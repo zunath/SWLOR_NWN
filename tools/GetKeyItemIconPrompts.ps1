@@ -43,7 +43,7 @@ $records = foreach ($match in $keyItemMatches)
 {
     $active = $match.Groups['Active'].Value -eq 'true'
     $category = $match.Groups['Category'].Value
-    if (!$active -or $category -in @('Invalid', 'FieldNotes', 'Maps'))
+    if (!$active -or $category -notin @('QuestItems', 'Documents', 'Keys'))
     {
         continue
     }
@@ -78,9 +78,9 @@ Constraints: completely original artwork and a composition distinct from every o
 }
 
 $records = @($records)
-if ($records.Count -ne 198)
+if ($records.Count -ne 200)
 {
-    throw "Expected 198 active Key, Quest Item, and Document entries but found $($records.Count)."
+    throw "Expected 200 active Key, Quest Item, and Document entries but found $($records.Count)."
 }
 
 $records |

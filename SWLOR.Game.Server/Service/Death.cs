@@ -60,6 +60,7 @@ namespace SWLOR.Game.Server.Service
                         player,
                         receiver => $"{PlayerName.GetDisplayName(receiver, player)} has been subdued by {PlayerName.GetDisplayName(receiver, hostile)}.");
                     ApplyEffectToObject(DurationType.Instant, EffectResurrection(), player);
+                    Feature.PlayerTemporaryEffects.RestoreGhostAfterRevive(player);
                     DelayCommand(0.1f, () => Ability.ReapplyAuraEffectsForCreature(player));
                     StatusEffect.ApplyStatusEffect(player, player, typeof(KnockdownStatusEffect), 60f);
                     StatusEffect.ApplyStatusEffect(player, player, typeof(SubdualPenaltyStatusEffect), 300f);
@@ -86,6 +87,7 @@ namespace SWLOR.Game.Server.Service
 
             var amount = maxHP / 2;
             ApplyEffectToObject(DurationType.Instant, EffectResurrection(), player);
+            Feature.PlayerTemporaryEffects.RestoreGhostAfterRevive(player);
             if (CombatRecorder.IsRecording)
                 CombatRecorder.RecordRespawn(player);
             using (CombatRecorder.BeginRespawnAttribution())

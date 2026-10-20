@@ -54176,6 +54176,28 @@
                     "__struct_id": 0,
                     "NAME": {
                       "type": "cexostring",
+                      "value": "Twin Pistol Boost I"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "de_twinpist_b1"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "Twin Pistol Boost II"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "de_twinpist_b2"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
                       "value": "Ultranio"
                     },
                     "RESREF": {
@@ -54203,6 +54225,28 @@
                     "RESREF": {
                       "type": "resref",
                       "value": "ultraynno"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "Unarmed Boost I"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "de_unarmed_b1"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "Unarmed Boost II"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "de_unarmed_b2"
                     }
                   },
                   {
@@ -66829,6 +66873,50 @@
                     "__struct_id": 0,
                     "NAME": {
                       "type": "cexostring",
+                      "value": "Blueprint: Twin Pistol Boost I"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "recipe_dtwinpst1"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "Blueprint: Twin Pistol Boost II"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "recipe_dtwinpst2"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "Blueprint: Unarmed Boost I"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "recipe_dunarmed1"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "Blueprint: Unarmed Boost II"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "recipe_dunarmed2"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
                       "value": "Blueprint: Veilcarved Data Console"
                     },
                     "RESREF": {
@@ -69095,6 +69183,17 @@
                     "__struct_id": 0,
                     "NAME": {
                       "type": "cexostring",
+                      "value": "Instruction Disc: Akimbo Stance"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "id_akimbostance"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
                       "value": "Instruction Disc: Assassin's Stance"
                     },
                     "RESREF": {
@@ -69172,11 +69271,66 @@
                     "__struct_id": 0,
                     "NAME": {
                       "type": "cexostring",
+                      "value": "Instruction Disc: Blaster Slide I"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "id_blastslide1"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "Instruction Disc: Blaster Slide II"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "id_blastslide2"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "Instruction Disc: Blaster Slide III"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "id_blastslide3"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "Instruction Disc: Blaster Slide IV"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "id_blastslide4"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
                       "value": "Instruction Disc: Blazing Spikes"
                     },
                     "RESREF": {
                       "type": "resref",
                       "value": "id_blazspik"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "Instruction Disc: Bruiser Stance"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "id_bruiserstance"
                     }
                   },
                   {
@@ -69199,6 +69353,28 @@
                     "RESREF": {
                       "type": "resref",
                       "value": "id_conctoss2"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "Instruction Disc: Controlled Burst I"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "id_ctrlburst1"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "Instruction Disc: Controlled Burst II"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "id_ctrlburst2"
                     }
                   },
                   {
@@ -69348,6 +69524,17 @@
                     "__struct_id": 0,
                     "NAME": {
                       "type": "cexostring",
+                      "value": "Instruction Disc: Crossfire Stance"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "id_crossfirestan"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
                       "value": "Instruction Disc: Crusher Stance"
                     },
                     "RESREF": {
@@ -69375,6 +69562,50 @@
                     "RESREF": {
                       "type": "resref",
                       "value": "id_defestan"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "Instruction Disc: Dirty Jab I"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "id_dirtyjab1"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "Instruction Disc: Dirty Jab II"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "id_dirtyjab2"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "Instruction Disc: Dirty Jab III"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "id_dirtyjab3"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "Instruction Disc: Dirty Jab IV"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "id_dirtyjab4"
                     }
                   },
                   {
@@ -69612,6 +69843,28 @@
                     "__struct_id": 0,
                     "NAME": {
                       "type": "cexostring",
+                      "value": "Instruction Disc: Finishing Combination I"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "id_fincombo1"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "Instruction Disc: Finishing Combination II"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "id_fincombo2"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
                       "value": "Instruction Disc: Flash"
                     },
                     "RESREF": {
@@ -69656,11 +69909,55 @@
                     "__struct_id": 0,
                     "NAME": {
                       "type": "cexostring",
+                      "value": "Instruction Disc: Flow Stance"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "id_flowstance"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
                       "value": "Instruction Disc: Flurry Stance"
                     },
                     "RESREF": {
                       "type": "resref",
                       "value": "id_flurrystance"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "Instruction Disc: Focused Burst I"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "id_focburst1"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "Instruction Disc: Focused Burst II"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "id_focburst2"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "Instruction Disc: Focused Burst III"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "id_focburst3"
                     }
                   },
                   {
@@ -69705,6 +70002,39 @@
                     "RESREF": {
                       "type": "resref",
                       "value": "id_gambstan"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "Instruction Disc: Grapple Shot I"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "id_grappshot1"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "Instruction Disc: Grapple Shot II"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "id_grappshot2"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "Instruction Disc: Grapple Shot III"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "id_grappshot3"
                     }
                   },
                   {
@@ -69953,6 +70283,50 @@
                     "__struct_id": 0,
                     "NAME": {
                       "type": "cexostring",
+                      "value": "Instruction Disc: Jab I"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "id_jab1"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "Instruction Disc: Jab II"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "id_jab2"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "Instruction Disc: Jab III"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "id_jab3"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "Instruction Disc: Jab IV"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "id_jab4"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
                       "value": "Instruction Disc: Joint Lock I"
                     },
                     "RESREF": {
@@ -70118,11 +70492,110 @@
                     "__struct_id": 0,
                     "NAME": {
                       "type": "cexostring",
+                      "value": "Instruction Disc: Low Kick I"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "id_lowkick1"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "Instruction Disc: Low Kick II"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "id_lowkick2"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
                       "value": "Instruction Disc: Ordnance Stance"
                     },
                     "RESREF": {
                       "type": "resref",
                       "value": "id_ordnstan"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "Instruction Disc: Paired Volley I"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "id_pairvolley1"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "Instruction Disc: Paired Volley II"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "id_pairvolley2"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "Instruction Disc: Paired Volley III"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "id_pairvolley3"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "Instruction Disc: Paired Volley IV"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "id_pairvolley4"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "Instruction Disc: Palm Strike I"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "id_palmstrike1"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "Instruction Disc: Palm Strike II"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "id_palmstrike2"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "Instruction Disc: Palm Strike III"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "id_palmstrike3"
                     }
                   },
                   {
@@ -70288,6 +70761,28 @@
                     "RESREF": {
                       "type": "resref",
                       "value": "id_pinningtoss3"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "Instruction Disc: Pistol Rush I"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "id_pistolrush1"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "Instruction Disc: Pistol Rush II"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "id_pistolrush2"
                     }
                   },
                   {
@@ -71003,6 +71498,39 @@
                     "RESREF": {
                       "type": "resref",
                       "value": "id_twinrupture2"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "Instruction Disc: Uppercut I"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "id_uppercut1"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "Instruction Disc: Uppercut II"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "id_uppercut2"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "Instruction Disc: Uppercut III"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "id_uppercut3"
                     }
                   },
                   {

@@ -96,7 +96,10 @@ namespace SWLOR.Game.Server.Tests.Feature
                    behaviorCase.ExpectsTargetTemporaryHP ||
                    behaviorCase.ExpectsActivatorHealing ||
                    behaviorCase.ExpectsTargetHealing ||
-                   behaviorCase.MaximumActivatorDistanceToTargetAfterImpact.HasValue;
+                   behaviorCase.MaximumActivatorDistanceToTargetAfterImpact.HasValue ||
+                   behaviorCase.MinimumActivatorDistanceToTargetAfterImpact.HasValue ||
+                   behaviorCase.MinimumActivatorTravelDistanceAfterImpact.HasValue ||
+                   behaviorCase.MaximumActivatorDistanceToGroundTargetAfterImpact.HasValue;
         }
 
         private static bool IsExempt(List<Type> definers)
@@ -261,6 +264,26 @@ namespace SWLOR.Game.Server.Tests.Feature
                              behaviorCase.MaximumActivatorDistanceToTargetAfterImpact.Value)
                         problems.Add($"{behaviorCase.Feat}: target starts inside its post-impact distance threshold");
                 }
+
+                if (behaviorCase.MinimumActivatorDistanceToTargetAfterImpact is { } minimumSeparation &&
+                    (behaviorCase.Target == AbilityTargetKind.Self || minimumSeparation <= behaviorCase.TargetDistanceMeters || !behaviorCase.TargetIsStationary))
+                    problems.Add($"{behaviorCase.Feat}: retreat distance requires a closer stationary distinct target");
+
+                if (behaviorCase.MinimumActivatorTravelDistanceAfterImpact is <= 0)
+                    problems.Add($"{behaviorCase.Feat}: minimum travel distance must be positive");
+
+                if (behaviorCase.GroundTargetOffsetMeters is { } groundOffset)
+                {
+                    if (groundOffset.LengthSquared() <= 0 || !float.IsFinite(groundOffset.X) || !float.IsFinite(groundOffset.Y))
+                        problems.Add($"{behaviorCase.Feat}: ground cursor offset must be finite and nonzero");
+                    if (behaviorCase.Target == AbilityTargetKind.Self || !behaviorCase.TargetIsStationary)
+                        problems.Add($"{behaviorCase.Feat}: ground cursor direction requires a stationary distinct target");
+                }
+
+                if (behaviorCase.MaximumActivatorDistanceToGroundTargetAfterImpact is { } groundDistance &&
+                    (groundDistance <= 0 || !behaviorCase.GroundTargetOffsetMeters.HasValue ||
+                     groundDistance >= behaviorCase.GroundTargetOffsetMeters.Value.Length()))
+                    problems.Add($"{behaviorCase.Feat}: ground arrival assertion requires a positive tolerance smaller than its nonzero destination offset");
 
                 var setupTypes = behaviorCase.TargetSetupStatusEffects.ToHashSet();
                 foreach (var removedType in behaviorCase.ExpectedRemovedTargetStatusEffects)

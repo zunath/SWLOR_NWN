@@ -21,6 +21,7 @@ namespace SWLOR.Game.Server.Service.AbilityService
         public string Name { get; set; }
         public AbilityActivationAction ActivationAction { get; set; }
         public AbilityImpactAction ImpactAction { get; set; }
+        public MeleeTechniqueDetail MeleeTechnique { get; set; }
         public float ImpactDelay { get; set; }
         public AbilityActivationDelayAction ActivationDelay { get; set; }
         public AbilityRecastDelayAction RecastDelay { get; set; }
@@ -45,6 +46,7 @@ namespace SWLOR.Game.Server.Service.AbilityService
         public float NativeAnimationPreviewDuration { get; set; }
         public AnimationService.AnimationClip AuthoredImpactAnimation { get; set; }
         public bool UsesImmediateAuthoredAnimation { get; set; }
+        public bool FitsAuthoredAnimationToCastWindow { get; set; }
         public bool UsesAuthoredImpactAnimation { get; set; }
         public float ImmediateNativeImpactAnimationDuration { get; set; }
         public bool HasGeneratedAnimationBinding { get; set; }
@@ -63,6 +65,7 @@ namespace SWLOR.Game.Server.Service.AbilityService
         public bool CanBeUsedInSpace { get; set; }
         public float MaxRange { get; set; }
         public bool IsHostileAbility { get; set; }
+        public int? WeaponAbilityFlowDamagePerCharge { get; set; }
         /// <summary>
         /// The impact schedules damage through a status or callback even when its immediate
         /// base damage is zero. Hostile hit damage bonuses remain eligible on that impact.
@@ -121,6 +124,9 @@ namespace SWLOR.Game.Server.Service.AbilityService
         /// refunding the recast delay.
         /// </summary>
         public bool IsChanneled { get; set; }
+
+        public bool HasFixedActivationDelay { get; set; }
+        public bool SuppressesAutoAttacks { get; set; }
 
         /// <summary>
         /// Invoked against the activator when a channeled ability is interrupted so the effects granted

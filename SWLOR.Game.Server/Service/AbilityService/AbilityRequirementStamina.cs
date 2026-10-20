@@ -77,7 +77,17 @@ namespace SWLOR.Game.Server.Service.AbilityService
             adjustment += consumeNextAdjustment
                 ? Combat.ConsumeNextAbilityStaminaCostAdjustment(player, ability.EffectiveLevelPerkType)
                 : Combat.GetNextAbilityStaminaCostAdjustment(player, ability.EffectiveLevelPerkType);
-            return Math.Max(0, requiredSTM + adjustment);
+            // Cool Under Fire discounts only a cost that remains positive after all
+            // other adjustments. Its own discount may reduce that cost to zero.
+            requiredSTM = Math.Max(0, requiredSTM + adjustment);
+            if (CombatService.WeaponAbilityTraitPolicy.IsEligibleCostReduction(abilitySkillType, requiredSTM))
+            {
+                requiredSTM += PairedRangedTraits.GetAbilityStaminaCostAdjustment(player);
+                if (consumeNextAdjustment)
+                    PairedRangedTraits.ConsumeAbilityStaminaDiscount(player);
+            }
+            requiredSTM = Math.Max(0, requiredSTM);
+            return requiredSTM - MeleeTechnique.GetStaminaDiscount(player, ability, requiredSTM, consumeNextAdjustment);
         }
     }
 }

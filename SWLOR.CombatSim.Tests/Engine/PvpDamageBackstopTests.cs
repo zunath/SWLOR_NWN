@@ -95,5 +95,18 @@ namespace SWLOR.CombatSim.Tests.Engine
 
             fight.DamageAt(360 + 40).Should().BeApproximately(100, Tolerance);
         }
+
+        [TestCase(1, 180, 20)] [TestCase(7, 210, 40)] [TestCase(29, 240, 60)] [TestCase(33, 270, 80)] [TestCase(17, 300, 100)]
+        public void Current_SmallHitsUseProductionRoundedUpIncrease(int damage, int seconds, int percent)
+        {
+            var simulation = TestScenarios.Spawn(TestScenarios.TwoTeams(true,
+                new[] { TestCombatants.Dummy("Attacker") }, new[] { TestCombatants.Dummy("Target") }), RuleSets.Current(), _catalog);
+            var attacker = simulation.Get("Attacker");
+            var target = simulation.Get("Target");
+            target.PvpCombatStartedAt = -seconds;
+            target.LastPvpActivityAt = 0;
+            simulation.ApplyDamage(attacker, target, damage).Should().Be(
+                SWLOR.Game.Server.Service.PvpCombatService.PvpCombatRules.IncreaseDamage(damage, percent));
+        }
     }
 }

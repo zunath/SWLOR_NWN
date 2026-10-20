@@ -64,6 +64,32 @@ public class LootTableDefinitionTests
         }
     }
 
+    [Test]
+    public void LootTables_DropOnlyIdentifiedItems()
+    {
+        var root = FindRepositoryRoot();
+        var unidentified = new HashSet<string>(StringComparer.OrdinalIgnoreCase);
+        foreach (var path in Directory.EnumerateFiles(Path.Combine(root.FullName, "Module", "uti"), "*.uti.json"))
+        {
+            using var document = JsonDocument.Parse(File.ReadAllText(path));
+            if (document.RootElement.TryGetProperty("Identified", out var identified) &&
+                identified.GetProperty("value").GetInt32() == 0)
+                unidentified.Add(document.RootElement.GetProperty("TemplateResRef").GetProperty("value").GetString()!);
+        }
+
+        var failures = new List<string>();
+        foreach (var definitionType in GetLootTableDefinitionTypes())
+        {
+            var tables = ((ILootTableDefinition)Activator.CreateInstance(definitionType)!).BuildLootTables();
+            foreach (var (tableId, table) in tables)
+                failures.AddRange(table
+                    .Where(item => unidentified.Contains(item.Resref))
+                    .Select(item => $"{definitionType.Name}/{tableId}: '{item.Resref}' is unidentified, so players cannot see its properties."));
+        }
+
+        failures.Should().BeEmpty(string.Join(Environment.NewLine, failures));
+    }
+
     private static IEnumerable<Type> GetLootTableDefinitionTypes()
     {
         return typeof(ILootTableDefinition)

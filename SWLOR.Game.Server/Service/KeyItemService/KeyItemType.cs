@@ -1608,6 +1608,11 @@ namespace SWLOR.Game.Server.Service.KeyItemService
         [KeyItem(KeyItemCategoryType.Music, "Noctilium", true, "A recording of \"Noctilium\" in your music collection.")]
         SongNoctilium = 3643,
 
+        [KeyItem(KeyItemCategoryType.QuestItems, "Twin Suns Canyon Firing Trace", true, "A recording of sustained two-hand fire against one enemy at the Anchorhead Canyon Range, ready for Jek Talin's inspection.")]
+        TwinSunsCanyonFiringTrace = 3644,
+        [KeyItem(KeyItemCategoryType.QuestItems, "Final Salvo Canyon Route Trace", true, "A recording of two successful repositioning attacks and the Flow-powered follow-up at the Anchorhead Canyon Range, ready for Pavo Orrel's inspection.")]
+        FinalSalvoCanyonRouteTrace = 3645,
+
 	}
 
 	public class KeyItemAttribute : Attribute

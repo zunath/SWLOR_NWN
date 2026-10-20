@@ -239,6 +239,10 @@ namespace SWLOR.Game.Server.Service.CraftService
         DroidThrowing = 126,
         [EnhancementSubType("Shield Deflection")]
         ShieldDeflection = 127,
+        [EnhancementSubType("Droid - Unarmed")]
+        DroidUnarmed = 128,
+        [EnhancementSubType("Droid - Twin Pistol")]
+        DroidTwinPistol = 129,
 
 
     }

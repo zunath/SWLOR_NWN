@@ -5,9 +5,11 @@ using SWLOR.Game.Server.Core.Async;
 using SWLOR.Game.Server.Feature.AbilityDefinition;
 using SWLOR.Game.Server.Service;
 using SWLOR.Game.Server.Service.AbilityService;
+using SWLOR.Game.Server.Service.CombatService;
 using SWLOR.Game.Server.EngineTests.Framework;
 using SWLOR.Game.Server.Service.StatService;
 using SWLOR.NWN.API.NWNX;
+using SWLOR.NWN.API.Engine;
 using SWLOR.NWN.API.NWScript.Enum;
 
 namespace SWLOR.Game.Server.EngineTests.Definitions.AbilityBehaviors
@@ -178,6 +180,12 @@ namespace SWLOR.Game.Server.EngineTests.Definitions.AbilityBehaviors
             // added feat first, leaving the intended activation busy or already on recast.
             if (playerFixture == null)
                 SetAILevel(caster, AILevel.VeryLow);
+            if (behaviorCase.SearchForSafeMovementLane)
+            {
+                SetEventScript(caster, EventScript.Creature_OnHeartbeat, "");
+                SetEventScript(caster, EventScript.Creature_OnNotice, "");
+                SetEventScript(caster, EventScript.Creature_OnMeleeAttacked, "");
+            }
             var target = caster;
 
             try
@@ -213,8 +221,9 @@ namespace SWLOR.Game.Server.EngineTests.Definitions.AbilityBehaviors
                     target = ctx.SpawnCreature(TargetResref, -0.5f + behaviorCase.TargetDistanceMeters, 0f);
                     SetAILevel(target, AILevel.VeryLow);
                     ctx.MakeHostile(target);
-                    if (playerFixture != null)
+                    if (playerFixture != null || behaviorCase.TargetIsStationary)
                         ApplyEffectToObject(DurationType.Temporary, EffectCutsceneParalyze(), target, 120f);
+                    if (behaviorCase.TargetIsStationary) SetCommandable(false, target);
                     ApplyEffectToObject(
                         DurationType.Temporary,
                         EffectTemporaryHitpoints(TargetTemporaryHP),
@@ -305,6 +314,9 @@ namespace SWLOR.Game.Server.EngineTests.Definitions.AbilityBehaviors
                         playerFixture.Update(record => record.Perks[setupPerk] = setupLevel);
                 }
 
+                if (!string.IsNullOrWhiteSpace(behaviorCase.EquipOffHandResref))
+                    await ctx.EquipItemAsync(caster, behaviorCase.EquipOffHandResref, InventorySlot.LeftHand);
+
                 if (!string.IsNullOrWhiteSpace(behaviorCase.EquipMainHandResref))
                 {
                     await ctx.EquipItemAsync(caster, behaviorCase.EquipMainHandResref, InventorySlot.RightHand);
@@ -370,6 +382,10 @@ namespace SWLOR.Game.Server.EngineTests.Definitions.AbilityBehaviors
                         $"target HP setup expected {desiredTargetHitPoints}/{targetMaximumHitPoints} before activation");
                 }
 
+                var activationLocation = behaviorCase.SearchForSafeMovementLane
+                    ? await PrepareMovementLaneAsync(ctx, behaviorCase, ability, caster, target)
+                    : GetLocation(target);
+
                 if (behaviorCase.MaximumActivatorDistanceToTargetAfterImpact.HasValue)
                 {
                     ctx.Assert(
@@ -379,6 +395,23 @@ namespace SWLOR.Game.Server.EngineTests.Definitions.AbilityBehaviors
                         GetDistanceBetween(caster, target) >
                         behaviorCase.MaximumActivatorDistanceToTargetAfterImpact.Value,
                         "the target must start outside the asserted post-impact distance or the movement assertion is vacuous");
+                }
+
+                if (behaviorCase.MinimumActivatorDistanceToTargetAfterImpact.HasValue)
+                    ctx.Assert(target != caster && GetDistanceBetween(caster, target) < behaviorCase.MinimumActivatorDistanceToTargetAfterImpact.Value,
+                        "the target must start inside the asserted retreat distance");
+
+                var casterPositionBefore = GetPosition(caster);
+                if (!behaviorCase.SearchForSafeMovementLane && behaviorCase.GroundTargetOffsetMeters is { } offset)
+                {
+                    var direction = GetPosition(target) - casterPositionBefore;
+                    direction.Z = 0;
+                    ctx.Assert(direction.LengthSquared() > .001f, "a ground cursor direction requires a distinct target position");
+                    direction = System.Numerics.Vector3.Normalize(direction);
+                    var position = casterPositionBefore + direction * offset.X +
+                        new System.Numerics.Vector3(-direction.Y, direction.X, 0) * offset.Y;
+                    position.Z = GetGroundHeight(Location(GetArea(caster), position, 0));
+                    activationLocation = Location(GetArea(caster), position, 0);
                 }
 
                 foreach (var effectType in behaviorCase.ExpectedActivatorStatusEffects)
@@ -432,7 +465,13 @@ namespace SWLOR.Game.Server.EngineTests.Definitions.AbilityBehaviors
                         activationAttempted = true;
                         try
                         {
-                            used = UsePerkFeat.TryUseAbility(caster, target, behaviorCase.Feat, GetLocation(target));
+                            if (behaviorCase.SearchForSafeMovementLane)
+                            {
+                                ClearAllActions();
+                                ctx.Assert(System.Numerics.Vector3.Distance(casterPositionBefore, GetPosition(caster)) < .05f,
+                                    $"the controlled movement caster stayed at its captured origin: before={casterPositionBefore}, actual={GetPosition(caster)}");
+                            }
+                            used = UsePerkFeat.TryUseAbility(caster, target, behaviorCase.Feat, activationLocation);
 
                             // Captured HERE, not after the next yield: the denial reason is a
                             // process-wide slot that any other creature's CanUseAbility call
@@ -440,6 +479,8 @@ namespace SWLOR.Game.Server.EngineTests.Definitions.AbilityBehaviors
                             if (!used)
                             {
                                 activationDenial = Ability.GetLastActivationDenialReason();
+                                if (behaviorCase.SearchForSafeMovementLane)
+                                    activationDenial += $"; actor={GetPosition(caster)}, target={GetPosition(target)}, cursor={GetPositionFromLocation(activationLocation)}";
                             }
                         }
                         catch (Exception ex)
@@ -587,6 +628,18 @@ namespace SWLOR.Game.Server.EngineTests.Definitions.AbilityBehaviors
                         targetTemporaryHPBefore);
                 }
 
+                if (behaviorCase.MinimumActivatorTravelDistanceAfterImpact is { } minimumTravel)
+                    await ctx.WaitUntilAsync(() => System.Numerics.Vector3.Distance(casterPositionBefore, GetPosition(caster)) >= minimumTravel,
+                        EffectWaitSeconds, $"the activator to travel at least {minimumTravel:0.##}m from its activation position");
+
+                if (behaviorCase.MinimumActivatorDistanceToTargetAfterImpact is { } minimumSeparation)
+                    await ctx.WaitUntilAsync(() => GetDistanceBetween(caster, target) >= minimumSeparation,
+                        EffectWaitSeconds, $"the activator to disengage at least {minimumSeparation:0.##}m from the stationary target");
+
+                if (behaviorCase.MaximumActivatorDistanceToGroundTargetAfterImpact is { } maximumGroundDistance)
+                    await ctx.WaitUntilAsync(() => System.Numerics.Vector3.Distance(GetPosition(caster), GetPositionFromLocation(activationLocation)) <= maximumGroundDistance,
+                        EffectWaitSeconds, "the activator to arrive at the selected ground destination");
+
                 if (behaviorCase.ExpectsRecast)
                 {
                     await ctx.WaitUntilAsync(
@@ -597,7 +650,8 @@ namespace SWLOR.Game.Server.EngineTests.Definitions.AbilityBehaviors
 
                 if (behaviorCase.VerifiesImmediateRecastRejection)
                 {
-                    await AssertImmediateRecastRejectionAsync(ctx, behaviorCase, ability, caster, target);
+                    await AssertImmediateRecastRejectionAsync(ctx, behaviorCase, ability, caster, target,
+                        activationLocation, casterPositionBefore);
                 }
             }
             finally
@@ -607,7 +661,56 @@ namespace SWLOR.Game.Server.EngineTests.Definitions.AbilityBehaviors
                 if (target != caster)
                     DestroyCaseActor(target);
                 DestroyCaseActor(caster);
+                if (playerFixture == null && !ctx.CancellationToken.IsCancellationRequested)
+                    await ctx.WaitUntilAsync(() => !GetIsObjectValid(caster) && (target == caster || !GetIsObjectValid(target)),
+                        3f, "the completed case's NPC actors to leave the next movement lane");
             }
+        }
+
+        private static async Task<Location> PrepareMovementLaneAsync(EngineTestContext ctx,
+            AbilityBehaviorCase behaviorCase, AbilityDetail ability, uint caster, uint target)
+        {
+            ctx.Assert(target != caster && behaviorCase.TargetIsStationary,
+                "safe movement lane selection requires a stationary distinct target");
+            await ctx.ExecuteInCreatureContextAsync(caster, () => ClearAllActions());
+            var origin = GetPosition(caster);
+            var errors = new List<string>();
+            for (var direction = 0; direction < 16; direction++)
+            {
+                var angle = direction * MathF.PI / 8;
+                var unit = new System.Numerics.Vector3(MathF.Cos(angle), MathF.Sin(angle), 0);
+                var targetPosition = origin + unit * behaviorCase.TargetDistanceMeters;
+                targetPosition.Z = GetGroundHeight(Location(GetArea(caster), targetPosition, 0));
+                ObjectPlugin.SetPosition(target, targetPosition);
+                await ctx.WaitFrameAsync();
+                Location location = null;
+                var validation = string.Empty;
+                await ctx.ExecuteInCreatureContextAsync(caster, () =>
+                {
+                    ClearAllActions();
+                    location = GetLocation(target);
+                    if (behaviorCase.GroundTargetOffsetMeters is { } offset)
+                    {
+                        var position = origin + unit * offset.X + new System.Numerics.Vector3(-unit.Y, unit.X, 0) * offset.Y;
+                        position.Z = GetGroundHeight(Location(GetArea(caster), position, 0));
+                        location = Location(GetArea(caster), position, 0);
+                    }
+                    validation = ability.RequiresLocationTarget && GetDistanceBetweenLocations(GetLocation(caster), location) >= ability.MaxRange
+                        ? "Fixture cursor exceeds ability range"
+                        : ability.CustomValidation?.Invoke(caster, target, ability.AbilityLevel, location) ?? string.Empty;
+                    if (string.IsNullOrEmpty(validation) && !LineOfSightObject(caster, target))
+                        validation = "Fixture target has no line of fire";
+                });
+                if (string.IsNullOrEmpty(validation))
+                {
+                    ctx.Assert(System.Numerics.Vector3.Distance(targetPosition, GetPosition(target)) < .05f,
+                        "The native stationary target occupies the selected lane position");
+                    ctx.Log($"{behaviorCase.Feat} validated movement fixture: actor={GetPosition(caster)}, target={GetPosition(target)}, cursor={GetPositionFromLocation(location)}");
+                    return location;
+                }
+                errors.Add($"direction={direction}: {validation}");
+            }
+            throw new EngineTestAssertionException($"No legal movement fixture lane for {behaviorCase.Feat}: actor={origin}; {string.Join(" | ", errors)}");
         }
 
         private static async Task AssertImmediateRecastRejectionAsync(
@@ -615,41 +718,70 @@ namespace SWLOR.Game.Server.EngineTests.Definitions.AbilityBehaviors
             AbilityBehaviorCase behaviorCase,
             AbilityDetail ability,
             uint caster,
-            uint target)
+            uint target,
+            Location activationLocation,
+            System.Numerics.Vector3 initialCasterPosition)
         {
-            // Restore both pools so the second attempt can only fail because the shared
-            // recast is still active, not because the first activation consumed a resource.
+            // Full resources isolate the movement lockout and the longer shared recast.
             ctx.SetResources(caster, ResourcePool, ResourcePool);
 
             var attempted = false;
             var used = false;
             var denial = string.Empty;
             Exception error = null;
-            AssignCommand(caster, () =>
+            async Task RetryAsync()
             {
-                attempted = true;
-                try
+                attempted = false;
+                used = false;
+                denial = string.Empty;
+                error = null;
+                AssignCommand(caster, () =>
                 {
-                    used = UsePerkFeat.TryUseAbility(caster, target, behaviorCase.Feat, GetLocation(target));
-                    if (!used)
-                        denial = Ability.GetLastActivationDenialReason();
-                }
-                catch (Exception ex)
-                {
-                    error = ex;
-                }
-            });
+                    attempted = true;
+                    try
+                    {
+                        used = UsePerkFeat.TryUseAbility(caster, target, behaviorCase.Feat, activationLocation);
+                        if (!used)
+                            denial = Ability.GetLastActivationDenialReason();
+                    }
+                    catch (Exception ex) { error = ex; }
+                });
 
-            var deadline = DateTime.UtcNow.AddSeconds(2);
-            while (!attempted && DateTime.UtcNow < deadline)
-            {
-                await NwTask.Delay(TimeSpan.FromMilliseconds(100), ctx.CancellationToken);
-                ctx.CancellationToken.ThrowIfCancellationRequested();
+                var deadline = DateTime.UtcNow.AddSeconds(2);
+                while (!attempted && DateTime.UtcNow < deadline)
+                {
+                    await NwTask.Delay(TimeSpan.FromMilliseconds(100), ctx.CancellationToken);
+                    ctx.CancellationToken.ThrowIfCancellationRequested();
+                }
+                ctx.Assert(attempted, $"the immediate {behaviorCase.Feat} retry command never executed");
+                if (error != null)
+                    ctx.Fail($"immediate {behaviorCase.Feat} retry threw {error.GetType().Name}: {error.Message}");
             }
 
-            ctx.Assert(attempted, $"the immediate {behaviorCase.Feat} retry command never executed");
-            if (error != null)
-                ctx.Fail($"immediate {behaviorCase.Feat} retry threw {error.GetType().Name}: {error.Message}");
+            // A committed channel (Focused Burst) keeps the caster busy until it completes; the recast
+            // rejection is checked once the channel has released the caster.
+            if (ability.HasFixedActivationDelay)
+                await ctx.WaitUntilAsync(() => !Activity.IsBusy(caster), EffectWaitSeconds,
+                    $"the {behaviorCase.Feat} channel to release the caster");
+
+            await RetryAsync();
+            if (behaviorCase.SearchForSafeMovementLane && denial.Contains("Wait two seconds between movement abilities.", StringComparison.Ordinal))
+            {
+                ctx.Assert(!used, "The immediate retry respects the shared movement lockout");
+                ctx.Log($"{behaviorCase.Feat} immediate retry verified the two-second movement lockout");
+                await ctx.DelaySecondsAsync(2.05f);
+                ctx.Assert(!WeaponRepositioning.IsMoving(caster), "The first movement is complete before the cooldown-only fixture reset");
+                await ctx.ExecuteInCreatureContextAsync(caster, () =>
+                {
+                    ClearAllActions();
+                    ObjectPlugin.SetPosition(caster, initialCasterPosition);
+                });
+                await ctx.WaitFrameAsync();
+                ctx.Assert(System.Numerics.Vector3.Distance(initialCasterPosition, GetPosition(caster)) < .05f,
+                    "The cooldown-only retry starts at the original validated fixture position");
+                activationLocation = await PrepareMovementLaneAsync(ctx, behaviorCase, ability, caster, target);
+                await RetryAsync();
+            }
 
             ctx.Assert(!used, $"{behaviorCase.Feat} was accepted while its shared recast was active");
             ctx.Assert(
@@ -846,6 +978,8 @@ namespace SWLOR.Game.Server.EngineTests.Definitions.AbilityBehaviors
         {
             if (!GetIsObjectValid(creature))
                 return;
+
+            SetCommandable(true, creature);
 
             // Both calls run inside one assigned context: SetIsDestroyable executes
             // immediately there (it operates on OBJECT_SELF, so it cannot be called

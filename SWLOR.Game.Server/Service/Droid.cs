@@ -398,6 +398,12 @@ namespace SWLOR.Game.Server.Service
                         case DroidStatSubType.Throwing:
                             AddSkillBonus(details.Skills, SkillType.Throwing, value);
                             break;
+                        case DroidStatSubType.Unarmed:
+                            AddSkillBonus(details.Skills, SkillType.Unarmed, value);
+                            break;
+                        case DroidStatSubType.TwinPistol:
+                            AddSkillBonus(details.Skills, SkillType.TwinPistol, value);
+                            break;
                         default:
                             throw new ArgumentOutOfRangeException();
                     }
@@ -548,6 +554,12 @@ namespace SWLOR.Game.Server.Service
                             break;
                         case DroidStatSubType.Throwing:
                             details.Throwing += value;
+                            break;
+                        case DroidStatSubType.Unarmed:
+                            details.Unarmed += value;
+                            break;
+                        case DroidStatSubType.TwinPistol:
+                            details.TwinPistol += value;
                             break;
                         default:
                             throw new ArgumentOutOfRangeException();
@@ -838,6 +850,10 @@ namespace SWLOR.Game.Server.Service
             // because it doesn't exist at the time of the droid being created.
             ExecuteScript(GetEventScript(droid, EventScript.Creature_OnSpawnIn), droid);
 
+            // Generated off hands are never saved; rebuild them from the restored Power Glove or Twin Pistols item.
+            PowerGloveEquipment.EnsurePair(droid);
+            TwinPistolEquipment.EnsurePair(droid);
+
             DeleteLocalBool(droid, DroidIsSpawning);
             SaveItemSnapshot(droid);
             AssignCommand(GetModule(), () =>
@@ -991,6 +1007,9 @@ namespace SWLOR.Game.Server.Service
         {
             var itemType = GetBaseItemType(item);
             return itemType != BaseItem.CreatureBludgeonWeapon &&
+                   // Generated off hands are rebuilt from the saved main-hand item on every summon.
+                   itemType != BaseItem.CompanionPowerGlove &&
+                   itemType != BaseItem.CompanionPistol &&
                    itemType != BaseItem.CreaturePierceWeapon &&
                    itemType != BaseItem.CreatureSlashPierceWeapon &&
                    itemType != BaseItem.CreatureSlashWeapon &&

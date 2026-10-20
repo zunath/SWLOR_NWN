@@ -74,7 +74,7 @@ public class EquipmentRestrictionsTests
             null,
             leftHandType);
 
-        error.Should().Be("Pistols may only be paired with a shield in the left hand.");
+        error.Should().Be("Pistols may only be paired with a shield or companion pistol in the left hand.");
     }
 
     [TestCase(BaseItem.Pistol)]
@@ -87,7 +87,7 @@ public class EquipmentRestrictionsTests
             pistolType,
             null);
 
-        error.Should().Be("Pistols may only be paired with a shield in the left hand.");
+        error.Should().Be("Pistols may only be paired with a shield or companion pistol in the left hand.");
     }
 
     [TestCase(InventorySlot.LeftHand)]
@@ -177,7 +177,7 @@ public class EquipmentRestrictionsTests
             BaseItem.Longsword);
 
         offHandError.Should().Be("Pistols may only be equipped in the right hand.");
-        pairedWithWeaponError.Should().Be("Pistols may only be paired with a shield in the left hand.");
+        pairedWithWeaponError.Should().Be("Pistols may only be paired with a shield or companion pistol in the left hand.");
     }
 
     [TestCase(BaseItem.Pistol, "b_pistol", BaseItem.Sling)]

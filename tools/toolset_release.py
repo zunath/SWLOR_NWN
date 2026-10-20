@@ -215,6 +215,10 @@ class Publisher:
         """Create toolset-v{version} without taking Latest from game releases; skip identical, refuse different."""
         tag = versioned_tag(version)
         release = gh_release(tag)
+        existing_tag = self.tag_commit(tag)
+        if existing_tag is not None and existing_tag != revision:
+            raise RuntimeError(f'The tag {tag} already points at {existing_tag[:12]}, not {revision[:12]}. Published versions are never '
+                               'moved: publish a new version, or delete the stale tag and release if they were never used.')
         if release is None:
             options = ['--target', revision, '--title', f'SWLOR Toolset {version}', '--notes', RELEASE_NOTES, '--latest=false']
             if is_prerelease(version):
@@ -238,6 +242,16 @@ class Publisher:
             self.log(f'{tag}: published the recovered draft (not marked latest).')
         elif not missing:
             self.log(f'{tag}: already published with identical assets; skipped.')
+
+    @staticmethod
+    def tag_commit(tag):
+        """The commit a tag points at, or None when the tag does not exist."""
+        code, out, err = run_gh(['api', f'repos/{REPO}/commits/{tag}', '--jq', '.sha'], check=False)
+        if code == 0:
+            return out.strip()
+        if re.search(r'404|422|not found|no commit found', err + out, re.I):
+            return None
+        raise GhError(['api', 'commits', tag], err or out)
 
     def move_latest_tag(self, revision):
         code, out, err = run_gh(['api', f'repos/{REPO}/git/ref/tags/{LATEST_TAG}', '--jq', '.object.sha'], check=False)
@@ -265,9 +279,13 @@ class Publisher:
         else:
             self.write(['release', 'edit', LATEST_TAG, '--repo', REPO, '--title', LATEST_TITLE, '--notes', notes,
                         '--latest=false', '--prerelease=false', '--draft=false'])
-        self.write(['release', 'upload', LATEST_TAG, *downloads, '--repo', REPO, '--clobber'])
+        # --clobber deletes before it uploads, so only touch assets that actually differ.
+        remote = remote_assets(release or {})
+        changed = [path for path in downloads if path.name not in remote or not same_asset(path, remote[path.name])]
+        if changed:
+            self.write(['release', 'upload', LATEST_TAG, *changed, '--repo', REPO, '--clobber'])
         keep = {path.name for path in downloads}
-        for name in sorted(set(remote_assets(release or {})) - keep):
+        for name in sorted(set(remote) - keep):
             self.write(['release', 'delete-asset', LATEST_TAG, name, '--repo', REPO, '--yes'])
         self.log(f'{LATEST_TAG}: points at {revision[:12]} with {len(downloads)} download assets (not marked latest).')
 
@@ -429,7 +447,7 @@ def release_local(args):
         raise RuntimeError('Choose an output directory outside the source checkout.')
     release = output / 'release'
     if output.exists():
-        files = reusable_build(output, args.version, revision)
+        files = reusable_build(output, args.version, revision, args.publish, not args.skip_tests, args.sign_windows)
         print(f'Reusing the verified build of {args.version} at {revision[:12]} in {release}; nothing is rebuilt.')
     else:
         files = build_release(args, output, revision)
@@ -445,8 +463,9 @@ def build_info_path(output):
     return Path(output) / 'build-info.json'
 
 
-def reusable_build(output, version, revision):
-    """The release files of an earlier, complete build of this version and commit (a dry run), or an error."""
+def reusable_build(output, version, revision, publishing=False, need_tests=False, need_signed=False):
+    """The release files of an earlier, complete build of this version and commit (a dry run), or an error.
+    Publishing never reuses a dev-checkout build, an untested build when tests are required, or an unsigned one when signing is."""
     try:
         info = json.loads(build_info_path(output).read_text(encoding='utf-8'))
         files = release_files(Path(output) / 'release')
@@ -456,6 +475,15 @@ def reusable_build(output, version, revision):
     if recorded is None or info.get('Version') != version or info.get('Revision') != revision             or {path.name: file_sha256(path) for path in files} != recorded:
         raise RuntimeError(f'{output} already exists and is not an intact, complete build of {version} at {revision[:12]}. '
                            'Choose another --output or delete it.')
+    shortfalls = []
+    if publishing and info.get('DevCheckout'):
+        shortfalls.append('it was built from a checkout that bypassed the master/clean/origin guards')
+    if need_tests and not info.get('Tested'):
+        shortfalls.append('it was built with --skip-tests')
+    if need_signed and not info.get('Signed'):
+        shortfalls.append('it was not signed')
+    if shortfalls:
+        raise RuntimeError(f'Cannot publish the existing build in {output}: ' + ' and '.join(shortfalls) + '. Delete it and rerun.')
     return files
 
 
@@ -480,7 +508,8 @@ def build_release(args, output, revision):
             cleanup()
     files = merge_platform_releases([output / 'win-x64/release', output / 'linux-x64-release'], output / 'release')
     shutil.rmtree(work, ignore_errors=True)
-    build_info_path(output).write_text(json.dumps({'Version': args.version, 'Revision': revision,
+    build_info_path(output).write_text(json.dumps({'Version': args.version, 'Revision': revision, 'DevCheckout': args.allow_dev_checkout,
+                                                   'Tested': not args.skip_tests, 'Signed': args.sign_windows,
                                                    'Files': {path.name: file_sha256(path) for path in files}}, indent=2), encoding='utf-8')
     print('Timing: ' + ', '.join(f'{name} {seconds / 60:.1f} min' for name, seconds in timings.items()))
     return files

@@ -89,9 +89,10 @@ class GhLoginTests(unittest.TestCase):
 
 class FakeGitHub:
     """Stands in for gh: records every write and answers release/ref lookups from the given state."""
-    def __init__(self, releases=None, tag_sha=None):
+    def __init__(self, releases=None, tag_sha=None, version_tags=None):
         self.releases = releases or {}
         self.tag_sha = tag_sha
+        self.version_tags = version_tags or {}
         self.writes = []
 
     def view(self, tag):
@@ -99,7 +100,10 @@ class FakeGitHub:
 
     def run(self, arguments, check=True):
         arguments = [str(a) for a in arguments]
-        if arguments[0] == 'api' and arguments[1].startswith('repos/') and '--jq' in arguments:
+        if arguments[0] == 'api' and '/commits/' in arguments[1]:
+            sha = self.version_tags.get(arguments[1].rsplit('/', 1)[1])
+            return (1, '', 'gh: No commit found for SHA (HTTP 422)') if sha is None else (0, sha + '\n', '')
+        if arguments[0] == 'api' and '--jq' in arguments:
             if self.tag_sha is None:
                 return 1, '', 'gh: Not Found (HTTP 404)'
             return 0, self.tag_sha + '\n', ''
@@ -210,6 +214,37 @@ class PublishTests(unittest.TestCase):
                     with self.assertRaisesRegex(RuntimeError, 'different assets'):
                         release.publish_release('1.0.0', self.directory, REVISION, log=lambda m: None)
                 self.assertEqual(github.writes, [])
+
+    def test_existing_versioned_tag_on_another_commit_is_refused_before_anything_is_written(self):
+        for with_release in (False, True):
+            with self.subTest(with_release=with_release):
+                releases = {'toolset-v1.0.0': self.versioned_state()} if with_release else {}
+                github = FakeGitHub(releases=releases, version_tags={'toolset-v1.0.0': OTHER_REVISION})
+                with patch.object(release, 'run_gh', github.run), patch.object(release, 'gh_release', github.view):
+                    with self.assertRaisesRegex(RuntimeError, 'never moved'):
+                        release.publish_release('1.0.0', self.directory, REVISION, log=lambda m: None)
+                self.assertEqual(github.writes, [])
+
+    def test_versioned_tag_on_the_requested_commit_is_accepted(self):
+        github, _ = self.publish(version_tags={'toolset-v1.0.0': REVISION})
+        self.assertTrue(self.commands(github, 'release', 'create', 'toolset-v1.0.0'))
+
+    def test_identical_fixed_release_assets_are_not_clobbered_again(self):
+        state = self.versioned_state()
+        current = {'assets': [a for a in state['assets'] if release.is_user_download(a['name'])], 'isImmutable': False}
+        github, _ = self.publish(releases={'toolset-v1.0.0': state, 'toolset-latest': current}, tag_sha=REVISION)
+        self.assertEqual(self.commands(github, 'release', 'upload'), [])
+        self.assertEqual(self.commands(github, 'release', 'delete-asset'), [])
+        self.assertTrue(self.commands(github, 'release', 'edit', 'toolset-latest'))
+
+    def test_only_changed_fixed_release_assets_are_clobbered(self):
+        state = self.versioned_state()
+        current = {'assets': [dict(a, **({'digest': 'sha256:' + '0' * 64} if a['name'] == 'toolset-feed.json' else {}))
+                              for a in state['assets'] if release.is_user_download(a['name'])], 'isImmutable': False}
+        github, _ = self.publish(releases={'toolset-v1.0.0': state, 'toolset-latest': current}, tag_sha=REVISION)
+        upload, = self.commands(github, 'release', 'upload', 'toolset-latest')
+        self.assertEqual([Path(a).name for a in upload if Path(a).parent == self.directory], ['toolset-feed.json'])
+        self.assertIn('--clobber', upload)
 
     def test_asset_without_a_reported_digest_is_never_treated_as_identical(self):
         state = self.versioned_state()
@@ -327,10 +362,11 @@ class LocalBuildTests(unittest.TestCase):
         git.assert_not_called()
         windows.assert_not_called()
 
-    def finished_build(self, root, version='1.0.0'):
-        (root / 'release').mkdir(parents=True)
+    def finished_build(self, root, version='1.0.0', **conditions):
+        (root / 'release').mkdir(parents=True, exist_ok=True)
         (root / 'release' / 'toolset-feed.json').write_bytes(b'{}')
-        info = {'Version': version, 'Revision': REVISION, 'Files': {'toolset-feed.json': release.file_sha256(root / 'release' / 'toolset-feed.json')}}
+        info = {'Version': version, 'Revision': REVISION, 'DevCheckout': False, 'Tested': True, 'Signed': False,
+                'Files': {'toolset-feed.json': release.file_sha256(root / 'release' / 'toolset-feed.json')}, **conditions}
         release.build_info_path(root).write_text(json.dumps(info), encoding='utf-8')
 
     def test_dry_run_output_is_reused_for_the_publish_rerun_without_rebuilding(self):
@@ -359,6 +395,20 @@ class LocalBuildTests(unittest.TestCase):
             release.build_info_path(output).unlink()
             with self.assertRaisesRegex(RuntimeError, 'not an intact'):
                 release.reusable_build(output, '1.0.0', REVISION)
+
+    def test_publish_never_reuses_a_dev_checkout_untested_or_unsigned_build(self):
+        with tempfile.TemporaryDirectory() as temporary:
+            output = Path(temporary) / 'out'
+            self.finished_build(output, DevCheckout=True, Tested=False, Signed=False)
+            with self.assertRaisesRegex(RuntimeError, 'bypassed'):
+                release.reusable_build(output, '1.0.0', REVISION, publishing=True)
+            self.assertEqual(len(release.reusable_build(output, '1.0.0', REVISION)), 1)  # a dry run may still reuse it
+            self.finished_build(output, DevCheckout=False, Tested=False, Signed=False)
+            with self.assertRaisesRegex(RuntimeError, '--skip-tests'):
+                release.reusable_build(output, '1.0.0', REVISION, publishing=True, need_tests=True)
+            with self.assertRaisesRegex(RuntimeError, 'not signed'):
+                release.reusable_build(output, '1.0.0', REVISION, publishing=True, need_signed=True)
+            self.assertEqual(len(release.reusable_build(output, '1.0.0', REVISION, publishing=True)), 1)
 
     def test_container_script_runs_the_workflow_linux_steps(self):
         script = release.linux_container_script(run_tests=False)

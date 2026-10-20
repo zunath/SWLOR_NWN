@@ -26,6 +26,17 @@ Declare targeting metadata on the ability definition through the builder, never 
   - Passing `Spell.Invalid` to `ConfigureWeaponAbility` never reaches that check, because `ApplyTargetingMetadata` skips building targeting metadata at all. The ability ends up with no `Targeting`, so it silently loses both its cursor and its ground area marker with nothing thrown or logged. This is how several ranks shipped broken, and it is what `AreaAbilityTargetingTests` guards.
 - `tools/GenerateWeaponArchetypeImplementation.py` encodes the table above, and `SWLOR.Game.Server.Tests/Perks/AreaAbilityTargetingTests.cs` enforces it by reflecting over every `IAbilityListDefinition` and cross-checking `feat.2da`. Keep that test green rather than adding explicit per-ability lists. Deploy C# and rebuilt HAKs together; repack the module when `Module/` content also changes.
 
+## Radial and quickbar class menu rows
+
+The client builds the radial's Special Abilities > Standard list and the quickbar's class ability menu only from known feats that have a row in `SWLOR_Haks/sw_2da/CLS_FEAT_FIGHT.2da`. A player ability feat without one still works from an existing hotkey but never appears in either menu, so players cannot find or bind it.
+
+- Give every rank of a player ability exactly one `CLS_FEAT_FIGHT` row: `FeatLabel` equal to its `feat.2da` `LABEL`, `List=1`, `GrantedOnLevel=99` and `OnMenu=1`. The canonical feat must also link to a `spells.2da` row whose `Label` matches and whose `FeatID` points back to it.
+- A rank that presents a manual hostile target cursor (hostile, not a queued weapon ability, and `RequiresTarget` or `RequiresLocationTarget`) must use a row below 1024; the client's hotbar scan stops there. Reuse a free row below 1024 before appending.
+- Hide a retired generated feat's row (`List` and `OnMenu` not `1`) instead of leaving it visible.
+- The `AutoCast<Feat>` alias rows for optional targeting are generated separately; see [Generate and validate the native variants](#generate-and-validate-the-native-variants).
+
+`PlayerAbilityRadialMenuTests` enforces these rows and `QuickCastTests` enforces the alias rows. In the client, check Special Abilities > Standard with both Settings > Targeting options off and with each one on.
+
 ## Optional self-cast and current-enemy targeting
 
 Players configure **Self-Cast Support Abilities** and **Cast on Current Enemy** in Settings > Targeting. Both settings default off, save per character, and persist through reconnects and server resets. They change the presentation of existing feat buttons, quickbar hotkeys and radial choices; they are not additional abilities or chat commands. Current-enemy targeting requires a living hostile creature that the player is actively attacking, not merely a selected portrait or a stale combat target. The normal ability pipeline still enforces ownership, target validation, costs, cooldowns and incapacitation.

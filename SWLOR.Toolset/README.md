@@ -225,22 +225,45 @@ Third-party package and replacement provenance details are recorded in
 
 ## Releases and maintainer imports
 
-Maintainers only. Python 3.11 or newer is required (`python3` on Linux). Windows PowerShell wrappers exist for each command: `tools/PublishToolsetAssets.ps1`, `tools/PublishToolset.ps1`, `tools/ImportToolsetContribution.ps1`.
-
 ### Publish a release
 
-1. Pack the assets for the pinned `SWLOR_Haks` revision (once per revision). You need disk space for the source assets, packed HAKs, and download parts.
+Toolset releases never use GitHub's **Latest** badge, which belongs to the dated game releases. Each version is published as `toolset-v<version>` (not latest). Stable versions also refresh one fixed, non-latest release, `toolset-latest`, which holds the download links in the [root README](../README.md#install-the-toolset) and the feed (`ToolsetFeed.DefaultUrl`) that source builds read. Feed entries and installed copies use the immutable `toolset-v<version>` assets: installed builds read `releases/download/toolset-v<version>/toolset-feed.json` and update through Velopack's GitHub source, which lists releases and ignores `toolset-latest`. Prerelease versions (`1.1.0-beta`) never touch `toolset-latest`.
+
+Maintainers only. Python 3.11 or newer is required. Windows PowerShell wrappers exist for the lower-level commands: `tools/PublishToolsetAssets.ps1`, `tools/PublishToolset.ps1`, `tools/ImportToolsetContribution.ps1`.
+
+#### From your machine (no GitHub Actions)
+
+Needs Windows, Python 3.11+, the .NET SDK, Docker Desktop (Linux containers), and `gh` logged in as `zunath` with the `repo` scope.
+
+1. Pack the assets for the pinned `SWLOR_Haks` revision once per revision. You need disk space for the source assets, packed HAKs, and download parts.
 
    ```bash
    python tools/ToolsetDistribution.py assets --output /path/outside/checkout/swlor-assets-new
    ```
 
-2. Upload every file in the output's `release` directory to a GitHub release named `toolset-assets-<full-haks-commit>`. Do not mark it latest. Files are split into 1 GiB parts with per-part and combined SHA-256 checksums.
-3. In GitHub Actions, run **Package SWLOR Toolset** with a semantic version. Without `publish`, it uploads Windows and Linux preview artifacts. Publishing requires master, the repository owner, and approval in the `toolset-release` environment.
+2. Upload every file in the output's `release` directory to a GitHub release named `toolset-assets-<full-haks-commit>` and do not mark it latest (`gh release create toolset-assets-<commit> <files> --latest=false`). Files are split into 1 GiB parts with per-part and combined SHA-256 checksums.
+3. Merge the toolset change, then check out `master` with no local edits. `ReleaseToolset.cmd` refuses any other checkout, a stale `origin/master`, or a `gh` login that is not `zunath` with `repo` scope.
+4. Dry run (the default). It builds `win-x64` natively and `linux-x64` in a pinned Docker container (AppImage, tar.gz, and permissions need Linux), runs the same release tests and install checks as the workflow, and prints every file with its size and checksum plus the `gh` commands it would run. Nothing is created, tagged, or uploaded.
 
-The workflow builds self-contained Windows and Linux applications, tests both hosts, and builds Velopack installers and AppImage updates. Editor releases reuse the asset pack, so they never rebuild the large asset repository.
+   ```
+   ReleaseToolset.cmd --version 1.0.0
+   ```
 
-Windows signing is off by default. To enable it, set `sign_windows` and add the `TOOLSET_SIGNING_PFX_BASE64` and `TOOLSET_SIGNING_PASSWORD` secrets to the `toolset-release` environment. Unsigned downloads may show SmartScreen warnings.
+5. Publish with `--publish`. It creates `toolset-v1.0.0` (latest disabled) with all assets, then moves the `toolset-latest` tag to the released commit and replaces that release's download assets. Reruns are safe: an identical existing version is skipped, a different one is refused (publish a new version instead).
+
+   ```
+   ReleaseToolset.cmd --version 1.0.0 --publish
+   ```
+
+Output goes to `%USERPROFILE%\swlor-toolset-releases\<version>-<commit>` (or `--output`); delete it afterwards. Other options: `--skip-tests`, `--asset-descriptor <asset-pack.json>` instead of downloading it from the asset release. For Windows signing, set `SWLOR_SIGN_PFX` (path to the PFX) and `SWLOR_SIGN_PASSWORD` in the environment, then add `--sign-windows`. The password is never written to disk or logs, and the certificate is removed from your store afterwards unless it was already there. Unsigned downloads may show SmartScreen warnings.
+
+#### From GitHub Actions (when Actions is available)
+
+After step 2, run **Package SWLOR Toolset** with a semantic version. Without `publish`, it uploads Windows and Linux preview artifacts. Publishing requires master, the repository owner, and approval in the `toolset-release` environment, and then runs the same publish code as `ReleaseToolset.cmd`. The workflow builds self-contained Windows and Linux applications, tests both hosts, and builds Velopack installers and AppImage updates. Editor releases reuse the asset pack, so they never rebuild the large asset repository.
+
+Keep GitHub's immutable releases setting off for this repository: `toolset-latest` is replaced by design, and the publisher refuses an immutable one.
+
+Windows signing in Actions is off by default. To enable it, set `sign_windows` and add the `TOOLSET_SIGNING_PFX_BASE64` and `TOOLSET_SIGNING_PASSWORD` secrets to the `toolset-release` environment.
 
 ### Build a local preview
 

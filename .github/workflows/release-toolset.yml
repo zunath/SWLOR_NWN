@@ -66,7 +66,7 @@ jobs:
           if ($LASTEXITCODE -ne 0) { exit $LASTEXITCODE }
           dotnet test scripts/SWLOR.ContributorSetup.Tests/SWLOR.ContributorSetup.Tests.csproj -c Release --no-build --filter "FullyQualifiedName~SetupOptionsTests|FullyQualifiedName~NativeToolsTests|FullyQualifiedName~SetupApplicationTests|FullyQualifiedName~CommandRunnerTests"
           if ($LASTEXITCODE -ne 0) { exit $LASTEXITCODE }
-          python -B -m unittest tools.tests.test_toolset_content tools.tests.test_toolset_distribution -v
+          python -B -m unittest tools.tests.test_toolset_content tools.tests.test_toolset_distribution tools.tests.test_toolset_release -v
           exit $LASTEXITCODE
       - name: Resolve the pinned published asset pack
         if: runner.os == 'Windows'
@@ -131,20 +131,22 @@ jobs:
     permissions:
       contents: write
     steps:
+      - uses: actions/checkout@11d5960a326750d5838078e36cf38b85af677262 # v4
+        with:
+          persist-credentials: false
+      - uses: actions/setup-python@a26af69be951a213d495a4c3e4e4022e16d87065 # v5
+        with:
+          python-version: '3.12'
       - uses: actions/download-artifact@d3f86a106a0bac45b974a628896c90dbdf5c8093 # v4
         with:
           pattern: swlor-toolset-*
           merge-multiple: true
           path: release
+      # The same code ReleaseToolset.cmd uses on the owner's machine. Versioned releases never take Latest from
+      # the game releases; stable versions also refresh the fixed non-latest toolset-latest release.
       - name: Publish the verified release
         env:
           GH_TOKEN: ${{ github.token }}
           TOOLSET_VERSION: ${{ inputs.version }}
           SOURCE_REVISION: ${{ github.sha }}
-        run: |
-          if [[ "$TOOLSET_VERSION" == *-* ]]; then
-            release_options=(--prerelease --latest=false)
-          else
-            release_options=(--latest)
-          fi
-          gh release create "toolset-v$TOOLSET_VERSION" release/* --repo zunath/SWLOR_NWN --target "$SOURCE_REVISION" --title "SWLOR Toolset $TOOLSET_VERSION" --notes "Standalone Windows and Linux toolsets, shared contributor workspace, and matching asset downloads." "${release_options[@]}"
+        run: python -B tools/ToolsetDistribution.py release-publish --version "$TOOLSET_VERSION" --assets release --revision "$SOURCE_REVISION"

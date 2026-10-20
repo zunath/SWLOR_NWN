@@ -187,7 +187,8 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
 
             RefreshWeaponType();
             SelectedLightColor = LightsaberWorkbench.MatchBladeLightColor;
-            SelectedLightBrightnessIndex = 1;
+            // Dim (5m) by default; the larger Normal (15m) light is opt-in.
+            SelectedLightBrightnessIndex = 0;
             WatchOnClient(model => model.SelectedLightColor);
             WatchOnClient(model => model.SelectedLightBrightnessIndex);
         }

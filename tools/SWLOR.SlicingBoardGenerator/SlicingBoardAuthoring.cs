@@ -9,35 +9,77 @@ namespace SWLOR.Game.Server.Service.SlicingService
     /// </summary>
     public static class SlicingBoardAuthoring
     {
-        public const int BoardsPerTier = 100;
+        public const int BoardsPerTier = 500;
 
-        private static readonly Dictionary<int, (int Width, int Height, int ExtraTrace, int SwapCount)> _tierRules = new()
+        private const int MaxAttemptsPerBoard = 2000;
+
+        /// <param name="RouteCells">Inclusive range of authored route cells, counting START and GOAL.</param>
+        /// <param name="MinEndpointDistance">Smallest Manhattan distance between START and GOAL.</param>
+        /// <param name="RouteJunctionPercent">Chance a route tile is a junction whose spare arm leaks power into decoys.</param>
+        /// <param name="MinSolutionCost">Smallest optimal trace cost a board may have.</param>
+        /// <param name="MaxRoutesInTrace">Most distinct paths whose assignment bound fits base trace; the true number of paths a player can power is never higher.</param>
+        private sealed record TierRule(
+            int Width,
+            int Height,
+            int ExtraTrace,
+            int SwapCount,
+            (int Min, int Max) RouteCells,
+            int MinEndpointDistance,
+            int RouteJunctionPercent,
+            int MinSolutionCost,
+            int MaxRoutesInTrace);
+
+        private static readonly Dictionary<int, TierRule> _tierRules = new()
         {
-            [1] = (3, 3, 4, 0),
-            [2] = (4, 3, 3, 1),
-            [3] = (4, 4, 3, 2),
-            [4] = (5, 4, 2, 3),
-            [5] = (5, 5, 2, 4)
+            [1] = new(3, 3, 4, 0, (5, 7), 2, 0, 5, 3),
+            [2] = new(4, 3, 3, 1, (6, 9), 3, 15, 7, 3),
+            [3] = new(4, 4, 3, 2, (8, 11), 4, 20, 9, 4),
+            [4] = new(5, 4, 2, 3, (9, 13), 4, 25, 11, 4),
+            [5] = new(5, 5, 2, 4, (11, 15), 5, 25, 13, 5)
         };
 
-        private static readonly Dictionary<int, (int X, int Y)[]> _routes = new()
+        // Decoys are mostly pipe pieces so false branches look like the route.
+        private static readonly (SlicingTileType Type, int Weight)[] _decoyWeights =
         {
-            [1] = new[] { (0, 1), (0, 0), (1, 0), (1, 1), (2, 1) },
-            [2] = new[] { (0, 1), (0, 0), (1, 0), (1, 1), (1, 2), (2, 2), (2, 1), (3, 1) },
-            [3] = new[] { (0, 2), (0, 3), (1, 3), (1, 2), (1, 1), (2, 1), (2, 0), (3, 0), (3, 1), (3, 2) },
-            [4] = new[] { (0, 2), (0, 3), (1, 3), (1, 2), (1, 1), (2, 1), (2, 0), (3, 0), (3, 1), (3, 2), (4, 2) },
-            [5] = new[] { (0, 2), (0, 3), (0, 4), (1, 4), (1, 3), (1, 2), (1, 1), (2, 1), (2, 0), (3, 0), (3, 1), (3, 2), (3, 3), (4, 3), (4, 2) }
+            (SlicingTileType.Straight, 3),
+            (SlicingTileType.Corner, 4),
+            (SlicingTileType.Junction, 2),
+            (SlicingTileType.Cross, 1),
+            (SlicingTileType.Blocker, 1),
+            (SlicingTileType.Corrupt, 1)
         };
 
-        public static SlicingBoard GenerateBoard(int tier, int boardNumber)
+        /// <param name="variant">Selects a different deterministic seed range, used to replace a board
+        /// whose layout repeats an earlier board in the same tier.</param>
+        public static SlicingBoard GenerateBoard(int tier, int boardNumber, int variant = 0)
         {
             if (!_tierRules.TryGetValue(tier, out var rule))
                 throw new ArgumentOutOfRangeException(nameof(tier), "Slicing tier must be between 1 and 5.");
             if (boardNumber < 1 || boardNumber > BoardsPerTier)
                 throw new ArgumentOutOfRangeException(nameof(boardNumber),
                     $"Slicing board number must be between 1 and {BoardsPerTier}.");
+            if (variant < 0 || (variant + 1) * MaxAttemptsPerBoard > 100_000)
+                throw new ArgumentOutOfRangeException(nameof(variant));
 
-            var random = new System.Random(boardNumber);
+            for (var attempt = 0; attempt < MaxAttemptsPerBoard; attempt++)
+            {
+                var seed = tier * 100_000_007 + boardNumber * 100_003 + variant * MaxAttemptsPerBoard + attempt;
+                var board = TryAuthor(tier, boardNumber, rule, new System.Random(seed));
+                if (board != null)
+                    return board;
+            }
+
+            throw new InvalidOperationException(
+                $"Unable to author a meaningful tier {tier} slicing board T{tier}-{boardNumber:000}.");
+        }
+
+        private static SlicingBoard TryAuthor(int tier, int boardNumber, TierRule rule, System.Random random)
+        {
+            var routeLength = random.Next(rule.RouteCells.Min, rule.RouteCells.Max + 1);
+            var route = RandomRoute(rule.Width, rule.Height, routeLength, rule.MinEndpointDistance, random);
+            if (route == null)
+                return null;
+
             var board = new SlicingBoard
             {
                 Tier = tier,
@@ -47,147 +89,313 @@ namespace SWLOR.Game.Server.Service.SlicingService
             };
 
             for (var index = 0; index < rule.Width * rule.Height; index++)
-            {
                 board.Tiles.Add(CreateDecoy(random));
-            }
 
-            var route = _routes[tier];
-            for (var routeIndex = 0; routeIndex < route.Length; routeIndex++)
+            var routeIndices = route.Select(cell => ToIndex(cell.X, cell.Y, rule.Width)).ToList();
+            var routeSides = new Dictionary<int, (SlicingConnection In, SlicingConnection Out)>();
+            var authoredCost = 0;
+            for (var routeIndex = 0; routeIndex < route.Count; routeIndex++)
             {
                 var coordinate = route[routeIndex];
-                var index = ToIndex(coordinate.X, coordinate.Y, rule.Width);
-                var connections = SlicingConnection.None;
+                var index = routeIndices[routeIndex];
+                var inSide = routeIndex > 0 ? DirectionTo(coordinate, route[routeIndex - 1]) : SlicingConnection.None;
+                var outSide = routeIndex < route.Count - 1 ? DirectionTo(coordinate, route[routeIndex + 1]) : SlicingConnection.None;
 
-                if (routeIndex > 0)
-                    connections |= DirectionTo(coordinate, route[routeIndex - 1]);
-                if (routeIndex < route.Length - 1)
-                    connections |= DirectionTo(coordinate, route[routeIndex + 1]);
-
-                var type = routeIndex == 0
-                    ? SlicingTileType.Entry
-                    : routeIndex == route.Length - 1
-                        ? SlicingTileType.Core
-                        : TypeForConnections(connections);
-                var solutionOrientation = FindOrientation(type, connections);
-                var scrambleSteps = type is SlicingTileType.Entry or SlicingTileType.Core
-                    ? 0
-                    : random.Next(1, 4);
-
-                board.Tiles[index] = new SlicingTile
+                if (routeIndex == 0 || routeIndex == route.Count - 1)
                 {
-                    Type = type,
-                    Orientation = (solutionOrientation + scrambleSteps) % 4,
-                    SolutionIndex = index,
-                    RouteOrder = routeIndex,
-                    SolutionOrientation = solutionOrientation
+                    var type = routeIndex == 0 ? SlicingTileType.Entry : SlicingTileType.Core;
+                    board.Tiles[index] = new SlicingTile
+                    {
+                        Type = type,
+                        Orientation = FindOrientations(type, inSide | outSide).First()
+                    };
+                    continue;
+                }
+
+                routeSides[index] = (inSide, outSide);
+                var tileType = random.Next(100) < rule.RouteJunctionPercent
+                    ? SlicingTileType.Junction
+                    : TypeForConnections(inSide | outSide);
+                var orientations = FindOrientations(tileType, inSide | outSide).ToList();
+                var home = orientations[random.Next(orientations.Count)];
+                var tile = new SlicingTile
+                {
+                    Type = tileType,
+                    Orientation = (home + random.Next(1, 4)) % 4
                 };
+                board.Tiles[index] = tile;
+                authoredCost += SlicingBoardSolver.GetLinkTurns(tile.Type, tile.Orientation, inSide, outSide);
             }
 
-            ApplyDeterministicSwaps(board, route, rule.SwapCount, random);
-            EnsureMeaningfulStartingState(board);
+            authoredCost += ApplyAuthoredSwaps(board, routeIndices, routeSides, rule.SwapCount, random) * 2;
 
-            var rotationCost = board.Tiles
-                .Where(x => x.SolutionIndex >= 0)
-                .Sum(Slicing.GetClockwiseSolutionRotationCost);
-            var solutionCost = rotationCost + board.SolutionSwaps.Count * 2;
+            if (Slicing.IsSolved(board) || Slicing.CanSolveWithSingleAction(board))
+                return null;
 
-            return new SlicingBoard
+            SlicingBoardSolver.Solution solution;
+            try
+            {
+                // Rejecting boards with a repair under the minimum is the cheap, common case.
+                if (SlicingBoardSolver.Solve(board, rule.MinSolutionCost) != null)
+                    return null;
+
+                // The authored repair is a legal swap-and-rotate sequence, so a solution exists.
+                solution = SlicingBoardSolver.Solve(board, authoredCost + 1, knownMinimum: rule.MinSolutionCost);
+                if (solution == null)
+                    throw new InvalidOperationException($"Solver missed the authored repair for {board.BoardId}.");
+
+                // Every board past tier 1 must need a swap within the trace it starts with.
+                var baseTrace = solution.Cost + rule.ExtraTrace;
+                if (rule.SwapCount > 0 &&
+                    SlicingBoardSolver.Solve(board, baseTrace + 1, allowSwaps: false) != null)
+                    return null;
+                if (SlicingBoardSolver.CountRoutes(board, baseTrace, rule.MaxRoutesInTrace) > rule.MaxRoutesInTrace)
+                    return null;
+            }
+            catch (SlicingBoardSolver.SearchLimitExceededException)
+            {
+                return null;
+            }
+
+            RecordSolution(board, solution);
+            var finished = new SlicingBoard
             {
                 Tier = board.Tier,
                 BoardNumber = board.BoardNumber,
                 Width = board.Width,
                 Height = board.Height,
-                BaseTrace = solutionCost + rule.ExtraTrace,
-                SolutionActionCost = solutionCost,
+                BaseTrace = solution.Cost + rule.ExtraTrace,
+                SolutionActionCost = solution.Cost,
                 Tiles = board.Tiles,
-                SolutionSwaps = board.SolutionSwaps
+                SolutionSwaps = solution.Swaps.ToList()
             };
+
+            VerifyRecordedSolution(finished);
+            return finished;
         }
 
-        private static void ApplyDeterministicSwaps(
+        /// <summary>
+        /// Self-avoiding walk with backtracking. Returns null when no walk of the requested
+        /// length exists from the chosen start with START and GOAL far enough apart.
+        /// </summary>
+        private static List<(int X, int Y)> RandomRoute(int width, int height, int length, int minEndpointDistance, System.Random random)
+        {
+            var start = (X: random.Next(width), Y: random.Next(height));
+            var path = new List<(int X, int Y)> { start };
+            var visited = new HashSet<(int X, int Y)> { start };
+            var budget = 20_000;
+
+            bool Walk()
+            {
+                if (--budget < 0)
+                    return false;
+                if (path.Count == length)
+                {
+                    var end = path[^1];
+                    return Math.Abs(end.X - start.X) + Math.Abs(end.Y - start.Y) >= minEndpointDistance;
+                }
+
+                var current = path[^1];
+                var steps = new List<(int X, int Y)>
+                {
+                    (current.X, current.Y - 1),
+                    (current.X + 1, current.Y),
+                    (current.X, current.Y + 1),
+                    (current.X - 1, current.Y)
+                };
+                Shuffle(steps, random);
+                foreach (var step in steps)
+                {
+                    if (step.X < 0 || step.X >= width || step.Y < 0 || step.Y >= height || !visited.Add(step))
+                        continue;
+
+                    path.Add(step);
+                    if (Walk())
+                        return true;
+                    path.RemoveAt(path.Count - 1);
+                    visited.Remove(step);
+                }
+
+                return false;
+            }
+
+            return Walk() ? path : null;
+        }
+
+        /// <summary>
+        /// Moves route pieces out of place. A displaced piece trades with an adjacent decoy that
+        /// cannot carry the route; an exchanged pair trades two route pieces that do not fit each
+        /// other's cell. Returns the number of swaps applied.
+        /// </summary>
+        private static int ApplyAuthoredSwaps(
             SlicingBoard board,
-            (int X, int Y)[] route,
+            IReadOnlyList<int> routeIndices,
+            IReadOnlyDictionary<int, (SlicingConnection In, SlicingConnection Out)> routeSides,
             int swapCount,
             System.Random random)
         {
-            if (swapCount <= 0)
-                return;
+            var routeSet = routeIndices.ToHashSet();
+            var used = new HashSet<int>();
+            var applied = 0;
 
-            var candidates = new List<SlicingSwap>();
-            for (var routeIndex = 1; routeIndex < route.Length - 2; routeIndex++)
+            var interior = routeSides.Keys.ToList();
+            Shuffle(interior, random);
+
+            for (var slot = 0; slot < swapCount; slot++)
             {
-                var first = ToIndex(route[routeIndex].X, route[routeIndex].Y, board.Width);
-                var second = ToIndex(route[routeIndex + 1].X, route[routeIndex + 1].Y, board.Width);
-                if (board.Tiles[first].Type != board.Tiles[second].Type ||
-                    board.Tiles[first].SolutionOrientation != board.Tiles[second].SolutionOrientation)
-                {
-                    candidates.Add(new SlicingSwap { FirstIndex = first, SecondIndex = second });
-                }
+                var preferDisplaced = random.Next(100) < 60;
+                if (!(preferDisplaced && TryDisplace()) && !TryExchange() && !TryDisplace())
+                    break;
+                applied++;
             }
 
-            while (board.SolutionSwaps.Count < swapCount && candidates.Count > 0)
+            return applied;
+
+            bool TryDisplace()
             {
-                var candidateIndex = random.Next(candidates.Count);
-                var candidate = candidates[candidateIndex];
-                candidates.RemoveAt(candidateIndex);
+                foreach (var cell in interior.Where(cell => !used.Contains(cell)))
+                {
+                    var partners = Neighbors(board, cell)
+                        .Where(partner => !routeSet.Contains(partner) && !used.Contains(partner))
+                        .ToList();
+                    if (partners.Count == 0)
+                        continue;
 
-                if (board.SolutionSwaps.Any(x =>
-                        x.FirstIndex == candidate.FirstIndex || x.FirstIndex == candidate.SecondIndex ||
-                        x.SecondIndex == candidate.FirstIndex || x.SecondIndex == candidate.SecondIndex))
-                    continue;
+                    var partner = partners[random.Next(partners.Count)];
+                    var sides = routeSides[cell];
+                    board.Tiles[partner] = CreateBlockingDecoy(sides.In | sides.Out, random);
+                    Swap(cell, partner);
+                    return true;
+                }
 
-                (board.Tiles[candidate.FirstIndex], board.Tiles[candidate.SecondIndex]) =
-                    (board.Tiles[candidate.SecondIndex], board.Tiles[candidate.FirstIndex]);
-                board.SolutionSwaps.Insert(0, candidate);
+                return false;
+            }
+
+            bool TryExchange()
+            {
+                foreach (var cell in interior.Where(cell => !used.Contains(cell)))
+                {
+                    var partners = Neighbors(board, cell)
+                        .Where(partner => routeSides.ContainsKey(partner) && !used.Contains(partner))
+                        .Where(partner => !Fits(board.Tiles[partner], routeSides[cell]) ||
+                                          !Fits(board.Tiles[cell], routeSides[partner]))
+                        .ToList();
+                    if (partners.Count == 0)
+                        continue;
+
+                    Swap(cell, partners[random.Next(partners.Count)]);
+                    return true;
+                }
+
+                return false;
+            }
+
+            void Swap(int first, int second)
+            {
+                (board.Tiles[first], board.Tiles[second]) = (board.Tiles[second], board.Tiles[first]);
+                used.Add(first);
+                used.Add(second);
             }
         }
 
-        private static void EnsureMeaningfulStartingState(SlicingBoard board)
+        private static bool Fits(SlicingTile tile, (SlicingConnection In, SlicingConnection Out) sides)
         {
-            if (!Slicing.IsSolved(board) && !Slicing.CanSolveWithSingleAction(board))
-                return;
+            return SlicingBoardSolver.GetLinkTurns(tile.Type, tile.Orientation, sides.In, sides.Out) < SlicingBoardSolver.Unreachable;
+        }
 
-            var adjustableIndices = board.Tiles
-                .Select((tile, index) => (tile, index))
-                .Where(x => x.tile.Type is
-                    SlicingTileType.Straight or
-                    SlicingTileType.Corner or
-                    SlicingTileType.Junction)
-                .OrderByDescending(x => x.tile.SolutionIndex >= 0)
-                .Select(x => x.index)
-                .ToList();
-
-            foreach (var index in adjustableIndices)
+        /// <summary>Clears authored metadata and stamps the solver's optimal repair onto the tiles.</summary>
+        private static void RecordSolution(SlicingBoard board, SlicingBoardSolver.Solution solution)
+        {
+            foreach (var tile in board.Tiles)
             {
-                for (var turn = 0; turn < 3; turn++)
-                {
-                    Slicing.RotateClockwise(board, index);
-                    if (!Slicing.IsSolved(board) && !Slicing.CanSolveWithSingleAction(board))
-                        return;
-                }
+                tile.SolutionIndex = -1;
+                tile.RouteOrder = -1;
+                tile.SolutionOrientation = 0;
             }
 
-            throw new InvalidOperationException(
-                $"Unable to author a meaningful tier {board.Tier} slicing board {board.BoardId}.");
+            foreach (var swap in solution.Swaps)
+                Slicing.SwapAdjacent(board, swap.FirstIndex, swap.SecondIndex);
+
+            for (var routeOrder = 0; routeOrder < solution.Path.Count; routeOrder++)
+            {
+                var index = solution.Path[routeOrder];
+                var tile = board.Tiles[index];
+                tile.SolutionIndex = index;
+                tile.RouteOrder = routeOrder;
+                tile.SolutionOrientation = (tile.Orientation + solution.Rotations[routeOrder]) % 4;
+            }
+
+            for (var swapIndex = solution.Swaps.Count - 1; swapIndex >= 0; swapIndex--)
+            {
+                var swap = solution.Swaps[swapIndex];
+                Slicing.SwapAdjacent(board, swap.FirstIndex, swap.SecondIndex);
+            }
+        }
+
+        private static void VerifyRecordedSolution(SlicingBoard board)
+        {
+            var replay = board.Clone();
+            var spent = 0;
+            foreach (var swap in replay.SolutionSwaps)
+            {
+                if (!Slicing.SwapAdjacent(replay, swap.FirstIndex, swap.SecondIndex))
+                    throw new InvalidOperationException($"Recorded swap is illegal on {board.BoardId}.");
+                spent += 2;
+            }
+
+            for (var index = 0; index < replay.Tiles.Count; index++)
+            {
+                var tile = replay.Tiles[index];
+                if (tile.SolutionIndex < 0)
+                    continue;
+                if (tile.SolutionIndex != index)
+                    throw new InvalidOperationException($"Route tile is not home after swaps on {board.BoardId}.");
+
+                var turns = Slicing.GetClockwiseSolutionRotationCost(tile);
+                tile.Orientation = (tile.Orientation + turns) % 4;
+                spent += turns;
+            }
+
+            if (spent != board.SolutionActionCost || !Slicing.IsSolved(replay))
+                throw new InvalidOperationException($"Recorded solution does not solve {board.BoardId}.");
+        }
+
+        private static IEnumerable<int> Neighbors(SlicingBoard board, int index)
+        {
+            var x = index % board.Width;
+            var y = index / board.Width;
+            if (y > 0) yield return index - board.Width;
+            if (x < board.Width - 1) yield return index + 1;
+            if (y < board.Height - 1) yield return index + board.Width;
+            if (x > 0) yield return index - 1;
         }
 
         private static SlicingTile CreateDecoy(System.Random random)
         {
-            var types = new[]
+            var roll = random.Next(_decoyWeights.Sum(entry => entry.Weight));
+            foreach (var (type, weight) in _decoyWeights)
             {
-                SlicingTileType.Straight,
-                SlicingTileType.Corner,
-                SlicingTileType.Junction,
-                SlicingTileType.Cross,
-                SlicingTileType.Blocker,
-                SlicingTileType.Corrupt
-            };
+                if (roll < weight)
+                    return new SlicingTile { Type = type, Orientation = random.Next(4) };
+                roll -= weight;
+            }
 
-            return new SlicingTile
-            {
-                Type = types[random.Next(types.Length)],
-                Orientation = random.Next(4)
-            };
+            throw new InvalidOperationException("Decoy weights are empty.");
+        }
+
+        /// <summary>A decoy that cannot link the given sides in any orientation.</summary>
+        private static SlicingTile CreateBlockingDecoy(SlicingConnection sides, System.Random random)
+        {
+            var mismatchedPipe = TypeForConnections(sides) == SlicingTileType.Straight
+                ? SlicingTileType.Corner
+                : SlicingTileType.Straight;
+            var roll = random.Next(8);
+            var type = roll < 6
+                ? mismatchedPipe
+                : roll == 6
+                    ? SlicingTileType.Blocker
+                    : SlicingTileType.Corrupt;
+            return new SlicingTile { Type = type, Orientation = random.Next(4) };
         }
 
         private static SlicingTileType TypeForConnections(SlicingConnection connections)
@@ -205,16 +413,16 @@ namespace SWLOR.Game.Server.Service.SlicingService
             throw new InvalidOperationException($"Unsupported route connection mask: {connections}.");
         }
 
-        private static int FindOrientation(SlicingTileType type, SlicingConnection desired)
+        /// <summary>Orientations whose connections include every desired side (exactly, for sockets).</summary>
+        private static IEnumerable<int> FindOrientations(SlicingTileType type, SlicingConnection desired)
         {
+            var exact = type is SlicingTileType.Entry or SlicingTileType.Core;
             for (var orientation = 0; orientation < 4; orientation++)
             {
-                var tile = new SlicingTile { Type = type, Orientation = orientation };
-                if (Slicing.GetConnections(tile) == desired)
-                    return orientation;
+                var connections = Slicing.GetConnections(new SlicingTile { Type = type, Orientation = orientation });
+                if (exact ? connections == desired : (connections & desired) == desired)
+                    yield return orientation;
             }
-
-            throw new InvalidOperationException($"No orientation for {type} matches {desired}.");
         }
 
         private static int CountConnections(SlicingConnection connections)
@@ -228,6 +436,15 @@ namespace SWLOR.Game.Server.Service.SlicingService
             }
 
             return count;
+        }
+
+        private static void Shuffle<T>(IList<T> items, System.Random random)
+        {
+            for (var index = items.Count - 1; index > 0; index--)
+            {
+                var other = random.Next(index + 1);
+                (items[index], items[other]) = (items[other], items[index]);
+            }
         }
 
         private static SlicingConnection DirectionTo((int X, int Y) from, (int X, int Y) to)

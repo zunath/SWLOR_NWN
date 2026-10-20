@@ -24,7 +24,7 @@ namespace SWLOR.Toolset.Tests
         [Test]
         public void ACloakHangsOnTheBodyRatherThanAboveIt()
         {
-            var installRoot = NwnInstallLocator.Locate();
+            var installRoot = NwnInstallLocator.Locate(Environment.GetEnvironmentVariable("NWN_INSTALL_PATH"));
             if (installRoot == null)
             {
                 Assert.Ignore("the licensed base-game parts are required for a cloak");

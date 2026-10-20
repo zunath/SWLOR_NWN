@@ -1034,7 +1034,8 @@ public class TintMapReviewTests
         var droidSource = ReadSource("SWLOR.Game.Server", "Service", "Droid.cs");
         var saveOverrideMethod = FindMethod(tintSource, "SaveDroidOverride");
         var updateSnapshotMethod = FindMethod(droidSource, "UpdateEquippedItemSnapshot");
-        var unequipMethod = FindMethod(droidSource, "OnUnequipItem");
+        var equipmentChangedMethod = FindMethod(droidSource, "OnEquipmentChanged");
+        var saveSnapshotMethod = FindMethod(droidSource, "SaveItemSnapshot");
 
         saveOverrideMethod.DescendantNodes()
             .OfType<InvocationExpressionSyntax>()
@@ -1045,10 +1046,20 @@ public class TintMapReviewTests
             .OfType<AssignmentExpressionSyntax>()
             .Should()
             .ContainSingle(assignment => IsSerializedDictionaryAssignment(assignment, "EquippedItems"));
-        unequipMethod.DescendantNodes()
+        // After an unequip the droid's whole item snapshot is rebuilt, re-serializing the item with its current tint.
+        equipmentChangedMethod.AttributeLists
+            .SelectMany(list => list.Attributes)
+            .Select(attribute => attribute.ToString())
+            .Should()
+            .Contain(text => text.Contains("OnItemUnequipAfter"));
+        equipmentChangedMethod.DescendantNodes()
+            .OfType<InvocationExpressionSyntax>()
+            .Should()
+            .ContainSingle(invocation => GetInvokedMethodName(invocation) == "SaveItemSnapshot");
+        saveSnapshotMethod.DescendantNodes()
             .OfType<AssignmentExpressionSyntax>()
             .Should()
-            .ContainSingle(assignment => IsSerializedDictionaryAssignment(assignment, "Inventory"));
+            .Contain(assignment => IsSerializedDictionaryAssignment(assignment, "inventory"));
     }
 
     [Test]
@@ -3046,14 +3057,15 @@ public class TintMapReviewTests
         AssignmentExpressionSyntax assignment,
         string dictionaryName)
     {
-        return assignment.Left is ElementAccessExpressionSyntax
-               {
-                   Expression: MemberAccessExpressionSyntax
-                   {
-                       Name.Identifier.ValueText: var assignedDictionary
-                   }
-               } &&
-               assignedDictionary == dictionaryName &&
+        var assignedDictionary = assignment.Left is ElementAccessExpressionSyntax access
+            ? access.Expression switch
+            {
+                MemberAccessExpressionSyntax member => member.Name.Identifier.ValueText,
+                IdentifierNameSyntax identifier => identifier.Identifier.ValueText,
+                _ => null
+            }
+            : null;
+        return assignedDictionary == dictionaryName &&
                assignment.Right is InvocationExpressionSyntax serialization &&
                IsMemberInvocation(serialization, "ObjectPlugin", "Serialize");
     }

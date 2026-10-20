@@ -478,7 +478,7 @@ public class CombatDamageTests
         refresh.Should().Contain("GetLastCompletedOffensiveActivityAt(creature)");
         refresh.Should().NotContain("GetLastOffensiveActivityAt(creature)");
         schedule.Should().Contain("var scheduledActivity = GetLastCompletedOffensiveActivityAt(creature);");
-        schedule.Should().Contain("GetLastCompletedOffensiveActivityAt(creature) == scheduledActivity");
+        schedule.Should().Contain("GetLastCompletedOffensiveActivityAt(creature) != scheduledActivity");
         schedule.Should().NotContain("GetLastOffensiveActivityAt(creature)");
     }
 

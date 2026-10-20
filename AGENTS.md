@@ -44,7 +44,7 @@ Read the guide before working in its area. `Readmes/README.md` lists every guide
 - Skills, perk lines, cross-skill design, progression, descriptions, and balance evidence: `Readmes/SkillPerkStandards.md`
 - Migrations, persistence, and enum renames: `Readmes/Migrations.md`
 - Pull requests and code review: `Readmes/PullRequests.md`
-- Worktrees, haks submodule, git network, disk hygiene, builds, local deploy: `Readmes/AgentEnvironment.md`
+- Worktrees, haks submodule, git network, disk hygiene, builds, local deploy, cloud sessions: `Readmes/AgentEnvironment.md`
 - Client evidence (offline and live server): `Readmes/InEngineVisualVerification.md`
 - Engine tests: `Readmes/EngineTesting.md`
 - Active abilities and targeting: `Readmes/AbilityTargeting.md`. Icons: `Readmes/IconStandards.md` (key items: `Readmes/KeyItemIconStandards.md`). VFX: `Readmes/VisualEffectSelection.md`

@@ -71,6 +71,7 @@ namespace SWLOR.Toolset.Tests
         [Test]
         public void FailedSettingsReplacementPreservesTheLastValidFile()
         {
+            Support.WindowsFileSharing.Require();
             var settings = ToolsetSettings.Load(_file);
             settings.ShowFog = true;
             var before = File.ReadAllBytes(_file);

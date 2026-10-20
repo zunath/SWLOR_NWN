@@ -1,10 +1,12 @@
 using System.Diagnostics;
+using SWLOR.NWN.Formats.Common;
 using System.Reflection;
 using FluentAssertions;
 using NUnit.Framework;
 using SWLOR.Toolset.Domain.Script.Compile;
 using SWLOR.Toolset.Domain.Workspace;
 using SWLOR.Toolset.Services;
+using SWLOR.Toolset.Settings;
 using SWLOR.Toolset.Workspace;
 
 namespace SWLOR.Toolset.Tests
@@ -16,8 +18,8 @@ namespace SWLOR.Toolset.Tests
     /// </summary>
     public class ScriptCompilerTests
     {
-        private static string CompilerPath => Path.Combine(
-            CorpusLocator.RepositoryRoot, "tools", "SWLOR.CLI", "nwn_script_comp.exe");
+        private static string CompilerPath => NativeToolPath.Find("nwn_script_comp",
+            Path.Combine(CorpusLocator.RepositoryRoot, "tools", "SWLOR.CLI")) ?? "";
 
         private static string NssDirectory => Path.Combine(CorpusLocator.ModuleDirectory, "nss");
 
@@ -29,6 +31,8 @@ namespace SWLOR.Toolset.Tests
         [SetUp]
         public void SetUp()
         {
+            if (Environment.GetEnvironmentVariable("SWLOR_REQUIRE_NATIVE_TOOLS") == "1")
+                File.Exists(CompilerPath).Should().BeTrue("CI must exercise the real host-native compiler");
             // nwn_script_comp resolves the language spec as "nwscript.nss"; the in-repo header is
             // version-stamped, so it is staged under the plain name the compiler looks for.
             _staging = Path.Combine(Path.GetTempPath(), "swlor_nsscomp_" + Guid.NewGuid().ToString("N"));
@@ -51,6 +55,18 @@ namespace SWLOR.Toolset.Tests
 
         private ScriptCompiler Compiler() =>
             new(CompilerPath, new[] { NssDirectory, _staging });
+
+        /// <summary>
+        /// The service resolves base-game headers such as nwscript.nss through the NWN install. A host
+        /// without Steam, GOG, or Beamdog paths names one through NWN_INSTALL_PATH, as the corpus tests
+        /// do; unset, the service auto-detects as before.
+        /// </summary>
+        private ToolsetSettings InstallSettings()
+        {
+            var settings = ToolsetSettings.Load(Path.Combine(_staging, "toolset-settings.json"));
+            settings.NwnInstallOverride = Environment.GetEnvironmentVariable("NWN_INSTALL_PATH") ?? string.Empty;
+            return settings;
+        }
 
         [Test]
         public void MissingCompiler_ReportsUnavailableRatherThanThrowing()
@@ -212,7 +228,7 @@ namespace SWLOR.Toolset.Tests
             var context = new WorkspaceContext(path => new ModuleWorkspace(path), log);
             context.OpenAndSettle(module);
             var service = new ScriptCompileService(
-                context, log, compilerPathOverride: CompilerPath);
+                context, log, InstallSettings(), compilerPathOverride: CompilerPath);
 
             (await service.CompileAsync("entry_script")).Succeeded.Should().BeTrue();
             var output = Path.Combine(module, "ncs", "entry_script.ncs");
@@ -249,7 +265,7 @@ namespace SWLOR.Toolset.Tests
             var context = new WorkspaceContext(path => new ModuleWorkspace(path), log);
             context.OpenAndSettle(module);
             var service = new ScriptCompileService(
-                context, log, compilerPathOverride: CompilerPath);
+                context, log, InstallSettings(), compilerPathOverride: CompilerPath);
 
             var outcome = await service.CompileAsync("former_entry");
 
@@ -281,7 +297,7 @@ namespace SWLOR.Toolset.Tests
             var log = new OutputLogService();
             var context = new WorkspaceContext(path => new ModuleWorkspace(path), log);
             context.OpenAndSettle(module);
-            var service = new ScriptCompileService(context, log, compilerPathOverride: CompilerPath);
+            var service = new ScriptCompileService(context, log, InstallSettings(), compilerPathOverride: CompilerPath);
 
             var outcome = await service.CompileAsync("spike_atomic");
 
@@ -316,7 +332,7 @@ namespace SWLOR.Toolset.Tests
             var log = new OutputLogService();
             var context = new WorkspaceContext(path => new ModuleWorkspace(path), log);
             context.OpenAndSettle(module);
-            var service = new ScriptCompileService(context, log, compilerPathOverride: CompilerPath);
+            var service = new ScriptCompileService(context, log, InstallSettings(), compilerPathOverride: CompilerPath);
 
             (await service.CompileAsync("spike_atomic2")).Succeeded.Should().BeTrue();
             var output = Path.Combine(module, "ncs", "spike_atomic2.ncs");
@@ -362,7 +378,7 @@ namespace SWLOR.Toolset.Tests
             var log = new OutputLogService();
             var context = new WorkspaceContext(path => new ModuleWorkspace(path), log);
             context.OpenAndSettle(module);
-            var service = new ScriptCompileService(context, log, compilerPathOverride: CompilerPath);
+            var service = new ScriptCompileService(context, log, InstallSettings(), compilerPathOverride: CompilerPath);
 
             var outcome = await service.BuildAllAsync();
 

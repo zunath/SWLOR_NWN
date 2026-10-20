@@ -53,6 +53,9 @@ public class DevicesFieldSupportAndAssaultGadgetsTests
 
         foreach (var (perkType, definition, constants, _) in AssaultGadgetDamageLadders)
         {
+            if (perkType == PerkType.OverloadBarrage)
+                continue;
+
             var codeDamage = constants.Select(name => GetAbilityConstant<int>(definition, name)).ToArray();
             var describedDamage = perks[perkType].PerkLevels
                 .OrderBy(level => level.Key)
@@ -66,11 +69,24 @@ public class DevicesFieldSupportAndAssaultGadgetsTests
     }
 
     [Test]
+    public void OverloadBarrageDescription_AddsGadgetDMGOnlyToTheStrike()
+    {
+        var description = BuildDevicesAssaultGadgetsPerksWithout2daLookup()[PerkType.OverloadBarrage]
+            .PerkLevels.Single().Value.Description;
+        var definition = typeof(OverloadBarrageAbilityDefinition);
+
+        description.Should().Contain($"a 5m burst for {GetAbilityConstant<int>(definition, "BurstBaseDamage")} fire DMG plus Burn");
+        description.Should().Contain($"a single-target hit for gadget DMG + {GetAbilityConstant<int>(definition, "StrikeBaseDamage")} fire DMG");
+        description.Should().Contain($"a 5m burst for {GetAbilityConstant<int>(definition, "SonicBaseDamage")} sonic DMG");
+        System.Text.RegularExpressions.Regex.Matches(description, "gadget DMG").Count.Should().Be(1);
+    }
+
+    [Test]
     public void AssaultGadgetImpacts_AllAddGadgetDMG()
     {
         var root = FindRepositoryRoot();
 
-        foreach (var (_, definition, _, _) in AssaultGadgetDamageLadders)
+        foreach (var (perkType, definition, _, _) in AssaultGadgetDamageLadders)
         {
             var source = File.ReadAllText(
                 (root / "SWLOR.Game.Server" / "Feature" / "AbilityDefinition" / "Devices" / $"{definition.Name}.cs").FullName);
@@ -78,6 +94,14 @@ public class DevicesFieldSupportAndAssaultGadgetsTests
             var gadgetDMGAdjustments = System.Text.RegularExpressions.Regex.Matches(source, @"baseDamageAdjustment: ").Count;
 
             deviceImpacts.Should().BePositive(definition.Name);
+            if (perkType == PerkType.OverloadBarrage)
+            {
+                // A capstone's worth of damage: only the single-target strike of the three attacks adds Gadget DMG.
+                deviceImpacts.Should().Be(3);
+                gadgetDMGAdjustments.Should().Be(1, "only Overload Barrage's strike adds Gadget DMG");
+                continue;
+            }
+
             gadgetDMGAdjustments.Should().Be(deviceImpacts, $"every {definition.Name} impact must add Gadget DMG");
         }
     }
@@ -146,8 +170,10 @@ public class DevicesFieldSupportAndAssaultGadgetsTests
     public void AssaultGadgetDescriptions_StateDamageAsGadgetDMGPlusBonus()
     {
         var perks = BuildDevicesAssaultGadgetsPerksWithout2daLookup();
-        var damageDescriptions = perks.Values
-            .SelectMany(perk => perk.PerkLevels.Values)
+        // Overload Barrage's area bursts deliberately skip gadget DMG; its own test checks that wording.
+        var damageDescriptions = perks
+            .Where(perk => perk.Key != PerkType.OverloadBarrage)
+            .SelectMany(perk => perk.Value.PerkLevels.Values)
             .Select(level => level.Description)
             .Where(description => description.Contains(" DMG", StringComparison.Ordinal))
             .ToList();

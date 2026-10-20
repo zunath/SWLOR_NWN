@@ -2,6 +2,7 @@ using System.Collections.Generic;
 using System.Threading.Tasks;
 using NWN.Native.API;
 using SWLOR.Game.Server.EngineTests.Framework;
+using SWLOR.Game.Server.Feature.AbilityDefinition;
 using SWLOR.Game.Server.Service.AbilityService;
 using SWLOR.Game.Server.Service.PerkService;
 using SWLOR.Game.Server.Service.SkillService;
@@ -139,6 +140,8 @@ public static class QuickCastEngineTests
             await ctx.WaitUntilAsync(() => Ability.GetLastCompletedAbilityImpactSummary(player) != null && !Activity.IsBusy(player), 10f, "native hostile feat impact");
             ctx.AssertEqual("Force Drain I", Ability.GetLastCompletedAbilityImpactSummary(player).Ability.Name, "ordinary hostile ability pipeline completed");
             ctx.AssertEqual(96, Stat.GetCurrentFP(player), "ordinary FP cost is charged");
+            // The ability resumes the attack shortly after its impact; cancel that resumed attack.
+            await ctx.WaitUntilAsync(() => ActionInterruption.GetQueuedAttackTarget(player) == enemy, 5f, "resumed attack");
             await ctx.ExecuteInCreatureContextAsync(player, () => ClearAllActions(true));
             await ctx.WaitFrameAsync();
             await ctx.ExecuteInCreatureContextAsync(player, () =>

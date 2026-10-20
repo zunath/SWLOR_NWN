@@ -1034,7 +1034,8 @@ public class TintMapReviewTests
         var droidSource = ReadSource("SWLOR.Game.Server", "Service", "Droid.cs");
         var saveOverrideMethod = FindMethod(tintSource, "SaveDroidOverride");
         var updateSnapshotMethod = FindMethod(droidSource, "UpdateEquippedItemSnapshot");
-        var unequipMethod = FindMethod(droidSource, "OnUnequipItem");
+        var equipmentChangedMethod = FindMethod(droidSource, "OnEquipmentChanged");
+        var saveSnapshotMethod = FindMethod(droidSource, "SaveItemSnapshot");
 
         saveOverrideMethod.DescendantNodes()
             .OfType<InvocationExpressionSyntax>()
@@ -1045,10 +1046,20 @@ public class TintMapReviewTests
             .OfType<AssignmentExpressionSyntax>()
             .Should()
             .ContainSingle(assignment => IsSerializedDictionaryAssignment(assignment, "EquippedItems"));
-        unequipMethod.DescendantNodes()
+        // After an unequip the droid's whole item snapshot is rebuilt, re-serializing the item with its current tint.
+        equipmentChangedMethod.AttributeLists
+            .SelectMany(list => list.Attributes)
+            .Select(attribute => attribute.ToString())
+            .Should()
+            .Contain(text => text.Contains("OnItemUnequipAfter"));
+        equipmentChangedMethod.DescendantNodes()
+            .OfType<InvocationExpressionSyntax>()
+            .Should()
+            .ContainSingle(invocation => GetInvokedMethodName(invocation) == "SaveItemSnapshot");
+        saveSnapshotMethod.DescendantNodes()
             .OfType<AssignmentExpressionSyntax>()
             .Should()
-            .ContainSingle(assignment => IsSerializedDictionaryAssignment(assignment, "Inventory"));
+            .Contain(assignment => IsSerializedDictionaryAssignment(assignment, "inventory"));
     }
 
     [Test]
@@ -2733,8 +2744,13 @@ public class TintMapReviewTests
     [TestCase("fs_plt_tinter")]
     [TestCase("fs_plt_tinter_nm")]
     [TestCase("fs_plt_hair_nm")]
+    [TestCase("fs_hav_emit")]
     public void TintShadersRebuildSpecularityFromFinalPaletteInputs(string shaderName)
     {
+        // The Havoc armor shaders finish with the same lighting as ApplyStandardShader plus an emissive term.
+        var finalLighting = shaderName.StartsWith("fs_hav_", StringComparison.Ordinal)
+            ? "ApplyHavocShader("
+            : "ApplyStandardShader();";
         var shader = ReadSource("SWLOR_Haks", "sw_shader", $"{shaderName}.shd");
         var code = Regex.Replace(shader, @"/\*[\s\S]*?\*/|//[^\r\n]*", string.Empty);
         var setup = code.IndexOf("SetupStandardShaderInputs();", StringComparison.Ordinal);
@@ -2743,7 +2759,7 @@ public class TintMapReviewTests
         var specularity = code.IndexOf(
             "SetupSpecularity(FragmentColor.rgb * materialFrontDiffuse.rgb);",
             StringComparison.Ordinal);
-        var lighting = code.IndexOf("ApplyStandardShader();", StringComparison.Ordinal);
+        var lighting = code.LastIndexOf(finalLighting, StringComparison.Ordinal);
 
         setup.Should().BeGreaterThanOrEqualTo(0);
         environment.Should().BeGreaterThan(setup,
@@ -2818,7 +2834,7 @@ public class TintMapReviewTests
         var materialRoot = Path.Combine(FindRepositoryRoot().FullName, "SWLOR_Haks", "sw_tint_mtr");
         var shaderNames = new HashSet<string>(StringComparer.Ordinal)
         {
-            "fs_plt_tinter", "fs_plt_tinter_nm", "fs_plt_hair_nm"
+            "fs_plt_tinter", "fs_plt_tinter_nm", "fs_plt_hair_nm", "fs_hav_emit"
         };
         var materialPaths = Directory.GetFiles(materialRoot, "*.mtr");
         materialPaths.Should().NotBeEmpty();
@@ -3041,14 +3057,15 @@ public class TintMapReviewTests
         AssignmentExpressionSyntax assignment,
         string dictionaryName)
     {
-        return assignment.Left is ElementAccessExpressionSyntax
-               {
-                   Expression: MemberAccessExpressionSyntax
-                   {
-                       Name.Identifier.ValueText: var assignedDictionary
-                   }
-               } &&
-               assignedDictionary == dictionaryName &&
+        var assignedDictionary = assignment.Left is ElementAccessExpressionSyntax access
+            ? access.Expression switch
+            {
+                MemberAccessExpressionSyntax member => member.Name.Identifier.ValueText,
+                IdentifierNameSyntax identifier => identifier.Identifier.ValueText,
+                _ => null
+            }
+            : null;
+        return assignedDictionary == dictionaryName &&
                assignment.Right is InvocationExpressionSyntax serialization &&
                IsMemberInvocation(serialization, "ObjectPlugin", "Serialize");
     }

@@ -1,3 +1,4 @@
+using SWLOR.NWN.Formats.Common;
 using System.Text;
 using FluentAssertions;
 using NUnit.Framework;
@@ -23,8 +24,8 @@ namespace SWLOR.Toolset.Tests
     [TestFixture]
     public class ModuleResourceTemplateFactoryTests
     {
-        private static string CompilerPath => Path.Combine(
-            CorpusLocator.RepositoryRoot, "tools", "SWLOR.CLI", "nwn_script_comp.exe");
+        private static string CompilerPath => NativeToolPath.Find("nwn_script_comp",
+            Path.Combine(CorpusLocator.RepositoryRoot, "tools", "SWLOR.CLI")) ?? "";
 
         private static string NssDirectory => Path.Combine(CorpusLocator.ModuleDirectory, "nss");
 
@@ -203,7 +204,7 @@ namespace SWLOR.Toolset.Tests
                 var compiler = new ScriptCompiler(
                     CompilerPath,
                     new[] { NssDirectory, staging },
-                    NwnInstallLocator.Locate());
+                    NwnInstallLocator.Locate(Environment.GetEnvironmentVariable("NWN_INSTALL_PATH")));
 
                 foreach (var template in ModuleResourceTemplateFactory.ScriptTemplates)
                 {

@@ -171,6 +171,7 @@ class ProfileBoundaryTests(unittest.TestCase):
             self.assertEqual(captured.getpixel((1000, 360)), (255, 255, 255))
         self.assertFalse(native.exists())
 
+    @unittest.skipUnless(sys.platform=='win32','run() refuses non-Windows hosts before validating settings')
     def test_native_refusal_happens_before_process_creation(self):
         self.settings('volume=0.0','volume=0.5')
         with patch.object(offline_client.ctypes,'WinDLL',create=True) as native:
@@ -313,6 +314,13 @@ class ProfileCreationTests(unittest.TestCase):
 
 
 class FirewallStateTests(unittest.TestCase):
+    def setUp(self):
+        # The probe itself is Windows-only; supply its Windows constants so the parsing runs anywhere.
+        for patcher in (patch.dict(os.environ,{'SystemRoot':r'C:\Windows'}),
+                        patch.object(firewall.subprocess,'CREATE_NO_WINDOW',0x08000000,create=True)):
+            patcher.start()
+            self.addCleanup(patcher.stop)
+
     def test_structured_booleans_accept_enabled_profiles_without_display_labels(self):
         output=subprocess.CompletedProcess([],0,stdout='[true,true,true]',stderr='')
         with patch.object(firewall.subprocess,'run',return_value=output) as run:

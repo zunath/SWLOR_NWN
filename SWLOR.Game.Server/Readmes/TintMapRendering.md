@@ -522,6 +522,13 @@ Rebuild/install `sw_pt_root.hak` together with `sw_anim_m.hak` and `sw_anim_f.ha
 the helper part IDs live in the animation bridges too, and with older bridges the
 skirts stay static. No module repack or C# deploy is required.
 
+Robe 236's tint map is built from its original PLT, not the March 2026 revision
+(SWLOR_Haks #291) that raised the coat's Leather 1 shade from a mean of 38 to 61 and
+made every dye render the coat much lighter. Both genders share that source. The
+tint shaders reproduce the native PLT exactly, so a lighter coat means a lighter
+source, not a rendering defect. `TestRobe236CoatShade.py` fails if the materials
+are regenerated from the brightened PLT.
+
 The catalog audit extends this treatment to every visible static attachment
 under a body bone, including nested belts, chest ornaments and leg coverings.
 It scans all 7,171 native attachments and RGB roots by mesh flags and hierarchy,

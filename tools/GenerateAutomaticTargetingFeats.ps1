@@ -1,6 +1,8 @@
 param(
     [string]$AssemblyDirectory = "SWLOR.Game.Server\bin\Debug\net10.0",
     [string]$Feat2daPath = "SWLOR_Haks\sw_2da\feat.2da",
+    # Every player class uses this table; its OnMenu cell lists a known feat on the radial and quickbar class menus.
+    [string]$ClassFeat2daPath = "SWLOR_Haks\sw_2da\CLS_FEAT_FIGHT.2da",
     [string]$FeatEnumPath = "SWLOR.NWN.API\NWScript\Enum\FeatType.cs",
     # Optional output of the same compiled-definition exporter, for reproducible offline generation.
     [string]$EligibilityJson = "",
@@ -66,7 +68,8 @@ var eligible = abilities.OrderBy(entry => (int)entry.Key).Select(entry => new {
 File.WriteAllText(args[1], JsonSerializer.Serialize(eligible));
 '@ | Set-Content -LiteralPath (Join-Path $exportDirectory "Program.cs") -Encoding utf8
 
-        & dotnet run --project $projectPath -p:RunPostBuildEvent=Never -- $assemblyRoot $outputPath | Out-Host
+        # A shared compiler server keeps the copied references open, which blocks the cleanup below.
+        & dotnet run --project $projectPath -p:RunPostBuildEvent=Never -p:UseSharedCompilation=false -- $assemblyRoot $outputPath | Out-Host
         if ($LASTEXITCODE -ne 0) {
             throw "Compiled ability discovery failed with exit code $LASTEXITCODE."
         }
@@ -120,6 +123,30 @@ foreach ($line in ($featText -split "\r?\n")) {
     }
 }
 
+$classFeatPath = (Resolve-Path -LiteralPath $ClassFeat2daPath).Path
+$classFeatBytes = [IO.File]::ReadAllBytes($classFeatPath)
+$classFeatText = [Text.Encoding]::UTF8.GetString($classFeatBytes)
+$classFeatNewline = if ($classFeatText.Contains("`r`n")) { "`r`n" } else { "`n" }
+$classFeatColumns = ($classFeatText -split "\r?\n")[2].Trim() -split "\s+"
+if (($classFeatColumns -join ",") -ne "FeatLabel,FeatIndex,List,GrantedOnLevel,OnMenu") {
+    throw "Unexpected class feat table columns: $($classFeatColumns -join ', ')."
+}
+$classFeatRowsByFeat = @{}
+$nextClassFeatRow = 0
+foreach ($line in ($classFeatText -split "\r?\n" | Select-Object -Skip 3)) {
+    $tokens = $line.Trim() -split "\s+"
+    $row = 0
+    if (![int]::TryParse($tokens[0], [ref]$row)) { continue }
+    if ($tokens.Count -ne $classFeatColumns.Count + 1) { throw "Malformed class feat row $row." }
+    if ($row -ne $nextClassFeatRow) { throw "Class feat row $row is out of sequence; expected $nextClassFeatRow." }
+    $nextClassFeatRow++
+    $featIndex = 0
+    if (![int]::TryParse($tokens[2], [ref]$featIndex)) { continue }
+    if (!$classFeatRowsByFeat.ContainsKey($featIndex)) { $classFeatRowsByFeat[$featIndex] = [Collections.Generic.List[object]]::new() }
+    $classFeatRowsByFeat[$featIndex].Add([string[]]$tokens)
+}
+$newClassFeatRows = [Collections.Generic.List[string]]::new()
+
 $enumValues = @{}
 $enumIds = @{}
 foreach ($match in [regex]::Matches($enumText, '(?m)^\s*(?<name>\w+)\s*=\s*(?<id>-?\d+)\s*,')) {
@@ -169,6 +196,28 @@ foreach ($ability in ($eligible | Sort-Object Id)) {
         $rows[$aliasId] = $expected
         $aliases[$aliasName] = $aliasId
     }
+    # The client lists class abilities from the class feat table, so an alias without its own row
+    # disappears from the radial and quickbar menus while it replaces the canonical feat.
+    # Feats players never learn, such as beast abilities, have no row and their aliases get none.
+    $canonicalClassRows = [object[]]@()
+    if ($classFeatRowsByFeat.ContainsKey($baseId)) { $canonicalClassRows = $classFeatRowsByFeat[$baseId].ToArray() }
+    $aliasClassRows = [object[]]@()
+    if ($classFeatRowsByFeat.ContainsKey($aliasId)) { $aliasClassRows = $classFeatRowsByFeat[$aliasId].ToArray() }
+    if ($canonicalClassRows.Count -gt 1) { throw "Canonical feat $baseName/$baseId has more than one class feat row." }
+    if ($aliasClassRows.Count -gt $canonicalClassRows.Count) {
+        throw "Alias $aliasName/$aliasId has $($aliasClassRows.Count) class feat rows but $baseName has $($canonicalClassRows.Count)."
+    }
+    if ($canonicalClassRows.Count -eq 1) {
+        $expectedClassCells = [string[]](@($aliasName, [string]$aliasId) + $canonicalClassRows[0][3..5])
+        if ($aliasClassRows.Count -eq 1) {
+            if (($aliasClassRows[0][1..5] -join " ") -ne ($expectedClassCells -join " ")) {
+                throw "Existing class feat row $($aliasClassRows[0][0]) for $aliasName differs from its canonical row; existing rows are never rewritten."
+            }
+        } else {
+            $newClassFeatRows.Add("$nextClassFeatRow   " + ($expectedClassCells -join "   "))
+            $nextClassFeatRow++
+        }
+    }
     if ($enumValues.ContainsKey($aliasName)) {
         if ($enumValues[$aliasName] -ne $aliasId) { throw "Enum ID mismatch for $aliasName." }
     } else {
@@ -179,8 +228,21 @@ foreach ($ability in ($eligible | Sort-Object Id)) {
     }
 }
 
-if ($newRows.Count -gt 0 -or $newEnums.Count -gt 0) {
-    if ($CheckOnly) { throw "Automatic targeting assets need $($newRows.Count) feat rows and $($newEnums.Count) enum entries. Run the generator without -CheckOnly." }
+function Add-TableRows {
+    param([string]$Path, [byte[]]$OriginalBytes, [string]$OriginalText, [string]$Newline, [string[]]$Rows)
+
+    $separator = if ($OriginalText.EndsWith("`n")) { "" } else { $Newline }
+    $appendBytes = [Text.Encoding]::UTF8.GetBytes($separator + ($Rows -join $Newline) + $Newline)
+    $stream = [IO.File]::Open($Path, [IO.FileMode]::Append, [IO.FileAccess]::Write)
+    try { $stream.Write($appendBytes, 0, $appendBytes.Length) } finally { $stream.Dispose() }
+    $afterBytes = [IO.File]::ReadAllBytes($Path)
+    for ($index = 0; $index -lt $OriginalBytes.Length; $index++) {
+        if ($afterBytes[$index] -ne $OriginalBytes[$index]) { throw "Original $([IO.Path]::GetFileName($Path)) bytes changed at offset $index." }
+    }
+}
+
+if ($newRows.Count -gt 0 -or $newEnums.Count -gt 0 -or $newClassFeatRows.Count -gt 0) {
+    if ($CheckOnly) { throw "Automatic targeting assets need $($newRows.Count) feat rows, $($newClassFeatRows.Count) class feat rows and $($newEnums.Count) enum entries. Run the generator without -CheckOnly." }
     $enumClosing = [regex]::Match($enumText, '(?m)^\s*}\s*\r?\n\s*}\s*\z')
     if (!$enumClosing.Success) { throw "Could not locate the FeatType enum closing braces." }
     if ($newEnums.Count -gt 0) {
@@ -188,16 +250,12 @@ if ($newRows.Count -gt 0 -or $newEnums.Count -gt 0) {
         [IO.File]::WriteAllText($enumPath, $updatedEnum, [Text.UTF8Encoding]::new($false))
     }
     if ($newRows.Count -gt 0) {
-        $separator = if ($featText.EndsWith("`n")) { "" } else { $newline }
-        $appendBytes = [Text.Encoding]::UTF8.GetBytes($separator + ($newRows -join $newline) + $newline)
-        $stream = [IO.File]::Open($featPath, [IO.FileMode]::Append, [IO.FileAccess]::Write)
-        try { $stream.Write($appendBytes, 0, $appendBytes.Length) } finally { $stream.Dispose() }
-        $afterBytes = [IO.File]::ReadAllBytes($featPath)
-        for ($index = 0; $index -lt $featBytes.Length; $index++) {
-            if ($afterBytes[$index] -ne $featBytes[$index]) { throw "Original feat.2da bytes changed at offset $index." }
-        }
+        Add-TableRows $featPath $featBytes $featText $newline $newRows
+    }
+    if ($newClassFeatRows.Count -gt 0) {
+        Add-TableRows $classFeatPath $classFeatBytes $classFeatText $classFeatNewline $newClassFeatRows
     }
 }
 $selfCount = @($eligible | Where-Object Self).Count
 $enemyCount = @($eligible | Where-Object Enemy).Count
-Write-Host "Validated $($eligible.Count) eligible feats ($selfCount self, $enemyCount current enemy); appended $($newRows.Count) rows and $($newEnums.Count) enum entries."
+Write-Host "Validated $($eligible.Count) eligible feats ($selfCount self, $enemyCount current enemy); appended $($newRows.Count) feat rows, $($newClassFeatRows.Count) class feat rows and $($newEnums.Count) enum entries."

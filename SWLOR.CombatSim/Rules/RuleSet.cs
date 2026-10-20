@@ -12,10 +12,29 @@ namespace SWLOR.CombatSim.Rules
     {
         public const float MaximumCostMultiplier = 100f;
 
+        /// <summary>
+        /// The game's top Willpower multiplier is 1.25. Up to 2 keeps the largest heal (Emergency Triage on a low
+        /// 10,000,000 HP target with every percent bonus at its limit) a whole number that fits.
+        /// </summary>
+        public const float MaximumHealMultiplier = 2f;
+
         public string Name { get; set; }
 
         /// <summary>Highest multiplier Light affinity may apply to heals and shields (x1.5 before the tuning, x1.25 now).</summary>
         public float ForceAffinityHealingCap { get; set; } = 1.5f;
+
+        /// <summary>
+        /// Heals and shields restore the game's flat amount plus a small percent of max HP, instead of the percent of max
+        /// HP they restored before the tuning. Revives restore a percent of max HP either way.
+        /// </summary>
+        public bool FlatHeals { get; set; }
+
+        /// <summary>
+        /// Willpower-scaled heals and shields are multiplied by this at Willpower 10 and below, rising in a straight line
+        /// to <see cref="HealStatMultiplierAtCap"/> at 26. The game uses 1 and 1.25.
+        /// </summary>
+        public float HealStatMultiplierAtBaseline { get; set; } = 1f;
+        public float HealStatMultiplierAtCap { get; set; } = 1.25f;
 
         /// <summary>Recast seconds by recast group name, replacing the game data's value.</summary>
         public Dictionary<string, float> RecastOverrides { get; set; } = new();
@@ -111,6 +130,9 @@ namespace SWLOR.CombatSim.Rules
 
             // Below 1 the cap would also cut heals from casters with no affinity at all.
             AtLeast(nameof(ForceAffinityHealingCap), ForceAffinityHealingCap, 1);
+
+            Between(nameof(HealStatMultiplierAtBaseline), HealStatMultiplierAtBaseline, 0, MaximumHealMultiplier);
+            Between(nameof(HealStatMultiplierAtCap), HealStatMultiplierAtCap, 0, MaximumHealMultiplier);
 
             if (RecastOverrides == null)
                 problems.Add($"{nameof(RecastOverrides)} must be an object; use {{}} for none");

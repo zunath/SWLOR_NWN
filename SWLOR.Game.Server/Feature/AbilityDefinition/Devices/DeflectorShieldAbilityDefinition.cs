@@ -105,25 +105,25 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.Devices
 
         private static void DeflectorShield1ImpactAction(uint activator, uint target, int level, Location targetLocation)
         {
-            ApplyDeflectorShield(activator, target, 35, 6);
+            ApplyDeflectorShield(activator, target, new HealAmount(41, 1.5f));
         }
 
         private static void DeflectorShield2ImpactAction(uint activator, uint target, int level, Location targetLocation)
         {
-            ApplyDeflectorShield(activator, target, 65, 9);
+            ApplyDeflectorShield(activator, target, new HealAmount(85, 2.25f));
         }
 
         private static void DeflectorShield3ImpactAction(uint activator, uint target, int level, Location targetLocation)
         {
-            ApplyDeflectorShield(activator, target, 100, 12);
+            ApplyDeflectorShield(activator, target, new HealAmount(154, 3f));
         }
 
-        private static void ApplyDeflectorShield(uint activator, uint target, int flatAmount, int percent)
+        private static void ApplyDeflectorShield(uint activator, uint target, HealAmount shield)
         {
             var shielded = new List<uint>();
             foreach (var friendly in AbilityTargeting.GetFriendlyTargets(activator, target, false))
             {
-                ApplyShieldTemporaryHP(activator, friendly, flatAmount, percent, 45f);
+                ApplyShieldTemporaryHP(activator, friendly, shield, 45f);
                 shielded.Add(friendly);
             }
 
@@ -134,11 +134,10 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.Devices
         private static void ApplyShieldTemporaryHP(
             uint activator,
             uint target,
-            int flatAmount,
-            int percent,
+            HealAmount shield,
             float durationSeconds)
         {
-            var amount = Math.Max(1, flatAmount + GameMath.PercentOf(GetMaxHitPoints(target), percent));
+            var amount = shield.ForMaxHitPoints(GetMaxHitPoints(target));
             amount = Ability.ApplyCombatReadinessMagnitude(activator, amount);
             var duration = durationSeconds;
 

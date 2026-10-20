@@ -41,7 +41,7 @@ Take the open posts in the SWLOR Discord bug-report forum through to reviewed pu
 1. **List open posts.** Open the forum, scroll the virtualized list, and collect the thread ids above "Older Posts" along with their reactions.
    - Count a reaction as a marker only when the owner's account added it. Its aria-label ends in `press to remove your reaction`. Players can add the same emoji.
    - Skip posts that are locked or that carry the flagged message. They are waiting on the owner.
-   - Also scan below the divider for posts that carry one of your markers (🇶, ❓, ⏳, 👀). Discord moves inactive posts there without closing them, and these are tickets you're tracking. Include them in steps 2 and 3. New posts still come only from above the divider.
+   - Never look below the divider, even for posts that carry a marker. The owner treats everything there as done.
 2. **Recheck 👀 posts.** Read the PR URLs from each post's `[AI bot] @zunath Fix ready for review` message. Check every PR, companions included, with `gh pr view <url> --json state,mergedAt,headRefOid`.
    - **All merged:**
      1. Remove all reactions from the post, then Close Post. Don't lock it.
@@ -93,7 +93,7 @@ Give each worker:
   1. Find the root cause and fix it on one branch from up-to-date `origin/master`.
   2. Add tests that guard the fix.
   3. Capture NWN client evidence per `Readmes/InEngineVisualVerification.md`.
-  4. Open the PR, request `@codex review`, and keep fixing until Codex finds nothing.
+  4. Open the PR, run the Codex review loop with `tools/RequestCodexReview.ps1` (`Readmes/PullRequests.md`), and keep fixing until Codex finds nothing.
   5. Resolve every thread (`Readmes/PullRequests.md`).
   6. Don't merge.
 - **The constraints:** never post to Discord, stay in its own worktree, and stop only processes it started. If only the reporter can answer something, stop and report the exact question.
@@ -125,7 +125,7 @@ For a flagged post:
 
 - **Navigation:** move between threads in-app with `history.pushState({}, '', '/channels/<guild>/<threadId>'); dispatchEvent(new PopStateEvent('popstate'))`, then wait about 3 seconds. A full page navigation reloads the app, and the page text reads as empty for a while.
 - **Reading a thread:** `document.querySelector('main').innerText`.
-- **Forum list:** the list is virtualized. Scroll its container and collect the `[data-item-id]` cards. The "Older Posts" divider appears as text in the list.
+- **Forum list:** the list is virtualized. Set its scroll container to the top first, since it keeps an earlier scroll position. Then collect the `[data-item-id]` cards and stop at the "Older Posts" divider, which appears as text in the list.
 - **Adding a reaction:**
   - With no reactions yet, click "React to Post".
   - With existing reactions, click the smiley icon next to them. It only shows on hover, so click it by coordinate.

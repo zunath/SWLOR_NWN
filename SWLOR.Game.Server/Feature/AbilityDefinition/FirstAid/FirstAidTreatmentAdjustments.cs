@@ -14,12 +14,12 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.FirstAid
         public static void ApplyMedicalScaledHeal(
             uint source,
             uint target,
-            float percent,
+            HealAmount heal,
             AbilityType scalingAbility = AbilityType.Willpower,
             float multiplier = 1f,
             VisualEffect visualEffect = VisualEffect.Vfx_Imp_Healing_M_Silent)
         {
-            var amount = AbilityEffectScaling.CalculateScaledPercentOfMaxHP(source, target, percent, scalingAbility, multiplier);
+            var amount = AbilityEffectScaling.CalculateScaledHeal(source, target, heal, scalingAbility, multiplier);
             amount = Stat.ApplyOutgoingAbilityHealingAdjustment(source, amount);
             amount = Stat.ApplyHealingReceivedAdjustment(target, amount);
 
@@ -30,11 +30,11 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.FirstAid
         public static void ApplyActivatedMedicalScaledHeal(
             uint source,
             uint target,
-            float percent,
+            HealAmount heal,
             AbilityType scalingAbility = AbilityType.Willpower,
             float multiplier = 1f)
         {
-            var amount = AbilityEffectScaling.CalculateScaledPercentOfMaxHP(source, target, percent, scalingAbility, multiplier);
+            var amount = AbilityEffectScaling.CalculateScaledHeal(source, target, heal, scalingAbility, multiplier);
             amount = Stat.ApplyOutgoingAbilityHealingAdjustment(source, amount);
             amount = Ability.ApplyCombatReadinessToActivatedAbilityMagnitude(source, amount);
             amount = Stat.ApplyHealingReceivedAdjustment(target, amount, isInstantAbilityHeal: true);

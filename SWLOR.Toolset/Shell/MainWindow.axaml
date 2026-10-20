@@ -18,11 +18,15 @@
          opened once, and a KeyBinding declared here has no DataContext to bind a command from). -->
     <Menu Grid.Row="0">
       <MenuItem Header="_File">
+        <MenuItem Header="_Workspaces..." Command="{Binding WorkspacesCommand}" />
+        <Separator />
         <MenuItem Header="_Save" Command="{Binding SaveCommand}" InputGesture="Ctrl+S" />
         <MenuItem Header="Save _All" Command="{Binding SaveAllCommand}" InputGesture="Ctrl+Shift+S" />
         <Separator />
         <MenuItem x:Name="ErfManagerMenuItem" Header="ERF _Manager..."
                   Command="{Binding ErfArchivesCommand}" />
+        <Separator />
+        <MenuItem Header="Export _Contribution..." Command="{Binding ExportContributionCommand}" />
         <Separator />
         <MenuItem Header="E_xit" Command="{Binding ExitCommand}" />
       </MenuItem>
@@ -56,6 +60,9 @@
         <MenuItem Header="Run Validation" Command="{Binding FocusValidationCommand}" />
         <Separator />
         <MenuItem Header="Build _Preview Cache" Command="{Binding BuildPreviewCacheCommand}" />
+      </MenuItem>
+      <MenuItem Header="_Help">
+        <MenuItem Header="Check for _Updates..." Command="{Binding CheckForUpdatesCommand}" />
       </MenuItem>
     </Menu>
     <!-- Quick-access bar: the handful of actions a builder reaches for constantly, so they are one
@@ -150,6 +157,8 @@
                      TextAlignment="Center"
                      TextWrapping="Wrap"
                      Foreground="{DynamicResource InkSecondaryBrush}" />
+          <Button x:Name="StartupWorkspaceButton" Content="Choose workspace"
+                  HorizontalAlignment="Center" IsVisible="False" Click="OnStartupWorkspaceClick" />
         </StackPanel>
         </ScrollViewer>
       </Border>

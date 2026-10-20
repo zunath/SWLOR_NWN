@@ -36,6 +36,11 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition
                             .BindOnClicked(model => model.OnClickSearch());
 
                         row.AddButton()
+                            .BindText(model => model.FavoritesFilterText)
+                            .SetHeight(35f)
+                            .BindOnClicked(model => model.OnClickToggleFavoritesFilter());
+
+                        row.AddButton()
                             .SetText("Add New Creature")
                             .SetHeight(35f)
                             .BindOnClicked(model => model.OnClickAddNew());
@@ -63,6 +68,7 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition
                                         cell.AddButton()
                                             .SetText("Create")
                                             .SetWidth(40f)
+                                            .BindIsEnabled(model => model.CreatureExists)
                                             .BindOnClicked(model => model.OnCreateCreature());
 
                                         cell.SetWidth(40f);
@@ -72,9 +78,19 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition
                                         cell.AddButton()
                                             .SetText("Delete")
                                             .SetWidth(40f)
+                                            .BindIsEnabled(model => model.CreatureExists)
                                             .BindOnClicked(model => model.OnDeleteCreature());
 
                                         cell.SetWidth(40f);
+                                    });
+                                    template.AddCell(cell =>
+                                    {
+                                        cell.AddButton()
+                                            .BindText(model => model.FavoriteTexts)
+                                            .SetWidth(60f)
+                                            .BindOnClicked(model => model.OnToggleFavorite());
+
+                                        cell.SetWidth(60f);
                                     });
                                 })
                                     .BindRowCount(model => model.CreatureNames);

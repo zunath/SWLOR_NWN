@@ -67,6 +67,8 @@ public class CustomShaderMobileCompatibilityTests
         const string guardedMacro = "#ifndef MOBILE\n#define UNPACK(v) ((v >> 3) & 3)\n#endif\nint Unpack(int v) { return 0; }\n";
         const string preprocessorOnlyMacro = "#define HAS_FLAG (FLAGS & 2)\n#if HAS_FLAG\n#endif\n";
         const string unusedMacro = "#define UNUSED(v) (v & 1)\n";
+        const string elifAfterMobile = "#ifdef MOBILE\nint A() { return 0; }\n#elif defined(DESKTOP_FAST)\n" + unguarded + "#else\n" + unguarded + "#endif\n";
+        const string redefinedMacro = "#define LOW(v) (v & 3)\n#if QUALITY\n#define UNPACK(v) (v)\n#else\n#define UNPACK(v) LOW(v)\n#endif\nint Unpack(int v) { return UNPACK(v); }\n";
 
         FindMobileUnsupportedLines(unguarded).Should().ContainSingle();
         FindMobileUnsupportedLines(guarded).Should().BeEmpty();
@@ -77,6 +79,8 @@ public class CustomShaderMobileCompatibilityTests
         FindMobileUnsupportedLines(guardedMacro).Should().BeEmpty();
         FindMobileUnsupportedLines(preprocessorOnlyMacro).Should().BeEmpty();
         FindMobileUnsupportedLines(unusedMacro).Should().BeEmpty();
+        FindMobileUnsupportedLines(elifAfterMobile).Should().BeEmpty();
+        FindMobileUnsupportedLines(redefinedMacro).Should().ContainSingle();
     }
 
     [Test]
@@ -99,13 +103,17 @@ public class CustomShaderMobileCompatibilityTests
         // A macro body only reaches the GLSL compiler when runtime code expands it;
         // macros used only by #if are evaluated by the preprocessor, which allows
         // these operators. Follow macro-to-macro references to a fixed point.
+        // Every possibly active definition of a used name is followed, since any of
+        // them may be the one the mobile build sees.
         var used = new HashSet<string>();
+        var visited = new HashSet<int>();
         var pending = new Queue<string>(scan.PossibleCode.Select(line => line.Text));
         while (pending.Count > 0)
         {
             var text = pending.Dequeue();
-            foreach (var definition in scan.Macros.Where(m => !used.Contains(m.Name) && Regex.IsMatch(text, $@"\b{m.Name}\b")))
+            foreach (var definition in scan.Macros.Where(m => !visited.Contains(m.Number) && Regex.IsMatch(text, $@"\b{m.Name}\b")).ToList())
             {
+                visited.Add(definition.Number);
                 used.Add(definition.Name);
                 pending.Enqueue(definition.Body);
             }
@@ -132,8 +140,10 @@ public class CustomShaderMobileCompatibilityTests
     private static MobileScan ScanForMobile(string shader)
     {
         var lines = StripComments(shader).Replace("\r\n", "\n").Split('\n');
-        // null: condition unrelated to MOBILE; true/false: branch compiled on mobile.
-        var conditions = new Stack<bool?>();
+        // Per conditional chain: Current is whether the branch now open is compiled on
+        // mobile, and Matched whether an earlier branch of the chain already was
+        // (null: depends on a condition unrelated to MOBILE).
+        var conditions = new Stack<(bool? Current, bool? Matched)>();
         var possible = new List<(int Number, string Text)>();
         var definite = new List<(int Number, string Text)>();
         var macros = new List<(int Number, string Name, string Body)>();
@@ -142,7 +152,7 @@ public class CustomShaderMobileCompatibilityTests
         {
             var text = lines[index];
             var directive = text.Trim();
-            var possiblyActive = conditions.All(condition => condition != false);
+            var possiblyActive = conditions.All(condition => condition.Current != false);
 
             if (directive.StartsWith("#"))
             {
@@ -153,23 +163,27 @@ public class CustomShaderMobileCompatibilityTests
                 switch (keyword)
                 {
                     case "ifdef":
-                        conditions.Push(argument == "MOBILE" ? true : null);
+                        conditions.Push(argument == "MOBILE" ? (true, true) : (null, null));
                         break;
                     case "ifndef":
-                        conditions.Push(argument == "MOBILE" ? false : null);
+                        conditions.Push(argument == "MOBILE" ? (false, false) : (null, null));
                         break;
                     case "if":
-                        conditions.Push(null);
+                        conditions.Push((null, null));
                         break;
                     case "elif":
-                        if (conditions.Count > 0) { conditions.Pop(); }
-                        conditions.Push(null);
+                        if (conditions.Count > 0)
+                        {
+                            var chain = conditions.Pop();
+                            // A branch that already matched skips every later #elif.
+                            conditions.Push(chain.Matched == true ? (false, true) : (null, null));
+                        }
                         break;
                     case "else":
                         if (conditions.Count > 0)
                         {
-                            var current = conditions.Pop();
-                            conditions.Push(current.HasValue ? !current.Value : null);
+                            var chain = conditions.Pop();
+                            conditions.Push((chain.Matched.HasValue ? !chain.Matched.Value : null, true));
                         }
                         break;
                     case "endif":
@@ -193,7 +207,7 @@ public class CustomShaderMobileCompatibilityTests
             }
 
             possible.Add((index + 1, text));
-            if (conditions.All(condition => condition == true))
+            if (conditions.All(condition => condition.Current == true))
             {
                 definite.Add((index + 1, text));
             }

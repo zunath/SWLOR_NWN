@@ -50,9 +50,13 @@ def accessor(document,binary,index):
     view=gltf_index(document,'bufferViews',item.get('bufferView'))
     columns={'SCALAR':1,'VEC2':2,'VEC3':3,'VEC4':4}[item['type']]
     dtype=np.dtype({5126:'<f4',5125:'<u4',5123:'<u2',5121:'u1'}[item['componentType']])
-    offset=view.get('byteOffset',0)+item.get('byteOffset',0);stride=view.get('byteStride',columns*dtype.itemsize)
-    if view.get('buffer',0)!=0 or offset<0 or offset+(item['count']-1)*stride+columns*dtype.itemsize>len(binary):
+    element=columns*dtype.itemsize;fields=(view.get('byteOffset',0),view.get('byteLength'),item.get('byteOffset',0),item.get('count'),view.get('byteStride',element))
+    if view.get('buffer',0)!=0 or any(type(x) is not int or x<0 for x in fields):raise ValueError('Source basis accessor out of bounds')
+    view_offset,view_length,item_offset,count,stride=fields
+    # Bound the accessor by its own buffer view, and the view by the BIN chunk.
+    if count<1 or stride<element or view_offset+view_length>len(binary) or item_offset+(count-1)*stride+element>view_length:
         raise ValueError('Source basis accessor out of bounds')
+    offset=view_offset+item_offset
     return np.ndarray((item['count'],columns),dtype=dtype,buffer=binary,offset=offset,strides=(stride,dtype.itemsize)).copy()
 
 

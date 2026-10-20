@@ -39,10 +39,12 @@ def blender_identity(executable):
 
 def require_same_blender(executable,runtime,outputs):
     """The cache key names the hashed build; discard output made by a replaced executable."""
-    if blender_identity(executable)['sha256']!=runtime['sha256']:
+    try:same=blender_identity(executable)['sha256']==runtime['sha256']
+    except Exception:same=False  # An unprovable identity counts as a mismatch.
+    if not same:
         for stale in outputs:
             if stale.exists():stale.unlink()
-        raise ValueError('Blender executable changed during shield reconstruction')
+        raise ValueError('Blender executable changed or could not be verified during shield reconstruction')
 
 
 def probe_cache_access(cache,missing):
@@ -104,9 +106,11 @@ def require_untextured(mesh):
 
 def cached_arrays(path):
     import numpy as np
+    import io
     record=json.loads(path.with_suffix('.json').read_text(encoding='utf-8'))
-    if record['output_sha256']!=hashlib.sha256(path.read_bytes()).hexdigest():raise ValueError('Cached shield surface changed: '+str(path))
-    with np.load(path,allow_pickle=False) as data:return data['vertices'].copy(),data['faces'].copy()
+    data=path.read_bytes()  # Hash and load the same snapshot.
+    if record['output_sha256']!=hashlib.sha256(data).hexdigest():raise ValueError('Cached shield surface changed: '+str(path))
+    with np.load(io.BytesIO(data),allow_pickle=False) as arrays:return arrays['vertices'].copy(),arrays['faces'].copy()
 
 
 def cached_entry(path):

@@ -152,10 +152,9 @@ def normalize_normal(normal):
 
 
 def prepare_normal_map(pixels, scale, limit):
-    normal=pixels[...,:3]*2-1
-    normalize_normal(normal)  # Validate every source texel before filtering can hide it.
+    normal=normalize_normal(pixels[...,:3]*2-1)  # Validate every source texel before filtering can hide it.
     normal[...,:2]*=scale
-    normalize_normal(normal)  # Scaling must not create undefined directions either.
+    normal=normalize_normal(normal)  # Filter unit directions so steep texels are not overweighted.
     return normalize_normal(resize(normal,limit))
 
 

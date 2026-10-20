@@ -485,6 +485,14 @@ class TrellisWeaponExportTests(unittest.TestCase):
         expected=np.array([.4,1.2,1.]);expected/=np.linalg.norm(expected)
         np.testing.assert_allclose(actual[0,0],expected)
 
+    @unittest.skipIf(np is None,'numpy required')
+    def test_scaled_normals_are_averaged_as_unit_directions(self):
+        # Two texels: one tilted fully in +X (after scale) and one straight up. Averaging unit
+        # vectors gives the [1,0,1] direction, not the [2,0,1] of unequal-length vectors.
+        pixels=np.array([[[1.,.5,.5+1e-4],[.5,.5,1.]]]);actual=exporter.prepare_normal_map(pixels,2,1)
+        expected=np.array([1.,0.,1.]);expected/=np.linalg.norm(expected)
+        np.testing.assert_allclose(actual[0,0],expected,atol=1e-3)
+
     @unittest.skipUnless(HAS_BLENDER,'Run Blender 4.0 for source surface proof')
     def test_closed_surface_policy_allows_enclosed_cavity_but_not_exposed_inversion(self):
         bpy=exporter.bpy
@@ -765,6 +773,15 @@ class NativeWeaponNormalTests(unittest.TestCase):
                     self.helper.gltf_index(document,key,value)
         with self.assertRaisesRegex(ValueError,'Invalid glTF bufferViews'):
             self.helper.accessor({'accessors':[{'bufferView':-1,'type':'SCALAR','componentType':5126,'count':1}],'bufferViews':[{}]},b'\0'*4,0)
+
+    def test_accessors_stay_inside_their_buffer_view(self):
+        binary=bytes(range(32))
+        def doc(view,item):return {'accessors':[{'bufferView':0,'type':'SCALAR','componentType':5126,**item}],'bufferViews':[view]}
+        self.assertEqual(self.helper.accessor(doc({'byteOffset':8,'byteLength':8},{'count':2}),binary,0).shape,(2,1))
+        for view,item in (({'byteOffset':8,'byteLength':8},{'count':3}),({'byteOffset':8,'byteLength':8},{'count':1,'byteOffset':-4}),
+                          ({'byteOffset':8,'byteLength':40},{'count':1}),({'byteOffset':0},{'count':1}),({'byteOffset':0,'byteLength':8,'byteStride':2},{'count':2})):
+            with self.subTest(view=view,item=item),self.assertRaisesRegex(ValueError,'out of bounds'):
+                self.helper.accessor(doc(view,item),binary,0)
 
     def test_uv_v_conversion_reverses_green_but_preserves_world_normal(self):
         n=np.array([[0.,0.,1.]]);t=np.array([[1.,0.,0.]])

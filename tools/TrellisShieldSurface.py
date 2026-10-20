@@ -89,19 +89,19 @@ def audit_surface(vertices, faces, components=False):
             points=triangles[ids];origin=points.mean(axis=(0,1));shifted=points-origin
             volume=float(np.einsum('ij,ij->i',shifted[:,0],np.cross(shifted[:,1],shifted[:,2])).sum()/6)
             shells.append({'triangles':len(ids),'signed_volume':volume,'area':float(area2[ids].sum()/2)})
-        # An inward-wound shell is valid only as a cavity: the whole shell must lie in solid
-        # material, i.e. the other shells wind exactly once around every vertex and face
-        # centroid of it. A shell that crosses or pokes through another one, or sits outside,
-        # is an exposed inside-out surface.
+        # An inward-wound shell is valid only as a cavity: it must not cross any other shell
+        # and must lie in solid material (the other shells wind exactly once around it).
         exposed=0;ids_list=list(groups.values())
         for index,(ids,shell) in enumerate(zip(ids_list,shells)):
             if shell['signed_volume']>=0:continue
             others=[face for other,group in enumerate(ids_list) if other!=index for face in group]
             # Whole-shell containment: the shell must not cross any other shell (no edge of either
             # passes through a triangle of the other), and then one interior sample decides inside.
-            samples=np.concatenate([vertices[np.unique(faces[ids])],triangles[ids].mean(axis=1)])
+            # Disjoint closed shells cannot change containment across a connected shell, so one
+            # representative point (largest face centroid) decides once crossing is ruled out.
+            point=triangles[ids[int(np.argmax(area2[ids]))]].mean(axis=0)
             enclosed=(bool(others) and not shells_intersect(triangles[ids],triangles[others])
-                      and all(abs(winding_number(point,triangles[others])-1)<1e-3 for point in samples))
+                      and abs(winding_number(point,triangles[others])-1)<1e-3)
             shell['enclosed_cavity']=enclosed;exposed+=not enclosed
         report['shells']=shells
         report['zero_volume_shells']=sum(shell['signed_volume']==0 for shell in shells)

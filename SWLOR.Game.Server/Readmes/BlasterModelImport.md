@@ -536,7 +536,7 @@ and for complete (simple) item icons such as shields.
 Without a same-named TGA in any loaded resource layer, it replaces the requested
 resref with the base item's generic icon, even when the requested DDS exists.
 The Basic Pistol's native slot 201 and Part #111 demonstrate this fallback;
-simple shield slots 57–60 also fall back when their icons are DDS-only.
+simple shield slots 57-60 also fall back when their icons are DDS-only.
 The artwork can be unique and correctly packed while the displayed icon is wrong.
 
 Keep new/replacement artwork DDS-only. Native inventory discovery requires a

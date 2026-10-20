@@ -153,9 +153,30 @@ class ShieldSurfaceTests(unittest.TestCase):
             with patch.object(bridge,'blender_identity',return_value={'sha256':'same'}):
                 bridge.require_same_blender('blender',{'sha256':'same'},(output,report))
             self.assertTrue(output.exists())
-            with patch.object(bridge,'blender_identity',return_value={'sha256':'new'}),self.assertRaisesRegex(ValueError,'changed during shield reconstruction'):
+            with patch.object(bridge,'blender_identity',return_value={'sha256':'new'}),self.assertRaisesRegex(ValueError,'changed or could not be verified'):
                 bridge.require_same_blender('blender',{'sha256':'old'},(output,report))
             self.assertFalse(output.exists() or report.exists())
+
+    def test_unverifiable_blender_identity_discards_outputs(self):
+        spec=importlib.util.spec_from_file_location('shield_identity_error_bridge',TOOLS/'trellis2_shield_nodes/__init__.py')
+        bridge=importlib.util.module_from_spec(spec);spec.loader.exec_module(bridge)
+        with tempfile.TemporaryDirectory() as temporary:
+            output=Path(temporary)/'closed_low.npz';report=output.with_suffix('.json');output.write_bytes(b'x');report.write_text('{}')
+            with patch.object(bridge,'blender_identity',side_effect=FileNotFoundError('gone')),self.assertRaisesRegex(ValueError,'could not be verified'):
+                bridge.require_same_blender('blender',{'sha256':'old'},(output,report))
+            self.assertFalse(output.exists() or report.exists())
+
+    def test_cached_surface_is_loaded_from_the_hashed_snapshot(self):
+        spec=importlib.util.spec_from_file_location('shield_snapshot_bridge',TOOLS/'trellis2_shield_nodes/__init__.py')
+        bridge=importlib.util.module_from_spec(spec);spec.loader.exec_module(bridge)
+        with tempfile.TemporaryDirectory() as temporary:
+            path=Path(temporary)/'surface.npz';v,f=box();np.savez(path,vertices=v,faces=f)
+            path.with_suffix('.json').write_text(json.dumps({'output_sha256':hashlib.sha256(path.read_bytes()).hexdigest()}))
+            real=np.load
+            def swap(source,**kwargs):
+                other=box(center=(5,0,0));np.savez(path,vertices=other[0],faces=other[1]);return real(source,**kwargs)
+            with patch.object(np,'load',side_effect=swap):actual=bridge.cached_arrays(path)
+            np.testing.assert_array_equal(actual[0],v)
 
     def test_intersection_batches_cover_every_edge_and_triangle_pair(self):
         far=np.asarray([[[10,10,10],[11,10,10],[10,11,10]]],np.float64)

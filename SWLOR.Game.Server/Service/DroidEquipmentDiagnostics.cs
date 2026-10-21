@@ -20,12 +20,18 @@ public static class DroidEquipmentDiagnostics
     public static string LastEntry { get; private set; } = string.Empty;
 
     // Native equips (RunEquip): equip actions, inventory drags and queued combat-round equips.
+    // The after-event also follows refused equips; only an item now in a slot was equipped.
     [NWNEventHandler(ScriptName.OnItemEquipValidateAfter)]
     public static void OnEquipped()
     {
         var droid = OBJECT_SELF;
+        if (!Droid.IsDroid(droid))
+            return;
+
         var item = StringToObject(EventsPlugin.GetEventData("ITEM"));
-        Record("equipped", droid, item, Droid.IsDroid(droid) ? Item.GetItemSlot(droid, item) : InventorySlot.Invalid);
+        var slot = Item.GetItemSlot(droid, item);
+        if (slot != InventorySlot.Invalid)
+            Record("equipped", droid, item, slot);
     }
 
     // The after-event runs once the item has left its slot, so note the slot first.
@@ -56,7 +62,9 @@ public static class DroidEquipmentDiagnostics
         var slot = _unequipSlots.Remove(droid, out var pending) && pending.Item == item
             ? pending.Slot
             : InventorySlot.Invalid;
-        Record("unequipped", droid, item, slot);
+        // An item still in a slot was not unequipped.
+        if (Droid.IsDroid(droid) && Item.GetItemSlot(droid, item) == InventorySlot.Invalid)
+            Record("unequipped", droid, item, slot);
     }
 
     /// <summary>
@@ -76,6 +84,19 @@ public static class DroidEquipmentDiagnostics
             if (_lastHands.TryGetValue(droid, out var previous) && previous != hands)
                 Write("hands changed without an equip event", droid, OBJECT_INVALID, InventorySlot.Invalid, $"before={previous}");
             _lastHands[droid] = hands;
+        }
+        catch (Exception exception)
+        {
+            Log.Write(LogGroup.Error, $"Droid equipment diagnostics failed: {exception.Message}");
+        }
+    }
+
+    /// <summary>Sets the hand baseline once a summon has restored the droid's equipment, without logging the restore.</summary>
+    public static void RememberHands(uint droid)
+    {
+        try
+        {
+            _lastHands[droid] = DescribeHands(droid);
         }
         catch (Exception exception)
         {

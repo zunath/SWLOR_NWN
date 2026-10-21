@@ -860,6 +860,7 @@ namespace SWLOR.Game.Server.Service
             TwinPistolEquipment.EnsurePair(droid);
 
             DeleteLocalBool(droid, DroidIsSpawning);
+            DroidEquipmentDiagnostics.RememberHands(droid);
             SaveItemSnapshot(droid);
             AssignCommand(GetModule(), () =>
             {

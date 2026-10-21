@@ -68,23 +68,10 @@ namespace SWLOR.Game.Server.EngineTests.Definitions
                 ctx.AssertEqual("oph_rifle", GetResRef(rifle), "The summon restores the saved rifle");
                 ctx.AssertEqual(before, DroidEquipmentDiagnostics.LastEntry, "Summon restores are not logged");
 
-                await Unequip(ctx, droid, rifle);
-                var unequipped = DroidEquipmentDiagnostics.LastEntry;
-                ctx.Assert(unequipped.StartsWith("change=unequipped") && unequipped.Contains("item=oph_rifle slot=RightHand") && unequipped.Contains("hands=|"),
-                    $"The unequip is logged: {unequipped}");
-                ctx.Assert(unequipped.Contains("action=") && unequipped.Contains("inCombat=") && unequipped.Contains("associateCommand="),
-                    $"The unequip entry carries the droid's state: {unequipped}");
-
-                await Equip(ctx, droid, rifle, InventorySlot.RightHand);
-                var equipped = DroidEquipmentDiagnostics.LastEntry;
-                ctx.Assert(equipped.StartsWith("change=equipped") && equipped.Contains("item=oph_rifle slot=RightHand") && equipped.Contains("hands=oph_rifle|"),
-                    $"The equip is logged: {equipped}");
-
-                // An engine path that moves the weapon without equip events is caught on the next heartbeat.
-                await ctx.ExecuteInCreatureContextAsync(droid, () => ExecuteScript(ScriptName.OnDroidHeartbeat, droid));
+                // The summon sets the hand baseline, so an eventless engine unequip (disarm, polymorph)
+                // right after it is caught by the first heartbeat.
                 await ctx.ExecuteInCreatureContextAsync(droid, () =>
                 {
-                    // The engine's own unequip, as used by disarm and polymorph, skips the equip events.
                     var native = NWNXLib.g_pAppManager.m_pServerExoApp.GetGameObject(droid).AsNWSCreature();
                     var nativeRifle = NWNXLib.g_pAppManager.m_pServerExoApp.GetGameObject(rifle).AsNWSItem();
                     ctx.Assert(native.UnequipItem(nativeRifle, 0, 0) != 0, "The engine unequips the rifle without events");
@@ -99,7 +86,33 @@ namespace SWLOR.Game.Server.EngineTests.Definitions
                     var nativeRifle = NWNXLib.g_pAppManager.m_pServerExoApp.GetGameObject(rifle).AsNWSItem();
                     ctx.Assert(native.EquipItem((uint)global::NWN.Native.API.EquipmentSlot.RightHand, nativeRifle, 1, 0, 0) != 0,
                         "The engine restores the rifle to the hand");
+                    ExecuteScript(ScriptName.OnDroidHeartbeat, droid);
                 });
+
+                await Unequip(ctx, droid, rifle);
+                var unequipped = DroidEquipmentDiagnostics.LastEntry;
+                ctx.Assert(unequipped.StartsWith("change=unequipped") && unequipped.Contains("item=oph_rifle slot=RightHand") && unequipped.Contains("hands=|"),
+                    $"The unequip is logged: {unequipped}");
+                ctx.Assert(unequipped.Contains("action=") && unequipped.Contains("inCombat=") && unequipped.Contains("associateCommand="),
+                    $"The unequip entry carries the droid's state: {unequipped}");
+
+                await Equip(ctx, droid, rifle, InventorySlot.RightHand);
+                var equipped = DroidEquipmentDiagnostics.LastEntry;
+                ctx.Assert(equipped.StartsWith("change=equipped") && equipped.Contains("item=oph_rifle slot=RightHand") && equipped.Contains("hands=oph_rifle|"),
+                    $"The equip is logged: {equipped}");
+
+                // A refused equip changes nothing and is not logged.
+                var ring = await CreateEquipment(ctx, owner, "advent_ring", false);
+                await Transfer(ctx, owner, ring, droid);
+                await ctx.ExecuteInCreatureContextAsync(droid, () =>
+                {
+                    ctx.Assert(!string.IsNullOrEmpty(Item.CanEquip(droid, ring)), "The droid cannot use the ring");
+                    ClearAllActions();
+                    ActionEquipItem(ring, InventorySlot.LeftRing);
+                });
+                await ctx.DelaySecondsAsync(2f);
+                ctx.Assert(GetItemInSlot(InventorySlot.LeftRing, droid) != ring, "The ring was refused");
+                ctx.AssertEqual(equipped, DroidEquipmentDiagnostics.LastEntry, "A refused equip is not logged");
                 ctx.Log($"unequip: {unequipped}");
                 ctx.Log($"equip: {equipped}");
                 ctx.Log($"silent: {silent}");

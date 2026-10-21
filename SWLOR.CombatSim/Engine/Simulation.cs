@@ -791,7 +791,9 @@ namespace SWLOR.CombatSim.Engine
                 WeaponDamages = info.TwinPistol == null ? null : CaptureTwinWeaponDamage(caster.Spec.WeaponLoadout),
                 WeaponTraits = caster.Spec.WeaponLoadout != null && info.IsHostile && Combat.IsWeaponSkillType(info.SkillType)
                     ? caster.WeaponTraits.Paired.CaptureAbility(WeaponNow, WeaponTraitState.Configuration(caster), true,
-                        WeaponAbilityTraitPolicy.IsEligibleSpender(info.IsHostile, info.SkillType, info.STM))
+                        // Twin Pistol builders keep Flow for their finishers, as on the server.
+                        WeaponAbilityTraitPolicy.IsEligibleSpender(info.IsHostile, info.SkillType, info.STM) &&
+                        info.TwinPistol?.SpendsMomentum != false)
                     : null
             };
             if (cast.WeaponTraits != null)

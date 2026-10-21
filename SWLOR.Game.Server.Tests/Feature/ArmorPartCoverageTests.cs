@@ -12,7 +12,7 @@ namespace SWLOR.Game.Server.Tests.Feature;
 /// The appearance editor hides an armor part whose model is missing for the wearer's body,
 /// so a part authored for only some bodies silently disappears for other species. Every
 /// catalog part must have a model, and a tint row for palette and exact RGB colors, on every
-/// playable body of both genders.
+/// playable body of both genders; a species' own skin on the bodies of the species that own it.
 /// </summary>
 public class ArmorPartCoverageTests
 {
@@ -34,6 +34,12 @@ public class ArmorPartCoverageTests
     private static IEnumerable<(string Model, string Body)> RequiredParts()
     {
         var speciesParts = SpeciesBodyParts();
+        var models = Slots.ToDictionary(slot => slot.Part, slot => slot.Model);
+        // A species' own skin is required only on the bodies of the species that own it.
+        foreach (var ((part, style), races) in speciesParts)
+        foreach (var race in races)
+        foreach (var gender in "mf")
+            yield return ($"{models[part]}{style:D3}", $"p{gender}{race}0");
         // Droids wear their own catalog on the droid body; every other species shares the general one.
         foreach (var (catalog, races) in new[]
                  {
@@ -43,8 +49,7 @@ public class ArmorPartCoverageTests
         foreach (var (part, model) in Slots)
         foreach (var style in ArmorAppearanceCatalog.GetStyles(catalog, part).Where(style => style > 0).Distinct())
         {
-            // A species' own skin for this slot exists only for the bodies that own it.
-            if (races == Bodies && speciesParts.Contains((part, style)))
+            if (races == Bodies && speciesParts.ContainsKey((part, style)))
                 continue;
             foreach (var race in races)
             foreach (var gender in "mf")
@@ -61,6 +66,7 @@ public class ArmorPartCoverageTests
             .Select(columns => columns[1].ToLowerInvariant())
             .ToHashSet();
         Assert.That(tinted, Does.Contain("pmh0_chest001"));
+        Assert.That(SpeciesBodyParts()[(AppearanceArmor.Torso, 208)], Does.Contain('e'), "Wookiee torso 208 belongs to the elf body");
 
         var gaps = RequiredParts()
             .Where(required => !tinted.Contains($"{required.Body}_{required.Model}"))
@@ -88,19 +94,36 @@ public class ArmorPartCoverageTests
             "Refit missing bodies with SWLOR_Haks/tools/GenerateRacialPartVariants.py (ItemAppearanceRules.md).");
     }
 
-    private static HashSet<(AppearanceArmor Part, int Style)> SpeciesBodyParts()
+    private static Dictionary<(AppearanceArmor Part, int Style), HashSet<char>> SpeciesBodyParts()
     {
         // Racial skins (Cathar and Trandoshan 201, Mon Calamari 204, Wookiee and Ewok 208-214,
         // the human-model bicep 251) exist only for the bodies that own them. Styles every
         // species' default lists offer (hands 258-263) are not racial.
         var shared = BodyParts(new BothanRacialAppearanceDefinition());
-        var parts = new HashSet<(AppearanceArmor, int)>();
+        var races = BodyRaces();
+        var parts = new Dictionary<(AppearanceArmor, int), HashSet<char>>();
         foreach (var type in RacialAppearanceRegistry.GetAppearanceTypes())
         {
             RacialAppearanceRegistry.TryGet(type, out var appearance);
-            parts.UnionWith(BodyParts(appearance).Where(part => part.Style > 200 && !shared.Contains(part)));
+            foreach (var part in BodyParts(appearance).Where(part => part.Style > 200 && !shared.Contains(part)))
+            {
+                if (!parts.TryGetValue(part, out var owners))
+                    parts[part] = owners = new HashSet<char>();
+                owners.Add(races[(int)type]);
+            }
         }
         return parts;
+    }
+
+    private static Dictionary<int, char> BodyRaces()
+    {
+        // appearance.2da RACE names the body model letter (p<g><race>0) each appearance wears.
+        var lines = File.ReadAllLines(Path.Combine(FindRepositoryRoot(), "SWLOR_Haks", "sw_2da", "appearance.2da"));
+        var race = Array.IndexOf(Regex.Split(lines[2].Trim(), @"\s+"), "RACE") + 1;
+        return lines.Skip(3)
+            .Select(line => Regex.Matches(line, @"""[^""]*""|\S+").Select(match => match.Value).ToArray())
+            .Where(columns => columns.Length > race && int.TryParse(columns[0], out _) && columns[race].Length == 1)
+            .ToDictionary(columns => int.Parse(columns[0]), columns => char.ToLowerInvariant(columns[race][0]));
     }
 
     private static HashSet<(AppearanceArmor Part, int Style)> BodyParts(IRacialAppearanceDefinition appearance) => new[]

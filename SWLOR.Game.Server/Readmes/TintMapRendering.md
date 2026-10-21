@@ -541,8 +541,9 @@ the seat or the floor. The originals are read from the Git blobs recorded in
 `ChestSkirtBindings.json`. Other chest styles with leg-weighted coat tails (003, 027 to
 029, 059, 065, 072, 128, 155, 276, 290, 300, 310) are unchanged.
 Run `python -B SWLOR_Haks/tools/ChestSkirtBindings.py --apply`, then
-`GeneratePartSkinModels.py --apply`, which renumbers the robe-body aliases whose bone
-mapping changed; `--check` and `TestChestSkirtBindings.py` guard both. Rebuild
+`python -B SWLOR_Haks/tools/GeneratePartSkinModels.py --apply`, which renumbers the
+robe-body aliases whose bone mapping changed. Both scripts' `--check` and
+`python -B -m unittest discover -s SWLOR_Haks/tools -p "TestChestSkirtBindings.py"` guard them. Rebuild
 `sw_pt_chest.hak` and `sw_2da.hak` together and restart the server, which reads the
 renumbered aliases from `partrender.2da`.
 

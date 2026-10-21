@@ -170,9 +170,9 @@ namespace SWLOR.Game.Server.Service
         }
 
         /// <summary>
-        /// Returns where a player respawns: their registered point, or the default respawn point
-        /// when none is saved, its area no longer exists, or it is not on walkable ground.
-        /// A jump to any of those fails silently and leaves the player where they died.
+        /// Returns where a player respawns: their registered medical center, or the default respawn
+        /// point (DTH_DEFAULT_RESPAWN_POINT) when no medical center is saved, its area no longer exists,
+        /// or the saved point is not on walkable ground. Never returns the place the player died.
         /// </summary>
         /// <param name="dbPlayer">The player's record. May be null.</param>
         /// <returns>The location to respawn at.</returns>

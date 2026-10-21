@@ -76,7 +76,7 @@ Take the open posts in the SWLOR Discord bug-report forum through to reviewed pu
    - the PR is open, and its head commit is the one Codex reviewed;
    - Codex's review of the current head is complete with no findings (its issue comment carries a `codex-review-state` marker with `commit_sha` and `has_any_findings`);
    - no review threads are unresolved (GraphQL `reviewThreads { isResolved }`);
-   - the PR has no merge conflicts with its base (`gh pr view --json mergeable,mergeStateStatus` is not `CONFLICTING` or `DIRTY`; ask again on `UNKNOWN`);
+   - the PR has no merge conflicts with its base (`gh pr view <PR URL> --json mergeable,mergeStateStatus`, run on every PR URL including companions, is not `CONFLICTING` or `DIRTY`; ask again on `UNKNOWN`);
    - no review body or PR comment holds an unanswered finding, by reading `pulls/<n>/reviews` and the issue comments as `Readmes/PullRequests.md` requires;
    - the PR or worker report names the build and tests run with their results, plus the NWN client evidence (or why the change has no in-game surface);
    - companion PRs pass the same checks.

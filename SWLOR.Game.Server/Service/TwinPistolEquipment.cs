@@ -1,4 +1,5 @@
 using System.Collections.Generic;
+using SWLOR.Game.Server.Feature.AppearanceDefinition.ItemAppearance;
 using SWLOR.Game.Server.Feature.MigrationDefinition;
 using SWLOR.Game.Server.Service.SkillService;
 using SWLOR.NWN.API.NWNX;
@@ -19,6 +20,7 @@ public static class TwinPistolEquipment
     private const string CompanionResref = "twp_companion";
     private static readonly Dictionary<uint, (uint Main, uint Spare)> Pairs = new();
     private static readonly HashSet<uint> Changing = new();
+    private static readonly HashSet<uint> RefreshingAppearance = new();
 
     public static bool IsChanging(uint creature) => Changing.Contains(creature);
 
@@ -87,6 +89,7 @@ public static class TwinPistolEquipment
             ItemPlugin.SetWeight(spare, 0);
             for (var ip = GetFirstItemProperty(main); GetIsItemPropertyValid(ip); ip = GetNextItemProperty(main))
                 if (IsMirroredProperty(GetItemPropertyType(ip))) AddItemProperty(DurationType.Permanent, ip, spare);
+            CopyAppearance(main, spare);
 
             Pairs[creature] = (main, spare);
             SetLocalObject(main, CompanionVariable, spare);
@@ -111,6 +114,44 @@ public static class TwinPistolEquipment
 
         // Failed generation must not leave the owned pair operating as a single pistol.
         if (!IsActivePair(creature)) RemovePair(creature, main);
+    }
+
+    /// <summary>The generated gun has no appearance of its own; edits go to the owned pistol it mirrors.</summary>
+    public static uint ResolveAppearanceOwner(uint creature, uint item)
+    {
+        if (!IsGeneratedCompanion(item)) return item;
+        var main = GetLocalObject(item, MainWeaponVariable);
+        return IsLinkedPair(creature, main, item) ? main : OBJECT_INVALID;
+    }
+
+    /// <summary>Copies the owned pistol's model parts and colors onto its equipped generated gun.</summary>
+    public static void RefreshAppearance(uint creature)
+    {
+        if (!GetIsObjectValid(creature) || RefreshingAppearance.Contains(creature)) return;
+        var main = GetItemInSlot(InventorySlot.RightHand, creature);
+        var spare = GetItemInSlot(InventorySlot.LeftHand, creature);
+        if (!IsLinkedPair(creature, main, spare) || IsDestroyingCompanion(spare)) return;
+        RefreshingAppearance.Add(creature);
+        try
+        {
+            // Invalidate observer caches for the same-ID held item; the nested tint pass cannot re-enter.
+            if (CopyAppearance(main, spare)) EquippedItemAppearance.Refresh(creature, spare);
+        }
+        finally { RefreshingAppearance.Remove(creature); }
+    }
+
+    private static bool CopyAppearance(uint main, uint spare)
+    {
+        var changed = false;
+        foreach (var part in new[] { AppearanceWeapon.Bottom, AppearanceWeapon.Middle, AppearanceWeapon.Top })
+        foreach (var type in new[] { ItemAppearanceType.WeaponColor, ItemAppearanceType.WeaponModel })
+        {
+            var value = GetItemAppearance(main, type, (int)part);
+            if (GetItemAppearance(spare, type, (int)part) == value) continue;
+            ItemPlugin.SetItemAppearance(spare, type, (int)part, value, updateCreatureAppearance: false);
+            changed = true;
+        }
+        return changed;
     }
 
     /// <summary>Safely returns the owned item and destroys only its generated second gun.</summary>

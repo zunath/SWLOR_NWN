@@ -658,6 +658,23 @@ namespace SWLOR.Game.Server.Service
         /// <typeparam name="T">The type of entity to retrieve.</typeparam>
         /// <param name="query">The query to run.</param>
         /// <returns>An enumerable of raw json values matching the criteria.</returns>
+        /// <summary>
+        /// Returns the ids of the entities a query matches without reading the entities themselves.
+        /// </summary>
+        /// <typeparam name="T">The type of entity to search.</typeparam>
+        /// <param name="query">The query to run. Its paging applies.</param>
+        public static IEnumerable<string> SearchIds<T>(DBQuery<T> query)
+            where T: EntityBase
+        {
+            var indexKeyPrefix = SearchIndexDefinition.KeyPrefix(_keyPrefixByType[typeof(T)]);
+            var result = SearchIndex(query);
+
+            foreach (var doc in result.Documents)
+            {
+                yield return doc.Id.Substring(indexKeyPrefix.Length);
+            }
+        }
+
         public static IEnumerable<string> SearchRawJson<T>(DBQuery<T> query)
             where T: EntityBase
         {

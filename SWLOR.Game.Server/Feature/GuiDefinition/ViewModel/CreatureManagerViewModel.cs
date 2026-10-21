@@ -181,7 +181,16 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
             if (index < 0 || index >= _creatureIds.Count)
                 return;
 
-            var change = DMCreatureManagerFavorite.Toggle(Player, _creatureIds[index], _rowNames[index], out var favorites);
+            // A saved creature another DM deleted after this list loaded can still be removed, but not added.
+            var creatureId = _creatureIds[index];
+            if (!DMSavedCreatureFavoriteList.Contains(_favorites, creatureId) && !DB.Exists<DMCreature>(creatureId))
+            {
+                DMPresence.SendMessage(Player, "That saved creature no longer exists.");
+                Search();
+                return;
+            }
+
+            var change = DMCreatureManagerFavorite.Toggle(Player, creatureId, _rowNames[index], out var favorites);
             if (change == DMFavoriteChange.NotSaved)
             {
                 DMPresence.SendMessage(Player, "Your favorites could not be saved.");
@@ -236,15 +245,11 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
         // was deleted, so they can still be removed.
         private void SearchFavorites()
         {
-            var deleted = GetDeletedFavorites();
-            var deletedIds = deleted.Select(favorite => favorite.CreatureId).ToHashSet();
-            var savedIds = _favorites
-                .Select(favorite => favorite.CreatureId)
-                .Where(id => !deletedIds.Contains(id))
-                .ToList();
-            var terms = DMSearchText.GetTerms(SearchText);
-            var matchingDeleted = deleted
-                .Where(favorite => DMSearchText.Matches(terms, favorite.Name))
+            var savedIds = GetSavedFavoriteIds();
+            // Deleted favorites follow the database's word-start matching, so a search finds them like saved ones.
+            var matchingDeleted = _favorites
+                .Where(favorite => !savedIds.Contains(favorite.CreatureId) &&
+                                   DMSearchText.MatchesWordStarts(SearchText, favorite.Name))
                 .OrderBy(favorite => favorite.Name, StringComparer.OrdinalIgnoreCase)
                 .ToList();
 
@@ -254,7 +259,7 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
             {
                 query = new DBQuery<DMCreature>()
                     .OrderBy(nameof(DMCreature.Name))
-                    .AddFieldSearch(nameof(DMCreature.Id), savedIds);
+                    .AddFieldSearch(nameof(DMCreature.Id), savedIds.ToList());
                 if (!string.IsNullOrWhiteSpace(SearchText)) query.AddFieldSearch(nameof(DMCreature.Name), SearchText, true);
                 savedTotal = DB.SearchCount(query);
             }
@@ -276,20 +281,17 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
             ShowRows(rows);
         }
 
-        private List<DMSavedCreatureFavorite> GetDeletedFavorites()
+        // The favorites whose saved creature still exists, from one query that reads no records.
+        private HashSet<string> GetSavedFavoriteIds()
         {
             var ids = _favorites.Select(favorite => favorite.CreatureId).ToList();
             if (ids.Count == 0)
-                return new List<DMSavedCreatureFavorite>();
+                return new HashSet<string>();
 
-            // One count answers the usual case; only a mismatch checks each record.
-            var count = DB.SearchCount(new DBQuery<DMCreature>().AddFieldSearch(nameof(DMCreature.Id), ids));
-            if (count >= ids.Count)
-                return new List<DMSavedCreatureFavorite>();
-
-            return _favorites
-                .Where(favorite => !DB.Exists<DMCreature>(favorite.CreatureId))
-                .ToList();
+            var query = new DBQuery<DMCreature>()
+                .AddFieldSearch(nameof(DMCreature.Id), ids)
+                .AddPaging(ids.Count, 0);
+            return DB.SearchIds(query).ToHashSet();
         }
 
         private void ShowRows(IEnumerable<(string Id, string Name, bool Exists)> rows)

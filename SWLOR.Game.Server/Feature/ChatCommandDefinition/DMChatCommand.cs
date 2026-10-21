@@ -65,6 +65,7 @@ namespace SWLOR.Game.Server.Feature.ChatCommandDefinition
             Notes();
             CreatureManager();
             DMTools();
+            BattleGrid();
             MusicWindow();
             Broadcast();
             AreaShout();
@@ -1112,6 +1113,21 @@ namespace SWLOR.Game.Server.Feature.ChatCommandDefinition
                 .Action((user, target, location, args) =>
                 {
                     DMPresence.ToggleWindow(user, GuiWindowType.DMTools);
+                });
+        }
+
+        private void BattleGrid()
+        {
+            _builder.Create("battlegrid")
+                .Description("Toggles the Battle Grid window: show, size and move a grid over the current area.")
+                .Permissions(AuthorizationLevel.DM, AuthorizationLevel.Admin)
+                .Validate((user, args) =>
+                    GetIsDM(user) || GetIsDMPossessed(user)
+                        ? string.Empty
+                        : "Only a DM avatar, or a creature a DM possesses, can use the battle grid.")
+                .Action((user, target, location, args) =>
+                {
+                    DMPresence.ToggleWindow(user, GuiWindowType.DMBattleGrid);
                 });
         }
 

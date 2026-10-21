@@ -24,6 +24,20 @@ public class DMChatCommandTests
     }
 
     [Test]
+    public void BattleGrid_OpensForDMsWithoutATarget()
+    {
+        var commands = new DMChatCommand().BuildChatCommands();
+
+        commands.Should().ContainKey("battlegrid");
+
+        var command = commands["battlegrid"];
+        command.Authorization.Should().Be(AuthorizationLevel.DM | AuthorizationLevel.Admin);
+        command.AvailableToAllOnTestEnvironment.Should().BeFalse("the grid is shown to every player in the area");
+        command.RequiresTarget.Should().BeFalse();
+        command.DoAction.Should().NotBeNull();
+    }
+
+    [Test]
     public void SpawnBeastEgg_AllowsStaffAndTestUsersToCreateTypedEggs()
     {
         var commands = new DMChatCommand().BuildChatCommands();

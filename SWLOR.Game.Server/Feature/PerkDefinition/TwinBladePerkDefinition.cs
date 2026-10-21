@@ -82,7 +82,7 @@ namespace SWLOR.Game.Server.Feature.PerkDefinition
 
                 .AddPerkLevel()
                 .GrantsFeat(FeatType.MomentumTrait)
-                .Description("Abilities that hit 2 or more enemies grant +5% Haste (reduces your weapon's attack delay by 5%) for 30 seconds, stacking up to +15%.")
+                .Description("Abilities that hit 2 or more enemies grant +5% Haste for 30 seconds, stacking up to +15%.")
                 .IncreasesStat(StatType.AreaAbilityHasteStackMinimumTargets, 2)
                 .IncreasesStat(StatType.AreaAbilityHastePerStack, 5)
                 .IncreasesStat(StatType.AreaAbilityHasteStackDurationSeconds, 30)
@@ -98,7 +98,7 @@ namespace SWLOR.Game.Server.Feature.PerkDefinition
 
                 .AddPerkLevel()
                 .GrantsFeat(FeatType.SpinningRhythmTrait)
-                .Description("Area combat abilities grant +2% Haste (reduces your weapon's attack delay by 2%) for 30 seconds per enemy hit beyond the first, up to three stacks.")
+                .Description("Area combat abilities grant +2% Haste for 30 seconds per enemy hit beyond the first, up to three stacks.")
                 .IncreasesStat(StatType.AreaAbilityHasteStackMinimumTargets, 2)
                 .IncreasesStat(StatType.AreaAbilityHasteStacksPerAdditionalTarget, 1)
                 .IncreasesStat(StatType.AreaAbilityHastePerStack, 2)
@@ -108,7 +108,7 @@ namespace SWLOR.Game.Server.Feature.PerkDefinition
                 .RequirementSkill(SkillType.TwinBlade, 8)
 
                 .AddPerkLevel()
-                .Description("Area combat abilities grant +3% Haste (reduces your weapon's attack delay by 3%) for 30 seconds per enemy hit beyond the first, up to three stacks.")
+                .Description("Area combat abilities grant +3% Haste for 30 seconds per enemy hit beyond the first, up to three stacks.")
                 .IncreasesStat(StatType.AreaAbilityHasteStackMinimumTargets, 2)
                 .IncreasesStat(StatType.AreaAbilityHasteStacksPerAdditionalTarget, 1)
                 .IncreasesStat(StatType.AreaAbilityHastePerStack, 3)
@@ -118,7 +118,7 @@ namespace SWLOR.Game.Server.Feature.PerkDefinition
                 .RequirementSkill(SkillType.TwinBlade, 22)
 
                 .AddPerkLevel()
-                .Description("Area combat abilities grant +4% Haste (reduces your weapon's attack delay by 4%) for 30 seconds per enemy hit beyond the first, up to three stacks.")
+                .Description("Area combat abilities grant +4% Haste for 30 seconds per enemy hit beyond the first, up to three stacks.")
                 .IncreasesStat(StatType.AreaAbilityHasteStackMinimumTargets, 2)
                 .IncreasesStat(StatType.AreaAbilityHasteStacksPerAdditionalTarget, 1)
                 .IncreasesStat(StatType.AreaAbilityHastePerStack, 4)
@@ -197,7 +197,7 @@ namespace SWLOR.Game.Server.Feature.PerkDefinition
                 .AddPerkLevel()
                 .GrantsFeat(FeatType.CycloneStance1)
                 .DroidAISlots(1)
-                .Description("While active, grants +15% Haste (reduces your weapon's attack delay by 15%) and +10% Attack, but reduces Defense by 20%.")
+                .Description("While active, grants +15% Haste and +10% Attack, but reduces Defense by 20%.")
                 .Price(4)
                 .RequirementSkill(SkillType.TwinBlade, 20);
         }

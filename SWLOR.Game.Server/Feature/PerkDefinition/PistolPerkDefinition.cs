@@ -302,21 +302,21 @@ namespace SWLOR.Game.Server.Feature.PerkDefinition
 
                 .AddPerkLevel()
                 .GrantsFeat(FeatType.RapidShotTrait)
-                .Description("After landing a critical hit, gain +3% Haste (reduces your weapon's attack delay by 3%) for 30 seconds.")
+                .Description("After landing a critical hit, gain +3% Haste for 30 seconds.")
                 .IncreasesStat(StatType.CriticalHitSelfHastePercentAdjustment, 3)
                 .IncreasesStat(StatType.CriticalHitSelfHasteDurationSeconds, 30)
                 .Price(2)
                 .RequirementSkill(SkillType.Pistol, 8)
 
                 .AddPerkLevel()
-                .Description("After landing a critical hit, gain +5% Haste (reduces your weapon's attack delay by 5%) for 30 seconds.")
+                .Description("After landing a critical hit, gain +5% Haste for 30 seconds.")
                 .IncreasesStat(StatType.CriticalHitSelfHastePercentAdjustment, 5)
                 .IncreasesStat(StatType.CriticalHitSelfHasteDurationSeconds, 30)
                 .Price(4)
                 .RequirementSkill(SkillType.Pistol, 22)
 
                 .AddPerkLevel()
-                .Description("After landing a critical hit, gain +7% Haste (reduces your weapon's attack delay by 7%) for 30 seconds.")
+                .Description("After landing a critical hit, gain +7% Haste for 30 seconds.")
                 .IncreasesStat(StatType.CriticalHitSelfHastePercentAdjustment, 7)
                 .IncreasesStat(StatType.CriticalHitSelfHasteDurationSeconds, 30)
                 .Price(4)
@@ -421,7 +421,7 @@ namespace SWLOR.Game.Server.Feature.PerkDefinition
 
                 .AddPerkLevel()
                 .GrantsFeat(FeatType.ReloadTempoTrait)
-                .Description("After a critical hit, gain +20% Haste (reduces your weapon's attack delay by 20%) for your next two attacks. Expires after 30 seconds.")
+                .Description("After a critical hit, gain +20% Haste for your next two attacks. Expires after 30 seconds.")
                 .IncreasesStat(StatType.CriticalHitLimitedHasteTriggerSkillType, (int)SkillType.Invalid)
                 .IncreasesStat(StatType.CriticalHitLimitedHastePercentAdjustment, 20)
                 .IncreasesStat(StatType.CriticalHitLimitedHasteDurationSeconds, 30)

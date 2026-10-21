@@ -240,7 +240,7 @@ namespace SWLOR.Game.Server.Feature.PerkDefinition
                 .Name("Predatory Bond Stance")
 
                 .AddPerkLevel()
-                .Description("While active, your beast deals +25% damage, gains +15% Haste (reduces its attack delay by 15%) and +10% ability accuracy, and generates 40% less enmity. Only one stance may be active at a time.")
+                .Description("While active, your beast deals +25% damage, gains +15% haste and +10% ability accuracy, and generates 40% less enmity. Only one stance may be active at a time.")
                 .Price(2)
                 .RequirementSkill(SkillType.BeastMastery, 15)
                 .GrantsFeat(FeatType.PredatoryBondStance);

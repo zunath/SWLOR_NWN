@@ -42,7 +42,8 @@ namespace SWLOR.Game.Server.Service
             if (WeaponRepositioning.IsMoving(actor)) return "Finish your current movement first.";
             if (spec.Movement != TwinPistolMovementType.FreeDestination &&
                 (!IsLegalTarget(actor, target, spec.MaxRange))) return "Choose a hostile target within range and line of fire.";
-            var destination = GetDestination(actor, target, targetLocation, spec);
+            var destination = GetDestination(actor, target, targetLocation, spec, out var retreatError);
+            if (!string.IsNullOrEmpty(retreatError)) return retreatError;
             if (GetAreaFromLocation(destination) != GetArea(actor)) return "Choose a destination in your current area.";
             var distance = NumericsVector3.Distance(GetPosition(actor), GetPositionFromLocation(destination));
             if (distance < .01f && spec.Movement is TwinPistolMovementType.None or TwinPistolMovementType.Approach)
@@ -283,8 +284,13 @@ namespace SWLOR.Game.Server.Service
             GetArea(actor) == GetArea(target) && GetIsReactionTypeHostile(target, actor) &&
             GetDistanceBetween(actor, target) <= range && LineOfSightObject(actor, target);
 
-        private static Location GetDestination(uint actor, uint target, Location targetLocation, TwinPistolAbilitySpec spec)
+        private static Location GetDestination(uint actor, uint target, Location targetLocation, TwinPistolAbilitySpec spec) =>
+            GetDestination(actor, target, targetLocation, spec, out _);
+
+        private static Location GetDestination(uint actor, uint target, Location targetLocation, TwinPistolAbilitySpec spec,
+            out string retreatError)
         {
+            retreatError = string.Empty;
             var origin = GetPosition(actor);
             if (spec.Movement == TwinPistolMovementType.None) return GetLocation(actor);
             if (spec.Movement == TwinPistolMovementType.FreeDestination)
@@ -297,7 +303,7 @@ namespace SWLOR.Game.Server.Service
             var direction = distance > .001f ? delta / distance : new NumericsVector3(
                 (float)Math.Cos(GetFacing(actor) * Math.PI / 180), (float)Math.Sin(GetFacing(actor) * Math.PI / 180), 0);
             if (spec.Movement == TwinPistolMovementType.Retreat)
-                return GetRetreatDestination(actor, target, origin, direction, spec);
+                return GetRetreatDestination(actor, target, origin, direction, spec, out retreatError);
             var travel = -Math.Min(spec.MaxMovementMeters, Math.Max(0, distance - spec.StopDistanceMeters));
             var position = origin + direction * travel;
             var destination = Location(GetArea(actor), position, GetFacing(actor));
@@ -346,12 +352,13 @@ namespace SWLOR.Game.Server.Service
         /// <summary>
         /// A retreat takes the first lane away from the target that passes movement validation and keeps a line
         /// of fire to the target, so a rock or ally directly behind the caster does not refuse the ability while
-        /// open ground lies beside it. With no legal lane, the full straight retreat is returned and its
-        /// validation reports why it is blocked.
+        /// open ground lies beside it. With no legal lane, <paramref name="error"/> says why before anything is
+        /// paid: the straight retreat's movement error, or that every open lane loses the line of fire.
         /// </summary>
         private static Location GetRetreatDestination(uint actor, uint target, NumericsVector3 origin,
-            NumericsVector3 direction, TwinPistolAbilitySpec spec)
+            NumericsVector3 direction, TwinPistolAbilitySpec spec, out string error)
         {
+            error = string.Empty;
             Location straight = null;
             var targetPosition = GetPosition(target);
             foreach (var endpoint in RetreatEndpoints(new(origin.X, origin.Y), new(direction.X, direction.Y),
@@ -374,7 +381,15 @@ namespace SWLOR.Game.Server.Service
                         spec.MinimumMovementMeters, spec.MaxMovementMeters)))
                     return destination;
             }
-            return straight ?? GetLocation(actor);
+            if (straight == null)
+            {
+                error = "Invalid movement destination.";
+                return GetLocation(actor);
+            }
+            error = WeaponRepositioning.Validate(actor, GetLocation(actor), straight,
+                spec.MinimumMovementMeters, spec.MaxMovementMeters);
+            if (string.IsNullOrEmpty(error)) error = "No retreat path keeps a line of fire to the target.";
+            return straight;
         }
 
         private static bool HasLineOfFire(NumericsVector3 from, NumericsVector3 target) =>

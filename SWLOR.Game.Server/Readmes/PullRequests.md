@@ -34,6 +34,15 @@ Every pull request gets a Codex review, repeated until a review of the current h
 - The script needs an authenticated `gh` on PATH. Without one, tell the user the loop cannot run; do not skip it.
 - CodeRabbit reviews automatically. If it reports a rate limit, do not wait for it; handle any findings it posts later the same way.
 
+## Merge conflicts
+
+A pull request with merge conflicts is not ready, however clean its review. Resolving them is part of the job, never something to leave for the user.
+
+- Check every pull request, companions included, with `gh pr view <pr> --repo <owner>/<repo> --json mergeable,mergeStateStatus` before you report it ready, and again whenever you come back to it. `CONFLICTING` or `DIRTY` means it has conflicts. `UNKNOWN` means GitHub is still computing; ask again.
+- Resolve them by merging the base branch into your branch (`git merge origin/master`); don't rebase or force-push a branch under review. Keep both sides' intent, rebuild, rerun the tests that guard the change, and push.
+- A conflicting submodule pointer resolves to the companion's current head once the companion branch has master merged in.
+- The merge commit is a new head, so run the review loop again until the latest review of that head is clean.
+
 ## Review threads
 
 Addressing a finding means fixing it or answering it with a concrete reason it does not apply, then resolving its thread. This applies to bot reviewers too. Never resolve a thread just to hide it.

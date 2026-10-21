@@ -47,7 +47,7 @@ Take the open posts in the SWLOR Discord bug-report forum through to reviewed pu
      1. Remove all reactions from the post, then Close Post. Don't lock it.
      2. Archive or close the worker session that produced the PRs. Find it by its branch or PR number in your agent's session list, and only touch sessions this process started for that ticket. A session that is still working or waiting on the owner stays open; say so in your report.
      3. Note in your report if Codex never reviewed the merged head.
-   - **Still open:** rerun the readiness checks in step 9. If the head changed and isn't Codex-clean, or new findings appeared, put the post back on 🇶 and send the worker back.
+   - **Still open:** rerun the readiness checks in step 9. If the head changed and isn't Codex-clean, new findings appeared, or a PR now has merge conflicts, put the post back on 🇶 and send the worker back.
    - **Closed without merging:** leave the post on 👀 and ask the owner what to do.
 3. **Recheck 🇶, ❓, and ⏳ posts.**
    - **🇶:** find the post's worker session in your agent's session list, by the thread id in its brief or its branch, and any PR that names the ticket.
@@ -76,6 +76,7 @@ Take the open posts in the SWLOR Discord bug-report forum through to reviewed pu
    - the PR is open, and its head commit is the one Codex reviewed;
    - Codex's review of the current head is complete with no findings (its issue comment carries a `codex-review-state` marker with `commit_sha` and `has_any_findings`);
    - no review threads are unresolved (GraphQL `reviewThreads { isResolved }`);
+   - the PR has no merge conflicts with its base (`gh pr view --json mergeable,mergeStateStatus` is not `CONFLICTING` or `DIRTY`; ask again on `UNKNOWN`);
    - no review body or PR comment holds an unanswered finding, by reading `pulls/<n>/reviews` and the issue comments as `Readmes/PullRequests.md` requires;
    - the PR or worker report names the build and tests run with their results, plus the NWN client evidence (or why the change has no in-game surface);
    - companion PRs pass the same checks.
@@ -94,7 +95,7 @@ Give each worker:
   2. Add tests that guard the fix.
   3. Capture NWN client evidence per `Readmes/InEngineVisualVerification.md`.
   4. Open the PR, run the Codex review loop with `tools/RequestCodexReview.ps1` (`Readmes/PullRequests.md`), and keep fixing until Codex finds nothing.
-  5. Resolve every thread (`Readmes/PullRequests.md`).
+  5. Resolve every thread and every merge conflict with the base, then rerun the Codex loop on the new head (`Readmes/PullRequests.md`).
   6. Don't merge.
 - **The constraints:** never post to Discord, stay in its own worktree, and stop only processes it started. If only the reporter can answer something, stop and report the exact question.
 - **The final report:** PR URLs or a conclusive no-change result with its evidence, the tickets fixed, a one-sentence player-facing summary, the root cause, the tests and client evidence (or what is unverified), and the deploy step.

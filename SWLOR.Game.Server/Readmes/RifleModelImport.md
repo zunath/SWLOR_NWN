@@ -77,7 +77,12 @@ Fit rifles to the male human (`pmh0`) only. Other bodies put the support hand
 somewhere else on the weapon: the female human's sits about 4 cm lower, and the
 Cathar male's sits about 11 cm further up the barrel. Do not fit a rifle to those
 bodies. `SWLOR_Haks/tools/GenerateRifleHoldAnimations.py` retargets the three clips
-for every playable body, so each support hand meets the weapon where `pmh0`'s does.
+for every playable body, the male human included, so each support palm sits centred
+under the barrel. The stock clips left the open palm beside the barrel (4.5 cm to the
+left at idle, touching only with the fingertips, and 8 cm to the right when ready or
+attacking). `SUPPORT_OFFSETS` in the generator moves the male human's palm, per clip,
+to the barrel axis at weapon-space x = -0.5 cm, seated slightly into the median fitted
+fore-end so the fingers wrap it. When fitting a rifle, seat its fore-end on that palm.
 The firing hand keeps its inherited weapon hook; keying the hook would split the
 shared robe `rhand` joint. Rerun the generator whenever those clips, body roots or
 default hands change, then follow the compile and robe refresh steps in its
@@ -86,7 +91,9 @@ docstring.
 `tools/RenderRifleGrip.py` reads the rifle pose from an ASCII animation model.
 Supply `--source <review.blend>`, `--hand <ASCII pmh0_handr001.mdl>`,
 `--animation <ASCII a_ba_non_combat.mdl>` for `--pose xbowr`, or `a_ba.mdl` for
-`xbowrdy`/`xbowshot`, and `--output <local review folder>`. For fitting rifles, also supply
+`xbowrdy`/`xbowshot`, and `--output <local review folder>`. Those are the stock clips, so
+the rendered support hand sits `SUPPORT_OFFSETS` away from where it is in game; judge the
+fore-end against that offset palm and confirm in the client. For fitting rifles, also supply
 `--skeleton <ASCII pmh0.mdl>` and `--left-hand <ASCII pmh0_handl001.mdl>`.
 This composes the complete arm hierarchy and shows both hands from both sides.
 Skeleton/animation node names must be matched case-insensitively: the skeleton's

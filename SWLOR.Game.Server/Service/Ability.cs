@@ -875,7 +875,7 @@ namespace SWLOR.Game.Server.Service
             }
 
             // Perk-specific requirement checks
-            var techniqueError = MeleeTechnique.ValidateActivation(activator, ability);
+            var techniqueError = MeleeTechnique.ValidateActivation(activator, ability, target);
             if (!string.IsNullOrWhiteSpace(techniqueError))
                 return Deny(techniqueError);
 

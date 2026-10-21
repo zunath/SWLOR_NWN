@@ -134,7 +134,7 @@ namespace SWLOR.Game.Server.Feature.PerkDefinition
 
                 .AddPerkLevel()
                 .GrantsFeat(FeatType.BloodlustTrait)
-                .Description("After you spend HP on a Heavy Vibroblade Offense ability, restore 15% of maximum STM, increased by 1 percentage point per MGT to a maximum of 35%, reduced in proportion when less than the full HP cost could be paid. This can trigger once every 30 seconds.")
+                .Description("After you spend HP on a Heavy Vibroblade Offense ability, restore 15% of maximum STM, increased by 1 percentage point per MGT to a maximum of 35%, reduced in proportion when less than the full HP cost could be paid. HP absorbed by temporary HP does not count as paid. This can trigger once every 30 seconds.")
                 .IncreasesStat(StatType.HeavyVibrobladeOffenseHitPointSpendStaminaRestoreBasePercent, 15)
                 .IncreasesStat(StatType.HeavyVibrobladeOffenseHitPointSpendStaminaRestoreScalingAbility, (int)AbilityType.Might + 1)
                 .IncreasesStat(StatType.HeavyVibrobladeOffenseHitPointSpendStaminaRestoreMaximumPercent, 35)

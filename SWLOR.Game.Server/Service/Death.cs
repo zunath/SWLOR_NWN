@@ -3,12 +3,15 @@ using SWLOR.Game.Server.Entity;
 using SWLOR.Game.Server.Feature.StatusEffectDefinition;
 using SWLOR.Game.Server.Service.LogService;
 using SWLOR.Game.Server.Service.PropertyService;
+using SWLOR.NWN.API.Engine;
 using SWLOR.NWN.API.NWScript.Enum;
 
 namespace SWLOR.Game.Server.Service
 {
     public class Death
     {
+        private const string DefaultRespawnWaypointTag = "DTH_DEFAULT_RESPAWN_POINT";
+
         /// <summary>
         /// When a player starts dying, instantly kill them.
         /// </summary>
@@ -113,9 +116,9 @@ namespace SWLOR.Game.Server.Service
             var dbPlayer = DB.Get<Player>(playerId) ?? new Player(playerId);
 
             // Already have a respawn point, no need to set the default one.
-            if (!string.IsNullOrWhiteSpace(dbPlayer.RespawnAreaResref)) return;
+            if (HasRespawnArea(dbPlayer)) return;
 
-            var waypoint = GetWaypointByTag("DTH_DEFAULT_RESPAWN_POINT");
+            var waypoint = GetWaypointByTag(DefaultRespawnWaypointTag);
             var position = GetPosition(waypoint);
             var areaResref = GetResRef(GetArea(waypoint));
             var facing = GetFacing(waypoint);
@@ -155,16 +158,7 @@ namespace SWLOR.Game.Server.Service
         private static void SendToHomePoint(uint player)
         {
             var playerId = GetObjectUUID(player);
-            var entity = DB.Get<Player>(playerId);
-            var area = Area.GetAreaByResref(entity.RespawnAreaResref);
-            var position = Vector3(
-                entity.RespawnLocationX,
-                entity.RespawnLocationY,
-                entity.RespawnLocationZ);
-
-            var destination = GetIsObjectValid(area)
-                ? Location(area, position, entity.RespawnLocationOrientation)
-                : GetLocation(GetWaypointByTag("DTH_DEFAULT_RESPAWN_POINT"));
+            var destination = GetRespawnLocation(DB.Get<Player>(playerId));
 
             // Jump immediately rather than queueing an action: resurrection and the death
             // state clear the action queue, which left players respawning where they died.
@@ -173,6 +167,52 @@ namespace SWLOR.Game.Server.Service
                 ClearAllActions(true);
                 JumpToLocation(destination);
             });
+        }
+
+        /// <summary>
+        /// Returns where a player respawns: their registered point, or the default respawn point
+        /// when none is saved, its area no longer exists, or it is not on walkable ground.
+        /// A jump to any of those fails silently and leaves the player where they died.
+        /// </summary>
+        /// <param name="dbPlayer">The player's record. May be null.</param>
+        /// <returns>The location to respawn at.</returns>
+        public static Location GetRespawnLocation(Player dbPlayer)
+        {
+            if (HasRespawnArea(dbPlayer))
+            {
+                var area = Area.GetAreaByResref(dbPlayer.RespawnAreaResref);
+                if (GetIsObjectValid(area))
+                {
+                    var position = Vector3(
+                        dbPlayer.RespawnLocationX,
+                        dbPlayer.RespawnLocationY,
+                        dbPlayer.RespawnLocationZ);
+                    var location = Location(area, position, dbPlayer.RespawnLocationOrientation);
+
+                    if (IsWalkable(location))
+                        return location;
+                }
+            }
+
+            return GetLocation(GetWaypointByTag(DefaultRespawnWaypointTag));
+        }
+
+        /// <summary>
+        /// Whether a player record names a respawn area at all.
+        /// </summary>
+        /// <param name="dbPlayer">The player's record. May be null.</param>
+        /// <returns>true if a respawn area resref is saved, false otherwise.</returns>
+        public static bool HasRespawnArea(Player dbPlayer)
+        {
+            return !string.IsNullOrWhiteSpace(dbPlayer?.RespawnAreaResref);
+        }
+
+        private static bool IsWalkable(Location location)
+        {
+            var material = GetSurfaceMaterial(location);
+            return material > 0 &&
+                   int.TryParse(Get2DAString("surfacemat", "Walk", material), out var walkable) &&
+                   walkable == 1;
         }
 
         /// <summary>

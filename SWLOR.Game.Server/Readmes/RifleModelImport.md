@@ -91,9 +91,10 @@ docstring.
 `tools/RenderRifleGrip.py` reads the rifle pose from an ASCII animation model.
 Supply `--source <review.blend>`, `--hand <ASCII pmh0_handr001.mdl>`,
 `--animation <ASCII a_ba_non_combat.mdl>` for `--pose xbowr`, or `a_ba.mdl` for
-`xbowrdy`/`xbowshot`, and `--output <local review folder>`. Those are the stock clips, so
-the rendered support hand sits `SUPPORT_OFFSETS` away from where it is in game; judge the
-fore-end against that offset palm and confirm in the client. For fitting rifles, also supply
+`xbowrdy`/`xbowshot`, and `--output <local review folder>`. Those are the stock clips; the
+renderer moves the support hand by the same `SUPPORT_OFFSETS` the hold banks use, so it shows
+the palm where it sits in game (`--stock-support` shows the stock palm instead). A test keeps
+the two offset tables equal. For fitting rifles, also supply
 `--skeleton <ASCII pmh0.mdl>` and `--left-hand <ASCII pmh0_handl001.mdl>`.
 This composes the complete arm hierarchy and shows both hands from both sides.
 Skeleton/animation node names must be matched case-insensitively: the skeleton's

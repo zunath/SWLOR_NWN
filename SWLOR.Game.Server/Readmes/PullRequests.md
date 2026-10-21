@@ -39,8 +39,8 @@ Every pull request gets a Codex review, repeated until a review of the current h
 A pull request with merge conflicts is not ready, however clean its review. Resolving them is part of the job, never something to leave for the user.
 
 - Check every pull request, companions included, with `gh pr view <pr> --repo <owner>/<repo> --json mergeable,mergeStateStatus` before you report it ready, and again whenever you come back to it. `CONFLICTING` or `DIRTY` means it has conflicts. `UNKNOWN` means GitHub is still computing; ask again.
-- Resolve them by merging the base branch into your branch (`git merge origin/master`); don't rebase or force-push a branch under review. Keep both sides' intent, rebuild, rerun the tests that guard the change, and push.
-- A conflicting submodule pointer resolves to the companion's current head once the companion branch has master merged in.
+- Resolve them by merging the pull request's own base branch into your branch (`git merge origin/<base>`, read from `gh pr view --json baseRefName`); don't rebase or force-push a branch under review. Keep both sides' intent, rebuild, rerun the tests that guard the change, and push.
+- A conflicting submodule pointer resolves to the companion's current head once the companion branch has its own base merged in.
 - The merge commit is a new head, so run the review loop again until the latest review of that head is clean.
 
 ## Review threads

@@ -66,7 +66,9 @@ public class ArmorPartCoverageTests
             .Select(columns => columns[1].ToLowerInvariant())
             .ToHashSet();
         Assert.That(tinted, Does.Contain("pmh0_chest001"));
-        Assert.That(SpeciesBodyParts()[(AppearanceArmor.Torso, 208)], Does.Contain('e'), "Wookiee torso 208 belongs to the elf body");
+        var speciesParts = SpeciesBodyParts();
+        Assert.That(speciesParts[(AppearanceArmor.Torso, 208)], Does.Contain('e'), "Wookiee torso 208 belongs to the elf body");
+        Assert.That(speciesParts[(AppearanceArmor.LeftHand, 45)], Does.Contain('h'), "Kel Dor hand 45 belongs to the human body");
 
         var gaps = RequiredParts()
             .Where(required => !tinted.Contains($"{required.Body}_{required.Model}"))
@@ -96,16 +98,17 @@ public class ArmorPartCoverageTests
 
     private static Dictionary<(AppearanceArmor Part, int Style), HashSet<char>> SpeciesBodyParts()
     {
-        // Racial skins (Cathar and Trandoshan 201, Mon Calamari 204, Wookiee and Ewok 208-214,
-        // the human-model bicep 251) exist only for the bodies that own them. Styles every
-        // species' default lists offer (hands 258-263) are not racial.
+        // A species' body part is racial when it departs from the shared default lists (which
+        // Bothans use unchanged): Cathar and Trandoshan 201, Mon Calamari 204, Wookiee and Ewok
+        // 208-215 and torso 350, the human-model bicep 251, Rodian hand 44, Kel Dor hand 45.
+        // Those exist only for the bodies of the species that own them.
         var shared = BodyParts(new BothanRacialAppearanceDefinition());
         var races = BodyRaces();
         var parts = new Dictionary<(AppearanceArmor, int), HashSet<char>>();
         foreach (var type in RacialAppearanceRegistry.GetAppearanceTypes())
         {
             RacialAppearanceRegistry.TryGet(type, out var appearance);
-            foreach (var part in BodyParts(appearance).Where(part => part.Style > 200 && !shared.Contains(part)))
+            foreach (var part in BodyParts(appearance).Where(part => !shared.Contains(part)))
             {
                 if (!parts.TryGetValue(part, out var owners))
                     parts[part] = owners = new HashSet<char>();

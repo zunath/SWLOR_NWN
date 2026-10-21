@@ -122,6 +122,10 @@ namespace SWLOR.Game.Server.Service
         public static void SetSettings(uint area, BattleGridSettings settings)
         {
             settings = Clamp(settings);
+            // A click past a limit clamps back to the current settings; redrawing would rebuild every anchor for nothing.
+            if (settings == Clamp(GetSettings(area)))
+                return;
+
             SetLocalFloat(area, SquareSizeVariable, settings.SquareSize);
             SetLocalInt(area, SectionsWideVariable, settings.SectionsWide);
             SetLocalInt(area, SectionsLongVariable, settings.SectionsLong);

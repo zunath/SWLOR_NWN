@@ -78,6 +78,7 @@ namespace SWLOR.Game.Server.Core
         public const string OnItemHit = "item_on_hit";
         public const string OnItemUseBefore = "item_use_bef";
         public const string OnItemUnequipBefore = "item_uneqp_bef";
+        public const string OnEquipmentUnequipBefore = "equip_uneqp_bef";
         public const string OnItemUnequipAfter = "item_uneqp_aft";
         public const string OnItemDecrementBefore = "item_dec_bef";
         public const string OnItemEquipValidateBefore = "item_eqpval_bef";

@@ -1847,6 +1847,8 @@ namespace SWLOR.Game.Server.Service
             if (GetStatusEffectSourceType(statusEffectType) != StatusEffectSourceType.Stance)
                 return;
 
+            MeleeTechnique.OnStanceChanged(creature);
+
             RemoveStatusEffectBySourceType(
                 creature,
                 StatusEffectSourceType.Stance,
@@ -2087,6 +2089,8 @@ namespace SWLOR.Game.Server.Service
 
         private static void NotifyStatusEffectRemoved(uint creature, IStatusEffect statusEffect)
         {
+            if (statusEffect.SourceType == StatusEffectSourceType.Stance)
+                MeleeTechnique.OnStanceChanged(creature);
             if (statusEffect is IStatusEffectRemovedHandler handler)
                 handler.AfterRemoved(creature);
         }
@@ -2360,6 +2364,7 @@ namespace SWLOR.Game.Server.Service
             {
                 effect.OnBeforeDamageTaken(defender, attacker, damage, damageType, deliveryType);
             }
+            MeleeTechnique.PrepareDirectDamage(attacker, defender, deliveryType);
         }
 
         /// <summary>
@@ -2404,6 +2409,16 @@ namespace SWLOR.Game.Server.Service
         {
             _nativeAttackSwingDepth.TryGetValue(attacker, out var depth);
             _nativeAttackSwingDepth[attacker] = depth + 1;
+        }
+
+        /// <summary>
+        /// Discards a destroyed attacker's open native attack cycle and its deferred effects without applying them,
+        /// so a reused object ID never starts inside a stale cycle.
+        /// </summary>
+        public static void ForgetDestroyedNativeAttackSwing(uint attacker)
+        {
+            _nativeAttackSwingDepth.Remove(attacker);
+            _deferredNativeAttackStatusEffects.Remove(attacker);
         }
 
         /// <summary>

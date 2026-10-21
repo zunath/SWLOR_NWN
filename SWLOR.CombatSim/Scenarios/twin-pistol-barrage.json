@@ -1,0 +1,31 @@
+{
+  "Name": "Twin Pistol Barrage: Matched Rhythm",
+  "Description": "60-SP full line plus the profile's common 9-SP Armor offhand-delay assumption. Effective ATT150/ACC150, DMG22 per hand, Delay250, attributes26, 30% offhand delay reduction. Production Twin payloads, perk/status values, trait states and damage/timing formulas; logical impact cadence, not native projectiles or animations. Finite61STM and20STM/30s against HP30000/DEF94/EVA134/VIT26 with no Guard, critical mitigation or item procs. Mastery unlocked. Does not model other perk families. Use native WeaponRotationBalance tests for an equal-investment Pistol comparison.",
+  "DurationSeconds": 120,
+  "TimeStepSeconds": 0.05,
+  "IsPvp": false,
+  "Teams": [
+    {
+      "Name": "Twin",
+      "Members": [
+        {
+          "Name": "Barrage",
+          "MaxHp": 30000,
+          "MaxStm": 61,
+          "StmRegenPer30Seconds": 20,
+          "ReactionSeconds": 0.5,
+          "Perks": ["PairedVolley:4", "AlternatingFire", "MatchedRhythm:3", "FocusedBurst:3", "BalancedGrip", "ControlledBurst:2", "AkimboStance", "ConvergingFire", "CoolUnderFire", "TwinSuns"],
+          "WeaponLoadout": { "MainDamage": 22, "OffhandDamage": 22, "MainDelay": 250, "OffhandDelay": 250, "OffhandDelayReductionPercent": 30, "Attack": 150, "Accuracy": 150, "DamageAbility": 26, "Perception": 26, "SkillRank": 50, "WeaponRank": 50 },
+          "Abilities": [
+            { "Feat": "AkimboStance", "Target": "Self", "KeepUp": true },
+            { "Feat": "TwinSuns", "Target": "Enemy" },
+            { "Feat": "PairedVolley4", "Target": "Enemy" },
+            { "Feat": "FocusedBurst3", "Target": "Enemy" },
+            { "Feat": "ControlledBurst2", "Target": "Enemy" }
+          ]
+        }
+      ]
+    },
+    { "Name": "Target", "Members": [{ "Name": "Target", "IsNpc": true, "MaxHp": 30000, "Defense": 94, "Evasion": 134, "Vitality": 26 }] }
+  ]
+}

@@ -24,7 +24,7 @@ public static class NamedAnimation
         if (!GetIsObjectValid(creature) || GetObjectType(creature) != ObjectType.Creature)
             throw new ArgumentException("Animation target must be a valid creature.", nameof(creature));
         var rifle = UsesRifleGrip(creature);
-        var speed = rifle ? RiflePlaybackSpeed(clip, duration) : 1f;
+        var speed = rifle ? clip.PlaybackSpeed(duration) : 1f;
         var request = equipmentRequirement == AnimationEquipmentRequirement.Unrestricted ? null : Playback.ReserveEquipmentPlayback(creature);
         string token = null;
         AssignCommand(creature, () =>
@@ -43,12 +43,13 @@ public static class NamedAnimation
 
     /// <summary>Plays immediately using NWN's PlayAnimation semantics. Prefer Queue when existing actions must finish.</summary>
     public static string Play(uint creature, AnimationClip clip, float? durationSeconds = null,
-        AnimationEquipmentRequirement equipmentRequirement = AnimationEquipmentRequirement.Unrestricted)
+        AnimationEquipmentRequirement equipmentRequirement = AnimationEquipmentRequirement.Unrestricted,
+        bool fitToDuration = false)
     {
         var duration = Validate(clip, durationSeconds);
         if (!AbilityAnimationEquipment.IsCompatible(equipmentRequirement, creature)) return null;
         var rifle = UsesRifleGrip(creature);
-        var speed = rifle ? RiflePlaybackSpeed(clip, duration) : 1f;
+        var speed = rifle || fitToDuration ? clip.PlaybackSpeed(duration) : 1f;
         // AssignCommand is a deferred closure in SWLOR. Reserve ownership now so
         // the caller can stop it even before that closure runs (for example on close).
         var request = equipmentRequirement == AnimationEquipmentRequirement.Unrestricted ? null : Playback.ReserveEquipmentPlayback(creature);
@@ -151,14 +152,6 @@ public static class NamedAnimation
     {
         var weapon = GetItemInSlot(InventorySlot.RightHand, creature);
         return GetIsObjectValid(weapon) && GetBaseItemType(weapon) is BaseItem.Rifle or BaseItem.Cannon;
-    }
-
-    private static float RiflePlaybackSpeed(AnimationClip clip, float duration)
-    {
-        var speed = clip.Duration / duration;
-        if (!float.IsFinite(speed) || speed <= 0f)
-            throw new ArgumentOutOfRangeException(nameof(duration), "Animation duration produces an invalid playback speed.");
-        return speed;
     }
 
     private sealed class NativeRuntime : INamedAnimationRuntime

@@ -54,5 +54,23 @@ namespace SWLOR.CombatSim.Tests.Scenario
             damage.CritMultiplier.Should().Be(1.5f);
             damage.Area.Should().BeFalse();
         }
+
+        [TestCase("damage")] [TestCase("accuracy")] [TestCase("chance")]
+        [TestCase("target chance")] [TestCase("crit")] [TestCase("type")]
+        public void WeaponPower_RejectsAmbiguousCalibratedOverrides(string field)
+        {
+            var damage = new DamageSpec { WeaponPower = new() { FlatDamage = 6 } };
+            damage.GetProblems().Should().BeEmpty();
+            switch (field)
+            {
+                case "damage": damage.Min = damage.Max = 1; break;
+                case "accuracy": damage.Accuracy = 100; break;
+                case "chance": damage.HitChance = .5f; break;
+                case "target chance": damage.HitChanceVs["enemy"] = .5f; break;
+                case "crit": damage.CritChance = .5f; break;
+                case "type": damage.Type = DamageType.Force; break;
+            }
+            damage.GetProblems().Should().ContainSingle(p => p.Contains("do not combine"));
+        }
     }
 }

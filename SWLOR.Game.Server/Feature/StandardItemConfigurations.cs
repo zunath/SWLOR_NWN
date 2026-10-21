@@ -69,6 +69,7 @@ namespace SWLOR.Game.Server.Feature
                     BaseItem.WarHammer,
                     BaseItem.Whip,
                     BaseItem.Katar,
+                    BaseItem.PowerGlove,
                     BaseItem.Lightsaber,
                     BaseItem.Saberstaff,
                     BaseItem.Electroblade,

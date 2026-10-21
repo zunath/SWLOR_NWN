@@ -23,5 +23,14 @@ namespace SWLOR.CombatSim.Engine
 
         /// <summary>HP paid for abilities' HP costs, not counted as damage taken.</summary>
         public double HitPointsSpent { get; set; }
+        public int OrdinaryAttempts { get; set; }
+        public int OrdinaryHits { get; set; }
+        public int AbilityImpacts { get; set; }
+        public int AbilityHits { get; set; }
+        public int FlowSpent { get; set; }
+        public int FlowDamagePowerApplied { get; set; }
+        public double OrdinaryDamage { get; set; }
+        public double AbilityDamage { get; set; }
+        public Dictionary<string, int> AbilityUses { get; } = new();
     }
 }

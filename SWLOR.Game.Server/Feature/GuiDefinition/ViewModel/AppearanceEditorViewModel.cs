@@ -161,6 +161,7 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
             _weaponAppearances[BaseItem.Electroblade] = new ElectrobladeAppearanceDefinition();
             _weaponAppearances[BaseItem.GreatSword] = new GreatSwordAppearanceDefinition();
             _weaponAppearances[BaseItem.Katar] = new KatarAppearanceDefinition();
+            _weaponAppearances[BaseItem.PowerGlove] = new PowerGloveAppearanceDefinition();
             _weaponAppearances[BaseItem.LargeShield] = new LargeShieldAppearanceDefinition();
             _weaponAppearances[BaseItem.Lightsaber] = new LightsaberAppearanceDefinition();
             _weaponAppearances[BaseItem.Saberstaff] = new SaberstaffAppearanceDefinition();
@@ -169,6 +170,7 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
             _weaponAppearances[BaseItem.Pistol] = pistolAppearance;
             _weaponAppearances[BaseItem.Sling] = pistolAppearance;
             _weaponAppearances[BaseItem.LegacyPistol] = pistolAppearance;
+            _weaponAppearances[BaseItem.CompanionPistol] = new CompanionPistolAppearanceDefinition();
             _weaponAppearances[BaseItem.QuarterStaff] = new QuarterstaffAppearanceDefinition();
             _weaponAppearances[BaseItem.Rifle] = new RifleAppearanceDefinition();
             _weaponAppearances[BaseItem.Shuriken] = new ShurikenAppearanceDefinition();
@@ -1752,7 +1754,7 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
             PartCategorySelected[SelectedPartCategoryIndex] = true;
         }
 
-        private (GuiBindingList<string>, GuiBindingList<bool>) GetPartLists(int[] partIds)
+        private (GuiBindingList<string>, GuiBindingList<bool>) GetPartLists(int[] partIds, Func<int, string> getPartName = null)
         {
             var partNames = new GuiBindingList<string>();
             var partSelected = new GuiBindingList<bool>();
@@ -1763,7 +1765,7 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
             {
                 var partIndex = partId;
 
-                partNames.Add($"Part #{partId}");
+                partNames.Add(getPartName?.Invoke(partId) ?? $"Part #{partId}");
                 partSelected.Add(false);
                 partIdToIndex[partIndex] = index;
                 index++;
@@ -1793,7 +1795,8 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
             }
             else if (SelectedItemTypeIndex == 4) // 4 = Weapon (Off Hand)
             {
-                return GetItemInSlot(InventorySlot.LeftHand, _target);
+                return PowerGloveEquipment.ResolveAppearanceOwner(_target,
+                    GetItemInSlot(InventorySlot.LeftHand, _target));
             }
 
             return OBJECT_INVALID;
@@ -2082,7 +2085,19 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
             if (selectedPartId <= -1)
                 return;
 
-            var (partNames, partSelected) = GetPartLists(partIds);
+            Func<int, string> getPartName = null;
+            if (SelectedItemTypeIndex is 3 or 4)
+            {
+                var part = SelectedPartCategoryIndex switch
+                {
+                    0 => AppearanceWeapon.Top,
+                    1 => AppearanceWeapon.Middle,
+                    2 => AppearanceWeapon.Bottom,
+                    _ => AppearanceWeapon.Invalid
+                };
+                getPartName = partId => _weaponAppearances[type].GetPartName(part, partId);
+            }
+            var (partNames, partSelected) = GetPartLists(partIds, getPartName);
 
             PartOptions = partNames;
             PartSelected = partSelected;
@@ -2254,7 +2269,9 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
                     slot = InventorySlot.RightHand;
                     break;
                 case 4: // 4 = Weapon (Off Hand)
-                    slot = InventorySlot.LeftHand;
+                    var offHand = GetItemInSlot(InventorySlot.LeftHand, _target);
+                    slot = PowerGloveEquipment.ResolveAppearanceOwner(_target, offHand) != offHand
+                        ? InventorySlot.RightHand : InventorySlot.LeftHand;
                     break;
             }
 

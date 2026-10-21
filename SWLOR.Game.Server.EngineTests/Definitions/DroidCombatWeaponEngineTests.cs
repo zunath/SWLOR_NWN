@@ -3,7 +3,11 @@ using System.Collections.Generic;
 using System.Threading.Tasks;
 using SWLOR.Game.Server.Core;
 using SWLOR.Game.Server.EngineTests.Framework;
+using SWLOR.Game.Server.Service.AbilityService;
 using SWLOR.Game.Server.Service.CompanionControlService;
+using SWLOR.Game.Server.Service.DroidService;
+using SWLOR.Game.Server.Service.PerkService;
+using SWLOR.NWN.API.NWScript.Enum.Item.Property;
 using SWLOR.NWN.API.NWNX;
 using SWLOR.NWN.API.NWScript.Enum;
 using SWLOR.NWN.API.NWScript.Enum.Item;
@@ -26,6 +30,89 @@ namespace SWLOR.Game.Server.EngineTests.Definitions
             _rifleUnequips.Add($"action={GetCurrentAction(OBJECT_SELF)} target={GetName(GetAttackTarget(OBJECT_SELF))} " +
                                $"bolts={GetItemStackSize(GetItemInSlot(InventorySlot.Bolts, OBJECT_SELF))} " +
                                $"stack={Environment.StackTrace}");
+        }
+
+        [EngineTest("Med Kit droid keeps its rifle while healing mid-fight", Category = "DroidCombat", TimeoutSeconds = 150f)]
+        public static async Task MedKitDroidKeepsRifle(EngineTestContext ctx)
+        {
+            using var player = await PlayerAbilityFixture.CreateAsync(ctx, 4f);
+            var owner = player.Creature;
+            var controller = OBJECT_INVALID;
+            await ctx.ExecuteInCreatureContextAsync(owner, () =>
+            {
+                controller = CreateItemOnObject(Droid.DroidControlItemResref, owner);
+                ctx.Assert(GetIsObjectValid(controller), "The controller exists");
+                foreach (var (stat, value) in new[]
+                         {
+                             (DroidStatSubType.Tier, 5), (DroidStatSubType.AISlots, 20), (DroidStatSubType.HP, 70),
+                             (DroidStatSubType.STM, 10), (DroidStatSubType.MGT, 10), (DroidStatSubType.PER, 32),
+                             (DroidStatSubType.VIT, 18), (DroidStatSubType.WIL, 10), (DroidStatSubType.AGI, 23),
+                             (DroidStatSubType.SOC, 10), (DroidStatSubType.Rifle, 45), (DroidStatSubType.Pistol, 45),
+                             (DroidStatSubType.Armor, 45)
+                         })
+                    AddItemProperty(DurationType.Permanent, ItemPropertyCustom(ItemPropertyType.DroidStat, (int)stat, value), controller);
+                var constructed = Droid.LoadConstructedDroid(controller);
+                constructed.LearnedPerks.Add(new DroidPerk { Perk = PerkType.MedKit, Level = 4 });
+                constructed.ActivePerks.Add(new DroidPerk { Perk = PerkType.MedKit, Level = 4 });
+                Droid.SaveInstructions(controller, constructed);
+            });
+            await ctx.WaitFrameAsync();
+            var droid = await Spawn(ctx, owner, controller);
+            _rifleUnequips.Clear();
+            try
+            {
+                var rifle = OBJECT_INVALID;
+                await ctx.ExecuteInCreatureContextAsync(owner, () => rifle = CreateItemOnObject("oph_rifle", owner));
+                await ctx.WaitFrameAsync();
+                await Transfer(ctx, owner, rifle, droid);
+                await Equip(ctx, droid, rifle, InventorySlot.RightHand);
+                SetImmortal(droid, true);
+                SetLocalBool(droid, CombatProbe, true);
+
+                var enemy = ctx.SpawnCreature("nar_thief", 5f);
+                await ctx.WaitFrameAsync();
+                SetPlotFlag(enemy, false);
+                Stat.SetNPCMaxHitPoints(enemy, 30000, true);
+                ObjectPlugin.SetCurrentHitPoints(enemy, 30000);
+                SetImmortal(enemy, true);
+                ctx.MakeHostile(enemy);
+                ObjectPlugin.SetPosition(enemy, GetPosition(droid) + new System.Numerics.Vector3(1f, 0f, 0f));
+                CreaturePlugin.DoPerceptionUpdateOnCreature(droid, enemy);
+                CreaturePlugin.DoPerceptionUpdateOnCreature(enemy, droid);
+                SetPlotFlag(owner, true);
+                AssignCommand(enemy, () => ActionAttack(droid));
+                AssignCommand(owner, () => ActionAttack(enemy));
+
+                await ctx.WaitUntilAsync(() => GetAttackTarget(droid) == enemy, 15f, "the droid to fight back");
+                // Droids play Med Kit's native gesture, so the recast marks each heal.
+                var heals = 0;
+                var onRecast = false;
+                for (var tick = 0; tick < 450; tick++)
+                {
+                    if (tick % 20 == 0)
+                        ObjectPlugin.SetCurrentHitPoints(droid, Math.Max(1, GetMaxHitPoints(droid) / 3));
+                    await ctx.DelaySecondsAsync(0.1f);
+                    ctx.AssertEqual(rifle, GetItemInSlot(InventorySlot.RightHand, droid),
+                        $"The droid holds its rifle after {tick / 10f:0.0}s. Unequips: {string.Join(" || ", _rifleUnequips)}");
+                    var recasting = Recast.IsOnRecastDelay(droid, RecastGroup.MedKit).Item1;
+                    if (recasting && !onRecast)
+                        heals++;
+                    onRecast = recasting;
+                }
+                ctx.Log($"medkit uses={heals} hp={GetCurrentHitPoints(droid)}/{GetMaxHitPoints(droid)} target={GetName(GetAttackTarget(droid))}");
+                ctx.Assert(heals > 0, "The droid used Med Kit during the fight");
+                AssignCommand(enemy, () => ClearAllActions());
+                AssignCommand(owner, () => ClearAllActions());
+            }
+            finally
+            {
+                if (GetIsObjectValid(droid))
+                {
+                    DeleteLocalBool(droid, CombatProbe);
+                    SetImmortal(droid, false);
+                    await Dismiss(ctx, owner, droid);
+                }
+            }
         }
 
         [EngineTest("Droid keeps its rifle against a point-blank melee attacker over several rounds", Category = "DroidCombat", TimeoutSeconds = 120f)]

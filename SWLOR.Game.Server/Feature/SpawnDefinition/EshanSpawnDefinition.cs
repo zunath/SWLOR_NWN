@@ -15,6 +15,7 @@ namespace SWLOR.Game.Server.Feature.SpawnDefinition
             EshanBattlegrounds();
             EshanNeoCrusaderBase();
             EshanScraplandCaves();
+            EshanShattervein();
 
             return _builder.Build();
         }
@@ -108,6 +109,19 @@ namespace SWLOR.Game.Server.Feature.SpawnDefinition
                 .AddSpawn(ObjectType.Creature, "esh_nc_captain")
                 .WithFrequency(25)
                 .RandomlyWalks()
+                .ReturnsHome();
+        }
+
+        private void EshanShattervein()
+        {
+            _builder.Create("ESHAN_SHATTERVEIN_WOLVES", "Eshan - Shattervein Wolves")
+                .AddSpawn(ObjectType.Creature, "esh_veinwolf")
+                .WithFrequency(100)
+                .ReturnsHome();
+
+            _builder.Create("ESHAN_SHATTERVEIN_WARDEN", "Eshan - Crystal Den Warden")
+                .AddSpawn(ObjectType.Creature, "esh_veinboss")
+                .WithFrequency(100)
                 .ReturnsHome();
         }
 

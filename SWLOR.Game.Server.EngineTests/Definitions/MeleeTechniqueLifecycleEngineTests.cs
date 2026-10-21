@@ -86,16 +86,20 @@ public static class MeleeTechniqueLifecycleEngineTests
         try
         {
             await Cast(context, counterOwner, victim.Creature, FeatType.Jab1);
-            await Cast(context, killer.Creature, victim.Creature, FeatType.Jab1);
-            await context.DelaySecondsAsync(1.05f);
-            await Cast(context, killer.Creature, victim.Creature, FeatType.FinishingCombination1);
+            // Arm the counter before the killer's short combo: its sweep also strikes this nearby fighter,
+            // and the eighteen-second grant gate must keep the counter bound to the victim.
             await context.ExecuteInCreatureContextAsync(victim.Creature, () =>
             {
                 StatusEffect.NotifyPreDamageStatusEffects(victim.Creature, counterOwner, 5, CombatDamageType.Physical);
                 ApplyEffectToObject(DurationType.Instant, EffectDamage(5), counterOwner);
             });
-            await context.WaitUntilAsync(() => MeleeTechnique.GetPendingRetaliationPower(counterOwner, victim.Creature) == 24,
+            await context.WaitUntilAsync(() => MeleeTechnique.GetPendingRetaliationPower(counterOwner, victim.Creature) == 12,
                 2f, "the victim's direct HP hit to arm the independent counter");
+            await Cast(context, killer.Creature, victim.Creature, FeatType.Jab1);
+            await context.DelaySecondsAsync(1.05f);
+            await Cast(context, killer.Creature, victim.Creature, FeatType.FinishingCombination1);
+            context.AssertEqual(12, MeleeTechnique.GetPendingRetaliationPower(counterOwner, victim.Creature),
+                "The killer's sweep cannot replace the victim's counter inside the grant gate.");
             context.Assert(StatusEffect.HasStatusEffect<SlipAwayStatusEffect>(killer.Creature), "The killer earned Flow against this victim.");
             context.Assert(StatusEffect.HasStatusEffect<OpeningStatusEffect>(counterOwner), "The counter owner also has unspent setup against this victim.");
             context.Assert(StatusEffect.HasStatusEffect<RetaliationStatusEffect>(counterOwner), "The victim is the counter's live damaging opponent.");

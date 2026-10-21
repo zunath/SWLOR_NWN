@@ -23,7 +23,9 @@ or migration that assigns item models.
   `SWLOR_Haks/tools/GenerateRacialPartVariants.py` refits missing variants from the human
   donor the native palette lookup already selects (manifest `RacialPartVariants.json`);
   run it with `--apply`, then the tint, part-skin, neck, robe RGB and robe cloak generators,
-  and keep `--check` green. Racial body parts (201-214, 251) stay species-only.
+  and keep `--check` green. Racial body parts (201-214, 251) stay species-only. A style
+  with no model on any body does not belong in the catalog; `ArmorPartCoverageTests`
+  requires both the model and the tint row for every other style.
 - A body's own part model that borrows another model's texture must share that model's UV
   layout; a mesh laid out for a different texture renders white, black or scrambled patches.
   Replace such a variant by listing it in `RacialPartVariants.json`, which refits the donor.

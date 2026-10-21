@@ -1,3 +1,4 @@
+using System.Text.Json;
 using System.Text.RegularExpressions;
 using NUnit.Framework;
 using SWLOR.Game.Server.Feature.AppearanceDefinition.ItemAppearance;
@@ -10,7 +11,7 @@ namespace SWLOR.Game.Server.Tests.Feature;
 /// <summary>
 /// The appearance editor hides an armor part whose model is missing for the wearer's body,
 /// so a part authored for only some bodies silently disappears for other species. Every
-/// catalog part must render, with tint rows for palette and exact RGB colors, on every
+/// catalog part must have a model, and a tint row for palette and exact RGB colors, on every
 /// playable body of both genders.
 /// </summary>
 public class ArmorPartCoverageTests
@@ -30,27 +31,9 @@ public class ArmorPartCoverageTests
         (AppearanceArmor.RightFoot, "footr"), (AppearanceArmor.Robe, "robe"),
     };
 
-    // Armor slots that can show a species' own body part; necks, belts, shoulders and robes cannot.
-    private static readonly HashSet<AppearanceArmor> BodySlots = new()
+    private static IEnumerable<(string Model, string Body)> RequiredParts()
     {
-        AppearanceArmor.Torso, AppearanceArmor.Pelvis, AppearanceArmor.LeftBicep, AppearanceArmor.RightBicep,
-        AppearanceArmor.LeftForearm, AppearanceArmor.RightForearm, AppearanceArmor.LeftHand, AppearanceArmor.RightHand,
-        AppearanceArmor.LeftThigh, AppearanceArmor.RightThigh, AppearanceArmor.LeftShin, AppearanceArmor.RightShin,
-        AppearanceArmor.LeftFoot, AppearanceArmor.RightFoot,
-    };
-
-    [Test]
-    public void EveryCatalogArmorPartRendersOnEveryPlayableBodyOrNone()
-    {
-        var tinted = File.ReadAllLines(Path.Combine(FindRepositoryRoot(), "SWLOR_Haks", "sw_2da", "tintmap.2da"))
-            .Select(line => Regex.Split(line.Trim(), @"\s+"))
-            .Where(columns => columns.Length == 4)
-            .Select(columns => columns[1].ToLowerInvariant())
-            .ToHashSet();
-        Assert.That(tinted, Does.Contain("pmh0_chest001"));
-
         var speciesParts = SpeciesBodyParts();
-        var gaps = new List<string>();
         // Droids wear their own catalog on the droid body; every other species shares the general one.
         foreach (var (catalog, races) in new[]
                  {
@@ -60,41 +43,89 @@ public class ArmorPartCoverageTests
         foreach (var (part, model) in Slots)
         foreach (var style in ArmorAppearanceCatalog.GetStyles(catalog, part).Where(style => style > 0).Distinct())
         {
-            if (races == Bodies && BodySlots.Contains(part) && speciesParts.Contains(style))
+            // A species' own skin for this slot exists only for the bodies that own it.
+            if (races == Bodies && speciesParts.Contains((part, style)))
                 continue;
-            var bodies = races.SelectMany(race => new[] { $"pm{race}0", $"pf{race}0" }).ToList();
-            var missing = bodies.Where(body => !tinted.Contains($"{body}_{model}{style:D3}")).ToList();
-            // A style no body renders is hidden everywhere; partial coverage is the defect.
-            if (missing.Count > 0 && missing.Count < bodies.Count)
-                gaps.Add($"{model}{style:D3}: {string.Join(", ", missing)}");
+            foreach (var race in races)
+            foreach (var gender in "mf")
+                yield return ($"{model}{style:D3}", $"p{gender}{race}0");
         }
-
-        Assert.That(gaps, Is.Empty,
-            "Refit the missing bodies with SWLOR_Haks/tools/GenerateRacialPartVariants.py (ItemAppearanceRules.md).");
     }
 
-    private static HashSet<int> SpeciesBodyParts()
+    [Test]
+    public void EveryCatalogArmorPartHasATintRowOnEveryPlayableBody()
+    {
+        var tinted = File.ReadAllLines(Path.Combine(FindRepositoryRoot(), "SWLOR_Haks", "sw_2da", "tintmap.2da"))
+            .Select(line => Regex.Split(line.Trim(), @"\s+"))
+            .Where(columns => columns.Length == 4)
+            .Select(columns => columns[1].ToLowerInvariant())
+            .ToHashSet();
+        Assert.That(tinted, Does.Contain("pmh0_chest001"));
+
+        var gaps = RequiredParts()
+            .Where(required => !tinted.Contains($"{required.Body}_{required.Model}"))
+            .GroupBy(required => required.Model, required => required.Body)
+            .Select(group => $"{group.Key}: {string.Join(", ", group)}")
+            .ToList();
+
+        Assert.That(gaps, Is.Empty,
+            "Refit missing bodies with SWLOR_Haks/tools/GenerateRacialPartVariants.py and bind their tint rows (ItemAppearanceRules.md).");
+    }
+
+    [Test]
+    public void EveryCatalogArmorPartHasAModelOnEveryPlayableBody()
+    {
+        var models = HakModels();
+        Assert.That(models, Does.Contain("pmh0_chest001"));
+
+        var gaps = RequiredParts()
+            .Where(required => !models.Contains($"{required.Body}_{required.Model}"))
+            .GroupBy(required => required.Model, required => required.Body)
+            .Select(group => $"{group.Key}: {string.Join(", ", group)}")
+            .ToList();
+
+        Assert.That(gaps, Is.Empty,
+            "Refit missing bodies with SWLOR_Haks/tools/GenerateRacialPartVariants.py (ItemAppearanceRules.md).");
+    }
+
+    private static HashSet<(AppearanceArmor Part, int Style)> SpeciesBodyParts()
     {
         // Racial skins (Cathar and Trandoshan 201, Mon Calamari 204, Wookiee and Ewok 208-214,
         // the human-model bicep 251) exist only for the bodies that own them. Styles every
         // species' default lists offer (hands 258-263) are not racial.
         var shared = BodyParts(new BothanRacialAppearanceDefinition());
-        var parts = new HashSet<int>();
+        var parts = new HashSet<(AppearanceArmor, int)>();
         foreach (var type in RacialAppearanceRegistry.GetAppearanceTypes())
         {
             RacialAppearanceRegistry.TryGet(type, out var appearance);
-            parts.UnionWith(BodyParts(appearance).Where(part => part > 200 && !shared.Contains(part)));
+            parts.UnionWith(BodyParts(appearance).Where(part => part.Style > 200 && !shared.Contains(part)));
         }
         return parts;
     }
 
-    private static HashSet<int> BodyParts(IRacialAppearanceDefinition appearance) => new[]
+    private static HashSet<(AppearanceArmor Part, int Style)> BodyParts(IRacialAppearanceDefinition appearance) => new[]
         {
-            appearance.Torsos, appearance.Pelvis, appearance.RightBicep, appearance.LeftBicep,
-            appearance.RightForearm, appearance.LeftForearm, appearance.RightHand, appearance.LeftHand,
-            appearance.RightThigh, appearance.LeftThigh, appearance.RightShin, appearance.LeftShin,
-            appearance.RightFoot, appearance.LeftFoot,
-        }.SelectMany(list => list).ToHashSet();
+            (AppearanceArmor.Torso, appearance.Torsos), (AppearanceArmor.Pelvis, appearance.Pelvis),
+            (AppearanceArmor.RightBicep, appearance.RightBicep), (AppearanceArmor.LeftBicep, appearance.LeftBicep),
+            (AppearanceArmor.RightForearm, appearance.RightForearm), (AppearanceArmor.LeftForearm, appearance.LeftForearm),
+            (AppearanceArmor.RightHand, appearance.RightHand), (AppearanceArmor.LeftHand, appearance.LeftHand),
+            (AppearanceArmor.RightThigh, appearance.RightThigh), (AppearanceArmor.LeftThigh, appearance.LeftThigh),
+            (AppearanceArmor.RightShin, appearance.RightShin), (AppearanceArmor.LeftShin, appearance.LeftShin),
+            (AppearanceArmor.RightFoot, appearance.RightFoot), (AppearanceArmor.LeftFoot, appearance.LeftFoot),
+        }.SelectMany(slot => slot.Item2.Select(style => (slot.Item1, style))).ToHashSet();
+
+    private static HashSet<string> HakModels()
+    {
+        var haks = Path.Combine(FindRepositoryRoot(), "SWLOR_Haks");
+        using var config = JsonDocument.Parse(File.ReadAllText(Path.Combine(haks, "hakbuilder.json")));
+        return config.RootElement.GetProperty("HakList").EnumerateArray()
+            .Select(hak => Path.Combine(haks, hak.GetProperty("Path").GetString()!.Trim('.', '/')))
+            .Where(Directory.Exists)
+            .SelectMany(directory => Directory.EnumerateFiles(directory, "*.mdl")
+                .Concat(Directory.EnumerateFiles(directory, "*.lod")))
+            .Select(file => Path.GetFileNameWithoutExtension(file).ToLowerInvariant())
+            .ToHashSet();
+    }
 
     private static string FindRepositoryRoot()
     {

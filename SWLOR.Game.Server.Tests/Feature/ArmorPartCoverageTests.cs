@@ -114,6 +114,9 @@ public class ArmorPartCoverageTests
         var parts = new Dictionary<(AppearanceArmor, int), HashSet<char>>();
         foreach (var type in RacialAppearanceRegistry.GetAppearanceTypes())
         {
+            // Droids wear their own catalog; only bodies sharing the general catalog have exceptions.
+            if (!Bodies.Contains(races[(int)type]))
+                continue;
             RacialAppearanceRegistry.TryGet(type, out var appearance);
             foreach (var part in BodyParts(appearance).Where(part => !shared.Contains(part)))
             {

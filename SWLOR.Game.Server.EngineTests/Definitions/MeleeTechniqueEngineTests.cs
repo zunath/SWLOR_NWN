@@ -115,9 +115,9 @@ namespace SWLOR.Game.Server.EngineTests.Definitions
                 ctx.AssertEqual(excludedHP, GetCurrentHitPoints(excluded), "an enemy outside the sweep radius is untouched");
                 ctx.AssertEqual(stamina - 9 + (stage == MeleeTechniqueStage.None ? 0 : 2) + (sweep ? 4 : 0),
                     Stat.GetCurrentStamina(caster), "Controlled Breathing refunds once and area recovery counts only the two hit targets");
-                ctx.AssertEqual(evasion + (stage == MeleeTechniqueStage.Opening ? 35 : 0) + (sweep ? 10 : 0),
+                ctx.AssertEqual(evasion + (stage == MeleeTechniqueStage.Opening ? 20 : 0) + (sweep ? 10 : 0),
                     Stat.GetStatAdjustment(caster, StatType.EvasionPercentAdjustment), "Flowing Footwork applies only to the sweep");
-                ctx.AssertEqual(haste + (stage == MeleeTechniqueStage.Finish ? 30 : 0) + (sweep ? 9 : 0),
+                ctx.AssertEqual(haste + (stage == MeleeTechniqueStage.Finish ? 15 : 0) + (sweep ? 9 : 0),
                     Stat.GetStatAdjustment(caster, StatType.AttackDelayReductionPercent), "two landed targets grant one stack from each area haste source");
                 if (stage == MeleeTechniqueStage.Opening)
                 {
@@ -403,7 +403,7 @@ namespace SWLOR.Game.Server.EngineTests.Definitions
                 await ctx.EquipItemAsync(standard.Creature, "b_longsword", InventorySlot.RightHand);
                 ctx.AssertEqual(15, Stat.GetStatAdjustment(standard.Creature, StatType.MobilityResistance), "Rooted Technique remains unconditional with a sword and shield");
                 ctx.AssertEqual(15, Stat.GetStatAdjustment(standard.Creature, StatType.TraumaResistance), "Hard Knocks remains unconditional with a sword and shield");
-                ctx.Assert(!string.IsNullOrEmpty(MeleeTechnique.ValidateActivation(standard.Creature, Ability.GetAbilityDetail(FeatType.Jab1))), "active fist strikes still require Power Gloves");
+                ctx.Assert(!string.IsNullOrEmpty(MeleeTechnique.ValidateActivation(standard.Creature, Ability.GetAbilityDetail(FeatType.Jab1), target)), "active fist strikes still require Power Gloves");
                 await Cast(ctx, standard.Creature, standard.Creature, FeatType.BruiserStance1);
                 ctx.Assert(StatusEffect.HasStatusEffect(standard.Creature, typeof(BruiserStanceStatusEffect)), "Bruiser Stance activates with another weapon class");
                 ctx.Assert(!StatusEffect.HasStatusEffect(standard.Creature, typeof(FlowStanceStatusEffect)), "changing stances still removes the previous stance");
@@ -463,9 +463,9 @@ namespace SWLOR.Game.Server.EngineTests.Definitions
                     await Cast(ctx, caster, target, FeatType.FinishingCombination1);
                     ctx.AssertEqual(!fullSequence, StatusEffect.HasStatusEffect(caster, typeof(SlipAwayStatusEffect)), "short route alone grants Slip Away");
                     ctx.AssertEqual(fullSequence, StatusEffect.HasStatusEffect(caster, typeof(PressForwardStatusEffect)), "full route alone grants Press Forward");
-                    ctx.AssertEqual(evasion + (fullSequence ? 0 : 35), Stat.GetStatAdjustment(caster, StatType.EvasionPercentAdjustment), "evasion window budget");
+                    ctx.AssertEqual(evasion + (fullSequence ? 0 : 20), Stat.GetStatAdjustment(caster, StatType.EvasionPercentAdjustment), "evasion window budget");
                     ctx.AssertEqual(movement + (fullSequence ? 0 : 15), Stat.GetStatAdjustment(caster, StatType.MovementSpeedPercentAdjustment), "movement window budget");
-                    ctx.AssertEqual(haste + (fullSequence ? 30 : 0), Stat.GetStatAdjustment(caster, StatType.AttackDelayReductionPercent), "haste window budget");
+                    ctx.AssertEqual(haste + (fullSequence ? 15 : 0), Stat.GetStatAdjustment(caster, StatType.AttackDelayReductionPercent), "haste window budget");
                     var windowGrantedAt = DateTime.UtcNow;
                     await ctx.EquipItemAsync(caster, "b_pistol", InventorySlot.RightHand);
                     ctx.Assert(!EquipmentPredicates.HasUnarmedGrip(caster), "the window regression swaps to a ranged weapon");
@@ -475,8 +475,8 @@ namespace SWLOR.Game.Server.EngineTests.Definitions
                     await Cast(ctx, caster, target, FeatType.QuickDraw1);
                     ctx.AssertEqual(!fullSequence, StatusEffect.HasStatusEffect(caster, typeof(SlipAwayStatusEffect)), "another skill's same-target cast retains Slip Away");
                     ctx.AssertEqual(fullSequence, StatusEffect.HasStatusEffect(caster, typeof(PressForwardStatusEffect)), "another skill's same-target cast retains Press Forward");
-                    ctx.AssertEqual(evasion + (fullSequence ? 0 : 35), Stat.GetStatAdjustment(caster, StatType.EvasionPercentAdjustment), "the ranged weapon and its real skill retain the earned evasion magnitude");
-                    ctx.AssertEqual(haste + (fullSequence ? 30 : 0), Stat.GetStatAdjustment(caster, StatType.AttackDelayReductionPercent), "the ranged weapon and its real skill retain the earned haste magnitude");
+                    ctx.AssertEqual(evasion + (fullSequence ? 0 : 20), Stat.GetStatAdjustment(caster, StatType.EvasionPercentAdjustment), "the ranged weapon and its real skill retain the earned evasion magnitude");
+                    ctx.AssertEqual(haste + (fullSequence ? 15 : 0), Stat.GetStatAdjustment(caster, StatType.AttackDelayReductionPercent), "the ranged weapon and its real skill retain the earned haste magnitude");
                     if (!fullSequence)
                     {
                         await ctx.WaitUntilAsync(() => !StatusEffect.HasStatusEffect(caster, typeof(SlipAwayStatusEffect)), 10f, "the original eight-second window to expire despite the swap and other skill's cast");
@@ -601,15 +601,15 @@ namespace SWLOR.Game.Server.EngineTests.Definitions
                 ctx.AssertEqual(0, MeleeTechnique.GetPendingRetaliationPower(caster, target), "temporary HP only damage cannot grant a counter");
                 await DirectHit(target, 10);
                 ctx.AssertEqual(baselineHP - 5, GetCurrentHitPoints(caster), "spillover costs five real HP");
-                await ctx.WaitUntilAsync(() => MeleeTechnique.GetPendingRetaliationPower(caster, target) == 24, 2f, "direct HP loss arms a counter without gloves or Rattled");
+                await ctx.WaitUntilAsync(() => MeleeTechnique.GetPendingRetaliationPower(caster, target) == 12, 2f, "direct HP loss arms a counter without gloves or Rattled");
                 ctx.Assert(StatusEffect.HasStatusEffect(caster, typeof(RetaliationStatusEffect)), "the charge has visible feedback");
                 await DirectHit(other, 5);
-                ctx.AssertEqual(24, MeleeTechnique.GetPendingRetaliationPower(caster, target), "the grant cooldown prevents another attacker replacing the charge");
+                ctx.AssertEqual(12, MeleeTechnique.GetPendingRetaliationPower(caster, target), "the grant cooldown prevents another attacker replacing the charge");
                 ctx.AssertEqual(0, MeleeTechnique.GetPendingRetaliationPower(caster, other), "the counter remains bound to the damaging opponent");
                 MeleeTechnique.BeginPaidActivation(caster, target, new AbilityDetail { IsHostileAbility = true, SkillType = SkillType.Force });
-                ctx.AssertEqual(24, MeleeTechnique.GetPendingRetaliationPower(caster, target), "an unrelated same-target skill preserves the charge");
+                ctx.AssertEqual(12, MeleeTechnique.GetPendingRetaliationPower(caster, target), "an unrelated same-target skill preserves the charge");
                 await ctx.EquipItemAsync(caster, "t_pglove", InventorySlot.RightHand);
-                ctx.AssertEqual(24, MeleeTechnique.GetPendingRetaliationPower(caster, target), "returning to gloves preserves the original charge");
+                ctx.AssertEqual(12, MeleeTechnique.GetPendingRetaliationPower(caster, target), "returning to gloves preserves the original charge");
                 await Cast(ctx, caster, target, FeatType.Uppercut1);
                 ctx.AssertEqual(0, MeleeTechnique.GetPendingRetaliationPower(caster, target), "a paid missed heavy strike consumes the single charge without setup");
                 ctx.Assert(!StatusEffect.HasStatusEffect(caster, typeof(RetaliationStatusEffect)), "consumption removes the charge marker");
@@ -643,7 +643,7 @@ namespace SWLOR.Game.Server.EngineTests.Definitions
                 await ctx.DelaySecondsAsync(1.05f);
                 stamina = Stat.GetCurrentStamina(caster);
                 await Cast(ctx, caster, target, FeatType.Haymaker1);
-                ctx.AssertEqual(stamina - 12, Stat.GetCurrentStamina(caster), "Haymaker cannot bypass the same twelve-second refund gate");
+                ctx.AssertEqual(stamina - 15, Stat.GetCurrentStamina(caster), "Haymaker cannot bypass the same twelve-second refund gate");
                 ctx.AssertEqual(MeleeTechniqueStage.None, MeleeTechnique.GetSetupStage(caster, target), "Haymaker is usable without Rattled");
             }
             finally { ResetOverrides(caster); }
@@ -715,7 +715,7 @@ namespace SWLOR.Game.Server.EngineTests.Definitions
             finally { Combat.SetAbilityHitResolutionOverride(null); Combat.SetAutoAttackHitResolutionOverride(null); }
         }
 
-        [EngineTest("Measured Technique captures ten accuracy for both a spender and Perfect Form against Opening", Category = "MeleeTechnique", TimeoutSeconds = 25f)]
+        [EngineTest("Measured Technique captures ten accuracy for a spender against Opening and Perfect Form against Finish", Category = "MeleeTechnique", TimeoutSeconds = 30f)]
         public static async Task CapturedSpenderAccuracy(EngineTestContext ctx)
         {
             foreach (var (feat, perk, expectedAfter) in new[]
@@ -726,6 +726,7 @@ namespace SWLOR.Game.Server.EngineTests.Definitions
             {
                 var (caster, target) = await CreateFixture(ctx);
                 ctx.SetNPCPerkLevel(caster, PerkType.Jab, 1);
+                ctx.SetNPCPerkLevel(caster, PerkType.PalmStrike, 1);
                 ctx.SetNPCPerkLevel(caster, perk, 1);
                 ctx.SetNPCPerkLevel(caster, PerkType.FlowingForm, 1);
                 ctx.SetNPCPerkLevel(caster, PerkType.MeasuredTechnique, 1);
@@ -748,10 +749,15 @@ namespace SWLOR.Game.Server.EngineTests.Definitions
                     };
                     await Cast(ctx, caster, target, FeatType.Jab1);
                     await ctx.DelaySecondsAsync(1.05f);
+                    if (feat == FeatType.PerfectForm1)
+                    {
+                        await Cast(ctx, caster, target, FeatType.PalmStrike1);
+                        await ctx.DelaySecondsAsync(1.05f);
+                    }
                     await Cast(ctx, caster, target, feat);
                     ctx.AssertEqual(MeleeTechniqueStage.None, consumedStage, "the paid technique has cleared its setup before the captured impact");
                     ctx.AssertEqual(10, capturedAccuracy, "the captured impact keeps exactly ten accuracy even when its consumed stage is None");
-                    ctx.AssertEqual(expectedAfter, MeleeTechnique.GetSetupStage(caster, target), "only the actual bridge creates Finish; Perfect Form cannot promote Opening");
+                    ctx.AssertEqual(expectedAfter, MeleeTechnique.GetSetupStage(caster, target), "only the actual bridge creates Finish; Perfect Form spends it");
                 }
                 finally
                 {
@@ -833,7 +839,7 @@ namespace SWLOR.Game.Server.EngineTests.Definitions
                 ctx.AssertEqual(MeleeTechniqueStage.Opening, MeleeTechnique.GetSetupStage(caster, target), "the replacement profile can create fresh setup");
                 await ctx.EquipItemAsync(caster, "b_longsword", InventorySlot.RightHand);
                 ctx.AssertEqual(SkillType.Vibroblade, Skill.GetSkillTypeByBaseItem(GetBaseItemType(GetItemInSlot(InventorySlot.RightHand, caster))), "fixture equips another weapon skill");
-                ctx.Assert(!string.IsNullOrEmpty(MeleeTechnique.ValidateActivation(caster, discountedAbility)), "fist activation fails its grip check with a sword");
+                ctx.Assert(!string.IsNullOrEmpty(MeleeTechnique.ValidateActivation(caster, discountedAbility, target)), "fist activation fails its grip check with a sword");
                 ctx.AssertEqual(MeleeTechniqueStage.Opening, MeleeTechnique.GetSetupStage(caster, target), "the weapon swap preserves the source-owned setup");
                 ctx.Assert(StatusEffect.HasStatusEffect(caster, typeof(OpeningStatusEffect)), "the swap retains the tracked setup marker");
                 await ctx.EquipItemAsync(caster, "t_pglove", InventorySlot.RightHand);
@@ -841,7 +847,7 @@ namespace SWLOR.Game.Server.EngineTests.Definitions
                 ctx.AssertEqual(0, MeleeTechnique.GetStaminaDiscount(caster, discountedAbility, 3, false), "profile and weapon changes preserve the eighteen-second damage-reaction gate");
 
                 MeleeTechnique.UnregisterProfile(SkillType.Unarmed);
-                ctx.Assert(!string.IsNullOrEmpty(MeleeTechnique.ValidateActivation(caster, discountedAbility)), "a missing profile fails activation closed");
+                ctx.Assert(!string.IsNullOrEmpty(MeleeTechnique.ValidateActivation(caster, discountedAbility, target)), "a missing profile fails activation closed");
                 await DirectHit();
                 ctx.AssertEqual(0, MeleeTechnique.GetStaminaDiscount(caster, discountedAbility, 3, false), "a missing profile cannot grant passive benefits");
             }
@@ -856,6 +862,115 @@ namespace SWLOR.Game.Server.EngineTests.Definitions
                 StatusEffect.NotifyPreDamageStatusEffects(target, caster, 5, CombatDamageType.Physical);
                 ApplyEffectToObject(DurationType.Instant, EffectDamage(5), caster);
             });
+        }
+
+        [EngineTest("Perfect Form refuses to start without Finish and leaves Opening, STM and its recast untouched", Category = "MeleeTechnique", TimeoutSeconds = 25f)]
+        public static async Task PerfectFormRequiresFinish(EngineTestContext ctx)
+        {
+            var (caster, target) = await CreateFixture(ctx);
+            ctx.SetNPCPerkLevel(caster, PerkType.Jab, 1);
+            ctx.SetNPCPerkLevel(caster, PerkType.PerfectForm, 1);
+            Combat.SetAbilityHitResolutionOverride(true);
+            Combat.SetAutoAttackHitResolutionOverride(false);
+            try
+            {
+                await AssertPerfectFormRefused(ctx, caster, target, "with no setup");
+                await Cast(ctx, caster, target, FeatType.Jab1);
+                await ctx.DelaySecondsAsync(1.05f);
+                await AssertPerfectFormRefused(ctx, caster, target, "against Opening");
+                ctx.AssertEqual(MeleeTechniqueStage.Opening, MeleeTechnique.GetSetupStage(caster, target), "a refused Perfect Form cannot spend or clear Opening");
+            }
+            finally { ResetOverrides(caster); }
+        }
+
+        [EngineTest("Perfect Form spends the Finish it started with when Finish runs out during its cast", Category = "MeleeTechnique", TimeoutSeconds = 30f)]
+        public static async Task PerfectFormHoldsFinishThroughCast(EngineTestContext ctx)
+        {
+            var (caster, target) = await CreateFixture(ctx);
+            ctx.SetNPCPerkLevel(caster, PerkType.Jab, 1);
+            ctx.SetNPCPerkLevel(caster, PerkType.PalmStrike, 1);
+            ctx.SetNPCPerkLevel(caster, PerkType.PerfectForm, 1);
+            var perfect = Ability.GetAbilityDetail(FeatType.PerfectForm1);
+            var landings = new System.Collections.Generic.List<MeleeTechniqueStage>();
+            void OnLanded(uint source, uint enemy, AbilityDetail ability, MeleeTechniqueStage stage)
+            {
+                if (source == caster && enemy == target && ability == perfect)
+                    landings.Add(stage);
+            }
+            MeleeTechnique.TechniqueLanded += OnLanded;
+            Combat.SetAbilityHitResolutionOverride(true);
+            Combat.SetAutoAttackHitResolutionOverride(false);
+            try
+            {
+                var stamina = await StartPerfectFormNearFinishExpiry(ctx, caster, target);
+                await ctx.DelaySecondsAsync(1.5f);
+                ctx.Assert(!string.IsNullOrEmpty(UsePerkFeat.GetActiveAbilityActivationId(caster)), "the two-second cast is still in progress");
+                ctx.AssertEqual(MeleeTechniqueStage.None, MeleeTechnique.GetSetupStage(caster, target), "the live four-second Finish has run out under the cast");
+                await ctx.WaitUntilAsync(() => Ability.GetLastCompletedAbilityImpactSummary(caster)?.Ability == perfect,
+                    4f, "Perfect Form to complete its actual activation");
+                ctx.AssertEqual(1, landings.Count, "one landed Perfect Form");
+                ctx.AssertEqual(MeleeTechniqueStage.Finish, landings.Single(), "the completed cast spends the Finish it started with");
+                ctx.AssertEqual(stamina - 15, Stat.GetCurrentStamina(caster), "the completed cast pays its STM once");
+                ctx.Assert(Recast.IsOnRecastDelay(caster, RecastGroup.Capstone).Item1, "the completed cast starts the Capstone recast");
+                ctx.AssertEqual(MeleeTechniqueStage.None, MeleeTechnique.GetSetupStage(caster, target), "Perfect Form leaves no setup behind");
+            }
+            finally
+            {
+                MeleeTechnique.TechniqueLanded -= OnLanded;
+                ResetOverrides(caster);
+            }
+        }
+
+        [EngineTest("An interrupted Perfect Form releases its held Finish to its normal expiry", Category = "MeleeTechnique", TimeoutSeconds = 30f)]
+        public static async Task InterruptedPerfectFormReleasesFinish(EngineTestContext ctx)
+        {
+            var (caster, target) = await CreateFixture(ctx);
+            ctx.SetNPCPerkLevel(caster, PerkType.Jab, 1);
+            ctx.SetNPCPerkLevel(caster, PerkType.PalmStrike, 1);
+            ctx.SetNPCPerkLevel(caster, PerkType.PerfectForm, 1);
+            Combat.SetAbilityHitResolutionOverride(true);
+            Combat.SetAutoAttackHitResolutionOverride(false);
+            try
+            {
+                var stamina = await StartPerfectFormNearFinishExpiry(ctx, caster, target);
+                await ctx.DelaySecondsAsync(0.3f);
+                ctx.Assert(UsePerkFeat.InterruptAbilityActivation(caster), "the cast in progress is interrupted");
+                await ctx.DelaySecondsAsync(1.2f);
+                ctx.AssertEqual(MeleeTechniqueStage.None, MeleeTechnique.GetSetupStage(caster, target), "Finish expires on its own schedule after the interruption");
+                ctx.AssertEqual(stamina, Stat.GetCurrentStamina(caster), "the interrupted cast spends no STM");
+                ctx.Assert(!Recast.IsOnRecastDelay(caster, RecastGroup.Capstone).Item1, "the interrupted cast starts no Capstone recast");
+                await AssertPerfectFormRefused(ctx, caster, target, "after the interrupted cast's Finish expired");
+            }
+            finally { ResetOverrides(caster); }
+        }
+
+        /// <summary>Jab, Palm Strike, then Perfect Form with about one second of the four-second Finish left.</summary>
+        private static async Task<int> StartPerfectFormNearFinishExpiry(EngineTestContext ctx, uint caster, uint target)
+        {
+            await Cast(ctx, caster, target, FeatType.Jab1);
+            await ctx.DelaySecondsAsync(1.05f);
+            await Cast(ctx, caster, target, FeatType.PalmStrike1);
+            await ctx.DelaySecondsAsync(3f);
+            ctx.AssertEqual(MeleeTechniqueStage.Finish, MeleeTechnique.GetSetupStage(caster, target), "Finish is still live when Perfect Form starts");
+            var stamina = Stat.GetCurrentStamina(caster);
+            Ability.ClearLastCompletedAbilityImpactSummary(caster);
+            await ctx.ExecuteInCreatureContextAsync(caster, () =>
+                ctx.Assert(UsePerkFeat.TryUseAbility(caster, target, FeatType.PerfectForm1, GetLocation(target)),
+                    $"Perfect Form starts with Finish: {Ability.GetLastActivationDenialReason()}"));
+            return stamina;
+        }
+
+        private static async Task AssertPerfectFormRefused(EngineTestContext ctx, uint caster, uint target, string setup)
+        {
+            var stamina = Stat.GetCurrentStamina(caster);
+            var started = true;
+            await ctx.ExecuteInCreatureContextAsync(caster, () =>
+                started = UsePerkFeat.TryUseAbility(caster, target, FeatType.PerfectForm1, GetLocation(target)));
+            ctx.Assert(!started, $"Perfect Form cannot start {setup}");
+            ctx.AssertEqual("Perfect Form requires your Finish against this enemy.", Ability.GetLastActivationDenialReason(),
+                $"the refusal {setup} names the missing Finish");
+            ctx.AssertEqual(stamina, Stat.GetCurrentStamina(caster), $"a refusal {setup} spends no STM");
+            ctx.Assert(!Recast.IsOnRecastDelay(caster, RecastGroup.Capstone).Item1, $"a refusal {setup} starts no Capstone recast");
         }
 
         private static async Task<(uint Caster, uint Target)> CreateFixture(EngineTestContext ctx)

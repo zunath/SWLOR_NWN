@@ -9,6 +9,8 @@ namespace SWLOR.Game.Server.Service.AbilityService
         public MeleeTechniqueLine Line { get; init; }
         public MeleeTechniqueStage CreatedStage { get; init; }
         public MeleeTechniqueStage ConsumedStages { get; init; }
+        /// <summary>Activation is refused without one of these setups against the enemy, which its cast then keeps.</summary>
+        public MeleeTechniqueStage RequiredStages { get; init; }
         public bool CreatesStageOnlyWhenSequenced { get; init; }
         public int SetupDurationSeconds { get; init; }
         public int OrdinaryAccuracyBonus { get; init; }

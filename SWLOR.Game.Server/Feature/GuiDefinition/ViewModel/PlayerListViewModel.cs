@@ -398,9 +398,16 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
                 return;
 
             var target = selected.Player;
+            var targetId = GetObjectUUID(target);
             ShowModal($"Disconnect {GetReference(selected)} ({GetPCPlayerName(target)}) from the server?", () =>
             {
-                // The list can change while the confirmation is open, so check the same player again.
+                // The player may log off while the confirmation is open, and their object ID can be reused.
+                if (!GetIsObjectValid(target) || GetObjectUUID(target) != targetId)
+                {
+                    DMPresence.SendMessage(Player, ColorToken.Red("That player is no longer online."));
+                    return;
+                }
+
                 var state = PlayerListRules.Evaluate(PlayerList.GetRelation(Player, target)).Boot;
                 if (!state.IsEnabled)
                 {

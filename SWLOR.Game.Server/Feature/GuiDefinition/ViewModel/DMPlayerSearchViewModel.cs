@@ -30,8 +30,7 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
 
         private List<DMPlayerSearchResult> _results = new();
         private readonly List<DMPlayerSearchResult> _pageResults = new();
-        // Selected characters in the order they were picked, kept across searches and pages so a DM can
-        // gather a group from several searches. One selection drives the details and single-character actions.
+        // Selected characters in pick order, kept across searches and pages to gather a group.
         private readonly List<DMPlayerSearchResult> _selected = new();
         private bool _isTruncated;
         private bool _suppressSearch;

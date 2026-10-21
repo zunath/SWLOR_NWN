@@ -78,7 +78,7 @@ namespace SWLOR.Game.Server.EngineTests.Definitions
                 });
                 await ctx.ExecuteInCreatureContextAsync(droid, () => ExecuteScript(ScriptName.OnDroidHeartbeat, droid));
                 var silent = DroidEquipmentDiagnostics.LastEntry;
-                ctx.Assert(silent.StartsWith("change=hands changed without an equip event") && silent.Contains("detail=before=oph_rifle|") &&
+                ctx.Assert(silent.StartsWith("change=hands changed without an equip event") && silent.Contains("detail=before=oph_rifle#") &&
                            silent.Contains("hands=|"), $"The silent change is logged: {silent}");
                 await ctx.ExecuteInCreatureContextAsync(droid, () =>
                 {
@@ -98,7 +98,7 @@ namespace SWLOR.Game.Server.EngineTests.Definitions
 
                 await Equip(ctx, droid, rifle, InventorySlot.RightHand);
                 var equipped = DroidEquipmentDiagnostics.LastEntry;
-                ctx.Assert(equipped.StartsWith("change=equipped") && equipped.Contains("item=oph_rifle slot=RightHand") && equipped.Contains("hands=oph_rifle|"),
+                ctx.Assert(equipped.StartsWith("change=equipped") && equipped.Contains("item=oph_rifle slot=RightHand") && equipped.Contains("hands=oph_rifle#"),
                     $"The equip is logged: {equipped}");
 
                 // A refused equip changes nothing and is not logged.
@@ -113,6 +113,23 @@ namespace SWLOR.Game.Server.EngineTests.Definitions
                 await ctx.DelaySecondsAsync(2f);
                 ctx.Assert(GetItemInSlot(InventorySlot.LeftRing, droid) != ring, "The ring was refused");
                 ctx.AssertEqual(equipped, DroidEquipmentDiagnostics.LastEntry, "A refused equip is not logged");
+
+                // An eventless swap to another copy of the same rifle is still caught.
+                var spare = await CreateEquipment(ctx, owner, "oph_rifle");
+                await Transfer(ctx, owner, spare, droid);
+                await ctx.ExecuteInCreatureContextAsync(droid, () =>
+                {
+                    var server = NWNXLib.g_pAppManager.m_pServerExoApp;
+                    var native = server.GetGameObject(droid).AsNWSCreature();
+                    ctx.Assert(native.UnequipItem(server.GetGameObject(rifle).AsNWSItem(), 0, 0) != 0, "The engine removes the first rifle");
+                    ctx.Assert(native.EquipItem((uint)global::NWN.Native.API.EquipmentSlot.RightHand, server.GetGameObject(spare).AsNWSItem(), 1, 0, 0) != 0,
+                        "The engine equips the second rifle");
+                    ExecuteScript(ScriptName.OnDroidHeartbeat, droid);
+                });
+                var swapped = DroidEquipmentDiagnostics.LastEntry;
+                ctx.Assert(swapped.StartsWith("change=hands changed without an equip event") &&
+                           swapped.Contains($"before=oph_rifle#{rifle:X}|") && swapped.Contains($"hands=oph_rifle#{spare:X}|"),
+                    $"The same-blueprint swap is logged: {swapped}");
                 ctx.Log($"unequip: {unequipped}");
                 ctx.Log($"equip: {equipped}");
                 ctx.Log($"silent: {silent}");

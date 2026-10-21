@@ -155,8 +155,12 @@ public static class DroidEquipmentDiagnostics
         Log.Write(LogGroup.DroidEquipment, LastEntry);
     }
 
+    // The object id tells apart two copies of the same blueprint swapped into a hand.
     private static string DescribeHands(uint droid) =>
-        $"{GetResRef(GetItemInSlot(InventorySlot.RightHand, droid))}|{GetResRef(GetItemInSlot(InventorySlot.LeftHand, droid))}";
+        $"{DescribeItem(GetItemInSlot(InventorySlot.RightHand, droid))}|{DescribeItem(GetItemInSlot(InventorySlot.LeftHand, droid))}";
+
+    private static string DescribeItem(uint item) =>
+        GetIsObjectValid(item) ? $"{GetResRef(item)}#{item:X}" : string.Empty;
 
     public static string Format(IEnumerable<(string Name, string Value)> fields)
     {

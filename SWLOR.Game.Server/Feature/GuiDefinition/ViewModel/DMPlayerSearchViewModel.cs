@@ -224,12 +224,26 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
                 .Skip(SelectedPageIndex * ResultsPerPage)
                 .Take(ResultsPerPage));
 
-            // A fresh search has the current online state and location of any selected character it lists.
-            foreach (var result in _results)
+            // Refresh selections from the search, and swap in the offline record of anyone who logged off.
+            for (var index = _selected.Count - 1; index >= 0; index--)
             {
-                var index = _selected.FindIndex(selected => selected.PlayerId == result.PlayerId);
-                if (index >= 0)
+                var selected = _selected[index];
+                var result = _results.FirstOrDefault(listed => listed.PlayerId == selected.PlayerId);
+                if (result != null)
+                {
                     _selected[index] = result;
+                    continue;
+                }
+
+                if (!selected.IsOnline || GetIsObjectValid(DMPlayerDirectory.GetOnlinePlayer(selected.PlayerId)))
+                    continue;
+
+                var offline = DMPlayerDirectory.Search(selected.PlayerId, DMPlayerSearchScope.Offline, out _)
+                    .FirstOrDefault(listed => listed.PlayerId == selected.PlayerId);
+                if (offline == null)
+                    _selected.RemoveAt(index);
+                else
+                    _selected[index] = offline;
             }
 
             var names = new GuiBindingList<string>();

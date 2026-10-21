@@ -248,6 +248,18 @@ public class SavedDataItemSweepTests
         starListing.Should().ContainSingle().Which.Should().Be(("iwthsh_042", MarketCategoryType.Throwing));
     }
 
+    [Test]
+    public void AppearanceCatalog_MovesShippedHelmetsOffRevansMask()
+    {
+        // Sentinel's Visor shipped on helmet 223 (Darth Revan's mask and hood); its blueprint now uses 187.
+        Migrate(Encode(Item("guardmst_l7", BaseItem.Helmet, 223)), out var visor, true, out _).Should().BeTrue();
+        (Int(Read(visor), "ModelPart1"), Int(Read(visor), "xModelPart1")).Should().Be((187, 187));
+
+        // The same pass also revises the visor's stats, so check only the restyled model.
+        Migrate(Encode(Item("guardmst_l7", BaseItem.Helmet, 110)), out var customized, true, out _);
+        Int(Read(customized), "ModelPart1").Should().Be(110, "a copy restyled away from 223 keeps its choice");
+    }
+
     [TestCase(30, 5, 35)]
     [TestCase(0, 5, 35)]
     [TestCase(0, 30, 30)]

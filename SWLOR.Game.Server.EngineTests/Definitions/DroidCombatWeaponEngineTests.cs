@@ -70,14 +70,14 @@ namespace SWLOR.Game.Server.EngineTests.Definitions
 
                 await Unequip(ctx, droid, rifle);
                 var unequipped = DroidEquipmentDiagnostics.LastEntry;
-                ctx.Assert(unequipped.StartsWith("change=unequipped") && unequipped.Contains("item=oph_rifle") && unequipped.Contains("hands=|"),
+                ctx.Assert(unequipped.StartsWith("change=unequipped") && unequipped.Contains("item=oph_rifle slot=RightHand") && unequipped.Contains("hands=|"),
                     $"The unequip is logged: {unequipped}");
                 ctx.Assert(unequipped.Contains("action=") && unequipped.Contains("inCombat=") && unequipped.Contains("associateCommand="),
                     $"The unequip entry carries the droid's state: {unequipped}");
 
                 await Equip(ctx, droid, rifle, InventorySlot.RightHand);
                 var equipped = DroidEquipmentDiagnostics.LastEntry;
-                ctx.Assert(equipped.StartsWith("change=equipped") && equipped.Contains("item=oph_rifle") && equipped.Contains("hands=oph_rifle|"),
+                ctx.Assert(equipped.StartsWith("change=equipped") && equipped.Contains("item=oph_rifle slot=RightHand") && equipped.Contains("hands=oph_rifle|"),
                     $"The equip is logged: {equipped}");
 
                 // An engine path that moves the weapon without equip events is caught on the next heartbeat.

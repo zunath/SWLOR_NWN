@@ -14,19 +14,50 @@ public static class DroidEquipmentDiagnostics
 {
     private const int MaxStackFrames = 8;
     private static readonly Dictionary<uint, string> _lastHands = new();
+    private static readonly Dictionary<uint, (uint Item, InventorySlot Slot)> _unequipSlots = new();
 
     /// <summary>The most recent entry written, for engine tests.</summary>
     public static string LastEntry { get; private set; } = string.Empty;
 
     // Native equips (RunEquip): equip actions, inventory drags and queued combat-round equips.
     [NWNEventHandler(ScriptName.OnItemEquipValidateAfter)]
-    public static void OnEquipped() =>
-        Record("equipped", OBJECT_SELF, StringToObject(EventsPlugin.GetEventData("ITEM")));
+    public static void OnEquipped()
+    {
+        var droid = OBJECT_SELF;
+        var item = StringToObject(EventsPlugin.GetEventData("ITEM"));
+        Record("equipped", droid, item, Droid.IsDroid(droid) ? Item.GetItemSlot(droid, item) : InventorySlot.Invalid);
+    }
+
+    // The after-event runs once the item has left its slot, so note the slot first.
+    [NWNEventHandler(ScriptName.OnEquipmentUnequipBefore)]
+    public static void OnUnequipping()
+    {
+        var droid = OBJECT_SELF;
+        try
+        {
+            if (!Droid.IsDroid(droid))
+                return;
+
+            var item = StringToObject(EventsPlugin.GetEventData("ITEM"));
+            _unequipSlots[droid] = (item, Item.GetItemSlot(droid, item));
+        }
+        catch (Exception exception)
+        {
+            Log.Write(LogGroup.Error, $"Droid equipment diagnostics failed: {exception.Message}");
+        }
+    }
 
     // Native unequips (RunUnequip): unequip actions, inventory drags and queued combat-round unequips.
     [NWNEventHandler(ScriptName.OnItemUnequipAfter)]
-    public static void OnUnequipped() =>
-        Record("unequipped", OBJECT_SELF, StringToObject(EventsPlugin.GetEventData("ITEM")));
+    public static void OnUnequipped()
+    {
+        var droid = OBJECT_SELF;
+        var item = StringToObject(EventsPlugin.GetEventData("ITEM"));
+        var slot = _unequipSlots.Remove(droid, out var pending) && pending.Item == item
+            ? pending.Slot
+            : InventorySlot.Invalid;
+        Record("unequipped", droid, item, slot);
+    }
 
     /// <summary>
     /// Engine paths such as disarm, polymorph, replacement equips and item level checks change hands
@@ -43,7 +74,7 @@ public static class DroidEquipmentDiagnostics
 
             var hands = DescribeHands(droid);
             if (_lastHands.TryGetValue(droid, out var previous) && previous != hands)
-                Write("hands changed without an equip event", droid, OBJECT_INVALID, $"before={previous}");
+                Write("hands changed without an equip event", droid, OBJECT_INVALID, InventorySlot.Invalid, $"before={previous}");
             _lastHands[droid] = hands;
         }
         catch (Exception exception)
@@ -53,16 +84,20 @@ public static class DroidEquipmentDiagnostics
     }
 
     [NWNEventHandler(ScriptName.OnObjectDestroyed)]
-    public static void Forget() => _lastHands.Remove(OBJECT_SELF);
+    public static void Forget()
+    {
+        _lastHands.Remove(OBJECT_SELF);
+        _unequipSlots.Remove(OBJECT_SELF);
+    }
 
-    private static void Record(string change, uint droid, uint item)
+    private static void Record(string change, uint droid, uint item, InventorySlot slot)
     {
         try
         {
             if (!Droid.IsDroid(droid) || Droid.IsSpawning(droid))
                 return;
 
-            Write(change, droid, item, string.Empty);
+            Write(change, droid, item, slot, string.Empty);
             _lastHands[droid] = DescribeHands(droid);
         }
         catch (Exception exception)
@@ -71,7 +106,7 @@ public static class DroidEquipmentDiagnostics
         }
     }
 
-    private static void Write(string change, uint droid, uint item, string detail)
+    private static void Write(string change, uint droid, uint item, InventorySlot slot, string detail)
     {
         var fields = new List<(string Name, string Value)>
         {
@@ -82,10 +117,7 @@ public static class DroidEquipmentDiagnostics
         if (GetIsObjectValid(item))
         {
             fields.Add(("item", GetResRef(item)));
-            // An unequipped item has already left its slot; the hands field shows what changed.
-            var slot = Item.GetItemSlot(droid, item);
-            if (slot != InventorySlot.Invalid)
-                fields.Add(("slot", slot.ToString()));
+            fields.Add(("slot", slot.ToString()));
         }
         if (!string.IsNullOrEmpty(detail))
             fields.Add(("detail", detail));

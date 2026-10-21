@@ -117,13 +117,12 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
 
             Targeting.EnterTargetingMode(controlled, ObjectType.All, "Click where to center the battle grid.", target =>
             {
+                // Targeting only calls back once something was picked, so every position here is a real choice,
+                // the area's (0, 0, 0) corner included. A clicked object centers the grid on the object.
                 var area = GetArea(controlled);
-                var position = GetTargetingModeSelectedPosition();
-                if (position == Vector3() && GetIsObjectValid(target) && target != area)
-                    position = GetPosition(target);
-
-                if (position == Vector3())
-                    return;
+                var position = GetIsObjectValid(target) && target != area
+                    ? GetPosition(target)
+                    : GetTargetingModeSelectedPosition();
 
                 BattleGrid.Place(area, position);
                 Refresh();

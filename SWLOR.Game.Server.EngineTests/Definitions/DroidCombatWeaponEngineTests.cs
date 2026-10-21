@@ -1,8 +1,10 @@
 using System;
 using System.Collections.Generic;
 using System.Threading.Tasks;
+using NWNXLib = NWN.Native.API.NWNXLib;
 using SWLOR.Game.Server.Core;
 using SWLOR.Game.Server.EngineTests.Framework;
+using SWLOR.Game.Server.Service;
 using SWLOR.Game.Server.Service.AbilityService;
 using SWLOR.Game.Server.Service.CompanionControlService;
 using SWLOR.Game.Server.Service.DroidService;
@@ -41,6 +43,72 @@ namespace SWLOR.Game.Server.EngineTests.Definitions
                 return;
             _droidConversations.Add($"pattern={GetListenPatternNumber()} command={GetLastAssociateCommand(OBJECT_SELF)} " +
                                     $"speakerIsMaster={GetLastSpeaker() == GetMaster(OBJECT_SELF)} inCombat={GetIsInCombat(OBJECT_SELF)}");
+        }
+
+        [EngineTest("Droid weapon equips and unequips are logged outside summon restores", Category = "DroidCombat", TimeoutSeconds = 90f)]
+        public static async Task DroidEquipmentChangesAreLogged(EngineTestContext ctx)
+        {
+            var owner = ctx.SpawnCreature("civilian");
+            await ctx.WaitFrameAsync();
+            var controller = await CreateController(ctx, owner);
+            var rifle = await CreateEquipment(ctx, owner, "oph_rifle");
+            await ctx.ExecuteInCreatureContextAsync(owner, () =>
+            {
+                var constructed = Droid.LoadConstructedDroid(controller);
+                constructed.EquippedItems[InventorySlot.RightHand] = ObjectPlugin.Serialize(rifle);
+                Droid.SaveConstructedDroid(controller, constructed);
+                DestroyObject(rifle);
+            });
+            await ctx.WaitFrameAsync();
+            var before = DroidEquipmentDiagnostics.LastEntry;
+            var droid = await Spawn(ctx, owner, controller);
+            try
+            {
+                rifle = GetItemInSlot(InventorySlot.RightHand, droid);
+                ctx.AssertEqual("oph_rifle", GetResRef(rifle), "The summon restores the saved rifle");
+                ctx.AssertEqual(before, DroidEquipmentDiagnostics.LastEntry, "Summon restores are not logged");
+
+                await Unequip(ctx, droid, rifle);
+                var unequipped = DroidEquipmentDiagnostics.LastEntry;
+                ctx.Assert(unequipped.StartsWith("change=unequipped") && unequipped.Contains("item=oph_rifle") && unequipped.Contains("hands=|"),
+                    $"The unequip is logged: {unequipped}");
+                ctx.Assert(unequipped.Contains("action=") && unequipped.Contains("inCombat=") && unequipped.Contains("associateCommand="),
+                    $"The unequip entry carries the droid's state: {unequipped}");
+
+                await Equip(ctx, droid, rifle, InventorySlot.RightHand);
+                var equipped = DroidEquipmentDiagnostics.LastEntry;
+                ctx.Assert(equipped.StartsWith("change=equipped") && equipped.Contains("item=oph_rifle") && equipped.Contains("hands=oph_rifle|"),
+                    $"The equip is logged: {equipped}");
+
+                // An engine path that moves the weapon without equip events is caught on the next heartbeat.
+                await ctx.ExecuteInCreatureContextAsync(droid, () => ExecuteScript(ScriptName.OnDroidHeartbeat, droid));
+                await ctx.ExecuteInCreatureContextAsync(droid, () =>
+                {
+                    // The engine's own unequip, as used by disarm and polymorph, skips the equip events.
+                    var native = NWNXLib.g_pAppManager.m_pServerExoApp.GetGameObject(droid).AsNWSCreature();
+                    var nativeRifle = NWNXLib.g_pAppManager.m_pServerExoApp.GetGameObject(rifle).AsNWSItem();
+                    ctx.Assert(native.UnequipItem(nativeRifle, 0, 0) != 0, "The engine unequips the rifle without events");
+                });
+                await ctx.ExecuteInCreatureContextAsync(droid, () => ExecuteScript(ScriptName.OnDroidHeartbeat, droid));
+                var silent = DroidEquipmentDiagnostics.LastEntry;
+                ctx.Assert(silent.StartsWith("change=hands changed without an equip event") && silent.Contains("detail=before=oph_rifle|") &&
+                           silent.Contains("hands=|"), $"The silent change is logged: {silent}");
+                await ctx.ExecuteInCreatureContextAsync(droid, () =>
+                {
+                    var native = NWNXLib.g_pAppManager.m_pServerExoApp.GetGameObject(droid).AsNWSCreature();
+                    var nativeRifle = NWNXLib.g_pAppManager.m_pServerExoApp.GetGameObject(rifle).AsNWSItem();
+                    ctx.Assert(native.EquipItem((uint)global::NWN.Native.API.EquipmentSlot.RightHand, nativeRifle, 1, 0, 0) != 0,
+                        "The engine restores the rifle to the hand");
+                });
+                ctx.Log($"unequip: {unequipped}");
+                ctx.Log($"equip: {equipped}");
+                ctx.Log($"silent: {silent}");
+            }
+            finally
+            {
+                if (GetIsObjectValid(droid))
+                    await Dismiss(ctx, owner, droid);
+            }
         }
 
         [EngineTest("Idle droid keeps its rifle when a melee enemy attacks its owner", Category = "DroidCombat", TimeoutSeconds = 120f)]

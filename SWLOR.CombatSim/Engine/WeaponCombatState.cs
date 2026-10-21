@@ -29,6 +29,9 @@ public sealed partial class WeaponCombatState
     public double ControlDefenseUntil { get; private set; }
     public double ReversalUntil { get; private set; }
     private float _attackDebt;
+    private const double HeldSetupResolveSeconds = 0.001;
+    private HeldSetup _heldSetup;
+    private sealed record HeldSetup(PendingCast Cast, uint Target, MeleeTechniqueStage Stage, DateTime ExpiresAt);
     private ActiveStatus _stance;
     private Combatant _windowEnemy;
     private Combatant _retaliationEnemy;
@@ -106,7 +109,7 @@ public sealed partial class WeaponCombatState
         }
         if (_retaliationEnemy?.IsDead == true) { Reactions.ClearRetaliation(); _retaliationEnemy = null; }
         if (_windowEnemy?.IsDead == true) { Reactions.ClearWindow(); _windowEnemy = null; }
-        if (Sequence.Stage != MeleeTechniqueStage.None && (SetupEnemy == null || SetupEnemy.IsDead || !Sequence.Matches(Sequence.Target, At(now)) ||
+        if (Sequence.Stage != MeleeTechniqueStage.None && (SetupEnemy == null || SetupEnemy.IsDead || !Sequence.Matches(Sequence.Target, At(now)) && !IsSetupHeld(_owner.Casting) ||
             Sequence.Stage == MeleeTechniqueStage.Distraction && (!SetupEnemy.Weapon.Rattled.TryGetValue(_owner.SimId, out var rattled) || rattled.Until <= now)))
         {
             if (SetupEnemy?.IsDead != true) Count("SetupExpired");
@@ -138,12 +141,30 @@ public sealed partial class WeaponCombatState
         if (_owner.Stm < use.MinimumStaminaBeforeUse) return false;
         if (info.Technique != null && (!_owner.Spec.WeaponCombat.AllowTechniqueAbilities || !Resources.CanActivate(At(now)))) return false;
         var stage = Stage(target, now);
+        if (info.Technique is { RequiredStages: not MeleeTechniqueStage.None } required &&
+            (Line != required.Line || (stage & required.RequiredStages) == 0)) return false;
         if (use.RequiredSetup != "Any" && use.RequiredSetup != stage.ToString()) return false;
         if (use.WaitForWeave && stage == MeleeTechniqueStage.Opening && Sequence.WeavePower > 0) return false;
         return true;
     }
-    public TechniqueActivation Begin(AbilityInfo info, AbilityUseSpec use, Combatant target, int paid, double now)
+    /// <summary>A technique that requires a setup keeps the one its cast started with (MeleeTechnique.HoldSetupForCast).</summary>
+    public void HoldSetupForCast(PendingCast cast, double now)
     {
+        _heldSetup = null;
+        var required = cast.Ability.Technique?.RequiredStages ?? MeleeTechniqueStage.None;
+        if (required == MeleeTechniqueStage.None) return;
+        Refresh(now);
+        if (Line != cast.Ability.Technique.Line || !Sequence.Matches(cast.Target.SimId, At(now)) || (Sequence.Stage & required) == 0) return;
+        _heldSetup = new HeldSetup(cast, Sequence.Target, Sequence.Stage, Sequence.ExpiresAt);
+    }
+    private bool IsSetupHeld(PendingCast cast) =>
+        cast != null && _heldSetup is { } held && held.Cast == cast &&
+        Sequence.Target == held.Target && Sequence.Stage == held.Stage && Sequence.ExpiresAt == held.ExpiresAt;
+    public TechniqueActivation Begin(AbilityInfo info, AbilityUseSpec use, Combatant target, int paid, double now, PendingCast cast = null)
+    {
+        // The game resolves the held setup at completion; renew it for this instant so the shared path spends it.
+        if (IsSetupHeld(cast)) Sequence.Begin(Sequence.Target, Sequence.Stage, At(now + HeldSetupResolveSeconds), Sequence.WeavePower);
+        _heldSetup = null;
         if (info.IsHostile && info.IsAimed) Target(target, now);
         var accuracy = info.IsHostile ? SetupAccuracy(target, now) : 0;
         var stage = MeleeTechniqueStage.None;

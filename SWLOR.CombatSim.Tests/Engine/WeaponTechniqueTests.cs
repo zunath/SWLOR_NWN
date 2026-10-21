@@ -92,6 +92,35 @@ public class WeaponTechniqueTests
         c.Weapon.HastePercent(22.9).Should().Be(15);
         c.Weapon.HastePercent(23).Should().Be(0);
     }
+    [Test] public void PerfectForm_RequiresFinishAndKeepsTheOneItsCastStartedWith()
+    {
+        var c = Fighter("c",1,"None"); var enemy = Fighter("e",2);
+        var perfect = _catalog.Get(FeatType.PerfectForm1);
+        var use = new AbilityUseSpec { Feat = nameof(FeatType.PerfectForm1) };
+        c.Weapon.CanUse(perfect, use, enemy, 0).Should().BeFalse("Perfect Form cannot start without a setup");
+        Use(c,enemy,FeatType.Jab4,0);
+        c.Weapon.CanUse(perfect, use, enemy, 1).Should().BeFalse("Opening does not satisfy the Finish requirement");
+        Use(c,enemy,FeatType.PalmStrike3,1);
+        c.Weapon.CanUse(perfect, use, enemy, 4.5).Should().BeTrue("the four-second Finish is still live");
+
+        var interrupted = new PendingCast { Ability = perfect, Use = use, Target = enemy };
+        c.Casting = interrupted;
+        c.Weapon.HoldSetupForCast(interrupted, 4.5);
+        c.Casting = null;
+        c.Weapon.Stage(enemy, 5.5).Should().Be(MeleeTechniqueStage.None);
+        c.Weapon.Sequence.Stage.Should().Be(MeleeTechniqueStage.None, "an interrupted cast holds nothing past the normal expiry");
+
+        Use(c,enemy,FeatType.Jab4,6); Use(c,enemy,FeatType.PalmStrike3,7);
+        var cast = new PendingCast { Ability = perfect, Use = use, Target = enemy };
+        c.Casting = cast;
+        c.Weapon.HoldSetupForCast(cast, 10.5);
+        c.Weapon.Stage(enemy, 11.5).Should().Be(MeleeTechniqueStage.None, "the live Finish runs out during the cast");
+        c.Casting = null;
+        var activation = c.Weapon.Begin(perfect, use, enemy, perfect.STM, 12.5, cast);
+        activation.Stage.Should().Be(MeleeTechniqueStage.Finish, "the completed cast spends the Finish it started with");
+        activation.ConditionalPower.Should().Be(15);
+        c.Weapon.Stage(enemy, 12.5).Should().Be(MeleeTechniqueStage.None);
+    }
     [Test] public void PaybackPaidCost_DisablesHighGuardAtSevenButNotEight()
     {
         var c = Fighter("c",1,"None","HighGuard:3","Payback"); var enemy = Fighter("e",2);

@@ -68,6 +68,17 @@ public class AppearanceEditorColorStateTests
     }
 
     [Test]
+    public void ChangingHeadsCapturesExtraColorsBeforeReplacingTheModel()
+    {
+        var root = CSharpSyntaxTree.ParseText(ReadViewModel()).GetRoot();
+        var load = FindMethod(root, "LoadBodyPart").ToString();
+        load.IndexOf("CaptureCurrentHeadColors(_target)", StringComparison.Ordinal).Should().BeGreaterThan(0)
+            .And.BeLessThan(load.IndexOf("SetCreatureBodyPart(CreaturePart.Head", StringComparison.Ordinal));
+        FindMethod(root, "LoadBodyParts").ToString().Should().NotContain("CaptureCurrentHeadColors",
+            "opening or repopulating the picker must not write appearance state");
+    }
+
+    [Test]
     public void ArmorHydrationDisablesEditingUntilCurrentOptionsHaveBeenPublished()
     {
         var root = CSharpSyntaxTree.ParseText(ReadViewModel()).GetRoot();

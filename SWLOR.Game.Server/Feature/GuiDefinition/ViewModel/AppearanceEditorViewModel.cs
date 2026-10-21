@@ -3,6 +3,7 @@ using System.Linq;
 using SWLOR.Game.Server.Core;
 using SWLOR.Game.Server.Core.Beamdog;
 using SWLOR.Game.Server.Entity;
+using SWLOR.Game.Server.Feature.AppearanceDefinition;
 using SWLOR.Game.Server.Feature.AppearanceDefinition.ItemAppearance;
 using SWLOR.Game.Server.Feature.AppearanceDefinition.RacialAppearance;
 using SWLOR.Game.Server.Feature.AppearanceDefinition.TintMap;
@@ -68,6 +69,7 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
         private Dictionary<int, int> _partIdToIndex = new();
         private bool _isDMArmorDisplay;
         private IReadOnlyList<TintMapMaterialSelection> _tintMapSelections = Array.Empty<TintMapMaterialSelection>();
+        private IReadOnlyList<TintMapLayerType> _appearanceColorLayers = HeadTintChannels.GetLayers(Array.Empty<TintMapMaterialSelection>());
         private bool _loadingTintColor;
         private bool _applyingTintColor;
         private int _tintEditGeneration;
@@ -712,6 +714,11 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
                     {
                         ColorSheetResref = "gui_pal_tattoo";
                     }
+                    else if (TryGetSelectedTintLayer(out var extraLayer))
+                    {
+                        ColorSheetResref = extraLayer is TintMapLayerType.Metal1 or TintMapLayerType.Metal2
+                            ? "gui_pal_armor01" : "gui_pal_tattoo";
+                    }
                 }
                 else if (IsEquipmentSelected)
                 {
@@ -1035,6 +1042,7 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
             _tintComponentCorrection = null;
             _hasTintComponentDraft = false;
             RefreshTintMapAvailability();
+            RefreshHeadColorCategories();
             if (!TryGetEditableTintSelections(out var selections, out var layerType, out _))
             {
                 IsCustomTintAvailable = false;
@@ -1073,7 +1081,7 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
             if (selections.Count == 0)
             {
                 var paletteId = IsAppearanceSelected
-                    ? GetColor(_target, (ColorChannel)SelectedColorCategoryIndex)
+                    ? (SelectedColorCategoryIndex < 4 ? GetColor(_target, (ColorChannel)SelectedColorCategoryIndex) : 0)
                     : GetItemAppearance(GetItem(), ItemAppearanceType.ArmorColor, SelectedColorCategoryIndex);
                 var fallbackColor = TintMapPaletteColors.GetColor(layerType, paletteId);
                 SetLoadedTintColor(fallbackColor, layerType, paletteId);
@@ -1093,7 +1101,7 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
             {
                 var color = distinctColors[0];
                 var paletteId = IsAppearanceSelected
-                    ? GetColor(_target, (ColorChannel)SelectedColorCategoryIndex)
+                    ? (SelectedColorCategoryIndex < 4 ? GetColor(_target, (ColorChannel)SelectedColorCategoryIndex) : 0)
                     : GetItemAppearance(GetItem(), ItemAppearanceType.ArmorColor, SelectedColorCategoryIndex);
                 SetLoadedTintColor(color, layerType, paletteId);
                 return;
@@ -1113,10 +1121,10 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
         private bool TryGetSelectedCustomColor(IReadOnlyList<TintMapMaterialSelection> selections,
             TintMapLayerType layer, out TintMapColor color)
         {
-            if (IsAppearanceSelected)
+            if (IsAppearanceSelected && TintMapVariable.IsCreatureColorLayer(layer))
                 return TintMapColor.TryFromStoredValue(
                     GetLocalInt(_target, TintMapVariable.GetCreatureColorStateName(layer)), out color);
-            if (SelectedItemTypeIndex != 0 || _colorTarget == ColorTarget.Global)
+            if (IsEquipmentSelected && (SelectedItemTypeIndex != 0 || _colorTarget == ColorTarget.Global))
                 return TintMapColor.TryFromStoredValue(
                     GetLocalInt(GetItem(), TintMapVariable.GetItemGlobalColorStateName(layer)), out color);
             var customColors = selections
@@ -1205,9 +1213,9 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
             {
                 if (!GetIsObjectValid(target) || !appearance && !GetIsObjectValid(item))
                     return;
-                if (appearance)
+                if (appearance && TintMapVariable.IsCreatureColorLayer(layerType))
                     TintMapService.SetCreatureCustomColor(target, selections, layerType, color);
-                else if (globalItem)
+                else if (!appearance && globalItem)
                     TintMapService.SetGlobalItemCustomColor(target, selections, layerType, color, item);
                 else
                     foreach (var selection in selections)
@@ -1437,6 +1445,8 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
                 .Where(selection =>
                     selection.GetPaletteSource(selectedLayerType) == paletteSource &&
                     selection.Material.Layers.Contains(selectedLayerType) &&
+                    (!IsAppearanceSelected || TintMapVariable.IsCreatureColorLayer(selectedLayerType) ||
+                     HeadTintChannels.IsHead(selection)) &&
                     (!restrictToArmorPart || selection.ArmorPart == armorPart))
                 .ToList();
             // The native channel exists independently of the currently visible material.
@@ -1449,15 +1459,10 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
             layerType = default;
             if (IsAppearanceSelected)
             {
-                layerType = SelectedColorCategoryIndex switch
-                {
-                    0 => TintMapLayerType.Skin,
-                    1 => TintMapLayerType.Hair,
-                    2 => TintMapLayerType.Tattoo1,
-                    3 => TintMapLayerType.Tattoo2,
-                    _ => default
-                };
-                return SelectedColorCategoryIndex is >= 0 and <= 3;
+                if (SelectedColorCategoryIndex < 0 || SelectedColorCategoryIndex >= _appearanceColorLayers.Count)
+                    return false;
+                layerType = _appearanceColorLayers[SelectedColorCategoryIndex];
+                return true;
             }
 
             if (!IsEquipmentSelected)
@@ -1632,6 +1637,20 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
             LoadTintMapEditor();
         }
 
+        private void RefreshHeadColorCategories()
+        {
+            if (!IsAppearanceSelected)
+                return;
+            var next = HeadTintChannels.GetLayers(_tintMapSelections);
+            if (_appearanceColorLayers.SequenceEqual(next))
+                return;
+            var selected = TryGetSelectedTintLayer(out var layer) ? layer : TintMapLayerType.Skin;
+            LoadColorCategoryOptions();
+            ColorCategorySelected[0] = false;
+            SelectedColorCategoryIndex = HeadTintChannels.GetSelectedIndex(_appearanceColorLayers, selected);
+            ColorCategorySelected[SelectedColorCategoryIndex] = true;
+        }
+
         private void LoadColorCategoryOptions()
         {
             if (DoesNotHaveItemEquipped)
@@ -1641,10 +1660,9 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
 
             if (IsAppearanceSelected)
             {
-                colorCategoryOptions.Add("Skin Color");
-                colorCategoryOptions.Add("Hair Color");
-                colorCategoryOptions.Add("Tattoo 1 Color");
-                colorCategoryOptions.Add("Tattoo 2 Color");
+                _appearanceColorLayers = HeadTintChannels.GetLayers(GetCurrentTintMapSelections());
+                foreach (var colorLayer in _appearanceColorLayers)
+                    colorCategoryOptions.Add(HeadTintChannels.GetLabel(colorLayer));
 
                 IsColorPickerVisible = true;
             }
@@ -1909,6 +1927,7 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
 
         private void LoadSettings()
         {
+            RefreshHeadTransformSettings();
             if (_isDMArmorDisplay)
             {
                 LoadDMArmorDisplay();
@@ -2180,6 +2199,7 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
                 HelmetModelRenderer.SetHeadScale(_target, scale - Increment);
                 SendScaleMessage($"Head Size: {HelmetModelRenderer.GetHeadScale(_target)}");
             }
+            RefreshHeadTransformSettings();
         };
 
         public Action OnIncreaseHeadScale() => () =>
@@ -2206,6 +2226,7 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
                 HelmetModelRenderer.SetHeadScale(_target, scale + Increment);
                 SendScaleMessage($"Head Size: {HelmetModelRenderer.GetHeadScale(_target)}");
             }
+            RefreshHeadTransformSettings();
         };
 
         private void SendScaleMessage(string message)
@@ -2221,6 +2242,8 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
                 return;
 
             var index = NuiGetEventArrayIndex();
+            if (index < 0 || index >= ColorCategoryOptions.Count)
+                return;
             ColorCategorySelected[SelectedColorCategoryIndex] = false;
 
             SelectedColorCategoryIndex = index;
@@ -2375,50 +2398,61 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
                 return false;
             }
 
-            ResetCurrentCustomTintOverrides();
-
-            // Appearance - Skin, Hair, or Tattoo
-            if (IsAppearanceSelected)
+            if (IsAppearanceSelected && TryGetSelectedTintLayer(out var extraLayer) &&
+                !TintMapVariable.IsCreatureColorLayer(extraLayer))
             {
-                switch (SelectedColorCategoryIndex)
-                {
-                    case 0: // 0 = Skin
-                        SetColor(_target, ColorChannel.Skin, colorId);
-                        break;
-                    case 1: //  1 = Hair
-                        SetColor(_target, ColorChannel.Hair, colorId);
-                        break;
-                    case 2: // 2 = Tattoo 1
-                        SetColor(_target, ColorChannel.Tattoo1, colorId);
-                        break;
-                    case 3: // 3 = Tattoo 2
-                        SetColor(_target, ColorChannel.Tattoo2, colorId);
-                        break;
-                }
+                if (!TryGetEditableTintSelections(out var selections, out _, out _) || selections.Count == 0)
+                    return false;
+                foreach (var selection in selections)
+                    TintMapService.SetPaletteColor(_target, selection, extraLayer, colorId);
             }
-            // Helmet/Cloak - Cloth 1, Cloth 2, Leather 1, Leather 2, Metal 1, Metal 2
-            else if (IsEquipmentSelected && (SelectedItemTypeIndex == 1 || SelectedItemTypeIndex == 2))
+            else
             {
-                switch (SelectedColorCategoryIndex)
+                ResetCurrentCustomTintOverrides();
+
+                // Appearance - Skin, Hair, or Tattoo
+                if (IsAppearanceSelected)
                 {
-                    case 0: // 0 = Leather 1
-                        ModifyHelmetCloakColor(AppearanceArmorColor.Leather1, colorId);
-                        break;
-                    case 1: // 1 = Leather 2
-                        ModifyHelmetCloakColor(AppearanceArmorColor.Leather2, colorId);
-                        break;
-                    case 2: // 2 = Cloth 1
-                        ModifyHelmetCloakColor(AppearanceArmorColor.Cloth1, colorId);
-                        break;
-                    case 3: // 3 = Cloth 2
-                        ModifyHelmetCloakColor(AppearanceArmorColor.Cloth2, colorId);
-                        break;
-                    case 4: // 4 = Metal 1
-                        ModifyHelmetCloakColor(AppearanceArmorColor.Metal1, colorId);
-                        break;
-                    case 5: // 5 = Metal 2
-                        ModifyHelmetCloakColor(AppearanceArmorColor.Metal2, colorId);
-                        break;
+                    switch (SelectedColorCategoryIndex)
+                    {
+                        case 0: // 0 = Skin
+                            SetColor(_target, ColorChannel.Skin, colorId);
+                            break;
+                        case 1: //  1 = Hair
+                            SetColor(_target, ColorChannel.Hair, colorId);
+                            break;
+                        case 2: // 2 = Tattoo 1
+                            SetColor(_target, ColorChannel.Tattoo1, colorId);
+                            break;
+                        case 3: // 3 = Tattoo 2
+                            SetColor(_target, ColorChannel.Tattoo2, colorId);
+                            break;
+                    }
+                }
+                // Helmet/Cloak - Cloth 1, Cloth 2, Leather 1, Leather 2, Metal 1, Metal 2
+                else if (IsEquipmentSelected && (SelectedItemTypeIndex == 1 || SelectedItemTypeIndex == 2))
+                {
+                    switch (SelectedColorCategoryIndex)
+                    {
+                        case 0: // 0 = Leather 1
+                            ModifyHelmetCloakColor(AppearanceArmorColor.Leather1, colorId);
+                            break;
+                        case 1: // 1 = Leather 2
+                            ModifyHelmetCloakColor(AppearanceArmorColor.Leather2, colorId);
+                            break;
+                        case 2: // 2 = Cloth 1
+                            ModifyHelmetCloakColor(AppearanceArmorColor.Cloth1, colorId);
+                            break;
+                        case 3: // 3 = Cloth 2
+                            ModifyHelmetCloakColor(AppearanceArmorColor.Cloth2, colorId);
+                            break;
+                        case 4: // 4 = Metal 1
+                            ModifyHelmetCloakColor(AppearanceArmorColor.Metal1, colorId);
+                            break;
+                        case 5: // 5 = Metal 2
+                            ModifyHelmetCloakColor(AppearanceArmorColor.Metal2, colorId);
+                            break;
+                    }
                 }
             }
 
@@ -2527,6 +2561,7 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
             switch (SelectedPartCategoryIndex)
             {
                 case 0: // Head
+                    TintMapService.CaptureCurrentHeadColors(_target);
                     switch (gender)
                     {
                         case Gender.Male:
@@ -2736,6 +2771,7 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
 
             SetObjectVisualTransform(_target, ObjectVisualTransform.Scale, dbPlayer.AppearanceScale);
             HelmetModelRenderer.SetHeadScale(_target, headScale);
+            HeadPosition.ApplySaved(_target, dbPlayer);
         };
 
         public Action OnClickSaveSettings() => () =>
@@ -2756,6 +2792,7 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
             if (newHeadScale <= 0f)
                 newHeadScale = 1.0f;
             dbPlayer.HeadAppearanceScale = newHeadScale;
+            HeadPosition.Save(_target, dbPlayer);
 
             DB.Set(dbPlayer);
             SendMessageToPC(_target, ColorToken.Green("Appearance settings saved successfully."));

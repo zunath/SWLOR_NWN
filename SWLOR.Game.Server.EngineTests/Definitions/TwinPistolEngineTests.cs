@@ -785,6 +785,85 @@ namespace SWLOR.Game.Server.EngineTests.Definitions
             }
         }
 
+        [EngineTest("Blaster Slide turns aside when a creature blocks the straight retreat", Category = "TwinPistolMovement", TimeoutSeconds = 120f)]
+        public static async Task BlockedRetreatTakesAnAngledLane(EngineTestContext ctx)
+        {
+            var (actor, target, _, _) = await CreatePair(ctx);
+            var blocker = ctx.SpawnCreature("nw_rat001", 3f);
+            try
+            {
+                var origin = GetPosition(actor);
+                NumericsVector3 away = default, enemyPosition = default, blockerPosition = default;
+                var found = false;
+                await ctx.ExecuteInCreatureContextAsync(actor, () =>
+                {
+                    ClearAllActions();
+                    for (var direction = 0; direction < 16 && !found; direction++)
+                    {
+                        var angle = direction * MathF.PI / 8;
+                        var unit = new NumericsVector3(MathF.Cos(angle), MathF.Sin(angle), 0);
+                        bool LaneOpen(float degrees)
+                        {
+                            var (sin, cos) = MathF.SinCos(degrees * MathF.PI / 180f);
+                            var lane = new NumericsVector3(unit.X * cos - unit.Y * sin, unit.X * sin + unit.Y * cos, 0);
+                            var end = origin + lane * 4f;
+                            end.Z = GetGroundHeight(Location(ctx.Arena, end, 0));
+                            return string.IsNullOrEmpty(WeaponRepositioning.Validate(actor, GetLocation(actor), Location(ctx.Arena, end, 0), 2f, 6f));
+                        }
+                        // The straight lane is open terrain, so only the blocker placed on it can refuse it,
+                        // and at least one angled lane is open for the fallback.
+                        var open = LaneOpen(0f) && new[] { 30f, -30f, 60f, -60f }.Any(LaneOpen);
+                        enemyPosition = origin - unit * 2f;
+                        enemyPosition.Z = GetGroundHeight(Location(ctx.Arena, enemyPosition, 0));
+                        open &= string.IsNullOrEmpty(WeaponRepositioning.Validate(actor, GetLocation(actor), Location(ctx.Arena, enemyPosition, 0), 0f, 6f));
+                        if (!open) continue;
+                        away = unit;
+                        blockerPosition = origin + unit * 2f;
+                        blockerPosition.Z = GetGroundHeight(Location(ctx.Arena, blockerPosition, 0));
+                        found = true;
+                    }
+                    ctx.Assert(found, "The arena provides open straight and angled retreat lanes");
+                    ctx.SetNPCResources(actor, 100, 100);
+                });
+                ObjectPlugin.SetPosition(target, enemyPosition);
+                ObjectPlugin.SetPosition(blocker, blockerPosition);
+                ApplyEffectToObject(DurationType.Permanent, EffectCutsceneParalyze(), blocker);
+                await ctx.WaitFrameAsync();
+                ctx.Assert(NumericsVector3.Distance(blockerPosition, GetPosition(blocker)) < .05f,
+                    "The blocker stands on the straight retreat lane");
+
+                Combat.SetAutoAttackHitResolutionOverride(false);
+                Combat.SetAbilityHitResolutionOverride(true);
+                await ctx.ExecuteInCreatureContextAsync(actor, () =>
+                {
+                    ctx.SetNPCPerkLevel(actor, PerkType.BlasterSlide, 1);
+                    CreaturePlugin.AddFeat(actor, FeatType.BlasterSlide1);
+                    Ability.ClearLastCompletedAbilityImpactSummary(actor);
+                    ctx.Assert(UsePerkFeat.TryUseAbility(actor, target, FeatType.BlasterSlide1, GetLocation(target)),
+                        $"A blocked straight retreat still activates: {Ability.GetLastActivationDenialReason()}");
+                });
+                await ctx.WaitUntilAsync(() => !WeaponRepositioning.IsMoving(actor) &&
+                    Ability.GetLastCompletedAbilityImpactSummary(actor)?.AttributedDamage > 0,
+                    10f, "arrival on an angled lane followed by the paired impacts");
+                var moved = GetPosition(actor) - origin;
+                moved.Z = 0;
+                ctx.Assert(moved.Length() >= 2f, $"The slide travelled at least two meters ({moved.Length():0.00})");
+                ctx.Assert(NumericsVector3.Dot(moved, away) > 0, "The slide still moved away from the target");
+                var sideways = MathF.Abs(moved.X * away.Y - moved.Y * away.X);
+                ctx.Assert(sideways > .9f, $"The slide turned off the blocked straight lane (sideways {sideways:0.00})");
+            }
+            finally
+            {
+                TwinPistolAbility.Cancel(actor);
+                Combat.SetAbilityHitResolutionOverride(null);
+                Stop(actor);
+                DestroyObject(actor);
+                DestroyObject(target);
+                DestroyObject(blocker);
+                await ctx.WaitFrameAsync();
+            }
+        }
+
         private static async Task<(uint Actor, uint Target, uint Main, uint Companion)> CreatePair(EngineTestContext ctx, string targetBlueprint = "nw_rat001", bool finiteAmmunition = false, uint actorOverride = OBJECT_INVALID)
         {
             ctx.SeedRandom(20261013);

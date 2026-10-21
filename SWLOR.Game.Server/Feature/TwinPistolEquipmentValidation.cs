@@ -67,23 +67,7 @@ public static class TwinPistolEquipmentValidation
 
         var main = GetItemInSlot(InventorySlot.RightHand, creature);
         var off = GetItemInSlot(InventorySlot.LeftHand, creature);
-        var companion = GetIsObjectValid(off) && GetBaseItemType(off) == BaseItem.CompanionPistol;
-        var companionError = companion
-            ? !TwinPistolEquipment.IsLinkedPair(creature, main, off)
-                ? "The off-hand pistol is created automatically by equipping a Twin Pistols item."
-                : TwinPistolEquipment.GetCompanionPropertyError(off)
-            : string.Empty;
-        if (companion && string.IsNullOrEmpty(companionError))
-            companionError = TwinPistolEquipment.GetPairCompatibilityError(
-                GetIsObjectValid(main) ? GetBaseItemType(main) : null, BaseItem.CompanionPistol);
-        if (companion && string.IsNullOrEmpty(companionError))
-            companionError = Item.GetCreatureItemUseError(creature, off);
-
-        var skill = companion && string.IsNullOrEmpty(companionError) && GetIsObjectValid(main) &&
-                    TwinPistolEquipment.IsPair(GetBaseItemType(main), GetBaseItemType(off))
-            ? SkillType.TwinPistol : SkillType.Invalid;
-        var mainError = GetIsObjectValid(main) && Item.PistolBaseItemTypes.Contains(GetBaseItemType(main))
-            ? Item.GetCreatureItemUseError(creature, main, skill) : string.Empty;
+        if (!TryGetHandErrors(creature, out var mainError, out var companionError)) return;
         if (string.IsNullOrEmpty(mainError) && string.IsNullOrEmpty(companionError))
         {
             FailedReturns.Remove(creature);
@@ -103,6 +87,35 @@ public static class TwinPistolEquipmentValidation
         });
         var observer = Droid.IsDroid(creature) ? GetMaster(creature) : creature;
         SendMessageToPC(observer, ColorToken.Red(!string.IsNullOrEmpty(mainError) ? mainError : companionError));
+    }
+
+    /// <summary>Checks the current hands; false while they are mid-change and must not be judged yet.</summary>
+    public static bool TryGetHandErrors(uint creature, out string mainError, out string companionError)
+    {
+        mainError = companionError = string.Empty;
+        var main = GetItemInSlot(InventorySlot.RightHand, creature);
+        var off = GetItemInSlot(InventorySlot.LeftHand, creature);
+        // A removed pair's spare stays in the hand until its deferred destroy completes.
+        // It is leaving, not misused; its loss event revalidates the settled hands.
+        if (TwinPistolEquipment.IsDestroyingCompanion(off)) return false;
+        var companion = GetIsObjectValid(off) && GetBaseItemType(off) == BaseItem.CompanionPistol;
+        companionError = companion
+            ? !TwinPistolEquipment.IsLinkedPair(creature, main, off)
+                ? "The off-hand pistol is created automatically by equipping a Twin Pistols item."
+                : TwinPistolEquipment.GetCompanionPropertyError(off)
+            : string.Empty;
+        if (companion && string.IsNullOrEmpty(companionError))
+            companionError = TwinPistolEquipment.GetPairCompatibilityError(
+                GetIsObjectValid(main) ? GetBaseItemType(main) : null, BaseItem.CompanionPistol);
+        if (companion && string.IsNullOrEmpty(companionError))
+            companionError = Item.GetCreatureItemUseError(creature, off);
+
+        var skill = companion && string.IsNullOrEmpty(companionError) && GetIsObjectValid(main) &&
+                    TwinPistolEquipment.IsPair(GetBaseItemType(main), GetBaseItemType(off))
+            ? SkillType.TwinPistol : SkillType.Invalid;
+        mainError = GetIsObjectValid(main) && Item.PistolBaseItemTypes.Contains(GetBaseItemType(main))
+            ? Item.GetCreatureItemUseError(creature, main, skill) : string.Empty;
+        return true;
     }
 
     private static void ReturnEquippedItem(uint creature, uint item, InventorySlot slot)

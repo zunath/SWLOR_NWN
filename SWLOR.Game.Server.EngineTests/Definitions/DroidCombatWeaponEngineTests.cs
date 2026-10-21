@@ -32,8 +32,89 @@ namespace SWLOR.Game.Server.EngineTests.Definitions
                                $"stack={Environment.StackTrace}");
         }
 
+        private static readonly List<string> _droidConversations = new();
+
+        [NWNEventHandler(ScriptName.OnDroidConversation)]
+        public static void RecordDroidConversation()
+        {
+            if (!GetLocalBool(OBJECT_SELF, CombatProbe))
+                return;
+            _droidConversations.Add($"pattern={GetListenPatternNumber()} command={GetLastAssociateCommand(OBJECT_SELF)} " +
+                                    $"speakerIsMaster={GetLastSpeaker() == GetMaster(OBJECT_SELF)} inCombat={GetIsInCombat(OBJECT_SELF)}");
+        }
+
+        [EngineTest("Idle droid keeps its rifle when a melee enemy attacks its owner", Category = "DroidCombat", TimeoutSeconds = 120f)]
+        public static async Task IdleDroidOwnerAttacked(EngineTestContext ctx)
+        {
+            using var player = await PlayerAbilityFixture.CreateAsync(ctx, 4f);
+            var owner = player.Creature;
+            var controller = await CreateController(ctx, owner);
+            var droid = await Spawn(ctx, owner, controller);
+            _rifleUnequips.Clear();
+            _droidConversations.Clear();
+            try
+            {
+                var rifle = await CreateEquipment(ctx, owner, "oph_rifle");
+                await ctx.ExecuteInCreatureContextAsync(owner, () =>
+                    AddItemProperty(DurationType.Permanent, ItemPropertyUnlimitedAmmo(), rifle));
+                await Transfer(ctx, owner, rifle, droid);
+                await Equip(ctx, droid, rifle, InventorySlot.RightHand);
+                SetImmortal(droid, true);
+                SetLocalBool(droid, CombatProbe, true);
+                SetPlotFlag(owner, true);
+
+                var enemy = ctx.SpawnCreature("nw_bandit001", 5f);
+                await ctx.WaitFrameAsync();
+                await ctx.EquipItemAsync(enemy, "b_longsword", InventorySlot.RightHand);
+                SetPlotFlag(enemy, true);
+                ObjectPlugin.SetPosition(droid, GetPosition(owner) + new System.Numerics.Vector3(0f, 1f, 0f));
+                ObjectPlugin.SetPosition(enemy, GetPosition(owner) + new System.Numerics.Vector3(1f, 0.5f, 0f));
+                ctx.MakeHostile(enemy);
+                CreaturePlugin.DoPerceptionUpdateOnCreature(droid, enemy);
+                CreaturePlugin.DoPerceptionUpdateOnCreature(enemy, owner);
+                await ctx.ExecuteInCreatureContextAsync(droid, () => ClearAllActions(true));
+                AssignCommand(enemy, () => ActionAttack(owner));
+
+                for (var tick = 0; tick < 200; tick++)
+                {
+                    await ctx.DelaySecondsAsync(0.1f);
+                    if (tick % 30 == 0)
+                        await ctx.ExecuteInCreatureContextAsync(droid, () => ClearAllActions(true));
+                    var held = GetItemInSlot(InventorySlot.RightHand, droid);
+                    if (held != rifle)
+                        ctx.Fail($"The droid's right hand changed to '{GetName(held)}' after {tick / 10f:0.0}s. " +
+                                 $"Conversations: {string.Join(" | ", _droidConversations)}. Unequips: {string.Join(" || ", _rifleUnequips)}");
+                }
+                ctx.Log($"conversations: {string.Join(" | ", _droidConversations)}");
+                ctx.Assert(_droidConversations.Count > 0, "The droid heard its owner's associate events");
+                AssignCommand(enemy, () => ClearAllActions());
+            }
+            finally
+            {
+                if (GetIsObjectValid(droid))
+                {
+                    DeleteLocalBool(droid, CombatProbe);
+                    SetImmortal(droid, false);
+                    await Dismiss(ctx, owner, droid);
+                }
+            }
+        }
+
         [EngineTest("Med Kit droid keeps its rifle while healing mid-fight", Category = "DroidCombat", TimeoutSeconds = 150f)]
-        public static async Task MedKitDroidKeepsRifle(EngineTestContext ctx)
+        public static Task MedKitDroidKeepsRifle(EngineTestContext ctx) => MedKitFight(ctx, false);
+
+        [EngineTest("Med Kit droid summoned with its saved armor and rifle keeps the rifle while healing", Category = "DroidCombat", TimeoutSeconds = 150f)]
+        public static Task SavedLoadoutMedKitDroidKeepsRifle(EngineTestContext ctx) => MedKitFight(ctx, true);
+
+        private static readonly (InventorySlot Slot, string Resref)[] _savedDroidLoadout =
+        {
+            (InventorySlot.Head, "dhhl005"), (InventorySlot.Chest, "dhar005"), (InventorySlot.Boots, "dhlg005"),
+            (InventorySlot.Arms, "dhbr005"), (InventorySlot.Cloak, "dlcl005"), (InventorySlot.LeftRing, "dlrg005s"),
+            (InventorySlot.RightRing, "dlrg005"), (InventorySlot.Neck, "dlnk005"), (InventorySlot.Belt, "dlbe005"),
+            (InventorySlot.RightHand, "oph_rifle")
+        };
+
+        private static async Task MedKitFight(EngineTestContext ctx, bool savedLoadout)
         {
             using var player = await PlayerAbilityFixture.CreateAsync(ctx, 4f);
             var owner = player.Creature;
@@ -54,6 +135,17 @@ namespace SWLOR.Game.Server.EngineTests.Definitions
                 var constructed = Droid.LoadConstructedDroid(controller);
                 constructed.LearnedPerks.Add(new DroidPerk { Perk = PerkType.MedKit, Level = 4 });
                 constructed.ActivePerks.Add(new DroidPerk { Perk = PerkType.MedKit, Level = 4 });
+                if (savedLoadout)
+                {
+                    // A summon restores the controller's saved equipment, as in normal play.
+                    foreach (var (slot, resref) in _savedDroidLoadout)
+                    {
+                        var item = CreateItemOnObject(resref, owner);
+                        ctx.Assert(GetIsObjectValid(item), $"The {resref} loadout item exists");
+                        constructed.EquippedItems[slot] = ObjectPlugin.Serialize(item);
+                        DestroyObject(item);
+                    }
+                }
                 Droid.SaveInstructions(controller, constructed);
             });
             await ctx.WaitFrameAsync();
@@ -62,10 +154,20 @@ namespace SWLOR.Game.Server.EngineTests.Definitions
             try
             {
                 var rifle = OBJECT_INVALID;
-                await ctx.ExecuteInCreatureContextAsync(owner, () => rifle = CreateItemOnObject("oph_rifle", owner));
-                await ctx.WaitFrameAsync();
-                await Transfer(ctx, owner, rifle, droid);
-                await Equip(ctx, droid, rifle, InventorySlot.RightHand);
+                if (savedLoadout)
+                {
+                    await ctx.WaitUntilAsync(() => GetResRef(GetItemInSlot(InventorySlot.RightHand, droid)) == "oph_rifle", 5f, "the saved rifle to be restored in hand");
+                    rifle = GetItemInSlot(InventorySlot.RightHand, droid);
+                    foreach (var (slot, resref) in _savedDroidLoadout)
+                        ctx.AssertEqual(resref, GetResRef(GetItemInSlot(slot, droid)), $"The droid wears its saved {resref}");
+                }
+                else
+                {
+                    await ctx.ExecuteInCreatureContextAsync(owner, () => rifle = CreateItemOnObject("oph_rifle", owner));
+                    await ctx.WaitFrameAsync();
+                    await Transfer(ctx, owner, rifle, droid);
+                    await Equip(ctx, droid, rifle, InventorySlot.RightHand);
+                }
                 SetImmortal(droid, true);
                 SetLocalBool(droid, CombatProbe, true);
 

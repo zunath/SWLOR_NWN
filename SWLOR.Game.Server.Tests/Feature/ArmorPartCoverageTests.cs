@@ -1,6 +1,7 @@
 using System.Text.Json;
 using System.Text.RegularExpressions;
 using NUnit.Framework;
+using SWLOR.Game.Server.Feature.AppearanceDefinition;
 using SWLOR.Game.Server.Feature.AppearanceDefinition.ItemAppearance;
 using SWLOR.Game.Server.Feature.AppearanceDefinition.RacialAppearance;
 using SWLOR.NWN.API.NWScript.Enum;
@@ -83,11 +84,17 @@ public class ArmorPartCoverageTests
     [Test]
     public void EveryCatalogArmorPartHasAModelOnEveryPlayableBody()
     {
-        var models = HakModels();
-        Assert.That(models, Does.Contain("pmh0_chest001"));
+        var (models, redirects) = HakModels();
+        // Resolve exactly as the server does: a .lod redirect wins over an .mdl and must reach one.
+        bool Exists(string model) => ModelResource.Exists(model,
+            (name, type) => type == ResType.LOD
+                ? redirects.ContainsKey(name.ToLowerInvariant())
+                : models.Contains(name.ToLowerInvariant()),
+            name => File.ReadAllText(redirects[name.ToLowerInvariant()]));
+        Assert.That(Exists("pmh0_chest001"), Is.True);
 
         var gaps = RequiredParts()
-            .Where(required => !models.Contains($"{required.Body}_{required.Model}"))
+            .Where(required => !Exists($"{required.Body}_{required.Model}"))
             .GroupBy(required => required.Model, required => required.Body)
             .Select(group => $"{group.Key}: {string.Join(", ", group)}")
             .ToList();
@@ -140,17 +147,24 @@ public class ArmorPartCoverageTests
             (AppearanceArmor.RightFoot, appearance.RightFoot), (AppearanceArmor.LeftFoot, appearance.LeftFoot),
         }.SelectMany(slot => slot.Item2.Select(style => (slot.Item1, style))).ToHashSet();
 
-    private static HashSet<string> HakModels()
+    private static (HashSet<string> Models, Dictionary<string, string> Redirects) HakModels()
     {
         var haks = Path.Combine(FindRepositoryRoot(), "SWLOR_Haks");
         using var config = JsonDocument.Parse(File.ReadAllText(Path.Combine(haks, "hakbuilder.json")));
-        return config.RootElement.GetProperty("HakList").EnumerateArray()
-            .Select(hak => Path.Combine(haks, hak.GetProperty("Path").GetString()!.Trim('.', '/')))
-            .Where(Directory.Exists)
-            .SelectMany(directory => Directory.EnumerateFiles(directory, "*.mdl")
-                .Concat(Directory.EnumerateFiles(directory, "*.lod")))
-            .Select(file => Path.GetFileNameWithoutExtension(file).ToLowerInvariant())
-            .ToHashSet();
+        var models = new HashSet<string>();
+        var redirects = new Dictionary<string, string>();
+        // HAK order is priority order; the first resource of a name wins.
+        foreach (var hak in config.RootElement.GetProperty("HakList").EnumerateArray())
+        {
+            var directory = Path.Combine(haks, hak.GetProperty("Path").GetString()!.Trim('.', '/'));
+            if (!Directory.Exists(directory))
+                continue;
+            foreach (var file in Directory.EnumerateFiles(directory, "*.mdl"))
+                models.Add(Path.GetFileNameWithoutExtension(file).ToLowerInvariant());
+            foreach (var file in Directory.EnumerateFiles(directory, "*.lod"))
+                redirects.TryAdd(Path.GetFileNameWithoutExtension(file).ToLowerInvariant(), file);
+        }
+        return (models, redirects);
     }
 
     private static string FindRepositoryRoot()

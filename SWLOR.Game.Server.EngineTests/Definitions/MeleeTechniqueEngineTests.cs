@@ -115,9 +115,9 @@ namespace SWLOR.Game.Server.EngineTests.Definitions
                 ctx.AssertEqual(excludedHP, GetCurrentHitPoints(excluded), "an enemy outside the sweep radius is untouched");
                 ctx.AssertEqual(stamina - 9 + (stage == MeleeTechniqueStage.None ? 0 : 2) + (sweep ? 4 : 0),
                     Stat.GetCurrentStamina(caster), "Controlled Breathing refunds once and area recovery counts only the two hit targets");
-                ctx.AssertEqual(evasion + (stage == MeleeTechniqueStage.Opening ? 35 : 0) + (sweep ? 10 : 0),
+                ctx.AssertEqual(evasion + (stage == MeleeTechniqueStage.Opening ? 20 : 0) + (sweep ? 10 : 0),
                     Stat.GetStatAdjustment(caster, StatType.EvasionPercentAdjustment), "Flowing Footwork applies only to the sweep");
-                ctx.AssertEqual(haste + (stage == MeleeTechniqueStage.Finish ? 30 : 0) + (sweep ? 9 : 0),
+                ctx.AssertEqual(haste + (stage == MeleeTechniqueStage.Finish ? 15 : 0) + (sweep ? 9 : 0),
                     Stat.GetStatAdjustment(caster, StatType.AttackDelayReductionPercent), "two landed targets grant one stack from each area haste source");
                 if (stage == MeleeTechniqueStage.Opening)
                 {
@@ -463,9 +463,9 @@ namespace SWLOR.Game.Server.EngineTests.Definitions
                     await Cast(ctx, caster, target, FeatType.FinishingCombination1);
                     ctx.AssertEqual(!fullSequence, StatusEffect.HasStatusEffect(caster, typeof(SlipAwayStatusEffect)), "short route alone grants Slip Away");
                     ctx.AssertEqual(fullSequence, StatusEffect.HasStatusEffect(caster, typeof(PressForwardStatusEffect)), "full route alone grants Press Forward");
-                    ctx.AssertEqual(evasion + (fullSequence ? 0 : 35), Stat.GetStatAdjustment(caster, StatType.EvasionPercentAdjustment), "evasion window budget");
+                    ctx.AssertEqual(evasion + (fullSequence ? 0 : 20), Stat.GetStatAdjustment(caster, StatType.EvasionPercentAdjustment), "evasion window budget");
                     ctx.AssertEqual(movement + (fullSequence ? 0 : 15), Stat.GetStatAdjustment(caster, StatType.MovementSpeedPercentAdjustment), "movement window budget");
-                    ctx.AssertEqual(haste + (fullSequence ? 30 : 0), Stat.GetStatAdjustment(caster, StatType.AttackDelayReductionPercent), "haste window budget");
+                    ctx.AssertEqual(haste + (fullSequence ? 15 : 0), Stat.GetStatAdjustment(caster, StatType.AttackDelayReductionPercent), "haste window budget");
                     var windowGrantedAt = DateTime.UtcNow;
                     await ctx.EquipItemAsync(caster, "b_pistol", InventorySlot.RightHand);
                     ctx.Assert(!EquipmentPredicates.HasUnarmedGrip(caster), "the window regression swaps to a ranged weapon");
@@ -475,8 +475,8 @@ namespace SWLOR.Game.Server.EngineTests.Definitions
                     await Cast(ctx, caster, target, FeatType.QuickDraw1);
                     ctx.AssertEqual(!fullSequence, StatusEffect.HasStatusEffect(caster, typeof(SlipAwayStatusEffect)), "another skill's same-target cast retains Slip Away");
                     ctx.AssertEqual(fullSequence, StatusEffect.HasStatusEffect(caster, typeof(PressForwardStatusEffect)), "another skill's same-target cast retains Press Forward");
-                    ctx.AssertEqual(evasion + (fullSequence ? 0 : 35), Stat.GetStatAdjustment(caster, StatType.EvasionPercentAdjustment), "the ranged weapon and its real skill retain the earned evasion magnitude");
-                    ctx.AssertEqual(haste + (fullSequence ? 30 : 0), Stat.GetStatAdjustment(caster, StatType.AttackDelayReductionPercent), "the ranged weapon and its real skill retain the earned haste magnitude");
+                    ctx.AssertEqual(evasion + (fullSequence ? 0 : 20), Stat.GetStatAdjustment(caster, StatType.EvasionPercentAdjustment), "the ranged weapon and its real skill retain the earned evasion magnitude");
+                    ctx.AssertEqual(haste + (fullSequence ? 15 : 0), Stat.GetStatAdjustment(caster, StatType.AttackDelayReductionPercent), "the ranged weapon and its real skill retain the earned haste magnitude");
                     if (!fullSequence)
                     {
                         await ctx.WaitUntilAsync(() => !StatusEffect.HasStatusEffect(caster, typeof(SlipAwayStatusEffect)), 10f, "the original eight-second window to expire despite the swap and other skill's cast");
@@ -601,15 +601,15 @@ namespace SWLOR.Game.Server.EngineTests.Definitions
                 ctx.AssertEqual(0, MeleeTechnique.GetPendingRetaliationPower(caster, target), "temporary HP only damage cannot grant a counter");
                 await DirectHit(target, 10);
                 ctx.AssertEqual(baselineHP - 5, GetCurrentHitPoints(caster), "spillover costs five real HP");
-                await ctx.WaitUntilAsync(() => MeleeTechnique.GetPendingRetaliationPower(caster, target) == 24, 2f, "direct HP loss arms a counter without gloves or Rattled");
+                await ctx.WaitUntilAsync(() => MeleeTechnique.GetPendingRetaliationPower(caster, target) == 12, 2f, "direct HP loss arms a counter without gloves or Rattled");
                 ctx.Assert(StatusEffect.HasStatusEffect(caster, typeof(RetaliationStatusEffect)), "the charge has visible feedback");
                 await DirectHit(other, 5);
-                ctx.AssertEqual(24, MeleeTechnique.GetPendingRetaliationPower(caster, target), "the grant cooldown prevents another attacker replacing the charge");
+                ctx.AssertEqual(12, MeleeTechnique.GetPendingRetaliationPower(caster, target), "the grant cooldown prevents another attacker replacing the charge");
                 ctx.AssertEqual(0, MeleeTechnique.GetPendingRetaliationPower(caster, other), "the counter remains bound to the damaging opponent");
                 MeleeTechnique.BeginPaidActivation(caster, target, new AbilityDetail { IsHostileAbility = true, SkillType = SkillType.Force });
-                ctx.AssertEqual(24, MeleeTechnique.GetPendingRetaliationPower(caster, target), "an unrelated same-target skill preserves the charge");
+                ctx.AssertEqual(12, MeleeTechnique.GetPendingRetaliationPower(caster, target), "an unrelated same-target skill preserves the charge");
                 await ctx.EquipItemAsync(caster, "t_pglove", InventorySlot.RightHand);
-                ctx.AssertEqual(24, MeleeTechnique.GetPendingRetaliationPower(caster, target), "returning to gloves preserves the original charge");
+                ctx.AssertEqual(12, MeleeTechnique.GetPendingRetaliationPower(caster, target), "returning to gloves preserves the original charge");
                 await Cast(ctx, caster, target, FeatType.Uppercut1);
                 ctx.AssertEqual(0, MeleeTechnique.GetPendingRetaliationPower(caster, target), "a paid missed heavy strike consumes the single charge without setup");
                 ctx.Assert(!StatusEffect.HasStatusEffect(caster, typeof(RetaliationStatusEffect)), "consumption removes the charge marker");
@@ -643,7 +643,7 @@ namespace SWLOR.Game.Server.EngineTests.Definitions
                 await ctx.DelaySecondsAsync(1.05f);
                 stamina = Stat.GetCurrentStamina(caster);
                 await Cast(ctx, caster, target, FeatType.Haymaker1);
-                ctx.AssertEqual(stamina - 12, Stat.GetCurrentStamina(caster), "Haymaker cannot bypass the same twelve-second refund gate");
+                ctx.AssertEqual(stamina - 15, Stat.GetCurrentStamina(caster), "Haymaker cannot bypass the same twelve-second refund gate");
                 ctx.AssertEqual(MeleeTechniqueStage.None, MeleeTechnique.GetSetupStage(caster, target), "Haymaker is usable without Rattled");
             }
             finally { ResetOverrides(caster); }

@@ -106,10 +106,10 @@ public static class UnarmedMasteryEngineTests
             });
             context.Assert(GetCurrentHitPoints(owner.Creature) < counterHitPoints && !GetIsDead(owner.Creature),
                 "The counter setup hit removes real player HP without killing the fixture.");
-            await context.WaitUntilAsync(() => MeleeTechnique.GetPendingRetaliationPower(owner.Creature, target) == 24,
+            await context.WaitUntilAsync(() => MeleeTechnique.GetPendingRetaliationPower(owner.Creature, target) == 12,
                 2f, "the real player damage event arms the optional counter while a pistol is equipped");
             await context.EquipItemAsync(owner.Creature, "t_pglove", InventorySlot.RightHand);
-            context.AssertEqual(24, MeleeTechnique.GetPendingRetaliationPower(owner.Creature, target),
+            context.AssertEqual(12, MeleeTechnique.GetPendingRetaliationPower(owner.Creature, target),
                 "The counter survives switching back to Power Gloves before the free heavy strike.");
             // Exercise the native avoided-attack callback with the owned perk's real stat source.
             await context.ExecuteInCreatureContextAsync(owner.Creature, () => Combat.TrackAvoidedAttack(owner.Creature, target));

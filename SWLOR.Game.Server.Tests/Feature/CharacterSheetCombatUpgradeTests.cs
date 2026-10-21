@@ -222,7 +222,7 @@ public class CharacterSheetCombatUpgradeTests
             "CharacterSheetViewModel.cs"));
 
         viewModel.Should().Contain("AddStat(\"Ranged Evasion\", FormatPercent(Stat.GetStatAdjustment(_target, StatType.RangedEvasionPercentAdjustment))");
-        viewModel.Should().Contain("Negative values slow attacks.");
+        viewModel.Should().Contain("Reduces the delay between your attacks by this percent. Negative values increase it.");
     }
 
     [Test]

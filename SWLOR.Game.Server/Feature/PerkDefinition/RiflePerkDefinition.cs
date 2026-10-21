@@ -200,7 +200,7 @@ namespace SWLOR.Game.Server.Feature.PerkDefinition
                 .AddPerkLevel()
                 .GrantsFeat(FeatType.SuppressionStance1)
                 .DroidAISlots(1)
-                .Description("While active, weapon attacks gain +10% Haste and add Suppression stacks lasting 30 seconds using your Suppressing Shot stack strength, but critical damage is reduced by 10%.")
+                .Description("While active, weapon attacks gain +10% Haste (reduces the delay between your attacks by 10%) and add Suppression stacks lasting 30 seconds using your Suppressing Shot stack strength, but critical damage is reduced by 10%.")
                 .Price(4)
                 .RequirementSkill(SkillType.Rifle, 20);
         }
@@ -398,7 +398,7 @@ namespace SWLOR.Game.Server.Feature.PerkDefinition
                 .AddPerkLevel()
                 .GrantsFeat(FeatType.SniperStance1)
                 .DroidAISlots(1)
-                .Description("While active, long-range hostile ranged abilities deal +15% damage, but attack delay is increased by 15%.")
+                .Description("While active, long-range hostile ranged abilities deal +15% damage, but the delay between your attacks is increased by 15% (-15% Haste).")
                 .Price(4)
                 .RequirementSkill(SkillType.Rifle, 20);
         }

@@ -1003,7 +1003,7 @@ public class CombatAttackDelayTests
         var reloadTempo = source[source.IndexOf("private void ReloadTempo()", StringComparison.Ordinal)..];
         reloadTempo = reloadTempo[..reloadTempo.IndexOf("private void ", 1, StringComparison.Ordinal)];
 
-        reloadTempo.Should().Contain("gain +20% Haste for your next two attacks");
+        reloadTempo.Should().Contain("gain +20% Haste (reduces the delay between your attacks by 20%) for your next two attacks");
         reloadTempo.Should().Contain(".IncreasesStat(StatType.CriticalHitLimitedHastePercentAdjustment, 20)");
         reloadTempo.Should().Contain(".IncreasesStat(StatType.CriticalHitLimitedHasteDurationSeconds, 30)");
         reloadTempo.Should().Contain(".IncreasesStat(StatType.CriticalHitLimitedHasteAttackCount, 2)");

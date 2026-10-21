@@ -145,7 +145,7 @@ namespace SWLOR.Game.Server.Feature.PerkDefinition.Beast
                 .IncreasesStat(StatType.PredatorsMarkDurationSeconds, 30)
 
                 .AddPerkLevel()
-                .Description("Predator's Mark also causes damage against marked targets to grant the beast +5% Haste and +2% hit chance for 30 seconds, stacking up to +20% Haste and +8% hit chance.")
+                .Description("Predator's Mark also causes damage against marked targets to grant the beast +5% Haste (reduces the delay between its attacks by 5%) and +2% hit chance for 30 seconds, stacking up to +20% Haste and +8% hit chance.")
                 .Price(4)
                 .RequirementBeastLevel(45)
                 .RequirementBeastRole(BeastRoleType.Damage)

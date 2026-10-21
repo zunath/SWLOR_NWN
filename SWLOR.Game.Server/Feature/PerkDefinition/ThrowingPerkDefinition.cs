@@ -395,7 +395,7 @@ namespace SWLOR.Game.Server.Feature.PerkDefinition
                 .AddPerkLevel()
                 .GrantsFeat(FeatType.FlurryStance1)
                 .DroidAISlots(1)
-                .Description("While active, thrown attacks against bleeding targets gain +10% Haste, but your Defense is reduced by 10%.")
+                .Description("While active, thrown attacks against bleeding targets gain +10% Haste (reduces the delay between those attacks by 10%), but your Defense is reduced by 10%.")
                 .Price(4)
                 .RequirementSkill(SkillType.Throwing, 20);
         }

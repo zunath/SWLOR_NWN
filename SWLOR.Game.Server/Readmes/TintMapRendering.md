@@ -742,6 +742,23 @@ DDS/TXI pair. Both the asset audit and C# corpus test require the pair; the GPU
 test rejects missing or enabled-mipmap TXIs before issuing compressed uploads.
 Rebuild and deploy all three `sw_tint*.hak` archives after this repair.
 
+## Smooth dye edges on reported materials
+
+By default `fs_plt_tinter` and `fs_plt_tinter_nm` take each pixel's dye layer
+from the nearest mask texel and filter only the shade. The native PLT renderer
+filtered the resolved colors instead, so on a converted part every boundary
+between two dye layers can render as a texel staircase. Players see this as a
+lower-resolution, jagged texture, even though the mask matches the PLT exactly.
+Materials listed in `SMOOTH_TINT_MATERIALS` (`GenerateTintMapAssets.py`) get
+`smoothTintEdges 1.0`, which resolves the four neighboring texels and filters
+their colors like the native PLT. Current opt-ins: helmets 53 and 287, and
+neck 267 with its scoped aliases. Every converted multi-layer mask uses the
+nearest-layer default, so a new report of jagged dye edges usually needs only
+a new opt-in. Confirm it against the pre-conversion PLT before adding one.
+`TestHelmetTintFiltering.py --game-data <dir>` guards the opt-in list and
+compares each opt-in mask's edges with resolved-color filtering on the GPU.
+Rebuild `sw_tint_mtr.hak` after a change and restart the client.
+
 ## Regression scene and checks
 
 ### Cover native body-part texture fallbacks

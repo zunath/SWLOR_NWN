@@ -5,6 +5,7 @@ using SWLOR.Game.Server.Core.NWNX.Enum;
 using SWLOR.Game.Server.Entity;
 using SWLOR.Game.Server.Feature.GuiDefinition.RefreshEvent;
 using SWLOR.Game.Server.Service.GuiService;
+using SWLOR.Game.Server.Service.LogService;
 using SWLOR.Game.Server.Service.PlayerListService;
 using SWLOR.NWN.API.NWNX;
 using NWNXLib = NWN.Native.API.NWNXLib;
@@ -176,6 +177,19 @@ namespace SWLOR.Game.Server.Service
         }
 
         /// <summary>
+        /// Returns a character's party leader and how many player characters the party holds. A character
+        /// outside a party, or a DM, leads a party of one.
+        /// </summary>
+        public static (uint Leader, int PlayerCount) GetParty(uint player)
+        {
+            var partyLeaders = GetPartyLeaders();
+            if (!partyLeaders.TryGetValue(player, out var leader))
+                return (player, 1);
+
+            return (leader, CountPartySizes(partyLeaders)[leader]);
+        }
+
+        /// <summary>
         /// Whether the viewer has marked the target hostile through the player list or the native PvP attitude.
         /// </summary>
         public static bool IsHostileTo(uint viewer, uint target)
@@ -224,6 +238,10 @@ namespace SWLOR.Game.Server.Service
             {
                 DeleteLocalBool(speaker, PlayerName.DirectTellVariable);
             }
+
+            // Matches the DM log entry the Player Search window writes for its private messages.
+            if (senderIsDM)
+                Log.Write(LogGroup.DM, $"{DMPresence.DescribeDM(sender)} messaged {GetName(target)} ({GetObjectUUID(target)}): {message}");
 
             return string.Empty;
         }

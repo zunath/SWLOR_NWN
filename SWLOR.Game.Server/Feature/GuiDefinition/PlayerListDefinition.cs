@@ -34,14 +34,15 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition
                 .SetIsResizable(true)
                 .SetIsCollapsible(true)
                 .SetKeepsOpenOnAreaChange(true)
-                .DefinePartialView(PlayerListViewModel.MainContentPartial, AddMainContent);
+                .DefinePartialView(PlayerListViewModel.MainContentPartial, host => AddMainContent(host, false))
+                .DefinePartialView(PlayerListViewModel.DMContentPartial, host => AddMainContent(host, true));
 
             window.AddStandardLayout(layout => layout.SetContentPartialElement(PlayerListViewModel.MainContentElement));
 
             return _builder.Build();
         }
 
-        private static void AddMainContent(GuiGroup<PlayerListViewModel> host)
+        private static void AddMainContent(GuiGroup<PlayerListViewModel> host, bool isDM)
         {
             host.AddColumn(col =>
             {
@@ -59,6 +60,8 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition
                             AddPlayerRows(content);
                             AddSelectionSummary(content);
                             AddActions(content);
+                            if (isDM)
+                                AddDMActions(content);
                         });
                     })
                         .SetWidth(ContentPanelWidth);
@@ -278,16 +281,6 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition
                     .SetWidth(120f)
                     .SetHeight(ButtonHeight);
 
-                row.AddButton()
-                    .SetText("Jump To")
-                    .SetTooltip("Teleport to the selected player")
-                    .BindDisabledTooltip(model => model.JumpToReason)
-                    .BindIsEnabled(model => model.CanJumpTo)
-                    .BindIsVisible(model => model.IsDMViewer)
-                    .BindOnClicked(model => model.OnClickJumpTo())
-                    .SetWidth(100f)
-                    .SetHeight(ButtonHeight);
-
                 row.AddSpacer();
             });
 
@@ -308,6 +301,30 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition
                     model => model.CanMakeLeader, model => model.MakeLeaderReason, model => model.OnClickMakeLeader());
                 AddActionButton(row, "Leave Party", 110f, "Leave your party",
                     model => model.CanLeaveParty, model => model.LeavePartyReason, model => model.OnClickLeaveParty());
+
+                row.AddSpacer();
+            });
+        }
+
+        private static void AddDMActions(GuiColumn<PlayerListViewModel> content)
+        {
+            content.AddRow(row =>
+            {
+                row.AddLabel()
+                    .SetText("DM")
+                    .SetColor(100, 180, 255)
+                    .SetHorizontalAlign(NuiHorizontalAlign.Left)
+                    .SetWidth(44f)
+                    .SetHeight(ButtonHeight);
+
+                AddActionButton(row, "Jump To", 90f, "Teleport to the selected player",
+                    model => model.CanJumpTo, model => model.JumpToReason, model => model.OnClickJumpTo());
+                AddActionButton(row, "Jump Here", 90f, "Bring the selected player to you",
+                    model => model.CanJumpHere, model => model.JumpHereReason, model => model.OnClickJumpHere());
+                AddActionButton(row, "Examine", 90f, "Open the DM examine window for the selected player",
+                    model => model.CanExamine, model => model.ExamineReason, model => model.OnClickExamine());
+                AddActionButton(row, "Boot", 90f, "Disconnect the selected player from the server",
+                    model => model.CanBoot, model => model.BootReason, model => model.OnClickBoot());
 
                 row.AddSpacer();
             });

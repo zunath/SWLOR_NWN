@@ -1015,7 +1015,7 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
             AddStat("Enmity", FormatPercent(Stat.GetStatAdjustment(_target, StatType.EnmityPercentAdjustment)), "Increases or decreases the rate at which enmity is acquired.");
             AddStat("FP Cost", FormatPercent(Stat.GetStatAdjustment(_target, StatType.FPCostPercentAdjustment)), "Adjusts the FP cost of abilities. Lower is better.");
             AddStat("STM Cost", FormatPercent(Stat.GetStatAdjustment(_target, StatType.AbilityStaminaCostPercentAdjustment)), "Adjusts the Stamina cost of abilities. Lower is better.");
-            AddStat("Haste", FormatPercent(Combat.CalculateAttackDelayReduction(_target)), $"Reduces the delay between your attacks by this percent. Negative values increase it. Once Atk Delay reaches {Combat.BaseAttackDelayMilliseconds / 1000f:0.##}s, more Haste adds extra attacks within a swing instead of faster swings.");
+            AddStat("Haste", FormatPercent(Combat.CalculateAttackDelayReduction(_target)), $"Reduces the delay between your attacks by this percent. Below {Combat.BaseAttackDelayMilliseconds / 1000f:0.##}s Atk Delay, extra Haste adds attacks within swings instead.");
             AddStat("Off-Hand Haste", FormatPercent(Combat.CalculateOffhandAttackDelayReduction(_target)), "Reduces the delay of your off-hand attacks by this percent. Only applies while dual wielding.");
             AddStat("Single Weapon DMG", FormatPercent(EquipmentPredicates.HasSingleWeapon(_target) ? WeaponDamage.GetSingleWeaponPercent(_target) : 0),
                 "Bonus to the item's weapon DMG with one eligible one-handed melee, pistol, or throwing weapon and an empty off hand. Includes the natural bonus and Doublehand; already included in equipped DMG.");

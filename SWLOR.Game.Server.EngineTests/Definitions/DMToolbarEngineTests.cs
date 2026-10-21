@@ -185,6 +185,24 @@ namespace SWLOR.Game.Server.EngineTests.Definitions
                 ctx.AssertEqual(before.X + BattleGrid.DefaultSettings.SquareSize, BattleGrid.GetCenter(area).X, "Move East shifts one square");
                 ctx.AssertEqual(2, GridAnchors(area).Count, "moving redraws the same sections");
 
+                // Place at Target centers on an object in this area, and ignores picks with no position here.
+                var centerBeforePicks = BattleGrid.GetCenter(area);
+                var anchorsBeforePicks = GridAnchors(area);
+                var item = OBJECT_INVALID;
+                await InContext(ctx, player.Creature, () => item = CreateItemOnObject("bag_sm", player.Creature));
+                ctx.Assert(GetIsObjectValid(item), "the fixture holds an inventory item to pick");
+                await InContext(ctx, player.Creature, grid.OnPlaceAtTarget());
+                await InContext(ctx, player.Creature, () => PendingTargetAction(player.Creature)(item));
+                ctx.AssertEqual(centerBeforePicks, BattleGrid.GetCenter(area), "picking an inventory item leaves the grid where it was");
+                ctx.Assert(anchorsBeforePicks.SequenceEqual(GridAnchors(area)), "picking an inventory item does not redraw the grid");
+
+                var marker = CreateObject(ObjectType.Placeable, "plc_invisobj", ctx.GetArenaLocation(6.3f, 2.1f));
+                ctx.Track(marker);
+                await InContext(ctx, player.Creature, grid.OnPlaceAtTarget());
+                await InContext(ctx, player.Creature, () => PendingTargetAction(player.Creature)(marker));
+                var expectedCenter = BattleGrid.SnapCenter(GetPosition(marker), BattleGrid.DefaultSettings.SquareSize);
+                ctx.AssertEqual(expectedCenter, BattleGrid.GetCenter(area), "picking an object in the area centers the grid on it");
+
                 // Far outside the map: whatever the engine creates, the reported grid matches it.
                 var drawnOffMap = 0;
                 await InContext(ctx, player.Creature, () => drawnOffMap = BattleGrid.Place(area, new System.Numerics.Vector3(-5000f, -5000f, 0f)));
@@ -201,6 +219,15 @@ namespace SWLOR.Game.Server.EngineTests.Definitions
             {
                 await InContext(ctx, player.Creature, () => BattleGrid.Remove(area));
             }
+        }
+
+        // A headless fixture cannot click, so run the handler Place at Target registered for its next pick.
+        private static Action<uint> PendingTargetAction(uint creature)
+        {
+            var actions = (System.Collections.IDictionary)typeof(Targeting)
+                .GetField("_playerTargetingActions", BindingFlags.Static | BindingFlags.NonPublic)!.GetValue(null)!;
+            var detail = actions[creature] ?? throw new InvalidOperationException("No targeting action is pending.");
+            return (Action<uint>)detail.GetType().GetProperty("SelectionAction")!.GetValue(detail)!;
         }
 
         private static List<uint> GridAnchors(uint area)

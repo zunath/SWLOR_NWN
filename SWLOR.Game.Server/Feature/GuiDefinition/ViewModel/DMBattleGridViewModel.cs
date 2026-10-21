@@ -1,4 +1,5 @@
 using System.Globalization;
+using System.Numerics;
 using SWLOR.Game.Server.Service;
 using SWLOR.Game.Server.Service.GuiService;
 using SWLOR.NWN.API.NWScript.Enum;
@@ -129,11 +130,19 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
             {
                 // A ground pick arrives as the area object, so this is an object-only targeting request: Targeting's
                 // location fallback, which ignores a (0, 0, 0) position, is never needed, and a cancelled pick never
-                // calls back. A clicked object centers the grid on the object.
+                // calls back. A clicked object centers the grid on the object, but only one standing in this area:
+                // inventory items and objects elsewhere have no position here.
                 var area = GetArea(controlled);
-                var position = GetIsObjectValid(target) && target != area
-                    ? GetPosition(target)
-                    : GetTargetingModeSelectedPosition();
+                Vector3 position;
+                if (target == area)
+                    position = GetTargetingModeSelectedPosition();
+                else if (GetIsObjectValid(target) && GetArea(target) == area)
+                    position = GetPosition(target);
+                else
+                {
+                    DMPresence.SendMessage(Player, ColorToken.Red("Pick the ground or an object in this area to center the grid."));
+                    return;
+                }
 
                 ReportPlacement(BattleGrid.Place(area, position));
             }, false);

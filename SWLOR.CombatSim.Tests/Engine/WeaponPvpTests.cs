@@ -147,7 +147,8 @@ public class WeaponPvpTests
             return healer.Stats.HealingDone;
         }
         Heal(true).Should().Be(Heal(false));
-        Heal(true).Should().Be(161);
+        // (63 HP + 3.5% of 1,000) = 98, x0.625 at 10 Willpower -> 62, x1.15 at Force affinity 3 -> 71.
+        Heal(true).Should().Be(71);
     }
 
     [Test]

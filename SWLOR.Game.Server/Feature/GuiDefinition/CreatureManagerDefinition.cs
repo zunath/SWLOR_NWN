@@ -1,3 +1,4 @@
+using SWLOR.Game.Server.Core.Beamdog;
 using SWLOR.Game.Server.Feature.GuiDefinition.ViewModel;
 using SWLOR.Game.Server.Service.GuiService;
 
@@ -55,42 +56,38 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition
                             {
                                 row.AddList(template =>
                                 {
+                                    // The name takes whatever the fixed-width buttons leave.
                                     template.AddCell(cell =>
                                     {
                                         cell.AddLabel()
-                                            .SetWidth(120f)
+                                            .SetHorizontalAlign(NuiHorizontalAlign.Left)
                                             .BindText(model => model.CreatureNames);
-
-                                        cell.SetWidth(120f);
                                     });
                                     template.AddCell(cell =>
                                     {
+                                        cell.SetIsVariable(false);
+                                        cell.SetWidth(65f);
                                         cell.AddButton()
                                             .SetText("Create")
-                                            .SetWidth(40f)
                                             .BindIsEnabled(model => model.CreatureExists)
                                             .BindOnClicked(model => model.OnCreateCreature());
-
-                                        cell.SetWidth(40f);
                                     });
                                     template.AddCell(cell =>
                                     {
+                                        cell.SetIsVariable(false);
+                                        cell.SetWidth(65f);
                                         cell.AddButton()
                                             .SetText("Delete")
-                                            .SetWidth(40f)
                                             .BindIsEnabled(model => model.CreatureExists)
                                             .BindOnClicked(model => model.OnDeleteCreature());
-
-                                        cell.SetWidth(40f);
                                     });
                                     template.AddCell(cell =>
                                     {
+                                        cell.SetIsVariable(false);
+                                        cell.SetWidth(90f);
                                         cell.AddButton()
                                             .BindText(model => model.FavoriteTexts)
-                                            .SetWidth(60f)
                                             .BindOnClicked(model => model.OnToggleFavorite());
-
-                                        cell.SetWidth(60f);
                                     });
                                 })
                                     .BindRowCount(model => model.CreatureNames);

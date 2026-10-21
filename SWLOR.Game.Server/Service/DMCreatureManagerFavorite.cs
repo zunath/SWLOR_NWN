@@ -28,13 +28,14 @@ namespace SWLOR.Game.Server.Service
         }
 
         /// <summary>
-        /// Adds the saved creature to the DM's favorites, or removes it when it is already one, and saves the change.
+        /// Adds the saved creature to the DM's favorites or removes it, and saves the change.
         /// </summary>
         /// <param name="actor">A DM avatar or the creature they possess.</param>
         /// <param name="creatureId">The saved creature's record id.</param>
         /// <param name="name">The saved creature's name.</param>
+        /// <param name="isFavorite">True to add the saved creature, false to remove it.</param>
         /// <param name="favorites">The DM's saved favorites after the change.</param>
-        public static DMFavoriteChange Toggle(uint actor, string creatureId, string name, out List<DMSavedCreatureFavorite> favorites)
+        public static DMFavoriteChange Set(uint actor, string creatureId, string name, bool isFavorite, out List<DMSavedCreatureFavorite> favorites)
         {
             var record = GetRecord(actor);
             if (record == null)
@@ -44,7 +45,7 @@ namespace SWLOR.Game.Server.Service
             }
 
             // Read the saved list rather than the window's copy, so a second session on the same key is not overwritten.
-            var change = DMSavedCreatureFavoriteList.Toggle(record.Creatures, creatureId, name);
+            var change = DMSavedCreatureFavoriteList.Set(record.Creatures, creatureId, name, isFavorite);
             if (change != DMFavoriteChange.Full)
                 DB.Set(record);
 

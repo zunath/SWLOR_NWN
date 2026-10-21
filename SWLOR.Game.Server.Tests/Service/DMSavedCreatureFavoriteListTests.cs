@@ -9,32 +9,46 @@ namespace SWLOR.Game.Server.Tests.Service;
 public class DMSavedCreatureFavoriteListTests
 {
     [Test]
-    public void Toggle_AddsThenRemovesTheSameSavedCreature()
+    public void Set_AddsThenRemovesTheSameSavedCreature()
     {
         var favorites = new List<DMSavedCreatureFavorite>();
 
-        DMSavedCreatureFavoriteList.Toggle(favorites, "id-1", "Rancor").Should().Be(DMFavoriteChange.Added);
+        DMSavedCreatureFavoriteList.Set(favorites, "id-1", "Rancor", true).Should().Be(DMFavoriteChange.Added);
         favorites.Should().ContainSingle();
         favorites[0].CreatureId.Should().Be("id-1");
         favorites[0].Name.Should().Be("Rancor");
         DMSavedCreatureFavoriteList.Contains(favorites, "id-1").Should().BeTrue();
         DMSavedCreatureFavoriteList.Contains(favorites, "id-2").Should().BeFalse();
 
-        DMSavedCreatureFavoriteList.Toggle(favorites, "id-1", "Rancor").Should().Be(DMFavoriteChange.Removed);
+        DMSavedCreatureFavoriteList.Set(favorites, "id-1", "Rancor", false).Should().Be(DMFavoriteChange.Removed);
         favorites.Should().BeEmpty();
     }
 
     [Test]
-    public void Toggle_RefusesToAddPastTheLimitButStillRemoves()
+    public void Set_KeepsTheShownStateWhenAnotherSessionAlreadyChangedIt()
+    {
+        var favorites = new List<DMSavedCreatureFavorite> { new("id-1", "Rancor") };
+
+        // A stale "Favorite" button must not remove what another session just added.
+        DMSavedCreatureFavoriteList.Set(favorites, "id-1", "Rancor", true).Should().Be(DMFavoriteChange.Added);
+        favorites.Should().ContainSingle();
+
+        // A stale "Unfavorite" button must not add what another session just removed.
+        DMSavedCreatureFavoriteList.Set(favorites, "id-2", "Guard", false).Should().Be(DMFavoriteChange.Removed);
+        favorites.Should().ContainSingle();
+    }
+
+    [Test]
+    public void Set_RefusesToAddPastTheLimitButStillRemoves()
     {
         var favorites = Enumerable.Range(0, DMSavedCreatureFavoriteList.MaxFavorites)
             .Select(index => new DMSavedCreatureFavorite($"id-{index}", $"Creature {index}"))
             .ToList();
 
-        DMSavedCreatureFavoriteList.Toggle(favorites, "new", "New").Should().Be(DMFavoriteChange.Full);
+        DMSavedCreatureFavoriteList.Set(favorites, "new", "New", true).Should().Be(DMFavoriteChange.Full);
         favorites.Should().HaveCount(DMSavedCreatureFavoriteList.MaxFavorites);
 
-        DMSavedCreatureFavoriteList.Toggle(favorites, "id-3", "Creature 3").Should().Be(DMFavoriteChange.Removed);
+        DMSavedCreatureFavoriteList.Set(favorites, "id-3", "Creature 3", false).Should().Be(DMFavoriteChange.Removed);
         favorites.Should().HaveCount(DMSavedCreatureFavoriteList.MaxFavorites - 1);
     }
 

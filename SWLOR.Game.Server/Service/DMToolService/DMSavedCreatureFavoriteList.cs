@@ -22,15 +22,23 @@ namespace SWLOR.Game.Server.Service.DMToolService
         }
 
         /// <summary>
-        /// Removes the saved creature when it is a favorite, otherwise adds it unless the list is full.
+        /// Adds or removes the saved creature. Adding one that is already a favorite, or removing one that is not,
+        /// changes nothing, so a button acts on the state it shows even if another session changed the list.
         /// </summary>
         /// <param name="favorites">The DM's favorites, changed in place.</param>
         /// <param name="creatureId">The saved creature's record id.</param>
         /// <param name="name">The saved creature's name, kept for when the record is deleted.</param>
-        public static DMFavoriteChange Toggle(List<DMSavedCreatureFavorite> favorites, string creatureId, string name)
+        /// <param name="isFavorite">True to add the saved creature, false to remove it.</param>
+        public static DMFavoriteChange Set(List<DMSavedCreatureFavorite> favorites, string creatureId, string name, bool isFavorite)
         {
-            if (Remove(favorites, creatureId))
+            if (!isFavorite)
+            {
+                Remove(favorites, creatureId);
                 return DMFavoriteChange.Removed;
+            }
+
+            if (Contains(favorites, creatureId))
+                return DMFavoriteChange.Added;
 
             if (favorites.Count >= MaxFavorites)
                 return DMFavoriteChange.Full;

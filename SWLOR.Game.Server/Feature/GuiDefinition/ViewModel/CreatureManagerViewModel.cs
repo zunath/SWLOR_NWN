@@ -181,16 +181,18 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
             if (index < 0 || index >= _creatureIds.Count)
                 return;
 
-            // A saved creature another DM deleted after this list loaded can still be removed, but not added.
+            // The button acts on what it shows. A saved creature another DM deleted after this list loaded can
+            // still be removed, but not added.
             var creatureId = _creatureIds[index];
-            if (!DMSavedCreatureFavoriteList.Contains(_favorites, creatureId) && !DB.Exists<DMCreature>(creatureId))
+            var add = !DMSavedCreatureFavoriteList.Contains(_favorites, creatureId);
+            if (add && !DB.Exists<DMCreature>(creatureId))
             {
                 DMPresence.SendMessage(Player, "That saved creature no longer exists.");
                 Search();
                 return;
             }
 
-            var change = DMCreatureManagerFavorite.Toggle(Player, creatureId, _rowNames[index], out var favorites);
+            var change = DMCreatureManagerFavorite.Set(Player, creatureId, _rowNames[index], add, out var favorites);
             if (change == DMFavoriteChange.NotSaved)
             {
                 DMPresence.SendMessage(Player, "Your favorites could not be saved.");

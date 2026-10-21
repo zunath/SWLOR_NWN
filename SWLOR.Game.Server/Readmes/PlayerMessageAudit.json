@@ -1569,21 +1569,21 @@
   },
   {
     "File": "SWLOR.Game.Server/Feature/GuiDefinition/ViewModel/CreatureManagerViewModel.cs",
-    "Line": 188,
+    "Line": 190,
     "Member": "OnToggleFavorite",
     "Delivery": "Retained",
     "Call": "DMPresence.SendMessage(Player, \"That saved creature no longer exists.\")"
   },
   {
     "File": "SWLOR.Game.Server/Feature/GuiDefinition/ViewModel/CreatureManagerViewModel.cs",
-    "Line": 196,
+    "Line": 198,
     "Member": "OnToggleFavorite",
     "Delivery": "Retained",
     "Call": "DMPresence.SendMessage(Player, \"Your favorites could not be saved.\")"
   },
   {
     "File": "SWLOR.Game.Server/Feature/GuiDefinition/ViewModel/CreatureManagerViewModel.cs",
-    "Line": 202,
+    "Line": 204,
     "Member": "OnToggleFavorite",
     "Delivery": "Retained",
     "Call": "DMPresence.SendMessage(Player, $\"You already have {DMSavedCreatureFavoriteList.MaxFavorites} favorite creatures. Remove one to add another.\")"

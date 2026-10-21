@@ -1,4 +1,6 @@
 using System.Collections.Generic;
+using System.Threading.Tasks;
+using SWLOR.Game.Server.EngineTests.Framework;
 using SWLOR.Game.Server.Service.PerkService;
 using SWLOR.Game.Server.Service.StatService;
 using SWLOR.NWN.API.NWScript.Enum;
@@ -211,6 +213,13 @@ namespace SWLOR.Game.Server.EngineTests.Definitions.AbilityBehaviors
         /// entry must also appear in <see cref="TargetSetupStatusEffects"/>.
         /// </summary>
         public Type[] ExpectedRemovedTargetStatusEffects { get; set; } = Array.Empty<Type>();
+
+        /// <summary>
+        /// Runs after the fixtures and equipment, immediately before the pre-activation snapshot,
+        /// with (context, caster, target) - for abilities whose validation requires state earned
+        /// through other real activations (e.g. Perfect Form requires a Finish from Jab and Palm Strike).
+        /// </summary>
+        public Func<EngineTestContext, uint, uint, Task> PrepareActivationAsync { get; set; }
 
         /// <summary>
         /// Documents why a definition-declared resource cost cannot be observed by this case.

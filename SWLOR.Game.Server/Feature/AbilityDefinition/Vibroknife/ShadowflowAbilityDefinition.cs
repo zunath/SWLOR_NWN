@@ -27,7 +27,7 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.Vibroknife
                     .HasRecastDelay(RecastGroup.ShadowflowStance, 30.0f),
                 SkillType.Vibroknife,
                 8,
-                18,
+                0,
                 typeof(ShadowflowStatusEffect),
                 null,
                 0,

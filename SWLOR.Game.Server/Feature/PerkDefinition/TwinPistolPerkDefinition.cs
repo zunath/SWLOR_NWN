@@ -96,14 +96,14 @@ namespace SWLOR.Game.Server.Feature.PerkDefinition
                 .AddPerkLevel()
                 .RequirementCannotHavePerk(PerkType.PairedHandling)
                 .GrantsFeat(FeatType.MatchedRhythmTrait)
-                .Description("While wielding two weapons, grants +3% Haste (reduces the delay between your attacks by 3%). Cannot be purchased with Paired Handling.")
+                .Description("While wielding two weapons, grants +3% Haste (reduces your weapon's attack delay by 3%). Cannot be purchased with Paired Handling.")
                 .IncreasesStat(StatType.DualWieldAttackDelayReductionPercent, 3)
                 .Price(2)
                 .RequirementSkill(SkillType.TwinPistol, 8)
 
                 .AddPerkLevel()
                 .RequirementCannotHavePerk(PerkType.PairedHandling)
-                .Description("While wielding two weapons, grants +6% Haste (reduces the delay between your attacks by 6%). Cannot be purchased with Paired Handling.")
+                .Description("While wielding two weapons, grants +6% Haste (reduces your weapon's attack delay by 6%). Cannot be purchased with Paired Handling.")
                 .IncreasesStat(StatType.DualWieldAttackDelayReductionPercent, 6)
                 .Price(4)
                 .RequirementSkill(SkillType.TwinPistol, 22)
@@ -111,7 +111,7 @@ namespace SWLOR.Game.Server.Feature.PerkDefinition
 
                 .AddPerkLevel()
                 .RequirementCannotHavePerk(PerkType.PairedHandling)
-                .Description("While wielding two weapons, grants +8% Haste (reduces the delay between your attacks by 8%). Cannot be purchased with Paired Handling.")
+                .Description("While wielding two weapons, grants +8% Haste (reduces your weapon's attack delay by 8%). Cannot be purchased with Paired Handling.")
                 .IncreasesStat(StatType.DualWieldAttackDelayReductionPercent, 8)
                 .Price(4)
                 .RequirementSkill(SkillType.TwinPistol, 45)
@@ -189,7 +189,7 @@ namespace SWLOR.Game.Server.Feature.PerkDefinition
                 .AddPerkLevel()
                 .GrantsFeat(FeatType.AkimboStance)
                 .DroidAISlots(1)
-                .Description("With any weapon: +10% Haste (reduces the delay between your attacks by 10%). Landed weapon auto-attacks on the same enemy add +2% per stack, max five (+20% stance total), one stack per 2s. Target change or 6s without a weapon auto-attack hit clears stacks. All weapon auto-attacks deal 30% less damage.")
+                .Description("With any weapon: +10% Haste (reduces your weapon's attack delay by 10%). Landed weapon auto-attacks on the same enemy add +2% per stack, max five (+20% stance total), one stack per 2s. Target change or 6s without a weapon auto-attack hit clears stacks. All weapon auto-attacks deal 30% less damage.")
                 .Price(4)
                 .RequirementSkill(SkillType.TwinPistol, 20);
         }
@@ -393,7 +393,7 @@ namespace SWLOR.Game.Server.Feature.PerkDefinition
                 .AddPerkLevel()
                 .GrantsFeat(FeatType.CrossfireStance)
                 .DroidAISlots(1)
-                .Description("With any weapon: +10% Haste (reduces the delay between your attacks by 10%), +10% Movement Speed and 18-second Flow. All weapon auto-attacks deal 20% less damage. Activated ability damage is unchanged.")
+                .Description("With any weapon: +10% Haste (reduces your weapon's attack delay by 10%), +10% Movement Speed and 18-second Flow. All weapon auto-attacks deal 20% less damage. Activated ability damage is unchanged.")
                 .Price(4)
                 .RequirementSkill(SkillType.TwinPistol, 20);
         }

@@ -222,7 +222,7 @@ public class CharacterSheetCombatUpgradeTests
             "CharacterSheetViewModel.cs"));
 
         viewModel.Should().Contain("AddStat(\"Ranged Evasion\", FormatPercent(Stat.GetStatAdjustment(_target, StatType.RangedEvasionPercentAdjustment))");
-        viewModel.Should().Contain("Reduces the delay between your attacks by this percent. Below {Combat.BaseAttackDelayMilliseconds / 1000f:0.##}s Atk Delay, extra Haste adds attacks within swings instead.");
+        viewModel.Should().Contain("Reduces your weapon's attack delay by this percent. Below {Combat.BaseAttackDelayMilliseconds / 1000f:0.##}s Atk Delay, extra Haste adds attacks within swings instead.");
     }
 
     [Test]

@@ -45,7 +45,7 @@ namespace SWLOR.Game.Server.Feature.PerkDefinition
                 .AddPerkLevel()
                 .GrantsFeat(FeatType.BerserkerStance1)
                 .DroidAISlots(1)
-                .Description("While active, grants +25% Attack, +15% Haste (reduces the delay between your attacks by 15%), -20% Defense, and -20% Force Defense.")
+                .Description("While active, grants +25% Attack, +15% Haste (reduces your weapon's attack delay by 15%), -20% Defense, and -20% Force Defense.")
                 .Price(4)
                 .RequirementSkill(SkillType.Vibroblade, 20);
         }
@@ -57,7 +57,7 @@ namespace SWLOR.Game.Server.Feature.PerkDefinition
 
                 .AddPerkLevel()
                 .GrantsFeat(FeatType.BloodFrenzyBurst)
-                .Description("For 45 seconds, gain +15% Haste (reduces the delay between your attacks by 15%). Successful auto-attacks restore 1 STM, and defeating an enemy restores 8 STM. Works with any weapon.")
+                .Description("For 45 seconds, gain +15% Haste (reduces your weapon's attack delay by 15%). Successful auto-attacks restore 1 STM, and defeating an enemy restores 8 STM. Works with any weapon.")
                 .Price(6)
                 .RequirementSkill(SkillType.Vibroblade, 50)
                 .RequirementQuest(BloodFrenzyQuestDefinition.FinalQuestId);

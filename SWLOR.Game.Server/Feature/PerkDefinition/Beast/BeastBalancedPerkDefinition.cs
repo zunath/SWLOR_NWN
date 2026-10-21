@@ -142,14 +142,14 @@ namespace SWLOR.Game.Server.Feature.PerkDefinition.Beast
                 .GroupType(PerkGroupType.Beast)
 
                 .AddPerkLevel()
-                .Description("The beast gains +15% Haste (reduces the delay between its attacks by 15%) for 30 seconds.")
+                .Description("The beast gains +15% Haste (reduces its attack delay by 15%) for 30 seconds.")
                 .Price(3)
                 .RequirementBeastLevel(22)
                 .RequirementBeastRole(BeastRoleType.Balanced)
                 .GrantsFeat(FeatType.Hasten1)
 
                 .AddPerkLevel()
-                .Description("The beast gains +25% Haste (reduces the delay between its attacks by 25%) for 30 seconds.")
+                .Description("The beast gains +25% Haste (reduces its attack delay by 25%) for 30 seconds.")
                 .Price(3)
                 .RequirementBeastLevel(40)
                 .RequirementBeastRole(BeastRoleType.Balanced)

@@ -189,7 +189,7 @@ namespace SWLOR.Game.Server.Feature.PerkDefinition
                 .AddPerkLevel()
                 .GrantsFeat(FeatType.CrusherStance1)
                 .DroidAISlots(1)
-                .Description("While active, deal +15% damage to enemies affected by control effects, but the delay between your attacks is increased by 10% (-10% Haste).")
+                .Description("While active, deal +15% damage to enemies affected by control effects, but your weapon's attack delay is increased by 10% (-10% Haste).")
                 .Price(4)
                 .RequirementSkill(SkillType.Staff, 20);
         }

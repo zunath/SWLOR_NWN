@@ -207,7 +207,7 @@ namespace SWLOR.Game.Server.Feature.PerkDefinition
 
                 .AddPerkLevel()
                 .GrantsFeat(FeatType.EnergizedFormsTrait)
-                .Description("When a Saberstaff ability restores FP through Conduit, gain +10% Haste (reduces the delay between your attacks by 10%) for 30 seconds.")
+                .Description("When a Saberstaff ability restores FP through Conduit, gain +10% Haste (reduces your weapon's attack delay by 10%) for 30 seconds.")
                 .IncreasesStat(StatType.AbilityRestoredFPHastePercentAdjustment, 10)
                 .IncreasesStat(StatType.AbilityRestoredFPHasteDurationSeconds, 30)
                 .Price(4)
@@ -422,7 +422,7 @@ namespace SWLOR.Game.Server.Feature.PerkDefinition
 
                 .AddPerkLevel()
                 .GrantsFeat(FeatType.FlowOfTheMaelstromTrait)
-                .Description("After restoring FP from a combat ability, gain +10% Haste (reduces the delay between your attacks by 10%) for 30 seconds.")
+                .Description("After restoring FP from a combat ability, gain +10% Haste (reduces your weapon's attack delay by 10%) for 30 seconds.")
                 .IncreasesStat(StatType.AbilityRestoredFPHastePercentAdjustment, 10)
                 .IncreasesStat(StatType.AbilityRestoredFPHasteDurationSeconds, 30)
                 .Price(2)

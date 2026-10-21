@@ -383,6 +383,11 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
             ClearHighlight();
         };
 
+        public Action OnOpenBattleGrid() => () =>
+        {
+            DMPresence.ToggleWindow(Player, GuiWindowType.DMBattleGrid);
+        };
+
         public Action OnRefreshPlaceables() => () =>
         {
             RebuildPlaceables();

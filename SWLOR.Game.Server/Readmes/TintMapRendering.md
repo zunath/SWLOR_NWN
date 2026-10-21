@@ -42,11 +42,15 @@ blending enabled and disabled, in both native `NO_DISCARD` modes.
 
 Authored MTRs can inherit a same-name DDS/TGA without declaring `texture0`.
 `TintMapMaterialSources.json` records that input as `implicitTexture0`.
-Helmet 101, both human neck 12 textures, and female human left shin 264 have
-obsolete PLT atlases that differ from their authored diffuse artwork.
+Helmet 101 and both human neck 12 textures have obsolete PLT atlases that differ
+from their authored diffuse artwork.
 `GenerateAuthoredDiffuseTintMaps.py` registers a uniform channel selector while
 retaining the full-resolution diffuse and normal/specular textures. Cloth 1
-controls helmet 101 and shin 264; Skin controls the necks' authored surfaces.
+controls helmet 101; Skin controls the necks' authored surfaces. Female left shin
+264 is not one of them: its leftover DDS repeats the shared shin 264 palette's art
+(identical UVs, correlation 0.996), but it overrode the palette natively, so the
+left shin ignored dyes the right one took. `MIRRORED_MATERIAL_PROFILES` in
+`GenerateTintMapAssets.py` gives it the right shin's profile; both sides now dye alike.
 The mapped shader's opt-in `useAuthoredDiffuse` preserves original colors for
 native presets and reset. Explicit RGB replaces the hue using the original
 luminance detail, without sampling the obsolete PLT. Helmet 101 retains its
@@ -800,6 +804,12 @@ import until `python -B SWLOR_Haks/tools/TestStockPartTintBindings.py --game-dat
 "<NWN>/data"` reports no borrowed tint maps. Import the stock MDL first and
 convert its PLT with `--generate-preserving`; the remaining imports bind through
 `--refresh-model-bindings`.
+
+A stock part that keeps its own native PLT renders palette presets but never exact
+RGB, and a stock part whose palette is converted but whose MDL stays in the KEY/BIF
+layer has no `tintmap.2da` row, so runtime colors never reach it. Every part the
+appearance editor offers to a playable body is therefore imported and converted the
+same way, and every resolved catalog model must have a `tintmap.2da` row.
 
 PLT replacement changes the underlying diffuse texture, not the existing
 SharedMaterial configuration. Preserve the original normal, specular,

@@ -41,7 +41,8 @@ namespace SWLOR.Game.Server.EngineTests.Definitions
             GuiWindowType.CreatureManager,
             GuiWindowType.DMTools,
             GuiWindowType.AreaNotes,
-            GuiWindowType.MusicPicker
+            GuiWindowType.MusicPicker,
+            GuiWindowType.DMBattleGrid
         };
 
         /// <summary>
@@ -130,6 +131,88 @@ namespace SWLOR.Game.Server.EngineTests.Definitions
                 stats.m_bDMManifested = originalManifested;
                 WriteSnapshots();
             }
+        }
+
+        /// <summary>
+        /// Opens the Battle Grid through /battlegrid and Placeable Tools on a non-DM fixture (as an admin on their own
+        /// character would) and drives the window: the placed flag and section count must match the anchors that
+        /// really exist, a click past a limit must keep the drawn anchors, and a grid off the map is not reported.
+        /// </summary>
+        [EngineTest("Battle grid opens from /battlegrid and Placeable Tools and draws only what it reports", Category = "BattleGrid", TimeoutSeconds = 60f)]
+        public static async Task BattleGridDrawsAndRemovesSections(EngineTestContext ctx)
+        {
+            using var player = await PlayerAbilityFixture.CreateAsync(ctx);
+            using var windows = RegisterWindows(ctx, player);
+            var area = GetArea(player.Creature);
+            try
+            {
+                await InContext(ctx, player.Creature, () => BattleGrid.Remove(area));
+                await InContext(ctx, player.Creature, () => BattleGrid.SetSettings(area, BattleGrid.DefaultSettings));
+
+                var command = new DMChatCommand().BuildChatCommands()["battlegrid"];
+                ctx.Assert(command.ValidateArguments == null, "/battlegrid adds no check beyond the DM and Admin permission");
+                await InContext(ctx, player.Creature, () =>
+                    command.DoAction(player.Creature, OBJECT_INVALID, GetLocation(player.Creature)));
+                ctx.Assert(Gui.IsWindowOpen(player.Creature, GuiWindowType.DMBattleGrid), "/battlegrid opens the Battle Grid window");
+                await InContext(ctx, player.Creature, () =>
+                    command.DoAction(player.Creature, OBJECT_INVALID, GetLocation(player.Creature)));
+                ctx.Assert(!Gui.IsWindowOpen(player.Creature, GuiWindowType.DMBattleGrid), "/battlegrid again closes it");
+
+                await InContext(ctx, player.Creature, () => Gui.TogglePlayerWindow(player.Creature, GuiWindowType.DMTools));
+                var tools = (DMToolsViewModel)windows.ViewModel(GuiWindowType.DMTools);
+                await InContext(ctx, player.Creature, tools.OnOpenBattleGrid());
+                ctx.Assert(Gui.IsWindowOpen(player.Creature, GuiWindowType.DMBattleGrid), "Placeable Tools opens the Battle Grid window");
+                var grid = (DMBattleGridViewModel)windows.ViewModel(GuiWindowType.DMBattleGrid);
+                ctx.Assert(!grid.IsPlaced, "no grid before one is placed");
+
+                await InContext(ctx, player.Creature, grid.OnPlaceHere());
+                ctx.AssertEqual(4, GridAnchors(area).Count, "the default grid draws 2 x 2 sections");
+                ctx.Assert(grid.IsPlaced && BattleGrid.GetDrawnSections(area) == 4, "the window and service report the drawn grid");
+                ctx.AssertEqual("Grid shown: 40 x 40 squares.", grid.StatusText, "status names the full grid");
+
+                await InContext(ctx, player.Creature, grid.OnWidthUp());
+                ctx.AssertEqual(6, GridAnchors(area).Count, "one wider redraws 3 x 2 sections");
+
+                await InContext(ctx, player.Creature, grid.OnWidthDown());
+                await InContext(ctx, player.Creature, grid.OnWidthDown());
+                ctx.AssertEqual(2, GridAnchors(area).Count, "the narrowest grid is 1 x 2 sections");
+                var atLimit = GridAnchors(area);
+                await InContext(ctx, player.Creature, grid.OnWidthDown());
+                ctx.Assert(atLimit.SequenceEqual(GridAnchors(area)), "a click past the limit keeps the drawn anchors");
+
+                var before = BattleGrid.GetCenter(area);
+                await InContext(ctx, player.Creature, grid.OnMoveEast());
+                ctx.AssertEqual(before.X + BattleGrid.DefaultSettings.SquareSize, BattleGrid.GetCenter(area).X, "Move East shifts one square");
+                ctx.AssertEqual(2, GridAnchors(area).Count, "moving redraws the same sections");
+
+                // Far outside the map: whatever the engine creates, the reported grid matches it.
+                var drawnOffMap = 0;
+                await InContext(ctx, player.Creature, () => drawnOffMap = BattleGrid.Place(area, new System.Numerics.Vector3(-5000f, -5000f, 0f)));
+                ctx.AssertEqual(drawnOffMap, GridAnchors(area).Count, "the drawn count matches the anchors after an off-map placement");
+                ctx.AssertEqual(drawnOffMap > 0, BattleGrid.IsPlaced(area), "the area only counts as having a grid when one was drawn");
+                ctx.Log($"Sections drawn at (-5000, -5000): {drawnOffMap} of 2");
+
+                await InContext(ctx, player.Creature, grid.OnPlaceHere());
+                await InContext(ctx, player.Creature, grid.OnRemove());
+                ctx.AssertEqual(0, GridAnchors(area).Count, "Remove destroys every anchor");
+                ctx.Assert(!grid.IsPlaced && !BattleGrid.IsPlaced(area), "Remove clears the placed state");
+            }
+            finally
+            {
+                await InContext(ctx, player.Creature, () => BattleGrid.Remove(area));
+            }
+        }
+
+        private static List<uint> GridAnchors(uint area)
+        {
+            var anchors = new List<uint>();
+            for (var obj = GetFirstObjectInArea(area); GetIsObjectValid(obj); obj = GetNextObjectInArea(area))
+            {
+                if (GetTag(obj) == BattleGrid.AnchorTag)
+                    anchors.Add(obj);
+            }
+
+            return anchors;
         }
 
         [EngineTest("DM chooser searches, jumps to, summons and destroys objects", Category = "DMToolbar", TimeoutSeconds = 90f)]

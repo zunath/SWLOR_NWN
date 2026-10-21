@@ -39,6 +39,7 @@ namespace SWLOR.Game.Server.Service
         public static readonly BattleGridSettings DefaultSettings = new(2f, 2, 2, 0.2f);
 
         private const string PlacedVariable = "BATTLE_GRID_PLACED";
+        private const string DrawnSectionsVariable = "BATTLE_GRID_DRAWN_SECTIONS";
         private const string SquareSizeVariable = "BATTLE_GRID_SQUARE_SIZE";
         private const string SectionsWideVariable = "BATTLE_GRID_SECTIONS_WIDE";
         private const string SectionsLongVariable = "BATTLE_GRID_SECTIONS_LONG";
@@ -94,11 +95,20 @@ namespace SWLOR.Game.Server.Service
         }
 
         /// <summary>
-        /// Returns true when the area has a grid.
+        /// Returns true when the area has a grid with at least one section drawn.
         /// </summary>
         public static bool IsPlaced(uint area)
         {
             return GetLocalBool(area, PlacedVariable);
+        }
+
+        /// <summary>
+        /// Returns how many sections of the area's grid were drawn. Sections the engine could not create, such as
+        /// ones off the edge of the map, are not counted.
+        /// </summary>
+        public static int GetDrawnSections(uint area)
+        {
+            return IsPlaced(area) ? GetLocalInt(area, DrawnSectionsVariable) : 0;
         }
 
         /// <summary>
@@ -150,14 +160,13 @@ namespace SWLOR.Game.Server.Service
         /// Draws the area's grid centered on the square corner nearest <paramref name="position"/>, replacing any
         /// grid already in the area.
         /// </summary>
-        /// <returns>The number of sections drawn.</returns>
+        /// <returns>The number of sections drawn; 0 leaves the area without a grid.</returns>
         public static int Place(uint area, Vector3 position)
         {
             var settings = Clamp(GetSettings(area));
             var center = SnapCenter(position, settings.SquareSize);
 
             DestroyAnchors(area);
-            SetLocalBool(area, PlacedVariable, true);
             SetLocalFloat(area, CenterXVariable, center.X);
             SetLocalFloat(area, CenterYVariable, center.Y);
             SetLocalFloat(area, CenterZVariable, center.Z);
@@ -179,6 +188,19 @@ namespace SWLOR.Game.Server.Service
                     EffectVisualEffect(VisualEffect.Vfx_Placement_Grid, false, scale, new Vector3(0f, 0f, settings.Height)),
                     anchor);
                 drawn++;
+            }
+
+            // The area only counts as having a grid when something was drawn, so the window never reports a grid
+            // that is not there. Sections that did draw stay: a grid running off the map still covers the map.
+            if (drawn > 0)
+            {
+                SetLocalBool(area, PlacedVariable, true);
+                SetLocalInt(area, DrawnSectionsVariable, drawn);
+            }
+            else
+            {
+                DeleteLocalBool(area, PlacedVariable);
+                DeleteLocalInt(area, DrawnSectionsVariable);
             }
 
             return drawn;
@@ -206,6 +228,7 @@ namespace SWLOR.Game.Server.Service
         {
             DestroyAnchors(area);
             DeleteLocalBool(area, PlacedVariable);
+            DeleteLocalInt(area, DrawnSectionsVariable);
         }
 
         private static void DestroyAnchors(uint area)

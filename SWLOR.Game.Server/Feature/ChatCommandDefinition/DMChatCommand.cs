@@ -1120,11 +1120,8 @@ namespace SWLOR.Game.Server.Feature.ChatCommandDefinition
         {
             _builder.Create("battlegrid")
                 .Description("Toggles the Battle Grid window: show, size and move a grid over the current area.")
+                // DMs, the creatures they possess, and admins on their own characters may all run a battle.
                 .Permissions(AuthorizationLevel.DM, AuthorizationLevel.Admin)
-                .Validate((user, args) =>
-                    GetIsDM(user) || GetIsDMPossessed(user)
-                        ? string.Empty
-                        : "Only a DM avatar, or a creature a DM possesses, can use the battle grid.")
                 .Action((user, target, location, args) =>
                 {
                     DMPresence.ToggleWindow(user, GuiWindowType.DMBattleGrid);

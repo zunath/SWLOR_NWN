@@ -54,15 +54,12 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
         }
 
         /// <summary>
-        /// The grid belongs to the area of whatever the DM controls, which can be a possessed creature.
+        /// The grid belongs to the area of whatever the user controls: a DM's possessed creature, or the player
+        /// object of a staff member using /battlegrid. Only DM tools and that command open this window.
         /// </summary>
         private uint GetGridArea()
         {
-            var controlled = DMPresence.GetControlledCreature(Player);
-            if (!GetIsDM(controlled) && !GetIsDMPossessed(controlled))
-                return OBJECT_INVALID;
-
-            return GetArea(controlled);
+            return GetArea(DMPresence.GetControlledCreature(Player));
         }
 
         private void Refresh()
@@ -75,13 +72,24 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
 
             var squaresWide = settings.SectionsWide * BattleGrid.SquaresPerSection;
             var squaresLong = settings.SectionsLong * BattleGrid.SquaresPerSection;
-            StatusText = IsPlaced
-                ? $"Grid shown: {squaresWide} x {squaresLong} squares."
-                : "No grid in this area.";
+            var sections = settings.SectionsWide * settings.SectionsLong;
+            var drawn = IsPlaced ? BattleGrid.GetDrawnSections(area) : 0;
+            StatusText = !IsPlaced
+                ? "No grid in this area."
+                : drawn < sections
+                    ? $"Grid shown: {drawn} of {sections} sections fit on the map."
+                    : $"Grid shown: {squaresWide} x {squaresLong} squares.";
             SquareSizeText = $"{FormatMeters(settings.SquareSize)} per square";
             WidthText = $"{squaresWide} squares ({FormatMeters(squaresWide * settings.SquareSize)})";
             LengthText = $"{squaresLong} squares ({FormatMeters(squaresLong * settings.SquareSize)})";
             HeightText = $"{(settings.Height >= 0f ? "+" : string.Empty)}{FormatMeters(settings.Height)}";
+        }
+
+        private void ReportPlacement(int drawn)
+        {
+            Refresh();
+            if (drawn <= 0)
+                DMPresence.SendMessage(Player, ColorToken.Red("The grid could not be drawn there. Pick a spot inside the map."));
         }
 
         private static string FormatMeters(float meters)
@@ -107,6 +115,8 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
 
             BattleGrid.Move(area, squaresEast, squaresNorth);
             Refresh();
+            if (!IsPlaced)
+                DMPresence.SendMessage(Player, ColorToken.Red("The grid moved off the map and was removed. Place it again."));
         }
 
         public Action OnPlaceAtTarget() => () =>
@@ -124,8 +134,7 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
                     ? GetPosition(target)
                     : GetTargetingModeSelectedPosition();
 
-                BattleGrid.Place(area, position);
-                Refresh();
+                ReportPlacement(BattleGrid.Place(area, position));
             }, true);
         };
 
@@ -135,8 +144,7 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
             if (!GetIsObjectValid(area))
                 return;
 
-            BattleGrid.Place(area, GetPosition(DMPresence.GetControlledCreature(Player)));
-            Refresh();
+            ReportPlacement(BattleGrid.Place(area, GetPosition(DMPresence.GetControlledCreature(Player))));
         };
 
         public Action OnRemove() => () =>

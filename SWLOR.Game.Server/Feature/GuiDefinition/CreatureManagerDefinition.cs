@@ -23,6 +23,7 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition
                     {
                         row.AddTextEdit()
                             .SetPlaceholder("Search")
+                            .SetHeight(35f)
                             .BindValue(model => model.SearchText);
 
                         row.AddButton()
@@ -34,8 +35,12 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition
                         row.AddButton()
                             .SetText("Search")
                             .SetHeight(35f)
+                            .SetWidth(100f)
                             .BindOnClicked(model => model.OnClickSearch());
+                    });
 
+                    col.AddRow(row =>
+                    {
                         row.AddButton()
                             .BindText(model => model.FavoritesFilterText)
                             .SetHeight(35f)

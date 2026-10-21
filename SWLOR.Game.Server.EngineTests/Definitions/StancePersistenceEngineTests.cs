@@ -37,7 +37,7 @@ namespace SWLOR.Game.Server.EngineTests.Definitions
             var target = ctx.SpawnCreature(TargetResref, 1.5f, 0f);
             ctx.MakeHostile(target);
 
-            TriggerHostileAbilityRiders(caster, target, SkillType.Saberstaff, isArea: true);
+            await ctx.ExecuteInCreatureContextAsync(caster, () => TriggerHostileAbilityRiders(caster, target, SkillType.Saberstaff, isArea: true));
             ctx.AssertEqual(5, TemporaryStatModifier.GetStatAdjustment(caster, StatType.RangedDeflection),
                 "Ranged Deflection granted by Tempest Stance's area-ability rider");
 
@@ -57,7 +57,7 @@ namespace SWLOR.Game.Server.EngineTests.Definitions
             var target = ctx.SpawnCreature(TargetResref, 1.5f, 0f);
             ctx.MakeHostile(target);
 
-            TriggerHostileAbilityRiders(caster, target, SkillType.Spear, isArea: false);
+            await ctx.ExecuteInCreatureContextAsync(caster, () => TriggerHostileAbilityRiders(caster, target, SkillType.Spear, isArea: false));
             ctx.AssertEqual(8, TemporaryStatModifier.GetStatAdjustment(caster, StatType.EvasionPercentAdjustment),
                 "Evasion granted by Vigor Stance's hostile-ability rider");
 
@@ -94,8 +94,15 @@ namespace SWLOR.Game.Server.EngineTests.Definitions
             CreaturePlugin.AddFeat(caster, feat);
             await ctx.EquipItemAsync(caster, weaponResref, InventorySlot.RightHand);
 
-            ctx.Assert(UsePerkFeat.TryUseAbility(caster, caster, feat, GetLocation(caster)),
-                $"{feat} should activate on its caster.");
+            await ctx.WaitUntilAsync(() => GetCommandable(caster), 5f, "the caster to become commandable");
+            var used = false;
+            var denial = string.Empty;
+            await ctx.ExecuteInCreatureContextAsync(caster, () =>
+            {
+                used = UsePerkFeat.TryUseAbility(caster, caster, feat, GetLocation(caster));
+                denial = Ability.GetLastActivationDenialReason();
+            });
+            ctx.Assert(used, $"{feat} should activate on its caster: {denial}");
             await ctx.WaitUntilAsync(() => StatusEffect.HasStatusEffect(caster, stanceType), 10f,
                 $"{stanceType.Name} to appear on the caster");
 

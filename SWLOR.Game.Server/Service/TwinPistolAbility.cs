@@ -362,10 +362,13 @@ namespace SWLOR.Game.Server.Service
                 var destination = Location(GetArea(actor), position, GetFacing(actor));
                 straight ??= destination;
                 if (NumericsVector3.Distance(position, targetPosition) > spec.ArrivalRangeMeters) continue;
-                // The arrival volley checks line of sight from the new position; a lane behind cover would
-                // spend the cast without an attack. LineOfSightVector needs the actor's script context.
-                if (OBJECT_SELF == actor && !LineOfSightVector(position + new NumericsVector3(0, 0, 1f),
-                        targetPosition + new NumericsVector3(0, 0, 1f)))
+                // The arrival volley checks line of sight from where the actor stops; a lane behind cover would
+                // spend the cast without an attack. The move counts as arrived up to the arrival tolerance short
+                // of its end point, so both must see the target. LineOfSightVector needs the actor's script context.
+                var travel = new NumericsVector3(position.X - origin.X, position.Y - origin.Y, 0);
+                var early = position - travel * (WeaponRepositioning.ArrivalTolerance / travel.Length());
+                early.Z = GetGroundHeight(Location(GetArea(actor), early, GetFacing(actor)));
+                if (OBJECT_SELF == actor && (!HasLineOfFire(position, targetPosition) || !HasLineOfFire(early, targetPosition)))
                     continue;
                 if (string.IsNullOrEmpty(WeaponRepositioning.Validate(actor, GetLocation(actor), destination,
                         spec.MinimumMovementMeters, spec.MaxMovementMeters)))
@@ -373,6 +376,9 @@ namespace SWLOR.Game.Server.Service
             }
             return straight ?? GetLocation(actor);
         }
+
+        private static bool HasLineOfFire(NumericsVector3 from, NumericsVector3 target) =>
+            LineOfSightVector(from + new NumericsVector3(0, 0, 1f), target + new NumericsVector3(0, 0, 1f));
 
         /// <summary>
         /// The native move may report arrival up to 0.35m short, and slide rewards need the minimum distance

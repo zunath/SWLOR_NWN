@@ -13,5 +13,8 @@ namespace SWLOR.Game.Server.Service.PlayerListService
         public PlayerListActionState MakeLeader { get; set; }
         public PlayerListActionState LeaveParty { get; set; }
         public PlayerListActionState JumpTo { get; set; }
+        public PlayerListActionState JumpHere { get; set; }
+        public PlayerListActionState Examine { get; set; }
+        public PlayerListActionState Boot { get; set; }
     }
 }

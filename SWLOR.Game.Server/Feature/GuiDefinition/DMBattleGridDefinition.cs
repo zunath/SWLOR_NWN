@@ -15,6 +15,7 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition
 
         private const float ContentPanelWidth = 320f;
         private const float LabelHeight = 20f;
+        private const float ActionButtonWidth = 140f;
         private const float StepButtonSize = 32f;
         private const float ValueLabelWidth = 200f;
         private const float ArrowSize = 32f;
@@ -58,11 +59,14 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition
                                 r.AddButton()
                                     .SetText("Place at Target")
                                     .SetTooltip("Click a spot to center the grid there. Players in the area see it.")
+                                    .SetWidth(ActionButtonWidth)
                                     .BindOnClicked(model => model.OnPlaceAtTarget());
                                 r.AddButton()
                                     .SetText("Place on Me")
                                     .SetTooltip("Center the grid where you stand.")
+                                    .SetWidth(ActionButtonWidth)
                                     .BindOnClicked(model => model.OnPlaceHere());
+                                r.AddSpacer();
                             });
 
                             content.AddRow(r =>
@@ -70,6 +74,7 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition
                                 r.AddButton()
                                     .SetText("Remove Grid")
                                     .SetTooltip("Remove this area's grid. Its size settings are kept.")
+                                    .SetWidth(ActionButtonWidth)
                                     .BindOnClicked(model => model.OnRemove())
                                     .BindIsEnabled(model => model.IsPlaced);
                                 r.AddSpacer();

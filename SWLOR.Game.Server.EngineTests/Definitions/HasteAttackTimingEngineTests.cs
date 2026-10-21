@@ -93,14 +93,14 @@ namespace SWLOR.Game.Server.EngineTests.Definitions
                 });
                 var capped = await MeasureAttackRateAsync(ctx, 8f);
 
-                var baseline = unhasted.Average();
+                var baseline = Median(unhasted);
                 Report(ctx, $"Heavy Vibroblade attack interval: unhasted {Format(unhasted)}; 25% temporary " +
                             $"{Format(temporary)}; Hasten II {Format(status)}; limited {Format(limited)}; capped 50% " +
                             $"{capped:0}ms per attack. Designed cut for 25% Haste: {expectedCut}ms of the {rawDelay}ms raw delay.");
                 AssertCut(ctx, baseline, temporary, expectedCut, "25% temporary Haste");
                 AssertCut(ctx, baseline, status, expectedCut, "Hasten II");
                 AssertCut(ctx, baseline, limited, expectedCut, "25% limited Haste");
-                ctx.Assert(capped < temporary.Average() - ToleranceMilliseconds,
+                ctx.Assert(capped < Median(temporary) - ToleranceMilliseconds,
                     $"Capped Haste attacks faster than 25% Haste (observed {capped:0}ms per attack)");
             }
             finally
@@ -131,7 +131,7 @@ namespace SWLOR.Game.Server.EngineTests.Definitions
 
                 StartAttacking(attacker, target);
                 var unhastedSwings = await MeasureIntervalsAsync(ctx, 3, "unhasted");
-                var unhasted = unhastedSwings.Average();
+                var unhasted = Median(unhastedSwings);
 
                 await ctx.ExecuteInCreatureContextAsync(attacker, () =>
                     TemporaryStatModifier.Add(attacker, StatType.AttackDelayReductionPercent, 15, 100f));
@@ -141,9 +141,9 @@ namespace SWLOR.Game.Server.EngineTests.Definitions
                 Report(ctx, $"Vibroblade: unhasted swings {Format(unhastedSwings)}; 15% Haste swings " +
                             $"{Format(hastedSwings)} at the {Combat.BaseAttackDelayMilliseconds}ms floor, averaging " +
                             $"{hastedRate:0}ms per attack over 24s with extra rolls inside some swings.");
-                ctx.Assert(hastedSwings.Average() < unhasted - ToleranceMilliseconds,
+                ctx.Assert(Median(hastedSwings) < unhasted - ToleranceMilliseconds,
                     "Haste shortens the swing cadence down to the animation floor");
-                ctx.Assert(hastedRate < hastedSwings.Average() - 100,
+                ctx.Assert(hastedRate < Median(hastedSwings) - 100,
                     "Haste below the floor resolves extra attacks inside some swings");
             }
             finally
@@ -212,7 +212,7 @@ namespace SWLOR.Game.Server.EngineTests.Definitions
 
         private static void AssertCut(EngineTestContext ctx, double baseline, List<double> hasted, int expectedCut, string label)
         {
-            var cut = baseline - hasted.Average();
+            var cut = baseline - Median(hasted);
             ctx.Assert(Math.Abs(cut - expectedCut) <= ToleranceMilliseconds,
                 $"{label} removes {expectedCut}ms from each measured attack (observed {cut:0}ms: {Format(hasted)} vs {baseline:0}ms)");
         }
@@ -224,8 +224,12 @@ namespace SWLOR.Game.Server.EngineTests.Definitions
             Console.WriteLine($"[ENGINE_TESTS] [{ctx.TestName}] {message}");
         }
 
+        // A cycle occasionally waits for an extra engine round start; the median ignores one such outlier.
+        private static double Median(List<double> intervals) =>
+            intervals.OrderBy(value => value).ElementAt(intervals.Count / 2);
+
         private static string Format(List<double> intervals) =>
-            $"{intervals.Average():0}ms [{string.Join(", ", intervals.Select(value => value.ToString("0")))}]";
+            $"{Median(intervals):0}ms median [{string.Join(", ", intervals.Select(value => value.ToString("0")))}]";
 
         [NWNEventHandler(ScriptName.OnSWLORDamage)]
         public static void ObserveAttackDamage()

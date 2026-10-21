@@ -68,11 +68,11 @@ namespace SWLOR.Game.Server.Tests.Service
         {
             var origin = new Vector2(10, 10);
             var endpoints = TwinPistolAbility.RetreatEndpoints(origin, new Vector2(-2, 0), 2f, 4f).ToList();
-            Assert.That(endpoints, Has.Count.EqualTo(15), "five lanes, each at 4, 3 and 2 meters");
+            Assert.That(endpoints, Has.Count.EqualTo(15), "five lanes, each at 4, 3 and 2.5 meters");
             var expected = new (float Degrees, float Length)[]
             {
-                (0, 4), (0, 3), (0, 2), (30, 4), (30, 3), (30, 2), (-30, 4), (-30, 3), (-30, 2),
-                (60, 4), (60, 3), (60, 2), (-60, 4), (-60, 3), (-60, 2),
+                (0, 4), (0, 3), (0, 2.5f), (30, 4), (30, 3), (30, 2.5f), (-30, 4), (-30, 3), (-30, 2.5f),
+                (60, 4), (60, 3), (60, 2.5f), (-60, 4), (-60, 3), (-60, 2.5f),
             };
             for (var index = 0; index < expected.Length; index++)
             {
@@ -86,11 +86,16 @@ namespace SWLOR.Game.Server.Tests.Service
         }
 
         [Test]
-        public void RetreatAlwaysIncludesTheMinimumDistance()
+        public void RetreatShortestEndpointKeepsArrivalHeadroomAboveTheMinimum()
         {
-            var lengths = TwinPistolAbility.RetreatEndpoints(Vector2.Zero, new Vector2(1, 0), 2f, 3.5f)
+            var lengths = TwinPistolAbility.RetreatEndpoints(Vector2.Zero, new Vector2(1, 0), 2f, 4.2f)
                 .Take(3).Select(endpoint => endpoint.Length()).ToArray();
-            Assert.That(lengths, Is.EqualTo(new[] { 3.5f, 2.5f, 2f }).Within(.001f));
+            Assert.That(lengths, Is.EqualTo(new[] { 4.2f, 3.2f, 2.5f }).Within(.001f),
+                "an early native arrival still travels the two meters slide rewards require");
+            var narrow = TwinPistolAbility.RetreatEndpoints(Vector2.Zero, new Vector2(1, 0), 2f, 2.2f)
+                .Take(2).Select(endpoint => endpoint.Length()).ToArray();
+            Assert.That(narrow[0], Is.EqualTo(2.2f).Within(.001f), "the shortest endpoint never exceeds the maximum");
+            Assert.That(narrow[1], Is.EqualTo(2.2f).Within(.001f), "the next lane starts at the same capped distance");
         }
 
         [Test]

@@ -297,7 +297,7 @@ namespace SWLOR.Game.Server.Service
             var direction = distance > .001f ? delta / distance : new NumericsVector3(
                 (float)Math.Cos(GetFacing(actor) * Math.PI / 180), (float)Math.Sin(GetFacing(actor) * Math.PI / 180), 0);
             if (spec.Movement == TwinPistolMovementType.Retreat)
-                return GetRetreatDestination(actor, origin, direction, spec);
+                return GetRetreatDestination(actor, target, origin, direction, spec);
             var travel = -Math.Min(spec.MaxMovementMeters, Math.Max(0, distance - spec.StopDistanceMeters));
             var position = origin + direction * travel;
             var destination = Location(GetArea(actor), position, GetFacing(actor));
@@ -344,14 +344,16 @@ namespace SWLOR.Game.Server.Service
         }
 
         /// <summary>
-        /// A retreat takes the first lane away from the target that passes movement validation, so a rock or ally
-        /// directly behind the caster does not refuse the ability while open ground lies beside it. With no legal
-        /// lane, the full straight retreat is returned and its validation reports why it is blocked.
+        /// A retreat takes the first lane away from the target that passes movement validation and keeps a line
+        /// of fire to the target, so a rock or ally directly behind the caster does not refuse the ability while
+        /// open ground lies beside it. With no legal lane, the full straight retreat is returned and its
+        /// validation reports why it is blocked.
         /// </summary>
-        private static Location GetRetreatDestination(uint actor, NumericsVector3 origin, NumericsVector3 direction,
-            TwinPistolAbilitySpec spec)
+        private static Location GetRetreatDestination(uint actor, uint target, NumericsVector3 origin,
+            NumericsVector3 direction, TwinPistolAbilitySpec spec)
         {
             Location straight = null;
+            var targetPosition = GetPosition(target);
             foreach (var endpoint in RetreatEndpoints(new(origin.X, origin.Y), new(direction.X, direction.Y),
                          spec.MinimumMovementMeters, spec.MaxMovementMeters))
             {
@@ -359,6 +361,12 @@ namespace SWLOR.Game.Server.Service
                 position.Z = GetGroundHeight(Location(GetArea(actor), position, GetFacing(actor)));
                 var destination = Location(GetArea(actor), position, GetFacing(actor));
                 straight ??= destination;
+                if (NumericsVector3.Distance(position, targetPosition) > spec.ArrivalRangeMeters) continue;
+                // The arrival volley checks line of sight from the new position; a lane behind cover would
+                // spend the cast without an attack. LineOfSightVector needs the actor's script context.
+                if (OBJECT_SELF == actor && !LineOfSightVector(position + new NumericsVector3(0, 0, 1f),
+                        targetPosition + new NumericsVector3(0, 0, 1f)))
+                    continue;
                 if (string.IsNullOrEmpty(WeaponRepositioning.Validate(actor, GetLocation(actor), destination,
                         spec.MinimumMovementMeters, spec.MaxMovementMeters)))
                     return destination;
@@ -367,24 +375,30 @@ namespace SWLOR.Game.Server.Service
         }
 
         /// <summary>
+        /// The native move may report arrival up to 0.35m short, and slide rewards need the minimum distance
+        /// actually travelled, so the shortest retreat endpoint keeps this much headroom above the minimum.
+        /// </summary>
+        private const float RetreatArrivalHeadroomMeters = .5f;
+
+        /// <summary>
         /// Retreat endpoints in preference order: straight away from the target, then lanes turned 30 and 60
-        /// degrees to either side; each lane tries the full distance first and shortens one meter at a time
-        /// down to the minimum.
+        /// degrees to either side; each lane tries the full distance first and shortens one meter at a time,
+        /// ending half a meter above the minimum.
         /// </summary>
         public static IEnumerable<System.Numerics.Vector2> RetreatEndpoints(System.Numerics.Vector2 origin,
             System.Numerics.Vector2 awayFromTarget, float minimumMeters, float maximumMeters)
         {
             if (awayFromTarget.LengthSquared() < .000001f || maximumMeters <= 0 || minimumMeters > maximumMeters) yield break;
             var away = System.Numerics.Vector2.Normalize(awayFromTarget);
+            var shortest = Math.Min(maximumMeters, minimumMeters + RetreatArrivalHeadroomMeters);
             foreach (var degrees in new[] { 0f, 30f, -30f, 60f, -60f })
             {
                 var radians = degrees * MathF.PI / 180f;
                 var (sin, cos) = MathF.SinCos(radians);
                 var heading = new System.Numerics.Vector2(away.X * cos - away.Y * sin, away.X * sin + away.Y * cos);
-                for (var length = maximumMeters; length >= minimumMeters - .001f; length -= 1f)
+                for (var length = maximumMeters; length > shortest + .001f; length -= 1f)
                     yield return origin + heading * length;
-                if ((maximumMeters - minimumMeters) % 1f > .001f)
-                    yield return origin + heading * minimumMeters;
+                yield return origin + heading * shortest;
             }
         }
 

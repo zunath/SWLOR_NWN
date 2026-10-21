@@ -21,9 +21,11 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition
                 {
                     col.AddRow(row =>
                     {
+                        // This window sizes to its content, so these widths keep the rows and list window-wide.
                         row.AddTextEdit()
                             .SetPlaceholder("Search")
                             .SetHeight(35f)
+                            .SetWidth(435f)
                             .BindValue(model => model.SearchText);
 
                         row.AddButton()
@@ -44,11 +46,13 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition
                         row.AddButton()
                             .BindText(model => model.FavoritesFilterText)
                             .SetHeight(35f)
+                            .SetWidth(290f)
                             .BindOnClicked(model => model.OnClickToggleFavoritesFilter());
 
                         row.AddButton()
                             .SetText("Add New Creature")
                             .SetHeight(35f)
+                            .SetWidth(290f)
                             .BindOnClicked(model => model.OnClickAddNew());
                     });
 

@@ -1,6 +1,7 @@
 using SWLOR.Game.Server.Core;
 using SWLOR.Game.Server.Entity;
 using SWLOR.Game.Server.Service;
+using SWLOR.Game.Server.Service.CraftService;
 using SWLOR.Game.Server.Service.PerkService;
 using SWLOR.Game.Server.Service.SkillService;
 using SWLOR.NWN.API.NWScript.Enum;
@@ -27,8 +28,8 @@ namespace SWLOR.Game.Server.Feature
                 return;
             }
 
-            var scavengingLevel = Perk.GetPerkLevel(user, PerkType.Scavenging);
-            var hardLookLevel = Perk.GetPerkLevel(user, PerkType.HardLook);
+            var scavengingLevel = CraftRankMilestones.GetScavengingTier(user);
+            var hardLookLevel = CraftRankMilestones.GetHardLookLevel(user);
             var requiredLevel = GetLocalInt(placeable, "SCAVENGE_POINT_LEVEL");
             var lootTableName = GetLocalString(placeable, "SCAVENGE_POINT_LOOT_TABLE_NAME");
 
@@ -40,10 +41,10 @@ namespace SWLOR.Game.Server.Feature
                 return;
             }
 
-            // Perk level isn't high enough.
+            // Gathering rank isn't high enough.
             if (scavengingLevel < requiredLevel)
             {
-                SendMessageToPC(user, $"You aren't skilled enough to scavenge through this. (Required level: {requiredLevel})");
+                SendMessageToPC(user, $"You aren't skilled enough to scavenge through this. (Required Gathering rank: {CraftRankMilestones.RequiredRankForTier(requiredLevel)})");
                 AssignCommand(user, () => ActionInteractObject(placeable));
                 SetLocalBool(placeable, "DO_NOT_DESTROY", true);
                 return;
@@ -51,7 +52,7 @@ namespace SWLOR.Game.Server.Feature
 
             var attempts = 1;
 
-            // Chance for a second attempt based on the hard look perk level and the user's Perception modifier.
+            // Chance for a second attempt based on the Hard Look level their Gathering rank grants and the user's Perception modifier.
             if (Random.D100(1) <= (hardLookLevel * 10 + GetAbilityModifier(AbilityType.Perception, user) * 5))
             {
                 attempts++;

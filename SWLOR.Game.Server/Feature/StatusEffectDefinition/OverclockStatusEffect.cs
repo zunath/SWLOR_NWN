@@ -1,0 +1,25 @@
+using SWLOR.Game.Server.Service.CraftService.Minigame.Circuit;
+using SWLOR.Game.Server.Service.StatService;
+using SWLOR.Game.Server.Service.StatusEffectService;
+using SWLOR.NWN.API.NWScript.Enum;
+
+namespace SWLOR.Game.Server.Feature.StatusEffectDefinition
+{
+    /// <summary>The Engineering Circuit style Overclock. The craft window applies it when the crafter picks the style.</summary>
+    public sealed class OverclockStatusEffect : StatusEffectBase
+    {
+        public override string Name => "Overclock";
+        public override float Frequency => 1f;
+        public override EffectIconType Icon => EffectIconType.OverclockStatusEffect;
+        public override StatusEffectCategory Categories => StatusEffectCategory.Buff;
+        public override bool PersistsOnLogout => false;
+        public override bool SendsApplicationMessage => false;
+        public override bool SendsWornOffMessage => false;
+
+        public OverclockStatusEffect()
+        {
+            StatGroup.Stats[StatType.CircuitExtraLoadPerBuildAction] = CircuitPerkRules.OverclockExtraLoad;
+            StatGroup.Stats[StatType.CircuitLoadBoostPercent] = CircuitPerkRules.OverclockLoadBoostPercent;
+        }
+    }
+}

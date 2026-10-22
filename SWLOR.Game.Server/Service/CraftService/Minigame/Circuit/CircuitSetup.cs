@@ -1,8 +1,8 @@
 namespace SWLOR.Game.Server.Service.CraftService.Minigame.Circuit;
 
 /// <summary>
-/// Everything the Circuit engine takes as fixed for one craft: the recipe's size and parameters, the crafter's rank and gear, and
-/// the progress the selected enhancements add. It holds no state; the engine's state record does.
+/// Everything the Circuit engine takes as fixed for one craft: the recipe's size and parameters, the crafter's rank, gear and perk
+/// stats, and the progress the selected enhancements add. It holds no state; the engine's state record does.
 /// </summary>
 public sealed class CircuitSetup
 {
@@ -16,6 +16,7 @@ public sealed class CircuitSetup
     /// <param name="control">The crafter's Engineering Control, which powers Calibration.</param>
     /// <param name="gearCp">The CP from the crafter's gear.</param>
     /// <param name="enhancementProgressPenalty">The Assembly the selected enhancements add to what the piece needs.</param>
+    /// <param name="perks">What the crafter's Engineering perks and style change; null plays without them.</param>
     public CircuitSetup(
         CircuitParameters parameters,
         int recipeLevel,
@@ -26,9 +27,11 @@ public sealed class CircuitSetup
         int craftsmanship,
         int control,
         int gearCp,
-        int enhancementProgressPenalty = 0)
+        int enhancementProgressPenalty = 0,
+        CircuitPerkStats perks = null)
     {
         Parameters = parameters ?? CircuitParameters.Fallback;
+        Perks = perks ?? CircuitPerkStats.None;
         RecipeLevel = recipeLevel;
         Rank = Math.Max(0, rank);
         Craftsmanship = Math.Max(0, craftsmanship);
@@ -47,6 +50,9 @@ public sealed class CircuitSetup
     }
 
     public CircuitParameters Parameters { get; }
+
+    /// <summary>What the crafter's perks and style change, captured when the craft starts.</summary>
+    public CircuitPerkStats Perks { get; }
 
     public int RecipeLevel { get; }
 
@@ -79,22 +85,63 @@ public sealed class CircuitSetup
 
     public int MaxCp { get; }
 
-    public int OverloadLine => Parameters.OverloadLine;
+    /// <summary>The Load above which an action can overload: the recipe's line plus the perks', never past the highest Load.</summary>
+    public int OverloadLine => Math.Min(CircuitRules.MaxLoad, Parameters.OverloadLine + Perks.OverloadLine);
+
+    /// <summary>The percentage points of output each Load point adds: the recipe's plus the perks' and style's.</summary>
+    public int LoadBoostPercent => Math.Max(0, Parameters.LoadBoostPercent + Perks.LoadBoostPercent);
 
     /// <summary>The Integrity an overload costs.</summary>
-    public int OverloadIntegrityCost =>
-        Math.Max(1, (int)Math.Round(MaxIntegrity * CircuitRules.OverloadIntegrityPercent / 100.0, MidpointRounding.AwayFromZero));
+    public int OverloadIntegrityCost
+    {
+        get
+        {
+            var kept = 100 - Math.Clamp(Perks.OverloadIntegrityReductionPercent, 0, 100);
+            return Math.Max(1, (int)Math.Round(MaxIntegrity * CircuitRules.OverloadIntegrityPercent * kept / 10000.0, MidpointRounding.AwayFromZero));
+        }
+    }
+
+    public int WireLoad => CircuitRules.WireLoad + Math.Max(0, Perks.ExtraLoadPerBuildAction);
+
+    public int TuneLoad => CircuitRules.TuneLoad + Math.Max(0, Perks.ExtraLoadPerBuildAction);
+
+    public int BoostLoad => CircuitRules.BoostLoad + Math.Max(0, Perks.BoostLoad);
+
+    public int WireIntegrity => ReduceIntegrity(CircuitRules.WireIntegrity);
+
+    public int TuneIntegrity => ReduceIntegrity(CircuitRules.TuneIntegrity);
+
+    public int BoostIntegrity => ReduceIntegrity(CircuitRules.BoostIntegrity);
+
+    public int DischargeIntegrity => ReduceIntegrity(CircuitRules.DischargeIntegrity);
+
+    public int MicroTuneIntegrity => ReduceIntegrity(CircuitRules.MicroTuneIntegrity);
+
+    public int BoostCp => Math.Max(0, CircuitRules.BoostCp - Math.Max(0, Perks.BoostCpReduction));
+
+    public int PatchCp => Math.Max(0, CircuitRules.PatchCp - Math.Max(0, Perks.PatchCpReduction));
+
+    public int PatchRestore => CircuitRules.PatchRestore + Math.Max(0, Perks.PatchRestore);
+
+    /// <summary>The chance, in percent, that a turn announces a Clean Signal.</summary>
+    public int CleanSignalChancePercent => Math.Clamp(CircuitRules.CleanSignalChancePercent + Perks.SignalChancePercent, 0, 100);
+
+    /// <summary>The actions ahead a Clean Signal is announced: 1, or 2 with Diagnostics.</summary>
+    public int ForecastDepth => 1 + Math.Clamp(Perks.ForecastTurns, 0, CircuitRules.MaxForecastTurns);
 
     public MinigameMeters StartingMeters() => MinigameMeters.Start(MaxAssembly, MaxCalibration, MaxIntegrity, MaxCp);
 
     /// <summary>The multiplier a Load level gives to Wire, Tune and Discharge output: the recipe's boost per point, per point.</summary>
-    public double LoadMultiplier(int load) => 1.0 + Parameters.LoadBoostPercent / 100.0 * Math.Max(0, load);
+    public double LoadMultiplier(int load) => 1.0 + LoadBoostPercent / 100.0 * Math.Max(0, load);
 
-    /// <summary>The chance, in percent, that an action that leaves Load at the given level overloads.</summary>
+    /// <summary>
+    /// The chance, in percent, that an action that leaves Load at the given level overloads. It is 0 while Load is no more than
+    /// the perks' grace past the line.
+    /// </summary>
     public int OverloadChancePercent(int loadAfterAction)
     {
         var pointsOver = loadAfterAction - OverloadLine;
-        return pointsOver <= 0
+        return pointsOver <= Math.Max(0, Perks.OverloadGrace)
             ? 0
             : Math.Min(CircuitRules.MaxOverloadChancePercent, pointsOver * CircuitRules.OverloadChancePerPointPercent);
     }
@@ -103,20 +150,47 @@ public sealed class CircuitSetup
     public int WireGain(int load) => Scale(AssemblySize, CircuitRules.WirePercent, load, AssemblyFactor());
 
     /// <summary>The Calibration a Tune adds at the given Load, before a Clean Signal doubles it.</summary>
-    public int TuneGain(int load) => Scale(CalibrationSize, CircuitRules.TunePercent, load, CalibrationFactor());
+    public int TuneGain(int load) => Scale(CalibrationSize, CircuitRules.TunePercent, load, CalibrationFactor() * TunePowerFactor());
+
+    /// <summary>The Calibration a Micro-Tune adds at the given Load: a share of a Tune's, and it adds no Load.</summary>
+    public int MicroTuneGain(int load) =>
+        Scale(CalibrationSize, CircuitRules.TunePercent * CircuitRules.MicroTuneSharePercent / 100.0, load, CalibrationFactor() * TunePowerFactor());
 
     /// <summary>The Assembly a Discharge adds when it spends the given Load.</summary>
     public int DischargeAssemblyGain(int load) =>
-        load <= 0 ? 0 : Scale(AssemblySize, CircuitRules.DischargePercentPerLoad * load, load, AssemblyFactor());
+        load <= 0 ? 0 : Scale(AssemblySize, CircuitRules.DischargePercentPerLoad * load, load, AssemblyFactor() * DischargePowerFactor());
 
     /// <summary>The Calibration a Discharge adds when it spends the given Load.</summary>
     public int DischargeCalibrationGain(int load) =>
-        load <= 0 ? 0 : Scale(CalibrationSize, CircuitRules.DischargePercentPerLoad * load, load, CalibrationFactor());
+        load <= 0 ? 0 : Scale(CalibrationSize, CircuitRules.DischargePercentPerLoad * load, load, CalibrationFactor() * DischargePowerFactor());
+
+    /// <summary>The Assembly a Cascade Discharge adds when it spends the given Load.</summary>
+    public int CascadeAssemblyGain(int load) =>
+        load <= 0
+            ? 0
+            : Scale(AssemblySize, CircuitRules.DischargePercentPerLoad * load * CircuitRules.CascadeDischargeSharePercent / 100.0, load,
+                AssemblyFactor() * DischargePowerFactor());
+
+    /// <summary>The Calibration a Cascade Discharge adds when it spends the given Load.</summary>
+    public int CascadeCalibrationGain(int load) =>
+        load <= 0
+            ? 0
+            : Scale(CalibrationSize, CircuitRules.DischargePercentPerLoad * load * CircuitRules.CascadeDischargeSharePercent / 100.0, load,
+                CalibrationFactor() * DischargePowerFactor());
 
     /// <summary>The Engineering rank an action unlocks at: Patch at 10 and everything else at 0.</summary>
     public static int UnlockRank(string actionId) => actionId == CircuitActionIds.Patch ? CircuitRules.PatchRank : 0;
 
     public bool IsUnlocked(string actionId) => Rank >= UnlockRank(actionId);
+
+    private int ReduceIntegrity(int cost) =>
+        Perks.ActionIntegrityReduction <= 0
+            ? cost
+            : Math.Max(Math.Min(cost, CircuitRules.MinimumActionIntegrity), cost - Perks.ActionIntegrityReduction);
+
+    private double TunePowerFactor() => 1.0 + Math.Max(0, Perks.TunePowerPercent) / 100.0;
+
+    private double DischargePowerFactor() => 1.0 + Math.Max(0, Perks.DischargePowerPercent) / 100.0;
 
     private double AssemblyFactor() =>
         (1.0 + Craftsmanship * CircuitRules.GearPercentPerPoint / 100.0) * RankFactor(CircuitRules.MaxRanksAboveRecipe);

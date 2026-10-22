@@ -6394,7 +6394,77 @@ namespace SWLOR.Game.Server.Service.StatService
         [StatType(StatTypeCategory.BeneficialWhenPositive)]
         DualWieldAttackDelayReductionPercent = 1167,
 
+        /// <summary>Percentage points of output each Load point adds to Circuit Wire, Tune and Discharge, on top of the recipe's own. A style may lower it.</summary>
+        [StatType(StatTypeCategory.BeneficialWhenPositive)]
+        CircuitLoadBoostPercent = 1168,
 
+        /// <summary>Percent added to the size of a Circuit Discharge burst.</summary>
+        [StatType(StatTypeCategory.BeneficialWhenPositive)]
+        CircuitDischargePowerPercent = 1169,
+
+        /// <summary>Points added to the recipe's Circuit overload line.</summary>
+        [StatType(StatTypeCategory.BeneficialWhenPositive)]
+        CircuitOverloadLine = 1170,
+
+        /// <summary>Load a Circuit Wire or Tune adds beyond its usual amount.</summary>
+        [StatType(StatTypeCategory.BeneficialWhenPositive)]
+        CircuitExtraLoadPerBuildAction = 1171,
+
+        /// <summary>Nonzero when the crafter has the Circuit's Cascade Discharge action.</summary>
+        [StatType(StatTypeCategory.BeneficialWhenPositive, StatTypeAggregation.Maximum)]
+        CircuitCascadeDischargeUnlocked = 1172,
+
+        /// <summary>Load a Circuit Boost adds beyond its usual amount.</summary>
+        [StatType(StatTypeCategory.BeneficialWhenPositive)]
+        CircuitBoostLoad = 1173,
+
+        /// <summary>CP a Circuit Boost costs less than usual.</summary>
+        [StatType(StatTypeCategory.BeneficialWhenPositive)]
+        CircuitBoostCpReduction = 1174,
+
+        /// <summary>Percent of the Integrity an overload would cost that a Circuit overload does not take.</summary>
+        [StatType(StatTypeCategory.BeneficialWhenPositive)]
+        CircuitOverloadIntegrityReductionPercent = 1175,
+
+        /// <summary>Nonzero when the first Circuit overload of a craft becomes a Discharge instead of costing Integrity.</summary>
+        [StatType(StatTypeCategory.BeneficialWhenPositive, StatTypeAggregation.Maximum)]
+        CircuitSurgeUnlocked = 1176,
+
+        /// <summary>Integrity that Circuit Wire, Tune, Boost, Discharge and their variants cost less than usual, to a minimum of 1.</summary>
+        [StatType(StatTypeCategory.BeneficialWhenPositive)]
+        CircuitActionIntegrityReduction = 1177,
+
+        /// <summary>Percent added to the Calibration a Circuit Tune builds.</summary>
+        [StatType(StatTypeCategory.BeneficialWhenPositive)]
+        CircuitTunePowerPercent = 1178,
+
+        /// <summary>Extra actions ahead at which a Circuit Clean Signal is announced.</summary>
+        [StatType(StatTypeCategory.BeneficialWhenPositive)]
+        CircuitForecastTurns = 1179,
+
+        /// <summary>Points past the overload line at which a Circuit action still cannot overload.</summary>
+        [StatType(StatTypeCategory.BeneficialWhenPositive)]
+        CircuitOverloadGrace = 1180,
+
+        /// <summary>Nonzero when the crafter has the Circuit's Micro-Tune action.</summary>
+        [StatType(StatTypeCategory.BeneficialWhenPositive, StatTypeAggregation.Maximum)]
+        CircuitMicroTuneUnlocked = 1181,
+
+        /// <summary>Points added to the chance that a Circuit action announces a Clean Signal.</summary>
+        [StatType(StatTypeCategory.BeneficialWhenPositive)]
+        CircuitSignalChancePercent = 1182,
+
+        /// <summary>Integrity a Circuit Patch restores beyond its usual amount.</summary>
+        [StatType(StatTypeCategory.BeneficialWhenPositive)]
+        CircuitPatchRestore = 1183,
+
+        /// <summary>CP a Circuit Patch costs less than usual.</summary>
+        [StatType(StatTypeCategory.BeneficialWhenPositive)]
+        CircuitPatchCpReduction = 1184,
+
+        /// <summary>Nonzero when the first time a Circuit craft would break leaves the piece at 1 Integrity instead.</summary>
+        [StatType(StatTypeCategory.BeneficialWhenPositive, StatTypeAggregation.Maximum)]
+        CircuitFailsafeUnlocked = 1185,
     }
 
     public class StatTypeAttribute : Attribute

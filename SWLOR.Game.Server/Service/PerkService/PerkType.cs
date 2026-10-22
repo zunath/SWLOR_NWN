@@ -779,7 +779,23 @@ namespace SWLOR.Game.Server.Service.PerkService
         TwinPistolFollowThrough = 841,
         TwinPistolSecondWind = 842,
         FinalSalvo = 843,
+        ConductiveWiring = 844,
+        CapacitorBank = 845,
+        HeatSinks = 846,
+        OverclockStyle = 847,
+        CascadeDischarge = 848,
+        OverdriveBoost = 849,
+        ShockAbsorbers = 850,
+        CircuitSurge = 851,
+        InsulatedTraces = 852,
+        FineCalibration = 853,
+        CircuitDiagnostics = 854,
+        SafeModeStyle = 855,
+        MicroTune = 856,
+        SignalLock = 857,
+        PrecisionPatch = 858,
+        CircuitFailsafe = 859,
 
-        // IDs 650 and 844+ are free.
+        // IDs 650 and 860+ are free.
     }
 }

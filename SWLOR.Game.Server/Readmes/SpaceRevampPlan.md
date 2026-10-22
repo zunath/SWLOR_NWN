@@ -171,9 +171,9 @@ Paths are relative to `SWLOR.Game.Server/`.
 
 | Skill | ID | Gates | Rank adds | Combat point category |
 |---|---|---|---|---|
-| Piloting | 7 (kept) | Hull sizes; Afterburner, Thrusters and Cargo Expander modules | Evasion, speed | Exempt (full XP from every space kill, like Armor on the ground) |
+| Piloting | 7 (kept) | Hull sizes; passive defenses (Shield Booster, Hull Plating, Resist Plating, Capacitor Battery); Afterburner, Thrusters, Cargo Expander, Cloaking Device | Evasion, speed | Exempt (full XP from every space kill, like Armor on the ground) |
 | Gunnery | new (next free ID, 53 today) | Weapons, Targeting Computer, Damage Amplifier | Accuracy, attack, crit | New `Starship` category (split by contribution) |
-| Ship Systems | new (54 today) | Shields, hull, capacitor, repairers, electronic warfare, tackle, Smuggling Compartment | Shield regen, capacitor regen, repair amount | New `Starship` category |
+| Ship Systems | new (54 today) | Active defense and support: shield and hull repairers, Shield Hardener, Hypermatter Injector, Capacitor Regulator, electronic warfare, tackle, Probe Launcher, Data Analyzer, Smuggling Compartment | Shield regen, capacitor regen, repair amount | New `Starship` category |
 | Gathering | 11 (kept) | Mining Laser, Strip Miner, Salvager | Yield | Gathering XP from mining, gas harvesting and salvage |
 
 - **Skill attributes:** Utility category, rank 50, active, `ContributesToSkillCap = true`.
@@ -181,11 +181,13 @@ Paths are relative to `SWLOR.Game.Server/`.
 - **Mining rank:** a Mining Laser's `RequiresSkill` follows the module rank schedule in Gathering. The asteroid tier check still applies.
 - **Why each skill is worth taking:**
   - **Minimum builds:**
-    - Damage pilot: Piloting + Gunnery (100 ranks).
-    - Tank or support pilot: Piloting + Ship Systems (100 ranks).
-    - Full solo pilot: all three (150 ranks).
+    - Glass-cannon fighter (Small hull): Gunnery 50 (50 ranks).
+    - Complete solo combat pilot: Piloting + Gunnery (100 ranks), the same as a ground melee fighter's weapon + Armor.
+    - Tank or support pilot: Piloting + Ship Systems (up to 100 ranks).
+    - Everything maxed: all three (150 ranks).
     - Crew member: one station skill (50 ranks).
-  - **Piloting is not a tax.** It owns gear (propulsion, cargo), maneuvers, and command, and it earns XP from trade.
+  - **Piloting works like the Armor skill.** It gates hulls and the passive defenses that every role wears, and it owns propulsion, cargo, cloaking, maneuvers and command. It also earns XP from trade.
+  - **Ship Systems is the tank and support specialty,** like First Aid or Leadership on the ground. Nobody needs it just to survive.
 - **XP rules:**
   - The XP range must cover the longest weapon range. Today it's 40 m against a 55 m missile.
   - Crew earn XP in their station's skill.
@@ -311,7 +313,7 @@ Two ships in the same role are sidegrades, never strict upgrades.
   - Docking limits by size:
     - Capital hulls dock only at Veles, Mon Cala, Anchorhead, Smuggler's Moon Station and Korriban.
     - Every NPC dock takes Large and smaller.
-    - Player-city starports take Large at upgrade level 3 and Capital at level 5. This gives the starport upgrade a purpose beyond its repair discount.
+    - Any player-city starport takes Large hulls. Capital hulls need starport upgrade level 2, which a city with 10 citizens can reach. This gives the starport upgrade a purpose beyond its repair discount without locking capitals out of smaller cities.
     - Ships already docked somewhere too small stay there until they leave.
 - **Cost:** the repair bill scales with size.
 
@@ -379,13 +381,13 @@ Toggled modules are the ship's auto-attacks; perk abilities are the buttons, as 
 |---|---|---|
 | High | Gunnery | Laser Cannon, Ion Cannon, Beam Cannon, Missile Launcher, Torpedo Launcher (today's proton bomb, expanded), *Point-Defense Turret* (always fires as Light), capital weapons (Turbolaser, Quad Laser, Laser Battery, Storm Cannon, Assault Concussion Missile) |
 | High | Gathering | Mining Laser, Strip Miner, *Salvager*, *Gas Harvester* |
-| Mid | Ship Systems | Shield Booster, Shield Repairer, *Shield Hardener*, Capacitor Battery, Hypermatter Injector, *Ion Web*, *Interdictor* (target can't jump, dock or leave space for a while), *Jammer*, *Target Painter*, capital Bulwark, Repair Field and E-War arrays |
-| Mid | Piloting | *Afterburner*, *Cloaking Device* (Small hulls and Blockade Runners; section 32) |
+| Mid | Ship Systems | Shield Repairer, *Shield Hardener*, Hypermatter Injector, *Ion Web*, *Interdictor* (target can't jump, dock or leave space for a while), *Jammer*, *Target Painter*, capital Bulwark, Repair Field and E-War arrays |
+| Mid | Piloting | Shield Booster, Capacitor Battery, *Afterburner*, *Cloaking Device* (Small hulls and Blockade Runners; section 32) |
 | Mid | Ship Systems | *Probe Launcher*, *Data Analyzer* (section 24) |
 | Mid | Gunnery | Targeting Computer |
-| Low | Ship Systems | Hull Plating, Hull Repairer, Resist Plating (one type or all types), *Capacitor Regulator*, *Smuggling Compartment* |
+| Low | Ship Systems | Hull Repairer, *Capacitor Regulator*, *Smuggling Compartment* |
 | Low | Gunnery | Damage Amplifier (per type) |
-| Low | Piloting | Thrusters, *Cargo Expander* |
+| Low | Piloting | Hull Plating, Resist Plating (one type or all types), Thrusters, *Cargo Expander* |
 | Low | Ship Systems | The six capital passives |
 
 - **Capital modules:** capital weapons and arrays fit only Capital hulls. Hull and shield repairers and the injector now work on capital ships too.
@@ -394,6 +396,7 @@ Toggled modules are the ship's auto-attacks; perk abilities are the buttons, as 
 ### Ranks and size
 
 - **Rank steps:** every family has a distinct item every 5 ranks: 0, 5, 10 ... 45, with in-between stats. Rank N requires rank N in the owning skill.
+- **Station slots:** an owner can fit a station-slot module without meeting its rank. The crew member at that station can switch it on only if their own rank in its skill meets the requirement; a droid uses its tier (section 10).
 - **Rank 50:** reserved for named boss modules (section 14).
 - **Capital families:** their ladders start at rank 40.
 - **Size scaling:** a module's output scales with the size of the hull it's fitted to. A Laser Cannon fires as Light on a Small hull and as Heavy on a Large hull.
@@ -445,6 +448,7 @@ Ships at launch.
   - The Engineer runs active shield and hull modules, plus a new **power-routing** ability that shifts capacitor regen between weapons, shields and engines.
   - Sensors runs Mid electronic warfare and tackle.
   - The Pilot runs Helm slots, Afterburner, Thrusters and maneuvers. The pilot cannot fire station slots.
+- **Gear rank on stations:** the owner fits station-slot modules without rank checks. Each crew member can switch on only the modules whose rank requirement they meet themselves; droid crew go by their tier. A pilot-only captain can still outfit their gunners.
 - **Boarding a station:**
   - A crew member uses a console placeable in the interior. Their character moves into the space area and is hidden through `VisibilityPlugin`. It is ghosted (passes through things), can't be targeted, and is plot.
   - The camera attaches to the ship with `AttachCamera`, and a copy of them sits at the console.
@@ -533,8 +537,8 @@ Ships at launch.
 
 | Dock | Exports (cheap) | Imports (pays well) |
 |---|---|---|
-| Viscara | Veles honey, Viscaran crystals, kinrath silk | Machine parts, purified water |
-| CZ-220 | Reactor cores, Czerka machine parts | Grain, crystals |
+| Viscara | Veles honey, Viscaran crystals, kinrath silk | Purified water, medical supplies |
+| CZ-220 | Reactor cores, Czerka machine parts | Grain, timber |
 | Mon Cala | Seafood, purified water, hull sections | Silk, timber, neon salt |
 | Hutlar | Aracia timber, byysk hides | Medical supplies, reactor cores |
 | Tatooine | Jawa salvage, bantha hides | Water, grain, seafood |
@@ -543,6 +547,7 @@ Ships at launch.
 | Dathomir | Witch herbs, beast hides | Machine parts, medical supplies |
 | Dantooine | Grain, bantha milk | Hides, timber |
 
+- **No pair within one orbit:** no dock exports a good that a dock in the same orbit imports. Viscara and CZ-220 share an orbit, and so do Smuggler's Moon Landing and Station. Commodity drafts are checked against this rule.
 - **Exchanges:**
   - A Trade Exchange NUI window sits at every NPC dock and every player-city starport. It trades with the player's ship docked there.
   - **Prices move:** selling floods a dock and lowers its price, buying raises it, and both recover over a few hours. Price state persists in a new Redis entity.
@@ -912,7 +917,7 @@ A station is a **player city in space** and follows every city mechanic, in `Ser
 - Add a station city layout beside `CityLayoutDefinition`, with the same building and structure limits.
 
 **Docking and buildings**
-- **Docking:** through the Starport building and its upgrade level, which lets Large hulls dock at level 3 and Capital hulls at level 5, as in planet cities.
+- **Docking:** through the Starport building, as in planet cities: any starport takes Large hulls, and Capital hulls need starport upgrade level 2.
 - **City buildings:** all of them: City Hall, Starport (with the Trade Exchange and its tariff), Medical Center (respawn), Bank, Cantina.
 - **Station-only buildings:**
   - **Shipyard:** Capital hull recipes can only be crafted at a Shipyard. A droid assigned to it shortens builds.
@@ -1224,10 +1229,10 @@ Every family has an item every 5 ranks (0-45); capital families start at rank 40
 | Strip Miner | High | Gathering | Toggle | Large and Capital hulls; strips a whole asteroid and roots the ship while it runs. | Strip Miner |
 | Salvager | High | Gathering | Toggle | Salvages wrecks for scrap, components and rare finds. | New |
 | Gas Harvester | High | Gathering | Toggle | Harvests gas clouds. | New |
-| Shield Booster | Mid | Ship Systems | Passive | + max shield. | Shield Booster (was Low) |
+| Shield Booster | Mid | Piloting | Passive | + max shield. | Shield Booster (was Low) |
 | Shield Repairer | Mid | Ship Systems | Toggle | Repairs the shield of its locked target, or your own. | Shield Repairer (was High) |
 | Shield Hardener | Mid | Ship Systems | Toggle | + resistances while on; pays capacitor each cycle. | New |
-| Capacitor Battery | Mid | Ship Systems | Passive | + max capacitor. | Capacitor Booster (was Low) |
+| Capacitor Battery | Mid | Piloting | Passive | + max capacitor. | Capacitor Booster (was Low) |
 | Hypermatter Injector | Mid | Ship Systems | One press | Restores capacitor; uses a capsule. | Hypermatter Injector (was High) |
 | Ion Web | Mid | Ship Systems | Toggle | Slows the target. | New |
 | Interdictor | Mid | Ship Systems | Toggle | The target can't jump, dock or leave space while it holds. | New |
@@ -1239,9 +1244,9 @@ Every family has an item every 5 ranks (0-45); capital families start at rank 40
 | Probe Launcher | Mid | Ship Systems | Toggle | Scans hidden signatures system-wide; pulse mode for a Sensor Sweep (section 24). | New |
 | Data Analyzer | Mid | Ship Systems | One press | Starts the slicing mini-game on a data can (section 24). | New |
 | Targeting Computer | Mid | Gunnery | Passive | + accuracy. | Targeting System (was Low) |
-| Hull Plating | Low | Ship Systems | Passive | + max hull. | Hull Booster |
+| Hull Plating | Low | Piloting | Passive | + max hull. | Hull Booster |
 | Hull Repairer | Low | Ship Systems | Toggle | Repairs the hull of its locked target, or your own. | Hull Repairer (was High) |
-| Resist Plating | Low | Ship Systems | Passive | + one resistance, or all resistances at a cost to evasion. | Mirrored Plating, Ion Shielding, Reactive Armor, Durasteel Plating |
+| Resist Plating | Low | Piloting | Passive | + one resistance, or all resistances at a cost to evasion. | Mirrored Plating, Ion Shielding, Reactive Armor, Durasteel Plating |
 | Capacitor Regulator | Low | Ship Systems | Passive | + capacitor regen. | New |
 | Smuggling Compartment | Low | Ship Systems | Passive | Lowers the customs scan chance. | New |
 | Damage Amplifier | Low | Gunnery | Passive | + one damage type. | EM, Thermal and Explosive amplifiers |

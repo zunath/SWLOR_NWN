@@ -26,6 +26,9 @@ namespace SWLOR.CraftSim.Scenario.Circuit
 
         public double XpMultiplier => CircuitRules.XpMultiplier;
 
+        /// <summary>The Assembly an enhancement adds to a craft is the old window's progress penalty, added to what the piece needs.</summary>
+        public EnhancementSupport Enhancements => EnhancementSupport.Modeled;
+
         public ICraftMinigameEngine CreateEngine(CraftEngineRequest request)
         {
             var level = Craft.GetRecipeLevelDetail(request.Recipe.Level);
@@ -38,14 +41,15 @@ namespace SWLOR.CraftSim.Scenario.Circuit
                 request.Rank,
                 request.Gear.Craftsmanship,
                 request.Gear.Control,
-                request.Gear.CpBonus);
+                request.Gear.CpBonus,
+                request.Enhancements.TotalProgressPenalty);
 
             return new CircuitEngine(request.Random, setup);
         }
 
         public IReadOnlyList<string> Limitations => new[]
         {
-            "No enhancements are slotted, so no enhancement adds Assembly to the craft.",
+            "An enhancement's difficulty is the old window's progress penalty added to the Assembly the piece needs; the Circuit's Wire, Tune and Discharge outputs do not change with it.",
             "The Circuit has no styles or perks yet, so the style-balance gate is not applicable and the perks-optional gate plays the unperked crafter.",
             "Seconds per action is an estimate of 8 s until the client evidence measures it."
         };

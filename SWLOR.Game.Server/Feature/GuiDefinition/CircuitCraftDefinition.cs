@@ -22,8 +22,8 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition
             "GOAL\n" +
             "Fill Assembly to finish the item. Calibration is the item's quality. Integrity is the piece's health: if it reaches 0 the " +
             $"piece breaks and each component stack and each enhancement is lost on a roll of {CraftOutcomeRules.ChanceToLoseItemPercent} or lower on a D100. " +
-            $"An enhancement transfers when the quality reaches its slot's threshold: {CraftOutcomeRules.FirstSlotQualityThresholdPercent}% for the first slot and " +
-            $"{CraftOutcomeRules.SecondSlotQualityThresholdPercent}% for the others. The action that would fill Assembly says it finishes the item, so raise Calibration first.\n\n" +
+            $"An enhancement transfers when the quality reaches its slot's threshold: {ThresholdSummary()}. " +
+            "The action that would fill Assembly says it finishes the item, so raise Calibration first.\n\n" +
             "LOAD\n" +
             $"Wire adds {CircuitRules.WireLoad} Load, Tune adds {CircuitRules.TuneLoad} and Boost adds {CircuitRules.BoostLoad}. Every Load point makes Wire, Tune and Discharge stronger; this recipe's percentage is shown above. " +
             "Load is marked with an overload line. An action that leaves Load above the line can overload: the action still happens, then you lose a large share of " +
@@ -42,6 +42,13 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition
             "Craftsmanship makes Assembly work stronger and Control makes Calibration work stronger. CP is your gear's CP plus a share of your Engineering rank.";
 
         private readonly GuiWindowBuilder<CircuitCraftViewModel> _builder = new();
+
+        /// <summary>The slot thresholds as the shared outcome rules set them, such as "50% for the first slot, 85% for the second and 85% for the third and any later slot".</summary>
+        private static string ThresholdSummary()
+        {
+            var thresholds = CraftOutcomeRules.GetEnhancementThresholds(3);
+            return $"{thresholds[0]}% for the first slot, {thresholds[1]}% for the second and {thresholds[2]}% for the third and any later slot";
+        }
 
         public GuiConstructedWindow BuildWindow()
         {

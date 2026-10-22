@@ -117,6 +117,7 @@ namespace SWLOR.CraftSim.Gates
             private int _never;
             private double _success;
             private double _score;
+            private double _weight;
 
             public double Stacks { get; private set; }
             public double Items { get; private set; }
@@ -126,13 +127,16 @@ namespace SWLOR.CraftSim.Gates
 
             public double NeverShare => _recipes == 0 ? 0 : _never / (double)_recipes;
             public double SuccessRate => _recipes == 0 ? 0 : _success / _recipes;
-            public double Quality => _recipes == 0 ? 0 : _score / _recipes;
+
+            /// <summary>The average quality of an attempt, a failure counting 0, weighted by the items a craft of each recipe makes like the material figure is.</summary>
+            public double Quality => _weight == 0 ? 0 : _score / _weight;
 
             public void Add(RecipeEntry recipe, double successRate, double meanScore)
             {
                 _recipes++;
                 _success += successRate;
-                _score += meanScore;
+                _score += meanScore * recipe.Quantity;
+                _weight += recipe.Quantity;
                 if (successRate <= 0)
                 {
                     _never++;

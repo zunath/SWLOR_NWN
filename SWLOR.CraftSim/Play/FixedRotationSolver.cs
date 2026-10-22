@@ -96,12 +96,25 @@ namespace SWLOR.CraftSim.Play
 
         private readonly FixedRotationSolverOptions _options;
         private readonly ILeafHeuristic _guidance;
+        private readonly int _actionLimit;
+        private readonly int _maximumLength;
 
-        public FixedRotationSolver(FixedRotationSolverOptions options = null, ILeafHeuristic guidance = null)
+        /// <param name="options">How hard to search.</param>
+        /// <param name="guidance">Ranks unfinished prefixes in the beam; the default weighs finishing safely and quality.</param>
+        /// <param name="actionLimit">
+        /// The actions after which an attempt counts as stalled, the same limit the gate scores the winner with. Every attempt the search
+        /// plays uses it, and no rotation is searched longer than it.
+        /// </param>
+        public FixedRotationSolver(FixedRotationSolverOptions options = null, ILeafHeuristic guidance = null, int actionLimit = CraftPlayer.DefaultActionLimit)
         {
+            if (actionLimit < 1)
+                throw new ArgumentOutOfRangeException(nameof(actionLimit), "An attempt needs at least one action.");
+
             _options = options ?? FixedRotationSolverOptions.Default;
             _options.Validate();
             _guidance = guidance ?? DefaultLeafHeuristic.Instance;
+            _actionLimit = actionLimit;
+            _maximumLength = Math.Min(_options.MaximumLength, actionLimit);
         }
 
         /// <summary>
@@ -132,7 +145,7 @@ namespace SWLOR.CraftSim.Play
                     if (!cache.TryGetValue(key, out var score))
                     {
                         score = Score(
-                            factory, sequence, seed, SimStreams.SolverTraining, stream, _options.TrainingRuns, CraftPlayer.DefaultActionLimit,
+                            factory, sequence, seed, SimStreams.SolverTraining, stream, _options.TrainingRuns, _actionLimit,
                             firstRun: round * _options.TrainingRuns);
                         cache[key] = score;
                     }
@@ -145,7 +158,7 @@ namespace SWLOR.CraftSim.Play
             candidates.AddRange(Beam(factory, actions, seed, stream));
             candidates.AddRange(Cycles(factory, actions, seed, stream));
             if (seedLines != null)
-                candidates.AddRange(seedLines.Where(line => line.Count > 0 && line.All(actions.Contains)).Select(line => line.Take(_options.MaximumLength).ToList()));
+                candidates.AddRange(seedLines.Where(line => line.Count > 0 && line.All(actions.Contains)).Select(line => line.Take(_maximumLength).ToList()));
 
             var firstRound = TrainFor(0);
             var ranked = Distinct(candidates).OrderByDescending(sequence => firstRound(sequence)).ToList();
@@ -157,7 +170,7 @@ namespace SWLOR.CraftSim.Play
             var winnerSelection = double.MinValue;
             foreach (var sequence in finalists)
             {
-                var selection = Score(factory, sequence, seed, SimStreams.SolverSelection, stream, _options.SelectionRuns, CraftPlayer.DefaultActionLimit);
+                var selection = Score(factory, sequence, seed, SimStreams.SolverSelection, stream, _options.SelectionRuns, _actionLimit);
                 if (selection > winnerSelection + Improvement)
                 {
                     winner = sequence;
@@ -206,14 +219,19 @@ namespace SWLOR.CraftSim.Play
         /// not itself a good fixed rotation (it reacts), but it shows which actions a good rotation uses and in what order.
         /// </summary>
         public static IReadOnlyList<IReadOnlyList<string>> AdaptiveLines(
-            Func<IMinigameRandom, ICraftMinigameEngine> factory, AdaptivePolicyOptions options, int seed, int[] stream, int count)
+            Func<IMinigameRandom, ICraftMinigameEngine> factory,
+            AdaptivePolicyOptions options,
+            int seed,
+            int[] stream,
+            int count,
+            int actionLimit = CraftPlayer.DefaultActionLimit)
         {
             var lines = new List<IReadOnlyList<string>>();
             for (var run = 0; run < count; run++)
             {
                 var engine = factory(new SimMinigameRandom(SimRandom.ForRun(seed, Stream(SimStreams.SolverSeedLines, stream, 0, run))));
                 var recorder = new RecordingPolicy(new AdaptivePolicy(options, unchecked((int)SimRandom.ForRun(seed, Stream(SimStreams.SolverSeedLines, stream, 1, run)).NextUInt64())));
-                CraftPlayer.Play(engine, recorder);
+                CraftPlayer.Play(engine, recorder, actionLimit);
                 if (recorder.Actions.Count > 0)
                     lines.Add(recorder.Actions);
             }
@@ -264,7 +282,7 @@ namespace SWLOR.CraftSim.Play
             var finished = new List<Entry>();
             var seen = new HashSet<int>();
 
-            for (var step = 1; step <= _options.MaximumLength && beam.Count > 0; step++)
+            for (var step = 1; step <= _maximumLength && beam.Count > 0; step++)
             {
                 var next = new List<Entry>();
                 seen.Clear();
@@ -368,13 +386,13 @@ namespace SWLOR.CraftSim.Play
             {
                 foreach (var cycle in Product(actions, length))
                 {
-                    var sequence = new List<string>(_options.MaximumLength);
-                    while (sequence.Count < _options.MaximumLength)
+                    var sequence = new List<string>(_maximumLength);
+                    while (sequence.Count < _maximumLength)
                         sequence.AddRange(cycle);
 
-                    sequence.RemoveRange(_options.MaximumLength, sequence.Count - _options.MaximumLength);
+                    sequence.RemoveRange(_maximumLength, sequence.Count - _maximumLength);
                     var screening = Math.Min(_options.ScreeningRuns, _options.TrainingRuns);
-                    scored.Add((sequence, Score(factory, sequence, seed, SimStreams.SolverTraining, stream, screening, CraftPlayer.DefaultActionLimit)));
+                    scored.Add((sequence, Score(factory, sequence, seed, SimStreams.SolverTraining, stream, screening, _actionLimit)));
                 }
             }
 
@@ -420,7 +438,7 @@ namespace SWLOR.CraftSim.Play
                     var positionScore = bestScore;
                     foreach (var variant in Variants(best, position, actions))
                     {
-                        if (variant.Count == 0 || variant.Count > _options.MaximumLength)
+                        if (variant.Count == 0 || variant.Count > _maximumLength)
                             continue;
 
                         var score = train(variant);

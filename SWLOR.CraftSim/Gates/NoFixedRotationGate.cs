@@ -37,7 +37,7 @@ namespace SWLOR.CraftSim.Gates
             }
 
             run.PrepareAdaptive(run.CohortCells());
-            var solver = new FixedRotationSolver(run.SolverOptions);
+            var solver = new FixedRotationSolver(run.SolverOptions, actionLimit: run.Thresholds.ActionLimit);
             var solved = new (SolvedRotation Rotation, double HoldOut)[work.Count];
             Parallel.For(0, work.Count, ScenarioRun.Parallelism, index =>
             {
@@ -49,7 +49,8 @@ namespace SWLOR.CraftSim.Gates
 
                 var stream = new[] { id, rank, gearIndex };
                 var lines = FixedRotationSolver.AdaptiveLines(
-                    factory, run.Scenario.AdaptiveOptions, context.Seed, stream, run.SolverOptions.AdaptiveSeedLines);
+                    factory, run.Scenario.AdaptiveOptions, context.Seed, stream, run.SolverOptions.AdaptiveSeedLines,
+                    run.Thresholds.ActionLimit);
                 var rotation = solver.Solve(factory, context.Seed, stream, lines);
                 var holdOut = FixedRotationSolver.Score(
                     factory, rotation.Sequence, context.Seed, SimStreams.FixedEvaluation, stream, context.Runs, run.Thresholds.ActionLimit);

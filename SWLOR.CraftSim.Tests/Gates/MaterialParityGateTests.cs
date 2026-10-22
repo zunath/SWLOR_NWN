@@ -1,7 +1,11 @@
 using FluentAssertions;
 using NUnit.Framework;
+using SWLOR.CraftSim.Data;
 using SWLOR.CraftSim.Gates;
+using SWLOR.CraftSim.Scenario;
 using SWLOR.CraftSim.Tests.Support;
+using SWLOR.Game.Server.Service.CraftService;
+using SWLOR.Game.Server.Service.SkillService;
 using static SWLOR.CraftSim.Tests.Support.BenchHarness;
 
 namespace SWLOR.CraftSim.Tests.Gates
@@ -68,6 +72,28 @@ namespace SWLOR.CraftSim.Tests.Gates
             byGear["1-10/best gear"][10].Should().Be("no");
             byGear["1-10/best gear"].Last().Should().Be("Failed");
             double.Parse(byGear["1-10/best gear"][5]).Should().BeInRange(0.9, 1.1, "the stacks per item alone would have passed");
+        }
+
+        [Test]
+        public void QualityIsWeightedByTheItemsEachRecipeMakes()
+        {
+            // One recipe makes a single item at full quality and another makes ten at no quality: most items are worthless, though the
+            // two recipes' qualities average 50%.
+            var stacks = new Dictionary<string, int> { ["plate"] = 3, ["wire"] = 1 };
+            var catalog = RecipeCatalog.From(new[]
+            {
+                new RecipeEntry((RecipeType)91001, SkillType.Smithery, 5, "single", RecipeCategoryType.Breastplate, stacks, quantity: 1),
+                new RecipeEntry((RecipeType)91002, SkillType.Smithery, 5, "batch", RecipeCategoryType.Longsword, stacks, quantity: 10)
+            });
+            var scenario = new TableScenario { Quality = (recipe, _) => recipe.Quantity == 1 ? 100 : 0 };
+            var context = new GateContext(catalog, SharedData.Gear, 20, 1, AttributeSweep.Default);
+
+            var result = Evaluate("materials", scenario, context, recipesPerBand: 2);
+
+            var best = result.Tables[0].Rows.Single(row => row[1] == "best gear");
+            best[8].Should().Be("9%", "100 x 1 and 0 x 10 over eleven items");
+            best[10].Should().Be("no", "the legacy player's best-gear items average well above that");
+            result.Verdict.Should().Be(GateVerdict.Failed);
         }
 
         [Test]

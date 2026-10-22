@@ -165,6 +165,27 @@ namespace SWLOR.CraftSim.Tests.Play
         }
 
         [Test]
+        public void TheActionLimitCapsEverySearchedRotation()
+        {
+            // Within two actions the best item is Quality 60 from D, then C to finish: no rotation that needs more actions can be chosen.
+            var solved = new FixedRotationSolver(Small, actionLimit: 2).Solve(NewToy, 1, Stream);
+
+            solved.SelectionScore.Should().BeApproximately(0.6, 1e-6);
+            solved.Sequence.Count.Should().BeLessThanOrEqualTo(2);
+            new FixedRotationSolver(Small).Solve(NewToy, 1, Stream).SelectionScore.Should().Be(1.0, "with the usual limit a full-quality rotation exists");
+            ((Action)(() => new FixedRotationSolver(Small, actionLimit: 0))).Should().Throw<ArgumentOutOfRangeException>();
+        }
+
+        [Test]
+        public void AdaptiveLinesStopAtTheActionLimit()
+        {
+            var lines = FixedRotationSolver.AdaptiveLines(NewBench, new AdaptivePolicyOptions { Depth = 2, ForecastSamples = 1 }, 1, Stream, 4, actionLimit: 5);
+
+            lines.Should().HaveCount(4);
+            lines.Should().OnlyContain(line => line.Count <= 5);
+        }
+
+        [Test]
         public void OptionsOutsideTheirRangesAreRejected()
         {
             ((Action)(() => new FixedRotationSolver(new FixedRotationSolverOptions { BeamWidth = 0 }))).Should().Throw<ArgumentOutOfRangeException>();

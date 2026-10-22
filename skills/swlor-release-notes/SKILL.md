@@ -106,6 +106,7 @@ Before publication, check:
 - The wording is player-facing and respects the Dragon, enemy-stat, RPXP, and location rules.
 - HTML is well formed, links and IDs are valid, and `git diff --check` passes.
 - The index, metadata, visible status, and dates agree. A routine upcoming update leaves released pages unchanged.
+- Every changed page's metadata `description` and `title` are at most 255 characters. The Wiki stores them in 255-character columns; a longer value makes Git sync skip that page on every run without reporting an error, while other pages keep syncing.
 
 Prose-only edits do not require game tests. Validate the document and the affected publication path instead.
 
@@ -113,7 +114,7 @@ Prose-only edits do not require game tests. Validate the document and the affect
 
 A successful push is not proof that the live page has updated. Confirm the commit is on the remote default branch, then verify the actual live page and affected index entry. Check both the new text and the intended release status/category before reporting completion.
 
-The Wiki uses Git synchronization. If the pushed content has not appeared and the signed-in administration UI is available, its storage page at `/a/storage` provides a **Force Sync** action. Inspect the current UI and run only that normal synchronization action; it respects the configured direction. Do not change storage settings or use Add Untracked Changes, Import Everything, or Purge Local Repository as a shortcut. Allow the asynchronous sync to finish before refreshing the release page; do not repeatedly trigger it while pending.
+The Wiki uses Git synchronization. If the pushed content has not appeared and the signed-in administration UI is available, its storage page at `/a/storage` provides a **Force Sync** action. Inspect the current UI and run only that normal synchronization action; it respects the configured direction. Do not change storage settings or use Add Untracked Changes, Import Everything, or Purge Local Repository as a shortcut. Allow the asynchronous sync to finish before refreshing the release page; do not repeatedly trigger it while pending. If the sync completes but one page stays on an old version (its page history shows no newer edit), check that page's metadata lengths first and fix the source file rather than editing the page in the Wiki.
 
 Reuse the user's authenticated Wiki session. Do not sign out, close their tab, or alter authentication settings. If sign-in needs the user's participation, hand off that step and preserve the work. Return the tab to the release notes after any administration work.
 

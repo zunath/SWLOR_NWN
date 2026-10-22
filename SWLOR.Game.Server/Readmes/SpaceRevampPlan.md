@@ -344,6 +344,28 @@ Two ships in the same role are sidegrades, never strict upgrades.
 - **Examine** shows the pilot under the normal recognition rules. Route both through `PlayerName` and `PlayerDescriptor` (the system behind `/name`), following `PlayerIdentity.md`, so known-name labels and disguises keep working.
 - **Leaving the ship** restores the pilot's normal name.
 
+### Ship transfers and sales
+
+Today the only way to hand a ship over is unregistering it, which turns it back into a deed and destroys every structure inside (`ShipManagementViewModel.OnClickUnregisterShip`). Add two ways that keep the ship whole.
+
+- **What a transfer is:** the same ship changes owner. Nothing moves between interiors. One step re-owns the `PlayerShip`, its interior `WorldProperty` and every child structure; structures copy their owner's ID when placed, so each one must be updated. The layout, furniture positions, stored items and installed modules stay as they are.
+- **Blocking conditions** (checked when offered and again at the moment it completes):
+  - Nobody is aboard, and the ship isn't flying.
+  - The recipient is under `Space.MaxRegisteredShips` (10).
+  - Droids assigned to the ship belong to the old owner and go back to them first.
+  - Any item aboard that can't normally be traded blocks the transfer until it's removed, so a transfer never passes on bound items.
+- **Rules for the new owner:**
+  - They can own a ship above their Piloting rank but can't fly it until they reach it.
+  - Hull Designs don't change hands. The ship keeps its current look, and the new owner can only refit to designs they've unlocked. The old owner keeps every unlock.
+  - Permissions reset. The old owner and everyone they invited lose access, and the new owner starts with full rights.
+- **Direct transfer (gifts):** a Transfer button in Ship Management. Both players are at the starport where the ship is docked. The recipient sees a summary (ship, design, modules, furniture, stored items) and accepts. It costs a transfer fee scaled by size (section 17).
+- **Sales through the player market:** the existing `PlayerMarket` already has a `Starship` category for ship deeds. Extend it so an owner can list a registered ship from Ship Management at an asking price.
+  - The listing is a `MarketItem` that points at the ship instead of holding a serialized item, and it shows the ship's summary and where it's docked.
+  - While listed, the ship is locked: it can't fly, be furnished or be transferred.
+  - Buying uses the market's existing flow: the same-CD-key block, the price check, and the seller's proceeds minus the market tax going to their market till. Then it runs the transfer above instead of handing over an item. The market tax replaces the transfer fee.
+  - The buyer doesn't need to be at the starport; the ship stays where it's docked.
+  - When a listing expires after the usual 14 days, the ship simply unlocks.
+
 ## 8. Modules
 
 ### Slots
@@ -694,6 +716,7 @@ One release, one migration set (`Migrations.md`): server migrations first, then 
   - Clean `UnlockedPerks`.
 - **Login notice:** must say plainly that a pilot keeps Piloting, which still covers hull sizes and the Piloting modules (passive defenses, propulsion, cargo, cloaking), but needs Gunnery or Ship Systems ranks to fit weapons or Ship Systems modules above rank 0. The free Rebuild Token is the way to move ranks.
 - **Items** (inventories, storage, bank, market listings, deeds, installed modules on `PlayerShip`):
+  - Converted ships keep their interior: the property keeps the layout it already has (`WorldProperty.Layout`), so no furniture moves or breaks. Only ships built after the release use the new ship's layout.
   - Old hulls map to new ships as below, and the owner gets the old model unlocked as a design of the new ship:
 
 | Old hull | New ship |
@@ -774,6 +797,7 @@ Draft each in the Bible, check it with the combat simulator where it affects com
   - The measured combat baseline and the resulting targets.
 - **Repairs:** cost per hull size.
 - **Refit:** fee.
+- **Ship transfer:** fee by hull size.
 - **Dockhand store:** prices for its stock (section 14).
 - **Wild Space:** environment effect sizes, rift lifetimes, mass budgets and collapse damage, Rift Raider presets, loot tables.
 - **Scanning:** signal gained per cycle, spawn rates per signature type, Sensor Sweep range and cooldown, Jump to Signature spool.
@@ -801,7 +825,7 @@ Everything merges to one integration branch and releases together.
 | W0 | Bible drafts | Piloting, Gunnery and Ship Systems perk tabs; Starships tab rewrite (hulls, modules, components, traits); space enemy sections; trade tab (commodities, prices) | Owner approval gates W2-W9 numbers |
 | W1 | Foundations | Skills, `CombatPointCategoryType.Starship`, space `StatType`s, resistance types, High/Mid/Low and slot tags in `ShipStatus`, removing configs, size x role data model, `RequiresSkill` on space items | - |
 | W2 | Combat rules | Shared crit, resist, status and threat; attribute mapping; regen; toggle and auto-fire loop; Ship HUD; PvP; escape pods; repair bills | W1 |
-| W3 | Ships and modules | 100 ships (Appendix C) with model scales, Hull Designs and Refit, about 20 module families x rank steps, size scaling, icons with lit variants, store, moving recipes to their new crafting skills | W1, W0 |
+| W3 | Ships and modules | 100 ships (Appendix C) with model scales, Hull Designs and Refit, about 20 module families x rank steps, size scaling, icons with lit variants, store, moving recipes to their new crafting skills, ship transfers and market sales | W1, W0 |
 | W4 | Perks and abilities | Six styles, Gathering space perks, space abilities and IDs | W1, W2, W0 |
 | W5 | Enemies | NPC conversion, role AI, new groups, aces, encounters, spawn tables, DM Space tab | W2, W3 |
 | W6 | World | Salvage and wrecks, gas harvesting, new materials, 3 zones (Module JSON), station flags, starlanes, docking limits | W3 |
@@ -823,7 +847,7 @@ Everything merges to one integration branch and releases together.
 - **Build and tests:**
   - Build once with `-p:RunPostBuildEvent=Never -v q -clp:ErrorsOnly`.
   - Run focused NUnit filters for each slice.
-  - Add tests for: rank gating, size rules, slot rows, migration (refunds, token, item mapping, ship rebuild), trade pricing and flooding, cargo spill, customs, XP split and range, PvP gating, escape pods, every auto-off trigger, support-module target locks and Retarget, All Weapons, space slicing (tier gate, Sensors crew slicing, Espionage XP, customs spoof outcomes).
+  - Add tests for: rank gating, size rules, slot rows, migration (refunds, token, item mapping, ship rebuild), trade pricing and flooding, cargo spill, customs, XP split and range, PvP gating, escape pods, every auto-off trigger, support-module target locks and Retarget, All Weapons, space slicing (tier gate, Sensors crew slicing, Espionage XP, customs spoof outcomes), ship transfers and market sales (every structure re-owned, blocking conditions, designs not shared, permissions reset, migrated interiors kept).
 - **Engine tests** (`EngineTesting.md`) for:
   - Entering space with Mid slots.
   - Crew boarding, camera attach and re-attach after a starlane jump.
@@ -846,6 +870,7 @@ Everything merges to one integration branch and releases together.
   - Founding a station at an anchor site, docking, and a Jump Beacon jump.
   - A holding's ground site, an event fight, and cargo pickup.
   - An industrial droid in a droid bay and at a crew station.
+  - A ship transfer and a market ship sale, with the interior intact.
   - Boarding a derelict, a contested derelict's waves, a data site slicing game, a customs spoof, a wreck data core, a space lockbox, a DM-spawned squad, an agent mission, a Rift Run timer, and cloak and reveal.
   - Every Hull Design at ship scale.
   - Crew camera view.

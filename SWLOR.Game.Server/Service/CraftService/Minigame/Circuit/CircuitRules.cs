@@ -25,9 +25,6 @@ public static class CircuitRules
 
     /// <summary>The output each rank above or below the recipe's level adds, as a fraction.</summary>
     public const double RankStep = 0.05;
-
-    /// <summary>The output each rank below the recipe's level takes away, as a fraction.</summary>
-    public const double RankBelowStep = 0.10;
     public const int MaxRanksBelowRecipe = 3;
     public const int MaxRanksAboveRecipe = 5;
 

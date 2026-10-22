@@ -82,7 +82,7 @@ public class CircuitEngineTests
         setup.OverloadLine.Should().Be(6);
     }
 
-    [TestCase(22, 6)]
+    [TestCase(22, 7)]
     [TestCase(25, 8)]
     [TestCase(30, 11)]
     [TestCase(45, 11)]
@@ -91,7 +91,7 @@ public class CircuitEngineTests
         Setup(rank: rank).WireGain(0).Should().Be(wire);
     }
 
-    [TestCase(22, 56)]
+    [TestCase(22, 68)]
     [TestCase(25, 81)]
     [TestCase(45, 81)]
     public void RankAgainstTheRecipe_PenalizesCalibrationBelowButNeverRewardsAbove(int rank, int tune)

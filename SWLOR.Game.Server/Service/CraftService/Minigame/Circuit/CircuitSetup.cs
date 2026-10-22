@@ -123,7 +123,7 @@ public sealed class CircuitSetup
     private double RankFactor(int maxAbove)
     {
         var difference = Math.Clamp(Rank - RecipeLevel, -CircuitRules.MaxRanksBelowRecipe, maxAbove);
-        return 1.0 + (difference < 0 ? CircuitRules.RankBelowStep : CircuitRules.RankStep) * difference;
+        return 1.0 + CircuitRules.RankStep * difference;
     }
 
     private int Scale(int size, double percent, int load, double factor)

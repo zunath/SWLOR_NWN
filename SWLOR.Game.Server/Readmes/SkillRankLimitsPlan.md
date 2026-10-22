@@ -26,7 +26,7 @@ It ships on its own pull request, ahead of the space revamp, so players can set 
    - A limited skill at or below its limit never decays.
    - Recompute the candidates after every decay in the rank-up loop: a decay can bring a skill down to its limit, which can empty the above-limit pool.
 5. **Blocked at the cap:** when no candidate remains, XP is blocked as today. Update both existing `SKILL_CAP` messages to say "locked or at their limits" instead of "locked from decay". XP debt the award already repaid stays repaid: the blocked path saves it (today it sends the "removed from your debt" message without saving).
-6. **Scope:** only skills with `ContributesToSkillCap`, the same set as the decay lock. Languages and other non-contributing skills have no limit control and ignore any stored value.
+6. **Scope:** every skill, languages included (players asked to stop learning languages they don't want). Languages max out at rank 20; the shared combo options run to 50, so a language pick above 20 saves as 20. Languages never decay and send no `SKILL_LIMIT` warning, because they gain XP from overheard speech and would warn whenever someone spoke the language.
 7. **RP XP** (`Feature/GuiDefinition/ViewModel/DistributeRPXPViewModel.cs`): RP XP is never lost to a blocked award.
    - **Today's bug:** the window subtracts the amount from `UnallocatedXP` *before* calling `GiveSkillXP`. If the award is then blocked (at the cap with every other skill locked), the RP XP is lost. Limits make that state more common, so fix it here.
    - **Return the accepted amount:** change `GiveSkillXP` to return the XP it actually used: XP debt repaid plus XP applied to the skill. Discarded XP is not counted, so a blocked award returns only the debt it repaid (0 without debt). Existing callers can ignore the return value.
@@ -35,7 +35,7 @@ It ships on its own pull request, ahead of the space revamp, so players can set 
    - **Cap the amount** at the XP needed to reach the limit. Distribution calls `GiveSkillXP` with `ignoreBonuses: true` and no henchman penalty, so the needed XP is exact.
 8. **Rebuilds:** `CharacterFullRebuildViewModel` ignores limits during manual allocation. `RefundAllSkills` leaves `RankLimit` untouched; it still resets `IsLocked` as today. Limits persist through full rebuilds and Rebuild Tokens.
 9. **Other rank writers:**
-   - `PlayerInitialization` sets language ranks, and languages are out of scope.
+   - `PlayerInitialization` sets starting language ranks directly, outside `GiveSkillXP`, so it ignores limits; a limit only stops later gains.
    - The rebuild ignores limits (rule 8).
    - No other code raises a skill's rank outside `GiveSkillXP`. Recheck this with a search before coding.
 
@@ -52,7 +52,7 @@ Files: `Feature/GuiDefinition/SkillsDefinition.cs` and `Feature/GuiDefinition/Vi
 - **The control:** add a **Limit** control to each row, beside the existing Decay Lock button. It's a combo with "None" and every rank from the skill's max rank down to 0, in steps of 1, defaulting to None. The ranks run highest first because the dropdown opens at the top of its list and players usually limit a skill near the top of its range.
   - List-template combos share one static option list, so the options run to the highest max rank among skills that count toward the cap (50 for every such skill today); saving clamps to the row's own max rank.
   - The selection is a watched `GuiBindingList<int>` (value 0 = None, otherwise limit + 1). A watch event reports the whole list, so the view model diffs it against the last saved selections and saves only the changed rows. This is the first watched per-row list in the codebase, so the client evidence must show a combo change reaching the Player record.
-- **When enabled:** only for skills that count toward the cap, matching `DecayLockButtonEnabled`.
+- **When enabled:** on every row, languages included (rule 6).
 - **Display:** the row shows the current choice ("None" or "25") under a "Limit" column header. Longer labels such as "Limit: None" were clipped at the window's default width.
 - **Tooltip:** on the "Limit" header: "Stop a skill at a chosen rank. It never decays below its limit." A tooltip on the combo itself kept it from opening in the client, and the longer text ran off screen.
 - **Saving:** a change saves at once and refreshes the row, the way `ToggleDecayLock` does.

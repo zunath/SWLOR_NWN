@@ -21,9 +21,7 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition
                 .ToList();
             // Read the attributes directly: the skill cache may not be loaded when windows are built.
             var maxLimitRank = Enum.GetValues<SkillType>()
-                .Select(skill => skill.GetAttribute<SkillType, SkillAttribute>())
-                .Where(skill => skill.ContributesToSkillCap)
-                .Max(skill => skill.MaxRank);
+                .Max(skill => skill.GetAttribute<SkillType, SkillAttribute>().MaxRank);
 
             _builder.CreateWindow(GuiWindowType.Skills)
                 .SetIsResizable(true)
@@ -154,11 +152,12 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition
                             template.AddCell(cell =>
                             {
                                 var limit = cell.AddComboBox()
-                                    .BindSelectedIndex(model => model.RankLimitSelections)
-                                    .BindIsEnabled(model => model.DecayLockButtonEnabled);
+                                    .BindSelectedIndex(model => model.RankLimitSelections);
 
                                 // Short labels: the column is too narrow at the default width for "Limit: None".
                                 // Highest ranks first, since players usually limit a skill near the top of its range.
+                                // Every row shares these options, so a pick above a skill's max rank (20 for languages)
+                                // saves as its max rank.
                                 limit.AddOption("None", SkillsViewModel.NoRankLimitSelection);
                                 for (var rank = maxLimitRank; rank >= 0; rank--)
                                 {

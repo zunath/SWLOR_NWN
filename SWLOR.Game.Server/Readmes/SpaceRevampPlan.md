@@ -48,6 +48,8 @@ Appendices
 
 - Appendix A: Perk drafts
 - Appendix B: Module families
+- Appendix C: The 100 ships
+- Appendix D: Components and sourcing
 
 ---
 
@@ -76,11 +78,11 @@ Before any work, read `AGENTS.md` and these guides, plus every guide named in th
 | Skills | Piloting (kept), Gunnery (new), Ship Systems (new). Space mining and salvage move to Gathering. All count toward the 400 skill cap. |
 | Gating | Hulls and modules use `RequiresSkill`. The four unlock perk lines are deleted. |
 | Perks | Each space skill gets 2 styles of 60 SP on the ground template: abilities, stances, traits, capstone. |
-| Hulls | Size (Small/Medium/Large/Capital) x role, one stat block per role, Piloting gates 0/10/25/40. No hull tiers. |
-| Looks | Called **Hull Designs**. Any existing hak model can be a design. Rare designs come from Design Schematics. Starports **Refit** designs. |
+| Ships | 100 ships: 14 roles in 4 sizes, 8 manufacturers, each with a signature bonus. 74 Standard and 26 Advanced. Piloting gates 0/10/25/40, with Advanced 10 higher. |
+| Looks | **Hull Designs** are skins for one specific ship. They launch from model variants and Trellis2 adds more. They're unlocked by Design Schematics and swapped by starport **Refit**. |
 | Slots | High / Mid / Low. No configuration slot. |
 | Modules | About 20 families, an item every 5 ranks (0-45), rank-50 named boss modules. A weapon fires at its hull's size. |
-| Crafting | A new Engineering component layer with trade-off traits. Research blueprints work for hulls and modules. |
+| Crafting | No new skill. Space crafting spreads across Smithery, Engineering, Fabrication, Agriculture and Gathering. A component layer has trade-off traits, manufacturer and rare components. Research blueprints work for hulls and modules. |
 | Combat | Shared ground rules: crits, one Attack and one Defense, EM/Thermal/Explosive resistances, shared status effects, threat, PvP rules. |
 | Attributes | AGI accuracy/evasion, PER attack/crit, VIT hull defense, WIL shields/capacitor/repair, MGT STM for maneuvers, SOC command and trade prices. |
 | Activation | Modules with a cycle are toggles that fire themselves each cycle and switch off when they can't fire. Lit icons show what's on, and a Ship HUD shows targets. |
@@ -142,7 +144,7 @@ Paths are relative to `SWLOR.Game.Server/`.
 | Skills | Piloting only | Piloting, Gunnery, Ship Systems; space mining, gas and salvage in Gathering |
 | Perks | 7 perks; 4 of them only unlock gear tiers (67 SP) | 6 styles of 18 perks (60 SP each) plus Gathering space perks; no perk unlocks gear (Appendix A) |
 | Gear requirements | Perk levels stamped on examine | `RequiresSkill` rank on every hull and module |
-| Hulls | 17 hulls in T1-T5 pairs, each strictly bigger, plus 10 identical capitals | 12 roles in 4 sizes, one stat block per role; looks are Hull Designs |
+| Hulls | 17 hulls in T1-T5 pairs, each strictly bigger, plus 10 identical capitals | 100 ships: 14 roles, 8 manufacturers, signature bonuses, Standard and Advanced (Appendix C) |
 | Ship role | One configuration module | Built into the hull |
 | Slots | High, Low, 1 Config | High, Mid, Low |
 | Module tiers | Basic, I-IV | An item every 5 ranks (0-45) plus named rank-50 modules |
@@ -162,7 +164,7 @@ Paths are relative to `SWLOR.Game.Server/`.
 | Zones | 13 open orbits plus the Abandoned Station | Abandoned Station becomes Small/Medium only; 3 new Small/Medium zones |
 | Enemies | 7 hull types per faction, one shared AI | Sizes, 8 role behaviors, 5 new groups, aces, encounters |
 | Docking | Any ship at any dock | Capitals at major ports; city starport level gates size |
-| Crafting | Refined ore plus electronics | Component layer with trait variants; research blueprints |
+| Crafting | Engineering makes everything from refined ore plus electronics | Smithery, Engineering, Fabrication, Agriculture and Gathering share the work; components with traits; research blueprints |
 | Starlanes | Smuggler's Moon unreachable; Korriban return skips | New lanes; return fixed |
 
 ## 4. Skills
@@ -244,26 +246,57 @@ Each space skill has two styles of 60 SP, the same as a weapon skill.
 
 ## 7. Hulls
 
-### Size x role grid
+### Roles
 
-| Size | Piloting | Roles and built-in bonus |
+| Size | Piloting (Standard / Advanced) | Roles and built-in bonus |
 |---|---|---|
-| Small | 0 | **Fighter**: weapon damage, most High slots. **Interceptor**: fastest; stronger, longer-range tackle. **Bomber**: torpedo damage. |
-| Medium | 10 | **Gunship**: threat and resistances. **Logistics**: remote repair amount and range. **Mining Barge**: mining yield. **Light Freighter**: big interior, cargo, passengers. |
-| Large | 25 | **Frigate**: heavy combat. **Industrial**: strip mining and salvage. **Heavy Freighter**: largest non-capital interior and hold. |
-| Capital | 40 | **Cruiser**: line combat, capital weapons. **Command Ship**: command aura range and strength. |
+| Small | 0 / 10 | **Fighter**: weapon damage, most High slots. **Interceptor**: fastest; stronger, longer-range tackle. **Bomber**: torpedo damage. **Explorer**: scan strength and cloaking. |
+| Medium | 10 / 20 | **Gunship**: threat and resistances. **Logistics**: remote repair amount and range. **Mining Barge**: mining yield. **Light Freighter**: big interior, cargo, passengers. **Blockade Runner**: speed, cloaking with cargo aboard, lower customs scan chance. |
+| Large | 25 / 35 | **Frigate**: heavy combat. **Industrial**: strip mining and salvage. **Heavy Freighter**: largest non-capital interior and hold. |
+| Capital | 40 / 50 | **Cruiser**: line combat, capital weapons. **Command Ship**: command aura range and strength. |
 
-- **Stat blocks:** one per role, with no tiers. Power grows through module ranks and the pilot's skills and perks, never through a better copy of the same hull.
-- **Each hull defines:**
-  - High/Mid/Low slot counts.
-  - Base hull, shield and capacitor.
-  - Speed and evasion.
-  - Signature (size).
-  - Cargo hold.
-  - Interior layout (structure and storage limits).
-  - Repair-cost multiplier.
-  - Crew stations.
-- **Built-in bonuses** replace the configuration modules. They use stats, not role-name switches.
+### Ships: role, manufacturer and signature bonus
+
+There are **100 player ships**, all listed in Appendix C. Each ship's stats come from one Bible formula with three layers:
+
+1. **Role baseline:** slots, hull, shield, capacitor, speed, evasion, signature, cargo, interior, repair multiplier, crew stations and the role's built-in bonus.
+2. **Manufacturer theme:** a modifier.
+3. **Signature bonus:** one of its own.
+
+Two ships in the same role are sidegrades, never strict upgrades.
+
+| Manufacturer | Theme | Ships |
+|---|---|---|
+| Republic | Shields, repairs, support | 20 |
+| Corellian | Speed, evasion, flexible fittings | 20 |
+| Sith | Damage and critical hits | 17 |
+| Czerka | Industry: mining, salvage, cargo, drills | 11 |
+| Mandalorian | Hull toughness, explosive weapons | 10 |
+| Hutt | Heavy hulls, big holds, contraband | 10 |
+| Chiss | Sensors, accuracy, range, scanning | 8 |
+| Rakatan | Exotic Wild Space relic hulls (Advanced only) | 4 |
+
+**Standard and Advanced:** 74 Standard ships and 26 Advanced ships. Compared with a Standard ship, an Advanced ship has:
+- **Better stats:** higher base stats, plus either one extra slot or a stronger signature bonus.
+- **A higher Piloting gate:** 10 ranks above its size's gate (Small 10, Medium 20, Large 35, Capital 50).
+- **A recipe unlock (Ship Schematic)** from drops or faction stores.
+- **A higher recipe level.**
+- **One rare component** (Appendix D).
+- **A Shipyard requirement** when it's Large or Capital. Every Capital ship, Standard or Advanced, is built at a station Shipyard (section 25).
+
+**Every ship defines:**
+- High/Mid/Low slot counts.
+- Base hull, shield and capacitor.
+- Speed and evasion.
+- Signature (size).
+- Cargo hold.
+- Interior layout (structure and storage limits).
+- Repair-cost multiplier.
+- Crew stations.
+- A model scale. Models vary in size, so each ship sets its scale through `SetObjectVisualTransform`, checked with client evidence.
+
+**Implementation rule:** built-in, manufacturer and signature bonuses replace the configuration modules. They grant stats; there are no ship-name switches.
+
 - **Speed:** add per-hull movement through `Stat.ApplyCreatureMovementRate` (today every ship is 1.0).
 - **Shield regen:** make it per second, increasing with size and WIL. Today larger hulls regenerate slower.
 
@@ -282,29 +315,15 @@ Each space skill has two styles of 60 SP, the same as a weapon skill.
     - Ships already docked somewhere too small stay there until they leave.
 - **Cost:** the repair bill scales with size.
 
-### Hull Designs and Refit
+### Hull Designs (ship skins) and Refit
 
-- **Naming:** looks are **Hull Designs**. The unlock item is a **Design Schematic: <name>**, which unlocks that design for the character permanently. Changing design at a starport is a **Refit** and costs a fee.
-- **Common and rare designs:**
-  - Each role has a few common designs every character has.
-  - Rare designs come from schematics. These include Aurek, Sith Fighter, Cutlass, Basilisk and the faction capitals. Today `recipe_aurek`, `recipe_sfight` and `recipe_basilisk` have no source.
-- **Models:** only existing hak models are used. New models go to the Trellis2 list (section 20).
-- **Starting design map** (the implementing agent verifies each model renders correctly at ship scale with client evidence before assigning it):
-
-| Role | Candidate models (appearance row) |
-|---|---|
-| Fighter | Striker 10057, Republic Striker B 10072, Sith Striker A/B 10089/10090, Pirate Fighter 10183, Liberty Fighter 10199; rare: Aurek 10074, Sith Fighter 10092, Cutlass 10161 |
-| Interceptor | Condor 10055, Sith Scout A/B/C 10086/10087/10088, Republic Scout B/C 10069/10070, Republic Infiltrator A-D 10064-10067, Starflier 10114 |
-| Bomber | Republic Bomber A/B 10058/10059, Sith Bomber A/C 10077/10079, Chela Bomber 10149 |
-| Gunship | Neutral Gunship 10056, Republic Gunship B/C 10062/10063, Sith Gunship A/B/C 10080-10082; rare: Basilisk 10120 |
-| Logistics | Support Ship 1-3 10101-10103, Repair Ship 10182 |
-| Mining Barge | Y8 Miner 10152, Mining Ship 10185 |
-| Light Freighter | Neutral Dropship 10054, XS Freighter 10146, Small Transport 10186, Trandoshan Transport 10147, Jedi Transport 10119 |
-| Frigate | Republic Foray 10075, Republic Hammerhead 10076, Neutral Foray/Hammerhead/Praetorian 10133/10134/10136, Sith Foray/Hammerhead/Praetorian 10137/10138/10140 |
-| Industrial | Heavy Lifter 10188 |
-| Heavy Freighter | Freight Train 10189, Large Transport 10187, Luxury Liner 10111 |
-| Cruiser | Thranta x3 10123/10135/10139, YZ2500 10145, Chiss Trireme 10162, Kusari Gunship 10207, Hutt Corvette 10108, Jehavey 10154, Crusader 10260, Mando Cruiser 10121, Bothan Cruiser 10099 |
-| Command Ship | Armored Transport 10218, Republic Valor 10117, Paladin 10125, Centurion/Zenith 10128/10129, Interdictor 10143 |
+- **What a design is:** a **Hull Design** is a skin for one specific ship, usable only on that ship.
+- **Launch designs:** every ship has its base model. Ships whose model family has variants launch with those variants as designs (Appendix C, "Launch skins").
+- **More designs later:** the Trellis2 pipeline generates more designs per ship over time (section 20).
+- **Unlocking:** a **Design Schematic: <Ship> - <Design>** unlocks one design for the character. Sources: aces, bosses, Wild Space, rare salvage and faction stores.
+- **Refit:** a starport Refit swaps a ship to another design unlocked for it, for a fee.
+- **Ship Schematics** are the recipe unlocks for Advanced ships. They replace the orphaned `recipe_aurek`, `recipe_sfight` and `recipe_basilisk`.
+- **Migration:** owners keep today's look as a design of the ship they're mapped to (section 15).
 
 ## 8. Modules
 
@@ -361,7 +380,7 @@ Toggled modules are the ship's auto-attacks; perk abilities are the buttons, as 
 | High | Gunnery | Laser Cannon, Ion Cannon, Beam Cannon, Missile Launcher, Torpedo Launcher (today's proton bomb, expanded), *Point-Defense Turret* (always fires as Light), capital weapons (Turbolaser, Quad Laser, Laser Battery, Storm Cannon, Assault Concussion Missile) |
 | High | Gathering | Mining Laser, Strip Miner, *Salvager*, *Gas Harvester* |
 | Mid | Ship Systems | Shield Booster, Shield Repairer, *Shield Hardener*, Capacitor Battery, Hypermatter Injector, *Ion Web*, *Interdictor* (target can't jump, dock or leave space for a while), *Jammer*, *Target Painter*, capital Bulwark, Repair Field and E-War arrays |
-| Mid | Piloting | *Afterburner*, *Cloaking Device* (Small hulls only; section 32) |
+| Mid | Piloting | *Afterburner*, *Cloaking Device* (Small hulls and Blockade Runners; section 32) |
 | Mid | Ship Systems | *Probe Launcher*, *Data Analyzer* (section 24) |
 | Mid | Gunnery | Targeting Computer |
 | Low | Ship Systems | Hull Plating, Hull Repairer, Resist Plating (one type or all types), *Capacitor Regulator*, *Smuggling Compartment* |
@@ -555,9 +574,11 @@ Ships at launch.
 
 ### Component layer
 
-Engineering intermediates that hull and module recipes consume.
+Crafted intermediates that hull and module recipes consume. Appendix D lists every component, which skill crafts it, and which loot tables drop it.
 
-- **Families:** Hull Frame, Ship Reactor, Energy Emitter, Ordnance Assembly, Shield Projector, Thruster Assembly, Sensor Suite, Extraction Head.
+- **Generic families:** Hull Frame, Ship Reactor, Energy Emitter, Ordnance Assembly, Shield Projector, Thruster Assembly, Sensor Suite, Extraction Head, Life Support System.
+- **Manufacturer components:** one per manufacturer (for example Republic Shield Matrix, Sith Targeting Core). They are not crafted. They come from that manufacturer's faction store, its NPC ships' loot, and salvage of those wrecks.
+- **Rare components** for Advanced ships: Thorilide Core, Aurodium Plating, Rakatan Relic Core, and salvaged parts carrying a rare trait.
 - **Tiers:**
   - Five material tiers. Items at in-between ranks use their tier's component.
   - Today's capital parts (`capc_*`) become the top band.
@@ -570,7 +591,28 @@ Engineering intermediates that hull and module recipes consume.
   - Extraction Head: Bulk (+yield), Precision (+rare-find chance).
 - **Salvaged Components:** carry a random trait, sometimes a rare one crafting can't make (for example "Sith-tuned").
 - **Recipe levels:** they match the rank schedule. The rule "required rank = recipe level - 3" stays.
-- **Hulls:** one Engineering recipe per role, at its size gate level. Starship enhancements remain the way to improve a hull.
+### Who crafts space items
+
+There is no new crafting skill. Space work spreads across the existing crafts by theme, so a hull needs parts from several crafters and they trade with each other.
+
+| Skill | Space items |
+|---|---|
+| Smithery | Weapon modules (every Gunnery High-slot weapon, capital weapons included), Hull Plating, Resist Plating, ammo (missiles, torpedoes, concussion missiles), and the metal components: Hull Frame, Ordnance Assembly, Thruster Assembly, Aurodium Plating |
+| Engineering | Every other module (shields, repairers, capacitor, electronic warfare, tackle, sensors, Probe Launcher, Data Analyzer, Cloaking Device, Afterburner, Thrusters, Damage Amplifier, Targeting Computer, mining and salvage gear), Hypermatter capsules, enhancements, droids and industrial droid parts, and the electronic components: Ship Reactor, Energy Emitter, Shield Projector, Sensor Suite, Extraction Head, Thorilide Core, Rakatan Relic Core |
+| Fabrication | Final assembly of all 100 ships, the Cargo Expander and Smuggling Compartment, Station Cores and station buildings (Shipyard, Asteroid Drill, Jump Beacon), holding upgrades and Processing Plants, and interior trophies and decor |
+| Agriculture | Life Support System (hydroponics), a component of Light and Heavy Freighters, Cruisers and Command Ships |
+| Gathering | Refining: ores, the new materials, and Ship Scrap into electronics (no recipes) |
+
+- **Hull recipes:**
+  - Each ship is one Fabrication recipe needing a Hull Frame, a Ship Reactor, a Thruster Assembly, its role's component and its manufacturer's component.
+  - Advanced ships add one rare component.
+  - Large and Capital Advanced ships, and every Capital ship, are assembled at a station Shipyard.
+- **Recipe levels (draft):**
+  - Standard: the ship's Piloting gate + 5.
+  - Advanced: its Advanced gate + 5.
+  - Capital Advanced recipes are level 52, the tier-5.5 recipe level, as on the ground.
+- **Moving recipes:** today's ship, module and ammo recipes leave Engineering for the skills above. Recipe unlocks a player already has are remapped, never dropped (`CombatUpgradeMigration.md` rule). The free Rebuild Token covers anyone who wants to move ranks.
+- **Hull quality:** starship enhancements remain the way to improve a hull.
 
 ### Research
 
@@ -581,7 +623,7 @@ Engineering intermediates that hull and module recipes consume.
 - **Named rank-50 modules,** one per main family:
   - They follow the ground Chiro pattern: level-52 recipe unlocks, 2 enhancement slots.
   - Recipe unlocks drop from T6 bosses and aces. The modules need Thorilide and Aurodium.
-- **Design Schematics** for rare Hull Designs drop from aces, bosses and rare salvage.
+- **Design Schematics** for Hull Designs drop from aces, bosses and rare salvage, and faction stores sell some. **Ship Schematics** for Advanced ships drop from the same sources (Appendix D).
 - **Interior trophies and decor:** new `StructureType` entries such as a mounted wreck trophy or a captain's holotable.
 - **Ammo variants** for each launcher at each tier:
   - Ion missiles (EM plus slow).
@@ -614,8 +656,24 @@ One release, one migration set (`Migrations.md`): server migrations first, then 
   - Clean `UnlockedPerks`.
 - **Login notice:** must say plainly that a pilot keeps Piloting but needs Gunnery or Ship Systems ranks to fit anything above rank-0 modules. The free Rebuild Token is the way to move ranks.
 - **Items** (inventories, storage, bank, market listings, deeds, installed modules on `PlayerShip`):
-  - Old hulls map to the new role whose design matches. Store-sold starter hulls (`sdeed_freighter`, `sdeed_escort`) map to Small roles.
-  - Each owner gets that design unlocked.
+  - Old hulls map to new ships as below, and the owner gets the old model unlocked as a design of the new ship:
+
+| Old hull | New ship |
+|---|---|
+| Light Freighter (`sdeed_freighter`), Striker | Striker |
+| Light Escort (`sdeed_escort`), Condor | Condor |
+| Hound | Republic Striker |
+| Panther, Falchion | Sith Scout |
+| Saber | Republic Scout |
+| Mule, Consular | Republic Gunship |
+| Merchant | Sith Gunship |
+| Throne | Sith Infiltrator |
+| Aurek, Sith Fighter, Cutlass, Basilisk | Same-named ship |
+| Republic, Sith and Neutral Thranta; Hutt Corvette; Jehavey'ir; Chiss Trireme | Same-named Cruiser |
+| YZ2500 Corellian Gunboat | Corellian Gunboat |
+| CZC Armored Transport, Terminus Corsair, Crusader | Czerka Armored Transport, Terminus Corsair, Crusader Corvette (Command Ships) |
+
+  - The two store starters map to Small ships so their owners can still fly them at Piloting 0.
   - Old module tiers map to the new rank steps: Basic -> 0, I -> 10, II -> 20, III -> 30, IV -> 40.
   - Configuration modules are uninstalled and refunded in credits at their value.
   - Installed modules that no longer fit return to their owner, never deleted.
@@ -647,7 +705,7 @@ Fix these as part of the rewrite. Most go away with the code that replaces them.
 11. Space weapons and damage have no PvP hostility check.
 12. `EquipmentRequirementMigration` stamped examined Defensive, Offensive and Mining module items with `RequiresSkill(Invalid, 100)`, because only `PerkType.Starships` was skipped.
 13. Starship enhancement subtype 58 is labelled "Starship - Agility" but builds an ability bonus.
-14. `recipe_aurek`, `recipe_sfight` and `recipe_basilisk` cannot be obtained. Design Schematics fix this.
+14. `recipe_aurek`, `recipe_sfight` and `recipe_basilisk` cannot be obtained. Ship Schematics replace them (section 7).
 15. Missile ammo: `Missile35` is recipe level 25, recipe type names don't match quantities, and the Bible rows are stale.
 16. `ShipDetail` Accuracy, Evasion, defenses, IndustryBonus and HasDroidBay are never read. `ShipStatus.ActiveModules` is never read either; it becomes the toggle state (section 8).
 17. NPC config modules are stored under negative Low-slot keys. Removed with configs.
@@ -661,7 +719,8 @@ Fix these as part of the rewrite. Most go away with the code that replaces them.
 
 Draft each in the Bible, check it with the combat simulator where it affects combat, and get owner approval before code.
 
-- **Hulls:** per-role slots, hull, shield, capacitor, speed, evasion, signature, cargo, interior limits, repair multiplier, built-in bonus sizes.
+- **Ships:** the ship formula; per-role baselines (slots, hull, shield, capacitor, speed, evasion, signature, cargo, interior limits, repair multiplier, built-in bonus); manufacturer modifiers; each ship's signature bonus size; Advanced multipliers; recipe levels; model scales.
+- **Components:** recipes and quantities per ship; manufacturer component drop chances; rare component recipes.
 - **Size rules:** hit-chance and damage penalty per size step.
 - **Modules:** stats per family per rank step; capacitor cost, recast and range; Point-Defense and capital values; size scaling factors.
 - **Components:** recipes, variant trait sizes, salvaged trait odds.
@@ -702,7 +761,7 @@ Everything merges to one integration branch and releases together.
 | W0 | Bible drafts | Piloting, Gunnery and Ship Systems perk tabs; Starships tab rewrite (hulls, modules, components, traits); space enemy sections; trade tab (commodities, prices) | Owner approval gates W2-W9 numbers |
 | W1 | Foundations | Skills, `CombatPointCategoryType.Starship`, space `StatType`s, resistance types, High/Mid/Low and slot tags in `ShipStatus`, removing configs, size x role data model, `RequiresSkill` on space items | - |
 | W2 | Combat rules | Shared crit, resist, status and threat; attribute mapping; regen; toggle and auto-fire loop; Ship HUD; PvP; escape pods; repair bills | W1 |
-| W3 | Hulls and modules | 12 role hulls, Hull Designs and Refit, about 20 module families x rank steps, size scaling, icons with lit variants, store | W1, W0 |
+| W3 | Ships and modules | 100 ships (Appendix C) with model scales, Hull Designs and Refit, about 20 module families x rank steps, size scaling, icons with lit variants, store, moving recipes to their new crafting skills | W1, W0 |
 | W4 | Perks and abilities | Six styles, Gathering space perks, space abilities and IDs | W1, W2, W0 |
 | W5 | Enemies | NPC conversion, role AI, new groups, aces, encounters, spawn tables | W2, W3 |
 | W6 | World | Salvage and wrecks, gas harvesting, new materials, 3 zones (Module JSON), station flags, starlanes, docking limits | W3 |
@@ -762,7 +821,7 @@ Everything merges to one integration branch and releases together.
 New models go through the Trellis2 pipeline (`Readmes/BlasterModelImport.md`) as a separate project. This plan ships without them.
 
 - Space fauna: mynock swarms (latch on and drain capacitor) and a giant space slug (exogorth) in the Viscara Asteroid Belt.
-- Signature Hull Designs for roles with thin model choices (Industrial, Logistics).
+- **Hull Designs for every ship:** several skins per ship, each usable only on that ship (section 7). Start with ships that have no launch skins.
 - Trade containers and wreck variants, if the existing placeables look wrong at ship scale.
 - Station exteriors for Small, Medium and Large stations, if scaling the existing `[mdrn]SpaceStation` placeable (placeables.2da row 1452) can't tell them apart.
 - Rakatan Remnant automaton ships, if the unused hak models (for example the Alien set, 10215-10217) don't read as ancient machines.
@@ -964,7 +1023,9 @@ A station is a **player city in space** and follows every city mechanic, in `Ser
 
 ## 32. Cloaking
 
-- **Cloaking Device:** Mid slot, Piloting, Small hulls only. Interceptors and Bombers get a role bonus (a faster cloak and a smaller speed penalty).
+- **Cloaking Device:** Mid slot, Piloting. It fits Small hulls and Blockade Runners only.
+  - Interceptors, Bombers and Explorers get a role bonus: a faster cloak and a smaller speed penalty.
+  - Blockade Runners can cloak with cargo aboard.
 - **While cloaked:**
   - The ship is hidden from other players.
   - It can't use modules or abilities, and its toggled modules switch off.
@@ -1174,7 +1235,7 @@ Every family has an item every 5 ranks (0-45); capital families start at rank 40
 | Target Painter | Mid | Ship Systems | Toggle | Paints the target (damage taken up). | New |
 | Bulwark Shield Generator, Repair Field, E-War array | Mid | Ship Systems | Toggle | Capital fleet support. Capital hulls only. | Capital support modules |
 | Afterburner | Mid | Piloting | Toggle | + speed while on; pays capacitor each cycle. | New |
-| Cloaking Device | Mid | Piloting | Toggle | Hides a Small hull; no module or ability use while cloaked (section 32). | New |
+| Cloaking Device | Mid | Piloting | Toggle | Hides a Small hull or Blockade Runner; no module or ability use while cloaked (section 32). | New |
 | Probe Launcher | Mid | Ship Systems | Toggle | Scans hidden signatures system-wide; pulse mode for a Sensor Sweep (section 24). | New |
 | Data Analyzer | Mid | Ship Systems | One press | Starts the slicing mini-game on a data can (section 24). | New |
 | Targeting Computer | Mid | Gunnery | Passive | + accuracy. | Targeting System (was Low) |
@@ -1187,3 +1248,170 @@ Every family has an item every 5 ranks (0-45); capital families start at rank 40
 | Thrusters | Low | Piloting | Passive | + evasion and speed. | Evasion Booster |
 | Cargo Expander | Low | Piloting | Passive | + cargo hold. | New |
 | Capital passives | Low | Ship Systems | Passive | Advanced Thrusters, Redundant Shield Generator, Reinforced Plating, Targeting Array, Weapons Computer, Power Diverter. Capital hulls only. | Capital passives |
+
+## Appendix C: The 100 ships
+
+Model and Launch skins are `appearance.2da` rows. Launch skins are Hull Designs available at release; they are other variants from the same model family. Piloting is the required rank. Signature bonus sizes are drafts for the Bible formula.
+
+| # | Ship | Size | Role | Maker | Tier | Piloting | Model | Launch skins | Signature bonus |
+|---|---|---|---|---|---|---|---|---|---|
+| 1 | Striker | Small | Fighter | Corellian | Standard | 0 | 10057 | 10190 | Weapon cycles 5% faster. |
+| 2 | Republic Striker | Small | Fighter | Republic | Standard | 0 | 10071 | 10072, 10073 | +15% shield regen. |
+| 3 | Sith Striker | Small | Fighter | Sith | Standard | 0 | 10089 | 10090, 10091 | +5% Critical Rate with energy weapons. |
+| 4 | Davaab | Small | Fighter | Mandalorian | Standard | 0 | 10155 | - | +10% max hull and +5% missile damage. |
+| 5 | Hutt Fighter | Small | Fighter | Hutt | Standard | 0 | 10105 | - | +15% max hull and a 10-unit cargo hold. |
+| 6 | Chiss Clawcraft | Small | Fighter | Chiss | Standard | 0 | 10204 | - | +10% accuracy against targets beyond 30 m. |
+| 7 | Corsair | Small | Fighter | Corellian | Standard | 0 | 10193 | 10194 | +10% damage to slowed or interdicted targets. |
+| 8 | Liberty Fighter | Small | Fighter | Republic | Standard | 0 | 10199 | 10200 | +10% repairs received. |
+| 9 | Rheinland Fighter | Small | Fighter | Sith | Standard | 0 | 10210 | 10211 | Critical hits deal +10% damage. |
+| 10 | Aurek Strikefighter | Small | Fighter | Republic | Advanced | 10 | 10074 | - | +20% shield regen; Point-Defense fires as Medium. |
+| 11 | Sith Fighter | Small | Fighter | Sith | Advanced | 10 | 10092 | 2008 | +10% Critical Rate; critical hits restore 1 capacitor. |
+| 12 | Cutlass | Small | Fighter | Corellian | Advanced | 10 | 10161 | - | +1 High slot and +10% speed. |
+| 13 | Condor | Small | Interceptor | Corellian | Standard | 0 | 10055 | - | +10% speed. |
+| 14 | Republic Scout | Small | Interceptor | Republic | Standard | 0 | 10068 | 10069, 10070 | Ion Web range +20%. |
+| 15 | Sith Scout | Small | Interceptor | Sith | Standard | 0 | 10086 | 10087, 10088 | +10% damage to webbed targets. |
+| 16 | Teroch | Small | Interceptor | Mandalorian | Standard | 0 | 10153 | - | +10% max hull; Interdictor cycles 20% faster. |
+| 17 | Zoomer | Small | Interceptor | Corellian | Standard | 0 | 10144 | - | Afterburner costs 25% less capacitor. |
+| 18 | Chiss Nighthawk | Small | Interceptor | Chiss | Standard | 0 | 10205 | - | Sensor Sweep range +25%. |
+| 19 | Eclipse Interceptor | Small | Interceptor | Sith | Advanced | 10 | 2006 | - | +15% speed; webs also lower the target's evasion. |
+| 20 | Arrow Interceptor | Small | Interceptor | Republic | Advanced | 10 | 2001 | 2003 | +20% evasion while the Afterburner is on. |
+| 21 | Republic Bomber | Small | Bomber | Republic | Standard | 0 | 10058 | 10059, 10060 | Torpedo hits strip 10% extra shield. |
+| 22 | Sith Bomber | Small | Bomber | Sith | Standard | 0 | 10077 | 10078, 10079 | +5% torpedo Critical Rate. |
+| 23 | Hutt Bomber | Small | Bomber | Hutt | Standard | 0 | 10106 | - | +15% max hull. |
+| 24 | Phoebos Bomber | Small | Bomber | Corellian | Standard | 0 | 10104 | - | Torpedo cycles 10% faster. |
+| 25 | Ruping Bomber | Small | Bomber | Mandalorian | Standard | 0 | 10237 | - | +10% explosive damage. |
+| 26 | Chela Bomber | Small | Bomber | Republic | Advanced | 10 | 10149 | 2005 | Torpedoes ignore 25% of the target's resistances. |
+| 27 | Aurora Bomber | Small | Bomber | Sith | Advanced | 10 | 10241 | 2007 | +20% torpedo damage to Capital hulls. |
+| 28 | Starflier | Small | Explorer | Corellian | Standard | 0 | 10114 | - | +15% scan strength. |
+| 29 | Republic Infiltrator | Small | Explorer | Republic | Standard | 0 | 10064 | 10065, 10066, 10067 | Cloaks in 2 seconds; +10% scan strength. |
+| 30 | Sith Infiltrator | Small | Explorer | Sith | Standard | 0 | 10083 | 10084, 10085 | Sensor Sweep reveals ships 50% farther away. |
+| 31 | Chiss Hyperion | Small | Explorer | Chiss | Standard | 0 | 10230 | - | +25% scan strength; signatures show their tier from 25%. |
+| 32 | Czerka Surveyor | Small | Explorer | Czerka | Standard | 0 | 10191 | 10192 | +20% loot from data and relic sites. |
+| 33 | Jalshey Serendipity | Small | Explorer | Corellian | Advanced | 10 | 10221 | 10222 | Jump to Signature spools 50% faster; passes Small rifts without spending mass. |
+| 34 | Rakatan Seeker | Small | Explorer | Rakatan | Advanced | 10 | 10215 | - | Scans Wild Space 50% faster and ignores environment penalties. |
+| 35 | Neutral Gunship | Medium | Gunship | Corellian | Standard | 10 | 10056 | - | +1 Mid slot, -1 Low slot. |
+| 36 | Republic Gunship | Medium | Gunship | Republic | Standard | 10 | 10061 | 10062, 10063, 10148 | +10% shield resistances. |
+| 37 | Sith Gunship | Medium | Gunship | Sith | Standard | 10 | 10080 | 10081, 10082 | +10% threat generation and +5% damage. |
+| 38 | Hutt Gunship | Medium | Gunship | Hutt | Standard | 10 | 10107 | - | +20% max hull, -10% speed. |
+| 39 | Brute Patrol Ship | Medium | Gunship | Mandalorian | Standard | 10 | 10156 | - | +10% hull resistances. |
+| 40 | Chiss Longhorn | Medium | Gunship | Chiss | Standard | 10 | 10163 | - | +10% accuracy; Jammers cycle 15% faster. |
+| 41 | Basilisk War Droid | Medium | Gunship | Mandalorian | Advanced | 20 | 10120 | - | +15% hull resistances and +10% explosive damage. |
+| 42 | Rakatan Warden | Medium | Gunship | Rakatan | Advanced | 20 | 10216 | - | 10% of damage taken returns as capacitor. |
+| 43 | Republic Mender | Medium | Logistics | Republic | Standard | 10 | 10101 | - | +15% remote shield repair. |
+| 44 | Czerka Repair Tender | Medium | Logistics | Czerka | Standard | 10 | 10182 | - | +15% remote hull repair. |
+| 45 | Corellian Lifeline | Medium | Logistics | Corellian | Standard | 10 | 10102 | - | +20% capacitor transfer. |
+| 46 | Chiss Caretaker | Medium | Logistics | Chiss | Standard | 10 | 10103 | - | Remote repair range +25%. |
+| 47 | Jedi Transport | Medium | Logistics | Republic | Advanced | 20 | 10119 | 10157 | Repairs 20% stronger; repairs also remove one slow. |
+| 48 | Onderon Service Ship | Medium | Logistics | Czerka | Advanced | 20 | 10226 | - | Repairers cycle 15% faster; droid bay repairs +25%. |
+| 49 | Y8 Miner | Medium | Mining Barge | Czerka | Standard | 10 | 10152 | - | +15% ore yield. |
+| 50 | Gas Skimmer | Medium | Mining Barge | Corellian | Standard | 10 | 10185 | - | +15% gas yield. |
+| 51 | Hutt Ore Hauler | Medium | Mining Barge | Hutt | Standard | 10 | 10151 | - | +10% yield and a 30-unit cargo hold. |
+| 52 | Republic Survey Barge | Medium | Mining Barge | Republic | Standard | 10 | 10201 | - | +20% rare-metal chance. |
+| 53 | Deep Core Barge | Medium | Mining Barge | Czerka | Advanced | 20 | 10227 | - | Mines asteroids one tier above its laser; +20% yield. |
+| 54 | XS Freighter | Medium | Light Freighter | Corellian | Standard | 10 | 10146 | - | +20% cargo. |
+| 55 | Czerka Courier | Medium | Light Freighter | Czerka | Standard | 10 | 10054 | - | +15% speed while carrying cargo. |
+| 56 | Hutt Hauler | Medium | Light Freighter | Hutt | Standard | 10 | 10186 | - | Comes with a built-in Smuggling Compartment. |
+| 57 | Sith Transport | Medium | Light Freighter | Sith | Standard | 10 | 10240 | - | +10% max shield; Sith customs scan it 25% less. |
+| 58 | Chiss Trader | Medium | Light Freighter | Chiss | Standard | 10 | 10206 | - | HoloNet price board shows live prices. |
+| 59 | Lambda Shuttle | Medium | Light Freighter | Republic | Advanced | 20 | 2002 | - | +30% cargo and +15% max shield. |
+| 60 | Pirate Freighter | Medium | Blockade Runner | Corellian | Standard | 10 | 10184 | - | Cloaks in 2 seconds and +10% cargo. |
+| 61 | Trandoshan Runner | Medium | Blockade Runner | Hutt | Standard | 10 | 10147 | - | -25% customs scan chance. |
+| 62 | Chasemaster | Medium | Blockade Runner | Corellian | Standard | 10 | 10164 | - | +15% speed, -15% cargo. |
+| 63 | Doomtreader | Medium | Blockade Runner | Mandalorian | Standard | 10 | 10160 | - | +15% max hull; Interdictors hold it 50% shorter. |
+| 64 | Barracuda | Medium | Blockade Runner | Corellian | Advanced | 20 | 10113 | - | Immune to Ion Webs; ships must be within 5 m to reveal it. |
+| 65 | Neutral Foray | Large | Frigate | Corellian | Standard | 25 | 10133 | - | +1 High slot, -1 Mid slot. |
+| 66 | Republic Foray | Large | Frigate | Republic | Standard | 25 | 10075 | - | +10% max shield. |
+| 67 | Sith Foray | Large | Frigate | Sith | Standard | 25 | 10137 | - | +10% weapon damage. |
+| 68 | Republic Hammerhead | Large | Frigate | Republic | Standard | 25 | 10076 | 10134 | Point-Defense deals +20% damage. |
+| 69 | Sith Hammerhead | Large | Frigate | Sith | Standard | 25 | 10138 | - | +5% Critical Rate. |
+| 70 | Mandalorian Raider | Large | Frigate | Mandalorian | Standard | 25 | 10121 | - | +15% max hull and +10% missile damage. |
+| 71 | Interceptor IV | Large | Frigate | Chiss | Advanced | 35 | 10224 | - | +15% weapon range. |
+| 72 | Rakatan Sentinel | Large | Frigate | Rakatan | Advanced | 35 | 10196 | 10195 | Shield regen doubles while no weapon is firing. |
+| 73 | Heavy Lifter | Large | Industrial | Czerka | Standard | 25 | 10188 | - | +20% strip-mining yield. |
+| 74 | Czerka Salvager | Large | Industrial | Czerka | Standard | 25 | 10197 | 10198 | +20% salvage yield. |
+| 75 | Hutt Bulk Hauler | Large | Industrial | Hutt | Standard | 25 | 10132 | - | +30% cargo. |
+| 76 | Sith Quartermaster | Large | Industrial | Sith | Standard | 25 | 10131 | - | The Strip Miner doesn't root the ship. |
+| 77 | Czerka Refinery Ship | Large | Industrial | Czerka | Advanced | 35 | 10229 | - | Mined ore comes out already refined. |
+| 78 | Freight Train | Large | Heavy Freighter | Czerka | Standard | 25 | 10189 | 2174 | +30% cargo. |
+| 79 | Large Transport | Large | Heavy Freighter | Corellian | Standard | 25 | 10187 | - | +15% speed. |
+| 80 | Hutt Barge | Large | Heavy Freighter | Hutt | Standard | 25 | 10212 | - | Built-in Smuggling Compartment; -20% customs scan chance. |
+| 81 | Republic Quartermaster | Large | Heavy Freighter | Republic | Standard | 25 | 10130 | 10150 | +15% max shield; allied ships within 30 m take 5% less damage. |
+| 82 | Hutt Grand Barge | Large | Heavy Freighter | Hutt | Advanced | 35 | 10109 | - | +40% cargo; Jump Beacon jumps cost 50% less fuel. |
+| 83 | Neutral Thranta | Capital | Cruiser | Corellian | Standard | 40 | 10135 | - | +1 High slot. |
+| 84 | Republic Thranta | Capital | Cruiser | Republic | Standard | 40 | 10123 | - | +10% max shield. |
+| 85 | Sith Thranta | Capital | Cruiser | Sith | Standard | 40 | 10139 | - | +10% damage. |
+| 86 | Hutt Corvette | Capital | Cruiser | Hutt | Standard | 40 | 10108 | - | +20% max hull and +50% cargo. |
+| 87 | Jehavey'ir | Capital | Cruiser | Mandalorian | Standard | 40 | 10154 | - | +15% max hull and +10% explosive damage. |
+| 88 | Chiss Trireme | Capital | Cruiser | Chiss | Standard | 40 | 10162 | - | +15% weapon range. |
+| 89 | Corellian Gunboat | Capital | Cruiser | Corellian | Standard | 40 | 10145 | - | +10% speed and evasion. |
+| 90 | Republic Valor | Capital | Cruiser | Republic | Advanced | 50 | 10117 | 10122, 2170 | +25% max shield; allied ships within 30 m regen shields 10% faster. |
+| 91 | Sith Harrower | Capital | Cruiser | Sith | Advanced | 50 | 10126 | 10238, 10239 | +15% damage; critical hits slow the target. |
+| 92 | Rakatan Dreadnought | Capital | Cruiser | Rakatan | Advanced | 50 | 10217 | - | Every hit uses whichever damage type the target resists least. |
+| 93 | Republic Interdictor | Capital | Command Ship | Republic | Standard | 40 | 10143 | - | Command range +10 m. |
+| 94 | Sith Centurion | Capital | Command Ship | Sith | Standard | 40 | 10127 | 10141 | Focus Fire orders +5% stronger. |
+| 95 | Czerka Armored Transport | Capital | Command Ship | Czerka | Standard | 40 | 10218 | - | Crew stations +10% effective; droid crew +20%. |
+| 96 | Terminus Corsair | Capital | Command Ship | Corellian | Standard | 40 | 10207 | - | Allied ships within command range +5% speed. |
+| 97 | Crusader Corvette | Capital | Command Ship | Mandalorian | Standard | 40 | 10260 | - | +15% max hull; allies within command range +5% explosive damage. |
+| 98 | Republic Centurion | Capital | Command Ship | Republic | Advanced | 50 | 10128 | 10129, 10124, 10125 | Command range +20 m; orders last 25% longer. |
+| 99 | Kyramud | Capital | Command Ship | Mandalorian | Advanced | 50 | 10116 | 10115 | Allied ships within command range +10% max hull. |
+| 100 | Supremacy Assault Ship | Capital | Command Ship | Sith | Advanced | 50 | 10142 | 10093, 10118, 2169 | Allied ships within command range +8% Critical Rate. |
+
+## Appendix D: Components and sourcing
+
+Every ship recipe uses its generic components, its role's component, and its manufacturer's component. Advanced ships add one rare component. Quantities and drop chances are drafted in the Bible.
+
+### Generic components
+
+| Component | Crafted by | Main inputs | Used by ships | Also from |
+|---|---|---|---|---|
+| Hull Frame | Smithery | Refined ore, metals; Durelium in the T1-2 band | Every ship | Salvage |
+| Ship Reactor | Engineering | Electronics, refined ore; Tibanna Gas in the T3-4 band | Every ship | Salvage |
+| Thruster Assembly | Smithery | Refined ore, fiberplast | Every ship (two for Interceptors and Blockade Runners) | Salvage |
+| Energy Emitter | Engineering | Electronics, crystals | Fighters, Frigates, Cruisers | Salvage |
+| Ordnance Assembly | Smithery | Refined ore, metals | Bombers | Salvage |
+| Shield Projector | Engineering | Electronics, crystals | Gunships, Logistics | Salvage |
+| Sensor Suite | Engineering | Electronics, gems | Interceptors, Explorers, Command Ships | Salvage, data sites |
+| Extraction Head | Engineering | Diamond-grade gems, metals, electronics | Mining Barges, Industrials | Salvage |
+| Life Support System | Agriculture | Plants and food goods, fiberplast | Light and Heavy Freighters, Blockade Runners, Cruisers, Command Ships | None |
+
+### Manufacturer components
+
+These are not crafted. Each one comes from its manufacturer's side of the galaxy, so flying a maker's ships ties you to that faction.
+
+| Component | Manufacturer | Sources |
+|---|---|---|
+| Republic Shield Matrix | Republic | Republic Military agent store; Republic freight contracts |
+| Sith Targeting Core | Sith | Sith Military agent store; Imperial (T6) ships and Sith capitals; their wrecks |
+| Mandalorian Plating | Mandalorian | Mandalorian agent store; Clan Zel Arun (T4) ships and Mandalorian capitals; their wrecks |
+| Czerka Industrial Frame | Czerka | Czerka agent store; Czerka freight contracts; rare output from Assembly Line holdings |
+| Hutt Cargo Coupling | Hutt | Hutt Cartel agent store; Hutt enforcers; their wrecks |
+| Corellian Drive Kit | Corellian | Smugglers agent store; pirate raiders and the T1-T5 pirate factions; their wrecks |
+| Chiss Sensor Array | Chiss | Data sites, aces, and the black markets at Smuggler's Moon, Tatooine and Hutlar |
+| Rakatan Relic Hull | Rakatan | Wild Space only: Rakatan Remnant ships and relic sites |
+
+### Rare components (Advanced ships)
+
+| Component | Crafted by | Inputs | Used by |
+|---|---|---|---|
+| Thorilide Core | Engineering | Thorilide (capital-ship kills) + Ship Reactor | Advanced Republic, Sith, Corellian and Chiss ships |
+| Aurodium Plating | Smithery | Aurodium (Korriban Debris Field, Wild Space) + Hull Frame | Advanced Mandalorian, Hutt and Czerka ships |
+| Rakatan Relic Core | Engineering | Rakatan relics (Wild Space) + Sensor Suite | Rakatan ships |
+
+A salvaged component carrying a rare trait can stand in for the rare component in any Advanced recipe. That makes elite and boss wrecks worth salvaging.
+
+### Schematics
+
+| Unlock | Sources |
+|---|---|
+| Ship Schematic (Advanced ship recipe) | That manufacturer's agent store at high standing, aces, incursion rewards; Chiss from data sites; Rakatan from Wild Space |
+| Design Schematic (one ship's skin) | Aces, bosses, rare salvage, Rift Runs, faction stores |
+
+### Loot table changes
+
+- **Faction NPC ships** drop their manufacturer's component: a low chance on basic ships, higher on elites and bosses. Map each NPC faction to the manufacturer its ships resemble while drafting.
+- **Wrecks** (Salvager) yield Ship Scrap, salvaged generic components, the wreck's manufacturer component, and, on elites and bosses, rare-trait parts.
+- **Aces** drop Ship Schematics, Design Schematics and rare components.
+- **Wild Space** drops Rakatan relics, Rakatan Relic Hulls and Thorilide.
+- **Incursions** reward Sith or Mandalorian Ship Schematics, matching the invader.
+- **Rift Runs** drop rare-trait parts and Design Schematics.
+- **Registration:** every new item source is registered for `EconomyObtainabilityCoverageTests` (`EconomyRestrictedItems.md`).

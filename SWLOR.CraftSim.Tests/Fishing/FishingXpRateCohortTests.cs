@@ -175,6 +175,38 @@ namespace SWLOR.CraftSim.Tests.Fishing
         }
 
         [Test]
+        public void TheFastestAllowedPace_TakesTheFirstActionAtOnce_SoAFightOfNActionsLastsNMinusOneTurns()
+        {
+            var parity = ReportParity.Value;
+            var typical = new FishingXpRateCohort(parity);
+            var fastest = new FishingXpRateCohort(parity, FishingParityOptions.Default with { FreeOpeningTurn = true });
+
+            fastest.Name.Should().Contain("fastest allowed pace");
+            foreach (var xpCase in typical.Cases(Context()))
+            {
+                var typicalSample = typical.PlayReplacement(xpCase, Context());
+                var fastestSample = fastest.PlayReplacement(xpCase, Context());
+
+                fastestSample.ActionsPerRun.Should().BeApproximately(typicalSample.ActionsPerRun - 1, 1e-6, $"{xpCase.Group}: one free action in every fight that has one");
+                fastestSample.XpPerRun.Should().BeLessThan(typicalSample.XpPerRun, $"{xpCase.Group}: a shorter fight earns a smaller share of the rest");
+            }
+        }
+
+        [Test]
+        public void TheFastestAllowedPace_EarnsAtLeastTodaysXpPerHour_SoTheMultipliersDoNotUnderpayIt()
+        {
+            var fastest = new FishingXpRateCohort(ReportParity.Value, FishingParityOptions.Default with { FreeOpeningTurn = true });
+
+            foreach (var xpCase in fastest.Cases(Context()))
+            {
+                var legacyRate = fastest.PlayLegacy(xpCase, Context()).XpPerHour(fastest.LegacyTiming);
+                var fastestRate = fastest.PlayReplacement(xpCase, Context()).XpPerHour(fastest.ReplacementTiming);
+
+                (fastestRate / legacyRate).Should().BeInRange(1.0, 1.15, $"{xpCase.Group}: not below today's, and the free first action buys only a few percent");
+            }
+        }
+
+        [Test]
         public void ATableWithOnlyADayPoolOrOnlyANightPool_KeepsItsHalfOfTheWeight()
         {
             var cohort = new FishingXpRateCohort(new FishingParity(10, 1));

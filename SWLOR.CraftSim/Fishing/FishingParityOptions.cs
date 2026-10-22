@@ -35,6 +35,13 @@ namespace SWLOR.CraftSim.Fishing
         /// </summary>
         public double SecondsPerTurn { get; init; } = LineRules.TurnSeconds;
 
+        /// <summary>
+        /// Whether the XP cohort's player takes the first action of a fight at once, as the game allows (each later action waits the turn).
+        /// False models the typical player, who reads the first move for a turn like every other; true models the fastest allowed pace, a
+        /// fight of n actions lasting n - 1 turns.
+        /// </summary>
+        public bool FreeOpeningTurn { get; init; }
+
         /// <summary>The seconds of one cast and wait for a bite: 6, 7 or 8 in the game, so 7 on average. Both loops spend it, once per bite.</summary>
         public double CastSeconds { get; init; } = 7;
 

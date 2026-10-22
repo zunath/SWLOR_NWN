@@ -36,12 +36,13 @@ namespace SWLOR.CraftSim.Tests.Fishing
                 GateNames.EconomyParity,
                 GateNames.Length,
                 GateNames.XpRate,
+                "Evidence: XP rate at the fastest allowed pace",
                 "Evidence: Angler perk magnitudes",
                 "Evidence: style balance",
                 "Evidence: rare fish and Trophy Catch");
             report.Should().StartWith("# " + FishingReport.Title);
             report.Should().Contain("## Inputs").And.Contain("## Verdicts").And.Contain("## Economy parity").And.Contain("## Length").And.Contain("## XP rate")
-                .And.Contain("## Evidence: Angler perk magnitudes").And.Contain("## Evidence: style balance")
+                .And.Contain("## Evidence: XP rate at the fastest allowed pace").And.Contain("## Evidence: Angler perk magnitudes").And.Contain("## Evidence: style balance")
                 .And.Contain("## Evidence: rare fish and Trophy Catch").And.Contain("## Limitations");
             report.Should().Contain("Willpower scores 8, 10, 12, 14, 16, 18, 20");
             report.Should().Contain("Rank - fish level").And.Contain("Agriculture rank").And.Contain("Trophy Catch");
@@ -93,6 +94,7 @@ namespace SWLOR.CraftSim.Tests.Fishing
             WriteReport(out var results);
 
             results.Single(result => result.Gate == GateNames.XpRate).Tables.Single().Rows.Should().HaveCount(5, "one case for each band of fish levels");
+            results.Single(result => result.Gate == "Evidence: XP rate at the fastest allowed pace").Tables.Single().Rows.Should().HaveCount(5);
             results.Single(result => result.Gate == GateNames.EconomyParity).Tables.Should().HaveCount(2);
             results.Where(result => result.Gate.StartsWith("Evidence")).Should().OnlyContain(result => result.Verdict == GateVerdict.NotApplicable);
         }

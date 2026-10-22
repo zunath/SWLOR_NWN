@@ -63,6 +63,7 @@
 | Economy parity | Passed | Catch rate per bite: the adaptive player stays within 10 points of today's Willpower 10-14 corridor at every rank above the fish's level and at every rank over the real pools (furthest outside: 5.1 points). |
 | Length | Passed | The adaptive player's fights last 3-6 actions (fishing fight) in every row. |
 | XP rate | Passed | Fishing: XP per hour is at least 1.00x the legacy rate in every case (lowest 1.00x in 31-40 / best rod for the rank, rank = fish level (at most 50)). |
+| Evidence: XP rate at the fastest allowed pace | NotApplicable | Not a gate. A player who takes the free first action at once and then waits the turn each time earns 1.03x to 1.04x of today's XP per hour across the bands; the multipliers above are calibrated for the typical player, who reads the first move for a turn like the others. |
 | Evidence: Angler perk magnitudes | NotApplicable | Not a gate. What each proposed Angler purchase adds to the adaptive player's catch rate; the draft quotes it. |
 | Evidence: style balance | NotApplicable | Not a gate. Patient Angler is the better style on 69% of the cases and Aggressive Angler on 31%; the mean gap is 0.2 points (Patient less Aggressive). |
 | Evidence: rare fish and Trophy Catch | NotApplicable | Not a gate. The ceiling for the capstone is today's catch chance for a level 52 fish at rank 50 for a character with Willpower 20: 60%. |
@@ -134,6 +135,18 @@
 | 21-30 | best rod for the rank, rank = fish level (at most 50) | 600 | 0.0 | 308571 | 4200 | 5.2 | 309680 | 1.00 | - | Passed |
 | 31-40 | best rod for the rank, rank = fish level (at most 50) | 600 | 0.0 | 308571 | 4169 | 5.2 | 309045 | 1.00 | - | Passed |
 | 41-52 | best rod for the rank, rank = fish level (at most 50) | 617 | 0.0 | 317473 | 4185 | 5.0 | 319258 | 1.01 | - | Passed |
+
+## Evidence: XP rate at the fastest allowed pace
+
+### Fishing at the fastest allowed pace: XP per hour against the legacy loop (0.0 s per action legacy, 8.0 s per action new; unmeasured estimates)
+
+| Group | Variant | Legacy XP per bite | Legacy actions per bite | Legacy XP per hour | New XP per bite | New actions per bite | New XP per hour | Ratio | XP multiplier needed | Verdict |
+| --- | --- | --- | --- | --- | --- | --- | --- | --- | --- | --- |
+| 0-10 | best rod for the rank, rank = fish level (at most 50) | 600 | 0.0 | 308571 | 3852 | 4.6 | 318544 | 1.03 | - | Passed |
+| 11-20 | best rod for the rank, rank = fish level (at most 50) | 600 | 0.0 | 308571 | 3776 | 4.4 | 319672 | 1.04 | - | Passed |
+| 21-30 | best rod for the rank, rank = fish level (at most 50) | 600 | 0.0 | 308571 | 3593 | 4.2 | 316826 | 1.03 | - | Passed |
+| 31-40 | best rod for the rank, rank = fish level (at most 50) | 600 | 0.0 | 308571 | 3566 | 4.2 | 316498 | 1.03 | - | Passed |
+| 41-52 | best rod for the rank, rank = fish level (at most 50) | 617 | 0.0 | 317473 | 3557 | 4.0 | 326735 | 1.03 | - | Passed |
 
 ## Evidence: Angler perk magnitudes
 
@@ -213,6 +226,6 @@
 - The game places the six special fish at a random location and bait on every server start. The study fixes one placement (`FishingCatchModel.SpecialPlacementSeed` = 1) so the report can be reproduced; another placement moves the top band's mix and the pooled rows a little.
 - The fight has no hidden chance, so a very easy fish is landed every time by a skilled player, where today's chance stops at 95%.
 - The pooled table averages every pool a rod can reach with equal weight, as the legacy baseline does, and ignores the 80% chance of no bite when only the default fish is on offer. Fish per hour is not modelled: location choice, bait supply and respawn are outside the study.
-- Gate 6 weighs the time a fight adds (8.0 s a turn is unmeasured) against the XP multiplier, so the multipliers are starting values: they shrink or grow with the real seconds per turn. The game keeps the pace from below in two ways: each action after the first waits the turn, and the rest of the multiplied XP is paid in proportion to how long the fight lasted (up to the full turns), so a fast player, or one who loses the fight on purpose after a move, earns about today's XP per hour and no more. The gate plays every fight at the modelled turn, so a player slower than that earns less than today per hour.
+- Gate 6 weighs the time a fight adds (8.0 s a turn is unmeasured) against the XP multiplier, so the multipliers are starting values: they shrink or grow with the real seconds per turn. The game keeps the pace from below in two ways: each action after the first waits the turn, and the rest of the multiplied XP is paid in proportion to how long the fight lasted (up to the full turns), so a fast player, or one who loses the fight on purpose after a move, earns about today's XP per hour and no more; the evidence table for the fastest allowed pace (first action at once) shows it a few percent above today's. The gate plays every fight at the modelled turn, so a player slower than that earns less than today per hour.
 - The multiplier raises the XP of a fight that lasts the full turns about eightfold, because the fight takes several times as long as the cast it follows; the catch rate per bite stays near today's, so fish per hour falls by the same factor. Gate 6 asks for it; it is flagged here for the owner.
 - Perks, food and status effects are not modelled except where an evidence table names a perk. The client was not run.

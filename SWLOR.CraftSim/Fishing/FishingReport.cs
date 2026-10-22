@@ -32,6 +32,20 @@ namespace SWLOR.CraftSim.Fishing
                 new XpRateGate(cohort, thresholds).Evaluate(context)
             };
 
+            // The game lets the first action of a fight resolve at once, so the fastest allowed player's fight of n actions lasts n - 1 turns.
+            // The multipliers are calibrated for the typical player above; this shows what the fastest allowed pace earns against today's.
+            var fastest = new FishingXpRateCohort(parity, options with { FreeOpeningTurn = true });
+            var fastestGate = new XpRateGate(fastest, thresholds).Evaluate(context);
+            var fastestRatios = fastest.Cases(context).Select(xpCase =>
+                fastest.PlayReplacement(xpCase, context).XpPerHour(fastest.ReplacementTiming) /
+                fastest.PlayLegacy(xpCase, context).XpPerHour(fastest.LegacyTiming)).ToList();
+            results.Add(new GateResult(
+                "Evidence: XP rate at the fastest allowed pace",
+                GateVerdict.NotApplicable,
+                $"Not a gate. A player who takes the free first action at once and then waits the turn each time earns {Number(fastestRatios.Min(), 2)}x to " +
+                $"{Number(fastestRatios.Max(), 2)}x of today's XP per hour across the bands; the multipliers above are calibrated for the typical player, who reads the first move for a turn like the others.",
+                fastestGate.Tables));
+
             var style = FishingAnglerEvidence.StyleBalance(parity);
             results.Add(new GateResult(
                 "Evidence: Angler perk magnitudes",
@@ -109,7 +123,7 @@ namespace SWLOR.CraftSim.Fishing
             $"- The game places the six special fish at a random location and bait on every server start. The study fixes one placement (`FishingCatchModel.SpecialPlacementSeed` = {FishingCatchModel.SpecialPlacementSeed}) so the report can be reproduced; another placement moves the top band's mix and the pooled rows a little.",
             "- The fight has no hidden chance, so a very easy fish is landed every time by a skilled player, where today's chance stops at 95%.",
             "- The pooled table averages every pool a rod can reach with equal weight, as the legacy baseline does, and ignores the 80% chance of no bite when only the default fish is on offer. Fish per hour is not modelled: location choice, bait supply and respawn are outside the study.",
-            $"- Gate 6 weighs the time a fight adds ({Number(options.SecondsPerTurn)} s a turn is unmeasured) against the XP multiplier, so the multipliers are starting values: they shrink or grow with the real seconds per turn. The game keeps the pace from below in two ways: each action after the first waits the turn, and the rest of the multiplied XP is paid in proportion to how long the fight lasted (up to the full turns), so a fast player, or one who loses the fight on purpose after a move, earns about today's XP per hour and no more. The gate plays every fight at the modelled turn, so a player slower than that earns less than today per hour.",
+            $"- Gate 6 weighs the time a fight adds ({Number(options.SecondsPerTurn)} s a turn is unmeasured) against the XP multiplier, so the multipliers are starting values: they shrink or grow with the real seconds per turn. The game keeps the pace from below in two ways: each action after the first waits the turn, and the rest of the multiplied XP is paid in proportion to how long the fight lasted (up to the full turns), so a fast player, or one who loses the fight on purpose after a move, earns about today's XP per hour and no more; the evidence table for the fastest allowed pace (first action at once) shows it a few percent above today's. The gate plays every fight at the modelled turn, so a player slower than that earns less than today per hour.",
             "- The multiplier raises the XP of a fight that lasts the full turns about eightfold, because the fight takes several times as long as the cast it follows; the catch rate per bite stays near today's, so fish per hour falls by the same factor. Gate 6 asks for it; it is flagged here for the owner.",
             "- Perks, food and status effects are not modelled except where an evidence table names a perk. The client was not run."
         };

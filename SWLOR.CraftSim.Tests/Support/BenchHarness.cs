@@ -30,7 +30,7 @@ namespace SWLOR.CraftSim.Tests.Support
     internal static class BenchHarness
     {
         public static GateContext Context(IEnumerable<int> levels, int runs = 20, int seed = 1, int perLevel = 2) =>
-            new(BenchRecipes.Catalog(levels, perLevel), SharedData.Gear, runs, seed, AttributeSweep.Default);
+            new(BenchRecipes.Catalog(levels, perLevel), SharedData.Gear, runs, seed, AttributeSweep.Default, enhancements: SharedData.Enhancements);
 
         public static CraftGateSuite Suite(ICraftScenario scenario, int recipesPerBand = 1, GateThresholds thresholds = null) =>
             new(scenario, (thresholds ?? GateThresholds.Default) with { RecipesPerBand = recipesPerBand });

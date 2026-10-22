@@ -14,9 +14,12 @@ namespace SWLOR.CraftSim.Tests.Support
         private static readonly Lazy<CraftingGearCatalog> GearValue =
             new(() => CraftingGearCatalog.Build(GearItems, Recipes));
 
+        private static readonly Lazy<EnhancementCatalog> EnhancementsValue = new(() => EnhancementCatalog.Load(Root));
+
         public static string Root => RootValue.Value;
         public static RecipeCatalog Recipes => RecipesValue.Value;
         public static IReadOnlyList<GearItem> GearItems => GearItemsValue.Value;
         public static CraftingGearCatalog Gear => GearValue.Value;
+        public static EnhancementCatalog Enhancements => EnhancementsValue.Value;
     }
 }

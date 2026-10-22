@@ -28,7 +28,7 @@ namespace SWLOR.CraftSim.Tests.Cli
         {
             var writer = new StringWriter();
             var code = GatesCommand.Run(
-                args.ToArray(), writer, registry ?? Registry(), BenchRecipes.Catalog(new[] { 15, 45 }), SharedData.Gear);
+                args.ToArray(), writer, registry ?? Registry(), BenchRecipes.Catalog(new[] { 15, 45 }), SharedData.Gear, SharedData.Enhancements);
             output = writer.ToString();
             return code;
         }
@@ -56,7 +56,7 @@ namespace SWLOR.CraftSim.Tests.Cli
             json["scenario"]["Skill"].Value<string>().Should().Be("Smithery");
             json["seed"].Value<int>().Should().Be(3);
             json["runs"].Value<int>().Should().Be(12);
-            json["allGatesPassed"].Value<bool>().Should().BeFalse("only two of the six gates were run");
+            json["allGatesPassed"].Value<bool>().Should().BeFalse("only two of the seven gates were run");
             json["results"].Select(r => r["Gate"].Value<string>()).Should().Equal("Length", "XP rate");
             json["results"].Select(r => r["Verdict"].Value<string>()).Should().OnlyContain(v => v == "Passed" || v == "Failed");
             json["thresholds"].Select(t => t["Name"].Value<string>()).Should().Contain("RotationMarginPoints");
@@ -69,11 +69,37 @@ namespace SWLOR.CraftSim.Tests.Cli
 
             code.Should().Be(0);
             var report = File.ReadAllText(Path("all.md"));
-            foreach (var gate in new[] { "No fixed rotation", "Style balance", "Perks optional", "Length", "Economy parity", "XP rate" })
+            foreach (var gate in new[] { "No fixed rotation", "Style balance", "Perks optional", "Length", "Economy parity", "XP rate", "Enhancement parity" })
                 report.Should().Contain($"| {gate} |");
 
             report.Should().NotContain("Gates run:");
             output.Should().Contain("Style balance: NotApplicable");
+        }
+
+        [TestCase("7")]
+        [TestCase("enhancements")]
+        public void GateSevenRunsAlongsideTheOthersByNumberOrByName(string seven)
+        {
+            var code = Run(Common("--gates", $"4,{seven}", "--json", Path("results.json")), out var output);
+
+            code.Should().Be(0);
+            output.Should().Contain("Running Length...").And.Contain("Running Enhancement parity...").And.Contain("Enhancement parity: ");
+            var report = File.ReadAllText(Path("report.md"));
+            report.Should().Contain("## Enhancement parity").And.Contain("## Length").And.NotContain("## XP rate");
+            report.Should().Contain("Representative enhancements").And.Contain("Thresholds, first / second / third slot");
+            report.Should().Contain("- Gates run: Length, Enhancement parity.");
+
+            var json = JObject.Parse(File.ReadAllText(Path("results.json")));
+            json["results"].Select(r => r["Gate"].Value<string>()).Should().Equal("Length", "Enhancement parity");
+            json["thresholds"].Select(t => t["Name"].Value<string>()).Should().Contain("EnhancementParityMinimumRatio");
+        }
+
+        [Test]
+        public void GateSevenAloneDoesNotNeedTheOtherGatesToLoadAnything()
+        {
+            Run(Common("--gates", "7"), out var output).Should().Be(0);
+
+            output.Should().NotContain("Running Length").And.Contain("Enhancement parity: ");
         }
 
         [Test]

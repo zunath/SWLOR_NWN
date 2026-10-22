@@ -27,7 +27,8 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.SmitheryRecipeDefinition
                 .EnhancementSlots(RecipeEnhancementType.Armor, 1)
                 .Component("lth_high", 4)
                 .Component("fiberp_high", 2)
-                .Component("midink_sac", 1);
+                .Component("midink_sac", 1)
+                .ForgeParameters(rangeCenter: 36, rangeWidth: 49, coolingRate: 4, startingThermal: 44, shapeShare: 63);
 
             // Inkguard Wraps
             _builder.Create(RecipeType.InkguardWraps, SkillType.Smithery)
@@ -39,7 +40,8 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.SmitheryRecipeDefinition
                 .EnhancementSlots(RecipeEnhancementType.Armor, 1)
                 .Component("lth_high", 2)
                 .Component("fiberp_high", 1)
-                .Component("midink_sac", 1);
+                .Component("midink_sac", 1)
+                .ForgeParameters(rangeCenter: 38, rangeWidth: 49, coolingRate: 2, startingThermal: 51, shapeShare: 56);
 
             // Inkguard Treads
             _builder.Create(RecipeType.InkguardTreads, SkillType.Smithery)
@@ -51,7 +53,8 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.SmitheryRecipeDefinition
                 .EnhancementSlots(RecipeEnhancementType.Armor, 1)
                 .Component("lth_high", 2)
                 .Component("fiberp_high", 1)
-                .Component("midink_sac", 1);
+                .Component("midink_sac", 1)
+                .ForgeParameters(rangeCenter: 38, rangeWidth: 52, coolingRate: 3, startingThermal: 50, shapeShare: 54);
 
             // Inkguard Sash
             _builder.Create(RecipeType.InkguardSash, SkillType.Smithery)
@@ -63,7 +66,8 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.SmitheryRecipeDefinition
                 .EnhancementSlots(RecipeEnhancementType.Armor, 1)
                 .Component("lth_high", 2)
                 .Component("fiberp_high", 1)
-                .Component("midink_sac", 1);
+                .Component("midink_sac", 1)
+                .ForgeParameters(rangeCenter: 44, rangeWidth: 55, coolingRate: 3, startingThermal: 51, shapeShare: 54);
 
             // Inkguard Mantle
             _builder.Create(RecipeType.InkguardMantle, SkillType.Smithery)
@@ -75,7 +79,8 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.SmitheryRecipeDefinition
                 .EnhancementSlots(RecipeEnhancementType.Armor, 1)
                 .Component("lth_high", 2)
                 .Component("fiberp_high", 1)
-                .Component("midink_sac", 1);
+                .Component("midink_sac", 1)
+                .ForgeParameters(rangeCenter: 37, rangeWidth: 49, coolingRate: 3, startingThermal: 43, shapeShare: 50);
 
             // Inkguard Gorget
             _builder.Create(RecipeType.InkguardGorget, SkillType.Smithery)
@@ -87,7 +92,8 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.SmitheryRecipeDefinition
                 .EnhancementSlots(RecipeEnhancementType.Armor, 1)
                 .Component("lth_high", 2)
                 .Component("fiberp_high", 1)
-                .Component("midink_sac", 1);
+                .Component("midink_sac", 1)
+                .ForgeParameters(rangeCenter: 41, rangeWidth: 48, coolingRate: 3, startingThermal: 51, shapeShare: 42);
 
             // Inkguard Band
             _builder.Create(RecipeType.InkguardBand, SkillType.Smithery)
@@ -99,7 +105,8 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.SmitheryRecipeDefinition
                 .EnhancementSlots(RecipeEnhancementType.Armor, 1)
                 .Component("lth_high", 2)
                 .Component("fiberp_high", 1)
-                .Component("midink_sac", 1);
+                .Component("midink_sac", 1)
+                .ForgeParameters(rangeCenter: 38, rangeWidth: 53, coolingRate: 4, startingThermal: 51, shapeShare: 42);
 
             // Inkguard Guard
             _builder.Create(RecipeType.InkguardGuard, SkillType.Smithery)
@@ -111,7 +118,8 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.SmitheryRecipeDefinition
                 .EnhancementSlots(RecipeEnhancementType.Armor, 1)
                 .Component("lth_high", 2)
                 .Component("fiberp_high", 1)
-                .Component("midink_sac", 1);
+                .Component("midink_sac", 1)
+                .ForgeParameters(rangeCenter: 41, rangeWidth: 51, coolingRate: 4, startingThermal: 43, shapeShare: 53);
 
             // Inkguard Visor
             _builder.Create(RecipeType.InkguardVisor, SkillType.Smithery)
@@ -123,7 +131,8 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.SmitheryRecipeDefinition
                 .EnhancementSlots(RecipeEnhancementType.Armor, 1)
                 .Component("lth_high", 3)
                 .Component("fiberp_high", 2)
-                .Component("midink_sac", 1);
+                .Component("midink_sac", 1)
+                .ForgeParameters(rangeCenter: 39, rangeWidth: 55, coolingRate: 4, startingThermal: 45, shapeShare: 58);
 
             // Inkguard Charm
             _builder.Create(RecipeType.InkguardCharm, SkillType.Smithery)
@@ -135,7 +144,8 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.SmitheryRecipeDefinition
                 .EnhancementSlots(RecipeEnhancementType.Armor, 1)
                 .Component("lth_high", 2)
                 .Component("fiberp_high", 1)
-                .Component("midink_sac", 1);
+                .Component("midink_sac", 1)
+                .ForgeParameters(rangeCenter: 41, rangeWidth: 54, coolingRate: 3, startingThermal: 49, shapeShare: 43);
         }
     }
 }

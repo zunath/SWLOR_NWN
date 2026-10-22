@@ -24,15 +24,19 @@ public static class CraftMinigameRouting
 
     public static GuiWindowType GetWindow(SkillType skill) => GetRoute(skill).Window;
 
-    /// <summary>True when the player has any crafting window open, the original or a minigame's.</summary>
-    public static bool IsAnyCraftWindowOpen(uint player)
+    /// <summary>Every window that crafts items: the original one and each minigame's.</summary>
+    public static IReadOnlyList<GuiWindowType> GetCraftWindows()
     {
         _routes ??= BuildRoutes(DiscoverRoutes());
         return _routes.Values.Select(route => route.Window)
             .Append(LegacyWindow)
             .Distinct()
-            .Any(window => Gui.IsWindowOpen(player, window));
+            .ToList();
     }
+
+    /// <summary>True when the player has any crafting window open, the original or a minigame's.</summary>
+    public static bool IsAnyCraftWindowOpen(uint player) =>
+        GetCraftWindows().Any(window => Gui.IsWindowOpen(player, window));
 
     /// <summary>Builds the lookup from route declarations. Two routes for one skill is an error.</summary>
     public static IReadOnlyDictionary<SkillType, CraftMinigameRoute> BuildRoutes(IEnumerable<ICraftMinigameRoute> declarations)

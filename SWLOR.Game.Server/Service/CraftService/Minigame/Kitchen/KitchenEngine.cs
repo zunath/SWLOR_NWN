@@ -211,15 +211,17 @@ public sealed class KitchenEngine : MinigameEngineBase<KitchenState>
         if (state.Stock.Remaining(line) <= 0)
             return MinigameActionRule<KitchenState>.Disabled(info, 0, 0, $"No {ingredient.Name} left.");
 
+        // The portions added so far decide which share of the stack this one carries.
+        var portion = ingredient.Portions - state.Stock.Remaining(line);
         if (ingredient.Kind == KitchenIngredientKind.Dilute)
         {
             var percent = IsPeakAroma(state)
-                ? Math.Min(100, ingredient.DilutePercent * KitchenTuning.PeakAromaMultiplier)
-                : ingredient.DilutePercent;
+                ? Math.Min(100, ingredient.DilutePercentAt(portion) * KitchenTuning.PeakAromaMultiplier)
+                : ingredient.DilutePercentAt(portion);
             return Single(info, 0, 0, "Diluted", s => s.WithProfile(s.Profile.Scaled(100 - percent)).UsePortion(line));
         }
 
-        return AddFlavor(state, info, ingredient.PortionVector, line);
+        return AddFlavor(state, info, ingredient.PortionVectorAt(portion), line);
     }
 
     /// <summary>

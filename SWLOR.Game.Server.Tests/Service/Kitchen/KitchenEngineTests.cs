@@ -189,6 +189,24 @@ public class KitchenEngineTests
     }
 
     [Test]
+    public void AddingEveryPortionOfAStack_PushesExactlyTheWholeStack()
+    {
+        var stack = Soup(freshness: 100, center: new FlavorVector(78, 0, 12), outer: 40, lines: new[] { Meat(6) });
+        var engine = Engine(Script(Rolls(50), Rolls(50), Rolls(50), Rolls(50)), stack);
+        var pushed = new List<int>();
+
+        for (var portion = 0; portion < 4; portion++)
+        {
+            var before = Savory(engine);
+            engine.Perform(KitchenActionIds.AddIngredient(0));
+            pushed.Add(Savory(engine) - before);
+        }
+
+        pushed.Should().Equal(20, 20, 19, 19);
+        engine.Profile.Should().Be(new FlavorVector(78, 0, 12), "6 x (13, 0, 2), however the stack is split");
+    }
+
+    [Test]
     public void AddingAnIngredient_StopsWhenTheCommittedPortionsAreGone()
     {
         var engine = Engine(new FixedRolls(50), Soup(freshness: 200), Cook());

@@ -136,6 +136,41 @@ public class KitchenFlavorTests
         line.TotalVector.Should().Be(new FlavorVector(130, 0, 20));
     }
 
+    [TestCase(1)]
+    [TestCase(2)]
+    [TestCase(3)]
+    [TestCase(4)]
+    [TestCase(5)]
+    [TestCase(6)]
+    [TestCase(7)]
+    [TestCase(10)]
+    [TestCase(13)]
+    [TestCase(16)]
+    public void ThePortionsOfAStackAlwaysAddUpToTheWholeStack(int quantity)
+    {
+        var flavor = new KitchenComponentFlavor(KitchenIngredientKind.Flavor, new FlavorVector(11, 1, 2));
+        var line = new KitchenIngredientLine("fish", "Fish", quantity, flavor);
+
+        var portions = Enumerable.Range(0, line.Portions).Select(line.PortionVectorAt).ToList();
+
+        portions.Aggregate(FlavorVector.Zero, (total, portion) => total + portion).Should().Be(line.TotalVector);
+        portions.Select(portion => portion.Savory).Should().BeInDescendingOrder();
+        portions.Max(portion => portion.Savory - portions.Min(other => other.Savory)).Should().BeLessThanOrEqualTo(1);
+        Enumerable.Range(0, line.Portions).Sum(line.DilutePercentAt)
+            .Should().Be(KitchenTuning.DilutePercentPerUnit * quantity);
+    }
+
+    [Test]
+    public void ASixUnitStack_SplitsItsRemainderOverTheFirstPortions()
+    {
+        var flavor = new KitchenComponentFlavor(KitchenIngredientKind.Flavor, new FlavorVector(11, 1, 2));
+        var line = new KitchenIngredientLine("bream", "Bream", 6, flavor);
+
+        Enumerable.Range(0, 4).Select(line.PortionVectorAt).Should().Equal(
+            new FlavorVector(17, 2, 3), new FlavorVector(17, 2, 3), new FlavorVector(16, 1, 3), new FlavorVector(16, 1, 3));
+        line.TotalVector.Should().Be(new FlavorVector(66, 6, 12));
+    }
+
     [Test]
     public void AnIngredientLine_OfThreeUnitsIsThreePortionsOfOneUnitEach()
     {

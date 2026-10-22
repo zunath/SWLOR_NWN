@@ -660,7 +660,7 @@ One release, one migration set (`Migrations.md`): server migrations first, then 
   - Use `CharacterRecalculation.RefundPerk` with a login notice.
   - Remove their feats.
   - Clean `UnlockedPerks`.
-- **Login notice:** must say plainly that a pilot keeps Piloting but needs Gunnery or Ship Systems ranks to fit anything above rank-0 modules. The free Rebuild Token is the way to move ranks.
+- **Login notice:** must say plainly that a pilot keeps Piloting, which still covers hull sizes and the Piloting modules (passive defenses, propulsion, cargo, cloaking), but needs Gunnery or Ship Systems ranks to fit weapons or Ship Systems modules above rank 0. The free Rebuild Token is the way to move ranks.
 - **Items** (inventories, storage, bank, market listings, deeds, installed modules on `PlayerShip`):
   - Old hulls map to new ships as below, and the owner gets the old model unlocked as a design of the new ship:
 

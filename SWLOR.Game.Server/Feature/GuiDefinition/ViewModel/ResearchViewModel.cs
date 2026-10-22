@@ -6,6 +6,9 @@ using SWLOR.Game.Server.Feature.GuiDefinition.Payload;
 using SWLOR.Game.Server.Service;
 using SWLOR.Game.Server.Service.CombatService;
 using SWLOR.Game.Server.Service.CraftService;
+using SWLOR.Game.Server.Service.CraftService.Minigame;
+using SWLOR.Game.Server.Service.CraftService.Minigame.Experiment;
+using SWLOR.Game.Server.Service.CraftService.Research;
 using SWLOR.Game.Server.Service.DBService;
 using SWLOR.Game.Server.Service.GuiService;
 using SWLOR.NWN.API.Engine;
@@ -133,6 +136,12 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
             set => Set(value);
         }
 
+        public GuiBindingList<string> ExperimentLines
+        {
+            get => Get<GuiBindingList<string>>();
+            set => Set(value);
+        }
+
         private ResearchJob GetJob()
         {
             var query = new DBQuery<ResearchJob>()
@@ -183,6 +192,15 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
 
             var now = DateTime.UtcNow;
             var dbJob = GetJob();
+            ExperimentLines = new GuiBindingList<string>();
+
+            // An experiment left open (a crash, or a window closed without being settled) ends with its saved evidence.
+            if (ResearchExperimentLifecycle.IsOpen(dbJob) && !Gui.IsWindowOpen(Player, GuiWindowType.ResearchExperiment))
+            {
+                ResearchExperimentLifecycle.Settle(dbJob, ServiceMinigameRandom.Instance);
+                ResearchExperimentService.GrantExperimentXp(Player, dbJob);
+                DB.Set(dbJob);
+            }
 
             // New Job
             if (dbJob == null)
@@ -220,6 +238,7 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
                 Level = $"Level: {dbJob.Level}";
                 JobProgress = progressPercentage > 1f ? 1f : progressPercentage;
                 JobProgressTime = $"Remaining: {timeString}";
+                ExperimentLines = BuildExperimentLines(dbJob);
             }
             // Complete
             else if (now >= dbJob.DateCompleted)
@@ -232,37 +251,22 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
                 Level = $"Level: {dbJob.Level}";
                 JobProgress = 1f;
                 JobProgressTime = "COMPLETE";
+                ExperimentLines = BuildExperimentLines(dbJob);
             }
+        }
+
+        private static GuiBindingList<string> BuildExperimentLines(ResearchJob job)
+        {
+            var lines = new GuiBindingList<string>();
+            foreach (var line in ResearchExperimentLifecycle.Describe(job.Experiment))
+                lines.Add(line);
+
+            return lines;
         }
 
         private string GetUpgradeLevelBonus(int level)
         {
-            switch (level)
-            {
-                case 1:
-                    return "Item Bonus +1";
-                case 2:
-                    return "Licensed Run +1";
-                case 3:
-                    return "Blueprint Bonus";
-                case 4:
-                    return "Licensed Run +1";
-                case 5:
-                    return "Blueprint Bonus";
-                case 6:
-                    return "Item Bonus +1";
-                case 7:
-                    return "Guaranteed Item Bonus";
-                case 8:
-                    return "Blueprint Bonus";
-                case 9:
-                    return "Item Bonus +1";
-                case 10:
-                    return "Enhancement Slot +1";
-
-                default:
-                    return "MAX";
-            }
+            return ResearchGrantRules.Describe(level);
         }
 
         private string ValidateJob()
@@ -325,7 +329,7 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
         public Action ClickStartJob() => () =>
         {
             var researchJob = BuildResearchJobDetails(_recipeType, _blueprintItem);
-            ShowModal($"This job will cost {researchJob.CreditCost}cr and take {researchJob.TimeString} to complete. Are you sure you want to start the job?",
+            ShowModal($"This job will cost {researchJob.CreditCost}cr and take {researchJob.TimeString} to complete. A short experiment follows that can shorten the job; closing it early keeps the evidence you gathered. Are you sure you want to start the job?",
                 () =>
                 {
                     var jobValidation = ValidateJob();
@@ -337,6 +341,8 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
                     }
 
                     var now = DateTime.UtcNow;
+                    var targetLevel = researchJob.CurrentLevel + 1;
+                    var extraBonus = ResearchGrantRules.RollExtraBonus(targetLevel, ServiceMinigameRandom.Instance);
                     var dbResearchJob = new ResearchJob
                     {
                         ParentPropertyId = _researchTerminalPropertyId,
@@ -345,13 +351,19 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
                         DateCompleted = now.AddSeconds(researchJob.TimeCost),
                         SerializedItem = GetIsObjectValid(_blueprintItem) ? ObjectPlugin.Serialize(_blueprintItem) : string.Empty,
                         Level = researchJob.CurrentLevel,
-                        Recipe = _recipeType
+                        Recipe = _recipeType,
+                        Experiment = ResearchExperimentLifecycle.Open(targetLevel, ExperimentRules.Trials, researchJob.TimeCost, extraBonus)
                     };
                     DB.Set(dbResearchJob);
 
                     AssignCommand(Player, () => TakeGoldFromCreature(researchJob.CreditCost, Player, true));
                     DestroyObject(_blueprintItem);
                     Gui.TogglePlayerWindow(Player, GuiWindowType.Research);
+                    Gui.TogglePlayerWindow(
+                        Player,
+                        GuiWindowType.ResearchExperiment,
+                        new ResearchExperimentPayload(dbResearchJob.Id),
+                        TetherObject);
                 }, () =>
                 {
                     ChangePartialView(PartialView, StartStageView);
@@ -390,6 +402,17 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
             var dbJob = GetJob();
             var recipe = Craft.GetRecipe(dbJob.Recipe);
 
+            if (ResearchExperimentLifecycle.IsOpen(dbJob))
+            {
+                if (Gui.IsWindowOpen(Player, GuiWindowType.ResearchExperiment))
+                {
+                    FloatingTextStringOnCreature("Finish your experiment first.", Player, false);
+                    return;
+                }
+
+                ResearchExperimentLifecycle.Settle(dbJob, ServiceMinigameRandom.Instance);
+            }
+
             bool isNewBlueprint;
             uint item;
             if (string.IsNullOrWhiteSpace(dbJob.SerializedItem))
@@ -421,48 +444,6 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
 
             var blueprintDetails = Craft.GetBlueprintDetails(item);
 
-            void AddBlueprintBonus()
-            {
-                var hasEnhancementBonus = blueprintDetails.EnhancementSlots > 0 &&
-                                          blueprintDetails.Level < Craft.MaxResearchLevel;
-
-                int[] weights;
-
-                if (hasEnhancementBonus)
-                {
-                    weights = new[]
-                    {
-                        310,
-                        420,
-                        420
-                    };
-                }
-                else
-                {
-                    weights = new[]
-                    {
-                        300,
-                        400,
-                        400
-                    };
-                }
-
-                var index = Random.GetRandomWeightedIndex(weights);
-
-                if (index == 0) // 0 = Licensed Runs
-                {
-                    blueprintDetails.LicensedRuns += Random.D3(1);
-                }
-                else if (index == 1) // 1 = Credit Reduction
-                {
-                    blueprintDetails.CreditReduction += Random.D10(1);
-                }
-                else if (index == 2) // 2 = Time Reduction
-                {
-                    blueprintDetails.TimeReduction += Random.D10(1);
-                }
-            }
-
             void AddGuaranteedBonus(int tier)
             {
                 var bonus = _blueprintBonuses.PickBonus(recipe.EnhancementType, tier, recipe.IsItemIntendedForCrafting);
@@ -491,63 +472,11 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
                 }
             }
 
-            blueprintDetails.Level++;
-            if (blueprintDetails.Level > Craft.MaxResearchLevel)
-                blueprintDetails.Level = Craft.MaxResearchLevel;
-
-            switch (blueprintDetails.Level)
-            {
-                case 1:
-                    blueprintDetails.ItemBonuses++;
-                    if(Random.Next(1000) <= 1)
-                        AddGuaranteedBonus(1);
-                    break;
-                case 2:
-                    blueprintDetails.LicensedRuns++;
-                    if (Random.Next(1000) <= 2)
-                        AddGuaranteedBonus(1);
-                    break;
-                case 3:
-                    AddBlueprintBonus();
-                    if (Random.Next(1000) <= 3)
-                        AddGuaranteedBonus(1);
-                    break;
-                case 4:
-                    blueprintDetails.LicensedRuns++;
-                    if (Random.Next(1000) <= 10)
-                        AddGuaranteedBonus(1);
-                    break;
-                case 5:
-                    AddBlueprintBonus();
-                    if (Random.Next(1000) <= 15)
-                        AddGuaranteedBonus(1);
-                    break;
-                case 6:
-                    blueprintDetails.ItemBonuses++;
-                    if (Random.Next(1000) <= 20)
-                        AddGuaranteedBonus(1);
-                    break;
-                case 7:
-                    AddGuaranteedBonus(3);
-                    if (Random.Next(1000) <= 50)
-                        AddGuaranteedBonus(1);
-                    break;
-                case 8:
-                    AddBlueprintBonus();
-                    if (Random.Next(1000) <= 80)
-                        AddGuaranteedBonus(1);
-                    break;
-                case 9:
-                    blueprintDetails.ItemBonuses++;
-                    if (Random.Next(1000) <= 100)
-                        AddGuaranteedBonus(2);
-                    break;
-                case 10:
-                    blueprintDetails.EnhancementSlots++;
-                    if (Random.Next(1000) <= 120)
-                        AddGuaranteedBonus(3);
-                    break;
-            }
+            var completion = ResearchGrantRules.Complete(
+                blueprintDetails,
+                dbJob.Experiment,
+                ServiceMinigameRandom.Instance,
+                AddGuaranteedBonus);
 
             if (isNewBlueprint)
             {
@@ -559,7 +488,23 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
             Craft.SetBlueprintDetails(item, blueprintDetails);
             Gui.TogglePlayerWindow(Player, GuiWindowType.Research);
 
+            var experimentXp = ResearchExperimentService.GrantExperimentXp(Player, dbJob);
+            var completionXp = ResearchExperimentService.GrantCompletionXp(Player, dbJob, completion.Level);
             DB.Delete<ResearchJob>(dbJob.Id);
+
+            SendMessageToPC(Player, DescribeCompletion(completion, experimentXp + completionXp));
         };
+
+        private static string DescribeCompletion(ResearchCompletion completion, int xp)
+        {
+            var gained = completion.Grant == ResearchLevelGrant.RandomBlueprintBonus
+                ? completion.Candidate == ResearchCandidate.LicensedRuns
+                    ? $"Licensed Runs +{completion.Amount}"
+                    : $"{ResearchGrantRules.CandidateName(completion.Candidate, completion.Level)} +{completion.Amount}%"
+                : ResearchGrantRules.Describe(completion.Level);
+            var extra = completion.ExtraBonusTier > 0 ? $" An extra guaranteed bonus (tier {completion.ExtraBonusTier}) was added." : string.Empty;
+            var xpText = xp > 0 ? $" +{xp} Fabrication XP." : string.Empty;
+            return $"Research complete: the blueprint is now level {completion.Level}. {gained}.{extra}{xpText}";
+        }
     }
 }

@@ -170,7 +170,8 @@ public static class TwinPistolCrossSkillEngineTests
                 player.Update(record => record.Perks[PerkType.PairedHandling] = 3);
                 ctx.AssertEqual(10, Stat.GetStatAdjustment(actor, StatType.PairedRangedOrdinaryDamagePercentAdjustment),
                     "The purchased handling trait contributes ten percent");
-                AssertDamage(Sample(64, 10, false), 10, 0, false, "Paired Handling");
+                // Paired Handling offsets the paired firing cycle, so a single pistol captures none of it.
+                AssertDamage(Sample(64, 0, false), 0, 0, false, "Paired Handling on one pistol");
 
                 player.Update(record => record.Perks[PerkType.PairedHandling] = 0);
                 GrantTwinSuns(12);
@@ -181,11 +182,11 @@ public static class TwinPistolCrossSkillEngineTests
                 player.Update(record => record.Perks[PerkType.PairedHandling] = 3);
                 StatusEffect.ApplyPermanentStatusEffect<AkimboStanceStatusEffect>(actor, actor);
                 GrantTwinSuns(12);
-                AssertDamage(Sample(8, 10, true), 10, -30, true, "Akimbo with handling and Twin Suns");
+                AssertDamage(Sample(8, 0, true), 0, -30, true, "Akimbo with one-pistol handling and Twin Suns");
                 StatusEffect.RemoveStatusEffect<AkimboStanceStatusEffect>(actor);
                 StatusEffect.ApplyPermanentStatusEffect<CrossfireStanceStatusEffect>(actor, actor);
                 GrantTwinSuns(12);
-                AssertDamage(Sample(8, 10, true), 10, -20, true, "Crossfire with handling and Twin Suns");
+                AssertDamage(Sample(8, 0, true), 0, -20, true, "Crossfire with one-pistol handling and Twin Suns");
                 StatusEffect.RemoveStatusEffect<CrossfireStanceStatusEffect>(actor);
                 player.Update(record => record.Perks[PerkType.PairedHandling] = 0);
 
@@ -270,7 +271,7 @@ public static class TwinPistolCrossSkillEngineTests
         }
     }
 
-    [EngineTest("Twin Pistol ordinary bonuses stance damage costs and Haste reach native saber and rifle attacks", Category = "TwinPistolCrossSkill", TimeoutSeconds = 180f)]
+    [EngineTest("Twin Pistol stance damage costs and Haste reach native saber and rifle attacks without paired handling", Category = "TwinPistolCrossSkill", TimeoutSeconds = 180f)]
     public static async Task MeasuredNativeOrdinaryModifiers(EngineTestContext ctx)
     {
         Combat.SetAutoAttackHitResolutionOverride(true);
@@ -316,8 +317,9 @@ public static class TwinPistolCrossSkillEngineTests
                     player.Update(record => record.Perks[PerkType.PairedHandling] = 3);
                     ctx.AssertEqual(10, Stat.GetStatAdjustment(actor, StatType.PairedRangedOrdinaryDamagePercentAdjustment), "The purchased handling trait is present outside pistol equipment");
                     var handling = Sample();
-                    ctx.Assert(handling / baseline is > 1.07 and < 1.13,
-                        $"{resref} native ordinary attempts capture the universal +10% bonus ({baseline:0.00}->{handling:0.00})");
+                    // Paired Handling needs two weapons; a single saber or rifle captures none of it.
+                    ctx.Assert(Math.Abs(handling - baseline) < .01,
+                        $"The single {resref} gains no Paired Handling bonus ({baseline:0.00}->{handling:0.00})");
                     player.Update(record => record.Perks[PerkType.PairedHandling] = 0);
                     StatusEffect.ApplyPermanentStatusEffect<AkimboStanceStatusEffect>(actor, actor);
                     var akimbo = Sample();

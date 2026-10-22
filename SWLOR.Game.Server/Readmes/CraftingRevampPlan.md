@@ -341,16 +341,18 @@ Today's outcome per level (`ResearchViewModel.ClickCompleteJob`), plus a small c
 1. **Start.** Starting a level charges credits exactly as today, then opens the experiment. Every level has one (owner decision, October 2026).
 2. **Grants.**
    - **Fixed levels** (1, 2, 4, 6, 7, 9, 10) keep their grant. Their experiment earns the time cut, XP and the extra-bonus opportunity.
-   - **Random levels** (3, 5, 8): the three blueprint bonuses are always the three candidates, and evidence decides which one wins.
+   - **Random levels** (3, 5, 8): licensed runs stay random (owner decision, October 2026). When the experiment opens, the level rolls whether it grants licensed runs at today's weight (300 of 1100, or 310 of 1150 with the enhancement-slot weights, as `AddBlueprintBonus` does today) with today's d3, and shows the result. Expected licensed runs per blueprint equal today's.
+     - **Licensed runs rolled:** the level grants those runs, and the experiment there earns only the time cut, XP and the extra-bonus opportunity, like a fixed level.
+     - **Otherwise** the candidates are credit reduction and time reduction only, and evidence decides which one wins and how large it is, within today's d10.
    - **Extra-bonus opportunity.** Today's extra guaranteed bonus is rolled at today's chance when the experiment opens. If it appears, it is shown and granted on completion. Evidence never raises its chance.
 3. **Trials.** *Starting value:* 6 trials.
    - **Test** adds evidence to a candidate, with the success chance shown.
    - **Refine Method** costs Fabrication CP and raises the next Test's chance.
    - **Analyze** spends spare evidence to shorten the job. *Starting cap:* -25% of the job's time.
 4. **Result.**
-   - At a random level, the best-evidenced candidate is granted when the real-time job completes.
-   - Its magnitude is set by the evidence earned, within today's dice range. For example, a "+d3 runs" outcome pays 1-3 runs, never more.
-   - **Leaving early.** Closing the window or logging out ends the experiment with the evidence earned so far. A random level with no evidence on any candidate falls back to today's weighted roll and dice.
+   - At a random level that did not roll licensed runs, the best-evidenced reduction is granted when the real-time job completes. A tie goes to one of the tied reductions at random.
+   - Its magnitude is set by the evidence earned, within today's d10: 1% with one piece of evidence, 10% with six, never more.
+   - **Leaving early.** Closing the window or logging out ends the experiment with the evidence earned so far. A random level with no evidence on either reduction falls back to today's roll between credit reduction and time reduction (400:400) and its d10.
 5. **XP.** Fabrication XP is awarded for the experiment and on job completion, based on recipe level against Fabrication rank. Research gives no XP today.
 6. **Gates and capacity.**
    - Research tier gates come from Fabrication rank (see Progression).
@@ -497,7 +499,7 @@ The structure is the same for every crafting skill:
 | Agriculture | **Chef** (cooking) | Style choice *Slow Cooking* (Low heat cooks faster, steadier flavor) or *Flash Cooking* (High heat drifts less). *Seasoned Palate*: half-strength Adds. *Reduce*: pulls the profile toward center. Capstone *Signature Dish*: once per craft, snaps one flavor axis onto target. |
 | Agriculture | **Angler** (fishing) | Style choice *Patient Angler* (Give Line loses less Distance) or *Aggressive Angler* (stronger Reel, more Tension). *Strong Line*: +Tension cap. *Fish Sense*: shows the fish's next two moves. *Hard Set*: Set Hook drains much more Stamina. Capstone *Trophy Catch*: better odds on rare fish. Tune it without raising the economy's rare-fish supply beyond the simulator's parity check. |
 | Fabrication | **Builder** (Fabricator) | Style choice *Production Run* (Run +25%, Precision Pass -25%) or *Fine Tolerance* (the mirror). *Quick Change*: cheaper Retool. *Dual Feed*: one Run advances two sub-assemblies at 60% each. *Field Service*: Service restores more. Capstone *Master Assembler*: the Assemble cap rises from weakest + 20 to weakest + 35. |
-| Fabrication | **Researcher** (Experiment) | Style choice *Methodical* (+2 trials, -10% Test chance) or *Intuitive* (+15% Test chance, -2 trials). *Broader Hypotheses*: +1 trial. *Peer Review*: moves half of one candidate's evidence to another. *Efficient Analysis*: Analyze cuts more time. Capstone *Breakthrough*: once per experiment, one Test succeeds automatically, and the winner's time cut doubles. It grants no extra bonuses. (Broader Hypotheses and Breakthrough changed by the owner in October 2026: the random pool has only three outcomes, so there is nothing to draw a fourth candidate or a redraw from.) |
+| Fabrication | **Researcher** (Experiment) | Style choice *Methodical* (+2 trials, -10% Test chance) or *Intuitive* (+15% Test chance, -2 trials). *Broader Hypotheses*: +1 trial. *Peer Review*: moves half of one candidate's evidence to the other (only where evidence decides between credit and time reduction). *Efficient Analysis*: Analyze cuts more time. Capstone *Breakthrough*: once per experiment, one Test succeeds automatically, and the winner's time cut doubles. It grants no extra bonuses. (Broader Hypotheses and Breakthrough changed by the owner in October 2026: the random pool has only two evidence-decided candidates, credit and time reduction, so there is nothing to draw a third candidate or a redraw from.) |
 
 Espionage gets no new lines.
 

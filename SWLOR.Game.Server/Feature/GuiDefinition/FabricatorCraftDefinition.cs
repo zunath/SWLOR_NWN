@@ -32,8 +32,8 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition
             "Retool loads another head and costs CP. Every Run and Precision Pass wears the machine; this recipe's wear is shown above, and harder materials wear it faster. " +
             "Enhancements make the piece bigger: it needs more Runs and Precision Passes, and the Machine Condition you start with grows in step.\n\n" +
             "QUALITY\n" +
-            "The piece's quality is the average of the three sub-assemblies' quality, weighted by this recipe's quality shares (a bed is mostly Frame, a terminal mostly Fittings), " +
-            $"and it can be no higher than the weakest sub-assembly plus {FabricatorRules.AssembleCapPoints}. The cap is shown on the quality meter. Lift your weakest sub-assembly to raise it.\n\n" +
+            "The quality meter shows the average of the three sub-assemblies' quality, weighted by this recipe's quality shares (a bed is mostly Frame, a terminal mostly Fittings). " +
+            $"Assemble caps it: the item is made at no more than the weakest sub-assembly plus {FabricatorRules.AssembleCapPoints}. The cap is marked on the meter, and the window and the Assemble button show the quality you would get now. Lift your weakest sub-assembly to raise the cap.\n\n" +
             "ACTIONS\n" +
             "Run builds a sub-assembly. Precision Pass refines the loaded head's sub-assembly. Retool changes heads and costs CP. " +
             $"Service restores {FabricatorRules.ServiceRestore} Machine Condition and costs CP (Fabrication rank {FabricatorRules.ServiceRank}). " +

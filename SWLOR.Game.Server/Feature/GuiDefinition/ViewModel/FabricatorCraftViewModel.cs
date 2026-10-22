@@ -349,12 +349,12 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
             (ShellText, ShellProgress, ShellQuality) = DescribePart(SubAssembly.Shell);
             (FittingsText, FittingsProgress, FittingsQuality) = DescribePart(SubAssembly.Fittings);
 
-            QualityText = $"Quality: {meters.QualityPercent}%  (no higher than {_engine.QualityCap}% until your weakest sub-assembly improves)";
+            QualityText = $"Quality: {meters.QualityPercent}%  |  Assembled now: {_engine.AssembledQuality}% (the cap is {_engine.QualityCap}%: your weakest sub-assembly + {FabricatorRules.AssembleCapPoints})";
             QualityFraction = meters.Quality.Fraction;
             MachineText = $"Machine Condition: {meters.Integrity.Value} / {meters.Integrity.Max}  (wear {setup.WearRate} per Run or Precision Pass)";
             MachineFraction = meters.Integrity.Fraction;
             CpText = $"CP: {meters.Cp.Value} / {meters.Cp.Max}";
-            ThresholdText = BuildThresholdText(meters.QualityPercent);
+            ThresholdText = BuildThresholdText(_engine.AssembledQuality);
 
             var names = new GuiBindingList<string>();
             var texts = new GuiBindingList<string>();
@@ -395,8 +395,8 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
             }
 
             return parts.Count == 0
-                ? $"Quality {qualityPercent}%. No enhancements are slotted."
-                : $"Quality {qualityPercent}%. Enhancements: {string.Join(", ", parts)}.";
+                ? $"Quality if assembled now: {qualityPercent}%. No enhancements are slotted."
+                : $"Quality if assembled now: {qualityPercent}%. Enhancements: {string.Join(", ", parts)}.";
         }
 
         private void ClearCraftView()

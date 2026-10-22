@@ -97,6 +97,25 @@ namespace SWLOR.Game.Server.EngineTests.Definitions
             }
         }
 
+        [EngineTest("An emptied desert shrub dies, frees its spawn slot, and queues one respawn", Category = "ScavengeLeftoverDespawn", TimeoutSeconds = 30f)]
+        public static async Task EmptiedDesertShrubQueuesRespawn(EngineTestContext ctx)
+        {
+            var node = CreateNode(ctx, "desert_shrub");
+            var spawnId = Spawn.RegisterResourceSpawnForTesting(node, "KORRIBAN_WASTELANDS_RESOURCES");
+            try
+            {
+                SetLocalBool(node, "FULLY_HARVESTED", true);
+                await Close(ctx, node);
+                await ctx.WaitUntilAsync(() => !GetIsObjectValid(node), 5f, "the emptied shrub to die");
+                ctx.Assert(!Spawn.IsSpawnActiveForTesting(spawnId), "The emptied shrub should free its spawn slot.");
+                ctx.AssertEqual(1, Spawn.GetQueuedSpawnCountForTesting(spawnId), "Queued respawns after the shrub is emptied");
+            }
+            finally
+            {
+                Spawn.RemoveSpawnForTesting(spawnId);
+            }
+        }
+
         [EngineTest("A hand-placed scavenge point left with items is not despawned", Category = "ScavengeLeftoverDespawn", TimeoutSeconds = 30f)]
         public static async Task HandPlacedNodeIsLeftAlone(EngineTestContext ctx)
         {
@@ -123,10 +142,10 @@ namespace SWLOR.Game.Server.EngineTests.Definitions
             return ctx.ExecuteInCreatureContextAsync(GetModule(), () => ScavengePoint.ResolveClosedScavengePoint(node));
         }
 
-        private static uint CreateNode(EngineTestContext ctx)
+        private static uint CreateNode(EngineTestContext ctx, string resref = NodeResref)
         {
-            var node = CreateObject(ObjectType.Placeable, NodeResref, ctx.GetArenaLocation(2f));
-            ctx.Assert(GetIsObjectValid(node), $"Placeable '{NodeResref}' should be created.");
+            var node = CreateObject(ObjectType.Placeable, resref, ctx.GetArenaLocation(2f));
+            ctx.Assert(GetIsObjectValid(node), $"Placeable '{resref}' should be created.");
             ctx.Track(node);
             return node;
         }

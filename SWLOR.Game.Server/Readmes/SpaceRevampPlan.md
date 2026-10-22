@@ -188,6 +188,7 @@ Paths are relative to `SWLOR.Game.Server/`.
     - Complete solo combat pilot: Piloting + Gunnery (100 ranks), the same as a ground melee fighter's weapon + Armor.
     - Tank or support pilot: Piloting + Ship Systems (up to 100 ranks).
     - Everything maxed: all three (150 ranks).
+  - **Solo targets** (checked by the combat simulator, section 19): a Gunnery 50 pilot in a Small fighter with no Piloting solos normal enemies at its tier with careful play; Piloting 50 + Gunnery 50 with no Ship Systems solos all normal content and most elites.
     - Crew member: one station skill (50 ranks).
     - Casual flyer: Piloting 10 + Gunnery 15 (25 ranks): Medium hulls and rank-15 weapons.
     - Space miner: Piloting 10 + Gathering 40 (50 ranks) for a Mining Barge on top-tier ore, or Piloting 25 + Gathering 40 (65 ranks) to strip-mine in an Industrial. Today a top space miner needs Piloting 40, so a pure space miner pays about 10 more ranks. The same Gathering also covers ground harvesting, salvage and gas. Player text must give these numbers, never claim mining got cheaper.
@@ -497,6 +498,8 @@ Ships at launch.
 - **While crewing:**
   - The server keeps the hidden character beside the ship every second and re-attaches the camera after every area transition. The camera drops on transitions.
   - Everything a station does is fired from the ship. The crew member's own rank, attributes and perks set the strength.
+  - **Crew rewards:** taking a station requires being in the captain's party. Crew count as party members for every reward: kill XP, loot rights, wreck claims, agent mission credit and incursion contribution. Cargo and trade profit stay with the ship's owner.
+  - **Viewports:** a viewport console in the interior lets any passenger watch space from the ship with no controls. It reuses the station camera (`AttachCamera` and the hidden character) without firing anything.
 - **Droid crew:**
   - A player-built droid (Engineering) can work any station at reduced effect, scaled by its Industry rating (section 27). It turns that station's modules on whenever the pilot has a valid target, and back on after an auto-off once a new valid target is picked.
   - Its tier sets which station modules it can switch on, the way a player's rank does. Its Industry rating sets how well it works them. The best industrial droid works a station at about 75% of a player of matching rank, and a tier-1 combat droid far below that, so players stay the best crew and a top-tier droid pays off.
@@ -788,7 +791,7 @@ Draft each in the Bible, check it with the combat simulator where it affects com
 - **Perks:** every row for Ace, Wing Commander, Broadside, Ordnance, Bulwark and Operator, plus the Gathering space perks.
 - **Combat:** STM costs, capacitor and shield regen formulas, crit factors.
 - **Activation:** cycle time and capacitor per cycle for every family once the global recast is gone, and the auto-fire loop interval.
-- **Crew:** droid crew effectiveness (the best industrial droid at about 75% of a player of matching rank, a tier-1 combat droid far below), power-routing amounts.
+- **Crew:** droid crew effectiveness (the best industrial droid at about 75% of a player of matching rank, a tier-1 combat droid far below), industrial part recipes (about half the materials of combat parts), power-routing amounts.
 - **Enemies:** space NPC stat presets per role and tier, ambush odds, convoy and patrol sizes.
 - **Trade:**
   - Commodity base prices, flooding and recovery rates, exchange fee.
@@ -859,6 +862,7 @@ Everything merges to one integration branch and releases together.
   - Damage pilot vs tank vs support.
   - Small vs Large vs Capital under the size rules.
   - A crewed capital vs the same pilots in separate ships.
+  - Solo targets at every tier: Gunnery 50 in a Small fighter with no Piloting solos normal enemies at its tier (elites and bosses aren't expected); Piloting 50 + Gunnery 50 with no Ship Systems solos all normal content and most elites, sustained by shield regen, rank-0 repairers (no rank needed) and consumables.
   - The Advanced ships in each role: each lands within 10% of the others at that role's job.
   - A melee build (MGT, PER) on launchers vs a ranged build (PER, AGI) on energy weapons at equal ranks.
 - **Client evidence** (`InEngineVisualVerification.md`) for:
@@ -1060,6 +1064,7 @@ A station is a **player city in space** and follows every city mechanic, in `Ser
   - In exchange, they have lower HP and attributes and **no combat skill bonuses**.
   - Examples: Labor Arms, Hauler Legs, Survey Head, Logistics CPU.
   - They are Engineering recipes at each Droid Assembly tier and go in the Bible's Equipment - Droids tab.
+- **Cost:** industrial parts cost about half the materials of combat parts at the same tier, so a crew droid is affordable while a top-tier one is still an investment.
 - **Industry rating:** a droid's Industry is the sum of its parts. Mixing combat and industrial parts gives a middling droid at both.
 - **Industry pays off in four places:**
   - **Planetary Holdings:** an output boost.

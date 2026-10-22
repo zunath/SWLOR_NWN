@@ -472,7 +472,7 @@ Ships at launch.
   - Everything a station does is fired from the ship. The crew member's own rank, attributes and perks set the strength.
 - **Droid crew:**
   - A player-built droid (Engineering) can work any station at reduced effect, scaled by its Industry rating (section 27). It turns that station's modules on whenever the pilot has a valid target, and back on after an auto-off once a new valid target is picked.
-  - Its tier sets which station modules it can switch on, the way a player's rank does. Its Industry rating sets how well it works them.
+  - Its tier sets which station modules it can switch on, the way a player's rank does. Its Industry rating sets how well it works them. The best industrial droid works a station at about 75% of a player of matching rank, and a tier-1 combat droid far below that, so players stay the best crew and a top-tier droid pays off.
   - **Droid limit:** a droid assigned to a ship's station, a droid bay, a holding or a station building stays at that post and doesn't count toward the one-droid limit. That limit covers only the droid that follows its owner.
   - Its logic reuses `ProcessSpaceNPCAI`.
 - **Permissions and edge cases:**
@@ -614,7 +614,7 @@ Crafted intermediates that hull and module recipes consume. Appendix D lists eve
 - **Recipe levels:** they match the rank schedule. The rule "required rank = recipe level - 3" stays.
 ### Who crafts space items
 
-There is no new crafting skill. Space work spreads across the existing crafts by theme, so a hull needs parts from several crafters and they trade with each other.
+There is no new crafting skill. Space work spreads across the existing crafts by theme, so a hull needs parts from several crafters and they trade with each other. Self-sufficiency costs more on purpose: no single craft builds a whole ship, the same way no ground fighter crafts their own weapon, armor and stims.
 
 | Skill | Space items |
 |---|---|
@@ -659,7 +659,7 @@ There is no new crafting skill. Space work spreads across the existing crafts by
 
 ### Stores and economy
 
-- The dockhand store sells rank-0 modules and starter Small hulls. Its stock above rank 0 is a number to draft (section 17); today it sells Mining Lasers I-IV.
+- The dockhand store sells rank-0 modules, starter Small hulls, and Mining Lasers through rank 40 (today's Mining Lasers I-IV, mapped as in section 15). Non-crafters can still mine ore and lyase. Weapons and other modules above rank 0 are crafted only.
 - Every new item source must be registered for `EconomyObtainabilityCoverageTests` and follow `EconomyRestrictedItems.md`.
 - Game text uses ASCII punctuation (`CodingStandards.md`).
 
@@ -748,7 +748,7 @@ Draft each in the Bible, check it with the combat simulator where it affects com
 - **Perks:** every row for Ace, Wing Commander, Broadside, Ordnance, Bulwark and Operator, plus the Gathering space perks.
 - **Combat:** STM costs, capacitor and shield regen formulas, crit factors.
 - **Activation:** cycle time and capacitor per cycle for every family once the global recast is gone, and the auto-fire loop interval.
-- **Crew:** droid crew effectiveness, power-routing amounts.
+- **Crew:** droid crew effectiveness (the best industrial droid at about 75% of a player of matching rank, a tier-1 combat droid far below), power-routing amounts.
 - **Enemies:** space NPC stat presets per role and tier, ambush odds, convoy and patrol sizes.
 - **Trade:**
   - Commodity base prices, flooding and recovery rates, exchange fee.
@@ -757,7 +757,7 @@ Draft each in the Bible, check it with the combat simulator where it affects com
   - The measured combat baseline and the resulting targets.
 - **Repairs:** cost per hull size.
 - **Refit:** fee.
-- **Dockhand store:** stock above rank 0.
+- **Dockhand store:** prices for its stock (section 14).
 - **Wild Space:** environment effect sizes, rift lifetimes, mass budgets and collapse damage, Rift Raider presets, loot tables.
 - **Scanning:** signal gained per cycle, spawn rates per signature type, Sensor Sweep range and cooldown, Jump to Signature spool.
 - **Stations:** Station Core recipe, anchor site count per area, Asteroid Drill output, Shipyard build times, Jump Beacon fuel cost and hull caps.

@@ -100,6 +100,9 @@ namespace SWLOR.CraftSim.Cli
                     skills.Add(skill.Value);
             }
 
+            if (skills.Count == 0)
+                throw new ArgumentException($"--skills needs at least one crafting skill ({string.Join(", ", CraftingGearCatalog.GearSkills)}).");
+
             return skills;
         }
     }

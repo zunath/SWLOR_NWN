@@ -8,7 +8,7 @@ namespace SWLOR.CraftSim.Progression
 {
     /// <summary>The climb of one guild rank by hand-ins of quick-crafted items, for a crafter who has reached rank 50.</summary>
     /// <param name="Tier">The guild rank being climbed from.</param>
-    /// <param name="Resref">The task item the crafter makes: the cheapest the tier offers that quick craft allows at rank 50.</param>
+    /// <param name="Resref">The task item the crafter prefers: the cheapest the tier offers that quick craft allows at rank 50. The hours use the expected cost of the preferred item that is on the ten-task board.</param>
     /// <param name="ItemLevel">That item's recipe level.</param>
     /// <param name="GuildPointsEach">Guild points one hand-in earns at this guild rank.</param>
     /// <param name="HandIns">Hand-ins to climb the rank.</param>
@@ -55,20 +55,25 @@ namespace SWLOR.CraftSim.Progression
             var previousThreshold = 0;
             for (var tier = 0; tier < Guild.MaxRank; tier++)
             {
-                var eligible = tasks.Where(t => t.Tier == tier && t.Level.Value <= HighestQuickCraftLevel).ToList();
+                var eligible = tasks
+                    .Where(t => t.Tier == tier && t.Level.Value <= HighestQuickCraftLevel)
+                    .OrderBy(t => LevelDemand.SecondsOf(t.Recipe, supply, assumptions with { UnmodelledUnitSeconds = 20 }))
+                    .ThenBy(t => t.QuestId, StringComparer.Ordinal)
+                    .ToList();
                 if (eligible.Count == 0)
                     throw new InvalidDataException($"{guild} tier {tier} has no task item a rank-50 crafter can quick craft.");
 
-                var task = eligible
-                    .OrderBy(t => LevelDemand.SecondsOf(t.Recipe, supply, assumptions with { UnmodelledUnitSeconds = 20 }))
-                    .ThenBy(t => t.QuestId, StringComparer.Ordinal)
-                    .First();
+                // The board keeps ten random tasks of the tier, so the crafter makes the cheapest eligible one that is on it.
+                var perItem = eligible
+                    .Select(t => QuickCraftBatch.SecondsPerItem + assumptions.HandInSeconds + LevelDemand.SecondsOf(t.Recipe, supply, assumptions))
+                    .ToList();
+                var tierTasks = guilds.For(guild).Count(t => t.Tier == tier);
+                var (_, itemSeconds) = GuildBoard.PreferredOnBoard(perItem, tierTasks);
+                var task = eligible[0];
                 var pointsEach = GuildHandInPlan.GuildPointsFor(task.GuildPoints, tier);
                 var threshold = Guild.GetGPRequiredForRank(tier);
                 var handIns = (threshold - previousThreshold) / (double)pointsEach;
-                var seconds = handIns * (QuickCraftBatch.SecondsPerItem + assumptions.HandInSeconds +
-                                         LevelDemand.SecondsOf(task.Recipe, supply, assumptions));
-                rows.Add(new GuildChoreRow(guild, tier, task.Resref, task.Level.Value, pointsEach, handIns, seconds / 3600, handIns * task.Credits));
+                rows.Add(new GuildChoreRow(guild, tier, task.Resref, task.Level.Value, pointsEach, handIns, handIns * itemSeconds / 3600, handIns * task.Credits));
                 previousThreshold = threshold;
             }
 

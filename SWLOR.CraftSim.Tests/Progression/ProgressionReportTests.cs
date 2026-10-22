@@ -108,6 +108,9 @@ namespace SWLOR.CraftSim.Tests.Progression
 
         [TestCase("--runs", "0", "--runs needs a whole number")]
         [TestCase("--skills", "Armor", "--skills names a crafting skill")]
+        [TestCase("--skills", "", "--skills needs at least one crafting skill")]
+        [TestCase("--skills", ",", "--skills needs at least one crafting skill")]
+        [TestCase("--skills", " , ", "--skills needs at least one crafting skill")]
         [TestCase("--node-seconds", "0", "--node-seconds needs a number above zero")]
         [TestCase("--might", "9", "--might needs a whole number")]
         [TestCase("--bogus", "1", "Unknown option '--bogus'")]

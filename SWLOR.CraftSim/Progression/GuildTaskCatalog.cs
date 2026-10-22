@@ -109,13 +109,6 @@ namespace SWLOR.CraftSim.Progression
                 : throw new InvalidDataException($"{guild} tier {tier} pays {rewards.Count} different rewards, not one.");
         }
 
-        /// <summary>For each recipe level, the lowest guild rank that unlocks a task for a recipe of that level.</summary>
-        public IReadOnlyDictionary<int, int> TierByRecipeLevel(GuildType guild) =>
-            For(guild)
-                .Where(t => t.Kind == GuildTaskKind.Crafted)
-                .GroupBy(t => t.Level.Value)
-                .ToDictionary(g => g.Key, g => g.Min(t => t.Tier));
-
         private void AddTasks(GuildType guild, SkillType skill, IEnumerable<QuestDetail> quests, RecipeCatalog recipes)
         {
             // The lowest-level recipe that makes an item sets the task's level (and is the one a crafter would pick).

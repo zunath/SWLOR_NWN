@@ -41,8 +41,8 @@ namespace SWLOR.CraftSim.Progression
             var demand = new Dictionary<int, LevelDemand>();
             var varietyBonusLeft = new Dictionary<int, double>();
             var steps = new List<RankStep>();
-            var handInTiers = plan?.TierByRecipeLevel;
-            var craftedByHand = new HashSet<string>(StringComparer.OrdinalIgnoreCase);
+            var offers = plan?.OfferByRecipeLevel;
+            var manualCraftTiers = new HashSet<int>();
             var guildRank = 0;
             var guildPoints = 0.0;
 
@@ -79,37 +79,42 @@ namespace SWLOR.CraftSim.Progression
                 double crafts = 0, handIns = 0, guildXp = 0, handInSeconds = 0, credits = 0;
                 double catchUpHandIns = 0, catchUpSeconds = 0;
 
-                var handInTier = handInTiers != null && handInTiers.TryGetValue(level, out var tier) ? tier : (int?)null;
-                if (plan != null && plan.QuickCraftCatchUp && handInTier.HasValue && !plan.IgnoreGuildRank)
+                var offer = offers != null && offers.TryGetValue(level, out var found) ? found : (LevelOffer?)null;
+                var boardChance = offer?.ChanceOnBoard ?? 0;
+                if (plan != null && plan.QuickCraftCatchUp && offer.HasValue && !plan.IgnoreGuildRank)
                 {
-                    while (guildRank < handInTier.Value && guildRank < Guild.MaxRank)
+                    while (guildRank < offer.Value.Tier && guildRank < Guild.MaxRank)
                     {
                         var eligible = plan.CraftedTasks
                             .Where(t => t.Tier == guildRank && t.Level.Value + QuickCraftRules.RankMargin <= rank)
+                            .OrderBy(t => RankingSeconds(t.Recipe, supply, assumptions))
+                            .ThenBy(t => t.QuestId, StringComparer.Ordinal)
                             .ToList();
                         if (eligible.Count == 0)
                             break;
 
-                        var task = eligible
-                            .OrderBy(t => RankingSeconds(t.Recipe, supply, assumptions))
-                            .ThenBy(t => t.QuestId, StringComparer.Ordinal)
-                            .First();
+                        // The board holds ten random tasks of the tier, so the crafter takes the preferred eligible one that is on it.
+                        var gather = eligible.Select(t => LevelDemand.SecondsOf(t.Recipe, supply, assumptions)).ToList();
+                        var perItem = gather.Select(g => QuickCraftBatch.SecondsPerItem + assumptions.HandInSeconds + g).ToList();
+                        var tierTasks = plan.TasksPerTier[guildRank];
+                        var (onBoard, itemSeconds) = GuildBoard.PreferredOnBoard(perItem, tierTasks);
+                        if (onBoard <= 0)
+                            break;
+
                         var (taskCredits, basePoints) = plan.RewardsByTier[guildRank];
                         var pointsEach = GuildHandInPlan.GuildPointsFor(basePoints, guildRank);
                         var handInsNeeded = Math.Max(0, Guild.GetGPRequiredForRank(guildRank) - guildPoints) / pointsEach;
 
                         // The quick craft window needs the recipe made by hand once.
-                        var seconds = 0.0;
-                        if (craftedByHand.Add(task.Resref))
+                        var seconds = handInsNeeded * itemSeconds;
+                        if (manualCraftTiers.Add(guildRank))
                         {
-                            var handCell = cells[task.Level.Value];
-                            seconds += handCell.ActionsPerCraft * assumptions.SecondsPerAction + assumptions.OverheadSecondsPerCraft +
-                                       LevelDemand.SecondsOf(task.Recipe, supply, assumptions);
+                            var byHand = eligible
+                                .Select((t, index) => cells[t.Level.Value].ActionsPerCraft * assumptions.SecondsPerAction + assumptions.OverheadSecondsPerCraft + gather[index])
+                                .ToList();
+                            seconds += GuildBoard.PreferredOnBoard(byHand, tierTasks).ExpectedCost;
                         }
 
-                        seconds += handInsNeeded *
-                                   (QuickCraftBatch.SecondsPerItem + assumptions.HandInSeconds +
-                                    LevelDemand.SecondsOf(task.Recipe, supply, assumptions));
                         catchUpSeconds += seconds;
                         catchUpHandIns += handInsNeeded;
                         credits += handInsNeeded * taskCredits;
@@ -123,8 +128,10 @@ namespace SWLOR.CraftSim.Progression
                     var bonusSuccesses = Math.Min(success, varietyBonusLeft[level]);
                     var craftXp = bonusSuccesses * firstXp + (success - bonusSuccesses) * normalXp + (1 - success) * failureXp;
 
-                    var handIn = handInTier.HasValue && (plan.IgnoreGuildRank || guildRank >= handInTier.Value);
-                    var handInXp = handIn ? success * plan.XpFraction * baseXp * multiplier : 0;
+                    // A hand-in needs a task for the level on this boot's board and a guild rank that unlocks it.
+                    var handIn = offer.HasValue && (plan.IgnoreGuildRank || guildRank >= offer.Value.Tier);
+                    var handInChance = handIn ? success * boardChance : 0;
+                    var handInXp = handInChance * plan?.XpFraction * baseXp * multiplier ?? 0;
                     var xp = craftXp + handInXp;
                     if (xp <= 0)
                         throw new InvalidOperationException($"{skill} {gear} rank {rank} earns no XP, so the climb never ends.");
@@ -137,11 +144,11 @@ namespace SWLOR.CraftSim.Progression
                     if (!handIn)
                         continue;
 
-                    var handInsNow = success * share;
+                    var handInsNow = handInChance * share;
                     handIns += handInsNow;
                     guildXp += handInXp * share;
                     handInSeconds += handInsNow * assumptions.HandInSeconds;
-                    var (taskCredits, basePoints) = plan.RewardsByTier[handInTier.Value];
+                    var (taskCredits, basePoints) = plan.RewardsByTier[offer.Value.Tier];
                     credits += handInsNow * taskCredits;
                     guildPoints = Math.Min(
                         guildPoints + handInsNow * GuildHandInPlan.GuildPointsFor(basePoints, guildRank),

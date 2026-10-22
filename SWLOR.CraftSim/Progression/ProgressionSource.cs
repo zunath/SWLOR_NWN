@@ -27,6 +27,10 @@ namespace SWLOR.CraftSim.Progression
             "Guild points per hand-in", Guild, 62, 80,
             "var rankBonus = 0.25f * dbGuild.Rank;", "(rankBonus * baseAmount)", "return (int)amount;");
 
+        public static readonly SourceReference GuildBoardSize = new(
+            "Ten guild tasks per tier on the board", Guild, 124, 170,
+            "if (potentialTasks.Count <= 10)", ".OrderBy(o => Random.Next())", ".Take(10)", "_activeGuildTasksByRank[type][rank] = tasks;");
+
         public static readonly SourceReference HarvestDelay = new(
             "Seconds per harvester use", Harvester, 50, 60,
             ".Delay(5f)", ".ReducesItemCharge()");
@@ -51,7 +55,7 @@ namespace SWLOR.CraftSim.Progression
 
         public static readonly IReadOnlyList<SourceReference> All = new[]
         {
-            RoleplayXpRate, GuildPointReward, HarvestDelay, ScavengeSearch, RefineDelay, ResearchCost, ResearchBlueprint
+            RoleplayXpRate, GuildPointReward, GuildBoardSize, HarvestDelay, ScavengeSearch, RefineDelay, ResearchCost, ResearchBlueprint
         };
     }
 }

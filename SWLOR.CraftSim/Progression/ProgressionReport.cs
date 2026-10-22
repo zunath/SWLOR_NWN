@@ -355,9 +355,12 @@ namespace SWLOR.CraftSim.Progression
 
             text.AppendLine("### Cohort: hand in what you craft");
             text.AppendLine();
-            text.AppendLine("The cohort crafts at level as before and, whenever the guild has a task for that recipe level and the guild rank allows it, hands the item in. " +
-                            $"Each hand-in costs {Number(a.HandInSeconds, 0)} s (unmeasured). When the guild rank is what stands in the way, the crafter quick-crafts the cheapest task item of their current tier that quick craft allows " +
-                            $"(rank at least level + {QuickCraftRules.RankMargin}, after one craft by hand; {QuickCraftBatch.SecondsPerItem:0} s per item, components gathered as above) and hands it in until the rank rises. Those items pay no XP. " +
+            text.AppendLine("The cohort crafts at level as before and, whenever the board has a task for that recipe level and the guild rank allows it, hands the item in. " +
+                            $"The board is the catch: `Guild.RefreshGuildTasks` keeps only {GuildBoard.TasksPerTier} random tasks of a tier at each server start (all of them when the tier has {GuildBoard.TasksPerTier} or fewer), the same for every player, and the cap change does not touch that. " +
+                            "A level's task is therefore on the board with a chance, and the model weights every hand-in, its XP, points and credits by it (the chance that at least one of the level's tasks is among the ten drawn; Agriculture's catch tasks take board places too). " +
+                            "A crafter who finds no task for their level on this boot's board hands nothing in, so a climb over many server starts gets the expected share. " +
+                            $"Each hand-in costs {Number(a.HandInSeconds, 0)} s (unmeasured). When the guild rank is what stands in the way, the crafter quick-crafts the preferred task item of their current tier that is on the board and that quick craft allows " +
+                            $"(the cheapest to gather; rank at least level + {QuickCraftRules.RankMargin}, after one craft by hand; {QuickCraftBatch.SecondsPerItem:0} s per item, components gathered as above) and hands it in until the rank rises; the cost is the expected cost over which tasks the board holds. Those items pay no XP. " +
                             "The award is a share of the craft's base XP (`GetDeltaXP(task level - rank)`, the same cutoff as crafting), so a hand-in five or more levels below the rank pays nothing and quick-crafted items never do.");
             text.AppendLine();
             var cohort = new MarkdownTable(
@@ -447,7 +450,7 @@ namespace SWLOR.CraftSim.Progression
             text.AppendLine("### What limits the hand-ins");
             text.AppendLine();
             var rate = GuildCohorts.Chore(guilds, model.Supply, GuildType.SmitheryGuild, a);
-            text.AppendLine("Every hand-in consumes one real player-crafted item (or four caught fish), which already limits the rate: the components. Nothing else limits it once the cap is lifted. " +
+            text.AppendLine("Every hand-in consumes one real player-crafted item (or four caught fish), which already limits the rate: the components. Nothing else limits it once the cap is lifted: the board's ten tasks per tier no longer bound it, because a completed task returns at once and one task can be repeated. " +
                             $"Quick craft makes a base item in {QuickCraftBatch.SecondsPerItem:0} s, so for a high-rank crafter the real bounds are the components and the turn-in time. " +
                             $"Credits are the lever that matters: a task pays {guilds.RewardOfTier(GuildType.SmitheryGuild, 0).Credits:N0} to {guilds.RewardOfTier(GuildType.SmitheryGuild, 4).Credits:N0} credits plus the Guild Relations and Social bonuses, and the Smithery rank climb alone pays " +
                             $"{Whole(rate.Sum(r => r.Credits))} credits for {Number(rate.Sum(r => r.Hours), 1)} hours of work. Nothing was added in this PR; the owner decides whether credits need a limit (see the proposals).");
@@ -541,8 +544,10 @@ namespace SWLOR.CraftSim.Progression
             text.AppendLine();
             text.AppendLine(targets.ToString());
 
-            var multiplierForFaster = solver.SolveMultiplier(a, FasterTargetHours, XpTargetMetric.MedianSkill);
-            var optionB = multiplierForFaster.HasValue ? Math.Ceiling(multiplierForFaster.Value * 20) / 20 : 1.0;
+            var medianA = solver.MedianHours(a);
+            var multiplierForTarget = solver.SolveMultiplier(a, TargetHours, XpTargetMetric.MedianSkill);
+            var needsMultiplier = multiplierForTarget.HasValue && multiplierForTarget.Value > 1.0;
+            var optionB = multiplierForTarget.HasValue ? Math.Ceiling(multiplierForTarget.Value * 20) / 20 : 1.0;
             var medianB = solver.MedianHours(a with { CraftXpMultiplier = optionB });
             var capForB = solver.SolveCap(a, medianB, XpTargetMetric.MedianSkill);
             var optionC = capForB.HasValue ? capForB.Value / 100 * 100 : NoCap;
@@ -566,13 +571,17 @@ namespace SWLOR.CraftSim.Progression
             }
 
             text.AppendLine(option.ToString());
-            text.AppendLine($"- **A: guild task XP only.** No craft XP change. It is the smallest change, needs no stored-data conversion, and gets the median skill to {Number(solver.MedianHours(a), 0)} h.");
-            text.AppendLine($"- **B: A plus one crafting-only multiplier, x{Number(optionB, 2)}.** For a faster target ({Number(FasterTargetHours, 0)} h for the median skill). One parameter on what crafts and hand-ins pay, retuned from the client timings later. It changes gains only, so stored XP and ranks need no conversion.");
+            text.AppendLine($"- **A: guild task XP only.** No craft XP change; the smallest change, with no stored-data conversion. It takes the median skill to {Number(medianA, 0)} h, " +
+                            (medianA <= TargetHours ? "which meets the target." : $"which is {Number(medianA - TargetHours, 0)} h short of the {Number(TargetHours, 0)} h target."));
+            text.AppendLine($"- **B: A plus one crafting-only multiplier, x{Number(optionB, 2)}.** The smallest round multiplier that brings the median skill to the target ({Number(medianB, 0)} h). One parameter on what crafts and hand-ins pay, retuned from the client timings later. It changes gains only, so stored XP and ranks need no conversion.");
             text.AppendLine($"- **C: A plus a cap of {optionC:N0} XP on any rank's cost.** The same median as B by a different route: it cuts the climb from {Enumerable.Range(0, ProgressionAssumptions.MaximumRank).Sum(Skill.GetRequiredXP):N0} to {optionCTotal:N0} XP and spares the late ranks that cost up to 16,000 XP and need 15-25 crafts each, while leaving the early ranks alone. " +
                             "It changes required XP per rank for the crafting skills, so it needs a crafting-specific table and the plan's migration (convert stored XP and ranks so nobody loses a rank).");
             text.AppendLine();
-            text.AppendLine($"**Recommendation: A, then B only if the client timings call for it.** A alone meets the {Number(TargetHours, 0)} h target for the median skill at these timings without touching craft XP. The model's hours move more with the node travel time " +
-                            $"({slowest} runs from {Number(model.Path(slowest, mid, a with { NodeTravelSeconds = 15 }).TotalHours, 0)} h at 15 s to {Number(model.Path(slowest, mid, a with { NodeTravelSeconds = 120 }).TotalHours, 0)} h at 120 s) than any option moves them, so measure it, re-run `progression`, and add the B multiplier only if the median stays above the target. " +
+            text.AppendLine((needsMultiplier
+                                ? $"**Recommendation: B.** The guild award alone leaves the median skill at {Number(medianA, 0)} h, so the target needs a crafting-only multiplier of about x{Number(optionB, 2)} on top; B reaches it with no migration. "
+                                : $"**Recommendation: A.** The guild award alone meets the {Number(TargetHours, 0)} h target for the median skill without touching craft XP. ") +
+                            $"Treat the multiplier as a starting point: the model's hours move more with the node travel time ({slowest} runs from {Number(model.Path(slowest, mid, a with { NodeTravelSeconds = 15 }).TotalHours, 0)} h at 15 s to {Number(model.Path(slowest, mid, a with { NodeTravelSeconds = 120 }).TotalHours, 0)} h at 120 s) than any option moves them, " +
+                            "so measure it, re-run `progression`, and retune. " +
                             $"{slowest} stays far above the median under every option here because its components are scarce drops (gems and crate goods); that is a supply question for the gathering workstream, not an XP one.");
             text.AppendLine();
 
@@ -624,8 +633,6 @@ namespace SWLOR.CraftSim.Progression
 
         public const double TargetHours = 45.0;
 
-        /// <summary>The faster target option B is built for.</summary>
-        public const double FasterTargetHours = 35.0;
         private const int NoCap = 20_000;
 
         private static void AppendLimitations(StringBuilder text)

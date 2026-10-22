@@ -11,6 +11,9 @@ namespace SWLOR.Game.Server.Service.CraftService.RecipeParameters
     public abstract class RecipeParameterProfile<TParameters> : IRecipeParameterProfile
         where TParameters : RecipeMinigameParameters
     {
+        private static readonly IReadOnlyDictionary<RecipeType, RecipeType> _noDerivedRecipes =
+            new Dictionary<RecipeType, RecipeType>();
+
         public abstract string Key { get; }
         public abstract SkillType Skill { get; }
         public abstract IReadOnlyList<RecipeParameterDefinition> Definitions { get; }
@@ -19,6 +22,8 @@ namespace SWLOR.Game.Server.Service.CraftService.RecipeParameters
         public Type ParametersType => typeof(TParameters);
 
         public virtual RecipeParameterOverrides Overrides => RecipeParameterOverrides.None;
+
+        public virtual IReadOnlyDictionary<RecipeType, RecipeType> DerivedRecipes => _noDerivedRecipes;
 
         /// <summary>Every active recipe of the profile's skill, unless the profile narrows it.</summary>
         public virtual bool AppliesTo(RecipeParameterContext recipe)

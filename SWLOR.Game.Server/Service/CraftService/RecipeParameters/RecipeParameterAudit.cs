@@ -143,8 +143,14 @@ namespace SWLOR.Game.Server.Service.CraftService.RecipeParameters
             var problems = new List<string>();
             foreach (var (type, detail) in Covered(profile, recipes))
             {
-                var generated = RecipeParameterGenerator.Generate(profile, RecipeParameterContext.From(type, detail));
                 var actual = detail.MinigameParameters.Values.ToDictionary(v => v.Name, v => v.Value, StringComparer.Ordinal);
+                if (profile.DerivedRecipes.TryGetValue(type, out var source))
+                {
+                    AddDerivedDrift(problems, type, source, actual, recipes);
+                    continue;
+                }
+
+                var generated = RecipeParameterGenerator.Generate(profile, RecipeParameterContext.From(type, detail));
                 foreach (var (name, expected) in generated.Values)
                 {
                     if (!actual.TryGetValue(name, out var value) || Math.Abs(value - expected) > Tolerance)
@@ -153,6 +159,25 @@ namespace SWLOR.Game.Server.Service.CraftService.RecipeParameters
                         problems.Add($"{type}: {name} is {shown} but the generator gives {expected}; record an override or regenerate");
                     }
                 }
+            }
+
+            return problems;
+        }
+
+        /// <summary>Derived recipes that name a missing, uncovered or itself derived source.</summary>
+        public static IReadOnlyList<string> FindInvalidDerivations(
+            IRecipeParameterProfile profile,
+            IReadOnlyDictionary<RecipeType, RecipeDetail> recipes)
+        {
+            var problems = new List<string>();
+            foreach (var (derived, source) in profile.DerivedRecipes.OrderBy(pair => pair.Key.ToString(), StringComparer.Ordinal))
+            {
+                if (!IsCovered(profile, derived, recipes))
+                    problems.Add($"{derived} is derived from {source} but the profile does not cover it");
+                else if (!IsCovered(profile, source, recipes))
+                    problems.Add($"{derived} is derived from {source}, which the profile does not cover");
+                else if (profile.DerivedRecipes.ContainsKey(source))
+                    problems.Add($"{derived} is derived from {source}, which is itself derived");
             }
 
             return problems;
@@ -201,6 +226,39 @@ namespace SWLOR.Game.Server.Service.CraftService.RecipeParameters
             }
 
             return problems;
+        }
+
+        private static void AddDerivedDrift(
+            List<string> problems,
+            RecipeType derived,
+            RecipeType source,
+            Dictionary<string, double> actual,
+            IReadOnlyDictionary<RecipeType, RecipeDetail> recipes)
+        {
+            if (!recipes.TryGetValue(source, out var sourceDetail) || sourceDetail.MinigameParameters == null)
+            {
+                problems.Add($"{derived}: its source {source} has no parameters to copy");
+                return;
+            }
+
+            foreach (var value in sourceDetail.MinigameParameters.Values)
+            {
+                if (!actual.TryGetValue(value.Name, out var found) || Math.Abs(found - value.Value) > Tolerance)
+                {
+                    var shown = actual.TryGetValue(value.Name, out var present) ? present.ToString() : "missing";
+                    problems.Add($"{derived}: {value.Name} is {shown} but derived recipes copy {source}, which has {value.Value}");
+                }
+            }
+        }
+
+        private static bool IsCovered(
+            IRecipeParameterProfile profile,
+            RecipeType type,
+            IReadOnlyDictionary<RecipeType, RecipeDetail> recipes)
+        {
+            return recipes.TryGetValue(type, out var detail) &&
+                   detail.Skill == profile.Skill &&
+                   profile.AppliesTo(RecipeParameterContext.From(type, detail));
         }
 
         private static IEnumerable<string> CheckOverride(

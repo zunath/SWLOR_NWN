@@ -48,13 +48,18 @@ public static class TestRecipeRegistry
                 detail.Components["comp_" + component] = 1 + component;
             }
 
-            if (detail.Skill == profile.Skill && detail.IsActive)
+            if (detail.Skill == profile.Skill && detail.IsActive && !profile.DerivedRecipes.ContainsKey(type))
             {
                 detail.MinigameParameters =
                     RecipeParameterGenerator.Generate(profile, RecipeParameterContext.From(type, detail)).Parameters;
             }
 
             registry[type] = detail;
+        }
+
+        foreach (var (derived, source) in profile.DerivedRecipes)
+        {
+            registry[derived].MinigameParameters = registry[source].MinigameParameters;
         }
 
         return registry;

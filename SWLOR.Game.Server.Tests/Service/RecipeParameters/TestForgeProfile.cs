@@ -19,15 +19,17 @@ public sealed class TestForgeProfile : RecipeParameterProfile<TestForgeParameter
 
     private readonly SkillType _skill;
     private readonly RecipeParameterOverrides _overrides;
+    private readonly IReadOnlyDictionary<RecipeType, RecipeType> _derived;
 
     public TestForgeProfile()
         : this(SkillType.Smithery, true)
     {
     }
 
-    public TestForgeProfile(SkillType skill, bool withOverrides)
+    public TestForgeProfile(SkillType skill, bool withOverrides, IReadOnlyDictionary<RecipeType, RecipeType> derived = null)
     {
         _skill = skill;
+        _derived = derived ?? base.DerivedRecipes;
         _overrides = withOverrides
             ? new RecipeParameterOverrides()
                 .ForCategory(RecipeCategoryType.Breastplate, "Breastplates are worked hot", ("center", 65))
@@ -39,6 +41,7 @@ public sealed class TestForgeProfile : RecipeParameterProfile<TestForgeParameter
     public override SkillType Skill => _skill;
     public override IReadOnlyList<RecipeParameterDefinition> Definitions => _definitions;
     public override RecipeParameterOverrides Overrides => _overrides;
+    public override IReadOnlyDictionary<RecipeType, RecipeType> DerivedRecipes => _derived;
 
     public override IReadOnlyDictionary<string, double> BaseValues(RecipeParameterContext recipe)
     {

@@ -56,7 +56,7 @@ public abstract class RecipeParameterCoverageTests
     public void Values_MatchTheGeneratorUnlessAnOverrideRecordsThem()
     {
         AssertNoProblems(RecipeParameterAudit.FindGeneratorDrift(Profile, Recipes),
-            "values must equal the generator's output, which includes the profile's recorded overrides");
+            "values must equal the generator's output, which includes the profile's recorded overrides, or the source recipe's values for a derived recipe");
     }
 
     [Test]
@@ -64,6 +64,13 @@ public abstract class RecipeParameterCoverageTests
     {
         AssertNoProblems(RecipeParameterAudit.FindOutOfBudget(Profile, Recipes),
             "difficulty must stay inside the profile's budget for the recipe level");
+    }
+
+    [Test]
+    public void DerivedRecipes_NameCoveredSources()
+    {
+        AssertNoProblems(RecipeParameterAudit.FindInvalidDerivations(Profile, Recipes),
+            "a derived recipe and its source must both be covered by the profile");
     }
 
     [Test]

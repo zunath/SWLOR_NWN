@@ -27,7 +27,7 @@ namespace SWLOR.Game.Server.Service.CraftService.RecipeParameters
             var overridden = new HashSet<string>(overrides.SelectMany(o => o.Values.Keys), StringComparer.Ordinal);
             var varied = definitions.Where(d => d.Variation > 0 && !overridden.Contains(d.Name)).ToList();
             var budget = profile.BudgetFor(recipe.Level);
-            var reason = string.Join("; ", overrides.Select(o => o.Reason));
+            var reason = DescribeOverrides(profile, recipe);
             var recipeName = recipe.Type.ToString();
 
             var lastDifficulty = 0.0;
@@ -78,6 +78,12 @@ namespace SWLOR.Game.Server.Service.CraftService.RecipeParameters
                 result.Add(single);
 
             return result;
+        }
+
+        /// <summary>The reasons of the overrides that apply to a recipe, joined for the Bible; empty when none do.</summary>
+        public static string DescribeOverrides(IRecipeParameterProfile profile, RecipeParameterContext recipe)
+        {
+            return string.Join("; ", ApplicableOverrides(profile, recipe).Select(o => o.Reason));
         }
 
         private static Dictionary<string, double> ReadBaseValues(IRecipeParameterProfile profile, RecipeParameterContext recipe)

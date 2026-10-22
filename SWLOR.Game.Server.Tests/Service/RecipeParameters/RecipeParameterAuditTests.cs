@@ -98,6 +98,47 @@ public class RecipeParameterAuditTests
     }
 
     [Test]
+    public void DerivedRecipes_MustCopyTheirSourcesParametersAndNeedNoGeneratorOutput()
+    {
+        var derived = new Dictionary<RecipeType, RecipeType> { [RecipeType.SpiritmasterTunic] = RecipeType.BattlemasterBreastplate };
+        var profile = new TestForgeProfile(_profile.Skill, false, derived);
+        var recipes = TestRecipeRegistry.Create(profile);
+
+        Assert.That(recipes[RecipeType.SpiritmasterTunic].MinigameParameters,
+            Is.SameAs(recipes[RecipeType.BattlemasterBreastplate].MinigameParameters));
+        Assert.That(RecipeParameterAudit.FindGeneratorDrift(profile, recipes), Is.Empty);
+        Assert.That(RecipeParameterAudit.FindMissingParameters(profile, recipes), Is.Empty);
+        Assert.That(RecipeParameterAudit.FindInvalidDerivations(profile, recipes), Is.Empty);
+
+        var source = (TestForgeParameters)recipes[RecipeType.BattlemasterBreastplate].MinigameParameters;
+        recipes[RecipeType.SpiritmasterTunic].MinigameParameters =
+            new TestForgeParameters(source.Center == 50 ? 51 : 50, source.Width, source.Cooling, source.Style);
+
+        var drift = RecipeParameterAudit.FindGeneratorDrift(profile, recipes);
+        Assert.That(drift, Has.Count.EqualTo(1));
+        Assert.That(drift[0], Does.Contain("SpiritmasterTunic: center is").And.Contain("copy BattlemasterBreastplate"));
+    }
+
+    [Test]
+    public void FindInvalidDerivations_FlagsUncoveredAndChainedSources()
+    {
+        var derived = new Dictionary<RecipeType, RecipeType>
+        {
+            [RecipeType.SpiritmasterTunic] = TestRecipeRegistry.OtherSkillRecipe,
+            [TestRecipeRegistry.InactiveRecipe] = RecipeType.BattlemasterBreastplate,
+            [RecipeType.AdventTunic] = RecipeType.SpiritmasterTunic,
+        };
+        var profile = new TestForgeProfile(_profile.Skill, false, derived);
+        var recipes = TestRecipeRegistry.Create(_profile);
+
+        var problems = RecipeParameterAudit.FindInvalidDerivations(profile, recipes);
+
+        Assert.That(problems, Has.Some.Contain($"SpiritmasterTunic is derived from {TestRecipeRegistry.OtherSkillRecipe}, which the profile does not cover"));
+        Assert.That(problems, Has.Some.Contain($"{TestRecipeRegistry.InactiveRecipe} is derived from BattlemasterBreastplate but the profile does not cover it"));
+        Assert.That(problems, Has.Some.Contain("AdventTunic is derived from SpiritmasterTunic, which is itself derived"));
+    }
+
+    [Test]
     public void FindOutOfBudget_FlagsParametersTooHardForTheirLevel()
     {
         var recipes = TestRecipeRegistry.Create(_profile);

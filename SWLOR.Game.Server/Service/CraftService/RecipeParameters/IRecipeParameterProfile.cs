@@ -23,6 +23,12 @@ namespace SWLOR.Game.Server.Service.CraftService.RecipeParameters
 
         RecipeParameterOverrides Overrides { get; }
 
+        /// <summary>
+        /// Recipes whose definition copies another recipe's detail instead of using a builder chain, mapped to
+        /// that source recipe. A derived recipe must carry its source's parameters, and the source writer skips it.
+        /// </summary>
+        IReadOnlyDictionary<RecipeType, RecipeType> DerivedRecipes { get; }
+
         bool AppliesTo(RecipeParameterContext recipe);
 
         /// <summary>The value of every definition for a recipe, before the per-recipe variation.</summary>

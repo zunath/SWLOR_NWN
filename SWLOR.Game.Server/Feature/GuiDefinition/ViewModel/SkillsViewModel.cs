@@ -303,13 +303,10 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
                 var type = _viewableSkills[index];
                 var details = Skill.GetSkillDetails(type);
                 var pcSkill = dbPlayer.Skills[type];
-                if (details.ContributesToSkillCap)
-                {
-                    pcSkill.RankLimit = selections[index] == NoRankLimitSelection
-                        ? null
-                        : Math.Clamp(selections[index] - 1, 0, details.MaxRank);
-                    changed = true;
-                }
+                pcSkill.RankLimit = selections[index] == NoRankLimitSelection
+                    ? null
+                    : Math.Clamp(selections[index] - 1, 0, details.MaxRank);
+                changed = true;
 
                 var savedSelection = GetRankLimitSelection(Skill.GetRankLimit(pcSkill, details));
                 _savedRankLimitSelections[index] = savedSelection;

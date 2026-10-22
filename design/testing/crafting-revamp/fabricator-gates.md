@@ -284,7 +284,7 @@ Starting values and the values the gates settled on (`FabricatorRules`, `Fabrica
 | --- | --- | --- | --- |
 | Run (progress per Run, share of the recipe's work, on the head's own sub-assembly) | 13% | 28% | Length (gate 4): at 13% a plain craft took 20-27 actions. At 28% and 46 quality points a Precision Pass it takes about 15 (best gear) to 19 (no gear) |
 | Precision Pass (quality points) | 40 | 46 | Gate 3 at levels 51-53 (rank 50 against a level 53 recipe loses 15%): 42 left two passes short of full quality there (37% of crafts reached maximum); 46 keeps two passes enough at rank 50 with the best gear (97%+) |
-| Service restores | 30 | 40 | Fewer Services at the high wear of high levels, which kept no-gear crafts under 20 actions |
+| Service restores | 30 | 40 | Fewer Services are needed at the high wear of high levels |
 | Wear per Run or Precision Pass | 2-7 | 2-9 | Wear is the budget: harder materials wear the heads faster. 2.0 + 1.15 per point of component hardness |
 | Prime Feedstock | 12% a head, +50%, waits 2 actions | the same | The plan's +50% stays; the window of 2 actions lets a Retool catch it |
 | Machine Condition | 100 | 100 for a plain piece, in proportion to the work for an enhanced one | Gate 6 with enhancements: three enhancements at levels 11-20 left a no-gear crafter 4 times short of today's XP per hour because most crafts broke. The machine now lasts the longer run |

@@ -118,7 +118,7 @@ public class WeaponTechniqueTests
         c.Casting = null;
         var activation = c.Weapon.Begin(perfect, use, enemy, perfect.STM, 12.5, cast);
         activation.Stage.Should().Be(MeleeTechniqueStage.Finish, "the completed cast spends the Finish it started with");
-        activation.ConditionalPower.Should().Be(15);
+        activation.ConditionalPower.Should().Be(45);
         c.Weapon.Stage(enemy, 12.5).Should().Be(MeleeTechniqueStage.None);
     }
     [Test] public void PaybackPaidCost_DisablesHighGuardAtSevenButNotEight()

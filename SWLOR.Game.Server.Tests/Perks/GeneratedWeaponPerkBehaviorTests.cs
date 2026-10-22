@@ -1259,6 +1259,63 @@ public class GeneratedWeaponPerkBehaviorTests
     }
 
     [Test]
+    public void WeaponStances_HaveNoDurationOfTheirOwn()
+    {
+        // A stance's description can name a timed rider ("+5 Ranged Deflection for 30 seconds").
+        // That rider's duration must not become the stance's duration, or the stance turns itself off.
+        var stanceTypes = typeof(TempestStanceStatusEffect).Assembly.GetTypes()
+            .Where(type => typeof(IStatusEffect).IsAssignableFrom(type) &&
+                           !type.IsAbstract &&
+                           type.GetConstructor(Type.EmptyTypes) != null &&
+                           ((IStatusEffect)Activator.CreateInstance(type)!).SourceType == StatusEffectSourceType.Stance)
+            .Select(type => type.Name)
+            .ToHashSet();
+        stanceTypes.Should().Contain(new[]
+        {
+            nameof(TempestStanceStatusEffect),
+            nameof(VigorStanceStatusEffect),
+            nameof(ShadowflowStatusEffect)
+        });
+
+        var root = FindRepositoryRoot();
+        var definitions = Directory.GetFiles(
+            Path.Combine(root.FullName, "SWLOR.Game.Server", "Feature", "AbilityDefinition"),
+            "*.cs",
+            SearchOption.AllDirectories);
+        var configuredStances = new List<string>();
+        var timedStances = new List<string>();
+        foreach (var definition in definitions)
+        {
+            var source = File.ReadAllText(definition);
+            foreach (Match match in Regex.Matches(
+                source,
+                @"\n\s*SkillType\.\w+,\s*\n\s*[^,\n]+,\s*\n\s*([^,\n]+),\s*\n\s*typeof\((\w+)\),"))
+            {
+                var statusType = match.Groups[2].Value;
+                if (!stanceTypes.Contains(statusType))
+                    continue;
+
+                configuredStances.Add(statusType);
+                if (match.Groups[1].Value.Trim() != "0")
+                    timedStances.Add($"{Path.GetFileName(definition)}: {statusType} duration {match.Groups[1].Value.Trim()}");
+            }
+        }
+
+        configuredStances.Should().Contain(new[]
+        {
+            nameof(TempestStanceStatusEffect),
+            nameof(VigorStanceStatusEffect),
+            nameof(ShadowflowStatusEffect)
+        }, "the scan must reach the ConfigureWeaponAbility stance definitions it guards");
+        timedStances.Should().BeEmpty();
+
+        var generatorSource = File.ReadAllText(Path.Combine(root.FullName, "tools", "GenerateWeaponArchetypeImplementation.py"));
+        generatorSource.Should().MatchRegex(
+            @"if row\[""Type""\] in \{""Stance"", ""Toggle"", ""Aura""\}:\s*\n(\s*#.*\n)*\s*duration = 0",
+            "regenerating weapon stances must not turn a rider's duration into the stance's duration");
+    }
+
+    [Test]
     public void EventDrivenWeaponPromises_AreDeclaredAndConsumedBySharedCombat()
     {
         Stat.GetStatTypeCategory(StatType.CriticalBleedingStatusDurationExtensionSeconds)

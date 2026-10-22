@@ -2,6 +2,7 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using SWLOR.Game.Server.Core;
+using SWLOR.Game.Server.Feature;
 using SWLOR.Game.Server.Feature.AbilityDefinition;
 using SWLOR.Game.Server.Service.AbilityService;
 using SWLOR.Game.Server.Service.CombatService;
@@ -63,7 +64,7 @@ namespace SWLOR.Game.Server.Service
                 .Where(source => source[StatType.TechniqueLine] == (int)line)
                 .Sum(source => source[payload]);
 
-        public static string ValidateActivation(uint creature, AbilityDetail ability)
+        public static string ValidateActivation(uint creature, AbilityDetail ability, uint target)
         {
             if (ability?.MeleeTechnique == null)
                 return string.Empty;
@@ -74,8 +75,52 @@ namespace SWLOR.Game.Server.Service
                 return profile.EquipmentError;
             if (ability.IsHostileAbility && !GetOwner(creature).Resources.CanActivate(DateTime.UtcNow))
                 return "Wait a moment before using another technique.";
+            var required = ability.MeleeTechnique.RequiredStages;
+            if (required != MeleeTechniqueStage.None && (GetRequiredSetupStage(creature, target, ability) & required) == 0)
+                return $"{ability.Name} requires your {DescribeStages(required)} against this enemy.";
             return string.Empty;
         }
+
+        /// <summary>
+        /// Called when a cast starts. A technique which requires a setup keeps the one it started with
+        /// until that same cast completes, so the setup cannot expire under its cast time.
+        /// </summary>
+        public static void HoldSetupForCast(uint creature, uint target, AbilityDetail ability, string activationId)
+        {
+            if (!Owners.TryGetValue(creature, out var owner))
+                return;
+            owner.HeldCast = null;
+            var required = ability?.MeleeTechnique?.RequiredStages ?? MeleeTechniqueStage.None;
+            if (required == MeleeTechniqueStage.None || string.IsNullOrEmpty(activationId))
+                return;
+            Refresh(creature, owner);
+            if (owner.Line != ability.MeleeTechnique.Line || !owner.Sequence.Matches(target, DateTime.UtcNow) ||
+                (owner.Sequence.Stage & required) == 0)
+                return;
+            owner.HeldCast = new HeldCast(activationId, ability, target, owner.Sequence.Stage, owner.Sequence.ExpiresAt);
+        }
+
+        private static MeleeTechniqueStage GetRequiredSetupStage(uint creature, uint target, AbilityDetail ability)
+        {
+            if (!Owners.TryGetValue(creature, out var owner))
+                return MeleeTechniqueStage.None;
+            Refresh(creature, owner);
+            return owner.Line == ability.MeleeTechnique.Line && SetupMatches(creature, owner, target, ability, DateTime.UtcNow)
+                ? owner.Sequence.Stage : MeleeTechniqueStage.None;
+        }
+
+        /// <summary>The live setup, or the one held for this ability's cast in progress.</summary>
+        private static bool SetupMatches(uint creature, OwnerState owner, uint target, AbilityDetail ability, DateTime now) =>
+            owner.Sequence.Matches(target, now) || IsSetupHeld(creature, owner, target, ability);
+
+        private static bool IsSetupHeld(uint creature, OwnerState owner, uint target, AbilityDetail ability) =>
+            owner.HeldCast is { } held && held.Ability == ability && held.Target == target &&
+            owner.Sequence.Target == target && owner.Sequence.Stage == held.Stage && owner.Sequence.ExpiresAt == held.ExpiresAt &&
+            UsePerkFeat.GetActiveAbilityActivationId(creature) == held.ActivationId;
+
+        private static string DescribeStages(MeleeTechniqueStage stages) => string.Join(" or ",
+            new[] { MeleeTechniqueStage.Opening, MeleeTechniqueStage.Finish, MeleeTechniqueStage.Distraction }
+                .Where(stage => (stages & stage) != 0));
 
         /// <summary>Called after all paid requirements, before an impact is launched.</summary>
         public static void BeginPaidActivation(uint creature, uint target, AbilityDetail ability)
@@ -110,7 +155,7 @@ namespace SWLOR.Game.Server.Service
                 return;
             if (!Profiles.TryGetValue(ability.SkillType, out var profile))
                 return;
-            var setupAccuracy = owner.Sequence.Matches(target, now) &&
+            var setupAccuracy = SetupMatches(creature, owner, target, ability, now) &&
                                 owner.Sequence.Stage is MeleeTechniqueStage.Opening or MeleeTechniqueStage.Finish
                 ? GetLineStat(creature, owner.Line, StatType.TechniqueSetupAbilityAccuracy) : 0;
             if (owner.Profile != profile || owner.ProfileSkill != ability.SkillType)
@@ -118,7 +163,8 @@ namespace SWLOR.Game.Server.Service
             owner.Profile = profile;
             owner.ProfileSkill = ability.SkillType;
 
-            var matching = owner.Line == detail.Line && owner.Sequence.Matches(target, now);
+            var matching = owner.Line == detail.Line && SetupMatches(creature, owner, target, ability, now);
+            owner.HeldCast = null;
             var stage = matching && (detail.ConsumedStages & owner.Sequence.Stage) != 0
                 ? owner.Sequence.Stage : MeleeTechniqueStage.None;
             var retaliation = detail.ConsumesRetaliation || stage == MeleeTechniqueStage.Distraction && detail.CreatedStage == MeleeTechniqueStage.None
@@ -569,7 +615,7 @@ namespace SWLOR.Game.Server.Service
                 ClearRetaliation(creature, owner);
             if (owner.Sequence.Stage == MeleeTechniqueStage.None)
                 return;
-            if (!owner.Sequence.Matches(owner.Sequence.Target, DateTime.UtcNow) ||
+            if (!SetupMatches(creature, owner, owner.Sequence.Target, owner.HeldCast?.Ability, DateTime.UtcNow) ||
                 !IsValidEnemy(creature, owner.Sequence.Target) ||
                 GetArea(creature) != owner.Area ||
                 owner.SourceOwnedStatusType != null && !StatusEffect.HasStatusEffect(owner.Sequence.Target, owner.SourceOwnedStatusType, creature))
@@ -650,7 +696,11 @@ namespace SWLOR.Game.Server.Service
             public Type SourceOwnedStatusType { get; set; }
             public uint Area { get; set; }
             public DateTime LastHostileActivity { get; set; }
+            public HeldCast HeldCast { get; set; }
         }
+
+        /// <summary>The setup a cast in progress started with; valid only while that activation is running.</summary>
+        private sealed record HeldCast(string ActivationId, AbilityDetail Ability, uint Target, MeleeTechniqueStage Stage, DateTime ExpiresAt);
 
         private sealed class Activation
         {

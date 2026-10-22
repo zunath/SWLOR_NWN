@@ -36,7 +36,7 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition
                         AddButton(row, "Creator", "Search the palettes and spawn blueprints", model => model.OnClickCreator());
                         AddButton(row, "Players", "Search online and offline characters", model => model.OnClickPlayers());
                         AddButton(row, "Creatures", "Creature Manager: save and spawn customized creatures", model => model.OnClickCreatureManager());
-                        AddButton(row, "Placeables", "Placeable Tools: move, rotate and save placeable layouts", model => model.OnClickPlaceableTools());
+                        AddButton(row, "Placeables", "Placeable Tools: move, rotate and save placeable layouts, and the battle grid", model => model.OnClickPlaceableTools());
                         AddButton(row, "Notes", "Area notes", model => model.OnClickAreaNotes());
                         AddButton(row, "Music", "Change the area music", model => model.OnClickMusic());
 

@@ -56,6 +56,31 @@ public class ItemAppearanceCatalogMigrationTests
         failures.Should().BeEmpty(string.Join(Environment.NewLine, failures));
     }
 
+    // Helmets the combat upgrade shipped on model 223 (Darth Revan's mask and hood, reserved for revan_mask).
+    // Their blueprints moved to other models on 2026-10-12, so owned copies must follow.
+    private static readonly string[] ShippedRevanMaskHelmets =
+    {
+        "absdef_l7", "adamguard_l7", "alpharhy_l5", "apexbite_l5", "darkhung_l7", "deadhand_l7", "deccommand_l5",
+        "eclipse_l7", "embunker_l5", "emcocktail_l5", "forcebane_l7", "forcebeast_l5", "guardmst_l7", "headwind_visor",
+        "holdline_l5", "infconduit_l7", "invinc_l7", "killbeacon_l5", "killbox_l7", "lastword_l7", "lightstand_l7",
+        "lowblow_visor", "oneshot_l7", "overbarr_l5", "perflurry_l7", "primover_l5", "rainsteel_l7", "sabcycl_l7",
+        "sabstorm_l7", "scav_visor", "scraplock_l7", "soulasc_l7", "sysshut_l7", "thermdet_l5", "unbrbeast_l5",
+        "unmovctr_l7", "untinst_l5", "vitrupt_l7", "worldbrk_l7",
+    };
+
+    [Test]
+    public void ShippedRevanMaskHelmets_MoveOwnedCopiesOffTheReservedModel()
+    {
+        foreach (var resref in ShippedRevanMaskHelmets)
+        {
+            ItemAppearanceCatalogMigration.Revisions.Should().ContainKey(resref);
+            var revision = ItemAppearanceCatalogMigration.Revisions[resref];
+            revision.BaseItem.Should().Be(BaseItem.Helmet, resref);
+            revision.Previous.Should().Equal(new[] { 223 }, resref);
+            revision.Current.Should().NotContain(223, resref);
+        }
+    }
+
     private static int ReadPart(JObject blueprint, string field) =>
         blueprint["x" + (field.Length > 15 ? field[..15] : field)]?["value"]?.Value<int>() ??
         blueprint[field]?["value"]?.Value<int>() ?? 0;

@@ -118,6 +118,17 @@ namespace SWLOR.Game.Server.Service
         }
 
         /// <summary>
+        /// Disconnects a player from the server. Written to the DM log.
+        /// </summary>
+        /// <param name="dm">The DM avatar or the creature they possess.</param>
+        /// <param name="player">The player to disconnect.</param>
+        public static void Boot(uint dm, uint player)
+        {
+            Log.Write(LogGroup.DM, $"{DescribeDM(dm)} booted {GetName(player)} ({GetPCPlayerName(player)}) [{GetPCPublicCDKey(player)}] ({GetObjectUUID(player)}).");
+            BootPC(player, "You have been disconnected by a DM.");
+        }
+
+        /// <summary>
         /// Describes a DM for audit logs.
         /// </summary>
         /// <param name="dm">The DM avatar or the creature they possess.</param>

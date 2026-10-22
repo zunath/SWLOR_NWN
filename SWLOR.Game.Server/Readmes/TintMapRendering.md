@@ -42,11 +42,15 @@ blending enabled and disabled, in both native `NO_DISCARD` modes.
 
 Authored MTRs can inherit a same-name DDS/TGA without declaring `texture0`.
 `TintMapMaterialSources.json` records that input as `implicitTexture0`.
-Helmet 101, both human neck 12 textures, and female human left shin 264 have
-obsolete PLT atlases that differ from their authored diffuse artwork.
+Helmet 101 and both human neck 12 textures have obsolete PLT atlases that differ
+from their authored diffuse artwork.
 `GenerateAuthoredDiffuseTintMaps.py` registers a uniform channel selector while
 retaining the full-resolution diffuse and normal/specular textures. Cloth 1
-controls helmet 101 and shin 264; Skin controls the necks' authored surfaces.
+controls helmet 101; Skin controls the necks' authored surfaces. Female left shin
+264 is not one of them: its leftover DDS repeats the shared shin 264 palette's art
+(identical UVs, correlation 0.996), but it overrode the palette natively, so the
+left shin ignored dyes the right one took. `MIRRORED_MATERIAL_PROFILES` in
+`GenerateTintMapAssets.py` gives it the right shin's profile; both sides now dye alike.
 The mapped shader's opt-in `useAuthoredDiffuse` preserves original colors for
 native presets and reset. Explicit RGB replaces the hue using the original
 luminance detail, without sampling the obsolete PLT. Helmet 101 retains its
@@ -522,6 +526,27 @@ Rebuild/install `sw_pt_root.hak` together with `sw_anim_m.hak` and `sw_anim_f.ha
 the helper part IDs live in the animation bridges too, and with older bridges the
 skirts stay static. No module repack or C# deploy is required.
 
+Chest parts 154 (human bodies) and 269 (human, elf, half-orc and dwarf bodies) carry
+ankle-length coat skirts in the chest mesh. Each half of the skirt was weighted to its
+own thigh and shin, so striding pulled the halves apart: the back tore open and the legs
+showed through it. A chest part only reaches the normal body's bones, and a least-squares
+fit shows no blend of them reproduces robe 236's coat helpers. `ChestSkirtBindings.py`
+therefore moves every leg weight onto `pelvis_g`, as on rigid stock skirts, and keeps
+the other bones, the geometry, inverse binds and bone tables, so the bind shape is
+unchanged. Over the stock walk and run clips the worst skirt stretch drops below 1.4x
+(up to 11x before) and less leg shows behind the coat. Keeping even a quarter of the
+leg weight let the female chest 154 skirt tear again. The trade-off matches rigid stock
+skirts: when sitting or kneeling the coat no longer follows the legs and passes through
+the seat or the floor. The originals are read from the Git blobs recorded in
+`ChestSkirtBindings.json`. Other chest styles with leg-weighted coat tails (003, 027 to
+029, 059, 065, 072, 128, 155, 276, 290, 300, 310) are unchanged.
+Run `python -B SWLOR_Haks/tools/ChestSkirtBindings.py --apply`, then
+`python -B SWLOR_Haks/tools/GeneratePartSkinModels.py --apply`, which renumbers the
+robe-body aliases whose bone mapping changed. Both scripts' `--check` and
+`python -B -m unittest discover -s SWLOR_Haks/tools -p "TestChestSkirtBindings.py"` guard them. Rebuild
+`sw_pt_chest.hak` and `sw_2da.hak` together and restart the server, which reads the
+renumbered aliases from `partrender.2da`.
+
 Robe 236's tint map is built from its original PLT, not the March 2026 revision
 (SWLOR_Haks #291) that raised the coat's Leather 1 shade from a mean of 38 to 61 and
 made every dye render the coat much lighter. Both genders share that source. The
@@ -742,6 +767,23 @@ DDS/TXI pair. Both the asset audit and C# corpus test require the pair; the GPU
 test rejects missing or enabled-mipmap TXIs before issuing compressed uploads.
 Rebuild and deploy all three `sw_tint*.hak` archives after this repair.
 
+## Smooth dye edges on reported materials
+
+By default `fs_plt_tinter` and `fs_plt_tinter_nm` take each pixel's dye layer
+from the nearest mask texel and filter only the shade. The native PLT renderer
+filtered the resolved colors instead, so on a converted part every boundary
+between two dye layers can render as a texel staircase. Players see this as a
+lower-resolution, jagged texture, even though the mask matches the PLT exactly.
+Materials listed in `SMOOTH_TINT_MATERIALS` (`GenerateTintMapAssets.py`) get
+`smoothTintEdges 1.0`, which resolves the four neighboring texels and filters
+their colors like the native PLT. Current opt-ins: helmets 53 and 287, and
+neck 267 with its scoped aliases. Every converted multi-layer mask uses the
+nearest-layer default, so a new report of jagged dye edges usually needs only
+a new opt-in. Confirm it against the pre-conversion PLT before adding one.
+`TestHelmetTintFiltering.py --game-data <dir>` guards the opt-in list and
+compares each opt-in mask's edges with resolved-color filtering on the GPU.
+Rebuild `sw_tint_mtr.hak` after a change and restart the client.
+
 ## Regression scene and checks
 
 ### Cover native body-part texture fallbacks
@@ -783,6 +825,12 @@ import until `python -B SWLOR_Haks/tools/TestStockPartTintBindings.py --game-dat
 "<NWN>/data"` reports no borrowed tint maps. Import the stock MDL first and
 convert its PLT with `--generate-preserving`; the remaining imports bind through
 `--refresh-model-bindings`.
+
+A stock part that keeps its own native PLT renders palette presets but never exact
+RGB, and a stock part whose palette is converted but whose MDL stays in the KEY/BIF
+layer has no `tintmap.2da` row, so runtime colors never reach it. Every part the
+appearance editor offers to a playable body is therefore imported and converted the
+same way, and every resolved catalog model must have a `tintmap.2da` row.
 
 PLT replacement changes the underlying diffuse texture, not the existing
 SharedMaterial configuration. Preserve the original normal, specular,

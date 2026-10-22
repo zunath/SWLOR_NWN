@@ -109,6 +109,26 @@ public class UnarmedProgressionTests
         });
     }
 
+    [Test]
+    public void PerfectFormRequiresAndSpendsFinish()
+    {
+        var perfect = new PerfectFormAbilityDefinition().BuildAbilities()[FeatType.PerfectForm1].MeleeTechnique;
+        Assert.Multiple(() =>
+        {
+            Assert.That(perfect.RequiredStages, Is.EqualTo(MeleeTechniqueStage.Finish));
+            Assert.That(perfect.ConsumedStages, Is.EqualTo(MeleeTechniqueStage.Finish));
+            Assert.That(perfect.FinishPower, Is.EqualTo(15));
+            Assert.That(perfect.RefundEligible, Is.True);
+        });
+        foreach (var definition in new IAbilityListDefinition[]
+                 {
+                     new JabAbilityDefinition(), new PalmStrikeAbilityDefinition(), new FinishingCombinationAbilityDefinition(),
+                     new DirtyJabAbilityDefinition(), new UppercutAbilityDefinition(), new LowKickAbilityDefinition(), new HaymakerAbilityDefinition()
+                 })
+            foreach (var ability in definition.BuildAbilities().Values)
+                Assert.That(ability.MeleeTechnique.RequiredStages, Is.EqualTo(MeleeTechniqueStage.None), $"{ability.Name} can still start without a setup");
+    }
+
     [TestCase(nameof(RecastGroup.UnarmedOpener), "Unarmed Opener", "Fist Opener")]
     [TestCase(nameof(RecastGroup.UnarmedResponse), "Unarmed Response", "Fist Response")]
     [TestCase(nameof(RecastGroup.UnarmedTechnique), "Unarmed Technique", "Fist Technique")]

@@ -158,8 +158,9 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition
                                     .BindIsEnabled(model => model.DecayLockButtonEnabled);
 
                                 // Short labels: the column is too narrow at the default width for "Limit: None".
+                                // Highest ranks first, since players usually limit a skill near the top of its range.
                                 limit.AddOption("None", SkillsViewModel.NoRankLimitSelection);
-                                for (var rank = 0; rank <= maxLimitRank; rank++)
+                                for (var rank = maxLimitRank; rank >= 0; rank--)
                                 {
                                     limit.AddOption(rank.ToString(), SkillsViewModel.GetRankLimitSelection(rank));
                                 }

@@ -49,7 +49,7 @@ It ships on its own pull request, ahead of the space revamp, so players can set 
 
 Files: `Feature/GuiDefinition/SkillsDefinition.cs` and `Feature/GuiDefinition/ViewModel/SkillsViewModel.cs`. Follow `NuiLayoutRules.md`, `GuiWindowAuthoring.md` and `skills/swlor-gui-window-generation/SKILL.md`.
 
-- **The control:** add a **Limit** control to each row, beside the existing Decay Lock button. It's a combo with "None" and every rank from 0 to the skill's max rank, defaulting to None.
+- **The control:** add a **Limit** control to each row, beside the existing Decay Lock button. It's a combo with "None" and every rank from the skill's max rank down to 0, in steps of 1, defaulting to None. The ranks run highest first because the dropdown opens at the top of its list and players usually limit a skill near the top of its range.
   - List-template combos share one static option list, so the options run to the highest max rank among skills that count toward the cap (50 for every such skill today); saving clamps to the row's own max rank.
   - The selection is a watched `GuiBindingList<int>` (value 0 = None, otherwise limit + 1). A watch event reports the whole list, so the view model diffs it against the last saved selections and saves only the changed rows. This is the first watched per-row list in the codebase, so the client evidence must show a combo change reaching the Player record.
 - **When enabled:** only for skills that count toward the cap, matching `DecayLockButtonEnabled`.

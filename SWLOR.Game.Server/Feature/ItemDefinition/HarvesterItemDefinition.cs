@@ -4,7 +4,7 @@ using SWLOR.Game.Server.Entity;
 using SWLOR.Game.Server.Service;
 using SWLOR.Game.Server.Service.ItemService;
 using SWLOR.Game.Server.Service.LogService;
-using SWLOR.Game.Server.Service.PerkService;
+using SWLOR.Game.Server.Service.CraftService;
 using SWLOR.Game.Server.Service.SkillService;
 using SWLOR.NWN.API.NWScript.Enum;
 using SWLOR.NWN.API.NWScript.Enum.VisualEffect;
@@ -58,11 +58,9 @@ namespace SWLOR.Game.Server.Feature.ItemDefinition
                 .ReducesItemCharge()
                 .ValidationAction((user, item, target, location, itemPropertyIndex) =>
                 {
-                    var perkLevel = Perk.GetPerkLevel(user, PerkType.Harvesting);
-
-                    if (perkLevel < requiredLevel)
+                    if (CraftRankMilestones.GetHarvesterTier(user) < requiredLevel)
                     {
-                        return $"Your Harvesting perk level is too low to use this harvester. (Required: {requiredLevel})";
+                        return $"Your Gathering skill is too low to use this harvester. (Required rank: {CraftRankMilestones.RequiredRankForTier(requiredLevel)})";
                     }
 
                     var lootTableName = GetLocalString(target, "HARVESTING_LOOT_TABLE");

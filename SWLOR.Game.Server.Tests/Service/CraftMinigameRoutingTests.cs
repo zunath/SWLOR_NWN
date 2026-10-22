@@ -95,6 +95,16 @@ public class CraftMinigameRoutingTests
     }
 
     [Test]
+    public void AgricultureCooksInTheKitchenWindow()
+    {
+        var route = CraftMinigameRouting.GetRoute(SkillType.Agriculture);
+
+        route.Window.Should().Be(GuiWindowType.Kitchen);
+        route.Minigame.Should().Be(CraftMinigameType.Kitchen);
+        route.IsLegacy.Should().BeFalse();
+    }
+
+    [Test]
     public void TheCraftWindowsAreTheOriginalAndEveryRoutedMinigameWindow()
     {
         var windows = CraftMinigameRouting.GetCraftWindows();

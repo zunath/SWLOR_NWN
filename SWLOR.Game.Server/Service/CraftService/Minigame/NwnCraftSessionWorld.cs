@@ -162,7 +162,10 @@ public sealed class NwnCraftSessionWorld : ICraftSessionWorld
     public void ApplyFoodBonus(uint item, int durationSeconds, int bonusCharges)
     {
         if (durationSeconds > 0)
+        {
             SetLocalInt(item, CraftOutcomeRules.FoodDurationBonusSecondsVariable, durationSeconds);
+            SetDescription(item, FoodDurationText.AppendTo(GetDescription(item), durationSeconds));
+        }
 
         if (bonusCharges > 0)
             SetItemCharges(item, GetItemCharges(item) + bonusCharges);

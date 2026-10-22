@@ -115,7 +115,10 @@ namespace SWLOR.Game.Server.Feature.ChatCommandDefinition
                 .Action((user, target, location, args) =>
                 {
                     var recipe = RecipeType.MynockMeatBall;
-                    if (args.Length > 0 && !Enum.TryParse(args[0], true, out recipe))
+                    if (args.Length > 0 &&
+                        (!Enum.TryParse(args[0], true, out recipe) ||
+                         !Enum.IsDefined(recipe) ||
+                         recipe == RecipeType.Invalid))
                     {
                         SendMessageToPC(user, $"{args[0]} is not a recipe.");
                         return;

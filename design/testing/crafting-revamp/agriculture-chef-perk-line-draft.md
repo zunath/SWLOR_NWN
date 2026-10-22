@@ -7,7 +7,7 @@ The Chef line acts only on the Kitchen minigame (cooking, pet food and cooking e
 ## Sources and comparators
 
 - Anchors, schedule and price list: `Readmes/CraftingRevampPlan.md` ("Line schedule", "Lines", "Agriculture cooking: the Kitchen").
-- Engine values the perks bend: `Service/CraftService/Minigame/Kitchen/KitchenTuning.cs` (pantry push 4, push spread 40% before Control, Simmer 7/12 Doneness at Low/Medium, Sear 36 for 6 Freshness, drift 8 at High and 4 at Medium, Cover 3 turns for 6 CP, Stir 8 CP, Peak Aroma 25%).
+- Engine values the perks bend: `Service/CraftService/Minigame/Kitchen/KitchenTuning.cs` (pantry push 4, push spread 40% before Control, Simmer 5/12 Doneness at Low/Medium, Sear 36 for 6 Freshness, drift 8 at High and 4 at Medium, Cover 3 turns for 6 CP, Stir 8 CP, Peak Aroma 25%).
 - Comparators: the rank-20 style and rank-50 capstone anchors of the other crafting lines in the same plan table (Hot Forging/Red Line, Overclock/Surge, Production Run/Master Assembler). The weapon schedule table in `SkillPerkStandards.md` does not apply to crafting lines; the plan's schedule does.
 - No character-sheet stat changes: Craftsmanship and Control keep their roles (Doneness speed, narrower pushes). Perks add `StatType` adjustments that `KitchenStats` collects when the window opens the dish; the engine reads those and never checks a perk by name.
 

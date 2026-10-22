@@ -659,6 +659,12 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
         private void RuinDish()
         {
             var settlement = CraftSessionService.Fail(Player, CraftSessionEndReason.Broken);
+            if (!settlement.Settled)
+            {
+                ReturnToSetup("Your cooking was interrupted, so the dish was lost.", GuiColor.Red);
+                return;
+            }
+
             var total = settlement.ItemsLost + settlement.ItemsKept;
             var message = $"The dish is ruined! {settlement.ItemsLost} of {total} items were lost.";
             SendMessageToPC(Player, message);

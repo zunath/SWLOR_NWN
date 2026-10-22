@@ -25,6 +25,9 @@ public static class CircuitRules
 
     /// <summary>The output each rank above or below the recipe's level adds, as a fraction.</summary>
     public const double RankStep = 0.05;
+
+    /// <summary>The output each rank below the recipe's level takes away, as a fraction.</summary>
+    public const double RankBelowStep = 0.10;
     public const int MaxRanksBelowRecipe = 3;
     public const int MaxRanksAboveRecipe = 5;
 
@@ -56,12 +59,6 @@ public static class CircuitRules
     public const int RankPassiveCpRank = 25;
     public const int RankPassiveCp = 31;
 
-    // Skill ranks at which each action unlocks.
-    public const int WireRank = 0;
-    public const int DischargeAssemblyRank = 0;
-    public const int TuneRank = 5;
-    public const int DischargeCalibrationRank = 5;
+    /// <summary>The Engineering rank that unlocks Patch. Every other action is open from rank 0; rank changes power and CP only.</summary>
     public const int PatchRank = 10;
-    public const int GroundRank = 15;
-    public const int BoostRank = 20;
 }

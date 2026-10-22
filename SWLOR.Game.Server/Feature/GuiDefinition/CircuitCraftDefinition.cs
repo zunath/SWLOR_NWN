@@ -30,12 +30,12 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition
             $"Integrity and Load drops to 0. The chance is {CircuitRules.OverloadChancePerPointPercent}% for every point above the line and is shown beside each action. " +
             "Better component grades raise the line.\n\n" +
             "ACTIONS\n" +
-            $"Wire builds Assembly and costs no CP (rank {CircuitRules.WireRank}).\n" +
-            $"Tune builds Calibration and costs CP (rank {CircuitRules.TuneRank}).\n" +
-            $"Discharge spends all your Load as one burst into Assembly (rank {CircuitRules.DischargeAssemblyRank}) or Calibration (rank {CircuitRules.DischargeCalibrationRank}). The more Load, the bigger the burst. It never overloads.\n" +
-            $"Patch restores {CircuitRules.PatchRestore} Integrity and costs CP (rank {CircuitRules.PatchRank}).\n" +
-            $"Ground lowers Load by {CircuitRules.GroundLoad}, costs CP and never overloads (rank {CircuitRules.GroundRank}).\n" +
-            $"Boost adds {CircuitRules.BoostLoad} Load and costs CP (rank {CircuitRules.BoostRank}).\n\n" +
+            "Wire builds Assembly and costs no CP.\n" +
+            "Tune builds Calibration and costs CP.\n" +
+            "Discharge spends all your Load as one burst into Assembly or Calibration. The more Load, the bigger the burst. It never overloads.\n" +
+            $"Patch restores {CircuitRules.PatchRestore} Integrity and costs CP. It unlocks at Engineering rank {CircuitRules.PatchRank}.\n" +
+            $"Ground lowers Load by {CircuitRules.GroundLoad}, costs CP and never overloads.\n" +
+            $"Boost adds {CircuitRules.BoostLoad} Load and costs CP.\n\n" +
             "CLEAN SIGNAL\n" +
             "Sometimes the next action is announced as a Clean Signal: your next Tune is doubled. It lasts for that one action.\n\n" +
             "GEAR\n" +

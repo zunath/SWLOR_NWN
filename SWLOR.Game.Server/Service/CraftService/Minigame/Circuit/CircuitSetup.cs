@@ -108,18 +108,8 @@ public sealed class CircuitSetup
     public int DischargeCalibrationGain(int load) =>
         load <= 0 ? 0 : Scale(CalibrationSize, CircuitRules.DischargePercentPerLoad * load, load, CalibrationFactor());
 
-    /// <summary>The unlock rank of an action, or -1 for an unknown action.</summary>
-    public static int UnlockRank(string actionId) => actionId switch
-    {
-        CircuitActionIds.Wire => CircuitRules.WireRank,
-        CircuitActionIds.DischargeAssembly => CircuitRules.DischargeAssemblyRank,
-        CircuitActionIds.Tune => CircuitRules.TuneRank,
-        CircuitActionIds.DischargeCalibration => CircuitRules.DischargeCalibrationRank,
-        CircuitActionIds.Patch => CircuitRules.PatchRank,
-        CircuitActionIds.Ground => CircuitRules.GroundRank,
-        CircuitActionIds.Boost => CircuitRules.BoostRank,
-        _ => -1
-    };
+    /// <summary>The Engineering rank an action unlocks at: Patch at 10 and everything else at 0.</summary>
+    public static int UnlockRank(string actionId) => actionId == CircuitActionIds.Patch ? CircuitRules.PatchRank : 0;
 
     public bool IsUnlocked(string actionId) => Rank >= UnlockRank(actionId);
 
@@ -133,7 +123,7 @@ public sealed class CircuitSetup
     private double RankFactor(int maxAbove)
     {
         var difference = Math.Clamp(Rank - RecipeLevel, -CircuitRules.MaxRanksBelowRecipe, maxAbove);
-        return 1.0 + CircuitRules.RankStep * difference;
+        return 1.0 + (difference < 0 ? CircuitRules.RankBelowStep : CircuitRules.RankStep) * difference;
     }
 
     private int Scale(int size, double percent, int load, double factor)

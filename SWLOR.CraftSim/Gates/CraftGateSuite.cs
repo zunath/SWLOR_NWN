@@ -7,14 +7,14 @@ using static SWLOR.CraftSim.Report.MarkdownTable;
 namespace SWLOR.CraftSim.Gates
 {
     /// <summary>
-    /// The six crafting gates for one scenario, sharing one set of plays: the adaptive player's cells that gates 1, 4, 5 and 6 read
+    /// The seven crafting gates for one scenario, sharing one set of plays: the adaptive player's cells that gates 1, 4, 5 and 6 read
     /// are played once, and so are the legacy cells that gates 5 and 6 compare against. Make one suite per scenario and run its
     /// <see cref="Gates"/> with <see cref="GateReport.Run"/> against one <see cref="GateContext"/>; a different context starts the plays over.
     /// </summary>
     public sealed class CraftGateSuite
     {
-        /// <summary>The names the command line takes for each gate, in the order of <see cref="GateNames.All"/>.</summary>
-        public static readonly IReadOnlyList<string> GateKeys = new[] { "rotation", "styles", "perks", "length", "materials", "xp" };
+        /// <summary>The names the command line takes for each gate, in the order of <see cref="GateNames.All"/>. A gate's number, 1 to 7, names it too.</summary>
+        public static readonly IReadOnlyList<string> GateKeys = new[] { "rotation", "styles", "perks", "length", "materials", "xp", "enhancements" };
 
         private readonly object _gate = new();
         private ScenarioRun _run;
@@ -31,7 +31,8 @@ namespace SWLOR.CraftSim.Gates
                 new PerksOptionalGate(this),
                 new LengthGate(this),
                 new MaterialParityGate(this),
-                new XpRateGate(XpCohort, Thresholds)
+                new XpRateGate(XpCohort, Thresholds),
+                new EnhancementParityGate(this)
             };
         }
 
@@ -41,18 +42,24 @@ namespace SWLOR.CraftSim.Gates
         /// <summary>The cohort gate 6 compares: the plan's item-craft cohort unless a scenario brought its own.</summary>
         public IXpRateCohort XpCohort { get; }
 
-        /// <summary>The six gates, in the order of <see cref="GateNames.All"/>.</summary>
+        /// <summary>The seven gates, in the order of <see cref="GateNames.All"/>.</summary>
         public IReadOnlyList<IBalanceGate> Gates { get; }
 
-        /// <summary>The gates the command line named; an unknown name is an error.</summary>
+        /// <summary>The gates the command line named, by key or by number (1 to 7); an unknown name is an error.</summary>
         public IReadOnlyList<IBalanceGate> Select(IEnumerable<string> keys)
         {
             var selected = new List<IBalanceGate>();
             foreach (var key in keys)
             {
                 var index = GateKeys.ToList().FindIndex(k => string.Equals(k, key, StringComparison.OrdinalIgnoreCase));
+                if (index < 0 && int.TryParse(key, System.Globalization.NumberStyles.None, System.Globalization.CultureInfo.InvariantCulture, out var number) &&
+                    number >= 1 && number <= GateKeys.Count)
+                {
+                    index = number - 1;
+                }
+
                 if (index < 0)
-                    throw new ArgumentException($"--gates names {string.Join(", ", GateKeys)}, not '{key}'.");
+                    throw new ArgumentException($"--gates names {string.Join(", ", GateKeys)} (or a gate number, 1 to {GateKeys.Count}), not '{key}'.");
 
                 if (!selected.Contains(Gates[index]))
                     selected.Add(Gates[index]);
@@ -104,6 +111,14 @@ namespace SWLOR.CraftSim.Gates
                 lines.Add($"  - `{name}` = {value}: {meaning}");
 
             lines.Add($"- Length target: {Scenario.LengthTarget}.");
+            lines.Add("- Enhancement thresholds in force (`CraftOutcomeRules`, read by gate 7): " +
+                      string.Join(" / ", CraftOutcomeRules.GetEnhancementThresholds(3).Select(t => t + "%")) + " for slots 1, 2 and 3. " +
+                      Scenario.Enhancements switch
+                      {
+                          EnhancementSupport.Modeled => "The scenario applies enhancements to its engine's progress meter.",
+                          EnhancementSupport.NoSlots => "The minigame has no enhancement slots.",
+                          _ => "The scenario does not apply enhancements yet, so gate 7 is not run."
+                      });
             if (Scenario.StylePairs.Count == 0)
             {
                 lines.Add("- Styles: none offered, so the style-balance gate is not applicable.");
@@ -125,7 +140,8 @@ namespace SWLOR.CraftSim.Gates
                 "- The adaptive player is a bounded-depth expectimax over the previews with a generic heuristic. It is a floor on skilled play, not an optimal player; a deeper search or a scenario heuristic can only raise it.",
                 "- The fixed-rotation solver is a beam search with local search, not a proof. A fixed rotation it did not find would narrow the margin; raise the solver options to look harder. The rotation is scored on separate attempts, so its figure is not flattered by the search.",
                 "- Gate 5 compares at matched rank, gear and effort (both sides play to maximize quality) and requires the new minigame's average quality to be at least the legacy player's (within `MaterialQualityShortfallPoints`); it does not compare at an equal quality target. Enhancements are not committed in either model.",
-                "- Gate 6 uses estimated seconds per action. The legacy comparator is the old minigame's lookahead player, one step of policy improvement over the rotation players report, not an optimal player.",
+                "- Gate 6 uses estimated seconds per action. The legacy comparator is the old minigame's lookahead player, one step of policy improvement over the rotation players report, not an optimal player. Its enhanced cases play the cohort's recipes that have an enhancement slot (an even sample of each band, so they can differ from the plain cases' recipes) with gate 7's representative enhancement in every slot; XP does not depend on the enhancements except through the quality and failures they cause.",
+                "- Gate 7 plays every enhanceable recipe of the at-level bands with the representative real enhancement item of its kind (the best level the recipe accepts, the lower-median progress penalty of that level), the same item in every filled slot, and counts expected transferred enhancements per craft attempt, a craft that makes no item counting none. Enhancement items differ in penalty, so the figure holds for the median item. Today's side draws no transfer rolls: a craft that is made adds slots x quality chance / 100. How a scenario maps the penalty onto its progress meter is that minigame's own rule, and the client has not measured it.",
                 "- Gathering, scavenging, fishing and research are not covered here; their cohorts implement `IXpRateCohort` and their economy checks belong to their own gates.",
                 "- No attributes, food, status effects, blueprints, first-craft bonus or quick craft are modeled, and the client was not run."
             };
@@ -144,14 +160,24 @@ namespace SWLOR.CraftSim.Gates
         }
     }
 
+
     /// <summary>
     /// The plan's item-craft cohort for the XP-rate gate: each recipe band with rank equal to recipe level (levels 51-53 at rank 50), each
     /// gear tier, the band's recipes weighted equally, no blueprint and not a first craft. Both sides play as each policy actually plays,
     /// failures included at their 15% XP: the legacy side is the old minigame's lookahead player, the new side CraftSim's adaptive player.
+    /// <para>
+    /// Each band and gear tier is played plain and again with one, two and three enhancements (<see cref="GateThresholds.EnhancementSlotCounts"/>),
+    /// the same representative enhancement as gate 7 on the recipes that can hold one, each side applying its own enhancement difficulty:
+    /// the old window's progress penalty, and the scenario's mapping of it onto its progress meter. Every band, gear tier and enhancement
+    /// count must pass on its own. A scenario that does not model enhancements leaves the enhanced cases unplayed, which
+    /// <see cref="Incomplete"/> reports so the gate is not run rather than passed.
+    /// </para>
     /// </summary>
     public sealed class CraftXpRateCohort : IXpRateCohort
     {
         private readonly CraftGateSuite _suite;
+        private readonly object _planGate = new();
+        private (GateContext Context, EnhancedPlan Plan)? _plan;
 
         public CraftXpRateCohort(CraftGateSuite suite)
         {
@@ -166,27 +192,68 @@ namespace SWLOR.CraftSim.Gates
 
         public XpLoopTiming ReplacementTiming => new(_suite.Scenario.SecondsPerAction, _suite.Thresholds.OverheadSecondsPerAttempt);
 
+        /// <summary>The enhanced bands the cohort can play with the counts to play, or why it cannot play them.</summary>
+        private sealed record EnhancedPlan(IReadOnlyList<EnhancedBand> Bands, IReadOnlyList<int> Counts, string Problem);
+
+        /// <summary>The label of a gear tier played with <paramref name="count"/> enhancements: just the gear name when plain.</summary>
+        public static string CaseLabel(string gearName, int count) =>
+            count == 0 ? gearName : $"{gearName}, {count} enhancement{(count == 1 ? string.Empty : "s")}";
+
         public IReadOnlyList<XpRateCase> Cases(GateContext context)
         {
             var run = _suite.RunFor(context);
-            return run.Bands
-                .SelectMany(band => run.Gear.Select(gear => new XpRateCase(band.Band.Name, gear.Name)))
-                .ToList();
+            var plan = PlanFor(context);
+            var cases = new List<XpRateCase>();
+            foreach (var band in run.Bands)
+            {
+                var enhanced = plan.Bands.Any(b => b.Band.Band.Name == band.Band.Name);
+                foreach (var gear in run.Gear)
+                {
+                    cases.Add(new XpRateCase(band.Band.Name, CaseLabel(gear.Name, 0)));
+                    if (!enhanced)
+                        continue;
+
+                    cases.AddRange(plan.Counts.Select(count => new XpRateCase(band.Band.Name, CaseLabel(gear.Name, count))));
+                }
+            }
+
+            return cases;
         }
+
+        public string Incomplete(GateContext context) => PlanFor(context).Problem;
 
         public XpLoopSample PlayLegacy(XpRateCase xpCase, GateContext context)
         {
             var run = _suite.RunFor(context);
-            var (band, gearIndex) = Locate(run, xpCase);
-            run.PrepareLegacy(band.Recipes.Select(recipe => (recipe.Level, run.RankFor(recipe), gearIndex)));
+            var (band, gearIndex, count) = Locate(run, xpCase, context);
+            if (count == 0)
+            {
+                run.PrepareLegacy(band.Recipes.Select(recipe => (recipe.Level, run.RankFor(recipe), gearIndex)));
+
+                double plainXp = 0, plainActions = 0;
+                var plainRuns = 0;
+                foreach (var recipe in band.Recipes)
+                {
+                    var rank = run.RankFor(recipe);
+                    var cell = run.Legacy(recipe.Level, rank, gearIndex);
+                    plainXp += cell.XpPerAttempt(ServerXp.ForRecipe(recipe, rank)) * cell.Runs;
+                    plainActions += cell.Actions;
+                    plainRuns += cell.Runs;
+                }
+
+                return new XpLoopSample(plainXp, plainActions, plainRuns);
+            }
+
+            var enhanced = EnhancedRecipes(run, xpCase, context);
+            run.PrepareEnhanced(enhanced.Select(entry => (entry.Recipe, run.RankFor(entry.Recipe), gearIndex, entry.Configuration(count))));
 
             double xp = 0, actions = 0;
             var runs = 0;
-            foreach (var recipe in band.Recipes)
+            foreach (var entry in enhanced)
             {
-                var rank = run.RankFor(recipe);
-                var cell = run.Legacy(recipe.Level, rank, gearIndex);
-                xp += cell.XpPerAttempt(ServerXp.ForRecipe(recipe, rank)) * cell.Runs;
+                var rank = run.RankFor(entry.Recipe);
+                var cell = run.LegacyEnhanced(entry.Recipe.Level, rank, gearIndex, entry.Configuration(count));
+                xp += cell.XpPerAttempt(ServerXp.ForRecipe(entry.Recipe, rank)) * cell.Runs;
                 actions += cell.Actions;
                 runs += cell.Runs;
             }
@@ -197,14 +264,28 @@ namespace SWLOR.CraftSim.Gates
         public XpLoopSample PlayReplacement(XpRateCase xpCase, GateContext context)
         {
             var run = _suite.RunFor(context);
-            var (band, gearIndex) = Locate(run, xpCase);
-            run.PrepareAdaptive(band.Recipes.Select(recipe => (recipe, run.RankFor(recipe), gearIndex, (CraftStyle)null)));
-
+            var (band, gearIndex, count) = Locate(run, xpCase, context);
             double xp = 0, actions = 0;
             var runs = 0;
-            foreach (var recipe in band.Recipes)
+            if (count == 0)
             {
-                var cell = run.Adaptive(recipe, run.RankFor(recipe), gearIndex);
+                run.PrepareAdaptive(band.Recipes.Select(recipe => (recipe, run.RankFor(recipe), gearIndex, (CraftStyle)null)));
+                foreach (var recipe in band.Recipes)
+                {
+                    var cell = run.Adaptive(recipe, run.RankFor(recipe), gearIndex);
+                    xp += cell.XpSum;
+                    actions += cell.Actions;
+                    runs += cell.Runs;
+                }
+
+                return new XpLoopSample(xp, actions, runs);
+            }
+
+            var enhanced = EnhancedRecipes(run, xpCase, context);
+            run.PrepareEnhanced(enhanced.Select(entry => (entry.Recipe, run.RankFor(entry.Recipe), gearIndex, entry.Configuration(count))));
+            foreach (var entry in enhanced)
+            {
+                var cell = run.AdaptiveEnhanced(entry.Recipe, run.RankFor(entry.Recipe), gearIndex, entry.Configuration(count));
                 xp += cell.XpSum;
                 actions += cell.Actions;
                 runs += cell.Runs;
@@ -213,15 +294,75 @@ namespace SWLOR.CraftSim.Gates
             return new XpLoopSample(xp, actions, runs);
         }
 
-        private static (CohortBand Band, int GearIndex) Locate(ScenarioRun run, XpRateCase xpCase)
+        private EnhancedPlan PlanFor(GateContext context)
+        {
+            lock (_planGate)
+            {
+                if (_plan is { } cached && ReferenceEquals(cached.Context, context))
+                    return cached.Plan;
+
+                var plan = BuildPlan(context);
+                _plan = (context, plan);
+                return plan;
+            }
+        }
+
+        private EnhancedPlan BuildPlan(GateContext context)
+        {
+            var run = _suite.RunFor(context);
+            var counts = _suite.Thresholds.EnhancementSlotCounts.Where(count => count >= 1).Distinct().OrderBy(count => count).ToList();
+            var none = new EnhancedPlan(Array.Empty<EnhancedBand>(), counts, null);
+            if (counts.Count == 0 || _suite.Scenario.Enhancements == EnhancementSupport.NoSlots || !run.HasEnhanceableRecipes)
+                return none;
+
+            const string Skipped = "the enhanced crafts (one, two and three enhancements) in every band and gear tier, ";
+            if (_suite.Scenario.Enhancements == EnhancementSupport.NotModeled)
+            {
+                return none with
+                {
+                    Problem = Skipped + "because the scenario does not apply CraftEngineRequest.Enhancements to its engine " +
+                              "(set ICraftScenario.Enhancements to Modeled once it does; see SWLOR.CraftSim/README.md)."
+                };
+            }
+
+            if (context.Enhancements == null)
+                return none with { Problem = Skipped + "because the gate context has no enhancement items (EnhancementCatalog.Load)." };
+
+            var bands = run.EnhancedBands().Where(band => band.Recipes.Count > 0).ToList();
+            if (bands.Count == 0)
+                return none with { Problem = Skipped + "because no sampled recipe that can hold an enhancement has an enhancement item to use." };
+
+            var unmodeled = run.UnmodeledRecipes(bands.SelectMany(band => band.Recipes), run.RankFor, run.Gear.Count - 1, counts[^1]);
+            if (unmodeled.Count > 0)
+            {
+                return none with
+                {
+                    Problem = Skipped + $"because the scenario says it models enhancements but its engine's progress maximum does not rise with them for {unmodeled.Count} recipe(s), such as {unmodeled[0]}."
+                };
+            }
+
+            return new EnhancedPlan(bands, counts, null);
+        }
+
+        private IReadOnlyList<EnhancedRecipe> EnhancedRecipes(ScenarioRun run, XpRateCase xpCase, GateContext context) =>
+            PlanFor(context).Bands.FirstOrDefault(band => band.Band.Band.Name == xpCase.Group)?.Recipes
+            ?? throw new ArgumentException($"The cohort has no enhanced band '{xpCase.Group}'.");
+
+        private (CohortBand Band, int GearIndex, int Count) Locate(ScenarioRun run, XpRateCase xpCase, GateContext context)
         {
             var band = run.Bands.FirstOrDefault(b => b.Band.Name == xpCase.Group)
                        ?? throw new ArgumentException($"The cohort has no band '{xpCase.Group}'.");
-            var gearIndex = run.Gear.ToList().FindIndex(gear => gear.Name == xpCase.Label);
-            if (gearIndex < 0)
-                throw new ArgumentException($"The cohort has no gear level '{xpCase.Label}'.");
+            var counts = new[] { 0 }.Concat(PlanFor(context).Counts).ToList();
+            for (var gearIndex = 0; gearIndex < run.Gear.Count; gearIndex++)
+            {
+                foreach (var count in counts)
+                {
+                    if (CaseLabel(run.Gear[gearIndex].Name, count) == xpCase.Label)
+                        return (band, gearIndex, count);
+                }
+            }
 
-            return (band, gearIndex);
+            throw new ArgumentException($"The cohort has no case '{xpCase.Label}'.");
         }
     }
 }

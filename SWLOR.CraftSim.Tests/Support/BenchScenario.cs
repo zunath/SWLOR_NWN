@@ -60,13 +60,27 @@ namespace SWLOR.CraftSim.Tests.Support
 
         public IReadOnlyList<string> Limitations => new[] { "The test bench is not a real minigame." };
 
+        public EnhancementSupport Enhancements { get; init; } = EnhancementSupport.Modeled;
+
+        /// <summary>Builds the engine without reading the request's enhancements, as a scenario that forgot to would.</summary>
+        public bool IgnoreEnhancements { get; init; }
+
+        /// <summary>The progress each enhancement penalty point adds to what the bench's piece needs: a quarter, the bench's own mapping of the old window's units.</summary>
+        public const double ProgressPerPenaltyPoint = 0.25;
+
+        /// <summary>Called with every request the scenario builds an engine for, so a test can see what the gates asked for. Must be thread-safe.</summary>
+        public Action<CraftEngineRequest> Spy { get; init; }
+
         public ICraftMinigameEngine CreateEngine(CraftEngineRequest request)
         {
+            Spy?.Invoke(request);
             var style = request.Style?.Configuration as BenchStyle ?? BenchStyle.Plain;
+            var extraProgress = IgnoreEnhancements ? 0 : (int)(request.Enhancements.TotalProgressPenalty * ProgressPerPenaltyPoint);
             return new BenchEngine(
                 request.Random,
                 new BenchTuning
                 {
+                    MaxProgress = 100 + extraProgress,
                     MaxQuality = QualityDemand,
                     MaxCp = 36 + request.Rank / 3 + request.Gear.CpBonus / 2,
                     PressInWindow = (int)((30 + request.Gear.Craftsmanship / 10) * style.PressFactor),
@@ -95,7 +109,9 @@ namespace SWLOR.CraftSim.Tests.Support
                         level,
                         $"bench_{number}",
                         number % 2 == 0 ? RecipeCategoryType.Longsword : RecipeCategoryType.Breastplate,
-                        new Dictionary<string, int> { ["plate"] = 3, ["wire"] = 1 }));
+                        new Dictionary<string, int> { ["plate"] = 3, ["wire"] = 1 },
+                        enhancementSlots: 2,
+                        enhancementType: number % 2 == 0 ? RecipeEnhancementType.Weapon : RecipeEnhancementType.Armor));
                 }
             }
 

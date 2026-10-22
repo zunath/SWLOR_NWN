@@ -6,7 +6,14 @@ namespace SWLOR.CraftSim.Scenario
     /// <summary>Everything a scenario needs to build one engine for one simulated attempt.</summary>
     public sealed class CraftEngineRequest
     {
-        public CraftEngineRequest(RecipeEntry recipe, int rank, GearLevel gear, CraftStyle style, int seed, IMinigameRandom random)
+        public CraftEngineRequest(
+            RecipeEntry recipe,
+            int rank,
+            GearLevel gear,
+            CraftStyle style,
+            int seed,
+            IMinigameRandom random,
+            CraftEnhancementConfiguration enhancements = null)
         {
             Recipe = recipe ?? throw new ArgumentNullException(nameof(recipe));
             Gear = gear ?? throw new ArgumentNullException(nameof(gear));
@@ -14,6 +21,7 @@ namespace SWLOR.CraftSim.Scenario
             Rank = rank;
             Style = style;
             Seed = seed;
+            Enhancements = enhancements ?? CraftEnhancementConfiguration.None;
         }
 
         /// <summary>The recipe being crafted. <see cref="RecipeEntry.Detail"/> holds its per-recipe minigame parameters when it came from the server's definitions.</summary>
@@ -33,5 +41,12 @@ namespace SWLOR.CraftSim.Scenario
 
         /// <summary>The source of chance the engine must be built with, so the attempt repeats from its seed.</summary>
         public IMinigameRandom Random { get; }
+
+        /// <summary>
+        /// The enhancements slotted into the craft, none by default. A scenario that sets <see cref="ICraftScenario.Enhancements"/> to
+        /// <see cref="EnhancementSupport.Modeled"/> maps <see cref="CraftEnhancementConfiguration.TotalProgressPenalty"/> (in the old
+        /// window's progress units) onto its engine's own enhancement handling, so the progress meter's maximum rises.
+        /// </summary>
+        public CraftEnhancementConfiguration Enhancements { get; }
     }
 }

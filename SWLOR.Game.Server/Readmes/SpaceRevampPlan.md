@@ -2,7 +2,7 @@
 
 Owner-approved design for rebuilding the space system so it matches the combat upgrade (`2fa527816`, "Feature/combat upgrade (#2277)"). The decisions came out of a design interview with the owner; every one of them is final unless this file marks it as a number to draft. The work is handed to an implementing agent.
 
-Everything in this plan ships in **one release**. The workstreams in section 14 organize the work, not the release.
+Everything in this plan, Part I and Part II, ships in **one release**. The workstreams in section 18 organize the work, not the release.
 
 Delete this file after release, the way the combat upgrade deleted its plan documents (`dee01b4fe`). Lasting rules move into the owning guides (section 15).
 
@@ -30,6 +30,22 @@ Delete this file after release, the way the combat upgrade deleted its plan docu
 20. Trellis2 request list
 21. Out of scope
 22. Risks
+
+Part II: Space Expansion
+
+23. Wild Space
+24. Scanning and exploration
+25. Player stations
+26. Planetary Holdings
+27. Industrial droids
+28. Derelict boarding
+29. Faction agents
+30. Incursions
+31. Rift Runs
+32. Cloaking
+
+Appendices
+
 - Appendix A: Perk drafts
 - Appendix B: Module families
 
@@ -74,6 +90,12 @@ Before any work, read `AGENTS.md` and these guides, plus every guide named in th
 | World | 3 new small-ship zones with 3 new materials. Salvage from wrecks. Starlane fixes. Size limits on docking. |
 | Trade | Cargo held as ship data, about 20 commodities, dock exchanges with moving prices, contraband and customs, pirates, freight contracts, faction standing, city tariffs. |
 | Migration | Every character gets one Rebuild Token. Piloting perks are refunded. Ships and modules convert to their new equivalents. |
+| Wild Space | Six persistent tier-5.5 systems reached through hidden, rotating rifts, each with an environmental effect, guarded by the Rakatan Remnant. |
+| Exploration | A Probe Launcher reveals hidden sites (rift, combat, data, relic, gas, derelict) and jumps the party to them. Data sites use the slicing mini-game. |
+| Stations | Player cities in space, at anchor sites, with every city mechanic, plus a Shipyard (Capital hulls), Asteroid Drill and Jump Beacons. Stations can't be attacked in this release. |
+| Holdings | Up to 3 planetary holdings per character, with cross-planet upgrades, production chains, droid staff, events and visitable ground sites. |
+| Droids | Industrial parts and AI instructions trade combat for an Industry rating used by holdings, crew, droid bays and stations. |
+| More activities | Derelict boarding (ground dungeons), faction agents at docks across the galaxy, weekly incursions, timed Rift Runs, and cloaking for Small hulls. |
 
 ## 3. Current state
 
@@ -339,7 +361,8 @@ Toggled modules are the ship's auto-attacks; perk abilities are the buttons, as 
 | High | Gunnery | Laser Cannon, Ion Cannon, Beam Cannon, Missile Launcher, Torpedo Launcher (today's proton bomb, expanded), *Point-Defense Turret* (always fires as Light), capital weapons (Turbolaser, Quad Laser, Laser Battery, Storm Cannon, Assault Concussion Missile) |
 | High | Gathering | Mining Laser, Strip Miner, *Salvager*, *Gas Harvester* |
 | Mid | Ship Systems | Shield Booster, Shield Repairer, *Shield Hardener*, Capacitor Battery, Hypermatter Injector, *Ion Web*, *Interdictor* (target can't jump, dock or leave space for a while), *Jammer*, *Target Painter*, capital Bulwark, Repair Field and E-War arrays |
-| Mid | Piloting | *Afterburner* |
+| Mid | Piloting | *Afterburner*, *Cloaking Device* (Small hulls only; section 32) |
+| Mid | Ship Systems | *Probe Launcher*, *Data Analyzer* (section 24) |
 | Mid | Gunnery | Targeting Computer |
 | Low | Ship Systems | Hull Plating, Hull Repairer, Resist Plating (one type or all types), *Capacitor Regulator*, *Smuggling Compartment* |
 | Low | Gunnery | Damage Amplifier (per type) |
@@ -411,7 +434,7 @@ Ships at launch.
   - The server keeps the hidden character beside the ship every second and re-attaches the camera after every area transition. The camera drops on transitions.
   - Everything a station does is fired from the ship. The crew member's own rank, attributes and perks set the strength.
 - **Droid crew:**
-  - A player-built droid (Engineering) can work any station at reduced effect. It turns that station's modules on whenever the pilot has a valid target, and back on after an auto-off once a new valid target is picked.
+  - A player-built droid (Engineering) can work any station at reduced effect, scaled by its Industry rating (section 27). It turns that station's modules on whenever the pilot has a valid target, and back on after an auto-off once a new valid target is picked.
   - Its logic reuses `ProcessSpaceNPCAI`.
 - **Permissions and edge cases:**
   - Add a crew property permission next to `PilotShip`.
@@ -443,7 +466,8 @@ Ships at launch.
   - **NPC trade convoys** players can raid for cargo. Raiding costs lawful standing.
 - **Aces:** one named rare-spawn pilot per orbit, built with `skills/swlor-rare-spawn-generation/SKILL.md`. Each has a unique loot table of Design Schematics, named-module recipes, trophies and components.
 - **Encounter types:** patrols, ambushes, convoys, mining-site defense and capital battle events.
-- **Rare Sith and Mandalorian capitals** (Harrower, Kandosii and the others) spawn only in T5-T6 orbits.
+- **Rare Sith and Mandalorian capitals** (Harrower, Kandosii and the others) spawn only in T5-T6 orbits. Their armadas also drive weekly incursions (section 30).
+- **Rakatan Remnant:** the Wild Space automaton faction (section 23).
 - **Stats:** draft a space section in the Bible's Enemy Builder Guide, Enemy Stat Presets and related tabs for owner approval. Follow `NpcHitPoints.md` for HP limits.
 - **Models:** use unused hak models. Space fauna goes on the Trellis2 list.
 
@@ -486,7 +510,7 @@ Ships at launch.
   - Cargo is data on `PlayerShip`, never items. It can't enter an inventory, the bank, the market or contracts, all of which are galaxy-wide today.
   - Each hull has a cargo hold in units. Freighters are largest and Small hulls hold almost nothing.
   - A Cargo Expander (Low, Piloting) trades a slot for capacity.
-- **Commodities:** about 20, separate from crafting materials.
+- **Commodities:** about 20, separate from crafting materials, plus the refined goods from holding production chains (section 26), including Station Fuel.
 
 | Dock | Exports (cheap) | Imports (pays well) |
 |---|---|---|
@@ -550,7 +574,7 @@ Engineering intermediates that hull and module recipes consume.
 
 ### Research
 
-- Extend `IsResearchableRecipe` and the Research Terminal so starship and module recipes can be researched into blueprints: bonus stats, extra enhancement slots, cheaper runs.
+- Extend `IsResearchableRecipe` and the Research Terminal so starship and module recipes can be researched into blueprints: bonus stats, extra enhancement slots, cheaper runs. Rakatan relics from Wild Space (section 23) are an optional research input that raises blueprint bonuses.
 
 ### Rewards
 
@@ -654,6 +678,12 @@ Draft each in the Bible, check it with the combat simulator where it affects com
 - **Repairs:** cost per hull size.
 - **Refit:** fee.
 - **Dockhand store:** stock above rank 0.
+- **Wild Space:** environment effect sizes, rift lifetimes, mass budgets and collapse damage, Rakatan Remnant presets, loot tables.
+- **Scanning:** signal gained per cycle, spawn rates per signature type, Sensor Sweep range and cooldown, Jump to Signature spool.
+- **Stations:** Station Core recipe, anchor site count per area, Asteroid Drill output, Shipyard build times, Jump Beacon fuel cost and hull caps.
+- **Holdings:** price, upkeep, output, upgrade costs, Processing Plant recipes, event odds, droid boost.
+- **Droids:** Industry per industrial part, stat cuts, instruction effects.
+- **Activities:** agent mission pay and token prices, incursion schedule and rewards, Rift Run timers and loot, cloak speed penalty and reveal range.
 - **IDs:** confirm the new skill IDs (53 and 54) were never used historically, since saved data keys skills by ID.
 
 ## 18. Workstreams and order
@@ -680,9 +710,14 @@ Everything merges to one integration branch and releases together.
 | W8 | Crew | Stations, consoles, `AttachCamera` and hidden crew, droid crew, permissions, power routing, Wing Commander crew bonuses | W2, W3, W4 |
 | W9 | Crafting and rewards | Component layer and traits, recipes, research blueprints, named modules, Design Schematics, trophies and decor, ammo variants, achievements | W3, W6 |
 | W10 | Migration | Rebuild Token, perk refunds, item and ship conversion, stamp cleanup, design unlocks, notices | W1, W3, W9 |
+| W12 | Wild Space and exploration | 6 Wild Space areas and environments, rifts, Rakatan Remnant, Probe Launcher, signatures, Jump to Signature, Sensor Sweep, data/relic/gas/combat sites, Scanner HUD tab | W2, W3, W5 |
+| W13 | Stations | Station city layout, Station Core, anchor sites, deck areas, Shipyard, Asteroid Drill, Jump Beacons, Station Fuel | W3, W7 |
+| W14 | Holdings and droids | Holdings terminal, types, upgrades, production chains, events, ground sites; industrial droid parts, Industry stat, AI instructions, droid bays | W7, W9 |
+| W15 | Activities | Derelict boarding, faction agents and token stores, incursions, Rift Runs | W5, W7, W12 |
+| W16 | Cloaking | Cloaking Device, reveal rules, stealth unblock in space | W2, W12 |
 | W11 | Release | Balance pass, client evidence, docs (section 19), player release notes | All |
 
-**Suggested order:** W0 and W1 first, then W2 and W3, then W4-W9 in parallel slices, then W10, then W11.
+**Suggested order:** W0 and W1 first, then W2 and W3, then W4-W9 and W12-W16 in parallel slices, then W10, then W11.
 
 ## 19. Verification
 
@@ -704,6 +739,12 @@ Everything merges to one integration branch and releases together.
   - The Mid hotbar row.
   - Lit and unlit module icons, and a module switching itself off.
   - The Ship HUD with a support module retargeted.
+  - A signature scanned from 0% to 100%, then Jump to Signature.
+  - A rift crossing into Wild Space, an environment effect, and a collapse ejection.
+  - Founding a station at an anchor site, docking, and a Jump Beacon jump.
+  - A holding's ground site, an event fight, and cargo pickup.
+  - An industrial droid in a droid bay and at a crew station.
+  - Boarding a derelict, a data site slicing game, an agent mission, a Rift Run timer, and cloak and reveal.
   - Every Hull Design at ship scale.
   - Crew camera view.
   - The exchange window.
@@ -723,13 +764,17 @@ New models go through the Trellis2 pipeline (`Readmes/BlasterModelImport.md`) as
 - Space fauna: mynock swarms (latch on and drain capacitor) and a giant space slug (exogorth) in the Viscara Asteroid Belt.
 - Signature Hull Designs for roles with thin model choices (Industrial, Logistics).
 - Trade containers and wreck variants, if the existing placeables look wrong at ship scale.
+- Station exteriors for Small, Medium and Large stations, if scaling the existing `[mdrn]SpaceStation` placeable (placeables.2da row 1452) can't tell them apart.
+- Rakatan Remnant automaton ships, if the unused hak models (for example the Alien set, 10215-10217) don't read as ancient machines.
 
 ## 21. Out of scope
 
 - Any ground ability in space, or any space ability on the ground.
-- Fuel.
-- Hyperspace travel beyond starlanes.
-- Tier 6 content and the reserved ores (Ochne, Croknor, Hemorgite, Bisteiss).
+- Fuel for ordinary flight. Station Fuel is spent only by Jump Beacons (section 25).
+- Capital jump drives. Jump Beacons (section 25) and rifts (section 23) are the only travel beyond starlanes.
+- Tier 6 content and the reserved ores (Ochne, Croknor, Hemorgite, Bisteiss). Wild Space is tier 5.5.
+- Station raids and the Defense Grid building (a later pass).
+- Faction warfare, bounties on players, and racing.
 - New 3D models (section 20).
 - Player-posted hauling contracts. Items already teleport through the bank, so they add nothing.
 
@@ -740,6 +785,193 @@ New models go through the Trellis2 pipeline (`Readmes/BlasterModelImport.md`) as
 - **Content volume:** about 200 module items, 12 hulls, 6 styles, 3 zones and new enemy groups. Slice pull requests by family so reviews stay readable.
 - **Migration:** every `PlayerShip` record and every space item changes. Test the item sweep on a production-sized copy before release.
 - **Balance of crewed ships against fleets,** and of Small hulls at endgame. The simulator checks both before release.
+- **Expansion content volume:** 6 Wild Space systems, station deck areas, 9 holding sites, derelict templates and Rift Run pockets are all new areas. Build them from templates and reuse existing interiors wherever the plan allows.
+- **More credit sources:** holdings, agents, incursions and Rift Runs all pay out. Measure them against the same combat baseline as trade (section 13) before release.
+
+# Part II: Space Expansion
+
+Everything in Part II ships in the same release as Part I. It builds on Part I's sizes, roles, toggles, salvage, trade, crew and droids.
+
+## 23. Wild Space
+
+- **Systems:** six persistent new areas that always exist, flagged as Wild Space. They are **tier 5.5**, matching the ground's tier 5.5: rank-50 gear and level-52 recipe unlocks. This is not tier 6, so the reserved ores stay unused.
+- **Environments:** each system has one environmental effect, applied as `StatType` changes to every ship inside. Magnitudes are drafted in the Bible. Starting set:
+
+| System type | Effect |
+|---|---|
+| Pulsar | Stronger shields, slower capacitor regen |
+| Black Hole | More speed, less accuracy |
+| Ion Storm | More EM damage, weaker shields |
+| Magnetar | More damage, less evasion |
+| Red Giant | Stronger overcharges and volleys, higher capacitor cost |
+| Rakatan Graveyard | Richer salvage, weaker scanning |
+
+- **Rifts:**
+  - Hidden signatures (section 24) connect each Wild Space system to a random known orbit or to another Wild Space system. Each system keeps about 2 connections open, and new ones appear as old ones collapse.
+  - Each rift has a lifetime of 4-24 hours and a size class (Small, Medium or Large) that caps the largest hull through it. Only Large rifts take Capital hulls.
+  - Each rift has a mass budget, and every passage spends some of it by hull size.
+  - On collapse, ships inside get a 2-minute warning. Then any ship still in a system with no open exit is thrown to a random known orbit with hull damage.
+- **Rakatan Remnant:** a new automaton enemy faction that uses all 8 role behaviors together. Its stats are drafted from the ground tier-5.5 presets. Models come from unused hak ships, or from Trellis2 (section 20).
+- **Loot:** named rank-50 module recipe unlocks, Design Schematics, Thorilide, Aurodium, tier-5.5 Rift Keys, rare component traits, and **Rakatan relics**. Relics are a research input that improves blueprint bonuses (section 14).
+- **Stations:** 1-2 anchor sites per system (section 25). Jump Beacons never connect into or out of Wild Space.
+
+## 24. Scanning and exploration
+
+- **Probe Launcher** (Mid slot, Ship Systems, toggle): each cycle adds signal strength to every hidden signature in the area, system-wide.
+- **Scan strength** grows with Ship Systems rank, a crew member at the Sensors station, a droid running Survey Protocol (section 27) and the system's environment.
+- **Signature types:** rift, combat site, data site, relic site, gas site, derelict. They spawn at random points and stay hidden: **no object exists in the area until the signature reaches 100%**, so flying over the spot finds nothing.
+- **Information grows with strength,** shown on a new Scanner tab of the Ship HUD:
+  - 25%: type
+  - 50%: tier
+  - 75%: threat level and loot class
+  - 100%: the site opens for the scanning party
+- **Jump to Signature:** at 100%, anyone in the scanning party can micro-jump to the site after a 5-second spool. Damage and Interdictors interrupt the spool. Players outside the party must scan it themselves.
+- **Sensor Sweep:** a pulse mode on the Probe Launcher with its own cooldown. It lists every ship within range, cloaked ships included.
+- **Sites:**
+  - **Combat sites:** waves and a boss at the system's tier.
+  - **Data sites:** a **Data Analyzer** (Mid slot, Ship Systems) runs the existing slicing mini-game (`Service/SlicingService/`) on data cans. They yield blueprints, recipe unlocks and agent intel, which unlocks special agent missions.
+  - **Relic sites:** the Salvager (Gathering) works relic cans for Rakatan relics and components.
+  - **Gas sites:** the Gas Harvester.
+  - **Derelicts:** section 28.
+- **Despawning:** sites despawn once completed or after a timer.
+
+## 25. Player stations
+
+A station is a **player city in space** and follows every city mechanic, in `Service/Property.cs` and the city layouts:
+- a mayor, who needs City Management
+- citizens, with one citizenship per player across stations and planet cities
+- elections every three weeks
+- taxes, weekly upkeep and loss after four weeks unpaid
+- city level by citizen count
+- upgrades
+
+**Founding**
+- A **Station Core**, crafted with Engineering, takes the place of the City Hall item. It is used at an **anchor site**: 2 per orbit and 1-2 per Wild Space system, one station per site.
+- Founding creates two things:
+  - the station exterior at the site, using the existing `[mdrn]SpaceStation` placeable scaled by city level
+  - the station's own interior deck area, which is the city's land. The City Hall sits inside it.
+- Add a station city layout beside `CityLayoutDefinition`, with the same building and structure limits.
+
+**Docking and buildings**
+- **Docking:** through the Starport building and its upgrade level, which lets Large hulls dock at level 3 and Capital hulls at level 5, as in planet cities.
+- **City buildings:** all of them: City Hall, Starport (with the Trade Exchange and its tariff), Medical Center (respawn), Bank, Cantina.
+- **Station-only buildings:**
+  - **Shipyard:** Capital hull recipes can only be crafted at a Shipyard. A droid assigned to it shortens builds.
+  - **Asteroid Drill:** extracts the anchor site's ore over time into station storage, at the system's tier. An assigned droid raises output.
+  - **Jump Beacon:** jumps a docked ship to any other beacon whose city permits it.
+    - Each jump costs **Station Fuel**, a trade good.
+    - Beacon level caps hull size.
+    - Beacons never connect into or out of Wild Space.
+
+**Not in this release**
+- Upkeep is city upkeep in credits; there is no other upkeep.
+- Stations cannot be attacked. Raids and the Defense Grid come in a later pass.
+
+## 26. Planetary Holdings
+
+- **Buying:** at a planet's dock, from a Holdings terminal. Up to 3 per character, with credit upkeep.
+- **Types:**
+
+| Planet | Holding types (outputs) |
+|---|---|
+| Viscara | Crystal Mine (Viscaran crystals), Apiary (Veles honey) |
+| CZ-220 | Assembly Line (Czerka machine parts, reactor cores) |
+| Mon Cala | Kelp Fishery (seafood), Desalination Plant (purified water) |
+| Hutlar | Timber Camp (Aracia timber), Byysk Ranch (hides) |
+| Tatooine | Moisture Farm (water), Scrap Yard (Jawa salvage) |
+| Smuggler's Moon | Spice Lab (moonspice, contraband), Salt Works (neon salt) |
+| Korriban | Excavation Dig (Sith relics, contraband) |
+| Dathomir | Herb Grove (witch herbs) |
+| Dantooine | Grain Farm (grain), Bantha Ranch (bantha milk) |
+
+- **Output:** one batch of the holding's good per day, stored in that dock's warehouse until the owner's ship collects it as cargo.
+- **Upgrades** (levels 1-3) raise output and cost goods from other planets, delivered to the holding's dock. For example, a level-3 Moisture Farm needs Czerka machine parts and reactor cores.
+- **Production chains:** a holding upgraded with a **Processing Plant** turns its own output plus a delivered input into a refined good worth more than both. Examples:
+  - Grain + Water -> Ration Packs
+  - Reactor Cores + Tibanna Gas -> **Station Fuel**
+  - Viscaran Crystals + Machine Parts -> Focusing Lenses
+  - Hides + Witch Herbs -> Medical Supplies
+
+  The full list is drafted with the commodity table.
+- **Droid staff:** an assigned industrial droid raises output by its Industry rating (section 27).
+- **Events,** rolled every few days per holding:
+  - **Bandit raid:** a short instanced ground fight at the holding. Win to keep the stock, lose to lose it.
+  - **Breakdown or sandstorm:** output pauses until parts are delivered.
+  - **Boom:** double output for a day.
+  - **Customs inspection** (contraband holdings only): pay a fine or lose the stock.
+- **Ground sites:** each holding type has a small ground area (an instanced copy of a template), reached from its planet's dock. Owners manage the holding and fight its events there.
+- **Economy:** new goods follow `EconomyRestrictedItems.md`. Holdings output is cargo (section 13), not items.
+
+## 27. Industrial droids
+
+- **Industrial parts:** every part slot (CPU, Head, Body, Arms, Legs) gets an industrial variant at every tier.
+  - Industrial parts give a new **Industry** rating, through a new `DroidStatSubType.Industry` read in `Droid.LoadDroidItemPropertyDetails`.
+  - In exchange, they have lower HP and attributes and **no combat skill bonuses**.
+  - Examples: Labor Arms, Hauler Legs, Survey Head, Logistics CPU.
+  - They are Engineering recipes at each Droid Assembly tier and go in the Bible's Equipment - Droids tab.
+- **Industry rating:** a droid's Industry is the sum of its parts. Mixing combat and industrial parts gives a middling droid at both.
+- **Industry pays off in four places:**
+  - **Planetary Holdings:** an output boost.
+  - **Ship droid crew** (section 10): station effectiveness comes from Industry, so a combat droid makes poor crew.
+  - **Droid bays:** Mining Barge, Industrial and Logistics hulls get one, using the unused `ShipDetail.HasDroidBay`. A droid riding in the bay boosts mining, gas and salvage yield, or Logistics repair output.
+  - **Station buildings:** faster Shipyard builds, more Asteroid Drill output.
+- **New AI instructions,** which compete with combat instructions for AI slots:
+  - **Efficiency Protocol:** holding, drill and droid-bay output.
+  - **Damage Control Protocol:** Engineer station and Logistics bay repairs.
+  - **Survey Protocol:** scan strength at the Sensors station.
+  - **Prospecting Protocol:** the rare-find chance on mining and salvage.
+
+## 28. Derelict boarding
+
+- **Finding them:** derelicts come from scanning (section 24) and Wild Space.
+- **Boarding:** a Small or Medium ship docks with the derelict and the party boards on foot.
+- **Inside:** an instanced copy of a derelict template: existing starship interior layouts dressed as wrecks, plus a few new ones. It is a ground dungeon at the system's tier, with ground enemies, ground loot and ground abilities. Each mode keeps its own abilities.
+- **Safety:** the docked ship can't be attacked while its crew is aboard the derelict. Leaving returns everyone to the ship.
+
+## 29. Faction agents
+
+- **Placement:** two agents per faction at different docks, with no dock hosting more than two. Each faction's first dock is the lower-tier one.
+
+| Faction | First dock | Second dock |
+|---|---|---|
+| Republic Military | Veles (Viscara) | Dantooine |
+| Czerka | CZ-220 | Hutlar |
+| Smugglers | Mon Cala | Smuggler's Moon Station |
+| Hutt Cartel | Anchorhead (Tatooine) | Smuggler's Moon Landing |
+| Mandalorian | Hutlar | Dathomir |
+| Sith Military | Korriban | Dathomir |
+
+- **Missions:** kill, sealed courier, mining quota, convoy escort and scan-down, scaled to the dock's tier. Higher standing unlocks harder missions.
+- **Rewards:**
+  - credits
+  - faction standing (the faction service)
+  - **faction tokens,** one currency per faction, spent at that faction's store on Design Schematics, ammo variants, components and interior trophies
+- **Implementation:** missions are runtime quests (`Quest.RegisterRuntimeQuest`).
+
+## 30. Incursions
+
+- **Schedule:** once a week, a Sith or Mandalorian armada invades one region (an orbit and its neighbors) for up to 48 hours.
+- **What spawns:** waves, command capitals, and blockades at the region's docks. While a blockade holds, docking services there are offline.
+- **Trade:** the region's prices spike while the incursion lasts.
+- **Clearing it:** a region-wide reward, plus personal loot scaled by each player's tracked contribution.
+
+## 31. Rift Runs
+
+- **Rift Keys:** tiers 1 through 5.5, dropped by aces, Wild Space and salvage, and sold at faction stores.
+- **The run:** a key opens a private pocket for 1-3 ships, built as new template areas with 3 rooms. It has a 15-minute timer, and the rooms escalate.
+- **Finishing in time** pays loot scaled by the key's tier and the time left.
+- **Running out of time** ejects everyone in escape pods, with the normal XP debt.
+
+## 32. Cloaking
+
+- **Cloaking Device:** Mid slot, Piloting, Small hulls only. Interceptors and Bombers get a role bonus (a faster cloak and a smaller speed penalty).
+- **While cloaked:**
+  - The ship is hidden from other players.
+  - It can't use modules or abilities, and its toggled modules switch off.
+  - It moves slower.
+- **Decloaking:** locks firing for 5 seconds.
+- **Counters:** a Sensor Sweep, or any ship within 10 m, reveals a cloaked ship.
+- **Replaces** today's blanket stealth block in space.
 
 ## Appendix A: Perk drafts
 
@@ -942,6 +1174,9 @@ Every family has an item every 5 ranks (0-45); capital families start at rank 40
 | Target Painter | Mid | Ship Systems | Toggle | Paints the target (damage taken up). | New |
 | Bulwark Shield Generator, Repair Field, E-War array | Mid | Ship Systems | Toggle | Capital fleet support. Capital hulls only. | Capital support modules |
 | Afterburner | Mid | Piloting | Toggle | + speed while on; pays capacitor each cycle. | New |
+| Cloaking Device | Mid | Piloting | Toggle | Hides a Small hull; no module or ability use while cloaked (section 32). | New |
+| Probe Launcher | Mid | Ship Systems | Toggle | Scans hidden signatures system-wide; pulse mode for a Sensor Sweep (section 24). | New |
+| Data Analyzer | Mid | Ship Systems | One press | Starts the slicing mini-game on a data can (section 24). | New |
 | Targeting Computer | Mid | Gunnery | Passive | + accuracy. | Targeting System (was Low) |
 | Hull Plating | Low | Ship Systems | Passive | + max hull. | Hull Booster |
 | Hull Repairer | Low | Ship Systems | Toggle | Repairs the hull of its locked target, or your own. | Hull Repairer (was High) |

@@ -61,6 +61,30 @@ public class RecipeParameterDefinitionTests
         Assert.That(definition.Vary(78, 0.999999), Is.EqualTo(80));
     }
 
+    [TestCase(0.19, 0.1)]
+    [TestCase(0.3, 0.3)]
+    [TestCase(0.05, 0.0)]
+    public void Vary_NeverMovesFartherThanTheDeclaredVariation(double variation, double farthest)
+    {
+        var definition = RecipeParameterDefinition.Decimal("cooling", "Cooling", 0.0, 3.0, 1, variation);
+        var reached = 0.0;
+
+        for (var index = 0; index < 1000; index++)
+        {
+            reached = Math.Max(reached, Math.Abs(definition.Vary(1.5, index / 1000.0) - 1.5));
+        }
+
+        Assert.That(reached, Is.EqualTo(farthest).Within(1e-9));
+    }
+
+    [Test]
+    public void Header_CollapsesRunsOfWhitespace()
+    {
+        var definition = RecipeParameterDefinition.Integer("center", "  Forge   Heat\nCenter ", 0, 10);
+
+        Assert.That(definition.Header, Is.EqualTo("Forge Heat Center"));
+    }
+
     [Test]
     public void Vary_WithNoVariationKeepsTheBaseValue()
     {

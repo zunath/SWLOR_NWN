@@ -216,6 +216,22 @@ public class RecipeParameterAuditTests
     }
 
     [Test]
+    public void ValidateProfile_FlagsHeadersThatDifferOnlyInWhitespace()
+    {
+        var definitions = new[]
+        {
+            RecipeParameterDefinition.Integer("center", "Configurable Heat", 0, 10),
+            RecipeParameterDefinition.Integer("width", "Configurable  Heat", 0, 10),
+            RecipeParameterDefinition.Decimal("cooling", "Configurable Cooling", 0.0, 10.0, 1),
+            RecipeParameterDefinition.Enumeration<TestForgeStyle>("style", "Configurable Style"),
+        };
+
+        var problems = RecipeParameterAudit.ValidateProfile(Configurable(definitions: definitions));
+
+        Assert.That(problems, Is.EqualTo(new[] { "Bible header 'Configurable Heat' is used twice" }));
+    }
+
+    [Test]
     public void ValidateProfile_FlagsABibleHeaderThatDoesNotStartWithTheProfileKey()
     {
         var definitions = new[]
@@ -245,6 +261,18 @@ public class RecipeParameterAuditTests
         var problems = RecipeParameterAudit.ValidateProfile(Configurable(definitions: definitions));
 
         Assert.That(problems, Has.Some.Contain("Bible header 'Configurable Override' is used twice"));
+    }
+
+    [Test]
+    public void ProfileKeys_MustBeUniqueWithoutRegardToCase()
+    {
+        ConfigurableTestProfile Keyed(string key) => new(
+            _ => ConfigurableTestProfile.FlatBase(), parameters => 0, _ => new DifficultyBudget(0, 1), key: key);
+
+        Assert.DoesNotThrow(() => RecipeParameterProfiles.EnsureUniqueKeys(new[] { Keyed("Forge"), Keyed("Circuit") }));
+        var exception = Assert.Throws<InvalidOperationException>(
+            () => RecipeParameterProfiles.EnsureUniqueKeys(new[] { Keyed("Forge"), Keyed("forge") }));
+        Assert.That(exception!.Message, Does.Contain("'Forge'").And.Contain("without regard to case"));
     }
 
     [Test]

@@ -196,6 +196,24 @@ class RecipeParameterBibleTests(unittest.TestCase):
             self.before["xl/workbook.xml"].replace("$A$1:$F$6", "$A$1:$H$6"),
             after["xl/workbook.xml"])
 
+    def test_untouched_members_keep_their_stored_bytes(self):
+        original = self.workbook.read_bytes()
+        with zipfile.ZipFile(self.workbook) as archive:
+            before = BIBLE.raw_records(original, archive)
+
+        self.run_update()
+
+        updated = self.workbook.read_bytes()
+        with zipfile.ZipFile(self.workbook) as archive:
+            after = BIBLE.raw_records(updated, archive)
+            self.assertIsNone(archive.testzip())
+        changed = {"xl/workbook.xml", "xl/worksheets/sheet1.xml"}
+        for name, record in before.items():
+            if name in changed:
+                self.assertNotEqual(record, after[name], name)
+            else:
+                self.assertEqual(record, after[name], name)
+
     def test_tabs_without_data_stay_byte_identical(self):
         self.run_update()
 

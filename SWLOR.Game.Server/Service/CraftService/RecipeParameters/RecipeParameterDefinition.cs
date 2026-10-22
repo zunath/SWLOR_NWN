@@ -15,13 +15,14 @@ namespace SWLOR.Game.Server.Service.CraftService.RecipeParameters
     {
         private const double Tolerance = 1e-9;
         private static readonly Regex NamePattern = new Regex("^[a-z][A-Za-z0-9]*$", RegexOptions.Compiled);
+        private static readonly Regex HeaderWhitespace = new Regex(@"\s+", RegexOptions.Compiled);
 
         private readonly HashSet<int> _enumValues;
 
         /// <summary>The constructor and builder argument name, in camelCase.</summary>
         public string Name { get; }
 
-        /// <summary>The header of the Bible recipe tab column holding this value.</summary>
+        /// <summary>The header of the Bible recipe tab column holding this value, with runs of whitespace collapsed to one space.</summary>
         public string Header { get; }
 
         public double Min { get; }
@@ -30,7 +31,7 @@ namespace SWLOR.Game.Server.Service.CraftService.RecipeParameters
         /// <summary>Digits after the decimal point; values sit on a grid of 10^-Decimals.</summary>
         public int Decimals { get; }
 
-        /// <summary>The largest distance the generator may move a recipe's value from the base value.</summary>
+        /// <summary>The largest distance the generator may move a recipe's value from the base value, in whole steps.</summary>
         public double Variation { get; }
 
         /// <summary>The enum whose members are the allowed values, or null for numeric parameters.</summary>
@@ -59,7 +60,7 @@ namespace SWLOR.Game.Server.Service.CraftService.RecipeParameters
                 throw new ArgumentOutOfRangeException(nameof(variation));
 
             Name = name;
-            Header = header.Trim();
+            Header = HeaderWhitespace.Replace(header, " ").Trim();
             Min = min;
             Max = max;
             Decimals = decimals;
@@ -130,7 +131,7 @@ namespace SWLOR.Game.Server.Service.CraftService.RecipeParameters
         /// </summary>
         public double Vary(double baseValue, double unit)
         {
-            var spanSteps = (int)Math.Round(Variation / Step);
+            var spanSteps = (int)Math.Floor(Variation / Step + Tolerance);
             if (spanSteps <= 0)
                 return baseValue;
 

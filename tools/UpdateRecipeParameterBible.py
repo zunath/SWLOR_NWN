@@ -13,6 +13,7 @@ tools/FormatCombatUpgradeBibleWorkbook.ps1 rewrites every tab's column widths fr
 from __future__ import annotations
 
 import argparse
+import copy
 import io
 import json
 import os
@@ -364,17 +365,36 @@ def update_workbook_entries(entries: dict[str, bytes], data: dict, layout: dict 
     return changed, (layout_after if layout_after != layout else None), report
 
 
-def write_archive(path: Path, infos, entries: dict[str, bytes], changed: dict[str, bytes]):
+def raw_records(source: bytes, archive: zipfile.ZipFile) -> dict[str, bytes]:
+    """The stored bytes of every member: its local header, compressed data and any data descriptor."""
+    ordered = sorted(archive.infolist(), key=lambda info: info.header_offset)
+    ends = [info.header_offset for info in ordered[1:]] + [archive.start_dir]
+    return {info.filename: source[info.header_offset:end] for info, end in zip(ordered, ends)}
+
+
+def write_archive(path: Path, changed: dict[str, bytes]):
+    """Rewrites the workbook with the changed members recompressed and every other member copied as stored."""
+    source = path.read_bytes()
     handle, temporary = tempfile.mkstemp(suffix=".xlsx", dir=path.parent)
     os.close(handle)
     try:
-        with zipfile.ZipFile(temporary, "w") as target:
-            for info in infos:
-                copy = zipfile.ZipInfo(info.filename, info.date_time)
-                copy.compress_type = info.compress_type
-                copy.external_attr = info.external_attr
-                copy.create_system = info.create_system
-                target.writestr(copy, changed.get(info.filename, entries[info.filename]))
+        with zipfile.ZipFile(io.BytesIO(source)) as archive, zipfile.ZipFile(temporary, "w") as target:
+            records = raw_records(source, archive)
+            for info in archive.infolist():
+                if info.filename in changed:
+                    replacement = zipfile.ZipInfo(info.filename, info.date_time)
+                    replacement.compress_type = info.compress_type
+                    replacement.external_attr = info.external_attr
+                    replacement.create_system = info.create_system
+                    target.writestr(replacement, changed[info.filename])
+                    continue
+
+                moved = copy.copy(info)
+                moved.header_offset = target.fp.tell()
+                target.fp.write(records[info.filename])
+                target.start_dir = target.fp.tell()
+                target.filelist.append(moved)
+                target.NameToInfo[moved.filename] = moved
         os.replace(temporary, path)
     finally:
         if os.path.exists(temporary):
@@ -397,7 +417,7 @@ def update_files(workbook: Path, data: dict, layout_path: Path | None, check: bo
     has_changes = bool(changed) or layout_after is not None
     if has_changes and not check:
         if changed:
-            write_archive(workbook, infos, entries, changed)
+            write_archive(workbook, changed)
         if layout_after is not None:
             layout_path.write_text(render_layout(layout_after), encoding="utf-8", newline="")
     return has_changes, report

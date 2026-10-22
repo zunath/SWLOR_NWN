@@ -19,8 +19,10 @@ public sealed class ConfigurableTestProfile : RecipeParameterProfile<TestForgePa
         Func<int, DifficultyBudget> budget,
         RecipeParameterOverrides overrides = null,
         IReadOnlyList<RecipeParameterDefinition> definitions = null,
-        IReadOnlyDictionary<RecipeType, RecipeType> derived = null)
+        IReadOnlyDictionary<RecipeType, RecipeType> derived = null,
+        string key = "Configurable")
     {
+        Key = key;
         DerivedRecipes = derived ?? base.DerivedRecipes;
         _baseValues = baseValues;
         _difficulty = difficulty;
@@ -35,7 +37,7 @@ public sealed class ConfigurableTestProfile : RecipeParameterProfile<TestForgePa
         };
     }
 
-    public override string Key => "Configurable";
+    public override string Key { get; }
     public override SkillType Skill => SkillType.Smithery;
     public override IReadOnlyList<RecipeParameterDefinition> Definitions { get; }
     public override RecipeParameterOverrides Overrides { get; }

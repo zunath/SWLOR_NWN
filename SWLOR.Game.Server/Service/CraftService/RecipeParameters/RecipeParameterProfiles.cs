@@ -23,11 +23,19 @@ namespace SWLOR.Game.Server.Service.CraftService.RecipeParameters
                 .OrderBy(profile => profile.Key, StringComparer.Ordinal)
                 .ToList();
 
-            var duplicate = profiles.GroupBy(profile => profile.Key, StringComparer.Ordinal).FirstOrDefault(g => g.Count() > 1);
-            if (duplicate != null)
-                throw new InvalidOperationException($"Two recipe parameter profiles use the key '{duplicate.Key}'.");
-
+            EnsureUniqueKeys(profiles);
             return profiles;
+        }
+
+        /// <summary>Keys are matched without regard to case on the command line, so two keys that differ only by case collide.</summary>
+        public static void EnsureUniqueKeys(IEnumerable<IRecipeParameterProfile> profiles)
+        {
+            var duplicate = profiles.GroupBy(profile => profile.Key, StringComparer.OrdinalIgnoreCase).FirstOrDefault(g => g.Count() > 1);
+            if (duplicate != null)
+            {
+                throw new InvalidOperationException(
+                    $"Recipe parameter profiles use the key '{duplicate.Key}' more than once (keys are compared without regard to case).");
+            }
         }
     }
 }

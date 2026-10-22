@@ -405,7 +405,7 @@ Replace each direct `Perk.GetPerkLevel` gate in the files listed under Current s
 - **Swap their requirements onto Armor:**
   - Treasure Hunter I-III: Armor 20/40/50 at 3/3/4 SP.
   - Creditfinder I-III: Armor 15/30/45 at 3/3/4 SP.
-- **Refund every owned rank in the migration** so players re-buy them under the new requirements.
+- **Refund every owned rank explicitly in the migration** (Migration and release, "Refunds and rebuild token"). Their category and requirements changed, so owners re-buy them under the new requirements.
 
 ### Line schedule
 
@@ -450,19 +450,54 @@ Follow `Migrations.md`.
 
 The newest migrations today are server `_29_CorrectStoredCarapaceBracers` and player `_24_CorrectCarapaceBracers`. Before adding a version, ask the owner whether the newest migration of that kind has shipped to production.
 
-### Perk refunds
+### Refunds and rebuild token (required)
 
-The owner asked for these refunds in the migration. This departs from `Migrations.md`'s rule against one-off refund migrations, so update that rule's line to record the exception in the same PR.
+Every character gets SP back for each perk this rework removes or changes, plus one rebuild token.
 
-- Refund every retired perk above, plus Treasure Hunter and Creditfinder, through the existing refund path:
-  - `LegacyPerkRefundMigration.Migrate(player, removedPerks)` runs in this release's server migration and prices perks from its historical table.
-  - Verify each perk's entry and prices in that table first.
-  - Use `CharacterRecalculation.RefundPerk` only for data that lives in the character file.
-  - Players get a login notice listing their refunds.
+- **Rebuilding is optional.** The token only gives players the option. Do not force a rebuild: leave `Player.RebuildComplete` alone.
+- **Refund every perk in this table explicitly.** Treasure Hunter and Creditfinder stay in the game, but their category and requirements changed, so they are refunded too and their owners re-buy them under the new requirements.
 
-### Rebuild token
+| Perk (PerkType ID) | Ranks | SP per rank on current master | Full refund |
+| --- | --- | --- | --- |
+| Harvesting (157) | I-V | 1/1/2/3/4 | 11 |
+| Refining (158) | I-V | 1/1/2/3/4 | 11 |
+| RefineryManagement (159) | I-VI | 1/1/2/2/3/4 | 13 |
+| Scavenging (160) | I-V | 1/1/2/3/4 | 11 |
+| HardLook (161) | I-V | 1/1/2/3/3 | 10 |
+| TreasureHunter (181) | I-III | 3/3/4 | 10 |
+| CreditFinder (182) | I-III | 3/3/4 | 10 |
+| Research (297) | I-V | 2/2/3/3/4 | 14 |
+| ScientificNetworking (256) | I-II | 3/4 | 7 |
+| ResearchProjects (299) | I-II | 2/3 | 5 |
+| DroidAssembly (264) | I-V | 1/1/2/3/4 | 11 |
 
-Grant one rebuild token per character with `RebuildTokenGrant.Grant(player)` in this release's character migration's `MigratePlayerData`, as `_15_RemoveObsoleteCombatInstructionDiscs` does. Do not force a full rebuild (`Player.RebuildComplete`).
+**Steps.** Do both the refund and the token in this release's character migration's `MigratePlayerData(Player)`. It runs once per character record, including characters whose players have not logged in. `_15_RemoveObsoleteCombatInstructionDiscs` grants its token there.
+
+1. For each perk in the table that the record owns:
+   - Add the price of every owned rank to `Player.UnallocatedSP`.
+   - Remove the perk from `Player.Perks`, and from `Player.UnlockedPerks` if present.
+   - Add a line to `Player.UpgradeNotices` naming the perk and the SP returned.
+2. Grant the token with `RebuildTokenGrant.Grant(player)`.
+3. Add a notice that one rebuild token was granted and that rebuilding is optional.
+
+**Price source.** Price refunds from a dedicated table in the migration: the values above, read from master `e77fca53`. Re-check them against master when you write the migration.
+
+- Not from perk definitions: the retired definitions are deleted.
+- Not from `LegacyPerkRefundMigration`'s historical table: its prices for Harvesting, Refining, Refinery Management, Research, Scientific Networking and Droid Assembly are older than what players paid after the combat upgrade's rebuild. Droid Assembly, for example, is 3 SP per rank there.
+
+**Rules.**
+- Keep the retired `PerkType` members and never reuse their IDs.
+- **"Changed" includes any existing perk.** If any workstream changes an existing perk's behavior, requirements, category or price, add that perk to this table in the same PR.
+  - Espionage's Poisoncraft, Trapcraft and Master Saboteur are unchanged, so they are not refunded unless a workstream changes them.
+  - The new crafting lines are new purchases and need no refund.
+- This refund departs from `Migrations.md`'s rule against one-off refund migrations, at the owner's request. Update that line in the same PR to record the exception.
+
+**Tests.** Start from legacy records that own each perk at each rank, and check that the migration:
+- refunds exactly the table's SP;
+- removes the perks;
+- grants exactly one token, including to characters that own none of the perks;
+- adds the notices;
+- changes nothing on a second run.
 
 ### Saved data
 

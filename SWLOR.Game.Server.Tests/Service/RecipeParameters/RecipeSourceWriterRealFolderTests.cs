@@ -52,14 +52,6 @@ public class RecipeSourceWriterRealFolderTests
         var originals = CopyFolder(sourceFolder, _scratch);
         Assert.That(originals.Values.Any(text => text.Contains("TestForgeParameters")), Is.False);
 
-        // The shipped minigames' parameters are already in the definitions. Take them out of the copy first, so the test
-        // measures what the writer adds and removes and not what the real profiles wrote.
-        var baselines = originals.ToDictionary(pair => pair.Key, pair => WithoutShippedParameters(pair.Key, pair.Value));
-        foreach (var (relative, text) in baselines)
-        {
-            File.WriteAllBytes(Path.Combine(_scratch, relative), new UTF8Encoding(false).GetBytes(text));
-        }
-
         var derived = TwinPistolSources(recipes);
         var profiles = recipes.Values.Select(recipe => recipe.Skill).Distinct()
             .Select(skill => new TestForgeProfile(skill, false, derived))
@@ -95,9 +87,10 @@ public class RecipeSourceWriterRealFolderTests
 
         foreach (var (path, text) in rewritten)
         {
-            var removed = RecipeSourceWriter.Rewrite(path, text, _ => RecipeParameterPlan.Remove("TestForgeParameters"));
-            var stripped = Plumbing.Replace(removed.Text, string.Empty);
-            Assert.That(stripped, Is.EqualTo(baselines[path]), $"{path} differs from the original beyond the parameters");
+            Assert.That(
+                WithoutParameters(path, text),
+                Is.EqualTo(WithoutParameters(path, originals[path])),
+                $"{path} differs from the original beyond the parameters");
         }
     }
 
@@ -123,11 +116,19 @@ public class RecipeSourceWriterRealFolderTests
         Assert.That(instructions, Does.Contain(".MinigameParameters(recipe.Parameters)"));
     }
 
-    private static string WithoutShippedParameters(string path, string text)
+    /// <summary>Every parameter type a minigame has added to the game, which recipe files may already carry.</summary>
+    private static readonly string[] GameParameterTypes = typeof(RecipeMinigameParameters).Assembly.GetTypes()
+        .Where(type => typeof(RecipeMinigameParameters).IsAssignableFrom(type) && !type.IsAbstract)
+        .Select(type => type.Name)
+        .OrderBy(name => name, StringComparer.Ordinal)
+        .ToArray();
+
+    /// <summary>The source with every minigame's parameters and the helper plumbing for them taken out.</summary>
+    private static string WithoutParameters(string path, string text)
     {
-        foreach (var profile in RecipeParameterProfiles.Game)
+        foreach (var name in GameParameterTypes.Append("TestForgeParameters"))
         {
-            text = RecipeSourceWriter.Rewrite(path, text, _ => RecipeParameterPlan.Remove(profile.ParametersType.Name)).Text;
+            text = RecipeSourceWriter.Rewrite(path, text, _ => RecipeParameterPlan.Remove(name)).Text;
         }
 
         return Plumbing.Replace(text, string.Empty);

@@ -19,13 +19,20 @@ public class CraftMinigameRoutingTests
             return attribute is { IsActive: true, IsShownInCraftMenu: true };
         });
 
+    private static HashSet<SkillType> SkillsWithAMinigame() =>
+        typeof(ICraftMinigameRoute).Assembly.GetTypes()
+            .Where(type => typeof(ICraftMinigameRoute).IsAssignableFrom(type) && !type.IsInterface && !type.IsAbstract)
+            .Select(type => ((ICraftMinigameRoute)Activator.CreateInstance(type)!).Skill)
+            .ToHashSet();
+
     [Test]
     public void EveryCraftingSkillUsesTheOriginalWindowUntilItsMinigameLands()
     {
         var skills = CraftingSkills().ToList();
         skills.Should().NotBeEmpty();
+        var landed = SkillsWithAMinigame();
 
-        foreach (var skill in skills)
+        foreach (var skill in skills.Where(skill => !landed.Contains(skill)))
         {
             var route = CraftMinigameRouting.GetRoute(skill);
 

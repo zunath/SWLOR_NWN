@@ -1,3 +1,4 @@
+using FluentAssertions;
 using SWLOR.Game.Server.Service.CraftService;
 using SWLOR.Game.Server.Service.CraftService.Minigame;
 using SWLOR.Game.Server.Service.CraftService.Minigame.Circuit;
@@ -46,4 +47,41 @@ internal static class CircuitTestData
     /// </summary>
     public static int[] Rolls(int? outcomeRoll = null, int forecastRoll = NoSignal) =>
         outcomeRoll.HasValue ? new[] { outcomeRoll.Value, forecastRoll } : new[] { forecastRoll };
+
+    /// <summary>Plays a fresh craft with a seed; see <see cref="PlaySafely(CircuitEngine, CircuitSetup)"/>.</summary>
+    public static (MinigameStatus Status, int Actions, int QualityPercent, int Overloads) PlaySafely(CircuitSetup setup, int seed) =>
+        PlaySafely(new CircuitEngine(new SeededMinigameRandom(seed), setup), setup);
+
+    /// <summary>Builds Load with Tune up to the line while quality is short, banks it into the lagging meter, and never pushes past the line.</summary>
+    public static (MinigameStatus Status, int Actions, int QualityPercent, int Overloads) PlaySafely(CircuitEngine engine, CircuitSetup setup)
+    {
+        var overloads = 0;
+        var actions = 0;
+
+        while (engine.Status == MinigameStatus.InProgress && actions < 80)
+        {
+            var meters = engine.Meters;
+            var qualityShort = meters.Quality.Fraction < 0.92f;
+            var integrityLow = meters.Integrity.Value <= meters.Integrity.Max * 0.35;
+            string next;
+
+            if (integrityLow && engine.Preview(CircuitActionIds.Patch).Enabled && engine.Load <= setup.OverloadLine)
+                next = CircuitActionIds.Patch;
+            else if (engine.Load >= setup.OverloadLine && engine.Load > 0)
+                next = qualityShort && engine.Preview(CircuitActionIds.DischargeCalibration).Enabled
+                    ? CircuitActionIds.DischargeCalibration
+                    : CircuitActionIds.DischargeAssembly;
+            else if (qualityShort && meters.Quality.Fraction <= meters.Progress.Fraction + 0.15f && engine.Preview(CircuitActionIds.Tune).Enabled)
+                next = CircuitActionIds.Tune;
+            else
+                next = CircuitActionIds.Wire;
+
+            var result = engine.Perform(next);
+            result.Performed.Should().BeTrue($"{next} should be available");
+            overloads += result.Outcome.Label == CircuitEngine.OverloadLabel ? 1 : 0;
+            actions++;
+        }
+
+        return (engine.Status, actions, engine.Meters.QualityPercent, overloads);
+    }
 }

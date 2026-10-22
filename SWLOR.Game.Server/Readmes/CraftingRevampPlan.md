@@ -28,6 +28,7 @@ The revamp aligns crafting with the combat upgrade:
 - Smithery, Engineering, Fabrication (including Research) and Agriculture (cooking and fishing).
 - Gathering (harvesting, scavenging, refining).
 - Espionage's poison and trap crafting.
+- **Progression pace** (added by the owner after player feedback, October 2026): crafting XP speed and the crafting guilds' task cap. Players report slow crafting progression and guild ranks that are a required chore, and bypass both with RP XP or rebuilds (workstream 11).
 
 **Out of scope**
 - **Farming.** It comes later and will add a third Agriculture line, Farmer, at 25 SP.
@@ -119,7 +120,8 @@ These rules apply to every item craft, in every minigame.
 - **Success.** The craft succeeds when its progress meter completes, and the item is created at once. The action that would complete it shows a "Finishes the item" warning. Each minigame names its own progress meter.
 - **Quality.** Every craft ends with a quality percentage.
 - **Enhancements.** Each enhancement slot has a visible quality threshold.
-  - Meeting the threshold guarantees the transfer. *Starting values:* first slot 50%, second slot 85%.
+  - Meeting the threshold guarantees the transfer. *Starting values:* first slot 50%, second slot 85%. A third slot (research level 10 adds one) needs its own value, set with the gate below.
+  - **Enhancement parity** (owner decision after player feedback, October 2026). Today each enhancement transfers at a chance equal to quality, so 80% quality averages 2.4 of 3 mods; thresholds of 50/85/85 give exactly 1. Crafters report about 80% on triple-enhanced endgame crafts with best gear. CraftSim must model the extra difficulty enhancements add (today's progress penalty, and each minigame's equivalent) and tune the thresholds so the expected number of transferred enhancements per enhanced craft, at rank 50 with best gear and at level, is at least today's for one, two and three slots. Thresholds stay deterministic and visible.
   - This replaces today's per-enhancement chance roll (`quality / max quality`).
   - The window shows which thresholds the current quality meets.
 - **Food.** Duration scales across the whole quality range, up to today's 100% bonus. This replaces the `(int)qualityPercent` branch that only paid at 100%.
@@ -137,7 +139,13 @@ The three existing per-skill gear stats stay. No new item properties are added, 
 - **Control** powers its quality actions.
 - **CP** (gear CP + 0.75 × rank) is the action budget.
 - **The +31 CP passive at rank 25** is re-tuned per minigame by the simulator.
-- **Retired passives.** Today's hard-coded rank passives (+21 progress at rank 20, +115 quality at rank 40) and action unlock ranks (`CraftViewModel.cs:39-48`) are retired with the old minigame. Each new minigame's actions unlock by skill rank as defined below.
+- **Retired passives.** Today's hard-coded rank passives (+21 progress at rank 20, +115 quality at rank 40) and action unlock ranks (`CraftViewModel.cs:39-48`) are retired with the old minigame.
+- **Action unlocks** (owner decision, October 2026), the same rule for every minigame:
+  - Every action needed to play the loop is available from rank 0, including completion actions such as the Fabricator's Assemble.
+  - The integrity-repair action unlocks at rank 10: Rebond (Forge), Patch (Circuit), Service (Fabricator) and Stabilize (Reaction). The Kitchen has none.
+  - The once-per-craft finisher unlocks at rank 20. Only the Forge has one (Cryo-Quench).
+  - Nothing else is gated by rank; rank changes power and CP only. Gathering, fishing and the Experiment have no rank-gated actions.
+  - The Forge, Circuit and Reaction merged with other unlock ranks before this rule. Their phase-2 tuning PRs align them.
 - **Espionage** has no crafting gear today and gets none. Its minigame scales from Espionage rank only.
 
 ### Per-recipe parameters
@@ -164,6 +172,9 @@ Every recipe gets its own minigame parameters.
 - **Batches.** Up to 10 per batch, materials permitting. Each item takes a short crafting animation, and the player stays at the station.
   - Cancelling stops the batch. Completed items are kept and unused materials stay in the inventory.
 - **Output.** The base item only, with no enhancements, no blueprint, no blueprint bonuses and no XP.
+- **Threshold kept.** Players asked for easier bulk orders (October 2026). The owner kept rank >= recipe level + 5, so recipes above level 45 stay manual even at rank 50.
+- **Tied to the XP cutoff.** Level + 5 is where `GetDeltaXP` stops paying XP. Workstream 11's proposal must either keep that cutoff or state the matching quick-craft threshold for the owner's approval, so quick craft never costs a player XP they could still earn.
+  - Practice-limited recipes (Espionage) keep paying practice XP up to `PracticeRankLimit`, so the threshold is the higher of level + 5 and that limit. `QuickCraftRules.GetRequiredRank` already does this.
 
 ### Balance gates and tooling
 
@@ -179,14 +190,27 @@ Build `SWLOR.CraftSim` (tool and tests) on the `SWLOR.CombatSim` pattern. It dri
 3. **Perks optional.** An unperked rank-50 crafter with good gear can reach max quality on at-level recipes through skilled play. Perks change how, and how efficiently.
 4. **Length.** The targets above are met.
 5. **Economy parity.**
-   - Gathering yield per node and per scavenge site at each rank stays near today's expected yield.
+   - Gathering yield per node and per scavenge site at each rank stays near today's expected yield. Quick Harvest and Quick Search equal it, and a skilled session stays within +15% of it (starting value).
    - Fish caught per bite at each rank stays near today's catch rate.
    - Research base credits and times are unchanged; the Analyze cut stays within its cap.
    - Material use per crafted item at matched quality stays near today's.
+6. **XP rate** (owner decision after player feedback, October 2026).
+   - At matched rank and gear, XP per hour of play in each minigame is at least today's.
+   - **Item-craft cohort**, identical for the legacy and new runs: each recipe band (1-10, 11-20, 21-30, 31-40, 41-53) with rank equal to recipe level, capped at rank 50 (levels 51-53 run at rank 50); no gear, mid and best gear tiers; the band's active recipes weighted equally; no blueprint and not a first craft; quality and failures as each policy actually plays them (legacy: the lookahead policy; new: CraftSim's adaptive policy), counting the 15% failure XP. Run it with no enhancements and with representative enhancements for each slot count the recipes support (one, two, three), applying each side's enhancement difficulty. Each band, gear tier and enhancement count must pass on its own.
+   - **Activity cohorts:** each pairs the legacy loop with its replacement at the parity attribute values, using identical tool inputs:
+     - Harvesting: per node tier, rank equal to the vein level, and the highest harvester tier that rank allows (`CraftRankMilestones`); XP per item.
+     - Scavenging: per site level, rank equal to 10 × site level; XP per attempt, quarter on failure. No tool.
+     - Fishing: per fish-level band (0-10, ..., 41-52), rank equal to fish level and capped at 50, and the highest rod tier that rank allows. Every fishing location's (rod, bait) tables reachable with that rod are weighted equally, half by day and half by night, so both runs draw the same fish mix. XP per bite.
+     - Refining has no minigame, and research XP is new, so neither has a legacy rate to match. Research XP is bounded instead by workstream 11's research ceiling.
+   - CraftSim estimates minutes per craft, node, site or fight from actions taken and a seconds-per-action estimate, plus each loop's fixed time (fishing's 6-8 s cast wait, the harvester delay, window setup). Measure both in the client evidence, separately for each legacy loop and each new one.
+   - If a loop falls short, scale its XP per craft, item, attempt or bite up, recorded in code and the Bible. Do not shorten it below its length target to pass.
+   - **Legacy timing input:** Foundation 1d (PR #2803) commits today's actions per craft in `design/testing/crafting-revamp/legacy-crafting-baseline.md` (5-9 at levels 1-10, rising to 20-28 at levels 21-53 with gear) and the gathering baseline beside it. Re-run them with the committed seeds when the inputs change.
+7. **Enhancement parity** (owner decision after player feedback, October 2026). With enhancement difficulty modeled for both the legacy model and each minigame, the expected number of transferred enhancements per enhanced craft at rank 50, best gear and at level is at least today's, for items with one, two and three enhancement slots. The gate reports the threshold values that meet it; the thresholds are shared by every minigame.
 
 **Baselines.**
 - **Legacy model.** CraftSim ports today's rules as a legacy baseline, checked formula by formula against the code: the old minigame (`CraftViewModel.cs`), harvesting, scavenging, refining and the fishing catch roll. Build it in Foundation, before Closeout deletes the old minigame.
 - **Attributes.** Today's yields depend on Might (harvest bonus item), Perception (scavenge attempts and success) and Willpower (catch chance). Parity matches the median of active characters, measured once from a production data copy: Might and Perception among characters with Gathering rank 10 or more, Willpower among those with Agriculture rank 10 or more. Record the method and medians (aggregates only) in `design/testing/`, and delete every production-derived copy afterward.
+  - The agent environment refused to load the production copy (October 2026), so the medians are not measured yet. Until the owner runs the measurement, report parity across an attribute sweep, and get the owner's reference value before workstream 9 ships.
 
 Report inputs, seeds, results and limitations as `SkillPerkStandards.md` requires, and keep the reports under `design/testing/` (new folder).
 
@@ -350,6 +374,7 @@ Today (`HarvesterItemDefinition.cs`): a node holds d4 harvests, set on the first
   - **Heavy Strike:** 2-4 units, costs more Stability. It shows the chance of shattering an unsurveyed gem pocket. Gathering rank milestones add yield and replace Might.
   - **Extract:** claims a revealed seam for extra charges.
   - **Leave:** ends the session. The remaining yield stays for others.
+  - **Quick Harvest** (owner decision after player feedback, October 2026): resolves the node without seams. It yields today's expected units and XP for that node and harvester, spends the matching charges, and takes as long as today's harvests of that node (one harvest delay per unit) with the harvest animation, so it never trains Gathering faster than today. Playing the session adds bounded upside (rich seams, gem pockets), which the parity gate caps.
 - **Rules:**
   - One player works a node at a time; others see that it is in use.
   - Harvester and node tiers work as today, gated by rank.
@@ -370,6 +395,7 @@ Today (`ScavengePoint.cs`): one attempt, plus a second at `HardLook × 10 + Perc
   - **Search:** rolls the site's loot table; promising spots roll better.
   - **Dig Deeper:** searches the same spot again for a rare item, at a shown risk of spoiling the spot.
   - **Sift:** costs one search; reveals which neighboring spots are promising.
+  - **Quick Search** (owner decision after player feedback, October 2026): resolves the site at today's expected rolls and XP, with no Dig Deeper, taking as long as today's attempts. Playing the board adds bounded upside, which the parity gate caps.
 - **Rules:**
   - Treasure Hunter's rare weight still applies.
   - XP and the once-per-site rule stay as today.
@@ -618,7 +644,7 @@ The combat upgrade's model applies, with no pilot: build every minigame, then te
   - Merge Bible-editing PRs into the feature branch one at a time. After a conflict, take the base's workbook and re-run the PR's script.
 - **Merging master in.** Merge `origin/master` into the feature branch regularly, and re-run the focused tests after each merge.
 
-**Workstreams.** 1 comes first; 2-10 can run in parallel after it; 11 closes.
+**Workstreams.** 1 comes first; 2-11 can run in parallel after it; 12 closes.
 
 1. **Foundation**, as four PRs that can run in parallel:
    - **1a Progression and migration:** rank milestones replacing retired perks, Treasure Hunter/Creditfinder move, migration with refunds and token, the `Migrations.md` exception, research message fix, Bible SP total fix and the Bible perk-row changes. The only Foundation PR that edits the Bible.
@@ -634,7 +660,18 @@ The combat upgrade's model applies, with no pilot: build every minigame, then te
 8. **Espionage:** Reaction.
 9. **Gathering:** Prospecting, Search and refining changes, plus the Prospector and Treasure Seeker lines and the gathering animations.
 10. **Art:** Trellis2 placeable adaptation, seven station models, and the five station work loops.
-11. **Closeout.**
+11. **Progression pace:** crafting XP speed and the crafting guilds' task cap. It can run beside 2-10. Owner decisions (October 2026), after research:
+    - **Today.** One XP table serves every skill; rank 50 costs 411,125 XP, about 340-420 at-level crafts plus 2,000-4,000 components, with Gathering needing its own 411,125. Guild rank 5 needs 45,000 GP (about 240 hand-in tasks), and each tier offers only 10 tasks per server boot (`Guild.cs:127-169`, `GuildTasksViewModel.cs:140-146`), so rank 5 takes at least 14-21 days. RP XP pays about 3,000 XP per hour with no materials.
+    - **Guild task cap.** For the Smithery, Engineering, Fabrication and Agriculture guilds, completing a task no longer hides it until the next boot; the board refreshes after completion. GP thresholds, GP per task and guild rank gates stay as they are. The Hunter's Guild is unchanged.
+    - **Guild tasks give XP.** Each crafting-guild hand-in also awards XP in that guild's skill. Propose the amount for the owner's approval. The level basis is the recipe level for crafted hand-ins and the fish's `FishType` level for Agriculture catch tasks (such as `agr_tsk_017`); the proposal also states how a task's item quantity scales the award.
+    - **XP speed: measure, then set a target.** Model today's hours to rank 50 for each crafting skill in CraftSim, including the gathering that supplies it, then bring the owner a target and the crafting-only multiplier or curve that meets it. Measure the XP-rate gate against today's XP first, then apply the change on top.
+    - **Quick gathering in the model.** The hours-to-50 model includes Quick Harvest and Quick Search cohorts as well as the played sessions, and reports Gathering XP per hour for each; neither may exceed today's.
+    - **Guild tasks in the model.** With the cap lifted, hand-ins become a repeatable XP source. The hours-to-50 model includes a representative task cohort (task tier for the rank, item quantity, how the item is obtained, including quick craft, and turn-in time) and reports hand-in XP's share of the pace, so the proposed award neither dominates nor vanishes.
+    - **Research ceiling.** Research now gives Fabrication XP. The model includes a research cohort (experiment time, job duration, concurrent jobs at Fabrication 25 and 50, blueprint acquisition), and the proposal sets a ceiling: research XP per real hour stays below at-level Fabrication crafting XP per hour.
+    - **Isolate the change.** `Skill.GetRequiredXP` and `GetDeltaXP` take no skill and also drive combat and Piloting, and guild code is shared with the Hunter's Guild. Changes apply only to the crafting skills and crafting guilds, through crafting-specific tables or a skill or guild parameter, with tests that combat, Piloting and Hunter's Guild progression are unchanged.
+    - **Espionage is excluded** from the pace change: its crafting XP stays tied to Espionage rank, and `Craft.GetBaseRecipeXP`, `EspionageInfiltration.CalculateXp` and slicing's `Skill.CalculateEspionageXP` share Espionage progression. Add regression tests that infiltration and slicing XP are unchanged.
+    - **Existing progress.** If required XP per rank changes, convert stored XP and ranks (a migration, with tests on legacy records) so no character loses a rank. Guild points and ranks need no conversion, because their thresholds do not change.
+12. **Closeout.**
     - Delete the old minigame (`CraftViewModel` rules, `CraftDefinition`, retired level-chart fields).
     - Final Bible sync, player guide text and tooltips.
     - Joint test pass across every minigame.
@@ -678,6 +715,16 @@ The owner did not decide these explicitly; they follow today's behavior or the n
 - **Pantry seasonings** in the Kitchen are free and unlimited, with small pushes; recipe ingredients push harder and are limited to the committed quantity.
 - **Research XP** is awarded for the experiment and on completion. The other research rules are as stated above.
 - **Fishing XP** stays per bite.
+
+## Declined after player feedback
+
+The owner reviewed these in October 2026 and declined them. Do not reintroduce them without new approval.
+
+- Quick craft at recipe level (it stays at level + 5).
+- Batch crafting several copies of one recipe in one minigame.
+- A beginner gate requiring a simple policy to finish at-level crafts.
+
+Taking crafting skills out of the 400-rank skill cap, or capping how many crafts a character may train, is outside this revamp's scope.
 
 ## Prior attempts
 

@@ -245,7 +245,7 @@ namespace SWLOR.CraftSim.Progression
             var secondsByFamily = new Dictionary<string, double>();
             var unitsBySource = Enum.GetValues<ComponentSource>().ToDictionary(source => source, _ => 0.0);
             double modelled = 0, unmodelled = 0;
-            var byTable = new Dictionary<string, List<(string Component, double Units, GatheringSource Source)>>();
+            var byTable = new Dictionary<string, List<(string Component, string Gathered, double Units, GatheringSource Source)>>();
 
             void Add(string component, double seconds)
             {
@@ -272,17 +272,26 @@ namespace SWLOR.CraftSim.Progression
 
                 var source = CheapestSource(gathered, assumptions);
                 if (!byTable.TryGetValue(source.Table, out var lines))
-                    byTable[source.Table] = lines = new List<(string, double, GatheringSource)>();
+                    byTable[source.Table] = lines = new List<(string, string, double, GatheringSource)>();
 
-                lines.Add((resref, quantity, source));
+                lines.Add((resref, gathered, quantity, source));
             }
 
             foreach (var lines in byTable.Values)
             {
-                var source = lines[0].Source;
-                var visitSeconds = SecondsPerVisit(source, assumptions);
-                var alone = lines.Select(l => l.Units / PerVisitOf(l, assumptions)).ToList();
-                var visits = alone.Max();
+                var visitSeconds = SecondsPerVisit(lines[0].Source, assumptions);
+
+                // A roll yields one item of the table, so a recipe that needs two of its items needs rolls for both, not just the scarcer one:
+                // the visits are the expected time until every item's count is met. Lines that name one gathered item (the raw ore itself and
+                // a refined ore made from it) need their units added.
+                var needs = lines
+                    .GroupBy(l => l.Gathered, StringComparer.OrdinalIgnoreCase)
+                    .Select(g => (Units: g.Sum(l => l.Units), PerVisit: UnitsPerVisit(g.First().Source, assumptions)))
+                    .ToList();
+                var visits = ExpectedVisits(needs);
+
+                // Each component's share of the visits is its own need over the sum of the needs, so the parts add up to the whole.
+                var alone = lines.Select(l => l.Units / UnitsPerVisit(l.Source, assumptions)).ToList();
                 var total = alone.Sum();
                 for (var i = 0; i < lines.Count; i++)
                     Add(lines[i].Component, visits * visitSeconds * (total > 0 ? alone[i] / total : 0));
@@ -291,8 +300,54 @@ namespace SWLOR.CraftSim.Progression
             return new RecipeGathering(secondsByComponent.Values.Sum(), modelled, unmodelled, secondsByFamily, secondsByComponent, unitsBySource);
         }
 
-        private static double PerVisitOf((string Component, double Units, GatheringSource Source) line, ProgressionAssumptions assumptions) =>
-            UnitsPerVisit(line.Source, assumptions);
+        /// <summary>
+        /// The expected number of visits until every item's count is met, when item <c>i</c> arrives at <c>PerVisit</c> units a visit: the
+        /// expected maximum of independent Erlang waiting times (the arrivals taken as a Poisson process, which is exact for one item and a
+        /// close approximation for several). It lies between the longest single need and the sum of the needs; one item is just units over rate.
+        /// </summary>
+        public static double ExpectedVisits(IReadOnlyList<(double Units, double PerVisit)> items)
+        {
+            if (items.Count == 0)
+                return 0;
+
+            if (items.Count == 1)
+                return items[0].Units / items[0].PerVisit;
+
+            // Integrate the chance that some item is still short, from now until every Erlang is all but certain to have finished.
+            var horizon = items.Max(i => (i.Units + 12 * Math.Sqrt(i.Units) + 12) / i.PerVisit);
+            const int steps = 4000;
+            var dt = horizon / steps;
+            double expected = 0;
+            for (var step = 0; step < steps; step++)
+            {
+                var t = (step + 0.5) * dt;
+                var allDone = 1.0;
+                foreach (var (units, perVisit) in items)
+                    allDone *= ErlangCdf((int)Math.Ceiling(units), perVisit * t);
+
+                expected += (1 - allDone) * dt;
+            }
+
+            return expected;
+        }
+
+        /// <summary>The chance that <paramref name="count"/> arrivals of a Poisson process of mean <paramref name="mean"/> have happened.</summary>
+        private static double ErlangCdf(int count, double mean)
+        {
+            if (count <= 0)
+                return 1;
+
+            // 1 - P(fewer than count arrivals), the Poisson tail summed term by term.
+            var term = Math.Exp(-mean);
+            var fewer = 0.0;
+            for (var arrivals = 0; arrivals < count; arrivals++)
+            {
+                fewer += term;
+                term *= mean / (arrivals + 1);
+            }
+
+            return Math.Clamp(1 - fewer, 0, 1);
+        }
 
         /// <summary>Whether the model prices the component from a node, rather than leaving it out or using the flat estimate.</summary>
         public bool IsModelled(string resref) => Classify(resref) is ComponentSource.Refined or ComponentSource.Harvested;

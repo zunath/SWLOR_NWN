@@ -129,20 +129,85 @@ namespace SWLOR.CraftSim.Tests.Progression
         [Test]
         public void ItemsFromOneTableAreGatheredTogetherNotOneVeinRunEach()
         {
-            // HARVESTING_VELDITE holds raw_veldite 50 and jade 5. A recipe needing refined veldite and jade farms the rare jade, and the
-            // veldite comes with it.
+            // HARVESTING_VELDITE holds raw_veldite 50 and jade 5, and one roll gives one of them. A recipe needing refined veldite and jade
+            // farms the rare jade; the rolls that are not jade give the veldite, so the veldite costs little extra but not nothing.
             var recipe = Recipe(("ref_veldite", 2), ("jade", 1));
             var priced = Supply.PriceRecipe(recipe, Assumptions);
 
             var jade = Supply.CheapestSource("jade", Assumptions);
+            var veldite = Supply.CheapestSource("raw_veldite", Assumptions);
             jade.Table.Should().Be("HARVESTING_VELDITE");
-            var uses = 1 / ComponentSupply.UnitsPerVisit(jade, Assumptions);
+            veldite.Table.Should().Be("HARVESTING_VELDITE");
+
+            var jadeRate = ComponentSupply.UnitsPerVisit(jade, Assumptions);
+            var veldRate = ComponentSupply.UnitsPerVisit(veldite, Assumptions);
+            var visits = ComponentSupply.ExpectedVisits(new[] { (1.0, jadeRate), (2.0, veldRate) });
+            visits.Should().BeGreaterThanOrEqualTo(Math.Max(1 / jadeRate, 2 / veldRate));
+            visits.Should().BeLessThan(1 / jadeRate + 2 / veldRate);
+
             var refining = 2 * Assumptions.RefineSecondsPerBatch / Assumptions.RefineBatchUnits;
-            priced.Seconds.Should().BeApproximately(uses * ComponentSupply.SecondsPerHarvestUse(Assumptions) + refining, 1e-9);
+            priced.Seconds.Should().BeApproximately(visits * ComponentSupply.SecondsPerHarvestUse(Assumptions) + refining, 1e-9);
 
             var apart = 2 * Supply.SecondsPerUnit("ref_veldite", Assumptions) + Supply.SecondsPerUnit("jade", Assumptions);
             priced.Seconds.Should().BeLessThan(apart, "pricing each alone would charge a second vein run for the veldite");
             priced.SecondsByComponent.Values.Sum().Should().BeApproximately(priced.Seconds, 1e-9);
+        }
+
+        // The exact expected rolls until every item's count is met, when each roll yields item i with probability p[i].
+        private static double ExactRolls(double[] probabilities, int[] needs, Dictionary<string, double> memo = null)
+        {
+            memo ??= new Dictionary<string, double>();
+            var key = string.Join(",", needs);
+            if (memo.TryGetValue(key, out var known))
+                return known;
+
+            var open = Enumerable.Range(0, needs.Length).Where(i => needs[i] > 0).ToList();
+            if (open.Count == 0)
+                return 0;
+
+            var useful = open.Sum(i => probabilities[i]);
+            var expected = 1 / useful;
+            foreach (var i in open)
+            {
+                var next = (int[])needs.Clone();
+                next[i]--;
+                expected += probabilities[i] / useful * ExactRolls(probabilities, next, memo);
+            }
+
+            return memo[key] = expected;
+        }
+
+        [TestCase(0.5, 0.5, 1, 1)]
+        [TestCase(0.9, 0.1, 2, 1)]
+        [TestCase(0.9, 0.1, 6, 2)]
+        [TestCase(0.3, 0.2, 3, 4)]
+        [TestCase(0.15, 0.15, 5, 5)]
+        public void TheExpectedVisitsOfTwoItemsMatchTheExactRollsOfAMultinomialDraw(double first, double second, int firstNeeds, int secondNeeds)
+        {
+            var exact = ExactRolls(new[] { first, second }, new[] { firstNeeds, secondNeeds });
+
+            var model = ComponentSupply.ExpectedVisits(new[] { ((double)firstNeeds, first), ((double)secondNeeds, second) });
+
+            model.Should().BeApproximately(exact, exact * 0.06, "the arrivals are taken as a Poisson process");
+            model.Should().BeGreaterThanOrEqualTo(Math.Max(firstNeeds / first, secondNeeds / second) - 1e-9);
+            model.Should().BeLessThan(firstNeeds / first + secondNeeds / second);
+        }
+
+        [Test]
+        public void OneItemNeedsItsUnitsOverItsRateAndNothingNeedsNoVisits()
+        {
+            ComponentSupply.ExpectedVisits(new[] { (6.0, 0.25) }).Should().Be(24);
+            ComponentSupply.ExpectedVisits(Array.Empty<(double, double)>()).Should().Be(0);
+        }
+
+        [Test]
+        public void ARawOreAndTheRefinedOreMadeFromItNeedTheirUnitsAdded()
+        {
+            var both = Supply.PriceRecipe(Recipe(("raw_veldite", 2), ("ref_veldite", 3)), Assumptions);
+            var one = Supply.PriceRecipe(Recipe(("raw_veldite", 5)), Assumptions);
+            var refining = 3 * Assumptions.RefineSecondsPerBatch / Assumptions.RefineBatchUnits;
+
+            both.Seconds.Should().BeApproximately(one.Seconds + refining, 1e-9);
         }
 
         [Test]

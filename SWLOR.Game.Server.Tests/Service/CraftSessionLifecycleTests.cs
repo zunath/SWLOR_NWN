@@ -56,7 +56,7 @@ public class CraftSessionLifecycleTests
         return result.Session;
     }
 
-    private int BaseXp => Craft.GetBaseRecipeXP(_recipe, 10);
+    private int BaseXp => CraftMinigameXp.BaseXp(_recipe, 10);
 
     [Test]
     public void Start_CommitsTheMaterialsAndSavesThemOnThePlayerBeforeTheStationLocksIn()
@@ -190,33 +190,6 @@ public class CraftSessionLifecycleTests
         _player.ActiveCraftSession.Should().BeNull();
         _player.CraftedRecipes.Should().ContainKey(TestRecipe);
         _world.Messages.Should().HaveCount(2);
-    }
-
-    [Test]
-    public void Succeed_ScalesTheBaseXpByTheMinigamesMultiplier()
-    {
-        _world.XpMultiplier = 1.6;
-        var lifecycle = Lifecycle();
-        var session = StartSession(lifecycle);
-
-        lifecycle.Succeed(FakeCraftSessionWorld.PlayerHandle, _player, session, new MinigameMeter(60, 100));
-
-        var scaledBase = CraftOutcomeRules.ScaleBaseXp(BaseXp, 1.6);
-        scaledBase.Should().BeGreaterThan(BaseXp);
-        _world.XpGiven.Should().ContainSingle().Which.Xp.Should().Be(CraftOutcomeRules.CalculateXp(scaledBase, 0, true, 0.6f));
-    }
-
-    [Test]
-    public void Fail_ScalesTheBaseXpByTheMinigamesMultiplierToo()
-    {
-        _world.XpMultiplier = 1.6;
-        var lifecycle = Lifecycle(100, 100);
-        StartSession(lifecycle);
-
-        var settlement = lifecycle.Fail(FakeCraftSessionWorld.PlayerHandle, _player, CraftSessionEndReason.Broken);
-
-        settlement.Xp.Should().Be(CraftOutcomeRules.CalculateFailureXp(CraftOutcomeRules.ScaleBaseXp(BaseXp, 1.6), 0));
-        settlement.Xp.Should().BeGreaterThan(CraftOutcomeRules.CalculateFailureXp(BaseXp, 0));
     }
 
     [Test]

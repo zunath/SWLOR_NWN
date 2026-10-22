@@ -29,13 +29,15 @@ namespace SWLOR.CraftSim.Scenario.Forge
         /// <summary>An estimate for the new window until the client evidence measures it; the old window's is 6.</summary>
         public double SecondsPerAction => 8.0;
 
-        public double XpMultiplier => new ForgeCraftRoute().XpMultiplier;
+        public double XpMultiplier => CraftMinigameXp.MultiplierFor(Minigame);
+
+        public EnhancementSupport Enhancements => EnhancementSupport.Modeled;
 
         public AdaptivePolicyOptions AdaptiveOptions => Adaptive;
 
         public IReadOnlyList<string> Limitations => new[]
         {
-            "No enhancements are slotted, so Shape is never raised by an enhancement's progress penalty.",
+            "Enhancements raise the Shape the recipe needs by their progress penalty through ForgeRules.EnhancementShapePercent; their other effects are not played.",
             "No perks or styles exist yet; Hot Forging and Cold Working are drafts, so the style-balance gate is not applicable.",
             "The seconds per action (8) is an estimate for a window nobody has played; client timing replaces it.",
             "The adaptive player reads only the shared meters and previews, so it plans Thermal worse than a person who reads the range; gate 1 compares it with a solver that searches whole rotations."
@@ -52,7 +54,8 @@ namespace SWLOR.CraftSim.Scenario.Forge
                 request.Rank,
                 request.Gear.Craftsmanship,
                 request.Gear.Control,
-                request.Gear.CpBonus);
+                request.Gear.CpBonus,
+                ForgeRules.EnhancementShapePercent(request.Enhancements.TotalProgressPenalty, request.Recipe.Level));
 
             return new ForgeEngine(setup, request.Random);
         }

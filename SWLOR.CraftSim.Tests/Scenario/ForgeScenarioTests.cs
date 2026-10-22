@@ -38,7 +38,7 @@ namespace SWLOR.CraftSim.Tests.Scenario
         public void TheScenariosXpMultiplierIsTheOneTheGameRouteApplies()
         {
             Scenario.XpMultiplier.Should().Be(ForgeRules.XpMultiplier);
-            Scenario.XpMultiplier.Should().Be(new ForgeCraftRoute().XpMultiplier);
+            Scenario.XpMultiplier.Should().Be(CraftMinigameXp.MultiplierFor(CraftMinigameType.Forge));
         }
 
         [Test]
@@ -58,6 +58,23 @@ namespace SWLOR.CraftSim.Tests.Scenario
             engine.Setup.GearCp.Should().Be(gear.CpBonus);
             engine.Meters.Cp.Max.Should().Be(ForgeRules.MaxCp(gear.CpBonus, 40));
             engine.Thermal.Should().Be(parameters.StartingThermal);
+        }
+
+        [Test]
+        public void TheScenarioModelsEnhancementsThroughTheEnginesShapeRequirement()
+        {
+            Scenario.Enhancements.Should().Be(EnhancementSupport.Modeled);
+
+            var recipe = Recipe();
+            var gear = GearLevel.None(SkillType.Smithery);
+            var penalty = new CraftEnhancementConfiguration(2, 40);
+            var plain = (ForgeEngine)Scenario.CreateEngine(Request(recipe, 40, gear));
+            var enhanced = (ForgeEngine)Scenario.CreateEngine(
+                new CraftEngineRequest(recipe, 40, gear, null, 1, new ScriptedRandom(100), penalty));
+
+            plain.Setup.EnhancementShapePercent.Should().Be(0);
+            enhanced.Setup.EnhancementShapePercent.Should().Be(ForgeRules.EnhancementShapePercent(80, recipe.Level)).And.BePositive();
+            enhanced.Meters.Progress.Max.Should().BeGreaterThan(plain.Meters.Progress.Max);
         }
 
         [Test]

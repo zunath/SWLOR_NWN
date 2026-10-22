@@ -60,16 +60,6 @@ public class CraftOutcomeRulesTests
         }
     }
 
-    [TestCase(100, 1.0, 100)]
-    [TestCase(100, 1.6, 160)]
-    [TestCase(333, 1.6, 533)]
-    [TestCase(0, 1.6, 0)]
-    [TestCase(5, 1.5, 8)]
-    public void ScaleBaseXp_RoundsTheScaledBaseToAWholeNumber(int baseXp, double multiplier, int expected)
-    {
-        CraftOutcomeRules.ScaleBaseXp(baseXp, multiplier).Should().Be(expected);
-    }
-
     [Test]
     public void Xp_KnownValue()
     {

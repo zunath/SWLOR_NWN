@@ -22,8 +22,6 @@ public sealed class NwnCraftSessionWorld : ICraftSessionWorld
 
     public RecipeDetail GetRecipe(RecipeType recipe) => Craft.GetRecipe(recipe);
 
-    public double GetXpMultiplier(SkillType skill) => CraftMinigameRouting.GetRoute(skill).XpMultiplier;
-
     public bool CanCraft(uint player, RecipeType recipe) => Craft.CanPlayerCraftRecipe(player, recipe);
 
     public string ValidateBlueprint(uint player, uint blueprintItem, RecipeType recipe)

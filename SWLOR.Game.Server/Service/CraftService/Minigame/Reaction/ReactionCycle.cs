@@ -53,11 +53,8 @@ public sealed class ReactionCycle
     /// <summary>The last position of the phase in one cycle.</summary>
     public int LastIndexOf(ReactionPhase phase) => Array.LastIndexOf(_phases, phase);
 
-    /// <summary>
-    /// The number of positions an attempt may start at: the Calm and Rising turns, so the first action never lands in a Peak or a
-    /// Settling the player had no turn to prepare for.
-    /// </summary>
-    public int StartPositionCount => TurnsIn(ReactionPhase.Calm) + TurnsIn(ReactionPhase.Rising);
+    /// <summary>The number of positions an attempt may start at: the reaction is already under way, so any turn of the cycle.</summary>
+    public int StartPositionCount => Length;
 
     /// <summary>The phases that receive the turns beyond four, in the order the pattern hands them out.</summary>
     public static IReadOnlyList<ReactionPhase> ExtraTurnOrder(ReactionCyclePattern pattern) => pattern switch

@@ -68,10 +68,6 @@ public static class CraftOutcomeRules
                 ? SecondSlotQualityThresholdPercent
                 : ThirdSlotQualityThresholdPercent;
 
-    /// <summary>The recipe's base XP after its minigame's XP multiplier, which scales a failed craft's XP with it.</summary>
-    public static int ScaleBaseXp(int baseXp, double xpMultiplier) =>
-        (int)Math.Round(baseXp * xpMultiplier, MidpointRounding.AwayFromZero);
-
     /// <summary>XP for a successful craft: first-craft bonus, blueprint bonus, then a bonus equal to the quality share.</summary>
     public static int CalculateXp(int baseXp, int blueprintLevel, bool firstTime, float qualityFraction)
     {

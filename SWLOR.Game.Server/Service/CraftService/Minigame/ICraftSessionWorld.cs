@@ -12,9 +12,6 @@ public interface ICraftSessionWorld
 {
     RecipeDetail GetRecipe(RecipeType recipe);
 
-    /// <summary>The factor on the base XP of the skill's crafts: its minigame's XP multiplier.</summary>
-    double GetXpMultiplier(SkillType skill);
-
     /// <summary>True when the player meets the recipe's skill and other requirements. It does not check materials.</summary>
     bool CanCraft(uint player, RecipeType recipe);
 

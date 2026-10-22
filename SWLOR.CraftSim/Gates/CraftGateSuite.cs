@@ -101,10 +101,10 @@ namespace SWLOR.CraftSim.Gates
             lines.Add($"- Adaptive player: {Scenario.AdaptiveOptions.Describe()}. Each attempt's dice come from its own stream of the seed.");
             lines.Add($"- Fixed-rotation solver: {run.SolverOptions.Describe()}. The winner is chosen on separate attempts and then scored on a third set (hold-out) with {context.Runs} attempts.");
             lines.Add("- Legacy comparator (gates 5 and 6): the old minigame's lookahead player (`SWLOR.CraftSim baseline`), replayed here with the same seed on the same recipes, ranks and gear.");
-            lines.Add($"- Time: {Number(Scenario.SecondsPerAction)} s per action in the new window and {Number(Thresholds.LegacySecondsPerAction)} s in the old one, plus {Number(Thresholds.OverheadSecondsPerAttempt)} s per craft in both. These are estimates; the client evidence replaces them.");
-            if (Math.Abs(Scenario.XpMultiplier - 1.0) > 1e-9)
-                lines.Add($"- XP multiplier: the scenario scales every craft's base XP by {Number(Scenario.XpMultiplier, 2)}, as the game does (the legacy side is not scaled).");
+            if (Scenario.XpMultiplier != 1.0)
+                lines.Add($"- XP multiplier: the new minigame's base XP is scaled by {Number(Scenario.XpMultiplier, 2)} (gate 6); the legacy loop's is not.");
 
+            lines.Add($"- Time: {Number(Scenario.SecondsPerAction)} s per action in the new window and {Number(Thresholds.LegacySecondsPerAction)} s in the old one, plus {Number(Thresholds.OverheadSecondsPerAttempt)} s per craft in both. These are estimates; the client evidence replaces them.");
             lines.Add("- Thresholds (starting values, all in `GateThresholds`):");
             foreach (var (name, value, meaning) in Thresholds.Describe())
                 lines.Add($"  - `{name}` = {value}: {meaning}");

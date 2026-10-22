@@ -34,12 +34,6 @@ namespace SWLOR.CraftSim.Scenario
         double SecondsPerAction { get; }
 
         /// <summary>
-        /// The factor on the base XP of every craft of the minigame's skill, success and failure alike: the single named multiplier the
-        /// XP-rate gate may need. It must equal the one the game applies (<see cref="ICraftMinigameRoute.XpMultiplier"/>). 1 by default.
-        /// </summary>
-        double XpMultiplier => 1.0;
-
-        /// <summary>
         /// A new engine for one attempt: the recipe's parameters (<see cref="CraftEngineRequest.Recipe"/>), the crafter's rank, the
         /// gear worn (Control powers quality, Craftsmanship progress, CP bonus the action budget) and the style, built on
         /// <see cref="CraftEngineRequest.Random"/>. It must return an attempt that has not started, with no perks unless a style says so.
@@ -48,6 +42,12 @@ namespace SWLOR.CraftSim.Scenario
 
         /// <summary>Which recipes the gates play and at which ranks. By default every recipe of <see cref="Skill"/>, at its own level up to rank 50.</summary>
         ScenarioCohort Cohort => ScenarioCohort.ForSkill(Skill);
+
+        /// <summary>
+        /// The multiplier the minigame puts on a craft's base XP (<c>CraftMinigameXp</c>), 1 by default. The XP-rate gate scales the
+        /// minigame's XP by it, so a minigame whose loop is slower than the old window can still reach the old XP per hour.
+        /// </summary>
+        double XpMultiplier => 1.0;
 
         /// <summary>The actions per attempt the gates expect. By default an item craft at level: 10-20.</summary>
         LengthTarget LengthTarget => LengthTarget.ItemCraft;

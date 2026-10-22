@@ -39,11 +39,6 @@ internal sealed class FakeCraftSessionWorld : ICraftSessionWorld
 
     public RecipeDetail GetRecipe(RecipeType recipe) => Recipes[recipe];
 
-    /// <summary>The factor on the base XP of every craft. 1 unless a test scales it.</summary>
-    public double XpMultiplier { get; set; } = 1.0;
-
-    public double GetXpMultiplier(SkillType skill) => XpMultiplier;
-
     public bool CanCraft(uint player, RecipeType recipe) => MeetsRequirements;
 
     public string ValidateBlueprint(uint player, uint blueprintItem, RecipeType recipe) => BlueprintProblem;

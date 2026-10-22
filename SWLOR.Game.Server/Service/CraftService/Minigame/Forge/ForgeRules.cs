@@ -81,7 +81,7 @@ public static class ForgeRules
     /// The factor on every Smithery craft's base XP, success and failure alike. The old window's early crafts take 6 actions at 6 seconds,
     /// so the Forge's 10-20 actions would otherwise pay less XP per hour at the lowest ranks (the XP-rate gate).
     /// </summary>
-    public const double XpMultiplier = 1.6;
+    public const double XpMultiplier = 1.55;
 
     public const string StableContainmentId = "stable_containment";
     public const int StableContainmentChancePercent = 35;

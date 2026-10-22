@@ -11,6 +11,4 @@ public sealed class ForgeCraftRoute : ICraftMinigameRoute
     public GuiWindowType Window => GuiWindowType.Forge;
 
     public CraftMinigameType Minigame => CraftMinigameType.Forge;
-
-    public double XpMultiplier => ForgeRules.XpMultiplier;
 }

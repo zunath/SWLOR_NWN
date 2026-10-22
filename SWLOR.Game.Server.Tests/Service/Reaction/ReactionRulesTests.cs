@@ -1,6 +1,7 @@
 using FluentAssertions;
 using NUnit.Framework;
 using SWLOR.Game.Server.Service.CraftService;
+using SWLOR.Game.Server.Service.CraftService.Minigame;
 using SWLOR.Game.Server.Service.CraftService.Minigame.Reaction;
 
 namespace SWLOR.Game.Server.Tests.Service.Reaction;
@@ -32,19 +33,48 @@ public class ReactionRulesTests
     [TestCase(1, 0)]
     [TestCase(4, 3)]
     [TestCase(24, 18)]
-    [TestCase(25, 49)]
-    [TestCase(50, 68)]
-    public void CpIsThreeQuartersOfRankPlusTheRank25Passive_WithNoGearCp(int rank, int expected)
+    [TestCase(25, 18)]
+    [TestCase(50, 37)]
+    public void CpIsThreeQuartersOfRank_WithNoGearCpAndNoRank25Passive(int rank, int expected)
     {
         ReactionRules.MaxCp(rank).Should().Be(expected);
+        ReactionRules.CpPassive.Should().Be(0, "the simulator tuned the Reaction's rank-25 passive to nothing");
     }
 
     [Test]
-    public void CpMatchesTheLegacyBaselineForEspionageWithNoGear()
+    public void StabilizeCostsThreeCpPerFiveRecipeLevels_AndAMinimumRankCrafterCanAlwaysAffordOne()
     {
-        // design/testing/crafting-revamp/legacy-crafting-baseline.md: Espionage, no gear, 49 CP at rank 25 and 68 at rank 50.
-        ReactionRules.MaxCp(25).Should().Be(49);
-        ReactionRules.MaxCp(50).Should().Be(68);
+        ReactionRules.StabilizeCp(3).Should().Be(ReactionRules.MinimumStabilizeCp);
+        ReactionRules.StabilizeCp(16).Should().Be(9);
+        ReactionRules.StabilizeCp(50).Should().Be(30);
+
+        foreach (var level in new[] { 16, 18, 26, 30, 36, 45, 46, 50 })
+        {
+            var cost = ReactionRules.StabilizeCp(level);
+
+            ReactionRules.MaxCp(level).Should().BeGreaterThanOrEqualTo(cost, $"level {level} at its level");
+            ReactionRules.MaxCp(level - 3).Should().BeGreaterThanOrEqualTo(cost, $"level {level} at its minimum rank");
+            ReactionRules.MaxCp(level).Should().BeLessThan(cost * 2, $"level {level}: one Stabilize, not two");
+        }
+    }
+
+    [Test]
+    public void ActionWearRisesWithPeakIntensity_SoTheBudgetStaysTightWhereCpIsPlentiful()
+    {
+        var wear = Enumerable.Range(1, 5).Select(ReactionRules.ActionStability).ToList();
+
+        wear.Should().BeInAscendingOrder();
+        wear.First().Should().BeLessThan(wear.Last());
+        ReactionRules.ActionStability(0).Should().Be(wear.First(), "an out-of-range intensity is held to the table");
+        ReactionRules.ActionStability(9).Should().Be(wear.Last());
+        ReactionRules.HeavyChargeStability.Should().BeGreaterThan(wear.Last() * 2, "a Charge outside Calm costs far more than any other action");
+    }
+
+    [Test]
+    public void TheXpMultiplierIsOneNamedValueThatKeepsEspionageXpPerHourAtTheOldWindows()
+    {
+        ReactionRules.XpMultiplier.Should().BeGreaterThan(1.0);
+        CraftMinigameXp.MultiplierFor(CraftMinigameType.Reaction).Should().Be(ReactionRules.XpMultiplier);
     }
 
     [Test]

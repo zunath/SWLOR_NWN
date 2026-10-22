@@ -30,6 +30,8 @@ Delete this file after release, the way the combat upgrade deleted its plan docu
 20. Trellis2 request list
 21. Out of scope
 22. Risks
+- Appendix A: Perk drafts
+- Appendix B: Module families
 
 ---
 
@@ -111,6 +113,36 @@ Paths are relative to `SWLOR.Game.Server/`.
   - `Quest.RegisterRuntimeQuest`.
   - About 100 unused ship models in `SWLOR_Haks/sw_2da/appearance.2da` (most in `sw_cr_vehicle/`).
 
+### Before and after
+
+| Area | Today | After the revamp |
+|---|---|---|
+| Skills | Piloting only | Piloting, Gunnery, Ship Systems; space mining, gas and salvage in Gathering |
+| Perks | 7 perks; 4 of them only unlock gear tiers (67 SP) | 6 styles of 18 perks (60 SP each) plus Gathering space perks; no perk unlocks gear (Appendix A) |
+| Gear requirements | Perk levels stamped on examine | `RequiresSkill` rank on every hull and module |
+| Hulls | 17 hulls in T1-T5 pairs, each strictly bigger, plus 10 identical capitals | 12 roles in 4 sizes, one stat block per role; looks are Hull Designs |
+| Ship role | One configuration module | Built into the hull |
+| Slots | High, Low, 1 Config | High, Mid, Low |
+| Module tiers | Basic, I-IV | An item every 5 ranks (0-45) plus named rank-50 modules |
+| Module families | 4 offensive, about 12 defensive, mining, 4 config, capital set | About 20 families (Appendix B) |
+| Firing | Press each module; 2 s global recast | Toggle on; fires every cycle; switches off when it can't fire |
+| Damage math | Separate attack and defense per damage type; no crits | One Attack and one Defense; EM, Thermal and Explosive resistances; crits |
+| Effects | Ion slow hard-coded | Shared status effects, resistance families and hard crowd-control rules |
+| Threat | E-War module only | Shared enmity; tank stance |
+| Attributes | AGI, PER (or WIL), VIT | All six (section 5) |
+| Shield regen | 1 point every N s; bigger hulls slower | Per second, growing with size and WIL |
+| Speed | Same for every ship | Set per hull |
+| PvP | Any ship can shoot any player ship | Ground hostility and area rules, PvP ramps |
+| Ship death | 65% drop per module on every death; everyone inside killed | PvE keeps modules; PvP 65% drop; escape pods; cargo spills |
+| Crew | Passengers only | Stations on Large and Capital hulls; droid crew |
+| Mining | Piloting perks and XP | Gathering perks and XP; gas harvesting; salvage |
+| Trade | None | Cargo, exchanges, contraband, pirates, freight contracts, factions |
+| Zones | 13 open orbits plus the Abandoned Station | Abandoned Station becomes Small/Medium only; 3 new Small/Medium zones |
+| Enemies | 7 hull types per faction, one shared AI | Sizes, 8 role behaviors, 5 new groups, aces, encounters |
+| Docking | Any ship at any dock | Capitals at major ports; city starport level gates size |
+| Crafting | Refined ore plus electronics | Component layer with trait variants; research blueprints |
+| Starlanes | Smuggler's Moon unreachable; Korriban return skips | New lanes; return fixed |
+
 ## 4. Skills
 
 | Skill | ID | Gates | Rank adds | Combat point category |
@@ -178,13 +210,14 @@ Each space skill has two styles of 60 SP, the same as a weapon skill.
 | Ship Systems | **Operator** | Support and control | Remote repair, capacitor transfer, jamming, target painting |
 
 - **Gathering:** add space mining, gas harvesting and salvage perks inside its existing tree. Starship Mining I-II are refunded.
+- **Draft rows:** Appendix A lists every perk for all six styles and the Gathering space perks.
 
 ### Implementation rules
 
 - **Abilities:** space abilities use the shared ability system with `.CanBeUsedInSpace()` (`Service/AbilityService/AbilityBuilder.cs:105`). No ground ability gets that flag.
 - **Source:** abilities act from the ship. Range, line of sight, threat and damage source are all the ship's.
 - **Perk effects:** perks grant `StatType` values that the shared space code reads. Add space `StatType`s as needed (`Service/StatService/StatType.cs`) following the StatType rules in `CodingStandards.md`. There is no `Perk.GetPerkLevel` check in space code; today's Energy Management check at `Space.cs` ~1310 goes away.
-- **Bible rows:** the implementing agent drafts row-by-row perks (names, ranks, costs, cooldowns, descriptions) in new **Gunnery** and **Ship Systems** tabs and a rewritten **Piloting** tab, using the existing perk-table columns. The owner approves before code.
+- **Bible rows:** the implementing agent moves Appendix A into new **Gunnery** and **Ship Systems** tabs, a rewritten **Piloting** tab and the **Gathering** tab, using the existing perk-table columns. Values are run through the combat simulator, and the owner approves before code.
 - **IDs:** reserve feat, spell, `spells.2da` and TLK IDs following `AbilityTargeting.md`.
 
 ## 7. Hulls
@@ -706,3 +739,215 @@ New models go through the Trellis2 pipeline (`Readmes/BlasterModelImport.md`) as
 - **Content volume:** about 200 module items, 12 hulls, 6 styles, 3 zones and new enemy groups. Slice pull requests by family so reviews stay readable.
 - **Migration:** every `PlayerShip` record and every space item changes. Test the item sweep on a production-sized copy before release.
 - **Balance of crewed ships against fleets,** and of Small hulls at endgame. The simulator checks both before release.
+
+## Appendix A: Perk drafts
+
+Draft rows for the Bible. Where a ground perk does the same job, its numbers are copied and the **Source** column names it. "New" rows have no ground match: their numbers are a starting point for the combat simulator. Everything here needs owner approval before code (section 17).
+
+**Shared rules for every space style**
+
+- **Costs and scaling:**
+  - Every ability costs the pilot's (or crew member's) STM. Costs and cooldowns follow the ground template: 3/5/8/12 STM at 18 s, 4/8/10 at 24 s, 6/9 at 30 s, and the capstone at 15 STM and 90 s.
+  - Stances have a 30 s cooldown.
+  - Scaling uses the Bible Scaling Legend with the style's primary and secondary stat.
+- **Terms:**
+  - **Weapon DMG** is the DMG of the fitted weapon that fires.
+  - **Energy weapons** are Laser Cannon, Ion Cannon, Beam Cannon, Point-Defense Turret and the capital lasers (Turbolaser, Quad Laser, Laser Battery, Storm Cannon).
+  - **Launchers** are Missile Launcher, Torpedo Launcher and Assault Concussion Missile.
+  - **Command range** is 30 m base. Ground Leadership uses 5 m, but space weapons reach 20-55 m.
+- **New space statuses:**
+  - **Jammed:** Accuracy down; Disruption family.
+  - **Painted:** damage taken up.
+  - Slows keep using the Mobility family.
+  - None of these is hard crowd control.
+- **Where perks apply:** a perk works wherever its condition is met, on any hull and from any station (cross-skill rule in `SkillPerkStandards.md`).
+
+### Piloting: Ace (AGI primary, MGT secondary)
+
+| Rank | SP | Perk | Type | STM | Cooldown | Effect | Source |
+|---|---|---|---|---|---|---|---|
+| 2 | 2 | Evasive Roll I | Combat | 3 | 18 s | Gain +10% Evasion for 12 s. The first attack you evade during it gives your weapons' next cycle +10% Critical Rate. | Point Blank Burst I evasion |
+| 5 | 2 | Afterburner Discipline | Trait | - | - | Afterburner cycles cost 25% less capacitor. | New |
+| 8 | 2 | Tight Turns I | Trait | - | - | +4% Evasion while your ship is moving. | New (Snap Roll ladder shape) |
+| 10 | 2 | Strafing Run I | Combat | 4 | 24 s | Gain +20% Movement Speed for 10 s. Each weapon's next cycle on your target deals +12 DMG. | Interrupting Shot I DMG |
+| 12 | 2 | Evasive Roll II | Combat | 5 | 18 s | As I, with +12% Evasion and +12% Critical Rate. | Quick Draw II crit |
+| 15 | 4 | Slipstream | Trait | - | - | After you evade an attack, gain +10% Movement Speed for 10 s. Once every 10 s. | Kiting Instinct |
+| 18 | 3 | Break Lock I | Combat | 6 | 30 s | Drop 50% of your threat on every enemy within 30 m and gain +15% Evasion for 10 s. | New |
+| 20 | 4 | Ace Stance | Stance | - | 30 s | +15% Evasion and +10% Movement Speed; -15% max Shield. | Skirmisher Stance (penalty moved to shield) |
+| 22 | 4 | Tight Turns II | Trait | - | - | +6% Evasion while moving. | New |
+| 25 | 4 | Opportunist | Trait | - | - | Weapon cycles against a target that is attacking another ship gain +10% Critical Rate. | Quick Draw I crit |
+| 28 | 3 | Evasive Roll III | Combat | 8 | 18 s | As I, with +15% Evasion and +15% Critical Rate. | Point Blank Burst II evasion |
+| 30 | 4 | Strafing Run II | Combat | 8 | 24 s | As I, with +24 DMG. | Interrupting Shot II |
+| 32 | 3 | Break Lock II | Combat | 9 | 30 s | Drop all your threat on every enemy within 30 m and gain +25% Evasion for 10 s. | New |
+| 35 | 2 | Ace Reflexes | Trait | - | - | Below 30% hull, gain +25% Evasion for 15 s. Once per 3 minutes. | Unbreakable |
+| 38 | 4 | Strafing Run III | Combat | 10 | 24 s | As I, with +36 DMG. | Interrupting Shot III |
+| 40 | 5 | Evasive Roll IV | Combat | 12 | 18 s | As I, with +18% Evasion and +18% Critical Rate. | Quick Draw IV crit |
+| 45 | 4 | Tight Turns III | Trait | - | - | +8% Evasion while moving. | New |
+| 50 | 6 | Untouchable | Capstone | 15 | 90 s | For 30 s, every attack you evade resets Evasive Roll's cooldown and gives your weapons' next cycle +20% Critical Rate. | Last Word |
+
+### Piloting: Wing Commander (SOC primary, WIL secondary)
+
+| Rank | SP | Perk | Type | STM | Cooldown | Effect | Source |
+|---|---|---|---|---|---|---|---|
+| 2 | 2 | Focus Fire I | Combat | 3 | 18 s | Allied ships within command range deal +6% damage to your current target for 20 s. SOC can raise this to +8%. | Press the Attack I |
+| 5 | 2 | Steady Wings | Trait | - | - | Allied ships within command range gain +30 Mobility Resistance. | Charge Order I |
+| 8 | 2 | Wingmen I | Trait | - | - | Allied ships within command range gain +3% Accuracy. | Rallying Standard I |
+| 10 | 2 | Rally I | Combat | 4 | 24 s | Allied ships within command range gain a shield buffer of 2.5% of their max Shield for 30 s. | Rousing Shout I |
+| 12 | 2 | Focus Fire II | Combat | 5 | 18 s | As I, with +8% (SOC to +10%). | Press the Attack II |
+| 15 | 4 | Crew Morale | Trait | - | - | Crew and droid crew aboard your ship work their stations at +10% effectiveness. | New |
+| 18 | 3 | Break Formation I | Combat | 6 | 30 s | Enemies within 10 m of your target are Jammed for 30 s: -10% Accuracy (SOC to -12%). | Break Morale I |
+| 20 | 4 | Formation Stance | Stance | - | 30 s | Allied ships within command range take 6% less damage; your Attack is -20%. | Watchful Presence II, Defensive Stance penalty |
+| 22 | 4 | Wingmen II | Trait | - | - | +5% Accuracy. | Rallying Standard II |
+| 25 | 4 | Mark Target | Trait | - | - | When your module or ability damages an enemy, allied ships within command range deal +8% damage to it for 30 s. | Mark Target I |
+| 28 | 3 | Focus Fire III | Combat | 8 | 18 s | As I, with +10% (SOC to +12%). | Press the Attack III |
+| 30 | 4 | Rally II | Combat | 8 | 24 s | As I, with 3.75% of max Shield. | Rousing Shout II |
+| 32 | 3 | Break Formation II | Combat | 9 | 30 s | As I, with -15% Accuracy, plus -12% Attack (SOC to -18% and -14%). | Break Morale II |
+| 35 | 2 | Command Presence | Trait | - | - | Orders last 4 s longer and command range is 10 m larger. | Command Presence II (range space-scaled) |
+| 38 | 4 | Rally III | Combat | 10 | 24 s | As I, with 5% of max Shield. | Rousing Shout III |
+| 40 | 5 | Focus Fire IV | Combat | 12 | 18 s | As I, with +10% damage and +5% Accuracy (SOC to +12% and +6%). | Press the Attack III |
+| 45 | 4 | Wingmen III | Trait | - | - | +6% Accuracy. | New (Rallying Standard ladder) |
+| 50 | 6 | Fleet Action | Capstone | 15 | 90 s | For 45 s, allied ships within command range, yours included, gain +12% damage, +6% Accuracy and +6% Critical Rate. | Decisive Command |
+
+### Gunnery: Broadside (PER primary, AGI secondary)
+
+| Rank | SP | Perk | Type | STM | Cooldown | Effect | Source |
+|---|---|---|---|---|---|---|---|
+| 2 | 2 | Overcharge I | Combat | 3 | 18 s | Your energy weapons' next cycle deals +8 DMG each and costs 50% more capacitor. | Disarming Shot I DMG |
+| 5 | 2 | Capacitor Discipline | Trait | - | - | Energy weapon cycles cost 10% less capacitor. | New |
+| 8 | 2 | Sustained Fire I | Trait | - | - | Each energy-weapon hit on your current target adds a stack of +2% damage, up to 5. Switching targets clears it. | New |
+| 10 | 2 | Shield Breaker I | Combat | 4 | 24 s | Your energy weapons' next cycle on your target deals +50% damage to shields. | New |
+| 12 | 2 | Overcharge II | Combat | 5 | 18 s | As I, with +18 DMG. | Disarming Shot II |
+| 15 | 4 | Steady Barrage | Trait | - | - | While Sustained Fire has 5 stacks, gain +10% Critical Rate. | Lucky Chamber |
+| 18 | 3 | Full Broadside I | Combat | 6 | 30 s | Every energy weapon fires at your target at once for weapon DMG + 14 each; their cycles restart. | Fan the Hammer I |
+| 20 | 4 | Battery Stance | Stance | - | 30 s | Energy weapons cycle 15% faster but cost 25% more capacitor. | New (Gambler Stance shape) |
+| 22 | 4 | Sustained Fire II | Trait | - | - | +3% damage per stack. | New |
+| 25 | 4 | Hull Shredder | Trait | - | - | Energy-weapon hits on a target with no shield deal +10% damage. | New |
+| 28 | 3 | Overcharge III | Combat | 8 | 18 s | As I, with +28 DMG. | Disarming Shot III |
+| 30 | 4 | Shield Breaker II | Combat | 8 | 24 s | As I, with +75% damage to shields. | New |
+| 32 | 3 | Full Broadside II | Combat | 9 | 30 s | As I, with weapon DMG + 26. | Fan the Hammer II |
+| 35 | 2 | Heat Sinks | Trait | - | - | After Overcharge, your energy weapons' following cycle costs no capacitor. | Evasive Reload shape |
+| 38 | 4 | Shield Breaker III | Combat | 10 | 24 s | As I, with +100% damage to shields. | New |
+| 40 | 5 | Overcharge IV | Combat | 12 | 18 s | As I, with +38 DMG. | Disarming Shot IV |
+| 45 | 4 | Sustained Fire III | Trait | - | - | +4% damage per stack. | New |
+| 50 | 6 | Firestorm | Capstone | 15 | 90 s | For 30 s, your energy weapons cycle 30% faster and Sustained Fire stacks up to 10. | New (Dead Man's Hand shape) |
+
+### Gunnery: Ordnance (PER primary, MGT secondary)
+
+| Rank | SP | Perk | Type | STM | Cooldown | Effect | Source |
+|---|---|---|---|---|---|---|---|
+| 2 | 2 | Volley I | Combat | 3 | 18 s | Every launcher fires at your target at once for weapon DMG + 8 each, using ammo as normal; their cycles restart. | Disarming Shot I DMG |
+| 5 | 2 | Efficient Loading | Trait | - | - | Launcher cycles have a 15% chance not to use ammo. | New |
+| 8 | 2 | Lock-On I | Trait | - | - | After 5 s on the same target, your launchers gain +3% Accuracy and +3% Critical Rate against it. | New |
+| 10 | 2 | Bunker Buster I | Combat | 4 | 24 s | Your next launcher hit within 10 s deals +25% damage to a Large or Capital hull. | New |
+| 12 | 2 | Volley II | Combat | 5 | 18 s | As I, with +18 DMG. | Disarming Shot II |
+| 15 | 4 | Proximity Warheads | Trait | - | - | Missile hits also deal 25% of their damage to other enemies within 5 m of the target. | New |
+| 18 | 3 | Cluster Barrage I | Combat | 6 | 30 s | Fire at up to 3 enemies within 10 m of your target for weapon DMG + 14 each, using 1 ammo per target. | Fan the Hammer I |
+| 20 | 4 | Siege Stance | Stance | - | 30 s | Launchers deal +15% damage to Large and Capital hulls; your Evasion is -15%. | New (Skirmisher Stance size) |
+| 22 | 4 | Lock-On II | Trait | - | - | +5% Accuracy and +5% Critical Rate. | New |
+| 25 | 4 | Shield Breach | Trait | - | - | Launcher hits on a target at 10% shield or less deal +15% damage. Stacks with the Missile Launcher's own low-shield bonus. | New |
+| 28 | 3 | Volley III | Combat | 8 | 18 s | As I, with +28 DMG. | Disarming Shot III |
+| 30 | 4 | Bunker Buster II | Combat | 8 | 24 s | As I, with +40%. | New |
+| 32 | 3 | Cluster Barrage II | Combat | 9 | 30 s | As I, up to 4 enemies, weapon DMG + 26. | Fan the Hammer II |
+| 35 | 2 | Rapid Reload | Trait | - | - | After Volley, your launchers' next cycle is 30% shorter. | New (Reload Tempo shape) |
+| 38 | 4 | Bunker Buster III | Combat | 10 | 24 s | As I, with +60%. | New |
+| 40 | 5 | Volley IV | Combat | 12 | 18 s | As I, with +38 DMG. | Disarming Shot IV |
+| 45 | 4 | Lock-On III | Trait | - | - | +7% Accuracy and +7% Critical Rate. | New |
+| 50 | 6 | Saturation Strike | Capstone | 15 | 90 s | Every launcher fires at your target three times over 6 s for weapon DMG + 30 each, without using ammo. | Dead Man's Hand DMG |
+
+### Ship Systems: Bulwark (VIT primary, WIL secondary)
+
+| Rank | SP | Perk | Type | STM | Cooldown | Effect | Source |
+|---|---|---|---|---|---|---|---|
+| 2 | 2 | Defiance I | Combat | 3 | 18 s | Your weapons' next cycle on your target deals +8 DMG each, and the target generates +25% threat toward you for 30 s. | Disarming Shot I DMG, Covering Strike threat |
+| 5 | 2 | Reinforced Bulkheads | Trait | - | - | +15 Mobility Resistance and +15 Disruption Resistance. | Fortification |
+| 8 | 2 | Hardened Shields I | Trait | - | - | +8% Defense while your shield is above 0. | Bulwark I |
+| 10 | 2 | Bastion Pulse I | Combat | 4 | 24 s | Enemies within 15 m take 15 EM damage and generate +25% threat toward you for 30 s. | Covering Strike I |
+| 12 | 2 | Defiance II | Combat | 5 | 18 s | As I, with +18 DMG. | Disarming Shot II |
+| 15 | 4 | Emergency Capacitor | Trait | - | - | When your shield drops to 0, restore 15% of max capacitor. Once per 60 s. | New |
+| 18 | 3 | Shield Projection I | Combat | 6 | 45 s | Channel for up to 30 s: you and allied ships within 15 m take 20% less damage. | Shield Wall I (range space-scaled) |
+| 20 | 4 | Bulwark Stance | Stance | - | 30 s | +30% threat generation, +20% Defense, -20% Attack. You generate +100% threat from damage dealt. | Defensive Stance |
+| 22 | 4 | Hardened Shields II | Trait | - | - | +10% Defense while your shield is above 0. | Bulwark II |
+| 25 | 4 | Absorption | Trait | - | - | When an attack hits your shield, restore 4 capacitor. Once every 6 s. | Alacrity |
+| 28 | 3 | Defiance III | Combat | 8 | 18 s | As I, with +28 DMG. | Disarming Shot III |
+| 30 | 4 | Bastion Pulse II | Combat | 8 | 24 s | As I, with 25 EM damage. | Covering Strike II |
+| 32 | 3 | Shield Projection II | Combat | 9 | 45 s | As I, with 35% less damage. | Shield Wall II |
+| 35 | 2 | Last Stand | Trait | - | - | Below 25% hull, gain +40% Defense for 30 s. Once per 3 minutes. | Unbreakable |
+| 38 | 4 | Bastion Pulse III | Combat | 10 | 24 s | As I, with 30 EM damage. | Covering Strike III |
+| 40 | 5 | Defiance IV | Combat | 12 | 18 s | As I, with +38 DMG. | Disarming Shot IV |
+| 45 | 4 | Hardened Shields III | Trait | - | - | +12% Defense while your shield is above 0. | Bulwark III |
+| 50 | 6 | Unbreakable Hull | Capstone | 15 | 90 s | For 45 s, take 50% less damage and ignore slows and Interdiction. | Invincible |
+
+### Ship Systems: Operator (WIL primary, SOC secondary)
+
+| Rank | SP | Perk | Type | STM | Cooldown | Effect | Source |
+|---|---|---|---|---|---|---|---|
+| 2 | 2 | Emergency Repair I | Combat | 3 | 18 s | Repair an allied ship within 30 m for 2% of its max hull plus WIL scaling. | Med Kit I (percent part) |
+| 5 | 2 | Efficient Transfer | Trait | - | - | Repairers and capacitor transfers cost 10% less capacitor. | New |
+| 8 | 2 | Repair Efficiency I | Trait | - | - | Repairs from your modules and abilities are 5% stronger. | Medical Injector Rig I |
+| 10 | 2 | Capacitor Transfer I | Combat | 4 | 24 s | Give 10% of your max capacitor to an allied ship within 30 m. | New |
+| 12 | 2 | Emergency Repair II | Combat | 5 | 18 s | As I, with 3.5% of max hull. | Med Kit II |
+| 15 | 4 | Sensor Reach | Trait | - | - | Your Jammers, Target Painters and Ion Webs reach 10 m further. | New |
+| 18 | 3 | Sensor Blackout I | Combat | 6 | 30 s | Enemies within 10 m of your target are Jammed for 30 s: -10% Accuracy and -10% weapon range. | Break Morale I |
+| 20 | 4 | Triage Stance | Stance | - | 30 s | Your repairs are 20% stronger and your repairers cycle 10% faster; your weapons deal 25% less damage. | New |
+| 22 | 4 | Repair Efficiency II | Trait | - | - | 10% stronger. | Medical Injector Rig II |
+| 25 | 4 | Target Analysis | Trait | - | - | Targets you paint take +5% damage from all sources. | New |
+| 28 | 3 | Emergency Repair III | Combat | 8 | 18 s | As I, with 5% of max hull. | Med Kit III |
+| 30 | 4 | Capacitor Transfer II | Combat | 8 | 24 s | As I, with 15%. | New |
+| 32 | 3 | Sensor Blackout II | Combat | 9 | 30 s | As I, with -15% Accuracy and -15% weapon range. | Break Morale II |
+| 35 | 2 | Overflow | Trait | - | - | Shield repairs on a target at full shield repair its hull at 50% strength. | New |
+| 38 | 4 | Capacitor Transfer III | Combat | 10 | 24 s | As I, with 20%. | New |
+| 40 | 5 | Emergency Repair IV | Combat | 12 | 18 s | As I, with 6% of max hull. | Med Kit IV |
+| 45 | 4 | Repair Efficiency III | Trait | - | - | 15% stronger. | New (Rig ladder) |
+| 50 | 6 | Lifeline Network | Capstone | 15 | 90 s | For 30 s, your repairers also repair up to 3 other allied ships within 15 m of their target, and all your repairs are 25% stronger. | New |
+
+### Gathering: space perks (new "Space Industry" group)
+
+Traits only, priced like the existing Gathering lines. No perk unlocks a module; Gathering rank does that through `RequiresSkill`.
+
+| Perk | Gathering rank | SP | Effect | Source |
+|---|---|---|---|---|
+| Prospector I / II / III | 10 / 25 / 40 | 2 / 3 / 4 | +1 / +2 / +3 ore per asteroid cycle. | Starship Mining I-II (refunded) |
+| Deep Core I / II | 20 / 40 | 3 / 4 | +10 / +20 to the rare-metal chance from asteroids. | Treasure Hunter |
+| Gas Siphoning I / II | 15 / 35 | 2 / 3 | +1 / +2 Tibanna Gas per cycle. | New |
+| Salvage Expert I / II / III | 10 / 25 / 40 | 2 / 3 / 4 | +1 / +2 / +3 items per salvage cycle. | New (Prospector shape) |
+| Trait Hunter I / II | 20 / 40 | 3 / 4 | Salvaged components are 10% / 20% more likely to carry a rare trait. | New |
+| Rapid Extraction I / II | 30 / 45 | 3 / 4 | Mining, gas and salvage cycles are 10% / 20% faster. | New |
+
+## Appendix B: Module families
+
+Every family has an item every 5 ranks (0-45); capital families start at rank 40. "Toggle" means it fires every cycle while on (section 8, Activation). Numbers come from the Bible draft.
+
+| Family | Slot | Skill | Use | What it does | Today |
+|---|---|---|---|---|---|
+| Laser Cannon | High | Gunnery | Toggle | Thermal damage on a steady cycle. | Combat Laser |
+| Ion Cannon | High | Gunnery | Toggle | EM damage, strong against shields; slows on hull hits. | Ion Cannon |
+| Beam Cannon | High | Gunnery | Toggle | Thermal damage over a few ticks at short range. | Beam Cannon |
+| Missile Launcher | High | Gunnery | Toggle | Explosive damage at long range; uses missiles; bonus against low shields. Ion, incendiary and seeker ammo variants. | Missile Launcher |
+| Torpedo Launcher | High | Gunnery | Toggle | Heavy explosive damage to Large and Capital hulls; bypasses shields; ignores the size penalty; uses torpedoes. | Proton Bomb Launcher |
+| Point-Defense Turret | High | Gunnery | Toggle | Always fires as Light; bonus against Small hulls. | New |
+| Turbolaser, Quad Laser, Laser Battery, Storm Cannon, Assault Concussion Missile | High | Gunnery | Toggle | Capital weapons. Capital hulls only. | Capital weapons |
+| Mining Laser | High | Gathering | Toggle | Mines asteroids up to its tier. | Mining Laser |
+| Strip Miner | High | Gathering | Toggle | Large and Capital hulls; strips a whole asteroid and roots the ship while it runs. | Strip Miner |
+| Salvager | High | Gathering | Toggle | Salvages wrecks for scrap, components and rare finds. | New |
+| Gas Harvester | High | Gathering | Toggle | Harvests gas clouds. | New |
+| Shield Booster | Mid | Ship Systems | Passive | + max shield. | Shield Booster (was Low) |
+| Shield Repairer | Mid | Ship Systems | Toggle | Repairs the shield of its locked target, or your own. | Shield Repairer (was High) |
+| Shield Hardener | Mid | Ship Systems | Toggle | + resistances while on; pays capacitor each cycle. | New |
+| Capacitor Battery | Mid | Ship Systems | Passive | + max capacitor. | Capacitor Booster (was Low) |
+| Hypermatter Injector | Mid | Ship Systems | One press | Restores capacitor; uses a capsule. | Hypermatter Injector (was High) |
+| Ion Web | Mid | Ship Systems | Toggle | Slows the target. | New |
+| Interdictor | Mid | Ship Systems | Toggle | The target can't jump, dock or leave space while it holds. | New |
+| Jammer | Mid | Ship Systems | Toggle | Jams the target (Accuracy down). | New |
+| Target Painter | Mid | Ship Systems | Toggle | Paints the target (damage taken up). | New |
+| Bulwark Shield Generator, Repair Field, E-War array | Mid | Ship Systems | Toggle | Capital fleet support. Capital hulls only. | Capital support modules |
+| Afterburner | Mid | Piloting | Toggle | + speed while on; pays capacitor each cycle. | New |
+| Targeting Computer | Mid | Gunnery | Passive | + accuracy. | Targeting System (was Low) |
+| Hull Plating | Low | Ship Systems | Passive | + max hull. | Hull Booster |
+| Hull Repairer | Low | Ship Systems | Toggle | Repairs the hull of its locked target, or your own. | Hull Repairer (was High) |
+| Resist Plating | Low | Ship Systems | Passive | + one resistance, or all resistances at a cost to evasion. | Mirrored Plating, Ion Shielding, Reactive Armor, Durasteel Plating |
+| Capacitor Regulator | Low | Ship Systems | Passive | + capacitor regen. | New |
+| Smuggling Compartment | Low | Ship Systems | Passive | Lowers the customs scan chance. | New |
+| Damage Amplifier | Low | Gunnery | Passive | + one damage type. | EM, Thermal and Explosive amplifiers |
+| Thrusters | Low | Piloting | Passive | + evasion and speed. | Evasion Booster |
+| Cargo Expander | Low | Piloting | Passive | + cargo hold. | New |
+| Capital passives | Low | Ship Systems | Passive | Advanced Thrusters, Redundant Shield Generator, Reinforced Plating, Targeting Array, Weapons Computer, Power Diverter. Capital hulls only. | Capital passives |

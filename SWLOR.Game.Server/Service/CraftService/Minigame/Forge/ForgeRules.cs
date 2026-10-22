@@ -81,7 +81,7 @@ public static class ForgeRules
     // and every enhancement count at or above the old window's XP per hour in the CraftSim XP-rate gate (gate 6). The old window is fastest
     // in the lowest bands (its 1-10 crafts take 6 actions at 6 seconds against the Forge's 14 at 8), so they need the most.
     // Starting values until client timing replaces the seconds per action.
-    public const double XpMultiplierLevels1To10 = 1.54;
+    public const double XpMultiplierLevels1To10 = 1.55;
     public const double XpMultiplierLevels11To20 = 1.09;
     public const double XpMultiplierLevels21To30 = 1.15;
     public const double XpMultiplierLevels31To40 = 1.07;

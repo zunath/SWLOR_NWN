@@ -13,19 +13,20 @@
   - best gear (Control 29, Craftsmanship 30, CP 37)
 - Recipes: 1-10: 6 of 119; 11-20: 6 of 142; 21-30: 6 of 195; 31-40: 6 of 134; 41-53: 6 of 187 recipes played.
 - Adaptive player: depth 3, forecast samples per result 2, budget 4000 engine copies per decision, 0.5% of value lost per extra action, heuristic DefaultLeafHeuristic. Each attempt's dice come from its own stream of the seed.
-- Fixed-rotation solver: beam 8, cycles up to 3, 8 adaptive lines as seeds, up to 40 actions, 64 training attempts per local-search round and 150 selection attempts for each of 12 finalists, local search from the best 3 candidate(s) for up to 3 round(s) each. The winner is chosen on separate attempts and then scored on a third set (hold-out) with 100 attempts.
+- Fixed-rotation solver: beam 8, cycles up to 3, 8 adaptive lines as seeds, up to 40 actions, 64 training attempts per local-search round and 150 selection attempts for each of 12 finalists, local search from the best 3 candidate(s) for up to 3 round(s) each. Gate 1 searches one sequence for each band and gear tier across the band's sampled recipes (every recipe weighing the same; an action a recipe's engine cannot take is skipped there), and also each recipe's own best sequence as a reported metric. The winner is chosen on separate attempts and then scored on a third set (hold-out) with 100 attempts per recipe.
 - Legacy comparator (gates 5 and 6): the old minigame's lookahead player (`SWLOR.CraftSim baseline`), replayed here with the same seed on the same recipes, ranks and gear.
-- XP multiplier: the new minigame's base XP is scaled by 1.55 (gate 6); the legacy loop's is not.
 - Time: 8.0 s per action in the new window and 6.0 s in the old one, plus 0.0 s per craft in both. These are estimates; the client evidence replaces them.
+- XP multiplier on the base XP of every craft, failures included, as the game server applies it (`CraftMinigameXp`): 1-10 1.55x, 11-20 1.09x, 21-30 1.15x, 31-40 1.07x, 41-53 1.00x. The new side's XP below includes it; the legacy loop's does not.
 - Thresholds (starting values, all in `GateThresholds`):
-  - `RotationMarginPoints` = 10: gate 1: adaptive beats the best fixed rotation by at least this many quality points
+  - `RotationMarginPoints` = 10: gate 1: adaptive beats the best single fixed rotation (one sequence for a whole band) by at least this many quality points
   - `StyleMinimumWinShare` = 30%: gate 2: each style is the better choice on at least this share of recipes
   - `StyleMaximumMeanDifferencePoints` = 5: gate 2: neither style beats the other by more on average
   - `StyleTieMarginPoints` = 0.5: gate 2: a recipe within this many points is a tie, half a win each
   - `PerksOptionalRank` = 50: gate 3: rank of the unperked crafter
   - `PerksOptionalMinimumFullQualityShare` = 50%: gate 3: share of crafts that reach maximum quality, per at-level band
   - `PerksOptionalBands` = 41-45, 46-50, 51-53: gate 3: the at-level recipe bands
-  - `MaterialTolerance` = 10%: gate 5: component stacks per item within this share of the legacy baseline
+  - `MaterialTolerance` = 10%: gate 5: component stacks per item within this share of the legacy baseline (above it only, where the legacy success rate is below the next value)
+  - `MaterialTwoSidedMinimumLegacySuccess` = 90%: gate 5: cells where the legacy policy succeeds at least this often keep the two-sided parity; below it, using less material passes
   - `MaterialExtraNeverCraftedShare` = 10%: gate 5: recipes never made may exceed the legacy share by at most this
   - `MaterialQualityShortfallPoints` = 5: gate 5: the new average quality may be at most this many points below the legacy player's
   - `XpRateMinimumRatio` = 1: gate 6: XP per hour divided by the legacy rate
@@ -46,55 +47,150 @@
 
 | Gate | Verdict | Summary |
 | --- | --- | --- |
-| No fixed rotation | Failed | A fixed rotation comes within 10 points of adaptive play in 15 case(s): 1-10 / no gear; 1-10 / mid gear; 1-10 / best gear; 11-20 / no gear; 11-20 / mid gear; 11-20 / best gear; 21-30 / no gear; 21-30 / mid gear; 21-30 / best gear; 31-40 / no gear; 31-40 / mid gear; 31-40 / best gear; 41-53 / no gear; 41-53 / mid gear; 41-53 / best gear (smallest margin -0.3 in 41-53 / best gear). |
+| No fixed rotation | Failed | One fixed rotation comes within 10 points of adaptive play in 15 case(s): 1-10 / no gear; 1-10 / mid gear; 1-10 / best gear; 11-20 / no gear; 11-20 / mid gear; 11-20 / best gear; 21-30 / no gear; 21-30 / mid gear; 21-30 / best gear; 31-40 / no gear; 31-40 / mid gear; 31-40 / best gear; 41-53 / no gear; 41-53 / mid gear; 41-53 / best gear (smallest margin -0.3 in 41-53 / best gear). The best rotation for each recipe alone, a reported metric, is -0.3 to -0.1 points behind adaptive play. |
 | Style balance | NotApplicable | The scenario offers no style configurations yet, so there is nothing to compare. |
 | Perks optional | Passed | An unperked rank-50 crafter in best gear reaches maximum quality on at least 50% of crafts in every at-level band (lowest 89%). |
 | Length | Passed | Every band and gear tier takes 10-20 actions (item craft at level) on average. |
-| Economy parity | Failed | Outside 10% of the legacy baseline, or below its quality: 41-53 / no gear (ratio 1.54); 41-53 / mid gear (ratio 0.87). |
+| Economy parity | Failed | Outside 10% of the legacy baseline (above it only, where its success rate is below 90%), or below its quality: 41-53 / no gear (ratio 1.54). |
 | XP rate | Passed | Item crafts: XP per hour is at least 1.00x the legacy rate in every case (lowest 1.00x in 1-10 / no gear). |
 | Enhancement parity | Passed | At rank 50 in best gear, the thresholds in force (50% / 85% / 85%) transfer at least 1.00 times today's expected enhancements for 1, 2, 3 slot(s) in every band (lowest 1.06 times today's). Thresholds that meet parity in every band for this quality: 98% / 100% / 100%. |
 
 ## No fixed rotation
 
-### Average quality: adaptive play against the best fixed rotation (quality points; a broken piece counts 0)
+### Average quality: adaptive play against the best single fixed rotation of each band and gear tier (quality points; a broken piece counts 0)
 
-| Band | Gear | Recipes played | Adaptive avg quality | Best fixed avg quality | Margin | Required | Verdict |
-| --- | --- | --- | --- | --- | --- | --- | --- |
-| 1-10 | no gear | 6 | 99.8 | 100.0 | -0.2 | >= 10 | Failed |
-| 1-10 | mid gear | 6 | 99.9 | 100.0 | -0.1 | >= 10 | Failed |
-| 1-10 | best gear | 6 | 99.8 | 100.0 | -0.1 | >= 10 | Failed |
-| 11-20 | no gear | 6 | 99.9 | 100.0 | -0.1 | >= 10 | Failed |
-| 11-20 | mid gear | 6 | 99.8 | 100.0 | -0.2 | >= 10 | Failed |
-| 11-20 | best gear | 6 | 99.8 | 100.0 | -0.2 | >= 10 | Failed |
-| 21-30 | no gear | 6 | 99.9 | 100.0 | -0.1 | >= 10 | Failed |
-| 21-30 | mid gear | 6 | 99.9 | 100.0 | -0.1 | >= 10 | Failed |
-| 21-30 | best gear | 6 | 99.8 | 100.0 | -0.2 | >= 10 | Failed |
-| 31-40 | no gear | 6 | 99.8 | 100.0 | -0.2 | >= 10 | Failed |
-| 31-40 | mid gear | 6 | 99.9 | 100.0 | -0.1 | >= 10 | Failed |
-| 31-40 | best gear | 6 | 99.8 | 100.0 | -0.2 | >= 10 | Failed |
-| 41-53 | no gear | 6 | 99.8 | 100.0 | -0.2 | >= 10 | Failed |
-| 41-53 | mid gear | 6 | 99.8 | 100.0 | -0.2 | >= 10 | Failed |
-| 41-53 | best gear | 6 | 99.7 | 100.0 | -0.3 | >= 10 | Failed |
+| Band | Gear | Recipes played | Adaptive avg quality | Best single rotation avg quality | Margin | Required | Best rotation per recipe avg quality (reported) | Verdict |
+| --- | --- | --- | --- | --- | --- | --- | --- | --- |
+| 1-10 | no gear | 6 | 99.8 | 100.0 | -0.2 | >= 10 | 100.0 | Failed |
+| 1-10 | mid gear | 6 | 99.9 | 100.0 | -0.1 | >= 10 | 100.0 | Failed |
+| 1-10 | best gear | 6 | 99.8 | 100.0 | -0.2 | >= 10 | 100.0 | Failed |
+| 11-20 | no gear | 6 | 99.9 | 100.0 | -0.1 | >= 10 | 100.0 | Failed |
+| 11-20 | mid gear | 6 | 99.8 | 100.0 | -0.2 | >= 10 | 100.0 | Failed |
+| 11-20 | best gear | 6 | 99.8 | 100.0 | -0.2 | >= 10 | 100.0 | Failed |
+| 21-30 | no gear | 6 | 99.9 | 99.9 | -0.0 | >= 10 | 100.0 | Failed |
+| 21-30 | mid gear | 6 | 99.9 | 100.0 | -0.1 | >= 10 | 100.0 | Failed |
+| 21-30 | best gear | 6 | 99.8 | 100.0 | -0.1 | >= 10 | 100.0 | Failed |
+| 31-40 | no gear | 6 | 99.8 | 100.0 | -0.2 | >= 10 | 100.0 | Failed |
+| 31-40 | mid gear | 6 | 99.9 | 100.0 | -0.1 | >= 10 | 100.0 | Failed |
+| 31-40 | best gear | 6 | 99.8 | 100.0 | -0.2 | >= 10 | 100.0 | Failed |
+| 41-53 | no gear | 6 | 99.8 | 100.0 | -0.2 | >= 10 | 100.0 | Failed |
+| 41-53 | mid gear | 6 | 99.8 | 100.0 | -0.2 | >= 10 | 100.0 | Failed |
+| 41-53 | best gear | 6 | 99.7 | 100.0 | -0.3 | >= 10 | 100.0 | Failed |
 
-### The best fixed rotation found for the first recipe played in each band and gear tier (average quality in points)
+### The single rotation found for each band and gear tier, searched across the band's sampled recipes (average quality in points)
 
-| Band | Gear | Recipe | Best fixed rotation | Training | Selection | Hold-out | Adaptive on this recipe |
-| --- | --- | --- | --- | --- | --- | --- | --- |
-| 1-10 | no gear | bm_bracer (level 3) | vibro_hone > hydro_press > vibro_hone x8 > hydro_press x3 > vibro_hone > hydro_press x2 | 100.0 | 100.0 | 100.0 | 99.9 |
-| 1-10 | mid gear | bm_bracer (level 3) | vibro_hone x2 > hydro_press > vibro_hone x7 > hydro_press x5 | 100.0 | 100.0 | 100.0 | 99.9 |
-| 1-10 | best gear | bm_bracer (level 3) | vibro_hone x4 > hydro_press > vibro_hone x4 > hydro_press x4 | 100.0 | 100.0 | 100.0 | 99.9 |
-| 11-20 | no gear | val_necklace (level 12) | hydro_press > vibro_hone x9 > hydro_press x4 > vibro_hone > hydro_press | 100.0 | 99.9 | 99.8 | 99.6 |
-| 11-20 | mid gear | val_necklace (level 12) | vibro_hone > hydro_press > vibro_hone x7 > hydro_press > vibro_hone > hydro_press x3 | 100.0 | 100.0 | 100.0 | 99.8 |
-| 11-20 | best gear | val_necklace (level 12) | vibro_hone > hydro_press > vibro_hone x7 > hydro_press x3 | 100.0 | 100.0 | 100.0 | 99.5 |
-| 21-30 | no gear | vet_twinelec (level 22) | vibro_hone > hydro_press > vibro_hone x6 > ramp_plasma > vibro_hone x3 > hydro_press x3 > vibro_hone > hydro_press x3 | 100.0 | 100.0 | 100.0 | 99.8 |
-| 21-30 | mid gear | vet_twinelec (level 22) | hydro_press > vibro_hone x6 > ramp_plasma > vibro_hone x2 > hydro_press x3 > vibro_hone > hydro_press | 100.0 | 99.9 | 100.0 | 99.8 |
-| 21-30 | best gear | vet_twinelec (level 22) | vibro_hone x7 > ramp_plasma > hydro_press x2 > vibro_hone > hydro_press x2 | 100.0 | 100.0 | 100.0 | 99.8 |
-| 31-40 | no gear | sh_charm (level 31) | hydro_press > vibro_hone x7 > ramp_plasma > vibro_hone > hydro_press x4 > cryo_quench > vibro_hone x2 | 100.0 | 99.9 | 100.0 | 99.7 |
-| 31-40 | mid gear | sh_charm (level 31) | vibro_hone > hydro_press > vibro_hone x6 > ramp_plasma > hydro_press x2 > vibro_hone > hydro_press x2 | 100.0 | 100.0 | 100.0 | 99.8 |
-| 31-40 | best gear | sh_charm (level 31) | hydro_press > vibro_hone x7 > ramp_plasma > hydro_press x4 | 100.0 | 100.0 | 100.0 | 99.9 |
-| 41-53 | no gear | asc_chn_tunic (level 42) | vibro_hone x6 > ramp_plasma > hydro_press x8 | 100.0 | 100.0 | 100.0 | 99.9 |
-| 41-53 | mid gear | asc_chn_tunic (level 42) | vibro_hone > hydro_press > vibro_hone x4 > hydro_press x2 > vibro_hone > ramp_plasma > hydro_press x5 | 100.0 | 100.0 | 100.0 | 99.9 |
-| 41-53 | best gear | asc_chn_tunic (level 42) | vibro_hone > hydro_press > vibro_hone x4 > hydro_press x3 > ramp_plasma > hydro_press x3 | 100.0 | 100.0 | 100.0 | 99.7 |
+| Band | Gear | Best single rotation for the band | Training | Selection | Hold-out | Adaptive on these recipes |
+| --- | --- | --- | --- | --- | --- | --- |
+| 1-10 | no gear | hydro_press x2 > vibro_hone x2 > hydro_press > vibro_hone x9 > hydro_press x2 > ramp_plasma > hydro_press > vibro_hone > hydro_press x4 | 100.0 | 100.0 | 100.0 | 99.8 |
+| 1-10 | mid gear | vibro_hone x3 > hydro_press > vibro_hone x7 > hydro_press > vibro_hone > hydro_press x2 > ramp_plasma x2 > hydro_press x3 | 100.0 | 100.0 | 100.0 | 99.9 |
+| 1-10 | best gear | hydro_press > vibro_hone x9 > cryo_quench > hydro_press > vibro_hone > hydro_press | 100.0 | 100.0 | 100.0 | 99.8 |
+| 11-20 | no gear | hydro_press x2 > vibro_hone x2 > hydro_press > vibro_hone x7 > ramp_plasma x3 > vibro_hone > hydro_press x3 | 100.0 | 100.0 | 100.0 | 99.9 |
+| 11-20 | mid gear | vibro_hone x9 > ramp_plasma > hydro_press x3 > vibro_hone > hydro_press x2 > ramp_plasma > hydro_press | 100.0 | 100.0 | 100.0 | 99.8 |
+| 11-20 | best gear | vibro_hone x2 > hydro_press > vibro_hone x6 > ramp_plasma > hydro_press x2 > vibro_hone > hydro_press x2 | 100.0 | 100.0 | 100.0 | 99.8 |
+| 21-30 | no gear | vibro_hone x7 > ramp_plasma > vibro_hone > hydro_press > ramp_plasma > hydro_press > cryo_quench > vibro_hone > hydro_press > cryo_quench > ramp_plasma > hydro_press x2 > vibro_hone > hydro_press > vibro_hone x3 | 99.9 | 99.9 | 99.9 | 99.9 |
+| 21-30 | mid gear | vibro_hone x8 > ramp_plasma > cryo_quench > ramp_plasma > hydro_press x2 > vibro_hone > hydro_press > vibro_hone > hydro_press x2 > ramp_plasma > hydro_press | 100.0 | 100.0 | 100.0 | 99.9 |
+| 21-30 | best gear | vibro_hone x6 > ramp_plasma > hydro_press > vibro_hone > ramp_plasma > hydro_press > vibro_hone > hydro_press x3 | 100.0 | 100.0 | 100.0 | 99.8 |
+| 31-40 | no gear | vibro_hone x6 > ramp_plasma > vibro_hone > ramp_plasma > rebond > vibro_hone > ramp_plasma > hydro_press > vibro_hone > hydro_press > ramp_plasma > vibro_hone > hydro_press > ramp_plasma > hydro_press x2 | 100.0 | 100.0 | 100.0 | 99.8 |
+| 31-40 | mid gear | vibro_hone x5 > ramp_plasma > vibro_hone x2 > ramp_plasma > hydro_press > vibro_hone x2 > ramp_plasma > hydro_press > vibro_hone > hydro_press x2 > ramp_plasma > hydro_press x2 | 100.0 | 100.0 | 100.0 | 99.9 |
+| 31-40 | best gear | vibro_hone x5 > ramp_plasma > vibro_hone x2 > ramp_plasma > hydro_press x2 > vibro_hone > ramp_plasma > hydro_press x3 | 100.0 | 100.0 | 100.0 | 99.8 |
+| 41-53 | no gear | vibro_hone x2 > hydro_press > vibro_hone > ramp_plasma > vibro_hone > hydro_press > vibro_hone > ramp_plasma > vibro_hone > hydro_press > vibro_hone > ramp_plasma x2 > vibro_hone > cryo_quench > vibro_hone > ramp_plasma > vibro_hone x2 > ramp_plasma x2 > rebond > hydro_press > vibro_hone > hydro_press > ramp_plasma > hydro_press > ramp_plasma > hydro_press | 100.0 | 100.0 | 100.0 | 99.8 |
+| 41-53 | mid gear | hydro_press > vibro_hone x3 > ramp_plasma > vibro_hone > ramp_plasma > vibro_hone x2 > ramp_plasma x2 > vibro_hone x2 > hydro_press > ramp_plasma > vibro_hone x2 > ramp_plasma > rebond > ramp_plasma > vibro_hone x2 > hydro_press > cryo_quench > ramp_plasma > vibro_hone > ramp_plasma > rebond > hydro_press > vibro_hone > ramp_plasma > vibro_hone > hydro_press > ramp_plasma > hydro_press | 100.0 | 100.0 | 100.0 | 99.8 |
+| 41-53 | best gear | vibro_hone x4 > ramp_plasma > vibro_hone > ramp_plasma x2 > hydro_press > vibro_hone x3 > ramp_plasma > hydro_press > vibro_hone > ramp_plasma x2 > vibro_hone > rebond > cryo_quench > vibro_hone > hydro_press x2 > cryo_quench > vibro_hone x2 | 100.0 | 100.0 | 100.0 | 99.7 |
+
+### Reported metric, not gated: the best fixed rotation for each recipe alone, and what the band's single rotation scores on the same recipe (average quality in points)
+
+| Band | Gear | Recipe | Best rotation for this recipe alone (reported) | Its hold-out | The single rotation on this recipe | Adaptive on this recipe |
+| --- | --- | --- | --- | --- | --- | --- |
+| 1-10 | no gear | bm_bracer (level 3) | vibro_hone > hydro_press > vibro_hone x8 > hydro_press x3 > vibro_hone > hydro_press x2 | 100.0 | 100.0 | 99.9 |
+| 1-10 | no gear | b_twinpistol (level 6) | vibro_hone x11 > hydro_press x3 > vibro_hone > hydro_press | 100.0 | 99.9 | 99.4 |
+| 1-10 | no gear | os_hidevest (level 8) | vibro_hone x2 > hydro_press > vibro_hone x5 > hydro_press x4 > vibro_hone > hydro_press x2 | 100.0 | 100.0 | 99.9 |
+| 1-10 | no gear | sp_crestvis (level 8) | vibro_hone > hydro_press > vibro_hone x6 > hydro_press x3 > vibro_hone > hydro_press x3 | 100.0 | 100.0 | 99.9 |
+| 1-10 | no gear | advent_bracer (level 10) | hydro_press > vibro_hone x7 > hydro_press x7 | 100.0 | 100.0 | 99.8 |
+| 1-10 | no gear | chef_ring_1 (level 10) | vibro_hone x8 > hydro_press x2 > vibro_hone x2 > hydro_press x3 | 100.0 | 100.0 | 100.0 |
+| 1-10 | mid gear | bm_bracer (level 3) | vibro_hone x2 > hydro_press > vibro_hone x7 > hydro_press x5 | 100.0 | 100.0 | 99.9 |
+| 1-10 | mid gear | b_twinpistol (level 6) | hydro_press > vibro_hone x10 > hydro_press x2 > vibro_hone > hydro_press | 100.0 | 100.0 | 99.7 |
+| 1-10 | mid gear | os_hidevest (level 8) | vibro_hone x6 > hydro_press > vibro_hone > hydro_press x5 | 100.0 | 100.0 | 99.8 |
+| 1-10 | mid gear | sp_crestvis (level 8) | vibro_hone > hydro_press > vibro_hone x6 > hydro_press x6 | 100.0 | 100.0 | 99.9 |
+| 1-10 | mid gear | advent_bracer (level 10) | vibro_hone > hydro_press > vibro_hone x5 > hydro_press x3 > vibro_hone > hydro_press x3 | 100.0 | 100.0 | 100.0 |
+| 1-10 | mid gear | chef_ring_1 (level 10) | vibro_hone > hydro_press > vibro_hone x7 > hydro_press x2 > vibro_hone > hydro_press x2 | 100.0 | 100.0 | 99.9 |
+| 1-10 | best gear | bm_bracer (level 3) | vibro_hone x4 > hydro_press > vibro_hone x4 > hydro_press x4 | 100.0 | 100.0 | 99.9 |
+| 1-10 | best gear | b_twinpistol (level 6) | vibro_hone x4 > hydro_press > vibro_hone x3 > hydro_press > vibro_hone x2 > hydro_press > vibro_hone > hydro_press | 99.8 | 100.0 | 99.6 |
+| 1-10 | best gear | os_hidevest (level 8) | hydro_press > vibro_hone x6 > hydro_press x4 | 100.0 | 100.0 | 99.9 |
+| 1-10 | best gear | sp_crestvis (level 8) | vibro_hone x2 > hydro_press > vibro_hone x4 > hydro_press x5 | 100.0 | 100.0 | 99.8 |
+| 1-10 | best gear | advent_bracer (level 10) | hydro_press > vibro_hone x5 > hydro_press x2 > vibro_hone > hydro_press x3 | 100.0 | 100.0 | 99.9 |
+| 1-10 | best gear | chef_ring_1 (level 10) | vibro_hone x3 > hydro_press > vibro_hone x5 > hydro_press x3 | 100.0 | 100.0 | 100.0 |
+| 11-20 | no gear | val_necklace (level 12) | hydro_press > vibro_hone x9 > hydro_press x4 > vibro_hone > hydro_press | 99.8 | 100.0 | 99.6 |
+| 11-20 | no gear | viv_cap (level 14) | vibro_hone x7 > ramp_plasma > hydro_press x7 | 100.0 | 100.0 | 100.0 |
+| 11-20 | no gear | vet_chn_ring (level 16) | vibro_hone > hydro_press > vibro_hone x8 > hydro_press x3 > vibro_hone > hydro_press x2 | 100.0 | 100.0 | 99.9 |
+| 11-20 | no gear | sith_katar (level 18) | vibro_hone > hydro_press > vibro_hone x7 > ramp_plasma > vibro_hone > hydro_press x6 | 100.0 | 100.0 | 100.0 |
+| 11-20 | no gear | frontier_ring (level 20) | vibro_hone > hydro_press > vibro_hone x7 > hydro_press x4 > ramp_plasma > hydro_press x2 | 100.0 | 100.0 | 100.0 |
+| 11-20 | no gear | chef_ring_2 (level 20) | hydro_press > vibro_hone x8 > hydro_press x2 > vibro_hone > ramp_plasma > hydro_press x3 | 100.0 | 100.0 | 99.7 |
+| 11-20 | mid gear | val_necklace (level 12) | vibro_hone > hydro_press > vibro_hone x7 > hydro_press > vibro_hone > hydro_press x3 | 100.0 | 100.0 | 99.8 |
+| 11-20 | mid gear | viv_cap (level 14) | vibro_hone x2 > hydro_press > vibro_hone x4 > hydro_press x2 > vibro_hone > hydro_press x4 | 100.0 | 100.0 | 99.9 |
+| 11-20 | mid gear | vet_chn_ring (level 16) | vibro_hone > hydro_press > vibro_hone x7 > hydro_press x2 > vibro_hone > hydro_press x2 | 100.0 | 100.0 | 99.8 |
+| 11-20 | mid gear | sith_katar (level 18) | hydro_press > vibro_hone x7 > ramp_plasma > hydro_press x3 > vibro_hone > hydro_press x2 | 99.9 | 100.0 | 99.8 |
+| 11-20 | mid gear | frontier_ring (level 20) | vibro_hone > hydro_press > vibro_hone x6 > ramp_plasma > hydro_press x4 | 100.0 | 100.0 | 99.7 |
+| 11-20 | mid gear | chef_ring_2 (level 20) | hydro_press > vibro_hone x7 > hydro_press x2 > vibro_hone > hydro_press x4 | 100.0 | 100.0 | 99.9 |
+| 11-20 | best gear | val_necklace (level 12) | vibro_hone > hydro_press > vibro_hone x7 > hydro_press x3 | 100.0 | 100.0 | 99.5 |
+| 11-20 | best gear | viv_cap (level 14) | vibro_hone > hydro_press > vibro_hone x4 > hydro_press > vibro_hone > hydro_press x4 | 100.0 | 100.0 | 100.0 |
+| 11-20 | best gear | vet_chn_ring (level 16) | vibro_hone x2 > hydro_press > vibro_hone x6 > hydro_press x4 | 100.0 | 100.0 | 99.9 |
+| 11-20 | best gear | sith_katar (level 18) | vibro_hone > hydro_press > vibro_hone x6 > ramp_plasma > hydro_press x4 | 100.0 | 100.0 | 99.6 |
+| 11-20 | best gear | frontier_ring (level 20) | vibro_hone > hydro_press > vibro_hone x5 > hydro_press x2 > vibro_hone > hydro_press x2 | 100.0 | 100.0 | 99.9 |
+| 11-20 | best gear | chef_ring_2 (level 20) | vibro_hone > hydro_press > vibro_hone x6 > hydro_press x4 | 100.0 | 100.0 | 100.0 |
+| 21-30 | no gear | vet_twinelec (level 22) | vibro_hone > hydro_press > vibro_hone x6 > ramp_plasma > vibro_hone x3 > hydro_press x3 > vibro_hone > hydro_press x3 | 100.0 | 99.7 | 99.8 |
+| 21-30 | no gear | vet_trnsabstaff (level 24) | vibro_hone x2 > hydro_press > vibro_hone x6 > hydro_press > vibro_hone > hydro_press x3 > ramp_plasma > hydro_press | 100.0 | 99.9 | 100.0 |
+| 21-30 | no gear | mb_guard (level 26) | vibro_hone > hydro_press > vibro_hone x6 > hydro_press x4 > vibro_hone > hydro_press x4 | 100.0 | 100.0 | 100.0 |
+| 21-30 | no gear | cnt_neck (level 27) | vibro_hone x3 > hydro_press > vibro_hone > ramp_plasma > vibro_hone x2 > hydro_press > vibro_hone x2 > ramp_plasma > vibro_hone > ramp_plasma > hydro_press x3 | 100.0 | 99.9 | 99.8 |
+| 21-30 | no gear | tg_mantle (level 29) | hydro_press > vibro_hone x6 > hydro_press > vibro_hone > hydro_press x6 | 100.0 | 100.0 | 99.7 |
+| 21-30 | no gear | chef_necklace_3 (level 30) | vibro_hone x6 > ramp_plasma > hydro_press > vibro_hone x2 > hydro_press x6 | 100.0 | 100.0 | 99.9 |
+| 21-30 | mid gear | vet_twinelec (level 22) | hydro_press > vibro_hone x6 > ramp_plasma > vibro_hone x2 > hydro_press x3 > vibro_hone > hydro_press | 100.0 | 100.0 | 99.8 |
+| 21-30 | mid gear | vet_trnsabstaff (level 24) | hydro_press > vibro_hone x7 > hydro_press > vibro_hone > hydro_press x4 | 100.0 | 100.0 | 100.0 |
+| 21-30 | mid gear | mb_guard (level 26) | vibro_hone > hydro_press > vibro_hone x5 > hydro_press x3 > vibro_hone > hydro_press x3 | 100.0 | 100.0 | 99.8 |
+| 21-30 | mid gear | cnt_neck (level 27) | vibro_hone x4 > ramp_plasma > vibro_hone x3 > ramp_plasma > hydro_press x3 > vibro_hone > hydro_press x3 | 100.0 | 100.0 | 99.7 |
+| 21-30 | mid gear | tg_mantle (level 29) | vibro_hone x6 > ramp_plasma > hydro_press x6 | 100.0 | 100.0 | 100.0 |
+| 21-30 | mid gear | chef_necklace_3 (level 30) | vibro_hone x6 > ramp_plasma > hydro_press > vibro_hone > hydro_press > vibro_hone > hydro_press x4 | 100.0 | 100.0 | 100.0 |
+| 21-30 | best gear | vet_twinelec (level 22) | vibro_hone x7 > ramp_plasma > hydro_press x2 > vibro_hone > hydro_press x2 | 100.0 | 99.9 | 99.8 |
+| 21-30 | best gear | vet_trnsabstaff (level 24) | vibro_hone > hydro_press > vibro_hone x6 > hydro_press x4 | 100.0 | 100.0 | 100.0 |
+| 21-30 | best gear | mb_guard (level 26) | vibro_hone x4 > hydro_press > vibro_hone x2 > hydro_press x5 | 100.0 | 100.0 | 100.0 |
+| 21-30 | best gear | cnt_neck (level 27) | vibro_hone x3 > ramp_plasma > hydro_press > vibro_hone x3 > hydro_press > ramp_plasma > hydro_press > vibro_hone > hydro_press x2 | 100.0 | 100.0 | 99.7 |
+| 21-30 | best gear | tg_mantle (level 29) | vibro_hone > hydro_press > vibro_hone x4 > hydro_press x2 > vibro_hone > hydro_press x3 | 100.0 | 100.0 | 99.9 |
+| 21-30 | best gear | chef_necklace_3 (level 30) | vibro_hone x7 > ramp_plasma > hydro_press x3 > vibro_hone > hydro_press x2 | 100.0 | 100.0 | 99.7 |
+| 31-40 | no gear | sh_charm (level 31) | hydro_press > vibro_hone x7 > ramp_plasma > vibro_hone > hydro_press x4 > cryo_quench > vibro_hone x2 | 100.0 | 100.0 | 99.7 |
+| 31-40 | no gear | prm_bul_cloak (level 33) | vibro_hone x3 > hydro_press > vibro_hone x4 > ramp_plasma > vibro_hone > hydro_press x4 > vibro_hone > hydro_press x2 | 100.0 | 100.0 | 99.8 |
+| 31-40 | no gear | biolab_belt (level 34) | hydro_press > vibro_hone x4 > hydro_press > vibro_hone > ramp_plasma > vibro_hone x2 > hydro_press x3 > cryo_quench > hydro_press > cryo_quench > vibro_hone x3 | 100.0 | 100.0 | 99.9 |
+| 31-40 | no gear | proto_greatsword (level 38) | hydro_press x2 > vibro_hone x3 > ramp_plasma > vibro_hone x4 > ramp_plasma > hydro_press x2 > vibro_hone > hydro_press x2 | 100.0 | 100.0 | 99.8 |
+| 31-40 | no gear | majestic_ring001 (level 40) | vibro_hone x3 > ramp_plasma > vibro_hone x3 > ramp_plasma > vibro_hone x2 > ramp_plasma > hydro_press x4 > ramp_plasma > hydro_press x2 | 100.0 | 100.0 | 99.7 |
+| 31-40 | no gear | chef_cloak_4 (level 40) | vibro_hone x4 > ramp_plasma > hydro_press > vibro_hone x3 > ramp_plasma > hydro_press > ramp_plasma > hydro_press x4 | 100.0 | 100.0 | 99.9 |
+| 31-40 | mid gear | sh_charm (level 31) | vibro_hone > hydro_press > vibro_hone x6 > ramp_plasma > hydro_press x2 > vibro_hone > hydro_press x2 | 100.0 | 100.0 | 99.8 |
+| 31-40 | mid gear | prm_bul_cloak (level 33) | vibro_hone > hydro_press > vibro_hone x5 > ramp_plasma > hydro_press x2 > vibro_hone > hydro_press x3 | 100.0 | 100.0 | 100.0 |
+| 31-40 | mid gear | biolab_belt (level 34) | vibro_hone x2 > hydro_press > vibro_hone x4 > ramp_plasma > hydro_press x3 > vibro_hone > hydro_press x2 > ramp_plasma > hydro_press | 100.0 | 100.0 | 100.0 |
+| 31-40 | mid gear | proto_greatsword (level 38) | vibro_hone x4 > ramp_plasma > hydro_press > vibro_hone x3 > ramp_plasma > hydro_press x2 > vibro_hone > hydro_press x3 | 100.0 | 100.0 | 99.8 |
+| 31-40 | mid gear | majestic_ring001 (level 40) | vibro_hone x3 > ramp_plasma > vibro_hone x3 > ramp_plasma > hydro_press > vibro_hone > ramp_plasma > hydro_press x4 | 100.0 | 100.0 | 99.9 |
+| 31-40 | mid gear | chef_cloak_4 (level 40) | vibro_hone x4 > ramp_plasma > hydro_press > vibro_hone x3 > ramp_plasma > hydro_press x5 | 100.0 | 100.0 | 99.8 |
+| 31-40 | best gear | sh_charm (level 31) | hydro_press > vibro_hone x7 > ramp_plasma > hydro_press x4 | 100.0 | 100.0 | 99.9 |
+| 31-40 | best gear | prm_bul_cloak (level 33) | vibro_hone > hydro_press > vibro_hone x5 > ramp_plasma > hydro_press x4 | 100.0 | 100.0 | 99.7 |
+| 31-40 | best gear | biolab_belt (level 34) | vibro_hone > hydro_press > vibro_hone x5 > ramp_plasma > hydro_press x5 | 100.0 | 100.0 | 99.6 |
+| 31-40 | best gear | proto_greatsword (level 38) | vibro_hone x4 > ramp_plasma > hydro_press > vibro_hone x3 > ramp_plasma > hydro_press x4 | 100.0 | 100.0 | 99.8 |
+| 31-40 | best gear | majestic_ring001 (level 40) | vibro_hone x4 > hydro_press > ramp_plasma > vibro_hone > ramp_plasma > hydro_press x2 > vibro_hone > hydro_press x2 | 100.0 | 100.0 | 99.9 |
+| 31-40 | best gear | chef_cloak_4 (level 40) | vibro_hone x4 > ramp_plasma > vibro_hone x2 > ramp_plasma > hydro_press x5 | 100.0 | 100.0 | 100.0 |
+| 41-53 | no gear | asc_chn_tunic (level 42) | vibro_hone x6 > ramp_plasma > hydro_press x8 | 100.0 | 100.0 | 99.9 |
+| 41-53 | no gear | sorting_harness (level 45) | vibro_hone x4 > ramp_plasma > hydro_press > vibro_hone x4 > hydro_press > ramp_plasma > hydro_press x5 | 100.0 | 100.0 | 99.8 |
+| 41-53 | no gear | engi_belt_5 (level 50) | vibro_hone > ramp_plasma > vibro_hone x2 > ramp_plasma > hydro_press > vibro_hone x2 > ramp_plasma > vibro_hone x3 > ramp_plasma > hydro_press x2 > ramp_plasma > hydro_press x3 | 100.0 | 100.0 | 99.8 |
+| 41-53 | no gear | fang_gaunt (level 50) | vibro_hone x2 > ramp_plasma > vibro_hone x4 > ramp_plasma x2 > hydro_press x2 > ramp_plasma > hydro_press x5 | 100.0 | 100.0 | 99.9 |
+| 41-53 | no gear | chi_greatsword (level 52) | vibro_hone x3 > ramp_plasma > vibro_hone x3 > ramp_plasma > vibro_hone x3 > ramp_plasma > hydro_press x2 > vibro_hone > ramp_plasma > hydro_press x4 | 100.0 | 100.0 | 99.6 |
+| 41-53 | no gear | imm_ring (level 52) | vibro_hone x2 > ramp_plasma > vibro_hone x2 > ramp_plasma > vibro_hone x3 > ramp_plasma > vibro_hone x2 > ramp_plasma > hydro_press x2 > vibro_hone > ramp_plasma > hydro_press x3 > ramp_plasma > hydro_press | 100.0 | 100.0 | 99.6 |
+| 41-53 | mid gear | asc_chn_tunic (level 42) | vibro_hone > hydro_press > vibro_hone x4 > hydro_press x2 > vibro_hone > ramp_plasma > hydro_press x5 | 100.0 | 100.0 | 99.9 |
+| 41-53 | mid gear | sorting_harness (level 45) | vibro_hone x4 > ramp_plasma > hydro_press > vibro_hone x2 > hydro_press > vibro_hone > hydro_press > ramp_plasma > hydro_press x3 | 100.0 | 100.0 | 100.0 |
+| 41-53 | mid gear | engi_belt_5 (level 50) | vibro_hone > ramp_plasma > vibro_hone x2 > ramp_plasma > vibro_hone x3 > ramp_plasma > hydro_press > vibro_hone > ramp_plasma > hydro_press x5 | 100.0 | 100.0 | 99.8 |
+| 41-53 | mid gear | fang_gaunt (level 50) | vibro_hone x2 > ramp_plasma > vibro_hone x3 > ramp_plasma > hydro_press > vibro_hone > hydro_press x2 > ramp_plasma > hydro_press x5 | 100.0 | 100.0 | 99.9 |
+| 41-53 | mid gear | chi_greatsword (level 52) | hydro_press > vibro_hone x3 > ramp_plasma > hydro_press > vibro_hone x2 > ramp_plasma > vibro_hone x3 > ramp_plasma > hydro_press x4 > cryo_quench > vibro_hone | 100.0 | 100.0 | 99.8 |
+| 41-53 | mid gear | imm_ring (level 52) | vibro_hone x2 > ramp_plasma > vibro_hone x2 > ramp_plasma > vibro_hone x4 > ramp_plasma > vibro_hone > hydro_press > ramp_plasma > hydro_press x2 > ramp_plasma > hydro_press | 100.0 | 100.0 | 99.6 |
+| 41-53 | best gear | asc_chn_tunic (level 42) | vibro_hone > hydro_press > vibro_hone x4 > hydro_press x3 > ramp_plasma > hydro_press x3 | 100.0 | 100.0 | 99.7 |
+| 41-53 | best gear | sorting_harness (level 45) | hydro_press > vibro_hone x4 > ramp_plasma > vibro_hone > hydro_press x2 > vibro_hone > hydro_press x3 | 100.0 | 100.0 | 99.7 |
+| 41-53 | best gear | engi_belt_5 (level 50) | vibro_hone x2 > ramp_plasma > vibro_hone x2 > ramp_plasma > hydro_press > vibro_hone > ramp_plasma > vibro_hone > hydro_press x3 | 100.0 | 100.0 | 99.5 |
+| 41-53 | best gear | fang_gaunt (level 50) | vibro_hone x2 > ramp_plasma > vibro_hone x3 > ramp_plasma x2 > hydro_press x5 | 100.0 | 100.0 | 99.9 |
+| 41-53 | best gear | chi_greatsword (level 52) | vibro_hone x3 > ramp_plasma > vibro_hone x3 > ramp_plasma > hydro_press > vibro_hone x2 > ramp_plasma > hydro_press x4 | 100.0 | 100.0 | 99.8 |
+| 41-53 | best gear | imm_ring (level 52) | vibro_hone x2 > ramp_plasma > vibro_hone x2 > ramp_plasma > hydro_press > vibro_hone x2 > ramp_plasma > vibro_hone x2 > ramp_plasma > hydro_press x4 | 100.0 | 100.0 | 99.8 |
 
 ## Perks optional
 
@@ -132,23 +228,23 @@
 
 ### Component stacks consumed per item made, failures included (both sides play to maximize quality; quality is the mean over attempts, a failure counting 0)
 
-| Band | Gear | Recipes played | New stacks per item | Legacy stacks per item | Ratio | New success | Legacy success | New avg quality | Legacy avg quality | Quality matched | Never made (new / legacy) | Verdict |
-| --- | --- | --- | --- | --- | --- | --- | --- | --- | --- | --- | --- | --- |
-| 1-10 | no gear | 6 | 2.67 | 2.70 | 0.99 | 100% | 98% | 100% | 1% | yes | 0% / 0% | Passed |
-| 1-10 | mid gear | 6 | 2.67 | 2.73 | 0.98 | 100% | 96% | 100% | 11% | yes | 0% / 0% | Passed |
-| 1-10 | best gear | 6 | 2.67 | 2.70 | 0.99 | 100% | 98% | 100% | 28% | yes | 0% / 0% | Passed |
-| 11-20 | no gear | 6 | 2.50 | 2.70 | 0.92 | 100% | 89% | 100% | 2% | yes | 0% / 0% | Passed |
-| 11-20 | mid gear | 6 | 2.50 | 2.53 | 0.99 | 100% | 98% | 100% | 13% | yes | 0% / 0% | Passed |
-| 11-20 | best gear | 6 | 2.50 | 2.51 | 1.00 | 100% | 100% | 100% | 29% | yes | 0% / 0% | Passed |
-| 21-30 | no gear | 6 | 3.33 | 3.37 | 0.99 | 100% | 98% | 100% | 7% | yes | 0% / 0% | Passed |
-| 21-30 | mid gear | 6 | 3.33 | 3.35 | 1.00 | 100% | 99% | 100% | 15% | yes | 0% / 0% | Passed |
-| 21-30 | best gear | 6 | 3.33 | 3.35 | 0.99 | 100% | 99% | 100% | 28% | yes | 0% / 0% | Passed |
-| 31-40 | no gear | 6 | 3.00 | 3.07 | 0.98 | 100% | 97% | 100% | 22% | yes | 0% / 0% | Passed |
-| 31-40 | mid gear | 6 | 3.00 | 3.01 | 1.00 | 100% | 99% | 100% | 38% | yes | 0% / 0% | Passed |
-| 31-40 | best gear | 6 | 3.00 | 3.02 | 0.99 | 100% | 99% | 100% | 50% | yes | 0% / 0% | Passed |
-| 41-53 | no gear | 6 | 4.67 | 3.03 | 1.54 | 100% | 66% | 100% | 29% | yes | 0% / 33% | Failed |
-| 41-53 | mid gear | 6 | 4.67 | 5.35 | 0.87 | 100% | 73% | 100% | 46% | yes | 0% / 0% | Failed |
-| 41-53 | best gear | 6 | 4.67 | 4.90 | 0.95 | 100% | 89% | 100% | 61% | yes | 0% / 0% | Passed |
+| Band | Gear | Recipes played | New stacks per item | Legacy stacks per item | Ratio | New success | Legacy success | New avg quality | Legacy avg quality | Quality matched | Never made (new / legacy) | Parity rule | Verdict |
+| --- | --- | --- | --- | --- | --- | --- | --- | --- | --- | --- | --- | --- | --- |
+| 1-10 | no gear | 6 | 2.67 | 2.70 | 0.99 | 100% | 98% | 100% | 1% | yes | 0% / 0% | within 10% | Passed |
+| 1-10 | mid gear | 6 | 2.67 | 2.73 | 0.98 | 100% | 96% | 100% | 11% | yes | 0% / 0% | within 10% | Passed |
+| 1-10 | best gear | 6 | 2.67 | 2.70 | 0.99 | 100% | 98% | 100% | 28% | yes | 0% / 0% | within 10% | Passed |
+| 11-20 | no gear | 6 | 2.50 | 2.70 | 0.92 | 100% | 89% | 100% | 2% | yes | 0% / 0% | at most +10% | Passed |
+| 11-20 | mid gear | 6 | 2.50 | 2.53 | 0.99 | 100% | 98% | 100% | 13% | yes | 0% / 0% | within 10% | Passed |
+| 11-20 | best gear | 6 | 2.50 | 2.51 | 1.00 | 100% | 100% | 100% | 29% | yes | 0% / 0% | within 10% | Passed |
+| 21-30 | no gear | 6 | 3.33 | 3.37 | 0.99 | 100% | 98% | 100% | 7% | yes | 0% / 0% | within 10% | Passed |
+| 21-30 | mid gear | 6 | 3.33 | 3.35 | 1.00 | 100% | 99% | 100% | 15% | yes | 0% / 0% | within 10% | Passed |
+| 21-30 | best gear | 6 | 3.33 | 3.35 | 0.99 | 100% | 99% | 100% | 28% | yes | 0% / 0% | within 10% | Passed |
+| 31-40 | no gear | 6 | 3.00 | 3.07 | 0.98 | 100% | 97% | 100% | 22% | yes | 0% / 0% | within 10% | Passed |
+| 31-40 | mid gear | 6 | 3.00 | 3.01 | 1.00 | 100% | 99% | 100% | 38% | yes | 0% / 0% | within 10% | Passed |
+| 31-40 | best gear | 6 | 3.00 | 3.02 | 0.99 | 100% | 99% | 100% | 50% | yes | 0% / 0% | within 10% | Passed |
+| 41-53 | no gear | 6 | 4.67 | 3.03 | 1.54 | 100% | 66% | 100% | 29% | yes | 0% / 33% | at most +10% | Failed |
+| 41-53 | mid gear | 6 | 4.67 | 5.35 | 0.87 | 100% | 73% | 100% | 46% | yes | 0% / 0% | at most +10%; uses 13% less, passes | Passed |
+| 41-53 | best gear | 6 | 4.67 | 4.90 | 0.95 | 100% | 89% | 100% | 61% | yes | 0% / 0% | at most +10% | Passed |
 
 ## XP rate
 
@@ -168,54 +264,54 @@
 | 1-10 | best gear, 1 enhancement | 745 | 10.9 | 41214 | 1859 | 12.5 | 66942 | 1.62 | - | Passed |
 | 1-10 | best gear, 2 enhancements | 733 | 11.0 | 39984 | 1859 | 14.2 | 58769 | 1.47 | - | Passed |
 | 1-10 | best gear, 3 enhancements | 703 | 11.1 | 37811 | 1859 | 15.9 | 52462 | 1.39 | - | Passed |
-| 11-20 | no gear | 556 | 7.8 | 42813 | 1859 | 13.7 | 61242 | 1.43 | - | Passed |
-| 11-20 | no gear, 1 enhancement | 415 | 8.1 | 30917 | 1798 | 16.5 | 49022 | 1.59 | - | Passed |
-| 11-20 | no gear, 2 enhancements | 260 | 7.1 | 21850 | 1694 | 19.3 | 39581 | 1.81 | - | Passed |
-| 11-20 | no gear, 3 enhancements | 261 | 7.7 | 20290 | 1665 | 20.8 | 35972 | 1.77 | - | Passed |
-| 11-20 | mid gear | 668 | 11.0 | 36437 | 1858 | 12.2 | 68432 | 1.88 | - | Passed |
-| 11-20 | mid gear, 1 enhancement | 651 | 11.8 | 32992 | 1859 | 14.6 | 57362 | 1.74 | - | Passed |
-| 11-20 | mid gear, 2 enhancements | 626 | 12.6 | 29817 | 1859 | 16.9 | 49547 | 1.66 | - | Passed |
-| 11-20 | mid gear, 3 enhancements | 611 | 13.5 | 27091 | 1842 | 19.8 | 41934 | 1.55 | - | Passed |
-| 11-20 | best gear | 771 | 14.5 | 31867 | 1858 | 10.6 | 78561 | 2.47 | - | Passed |
-| 11-20 | best gear, 1 enhancement | 761 | 15.1 | 30267 | 1859 | 12.6 | 66410 | 2.19 | - | Passed |
-| 11-20 | best gear, 2 enhancements | 743 | 16.0 | 27845 | 1859 | 14.5 | 57514 | 2.07 | - | Passed |
-| 11-20 | best gear, 3 enhancements | 744 | 16.5 | 27046 | 1859 | 16.8 | 49942 | 1.85 | - | Passed |
-| 21-30 | no gear | 636 | 10.2 | 37567 | 1859 | 13.7 | 61202 | 1.63 | - | Passed |
-| 21-30 | no gear, 1 enhancement | 614 | 11.5 | 32122 | 1832 | 16.8 | 48983 | 1.52 | - | Passed |
-| 21-30 | no gear, 2 enhancements | 601 | 12.5 | 28780 | 1816 | 20.1 | 40609 | 1.41 | - | Passed |
-| 21-30 | no gear, 3 enhancements | 575 | 13.4 | 25748 | 1784 | 23.1 | 34766 | 1.35 | - | Passed |
-| 21-30 | mid gear | 688 | 16.4 | 25238 | 1859 | 12.1 | 68891 | 2.73 | - | Passed |
-| 21-30 | mid gear, 1 enhancement | 676 | 16.7 | 24276 | 1859 | 14.7 | 56980 | 2.35 | - | Passed |
-| 21-30 | mid gear, 2 enhancements | 666 | 17.3 | 23121 | 1859 | 17.8 | 47080 | 2.04 | - | Passed |
-| 21-30 | mid gear, 3 enhancements | 645 | 17.5 | 22081 | 1856 | 21.0 | 39680 | 1.80 | - | Passed |
-| 21-30 | best gear | 766 | 21.3 | 21616 | 1858 | 10.7 | 78440 | 3.63 | - | Passed |
-| 21-30 | best gear, 1 enhancement | 757 | 21.6 | 21048 | 1859 | 12.8 | 65247 | 3.10 | - | Passed |
-| 21-30 | best gear, 2 enhancements | 748 | 22.0 | 20379 | 1859 | 15.0 | 55838 | 2.74 | - | Passed |
-| 21-30 | best gear, 3 enhancements | 743 | 22.1 | 20179 | 1859 | 17.9 | 46862 | 2.32 | - | Passed |
-| 31-40 | no gear | 717 | 15.1 | 28426 | 1858 | 14.3 | 58427 | 2.06 | - | Passed |
-| 31-40 | no gear, 1 enhancement | 667 | 15.3 | 26143 | 1858 | 17.4 | 48110 | 1.84 | - | Passed |
-| 31-40 | no gear, 2 enhancements | 641 | 14.8 | 25935 | 1856 | 21.1 | 39576 | 1.53 | - | Passed |
-| 31-40 | no gear, 3 enhancements | 602 | 16.0 | 22641 | 1829 | 24.8 | 33145 | 1.46 | - | Passed |
-| 31-40 | mid gear | 824 | 20.7 | 23873 | 1859 | 12.8 | 65217 | 2.73 | - | Passed |
-| 31-40 | mid gear, 1 enhancement | 792 | 21.0 | 22644 | 1859 | 15.4 | 54435 | 2.40 | - | Passed |
-| 31-40 | mid gear, 2 enhancements | 750 | 20.5 | 21918 | 1859 | 18.5 | 45111 | 2.06 | - | Passed |
-| 31-40 | mid gear, 3 enhancements | 711 | 20.1 | 21265 | 1859 | 21.5 | 38880 | 1.83 | - | Passed |
-| 31-40 | best gear | 892 | 25.4 | 21100 | 1858 | 11.3 | 73959 | 3.51 | - | Passed |
-| 31-40 | best gear, 1 enhancement | 887 | 26.0 | 20442 | 1859 | 13.2 | 63221 | 3.09 | - | Passed |
-| 31-40 | best gear, 2 enhancements | 862 | 26.1 | 19776 | 1859 | 15.6 | 53678 | 2.71 | - | Passed |
-| 31-40 | best gear, 3 enhancements | 831 | 24.8 | 20137 | 1859 | 18.5 | 45134 | 2.24 | - | Passed |
-| 41-53 | no gear | 605 | 15.8 | 22974 | 2013 | 15.7 | 57769 | 2.51 | - | Passed |
-| 41-53 | no gear, 1 enhancement | 553 | 14.4 | 23054 | 2014 | 18.0 | 50410 | 2.19 | - | Passed |
-| 41-53 | no gear, 2 enhancements | 495 | 14.5 | 20431 | 2005 | 20.4 | 44180 | 2.16 | - | Passed |
-| 41-53 | no gear, 3 enhancements | 445 | 14.8 | 17963 | 1987 | 23.1 | 38677 | 2.15 | - | Passed |
-| 41-53 | mid gear | 757 | 23.0 | 19709 | 2013 | 14.0 | 64719 | 3.28 | - | Passed |
-| 41-53 | mid gear, 1 enhancement | 686 | 21.2 | 19431 | 2014 | 15.8 | 57481 | 2.96 | - | Passed |
-| 41-53 | mid gear, 2 enhancements | 611 | 18.3 | 19987 | 2013 | 17.9 | 50642 | 2.53 | - | Passed |
-| 41-53 | mid gear, 3 enhancements | 568 | 17.3 | 19735 | 2013 | 20.2 | 44789 | 2.27 | - | Passed |
-| 41-53 | best gear | 947 | 27.5 | 20638 | 2013 | 12.2 | 74416 | 3.61 | - | Passed |
-| 41-53 | best gear, 1 enhancement | 900 | 27.4 | 19733 | 2014 | 13.7 | 66177 | 3.35 | - | Passed |
-| 41-53 | best gear, 2 enhancements | 776 | 24.2 | 19276 | 2014 | 15.4 | 58867 | 3.05 | - | Passed |
-| 41-53 | best gear, 3 enhancements | 715 | 21.7 | 19802 | 2014 | 17.2 | 52554 | 2.65 | - | Passed |
+| 11-20 | no gear | 556 | 7.8 | 42813 | 1307 | 13.7 | 43066 | 1.01 | - | Passed |
+| 11-20 | no gear, 1 enhancement | 415 | 8.1 | 30917 | 1265 | 16.5 | 34473 | 1.12 | - | Passed |
+| 11-20 | no gear, 2 enhancements | 260 | 7.1 | 21850 | 1191 | 19.3 | 27835 | 1.27 | - | Passed |
+| 11-20 | no gear, 3 enhancements | 261 | 7.7 | 20290 | 1171 | 20.8 | 25296 | 1.25 | - | Passed |
+| 11-20 | mid gear | 668 | 11.0 | 36437 | 1307 | 12.2 | 48123 | 1.32 | - | Passed |
+| 11-20 | mid gear, 1 enhancement | 651 | 11.8 | 32992 | 1307 | 14.6 | 40338 | 1.22 | - | Passed |
+| 11-20 | mid gear, 2 enhancements | 626 | 12.6 | 29817 | 1307 | 16.9 | 34842 | 1.17 | - | Passed |
+| 11-20 | mid gear, 3 enhancements | 611 | 13.5 | 27091 | 1295 | 19.8 | 29489 | 1.09 | - | Passed |
+| 11-20 | best gear | 771 | 14.5 | 31867 | 1307 | 10.6 | 55246 | 1.73 | - | Passed |
+| 11-20 | best gear, 1 enhancement | 761 | 15.1 | 30267 | 1307 | 12.6 | 46701 | 1.54 | - | Passed |
+| 11-20 | best gear, 2 enhancements | 743 | 16.0 | 27845 | 1307 | 14.5 | 40445 | 1.45 | - | Passed |
+| 11-20 | best gear, 3 enhancements | 744 | 16.5 | 27046 | 1307 | 16.8 | 35120 | 1.30 | - | Passed |
+| 21-30 | no gear | 636 | 10.2 | 37567 | 1379 | 13.7 | 45407 | 1.21 | - | Passed |
+| 21-30 | no gear, 1 enhancement | 614 | 11.5 | 32122 | 1360 | 16.8 | 36341 | 1.13 | - | Passed |
+| 21-30 | no gear, 2 enhancements | 601 | 12.5 | 28780 | 1347 | 20.1 | 30129 | 1.05 | - | Passed |
+| 21-30 | no gear, 3 enhancements | 575 | 13.4 | 25748 | 1323 | 23.1 | 25793 | 1.00 | - | Passed |
+| 21-30 | mid gear | 688 | 16.4 | 25238 | 1379 | 12.1 | 51111 | 2.03 | - | Passed |
+| 21-30 | mid gear, 1 enhancement | 676 | 16.7 | 24276 | 1379 | 14.7 | 42275 | 1.74 | - | Passed |
+| 21-30 | mid gear, 2 enhancements | 666 | 17.3 | 23121 | 1379 | 17.8 | 34930 | 1.51 | - | Passed |
+| 21-30 | mid gear, 3 enhancements | 645 | 17.5 | 22081 | 1377 | 21.0 | 29440 | 1.33 | - | Passed |
+| 21-30 | best gear | 766 | 21.3 | 21616 | 1379 | 10.7 | 58197 | 2.69 | - | Passed |
+| 21-30 | best gear, 1 enhancement | 757 | 21.6 | 21048 | 1379 | 12.8 | 48409 | 2.30 | - | Passed |
+| 21-30 | best gear, 2 enhancements | 748 | 22.0 | 20379 | 1379 | 15.0 | 41427 | 2.03 | - | Passed |
+| 21-30 | best gear, 3 enhancements | 743 | 22.1 | 20179 | 1380 | 17.9 | 34768 | 1.72 | - | Passed |
+| 31-40 | no gear | 717 | 15.1 | 28426 | 1283 | 14.3 | 40332 | 1.42 | - | Passed |
+| 31-40 | no gear, 1 enhancement | 667 | 15.3 | 26143 | 1283 | 17.4 | 33211 | 1.27 | - | Passed |
+| 31-40 | no gear, 2 enhancements | 641 | 14.8 | 25935 | 1281 | 21.1 | 27320 | 1.05 | - | Passed |
+| 31-40 | no gear, 3 enhancements | 602 | 16.0 | 22641 | 1263 | 24.8 | 22881 | 1.01 | - | Passed |
+| 31-40 | mid gear | 824 | 20.7 | 23873 | 1283 | 12.8 | 45021 | 1.89 | - | Passed |
+| 31-40 | mid gear, 1 enhancement | 792 | 21.0 | 22644 | 1283 | 15.4 | 37577 | 1.66 | - | Passed |
+| 31-40 | mid gear, 2 enhancements | 750 | 20.5 | 21918 | 1283 | 18.5 | 31141 | 1.42 | - | Passed |
+| 31-40 | mid gear, 3 enhancements | 711 | 20.1 | 21265 | 1283 | 21.5 | 26839 | 1.26 | - | Passed |
+| 31-40 | best gear | 892 | 25.4 | 21100 | 1283 | 11.3 | 51054 | 2.42 | - | Passed |
+| 31-40 | best gear, 1 enhancement | 887 | 26.0 | 20442 | 1283 | 13.2 | 43642 | 2.13 | - | Passed |
+| 31-40 | best gear, 2 enhancements | 862 | 26.1 | 19776 | 1283 | 15.6 | 37055 | 1.87 | - | Passed |
+| 31-40 | best gear, 3 enhancements | 831 | 24.8 | 20137 | 1283 | 18.5 | 31157 | 1.55 | - | Passed |
+| 41-53 | no gear | 605 | 15.8 | 22974 | 1298 | 15.7 | 37263 | 1.62 | - | Passed |
+| 41-53 | no gear, 1 enhancement | 553 | 14.4 | 23054 | 1299 | 18.0 | 32517 | 1.41 | - | Passed |
+| 41-53 | no gear, 2 enhancements | 495 | 14.5 | 20431 | 1293 | 20.4 | 28498 | 1.39 | - | Passed |
+| 41-53 | no gear, 3 enhancements | 445 | 14.8 | 17963 | 1282 | 23.1 | 24948 | 1.39 | - | Passed |
+| 41-53 | mid gear | 757 | 23.0 | 19709 | 1299 | 14.0 | 41747 | 2.12 | - | Passed |
+| 41-53 | mid gear, 1 enhancement | 686 | 21.2 | 19431 | 1299 | 15.8 | 37078 | 1.91 | - | Passed |
+| 41-53 | mid gear, 2 enhancements | 611 | 18.3 | 19987 | 1299 | 17.9 | 32666 | 1.63 | - | Passed |
+| 41-53 | mid gear, 3 enhancements | 568 | 17.3 | 19735 | 1299 | 20.2 | 28891 | 1.46 | - | Passed |
+| 41-53 | best gear | 947 | 27.5 | 20638 | 1298 | 12.2 | 48001 | 2.33 | - | Passed |
+| 41-53 | best gear, 1 enhancement | 900 | 27.4 | 19733 | 1299 | 13.7 | 42687 | 2.16 | - | Passed |
+| 41-53 | best gear, 2 enhancements | 776 | 24.2 | 19276 | 1299 | 15.4 | 37972 | 1.97 | - | Passed |
+| 41-53 | best gear, 3 enhancements | 715 | 21.7 | 19802 | 1299 | 17.2 | 33900 | 1.71 | - | Passed |
 
 ## Enhancement parity
 
@@ -267,8 +363,9 @@
 
 - The recipes are an even sample of each band (or all of them, as the inputs say), weighted equally. A recipe the sample skipped can behave differently.
 - The adaptive player is a bounded-depth expectimax over the previews with a generic heuristic. It is a floor on skilled play, not an optimal player; a deeper search or a scenario heuristic can only raise it.
-- The fixed-rotation solver is a beam search with local search, not a proof. A fixed rotation it did not find would narrow the margin; raise the solver options to look harder. The rotation is scored on separate attempts, so its figure is not flattered by the search.
-- Gate 5 compares at matched rank, gear and effort (both sides play to maximize quality) and requires the new minigame's average quality to be at least the legacy player's (within `MaterialQualityShortfallPoints`); it does not compare at an equal quality target. Enhancements are not committed in either model.
+- Gate 1 asks whether one rotation wins every craft of a band (owner decision, October 2026), not whether each recipe has a rotation of its own: in a minigame with full state and almost no randomness a rotation per recipe always exists, so that figure is reported and not gated. The band's recipes are an even sample of at most `RecipesPerBand`, so a rotation that wins the unsampled recipes is not tried.
+- The fixed-rotation solver is a beam search with local search, not a proof. A fixed rotation it did not find would narrow the margin; raise the solver options to look harder. The single rotation starts from every recipe's own best sequence and the adaptive lines, and is scored on separate attempts, so its figure is not flattered by the search.
+- Gate 5 compares at matched rank, gear and effort (both sides play to maximize quality) and requires the new minigame's average quality to be at least the legacy player's (within `MaterialQualityShortfallPoints`); it does not compare at an equal quality target. Where the legacy policy succeeds in fewer than `MaterialTwoSidedMinimumLegacySuccess` of the crafts, its failures waste material, and lower use than today passes (owner decision, October 2026). Enhancements are not committed in either model.
 - Gate 6 uses estimated seconds per action. The legacy comparator is the old minigame's lookahead player, one step of policy improvement over the rotation players report, not an optimal player. Its enhanced cases play the cohort's recipes that have an enhancement slot (an even sample of each band, so they can differ from the plain cases' recipes) with gate 7's representative enhancement in every slot; XP does not depend on the enhancements except through the quality and failures they cause.
 - Gate 7 plays every enhanceable recipe of the at-level bands with the representative real enhancement item of its kind (the best level the recipe accepts, the lower-median progress penalty of that level), the same item in every filled slot, and counts expected transferred enhancements per craft attempt, a craft that makes no item counting none. Enhancement items differ in penalty, so the figure holds for the median item. Today's side draws no transfer rolls: a craft that is made adds slots x quality chance / 100. How a scenario maps the penalty onto its progress meter is that minigame's own rule, and the client has not measured it.
 - Gathering, scavenging, fishing and research are not covered here; their cohorts implement `IXpRateCohort` and their economy checks belong to their own gates.
@@ -284,12 +381,12 @@
 
 | Gate | Result | Where it stands |
 | --- | --- | --- |
-| 1 No fixed rotation | Failed in all 15 cases (margins -0.3 to -0.1) | Needs a structural change; see "Gate 1" below. |
+| 1 No single rotation | Failed in all 15 cases (margins -0.3 to 0.0 against the best single rotation of each band and tier; -0.3 to -0.1 against each recipe's own best) | Needs a structural change; see "Gate 1" below. |
 | 2 Style balance | Not applicable | No styles until the perk pull request. |
 | 3 Perks optional | Passed (89% to 92% reach maximum quality at rank 50 with best gear) | |
 | 4 Length | Passed (10.6 to 15.7 actions at level in every band and gear tier) | |
-| 5 Material parity | Failed in 41-53 / no gear (1.54) and 41-53 / mid gear (0.87) only | Both are properties of the comparison, not of the Forge; see "Gate 5" below. |
-| 6 XP rate | Passed in every band, gear tier and enhancement count (0 to 3; lowest 1.00x in 1-10 / no gear) with `ForgeRules.XpMultiplier` = 1.55 | The multiplier is an owner decision; see "Gate 6" below. |
+| 5 Material parity | Failed in 41-53 / no gear (1.54) only; 41-53 / mid gear (0.87) now passes under the one-sided rule | The failing cell is a property of the comparison, not of the Forge; see "Gate 5" below. |
+| 6 XP rate | Passed in every band, gear tier and enhancement count (0 to 3; lowest 1.00x in 1-10 / no gear and in 21-30 / no gear with 3 enhancements) with the per-band multipliers 1.55 / 1.09 / 1.15 / 1.07 / 1.0 | The multipliers are an owner decision; see "Gate 6" below. |
 | 7 Enhancement parity | Passed (1.06 to 218 times today's expected enhancements; the Forge transfers 1.00 / 2.00 / 3.00 for 1 / 2 / 3 slots) | The shared thresholds are untouched; see "Gate 7" below. |
 
 ### What changed from the phase 1 values
@@ -307,10 +404,12 @@ Phase 1 values were played first (40 runs, 4 recipes per band, the generic adapt
 | Cryo-Quench base Finish | 300 | 360 | Same. |
 | Post-quench Vibro-Hone | 63 Finish, 55 Shape | 84 Finish, 72 Shape | Scaled with the above, so it stays 0.6 of a best-case hone. |
 | Ramp Plasma +25, Rebond +25 Integrity and -12 Thermal, Integrity costs, Stable Containment 35% and +50%, the 80% quench threshold | | unchanged | Raising the opportunity's frequency or strength did not help gate 1 (below). |
-| `ForgeRules.XpMultiplier` | none | 1.55 | Gate 6, at its minimum (1-10 / no gear, no enhancements needs 1.54). |
+| `ForgeRules.XpMultiplierLevels...` | none | 1.55 / 1.09 / 1.15 / 1.07 / 1.0 for levels 1-10 / 11-20 / 21-30 / 31-40 / 41 and up | Gate 6, the minimum per band through the shared `CraftMinigameXp` mechanism. |
 | Adaptive heuristic (scenario) | generic | success bonus 0.85, safety margin 3.0 | The generic one honed to full Finish and then lacked the Integrity to finish Shape. |
 
 ### Gate 1: why tuning magnitudes and frequency cannot pass it
+
+Under the current gate (one rotation for the whole band and gear tier, searched across the band's sampled recipes, scored on hold-out attempts; seed 1, 100 runs, the default solver) one fixed sequence scores 99.9 to 100.0 on average in all 15 cases against adaptive play's 99.7 to 99.9, so the margins are -0.3 to 0.0 where 10 are required. The band's single rotation is hone-heavy with a Ramp Plasma where the recipes' cooling needs one (more of them at higher levels), and it scores 99.7 to 100.0 on every sampled recipe too, so one sequence per band serves all six recipes. What blocks it: the Forge is deterministic apart from one telegraphed opportunity worth +50% to one action, so a sequence found after the fact reproduces the best plan every time, and the recipes of a band share enough shape (cooling, range width and Shape split change by a few points between neighbouring levels) that one sequence fits them. Only a result the player must read before choosing the next action, which a stored sequence cannot know, separates adaptive play from it. That is the structural change below, which is not made here.
 
 Reduced solver (beam 6, 32/80 training/selection attempts), 3 recipes per band, 30 runs, seed 1, the tuned values above. Margins are adaptive minus best fixed rotation, in quality points, over the 15 band and gear cases.
 
@@ -331,31 +430,23 @@ Proposed structural change (not made; needs the owner's approval). Give the Forg
 
 This is reasoned from the results above and has not been simulated for the Forge.
 
-### Gate 5: the failing cells compare different recipe sets
+### Gate 5: the failing cell compares different recipe sets
 
-The comparison drops recipes the old minigame never makes from its stack figure and keeps them in the new one, and in 41-53 the old minigame never makes 2 of the 6 sampled recipes at no gear. On the recipes the old minigame does make (100 runs per recipe, seed 1):
-
-| Band / gear | New stacks per item | Legacy stacks per item | Ratio |
-| --- | --- | --- | --- |
-| 41-53 / no gear | 3.00 | 3.03 | 0.99 |
-| 41-53 / mid gear | 4.67 | 5.35 | 0.87 |
-| 41-53 / best gear | 4.67 | 4.90 | 0.95 |
-
-The mid gear cell is a real difference with the right sign: the old minigame fails 27% of these recipes at mid gear (each failure loses stacks at 65%) and the Forge fails none, so it uses 13% fewer stacks per item. Matching the old waste would mean making the Forge fail more often, which the outcome contract does not want. A one-sided check (the new minigame uses at most 10% more than the old one) would pass every cell; that change to the gate belongs to the harness owner.
+Under the current one-sided rule (the new minigame may use at most 10% more stacks than the old one where the old crafter succeeds under 90% of the time) 41-53 / mid gear passes (0.87: the old minigame fails 27% of these recipes and the Forge none, so the Forge uses 13% fewer stacks per item). 41-53 / no gear still fails at 1.54 because the old minigame never makes 2 of the 6 sampled recipes there. The comparison drops those recipes from its stack figure and keeps them in the new one's. On the recipes the old minigame does make (100 runs per recipe, seed 1) the ratio is 0.99 (3.00 new stacks per item against 3.03). Fixing it belongs to the harness owner, for example by averaging the new side over the recipes the old side makes.
 
 ### Gate 6: the XP multiplier
 
-The multiplier is `CraftMinigameXp.MultiplierFor(CraftMinigameType.Forge)`, which reads `ForgeRules.XpMultiplier`. It scales the base XP of every Smithery craft, failures included, in the game and in the simulator. At multiplier 1.0, with the enhancement cases the gate now plays (0 to 3 enhancements, `--gates xp`, seed 1, 100 runs, 6 recipes per band), the multiplier each band needs is:
+The multiplier is per recipe-level band, through the shared `CraftMinigameXp.MultiplierFor(CraftMinigameType.Forge, recipeLevel)` that reads `ForgeRules.XpMultiplierForLevel`. It scales the base XP of every Smithery craft, failures included, in the game and in the simulator. At multiplier 1.0, with the enhancement cases the gate plays (0 to 3 enhancements, seed 1, 100 runs, 6 recipes per band), the multiplier each band needs is:
 
-| Band | Needed at 1.0 | Binding case |
-| --- | --- | --- |
-| 1-10 | 1.54 | no gear, no enhancement: the old minigame spends 5.8 actions per craft (6 s each), the Forge 13.7 (8 s) |
-| 11-20 | 1.09 | no gear |
-| 21-30 | 1.15 | no gear, 3 enhancements |
-| 31-40 | 1.07 | no gear, 3 enhancements |
-| 41-53 | none (the Forge already pays 1.39x or more) | |
+| Band | Needed at 1.0 | Binding case | Set to |
+| --- | --- | --- | --- |
+| 1-10 | 1.54 | no gear, no enhancement: the old minigame spends 5.8 actions per craft (6 s each), the Forge 13.7 (8 s) | 1.55 (1.54 gave 0.99x) |
+| 11-20 | 1.09 | no gear | 1.09 |
+| 21-30 | 1.15 | no gear, 3 enhancements | 1.15 |
+| 31-40 | 1.07 | no gear, 3 enhancements | 1.07 |
+| 41-53 | none (the Forge already pays 1.39x or more) | | 1.0 |
 
-The single multiplier is 1.55 (the gate's own "needed" figure for the worst case, 1.55x). It passes every case at 1.00x or more; the lowest is 1-10 / no gear with no enhancement at exactly 1.00x, so a small change in the estimated seconds per action will move it. Enhancements make a Forge craft longer (Shape needs more) but also make the old craft longer, so they never need more than 1.17x. The cost of a single multiplier: Smithery XP per hour is 1.00x to 3.6x the old rate (3.4x to 3.6x at best gear from level 21, where the old minigame's crafts take 21-28 actions and the Forge's 11-18). A band-by-band multiplier (1.54, 1.09, 1.15, 1.07, 1.0 above) would pay 1.0x to 2.7x instead, but `ICraftScenario.XpMultiplier` and `CraftMinigameXp.MultiplierFor` take no recipe level; adding one is a harness and route change for the owner to decide. The seconds-per-action figures (8 and 6) are estimates; client timing will move every number in this gate.
+With these, every one of the 60 cases passes at 1.00x or more: the lowest per band are 1.00 (1-10 / no gear), 1.01 (11-20 / no gear), 1.00 (21-30 / no gear, 3 enhancements), 1.01 (31-40 / no gear, 3 enhancements) and 1.39 (41-53). Smithery XP per hour is then 1.00x to 2.7x the old rate (the highest is 2.69x at 21-30 / best gear, 2.42x at 31-40 / best gear, 2.33x at 41-53 / best gear), against 1.0x to 3.6x with one multiplier of 1.55 for every band. The table is a minimum: three bands sit at 1.00x to 1.01x, so a small change in the estimated seconds per action will move them. The seconds-per-action figures (8 and 6) are estimates; client timing will move every number in this gate.
 
 ### Gate 7: enhancement parity (reported for the shared thresholds; `CraftOutcomeRules` is not changed)
 

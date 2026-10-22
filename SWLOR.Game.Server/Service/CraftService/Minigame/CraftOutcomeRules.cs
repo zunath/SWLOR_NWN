@@ -29,7 +29,13 @@ public static class CraftOutcomeRules
     /// <summary>The quality an enhancement in the second slot, and any later slot, needs to be guaranteed.</summary>
     public const int SecondSlotQualityThresholdPercent = 85;
 
-    /// <summary>Food duration comes in whole steps of this many seconds (<c>ConsumableItemDefinition</c>: 5 minutes per bonus).</summary>
+    /// <summary>
+    /// The item local that holds a crafted food's extra duration in seconds. The food item reads it when eaten, because an item
+    /// property can only store whole 5-minute steps.
+    /// </summary>
+    public const string FoodDurationBonusSecondsVariable = "FOOD_DURATION_BONUS_SECONDS";
+
+    /// <summary>One step of a food duration bonus in seconds (<c>ConsumableItemDefinition</c>: 5 minutes per bonus).</summary>
     public const int FoodDurationSecondsPerUnit = 5 * 60;
 
     /// <summary>The duration bonus, in steps, of a food crafted at 100% quality: the old code's <c>(int)qualityPercent</c>.</summary>
@@ -89,10 +95,6 @@ public static class CraftOutcomeRules
     public static int CalculateFoodDurationBonusSeconds(float qualityFraction) =>
         (int)Math.Round(Math.Clamp(qualityFraction, 0f, 1f) * FullQualityFoodDurationUnits * FoodDurationSecondsPerUnit);
 
-    /// <summary>The food duration bonus in the whole steps an item property stores, rounded to the nearest step.</summary>
-    public static int CalculateFoodDurationBonusUnits(float qualityFraction) =>
-        (int)Math.Round(Math.Clamp(qualityFraction, 0f, 1f) * FullQualityFoodDurationUnits);
-
     /// <summary>
     /// Everything a successful craft decides from its quality.
     /// </summary>
@@ -128,7 +130,6 @@ public static class CraftOutcomeRules
             CalculateVendorValueBonus(recipeLevel, fraction),
             transfers,
             isFood ? CalculateFoodDurationBonusSeconds(fraction) : 0,
-            isFood ? CalculateFoodDurationBonusUnits(fraction) : 0,
             isFood && quality.IsFull ? blueprintLevel : 0);
     }
 

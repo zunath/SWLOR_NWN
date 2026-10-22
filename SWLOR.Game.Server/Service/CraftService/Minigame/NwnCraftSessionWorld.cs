@@ -159,13 +159,10 @@ public sealed class NwnCraftSessionWorld : ICraftSessionWorld
             Craft.ApplyCraftedItemProperty(item, property);
     }
 
-    public void ApplyFoodBonus(uint item, int durationUnits, int bonusCharges)
+    public void ApplyFoodBonus(uint item, int durationSeconds, int bonusCharges)
     {
-        if (durationUnits > 0)
-        {
-            var ip = ItemPropertyCustom(ItemPropertyType.FoodBonus, (int)FoodItemPropertySubType.Duration, durationUnits);
-            BiowareXP2.IPSafeAddItemProperty(item, ip, 0.0f, AddItemPropertyPolicy.IgnoreExisting, false, false);
-        }
+        if (durationSeconds > 0)
+            SetLocalInt(item, CraftOutcomeRules.FoodDurationBonusSecondsVariable, durationSeconds);
 
         if (bonusCharges > 0)
             SetItemCharges(item, GetItemCharges(item) + bonusCharges);

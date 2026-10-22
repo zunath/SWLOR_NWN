@@ -32,7 +32,7 @@ internal sealed class FakeCraftSessionWorld : ICraftSessionWorld
     public List<string> Messages { get; } = new();
     public List<(SkillType Skill, int Xp)> XpGiven { get; } = new();
     public List<string> AppliedEnhancements { get; } = new();
-    public List<(int Units, int Charges)> FoodBonuses { get; } = new();
+    public List<(int Seconds, int Charges)> FoodBonuses { get; } = new();
     public List<int> VendorValues { get; } = new();
     public int BlueprintBonusCalls { get; private set; }
     public int SaveCount { get; private set; }
@@ -103,8 +103,8 @@ internal sealed class FakeCraftSessionWorld : ICraftSessionWorld
     public void ApplyEnhancement(uint item, string serializedEnhancement, RecipeDetail recipe) =>
         AppliedEnhancements.Add(serializedEnhancement);
 
-    public void ApplyFoodBonus(uint item, int durationUnits, int bonusCharges) =>
-        FoodBonuses.Add((durationUnits, bonusCharges));
+    public void ApplyFoodBonus(uint item, int durationSeconds, int bonusCharges) =>
+        FoodBonuses.Add((durationSeconds, bonusCharges));
 
     public void ApplyBlueprintBonuses(uint player, uint item, RecipeDetail recipe, BlueprintDetail blueprint) =>
         BlueprintBonusCalls++;

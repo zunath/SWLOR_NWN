@@ -133,7 +133,7 @@ public sealed class CraftSessionLifecycle
         }
 
         if (recipe.Category == RecipeCategoryType.Food)
-            _world.ApplyFoodBonus(item, outcome.FoodDurationBonusUnits, outcome.FoodBonusCharges);
+            _world.ApplyFoodBonus(item, outcome.FoodDurationBonusSeconds, outcome.FoodBonusCharges);
 
         if (session.HasBlueprint)
             _world.ApplyBlueprintBonuses(player, item, recipe, session.Blueprint);

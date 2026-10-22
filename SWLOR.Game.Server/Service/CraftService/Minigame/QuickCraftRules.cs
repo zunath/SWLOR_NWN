@@ -12,16 +12,23 @@ public static class QuickCraftRules
     public const int MaxBatchSize = 10;
 
     /// <summary>
-    /// Quick craft needs the skill rank to be at least the recipe level plus <see cref="RankMargin"/>, and one successful manual craft
-    /// of the recipe on record.
+    /// The skill rank where quick craft opens: <see cref="RankMargin"/> above the recipe level, and no lower than the rank where a
+    /// practice-limited recipe stops training, so quick craft only opens once the recipe gives no XP.
     /// </summary>
-    /// <param name="recipeLevel">The recipe's level.</param>
+    public static int GetRequiredRank(RecipeDetail recipe) =>
+        Math.Max(recipe.Level + RankMargin, recipe.PracticeRankLimit ?? 0);
+
+    /// <summary>
+    /// Quick craft needs the skill rank to reach <see cref="GetRequiredRank"/> and one successful manual craft of the recipe on
+    /// record.
+    /// </summary>
+    /// <param name="recipe">The recipe.</param>
     /// <param name="skillName">The crafting skill's name, for the reason shown.</param>
     /// <param name="skillRank">The player's rank in that skill.</param>
     /// <param name="craftedByHand">True when <c>Player.CraftedRecipes</c> holds the recipe.</param>
-    public static QuickCraftEligibility Evaluate(int recipeLevel, string skillName, int skillRank, bool craftedByHand)
+    public static QuickCraftEligibility Evaluate(RecipeDetail recipe, string skillName, int skillRank, bool craftedByHand)
     {
-        var requiredRank = recipeLevel + RankMargin;
+        var requiredRank = GetRequiredRank(recipe);
         if (skillRank < requiredRank)
             return QuickCraftEligibility.Refused($"Quick craft needs {skillName} rank {requiredRank}.");
 

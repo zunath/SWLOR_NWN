@@ -238,9 +238,36 @@ public class CraftSessionLifecycleTests
 
         lifecycle.Succeed(FakeCraftSessionWorld.PlayerHandle, _player, session, new MinigameMeter(100, 100));
 
-        _world.FoodBonuses.Should().Equal((1, 2));
+        _world.FoodBonuses.Should().Equal((300, 2));
         _world.BlueprintBonusCalls.Should().Be(1);
         _world.XpGiven.Single().Xp.Should().Be(CraftOutcomeRules.CalculateXp(BaseXp, 2, true, 1f));
+    }
+
+    [Test]
+    public void Succeed_ForFoodBelowFullQuality_AppliesTheLinearDurationAndNoBlueprintCharges()
+    {
+        _recipe.Category = RecipeCategoryType.Food;
+        var lifecycle = Lifecycle();
+        var session = StartSession(lifecycle, FakeCraftSessionWorld.Blueprint);
+
+        lifecycle.Succeed(FakeCraftSessionWorld.PlayerHandle, _player, session, new MinigameMeter(25, 100));
+
+        _world.FoodBonuses.Should().Equal((75, 0));
+    }
+
+    [Test]
+    public void EatingCraftedFood_AddsTheSecondsTheCraftStored()
+    {
+        // The consumable reads the local the session writes; the two must keep using one name.
+        var directory = new DirectoryInfo(AppContext.BaseDirectory);
+        while (directory != null && !File.Exists(Path.Combine(directory.FullName, "SWLOR.Game.Server.sln")))
+            directory = directory.Parent;
+        directory.Should().NotBeNull();
+
+        var source = File.ReadAllText(Path.Combine(
+            directory!.FullName, "SWLOR.Game.Server", "Feature", "ItemDefinition", "ConsumableItemDefinition.cs"));
+
+        source.Should().Contain("GetLocalInt(item, CraftOutcomeRules.FoodDurationBonusSecondsVariable)");
     }
 
     [Test]

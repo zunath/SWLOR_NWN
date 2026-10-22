@@ -22,7 +22,7 @@ public static class QuickCraftService
         var recipe = Craft.GetRecipe(recipeType);
         var rank = dbPlayer.Skills.TryGetValue(recipe.Skill, out var skill) ? skill.Rank : 0;
         var eligibility = QuickCraftRules.Evaluate(
-            recipe.Level,
+            recipe,
             Skill.GetSkillDetails(recipe.Skill).Name,
             rank,
             dbPlayer.CraftedRecipes.ContainsKey(recipeType));

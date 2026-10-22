@@ -1,5 +1,6 @@
 using FluentAssertions;
 using NUnit.Framework;
+using SWLOR.Game.Server.Service;
 using SWLOR.Game.Server.Service.CraftService;
 using SWLOR.Game.Server.Service.CraftService.Minigame;
 
@@ -75,16 +76,47 @@ public class QuickCraftTests
     [TestCase(10, false, false)]
     public void Eligibility_NeedsRankFiveAboveTheRecipeAndOneManualCraft(int rank, bool craftedByHand, bool expected)
     {
-        QuickCraftRules.Evaluate(20, "Smithery", rank, craftedByHand).IsEligible.Should().Be(expected);
+        QuickCraftRules.Evaluate(Recipe(), "Smithery", rank, craftedByHand).IsEligible.Should().Be(expected);
     }
 
     [Test]
     public void Eligibility_SaysWhyItIsRefused()
     {
-        QuickCraftRules.Evaluate(20, "Smithery", 24, true).Reason.Should().Be("Quick craft needs Smithery rank 25.");
-        QuickCraftRules.Evaluate(20, "Smithery", 25, false).Reason.Should().Be("Craft this recipe by hand once to unlock quick craft.");
-        QuickCraftRules.Evaluate(20, "Smithery", 24, false).Reason.Should().Be("Quick craft needs Smithery rank 25.");
-        QuickCraftRules.Evaluate(20, "Smithery", 25, true).Reason.Should().BeEmpty();
+        QuickCraftRules.Evaluate(Recipe(), "Smithery", 24, true).Reason.Should().Be("Quick craft needs Smithery rank 25.");
+        QuickCraftRules.Evaluate(Recipe(), "Smithery", 25, false).Reason.Should().Be("Craft this recipe by hand once to unlock quick craft.");
+        QuickCraftRules.Evaluate(Recipe(), "Smithery", 24, false).Reason.Should().Be("Quick craft needs Smithery rank 25.");
+        QuickCraftRules.Evaluate(Recipe(), "Smithery", 25, true).Reason.Should().BeEmpty();
+    }
+
+    [Test]
+    public void Eligibility_WaitsForThePracticeLimitOfARecipeThatKeepsTraining()
+    {
+        // A level 3 recipe would open at rank 8, but it trains until rank 15.
+        var practice = new RecipeDetail { Level = 3, PracticeRankLimit = 15 };
+
+        QuickCraftRules.GetRequiredRank(practice).Should().Be(15);
+        QuickCraftRules.Evaluate(practice, "Espionage", 14, true).Reason.Should().Be("Quick craft needs Espionage rank 15.");
+        QuickCraftRules.Evaluate(practice, "Espionage", 15, true).IsEligible.Should().BeTrue();
+
+        // A limit below the usual margin changes nothing.
+        QuickCraftRules.GetRequiredRank(new RecipeDetail { Level = 20, PracticeRankLimit = 10 }).Should().Be(25);
+    }
+
+    [Test]
+    public void Eligibility_OpensOnlyWhereTheRecipeGivesNoXp()
+    {
+        foreach (var limit in new int?[] { null, 5, 15, 30, 55 })
+        for (var level = 0; level <= 50; level += 3)
+        {
+            var recipe = new RecipeDetail { Level = level, PracticeRankLimit = limit };
+            for (var rank = 0; rank <= 60; rank++)
+            {
+                if (rank >= QuickCraftRules.GetRequiredRank(recipe))
+                {
+                    Craft.GetBaseRecipeXP(recipe, rank).Should().Be(0, $"level {level}, limit {limit}, rank {rank}");
+                }
+            }
+        }
     }
 
     [Test]

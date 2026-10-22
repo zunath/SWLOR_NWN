@@ -173,7 +173,6 @@ public class CraftOutcomeRulesTests
         // CraftViewModel.cs:1471-1475: (int)qualityPercent is 1 only at 100%, and ConsumableItemDefinition pays 5 minutes per step.
         var oldFullQualityBonus = (int)1.0f;
 
-        CraftOutcomeRules.CalculateFoodDurationBonusUnits(1f).Should().Be(oldFullQualityBonus);
         CraftOutcomeRules.CalculateFoodDurationBonusSeconds(1f).Should().Be(oldFullQualityBonus * 5 * 60);
     }
 
@@ -201,9 +200,7 @@ public class CraftOutcomeRulesTests
         var other = Success(new MinigameMeter(100, 100), isFood: false);
 
         food.FoodDurationBonusSeconds.Should().Be(300);
-        food.FoodDurationBonusUnits.Should().Be(1);
         other.FoodDurationBonusSeconds.Should().Be(0);
-        other.FoodDurationBonusUnits.Should().Be(0);
     }
 
     [Test]

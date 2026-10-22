@@ -45,7 +45,7 @@ public interface ICraftSessionWorld
     /// <summary>Moves the properties of a serialized enhancement onto the crafted item.</summary>
     void ApplyEnhancement(uint item, string serializedEnhancement, RecipeDetail recipe);
 
-    void ApplyFoodBonus(uint item, int durationUnits, int bonusCharges);
+    void ApplyFoodBonus(uint item, int durationSeconds, int bonusCharges);
 
     /// <summary>Applies the blueprint's random and guaranteed bonuses and marks the item with the blueprint level.</summary>
     void ApplyBlueprintBonuses(uint player, uint item, RecipeDetail recipe, BlueprintDetail blueprint);

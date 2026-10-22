@@ -74,7 +74,7 @@ Seconds per action: 8 s for the Reaction window against 6 s for the old one, bot
 
 ## XP multiplier (owner decision)
 
-The old minigame is trivial at levels 1-10 with no gear: 3.2 actions a craft at 0% quality, which is 112,000 XP per hour at 6 s an action. Ten to twenty actions at 8 s cannot match that without more XP per craft, and the gate asks for at least today's rate. `ReactionRules.XpMultiplier` (3.0) scales a Reaction craft's base XP, applied in `CraftMinigameXp.BaseXp` for both a finished craft and a failed one's 15%. Band 1-10 needed 2.83x.
+The old minigame is trivial at levels 1-10 with no gear: 3.2 actions a craft at 0% quality, which is 112,000 XP per hour at 6 s an action. Ten to twenty actions at 8 s cannot match that without more XP per craft, and the gate asks for at least today's rate. `ReactionRules.XpMultiplier` (3.0) scales a Reaction craft's base XP, applied in `CraftMinigameXp.BaseXp` for both a finished craft and a failed one's 15%. Band 1-10 needed 2.83x. The Bible records it, with the Stabilize unlock, in a row of the System Changes & Migrations tab (`python tools/UpdateReactionBible.py`, which reads the constants from the source; a test fails when the two drift).
 
 One multiplier cannot fit every band: the same 3.0 pays 3.4x to 4.9x the old XP per hour in bands 11-53, where the old loop was slower. Espionage levels about three times faster than today. If the owner prefers, the multiplier could apply only to the lowest tier, or gate 6 could be accepted below 1.0 in band 1-10; either is a decision, not a tuning.
 
@@ -111,4 +111,4 @@ dotnet SWLOR.CraftSim/bin/Debug/net10.0/SWLOR.CraftSim.dll gates --scenario reac
 dotnet SWLOR.CraftSim/bin/Debug/net10.0/SWLOR.CraftSim.dll gates --scenario reaction-nodampen --runs 200 --seed 7 --gates length,materials,perks
 ```
 
-The Bible columns come from `espionage-reaction-bible-columns.json` (`python tools/UpdateRecipeParameterBible.py --data design/testing/crafting-revamp/espionage-reaction-bible-columns.json`) and only change when the recipe parameters do.
+`python tools/UpdateReactionBible.py` writes the System Changes row and changes nothing on a second run. The recipe Bible columns come from `espionage-reaction-bible-columns.json` (`python tools/UpdateRecipeParameterBible.py --data design/testing/crafting-revamp/espionage-reaction-bible-columns.json`) and only change when the recipe parameters do.

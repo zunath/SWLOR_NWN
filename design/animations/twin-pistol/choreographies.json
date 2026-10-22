@@ -1,0 +1,1488 @@
+[
+  {
+    "Id": "PairedVolley",
+    "Description": "Snap both pistols up together, fire one simultaneous paired volley with a sharp shared recoil, then lower",
+    "Duration": 1.05,
+    "Beats": [
+      {
+        "Time": 0,
+        "Label": "Neutral entry",
+        "SourceAnimation": "pause1",
+        "SourceTime": 0
+      },
+      {
+        "Time": 0.2,
+        "Label": "Raise both pistols",
+        "SourceAnimation": "bowshot",
+        "SourceTime": 0,
+        "SourceModel": "a_ba_med_weap",
+        "LeftHand": [
+          -0.17,
+          0.52,
+          1.36
+        ],
+        "RightHand": [
+          0.17,
+          0.52,
+          1.36
+        ],
+        "RootOffset": [
+          0,
+          0.02,
+          -0.015
+        ]
+      },
+      {
+        "Time": 0.34,
+        "Label": "Paired volley recoil",
+        "SourceAnimation": "bowshot",
+        "SourceTime": 0.53,
+        "SourceModel": "a_ba_med_weap",
+        "LeftHand": [
+          -0.17,
+          0.43,
+          1.43
+        ],
+        "RightHand": [
+          0.17,
+          0.43,
+          1.43
+        ],
+        "TorsoDegrees": [
+          -6,
+          0,
+          0
+        ],
+        "RootOffset": [
+          0,
+          -0.01,
+          -0.012
+        ]
+      },
+      {
+        "Time": 0.52,
+        "Label": "Settle sights",
+        "SourceAnimation": "bowshot",
+        "SourceTime": 1,
+        "SourceModel": "a_ba_med_weap",
+        "LeftHand": [
+          -0.17,
+          0.52,
+          1.36
+        ],
+        "RightHand": [
+          0.17,
+          0.52,
+          1.36
+        ],
+        "RootOffset": [
+          0,
+          0.015,
+          -0.015
+        ]
+      },
+      {
+        "Time": 0.8,
+        "Label": "Lower both pistols",
+        "SourceAnimation": "bowshot",
+        "SourceTime": 0,
+        "SourceModel": "a_ba_med_weap",
+        "LeftHand": [
+          -0.3,
+          0.3,
+          1.05
+        ],
+        "RightHand": [
+          0.3,
+          0.3,
+          1.05
+        ],
+        "RootOffset": [
+          0,
+          0,
+          -0.006
+        ]
+      },
+      {
+        "Time": 1.05,
+        "Label": "Neutral recovery",
+        "SourceAnimation": "pause1",
+        "SourceTime": 0
+      }
+    ]
+  },
+  {
+    "Id": "FocusedBurst",
+    "Description": "Bring both pistols close together on one line and hold a braced channel through three tight paired recoils",
+    "Duration": 1.5,
+    "Beats": [
+      {
+        "Time": 0,
+        "Label": "Neutral entry",
+        "SourceAnimation": "pause1",
+        "SourceTime": 0
+      },
+      {
+        "Time": 0.18,
+        "Label": "Brace and focus",
+        "SourceAnimation": "bowshot",
+        "SourceTime": 0,
+        "SourceModel": "a_ba_med_weap",
+        "LeftHand": [
+          -0.09,
+          0.56,
+          1.38
+        ],
+        "RightHand": [
+          0.09,
+          0.56,
+          1.38
+        ],
+        "TorsoDegrees": [
+          6,
+          0,
+          0
+        ],
+        "RootOffset": [
+          0,
+          0.03,
+          -0.025
+        ]
+      },
+      {
+        "Time": 0.3,
+        "Label": "First burst recoil",
+        "SourceAnimation": "bowshot",
+        "SourceTime": 0.53,
+        "SourceModel": "a_ba_med_weap",
+        "LeftHand": [
+          -0.09,
+          0.49,
+          1.43
+        ],
+        "RightHand": [
+          0.09,
+          0.49,
+          1.43
+        ],
+        "TorsoDegrees": [
+          0,
+          0,
+          0
+        ],
+        "RootOffset": [
+          0,
+          0.015,
+          -0.028
+        ]
+      },
+      {
+        "Time": 0.5,
+        "Label": "Refocus",
+        "SourceAnimation": "bowshot",
+        "SourceTime": 1,
+        "SourceModel": "a_ba_med_weap",
+        "LeftHand": [
+          -0.09,
+          0.56,
+          1.38
+        ],
+        "RightHand": [
+          0.09,
+          0.56,
+          1.38
+        ],
+        "TorsoDegrees": [
+          6,
+          0,
+          0
+        ],
+        "RootOffset": [
+          0,
+          0.03,
+          -0.025
+        ]
+      },
+      {
+        "Time": 0.75,
+        "Label": "Second burst recoil",
+        "SourceAnimation": "bowshot",
+        "SourceTime": 0.53,
+        "SourceModel": "a_ba_med_weap",
+        "LeftHand": [
+          -0.09,
+          0.49,
+          1.43
+        ],
+        "RightHand": [
+          0.09,
+          0.49,
+          1.43
+        ],
+        "RootOffset": [
+          0,
+          0.015,
+          -0.028
+        ]
+      },
+      {
+        "Time": 0.95,
+        "Label": "Refocus again",
+        "SourceAnimation": "bowshot",
+        "SourceTime": 1,
+        "SourceModel": "a_ba_med_weap",
+        "LeftHand": [
+          -0.09,
+          0.56,
+          1.38
+        ],
+        "RightHand": [
+          0.09,
+          0.56,
+          1.38
+        ],
+        "TorsoDegrees": [
+          6,
+          0,
+          0
+        ],
+        "RootOffset": [
+          0,
+          0.03,
+          -0.025
+        ]
+      },
+      {
+        "Time": 1.2,
+        "Label": "Third burst recoil",
+        "SourceAnimation": "bowshot",
+        "SourceTime": 0.53,
+        "SourceModel": "a_ba_med_weap",
+        "LeftHand": [
+          -0.09,
+          0.46,
+          1.46
+        ],
+        "RightHand": [
+          0.09,
+          0.46,
+          1.46
+        ],
+        "RootOffset": [
+          0,
+          0.01,
+          -0.025
+        ]
+      },
+      {
+        "Time": 1.5,
+        "Label": "Neutral recovery",
+        "SourceAnimation": "pause1",
+        "SourceTime": 0
+      }
+    ]
+  },
+  {
+    "Id": "ControlledBurst",
+    "Description": "Measured alternating fire: right pistol, left pistol, right pistol, each with its own recoil while the other stays on target",
+    "Duration": 1.05,
+    "Beats": [
+      {
+        "Time": 0,
+        "Label": "Neutral entry",
+        "SourceAnimation": "pause1",
+        "SourceTime": 0
+      },
+      {
+        "Time": 0.16,
+        "Label": "Acquire with both",
+        "SourceAnimation": "bowshot",
+        "SourceTime": 0,
+        "SourceModel": "a_ba_med_weap",
+        "LeftHand": [
+          -0.17,
+          0.52,
+          1.36
+        ],
+        "RightHand": [
+          0.17,
+          0.52,
+          1.36
+        ],
+        "RootOffset": [
+          0,
+          0.018,
+          -0.015
+        ]
+      },
+      {
+        "Time": 0.3,
+        "Label": "Right shot",
+        "SourceAnimation": "bowshot",
+        "SourceTime": 0.53,
+        "SourceModel": "a_ba_med_weap",
+        "LeftHand": [
+          -0.17,
+          0.52,
+          1.36
+        ],
+        "RightHand": [
+          0.17,
+          0.45,
+          1.41
+        ],
+        "TorsoDegrees": [
+          0,
+          -4,
+          0
+        ],
+        "RootOffset": [
+          0.01,
+          0.01,
+          -0.018
+        ]
+      },
+      {
+        "Time": 0.45,
+        "Label": "Left shot",
+        "SourceAnimation": "bowshot",
+        "SourceTime": 0.53,
+        "SourceModel": "a_ba_med_weap",
+        "LeftHand": [
+          -0.17,
+          0.45,
+          1.41
+        ],
+        "RightHand": [
+          0.17,
+          0.52,
+          1.36
+        ],
+        "TorsoDegrees": [
+          0,
+          4,
+          0
+        ],
+        "RootOffset": [
+          -0.01,
+          0.01,
+          -0.018
+        ]
+      },
+      {
+        "Time": 0.6,
+        "Label": "Right shot",
+        "SourceAnimation": "bowshot",
+        "SourceTime": 0.53,
+        "SourceModel": "a_ba_med_weap",
+        "LeftHand": [
+          -0.17,
+          0.52,
+          1.36
+        ],
+        "RightHand": [
+          0.17,
+          0.45,
+          1.41
+        ],
+        "TorsoDegrees": [
+          0,
+          -4,
+          0
+        ],
+        "RootOffset": [
+          0.01,
+          0.01,
+          -0.018
+        ]
+      },
+      {
+        "Time": 0.8,
+        "Label": "Lower",
+        "SourceAnimation": "bowshot",
+        "SourceTime": 0,
+        "SourceModel": "a_ba_med_weap",
+        "LeftHand": [
+          -0.3,
+          0.3,
+          1.05
+        ],
+        "RightHand": [
+          0.3,
+          0.3,
+          1.05
+        ],
+        "RootOffset": [
+          0,
+          0,
+          -0.006
+        ]
+      },
+      {
+        "Time": 1.05,
+        "Label": "Neutral recovery",
+        "SourceAnimation": "pause1",
+        "SourceTime": 0
+      }
+    ]
+  },
+  {
+    "Id": "TwinSuns",
+    "Description": "Cross both pistols over the chest, then snap them out into a wide V to fire both diagonals at once before bringing them back to ready",
+    "Duration": 2.0,
+    "Beats": [
+      {
+        "Time": 0,
+        "Label": "Neutral entry",
+        "SourceAnimation": "pause1",
+        "SourceTime": 0
+      },
+      {
+        "Time": 0.3,
+        "Label": "Cross pistols over chest",
+        "SourceAnimation": "bowshot",
+        "SourceTime": 0,
+        "SourceModel": "a_ba_med_weap",
+        "LeftHand": [
+          0.12,
+          0.36,
+          1.28
+        ],
+        "RightHand": [
+          -0.12,
+          0.32,
+          1.32
+        ],
+        "TorsoDegrees": [
+          4,
+          0,
+          0
+        ],
+        "RootOffset": [
+          0,
+          0.01,
+          -0.02
+        ]
+      },
+      {
+        "Time": 0.55,
+        "Label": "Hold crossed",
+        "SourceAnimation": "bowshot",
+        "SourceTime": 0,
+        "SourceModel": "a_ba_med_weap",
+        "LeftHand": [
+          0.13,
+          0.37,
+          1.3
+        ],
+        "RightHand": [
+          -0.13,
+          0.33,
+          1.34
+        ],
+        "TorsoDegrees": [
+          4,
+          0,
+          0
+        ],
+        "RootOffset": [
+          0,
+          0.01,
+          -0.022
+        ]
+      },
+      {
+        "Time": 0.8,
+        "Label": "Snap into a wide V",
+        "SourceAnimation": "bowshot",
+        "SourceTime": 0,
+        "SourceModel": "a_ba_med_weap",
+        "LeftHand": [
+          -0.34,
+          0.46,
+          1.3
+        ],
+        "RightHand": [
+          0.34,
+          0.46,
+          1.3
+        ],
+        "TorsoDegrees": [
+          -4,
+          0,
+          0
+        ],
+        "RootOffset": [
+          0,
+          0,
+          -0.03
+        ]
+      },
+      {
+        "Time": 0.95,
+        "Label": "Fire both diagonals",
+        "SourceAnimation": "bowshot",
+        "SourceTime": 0.53,
+        "SourceModel": "a_ba_med_weap",
+        "LeftHand": [
+          -0.34,
+          0.39,
+          1.35
+        ],
+        "RightHand": [
+          0.34,
+          0.39,
+          1.35
+        ],
+        "TorsoDegrees": [
+          -8,
+          0,
+          0
+        ],
+        "RootOffset": [
+          0,
+          -0.01,
+          -0.03
+        ]
+      },
+      {
+        "Time": 1.15,
+        "Label": "Second diagonal shot",
+        "SourceAnimation": "bowshot",
+        "SourceTime": 0.53,
+        "SourceModel": "a_ba_med_weap",
+        "LeftHand": [
+          -0.34,
+          0.42,
+          1.33
+        ],
+        "RightHand": [
+          0.34,
+          0.42,
+          1.33
+        ],
+        "TorsoDegrees": [
+          -4,
+          0,
+          0
+        ],
+        "RootOffset": [
+          0,
+          0,
+          -0.03
+        ]
+      },
+      {
+        "Time": 1.45,
+        "Label": "Bring pistols back",
+        "SourceAnimation": "bowshot",
+        "SourceTime": 1,
+        "SourceModel": "a_ba_med_weap",
+        "LeftHand": [
+          -0.17,
+          0.52,
+          1.36
+        ],
+        "RightHand": [
+          0.17,
+          0.52,
+          1.36
+        ],
+        "RootOffset": [
+          0,
+          0.01,
+          -0.015
+        ]
+      },
+      {
+        "Time": 1.72,
+        "Label": "Lower",
+        "SourceAnimation": "bowshot",
+        "SourceTime": 0,
+        "SourceModel": "a_ba_med_weap",
+        "LeftHand": [
+          -0.3,
+          0.3,
+          1.05
+        ],
+        "RightHand": [
+          0.3,
+          0.3,
+          1.05
+        ],
+        "RootOffset": [
+          0,
+          0,
+          -0.006
+        ]
+      },
+      {
+        "Time": 2.0,
+        "Label": "Neutral recovery",
+        "SourceAnimation": "pause1",
+        "SourceTime": 0
+      }
+    ]
+  },
+  {
+    "Id": "FinalSalvo",
+    "Description": "Drop into a wide braced stance, unload rapid alternating shots that build to a heavy closing double recoil, then rise",
+    "Duration": 2.0,
+    "Beats": [
+      {
+        "Time": 0,
+        "Label": "Neutral entry",
+        "SourceAnimation": "pause1",
+        "SourceTime": 0
+      },
+      {
+        "Time": 0.25,
+        "Label": "Brace wide",
+        "SourceAnimation": "bowshot",
+        "SourceTime": 0,
+        "SourceModel": "a_ba_med_weap",
+        "LeftHand": [
+          -0.19,
+          0.55,
+          1.34
+        ],
+        "RightHand": [
+          0.19,
+          0.55,
+          1.34
+        ],
+        "TorsoDegrees": [
+          8,
+          0,
+          0
+        ],
+        "RootOffset": [
+          0,
+          0.02,
+          -0.06
+        ]
+      },
+      {
+        "Time": 0.42,
+        "Label": "Right shot",
+        "SourceAnimation": "bowshot",
+        "SourceTime": 0.53,
+        "SourceModel": "a_ba_med_weap",
+        "LeftHand": [
+          -0.19,
+          0.55,
+          1.34
+        ],
+        "RightHand": [
+          0.19,
+          0.48,
+          1.39
+        ],
+        "TorsoDegrees": [
+          6,
+          -5,
+          0
+        ],
+        "RootOffset": [
+          0.01,
+          0.015,
+          -0.06
+        ]
+      },
+      {
+        "Time": 0.56,
+        "Label": "Left shot",
+        "SourceAnimation": "bowshot",
+        "SourceTime": 0.53,
+        "SourceModel": "a_ba_med_weap",
+        "LeftHand": [
+          -0.19,
+          0.48,
+          1.39
+        ],
+        "RightHand": [
+          0.19,
+          0.55,
+          1.34
+        ],
+        "TorsoDegrees": [
+          6,
+          5,
+          0
+        ],
+        "RootOffset": [
+          -0.01,
+          0.015,
+          -0.06
+        ]
+      },
+      {
+        "Time": 0.7,
+        "Label": "Right shot",
+        "SourceAnimation": "bowshot",
+        "SourceTime": 0.53,
+        "SourceModel": "a_ba_med_weap",
+        "LeftHand": [
+          -0.19,
+          0.55,
+          1.34
+        ],
+        "RightHand": [
+          0.19,
+          0.48,
+          1.39
+        ],
+        "TorsoDegrees": [
+          6,
+          -5,
+          0
+        ],
+        "RootOffset": [
+          0.01,
+          0.015,
+          -0.06
+        ]
+      },
+      {
+        "Time": 0.84,
+        "Label": "Left shot",
+        "SourceAnimation": "bowshot",
+        "SourceTime": 0.53,
+        "SourceModel": "a_ba_med_weap",
+        "LeftHand": [
+          -0.19,
+          0.48,
+          1.39
+        ],
+        "RightHand": [
+          0.19,
+          0.55,
+          1.34
+        ],
+        "TorsoDegrees": [
+          6,
+          5,
+          0
+        ],
+        "RootOffset": [
+          -0.01,
+          0.015,
+          -0.06
+        ]
+      },
+      {
+        "Time": 1.1,
+        "Label": "Draw both to aim",
+        "SourceAnimation": "bowshot",
+        "SourceTime": 1,
+        "SourceModel": "a_ba_med_weap",
+        "LeftHand": [
+          -0.19,
+          0.55,
+          1.34
+        ],
+        "RightHand": [
+          0.19,
+          0.55,
+          1.34
+        ],
+        "TorsoDegrees": [
+          10,
+          0,
+          0
+        ],
+        "RootOffset": [
+          0,
+          0.03,
+          -0.065
+        ]
+      },
+      {
+        "Time": 1.26,
+        "Label": "Heavy closing salvo",
+        "SourceAnimation": "bowshot",
+        "SourceTime": 0.53,
+        "SourceModel": "a_ba_med_weap",
+        "LeftHand": [
+          -0.19,
+          0.42,
+          1.44
+        ],
+        "RightHand": [
+          0.19,
+          0.42,
+          1.44
+        ],
+        "TorsoDegrees": [
+          -8,
+          0,
+          0
+        ],
+        "RootOffset": [
+          0,
+          -0.02,
+          -0.05
+        ]
+      },
+      {
+        "Time": 1.6,
+        "Label": "Rise and lower",
+        "SourceAnimation": "bowshot",
+        "SourceTime": 0,
+        "SourceModel": "a_ba_med_weap",
+        "LeftHand": [
+          -0.3,
+          0.3,
+          1.05
+        ],
+        "RightHand": [
+          0.3,
+          0.3,
+          1.05
+        ],
+        "RootOffset": [
+          0,
+          0,
+          -0.01
+        ]
+      },
+      {
+        "Time": 2.0,
+        "Label": "Neutral recovery",
+        "SourceAnimation": "pause1",
+        "SourceTime": 0
+      }
+    ]
+  },
+  {
+    "Id": "AkimboStance",
+    "Description": "Flip both pistols up beside the head, then drop them into a squared forward akimbo ready with both muzzles level",
+    "Duration": 2.0,
+    "Beats": [
+      {
+        "Time": 0,
+        "Label": "Neutral entry",
+        "SourceAnimation": "pause1",
+        "SourceTime": 0
+      },
+      {
+        "Time": 0.35,
+        "Label": "Pistols up beside head",
+        "SourceAnimation": "bowshot",
+        "SourceTime": 0,
+        "SourceModel": "a_ba_med_weap",
+        "LeftHand": [
+          -0.37,
+          0.1,
+          1.52
+        ],
+        "RightHand": [
+          0.37,
+          0.1,
+          1.52
+        ],
+        "TorsoDegrees": [
+          -4,
+          0,
+          0
+        ],
+        "RootOffset": [
+          0,
+          0,
+          -0.01
+        ]
+      },
+      {
+        "Time": 0.7,
+        "Label": "Hold raised",
+        "SourceAnimation": "bowshot",
+        "SourceTime": 0,
+        "SourceModel": "a_ba_med_weap",
+        "LeftHand": [
+          -0.38,
+          0.11,
+          1.54
+        ],
+        "RightHand": [
+          0.38,
+          0.11,
+          1.54
+        ],
+        "TorsoDegrees": [
+          -4,
+          0,
+          0
+        ],
+        "RootOffset": [
+          0,
+          0,
+          -0.012
+        ]
+      },
+      {
+        "Time": 1.05,
+        "Label": "Drop into akimbo ready",
+        "SourceAnimation": "bowshot",
+        "SourceTime": 0,
+        "SourceModel": "a_ba_med_weap",
+        "LeftHand": [
+          -0.22,
+          0.46,
+          1.2
+        ],
+        "RightHand": [
+          0.22,
+          0.46,
+          1.2
+        ],
+        "TorsoDegrees": [
+          6,
+          0,
+          0
+        ],
+        "RootOffset": [
+          0,
+          0.02,
+          -0.035
+        ]
+      },
+      {
+        "Time": 1.45,
+        "Label": "Settle squared",
+        "SourceAnimation": "bowshot",
+        "SourceTime": 0,
+        "SourceModel": "a_ba_med_weap",
+        "LeftHand": [
+          -0.22,
+          0.47,
+          1.22
+        ],
+        "RightHand": [
+          0.22,
+          0.47,
+          1.22
+        ],
+        "TorsoDegrees": [
+          6,
+          0,
+          0
+        ],
+        "RootOffset": [
+          0,
+          0.02,
+          -0.035
+        ]
+      },
+      {
+        "Time": 1.75,
+        "Label": "Release stance entry",
+        "SourceAnimation": "bowshot",
+        "SourceTime": 0,
+        "SourceModel": "a_ba_med_weap",
+        "LeftHand": [
+          -0.3,
+          0.3,
+          1.05
+        ],
+        "RightHand": [
+          0.3,
+          0.3,
+          1.05
+        ],
+        "RootOffset": [
+          0,
+          0,
+          -0.01
+        ]
+      },
+      {
+        "Time": 2.0,
+        "Label": "Neutral recovery",
+        "SourceAnimation": "pause1",
+        "SourceTime": 0
+      }
+    ]
+  },
+  {
+    "Id": "CrossfireStance",
+    "Description": "Step into a light mobile stance and cross the wrists so both pistols cover forward in an X, ready to fire while moving",
+    "Duration": 2.0,
+    "Beats": [
+      {
+        "Time": 0,
+        "Label": "Neutral entry",
+        "SourceAnimation": "pause1",
+        "SourceTime": 0
+      },
+      {
+        "Time": 0.35,
+        "Label": "Light mobile step",
+        "SourceAnimation": "dodgelr",
+        "SourceTime": 0.3,
+        "LeftHand": [
+          -0.3,
+          0.35,
+          1.12
+        ],
+        "RightHand": [
+          0.3,
+          0.35,
+          1.12
+        ],
+        "RootOffset": [
+          0,
+          0,
+          -0.02
+        ]
+      },
+      {
+        "Time": 0.8,
+        "Label": "Cross wrists forward",
+        "SourceAnimation": "bowshot",
+        "SourceTime": 0,
+        "SourceModel": "a_ba_med_weap",
+        "LeftHand": [
+          0.05,
+          0.55,
+          1.32
+        ],
+        "RightHand": [
+          -0.05,
+          0.57,
+          1.34
+        ],
+        "TorsoDegrees": [
+          4,
+          0,
+          0
+        ],
+        "RootOffset": [
+          0,
+          0.015,
+          -0.025
+        ]
+      },
+      {
+        "Time": 1.3,
+        "Label": "Hold crossfire guard",
+        "SourceAnimation": "bowshot",
+        "SourceTime": 0,
+        "SourceModel": "a_ba_med_weap",
+        "LeftHand": [
+          0.05,
+          0.56,
+          1.33
+        ],
+        "RightHand": [
+          -0.05,
+          0.58,
+          1.35
+        ],
+        "TorsoDegrees": [
+          4,
+          0,
+          0
+        ],
+        "RootOffset": [
+          0,
+          0.015,
+          -0.025
+        ]
+      },
+      {
+        "Time": 1.7,
+        "Label": "Uncross and lower",
+        "SourceAnimation": "bowshot",
+        "SourceTime": 0,
+        "SourceModel": "a_ba_med_weap",
+        "LeftHand": [
+          -0.3,
+          0.3,
+          1.05
+        ],
+        "RightHand": [
+          0.3,
+          0.3,
+          1.05
+        ],
+        "RootOffset": [
+          0,
+          0,
+          -0.01
+        ]
+      },
+      {
+        "Time": 2.0,
+        "Label": "Neutral recovery",
+        "SourceAnimation": "pause1",
+        "SourceTime": 0
+      }
+    ]
+  },
+  {
+    "Id": "BlasterSlide",
+    "Description": "Come out of the slide in a low crouch, fire both pistols twice from the crouch, then rise to ready",
+    "Duration": 1.05,
+    "Beats": [
+      {
+        "Time": 0,
+        "Label": "Neutral entry",
+        "SourceAnimation": "pause1",
+        "SourceTime": 0
+      },
+      {
+        "Time": 0.16,
+        "Label": "Low crouch aim",
+        "SourceAnimation": "bowshot",
+        "SourceTime": 0,
+        "SourceModel": "a_ba_med_weap",
+        "LeftHand": [
+          -0.17,
+          0.5,
+          1.18
+        ],
+        "RightHand": [
+          0.17,
+          0.5,
+          1.18
+        ],
+        "TorsoDegrees": [
+          10,
+          0,
+          0
+        ],
+        "RootOffset": [
+          0,
+          -0.03,
+          -0.1
+        ]
+      },
+      {
+        "Time": 0.3,
+        "Label": "First crouched recoil",
+        "SourceAnimation": "bowshot",
+        "SourceTime": 0.53,
+        "SourceModel": "a_ba_med_weap",
+        "LeftHand": [
+          -0.17,
+          0.43,
+          1.23
+        ],
+        "RightHand": [
+          0.17,
+          0.43,
+          1.23
+        ],
+        "TorsoDegrees": [
+          4,
+          0,
+          0
+        ],
+        "RootOffset": [
+          0,
+          -0.04,
+          -0.1
+        ]
+      },
+      {
+        "Time": 0.46,
+        "Label": "Second crouched recoil",
+        "SourceAnimation": "bowshot",
+        "SourceTime": 0.53,
+        "SourceModel": "a_ba_med_weap",
+        "LeftHand": [
+          -0.17,
+          0.41,
+          1.25
+        ],
+        "RightHand": [
+          0.17,
+          0.41,
+          1.25
+        ],
+        "TorsoDegrees": [
+          2,
+          0,
+          0
+        ],
+        "RootOffset": [
+          0,
+          -0.045,
+          -0.095
+        ]
+      },
+      {
+        "Time": 0.75,
+        "Label": "Rise to ready",
+        "SourceAnimation": "bowshot",
+        "SourceTime": 1,
+        "SourceModel": "a_ba_med_weap",
+        "LeftHand": [
+          -0.3,
+          0.3,
+          1.05
+        ],
+        "RightHand": [
+          0.3,
+          0.3,
+          1.05
+        ],
+        "RootOffset": [
+          0,
+          0,
+          -0.02
+        ]
+      },
+      {
+        "Time": 1.05,
+        "Label": "Neutral recovery",
+        "SourceAnimation": "pause1",
+        "SourceTime": 0
+      }
+    ]
+  },
+  {
+    "Id": "PistolRush",
+    "Description": "Carry the dash's forward lean into an angled double volley at the target being passed, then straighten",
+    "Duration": 1.05,
+    "Beats": [
+      {
+        "Time": 0,
+        "Label": "Neutral entry",
+        "SourceAnimation": "pause1",
+        "SourceTime": 0
+      },
+      {
+        "Time": 0.15,
+        "Label": "Forward lean, aim aside",
+        "SourceAnimation": "bowshot",
+        "SourceTime": 0,
+        "SourceModel": "a_ba_med_weap",
+        "LeftHand": [
+          0.11,
+          0.54,
+          1.3
+        ],
+        "RightHand": [
+          0.41,
+          0.37,
+          1.3
+        ],
+        "TorsoDegrees": [
+          12,
+          -15,
+          0
+        ],
+        "RootOffset": [
+          0,
+          0.08,
+          -0.05
+        ]
+      },
+      {
+        "Time": 0.3,
+        "Label": "Angled volley",
+        "SourceAnimation": "bowshot",
+        "SourceTime": 0.53,
+        "SourceModel": "a_ba_med_weap",
+        "LeftHand": [
+          0.11,
+          0.47,
+          1.36
+        ],
+        "RightHand": [
+          0.41,
+          0.3,
+          1.36
+        ],
+        "TorsoDegrees": [
+          8,
+          -15,
+          0
+        ],
+        "RootOffset": [
+          0,
+          0.06,
+          -0.05
+        ]
+      },
+      {
+        "Time": 0.46,
+        "Label": "Second angled volley",
+        "SourceAnimation": "bowshot",
+        "SourceTime": 0.53,
+        "SourceModel": "a_ba_med_weap",
+        "LeftHand": [
+          0.11,
+          0.49,
+          1.35
+        ],
+        "RightHand": [
+          0.41,
+          0.32,
+          1.35
+        ],
+        "TorsoDegrees": [
+          8,
+          -14,
+          0
+        ],
+        "RootOffset": [
+          0,
+          0.05,
+          -0.05
+        ]
+      },
+      {
+        "Time": 0.75,
+        "Label": "Straighten and lower",
+        "SourceAnimation": "bowshot",
+        "SourceTime": 1,
+        "SourceModel": "a_ba_med_weap",
+        "LeftHand": [
+          -0.3,
+          0.3,
+          1.05
+        ],
+        "RightHand": [
+          0.3,
+          0.3,
+          1.05
+        ],
+        "RootOffset": [
+          0,
+          0.02,
+          -0.02
+        ]
+      },
+      {
+        "Time": 1.05,
+        "Label": "Neutral recovery",
+        "SourceAnimation": "pause1",
+        "SourceTime": 0
+      }
+    ]
+  },
+  {
+    "Id": "GrappleShot",
+    "Description": "Land from the grapple pull with the left arm still extended, reel it in while the right pistol fires point blank twice",
+    "Duration": 1.05,
+    "Beats": [
+      {
+        "Time": 0,
+        "Label": "Neutral entry",
+        "SourceAnimation": "pause1",
+        "SourceTime": 0
+      },
+      {
+        "Time": 0.14,
+        "Label": "Land with grapple arm out",
+        "SourceAnimation": "bowshot",
+        "SourceTime": 0,
+        "SourceModel": "a_ba_med_weap",
+        "LeftHand": [
+          -0.15,
+          0.62,
+          1.5
+        ],
+        "RightHand": [
+          0.24,
+          0.3,
+          1.15
+        ],
+        "TorsoDegrees": [
+          10,
+          0,
+          0
+        ],
+        "RootOffset": [
+          0,
+          0.06,
+          -0.07
+        ]
+      },
+      {
+        "Time": 0.32,
+        "Label": "Reel in, right point blank",
+        "SourceAnimation": "bowshot",
+        "SourceTime": 0.53,
+        "SourceModel": "a_ba_med_weap",
+        "LeftHand": [
+          -0.25,
+          0.25,
+          1.3
+        ],
+        "RightHand": [
+          0.14,
+          0.5,
+          1.3
+        ],
+        "TorsoDegrees": [
+          6,
+          -6,
+          0
+        ],
+        "RootOffset": [
+          0,
+          0.04,
+          -0.05
+        ]
+      },
+      {
+        "Time": 0.48,
+        "Label": "Second point blank shot",
+        "SourceAnimation": "bowshot",
+        "SourceTime": 0.53,
+        "SourceModel": "a_ba_med_weap",
+        "LeftHand": [
+          -0.28,
+          0.22,
+          1.25
+        ],
+        "RightHand": [
+          0.14,
+          0.43,
+          1.35
+        ],
+        "TorsoDegrees": [
+          2,
+          -6,
+          0
+        ],
+        "RootOffset": [
+          0,
+          0.03,
+          -0.05
+        ]
+      },
+      {
+        "Time": 0.76,
+        "Label": "Recover both",
+        "SourceAnimation": "bowshot",
+        "SourceTime": 1,
+        "SourceModel": "a_ba_med_weap",
+        "LeftHand": [
+          -0.3,
+          0.3,
+          1.05
+        ],
+        "RightHand": [
+          0.3,
+          0.3,
+          1.05
+        ],
+        "RootOffset": [
+          0,
+          0,
+          -0.02
+        ]
+      },
+      {
+        "Time": 1.05,
+        "Label": "Neutral recovery",
+        "SourceAnimation": "pause1",
+        "SourceTime": 0
+      }
+    ]
+  }
+]

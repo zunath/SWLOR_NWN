@@ -336,12 +336,12 @@ Time at the terminal per job: an experiment of 6 trials at 6 s, plus 30 s to sta
 | 10 | 1 | 9 | 450 | 1 | 3.3 min | 5.6 h | 200 | 24.0 | 0.62 | 10,669 | 10,800 |
 | 15 | 1 | 9 | 0 | 1 | 3.3 min | 5.6 h | 200 | 24.0 | 0.62 | 12,329 | 0 |
 | 20 | 2 | 19 | 450 | 1 | 15.3 min | 25.5 h | 918 | 5.2 | 0.14 | 9,479 | 2,353 |
-| 25 | 2 | 19 | 0 | 2 | 15.3 min | 25.5 h | 918 | 10.5 | 0.27 | 6,119 | 0 |
+| 25 | 2 | 9 | 0 | 2 | 3.3 min | 5.6 h | 200 | 37.5 | 1.25 | 6,119 | 0 |
 | 30 | 3 | 29 | 450 | 2 | 37.4 min | 62.3 h | 2,242 | 4.3 | 0.11 | 3,652 | 1,927 |
-| 35 | 3 | 29 | 0 | 2 | 37.4 min | 62.3 h | 2,242 | 4.3 | 0.11 | 12,211 | 0 |
+| 35 | 3 | 9 | 0 | 2 | 3.3 min | 5.6 h | 200 | 37.5 | 1.25 | 12,211 | 0 |
 | 40 | 4 | 39 | 450 | 2 | 1.2 h | 117.3 h | 4,222 | 2.3 | 0.06 | 13,348 | 1,023 |
-| 45 | 4 | 39 | 0 | 2 | 1.2 h | 117.3 h | 4,222 | 2.3 | 0.06 | 10,665 | 0 |
-| 49 | 4 | 39 | 0 | 2 | 1.2 h | 117.3 h | 4,222 | 2.3 | 0.06 | 6,850 | 0 |
+| 45 | 4 | 9 | 0 | 2 | 3.3 min | 5.6 h | 200 | 37.5 | 1.25 | 10,665 | 0 |
+| 49 | 4 | 9 | 0 | 2 | 3.3 min | 5.6 h | 200 | 37.5 | 1.25 | 6,850 | 0 |
 
 The tier gate lags the rank, so the best recipe a researcher may start is between 1 and 10 levels below their rank, and the XP chart pays nothing for a recipe five or more levels below. 24 of the 40 Fabrication ranks 10-49 have no researchable recipe that pays XP at all under the starting values; research XP arrives in bursts in the first four ranks of each tier. The third job slot (Fabrication 50) arrives when the skill stops paying XP, so it matters for blueprints only.
 

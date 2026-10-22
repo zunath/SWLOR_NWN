@@ -1,8 +1,10 @@
 using FluentAssertions;
 using NUnit.Framework;
+using SWLOR.CraftSim.Data;
 using SWLOR.CraftSim.Progression;
 using SWLOR.CraftSim.Tests.Support;
 using SWLOR.Game.Server.Service.CraftService;
+using SWLOR.Game.Server.Service.CraftService.Research;
 using SWLOR.Game.Server.Service.SkillService;
 
 namespace SWLOR.CraftSim.Tests.Progression
@@ -69,6 +71,37 @@ namespace SWLOR.CraftSim.Tests.Progression
                 .Select(r => r.Level)
                 .ToHashSet();
             rows.Select(r => r.RecipeLevel).Should().OnlyContain(level => offered.Contains(level));
+        }
+
+        [Test]
+        public void RecipesThatPayTheSameResearchXpChooseTheShorterJob()
+        {
+            RecipeEntry Weapon(string name, int level, float modifier) => new(
+                default, SkillType.Fabrication, level, name, default, new Dictionary<string, int> { { "wood", 1 } },
+                detail: new RecipeDetail
+                {
+                    Skill = SkillType.Fabrication,
+                    Level = level,
+                    Resref = name,
+                    EnhancementType = RecipeEnhancementType.Weapon,
+                    ResearchCostModifier = modifier,
+                    Components = new Dictionary<string, int> { { "wood", 1 } }
+                });
+
+            // All three are level 39 (tier 4) and pay the same chart XP at Fabrication 40, but two have a cost modifier that lengthens their jobs.
+            // The dear one is listed first, so a tie-break that ignored the job length would take it.
+            var recipes = RecipeCatalog.From(
+                Enumerable.Range(1, 53).Select(level => new RecipeEntry(
+                        default, SkillType.Fabrication, level, $"item_{level}", default, new Dictionary<string, int> { { "wood", 1 } }))
+                    .Concat(new[] { Weapon("dear_job", 39, 0.2f), Weapon("cheap_job", 39, 0f), Weapon("dear_job_2", 39, 0.2f) }));
+            var model = ProgressionFixture.Model(recipes, ComponentSupply.Build(recipes), null, 0.95, 0.3, 15, new[] { SkillType.Fabrication });
+
+            var row = ResearchCohort.Rows(model, ProgressionFixture.Gear, new ProgressionAssumptions()).Single(r => r.FabricationRank == 40);
+
+            row.BaseXp.Should().Be(ResearchXpRules.BaseXp(39, 40));
+            row.BaseXp.Should().BeGreaterThan(0);
+            row.FirstJobSeconds.Should().Be(ResearchCohort.JobSeconds(39, 1, 0f), "the researcher picks the recipe whose job is shorter");
+            ResearchCohort.JobSeconds(39, 1, 0.2f).Should().BeGreaterThan(ResearchCohort.JobSeconds(39, 1, 0f));
         }
     }
 }

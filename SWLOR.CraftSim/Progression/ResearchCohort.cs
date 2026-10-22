@@ -114,9 +114,12 @@ namespace SWLOR.CraftSim.Progression
                 if (candidates.Count == 0)
                     continue;
 
-                // The recipe that pays the most XP against this rank; ties go to the higher level, then the lower recipe type, so the pick is stable.
+                // The recipe that pays the most XP against this rank. Recipes that pay the same (the chart tops out at 1,200) are tied on
+                // what the researcher gets, so they choose the shortest first job (the recipe's cost modifier lengthens it), then the higher
+                // level, then the recipe type, so the pick is stable.
                 var best = candidates
                     .OrderByDescending(r => ResearchXpRules.BaseXp(r.Level, rank))
+                    .ThenBy(r => JobSeconds(r.Level, 1, r.Detail.ResearchCostModifier))
                     .ThenByDescending(r => r.Level)
                     .ThenBy(r => r.Type.ToString(), StringComparer.Ordinal)
                     .First();

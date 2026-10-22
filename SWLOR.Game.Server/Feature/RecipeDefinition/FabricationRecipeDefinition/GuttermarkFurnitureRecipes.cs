@@ -27,7 +27,8 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.FabricationRecipeDefinition
                 .EnhancementSlots(RecipeEnhancementType.Structure, 1)
                 .Component("lth_ruined", 3)
                 .Component("fiberp_ruined", 2)
-                .Component("nv_pin", 1);
+                .Component("nv_pin", 1)
+                .FabricatorParameters(frameSizePercent: 50, shellSizePercent: 34, frameQualityPercent: 58, shellQualityPercent: 22, wearRate: 4);
 
             // Guttermark Signal Lamp
             _builder.Create(RecipeType.GuttermarkSignalLamp, SkillType.Fabrication)
@@ -39,7 +40,8 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.FabricationRecipeDefinition
                 .EnhancementSlots(RecipeEnhancementType.Structure, 1)
                 .Component("fiberp_ruined", 3)
                 .Component("ref_veldite", 1)
-                .Component("nv_pin", 1);
+                .Component("nv_pin", 1)
+                .FabricatorParameters(frameSizePercent: 22, shellSizePercent: 28, frameQualityPercent: 19, shellQualityPercent: 33, wearRate: 4);
 
             // Guttermark Trophy Stand
             _builder.Create(RecipeType.GuttermarkTrophyStand, SkillType.Fabrication)
@@ -51,7 +53,8 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.FabricationRecipeDefinition
                 .EnhancementSlots(RecipeEnhancementType.Structure, 1)
                 .Component("wood", 3)
                 .Component("ref_veldite", 2)
-                .Component("nv_pin", 1);
+                .Component("nv_pin", 1)
+                .FabricatorParameters(frameSizePercent: 36, shellSizePercent: 22, frameQualityPercent: 35, shellQualityPercent: 26, wearRate: 3);
 
             // Guttermark Low Table
             _builder.Create(RecipeType.GuttermarkLowTable, SkillType.Fabrication)
@@ -63,7 +66,8 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.FabricationRecipeDefinition
                 .EnhancementSlots(RecipeEnhancementType.Structure, 1)
                 .Component("wood", 3)
                 .Component("fiberp_ruined", 2)
-                .Component("nv_pin", 1);
+                .Component("nv_pin", 1)
+                .FabricatorParameters(frameSizePercent: 35, shellSizePercent: 43, frameQualityPercent: 42, shellQualityPercent: 42, wearRate: 2);
 
             // Guttermark Wall Banner
             _builder.Create(RecipeType.GuttermarkWallBanner, SkillType.Fabrication)
@@ -75,7 +79,8 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.FabricationRecipeDefinition
                 .EnhancementSlots(RecipeEnhancementType.Structure, 1)
                 .Component("fiberp_ruined", 3)
                 .Component("lth_ruined", 2)
-                .Component("nv_pin", 1);
+                .Component("nv_pin", 1)
+                .FabricatorParameters(frameSizePercent: 37, shellSizePercent: 48, frameQualityPercent: 30, shellQualityPercent: 50, wearRate: 4);
 
             // Guttermark Supply Locker
             _builder.Create(RecipeType.GuttermarkSupplyLocker, SkillType.Fabrication)
@@ -87,7 +92,8 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.FabricationRecipeDefinition
                 .EnhancementSlots(RecipeEnhancementType.Structure, 1)
                 .Component("wood", 3)
                 .Component("ref_veldite", 2)
-                .Component("nv_pin", 1);
+                .Component("nv_pin", 1)
+                .FabricatorParameters(frameSizePercent: 29, shellSizePercent: 29, frameQualityPercent: 36, shellQualityPercent: 29, wearRate: 3);
 
             // Guttermark Floor Mat
             _builder.Create(RecipeType.GuttermarkFloorMat, SkillType.Fabrication)
@@ -99,7 +105,8 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.FabricationRecipeDefinition
                 .EnhancementSlots(RecipeEnhancementType.Structure, 1)
                 .Component("lth_ruined", 3)
                 .Component("fiberp_ruined", 2)
-                .Component("nv_pin", 1);
+                .Component("nv_pin", 1)
+                .FabricatorParameters(frameSizePercent: 22, shellSizePercent: 55, frameQualityPercent: 20, shellQualityPercent: 60, wearRate: 2);
 
             // Guttermark Data Console
             _builder.Create(RecipeType.GuttermarkDataConsole, SkillType.Fabrication)
@@ -111,7 +118,8 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.FabricationRecipeDefinition
                 .EnhancementSlots(RecipeEnhancementType.Structure, 1)
                 .Component("elec_ruined", 3)
                 .Component("fiberp_ruined", 2)
-                .Component("nv_pin", 1);
+                .Component("nv_pin", 1)
+                .FabricatorParameters(frameSizePercent: 29, shellSizePercent: 22, frameQualityPercent: 19, shellQualityPercent: 28, wearRate: 4);
 
             // Guttermark Display Plinth
             _builder.Create(RecipeType.GuttermarkDisplayPlinth, SkillType.Fabrication)
@@ -123,7 +131,8 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.FabricationRecipeDefinition
                 .EnhancementSlots(RecipeEnhancementType.Structure, 1)
                 .Component("wood", 3)
                 .Component("ref_veldite", 2)
-                .Component("nv_pin", 1);
+                .Component("nv_pin", 1)
+                .FabricatorParameters(frameSizePercent: 29, shellSizePercent: 55, frameQualityPercent: 24, shellQualityPercent: 59, wearRate: 3);
 
             // Guttermark Work Stool
             _builder.Create(RecipeType.GuttermarkWorkStool, SkillType.Fabrication)
@@ -135,7 +144,8 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.FabricationRecipeDefinition
                 .EnhancementSlots(RecipeEnhancementType.Structure, 1)
                 .Component("wood", 3)
                 .Component("lth_ruined", 2)
-                .Component("nv_pin", 1);
+                .Component("nv_pin", 1)
+                .FabricatorParameters(frameSizePercent: 45, shellSizePercent: 36, frameQualityPercent: 44, shellQualityPercent: 38, wearRate: 4);
         }
     }
 }

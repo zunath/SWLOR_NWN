@@ -78,7 +78,7 @@ namespace SWLOR.CraftSim.Tests.Gates
             GateReport.AllPassed(results).Should().BeTrue();
 
             var dominated = Suite(new BenchScenario { Dominant = true, SecondsPerAction = 2 }, recipesPerBand: 2, thresholds: ReliableBands);
-            GateReport.AllPassed(GateReport.Run(dominated.Gates, context)).Should().BeFalse("a dominant rotation fails the no-fixed-rotation gate");
+            GateReport.AllPassed(GateReport.Run(dominated.Gates, context)).Should().BeFalse("a dominant rotation fails the no-single-rotation gate");
         }
 
         [Test]
@@ -116,7 +116,8 @@ namespace SWLOR.CraftSim.Tests.Gates
 
             inputs.Should().Contain("Test Bench (`bench`)").And.Contain("Smithery recipes").And.Contain("Forge");
             inputs.Should().Contain("no gear (Control 0, Craftsmanship 0, CP 0)").And.Contain("best gear");
-            inputs.Should().Contain("Adaptive player: depth 3").And.Contain("Fixed-rotation solver: beam 3");
+            inputs.Should().Contain("Adaptive player: depth 3").And.Contain("Fixed-rotation solver: beam 3")
+                .And.Contain("Gate 1 searches one sequence for each band and gear tier across the band's sampled recipes");
             inputs.Should().Contain("2.0 s per action in the new window and 6.0 s in the old one");
             inputs.Should().Contain("Heavy Press vs Fine Polish (from rank 20)");
             inputs.Should().Contain("1-10: 1 of 2").And.Contain("11-20: 1 of 2");
@@ -151,6 +152,8 @@ namespace SWLOR.CraftSim.Tests.Gates
 
             limitations.Should().Contain(line => line.Contains("floor on skilled play"));
             limitations.Should().Contain(line => line.Contains("matched rank, gear and effort"));
+            limitations.Should().Contain(line => line.Contains("Gate 1 asks whether one rotation wins every craft of a band"));
+            limitations.Should().Contain(line => line.Contains("lower use than today passes"));
             limitations[^1].Should().Be("- The test bench is not a real minigame.");
         }
 
@@ -162,7 +165,7 @@ namespace SWLOR.CraftSim.Tests.Gates
             described.Select(d => d.Name).Should().Contain(new[]
             {
                 "RotationMarginPoints", "StyleMinimumWinShare", "StyleMaximumMeanDifferencePoints", "PerksOptionalRank",
-                "PerksOptionalMinimumFullQualityShare", "MaterialTolerance", "MaterialQualityShortfallPoints", "XpRateMinimumRatio", "LegacySecondsPerAction", "RecipesPerBand",
+                "PerksOptionalMinimumFullQualityShare", "MaterialTolerance", "MaterialTwoSidedMinimumLegacySuccess", "MaterialQualityShortfallPoints", "XpRateMinimumRatio", "LegacySecondsPerAction", "RecipesPerBand",
                 "EnhancementParityRank", "EnhancementParityBands", "EnhancementSlotCounts", "EnhancementParityMinimumRatio"
             });
             described.Single(d => d.Name == "RotationMarginPoints").Value.Should().Be("10");
@@ -171,6 +174,7 @@ namespace SWLOR.CraftSim.Tests.Gates
             described.Single(d => d.Name == "PerksOptionalRank").Value.Should().Be("50");
             described.Single(d => d.Name == "PerksOptionalMinimumFullQualityShare").Value.Should().Be("50%");
             described.Single(d => d.Name == "MaterialTolerance").Value.Should().Be("10%");
+            described.Single(d => d.Name == "MaterialTwoSidedMinimumLegacySuccess").Value.Should().Be("90%");
             described.Single(d => d.Name == "MaterialQualityShortfallPoints").Value.Should().Be("5");
             described.Single(d => d.Name == "XpRateMinimumRatio").Value.Should().Be("1");
         }

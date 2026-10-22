@@ -55,9 +55,10 @@ namespace SWLOR.CraftSim.Play
         }
 
         /// <summary>
-        /// Plays a fixed rotation: the actions in order, an unavailable one skipped (a refused action changes nothing and spends no chance),
-        /// and the last one repeated while it stays available once the list runs out. It gives the same result as playing a
-        /// <see cref="FixedSequencePolicy"/>, with one rules evaluation per action instead of two.
+        /// Plays a fixed rotation: the actions in order, an unavailable one skipped (a refused action changes nothing and spends no chance,
+        /// and an action this engine does not offer at all is unavailable, so a rotation shared by several recipes can play on engines whose
+        /// action lists differ), and the last one repeated while it stays available once the list runs out. It gives the same result as
+        /// playing a <see cref="FixedSequencePolicy"/>, with one rules evaluation per action instead of two.
         /// </summary>
         public static CraftPlayResult PlayFixed(ICraftMinigameEngine engine, IReadOnlyList<string> sequence, int actionLimit = DefaultActionLimit)
         {
@@ -72,15 +73,31 @@ namespace SWLOR.CraftSim.Play
             {
                 if (next < sequence.Count)
                 {
-                    engine.Perform(sequence[next++]);
+                    var action = sequence[next++];
+                    if (Offers(engine, action))
+                        engine.Perform(action);
+
                     continue;
                 }
 
-                if (sequence.Count == 0 || !engine.Perform(sequence[^1]).Performed)
+                if (sequence.Count == 0 || !Offers(engine, sequence[^1]) || !engine.Perform(sequence[^1]).Performed)
                     break;
             }
 
             return Result(engine, startingTurn);
+        }
+
+        /// <summary>True when the engine has an action of this id at all (it may still be disabled right now).</summary>
+        internal static bool Offers(ICraftMinigameEngine engine, string actionId)
+        {
+            var actions = engine.Actions;
+            for (var index = 0; index < actions.Count; index++)
+            {
+                if (actions[index].Id == actionId)
+                    return true;
+            }
+
+            return false;
         }
 
         private static CraftPlayResult Result(ICraftMinigameEngine engine, int startingTurn)

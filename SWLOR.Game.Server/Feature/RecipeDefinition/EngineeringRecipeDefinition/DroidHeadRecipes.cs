@@ -28,7 +28,8 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.EngineeringRecipeDefinition
                 .Level(5)
                 .Quantity(1)
                 .Component("d_brain1", 1)
-                .Component("d_sensor1", 2);
+                .Component("d_sensor1", 2)
+                .CircuitParameters(overloadLine: 3, loadBoostPercent: 11, assemblySharePercent: 54);
 
             // Droid Head MPW I
             _builder.Create(RecipeType.DroidHeadMPW1, SkillType.Engineering)
@@ -37,7 +38,8 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.EngineeringRecipeDefinition
                 .Level(6)
                 .Quantity(1)
                 .Component("d_brain1", 1)
-                .Component("d_sensor1", 2);
+                .Component("d_sensor1", 2)
+                .CircuitParameters(overloadLine: 3, loadBoostPercent: 12, assemblySharePercent: 48);
 
             // Droid Head MPA I
             _builder.Create(RecipeType.DroidHeadMPA1, SkillType.Engineering)
@@ -46,7 +48,8 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.EngineeringRecipeDefinition
                 .Level(7)
                 .Quantity(1)
                 .Component("d_brain1", 1)
-                .Component("d_sensor1", 2);
+                .Component("d_sensor1", 2)
+                .CircuitParameters(overloadLine: 5, loadBoostPercent: 11, assemblySharePercent: 46);
 
             // Droid Head MPS I
             _builder.Create(RecipeType.DroidHeadMPS1, SkillType.Engineering)
@@ -55,7 +58,8 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.EngineeringRecipeDefinition
                 .Level(8)
                 .Quantity(1)
                 .Component("d_brain1", 1)
-                .Component("d_sensor1", 2);
+                .Component("d_sensor1", 2)
+                .CircuitParameters(overloadLine: 4, loadBoostPercent: 11, assemblySharePercent: 47);
 
             // Droid Head MVW I
             _builder.Create(RecipeType.DroidHeadMVW1, SkillType.Engineering)
@@ -64,7 +68,8 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.EngineeringRecipeDefinition
                 .Level(9)
                 .Quantity(1)
                 .Component("d_brain1", 1)
-                .Component("d_sensor1", 2);
+                .Component("d_sensor1", 2)
+                .CircuitParameters(overloadLine: 4, loadBoostPercent: 11, assemblySharePercent: 52);
 
             // Droid Head MVA I
             _builder.Create(RecipeType.DroidHeadMVA1, SkillType.Engineering)
@@ -73,7 +78,8 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.EngineeringRecipeDefinition
                 .Level(10)
                 .Quantity(1)
                 .Component("d_brain1", 1)
-                .Component("d_sensor1", 2);
+                .Component("d_sensor1", 2)
+                .CircuitParameters(overloadLine: 3, loadBoostPercent: 12, assemblySharePercent: 47);
 
             // Droid Head MVS I
             _builder.Create(RecipeType.DroidHeadMVS1, SkillType.Engineering)
@@ -82,7 +88,8 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.EngineeringRecipeDefinition
                 .Level(10)
                 .Quantity(1)
                 .Component("d_brain1", 1)
-                .Component("d_sensor1", 2);
+                .Component("d_sensor1", 2)
+                .CircuitParameters(overloadLine: 3, loadBoostPercent: 13, assemblySharePercent: 55);
 
             // Droid Head MWA I
             _builder.Create(RecipeType.DroidHeadMWA1, SkillType.Engineering)
@@ -91,7 +98,8 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.EngineeringRecipeDefinition
                 .Level(9)
                 .Quantity(1)
                 .Component("d_brain1", 1)
-                .Component("d_sensor1", 2);
+                .Component("d_sensor1", 2)
+                .CircuitParameters(overloadLine: 5, loadBoostPercent: 13, assemblySharePercent: 49);
 
             // Droid Head MWS I
             _builder.Create(RecipeType.DroidHeadMWS1, SkillType.Engineering)
@@ -100,7 +108,8 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.EngineeringRecipeDefinition
                 .Level(8)
                 .Quantity(1)
                 .Component("d_brain1", 1)
-                .Component("d_sensor1", 2);
+                .Component("d_sensor1", 2)
+                .CircuitParameters(overloadLine: 3, loadBoostPercent: 12, assemblySharePercent: 52);
 
             // Droid Head MAS I
             _builder.Create(RecipeType.DroidHeadMAS1, SkillType.Engineering)
@@ -109,7 +118,8 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.EngineeringRecipeDefinition
                 .Level(7)
                 .Quantity(1)
                 .Component("d_brain1", 1)
-                .Component("d_sensor1", 2);
+                .Component("d_sensor1", 2)
+                .CircuitParameters(overloadLine: 4, loadBoostPercent: 11, assemblySharePercent: 48);
 
             // Droid Head PVW I
             _builder.Create(RecipeType.DroidHeadPVW1, SkillType.Engineering)
@@ -118,7 +128,8 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.EngineeringRecipeDefinition
                 .Level(6)
                 .Quantity(1)
                 .Component("d_brain1", 1)
-                .Component("d_sensor1", 2);
+                .Component("d_sensor1", 2)
+                .CircuitParameters(overloadLine: 5, loadBoostPercent: 12, assemblySharePercent: 55);
 
             // Droid Head PVA I
             _builder.Create(RecipeType.DroidHeadPVA1, SkillType.Engineering)
@@ -127,7 +138,8 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.EngineeringRecipeDefinition
                 .Level(7)
                 .Quantity(1)
                 .Component("d_brain1", 1)
-                .Component("d_sensor1", 2);
+                .Component("d_sensor1", 2)
+                .CircuitParameters(overloadLine: 5, loadBoostPercent: 13, assemblySharePercent: 47);
 
             // Droid Head PVS I
             _builder.Create(RecipeType.DroidHeadPVS1, SkillType.Engineering)
@@ -136,7 +148,8 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.EngineeringRecipeDefinition
                 .Level(8)
                 .Quantity(1)
                 .Component("d_brain1", 1)
-                .Component("d_sensor1", 2);
+                .Component("d_sensor1", 2)
+                .CircuitParameters(overloadLine: 5, loadBoostPercent: 13, assemblySharePercent: 51);
 
             // Droid Head VWA I
             _builder.Create(RecipeType.DroidHeadVWA1, SkillType.Engineering)
@@ -145,7 +158,8 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.EngineeringRecipeDefinition
                 .Level(10)
                 .Quantity(1)
                 .Component("d_brain1", 1)
-                .Component("d_sensor1", 2);
+                .Component("d_sensor1", 2)
+                .CircuitParameters(overloadLine: 4, loadBoostPercent: 13, assemblySharePercent: 48);
 
             // Droid Head VWS I
             _builder.Create(RecipeType.DroidHeadVWS1, SkillType.Engineering)
@@ -154,7 +168,8 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.EngineeringRecipeDefinition
                 .Level(5)
                 .Quantity(1)
                 .Component("d_brain1", 1)
-                .Component("d_sensor1", 2);
+                .Component("d_sensor1", 2)
+                .CircuitParameters(overloadLine: 4, loadBoostPercent: 13, assemblySharePercent: 55);
 
             // Droid Head VAS I
             _builder.Create(RecipeType.DroidHeadVAS1, SkillType.Engineering)
@@ -163,7 +178,8 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.EngineeringRecipeDefinition
                 .Level(9)
                 .Quantity(1)
                 .Component("d_brain1", 1)
-                .Component("d_sensor1", 2);
+                .Component("d_sensor1", 2)
+                .CircuitParameters(overloadLine: 4, loadBoostPercent: 13, assemblySharePercent: 55);
 
             // Droid Head WAS I
             _builder.Create(RecipeType.DroidHeadWAS1, SkillType.Engineering)
@@ -172,7 +188,8 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.EngineeringRecipeDefinition
                 .Level(7)
                 .Quantity(1)
                 .Component("d_brain1", 1)
-                .Component("d_sensor1", 2);
+                .Component("d_sensor1", 2)
+                .CircuitParameters(overloadLine: 4, loadBoostPercent: 13, assemblySharePercent: 55);
 
 
         }
@@ -186,7 +203,8 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.EngineeringRecipeDefinition
                 .Level(15)
                 .Quantity(1)
                 .Component("d_brain2", 1)
-                .Component("d_sensor2", 2);
+                .Component("d_sensor2", 2)
+                .CircuitParameters(overloadLine: 5, loadBoostPercent: 12, assemblySharePercent: 50);
 
             // Droid Head MPW II
             _builder.Create(RecipeType.DroidHeadMPW2, SkillType.Engineering)
@@ -195,7 +213,8 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.EngineeringRecipeDefinition
                 .Level(16)
                 .Quantity(1)
                 .Component("d_brain2", 1)
-                .Component("d_sensor2", 2);
+                .Component("d_sensor2", 2)
+                .CircuitParameters(overloadLine: 4, loadBoostPercent: 11, assemblySharePercent: 55);
 
             // Droid Head MPA II
             _builder.Create(RecipeType.DroidHeadMPA2, SkillType.Engineering)
@@ -204,7 +223,8 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.EngineeringRecipeDefinition
                 .Level(17)
                 .Quantity(1)
                 .Component("d_brain2", 1)
-                .Component("d_sensor2", 2);
+                .Component("d_sensor2", 2)
+                .CircuitParameters(overloadLine: 5, loadBoostPercent: 11, assemblySharePercent: 49);
 
             // Droid Head MPS II
             _builder.Create(RecipeType.DroidHeadMPS2, SkillType.Engineering)
@@ -213,7 +233,8 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.EngineeringRecipeDefinition
                 .Level(18)
                 .Quantity(1)
                 .Component("d_brain2", 1)
-                .Component("d_sensor2", 2);
+                .Component("d_sensor2", 2)
+                .CircuitParameters(overloadLine: 6, loadBoostPercent: 12, assemblySharePercent: 48);
 
             // Droid Head MVW II
             _builder.Create(RecipeType.DroidHeadMVW2, SkillType.Engineering)
@@ -222,7 +243,8 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.EngineeringRecipeDefinition
                 .Level(19)
                 .Quantity(1)
                 .Component("d_brain2", 1)
-                .Component("d_sensor2", 2);
+                .Component("d_sensor2", 2)
+                .CircuitParameters(overloadLine: 6, loadBoostPercent: 11, assemblySharePercent: 47);
 
             // Droid Head MVA II
             _builder.Create(RecipeType.DroidHeadMVA2, SkillType.Engineering)
@@ -231,7 +253,8 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.EngineeringRecipeDefinition
                 .Level(20)
                 .Quantity(1)
                 .Component("d_brain2", 1)
-                .Component("d_sensor2", 2);
+                .Component("d_sensor2", 2)
+                .CircuitParameters(overloadLine: 4, loadBoostPercent: 11, assemblySharePercent: 46);
 
             // Droid Head MVS II
             _builder.Create(RecipeType.DroidHeadMVS2, SkillType.Engineering)
@@ -240,7 +263,8 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.EngineeringRecipeDefinition
                 .Level(20)
                 .Quantity(1)
                 .Component("d_brain2", 1)
-                .Component("d_sensor2", 2);
+                .Component("d_sensor2", 2)
+                .CircuitParameters(overloadLine: 4, loadBoostPercent: 12, assemblySharePercent: 54);
 
             // Droid Head MWA II
             _builder.Create(RecipeType.DroidHeadMWA2, SkillType.Engineering)
@@ -249,7 +273,8 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.EngineeringRecipeDefinition
                 .Level(19)
                 .Quantity(1)
                 .Component("d_brain2", 1)
-                .Component("d_sensor2", 2);
+                .Component("d_sensor2", 2)
+                .CircuitParameters(overloadLine: 6, loadBoostPercent: 12, assemblySharePercent: 47);
 
             // Droid Head MWS II
             _builder.Create(RecipeType.DroidHeadMWS2, SkillType.Engineering)
@@ -258,7 +283,8 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.EngineeringRecipeDefinition
                 .Level(18)
                 .Quantity(1)
                 .Component("d_brain2", 1)
-                .Component("d_sensor2", 2);
+                .Component("d_sensor2", 2)
+                .CircuitParameters(overloadLine: 6, loadBoostPercent: 13, assemblySharePercent: 53);
 
             // Droid Head MAS II
             _builder.Create(RecipeType.DroidHeadMAS2, SkillType.Engineering)
@@ -267,7 +293,8 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.EngineeringRecipeDefinition
                 .Level(17)
                 .Quantity(1)
                 .Component("d_brain2", 1)
-                .Component("d_sensor2", 2);
+                .Component("d_sensor2", 2)
+                .CircuitParameters(overloadLine: 5, loadBoostPercent: 13, assemblySharePercent: 48);
 
             // Droid Head PVW II
             _builder.Create(RecipeType.DroidHeadPVW2, SkillType.Engineering)
@@ -276,7 +303,8 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.EngineeringRecipeDefinition
                 .Level(16)
                 .Quantity(1)
                 .Component("d_brain2", 1)
-                .Component("d_sensor2", 2);
+                .Component("d_sensor2", 2)
+                .CircuitParameters(overloadLine: 4, loadBoostPercent: 11, assemblySharePercent: 50);
 
             // Droid Head PVA II
             _builder.Create(RecipeType.DroidHeadPVA2, SkillType.Engineering)
@@ -285,7 +313,8 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.EngineeringRecipeDefinition
                 .Level(17)
                 .Quantity(1)
                 .Component("d_brain2", 1)
-                .Component("d_sensor2", 2);
+                .Component("d_sensor2", 2)
+                .CircuitParameters(overloadLine: 6, loadBoostPercent: 12, assemblySharePercent: 46);
 
             // Droid Head PVS II
             _builder.Create(RecipeType.DroidHeadPVS2, SkillType.Engineering)
@@ -294,7 +323,8 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.EngineeringRecipeDefinition
                 .Level(18)
                 .Quantity(1)
                 .Component("d_brain2", 1)
-                .Component("d_sensor2", 2);
+                .Component("d_sensor2", 2)
+                .CircuitParameters(overloadLine: 5, loadBoostPercent: 11, assemblySharePercent: 45);
 
             // Droid Head VWA II
             _builder.Create(RecipeType.DroidHeadVWA2, SkillType.Engineering)
@@ -303,7 +333,8 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.EngineeringRecipeDefinition
                 .Level(20)
                 .Quantity(1)
                 .Component("d_brain2", 1)
-                .Component("d_sensor2", 2);
+                .Component("d_sensor2", 2)
+                .CircuitParameters(overloadLine: 6, loadBoostPercent: 11, assemblySharePercent: 49);
 
             // Droid Head VWS II
             _builder.Create(RecipeType.DroidHeadVWS2, SkillType.Engineering)
@@ -312,7 +343,8 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.EngineeringRecipeDefinition
                 .Level(15)
                 .Quantity(1)
                 .Component("d_brain2", 1)
-                .Component("d_sensor2", 2);
+                .Component("d_sensor2", 2)
+                .CircuitParameters(overloadLine: 5, loadBoostPercent: 13, assemblySharePercent: 54);
 
             // Droid Head VAS II
             _builder.Create(RecipeType.DroidHeadVAS2, SkillType.Engineering)
@@ -321,7 +353,8 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.EngineeringRecipeDefinition
                 .Level(19)
                 .Quantity(1)
                 .Component("d_brain2", 1)
-                .Component("d_sensor2", 2);
+                .Component("d_sensor2", 2)
+                .CircuitParameters(overloadLine: 5, loadBoostPercent: 13, assemblySharePercent: 55);
 
             // Droid Head WAS II
             _builder.Create(RecipeType.DroidHeadWAS2, SkillType.Engineering)
@@ -330,7 +363,8 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.EngineeringRecipeDefinition
                 .Level(17)
                 .Quantity(1)
                 .Component("d_brain2", 1)
-                .Component("d_sensor2", 2);
+                .Component("d_sensor2", 2)
+                .CircuitParameters(overloadLine: 4, loadBoostPercent: 12, assemblySharePercent: 50);
 
 
         }
@@ -344,7 +378,8 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.EngineeringRecipeDefinition
                 .Quantity(1)
                 .EnhancementSlots(RecipeEnhancementType.Droid, 1)
                 .Component("d_brain3", 1)
-                .Component("d_sensor3", 2);
+                .Component("d_sensor3", 2)
+                .CircuitParameters(overloadLine: 6, loadBoostPercent: 11, assemblySharePercent: 47);
 
             // Droid Head MPW III
             _builder.Create(RecipeType.DroidHeadMPW3, SkillType.Engineering)
@@ -354,7 +389,8 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.EngineeringRecipeDefinition
                 .Quantity(1)
                 .EnhancementSlots(RecipeEnhancementType.Droid, 1)
                 .Component("d_brain3", 1)
-                .Component("d_sensor3", 2);
+                .Component("d_sensor3", 2)
+                .CircuitParameters(overloadLine: 5, loadBoostPercent: 12, assemblySharePercent: 48);
 
             // Droid Head MPA III
             _builder.Create(RecipeType.DroidHeadMPA3, SkillType.Engineering)
@@ -364,7 +400,8 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.EngineeringRecipeDefinition
                 .Quantity(1)
                 .EnhancementSlots(RecipeEnhancementType.Droid, 1)
                 .Component("d_brain3", 1)
-                .Component("d_sensor3", 2);
+                .Component("d_sensor3", 2)
+                .CircuitParameters(overloadLine: 5, loadBoostPercent: 12, assemblySharePercent: 50);
 
             // Droid Head MPS III
             _builder.Create(RecipeType.DroidHeadMPS3, SkillType.Engineering)
@@ -374,7 +411,8 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.EngineeringRecipeDefinition
                 .Quantity(1)
                 .EnhancementSlots(RecipeEnhancementType.Droid, 1)
                 .Component("d_brain3", 1)
-                .Component("d_sensor3", 2);
+                .Component("d_sensor3", 2)
+                .CircuitParameters(overloadLine: 5, loadBoostPercent: 13, assemblySharePercent: 46);
 
             // Droid Head MVW III
             _builder.Create(RecipeType.DroidHeadMVW3, SkillType.Engineering)
@@ -384,7 +422,8 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.EngineeringRecipeDefinition
                 .Quantity(1)
                 .EnhancementSlots(RecipeEnhancementType.Droid, 1)
                 .Component("d_brain3", 1)
-                .Component("d_sensor3", 2);
+                .Component("d_sensor3", 2)
+                .CircuitParameters(overloadLine: 5, loadBoostPercent: 12, assemblySharePercent: 52);
 
             // Droid Head MVA III
             _builder.Create(RecipeType.DroidHeadMVA3, SkillType.Engineering)
@@ -394,7 +433,8 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.EngineeringRecipeDefinition
                 .Quantity(1)
                 .EnhancementSlots(RecipeEnhancementType.Droid, 1)
                 .Component("d_brain3", 1)
-                .Component("d_sensor3", 2);
+                .Component("d_sensor3", 2)
+                .CircuitParameters(overloadLine: 5, loadBoostPercent: 11, assemblySharePercent: 47);
 
             // Droid Head MVS III
             _builder.Create(RecipeType.DroidHeadMVS3, SkillType.Engineering)
@@ -404,7 +444,8 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.EngineeringRecipeDefinition
                 .Quantity(1)
                 .EnhancementSlots(RecipeEnhancementType.Droid, 1)
                 .Component("d_brain3", 1)
-                .Component("d_sensor3", 2);
+                .Component("d_sensor3", 2)
+                .CircuitParameters(overloadLine: 5, loadBoostPercent: 11, assemblySharePercent: 55);
 
             // Droid Head MWA III
             _builder.Create(RecipeType.DroidHeadMWA3, SkillType.Engineering)
@@ -414,7 +455,8 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.EngineeringRecipeDefinition
                 .Quantity(1)
                 .EnhancementSlots(RecipeEnhancementType.Droid, 1)
                 .Component("d_brain3", 1)
-                .Component("d_sensor3", 2);
+                .Component("d_sensor3", 2)
+                .CircuitParameters(overloadLine: 6, loadBoostPercent: 13, assemblySharePercent: 52);
 
             // Droid Head MWS III
             _builder.Create(RecipeType.DroidHeadMWS3, SkillType.Engineering)
@@ -424,7 +466,8 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.EngineeringRecipeDefinition
                 .Quantity(1)
                 .EnhancementSlots(RecipeEnhancementType.Droid, 1)
                 .Component("d_brain3", 1)
-                .Component("d_sensor3", 2);
+                .Component("d_sensor3", 2)
+                .CircuitParameters(overloadLine: 7, loadBoostPercent: 13, assemblySharePercent: 51);
 
             // Droid Head MAS III
             _builder.Create(RecipeType.DroidHeadMAS3, SkillType.Engineering)
@@ -434,7 +477,8 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.EngineeringRecipeDefinition
                 .Quantity(1)
                 .EnhancementSlots(RecipeEnhancementType.Droid, 1)
                 .Component("d_brain3", 1)
-                .Component("d_sensor3", 2);
+                .Component("d_sensor3", 2)
+                .CircuitParameters(overloadLine: 6, loadBoostPercent: 12, assemblySharePercent: 55);
 
             // Droid Head PVW III
             _builder.Create(RecipeType.DroidHeadPVW3, SkillType.Engineering)
@@ -444,7 +488,8 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.EngineeringRecipeDefinition
                 .Quantity(1)
                 .EnhancementSlots(RecipeEnhancementType.Droid, 1)
                 .Component("d_brain3", 1)
-                .Component("d_sensor3", 2);
+                .Component("d_sensor3", 2)
+                .CircuitParameters(overloadLine: 7, loadBoostPercent: 13, assemblySharePercent: 49);
 
             // Droid Head PVA III
             _builder.Create(RecipeType.DroidHeadPVA3, SkillType.Engineering)
@@ -454,7 +499,8 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.EngineeringRecipeDefinition
                 .Quantity(1)
                 .EnhancementSlots(RecipeEnhancementType.Droid, 1)
                 .Component("d_brain3", 1)
-                .Component("d_sensor3", 2);
+                .Component("d_sensor3", 2)
+                .CircuitParameters(overloadLine: 7, loadBoostPercent: 11, assemblySharePercent: 46);
 
             // Droid Head PVS III
             _builder.Create(RecipeType.DroidHeadPVS3, SkillType.Engineering)
@@ -464,7 +510,8 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.EngineeringRecipeDefinition
                 .Quantity(1)
                 .EnhancementSlots(RecipeEnhancementType.Droid, 1)
                 .Component("d_brain3", 1)
-                .Component("d_sensor3", 2);
+                .Component("d_sensor3", 2)
+                .CircuitParameters(overloadLine: 7, loadBoostPercent: 12, assemblySharePercent: 50);
 
             // Droid Head VWA III
             _builder.Create(RecipeType.DroidHeadVWA3, SkillType.Engineering)
@@ -474,7 +521,8 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.EngineeringRecipeDefinition
                 .Quantity(1)
                 .EnhancementSlots(RecipeEnhancementType.Droid, 1)
                 .Component("d_brain3", 1)
-                .Component("d_sensor3", 2);
+                .Component("d_sensor3", 2)
+                .CircuitParameters(overloadLine: 6, loadBoostPercent: 12, assemblySharePercent: 50);
 
             // Droid Head VWS III
             _builder.Create(RecipeType.DroidHeadVWS3, SkillType.Engineering)
@@ -484,7 +532,8 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.EngineeringRecipeDefinition
                 .Quantity(1)
                 .EnhancementSlots(RecipeEnhancementType.Droid, 1)
                 .Component("d_brain3", 1)
-                .Component("d_sensor3", 2);
+                .Component("d_sensor3", 2)
+                .CircuitParameters(overloadLine: 7, loadBoostPercent: 13, assemblySharePercent: 46);
 
             // Droid Head VAS III
             _builder.Create(RecipeType.DroidHeadVAS3, SkillType.Engineering)
@@ -494,7 +543,8 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.EngineeringRecipeDefinition
                 .Quantity(1)
                 .EnhancementSlots(RecipeEnhancementType.Droid, 1)
                 .Component("d_brain3", 1)
-                .Component("d_sensor3", 2);
+                .Component("d_sensor3", 2)
+                .CircuitParameters(overloadLine: 6, loadBoostPercent: 11, assemblySharePercent: 49);
 
             // Droid Head WAS III
             _builder.Create(RecipeType.DroidHeadWAS3, SkillType.Engineering)
@@ -504,7 +554,8 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.EngineeringRecipeDefinition
                 .Quantity(1)
                 .EnhancementSlots(RecipeEnhancementType.Droid, 1)
                 .Component("d_brain3", 1)
-                .Component("d_sensor3", 2);
+                .Component("d_sensor3", 2)
+                .CircuitParameters(overloadLine: 7, loadBoostPercent: 12, assemblySharePercent: 52);
         }
         private void Tier4()
         {
@@ -516,7 +567,8 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.EngineeringRecipeDefinition
                 .Quantity(1)
                 .EnhancementSlots(RecipeEnhancementType.Droid, 1)
                 .Component("d_brain4", 1)
-                .Component("d_sensor4", 2);
+                .Component("d_sensor4", 2)
+                .CircuitParameters(overloadLine: 7, loadBoostPercent: 13, assemblySharePercent: 52);
 
             // Droid Head MPW IV
             _builder.Create(RecipeType.DroidHeadMPW4, SkillType.Engineering)
@@ -526,7 +578,8 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.EngineeringRecipeDefinition
                 .Quantity(1)
                 .EnhancementSlots(RecipeEnhancementType.Droid, 1)
                 .Component("d_brain4", 1)
-                .Component("d_sensor4", 2);
+                .Component("d_sensor4", 2)
+                .CircuitParameters(overloadLine: 7, loadBoostPercent: 11, assemblySharePercent: 48);
 
             // Droid Head MPA IV
             _builder.Create(RecipeType.DroidHeadMPA4, SkillType.Engineering)
@@ -536,7 +589,8 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.EngineeringRecipeDefinition
                 .Quantity(1)
                 .EnhancementSlots(RecipeEnhancementType.Droid, 1)
                 .Component("d_brain4", 1)
-                .Component("d_sensor4", 2);
+                .Component("d_sensor4", 2)
+                .CircuitParameters(overloadLine: 8, loadBoostPercent: 12, assemblySharePercent: 48);
 
             // Droid Head MPS IV
             _builder.Create(RecipeType.DroidHeadMPS4, SkillType.Engineering)
@@ -546,7 +600,8 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.EngineeringRecipeDefinition
                 .Quantity(1)
                 .EnhancementSlots(RecipeEnhancementType.Droid, 1)
                 .Component("d_brain4", 1)
-                .Component("d_sensor4", 2);
+                .Component("d_sensor4", 2)
+                .CircuitParameters(overloadLine: 6, loadBoostPercent: 12, assemblySharePercent: 48);
 
             // Droid Head MVW IV
             _builder.Create(RecipeType.DroidHeadMVW4, SkillType.Engineering)
@@ -556,7 +611,8 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.EngineeringRecipeDefinition
                 .Quantity(1)
                 .EnhancementSlots(RecipeEnhancementType.Droid, 1)
                 .Component("d_brain4", 1)
-                .Component("d_sensor4", 2);
+                .Component("d_sensor4", 2)
+                .CircuitParameters(overloadLine: 6, loadBoostPercent: 11, assemblySharePercent: 46);
 
             // Droid Head MVA IV
             _builder.Create(RecipeType.DroidHeadMVA4, SkillType.Engineering)
@@ -566,7 +622,8 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.EngineeringRecipeDefinition
                 .Quantity(1)
                 .EnhancementSlots(RecipeEnhancementType.Droid, 1)
                 .Component("d_brain4", 1)
-                .Component("d_sensor4", 2);
+                .Component("d_sensor4", 2)
+                .CircuitParameters(overloadLine: 8, loadBoostPercent: 13, assemblySharePercent: 48);
 
             // Droid Head MVS IV
             _builder.Create(RecipeType.DroidHeadMVS4, SkillType.Engineering)
@@ -576,7 +633,8 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.EngineeringRecipeDefinition
                 .Quantity(1)
                 .EnhancementSlots(RecipeEnhancementType.Droid, 1)
                 .Component("d_brain4", 1)
-                .Component("d_sensor4", 2);
+                .Component("d_sensor4", 2)
+                .CircuitParameters(overloadLine: 6, loadBoostPercent: 13, assemblySharePercent: 53);
 
             // Droid Head MWA IV
             _builder.Create(RecipeType.DroidHeadMWA4, SkillType.Engineering)
@@ -586,7 +644,8 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.EngineeringRecipeDefinition
                 .Quantity(1)
                 .EnhancementSlots(RecipeEnhancementType.Droid, 1)
                 .Component("d_brain4", 1)
-                .Component("d_sensor4", 2);
+                .Component("d_sensor4", 2)
+                .CircuitParameters(overloadLine: 6, loadBoostPercent: 13, assemblySharePercent: 47);
 
             // Droid Head MWS IV
             _builder.Create(RecipeType.DroidHeadMWS4, SkillType.Engineering)
@@ -596,7 +655,8 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.EngineeringRecipeDefinition
                 .Quantity(1)
                 .EnhancementSlots(RecipeEnhancementType.Droid, 1)
                 .Component("d_brain4", 1)
-                .Component("d_sensor4", 2);
+                .Component("d_sensor4", 2)
+                .CircuitParameters(overloadLine: 7, loadBoostPercent: 12, assemblySharePercent: 47);
 
             // Droid Head MAS IV
             _builder.Create(RecipeType.DroidHeadMAS4, SkillType.Engineering)
@@ -606,7 +666,8 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.EngineeringRecipeDefinition
                 .Quantity(1)
                 .EnhancementSlots(RecipeEnhancementType.Droid, 1)
                 .Component("d_brain4", 1)
-                .Component("d_sensor4", 2);
+                .Component("d_sensor4", 2)
+                .CircuitParameters(overloadLine: 8, loadBoostPercent: 13, assemblySharePercent: 54);
 
             // Droid Head PVW IV
             _builder.Create(RecipeType.DroidHeadPVW4, SkillType.Engineering)
@@ -616,7 +677,8 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.EngineeringRecipeDefinition
                 .Quantity(1)
                 .EnhancementSlots(RecipeEnhancementType.Droid, 1)
                 .Component("d_brain4", 1)
-                .Component("d_sensor4", 2);
+                .Component("d_sensor4", 2)
+                .CircuitParameters(overloadLine: 8, loadBoostPercent: 13, assemblySharePercent: 48);
 
             // Droid Head PVA IV
             _builder.Create(RecipeType.DroidHeadPVA4, SkillType.Engineering)
@@ -626,7 +688,8 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.EngineeringRecipeDefinition
                 .Quantity(1)
                 .EnhancementSlots(RecipeEnhancementType.Droid, 1)
                 .Component("d_brain4", 1)
-                .Component("d_sensor4", 2);
+                .Component("d_sensor4", 2)
+                .CircuitParameters(overloadLine: 8, loadBoostPercent: 12, assemblySharePercent: 48);
 
             // Droid Head PVS IV
             _builder.Create(RecipeType.DroidHeadPVS4, SkillType.Engineering)
@@ -636,7 +699,8 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.EngineeringRecipeDefinition
                 .Quantity(1)
                 .EnhancementSlots(RecipeEnhancementType.Droid, 1)
                 .Component("d_brain4", 1)
-                .Component("d_sensor4", 2);
+                .Component("d_sensor4", 2)
+                .CircuitParameters(overloadLine: 6, loadBoostPercent: 13, assemblySharePercent: 46);
 
             // Droid Head VWA IV
             _builder.Create(RecipeType.DroidHeadVWA4, SkillType.Engineering)
@@ -646,7 +710,8 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.EngineeringRecipeDefinition
                 .Quantity(1)
                 .EnhancementSlots(RecipeEnhancementType.Droid, 1)
                 .Component("d_brain4", 1)
-                .Component("d_sensor4", 2);
+                .Component("d_sensor4", 2)
+                .CircuitParameters(overloadLine: 7, loadBoostPercent: 13, assemblySharePercent: 49);
 
             // Droid Head VWS IV
             _builder.Create(RecipeType.DroidHeadVWS4, SkillType.Engineering)
@@ -656,7 +721,8 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.EngineeringRecipeDefinition
                 .Quantity(1)
                 .EnhancementSlots(RecipeEnhancementType.Droid, 1)
                 .Component("d_brain4", 1)
-                .Component("d_sensor4", 2);
+                .Component("d_sensor4", 2)
+                .CircuitParameters(overloadLine: 6, loadBoostPercent: 11, assemblySharePercent: 48);
 
             // Droid Head VAS IV
             _builder.Create(RecipeType.DroidHeadVAS4, SkillType.Engineering)
@@ -666,7 +732,8 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.EngineeringRecipeDefinition
                 .Quantity(1)
                 .EnhancementSlots(RecipeEnhancementType.Droid, 1)
                 .Component("d_brain4", 1)
-                .Component("d_sensor4", 2);
+                .Component("d_sensor4", 2)
+                .CircuitParameters(overloadLine: 6, loadBoostPercent: 13, assemblySharePercent: 53);
 
             // Droid Head WAS IV
             _builder.Create(RecipeType.DroidHeadWAS4, SkillType.Engineering)
@@ -676,7 +743,8 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.EngineeringRecipeDefinition
                 .Quantity(1)
                 .EnhancementSlots(RecipeEnhancementType.Droid, 1)
                 .Component("d_brain4", 1)
-                .Component("d_sensor4", 2);
+                .Component("d_sensor4", 2)
+                .CircuitParameters(overloadLine: 7, loadBoostPercent: 13, assemblySharePercent: 45);
 
 
         }
@@ -690,7 +758,8 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.EngineeringRecipeDefinition
                 .Quantity(1)
                 .EnhancementSlots(RecipeEnhancementType.Droid, 1)
                 .Component("d_brain5", 1)
-                .Component("d_sensor5", 2);
+                .Component("d_sensor5", 2)
+                .CircuitParameters(overloadLine: 7, loadBoostPercent: 13, assemblySharePercent: 46);
 
             // Droid Head MPW V
             _builder.Create(RecipeType.DroidHeadMPW5, SkillType.Engineering)
@@ -700,7 +769,8 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.EngineeringRecipeDefinition
                 .Quantity(1)
                 .EnhancementSlots(RecipeEnhancementType.Droid, 1)
                 .Component("d_brain5", 1)
-                .Component("d_sensor5", 2);
+                .Component("d_sensor5", 2)
+                .CircuitParameters(overloadLine: 9, loadBoostPercent: 11, assemblySharePercent: 54);
 
             // Droid Head MPA V
             _builder.Create(RecipeType.DroidHeadMPA5, SkillType.Engineering)
@@ -710,7 +780,8 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.EngineeringRecipeDefinition
                 .Quantity(1)
                 .EnhancementSlots(RecipeEnhancementType.Droid, 1)
                 .Component("d_brain5", 1)
-                .Component("d_sensor5", 2);
+                .Component("d_sensor5", 2)
+                .CircuitParameters(overloadLine: 8, loadBoostPercent: 11, assemblySharePercent: 55);
 
             // Droid Head MPS V
             _builder.Create(RecipeType.DroidHeadMPS5, SkillType.Engineering)
@@ -720,7 +791,8 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.EngineeringRecipeDefinition
                 .Quantity(1)
                 .EnhancementSlots(RecipeEnhancementType.Droid, 1)
                 .Component("d_brain5", 1)
-                .Component("d_sensor5", 2);
+                .Component("d_sensor5", 2)
+                .CircuitParameters(overloadLine: 7, loadBoostPercent: 12, assemblySharePercent: 46);
 
             // Droid Head MVW V
             _builder.Create(RecipeType.DroidHeadMVW5, SkillType.Engineering)
@@ -730,7 +802,8 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.EngineeringRecipeDefinition
                 .Quantity(1)
                 .EnhancementSlots(RecipeEnhancementType.Droid, 1)
                 .Component("d_brain5", 1)
-                .Component("d_sensor5", 2);
+                .Component("d_sensor5", 2)
+                .CircuitParameters(overloadLine: 7, loadBoostPercent: 11, assemblySharePercent: 47);
 
             // Droid Head MVA V
             _builder.Create(RecipeType.DroidHeadMVA5, SkillType.Engineering)
@@ -740,7 +813,8 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.EngineeringRecipeDefinition
                 .Quantity(1)
                 .EnhancementSlots(RecipeEnhancementType.Droid, 1)
                 .Component("d_brain5", 1)
-                .Component("d_sensor5", 2);
+                .Component("d_sensor5", 2)
+                .CircuitParameters(overloadLine: 7, loadBoostPercent: 13, assemblySharePercent: 47);
 
             // Droid Head MVS V
             _builder.Create(RecipeType.DroidHeadMVS5, SkillType.Engineering)
@@ -750,7 +824,8 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.EngineeringRecipeDefinition
                 .Quantity(1)
                 .EnhancementSlots(RecipeEnhancementType.Droid, 1)
                 .Component("d_brain5", 1)
-                .Component("d_sensor5", 2);
+                .Component("d_sensor5", 2)
+                .CircuitParameters(overloadLine: 7, loadBoostPercent: 13, assemblySharePercent: 55);
 
             // Droid Head MWA V
             _builder.Create(RecipeType.DroidHeadMWA5, SkillType.Engineering)
@@ -760,7 +835,8 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.EngineeringRecipeDefinition
                 .Quantity(1)
                 .EnhancementSlots(RecipeEnhancementType.Droid, 1)
                 .Component("d_brain5", 1)
-                .Component("d_sensor5", 2);
+                .Component("d_sensor5", 2)
+                .CircuitParameters(overloadLine: 9, loadBoostPercent: 11, assemblySharePercent: 48);
 
             // Droid Head MWS V
             _builder.Create(RecipeType.DroidHeadMWS5, SkillType.Engineering)
@@ -770,7 +846,8 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.EngineeringRecipeDefinition
                 .Quantity(1)
                 .EnhancementSlots(RecipeEnhancementType.Droid, 1)
                 .Component("d_brain5", 1)
-                .Component("d_sensor5", 2);
+                .Component("d_sensor5", 2)
+                .CircuitParameters(overloadLine: 9, loadBoostPercent: 12, assemblySharePercent: 49);
 
             // Droid Head MAS V
             _builder.Create(RecipeType.DroidHeadMAS5, SkillType.Engineering)
@@ -780,7 +857,8 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.EngineeringRecipeDefinition
                 .Quantity(1)
                 .EnhancementSlots(RecipeEnhancementType.Droid, 1)
                 .Component("d_brain5", 1)
-                .Component("d_sensor5", 2);
+                .Component("d_sensor5", 2)
+                .CircuitParameters(overloadLine: 8, loadBoostPercent: 13, assemblySharePercent: 54);
 
             // Droid Head PVW V
             _builder.Create(RecipeType.DroidHeadPVW5, SkillType.Engineering)
@@ -790,7 +868,8 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.EngineeringRecipeDefinition
                 .Quantity(1)
                 .EnhancementSlots(RecipeEnhancementType.Droid, 1)
                 .Component("d_brain5", 1)
-                .Component("d_sensor5", 2);
+                .Component("d_sensor5", 2)
+                .CircuitParameters(overloadLine: 7, loadBoostPercent: 13, assemblySharePercent: 47);
 
             // Droid Head PVA V
             _builder.Create(RecipeType.DroidHeadPVA5, SkillType.Engineering)
@@ -800,7 +879,8 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.EngineeringRecipeDefinition
                 .Quantity(1)
                 .EnhancementSlots(RecipeEnhancementType.Droid, 1)
                 .Component("d_brain5", 1)
-                .Component("d_sensor5", 2);
+                .Component("d_sensor5", 2)
+                .CircuitParameters(overloadLine: 8, loadBoostPercent: 11, assemblySharePercent: 49);
 
             // Droid Head PVS V
             _builder.Create(RecipeType.DroidHeadPVS5, SkillType.Engineering)
@@ -810,7 +890,8 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.EngineeringRecipeDefinition
                 .Quantity(1)
                 .EnhancementSlots(RecipeEnhancementType.Droid, 1)
                 .Component("d_brain5", 1)
-                .Component("d_sensor5", 2);
+                .Component("d_sensor5", 2)
+                .CircuitParameters(overloadLine: 7, loadBoostPercent: 13, assemblySharePercent: 46);
 
             // Droid Head VWA V
             _builder.Create(RecipeType.DroidHeadVWA5, SkillType.Engineering)
@@ -820,7 +901,8 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.EngineeringRecipeDefinition
                 .Quantity(1)
                 .EnhancementSlots(RecipeEnhancementType.Droid, 1)
                 .Component("d_brain5", 1)
-                .Component("d_sensor5", 2);
+                .Component("d_sensor5", 2)
+                .CircuitParameters(overloadLine: 8, loadBoostPercent: 11, assemblySharePercent: 55);
 
             // Droid Head VWS V
             _builder.Create(RecipeType.DroidHeadVWS5, SkillType.Engineering)
@@ -830,7 +912,8 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.EngineeringRecipeDefinition
                 .Quantity(1)
                 .EnhancementSlots(RecipeEnhancementType.Droid, 1)
                 .Component("d_brain5", 1)
-                .Component("d_sensor5", 2);
+                .Component("d_sensor5", 2)
+                .CircuitParameters(overloadLine: 9, loadBoostPercent: 11, assemblySharePercent: 46);
 
             // Droid Head VAS V
             _builder.Create(RecipeType.DroidHeadVAS5, SkillType.Engineering)
@@ -840,7 +923,8 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.EngineeringRecipeDefinition
                 .Quantity(1)
                 .EnhancementSlots(RecipeEnhancementType.Droid, 1)
                 .Component("d_brain5", 1)
-                .Component("d_sensor5", 2);
+                .Component("d_sensor5", 2)
+                .CircuitParameters(overloadLine: 8, loadBoostPercent: 13, assemblySharePercent: 50);
 
             // Droid Head WAS V
             _builder.Create(RecipeType.DroidHeadWAS5, SkillType.Engineering)
@@ -850,7 +934,8 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.EngineeringRecipeDefinition
                 .Quantity(1)
                 .EnhancementSlots(RecipeEnhancementType.Droid, 1)
                 .Component("d_brain5", 1)
-                .Component("d_sensor5", 2);
+                .Component("d_sensor5", 2)
+                .CircuitParameters(overloadLine: 8, loadBoostPercent: 12, assemblySharePercent: 48);
 
 
         }

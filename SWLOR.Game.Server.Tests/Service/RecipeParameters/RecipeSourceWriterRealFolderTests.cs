@@ -52,6 +52,14 @@ public class RecipeSourceWriterRealFolderTests
         var originals = CopyFolder(sourceFolder, _scratch);
         Assert.That(originals.Values.Any(text => text.Contains("TestForgeParameters")), Is.False);
 
+        // The shipped minigames' parameters are already in the definitions. Take them out of the copy first, so the test
+        // measures what the writer adds and removes and not what the real profiles wrote.
+        var baselines = originals.ToDictionary(pair => pair.Key, pair => WithoutShippedParameters(pair.Key, pair.Value));
+        foreach (var (relative, text) in baselines)
+        {
+            File.WriteAllBytes(Path.Combine(_scratch, relative), new UTF8Encoding(false).GetBytes(text));
+        }
+
         var derived = TwinPistolSources(recipes);
         var profiles = recipes.Values.Select(recipe => recipe.Skill).Distinct()
             .Select(skill => new TestForgeProfile(skill, false, derived))
@@ -89,7 +97,7 @@ public class RecipeSourceWriterRealFolderTests
         {
             var removed = RecipeSourceWriter.Rewrite(path, text, _ => RecipeParameterPlan.Remove("TestForgeParameters"));
             var stripped = Plumbing.Replace(removed.Text, string.Empty);
-            Assert.That(stripped, Is.EqualTo(originals[path]), $"{path} differs from the original beyond the parameters");
+            Assert.That(stripped, Is.EqualTo(baselines[path]), $"{path} differs from the original beyond the parameters");
         }
     }
 
@@ -113,6 +121,16 @@ public class RecipeSourceWriterRealFolderTests
         Assert.That(instructions, Does.Contain("new DroidInstructionRecipe(RecipeType.InstructionPowerCell3, \"id_powercell3\", Parameters: new TestForgeParameters("));
         Assert.That(instructions, Does.Contain("RecipeMinigameParameters Parameters = null"));
         Assert.That(instructions, Does.Contain(".MinigameParameters(recipe.Parameters)"));
+    }
+
+    private static string WithoutShippedParameters(string path, string text)
+    {
+        foreach (var profile in RecipeParameterProfiles.Game)
+        {
+            text = RecipeSourceWriter.Rewrite(path, text, _ => RecipeParameterPlan.Remove(profile.ParametersType.Name)).Text;
+        }
+
+        return Plumbing.Replace(text, string.Empty);
     }
 
     /// <summary>Twin pistols copy their single pistol's detail in TwinPistolRecipes instead of using a builder chain.</summary>

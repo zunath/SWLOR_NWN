@@ -27,7 +27,8 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.EngineeringRecipeDefinition
                 .EnhancementSlots(RecipeEnhancementType.Module, 2)
                 .Component("capc_techcom", 1)
                 .Component("capc_modcomp", 1)
-                .Component("capc_power", 3);
+                .Component("capc_power", 3)
+                .CircuitParameters(overloadLine: 9, loadBoostPercent: 11, assemblySharePercent: 63);
 
             // Bulwark Shield Generator
             _builder.Create(RecipeType.BulwarkShieldGenerator, SkillType.Engineering)
@@ -39,7 +40,8 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.EngineeringRecipeDefinition
                 .EnhancementSlots(RecipeEnhancementType.Module, 2)
                 .Component("capc_techcom", 1)
                 .Component("capc_modcomp", 1)
-                .Component("capc_power", 3);
+                .Component("capc_power", 3)
+                .CircuitParameters(overloadLine: 9, loadBoostPercent: 10, assemblySharePercent: 58);
 
             // Dedicated Targeting Sensor Array
             _builder.Create(RecipeType.TargetingArray, SkillType.Engineering)
@@ -51,7 +53,8 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.EngineeringRecipeDefinition
                 .EnhancementSlots(RecipeEnhancementType.Module, 2)
                 .Component("capc_techcom", 1)
                 .Component("capc_modcomp", 1)
-                .Component("capc_power", 3);
+                .Component("capc_power", 3)
+                .CircuitParameters(overloadLine: 9, loadBoostPercent: 9, assemblySharePercent: 60);
 
             // Heavy Turbolaser Cannon
             _builder.Create(RecipeType.Turbolaser1, SkillType.Engineering)
@@ -63,7 +66,8 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.EngineeringRecipeDefinition
                 .EnhancementSlots(RecipeEnhancementType.Module, 2)
                 .Component("capc_techcom", 1)
                 .Component("capc_modcomp", 1)
-                .Component("capc_power", 3);
+                .Component("capc_power", 3)
+                .CircuitParameters(overloadLine: 8, loadBoostPercent: 10, assemblySharePercent: 62);
 
             // Dual Turbolaser Cannon
             _builder.Create(RecipeType.Turbolaser2, SkillType.Engineering)
@@ -75,7 +79,8 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.EngineeringRecipeDefinition
                 .EnhancementSlots(RecipeEnhancementType.Module, 2)
                 .Component("capc_techcom", 1)
                 .Component("capc_modcomp", 1)
-                .Component("capc_power", 3);
+                .Component("capc_power", 3)
+                .CircuitParameters(overloadLine: 8, loadBoostPercent: 10, assemblySharePercent: 60);
 
             // Quad Turbolaser Cannon
             _builder.Create(RecipeType.Turbolaser3, SkillType.Engineering)
@@ -87,7 +92,8 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.EngineeringRecipeDefinition
                 .EnhancementSlots(RecipeEnhancementType.Module, 2)
                 .Component("capc_techcom", 1)
                 .Component("capc_modcomp", 1)
-                .Component("capc_power", 3);
+                .Component("capc_power", 3)
+                .CircuitParameters(overloadLine: 9, loadBoostPercent: 9, assemblySharePercent: 60);
 
             // Laser Cannon Battery I
             _builder.Create(RecipeType.LaserCannonBattery1, SkillType.Engineering)
@@ -99,7 +105,8 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.EngineeringRecipeDefinition
                 .EnhancementSlots(RecipeEnhancementType.Module, 2)
                 .Component("capc_techcom", 1)
                 .Component("capc_modcomp", 1)
-                .Component("capc_power", 3);
+                .Component("capc_power", 3)
+                .CircuitParameters(overloadLine: 9, loadBoostPercent: 10, assemblySharePercent: 62);
 
             // Quad Laser Cannons
             _builder.Create(RecipeType.QuadLaserCannon1, SkillType.Engineering)
@@ -111,7 +118,8 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.EngineeringRecipeDefinition
                 .EnhancementSlots(RecipeEnhancementType.Module, 2)
                 .Component("capc_techcom", 1)
                 .Component("capc_modcomp", 1)
-                .Component("capc_power", 3);
+                .Component("capc_power", 3)
+                .CircuitParameters(overloadLine: 8, loadBoostPercent: 10, assemblySharePercent: 58);
 
             // Quad Laser Cannon Array
             _builder.Create(RecipeType.QuadLaserCannon2, SkillType.Engineering)
@@ -123,7 +131,8 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.EngineeringRecipeDefinition
                 .EnhancementSlots(RecipeEnhancementType.Module, 2)
                 .Component("capc_techcom", 1)
                 .Component("capc_modcomp", 1)
-                .Component("capc_power", 3);
+                .Component("capc_power", 3)
+                .CircuitParameters(overloadLine: 8, loadBoostPercent: 11, assemblySharePercent: 59);
 
             // Quad Laser Cannon Battery
             _builder.Create(RecipeType.QuadLaserCannon3, SkillType.Engineering)
@@ -135,7 +144,8 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.EngineeringRecipeDefinition
                 .EnhancementSlots(RecipeEnhancementType.Module, 2)
                 .Component("capc_techcom", 1)
                 .Component("capc_modcomp", 1)
-                .Component("capc_power", 3);
+                .Component("capc_power", 3)
+                .CircuitParameters(overloadLine: 9, loadBoostPercent: 11, assemblySharePercent: 60);
 
             // Redundant Shield Generator
             _builder.Create(RecipeType.RedundantShieldGenerator, SkillType.Engineering)
@@ -147,7 +157,8 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.EngineeringRecipeDefinition
                 .EnhancementSlots(RecipeEnhancementType.Module, 2)
                 .Component("capc_techcom", 1)
                 .Component("capc_modcomp", 1)
-                .Component("capc_power", 3);
+                .Component("capc_power", 3)
+                .CircuitParameters(overloadLine: 9, loadBoostPercent: 11, assemblySharePercent: 57);
 
             // Reinforced Plating
             _builder.Create(RecipeType.ReinforcedPlating, SkillType.Engineering)
@@ -159,7 +170,8 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.EngineeringRecipeDefinition
                 .EnhancementSlots(RecipeEnhancementType.Module, 2)
                 .Component("capc_techcom", 1)
                 .Component("capc_modcomp", 1)
-                .Component("capc_power", 3);
+                .Component("capc_power", 3)
+                .CircuitParameters(overloadLine: 8, loadBoostPercent: 9, assemblySharePercent: 59);
 
             // Repair Field Generator
             _builder.Create(RecipeType.RepairFieldGenerator, SkillType.Engineering)
@@ -171,7 +183,8 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.EngineeringRecipeDefinition
                 .EnhancementSlots(RecipeEnhancementType.Module, 2)
                 .Component("capc_techcom", 1)
                 .Component("capc_modcomp", 1)
-                .Component("capc_power", 3);
+                .Component("capc_power", 3)
+                .CircuitParameters(overloadLine: 9, loadBoostPercent: 9, assemblySharePercent: 57);
 
             // Storm Cannon
             _builder.Create(RecipeType.StormCannon, SkillType.Engineering)
@@ -183,7 +196,8 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.EngineeringRecipeDefinition
                 .EnhancementSlots(RecipeEnhancementType.Module, 2)
                 .Component("capc_techcom", 1)
                 .Component("capc_modcomp", 1)
-                .Component("capc_power", 3);
+                .Component("capc_power", 3)
+                .CircuitParameters(overloadLine: 8, loadBoostPercent: 10, assemblySharePercent: 59);
 
             // Logistics Nexus Configuration
             _builder.Create(RecipeType.LogisticsNexusConfig, SkillType.Engineering)
@@ -195,7 +209,8 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.EngineeringRecipeDefinition
                 .EnhancementSlots(RecipeEnhancementType.Module, 2)
                 .Component("capc_techcom", 1)
                 .Component("capc_modcomp", 1)
-                .Component("capc_power", 3);
+                .Component("capc_power", 3)
+                .CircuitParameters(overloadLine: 9, loadBoostPercent: 11, assemblySharePercent: 64);
 
             // Skirmisher Configuration
             _builder.Create(RecipeType.SkirmisherConfig, SkillType.Engineering)
@@ -207,7 +222,8 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.EngineeringRecipeDefinition
                 .EnhancementSlots(RecipeEnhancementType.Module, 2)
                 .Component("capc_techcom", 1)
                 .Component("capc_modcomp", 1)
-                .Component("capc_power", 3);
+                .Component("capc_power", 3)
+                .CircuitParameters(overloadLine: 8, loadBoostPercent: 10, assemblySharePercent: 55);
 
             // Warship Configuration
             _builder.Create(RecipeType.WarshipConfig1, SkillType.Engineering)
@@ -219,7 +235,8 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.EngineeringRecipeDefinition
                 .EnhancementSlots(RecipeEnhancementType.Module, 2)
                 .Component("capc_techcom", 1)
                 .Component("capc_modcomp", 1)
-                .Component("capc_power", 3);
+                .Component("capc_power", 3)
+                .CircuitParameters(overloadLine: 8, loadBoostPercent: 9, assemblySharePercent: 65);
 
             // Strip Miner Configuration
             _builder.Create(RecipeType.StripMiner, SkillType.Engineering)
@@ -231,7 +248,8 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.EngineeringRecipeDefinition
                 .EnhancementSlots(RecipeEnhancementType.Module, 2)
                 .Component("capc_techcom", 1)
                 .Component("capc_modcomp", 1)
-                .Component("capc_power", 3);
+                .Component("capc_power", 3)
+                .CircuitParameters(overloadLine: 9, loadBoostPercent: 9, assemblySharePercent: 60);
 
             // Weapons Computer
             _builder.Create(RecipeType.WeaponsComputer, SkillType.Engineering)
@@ -243,7 +261,8 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.EngineeringRecipeDefinition
                 .EnhancementSlots(RecipeEnhancementType.Module, 2)
                 .Component("capc_techcom", 1)
                 .Component("capc_modcomp", 1)
-                .Component("capc_power", 3);
+                .Component("capc_power", 3)
+                .CircuitParameters(overloadLine: 9, loadBoostPercent: 9, assemblySharePercent: 61);
 
             // Capital E-War Module
             _builder.Create(RecipeType.CapitalEWar, SkillType.Engineering)
@@ -255,7 +274,8 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.EngineeringRecipeDefinition
                 .EnhancementSlots(RecipeEnhancementType.Module, 2)
                 .Component("capc_techcom", 1)
                 .Component("capc_modcomp", 1)
-                .Component("capc_power", 3);
+                .Component("capc_power", 3)
+                .CircuitParameters(overloadLine: 9, loadBoostPercent: 9, assemblySharePercent: 60);
 
             // Capital E-War Module
             _builder.Create(RecipeType.CapitalPowerDiverter, SkillType.Engineering)
@@ -267,7 +287,8 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.EngineeringRecipeDefinition
                 .EnhancementSlots(RecipeEnhancementType.Module, 2)
                 .Component("capc_techcom", 1)
                 .Component("capc_modcomp", 1)
-                .Component("capc_power", 3);
+                .Component("capc_power", 3)
+                .CircuitParameters(overloadLine: 9, loadBoostPercent: 11, assemblySharePercent: 61);
 
             // Assault Concussion Missile Launcher I
             _builder.Create(RecipeType.AssaultConcMissileLauncher, SkillType.Engineering)
@@ -279,7 +300,8 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.EngineeringRecipeDefinition
                 .EnhancementSlots(RecipeEnhancementType.Module, 2)
                 .Component("capc_techcom", 1)
                 .Component("capc_modcomp", 1)
-                .Component("capc_power", 3);
+                .Component("capc_power", 3)
+                .CircuitParameters(overloadLine: 9, loadBoostPercent: 11, assemblySharePercent: 57);
         }
     }
 }

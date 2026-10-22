@@ -80,9 +80,8 @@ namespace SWLOR.Game.Server.Service.GuiService
         DMSettings = 75,
         PlayerList = 76,
         DMBattleGrid = 77,
-
-        // Crafting minigame windows count up from 80 by their CraftMinigameType value (Kitchen is 4).
-        Kitchen = 84,
+        Reaction = 84,
+        Kitchen = 85,
 
         DebugEnmity = 900,
         DebugNuiGallery = 901,

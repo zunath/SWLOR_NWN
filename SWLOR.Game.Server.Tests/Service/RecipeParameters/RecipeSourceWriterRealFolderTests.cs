@@ -49,7 +49,7 @@ public class RecipeSourceWriterRealFolderTests
     {
         var recipes = RecipeDefinitionLoader.LoadGame();
         var sourceFolder = Path.Combine(FindRepositoryRoot(), "SWLOR.Game.Server", "Feature", "RecipeDefinition");
-        var originals = StartFromParameterFreeCopy(sourceFolder, _scratch);
+        var originals = CopyFolder(sourceFolder, _scratch);
         Assert.That(originals.Values.Any(text => text.Contains("TestForgeParameters")), Is.False);
 
         var derived = TwinPistolSources(recipes);
@@ -87,9 +87,10 @@ public class RecipeSourceWriterRealFolderTests
 
         foreach (var (path, text) in rewritten)
         {
-            var removed = RecipeSourceWriter.Rewrite(path, text, _ => RecipeParameterPlan.Remove("TestForgeParameters"));
-            var stripped = Plumbing.Replace(removed.Text, string.Empty);
-            Assert.That(stripped, Is.EqualTo(originals[path]), $"{path} differs from the original beyond the parameters");
+            Assert.That(
+                WithoutParameters(path, text),
+                Is.EqualTo(WithoutParameters(path, originals[path])),
+                $"{path} differs from the original beyond the parameters");
         }
     }
 
@@ -98,7 +99,7 @@ public class RecipeSourceWriterRealFolderTests
     {
         var recipes = RecipeDefinitionLoader.LoadGame();
         var sourceFolder = Path.Combine(FindRepositoryRoot(), "SWLOR.Game.Server", "Feature", "RecipeDefinition");
-        StartFromParameterFreeCopy(sourceFolder, _scratch);
+        CopyFolder(sourceFolder, _scratch);
         var derived = TwinPistolSources(recipes);
         foreach (var skill in recipes.Values.Select(recipe => recipe.Skill).Distinct())
         {
@@ -115,36 +116,30 @@ public class RecipeSourceWriterRealFolderTests
         Assert.That(instructions, Does.Contain(".MinigameParameters(recipe.Parameters)"));
     }
 
+    /// <summary>Every parameter type a minigame has added to the game, which recipe files may already carry.</summary>
+    private static readonly string[] GameParameterTypes = typeof(RecipeMinigameParameters).Assembly.GetTypes()
+        .Where(type => typeof(RecipeMinigameParameters).IsAssignableFrom(type) && !type.IsAbstract)
+        .Select(type => type.Name)
+        .OrderBy(name => name, StringComparer.Ordinal)
+        .ToArray();
+
+    /// <summary>The source with every minigame's parameters and the helper plumbing for them taken out.</summary>
+    private static string WithoutParameters(string path, string text)
+    {
+        foreach (var name in GameParameterTypes.Append("TestForgeParameters"))
+        {
+            text = RecipeSourceWriter.Rewrite(path, text, _ => RecipeParameterPlan.Remove(name)).Text;
+        }
+
+        return Plumbing.Replace(text, string.Empty);
+    }
+
     /// <summary>Twin pistols copy their single pistol's detail in TwinPistolRecipes instead of using a builder chain.</summary>
     private static Dictionary<RecipeType, RecipeType> TwinPistolSources(Dictionary<RecipeType, RecipeDetail> recipes)
     {
         return recipes
             .Where(pair => pair.Value.Category == RecipeCategoryType.TwinPistol)
             .ToDictionary(pair => pair.Key, pair => Enum.Parse<RecipeType>(pair.Key.ToString().Replace("TwinPistol", "Pistol")));
-    }
-
-    /// <summary>
-    /// Copies the recipe definitions and removes the parameters (and the helper plumbing for them) that the game's own minigames
-    /// have already written, so the test profile starts from recipes with none. Returns the copied text by file.
-    /// </summary>
-    private static Dictionary<string, string> StartFromParameterFreeCopy(string source, string destination)
-    {
-        var stripped = new Dictionary<string, string>(StringComparer.Ordinal);
-        foreach (var (path, text) in CopyFolder(source, destination))
-        {
-            var current = text;
-            foreach (var profile in RecipeParameterProfiles.Game)
-            {
-                var builderMethod = profile.ParametersType.Name;
-                current = RecipeSourceWriter.Rewrite(path, current, _ => RecipeParameterPlan.Remove(builderMethod)).Text;
-            }
-
-            current = Plumbing.Replace(current, string.Empty);
-            File.WriteAllBytes(Path.Combine(destination, path), new UTF8Encoding(false).GetBytes(current));
-            stripped[path] = current;
-        }
-
-        return stripped;
     }
 
     private static Dictionary<string, string> CopyFolder(string source, string destination)

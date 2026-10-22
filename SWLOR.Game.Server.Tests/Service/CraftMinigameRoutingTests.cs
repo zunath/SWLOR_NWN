@@ -19,20 +19,20 @@ public class CraftMinigameRoutingTests
             return attribute is { IsActive: true, IsShownInCraftMenu: true };
         });
 
-    private static List<ICraftMinigameRoute> GameRoutes() =>
+    private static IReadOnlyDictionary<SkillType, ICraftMinigameRoute> RegisteredRoutes() =>
         typeof(ICraftMinigameRoute).Assembly.GetTypes()
             .Where(type => typeof(ICraftMinigameRoute).IsAssignableFrom(type) && !type.IsInterface && !type.IsAbstract)
             .Select(type => (ICraftMinigameRoute)Activator.CreateInstance(type)!)
-            .ToList();
+            .ToDictionary(route => route.Skill);
 
     [Test]
-    public void EveryCraftingSkillWithoutARegisteredMinigameUsesTheOriginalWindow()
+    public void EveryCraftingSkillUsesTheOriginalWindowUntilItsMinigameLands()
     {
-        var routed = GameRoutes().Select(route => route.Skill).ToHashSet();
         var skills = CraftingSkills().ToList();
         skills.Should().NotBeEmpty();
+        var registered = RegisteredRoutes();
 
-        foreach (var skill in skills.Where(skill => !routed.Contains(skill)))
+        foreach (var skill in skills.Where(skill => !registered.ContainsKey(skill)))
         {
             var route = CraftMinigameRouting.GetRoute(skill);
 
@@ -41,6 +41,30 @@ public class CraftMinigameRoutingTests
             route.Minigame.Should().BeNull();
             CraftMinigameRouting.GetWindow(skill).Should().Be(GuiWindowType.Craft);
         }
+    }
+
+    [Test]
+    public void ASkillWithAMinigameOpensItsOwnWindow()
+    {
+        foreach (var (skill, declaration) in RegisteredRoutes())
+        {
+            var route = CraftMinigameRouting.GetRoute(skill);
+
+            route.IsLegacy.Should().BeFalse();
+            route.Window.Should().Be(declaration.Window);
+            route.Minigame.Should().Be(declaration.Minigame);
+            CraftMinigameRouting.GetWindow(skill).Should().Be(declaration.Window);
+        }
+    }
+
+    [Test]
+    public void EspionageCraftsInTheReactionWindow()
+    {
+        var route = CraftMinigameRouting.GetRoute(SkillType.Espionage);
+
+        route.Window.Should().Be(GuiWindowType.Reaction);
+        route.Minigame.Should().Be(CraftMinigameType.Reaction);
+        route.IsLegacy.Should().BeFalse();
     }
 
     [Test]

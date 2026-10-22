@@ -22,7 +22,7 @@ A minigame workstream adds these pieces, in this order.
    - A `_builder.Create(RecipeType.X, ...)` chain gets `.ForgeParameters(...)` at its end, or has its call replaced.
    - A helper that calls `_builder.Create(parameter, ...)` gains an optional `RecipeMinigameParameters parameters = null` argument that it passes to `.MinigameParameters(parameters)`, and every call gets `parameters: new ForgeParameters(...)`. A `foreach` over a record array does the same through an optional `Parameters` member. This covers the droid, trace fuse, slicing cache, venom and cooking loops.
    - A recipe that is built by copying another recipe's `RecipeDetail` has no chain to edit. `TwinPistolRecipes` does this for 11 recipes. List each one in the profile's `DerivedRecipes` (derived recipe to source recipe), and copy the source's `MinigameParameters` where the detail is built. The coverage test then requires the copy to equal its source.
-   - Any other shape stops the tool with the file and line.
+   - Any other shape stops the tool with the file and line. The tool rewrites every file in memory first and writes nothing when a shape is refused or a problem is reported (a covered recipe with no `Create` call, or a recipe the build does not know), so a failed run never leaves the folder half regenerated.
 5. **Coverage test**: one class per minigame.
 
    ```csharp

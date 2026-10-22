@@ -11,6 +11,8 @@ public static class RecipeFolderUpdater
 {
     /// <summary>
     /// Rewrites the folder, or only reports what would change when <paramref name="write"/> is false.
+    /// Every file is rewritten in memory first, and nothing is written when any file is refused or any
+    /// problem is found, so a failed run never leaves the folder half regenerated.
     /// <paramref name="recipes"/> is the registry the game server builds, which supplies each recipe's
     /// skill, category, level and components; it must come from the same sources as the folder.
     /// Recipes the profile lists as derived are skipped, since they are built from another recipe.
@@ -26,6 +28,7 @@ public static class RecipeFolderUpdater
         var unknown = new SortedSet<string>(StringComparer.Ordinal);
         var visited = new HashSet<string>(StringComparer.Ordinal);
         var changed = new List<string>();
+        var pending = new List<(string Path, bool HasBom, string Text)>();
         int chainEdits = 0, rowEdits = 0, plumbingEdits = 0, files = 0;
 
         RecipeParameterPlan PlanFor(string name)
@@ -55,11 +58,7 @@ public static class RecipeFolderUpdater
                 continue;
 
             changed.Add(relative);
-            if (write)
-            {
-                var encoded = new UTF8Encoding(false).GetBytes(rewrite.Text);
-                File.WriteAllBytes(path, hasBom ? new byte[] { 0xEF, 0xBB, 0xBF }.Concat(encoded).ToArray() : encoded);
-            }
+            pending.Add((path, hasBom, rewrite.Text));
         }
 
         foreach (var (type, detail) in recipes.OrderBy(pair => pair.Key.ToString(), StringComparer.Ordinal))
@@ -75,9 +74,20 @@ public static class RecipeFolderUpdater
 
         problems.AddRange(unknown.Select(name => $"RecipeType.{name} appears in the source but not in the built game server; rebuild before running"));
 
+        var applied = write && problems.Count == 0 && pending.Count > 0;
+        if (applied)
+        {
+            foreach (var (path, hasBom, text) in pending)
+            {
+                var encoded = new UTF8Encoding(false).GetBytes(text);
+                File.WriteAllBytes(path, hasBom ? new byte[] { 0xEF, 0xBB, 0xBF }.Concat(encoded).ToArray() : encoded);
+            }
+        }
+
         return new RecipeFolderUpdate
         {
             FilesScanned = files,
+            Applied = applied,
             ChangedFiles = changed,
             ChainEdits = chainEdits,
             RowEdits = rowEdits,

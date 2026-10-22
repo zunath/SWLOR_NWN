@@ -7,6 +7,9 @@ public sealed class RecipeFolderUpdate
 {
     public int FilesScanned { get; init; }
 
+    /// <summary>True when the changed files were written; false in check mode, when nothing changed, or when a problem stopped the write.</summary>
+    public bool Applied { get; init; }
+
     /// <summary>Paths relative to the folder, in order.</summary>
     public IReadOnlyList<string> ChangedFiles { get; init; } = Array.Empty<string>();
 

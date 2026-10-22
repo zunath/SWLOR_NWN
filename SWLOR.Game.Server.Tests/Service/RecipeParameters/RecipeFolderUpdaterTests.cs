@@ -130,6 +130,37 @@ public class RecipeFolderUpdaterTests
     }
 
     [Test]
+    public void Update_WritesNothingWhenALaterFileIsRefused()
+    {
+        var good = WriteFixture("A.cs", Lf(DirectChains), false);
+        var bad = WriteFixture("B.cs", Lf(DirectChains).Replace("_builder.Create(RecipeType.CombatTunic, SkillType.Smithery);", "_builder.Create(Pick(), SkillType.Smithery);"), false);
+        var goodBefore = File.ReadAllBytes(good);
+        var badBefore = File.ReadAllBytes(bad);
+
+        Assert.Throws<RecipeSourceWriterException>(
+            () => RecipeFolderUpdater.Update(_folder, new TestForgeProfile(SkillType.Smithery, false), Registry(), true));
+
+        Assert.That(File.ReadAllBytes(good), Is.EqualTo(goodBefore));
+        Assert.That(File.ReadAllBytes(bad), Is.EqualTo(badBefore));
+    }
+
+    [Test]
+    public void Update_WritesNothingWhileAProblemRemains()
+    {
+        var path = WriteFixture("Direct.cs", Lf(DirectChains), false);
+        var before = File.ReadAllBytes(path);
+        var registry = Registry();
+        registry[RecipeType.SpiritmasterTunic] = new RecipeDetail { Skill = SkillType.Smithery, Level = 2 };
+
+        var update = RecipeFolderUpdater.Update(_folder, new TestForgeProfile(SkillType.Smithery, false), registry, true);
+
+        Assert.That(update.Problems, Is.Not.Empty);
+        Assert.That(update.ChangedFiles, Is.EqualTo(new[] { "Direct.cs" }));
+        Assert.That(update.Applied, Is.False);
+        Assert.That(File.ReadAllBytes(path), Is.EqualTo(before));
+    }
+
+    [Test]
     public void Update_ReportsACoveredRecipeWhoseCreateCallIsNotInTheFolder()
     {
         WriteFixture("Direct.cs", Lf(DirectChains), false);

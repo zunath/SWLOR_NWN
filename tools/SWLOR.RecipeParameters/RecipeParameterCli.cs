@@ -100,8 +100,9 @@ public static class RecipeParameterCli
         var folder = source ?? Path.Combine(FindRepositoryRoot(), "SWLOR.Game.Server", "Feature", "RecipeDefinition");
         var update = RecipeFolderUpdater.Update(folder, profile, recipes ?? RecipeDefinitionLoader.LoadGame(), !check);
 
+        var verb = check || !update.Applied ? "Would change" : "Changed";
         output.WriteLine(
-            $"{(check ? "Would change" : "Changed")} {update.ChangedFiles.Count} of {update.FilesScanned} files " +
+            $"{verb} {update.ChangedFiles.Count} of {update.FilesScanned} files " +
             $"({update.ChainEdits} recipe chains, {update.RowEdits} data rows, {update.PlumbingEdits} helper signatures).");
         foreach (var file in update.ChangedFiles)
         {
@@ -112,6 +113,9 @@ public static class RecipeParameterCli
         {
             error.WriteLine($"Problem: {problem}");
         }
+
+        if (update.Problems.Count > 0 && !check && update.ChangedFiles.Count > 0)
+            error.WriteLine("Nothing was written because of the problems above.");
 
         return update.Problems.Count > 0 || (check && update.ChangedFiles.Count > 0) ? 1 : 0;
     }

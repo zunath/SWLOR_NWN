@@ -66,7 +66,7 @@ A Circuit craft takes 14 to 18 actions where the old window takes 5.6 to 10 at l
 | 31-40 | 0.990 | none needed | 1.00 | 1.01x |
 | 41-53 | 0.771 | none needed | 1.00 | 1.30x |
 
-The multiplier is one value per band of recipe levels, as the plan asks, recorded in code (`CircuitRules.XpMultiplierLevels1To10` and the others). It is a step function; a smooth curve through the same points would avoid the 2.29 to 1.52 jump between levels 10 and 11, and the owner and the plan's XP-pace workstream may prefer one. The Bible record is not written: the workbook cannot merge across the parallel minigame PRs, so one "crafting XP multipliers" entry on the System Changes & Migrations tab should cover every minigame once they have landed. A re-run with 10 recipes per band and seed 2, as a sensitivity check, is in the PR description.
+The multiplier is one value per band of recipe levels, as the plan asks, recorded in code (`CircuitRules.XpMultiplierLevels1To10` and the others). It is a step function; a smooth curve through the same points would avoid the 2.29 to 1.52 jump between levels 10 and 11, and the owner and the plan's XP-pace workstream may prefer one. The Bible records it as System Changes & Migrations entry 13, written from `CircuitRules.cs` by `tools/UpdateCircuitBible.py`; rerun the script after a change to the multipliers or the cap. A second sample (10 recipes per band, seed 2, the same multipliers) leaves 2 of 60 cases at 0.99x (11-20 and 21-30 with no gear): the multipliers are the minimum on the committed sample, so another sample can sit a point under.
 
 ## Gate 1
 
@@ -131,5 +131,5 @@ No variation produced a margin of 10 in any cell (the best is +1.4). A heuristic
 
 - Style balance is not applicable until the perks exist.
 - Seconds per action (8 s for the Circuit, 6 s for the old window) are estimates.
-- The multipliers and the cap are set on one sample of recipes (6 per band) and one seed; the PR description reports a second sample.
-- Client evidence: the window, the Needs line with an enhancement and the XP of a craft were not seen in the NWN client (see the PR description).
+- The multipliers and the cap are set on one sample of recipes (6 per band) and one seed; a second sample is 0.99x in two cases (see "XP multipliers").
+- Client evidence: the owner deferred it to the crafting revamp closeout pass; the window, the Needs line with an enhancement and the XP of a craft were not seen in the NWN client.

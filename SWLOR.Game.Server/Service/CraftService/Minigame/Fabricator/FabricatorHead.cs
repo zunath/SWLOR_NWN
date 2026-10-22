@@ -30,6 +30,14 @@ public static class FabricatorHeads
     /// <summary>The head that serves the sub-assembly.</summary>
     public static FabricatorHead HeadFor(this SubAssembly part) => (FabricatorHead)(int)part;
 
+    /// <summary>The two other sub-assemblies, in the order Frame, Shell, Fittings.</summary>
+    public static (SubAssembly First, SubAssembly Second) OtherParts(this SubAssembly part) => part switch
+    {
+        SubAssembly.Frame => (SubAssembly.Shell, SubAssembly.Fittings),
+        SubAssembly.Shell => (SubAssembly.Frame, SubAssembly.Fittings),
+        _ => (SubAssembly.Frame, SubAssembly.Shell)
+    };
+
     public static string RunActionId(this SubAssembly part) => part switch
     {
         SubAssembly.Frame => FabricatorActionIds.RunFrame,

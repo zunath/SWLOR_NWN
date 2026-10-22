@@ -14,6 +14,9 @@ namespace SWLOR.Game.Server.Service.CraftService.Minigame.Experiment;
 /// <param name="TimeCutPercent">The share of the job's time cut so far, in percent.</param>
 /// <param name="MethodBonus">The Test chance Refine Method has added to the next Test, in points; 0 when none is waiting.</param>
 /// <param name="Concluded">True once the player ended the experiment.</param>
+/// <param name="PeerReviewUsed">True once Peer Review has moved evidence.</param>
+/// <param name="BreakthroughUsed">True once Breakthrough was spent: Analyze cuts more time for the rest of the experiment.</param>
+/// <param name="BreakthroughArmed">True while Breakthrough waits for the Test it makes succeed.</param>
 public sealed record ExperimentState(
     MinigameMeters Meters,
     MinigameOpportunity NextOpportunity,
@@ -21,7 +24,10 @@ public sealed record ExperimentState(
     int SpentEvidence,
     int TimeCutPercent,
     int MethodBonus,
-    bool Concluded) : IMinigameState<ExperimentState>
+    bool Concluded,
+    bool PeerReviewUsed = false,
+    bool BreakthroughUsed = false,
+    bool BreakthroughArmed = false) : IMinigameState<ExperimentState>
 {
     public ExperimentState WithMeters(MinigameMeters meters) => this with { Meters = meters };
 

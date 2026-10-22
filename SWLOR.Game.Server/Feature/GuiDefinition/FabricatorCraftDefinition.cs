@@ -15,7 +15,7 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition
         private const float SlotRowHeight = 30f;
         private const float SlotListHeight = 4 * SlotRowHeight + 8f;
         private const float ActionRowHeight = 46f;
-        private const float ActionListHeight = 9 * ActionRowHeight + 8f;
+        private const float ActionListHeight = 11 * ActionRowHeight + 8f;
         private const float ActionButtonWidth = 170f;
         private const float PartLabelWidth = 250f;
 
@@ -42,14 +42,19 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition
             $"Sometimes a head is announced as primed: its next action gets +{FabricatorRules.PrimeBonusPercent}%. It waits for that head for {FabricatorRules.PrimeWindowActions} actions, " +
             "so you can retool to it in time. It only ever helps.\n\n" +
             "GEAR\n" +
-            "Craftsmanship makes Run stronger and Control makes Precision Pass stronger. CP is your gear's CP plus a share of your Fabrication rank.";
+            "Craftsmanship makes Run stronger and Control makes Precision Pass stronger. CP is your gear's CP plus a share of your Fabrication rank.\n\n" +
+            "BUILDER PERKS\n" +
+            "The Builder perks you own change the numbers above, and the window shows your own. The style you chose at Fabrication 20 is always active: " +
+            "Production Run makes Run stronger and Precision Pass weaker, and Fine Tolerance is the mirror. Production Run builds the work faster, so it suits large " +
+            "Frames and floors; Fine Tolerance lifts quality faster, so it suits terminals and tools. Dual Feed, if you own it, builds two sub-assemblies in one action: " +
+            $"each gets {FabricatorRules.DualFeedPercent:0}% of a full Run, it costs the CP of a Retool and one Run's wear, and the loaded head stays loaded.";
 
         private readonly GuiWindowBuilder<FabricatorCraftViewModel> _builder = new();
 
         public GuiConstructedWindow BuildWindow()
         {
             var window = _builder.CreateWindow(GuiWindowType.CraftFabricator)
-                .SetInitialGeometry(0, 0, 740f, 820f)
+                .SetInitialGeometry(0, 0, 740f, 880f)
                 .SetTitle("Fabricator")
                 .SetIsResizable(true)
                 .SetIsCollapsible(true)
@@ -87,6 +92,11 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition
                                 .SetHeight(40f));
                             content.AddRow(row2 => row2.AddText()
                                 .BindText(model => model.NeedsSummary)
+                                .SetShowBorder(false)
+                                .SetScrollbars(NuiScrollbars.None)
+                                .SetHeight(40f));
+                            content.AddRow(row2 => row2.AddText()
+                                .BindText(model => model.PerkSummary)
                                 .SetShowBorder(false)
                                 .SetScrollbars(NuiScrollbars.None)
                                 .SetHeight(40f));

@@ -90,4 +90,17 @@ public static class FabricatorRules
 
     /// <summary>The CP one Service costs at a recipe level.</summary>
     public static int ServiceCp(int recipeLevel) => ServiceCpBase + Math.Max(0, recipeLevel) / ServiceCpLevelDivisor;
+
+    /// <summary>Each of Dual Feed's two sub-assemblies gets this share of what a full Run makes.</summary>
+    public const double DualFeedPercent = 60.0;
+
+    /// <summary>The least CP an action with a perk discount costs.</summary>
+    public const int MinimumDiscountedCp = 1;
+
+    /// <summary>A CP cost less a percentage, rounded to the nearest CP and never below <see cref="MinimumDiscountedCp"/>.</summary>
+    public static int ReduceCpByPercent(int cp, int percent) =>
+        Math.Max(MinimumDiscountedCp, (int)Math.Round(cp * (100 - Math.Clamp(percent, 0, 100)) / 100.0, MidpointRounding.AwayFromZero));
+
+    /// <summary>A CP cost less a flat amount, never below <see cref="MinimumDiscountedCp"/>.</summary>
+    public static int ReduceCp(int cp, int amount) => Math.Max(MinimumDiscountedCp, cp - Math.Max(0, amount));
 }

@@ -67,6 +67,34 @@ public static class FabricatorActionText
 
     public static string Signed(int value) => value > 0 ? $"+{value}" : value.ToString();
 
+    /// <summary>The line the window shows for the crafter's Builder perks: each number they change, or a note that they have none.</summary>
+    public static string PerkSummary(FabricatorPerkStats stats)
+    {
+        var parts = new List<string>();
+        if (stats.RunPowerPercent != 0)
+            parts.Add($"Run {Signed(stats.RunPowerPercent)}%");
+        if (stats.PrecisionPowerPercent != 0)
+            parts.Add($"Precision Pass {Signed(stats.PrecisionPowerPercent)}%");
+        if (stats.WearReduction > 0)
+            parts.Add($"wear -{stats.WearReduction}");
+        if (stats.RetoolCpReductionPercent > 0)
+            parts.Add($"Retool CP -{stats.RetoolCpReductionPercent}%");
+        if (stats.ServiceRestoreBonus > 0)
+            parts.Add($"Service restores {Signed(stats.ServiceRestoreBonus)}");
+        if (stats.ServiceCpReduction > 0)
+            parts.Add($"Service CP -{stats.ServiceCpReduction}");
+        if (stats.DualFeedUnlocked)
+            parts.Add("Dual Feed");
+        if (stats.PrimeWindowBonusActions > 0)
+            parts.Add($"Prime Feedstock waits {stats.PrimeWindowBonusActions} more action{(stats.PrimeWindowBonusActions == 1 ? string.Empty : "s")}");
+        if (stats.PrimeBonusPercentBonus > 0)
+            parts.Add($"Prime Feedstock +{stats.PrimeBonusPercentBonus}% stronger");
+        if (stats.AssembleCapBonusPoints > 0)
+            parts.Add($"Assemble cap {Signed(stats.AssembleCapBonusPoints)}");
+
+        return parts.Count == 0 ? "Builder perks: none." : $"Builder perks: {string.Join(", ", parts)}.";
+    }
+
     /// <summary>The line the window shows for the announced or waiting opportunity, or a note that none is.</summary>
     public static string OpportunityText(MinigameOpportunity opportunity) =>
         opportunity == null

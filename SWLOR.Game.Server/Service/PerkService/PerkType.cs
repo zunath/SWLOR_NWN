@@ -780,6 +780,25 @@ namespace SWLOR.Game.Server.Service.PerkService
         TwinPistolSecondWind = 842,
         FinalSalvo = 843,
 
-        // IDs 650 and 844+ are free.
+        QuickChange = 864,
+        HardenedHeads = 865,
+        FieldService = 866,
+        ProductionRun = 867,
+        FineTolerance = 868,
+        DualFeed = 869,
+        FeedstockReserve = 870,
+        FeedstockContract = 871,
+        MasterAssembler = 872,
+        FieldNotes = 873,
+        SteadyHands = 874,
+        BroaderHypotheses = 875,
+        Methodical = 876,
+        Intuitive = 877,
+        PeerReview = 878,
+        EfficientAnalysis = 879,
+        SecondOpinion = 880,
+        Breakthrough = 881,
+
+        // IDs 650, 844-863 and 882+ are free.
     }
 }

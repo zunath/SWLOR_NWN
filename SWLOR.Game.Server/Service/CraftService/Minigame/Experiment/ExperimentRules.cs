@@ -30,6 +30,18 @@ public static class ExperimentRules
     /// <summary>The most the experiment can cut from the job's time, in percent of the job.</summary>
     public const int TimeCutCapPercent = 25;
 
+    /// <summary>The fewest CP Refine Method can cost after a perk discount.</summary>
+    public const int MinimumRefineCp = 1;
+
+    /// <summary>The fewest trials an experiment can have after perks.</summary>
+    public const int MinimumTrials = 1;
+
+    /// <summary>The Fabrication CP Peer Review costs. It uses no trial and can be used once per experiment.</summary>
+    public const int PeerReviewCp = 25;
+
+    /// <summary>After Breakthrough, each piece of spare evidence Analyze spends cuts this many times its usual share of the job's time.</summary>
+    public const int BreakthroughTimeCutMultiplier = 2;
+
     // CP: gear CP plus this share of the rank. The rank-25 passive the other minigames add is re-tuned to nothing here, because
     // Refine Method is the only CP sink and a flat bonus would make it free for every researcher from rank 25.
     public const double CpPerRank = 0.75;

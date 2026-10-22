@@ -350,6 +350,7 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
                     var extraBonus = ResearchGrantRules.RollExtraBonus(targetLevel, ServiceMinigameRandom.Instance);
                     var licensedRunsGrant = ResearchGrantRules.RollLicensedRunsGrant(
                         targetLevel, researchJob.EnhancementSlots > 0, ServiceMinigameRandom.Instance);
+                    var trials = ExperimentTuning.FromStatTotals(stat => Stat.GetStatAdjustment(Player, stat)).Trials;
                     var dbResearchJob = new ResearchJob
                     {
                         ParentPropertyId = _researchTerminalPropertyId,
@@ -360,7 +361,7 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
                         Level = researchJob.CurrentLevel,
                         Recipe = _recipeType,
                         Experiment = ResearchExperimentLifecycle.Open(
-                            targetLevel, ExperimentRules.Trials, researchJob.TimeCost, extraBonus, licensedRunsGrant)
+                            targetLevel, trials, researchJob.TimeCost, extraBonus, licensedRunsGrant)
                     };
                     DB.Set(dbResearchJob);
 

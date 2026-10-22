@@ -6394,7 +6394,73 @@ namespace SWLOR.Game.Server.Service.StatService
         [StatType(StatTypeCategory.BeneficialWhenPositive)]
         DualWieldAttackDelayReductionPercent = 1167,
 
+        /// <summary>Percent added to the progress each Fabricator Run makes; a style's cost is a negative value.</summary>
+        [StatType(StatTypeCategory.BeneficialWhenPositive)]
+        FabricatorRunPowerPercent = 1188,
 
+        /// <summary>Percent added to the quality each Fabricator Precision Pass gains; a style's cost is a negative value.</summary>
+        [StatType(StatTypeCategory.BeneficialWhenPositive)]
+        FabricatorPrecisionPowerPercent = 1189,
+
+        /// <summary>Machine Condition a Fabricator Run or Precision Pass wears less, to a minimum of 1.</summary>
+        [StatType(StatTypeCategory.BeneficialWhenPositive)]
+        FabricatorWearReduction = 1190,
+
+        /// <summary>Percent off the CP a Fabricator Retool costs, to a minimum of 1 CP.</summary>
+        [StatType(StatTypeCategory.BeneficialWhenPositive)]
+        FabricatorRetoolCpReductionPercent = 1191,
+
+        /// <summary>Machine Condition a Fabricator Service restores beyond its base amount.</summary>
+        [StatType(StatTypeCategory.BeneficialWhenPositive)]
+        FabricatorServiceRestore = 1192,
+
+        /// <summary>CP a Fabricator Service costs less, to a minimum of 1 CP.</summary>
+        [StatType(StatTypeCategory.BeneficialWhenPositive)]
+        FabricatorServiceCpReduction = 1193,
+
+        /// <summary>Non-zero when the Fabricator offers Dual Feed.</summary>
+        [StatType(StatTypeCategory.BeneficialWhenPositive, StatTypeAggregation.Maximum)]
+        FabricatorDualFeedUnlocked = 1194,
+
+        /// <summary>Extra actions a Prime Feedstock waits for its head.</summary>
+        [StatType(StatTypeCategory.BeneficialWhenPositive)]
+        FabricatorPrimeWindowActions = 1195,
+
+        /// <summary>Percentage points added to the bonus a Prime Feedstock gives.</summary>
+        [StatType(StatTypeCategory.BeneficialWhenPositive)]
+        FabricatorPrimeBonusPercent = 1196,
+
+        /// <summary>Points added to how far Assemble lets the piece's quality rise above its weakest sub-assembly.</summary>
+        [StatType(StatTypeCategory.BeneficialWhenPositive)]
+        FabricatorAssembleCapPoints = 1197,
+
+        /// <summary>Trials added to every research Experiment; a style's cost is a negative value.</summary>
+        [StatType(StatTypeCategory.BeneficialWhenPositive)]
+        ExperimentTrials = 1198,
+
+        /// <summary>Percentage points added to the chance every research Test finds evidence; a style's cost is a negative value.</summary>
+        [StatType(StatTypeCategory.BeneficialWhenPositive)]
+        ExperimentTestChancePercent = 1199,
+
+        /// <summary>CP Refine Method costs less in a research Experiment, to a minimum of 1 CP.</summary>
+        [StatType(StatTypeCategory.BeneficialWhenPositive)]
+        ExperimentRefineCpReduction = 1200,
+
+        /// <summary>Percentage points Refine Method adds to the next Test's chance beyond its base amount.</summary>
+        [StatType(StatTypeCategory.BeneficialWhenPositive)]
+        ExperimentRefineChancePercent = 1201,
+
+        /// <summary>Percent of the job's time each piece of spare evidence cuts beyond its base amount; the cap stays.</summary>
+        [StatType(StatTypeCategory.BeneficialWhenPositive)]
+        ExperimentTimeCutPerEvidencePercent = 1202,
+
+        /// <summary>Non-zero when the research Experiment offers Peer Review.</summary>
+        [StatType(StatTypeCategory.BeneficialWhenPositive, StatTypeAggregation.Maximum)]
+        ExperimentPeerReviewUnlocked = 1203,
+
+        /// <summary>Non-zero when the research Experiment offers Breakthrough.</summary>
+        [StatType(StatTypeCategory.BeneficialWhenPositive, StatTypeAggregation.Maximum)]
+        ExperimentBreakthroughUnlocked = 1204,
     }
 
     public class StatTypeAttribute : Attribute

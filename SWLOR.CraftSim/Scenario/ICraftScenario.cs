@@ -61,6 +61,14 @@ namespace SWLOR.CraftSim.Scenario
         /// <summary>How hard the fixed-rotation solver searches, for the gate that asks whether one rotation always wins.</summary>
         FixedRotationSolverOptions SolverOptions => FixedRotationSolverOptions.Default;
 
+        /// <summary>
+        /// Whether <see cref="CraftEngineRequest.Enhancements"/> reaches the engine, for gate 7 (enhancement parity). By default it does not,
+        /// and gate 7 then does not run. Set <see cref="EnhancementSupport.Modeled"/> once <see cref="CreateEngine"/> applies the request's
+        /// total progress penalty through the engine's own enhancement handling, or <see cref="EnhancementSupport.NoSlots"/> for a minigame
+        /// whose recipes have no enhancement slots.
+        /// </summary>
+        EnhancementSupport Enhancements => EnhancementSupport.NotModeled;
+
         /// <summary>What this scenario's results do not cover, added to the report's own limitations.</summary>
         IReadOnlyList<string> Limitations => Array.Empty<string>();
     }

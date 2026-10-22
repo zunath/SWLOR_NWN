@@ -10,8 +10,11 @@ This project holds the **legacy baseline**: today's rules for the old craft mini
 dotnet build SWLOR.CraftSim -p:RunPostBuildEvent=Never -v q -clp:ErrorsOnly
 dotnet SWLOR.CraftSim/bin/Debug/net10.0/SWLOR.CraftSim.dll baseline --section crafting --runs 500 --seed 1 --out design/testing/crafting-revamp/legacy-crafting-baseline.md
 dotnet SWLOR.CraftSim/bin/Debug/net10.0/SWLOR.CraftSim.dll baseline --section gathering --seed 1 --out design/testing/crafting-revamp/legacy-gathering-baseline.md
+dotnet SWLOR.CraftSim/bin/Debug/net10.0/SWLOR.CraftSim.dll legacy-enhancements --runs 200 --seed 1 --recipes-per-band 6 --out design/testing/crafting-revamp/legacy-enhancement-baseline.md
 dotnet SWLOR.CraftSim/bin/Debug/net10.0/SWLOR.CraftSim.dll gear
 ```
+
+`legacy-enhancements` plays the old minigame with one, two and three enhancements slotted and writes today's expected transferred enhancements per band, tier and slot count, the yardstick of gate 7. It takes `--runs`, `--seed`, `--recipes-per-band` (enhanceable recipes sampled per skill and band), `--skills` (Smithery, Engineering, Fabrication, Agriculture), `--gear all|best`, `--out` and `--json`. At the committed settings it takes about ten minutes.
 
 `baseline` takes `--section crafting|gathering|all`, `--runs` (crafts per recipe level, skill, gear level and policy), `--seed`, `--gathering-runs` (nodes and sites played per row), `--skills Smithery,Engineering,...`, `--out report.md` and `--json results.json`. The same seed repeats a report exactly. The crafting section takes about two minutes at 500 runs.
 
@@ -25,18 +28,20 @@ Recipes come from the server's `IRecipeListDefinition` classes and the level cha
 
 Every ported rule is registered in `Legacy/LegacySource.cs` with its file, lines and source text, and cited in a code comment. `LegacySourceTests` fails when a quoted line moves more than 40 lines or changes, and when a comment cites lines no registered rule covers. When Closeout deletes `CraftViewModel.cs`, retire the references to it with the file and keep the committed baseline report as the record.
 
+Enhancements (`LegacyEnhancementRules`, `LegacyEnhancementBaseline`, `Data/Enhancement*`): each enhancement item adds its `ProgressPenalty` item property to the progress the piece needs (`LegacyCraftContext` takes a `CraftEnhancementConfiguration` of a count and a penalty each), and on a success each enhancement transfers by a roll at a chance equal to the quality percentage, truncated in floats. The model draws no transfer dice: a craft that is made adds slots x chance / 100 expected enhancements, a craft that breaks the piece adds none. The enhancement items are read from `Module/uti` (`EnhancementItemReader`: an item with a progress penalty, one enhancement property and an enhancement level). A recipe is played with the **representative enhancement** of its kind: the real item at the best level the recipe accepts (the old window refuses one more than 5 levels above the recipe) whose penalty is the lower median of that level, ties by resref (`EnhancementCatalog.ForRecipe`). The committed `legacy-enhancement-baseline.md` lists them.
+
 Gathering rules depend on Might, Perception and Willpower. They are swept over modifiers -1 to +5 (`AttributeSweep`) until the real medians of active characters are measured.
 
 ## Balance gates
 
-`Gates/` holds the plan's six gates (`GateNames`): an `IBalanceGate` receives a `GateContext` (recipes, gear, runs, seed) and returns a `GateResult` with a verdict and evidence tables, and `GateReport` writes them as markdown with the inputs and limitations `SkillPerkStandards.md` asks for. The gates are generic over `ICraftMinigameEngine`: a minigame supplies a scenario and never writes its own solver or gate framework.
+`Gates/` holds the plan's seven gates (`GateNames`): an `IBalanceGate` receives a `GateContext` (recipes, gear, runs, seed) and returns a `GateResult` with a verdict and evidence tables, and `GateReport` writes them as markdown with the inputs and limitations `SkillPerkStandards.md` asks for. The gates are generic over `ICraftMinigameEngine`: a minigame supplies a scenario and never writes its own solver or gate framework.
 
 ```powershell
 dotnet SWLOR.CraftSim/bin/Debug/net10.0/SWLOR.CraftSim.dll gates --list
 dotnet SWLOR.CraftSim/bin/Debug/net10.0/SWLOR.CraftSim.dll gates --scenario forge --runs 100 --seed 1 --recipes-per-band 6 --out design/testing/crafting-revamp/forge-gates.md --json forge-gates.json
 ```
 
-`gates` takes `--scenario <name>` (required; `--list` shows them), `--runs` (attempts per case, default 100), `--seed`, `--recipes-per-band` (an even sample of each band, default 6) or `--all-recipes`, `--gates rotation,styles,perks,length,materials,xp` (a subset), `--legacy-seconds-per-action`, `--thorough` (a much longer fixed-rotation search for a final run), `--out` (default `design/testing/crafting-revamp/<scenario>-gates.md`), `--json` and `--strict` (exit 2 when a gate failed or was not run). The same seed repeats a report exactly. Cases are played on every core. Gate 1 dominates the time: it solves a fixed rotation for every sampled recipe and gear tier, so use the sample, not `--all-recipes`, for it (`--gates` skips it).
+`gates` takes `--scenario <name>` (required; `--list` shows them), `--runs` (attempts per case, default 100), `--seed`, `--recipes-per-band` (an even sample of each band, default 6) or `--all-recipes`, `--gates rotation,styles,perks,length,materials,xp,enhancements` (a subset; a gate's number, 1 to 7, names it too, so `--gates 7` runs enhancement parity), `--legacy-seconds-per-action`, `--thorough` (a much longer fixed-rotation search for a final run), `--out` (default `design/testing/crafting-revamp/<scenario>-gates.md`), `--json` and `--strict` (exit 2 when a gate failed or was not run). The same seed repeats a report exactly. Cases are played on every core. Gate 1 dominates the time: it solves a fixed rotation for every sampled recipe and gear tier, so use the sample, not `--all-recipes`, for it (`--gates` skips it).
 
 | Gate | What it checks | Starting threshold (`GateThresholds`) |
 | --- | --- | --- |
@@ -45,9 +50,35 @@ dotnet SWLOR.CraftSim/bin/Debug/net10.0/SWLOR.CraftSim.dll gates --scenario forg
 | 3 Perks optional | At rank 50 with the best gear and no perks, the share of adaptive crafts that reach maximum quality, per at-level band (41-45, 46-50, 51-53). | at least 50% in every band |
 | 4 Length | Mean actions per attempt of the adaptive player at level, per band and gear tier. | the scenario's `LengthTarget` (item craft 10-20) |
 | 5 Material parity (economy parity) | Component stacks consumed per item made, failures included, against the legacy lookahead player on the same recipes, ranks and gear. | within 10%, at an average quality no more than 5 points below the legacy player's (`MaterialQualityShortfallPoints`); recipes never made may exceed the legacy share by at most 10 points |
-| 6 XP rate | XP per hour against the legacy loop over the plan's item-craft cohort: each band with rank equal to level (capped at 50), no gear, mid and best gear, equal weight per recipe, no blueprint, not a first craft, failures at 15% XP. Each band and tier must pass. | at least 1.0 times the legacy rate |
+| 6 XP rate | XP per hour against the legacy loop over the plan's item-craft cohort: each band with rank equal to level (capped at 50), no gear, mid and best gear, equal weight per recipe, no blueprint, not a first craft, failures at 15% XP. Each band, gear tier and enhancement count must pass: the cohort is played plain and again with one, two and three enhancements (the representative enhancement of gate 7, each side applying its own enhancement difficulty). A scenario that does not model enhancements leaves the enhanced cases unplayed and the gate not run. | at least 1.0 times the legacy rate |
+| 7 Enhancement parity | At rank 50 with the best gear and at level (41-45, 46-50, 51-53), the expected number of enhancements transferred per enhanced craft attempt, for items with one, two and three filled slots, against the old window's chance roll (quality percentage per enhancement) with the same enhancements slotted. The new count is read from the quality distribution of the adaptive player's crafts under the thresholds in `CraftOutcomeRules`. The report also gives the thresholds that would meet parity. Not run until the scenario models enhancements. | at least 1.0 times today's in every band and slot count (`EnhancementParityMinimumRatio`) |
 
 Quality is the quality meter's share at the end, in points, with a broken or abandoned piece counting 0. Time for gate 6 is actions times a seconds-per-action estimate (the scenario's `SecondsPerAction`, 6 s for the old window), plus an optional per-craft overhead; both are unmeasured until the client evidence replaces them. A failing XP case reports the multiplier it would need.
+
+### Gate 7: enhancement parity
+
+Today each enhancement transfers at a chance equal to the quality percentage, so 80% quality averages 2.4 of 3 enhancements; thresholds of 50/85/85 give exactly 1. Each enhancement also raises the progress the piece needs by its progress penalty, which makes the craft harder. The gate plays both:
+
+- **Today:** `LegacyEnhancementBaseline` plays the old minigame's lookahead player with the representative enhancement of the recipe's kind slotted 1, 2 and 3 times. A craft that is made adds slots x chance / 100; one that breaks adds none.
+- **New:** the scenario builds its engine with `CraftEngineRequest.Enhancements` (a `CraftEnhancementConfiguration`: the count and the progress penalty each, in the old window's units, default none), and the adaptive player crafts. A made item transfers the enhancement of slot n when its quality percent (`MinigameMeter.Percent`, rounded down) meets `CraftOutcomeRules.GetEnhancementThreshold(n)`, exactly as `CraftOutcomeRules.CalculateSuccess` decides (a test checks every quality and slot count). Changing a threshold constant there flows into the gate. A craft that breaks the piece transfers none.
+- **Report:** per band and slot count, today's and the new figure, the ratio and the verdict; the thresholds (first, second, third) that would meet parity for the measured quality distribution, for every band together and for each band alone, exact and in steps of 5 (`EnhancementThresholdSolver`: the strictest non-decreasing set that keeps every case at least at today's); the quality percentiles of the items made; and the representative enhancements used.
+
+The recipes are the cohort's recipes that have an enhancement slot, an even sample of each band. Recipes have one or two slots and research and blueprints add more, so each is played with every slot count. A scenario must say how it treats enhancements:
+
+| `ICraftScenario.Enhancements` | Meaning | Gate 7 |
+| --- | --- | --- |
+| `NotModeled` (default) | `CreateEngine` ignores `request.Enhancements`. | Not run, which blocks shipping (`GateReport.AllPassed`) |
+| `Modeled` | `CreateEngine` maps the request's total progress penalty onto the engine's progress meter. | Runs. It first checks that the engine's progress maximum rises with the enhancements and fails if not. |
+| `NoSlots` | The minigame has no enhancement slots (Reaction). | Not applicable |
+
+Mapping a penalty onto a minigame: `request.Enhancements.TotalProgressPenalty` (count x penalty each, in the old window's progress units) goes through the engine's own enhancement handling, the same one its window uses when the player slots enhancements, as each phase 1 PR mapped the old progress penalty:
+
+- **Forge (Smithery):** extra Shape. `ForgeRules.EnhancementShapePercent(total, recipe.Level)` gives the percent, which `ForgeSetup` takes as its `EnhancementShapePercent`.
+- **Circuit (Engineering):** extra Assembly. `CircuitSetup` takes the total as `enhancementProgressPenalty` and adds it to `MaxAssembly`.
+- **Kitchen (Agriculture):** extra Doneness. `KitchenTuning.EnhancementDoneness(total)` is passed to `KitchenEngine` as `extraDoneness`.
+- **Reaction:** `EnhancementSupport.NoSlots`.
+
+A scenario then sets `public EnhancementSupport Enhancements => EnhancementSupport.Modeled;`. Nothing else in the scenario changes: `request.Enhancements` is `CraftEnhancementConfiguration.None` for every other gate.
 
 ### The players
 
@@ -65,11 +96,12 @@ Phase 2 of a minigame workstream adds one class to this project, normally under 
 3. The engine must keep every mutable value in its `TState`, with only `readonly` configuration fields: `Fork` copies it with a shallow clone. A game server test checks the fields of every engine.
 4. Fill in the rest as the minigame needs, all optional: `Cohort` (which recipes and which ranks; the default is every recipe of `Skill` at its level up to rank 50), `LengthTarget`, `StylePairs` (alternative styles and the rank they open at, built from `CraftStyle`), `AdaptiveOptions` (a deeper search or a heuristic of the minigame's own), `SolverOptions` and `Limitations` (appended to the report).
 5. `SecondsPerAction` is required: the seconds a player takes per action in the new window. Measure it in the client evidence and replace the estimate.
+6. `Enhancements`: apply `request.Enhancements` through the engine's own enhancement handling (see "Gate 7: enhancement parity" above) and return `EnhancementSupport.Modeled`, or `NoSlots` for a minigame without enhancement slots. Until then gates 6 and 7 do not run their enhanced cases and the minigame cannot ship.
 
 Gathering and fishing implement `IXpRateCohort` instead: it pairs the legacy loop with its replacement over the plan's activity cohorts (harvesting per node tier, scavenging per site level, fishing per fish-level band) at the parity attribute medians in `GateContext.Attributes`, and `XpRateGate` compares them. `LengthTarget` already carries their 3-8, 3-6 and 5-8 action targets.
 
-The game server changes only by `ICraftMinigameEngine.Fork`, which every engine inherits from `MinigameEngineBase<TState>`.
+The game server changes only by `ICraftMinigameEngine.Fork`, which every engine inherits from `MinigameEngineBase<TState>`, and by the third enhancement slot's own threshold constant in `CraftOutcomeRules` (a starting value that gate 7 sets).
 
 ### Test bench
 
-`SWLOR.CraftSim.Tests/Support` holds a test-only engine (`BenchEngine`: a working window the player must keep Heat inside, a chance-dependent Stoke and a telegraphed opportunity), a variant with a dominant action, a one-action table engine whose quality is set per recipe and style, and their scenarios. The tests run every gate runner end to end on them with seeds, including a dominant rotation (gate 1 fails) and an adaptive game (gate 1 passes).
+`SWLOR.CraftSim.Tests/Support` holds a test-only engine (`BenchEngine`: a working window the player must keep Heat inside, a chance-dependent Stoke and a telegraphed opportunity), a variant with a dominant action, a one-action table engine whose quality is set per recipe and style, and their scenarios. The tests run every gate runner end to end on them with seeds, including a dominant rotation (gate 1 fails) and an adaptive game (gate 1 passes). Both model enhancements (a quarter of the penalty becomes extra progress, one for one in the table engine), and the table engine sets the quality of an enhanced craft by its enhancement count so gate 7's arithmetic and the threshold solver can be checked exactly.

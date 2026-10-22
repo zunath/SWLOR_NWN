@@ -32,7 +32,8 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.SmitheryRecipeDefinition
                 .Component("lth_good", 8)
                 .Component("fiberp_good", 5)
                 .Component("ref_plagionite", 2)
-                .Component("quar_seal", 1);
+                .Component("quar_seal", 1)
+                .ForgeParameters(rangeCenter: 52, rangeWidth: 31, coolingRate: 4, startingThermal: 57, shapeShare: 52);
 
             // Containment Belt
             _builder.Create(RecipeType.ContainmentBelt, SkillType.Smithery)
@@ -45,7 +46,8 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.SmitheryRecipeDefinition
                 .Component("lth_good", 8)
                 .Component("fiberp_good", 5)
                 .Component("ref_plagionite", 2)
-                .Component("quar_seal", 1);
+                .Component("quar_seal", 1)
+                .ForgeParameters(rangeCenter: 46, rangeWidth: 38, coolingRate: 5, startingThermal: 55, shapeShare: 52);
 
             // Containment Ring
             _builder.Create(RecipeType.ContainmentRing, SkillType.Smithery)
@@ -58,7 +60,8 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.SmitheryRecipeDefinition
                 .Component("ref_plagionite", 2)
                 .Component("citrine", 2)
                 .Component("lth_good", 1)
-                .Component("quar_seal", 1);
+                .Component("quar_seal", 1)
+                .ForgeParameters(rangeCenter: 45, rangeWidth: 44, coolingRate: 4, startingThermal: 57, shapeShare: 44);
 
             // Containment Necklace
             _builder.Create(RecipeType.ContainmentNecklace, SkillType.Smithery)
@@ -71,7 +74,8 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.SmitheryRecipeDefinition
                 .Component("ref_plagionite", 3)
                 .Component("citrine", 2)
                 .Component("lth_good", 1)
-                .Component("quar_seal", 1);
+                .Component("quar_seal", 1)
+                .ForgeParameters(rangeCenter: 52, rangeWidth: 39, coolingRate: 5, startingThermal: 56, shapeShare: 44);
         }
 
         private void Gantry()
@@ -87,7 +91,8 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.SmitheryRecipeDefinition
                 .Component("lth_good", 8)
                 .Component("fiberp_good", 5)
                 .Component("elec_good", 2)
-                .Component("quar_seal", 1);
+                .Component("quar_seal", 1)
+                .ForgeParameters(rangeCenter: 40, rangeWidth: 47, coolingRate: 5, startingThermal: 46, shapeShare: 53);
 
             // Gantry Belt
             _builder.Create(RecipeType.GantryBelt, SkillType.Smithery)
@@ -100,7 +105,8 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.SmitheryRecipeDefinition
                 .Component("lth_good", 8)
                 .Component("fiberp_good", 5)
                 .Component("elec_good", 2)
-                .Component("quar_seal", 1);
+                .Component("quar_seal", 1)
+                .ForgeParameters(rangeCenter: 37, rangeWidth: 54, coolingRate: 3, startingThermal: 44, shapeShare: 50);
 
             // Gantry Ring
             _builder.Create(RecipeType.GantryRing, SkillType.Smithery)
@@ -113,7 +119,8 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.SmitheryRecipeDefinition
                 .Component("ref_plagionite", 2)
                 .Component("citrine", 2)
                 .Component("elec_good", 1)
-                .Component("quar_seal", 1);
+                .Component("quar_seal", 1)
+                .ForgeParameters(rangeCenter: 44, rangeWidth: 36, coolingRate: 4, startingThermal: 55, shapeShare: 45);
 
             // Gantry Necklace
             _builder.Create(RecipeType.GantryNecklace, SkillType.Smithery)
@@ -126,7 +133,8 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.SmitheryRecipeDefinition
                 .Component("ref_plagionite", 3)
                 .Component("citrine", 2)
                 .Component("elec_good", 1)
-                .Component("quar_seal", 1);
+                .Component("quar_seal", 1)
+                .ForgeParameters(rangeCenter: 45, rangeWidth: 40, coolingRate: 3, startingThermal: 55, shapeShare: 44);
         }
 
         private void Biolab()
@@ -142,7 +150,8 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.SmitheryRecipeDefinition
                 .Component("lth_good", 8)
                 .Component("fiberp_good", 5)
                 .Component("citrine", 2)
-                .Component("quar_seal", 1);
+                .Component("quar_seal", 1)
+                .ForgeParameters(rangeCenter: 39, rangeWidth: 54, coolingRate: 3, startingThermal: 45, shapeShare: 51);
 
             // Biolab Belt
             _builder.Create(RecipeType.BiolabBelt, SkillType.Smithery)
@@ -155,7 +164,8 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.SmitheryRecipeDefinition
                 .Component("lth_good", 8)
                 .Component("fiberp_good", 5)
                 .Component("citrine", 2)
-                .Component("quar_seal", 1);
+                .Component("quar_seal", 1)
+                .ForgeParameters(rangeCenter: 43, rangeWidth: 54, coolingRate: 5, startingThermal: 45, shapeShare: 50);
 
             // Biolab Ring
             _builder.Create(RecipeType.BiolabRing, SkillType.Smithery)
@@ -168,7 +178,8 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.SmitheryRecipeDefinition
                 .Component("ref_plagionite", 2)
                 .Component("citrine", 2)
                 .Component("fiberp_good", 1)
-                .Component("quar_seal", 1);
+                .Component("quar_seal", 1)
+                .ForgeParameters(rangeCenter: 46, rangeWidth: 38, coolingRate: 5, startingThermal: 56, shapeShare: 46);
 
             // Biolab Necklace
             _builder.Create(RecipeType.BiolabNecklace, SkillType.Smithery)
@@ -181,7 +192,8 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.SmitheryRecipeDefinition
                 .Component("ref_plagionite", 3)
                 .Component("citrine", 2)
                 .Component("fiberp_good", 1)
-                .Component("quar_seal", 1);
+                .Component("quar_seal", 1)
+                .ForgeParameters(rangeCenter: 45, rangeWidth: 37, coolingRate: 4, startingThermal: 60, shapeShare: 47);
         }
     }
 }

@@ -27,7 +27,8 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.SmitheryRecipeDefinition
                 .EnhancementSlots(RecipeEnhancementType.Armor, 1)
                 .Component("lth_good", 4)
                 .Component("fiberp_good", 2)
-                .Component("tide_scale", 1);
+                .Component("tide_scale", 1)
+                .ForgeParameters(rangeCenter: 38, rangeWidth: 55, coolingRate: 4, startingThermal: 52, shapeShare: 57);
 
             // Tideguard Wraps
             _builder.Create(RecipeType.TideguardWraps, SkillType.Smithery)
@@ -39,7 +40,8 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.SmitheryRecipeDefinition
                 .EnhancementSlots(RecipeEnhancementType.Armor, 1)
                 .Component("lth_good", 2)
                 .Component("fiberp_good", 1)
-                .Component("tide_scale", 1);
+                .Component("tide_scale", 1)
+                .ForgeParameters(rangeCenter: 40, rangeWidth: 54, coolingRate: 4, startingThermal: 49, shapeShare: 54);
 
             // Tideguard Treads
             _builder.Create(RecipeType.TideguardTreads, SkillType.Smithery)
@@ -51,7 +53,8 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.SmitheryRecipeDefinition
                 .EnhancementSlots(RecipeEnhancementType.Armor, 1)
                 .Component("lth_good", 2)
                 .Component("fiberp_good", 1)
-                .Component("tide_scale", 1);
+                .Component("tide_scale", 1)
+                .ForgeParameters(rangeCenter: 39, rangeWidth: 59, coolingRate: 4, startingThermal: 46, shapeShare: 57);
 
             // Tideguard Sash
             _builder.Create(RecipeType.TideguardSash, SkillType.Smithery)
@@ -63,7 +66,8 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.SmitheryRecipeDefinition
                 .EnhancementSlots(RecipeEnhancementType.Armor, 1)
                 .Component("lth_good", 2)
                 .Component("fiberp_good", 1)
-                .Component("tide_scale", 1);
+                .Component("tide_scale", 1)
+                .ForgeParameters(rangeCenter: 36, rangeWidth: 53, coolingRate: 3, startingThermal: 49, shapeShare: 53);
 
             // Tideguard Mantle
             _builder.Create(RecipeType.TideguardMantle, SkillType.Smithery)
@@ -75,7 +79,8 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.SmitheryRecipeDefinition
                 .EnhancementSlots(RecipeEnhancementType.Armor, 1)
                 .Component("lth_good", 2)
                 .Component("fiberp_good", 1)
-                .Component("tide_scale", 1);
+                .Component("tide_scale", 1)
+                .ForgeParameters(rangeCenter: 43, rangeWidth: 54, coolingRate: 2, startingThermal: 49, shapeShare: 55);
 
             // Tideguard Gorget
             _builder.Create(RecipeType.TideguardGorget, SkillType.Smithery)
@@ -87,7 +92,8 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.SmitheryRecipeDefinition
                 .EnhancementSlots(RecipeEnhancementType.Armor, 1)
                 .Component("lth_good", 2)
                 .Component("fiberp_good", 1)
-                .Component("tide_scale", 1);
+                .Component("tide_scale", 1)
+                .ForgeParameters(rangeCenter: 35, rangeWidth: 58, coolingRate: 3, startingThermal: 49, shapeShare: 47);
 
             // Tideguard Band
             _builder.Create(RecipeType.TideguardBand, SkillType.Smithery)
@@ -99,7 +105,8 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.SmitheryRecipeDefinition
                 .EnhancementSlots(RecipeEnhancementType.Armor, 1)
                 .Component("lth_good", 2)
                 .Component("fiberp_good", 1)
-                .Component("tide_scale", 1);
+                .Component("tide_scale", 1)
+                .ForgeParameters(rangeCenter: 36, rangeWidth: 53, coolingRate: 2, startingThermal: 53, shapeShare: 41);
 
             // Tideguard Guard
             _builder.Create(RecipeType.TideguardGuard, SkillType.Smithery)
@@ -111,7 +118,8 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.SmitheryRecipeDefinition
                 .EnhancementSlots(RecipeEnhancementType.Armor, 1)
                 .Component("lth_good", 2)
                 .Component("fiberp_good", 1)
-                .Component("tide_scale", 1);
+                .Component("tide_scale", 1)
+                .ForgeParameters(rangeCenter: 42, rangeWidth: 53, coolingRate: 4, startingThermal: 52, shapeShare: 53);
 
             // Tideguard Visor
             _builder.Create(RecipeType.TideguardVisor, SkillType.Smithery)
@@ -123,7 +131,8 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.SmitheryRecipeDefinition
                 .EnhancementSlots(RecipeEnhancementType.Armor, 1)
                 .Component("lth_good", 3)
                 .Component("fiberp_good", 2)
-                .Component("tide_scale", 1);
+                .Component("tide_scale", 1)
+                .ForgeParameters(rangeCenter: 41, rangeWidth: 51, coolingRate: 2, startingThermal: 51, shapeShare: 57);
 
             // Tideguard Charm
             _builder.Create(RecipeType.TideguardCharm, SkillType.Smithery)
@@ -135,7 +144,8 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.SmitheryRecipeDefinition
                 .EnhancementSlots(RecipeEnhancementType.Armor, 1)
                 .Component("lth_good", 2)
                 .Component("fiberp_good", 1)
-                .Component("tide_scale", 1);
+                .Component("tide_scale", 1)
+                .ForgeParameters(rangeCenter: 36, rangeWidth: 50, coolingRate: 3, startingThermal: 47, shapeShare: 44);
         }
     }
 }

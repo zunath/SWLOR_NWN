@@ -18,6 +18,12 @@ internal sealed class FakeFishingFightWorld : IFishingFightWorld
     public List<FishingFight> Opened { get; } = new();
 
     public bool Busy { get; private set; }
+
+    /// <summary>True while the angler's busy state is the fishing one the fight set; a test clears it to stand in for a rest.</summary>
+    public bool OwnsActivity { get; set; }
+
+    /// <summary>The item in the angler's right hand; the tests' rod by default.</summary>
+    public uint EquippedRod { get; set; } = 22;
     public bool WindowOpen { get; set; }
     public bool CanOpenWindow { get; set; } = true;
     public bool OpeningTheWindowThrows { get; set; }
@@ -68,12 +74,14 @@ internal sealed class FakeFishingFightWorld : IFishingFightWorld
     {
         Log.Add("busy");
         Busy = true;
+        OwnsActivity = true;
     }
 
     public void EndFight(uint player)
     {
         Log.Add("free");
         Busy = false;
+        OwnsActivity = false;
     }
 
     public bool OpenWindow(uint player, FishingFight fight)
@@ -97,7 +105,7 @@ internal sealed class FakeFishingFightWorld : IFishingFightWorld
     }
 
     public FishingPlayerState GetPlayerState(uint player) =>
-        new(IsValid, IsDead, IsInCombat, Position, WindowOpen);
+        new(IsValid, IsDead, IsInCombat, Position, WindowOpen, EquippedRod, OwnsActivity);
 
     public void Schedule(float seconds, Action action) => _scheduled.Add((seconds, action));
 

@@ -58,4 +58,25 @@ public static class LineRules
     public const double TireWeightAtRung0 = 45;
     public const double TireWeightPerRung = 0.45;
     public const int TireWeightMinimum = 2;
+
+    // The multiplier on the XP a bite pays (see CraftMinigameXp), by the fish's level band: the least that keeps the CraftSim XP-rate
+    // gate (gate 6) passing in the band. Today's cast takes about seven seconds and pays at the bite; the fight adds three to six turns
+    // of eight seconds to that, so the same XP per bite would cut the XP per hour to a seventh. The XP is still paid at the bite, caught
+    // or not, so only its size changes. Starting values until client timing replaces the seconds per turn; 1.0 in every band restores
+    // today's XP per bite.
+    public const double XpMultiplierLevels0To10 = 7.4;
+    public const double XpMultiplierLevels11To20 = 7.25;
+    public const double XpMultiplierLevels21To30 = 7.0;
+    public const double XpMultiplierLevels31To40 = 6.95;
+    public const double XpMultiplierLevels41Up = 6.75;
+
+    /// <summary>The multiplier on the XP of a bite from a fish of the level. A level of 0 or less takes the lowest band's.</summary>
+    public static double XpMultiplierForLevel(int fishLevel) => fishLevel switch
+    {
+        <= 10 => XpMultiplierLevels0To10,
+        <= 20 => XpMultiplierLevels11To20,
+        <= 30 => XpMultiplierLevels21To30,
+        <= 40 => XpMultiplierLevels31To40,
+        _ => XpMultiplierLevels41Up
+    };
 }

@@ -4,6 +4,8 @@ using SWLOR.CraftSim.Fishing;
 using SWLOR.CraftSim.Gates;
 using SWLOR.CraftSim.Legacy.Gathering;
 using SWLOR.CraftSim.Scenario;
+using SWLOR.Game.Server.Service.CraftService.Minigame;
+using SWLOR.Game.Server.Service.CraftService.Minigame.Line;
 using SWLOR.Game.Server.Service.FishingService;
 
 namespace SWLOR.CraftSim.Tests.Fishing
@@ -81,7 +83,7 @@ namespace SWLOR.CraftSim.Tests.Fishing
         }
 
         [Test]
-        public void TheFight_PaysTheSameXpPerBite_AndTakesTurns()
+        public void TheFight_PaysTodaysXpTimesTheMultiplierOfTheBand_AndTakesTurns()
         {
             var cohort = new FishingXpRateCohort(new FishingParity(10, 1));
             var xpCase = cohort.Cases(Context()).Single(c => c.Group == "41-52");
@@ -90,15 +92,106 @@ namespace SWLOR.CraftSim.Tests.Fishing
             var fight = cohort.PlayReplacement(xpCase, Context());
 
             fight.Runs.Should().Be(legacy.Runs);
-            fight.TotalXp.Should().BeApproximately(legacy.TotalXp, 1e-6, "XP is paid per bite, caught or not");
+            var expected = cohort.Mix("41-52").Sum(entry =>
+                CraftMinigameXp.ScaleBaseXp(FishingCatchModel.XpPerBite(entry.Rank, entry.Level), LineRules.XpMultiplierLevels41Up) * entry.Weight);
+            fight.XpPerRun.Should().BeApproximately(expected, 1e-6, "XP is paid per bite, caught or not, and the multiplier is the band's");
+            fight.XpPerRun.Should().BeApproximately(legacy.XpPerRun * LineRules.XpMultiplierLevels41Up, legacy.XpPerRun * 0.001, "rounding to whole XP moves it by well under a tenth of a percent");
             fight.ActionsPerRun.Should().BeInRange(2, 10);
             cohort.ReplacementTiming.Should().Be(new XpLoopTiming(8, 7));
         }
 
         [Test]
-        public void TheXpRateGate_ShowsWhatTheFightsTimeCostsAndTheMultiplierThatWouldRestoreTodaysRate()
+        public void WithNoMultiplier_TheFightPaysTodaysXpPerBite()
+        {
+            var cohort = new FishingXpRateCohort(new FishingParity(10, 1), null, _ => 1.0);
+            var xpCase = cohort.Cases(Context()).Single(c => c.Group == "21-30");
+
+            cohort.PlayReplacement(xpCase, Context()).TotalXp.Should().BeApproximately(cohort.PlayLegacy(xpCase, Context()).TotalXp, 1e-6);
+        }
+
+        // The multipliers are the least step that passes the report's runs and seed, so these tests play the report's 1000 fights per case.
+        // The two tests share one played set, which takes about a minute.
+        private const int MultiplierRuns = 1000;
+
+        private static readonly Lazy<FishingParity> ReportParity = new(() =>
+        {
+            var parity = new FishingParity(MultiplierRuns, 1);
+            new FishingXpRateCohort(parity).Prepare();
+            return parity;
+        });
+
+        private static bool InBand(string band, int level) => band switch
+        {
+            "0-10" => level <= 10,
+            "11-20" => level is >= 11 and <= 20,
+            "21-30" => level is >= 21 and <= 30,
+            "31-40" => level is >= 31 and <= 40,
+            _ => level >= 41
+        };
+
+        [Test]
+        public void TheXpRateGate_PassesInEveryBand_WithTheMultipliersTheGameServerApplies()
+        {
+            var cohort = new FishingXpRateCohort(ReportParity.Value);
+
+            var result = new XpRateGate(cohort).Evaluate(Context());
+
+            result.Verdict.Should().Be(GateVerdict.Passed, result.Summary);
+            result.Tables.Single().Rows.Should().OnlyContain(row => row[10] == "Passed");
+        }
+
+        [Test]
+        public void EveryMultiplier_IsTheLeastStepOfOneTwentiethThatPassesItsBand()
+        {
+            var parity = ReportParity.Value;
+
+            foreach (var (band, firstLevel) in new[] { ("0-10", 0), ("11-20", 11), ("21-30", 21), ("31-40", 31), ("41-52", 41) })
+            {
+                var shipped = LineRules.XpMultiplierForLevel(firstLevel);
+                var lower = new FishingXpRateCohort(parity, null, level => LineRules.XpMultiplierForLevel(level) - (InBand(band, level) ? 0.05 : 0));
+
+                var result = new XpRateGate(lower).Evaluate(Context());
+
+                var row = result.Tables.Single().Rows.Single(r => r[0] == band);
+                row[10].Should().Be("Failed", $"{shipped - 0.05}x is below what band {band} needs, so {shipped}x is the least step that passes");
+            }
+        }
+
+        [Test]
+        public void ATableWithOnlyADayPoolOrOnlyANightPool_KeepsItsHalfOfTheWeight()
         {
             var cohort = new FishingXpRateCohort(new FishingParity(10, 1));
+            var levels = FishingCatchModel.Fish().ToDictionary(fish => fish.Type, fish => fish.Level);
+            var tables = FishingCatchModel.Pools().GroupBy(pool => (pool.Location, pool.Rod, pool.Bait)).ToList();
+            Assume.That(tables.Any(table => table.Count() == 1), "the data has a table with one pool; otherwise there is nothing to keep");
+
+            var expected = new Dictionary<(string Band, FishType Fish), double>();
+            foreach (var pool in tables.SelectMany(table => table))
+            {
+                var total = pool.Entries.Sum(entry => (double)entry.Frequency);
+                foreach (var entry in pool.Entries)
+                {
+                    var level = levels[entry.Fish];
+                    if (FishingRodTier.Tier(pool.Rod) != FishingParity.NominalRodTier(Math.Min(level, 50)))
+                        continue;
+
+                    var band = level <= 10 ? "0-10" : level <= 20 ? "11-20" : level <= 30 ? "21-30" : level <= 40 ? "31-40" : "41-52";
+                    expected[(band, entry.Fish)] = expected.GetValueOrDefault((band, entry.Fish)) + 0.5 * entry.Frequency / total;
+                }
+            }
+
+            foreach (var xpCase in cohort.Cases(Context()))
+            {
+                var sum = expected.Where(pair => pair.Key.Band == xpCase.Group).Sum(pair => pair.Value);
+                foreach (var entry in cohort.Mix(xpCase.Group))
+                    entry.Weight.Should().BeApproximately(expected[(xpCase.Group, entry.Fish)] / sum, 1e-9, $"{xpCase.Group} {entry.Fish}");
+            }
+        }
+
+        [Test]
+        public void TheXpRateGate_WithNoMultiplier_ShowsWhatTheFightsTimeCostsAndTheMultiplierThatWouldRestoreTodaysRate()
+        {
+            var cohort = new FishingXpRateCohort(new FishingParity(10, 1), null, _ => 1.0);
             cohort.Prepare();
 
             var result = new XpRateGate(cohort).Evaluate(Context());

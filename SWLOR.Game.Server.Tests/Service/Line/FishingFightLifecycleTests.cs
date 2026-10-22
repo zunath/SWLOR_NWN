@@ -2,6 +2,7 @@ using System.Numerics;
 using FluentAssertions;
 using NUnit.Framework;
 using SWLOR.Game.Server.Service;
+using SWLOR.Game.Server.Service.CraftService.Minigame;
 using SWLOR.Game.Server.Service.CraftService.Minigame.Line;
 using SWLOR.Game.Server.Service.FishingService;
 
@@ -75,7 +76,7 @@ public class FishingFightLifecycleTests
         _world.Bait[Rod].Should().Be(4);
         _world.PointAttempts[Point].Should().Be(6);
         _world.ExhaustedPoints.Should().BeEmpty();
-        _world.Xp.Should().Equal(Skill.GetDeltaXP(0));
+        _world.Xp.Should().Equal(BiteXp(20, 20));
         _world.Opened.Should().Equal(fight);
         _world.Busy.Should().BeTrue();
         _world.FishCreated.Should().BeEmpty("the fish is landed by the fight, not by the bite");
@@ -84,8 +85,12 @@ public class FishingFightLifecycleTests
         _world.Log.Should().ContainInOrder("bait", "message", "message", "attempts", "xp", "busy", "open");
     }
 
+    /// <summary>What a bite pays: today's XP for the fish against the rank, times the multiplier of the fish's level band.</summary>
+    private static int BiteXp(int level, int rank) =>
+        CraftMinigameXp.ScaleBaseXp(Skill.GetDeltaXP(level - rank), LineRules.XpMultiplierForLevel(level));
+
     [Test]
-    public void TheXpForABite_IsTodaysDeltaXpOfTheFishAgainstTheRankAtTheBite()
+    public void TheXpForABite_IsTodaysDeltaXpOfTheFishAgainstTheRankAtTheBite_TimesTheMultiplierOfTheFishsLevelBand()
     {
         foreach (var (level, rank) in new[] { (0, 0), (20, 20), (22, 20), (18, 20), (35, 10), (0, 50), (52, 50) })
         {
@@ -93,8 +98,30 @@ public class FishingFightLifecycleTests
 
             Lifecycle().Bite(Bite(level, rank, rod: FishingRodType.Bamboo));
 
-            _world.Xp.Should().Equal(new[] { Skill.GetDeltaXP(level - rank) }, $"level {level}, rank {rank}");
+            _world.Xp.Should().Equal(new[] { BiteXp(level, rank) }, $"level {level}, rank {rank}");
         }
+
+        BiteXp(20, 20).Should().Be(
+            CraftMinigameXp.ScaleBaseXp(Skill.GetDeltaXP(0), LineRules.XpMultiplierLevels11To20),
+            "the multiplier is the one of the fish's level, not of the angler's rank");
+    }
+
+    [Test]
+    public void TheMultiplierIsTheLeastOfItsBand_AndEveryBandHasItsOwn()
+    {
+        CraftMinigameXp.MultiplierFor(CraftMinigameType.Line, 0).Should().Be(LineRules.XpMultiplierLevels0To10);
+        CraftMinigameXp.MultiplierFor(CraftMinigameType.Line, 10).Should().Be(LineRules.XpMultiplierLevels0To10);
+        CraftMinigameXp.MultiplierFor(CraftMinigameType.Line, 11).Should().Be(LineRules.XpMultiplierLevels11To20);
+        CraftMinigameXp.MultiplierFor(CraftMinigameType.Line, 20).Should().Be(LineRules.XpMultiplierLevels11To20);
+        CraftMinigameXp.MultiplierFor(CraftMinigameType.Line, 30).Should().Be(LineRules.XpMultiplierLevels21To30);
+        CraftMinigameXp.MultiplierFor(CraftMinigameType.Line, 40).Should().Be(LineRules.XpMultiplierLevels31To40);
+        CraftMinigameXp.MultiplierFor(CraftMinigameType.Line, 52).Should().Be(LineRules.XpMultiplierLevels41Up);
+        CraftMinigameXp.MultiplierFor(CraftMinigameType.Line).Should().Be(LineRules.XpMultiplierLevels0To10, "no level takes the lowest band");
+        new[]
+        {
+            LineRules.XpMultiplierLevels0To10, LineRules.XpMultiplierLevels11To20, LineRules.XpMultiplierLevels21To30,
+            LineRules.XpMultiplierLevels31To40, LineRules.XpMultiplierLevels41Up
+        }.Should().BeInDescendingOrder().And.OnlyHaveUniqueItems("the old window is fastest at the lowest levels, so no one value serves every band");
     }
 
     [Test]
@@ -134,7 +161,7 @@ public class FishingFightLifecycleTests
     }
 
     [Test]
-    public void WhenTheWindowCannotOpen_TheFishIsLost_ButTheBaitAndXpAreSpentAsToday()
+    public void WhenTheWindowCannotOpen_TheFishIsLost_ButTheBaitAndXpAreSpentAtTheBite()
     {
         _world.CanOpenWindow = false;
 
@@ -142,7 +169,7 @@ public class FishingFightLifecycleTests
 
         fight.Should().BeNull();
         _world.Bait[Rod].Should().Be(4);
-        _world.Xp.Should().Equal(Skill.GetDeltaXP(0));
+        _world.Xp.Should().Equal(BiteXp(20, 20));
         _world.PointAttempts[Point].Should().Be(6);
         _world.Busy.Should().BeFalse();
         _world.FishCreated.Should().BeEmpty();
@@ -460,6 +487,78 @@ public class FishingFightLifecycleTests
         fight.Settled.Should().BeTrue();
         _world.Busy.Should().BeFalse();
         _world.Messages.Should().Contain(message => message.Contains("You let the fish go."));
+    }
+
+    [Test]
+    public void TakingTheRodOutOfTheHand_LosesTheFish_AtTheNextCheckAndAtTheNextAction()
+    {
+        var lifecycle = Lifecycle();
+        var polled = lifecycle.Bite(EasyFish());
+        _world.EquippedRod = 0;
+
+        _world.RunNextScheduled();
+
+        polled.Settled.Should().BeTrue();
+        _world.Busy.Should().BeFalse();
+        _world.WindowOpen.Should().BeFalse();
+        _world.Messages.Should().Contain(message => message.Contains("You put the rod away and the fish got away."));
+        _world.ScheduledCount.Should().Be(0);
+
+        _world = new FakeFishingFightWorld();
+        lifecycle = Lifecycle();
+        var swapped = lifecycle.Bite(EasyFish());
+        _world.EquippedRod = Rod + 1;
+
+        lifecycle.Revalidate(swapped).Should().BeFalse("a different item in the hand is not the rod that hooked the fish");
+
+        swapped.Settled.Should().BeTrue();
+        lifecycle.Settle(swapped).Should().BeNull();
+        _world.FishCreated.Should().BeEmpty();
+    }
+
+    [Test]
+    public void AnotherActivityTakingTheBusyState_LosesTheFish()
+    {
+        var lifecycle = Lifecycle();
+        var fight = lifecycle.Bite(EasyFish());
+        _world.OwnsActivity = false;
+
+        _world.RunNextScheduled();
+
+        fight.Settled.Should().BeTrue();
+        _world.WindowOpen.Should().BeFalse();
+        _world.Messages.Should().Contain(message => message.Contains("You stopped fishing and the fish got away."));
+        _world.ScheduledCount.Should().Be(0);
+        lifecycle.GetActive(Player).Should().BeNull();
+    }
+
+    [Test]
+    public void ADeathTheCheckNeverSees_StillLosesTheFish_WithoutAMessage()
+    {
+        var lifecycle = Lifecycle();
+        var fight = lifecycle.Bite(EasyFish());
+        var messages = _world.Messages.Count;
+        _world.IsDead = false;
+
+        lifecycle.Abandon(fight, FishingFightEnd.Died);
+
+        fight.Settled.Should().BeTrue("the death event settles the fight even when a revive hides the death from the next check");
+        _world.Busy.Should().BeFalse();
+        _world.WindowOpen.Should().BeFalse();
+        _world.FishCreated.Should().BeEmpty();
+        _world.Messages.Should().HaveCount(messages);
+        lifecycle.Revalidate(fight).Should().BeFalse();
+        lifecycle.Settle(fight).Should().BeNull();
+    }
+
+    [Test]
+    public void ADeathWithNoFightGoing_ChangesNothing()
+    {
+        var lifecycle = Lifecycle();
+
+        lifecycle.Abandon(lifecycle.GetActive(Player), FishingFightEnd.Died);
+
+        _world.Log.Should().BeEmpty();
     }
 
     [Test]

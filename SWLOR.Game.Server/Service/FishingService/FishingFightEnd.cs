@@ -19,6 +19,12 @@ namespace SWLOR.Game.Server.Service.FishingService
         Left = 5,
 
         /// <summary>A new bite started while the fight was still going.</summary>
-        Replaced = 6
+        Replaced = 6,
+
+        /// <summary>The angler took the rod out of their hand.</summary>
+        RodUnequipped = 7,
+
+        /// <summary>Another activity, such as resting, replaced the angler's fishing busy state.</summary>
+        Interrupted = 8
     }
 }

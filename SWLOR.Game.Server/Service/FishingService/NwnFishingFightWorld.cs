@@ -84,7 +84,9 @@ namespace SWLOR.Game.Server.Service.FishingService
                 GetIsDead(player),
                 GetIsInCombat(player),
                 GetPosition(player),
-                Gui.IsWindowOpen(player, GuiWindowType.Line));
+                Gui.IsWindowOpen(player, GuiWindowType.Line),
+                GetItemInSlot(InventorySlot.RightHand, player),
+                Activity.GetBusyType(player) == ActivityStatusType.Fishing);
         }
 
         public void Schedule(float seconds, Action action)

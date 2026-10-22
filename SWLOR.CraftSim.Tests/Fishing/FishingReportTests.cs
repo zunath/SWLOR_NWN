@@ -69,11 +69,30 @@ namespace SWLOR.CraftSim.Tests.Fishing
         }
 
         [Test]
+        public void TheReportRecordsTheXpMultiplierOfEveryBand()
+        {
+            var report = WriteReport(out _);
+
+            string Text(double value) => value.ToString("0.##", System.Globalization.CultureInfo.InvariantCulture);
+            report.Should().Contain($"`XpMultiplierLevels0To10` = {Text(LineRules.XpMultiplierLevels0To10)}");
+            report.Should().Contain($"`XpMultiplierLevels41Up` = {Text(LineRules.XpMultiplierLevels41Up)}");
+            report.Should().Contain("CraftMinigameXp");
+            report.Should().Contain($"0-10 {Text(LineRules.XpMultiplierLevels0To10)}x").And.Contain($"41-52 {Text(LineRules.XpMultiplierLevels41Up)}x");
+            FishingReport.XpBands().Select(band => band.Name).Should().Equal("0-10", "11-20", "21-30", "31-40", "41-52");
+            FishingReport.XpBands().Select(band => band.Multiplier).Should().Equal(
+                LineRules.XpMultiplierLevels0To10,
+                LineRules.XpMultiplierLevels11To20,
+                LineRules.XpMultiplierLevels21To30,
+                LineRules.XpMultiplierLevels31To40,
+                LineRules.XpMultiplierLevels41Up);
+        }
+
+        [Test]
         public void TheGatesSayWhatTheyFound()
         {
             WriteReport(out var results);
 
-            results.Single(result => result.Gate == GateNames.XpRate).Verdict.Should().Be(GateVerdict.Failed);
+            results.Single(result => result.Gate == GateNames.XpRate).Tables.Single().Rows.Should().HaveCount(5, "one case for each band of fish levels");
             results.Single(result => result.Gate == GateNames.EconomyParity).Tables.Should().HaveCount(2);
             results.Where(result => result.Gate.StartsWith("Evidence")).Should().OnlyContain(result => result.Verdict == GateVerdict.NotApplicable);
         }
@@ -110,7 +129,7 @@ namespace SWLOR.CraftSim.Tests.Fishing
                 code.Should().Be(0);
                 File.ReadAllText(report).Should().StartWith("# " + FishingReport.Title);
                 File.ReadAllText(json).Should().Contain("\"seed\": 2").And.Contain("\"runs\": 6");
-                output.ToString().Should().Contain("Economy parity:").And.Contain("XP rate: Failed");
+                output.ToString().Should().Contain("Economy parity:").And.Contain("XP rate:");
             }
             finally
             {

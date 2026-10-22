@@ -55,7 +55,10 @@ namespace SWLOR.Game.Server.Service.FishingService
             var remainingBait = Math.Max(0, bite.BaitRemaining - 1);
             _world.SetRemainingBait(bite.Rod, remainingBait);
 
-            var xp = Skill.GetDeltaXP(bite.Fish.Level - bite.Rank);
+            // Today's XP for the bite, times the multiplier of the fish's level band that keeps the XP per hour at today's (gate 6).
+            var xp = CraftMinigameXp.ScaleBaseXp(
+                Skill.GetDeltaXP(bite.Fish.Level - bite.Rank),
+                CraftMinigameXp.MultiplierFor(CraftMinigameType.Line, bite.Fish.Level));
 
             _world.Message(bite.Player, BiteMessage);
             _world.Message(bite.Player, $"Bait Remaining: {remainingBait}x {bite.BaitName}");
@@ -157,7 +160,8 @@ namespace SWLOR.Game.Server.Service.FishingService
         }
 
         /// <summary>
-        /// Checks the angler now: they must still be there, alive, out of combat, standing where they cast and watching. A fight whose
+        /// Checks the angler now: they must still be there, alive, out of combat, holding the rod, still fishing, standing where they cast
+        /// and watching. A fight whose
         /// angler is not loses the fish, as an escape, and the method says so. The window calls it before it resolves an action, so a
         /// click cannot beat the periodic check. Returns false when the fight is over or was just lost.
         /// </summary>
@@ -175,6 +179,10 @@ namespace SWLOR.Game.Server.Service.FishingService
                 end = FishingFightEnd.Died;
             else if (state.IsInCombat)
                 end = FishingFightEnd.Combat;
+            else if (state.EquippedRod != fight.Bite.Rod)
+                end = FishingFightEnd.RodUnequipped;
+            else if (!state.OwnsActivity)
+                end = FishingFightEnd.Interrupted;
             else if (state.Position.X != start.X || state.Position.Y != start.Y || state.Position.Z != start.Z)
                 end = FishingFightEnd.Moved;
             else if (!state.HasWindowOpen)
@@ -199,6 +207,9 @@ namespace SWLOR.Game.Server.Service.FishingService
             FishingFightEnd.WindowClosed => "You let the fish go. " + LostMessage,
             FishingFightEnd.Moved => "You moved and the fish got away. " + LostMessage,
             FishingFightEnd.Combat => "The fight drew you away and the fish got away. " + LostMessage,
+            FishingFightEnd.RodUnequipped => "You put the rod away and the fish got away. " + LostMessage,
+            FishingFightEnd.Interrupted => "You stopped fishing and the fish got away. " + LostMessage,
+            FishingFightEnd.Died => null,
             FishingFightEnd.Replaced => null,
             _ => EscapedMessage
         };

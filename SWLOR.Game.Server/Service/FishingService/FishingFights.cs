@@ -24,6 +24,17 @@ namespace SWLOR.Game.Server.Service.FishingService
         /// <summary>Checks the angler now and loses the fish if they moved, entered combat, died or closed the window. Returns true while the fight can go on.</summary>
         public static bool Revalidate(FishingFight fight) => Lifecycle.Revalidate(fight);
 
+        /// <summary>
+        /// An angler who dies loses the fish at once. The poll cannot be trusted to see it: a death that is subdued revives the angler
+        /// before the next check.
+        /// </summary>
+        [NWNEventHandler(ScriptName.OnModuleDeath)]
+        public static void AbandonOnDeath()
+        {
+            var player = GetLastPlayerDied();
+            Lifecycle.Abandon(Lifecycle.GetActive(player), FishingFightEnd.Died);
+        }
+
         /// <summary>An angler who logs out loses the fish at once.</summary>
         [NWNEventHandler(ScriptName.OnModuleExit)]
         public static void AbandonOnExit()

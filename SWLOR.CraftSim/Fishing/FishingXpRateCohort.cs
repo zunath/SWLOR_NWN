@@ -1,5 +1,6 @@
 using SWLOR.CraftSim.Gates;
 using SWLOR.CraftSim.Legacy.Gathering;
+using SWLOR.Game.Server.Service.CraftService.Minigame;
 using SWLOR.Game.Server.Service.CraftService.Minigame.Line;
 using SWLOR.Game.Server.Service.FishingService;
 
@@ -18,8 +19,9 @@ namespace SWLOR.CraftSim.Fishing
     /// The fishing cohort of the XP-rate gate, as the plan pins it: one case for each band of fish levels, the angler's rank equal to the
     /// fish's level (at most 50) with the best rod tier that rank allows, and every (rod, bait) table of every fishing location that rod
     /// reaches weighted equally, half by day and half by night, so both loops draw the same fish. A run is a bite: XP is paid per bite,
-    /// caught or not, so what differs between the loops is the time. Today's loop spends the cast and the wait; the fight spends the
-    /// same and then plays its turns, each one <see cref="FishingParityOptions.SecondsPerTurn"/>.
+    /// caught or not, so what differs between the loops is the time and the multiplier on the fight's XP (<c>CraftMinigameXp</c>, by the
+    /// fish's level band). Today's loop spends the cast and the wait; the fight spends the same and then plays its turns, each one
+    /// <see cref="FishingParityOptions.SecondsPerTurn"/>.
     /// </summary>
     public sealed class FishingXpRateCohort : IXpRateCohort
     {
@@ -35,12 +37,20 @@ namespace SWLOR.CraftSim.Fishing
 
         private readonly FishingParity _parity;
         private readonly FishingParityOptions _options;
+        private readonly Func<int, double> _xpMultiplierFor;
         private readonly Lazy<IReadOnlyDictionary<string, IReadOnlyList<FishingMixEntry>>> _mixes;
 
-        public FishingXpRateCohort(FishingParity parity, FishingParityOptions options = null)
+        /// <param name="parity">The played fights.</param>
+        /// <param name="options">The time of a cast and of a turn.</param>
+        /// <param name="xpMultiplierFor">
+        /// The multiplier on a bite's XP by the fish's level. By default it is the one the game server applies (<c>CraftMinigameXp</c>);
+        /// a study passes another to see what a different multiplier would do.
+        /// </param>
+        public FishingXpRateCohort(FishingParity parity, FishingParityOptions options = null, Func<int, double> xpMultiplierFor = null)
         {
             _parity = parity ?? throw new ArgumentNullException(nameof(parity));
             _options = options ?? FishingParityOptions.Default;
+            _xpMultiplierFor = xpMultiplierFor ?? (level => CraftMinigameXp.MultiplierFor(CraftMinigameType.Line, level));
             _mixes = new Lazy<IReadOnlyDictionary<string, IReadOnlyList<FishingMixEntry>>>(BuildMixes);
         }
 
@@ -85,7 +95,9 @@ namespace SWLOR.CraftSim.Fishing
             {
                 var bites = entry.Weight * BitesPerCase;
                 var sample = _parity.Catch(entry.Level, entry.Rarity, entry.Rank, entry.RodTier);
-                xp += FishingCatchModel.XpPerBite(entry.Rank, entry.Level) * bites;
+
+                // The bite pays today's XP times the multiplier, rounded to a whole XP as the game server rounds it.
+                xp += CraftMinigameXp.ScaleBaseXp(FishingCatchModel.XpPerBite(entry.Rank, entry.Level), _xpMultiplierFor(entry.Level)) * bites;
                 actions += sample.MeanTurns * bites;
             }
 
@@ -98,8 +110,10 @@ namespace SWLOR.CraftSim.Fishing
             var weights = new Dictionary<(string Band, FishType Fish), double>();
             foreach (var table in FishingCatchModel.Pools().GroupBy(pool => (pool.Location, pool.Rod, pool.Bait)))
             {
-                // Every (rod, bait) table of a location counts once; its day and night tables split that one share.
-                var split = 1.0 / table.Count();
+                // Every (rod, bait) table of a location counts once, half by day and half by night. A table that only has a day pool (or
+                // only a night one) keeps that half: it gives no bite in the other half of the day, and the other table's fish do not
+                // take its share.
+                const double split = 0.5;
                 foreach (var pool in table)
                 {
                     var total = pool.Entries.Sum(entry => (double)entry.Frequency);

@@ -98,6 +98,6 @@ The engine fields they feed are `LineAnglerEffects.TensionCapBonus`, `SetHookDra
 
 ## Integration notes
 
-- Perks act on the fight's snapshot at the bite. Equipment, perk and rank changes during a fight do not change it, and a fight that ends early (window closed, logout, moving away, combat, death) loses the fish as an escape under the same rule as an unperked fight.
-- Bait, the fishing point's bites and XP are spent at the bite, so no perk can change them.
+- Perks act on the fight's snapshot at the bite. Equipment, perk and rank changes during a fight do not change it, and a fight that ends early (window closed, logout, moving away, combat, death, the rod taken out of the hand, another activity such as resting taking over) loses the fish as an escape under the same rule as an unperked fight.
+- Bait, the fishing point's bites and XP are spent at the bite, so no perk can change them. The XP is today's times the fish-level band's multiplier (`LineRules.XpMultiplierForLevel`, through `CraftMinigameXp`), so a perk that shortens a fight must not shorten it below what the multiplier was passed for; the XP-rate gate in `fishing-line-parity.md` is the check.
 - No perk changes which fish bites or how often; fish selection, bait and location stay as today.

@@ -2,6 +2,7 @@ using System.Reflection;
 using SWLOR.CraftSim.Gates;
 using SWLOR.CraftSim.Report;
 using SWLOR.CraftSim.Scenario;
+using SWLOR.Game.Server.Service.CraftService.Minigame;
 using SWLOR.Game.Server.Service.CraftService.Minigame.Line;
 using static SWLOR.CraftSim.Report.MarkdownTable;
 
@@ -73,7 +74,10 @@ namespace SWLOR.CraftSim.Fishing
                 $"- Adaptive player: {LineFights.AdaptiveOptions.Describe()}. It is a floor on skilled play. Rule-of-thumb player: reads the announced move and answers it by a fixed rule, never looking further ahead.",
                 $"- Time: {Number(options.CastSeconds)} s for a cast and the wait for a bite (6-8 s in the game), in both loops; {Number(options.SecondsPerTurn)} s for each turn of the fight. Both are estimates until the client run measures them.",
                 "- XP cohort (gate 6): fish-level bands 0-10, 11-20, 21-30, 31-40 and 41-52; the angler's rank equals the fish's level (at most 50) with the best rod tier that rank allows; every (rod, bait) table of every location that rod reaches counts equally, half by day and half by night, so both loops draw the same fish. XP is per bite.",
-                $"- Tolerance: the adaptive player's catch rate is near today's when it sits within {Number(options.TolerancePoints, 0)} points of the corridor. XP: per bite, caught or not, unchanged.",
+                $"- Tolerance: the adaptive player's catch rate is near today's when it sits within {Number(options.TolerancePoints, 0)} points of the corridor.",
+                "- XP: paid at the bite, caught or not, as today. Its size is today's XP for the fish against the rank, times a multiplier by the fish's level band, as the game server applies it (`CraftMinigameXp`): " +
+                string.Join(", ", XpBands().Select(band => $"{band.Name} {band.Multiplier.ToString("0.##", System.Globalization.CultureInfo.InvariantCulture)}x")) +
+                ". Each is the least multiple of 0.05 that keeps gate 6 passing in its band at this report's runs and seed; 1.0 in every band restores today's XP per bite.",
                 "- Rod tiers: Bamboo, Carbon and Clothespole 0; Composite, Ebisu and Fastwater 10; Glass Fiber, Halcyon and Judge 20; Maze Monger, Willow and Yew 30; Butterfly, Tranquility and LuShang 40.",
                 "- Named starting values of the fight (`LineRules`), all tunable:"
             };
@@ -83,6 +87,12 @@ namespace SWLOR.CraftSim.Fishing
 
             return lines;
         }
+
+        /// <summary>The fish-level bands of the XP cohort with the multiplier the game server puts on a bite's XP in each.</summary>
+        public static IReadOnlyList<(string Name, int First, double Multiplier)> XpBands() => new[]
+        {
+            ("0-10", 0), ("11-20", 11), ("21-30", 21), ("31-40", 31), ("41-52", 41)
+        }.Select(band => (band.Item1, band.Item2, CraftMinigameXp.MultiplierFor(CraftMinigameType.Line, band.Item2))).ToList();
 
         /// <summary>Every starting value of the Line, by name, as the report records them.</summary>
         public static IReadOnlyList<(string Name, string Value)> StartingValues() =>
@@ -97,7 +107,8 @@ namespace SWLOR.CraftSim.Fishing
             "- The adaptive player is a bounded-depth expectimax with a generic fish heuristic. It is not an optimal player, and real players are less skilled; the rule-of-thumb player marks the other end. The study does not measure how real players play.",
             "- The fight has no hidden chance, so a very easy fish is landed every time by a skilled player, where today's chance stops at 95%.",
             "- The pooled table averages every pool a rod can reach with equal weight, as the legacy baseline does, and ignores the 80% chance of no bite when only the default fish is on offer. Fish per hour is not modelled: location choice, bait supply and respawn are outside the study.",
-            $"- Gate 6 compares XP per hour with the same XP per bite, so it measures the time a fight adds ({Number(options.SecondsPerTurn)} s a turn is unmeasured). The plan keeps XP per bite; a failing ratio shows the multiplier that would restore today's rate.",
+            $"- Gate 6 weighs the time a fight adds ({Number(options.SecondsPerTurn)} s a turn is unmeasured) against the XP multiplier, so the multipliers are starting values: they shrink or grow with the real seconds per turn, and a fight that turns out shorter than modelled would pay more than today's XP per hour.",
+            "- The multiplier raises the XP of a bite about sevenfold, because the fight takes several times as long as the cast it follows; the catch rate per bite stays near today's, so fish per hour falls by the same factor. Gate 6 asks for it; it is flagged here for the owner.",
             "- Perks, food and status effects are not modelled except where an evidence table names a perk. The client was not run."
         };
     }

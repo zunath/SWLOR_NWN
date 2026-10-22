@@ -50,6 +50,16 @@ public static class KitchenTuning
     /// <summary>Doneness gained by each action grows by this share per point of Craftsmanship.</summary>
     public const double CraftsmanshipDonenessPerPoint = 0.015;
 
+    /// <summary>
+    /// An enhancement's progress penalty (written for the old crafting window's much larger progress scale) adds this share of
+    /// itself to the Doneness the dish needs.
+    /// </summary>
+    public const double EnhancementDonenessPerPenalty = 0.5;
+
+    /// <summary>The Doneness a set of enhancements adds to what the dish needs, from their total progress penalty.</summary>
+    public static int EnhancementDoneness(int progressPenalty) =>
+        (int)Math.Round(Math.Max(0, progressPenalty) * EnhancementDonenessPerPenalty, MidpointRounding.AwayFromZero);
+
     /// <summary>The Doneness multiplier moves by this much per skill rank above (or below) the recipe's level.</summary>
     public const double LevelFactorPerRank = 0.05;
 

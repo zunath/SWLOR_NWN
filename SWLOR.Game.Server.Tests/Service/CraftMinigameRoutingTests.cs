@@ -19,13 +19,20 @@ public class CraftMinigameRoutingTests
             return attribute is { IsActive: true, IsShownInCraftMenu: true };
         });
 
+    private static List<ICraftMinigameRoute> GameRoutes() =>
+        typeof(ICraftMinigameRoute).Assembly.GetTypes()
+            .Where(type => typeof(ICraftMinigameRoute).IsAssignableFrom(type) && !type.IsInterface && !type.IsAbstract)
+            .Select(type => (ICraftMinigameRoute)Activator.CreateInstance(type)!)
+            .ToList();
+
     [Test]
-    public void EveryCraftingSkillUsesTheOriginalWindowUntilItsMinigameLands()
+    public void EveryCraftingSkillWithoutARegisteredMinigameUsesTheOriginalWindow()
     {
+        var routed = GameRoutes().Select(route => route.Skill).ToHashSet();
         var skills = CraftingSkills().ToList();
         skills.Should().NotBeEmpty();
 
-        foreach (var skill in skills)
+        foreach (var skill in skills.Where(skill => !routed.Contains(skill)))
         {
             var route = CraftMinigameRouting.GetRoute(skill);
 
@@ -34,6 +41,16 @@ public class CraftMinigameRoutingTests
             route.Minigame.Should().BeNull();
             CraftMinigameRouting.GetWindow(skill).Should().Be(GuiWindowType.Craft);
         }
+    }
+
+    [Test]
+    public void AgricultureCooksInTheKitchenWindow()
+    {
+        var route = CraftMinigameRouting.GetRoute(SkillType.Agriculture);
+
+        route.Window.Should().Be(GuiWindowType.Kitchen);
+        route.Minigame.Should().Be(CraftMinigameType.Kitchen);
+        route.IsLegacy.Should().BeFalse();
     }
 
     [Test]

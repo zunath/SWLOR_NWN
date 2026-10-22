@@ -23,8 +23,8 @@ public sealed class KitchenEngine : MinigameEngineBase<KitchenState>
     private readonly KitchenStats _stats;
     private readonly IReadOnlyList<MinigameActionInfo> _actions;
 
-    public KitchenEngine(IMinigameRandom random, KitchenRecipe recipe, KitchenStats stats)
-        : base(random, CreateStart(recipe, stats))
+    public KitchenEngine(IMinigameRandom random, KitchenRecipe recipe, KitchenStats stats, int extraDoneness = 0)
+        : base(random, CreateStart(recipe, stats, extraDoneness))
     {
         _recipe = recipe;
         _stats = stats;
@@ -66,7 +66,7 @@ public sealed class KitchenEngine : MinigameEngineBase<KitchenState>
     /// <summary>The three flavor axes with the dish's position and both target zones, for a window.</summary>
     public IReadOnlyList<KitchenAxisView> DescribeAxes() => DescribeAxes(State);
 
-    private static KitchenState CreateStart(KitchenRecipe recipe, KitchenStats stats)
+    private static KitchenState CreateStart(KitchenRecipe recipe, KitchenStats stats, int extraDoneness)
     {
         if (recipe == null)
             throw new ArgumentNullException(nameof(recipe));
@@ -74,7 +74,7 @@ public sealed class KitchenEngine : MinigameEngineBase<KitchenState>
             throw new ArgumentNullException(nameof(stats));
 
         var meters = MinigameMeters.Start(
-            KitchenTuning.DonenessMax,
+            KitchenTuning.DonenessMax + Math.Max(0, extraDoneness),
             KitchenTuning.QualityMax,
             recipe.Freshness,
             stats.MaxCp);

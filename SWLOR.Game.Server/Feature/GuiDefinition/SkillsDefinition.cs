@@ -103,8 +103,10 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition
                             .SetHorizontalAlign(NuiHorizontalAlign.Center)
                             .SetVerticalAlign(NuiVerticalAlign.Top);
 
+                        // The tooltip sits on the header: a tooltip on the combo kept it from opening.
                         row.AddLabel()
                             .SetText("Limit")
+                            .SetTooltip("Stop a skill at a chosen rank. It never decays below its limit.")
                             .SetHorizontalAlign(NuiHorizontalAlign.Center)
                             .SetVerticalAlign(NuiVerticalAlign.Top);
 
@@ -153,13 +155,13 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition
                             {
                                 var limit = cell.AddComboBox()
                                     .BindSelectedIndex(model => model.RankLimitSelections)
-                                    .BindIsEnabled(model => model.DecayLockButtonEnabled)
-                                    .SetTooltip($"Stop this skill at a chosen rank. At the {Skill.SkillCap}-rank cap, skills above their limit decay first, and a skill never decays below its limit.");
+                                    .BindIsEnabled(model => model.DecayLockButtonEnabled);
 
-                                limit.AddOption("Limit: None", SkillsViewModel.NoRankLimitSelection);
+                                // Short labels: the column is too narrow at the default width for "Limit: None".
+                                limit.AddOption("None", SkillsViewModel.NoRankLimitSelection);
                                 for (var rank = 0; rank <= maxLimitRank; rank++)
                                 {
-                                    limit.AddOption($"Limit: {rank}", SkillsViewModel.GetRankLimitSelection(rank));
+                                    limit.AddOption(rank.ToString(), SkillsViewModel.GetRankLimitSelection(rank));
                                 }
                             });
 

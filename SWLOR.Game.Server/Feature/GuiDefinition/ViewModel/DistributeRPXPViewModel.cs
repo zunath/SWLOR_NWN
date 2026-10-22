@@ -81,6 +81,13 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
 
         public Action OnClickConfirm() => () =>
         {
+            if (_maxDistributableXP <= 0)
+            {
+                var playerId = GetObjectUUID(Player);
+                FloatingTextStringOnCreature(GetRefusalReason(DB.Get<Player>(playerId)), Player, false);
+                return;
+            }
+
             ShowModal($"Are you sure you want to distribute {Distribution} RP XP into the {SkillName} skill?",
                 () =>
                 {
@@ -157,9 +164,9 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
 
             var rankCeiling = Skill.GetRankCeiling(pcSkill, details);
             if (pcSkill.Rank >= rankCeiling)
-                return $"Skill at your limit of {rankCeiling} - no XP accepted";
+                return $"At your limit of {rankCeiling} - no XP accepted";
 
-            return $"At the skill cap of {Skill.SkillCap} and all other skills are locked or at their limits - no XP accepted";
+            return "Skill cap reached - no XP accepted";
         }
 
         private void UpdateMaxDistributableInfo()

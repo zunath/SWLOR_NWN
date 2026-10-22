@@ -53,8 +53,8 @@ Files: `Feature/GuiDefinition/SkillsDefinition.cs` and `Feature/GuiDefinition/Vi
   - List-template combos share one static option list, so the options run to the highest max rank among skills that count toward the cap (50 for every such skill today); saving clamps to the row's own max rank.
   - The selection is a watched `GuiBindingList<int>` (value 0 = None, otherwise limit + 1). A watch event reports the whole list, so the view model diffs it against the last saved selections and saves only the changed rows. This is the first watched per-row list in the codebase, so the client evidence must show a combo change reaching the Player record.
 - **When enabled:** only for skills that count toward the cap, matching `DecayLockButtonEnabled`.
-- **Display:** the row shows the current choice ("Limit: None" or "Limit: 25").
-- **Tooltip:** "Stop this skill at a chosen rank. At the 400-rank cap, skills above their limit decay first, and a skill never decays below its limit."
+- **Display:** the row shows the current choice ("None" or "25") under a "Limit" column header. Longer labels such as "Limit: None" were clipped at the window's default width.
+- **Tooltip:** on the "Limit" header: "Stop a skill at a chosen rank. It never decays below its limit." A tooltip on the combo itself kept it from opening in the client, and the longer text ran off screen.
 - **Saving:** a change saves at once and refreshes the row, the way `ToggleDecayLock` does.
 
 ## 5. Player Guide

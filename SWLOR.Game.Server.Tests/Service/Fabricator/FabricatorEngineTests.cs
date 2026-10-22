@@ -823,8 +823,8 @@ public class FabricatorEngineTests
         setup.RunGain(true, false).Should().Be(279);
         setup.RunGain(false, false).Should().Be(140);
         setup.RunGain(true, true).Should().Be(419);
-        setup.PrecisionGain(false).Should().Be(47);
-        setup.PrecisionGain(true).Should().Be(71);
+        setup.PrecisionGain(false).Should().Be(52);
+        setup.PrecisionGain(true).Should().Be(78);
         setup.RetoolCp.Should().Be(5);
         setup.ServiceCp.Should().Be(10);
         setup.MaxCp.Should().Be(69);

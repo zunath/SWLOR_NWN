@@ -151,7 +151,8 @@ namespace SWLOR.CraftSim.Gates
         private CohortCell PlayAdaptive(RecipeEntry recipe, int rank, int gearIndex, CraftStyle style)
         {
             var gear = Gear[gearIndex];
-            var baseXp = ServerXp.ForRecipe(recipe, rank);
+            // The XP the game pays: the minigame's own multiplier, if it names one, scales the base XP as the crafting session does.
+            var baseXp = CraftMinigameXp.Scale(ServerXp.ForRecipe(recipe, rank), CraftMinigameXp.MultiplierFor(Scenario.Minigame));
             var cell = new CohortCell { Recipe = recipe, Rank = rank, Gear = gear.Name, Style = style, Runs = Context.Runs };
             var id = StableId(recipe);
 

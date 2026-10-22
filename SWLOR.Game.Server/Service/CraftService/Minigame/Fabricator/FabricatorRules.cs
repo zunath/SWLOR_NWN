@@ -24,7 +24,7 @@ public static class FabricatorRules
     public const double OffHeadFactor = 0.5;
 
     /// <summary>The quality points one Precision Pass adds to the active head's sub-assembly, before gear and rank.</summary>
-    public const int PrecisionPoints = 42;
+    public const int PrecisionPoints = 46;
 
     /// <summary>Retooling wears the machine a little; a Run or Precision Pass wears it by the recipe's wear rate.</summary>
     public const int RetoolWear = 1;
@@ -67,7 +67,7 @@ public static class FabricatorRules
     /// 8 seconds an action pays less XP per hour than the old window's 5-28 action loop at 6 seconds in the lowest bands, so the
     /// CraftSim XP-rate gate needs it. A starting value until client timing replaces the seconds per action.
     /// </summary>
-    public const double XpMultiplier = 1.0;
+    public const double XpMultiplier = 2.5;
 
     /// <summary>The Fabrication rank that unlocks Service. Every other action is available from rank 0.</summary>
     public const int ServiceRank = 10;

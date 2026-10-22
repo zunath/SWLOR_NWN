@@ -1,6 +1,7 @@
 using System.Text;
 using SWLOR.CraftSim.Data;
 using SWLOR.CraftSim.Scenario;
+using SWLOR.Game.Server.Service.CraftService.Minigame;
 using static SWLOR.CraftSim.Report.MarkdownTable;
 
 namespace SWLOR.CraftSim.Gates
@@ -94,6 +95,10 @@ namespace SWLOR.CraftSim.Gates
             lines.Add($"- Fixed-rotation solver: {run.SolverOptions.Describe()}. The winner is chosen on separate attempts and then scored on a third set (hold-out) with {context.Runs} attempts.");
             lines.Add("- Legacy comparator (gates 5 and 6): the old minigame's lookahead player (`SWLOR.CraftSim baseline`), replayed here with the same seed on the same recipes, ranks and gear.");
             lines.Add($"- Time: {Number(Scenario.SecondsPerAction)} s per action in the new window and {Number(Thresholds.LegacySecondsPerAction)} s in the old one, plus {Number(Thresholds.OverheadSecondsPerAttempt)} s per craft in both. These are estimates; the client evidence replaces them.");
+            var xpMultiplier = CraftMinigameXp.MultiplierFor(Scenario.Minigame);
+            lines.Add(xpMultiplier == 1.0
+                ? "- XP multiplier: none; the minigame pays today's base XP (`CraftMinigameXp`)."
+                : $"- XP multiplier: {Number(xpMultiplier)}x on the base XP of every craft, failures included, as the game server applies it (`CraftMinigameXp`). The new side's XP below includes it.");
             lines.Add("- Thresholds (starting values, all in `GateThresholds`):");
             foreach (var (name, value, meaning) in Thresholds.Describe())
                 lines.Add($"  - `{name}` = {value}: {meaning}");

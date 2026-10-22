@@ -8,11 +8,11 @@ Command: `SWLOR.CraftSim gates --scenario circuit --runs 100 --recipes-per-band 
 
 | Gate | Verdict | Evidence |
 | --- | --- | --- |
-| 1 No fixed rotation | Failed | Per recipe (the harness today): the margin of adaptive play over the best fixed rotation of each recipe is -10.4 to 0.0 points in every band and gear tier; 10 are required. One rotation per band and tier (the owner's new definition, measured by a probe outside the harness): the margin is -6.7 to 0.0 points in every band and gear tier, so it fails the same way (the single rotations score 0 to 7 points above adaptive play, and a per-recipe rotation adds at most 5). See below. |
+| 1 No fixed rotation | Failed | Gated: the margin of adaptive play over the best single rotation of a band and gear tier is -7.5 to -0.0 points in every band and tier; 10 are required. Reported: the best rotation of each recipe alone is -10.4 to -0.0 behind. See below. |
 | 2 Style balance | Not applicable | The Circuit has no styles until its perks exist. |
 | 3 Perks optional | Passed | Rank 50, best gear, no perks: 95%, 99% and 96% of crafts reach maximum quality in bands 41-45, 46-50 and 51-53. |
 | 4 Length | Passed | 13.7 to 18.0 actions per craft on average in every band and tier (target 10-20); the shortest recipe averages 12.1 and the longest 19.8. |
-| 5 Material parity | Passed | Stacks per item are 0.92 to 1.04 of the old window's, at higher quality in every case; the thinnest cell is 41-53 with mid gear (0.92). |
+| 5 Material parity | Passed | Stacks per item are 0.92 to 1.04 of the old window's, at higher quality in every case; the thinnest cell is 41-53 with mid gear (0.92). The old window succeeds on under 90% of crafts only at 41-53 with no gear and mid gear, where the one-sided rule (PR 1g) lets the new side use up to 10% more; the Circuit is at 1.04 and 0.92. |
 | 6 XP rate | Passed | XP per hour is 1.00x to 4.60x the old window's in all 60 cases (5 bands x 3 gear tiers x none, 1, 2 and 3 enhancements) with the per-band multipliers below. The closest cases are 1-10, 11-20 and 21-30 with no gear (1.00x), by construction. |
 | 7 Enhancement parity | Passed | At rank 50 in best gear the Circuit transfers every enhancement (100% quality): 1, 2 and 3 of 1, 2 and 3 slots. That is 1.08 to 1.80 times today's in bands 41-45 and 46-50, and far more in 51-53, where the old window rarely makes the item. |
 
@@ -70,7 +70,7 @@ The multiplier is one value per band of recipe levels, as the plan asks, recorde
 
 ## Gate 1
 
-### Per recipe (the harness today)
+### Per recipe (reported, no longer gated)
 
 The best fixed rotation of each recipe scores 98 to 100 at every level above 10 with mid or best gear, and the adaptive player scores the same, so those cells sit at a margin of 0.0 however the rest is tuned: a margin of 10 needs the fixed rotation at 90 or less. Where quality is not capped, the adaptive player is below the fixed rotation, not above it.
 
@@ -80,29 +80,29 @@ Why the adaptive player is weaker where quality binds: the harness's adaptive pl
 
 The ceiling on what a perfect player gains from the signal is 2 / (1 + p) times what the fixed rotation gets: the fixed rotation's Tunes meet a signal by chance a share p of the time, the adaptive player puts every Tune on one. At p = 0.25 that is 1.6, and the quality has to be binding for it to show.
 
-### One rotation per band and tier (the owner's new definition)
+### One rotation per band and tier (the owner's definition, in the harness since PR 1g and gated)
 
-PR 1g will put this in the harness. Until it does, this is a probe outside the repository, on the same recipes, ranks, gear, seed and 100 runs per recipe as the gate: `FixedRotationSolver` searches one sequence per band and gear tier on attempts that draw a recipe of the band at random (training 192 and selection 450 attempts, three times the gate's), seeded with the adaptive player's lines on every recipe of the band, and the winner is scored on 600 attempts, 100 per recipe. The adaptive column is the gate's.
+`FixedRotationSolver.SolveShared` searches one sequence for every sampled recipe of a band at each gear tier, and the adaptive player must beat it by 10 points. The per-recipe best rotations are reported in the last column and in a second table of `circuit-gates.md`.
 
-| Band | Gear | Adaptive avg quality | Best single fixed rotation (600 attempts) | Margin | Required | Verdict |
-| --- | --- | --- | --- | --- | --- | --- |
-| 1-10 | no gear | 47.4 | 47.9 | -0.5 | >= 10 | Failed |
-| 1-10 | mid gear | 88.1 | 93.6 | -5.5 | >= 10 | Failed |
-| 1-10 | best gear | 91.4 | 98.0 | -6.7 | >= 10 | Failed |
-| 11-20 | no gear | 76.5 | 79.9 | -3.4 | >= 10 | Failed |
-| 11-20 | mid gear | 96.2 | 100.0 | -3.8 | >= 10 | Failed |
-| 11-20 | best gear | 100.0 | 100.0 | -0.0 | >= 10 | Failed |
-| 21-30 | no gear | 98.3 | 99.0 | -0.7 | >= 10 | Failed |
-| 21-30 | mid gear | 99.2 | 100.0 | -0.8 | >= 10 | Failed |
-| 21-30 | best gear | 100.0 | 100.0 | -0.0 | >= 10 | Failed |
-| 31-40 | no gear | 99.9 | 100.0 | -0.1 | >= 10 | Failed |
-| 31-40 | mid gear | 100.0 | 100.0 | -0.0 | >= 10 | Failed |
-| 31-40 | best gear | 100.0 | 100.0 | -0.0 | >= 10 | Failed |
-| 41-53 | no gear | 99.7 | 100.0 | -0.3 | >= 10 | Failed |
-| 41-53 | mid gear | 100.0 | 100.0 | -0.0 | >= 10 | Failed |
-| 41-53 | best gear | 100.0 | 100.0 | -0.0 | >= 10 | Failed |
+| Band | Gear | Adaptive avg quality | Best single rotation | Margin | Required | Best rotation per recipe (reported) | Verdict |
+| --- | --- | --- | --- | --- | --- | --- | --- |
+| 1-10 | no gear | 47.4 | 48.4 | -1.0 | >= 10 | 51.7 | Failed |
+| 1-10 | mid gear | 88.1 | 95.2 | -7.2 | >= 10 | 98.4 | Failed |
+| 1-10 | best gear | 91.4 | 98.9 | -7.5 | >= 10 | 100.0 | Failed |
+| 11-20 | no gear | 76.5 | 80.4 | -3.9 | >= 10 | 82.9 | Failed |
+| 11-20 | mid gear | 96.2 | 100.0 | -3.8 | >= 10 | 100.0 | Failed |
+| 11-20 | best gear | 100.0 | 100.0 | -0.0 | >= 10 | 100.0 | Failed |
+| 21-30 | no gear | 98.3 | 99.0 | -0.6 | >= 10 | 99.3 | Failed |
+| 21-30 | mid gear | 99.2 | 100.0 | -0.8 | >= 10 | 100.0 | Failed |
+| 21-30 | best gear | 100.0 | 100.0 | -0.0 | >= 10 | 100.0 | Failed |
+| 31-40 | no gear | 99.9 | 100.0 | -0.1 | >= 10 | 100.0 | Failed |
+| 31-40 | mid gear | 100.0 | 100.0 | -0.0 | >= 10 | 100.0 | Failed |
+| 31-40 | best gear | 100.0 | 100.0 | -0.0 | >= 10 | 100.0 | Failed |
+| 41-53 | no gear | 99.7 | 100.0 | -0.3 | >= 10 | 100.0 | Failed |
+| 41-53 | mid gear | 100.0 | 100.0 | -0.0 | >= 10 | 100.0 | Failed |
+| 41-53 | best gear | 100.0 | 100.0 | -0.0 | >= 10 | 100.0 | Failed |
 
-The new definition does not rescue gate 1 for the Circuit. The recipes of a band share one shape (the level chart scales the meters and the recipe's parameters move the Load boost and the Assembly share by a few points), so one rotation fits them nearly as well as a rotation per recipe: the single rotations score within 0 to 5 points of the per-recipe ones, and 98 to 100 at mid and best gear from level 21. The single rotation for 41-53 with the best gear is `boost > tune x4 > discharge_calibration > tune x3 > wire x4 > discharge_assembly > tune x2 > wire`: build Load to the overload line with Tunes, bank it into Calibration, Wire to finish. The cause is the same as per recipe: Load, CP, Integrity and Assembly are deterministic, and the only chance (the Clean Signal and the overload dice) is too small for the harness's adaptive player to gain 10 points by reacting to it. The margin needs the harness change (proposal 1) or a rules change (proposal 2), not a tuning pass. Re-run when 1g merges: the probe's figures are one solver run each and will differ a little from the harness's.
+The new definition does not rescue gate 1 for the Circuit: the margin is -7.5 to -0.0 in every band and gear tier (per recipe: -10.4 to -0.0). The recipes of a band share one shape (the level chart scales the meters and the recipe's parameters move the Load boost and the Assembly share by a few points), so one rotation fits them nearly as well as a rotation per recipe: the single rotations score within 0 to 3 points of the per-recipe ones, and 95 to 100 at mid and best gear from level 11. The cause is the same as per recipe: Load, CP, Integrity and Assembly are deterministic, and the only chance (the Clean Signal and the overload dice) is too small for the harness's adaptive player to gain 10 points by reacting to it. The margin needs the harness change (proposal 1) or a rules change (proposal 2), not a tuning pass. No randomness or new effect was added to pass it, per the owner's decision.
 
 ### What was tried for the per-recipe gate (not committed; temporary overrides of the values above, 30 runs and 2 recipes per band)
 

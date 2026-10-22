@@ -5,8 +5,9 @@ using NUnit.Framework;
 namespace SWLOR.Game.Server.Tests.Feature;
 
 /// <summary>
-/// Searched scavenge points with leftover items despawn from the close handler, so every
-/// scavenge blueprint must run the shared open, close, and disturb scripts.
+/// Searched scavenge points with leftover items despawn from the close handler, and emptied ones
+/// queue their respawn from the death handler, so every scavenge blueprint must run the shared
+/// open, close, disturb, and death scripts.
 /// </summary>
 public class ScavengePointBlueprintTests
 {
@@ -31,7 +32,8 @@ public class ScavengePointBlueprintTests
                      {
                          ("OnOpen", "scav_opened"),
                          ("OnClosed", "scav_closed"),
-                         ("OnInvDisturbed", "scav_disturbed")
+                         ("OnInvDisturbed", "scav_disturbed"),
+                         ("OnDeath", "plc_death")
                      })
             {
                 var actual = blueprint.RootElement.GetProperty(field).GetProperty("value").GetString();

@@ -57,6 +57,31 @@ namespace SWLOR.CraftSim.Progression
         public static int GuildPointsFor(int basePoints, int guildRank) =>
             (int)(basePoints + RankBonusPerRank * guildRank * basePoints);
 
+        /// <summary>
+        /// Adds hand-ins to a guild's points. Each earns guild points at the rank the guild has when it is made, and the rank rises the moment the
+        /// points reach the threshold (<c>Guild.GiveGuildPoints</c>), so a batch is split at every threshold it crosses. Needs <c>Guild.LoadData</c>.
+        /// </summary>
+        public static (int GuildRank, double Points) AddHandIns(int guildRank, double points, double handIns, int basePoints)
+        {
+            var maximumPoints = Game.Server.Service.Guild.GetGPRequiredForRank(Game.Server.Service.Guild.MaxRank) - 1;
+            while (handIns > 1e-12)
+            {
+                if (guildRank >= Game.Server.Service.Guild.MaxRank)
+                    return (guildRank, Math.Min(points, maximumPoints));
+
+                var pointsEach = GuildPointsFor(basePoints, guildRank);
+                var needed = Game.Server.Service.Guild.GetGPRequiredForRank(guildRank) - points;
+                if (handIns * pointsEach < needed)
+                    return (guildRank, points + handIns * pointsEach);
+
+                handIns -= needed / pointsEach;
+                points = Game.Server.Service.Guild.GetGPRequiredForRank(guildRank);
+                guildRank++;
+            }
+
+            return (guildRank, Math.Min(points, maximumPoints));
+        }
+
         public static GuildHandInPlan For(
             GuildTaskCatalog catalog, GuildType guild, double xpFraction, bool ignoreGuildRank = false, bool quickCraftCatchUp = true)
         {

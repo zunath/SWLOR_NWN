@@ -5,12 +5,13 @@ namespace SWLOR.CraftSim.Progression
     /// <summary>A new crafter's climb from rank 0 to rank 50 in one skill at one gear level.</summary>
     public sealed class SkillPath
     {
-        public SkillPath(SkillType skill, string gear, IReadOnlyList<RankStep> steps, int guildRankReached = 0)
+        public SkillPath(SkillType skill, string gear, IReadOnlyList<RankStep> steps, int guildRankReached = 0, double lowestCatchUpBoardChance = 1.0)
         {
             Skill = skill;
             Gear = gear;
             Steps = steps;
             GuildRankReached = guildRankReached;
+            LowestCatchUpBoardChance = lowestCatchUpBoardChance;
         }
 
         public SkillType Skill { get; }
@@ -19,6 +20,13 @@ namespace SWLOR.CraftSim.Progression
 
         /// <summary>The guild rank the hand-ins reached by rank 50; 0 when the path makes no hand-ins.</summary>
         public int GuildRankReached { get; }
+
+        /// <summary>
+        /// The lowest chance, over the catch-up hand-ins the path makes, that the guild board held a quick-craftable task of the tier. A board
+        /// without one makes the crafter wait for the next server start, which costs calendar time, not play hours, and is not charged. 1 when the
+        /// path makes no catch-up hand-ins.
+        /// </summary>
+        public double LowestCatchUpBoardChance { get; }
 
         public int RequiredXp => Steps.Sum(s => s.RequiredXp);
         public double Crafts => Steps.Sum(s => s.Crafts);

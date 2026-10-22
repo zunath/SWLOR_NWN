@@ -359,29 +359,34 @@ namespace SWLOR.CraftSim.Progression
                             $"The board is the catch: `Guild.RefreshGuildTasks` keeps only {GuildBoard.TasksPerTier} random tasks of a tier at each server start (all of them when the tier has {GuildBoard.TasksPerTier} or fewer), the same for every player, and the cap change does not touch that. " +
                             "A level's task is therefore on the board with a chance, and the model weights every hand-in, its XP, points and credits by it (the chance that at least one of the level's tasks is among the ten drawn; Agriculture's catch tasks take board places too). " +
                             "A crafter who finds no task for their level on this boot's board hands nothing in, so a climb over many server starts gets the expected share. " +
+                            "A hand-in asks for one exact recipe (the quest collector matches the item's resref), so when the board holds the level's task the crafter makes that recipe, not an arbitrary one of the level: the craft's components are the level's task recipes' mean, not the level's average over all recipes (a crafter who picks recipes by cost can do so with or without a guild; see the sensitivity table). " +
                             $"Each hand-in costs {Number(a.HandInSeconds, 0)} s (unmeasured). When the guild rank is what stands in the way, the crafter quick-crafts the preferred task item of their current tier that is on the board and that quick craft allows " +
-                            $"(the cheapest to gather; rank at least level + {QuickCraftRules.RankMargin}, after one craft by hand; {QuickCraftBatch.SecondsPerItem:0} s per item, components gathered as above) and hands it in until the rank rises; the cost is the expected cost over which tasks the board holds. Those items pay no XP. " +
+                            $"(the cheapest to gather; rank at least level + {QuickCraftRules.RankMargin}, after one craft by hand; {QuickCraftBatch.SecondsPerItem:0} s per item, components gathered as above) and hands it in until the rank rises; the cost is the expected cost over which tasks the board holds, given that it holds one. A board with no eligible item makes the crafter wait for the next server start; that is calendar time, not play time, and it is not charged, so the table gives the lowest chance of such a board in any catch-up. Those items pay no XP. " +
                             "The award is a share of the craft's base XP (`GetDeltaXP(task level - rank)`, the same cutoff as crafting), so a hand-in five or more levels below the rank pays nothing and quick-crafted items never do.");
             text.AppendLine();
             var cohort = new MarkdownTable(
-                "Skill", "Award share", "Total h (mid gear)", "Change", "At-level hand-ins", "Catch-up hand-ins", "Catch-up h", "Guild rank at rank 50", "Hand-in XP", "Share of the climb's XP", "Credits earned");
+                "Skill", "Award share", "Total h (mid gear)", "Change vs no guild", "Change vs the 0% award", "At-level hand-ins", "Catch-up hand-ins", "Catch-up h",
+                "Lowest chance a board held a catch-up item", "Guild rank at rank 50", "Hand-in XP", "Share of the climb's XP", "Credits earned");
             foreach (var skill in skills)
             {
                 var guild = GuildTaskCatalog.GuildOf(skill);
                 var baseline = model.Path(skill, mid, a);
-                cohort.Add(skill.ToString(), "no guild", Number(baseline.TotalHours, 1), "-", "-", "-", "-", "-", "-", "-", "-");
+                var zero = model.Path(skill, mid, a, GuildHandInPlan.For(guilds, guild, 0));
+                cohort.Add(skill.ToString(), "no guild", Number(baseline.TotalHours, 1), "-", "-", "-", "-", "-", "-", "-", "-", "-", "-");
                 foreach (var share in new[] { 0.0 }.Concat(GuildXpShares))
                 {
                     var path = model.Path(skill, mid, a, GuildHandInPlan.For(guilds, guild, share));
                     cohort.Add(
-                        skill.ToString(), share == 0 ? "0% (credits and points only)" : Percent(share), Number(path.TotalHours, 1),
-                        Percent(path.TotalHours / baseline.TotalHours - 1), Number(path.HandIns, 0), Number(path.CatchUpHandIns, 0), Number(path.CatchUpHours, 1),
+                        skill.ToString(), share == 0 ? "0% (hand-ins for credits and points only)" : Percent(share), Number(path.TotalHours, 1),
+                        Percent(path.TotalHours / baseline.TotalHours - 1), share == 0 ? "-" : Percent(path.TotalHours / zero.TotalHours - 1),
+                        Number(path.HandIns, 0), Number(path.CatchUpHandIns, 0), Number(path.CatchUpHours, 1), Percent(path.LowestCatchUpBoardChance),
                         path.GuildRankReached.ToString(), Whole(path.GuildXp), Percent(path.GuildXp / path.RequiredXp), Whole(path.Credits));
                 }
             }
 
             text.AppendLine(cohort.ToString());
-            text.AppendLine("Hand-in XP's share of the climb is the figure to read: the proposal should land it between a fifth and a third, so it neither dominates nor vanishes.");
+            text.AppendLine("Read the award's effect against the 0% row, not against no guild: handing in the task recipes already changes the hours at a 0% award, because their components differ from the level's average recipe. " +
+                            "Hand-in XP's share of the climb is the figure to read for the award: the proposal should land it between a fifth and a third, so it neither dominates nor vanishes.");
             text.AppendLine();
 
             text.AppendLine($"The same cohort by rank band at the recommended {Percent(RecommendedGuildXpShare)} award. The task tier a crafter can hand in at is capped by the guild rank, which the catch-up hand-ins raise; one item per task, taken from the crafter's own craft or, for the catch-up, from quick craft.");
@@ -407,18 +412,18 @@ namespace SWLOR.CraftSim.Progression
 
             text.AppendLine("### The guild rank chore");
             text.AppendLine();
-            text.AppendLine("What raising a guild from rank 0 to 5 costs a rank-50 crafter who quick-crafts the cheapest eligible task item of each tier and hands it in. Before the change the board held ten tasks a tier per server start, so rank 5 took at least 14-21 days.");
+            text.AppendLine("What raising a guild from rank 0 to 5 costs a rank-50 crafter who quick-crafts the cheapest eligible task item of each tier that is on the board and hands it in (a board with none makes them wait for the next server start, which is not charged). Before the change the board held ten tasks a tier per server start, so rank 5 took at least 14-21 days.");
             text.AppendLine();
-            var chore = new MarkdownTable("Guild", "Hand-ins", "Hours", "Credits earned", "Credits per hour");
-            var choreDetail = new MarkdownTable("Guild", "Tier", "Item", "Item level", "Guild points each", "Hand-ins", "Hours");
+            var chore = new MarkdownTable("Guild", "Hand-ins", "Hours", "Credits earned", "Credits per hour", "Lowest chance a board holds an eligible item");
+            var choreDetail = new MarkdownTable("Guild", "Tier", "Item", "Item level", "Guild points each", "Hand-ins", "Hours", "Chance a board holds an eligible item");
             foreach (var guild in new[] { GuildType.SmitheryGuild, GuildType.EngineeringGuild, GuildType.FabricationGuild, GuildType.AgricultureGuild })
             {
                 var rows = GuildCohorts.Chore(guilds, model.Supply, guild, a);
                 chore.Add(
                     guild.ToString(), Number(rows.Sum(r => r.HandIns), 0), Number(rows.Sum(r => r.Hours), 1), Whole(rows.Sum(r => r.Credits)),
-                    Whole(rows.Sum(r => r.Credits) / rows.Sum(r => r.Hours)));
+                    Whole(rows.Sum(r => r.Credits) / rows.Sum(r => r.Hours)), Percent(rows.Min(r => r.BoardChance)));
                 foreach (var row in rows)
-                    choreDetail.Add(guild.ToString(), row.Tier.ToString(), $"`{row.Resref}`", row.ItemLevel.ToString(), row.GuildPointsEach.ToString(), Number(row.HandIns, 0), Number(row.Hours, 2));
+                    choreDetail.Add(guild.ToString(), row.Tier.ToString(), $"`{row.Resref}`", row.ItemLevel.ToString(), row.GuildPointsEach.ToString(), Number(row.HandIns, 0), Number(row.Hours, 2), Percent(row.BoardChance));
             }
 
             text.AppendLine(chore.ToString());
@@ -552,25 +557,27 @@ namespace SWLOR.CraftSim.Progression
             var capForB = solver.SolveCap(a, medianB, XpTargetMetric.MedianSkill);
             var optionC = capForB.HasValue ? capForB.Value / 100 * 100 : NoCap;
             var optionCTotal = Enumerable.Range(0, ProgressionAssumptions.MaximumRank).Sum(r => Math.Min(Skill.GetRequiredXP(r), optionC));
-            var options = new (string Name, string Change, ProgressionAssumptions Assumptions, bool Guild, string Migration)[]
+            var options = new (string Name, string Change, ProgressionAssumptions Assumptions, double? GuildShare, string Migration)[]
             {
-                ("Today", "nothing", a, false, "no"),
-                ("A", "guild task XP only", a, true, "no"),
-                ("B", $"A, and crafting XP x{Number(optionB, 2)} (crafts and hand-ins)", a with { CraftXpMultiplier = optionB }, true, "no"),
-                ("C", $"A, and no rank costs more than {optionC:N0} XP", a with { RequiredXpCap = optionC }, true, "yes")
+                ("Today", "nothing", a, null, "no"),
+                ("0", "hand in the guild's task recipes for credits and points, no XP award (isolates the recipe choice)", a, 0.0, "no"),
+                ("A", "guild task XP only", a, RecommendedGuildXpShare, "no"),
+                ("B", $"A, and crafting XP x{Number(optionB, 2)} (crafts and hand-ins)", a with { CraftXpMultiplier = optionB }, RecommendedGuildXpShare, "no"),
+                ("C", $"A, and no rank costs more than {optionC:N0} XP", a with { RequiredXpCap = optionC }, RecommendedGuildXpShare, "yes")
             };
             var option = new MarkdownTable(new[] { "Option", "Change" }.Concat(skills.Select(s => $"{s} h")).Concat(new[] { "Median skill", "Slowest skill", "Migration of stored XP" }).ToArray());
-            foreach (var (name, change, scenario, guild, migration) in options)
+            foreach (var (name, change, scenario, guildShare, migration) in options)
             {
                 var hours = skills.ToDictionary(
                     skill => skill,
-                    skill => model.Path(skill, mid, scenario, guild ? GuildHandInPlan.For(model.Guilds, GuildTaskCatalog.GuildOf(skill), RecommendedGuildXpShare) : null).TotalHours);
+                    skill => model.Path(skill, mid, scenario, guildShare.HasValue ? GuildHandInPlan.For(model.Guilds, GuildTaskCatalog.GuildOf(skill), guildShare.Value) : null).TotalHours);
                 var ordered = hours.Values.OrderBy(h => h).ToList();
                 var median = (ordered[(ordered.Count - 1) / 2] + ordered[ordered.Count / 2]) / 2;
                 option.Add(new[] { name, change }.Concat(skills.Select(s => Number(hours[s], 1))).Concat(new[] { Number(median, 1), Number(ordered[^1], 1), migration }).ToArray());
             }
 
             text.AppendLine(option.ToString());
+            text.AppendLine("- **Row 0 is not an option.** It shows that handing in the guild's task recipes, with no award at all, already changes the hours, because the task recipes' components differ from the level's average recipe; the award's own effect is the difference between rows 0 and A.");
             text.AppendLine($"- **A: guild task XP only.** No craft XP change; the smallest change, with no stored-data conversion. It takes the median skill to {Number(medianA, 0)} h, " +
                             (medianA <= TargetHours ? "which meets the target." : $"which is {Number(medianA - TargetHours, 0)} h short of the {Number(TargetHours, 0)} h target."));
             text.AppendLine($"- **B: A plus one crafting-only multiplier, x{Number(optionB, 2)}.** The smallest round multiplier that brings the median skill to the target ({Number(medianB, 0)} h). One parameter on what crafts and hand-ins pay, retuned from the client timings later. It changes gains only, so stored XP and ranks need no conversion.");

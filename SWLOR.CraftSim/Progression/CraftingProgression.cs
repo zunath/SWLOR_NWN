@@ -45,6 +45,8 @@ namespace SWLOR.CraftSim.Progression
             var manualCraftTiers = new HashSet<int>();
             var guildRank = 0;
             var guildPoints = 0.0;
+            var lowestCatchUpChance = 1.0;
+
 
             for (var rank = 0; rank <= HighestLevel; rank++)
             {
@@ -72,15 +74,19 @@ namespace SWLOR.CraftSim.Progression
                 // A failed craft loses each stack on 65% of rolls, so a craft consumes this share of the committed stacks.
                 var consumed = success + LegacyCraftRules.FailureLossPercent / 100.0 * (1 - success);
                 var craftSeconds = cell.ActionsPerCraft * assumptions.SecondsPerAction + assumptions.OverheadSecondsPerCraft;
-                var gatherSeconds = levelDemand.SecondsPerAttempt * consumed;
 
                 var required = Math.Min(Skill.GetRequiredXP(rank), assumptions.RequiredXpCap ?? int.MaxValue);
                 var remaining = (double)required;
                 double crafts = 0, handIns = 0, guildXp = 0, handInSeconds = 0, credits = 0;
                 double catchUpHandIns = 0, catchUpSeconds = 0;
+                double gatherSecondsTotal = 0, modelledUnitsTotal = 0, unmodelledUnitsTotal = 0;
 
                 var offer = offers != null && offers.TryGetValue(level, out var found) ? found : (LevelOffer?)null;
                 var boardChance = offer?.ChanceOnBoard ?? 0;
+
+                // A hand-in asks for one exact recipe, so when the board holds the level's task the crafter makes that recipe instead of an
+                // arbitrary one of the level, and its components, not the level's average, are what the craft costs.
+                var taskMix = offer.HasValue ? TaskMix.Build(plan, offer.Value, level, supply, assumptions) : null;
                 if (plan != null && plan.QuickCraftCatchUp && offer.HasValue && !plan.IgnoreGuildRank)
                 {
                     while (guildRank < offer.Value.Tier && guildRank < Guild.MaxRank)
@@ -100,6 +106,10 @@ namespace SWLOR.CraftSim.Progression
                         var (onBoard, itemSeconds) = GuildBoard.PreferredOnBoard(perItem, tierTasks);
                         if (onBoard <= 0)
                             break;
+
+                        // A board without an eligible item makes the crafter wait for the next server start; that wait is calendar time,
+                        // not play time, so it is reported (SkillPath.LowestCatchUpBoardChance) rather than charged.
+                        lowestCatchUpChance = Math.Min(lowestCatchUpChance, onBoard);
 
                         var (taskCredits, basePoints) = plan.RewardsByTier[guildRank];
                         var pointsEach = GuildHandInPlan.GuildPointsFor(basePoints, guildRank);
@@ -131,7 +141,7 @@ namespace SWLOR.CraftSim.Progression
                     // A hand-in needs a task for the level on this boot's board and a guild rank that unlocks it.
                     var handIn = offer.HasValue && (plan.IgnoreGuildRank || guildRank >= offer.Value.Tier);
                     var handInChance = handIn ? success * boardChance : 0;
-                    var handInXp = handInChance * plan?.XpFraction * baseXp * multiplier ?? 0;
+                    var handInXp = plan == null ? 0 : handInChance * plan.XpFraction * baseXp * multiplier;
                     var xp = craftXp + handInXp;
                     if (xp <= 0)
                         throw new InvalidOperationException($"{skill} {gear} rank {rank} earns no XP, so the climb never ends.");
@@ -141,6 +151,15 @@ namespace SWLOR.CraftSim.Progression
                     remaining -= xp * share;
                     varietyBonusLeft[level] -= bonusSuccesses * share;
 
+                    // Gathering for this share of crafts: the task recipe when the board holds it and the guild rank allows a hand-in.
+                    var taskShare = handIn ? boardChance : 0;
+                    gatherSecondsTotal += share * consumed *
+                                          ((1 - taskShare) * levelDemand.SecondsPerAttempt + taskShare * (taskMix?.Seconds ?? 0));
+                    modelledUnitsTotal += share * consumed *
+                                          ((1 - taskShare) * levelDemand.ModelledUnits + taskShare * (taskMix?.ModelledUnits ?? 0));
+                    unmodelledUnitsTotal += share * consumed *
+                                            ((1 - taskShare) * levelDemand.UnmodelledUnits + taskShare * (taskMix?.UnmodelledUnits ?? 0));
+
                     if (!handIn)
                         continue;
 
@@ -148,13 +167,8 @@ namespace SWLOR.CraftSim.Progression
                     handIns += handInsNow;
                     guildXp += handInXp * share;
                     handInSeconds += handInsNow * assumptions.HandInSeconds;
-                    var (taskCredits, basePoints) = plan.RewardsByTier[offer.Value.Tier];
-                    credits += handInsNow * taskCredits;
-                    guildPoints = Math.Min(
-                        guildPoints + handInsNow * GuildHandInPlan.GuildPointsFor(basePoints, guildRank),
-                        Guild.GetGPRequiredForRank(Guild.MaxRank) - 1);
-                    while (guildRank < Guild.MaxRank && guildPoints >= Guild.GetGPRequiredForRank(guildRank))
-                        guildRank++;
+                    credits += handInsNow * plan.RewardsByTier[offer.Value.Tier].Credits;
+                    (guildRank, guildPoints) = GuildHandInPlan.AddHandIns(guildRank, guildPoints, handInsNow, plan.RewardsByTier[offer.Value.Tier].GuildPoints);
                 }
 
                 steps.Add(new RankStep(
@@ -167,18 +181,45 @@ namespace SWLOR.CraftSim.Progression
                     required,
                     crafts,
                     crafts * craftSeconds / 3600,
-                    crafts * gatherSeconds / 3600,
+                    gatherSecondsTotal / 3600,
                     handInSeconds / 3600,
                     catchUpSeconds / 3600,
-                    crafts * levelDemand.ModelledUnits * consumed,
-                    crafts * levelDemand.UnmodelledUnits * consumed,
+                    modelledUnitsTotal,
+                    unmodelledUnitsTotal,
                     handIns,
                     catchUpHandIns,
                     guildXp,
                     credits));
             }
 
-            return new SkillPath(skill, gear, steps, guildRank);
+            return new SkillPath(skill, gear, steps, guildRank, lowestCatchUpChance);
+        }
+
+        /// <summary>What a craft costs when it is the task recipe on the board: the expected components of the preferred task of the level.</summary>
+        private sealed class TaskMix
+        {
+            public double Seconds { get; private init; }
+            public double ModelledUnits { get; private init; }
+            public double UnmodelledUnits { get; private init; }
+
+            /// <summary>
+            /// The crafter makes whichever of the level's tasks is on the board, without picking the cheapest to gather (a crafter who picks
+            /// recipes by cost can do so with or without a guild, and the sensitivity table prices that separately). Every task of the level is
+            /// equally likely to be on the board, so the expected cost of the one made is the mean over the level's tasks.
+            /// </summary>
+            public static TaskMix Build(GuildHandInPlan plan, LevelOffer offer, int level, ComponentSupply supply, ProgressionAssumptions assumptions)
+            {
+                var tasks = plan.CraftedTasks
+                    .Where(t => t.Tier == offer.Tier && t.Level.Value == level)
+                    .ToList();
+
+                return new TaskMix
+                {
+                    Seconds = tasks.Average(t => LevelDemand.SecondsOf(t.Recipe, supply, assumptions)),
+                    ModelledUnits = tasks.Average(t => t.Recipe.Components.Where(c => supply.IsModelled(c.Key)).Sum(c => (double)c.Value)),
+                    UnmodelledUnits = tasks.Average(t => t.Recipe.Components.Where(c => !supply.IsModelled(c.Key)).Sum(c => (double)c.Value))
+                };
+            }
         }
 
         private static double RankingSeconds(RecipeEntry recipe, ComponentSupply supply, ProgressionAssumptions assumptions)

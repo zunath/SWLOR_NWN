@@ -14,8 +14,9 @@ namespace SWLOR.CraftSim.Progression
     /// <param name="HandIns">Hand-ins to climb the rank.</param>
     /// <param name="Hours">Hours the hand-ins take: quick craft, turn-in and gathering the components.</param>
     /// <param name="Credits">Credits the hand-ins pay.</param>
+    /// <param name="BoardChance">The chance a board holds at least one eligible item of the tier; with none, the crafter waits for the next server start (calendar time, not charged).</param>
     public sealed record GuildChoreRow(
-        GuildType Guild, int Tier, string Resref, int ItemLevel, int GuildPointsEach, double HandIns, double Hours, double Credits);
+        GuildType Guild, int Tier, string Resref, int ItemLevel, int GuildPointsEach, double HandIns, double Hours, double Credits, double BoardChance);
 
     /// <summary>One tier of Agriculture's catch tasks at a crafter whose rank matches the fish.</summary>
     /// <param name="Tier">The guild rank that unlocks the tier.</param>
@@ -68,12 +69,12 @@ namespace SWLOR.CraftSim.Progression
                     .Select(t => QuickCraftBatch.SecondsPerItem + assumptions.HandInSeconds + LevelDemand.SecondsOf(t.Recipe, supply, assumptions))
                     .ToList();
                 var tierTasks = guilds.For(guild).Count(t => t.Tier == tier);
-                var (_, itemSeconds) = GuildBoard.PreferredOnBoard(perItem, tierTasks);
+                var (boardChance, itemSeconds) = GuildBoard.PreferredOnBoard(perItem, tierTasks);
                 var task = eligible[0];
                 var pointsEach = GuildHandInPlan.GuildPointsFor(task.GuildPoints, tier);
                 var threshold = Guild.GetGPRequiredForRank(tier);
                 var handIns = (threshold - previousThreshold) / (double)pointsEach;
-                rows.Add(new GuildChoreRow(guild, tier, task.Resref, task.Level.Value, pointsEach, handIns, handIns * itemSeconds / 3600, handIns * task.Credits));
+                rows.Add(new GuildChoreRow(guild, tier, task.Resref, task.Level.Value, pointsEach, handIns, handIns * itemSeconds / 3600, handIns * task.Credits, boardChance));
                 previousThreshold = threshold;
             }
 

@@ -3,6 +3,7 @@ using NUnit.Framework;
 using SWLOR.CraftSim.Progression;
 using SWLOR.CraftSim.Tests.Support;
 using SWLOR.Game.Server.Enumeration;
+using SWLOR.Game.Server.Service;
 using SWLOR.Game.Server.Service.SkillService;
 
 namespace SWLOR.CraftSim.Tests.Progression
@@ -83,7 +84,7 @@ namespace SWLOR.CraftSim.Tests.Progression
             var costs = Enumerable.Range(1, 35).Select(i => (double)(i * i)).ToList();
             var (_, expected) = GuildBoard.PreferredOnBoard(costs.Take(20).ToList(), 35);
 
-            var random = new Random(7);
+            var random = new System.Random(7);
             double total = 0;
             var counted = 0;
             for (var trial = 0; trial < 200_000; trial++)
@@ -119,6 +120,69 @@ namespace SWLOR.CraftSim.Tests.Progression
 
             plan.TasksPerTier[0].Should().Be(ProgressionFixture.Guilds.For(GuildType.AgricultureGuild).Count(t => t.Tier == 0));
             plan.TasksPerTier[0].Should().BeGreaterThan(plan.CraftedTasks.Count(t => t.Tier == 0));
+        }
+
+        [Test]
+        public void ABatchOfHandInsEarnsTheHigherRankBonusOnceTheThresholdIsCrossed()
+        {
+            Guild.LoadData();
+
+            // 900 points at rank 0 and 10 hand-ins of a 21-point task: the first 100/21 reach the 1,000-point threshold, the rest earn 26 each.
+            var (rank, points) = GuildHandInPlan.AddHandIns(0, 900, 10, 21);
+
+            var before = 100 / 21.0;
+            rank.Should().Be(1);
+            points.Should().BeApproximately(1000 + (10 - before) * 26, 1e-9);
+            points.Should().BeGreaterThan(900 + 10 * 21, "pricing the whole batch at rank 0 would undercount");
+        }
+
+        [Test]
+        public void AHandInBatchThatStaysInsideARankIsPricedAtThatRank()
+        {
+            Guild.LoadData();
+
+            GuildHandInPlan.AddHandIns(2, 6000, 4, 117).Should().Be((2, 6000 + 4 * 175.0));
+        }
+
+        [Test]
+        public void ABatchCanCrossSeveralRanksAndStopsAtTheLastOne()
+        {
+            Guild.LoadData();
+
+            var (rank, points) = GuildHandInPlan.AddHandIns(0, 0, 100_000, 195);
+
+            rank.Should().Be(Guild.MaxRank);
+            points.Should().BeInRange(Guild.GetGPRequiredForRank(Guild.MaxRank - 1), Guild.GetGPRequiredForRank(Guild.MaxRank) - 1);
+        }
+
+        [Test]
+        public void AHandInIsTheTaskRecipeNotTheLevelsAverageRecipe()
+        {
+            var model = ProgressionFixture.RealRecipes;
+            var plan = GuildHandInPlan.For(ProgressionFixture.Guilds, GuildType.SmitheryGuild, 0.5);
+            var plain = model.Path(SkillType.Smithery, ProgressionFixture.Gear, new ProgressionAssumptions());
+            var guild = model.Path(SkillType.Smithery, ProgressionFixture.Gear, new ProgressionAssumptions(), plan);
+
+            // Level 5 has a Smithery task, so a share of the crafts is the task's recipe and its gathering differs from the level's average;
+            // level 10 has none, so it is unchanged.
+            guild.Steps[5].GatherHours.Should().NotBeApproximately(plain.Steps[5].GatherHours, 1e-9);
+            guild.Steps[10].GatherHours.Should().BeApproximately(plain.Steps[10].GatherHours, 1e-9);
+            (guild.Steps[5].ModelledUnits + guild.Steps[5].UnmodelledUnits).Should().BeGreaterThan(0);
+        }
+
+        [Test]
+        public void ACatchUpAndTheChoreReportTheChanceABoardHoldsAnEligibleItem()
+        {
+            var model = ProgressionFixture.RealRecipes;
+            var path = model.Path(SkillType.Engineering, ProgressionFixture.Gear, new ProgressionAssumptions(),
+                GuildHandInPlan.For(ProgressionFixture.Guilds, GuildType.EngineeringGuild, 0.5));
+
+            path.CatchUpHandIns.Should().BeGreaterThan(0);
+            path.LowestCatchUpBoardChance.Should().BeInRange(0.0001, 1.0);
+            model.Path(SkillType.Engineering, ProgressionFixture.Gear, new ProgressionAssumptions()).LowestCatchUpBoardChance.Should().Be(1.0);
+
+            foreach (var row in GuildCohorts.Chore(ProgressionFixture.Guilds, ProgressionFixture.Supply, GuildType.EngineeringGuild, new ProgressionAssumptions()))
+                row.BoardChance.Should().BeInRange(0.0001, 1.0);
         }
 
         [Test]

@@ -80,6 +80,7 @@ namespace SWLOR.Game.Server.Service.GuiService
         DMSettings = 75,
         PlayerList = 76,
         DMBattleGrid = 77,
+        Reaction = 84,
 
         DebugEnmity = 900,
         DebugNuiGallery = 901,

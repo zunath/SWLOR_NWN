@@ -60,15 +60,15 @@ With the phase 1 values, a slow safe rotation always worked: while Stability was
 
 ## Gate results
 
-`reaction-gates.md`: seed 1, 100 runs per case, the long fixed-rotation search (`--thorough`), all 15 recipes. Gate 6 on seeds 2 and 3 also passed (lowest 1.04x and 1.07x, both in 11-20 with no multiplier).
+`reaction-gates.md`: seed 1, 100 runs per case, the long fixed-rotation search (`--thorough`), all 15 recipes, on the base harness after #2826 (gate 1 is one fixed sequence per band, applied to every recipe of the band) and #2825 (the shared per-band XP mechanism). Seeds 2 and 3 (default search) also pass every applicable gate: gate 1 smallest margins 20.6 and 26.8 (both 21-30), gate 6 lowest 1.04x and 1.07x (both 11-20). Gate 6 on seeds 2 and 3 also passed (lowest 1.04x and 1.07x, both in 11-20 with no multiplier).
 
 | Gate | Result | Phase 1 values | Tuned values |
 | --- | --- | --- | --- |
-| 1 No fixed rotation | Passed | margin -0.2 to 0.0 points | smallest margin 15.0 (21-30), then 20.6 (11-20), 24.0 (41-53), 29.2 (31-40), 39.7 (1-10) |
+| 1 No single rotation | Passed | margin -0.2 to 0.0 points | best single rotation per band: margins 17.1 (21-30), 29.3 (31-40), 30.9 (11-20), 31.9 (41-53), 35.4 (1-10); the best rotation for each recipe alone (reported only) is 15.0 to 39.7 behind |
 | 2 Style balance | Not applicable | | Espionage gets no perk lines |
 | 3 Perks optional | Passed | 100% | 100% at maximum quality in 41-45 and 46-50 |
 | 4 Length | Passed | 11.2 to 14.0 actions | 12.2 to 14.0 actions |
-| 5 Material parity | Passed | ratios 0.95 to 1.00 | ratios 0.90 to 1.00, success 100% in every band, average quality 100% |
+| 5 Material parity | Passed | ratios 0.95 to 1.00 | ratios 0.90 to 1.00, success 100% in every band, average quality 100% (the base's one-sided rule applies in 11-20, where the legacy player succeeds 86%) |
 | 6 XP rate | Passed with the 1-10 multiplier | 0.34x in band 1-10 | 1.03x in 1-10 (with 3.0), then 1.15x, 1.19x, 1.25x and 1.67x in 11-20, 21-30, 31-40 and 41-53 (no multiplier) |
 | 7 Enhancement parity | Not applicable | | Espionage recipes have no enhancement slots |
 
@@ -83,7 +83,7 @@ The old minigame is trivial at levels 1-10 with no gear: 3.2 actions a craft at 
 | 1-10 | 3.0 (`ReactionRules.LowLevelXpMultiplier`) | 2.93x is the least that passes with Dampen in play (2.9 gave 0.99x) | 1.03x |
 | 11 and above | 1.0 | The old loop is already slow there, so the Reaction passes unscaled | 1.15x (11-20), 1.19x (21-30), 1.25x (31-40), 1.67x (41-53) |
 
-The multiplier lives in one place, `ReactionRules.XpMultiplier(recipeLevel)` (with `LowLevelXpMultiplier` and `XpMultiplierLastLevel`), and is applied in `CraftMinigameXp.BaseXp` for both a finished craft and a failed one's 15%. A flat 3.0 over every band would have paid 3.4x to 4.9x the old XP per hour in 11-53. The Bible records the per-band rule, with the Stabilize unlock and Dampen, in a row of the System Changes & Migrations tab (`python tools/UpdateReactionBible.py`, which reads the constants from the source; a test fails when the two drift).
+The multiplier lives in one place, `ReactionRules.XpMultiplier(recipeLevel)` (with `LowLevelXpMultiplier` and `XpMultiplierLastLevel`), is registered in the shared `CraftMinigameXp.MultiplierFor`, and is applied in `CraftMinigameXp.BaseXp` for both a finished craft and a failed one's 15%. A flat 3.0 over every band would have paid 3.4x to 4.9x the old XP per hour in 11-53. The Bible records the per-band rule, with the Stabilize unlock and Dampen, in a row of the System Changes & Migrations tab (`python tools/UpdateReactionBible.py`, which reads the constants from the source; a test fails when the two drift).
 
 ## Does Dampen earn its CP?
 
@@ -91,11 +91,11 @@ Owner decision, October 2026: Dampen keeps its hold and also restores a little S
 
 How the values were chosen (seed 7, 200 runs, the non-thorough solver; the model player spends CP like a prudent crafter, see the scenario notes below):
 
-| Dampen | Gate 1 smallest margin (21-30 band) | What changed for the model player at level |
+| Dampen | Gate 1 smallest margin (21-30 band), per-recipe rotations, before #2826 | What changed for the model player at level |
 | --- | --- | --- |
 | 6 CP flat, +10 Stability | 19.2 | Used only from level 31 (below that the CP is the one Stabilize); quality 99% to 100%, maximum quality at rank 50 in 46-50 from 92% to 100%, about 0.5 more actions |
 | 3 per 20 levels, +10 | 7.1, fails | Fixed rotations repair their way through (best fixed rotation 92.9 against 79.9) |
-| 3 per 20 levels, +8 (chosen) | 13.1 here, 15.0 in the thorough report | Used in every band; quality 98% to 100% |
+| 3 per 20 levels, +8 (chosen) | 13.1 here, 15.0 in the thorough report (per-recipe rotations); 17.1 as a single rotation per band after the merge | Used in every band; quality 98% to 100% |
 | 3 per 20 levels, +6 | 14.3 | The same, a little less |
 
 The chosen values, with and without Dampen (`reaction` against `reaction-nodampen`, the same engine with Dampen removed; seed 7, 200 runs):
@@ -116,7 +116,7 @@ At the minimum rank (`reaction-minrank` against `reaction-minrank-nodampen`, thr
 | At level, all five tiers | no case | no case |
 | Minimum rank | 4 of 20 tier-1 starts and 1 of 14 tier-5 starts save about half an action (the search is a beam, so one other tier-5 start came out an action longer) | none reaches a lower quality |
 
-Verdict: Dampen earns its CP modestly at most tiers, not decisively. For the model player it lifts average quality from 98% to 100% in bands 1-20 and 31-40 and makes the rank-50 top tier reliable, at 0.1 to 0.7 more actions. It is the only repair before rank 10. It is not a dominant rotation: the best fixed rotation stays at least 15 points behind adaptive play in every band, and the perfect-play search almost never needs it. Making it decisive would take a bigger restore or a cheaper cost, and 10 Stability already lets a fixed rotation win in the 21-30 band.
+Verdict: Dampen earns its CP modestly at most tiers, not decisively. For the model player it lifts average quality from 98% to 100% in bands 1-20 and 31-40 and makes the rank-50 top tier reliable, at 0.1 to 0.7 more actions. It is the only repair before rank 10. It is not a dominant rotation: the best fixed rotation stays at least 15 points behind adaptive play in every band, and the perfect-play search almost never needs it. Making it decisive would take a bigger restore or a cheaper cost, and with 10 Stability a per-recipe fixed rotation already won the 21-30 band (the gate then searched one rotation per recipe; the choice of 8 was made under that rule and the single-rotation gate passes with more room).
 
 ## Scenarios
 

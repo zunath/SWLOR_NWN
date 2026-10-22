@@ -13,7 +13,7 @@ Command: `SWLOR.CraftSim gates --scenario circuit --runs 100 --recipes-per-band 
 | 3 Perks optional | Passed | Rank 50, best gear, no perks: 95%, 99% and 96% of crafts reach maximum quality in bands 41-45, 46-50 and 51-53. |
 | 4 Length | Passed | 13.7 to 18.0 actions per craft on average in every band and tier (target 10-20); the shortest recipe averages 12.1 and the longest 19.8. |
 | 5 Material parity | Passed | Stacks per item are 0.92 to 1.04 of the old window's, at higher quality in every case; the thinnest cell is 41-53 with mid gear (0.92). The old window succeeds on under 90% of crafts only at 41-53 with no gear and mid gear, where the one-sided rule (PR 1g) lets the new side use up to 10% more; the Circuit is at 1.04 and 0.92. |
-| 6 XP rate | Passed | XP per hour is 1.00x to 4.60x the old window's in all 60 cases (5 bands x 3 gear tiers x none, 1, 2 and 3 enhancements) with the per-band multipliers below. The closest cases are 1-10, 11-20 and 21-30 with no gear (1.00x), by construction. |
+| 6 XP rate | Passed | XP per hour is 1.00x to 4.60x the old window's in all 60 cases (5 bands x 3 gear tiers x none, 1, 2 and 3 enhancements) with the per-band multipliers below. The closest case is 1-10 with no gear (1.00x), by construction; the second sample (10 recipes per band, seed 2) also passes, lowest 1.00x. |
 | 7 Enhancement parity | Passed | At rank 50 in best gear the Circuit transfers every enhancement (100% quality): 1, 2 and 3 of 1, 2 and 3 slots. That is 1.08 to 1.80 times today's in bands 41-45 and 46-50, and far more in 51-53, where the old window rarely makes the item. |
 
 ## Values
@@ -24,7 +24,7 @@ All in `CircuitRules`, `CircuitSetup` and `CircuitParameterProfile`. Phase 2 lef
 | --- | --- | --- | --- |
 | Unlock ranks | Wire, Discharge (Assembly) 0; Tune, Discharge (Calibration) 5; Patch 10; Ground 15; Boost 20 | Patch 10, every other action 0 | Owner decision: every action that plays the loop is open from rank 0 and only the repair is gated. A Clean Signal is announced from rank 0 because Tune is open. |
 | Enhancement Assembly | the whole progress penalty added to Assembly | the penalty, capped at 30% of the Assembly the recipe itself needs (`EnhancementAssemblyPerPenalty` 1.0, `MaxEnhancementAssemblyShare` 0.3) | Gate 6 with enhancements. See "Enhancements". |
-| XP multiplier | none | 2.29 for recipe levels 1-10, 1.52 for 11-20, 1.13 for 21-30, none (1.00) from 31 up, on a craft's base XP for an item and a failure alike (`CircuitRules.XpMultiplierFor`, read through `CraftMinigameXp`) | Gate 6. See "XP multipliers". |
+| XP multiplier | none | 2.29 for recipe levels 1-10, 1.54 for 11-20, 1.15 for 21-30, none (1.00) from 31 up, on a craft's base XP for an item and a failure alike (`CircuitRules.XpMultiplierFor`, read through `CraftMinigameXp`) | Gate 6. See "XP multipliers". |
 
 Everything else is as phase 1: Wire 8.5% and Tune 5.5% of the meter at Load 0, Discharge 2.5% per Load, Load boost per recipe (8, 10 or 12% per point), overload 8% per point above the line costing 30% of maximum Integrity, Clean Signal 25% a turn and doubling Tune, CP = gear + 0.75 x rank (+31 from rank 25), costs 3, 4, 3 and 8 CP for Tune, Boost, Ground and Patch, and 3, 3, 3, 4 and 2 Integrity for Wire, Tune, Boost, Discharge and Ground. A crafter below the recipe's level loses 5% of output per rank (to 3 ranks below). The help text now reads the slot thresholds from `CraftOutcomeRules.GetEnhancementThresholds` (a test checks it), so a change to the shared thresholds reaches the window.
 
@@ -56,17 +56,17 @@ The Circuit's quality is 100% in 98% to 100% of crafts at rank 50 with the best 
 
 ## XP multipliers
 
-A Circuit craft takes 14 to 18 actions where the old window takes 5.6 to 10 at levels 1-10 and 11 to 28 above, so XP per craft has to rise at low levels and hardly at all at high ones. Gate 6 gives the multiplier each band needs; the one shipped is the smallest to two decimals that keeps every case of the band (three gear tiers, none to three enhancements) at 1.00x or more. Measured with the multiplier at 1 on the sample above:
+A Circuit craft takes 14 to 18 actions where the old window takes 5.6 to 10 at levels 1-10 and 11 to 28 above, so XP per craft has to rise at low levels and hardly at all at high ones. Gate 6 gives the multiplier each band needs. The one shipped is the smallest two-decimal value that keeps every case of the band (three gear tiers, none to three enhancements) at 1.00x or more on both of two samples: the committed one (6 recipes per band, seed 1) and a sensitivity sample (10 per band, seed 2, 100 runs). Measured with the multiplier at 1 on the committed sample, and at the first shipped values (2.29, 1.52, 1.13) on the second:
 
-| Recipe levels | Needed (exact) | Set by | Shipped | Lowest case at the shipped value |
+| Recipe levels | Needed on sample 1 (6 per band, seed 1) | Needed on sample 2 (10 per band, seed 2) | Shipped | Lowest case at the shipped value, sample 1 / sample 2 |
 | --- | --- | --- | --- | --- |
-| 1-10 | 2.283 | 1-10, no gear, no enhancement | 2.29 | 1.00x |
-| 11-20 | 1.519 | 11-20, no gear, no enhancement | 1.52 | 1.00x |
-| 21-30 | 1.129 | 21-30, no gear, no enhancement | 1.13 | 1.00x |
-| 31-40 | 0.990 | none needed | 1.00 | 1.01x |
-| 41-53 | 0.771 | none needed | 1.00 | 1.30x |
+| 1-10 | 2.283 (no gear, no enhancement) | about 2.22 | 2.29 | 1.00x / 1.03x |
+| 11-20 | 1.519 (no gear, no enhancement) | about 1.54 (no gear, plain) | 1.54 | 1.01x / 1.00x |
+| 21-30 | 1.129 (no gear, no enhancement) | about 1.14 (no gear, plain) | 1.15 | 1.02x / 1.01x |
+| 31-40 | 0.990 | below 1 | 1.00 | 1.01x / 1.02x |
+| 41-53 | 0.771 | below 1 | 1.00 | 1.30x / 1.33x |
 
-The multiplier is one value per band of recipe levels, as the plan asks, recorded in code (`CircuitRules.XpMultiplierLevels1To10` and the others). It is a step function; a smooth curve through the same points would avoid the 2.29 to 1.52 jump between levels 10 and 11, and the owner and the plan's XP-pace workstream may prefer one. The Bible records it as System Changes & Migrations entry 13, written from `CircuitRules.cs` by `tools/UpdateCircuitBible.py`; rerun the script after a change to the multipliers or the cap. A second sample (10 recipes per band, seed 2, the same multipliers) leaves 2 of 60 cases at 0.99x (11-20 and 21-30 with no gear): the multipliers are the minimum on the committed sample, so another sample can sit a point under.
+The multiplier is one value per band of recipe levels, as the plan asks, recorded in code (`CircuitRules.XpMultiplierLevels1To10` and the others, read through the shared `CraftMinigameXp`). It is a step function; a smooth curve through the same points would avoid the 2.29 to 1.54 jump between levels 10 and 11, and the owner and the plan's XP-pace workstream may prefer one. The Bible records it as System Changes & Migrations entry 13, written from `CircuitRules.cs` by `tools/UpdateCircuitBible.py`; rerun the script after a change to the multipliers or the cap. The first shipped values (1.52 and 1.13) left two cases of the second sample at 0.99x, so they were raised to 1.54 and 1.15; another sample, or the client timing that replaces the 8 s per action estimate, can still move a band by a point or two.
 
 ## Gate 1
 
@@ -131,5 +131,5 @@ No variation produced a margin of 10 in any cell (the best is +1.4). A heuristic
 
 - Style balance is not applicable until the perks exist.
 - Seconds per action (8 s for the Circuit, 6 s for the old window) are estimates.
-- The multipliers and the cap are set on one sample of recipes (6 per band) and one seed; a second sample is 0.99x in two cases (see "XP multipliers").
+- The multipliers and the cap are set on two samples of recipes (6 and 10 per band) and two seeds; another sample or the client timing can move a band by a point or two (see "XP multipliers").
 - Client evidence: the owner deferred it to the crafting revamp closeout pass; the window, the Needs line with an enhancement and the XP of a craft were not seen in the NWN client.

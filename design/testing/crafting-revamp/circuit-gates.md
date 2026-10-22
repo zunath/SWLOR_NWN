@@ -16,7 +16,7 @@
 - Fixed-rotation solver: beam 8, cycles up to 3, 8 adaptive lines as seeds, up to 40 actions, 64 training attempts per local-search round and 150 selection attempts for each of 12 finalists, local search from the best 3 candidate(s) for up to 3 round(s) each. Gate 1 searches one sequence for each band and gear tier across the band's sampled recipes (every recipe weighing the same; an action a recipe's engine cannot take is skipped there), and also each recipe's own best sequence as a reported metric. The winner is chosen on separate attempts and then scored on a third set (hold-out) with 100 attempts per recipe.
 - Legacy comparator (gates 5 and 6): the old minigame's lookahead player (`SWLOR.CraftSim baseline`), replayed here with the same seed on the same recipes, ranks and gear.
 - Time: 8.0 s per action in the new window and 6.0 s in the old one, plus 0.0 s per craft in both. These are estimates; the client evidence replaces them.
-- XP multiplier on the base XP of every craft, failures included, as the game server applies it (`CraftMinigameXp`): 1-10 2.29x, 11-20 1.52x, 21-30 1.13x, 31-40 1.00x, 41-53 1.00x. The new side's XP below includes it; the legacy loop's does not.
+- XP multiplier on the base XP of every craft, failures included, as the game server applies it (`CraftMinigameXp`): 1-10 2.29x, 11-20 1.54x, 21-30 1.15x, 31-40 1.00x, 41-53 1.00x. The new side's XP below includes it; the legacy loop's does not.
 - Thresholds (starting values, all in `GateThresholds`):
   - `RotationMarginPoints` = 10: gate 1: adaptive beats the best single fixed rotation (one sequence for a whole band) by at least this many quality points
   - `StyleMinimumWinShare` = 30%: gate 2: each style is the better choice on at least this share of recipes
@@ -52,7 +52,7 @@
 | Perks optional | Passed | An unperked rank-50 crafter in best gear reaches maximum quality on at least 50% of crafts in every at-level band (lowest 95%). |
 | Length | Passed | Every band and gear tier takes 10-20 actions (item craft at level) on average. |
 | Economy parity | Passed | Component stacks per item are within 10% of the legacy baseline where its success rate is at least 90%, and at most 10% above it where it is lower, at no less quality, in every band and gear tier. |
-| XP rate | Passed | Item crafts: XP per hour is at least 1.00x the legacy rate in every case (lowest 1.00x in 21-30 / no gear). |
+| XP rate | Passed | Item crafts: XP per hour is at least 1.00x the legacy rate in every case (lowest 1.00x in 1-10 / no gear). |
 | Enhancement parity | Passed | At rank 50 in best gear, the thresholds in force (50% / 85% / 85%) transfer at least 1.00 times today's expected enhancements for 1, 2, 3 slot(s) in every band (lowest 1.08 times today's). Thresholds that meet parity in every band for this quality: 100% / 100% / 100%. |
 
 ## No fixed rotation
@@ -264,30 +264,30 @@
 | 1-10 | best gear, 1 enhancement | 722 | 9.1 | 47421 | 2298 | 18.3 | 56533 | 1.19 | - | Passed |
 | 1-10 | best gear, 2 enhancements | 716 | 9.6 | 44932 | 2324 | 18.2 | 57363 | 1.28 | - | Passed |
 | 1-10 | best gear, 3 enhancements | 689 | 10.0 | 41440 | 2365 | 18.3 | 58200 | 1.40 | - | Passed |
-| 11-20 | no gear | 577 | 8.0 | 43466 | 1604 | 16.6 | 43506 | 1.00 | - | Passed |
-| 11-20 | no gear, 1 enhancement | 390 | 8.7 | 27067 | 1655 | 19.2 | 38829 | 1.43 | - | Passed |
-| 11-20 | no gear, 2 enhancements | 262 | 7.3 | 21603 | 1636 | 19.1 | 38483 | 1.78 | - | Passed |
-| 11-20 | no gear, 3 enhancements | 251 | 8.0 | 18827 | 1642 | 19.2 | 38539 | 2.05 | - | Passed |
-| 11-20 | mid gear | 656 | 10.4 | 38034 | 1775 | 17.1 | 46583 | 1.22 | - | Passed |
-| 11-20 | mid gear, 1 enhancement | 639 | 11.6 | 32975 | 1748 | 18.7 | 42025 | 1.27 | - | Passed |
-| 11-20 | mid gear, 2 enhancements | 621 | 12.8 | 29212 | 1760 | 18.8 | 42027 | 1.44 | - | Passed |
-| 11-20 | mid gear, 3 enhancements | 568 | 13.9 | 24621 | 1746 | 18.8 | 41808 | 1.70 | - | Passed |
-| 11-20 | best gear | 766 | 14.6 | 31378 | 1824 | 15.0 | 54772 | 1.75 | - | Passed |
-| 11-20 | best gear, 1 enhancement | 753 | 15.3 | 29481 | 1821 | 16.4 | 50118 | 1.70 | - | Passed |
-| 11-20 | best gear, 2 enhancements | 739 | 16.1 | 27545 | 1824 | 16.3 | 50241 | 1.82 | - | Passed |
-| 11-20 | best gear, 3 enhancements | 718 | 16.6 | 25960 | 1821 | 16.4 | 50097 | 1.93 | - | Passed |
-| 21-30 | no gear | 630 | 11.3 | 33568 | 1342 | 18.0 | 33588 | 1.00 | - | Passed |
-| 21-30 | no gear, 1 enhancement | 618 | 12.3 | 30162 | 1333 | 19.1 | 31382 | 1.04 | - | Passed |
-| 21-30 | no gear, 2 enhancements | 605 | 13.1 | 27717 | 1334 | 19.3 | 31105 | 1.12 | - | Passed |
-| 21-30 | no gear, 3 enhancements | 575 | 13.8 | 24961 | 1326 | 19.3 | 30943 | 1.24 | - | Passed |
-| 21-30 | mid gear | 684 | 16.8 | 24373 | 1349 | 16.3 | 37230 | 1.53 | - | Passed |
-| 21-30 | mid gear, 1 enhancement | 676 | 17.4 | 23323 | 1350 | 16.8 | 36256 | 1.55 | - | Passed |
-| 21-30 | mid gear, 2 enhancements | 657 | 17.7 | 22315 | 1351 | 16.8 | 36170 | 1.62 | - | Passed |
-| 21-30 | mid gear, 3 enhancements | 655 | 17.9 | 21904 | 1351 | 17.0 | 35772 | 1.63 | - | Passed |
-| 21-30 | best gear | 766 | 22.5 | 20425 | 1356 | 14.2 | 42825 | 2.10 | - | Passed |
-| 21-30 | best gear, 1 enhancement | 761 | 22.7 | 20084 | 1356 | 14.6 | 41846 | 2.08 | - | Passed |
-| 21-30 | best gear, 2 enhancements | 752 | 23.3 | 19334 | 1356 | 14.6 | 41770 | 2.16 | - | Passed |
-| 21-30 | best gear, 3 enhancements | 741 | 23.1 | 19223 | 1356 | 14.6 | 41718 | 2.17 | - | Passed |
+| 11-20 | no gear | 577 | 8.0 | 43466 | 1625 | 16.6 | 44081 | 1.01 | - | Passed |
+| 11-20 | no gear, 1 enhancement | 390 | 8.7 | 27067 | 1677 | 19.2 | 39340 | 1.45 | - | Passed |
+| 11-20 | no gear, 2 enhancements | 262 | 7.3 | 21603 | 1658 | 19.1 | 38989 | 1.80 | - | Passed |
+| 11-20 | no gear, 3 enhancements | 251 | 8.0 | 18827 | 1664 | 19.2 | 39046 | 2.07 | - | Passed |
+| 11-20 | mid gear | 656 | 10.4 | 38034 | 1798 | 17.1 | 47196 | 1.24 | - | Passed |
+| 11-20 | mid gear, 1 enhancement | 639 | 11.6 | 32975 | 1771 | 18.7 | 42577 | 1.29 | - | Passed |
+| 11-20 | mid gear, 2 enhancements | 621 | 12.8 | 29212 | 1783 | 18.8 | 42580 | 1.46 | - | Passed |
+| 11-20 | mid gear, 3 enhancements | 568 | 13.9 | 24621 | 1769 | 18.8 | 42358 | 1.72 | - | Passed |
+| 11-20 | best gear | 766 | 14.6 | 31378 | 1848 | 15.0 | 55493 | 1.77 | - | Passed |
+| 11-20 | best gear, 1 enhancement | 753 | 15.3 | 29481 | 1845 | 16.4 | 50778 | 1.72 | - | Passed |
+| 11-20 | best gear, 2 enhancements | 739 | 16.1 | 27545 | 1848 | 16.3 | 50902 | 1.85 | - | Passed |
+| 11-20 | best gear, 3 enhancements | 718 | 16.6 | 25960 | 1845 | 16.4 | 50755 | 1.96 | - | Passed |
+| 21-30 | no gear | 630 | 11.3 | 33568 | 1366 | 18.0 | 34182 | 1.02 | - | Passed |
+| 21-30 | no gear, 1 enhancement | 618 | 12.3 | 30162 | 1357 | 19.1 | 31937 | 1.06 | - | Passed |
+| 21-30 | no gear, 2 enhancements | 605 | 13.1 | 27717 | 1358 | 19.3 | 31656 | 1.14 | - | Passed |
+| 21-30 | no gear, 3 enhancements | 575 | 13.8 | 24961 | 1350 | 19.3 | 31491 | 1.26 | - | Passed |
+| 21-30 | mid gear | 684 | 16.8 | 24373 | 1372 | 16.3 | 37888 | 1.55 | - | Passed |
+| 21-30 | mid gear, 1 enhancement | 676 | 17.4 | 23323 | 1374 | 16.8 | 36897 | 1.58 | - | Passed |
+| 21-30 | mid gear, 2 enhancements | 657 | 17.7 | 22315 | 1375 | 16.8 | 36810 | 1.65 | - | Passed |
+| 21-30 | mid gear, 3 enhancements | 655 | 17.9 | 21904 | 1375 | 17.0 | 36405 | 1.66 | - | Passed |
+| 21-30 | best gear | 766 | 22.5 | 20425 | 1380 | 14.2 | 43583 | 2.13 | - | Passed |
+| 21-30 | best gear, 1 enhancement | 761 | 22.7 | 20084 | 1380 | 14.6 | 42587 | 2.12 | - | Passed |
+| 21-30 | best gear, 2 enhancements | 752 | 23.3 | 19334 | 1380 | 14.6 | 42509 | 2.20 | - | Passed |
+| 21-30 | best gear, 3 enhancements | 741 | 23.1 | 19223 | 1380 | 14.6 | 42456 | 2.21 | - | Passed |
 | 31-40 | no gear | 723 | 14.5 | 29893 | 1199 | 17.9 | 30198 | 1.01 | - | Passed |
 | 31-40 | no gear, 1 enhancement | 680 | 14.5 | 28109 | 1196 | 18.7 | 28804 | 1.02 | - | Passed |
 | 31-40 | no gear, 2 enhancements | 621 | 15.2 | 24578 | 1195 | 18.8 | 28656 | 1.17 | - | Passed |

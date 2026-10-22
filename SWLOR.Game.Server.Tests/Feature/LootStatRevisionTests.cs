@@ -14,23 +14,29 @@ namespace SWLOR.Game.Server.Tests.Feature;
 
 public class LootStatRevisionTests
 {
-    [Test]
-    public void CarapaceBracer_UsesBiblePhysicalDefenseWithoutRetiredElementalDefense()
+    // Armor-40 values without the retired Poison Defense, matching the crafted Eclipse Bracer and Transcendent Gloves.
+    [TestCase("cara_bracer", 18, 10, 80, 0, 0)]
+    [TestCase("cara_wraps", 9, 20, 20, 8, 2)]
+    public void CarapaceItem_UsesBiblePhysicalDefenseWithoutRetiredElementalDefense(string resref, int physical, int force, int hp,
+        int fp, int fpRegen)
     {
         using var blueprint = JsonDocument.Parse(File.ReadAllText(Path.Combine(
-            FindRepositoryRoot().FullName, "Module", "uti", "cara_bracer.uti.json")));
+            FindRepositoryRoot().FullName, "Module", "uti", resref + ".uti.json")));
         var properties = ReadProperties(blueprint.RootElement);
-        properties.Should().BeEquivalentTo(new Dictionary<(int Type, int Subtype), int>
+        var expected = new Dictionary<(int Type, int Subtype), int>
         {
-            [((int)ItemPropertyType.Defense, 1)] = 18,
-            [((int)ItemPropertyType.Defense, 2)] = 10,
-            [((int)ItemPropertyType.HPBonus, 0)] = 80,
+            [((int)ItemPropertyType.Defense, 1)] = physical,
+            [((int)ItemPropertyType.Defense, 2)] = force,
+            [((int)ItemPropertyType.HPBonus, 0)] = hp,
             [((int)ItemPropertyType.RequiresSkill, 0)] = 40,
-        });
+        };
+        if (fp > 0) expected[((int)ItemPropertyType.FP, 0)] = fp;
+        if (fpRegen > 0) expected[((int)ItemPropertyType.FPRegen, 0)] = fpRegen;
+        properties.Should().BeEquivalentTo(expected);
         ReadLocalInt(blueprint.RootElement, CarapaceBracerStatRevisionCatalog.RevisionVariable)
             .Should().Be(CarapaceBracerStatRevisionCatalog.CurrentRevision);
-        CarapaceBracerStatRevisionCatalog.Changes.Keys.Should().BeEquivalentTo(new[] { "cara_bracer" });
-        foreach (var change in CarapaceBracerStatRevisionCatalog.Changes["cara_bracer"])
+        CarapaceBracerStatRevisionCatalog.Changes.Keys.Should().BeEquivalentTo(new[] { "cara_bracer", "cara_wraps" });
+        foreach (var change in CarapaceBracerStatRevisionCatalog.Changes[resref])
             properties.GetValueOrDefault(((int)change.Type, change.Subtype)).Should().Be(change.Current);
 
         using var archive = ZipFile.OpenRead(Path.Combine(FindRepositoryRoot().FullName, "design", "bible", "SWLOR Design Bible.xlsx"));
@@ -51,13 +57,15 @@ public class LootStatRevisionTests
         };
         var row = Load(target.StartsWith('/') ? target.TrimStart('/') : "xl/" + target)
             .Descendants(ns + "row").Single(x => x.Elements(ns + "c")
-                .Any(cell => cell.Attribute("r")!.Value.StartsWith('B') && Text(cell) == "cara_bracer"));
+                .Any(cell => cell.Attribute("r")!.Value.StartsWith('B') && Text(cell) == resref));
         var cells = row.Elements(ns + "c").ToDictionary(cell =>
             new string(cell.Attribute("r")!.Value.TakeWhile(char.IsLetter).ToArray()), Text);
         cells["E"].Should().Be("40");
-        cells["F"].Should().Be("18");
-        cells["G"].Should().Be("10");
-        cells["H"].Should().Be("80");
+        cells["F"].Should().Be(physical.ToString());
+        cells["G"].Should().Be(force.ToString());
+        cells["H"].Should().Be(hp.ToString());
+        cells["I"].Should().Be(fp.ToString());
+        cells["K"].Should().Be(fpRegen.ToString());
         cells["T"].Should().Be("-");
     }
 

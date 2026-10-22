@@ -1,12 +1,13 @@
 using System.Collections.Generic;
+using SWLOR.Game.Server.Service.CraftService.Minigame;
 
 namespace SWLOR.Game.Server.Service.CraftService
 {
     /// <summary>
     /// The per-recipe values the Kitchen minigame reads: the dish, the flavor target (its center and the inner and outer
-    /// radius) and the Freshness the dish starts with. Set by <see cref="RecipeBuilder.KitchenParameters"/>.
+    /// radius), the Freshness the dish starts with and the XP the craft pays. Set by <see cref="RecipeBuilder.KitchenParameters"/>.
     /// </summary>
-    public sealed class KitchenParameters : RecipeMinigameParameters
+    public sealed class KitchenParameters : RecipeMinigameParameters, ICraftXpScale
     {
         public KitchenDish Dish { get; }
 
@@ -28,6 +29,12 @@ namespace SWLOR.Game.Server.Service.CraftService
         /// <summary>The Freshness the dish starts with; the dish is ruined at 0.</summary>
         public int Freshness { get; }
 
+        /// <summary>
+        /// The recipe's base XP as a percentage of the plain formula. A Kitchen craft takes more actions than the old minigame did,
+        /// so the low recipe levels pay more XP per craft to keep the XP per hour at least what it was.
+        /// </summary>
+        public int XpPercent { get; }
+
         public KitchenParameters(
             KitchenDish dish,
             int targetSavory,
@@ -35,7 +42,8 @@ namespace SWLOR.Game.Server.Service.CraftService
             int targetSpice,
             int innerRadius,
             int outerRadius,
-            int freshness)
+            int freshness,
+            int xpPercent = 100)
         {
             Dish = dish;
             TargetSavory = targetSavory;
@@ -44,6 +52,7 @@ namespace SWLOR.Game.Server.Service.CraftService
             InnerRadius = innerRadius;
             OuterRadius = outerRadius;
             Freshness = freshness;
+            XpPercent = xpPercent;
         }
 
         public override IReadOnlyList<RecipeParameterValue> Values => new[]
@@ -54,7 +63,8 @@ namespace SWLOR.Game.Server.Service.CraftService
             new RecipeParameterValue("targetSpice", TargetSpice),
             new RecipeParameterValue("innerRadius", InnerRadius),
             new RecipeParameterValue("outerRadius", OuterRadius),
-            new RecipeParameterValue("freshness", Freshness)
+            new RecipeParameterValue("freshness", Freshness),
+            new RecipeParameterValue("xpPercent", XpPercent)
         };
     }
 }

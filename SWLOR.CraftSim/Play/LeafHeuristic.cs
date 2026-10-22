@@ -77,19 +77,35 @@ namespace SWLOR.CraftSim.Play
     /// <summary>A position a search has reached: the shared meters and status after a result, and what the position's previews say about finishing.</summary>
     public sealed class LeafPosition
     {
-        public LeafPosition(MinigameMeters meters, MinigameStatus status, FinishEstimate finish)
+        private static readonly IReadOnlyDictionary<string, int> NoValues = new Dictionary<string, int>();
+
+        public LeafPosition(MinigameMeters meters, MinigameStatus status, FinishEstimate finish, IReadOnlyDictionary<string, int> meterValues = null)
         {
             Meters = meters;
             Status = status;
             Finish = finish;
+            MeterValues = meterValues ?? NoValues;
         }
 
         public MinigameMeters Meters { get; }
         public MinigameStatus Status { get; }
         public FinishEstimate Finish { get; }
 
+        /// <summary>
+        /// The value of every meter the engine displays, by meter id, shared and engine-specific. It lets a minigame's own heuristic read a
+        /// meter the shared four do not carry, such as the Kitchen's distance from its target. Empty for a position that ended the attempt.
+        /// </summary>
+        public IReadOnlyDictionary<string, int> MeterValues { get; }
+
+        /// <summary>The value of one displayed meter, or null when the position does not carry it.</summary>
+        public int? Meter(string id) => MeterValues.TryGetValue(id, out var value) ? value : null;
+
         public static LeafPosition Of(ICraftMinigameEngine engine) =>
-            new(engine.Meters, engine.Status, engine.Status == MinigameStatus.InProgress ? FinishEstimate.From(engine.PreviewAll()) : FinishEstimate.None);
+            new(
+                engine.Meters,
+                engine.Status,
+                engine.Status == MinigameStatus.InProgress ? FinishEstimate.From(engine.PreviewAll()) : FinishEstimate.None,
+                engine.DescribeMeters().ToDictionary(view => view.Id, view => view.Value));
     }
 
     /// <summary>Scores a position from 0 (the item is lost) to 1 (a finished item of full quality), for the adaptive player's lookahead and the solver's beam.</summary>

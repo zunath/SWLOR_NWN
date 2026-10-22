@@ -41,6 +41,24 @@ namespace SWLOR.Game.Server.Service.CraftService
         /// <summary>Turns spent adjusting heat and correcting flavor on top of the adds and the simmering.</summary>
         private const int HandlingTurns = 4;
 
+        public const int MinXpPercent = 100;
+        public const int MaxXpPercent = 300;
+
+        /// <summary>
+        /// The XP a craft pays as a percentage of the plain formula, by the highest recipe level each row covers. A Kitchen craft takes
+        /// more actions than the old minigame did, so the bands whose crafts took the old minigame a handful of actions pay more per
+        /// craft; every other band pays the plain formula. Each value is the smallest the XP-rate gate (gate 6) accepts for its band
+        /// across every gear tier and enhancement count, and the gate report lists them with the run they come from.
+        /// </summary>
+        public static readonly IReadOnlyList<(int UpToLevel, int Percent)> XpPercentByLevel = new[]
+        {
+            (10, 160),
+            (20, 100),
+            (30, 120),
+            (40, 100),
+            (int.MaxValue, 100)
+        };
+
         private static readonly string[] SweetWords =
             { "Cookies", "Juice", "AuLait", "Cake", "FlapJack", "Fizz", "Gardula", "Noga", "Treat" };
 
@@ -62,7 +80,8 @@ namespace SWLOR.Game.Server.Service.CraftService
             RecipeParameterDefinition.Integer("targetSpice", "Kitchen Target Spice", 0, KitchenTuning.AxisMax, 6),
             RecipeParameterDefinition.Integer("innerRadius", "Kitchen Inner Radius", MinInnerRadius, MaxInnerRadius, 2),
             RecipeParameterDefinition.Integer("outerRadius", "Kitchen Outer Radius", MinOuterRadius, MaxOuterRadius, 4),
-            RecipeParameterDefinition.Integer("freshness", "Kitchen Freshness", MinFreshness, MaxFreshness, 4)
+            RecipeParameterDefinition.Integer("freshness", "Kitchen Freshness", MinFreshness, MaxFreshness, 4),
+            RecipeParameterDefinition.Integer("xpPercent", "Kitchen XP Percent", MinXpPercent, MaxXpPercent)
         };
 
         public override string Key => "Kitchen";
@@ -85,8 +104,15 @@ namespace SWLOR.Game.Server.Service.CraftService
                 ["targetSpice"] = center.Spice,
                 ["innerRadius"] = inner,
                 ["outerRadius"] = outer,
-                ["freshness"] = Freshness(recipe, center)
+                ["freshness"] = Freshness(recipe, center),
+                ["xpPercent"] = XpPercent(recipe.Level)
             };
+        }
+
+        /// <summary>The percentage of the plain base XP a recipe of this level pays.</summary>
+        public static int XpPercent(int recipeLevel)
+        {
+            return XpPercentByLevel.First(row => recipeLevel <= row.UpToLevel).Percent;
         }
 
         protected override KitchenParameters Create(RecipeParameterValues values)
@@ -98,7 +124,8 @@ namespace SWLOR.Game.Server.Service.CraftService
                 values.Int("targetSpice"),
                 values.Int("innerRadius"),
                 values.Int("outerRadius"),
-                values.Int("freshness"));
+                values.Int("freshness"),
+                values.Int("xpPercent"));
         }
 
         /// <summary>

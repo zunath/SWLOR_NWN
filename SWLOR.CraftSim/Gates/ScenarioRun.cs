@@ -253,7 +253,8 @@ namespace SWLOR.CraftSim.Gates
         private CohortCell PlayAdaptive(RecipeEntry recipe, int rank, int gearIndex, CraftStyle style, CraftEnhancementConfiguration enhancements = null)
         {
             var gear = Gear[gearIndex];
-            var baseXp = ServerXp.ForRecipe(recipe, rank);
+            // The minigame's own XP scale (a recipe's percentage of the plain base XP) is part of what the replacement pays; the legacy side never has one.
+            var baseXp = CraftXpScale.Apply(recipe.Detail?.MinigameParameters, ServerXp.ForRecipe(recipe, rank));
             var cell = new CohortCell { Recipe = recipe, Rank = rank, Gear = gear.Name, Style = style, Runs = Context.Runs };
             var id = StableId(recipe);
             var enhanced = enhancements is { IsNone: false };

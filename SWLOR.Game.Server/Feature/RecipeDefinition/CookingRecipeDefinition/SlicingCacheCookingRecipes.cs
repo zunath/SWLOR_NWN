@@ -10,11 +10,11 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.CookingRecipeDefinition
 
         public Dictionary<RecipeType, RecipeDetail> BuildRecipes()
         {
-            Add(RecipeType.QuietwatchJerky, "food_quietwatch", 5, "herb_v", "wild_meat", parameters: new KitchenParameters(dish: KitchenDish.Roast, targetSavory: 24, targetSweet: 5, targetSpice: 13, innerRadius: 8, outerRadius: 26, freshness: 72));
-            Add(RecipeType.DustveilTravelCakes, "food_dustveil", 15, "herb_m", "raivor_meat", parameters: new KitchenParameters(dish: KitchenDish.Roast, targetSavory: 23, targetSweet: 0, targetSpice: 20, innerRadius: 8, outerRadius: 24, freshness: 69));
-            Add(RecipeType.TombwalkerBroth, "food_tombwalk", 25, "herb_c", "byysk_meat", parameters: new KitchenParameters(dish: KitchenDish.Soup, targetSavory: 35, targetSweet: 0, targetSpice: 17, innerRadius: 10, outerRadius: 27, freshness: 69));
-            Add(RecipeType.SnowblindHuntersStew, "food_snowblind", 35, "herb_t", "sanddemon_meat", parameters: new KitchenParameters(dish: KitchenDish.Soup, targetSavory: 24, targetSweet: 4, targetSpice: 24, innerRadius: 9, outerRadius: 29, freshness: 74));
-            Add(RecipeType.NightMarchReserve, "food_nightmarch", 45, "herb_x", "wild_innards", parameters: new KitchenParameters(dish: KitchenDish.Roast, targetSavory: 19, targetSweet: 0, targetSpice: 29, innerRadius: 6, outerRadius: 20, freshness: 72));
+            Add(RecipeType.QuietwatchJerky, "food_quietwatch", 5, "herb_v", "wild_meat", parameters: new KitchenParameters(dish: KitchenDish.Roast, targetSavory: 24, targetSweet: 5, targetSpice: 13, innerRadius: 8, outerRadius: 26, freshness: 72, xpPercent: 160));
+            Add(RecipeType.DustveilTravelCakes, "food_dustveil", 15, "herb_m", "raivor_meat", parameters: new KitchenParameters(dish: KitchenDish.Roast, targetSavory: 23, targetSweet: 0, targetSpice: 20, innerRadius: 8, outerRadius: 24, freshness: 69, xpPercent: 100));
+            Add(RecipeType.TombwalkerBroth, "food_tombwalk", 25, "herb_c", "byysk_meat", parameters: new KitchenParameters(dish: KitchenDish.Soup, targetSavory: 35, targetSweet: 0, targetSpice: 17, innerRadius: 10, outerRadius: 27, freshness: 69, xpPercent: 120));
+            Add(RecipeType.SnowblindHuntersStew, "food_snowblind", 35, "herb_t", "sanddemon_meat", parameters: new KitchenParameters(dish: KitchenDish.Soup, targetSavory: 24, targetSweet: 4, targetSpice: 24, innerRadius: 9, outerRadius: 29, freshness: 74, xpPercent: 100));
+            Add(RecipeType.NightMarchReserve, "food_nightmarch", 45, "herb_x", "wild_innards", parameters: new KitchenParameters(dish: KitchenDish.Roast, targetSavory: 19, targetSweet: 0, targetSpice: 29, innerRadius: 6, outerRadius: 20, freshness: 72, xpPercent: 100));
             return _builder.Build();
         }
 

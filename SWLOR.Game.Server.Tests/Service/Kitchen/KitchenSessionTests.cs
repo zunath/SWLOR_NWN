@@ -113,7 +113,7 @@ public class KitchenSessionTests
         settlement.Settled.Should().BeTrue();
         settlement.ItemsLost.Should().Be(1);
         settlement.ItemsKept.Should().Be(2);
-        settlement.Xp.Should().Be(CraftOutcomeRules.CalculateFailureXp(Craft.GetBaseRecipeXP(_recipe, 20), 0));
+        settlement.Xp.Should().Be(CraftOutcomeRules.CalculateFailureXp(CraftXpScale.Apply(_recipe.MinigameParameters, Craft.GetBaseRecipeXP(_recipe, 20)), 0));
         _world.Returned.Should().HaveCount(2);
         _player.ActiveCraftSession.Should().BeNull();
     }

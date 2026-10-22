@@ -34,7 +34,7 @@ Delete this file after release, the way the combat upgrade deleted its plan docu
 Part II: Space Expansion
 
 23. Wild Space
-24. Scanning and exploration
+24. Scanning, exploration and slicing
 25. Player stations
 26. Planetary Holdings
 27. Industrial droids
@@ -93,7 +93,8 @@ Before any work, read `AGENTS.md` and these guides, plus every guide named in th
 | Trade | Cargo held as ship data, about 20 commodities, dock exchanges with moving prices, contraband and customs, pirates, freight contracts, faction standing, city tariffs. |
 | Migration | Every character gets one Rebuild Token. Piloting perks are refunded. Ships and modules convert to their new equivalents. |
 | Wild Space | Six persistent tier-5.5 systems reached through hidden, rotating rifts, each with an environmental effect, held by the Rift Raiders pirate coalition. |
-| Exploration | A Probe Launcher reveals hidden sites (rift, combat, data, cache, gas, derelict) and jumps the party to them. Data sites use the slicing mini-game. |
+| Exploration | A Probe Launcher reveals hidden sites (rift, combat, data, cache, gas, derelict) and jumps the party to them. |
+| Slicing | Espionage's Slicing perk works in space: data cans, locked pirate caches, ace and boss wreck data cores, derelict terminals and lockboxes, customs spoofing and agent data heists. Espionage XP and space reward tables. |
 | Stations | Player cities in space, at anchor sites, with every city mechanic, plus a Shipyard (Capital hulls), Asteroid Drill and Jump Beacons. Stations can't be attacked in this release. |
 | Holdings | Up to 3 planetary holdings per character, with cross-planet upgrades, production chains, droid staff, events and visitable ground sites. |
 | Droids | Industrial parts and AI instructions trade combat for an Industry rating used by holdings, crew, droid bays and stations. |
@@ -173,8 +174,10 @@ Paths are relative to `SWLOR.Game.Server/`.
 |---|---|---|---|---|
 | Piloting | 7 (kept) | Hull sizes; passive defenses (Shield Booster, Hull Plating, Resist Plating, Capacitor Battery); Afterburner, Thrusters, Cargo Expander, Cloaking Device | Evasion, speed | Exempt (full XP from every space kill, like Armor on the ground) |
 | Gunnery | new (next free ID, 53 today) | Weapons, Targeting Computer, Damage Amplifier | Accuracy, attack, crit | New `Starship` category (split by contribution) |
-| Ship Systems | new (54 today) | Active defense and support: shield and hull repairers, Shield Hardener, Hypermatter Injector, Capacitor Regulator, electronic warfare, tackle, Probe Launcher, Data Analyzer, Smuggling Compartment | Shield regen, capacitor regen, repair amount | New `Starship` category |
+| Ship Systems | new (54 today) | Active defense and support: shield and hull repairers, Shield Hardener, Hypermatter Injector, Capacitor Regulator, electronic warfare, tackle, Probe Launcher, Smuggling Compartment | Shield regen, capacitor regen, repair amount | New `Starship` category |
 | Gathering | 11 (kept) | Mining Laser, Strip Miner, Salvager | Yield | Gathering XP from mining, gas harvesting and salvage |
+
+- **Espionage** (49, kept) is not a space skill and gets no space perks, but its **Slicing** perk works in space (section 24). The Data Analyzer has no rank requirement; the Slicing tier decides what a player can crack.
 
 - **Skill attributes:** Utility category, rank 50, active, `ContributesToSkillCap = true`.
 - **Category value:** add `CombatPointCategoryType.Starship`. The loop in `Service/CombatPoint.cs` picks up new values automatically.
@@ -397,7 +400,8 @@ Toggled modules are the ship's auto-attacks; perk abilities are the buttons, as 
 | High | Gathering | Mining Laser, Strip Miner, *Salvager*, *Gas Harvester* |
 | Mid | Ship Systems | Shield Repairer, *Shield Hardener*, Hypermatter Injector, *Ion Web*, *Interdictor* (target can't jump, dock or leave space for a while), *Jammer*, *Target Painter*, capital Bulwark, Repair Field and E-War arrays |
 | Mid | Piloting | Shield Booster, Capacitor Battery, *Afterburner*, *Cloaking Device* (Small hulls and Blockade Runners; section 32) |
-| Mid | Ship Systems | *Probe Launcher*, *Data Analyzer* (section 24) |
+| Mid | Ship Systems | *Probe Launcher* (section 24) |
+| Mid | Espionage | *Data Analyzer*: one module with no rank ladder and no rank requirement. The Slicing perk gates its targets (section 24). |
 | Mid | Gunnery | Targeting Computer |
 | Low | Ship Systems | Hull Repairer, *Capacitor Regulator*, *Smuggling Compartment* |
 | Low | Gunnery | Damage Amplifier (per type) |
@@ -460,7 +464,7 @@ Ships at launch.
 - **Slot control:**
   - Gunners toggle the High slots tagged as their turrets and pick their own target, independent of the pilot.
   - The Engineer runs active shield and hull modules, plus a new **power-routing** ability that shifts capacitor regen between weapons, shields and engines.
-  - Sensors runs Mid electronic warfare and tackle.
+  - Sensors runs Mid electronic warfare and tackle, and the Data Analyzer. The crew member slices with their own Slicing perk, so an Espionage character can serve as a ship's slicer with no space skill.
   - The Pilot runs Helm slots, Afterburner, Thrusters and maneuvers. The pilot cannot fire station slots.
 - **Gear rank on stations:** the owner fits station-slot modules without rank checks. Each crew member can switch on only the modules whose rank requirement they meet themselves; droid crew go by their tier. A pilot-only captain can still outfit their gunners.
 - **Boarding a station:**
@@ -525,6 +529,7 @@ Ships at launch.
     - **Ship Scrap,** which the Refinery turns into electronics of the wreck's tier. This is the first reliable electronics source.
     - **Salvaged Components,** each carrying a random trait (section 14).
     - **Rare finds** from elite and boss wrecks.
+  - **Data cores:** elite, ace and boss wrecks also carry a data core. Slicing it (section 24) has better odds of Design Schematics, recipe unlocks and Ship Schematics than salvage. The killing party's 60 s first claim covers the core too.
 - **Zones:**
   - The 3 Abandoned Station areas (`zomb_abanstation`, `zomb_abanstatio2`, `zomb_abanstatio3`) become Small/Medium-only.
   - Build 3 new Small/Medium-only zones:
@@ -573,6 +578,7 @@ Ships at launch.
 - **Contraband and customs:**
   - Lawful docks: Republic (Viscara, Mon Cala, Dantooine), Czerka (CZ-220), Sith (Korriban). Each has its own contraband list. For example, the Republic bans spice, Sith relics and weapons crates.
   - Customs patrols in lawful orbits scan passing ships. If they find contraband, the player pays a fine and loses it, or runs: the patrol turns hostile and lawful standing drops.
+  - **Spoofing:** a slicer aboard (the pilot or the Sensors crew member) can instead try the slicing mini-game at the patrol's tier. Success returns a clean scan. Failure plays out as being caught: fine, confiscation and standing loss.
   - Black markets at Smuggler's Moon, Tatooine and Hutlar buy contraband at a premium.
   - A Smuggling Compartment (Low, Ship Systems) cuts the scan chance.
 - **Risk:**
@@ -763,6 +769,7 @@ Draft each in the Bible, check it with the combat simulator where it affects com
 - **Stations:** Station Core recipe, anchor site count per area, Asteroid Drill output, Shipyard build times, Jump Beacon fuel cost and hull caps.
 - **Holdings:** price, upkeep, output, upgrade costs, Processing Plant recipes, event odds, droid boost.
 - **Droids:** Industry per industrial part, stat cuts, instruction effects.
+- **Slicing:** Data Analyzer range, slicing tiers per zone for data cans, locked caches and data cores, customs spoof tier per patrol, space slicing XP and reward odds.
 - **Activities:** agent mission pay and token prices, incursion schedule and rewards, Rift Run timers and loot, cloak speed penalty and reveal range.
 - **IDs:** confirm the new skill IDs (53 and 54) were never used historically, since saved data keys skills by ID.
 
@@ -791,7 +798,7 @@ Everything merges to one integration branch and releases together.
 | W8 | Crew | Stations, consoles, `AttachCamera` and hidden crew, droid crew, permissions, power routing, Wing Commander crew bonuses | W2, W3, W4 |
 | W9 | Crafting and rewards | Component layer and traits, recipes, research blueprints, named modules, Design Schematics, trophies and decor, ammo variants, achievements | W3, W6 |
 | W10 | Migration | Rebuild Token, perk refunds, item and ship conversion, stamp cleanup, design unlocks, notices | W1, W3, W9 |
-| W12 | Wild Space and exploration | 6 Wild Space areas and environments, rifts, Rift Raiders, Probe Launcher, signatures, Jump to Signature, Sensor Sweep, data/cache/gas/combat sites, Scanner HUD tab | W2, W3, W5 |
+| W12 | Wild Space and exploration | 6 Wild Space areas and environments, rifts, Rift Raiders, Probe Launcher, signatures, Jump to Signature, Sensor Sweep, data/cache/gas/combat sites, Scanner HUD tab, space slicing (Data Analyzer, new slicing sources, space reward tables, customs spoofing) | W2, W3, W5 |
 | W13 | Stations | Station city layout, Station Core, anchor sites, deck areas, Shipyard, Asteroid Drill, Jump Beacons, Station Fuel | W3, W7 |
 | W14 | Holdings and droids | Holdings terminal, types, upgrades, production chains, events, ground sites; industrial droid parts, Industry stat, AI instructions, droid bays | W7, W9 |
 | W15 | Activities | Derelict boarding (including contested derelicts), faction agents and token stores, incursions, Rift Runs | W5, W7, W12 |
@@ -805,7 +812,7 @@ Everything merges to one integration branch and releases together.
 - **Build and tests:**
   - Build once with `-p:RunPostBuildEvent=Never -v q -clp:ErrorsOnly`.
   - Run focused NUnit filters for each slice.
-  - Add tests for: rank gating, size rules, slot rows, migration (refunds, token, item mapping, ship rebuild), trade pricing and flooding, cargo spill, customs, XP split and range, PvP gating, escape pods, every auto-off trigger, support-module target locks and Retarget, All Weapons.
+  - Add tests for: rank gating, size rules, slot rows, migration (refunds, token, item mapping, ship rebuild), trade pricing and flooding, cargo spill, customs, XP split and range, PvP gating, escape pods, every auto-off trigger, support-module target locks and Retarget, All Weapons, space slicing (tier gate, Sensors crew slicing, Espionage XP, customs spoof outcomes).
 - **Engine tests** (`EngineTesting.md`) for:
   - Entering space with Mid slots.
   - Crew boarding, camera attach and re-attach after a starlane jump.
@@ -827,7 +834,7 @@ Everything merges to one integration branch and releases together.
   - Founding a station at an anchor site, docking, and a Jump Beacon jump.
   - A holding's ground site, an event fight, and cargo pickup.
   - An industrial droid in a droid bay and at a crew station.
-  - Boarding a derelict, a contested derelict's waves, a data site slicing game, an agent mission, a Rift Run timer, and cloak and reveal.
+  - Boarding a derelict, a contested derelict's waves, a data site slicing game, a customs spoof, a wreck data core, an agent mission, a Rift Run timer, and cloak and reveal.
   - Every Hull Design at ship scale.
   - Crew camera view.
   - The exchange window.
@@ -899,7 +906,7 @@ Everything in Part II ships in the same release as Part I. It builds on Part I's
 - **Stations:** 1-2 anchor sites per system (section 25). Jump Beacons never connect into or out of Wild Space.
 - **Higher stakes:** Wild Space is the only place a PvP death can drop modules (section 9).
 
-## 24. Scanning and exploration
+## 24. Scanning, exploration and slicing
 
 - **Probe Launcher** (Mid slot, Ship Systems, toggle): each cycle adds signal strength to every hidden signature in the area, system-wide.
 - **Scan strength** grows with Ship Systems rank, a crew member at the Sensors station, a droid running Survey Protocol (section 27) and the system's environment.
@@ -913,11 +920,29 @@ Everything in Part II ships in the same release as Part I. It builds on Part I's
 - **Sensor Sweep:** a pulse mode on the Probe Launcher with its own cooldown. It lists every ship within range, cloaked ships included.
 - **Sites:**
   - **Combat sites:** waves and a boss at the system's tier.
-  - **Data sites:** a **Data Analyzer** (Mid slot, Ship Systems) runs the existing slicing mini-game (`Service/SlicingService/`) on data cans. They yield blueprints, recipe unlocks and agent intel, which unlocks special agent missions.
-  - **Cache sites:** hidden pirate caches. The Salvager (Gathering) works cache containers for prototype tech and components.
+  - **Data sites:** the **Data Analyzer** runs the existing slicing mini-game (`Service/SlicingService/`) on data cans. They yield blueprints, recipe unlocks and agent intel, which unlocks special agent missions.
+  - **Cache sites:** hidden pirate caches. The Salvager (Gathering) works the open containers for prototype tech and components. Locked caches hold the site's best loot and need slicing.
   - **Gas sites:** the Gas Harvester.
   - **Derelicts:** section 28.
 - **Despawning:** sites despawn once completed or after a timer.
+
+### Slicing in space
+
+Espionage's Slicing perk works in space exactly as on the ground.
+
+- **Data Analyzer:** a Mid-slot Espionage module (Engineering crafts it). Any ship can fit it, with no rank requirement. It is a one-press module that starts the mini-game on a target in range; range is a number to draft (section 17) and replaces the 5 m terminal range for space targets.
+- **Who slices:** the pilot, or the crew member at the Sensors station with their own Slicing perk (section 10).
+- **Rules kept from the ground:** `SlicingSession.ValidateStart` still requires a Slicing tier at or above the target's tier, and no slicing starts in combat. Wild Space targets are tier 5.
+- **New sources:** add `SlicingSourceType` values for data cans, locked caches, wreck data cores and customs scans.
+- **Targets:**
+  - Data cans at data sites.
+  - Locked caches at cache sites.
+  - Data cores in elite, ace and boss wrecks (section 12).
+  - Terminals and lockboxes inside derelicts (section 28).
+  - Customs scans (section 13).
+  - Data-heist missions for faction agents (section 29).
+- **XP:** Espionage XP through `Skill.CalculateEspionageXP(PerkType.Slicing, tier, rank)`, never Ship Systems XP.
+- **Rewards:** new space reward tables in `SlicingRewardCatalog` for each new source: Design Schematics, recipe unlocks, Ship Schematics, agent intel and components with rare traits. Ground lockbox and terminal rewards stay as they are. New items follow `EconomyRestrictedItems.md`.
 
 ## 25. Player stations
 
@@ -1010,7 +1035,7 @@ A station is a **player city in space** and follows every city mechanic, in `Ser
 
 - **Finding them:** derelicts come from scanning (section 24) and Wild Space.
 - **Boarding:** a Small or Medium ship docks with the derelict and the party boards on foot.
-- **Inside:** an instanced copy of a derelict template: existing starship interior layouts dressed as wrecks, plus a few new ones. It is a ground dungeon at the system's tier, with ground enemies, ground loot and ground abilities. Each mode keeps its own abilities.
+- **Inside:** an instanced copy of a derelict template: existing starship interior layouts dressed as wrecks, plus a few new ones. It is a ground dungeon at the system's tier, with ground enemies, ground loot, slicing terminals and lockboxes at the system's tier, and ground abilities. Each mode keeps its own abilities.
 - **Safety:** the docked ship can't be attacked while its crew is aboard the derelict. Leaving returns everyone to the ship.
 - **Contested derelicts:** some derelicts are contested.
   - While the boarding party is inside, enemy fighters attack in waves around the derelict, and pilots who stay outside defend it. The docked ship stays safe.
@@ -1031,7 +1056,7 @@ A station is a **player city in space** and follows every city mechanic, in `Ser
 | Mandalorian | Hutlar | Dathomir |
 | Sith Military | Korriban | Dathomir |
 
-- **Missions:** kill, sealed courier, mining quota, convoy escort and scan-down, scaled to the dock's tier. Higher standing unlocks harder missions.
+- **Missions:** kill, sealed courier, mining quota, convoy escort, scan-down and data heist (slice a target data can inside an enemy-held site), scaled to the dock's tier. Higher standing unlocks harder missions.
 - **Rewards:**
   - credits
   - faction standing (the faction service)
@@ -1240,7 +1265,7 @@ Traits only, priced like the existing Gathering lines. No perk unlocks a module;
 
 ## Appendix B: Module families
 
-Every family has an item every 5 ranks (0-45); capital families start at rank 40. "Toggle" means it fires every cycle while on (section 8, Activation). Numbers come from the Bible draft.
+Every family has an item every 5 ranks (0-45); capital families start at rank 40. The Data Analyzer is the exception: one item, no rank. "Toggle" means it fires every cycle while on (section 8, Activation). Numbers come from the Bible draft.
 
 | Family | Slot | Skill | Use | What it does | Today |
 |---|---|---|---|---|---|
@@ -1269,7 +1294,7 @@ Every family has an item every 5 ranks (0-45); capital families start at rank 40
 | Afterburner | Mid | Piloting | Toggle | + speed while on; pays capacitor each cycle. | New |
 | Cloaking Device | Mid | Piloting | Toggle | Hides a Small hull or Blockade Runner; no module or ability use while cloaked (section 32). | New |
 | Probe Launcher | Mid | Ship Systems | Toggle | Scans hidden signatures system-wide; pulse mode for a Sensor Sweep (section 24). | New |
-| Data Analyzer | Mid | Ship Systems | One press | Starts the slicing mini-game on a data can (section 24). | New |
+| Data Analyzer | Mid | Espionage (no rank; the Slicing perk gates targets) | One press | Starts the slicing mini-game on a data can, locked cache or wreck data core (section 24). | New |
 | Targeting Computer | Mid | Gunnery | Passive | + accuracy. | Targeting System (was Low) |
 | Hull Plating | Low | Piloting | Passive | + max hull. | Hull Booster |
 | Hull Repairer | Low | Ship Systems | Toggle | Repairs the hull of its locked target, or your own. | Hull Repairer (was High) |

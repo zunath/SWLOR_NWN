@@ -38,10 +38,38 @@ class GeneratedWeaponTargetingTests(unittest.TestCase):
             for root in (output_root, ROOT):
                 ability = (root / "SWLOR.Game.Server/Feature/AbilityDefinition/Vibroknife/ShadowflowAbilityDefinition.cs").read_text()
                 self.assertIn('.Name("Shadowflow")', ability)
-                self.assertRegex(ability, r"SkillType\.Vibroknife,\s+8,\s+18,\s+typeof\(ShadowflowStatusEffect\)")
+                # The stance stays on until toggled off; only the Hamstring it inflicts lasts 18 seconds.
+                self.assertRegex(ability, r"SkillType\.Vibroknife,\s+8,\s+0,\s+typeof\(ShadowflowStatusEffect\)")
                 status = (root / "SWLOR.Game.Server/Feature/StatusEffectDefinition/ShadowflowStatusEffect.cs").read_text()
                 self.assertIn('Name => "Shadowflow"', status)
                 self.assertIn("AutoAttackHamstringDurationSeconds] = 18", status)
+
+    def test_stance_rider_durations_do_not_time_the_stance(self):
+        rows = [row for row in GENERATOR.read_manifest()
+                if row["PerkName"] in {"Tempest Stance", "Vigor Stance"}]
+        self.assertEqual(2, len(rows))
+        _, feats = GENERATOR.parse_enum_values(ROOT / "SWLOR.NWN.API/NWScript/Enum/FeatType.cs")
+        targeting = GENERATOR.read_spell_targeting()
+        status_types = GENERATOR.known_status_effect_types()
+        with tempfile.TemporaryDirectory() as folder:
+            output_root = Path(folder)
+            (output_root / "SWLOR.Game.Server/Feature/StatusEffectDefinition").mkdir(parents=True)
+            with (patch.object(GENERATOR, "ROOT", output_root),
+                  patch.object(GENERATOR, "read_spell_targeting", return_value=targeting),
+                  patch.object(GENERATOR, "known_status_effect_types", return_value=status_types)):
+                GENERATOR.generate_ability_definitions(rows, feats, {})
+                GENERATOR.generate_stance_status_effects(rows)
+            for root in (output_root, ROOT):
+                for path, skill, status, rider in [
+                        ("Saberstaff/TempestStanceAbilityDefinition.cs", "Saberstaff", "TempestStanceStatusEffect",
+                         "AreaAbilityUsedAttackDeflectionDurationSeconds] = 30"),
+                        ("Spear/VigorStanceAbilityDefinition.cs", "Spear", "VigorStanceStatusEffect",
+                         "HostileAbilityUsedEvasionDurationSeconds] = 30")]:
+                    with self.subTest(root=str(root), stance=status):
+                        ability = (root / "SWLOR.Game.Server/Feature/AbilityDefinition" / path).read_text()
+                        self.assertRegex(ability, rf"SkillType\.{skill},\s+8,\s+0,\s+typeof\({status}\)")
+                        effect = (root / f"SWLOR.Game.Server/Feature/StatusEffectDefinition/{status}.cs").read_text()
+                        self.assertIn(rider, effect)
 
     def test_regeneration_preserves_weapon_independent_attack_triggers(self):
         expected = {

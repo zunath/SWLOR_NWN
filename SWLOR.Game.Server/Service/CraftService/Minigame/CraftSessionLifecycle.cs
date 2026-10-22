@@ -11,6 +11,9 @@ namespace SWLOR.Game.Server.Service.CraftService.Minigame;
 /// </summary>
 public sealed class CraftSessionLifecycle
 {
+    public const string HeldItemsMessage =
+        "Your inventory is full. Items from your craft wait for you; make room, then open a crafting station again.";
+
     private readonly ICraftSessionWorld _world;
     private readonly IMinigameRandom _random;
 
@@ -238,7 +241,7 @@ public sealed class CraftSessionLifecycle
         }
 
         if (held.Count > 0)
-            _world.Message(player, Item.ItemsHeldMessage);
+            _world.Message(player, HeldItemsMessage);
 
         return held.Count;
     }

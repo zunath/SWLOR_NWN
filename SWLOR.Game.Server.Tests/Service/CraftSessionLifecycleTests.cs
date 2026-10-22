@@ -284,7 +284,7 @@ public class CraftSessionLifecycleTests
 
         _player.HeldCraftItems.Should().Equal("ore x3", "wire x2");
         _world.Returned.Should().BeEmpty();
-        _world.Messages.Should().Contain(Item.ItemsHeldMessage);
+        _world.Messages.Should().Contain(CraftSessionLifecycle.HeldItemsMessage);
 
         _world.Room = 1;
         lifecycle.ReturnHeldItems(FakeCraftSessionWorld.PlayerHandle, _player).Should().Be(1);

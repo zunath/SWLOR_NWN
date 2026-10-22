@@ -27,6 +27,9 @@ namespace SWLOR.CraftSim.Scenario.Reaction
         /// <summary>The Reaction's multiplier on a craft's base XP, the same constant the game applies.</summary>
         public double XpMultiplier => CraftMinigameXp.MultiplierFor(Minigame);
 
+        /// <summary>Espionage recipes have no enhancement slots, so the enhancement-parity gate (gate 7) is not applicable.</summary>
+        public EnhancementSupport Enhancements => EnhancementSupport.NoSlots;
+
         public AdaptivePolicyOptions AdaptiveOptions => new() { Depth = 5, ForecastSamples = 1, SampleBudget = 6000 };
 
         public IReadOnlyList<string> Limitations => new[]

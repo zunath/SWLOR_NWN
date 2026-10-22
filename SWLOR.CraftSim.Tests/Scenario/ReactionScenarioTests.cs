@@ -74,6 +74,13 @@ namespace SWLOR.CraftSim.Tests.Scenario
         }
 
         [Test]
+        public void EspionageRecipesHaveNoEnhancementSlotsSoGateSevenIsNotApplicable()
+        {
+            new ReactionScenario().Enhancements.Should().Be(EnhancementSupport.NoSlots);
+            new ReactionWithoutDampenScenario().Enhancements.Should().Be(EnhancementSupport.NoSlots);
+        }
+
+        [Test]
         public void TheXpMultiplierIsTheOneTheGameApplies()
         {
             ICraftScenario scenario = new ReactionScenario();

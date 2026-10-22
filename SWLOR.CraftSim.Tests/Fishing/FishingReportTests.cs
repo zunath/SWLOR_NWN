@@ -34,18 +34,19 @@ namespace SWLOR.CraftSim.Tests.Fishing
 
             results.Select(result => result.Gate).Should().Equal(
                 GateNames.EconomyParity,
+                FishingFightBoundGate.GateName,
                 GateNames.Length,
                 GateNames.XpRate,
                 "Evidence: XP rate at the fastest allowed pace",
                 "Evidence: Angler perk magnitudes",
-                "Evidence: style balance",
-                "Evidence: rare fish and Trophy Catch");
+                "Evidence: style balance");
             report.Should().StartWith("# " + FishingReport.Title);
-            report.Should().Contain("## Inputs").And.Contain("## Verdicts").And.Contain("## Economy parity").And.Contain("## Length").And.Contain("## XP rate")
+            report.Should().Contain("## Inputs").And.Contain("## Verdicts").And.Contain("## Economy parity").And.Contain("## Fight bound").And.Contain("## Length").And.Contain("## XP rate")
                 .And.Contain("## Evidence: XP rate at the fastest allowed pace").And.Contain("## Evidence: Angler perk magnitudes").And.Contain("## Evidence: style balance")
-                .And.Contain("## Evidence: rare fish and Trophy Catch").And.Contain("## Limitations");
+                .And.Contain("## Limitations");
             report.Should().Contain("Willpower scores 8, 10, 12, 14, 16, 18, 20");
             report.Should().Contain("Rank - fish level").And.Contain("Agriculture rank").And.Contain("Trophy Catch");
+            report.Should().Contain("Quick Reel").And.Contain("pending the owner's attribute-median decision");
         }
 
         [Test]
@@ -57,7 +58,7 @@ namespace SWLOR.CraftSim.Tests.Fishing
             values.Should().Contain(("TensionCapBase", LineRules.TensionCapBase.ToString()));
             values.Should().Contain(("PullPercentPerRung", "0.8"));
             values.Select(value => value.Name).Should().OnlyHaveUniqueItems();
-            WriteReport(out _).Should().Contain("`RungAtRank` = 42");
+            WriteReport(out _).Should().Contain($"`RungAtRank` = {LineRules.RungAtRank}");
         }
 
         [Test]
@@ -95,7 +96,8 @@ namespace SWLOR.CraftSim.Tests.Fishing
 
             results.Single(result => result.Gate == GateNames.XpRate).Tables.Single().Rows.Should().HaveCount(5, "one case for each band of fish levels");
             results.Single(result => result.Gate == "Evidence: XP rate at the fastest allowed pace").Tables.Single().Rows.Should().HaveCount(5);
-            results.Single(result => result.Gate == GateNames.EconomyParity).Tables.Should().HaveCount(2);
+            results.Single(result => result.Gate == GateNames.EconomyParity).Tables.Should().HaveCount(3, "by rank above the fish's level, by rank over the pools, and per hour");
+            results.Single(result => result.Gate == FishingFightBoundGate.GateName).Tables.Should().HaveCount(4, "no perks, over the pools, the Angler line, and the rare fish");
             results.Where(result => result.Gate.StartsWith("Evidence")).Should().OnlyContain(result => result.Verdict == GateVerdict.NotApplicable);
         }
 
@@ -108,11 +110,11 @@ namespace SWLOR.CraftSim.Tests.Fishing
             var style = FishingAnglerEvidence.StyleBalance(parity);
             var rare = FishingAnglerEvidence.RareFish(parity, new[] { 10, 14 });
 
-            perks.Rows.Should().HaveCount(FishingAnglerEvidence.Variants.Count + 1);
+            perks.Rows.Should().HaveCount(FishingAnglerEvidence.Variants.Count + FishingAnglerEvidence.RejectedVariants.Count + 1);
             style.Table.Rows.Should().HaveCount(FishingAnglerEvidence.Ranks.Count * FishingAnglerEvidence.StyleDeltas.Count);
             (style.PatientShare + style.AggressiveShare).Should().BeApproximately(1.0, 1e-9);
             rare.Rows.Select(row => row[0]).Should().Contain(name => name.Contains("Trophy Catch"));
-            FishingAnglerEvidence.Variants.Select(variant => variant.Name).Should().OnlyHaveUniqueItems();
+            FishingAnglerEvidence.Variants.Concat(FishingAnglerEvidence.RejectedVariants).Select(variant => variant.Name).Should().OnlyHaveUniqueItems();
         }
 
         [Test]

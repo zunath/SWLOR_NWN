@@ -167,7 +167,12 @@ public sealed class LineSetup
         effects ??= LineAnglerEffects.None;
         var rung = Rung(fishLevel, rank);
         if (rarity == FishRarity.Rare)
+        {
+            // A rare fish fights on its own terms: only the rare-fish perk helps against it, so the rest of an angler's line cannot
+            // lift the supply of rare fish past what the fight is bounded to (see FishingParityOptions.FightBoundRelative).
+            effects = LineAnglerEffects.None with { RareFishRungReduction = effects.RareFishRungReduction };
             rung = Math.Clamp(rung - effects.RareFishRungReduction, LineRules.RungMinimum, LineRules.RungMaximum);
+        }
 
         var reelDistance = BaseReelDistance(rodTier, rank);
         var tensionCap = BaseTensionCap(rodTier, rank);

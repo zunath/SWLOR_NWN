@@ -46,8 +46,11 @@ public static class LineRules
     // The fish's strength. Its level less the angler's rank picks a rung of a ladder from 0 (a minnow) to 100 (hopeless), and
     // every rung adds a little pull, Stamina and aggression, so the chance of landing it falls smoothly with each level the fish
     // is above the rank. The pull is a share of the angler's Tension cap before perks, so a better rod meets stronger fish of
-    // its own tier and perks that raise the cap do not make the fish weaker.
-    public const int RungAtRank = 42;
+    // its own tier and perks that raise the cap do not make the fish weaker. RungAtRank is where a fish of the angler's own level
+    // sits. It is set high enough that a skilled angler with no perks lands fewer fish than Quick Reel would (the fight is the XP
+    // choice, and Quick Reel is the fish choice), which leaves room for the Angler line to lift a skilled angler up to, and not past,
+    // the bound on the fight's catch rate (FishingParityOptions.FightBoundRelative in CraftSim).
+    public const int RungAtRank = 54;
     public const int RungsPerLevel = 5;
     public const int RungMinimum = 0;
     public const int RungMaximum = 100;
@@ -72,11 +75,11 @@ public static class LineRules
     // move earns more per hour than today. Starting values until client timing replaces the seconds per turn; 1.0 in every band
     // restores today's XP per bite.
     public const int XpFullTurns = 5;
-    public const double XpMultiplierLevels0To10 = 8.75;
-    public const double XpMultiplierLevels11To20 = 8.55;
-    public const double XpMultiplierLevels21To30 = 8.35;
-    public const double XpMultiplierLevels31To40 = 8.25;
-    public const double XpMultiplierLevels41Up = 8.05;
+    public const double XpMultiplierLevels0To10 = 8.55;
+    public const double XpMultiplierLevels11To20 = 8.35;
+    public const double XpMultiplierLevels21To30 = 7.75;
+    public const double XpMultiplierLevels31To40 = 8.05;
+    public const double XpMultiplierLevels41Up = 7.5;
 
     /// <summary>
     /// The share, from 0 to 1, of a fight's multiplied XP that a fight lasting <paramref name="fightSeconds"/> has earned: all of it from

@@ -1,4 +1,5 @@
 using SWLOR.Game.Server.Service.CraftService.Minigame.Line;
+using SWLOR.Game.Server.Service.FishingService;
 
 namespace SWLOR.CraftSim.Fishing
 {
@@ -28,6 +29,30 @@ namespace SWLOR.CraftSim.Fishing
 
         /// <summary>The adaptive player's catch rate may sit this many points outside the corridor and still count as near today's.</summary>
         public double TolerancePoints { get; init; } = 10;
+
+        /// <summary>
+        /// The Willpower score Quick Reel rolls with (<see cref="FishingQuickReel.ReferenceWillpowerScore"/>), the middle of the corridor.
+        /// Pending the owner's attribute-median decision.
+        /// </summary>
+        public int QuickReelWillpowerScore { get; init; } = FishingQuickReel.ReferenceWillpowerScore;
+
+        /// <summary>
+        /// The bound on a skilled fight's catch rate (owner decision, October 2026; a starting value): it may be this share above Quick Reel's
+        /// chance for the same fish and angler, 0.15 being 15% more.
+        /// </summary>
+        public double FightBoundRelative { get; init; } = 0.15;
+
+        /// <summary>
+        /// Points added to the bound, so that a fish Quick Reel can hardly land is not held to a few hundredths of a point, and to cover the
+        /// sampling error of a case of 1000 fights (about 1.5 points at its widest, so 3 points is two standard errors).
+        /// </summary>
+        public double FightBoundSlackPoints { get; init; } = 3;
+
+        /// <summary>The most a fight may land, in percent, when Quick Reel lands <paramref name="quickReelPercent"/>.</summary>
+        public double FightBound(double quickReelPercent) => quickReelPercent * (1 + FightBoundRelative) + FightBoundSlackPoints;
+
+        /// <summary>Quick Reel's chance, in percent, for an angler of the rank and a fish of the level.</summary>
+        public int QuickReel(int rank, int fishLevel) => FishingQuickReel.CatchChancePercent(rank, fishLevel, QuickReelWillpowerScore);
 
         /// <summary>
         /// The seconds one turn of the fight takes the player, reading the previews included: <c>LineRules.TurnSeconds</c>, which the game also

@@ -8,7 +8,8 @@ namespace SWLOR.Game.Server.Service.FishingService
     /// <summary>
     /// The life of a bite, from the moment a cast picks a fish to the end of its fight. A bite spends one bait, takes one of the
     /// fishing point's bites and pays Agriculture XP at once, caught or not, exactly as the catch roll it replaces did; then it
-    /// opens a fight in the Line window. The fish is landed only when the fight is won. A fight the angler leaves unfinished
+    /// opens a fight in the Line window. At the start of the bite the angler may instead choose Quick Reel, which lands the fish by
+    /// today's catch roll at once. The fish is otherwise landed only when the fight is won. A fight the angler leaves unfinished
     /// (window closed, logout, moving away, combat, death) loses the fish as an escape.
     /// </summary>
     public sealed class FishingFightLifecycle
@@ -17,6 +18,7 @@ namespace SWLOR.Game.Server.Service.FishingService
         public const string LostMessage = "You failed to reel the fish in...";
         public const string SnappedMessage = "Your line snapped. " + LostMessage;
         public const string EscapedMessage = "The fish got away. " + LostMessage;
+        public const string QuickReelMissedMessage = "The fish shook the hook. " + LostMessage;
 
         /// <summary>How often a fight in progress checks that the angler is still there and still.</summary>
         public const float CheckSeconds = 1.0f;
@@ -150,6 +152,56 @@ namespace SWLOR.Game.Server.Service.FishingService
                 _world.GiveAgricultureXp(fight.Player, rest);
 
             fight.Result = new FishingFightResult(ending, message);
+            return fight.Result;
+        }
+
+        /// <summary>True while the angler may still choose Quick Reel: the fight is theirs and they have not made a move in it.</summary>
+        public bool CanQuickReel(FishingFight fight) => IsActive(fight) && fight.Engine.Turn == 0;
+
+        /// <summary>The chance, in percent, that Quick Reel lands this fight's fish.</summary>
+        public static int QuickReelChance(FishingFight fight)
+        {
+            if (fight == null)
+                throw new ArgumentNullException(nameof(fight));
+
+            return FishingQuickReel.CatchChancePercent(fight.Bite.Rank, fight.Fish.Level);
+        }
+
+        /// <summary>
+        /// Ends the fight at once by the catch roll fishing had before the Line (<see cref="FishingQuickReel"/>): no fight time, and no
+        /// XP beyond the bite's, which is today's. The bait, the point's bite and that XP were spent at the bite. It is the choice at
+        /// the start of a bite, so it is refused once the angler has made a move, or when the fight is over. Returns the result, or
+        /// null when it was refused.
+        /// </summary>
+        public FishingFightResult QuickReel(FishingFight fight)
+        {
+            if (fight == null)
+                throw new ArgumentNullException(nameof(fight));
+
+            if (!CanQuickReel(fight) || !fight.TrySettle())
+                return null;
+
+            Forget(fight);
+            _world.EndFight(fight.Player);
+
+            // The multiplied XP is the fight's, paid for its time.
+            fight.XpOnFinish = 0;
+
+            var landed = _random.D100() <= QuickReelChance(fight);
+            string message;
+            if (landed)
+            {
+                _world.CreateFish(fight.Player, fight.Fish.Resref);
+                message = $"You landed a {fight.Fish.Name}!";
+                _world.Message(fight.Player, message);
+            }
+            else
+            {
+                message = QuickReelMissedMessage;
+                _world.Message(fight.Player, ColorToken.Red(message));
+            }
+
+            fight.Result = new FishingFightResult(landed ? LineEnding.Landed : LineEnding.Escaped, message);
             return fight.Result;
         }
 

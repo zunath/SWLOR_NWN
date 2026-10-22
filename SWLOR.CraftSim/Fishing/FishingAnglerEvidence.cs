@@ -22,31 +22,30 @@ namespace SWLOR.CraftSim.Fishing
         public static readonly IReadOnlyList<int> FishAboveRank = new[] { 0, 3 };
 
         public static readonly AnglerPerkVariant Patient = new(
-            "Patient Angler (Give Line lets out 2 less Distance)",
-            new LineAnglerEffects(GiveLineDistanceReduction: 2));
+            "Patient Angler (Give Line lets out 1 less Distance)",
+            new LineAnglerEffects(GiveLineDistanceReduction: 1));
 
         public static readonly AnglerPerkVariant Aggressive = new(
-            "Aggressive Angler (Reel pulls 2 more Distance and adds 2 more Tension)",
-            new LineAnglerEffects(ReelDistanceBonus: 2, ReelTensionBonus: 2));
+            "Aggressive Angler (Reel pulls the fish in 1 more Distance)",
+            new LineAnglerEffects(ReelDistanceBonus: 1));
 
         /// <summary>Everything the line grants below the capstone, with the Patient Angler style.</summary>
         public static readonly LineAnglerEffects WholeLinePatient =
-            new(TensionCapBonus: 3, SetHookDrainBonus: 4, HoldDrainBonus: 1, ForecastDepth: 2, GiveLineDistanceReduction: 2);
+            new(TensionCapBonus: 2, SetHookDrainBonus: 2, ForecastDepth: 2, GiveLineDistanceReduction: 1);
 
         /// <summary>Everything the line grants below the capstone, with the Aggressive Angler style.</summary>
         public static readonly LineAnglerEffects WholeLineAggressive =
-            new(TensionCapBonus: 3, SetHookDrainBonus: 4, HoldDrainBonus: 1, ForecastDepth: 2, ReelDistanceBonus: 2, ReelTensionBonus: 2);
+            new(TensionCapBonus: 2, SetHookDrainBonus: 2, ForecastDepth: 2, ReelDistanceBonus: 1);
+
+        /// <summary>The rungs Trophy Catch takes off a rare fish's difficulty.</summary>
+        public const int TrophyCatchRungs = 12;
 
         public static readonly IReadOnlyList<AnglerPerkVariant> Variants = new[]
         {
             new AnglerPerkVariant("Strong Line I (+1 Tension cap)", new LineAnglerEffects(TensionCapBonus: 1)),
             new AnglerPerkVariant("Strong Line II (+2 Tension cap)", new LineAnglerEffects(TensionCapBonus: 2)),
-            new AnglerPerkVariant("Strong Line III (+3 Tension cap)", new LineAnglerEffects(TensionCapBonus: 3)),
-            new AnglerPerkVariant("Hard Set I (Set Hook drains 2 more Stamina)", new LineAnglerEffects(SetHookDrainBonus: 2)),
-            new AnglerPerkVariant("Hard Set II (Set Hook drains 3 more Stamina)", new LineAnglerEffects(SetHookDrainBonus: 3)),
-            new AnglerPerkVariant("Hard Set III (Set Hook drains 4 more Stamina)", new LineAnglerEffects(SetHookDrainBonus: 4)),
-            new AnglerPerkVariant("Steady Hold I (Hold drains 1 more Stamina)", new LineAnglerEffects(HoldDrainBonus: 1)),
-            new AnglerPerkVariant("Steady Hold II (Hold drains 2 more Stamina)", new LineAnglerEffects(HoldDrainBonus: 2)),
+            new AnglerPerkVariant("Hard Set I (Set Hook drains 1 more Stamina)", new LineAnglerEffects(SetHookDrainBonus: 1)),
+            new AnglerPerkVariant("Hard Set II (Set Hook drains 2 more Stamina)", new LineAnglerEffects(SetHookDrainBonus: 2)),
             new AnglerPerkVariant("Fish Sense (sees the next two moves)", new LineAnglerEffects(ForecastDepth: 2)),
             Patient,
             Aggressive,
@@ -54,8 +53,19 @@ namespace SWLOR.CraftSim.Fishing
             new AnglerPerkVariant("Whole line below the capstone, Aggressive Angler", WholeLineAggressive)
         };
 
+        /// <summary>
+        /// The draft's first whole line, kept to show how far over the bound it went. Each of its purchases alone is within the bound; it is the
+        /// sum that is not, which is why the line was cut to seven purchases.
+        /// </summary>
+        public static readonly IReadOnlyList<AnglerPerkVariant> RejectedVariants = new[]
+        {
+            new AnglerPerkVariant(
+                "Rejected: the first draft's whole line (Strong Line III, Hard Set III, Steady Hold, Fish Sense, Patient Angler -2)",
+                new LineAnglerEffects(TensionCapBonus: 3, SetHookDrainBonus: 4, HoldDrainBonus: 1, ForecastDepth: 2, GiveLineDistanceReduction: 2))
+        };
+
         /// <summary>The rung reductions Trophy Catch is tried at.</summary>
-        public static readonly IReadOnlyList<int> TrophyReductions = new[] { 2, 4, 6, 8, 12 };
+        public static readonly IReadOnlyList<int> TrophyReductions = new[] { 4, 8, 10, TrophyCatchRungs, 14 };
 
         /// <summary>The level of the special fish, which are all the same.</summary>
         public const int RareFishLevel = 52;
@@ -68,7 +78,7 @@ namespace SWLOR.CraftSim.Fishing
                 {
                     var tier = FishingParity.NominalRodTier(rank);
                     yield return new CatchKey(rank + above, FishRarity.Common, rank, tier, LinePlayer.Adaptive, LineAnglerEffects.None);
-                    foreach (var variant in Variants)
+                    foreach (var variant in Variants.Concat(RejectedVariants))
                         yield return new CatchKey(rank + above, FishRarity.Common, rank, tier, LinePlayer.Adaptive, variant.Effects);
                 }
 
@@ -85,6 +95,7 @@ namespace SWLOR.CraftSim.Fishing
                 yield return new CatchKey(RareFishLevel, FishRarity.Common, 50, 4, player, LineAnglerEffects.None);
                 yield return new CatchKey(RareFishLevel, FishRarity.Rare, 50, 4, player, WholeLinePatient);
                 yield return new CatchKey(RareFishLevel, FishRarity.Rare, 50, 4, player, WholeLineAggressive);
+                yield return new CatchKey(RareFishLevel, FishRarity.Rare, 50, 4, player, WholeLineAggressive with { RareFishRungReduction = TrophyCatchRungs });
                 foreach (var reduction in TrophyReductions)
                 {
                     yield return new CatchKey(RareFishLevel, FishRarity.Rare, 50, 4, player, new LineAnglerEffects(RareFishRungReduction: reduction));
@@ -97,21 +108,30 @@ namespace SWLOR.CraftSim.Fishing
         public static readonly IReadOnlyList<int> StyleDeltas = new[] { -4, -3, -2, -1, 0, 1, 2 };
 
         /// <summary>What each proposed perk adds to the adaptive player's catch rate against fish at level and three levels above the rank.</summary>
-        public static GateTable PerkMagnitudes(FishingParity parity)
+        public static GateTable PerkMagnitudes(FishingParity parity, FishingParityOptions options = null)
         {
+            options ??= FishingParityOptions.Default;
+            var boundAtLevel = options.FightBound(options.QuickReel(0, 0));
+            var boundHarder = options.FightBound(options.QuickReel(0, FishAboveRank[1]));
             var table = new EvidenceTable(
                 "Perk",
                 "Landed, fish at the rank's level",
                 "Landed, fish 3 levels above the rank",
-                "Added points, mean");
+                "Added points, mean",
+                "Within the bound");
 
             double Mean(LineAnglerEffects effects, int above) => Ranks.Average(rank =>
                 parity.Catch(rank + above, FishRarity.Common, rank, FishingParity.NominalRodTier(rank), LinePlayer.Adaptive, effects).LandedPercent);
 
+            string Verdict(double atLevel, double harder) =>
+                atLevel <= boundAtLevel && harder <= boundHarder
+                    ? "Yes"
+                    : "No: over by " + Number(Math.Max(atLevel - boundAtLevel, harder - boundHarder), 1) + " points";
+
             var baseAtLevel = Mean(LineAnglerEffects.None, 0);
             var baseHarder = Mean(LineAnglerEffects.None, 3);
-            table.Add("No perks", Number(baseAtLevel, 1) + "%", Number(baseHarder, 1) + "%", "-");
-            foreach (var variant in Variants)
+            table.Add("No perks", Number(baseAtLevel, 1) + "%", Number(baseHarder, 1) + "%", "-", Verdict(baseAtLevel, baseHarder));
+            foreach (var variant in Variants.Concat(RejectedVariants))
             {
                 var atLevel = Mean(variant.Effects, 0);
                 var harder = Mean(variant.Effects, 3);
@@ -119,11 +139,14 @@ namespace SWLOR.CraftSim.Fishing
                     variant.Name,
                     Number(atLevel, 1) + "%",
                     Number(harder, 1) + "%",
-                    Number(((atLevel - baseAtLevel) + (harder - baseHarder)) / 2, 1));
+                    Number(((atLevel - baseAtLevel) + (harder - baseHarder)) / 2, 1),
+                    Verdict(atLevel, harder));
             }
 
             return table.ToGateTable(
-                $"Angler perk magnitudes: the adaptive player's catch rate at ranks {string.Join(", ", Ranks)}, averaged over the ranks ({parity.Runs} fights per case)");
+                $"Angler perk magnitudes: the adaptive player's catch rate at ranks {string.Join(", ", Ranks)}, averaged over the ranks " +
+                $"({parity.Runs} fights per case). The bound is Quick Reel's chance plus {Number(options.FightBoundRelative * 100, 0)}% plus " +
+                $"{Number(options.FightBoundSlackPoints, 0)} points: {Number(boundAtLevel, 1)}% at the rank's level and {Number(boundHarder, 1)}% for fish 3 levels above");
         }
 
         /// <summary>The two rank-20 styles against each other over fish from four levels above the rank to two below it.</summary>
@@ -168,50 +191,101 @@ namespace SWLOR.CraftSim.Fishing
             return (table.ToGateTable(title), patientWins / cases, aggressiveWins / cases, gap / cases);
         }
 
-        /// <summary>How the special fish fight at rank 50, and how far Trophy Catch moves them against today's catch chance.</summary>
-        public static GateTable RareFish(FishingParity parity, IReadOnlyList<int> scores)
+        /// <summary>One case of the rare-fish table: a fish, and the perks the angler brings.</summary>
+        /// <param name="Name">What the row says.</param>
+        /// <param name="Rarity">The fish's rarity.</param>
+        /// <param name="Effects">The angler's perks.</param>
+        /// <param name="Gated">True when the fight bound judges the row, false when it is shown for comparison.</param>
+        public sealed record RareFishCase(string Name, FishRarity Rarity, LineAnglerEffects Effects, bool Gated);
+
+        /// <summary>The cases the rare-fish table plays: the six special fish at rank 50 with a tier 4 rod, with and without the line and Trophy Catch.</summary>
+        public static IReadOnlyList<RareFishCase> RareCases()
         {
+            var cases = new List<RareFishCase>
+            {
+                new("Fight, a common fish of level 52 (for comparison)", FishRarity.Common, LineAnglerEffects.None, false),
+                new("Fight, a rare fish (chained moves)", FishRarity.Rare, LineAnglerEffects.None, true)
+            };
+            cases.AddRange(TrophyReductions.Select(reduction => new RareFishCase(
+                $"Fight, a rare fish with Trophy Catch (-{reduction} rungs) and no other perk",
+                FishRarity.Rare,
+                new LineAnglerEffects(RareFishRungReduction: reduction),
+                reduction == TrophyCatchRungs)));
+            cases.Add(new("Fight, a rare fish with the whole line below the capstone (Patient Angler)", FishRarity.Rare, WholeLinePatient, true));
+            cases.Add(new("Fight, a rare fish with the whole line below the capstone (Aggressive Angler)", FishRarity.Rare, WholeLineAggressive, true));
+            cases.Add(new(
+                $"Fight, a rare fish with the whole line (Patient Angler) and Trophy Catch (-{TrophyCatchRungs} rungs)",
+                FishRarity.Rare,
+                WholeLinePatient with { RareFishRungReduction = TrophyCatchRungs },
+                true));
+            cases.Add(new(
+                $"Fight, a rare fish with the whole line (Aggressive Angler) and Trophy Catch (-{TrophyCatchRungs} rungs)",
+                FishRarity.Rare,
+                WholeLineAggressive with { RareFishRungReduction = TrophyCatchRungs },
+                true));
+            return cases;
+        }
+
+        /// <summary>The rank every rare-fish case is played at, and its rod tier.</summary>
+        public const int RareFishRank = 50;
+
+        /// <summary>
+        /// How the special fish fight at rank 50 against Quick Reel and the bound: what each case lands, the bound it is held to, and whether it
+        /// is within it. The special fish ignore the line, so only Trophy Catch moves them.
+        /// </summary>
+        public static IReadOnlyList<(RareFishCase Case, double Landed, double Bound, bool Within)> RareFishVerdicts(FishingParity parity, FishingParityOptions options = null)
+        {
+            options ??= FishingParityOptions.Default;
+            var bound = options.FightBound(options.QuickReel(RareFishRank, RareFishLevel));
+            return RareCases()
+                .Select(rareCase =>
+                {
+                    var landed = parity.Catch(RareFishLevel, rareCase.Rarity, RareFishRank, 4, LinePlayer.Adaptive, rareCase.Effects).LandedPercent;
+                    return (rareCase, landed, bound, landed <= bound);
+                })
+                .ToList();
+        }
+
+        /// <summary>How the special fish fight at rank 50 against Quick Reel and today's catch chance, and how far Trophy Catch moves them.</summary>
+        public static GateTable RareFish(FishingParity parity, IReadOnlyList<int> scores, FishingParityOptions options = null)
+        {
+            options ??= FishingParityOptions.Default;
+            var quickReel = options.QuickReel(RareFishRank, RareFishLevel);
+            var bound = options.FightBound(quickReel);
             var header = new List<string> { "Case" };
             header.AddRange(scores.Select(score => $"Today, Willpower {score}"));
-            header.AddRange(new[] { "Fight, adaptive", "Fight, rule of thumb", "Adaptive turns" });
+            header.AddRange(new[]
+            {
+                $"Quick Reel (Willpower {options.QuickReelWillpowerScore})", "Bound", "Fight, adaptive", "Fight, rule of thumb", "Adaptive turns", "Within the bound"
+            });
             var table = new EvidenceTable(header.ToArray());
 
-            void AddToday(string name)
-            {
-                var row = new List<string> { name };
-                row.AddRange(scores.Select(score => FishingCatchRateGate.Today(50 - RareFishLevel, score) + "%"));
-                row.AddRange(new[] { "-", "-", "-" });
-                table.Add(row.ToArray());
-            }
+            var todayRow = new List<string> { "Today (level 52 fish, rank 50)" };
+            todayRow.AddRange(scores.Select(score => FishingCatchRateGate.Today(RareFishRank - RareFishLevel, score) + "%"));
+            todayRow.AddRange(new[] { quickReel + "%", Number(bound, 1) + "%", "-", "-", "-", "-" });
+            table.Add(todayRow.ToArray());
 
-            void AddFight(string name, FishRarity rarity, LineAnglerEffects effects)
+            foreach (var verdict in RareFishVerdicts(parity, options))
             {
-                var adaptive = parity.Catch(RareFishLevel, rarity, 50, 4, LinePlayer.Adaptive, effects);
-                var rule = parity.Catch(RareFishLevel, rarity, 50, 4, LinePlayer.RuleOfThumb, effects);
-                var row = new List<string> { name };
+                var rule = parity.Catch(RareFishLevel, verdict.Case.Rarity, RareFishRank, 4, LinePlayer.RuleOfThumb, verdict.Case.Effects);
+                var adaptive = parity.Catch(RareFishLevel, verdict.Case.Rarity, RareFishRank, 4, LinePlayer.Adaptive, verdict.Case.Effects);
+                var row = new List<string> { verdict.Case.Name };
                 row.AddRange(scores.Select(_ => "-"));
-                row.AddRange(new[] { Number(adaptive.LandedPercent, 0) + "%", Number(rule.LandedPercent, 0) + "%", Number(adaptive.MeanTurns) });
+                row.AddRange(new[]
+                {
+                    "-",
+                    "-",
+                    Number(adaptive.LandedPercent, 0) + "%",
+                    Number(rule.LandedPercent, 0) + "%",
+                    Number(adaptive.MeanTurns),
+                    !verdict.Case.Gated ? "Not judged" : verdict.Within ? "Yes" : "No: over by " + Number(verdict.Landed - verdict.Bound, 1) + " points"
+                });
                 table.Add(row.ToArray());
-            }
-
-            AddToday("Today (level 52 fish, rank 50)");
-            AddFight("Fight, a common fish of level 52", FishRarity.Common, LineAnglerEffects.None);
-            AddFight("Fight, a rare fish (chained moves)", FishRarity.Rare, LineAnglerEffects.None);
-            foreach (var reduction in TrophyReductions)
-                AddFight($"Fight, a rare fish with Trophy Catch (-{reduction} rungs) and no other perk", FishRarity.Rare, new LineAnglerEffects(RareFishRungReduction: reduction));
-
-            AddFight("Fight, a rare fish with the whole line below the capstone (Patient Angler)", FishRarity.Rare, WholeLinePatient);
-            AddFight("Fight, a rare fish with the whole line below the capstone (Aggressive Angler)", FishRarity.Rare, WholeLineAggressive);
-            foreach (var reduction in TrophyReductions)
-            {
-                AddFight(
-                    $"Fight, a rare fish with the whole line (Patient Angler) and Trophy Catch (-{reduction} rungs)",
-                    FishRarity.Rare,
-                    WholeLinePatient with { RareFishRungReduction = reduction });
             }
 
             return table.ToGateTable(
-                $"The six special fish (level {RareFishLevel}) at Agriculture rank 50 with a tier 4 rod, against today's catch chance ({parity.Runs} fights per case)");
+                $"The six special fish (level {RareFishLevel}) at Agriculture rank {RareFishRank} with a tier 4 rod, against Quick Reel's chance and the bound " +
+                $"({parity.Runs} fights per case). A rare fish ignores the line; only Trophy Catch helps against it");
         }
     }
 }

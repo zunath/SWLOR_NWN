@@ -51,6 +51,12 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
         public float TensionPercent { get => Get<float>(); set => Set(value); }
         public float StaminaPercent { get => Get<float>(); set => Set(value); }
         public string CloseText { get => Get<string>(); set => Set(value); }
+        public string QuickReelText { get => Get<string>(); set => Set(value); }
+        public string QuickReelSummary { get => Get<string>(); set => Set(value); }
+        public string QuickReelTooltip { get => Get<string>(); set => Set(value); }
+        public GuiColor QuickReelColor { get => Get<GuiColor>(); set => Set(value); }
+        public bool QuickReelEnabled { get => Get<bool>(); set => Set(value); }
+        public string FightLabelText { get => Get<string>(); set => Set(value); }
 
         public string ActionText0 => Get<string>();
         public string ActionText1 => Get<string>();
@@ -98,7 +104,32 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
 
         public Action OnClickAction(int index) => () => PerformAction(index);
 
+        public Action OnClickQuickReel() => () => PerformQuickReel();
+
         public Action OnClickClose() => () => Gui.ClosePlayerWindow(Player, WindowType);
+
+        private void PerformQuickReel()
+        {
+            // A click queued behind the one that ended the fight must not replace the result the window already shows.
+            if (_fight == null || _fight.Result != null)
+                return;
+
+            if (!FishingFights.Revalidate(_fight))
+            {
+                ShowEnd(FishingFightLifecycle.EscapedMessage, LineEnding.Escaped);
+                return;
+            }
+
+            var result = FishingFights.QuickReel(_fight);
+            if (result == null)
+            {
+                SetStatus("Quick Reel is only a choice before your first move.", GuiColor.Red);
+                RefreshFight();
+                return;
+            }
+
+            ShowEnd(result.Message, result.Ending);
+        }
 
         private void PerformAction(int index)
         {
@@ -175,6 +206,27 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
             StaminaPercent = Fraction(engine.Stamina, engine.StaminaMax);
             CloseText = "Let the fish go";
 
+            var canQuickReel = FishingFights.CanQuickReel(_fight);
+            QuickReelText = "Quick Reel";
+            QuickReelEnabled = canQuickReel;
+            if (canQuickReel)
+            {
+                QuickReelSummary =
+                    $"Reel it in at once: {FishingFights.QuickReelChance(_fight)}% to land it. No fight, and your XP is as it always was.";
+                QuickReelColor = GuiColor.Green;
+                QuickReelTooltip =
+                    "Lands the fish by the old catch roll (your Agriculture rank against the fish's level), with no fight. " +
+                    "You can only choose it before your first move.";
+                FightLabelText = "Or fight it for more XP; skill can land more fish:";
+            }
+            else
+            {
+                QuickReelSummary = "Not a choice once the fight has begun.";
+                QuickReelColor = GuiColor.Grey;
+                QuickReelTooltip = "Quick Reel is only a choice before your first move.";
+                FightLabelText = "Actions";
+            }
+
             var previews = engine.PreviewAll();
             for (var index = 0; index < ActionCount; index++)
             {
@@ -202,6 +254,12 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
             MoveHintText = string.Empty;
             MoveThenText = string.Empty;
             CloseText = "Close";
+            QuickReelText = "Quick Reel";
+            QuickReelSummary = string.Empty;
+            QuickReelTooltip = string.Empty;
+            QuickReelColor = GuiColor.Grey;
+            QuickReelEnabled = false;
+            FightLabelText = string.Empty;
             SetStatus(message, ending == LineEnding.Landed ? GuiColor.Green : GuiColor.Red);
 
             for (var index = 0; index < ActionCount; index++)
@@ -228,6 +286,12 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
             TensionPercent = 0f;
             StaminaPercent = 0f;
             CloseText = "Let the fish go";
+            QuickReelText = "Quick Reel";
+            QuickReelSummary = string.Empty;
+            QuickReelTooltip = string.Empty;
+            QuickReelColor = GuiColor.White;
+            QuickReelEnabled = false;
+            FightLabelText = "Actions";
             SetStatus(string.Empty, GuiColor.White);
 
             for (var index = 0; index < ActionCount; index++)

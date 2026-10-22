@@ -141,10 +141,125 @@ namespace SWLOR.CraftSim.Tests.Gates
             var cases = suite.XpCohort.Cases(context);
 
             cases.Select(c => $"{c.Group}/{c.Label}").Should().Equal(
-                "1-10/no gear", "1-10/mid gear", "1-10/best gear",
-                "21-30/no gear", "21-30/mid gear", "21-30/best gear",
-                "41-53/no gear", "41-53/mid gear", "41-53/best gear");
+                new[] { "1-10", "21-30", "41-53" }.SelectMany(band => new[] { "no gear", "mid gear", "best gear" }.SelectMany(gear => new[]
+                {
+                    $"{band}/{gear}", $"{band}/{gear}, 1 enhancement", $"{band}/{gear}, 2 enhancements", $"{band}/{gear}, 3 enhancements"
+                })));
             suite.XpCohort.Name.Should().Be("Item crafts");
+        }
+
+        [Test]
+        public void TheItemCraftCohortPlaysEachBandAndGearTierPlainAndWithOneTwoAndThreeEnhancements()
+        {
+            var suite = Suite(new BenchScenario());
+
+            var cases = suite.XpCohort.Cases(Context(new[] { 52 }));
+
+            cases.Select(c => c.Label).Where(label => label.StartsWith("best gear")).Should().Equal(
+                "best gear", "best gear, 1 enhancement", "best gear, 2 enhancements", "best gear, 3 enhancements");
+            suite.XpCohort.Incomplete(Context(new[] { 52 })).Should().BeNull();
+        }
+
+        [Test]
+        public void TheEnhancedCasesCountTheEnhancementsDifficultyOnBothSides()
+        {
+            var context = Context(new[] { 45 }, runs: 30);
+            var suite = Suite(new BenchScenario());
+            var plain = new XpRateCase("41-53", "best gear");
+            var triple = new XpRateCase("41-53", "best gear, 3 enhancements");
+
+            var newPlain = suite.XpCohort.PlayReplacement(plain, context);
+            var newTriple = suite.XpCohort.PlayReplacement(triple, context);
+            var legacyPlain = suite.XpCohort.PlayLegacy(plain, context);
+            var legacyTriple = suite.XpCohort.PlayLegacy(triple, context);
+
+            newTriple.Runs.Should().Be(30);
+            legacyTriple.Runs.Should().Be(30);
+            newTriple.ActionsPerRun.Should().BeGreaterThan(newPlain.ActionsPerRun, "the bench piece needs more progress with enhancements");
+            legacyTriple.XpPerRun.Should().BeLessThan(legacyPlain.XpPerRun, "the old window needs more progress with enhancements, which leaves less quality and fewer crafts made");
+        }
+
+        [Test]
+        public void TheEnhancedCasesUseTheSameRepresentativeEnhancementsAsGateSeven()
+        {
+            var context = Context(new[] { 45 }, runs: 10);
+            var requested = new System.Collections.Concurrent.ConcurrentBag<CraftEnhancementConfiguration>();
+            var spied = Suite(new BenchScenario { Spy = request => requested.Add(request.Enhancements) });
+            var recipe = spied.RunFor(context).Bands.Single().Recipes.Single();
+            var item = SharedData.Enhancements.ForRecipe(recipe.EnhancementType, recipe.Level);
+
+            spied.XpCohort.PlayReplacement(new XpRateCase("41-53", "best gear, 2 enhancements"), context);
+
+            // The engine check at the largest count builds a three-enhancement engine too; every enhanced request carries the same item's penalty.
+            requested.Where(config => config.Count == 2).Should().NotBeEmpty();
+            requested.Where(config => !config.IsNone).Should().OnlyContain(config => config.ProgressPenaltyEach == item.ProgressPenalty);
+            requested.Select(config => config.Count).Distinct().Should().BeEquivalentTo(new[] { 0, 2, 3 });
+        }
+
+        [Test]
+        public void ACohortThatCouldNotPlayEverythingIsNotRunInsteadOfPassed()
+        {
+            var cohort = new FakeCohort { IncompleteReason = "the enhanced crafts were not played." };
+
+            var passing = new XpRateGate(cohort).Evaluate(Empty());
+            var failing = new XpRateGate(new FakeCohort { NewActions = 100, IncompleteReason = "the enhanced crafts were not played." }).Evaluate(Empty());
+
+            passing.Verdict.Should().Be(GateVerdict.NotRun);
+            passing.Summary.Should().Contain("not complete").And.Contain("the enhanced crafts were not played.");
+            passing.Tables.Should().HaveCount(1, "the cases that were played are still reported");
+            failing.Verdict.Should().Be(GateVerdict.Failed, "a case that was played and fell short outranks the cases that were not played");
+            failing.Summary.Should().Contain("Cases not played: the enhanced crafts were not played.");
+        }
+
+        [Test]
+        public void AScenarioThatDoesNotModelEnhancementsLeavesTheEnhancedCasesUnplayedAndTheGateNotRun()
+        {
+            var suite = Suite(new BenchScenario { Enhancements = EnhancementSupport.NotModeled, SecondsPerAction = 2 });
+            var context = Context(Levels, runs: 12);
+
+            suite.XpCohort.Cases(context).Select(c => c.Label).Should().OnlyContain(label => !label.Contains("enhancement"));
+            suite.XpCohort.Incomplete(context).Should().Contain("does not apply CraftEngineRequest.Enhancements");
+            Evaluate("xp", new BenchScenario { Enhancements = EnhancementSupport.NotModeled, SecondsPerAction = 2 }, context).Verdict
+                .Should().Be(GateVerdict.NotRun);
+        }
+
+        [Test]
+        public void AMinigameWithoutEnhancementSlotsPlaysOnlyPlainCrafts()
+        {
+            var suite = Suite(new BenchScenario { Enhancements = EnhancementSupport.NoSlots });
+            var context = Context(Levels, runs: 12);
+
+            suite.XpCohort.Cases(context).Select(c => c.Label).Should().OnlyContain(label => !label.Contains("enhancement"));
+            suite.XpCohort.Incomplete(context).Should().BeNull();
+        }
+
+        [Test]
+        public void ACohortWithNoEnhanceableRecipesPlaysOnlyPlainCraftsEvenWhenTheScenarioIsNotModeled()
+        {
+            var plainRecipes = RecipeCatalog.From(BenchRecipes.Catalog(Levels).Recipes.Select(r =>
+                new RecipeEntry(r.Type, r.Skill, r.Level, r.Resref, r.Category, r.Components)));
+            var context = new GateContext(plainRecipes, SharedData.Gear, 12, 1, AttributeSweep.Default, enhancements: SharedData.Enhancements);
+            var suite = Suite(new BenchScenario { Enhancements = EnhancementSupport.NotModeled });
+
+            suite.XpCohort.Cases(context).Select(c => c.Label).Should().OnlyContain(label => !label.Contains("enhancement"));
+            suite.XpCohort.Incomplete(context).Should().BeNull("there is nothing to enhance");
+        }
+
+        [Test]
+        public void AScenarioWhoseEngineIgnoresEnhancementsLeavesTheEnhancedCasesUnplayed()
+        {
+            var suite = Suite(new BenchScenario { IgnoreEnhancements = true });
+
+            suite.XpCohort.Incomplete(Context(Levels)).Should().Contain("does not rise with them");
+            suite.XpCohort.Cases(Context(Levels)).Select(c => c.Label).Should().OnlyContain(label => !label.Contains("enhancement"));
+        }
+
+        [Test]
+        public void WithoutEnhancementItemsTheEnhancedCasesCannotBePlayed()
+        {
+            var context = new GateContext(BenchRecipes.Catalog(Levels), SharedData.Gear, 12, 1, AttributeSweep.Default);
+
+            Suite(new BenchScenario()).XpCohort.Incomplete(context).Should().Contain("no enhancement items");
         }
 
         [Test]
@@ -211,6 +326,7 @@ namespace SWLOR.CraftSim.Tests.Gates
             public XpLoopTiming Replacement { get; init; } = new(6);
             public IReadOnlyList<XpRateCase> Cases { get; init; } = new[] { new XpRateCase("Group", "Variant") };
             public Func<XpRateCase, double> NewXpFor { get; set; }
+            public string IncompleteReason { get; init; }
 
             public string Name => "Fake";
             public string RunName => "run";
@@ -218,6 +334,8 @@ namespace SWLOR.CraftSim.Tests.Gates
             public XpLoopTiming ReplacementTiming => Replacement;
 
             IReadOnlyList<XpRateCase> IXpRateCohort.Cases(GateContext context) => Cases;
+
+            string IXpRateCohort.Incomplete(GateContext context) => IncompleteReason;
 
             public XpLoopSample PlayLegacy(XpRateCase xpCase, GateContext context) => new(LegacyXp * 5, LegacyActions * 5, 5);
 

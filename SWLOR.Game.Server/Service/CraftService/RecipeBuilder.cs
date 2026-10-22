@@ -208,6 +208,30 @@ namespace SWLOR.Game.Server.Service.CraftService
         }
 
         /// <summary>
+        /// Sets the Kitchen minigame parameters of a cooking recipe: its dish, the center and radii of its flavor target, and
+        /// the Freshness the dish starts with.
+        /// </summary>
+        /// <returns>A recipe builder with the configured options</returns>
+        public RecipeBuilder KitchenParameters(
+            KitchenDish dish,
+            int targetSavory,
+            int targetSweet,
+            int targetSpice,
+            int innerRadius,
+            int outerRadius,
+            int freshness)
+        {
+            return MinigameParameters(new KitchenParameters(
+                dish,
+                targetSavory,
+                targetSweet,
+                targetSpice,
+                innerRadius,
+                outerRadius,
+                freshness));
+        }
+
+        /// <summary>
         /// Sets the Plasma Forge parameters of the recipe.
         /// </summary>
         /// <param name="rangeCenter">The middle of the working range on the 0-100 Thermal meter.</param>

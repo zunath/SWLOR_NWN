@@ -17,7 +17,8 @@ namespace SWLOR.CraftSim.Tests.Gates
 
         private static readonly GateThresholds ReliableBands = GateThresholds.Default with
         {
-            PerksOptionalBands = new[] { new RecipeBand("1-20", 1, 20) }
+            PerksOptionalBands = new[] { new RecipeBand("1-20", 1, 20) },
+            EnhancementParityBands = new[] { new RecipeBand("1-20", 1, 20) }
         };
 
         private static BenchScenario EverythingPasses() => new() { SecondsPerAction = 2 };
@@ -29,9 +30,9 @@ namespace SWLOR.CraftSim.Tests.Gates
         };
 
         [Test]
-        public void TheGateKeysNameTheSixGatesInOrder()
+        public void TheGateKeysNameTheSevenGatesInOrder()
         {
-            CraftGateSuite.GateKeys.Should().Equal("rotation", "styles", "perks", "length", "materials", "xp");
+            CraftGateSuite.GateKeys.Should().Equal("rotation", "styles", "perks", "length", "materials", "xp", "enhancements");
             Suite(new BenchScenario()).Gates.Select(gate => gate.Name).Should().Equal(GateNames.All);
         }
 
@@ -42,9 +43,26 @@ namespace SWLOR.CraftSim.Tests.Gates
 
             suite.Select(new[] { "XP", "length", "length" }).Select(gate => gate.Name).Should().Equal(GateNames.Length, GateNames.XpRate);
             var act = () => suite.Select(new[] { "balance" });
-            act.Should().Throw<ArgumentException>().WithMessage("*--gates names rotation, styles, perks, length, materials, xp, not 'balance'*");
+            act.Should().Throw<ArgumentException>().WithMessage("*--gates names rotation, styles, perks, length, materials, xp, enhancements (or a gate number, 1 to 7), not 'balance'*");
             var none = () => suite.Select(Array.Empty<string>());
             none.Should().Throw<ArgumentException>().WithMessage("*--gates needs at least one of rotation*");
+        }
+
+        [Test]
+        public void TheGatesCanBeNamedByNumber()
+        {
+            var suite = Suite(new BenchScenario());
+
+            suite.Select(new[] { "7" }).Select(gate => gate.Name).Should().Equal(GateNames.EnhancementParity);
+            suite.Select(new[] { "7", "4", "length", "1" }).Select(gate => gate.Name)
+                .Should().Equal(GateNames.NoFixedRotation, GateNames.Length, GateNames.EnhancementParity);
+            suite.Select(new[] { "enhancements" }).Single().Name.Should().Be(GateNames.EnhancementParity);
+
+            foreach (var bad in new[] { "0", "8", "-1", "+3", "7.0" })
+            {
+                var act = () => suite.Select(new[] { bad });
+                act.Should().Throw<ArgumentException>().WithMessage($"*not '{bad}'*");
+            }
         }
 
         [Test]
@@ -55,7 +73,7 @@ namespace SWLOR.CraftSim.Tests.Gates
             var results = GateReport.Run(suite.Gates, context);
 
             results.Select(r => r.Verdict).Should().Equal(
-                new[] { GateVerdict.Passed, GateVerdict.NotApplicable, GateVerdict.Passed, GateVerdict.Passed, GateVerdict.Passed, GateVerdict.Passed },
+                new[] { GateVerdict.Passed, GateVerdict.NotApplicable, GateVerdict.Passed, GateVerdict.Passed, GateVerdict.Passed, GateVerdict.Passed, GateVerdict.Passed },
                 string.Join("; ", results.Select(r => r.Gate + ": " + r.Summary)));
             GateReport.AllPassed(results).Should().BeTrue();
 
@@ -105,6 +123,9 @@ namespace SWLOR.CraftSim.Tests.Gates
             foreach (var (name, _, _) in GateThresholds.Default.Describe())
                 inputs.Should().Contain($"`{name}`");
 
+            inputs.Should().Contain("Enhancement thresholds in force (`CraftOutcomeRules`, read by gate 7): 50% / 85% / 85% for slots 1, 2 and 3")
+                .And.Contain("The scenario applies enhancements to its engine's progress meter");
+
             string.Join(Environment.NewLine, Suite(new BenchScenario()).Inputs(context)).Should().Contain("style-balance gate is not applicable");
         }
 
@@ -141,7 +162,8 @@ namespace SWLOR.CraftSim.Tests.Gates
             described.Select(d => d.Name).Should().Contain(new[]
             {
                 "RotationMarginPoints", "StyleMinimumWinShare", "StyleMaximumMeanDifferencePoints", "PerksOptionalRank",
-                "PerksOptionalMinimumFullQualityShare", "MaterialTolerance", "MaterialQualityShortfallPoints", "XpRateMinimumRatio", "LegacySecondsPerAction", "RecipesPerBand"
+                "PerksOptionalMinimumFullQualityShare", "MaterialTolerance", "MaterialQualityShortfallPoints", "XpRateMinimumRatio", "LegacySecondsPerAction", "RecipesPerBand",
+                "EnhancementParityRank", "EnhancementParityBands", "EnhancementSlotCounts", "EnhancementParityMinimumRatio"
             });
             described.Single(d => d.Name == "RotationMarginPoints").Value.Should().Be("10");
             described.Single(d => d.Name == "StyleMinimumWinShare").Value.Should().Be("30%");
@@ -166,7 +188,7 @@ namespace SWLOR.CraftSim.Tests.Gates
             foreach (var name in GateNames.All)
                 report.Should().Contain($"| {name} |");
 
-            report.Should().Contain("## No fixed rotation").And.Contain("## Perks optional").And.Contain("## Length").And.Contain("## Economy parity").And.Contain("## XP rate");
+            report.Should().Contain("## No fixed rotation").And.Contain("## Perks optional").And.Contain("## Length").And.Contain("## Economy parity").And.Contain("## XP rate").And.Contain("## Enhancement parity");
             report.Should().NotContain("## Style balance", "a gate that does not apply has no evidence tables");
             report.Should().Contain("## Limitations");
         }

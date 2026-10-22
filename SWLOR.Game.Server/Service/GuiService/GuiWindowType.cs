@@ -83,6 +83,7 @@ namespace SWLOR.Game.Server.Service.GuiService
         Forge = 78,
         Reaction = 84,
         CraftCircuit = 85,
+        Kitchen = 86,
         Line = 87,
 
         DebugEnmity = 900,

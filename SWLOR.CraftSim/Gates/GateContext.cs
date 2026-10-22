@@ -15,7 +15,8 @@ namespace SWLOR.CraftSim.Gates
             int seed,
             AttributeSweep attributes,
             CraftingBaselineResults craftingBaseline = null,
-            GatheringBaselineResults gatheringBaseline = null)
+            GatheringBaselineResults gatheringBaseline = null,
+            EnhancementCatalog enhancements = null)
         {
             Recipes = recipes;
             Gear = gear;
@@ -24,6 +25,7 @@ namespace SWLOR.CraftSim.Gates
             Attributes = attributes;
             CraftingBaseline = craftingBaseline;
             GatheringBaseline = gatheringBaseline;
+            Enhancements = enhancements;
         }
 
         public RecipeCatalog Recipes { get; }
@@ -37,5 +39,8 @@ namespace SWLOR.CraftSim.Gates
 
         /// <summary>Today's gathering, refining and fishing results; null when not played.</summary>
         public GatheringBaselineResults GatheringBaseline { get; }
+
+        /// <summary>The module's real enhancement items, for the enhancement-parity gate; null when not loaded, which leaves that gate not run.</summary>
+        public EnhancementCatalog Enhancements { get; }
     }
 }

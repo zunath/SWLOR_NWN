@@ -72,10 +72,22 @@ namespace SWLOR.Game.Server.EngineTests.Definitions
             });
             ctx.Assert(GetIsObjectValid(bag), "the bag exists");
             ctx.Assert(GetIsObjectValid(supply), "the bagged supply exists");
-            await ctx.WaitUntilAsync(() => GetItemPossessor(bag) == player && GetItemPossessor(supply) == bag, 5f,
+            // GetItemPossessor reports the player for bagged items, so look inside the bag instead.
+            await ctx.WaitUntilAsync(() => GetItemPossessor(bag) == player && BagContains(bag, supply), 5f,
                 "the supply to sit inside a bag in the player's inventory");
             ctx.AssertEqual(stackSize, GetItemStackSize(supply), "bagged supply stack size");
             return supply;
+        }
+
+        private static bool BagContains(uint bag, uint item)
+        {
+            for (var child = GetFirstItemInInventory(bag); GetIsObjectValid(child); child = GetNextItemInInventory(bag))
+            {
+                if (child == item)
+                    return true;
+            }
+
+            return false;
         }
     }
 }

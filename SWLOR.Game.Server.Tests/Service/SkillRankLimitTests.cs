@@ -94,6 +94,16 @@ public class SkillRankLimitTests
         Warnings.Should().ContainSingle().Which.Should().Contain("limit of 11");
         Messages.Should().BeEmpty();
         Field<List<int>>("QueuedXP").Should().BeEmpty();
+        Field<int>("Refreshes").Should().Be(1, "the cleared progress must reach an open Skills window");
+    }
+
+    [Test]
+    public void Gain_AtTheLimitWithoutProgress_DoesNotRefreshTheSkillsWindow()
+    {
+        var player = CreatePlayer(11, (SkillType.Mimicry, S(11, limit: 11)));
+        Award(player, SkillType.Mimicry, 100);
+
+        Field<int>("Refreshes").Should().Be(0);
     }
 
     [Test]
@@ -474,6 +484,34 @@ public class SkillRankLimitTests
 
         blocked.Skills[SkillType.Unarmed].RankLimit = null;
         Skill.GetMaxDistributableXP(blocked, SkillType.Mimicry).Should().BeGreaterThan(0);
+    }
+
+    [Test]
+    public void MaxDistributableXP_AtTheCap_StopsAtTheRanksDecayCanSupply()
+    {
+        // Unarmed can give up 1 rank above its limit and Throwing 2 unlimited ranks: 3 ranks of Mimicry in all.
+        var player = CreatePlayer(Skill.SkillCap,
+            (SkillType.Mimicry, S(10, xp: 30)),
+            (SkillType.Unarmed, S(21, limit: 20)),
+            (SkillType.Throwing, S(2)));
+        var expected = Skill.GetRequiredXP(10) - 30 + Skill.GetRequiredXP(11) + Skill.GetRequiredXP(12);
+
+        Skill.GetMaxDistributableXP(player, SkillType.Mimicry).Should().Be(expected);
+        Award(player, SkillType.Mimicry, expected).Should().Be(expected);
+        player.Skills[SkillType.Mimicry].Rank.Should().Be(13);
+        player.Skills[SkillType.Unarmed].Rank.Should().Be(20);
+        player.Skills[SkillType.Throwing].Rank.Should().Be(0);
+    }
+
+    [Test]
+    public void MaxDistributableXP_BelowTheCap_CountsFreeRanksBeforeDecay()
+    {
+        var player = CreatePlayer(Skill.SkillCap - 1,
+            (SkillType.Mimicry, S(10)),
+            (SkillType.Unarmed, S(21, limit: 20)));
+
+        Skill.GetMaxDistributableXP(player, SkillType.Mimicry)
+            .Should().Be(Skill.GetRequiredXP(10) + Skill.GetRequiredXP(11));
     }
 
     [Test]

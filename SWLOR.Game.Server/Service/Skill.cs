@@ -137,6 +137,32 @@ namespace SWLOR.Game.Server.Service
         }
 
         /// <summary>
+        /// Counts the ranks decay can take from other skills before none remain: each unlocked skill's ranks
+        /// above its rank limit, or all of its ranks when it has no limit.
+        /// </summary>
+        /// <param name="dbPlayer">The player entity.</param>
+        /// <param name="skill">The skill gaining ranks, which never decays itself.</param>
+        /// <returns>The number of ranks decay can take.</returns>
+        private static int GetDecayCapacity(Player dbPlayer, SkillType skill)
+        {
+            var capacity = 0;
+            foreach (var (type, pcSkill) in dbPlayer.Skills)
+            {
+                if (type == skill || pcSkill.IsLocked || pcSkill.Rank <= 0)
+                    continue;
+
+                var detail = GetSkillDetails(type);
+                if (!detail.ContributesToSkillCap)
+                    continue;
+
+                var limit = GetRankLimit(pcSkill, detail) ?? 0;
+                capacity += Math.Max(0, pcSkill.Rank - limit);
+            }
+
+            return capacity;
+        }
+
+        /// <summary>
         /// Determines whether the skill cap blocks a skill from gaining XP: the player is at the cap,
         /// and every other skill is locked, at its rank limit, or at rank 0.
         /// </summary>
@@ -250,8 +276,13 @@ namespace SWLOR.Game.Server.Service
             var rankCeiling = GetRankCeiling(pcSkill, details);
             if (pcSkill.Rank >= rankCeiling)
             {
+                var clearedXP = pcSkill.XP > 0;
                 pcSkill.XP = 0;
                 DB.Set(dbPlayer);
+
+                // A limit can be set while the skill has progress; show the cleared progress in an open Skills window.
+                if (clearedXP)
+                    Gui.PublishRefreshEvent(player, new SkillXPRefreshEvent(new List<SkillType> { skill }));
 
                 if (rankCeiling < details.MaxRank)
                     PlayerFeedback.SendWarningToPlayer(player, "SKILL_LIMIT", ColorToken.Red($"{details.Name} is at your limit of {rankCeiling}. Raise it in the Skills window."));
@@ -474,12 +505,21 @@ namespace SWLOR.Game.Server.Service
             if (IsBlockedBySkillCap(dbPlayer, skillType))
                 return 0;
 
+            // A skill that counts toward the cap can only gain the free ranks under the cap,
+            // plus one rank for each rank decay can take from other skills.
+            var reachableRank = rankCeiling;
+            if (skillDetails.ContributesToSkillCap)
+            {
+                var freeRanks = Math.Max(0, SkillCap - GetTotalContributingSkillRanks(dbPlayer));
+                reachableRank = Math.Min(rankCeiling, currentSkill.Rank + freeRanks + GetDecayCapacity(dbPlayer, skillType));
+            }
+
             var totalDistributableXP = 0;
             var currentRank = currentSkill.Rank;
             var currentXP = currentSkill.XP;
 
             // Calculate XP needed to fill remaining ranks
-            while (currentRank < rankCeiling)
+            while (currentRank < reachableRank)
             {
                 var requiredXPForNextRank = GetRequiredXP(currentRank);
                 var xpNeededForThisRank = requiredXPForNextRank - currentXP;

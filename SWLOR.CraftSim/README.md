@@ -103,6 +103,16 @@ Gathering and fishing implement `IXpRateCohort` instead: it pairs the legacy loo
 
 The game server changes only by `ICraftMinigameEngine.Fork`, which every engine inherits from `MinigameEngineBase<TState>`, and by the third enhancement slot's own threshold constant in `CraftOutcomeRules` (a starting value that gate 7 sets).
 
+### Research Experiment
+
+`Scenario/Experiment` plugs the research Experiment in as the `experiment` scenario (`gates --scenario experiment --gates length` checks its 5-8 turn target; the other gates do not apply to an experiment, which has no quality, styles or legacy loop). The `research` command writes the Experiment's own evidence: length, the size of the reductions against today's dice and the change in supply (licensed runs stay random at today's odds, so theirs is unchanged), the time cut at fixed levels, and Fabrication XP per real hour against at-level crafting.
+
+```powershell
+dotnet SWLOR.CraftSim/bin/Debug/net10.0/SWLOR.CraftSim.dll research --runs 400 --adaptive-runs 40 --seed 1 --out design/testing/crafting-revamp/research-experiment-report.md
+```
+
+`research` takes `--runs` (experiments per case for the focused player), `--adaptive-runs` (for the adaptive player), `--seed`, `--seconds-per-action`, `--job-overhead-seconds`, `--out` and `--repo`. The focused player (`ExperimentFocusedPolicy`) states a strategy instead of searching for one; the XP values it reports are the named constants in `ResearchXpRules`.
+
 ### Test bench
 
 `SWLOR.CraftSim.Tests/Support` holds a test-only engine (`BenchEngine`: a working window the player must keep Heat inside, a chance-dependent Stoke and a telegraphed opportunity), a variant with a dominant action, a one-action table engine whose quality is set per recipe and style, and their scenarios. The tests run every gate runner end to end on them with seeds, including a dominant rotation (gate 1 fails) and an adaptive game (gate 1 passes). Both model enhancements (a quarter of the penalty becomes extra progress, one for one in the table engine), and the table engine sets the quality of an enhanced craft by its enhancement count so gate 7's arithmetic and the threshold solver can be checked exactly.

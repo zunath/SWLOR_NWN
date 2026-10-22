@@ -156,11 +156,15 @@ namespace SWLOR.Game.Server.Service.FishingService
                 _world.CloseWindow(fight.Player);
         }
 
-        /// <summary>One check of a fight in progress: the angler must still be there, alive, out of combat, standing where they cast and watching.</summary>
-        private void Check(FishingFight fight)
+        /// <summary>
+        /// Checks the angler now: they must still be there, alive, out of combat, standing where they cast and watching. A fight whose
+        /// angler is not loses the fish, as an escape, and the method says so. The window calls it before it resolves an action, so a
+        /// click cannot beat the periodic check. Returns false when the fight is over or was just lost.
+        /// </summary>
+        public bool Revalidate(FishingFight fight)
         {
             if (!IsActive(fight))
-                return;
+                return false;
 
             var state = _world.GetPlayerState(fight.Player);
             var start = fight.Bite.Position;
@@ -176,13 +180,18 @@ namespace SWLOR.Game.Server.Service.FishingService
             else if (!state.HasWindowOpen)
                 end = FishingFightEnd.WindowClosed;
 
-            if (end.HasValue)
-            {
-                Abandon(fight, end.Value);
-                return;
-            }
+            if (!end.HasValue)
+                return true;
 
-            _world.Schedule(CheckSeconds, () => Check(fight));
+            Abandon(fight, end.Value);
+            return false;
+        }
+
+        /// <summary>One check of a fight in progress, repeated every <see cref="CheckSeconds"/> until the fight is over.</summary>
+        private void Check(FishingFight fight)
+        {
+            if (Revalidate(fight))
+                _world.Schedule(CheckSeconds, () => Check(fight));
         }
 
         private static string AbandonedMessage(FishingFightEnd reason) => reason switch

@@ -105,7 +105,7 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
             if (_fight == null)
                 return;
 
-            if (!FishingFights.IsActive(_fight))
+            if (!FishingFights.Revalidate(_fight))
             {
                 ShowEnd(FishingFightLifecycle.EscapedMessage, LineEnding.Escaped);
                 return;

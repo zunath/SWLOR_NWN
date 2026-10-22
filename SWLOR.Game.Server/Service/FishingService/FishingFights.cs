@@ -21,6 +21,9 @@ namespace SWLOR.Game.Server.Service.FishingService
         /// <summary>True while the fight is the angler's fight in progress.</summary>
         public static bool IsActive(FishingFight fight) => Lifecycle.IsActive(fight);
 
+        /// <summary>Checks the angler now and loses the fish if they moved, entered combat, died or closed the window. Returns true while the fight can go on.</summary>
+        public static bool Revalidate(FishingFight fight) => Lifecycle.Revalidate(fight);
+
         /// <summary>An angler who logs out loses the fish at once.</summary>
         [NWNEventHandler(ScriptName.OnModuleExit)]
         public static void AbandonOnExit()

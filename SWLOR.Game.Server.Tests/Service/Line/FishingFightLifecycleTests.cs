@@ -352,6 +352,56 @@ public class FishingFightLifecycleTests
     }
 
     [Test]
+    public void ARevalidatedFight_ThatStillHasItsAngler_GoesOn()
+    {
+        var lifecycle = Lifecycle();
+        var fight = lifecycle.Bite(EasyFish());
+        var messages = _world.Messages.Count;
+
+        lifecycle.Revalidate(fight).Should().BeTrue();
+
+        fight.Settled.Should().BeFalse();
+        _world.Busy.Should().BeTrue();
+        _world.Messages.Should().HaveCount(messages);
+    }
+
+    [Test]
+    public void AnAnglerWhoMovedOrFought_BetweenTwoChecks_LosesTheFishBeforeTheirNextActionResolves()
+    {
+        var lifecycle = Lifecycle();
+        var moved = lifecycle.Bite(EasyFish());
+        _world.Position = new Vector3(11f, 20f, 0f);
+
+        lifecycle.Revalidate(moved).Should().BeFalse();
+
+        moved.Settled.Should().BeTrue();
+        _world.Busy.Should().BeFalse();
+        lifecycle.Settle(moved).Should().BeNull("the fish was lost before any action could land it");
+        _world.FishCreated.Should().BeEmpty();
+
+        _world = new FakeFishingFightWorld();
+        lifecycle = Lifecycle();
+        var fighting = lifecycle.Bite(EasyFish());
+        _world.IsInCombat = true;
+
+        lifecycle.Revalidate(fighting).Should().BeFalse();
+
+        fighting.Settled.Should().BeTrue();
+        _world.FishCreated.Should().BeEmpty();
+    }
+
+    [Test]
+    public void ARevalidatedFightThatIsAlreadyOver_IsNotAGoingFight()
+    {
+        var lifecycle = Lifecycle();
+        var fight = lifecycle.Bite(EasyFish());
+        lifecycle.Abandon(fight, FishingFightEnd.WindowClosed);
+
+        lifecycle.Revalidate(fight).Should().BeFalse();
+        lifecycle.Revalidate(null).Should().BeFalse();
+    }
+
+    [Test]
     public void GoingIntoCombat_LosesTheFish()
     {
         var lifecycle = Lifecycle();

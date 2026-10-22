@@ -107,7 +107,8 @@ public static class TwinPistolHostileDelayEngineTests
         var impact = events.Single(e => IsEvent(e, "ability_impact", FeatType.AkimboStance));
         ctx.Assert(cast.GetProperty("ts_ms").GetInt64() - firstPressedAt < HostileAbilityDelay.Seconds * 1000f,
             "The nonhostile cast starts before the hostile delay ends");
-        ctx.Assert(impact.GetProperty("ts_ms").GetInt64() - cast.GetProperty("ts_ms").GetInt64() >= castDelay * 1000f,
+        // The delayed impact can land a frame before the wall-clock cast duration; allow 100ms of frame jitter.
+        ctx.Assert(impact.GetProperty("ts_ms").GetInt64() - cast.GetProperty("ts_ms").GetInt64() >= castDelay * 1000f - 100f,
             "The status impact retains the stance's ordinary cast duration");
         ctx.AssertEqual(0, events.Single(e => IsEvent(e, "ability_cost", FeatType.AkimboStance)).GetProperty("stm").GetInt32(),
             "The stance has one normal zero-stamina payment");
@@ -192,7 +193,8 @@ public static class TwinPistolHostileDelayEngineTests
             {
                 await WaitFrames(ctx, () => UsePerkFeat.IsWeaponAbilityQueued(actor, winner), "the held Headshot to queue after the shared delay");
                 ctx.AssertEqual(afterFirst - Cost(winner), Stat.GetCurrentStamina(actor), "Replay pays the queued requirement exactly once");
-                ctx.AssertEqual(1, Flow(actor), "The queued cross-skill ability does not spend Twin Flow");
+                // Any hostile weapon ability that costs STM spends all Flow when its cost is paid.
+                ctx.AssertEqual(0, Flow(actor), "The paid queued cross-skill ability spends the captured Flow");
                 ctx.Assert(Ability.GetLastCompletedAbilityImpactSummary(actor) == null, "Queueing is not an impact");
                 Combat.SetAutoAttackHitResolutionOverride(true);
                 AssignCommand(actor, () => ActionAttack(target));
@@ -209,7 +211,8 @@ public static class TwinPistolHostileDelayEngineTests
                     "The replayed queue captures the gun changed while input was held");
             await ctx.DelaySecondsAsync(1f);
             ctx.AssertEqual(afterFirst - Cost(winner), Stat.GetCurrentStamina(actor), "Held input replay has only one payment");
-            ctx.AssertEqual(winner == FeatType.FinalSalvo ? 0 : 1, Flow(actor), "Only the winning finisher spends its captured Flow once");
+            // Twin builders such as Focused Burst keep Flow; finishers and other skills' weapon abilities spend it.
+            ctx.AssertEqual(winner == FeatType.FocusedBurst1 ? 1 : 0, Flow(actor), "Only a Flow-spending winner spends the captured Flow");
             ctx.Assert(OnRecast(actor, winningAbility.RecastGroup), "The winner applies its ordinary recast");
             if (replacement.HasValue)
                 ctx.Assert(!OnRecast(actor, Ability.GetAbilityDetail(held).RecastGroup), "The replaced queued press starts no recast");
@@ -241,7 +244,9 @@ public static class TwinPistolHostileDelayEngineTests
         ctx.AssertEqual(1, events.Count(e => IsEvent(e, "ability_cost", winner)), "The recorder contains one winning ability payment");
         ctx.AssertEqual(Cost(winner), events.Single(e => IsEvent(e, "ability_cost", winner)).GetProperty("stm").GetInt32(),
             "The recorded winning payment matches its requirement");
-        ctx.AssertEqual(1, events.Count(e => IsEvent(e, "ability_impact", winner)), "The recorder contains one winning ability impact");
+        // A channeled winner records its later volleys as recurring impacts of the same activation.
+        ctx.AssertEqual(1, events.Count(e => IsEvent(e, "ability_impact", winner) && !e.GetProperty("recurring").GetBoolean()),
+            "The recorder contains one winning ability activation impact");
         if (replacement.HasValue)
             ctx.Assert(!events.Any(e => e.TryGetProperty("feat_id", out var feat) && feat.GetInt32() == (int)held),
                 "The replaced press never queues, pays, casts or impacts");

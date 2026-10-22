@@ -784,6 +784,8 @@ Fix these as part of the rewrite. Most go away with the code that replaces them.
 20. `Readmes/Builders.md` ship builder examples use members that don't exist.
 21. Capital ships can't use normal repairers or the injector (section 8 allows them).
 22. Smuggler's Moon has no starlanes, and the Korriban route returns to Viscara instead of the way it came (section 12).
+23. The `t3capital` NPC has no `npc_cap3` configuration (`Feature/SpaceObjectDefinition/NPCSpaceObjectDefinition.cs`, `t3capital`), so its defense is 70 against 157 for T2 and 383 for T4.
+24. `npc_cap2` has explosive attack 20 and explosive defense 5 (`ShipConfigurationModuleDefinition.cs`), which look swapped: every other boss configuration has explosive defense at half its thermal defense.
 
 ## 17. Numbers to draft for approval
 
@@ -872,6 +874,19 @@ Everything merges to one integration branch and releases together.
   - Solo targets at every tier: Gunnery 50 in a Small fighter with no Piloting solos normal enemies at its tier (elites and bosses aren't expected); Piloting 50 + Gunnery 50 with no Ship Systems solos all normal content and most elites, sustained by shield regen, rank-0 repairers (no rank needed) and consumables.
   - The Advanced ships in each role: each lands within 10% of the others at that role's job.
   - A melee build (MGT, PER) on launchers vs a ranged build (PER, AGI) on energy weapons at equal ranks.
+  - **Fight length:** a matched solo pilot (same rank and attributes as the ground run) kills every normal space role at each tier within the ground's normal-enemy time at that tier, measured with the same simulator settings. No normal role takes more than 1.5x as long as the fastest one; on the ground, Melee, Ranged and Controller normals land within about 10% of each other. Capitals are compared with ground elites and bosses at the same tier.
+- **Fight-length baseline (today, measured 2026-10-22):** ground from `SWLOR.CombatSim` (a longsword autoattacking a same-level Normal Melee enemy from the Bible's Enemy Stat Presets, attributes 16 + 0.2 x rank, 300 runs); space from a model of today's rules (the shared hit and damage formulas, the 2 s global recast, per-module recasts, shield before hull, halved ion overflow, NPC shield regen and repairers, real player ships, modules and configs, real NPC pilots and loadouts, perfect play, the NPC not fighting back). Medians:
+
+| Tier (rank) | Ground, autoattacks | Ground, with abilities (rank 10-50) | Space fighter / interceptor | Space gunship |
+|---|---|---|---|---|
+| T1 (5) | 18 s | 19 s | 22 / 26 s | 175 s |
+| T2 (15) | 34 s | 25 s | 28 / 30 s | 85 s |
+| T3 (25) | 47 s | 25 s | 32 / 34 s | 75 s |
+| T4 (35) | 47 s | 25 s | 28 / 30 s | 59 s |
+| T5 (45) | 51 s | 29 s | 36 / 38 s | 83 s |
+
+- A T5 platform takes 90 s and a T5 capital about 340 s solo. Fighters and interceptors are 85% of space spawns; gunships, cargo haulers and platforms about 13%.
+- Today's slow fights come from two rules this plan replaces: the 2 s global recast caps a ship at one shot per 2 s however many weapons it carries, and gunships, platforms and cargo haulers regain 1 shield per second (fighters 1 per 6 s), some with repairers on top.
 - **Client evidence** (`InEngineVisualVerification.md`) for:
   - The Mid hotbar row.
   - Lit and unlit module icons, and a module switching itself off.

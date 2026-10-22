@@ -94,7 +94,7 @@ Before any work, read `AGENTS.md` and these guides, plus every guide named in th
 | Migration | Every character gets one Rebuild Token. Piloting perks are refunded. Ships and modules convert to their new equivalents. |
 | Wild Space | Six persistent tier-5.5 systems reached through hidden, rotating rifts, each with an environmental effect, held by the Rift Raiders pirate coalition. |
 | Exploration | A Probe Launcher reveals hidden sites (rift, combat, data, cache, gas, derelict) and jumps the party to them. |
-| Slicing | Espionage's Slicing perk works in space: data cans, locked pirate caches, ace and boss wreck data cores, derelict terminals and lockboxes, customs spoofing and agent data heists. Espionage XP and space reward tables. |
+| Slicing | Espionage's Slicing perk works in space: data cans, locked pirate caches, ace and boss wreck data cores, derelict terminals and lockboxes, lockboxes dropped by NPC ships, customs spoofing and agent data heists. Espionage XP and space reward tables. |
 | Stations | Player cities in space, at anchor sites, with every city mechanic, plus a Shipyard (Capital hulls), Asteroid Drill and Jump Beacons. Stations can't be attacked in this release. |
 | Holdings | Up to 3 planetary holdings per character, with cross-planet upgrades, production chains, droid staff, events and visitable ground sites. |
 | Droids | Industrial parts and AI instructions trade combat for an Industry rating used by holdings, crew, droid bays and stations. |
@@ -512,6 +512,10 @@ Ships at launch.
 - **Rare Sith and Mandalorian capitals** (Harrower, Kandosii and the others) spawn only in T5-T6 orbits. Their armadas also drive weekly incursions (section 30).
 - **Rift Raiders:** the Wild Space pirate coalition (section 23).
 - **Stats:** draft a space section in the Bible's Enemy Builder Guide, Enemy Stat Presets and related tabs for owner approval. Follow `NpcHitPoints.md` for HP limits.
+- **DM tools:** the DM windows have no space tools today. Add a Space tab to the DM tools (`Feature/GuiDefinition/DMToolsDefinition.cs`):
+  - Spawn enemy squads by faction, role and tier, using the new presets.
+  - Start an incursion or a trade convoy.
+  - Place a derelict, data site or cache site.
 - **Models:** use unused hak models. Space fauna goes on the Trellis2 list.
 
 ## 12. Activities, zones, and materials
@@ -530,6 +534,7 @@ Ships at launch.
     - **Salvaged Components,** each carrying a random trait (section 14).
     - **Rare finds** from elite and boss wrecks.
   - **Data cores:** elite, ace and boss wrecks also carry a data core. Slicing it (section 24) has better odds of Design Schematics, recipe unlocks and Ship Schematics than salvage. The killing party's 60 s first claim covers the core too.
+- **Lockboxes:** destroyed NPC ships sometimes drop a space lockbox, a new set of lockbox items beside today's `lockbox_t1`-`lockbox_t5` (`LockboxItemDefinition`). The owner slices it later, out of combat. It holds components, ammo, credits and parts with rare traits, from the space slicing tables (section 24). It never holds cargo, because cargo isn't an item.
 - **Zones:**
   - The 3 Abandoned Station areas (`zomb_abanstation`, `zomb_abanstatio2`, `zomb_abanstatio3`) become Small/Medium-only.
   - Build 3 new Small/Medium-only zones:
@@ -769,7 +774,7 @@ Draft each in the Bible, check it with the combat simulator where it affects com
 - **Stations:** Station Core recipe, anchor site count per area, Asteroid Drill output, Shipyard build times, Jump Beacon fuel cost and hull caps.
 - **Holdings:** price, upkeep, output, upgrade costs, Processing Plant recipes, event odds, droid boost.
 - **Droids:** Industry per industrial part, stat cuts, instruction effects.
-- **Slicing:** Data Analyzer range, slicing tiers per zone for data cans, locked caches and data cores, customs spoof tier per patrol, space slicing XP and reward odds.
+- **Slicing:** Data Analyzer range, slicing tiers per zone for data cans, locked caches, data cores and space lockboxes, space lockbox drop rates, customs spoof tier per patrol, space slicing XP and reward odds.
 - **Activities:** agent mission pay and token prices, incursion schedule and rewards, Rift Run timers and loot, cloak speed penalty and reveal range.
 - **IDs:** confirm the new skill IDs (53 and 54) were never used historically, since saved data keys skills by ID.
 
@@ -792,14 +797,14 @@ Everything merges to one integration branch and releases together.
 | W2 | Combat rules | Shared crit, resist, status and threat; attribute mapping; regen; toggle and auto-fire loop; Ship HUD; PvP; escape pods; repair bills | W1 |
 | W3 | Ships and modules | 100 ships (Appendix C) with model scales, Hull Designs and Refit, about 20 module families x rank steps, size scaling, icons with lit variants, store, moving recipes to their new crafting skills | W1, W0 |
 | W4 | Perks and abilities | Six styles, Gathering space perks, space abilities and IDs | W1, W2, W0 |
-| W5 | Enemies | NPC conversion, role AI, new groups, aces, encounters, spawn tables | W2, W3 |
+| W5 | Enemies | NPC conversion, role AI, new groups, aces, encounters, spawn tables, DM Space tab | W2, W3 |
 | W6 | World | Salvage and wrecks, gas harvesting, new materials, 3 zones (Module JSON), station flags, starlanes, docking limits | W3 |
 | W7 | Trade | Cargo data, exchange NUI, pricing service, HoloNet board, contraband and customs, pirates, freight contracts, factions, city tariffs, trade XP | W3, W5, W6 |
 | W8 | Crew | Stations, consoles, `AttachCamera` and hidden crew, droid crew, permissions, power routing, Wing Commander crew bonuses | W2, W3, W4 |
 | W9 | Crafting and rewards | Component layer and traits, recipes, research blueprints, named modules, Design Schematics, trophies and decor, ammo variants, achievements | W3, W6 |
 | W10 | Migration | Rebuild Token, perk refunds, item and ship conversion, stamp cleanup, design unlocks, notices | W1, W3, W9 |
 | W12 | Wild Space and exploration | 6 Wild Space areas and environments, rifts, Rift Raiders, Probe Launcher, signatures, Jump to Signature, Sensor Sweep, data/cache/gas/combat sites, Scanner HUD tab, space slicing (Data Analyzer, new slicing sources, space reward tables, customs spoofing) | W2, W3, W5 |
-| W13 | Stations | Station city layout, Station Core, anchor sites, deck areas, Shipyard, Asteroid Drill, Jump Beacons, Station Fuel | W3, W7 |
+| W13 | Stations | Station city layout, Station Core, anchor sites, deck areas, Shipyard, Asteroid Drill, Jump Beacons, Station Fuel, passenger shuttle route | W3, W7 |
 | W14 | Holdings and droids | Holdings terminal, types, upgrades, production chains, events, ground sites; industrial droid parts, Industry stat, AI instructions, droid bays | W7, W9 |
 | W15 | Activities | Derelict boarding (including contested derelicts), faction agents and token stores, incursions, Rift Runs | W5, W7, W12 |
 | W16 | Cloaking | Cloaking Device, reveal rules, stealth unblock in space | W2, W12 |
@@ -834,7 +839,7 @@ Everything merges to one integration branch and releases together.
   - Founding a station at an anchor site, docking, and a Jump Beacon jump.
   - A holding's ground site, an event fight, and cargo pickup.
   - An industrial droid in a droid bay and at a crew station.
-  - Boarding a derelict, a contested derelict's waves, a data site slicing game, a customs spoof, a wreck data core, an agent mission, a Rift Run timer, and cloak and reveal.
+  - Boarding a derelict, a contested derelict's waves, a data site slicing game, a customs spoof, a wreck data core, a space lockbox, a DM-spawned squad, an agent mission, a Rift Run timer, and cloak and reveal.
   - Every Hull Design at ship scale.
   - Crew camera view.
   - The exchange window.
@@ -864,6 +869,7 @@ New models go through the Trellis2 pipeline (`Readmes/BlasterModelImport.md`) as
 - Capital jump drives. Jump Beacons (section 25) and rifts (section 23) are the only travel beyond starlanes.
 - Tier 6 content and the reserved ores (Ochne, Croknor, Hemorgite, Bisteiss). Wild Space is tier 5.5.
 - Station raids and the Defense Grid building (a later pass).
+- A Capital Industrial role (a later pass). The proposal: convert the Czerka Armored Transport and the Hutt Corvette into capital industrials that refine ore aboard, carry a large ore hold and droid bays, and boost nearby miners' yield.
 - Faction warfare, bounties on players, and racing.
 - New 3D models (section 20).
 - Player-posted hauling contracts. Items already teleport through the bank, so they add nothing.
@@ -941,6 +947,7 @@ Espionage's Slicing perk works in space exactly as on the ground.
   - Terminals and lockboxes inside derelicts (section 28).
   - Customs scans (section 13).
   - Data-heist missions for faction agents (section 29).
+  - Space lockboxes dropped by NPC ships (section 12).
 - **XP:** Espionage XP through `Skill.CalculateEspionageXP(PerkType.Slicing, tier, rank)`, never Ship Systems XP.
 - **Rewards:** new space reward tables in `SlicingRewardCatalog` for each new source: Design Schematics, recipe unlocks, Ship Schematics, agent intel and components with rare traits. Ground lockbox and terminal rewards stay as they are. New items follow `EconomyRestrictedItems.md`.
 
@@ -963,6 +970,7 @@ A station is a **player city in space** and follows every city mechanic, in `Ser
 
 **Docking and buildings**
 - **Docking:** through the Starport building, as in planet cities: any starport takes Large hulls, and Capital hulls need starport upgrade level 2.
+- **Passenger shuttle:** every station's Starport has a flights terminal on the existing shuttle network, with a route to its orbit's NPC dock and the city's transport tax as in planet cities. Today `StarportFlightsDialog` and `Shuttle.TryPurchaseTicket` route between `PlanetType` values, so stations need their own origin and destination entries. Non-pilots can visit, live and roleplay on a station, so stations never become pilot-only hubs.
 - **City buildings:** all of them: City Hall, Starport (with the Trade Exchange and its tariff), Medical Center (respawn), Bank, Cantina.
 - **Station-only buildings:**
   - **Shipyard:** Capital hull recipes can only be crafted at a Shipyard. A droid assigned to it shortens builds.
@@ -1468,6 +1476,7 @@ A salvaged component carrying a rare trait can stand in for the rare component i
 - **Faction NPC ships** drop their manufacturer's component: a low chance on basic ships, higher on elites and bosses. Map each NPC faction to the manufacturer its ships resemble while drafting.
 - **Wrecks** (Salvager) yield Ship Scrap, salvaged generic components, the wreck's manufacturer component, and, on elites and bosses, rare-trait parts.
 - **Aces** drop Ship Schematics, Design Schematics and rare components.
+- **NPC ships** sometimes drop space lockboxes (section 12), at every tier.
 - **Wild Space** drops prototype tech, Raider Refit Hulls and Thorilide.
 - **Incursions** reward Sith or Mandalorian Ship Schematics, matching the invader.
 - **Rift Runs** drop rare-trait parts and Design Schematics.

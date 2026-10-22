@@ -84,6 +84,7 @@ namespace SWLOR.Game.Server.Service.GuiService
         Reaction = 84,
         CraftCircuit = 85,
         Kitchen = 86,
+        ResearchExperiment = 87,
 
         DebugEnmity = 900,
         DebugNuiGallery = 901,

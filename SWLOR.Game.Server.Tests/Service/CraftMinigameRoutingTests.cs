@@ -98,6 +98,14 @@ public class CraftMinigameRoutingTests
     }
 
     [Test]
+    public void TheResearchExperimentCommitsTheWornGearLikeACraftingWindow()
+    {
+        CraftMinigameRouting.GetCraftWindows().Should().Contain(GuiWindowType.ResearchExperiment);
+        RegisteredRoutes().Values.Select(route => route.Window).Should().NotContain(
+            GuiWindowType.ResearchExperiment, "the Experiment crafts no item, so no skill routes its recipes to it");
+    }
+
+    [Test]
     public void EquippingIsBlockedWhileAnyRoutedCraftWindowIsOpen()
     {
         var directory = new DirectoryInfo(AppContext.BaseDirectory);

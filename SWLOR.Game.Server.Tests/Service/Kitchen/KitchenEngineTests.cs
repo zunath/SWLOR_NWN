@@ -428,9 +428,13 @@ public class KitchenEngineTests
         var crafty = Engine(new FixedRolls(100), stats: Cook(craftsmanship: 30));
         var overqualified = Engine(new FixedRolls(100), stats: Cook(rank: 30));
 
-        plain.Preview(KitchenActionIds.Simmer).Outcomes[0].Delta.Progress.Should().Be(12);
-        crafty.Preview(KitchenActionIds.Simmer).Outcomes[0].Delta.Progress.Should().Be(17, "12 x 1.45");
-        overqualified.Preview(KitchenActionIds.Simmer).Outcomes[0].Delta.Progress.Should().Be(18, "12 x 1.5, the most a high rank adds");
+        var simmer = KitchenTuning.SimmerMediumDoneness;
+        var craftyFactor = 1 + KitchenTuning.CraftsmanshipDonenessPerPoint * 30;
+        plain.Preview(KitchenActionIds.Simmer).Outcomes[0].Delta.Progress.Should().Be(simmer);
+        crafty.Preview(KitchenActionIds.Simmer).Outcomes[0].Delta.Progress.Should()
+            .Be((int)Math.Round(simmer * craftyFactor, MidpointRounding.AwayFromZero), $"{simmer} x {craftyFactor}");
+        overqualified.Preview(KitchenActionIds.Simmer).Outcomes[0].Delta.Progress.Should()
+            .Be((int)Math.Round(simmer * KitchenTuning.LevelFactorMax, MidpointRounding.AwayFromZero), "the most a high rank adds");
     }
 
     #endregion
@@ -677,11 +681,11 @@ public class KitchenEngineTests
     [Test]
     public void TheDishIsDoneWhenDonenessIsFull_AndThePreviewWarnsTheActionFinishesIt()
     {
-        var engine = Engine(Script(Rolls(), Rolls(), Rolls()), Soup(), Cook(craftsmanship: 100));
+        var engine = Engine(Script(Rolls(), Rolls(), Rolls()), Soup(), QuarterCook());
         engine.Perform(KitchenActionIds.Simmer);
         engine.Perform(KitchenActionIds.Simmer);
         engine.Perform(KitchenActionIds.Simmer);
-        Doneness(engine).Should().Be(90);
+        Doneness(engine).Should().Be(3 * QuarterSimmer);
         var freshnessBefore = Freshness(engine);
 
         var preview = engine.Preview(KitchenActionIds.Simmer);
@@ -691,7 +695,7 @@ public class KitchenEngineTests
         preview.Outcomes[0].ResultingStatus.Should().Be(MinigameStatus.Succeeded);
         result.Status.Should().Be(MinigameStatus.Succeeded);
         engine.Status.Should().Be(MinigameStatus.Succeeded);
-        Doneness(engine).Should().Be(100);
+        Doneness(engine).Should().Be(KitchenTuning.DonenessMax);
         Freshness(engine).Should().Be(freshnessBefore, "the turn ends there: no decay and no drift");
         engine.Preview(KitchenActionIds.Simmer).Enabled.Should().BeFalse();
         engine.Preview(KitchenActionIds.Simmer).DisabledReason.Should().Be("The attempt is over.");
@@ -703,7 +707,7 @@ public class KitchenEngineTests
         var engine = Engine(
             Script(Rolls(50), Rolls(50), Rolls(), Rolls(), Rolls()),
             Soup(),
-            Cook(craftsmanship: 100));
+            QuarterCook());
         engine.Perform(KitchenActionIds.AddIngredient(MeatLine));
         engine.Perform(KitchenActionIds.AddIngredient(MeatLine));
         engine.Perform(KitchenActionIds.Simmer);
@@ -737,7 +741,10 @@ public class KitchenEngineTests
     [Test]
     public void ASearThatFinishesTheDishBeatsFreshnessRunningOutOnTheSameAction()
     {
-        var engine = Engine(Script(Rolls()), Soup(freshness: 10), Cook(craftsmanship: 200));
+        var engine = Engine(
+            Script(Rolls()),
+            Soup(freshness: 10),
+            Cook(craftsmanship: CraftsmanshipFor(KitchenTuning.SearDoneness, KitchenTuning.DonenessMax)));
         engine.Perform(KitchenActionIds.HeatHigh);
         Freshness(engine).Should().Be(6);
 
@@ -823,7 +830,7 @@ public class KitchenEngineTests
     public void TheForecastIsNotRolledOnceTheAttemptHasEnded()
     {
         var random = new ScriptedMinigameRandom();
-        var engine = Engine(random, Soup(), Cook(craftsmanship: 1000));
+        var engine = Engine(random, Soup(), Cook(craftsmanship: CraftsmanshipFor(KitchenTuning.SimmerMediumDoneness, KitchenTuning.DonenessMax)));
 
         engine.Perform(KitchenActionIds.Simmer);
 

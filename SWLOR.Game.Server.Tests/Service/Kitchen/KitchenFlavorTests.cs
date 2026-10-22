@@ -121,7 +121,9 @@ public class KitchenFlavorTests
     public void Doneness_GrowsWithCraftsmanshipAndTheLevelFactor()
     {
         new KitchenStats(20, 0, 0, 0).Doneness(12, 20).Should().Be(12);
-        new KitchenStats(20, 30, 0, 0).Doneness(12, 20).Should().Be(17, "12 x 1.45 = 17.4");
+        var factor = 1 + KitchenTuning.CraftsmanshipDonenessPerPoint * 30;
+        new KitchenStats(20, 30, 0, 0).Doneness(12, 20).Should()
+            .Be((int)Math.Round(12 * factor, MidpointRounding.AwayFromZero), $"12 x {factor}");
         new KitchenStats(20, 0, 0, 0).Doneness(12, 17).Should().Be(14, "12 x 1.15 = 13.8");
     }
 

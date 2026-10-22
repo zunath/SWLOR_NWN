@@ -142,7 +142,7 @@ public class KitchenSessionTests
         KitchenTuning.EnhancementDoneness(60).Should().Be(30);
         KitchenTuning.EnhancementDoneness(0).Should().Be(0);
         KitchenTuning.EnhancementDoneness(-5).Should().Be(0);
-        plain.Meters.Progress.Max.Should().Be(100);
-        enhanced.Meters.Progress.Max.Should().Be(130);
+        plain.Meters.Progress.Max.Should().Be(KitchenTuning.DonenessMax);
+        enhanced.Meters.Progress.Max.Should().Be(KitchenTuning.DonenessMax + 30);
     }
 }

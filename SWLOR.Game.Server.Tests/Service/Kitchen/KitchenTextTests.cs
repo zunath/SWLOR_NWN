@@ -68,7 +68,7 @@ public class KitchenTextTests
     [Test]
     public void TheActionThatFinishesTheDishCarriesTheFinishesTheItemWarning()
     {
-        var engine = Engine(Script(Rolls(), Rolls(), Rolls()), Soup(), Cook(craftsmanship: 100));
+        var engine = Engine(Script(Rolls(), Rolls(), Rolls()), Soup(), QuarterCook());
         engine.Perform(KitchenActionIds.Simmer);
         engine.Perform(KitchenActionIds.Simmer);
         engine.Perform(KitchenActionIds.Simmer);

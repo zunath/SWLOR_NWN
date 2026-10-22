@@ -1,3 +1,4 @@
+using SWLOR.CraftSim.Data;
 using SWLOR.CraftSim.Play;
 using SWLOR.Game.Server.Service.CraftService.Minigame;
 using SWLOR.Game.Server.Service.SkillService;
@@ -44,10 +45,11 @@ namespace SWLOR.CraftSim.Scenario
         ScenarioCohort Cohort => ScenarioCohort.ForSkill(Skill);
 
         /// <summary>
-        /// The multiplier the minigame puts on a craft's base XP (<c>CraftMinigameXp</c>), 1 by default. The XP-rate gate scales the
-        /// minigame's XP by it, so a minigame whose loop is slower than the old window can still reach the old XP per hour.
+        /// The multiplier the minigame puts on the base XP of a craft of this recipe (<c>CraftMinigameXp</c>), 1 by default. The XP-rate
+        /// gate scales the minigame's XP by it, so a recipe band where the new loop is slower than the old window can still reach the old
+        /// XP per hour.
         /// </summary>
-        double XpMultiplier => 1.0;
+        double XpMultiplierFor(RecipeEntry recipe) => 1.0;
 
         /// <summary>The actions per attempt the gates expect. By default an item craft at level: 10-20.</summary>
         LengthTarget LengthTarget => LengthTarget.ItemCraft;

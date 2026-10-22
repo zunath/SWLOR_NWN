@@ -1,7 +1,7 @@
 """Records the Espionage Reaction's XP multiplier on the Design Bible's System Changes & Migrations tab.
 
-The multiplier is the one named constant `ReactionRules.XpMultiplier`; this script reads it from the source, so the Bible
-row and the code cannot drift apart. It adds one row after the tab's last numbered row, or rewrites that row when it already
+The multiplier is the named constants `ReactionRules.LowLevelXpMultiplier` and `ReactionRules.XpMultiplierLastLevel`; this
+script reads them from the source, so the Bible row and the code cannot drift apart. It adds one row after the tab's last numbered row, or rewrites that row when it already
 exists (it is found by its opening words), edits only that row at the zip/XML level, and copies every other part of the
 workbook unchanged. A second run changes nothing. After a workbook merge conflict, take the base workbook and run this again,
 then run tools/UpdateCombatUpgradeAudit.ps1 -RefreshLocalBible.
@@ -39,9 +39,16 @@ class ReactionBibleError(Exception):
 
 
 def read_multiplier(source: Path = RULES_SOURCE) -> str:
-    match = re.search(r"public const double XpMultiplier = ([0-9]+(?:\.[0-9]+)?);", source.read_text(encoding="utf-8"))
+    match = re.search(r"public const double LowLevelXpMultiplier = ([0-9]+(?:\.[0-9]+)?);", source.read_text(encoding="utf-8"))
     if not match:
-        raise ReactionBibleError(f"{source} has no XpMultiplier constant")
+        raise ReactionBibleError(f"{source} has no LowLevelXpMultiplier constant")
+    return match.group(1)
+
+
+def read_last_multiplied_level(source: Path = RULES_SOURCE) -> str:
+    match = re.search(r"public const int XpMultiplierLastLevel = ([0-9]+);", source.read_text(encoding="utf-8"))
+    if not match:
+        raise ReactionBibleError(f"{source} has no XpMultiplierLastLevel constant")
     return match.group(1)
 
 
@@ -52,12 +59,14 @@ def read_unlock_rank(source: Path = RULES_SOURCE) -> str:
     return match.group(1)
 
 
-def row_text(multiplier: str, unlock_rank: str) -> str:
+def row_text(multiplier: str, last_level: str, unlock_rank: str) -> str:
     return (
         f"{MARKER}: a visible cycle of Calm, Rising, Peak and Settling that every action advances. "
         f"Stabilize unlocks at Espionage rank {unlock_rank}; every other Reaction action is available from rank 0. "
-        f"Each Reaction craft pays {multiplier} times the base Espionage practice XP, which keeps Espionage XP per hour at or above "
-        "the old crafting window's. Poisoncraft, Trapcraft and Master Saboteur are unchanged."
+        f"Dampen holds the current phase for one more turn and restores a little Stability. "
+        f"A Reaction craft of a recipe up to level {last_level} pays {multiplier} times the base Espionage practice XP, the least that keeps "
+        "Espionage XP per hour at or above the old crafting window's there; higher recipes pay the base XP, which already does. "
+        "Poisoncraft, Trapcraft and Master Saboteur are unchanged."
     )
 
 
@@ -132,7 +141,7 @@ def update_workbook(workbook: Path, check: bool = False) -> bool:
     path = paths.get(TAB) or paths[TAB.replace("&", "&amp;")]
 
     xml = entries[path].decode("utf-8")
-    updated = update_sheet(xml, row_text(read_multiplier(), read_unlock_rank()))
+    updated = update_sheet(xml, row_text(read_multiplier(), read_last_multiplied_level(), read_unlock_rank()))
     if updated == xml:
         return False
 

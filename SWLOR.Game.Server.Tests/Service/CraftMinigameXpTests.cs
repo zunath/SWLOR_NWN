@@ -3,6 +3,7 @@ using NUnit.Framework;
 using SWLOR.Game.Server.Service;
 using SWLOR.Game.Server.Service.CraftService;
 using SWLOR.Game.Server.Service.CraftService.Minigame;
+using SWLOR.Game.Server.Service.CraftService.Minigame.Reaction;
 using SWLOR.Game.Server.Service.SkillService;
 
 namespace SWLOR.Game.Server.Tests.Service;
@@ -11,12 +12,18 @@ namespace SWLOR.Game.Server.Tests.Service;
 public class CraftMinigameXpTests
 {
     [Test]
-    public void OnlyAMinigameThatNeedsOneHasAMultiplier()
+    public void OnlyAMinigameThatNeedsOneHasAMultiplier_AndOnlyForTheRecipeLevelsThatNeedIt()
     {
         foreach (var minigame in Enum.GetValues<CraftMinigameType>().Where(minigame => minigame != CraftMinigameType.Reaction))
-            CraftMinigameXp.MultiplierFor(minigame).Should().Be(1.0, minigame.ToString());
+        {
+            foreach (var level in new[] { 1, 10, 11, 50 })
+                CraftMinigameXp.MultiplierFor(minigame, level).Should().Be(1.0, $"{minigame} level {level}");
+        }
 
-        CraftMinigameXp.MultiplierFor(CraftMinigameType.Reaction).Should().BeGreaterThan(1.0);
+        CraftMinigameXp.MultiplierFor(CraftMinigameType.Reaction, 1).Should().BeGreaterThan(1.0);
+        CraftMinigameXp.MultiplierFor(CraftMinigameType.Reaction, ReactionRules.XpMultiplierLastLevel).Should().BeGreaterThan(1.0);
+        CraftMinigameXp.MultiplierFor(CraftMinigameType.Reaction, ReactionRules.XpMultiplierLastLevel + 1).Should().Be(1.0);
+        CraftMinigameXp.MultiplierFor(CraftMinigameType.Reaction, 50).Should().Be(1.0);
     }
 
     [TestCase(10, 2.5, 25)]

@@ -29,7 +29,7 @@ public sealed class ReactionEngine : MinigameEngineBase<ReactionState>
             "Charge",
             "Drive the reaction: a lot of Potency, doubled at Peak. It costs heavy Stability unless the phase is Calm."),
         new MinigameActionInfo(Refine, "Refine", "Purify the mixture: Subtlety, doubled in Settling and halved at Peak."),
-        new MinigameActionInfo(Dampen, "Dampen", "Hold the current phase for one more turn. Costs CP."),
+        new MinigameActionInfo(Dampen, "Dampen", "Hold the current phase for one more turn and restore a little Stability, without wearing the piece. Costs CP."),
         new MinigameActionInfo(Stabilize, "Stabilize", "Steady the mixture and restore Stability. Costs CP.")
     };
 
@@ -119,8 +119,8 @@ public sealed class ReactionEngine : MinigameEngineBase<ReactionState>
             }
 
             case Dampen:
-                return OneOutcome(info, ReactionRules.DampenCp, _settings.ActionStability, "Phase held", s =>
-                    s with { HoldCycle = true });
+                return OneOutcome(info, _settings.DampenCp, 0, "Phase held", s =>
+                    s.Adjust(new MinigameMeterDelta(Integrity: ReactionRules.DampenRestore)) with { HoldCycle = true });
 
             case Stabilize:
                 if (!_settings.StabilizeUnlocked)

@@ -71,10 +71,36 @@ public class ReactionRulesTests
     }
 
     [Test]
-    public void TheXpMultiplierIsOneNamedValueThatKeepsEspionageXpPerHourAtTheOldWindows()
+    public void TheXpMultiplierIsOneNamedValuePerBand_AndOnlyTheLowestBandPaysMore()
     {
-        ReactionRules.XpMultiplier.Should().BeGreaterThan(1.0);
-        CraftMinigameXp.MultiplierFor(CraftMinigameType.Reaction).Should().Be(ReactionRules.XpMultiplier);
+        ReactionRules.LowLevelXpMultiplier.Should().BeGreaterThan(1.0);
+        for (var level = 1; level <= ReactionRules.XpMultiplierLastLevel; level++)
+        {
+            ReactionRules.XpMultiplier(level).Should().Be(ReactionRules.LowLevelXpMultiplier, $"level {level}");
+            CraftMinigameXp.MultiplierFor(CraftMinigameType.Reaction, level).Should().Be(ReactionRules.LowLevelXpMultiplier, $"level {level}");
+        }
+
+        for (var level = ReactionRules.XpMultiplierLastLevel + 1; level <= 53; level++)
+        {
+            ReactionRules.XpMultiplier(level).Should().Be(1.0, $"level {level} already pays at least the old XP per hour");
+            CraftMinigameXp.MultiplierFor(CraftMinigameType.Reaction, level).Should().Be(1.0, $"level {level}");
+        }
+    }
+
+    [Test]
+    public void DampenCostsAQuarterOfStabilizesCp_SoACrafterAtTheRecipesLevelHasOneToSpare()
+    {
+        ReactionRules.DampenRestore.Should().BePositive().And.BeLessThan(ReactionRules.StabilizeRestore);
+        ReactionRules.DampenCp(1).Should().Be(ReactionRules.MinimumDampenCp);
+
+        var costs = Enumerable.Range(1, 50).Select(ReactionRules.DampenCp).ToList();
+        costs.Should().BeInAscendingOrder();
+        for (var level = ReactionRules.StabilizeUnlockRank + 1; level <= 50; level++)
+        {
+            ReactionRules.DampenCp(level).Should().BeLessThan(ReactionRules.StabilizeCp(level), $"level {level}");
+            ReactionRules.MaxCp(level).Should().BeGreaterThanOrEqualTo(
+                ReactionRules.StabilizeCp(level) + ReactionRules.DampenCp(level), $"level {level}: one Stabilize and one Dampen");
+        }
     }
 
     [Test]

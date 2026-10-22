@@ -48,7 +48,7 @@ public static class QuickCraftService
         if (IsRunning(player))
             return "A quick craft is already running.";
 
-        if (CraftSessionService.IsCrafting(player))
+        if (CraftSessionService.IsCrafting(player) || CraftMinigameRouting.IsAnyCraftWindowOpen(player))
             return "Finish your current craft first.";
 
         var eligibility = Evaluate(player, recipeType);

@@ -115,8 +115,16 @@ public sealed class NwnCraftSessionWorld : ICraftSessionWorld
         return true;
     }
 
-    public bool TryReturnItem(uint player, string serialized) =>
-        Item.TryAcquireItem(player, ObjectPlugin.Deserialize(serialized));
+    public bool TryReturnItem(uint player, string serialized)
+    {
+        var item = ObjectPlugin.Deserialize(serialized);
+        if (GetIsObjectValid(item))
+            return Item.TryAcquireItem(player, item);
+
+        // Data that no longer loads can never be returned; dropping it keeps the player from being told about it forever.
+        Log.Write(LogGroup.Error, $"A saved craft item for {GetObjectUUID(player)} could not be restored and was dropped.", true);
+        return true;
+    }
 
     public void BeginStationWork(uint player)
     {

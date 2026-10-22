@@ -1,5 +1,6 @@
 using System.Reflection;
 using SWLOR.CraftSim.Gates;
+using SWLOR.CraftSim.Legacy.Gathering;
 using SWLOR.CraftSim.Report;
 using SWLOR.CraftSim.Scenario;
 using SWLOR.Game.Server.Service.CraftService.Minigame;
@@ -105,6 +106,7 @@ namespace SWLOR.CraftSim.Fishing
         {
             "- Today's catch chance depends on the character's Willpower, which is not measured for active characters yet; the corridor between Willpower 10 and 14 stands in for it.",
             "- The adaptive player is a bounded-depth expectimax with a generic fish heuristic. It is not an optimal player, and real players are less skilled; the rule-of-thumb player marks the other end. The study does not measure how real players play.",
+            $"- The game places the six special fish at a random location and bait on every server start. The study fixes one placement (`FishingCatchModel.SpecialPlacementSeed` = {FishingCatchModel.SpecialPlacementSeed}) so the report can be reproduced; another placement moves the top band's mix and the pooled rows a little.",
             "- The fight has no hidden chance, so a very easy fish is landed every time by a skilled player, where today's chance stops at 95%.",
             "- The pooled table averages every pool a rod can reach with equal weight, as the legacy baseline does, and ignores the 80% chance of no bite when only the default fish is on offer. Fish per hour is not modelled: location choice, bait supply and respawn are outside the study.",
             $"- Gate 6 weighs the time a fight adds ({Number(options.SecondsPerTurn)} s a turn is unmeasured) against the XP multiplier, so the multipliers are starting values: they shrink or grow with the real seconds per turn, and a fight that turns out shorter than modelled would pay more than today's XP per hour.",

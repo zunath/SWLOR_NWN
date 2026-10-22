@@ -25,6 +25,12 @@ namespace SWLOR.Game.Server.Service.FishingService
         /// <summary>True once the fight has been landed, lost or abandoned. Nothing more can happen to it.</summary>
         public bool Settled { get; private set; }
 
+        /// <summary>
+        /// How the fight ended when its own engine settled it (landed, snapped or escaped), which is what the window has shown. Null while
+        /// the fight goes on, and when the angler abandoned it instead.
+        /// </summary>
+        public FishingFightResult Result { get; internal set; }
+
         /// <summary>Marks the fight over. Returns false when it already was, so a repeated settle does nothing.</summary>
         internal bool TrySettle()
         {

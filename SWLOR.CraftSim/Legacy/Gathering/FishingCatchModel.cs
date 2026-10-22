@@ -39,8 +39,27 @@ namespace SWLOR.CraftSim.Legacy.Gathering
                 .ToList();
         }
 
+        /// <summary>
+        /// The six special fish are placed at a random location and bait each time the server starts (<c>SpecialFishingLocationDefinition</c>), so
+        /// building the pools twice would give two different sets. The study fixes one placement, from this seed, and builds the pools once, so its
+        /// reports and tests can be reproduced.
+        /// </summary>
+        public const int SpecialPlacementSeed = 1;
+
+        private static readonly object PoolsLock = new();
+        private static IReadOnlyList<FishingPool> _pools;
+
         /// <summary>The weighted fish lists of each location, rod and bait, with daytime and nighttime counted separately.</summary>
         public static IReadOnlyList<FishingPool> Pools()
+        {
+            lock (PoolsLock)
+            {
+                return _pools ??= BuildPools();
+            }
+        }
+
+        /// <summary>Builds the pools afresh, for a test that checks two builds agree.</summary>
+        internal static IReadOnlyList<FishingPool> BuildPools()
         {
             var levels = Fish().ToDictionary(f => f.Type, f => f.Level);
             var pools = new List<FishingPool>();
@@ -51,7 +70,17 @@ namespace SWLOR.CraftSim.Legacy.Gathering
             var merged = new Dictionary<FishingLocationType, FishingLocationDetail>();
             foreach (var definition in definitions)
             {
-                var built = ((IFishingLocationDefinition)Activator.CreateInstance(definition)).Build();
+                Dictionary<FishingLocationType, FishingLocationDetail> built;
+                SWLOR.Game.Server.Service.Random.SetSeed(SpecialPlacementSeed);
+                try
+                {
+                    built = ((IFishingLocationDefinition)Activator.CreateInstance(definition)).Build();
+                }
+                finally
+                {
+                    SWLOR.Game.Server.Service.Random.ResetSeed();
+                }
+
                 foreach (var (location, detail) in built)
                 {
                     if (!merged.TryGetValue(location, out var existing))

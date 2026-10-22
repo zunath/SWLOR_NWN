@@ -102,7 +102,8 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
 
         private void PerformAction(int index)
         {
-            if (_fight == null)
+            // A click queued behind the one that ended the fight must not replace the result the window already shows.
+            if (_fight == null || _fight.Result != null)
                 return;
 
             if (!FishingFights.Revalidate(_fight))

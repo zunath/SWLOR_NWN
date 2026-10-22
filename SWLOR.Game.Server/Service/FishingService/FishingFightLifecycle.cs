@@ -135,7 +135,8 @@ namespace SWLOR.Game.Server.Service.FishingService
                     break;
             }
 
-            return new FishingFightResult(ending, message);
+            fight.Result = new FishingFightResult(ending, message);
+            return fight.Result;
         }
 
         /// <summary>

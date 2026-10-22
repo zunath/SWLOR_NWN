@@ -221,6 +221,39 @@ public class FishingFightLifecycleTests
     }
 
     [Test]
+    public void AFightSettledByItsEngine_KeepsItsResult_SoAClickQueuedBehindTheLastActionCanTellTheResultIsShown()
+    {
+        var lifecycle = Lifecycle();
+        var fight = lifecycle.Bite(EasyFish());
+        fight.Result.Should().BeNull("the fight is still going");
+
+        Reel(fight);
+        Reel(fight);
+        Reel(fight);
+        var result = lifecycle.Settle(fight);
+
+        fight.Engine.Ending.Should().Be(LineEnding.Landed);
+        fight.Result.Should().BeSameAs(result);
+        fight.Result.Ending.Should().Be(LineEnding.Landed);
+        lifecycle.Revalidate(fight).Should().BeFalse("the fight is over, which is why the window must look at the result and not at this answer");
+        fight.Result.Ending.Should().Be(LineEnding.Landed, "nothing a later check does can turn a landing into an escape");
+        lifecycle.Settle(fight).Should().BeNull();
+        fight.Result.Should().BeSameAs(result);
+    }
+
+    [Test]
+    public void AnAbandonedFight_HasNoResult_SoTheWindowStillShowsThatTheFishGotAway()
+    {
+        var lifecycle = Lifecycle();
+        var fight = lifecycle.Bite(EasyFish());
+
+        lifecycle.Abandon(fight, FishingFightEnd.Moved);
+
+        fight.Settled.Should().BeTrue();
+        fight.Result.Should().BeNull();
+    }
+
+    [Test]
     public void ASnappedLine_LosesTheFish_AndChangesNeitherTheBaitNorTheXp()
     {
         var lifecycle = Lifecycle(55, 99, 99);

@@ -141,6 +141,7 @@ namespace SWLOR.Game.Server.Feature
 
         /// <summary>
         /// When a scavenge site is closed by a player, if there are no more items in the inventory, destroy the scavenge point.
+        /// If it was searched but items remain, it despawns shortly after so it frees its spawn slot.
         /// </summary>
         [NWNEventHandler(ScriptName.OnScavengeClosed)]
         public static void OnClosed()
@@ -150,6 +151,11 @@ namespace SWLOR.Game.Server.Feature
 
             if (!GetIsPC(user) || GetIsDM(user)) return;
 
+            ResolveClosedScavengePoint(placeable);
+        }
+
+        public static void ResolveClosedScavengePoint(uint placeable)
+        {
             // In case the user is not skilled enough to scavenge this resource, we don't want to destroy it.
             if (GetLocalBool(placeable, "DO_NOT_DESTROY"))
             {
@@ -165,7 +171,10 @@ namespace SWLOR.Game.Server.Feature
                 SetPlotFlag(placeable, false);
                 ApplyEffectToObject(DurationType.Instant, EffectDeath(), placeable);
             }
-
+            else if (GetLocalBool(placeable, "FULLY_HARVESTED"))
+            {
+                Spawn.ScheduleResourceDespawn(placeable, TimeSpan.FromMinutes(Spawn.LeftoverResourceDespawnMinutes));
+            }
         }
     }
 }

@@ -115,6 +115,9 @@ namespace SWLOR.CraftSim.Gates
 
         public int RankFor(RecipeEntry recipe) => Scenario.Cohort.RankFor(recipe);
 
+        /// <summary>The solver's effort: the thresholds' override, or the scenario's own.</summary>
+        public FixedRotationSolverOptions SolverOptions => Thresholds.SolverOptions ?? Scenario.SolverOptions;
+
         public static readonly ParallelOptions Parallelism = new() { MaxDegreeOfParallelism = Math.Max(1, Environment.ProcessorCount) };
 
         public CohortCell Adaptive(RecipeEntry recipe, int rank, int gearIndex, CraftStyle style = null) =>

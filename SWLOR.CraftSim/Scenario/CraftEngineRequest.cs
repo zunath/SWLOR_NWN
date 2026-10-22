@@ -28,7 +28,7 @@ namespace SWLOR.CraftSim.Scenario
         /// <summary>The style or perk configuration to build with, or null for no perks.</summary>
         public CraftStyle Style { get; }
 
-        /// <summary>The seed of this attempt, for a scenario that needs a number of its own.</summary>
+        /// <summary>The seed of the whole simulation (the same for every attempt), for a scenario that needs a number of its own. The attempt's own dice are <see cref="Random"/>.</summary>
         public int Seed { get; }
 
         /// <summary>The source of chance the engine must be built with, so the attempt repeats from its seed.</summary>

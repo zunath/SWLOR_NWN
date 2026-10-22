@@ -37,11 +37,8 @@ namespace SWLOR.CraftSim.Tests.Support
         /// <summary>Adds the Perfect action, so a fixed rotation of it is as good as anything.</summary>
         public bool Dominant { get; init; }
 
-        /// <summary>The quality meter's maximum as a percentage of the normal 100 (or of 60 and 140 when split by category).</summary>
+        /// <summary>The quality meter's maximum; 100 is the normal, a larger one asks for more quality than the actions can reach.</summary>
         public int QualityDemand { get; init; } = 100;
-
-        /// <summary>Breastplates need much progress and little quality; longswords the reverse.</summary>
-        public bool SplitByCategory { get; init; }
 
         /// <summary>The integrity cost of Press; a high one makes crafts break.</summary>
         public int PressIntegrityCost { get; init; } = 6;
@@ -52,29 +49,25 @@ namespace SWLOR.CraftSim.Tests.Support
 
         public AdaptivePolicyOptions AdaptiveOptions { get; init; } = new() { Depth = 3, ForecastSamples = 1, SampleBudget = 2000 };
 
-        public FixedRotationSolverOptions SolverOptions { get; init; } = new()
+        /// <summary>The small solver the gate tests use so a whole gate runs in a few seconds.</summary>
+        public static readonly FixedRotationSolverOptions TinySolver = new()
         {
-            BeamWidth = 4, MaximumLength = 30, TrainingRuns = 24, SelectionRuns = 24, Finalists = 3, PolishPasses = 2,
-            PolishStarts = 2, CycleLength = 3, ScreeningRuns = 8, AdaptiveSeedLines = 4
+            BeamWidth = 3, MaximumLength = 28, TrainingRuns = 12, SelectionRuns = 12, Finalists = 2, PolishPasses = 1,
+            PolishStarts = 1, CycleLength = 2, ScreeningRuns = 6, AdaptiveSeedLines = 3
         };
+
+        public FixedRotationSolverOptions SolverOptions { get; init; } = TinySolver;
 
         public IReadOnlyList<string> Limitations => new[] { "The test bench is not a real minigame." };
 
         public ICraftMinigameEngine CreateEngine(CraftEngineRequest request)
         {
             var style = request.Style?.Configuration as BenchStyle ?? BenchStyle.Plain;
-            int progress = 100, quality = 100;
-            if (SplitByCategory)
-            {
-                (progress, quality) = request.Recipe.Category == RecipeCategoryType.Breastplate ? (140, 60) : (60, 140);
-            }
-
             return new BenchEngine(
                 request.Random,
                 new BenchTuning
                 {
-                    MaxProgress = progress,
-                    MaxQuality = quality * QualityDemand / 100,
+                    MaxQuality = QualityDemand,
                     MaxCp = 36 + request.Rank / 3 + request.Gear.CpBonus / 2,
                     PressInWindow = (int)((25 + request.Gear.Craftsmanship / 10) * style.PressFactor),
                     PolishInWindow = (int)((30 + request.Gear.Control / 10) * style.PolishFactor),

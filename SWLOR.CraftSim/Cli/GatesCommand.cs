@@ -2,6 +2,7 @@ using Newtonsoft.Json;
 using Newtonsoft.Json.Converters;
 using SWLOR.CraftSim.Data;
 using SWLOR.CraftSim.Gates;
+using SWLOR.CraftSim.Play;
 using SWLOR.CraftSim.Scenario;
 
 namespace SWLOR.CraftSim.Cli
@@ -20,7 +21,7 @@ namespace SWLOR.CraftSim.Cli
             "--scenario", "--runs", "--seed", "--recipes-per-band", "--gates", "--legacy-seconds-per-action", "--out", "--json", "--repo"
         };
 
-        private static readonly string[] Flags = { "--all-recipes", "--list", "--strict" };
+        private static readonly string[] Flags = { "--all-recipes", "--list", "--strict", "--thorough" };
 
         public static int Run(string[] args, TextWriter output, ScenarioRegistry registry = null) =>
             Run(args, output, registry, null, null);
@@ -57,13 +58,12 @@ namespace SWLOR.CraftSim.Cli
                     ? null
                     : CommandLineOptions.GetInt(options, "--recipes-per-band", GateThresholds.Default.RecipesPerBand ?? 1, 1, 10_000),
                 LegacySecondsPerAction = CommandLineOptions.GetPositiveNumber(
-                    options, "--legacy-seconds-per-action", GateThresholds.Default.LegacySecondsPerAction)
+                    options, "--legacy-seconds-per-action", GateThresholds.Default.LegacySecondsPerAction),
+                SolverOptions = options.ContainsKey("--thorough") ? FixedRotationSolverOptions.Thorough : null
             };
 
             var root = options.TryGetValue("--repo", out var repo) ? RepositoryPaths.FindRoot(repo[0]) : RepositoryPaths.FindRoot();
-            var outPath = options.TryGetValue("--out", out var outValues)
-                ? outValues[0]
-                : Path.Combine(root, "design", "testing", "crafting-revamp", $"{scenario.Name}-gates.md");
+            var outPath = options.TryGetValue("--out", out var outValues) ? outValues[0] : DefaultReportPath(root, scenario);
 
             var outputs = new List<(string, string)> { ("--out", outPath) };
             if (options.TryGetValue("--json", out var jsonValues))
@@ -123,6 +123,10 @@ namespace SWLOR.CraftSim.Cli
             var blocked = results.Any(result => result.Verdict is GateVerdict.Failed or GateVerdict.NotRun);
             return options.ContainsKey("--strict") && blocked ? 2 : 0;
         }
+
+        /// <summary>Where a scenario's report goes when <c>--out</c> is not given: the crafting revamp's evidence folder.</summary>
+        internal static string DefaultReportPath(string root, ICraftScenario scenario) =>
+            Path.Combine(root, "design", "testing", "crafting-revamp", $"{scenario.Name}-gates.md");
 
         private static void WriteFile(string path, string contents)
         {

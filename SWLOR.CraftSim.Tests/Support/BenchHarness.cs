@@ -26,28 +26,19 @@ namespace SWLOR.CraftSim.Tests.Support
         public int Next(int minInclusive, int maxExclusive) => Math.Clamp(D100(), minInclusive, maxExclusive - 1);
     }
 
-    /// <summary>The small solver and run sizes the gate tests use so a whole gate runs in a few seconds.</summary>
+    /// <summary>Builds the contexts and suites the gate tests run on the test bench.</summary>
     internal static class BenchHarness
     {
-        public static readonly FixedRotationSolverOptions TinySolver = new()
-        {
-            BeamWidth = 3, MaximumLength = 28, TrainingRuns = 12, SelectionRuns = 12, Finalists = 2, PolishPasses = 1,
-            PolishStarts = 1, CycleLength = 2, ScreeningRuns = 6, AdaptiveSeedLines = 3
-        };
-
-        public static BenchScenario Scenario(Func<BenchScenario, BenchScenario> change = null)
-        {
-            var scenario = new BenchScenario { SolverOptions = TinySolver };
-            return change == null ? scenario : change(scenario);
-        }
-
         public static GateContext Context(IEnumerable<int> levels, int runs = 20, int seed = 1, int perLevel = 2) =>
             new(BenchRecipes.Catalog(levels, perLevel), SharedData.Gear, runs, seed, AttributeSweep.Default);
 
-        public static CraftGateSuite Suite(BenchScenario scenario, int recipesPerBand = 1, GateThresholds thresholds = null) =>
+        public static CraftGateSuite Suite(ICraftScenario scenario, int recipesPerBand = 1, GateThresholds thresholds = null) =>
             new(scenario, (thresholds ?? GateThresholds.Default) with { RecipesPerBand = recipesPerBand });
 
-        public static GateResult Evaluate(string gateKey, BenchScenario scenario, GateContext context, int recipesPerBand = 1, GateThresholds thresholds = null) =>
+        public static GateResult Evaluate(string gateKey, ICraftScenario scenario, GateContext context, int recipesPerBand = 1, GateThresholds thresholds = null) =>
             Suite(scenario, recipesPerBand, thresholds).Select(new[] { gateKey }).Single().Evaluate(context);
+
+        /// <summary>The verdict cell of every row of a result's first table, which is its last column.</summary>
+        public static IReadOnlyList<string> RowVerdicts(GateResult result) => result.Tables[0].Rows.Select(row => row[^1]).ToList();
     }
 }

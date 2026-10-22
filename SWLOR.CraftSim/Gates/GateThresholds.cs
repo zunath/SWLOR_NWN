@@ -1,4 +1,5 @@
 using SWLOR.CraftSim.Data;
+using SWLOR.CraftSim.Play;
 
 namespace SWLOR.CraftSim.Gates
 {
@@ -67,6 +68,9 @@ namespace SWLOR.CraftSim.Gates
 
         // Sampling.
 
+        /// <summary>The fixed-rotation solver's effort for every scenario; null leaves each scenario's own <see cref="Scenario.ICraftScenario.SolverOptions"/>.</summary>
+        public FixedRotationSolverOptions SolverOptions { get; init; }
+
         /// <summary>Recipes played per band: an even sample across the band, repeatable. Null plays every recipe.</summary>
         public int? RecipesPerBand { get; init; } = 6;
 
@@ -88,6 +92,7 @@ namespace SWLOR.CraftSim.Gates
             ("LegacySecondsPerAction", Number(LegacySecondsPerAction), "gate 6: seconds per action in the old craft window (unmeasured estimate)"),
             ("OverheadSecondsPerAttempt", Number(OverheadSecondsPerAttempt), "gate 6: seconds per craft besides actions, both loops (unmeasured estimate)"),
             ("RecipesPerBand", RecipesPerBand?.ToString() ?? "all", "recipes played per band"),
+            ("SolverOptions", SolverOptions == null ? "the scenario's" : "overridden", "effort of the fixed-rotation solver"),
             ("ActionLimit", ActionLimit.ToString(), "actions after which an attempt counts as stalled")
         };
 

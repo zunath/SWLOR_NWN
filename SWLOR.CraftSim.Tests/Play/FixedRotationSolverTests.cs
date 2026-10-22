@@ -123,7 +123,7 @@ namespace SWLOR.CraftSim.Tests.Play
                 FixedRotationSolver.Score(NewToy, sequence, 1, SimStreams.SolverTraining, Stream, 5, CraftPlayer.DefaultActionLimit);
             var start = new List<string> { ToyEngine.B, ToyEngine.B, ToyEngine.A, ToyEngine.A, ToyEngine.A };
 
-            var polished = solver.Polish(start, new List<string> { ToyEngine.A, ToyEngine.B, ToyEngine.C, ToyEngine.D }, Train);
+            var polished = solver.Polish(start, new List<string> { ToyEngine.A, ToyEngine.B, ToyEngine.C, ToyEngine.D }, _ => Train);
 
             Train(start).Should().BeApproximately(0.68, 1e-6);
             Train(polished).Should().Be(1.0);
@@ -138,7 +138,7 @@ namespace SWLOR.CraftSim.Tests.Play
                 FixedRotationSolver.Score(NewBench, sequence, 1, SimStreams.SolverTraining, Stream, 8, CraftPlayer.DefaultActionLimit);
             var start = new List<string> { "stoke", "stoke", "press", "polish", "press" };
 
-            var polished = solver.Polish(start, new List<string> { "stoke", "press", "polish", "mend" }, Train);
+            var polished = solver.Polish(start, new List<string> { "stoke", "press", "polish", "mend" }, _ => Train);
 
             Train(polished).Should().BeGreaterThanOrEqualTo(Train(start));
         }
@@ -173,7 +173,7 @@ namespace SWLOR.CraftSim.Tests.Play
             ((Action)(() => new FixedRotationSolver(new FixedRotationSolverOptions { Finalists = 0 }))).Should().Throw<ArgumentOutOfRangeException>();
             ((Action)(() => new FixedRotationSolver(new FixedRotationSolverOptions { PolishPasses = -1 }))).Should().Throw<ArgumentOutOfRangeException>();
             ((Action)(() => new FixedRotationSolver(new FixedRotationSolverOptions { CycleLength = 6 }))).Should().Throw<ArgumentOutOfRangeException>();
-            FixedRotationSolverOptions.Default.Describe().Should().Contain("beam 8").And.Contain("cycles up to 3");
+            FixedRotationSolverOptions.Default.Describe().Should().Contain("beam 8").And.Contain("cycles up to 3").And.Contain("12 finalists");
         }
     }
 }

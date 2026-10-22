@@ -8,6 +8,12 @@ namespace SWLOR.CraftSim.Play
     {
         public static readonly FixedRotationSolverOptions Default = new();
 
+        /// <summary>A longer search for a final run: more of everything. It takes several times as long and finds better rotations than <see cref="Default"/>.</summary>
+        public static readonly FixedRotationSolverOptions Thorough = new()
+        {
+            BeamWidth = 12, TrainingRuns = 100, SelectionRuns = 250, Finalists = 16, PolishStarts = 5, PolishPasses = 4, AdaptiveSeedLines = 12
+        };
+
         /// <summary>Sequences kept at each length by the beam search.</summary>
         public int BeamWidth { get; init; } = 8;
 
@@ -15,19 +21,22 @@ namespace SWLOR.CraftSim.Play
         public int MaximumLength { get; init; } = 40;
 
         /// <summary>Seeded attempts every candidate is scored on while the search runs (the same dice for every candidate).</summary>
-        public int TrainingRuns { get; init; } = 40;
+        public int TrainingRuns { get; init; } = 64;
 
-        /// <summary>Different seeded attempts that pick the winner among the best candidates, so the winner is not just the luckiest one.</summary>
-        public int SelectionRuns { get; init; } = 48;
+        /// <summary>
+        /// Different seeded attempts, more of them than the search used, that pick the winner among the finalists. A rotation the search
+        /// tuned to its own dice looks better there than it is, so the winner is chosen on dice it never saw.
+        /// </summary>
+        public int SelectionRuns { get; init; } = 150;
 
-        /// <summary>How many of the best candidates go to the selection attempts.</summary>
-        public int Finalists { get; init; } = 4;
+        /// <summary>How many candidates go to the selection attempts: the local search's results first, then the best of the rest.</summary>
+        public int Finalists { get; init; } = 12;
 
-        /// <summary>Rounds of local search (replace, swap, delete or insert one action) on each start.</summary>
-        public int PolishPasses { get; init; } = 2;
+        /// <summary>Rounds of local search (replace, swap, delete or insert one action or a pair) on each start. Every round scores on attempts the earlier rounds did not use.</summary>
+        public int PolishPasses { get; init; } = 3;
 
         /// <summary>How many of the best candidates the local search starts from.</summary>
-        public int PolishStarts { get; init; } = 2;
+        public int PolishStarts { get; init; } = 3;
 
         /// <summary>
         /// The longest repeating cycle tried: with 3, every cycle of 1, 2 or 3 actions (such as "stoke, press, polish" over and over) is
@@ -62,7 +71,8 @@ namespace SWLOR.CraftSim.Play
 
         public string Describe() =>
             $"beam {BeamWidth}, cycles up to {CycleLength}, {AdaptiveSeedLines} adaptive lines as seeds, up to {MaximumLength} actions, " +
-            $"{TrainingRuns} training and {SelectionRuns} selection attempts per candidate, {PolishStarts} starts x {PolishPasses} local-search passes, {Finalists} finalists";
+            $"{TrainingRuns} training attempts per local-search round and {SelectionRuns} selection attempts for each of {Finalists} finalists, " +
+            $"local search from the best {PolishStarts} candidate(s) for up to {PolishPasses} round(s) each";
     }
 
     /// <summary>The best fixed rotation found for one recipe, rank, gear and style.</summary>
@@ -108,18 +118,27 @@ namespace SWLOR.CraftSim.Play
             IReadOnlyList<IReadOnlyList<string>> seedLines = null)
         {
             var actions = factory(new SimMinigameRandom(new SimRandom(0))).Actions.Select(action => action.Id).ToList();
-            var trainingCache = new Dictionary<string, double>();
+            var trainingCaches = new Dictionary<int, Dictionary<string, double>>();
 
-            double Train(IReadOnlyList<string> sequence)
+            // Round k of the local search scores on its own block of attempts, so a variant has to hold up on dice the last round did not use.
+            Func<IReadOnlyList<string>, double> TrainFor(int round)
             {
-                var key = Key(sequence);
-                if (!trainingCache.TryGetValue(key, out var score))
-                {
-                    score = Score(factory, sequence, seed, SimStreams.SolverTraining, stream, _options.TrainingRuns, CraftPlayer.DefaultActionLimit);
-                    trainingCache[key] = score;
-                }
+                if (!trainingCaches.TryGetValue(round, out var cache))
+                    trainingCaches[round] = cache = new Dictionary<string, double>();
 
-                return score;
+                return sequence =>
+                {
+                    var key = Key(sequence);
+                    if (!cache.TryGetValue(key, out var score))
+                    {
+                        score = Score(
+                            factory, sequence, seed, SimStreams.SolverTraining, stream, _options.TrainingRuns, CraftPlayer.DefaultActionLimit,
+                            firstRun: round * _options.TrainingRuns);
+                        cache[key] = score;
+                    }
+
+                    return score;
+                };
             }
 
             var candidates = new List<List<string>>();
@@ -128,12 +147,11 @@ namespace SWLOR.CraftSim.Play
             if (seedLines != null)
                 candidates.AddRange(seedLines.Where(line => line.Count > 0 && line.All(actions.Contains)).Select(line => line.Take(_options.MaximumLength).ToList()));
 
-            var ranked = Distinct(candidates).OrderByDescending(Train).ToList();
-            var polished = new List<List<string>>();
-            foreach (var start in ranked.Take(_options.PolishStarts))
-                polished.Add(Polish(start, actions, Train));
+            var firstRound = TrainFor(0);
+            var ranked = Distinct(candidates).OrderByDescending(sequence => firstRound(sequence)).ToList();
+            var polished = ranked.Take(_options.PolishStarts).Select(start => Polish(start, actions, TrainFor)).ToList();
 
-            var finalists = Distinct(polished.Concat(ranked)).OrderByDescending(Train).Take(_options.Finalists).ToList();
+            var finalists = Distinct(polished.Concat(ranked)).Take(Math.Max(_options.Finalists, _options.PolishStarts)).ToList();
 
             List<string> winner = null;
             var winnerSelection = double.MinValue;
@@ -149,7 +167,7 @@ namespace SWLOR.CraftSim.Play
 
             return winner == null
                 ? new SolvedRotation(new List<string>(), 0, 0)
-                : new SolvedRotation(winner, Train(winner), winnerSelection);
+                : new SolvedRotation(winner, firstRound(winner), winnerSelection);
         }
 
         /// <summary>The mean score of a fixed rotation over seeded attempts: quality of the item made, 0 for no item.</summary>
@@ -160,10 +178,11 @@ namespace SWLOR.CraftSim.Play
             int streamKind,
             int[] stream,
             int runs,
-            int actionLimit)
+            int actionLimit,
+            int firstRun = 0)
         {
             var total = 0.0;
-            for (var run = 0; run < runs; run++)
+            for (var run = firstRun; run < firstRun + runs; run++)
                 total += PlayRun(factory, sequence, seed, streamKind, stream, run, actionLimit).Score;
 
             return total / runs;
@@ -382,14 +401,18 @@ namespace SWLOR.CraftSim.Play
             }
         }
 
-        /// <summary>Local search: at each position keep the best single replacement, swap, deletion or insertion that raises the training score; repeat for the passes.</summary>
-        internal List<string> Polish(List<string> start, List<string> actions, Func<IReadOnlyList<string>, double> train)
+        /// <summary>
+        /// Local search: at each position keep the best single replacement, swap, deletion or insertion that raises the training score; repeat
+        /// for the passes, each scoring on its own attempts (<paramref name="trainFor"/> gives the scorer for a round).
+        /// </summary>
+        internal List<string> Polish(List<string> start, List<string> actions, Func<int, Func<IReadOnlyList<string>, double>> trainFor)
         {
             var best = start;
-            var bestScore = train(best);
 
             for (var pass = 0; pass < _options.PolishPasses; pass++)
             {
+                var train = trainFor(pass);
+                var bestScore = train(best);
                 var improved = false;
                 for (var position = 0; position <= best.Count; position++)
                 {
@@ -437,6 +460,11 @@ namespace SWLOR.CraftSim.Play
                 var inserted = new List<string>(sequence);
                 inserted.Insert(position, action);
                 yield return inserted;
+
+                // A pair at once reaches rotations that only pay off with two of the same action in a row.
+                var insertedPair = new List<string>(sequence);
+                insertedPair.InsertRange(position, new[] { action, action });
+                yield return insertedPair;
             }
 
             if (position < sequence.Count)
@@ -444,6 +472,13 @@ namespace SWLOR.CraftSim.Play
                 var deleted = new List<string>(sequence);
                 deleted.RemoveAt(position);
                 yield return deleted;
+            }
+
+            if (position + 1 < sequence.Count)
+            {
+                var deletedPair = new List<string>(sequence);
+                deletedPair.RemoveRange(position, 2);
+                yield return deletedPair;
             }
 
             if (position + 1 < sequence.Count && sequence[position] != sequence[position + 1])

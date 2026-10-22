@@ -79,7 +79,7 @@ namespace SWLOR.CraftSim.Gates
             {
                 $"- Scenario: {Scenario.Title} (`{Scenario.Name}`), {Scenario.Skill} recipes, minigame {Scenario.Minigame}.",
                 "- Quality: the quality meter's share of its maximum when the item is made, in points (0-100). A broken or abandoned piece counts 0, so every average includes the crafts that failed.",
-                "- Crafter: rank equal to the recipe's level, at most 50, so a crafter works at their own level, with no food or status bonuses and no perks unless a gate names a style. " +
+                "- Crafter: the rank the scenario's cohort gives each recipe (by default the recipe's level, at most 50, so a crafter works at their own level), with no food or status bonuses and no perks unless a gate names a style. " +
                 "Gear levels are the plan's none, middle and best tier of the skill's crafting gear:"
             };
 
@@ -88,7 +88,7 @@ namespace SWLOR.CraftSim.Gates
 
             lines.Add($"- Recipes: {RecipeLines(run)}");
             lines.Add($"- Adaptive player: {Scenario.AdaptiveOptions.Describe()}. Each attempt's dice come from its own stream of the seed.");
-            lines.Add($"- Fixed-rotation solver: {Scenario.SolverOptions.Describe()}. The winner is chosen on separate attempts and then scored on a third set (hold-out) with {context.Runs} attempts.");
+            lines.Add($"- Fixed-rotation solver: {run.SolverOptions.Describe()}. The winner is chosen on separate attempts and then scored on a third set (hold-out) with {context.Runs} attempts.");
             lines.Add("- Legacy comparator (gates 5 and 6): the old minigame's lookahead player (`SWLOR.CraftSim baseline`), replayed here with the same seed on the same recipes, ranks and gear.");
             lines.Add($"- Time: {Number(Scenario.SecondsPerAction)} s per action in the new window and {Number(Thresholds.LegacySecondsPerAction)} s in the old one, plus {Number(Thresholds.OverheadSecondsPerAttempt)} s per craft in both. These are estimates; the client evidence replaces them.");
             lines.Add("- Thresholds (starting values, all in `GateThresholds`):");

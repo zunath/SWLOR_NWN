@@ -52,7 +52,7 @@ namespace SWLOR.CraftSim.Play
         }
 
         public string Describe() =>
-            $"depth {Depth}, {ForecastSamples} forecast samples per result, budget {SampleBudget} engine copies per decision, " +
+            $"depth {Depth}, forecast samples per result {ForecastSamples}, budget {SampleBudget} engine copies per decision, " +
             $"{TimePreference:P1} of value lost per extra action, heuristic {Heuristic.GetType().Name}";
     }
 

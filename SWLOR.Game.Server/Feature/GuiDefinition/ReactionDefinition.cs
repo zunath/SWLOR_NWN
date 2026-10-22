@@ -32,10 +32,12 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition
             "- Charge: a large amount of Potency, doubled at Peak. It costs heavy Stability unless the phase is Calm. The Peak is " +
             "harsher in higher-tier recipes.\n" +
             "- Refine: Subtlety, doubled in Settling and halved at Peak.\n" +
-            "- Dampen: costs CP and holds the current phase for one more turn.\n" +
+            "- Dampen: holds the current phase for one more turn and restores a little Stability. It does not wear the piece. " +
+            "It costs 3 CP for every 20 recipe levels (at least 2), so before you learn Stabilize it is your only repair, and " +
+            "afterwards a crafter at the recipe's level has one to spare beside a Stabilize.\n" +
             "- Stabilize: costs CP and restores Stability. You learn it at Espionage rank 10, and it costs 3 CP for every 5 recipe " +
             "levels, so a crafter at the recipe's level can afford it once.\n" +
-            "Every action also costs some Stability, and more in the higher tiers. Each button shows exactly what it will do before " +
+            "Measure, Charge and Refine also cost some Stability, and more in the higher tiers. Each button shows exactly what it will do before " +
             "you click, including the phase that follows. The action that would finish the item says so.\n\n" +
             "FAILING\n" +
             "If Stability reaches 0, or you close this window, die or walk away from the bench, the piece is lost. Each stack of " +

@@ -19,7 +19,7 @@ public static class CraftMinigameXp
     {
         CraftMinigameType.Fabricator => FabricatorRules.XpMultiplierForLevel(recipeLevel),
         CraftMinigameType.Forge => ForgeRules.XpMultiplierForLevel(recipeLevel),
-        CraftMinigameType.Reaction => ReactionRules.XpMultiplier,
+        CraftMinigameType.Reaction => ReactionRules.XpMultiplier(recipeLevel),
         _ => 1.0
     };
 

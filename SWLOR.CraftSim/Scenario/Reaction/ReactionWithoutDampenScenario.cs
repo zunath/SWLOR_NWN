@@ -1,5 +1,3 @@
-using SWLOR.Game.Server.Service.CraftService.Minigame;
-
 namespace SWLOR.CraftSim.Scenario.Reaction
 {
     /// <summary>
@@ -12,6 +10,6 @@ namespace SWLOR.CraftSim.Scenario.Reaction
 
         public override string Title => "Reaction without Dampen";
 
-        public override ICraftMinigameEngine CreateEngine(CraftEngineRequest request) => new DampenlessEngine(base.CreateEngine(request));
+        protected override bool OffersDampen => false;
     }
 }

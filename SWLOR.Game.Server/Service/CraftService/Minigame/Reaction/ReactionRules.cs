@@ -67,10 +67,34 @@ public static class ReactionRules
     /// <summary>The Espionage rank Stabilize unlocks at. Every other Reaction action is available from rank 0.</summary>
     public const int StabilizeUnlockRank = 10;
 
-    public const int DampenCp = 6;
+    /// <summary>
+    /// Dampen costs 3 CP for every 20 recipe levels, at least <see cref="MinimumDampenCp"/>: a quarter of what Stabilize costs, so a
+    /// crafter at the recipe's level can afford one Dampen on top of one Stabilize, and a crafter who has not learned Stabilize yet
+    /// (below rank 10) can afford a few.
+    /// </summary>
+    public const int DampenCpNumerator = 3;
+    public const int DampenCpDenominator = 20;
+    public const int MinimumDampenCp = 2;
 
-    /// <summary>The multiplier on a Reaction craft's base XP that keeps its XP per hour at the old loop's in the 1-10 band (gate 6).</summary>
-    public const double XpMultiplier = 3.0;
+    /// <summary>
+    /// The Stability Dampen restores (it also holds the phase one more turn, and wears the piece by nothing). A little: at 10 or more the
+    /// CP a crafter has would let a fixed rotation repair its way through the 21-30 band (CraftSim gate 1).
+    /// </summary>
+    public const int DampenRestore = 8;
+
+    /// <summary>
+    /// The multiplier on the base XP of a Reaction craft of a recipe up to <see cref="XpMultiplierLastLevel"/>, the smallest that keeps the
+    /// Reaction's XP per hour at or above the old window's there (gate 6). The old minigame finishes these recipes in about three actions;
+    /// above that level the Reaction already pays at least today's rate, so it pays today's XP.
+    /// </summary>
+    public const double LowLevelXpMultiplier = 3.0;
+
+    /// <summary>The highest recipe level that pays <see cref="LowLevelXpMultiplier"/>: the gates' 1-10 band.</summary>
+    public const int XpMultiplierLastLevel = 10;
+
+    /// <summary>The multiplier on the base XP of a Reaction craft of a recipe of this level.</summary>
+    public static double XpMultiplier(int recipeLevel) =>
+        recipeLevel <= XpMultiplierLastLevel ? LowLevelXpMultiplier : 1.0;
 
     public static int EquivalentCraftsmanship(int rank) =>
         Math.Max(rank, 0) * EquivalentStatNumerator / EquivalentStatDenominator;
@@ -107,6 +131,10 @@ public static class ReactionRules
     /// <summary>The CP Stabilize costs for a recipe of this level.</summary>
     public static int StabilizeCp(int recipeLevel) =>
         Math.Max(MinimumStabilizeCp, Math.Max(recipeLevel, 0) * StabilizeCpNumerator / StabilizeCpDenominator);
+
+    /// <summary>The CP Dampen costs for a recipe of this level.</summary>
+    public static int DampenCp(int recipeLevel) =>
+        Math.Max(MinimumDampenCp, Math.Max(recipeLevel, 0) * DampenCpNumerator / DampenCpDenominator);
 
     /// <summary>A base amount raised by the stat and the rank factor and rounded down, never below 1.</summary>
     public static int ScaleGain(int baseAmount, int statPoints, int factorPercent) =>

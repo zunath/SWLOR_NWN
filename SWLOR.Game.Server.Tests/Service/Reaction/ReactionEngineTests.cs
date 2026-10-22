@@ -206,14 +206,40 @@ public class ReactionEngineTests
     }
 
     [Test]
-    public void Dampen_CostsCpAndTheActionStabilityAndGainsNothing()
+    public void Dampen_CostsCpAndRestoresALittleStabilityWithoutWearingThePiece()
     {
         var engine = EngineAt(RisingStart);
+        engine.Perform(ReactionEngine.Charge);
+        engine.Meters.Integrity.Value.Should().BeLessThan(ReactionRules.StabilityMaximum - ReactionRules.DampenRestore);
+        var before = engine.Meters;
 
         var outcome = OnlyOutcome(engine, ReactionEngine.Dampen);
+        engine.Perform(ReactionEngine.Dampen);
 
-        outcome.Delta.Should().Be(new MinigameMeterDelta(Integrity: -engine.Settings.ActionStability, Cp: -ReactionRules.DampenCp));
+        outcome.Delta.Should().Be(new MinigameMeterDelta(Integrity: ReactionRules.DampenRestore, Cp: -engine.Settings.DampenCp));
         outcome.Change(ReactionEngine.CycleMeterId)!.Delta.Should().Be(0, "the preview shows the phase held");
+        engine.Meters.Integrity.Value.Should().Be(before.Integrity.Value + ReactionRules.DampenRestore, "the preview equals the result");
+        engine.Meters.Cp.Value.Should().Be(before.Cp.Value - engine.Settings.DampenCp);
+        engine.Meters.Progress.Should().Be(before.Progress);
+        engine.Meters.Quality.Should().Be(before.Quality);
+    }
+
+    [Test]
+    public void Dampen_RestoresLessThanStabilize_ButNeverPastTheMaximum()
+    {
+        ReactionRules.DampenRestore.Should().BePositive();
+        ReactionRules.DampenRestore.Should().BeLessThan(ReactionRules.StabilizeRestore);
+
+        var full = EngineAt(RisingStart);
+        OnlyOutcome(full, ReactionEngine.Dampen).Delta.Integrity.Should().Be(0, "Stability is already full");
+        full.Perform(ReactionEngine.Dampen).Performed.Should().BeTrue("Dampen still holds the phase at full Stability");
+        full.Meters.Integrity.Value.Should().Be(ReactionRules.StabilityMaximum);
+
+        var nearlyFull = EngineAt(CalmStart, Settings(intensity: 1));
+        nearlyFull.Perform(ReactionEngine.Measure);
+        var missing = ReactionRules.StabilityMaximum - nearlyFull.Meters.Integrity.Value;
+        missing.Should().BeInRange(1, ReactionRules.DampenRestore - 1, "one Measure at the gentlest tier wears less than Dampen restores");
+        OnlyOutcome(nearlyFull, ReactionEngine.Dampen).Delta.Integrity.Should().Be(missing);
     }
 
     [Test]

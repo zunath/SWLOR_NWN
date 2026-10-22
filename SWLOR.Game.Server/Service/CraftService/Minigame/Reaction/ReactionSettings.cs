@@ -33,6 +33,7 @@ public sealed class ReactionSettings
         ActionStability = ReactionRules.ActionStability(PeakIntensity);
         PeakChargeStability = ReactionRules.PeakChargeStability(PeakIntensity);
         StabilizeCp = ReactionRules.StabilizeCp(RecipeLevel);
+        DampenCp = ReactionRules.DampenCp(RecipeLevel);
     }
 
     public ReactionCycle Cycle { get; }
@@ -69,6 +70,9 @@ public sealed class ReactionSettings
 
     /// <summary>The CP Stabilize costs for this recipe.</summary>
     public int StabilizeCp { get; }
+
+    /// <summary>The CP Dampen costs for this recipe.</summary>
+    public int DampenCp { get; }
 
     /// <summary>True once Espionage rank reaches the rank Stabilize unlocks at.</summary>
     public bool StabilizeUnlocked => Rank >= ReactionRules.StabilizeUnlockRank;

@@ -7,7 +7,7 @@ SPEC = importlib.util.spec_from_file_location("update_reaction_bible", ROOT / "t
 BIBLE = importlib.util.module_from_spec(SPEC)
 SPEC.loader.exec_module(BIBLE)
 
-TEXT = BIBLE.row_text("3.0", "10")
+TEXT = BIBLE.row_text("3.0", "10", "10")
 
 
 def sheet(rows):
@@ -47,9 +47,9 @@ class UpdateReactionBibleTests(unittest.TestCase):
 
     def test_rewrites_its_own_row_in_place_when_the_text_changes(self):
         xml = sheet(numbered(3, "1.0", "One") + blank_rows(22, 23))
-        once = BIBLE.update_sheet(xml, BIBLE.row_text("2.9", "10"))
+        once = BIBLE.update_sheet(xml, BIBLE.row_text("2.9", "10", "10"))
 
-        twice = BIBLE.update_sheet(once, BIBLE.row_text("3.0", "10"))
+        twice = BIBLE.update_sheet(once, BIBLE.row_text("3.0", "10", "10"))
 
         self.assertEqual(twice.count("Reaction minigame"), 1)
         self.assertIn("pays 3.0 times", twice)
@@ -79,16 +79,16 @@ class UpdateReactionBibleTests(unittest.TestCase):
         self.assertIn("&amp; &lt;more&gt;", updated)
 
     def test_the_text_is_plain_ascii_and_names_the_constants_it_reads(self):
-        text = BIBLE.row_text(BIBLE.read_multiplier(), BIBLE.read_unlock_rank())
+        text = BIBLE.row_text(BIBLE.read_multiplier(), BIBLE.read_last_multiplied_level(), BIBLE.read_unlock_rank())
 
         self.assertTrue(all(ord(character) < 127 for character in text))
-        self.assertIn(f"pays {BIBLE.read_multiplier()} times", text)
+        self.assertIn(f"up to level {BIBLE.read_last_multiplied_level()} pays {BIBLE.read_multiplier()} times", text)
         self.assertIn(f"rank {BIBLE.read_unlock_rank()}", text)
 
     def test_the_committed_workbook_matches_the_rules_in_code(self):
         self.assertFalse(
             BIBLE.update_workbook(BIBLE.DEFAULT_WORKBOOK, check=True),
-            "run python tools/UpdateReactionBible.py after changing ReactionRules.XpMultiplier or StabilizeUnlockRank")
+            "run python tools/UpdateReactionBible.py after changing ReactionRules.LowLevelXpMultiplier, XpMultiplierLastLevel or StabilizeUnlockRank")
 
 
 if __name__ == "__main__":

@@ -35,12 +35,18 @@ public class ReactionDisplayTests
     }
 
     [Test]
-    public void DampenShowsThatThePhaseIsHeld()
+    public void DampenShowsThatThePhaseIsHeldAndTheStabilityItRestores()
     {
-        var view = View(EngineAt(3), ReactionEngine.Dampen);
+        var engine = EngineAt(3);
+        engine.Perform(ReactionEngine.Charge);
+        engine.Perform(ReactionEngine.Charge);
+        var held = engine.CurrentPhase;
 
-        view.Summary.Should().Contain($"CP -{ReactionRules.DampenCp}");
-        view.Summary.Should().EndWith("Next: Peak");
+        var view = View(engine, ReactionEngine.Dampen);
+
+        view.Summary.Should().Contain($"Stability +{ReactionRules.DampenRestore}");
+        view.Summary.Should().Contain($"CP -{engine.Settings.DampenCp}");
+        view.Summary.Should().EndWith($"Next: {held}");
     }
 
     [Test]

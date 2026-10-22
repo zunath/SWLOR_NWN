@@ -61,6 +61,20 @@ namespace SWLOR.CraftSim.Tests.Legacy.Gathering
         }
 
         [Test]
+        public void TheSixSpecialFishAreNotPlacedAtRandom_SoTwoBuildsOfThePoolsAgree()
+        {
+            static List<string> Describe(IReadOnlyList<FishingPool> pools) => pools
+                .Select(p => $"{p.Location}/{p.Rod}/{p.Bait}/{p.TimeOfDay}:{string.Join(",", p.Entries.Select(e => $"{e.Fish}x{e.Frequency}"))}")
+                .ToList();
+
+            var first = Describe(FishingCatchModel.BuildPools());
+            var second = Describe(FishingCatchModel.BuildPools());
+
+            second.Should().Equal(first, "the game places the special fish at random on every start, and the model fixes one placement");
+            Describe(FishingCatchModel.Pools()).Should().Equal(first);
+        }
+
+        [Test]
         public void APoolsCatchChanceIsItsFishCatchChancesWeightedByFrequency()
         {
             var pool = new FishingPool(default, default, default, default, new[]

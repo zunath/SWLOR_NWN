@@ -19,6 +19,9 @@ SWLOR crafting simulator
       --gates also takes gate numbers, 1 to 7 (7 is enhancement parity).
   gates --list
       Lists the scenarios minigames have added.
+  fishing [--runs 200] [--seed 1] [--seconds-per-turn 8] [--out report.md] [--json results.json] [--strict] [--repo path]
+      Plays the Line (the fishing fight) against today's catch roll over a Willpower sweep, runs the XP-rate gate over the fishing cohort,
+      and writes the report (default design/testing/crafting-revamp/fishing-line-parity.md).
   research [--runs 400] [--adaptive-runs 40] [--seed 1] [--seconds-per-action 6] [--job-overhead-seconds 30] [--out report.md] [--repo path]
       Plays the research Experiment and writes its report: length, reduction size against today's dice and the supply change, the time cut, and Fabrication XP per real hour.
 """;
@@ -38,6 +41,7 @@ try
         "legacy-enhancements" => LegacyEnhancementsCommand.Run(args.Skip(1).ToArray(), Console.Out),
         "gear" => GearCommand.Run(args.Skip(1).ToArray(), Console.Out),
         "gates" => GatesCommand.Run(args.Skip(1).ToArray(), Console.Out),
+        "fishing" => FishingCommand.Run(args.Skip(1).ToArray(), Console.Out),
         "research" => ResearchCommand.Run(args.Skip(1).ToArray(), Console.Out),
         _ => Fail($"Unknown command '{args[0]}'.")
     };

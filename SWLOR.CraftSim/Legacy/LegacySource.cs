@@ -10,7 +10,7 @@ namespace SWLOR.CraftSim.Legacy
         public const string Harvester = Server + "Feature/ItemDefinition/HarvesterItemDefinition.cs";
         public const string Scavenge = Server + "Feature/ScavengePoint.cs";
         public const string Refinery = Server + "Feature/GuiDefinition/ViewModel/RefineryViewModel.cs";
-        public const string Fishing = Server + "Service/Fishing.cs";
+        public const string FishingFight = Server + "Service/FishingService/FishingFightLifecycle.cs";
         public const string EquipmentStats = Server + "Feature/EquipmentStats.cs";
 
         public static readonly SourceReference ActionRanks = new(
@@ -156,22 +156,16 @@ namespace SWLOR.CraftSim.Legacy
             "Refining XP", Refinery, 337, 352,
             "xp += refinedItem.XPGranted * stackSize;", "Skill.GiveSkillXP(Player, SkillType.Gathering, xp, false, false);");
 
-        public static readonly SourceReference FishingCatch = new(
-            "Fishing catch chance", Fishing, 452, 462,
-            "const int BaseChance = 40;", "var delta = skill - fish.Level;", "var stat = GetAbilityScore(player, AbilityType.Willpower);",
-            "var chance = BaseChance + delta * 10 + stat * 2;", "if (chance > 95)", "chance = 95;", "else if (chance < 0)", "chance = 0;",
-            "if (Random.D100(1) > chance)");
-
-        public static readonly SourceReference FishingBite = new(
-            "Fishing bite and XP", Fishing, 424, 491,
-            "if (isDefaultFish)", "if (Random.D100(1) <= 80)", "Skill.GetDeltaXP(fish.Level - skill)");
+        public static readonly SourceReference FishingXp = new(
+            "Fishing XP per bite", FishingFight, 52, 62,
+            "Skill.GetDeltaXP(bite.Fish.Level - bite.Rank)");
 
         public static readonly IReadOnlyList<SourceReference> All = new[]
         {
             ActionRanks, MaxCp, MaxDurability, MaxProgress, MaxQuality, LevelChart, Progress, Quality, HandleAction, Actions,
             SessionReset, FailureLoss, EnhancementSlots, EnhancementKinds, EnhancementProgressPenalty, EnhancementTransfer,
             RecipeUnlockOffset, GearStats, HarvestNodeCount, HarvestBonusItem, HarvestXp,
-            ScavengeAttempts, ScavengeRoll, RefineryOres, RefineryBatch, RefineryCores, RefineryXp, FishingCatch, FishingBite
+            ScavengeAttempts, ScavengeRoll, RefineryOres, RefineryBatch, RefineryCores, RefineryXp, FishingXp
         };
     }
 }

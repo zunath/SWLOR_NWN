@@ -46,7 +46,7 @@ public static class BibleExport
                     continue;
                 }
 
-                var reason = RecipeParameterGenerator.DescribeOverrides(profile, context);
+                var reason = RecipeParameterBibleColumns.OverrideReasonFor(profile, type, recipes);
                 var row = recipeNodes.TryGetValue(type.ToString(), out var existing) ? existing : recipeNodes[type.ToString()] = new JsonObject();
                 foreach (var cell in RecipeParameterBibleColumns.Cells(profile, detail.MinigameParameters, reason))
                 {

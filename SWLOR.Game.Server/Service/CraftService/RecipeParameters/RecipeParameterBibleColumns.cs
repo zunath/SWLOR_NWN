@@ -21,6 +21,22 @@ namespace SWLOR.Game.Server.Service.CraftService.RecipeParameters
             return profile.Definitions.Select(d => d.Header).Append(OverrideHeader(profile)).ToList();
         }
 
+        /// <summary>
+        /// The override reason shown for a recipe. A derived recipe shows its source's reason, since its values are the source's.
+        /// </summary>
+        public static string OverrideReasonFor(
+            IRecipeParameterProfile profile,
+            RecipeType type,
+            IReadOnlyDictionary<RecipeType, RecipeDetail> recipes)
+        {
+            if (profile.DerivedRecipes.TryGetValue(type, out var source))
+                type = source;
+
+            return recipes.TryGetValue(type, out var detail)
+                ? RecipeParameterGenerator.DescribeOverrides(profile, RecipeParameterContext.From(type, detail))
+                : string.Empty;
+        }
+
         /// <summary>The cell text for each header of a recipe that has the profile's parameters.</summary>
         public static IReadOnlyList<RecipeParameterBibleCell> Cells(
             IRecipeParameterProfile profile,

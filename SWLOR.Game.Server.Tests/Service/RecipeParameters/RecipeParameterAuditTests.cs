@@ -139,16 +139,29 @@ public class RecipeParameterAuditTests
     }
 
     [Test]
-    public void FindInvalidDerivations_FlagsAnOverrideOnADerivedRecipe()
+    public void FindInvalidOverrides_FlagsOverridesThatOnlyReachDerivedRecipes()
     {
-        var derived = new Dictionary<RecipeType, RecipeType> { [RecipeType.SpiritmasterTunic] = RecipeType.BattlemasterBreastplate };
-        var overrides = new RecipeParameterOverrides().ForRecipe(RecipeType.SpiritmasterTunic, "ignored", ("center", 40));
+        var recipes = TestRecipeRegistry.Create(_profile);
+        recipes[RecipeType.CombatBoots] = new RecipeDetail { Skill = _profile.Skill, Category = RecipeCategoryType.Boots, Level = 5 };
+        var derived = new Dictionary<RecipeType, RecipeType>
+        {
+            [RecipeType.SpiritmasterTunic] = RecipeType.BattlemasterBreastplate,
+            [RecipeType.CombatBoots] = RecipeType.BattlemasterBreastplate,
+        };
+        var overrides = new RecipeParameterOverrides()
+            .ForCategory(RecipeCategoryType.Boots, "boots only", ("center", 40))
+            .ForCategory(RecipeCategoryType.Breastplate, "breastplates", ("center", 40))
+            .ForRecipe(RecipeType.SpiritmasterTunic, "ignored", ("center", 40));
         var profile = new ConfigurableTestProfile(
             _ => ConfigurableTestProfile.FlatBase(), parameters => 0, _ => new DifficultyBudget(0, 1), overrides, derived: derived);
 
-        var problems = RecipeParameterAudit.FindInvalidDerivations(profile, TestRecipeRegistry.Create(_profile));
+        var problems = RecipeParameterAudit.FindInvalidOverrides(profile, recipes);
 
-        Assert.That(problems, Is.EqualTo(new[] { "SpiritmasterTunic is derived, so its own override has no effect; override BattlemasterBreastplate instead" }));
+        Assert.That(problems, Is.EquivalentTo(new[]
+        {
+            "category Boots override only reaches derived recipes, which copy their source's values",
+            "recipe SpiritmasterTunic is derived, so its own override has no effect; override BattlemasterBreastplate instead",
+        }));
     }
 
     [Test]

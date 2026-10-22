@@ -193,7 +193,9 @@ def update_sheet(xml: str, tab: str, profiles: list[dict], recipes: dict, shared
         for header in profile_headers:
             if not header.startswith(profile["key"] + " "):
                 raise BibleParameterError(f"header '{header}' must start with its profile key '{profile['key']}'")
-        if any(header in recipes[name] for name in on_tab for header in profile_headers):
+        has_data = any(header in recipes[name] for name in on_tab for header in profile_headers)
+        already_there = any(normalize(header) in headers for header in profile_headers)
+        if has_data or already_there:
             wanted.extend(header for header in profile_headers if header not in wanted)
     if not wanted:
         return xml, {}, [], 0, 0

@@ -169,7 +169,7 @@ namespace SWLOR.Game.Server.Service.CraftService.RecipeParameters
             return problems;
         }
 
-        /// <summary>Derived recipes that name an uncovered or itself derived source, or carry an override of their own.</summary>
+        /// <summary>Derived recipes that name an uncovered or itself derived source.</summary>
         public static IReadOnlyList<string> FindInvalidDerivations(
             IRecipeParameterProfile profile,
             IReadOnlyDictionary<RecipeType, RecipeDetail> recipes)
@@ -183,8 +183,6 @@ namespace SWLOR.Game.Server.Service.CraftService.RecipeParameters
                     problems.Add($"{derived} is derived from {source}, which the profile does not cover");
                 else if (profile.DerivedRecipes.ContainsKey(source))
                     problems.Add($"{derived} is derived from {source}, which is itself derived");
-                else if (profile.Overrides.Recipes.ContainsKey(derived))
-                    problems.Add($"{derived} is derived, so its own override has no effect; override {source} instead");
             }
 
             return problems;
@@ -207,7 +205,7 @@ namespace SWLOR.Game.Server.Service.CraftService.RecipeParameters
             return problems;
         }
 
-        /// <summary>Overrides with no reason, undeclared or disallowed values, or no recipe left to apply to.</summary>
+        /// <summary>Overrides with undeclared or disallowed values, or no generated recipe to apply to (derived recipes copy their source).</summary>
         public static IReadOnlyList<string> FindInvalidOverrides(
             IRecipeParameterProfile profile,
             IReadOnlyDictionary<RecipeType, RecipeDetail> recipes)
@@ -217,18 +215,25 @@ namespace SWLOR.Game.Server.Service.CraftService.RecipeParameters
                 .Where(pair => pair.Value.Skill == profile.Skill &&
                                profile.AppliesTo(RecipeParameterContext.From(pair.Key, pair.Value)))
                 .ToList();
+            var generated = applicable.Where(pair => !profile.DerivedRecipes.ContainsKey(pair.Key)).ToList();
 
             foreach (var (category, categoryOverride) in profile.Overrides.Categories)
             {
                 problems.AddRange(CheckOverride(profile, $"category {category}", categoryOverride));
-                if (applicable.All(pair => pair.Value.Category != category))
-                    problems.Add($"category {category} override matches no recipe the profile covers");
+                if (generated.All(pair => pair.Value.Category != category))
+                {
+                    problems.Add(applicable.Any(pair => pair.Value.Category == category)
+                        ? $"category {category} override only reaches derived recipes, which copy their source's values"
+                        : $"category {category} override matches no recipe the profile covers");
+                }
             }
 
             foreach (var (type, recipeOverride) in profile.Overrides.Recipes)
             {
                 problems.AddRange(CheckOverride(profile, $"recipe {type}", recipeOverride));
-                if (applicable.All(pair => pair.Key != type))
+                if (profile.DerivedRecipes.TryGetValue(type, out var source))
+                    problems.Add($"recipe {type} is derived, so its own override has no effect; override {source} instead");
+                else if (generated.All(pair => pair.Key != type))
                     problems.Add($"recipe {type} override matches no recipe the profile covers");
             }
 

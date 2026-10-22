@@ -3,6 +3,7 @@ using System.Text;
 using NUnit.Framework;
 using SWLOR.Game.Server.Service.CraftService;
 using SWLOR.Game.Server.Service.CraftService.RecipeParameters;
+using SWLOR.Game.Server.Service.SkillService;
 using SWLOR.Game.Server.Tests.Feature;
 
 namespace SWLOR.Game.Server.Tests.Service.RecipeParameters;
@@ -10,21 +11,38 @@ namespace SWLOR.Game.Server.Tests.Service.RecipeParameters;
 public class RecipeParameterBibleColumnsTests
 {
     private static readonly string[] Tabs = { "Smithery Recipes", "Engineering Recipes", "Cooking Recipes", "Fabrication Recipes" };
+    // CombatBoots is one of the recipes whose other Bible fields are excluded while a design decision is pending.
+    private const RecipeType ExcludedRecipe = RecipeType.CombatBoots;
+
     private static readonly RecipeType[] Rows =
     {
         RecipeType.BattlemasterBreastplate,
         RecipeType.SpiritmasterTunic,
         TestRecipeRegistry.OtherSkillRecipe,
         TestRecipeRegistry.InactiveRecipe,
+        ExcludedRecipe,
     };
 
-    private readonly TestForgeProfile _profile = new();
+    private TestForgeProfile _profile;
     private Dictionary<RecipeType, RecipeDetail> _registry;
 
     [SetUp]
     public void SetUp()
     {
-        _registry = TestRecipeRegistry.Create(_profile);
+        UseProfile(new TestForgeProfile());
+    }
+
+    private void UseProfile(TestForgeProfile profile)
+    {
+        _profile = profile;
+        _registry = TestRecipeRegistry.Create(profile);
+        if (!_registry.ContainsKey(ExcludedRecipe))
+        {
+            var detail = new RecipeDetail { Skill = profile.Skill, Category = RecipeCategoryType.Boots, Level = 12 };
+            detail.Components["comp_0"] = 2;
+            detail.MinigameParameters = RecipeParameterGenerator.Generate(profile, RecipeParameterContext.From(ExcludedRecipe, detail)).Parameters;
+            _registry[ExcludedRecipe] = detail;
+        }
     }
 
     private static string Text(string reference, string text)
@@ -64,7 +82,7 @@ public class RecipeParameterBibleColumnsTests
                 ? RecipeParameterBibleColumns.Cells(
                     _profile,
                     detail.MinigameParameters,
-                    RecipeParameterGenerator.DescribeOverrides(_profile, RecipeParameterContext.From(type, detail)))
+                    RecipeParameterBibleColumns.OverrideReasonFor(_profile, type, _registry))
                 : allHeaders.Select(header => new RecipeParameterBibleCell(header, string.Empty, false)).ToList();
 
             foreach (var cell in cells)
@@ -144,6 +162,34 @@ public class RecipeParameterBibleColumnsTests
             : null);
 
         Assert.That(Mismatches(padded), Is.Empty);
+    }
+
+    [Test]
+    public void RecipesWithAPendingDesignDecision_StillGetTheirParameterColumnsChecked()
+    {
+        using var workbook = Workbook((_, type, header) => type == ExcludedRecipe && header == "TestForge Width" ? "9" : null);
+
+        var mismatches = Mismatches(workbook);
+
+        Assert.That(mismatches, Has.Count.EqualTo(1));
+        Assert.That(mismatches[0], Does.Contain($"{ExcludedRecipe}.TestForge Width: Bible='9'"));
+    }
+
+    [Test]
+    public void ADerivedRecipe_ShowsItsSourcesOverrideReasonAndValues()
+    {
+        UseProfile(new TestForgeProfile(
+            SkillType.Smithery,
+            true,
+            new Dictionary<RecipeType, RecipeType> { [RecipeType.SpiritmasterTunic] = RecipeType.BattlemasterBreastplate }));
+        using var workbook = Workbook();
+
+        Assert.That(Mismatches(workbook), Is.Empty);
+        Assert.That(RecipeParameterBibleColumns.OverrideReasonFor(_profile, RecipeType.SpiritmasterTunic, _registry),
+            Is.EqualTo("Breastplates are worked hot; Starter set stays forgiving"));
+
+        using var tampered = Workbook((_, type, header) => type == RecipeType.SpiritmasterTunic && header == "TestForge Override" ? "" : null);
+        Assert.That(Mismatches(tampered), Has.Count.EqualTo(1));
     }
 
     [Test]

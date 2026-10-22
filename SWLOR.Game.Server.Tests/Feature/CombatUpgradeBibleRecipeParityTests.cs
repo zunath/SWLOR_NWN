@@ -241,8 +241,7 @@ public class CombatUpgradeBibleRecipeParityTests
                 var missing = headers.Where(header => !headerColumns.ContainsKey(header)).ToList();
                 var documented = rows
                     .Select(row => (row.RowNumber, Type: Enum.Parse<RecipeType>(row.Enum)))
-                    .Where(row => registry.TryGetValue(row.Type, out var detail) && HasProfileParameters(profile, detail) &&
-                                  !PendingDesignDecisionExclusions.Contains(row.Type))
+                    .Where(row => registry.TryGetValue(row.Type, out var detail) && HasProfileParameters(profile, detail))
                     .ToList();
 
                 if (missing.Count == headers.Count && documented.Count == 0)
@@ -259,14 +258,14 @@ public class CombatUpgradeBibleRecipeParityTests
                 foreach (var (rowNumber, enumName) in rows)
                 {
                     var type = Enum.Parse<RecipeType>(enumName);
-                    if (!registry.TryGetValue(type, out var detail) || PendingDesignDecisionExclusions.Contains(type))
+                    if (!registry.TryGetValue(type, out var detail))
                         continue;
 
                     var expected = HasProfileParameters(profile, detail)
                         ? RecipeParameterBibleColumns.Cells(
                             profile,
                             detail.MinigameParameters,
-                            RecipeParameterGenerator.DescribeOverrides(profile, RecipeParameterContext.From(type, detail)))
+                            RecipeParameterBibleColumns.OverrideReasonFor(profile, type, registry))
                         : headers.Select(header => new RecipeParameterBibleCell(header, string.Empty, false)).ToList();
 
                     foreach (var expectedCell in expected)

@@ -237,6 +237,20 @@ class RecipeParameterBibleTests(unittest.TestCase):
         self.assertIn('<c r="E6" s="6" />', after)
         self.assertNotIn("Cold", after)
 
+    def test_a_tab_whose_last_covered_recipe_is_gone_has_every_cell_blanked(self):
+        self.run_update()
+        data = json.loads(json.dumps(DATA))
+        data["recipes"] = {}
+
+        changed, _ = self.run_update(data)
+
+        after = read_entries(self.workbook)["xl/worksheets/sheet1.xml"]
+        self.assertTrue(changed)
+        for ref in ("E2", "F2", "G2", "E3", "F3", "G3", "H3", "E6", "F6", "G6"):
+            self.assertRegex(after, rf'<c r="{ref}" s="\d+" />')
+        self.assertEqual(4, after.count("TestForge "))
+        self.assertFalse(self.run_update(data)[0])
+
     def test_zero_is_a_value_and_not_a_blank(self):
         self.run_update()
 

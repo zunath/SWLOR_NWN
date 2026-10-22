@@ -1,3 +1,4 @@
+using SWLOR.Game.Server.Service.CraftService;
 using SWLOR.Game.Server.Service.CraftService.RecipeParameters;
 
 namespace SWLOR.RecipeParameters;
@@ -17,13 +18,25 @@ public static class RecipeParameterCli
 
     public static int Run(string[] args, TextWriter output, TextWriter error)
     {
+        return Run(args, output, error, RecipeParameterProfiles.Game, null);
+    }
+
+    /// <summary>
+    /// Runs a command against the given profiles and recipe registry; a null registry loads the game server's recipes when needed.
+    /// </summary>
+    public static int Run(
+        string[] args,
+        TextWriter output,
+        TextWriter error,
+        IReadOnlyList<IRecipeParameterProfile> profiles,
+        IReadOnlyDictionary<RecipeType, RecipeDetail> recipes)
+    {
         if (args.Length == 0)
         {
             error.WriteLine(Usage);
             return 2;
         }
 
-        var profiles = RecipeParameterProfiles.Game;
         switch (args[0])
         {
             case "list":
@@ -36,16 +49,21 @@ public static class RecipeParameterCli
                     output.WriteLine("No recipe parameter profiles are registered.");
                 return 0;
             case "write":
-                return Write(args.Skip(1).ToArray(), profiles, output, error);
+                return Write(args.Skip(1).ToArray(), profiles, recipes, output, error);
             case "export":
-                return Export(args.Skip(1).ToArray(), profiles, output, error);
+                return Export(args.Skip(1).ToArray(), profiles, recipes, output, error);
             default:
                 error.WriteLine(Usage);
                 return 2;
         }
     }
 
-    private static int Write(string[] args, IReadOnlyList<IRecipeParameterProfile> profiles, TextWriter output, TextWriter error)
+    private static int Write(
+        string[] args,
+        IReadOnlyList<IRecipeParameterProfile> profiles,
+        IReadOnlyDictionary<RecipeType, RecipeDetail> recipes,
+        TextWriter output,
+        TextWriter error)
     {
         string key = null;
         string source = null;
@@ -65,10 +83,10 @@ public static class RecipeParameterCli
             }
         }
 
-        var profile = key == null ? null : profiles.FirstOrDefault(p => string.Equals(p.Key, key, StringComparison.OrdinalIgnoreCase));
+        var profile = key == null ? null : Find(profiles, key);
         if (profile == null)
         {
-            error.WriteLine(key == null ? Usage : $"No profile named '{key}'. Registered: {string.Join(", ", profiles.Select(p => p.Key))}");
+            error.WriteLine(key == null ? Usage : UnknownProfile(key, profiles));
             return 2;
         }
 
@@ -80,7 +98,7 @@ public static class RecipeParameterCli
         }
 
         var folder = source ?? Path.Combine(FindRepositoryRoot(), "SWLOR.Game.Server", "Feature", "RecipeDefinition");
-        var update = RecipeFolderUpdater.Update(folder, profile, RecipeDefinitionLoader.LoadGame(), !check);
+        var update = RecipeFolderUpdater.Update(folder, profile, recipes ?? RecipeDefinitionLoader.LoadGame(), !check);
 
         output.WriteLine(
             $"{(check ? "Would change" : "Changed")} {update.ChangedFiles.Count} of {update.FilesScanned} files " +
@@ -98,7 +116,12 @@ public static class RecipeParameterCli
         return update.Problems.Count > 0 || (check && update.ChangedFiles.Count > 0) ? 1 : 0;
     }
 
-    private static int Export(string[] args, IReadOnlyList<IRecipeParameterProfile> profiles, TextWriter output, TextWriter error)
+    private static int Export(
+        string[] args,
+        IReadOnlyList<IRecipeParameterProfile> profiles,
+        IReadOnlyDictionary<RecipeType, RecipeDetail> recipes,
+        TextWriter output,
+        TextWriter error)
     {
         if (args.Length == 0)
         {
@@ -106,16 +129,21 @@ public static class RecipeParameterCli
             return 2;
         }
 
-        var selected = args.Length == 1
-            ? profiles
-            : profiles.Where(p => args.Skip(1).Contains(p.Key, StringComparer.OrdinalIgnoreCase)).ToList();
-        if (selected.Count == 0)
+        var unknown = args.Skip(1).Where(key => Find(profiles, key) == null).ToList();
+        if (unknown.Count > 0)
         {
-            error.WriteLine("No matching recipe parameter profiles are registered.");
+            error.WriteLine(string.Join("\n", unknown.Select(key => UnknownProfile(key, profiles))));
             return 2;
         }
 
-        var json = BibleExport.Build(selected, RecipeDefinitionLoader.LoadGame(), out var problems);
+        var selected = (args.Length == 1 ? profiles : args.Skip(1).Select(key => Find(profiles, key)).Distinct()).ToList();
+        if (selected.Count == 0)
+        {
+            error.WriteLine("No recipe parameter profiles are registered.");
+            return 2;
+        }
+
+        var json = BibleExport.Build(selected, recipes ?? RecipeDefinitionLoader.LoadGame(), out var problems);
         foreach (var problem in problems)
         {
             error.WriteLine($"Problem: {problem}");
@@ -127,6 +155,16 @@ public static class RecipeParameterCli
         File.WriteAllText(args[0], json);
         output.WriteLine($"Wrote Bible columns for {selected.Count} profile(s) to {args[0]}.");
         return 0;
+    }
+
+    private static IRecipeParameterProfile Find(IReadOnlyList<IRecipeParameterProfile> profiles, string key)
+    {
+        return profiles.FirstOrDefault(profile => string.Equals(profile.Key, key, StringComparison.OrdinalIgnoreCase));
+    }
+
+    private static string UnknownProfile(string key, IReadOnlyList<IRecipeParameterProfile> profiles)
+    {
+        return $"No profile named '{key}'. Registered: {(profiles.Count == 0 ? "none" : string.Join(", ", profiles.Select(p => p.Key)))}";
     }
 
     private static string FindRepositoryRoot()

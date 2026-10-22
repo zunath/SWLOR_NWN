@@ -166,6 +166,7 @@ Every recipe gets its own minigame parameters.
   - Cancelling stops the batch. Completed items are kept and unused materials stay in the inventory.
 - **Output.** The base item only, with no enhancements, no blueprint, no blueprint bonuses and no XP.
 - **Threshold kept.** Players asked for easier bulk orders (October 2026). The owner kept rank >= recipe level + 5, so recipes above level 45 stay manual even at rank 50.
+- **Tied to the XP cutoff.** Level + 5 is where `GetDeltaXP` stops paying XP. Workstream 11's proposal must either keep that cutoff or state the matching quick-craft threshold for the owner's approval, so quick craft never costs a player XP they could still earn.
 
 ### Balance gates and tooling
 
@@ -187,6 +188,7 @@ Build `SWLOR.CraftSim` (tool and tests) on the `SWLOR.CombatSim` pattern. It dri
    - Material use per crafted item at matched quality stays near today's.
 6. **XP rate** (owner decision after player feedback, October 2026).
    - At matched rank and gear, XP per hour of play in each minigame is at least today's.
+   - **Cohort**, identical for the legacy and new runs: each recipe band (1-10, 11-20, 21-30, 31-40, 41-53) with rank equal to recipe level; no gear, mid and best gear tiers; the band's active recipes weighted equally; no blueprint and not a first craft; quality and failures as each policy actually plays them (legacy: the lookahead policy; new: CraftSim's adaptive policy), counting the 15% failure XP. Each band and gear tier must pass on its own.
    - CraftSim estimates minutes per craft from actions taken and a seconds-per-action estimate. Measure that estimate in the client evidence, separately for today's minigame and each new one.
    - If a minigame falls short, scale its per-craft XP up, recorded in code and the Bible. Do not shorten the minigame below its length target to pass.
    - Today's actions per craft are in `design/testing/crafting-revamp/legacy-crafting-baseline.md`: 5-9 at levels 1-10, rising to 20-28 at levels 21-53 with gear.
@@ -642,6 +644,8 @@ The combat upgrade's model applies, with no pilot: build every minigame, then te
 9. **Gathering:** Prospecting, Search and refining changes, plus the Prospector and Treasure Seeker lines and the gathering animations.
 10. **Art:** Trellis2 placeable adaptation, seven station models, and the five station work loops.
 11. **Progression pace:** the crafting XP curve and guild-rank requirements. It starts with research and an owner-approved proposal, and can run beside 2-10. Any XP change must keep the XP-rate gate meaningful: measure the gate against today's XP, then apply the curve change on top.
+    - **Isolate the change.** `Skill.GetRequiredXP` and `GetDeltaXP` take no skill and also drive combat and Piloting, and `Guild._rankProgression` is shared by every guild, including the Hunter's Guild. Changes apply only to the crafting skills and crafting guilds, through crafting-specific tables or a skill or guild parameter, with tests that combat, Piloting and Hunter's Guild progression are unchanged.
+    - **Existing progress.** If required XP per rank changes, the proposal says how stored XP and ranks convert (a migration, with tests on legacy records) so no character loses a rank.
 12. **Closeout.**
     - Delete the old minigame (`CraftViewModel` rules, `CraftDefinition`, retired level-chart fields).
     - Final Bible sync, player guide text and tooltips.

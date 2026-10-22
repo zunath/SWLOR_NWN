@@ -11,11 +11,38 @@ namespace SWLOR.CraftSim.Fishing
     /// <param name="Snapped">Fights that ended with a snapped line.</param>
     /// <param name="Escaped">Fights that ended with an escape, including one the player stopped playing.</param>
     /// <param name="Turns">Actions over all the fights.</param>
-    public readonly record struct LineCatchSample(int Runs, int Landed, int Snapped, int Escaped, int Turns)
+    /// <param name="TurnCounts">How many fights took each number of actions: index n is the count of fights of n actions.</param>
+    public readonly record struct LineCatchSample(int Runs, int Landed, int Snapped, int Escaped, int Turns, IReadOnlyList<int> TurnCounts = null)
     {
         public double LandedPercent => Runs == 0 ? 0 : 100.0 * Landed / Runs;
         public double SnappedPercent => Runs == 0 ? 0 : 100.0 * Snapped / Runs;
         public double MeanTurns => Runs == 0 ? 0 : (double)Turns / Runs;
+
+        /// <summary>Two samples are equal when they hold the same counts, the counts of turns compared by value.</summary>
+        public bool Equals(LineCatchSample other) =>
+            Runs == other.Runs && Landed == other.Landed && Snapped == other.Snapped && Escaped == other.Escaped && Turns == other.Turns &&
+            (TurnCounts == null ? other.TurnCounts == null : other.TurnCounts != null && TurnCounts.SequenceEqual(other.TurnCounts));
+
+        public override int GetHashCode() => HashCode.Combine(Runs, Landed, Snapped, Escaped, Turns);
+
+        /// <summary>
+        /// The mean over the fights of a value that depends on how many actions the fight took. A sample without the counts uses the mean
+        /// number of actions for every fight.
+        /// </summary>
+        public double Mean(Func<int, double> valueForTurns)
+        {
+            if (Runs == 0)
+                return 0;
+
+            if (TurnCounts == null)
+                return valueForTurns((int)Math.Round(MeanTurns));
+
+            double sum = 0;
+            for (var turns = 0; turns < TurnCounts.Count; turns++)
+                sum += TurnCounts[turns] * valueForTurns(turns);
+
+            return sum / Runs;
+        }
     }
 
     /// <summary>Plays fights of the Line with the simulator's players and the chance each takes from the seed.</summary>
@@ -47,11 +74,13 @@ namespace SWLOR.CraftSim.Fishing
         public static LineCatchSample Sample(LineSetup setup, Func<int, ICraftPolicy> policyFor, int runs, int seed, int stream)
         {
             int landed = 0, snapped = 0, escaped = 0, turns = 0;
+            var turnCounts = new int[ActionLimit + 1];
             for (var run = 0; run < runs; run++)
             {
                 var random = SimMinigameRandom.ForRun(seed, SimStreams.Adaptive, stream, run);
                 var engine = Play(setup, policyFor(run), random);
                 turns += engine.Turn;
+                turnCounts[Math.Min(engine.Turn, ActionLimit)]++;
                 switch (engine.Ending)
                 {
                     case LineEnding.Landed:
@@ -66,7 +95,7 @@ namespace SWLOR.CraftSim.Fishing
                 }
             }
 
-            return new LineCatchSample(runs, landed, snapped, escaped, turns);
+            return new LineCatchSample(runs, landed, snapped, escaped, turns, turnCounts);
         }
 
         /// <summary>The adaptive player for run <paramref name="run"/>; each run searches with its own forecast samples.</summary>

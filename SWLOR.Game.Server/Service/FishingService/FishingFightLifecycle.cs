@@ -56,8 +56,8 @@ namespace SWLOR.Game.Server.Service.FishingService
             _world.SetRemainingBait(bite.Rod, remainingBait);
 
             // The fight pays today's XP for the bite times the multiplier of the fish's level band, which keeps the XP per hour at
-            // today's (gate 6). Today's XP is paid now, caught or not. The rest is paid when the fight ends on its own, so a fight
-            // abandoned at once to cast again earns no more than the old catch roll did.
+            // today's (gate 6). Today's XP is paid now, caught or not. The rest is paid when the fight ends on its own, in proportion
+            // to how long it lasted, so a fight abandoned at once to cast again earns no more than the old catch roll did.
             var baseXp = Skill.GetDeltaXP(bite.Fish.Level - bite.Rank);
             var fightXp = CraftMinigameXp.ScaleBaseXp(baseXp, CraftMinigameXp.MultiplierFor(CraftMinigameType.Line, bite.Fish.Level));
             var xp = Math.Min(baseXp, fightXp);
@@ -80,7 +80,8 @@ namespace SWLOR.Game.Server.Service.FishingService
                 FishingRodTier.Tier(bite.RodType));
             var fight = new FishingFight(Guid.NewGuid().ToString(), bite, new LineEngine(_random, setup))
             {
-                XpOnFinish = fightXp - xp
+                XpOnFinish = fightXp - xp,
+                StartedAt = _world.UtcNow
             };
             _active[bite.Player] = fight;
             _world.BeginFight(bite.Player);
@@ -140,8 +141,13 @@ namespace SWLOR.Game.Server.Service.FishingService
                     break;
             }
 
-            if (fight.XpOnFinish > 0)
-                _world.GiveAgricultureXp(fight.Player, fight.XpOnFinish);
+            // The rest of the multiplied XP accrues with the time the fight took, so a fight lost on purpose after one move earns
+            // almost none of it.
+            var rest = (int)Math.Round(
+                fight.XpOnFinish * LineRules.XpShare((_world.UtcNow - fight.StartedAt).TotalSeconds),
+                MidpointRounding.AwayFromZero);
+            if (rest > 0)
+                _world.GiveAgricultureXp(fight.Player, rest);
 
             fight.Result = new FishingFightResult(ending, message);
             return fight.Result;

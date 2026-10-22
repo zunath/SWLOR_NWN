@@ -42,8 +42,8 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition
             "Your first move is free. After every move the fish needs " + TurnSecondsText + " seconds before your next one counts.\n\n" +
             "LOSING THE FISH\n" +
             "The bait and one of the fishing point's bites are spent when the fish bites, whether you land it or not. You are paid " +
-            "Agriculture XP for the bite at once, and the rest when the fight ends on its own: you land the fish, the line snaps or " +
-            "the fish escapes. Closing this window, moving away, putting the rod away, resting, entering combat or dying lets the " +
+            "Agriculture XP for the bite at once, and the rest when the fight ends on its own (you land the fish, the line snaps or " +
+            "the fish escapes), more of it the longer the fight lasted. Closing this window, moving away, putting the rod away, resting, entering combat or dying lets the " +
             "fish go, and the rest of the XP with it.\n\n" +
             "YOUR GEAR\n" +
             "Your rod and your Agriculture rank set how much Tension the line takes and how far one Reel pulls the fish. A fish " +

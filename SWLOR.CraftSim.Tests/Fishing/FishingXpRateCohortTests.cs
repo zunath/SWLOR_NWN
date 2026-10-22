@@ -83,9 +83,10 @@ namespace SWLOR.CraftSim.Tests.Fishing
         }
 
         [Test]
-        public void TheFight_PaysTodaysXpTimesTheMultiplierOfTheBand_AndTakesTurns()
+        public void TheFight_PaysTodaysXpAtTheBite_AndTheRestOfTheBandsMultipliedXpInProportionToHowLongItLasts()
         {
-            var cohort = new FishingXpRateCohort(new FishingParity(10, 1));
+            var parity = new FishingParity(10, 1);
+            var cohort = new FishingXpRateCohort(parity);
             var xpCase = cohort.Cases(Context()).Single(c => c.Group == "41-52");
 
             var legacy = cohort.PlayLegacy(xpCase, Context());
@@ -93,11 +94,27 @@ namespace SWLOR.CraftSim.Tests.Fishing
 
             fight.Runs.Should().Be(legacy.Runs);
             var expected = cohort.Mix("41-52").Sum(entry =>
-                CraftMinigameXp.ScaleBaseXp(FishingCatchModel.XpPerBite(entry.Rank, entry.Level), LineRules.XpMultiplierLevels41Up) * entry.Weight);
-            fight.XpPerRun.Should().BeApproximately(expected, 1e-6, "XP is paid per bite, caught or not, and the multiplier is the band's");
-            fight.XpPerRun.Should().BeApproximately(legacy.XpPerRun * LineRules.XpMultiplierLevels41Up, legacy.XpPerRun * 0.001, "rounding to whole XP moves it by well under a tenth of a percent");
+            {
+                var baseXp = FishingCatchModel.XpPerBite(entry.Rank, entry.Level);
+                var fightXp = CraftMinigameXp.ScaleBaseXp(baseXp, LineRules.XpMultiplierLevels41Up);
+                var share = parity.Catch(entry.Level, entry.Rarity, entry.Rank, entry.RodTier).Mean(turns => LineRules.XpShare(turns * 8.0));
+                return (baseXp + (fightXp - baseXp) * share) * entry.Weight;
+            });
+            fight.XpPerRun.Should().BeApproximately(expected, 1e-6, "XP is paid per bite, caught or not, at the band's multiplier");
+            fight.XpPerRun.Should().BeGreaterThan(legacy.XpPerRun);
+            fight.XpPerRun.Should().BeLessThan(legacy.XpPerRun * LineRules.XpMultiplierLevels41Up, "a fight shorter than the full turns pays only a share of the rest");
             fight.ActionsPerRun.Should().BeInRange(2, 10);
             cohort.ReplacementTiming.Should().Be(new XpLoopTiming(8, 7));
+        }
+
+        [Test]
+        public void ASampleMean_WeighsEachFightByItsOwnTurns()
+        {
+            var sample = new LineCatchSample(4, 2, 1, 1, 3 + 3 + 5 + 9, new[] { 0, 0, 0, 2, 0, 1, 0, 0, 0, 1 });
+
+            sample.Mean(turns => turns).Should().BeApproximately(5.0, 1e-9);
+            sample.Mean(turns => Math.Min(turns, 5)).Should().BeApproximately((3 + 3 + 5 + 5) / 4.0, 1e-9);
+            sample.Equals(sample with { TurnCounts = new[] { 0, 0, 0, 2, 0, 1, 0, 0, 0, 1 } }).Should().BeTrue("counts compare by value");
         }
 
         [Test]

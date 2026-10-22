@@ -21,7 +21,7 @@ namespace SWLOR.CraftSim.Fishing
     /// reaches weighted equally, half by day and half by night, so both loops draw the same fish. A run is a bite: XP is paid per bite,
     /// caught or not, so what differs between the loops is the time and the multiplier on the fight's XP (<c>CraftMinigameXp</c>, by the
     /// fish's level band). The game pays today's XP at the bite and the rest when the fight ends on its own, which every fight of the
-    /// modelled player does, so a run is paid the multiplied XP in all. Today's loop spends the cast and the wait; the fight spends the
+    /// modelled player does, in proportion to its length up to <c>LineRules.XpFullTurns</c> turns of <see cref="FishingParityOptions.SecondsPerTurn"/>. Today's loop spends the cast and the wait; the fight spends the
     /// same and then plays its turns, each one <see cref="FishingParityOptions.SecondsPerTurn"/>.
     /// </summary>
     public sealed class FishingXpRateCohort : IXpRateCohort
@@ -97,8 +97,13 @@ namespace SWLOR.CraftSim.Fishing
                 var bites = entry.Weight * BitesPerCase;
                 var sample = _parity.Catch(entry.Level, entry.Rarity, entry.Rank, entry.RodTier);
 
-                // The bite pays today's XP times the multiplier, rounded to a whole XP as the game server rounds it.
-                xp += CraftMinigameXp.ScaleBaseXp(FishingCatchModel.XpPerBite(entry.Rank, entry.Level), _xpMultiplierFor(entry.Level)) * bites;
+                // The bite pays today's XP at once and the rest of the multiplied XP (rounded to a whole XP as the game server rounds it)
+                // when the fight ends, in proportion to how long it lasted: the modelled player takes SecondsPerTurn for every action.
+                var baseXp = FishingCatchModel.XpPerBite(entry.Rank, entry.Level);
+                var fightXp = CraftMinigameXp.ScaleBaseXp(baseXp, _xpMultiplierFor(entry.Level));
+                var atBite = Math.Min(baseXp, fightXp);
+                var share = sample.Mean(turns => LineRules.XpShare(turns * _options.SecondsPerTurn));
+                xp += (atBite + (fightXp - atBite) * share) * bites;
                 actions += sample.MeanTurns * bites;
             }
 

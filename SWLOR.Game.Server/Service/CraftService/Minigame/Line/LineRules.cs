@@ -66,15 +66,24 @@ public static class LineRules
 
     // The multiplier on the XP of a bite (see CraftMinigameXp), by the fish's level band: the least that keeps the CraftSim XP-rate
     // gate (gate 6) passing in the band. Today's cast takes about seven seconds; the fight adds three to six turns of TurnSeconds to
-    // that, so the same XP per bite would cut the XP per hour to a seventh. Today's XP is still paid at the bite, caught or not; the
-    // rest of the multiplied XP is paid when the fight ends on its own (landed, snapped or escaped), so abandoning a fight to cast
-    // again earns no more than today. Starting values until client timing replaces the seconds per turn; 1.0 in every band restores
-    // today's XP per bite.
-    public const double XpMultiplierLevels0To10 = 7.4;
-    public const double XpMultiplierLevels11To20 = 7.25;
-    public const double XpMultiplierLevels21To30 = 7.0;
-    public const double XpMultiplierLevels31To40 = 6.95;
-    public const double XpMultiplierLevels41Up = 6.75;
+    // that, so the same XP per bite would cut the XP per hour to a seventh. Today's XP is still paid at the bite, caught or not. The
+    // rest of the multiplied XP is paid when the fight ends on its own (landed, snapped or escaped), in proportion to how long the
+    // fight lasted up to XpFullTurns turns (XpShare), so neither abandoning a fight to cast again nor losing it on purpose in one
+    // move earns more per hour than today. Starting values until client timing replaces the seconds per turn; 1.0 in every band
+    // restores today's XP per bite.
+    public const int XpFullTurns = 5;
+    public const double XpMultiplierLevels0To10 = 8.75;
+    public const double XpMultiplierLevels11To20 = 8.55;
+    public const double XpMultiplierLevels21To30 = 8.35;
+    public const double XpMultiplierLevels31To40 = 8.25;
+    public const double XpMultiplierLevels41Up = 8.05;
+
+    /// <summary>
+    /// The share, from 0 to 1, of a fight's multiplied XP that a fight lasting <paramref name="fightSeconds"/> has earned: all of it from
+    /// <see cref="XpFullTurns"/> turns, and in proportion below that.
+    /// </summary>
+    public static double XpShare(double fightSeconds) =>
+        fightSeconds <= 0 ? 0 : Math.Min(1.0, fightSeconds / (XpFullTurns * TurnSeconds));
 
     /// <summary>The multiplier on the XP of a bite from a fish of the level. A level of 0 or less takes the lowest band's.</summary>
     public static double XpMultiplierForLevel(int fishLevel) => fishLevel switch

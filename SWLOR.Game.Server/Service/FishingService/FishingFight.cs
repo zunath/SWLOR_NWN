@@ -32,10 +32,13 @@ namespace SWLOR.Game.Server.Service.FishingService
         public FishingFightResult Result { get; internal set; }
 
         /// <summary>
-        /// The Agriculture XP still to pay when the fight ends on its own: the bite's multiplied XP less what the bite already paid. An
-        /// abandoned fight never pays it.
+        /// The most Agriculture XP still to pay when the fight ends on its own: the bite's multiplied XP less what the bite already paid.
+        /// It is paid in proportion to how long the fight lasted (<c>LineRules.XpShare</c>), and an abandoned fight never pays it.
         /// </summary>
         public int XpOnFinish { get; internal set; }
+
+        /// <summary>When the fish bit and the fight began.</summary>
+        public DateTime StartedAt { get; internal set; }
 
         /// <summary>The earliest time the angler's next action may resolve; null until they have taken the first, which is free.</summary>
         public DateTime? NextTurnAt { get; internal set; }

@@ -583,6 +583,7 @@ One release, one migration set (`Migrations.md`): server migrations first, then 
 - **Rebuild Token for every character**, regardless of skills or perks.
   - Use `CharacterMigration/RebuildTokenGrant.cs` in a new character migration.
   - There is no forced rebuild. Piloting ranks stay as they are; Gunnery and Ship Systems start at 0.
+  - Skill rank limits ship first, in their own pull request (`SkillRankLimitsPlan.md`, zunath/SWLOR_NWN#2810). The login notice should mention them, so pilots can cap Piloting before spending the token.
 - **Refund every Piloting perk** as SP: Starships, Defensive Modules, Offensive Modules, Mining Modules, Energy Management, Starship Mining, Intuitive Piloting.
   - Use `CharacterRecalculation.RefundPerk` with a login notice.
   - Remove their feats.

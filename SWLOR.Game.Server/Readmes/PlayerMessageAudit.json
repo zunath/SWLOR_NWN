@@ -1687,6 +1687,13 @@
     "Call": "FloatingTextStringOnCreature($\"XP cannot be distributed while dead.\", Player, false)"
   },
   {
+    "File": "SWLOR.Game.Server/Feature/GuiDefinition/ViewModel/DistributeRPXPViewModel.cs",
+    "Line": 126,
+    "Member": "OnClickConfirm",
+    "Delivery": "Retained",
+    "Call": "FloatingTextStringOnCreature(GetRefusalReason(dbPlayer), Player, false)"
+  },
+  {
     "File": "SWLOR.Game.Server/Feature/GuiDefinition/ViewModel/DMBattleGridViewModel.cs",
     "Line": 93,
     "Member": "ReportPlacement",
@@ -2829,14 +2836,14 @@
   },
   {
     "File": "SWLOR.Game.Server/Feature/GuiDefinition/ViewModel/SkillsViewModel.cs",
-    "Line": 266,
+    "Line": 328,
     "Member": "OnClickDistributeRPXP",
     "Delivery": "Retained",
     "Call": "FloatingTextStringOnCreature($\"XP cannot be distributed in this area.\", Player, false)"
   },
   {
     "File": "SWLOR.Game.Server/Feature/GuiDefinition/ViewModel/SkillsViewModel.cs",
-    "Line": 272,
+    "Line": 334,
     "Member": "OnClickDistributeRPXP",
     "Delivery": "Retained",
     "Call": "FloatingTextStringOnCreature($\"XP cannot be distributed while dead.\", Player, false)"
@@ -5545,49 +5552,56 @@
   },
   {
     "File": "SWLOR.Game.Server/Service/Skill.cs",
-    "Line": 161,
+    "Line": 237,
     "Member": "GiveSkillXP",
     "Delivery": "Retained",
     "Call": "SendMessageToPC(player, \"Your XP debt has been cleared.\")"
   },
   {
     "File": "SWLOR.Game.Server/Service/Skill.cs",
-    "Line": 163,
+    "Line": 239,
     "Member": "GiveSkillXP",
     "Delivery": "Retained",
     "Call": "SendMessageToPC(player, $\"{debtRemoved} XP was removed from your debt. (Remaining: {dbPlayer.XPDebt})\")"
   },
   {
     "File": "SWLOR.Game.Server/Service/Skill.cs",
-    "Line": 203,
+    "Line": 257,
     "Member": "GiveSkillXP",
     "Delivery": "Rate limited in Production",
-    "Call": "PlayerFeedback.SendWarningToPlayer(player, \"SKILL_CAP\", ColorToken.Red($\"You cannot gain {details.Name} XP. You are at the skill cap of {SkillCap} and all of your other skills are locked from decay. Unlock a skill in the Skills menu to resume gaining {details.Name} XP.\"))"
+    "Call": "PlayerFeedback.SendWarningToPlayer(player, \"SKILL_LIMIT\", ColorToken.Red($\"{details.Name} is at your limit of {rankCeiling}. Raise it in the Skills window.\"))"
   },
   {
     "File": "SWLOR.Game.Server/Service/Skill.cs",
-    "Line": 208,
+    "Line": 280,
+    "Member": "GiveSkillXP",
+    "Delivery": "Rate limited in Production",
+    "Call": "PlayerFeedback.SendWarningToPlayer(player, \"SKILL_CAP\", ColorToken.Red($\"You cannot gain {details.Name} XP. You are at the skill cap of {SkillCap} and all of your other skills are locked or at their limits. Unlock a skill or change a limit in the Skills menu to resume gaining {details.Name} XP.\"))"
+  },
+  {
+    "File": "SWLOR.Game.Server/Service/Skill.cs",
+    "Line": 285,
     "Member": "GiveSkillXP",
     "Delivery": "Retained",
     "Call": "SendMessageToPC(player, $\"You earned {details.Name} skill experience. ({xp})\")"
   },
   {
     "File": "SWLOR.Game.Server/Service/Skill.cs",
-    "Line": 228,
+    "Line": 309,
     "Member": "GiveSkillXP",
     "Delivery": "Retained",
     "Call": "FloatingTextStringOnCreature($\"Your {details.Name} skill level increased to rank {pcSkill.Rank}!\", player, false)"
   },
   {
     "File": "SWLOR.Game.Server/Service/Skill.cs",
-    "Line": 261,
+    "Line": 344,
     "Member": "GiveSkillXP",
     "Delivery": "Rate limited in Production",
-    "Call": "PlayerFeedback.SendWarningToPlayer(player, \"SKILL_CAP\", ColorToken.Red($\"You have reached the skill cap of {SkillCap} and all of your other skills are locked from decay. Excess {details.Name} XP was lost.\"))"
+    "Call": "PlayerFeedback.SendWarningToPlayer(player, \"SKILL_CAP\", ColorToken.Red($\"You have reached the skill cap of {SkillCap} and all of your other skills are locked or at their limits. Excess {details.Name} XP was lost.\"))"
   },
   {
     "File": "SWLOR.Game.Server/Service/Skill.cs",
-    "Line": 322,
+    "Line": 409,
     "Member": "ApplyAbilityPoint",
     "Delivery": "Retained",
     "Call": "SendMessageToPC(player, ColorToken.Green(\"You acquired 1 ability point!\"))"

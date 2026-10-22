@@ -24,11 +24,12 @@ It ships on its own pull request, ahead of the space revamp, so players can set 
    - Candidates are the other skills that count toward the cap, are not locked, have rank above 0, and, when they have a limit, sit **above** it.
    - Pick at random among candidates above their limit first. Only if there are none, pick at random among unlocked skills with no limit, which is today's rule.
    - A limited skill at or below its limit never decays.
-5. **Blocked at the cap:** when no candidate remains, XP is blocked as today. Update both existing `SKILL_CAP` messages to say "locked or at their limits" instead of "locked from decay".
+   - Recompute the candidates after every decay in the rank-up loop: a decay can bring a skill down to its limit, which can empty the above-limit pool.
+5. **Blocked at the cap:** when no candidate remains, XP is blocked as today. Update both existing `SKILL_CAP` messages to say "locked or at their limits" instead of "locked from decay". XP debt the award already repaid stays repaid: the blocked path saves it (today it sends the "removed from your debt" message without saving).
 6. **Scope:** only skills with `ContributesToSkillCap`, the same set as the decay lock. Languages and other non-contributing skills have no limit control and ignore any stored value.
 7. **RP XP** (`Feature/GuiDefinition/ViewModel/DistributeRPXPViewModel.cs`): RP XP is never lost to a blocked award.
    - **Today's bug:** the window subtracts the amount from `UnallocatedXP` *before* calling `GiveSkillXP`. If the award is then blocked (at the cap with every other skill locked), the RP XP is lost. Limits make that state more common, so fix it here.
-   - **Return the accepted amount:** change `GiveSkillXP` to return the XP it actually used: XP debt repaid plus XP applied to the skill. It returns 0 when it blocks the award. Existing callers can ignore the return value.
+   - **Return the accepted amount:** change `GiveSkillXP` to return the XP it actually used: XP debt repaid plus XP applied to the skill. Discarded XP is not counted, so a blocked award returns only the debt it repaid (0 without debt). Existing callers can ignore the return value.
    - **Debit only what was accepted:** the window calls `GiveSkillXP` first, re-reads the player, and subtracts only the returned amount from `UnallocatedXP`.
    - **Refuse up front** when the skill is at its limit, or when the player is at the cap and no decay candidate remains (rule 5). Explain why in the window's own text.
    - **Cap the amount** at the XP needed to reach the limit. Distribution calls `GiveSkillXP` with `ignoreBonuses: true` and no henchman penalty, so the needed XP is exact.
@@ -41,7 +42,7 @@ It ships on its own pull request, ahead of the space revamp, so players can set 
 ## 3. Data
 
 - **Field:** add `int? RankLimit` to `PlayerSkill` in `Entity/Player.cs`. `null` means None.
-- **Migration:** a missing field deserializes as `null`, so no migration should be needed. Confirm this against how `Player` records are read (`Readmes/Entities.md`, `Readmes/Migrations.md`). Only add a character migration if existing records would fail to load.
+- **Migration:** none. `DB.Get` reads `Player` records with `JsonConvert.DeserializeObject`, which leaves a missing `RankLimit` as `null`.
 - **Writing a limit:** only the Skills window writes it. Clamp to 0..`MaxRank`.
 
 ## 4. Skills window
@@ -49,6 +50,8 @@ It ships on its own pull request, ahead of the space revamp, so players can set 
 Files: `Feature/GuiDefinition/SkillsDefinition.cs` and `Feature/GuiDefinition/ViewModel/SkillsViewModel.cs`. Follow `NuiLayoutRules.md`, `GuiWindowAuthoring.md` and `skills/swlor-gui-window-generation/SKILL.md`.
 
 - **The control:** add a **Limit** control to each row, beside the existing Decay Lock button. It's a combo with "None" and every rank from 0 to the skill's max rank, defaulting to None.
+  - List-template combos share one static option list, so the options run to the highest max rank among skills that count toward the cap (50 for every such skill today); saving clamps to the row's own max rank.
+  - The selection is a watched `GuiBindingList<int>` (value 0 = None, otherwise limit + 1). A watch event reports the whole list, so the view model diffs it against the last saved selections and saves only the changed rows. This is the first watched per-row list in the codebase, so the client evidence must show a combo change reaching the Player record.
 - **When enabled:** only for skills that count toward the cap, matching `DecayLockButtonEnabled`.
 - **Display:** the row shows the current choice ("Limit: None" or "Limit: 25").
 - **Tooltip:** "Stop this skill at a chosen rank. At the 400-rank cap, skills above their limit decay first, and a skill never decays below its limit."
@@ -66,6 +69,7 @@ Keep `PlayerGuideContentTests` passing. Game text uses ASCII punctuation (`Codin
 
 ## 6. Tests and evidence
 
+- **Harness:** `SkillXPAwardTests` compiles named `Skill.cs` methods into a harness, so any helper `GiveSkillXP` calls (rank limit, ceiling, decay candidates) must be added to its method list.
 - **NUnit:** extend `SWLOR.Game.Server.Tests/Service/SkillXPAwardTests.cs` (or add `SkillRankLimitTests`) for:
   - gains stopping at the limit, including mid-award
   - XP debt repaid while at the limit

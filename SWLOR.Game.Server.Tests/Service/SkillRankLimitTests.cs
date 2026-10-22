@@ -242,29 +242,54 @@ public class SkillRankLimitTests
         WarningKeys.Should().BeEmpty();
     }
 
-    // ---- GiveSkillXP: non-contributing skills ----
+    // ---- GiveSkillXP: languages ----
 
     [Test]
-    public void NonContributingSkill_IgnoresAStoredLimit()
+    public void Language_AtItsLimit_GainsNothing_WithoutAWarning()
     {
-        var player = CreatePlayer(0, (SkillType.Mirialan, S(5, limit: 1)));
-        var xp = Skill.GetRequiredXP(5) + 10;
-        var used = Award(player, SkillType.Mirialan, xp);
+        var player = CreatePlayer(0, (SkillType.Mirialan, S(0, xp: 5, limit: 0)));
+        var used = Award(player, SkillType.Mirialan, 100);
 
-        used.Should().Be(xp);
+        used.Should().Be(0);
+        player.Skills[SkillType.Mirialan].Rank.Should().Be(0);
+        player.Skills[SkillType.Mirialan].XP.Should().Be(0);
+        WarningKeys.Should().BeEmpty("overheard speech would otherwise warn every time someone speaks the language");
+        Messages.Should().BeEmpty();
+    }
+
+    [Test]
+    public void Language_StopsAtItsLimit_MidAward()
+    {
+        var player = CreatePlayer(0, (SkillType.Mirialan, S(5, limit: 6)));
+        var used = Award(player, SkillType.Mirialan, Skill.GetRequiredXP(5) + Skill.GetRequiredXP(6));
+
+        used.Should().Be(Skill.GetRequiredXP(5));
         player.Skills[SkillType.Mirialan].Rank.Should().Be(6);
-        player.Skills[SkillType.Mirialan].XP.Should().Be(10);
+        player.Skills[SkillType.Mirialan].XP.Should().Be(0);
         WarningKeys.Should().BeEmpty();
     }
 
     [Test]
-    public void GetRankLimit_IsNullForNonContributingSkills_AndClampedForOthers()
+    public void Language_WithoutALimit_StillGainsRanks()
+    {
+        var player = CreatePlayer(0, (SkillType.Mirialan, S(5)));
+        var xp = Skill.GetRequiredXP(5) + 10;
+        Award(player, SkillType.Mirialan, xp).Should().Be(xp);
+        player.Skills[SkillType.Mirialan].Rank.Should().Be(6);
+        player.Skills[SkillType.Mirialan].XP.Should().Be(10);
+    }
+
+    [Test]
+    public void GetRankLimit_AppliesToLanguages_AndIsClampedToEachSkillsMaxRank()
     {
         var language = SkillType.Mirialan.GetAttribute<SkillType, SkillAttribute>();
         var combat = SkillType.Mimicry.GetAttribute<SkillType, SkillAttribute>();
 
-        Skill.GetRankLimit(S(5, limit: 1), language).Should().BeNull();
-        Skill.GetRankCeiling(S(5, limit: 1), language).Should().Be(language.MaxRank);
+        language.MaxRank.Should().Be(20);
+        Skill.GetRankLimit(S(5, limit: 1), language).Should().Be(1);
+        Skill.GetRankLimit(S(5, limit: 35), language).Should().Be(20);
+        Skill.GetRankCeiling(S(5, limit: 1), language).Should().Be(1);
+        Skill.GetRankCeiling(S(5), language).Should().Be(language.MaxRank);
         Skill.GetRankLimit(S(5), combat).Should().BeNull();
         Skill.GetRankLimit(S(5, limit: 12), combat).Should().Be(12);
         Skill.GetRankLimit(S(5, limit: 0), combat).Should().Be(0);
@@ -339,7 +364,7 @@ public class SkillRankLimitTests
         player.Skills[SkillType.Piloting] = S(10, limit: 30);         // below its limit
         player.Skills[SkillType.Armor] = S(10, locked: true);         // locked
         player.Skills[SkillType.Throwing] = S(0);                       // rank 0
-        player.Skills[SkillType.Mirialan] = S(5, limit: 1);           // non-contributing
+        player.Skills[SkillType.Mirialan] = S(5, limit: 1);           // a language: never decays
 
         DecayCandidates(player, SkillType.Mimicry).Should().Equal(SkillType.Unarmed);
 
@@ -528,10 +553,13 @@ public class SkillRankLimitTests
     }
 
     [Test]
-    public void MaxDistributableXP_IgnoresALimitOnANonContributingSkill()
+    public void MaxDistributableXP_RespectsALanguageLimit()
     {
-        var player = CreatePlayer(0, (SkillType.Mirialan, S(5, limit: 1)));
-        Skill.GetMaxDistributableXP(player, SkillType.Mirialan).Should().BeGreaterThan(0);
+        var atLimit = CreatePlayer(0, (SkillType.Mirialan, S(5, limit: 5)));
+        Skill.GetMaxDistributableXP(atLimit, SkillType.Mirialan).Should().Be(0);
+
+        var belowLimit = CreatePlayer(0, (SkillType.Mirialan, S(5, limit: 6)));
+        Skill.GetMaxDistributableXP(belowLimit, SkillType.Mirialan).Should().Be(Skill.GetRequiredXP(5));
     }
 
     // ---- RP XP window and rebuild (source shape; no engine seam) ----

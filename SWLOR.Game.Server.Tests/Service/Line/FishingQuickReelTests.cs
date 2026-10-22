@@ -75,7 +75,7 @@ public class FishingQuickReelTests
     [Test]
     public void TheCatchChance_UsesTheReferenceWillpowerScore_UnlessAnotherIsGiven()
     {
-        FishingQuickReel.ReferenceWillpowerScore.Should().Be(12, "the middle of the 10 to 14 corridor the parity study judged against, pending the owner's attribute-median decision");
+        FishingQuickReel.ReferenceWillpowerScore.Should().Be(10, "today's catch roll for a character with no attribute investment (owner decision, October 2026)");
 
         foreach (var (rank, level) in new[] { (0, 0), (10, 10), (20, 22), (50, 52), (3, 12), (50, 0) })
         {
@@ -89,7 +89,7 @@ public class FishingQuickReelTests
     {
         var fight = Lifecycle().Bite(Bite(level: 22, rank: 20));
 
-        FishingFightLifecycle.QuickReelChance(fight).Should().Be(44);
+        FishingFightLifecycle.QuickReelChance(fight).Should().Be(40);
         FishingFightLifecycle.QuickReelChance(fight).Should().Be(FishingQuickReel.CatchChancePercent(20, 22));
     }
 
@@ -98,7 +98,7 @@ public class FishingQuickReelTests
     {
         var lifecycle = Lifecycle();
         var fight = lifecycle.Bite(Bite(level: 20, rank: 20));
-        _random.Roll = 64;
+        _random.Roll = 60;
 
         var result = lifecycle.QuickReel(fight);
 
@@ -117,7 +117,7 @@ public class FishingQuickReelTests
     {
         var lifecycle = Lifecycle();
         var fight = lifecycle.Bite(Bite(level: 20, rank: 20));
-        _random.Roll = 65;
+        _random.Roll = 61;
 
         var result = lifecycle.QuickReel(fight);
 
@@ -268,8 +268,8 @@ public class FishingQuickReelTests
         var lifecycle = Lifecycle();
         var fight = lifecycle.Bite(Bite(level: 52, rank: 50, rarity: FishRarity.Rare));
 
-        FishingFightLifecycle.QuickReelChance(fight).Should().Be(44, "40 - 20 + 2 x 12: a rare fish is no easier and no harder for the quick roll");
-        _random.Roll = 44;
+        FishingFightLifecycle.QuickReelChance(fight).Should().Be(40, "40 - 20 + 2 x 10: a rare fish is no easier and no harder for the quick roll");
+        _random.Roll = 40;
         lifecycle.QuickReel(fight).Ending.Should().Be(LineEnding.Landed);
     }
 }

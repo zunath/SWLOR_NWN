@@ -33,8 +33,8 @@ namespace SWLOR.CraftSim.Tests.Fishing
         {
             var options = FishingParityOptions.Default;
 
-            options.FightBound(64).Should().BeApproximately(76.6, 1e-9);
-            options.FightBound(44).Should().BeApproximately(53.6, 1e-9);
+            options.FightBound(60).Should().BeApproximately(72.0, 1e-9);
+            options.FightBound(40).Should().BeApproximately(49.0, 1e-9);
             options.FightBound(0).Should().Be(3, "a fish Quick Reel cannot land is still held to a floor, not to nothing");
             (options with { FightBoundRelative = 0.25, FightBoundSlackPoints = 0 }).FightBound(40).Should().BeApproximately(50, 1e-9);
         }
@@ -50,7 +50,7 @@ namespace SWLOR.CraftSim.Tests.Fishing
             result.Verdict.Should().Be(GateVerdict.Passed, result.Summary);
             result.Tables.Should().HaveCount(4);
             result.Tables[0].Rows.Select(row => row[0]).Should().Equal("-2", "-1", "0", "+1", "+2");
-            result.Tables[0].Header.Should().Contain("Quick Reel (Willpower 12)").And.Contain("Bound").And.Contain("Fight, adaptive");
+            result.Tables[0].Header.Should().Contain("Quick Reel (Willpower 10)").And.Contain("Bound").And.Contain("Fight, adaptive");
             result.Tables[1].Rows.Select(row => row[0]).Should().Equal("0", "30");
             result.Tables[2].Header.Should().Contain("Whole line, Patient Angler").And.Contain("Whole line, Aggressive Angler");
             result.Tables[3].Rows.Select(row => row[0]).Should().Contain(name => name.Contains("Trophy Catch"));
@@ -104,7 +104,7 @@ namespace SWLOR.CraftSim.Tests.Fishing
             var verdicts = FishingAnglerEvidence.RareFishVerdicts(ReportParity.Value, options);
 
             var bound = options.FightBound(options.QuickReel(FishingAnglerEvidence.RareFishRank, FishingAnglerEvidence.RareFishLevel));
-            bound.Should().BeApproximately(53.6, 1e-9, "Quick Reel lands a level 52 fish at rank 50 44% of the time at Willpower 12");
+            bound.Should().BeApproximately(49.0, 1e-9, "Quick Reel lands a level 52 fish at rank 50 40% of the time at Willpower 10");
             var gated = verdicts.Where(verdict => verdict.Case.Gated).ToList();
             gated.Should().Contain(verdict => verdict.Case.Effects.RareFishRungReduction == FishingAnglerEvidence.TrophyCatchRungs);
             gated.Should().OnlyContain(verdict => verdict.Within, "Trophy Catch and the whole line together still land the fish within the bound");

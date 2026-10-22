@@ -46,7 +46,7 @@ namespace SWLOR.CraftSim.Tests.Fishing
                 .And.Contain("## Limitations");
             report.Should().Contain("Willpower scores 8, 10, 12, 14, 16, 18, 20");
             report.Should().Contain("Rank - fish level").And.Contain("Agriculture rank").And.Contain("Trophy Catch");
-            report.Should().Contain("Quick Reel").And.Contain("pending the owner's attribute-median decision");
+            report.Should().Contain("Quick Reel").And.Contain("no attribute investment");
         }
 
         [Test]

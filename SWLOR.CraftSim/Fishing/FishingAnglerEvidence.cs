@@ -38,7 +38,7 @@ namespace SWLOR.CraftSim.Fishing
             new(TensionCapBonus: 2, SetHookDrainBonus: 2, ForecastDepth: 2, ReelDistanceBonus: 1);
 
         /// <summary>The rungs Trophy Catch takes off a rare fish's difficulty.</summary>
-        public const int TrophyCatchRungs = 12;
+        public const int TrophyCatchRungs = 8;
 
         public static readonly IReadOnlyList<AnglerPerkVariant> Variants = new[]
         {
@@ -65,7 +65,7 @@ namespace SWLOR.CraftSim.Fishing
         };
 
         /// <summary>The rung reductions Trophy Catch is tried at.</summary>
-        public static readonly IReadOnlyList<int> TrophyReductions = new[] { 4, 8, 10, TrophyCatchRungs, 14 };
+        public static readonly IReadOnlyList<int> TrophyReductions = new[] { 4, 6, TrophyCatchRungs, 10, 12 };
 
         /// <summary>The level of the special fish, which are all the same.</summary>
         public const int RareFishLevel = 52;
@@ -231,7 +231,7 @@ namespace SWLOR.CraftSim.Fishing
 
         /// <summary>
         /// How the special fish fight at rank 50 against Quick Reel and the bound: what each case lands, the bound it is held to, and whether it
-        /// is within it. The special fish ignore the line, so only Trophy Catch moves them.
+        /// is within it. The special fish take the line at half strength and Trophy Catch at full strength.
         /// </summary>
         public static IReadOnlyList<(RareFishCase Case, double Landed, double Bound, bool Within)> RareFishVerdicts(FishingParity parity, FishingParityOptions options = null)
         {
@@ -285,7 +285,7 @@ namespace SWLOR.CraftSim.Fishing
 
             return table.ToGateTable(
                 $"The six special fish (level {RareFishLevel}) at Agriculture rank {RareFishRank} with a tier 4 rod, against Quick Reel's chance and the bound " +
-                $"({parity.Runs} fights per case). A rare fish ignores the line; only Trophy Catch helps against it");
+                $"({parity.Runs} fights per case). A rare fish takes the fight perks at half strength; Trophy Catch is the only perk at full strength");
         }
     }
 }

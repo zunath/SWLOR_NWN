@@ -157,7 +157,7 @@ namespace SWLOR.CraftSim.Legacy
             "xp += refinedItem.XPGranted * stackSize;", "Skill.GiveSkillXP(Player, SkillType.Gathering, xp, false, false);");
 
         public static readonly SourceReference FishingXp = new(
-            "Fishing XP per bite", FishingFight, 52, 62,
+            "Fishing XP per bite", FishingFight, 58, 68,
             "Skill.GetDeltaXP(bite.Fish.Level - bite.Rank)");
 
         public static readonly IReadOnlyList<SourceReference> All = new[]

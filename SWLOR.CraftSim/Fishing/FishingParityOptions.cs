@@ -31,8 +31,8 @@ namespace SWLOR.CraftSim.Fishing
         public double TolerancePoints { get; init; } = 10;
 
         /// <summary>
-        /// The Willpower score Quick Reel rolls with (<see cref="FishingQuickReel.ReferenceWillpowerScore"/>), the middle of the corridor.
-        /// Pending the owner's attribute-median decision.
+        /// The Willpower score Quick Reel rolls with (<see cref="FishingQuickReel.ReferenceWillpowerScore"/>): 10, a character with no
+        /// attribute investment (owner decision, October 2026), which is the low end of the corridor.
         /// </summary>
         public int QuickReelWillpowerScore { get; init; } = FishingQuickReel.ReferenceWillpowerScore;
 

@@ -6,7 +6,7 @@
 ## Inputs
 
 - Today (the catch roll before the Line): a bite lands the fish at `40 + 10 x (Agriculture rank - fish level) + 2 x Willpower score` percent, kept from 0 to 95. It is played at Willpower scores 8, 10, 12, 14, 16, 18, 20 (`AttributeSweep`); the corridor Quick Reel is judged against is Willpower 10 to 14, because the median Willpower of active characters is not measured yet.
-- Quick Reel (owner decision, October 2026): on a bite the angler may resolve it at once by today's formula, with Willpower fixed at 12 (`FishingQuickReel.ReferenceWillpowerScore`, the middle of the corridor and **pending the owner's attribute-median decision**), pays today's XP for the bite and nothing more, takes no fight time and spends the bait as today. It is only a choice before the first move of a fight.
+- Quick Reel (owner decision, October 2026): on a bite the angler may resolve it at once by today's formula, with Willpower fixed at 10 (`FishingQuickReel.ReferenceWillpowerScore`: a character with no attribute investment, the low end of the corridor; characters with more Willpower land less than today with it), pays today's XP for the bite and nothing more, takes no fight time and spends the bait as today. It is only a choice before the first move of a fight.
 - The fight: the Line engine, 1000 fights per case, each with its own dice from seed 1. No attributes are read. Fish strength comes from the fish's level against the angler's rank (`LineSetup.ForFish`); the rod tier and the rank set the Tension cap and the reel. Fighting is optional; its catch rate is bounded by Quick Reel's (owner decision; starting value): at most 15% more than Quick Reel's chance for the same fish and angler, plus 3 points (two standard errors of a 1000-fight case, and a floor for fish Quick Reel can hardly land). The adaptive player stands for the skilled fight.
 - Adaptive player: depth 3, forecast samples per result 2, budget 4000 engine copies per decision, 0.5% of value lost per extra action, heuristic LineLeafHeuristic. It is a floor on skilled play. Rule-of-thumb player: reads the announced move and answers it by a fixed rule, never looking further ahead.
 - Time: 7.0 s for a cast and the wait for a bite (6-8 s in the game), in both loops; 8.0 s for each turn of the fight. Both are estimates until the client run measures them. The game enforces the turn as the least time between two actions (`LineRules.TurnSeconds`, the first action free), so fast clicking cannot beat the pace the XP multipliers assume.
@@ -39,6 +39,8 @@
   - `TireStaminaLoss` = 2
   - `RungAtRank` = 54
   - `RungsPerLevel` = 5
+  - `HardLevelsFrom` = 3
+  - `RungsPerHardLevel` = 9
   - `RungMinimum` = 0
   - `RungMaximum` = 100
   - `PullPercentOfCapAtRung0` = 10
@@ -49,6 +51,7 @@
   - `TireWeightPerRung` = 0.45
   - `TireWeightMinimum` = 2
   - `TurnSeconds` = 8
+  - `FishSenseTurns` = 2
   - `XpFullTurns` = 5
   - `XpMultiplierLevels0To10` = 8.55
   - `XpMultiplierLevels11To20` = 8.35
@@ -60,8 +63,8 @@
 
 | Gate | Verdict | Summary |
 | --- | --- | --- |
-| Economy parity | Passed | Quick Reel rolls today's formula at Willpower 12 (pending the owner's attribute-median decision) and stays inside today's Willpower 10-14 corridor at every rank above the fish's level and at every rank over the real pools. Quick Reel lands 1.00x to 1.00x of today's fish per hour at Willpower 12 (0.94x to 1.07x across the Willpower 10-14 corridor, by band) and pays 1.00x to 1.00x of today's XP per hour. |
-| Fight bound | Passed | The skilled (adaptive) fight lands at most 15% above Quick Reel's chance plus 3 points for the same fish: with no perks at every rank above the fish's level and over the real pools, with the whole Angler line in either style, and on the special rare fish with and without Trophy Catch (furthest below the bound by 0.1 points in the tables). |
+| Economy parity | Passed | Quick Reel rolls today's formula at Willpower 10 (a character with no attribute investment; owner decision) and stays inside today's Willpower 10-14 corridor at every rank above the fish's level and at every rank over the real pools. Quick Reel lands 1.00x to 1.00x of today's fish per hour at Willpower 10 (0.88x to 1.00x across the Willpower 10-14 corridor, by band) and pays 1.00x to 1.00x of today's XP per hour. |
+| Fight bound | Passed | The skilled (adaptive) fight lands at most 15% above Quick Reel's chance plus 3 points for the same fish: with no perks at every rank above the fish's level and over the real pools, with the whole Angler line in either style, and on the special rare fish with and without Trophy Catch (furthest below the bound by 2.5 points in the tables). |
 | Length | Passed | The adaptive player's fights last 3-6 actions (fishing fight) in every row. |
 | XP rate | Passed | Fishing: XP per hour is at least 1.00x the legacy rate in every case (lowest 1.00x in 41-52 / best rod for the rank, rank = fish level (at most 50)). |
 | Evidence: XP rate at the fastest allowed pace | NotApplicable | Not a gate. A player who takes the free first action at once and then waits the turn each time earns 1.02x to 1.04x of today's XP per hour across the bands; the multipliers above are calibrated for the typical player, who reads the first move for a turn like the others. |
@@ -72,124 +75,124 @@
 
 ### Landed per bite by rank above the fish's level: today's catch roll by Willpower and Quick Reel (corridor Willpower 10-14)
 
-| Rank - fish level | Today, Willpower 8 | Today, Willpower 10 | Today, Willpower 12 | Today, Willpower 14 | Today, Willpower 16 | Today, Willpower 18 | Today, Willpower 20 | Quick Reel (Willpower 12) | Verdict |
+| Rank - fish level | Today, Willpower 8 | Today, Willpower 10 | Today, Willpower 12 | Today, Willpower 14 | Today, Willpower 16 | Today, Willpower 18 | Today, Willpower 20 | Quick Reel (Willpower 10) | Verdict |
 | --- | --- | --- | --- | --- | --- | --- | --- | --- | --- |
 | -8 | 0% | 0% | 0% | 0% | 0% | 0% | 0% | 0% | Inside |
 | -7 | 0% | 0% | 0% | 0% | 2% | 6% | 10% | 0% | Inside |
-| -6 | 0% | 0% | 4% | 8% | 12% | 16% | 20% | 4% | Inside |
-| -5 | 6% | 10% | 14% | 18% | 22% | 26% | 30% | 14% | Inside |
-| -4 | 16% | 20% | 24% | 28% | 32% | 36% | 40% | 24% | Inside |
-| -3 | 26% | 30% | 34% | 38% | 42% | 46% | 50% | 34% | Inside |
-| -2 | 36% | 40% | 44% | 48% | 52% | 56% | 60% | 44% | Inside |
-| -1 | 46% | 50% | 54% | 58% | 62% | 66% | 70% | 54% | Inside |
-| 0 | 56% | 60% | 64% | 68% | 72% | 76% | 80% | 64% | Inside |
-| +1 | 66% | 70% | 74% | 78% | 82% | 86% | 90% | 74% | Inside |
-| +2 | 76% | 80% | 84% | 88% | 92% | 95% | 95% | 84% | Inside |
-| +3 | 86% | 90% | 94% | 95% | 95% | 95% | 95% | 94% | Inside |
+| -6 | 0% | 0% | 4% | 8% | 12% | 16% | 20% | 0% | Inside |
+| -5 | 6% | 10% | 14% | 18% | 22% | 26% | 30% | 10% | Inside |
+| -4 | 16% | 20% | 24% | 28% | 32% | 36% | 40% | 20% | Inside |
+| -3 | 26% | 30% | 34% | 38% | 42% | 46% | 50% | 30% | Inside |
+| -2 | 36% | 40% | 44% | 48% | 52% | 56% | 60% | 40% | Inside |
+| -1 | 46% | 50% | 54% | 58% | 62% | 66% | 70% | 50% | Inside |
+| 0 | 56% | 60% | 64% | 68% | 72% | 76% | 80% | 60% | Inside |
+| +1 | 66% | 70% | 74% | 78% | 82% | 86% | 90% | 70% | Inside |
+| +2 | 76% | 80% | 84% | 88% | 92% | 95% | 95% | 80% | Inside |
+| +3 | 86% | 90% | 94% | 95% | 95% | 95% | 95% | 90% | Inside |
 | +4 | 95% | 95% | 95% | 95% | 95% | 95% | 95% | 95% | Inside |
 | +5 | 95% | 95% | 95% | 95% | 95% | 95% | 95% | 95% | Inside |
 | +6 | 95% | 95% | 95% | 95% | 95% | 95% | 95% | 95% | Inside |
 
 ### Landed per bite by Agriculture rank, over every rod and bait pool the angler can use (each location, rod and bait, daytime and nighttime counted separately; pools weighted equally, fish within a pool by frequency; the pool average mixes pools no single angler fishes, so it compares rules and is not a rank's own experience)
 
-| Agriculture rank | Today, Willpower 10 | Today, Willpower 14 | Today, Willpower 8-20 | Quick Reel (Willpower 12) | Pools | Verdict |
+| Agriculture rank | Today, Willpower 10 | Today, Willpower 14 | Today, Willpower 8-20 | Quick Reel (Willpower 10) | Pools | Verdict |
 | --- | --- | --- | --- | --- | --- | --- |
-| 0 | 30% | 36% | 27-47% | 33% | 194 | Inside |
-| 5 | 71% | 76% | 68-82% | 73% | 194 | Inside |
-| 10 | 62% | 64% | 61-68% | 63% | 313 | Inside |
-| 15 | 79% | 82% | 78-86% | 81% | 313 | Inside |
-| 20 | 73% | 76% | 72-79% | 75% | 445 | Inside |
-| 25 | 87% | 89% | 87-90% | 88% | 445 | Inside |
-| 30 | 79% | 81% | 78-83% | 80% | 571 | Inside |
-| 35 | 89% | 91% | 89-92% | 90% | 571 | Inside |
+| 0 | 30% | 36% | 27-47% | 30% | 194 | Inside |
+| 5 | 71% | 76% | 68-82% | 71% | 194 | Inside |
+| 10 | 62% | 64% | 61-68% | 62% | 313 | Inside |
+| 15 | 79% | 82% | 78-86% | 79% | 313 | Inside |
+| 20 | 73% | 76% | 72-79% | 73% | 445 | Inside |
+| 25 | 87% | 89% | 87-90% | 87% | 445 | Inside |
+| 30 | 79% | 81% | 78-83% | 79% | 571 | Inside |
+| 35 | 89% | 91% | 89-92% | 89% | 571 | Inside |
 | 40 | 81% | 82% | 80-83% | 81% | 699 | Inside |
 | 45 | 87% | 88% | 86-89% | 87% | 699 | Inside |
-| 50 | 92% | 93% | 92-94% | 93% | 699 | Inside |
+| 50 | 92% | 93% | 92-94% | 92% | 699 | Inside |
 
 ### Fish and XP per hour by fish-level band, rank equal to the fish's level (at most 50) with the best rod for it: today's catch roll, Quick Reel and the fight (7 s for a cast and the wait, 8 s for each turn of the fight; unmeasured estimates)
 
-| Fish-level band | Today, fish per hour, Willpower 10 | Today, fish per hour, Willpower 12 | Today, fish per hour, Willpower 14 | Quick Reel, fish per hour | Quick Reel against today (Willpower 12) | Quick Reel against today (Willpower 10-14) | Fight, fish per hour | Fight against today (Willpower 12) | Today, XP per hour | Quick Reel, XP per hour | Fight, XP per hour | Fight XP against today |
+| Fish-level band | Today, fish per hour, Willpower 10 | Today, fish per hour, Willpower 12 | Today, fish per hour, Willpower 14 | Quick Reel, fish per hour | Quick Reel against today (Willpower 10) | Quick Reel against today (Willpower 10-14) | Fight, fish per hour | Fight against today (Willpower 10) | Today, XP per hour | Quick Reel, XP per hour | Fight, XP per hour | Fight XP against today |
 | --- | --- | --- | --- | --- | --- | --- | --- | --- | --- | --- | --- | --- |
-| 0-10 | 309 | 329 | 350 | 329 | 1.00x | 1.07x-0.94x | 20 | 0.06x | 308571 | 308571 | 309519 | 1.00x |
-| 11-20 | 309 | 329 | 350 | 329 | 1.00x | 1.07x-0.94x | 21 | 0.06x | 308571 | 308571 | 310234 | 1.01x |
-| 21-30 | 309 | 329 | 350 | 329 | 1.00x | 1.07x-0.94x | 34 | 0.10x | 308571 | 308571 | 309489 | 1.00x |
-| 31-40 | 309 | 329 | 350 | 329 | 1.00x | 1.07x-0.94x | 37 | 0.11x | 308571 | 308571 | 309578 | 1.00x |
-| 41-52 | 297 | 317 | 338 | 317 | 1.00x | 1.07x-0.94x | 40 | 0.13x | 317473 | 317473 | 318167 | 1.00x |
+| 0-10 | 309 | 329 | 350 | 309 | 1.00x | 1.00x-0.88x | 20 | 0.07x | 308571 | 308571 | 309519 | 1.00x |
+| 11-20 | 309 | 329 | 350 | 309 | 1.00x | 1.00x-0.88x | 21 | 0.07x | 308571 | 308571 | 310234 | 1.01x |
+| 21-30 | 309 | 329 | 350 | 309 | 1.00x | 1.00x-0.88x | 34 | 0.11x | 308571 | 308571 | 309489 | 1.00x |
+| 31-40 | 309 | 329 | 350 | 309 | 1.00x | 1.00x-0.88x | 37 | 0.12x | 308571 | 308571 | 309578 | 1.00x |
+| 41-52 | 297 | 317 | 338 | 297 | 1.00x | 1.00x-0.88x | 40 | 0.14x | 317473 | 317473 | 318167 | 1.00x |
 
 ## Fight bound
 
 ### No perks: landed per bite by rank above the fish's level, at ranks 10, 20, 30, 40, 50 with the best rod each can use (1000 fights per fish). The bound is Quick Reel's chance plus 15% plus 3 points
 
-| Rank - fish level | Quick Reel (Willpower 12) | Bound | Fight, adaptive | Adaptive, by rank | Fight, rule of thumb | Adaptive turns | Verdict |
+| Rank - fish level | Quick Reel (Willpower 10) | Bound | Fight, adaptive | Adaptive, by rank | Fight, rule of thumb | Adaptive turns | Verdict |
 | --- | --- | --- | --- | --- | --- | --- | --- |
-| -8 | 0% | 3.0% | 0% | 0-1% | 1% | 3.6 | Within |
-| -7 | 0% | 3.0% | 1% | 1-1% | 1% | 3.9 | Within |
-| -6 | 4% | 7.6% | 2% | 1-3% | 3% | 4.1 | Within |
-| -5 | 14% | 19.1% | 3% | 2-5% | 3% | 4.3 | Within |
-| -4 | 24% | 30.6% | 8% | 7-12% | 7% | 4.7 | Within |
-| -3 | 34% | 42.1% | 12% | 7-15% | 9% | 4.8 | Within |
-| -2 | 44% | 53.6% | 20% | 10-31% | 11% | 5.0 | Within |
-| -1 | 54% | 65.1% | 33% | 24-41% | 19% | 5.0 | Within |
-| 0 | 64% | 76.6% | 45% | 32-53% | 26% | 5.0 | Within |
-| +1 | 74% | 88.1% | 57% | 51-61% | 36% | 5.1 | Within |
-| +2 | 84% | 99.6% | 63% | 58-68% | 43% | 5.2 | Within |
-| +3 | 94% | 111.1% | 70% | 64-75% | 53% | 5.4 | Within |
+| -8 | 0% | 3.0% | 0% | 0-0% | 0% | 3.5 | Within |
+| -7 | 0% | 3.0% | 0% | 0-0% | 0% | 3.5 | Within |
+| -6 | 0% | 3.0% | 0% | 0-0% | 0% | 3.6 | Within |
+| -5 | 10% | 14.5% | 1% | 1-2% | 2% | 4.0 | Within |
+| -4 | 20% | 26.0% | 5% | 4-5% | 5% | 4.4 | Within |
+| -3 | 30% | 37.5% | 12% | 7-15% | 9% | 4.8 | Within |
+| -2 | 40% | 49.0% | 20% | 10-31% | 11% | 5.0 | Within |
+| -1 | 50% | 60.5% | 33% | 24-41% | 19% | 5.0 | Within |
+| 0 | 60% | 72.0% | 45% | 32-53% | 26% | 5.0 | Within |
+| +1 | 70% | 83.5% | 57% | 51-61% | 36% | 5.1 | Within |
+| +2 | 80% | 95.0% | 63% | 58-68% | 43% | 5.2 | Within |
+| +3 | 90% | 106.5% | 70% | 64-75% | 53% | 5.4 | Within |
 | +4 | 95% | 112.2% | 80% | 70-86% | 65% | 5.5 | Within |
 | +5 | 95% | 112.2% | 87% | 80-94% | 72% | 5.5 | Within |
 | +6 | 95% | 112.2% | 95% | 91-98% | 82% | 4.7 | Within |
 
 ### No perks: landed per bite by Agriculture rank, over every rod and bait pool the angler can use (pools weighted equally, fish within a pool by frequency)
 
-| Agriculture rank | Quick Reel (Willpower 12) | Bound | Fight, adaptive | Adaptive turns | Pools | Verdict |
+| Agriculture rank | Quick Reel (Willpower 10) | Bound | Fight, adaptive | Adaptive turns | Pools | Verdict |
 | --- | --- | --- | --- | --- | --- | --- |
-| 0 | 33% | 41.1% | 14% | 4.8 | 194 | Within |
-| 5 | 73% | 87.3% | 50% | 5.7 | 194 | Within |
-| 10 | 63% | 75.4% | 56% | 4.5 | 313 | Within |
-| 15 | 81% | 95.9% | 73% | 3.9 | 313 | Within |
-| 20 | 75% | 88.8% | 68% | 3.9 | 445 | Within |
-| 25 | 88% | 104.2% | 84% | 3.7 | 445 | Within |
-| 30 | 80% | 94.6% | 78% | 3.6 | 571 | Within |
-| 35 | 90% | 106.5% | 91% | 3.6 | 571 | Within |
-| 40 | 81% | 96.3% | 82% | 3.4 | 699 | Within |
-| 45 | 87% | 103.5% | 89% | 3.4 | 699 | Within |
-| 50 | 93% | 109.7% | 96% | 3.2 | 699 | Within |
+| 0 | 30% | 37.4% | 13% | 4.6 | 194 | Within |
+| 5 | 71% | 84.4% | 50% | 5.7 | 194 | Within |
+| 10 | 62% | 74.0% | 56% | 4.4 | 313 | Within |
+| 15 | 79% | 94.3% | 73% | 3.9 | 313 | Within |
+| 20 | 73% | 87.2% | 68% | 3.9 | 445 | Within |
+| 25 | 87% | 103.4% | 84% | 3.7 | 445 | Within |
+| 30 | 79% | 93.5% | 78% | 3.6 | 571 | Within |
+| 35 | 89% | 105.8% | 91% | 3.6 | 571 | Within |
+| 40 | 81% | 95.8% | 82% | 3.4 | 699 | Within |
+| 45 | 87% | 102.9% | 89% | 3.4 | 699 | Within |
+| 50 | 92% | 109.2% | 96% | 3.2 | 699 | Within |
 
 ### The Angler line below the capstone (Strong Line II, Hard Set II, Fish Sense and a style; the perk draft): landed per bite by rank above the fish's level, at ranks 10, 20, 30, 40, 50 (1000 fights per fish)
 
-| Rank - fish level | Quick Reel (Willpower 12) | Bound | No perks | Whole line, Patient Angler | Whole line, Aggressive Angler | Verdict |
+| Rank - fish level | Quick Reel (Willpower 10) | Bound | No perks | Whole line, Patient Angler | Whole line, Aggressive Angler | Verdict |
 | --- | --- | --- | --- | --- | --- | --- |
-| -8 | 0% | 3.0% | 0% | 1% | 1% | Within |
-| -7 | 0% | 3.0% | 1% | 3% | 3% | Within |
-| -6 | 4% | 7.6% | 2% | 6% | 6% | Within |
-| -5 | 14% | 19.1% | 3% | 11% | 11% | Within |
-| -4 | 24% | 30.6% | 8% | 22% | 23% | Within |
-| -3 | 34% | 42.1% | 12% | 34% | 35% | Within |
-| -2 | 44% | 53.6% | 20% | 46% | 46% | Within |
-| -1 | 54% | 65.1% | 33% | 62% | 59% | Within |
-| 0 | 64% | 76.6% | 45% | 70% | 67% | Within |
-| +1 | 74% | 88.1% | 57% | 83% | 81% | Within |
-| +2 | 84% | 99.6% | 63% | 87% | 85% | Within |
-| +3 | 94% | 111.1% | 70% | 92% | 90% | Within |
-| +4 | 95% | 112.2% | 80% | 99% | 99% | Within |
+| -8 | 0% | 3.0% | 0% | 0% | 0% | Within |
+| -7 | 0% | 3.0% | 0% | 0% | 0% | Within |
+| -6 | 0% | 3.0% | 0% | 0% | 0% | Within |
+| -5 | 10% | 14.5% | 1% | 3% | 3% | Within |
+| -4 | 20% | 26.0% | 5% | 10% | 12% | Within |
+| -3 | 30% | 37.5% | 12% | 32% | 31% | Within |
+| -2 | 40% | 49.0% | 20% | 44% | 43% | Within |
+| -1 | 50% | 60.5% | 33% | 58% | 55% | Within |
+| 0 | 60% | 72.0% | 45% | 66% | 64% | Within |
+| +1 | 70% | 83.5% | 57% | 78% | 77% | Within |
+| +2 | 80% | 95.0% | 63% | 82% | 82% | Within |
+| +3 | 90% | 106.5% | 70% | 89% | 87% | Within |
+| +4 | 95% | 112.2% | 80% | 99% | 98% | Within |
 | +5 | 95% | 112.2% | 87% | 100% | 100% | Within |
 | +6 | 95% | 112.2% | 95% | 100% | 100% | Within |
 
-### The six special fish (level 52) at Agriculture rank 50 with a tier 4 rod, against Quick Reel's chance and the bound (1000 fights per case). A rare fish ignores the line; only Trophy Catch helps against it
+### The six special fish (level 52) at Agriculture rank 50 with a tier 4 rod, against Quick Reel's chance and the bound (1000 fights per case). A rare fish takes the fight perks at half strength; Trophy Catch is the only perk at full strength
 
-| Case | Today, Willpower 10 | Today, Willpower 14 | Quick Reel (Willpower 12) | Bound | Fight, adaptive | Fight, rule of thumb | Adaptive turns | Within the bound |
+| Case | Today, Willpower 10 | Today, Willpower 14 | Quick Reel (Willpower 10) | Bound | Fight, adaptive | Fight, rule of thumb | Adaptive turns | Within the bound |
 | --- | --- | --- | --- | --- | --- | --- | --- | --- |
-| Today (level 52 fish, rank 50) | 40% | 48% | 44% | 53.6% | - | - | - | - |
+| Today (level 52 fish, rank 50) | 40% | 48% | 40% | 49.0% | - | - | - | - |
 | Fight, a common fish of level 52 (for comparison) | - | - | - | - | 31% | 13% | 4.5 | Not judged |
 | Fight, a rare fish (chained moves) | - | - | - | - | 30% | 11% | 4.6 | Yes |
 | Fight, a rare fish with Trophy Catch (-4 rungs) and no other perk | - | - | - | - | 38% | 14% | 4.9 | Not judged |
-| Fight, a rare fish with Trophy Catch (-8 rungs) and no other perk | - | - | - | - | 42% | 18% | 4.7 | Not judged |
+| Fight, a rare fish with Trophy Catch (-6 rungs) and no other perk | - | - | - | - | 36% | 15% | 4.9 | Not judged |
+| Fight, a rare fish with Trophy Catch (-8 rungs) and no other perk | - | - | - | - | 42% | 18% | 4.7 | Yes |
 | Fight, a rare fish with Trophy Catch (-10 rungs) and no other perk | - | - | - | - | 42% | 21% | 4.7 | Not judged |
-| Fight, a rare fish with Trophy Catch (-12 rungs) and no other perk | - | - | - | - | 49% | 28% | 4.9 | Yes |
-| Fight, a rare fish with Trophy Catch (-14 rungs) and no other perk | - | - | - | - | 52% | 30% | 4.9 | Not judged |
-| Fight, a rare fish with the whole line below the capstone (Patient Angler) | - | - | - | - | 28% | 10% | 4.7 | Yes |
-| Fight, a rare fish with the whole line below the capstone (Aggressive Angler) | - | - | - | - | 28% | 8% | 4.6 | Yes |
-| Fight, a rare fish with the whole line (Patient Angler) and Trophy Catch (-12 rungs) | - | - | - | - | 48% | 30% | 4.9 | Yes |
-| Fight, a rare fish with the whole line (Aggressive Angler) and Trophy Catch (-12 rungs) | - | - | - | - | 49% | 28% | 5.0 | Yes |
+| Fight, a rare fish with Trophy Catch (-12 rungs) and no other perk | - | - | - | - | 49% | 28% | 4.9 | Not judged |
+| Fight, a rare fish with the whole line below the capstone (Patient Angler) | - | - | - | - | 32% | 12% | 4.9 | Yes |
+| Fight, a rare fish with the whole line below the capstone (Aggressive Angler) | - | - | - | - | 32% | 12% | 4.9 | Yes |
+| Fight, a rare fish with the whole line (Patient Angler) and Trophy Catch (-8 rungs) | - | - | - | - | 46% | 24% | 4.7 | Yes |
+| Fight, a rare fish with the whole line (Aggressive Angler) and Trophy Catch (-8 rungs) | - | - | - | - | 44% | 23% | 4.8 | Yes |
 
 ## Length
 
@@ -197,9 +200,9 @@
 
 | Rank - fish level | Adaptive turns | Rule-of-thumb turns | Verdict |
 | --- | --- | --- | --- |
-| -6 | 4.1 | 2.9 | Within |
-| -5 | 4.3 | 3.0 | Within |
-| -4 | 4.7 | 3.1 | Within |
+| -6 | 3.6 | 2.7 | Within |
+| -5 | 4.0 | 2.8 | Within |
+| -4 | 4.4 | 3.0 | Within |
 | -3 | 4.8 | 3.2 | Within |
 | -2 | 5.0 | 3.4 | Within |
 | -1 | 5.0 | 4.1 | Within |
@@ -235,7 +238,7 @@
 
 ## Evidence: Angler perk magnitudes
 
-### Angler perk magnitudes: the adaptive player's catch rate at ranks 20, 35, 50, averaged over the ranks (1000 fights per case). The bound is Quick Reel's chance plus 15% plus 3 points: 76.6% at the rank's level and 42.1% for fish 3 levels above
+### Angler perk magnitudes: the adaptive player's catch rate at ranks 20, 35, 50, averaged over the ranks (1000 fights per case). The bound is Quick Reel's chance plus 15% plus 3 points: 72.0% at the rank's level and 37.5% for fish 3 levels above
 
 | Perk | Landed, fish at the rank's level | Landed, fish 3 levels above the rank | Added points, mean | Within the bound |
 | --- | --- | --- | --- | --- |
@@ -244,12 +247,12 @@
 | Strong Line II (+2 Tension cap) | 52.4% | 22.1% | 7.5 | Yes |
 | Hard Set I (Set Hook drains 1 more Stamina) | 49.9% | 14.1% | 2.3 | Yes |
 | Hard Set II (Set Hook drains 2 more Stamina) | 49.1% | 13.6% | 1.6 | Yes |
-| Fish Sense (sees the next two moves) | 59.2% | 19.4% | 9.6 | Yes |
+| Fish Sense (sees the next two moves) | 56.5% | 16.9% | 7.0 | Yes |
 | Patient Angler (Give Line lets out 1 less Distance) | 49.9% | 13.5% | 2.0 | Yes |
 | Aggressive Angler (Reel pulls the fish in 1 more Distance) | 48.9% | 14.1% | 1.8 | Yes |
-| Whole line below the capstone, Patient Angler | 69.8% | 33.7% | 22.0 | Yes |
-| Whole line below the capstone, Aggressive Angler | 68.0% | 35.9% | 22.2 | Yes |
-| Rejected: the first draft's whole line (Strong Line III, Hard Set III, Steady Hold, Fish Sense, Patient Angler -2) | 81.5% | 58.3% | 40.2 | No: over by 16.2 points |
+| Whole line below the capstone, Patient Angler | 65.4% | 32.0% | 19.0 | Yes |
+| Whole line below the capstone, Aggressive Angler | 65.4% | 33.0% | 19.5 | Yes |
+| Rejected: the first draft's whole line (Strong Line III, Hard Set III, Steady Hold, Fish Sense, Patient Angler -2) | 76.9% | 53.6% | 35.5 | No: over by 16.1 points |
 
 ## Evidence: style balance
 
@@ -257,21 +260,21 @@
 
 | Rank | Fish levels above the rank | Patient Angler | Aggressive Angler | Better |
 | --- | --- | --- | --- | --- |
-| 20 | +4 | 7% | 8% | Tie |
+| 20 | +4 | 4% | 4% | Tie |
 | 20 | +3 | 10% | 10% | Tie |
 | 20 | +2 | 18% | 19% | Tie |
 | 20 | +1 | 28% | 27% | Tie |
 | 20 | 0 | 46% | 44% | Tie |
 | 20 | -1 | 53% | 53% | Tie |
 | 20 | -2 | 63% | 64% | Tie |
-| 35 | +4 | 9% | 11% | Tie |
+| 35 | +4 | 6% | 7% | Tie |
 | 35 | +3 | 16% | 17% | Tie |
 | 35 | +2 | 23% | 23% | Tie |
 | 35 | +1 | 43% | 42% | Tie |
 | 35 | 0 | 52% | 49% | Patient |
 | 35 | -1 | 62% | 65% | Aggressive |
 | 35 | -2 | 69% | 67% | Patient |
-| 50 | +4 | 11% | 12% | Tie |
+| 50 | +4 | 5% | 6% | Tie |
 | 50 | +3 | 14% | 15% | Tie |
 | 50 | +2 | 32% | 32% | Tie |
 | 50 | +1 | 39% | 42% | Aggressive |
@@ -289,5 +292,6 @@
 - Gate 6 weighs the time a fight adds (8.0 s a turn is unmeasured) against the XP multiplier, so the multipliers are starting values: they shrink or grow with the real seconds per turn. The game keeps the pace from below in two ways: each action after the first waits the turn, and the rest of the multiplied XP is paid in proportion to how long the fight lasted (up to the full turns), so a fast player, or one who loses the fight on purpose after a move, earns about today's XP per hour and no more; the evidence table for the fastest allowed pace (first action at once) shows it a few percent above today's. The gate plays every fight at the modelled turn, so a player slower than that earns less than today per hour.
 - The multiplier raises the XP of a fight that lasts the full turns about eightfold, because the fight takes several times as long as the cast it follows; a fighter lands fewer fish per hour than a quick reeler by the same factor. Gate 6 asks for it; it is flagged here for the owner. Quick Reel pays today's XP, so it needs no multiplier.
 - The bound leaves the unperked fight below Quick Reel: `LineRules.RungAtRank` (54) is set so that, with no perks, a skilled fight lands fewer fish than Quick Reel at the fish's own level and the Angler line can lift it up to the bound and no further. The fight is the XP choice and Quick Reel the fish choice until the line is bought. Lowering `RungAtRank` strengthens the unperked fight but leaves the line no room under the bound.
-- The Angler line is cut to what the bound allows: Strong Line and Hard Set to two steps each, Fish Sense, a style and Trophy Catch are seven of the plan's ten purchases; the other three need effects that do not raise the catch rate, or a looser bound. A rare fish ignores the rest of the line, so only Trophy Catch moves it.
+- The Angler line is cut to what the bound allows (owner decisions, October 2026): Steady Hold is dropped, Fish Sense shows two moves ahead only on the first 2 turns of a fight, Strong Line and Hard Set have two steps each, and a style and Trophy Catch complete seven of the plan's ten purchases; the other three need effects that do not raise the catch rate, or a looser bound. A rare fish takes the fight perks at half strength (rounded down; Fish Sense off) and Trophy Catch at full strength.
+- A fish more than 3 levels above the rank climbs the difficulty ladder 9 rungs a level instead of 5, so a fish Quick Reel cannot land at all (6 or more levels above the rank) is as hopeless in the fight whatever perks the angler has.
 - Perks, food and status effects are not modelled except where an evidence table names a perk. The client was not run.

@@ -63,7 +63,7 @@ namespace SWLOR.CraftSim.Fishing
                 return new GateResult(
                     Name,
                     GateVerdict.Passed,
-                    $"Quick Reel rolls today's formula at Willpower {_options.QuickReelWillpowerScore} (pending the owner's attribute-median decision) and stays inside " +
+                    $"Quick Reel rolls today's formula at Willpower {_options.QuickReelWillpowerScore} (a character with no attribute investment; owner decision) and stays inside " +
                     $"today's Willpower {_options.CorridorLowScore}-{_options.CorridorHighScore} corridor at every rank above the fish's level and at every rank over the real pools. {detail}",
                     tables);
             }

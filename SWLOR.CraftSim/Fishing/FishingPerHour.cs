@@ -8,6 +8,7 @@ namespace SWLOR.CraftSim.Fishing
     /// <summary>One band of fish levels: the fish and the XP an angler earns in an hour from today's catch roll, from Quick Reel and from the fight.</summary>
     /// <param name="Band">The band's name, such as "21-30".</param>
     /// <param name="TodayFishLow">Fish per hour at the low end of the Willpower corridor.</param>
+    /// <param name="TodayFishMiddle">Fish per hour at the middle of the corridor.</param>
     /// <param name="TodayFishReference">Fish per hour at the Willpower score Quick Reel rolls with.</param>
     /// <param name="TodayFishHigh">Fish per hour at the high end of the corridor.</param>
     /// <param name="QuickReelFish">Fish per hour by Quick Reel.</param>
@@ -18,6 +19,7 @@ namespace SWLOR.CraftSim.Fishing
     public sealed record FishingPerHourRow(
         string Band,
         double TodayFishLow,
+        double TodayFishMiddle,
         double TodayFishReference,
         double TodayFishHigh,
         double QuickReelFish,
@@ -43,6 +45,7 @@ namespace SWLOR.CraftSim.Fishing
                 double Chance(Func<FishingMixEntry, double> percent) => mix.Sum(entry => entry.Weight * percent(entry) / 100.0);
 
                 var low = Chance(entry => FishingCatchModel.CatchChancePercent(entry.Rank, entry.Level, options.CorridorLowScore));
+                var middle = Chance(entry => FishingCatchModel.CatchChancePercent(entry.Rank, entry.Level, MiddleScore(options)));
                 var reference = Chance(entry => FishingCatchModel.CatchChancePercent(entry.Rank, entry.Level, options.QuickReelWillpowerScore));
                 var high = Chance(entry => FishingCatchModel.CatchChancePercent(entry.Rank, entry.Level, options.CorridorHighScore));
                 var quickReel = Chance(entry => options.QuickReel(entry.Rank, entry.Level));
@@ -57,6 +60,7 @@ namespace SWLOR.CraftSim.Fishing
                 rows.Add(new FishingPerHourRow(
                     xpCase.Group,
                     low / castHours,
+                    middle / castHours,
                     reference / castHours,
                     high / castHours,
                     quickReel / castHours,
@@ -69,12 +73,15 @@ namespace SWLOR.CraftSim.Fishing
             return rows;
         }
 
+        /// <summary>The Willpower score in the middle of the corridor.</summary>
+        public static int MiddleScore(FishingParityOptions options) => (options.CorridorLowScore + options.CorridorHighScore) / 2;
+
         public static GateTable Table(IReadOnlyList<FishingPerHourRow> rows, FishingParityOptions options)
         {
             var table = new EvidenceTable(
                 "Fish-level band",
                 $"Today, fish per hour, Willpower {options.CorridorLowScore}",
-                $"Today, fish per hour, Willpower {options.QuickReelWillpowerScore}",
+                $"Today, fish per hour, Willpower {MiddleScore(options)}",
                 $"Today, fish per hour, Willpower {options.CorridorHighScore}",
                 "Quick Reel, fish per hour",
                 $"Quick Reel against today (Willpower {options.QuickReelWillpowerScore})",
@@ -92,7 +99,7 @@ namespace SWLOR.CraftSim.Fishing
                 table.Add(
                     row.Band,
                     Number(row.TodayFishLow, 0),
-                    Number(row.TodayFishReference, 0),
+                    Number(row.TodayFishMiddle, 0),
                     Number(row.TodayFishHigh, 0),
                     Number(row.QuickReelFish, 0),
                     Number(row.QuickReelFish / row.TodayFishReference, 2) + "x",

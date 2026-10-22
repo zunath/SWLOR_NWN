@@ -52,6 +52,11 @@ public static class LineRules
     // the bound on the fight's catch rate (FishingParityOptions.FightBoundRelative in CraftSim).
     public const int RungAtRank = 54;
     public const int RungsPerLevel = 5;
+
+    // A fish more than HardLevelsFrom levels above the rank climbs the ladder faster, RungsPerHardLevel rungs for each level beyond
+    // it: Quick Reel cannot land a fish 6 levels above the rank at all, and the fight must not either, whatever the angler's perks.
+    public const int HardLevelsFrom = 3;
+    public const int RungsPerHardLevel = 9;
     public const int RungMinimum = 0;
     public const int RungMaximum = 100;
     public const double PullPercentOfCapAtRung0 = 10;
@@ -66,6 +71,11 @@ public static class LineRules
     // multipliers below assume it. The fishing lifecycle enforces it as the least time between two actions (the first is free), so
     // fast clicking cannot finish a fight in seconds and be paid the multiplier for it.
     public const double TurnSeconds = 8.0;
+
+    // Fish Sense. The angler who has it sees the fish's next two moves, but only on the first FishSenseTurns turns of a fight: after
+    // that the window shows one move, as for everyone. The full forecast was the largest single purchase of the Angler line, and the
+    // fight bound leaves the line room for a smaller one.
+    public const int FishSenseTurns = 2;
 
     // The multiplier on the XP of a bite (see CraftMinigameXp), by the fish's level band: the least that keeps the CraftSim XP-rate
     // gate (gate 6) passing in the band. Today's cast takes about seven seconds; the fight adds three to six turns of TurnSeconds to

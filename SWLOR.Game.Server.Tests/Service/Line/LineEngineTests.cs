@@ -273,6 +273,30 @@ public class LineEngineTests
     }
 
     [Test]
+    public void FishSense_ShowsTwoMovesOnlyForItsFirstTurns_ThenOne_AndTheMovesStayTheOnesThatWereAnnounced()
+    {
+        LineRules.FishSenseTurns.Should().Be(2);
+        // Move 1 and 2 are announced together; the roll on turn 1 picks move 3; from turn 2 on only the current move is shown.
+        var engine = EngineSeeingTwo(Setup(effects: SeesTwoMoves, stamina: 40, cap: 40, start: 16, max: 60), FishMove.Run, FishMove.Dive, FishMove.Thrash, FishMove.Tire, FishMove.Run);
+
+        engine.Forecast.Should().Equal(FishMove.Run, FishMove.Dive);
+
+        engine.Perform(LineActionIds.GiveLine);
+        engine.Forecast.Should().Equal(FishMove.Dive, FishMove.Thrash);
+
+        engine.Perform(LineActionIds.GiveLine);
+        engine.Move.Should().Be(FishMove.Thrash, "the move announced as 'then' comes up as announced");
+        engine.Forecast.Should().Equal(FishMove.Thrash);
+
+        engine.Perform(LineActionIds.Hold);
+        engine.Forecast.Should().HaveCount(1);
+        engine.Setup.SeesTwoMoves(0).Should().BeTrue();
+        engine.Setup.SeesTwoMoves(1).Should().BeTrue();
+        engine.Setup.SeesTwoMoves(2).Should().BeFalse();
+        Setup().SeesTwoMoves(0).Should().BeFalse("without the perk nobody sees two moves");
+    }
+
+    [Test]
     public void SeeingOneMoveAhead_HidesTheFollowingMove()
     {
         var engine = Engine(Setup(), FishMove.Run, FishMove.Dive);

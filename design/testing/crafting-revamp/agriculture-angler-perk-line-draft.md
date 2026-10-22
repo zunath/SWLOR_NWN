@@ -2,13 +2,13 @@
 
 Draft for the owner's approval. No perk code, no StatType IDs and no Bible rows exist yet; this file is the only artifact. Every magnitude is a starting value that CraftSim tunes. Rules followed: `CraftingRevampPlan.md` (Line schedule, Lines, Agriculture fishing) and `SkillPerkStandards.md`. The Chef line is another workstream's draft.
 
-**This draft was cut to fit the owner's decision of October 2026.** A bite now offers Quick Reel (today's catch roll, no fight) or a fight, and a skilled fight's expected catch rate is bounded to +15% (starting value) of Quick Reel's, plus 3 points for sampling error and for fish Quick Reel can hardly land. The bound covers the whole Angler line and the rare fish with Trophy Catch. The first draft's whole line lifted a skilled angler 40 points, well past it, so the line below buys seven of the plan's ten purchases; three rows are open for the owner (Open questions, 1).
+**This draft follows the owner's decisions of October 2026.** A bite offers Quick Reel (today's catch roll at Willpower 10, no fight) or a fight, and a skilled fight's expected catch rate is bounded to +15% (starting value) of Quick Reel's, plus 3 points for sampling error and for fish Quick Reel can hardly land. The bound covers the whole Angler line and the rare fish with Trophy Catch. The owner also decided: no Steady Hold; Fish Sense shrunk; fight perks at half strength on rare fish with Trophy Catch the only full-strength rare-fish perk; and a short help paragraph per style once perks exist. The first draft's whole line lifted a skilled angler 35 points, well past the bound, so the line below buys seven of the plan's ten purchases; three rows are open for the owner (Open questions, 1).
 
-Evidence: `fishing-line-parity.md` (command `SWLOR.CraftSim fishing --runs 1000 --seed 1`). Every percentage below is the adaptive (skilled) player's catch rate averaged over Agriculture ranks 20, 35 and 50, 1000 fights per case, on a fish at the rank's level and on a fish 3 levels above it. Quick Reel lands 64% and 34% of those fish, so the bound is 76.6% and 42.1%.
+Evidence: `fishing-line-parity.md` (command `SWLOR.CraftSim fishing --runs 1000 --seed 1`). Every percentage below is the adaptive (skilled) player's catch rate averaged over Agriculture ranks 20, 35 and 50, 1000 fights per case, on a fish at the rank's level and on a fish 3 levels above it. Quick Reel lands 60% and 30% of those fish, so the bound is 72.0% and 37.5%.
 
 ## Structure
 
-- One independent, optional line of 25 SP. It is not needed to catch fish: Quick Reel lands them at today's rate for everyone, and an unperked fight is the XP choice (a skilled angler lands 47% of at-level fish by fighting against Quick Reel's 64%).
+- One independent, optional line of 25 SP. It is not needed to catch fish: Quick Reel lands them at today's rate for everyone, and an unperked fight is the XP choice (a skilled angler lands 47% of at-level fish by fighting against Quick Reel's 60%).
 - Ten rows at Agriculture ranks 5/10/15/20/25/30/35/40/45/50, priced 1/1/2/2/3/3/3/3/3/4 SP. The rank-20 purchase is the line's style, a choice of two mutually exclusive styles through `PerkRequirementCannotHavePerk`; switching costs a Perk Refund Token, like any perk. The rank-50 purchase is the capstone with no quest requirement. **Rows 35, 40 and 45 are open.**
 - Ranked perks use up to three purchases. Each rank restates the benefit inside its own total (only the purchased rank's stat bonuses apply).
 - Every effect acts only on the Line, the fishing fight. All four actions (Set Hook, Reel, Give Line, Hold) are available at rank 0, so no perk unlocks an action; each perk adjusts one number. No perk touches Quick Reel, whose chance is today's formula at one fixed Willpower score.
@@ -18,7 +18,11 @@ Evidence: `fishing-line-parity.md` (command `SWLOR.CraftSim fishing --runs 1000 
 
 When a bite opens the fight, the lifecycle builds an immutable `LineAnglerEffects` record from the angler's stat totals and passes it to `LineSetup.ForFish`, beside the fish, the rank and the rod's tier. Today it passes `LineAnglerEffects.None`. The engine reads only that record, never a perk, so previews and results stay pure, and a perk bought or refunded during a fight changes the next fight, not this one. Each stat below is a field of it.
 
-The fish's pull is a share of the Tension cap before perks, so a perk that raises the cap does not make the fish stronger. **A rare fish ignores every field but `RareFishRungReduction`**: only Trophy Catch helps against it, so the rest of the line cannot lift the supply of rare fish past the bound.
+The fish's pull is a share of the Tension cap before perks, so a perk that raises the cap does not make the fish stronger.
+
+**Rare fish.** A rare fish takes the fight perks at half strength, rounded down (`LineAnglerEffects.AtHalfStrengthAgainstRareFish`): Strong Line II's +2 becomes +1, Hard Set II's +2 becomes +1, a style's 1 becomes 0, and Fish Sense (which cannot be halved) is off. Trophy Catch is the one rare-fish perk at full strength. The rest of the line therefore cannot lift the supply of rare fish past the bound.
+
+**Fish Sense** shows the fish's next two moves, but only on the first two turns of a fight (`LineRules.FishSenseTurns`); after that the window shows one move, as for everyone. The full forecast was the line's largest single purchase.
 
 ## Angler (fishing)
 
@@ -30,49 +34,50 @@ The fish's pull is a share of the Tension cap before perks, so a perk that raise
 | 20 | 2 | Patient Angler | style (exclusive with Aggressive Angler) | Give Line lets out 1 less Distance (4 becomes 3). | `AnglerGiveLineDistance` -1 |
 | 20 | 2 | Aggressive Angler | style (exclusive with Patient Angler) | Reel pulls the fish in 1 more Distance. | `AnglerReelDistance` +1 |
 | 25 | 3 | Hard Set II | trait | Set Hook drains 2 more Stamina in total (replaces Hard Set I's 1). | `AnglerSetHookDrain` +2 |
-| 30 | 3 | Fish Sense | trait | The window shows the fish's next two moves, not one. | `AnglerForecastDepth` +1 |
+| 30 | 3 | Fish Sense | trait | You see the fish's next two moves on the first two turns of a fight. | `AnglerForecastDepth` +1 |
 | 35 | 3 | open | - | See Open questions, 1. | - |
 | 40 | 3 | open | - | See Open questions, 1. | - |
 | 45 | 3 | open | - | See Open questions, 1. | - |
-| 50 | 4 | Trophy Catch | capstone, trait | A rare fish fights as if it were 12 steps easier on the difficulty ladder, about 2.4 levels weaker. It is the only perk a rare fish lets through. | `AnglerRareFishRungs` +12 |
+| 50 | 4 | Trophy Catch | capstone, trait | A rare fish fights as if it were 8 steps easier on the difficulty ladder, about 1.6 levels weaker. It is the only perk that works on a rare fish at full strength. | `AnglerRareFishRungs` +8 |
 
 The rank-20 row appears twice because the purchase is a choice; the line has ten rows and the angler owns one of the two at rank 20.
 
 Decisions the line creates:
 
-- Patient Angler against Aggressive Angler: Patient keeps the fish close by making retreat cheap, so it suits an angler who gives line to calm a Dive or a Thrash; Aggressive reels faster, so it suits one who reels against Tire and Run. The styles are balanced (below).
+- Patient Angler against Aggressive Angler: Patient keeps the fish close by making retreat cheap, so it suits an angler who gives line to calm a Dive or a Thrash; Aggressive reels faster, so it suits one who reels against Tire and Run. The styles are balanced (below), almost to a tie.
 - Hard Set against Strong Line: draining Stamina ends the fight early because an exhausted fish only rests, while a bigger cap lets the angler survive a longer one.
-- Fish Sense changes planning more than any other perk: it turns "react to the next move" into "plan around two moves", and it is the largest single purchase of the line.
+- Fish Sense changes planning for the opening turns of a fight, which is when the fish's moves decide how the line is set.
 
 ## Evidence
 
-Catch rate of the adaptive player, perks one at a time, against the bound (76.6% at the rank's level, 42.1% for fish 3 levels above; from `fishing-line-parity.md`):
+Catch rate of the adaptive player, perks one at a time, against the bound (72.0% at the rank's level, 37.5% for fish 3 levels above; from `fishing-line-parity.md`):
 
 | Purchase | Fish at the rank's level | Fish 3 levels above | Added points, mean of both | Within the bound |
 | --- | --- | --- | --- | --- |
 | No perks | 47.4% | 12.1% | - | Yes |
 | Strong Line I / II (+1 / +2 Tension cap) | 48.2% / 52.4% | 17.1% / 22.1% | 3.0 / 7.5 | Yes |
 | Hard Set I / II (+1 / +2 drain) | 49.9% / 49.1% | 14.1% / 13.6% | 2.3 / 1.6 | Yes |
-| Fish Sense | 59.2% | 19.4% | 9.6 | Yes |
+| Fish Sense (two moves ahead for two turns) | 56.5% | 16.9% | 7.0 | Yes |
 | Patient Angler | 49.9% | 13.5% | 2.0 | Yes |
 | Aggressive Angler | 48.9% | 14.1% | 1.8 | Yes |
-| Whole line below the capstone, Patient Angler | 69.8% | 33.7% | 22.0 | Yes |
-| Whole line below the capstone, Aggressive Angler | 68.0% | 35.9% | 22.2 | Yes |
-| The first draft's whole line (Strong Line III, Hard Set III, Steady Hold, Fish Sense, Patient Angler -2) | 81.5% | 58.3% | 40.2 | No: over by 16.2 points |
+| Whole line below the capstone, Patient Angler | 65.4% | 32.0% | 19.0 | Yes |
+| Whole line below the capstone, Aggressive Angler | 65.4% | 33.0% | 19.5 | Yes |
+| The first draft's whole line (Strong Line III, Hard Set III, Steady Hold, a full-length Fish Sense, Patient Angler -2) | 76.9% | 53.6% | 35.5 | No: over by 16.1 points |
 
-The Fight bound gate in the report also holds the whole line, in both styles, to the bound at every rank above the fish's level from 8 below to 6 above. It is among the tightest on fish 7 levels above the rank, which Quick Reel cannot land at all, so the bound there is the 3-point floor and the line lands about 3% of them.
+The owner asked for the whole line at level to come down to about 90% from the first draft's 99%. The bound is stricter: it holds the whole line to 65% at level (72% at most), well under 90%.
 
-Style balance (the plan's style gate in miniature: each style the better choice on at least 30% of cases, neither ahead by more than about 5 points on average): over ranks 20, 35 and 50 and fish from 4 levels above the rank to 2 below, Patient Angler is the better style on 48% of the cases and Aggressive Angler on 52% (ties within 2 points count half), and the mean gap is -0.4 points.
+The Fight bound gate in the report also holds the whole line, in both styles, to the bound at every rank above the fish's level from 8 below to 6 above; the tightest margin anywhere in the gate's tables is 2.5 points.
 
-Rare fish and the capstone. The six special fish are level 52 and appear at one random spot per server start, caught only with the tier 4 rod. At rank 50 Quick Reel lands one 44% of the time, so the bound is 53.6%. A skilled angler with no perks lands a rare fish 30% of the time and a common fish of the same level 31%. A rare fish ignores the rest of the line, so the whole line adds nothing (28%). Trophy Catch at 4, 8, 10, 12 and 14 steps lands it 38%, 42%, 42%, 49% and 52% of the time, so 12 steps puts a skilled angler at 49%, under the 53.6% bound, and the whole line changes nothing (48-49%). The capstone is worth about +19 points and stays inside the bound.
+Style balance (the plan's style gate in miniature: each style the better choice on at least 30% of cases, neither ahead by more than about 5 points on average): over ranks 20, 35 and 50 and fish from 4 levels above the rank to 2 below, Patient Angler is the better style on 48% of the cases and Aggressive Angler on 52% (ties within 2 points count half), and the mean gap is -0.4 points. Most cases are ties, so the choice between styles is small in catch rate; its weight is in how the fight feels.
+
+Rare fish and the capstone. The six special fish are level 52 and appear at one random spot per server start, caught only with the tier 4 rod. At rank 50 Quick Reel lands one 40% of the time, so the bound is 49.0%. A skilled angler with no perks lands a rare fish 30% of the time and a common fish of the same level 31%. A rare fish takes the line at half strength, so the whole line adds about 2 points (32%). Trophy Catch alone at 4, 6, 8, 10 and 12 steps lands it 38%, 36%, 42%, 42% and 49% of the time; 8 steps gives 42% alone and 44-46% with the whole line, under the 49.0% bound, where 12 steps would touch it. The capstone is worth about +12 points and stays inside the bound.
 
 ## Open questions
 
-1. **Three open rows.** The bound leaves room for about seven purchases that raise the catch rate: the first draft's whole line used 40 points where this one uses 22, and the fight bound is tightest in the middle of the range where the line is most useful. Options for the owner: (a) loosen the bound, since each further catch-rate purchase (Strong Line III, Hard Set III, Steady Hold) adds a few points and needs that much room; (b) fill rows 35, 40 and 45 with effects that do not raise the catch rate, such as a chance not to spend the bait or an Agriculture XP bonus for fights, each of which needs its own approval and balance evidence; (c) accept a seven-purchase line and re-price it.
-2. **The unperked fight lands fewer fish than Quick Reel.** To leave the line room under the bound, `LineRules.RungAtRank` is 54 (it was 42): a skilled angler with no perks lands 47% of at-level fish by fighting where Quick Reel lands 64%, and 12% of fish 3 levels above where Quick Reel lands 34%. The fight pays the XP; Quick Reel gives the fish. Lowering `RungAtRank` strengthens the unperked fight and takes the room away from the line one for one.
+1. **Three open rows.** The bound leaves room for about seven purchases that raise the catch rate. The line below adds 19 points where the first draft added 35, and the fight bound is tightest in the middle of the range where the line is most useful (about 2.5 points of room in the tightest row). Options for the owner: (a) loosen the bound, since each further catch-rate purchase (Strong Line III, Hard Set III) adds a few points and needs that much room; (b) fill rows 35, 40 and 45 with effects that do not raise the catch rate, such as a chance not to spend the bait or an Agriculture XP bonus for fights, each of which needs its own approval and balance evidence; (c) accept a seven-purchase line and re-price it.
+2. **The unperked fight lands fewer fish than Quick Reel.** To leave the line room under the bound, `LineRules.RungAtRank` is 54 (it was 42): a skilled angler with no perks lands 47% of at-level fish by fighting where Quick Reel lands 60%, and 12% of fish 3 levels above where Quick Reel lands 30%. The fight pays the XP; Quick Reel gives the fish. Lowering `RungAtRank` strengthens the unperked fight and takes the room away from the line one for one.
 3. **How "+15%" is read.** The bound is 15% more than Quick Reel's chance for the same fish and angler, plus 3 points (two standard errors of a 1000-fight case, and a floor for fish Quick Reel can hardly land). If the owner meant 15 percentage points, the line and the unperked fight both have more room.
-4. **Fish Sense** is the largest single purchase (9.6 points) and the one that changes how the fight is played. It is the first to drop if the owner wants the line's catch-rate gain smaller still.
-5. **Styles and the first-use help.** The window's help page describes Quick Reel and the fight without perks. If the owner wants the styles explained in the game, the help page needs a paragraph per style once the perks exist.
+4. **Styles in the game.** Once the perks exist, the Line window's help page gets one short paragraph per style. Draft wording: "Patient Angler: Give Line lets out one less Distance, so a fish you give line to stays close." and "Aggressive Angler: each Reel pulls the fish in one more Distance, so you land it in fewer turns."
 
 ## Proposed StatTypes
 
@@ -87,7 +92,7 @@ Names only; the IDs are reserved against current master and the HAK when the own
 | `AnglerReelDistance` | additive | Aggressive Angler |
 | `AnglerRareFishRungs` | additive | Trophy Catch |
 
-The engine fields they feed are `LineAnglerEffects.TensionCapBonus`, `SetHookDrainBonus`, `ForecastDepth`, `GiveLineDistanceReduction`, `ReelDistanceBonus` and `RareFishRungReduction`. They exist now and default to zero; a unit test pins what each one changes. `HoldDrainBonus` and `ReelTensionBonus` also exist and stay zero: Steady Hold and the first draft's Aggressive Angler (+2 Reel Distance and +2 Tension) were cut because they took the line over the bound.
+The engine fields they feed are `LineAnglerEffects.TensionCapBonus`, `SetHookDrainBonus`, `ForecastDepth`, `GiveLineDistanceReduction`, `ReelDistanceBonus` and `RareFishRungReduction`. They exist now and default to zero; a unit test pins what each one changes. `HoldDrainBonus` and `ReelTensionBonus` also exist and stay zero: Steady Hold (dropped by the owner) and the first draft's Aggressive Angler (+2 Reel Distance and +2 Tension) took the line over the bound.
 
 ## Player descriptions (draft wording)
 
@@ -95,13 +100,13 @@ The engine fields they feed are `LineAnglerEffects.TensionCapBonus`, `SetHookDra
 - Hard Set: "Setting the hook drains N more Stamina from the fish."
 - Patient Angler: "Giving line lets out 1 less Distance."
 - Aggressive Angler: "Reeling pulls the fish in 1 more Distance."
-- Fish Sense: "You can see the fish's next two moves."
-- Trophy Catch: "Rare fish fight about two and a half levels weaker. Rare fish are not helped by your other fishing perks."
+- Fish Sense: "You can see the fish's next two moves for the first two turns of a fight."
+- Trophy Catch: "Rare fish fight about one and a half levels weaker. Your other fishing perks work at half strength on rare fish."
 
 ## Integration notes
 
 - Perks act on the fight's snapshot at the bite. Equipment, perk and rank changes during a fight do not change it, and a fight that ends early (window closed, logout, moving away, combat, death, the rod taken out of the hand, another activity such as resting taking over) loses the fish as an escape under the same rule as an unperked fight.
 - Bait, the fishing point's bites and today's XP are spent at the bite, so no perk can change them. The rest of the multiplied XP is paid when the fight ends on its own, in proportion to how long it lasted (up to five turns), so a perk that shortens a fight also shortens its pay, and the fight enforces `LineRules.TurnSeconds` between two actions, so no perk can speed the turns either. The multiplied XP is today's times the fish-level band's multiplier (`LineRules.XpMultiplierForLevel`, through `CraftMinigameXp`), so a perk that shortens a fight must not shorten it below what the multiplier was passed for; the XP-rate gate in `fishing-line-parity.md` is the check.
-- Quick Reel is the fish choice and a perk never changes it: the angler resolves the bite at once by today's catch roll at Willpower 12 (pending the owner's attribute-median decision), and only before the first move of a fight, so no angler can start a fight and fall back on it.
+- Quick Reel is the fish choice and a perk never changes it: the angler resolves the bite at once by today's catch roll at Willpower 10 (a character with no attribute investment), and only before the first move of a fight, so no angler can start a fight and fall back on it.
 - No perk changes which fish bites or how often; fish selection, bait and location stay as today.
 - The bound is a CraftSim gate (`Fight bound` in `fishing-line-parity.md`) and tests pin it: every purchase above is within it, the whole line in either style is within it, and so is a rare fish with Trophy Catch.

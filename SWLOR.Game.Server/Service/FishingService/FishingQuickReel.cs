@@ -8,11 +8,10 @@ namespace SWLOR.Game.Server.Service.FishingService
     public static class FishingQuickReel
     {
         /// <summary>
-        /// The Willpower score Quick Reel rolls with, the same for every angler so that fishing no longer reads an attribute. It is the middle
-        /// of the 10 to 14 corridor the CraftSim parity study judged the fight against (the median Willpower of active characters is not
-        /// measured yet). Pending the owner's attribute-median decision, which sets the final value.
+        /// The Willpower score Quick Reel rolls with, the same for every angler so that fishing no longer reads an attribute: 10, today's
+        /// catch roll for a character with no attribute investment (owner decision, October 2026).
         /// </summary>
-        public const int ReferenceWillpowerScore = 12;
+        public const int ReferenceWillpowerScore = 10;
 
         /// <summary>The chance, in percent, before the rank and Willpower.</summary>
         public const int BaseChance = 40;

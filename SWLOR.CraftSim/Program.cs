@@ -6,6 +6,9 @@ SWLOR crafting simulator
 
   baseline [--section crafting|gathering|all] [--runs 200] [--seed 1] [--gathering-runs 20000] [--skills Smithery,...] [--out report.md] [--json results.json] [--repo path]
       Plays today's rules (the old craft minigame, harvesting, scavenging, refining and the fishing catch roll) and writes the legacy baseline.
+  progression [--runs 500] [--seed 1] [--skills Smithery,...] [--node-seconds 30] [--overhead-seconds 30] [--might 0] [--out report.md] [--json results.json] [--repo path]
+      Models a new crafter's hours to rank 50 in each crafting skill (components gathered included) and in Gathering, the guild task and research cohorts,
+      and writes the progression-pace report with the proposals for the owner (default design/testing/crafting-revamp/progression-pace-baseline.md is the committed one).
   legacy-enhancements [--runs 200] [--seed 1] [--recipes-per-band 6] [--skills Smithery,...] [--gear all|best] [--out report.md] [--json results.json] [--repo path]
       Plays today's rules with 1, 2 and 3 enhancements slotted and writes the expected transferred enhancements per band, tier and slot count (the yardstick of gate 7).
   gear [--repo path]
@@ -34,6 +37,7 @@ try
     return args[0] switch
     {
         "baseline" => BaselineCommand.Run(args.Skip(1).ToArray(), Console.Out),
+        "progression" => ProgressionCommand.Run(args.Skip(1).ToArray(), Console.Out),
         "legacy-enhancements" => LegacyEnhancementsCommand.Run(args.Skip(1).ToArray(), Console.Out),
         "gear" => GearCommand.Run(args.Skip(1).ToArray(), Console.Out),
         "gates" => GatesCommand.Run(args.Skip(1).ToArray(), Console.Out),

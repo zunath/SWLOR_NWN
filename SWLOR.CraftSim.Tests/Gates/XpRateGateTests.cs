@@ -279,6 +279,35 @@ namespace SWLOR.CraftSim.Tests.Gates
         }
 
         [Test]
+        public void TheScenariosXpMultiplierScalesTheNewLoopsXpAndNotTheLegacyLoops()
+        {
+            var context = Context(new[] { 25 }, runs: 30);
+            var xpCase = new XpRateCase("21-30", "best gear");
+            var plain = Suite(new BenchScenario()).XpCohort;
+            var doubled = Suite(new BenchScenario { XpMultiplier = 2 }).XpCohort;
+
+            var before = plain.PlayReplacement(xpCase, context);
+            var after = doubled.PlayReplacement(xpCase, context);
+
+            after.ActionsPerRun.Should().Be(before.ActionsPerRun, "the multiplier changes XP and nothing the player does");
+            after.XpPerRun.Should().BeApproximately(before.XpPerRun * 2, before.XpPerRun * 0.03);
+            doubled.PlayLegacy(xpCase, context).XpPerRun.Should().Be(plain.PlayLegacy(xpCase, context).XpPerRun);
+        }
+
+        [Test]
+        public void AMultiplierPerRecipeLevelScalesEachRecipeByItsOwnLevel()
+        {
+            var context = Context(new[] { 5, 25 }, runs: 30);
+            var plain = Suite(new BenchScenario()).XpCohort;
+            var leveled = Suite(new BenchScenario { XpMultiplierByLevel = level => level <= 10 ? 3.0 : 1.0 }).XpCohort;
+            var low = new XpRateCase("1-10", "best gear");
+            var high = new XpRateCase("21-30", "best gear");
+
+            leveled.PlayReplacement(low, context).XpPerRun.Should().BeApproximately(plain.PlayReplacement(low, context).XpPerRun * 3, plain.PlayReplacement(low, context).XpPerRun * 0.05);
+            leveled.PlayReplacement(high, context).XpPerRun.Should().Be(plain.PlayReplacement(high, context).XpPerRun);
+        }
+
+        [Test]
         public void TheLegacySideIsTheOldMinigamesLookaheadPlayerOnTheSameRecipes()
         {
             var context = Context(new[] { 25 }, runs: 30);

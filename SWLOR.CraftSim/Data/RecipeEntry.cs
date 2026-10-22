@@ -57,6 +57,12 @@ namespace SWLOR.CraftSim.Data
         /// <summary>The server's definition, so a minigame scenario can read the recipe's own minigame parameters; null for a hand-written entry.</summary>
         public RecipeDetail Detail { get; }
 
+        /// <summary>
+        /// True when the recipe must be learned before anyone can craft it (<c>RequirementUnlocked</c>): the server refuses it until
+        /// <c>Player.UnlockedRecipes</c> holds it, so a new crafter cannot make it.
+        /// </summary>
+        public bool RequiresLearning => Detail != null && Detail.Requirements.OfType<RecipeUnlockRequirement>().Any();
+
         /// <summary>Distinct component lines: one committed stack each when a player holds each in one stack.</summary>
         public int ComponentStacks => Components.Count;
 

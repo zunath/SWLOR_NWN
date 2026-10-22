@@ -142,8 +142,8 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
             CircuitSummary =
                 $"Overload line {parameters.OverloadLine}  |  Each Load point adds {parameters.LoadBoostPercent}% output  |  " +
                 $"Work: {parameters.AssemblySharePercent}% Assembly, {100 - parameters.AssemblySharePercent}% Calibration";
-            NeedsSummary = setup.EnhancementProgressPenalty > 0
-                ? $"Needs {setup.MaxAssembly} Assembly ({setup.EnhancementProgressPenalty} added by enhancements) and {setup.MaxCalibration} Calibration. Integrity {setup.MaxIntegrity}."
+            NeedsSummary = setup.EnhancementAssembly > 0
+                ? $"Needs {setup.MaxAssembly} Assembly ({setup.EnhancementAssembly} added by enhancements) and {setup.MaxCalibration} Calibration. Integrity {setup.MaxIntegrity}."
                 : $"Needs {setup.MaxAssembly} Assembly and {setup.MaxCalibration} Calibration. Integrity {setup.MaxIntegrity}.";
             SlotHeader = _slotItems.Count == 0
                 ? "This recipe has no enhancement slots."

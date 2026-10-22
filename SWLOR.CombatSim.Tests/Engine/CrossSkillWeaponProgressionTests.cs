@@ -80,7 +80,9 @@ public class CrossSkillWeaponProgressionTests
                     var actor = sim.Combatants[0]; actor.NextActionAt = 0; actor.NextAttackAt = double.PositiveInfinity;
                     for (var i = 0; i < flow; i++) { sim.RecordWeaponMovement(actor, 2); sim.RecordLandedWeaponHit(actor); }
                     SimulationClock.RunUntil(sim, () => actor.Stats.AbilitiesUsed == 1 && actor.Casting == null, 5, "native low-tier activation");
-                    actor.Stats.FlowDamagePowerApplied.Should().Be(flow * 2 * gear.Weapon(0).DistinctAttackItemCount);
+                    // Twin Pistol builders keep Flow for their finishers, so only a Flow-spending ability applies it.
+                    var spendsFlow = catalog.Get(Enum.Parse<SWLOR.NWN.API.NWScript.Enum.FeatType>(Ability(gear.Rank, ability))).TwinPistol?.SpendsMomentum != false;
+                    actor.Stats.FlowDamagePowerApplied.Should().Be(spendsFlow ? flow * 2 * gear.Weapon(0).DistinctAttackItemCount : 0);
                     actor.Stats.StmRefunded.Should().BeLessThan(actor.Stats.StmSpent);
                     actors.Add(actor);
                 }

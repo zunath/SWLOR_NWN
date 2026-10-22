@@ -9,6 +9,7 @@ namespace SWLOR.Game.Server.Service.CraftService.Minigame.Line;
 /// <param name="ReelTensionBonus">Added to the Tension a Reel adds.</param>
 /// <param name="GiveLineDistanceReduction">Taken off the Distance Give Line lets out.</param>
 /// <param name="SetHookDrainBonus">Added to the Stamina Set Hook drains.</param>
+/// <param name="HoldDrainBonus">Added to the Stamina Hold drains.</param>
 /// <param name="ForecastDepth">How many of the fish's next moves the window shows: 1, or 2.</param>
 /// <param name="RareFishRungReduction">Rungs a rare fish is moved down the difficulty ladder, which makes it easier to land.</param>
 public sealed record LineAnglerEffects(
@@ -17,6 +18,7 @@ public sealed record LineAnglerEffects(
     int ReelTensionBonus = 0,
     int GiveLineDistanceReduction = 0,
     int SetHookDrainBonus = 0,
+    int HoldDrainBonus = 0,
     int ForecastDepth = 1,
     int RareFishRungReduction = 0)
 {

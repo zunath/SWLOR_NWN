@@ -444,8 +444,8 @@ public class FishingFightLifecycleTests
         setup.FishLevel.Should().Be(52);
         setup.Rank.Should().Be(50);
         setup.RodTier.Should().Be(4);
-        setup.TensionCap.Should().Be(14);
-        fight.Engine.TensionCap.Should().Be(14);
+        setup.TensionCap.Should().Be(28);
+        fight.Engine.TensionCap.Should().Be(28);
         fight.Fish.Name.Should().Be("Test Fish");
         fight.Player.Should().Be(Player);
     }

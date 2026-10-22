@@ -12,35 +12,36 @@ public static class LineRules
     // The angler. Power is the rod tier (0-4) plus one for every 10 ranks of Agriculture. The rod tier and the rank set the
     // Tension cap and the Distance a Reel closes, which replace the Willpower bonus fishing had.
     public const int RanksPerPower = 10;
-    public const int TensionCapBase = 10;
-    public const int RodTiersPerTensionCapPoint = 2;
-    public const int RanksPerTensionCapPoint = 25;
-    public const int ReelDistanceBase = 3;
-    public const int PowerPerReelDistancePoint = 6;
+    public const int TensionCapBase = 20;
+    public const int TensionCapPerRodTier = 1;
+    public const int RanksPerTensionCapPoint = 12;
+    public const int ReelDistanceBase = 6;
+    public const int PowerPerReelDistanceStep = 6;
+    public const int ReelDistancePerStep = 2;
 
     // The line. The fish is hooked about two reels out and escapes a couple of reels beyond that, whatever the reel strength.
-    public const int StartDistanceBase = 2;
+    public const int StartDistanceBase = 4;
     public const int StartDistancePerReelDistance = 2;
-    public const int EscapeBufferBase = 1;
+    public const int EscapeBufferBase = 2;
     public const int EscapeBufferPerReelDistance = 2;
 
     // Actions, before the fish's move. Reel closes Distance and adds Tension; Give Line lowers Tension and lets out Distance;
     // Hold drains Stamina; Set Hook drains more, once, and the fish's first move is spent on it.
-    public const int ReelTension = 2;
-    public const int GiveLineDistance = 2;
-    public const int GiveLineRelief = 3;
-    public const int HoldTension = 1;
-    public const int HoldDrain = 2;
-    public const int SetHookTension = 1;
-    public const int SetHookDrain = 3;
+    public const int ReelTension = 4;
+    public const int GiveLineDistance = 4;
+    public const int GiveLineRelief = 6;
+    public const int HoldTension = 2;
+    public const int HoldDrain = 4;
+    public const int SetHookTension = 2;
+    public const int SetHookDrain = 6;
 
     // The fish's moves, in terms of its pull. A Run takes pull in Distance, or in Tension (pull plus RunReelStrain) if the
     // angler reels against it; a Dive adds the pull in Tension to anything but Give Line, which absorbs half; a Thrash adds
     // pull plus ThrashSpike in Tension, which only Hold absorbs entirely; a Tire is a free pull-in.
-    public const int RunReelStrain = 1;
-    public const int ThrashSpike = 1;
-    public const int TireReelDistance = 1;
-    public const int TireStaminaLoss = 1;
+    public const int RunReelStrain = 2;
+    public const int ThrashSpike = 2;
+    public const int TireReelDistance = 2;
+    public const int TireStaminaLoss = 2;
 
     // The fish's strength. Its level less the angler's rank picks a rung of a ladder from 0 (a minnow) to 100 (hopeless), and
     // every rung adds a little pull, Stamina and aggression, so the chance of landing it falls smoothly with each level the fish
@@ -52,8 +53,8 @@ public static class LineRules
     public const int RungMaximum = 100;
     public const double PullPercentOfCapAtRung0 = 10;
     public const double PullPercentPerRung = 0.8;
-    public const double StaminaAtRung0 = 4;
-    public const double StaminaPerRung = 0.12;
+    public const double StaminaAtRung0 = 8;
+    public const double StaminaPerRung = 0.24;
     public const double TireWeightAtRung0 = 45;
     public const double TireWeightPerRung = 0.45;
     public const int TireWeightMinimum = 2;

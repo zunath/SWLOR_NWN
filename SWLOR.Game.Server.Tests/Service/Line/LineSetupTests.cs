@@ -16,13 +16,13 @@ public class LineSetupTests
 
         var setup = LineSetup.ForFish(25, FishRarity.Common, 25, 2);
 
-        // Cap 10 + 2 / 2 + 25 / 25; reel 3 + (2 + 2) / 6; start 2 + 2 x 3; escape 8 + 1 + 2 x 3; rung 42 gives a 43.6% pull of 12.
-        setup.TensionCap.Should().Be(12);
-        setup.ReelDistance.Should().Be(3);
-        setup.StartDistance.Should().Be(8);
-        setup.DistanceMax.Should().Be(15);
-        setup.Pull.Should().Be(5);
-        setup.Stamina.Should().Be(9);
+        // Cap 20 + 2 + 25 / 12; reel 6 + (2 + 2) / 6 x 2; start 4 + 2 x 6; escape 16 + 2 + 2 x 6; rung 42 gives a 43.6% pull of 24.
+        setup.TensionCap.Should().Be(24);
+        setup.ReelDistance.Should().Be(6);
+        setup.StartDistance.Should().Be(16);
+        setup.DistanceMax.Should().Be(30);
+        setup.Pull.Should().Be(10);
+        setup.Stamina.Should().Be(18);
         setup.Difficulty.Should().Be(0);
         setup.Pattern.Weight(null, FishMove.Tire).Should().Be(26, "the Tire weight on rung 42 is 45 less 0.45 per rung");
     }
@@ -63,10 +63,10 @@ public class LineSetupTests
         var bare = LineSetup.ForFish(0, FishRarity.Common, 0, 0);
         var best = LineSetup.ForFish(0, FishRarity.Common, 50, 4);
 
-        bare.TensionCap.Should().Be(10);
-        bare.ReelDistance.Should().Be(3);
-        best.TensionCap.Should().Be(10 + 2 + 2);
-        best.ReelDistance.Should().Be(4);
+        bare.TensionCap.Should().Be(20);
+        bare.ReelDistance.Should().Be(6);
+        best.TensionCap.Should().Be(20 + 4 + 4);
+        best.ReelDistance.Should().Be(8);
         LineSetup.BaseTensionCap(4, 0).Should().BeGreaterThan(LineSetup.BaseTensionCap(0, 0));
         LineSetup.BaseTensionCap(0, 50).Should().BeGreaterThan(LineSetup.BaseTensionCap(0, 0));
         LineSetup.BaseReelDistance(4, 20).Should().BeGreaterThan(LineSetup.BaseReelDistance(0, 0));
@@ -75,10 +75,10 @@ public class LineSetupTests
     [Test]
     public void AFartherReelHooksTheFishFartherOut_SoAFightTakesAboutAsManyReels()
     {
-        LineSetup.BaseStartDistance(3).Should().Be(8);
-        LineSetup.BaseDistanceMax(3).Should().Be(15);
-        LineSetup.BaseStartDistance(4).Should().Be(10);
-        LineSetup.BaseDistanceMax(4).Should().Be(19);
+        LineSetup.BaseStartDistance(6).Should().Be(16);
+        LineSetup.BaseDistanceMax(6).Should().Be(30);
+        LineSetup.BaseStartDistance(8).Should().Be(20);
+        LineSetup.BaseDistanceMax(8).Should().Be(38);
     }
 
     [Test]
@@ -121,6 +121,7 @@ public class LineSetupTests
                 ReelTensionBonus: 1,
                 GiveLineDistanceReduction: 1,
                 SetHookDrainBonus: 2,
+                HoldDrainBonus: 1,
                 ForecastDepth: 2));
 
         perked.TensionCap.Should().Be(plain.TensionCap + 2);
@@ -128,6 +129,7 @@ public class LineSetupTests
         perked.ReelTension.Should().Be(plain.ReelTension + 1);
         perked.GiveLineDistance.Should().Be(plain.GiveLineDistance - 1);
         perked.SetHookDrain.Should().Be(plain.SetHookDrain + 2);
+        perked.HoldDrain.Should().Be(plain.HoldDrain + 1);
         perked.ForecastDepth.Should().Be(2);
         plain.ForecastDepth.Should().Be(1);
         perked.Pull.Should().Be(plain.Pull);
@@ -180,7 +182,7 @@ public class LineSetupTests
         var hopeless = LineSetup.ForFish(80, FishRarity.Common, 25, 2);
 
         hopeless.Pull.Should().BeGreaterThan(hopeless.ReelTension + hopeless.TensionCap / 2);
-        hopeless.Stamina.Should().BeGreaterThan(14);
+        hopeless.Stamina.Should().BeGreaterThan(28);
         hopeless.Pattern.Weight(null, FishMove.Tire).Should().BeLessThan(10);
     }
 
@@ -191,6 +193,6 @@ public class LineSetupTests
         var setup = LineSetup.ForFish(35, FishRarity.Common, 35, FishingRodTier.Tier(FishingRodType.Yew));
 
         setup.RodTier.Should().Be(3);
-        setup.TensionCap.Should().Be(10 + 3 / 2 + 35 / 25);
+        setup.TensionCap.Should().Be(20 + 3 + 35 / 12);
     }
 }

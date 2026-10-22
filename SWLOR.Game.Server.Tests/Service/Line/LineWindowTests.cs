@@ -67,21 +67,21 @@ public class LineWindowTests
         var hold = LineActionText.Describe(engine, engine.Preview(LineActionIds.Hold));
         var hook = LineActionText.Describe(engine, engine.Preview(LineActionIds.SetHook));
 
-        reel.Summary.Should().Be("Distance 8 -> 5, Tension 0 -> 5");
-        give.Summary.Should().Be("Distance 8 -> 12");
-        hold.Summary.Should().Be("Distance 8 -> 9, Tension 0 -> 2, Stamina 8 -> 6");
-        hook.Summary.Should().Be("Tension 0 -> 1, Stamina 8 -> 5");
+        reel.Summary.Should().Be("Distance 16 -> 10, Tension 0 -> 10");
+        give.Summary.Should().Be("Distance 16 -> 24");
+        hold.Summary.Should().Be("Distance 16 -> 18, Tension 0 -> 4, Stamina 16 -> 12");
+        hook.Summary.Should().Be("Tension 0 -> 2, Stamina 16 -> 10");
         reel.Kind.Should().Be(LineActionKind.Normal);
         reel.Tooltip.Should().StartWith("Closes Distance and adds Tension");
-        reel.Tooltip.Should().Contain("reeling now adds 3 extra Tension");
+        reel.Tooltip.Should().Contain("reeling now adds 6 extra Tension");
     }
 
     [Test]
     public void TheActionThatLandsTheFish_SaysSo_AndTheOneThatSnapsTheLineSaysThat()
     {
-        var landing = Engine(Setup(start: 3, max: 8), FishMove.Tire);
+        var landing = Engine(Setup(start: 6, max: 16), FishMove.Tire);
         var snapping = Engine(Setup(cap: 4), FishMove.Run);
-        var escaping = Engine(Setup(start: 14, pull: 1), FishMove.Run);
+        var escaping = Engine(Setup(start: 29, pull: 1), FishMove.Run);
 
         var land = LineActionText.Describe(landing, landing.Preview(LineActionIds.Reel));
         var snap = LineActionText.Describe(snapping, snapping.Preview(LineActionIds.Reel));
@@ -112,10 +112,10 @@ public class LineWindowTests
     {
         var setup = Setup(pull: 3);
 
-        LineActionText.MoveHint(setup, FishMove.Run).Should().Contain("adds 4 extra Tension");
+        LineActionText.MoveHint(setup, FishMove.Run).Should().Contain("adds 5 extra Tension");
         LineActionText.MoveHint(setup, FishMove.Dive).Should().Contain("takes 3 Tension");
-        LineActionText.MoveHint(setup, FishMove.Thrash).Should().Contain("takes 4 Tension").And.Contain("only Hold");
-        LineActionText.MoveHint(setup, FishMove.Tire).Should().Contain("loses 1 Stamina");
+        LineActionText.MoveHint(setup, FishMove.Thrash).Should().Contain("takes 5 Tension").And.Contain("only Hold");
+        LineActionText.MoveHint(setup, FishMove.Tire).Should().Contain("loses 2 Stamina");
         LineActionText.ForecastText(new[] { FishMove.Run, FishMove.Thrash }).Should().Be("RUN, then THRASH");
         LineActionText.MeterText("Tension", 3, 10, "the line snaps at 10").Should().Be("Tension: 3 of 10 (the line snaps at 10)");
     }

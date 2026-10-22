@@ -5,7 +5,7 @@ using SWLOR.Game.Server.Service.FishingService;
 namespace SWLOR.Game.Server.Tests.Service.Line;
 
 /// <summary>
-/// A middling fight: a 10 Tension line, a 3 Distance reel, a fish hooked 8 out that escapes at 15, with 8 Stamina and a pull of 2.
+/// A middling fight: a 20 Tension line, a 6 Distance reel, a fish hooked 16 out that escapes at 30, with 16 Stamina and a pull of 4.
 /// The pinned numbers in the Line tests come from this setup.
 /// </summary>
 internal static class LineTestData
@@ -17,12 +17,12 @@ internal static class LineTestData
     public const int RollsTire = 80;
 
     public static LineSetup Setup(
-        int cap = 10,
-        int reel = 3,
-        int start = 8,
-        int max = 15,
-        int stamina = 8,
-        int pull = 2,
+        int cap = 20,
+        int reel = 6,
+        int start = 16,
+        int max = 30,
+        int stamina = 16,
+        int pull = 4,
         LineAnglerEffects effects = null,
         FishRarity rarity = FishRarity.Common) =>
         new(cap, reel, start, max, stamina, pull, LineMovePattern.For(rarity, 20), effects, 20, rarity, 20, 2);

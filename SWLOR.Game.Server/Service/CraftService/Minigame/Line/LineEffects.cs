@@ -71,7 +71,7 @@ public static class LineEffects
             {
                 var distance = 0;
                 var tension = LineRules.HoldTension;
-                var stamina = -LineRules.HoldDrain;
+                var stamina = -setup.HoldDrain;
                 switch (move)
                 {
                     case FishMove.Run:

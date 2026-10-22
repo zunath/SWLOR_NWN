@@ -23,11 +23,11 @@ public class LineEngineTests
         engine.Type.Should().Be(CraftMinigameType.Line);
         engine.Status.Should().Be(MinigameStatus.InProgress);
         engine.Ending.Should().Be(LineEnding.InProgress);
-        engine.Distance.Should().Be(8);
+        engine.Distance.Should().Be(16);
         engine.Tension.Should().Be(0);
-        engine.TensionCap.Should().Be(10);
-        engine.Stamina.Should().Be(8);
-        engine.StaminaMax.Should().Be(8);
+        engine.TensionCap.Should().Be(20);
+        engine.Stamina.Should().Be(16);
+        engine.StaminaMax.Should().Be(16);
         engine.Move.Should().Be(FishMove.Run);
         engine.Round.Should().Be(0);
         engine.Turn.Should().Be(0);
@@ -40,9 +40,9 @@ public class LineEngineTests
     {
         var engine = Engine(Setup(), FishMove.Run);
 
-        engine.Meters.Progress.Should().Be(new MinigameMeter(7, 15), "reeled in is the maximum Distance less the Distance");
-        engine.Meters.Quality.Should().Be(new MinigameMeter(0, 8), "worn down is the maximum Stamina less the Stamina");
-        engine.Meters.Integrity.Should().Be(new MinigameMeter(10, 10), "line strength is the Tension cap less the Tension");
+        engine.Meters.Progress.Should().Be(new MinigameMeter(14, 30), "reeled in is the maximum Distance less the Distance");
+        engine.Meters.Quality.Should().Be(new MinigameMeter(0, 16), "worn down is the maximum Stamina less the Stamina");
+        engine.Meters.Integrity.Should().Be(new MinigameMeter(20, 20), "line strength is the Tension cap less the Tension");
         engine.Meters.Cp.Should().Be(new MinigameMeter(0, 0), "the Line has no CP");
         engine.DescribeMeters().Select(meter => (meter.Id, meter.Label)).Should().Equal(
             (MinigameMeterIds.Progress, "Reeled in"),
@@ -62,23 +62,23 @@ public class LineEngineTests
         engine.Forecast.Should().Equal(FishMove.Thrash);
     }
 
-    // Pull 2, reel 3, reel Tension 2, give-line 2 Distance and 3 relief, hold 1 Tension and 2 drain, set hook 1 Tension and 3 drain.
-    [TestCase(LineActionIds.Reel, FishMove.Run, -3, 5, 0)]
-    [TestCase(LineActionIds.Reel, FishMove.Dive, -3, 4, 0)]
-    [TestCase(LineActionIds.Reel, FishMove.Thrash, -3, 5, 0)]
-    [TestCase(LineActionIds.Reel, FishMove.Tire, -4, 2, -1)]
-    [TestCase(LineActionIds.GiveLine, FishMove.Run, 4, -3, 0)]
-    [TestCase(LineActionIds.GiveLine, FishMove.Dive, 2, -2, 0)]
-    [TestCase(LineActionIds.GiveLine, FishMove.Thrash, 2, -1, 0)]
-    [TestCase(LineActionIds.GiveLine, FishMove.Tire, 2, -3, -1)]
-    [TestCase(LineActionIds.Hold, FishMove.Run, 1, 2, -2)]
-    [TestCase(LineActionIds.Hold, FishMove.Dive, 0, 3, -2)]
-    [TestCase(LineActionIds.Hold, FishMove.Thrash, 0, 1, -2)]
-    [TestCase(LineActionIds.Hold, FishMove.Tire, 0, 1, -3)]
-    [TestCase(LineActionIds.SetHook, FishMove.Run, 0, 1, -3)]
-    [TestCase(LineActionIds.SetHook, FishMove.Dive, 0, 1, -3)]
-    [TestCase(LineActionIds.SetHook, FishMove.Thrash, 0, 1, -3)]
-    [TestCase(LineActionIds.SetHook, FishMove.Tire, 0, 1, -3)]
+    // Pull 4, reel 6, reel Tension 4, give-line 4 Distance and 6 relief, hold 2 Tension and 4 drain, set hook 2 Tension and 6 drain.
+    [TestCase(LineActionIds.Reel, FishMove.Run, -6, 10, 0)]
+    [TestCase(LineActionIds.Reel, FishMove.Dive, -6, 8, 0)]
+    [TestCase(LineActionIds.Reel, FishMove.Thrash, -6, 10, 0)]
+    [TestCase(LineActionIds.Reel, FishMove.Tire, -8, 4, -2)]
+    [TestCase(LineActionIds.GiveLine, FishMove.Run, 8, -6, 0)]
+    [TestCase(LineActionIds.GiveLine, FishMove.Dive, 4, -4, 0)]
+    [TestCase(LineActionIds.GiveLine, FishMove.Thrash, 4, -3, 0)]
+    [TestCase(LineActionIds.GiveLine, FishMove.Tire, 4, -6, -2)]
+    [TestCase(LineActionIds.Hold, FishMove.Run, 2, 4, -4)]
+    [TestCase(LineActionIds.Hold, FishMove.Dive, 0, 6, -4)]
+    [TestCase(LineActionIds.Hold, FishMove.Thrash, 0, 2, -4)]
+    [TestCase(LineActionIds.Hold, FishMove.Tire, 0, 2, -6)]
+    [TestCase(LineActionIds.SetHook, FishMove.Run, 0, 2, -6)]
+    [TestCase(LineActionIds.SetHook, FishMove.Dive, 0, 2, -6)]
+    [TestCase(LineActionIds.SetHook, FishMove.Thrash, 0, 2, -6)]
+    [TestCase(LineActionIds.SetHook, FishMove.Tire, 0, 2, -6)]
     public void EveryActionAgainstEveryMove_HasTheExactEffectThePlanDescribes(
         string actionId, FishMove move, int distance, int tension, int stamina)
     {
@@ -139,9 +139,9 @@ public class LineEngineTests
         preview.Outcomes[0].ChancePercent.Should().Be(100);
         preview.Outcomes[0].Label.Should().Be("Reel against a Run");
         result.Outcome.Should().BeEquivalentTo(preview.Outcomes[0]);
-        engine.Distance.Should().Be(5);
-        engine.Tension.Should().Be(5);
-        engine.Stamina.Should().Be(8);
+        engine.Distance.Should().Be(10);
+        engine.Tension.Should().Be(10);
+        engine.Stamina.Should().Be(16);
         before.Zip(engine.DescribeMeters(), (b, a) => new MinigameMeterChange(a.Id, a.Label, b.Value, a.Value))
             .Should().BeEquivalentTo(result.Outcome.Changes);
     }
@@ -153,7 +153,7 @@ public class LineEngineTests
         {
             foreach (var actionId in AllActions)
             {
-                var engine = Engine(Setup(stamina: 12, cap: 30), move, FishMove.Tire);
+                var engine = Engine(Setup(stamina: 24, cap: 60), move, FishMove.Tire);
                 var promised = engine.Preview(actionId).Outcomes.Single();
 
                 var result = engine.Perform(actionId);
@@ -188,9 +188,9 @@ public class LineEngineTests
         var result = engine.Perform(LineActionIds.SetHook);
 
         result.Outcome.Label.Should().Be("Hook set");
-        engine.Stamina.Should().Be(5);
-        engine.Tension.Should().Be(1);
-        engine.Distance.Should().Be(8, "the Thrash never landed");
+        engine.Stamina.Should().Be(10);
+        engine.Tension.Should().Be(2);
+        engine.Distance.Should().Be(16, "the Thrash never landed");
         engine.Move.Should().Be(FishMove.Run, "the next move is announced");
     }
 
@@ -229,7 +229,7 @@ public class LineEngineTests
         random.Calls.Should().Be(1);
         engine.Move.Should().Be(FishMove.Dive);
         result.Outcome.Label.Should().Be("Reel against a Run", "the result answers the move announced before the click");
-        result.Outcome.Change(MinigameMeterIds.Integrity).After.Should().Be(10 - 5);
+        result.Outcome.Change(MinigameMeterIds.Integrity).After.Should().Be(20 - 10);
     }
 
     [Test]
@@ -303,7 +303,7 @@ public class LineEngineTests
     [Test]
     public void TensionAtItsCap_SnapsTheLine_AndTheFishIsLost()
     {
-        var engine = Engine(Setup(cap: 8), FishMove.Run, FishMove.Run);
+        var engine = Engine(Setup(cap: 16), FishMove.Run, FishMove.Run);
 
         engine.Perform(LineActionIds.Reel).Status.Should().Be(MinigameStatus.InProgress);
         var snapping = engine.Preview(LineActionIds.Reel);
@@ -314,7 +314,7 @@ public class LineEngineTests
 
         result.Status.Should().Be(MinigameStatus.Failed);
         engine.Ending.Should().Be(LineEnding.Snapped);
-        engine.Tension.Should().Be(8);
+        engine.Tension.Should().Be(16);
         engine.Distance.Should().BeGreaterThan(0);
     }
 
@@ -325,7 +325,7 @@ public class LineEngineTests
 
         engine.Perform(LineActionIds.GiveLine);
         engine.Perform(LineActionIds.GiveLine);
-        engine.Distance.Should().Be(15 - 1);
+        engine.Distance.Should().Be(26);
         var escaping = engine.Preview(LineActionIds.GiveLine);
         LineActionText.Ending(escaping.Outcomes[0]).Should().Be(LineActionText.FishEscapes);
 
@@ -333,18 +333,18 @@ public class LineEngineTests
 
         result.Status.Should().Be(MinigameStatus.Failed);
         engine.Ending.Should().Be(LineEnding.Escaped);
-        engine.Distance.Should().Be(15);
+        engine.Distance.Should().Be(30);
         engine.Tension.Should().Be(0);
     }
 
     [Test]
     public void ALandingReel_BeatsTheSnapItWouldCauseOnTheSameTurn()
     {
-        var engine = Engine(Setup(cap: 5, start: 3, max: 8), FishMove.Run);
+        var engine = Engine(Setup(cap: 10, start: 6, max: 16), FishMove.Run);
 
         var result = engine.Perform(LineActionIds.Reel);
 
-        engine.Tension.Should().Be(5, "a Reel against a Run adds 5 Tension, the whole cap");
+        engine.Tension.Should().Be(10, "a Reel against a Run adds 10 Tension, the whole cap");
         result.Status.Should().Be(MinigameStatus.Succeeded);
         engine.Ending.Should().Be(LineEnding.Landed);
     }
@@ -353,7 +353,7 @@ public class LineEngineTests
     public void AfterTheFightEnds_ActionsAreRefused_AndNoForecastIsRolled()
     {
         var random = new ScriptedMinigameRandom();
-        var engine = new LineEngine(random, Setup(cap: 5, start: 3, max: 8), FishMove.Run);
+        var engine = new LineEngine(random, Setup(cap: 10, start: 6, max: 16), FishMove.Run);
         engine.Perform(LineActionIds.Reel).Status.Should().Be(MinigameStatus.Succeeded);
         random.Calls.Should().Be(0, "no forecast is rolled once the fight has ended");
 
@@ -375,8 +375,8 @@ public class LineEngineTests
     [Test]
     public void WearingTheFishDown_ThenReelingAgainstItsRestsLandsItWithoutSnapping()
     {
-        // Set Hook, then Hold twice drains 3 + 2 + 2 of the 7 Stamina, and the exhausted fish only rests.
-        var engine = Engine(Setup(stamina: 7), FishMove.Run, FishMove.Thrash, FishMove.Dive);
+        // Set Hook, then Hold twice drains 6 + 4 + 4 of the 14 Stamina, and the exhausted fish only rests.
+        var engine = Engine(Setup(stamina: 14), FishMove.Run, FishMove.Thrash, FishMove.Dive);
 
         engine.Perform(LineActionIds.SetHook);
         engine.Perform(LineActionIds.Hold);
@@ -407,7 +407,7 @@ public class LineEngineTests
         original.Move.Should().Be(FishMove.Dive);
         original.Round.Should().Be(1);
         fork.Round.Should().Be(2);
-        original.Distance.Should().Be(12);
+        original.Distance.Should().Be(24);
     }
 
     [Test]

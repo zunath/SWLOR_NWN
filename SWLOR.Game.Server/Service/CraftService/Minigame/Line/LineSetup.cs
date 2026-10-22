@@ -56,6 +56,7 @@ public sealed class LineSetup
         ReelTension = LineRules.ReelTension + effects.ReelTensionBonus;
         GiveLineDistance = Math.Max(0, LineRules.GiveLineDistance - effects.GiveLineDistanceReduction);
         SetHookDrain = LineRules.SetHookDrain + effects.SetHookDrainBonus;
+        HoldDrain = LineRules.HoldDrain + effects.HoldDrainBonus;
         StartDistance = startDistance;
         DistanceMax = distanceMax;
         Stamina = stamina;
@@ -80,6 +81,9 @@ public sealed class LineSetup
 
     /// <summary>The Stamina Set Hook drains.</summary>
     public int SetHookDrain { get; }
+
+    /// <summary>The Stamina Hold drains.</summary>
+    public int HoldDrain { get; }
 
     public int StartDistance { get; }
 
@@ -112,11 +116,11 @@ public sealed class LineSetup
 
     /// <summary>The Tension cap before perks, from the rod tier and the Agriculture rank.</summary>
     public static int BaseTensionCap(int rodTier, int rank) =>
-        LineRules.TensionCapBase + rodTier / LineRules.RodTiersPerTensionCapPoint + rank / LineRules.RanksPerTensionCapPoint;
+        LineRules.TensionCapBase + rodTier * LineRules.TensionCapPerRodTier + rank / LineRules.RanksPerTensionCapPoint;
 
     /// <summary>The Distance a Reel closes before perks, from the rod tier and the Agriculture rank.</summary>
     public static int BaseReelDistance(int rodTier, int rank) =>
-        LineRules.ReelDistanceBase + (rodTier + rank / LineRules.RanksPerPower) / LineRules.PowerPerReelDistancePoint;
+        LineRules.ReelDistanceBase + (rodTier + rank / LineRules.RanksPerPower) / LineRules.PowerPerReelDistanceStep * LineRules.ReelDistancePerStep;
 
     /// <summary>The Distance the fish is hooked at: farther for an angler who reels farther, so a fight takes about as many reels.</summary>
     public static int BaseStartDistance(int reelDistance) =>

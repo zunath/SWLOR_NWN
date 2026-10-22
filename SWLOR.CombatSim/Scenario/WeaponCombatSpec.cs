@@ -30,7 +30,7 @@ public sealed class WeaponCombatSpec
             WeaponDamage is < 0 or > 10000 || WeaponSkillRank is < 0 or > 100 || WeaponRequiredSkillRank is < 0 or > 100 || WeaponDelayUnits is < 1 or > 10000 ||
             Attack is < 1 or > 10000 || Accuracy is < 0 or > 10000 || Defense is < 1 or > 10000 || Evasion is < 0 or > 10000 ||
             Might is < 0 or > 255 || Perception is < 0 or > 255 || Vitality is < 0 or > 255 || ExternalHastePercent is < -50 or > 50 ||
-            MindResistance is < -100 or > 100 || MobilityResistance is < -100 or > 100 || TraumaResistance is < -100 or > 100 || Stance is not ("None" or "Flow" or "Bruiser" or "Berserker" or "Scrapper"))
+            MindResistance is < -100 or > 100 || MobilityResistance is < -100 or > 100 || TraumaResistance is < -100 or > 100 || Stance is not ("None" or "Flow" or "Bruiser" or "Berserker" or "Scrapper" or "Crusher"))
             throw new InvalidDataException("WeaponCombat has unsupported calibration values or stance.");
     }
 }

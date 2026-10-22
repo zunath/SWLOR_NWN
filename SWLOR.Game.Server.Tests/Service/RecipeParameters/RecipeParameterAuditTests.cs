@@ -139,6 +139,19 @@ public class RecipeParameterAuditTests
     }
 
     [Test]
+    public void FindInvalidDerivations_FlagsAnOverrideOnADerivedRecipe()
+    {
+        var derived = new Dictionary<RecipeType, RecipeType> { [RecipeType.SpiritmasterTunic] = RecipeType.BattlemasterBreastplate };
+        var overrides = new RecipeParameterOverrides().ForRecipe(RecipeType.SpiritmasterTunic, "ignored", ("center", 40));
+        var profile = new ConfigurableTestProfile(
+            _ => ConfigurableTestProfile.FlatBase(), parameters => 0, _ => new DifficultyBudget(0, 1), overrides, derived: derived);
+
+        var problems = RecipeParameterAudit.FindInvalidDerivations(profile, TestRecipeRegistry.Create(_profile));
+
+        Assert.That(problems, Is.EqualTo(new[] { "SpiritmasterTunic is derived, so its own override has no effect; override BattlemasterBreastplate instead" }));
+    }
+
+    [Test]
     public void FindOutOfBudget_FlagsParametersTooHardForTheirLevel()
     {
         var recipes = TestRecipeRegistry.Create(_profile);

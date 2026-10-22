@@ -12,7 +12,7 @@ A minigame workstream adds these pieces, in this order.
    - `BaseValues`: the value of every definition from the recipe's category, level and components.
    - `Create`, `MeasureDifficulty` and `BudgetFor(level)`: the difficulty the parameters add up to, and the range allowed at that recipe level.
    - Optional: `Overrides` (`ForCategory` / `ForRecipe`, each with a reason that goes to the Bible), `AppliesTo` (default: active recipes of the skill), `DerivedRecipes`.
-4. **Generate the values.** The seed of each value is a stable hash of the profile key, the `RecipeType` name and the parameter name (never `string.GetHashCode`), so reruns give the same values, and the first variation draw that fits the level's budget wins.
+4. **Generate the values.** The seed of each value is a stable hash of the profile key, the `RecipeType` name and the parameter name (never `string.GetHashCode`), so reruns give the same values, and the first variation draw that fits the level's budget wins. Renaming a `RecipeType` member changes its draw, so regenerate and review the diff, or record an override to keep the old value.
 
    ```powershell
    dotnet run --project tools/SWLOR.RecipeParameters -p:RunPostBuildEvent=Never -- write Forge

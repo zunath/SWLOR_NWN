@@ -169,7 +169,7 @@ namespace SWLOR.Game.Server.Service.CraftService.RecipeParameters
             return problems;
         }
 
-        /// <summary>Derived recipes that name a missing, uncovered or itself derived source.</summary>
+        /// <summary>Derived recipes that name an uncovered or itself derived source, or carry an override of their own.</summary>
         public static IReadOnlyList<string> FindInvalidDerivations(
             IRecipeParameterProfile profile,
             IReadOnlyDictionary<RecipeType, RecipeDetail> recipes)
@@ -183,6 +183,8 @@ namespace SWLOR.Game.Server.Service.CraftService.RecipeParameters
                     problems.Add($"{derived} is derived from {source}, which the profile does not cover");
                 else if (profile.DerivedRecipes.ContainsKey(source))
                     problems.Add($"{derived} is derived from {source}, which is itself derived");
+                else if (profile.Overrides.Recipes.ContainsKey(derived))
+                    problems.Add($"{derived} is derived, so its own override has no effect; override {source} instead");
             }
 
             return problems;

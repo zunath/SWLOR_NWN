@@ -175,6 +175,16 @@ namespace SWLOR.Game.Server.Service.CraftService
         }
 
         /// <summary>
+        /// Sets the Reaction minigame parameters of an Espionage recipe.
+        /// </summary>
+        /// <param name="cyclePattern">How the cycle shares its turns between the phases.</param>
+        /// <param name="cycleLength">The turns in one full cycle.</param>
+        /// <param name="peakIntensity">How violent the Peak is.</param>
+        /// <returns>A recipe builder with the configured options</returns>
+        public RecipeBuilder ReactionParameters(ReactionCyclePattern cyclePattern, int cycleLength, int peakIntensity) =>
+            MinigameParameters(new ReactionParameters(cyclePattern, cycleLength, peakIntensity));
+
+        /// <summary>
         /// Sets the minigame parameters of the recipe. Each minigame's builder method calls this with
         /// its own parameter type. A null value leaves the recipe without parameters, and a second
         /// call with the same parameter type replaces the first.

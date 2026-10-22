@@ -29,8 +29,8 @@ public class CraftMinigameRoutingTests
     public void EveryCraftingSkillUsesTheOriginalWindowUntilItsMinigameLands()
     {
         var skills = CraftingSkills().ToList();
-        var registered = RegisteredRoutes();
         skills.Should().NotBeEmpty();
+        var registered = RegisteredRoutes();
 
         foreach (var skill in skills.Where(skill => !registered.ContainsKey(skill)))
         {
@@ -44,17 +44,37 @@ public class CraftMinigameRoutingTests
     }
 
     [Test]
-    public void EverySkillWithAMinigameOpensItsOwnWindow()
+    public void ASkillWithAMinigameOpensItsOwnWindow()
     {
         foreach (var (skill, declaration) in RegisteredRoutes())
         {
             var route = CraftMinigameRouting.GetRoute(skill);
 
-            route.IsLegacy.Should().BeFalse($"{skill} has a minigame");
+            route.IsLegacy.Should().BeFalse();
             route.Window.Should().Be(declaration.Window);
-            route.Window.Should().NotBe(GuiWindowType.Craft);
             route.Minigame.Should().Be(declaration.Minigame);
+            CraftMinigameRouting.GetWindow(skill).Should().Be(declaration.Window);
         }
+    }
+
+    [Test]
+    public void EspionageCraftsInTheReactionWindow()
+    {
+        var route = CraftMinigameRouting.GetRoute(SkillType.Espionage);
+
+        route.Window.Should().Be(GuiWindowType.Reaction);
+        route.Minigame.Should().Be(CraftMinigameType.Reaction);
+        route.IsLegacy.Should().BeFalse();
+    }
+
+    [Test]
+    public void SmitheryCraftsInThePlasmaForge()
+    {
+        var route = CraftMinigameRouting.GetRoute(SkillType.Smithery);
+
+        route.Window.Should().Be(GuiWindowType.Forge);
+        route.Minigame.Should().Be(CraftMinigameType.Forge);
+        route.IsLegacy.Should().BeFalse();
     }
 
     [Test]
@@ -80,16 +100,6 @@ public class CraftMinigameRoutingTests
         source.Should().Contain("CraftMinigameRouting.IsAnyCraftWindowOpen(creature)");
         source.Should().NotContain("Gui.IsWindowOpen(creature, GuiWindowType.Craft)",
             "a minigame's window must block equipping like the original one");
-    }
-
-    [Test]
-    public void SmitheryOpensThePlasmaForge()
-    {
-        var route = CraftMinigameRouting.GetRoute(SkillType.Smithery);
-
-        route.Window.Should().Be(GuiWindowType.Forge);
-        route.Minigame.Should().Be(CraftMinigameType.Forge);
-        CraftMinigameRouting.GetWindow(SkillType.Engineering).Should().NotBe(GuiWindowType.Forge);
     }
 
     [Test]

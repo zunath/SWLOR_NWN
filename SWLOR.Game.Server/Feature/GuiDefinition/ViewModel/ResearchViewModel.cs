@@ -8,7 +8,6 @@ using SWLOR.Game.Server.Service.CombatService;
 using SWLOR.Game.Server.Service.CraftService;
 using SWLOR.Game.Server.Service.DBService;
 using SWLOR.Game.Server.Service.GuiService;
-using SWLOR.Game.Server.Service.PerkService;
 using SWLOR.NWN.API.Engine;
 using SWLOR.NWN.API.NWNX;
 using SWLOR.NWN.API.NWScript.Enum.Item;
@@ -33,7 +32,7 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
             public List<ItemProperty> GuaranteedBonuses { get; set; }
             public int CreditCost { get; set; }
             public int TimeCost { get; set; }
-            public int RequiredPerkLevel { get; set; }
+            public int RequiredResearchTier { get; set; }
 
             public string TimeString
             {
@@ -149,13 +148,13 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
             var recipe = Craft.GetRecipe(recipeType);
             var blueprint = Craft.GetBlueprintDetails(blueprintItem);
             var currentLevel = blueprint.Level <= 0 ? 0 : blueprint.Level;
-            var licensedRunsMinimum = 1 + Perk.GetPerkLevel(Player, PerkType.ScientificNetworking);
+            var licensedRunsMinimum = 1 + CraftRankMilestones.GetBlueprintLicensedRunBonus(Player);
             var licensedRunsMaximum = licensedRunsMinimum + 2;
             var creditCost = Craft.CalculateBlueprintResearchCreditCost(_recipeType, currentLevel + 1, blueprint.CreditReduction);
             var timeCost = Craft.CalculateBlueprintResearchSeconds(_recipeType, currentLevel + 1, blueprint.TimeReduction);
-            var perkLevel = recipe.Level / 10 + 1;
-            if (perkLevel > 5)
-                perkLevel = 5;
+            var researchTier = recipe.Level / 10 + 1;
+            if (researchTier > 5)
+                researchTier = 5;
 
             return new ResearchJobDetails
             {
@@ -172,7 +171,7 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
                 GuaranteedBonuses = blueprint.GuaranteedBonuses,
                 CreditCost = creditCost,
                 TimeCost = timeCost,
-                RequiredPerkLevel = perkLevel
+                RequiredResearchTier = researchTier
             };
         }
 
@@ -285,9 +284,9 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
                 return "Not enough credits!";
             }
 
-            if (Perk.GetPerkLevel(Player, PerkType.Research) < researchJob.RequiredPerkLevel)
+            if (CraftRankMilestones.GetResearchTier(Player) < researchJob.RequiredResearchTier)
             {
-                return $"Research level {researchJob.RequiredPerkLevel} required.";
+                return $"Fabrication rank {CraftRankMilestones.RequiredFabricationRankForResearchTier(researchJob.RequiredResearchTier)} is required to research this recipe.";
             }
 
             if (researchJob.CurrentLevel >= Craft.MaxResearchLevel)
@@ -309,7 +308,7 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
             }
 
             var playerId = GetObjectUUID(Player);
-            var maxConcurrentJobs = Perk.GetPerkLevel(Player, PerkType.ResearchProjects) + 1;
+            var maxConcurrentJobs = CraftRankMilestones.GetMaxConcurrentResearchJobs(Player);
             var dbQuery = new DBQuery<ResearchJob>()
                 .AddFieldSearch(nameof(ResearchJob.PlayerId), playerId, false);
             var currentJobs = DB.Search(dbQuery).ToList();
@@ -552,8 +551,8 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
 
             if (isNewBlueprint)
             {
-                var scientificNetworking = Perk.GetPerkLevel(Player, PerkType.ScientificNetworking);
-                blueprintDetails.LicensedRuns = Random.D3(1) + scientificNetworking;
+                var licensedRunBonus = CraftRankMilestones.GetBlueprintLicensedRunBonus(Player);
+                blueprintDetails.LicensedRuns = Random.D3(1) + licensedRunBonus;
                 blueprintDetails.Recipe = dbJob.Recipe;
             }
 

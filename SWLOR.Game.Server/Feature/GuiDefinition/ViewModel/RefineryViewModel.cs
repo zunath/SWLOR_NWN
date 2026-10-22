@@ -1,9 +1,9 @@
 using System.Collections.Generic;
 using System.Linq;
 using SWLOR.Game.Server.Service;
+using SWLOR.Game.Server.Service.CraftService;
 using SWLOR.Game.Server.Service.GuiService;
 using SWLOR.Game.Server.Service.GuiService.Component;
-using SWLOR.Game.Server.Service.PerkService;
 using SWLOR.Game.Server.Service.SkillService;
 using SWLOR.NWN.API.NWNX;
 using SWLOR.NWN.API.NWScript.Enum;
@@ -166,7 +166,7 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
 
         private void CalculateCoresRequired()
         {
-            var refineryManagement = Perk.GetPerkLevel(Player, PerkType.RefineryManagement);
+            var refineryManagement = CraftRankMilestones.GetRefineryManagementLevel(Player);
             var itemsPerCore = BaseItemsRefinedPerCore + refineryManagement;
             _powerCoresRequired = (int)Math.Ceiling(ItemCount / (float)itemsPerCore);
 
@@ -217,11 +217,11 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
                     return false;
                 }
 
-                // Player doesn't have prerequisite level.
-                var perkLevel = Perk.GetPerkLevel(Player, PerkType.Refining);
-                if (perkLevel < _ores[resref].RequiredLevel)
+                // Player doesn't have prerequisite Gathering rank.
+                var refiningTier = CraftRankMilestones.GetRefiningTier(Player);
+                if (refiningTier < _ores[resref].RequiredLevel)
                 {
-                    SendMessageToPC(Player, $"Your Refining perk level must be at least {_ores[resref].RequiredLevel} to refine that item.");
+                    SendMessageToPC(Player, $"Your Gathering rank must be at least {CraftRankMilestones.RequiredRankForTier(_ores[resref].RequiredLevel)} to refine that item.");
                     return false;
                 }
 

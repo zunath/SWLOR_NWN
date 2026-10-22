@@ -27,7 +27,8 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.SmitheryRecipeDefinition
                 .EnhancementSlots(RecipeEnhancementType.Armor, 1)
                 .Component("lth_ruined", 4)
                 .Component("fiberp_ruined", 2)
-                .Component("oldscar_troph", 1);
+                .Component("oldscar_troph", 1)
+                .ForgeParameters(rangeCenter: 41, rangeWidth: 59, coolingRate: 1, startingThermal: 58, shapeShare: 57);
 
             // Fanghide Wraps
             _builder.Create(RecipeType.FanghideWraps, SkillType.Smithery)
@@ -39,7 +40,8 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.SmitheryRecipeDefinition
                 .EnhancementSlots(RecipeEnhancementType.Armor, 1)
                 .Component("lth_ruined", 2)
                 .Component("fiberp_ruined", 1)
-                .Component("oldscar_troph", 1);
+                .Component("oldscar_troph", 1)
+                .ForgeParameters(rangeCenter: 37, rangeWidth: 60, coolingRate: 1, startingThermal: 56, shapeShare: 53);
 
             // Fanghide Treads
             _builder.Create(RecipeType.FanghideTreads, SkillType.Smithery)
@@ -51,7 +53,8 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.SmitheryRecipeDefinition
                 .EnhancementSlots(RecipeEnhancementType.Armor, 1)
                 .Component("lth_ruined", 2)
                 .Component("fiberp_ruined", 1)
-                .Component("oldscar_troph", 1);
+                .Component("oldscar_troph", 1)
+                .ForgeParameters(rangeCenter: 34, rangeWidth: 59, coolingRate: 2, startingThermal: 59, shapeShare: 58);
 
             // Fanghide Sash
             _builder.Create(RecipeType.FanghideSash, SkillType.Smithery)
@@ -63,7 +66,8 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.SmitheryRecipeDefinition
                 .EnhancementSlots(RecipeEnhancementType.Armor, 1)
                 .Component("lth_ruined", 2)
                 .Component("fiberp_ruined", 1)
-                .Component("oldscar_troph", 1);
+                .Component("oldscar_troph", 1)
+                .ForgeParameters(rangeCenter: 40, rangeWidth: 59, coolingRate: 2, startingThermal: 59, shapeShare: 50);
 
             // Fanghide Mantle
             _builder.Create(RecipeType.FanghideMantle, SkillType.Smithery)
@@ -75,7 +79,8 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.SmitheryRecipeDefinition
                 .EnhancementSlots(RecipeEnhancementType.Armor, 1)
                 .Component("lth_ruined", 2)
                 .Component("fiberp_ruined", 1)
-                .Component("oldscar_troph", 1);
+                .Component("oldscar_troph", 1)
+                .ForgeParameters(rangeCenter: 35, rangeWidth: 60, coolingRate: 3, startingThermal: 61, shapeShare: 49);
 
             // Fanghide Collar
             _builder.Create(RecipeType.FanghideCollar, SkillType.Smithery)
@@ -87,7 +92,8 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.SmitheryRecipeDefinition
                 .EnhancementSlots(RecipeEnhancementType.Armor, 1)
                 .Component("lth_ruined", 2)
                 .Component("fiberp_ruined", 1)
-                .Component("oldscar_troph", 1);
+                .Component("oldscar_troph", 1)
+                .ForgeParameters(rangeCenter: 37, rangeWidth: 57, coolingRate: 1, startingThermal: 57, shapeShare: 46);
 
             // Fanghide Band
             _builder.Create(RecipeType.FanghideBand, SkillType.Smithery)
@@ -99,7 +105,8 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.SmitheryRecipeDefinition
                 .EnhancementSlots(RecipeEnhancementType.Armor, 1)
                 .Component("lth_ruined", 2)
                 .Component("fiberp_ruined", 1)
-                .Component("oldscar_troph", 1);
+                .Component("oldscar_troph", 1)
+                .ForgeParameters(rangeCenter: 35, rangeWidth: 60, coolingRate: 2, startingThermal: 57, shapeShare: 44);
 
             // Fanghide Guard
             _builder.Create(RecipeType.FanghideGuard, SkillType.Smithery)
@@ -111,7 +118,8 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.SmitheryRecipeDefinition
                 .EnhancementSlots(RecipeEnhancementType.Armor, 1)
                 .Component("lth_ruined", 2)
                 .Component("fiberp_ruined", 1)
-                .Component("oldscar_troph", 1);
+                .Component("oldscar_troph", 1)
+                .ForgeParameters(rangeCenter: 41, rangeWidth: 60, coolingRate: 3, startingThermal: 55, shapeShare: 55);
 
             // Fanghide Visor
             _builder.Create(RecipeType.FanghideVisor, SkillType.Smithery)
@@ -123,7 +131,8 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.SmitheryRecipeDefinition
                 .EnhancementSlots(RecipeEnhancementType.Armor, 1)
                 .Component("lth_ruined", 3)
                 .Component("fiberp_ruined", 2)
-                .Component("oldscar_troph", 1);
+                .Component("oldscar_troph", 1)
+                .ForgeParameters(rangeCenter: 33, rangeWidth: 60, coolingRate: 2, startingThermal: 57, shapeShare: 53);
 
             // Fanghide Charm
             _builder.Create(RecipeType.FanghideCharm, SkillType.Smithery)
@@ -135,7 +144,8 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.SmitheryRecipeDefinition
                 .EnhancementSlots(RecipeEnhancementType.Armor, 1)
                 .Component("lth_ruined", 2)
                 .Component("fiberp_ruined", 1)
-                .Component("oldscar_troph", 1);
+                .Component("oldscar_troph", 1)
+                .ForgeParameters(rangeCenter: 37, rangeWidth: 59, coolingRate: 3, startingThermal: 55, shapeShare: 42);
 
             // Fangmarked Band
             _builder.Create(RecipeType.FangmarkedBand, SkillType.Smithery)
@@ -147,7 +157,8 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.SmitheryRecipeDefinition
                 .EnhancementSlots(RecipeEnhancementType.Armor, 1)
                 .Component("lth_ruined", 2)
                 .Component("fiberp_ruined", 1)
-                .Component("oldscar_troph", 1);
+                .Component("oldscar_troph", 1)
+                .ForgeParameters(rangeCenter: 39, rangeWidth: 60, coolingRate: 1, startingThermal: 59, shapeShare: 46);
 
             // Fanghide Binding
             _builder.Create(RecipeType.FanghideBinding, SkillType.Smithery)
@@ -159,7 +170,8 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.SmitheryRecipeDefinition
                 .EnhancementSlots(RecipeEnhancementType.Armor, 1)
                 .Component("lth_ruined", 2)
                 .Component("fiberp_ruined", 1)
-                .Component("oldscar_troph", 1);
+                .Component("oldscar_troph", 1)
+                .ForgeParameters(rangeCenter: 40, rangeWidth: 57, coolingRate: 2, startingThermal: 59, shapeShare: 52);
         }
     }
 }

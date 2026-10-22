@@ -139,7 +139,7 @@ public class KillRatsQuestDefinition : IQuestListDefinition
 **Location**: `Feature/PerkDefinition/`
 
 **Categories**:
-- **EngineeringPerkDefinition.cs** - Droid assembly perks
+- **ArmorPerkDefinition.cs** - General perks (Armor requirements)
 - **Weapon and skill perk definitions** - Combat, utility, crafting, and companion perk trees
 - **BeastBalancedPerkDefinition.cs** - Beast companion perks
 

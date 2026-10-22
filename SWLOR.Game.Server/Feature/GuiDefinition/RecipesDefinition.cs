@@ -175,6 +175,43 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition
                                     .BindOnClicked(model => model.OnClickCraftOrResearch());
                                 row2.AddSpacer();
                             });
+
+                            col2.AddRow(row2 =>
+                            {
+                                row2.AddSpacer();
+                                row2.AddComboBox()
+                                    .BindSelectedIndex(model => model.QuickCraftCount)
+                                    .BindIsVisible(model => model.IsQuickCraftVisible)
+                                    .BindIsEnabled(model => model.IsQuickCraftEnabled)
+                                    .AddOption("x1", 1)
+                                    .AddOption("x2", 2)
+                                    .AddOption("x3", 3)
+                                    .AddOption("x4", 4)
+                                    .AddOption("x5", 5)
+                                    .AddOption("x6", 6)
+                                    .AddOption("x7", 7)
+                                    .AddOption("x8", 8)
+                                    .AddOption("x9", 9)
+                                    .AddOption("x10", 10)
+                                    .SetWidth(80f);
+                                row2.AddButton()
+                                    .BindText(model => model.QuickCraftButtonText)
+                                    .BindIsVisible(model => model.IsQuickCraftVisible)
+                                    .BindIsEnabled(model => model.IsQuickCraftEnabled)
+                                    .SetHeight(35f)
+                                    .BindOnClicked(model => model.OnClickQuickCraft());
+                                row2.AddSpacer();
+                            });
+
+                            col2.AddRow(row2 =>
+                            {
+                                row2.SetHeight(48f);
+                                row2.AddText()
+                                    .BindText(model => model.QuickCraftStatus)
+                                    .BindIsVisible(model => model.IsQuickCraftVisible)
+                                    .SetShowBorder(false)
+                                    .SetScrollbars(NuiScrollbars.None);
+                            });
                         });
                     });
 

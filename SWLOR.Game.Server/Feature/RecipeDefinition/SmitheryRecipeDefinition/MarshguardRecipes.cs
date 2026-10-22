@@ -27,7 +27,8 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.SmitheryRecipeDefinition
                 .EnhancementSlots(RecipeEnhancementType.Armor, 1)
                 .Component("lth_flawed", 4)
                 .Component("fiberp_flawed", 2)
-                .Component("rc_vine", 1);
+                .Component("rc_vine", 1)
+                .ForgeParameters(rangeCenter: 39, rangeWidth: 53, coolingRate: 3, startingThermal: 54, shapeShare: 58);
 
             // Marshguard Wraps
             _builder.Create(RecipeType.MarshguardWraps, SkillType.Smithery)
@@ -39,7 +40,8 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.SmitheryRecipeDefinition
                 .EnhancementSlots(RecipeEnhancementType.Armor, 1)
                 .Component("lth_flawed", 2)
                 .Component("fiberp_flawed", 1)
-                .Component("rc_vine", 1);
+                .Component("rc_vine", 1)
+                .ForgeParameters(rangeCenter: 36, rangeWidth: 57, coolingRate: 2, startingThermal: 52, shapeShare: 59);
 
             // Marshguard Treads
             _builder.Create(RecipeType.MarshguardTreads, SkillType.Smithery)
@@ -51,7 +53,8 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.SmitheryRecipeDefinition
                 .EnhancementSlots(RecipeEnhancementType.Armor, 1)
                 .Component("lth_flawed", 2)
                 .Component("fiberp_flawed", 1)
-                .Component("rc_vine", 1);
+                .Component("rc_vine", 1)
+                .ForgeParameters(rangeCenter: 38, rangeWidth: 55, coolingRate: 2, startingThermal: 50, shapeShare: 59);
 
             // Marshguard Sash
             _builder.Create(RecipeType.MarshguardSash, SkillType.Smithery)
@@ -63,7 +66,8 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.SmitheryRecipeDefinition
                 .EnhancementSlots(RecipeEnhancementType.Armor, 1)
                 .Component("lth_flawed", 2)
                 .Component("fiberp_flawed", 1)
-                .Component("rc_vine", 1);
+                .Component("rc_vine", 1)
+                .ForgeParameters(rangeCenter: 43, rangeWidth: 55, coolingRate: 2, startingThermal: 56, shapeShare: 51);
 
             // Marshguard Mantle
             _builder.Create(RecipeType.MarshguardMantle, SkillType.Smithery)
@@ -75,7 +79,8 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.SmitheryRecipeDefinition
                 .EnhancementSlots(RecipeEnhancementType.Armor, 1)
                 .Component("lth_flawed", 2)
                 .Component("fiberp_flawed", 1)
-                .Component("rc_vine", 1);
+                .Component("rc_vine", 1)
+                .ForgeParameters(rangeCenter: 41, rangeWidth: 57, coolingRate: 3, startingThermal: 50, shapeShare: 53);
 
             // Marshguard Gorget
             _builder.Create(RecipeType.MarshguardGorget, SkillType.Smithery)
@@ -87,7 +92,8 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.SmitheryRecipeDefinition
                 .EnhancementSlots(RecipeEnhancementType.Armor, 1)
                 .Component("lth_flawed", 2)
                 .Component("fiberp_flawed", 1)
-                .Component("rc_vine", 1);
+                .Component("rc_vine", 1)
+                .ForgeParameters(rangeCenter: 43, rangeWidth: 53, coolingRate: 3, startingThermal: 51, shapeShare: 42);
 
             // Marshguard Band
             _builder.Create(RecipeType.MarshguardBand, SkillType.Smithery)
@@ -99,7 +105,8 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.SmitheryRecipeDefinition
                 .EnhancementSlots(RecipeEnhancementType.Armor, 1)
                 .Component("lth_flawed", 2)
                 .Component("fiberp_flawed", 1)
-                .Component("rc_vine", 1);
+                .Component("rc_vine", 1)
+                .ForgeParameters(rangeCenter: 37, rangeWidth: 58, coolingRate: 2, startingThermal: 53, shapeShare: 43);
 
             // Marshguard Guard
             _builder.Create(RecipeType.MarshguardGuard, SkillType.Smithery)
@@ -111,7 +118,8 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.SmitheryRecipeDefinition
                 .EnhancementSlots(RecipeEnhancementType.Armor, 1)
                 .Component("lth_flawed", 2)
                 .Component("fiberp_flawed", 1)
-                .Component("rc_vine", 1);
+                .Component("rc_vine", 1)
+                .ForgeParameters(rangeCenter: 37, rangeWidth: 56, coolingRate: 2, startingThermal: 53, shapeShare: 57);
 
             // Marshguard Visor
             _builder.Create(RecipeType.MarshguardVisor, SkillType.Smithery)
@@ -123,7 +131,8 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.SmitheryRecipeDefinition
                 .EnhancementSlots(RecipeEnhancementType.Armor, 1)
                 .Component("lth_flawed", 3)
                 .Component("fiberp_flawed", 2)
-                .Component("rc_vine", 1);
+                .Component("rc_vine", 1)
+                .ForgeParameters(rangeCenter: 39, rangeWidth: 53, coolingRate: 4, startingThermal: 54, shapeShare: 57);
 
             // Marshguard Charm
             _builder.Create(RecipeType.MarshguardCharm, SkillType.Smithery)
@@ -135,7 +144,8 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.SmitheryRecipeDefinition
                 .EnhancementSlots(RecipeEnhancementType.Armor, 1)
                 .Component("lth_flawed", 2)
                 .Component("fiberp_flawed", 1)
-                .Component("rc_vine", 1);
+                .Component("rc_vine", 1)
+                .ForgeParameters(rangeCenter: 41, rangeWidth: 54, coolingRate: 3, startingThermal: 52, shapeShare: 43);
         }
     }
 }

@@ -36,6 +36,8 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.TwinPistol
 
             if (spec.MomentumPowerPerCharge > 0)
                 builder.HasWeaponAbilityFlowDamagePerCharge(spec.MomentumPowerPerCharge);
+            if (!spec.SpendsMomentum)
+                builder.KeepsWeaponAbilityFlow();
 
             if (spec.VolleyCount > 1)
                 builder.IsChanneledAbility(TwinPistolAbility.InterruptChannel, suppressAutoAttacks: true)

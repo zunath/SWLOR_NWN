@@ -141,7 +141,7 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
             foreach (var (_, task) in currentTasks)
             {
                 if (dbPlayer.Quests.ContainsKey(task.QuestId) &&
-                    dbPlayer.Quests[task.QuestId].DateLastCompleted >= Guild.DateTasksLoaded)
+                    Guild.IsCompletedTaskHidden(task.GuildType, dbPlayer.Quests[task.QuestId].DateLastCompleted, Guild.DateTasksLoaded))
                     continue;
 
                 var playerRank = dbPlayer.Guilds.ContainsKey(task.GuildType)

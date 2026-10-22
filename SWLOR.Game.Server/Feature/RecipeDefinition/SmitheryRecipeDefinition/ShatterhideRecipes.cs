@@ -41,7 +41,7 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.SmitheryRecipeDefinition
                 .Component("lth_high", 2)
                 .Component("fiberp_good", 1)
                 .Component("sh_chitin", 1)
-                .ForgeParameters(rangeCenter: 39, rangeWidth: 58, coolingRate: 2, startingThermal: 49, shapeShare: 53);
+                .ForgeParameters(rangeCenter: 40, rangeWidth: 56, coolingRate: 2, startingThermal: 48, shapeShare: 56);
 
             // Shatterhide Treads
             _builder.Create(RecipeType.ShatterhideTreads, SkillType.Smithery)
@@ -80,7 +80,7 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.SmitheryRecipeDefinition
                 .Component("lth_high", 2)
                 .Component("fiberp_good", 1)
                 .Component("sh_chitin", 1)
-                .ForgeParameters(rangeCenter: 37, rangeWidth: 52, coolingRate: 5, startingThermal: 44, shapeShare: 49);
+                .ForgeParameters(rangeCenter: 37, rangeWidth: 52, coolingRate: 4, startingThermal: 44, shapeShare: 49);
 
             // Shatterhide Gorget
             _builder.Create(RecipeType.ShatterhideGorget, SkillType.Smithery)
@@ -119,7 +119,7 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.SmitheryRecipeDefinition
                 .Component("lth_high", 2)
                 .Component("fiberp_good", 1)
                 .Component("sh_chitin", 1)
-                .ForgeParameters(rangeCenter: 43, rangeWidth: 54, coolingRate: 5, startingThermal: 48, shapeShare: 58);
+                .ForgeParameters(rangeCenter: 43, rangeWidth: 54, coolingRate: 4, startingThermal: 48, shapeShare: 58);
 
             // Shatterhide Visor
             _builder.Create(RecipeType.ShatterhideVisor, SkillType.Smithery)
@@ -132,7 +132,7 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.SmitheryRecipeDefinition
                 .Component("lth_high", 3)
                 .Component("fiberp_good", 2)
                 .Component("sh_chitin", 1)
-                .ForgeParameters(rangeCenter: 37, rangeWidth: 54, coolingRate: 3, startingThermal: 49, shapeShare: 56);
+                .ForgeParameters(rangeCenter: 37, rangeWidth: 56, coolingRate: 4, startingThermal: 47, shapeShare: 59);
 
             // Shatterhide Charm
             _builder.Create(RecipeType.ShatterhideCharm, SkillType.Smithery)

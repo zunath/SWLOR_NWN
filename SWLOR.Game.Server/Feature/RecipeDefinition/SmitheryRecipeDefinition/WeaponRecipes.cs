@@ -60,7 +60,7 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.SmitheryRecipeDefinition
                 .EnhancementSlots(RecipeEnhancementType.Weapon, 2)
                 .Component("ref_scordspar", 1)
                 .Component("fine_wood", 1)
-                .ForgeParameters(rangeCenter: 62, rangeWidth: 53, coolingRate: 4, startingThermal: 76, shapeShare: 41);
+                .ForgeParameters(rangeCenter: 62, rangeWidth: 53, coolingRate: 3, startingThermal: 76, shapeShare: 41);
 
             // Sith Knife
             _builder.Create(RecipeType.SithKnife, SkillType.Smithery)
@@ -82,7 +82,7 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.SmitheryRecipeDefinition
                 .EnhancementSlots(RecipeEnhancementType.Weapon, 2)
                 .Component("ref_plagionite", 1)
                 .Component("ancient_wood", 1)
-                .ForgeParameters(rangeCenter: 62, rangeWidth: 39, coolingRate: 4, startingThermal: 70, shapeShare: 43);
+                .ForgeParameters(rangeCenter: 62, rangeWidth: 39, coolingRate: 3, startingThermal: 70, shapeShare: 43);
 
             // Proto Knife
             _builder.Create(RecipeType.ProtoKnife, SkillType.Smithery)
@@ -137,7 +137,7 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.SmitheryRecipeDefinition
                 .EnhancementSlots(RecipeEnhancementType.Weapon, 1)
                 .Component("ref_veldite", 3)
                 .Component("wood", 2)
-                .ForgeParameters(rangeCenter: 58, rangeWidth: 55, coolingRate: 3, startingThermal: 83, shapeShare: 45);
+                .ForgeParameters(rangeCenter: 58, rangeWidth: 55, coolingRate: 2, startingThermal: 83, shapeShare: 45);
 
             // Titan Longsword
             _builder.Create(RecipeType.TitanLongsword, SkillType.Smithery)
@@ -148,7 +148,7 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.SmitheryRecipeDefinition
                 .EnhancementSlots(RecipeEnhancementType.Weapon, 2)
                 .Component("ref_scordspar", 3)
                 .Component("fine_wood", 2)
-                .ForgeParameters(rangeCenter: 56, rangeWidth: 46, coolingRate: 4, startingThermal: 73, shapeShare: 41);
+                .ForgeParameters(rangeCenter: 56, rangeWidth: 46, coolingRate: 3, startingThermal: 73, shapeShare: 41);
 
             // Sith Longsword
             _builder.Create(RecipeType.SithLongsword, SkillType.Smithery)
@@ -170,7 +170,7 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.SmitheryRecipeDefinition
                 .EnhancementSlots(RecipeEnhancementType.Weapon, 2)
                 .Component("ref_plagionite", 3)
                 .Component("ancient_wood", 2)
-                .ForgeParameters(rangeCenter: 64, rangeWidth: 41, coolingRate: 5, startingThermal: 68, shapeShare: 40);
+                .ForgeParameters(rangeCenter: 64, rangeWidth: 41, coolingRate: 4, startingThermal: 68, shapeShare: 40);
 
             // Proto Longsword
             _builder.Create(RecipeType.ProtoLongsword, SkillType.Smithery)
@@ -181,7 +181,7 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.SmitheryRecipeDefinition
                 .EnhancementSlots(RecipeEnhancementType.Weapon, 2)
                 .Component("ref_keromber", 3)
                 .Component("aracia_wood", 2)
-                .ForgeParameters(rangeCenter: 56, rangeWidth: 34, coolingRate: 4, startingThermal: 67, shapeShare: 39);
+                .ForgeParameters(rangeCenter: 56, rangeWidth: 34, coolingRate: 3, startingThermal: 67, shapeShare: 39);
 
             // Ophidian Longsword
             _builder.Create(RecipeType.OphidianLongsword, SkillType.Smithery)
@@ -192,7 +192,7 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.SmitheryRecipeDefinition
                 .EnhancementSlots(RecipeEnhancementType.Weapon, 2)
                 .Component("ref_jasioclase", 3)
                 .Component("hyphae_wood", 2)
-                .ForgeParameters(rangeCenter: 57, rangeWidth: 29, coolingRate: 5, startingThermal: 63, shapeShare: 44);
+                .ForgeParameters(rangeCenter: 57, rangeWidth: 29, coolingRate: 4, startingThermal: 63, shapeShare: 44);
 
             // Chiro Longsword
             _builder.Create(RecipeType.ChiroLongsword, SkillType.Smithery)
@@ -236,7 +236,7 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.SmitheryRecipeDefinition
                 .EnhancementSlots(RecipeEnhancementType.Weapon, 2)
                 .Component("elec_flawed", 4)
                 .Component("ref_scordspar", 2)
-                .ForgeParameters(rangeCenter: 50, rangeWidth: 49, coolingRate: 3, startingThermal: 62, shapeShare: 39);
+                .ForgeParameters(rangeCenter: 50, rangeWidth: 49, coolingRate: 2, startingThermal: 62, shapeShare: 39);
 
             // Sith Electroblade
             _builder.Create(RecipeType.SithElectroblade, SkillType.Smithery)
@@ -269,7 +269,7 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.SmitheryRecipeDefinition
                 .EnhancementSlots(RecipeEnhancementType.Weapon, 2)
                 .Component("elec_imperfect", 4)
                 .Component("ref_keromber", 2)
-                .ForgeParameters(rangeCenter: 52, rangeWidth: 33, coolingRate: 5, startingThermal: 55, shapeShare: 35);
+                .ForgeParameters(rangeCenter: 52, rangeWidth: 33, coolingRate: 4, startingThermal: 55, shapeShare: 35);
 
             // Electroblade V
             _builder.Create(RecipeType.Electroblade5, SkillType.Smithery)
@@ -312,7 +312,7 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.SmitheryRecipeDefinition
                 .Component("jade", 4)
                 .Component("ref_veldite", 2)
                 .Component("elec_ruined", 3)
-                .ForgeParameters(rangeCenter: 55, rangeWidth: 55, coolingRate: 4, startingThermal: 73, shapeShare: 37);
+                .ForgeParameters(rangeCenter: 55, rangeWidth: 55, coolingRate: 3, startingThermal: 73, shapeShare: 37);
 
             // Training Saber II
             _builder.Create(RecipeType.TrainingSaber2, SkillType.Smithery)
@@ -379,7 +379,7 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.SmitheryRecipeDefinition
                 .EnhancementSlots(RecipeEnhancementType.Weapon, 1)
                 .Component("ref_veldite", 5)
                 .Component("wood", 3)
-                .ForgeParameters(rangeCenter: 62, rangeWidth: 53, coolingRate: 3, startingThermal: 81, shapeShare: 42);
+                .ForgeParameters(rangeCenter: 62, rangeWidth: 53, coolingRate: 2, startingThermal: 81, shapeShare: 42);
 
             // Titan Great Sword
             _builder.Create(RecipeType.TitanGreatSword, SkillType.Smithery)
@@ -401,7 +401,7 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.SmitheryRecipeDefinition
                 .EnhancementSlots(RecipeEnhancementType.Weapon, 1)
                 .Component("ref_scordspar", 3)
                 .Component("fine_wood", 2)
-                .ForgeParameters(rangeCenter: 59, rangeWidth: 49, coolingRate: 4, startingThermal: 78, shapeShare: 39);
+                .ForgeParameters(rangeCenter: 59, rangeWidth: 49, coolingRate: 3, startingThermal: 78, shapeShare: 39);
 
             // Delta Great Sword
             _builder.Create(RecipeType.DeltaGreatSword, SkillType.Smithery)
@@ -489,7 +489,7 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.SmitheryRecipeDefinition
                 .EnhancementSlots(RecipeEnhancementType.Weapon, 1)
                 .Component("ref_scordspar", 3)
                 .Component("fine_wood", 2)
-                .ForgeParameters(rangeCenter: 61, rangeWidth: 51, coolingRate: 4, startingThermal: 76, shapeShare: 42);
+                .ForgeParameters(rangeCenter: 61, rangeWidth: 51, coolingRate: 3, startingThermal: 76, shapeShare: 42);
 
             // Delta Spear
             _builder.Create(RecipeType.DeltaSpear, SkillType.Smithery)
@@ -574,7 +574,7 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.SmitheryRecipeDefinition
                 .EnhancementSlots(RecipeEnhancementType.Weapon, 1)
                 .Component("ref_veldite", 3)
                 .Component("wood", 2)
-                .ForgeParameters(rangeCenter: 61, rangeWidth: 54, coolingRate: 4, startingThermal: 77, shapeShare: 45);
+                .ForgeParameters(rangeCenter: 61, rangeWidth: 54, coolingRate: 3, startingThermal: 77, shapeShare: 45);
 
             // Titan Twin Blade
             _builder.Create(RecipeType.TitanTwinBlade, SkillType.Smithery)
@@ -596,7 +596,7 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.SmitheryRecipeDefinition
                 .EnhancementSlots(RecipeEnhancementType.Weapon, 1)
                 .Component("ref_scordspar", 4)
                 .Component("fine_wood", 2)
-                .ForgeParameters(rangeCenter: 56, rangeWidth: 45, coolingRate: 4, startingThermal: 72, shapeShare: 39);
+                .ForgeParameters(rangeCenter: 56, rangeWidth: 45, coolingRate: 3, startingThermal: 72, shapeShare: 39);
 
             // Delta Twin Blade
             _builder.Create(RecipeType.DeltaTwinBlade, SkillType.Smithery)
@@ -738,7 +738,7 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.SmitheryRecipeDefinition
                 .Component("jade", 5)
                 .Component("ref_veldite", 3)
                 .Component("elec_ruined", 4)
-                .ForgeParameters(rangeCenter: 53, rangeWidth: 51, coolingRate: 4, startingThermal: 73, shapeShare: 38);
+                .ForgeParameters(rangeCenter: 53, rangeWidth: 51, coolingRate: 3, startingThermal: 73, shapeShare: 38);
 
             // Training Saberstaff II
             _builder.Create(RecipeType.TrainingSaberstaff2, SkillType.Smithery)
@@ -816,7 +816,7 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.SmitheryRecipeDefinition
                 .EnhancementSlots(RecipeEnhancementType.Weapon, 2)
                 .Component("ref_scordspar", 2)
                 .Component("fine_wood", 1)
-                .ForgeParameters(rangeCenter: 62, rangeWidth: 50, coolingRate: 2, startingThermal: 70, shapeShare: 44);
+                .ForgeParameters(rangeCenter: 62, rangeWidth: 50, coolingRate: 1, startingThermal: 70, shapeShare: 44);
 
             // Sith Katar
             _builder.Create(RecipeType.SithKatar, SkillType.Smithery)
@@ -838,7 +838,7 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.SmitheryRecipeDefinition
                 .EnhancementSlots(RecipeEnhancementType.Weapon, 2)
                 .Component("ref_plagionite", 2)
                 .Component("ancient_wood", 1)
-                .ForgeParameters(rangeCenter: 56, rangeWidth: 41, coolingRate: 3, startingThermal: 65, shapeShare: 39);
+                .ForgeParameters(rangeCenter: 56, rangeWidth: 41, coolingRate: 2, startingThermal: 65, shapeShare: 39);
 
             // Proto Katar
             _builder.Create(RecipeType.ProtoKatar, SkillType.Smithery)
@@ -849,7 +849,7 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.SmitheryRecipeDefinition
                 .EnhancementSlots(RecipeEnhancementType.Weapon, 2)
                 .Component("ref_keromber", 2)
                 .Component("aracia_wood", 1)
-                .ForgeParameters(rangeCenter: 63, rangeWidth: 37, coolingRate: 6, startingThermal: 62, shapeShare: 42);
+                .ForgeParameters(rangeCenter: 63, rangeWidth: 37, coolingRate: 5, startingThermal: 62, shapeShare: 42);
 
             // Ophidian Katar
             _builder.Create(RecipeType.OphidianKatar, SkillType.Smithery)
@@ -904,7 +904,7 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.SmitheryRecipeDefinition
                 .EnhancementSlots(RecipeEnhancementType.Weapon, 2)
                 .Component("ref_scordspar", 3)
                 .Component("fine_wood", 2)
-                .ForgeParameters(rangeCenter: 61, rangeWidth: 47, coolingRate: 2, startingThermal: 70, shapeShare: 42);
+                .ForgeParameters(rangeCenter: 61, rangeWidth: 47, coolingRate: 1, startingThermal: 70, shapeShare: 42);
 
             // Sith Staff
             _builder.Create(RecipeType.SithStaff, SkillType.Smithery)
@@ -915,7 +915,7 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.SmitheryRecipeDefinition
                 .EnhancementSlots(RecipeEnhancementType.Weapon, 1)
                 .Component("ref_scordspar", 2)
                 .Component("fine_wood", 1)
-                .ForgeParameters(rangeCenter: 62, rangeWidth: 46, coolingRate: 3, startingThermal: 72, shapeShare: 45);
+                .ForgeParameters(rangeCenter: 62, rangeWidth: 46, coolingRate: 2, startingThermal: 72, shapeShare: 45);
 
             // Delta Staff
             _builder.Create(RecipeType.DeltaStaff, SkillType.Smithery)
@@ -926,7 +926,7 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.SmitheryRecipeDefinition
                 .EnhancementSlots(RecipeEnhancementType.Weapon, 2)
                 .Component("ref_plagionite", 3)
                 .Component("ancient_wood", 2)
-                .ForgeParameters(rangeCenter: 57, rangeWidth: 41, coolingRate: 4, startingThermal: 69, shapeShare: 41);
+                .ForgeParameters(rangeCenter: 57, rangeWidth: 41, coolingRate: 3, startingThermal: 69, shapeShare: 41);
 
             // Proto Staff
             _builder.Create(RecipeType.ProtoStaff, SkillType.Smithery)
@@ -937,7 +937,7 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.SmitheryRecipeDefinition
                 .EnhancementSlots(RecipeEnhancementType.Weapon, 2)
                 .Component("ref_keromber", 3)
                 .Component("aracia_wood", 2)
-                .ForgeParameters(rangeCenter: 60, rangeWidth: 37, coolingRate: 4, startingThermal: 65, shapeShare: 45);
+                .ForgeParameters(rangeCenter: 60, rangeWidth: 37, coolingRate: 3, startingThermal: 65, shapeShare: 45);
 
             // Ophidian Staff
             _builder.Create(RecipeType.OphidianStaff, SkillType.Smithery)
@@ -948,7 +948,7 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.SmitheryRecipeDefinition
                 .EnhancementSlots(RecipeEnhancementType.Weapon, 2)
                 .Component("ref_jasioclase", 3)
                 .Component("hyphae_wood", 2)
-                .ForgeParameters(rangeCenter: 61, rangeWidth: 25, coolingRate: 7, startingThermal: 65, shapeShare: 45);
+                .ForgeParameters(rangeCenter: 61, rangeWidth: 25, coolingRate: 6, startingThermal: 65, shapeShare: 45);
 
             // Chiro Staff
             _builder.Create(RecipeType.ChiroStaff, SkillType.Smithery)
@@ -993,7 +993,7 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.SmitheryRecipeDefinition
                 .EnhancementSlots(RecipeEnhancementType.Weapon, 2)
                 .Component("ref_scordspar", 4)
                 .Component("elec_flawed", 2)
-                .ForgeParameters(rangeCenter: 54, rangeWidth: 48, coolingRate: 2, startingThermal: 66, shapeShare: 37);
+                .ForgeParameters(rangeCenter: 54, rangeWidth: 48, coolingRate: 1, startingThermal: 66, shapeShare: 37);
 
             // Sith Pistol
             _builder.Create(RecipeType.SithPistol, SkillType.Smithery)
@@ -1026,7 +1026,7 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.SmitheryRecipeDefinition
                 .EnhancementSlots(RecipeEnhancementType.Weapon, 2)
                 .Component("ref_keromber", 4)
                 .Component("elec_imperfect", 2)
-                .ForgeParameters(rangeCenter: 58, rangeWidth: 29, coolingRate: 5, startingThermal: 59, shapeShare: 42);
+                .ForgeParameters(rangeCenter: 58, rangeWidth: 29, coolingRate: 4, startingThermal: 59, shapeShare: 42);
 
             // Ophidian Pistol
             _builder.Create(RecipeType.OphidianPistol, SkillType.Smithery)
@@ -1081,7 +1081,7 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.SmitheryRecipeDefinition
                 .EnhancementSlots(RecipeEnhancementType.Weapon, 2)
                 .Component("ref_scordspar", 2)
                 .Component("fine_wood", 1)
-                .ForgeParameters(rangeCenter: 63, rangeWidth: 50, coolingRate: 2, startingThermal: 75, shapeShare: 41);
+                .ForgeParameters(rangeCenter: 63, rangeWidth: 50, coolingRate: 1, startingThermal: 75, shapeShare: 41);
 
             // Sith Shuriken
             _builder.Create(RecipeType.SithShuriken, SkillType.Smithery)
@@ -1103,7 +1103,7 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.SmitheryRecipeDefinition
                 .EnhancementSlots(RecipeEnhancementType.Weapon, 2)
                 .Component("ref_plagionite", 2)
                 .Component("ancient_wood", 1)
-                .ForgeParameters(rangeCenter: 57, rangeWidth: 42, coolingRate: 5, startingThermal: 65, shapeShare: 45);
+                .ForgeParameters(rangeCenter: 57, rangeWidth: 42, coolingRate: 4, startingThermal: 65, shapeShare: 45);
 
             // Proto Shuriken
             _builder.Create(RecipeType.ProtoShuriken, SkillType.Smithery)
@@ -1114,7 +1114,7 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.SmitheryRecipeDefinition
                 .EnhancementSlots(RecipeEnhancementType.Weapon, 2)
                 .Component("ref_keromber", 2)
                 .Component("aracia_wood", 1)
-                .ForgeParameters(rangeCenter: 63, rangeWidth: 34, coolingRate: 4, startingThermal: 62, shapeShare: 40);
+                .ForgeParameters(rangeCenter: 63, rangeWidth: 34, coolingRate: 3, startingThermal: 62, shapeShare: 40);
 
             // Ophidian Shuriken
             _builder.Create(RecipeType.OphidianShuriken, SkillType.Smithery)
@@ -1158,7 +1158,7 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.SmitheryRecipeDefinition
                 .EnhancementSlots(RecipeEnhancementType.Weapon, 1)
                 .Component("ref_veldite", 5)
                 .Component("elec_ruined", 3)
-                .ForgeParameters(rangeCenter: 52, rangeWidth: 47, coolingRate: 4, startingThermal: 71, shapeShare: 40);
+                .ForgeParameters(rangeCenter: 52, rangeWidth: 47, coolingRate: 3, startingThermal: 71, shapeShare: 40);
 
             // Titan Rifle
             _builder.Create(RecipeType.TitanRifle, SkillType.Smithery)
@@ -1180,7 +1180,7 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.SmitheryRecipeDefinition
                 .EnhancementSlots(RecipeEnhancementType.Weapon, 1)
                 .Component("ref_scordspar", 3)
                 .Component("elec_flawed", 2)
-                .ForgeParameters(rangeCenter: 57, rangeWidth: 45, coolingRate: 2, startingThermal: 69, shapeShare: 37);
+                .ForgeParameters(rangeCenter: 57, rangeWidth: 45, coolingRate: 1, startingThermal: 69, shapeShare: 37);
 
             // Delta Rifle
             _builder.Create(RecipeType.DeltaRifle, SkillType.Smithery)
@@ -1277,7 +1277,7 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.SmitheryRecipeDefinition
                 .Component("ref_scordspar", 2)
                 .Component("fine_wood", 2)
                 .Component("lth_flawed", 1)
-                .ForgeParameters(rangeCenter: 63, rangeWidth: 42, coolingRate: 4, startingThermal: 76, shapeShare: 40);
+                .ForgeParameters(rangeCenter: 63, rangeWidth: 42, coolingRate: 3, startingThermal: 76, shapeShare: 40);
 
             // Prime Knife
             _builder.Create(RecipeType.PrimeKnife, SkillType.Smithery)
@@ -1301,7 +1301,7 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.SmitheryRecipeDefinition
                 .Component("ref_keromber", 2)
                 .Component("aracia_wood", 2)
                 .Component("lth_imperfect", 1)
-                .ForgeParameters(rangeCenter: 63, rangeWidth: 29, coolingRate: 6, startingThermal: 61, shapeShare: 39);
+                .ForgeParameters(rangeCenter: 63, rangeWidth: 29, coolingRate: 5, startingThermal: 61, shapeShare: 39);
 
         }
 
@@ -1317,7 +1317,7 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.SmitheryRecipeDefinition
                 .Component("ref_veldite", 5)
                 .Component("wood", 3)
                 .Component("lth_ruined", 2)
-                .ForgeParameters(rangeCenter: 59, rangeWidth: 52, coolingRate: 2, startingThermal: 81, shapeShare: 45);
+                .ForgeParameters(rangeCenter: 59, rangeWidth: 52, coolingRate: 1, startingThermal: 81, shapeShare: 45);
 
             // Veteran Longsword
             _builder.Create(RecipeType.VeteranLongsword, SkillType.Smithery)
@@ -1369,7 +1369,7 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.SmitheryRecipeDefinition
                 .Component("elec_ruined", 6)
                 .Component("ref_veldite", 3)
                 .Component("jade", 2)
-                .ForgeParameters(rangeCenter: 54, rangeWidth: 50, coolingRate: 4, startingThermal: 72, shapeShare: 40);
+                .ForgeParameters(rangeCenter: 54, rangeWidth: 50, coolingRate: 3, startingThermal: 72, shapeShare: 40);
 
             // Veteran Electroblade
             _builder.Create(RecipeType.VeteranElectroblade, SkillType.Smithery)
@@ -1381,7 +1381,7 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.SmitheryRecipeDefinition
                 .Component("elec_flawed", 6)
                 .Component("ref_scordspar", 3)
                 .Component("agate", 2)
-                .ForgeParameters(rangeCenter: 51, rangeWidth: 47, coolingRate: 5, startingThermal: 62, shapeShare: 39);
+                .ForgeParameters(rangeCenter: 51, rangeWidth: 47, coolingRate: 4, startingThermal: 62, shapeShare: 39);
 
             // Prime Electroblade
             _builder.Create(RecipeType.PrimeElectroblade, SkillType.Smithery)
@@ -1419,7 +1419,7 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.SmitheryRecipeDefinition
                 .Component("ref_veldite", 3)
                 .Component("elec_ruined", 5)
                 .Component("fiberp_ruined", 2)
-                .ForgeParameters(rangeCenter: 55, rangeWidth: 52, coolingRate: 3, startingThermal: 68, shapeShare: 40);
+                .ForgeParameters(rangeCenter: 55, rangeWidth: 52, coolingRate: 2, startingThermal: 68, shapeShare: 40);
 
             // Veteran Training Saber
             _builder.Create(RecipeType.VeteranTrainingSaber, SkillType.Smithery)
@@ -1433,7 +1433,7 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.SmitheryRecipeDefinition
                 .Component("ref_scordspar", 3)
                 .Component("elec_flawed", 5)
                 .Component("fiberp_flawed", 2)
-                .ForgeParameters(rangeCenter: 50, rangeWidth: 44, coolingRate: 3, startingThermal: 63, shapeShare: 35);
+                .ForgeParameters(rangeCenter: 50, rangeWidth: 44, coolingRate: 2, startingThermal: 63, shapeShare: 35);
 
             // Prime Training Saber
             _builder.Create(RecipeType.PrimeTrainingSaber, SkillType.Smithery)
@@ -1447,7 +1447,7 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.SmitheryRecipeDefinition
                 .Component("ref_plagionite", 3)
                 .Component("elec_good", 5)
                 .Component("fiberp_good", 2)
-                .ForgeParameters(rangeCenter: 50, rangeWidth: 34, coolingRate: 5, startingThermal: 60, shapeShare: 40);
+                .ForgeParameters(rangeCenter: 50, rangeWidth: 34, coolingRate: 4, startingThermal: 60, shapeShare: 40);
 
             // Ascendant Training Saber
             _builder.Create(RecipeType.AscendantTrainingSaber, SkillType.Smithery)
@@ -1477,7 +1477,7 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.SmitheryRecipeDefinition
                 .Component("ref_veldite", 8)
                 .Component("wood", 5)
                 .Component("lth_ruined", 3)
-                .ForgeParameters(rangeCenter: 64, rangeWidth: 51, coolingRate: 4, startingThermal: 72, shapeShare: 45);
+                .ForgeParameters(rangeCenter: 64, rangeWidth: 51, coolingRate: 3, startingThermal: 72, shapeShare: 45);
 
             // Veteran Great Sword
             _builder.Create(RecipeType.VeteranGreatSword, SkillType.Smithery)
@@ -1489,7 +1489,7 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.SmitheryRecipeDefinition
                 .Component("ref_scordspar", 8)
                 .Component("fine_wood", 5)
                 .Component("lth_flawed", 3)
-                .ForgeParameters(rangeCenter: 59, rangeWidth: 38, coolingRate: 4, startingThermal: 73, shapeShare: 39);
+                .ForgeParameters(rangeCenter: 59, rangeWidth: 38, coolingRate: 3, startingThermal: 73, shapeShare: 39);
 
             // Prime Great Sword
             _builder.Create(RecipeType.PrimeGreatSword, SkillType.Smithery)
@@ -1501,7 +1501,7 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.SmitheryRecipeDefinition
                 .Component("ref_plagionite", 8)
                 .Component("ancient_wood", 5)
                 .Component("lth_good", 3)
-                .ForgeParameters(rangeCenter: 61, rangeWidth: 39, coolingRate: 4, startingThermal: 61, shapeShare: 43);
+                .ForgeParameters(rangeCenter: 61, rangeWidth: 39, coolingRate: 3, startingThermal: 61, shapeShare: 43);
 
             // Ascendant Great Sword
             _builder.Create(RecipeType.AscendantGreatSword, SkillType.Smithery)
@@ -1529,7 +1529,7 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.SmitheryRecipeDefinition
                 .Component("ref_veldite", 6)
                 .Component("wood", 3)
                 .Component("lth_ruined", 2)
-                .ForgeParameters(rangeCenter: 56, rangeWidth: 51, coolingRate: 3, startingThermal: 71, shapeShare: 43);
+                .ForgeParameters(rangeCenter: 56, rangeWidth: 51, coolingRate: 2, startingThermal: 71, shapeShare: 43);
 
             // Veteran Spear
             _builder.Create(RecipeType.VeteranSpear, SkillType.Smithery)
@@ -1541,7 +1541,7 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.SmitheryRecipeDefinition
                 .Component("ref_scordspar", 6)
                 .Component("fine_wood", 3)
                 .Component("lth_flawed", 2)
-                .ForgeParameters(rangeCenter: 60, rangeWidth: 39, coolingRate: 4, startingThermal: 71, shapeShare: 45);
+                .ForgeParameters(rangeCenter: 60, rangeWidth: 39, coolingRate: 3, startingThermal: 71, shapeShare: 45);
 
             // Prime Spear
             _builder.Create(RecipeType.PrimeSpear, SkillType.Smithery)
@@ -1553,7 +1553,7 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.SmitheryRecipeDefinition
                 .Component("ref_plagionite", 6)
                 .Component("ancient_wood", 3)
                 .Component("lth_good", 2)
-                .ForgeParameters(rangeCenter: 62, rangeWidth: 33, coolingRate: 5, startingThermal: 62, shapeShare: 41);
+                .ForgeParameters(rangeCenter: 62, rangeWidth: 33, coolingRate: 4, startingThermal: 62, shapeShare: 41);
 
             // Ascendant Spear
             _builder.Create(RecipeType.AscendantSpear, SkillType.Smithery)
@@ -1581,7 +1581,7 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.SmitheryRecipeDefinition
                 .Component("ref_veldite", 5)
                 .Component("wood", 3)
                 .Component("lth_ruined", 3)
-                .ForgeParameters(rangeCenter: 63, rangeWidth: 51, coolingRate: 4, startingThermal: 70, shapeShare: 42);
+                .ForgeParameters(rangeCenter: 63, rangeWidth: 51, coolingRate: 3, startingThermal: 70, shapeShare: 42);
 
             // Veteran Twin Blade
             _builder.Create(RecipeType.VeteranTwinBlade, SkillType.Smithery)
@@ -1593,7 +1593,7 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.SmitheryRecipeDefinition
                 .Component("ref_scordspar", 5)
                 .Component("fine_wood", 3)
                 .Component("lth_flawed", 3)
-                .ForgeParameters(rangeCenter: 60, rangeWidth: 41, coolingRate: 4, startingThermal: 72, shapeShare: 44);
+                .ForgeParameters(rangeCenter: 60, rangeWidth: 41, coolingRate: 3, startingThermal: 72, shapeShare: 44);
 
             // Prime Twin Blade
             _builder.Create(RecipeType.PrimeTwinBlade, SkillType.Smithery)
@@ -1605,7 +1605,7 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.SmitheryRecipeDefinition
                 .Component("ref_plagionite", 5)
                 .Component("ancient_wood", 3)
                 .Component("lth_good", 3)
-                .ForgeParameters(rangeCenter: 57, rangeWidth: 34, coolingRate: 5, startingThermal: 64, shapeShare: 42);
+                .ForgeParameters(rangeCenter: 57, rangeWidth: 34, coolingRate: 4, startingThermal: 64, shapeShare: 42);
 
             // Ascendant Twin Blade
             _builder.Create(RecipeType.AscendantTwinBlade, SkillType.Smithery)
@@ -1633,7 +1633,7 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.SmitheryRecipeDefinition
                 .Component("elec_ruined", 8)
                 .Component("ref_veldite", 5)
                 .Component("jade", 3)
-                .ForgeParameters(rangeCenter: 49, rangeWidth: 45, coolingRate: 2, startingThermal: 67, shapeShare: 36);
+                .ForgeParameters(rangeCenter: 49, rangeWidth: 45, coolingRate: 1, startingThermal: 67, shapeShare: 36);
 
             // Veteran Twin Electroblade
             _builder.Create(RecipeType.VeteranTwinElectroblade, SkillType.Smithery)
@@ -1645,7 +1645,7 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.SmitheryRecipeDefinition
                 .Component("elec_flawed", 8)
                 .Component("ref_scordspar", 5)
                 .Component("agate", 3)
-                .ForgeParameters(rangeCenter: 50, rangeWidth: 45, coolingRate: 5, startingThermal: 59, shapeShare: 35);
+                .ForgeParameters(rangeCenter: 50, rangeWidth: 45, coolingRate: 4, startingThermal: 59, shapeShare: 35);
 
             // Prime Twin Electroblade
             _builder.Create(RecipeType.PrimeTwinElectroblade, SkillType.Smithery)
@@ -1657,7 +1657,7 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.SmitheryRecipeDefinition
                 .Component("elec_good", 8)
                 .Component("ref_plagionite", 5)
                 .Component("citrine", 3)
-                .ForgeParameters(rangeCenter: 53, rangeWidth: 39, coolingRate: 6, startingThermal: 56, shapeShare: 39);
+                .ForgeParameters(rangeCenter: 53, rangeWidth: 39, coolingRate: 5, startingThermal: 56, shapeShare: 39);
 
             // Ascendant Twin Electroblade
             _builder.Create(RecipeType.AscendantTwinElectroblade, SkillType.Smithery)
@@ -1683,7 +1683,7 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.SmitheryRecipeDefinition
                 .Component("ref_veldite", 5)
                 .Component("elec_ruined", 6)
                 .Component("fiberp_ruined", 3)
-                .ForgeParameters(rangeCenter: 49, rangeWidth: 52, coolingRate: 3, startingThermal: 67, shapeShare: 35);
+                .ForgeParameters(rangeCenter: 49, rangeWidth: 52, coolingRate: 2, startingThermal: 67, shapeShare: 35);
 
             // Veteran Training Saberstaff
             _builder.Create(RecipeType.VeteranTrainingSaberstaff, SkillType.Smithery)
@@ -1697,7 +1697,7 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.SmitheryRecipeDefinition
                 .Component("ref_scordspar", 5)
                 .Component("elec_flawed", 6)
                 .Component("fiberp_flawed", 3)
-                .ForgeParameters(rangeCenter: 51, rangeWidth: 41, coolingRate: 3, startingThermal: 58, shapeShare: 40);
+                .ForgeParameters(rangeCenter: 51, rangeWidth: 41, coolingRate: 2, startingThermal: 58, shapeShare: 40);
 
             // Prime Training Saberstaff
             _builder.Create(RecipeType.PrimeTrainingSaberstaff, SkillType.Smithery)
@@ -1711,7 +1711,7 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.SmitheryRecipeDefinition
                 .Component("ref_plagionite", 5)
                 .Component("elec_good", 6)
                 .Component("fiberp_good", 3)
-                .ForgeParameters(rangeCenter: 56, rangeWidth: 34, coolingRate: 5, startingThermal: 58, shapeShare: 36);
+                .ForgeParameters(rangeCenter: 56, rangeWidth: 34, coolingRate: 4, startingThermal: 58, shapeShare: 36);
 
             // Ascendant Training Saberstaff
             _builder.Create(RecipeType.AscendantTrainingSaberstaff, SkillType.Smithery)
@@ -1725,7 +1725,7 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.SmitheryRecipeDefinition
                 .Component("ref_keromber", 5)
                 .Component("elec_imperfect", 6)
                 .Component("fiberp_imperfect", 3)
-                .ForgeParameters(rangeCenter: 53, rangeWidth: 28, coolingRate: 7, startingThermal: 55, shapeShare: 36);
+                .ForgeParameters(rangeCenter: 53, rangeWidth: 28, coolingRate: 6, startingThermal: 55, shapeShare: 36);
 
         }
 
@@ -1741,7 +1741,7 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.SmitheryRecipeDefinition
                 .Component("ref_veldite", 3)
                 .Component("wood", 2)
                 .Component("lth_ruined", 1)
-                .ForgeParameters(rangeCenter: 58, rangeWidth: 48, coolingRate: 2, startingThermal: 77, shapeShare: 40);
+                .ForgeParameters(rangeCenter: 58, rangeWidth: 48, coolingRate: 1, startingThermal: 77, shapeShare: 40);
 
             // Veteran Katar
             _builder.Create(RecipeType.VeteranKatar, SkillType.Smithery)
@@ -1793,7 +1793,7 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.SmitheryRecipeDefinition
                 .Component("ref_veldite", 5)
                 .Component("wood", 3)
                 .Component("lth_ruined", 2)
-                .ForgeParameters(rangeCenter: 57, rangeWidth: 50, coolingRate: 2, startingThermal: 74, shapeShare: 39);
+                .ForgeParameters(rangeCenter: 57, rangeWidth: 50, coolingRate: 1, startingThermal: 74, shapeShare: 39);
 
             // Veteran Staff
             _builder.Create(RecipeType.VeteranStaff, SkillType.Smithery)
@@ -1805,7 +1805,7 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.SmitheryRecipeDefinition
                 .Component("ref_scordspar", 5)
                 .Component("fine_wood", 3)
                 .Component("lth_flawed", 2)
-                .ForgeParameters(rangeCenter: 56, rangeWidth: 47, coolingRate: 4, startingThermal: 70, shapeShare: 39);
+                .ForgeParameters(rangeCenter: 56, rangeWidth: 47, coolingRate: 3, startingThermal: 70, shapeShare: 39);
 
             // Prime Staff
             _builder.Create(RecipeType.PrimeStaff, SkillType.Smithery)
@@ -1845,7 +1845,7 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.SmitheryRecipeDefinition
                 .Component("ref_veldite", 6)
                 .Component("elec_ruined", 3)
                 .Component("jade", 1)
-                .ForgeParameters(rangeCenter: 58, rangeWidth: 46, coolingRate: 3, startingThermal: 67, shapeShare: 38);
+                .ForgeParameters(rangeCenter: 58, rangeWidth: 46, coolingRate: 2, startingThermal: 67, shapeShare: 38);
 
             // Veteran Pistol
             _builder.Create(RecipeType.VeteranPistol, SkillType.Smithery)
@@ -1857,7 +1857,7 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.SmitheryRecipeDefinition
                 .Component("ref_scordspar", 6)
                 .Component("elec_flawed", 3)
                 .Component("agate", 1)
-                .ForgeParameters(rangeCenter: 51, rangeWidth: 42, coolingRate: 5, startingThermal: 64, shapeShare: 42);
+                .ForgeParameters(rangeCenter: 51, rangeWidth: 42, coolingRate: 4, startingThermal: 64, shapeShare: 42);
 
             // Prime Pistol
             _builder.Create(RecipeType.PrimePistol, SkillType.Smithery)
@@ -1949,7 +1949,7 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.SmitheryRecipeDefinition
                 .Component("ref_veldite", 8)
                 .Component("elec_ruined", 5)
                 .Component("jade", 2)
-                .ForgeParameters(rangeCenter: 54, rangeWidth: 52, coolingRate: 3, startingThermal: 67, shapeShare: 40);
+                .ForgeParameters(rangeCenter: 54, rangeWidth: 52, coolingRate: 2, startingThermal: 67, shapeShare: 40);
 
             // Veteran Rifle
             _builder.Create(RecipeType.VeteranRifle, SkillType.Smithery)
@@ -1961,7 +1961,7 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.SmitheryRecipeDefinition
                 .Component("ref_scordspar", 8)
                 .Component("elec_flawed", 5)
                 .Component("agate", 2)
-                .ForgeParameters(rangeCenter: 57, rangeWidth: 37, coolingRate: 5, startingThermal: 62, shapeShare: 38);
+                .ForgeParameters(rangeCenter: 57, rangeWidth: 37, coolingRate: 4, startingThermal: 62, shapeShare: 38);
 
             // Prime Rifle
             _builder.Create(RecipeType.PrimeRifle, SkillType.Smithery)
@@ -1973,7 +1973,7 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.SmitheryRecipeDefinition
                 .Component("ref_plagionite", 8)
                 .Component("elec_good", 5)
                 .Component("citrine", 2)
-                .ForgeParameters(rangeCenter: 55, rangeWidth: 35, coolingRate: 5, startingThermal: 63, shapeShare: 42);
+                .ForgeParameters(rangeCenter: 55, rangeWidth: 35, coolingRate: 4, startingThermal: 63, shapeShare: 42);
 
             // Ascendant Rifle
             _builder.Create(RecipeType.AscendantRifle, SkillType.Smithery)
@@ -1985,7 +1985,7 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.SmitheryRecipeDefinition
                 .Component("ref_keromber", 8)
                 .Component("elec_imperfect", 5)
                 .Component("ruby", 2)
-                .ForgeParameters(rangeCenter: 56, rangeWidth: 30, coolingRate: 6, startingThermal: 53, shapeShare: 39);
+                .ForgeParameters(rangeCenter: 56, rangeWidth: 30, coolingRate: 5, startingThermal: 53, shapeShare: 39);
 
         }
 

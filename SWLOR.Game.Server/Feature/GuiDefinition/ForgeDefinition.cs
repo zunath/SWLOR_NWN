@@ -28,11 +28,12 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition
             "- Hydro-Press gains a large amount of Shape, more the hotter the piece is inside the range. Below the range it does little and " +
             "cracks Integrity; above it, it shapes more but cracks Integrity harder.\n" +
             "- Vibro-Hone gains Finish. It is best in the cool half of the range and weak outside it.\n" +
-            "- Rebond restores Integrity and costs Thermal and CP.\n" +
-            "- Cryo-Quench works once per craft, after the piece is 80% shaped. It gives a large Finish bonus when Thermal is in the range, " +
+            "- Rebond (rank 10) restores Integrity and costs Thermal and CP.\n" +
+            "- Cryo-Quench (rank 20) works once per craft, after the piece is 80% shaped. It gives a large Finish bonus when Thermal is in the range, " +
             "more near its center. Afterward the piece is set: Ramp Plasma and Hydro-Press are disabled, and Vibro-Hone works at a flat rate " +
             "and trims the set piece to size.\n" +
-            "Each action unlocks at a Smithery rank, and the list shows the exact result of every action before you click.\n\n" +
+            "Rebond unlocks at Smithery rank 10 and Cryo-Quench at rank 20; the rest are open from the start. The list shows the exact " +
+            "result of every action before you click.\n\n" +
             "STABLE CONTAINMENT\n" +
             "Sometimes the forge announces Stable Containment: your next Hydro-Press or Vibro-Hone gets +50%. It lasts for one action and " +
             "never costs you anything.\n\n" +

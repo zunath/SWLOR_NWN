@@ -15,4 +15,7 @@ public interface ICraftMinigameRoute
     GuiWindowType Window { get; }
 
     CraftMinigameType Minigame { get; }
+
+    /// <summary>The factor on the base XP of every craft of the skill, success and failure alike. 1 leaves the XP chart's value.</summary>
+    double XpMultiplier => 1.0;
 }

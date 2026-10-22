@@ -151,7 +151,7 @@ namespace SWLOR.CraftSim.Gates
         private CohortCell PlayAdaptive(RecipeEntry recipe, int rank, int gearIndex, CraftStyle style)
         {
             var gear = Gear[gearIndex];
-            var baseXp = ServerXp.ForRecipe(recipe, rank);
+            var baseXp = CraftOutcomeRules.ScaleBaseXp(ServerXp.ForRecipe(recipe, rank), Scenario.XpMultiplier);
             var cell = new CohortCell { Recipe = recipe, Rank = rank, Gear = gear.Name, Style = style, Runs = Context.Runs };
             var id = StableId(recipe);
 

@@ -2,6 +2,7 @@ using FluentAssertions;
 using NUnit.Framework;
 using SWLOR.Game.Server.Extension;
 using SWLOR.Game.Server.Service.CraftService.Minigame;
+using SWLOR.Game.Server.Service.CraftService.Minigame.Forge;
 using SWLOR.Game.Server.Service.GuiService;
 using SWLOR.Game.Server.Service.SkillService;
 
@@ -75,6 +76,22 @@ public class CraftMinigameRoutingTests
         route.Window.Should().Be(GuiWindowType.Forge);
         route.Minigame.Should().Be(CraftMinigameType.Forge);
         route.IsLegacy.Should().BeFalse();
+    }
+
+    [Test]
+    public void ARoutesXpMultiplierReachesTheSkillsRouteAndTheOriginalWindowHasNone()
+    {
+        CraftMinigameRouting.GetRoute(SkillType.Smithery).XpMultiplier.Should().Be(ForgeRules.XpMultiplier);
+        ForgeRules.XpMultiplier.Should().BeGreaterThan(1.0);
+
+        foreach (var skill in CraftingSkills().Where(skill => !RegisteredRoutes().ContainsKey(skill)))
+            CraftMinigameRouting.GetRoute(skill).XpMultiplier.Should().Be(1.0, $"{skill} still uses the original window");
+
+        var routes = CraftMinigameRouting.BuildRoutes(new ICraftMinigameRoute[]
+        {
+            new Declaration(SkillType.Smithery, GuiWindowType.DebugEnmity, CraftMinigameType.Forge)
+        });
+        routes[SkillType.Smithery].XpMultiplier.Should().Be(1.0, "a route that declares none leaves the chart's XP");
     }
 
     [Test]

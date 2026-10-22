@@ -57,7 +57,7 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.SmitheryRecipeDefinition
                 .Component("bone_fetish", 1)
                 .Component("fiberp_high", 3)
                 .Component("elec_high", 1)
-                .ForgeParameters(rangeCenter: 44, rangeWidth: 42, coolingRate: 5, startingThermal: 45, shapeShare: 51);
+                .ForgeParameters(rangeCenter: 44, rangeWidth: 42, coolingRate: 4, startingThermal: 45, shapeShare: 51);
 
             // Warband Helm (heavy helmet)
             _builder.Create(RecipeType.WarbandHelm, SkillType.Smithery)
@@ -70,7 +70,7 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.SmitheryRecipeDefinition
                 .Component("bone_totem", 1)
                 .Component("lth_high", 3)
                 .Component("elec_high", 2)
-                .ForgeParameters(rangeCenter: 37, rangeWidth: 43, coolingRate: 5, startingThermal: 40, shapeShare: 56);
+                .ForgeParameters(rangeCenter: 37, rangeWidth: 43, coolingRate: 4, startingThermal: 40, shapeShare: 56);
         }
     }
 }

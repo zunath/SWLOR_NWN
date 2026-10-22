@@ -47,7 +47,7 @@ public static class CraftMinigameRouting
             if (routes.ContainsKey(declaration.Skill))
                 throw new InvalidOperationException($"More than one crafting window is registered for {declaration.Skill}.");
 
-            routes[declaration.Skill] = new CraftMinigameRoute(declaration.Skill, declaration.Window, declaration.Minigame);
+            routes[declaration.Skill] = new CraftMinigameRoute(declaration.Skill, declaration.Window, declaration.Minigame, declaration.XpMultiplier);
         }
 
         return routes;

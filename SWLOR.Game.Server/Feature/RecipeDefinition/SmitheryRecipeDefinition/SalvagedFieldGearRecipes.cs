@@ -264,7 +264,7 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.SmitheryRecipeDefinition
                 .Component("sorting_actuator", 1)
                 .Component("elec_high", 3)
                 .Component("fiberp_high", 2)
-                .ForgeParameters(rangeCenter: 44, rangeWidth: 42, coolingRate: 5, startingThermal: 45, shapeShare: 50);
+                .ForgeParameters(rangeCenter: 44, rangeWidth: 42, coolingRate: 4, startingThermal: 45, shapeShare: 50);
 
             // Assembly-Line Gauntlets (gloves) - Hutlar Droid Foundry
             _builder.Create(RecipeType.SalvagedAssemblyGauntlet, SkillType.Smithery)

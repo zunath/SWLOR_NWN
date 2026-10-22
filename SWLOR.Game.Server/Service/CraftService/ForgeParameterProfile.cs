@@ -59,7 +59,7 @@ namespace SWLOR.Game.Server.Service.CraftService
         {
             var level = Math.Clamp(recipe.Level, 1, 52);
             var metalWidth = Math.Round(56 - (level - 1) * 0.65);
-            var metalCooling = 2 + Math.Round((level - 1) * 4.0 / 49.0);
+            var metalCooling = Math.Round(1 + (level - 1) * 0.1);
             var sealed_ = IsHeatSealed(recipe.Components);
 
             double center;
@@ -115,8 +115,8 @@ namespace SWLOR.Game.Server.Service.CraftService
         public override DifficultyBudget BudgetFor(int recipeLevel)
         {
             var level = Math.Clamp(recipeLevel, 1, 52);
-            var metal = 55.0 + 1.10 * (level - 1);
-            var heatSealed = 46.0 + 0.89 * (level - 1);
+            var metal = 50.5 + 1.17 * (level - 1);
+            var heatSealed = 46.5 + 0.89 * (level - 1);
             return new DifficultyBudget(Math.Floor(heatSealed - 14.0), Math.Ceiling(metal + 14.0));
         }
 

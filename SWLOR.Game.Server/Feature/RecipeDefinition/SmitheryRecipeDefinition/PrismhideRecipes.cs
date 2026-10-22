@@ -28,7 +28,7 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.SmitheryRecipeDefinition
                 .Component("lth_flawed", 4)
                 .Component("fiberp_flawed", 2)
                 .Component("se_eye", 1)
-                .ForgeParameters(rangeCenter: 42, rangeWidth: 60, coolingRate: 3, startingThermal: 54, shapeShare: 58);
+                .ForgeParameters(rangeCenter: 42, rangeWidth: 60, coolingRate: 2, startingThermal: 54, shapeShare: 58);
 
             // Prismhide Wraps
             _builder.Create(RecipeType.PrismhideWraps, SkillType.Smithery)
@@ -80,7 +80,7 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.SmitheryRecipeDefinition
                 .Component("lth_flawed", 2)
                 .Component("fiberp_flawed", 1)
                 .Component("se_eye", 1)
-                .ForgeParameters(rangeCenter: 39, rangeWidth: 54, coolingRate: 4, startingThermal: 52, shapeShare: 51);
+                .ForgeParameters(rangeCenter: 39, rangeWidth: 54, coolingRate: 3, startingThermal: 52, shapeShare: 51);
 
             // Prismhide Gorget
             _builder.Create(RecipeType.PrismhideGorget, SkillType.Smithery)
@@ -93,7 +93,7 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.SmitheryRecipeDefinition
                 .Component("lth_flawed", 2)
                 .Component("fiberp_flawed", 1)
                 .Component("se_eye", 1)
-                .ForgeParameters(rangeCenter: 38, rangeWidth: 60, coolingRate: 4, startingThermal: 49, shapeShare: 44);
+                .ForgeParameters(rangeCenter: 38, rangeWidth: 60, coolingRate: 3, startingThermal: 49, shapeShare: 44);
 
             // Prismhide Band
             _builder.Create(RecipeType.PrismhideBand, SkillType.Smithery)
@@ -106,7 +106,7 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.SmitheryRecipeDefinition
                 .Component("lth_flawed", 2)
                 .Component("fiberp_flawed", 1)
                 .Component("se_eye", 1)
-                .ForgeParameters(rangeCenter: 35, rangeWidth: 60, coolingRate: 2, startingThermal: 50, shapeShare: 47);
+                .ForgeParameters(rangeCenter: 38, rangeWidth: 60, coolingRate: 2, startingThermal: 51, shapeShare: 47);
 
             // Prismhide Guard
             _builder.Create(RecipeType.PrismhideGuard, SkillType.Smithery)
@@ -119,7 +119,7 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.SmitheryRecipeDefinition
                 .Component("lth_flawed", 2)
                 .Component("fiberp_flawed", 1)
                 .Component("se_eye", 1)
-                .ForgeParameters(rangeCenter: 42, rangeWidth: 60, coolingRate: 4, startingThermal: 49, shapeShare: 57);
+                .ForgeParameters(rangeCenter: 42, rangeWidth: 60, coolingRate: 3, startingThermal: 49, shapeShare: 57);
 
             // Prismhide Visor
             _builder.Create(RecipeType.PrismhideVisor, SkillType.Smithery)
@@ -132,7 +132,7 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.SmitheryRecipeDefinition
                 .Component("lth_flawed", 3)
                 .Component("fiberp_flawed", 2)
                 .Component("se_eye", 1)
-                .ForgeParameters(rangeCenter: 38, rangeWidth: 57, coolingRate: 4, startingThermal: 48, shapeShare: 57);
+                .ForgeParameters(rangeCenter: 38, rangeWidth: 57, coolingRate: 3, startingThermal: 48, shapeShare: 57);
 
             // Prismhide Charm
             _builder.Create(RecipeType.PrismhideCharm, SkillType.Smithery)
@@ -145,7 +145,7 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.SmitheryRecipeDefinition
                 .Component("lth_flawed", 2)
                 .Component("fiberp_flawed", 1)
                 .Component("se_eye", 1)
-                .ForgeParameters(rangeCenter: 42, rangeWidth: 56, coolingRate: 3, startingThermal: 50, shapeShare: 45);
+                .ForgeParameters(rangeCenter: 42, rangeWidth: 56, coolingRate: 2, startingThermal: 50, shapeShare: 45);
         }
     }
 }

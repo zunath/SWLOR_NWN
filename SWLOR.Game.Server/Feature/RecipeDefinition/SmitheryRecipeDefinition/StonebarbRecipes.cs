@@ -28,7 +28,7 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.SmitheryRecipeDefinition
                 .Component("lth_flawed", 4)
                 .Component("fiberp_flawed", 2)
                 .Component("gs_spine", 1)
-                .ForgeParameters(rangeCenter: 41, rangeWidth: 58, coolingRate: 2, startingThermal: 52, shapeShare: 58);
+                .ForgeParameters(rangeCenter: 35, rangeWidth: 59, coolingRate: 2, startingThermal: 48, shapeShare: 60);
 
             // Stonebarb Wraps
             _builder.Create(RecipeType.StonebarbWraps, SkillType.Smithery)
@@ -41,7 +41,7 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.SmitheryRecipeDefinition
                 .Component("lth_flawed", 2)
                 .Component("fiberp_flawed", 1)
                 .Component("gs_spine", 1)
-                .ForgeParameters(rangeCenter: 35, rangeWidth: 53, coolingRate: 4, startingThermal: 47, shapeShare: 56);
+                .ForgeParameters(rangeCenter: 35, rangeWidth: 53, coolingRate: 3, startingThermal: 47, shapeShare: 56);
 
             // Stonebarb Treads
             _builder.Create(RecipeType.StonebarbTreads, SkillType.Smithery)
@@ -54,7 +54,7 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.SmitheryRecipeDefinition
                 .Component("lth_flawed", 2)
                 .Component("fiberp_flawed", 1)
                 .Component("gs_spine", 1)
-                .ForgeParameters(rangeCenter: 39, rangeWidth: 60, coolingRate: 3, startingThermal: 51, shapeShare: 59);
+                .ForgeParameters(rangeCenter: 39, rangeWidth: 60, coolingRate: 2, startingThermal: 51, shapeShare: 59);
 
             // Stonebarb Sash
             _builder.Create(RecipeType.StonebarbSash, SkillType.Smithery)
@@ -67,7 +67,7 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.SmitheryRecipeDefinition
                 .Component("lth_flawed", 2)
                 .Component("fiberp_flawed", 1)
                 .Component("gs_spine", 1)
-                .ForgeParameters(rangeCenter: 42, rangeWidth: 60, coolingRate: 2, startingThermal: 53, shapeShare: 51);
+                .ForgeParameters(rangeCenter: 42, rangeWidth: 60, coolingRate: 2, startingThermal: 49, shapeShare: 54);
 
             // Stonebarb Mantle
             _builder.Create(RecipeType.StonebarbMantle, SkillType.Smithery)
@@ -93,7 +93,7 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.SmitheryRecipeDefinition
                 .Component("lth_flawed", 2)
                 .Component("fiberp_flawed", 1)
                 .Component("gs_spine", 1)
-                .ForgeParameters(rangeCenter: 40, rangeWidth: 56, coolingRate: 3, startingThermal: 49, shapeShare: 42);
+                .ForgeParameters(rangeCenter: 40, rangeWidth: 56, coolingRate: 2, startingThermal: 49, shapeShare: 42);
 
             // Stonebarb Band
             _builder.Create(RecipeType.StonebarbBand, SkillType.Smithery)

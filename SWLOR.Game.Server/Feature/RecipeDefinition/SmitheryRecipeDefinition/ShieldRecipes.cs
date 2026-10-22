@@ -38,7 +38,7 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.SmitheryRecipeDefinition
                 .EnhancementSlots(RecipeEnhancementType.Armor, 2)
                 .Component("ref_scordspar", 4)
                 .Component("fine_wood", 2)
-                .ForgeParameters(rangeCenter: 61, rangeWidth: 45, coolingRate: 4, startingThermal: 81, shapeShare: 62);
+                .ForgeParameters(rangeCenter: 61, rangeWidth: 45, coolingRate: 3, startingThermal: 81, shapeShare: 62);
 
             // Quark Shield
             _builder.Create(RecipeType.QuarkShield, SkillType.Smithery)
@@ -60,7 +60,7 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.SmitheryRecipeDefinition
                 .EnhancementSlots(RecipeEnhancementType.Armor, 2)
                 .Component("ref_keromber", 4)
                 .Component("aracia_wood", 2)
-                .ForgeParameters(rangeCenter: 67, rangeWidth: 29, coolingRate: 6, startingThermal: 70, shapeShare: 62);
+                .ForgeParameters(rangeCenter: 67, rangeWidth: 29, coolingRate: 5, startingThermal: 70, shapeShare: 62);
 
             // Eclipse Shield
             _builder.Create(RecipeType.EclipseShield, SkillType.Smithery)
@@ -105,7 +105,7 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.SmitheryRecipeDefinition
                 .Component("ref_veldite", 6)
                 .Component("wood", 3)
                 .Component("fiberp_ruined", 2)
-                .ForgeParameters(rangeCenter: 64, rangeWidth: 50, coolingRate: 2, startingThermal: 81, shapeShare: 62);
+                .ForgeParameters(rangeCenter: 64, rangeWidth: 50, coolingRate: 1, startingThermal: 81, shapeShare: 62);
 
             // Bastion Shield
             _builder.Create(RecipeType.BastionShield, SkillType.Smithery)
@@ -117,7 +117,7 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.SmitheryRecipeDefinition
                 .Component("ref_scordspar", 6)
                 .Component("fine_wood", 3)
                 .Component("fiberp_flawed", 2)
-                .ForgeParameters(rangeCenter: 60, rangeWidth: 42, coolingRate: 3, startingThermal: 75, shapeShare: 61);
+                .ForgeParameters(rangeCenter: 60, rangeWidth: 42, coolingRate: 2, startingThermal: 75, shapeShare: 61);
 
             // Sentinel Shield
             _builder.Create(RecipeType.SentinelShield, SkillType.Smithery)

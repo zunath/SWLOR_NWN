@@ -80,7 +80,7 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.SmitheryRecipeDefinition
                 .Component("lth_high", 2)
                 .Component("fiberp_high", 1)
                 .Component("midink_sac", 1)
-                .ForgeParameters(rangeCenter: 37, rangeWidth: 49, coolingRate: 3, startingThermal: 43, shapeShare: 50);
+                .ForgeParameters(rangeCenter: 37, rangeWidth: 49, coolingRate: 2, startingThermal: 43, shapeShare: 50);
 
             // Inkguard Gorget
             _builder.Create(RecipeType.InkguardGorget, SkillType.Smithery)
@@ -106,7 +106,7 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.SmitheryRecipeDefinition
                 .Component("lth_high", 2)
                 .Component("fiberp_high", 1)
                 .Component("midink_sac", 1)
-                .ForgeParameters(rangeCenter: 38, rangeWidth: 53, coolingRate: 4, startingThermal: 51, shapeShare: 42);
+                .ForgeParameters(rangeCenter: 38, rangeWidth: 53, coolingRate: 3, startingThermal: 51, shapeShare: 42);
 
             // Inkguard Guard
             _builder.Create(RecipeType.InkguardGuard, SkillType.Smithery)
@@ -119,7 +119,7 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.SmitheryRecipeDefinition
                 .Component("lth_high", 2)
                 .Component("fiberp_high", 1)
                 .Component("midink_sac", 1)
-                .ForgeParameters(rangeCenter: 41, rangeWidth: 51, coolingRate: 4, startingThermal: 43, shapeShare: 53);
+                .ForgeParameters(rangeCenter: 41, rangeWidth: 51, coolingRate: 3, startingThermal: 43, shapeShare: 53);
 
             // Inkguard Visor
             _builder.Create(RecipeType.InkguardVisor, SkillType.Smithery)
@@ -132,7 +132,7 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.SmitheryRecipeDefinition
                 .Component("lth_high", 3)
                 .Component("fiberp_high", 2)
                 .Component("midink_sac", 1)
-                .ForgeParameters(rangeCenter: 39, rangeWidth: 55, coolingRate: 4, startingThermal: 45, shapeShare: 58);
+                .ForgeParameters(rangeCenter: 39, rangeWidth: 55, coolingRate: 3, startingThermal: 45, shapeShare: 58);
 
             // Inkguard Charm
             _builder.Create(RecipeType.InkguardCharm, SkillType.Smithery)
@@ -145,7 +145,7 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.SmitheryRecipeDefinition
                 .Component("lth_high", 2)
                 .Component("fiberp_high", 1)
                 .Component("midink_sac", 1)
-                .ForgeParameters(rangeCenter: 41, rangeWidth: 54, coolingRate: 3, startingThermal: 49, shapeShare: 43);
+                .ForgeParameters(rangeCenter: 41, rangeWidth: 54, coolingRate: 2, startingThermal: 49, shapeShare: 43);
         }
     }
 }

@@ -34,6 +34,12 @@ namespace SWLOR.CraftSim.Scenario
         double SecondsPerAction { get; }
 
         /// <summary>
+        /// The factor on the base XP of every craft of the minigame's skill, success and failure alike: the single named multiplier the
+        /// XP-rate gate may need. It must equal the one the game applies (<see cref="ICraftMinigameRoute.XpMultiplier"/>). 1 by default.
+        /// </summary>
+        double XpMultiplier => 1.0;
+
+        /// <summary>
         /// A new engine for one attempt: the recipe's parameters (<see cref="CraftEngineRequest.Recipe"/>), the crafter's rank, the
         /// gear worn (Control powers quality, Craftsmanship progress, CP bonus the action budget) and the style, built on
         /// <see cref="CraftEngineRequest.Random"/>. It must return an attempt that has not started, with no perks unless a style says so.

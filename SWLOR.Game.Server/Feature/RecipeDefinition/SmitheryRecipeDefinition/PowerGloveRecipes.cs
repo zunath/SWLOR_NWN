@@ -18,7 +18,7 @@ public class PowerGloveRecipes : IRecipeListDefinition
             .EnhancementSlots(RecipeEnhancementType.Weapon, 1)
             .Component("ref_veldite", 2)
             .Component("wood", 1)
-            .ForgeParameters(rangeCenter: 57, rangeWidth: 52, coolingRate: 2, startingThermal: 80, shapeShare: 49);
+            .ForgeParameters(rangeCenter: 57, rangeWidth: 52, coolingRate: 1, startingThermal: 80, shapeShare: 49);
 
         builder.Create(RecipeType.FieldPowerGlove, SkillType.Smithery)
             .Category(RecipeCategoryType.PowerGlove)
@@ -29,7 +29,7 @@ public class PowerGloveRecipes : IRecipeListDefinition
             .Component("ref_veldite", 3)
             .Component("wood", 2)
             .Component("lth_ruined", 1)
-            .ForgeParameters(rangeCenter: 57, rangeWidth: 49, coolingRate: 4, startingThermal: 81, shapeShare: 48);
+            .ForgeParameters(rangeCenter: 57, rangeWidth: 49, coolingRate: 3, startingThermal: 81, shapeShare: 48);
 
         builder.Create(RecipeType.TitanPowerGlove, SkillType.Smithery)
             .Category(RecipeCategoryType.PowerGlove)
@@ -39,7 +39,7 @@ public class PowerGloveRecipes : IRecipeListDefinition
             .EnhancementSlots(RecipeEnhancementType.Weapon, 2)
             .Component("ref_scordspar", 2)
             .Component("fine_wood", 1)
-            .ForgeParameters(rangeCenter: 61, rangeWidth: 51, coolingRate: 2, startingThermal: 72, shapeShare: 48);
+            .ForgeParameters(rangeCenter: 61, rangeWidth: 51, coolingRate: 1, startingThermal: 72, shapeShare: 48);
 
         builder.Create(RecipeType.VeteranPowerGlove, SkillType.Smithery)
             .Category(RecipeCategoryType.PowerGlove)
@@ -60,7 +60,7 @@ public class PowerGloveRecipes : IRecipeListDefinition
             .EnhancementSlots(RecipeEnhancementType.Weapon, 2)
             .Component("ref_plagionite", 2)
             .Component("ancient_wood", 1)
-            .ForgeParameters(rangeCenter: 61, rangeWidth: 42, coolingRate: 4, startingThermal: 70, shapeShare: 46);
+            .ForgeParameters(rangeCenter: 61, rangeWidth: 42, coolingRate: 3, startingThermal: 70, shapeShare: 46);
 
         builder.Create(RecipeType.PrimePowerGlove, SkillType.Smithery)
             .Category(RecipeCategoryType.PowerGlove)
@@ -81,7 +81,7 @@ public class PowerGloveRecipes : IRecipeListDefinition
             .EnhancementSlots(RecipeEnhancementType.Weapon, 2)
             .Component("ref_keromber", 2)
             .Component("aracia_wood", 1)
-            .ForgeParameters(rangeCenter: 58, rangeWidth: 31, coolingRate: 6, startingThermal: 63, shapeShare: 47);
+            .ForgeParameters(rangeCenter: 58, rangeWidth: 31, coolingRate: 5, startingThermal: 63, shapeShare: 47);
 
         builder.Create(RecipeType.AscendantPowerGlove, SkillType.Smithery)
             .Category(RecipeCategoryType.PowerGlove)

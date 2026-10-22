@@ -34,7 +34,7 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.SmitheryRecipeDefinition
                 .EnhancementSlots(RecipeEnhancementType.Armor, 1)
                 .Component("lth_ruined", 5)
                 .Component("fiberp_ruined", 3)
-                .ForgeParameters(rangeCenter: 34, rangeWidth: 60, coolingRate: 3, startingThermal: 54, shapeShare: 49);
+                .ForgeParameters(rangeCenter: 34, rangeWidth: 60, coolingRate: 2, startingThermal: 54, shapeShare: 49);
 
             // Spiritmaster Cloak
             _builder.Create(RecipeType.SpiritmasterCloak, SkillType.Smithery)
@@ -45,7 +45,7 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.SmitheryRecipeDefinition
                 .EnhancementSlots(RecipeEnhancementType.Armor, 1)
                 .Component("lth_ruined", 5)
                 .Component("fiberp_ruined", 3)
-                .ForgeParameters(rangeCenter: 33, rangeWidth: 58, coolingRate: 2, startingThermal: 55, shapeShare: 51);
+                .ForgeParameters(rangeCenter: 33, rangeWidth: 58, coolingRate: 1, startingThermal: 55, shapeShare: 51);
 
             // Combat Cloak
             _builder.Create(RecipeType.CombatCloak, SkillType.Smithery)
@@ -68,7 +68,7 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.SmitheryRecipeDefinition
                 .Component("ref_veldite", 5)
                 .Component("lth_ruined", 5)
                 .Component("jade", 3)
-                .ForgeParameters(rangeCenter: 50, rangeWidth: 54, coolingRate: 4, startingThermal: 65, shapeShare: 54);
+                .ForgeParameters(rangeCenter: 50, rangeWidth: 54, coolingRate: 3, startingThermal: 65, shapeShare: 54);
 
             // Amateur Cloak
             _builder.Create(RecipeType.AmateurCloak, SkillType.Smithery)
@@ -80,7 +80,7 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.SmitheryRecipeDefinition
                 .Component("ref_veldite", 5)
                 .Component("lth_ruined", 5)
                 .Component("jade", 3)
-                .ForgeParameters(rangeCenter: 45, rangeWidth: 54, coolingRate: 2, startingThermal: 60, shapeShare: 49);
+                .ForgeParameters(rangeCenter: 45, rangeWidth: 54, coolingRate: 1, startingThermal: 60, shapeShare: 49);
 
             // Cloth Cloak
             _builder.Create(RecipeType.ClothCloak, SkillType.Smithery)
@@ -92,7 +92,7 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.SmitheryRecipeDefinition
                 .Component("ref_veldite", 5)
                 .Component("lth_ruined", 5)
                 .Component("jade", 3)
-                .ForgeParameters(rangeCenter: 49, rangeWidth: 49, coolingRate: 4, startingThermal: 62, shapeShare: 51);
+                .ForgeParameters(rangeCenter: 49, rangeWidth: 49, coolingRate: 3, startingThermal: 62, shapeShare: 51);
 
             // Chef Cloak
             _builder.Create(RecipeType.ChefCloak, SkillType.Smithery)
@@ -104,7 +104,7 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.SmitheryRecipeDefinition
                 .Component("ref_veldite", 5)
                 .Component("lth_ruined", 5)
                 .Component("jade", 3)
-                .ForgeParameters(rangeCenter: 48, rangeWidth: 47, coolingRate: 4, startingThermal: 68, shapeShare: 50);
+                .ForgeParameters(rangeCenter: 48, rangeWidth: 47, coolingRate: 3, startingThermal: 68, shapeShare: 50);
         }
 
         private void Tier2()
@@ -152,7 +152,7 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.SmitheryRecipeDefinition
                 .Component("ref_scordspar", 5)
                 .Component("lth_flawed", 5)
                 .Component("agate", 3)
-                .ForgeParameters(rangeCenter: 48, rangeWidth: 45, coolingRate: 4, startingThermal: 57, shapeShare: 53);
+                .ForgeParameters(rangeCenter: 48, rangeWidth: 45, coolingRate: 3, startingThermal: 57, shapeShare: 53);
 
             // Worker Cloak
             _builder.Create(RecipeType.WorkerCloak, SkillType.Smithery)
@@ -164,7 +164,7 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.SmitheryRecipeDefinition
                 .Component("ref_scordspar", 5)
                 .Component("lth_flawed", 5)
                 .Component("agate", 3)
-                .ForgeParameters(rangeCenter: 52, rangeWidth: 44, coolingRate: 5, startingThermal: 60, shapeShare: 51);
+                .ForgeParameters(rangeCenter: 52, rangeWidth: 44, coolingRate: 4, startingThermal: 60, shapeShare: 51);
 
             // Linen Cloak
             _builder.Create(RecipeType.LinenCloak, SkillType.Smithery)
@@ -176,7 +176,7 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.SmitheryRecipeDefinition
                 .Component("ref_scordspar", 5)
                 .Component("lth_flawed", 5)
                 .Component("agate", 3)
-                .ForgeParameters(rangeCenter: 51, rangeWidth: 45, coolingRate: 4, startingThermal: 59, shapeShare: 55);
+                .ForgeParameters(rangeCenter: 51, rangeWidth: 45, coolingRate: 3, startingThermal: 59, shapeShare: 55);
 
             // Velveteen Cloak
             _builder.Create(RecipeType.VelveteenCloak, SkillType.Smithery)
@@ -188,7 +188,7 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.SmitheryRecipeDefinition
                 .Component("ref_scordspar", 5)
                 .Component("lth_flawed", 5)
                 .Component("agate", 3)
-                .ForgeParameters(rangeCenter: 52, rangeWidth: 47, coolingRate: 3, startingThermal: 58, shapeShare: 53);
+                .ForgeParameters(rangeCenter: 52, rangeWidth: 47, coolingRate: 2, startingThermal: 58, shapeShare: 53);
         }
 
         private void Tier3()
@@ -512,7 +512,7 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.SmitheryRecipeDefinition
                 .Component("lth_ruined", 8)
                 .Component("fiberp_ruined", 5)
                 .Component("ref_veldite", 2)
-                .ForgeParameters(rangeCenter: 49, rangeWidth: 47, coolingRate: 4, startingThermal: 64, shapeShare: 50);
+                .ForgeParameters(rangeCenter: 49, rangeWidth: 47, coolingRate: 3, startingThermal: 64, shapeShare: 50);
 
             // Mystic Cloak
             _builder.Create(RecipeType.MysticCloak, SkillType.Smithery)
@@ -524,7 +524,7 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.SmitheryRecipeDefinition
                 .Component("lth_ruined", 8)
                 .Component("fiberp_ruined", 5)
                 .Component("jade", 2)
-                .ForgeParameters(rangeCenter: 40, rangeWidth: 60, coolingRate: 3, startingThermal: 53, shapeShare: 52);
+                .ForgeParameters(rangeCenter: 40, rangeWidth: 60, coolingRate: 2, startingThermal: 53, shapeShare: 52);
 
             // Vanguard Cloak
             _builder.Create(RecipeType.VanguardCloak, SkillType.Smithery)
@@ -536,7 +536,7 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.SmitheryRecipeDefinition
                 .Component("lth_ruined", 8)
                 .Component("fiberp_ruined", 5)
                 .Component("elec_ruined", 2)
-                .ForgeParameters(rangeCenter: 41, rangeWidth: 58, coolingRate: 2, startingThermal: 60, shapeShare: 51);
+                .ForgeParameters(rangeCenter: 41, rangeWidth: 58, coolingRate: 1, startingThermal: 60, shapeShare: 51);
         }
 
         private void Tier2A()
@@ -551,7 +551,7 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.SmitheryRecipeDefinition
                 .Component("lth_flawed", 8)
                 .Component("fiberp_flawed", 5)
                 .Component("ref_scordspar", 2)
-                .ForgeParameters(rangeCenter: 49, rangeWidth: 44, coolingRate: 4, startingThermal: 60, shapeShare: 49);
+                .ForgeParameters(rangeCenter: 49, rangeWidth: 44, coolingRate: 3, startingThermal: 60, shapeShare: 49);
 
             // Oracle Cloak
             _builder.Create(RecipeType.OracleCloak, SkillType.Smithery)
@@ -563,7 +563,7 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.SmitheryRecipeDefinition
                 .Component("lth_flawed", 8)
                 .Component("fiberp_flawed", 5)
                 .Component("agate", 2)
-                .ForgeParameters(rangeCenter: 36, rangeWidth: 56, coolingRate: 3, startingThermal: 53, shapeShare: 52);
+                .ForgeParameters(rangeCenter: 36, rangeWidth: 56, coolingRate: 2, startingThermal: 53, shapeShare: 52);
 
             // Onslaught Cloak
             _builder.Create(RecipeType.OnslaughtCloak, SkillType.Smithery)
@@ -575,7 +575,7 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.SmitheryRecipeDefinition
                 .Component("lth_flawed", 8)
                 .Component("fiberp_flawed", 5)
                 .Component("elec_flawed", 2)
-                .ForgeParameters(rangeCenter: 42, rangeWidth: 55, coolingRate: 4, startingThermal: 54, shapeShare: 49);
+                .ForgeParameters(rangeCenter: 42, rangeWidth: 55, coolingRate: 3, startingThermal: 54, shapeShare: 49);
         }
 
         private void Tier3A()
@@ -590,7 +590,7 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.SmitheryRecipeDefinition
                 .Component("lth_good", 8)
                 .Component("fiberp_good", 5)
                 .Component("ref_plagionite", 2)
-                .ForgeParameters(rangeCenter: 45, rangeWidth: 34, coolingRate: 4, startingThermal: 50, shapeShare: 51);
+                .ForgeParameters(rangeCenter: 45, rangeWidth: 34, coolingRate: 3, startingThermal: 50, shapeShare: 51);
 
             // Arcanist Cloak
             _builder.Create(RecipeType.ArcanistCloak, SkillType.Smithery)
@@ -602,7 +602,7 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.SmitheryRecipeDefinition
                 .Component("lth_good", 8)
                 .Component("fiberp_good", 5)
                 .Component("citrine", 2)
-                .ForgeParameters(rangeCenter: 41, rangeWidth: 52, coolingRate: 5, startingThermal: 47, shapeShare: 52);
+                .ForgeParameters(rangeCenter: 41, rangeWidth: 52, coolingRate: 4, startingThermal: 47, shapeShare: 52);
 
             // Maverick Cloak
             _builder.Create(RecipeType.MaverickCloak, SkillType.Smithery)
@@ -614,7 +614,7 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.SmitheryRecipeDefinition
                 .Component("lth_good", 8)
                 .Component("fiberp_good", 5)
                 .Component("elec_good", 2)
-                .ForgeParameters(rangeCenter: 44, rangeWidth: 47, coolingRate: 4, startingThermal: 50, shapeShare: 51);
+                .ForgeParameters(rangeCenter: 44, rangeWidth: 47, coolingRate: 3, startingThermal: 50, shapeShare: 51);
         }
 
         private void Tier4A()

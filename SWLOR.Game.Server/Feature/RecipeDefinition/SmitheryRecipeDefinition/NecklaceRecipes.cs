@@ -34,7 +34,7 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.SmitheryRecipeDefinition
                 .EnhancementSlots(RecipeEnhancementType.Armor, 1)
                 .Component("ref_veldite", 2)
                 .Component("jade", 1)
-                .ForgeParameters(rangeCenter: 50, rangeWidth: 55, coolingRate: 2, startingThermal: 66, shapeShare: 47);
+                .ForgeParameters(rangeCenter: 50, rangeWidth: 55, coolingRate: 1, startingThermal: 66, shapeShare: 47);
 
             // Spiritmaster Necklace
             _builder.Create(RecipeType.SpiritmasterNecklace, SkillType.Smithery)
@@ -45,7 +45,7 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.SmitheryRecipeDefinition
                 .EnhancementSlots(RecipeEnhancementType.Armor, 1)
                 .Component("ref_veldite", 2)
                 .Component("jade", 1)
-                .ForgeParameters(rangeCenter: 51, rangeWidth: 57, coolingRate: 3, startingThermal: 68, shapeShare: 41);
+                .ForgeParameters(rangeCenter: 51, rangeWidth: 57, coolingRate: 2, startingThermal: 68, shapeShare: 41);
 
             // Combat Necklace
             _builder.Create(RecipeType.CombatNecklace, SkillType.Smithery)
@@ -56,7 +56,7 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.SmitheryRecipeDefinition
                 .EnhancementSlots(RecipeEnhancementType.Armor, 1)
                 .Component("ref_veldite", 2)
                 .Component("jade", 1)
-                .ForgeParameters(rangeCenter: 51, rangeWidth: 55, coolingRate: 2, startingThermal: 73, shapeShare: 46);
+                .ForgeParameters(rangeCenter: 51, rangeWidth: 55, coolingRate: 1, startingThermal: 73, shapeShare: 46);
 
             // Advent Necklace
             _builder.Create(RecipeType.AdventNecklace, SkillType.Smithery)
@@ -68,7 +68,7 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.SmitheryRecipeDefinition
                 .Component("ref_veldite", 5)
                 .Component("lth_ruined", 5)
                 .Component("jade", 3)
-                .ForgeParameters(rangeCenter: 49, rangeWidth: 53, coolingRate: 4, startingThermal: 64, shapeShare: 45);
+                .ForgeParameters(rangeCenter: 49, rangeWidth: 53, coolingRate: 3, startingThermal: 64, shapeShare: 45);
 
             // Amateur Necklace
             _builder.Create(RecipeType.AmateurNecklace, SkillType.Smithery)
@@ -80,7 +80,7 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.SmitheryRecipeDefinition
                 .Component("ref_veldite", 5)
                 .Component("lth_ruined", 5)
                 .Component("jade", 3)
-                .ForgeParameters(rangeCenter: 45, rangeWidth: 46, coolingRate: 4, startingThermal: 61, shapeShare: 42);
+                .ForgeParameters(rangeCenter: 45, rangeWidth: 46, coolingRate: 3, startingThermal: 61, shapeShare: 42);
 
             // Cloth Necklace
             _builder.Create(RecipeType.ClothNecklace, SkillType.Smithery)
@@ -92,7 +92,7 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.SmitheryRecipeDefinition
                 .Component("ref_veldite", 5)
                 .Component("lth_ruined", 5)
                 .Component("jade", 3)
-                .ForgeParameters(rangeCenter: 52, rangeWidth: 47, coolingRate: 4, startingThermal: 61, shapeShare: 42);
+                .ForgeParameters(rangeCenter: 52, rangeWidth: 47, coolingRate: 3, startingThermal: 61, shapeShare: 42);
 
             // Chef Necklace
             _builder.Create(RecipeType.ChefNecklace, SkillType.Smithery)
@@ -104,7 +104,7 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.SmitheryRecipeDefinition
                 .Component("ref_veldite", 5)
                 .Component("lth_ruined", 5)
                 .Component("jade", 3)
-                .ForgeParameters(rangeCenter: 44, rangeWidth: 46, coolingRate: 2, startingThermal: 65, shapeShare: 43);
+                .ForgeParameters(rangeCenter: 44, rangeWidth: 46, coolingRate: 1, startingThermal: 65, shapeShare: 43);
         }
 
         private void Tier2()
@@ -118,7 +118,7 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.SmitheryRecipeDefinition
                 .EnhancementSlots(RecipeEnhancementType.Armor, 2)
                 .Component("ref_scordspar", 2)
                 .Component("agate", 1)
-                .ForgeParameters(rangeCenter: 47, rangeWidth: 48, coolingRate: 2, startingThermal: 66, shapeShare: 43);
+                .ForgeParameters(rangeCenter: 47, rangeWidth: 48, coolingRate: 1, startingThermal: 66, shapeShare: 43);
 
             // Vivid Necklace
             _builder.Create(RecipeType.VividNecklace, SkillType.Smithery)
@@ -129,7 +129,7 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.SmitheryRecipeDefinition
                 .EnhancementSlots(RecipeEnhancementType.Armor, 2)
                 .Component("ref_scordspar", 2)
                 .Component("agate", 1)
-                .ForgeParameters(rangeCenter: 52, rangeWidth: 53, coolingRate: 2, startingThermal: 65, shapeShare: 45);
+                .ForgeParameters(rangeCenter: 52, rangeWidth: 53, coolingRate: 1, startingThermal: 65, shapeShare: 45);
 
             // Valor Necklace
             _builder.Create(RecipeType.ValorNecklace, SkillType.Smithery)
@@ -140,7 +140,7 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.SmitheryRecipeDefinition
                 .EnhancementSlots(RecipeEnhancementType.Armor, 2)
                 .Component("ref_scordspar", 2)
                 .Component("agate", 1)
-                .ForgeParameters(rangeCenter: 50, rangeWidth: 46, coolingRate: 2, startingThermal: 64, shapeShare: 44);
+                .ForgeParameters(rangeCenter: 50, rangeWidth: 46, coolingRate: 1, startingThermal: 64, shapeShare: 44);
 
             // Frontier Necklace
             _builder.Create(RecipeType.FrontierNecklace, SkillType.Smithery)
@@ -152,7 +152,7 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.SmitheryRecipeDefinition
                 .Component("ref_scordspar", 5)
                 .Component("lth_flawed", 5)
                 .Component("agate", 3)
-                .ForgeParameters(rangeCenter: 52, rangeWidth: 42, coolingRate: 3, startingThermal: 60, shapeShare: 47);
+                .ForgeParameters(rangeCenter: 52, rangeWidth: 42, coolingRate: 2, startingThermal: 60, shapeShare: 47);
 
             // Worker Necklace
             _builder.Create(RecipeType.WorkerNecklace, SkillType.Smithery)
@@ -164,7 +164,7 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.SmitheryRecipeDefinition
                 .Component("ref_scordspar", 5)
                 .Component("lth_flawed", 5)
                 .Component("agate", 3)
-                .ForgeParameters(rangeCenter: 46, rangeWidth: 42, coolingRate: 3, startingThermal: 58, shapeShare: 43);
+                .ForgeParameters(rangeCenter: 46, rangeWidth: 42, coolingRate: 2, startingThermal: 58, shapeShare: 43);
 
             // Linen Necklace
             _builder.Create(RecipeType.LinenNecklace, SkillType.Smithery)
@@ -176,7 +176,7 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.SmitheryRecipeDefinition
                 .Component("ref_scordspar", 5)
                 .Component("lth_flawed", 5)
                 .Component("agate", 3)
-                .ForgeParameters(rangeCenter: 51, rangeWidth: 46, coolingRate: 3, startingThermal: 58, shapeShare: 42);
+                .ForgeParameters(rangeCenter: 51, rangeWidth: 46, coolingRate: 2, startingThermal: 58, shapeShare: 42);
 
             // Velveteen Necklace
             _builder.Create(RecipeType.VelveteenNecklace, SkillType.Smithery)
@@ -188,7 +188,7 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.SmitheryRecipeDefinition
                 .Component("ref_scordspar", 5)
                 .Component("lth_flawed", 5)
                 .Component("agate", 3)
-                .ForgeParameters(rangeCenter: 46, rangeWidth: 42, coolingRate: 5, startingThermal: 56, shapeShare: 44);
+                .ForgeParameters(rangeCenter: 46, rangeWidth: 42, coolingRate: 4, startingThermal: 56, shapeShare: 44);
         }
 
         private void Tier3()
@@ -202,7 +202,7 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.SmitheryRecipeDefinition
                 .EnhancementSlots(RecipeEnhancementType.Armor, 2)
                 .Component("ref_plagionite", 2)
                 .Component("citrine", 1)
-                .ForgeParameters(rangeCenter: 44, rangeWidth: 41, coolingRate: 5, startingThermal: 60, shapeShare: 47);
+                .ForgeParameters(rangeCenter: 44, rangeWidth: 41, coolingRate: 4, startingThermal: 60, shapeShare: 47);
 
             // Reginal Necklace
             _builder.Create(RecipeType.ReginalNecklace, SkillType.Smithery)
@@ -213,7 +213,7 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.SmitheryRecipeDefinition
                 .EnhancementSlots(RecipeEnhancementType.Armor, 2)
                 .Component("ref_plagionite", 2)
                 .Component("citrine", 1)
-                .ForgeParameters(rangeCenter: 52, rangeWidth: 44, coolingRate: 5, startingThermal: 59, shapeShare: 45);
+                .ForgeParameters(rangeCenter: 52, rangeWidth: 44, coolingRate: 4, startingThermal: 59, shapeShare: 45);
 
             // Forza Necklace
             _builder.Create(RecipeType.ForzaNecklace, SkillType.Smithery)
@@ -224,7 +224,7 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.SmitheryRecipeDefinition
                 .EnhancementSlots(RecipeEnhancementType.Armor, 2)
                 .Component("ref_plagionite", 2)
                 .Component("citrine", 1)
-                .ForgeParameters(rangeCenter: 50, rangeWidth: 46, coolingRate: 4, startingThermal: 54, shapeShare: 43);
+                .ForgeParameters(rangeCenter: 50, rangeWidth: 46, coolingRate: 3, startingThermal: 54, shapeShare: 43);
 
             // Majestic Necklace
             _builder.Create(RecipeType.MajesticNecklace, SkillType.Smithery)
@@ -286,7 +286,7 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.SmitheryRecipeDefinition
                 .EnhancementSlots(RecipeEnhancementType.Armor, 2)
                 .Component("ref_keromber", 2)
                 .Component("ruby", 1)
-                .ForgeParameters(rangeCenter: 47, rangeWidth: 34, coolingRate: 6, startingThermal: 55, shapeShare: 47);
+                .ForgeParameters(rangeCenter: 47, rangeWidth: 34, coolingRate: 5, startingThermal: 55, shapeShare: 47);
 
             // Grenada Necklace
             _builder.Create(RecipeType.GrenadaNecklace, SkillType.Smithery)
@@ -297,7 +297,7 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.SmitheryRecipeDefinition
                 .EnhancementSlots(RecipeEnhancementType.Armor, 2)
                 .Component("ref_keromber", 2)
                 .Component("ruby", 1)
-                .ForgeParameters(rangeCenter: 44, rangeWidth: 36, coolingRate: 4, startingThermal: 54, shapeShare: 41);
+                .ForgeParameters(rangeCenter: 44, rangeWidth: 36, coolingRate: 3, startingThermal: 54, shapeShare: 41);
 
             // Survival Necklace
             _builder.Create(RecipeType.SurvivalNecklace, SkillType.Smithery)
@@ -308,7 +308,7 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.SmitheryRecipeDefinition
                 .EnhancementSlots(RecipeEnhancementType.Armor, 2)
                 .Component("ref_keromber", 2)
                 .Component("ruby", 1)
-                .ForgeParameters(rangeCenter: 49, rangeWidth: 34, coolingRate: 4, startingThermal: 51, shapeShare: 47);
+                .ForgeParameters(rangeCenter: 49, rangeWidth: 34, coolingRate: 3, startingThermal: 51, shapeShare: 47);
 
             // Dream Necklace
             _builder.Create(RecipeType.DreamNecklace, SkillType.Smithery)

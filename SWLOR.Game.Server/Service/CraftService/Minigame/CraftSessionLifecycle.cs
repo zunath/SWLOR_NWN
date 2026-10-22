@@ -109,7 +109,7 @@ public sealed class CraftSessionLifecycle
         var outcome = CraftOutcomeRules.CalculateSuccess(
             quality,
             recipe.Level,
-            Craft.GetBaseRecipeXP(recipe, GetRank(dbPlayer, recipe)),
+            BaseXp(dbPlayer, recipe),
             firstTime,
             blueprintLevel,
             recipe.Category == RecipeCategoryType.Food,
@@ -168,7 +168,7 @@ public sealed class CraftSessionLifecycle
             _random,
             enhancements.Count,
             record.Components.Count,
-            Craft.GetBaseRecipeXP(recipe, GetRank(dbPlayer, recipe)),
+            BaseXp(dbPlayer, recipe),
             record.BlueprintLevel);
 
         var kept = new List<string>();
@@ -266,6 +266,9 @@ public sealed class CraftSessionLifecycle
 
         return slots;
     }
+
+    private int BaseXp(Player dbPlayer, RecipeDetail recipe) =>
+        CraftOutcomeRules.ScaleBaseXp(Craft.GetBaseRecipeXP(recipe, GetRank(dbPlayer, recipe)), _world.GetXpMultiplier(recipe.Skill));
 
     private static int GetRank(Player dbPlayer, RecipeDetail recipe) =>
         dbPlayer.Skills.TryGetValue(recipe.Skill, out var skill) ? skill.Rank : 0;

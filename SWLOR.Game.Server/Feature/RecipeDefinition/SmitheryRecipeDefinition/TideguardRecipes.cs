@@ -54,7 +54,7 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.SmitheryRecipeDefinition
                 .Component("lth_good", 2)
                 .Component("fiberp_good", 1)
                 .Component("tide_scale", 1)
-                .ForgeParameters(rangeCenter: 39, rangeWidth: 59, coolingRate: 4, startingThermal: 46, shapeShare: 57);
+                .ForgeParameters(rangeCenter: 39, rangeWidth: 59, coolingRate: 3, startingThermal: 46, shapeShare: 57);
 
             // Tideguard Sash
             _builder.Create(RecipeType.TideguardSash, SkillType.Smithery)

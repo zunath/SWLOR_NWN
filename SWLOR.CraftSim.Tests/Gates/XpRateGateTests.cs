@@ -164,6 +164,31 @@ namespace SWLOR.CraftSim.Tests.Gates
         }
 
         [Test]
+        public void TheScenariosXpMultiplierScalesTheNewSideAndNotTheLegacySide()
+        {
+            var context = Context(new[] { 25 }, runs: 30);
+            var xpCase = new XpRateCase("21-30", "best gear");
+
+            var plain = Suite(new BenchScenario()).XpCohort;
+            var scaled = Suite(new BenchScenario { XpMultiplier = 2.0 }).XpCohort;
+
+            var one = plain.PlayReplacement(xpCase, context);
+            var two = scaled.PlayReplacement(xpCase, context);
+            two.ActionsPerRun.Should().Be(one.ActionsPerRun, "the multiplier changes XP, not play");
+            two.XpPerRun.Should().BeApproximately(one.XpPerRun * 2.0, one.XpPerRun * 0.02);
+            scaled.PlayLegacy(xpCase, context).XpPerRun.Should().Be(plain.PlayLegacy(xpCase, context).XpPerRun);
+        }
+
+        [Test]
+        public void TheReportNamesAnXpMultiplierOnlyWhenTheScenarioHasOne()
+        {
+            var context = Context(new[] { 25 });
+
+            Suite(new BenchScenario()).Inputs(context).Should().NotContain(line => line.Contains("XP multiplier"));
+            Suite(new BenchScenario { XpMultiplier = 1.6 }).Inputs(context).Should().Contain(line => line.Contains("XP multiplier") && line.Contains("1.6"));
+        }
+
+        [Test]
         public void TheLegacySideIsTheOldMinigamesLookaheadPlayerOnTheSameRecipes()
         {
             var context = Context(new[] { 25 }, runs: 30);

@@ -79,12 +79,27 @@ namespace SWLOR.CraftSim.Play
     {
         private static readonly IReadOnlyDictionary<string, int> NoValues = new Dictionary<string, int>();
 
+        private readonly IReadOnlyList<MinigameMeterChange> _changes;
+        private IReadOnlyDictionary<string, int> _values;
+
         public LeafPosition(MinigameMeters meters, MinigameStatus status, FinishEstimate finish, IReadOnlyDictionary<string, int> meterValues = null)
         {
             Meters = meters;
             Status = status;
             Finish = finish;
-            MeterValues = meterValues ?? NoValues;
+            _values = meterValues ?? NoValues;
+        }
+
+        /// <summary>
+        /// A position whose displayed meters are what a preview says a result leaves. The values are read from the preview's list only
+        /// when a heuristic asks for one, so a minigame whose heuristic ignores them pays nothing for them.
+        /// </summary>
+        public LeafPosition(MinigameMeters meters, MinigameStatus status, FinishEstimate finish, IReadOnlyList<MinigameMeterChange> afterChanges)
+        {
+            Meters = meters;
+            Status = status;
+            Finish = finish;
+            _changes = afterChanges;
         }
 
         public MinigameMeters Meters { get; }
@@ -95,10 +110,24 @@ namespace SWLOR.CraftSim.Play
         /// The value of every meter the engine displays, by meter id, shared and engine-specific. It lets a minigame's own heuristic read a
         /// meter the shared four do not carry, such as the Kitchen's distance from its target. Empty for a position that ended the attempt.
         /// </summary>
-        public IReadOnlyDictionary<string, int> MeterValues { get; }
+        public IReadOnlyDictionary<string, int> MeterValues => _values ??= _changes.ToDictionary(change => change.Id, change => change.After);
 
         /// <summary>The value of one displayed meter, or null when the position does not carry it.</summary>
-        public int? Meter(string id) => MeterValues.TryGetValue(id, out var value) ? value : null;
+        public int? Meter(string id)
+        {
+            if (_values == null)
+            {
+                foreach (var change in _changes)
+                {
+                    if (change.Id == id)
+                        return change.After;
+                }
+
+                return null;
+            }
+
+            return _values.TryGetValue(id, out var value) ? value : null;
+        }
 
         public static LeafPosition Of(ICraftMinigameEngine engine) =>
             new(

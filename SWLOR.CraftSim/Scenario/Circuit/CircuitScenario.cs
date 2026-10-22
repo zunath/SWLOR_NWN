@@ -24,7 +24,10 @@ namespace SWLOR.CraftSim.Scenario.Circuit
         /// <summary>An estimate: the window shows each action's result and risk, so a turn takes a little longer than the old window's 6 s. Client timing replaces it.</summary>
         public double SecondsPerAction => 8.0;
 
-        public double XpMultiplier => CircuitRules.XpMultiplier;
+        /// <summary>The Circuit's multiplier depends on the recipe's level band: see <see cref="XpMultiplierFor"/>.</summary>
+        public double XpMultiplier => 1.0;
+
+        public double XpMultiplierFor(int recipeLevel) => CraftMinigameXp.MultiplierFor(Minigame, recipeLevel);
 
         /// <summary>The Assembly an enhancement adds to a craft is the old window's progress penalty, added to what the piece needs.</summary>
         public EnhancementSupport Enhancements => EnhancementSupport.Modeled;
@@ -49,7 +52,7 @@ namespace SWLOR.CraftSim.Scenario.Circuit
 
         public IReadOnlyList<string> Limitations => new[]
         {
-            "An enhancement's difficulty is the old window's progress penalty added to the Assembly the piece needs; the Circuit's Wire, Tune and Discharge outputs do not change with it.",
+            $"An enhancement's difficulty is the old window's progress penalty added to the Assembly the piece needs, capped at {CircuitRules.MaxEnhancementAssemblyShare * 100:0}% of the Assembly the recipe itself needs; the Circuit's Wire, Tune and Discharge outputs do not change with it.",
             "The Circuit has no styles or perks yet, so the style-balance gate is not applicable and the perks-optional gate plays the unperked crafter.",
             "Seconds per action is an estimate of 8 s until the client evidence measures it."
         };

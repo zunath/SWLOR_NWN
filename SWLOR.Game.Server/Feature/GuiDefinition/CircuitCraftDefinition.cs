@@ -18,7 +18,7 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition
         private const float ActionListHeight = 7 * ActionRowHeight + 8f;
         private const float ActionButtonWidth = 170f;
 
-        private static readonly string HelpText =
+        public static readonly string HelpText =
             "GOAL\n" +
             "Fill Assembly to finish the item. Calibration is the item's quality. Integrity is the piece's health: if it reaches 0 the " +
             $"piece breaks and each component stack and each enhancement is lost on a roll of {CraftOutcomeRules.ChanceToLoseItemPercent} or lower on a D100. " +

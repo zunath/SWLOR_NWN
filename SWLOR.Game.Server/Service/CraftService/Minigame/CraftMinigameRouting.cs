@@ -24,10 +24,6 @@ public static class CraftMinigameRouting
 
     public static GuiWindowType GetWindow(SkillType skill) => GetRoute(skill).Window;
 
-    /// <summary>A recipe's base XP after its skill's minigame multiplier, rounded to the nearest whole XP.</summary>
-    public static int ScaleBaseXp(SkillType skill, int baseXp) =>
-        (int)Math.Round(baseXp * GetRoute(skill).XpMultiplier, MidpointRounding.AwayFromZero);
-
     /// <summary>
     /// The window of the research Experiment. It crafts no item, but it spends the Fabrication CP of the gear worn when it opened, so
     /// it commits that gear like a crafting window does.
@@ -58,7 +54,7 @@ public static class CraftMinigameRouting
             if (routes.ContainsKey(declaration.Skill))
                 throw new InvalidOperationException($"More than one crafting window is registered for {declaration.Skill}.");
 
-            routes[declaration.Skill] = new CraftMinigameRoute(declaration.Skill, declaration.Window, declaration.Minigame, declaration.XpMultiplier);
+            routes[declaration.Skill] = new CraftMinigameRoute(declaration.Skill, declaration.Window, declaration.Minigame);
         }
 
         return routes;

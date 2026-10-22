@@ -36,6 +36,11 @@ namespace SWLOR.CraftSim.Tests.Support
 
         public double XpMultiplier { get; init; } = 1;
 
+        /// <summary>A multiplier that depends on the recipe level; null plays <see cref="XpMultiplier"/> at every level.</summary>
+        public Func<int, double> XpMultiplierByLevel { get; init; }
+
+        public double XpMultiplierFor(int recipeLevel) => XpMultiplierByLevel?.Invoke(recipeLevel) ?? XpMultiplier;
+
         /// <summary>Adds the Perfect action, so a fixed rotation of it is as good as anything.</summary>
         public bool Dominant { get; init; }
 

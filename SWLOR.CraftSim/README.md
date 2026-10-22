@@ -74,7 +74,7 @@ The recipes are the cohort's recipes that have an enhancement slot, an even samp
 Mapping a penalty onto a minigame: `request.Enhancements.TotalProgressPenalty` (count x penalty each, in the old window's progress units) goes through the engine's own enhancement handling, the same one its window uses when the player slots enhancements, as each phase 1 PR mapped the old progress penalty:
 
 - **Forge (Smithery):** extra Shape. `ForgeRules.EnhancementShapePercent(total, recipe.Level)` gives the percent, which `ForgeSetup` takes as its `EnhancementShapePercent`.
-- **Circuit (Engineering):** extra Assembly. `CircuitSetup` takes the total as `enhancementProgressPenalty` and adds it to `MaxAssembly`.
+- **Circuit (Engineering):** extra Assembly. `CircuitSetup` takes the total as `enhancementProgressPenalty` and adds `CircuitRules.EnhancementAssembly(total, assemblySize)` to `MaxAssembly`: the penalty, capped at `MaxEnhancementAssemblyShare` of the Assembly the recipe itself needs (low-level recipes need so little Assembly that their enhancements' penalty would more than double it).
 - **Kitchen (Agriculture):** extra Doneness. `KitchenTuning.EnhancementDoneness(total)` is passed to `KitchenEngine` as `extraDoneness`.
 - **Reaction:** `EnhancementSupport.NoSlots`.
 

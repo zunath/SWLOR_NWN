@@ -64,6 +64,24 @@ public class CircuitEngineTests
         enhanced.WireGain(0).Should().Be(Setup().WireGain(0), "enhancements add to what is needed, not to what a Wire does");
     }
 
+    [Test]
+    public void EnhancementsAddScaledPenaltyToAssembly_ButNeverMoreThanTheCapShareOfWhatTheRecipeNeeds()
+    {
+        CircuitRules.EnhancementAssembly(0, 89).Should().Be(0);
+        CircuitRules.EnhancementAssembly(-5, 89).Should().Be(0);
+
+        var cap = (int)Math.Round(89 * CircuitRules.MaxEnhancementAssemblyShare, MidpointRounding.AwayFromZero);
+        var small = (int)Math.Round(10 * CircuitRules.EnhancementAssemblyPerPenalty, MidpointRounding.AwayFromZero);
+        CircuitRules.EnhancementAssembly(10, 89).Should().Be(Math.Min(small, cap));
+        CircuitRules.EnhancementAssembly(100_000, 89).Should().Be(cap, "a penalty far past the recipe's own size is capped");
+
+        var capped = Setup(penalty: 100_000);
+        capped.EnhancementProgressPenalty.Should().Be(100_000);
+        capped.EnhancementAssembly.Should().Be(cap);
+        capped.MaxAssembly.Should().Be(89 + cap);
+        capped.StartingMeters().Progress.Max.Should().Be(89 + cap);
+    }
+
     [TestCase(24, 38)]
     [TestCase(25, 69)]
     [TestCase(50, 20 + 37 + 31)]

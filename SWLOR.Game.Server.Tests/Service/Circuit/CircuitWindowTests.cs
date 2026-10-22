@@ -38,6 +38,16 @@ public class CircuitWindowTests
     }
 
     [Test]
+    public void TheHelpTextStatesTheSlotThresholdsTheSharedOutcomeRulesSet()
+    {
+        var thresholds = CraftOutcomeRules.GetEnhancementThresholds(3);
+
+        CircuitCraftDefinition.HelpText.Should().Contain(
+            $"{thresholds[0]}% for the first slot, {thresholds[1]}% for the second and {thresholds[2]}% for the third and any later slot");
+        CircuitCraftDefinition.HelpText.Should().NotContain("for the others");
+    }
+
+    [Test]
     public void AButtonShowsItsCpCost_AndItsRowShowsTheResultThenTheOverloadRisk()
     {
         var engine = Engine(Setup(), 6);

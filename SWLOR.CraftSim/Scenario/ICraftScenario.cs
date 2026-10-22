@@ -46,6 +46,13 @@ namespace SWLOR.CraftSim.Scenario
         /// </summary>
         double XpMultiplier => 1.0;
 
+        /// <summary>
+        /// The multiplier on the base XP of a craft of a recipe of the given level: <see cref="XpMultiplier"/> by default. A minigame whose
+        /// need differs by level (the old window's crafts are short at low levels and long at high ones) declares a multiplier per level
+        /// band in the game's <c>CraftMinigameXp</c> and returns it here.
+        /// </summary>
+        double XpMultiplierFor(int recipeLevel) => XpMultiplier;
+
         /// <summary>Which recipes the gates play and at which ranks. By default every recipe of <see cref="Skill"/>, at its own level up to rank 50.</summary>
         ScenarioCohort Cohort => ScenarioCohort.ForSkill(Skill);
 

@@ -11,6 +11,4 @@ public sealed class CircuitRoute : ICraftMinigameRoute
     public GuiWindowType Window => GuiWindowType.CraftCircuit;
 
     public CraftMinigameType Minigame => CraftMinigameType.Circuit;
-
-    public double XpMultiplier => CircuitRules.XpMultiplier;
 }

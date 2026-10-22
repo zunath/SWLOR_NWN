@@ -21,7 +21,8 @@ public static unsafe class WeaponRepositioning
     private static readonly Dictionary<uint, long> _lockouts = new();
     private const int MovementLockoutMilliseconds = 2000;
     private const int ArrivalTimeoutMilliseconds = 3000;
-    private const float ArrivalTolerance = 0.35f;
+    /// <summary>A move counts as arrived this close to its destination.</summary>
+    public const float ArrivalTolerance = 0.35f;
     // The native move cycles these base run clips; the weapon carry layers would pin the arms.
     private static readonly string[] RunAnimations = { "run", "runfl", "runfr" };
     private static readonly string[] RunCarryLayers = { "run_swordr", "run_swordl", "run_bowl", "run_shieldl" };

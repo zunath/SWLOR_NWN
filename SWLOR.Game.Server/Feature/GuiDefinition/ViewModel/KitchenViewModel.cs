@@ -516,6 +516,17 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
             if (_engine != null || _parameters == null)
                 return;
 
+            // Build the dish first, so a recipe the Kitchen cannot read never takes the player's materials.
+            var recipe = Craft.GetRecipe(_recipe);
+            var dbPlayer = DB.Get<Player>(GetObjectUUID(Player));
+            var kitchen = KitchenRecipe.From(_parameters, recipe.Level, recipe.Components, Cache.GetItemNameByResref);
+            var penalty = _enhancementPenalties.Take(_slotCount).Sum();
+            var engine = new KitchenEngine(
+                ServiceMinigameRandom.Instance,
+                kitchen,
+                BuildStats(dbPlayer, recipe),
+                KitchenTuning.EnhancementDoneness(penalty));
+
             var request = new CraftSessionStartRequest(
                 _recipe,
                 _blueprintItem,
@@ -528,15 +539,7 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
             }
 
             _session = result.Session;
-            var recipe = Craft.GetRecipe(_recipe);
-            var dbPlayer = DB.Get<Player>(GetObjectUUID(Player));
-            var kitchen = KitchenRecipe.From(_parameters, recipe.Level, recipe.Components, Cache.GetItemNameByResref);
-            var penalty = _enhancementPenalties.Take(_slotCount).Sum();
-            _engine = new KitchenEngine(
-                ServiceMinigameRandom.Instance,
-                kitchen,
-                BuildStats(dbPlayer, recipe),
-                KitchenTuning.EnhancementDoneness(penalty));
+            _engine = engine;
 
             ActionNames = BuildActionNames();
             LastResultText = string.Empty;

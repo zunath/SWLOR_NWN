@@ -4,6 +4,8 @@ using SWLOR.CraftSim.Progression;
 using SWLOR.CraftSim.Tests.Support;
 using SWLOR.Game.Server.Service;
 using SWLOR.Game.Server.Service.CraftService;
+using SWLOR.Game.Server.Service.CraftService.Minigame.Experiment;
+using SWLOR.Game.Server.Service.CraftService.Research;
 using SWLOR.Game.Server.Service.SkillService;
 
 namespace SWLOR.CraftSim.Tests.Progression
@@ -87,6 +89,62 @@ namespace SWLOR.CraftSim.Tests.Progression
 
             Enumerable.Range(10, 40).Select(rank => ResearchCohort.Rows(ProgressionFixture.RealRecipes, ProgressionFixture.Gear, Assumptions).Single(r => r.FabricationRank == rank))
                 .Where(r => r.BaseXp == 0).Should().OnlyContain(r => r.CeilingShare == null && r.ActiveCeilingShare == null);
+        }
+
+        [Test]
+        public void TheStartingXpIsTheResearchWorkstreamsOwnRule()
+        {
+            var rows = ResearchCohort.Rows(ProgressionFixture.RealRecipes, ProgressionFixture.Gear, Assumptions).Where(r => r.BaseXp > 0).ToList();
+
+            foreach (var row in rows)
+            {
+                var expected = ResearchXpRules.ExperimentXp(row.BaseXp, 1, 100) + ResearchXpRules.CompletionXp(row.BaseXp, 1);
+                row.StartingLevel1XpPerJob.Should().Be(expected);
+                ResearchCohort.StartingXpPerJob(row.BaseXp, 1).Should().Be(expected);
+                row.BaseXp.Should().Be(ResearchXpRules.BaseXp(row.RecipeLevel, row.FabricationRank));
+            }
+
+            // 450 chart XP: 100% x 1.1 and 50% x 1.1 for a level-1 job.
+            ResearchCohort.StartingXpPerJob(450, 1).Should().Be(495 + 247);
+            ResearchCohort.StartingXpPerJob(450, 10).Should().Be(900 + 450);
+        }
+
+        [Test]
+        public void TheStartingXpPerHourFollowsTheJobsPerHourAndTheTimeCut()
+        {
+            var rows = ResearchCohort.Rows(ProgressionFixture.RealRecipes, ProgressionFixture.Gear, Assumptions).Where(r => r.BaseXp > 0).ToList();
+
+            foreach (var row in rows)
+            {
+                // The better loop pays at least the fast loop's XP per hour, and never more jobs than the player's own time allows.
+                row.StartingXpPerHour.Should().BeGreaterThanOrEqualTo(row.FastLoopJobsPerHour * row.StartingLevel1XpPerJob - 1e-6);
+                row.FastLoopJobsPerHour.Should().BeLessThanOrEqualTo(3600.0 / row.ActiveSecondsPerJob + 1e-9);
+                row.StartingToCraftingRatio.Should().BeApproximately(row.StartingXpPerHour / row.CraftingXpPerHour, 1e-12);
+            }
+
+            var first = rows.First();
+            var cut = 1 - ExperimentRules.TimeCutCapPercent / 100.0;
+            var byTime = first.ConcurrentJobs * 3600.0 / (first.FirstJobSeconds * cut);
+            first.FastLoopJobsPerHour.Should().BeApproximately(Math.Min(byTime, 3600.0 / first.ActiveSecondsPerJob), 1e-9);
+        }
+
+        [Test]
+        public void TheAssumedExperimentLengthIsTheServersTrialCount()
+        {
+            Assumptions.ResearchTrials.Should().Be(ExperimentRules.Trials);
+        }
+
+        [Test]
+        public void TheCeilingScaleKeepsTheStartingValuesUnderCrafting()
+        {
+            var rows = ResearchCohort.Rows(ProgressionFixture.RealRecipes, ProgressionFixture.Gear, Assumptions).Where(r => r.BaseXp > 0).ToList();
+            var scale = rows.Min(r => Math.Min(r.CeilingShare.Value, r.ActiveCeilingShare.Value) / r.StartingShare.Value);
+
+            foreach (var row in rows)
+            {
+                (row.StartingShare.Value * scale * row.ResearchXpPerActiveHourAtFullShare).Should().BeLessThanOrEqualTo(row.CraftingXpPerHour * 1.0000001);
+                (row.StartingShare.Value * scale * row.ResearchXpPerHourAtFullShare).Should().BeLessThanOrEqualTo(row.CraftingXpPerHour * 1.0000001);
+            }
         }
 
         [Test]

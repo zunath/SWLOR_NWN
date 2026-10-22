@@ -4,6 +4,8 @@ using SWLOR.CraftSim.Legacy;
 using SWLOR.Game.Server.Enumeration;
 using SWLOR.Game.Server.Service;
 using SWLOR.Game.Server.Service.CraftService.Minigame;
+using SWLOR.Game.Server.Service.CraftService.Minigame.Experiment;
+using SWLOR.Game.Server.Service.CraftService.Research;
 using SWLOR.Game.Server.Service.SkillService;
 using static SWLOR.CraftSim.Report.MarkdownTable;
 using SWLOR.CraftSim.Report;
@@ -467,13 +469,16 @@ namespace SWLOR.CraftSim.Progression
             var rows = ResearchCohort.Rows(model, CraftingGearCatalog.MidGearName, a);
             text.AppendLine("## Research cohort");
             text.AppendLine();
-            text.AppendLine("Research becomes a Fabrication XP source in the revamp (an experiment plus job completion), with the amount not yet set. This cohort is a Fabrication researcher at the tier their rank opens, doing the job loop that pays the most XP per hour. " +
+            text.AppendLine("Research is a Fabrication XP source in the revamp. The Research workstream set starting values in `ResearchXpRules`: the experiment pays " +
+                            $"{ResearchXpRules.ExperimentXpPercent}% of the chart XP at full effort and completing the job {ResearchXpRules.CompletionXpPercent}%, each raised {ResearchXpRules.LevelBonusPercentPerLevel}% per research level reached, " +
+                            "where the chart XP is `GetDeltaXP(recipe level - Fabrication rank)`. This cohort is a Fabrication researcher at the tier their rank opens, doing the job loop that pays the most XP per hour, and it calls those rules directly. " +
                             "A job's length in seconds and its credit cost are one formula, `200 x tier^2.2 x level^2` (tier = recipe level / 10 + 1, at most 5; `Craft.CalculateResearchCost`), where level is the blueprint's new research level 1-10. " +
-                            "A recipe's blueprint is first acquired by starting its level-1 job with no blueprint, so \"blueprint acquisition\" is that job. The tier gate is Fabrication rank / 10 and the job slots are 1, 2 from rank 25 and 3 from rank 50 (`CraftRankMilestones`).");
+                            "A recipe's blueprint is first acquired by starting its level-1 job with no blueprint, so \"blueprint acquisition\" is that job. The tier gate is Fabrication rank / 10 and the job slots are 1, 2 from rank 25 and 3 from rank 50 (`CraftRankMilestones`). " +
+                            $"The experiment cuts up to {ExperimentRules.TimeCutCapPercent}% of a job's time (`ExperimentRules.TimeCutCapPercent`), which the cohort takes as the best case.");
             text.AppendLine();
             text.AppendLine($"Time at the terminal per job: an experiment of {a.ResearchTrials} trials at {Number(a.ResearchSecondsPerTrial, 0)} s, plus {Number(a.ResearchVisitSeconds, 0)} s to start the job and {Number(a.ResearchVisitSeconds, 0)} s to collect it " +
-                            $"({Number(a.ResearchTrials * a.ResearchSecondsPerTrial + 2 * a.ResearchVisitSeconds, 0)} s; unmeasured). The recipe researched is the researchable one (weapons, armor, food) whose level pays the most against the rank within the tier. " +
-                            "\"Fast loop\" keeps every slot on level-1 jobs for new blueprints; \"climb\" runs each slot up one blueprint from level 1 to 10. Base XP is the XP chart's price for the recipe level against the rank, the unit the award would be a share of.");
+                            $"({Number(a.ResearchTrials * a.ResearchSecondsPerTrial + 2 * a.ResearchVisitSeconds, 0)} s; unmeasured). The recipe researched is the one the research window lists (`Craft.IsResearchableRecipe`: weapons, armor and food) that needs no learning and whose level pays the most against the rank within the tier. " +
+                            "\"Fast loop\" keeps every slot on level-1 jobs for new blueprints; \"climb\" runs each slot up one blueprint from level 1 to 10. Base XP is the chart XP for the recipe level against the rank.");
             text.AppendLine();
             var table = new MarkdownTable(
                 "Fabrication rank", "Tier", "Recipe level", "Base XP", "Job slots", "Level-1 job", "Level-10 job", "Level-1 job credits", "Fast loop jobs per h", "Climb jobs per h",
@@ -490,12 +495,32 @@ namespace SWLOR.CraftSim.Progression
             var paying = rows.Where(r => r.BaseXp > 0).ToList();
             var zero = rows.Count(r => r.BaseXp == 0);
             text.AppendLine($"The tier gate lags the rank, so the best recipe a researcher may start is between 1 and 10 levels below their rank, and the XP chart pays nothing for a recipe five or more levels below. " +
-                            $"{zero} of the {rows.Count} Fabrication ranks 10-49 have no researchable recipe that pays XP at all if the award follows `GetDeltaXP`; research XP would arrive in bursts in the first four ranks of each tier. " +
+                            $"{zero} of the {rows.Count} Fabrication ranks 10-49 have no researchable recipe that pays XP at all under the starting values; research XP arrives in bursts in the first four ranks of each tier. " +
                             "The third job slot (Fabrication 50) arrives when the skill stops paying XP, so it matters for blueprints only.");
             text.AppendLine();
             if (paying.Count > 0)
             {
-                text.AppendLine("Ceilings: the largest award, as a share of base XP per job, that keeps research XP per hour under at-level Fabrication crafting XP per hour at that rank (the whole loop, gathering included), by two yardsticks.");
+                text.AppendLine("The starting values against at-level Fabrication crafting at the same rank (the hours-to-50 model, gathering and the per-craft overhead included). A ratio above 100% breaks the plan's ceiling that research XP per real hour stays below crafting XP per hour.");
+                text.AppendLine();
+                var starting = new MarkdownTable(
+                    "Fabrication rank", "Base XP", "Level-1 job XP (starting values)", "Starting values as a share of base XP", "Research XP per elapsed h", "Crafting XP per h",
+                    "Research / crafting, elapsed", "Research / crafting, player's own time");
+                foreach (var row in paying)
+                {
+                    starting.Add(
+                        row.FabricationRank.ToString(), row.BaseXp.ToString(), row.StartingLevel1XpPerJob.ToString(), Percent(row.StartingShare.Value), Whole(row.StartingXpPerHour),
+                        Whole(row.CraftingXpPerHour), Percent(row.StartingToCraftingRatio.Value), Percent(row.StartingActiveToCraftingRatio.Value));
+                }
+
+                text.AppendLine(starting.ToString());
+                var brokenElapsed = paying.Where(r => r.StartingToCraftingRatio > 1).Select(r => r.FabricationRank).ToList();
+                var brokenActive = paying.Where(r => r.StartingActiveToCraftingRatio > 1).Select(r => r.FabricationRank).ToList();
+                text.AppendLine($"Per elapsed hour with every slot busy, the starting values stay under crafting at {paying.Count - brokenElapsed.Count} of the {paying.Count} paying ranks" +
+                                (brokenElapsed.Count > 0 ? $" and break it at rank {string.Join(", ", brokenElapsed)}" : "") + ". " +
+                                $"Per hour of the player's own time at the terminal ({Number(paying[0].ActiveSecondsPerJob, 0)} s a job) they break it at {brokenActive.Count} of the {paying.Count} ranks (the lowest ratio is {Percent(paying.Min(r => r.StartingActiveToCraftingRatio.Value))}), " +
+                                "because a researcher who plays only the experiments and lets the jobs run earns a level-1 job's XP for about a minute and a half of attention.");
+                text.AppendLine();
+                text.AppendLine("Ceilings in terms of an award, as a share of base XP per job: the largest award that keeps research XP per hour under at-level Fabrication crafting XP per hour at that rank, by two yardsticks.");
                 text.AppendLine();
                 var ceil = new MarkdownTable("Yardstick", "Lowest ceiling over the paying ranks", "At Fabrication rank");
                 var elapsed = paying.OrderBy(r => r.CeilingShare).First();
@@ -503,6 +528,8 @@ namespace SWLOR.CraftSim.Progression
                 ceil.Add("Per elapsed hour with every job slot busy (research runs while the player does other things)", Percent(elapsed.CeilingShare.Value), elapsed.FabricationRank.ToString());
                 ceil.Add("Per hour of the player's own time at the terminal", Percent(active.ActiveCeilingShare.Value), active.FabricationRank.ToString());
                 text.AppendLine(ceil.ToString());
+                text.AppendLine("The Research workstream's own report compares its best row with crafting at 24,000 XP per hour (15 actions at 6 s, no overhead, no gathering); this report's crafting rate includes the per-craft overhead and the gathering the crafts need, so it is lower and the ceiling tighter.");
+                text.AppendLine();
             }
         }
 
@@ -578,14 +605,14 @@ namespace SWLOR.CraftSim.Progression
 
             text.AppendLine(option.ToString());
             text.AppendLine("- **Row 0 is not an option.** It shows that handing in the guild's task recipes, with no award at all, already changes the hours, because the task recipes' components differ from the level's average recipe; the award's own effect is the difference between rows 0 and A.");
-            text.AppendLine($"- **A: guild task XP only.** No craft XP change; the smallest change, with no stored-data conversion. It takes the median skill to {Number(medianA, 0)} h, " +
-                            (medianA <= TargetHours ? "which meets the target." : $"which is {Number(medianA - TargetHours, 0)} h short of the {Number(TargetHours, 0)} h target."));
-            text.AppendLine($"- **B: A plus one crafting-only multiplier, x{Number(optionB, 2)}.** The smallest round multiplier that brings the median skill to the target ({Number(medianB, 0)} h). One parameter on what crafts and hand-ins pay, retuned from the client timings later. It changes gains only, so stored XP and ranks need no conversion.");
+            text.AppendLine($"- **A: guild task XP only.** No craft XP change; the smallest change, with no stored-data conversion. It takes the median skill to {Number(medianA, 1)} h, " +
+                            (medianA <= TargetHours ? "which meets the target." : $"which is {Number(medianA - TargetHours, 1)} h short of the {Number(TargetHours, 0)} h target."));
+            text.AppendLine($"- **B: A plus one crafting-only multiplier, x{Number(optionB, 2)}.** The smallest round multiplier that brings the median skill to the target ({Number(medianB, 1)} h). One parameter on what crafts and hand-ins pay, retuned from the client timings later. It changes gains only, so stored XP and ranks need no conversion.");
             text.AppendLine($"- **C: A plus a cap of {Whole(optionC)} XP on any rank's cost.** The same median as B by a different route: it cuts the climb from {Whole(Enumerable.Range(0, ProgressionAssumptions.MaximumRank).Sum(Skill.GetRequiredXP))} to {Whole(optionCTotal)} XP and spares the late ranks that cost up to 16,000 XP and need 15-25 crafts each, while leaving the early ranks alone. " +
                             "It changes required XP per rank for the crafting skills, so it needs a crafting-specific table and the plan's migration (convert stored XP and ranks so nobody loses a rank).");
             text.AppendLine();
             text.AppendLine((needsMultiplier
-                                ? $"**Recommendation: B.** The guild award alone leaves the median skill at {Number(medianA, 0)} h, so the target needs a crafting-only multiplier of about x{Number(optionB, 2)} on top; B reaches it with no migration. "
+                                ? $"**Recommendation: B.** The guild award alone leaves the median skill at {Number(medianA, 1)} h, so the target needs a crafting-only multiplier of about x{Number(optionB, 2)} on top; B reaches it with no migration. "
                                 : $"**Recommendation: A.** The guild award alone meets the {Number(TargetHours, 0)} h target for the median skill without touching craft XP. ") +
                             $"Treat the multiplier as a starting point: the model's hours move more with the node travel time ({slowest} runs from {Number(model.Path(slowest, mid, a with { NodeTravelSeconds = 15 }).TotalHours, 0)} h at 15 s to {Number(model.Path(slowest, mid, a with { NodeTravelSeconds = 120 }).TotalHours, 0)} h at 120 s) than any option moves them, " +
                             "so measure it, re-run `progression`, and retune. " +
@@ -628,9 +655,17 @@ namespace SWLOR.CraftSim.Progression
             if (rows.Count > 0)
             {
                 var floor = rows.Min(r => Math.Min(r.ActiveCeilingShare.Value, r.CeilingShare.Value));
-                var proposed = floor >= 0.25 ? Math.Floor(floor * 4) / 4 : Math.Floor(floor * 20) / 20;
-                text.AppendLine($"Award per job (experiment and completion together) = share x `GetDeltaXP(recipe level - Fabrication rank)` of the recipe researched. The lowest ceiling over the paying ranks is {Percent(floor)}, from research XP per hour of the player's own time against the whole crafting loop. " +
-                                $"**Proposal: a share of {Percent(proposed)} or less**, which keeps research XP per hour under at-level crafting XP per hour by both yardsticks at every rank, and a rule that a research award never exceeds the base XP of a craft of the same recipe level. " +
+                var startingShare = rows.Max(r => r.StartingShare.Value);
+                var scale = rows.Min(r => Math.Min(r.CeilingShare.Value, r.ActiveCeilingShare.Value) / r.StartingShare.Value);
+                var experiment = (int)Math.Floor(ResearchXpRules.ExperimentXpPercent * scale);
+                var completion = (int)Math.Floor(ResearchXpRules.CompletionXpPercent * scale);
+                var elapsedOnly = rows.Min(r => r.CeilingShare.Value / r.StartingShare.Value);
+                text.AppendLine($"The Research workstream's starting values pay {Percent(startingShare)} of the chart XP for a level-1 job (`ResearchXpRules`: {ResearchXpRules.ExperimentXpPercent}% experiment, {ResearchXpRules.CompletionXpPercent}% completion, +{ResearchXpRules.LevelBonusPercentPerLevel}% per level). " +
+                                $"**Ceiling: research XP per real hour stays below at-level Fabrication crafting XP per hour, which at the lowest-ceiling rank means a level-1 job pays at most {Percent(floor)} of the chart XP** (measured per hour of the player's own time against the whole crafting loop). " +
+                                (scale >= 1
+                                    ? "The starting values already sit under it."
+                                    : $"**Proposal: scale the starting values to {Percent(scale)} of themselves, `ExperimentXpPercent` {experiment} and `CompletionXpPercent` {completion}.** Counting only elapsed hours with every slot busy, the starting values could be {Percent(elapsedOnly)} of themselves before they break the ceiling, so the own-time yardstick is the one that binds, and a researcher who runs the jobs and plays the experiments is the one who exceeds crafting.") +
+                                " Keep a rule that a research award never exceeds the base XP of a craft of the same recipe level. " +
                                 "Credits give a second bound: the first job on a new blueprint costs 200-4,200 credits and the level-10 job of a tier-4 recipe takes about five days. " +
                                 "Because the chart pays nothing for recipes five or more levels below the rank, the owner may want a floor for research (like `GetPracticeXP`'s 150) so researchers are not paid only in the first four ranks of each tier; a floor must sit under the same ceiling.");
             }

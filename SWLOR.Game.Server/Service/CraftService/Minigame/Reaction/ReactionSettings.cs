@@ -25,8 +25,8 @@ public sealed class ReactionSettings
         Control = ReactionRules.EquivalentControl(Rank);
         MaxCp = ReactionRules.MaxCp(Rank);
 
-        var progressFactor = ReactionRules.ProgressFactor(Rank, RecipeLevel);
-        var qualityFactor = ReactionRules.QualityFactor(Rank, RecipeLevel);
+        var progressFactor = ReactionRules.ProgressFactorPercent(Rank, RecipeLevel);
+        var qualityFactor = ReactionRules.QualityFactorPercent(Rank, RecipeLevel);
         MeasurePotency = ReactionRules.ScaleGain(ReactionRules.MeasurePotency, Craftsmanship, progressFactor);
         ChargePotency = ReactionRules.ScaleGain(ReactionRules.ChargePotency, Craftsmanship, progressFactor);
         RefineSubtlety = ReactionRules.ScaleGain(ReactionRules.RefineSubtlety, Control, qualityFactor);

@@ -104,7 +104,7 @@ public sealed class ReactionEngine : MinigameEngineBase<ReactionState>
                 var subtlety = phase switch
                 {
                     ReactionPhase.Settling => _settings.RefineSubtlety * ReactionRules.SettlingRefineMultiplier,
-                    ReactionPhase.Peak => Math.Max(1, (int)Math.Floor(_settings.RefineSubtlety * ReactionRules.PeakRefineFactor)),
+                    ReactionPhase.Peak => Math.Max(1, _settings.RefineSubtlety / ReactionRules.PeakRefineDivisor),
                     _ => _settings.RefineSubtlety
                 };
                 var label = phase switch

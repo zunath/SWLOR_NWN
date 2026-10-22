@@ -28,6 +28,7 @@ try
         "baseline" => BaselineCommand.Run(args.Skip(1).ToArray(), Console.Out),
         "gear" => GearCommand.Run(args.Skip(1).ToArray(), Console.Out),
         "gates" => GatesCommand.Run(args.Skip(1).ToArray(), Console.Out),
+        "fishing" => FishingCommand.Run(args.Skip(1).ToArray(), Console.Out),
         _ => Fail($"Unknown command '{args[0]}'.")
     };
 }

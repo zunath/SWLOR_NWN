@@ -4,7 +4,10 @@ using SWLOR.Game.Server.Service.FishingService;
 
 namespace SWLOR.CraftSim.Legacy.Gathering
 {
-    /// <summary>The catch roll of a bite (Fishing.cs:452-462); bait is spent and XP paid on every bite.</summary>
+    /// <summary>
+    /// The catch roll a bite had before the Line fight replaced it (<c>FinishFishing</c> in <c>Service/Fishing.cs</c> at commit d5f1c0466, no longer in the
+    /// source and so no longer checked against it); bait is spent and XP paid on every bite.
+    /// </summary>
     public static class FishingCatchModel
     {
         public const int BaseChance = 40;
@@ -21,7 +24,7 @@ namespace SWLOR.CraftSim.Legacy.Gathering
             return chance;
         }
 
-        /// <summary>XP for a bite, caught or not (Fishing.cs:491).</summary>
+        /// <summary>XP for a bite, caught or not (FishingFightLifecycle.cs:58).</summary>
         public static int XpPerBite(int agricultureRank, int fishLevel) => ServerXp.ForDelta(fishLevel - agricultureRank);
 
         /// <summary>Every fish the game defines, from the fish enum.</summary>

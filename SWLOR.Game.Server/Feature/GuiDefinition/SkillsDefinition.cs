@@ -17,11 +17,14 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition
             var activeCategories = Skill.GetAllActiveSkillCategories()
                 .OrderBy(category => category.Value.Sequence)
                 .ToList();
+            var maxLimitRank = Skill.GetAllSkills()
+                .Where(skill => skill.Value.ContributesToSkillCap)
+                .Max(skill => skill.Value.MaxRank);
 
             _builder.CreateWindow(GuiWindowType.Skills)
                 .SetIsResizable(true)
                 .SetIsCollapsible(true)
-                .SetInitialGeometry(0, 0, 545f, 295.5f)
+                .SetInitialGeometry(0, 0, 650f, 295.5f)
                 .SetTitle("Skills")
                 .AddColumn(column =>
                 {
@@ -97,6 +100,11 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition
                             .SetVerticalAlign(NuiVerticalAlign.Top);
 
                         row.AddLabel()
+                            .SetText("Limit")
+                            .SetHorizontalAlign(NuiHorizontalAlign.Center)
+                            .SetVerticalAlign(NuiVerticalAlign.Top);
+
+                        row.AddLabel()
                             .SetText("")
                             .SetWidth(32f);
 
@@ -136,6 +144,19 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition
                                     .BindColor(model => model.DecayLockColors)
                                     .BindOnClicked(model => model.ToggleDecayLock())
                                     .BindIsEnabled(model => model.DecayLockButtonEnabled);
+                            });
+                            template.AddCell(cell =>
+                            {
+                                var limit = cell.AddComboBox()
+                                    .BindSelectedIndex(model => model.RankLimitSelections)
+                                    .BindIsEnabled(model => model.DecayLockButtonEnabled)
+                                    .SetTooltip($"Stop this skill at a chosen rank. At the {Skill.SkillCap}-rank cap, skills above their limit decay first, and a skill never decays below its limit.");
+
+                                limit.AddOption("Limit: None", SkillsViewModel.NoRankLimitSelection);
+                                for (var rank = 0; rank <= maxLimitRank; rank++)
+                                {
+                                    limit.AddOption($"Limit: {rank}", SkillsViewModel.GetRankLimitSelection(rank));
+                                }
                             });
 
                             template.AddCell(cell =>

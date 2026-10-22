@@ -118,10 +118,25 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
                         amount > dbPlayer.UnallocatedXP)
                         return;
 
-                    dbPlayer.UnallocatedXP -= amount;
-                    DB.Set(dbPlayer);
+                    // Refuse a skill at its max rank or rank limit, or one the skill cap blocks,
+                    // and never send more than the skill can use.
+                    var maxDistributableXP = Skill.GetMaxDistributableXP(dbPlayer, _skillType);
+                    if (maxDistributableXP <= 0)
+                    {
+                        FloatingTextStringOnCreature(GetRefusalReason(dbPlayer), Player, false);
+                        return;
+                    }
 
-                    Skill.GiveSkillXP(Player, _skillType, amount, true, false);
+                    amount = Math.Min(amount, maxDistributableXP);
+
+                    // Debit only the XP the award used, so a blocked award keeps the player's RP XP.
+                    var acceptedXP = Skill.GiveSkillXP(Player, _skillType, amount, true, false);
+                    if (acceptedXP > 0)
+                    {
+                        dbPlayer = DB.Get<Player>(playerId);
+                        dbPlayer.UnallocatedXP -= Math.Min(acceptedXP, dbPlayer.UnallocatedXP);
+                        DB.Set(dbPlayer);
+                    }
 
                     Gui.TogglePlayerWindow(Player, GuiWindowType.DistributeRPXP);
                     Gui.PublishRefreshEvent(Player, new RPXPRefreshEvent());
@@ -133,11 +148,27 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
             Gui.TogglePlayerWindow(Player, GuiWindowType.DistributeRPXP);
         };
 
+        private string GetRefusalReason(Player dbPlayer)
+        {
+            var details = Skill.GetSkillDetails(_skillType);
+            var pcSkill = dbPlayer.Skills[_skillType];
+            if (pcSkill.Rank >= details.MaxRank)
+                return "Skill at max rank - no XP accepted";
+
+            var rankCeiling = Skill.GetRankCeiling(pcSkill, details);
+            if (pcSkill.Rank >= rankCeiling)
+                return $"Skill at your limit of {rankCeiling} - no XP accepted";
+
+            return $"At the skill cap of {Skill.SkillCap} and all other skills are locked or at their limits - no XP accepted";
+        }
+
         private void UpdateMaxDistributableInfo()
         {
             if (_maxDistributableXP == 0)
             {
-                MaxDistributableInfo = "Skill at max rank - no XP accepted";
+                var playerId = GetObjectUUID(Player);
+                var dbPlayer = DB.Get<Player>(playerId);
+                MaxDistributableInfo = GetRefusalReason(dbPlayer);
             }
             else
             {

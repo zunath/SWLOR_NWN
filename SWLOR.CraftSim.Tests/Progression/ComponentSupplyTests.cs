@@ -1,8 +1,10 @@
 using FluentAssertions;
 using NUnit.Framework;
+using SWLOR.CraftSim.Data;
 using SWLOR.CraftSim.Legacy.Gathering;
 using SWLOR.CraftSim.Progression;
 using SWLOR.CraftSim.Tests.Support;
+using SWLOR.Game.Server.Service.SkillService;
 
 namespace SWLOR.CraftSim.Tests.Progression
 {
@@ -119,6 +121,64 @@ namespace SWLOR.CraftSim.Tests.Progression
                 Supply.SourcesOf(resref).Min(s => ComponentSupply.SecondsPerUnit(s, Assumptions))
                     .Should().BeApproximately(ComponentSupply.SecondsPerUnit(cheapest, Assumptions), 1e-12, resref);
             }
+        }
+
+        private static RecipeEntry Recipe(params (string Resref, int Quantity)[] components) =>
+            new(default, SkillType.Smithery, 1, "test_item", default, components.ToDictionary(c => c.Resref, c => c.Quantity));
+
+        [Test]
+        public void ItemsFromOneTableAreGatheredTogetherNotOneVeinRunEach()
+        {
+            // HARVESTING_VELDITE holds raw_veldite 50 and jade 5. A recipe needing refined veldite and jade farms the rare jade, and the
+            // veldite comes with it.
+            var recipe = Recipe(("ref_veldite", 2), ("jade", 1));
+            var priced = Supply.PriceRecipe(recipe, Assumptions);
+
+            var jade = Supply.CheapestSource("jade", Assumptions);
+            jade.Table.Should().Be("HARVESTING_VELDITE");
+            var uses = 1 / ComponentSupply.UnitsPerVisit(jade, Assumptions);
+            var refining = 2 * Assumptions.RefineSecondsPerBatch / Assumptions.RefineBatchUnits;
+            priced.Seconds.Should().BeApproximately(uses * ComponentSupply.SecondsPerHarvestUse(Assumptions) + refining, 1e-9);
+
+            var apart = 2 * Supply.SecondsPerUnit("ref_veldite", Assumptions) + Supply.SecondsPerUnit("jade", Assumptions);
+            priced.Seconds.Should().BeLessThan(apart, "pricing each alone would charge a second vein run for the veldite");
+            priced.SecondsByComponent.Values.Sum().Should().BeApproximately(priced.Seconds, 1e-9);
+        }
+
+        [Test]
+        public void ItemsFromDifferentTablesAddUp()
+        {
+            var recipe = Recipe(("wood", 3), ("herb_m", 2));
+            var priced = Supply.PriceRecipe(recipe, Assumptions);
+
+            priced.Seconds.Should().BeApproximately(3 * Supply.SecondsPerUnit("wood", Assumptions) + 2 * Supply.SecondsPerUnit("herb_m", Assumptions), 1e-9);
+        }
+
+        [Test]
+        public void AUnitNoTableSuppliesIsCountedAndPricedAtTheFlatEstimateOnly()
+        {
+            var recipe = Recipe(("wood", 1), ("lth_ruined", 3));
+
+            var free = Supply.PriceRecipe(recipe, Assumptions);
+            var flat = Supply.PriceRecipe(recipe, Assumptions with { UnmodelledUnitSeconds = 20 });
+
+            free.UnmodelledUnits.Should().Be(3);
+            free.ModelledUnits.Should().Be(1);
+            (flat.Seconds - free.Seconds).Should().BeApproximately(60, 1e-9);
+        }
+
+        [Test]
+        public void AHigherGatheringTierGivesAScavengerHardLookAtLowLevelSites()
+        {
+            // The server derives Hard Look from the player's Gathering rank, so a tier-5 gatherer searches a level-1 bush twice far more often.
+            ComponentSupply.HardLookAt(1, Assumptions).Should().Be(1);
+            ComponentSupply.HardLookAt(1, Assumptions with { GatheringTier = 5 }).Should().Be(5);
+            ComponentSupply.HardLookAt(4, Assumptions with { GatheringTier = 2 }).Should().Be(4, "a site needs at least its own tier");
+
+            var bush = Supply.CheapestSource("fiberp_ruined", Assumptions);
+            bush.Mechanism.Should().Be(GatheringMechanism.Scavenge);
+            ComponentSupply.SecondsPerUnit(bush, Assumptions with { GatheringTier = 5 })
+                .Should().BeLessThan(ComponentSupply.SecondsPerUnit(bush, Assumptions));
         }
 
         [Test]

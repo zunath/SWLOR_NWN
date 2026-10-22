@@ -2,6 +2,7 @@ using SWLOR.CraftSim.Data;
 using SWLOR.CraftSim.Legacy.Gathering;
 using SWLOR.Game.Server.Enumeration;
 using SWLOR.Game.Server.Service;
+using SWLOR.Game.Server.Service.CraftService;
 using SWLOR.Game.Server.Service.CraftService.Minigame;
 
 namespace SWLOR.CraftSim.Progression
@@ -55,6 +56,7 @@ namespace SWLOR.CraftSim.Progression
             GuildTaskCatalog guilds, ComponentSupply supply, GuildType guild, ProgressionAssumptions assumptions)
         {
             Guild.LoadData();
+            assumptions = assumptions with { GatheringTier = CraftRankMilestones.TierForRank(ProgressionAssumptions.MaximumRank) };
             var rows = new List<GuildChoreRow>();
             var tasks = guilds.For(guild).Where(t => t.Kind == GuildTaskKind.Crafted).ToList();
             var previousThreshold = 0;

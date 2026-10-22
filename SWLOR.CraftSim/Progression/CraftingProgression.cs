@@ -1,6 +1,7 @@
 using SWLOR.CraftSim.Data;
 using SWLOR.CraftSim.Legacy.Crafting;
 using SWLOR.Game.Server.Service;
+using SWLOR.Game.Server.Service.CraftService;
 using SWLOR.Game.Server.Service.CraftService.Minigame;
 using SWLOR.Game.Server.Service.SkillService;
 
@@ -40,7 +41,7 @@ namespace SWLOR.CraftSim.Progression
             if (plan != null)
                 Guild.LoadData(); // sets Guild.MaxRank
 
-            var recipesByLevel = recipes.ForSkill(skill).GroupBy(r => r.Level).ToDictionary(g => g.Key, g => g.ToList());
+            var recipesByLevel = recipes.ForNewCrafter(skill).GroupBy(r => r.Level).ToDictionary(g => g.Key, g => g.ToList());
             var demand = new Dictionary<int, LevelDemand>();
             var varietyBonusLeft = new Dictionary<int, double>();
             var steps = new List<RankStep>();
@@ -54,6 +55,10 @@ namespace SWLOR.CraftSim.Progression
             for (var rank = 0; rank <= HighestLevel; rank++)
             {
                 var level = Math.Max(1, rank);
+
+                // The crafter gathers their own components with a Gathering rank that follows their crafting rank, which sets Hard Look at
+                // scavenge sites.
+                var gathering = assumptions with { GatheringTier = CraftRankMilestones.TierForRank(rank) };
                 if (!cells.TryGetValue(level, out var cell))
                     throw new InvalidDataException($"No {skill} {gear} craft results for recipe level {level}.");
 
@@ -62,7 +67,7 @@ namespace SWLOR.CraftSim.Progression
                     if (!recipesByLevel.TryGetValue(level, out var atLevel))
                         throw new InvalidDataException($"{skill} has no recipe at level {level}.");
 
-                    demand[level] = levelDemand = LevelDemand.Build(atLevel, supply, assumptions);
+                    demand[level] = levelDemand = LevelDemand.Build(atLevel, supply, gathering);
                     varietyBonusLeft[level] = assumptions.VarietyPlay ? atLevel.Count : 0;
                 }
 
@@ -96,14 +101,14 @@ namespace SWLOR.CraftSim.Progression
                     {
                         var eligible = plan.CraftedTasks
                             .Where(t => t.Tier == guildRank && t.Level.Value + QuickCraftRules.RankMargin <= rank)
-                            .OrderBy(t => RankingSeconds(t.Recipe, supply, assumptions))
+                            .OrderBy(t => RankingSeconds(t.Recipe, supply, gathering))
                             .ThenBy(t => t.QuestId, StringComparer.Ordinal)
                             .ToList();
                         if (eligible.Count == 0)
                             break;
 
                         // The board holds ten random tasks of the tier, so the crafter takes the preferred eligible one that is on it.
-                        var gather = eligible.Select(t => LevelDemand.SecondsOf(t.Recipe, supply, assumptions)).ToList();
+                        var gather = eligible.Select(t => LevelDemand.SecondsOf(t.Recipe, supply, gathering)).ToList();
                         var perItem = gather.Select(g => QuickCraftBatch.SecondsPerItem + assumptions.HandInSeconds + g).ToList();
                         var tierTasks = plan.TasksPerTier[guildRank];
                         var (onBoard, itemSeconds) = GuildBoard.PreferredOnBoard(perItem, tierTasks);
@@ -177,7 +182,7 @@ namespace SWLOR.CraftSim.Progression
                     // A hand-in asks for one exact recipe (the quest collector matches the resref), so when a board holds a task for the level
                     // the crafter makes that recipe, and its components, not the level's average, are what the craft costs.
                     var taskShare = odds.Chance;
-                    var mix = handIn ? TaskMix.For(taskMixes, plan, odds, level, supply, assumptions) : null;
+                    var mix = handIn ? TaskMix.For(taskMixes, plan, odds, level, supply, gathering) : null;
                     gatherSecondsTotal += share * consumed * ((1 - taskShare) * levelDemand.SecondsPerAttempt + taskShare * (mix?.Seconds ?? 0));
                     modelledUnitsTotal += share * consumed * ((1 - taskShare) * levelDemand.ModelledUnits + taskShare * (mix?.ModelledUnits ?? 0));
                     unmodelledUnitsTotal += share * consumed * ((1 - taskShare) * levelDemand.UnmodelledUnits + taskShare * (mix?.UnmodelledUnits ?? 0));

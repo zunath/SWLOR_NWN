@@ -46,6 +46,12 @@ namespace SWLOR.CraftSim.Progression
         /// <summary>The Might modifier of the gatherer: each point adds a 25% chance of a free second item per harvest.</summary>
         public int MightModifier { get; init; }
 
+        /// <summary>
+        /// The gatherer's Gathering tier, which sets the Hard Look level (the chance of a second search at a scavenge site). The progression
+        /// model sets it to the tier of the crafter's own rank, as if their Gathering rank followed their crafting rank; null uses the site's level.
+        /// </summary>
+        public int? GatheringTier { get; init; }
+
         /// <summary>The Perception modifier of the scavenger.</summary>
         public int PerceptionModifier { get; init; }
 

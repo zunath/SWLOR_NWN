@@ -87,7 +87,7 @@ namespace SWLOR.CraftSim.Progression
                 Number(gathering.TotalHours, 1), Whole(gathering.XpPerHour), "-");
             text.AppendLine(table.ToString());
             var requiredXp = paths.Values.First()[mid].RequiredXp;
-            text.AppendLine($"Rank 50 costs {requiredXp:N0} XP in every skill (`Skill.GetRequiredXP`, ranks 0-49). RP XP pays {ProgressionAssumptions.RoleplayXpPerHour:N0} XP per hour with no materials " +
+            text.AppendLine($"Rank 50 costs {Whole(requiredXp)} XP in every skill (`Skill.GetRequiredXP`, ranks 0-49). RP XP pays {Whole(ProgressionAssumptions.RoleplayXpPerHour)} XP per hour with no materials " +
                             $"(1,500 base XP every 30 minutes; the public mechanism in `RoleplayXP.cs`), which is {Number(rpHours, 0)} hours for the same XP. Gathering takes " +
                             $"{Number(harvest.TotalHours, 1)} h by harvesting and refining alone, {Number(scavenge.TotalHours, 1)} h by scavenging alone and {Number(gathering.TotalHours, 1)} h taking the better of the two at each rank.");
             text.AppendLine();
@@ -124,8 +124,8 @@ namespace SWLOR.CraftSim.Progression
             text.AppendLine($"- Command: `{command}`");
             text.AppendLine($"- Seed {model.Options.Seed}; {model.Options.Runs} lookahead crafts per recipe level, skill and gear level ({model.Options.Rollouts} sampled futures per action), each from its own stream of the seed, so a run repeats exactly. " +
                             "The hours themselves are expected values, not sampled.");
-            text.AppendLine("- Recipes: every active recipe in the server's definitions (" +
-                            string.Join("; ", skills.Select(s => $"{s} {model.Recipes.ForSkill(s).Count()}")) + "). The crafter's rank steps from 0 to 49 and each step crafts recipes of level max(1, rank): the `Skill.GetDeltaXP` price for the level equals the rank is 600 XP (676 at rank 0). Each of a level's recipes counts equally, as in the gates' cohort.");
+            text.AppendLine("- Recipes: the active recipes in the server's definitions that a new crafter can make without learning them first, of all the active ones (" +
+                            string.Join("; ", skills.Select(s => $"{s} {model.Recipes.ForNewCrafter(s).Count()} of {model.Recipes.ForSkill(s).Count()}")) + "). The crafter's rank steps from 0 to 49 and each step crafts recipes of level max(1, rank): the `Skill.GetDeltaXP` price for the level equals the rank is 600 XP (676 at rank 0). Each of a level's recipes counts equally, as in the gates' cohort.");
             text.AppendLine("- Gear: none, tier 3 (mid) and tier 5 (best) of the skill's own crafting gear (`legacy-crafting-baseline.md`, \"Gear levels\"). Food and status bonuses are not played.");
             text.AppendLine("- Craft player and XP: the legacy lookahead (`RolloutPolicy`) at the recipe's level and rank. A success pays the base XP plus the quality share; a failure pays 15% of the base (`CraftOutcomeRules`). No blueprint, no enhancements, no XP bonuses from Social or food, and no first-craft bonus unless the variety row below says so.");
             text.AppendLine($"- Time in the craft window: {Number(a.SecondsPerAction)} s per action (the legacy window's estimate) plus **{Number(a.OverheadSecondsPerCraft, 0)} s per craft** to open the station, pick the recipe, commit the components and collect the item. The overhead is an unmeasured estimate; the gates' own overhead defaults to 0. The sensitivity table shows 15 s and 60 s.");
@@ -175,13 +175,13 @@ namespace SWLOR.CraftSim.Progression
                     var xp = m.Sum(s => s.RequiredXp);
                     var totals = gearNames.Select(g => paths[skill][g].Band(first, end).Sum(s => s.TotalHours)).ToList();
                     table.Add(
-                        $"{first}-{end}", xp.ToString("N0"), Number(m.Sum(s => s.Crafts), 0), Number(m.Sum(s => s.CraftHours), 1), Number(m.Sum(s => s.GatherHours), 1),
+                        $"{first}-{end}", Whole(xp), Number(m.Sum(s => s.Crafts), 0), Number(m.Sum(s => s.CraftHours), 1), Number(m.Sum(s => s.GatherHours), 1),
                         Number(totals[0], 1), Number(totals[1], 1), Number(totals[2], 1), Whole(xp / totals[1]), Number((double)xp / ProgressionAssumptions.RoleplayXpPerHour, 1));
                 }
 
                 var all = paths[skill][mid];
                 table.Add(
-                    "0-50", all.RequiredXp.ToString("N0"), Number(all.Crafts, 0), Number(all.CraftHours, 1), Number(all.GatherHours, 1),
+                    "0-50", Whole(all.RequiredXp), Number(all.Crafts, 0), Number(all.CraftHours, 1), Number(all.GatherHours, 1),
                     Number(paths[skill][gearNames[0]].TotalHours, 1), Number(all.TotalHours, 1), Number(paths[skill][gearNames[2]].TotalHours, 1),
                     Whole(all.XpPerHour), Number((double)all.RequiredXp / ProgressionAssumptions.RoleplayXpPerHour, 1));
                 text.AppendLine(table.ToString());
@@ -202,7 +202,7 @@ namespace SWLOR.CraftSim.Progression
                 var best = paths[GatheringStrategy.Best].Band(first, end).ToList();
                 var xp = best.Sum(s => s.RequiredXp);
                 table.Add(
-                    $"{first}-{end}", xp.ToString("N0"),
+                    $"{first}-{end}", Whole(xp),
                     Number(paths[GatheringStrategy.HarvestAndRefine].Band(first, end).Sum(s => s.Hours), 2),
                     Number(paths[GatheringStrategy.Scavenge].Band(first, end).Sum(s => s.Hours), 2),
                     Number(best.Sum(s => s.Hours), 2), Whole(xp / best.Sum(s => s.Hours)), Number((double)xp / ProgressionAssumptions.RoleplayXpPerHour, 1));
@@ -210,7 +210,7 @@ namespace SWLOR.CraftSim.Progression
 
             var total = paths[GatheringStrategy.Best];
             table.Add(
-                "0-50", total.RequiredXp.ToString("N0"), Number(paths[GatheringStrategy.HarvestAndRefine].TotalHours, 2),
+                "0-50", Whole(total.RequiredXp), Number(paths[GatheringStrategy.HarvestAndRefine].TotalHours, 2),
                 Number(paths[GatheringStrategy.Scavenge].TotalHours, 2), Number(total.TotalHours, 2), Whole(total.XpPerHour),
                 Number((double)total.RequiredXp / ProgressionAssumptions.RoleplayXpPerHour, 1));
             text.AppendLine(table.ToString());
@@ -344,7 +344,7 @@ namespace SWLOR.CraftSim.Progression
                     guild.ToString(), tasks.Count.ToString(), tasks.Count(t => t.Kind == GuildTaskKind.Crafted).ToString(), tasks.Count(t => t.Kind == GuildTaskKind.Caught).ToString(),
                     tasks.Count(t => t.Kind == GuildTaskKind.Other).ToString(),
                     string.Join(", ", tiers.Select(t => { var levels = tasks.Where(x => x.Tier == t && x.Level.HasValue).Select(x => x.Level.Value).ToList(); return $"{levels.Min()}-{levels.Max()}"; })),
-                    string.Join(" / ", tiers.Select(t => guilds.RewardOfTier(guild, t).Credits.ToString("N0"))),
+                    string.Join(" / ", tiers.Select(t => Whole(guilds.RewardOfTier(guild, t).Credits))),
                     string.Join(" / ", tiers.Select(t => guilds.RewardOfTier(guild, t).GuildPoints.ToString())));
             }
 
@@ -457,7 +457,7 @@ namespace SWLOR.CraftSim.Progression
             var rate = GuildCohorts.Chore(guilds, model.Supply, GuildType.SmitheryGuild, a);
             text.AppendLine("Every hand-in consumes one real player-crafted item (or four caught fish), which already limits the rate: the components. Nothing else limits it once the cap is lifted: the board's ten tasks per tier no longer bound it, because a completed task returns at once and one task can be repeated. " +
                             $"Quick craft makes a base item in {QuickCraftBatch.SecondsPerItem:0} s, so for a high-rank crafter the real bounds are the components and the turn-in time. " +
-                            $"Credits are the lever that matters: a task pays {guilds.RewardOfTier(GuildType.SmitheryGuild, 0).Credits:N0} to {guilds.RewardOfTier(GuildType.SmitheryGuild, 4).Credits:N0} credits plus the Guild Relations and Social bonuses, and the Smithery rank climb alone pays " +
+                            $"Credits are the lever that matters: a task pays {Whole(guilds.RewardOfTier(GuildType.SmitheryGuild, 0).Credits)} to {Whole(guilds.RewardOfTier(GuildType.SmitheryGuild, 4).Credits)} credits plus the Guild Relations and Social bonuses, and the Smithery rank climb alone pays " +
                             $"{Whole(rate.Sum(r => r.Credits))} credits for {Number(rate.Sum(r => r.Hours), 1)} hours of work. Nothing was added in this PR; the owner decides whether credits need a limit (see the proposals).");
             text.AppendLine();
         }
@@ -482,7 +482,7 @@ namespace SWLOR.CraftSim.Progression
             {
                 table.Add(
                     row.FabricationRank.ToString(), row.Tier.ToString(), row.RecipeLevel.ToString(), row.BaseXp.ToString(), row.ConcurrentJobs.ToString(),
-                    Hours(row.FirstJobSeconds), Hours(row.TenthJobSeconds), row.FirstJobCredits.ToString("N0"), Number(row.FastLoopJobsPerHour, 1), Number(row.ClimbJobsPerHour, 2),
+                    Hours(row.FirstJobSeconds), Hours(row.TenthJobSeconds), Whole(row.FirstJobCredits), Number(row.FastLoopJobsPerHour, 1), Number(row.ClimbJobsPerHour, 2),
                     Whole(row.CraftingXpPerHour), Whole(row.ResearchXpPerHourAtFullShare));
             }
 
@@ -541,7 +541,7 @@ namespace SWLOR.CraftSim.Progression
                 {
                     Number(hours, 0),
                     multiplier.HasValue ? "x" + Number(multiplier.Value, 2) : "none up to x64",
-                    cap.HasValue ? (cap.Value >= NoCap ? "none needed" : cap.Value.ToString("N0")) : "none can"
+                    cap.HasValue ? (cap.Value >= NoCap ? "none needed" : Whole(cap.Value)) : "none can"
                 }.Concat(skills.Select(s => multiplier.HasValue ? Number(solver.Path(s, a with { CraftXpMultiplier = multiplier.Value }).TotalHours, 1) : "-")).ToArray());
             }
 
@@ -563,7 +563,7 @@ namespace SWLOR.CraftSim.Progression
                 ("0", "hand in the guild's task recipes for credits and points, no XP award (isolates the recipe choice)", a, 0.0, "no"),
                 ("A", "guild task XP only", a, RecommendedGuildXpShare, "no"),
                 ("B", $"A, and crafting XP x{Number(optionB, 2)} (crafts and hand-ins)", a with { CraftXpMultiplier = optionB }, RecommendedGuildXpShare, "no"),
-                ("C", $"A, and no rank costs more than {optionC:N0} XP", a with { RequiredXpCap = optionC }, RecommendedGuildXpShare, "yes")
+                ("C", $"A, and no rank costs more than {Whole(optionC)} XP", a with { RequiredXpCap = optionC }, RecommendedGuildXpShare, "yes")
             };
             var option = new MarkdownTable(new[] { "Option", "Change" }.Concat(skills.Select(s => $"{s} h")).Concat(new[] { "Median skill", "Slowest skill", "Migration of stored XP" }).ToArray());
             foreach (var (name, change, scenario, guildShare, migration) in options)
@@ -581,7 +581,7 @@ namespace SWLOR.CraftSim.Progression
             text.AppendLine($"- **A: guild task XP only.** No craft XP change; the smallest change, with no stored-data conversion. It takes the median skill to {Number(medianA, 0)} h, " +
                             (medianA <= TargetHours ? "which meets the target." : $"which is {Number(medianA - TargetHours, 0)} h short of the {Number(TargetHours, 0)} h target."));
             text.AppendLine($"- **B: A plus one crafting-only multiplier, x{Number(optionB, 2)}.** The smallest round multiplier that brings the median skill to the target ({Number(medianB, 0)} h). One parameter on what crafts and hand-ins pay, retuned from the client timings later. It changes gains only, so stored XP and ranks need no conversion.");
-            text.AppendLine($"- **C: A plus a cap of {optionC:N0} XP on any rank's cost.** The same median as B by a different route: it cuts the climb from {Enumerable.Range(0, ProgressionAssumptions.MaximumRank).Sum(Skill.GetRequiredXP):N0} to {optionCTotal:N0} XP and spares the late ranks that cost up to 16,000 XP and need 15-25 crafts each, while leaving the early ranks alone. " +
+            text.AppendLine($"- **C: A plus a cap of {Whole(optionC)} XP on any rank's cost.** The same median as B by a different route: it cuts the climb from {Whole(Enumerable.Range(0, ProgressionAssumptions.MaximumRank).Sum(Skill.GetRequiredXP))} to {Whole(optionCTotal)} XP and spares the late ranks that cost up to 16,000 XP and need 15-25 crafts each, while leaving the early ranks alone. " +
                             "It changes required XP per rank for the crafting skills, so it needs a crafting-specific table and the plan's migration (convert stored XP and ranks so nobody loses a rank).");
             text.AppendLine();
             text.AppendLine((needsMultiplier

@@ -4,10 +4,17 @@ namespace SWLOR.CraftSim.Progression
 {
     /// <summary>
     /// The components one craft of a skill at a recipe level commits, averaged over the level's recipes (each recipe counts equally,
-    /// as in the gates' cohort), and what gathering them costs.
+    /// as in the gates' cohort), and what gathering them costs. Each recipe's components are priced together
+    /// (<see cref="ComponentSupply.PriceRecipe"/>).
     /// </summary>
     public sealed class LevelDemand
     {
+        private readonly Dictionary<ComponentSource, double> _unitsBySource =
+            Enum.GetValues<ComponentSource>().ToDictionary(source => source, _ => 0.0);
+
+        private readonly Dictionary<string, double> _secondsByFamily = new();
+        private readonly Dictionary<string, double> _secondsByComponent = new(StringComparer.OrdinalIgnoreCase);
+
         private LevelDemand()
         {
         }
@@ -30,15 +37,8 @@ namespace SWLOR.CraftSim.Progression
         /// <summary>Seconds per craft attempt that commits every stack, by the kind of node the components come from.</summary>
         public IReadOnlyDictionary<string, double> SecondsByFamily => _secondsByFamily;
 
-        private readonly Dictionary<string, double> _secondsByFamily = new();
-
         /// <summary>Seconds per craft attempt that commits every stack, by component.</summary>
         public IReadOnlyDictionary<string, double> SecondsByComponent => _secondsByComponent;
-
-        private readonly Dictionary<string, double> _secondsByComponent = new(StringComparer.OrdinalIgnoreCase);
-
-        private readonly Dictionary<ComponentSource, double> _unitsBySource =
-            Enum.GetValues<ComponentSource>().ToDictionary(source => source, _ => 0.0);
 
         public static LevelDemand Build(IReadOnlyList<RecipeEntry> atLevel, ComponentSupply supply, ProgressionAssumptions assumptions)
         {
@@ -59,20 +59,16 @@ namespace SWLOR.CraftSim.Progression
             var demand = new LevelDemand { Recipes = chosen.Count };
             foreach (var recipe in chosen)
             {
-                foreach (var (resref, quantity) in recipe.Components)
-                {
-                    if (supply.IsModelled(resref))
-                        demand.ModelledUnits += quantity;
-                    else
-                        demand.UnmodelledUnits += quantity;
-
-                    demand._unitsBySource[supply.Classify(resref)] += quantity;
-                    var seconds = quantity * supply.SecondsPerUnit(resref, assumptions);
-                    demand.SecondsPerAttempt += seconds;
-                    demand._secondsByComponent[resref] = demand._secondsByComponent.GetValueOrDefault(resref) + seconds;
-                    var family = supply.Family(resref, assumptions);
+                var priced = supply.PriceRecipe(recipe, assumptions);
+                demand.ModelledUnits += priced.ModelledUnits;
+                demand.UnmodelledUnits += priced.UnmodelledUnits;
+                demand.SecondsPerAttempt += priced.Seconds;
+                foreach (var (source, units) in priced.UnitsBySource)
+                    demand._unitsBySource[source] += units;
+                foreach (var (family, seconds) in priced.SecondsByFamily)
                     demand._secondsByFamily[family] = demand._secondsByFamily.GetValueOrDefault(family) + seconds;
-                }
+                foreach (var (component, seconds) in priced.SecondsByComponent)
+                    demand._secondsByComponent[component] = demand._secondsByComponent.GetValueOrDefault(component) + seconds;
             }
 
             demand.ModelledUnits /= chosen.Count;
@@ -90,6 +86,6 @@ namespace SWLOR.CraftSim.Progression
 
         /// <summary>Seconds of gathering and refining for one craft of a recipe that commits every stack.</summary>
         public static double SecondsOf(RecipeEntry recipe, ComponentSupply supply, ProgressionAssumptions assumptions) =>
-            recipe.Components.Sum(c => c.Value * supply.SecondsPerUnit(c.Key, assumptions));
+            supply.PriceRecipe(recipe, assumptions).Seconds;
     }
 }

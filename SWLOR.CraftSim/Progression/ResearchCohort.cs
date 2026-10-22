@@ -75,8 +75,10 @@ namespace SWLOR.CraftSim.Progression
         {
             ServerXp.ForDelta(0);
             var fabrication = model.Path(SkillType.Fabrication, fabricationGear, assumptions);
+            // The recipes the research window lists, by the server's own rule, that a researcher can make without learning them first
+            // (the research job checks the recipe unlock).
             var researchable = model.Recipes.Recipes
-                .Where(r => r.Detail != null && IsResearchable(r.Detail.EnhancementType))
+                .Where(r => !r.RequiresLearning && ServerResearchRules.IsResearchable(r))
                 .ToList();
 
             var rows = new List<ResearchRow>();
@@ -126,8 +128,5 @@ namespace SWLOR.CraftSim.Progression
 
             return rows;
         }
-
-        private static bool IsResearchable(RecipeEnhancementType type) =>
-            type is RecipeEnhancementType.Weapon or RecipeEnhancementType.Armor or RecipeEnhancementType.Food;
     }
 }

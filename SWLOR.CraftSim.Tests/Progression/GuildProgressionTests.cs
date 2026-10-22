@@ -15,18 +15,19 @@ namespace SWLOR.CraftSim.Tests.Progression
         private static readonly ProgressionAssumptions Assumptions = new();
         private static GuildTaskCatalog Guilds => ProgressionFixture.Guilds;
 
-        [TestCase(GuildType.SmitheryGuild, 175, 175, 0)]
-        [TestCase(GuildType.EngineeringGuild, 80, 80, 0)]
-        [TestCase(GuildType.FabricationGuild, 211, 211, 0)]
-        [TestCase(GuildType.AgricultureGuild, 185, 134, 51)]
-        public void TheCatalogReadsEveryCraftingGuildTask(GuildType guild, int tasks, int crafted, int caught)
+        // Other: tasks for an item only a recipe that must be learned makes, which a new crafter cannot hand in.
+        [TestCase(GuildType.SmitheryGuild, 175, 175, 0, 0)]
+        [TestCase(GuildType.EngineeringGuild, 80, 80, 0, 0)]
+        [TestCase(GuildType.FabricationGuild, 211, 211, 0, 0)]
+        [TestCase(GuildType.AgricultureGuild, 185, 132, 51, 2)]
+        public void TheCatalogReadsEveryCraftingGuildTask(GuildType guild, int tasks, int crafted, int caught, int other)
         {
             var all = Guilds.For(guild).ToList();
 
             all.Should().HaveCount(tasks);
             all.Count(t => t.Kind == GuildTaskKind.Crafted).Should().Be(crafted);
             all.Count(t => t.Kind == GuildTaskKind.Caught).Should().Be(caught);
-            all.Count(t => t.Kind == GuildTaskKind.Other).Should().Be(0);
+            all.Count(t => t.Kind == GuildTaskKind.Other).Should().Be(other);
             all.Select(t => t.Tier).Distinct().OrderBy(t => t).Should().Equal(0, 1, 2, 3, 4);
             all.Where(t => t.Kind == GuildTaskKind.Crafted).Should().OnlyContain(t => t.Recipe != null && t.Level == t.Recipe.Level && t.Quantity == 1);
         }

@@ -111,8 +111,9 @@ namespace SWLOR.CraftSim.Progression
 
         private void AddTasks(GuildType guild, SkillType skill, IEnumerable<QuestDetail> quests, RecipeCatalog recipes)
         {
-            // The lowest-level recipe that makes an item sets the task's level (and is the one a crafter would pick).
-            var recipeByResref = recipes.ForSkill(skill)
+            // The lowest-level recipe that makes an item, among those a new crafter can make without learning them, sets the task's level
+            // (and is the one a crafter would pick).
+            var recipeByResref = recipes.ForNewCrafter(skill)
                 .Where(r => !string.IsNullOrEmpty(r.Resref))
                 .GroupBy(r => r.Resref, StringComparer.OrdinalIgnoreCase)
                 .ToDictionary(g => g.Key, g => g.OrderBy(r => r.Level).ThenBy(r => r.Type.ToString(), StringComparer.Ordinal).First(), StringComparer.OrdinalIgnoreCase);

@@ -33,6 +33,21 @@ namespace SWLOR.CraftSim.Progression
         Asteroid
     }
 
+    /// <summary>What gathering the components of one craft costs, priced together.</summary>
+    /// <param name="Seconds">Seconds of gathering and refining for one craft attempt that commits every stack.</param>
+    /// <param name="ModelledUnits">Component units a table supplies.</param>
+    /// <param name="UnmodelledUnits">Component units no table supplies.</param>
+    /// <param name="SecondsByFamily">Seconds by the kind of node.</param>
+    /// <param name="SecondsByComponent">Seconds by component; a table's visits are shared out by each item's own need.</param>
+    /// <param name="UnitsBySource">Component units by where they come from.</param>
+    public sealed record RecipeGathering(
+        double Seconds,
+        double ModelledUnits,
+        double UnmodelledUnits,
+        IReadOnlyDictionary<string, double> SecondsByFamily,
+        IReadOnlyDictionary<string, double> SecondsByComponent,
+        IReadOnlyDictionary<ComponentSource, double> UnitsBySource);
+
     /// <summary>One loot table that can drop an item.</summary>
     /// <param name="Table">The loot table's name.</param>
     /// <param name="Share">The chance one roll of the table gives the item.</param>
@@ -136,25 +151,39 @@ namespace SWLOR.CraftSim.Progression
         public static double SecondsPerHarvestUse(ProgressionAssumptions assumptions) =>
             assumptions.SecondsPerHarvest + assumptions.NodeTravelSeconds / HarvestModel.ExpectedHarvestsPerNode;
 
+        /// <summary>
+        /// The Hard Look level a scavenger has at a site: the server derives it from the player's Gathering rank (<c>CraftRankMilestones.GetHardLookLevel</c>),
+        /// which is at least the site's level (the tier that can search it). <see cref="ProgressionAssumptions.GatheringTier"/> is the gatherer's tier.
+        /// </summary>
+        public static int HardLookAt(int siteLevel, ProgressionAssumptions assumptions) =>
+            Math.Min(ScavengeModel.MaximumHardLook, Math.Max(siteLevel, assumptions.GatheringTier ?? 0));
+
         /// <summary>Seconds for one scavenge site: the walk plus the search animation of each attempt.</summary>
         public static double SecondsPerScavengeVisit(int siteLevel, ProgressionAssumptions assumptions) =>
             assumptions.NodeTravelSeconds +
-            ScavengeModel.ExpectedAttemptsPerSite(siteLevel, assumptions.PerceptionModifier) * assumptions.SecondsPerScavengeAttempt;
+            ScavengeModel.ExpectedAttemptsPerSite(HardLookAt(siteLevel, assumptions), assumptions.PerceptionModifier) * assumptions.SecondsPerScavengeAttempt;
 
-        /// <summary>
-        /// Seconds to gather one unit from a source. A scavenger needs the Gathering tier of the site, whose Hard Look level sets the chance of a second search.
-        /// </summary>
-        public static double SecondsPerUnit(GatheringSource source, ProgressionAssumptions assumptions)
+        /// <summary>Units of the item one visit of a scavenge site, or one use of a harvest node, gives on average.</summary>
+        public static double UnitsPerVisit(GatheringSource source, ProgressionAssumptions assumptions)
         {
             if (source.Mechanism == GatheringMechanism.Scavenge)
             {
-                var successes = ScavengeModel.ExpectedSuccessesPerSite(source.SiteLevel, assumptions.PerceptionModifier);
-                var meanQuantity = (source.MaxQuantity + 1) / 2.0;
-                return SecondsPerScavengeVisit(source.SiteLevel, assumptions) / (successes * source.Share * meanQuantity);
+                var successes = ScavengeModel.ExpectedSuccessesPerSite(HardLookAt(source.SiteLevel, assumptions), assumptions.PerceptionModifier);
+                return successes * source.Share * (source.MaxQuantity + 1) / 2.0;
             }
 
-            return SecondsPerHarvestUse(assumptions) / (source.Share * HarvestModel.ExpectedItemsPerHarvest(assumptions.MightModifier));
+            return source.Share * HarvestModel.ExpectedItemsPerHarvest(assumptions.MightModifier);
         }
+
+        /// <summary>Seconds one visit of a scavenge site, or one use of a harvest node, takes.</summary>
+        public static double SecondsPerVisit(GatheringSource source, ProgressionAssumptions assumptions) =>
+            source.Mechanism == GatheringMechanism.Scavenge
+                ? SecondsPerScavengeVisit(source.SiteLevel, assumptions)
+                : SecondsPerHarvestUse(assumptions);
+
+        /// <summary>Seconds to gather one unit from a source on its own.</summary>
+        public static double SecondsPerUnit(GatheringSource source, ProgressionAssumptions assumptions) =>
+            SecondsPerVisit(source, assumptions) / UnitsPerVisit(source, assumptions);
 
         /// <summary>The cheapest source of a gatherable item under the assumptions; null when no table drops it.</summary>
         public GatheringSource CheapestSource(string resref, ProgressionAssumptions assumptions) =>
@@ -204,6 +233,66 @@ namespace SWLOR.CraftSim.Progression
                     return assumptions.UnmodelledUnitSeconds;
             }
         }
+
+        /// <summary>
+        /// Prices a recipe's components together. A craft needs all of them at once, and one visit to a table gives every item it holds, so the
+        /// items drawn from one table cost the visits the scarcest of them needs (the rest come free as by-products), not the sum of each priced
+        /// alone. Refined ores add their refining time per unit; components no table supplies cost the flat estimate.
+        /// </summary>
+        public RecipeGathering PriceRecipe(RecipeEntry recipe, ProgressionAssumptions assumptions)
+        {
+            var secondsByComponent = new Dictionary<string, double>(StringComparer.OrdinalIgnoreCase);
+            var secondsByFamily = new Dictionary<string, double>();
+            var unitsBySource = Enum.GetValues<ComponentSource>().ToDictionary(source => source, _ => 0.0);
+            double modelled = 0, unmodelled = 0;
+            var byTable = new Dictionary<string, List<(string Component, double Units, GatheringSource Source)>>();
+
+            void Add(string component, double seconds)
+            {
+                secondsByComponent[component] = secondsByComponent.GetValueOrDefault(component) + seconds;
+                var family = Family(component, assumptions);
+                secondsByFamily[family] = secondsByFamily.GetValueOrDefault(family) + seconds;
+            }
+
+            foreach (var (resref, quantity) in recipe.Components)
+            {
+                var kind = Classify(resref);
+                unitsBySource[kind] += quantity;
+                if (kind is ComponentSource.Crafted or ComponentSource.Other)
+                {
+                    unmodelled += quantity;
+                    Add(resref, quantity * assumptions.UnmodelledUnitSeconds);
+                    continue;
+                }
+
+                modelled += quantity;
+                var gathered = kind == ComponentSource.Refined ? _oreByRefined[resref].Ore : resref;
+                if (kind == ComponentSource.Refined)
+                    Add(resref, quantity * assumptions.RefineSecondsPerBatch / assumptions.RefineBatchUnits);
+
+                var source = CheapestSource(gathered, assumptions);
+                if (!byTable.TryGetValue(source.Table, out var lines))
+                    byTable[source.Table] = lines = new List<(string, double, GatheringSource)>();
+
+                lines.Add((resref, quantity, source));
+            }
+
+            foreach (var lines in byTable.Values)
+            {
+                var source = lines[0].Source;
+                var visitSeconds = SecondsPerVisit(source, assumptions);
+                var alone = lines.Select(l => l.Units / PerVisitOf(l, assumptions)).ToList();
+                var visits = alone.Max();
+                var total = alone.Sum();
+                for (var i = 0; i < lines.Count; i++)
+                    Add(lines[i].Component, visits * visitSeconds * (total > 0 ? alone[i] / total : 0));
+            }
+
+            return new RecipeGathering(secondsByComponent.Values.Sum(), modelled, unmodelled, secondsByFamily, secondsByComponent, unitsBySource);
+        }
+
+        private static double PerVisitOf((string Component, double Units, GatheringSource Source) line, ProgressionAssumptions assumptions) =>
+            UnitsPerVisit(line.Source, assumptions);
 
         /// <summary>Whether the model prices the component from a node, rather than leaving it out or using the flat estimate.</summary>
         public bool IsModelled(string resref) => Classify(resref) is ComponentSource.Refined or ComponentSource.Harvested;

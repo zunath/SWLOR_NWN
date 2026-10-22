@@ -19,13 +19,20 @@ public class CraftMinigameRoutingTests
             return attribute is { IsActive: true, IsShownInCraftMenu: true };
         });
 
+    private static IReadOnlyDictionary<SkillType, ICraftMinigameRoute> RegisteredRoutes() =>
+        typeof(ICraftMinigameRoute).Assembly.GetTypes()
+            .Where(type => typeof(ICraftMinigameRoute).IsAssignableFrom(type) && !type.IsInterface && !type.IsAbstract)
+            .Select(type => (ICraftMinigameRoute)Activator.CreateInstance(type)!)
+            .ToDictionary(route => route.Skill);
+
     [Test]
     public void EveryCraftingSkillUsesTheOriginalWindowUntilItsMinigameLands()
     {
         var skills = CraftingSkills().ToList();
+        var registered = RegisteredRoutes();
         skills.Should().NotBeEmpty();
 
-        foreach (var skill in skills)
+        foreach (var skill in skills.Where(skill => !registered.ContainsKey(skill)))
         {
             var route = CraftMinigameRouting.GetRoute(skill);
 
@@ -34,6 +41,30 @@ public class CraftMinigameRoutingTests
             route.Minigame.Should().BeNull();
             CraftMinigameRouting.GetWindow(skill).Should().Be(GuiWindowType.Craft);
         }
+    }
+
+    [Test]
+    public void EverySkillWithAMinigameOpensItsOwnWindow()
+    {
+        foreach (var (skill, declaration) in RegisteredRoutes())
+        {
+            var route = CraftMinigameRouting.GetRoute(skill);
+
+            route.IsLegacy.Should().BeFalse($"{skill} has a minigame");
+            route.Window.Should().Be(declaration.Window);
+            route.Window.Should().NotBe(GuiWindowType.Craft);
+            route.Minigame.Should().Be(declaration.Minigame);
+        }
+    }
+
+    [Test]
+    public void SmitheryOpensThePlasmaForge()
+    {
+        var route = CraftMinigameRouting.GetRoute(SkillType.Smithery);
+
+        route.Window.Should().Be(GuiWindowType.Forge);
+        route.Minigame.Should().Be(CraftMinigameType.Forge);
+        CraftMinigameRouting.GetWindow(SkillType.Engineering).Should().NotBe(GuiWindowType.Forge);
     }
 
     [Test]

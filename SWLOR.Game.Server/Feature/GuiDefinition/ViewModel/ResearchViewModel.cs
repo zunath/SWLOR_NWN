@@ -271,6 +271,11 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
 
         private string ValidateJob()
         {
+            if (Gui.IsWindowOpen(Player, GuiWindowType.ResearchExperiment))
+            {
+                return "Finish your current research experiment first.";
+            }
+
             var researchJob = BuildResearchJobDetails(_recipeType, _blueprintItem);
 
             if (researchJob.CurrentLevel > 0 && !GetIsObjectValid(_blueprintItem))

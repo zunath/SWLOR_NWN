@@ -103,6 +103,16 @@ public class ExperimentWindowTests
     }
 
     [Test]
+    public void AJobCannotStartWhileAnExperimentWindowIsOpenBecauseTheToggleWouldCloseIt()
+    {
+        var source = ReadSource("Feature", "GuiDefinition", "ViewModel", "ResearchViewModel.cs");
+        var validate = source[source.IndexOf("private string ValidateJob()", StringComparison.Ordinal)..];
+
+        validate.IndexOf("Gui.IsWindowOpen(Player, GuiWindowType.ResearchExperiment)", StringComparison.Ordinal)
+            .Should().BeGreaterThan(0).And.BeLessThan(validate.IndexOf("BuildResearchJobDetails(", StringComparison.Ordinal));
+    }
+
+    [Test]
     public void TheExperimentHasNoRankGatedActions()
     {
         // Every action is available from the first trial at any Fabrication rank; only CP limits Refine Method.

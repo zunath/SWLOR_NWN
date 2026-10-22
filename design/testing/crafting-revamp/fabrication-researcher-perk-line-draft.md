@@ -91,7 +91,7 @@ Expected evidence is trials times Test chance, before Refine Method (one Refine 
 | Intuitive | 4 | 75% | 3.0 | 4-6 |
 | Intuitive, proposed alternative (+20 points, 1 fewer trial) | 5 | 80% | 4.0 | 5-7 |
 
-- **The plan's style pair is not balanced.** Methodical gives 11% more evidence than the unperked researcher and Intuitive 17% less, so Intuitive is worse on evidence and only wins on time. Either accept that Intuitive trades power for a shorter sitting, or use the proposed alternative (+20 points, 1 fewer trial), which matches Methodical's evidence in one fewer turn. Decision for the owner.
+- **The plan's style pair is not balanced.** Methodical gives 11% more evidence than the unperked researcher and Intuitive 17% less, so Intuitive is worse on evidence and only wins on time. Either accept that Intuitive trades power for a shorter sitting, or use the proposed alternative (+20 points, 1 fewer trial), which matches Methodical's evidence (4.0) in about three fewer turns (5 trials against 8). Decision for the owner.
 - **Length.** The 5-8 turn target is for the unperked experiment. Methodical lengthens it to 8-10 and Intuitive shortens it to 4-6. The length gate cannot pass for a style that changes the trials by 2; the owner should decide whether the target applies per style.
 - CraftSim (later): `ExperimentStudy.Play` already takes an `ExperimentTuning`, so each build above can be played with the focused player for evidence, magnitude and time cut. The perks-optional and style-balance gates need an Experiment scoring rule the generic gates do not have (an experiment has no quality meter).
 - SP prices: the plan's schedule (1/1/2/2/3/3/3/3/3/4) and the other crafting lines; no combat comparator applies.

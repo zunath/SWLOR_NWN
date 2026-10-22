@@ -273,7 +273,7 @@ namespace SWLOR.CraftSim.Scenario.Experiment
 
             text.AppendLine(table.ToString());
 
-            var craft = CraftingXpPerHour(options.ChartXp);
+            var craft = CraftingXpPerHour(options.ChartXp, options.SecondsPerAction);
             text.AppendLine("### Against at-level Fabrication crafting");
             text.AppendLine();
             text.AppendLine(
@@ -288,13 +288,13 @@ namespace SWLOR.CraftSim.Scenario.Experiment
             text.AppendLine();
         }
 
-        private static (double Low, double Middle, double High) CraftingXpPerHour(Func<int, int> chartXp)
+        private static (double Low, double Middle, double High) CraftingXpPerHour(Func<int, int> chartXp, double secondsPerAction)
         {
             var baseXp = chartXp(0);
             return (Rate(baseXp, 0f), Rate(baseXp, 0.5f), Rate(baseXp, 1f));
 
-            static double Rate(int xp, float quality) =>
-                CraftOutcomeRules.CalculateXp(xp, 0, false, quality) / (15 * 6.0) * 3600;
+            double Rate(int xp, float quality) =>
+                CraftOutcomeRules.CalculateXp(xp, 0, false, quality) / (15 * secondsPerAction) * 3600;
         }
 
         private static void AppendLimitations(StringBuilder text)

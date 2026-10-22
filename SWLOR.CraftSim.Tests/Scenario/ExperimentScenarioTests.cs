@@ -288,6 +288,28 @@ namespace SWLOR.CraftSim.Tests.Scenario
         }
 
         [Test]
+        public void TheCraftingComparatorUsesTheSameSecondsPerActionAsTheResearchRows()
+        {
+            var directory = Directory.CreateTempSubdirectory("craftsim-research-").FullName;
+            try
+            {
+                var path = Path.Combine(directory, "research.md");
+
+                ResearchCommand.Run(
+                    new[] { "--runs", "5", "--adaptive-runs", "1", "--seconds-per-action", "12", "--out", path },
+                    new StringWriter(),
+                    new[] { None });
+
+                var report = File.ReadAllText(path);
+                report.Should().Contain("at 12.0 s each takes 180.0 s and pays 12000 XP per hour at 0% quality");
+            }
+            finally
+            {
+                Directory.Delete(directory, true);
+            }
+        }
+
+        [Test]
         public void TheResearchCommandRejectsAnUnknownOption()
         {
             var act = () => ResearchCommand.Run(new[] { "--bogus", "1" }, new StringWriter(), new[] { None });

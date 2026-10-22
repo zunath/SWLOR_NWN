@@ -147,7 +147,10 @@ namespace SWLOR.Game.Server.Feature
         public static void OnClosed()
         {
             var placeable = OBJECT_SELF;
+            // The engine does not report who closed a placeable's inventory, so fall back to who opened it.
             var user = GetLastClosedBy();
+            if (!GetIsObjectValid(user))
+                user = GetLastOpenedBy();
 
             if (!GetIsPC(user) || GetIsDM(user)) return;
 

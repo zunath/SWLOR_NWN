@@ -2465,6 +2465,13 @@
   },
   {
     "File": "SWLOR.Game.Server/Feature/GuiDefinition/ViewModel/RecipesViewModel.cs",
+    "Line": 562,
+    "Member": "OnClickCraftOrResearch",
+    "Delivery": "Retained",
+    "Call": "SendMessageToPC(Player, \"Finish or cancel your quick craft first.\")"
+  },
+  {
+    "File": "SWLOR.Game.Server/Feature/GuiDefinition/ViewModel/RecipesViewModel.cs",
     "Line": 536,
     "Member": "OnClickCraftOrResearch",
     "Delivery": "Retained",
@@ -4303,6 +4310,34 @@
     "Member": "UseResearchTerminal",
     "Delivery": "Retained",
     "Call": "SendMessageToPC(player, $\"Another player's research job is active. This job has completed.\")"
+  },
+  {
+    "File": "SWLOR.Game.Server/Service/CraftService/Minigame/NwnCraftSessionWorld.cs",
+    "Line": 53,
+    "Member": "ChargeBlueprint",
+    "Delivery": "Retained",
+    "Call": "SendMessageToPC(player, $\"Remaining licensed runs: {details.LicensedRuns}\")"
+  },
+  {
+    "File": "SWLOR.Game.Server/Service/CraftService/Minigame/NwnCraftSessionWorld.cs",
+    "Line": 196,
+    "Member": "ApplyBlueprintBonuses",
+    "Delivery": "Retained",
+    "Call": "SendMessageToPC(player, ColorToken.Green($\"Blueprint Bonus applied: {bonusName} +{bonus.Amount}\"))"
+  },
+  {
+    "File": "SWLOR.Game.Server/Service/CraftService/Minigame/NwnCraftSessionWorld.cs",
+    "Line": 211,
+    "Member": "Message",
+    "Delivery": "Retained",
+    "Call": "SendMessageToPC(player, text)"
+  },
+  {
+    "File": "SWLOR.Game.Server/Service/CraftService/Minigame/NwnQuickCraftWorld.cs",
+    "Line": 53,
+    "Member": "Message",
+    "Delivery": "Retained",
+    "Call": "SendMessageToPC(player, text)"
   },
   {
     "File": "SWLOR.Game.Server/Service/Death.cs",

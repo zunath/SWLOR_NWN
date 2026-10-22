@@ -28,6 +28,11 @@ namespace SWLOR.CraftSim.Scenario.Kitchen
         /// </summary>
         public double SecondsPerAction => 8;
 
+        /// <summary>The Kitchen's multiplier at the lowest level band, the largest; <see cref="XpMultiplierFor"/> gives each band's.</summary>
+        public double XpMultiplier => CraftMinigameXp.MultiplierFor(Minigame);
+
+        public double XpMultiplierFor(int recipeLevel) => CraftMinigameXp.MultiplierFor(Minigame, recipeLevel);
+
         public EnhancementSupport Enhancements => EnhancementSupport.Modeled;
 
         public AdaptivePolicyOptions AdaptiveOptions { get; } = new()

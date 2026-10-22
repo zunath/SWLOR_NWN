@@ -212,42 +212,6 @@ public class KitchenRecipeParameterTests
             "Kitchen Inner Radius",
             "Kitchen Outer Radius",
             "Kitchen Freshness",
-            "Kitchen XP Percent",
             "Kitchen Override");
-    }
-
-    [Test]
-    public void EveryRecipePaysTheXpPercentOfItsLevelBand()
-    {
-        var wrong = CookingRecipes()
-            .Where(pair => ParametersOf(pair.Value).XpPercent != KitchenParameterProfile.XpPercent(pair.Value.Level))
-            .Select(pair => $"{pair.Key}: level {pair.Value.Level} pays {ParametersOf(pair.Value).XpPercent}%, the band pays {KitchenParameterProfile.XpPercent(pair.Value.Level)}%")
-            .ToList();
-
-        wrong.Should().BeEmpty();
-    }
-
-    [Test]
-    public void TheXpPercentBandsRunUpInLevelAndNeverPayLessThanThePlainFormula()
-    {
-        var table = KitchenParameterProfile.XpPercentByLevel;
-
-        table.Select(row => row.UpToLevel).Should().BeInAscendingOrder().And.OnlyHaveUniqueItems();
-        table.Last().UpToLevel.Should().Be(int.MaxValue, "every recipe level falls in a band");
-        table.Should().OnlyContain(row =>
-            row.Percent >= KitchenParameterProfile.MinXpPercent && row.Percent <= KitchenParameterProfile.MaxXpPercent);
-    }
-
-    [TestCase(1, 160)]
-    [TestCase(10, 160)]
-    [TestCase(11, 100)]
-    [TestCase(20, 100)]
-    [TestCase(21, 120)]
-    [TestCase(30, 120)]
-    [TestCase(31, 100)]
-    [TestCase(53, 100)]
-    public void TheXpPercentFollowsTheRecipeLevelsBand(int level, int percent)
-    {
-        KitchenParameterProfile.XpPercent(level).Should().Be(percent);
     }
 }

@@ -1,16 +1,20 @@
 namespace SWLOR.Game.Server.Service.CraftService.Minigame.Kitchen;
 
 /// <summary>
-/// Every number the Kitchen rules use. All of them are starting values for the simulator to tune; the plan fixes the actions and
-/// meters, not these magnitudes.
+/// Every number the Kitchen rules use. The plan fixes the actions and meters, not these magnitudes: phase 2 tuned the ones marked
+/// below against the CraftSim balance gates (<c>design/testing/crafting-revamp/kitchen-gates.md</c>) and the rest stay at their
+/// phase 1 starting values until the client evidence says otherwise.
 /// </summary>
 public static class KitchenTuning
 {
     /// <summary>Each flavor axis runs from 0 to this value.</summary>
     public const int AxisMax = 100;
 
-    /// <summary>Doneness (the progress meter) needed to finish the dish.</summary>
-    public const int DonenessMax = 100;
+    /// <summary>
+    /// Doneness (the progress meter) needed to finish the dish. Tuned: needing only 100, crafts at the lower levels with gear took fewer actions
+    /// than the 10 action floor of the length gate.
+    /// </summary>
+    public const int DonenessMax = 120;
 
     /// <summary>The quality meter is a percentage.</summary>
     public const int QualityMax = 100;
@@ -47,14 +51,18 @@ public static class KitchenTuning
     public const int SimmerMediumDoneness = 12;
     public const int SearDoneness = 36;
 
-    /// <summary>Doneness gained by each action grows by this share per point of Craftsmanship.</summary>
-    public const double CraftsmanshipDonenessPerPoint = 0.015;
+    /// <summary>
+    /// Doneness gained by each action grows by this share per point of Craftsmanship. Tuned: at 0.015 gear shortened crafts below the
+    /// length gate's floor of 10 actions.
+    /// </summary>
+    public const double CraftsmanshipDonenessPerPoint = 0.008;
 
     /// <summary>
     /// An enhancement's progress penalty (written for the old crafting window's much larger progress scale) adds this share of
-    /// itself to the Doneness the dish needs.
+    /// itself to the Doneness the dish needs. Tuned: at 0.5 dishes with two or three enhancements failed or fell
+    /// short of quality often enough that enhancement transfers dropped below today's (gate 7).
     /// </summary>
-    public const double EnhancementDonenessPerPenalty = 0.5;
+    public const double EnhancementDonenessPerPenalty = 0.25;
 
     /// <summary>The Doneness a set of enhancements adds to what the dish needs, from their total progress penalty.</summary>
     public static int EnhancementDoneness(int progressPenalty) =>
@@ -98,6 +106,28 @@ public static class KitchenTuning
     public const int CpPassiveRank = 25;
 
     public const int CpPassiveBonus = 31;
+
+    // XP
+
+    // The multiplier on the base XP of every Kitchen craft in a recipe-level band (see CraftMinigameXp), each the least that keeps the
+    // CraftSim XP-rate gate (gate 6) passing in its band at every gear tier and enhancement count. The Kitchen's 10-20 action loop at
+    // an estimated 8 seconds an action pays less XP per hour than the old window's 4-28 action loop at 6 seconds, and the old window is
+    // fastest at the lowest levels. Starting values until client timing replaces the seconds per action.
+    public const double XpMultiplierLevels1To10 = 2.1;
+    public const double XpMultiplierLevels11To20 = 1.05;
+    public const double XpMultiplierLevels21To30 = 1.05;
+    public const double XpMultiplierLevels31To40 = 1.15;
+    public const double XpMultiplierLevels41Up = 1.1;
+
+    /// <summary>The multiplier on the base XP of a Kitchen craft at a recipe level. A level of 0 or less takes the lowest band's.</summary>
+    public static double XpMultiplierForLevel(int recipeLevel) => recipeLevel switch
+    {
+        <= 10 => XpMultiplierLevels1To10,
+        <= 20 => XpMultiplierLevels11To20,
+        <= 30 => XpMultiplierLevels21To30,
+        <= 40 => XpMultiplierLevels31To40,
+        _ => XpMultiplierLevels41Up
+    };
 
     // Telegraphed opportunity
 

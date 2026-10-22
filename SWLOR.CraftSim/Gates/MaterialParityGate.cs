@@ -4,10 +4,60 @@ using static SWLOR.CraftSim.Report.MarkdownTable;
 
 namespace SWLOR.CraftSim.Gates
 {
+    /// <summary>The verdict of gate 5's stack comparison for one band and gear tier, before the never-made and quality checks.</summary>
+    /// <param name="Passed">The stacks per item are acceptable.</param>
+    /// <param name="TwoSided">The legacy policy succeeds often enough that the parity is two-sided.</param>
+    /// <param name="UsesLess">The parity is one-sided and the new minigame uses more than the tolerance less material than today.</param>
+    public readonly record struct MaterialParityJudgment(bool Passed, bool TwoSided, bool UsesLess)
+    {
+        /// <summary>The rule that applied, for the report; a one-sided pass on lower use says how much less.</summary>
+        public string Describe(double ratio, GateThresholds thresholds)
+        {
+            var tolerance = Number(thresholds.MaterialTolerance * 100, 0) + "%";
+            if (TwoSided)
+                return $"within {tolerance}";
+
+            return UsesLess
+                ? $"at most +{tolerance}; uses {Number((1 - ratio) * 100, 0)}% less, passes"
+                : $"at most +{tolerance}";
+        }
+    }
+
+    /// <summary>
+    /// Gate 5's one-sided rule (owner decision, October 2026). In a cell where the legacy policy succeeds at least
+    /// <see cref="GateThresholds.MaterialTwoSidedMinimumLegacySuccess"/> of the time, the new stacks per item must be within
+    /// <see cref="GateThresholds.MaterialTolerance"/> of the legacy figure either way. Where it succeeds less, today's failures waste
+    /// material, and the cell fails only if the new minigame uses more than the tolerance more; lower use passes.
+    /// </summary>
+    public static class MaterialParityRule
+    {
+        // A figure that sits exactly on a threshold (a mean of recipes' rates, a ratio of 1.10) can land a rounding error on the wrong side of it.
+        private const double Epsilon = 1e-9;
+
+        /// <param name="ratio">New stacks per item divided by the legacy figure; infinite when the new minigame makes no item.</param>
+        /// <param name="legacySuccessRate">The legacy policy's success rate in the cell, 0 to 1.</param>
+        /// <param name="thresholds">The tolerance and the legacy success rate where the parity turns two-sided.</param>
+        public static MaterialParityJudgment Judge(double ratio, double legacySuccessRate, GateThresholds thresholds)
+        {
+            var twoSided = legacySuccessRate + Epsilon >= thresholds.MaterialTwoSidedMinimumLegacySuccess;
+            if (double.IsNaN(ratio) || double.IsInfinity(ratio))
+                return new MaterialParityJudgment(false, twoSided, false);
+
+            var passed = twoSided
+                ? Math.Abs(ratio - 1) <= thresholds.MaterialTolerance + Epsilon
+                : ratio <= 1 + thresholds.MaterialTolerance + Epsilon;
+            return new MaterialParityJudgment(passed, twoSided, !twoSided && ratio < 1 - thresholds.MaterialTolerance - Epsilon);
+        }
+    }
+
     /// <summary>
     /// Gate 5, material parity (the crafting item of the plan's economy-parity gate): the component stacks consumed per item made,
-    /// counting the stacks a failed craft loses, must be within <see cref="GateThresholds.MaterialTolerance"/> of the legacy baseline in
-    /// every recipe band and gear tier. Both sides play the same recipes at the same ranks and gear; the legacy side is the old minigame's
+    /// counting the stacks a failed craft loses, against the legacy baseline in every recipe band and gear tier. Where the legacy policy
+    /// succeeds at least <see cref="GateThresholds.MaterialTwoSidedMinimumLegacySuccess"/> of the time the parity is two-sided, within
+    /// <see cref="GateThresholds.MaterialTolerance"/> either way. Where today's crafter fails more often (owner decision, October 2026:
+    /// today's failures waste material, so a minigame that fails less is not held to them) the parity is one-sided: the cell fails only if
+    /// the new minigame uses more than the tolerance more material than today, and lower use passes and is shown in the report
+    /// (<see cref="MaterialParityRule"/>). Both sides play the same recipes at the same ranks and gear; the legacy side is the old minigame's
     /// lookahead player, recomputed here with the legacy model and the same seed. Stacks per item is the baseline's own figure: a success
     /// consumes every stack, a failure each stack at the 65% loss chance, so stacks x (p + 0.65 x (1 - p)) per attempt for a success
     /// chance p, divided by the items an attempt makes. "At matched quality": the new minigame's average quality must also be at least the
@@ -36,9 +86,10 @@ namespace SWLOR.CraftSim.Gates
 
             var table = new EvidenceTable(
                 "Band", "Gear", "Recipes played", "New stacks per item", "Legacy stacks per item", "Ratio",
-                "New success", "Legacy success", "New avg quality", "Legacy avg quality", "Quality matched", "Never made (new / legacy)", "Verdict");
+                "New success", "Legacy success", "New avg quality", "Legacy avg quality", "Quality matched", "Never made (new / legacy)", "Parity rule", "Verdict");
             var failures = new List<string>();
             var compared = 0;
+            var usesLess = 0;
 
             foreach (var band in run.Bands)
             {
@@ -60,16 +111,19 @@ namespace SWLOR.CraftSim.Gates
                     {
                         table.Add(band.Band.Name, run.Gear[gearIndex].Name, band.Recipes.Count.ToString(), newSide.Items <= 0 ? "never made" : Number(newSide.StacksPerItem, 2), "n/a", "n/a",
                             Percent(newSide.SuccessRate), Percent(legacySide.SuccessRate), Percent(newSide.Quality), Percent(legacySide.Quality), "n/a",
-                            $"{Percent(newSide.NeverShare)} / {Percent(legacySide.NeverShare)}", "Skipped: the legacy baseline makes no item here");
+                            $"{Percent(newSide.NeverShare)} / {Percent(legacySide.NeverShare)}", "n/a", "Skipped: the legacy baseline makes no item here");
                         continue;
                     }
 
                     compared++;
                     var ratio = newSide.Items <= 0 ? double.PositiveInfinity : newSide.StacksPerItem / legacySide.StacksPerItem;
-                    var withinTolerance = Math.Abs(ratio - 1) <= run.Thresholds.MaterialTolerance;
+                    var parity = MaterialParityRule.Judge(ratio, legacySide.SuccessRate, run.Thresholds);
                     var neverOk = newSide.NeverShare <= legacySide.NeverShare + run.Thresholds.MaterialExtraNeverCraftedShare;
                     var qualityMatched = newSide.Quality * 100 + run.Thresholds.MaterialQualityShortfallPoints >= legacySide.Quality * 100;
-                    var passed = withinTolerance && neverOk && qualityMatched;
+                    var passed = parity.Passed && neverOk && qualityMatched;
+                    if (passed && parity.UsesLess)
+                        usesLess++;
+
                     if (!passed)
                     {
                         failures.Add(
@@ -90,6 +144,7 @@ namespace SWLOR.CraftSim.Gates
                         Percent(legacySide.Quality),
                         qualityMatched ? "yes" : "no",
                         $"{Percent(newSide.NeverShare)} / {Percent(legacySide.NeverShare)}",
+                        parity.Describe(ratio, run.Thresholds),
                         passed ? "Passed" : "Failed");
                 }
             }
@@ -103,9 +158,16 @@ namespace SWLOR.CraftSim.Gates
                 return new GateResult(Name, GateVerdict.NotRun, "The legacy baseline makes no item in any band, so there is nothing to compare.", tables);
 
             var tolerance = Percent(run.Thresholds.MaterialTolerance);
+            var twoSidedFrom = Percent(run.Thresholds.MaterialTwoSidedMinimumLegacySuccess);
             return failures.Count == 0
-                ? new GateResult(Name, GateVerdict.Passed, $"Component stacks per item are within {tolerance} of the legacy baseline, at no less quality, in every band and gear tier.", tables)
-                : new GateResult(Name, GateVerdict.Failed, $"Outside {tolerance} of the legacy baseline, or below its quality: {string.Join("; ", failures)}.", tables);
+                ? new GateResult(Name, GateVerdict.Passed,
+                    $"Component stacks per item are within {tolerance} of the legacy baseline where its success rate is at least {twoSidedFrom}, and at most {tolerance} above it where it is lower, " +
+                    "at no less quality, in every band and gear tier." +
+                    (usesLess == 0 ? string.Empty : $" {usesLess} case(s) use more than {tolerance} less material than today, which passes."),
+                    tables)
+                : new GateResult(Name, GateVerdict.Failed,
+                    $"Outside {tolerance} of the legacy baseline (above it only, where its success rate is below {twoSidedFrom}), or below its quality: {string.Join("; ", failures)}.",
+                    tables);
         }
 
         /// <summary>The materials a band's recipes use on one side of the comparison.</summary>

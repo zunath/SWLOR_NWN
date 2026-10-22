@@ -209,7 +209,7 @@ namespace SWLOR.Game.Server.Service.CraftService
 
         /// <summary>
         /// Sets the Kitchen minigame parameters of a cooking recipe: its dish, the center and radii of its flavor target, and
-        /// the Freshness the dish starts with and the percentage of the plain base XP the craft pays.
+        /// the Freshness the dish starts with.
         /// </summary>
         /// <returns>A recipe builder with the configured options</returns>
         public RecipeBuilder KitchenParameters(
@@ -219,8 +219,7 @@ namespace SWLOR.Game.Server.Service.CraftService
             int targetSpice,
             int innerRadius,
             int outerRadius,
-            int freshness,
-            int xpPercent = 100)
+            int freshness)
         {
             return MinigameParameters(new KitchenParameters(
                 dish,
@@ -229,8 +228,7 @@ namespace SWLOR.Game.Server.Service.CraftService
                 targetSpice,
                 innerRadius,
                 outerRadius,
-                freshness,
-                xpPercent));
+                freshness));
         }
 
         /// <summary>

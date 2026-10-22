@@ -56,6 +56,18 @@ namespace SWLOR.CraftSim.Scenario
         FixedRotationSolverOptions SolverOptions => FixedRotationSolverOptions.Default;
 
         /// <summary>
+        /// The multiplier the minigame puts on a craft's base XP (<c>CraftMinigameXp</c>), 1 by default. The XP-rate gate scales the
+        /// minigame's XP by it, so a minigame whose loop is slower than the old window can still reach the old XP per hour.
+        /// </summary>
+        double XpMultiplier => 1.0;
+
+        /// <summary>
+        /// The multiplier at a recipe level, for a minigame whose multiplier differs by level band (<c>CraftMinigameXp.MultiplierFor</c>
+        /// with the level). It is <see cref="XpMultiplier"/> unless the scenario says otherwise.
+        /// </summary>
+        double XpMultiplierFor(int recipeLevel) => XpMultiplier;
+
+        /// <summary>
         /// Whether <see cref="CraftEngineRequest.Enhancements"/> reaches the engine, for gate 7 (enhancement parity). By default it does not,
         /// and gate 7 then does not run. Set <see cref="EnhancementSupport.Modeled"/> once <see cref="CreateEngine"/> applies the request's
         /// total progress penalty through the engine's own enhancement handling, or <see cref="EnhancementSupport.NoSlots"/> for a minigame

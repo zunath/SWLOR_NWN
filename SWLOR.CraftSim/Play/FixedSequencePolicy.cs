@@ -4,7 +4,7 @@ namespace SWLOR.CraftSim.Play
 {
     /// <summary>
     /// A fixed rotation: the same actions in the same order whatever happens. An action that is not available when its turn comes
-    /// (not enough CP, disabled by the state) is skipped. When the list runs out before the attempt ends, the last action repeats for
+    /// (not enough CP, disabled by the state, or not offered by this recipe's engine) is skipped. When the list runs out before the attempt ends, the last action repeats for
     /// as long as it is available, as a rotation such as "Wire, Tune, Tune, Tune..." does, and then the player stops.
     /// </summary>
     public sealed class FixedSequencePolicy : ICraftPolicy
@@ -26,7 +26,7 @@ namespace SWLOR.CraftSim.Play
             while (_next < _sequence.Count)
             {
                 var action = _sequence[_next++];
-                if (engine.Preview(action).Enabled)
+                if (CraftPlayer.Offers(engine, action) && engine.Preview(action).Enabled)
                     return action;
             }
 
@@ -34,7 +34,7 @@ namespace SWLOR.CraftSim.Play
                 return null;
 
             var last = _sequence[^1];
-            return engine.Preview(last).Enabled ? last : null;
+            return CraftPlayer.Offers(engine, last) && engine.Preview(last).Enabled ? last : null;
         }
 
         /// <summary>The rotation in words, with a run of one action written once: "stoke x2 > press x3 > polish".</summary>

@@ -4,7 +4,7 @@ param(
     [switch]$Check
 )
 
-# Writes the Kitchen minigame columns (dish, flavor target, radii, Freshness, XP percent) onto the Agriculture rows of the
+# Writes the Kitchen minigame columns (dish, flavor target, radii, Freshness) onto the Agriculture rows of the
 # Design Bible "Cooking Recipes" tab. The values are read from the compiled recipe definitions, so rerun
 # `dotnet run --project tools/SWLOR.RecipeParameters -p:RunPostBuildEvent=Never -- write Kitchen` first when the profile changed.
 # A second run changes nothing. After a workbook merge conflict, take the base workbook and run this again, then run

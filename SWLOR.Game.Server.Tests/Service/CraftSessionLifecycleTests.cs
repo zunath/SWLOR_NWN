@@ -289,45 +289,6 @@ public class CraftSessionLifecycleTests
     }
 
     [Test]
-    public void Succeed_PaysTheBaseXpAfterTheMinigamesOwnScale()
-    {
-        _recipe.MinigameParameters = new ScaledParameters(160);
-        var lifecycle = Lifecycle();
-        var session = StartSession(lifecycle);
-        var scaled = (int)Math.Round(BaseXp * 1.6, MidpointRounding.AwayFromZero);
-
-        lifecycle.Succeed(FakeCraftSessionWorld.PlayerHandle, _player, session, new MinigameMeter(60, 100));
-
-        scaled.Should().BeGreaterThan(BaseXp);
-        _world.XpGiven.Single().Xp.Should().Be(CraftOutcomeRules.CalculateXp(scaled, 0, true, 0.6f));
-    }
-
-    [Test]
-    public void Fail_GivesFifteenPercentOfTheBaseXpAfterTheMinigamesOwnScale()
-    {
-        _recipe.MinigameParameters = new ScaledParameters(160);
-        var lifecycle = Lifecycle(100, 100);
-        StartSession(lifecycle, FakeCraftSessionWorld.Blueprint);
-        var scaled = (int)Math.Round(BaseXp * 1.6, MidpointRounding.AwayFromZero);
-
-        var settlement = lifecycle.Fail(FakeCraftSessionWorld.PlayerHandle, _player, CraftSessionEndReason.Broken);
-
-        settlement.Xp.Should().Be(CraftOutcomeRules.CalculateFailureXp(scaled, 2));
-    }
-
-    private sealed class ScaledParameters : RecipeMinigameParameters, ICraftXpScale
-    {
-        public ScaledParameters(int xpPercent)
-        {
-            XpPercent = xpPercent;
-        }
-
-        public int XpPercent { get; }
-
-        public override IReadOnlyList<RecipeParameterValue> Values => new[] { new RecipeParameterValue("xpPercent", XpPercent) };
-    }
-
-    [Test]
     public void Fail_StillGivesFifteenPercentOfTheBaseXp()
     {
         var lifecycle = Lifecycle(100, 100);

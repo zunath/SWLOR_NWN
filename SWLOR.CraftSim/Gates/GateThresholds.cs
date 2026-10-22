@@ -12,9 +12,12 @@ namespace SWLOR.CraftSim.Gates
     {
         public static readonly GateThresholds Default = new();
 
-        // Gate 1: no fixed rotation.
+        // Gate 1: no single rotation.
 
-        /// <summary>Adaptive play must beat the best fixed rotation by at least this many quality points (percentage points of the quality meter) in every band and gear tier.</summary>
+        /// <summary>
+        /// Adaptive play must beat the best single fixed rotation (one sequence for every recipe of a band, searched across the band's
+        /// sampled recipes) by at least this many quality points (percentage points of the quality meter) in every band and gear tier.
+        /// </summary>
         public double RotationMarginPoints { get; init; } = 10;
 
         // Gate 2: style balance.
@@ -46,8 +49,19 @@ namespace SWLOR.CraftSim.Gates
 
         // Gate 5: material parity.
 
-        /// <summary>Expected component stacks consumed per item must be within this share of the legacy baseline (10%).</summary>
+        /// <summary>
+        /// Expected component stacks consumed per item must be within this share of the legacy baseline (10%) in a cell where today's
+        /// crafter rarely fails (<see cref="MaterialTwoSidedMinimumLegacySuccess"/>), and may not exceed it by more than this share in a
+        /// cell where today's crafter fails often, where using less material is fine.
+        /// </summary>
         public double MaterialTolerance { get; init; } = 0.10;
+
+        /// <summary>
+        /// A cell (band and gear tier) where the legacy policy's success rate is at least this keeps the two-sided material parity: stacks
+        /// per item within <see cref="MaterialTolerance"/> either way. Where it is lower, the cell fails only if the new minigame uses more
+        /// than <see cref="MaterialTolerance"/> more material than today; lower use passes. Owner decision, October 2026, named starting value.
+        /// </summary>
+        public double MaterialTwoSidedMinimumLegacySuccess { get; init; } = 0.90;
 
         /// <summary>The share of a band's recipes the new minigame may never make beyond the legacy share; recipes never made are left out of the stack figure, so this stops them hiding there.</summary>
         public double MaterialExtraNeverCraftedShare { get; init; } = 0.10;
@@ -110,14 +124,15 @@ namespace SWLOR.CraftSim.Gates
 
         public IReadOnlyList<(string Name, string Value, string Meaning)> Describe() => new[]
         {
-            ("RotationMarginPoints", Number(RotationMarginPoints), "gate 1: adaptive beats the best fixed rotation by at least this many quality points"),
+            ("RotationMarginPoints", Number(RotationMarginPoints), "gate 1: adaptive beats the best single fixed rotation (one sequence for a whole band) by at least this many quality points"),
             ("StyleMinimumWinShare", Percent(StyleMinimumWinShare), "gate 2: each style is the better choice on at least this share of recipes"),
             ("StyleMaximumMeanDifferencePoints", Number(StyleMaximumMeanDifferencePoints), "gate 2: neither style beats the other by more on average"),
             ("StyleTieMarginPoints", Number(StyleTieMarginPoints), "gate 2: a recipe within this many points is a tie, half a win each"),
             ("PerksOptionalRank", PerksOptionalRank.ToString(), "gate 3: rank of the unperked crafter"),
             ("PerksOptionalMinimumFullQualityShare", Percent(PerksOptionalMinimumFullQualityShare), "gate 3: share of crafts that reach maximum quality, per at-level band"),
             ("PerksOptionalBands", string.Join(", ", PerksOptionalBands.Select(b => b.Name)), "gate 3: the at-level recipe bands"),
-            ("MaterialTolerance", Percent(MaterialTolerance), "gate 5: component stacks per item within this share of the legacy baseline"),
+            ("MaterialTolerance", Percent(MaterialTolerance), "gate 5: component stacks per item within this share of the legacy baseline (above it only, where the legacy success rate is below the next value)"),
+            ("MaterialTwoSidedMinimumLegacySuccess", Percent(MaterialTwoSidedMinimumLegacySuccess), "gate 5: cells where the legacy policy succeeds at least this often keep the two-sided parity; below it, using less material passes"),
             ("MaterialExtraNeverCraftedShare", Percent(MaterialExtraNeverCraftedShare), "gate 5: recipes never made may exceed the legacy share by at most this"),
             ("MaterialQualityShortfallPoints", Number(MaterialQualityShortfallPoints), "gate 5: the new average quality may be at most this many points below the legacy player's"),
             ("XpRateMinimumRatio", Number(XpRateMinimumRatio), "gate 6: XP per hour divided by the legacy rate"),

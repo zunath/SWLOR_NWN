@@ -23,7 +23,7 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.Unarmed
                     Line = MeleeTechniqueLine.MartialArtist,
                     ConsumedStages = MeleeTechniqueStage.Finish,
                     RequiredStages = MeleeTechniqueStage.Finish,
-                    FinishPower = 15,
+                    FinishPower = 45,
                     RefundEligible = true,
                 },
                 30,

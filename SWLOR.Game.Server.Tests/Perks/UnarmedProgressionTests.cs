@@ -117,7 +117,7 @@ public class UnarmedProgressionTests
         {
             Assert.That(perfect.RequiredStages, Is.EqualTo(MeleeTechniqueStage.Finish));
             Assert.That(perfect.ConsumedStages, Is.EqualTo(MeleeTechniqueStage.Finish));
-            Assert.That(perfect.FinishPower, Is.EqualTo(15));
+            Assert.That(perfect.FinishPower, Is.EqualTo(45));
             Assert.That(perfect.RefundEligible, Is.True);
         });
         foreach (var definition in new IAbilityListDefinition[]

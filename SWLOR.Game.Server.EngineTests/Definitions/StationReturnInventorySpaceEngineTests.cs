@@ -6,7 +6,7 @@ using SWLOR.Game.Server.Feature.GuiDefinition.ViewModel;
 using SWLOR.Game.Server.Service;
 using SWLOR.Game.Server.Service.CraftService;
 using SWLOR.Game.Server.Service.GuiService;
-using SWLOR.Game.Server.Service.PerkService;
+using SWLOR.Game.Server.Service.SkillService;
 using SWLOR.NWN.API.NWNX;
 using static SWLOR.Game.Server.EngineTests.Framework.FullInventoryFixture;
 using static SWLOR.Game.Server.EngineTests.Framework.ViewModelTestHelper;
@@ -76,7 +76,7 @@ namespace SWLOR.Game.Server.EngineTests.Definitions
         {
             using var fixture = await PlayerAbilityFixture.CreateAsync(ctx);
             var player = fixture.Creature;
-            fixture.Update(record => record.Perks[PerkType.DroidAssembly] = 5);
+            fixture.Update(record => record.Skills[SkillType.Engineering].Rank = 40);
             try
             {
                 await ctx.ExecuteInCreatureContextAsync(player, () =>
@@ -205,7 +205,7 @@ namespace SWLOR.Game.Server.EngineTests.Definitions
         {
             using var fixture = await PlayerAbilityFixture.CreateAsync(ctx);
             var player = fixture.Creature;
-            fixture.Update(record => record.Perks[PerkType.DroidAssembly] = 5);
+            fixture.Update(record => record.Skills[SkillType.Engineering].Rank = 40);
             var craftPayload = new CraftPayload(RecipeType.TwinElectroblade1, OBJECT_INVALID);
             var incubatorPayload = new IncubatorPayload("engine-claim-server-close/" + fixture.Id, string.Empty);
             try

@@ -576,14 +576,14 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
             }
             else if (_mode == RecipesUIMode.Research)
             {
-                var researchLevel = Perk.GetPerkLevel(Player, PerkType.Research);
-                var requiredLevel = recipe.Level / 10 + 1;
-                if (requiredLevel > 5)
-                    requiredLevel = 5;
+                var researchTier = CraftRankMilestones.GetResearchTier(Player);
+                var requiredTier = recipe.Level / 10 + 1;
+                if (requiredTier > 5)
+                    requiredTier = 5;
 
-                if (researchLevel < requiredLevel)
+                if (researchTier < requiredTier)
                 {
-                    FloatingTextStringOnCreature($"Research level {requiredLevel} required.", Player, false);
+                    FloatingTextStringOnCreature($"Fabrication rank {CraftRankMilestones.RequiredFabricationRankForResearchTier(requiredTier)} is required to research this recipe.", Player, false);
                     return false;
                 }
 

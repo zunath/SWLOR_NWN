@@ -6,6 +6,9 @@ SWLOR crafting simulator
 
   baseline [--section crafting|gathering|all] [--runs 200] [--seed 1] [--gathering-runs 20000] [--skills Smithery,...] [--out report.md] [--json results.json] [--repo path]
       Plays today's rules (the old craft minigame, harvesting, scavenging, refining and the fishing catch roll) and writes the legacy baseline.
+  progression [--runs 500] [--seed 1] [--skills Smithery,...] [--node-seconds 30] [--overhead-seconds 30] [--might 0] [--out report.md] [--json results.json] [--repo path]
+      Models a new crafter's hours to rank 50 in each crafting skill (components gathered included) and in Gathering, the guild task and research cohorts,
+      and writes the progression-pace report with the proposals for the owner (default design/testing/crafting-revamp/progression-pace-baseline.md is the committed one).
   gear [--repo path]
       Prints the gear levels derived from the module's crafting gear.
   gates --scenario <name> [--runs 100] [--seed 1] [--recipes-per-band 6 | --all-recipes] [--gates rotation,styles,perks,length,materials,xp] [--legacy-seconds-per-action 6] [--thorough] [--out report.md] [--json results.json] [--strict] [--repo path]
@@ -26,6 +29,7 @@ try
     return args[0] switch
     {
         "baseline" => BaselineCommand.Run(args.Skip(1).ToArray(), Console.Out),
+        "progression" => ProgressionCommand.Run(args.Skip(1).ToArray(), Console.Out),
         "gear" => GearCommand.Run(args.Skip(1).ToArray(), Console.Out),
         "gates" => GatesCommand.Run(args.Skip(1).ToArray(), Console.Out),
         _ => Fail($"Unknown command '{args[0]}'.")

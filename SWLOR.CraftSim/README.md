@@ -27,6 +27,16 @@ Every ported rule is registered in `Legacy/LegacySource.cs` with its file, lines
 
 Gathering rules depend on Might, Perception and Willpower. They are swept over modifiers -1 to +5 (`AttributeSweep`) until the real medians of active characters are measured.
 
+## Progression pace
+
+`progression` models how long a new crafter takes today to reach rank 50 (workstream 11 of the plan). It plays the legacy lookahead player at every recipe level and gear level from the seed, then walks ranks 0 to 49 with expected values: at each rank the crafter makes recipes of their own level, earns `GetDeltaXP`-priced XP plus the quality share (`CraftOutcomeRules`), and gathers the components each craft consumes (`Progression/ComponentSupply`: ore veins and trees are harvested, bushes, herbs, vegetable patches and supply crates are scavenge sites, refined ore adds refining). It also models Gathering itself, a guild task cohort (hand-ins, the quick-craft catch-up that raises the guild rank, the rank-50 chore, Agriculture's catch tasks) and a research cohort (job lengths, slots, XP ceilings), and prices the proposals for the owner: the guild task XP award, the crafting-only XP multiplier or rank cost cap that meets a target, and the research ceiling.
+
+```powershell
+dotnet SWLOR.CraftSim/bin/Debug/net10.0/SWLOR.CraftSim.dll progression --runs 500 --seed 1 --out design/testing/crafting-revamp/progression-pace-baseline.md
+```
+
+`progression` takes `--runs` (lookahead crafts per recipe level, skill and gear level, default 500), `--seed`, `--skills`, `--node-seconds` (default 30), `--overhead-seconds` (per craft, default 30), `--might`, `--out`, `--json` and `--repo`. The seed repeats the report exactly; it takes about two minutes at 500 runs. Node travel, the per-craft overhead, the turn-in time, research visits and seconds per fishing bite are unmeasured estimates (`Progression/ProgressionAssumptions`); the report's sensitivity table shows how far they move the hours, and the client evidence replaces them. Nothing in the game changes: the XP and guild numbers are proposals. `ProgressionSourceTests` pins the copied rules (harvest, scavenge and refining times, RP XP pace, research job length, guild points) to the server source.
+
 ## Balance gates
 
 `Gates/` holds the plan's six gates (`GateNames`): an `IBalanceGate` receives a `GateContext` (recipes, gear, runs, seed) and returns a `GateResult` with a verdict and evidence tables, and `GateReport` writes them as markdown with the inputs and limitations `SkillPerkStandards.md` asks for. The gates are generic over `ICraftMinigameEngine`: a minigame supplies a scenario and never writes its own solver or gate framework.

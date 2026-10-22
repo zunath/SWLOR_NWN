@@ -1,0 +1,634 @@
+using System.Text;
+using SWLOR.CraftSim.Data;
+using SWLOR.CraftSim.Legacy;
+using SWLOR.Game.Server.Enumeration;
+using SWLOR.Game.Server.Service;
+using SWLOR.Game.Server.Service.CraftService.Minigame;
+using SWLOR.Game.Server.Service.SkillService;
+using static SWLOR.CraftSim.Report.MarkdownTable;
+using SWLOR.CraftSim.Report;
+
+namespace SWLOR.CraftSim.Progression
+{
+    /// <summary>Writes the progression-pace baseline, its sensitivities and the proposals for the owner as markdown.</summary>
+    public static class ProgressionReport
+    {
+        /// <summary>The guild task XP awards the report prices, as a share of the craft's base XP per item handed in.</summary>
+        public static readonly IReadOnlyList<double> GuildXpShares = new[] { 0.25, 0.5, 1.0 };
+
+        /// <summary>The share the report recommends, and the one the XP target options assume.</summary>
+        public const double RecommendedGuildXpShare = 0.5;
+
+        private static readonly (int First, int End)[] Bands = { (0, 10), (10, 20), (20, 30), (30, 40), (40, 50) };
+
+        public static string Build(ProgressionModel model, ProgressionAssumptions a, string command)
+        {
+            var text = new StringBuilder();
+            var gearNames = new[] { CraftingGearCatalog.NoGearName, CraftingGearCatalog.MidGearName, CraftingGearCatalog.BestGearName };
+            var skills = model.Skills.ToList();
+            var paths = skills.ToDictionary(s => s, s => gearNames.ToDictionary(g => g, g => model.Path(s, g, a)));
+            var rpHours = (double)Enumerable.Range(0, ProgressionAssumptions.MaximumRank).Sum(Skill.GetRequiredXP) / ProgressionAssumptions.RoleplayXpPerHour;
+
+            text.AppendLine("# Crafting revamp: progression pace baseline (workstream 11)");
+            text.AppendLine();
+            text.AppendLine("How long a new crafter takes today to reach rank 50 in each crafting skill and in Gathering, with the component gathering that supplies the crafts, " +
+                            "and the proposals this gives the owner. **Nothing in the game's XP changes in this PR**; the numbers below are today's pace, measured with the legacy " +
+                            "craft model (`design/testing/crafting-revamp/legacy-crafting-baseline.md`). The XP-rate gate (gate 6) measures new minigames against today's XP first; " +
+                            "any change proposed here applies on top of that result.");
+            text.AppendLine();
+
+            AppendSummary(text, model, a, paths, rpHours, gearNames);
+            AppendInputs(text, model, a, command, skills);
+            AppendBands(text, model, a, paths, gearNames, skills);
+            AppendGathering(text, model, a);
+            AppendComponents(text, model, a, paths, skills);
+            AppendSensitivity(text, model, a, skills);
+            AppendGuildCohort(text, model, a, skills);
+            if (skills.Contains(SkillType.Fabrication))
+                AppendResearchCohort(text, model, a);
+            AppendProposals(text, model, a, skills, rpHours);
+            AppendLimitations(text);
+            return text.ToString();
+        }
+
+        // ---------------------------------------------------------------------------------------------------------------------------
+
+        private static void AppendSummary(
+            StringBuilder text, ProgressionModel model, ProgressionAssumptions a,
+            Dictionary<SkillType, Dictionary<string, SkillPath>> paths, double rpHours, string[] gearNames)
+        {
+            var mid = CraftingGearCatalog.MidGearName;
+            text.AppendLine("## Hours to rank 50 today");
+            text.AppendLine();
+            text.AppendLine($"A new crafter (rank 0, nothing handed in to a guild) who always crafts recipes of their own level with the legacy lookahead player. " +
+                            $"Hours are craft window time ({Number(a.SecondsPerAction)} s per action plus {Number(a.OverheadSecondsPerCraft, 0)} s per craft) plus the time to gather and refine the components " +
+                            "(node travel is an unmeasured assumption, below). Mid gear is the headline; the band-by-band tables give all three gear levels.");
+            text.AppendLine();
+            var table = new MarkdownTable(
+                "Skill", "Crafts to 50 (mid gear)", "Craft window h", "Gathering h", "Total h: no gear", "Total h: mid gear", "Total h: best gear",
+                "XP per hour (mid gear)", "Component units no node supplies (mid gear)");
+            foreach (var (skill, byGear) in paths)
+            {
+                var m = byGear[mid];
+                table.Add(
+                    skill.ToString(), Number(m.Crafts, 0), Number(m.CraftHours, 1), Number(m.GatherHours, 1),
+                    Number(byGear[gearNames[0]].TotalHours, 1), Number(m.TotalHours, 1), Number(byGear[gearNames[2]].TotalHours, 1),
+                    Whole(m.XpPerHour), Number(m.UnmodelledUnits, 0));
+            }
+
+            var gathering = model.Gathering(GatheringStrategy.Best, a);
+            var harvest = model.Gathering(GatheringStrategy.HarvestAndRefine, a);
+            var scavenge = model.Gathering(GatheringStrategy.Scavenge, a);
+            table.Add(
+                "Gathering (the skill)", "-", "-", Number(gathering.TotalHours, 1), Number(gathering.TotalHours, 1), Number(gathering.TotalHours, 1),
+                Number(gathering.TotalHours, 1), Whole(gathering.XpPerHour), "-");
+            text.AppendLine(table.ToString());
+            var requiredXp = paths.Values.First()[mid].RequiredXp;
+            text.AppendLine($"Rank 50 costs {requiredXp:N0} XP in every skill (`Skill.GetRequiredXP`, ranks 0-49). RP XP pays {ProgressionAssumptions.RoleplayXpPerHour:N0} XP per hour with no materials " +
+                            $"(1,500 base XP every 30 minutes; the public mechanism in `RoleplayXP.cs`), which is {Number(rpHours, 0)} hours for the same XP. Gathering takes " +
+                            $"{Number(harvest.TotalHours, 1)} h by harvesting and refining alone, {Number(scavenge.TotalHours, 1)} h by scavenging alone and {Number(gathering.TotalHours, 1)} h taking the better of the two at each rank.");
+            text.AppendLine();
+
+            var fastest = paths.OrderBy(p => p.Value[mid].TotalHours).First();
+            var slowest = paths.OrderByDescending(p => p.Value[mid].TotalHours).First();
+            text.AppendLine("What the numbers say:");
+            text.AppendLine();
+            text.AppendLine($"- **Crafts, not just components.** Mid gear needs about {Number(paths.Values.Average(p => p[mid].Crafts), 0)} at-level crafts to reach rank 50, not the 340-420 in the plan's research: " +
+                            "that range assumes near-full quality, and the lookahead player's quality at mid gear is " +
+                            $"{Percent(paths.Values.Average(p => p[mid].Steps.Sum(st => st.Crafts * st.SuccessRate * st.QualityFraction) / p[mid].Steps.Sum(st => st.Crafts * st.SuccessRate)))} on average (quality adds up to 100% to a craft's XP).");
+            text.AppendLine($"- **Pace.** The craft loop pays {Whole(slowest.Value[mid].XpPerHour)}-{Whole(fastest.Value[mid].XpPerHour)} XP per hour with its gathering, " +
+                            $"{Number(slowest.Value[mid].XpPerHour / ProgressionAssumptions.RoleplayXpPerHour, 1)}-{Number(fastest.Value[mid].XpPerHour / ProgressionAssumptions.RoleplayXpPerHour, 1)} times what RP XP pays. " +
+                            "Players who bypass crafting with RP XP are buying out the materials and gathering, not a faster rate.");
+            foreach (var (skill, byGear) in paths.OrderByDescending(p => p.Value[mid].GatherHours / p.Value[mid].TotalHours).Take(1))
+            {
+                var path = byGear[mid];
+                var byComponent = model.GatherHoursByComponent(path, a).Where(c => c.Value > 0).OrderByDescending(c => c.Value).Take(3).ToList();
+                var perUnit = byComponent.Select(c => model.Supply.SecondsPerUnit(c.Key, a) / 60).ToList();
+                text.AppendLine($"- **Gathering dominates {skill}.** {Percent(path.GatherHours / path.TotalHours)} of its hours are gathering. The three components that cost the most are " +
+                                string.Join(", ", byComponent.Select(c => $"`{c.Key}` ({Number(c.Value, 1)} h)")) +
+                                $"; each drops on a small share of rolls (gems 2-9%, crate goods 15%), so one unit costs {Number(perUnit.Min(), 1)}-{Number(perUnit.Max(), 1)} minutes.");
+            }
+
+            text.AppendLine("- **Gathering is quick for the skill itself.** Each harvested item pays up to 1,200 XP and refining pays 25-150 XP per unit whatever the rank, so Gathering rank 50 takes hours, not days, if nodes are free. Node respawns and contention are not modelled.");
+            text.AppendLine("- **Agriculture has a faster path than the one modelled here.** Fishing pays the same chart per bite (600-1,200 XP); see the catch task table in the guild section.");
+            text.AppendLine();
+        }
+
+        private static void AppendInputs(StringBuilder text, ProgressionModel model, ProgressionAssumptions a, string command, List<SkillType> skills)
+        {
+            text.AppendLine("## Inputs and assumptions");
+            text.AppendLine();
+            text.AppendLine($"- Command: `{command}`");
+            text.AppendLine($"- Seed {model.Options.Seed}; {model.Options.Runs} lookahead crafts per recipe level, skill and gear level ({model.Options.Rollouts} sampled futures per action), each from its own stream of the seed, so a run repeats exactly. " +
+                            "The hours themselves are expected values, not sampled.");
+            text.AppendLine("- Recipes: every active recipe in the server's definitions (" +
+                            string.Join("; ", skills.Select(s => $"{s} {model.Recipes.ForSkill(s).Count()}")) + "). The crafter's rank steps from 0 to 49 and each step crafts recipes of level max(1, rank): the `Skill.GetDeltaXP` price for the level equals the rank is 600 XP (676 at rank 0). Each of a level's recipes counts equally, as in the gates' cohort.");
+            text.AppendLine("- Gear: none, tier 3 (mid) and tier 5 (best) of the skill's own crafting gear (`legacy-crafting-baseline.md`, \"Gear levels\"). Food and status bonuses are not played.");
+            text.AppendLine("- Craft player and XP: the legacy lookahead (`RolloutPolicy`) at the recipe's level and rank. A success pays the base XP plus the quality share; a failure pays 15% of the base (`CraftOutcomeRules`). No blueprint, no enhancements, no XP bonuses from Social or food, and no first-craft bonus unless the variety row below says so.");
+            text.AppendLine($"- Time in the craft window: {Number(a.SecondsPerAction)} s per action (the legacy window's estimate) plus **{Number(a.OverheadSecondsPerCraft, 0)} s per craft** to open the station, pick the recipe, commit the components and collect the item. The overhead is an unmeasured estimate; the gates' own overhead defaults to 0. The sensitivity table shows 15 s and 60 s.");
+            text.AppendLine($"- Components: a craft commits every component stack of the recipe and a failure loses each stack on 65% of rolls (`CraftViewModel.cs:1601-1641`), so a craft consumes success + 0.65 x failure of the committed units. " +
+                            "A unit is priced at the cheapest loot table in `HarvestingLootTableDefinition` that drops it, worked the way the game works that table. " +
+                            $"Ore veins and trees are harvested (`res_used` on the placeable): each harvester use takes {Number(a.SecondsPerHarvest)} s (the item's `Delay(5f)`) plus its share of {Number(a.NodeTravelSeconds, 0)} s node travel over the node's 2.5 average harvests, and rolls the table once (plus the Might bonus roll; Might modifier {a.MightModifier}). " +
+                            $"Bushes, herbs, vegetable patches and supply crates are scavenge sites (`scav_opened`, `SCAVENGE_POINT_LOOT_TABLE_NAME`): a visit costs the {Number(a.NodeTravelSeconds, 0)} s walk plus {Number(a.SecondsPerScavengeAttempt)} s per search, the site can be searched once, and each successful search (`d20 + Perception >= 6`, then 6 + d3 on the second attempt that Hard Look gives) is one roll of the table, giving 1 to the item's maximum quantity. " +
+                            "Hard Look is taken at the site's level, the lowest Gathering tier that can search it; the Perception modifier is 0.");
+            text.AppendLine($"- Refined ore (`ref_*`) costs the raw ore plus refining: {Number(a.RefineSecondsPerBatch, 0)} s per operation (`RefiningDelaySeconds`) over a batch of {a.RefineBatchUnits} units (a full 99-unit stack; the refinery accepts several stacks per operation, so this is cautious). The sensitivity table also prices a batch of one power core (4 units). Power cores cost credits, not time.");
+            text.AppendLine("- Asteroid ores (`ore_*`, the Engineering recipes' `ref_tilarium` and the like) are priced like a ground node of the same tier. Space mining is not modelled.");
+            text.AppendLine($"- Node travel: **{Number(a.NodeTravelSeconds, 0)} s** between nodes, unmeasured. Respawn waits and other players at the node are not modelled, so gathering hours are a lower bound. Gathering rank is not a gate: the crafter is assumed to reach every node tier the recipe needs.");
+            text.AppendLine("- Components no node supplies (enemy and crate drops of leather and electronics, meat, vendor goods, parts another recipe makes) are left out of the hours and counted in the summary column. The sensitivity table prices them at 20 s a unit, about a harvested unit.");
+            text.AppendLine($"- Gathering the skill: each rank uses the better of harvesting and refining the best ground vein the tier allows (`CraftRankMilestones.TierForRank`) and searching the best scavenge site, at {Number(a.NodeTravelSeconds, 0)} s between nodes or sites and {Number(a.SecondsPerScavengeAttempt)} s per scavenge attempt. Perception modifier {a.PerceptionModifier}.");
+            text.AppendLine();
+            text.AppendLine("Rules copied from the server (the model calls everything else directly), each checked against its source by `ProgressionSourceTests` or `LegacySourceTests`:");
+            text.AppendLine();
+            var rules = new MarkdownTable("Rule", "Source");
+            foreach (var source in ProgressionSource.All.Concat(LegacySource.All.Where(s =>
+                         s.File.EndsWith("HarvesterItemDefinition.cs") || s.File.EndsWith("ScavengePoint.cs") || s.File.EndsWith("RefineryViewModel.cs") ||
+                         s == LegacySource.FailureLoss || s == LegacySource.RecipeUnlockOffset)))
+            {
+                rules.Add(source.Name, $"`{source.Citation}`");
+            }
+
+            text.AppendLine(rules.ToString());
+        }
+
+        private static void AppendBands(
+            StringBuilder text, ProgressionModel model, ProgressionAssumptions a,
+            Dictionary<SkillType, Dictionary<string, SkillPath>> paths, string[] gearNames, List<SkillType> skills)
+        {
+            var mid = CraftingGearCatalog.MidGearName;
+            text.AppendLine("## Hours per 10-rank band");
+            text.AppendLine();
+            text.AppendLine("A band is the hours to climb from its first rank to the next band's first rank (0-10 is rank 0 to rank 10). Crafts, craft window and gathering hours are mid gear; the three total columns give each gear level. " +
+                            "\"RP XP h\" is the hours RP XP needs for the band's XP.");
+            text.AppendLine();
+            foreach (var skill in skills)
+            {
+                text.AppendLine($"### {skill}");
+                text.AppendLine();
+                var table = new MarkdownTable(
+                    "Ranks", "XP", "Crafts (mid)", "Craft window h", "Gathering h", "Total h: no gear", "Total h: mid gear", "Total h: best gear", "XP per hour (mid)", "RP XP h");
+                foreach (var (first, end) in Bands)
+                {
+                    var m = paths[skill][mid].Band(first, end).ToList();
+                    var xp = m.Sum(s => s.RequiredXp);
+                    var totals = gearNames.Select(g => paths[skill][g].Band(first, end).Sum(s => s.TotalHours)).ToList();
+                    table.Add(
+                        $"{first}-{end}", xp.ToString("N0"), Number(m.Sum(s => s.Crafts), 0), Number(m.Sum(s => s.CraftHours), 1), Number(m.Sum(s => s.GatherHours), 1),
+                        Number(totals[0], 1), Number(totals[1], 1), Number(totals[2], 1), Whole(xp / totals[1]), Number((double)xp / ProgressionAssumptions.RoleplayXpPerHour, 1));
+                }
+
+                var all = paths[skill][mid];
+                table.Add(
+                    "0-50", all.RequiredXp.ToString("N0"), Number(all.Crafts, 0), Number(all.CraftHours, 1), Number(all.GatherHours, 1),
+                    Number(paths[skill][gearNames[0]].TotalHours, 1), Number(all.TotalHours, 1), Number(paths[skill][gearNames[2]].TotalHours, 1),
+                    Whole(all.XpPerHour), Number((double)all.RequiredXp / ProgressionAssumptions.RoleplayXpPerHour, 1));
+                text.AppendLine(table.ToString());
+            }
+        }
+
+        private static void AppendGathering(StringBuilder text, ProgressionModel model, ProgressionAssumptions a)
+        {
+            text.AppendLine("## Gathering rank 50");
+            text.AppendLine();
+            text.AppendLine("Hours per band for a new gatherer. Harvesting pays `GetDeltaXP(vein level - rank)` for every item, and a vein two tiers below the rank pays nothing, so the gatherer always works the top vein the tier allows; refining pays a flat 25-150 XP per raw unit.");
+            text.AppendLine();
+            var strategies = new[] { GatheringStrategy.HarvestAndRefine, GatheringStrategy.Scavenge, GatheringStrategy.Best };
+            var paths = strategies.ToDictionary(s => s, s => model.Gathering(s, a));
+            var table = new MarkdownTable("Ranks", "XP", "Harvest and refine h", "Scavenge h", "Better of the two h", "XP per hour (better)", "RP XP h");
+            foreach (var (first, end) in Bands)
+            {
+                var best = paths[GatheringStrategy.Best].Band(first, end).ToList();
+                var xp = best.Sum(s => s.RequiredXp);
+                table.Add(
+                    $"{first}-{end}", xp.ToString("N0"),
+                    Number(paths[GatheringStrategy.HarvestAndRefine].Band(first, end).Sum(s => s.Hours), 2),
+                    Number(paths[GatheringStrategy.Scavenge].Band(first, end).Sum(s => s.Hours), 2),
+                    Number(best.Sum(s => s.Hours), 2), Whole(xp / best.Sum(s => s.Hours)), Number((double)xp / ProgressionAssumptions.RoleplayXpPerHour, 1));
+            }
+
+            var total = paths[GatheringStrategy.Best];
+            table.Add(
+                "0-50", total.RequiredXp.ToString("N0"), Number(paths[GatheringStrategy.HarvestAndRefine].TotalHours, 2),
+                Number(paths[GatheringStrategy.Scavenge].TotalHours, 2), Number(total.TotalHours, 2), Whole(total.XpPerHour),
+                Number((double)total.RequiredXp / ProgressionAssumptions.RoleplayXpPerHour, 1));
+            text.AppendLine(table.ToString());
+
+            text.AppendLine("Sensitivity of the better-of-two total to the node travel assumption, the only unmeasured input that moves it:");
+            text.AppendLine();
+            var travel = new MarkdownTable("Seconds between nodes", "Harvest and refine h", "Scavenge h", "Better of the two h");
+            foreach (var seconds in new[] { 15.0, 30.0, 60.0, 120.0, 300.0 })
+            {
+                var scenario = a with { NodeTravelSeconds = seconds };
+                travel.Add(
+                    Number(seconds, 0), Number(model.Gathering(GatheringStrategy.HarvestAndRefine, scenario).TotalHours, 1),
+                    Number(model.Gathering(GatheringStrategy.Scavenge, scenario).TotalHours, 1), Number(model.Gathering(GatheringStrategy.Best, scenario).TotalHours, 1));
+            }
+
+            text.AppendLine(travel.ToString());
+        }
+
+        private static void AppendComponents(
+            StringBuilder text, ProgressionModel model, ProgressionAssumptions a,
+            Dictionary<SkillType, Dictionary<string, SkillPath>> paths, List<SkillType> skills)
+        {
+            var mid = CraftingGearCatalog.MidGearName;
+            text.AppendLine("## What supplies the components");
+            text.AppendLine();
+            text.AppendLine("Share of component units the at-level recipes commit, by where the model says they come from, over the whole climb. A unit only counts as gathered when a gathering loot table in `HarvestingLootTableDefinition` drops it (or its raw ore does).");
+            text.AppendLine();
+            var shares = new MarkdownTable("Skill", "Units per climb (mid gear)", "Refined ore", "Harvested items", "Made by another recipe", "Other (drops, vendor, quest)");
+            foreach (var skill in skills)
+            {
+                var totals = Enum.GetValues<ComponentSource>().ToDictionary(source => source, _ => 0.0);
+                foreach (var step in paths[skill][mid].Steps)
+                {
+                    var consumed = step.SuccessRate + 0.65 * (1 - step.SuccessRate);
+                    foreach (var (source, units) in model.Demand(skill, step.RecipeLevel, a).UnitsBySource)
+                        totals[source] += step.Crafts * consumed * units;
+                }
+
+                var sum = totals.Values.Sum();
+                shares.Add(
+                    skill.ToString(), Number(sum, 0), Percent(totals[ComponentSource.Refined] / sum), Percent(totals[ComponentSource.Harvested] / sum),
+                    Percent(totals[ComponentSource.Crafted] / sum), Percent(totals[ComponentSource.Other] / sum));
+            }
+
+            text.AppendLine(shares.ToString());
+
+            text.AppendLine("Gathering hours of the mid gear climb by kind of node. Each component is priced at the cheapest table that drops it. Ore veins and trees are harvested; bushes, herbs, vegetable patches and supply crates are scavenge sites; asteroid tables are mined from a ship and priced like a harvest node:");
+            text.AppendLine();
+            var families = skills.SelectMany(s => model.GatherHoursByFamily(paths[s][mid], a).Keys).Distinct().Where(f => f != ComponentSupply.NoNodeFamily).OrderBy(f => f, StringComparer.Ordinal).ToList();
+            var header = new[] { "Skill" }.Concat(families).ToArray();
+            var family = new MarkdownTable(header);
+            foreach (var skill in skills)
+            {
+                var hours = model.GatherHoursByFamily(paths[skill][mid], a);
+                family.Add(new[] { skill.ToString() }.Concat(families.Select(f => Number(hours.GetValueOrDefault(f), 1))).ToArray());
+            }
+
+            text.AppendLine(family.ToString());
+
+            text.AppendLine("The five components that cost the most gathering hours in each skill's mid gear climb:");
+            text.AppendLine();
+            var top = new MarkdownTable("Skill", "Component", "Gathering h", "Share of the skill's gathering");
+            foreach (var skill in skills)
+            {
+                var path = paths[skill][mid];
+                foreach (var (component, hours) in model.GatherHoursByComponent(path, a).Where(c => c.Value > 0).OrderByDescending(c => c.Value).Take(5))
+                    top.Add(skill.ToString(), $"`{component}`", Number(hours, 1), Percent(hours / path.GatherHours));
+            }
+
+            text.AppendLine(top.ToString());
+        }
+
+        private static void AppendSensitivity(StringBuilder text, ProgressionModel model, ProgressionAssumptions a, List<SkillType> skills)
+        {
+            var mid = CraftingGearCatalog.MidGearName;
+            text.AppendLine("## Sensitivity");
+            text.AppendLine();
+            text.AppendLine("Total hours to rank 50 at mid gear when one unmeasured input or play choice changes. Every other row is the baseline above.");
+            text.AppendLine();
+            var scenarios = new (string Name, ProgressionAssumptions Assumptions)[]
+            {
+                ("Baseline", a),
+                ("Overhead 15 s per craft", a with { OverheadSecondsPerCraft = 15 }),
+                ("Overhead 60 s per craft", a with { OverheadSecondsPerCraft = 60 }),
+                ("Node travel 15 s", a with { NodeTravelSeconds = 15 }),
+                ("Node travel 60 s", a with { NodeTravelSeconds = 60 }),
+                ("Node travel 120 s", a with { NodeTravelSeconds = 120 }),
+                ("Might modifier +2 (half the harvests drop a second item)", a with { MightModifier = 2 }),
+                ("Refining one power core (4 units) per operation", a with { RefineBatchUnits = 4 }),
+                ("Components no node supplies cost 20 s a unit", a with { UnmodelledUnitSeconds = 20 }),
+                ("Crafts the cheapest quarter of each level's recipes", a with { CheapestQuartileRecipes = true }),
+                ("Rotates through each level's recipes (20% first-craft bonus on each)", a with { VarietyPlay = true })
+            };
+            var table = new MarkdownTable(new[] { "Scenario" }.Concat(skills.Select(s => s.ToString())).ToArray());
+            foreach (var (name, scenario) in scenarios)
+                table.Add(new[] { name }.Concat(skills.Select(s => Number(model.Path(s, mid, scenario).TotalHours, 1))).ToArray());
+
+            text.AppendLine(table.ToString());
+        }
+
+        // ---------------------------------------------------------------------------------------------------------------------------
+
+        private static void AppendGuildCohort(StringBuilder text, ProgressionModel model, ProgressionAssumptions a, List<SkillType> skills)
+        {
+            var mid = CraftingGearCatalog.MidGearName;
+            var guilds = model.Guilds;
+            text.AppendLine("## Guild task cohort");
+            text.AppendLine();
+            text.AppendLine("With the task cap lifted, a completed task goes back on the board at once for the Smithery, Engineering, Fabrication and Agriculture guilds, so hand-ins are a repeatable activity. " +
+                            "A task wants one item (four raw fish for a catch task) and pays credits and guild points by its tier, which is the guild rank that unlocks it. Credits, guild points and the rank thresholds are unchanged.");
+            text.AppendLine();
+            var catalog = new MarkdownTable("Guild", "Tasks", "Crafted", "Caught", "Other", "Tier 0-4 recipe or fish levels", "Credits per task by tier", "Base guild points by tier");
+            foreach (var guild in new[] { GuildType.SmitheryGuild, GuildType.EngineeringGuild, GuildType.FabricationGuild, GuildType.AgricultureGuild })
+            {
+                var tasks = guilds.For(guild).ToList();
+                var tiers = tasks.Select(t => t.Tier).Distinct().OrderBy(t => t).ToList();
+                catalog.Add(
+                    guild.ToString(), tasks.Count.ToString(), tasks.Count(t => t.Kind == GuildTaskKind.Crafted).ToString(), tasks.Count(t => t.Kind == GuildTaskKind.Caught).ToString(),
+                    tasks.Count(t => t.Kind == GuildTaskKind.Other).ToString(),
+                    string.Join(", ", tiers.Select(t => { var levels = tasks.Where(x => x.Tier == t && x.Level.HasValue).Select(x => x.Level.Value).ToList(); return $"{levels.Min()}-{levels.Max()}"; })),
+                    string.Join(" / ", tiers.Select(t => guilds.RewardOfTier(guild, t).Credits.ToString("N0"))),
+                    string.Join(" / ", tiers.Select(t => guilds.RewardOfTier(guild, t).GuildPoints.ToString())));
+            }
+
+            text.AppendLine(catalog.ToString());
+            text.AppendLine("Every crafted task asks for a player-produced item, which includes quick-crafted ones (`NwnCraftSessionWorld.CreateCraftedItem` stamps both). Tier k holds the recipes of levels 10k+1 to 10k+10. " +
+                            "Guild rank 5 needs 45,000 GP, about 238 hand-ins when each is handed in at the tier of the rank it climbs from.");
+            text.AppendLine();
+
+            text.AppendLine("### Cohort: hand in what you craft");
+            text.AppendLine();
+            text.AppendLine("The cohort crafts at level as before and, whenever the guild has a task for that recipe level and the guild rank allows it, hands the item in. " +
+                            $"Each hand-in costs {Number(a.HandInSeconds, 0)} s (unmeasured). When the guild rank is what stands in the way, the crafter quick-crafts the cheapest task item of their current tier that quick craft allows " +
+                            $"(rank at least level + {QuickCraftRules.RankMargin}, after one craft by hand; {QuickCraftBatch.SecondsPerItem:0} s per item, components gathered as above) and hands it in until the rank rises. Those items pay no XP. " +
+                            "The award is a share of the craft's base XP (`GetDeltaXP(task level - rank)`, the same cutoff as crafting), so a hand-in five or more levels below the rank pays nothing and quick-crafted items never do.");
+            text.AppendLine();
+            var cohort = new MarkdownTable(
+                "Skill", "Award share", "Total h (mid gear)", "Change", "At-level hand-ins", "Catch-up hand-ins", "Catch-up h", "Guild rank at rank 50", "Hand-in XP", "Share of the climb's XP", "Credits earned");
+            foreach (var skill in skills)
+            {
+                var guild = GuildTaskCatalog.GuildOf(skill);
+                var baseline = model.Path(skill, mid, a);
+                cohort.Add(skill.ToString(), "no guild", Number(baseline.TotalHours, 1), "-", "-", "-", "-", "-", "-", "-", "-");
+                foreach (var share in new[] { 0.0 }.Concat(GuildXpShares))
+                {
+                    var path = model.Path(skill, mid, a, GuildHandInPlan.For(guilds, guild, share));
+                    cohort.Add(
+                        skill.ToString(), share == 0 ? "0% (credits and points only)" : Percent(share), Number(path.TotalHours, 1),
+                        Percent(path.TotalHours / baseline.TotalHours - 1), Number(path.HandIns, 0), Number(path.CatchUpHandIns, 0), Number(path.CatchUpHours, 1),
+                        path.GuildRankReached.ToString(), Whole(path.GuildXp), Percent(path.GuildXp / path.RequiredXp), Whole(path.Credits));
+                }
+            }
+
+            text.AppendLine(cohort.ToString());
+            text.AppendLine("Hand-in XP's share of the climb is the figure to read: the proposal should land it between a fifth and a third, so it neither dominates nor vanishes.");
+            text.AppendLine();
+
+            text.AppendLine($"The same cohort by rank band at the recommended {Percent(RecommendedGuildXpShare)} award. The task tier a crafter can hand in at is capped by the guild rank, which the catch-up hand-ins raise; one item per task, taken from the crafter's own craft or, for the catch-up, from quick craft.");
+            text.AppendLine();
+            var bands = new MarkdownTable(
+                "Skill", "Ranks", "Task tier at level", "Items per task", "At-level hand-ins", "Quick-crafted catch-up hand-ins", "Hand-in hours (turn-in and catch-up)", "Hand-in XP", "Share of the band's XP");
+            foreach (var skill in skills)
+            {
+                var guild = GuildTaskCatalog.GuildOf(skill);
+                var path = model.Path(skill, mid, a, GuildHandInPlan.For(guilds, guild, RecommendedGuildXpShare));
+                foreach (var (first, end) in Bands)
+                {
+                    var steps = path.Band(first, end).ToList();
+                    var xp = steps.Sum(s => s.RequiredXp);
+                    bands.Add(
+                        skill.ToString(), $"{first}-{end}", (first / 10).ToString(), "1",
+                        Number(steps.Sum(s => s.HandIns), 0), Number(steps.Sum(s => s.CatchUpHandIns), 0),
+                        Number(steps.Sum(s => s.HandInHours + s.CatchUpHours), 2), Whole(steps.Sum(s => s.GuildXp)), Percent(steps.Sum(s => s.GuildXp) / xp));
+                }
+            }
+
+            text.AppendLine(bands.ToString());
+
+            text.AppendLine("### The guild rank chore");
+            text.AppendLine();
+            text.AppendLine("What raising a guild from rank 0 to 5 costs a rank-50 crafter who quick-crafts the cheapest eligible task item of each tier and hands it in. Before the change the board held ten tasks a tier per server start, so rank 5 took at least 14-21 days.");
+            text.AppendLine();
+            var chore = new MarkdownTable("Guild", "Hand-ins", "Hours", "Credits earned", "Credits per hour");
+            var choreDetail = new MarkdownTable("Guild", "Tier", "Item", "Item level", "Guild points each", "Hand-ins", "Hours");
+            foreach (var guild in new[] { GuildType.SmitheryGuild, GuildType.EngineeringGuild, GuildType.FabricationGuild, GuildType.AgricultureGuild })
+            {
+                var rows = GuildCohorts.Chore(guilds, model.Supply, guild, a);
+                chore.Add(
+                    guild.ToString(), Number(rows.Sum(r => r.HandIns), 0), Number(rows.Sum(r => r.Hours), 1), Whole(rows.Sum(r => r.Credits)),
+                    Whole(rows.Sum(r => r.Credits) / rows.Sum(r => r.Hours)));
+                foreach (var row in rows)
+                    choreDetail.Add(guild.ToString(), row.Tier.ToString(), $"`{row.Resref}`", row.ItemLevel.ToString(), row.GuildPointsEach.ToString(), Number(row.HandIns, 0), Number(row.Hours, 2));
+            }
+
+            text.AppendLine(chore.ToString());
+            text.AppendLine(choreDetail.ToString());
+
+            text.AppendLine("### Catch tasks (Agriculture)");
+            text.AppendLine();
+            text.AppendLine("A catch task wants four raw fish of one kind (for example `agr_tsk_017`, four moat carp). The XP basis is the fish's `FishType` level against the Agriculture rank. " +
+                            $"Fishing already pays `GetDeltaXP(fish level - rank)` on every bite, landed or not, at an unmeasured {Number(a.FishingSecondsPerBite, 0)} s per bite and the catch chance `40 + 10 x (rank - level) + 2 x Willpower` (Willpower score {a.WillpowerScore}). " +
+                            "The table sets the rank equal to the tier's median fish level.");
+            text.AppendLine();
+            var catches = new MarkdownTable(
+                "Tier", "Fish level", "Fish per task", "Catch chance", "Bites per task", "Bite XP each", "Seconds per task", "Bite XP per hour",
+                "Hand-in XP at 50% per task", "Hand-in XP at 50% per fish", "Share of the task's XP: per task", "Share: per fish");
+            foreach (var row in GuildCohorts.CatchTasks(guilds, a))
+            {
+                var perTask = row.HandInXp(0.5, false);
+                var perFish = row.HandInXp(0.5, true);
+                catches.Add(
+                    row.Tier.ToString(), row.FishLevel.ToString(), row.Quantity.ToString(), Percent(row.CatchChance), Number(row.BitesPerTask, 1), row.BiteXp.ToString(),
+                    Number(row.SecondsPerTask, 0), Whole(row.XpPerHour(0)), Number(perTask, 0), Number(perFish, 0),
+                    Percent(perTask / (row.BiteXpPerTask + perTask)), Percent(perFish / (row.BiteXpPerTask + perFish)));
+            }
+
+            text.AppendLine(catches.ToString());
+            text.AppendLine("Fishing pays several times what the cooking loop does per hour at this bite time, so Agriculture's pace is set by fishing for anyone who fishes. The table assumes a fish of the tier's level is available to the angler; location, rod and bait pools are not modelled.");
+            text.AppendLine();
+
+            text.AppendLine("### What limits the hand-ins");
+            text.AppendLine();
+            var rate = GuildCohorts.Chore(guilds, model.Supply, GuildType.SmitheryGuild, a);
+            text.AppendLine("Every hand-in consumes one real player-crafted item (or four caught fish), which already limits the rate: the components. Nothing else limits it once the cap is lifted. " +
+                            $"Quick craft makes a base item in {QuickCraftBatch.SecondsPerItem:0} s, so for a high-rank crafter the real bounds are the components and the turn-in time. " +
+                            $"Credits are the lever that matters: a task pays {guilds.RewardOfTier(GuildType.SmitheryGuild, 0).Credits:N0} to {guilds.RewardOfTier(GuildType.SmitheryGuild, 4).Credits:N0} credits plus the Guild Relations and Social bonuses, and the Smithery rank climb alone pays " +
+                            $"{Whole(rate.Sum(r => r.Credits))} credits for {Number(rate.Sum(r => r.Hours), 1)} hours of work. Nothing was added in this PR; the owner decides whether credits need a limit (see the proposals).");
+            text.AppendLine();
+        }
+
+        private static void AppendResearchCohort(StringBuilder text, ProgressionModel model, ProgressionAssumptions a)
+        {
+            var rows = ResearchCohort.Rows(model, CraftingGearCatalog.MidGearName, a);
+            text.AppendLine("## Research cohort");
+            text.AppendLine();
+            text.AppendLine("Research becomes a Fabrication XP source in the revamp (an experiment plus job completion), with the amount not yet set. This cohort is a Fabrication researcher at the tier their rank opens, doing the job loop that pays the most XP per hour. " +
+                            "A job's length in seconds and its credit cost are one formula, `200 x tier^2.2 x level^2` (tier = recipe level / 10 + 1, at most 5; `Craft.CalculateResearchCost`), where level is the blueprint's new research level 1-10. " +
+                            "A recipe's blueprint is first acquired by starting its level-1 job with no blueprint, so \"blueprint acquisition\" is that job. The tier gate is Fabrication rank / 10 and the job slots are 1, 2 from rank 25 and 3 from rank 50 (`CraftRankMilestones`).");
+            text.AppendLine();
+            text.AppendLine($"Time at the terminal per job: an experiment of {a.ResearchTrials} trials at {Number(a.ResearchSecondsPerTrial, 0)} s, plus {Number(a.ResearchVisitSeconds, 0)} s to start the job and {Number(a.ResearchVisitSeconds, 0)} s to collect it " +
+                            $"({Number(a.ResearchTrials * a.ResearchSecondsPerTrial + 2 * a.ResearchVisitSeconds, 0)} s; unmeasured). The recipe researched is the researchable one (weapons, armor, food) whose level pays the most against the rank within the tier. " +
+                            "\"Fast loop\" keeps every slot on level-1 jobs for new blueprints; \"climb\" runs each slot up one blueprint from level 1 to 10. Base XP is the XP chart's price for the recipe level against the rank, the unit the award would be a share of.");
+            text.AppendLine();
+            var table = new MarkdownTable(
+                "Fabrication rank", "Tier", "Recipe level", "Base XP", "Job slots", "Level-1 job", "Level-10 job", "Level-1 job credits", "Fast loop jobs per h", "Climb jobs per h",
+                "Crafting XP per h (incl. gathering)", "Research XP per h at a 100% award");
+            foreach (var row in rows.Where(r => r.FabricationRank % 5 == 0 || r.FabricationRank == ProgressionAssumptions.MaximumRank - 1))
+            {
+                table.Add(
+                    row.FabricationRank.ToString(), row.Tier.ToString(), row.RecipeLevel.ToString(), row.BaseXp.ToString(), row.ConcurrentJobs.ToString(),
+                    Hours(row.FirstJobSeconds), Hours(row.TenthJobSeconds), row.FirstJobCredits.ToString("N0"), Number(row.FastLoopJobsPerHour, 1), Number(row.ClimbJobsPerHour, 2),
+                    Whole(row.CraftingXpPerHour), Whole(row.ResearchXpPerHourAtFullShare));
+            }
+
+            text.AppendLine(table.ToString());
+            var paying = rows.Where(r => r.BaseXp > 0).ToList();
+            var zero = rows.Count(r => r.BaseXp == 0);
+            text.AppendLine($"The tier gate lags the rank, so the best recipe a researcher may start is between 1 and 10 levels below their rank, and the XP chart pays nothing for a recipe five or more levels below. " +
+                            $"{zero} of the {rows.Count} Fabrication ranks 10-49 have no researchable recipe that pays XP at all if the award follows `GetDeltaXP`; research XP would arrive in bursts in the first four ranks of each tier. " +
+                            "The third job slot (Fabrication 50) arrives when the skill stops paying XP, so it matters for blueprints only.");
+            text.AppendLine();
+            if (paying.Count > 0)
+            {
+                text.AppendLine("Ceilings: the largest award, as a share of base XP per job, that keeps research XP per hour under at-level Fabrication crafting XP per hour at that rank (the whole loop, gathering included), by two yardsticks.");
+                text.AppendLine();
+                var ceil = new MarkdownTable("Yardstick", "Lowest ceiling over the paying ranks", "At Fabrication rank");
+                var elapsed = paying.OrderBy(r => r.CeilingShare).First();
+                var active = paying.OrderBy(r => r.ActiveCeilingShare).First();
+                ceil.Add("Per elapsed hour with every job slot busy (research runs while the player does other things)", Percent(elapsed.CeilingShare.Value), elapsed.FabricationRank.ToString());
+                ceil.Add("Per hour of the player's own time at the terminal", Percent(active.ActiveCeilingShare.Value), active.FabricationRank.ToString());
+                text.AppendLine(ceil.ToString());
+            }
+        }
+
+        // ---------------------------------------------------------------------------------------------------------------------------
+
+        private static void AppendProposals(StringBuilder text, ProgressionModel model, ProgressionAssumptions a, List<SkillType> skills, double rpHours)
+        {
+            var mid = CraftingGearCatalog.MidGearName;
+            var solver = new XpTargetSolver(model, RecommendedGuildXpShare);
+            var today = skills.ToDictionary(s => s, s => model.Path(s, mid, a).TotalHours);
+            var slowest = today.OrderByDescending(t => t.Value).First().Key;
+            text.AppendLine("## Proposals for the owner");
+            text.AppendLine();
+            text.AppendLine("These are options with their measured effect, not code. All of them apply to the four crafting skills and their guilds only: combat and Piloting keep `GetRequiredXP` and `GetDeltaXP` as they are, and Espionage is excluded " +
+                            "(`Craft.GetBaseRecipeXP`'s practice XP, `EspionageInfiltration.CalculateXp` and slicing's `Skill.CalculateEspionageXP` are untouched and pinned by tests). " +
+                            "None moves the XP chart's cutoff (a craft five or more levels below the rank pays nothing), so quick craft stays at rank >= recipe level + 5 and never costs a player XP they could still earn.");
+            text.AppendLine();
+
+            // XP target.
+            text.AppendLine("### XP target");
+            text.AppendLine();
+            var todaySolver = new XpTargetSolver(model, 0);
+            var medianToday = todaySolver.MedianHours(a);
+            text.AppendLine($"Today the four skills take {string.Join(", ", skills.Select(s => $"{s} {Number(today[s], 0)} h"))} at mid gear with the model's unmeasured timings: a median of {Number(medianToday, 0)} h and a slowest of {Number(today.Values.Max(), 0)} h, against {Number(rpHours, 0)} h of RP XP. " +
+                            $"**Proposed target: the median crafting skill reaches rank 50 in {Number(TargetHours, 0)} focused hours or fewer** ({Percent(TargetHours / rpHours)} of the RP XP time), with the {Percent(RecommendedGuildXpShare)} guild award below. " +
+                            $"The target is set on the median skill because the slowest ({slowest}) is slow from gathering, not from XP: {Percent(model.Path(slowest, mid, a).GatherHours / today[slowest])} of its hours are spent gathering. " +
+                            "Hours scale with 1 / multiplier, because the components and the craft time scale with the crafts, so one crafting-only multiplier moves every skill together and cannot close that gap.");
+            text.AppendLine();
+            var targets = new MarkdownTable(
+                new[] { "Median skill target (h)", "Multiplier needed", "Rank cost cap needed (XP)" }.Concat(skills.Select(s => $"{s} h at that multiplier")).ToArray());
+            foreach (var hours in new[] { TargetHours, 35.0, 25.0 })
+            {
+                var multiplier = solver.SolveMultiplier(a, hours, XpTargetMetric.MedianSkill);
+                var cap = solver.SolveCap(a, hours, XpTargetMetric.MedianSkill);
+                targets.Add(new[]
+                {
+                    Number(hours, 0),
+                    multiplier.HasValue ? "x" + Number(multiplier.Value, 2) : "none up to x64",
+                    cap.HasValue ? (cap.Value >= NoCap ? "none needed" : cap.Value.ToString("N0")) : "none can"
+                }.Concat(skills.Select(s => multiplier.HasValue ? Number(solver.Path(s, a with { CraftXpMultiplier = multiplier.Value }).TotalHours, 1) : "-")).ToArray());
+            }
+
+            text.AppendLine("What each target needs on top of the guild award. A multiplier of x1.00 means the award alone meets it:");
+            text.AppendLine();
+            text.AppendLine(targets.ToString());
+
+            var multiplierForFaster = solver.SolveMultiplier(a, FasterTargetHours, XpTargetMetric.MedianSkill);
+            var optionB = multiplierForFaster.HasValue ? Math.Ceiling(multiplierForFaster.Value * 20) / 20 : 1.0;
+            var medianB = solver.MedianHours(a with { CraftXpMultiplier = optionB });
+            var capForB = solver.SolveCap(a, medianB, XpTargetMetric.MedianSkill);
+            var optionC = capForB.HasValue ? capForB.Value / 100 * 100 : NoCap;
+            var optionCTotal = Enumerable.Range(0, ProgressionAssumptions.MaximumRank).Sum(r => Math.Min(Skill.GetRequiredXP(r), optionC));
+            var options = new (string Name, string Change, ProgressionAssumptions Assumptions, bool Guild, string Migration)[]
+            {
+                ("Today", "nothing", a, false, "no"),
+                ("A", "guild task XP only", a, true, "no"),
+                ("B", $"A, and crafting XP x{Number(optionB, 2)} (crafts and hand-ins)", a with { CraftXpMultiplier = optionB }, true, "no"),
+                ("C", $"A, and no rank costs more than {optionC:N0} XP", a with { RequiredXpCap = optionC }, true, "yes")
+            };
+            var option = new MarkdownTable(new[] { "Option", "Change" }.Concat(skills.Select(s => $"{s} h")).Concat(new[] { "Median skill", "Slowest skill", "Migration of stored XP" }).ToArray());
+            foreach (var (name, change, scenario, guild, migration) in options)
+            {
+                var hours = skills.ToDictionary(
+                    skill => skill,
+                    skill => model.Path(skill, mid, scenario, guild ? GuildHandInPlan.For(model.Guilds, GuildTaskCatalog.GuildOf(skill), RecommendedGuildXpShare) : null).TotalHours);
+                var ordered = hours.Values.OrderBy(h => h).ToList();
+                var median = (ordered[(ordered.Count - 1) / 2] + ordered[ordered.Count / 2]) / 2;
+                option.Add(new[] { name, change }.Concat(skills.Select(s => Number(hours[s], 1))).Concat(new[] { Number(median, 1), Number(ordered[^1], 1), migration }).ToArray());
+            }
+
+            text.AppendLine(option.ToString());
+            text.AppendLine($"- **A: guild task XP only.** No craft XP change. It is the smallest change, needs no stored-data conversion, and gets the median skill to {Number(solver.MedianHours(a), 0)} h.");
+            text.AppendLine($"- **B: A plus one crafting-only multiplier, x{Number(optionB, 2)}.** For a faster target ({Number(FasterTargetHours, 0)} h for the median skill). One parameter on what crafts and hand-ins pay, retuned from the client timings later. It changes gains only, so stored XP and ranks need no conversion.");
+            text.AppendLine($"- **C: A plus a cap of {optionC:N0} XP on any rank's cost.** The same median as B by a different route: it cuts the climb from {Enumerable.Range(0, ProgressionAssumptions.MaximumRank).Sum(Skill.GetRequiredXP):N0} to {optionCTotal:N0} XP and spares the late ranks that cost up to 16,000 XP and need 15-25 crafts each, while leaving the early ranks alone. " +
+                            "It changes required XP per rank for the crafting skills, so it needs a crafting-specific table and the plan's migration (convert stored XP and ranks so nobody loses a rank).");
+            text.AppendLine();
+            text.AppendLine($"**Recommendation: A, then B only if the client timings call for it.** A alone meets the {Number(TargetHours, 0)} h target for the median skill at these timings without touching craft XP. The model's hours move more with the node travel time " +
+                            $"({slowest} runs from {Number(model.Path(slowest, mid, a with { NodeTravelSeconds = 15 }).TotalHours, 0)} h at 15 s to {Number(model.Path(slowest, mid, a with { NodeTravelSeconds = 120 }).TotalHours, 0)} h at 120 s) than any option moves them, so measure it, re-run `progression`, and add the B multiplier only if the median stays above the target. " +
+                            $"{slowest} stays far above the median under every option here because its components are scarce drops (gems and crate goods); that is a supply question for the gathering workstream, not an XP one.");
+            text.AppendLine();
+
+            // Guild XP.
+            text.AppendLine("### Guild task XP");
+            text.AppendLine();
+            text.AppendLine("Each crafting-guild hand-in awards XP in the guild's skill. **Formula:** award = share x `Skill.GetDeltaXP(level - rank)` x item quantity, with `level` the recipe level of a crafted task and the fish's `FishType` level of a catch task (such as `agr_tsk_017`), " +
+                            "and `rank` the player's rank in the guild's skill. The chart's cutoff makes a hand-in five or more levels below the rank worth nothing, so the quick-crafted items that raise the guild rank pay no XP, and a task never pays more than crafting the same recipe would.");
+            text.AppendLine();
+            var guildOptions = new MarkdownTable(new[] { "Share of base XP" }.Concat(skills.SelectMany(s => new[] { $"{s} h", $"{s} XP share" })).ToArray());
+            guildOptions.Add(new[] { "none" }.Concat(skills.SelectMany(s => new[] { Number(today[s], 1), "-" })).ToArray());
+            var shareOfClimb = new Dictionary<double, double>();
+            foreach (var share in GuildXpShares)
+            {
+                var results = skills.Select(skill => model.Path(skill, mid, a, GuildHandInPlan.For(model.Guilds, GuildTaskCatalog.GuildOf(skill), share))).ToList();
+                shareOfClimb[share] = results.Average(p => p.GuildXp / p.RequiredXp);
+                guildOptions.Add(new[] { Percent(share) }.Concat(results.SelectMany(path => new[] { Number(path.TotalHours, 1), Percent(path.GuildXp / path.RequiredXp) })).ToArray());
+            }
+
+            text.AppendLine(guildOptions.ToString());
+            var catches = GuildCohorts.CatchTasks(model.Guilds, a);
+            var perTask = catches.Count > 0 ? catches[0].HandInXp(RecommendedGuildXpShare, false) / (catches[0].BiteXpPerTask + catches[0].HandInXp(RecommendedGuildXpShare, false)) : 0;
+            var perFish = catches.Count > 0 ? catches[0].HandInXp(RecommendedGuildXpShare, true) / (catches[0].BiteXpPerTask + catches[0].HandInXp(RecommendedGuildXpShare, true)) : 0;
+            text.AppendLine($"- **Option 1, {Percent(GuildXpShares[0])}.** Hand-ins supply {Percent(shareOfClimb[GuildXpShares[0]])} of the climb's XP: a small bonus that is easy to ignore.");
+            text.AppendLine($"- **Option 2, {Percent(GuildXpShares[1])} (recommended).** Hand-ins supply {Percent(shareOfClimb[GuildXpShares[1]])}: a real part of the pace that does not replace crafting. " +
+                            $"Quantity matters for catch tasks: at this share a four-fish task's hand-in XP is {Percent(perFish)} of the task's XP when the award is per fish and {Percent(perTask)} when it is per task, so the award is per item.");
+            text.AppendLine($"- **Option 3, {Percent(GuildXpShares[2])}.** Hand-ins supply {Percent(shareOfClimb[GuildXpShares[2]])} of the climb, and a crafter who hands in every craft effectively doubles their XP per craft. That is the largest change and should be a deliberate choice.");
+            text.AppendLine();
+            text.AppendLine("The credit faucet is the risk to weigh with this: every hand-in pays 1,000-7,200 credits and quick craft makes the items in seconds. If the owner wants a limit, the least invasive option is a per-day cap on guild task credits (not points or XP) per character; " +
+                            "nothing here adds one.");
+            text.AppendLine();
+
+            // Research ceiling.
+            text.AppendLine("### Research XP ceiling");
+            text.AppendLine();
+            var rows = skills.Contains(SkillType.Fabrication) ? ResearchCohort.Rows(model, mid, a).Where(r => r.BaseXp > 0).ToList() : new List<ResearchRow>();
+            if (rows.Count > 0)
+            {
+                var floor = rows.Min(r => Math.Min(r.ActiveCeilingShare.Value, r.CeilingShare.Value));
+                var proposed = floor >= 0.25 ? Math.Floor(floor * 4) / 4 : Math.Floor(floor * 20) / 20;
+                text.AppendLine($"Award per job (experiment and completion together) = share x `GetDeltaXP(recipe level - Fabrication rank)` of the recipe researched. The lowest ceiling over the paying ranks is {Percent(floor)}, from research XP per hour of the player's own time against the whole crafting loop. " +
+                                $"**Proposal: a share of {Percent(proposed)} or less**, which keeps research XP per hour under at-level crafting XP per hour by both yardsticks at every rank, and a rule that a research award never exceeds the base XP of a craft of the same recipe level. " +
+                                "Credits give a second bound: the first job on a new blueprint costs 200-4,200 credits and the level-10 job of a tier-4 recipe takes about five days. " +
+                                "Because the chart pays nothing for recipes five or more levels below the rank, the owner may want a floor for research (like `GetPracticeXP`'s 150) so researchers are not paid only in the first four ranks of each tier; a floor must sit under the same ceiling.");
+            }
+
+            text.AppendLine();
+        }
+
+        public const double TargetHours = 45.0;
+
+        /// <summary>The faster target option B is built for.</summary>
+        public const double FasterTargetHours = 35.0;
+        private const int NoCap = 20_000;
+
+        private static void AppendLimitations(StringBuilder text)
+        {
+            text.AppendLine("## Limitations");
+            text.AppendLine();
+            text.AppendLine("- Seconds per action, craft overhead, node travel, turn-in time, research visits and seconds per fishing bite are unmeasured estimates. The client evidence replaces them; the command re-runs with the new values.");
+            text.AppendLine("- Respawns, node contention, inventory trips, selling, restocking power cores and every other hour of real play are not modelled. These hours are a floor on a focused crafter's time, not a forecast of calendar days.");
+            text.AppendLine("- Components no node supplies, and parts another recipe makes, are not timed; the sensitivity row prices them at a flat 20 s. Gems are priced as if self-gathered, although players trade them.");
+            text.AppendLine("- One player policy (the legacy lookahead) at three gear sets. A better player or a different recipe choice changes quality, hence XP per craft. Stretch play (recipes up to three levels above the rank) and blueprints are not played.");
+            text.AppendLine("- The crafter's Gathering rank is not a gate, XP bonuses (Social, food, DM) are not applied, and the total skill-rank cap and XP debt are ignored.");
+            text.AppendLine("- Guild points follow the server's formula without Guild Relations or Social, and the cohort's catch-up uses one task item per tier. Credits are base rewards without the Guild Relations and Social bonuses.");
+            text.AppendLine("- Fishing is shown for catch tasks only; Agriculture's fishing path is not part of the hours above, and fish availability by location is not modelled.");
+            text.AppendLine("- The research cohort assumes the award follows `GetDeltaXP`; the Research workstream sets the real amount, and the ceiling is the bound on it.");
+        }
+
+        private static string Whole(double value) => value.ToString("N0", System.Globalization.CultureInfo.InvariantCulture);
+
+        private static string Hours(double seconds) =>
+            seconds >= 3600 ? Number(seconds / 3600, 1) + " h" : Number(seconds / 60, 1) + " min";
+    }
+}

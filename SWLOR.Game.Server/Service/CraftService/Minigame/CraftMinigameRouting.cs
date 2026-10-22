@@ -28,17 +28,24 @@ public static class CraftMinigameRouting
     public static int ScaleBaseXp(SkillType skill, int baseXp) =>
         (int)Math.Round(baseXp * GetRoute(skill).XpMultiplier, MidpointRounding.AwayFromZero);
 
-    /// <summary>Every window that crafts items: the original one and each minigame's.</summary>
+    /// <summary>
+    /// The window of the research Experiment. It crafts no item, but it spends the Fabrication CP of the gear worn when it opened, so
+    /// it commits that gear like a crafting window does.
+    /// </summary>
+    public const GuiWindowType ResearchExperimentWindow = GuiWindowType.ResearchExperiment;
+
+    /// <summary>Every window that crafts items, the original one and each minigame's, and the research Experiment, which commits the worn gear.</summary>
     public static IReadOnlyList<GuiWindowType> GetCraftWindows()
     {
         _routes ??= BuildRoutes(DiscoverRoutes());
         return _routes.Values.Select(route => route.Window)
             .Append(LegacyWindow)
+            .Append(ResearchExperimentWindow)
             .Distinct()
             .ToList();
     }
 
-    /// <summary>True when the player has any crafting window open, the original or a minigame's.</summary>
+    /// <summary>True when the player has any crafting window open, the original or a minigame's, or the research Experiment.</summary>
     public static bool IsAnyCraftWindowOpen(uint player) =>
         GetCraftWindows().Any(window => Gui.IsWindowOpen(player, window));
 

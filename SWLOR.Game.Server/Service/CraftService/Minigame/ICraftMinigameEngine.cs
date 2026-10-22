@@ -36,4 +36,11 @@ public interface ICraftMinigameEngine
 
     /// <summary>Performs an action. A refused action changes nothing and spends no chance.</summary>
     MinigameActionResult Perform(string actionId);
+
+    /// <summary>
+    /// A copy of the attempt exactly as it stands, with its own source of chance. Simulations use it to try an action without
+    /// touching this engine: performing actions on the copy never changes this engine, and the reverse. Recipe, rank, gear and
+    /// perk configuration are shared (they are immutable); everything an action can change is copied.
+    /// </summary>
+    ICraftMinigameEngine Fork(IMinigameRandom random);
 }

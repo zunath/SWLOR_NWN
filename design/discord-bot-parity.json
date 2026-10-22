@@ -1,0 +1,401 @@
+{
+  "schemaVersion": 1,
+  "observationDate": "2026-10-03",
+  "purpose": "Read-only parity evidence; not a deployable bot configuration",
+  "auditComplete": false,
+  "guild": {
+    "name": "SWLOR",
+    "id": "484936923341651971"
+  },
+  "sources": {
+    "dyno": "https://dyno.gg/manage/484936923341651971",
+    "ticketTool": "https://tickettool.xyz/dashboard/484936923341651971/configs#pc-menu",
+    "ticketEntryChannel": "Published Wiki; current deployed panel message unverified"
+  },
+  "dyno": {
+    "nickname": "Yoda",
+    "prefix": "?",
+    "modules": {
+      "customCommands": true,
+      "announcements": true,
+      "welcome": false,
+      "autoRoles": true,
+      "fullInventoryVerified": false
+    },
+    "welcome": {
+      "sourceModule": "Announcements",
+      "channel": {
+        "name": "welcome",
+        "id": null
+      },
+      "template": "Welcome to the party, {user}! Please visit our wiki at https://wiki.starwarsnwn.com/ to learn more about the project. Staff is on hand to help with any of your questions, too! You will find all important links in {#information} Please keep {#general} chat to SWLOR/Star Wars, but feel free to talk about any topics you so choose in the {#off-topic} channel. May the force be with you!",
+      "joinEnabled": null,
+      "dmEnabled": null,
+      "messageType": null,
+      "templateChannelIds": {
+        "information": null,
+        "general": null,
+        "off-topic": null
+      }
+    },
+    "factions": {
+      "command": "?rank",
+      "roles": [
+        {
+          "name": "Faction - Cartel",
+          "roleId": null
+        },
+        {
+          "name": "Faction - Free Fleet",
+          "roleId": null
+        },
+        {
+          "name": "Faction - The Mandalorians",
+          "roleId": null
+        },
+        {
+          "name": "Faction - The Republic",
+          "roleId": null
+        },
+        {
+          "name": "Faction - Remnants",
+          "roleId": null
+        },
+        {
+          "name": "Faction - Czerka",
+          "roleId": null
+        },
+        {
+          "name": "Faction - Jedi Order",
+          "roleId": null
+        },
+        {
+          "name": "Faction - The Legion",
+          "roleId": null
+        },
+        {
+          "name": "Faction - Veles City Hall",
+          "roleId": null
+        },
+        {
+          "name": "Faction - Republic Joint Comms",
+          "roleId": null
+        },
+        {
+          "name": "Faction - The Underworld",
+          "roleId": null
+        },
+        {
+          "name": "Faction - Sith Cultists",
+          "roleId": null
+        }
+      ],
+      "oneRankOnly": null,
+      "joinLeaveBehavior": null,
+      "deleteCommand": null,
+      "deleteResponse": null,
+      "restrictions": null
+    },
+    "customCommands": [
+      {
+        "name": "design",
+        "listingDescription": "Links the design bible",
+        "enabled": null,
+        "responses": null,
+        "options": null,
+        "status": "listing-observed-details-unverified"
+      },
+      {
+        "name": "weapon",
+        "listingDescription": "Displays weapon stats",
+        "enabled": null,
+        "responses": null,
+        "options": null,
+        "status": "listing-observed-details-unverified"
+      },
+      {
+        "name": "delete",
+        "listingDescription": "Tells you how to delete a character",
+        "enabled": null,
+        "responses": null,
+        "options": null,
+        "status": "listing-observed-details-unverified"
+      },
+      {
+        "name": "bug",
+        "listingDescription": "What to do when you find a bug",
+        "enabled": null,
+        "responses": null,
+        "options": null,
+        "status": "listing-observed-details-unverified"
+      },
+      {
+        "name": "nui",
+        "listingDescription": "Displays known issues with NUI",
+        "enabled": null,
+        "responses": null,
+        "options": null,
+        "status": "listing-observed-details-unverified"
+      },
+      {
+        "name": "dm",
+        "listingDescription": "What to do if you need a DM",
+        "enabled": null,
+        "responses": null,
+        "options": null,
+        "status": "listing-observed-details-unverified"
+      },
+      {
+        "name": "faction",
+        "listingDescription": "How to join factions",
+        "enabled": null,
+        "responses": null,
+        "options": null,
+        "status": "listing-observed-details-unverified"
+      },
+      {
+        "name": "wiki",
+        "listingDescription": "Wiki info",
+        "enabled": null,
+        "responses": null,
+        "options": null,
+        "status": "listing-observed-details-unverified"
+      },
+      {
+        "name": "skills",
+        "listingDescription": "Displays skill info",
+        "enabled": null,
+        "responses": null,
+        "options": null,
+        "status": "listing-observed-details-unverified"
+      },
+      {
+        "name": "damage",
+        "listingDescription": "Displays damage info",
+        "enabled": null,
+        "responses": null,
+        "options": null,
+        "status": "listing-observed-details-unverified"
+      },
+      {
+        "name": "race",
+        "listingDescription": "Race info",
+        "enabled": null,
+        "responses": null,
+        "options": null,
+        "status": "listing-observed-details-unverified"
+      },
+      {
+        "name": "based",
+        "listingDescription": "BASED ON WHAT?",
+        "enabled": null,
+        "responses": null,
+        "options": null,
+        "status": "listing-observed-details-unverified"
+      },
+      {
+        "name": "patreon",
+        "listingDescription": "Patreon info",
+        "enabled": null,
+        "responses": null,
+        "options": null,
+        "status": "listing-observed-details-unverified"
+      },
+      {
+        "name": "refund",
+        "listingDescription": "Info about refunding perks",
+        "enabled": null,
+        "responses": null,
+        "options": null,
+        "status": "listing-observed-details-unverified"
+      },
+      {
+        "name": "rebuild",
+        "listingDescription": "Rebuild info",
+        "enabled": null,
+        "responses": null,
+        "options": null,
+        "status": "listing-observed-details-unverified"
+      },
+      {
+        "name": "properties",
+        "listingDescription": "Player property info",
+        "enabled": null,
+        "responses": null,
+        "options": null,
+        "status": "listing-observed-details-unverified"
+      },
+      {
+        "name": "dev",
+        "listingDescription": "Development info",
+        "enabled": null,
+        "responses": null,
+        "options": null,
+        "status": "listing-observed-details-unverified"
+      },
+      {
+        "name": "bible",
+        "listingDescription": "Links the design bible",
+        "enabled": null,
+        "responses": null,
+        "options": null,
+        "status": "listing-observed-details-unverified"
+      },
+      {
+        "name": "ticket",
+        "listingDescription": "What to do if you need a DM",
+        "enabled": null,
+        "responses": null,
+        "options": null,
+        "status": "listing-observed-details-unverified"
+      },
+      {
+        "name": "spcap",
+        "listingDescription": null,
+        "enabled": null,
+        "responses": null,
+        "options": null,
+        "status": "listing-observed-details-unverified"
+      },
+      {
+        "name": "rules",
+        "listingDescription": null,
+        "enabled": null,
+        "responses": null,
+        "options": null,
+        "status": "listing-observed-details-unverified"
+      },
+      {
+        "name": "mastery",
+        "listingDescription": "Displays mastery info",
+        "enabled": null,
+        "responses": null,
+        "options": null,
+        "status": "listing-observed-details-unverified"
+      },
+      {
+        "name": "remnant",
+        "listingDescription": null,
+        "enabled": null,
+        "responses": null,
+        "options": null,
+        "status": "listing-observed-details-unverified"
+      },
+      {
+        "name": "jetpacks",
+        "listingDescription": null,
+        "enabled": null,
+        "responses": null,
+        "options": null,
+        "status": "listing-observed-details-unverified"
+      }
+    ]
+  },
+  "ticketTool": {
+    "prefix": "$",
+    "completePanelInventoryVerified": false,
+    "observedPlanLabel": "Free",
+    "selectedPanel": {
+      "displayedNumber": "1",
+      "name": "SWLOR Tickets",
+      "sourceChannelId": "930228689000603708",
+      "sourceChannelEvidence": "Published Wiki; current deployment unverified",
+      "sourceMessageId": null,
+      "supportRoles": [
+        {
+          "name": "Admin",
+          "roleId": null
+        },
+        {
+          "name": "Dungeon Master",
+          "roleId": null
+        },
+        {
+          "name": "Head DM",
+          "roleId": null
+        },
+        {
+          "name": "Quest Master",
+          "roleId": null
+        }
+      ],
+      "openCategories": [
+        {
+          "name": "tickets - open 1",
+          "id": null
+        },
+        {
+          "name": "Tickets - Open 2",
+          "id": null
+        }
+      ],
+      "closedCategory": {
+        "name": "tickets - closed",
+        "id": null
+      },
+      "limits": {
+        "perUser": 1,
+        "panel": 500,
+        "guild": 100,
+        "bypassRoles": [
+          {
+            "name": "Admin",
+            "roleId": null
+          },
+          {
+            "name": "Dungeon Master",
+            "roleId": null
+          },
+          {
+            "name": "Patreon Supporter",
+            "roleId": null
+          },
+          {
+            "name": "Head DM",
+            "roleId": null
+          },
+          {
+            "name": "Quest Master",
+            "roleId": null
+          }
+        ],
+        "bypassScopes": null,
+        "staleBypassEntry": "~ Deleted ~",
+        "staleEntryMustNotBeRecreated": true
+      },
+      "naming": {
+        "displayedOpen": "Ticket-{count}",
+        "displayedClosed": "Closed-{count}",
+        "displayedPadding": 4,
+        "fieldsDisabled": true,
+        "activeBehaviorVerified": false
+      },
+      "logging": {
+        "channelName": "discord-logs",
+        "channelId": null,
+        "eventFlags": null
+      },
+      "transcripts": {
+        "selectedChannel": null,
+        "displayedSendWhen": "Closed",
+        "displayedSaveWhen": "Closed",
+        "activePolicyVerified": false
+      },
+      "permissionProfiles": null,
+      "deployedButtons": null,
+      "messages": null,
+      "formQuestions": null,
+      "operations": null,
+      "cleanupPolicy": null
+    }
+  },
+  "remainingEvidence": [
+    "All stable role/category/channel IDs and deployed panel message IDs",
+    "All enabled command responses, embeds, macros, restrictions, and options",
+    "Opened/closed ticket permission profiles and operation authorization",
+    "Welcome delivery and faction policy switches",
+    "Complete Ticket Tool panel and Dyno enabled-module inventories",
+    "Existing-ticket handling and cleanup/archive policy",
+    "Linux host capacity, storage, backups, and deployment access"
+  ]
+}

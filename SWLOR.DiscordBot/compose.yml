@@ -1,0 +1,84 @@
+name: swlor-discord-bot
+
+services:
+  database:
+    build:
+      context: .
+      dockerfile: Dockerfile.postgres
+    restart: unless-stopped
+    environment:
+      POSTGRES_DB: swlor_bot
+      POSTGRES_USER: swlor_bot
+      SWLOR_BOT_SECRETS_FILE: /run/secrets/database_secrets
+    secrets:
+      - database_secrets
+    volumes:
+      - postgres-data:/var/lib/postgresql/data
+    networks:
+      - bot-internal
+    healthcheck:
+      test: ["CMD", "/usr/local/bin/swlor-postgres-entrypoint.sh", "check-password"]
+      interval: 10s
+      timeout: 5s
+      retries: 6
+      start_period: 20s
+    stop_grace_period: 1m
+    logging:
+      driver: json-file
+      options:
+        max-size: 10m
+        max-file: "5"
+
+  bot:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    restart: unless-stopped
+    user: "1654:1654"
+    read_only: true
+    init: true
+    environment:
+      SWLOR_BOT_SECRETS_FILE: /run/secrets/discord_bot_secrets
+      SWLOR_BOT_DATABASE_HOST: database
+      SWLOR_BOT_DATABASE_PORT: "5432"
+      SWLOR_BOT_DATABASE_NAME: swlor_bot
+      SWLOR_BOT_DATABASE_USER: swlor_bot
+      SWLOR_BOT_READY_FILE: /data/bot.ready
+    command: ["--config", "/config/bot.json"]
+    depends_on:
+      database:
+        condition: service_healthy
+    secrets:
+      - discord_bot_secrets
+    volumes:
+      - ./bot.json:/config/bot.json:ro
+      - bot-data:/data
+    tmpfs:
+      - /tmp:rw,noexec,nosuid,size=16m,mode=1777
+    networks:
+      - bot-internal
+    healthcheck:
+      test: ["CMD", "dotnet", "/app/SWLOR.DiscordBot.dll", "--health-check"]
+      interval: 30s
+      timeout: 5s
+      retries: 3
+      start_period: 45s
+    stop_grace_period: 30s
+    logging:
+      driver: json-file
+      options:
+        max-size: 10m
+        max-file: "5"
+
+secrets:
+  discord_bot_secrets:
+    file: ./secrets/secrets.json
+  database_secrets:
+    environment: SWLOR_BOT_DATABASE_SECRETS
+
+volumes:
+  postgres-data:
+  bot-data:
+
+networks:
+  bot-internal:

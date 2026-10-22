@@ -1,5 +1,6 @@
 using SWLOR.Game.Server.Service.CraftService.Minigame.Circuit;
 using SWLOR.Game.Server.Service.CraftService.Minigame.Fabricator;
+using SWLOR.Game.Server.Service.CraftService.Minigame.Reaction;
 
 namespace SWLOR.Game.Server.Service.CraftService.Minigame;
 
@@ -18,6 +19,7 @@ public static class CraftMinigameXp
     {
         CraftMinigameType.Circuit => CircuitRules.XpMultiplierFor(recipeLevel),
         CraftMinigameType.Fabricator => FabricatorRules.XpMultiplierForLevel(recipeLevel),
+        CraftMinigameType.Reaction => ReactionRules.XpMultiplier(recipeLevel),
         _ => 1.0
     };
 

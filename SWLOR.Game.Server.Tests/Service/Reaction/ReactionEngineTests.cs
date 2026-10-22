@@ -58,7 +58,7 @@ public class ReactionEngineTests
         engine.NextOpportunity.Should().BeNull();
         engine.Meters.Progress.Should().Be(new MinigameMeter(0, ReactionRules.MeterMaximum));
         engine.Meters.Quality.Should().Be(new MinigameMeter(0, ReactionRules.MeterMaximum));
-        engine.Meters.Integrity.Should().Be(new MinigameMeter(ReactionRules.MeterMaximum, ReactionRules.MeterMaximum));
+        engine.Meters.Integrity.Should().Be(new MinigameMeter(ReactionRules.StabilityMaximum, ReactionRules.StabilityMaximum));
         engine.Meters.Cp.Should().Be(new MinigameMeter(settings.MaxCp, settings.MaxCp));
     }
 
@@ -99,7 +99,7 @@ public class ReactionEngineTests
         var outcome = OnlyOutcome(engine, ReactionEngine.Measure);
 
         outcome.Delta.Should().Be(new MinigameMeterDelta(
-            Progress: engine.Settings.MeasurePotency, Integrity: -ReactionRules.ActionStability));
+            Progress: engine.Settings.MeasurePotency, Integrity: -engine.Settings.ActionStability));
         engine.Settings.MeasurePotency.Should().BeLessThan(engine.Settings.ChargePotency);
     }
 
@@ -110,10 +110,10 @@ public class ReactionEngineTests
 
         var preview = engine.Preview(ReactionEngine.Charge);
 
-        preview.IntegrityCost.Should().Be(ReactionRules.ActionStability);
+        preview.IntegrityCost.Should().Be(engine.Settings.ActionStability);
         preview.CpCost.Should().Be(0);
         preview.Outcomes.Should().ContainSingle().Which.Delta.Should().Be(new MinigameMeterDelta(
-            Progress: engine.Settings.ChargePotency, Integrity: -ReactionRules.ActionStability));
+            Progress: engine.Settings.ChargePotency, Integrity: -engine.Settings.ActionStability));
     }
 
     [Test]
@@ -124,7 +124,7 @@ public class ReactionEngineTests
 
         var preview = engine.Preview(ReactionEngine.Charge);
 
-        preview.IntegrityCost.Should().Be(ReactionRules.ActionStability + ReactionRules.HeavyChargeStability);
+        preview.IntegrityCost.Should().Be(engine.Settings.ActionStability + ReactionRules.HeavyChargeStability);
         preview.Outcomes.Single().Delta.Progress.Should().Be(engine.Settings.ChargePotency);
     }
 
@@ -141,7 +141,7 @@ public class ReactionEngineTests
             preview.Outcomes.Single().Delta.Progress.Should().Be(
                 engine.Settings.ChargePotency * ReactionRules.PeakChargeMultiplier, $"intensity {intensity}");
             preview.IntegrityCost.Should().Be(
-                ReactionRules.ActionStability + ReactionRules.PeakChargeStability(intensity), $"intensity {intensity}");
+                engine.Settings.ActionStability + ReactionRules.PeakChargeStability(intensity), $"intensity {intensity}");
             preview.IntegrityCost.Should().BeGreaterThan(previousCost);
             previousCost = preview.IntegrityCost;
         }
@@ -171,9 +171,11 @@ public class ReactionEngineTests
     [Test]
     public void Refine_CostsOnlyTheActionStabilityAndNoCp([Values(CalmStart, RisingStart, PeakStart, SettlingStart)] int start)
     {
-        var preview = EngineAt(start).Preview(ReactionEngine.Refine);
+        var engine = EngineAt(start);
 
-        preview.IntegrityCost.Should().Be(ReactionRules.ActionStability);
+        var preview = engine.Preview(ReactionEngine.Refine);
+
+        preview.IntegrityCost.Should().Be(engine.Settings.ActionStability);
         preview.CpCost.Should().Be(0);
         preview.Outcomes.Single().Delta.Progress.Should().Be(0);
     }
@@ -204,14 +206,40 @@ public class ReactionEngineTests
     }
 
     [Test]
-    public void Dampen_CostsCpAndTheActionStabilityAndGainsNothing()
+    public void Dampen_CostsCpAndRestoresALittleStabilityWithoutWearingThePiece()
     {
         var engine = EngineAt(RisingStart);
+        engine.Perform(ReactionEngine.Charge);
+        engine.Meters.Integrity.Value.Should().BeLessThan(ReactionRules.StabilityMaximum - ReactionRules.DampenRestore);
+        var before = engine.Meters;
 
         var outcome = OnlyOutcome(engine, ReactionEngine.Dampen);
+        engine.Perform(ReactionEngine.Dampen);
 
-        outcome.Delta.Should().Be(new MinigameMeterDelta(Integrity: -ReactionRules.ActionStability, Cp: -ReactionRules.DampenCp));
+        outcome.Delta.Should().Be(new MinigameMeterDelta(Integrity: ReactionRules.DampenRestore, Cp: -engine.Settings.DampenCp));
         outcome.Change(ReactionEngine.CycleMeterId)!.Delta.Should().Be(0, "the preview shows the phase held");
+        engine.Meters.Integrity.Value.Should().Be(before.Integrity.Value + ReactionRules.DampenRestore, "the preview equals the result");
+        engine.Meters.Cp.Value.Should().Be(before.Cp.Value - engine.Settings.DampenCp);
+        engine.Meters.Progress.Should().Be(before.Progress);
+        engine.Meters.Quality.Should().Be(before.Quality);
+    }
+
+    [Test]
+    public void Dampen_RestoresLessThanStabilize_ButNeverPastTheMaximum()
+    {
+        ReactionRules.DampenRestore.Should().BePositive();
+        ReactionRules.DampenRestore.Should().BeLessThan(ReactionRules.StabilizeRestore);
+
+        var full = EngineAt(RisingStart);
+        OnlyOutcome(full, ReactionEngine.Dampen).Delta.Integrity.Should().Be(0, "Stability is already full");
+        full.Perform(ReactionEngine.Dampen).Performed.Should().BeTrue("Dampen still holds the phase at full Stability");
+        full.Meters.Integrity.Value.Should().Be(ReactionRules.StabilityMaximum);
+
+        var nearlyFull = EngineAt(CalmStart, Settings(intensity: 1));
+        nearlyFull.Perform(ReactionEngine.Measure);
+        var missing = ReactionRules.StabilityMaximum - nearlyFull.Meters.Integrity.Value;
+        missing.Should().BeInRange(1, ReactionRules.DampenRestore - 1, "one Measure at the gentlest tier wears less than Dampen restores");
+        OnlyOutcome(nearlyFull, ReactionEngine.Dampen).Delta.Integrity.Should().Be(missing);
     }
 
     [Test]
@@ -243,20 +271,20 @@ public class ReactionEngineTests
     {
         var engine = EngineAt(PeakStart);
         engine.Perform(ReactionEngine.Charge);
-        var missing = ReactionRules.MeterMaximum - engine.Meters.Integrity.Value;
+        var missing = ReactionRules.StabilityMaximum - engine.Meters.Integrity.Value;
         missing.Should().BeGreaterThan(0);
 
         var outcome = OnlyOutcome(engine, ReactionEngine.Stabilize);
 
         outcome.Delta.Integrity.Should().Be(Math.Min(ReactionRules.StabilizeRestore, missing));
-        outcome.Delta.Cp.Should().Be(-ReactionRules.StabilizeCp);
+        outcome.Delta.Cp.Should().Be(-engine.Settings.StabilizeCp);
         outcome.Delta.Progress.Should().Be(0);
         engine.Preview(ReactionEngine.Stabilize).IntegrityCost.Should().Be(0);
 
         engine.Perform(ReactionEngine.Stabilize);
 
-        engine.Meters.Integrity.Value.Should().BeLessThanOrEqualTo(ReactionRules.MeterMaximum);
-        engine.Meters.Integrity.Value.Should().Be(ReactionRules.MeterMaximum - missing + Math.Min(ReactionRules.StabilizeRestore, missing));
+        engine.Meters.Integrity.Value.Should().BeLessThanOrEqualTo(ReactionRules.StabilityMaximum);
+        engine.Meters.Integrity.Value.Should().Be(ReactionRules.StabilityMaximum - missing + Math.Min(ReactionRules.StabilizeRestore, missing));
     }
 
     [Test]
@@ -278,13 +306,34 @@ public class ReactionEngineTests
     [Test]
     public void Stabilize_CannotBeUsedWithoutEnoughCp()
     {
-        var engine = EngineAt(CalmStart, Settings(rank: 0, level: 3));
+        var engine = EngineAt(CalmStart, Settings(rank: 10, level: 40));
         engine.Perform(ReactionEngine.Measure);
 
         var preview = engine.Preview(ReactionEngine.Stabilize);
 
         preview.Enabled.Should().BeFalse();
         preview.DisabledReason.Should().Be("Not enough CP.");
+        engine.Settings.MaxCp.Should().BeLessThan(engine.Settings.StabilizeCp);
+    }
+
+    [Test]
+    public void Stabilize_UnlocksAtRank10_AndEveryOtherActionIsThereFromRankZero()
+    {
+        var locked = EngineAt(CalmStart, Settings(rank: ReactionRules.StabilizeUnlockRank - 1, level: 3));
+        locked.Perform(ReactionEngine.Measure);
+        var open = EngineAt(CalmStart, Settings(rank: ReactionRules.StabilizeUnlockRank, level: 3));
+        open.Perform(ReactionEngine.Measure);
+        var newcomer = EngineAt(CalmStart, Settings(rank: 0, level: 3));
+
+        var lockedPreview = locked.Preview(ReactionEngine.Stabilize);
+
+        ReactionRules.StabilizeUnlockRank.Should().Be(10);
+        lockedPreview.Enabled.Should().BeFalse();
+        lockedPreview.DisabledReason.Should().Be("Unlocks at Espionage rank 10.");
+        locked.Perform(ReactionEngine.Stabilize).Performed.Should().BeFalse();
+        open.Preview(ReactionEngine.Stabilize).Enabled.Should().BeTrue();
+        foreach (var action in new[] { ReactionEngine.Measure, ReactionEngine.Charge, ReactionEngine.Refine })
+            newcomer.Preview(action).Enabled.Should().BeTrue($"{action} is available from rank 0");
     }
 
     [Test]
@@ -354,15 +403,15 @@ public class ReactionEngineTests
     [Test]
     public void AnActionThatFillsPotencyAndEmptiesStabilityTogetherStillFinishesTheItem()
     {
-        // Rank 50 against a level 3 recipe at intensity 5: thirty Refines leave 40 Stability with the cycle back at Calm,
-        // then three Charges bring the Peak Charge, which fills Potency and costs more Stability than is left.
+        // Rank 50 against a level 3 recipe at intensity 5: six Refines bring the cycle back to Calm and leave 128 Stability, then three
+        // Charges bring the Peak Charge, which fills Potency and costs more Stability than is left.
         var engine = EngineAt(CalmStart, Settings(rank: 50, level: 3, intensity: 5));
-        for (var turn = 0; turn < 30; turn++)
+        for (var turn = 0; turn < 6; turn++)
             engine.Perform(ReactionEngine.Refine);
         for (var turn = 0; turn < 3; turn++)
             engine.Perform(ReactionEngine.Charge);
         engine.CurrentPhase.Should().Be(ReactionPhase.Peak);
-        engine.Meters.Integrity.Value.Should().BeLessThan(ReactionRules.ActionStability + ReactionRules.PeakChargeStability(5));
+        engine.Meters.Integrity.Value.Should().BeLessThan(engine.Settings.ActionStability + ReactionRules.PeakChargeStability(5));
 
         var preview = engine.Preview(ReactionEngine.Charge);
 
@@ -376,13 +425,14 @@ public class ReactionEngineTests
     public void ABrokenPieceEndsTheAttemptAndTheActionThatBreaksItIsPreviewedAsBreakingIt()
     {
         var engine = EngineAt(CalmStart);
-        for (var turn = 0; turn < 49; turn++)
+        var wear = engine.Settings.ActionStability;
+        while (engine.Meters.Integrity.Value > wear)
         {
-            engine.Preview(ReactionEngine.Refine).CanBreakItem.Should().BeFalse($"turn {turn}");
+            engine.Preview(ReactionEngine.Refine).CanBreakItem.Should().BeFalse($"turn {engine.Turn}");
             engine.Perform(ReactionEngine.Refine).Status.Should().Be(MinigameStatus.InProgress);
         }
 
-        engine.Meters.Integrity.Value.Should().Be(ReactionRules.ActionStability);
+        engine.Meters.Integrity.Value.Should().BeLessThanOrEqualTo(wear);
         var breaking = engine.Preview(ReactionEngine.Refine);
         breaking.CanBreakItem.Should().BeTrue();
         breaking.Outcomes.Single().BreaksItem.Should().BeTrue();
@@ -451,7 +501,7 @@ public class ReactionEngineTests
     }
 
     [Test]
-    public void TheOnlyRandomChoiceIsTheStartingPosition_WhichIsAlwaysCalmOrRising()
+    public void TheOnlyRandomChoiceIsTheStartingPosition_WhichIsAnywhereInTheCycle()
     {
         for (var roll = 0; roll <= 100; roll++)
         {
@@ -460,12 +510,12 @@ public class ReactionEngineTests
             var engine = new ReactionEngine(random, Settings());
 
             random.Calls.Should().Be(1, $"roll {roll}");
-            engine.CurrentPhase.Should().BeOneOf(ReactionPhase.Calm, ReactionPhase.Rising);
+            engine.CycleIndex.Should().BeInRange(0, engine.Cycle.Length - 1);
         }
     }
 
     [Test]
-    public void ARolledStartCanLandOnEveryCalmAndRisingPosition()
+    public void ARolledStartCanLandOnEveryPositionOfTheCycle_SoOnAverageEveryPhaseOpensAnAttempt()
     {
         var starts = Enumerable.Range(1, 200)
             .Select(seed => new ReactionEngine(new SeededMinigameRandom(seed), Settings()).CycleIndex)
@@ -473,7 +523,8 @@ public class ReactionEngineTests
             .OrderBy(index => index)
             .ToList();
 
-        starts.Should().Equal(0, 1, 2);
+        starts.Should().Equal(0, 1, 2, 3, 4, 5);
+        new ReactionCycle(ReactionCyclePattern.Brew, 6).StartPositionCount.Should().Be(6);
     }
 
     [Test]
@@ -501,6 +552,25 @@ public class ReactionEngineTests
 
         random.Calls.Should().Be(0);
         engine.CurrentPhase.Should().Be(ReactionPhase.Settling);
+    }
+
+    [Test]
+    public void AForkContinuesFromTheSameAttemptWithoutTouchingTheOriginal()
+    {
+        var engine = EngineAt(RisingStart);
+        engine.Perform(ReactionEngine.Refine);
+        var before = engine.DescribeMeters();
+
+        var copy = (ReactionEngine)engine.Fork(new SeededMinigameRandom(9));
+        copy.DescribeMeters().Should().Equal(before);
+        copy.Perform(ReactionEngine.Charge);
+        copy.Perform(ReactionEngine.Dampen);
+
+        engine.DescribeMeters().Should().Equal(before);
+        engine.Turn.Should().Be(1);
+        copy.Turn.Should().Be(3);
+        engine.Perform(ReactionEngine.Measure).Performed.Should().BeTrue();
+        copy.Meters.Progress.Value.Should().NotBe(engine.Meters.Progress.Value);
     }
 
     [TestCase(-1)]

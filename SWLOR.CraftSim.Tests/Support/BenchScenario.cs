@@ -34,7 +34,8 @@ namespace SWLOR.CraftSim.Tests.Support
 
         public double SecondsPerAction { get; init; } = 6;
 
-        public double XpMultiplier { get; init; } = 1;
+        /// <summary>The multiplier on the new loop's base XP; 1 leaves it alone.</summary>
+        public double XpMultiplier { get; init; } = 1.0;
 
         /// <summary>A multiplier that depends on the recipe level; null plays <see cref="XpMultiplier"/> at every level.</summary>
         public Func<int, double> XpMultiplierByLevel { get; init; }

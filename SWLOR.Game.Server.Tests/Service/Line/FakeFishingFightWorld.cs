@@ -107,6 +107,9 @@ internal sealed class FakeFishingFightWorld : IFishingFightWorld
     public FishingPlayerState GetPlayerState(uint player) =>
         new(IsValid, IsDead, IsInCombat, Position, WindowOpen, EquippedRod, OwnsActivity);
 
+    /// <summary>The clock the fight's pacing reads; a test moves it forward.</summary>
+    public DateTime UtcNow { get; set; } = new(2026, 10, 22, 12, 0, 0, DateTimeKind.Utc);
+
     public void Schedule(float seconds, Action action) => _scheduled.Add((seconds, action));
 
     /// <summary>Runs the next scheduled check, the way a second passing would.</summary>

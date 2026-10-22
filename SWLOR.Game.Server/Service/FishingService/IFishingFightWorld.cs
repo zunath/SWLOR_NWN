@@ -35,6 +35,9 @@ namespace SWLOR.Game.Server.Service.FishingService
 
         FishingPlayerState GetPlayerState(uint player);
 
+        /// <summary>The current time, which paces the turns of a fight.</summary>
+        DateTime UtcNow { get; }
+
         /// <summary>Runs <paramref name="action"/> after the given seconds, whether or not the angler is still in the game.</summary>
         void Schedule(float seconds, Action action);
     }

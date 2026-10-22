@@ -76,7 +76,7 @@ public class FishingFightLifecycleTests
         _world.Bait[Rod].Should().Be(4);
         _world.PointAttempts[Point].Should().Be(6);
         _world.ExhaustedPoints.Should().BeEmpty();
-        _world.Xp.Should().Equal(BiteXp(20, 20));
+        _world.Xp.Should().Equal(new[] { BiteXp(20, 20) }, "the bite pays today's XP at once");
         _world.Opened.Should().Equal(fight);
         _world.Busy.Should().BeTrue();
         _world.FishCreated.Should().BeEmpty("the fish is landed by the fight, not by the bite");
@@ -85,25 +85,127 @@ public class FishingFightLifecycleTests
         _world.Log.Should().ContainInOrder("bait", "message", "message", "attempts", "xp", "busy", "open");
     }
 
-    /// <summary>What a bite pays: today's XP for the fish against the rank, times the multiplier of the fish's level band.</summary>
-    private static int BiteXp(int level, int rank) =>
+    /// <summary>What the bite itself pays: today's XP for the fish against the rank.</summary>
+    private static int BiteXp(int level, int rank) => Skill.GetDeltaXP(level - rank);
+
+    /// <summary>What a played fight pays in all: today's XP times the multiplier of the fish's level band.</summary>
+    private static int FightXp(int level, int rank) =>
         CraftMinigameXp.ScaleBaseXp(Skill.GetDeltaXP(level - rank), LineRules.XpMultiplierForLevel(level));
 
     [Test]
-    public void TheXpForABite_IsTodaysDeltaXpOfTheFishAgainstTheRankAtTheBite_TimesTheMultiplierOfTheFishsLevelBand()
+    public void ABite_PaysTodaysDeltaXpOfTheFishAgainstTheRankAtOnce_AndTheFightTheRestOfTheMultipliedXpWhenItEnds()
     {
         foreach (var (level, rank) in new[] { (0, 0), (20, 20), (22, 20), (18, 20), (35, 10), (0, 50), (52, 50) })
         {
             _world = new FakeFishingFightWorld();
 
-            Lifecycle().Bite(Bite(level, rank, rod: FishingRodType.Bamboo));
+            var fight = Lifecycle().Bite(Bite(level, rank, rod: FishingRodType.Bamboo));
 
             _world.Xp.Should().Equal(new[] { BiteXp(level, rank) }, $"level {level}, rank {rank}");
+            (_world.Xp.Sum() + fight.XpOnFinish).Should().Be(FightXp(level, rank), $"level {level}, rank {rank}");
         }
 
-        BiteXp(20, 20).Should().Be(
+        FightXp(20, 20).Should().Be(
             CraftMinigameXp.ScaleBaseXp(Skill.GetDeltaXP(0), LineRules.XpMultiplierLevels11To20),
             "the multiplier is the one of the fish's level, not of the angler's rank");
+    }
+
+    [Test]
+    public void AFightThatEndsOnItsOwn_PaysTheRestOfTheMultipliedXp_WhetherTheFishIsLandedSnappedOrEscaped()
+    {
+        BiteXp(80, 0).Should().BeGreaterThan(0, "the fish is far above the rank, so there is XP to pay");
+
+        var snapped = Lifecycle(55, 99, 99);
+        var snappedFight = snapped.Bite(HopelessFish());
+        Reel(snappedFight);
+        snapped.Settle(snappedFight).Ending.Should().Be(LineEnding.Snapped);
+        _world.Xp.Should().Equal(BiteXp(80, 0), FightXp(80, 0) - BiteXp(80, 0));
+
+        _world = new FakeFishingFightWorld();
+        var escaped = Lifecycle(0, 99, 99);
+        var escapedFight = escaped.Bite(HopelessFish());
+        escapedFight.Engine.Perform(LineActionIds.GiveLine);
+        escaped.Settle(escapedFight).Ending.Should().Be(LineEnding.Escaped);
+        _world.Xp.Should().Equal(BiteXp(80, 0), FightXp(80, 0) - BiteXp(80, 0));
+
+        _world = new FakeFishingFightWorld();
+        var landed = Lifecycle(Enumerable.Repeat(99, 200).ToArray());
+        var landedFight = landed.Bite(Bite(level: 20, rank: 20, rod: FishingRodType.GlassFiber));
+        for (var turn = 0; turn < 30 && landedFight.Engine.Ending == LineEnding.InProgress; turn++)
+            Reel(landedFight);
+        landed.Settle(landedFight).Should().NotBeNull();
+        _world.Xp.Sum().Should().Be(FightXp(20, 20), "whatever the ending, the fight pays the multiplied XP in all");
+    }
+
+    [Test]
+    public void AnAbandonedFight_PaysNoMoreThanTheBiteDid_SoSkippingTheFightEarnsNoMoreThanTheOldCatchRoll()
+    {
+        var lifecycle = Lifecycle();
+        var fight = lifecycle.Bite(Bite(level: 80, rank: 0, rod: FishingRodType.Bamboo));
+        var paid = _world.Xp.ToList();
+
+        lifecycle.Abandon(fight, FishingFightEnd.WindowClosed);
+
+        _world.Xp.Should().Equal(paid);
+        _world.Xp.Sum().Should().Be(BiteXp(80, 0), "today's XP and no more");
+        lifecycle.Settle(fight).Should().BeNull();
+        _world.Xp.Sum().Should().Be(BiteXp(80, 0), "a settle after the abandon pays nothing either");
+    }
+
+    [Test]
+    public void TheRestOfTheXp_IsPaidOnce()
+    {
+        var lifecycle = Lifecycle(55, 99, 99);
+        var fight = lifecycle.Bite(HopelessFish());
+        Reel(fight);
+
+        lifecycle.Settle(fight);
+        lifecycle.Settle(fight);
+
+        _world.Xp.Sum().Should().Be(FightXp(80, 0));
+    }
+
+    [Test]
+    public void TheFirstActionIsFree_AndEachOneAfterItWaitsTheTurnSeconds()
+    {
+        var lifecycle = Lifecycle();
+        var fight = lifecycle.Bite(EasyFish());
+
+        lifecycle.SecondsUntilNextTurn(fight).Should().Be(0, "the first action of a fight is free");
+
+        lifecycle.TurnTaken(fight);
+
+        lifecycle.SecondsUntilNextTurn(fight).Should().BeApproximately(LineRules.TurnSeconds, 1e-9);
+        _world.UtcNow = _world.UtcNow.AddSeconds(3);
+        lifecycle.SecondsUntilNextTurn(fight).Should().BeApproximately(LineRules.TurnSeconds - 3, 1e-9);
+        _world.UtcNow = _world.UtcNow.AddSeconds(LineRules.TurnSeconds - 3);
+        lifecycle.SecondsUntilNextTurn(fight).Should().Be(0);
+        _world.UtcNow = _world.UtcNow.AddSeconds(60);
+        lifecycle.SecondsUntilNextTurn(fight).Should().Be(0, "waiting longer never stores up turns");
+
+        lifecycle.TurnTaken(fight);
+        lifecycle.SecondsUntilNextTurn(fight).Should().BeApproximately(LineRules.TurnSeconds, 1e-9);
+    }
+
+    [Test]
+    public void ASettledFight_OrNoFight_HasNoWait()
+    {
+        var lifecycle = Lifecycle();
+        var fight = lifecycle.Bite(EasyFish());
+        lifecycle.TurnTaken(fight);
+
+        lifecycle.Abandon(fight, FishingFightEnd.WindowClosed);
+
+        lifecycle.SecondsUntilNextTurn(fight).Should().Be(0);
+        lifecycle.SecondsUntilNextTurn(null).Should().Be(0);
+        var act = () => lifecycle.TurnTaken(null);
+        act.Should().Throw<ArgumentNullException>();
+    }
+
+    [Test]
+    public void TheTurnPaceIsTheOneTheXpMultipliersAndTheStudyAssume()
+    {
+        LineRules.TurnSeconds.Should().Be(8);
     }
 
     [Test]
@@ -169,7 +271,7 @@ public class FishingFightLifecycleTests
 
         fight.Should().BeNull();
         _world.Bait[Rod].Should().Be(4);
-        _world.Xp.Should().Equal(BiteXp(20, 20));
+        _world.Xp.Should().Equal(new[] { BiteXp(20, 20) }, "the bite pays today's XP; a fight that never opened pays no more");
         _world.PointAttempts[Point].Should().Be(6);
         _world.Busy.Should().BeFalse();
         _world.FishCreated.Should().BeEmpty();
@@ -271,7 +373,7 @@ public class FishingFightLifecycleTests
         _world.FishCreated.Should().BeEmpty();
         _world.Busy.Should().BeFalse();
         _world.Bait[Rod].Should().Be(bait);
-        _world.Xp.Should().Equal(xp);
+        _world.Xp.Take(xp.Count).Should().Equal(xp, "the bite's XP is not paid again");
         _world.Messages.Should().Contain(message => message.Contains(FishingFightLifecycle.SnappedMessage));
     }
 
@@ -293,7 +395,7 @@ public class FishingFightLifecycleTests
         _world.FishCreated.Should().BeEmpty();
         _world.Busy.Should().BeFalse();
         _world.Bait[Rod].Should().Be(bait);
-        _world.Xp.Should().Equal(xp);
+        _world.Xp.Take(xp.Count).Should().Equal(xp, "the bite's XP is not paid again");
     }
 
     [Test]

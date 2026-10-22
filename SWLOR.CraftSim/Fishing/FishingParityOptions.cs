@@ -1,3 +1,5 @@
+using SWLOR.Game.Server.Service.CraftService.Minigame.Line;
+
 namespace SWLOR.CraftSim.Fishing
 {
     /// <summary>
@@ -27,8 +29,11 @@ namespace SWLOR.CraftSim.Fishing
         /// <summary>The adaptive player's catch rate may sit this many points outside the corridor and still count as near today's.</summary>
         public double TolerancePoints { get; init; } = 10;
 
-        /// <summary>The seconds one turn of the fight takes the player, reading the previews included. An estimate until the client run measures it.</summary>
-        public double SecondsPerTurn { get; init; } = 8;
+        /// <summary>
+        /// The seconds one turn of the fight takes the player, reading the previews included: <c>LineRules.TurnSeconds</c>, which the game also
+        /// enforces as the least time between two actions. An estimate until the client run measures it.
+        /// </summary>
+        public double SecondsPerTurn { get; init; } = LineRules.TurnSeconds;
 
         /// <summary>The seconds of one cast and wait for a bite: 6, 7 or 8 in the game, so 7 on average. Both loops spend it, once per bite.</summary>
         public double CastSeconds { get; init; } = 7;

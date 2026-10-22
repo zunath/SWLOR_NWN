@@ -31,6 +31,15 @@ namespace SWLOR.Game.Server.Service.FishingService
         /// </summary>
         public FishingFightResult Result { get; internal set; }
 
+        /// <summary>
+        /// The Agriculture XP still to pay when the fight ends on its own: the bite's multiplied XP less what the bite already paid. An
+        /// abandoned fight never pays it.
+        /// </summary>
+        public int XpOnFinish { get; internal set; }
+
+        /// <summary>The earliest time the angler's next action may resolve; null until they have taken the first, which is free.</summary>
+        public DateTime? NextTurnAt { get; internal set; }
+
         /// <summary>Marks the fight over. Returns false when it already was, so a repeated settle does nothing.</summary>
         internal bool TrySettle()
         {

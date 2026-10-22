@@ -20,8 +20,9 @@ namespace SWLOR.CraftSim.Fishing
     /// fish's level (at most 50) with the best rod tier that rank allows, and every (rod, bait) table of every fishing location that rod
     /// reaches weighted equally, half by day and half by night, so both loops draw the same fish. A run is a bite: XP is paid per bite,
     /// caught or not, so what differs between the loops is the time and the multiplier on the fight's XP (<c>CraftMinigameXp</c>, by the
-    /// fish's level band). Today's loop spends the cast and the wait; the fight spends the same and then plays its turns, each one
-    /// <see cref="FishingParityOptions.SecondsPerTurn"/>.
+    /// fish's level band). The game pays today's XP at the bite and the rest when the fight ends on its own, which every fight of the
+    /// modelled player does, so a run is paid the multiplied XP in all. Today's loop spends the cast and the wait; the fight spends the
+    /// same and then plays its turns, each one <see cref="FishingParityOptions.SecondsPerTurn"/>.
     /// </summary>
     public sealed class FishingXpRateCohort : IXpRateCohort
     {

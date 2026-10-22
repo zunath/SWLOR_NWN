@@ -55,10 +55,12 @@ namespace SWLOR.Game.Server.Service.FishingService
             var remainingBait = Math.Max(0, bite.BaitRemaining - 1);
             _world.SetRemainingBait(bite.Rod, remainingBait);
 
-            // Today's XP for the bite, times the multiplier of the fish's level band that keeps the XP per hour at today's (gate 6).
-            var xp = CraftMinigameXp.ScaleBaseXp(
-                Skill.GetDeltaXP(bite.Fish.Level - bite.Rank),
-                CraftMinigameXp.MultiplierFor(CraftMinigameType.Line, bite.Fish.Level));
+            // The fight pays today's XP for the bite times the multiplier of the fish's level band, which keeps the XP per hour at
+            // today's (gate 6). Today's XP is paid now, caught or not. The rest is paid when the fight ends on its own, so a fight
+            // abandoned at once to cast again earns no more than the old catch roll did.
+            var baseXp = Skill.GetDeltaXP(bite.Fish.Level - bite.Rank);
+            var fightXp = CraftMinigameXp.ScaleBaseXp(baseXp, CraftMinigameXp.MultiplierFor(CraftMinigameType.Line, bite.Fish.Level));
+            var xp = Math.Min(baseXp, fightXp);
 
             _world.Message(bite.Player, BiteMessage);
             _world.Message(bite.Player, $"Bait Remaining: {remainingBait}x {bite.BaitName}");
@@ -76,7 +78,10 @@ namespace SWLOR.Game.Server.Service.FishingService
                 bite.Fish.Rarity,
                 bite.Rank,
                 FishingRodTier.Tier(bite.RodType));
-            var fight = new FishingFight(Guid.NewGuid().ToString(), bite, new LineEngine(_random, setup));
+            var fight = new FishingFight(Guid.NewGuid().ToString(), bite, new LineEngine(_random, setup))
+            {
+                XpOnFinish = fightXp - xp
+            };
             _active[bite.Player] = fight;
             _world.BeginFight(bite.Player);
 
@@ -134,6 +139,9 @@ namespace SWLOR.Game.Server.Service.FishingService
                     _world.Message(fight.Player, ColorToken.Red(message));
                     break;
             }
+
+            if (fight.XpOnFinish > 0)
+                _world.GiveAgricultureXp(fight.Player, fight.XpOnFinish);
 
             fight.Result = new FishingFightResult(ending, message);
             return fight.Result;
@@ -194,6 +202,28 @@ namespace SWLOR.Game.Server.Service.FishingService
 
             Abandon(fight, end.Value);
             return false;
+        }
+
+        /// <summary>
+        /// The seconds the angler must still wait before their next action may resolve, 0 when it may now. The first action of a fight
+        /// is free; each one after it needs <see cref="LineRules.TurnSeconds"/> since the one before, so the pace the XP multipliers
+        /// assume holds however fast the angler clicks.
+        /// </summary>
+        public double SecondsUntilNextTurn(FishingFight fight)
+        {
+            if (fight?.NextTurnAt == null || fight.Settled)
+                return 0;
+
+            return Math.Max(0, (fight.NextTurnAt.Value - _world.UtcNow).TotalSeconds);
+        }
+
+        /// <summary>Starts the wait for the next action. The window calls it once an action has resolved.</summary>
+        public void TurnTaken(FishingFight fight)
+        {
+            if (fight == null)
+                throw new ArgumentNullException(nameof(fight));
+
+            fight.NextTurnAt = _world.UtcNow.AddSeconds(LineRules.TurnSeconds);
         }
 
         /// <summary>One check of a fight in progress, repeated every <see cref="CheckSeconds"/> until the fight is over.</summary>

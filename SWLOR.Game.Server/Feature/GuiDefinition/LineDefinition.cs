@@ -2,6 +2,7 @@ using System.Linq.Expressions;
 using SWLOR.Game.Server.Core.Beamdog;
 using SWLOR.Game.Server.Feature.GuiDefinition.ViewModel;
 using SWLOR.Game.Server.Service.CraftService.Minigame;
+using SWLOR.Game.Server.Service.CraftService.Minigame.Line;
 using SWLOR.Game.Server.Service.GuiService;
 using SWLOR.Game.Server.Service.GuiService.Component;
 
@@ -17,7 +18,9 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition
         private const float MeterBarHeight = 18f;
         private const float MoveHintHeight = 48f;
 
-        private const string HelpText =
+        private static readonly string TurnSecondsText = LineRules.TurnSeconds.ToString("0", System.Globalization.CultureInfo.InvariantCulture);
+
+        private static readonly string HelpText =
             "THE FIGHT\n" +
             "A bite hooks a fish. You win by reeling it in before it escapes or the line snaps. Three numbers tell you how it " +
             "stands: Distance (0 lands the fish, and at its maximum the fish escapes), Tension (at its maximum the line snaps) " +
@@ -35,9 +38,13 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition
             "- Give Line: lowers Tension and lets out Distance.\n" +
             "- Hold: drains the fish's Stamina. Strong against a Thrash.\n" +
             "Each button shows exactly what it will do against the move the fish announced.\n\n" +
+            "THE PACE\n" +
+            "Your first move is free. After every move the fish needs " + TurnSecondsText + " seconds before your next one counts.\n\n" +
             "LOSING THE FISH\n" +
-            "The bait, one of the fishing point's bites and your Agriculture XP are spent when the fish bites, whether you land it " +
-            "or not. Closing this window, moving away, entering combat or dying lets the fish go.\n\n" +
+            "The bait and one of the fishing point's bites are spent when the fish bites, whether you land it or not. You are paid " +
+            "Agriculture XP for the bite at once, and the rest when the fight ends on its own: you land the fish, the line snaps or " +
+            "the fish escapes. Closing this window, moving away, putting the rod away, resting, entering combat or dying lets the " +
+            "fish go, and the rest of the XP with it.\n\n" +
             "YOUR GEAR\n" +
             "Your rod and your Agriculture rank set how much Tension the line takes and how far one Reel pulls the fish. A fish " +
             "above your rank is stronger and rests less, so it is harder to land.";

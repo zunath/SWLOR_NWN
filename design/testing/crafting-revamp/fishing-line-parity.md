@@ -8,10 +8,10 @@
 - Today (the catch roll the fight replaces): a bite lands the fish at `40 + 10 x (Agriculture rank - fish level) + 2 x Willpower score` percent, kept from 0 to 95. It is played at Willpower scores 8, 10, 12, 14, 16, 18, 20 (`AttributeSweep`); the corridor the fight is judged against is Willpower 10 to 14, because the median Willpower of active characters is not measured yet.
 - The fight: the Line engine, 1000 fights per case, each with its own dice from seed 1. No attributes are read. Fish strength comes from the fish's level against the angler's rank (`LineSetup.ForFish`); the rod tier and the rank set the Tension cap and the reel.
 - Adaptive player: depth 3, forecast samples per result 2, budget 4000 engine copies per decision, 0.5% of value lost per extra action, heuristic LineLeafHeuristic. It is a floor on skilled play. Rule-of-thumb player: reads the announced move and answers it by a fixed rule, never looking further ahead.
-- Time: 7.0 s for a cast and the wait for a bite (6-8 s in the game), in both loops; 8.0 s for each turn of the fight. Both are estimates until the client run measures them.
+- Time: 7.0 s for a cast and the wait for a bite (6-8 s in the game), in both loops; 8.0 s for each turn of the fight. Both are estimates until the client run measures them. The game enforces the turn as the least time between two actions (`LineRules.TurnSeconds`, the first action free), so fast clicking cannot beat the pace the XP multipliers assume.
 - XP cohort (gate 6): fish-level bands 0-10, 11-20, 21-30, 31-40 and 41-52; the angler's rank equals the fish's level (at most 50) with the best rod tier that rank allows; every (rod, bait) table of every location that rod reaches counts equally, half by day and half by night, so both loops draw the same fish. XP is per bite.
 - Tolerance: the adaptive player's catch rate is near today's when it sits within 10 points of the corridor.
-- XP: paid at the bite, caught or not, as today. Its size is today's XP for the fish against the rank, times a multiplier by the fish's level band, as the game server applies it (`CraftMinigameXp`): 0-10 7.4x, 11-20 7.25x, 21-30 7x, 31-40 6.95x, 41-52 6.75x. Each is the least multiple of 0.05 that keeps gate 6 passing in its band at this report's runs and seed; 1.0 in every band restores today's XP per bite.
+- XP: today's XP for the fish against the rank is paid at the bite, caught or not, as today; the rest of the multiplied XP is paid when the fight ends on its own (landed, snapped or escaped), never for a fight the angler abandons, so skipping the fight earns no more than today. The multiplied XP is today's times a multiplier by the fish's level band, as the game server applies it (`CraftMinigameXp`): 0-10 7.4x, 11-20 7.25x, 21-30 7x, 31-40 6.95x, 41-52 6.75x. Each is the least multiple of 0.05 that keeps gate 6 passing in its band at this report's runs and seed; 1.0 in every band restores today's XP per bite.
 - Rod tiers: Bamboo, Carbon and Clothespole 0; Composite, Ebisu and Fastwater 10; Glass Fiber, Halcyon and Judge 20; Maze Monger, Willow and Yew 30; Butterfly, Tranquility and LuShang 40.
 - Named starting values of the fight (`LineRules`), all tunable:
   - `StartTension` = 0
@@ -48,6 +48,7 @@
   - `TireWeightAtRung0` = 45
   - `TireWeightPerRung` = 0.45
   - `TireWeightMinimum` = 2
+  - `TurnSeconds` = 8
   - `XpMultiplierLevels0To10` = 7.4
   - `XpMultiplierLevels11To20` = 7.25
   - `XpMultiplierLevels21To30` = 7
@@ -211,6 +212,6 @@
 - The game places the six special fish at a random location and bait on every server start. The study fixes one placement (`FishingCatchModel.SpecialPlacementSeed` = 1) so the report can be reproduced; another placement moves the top band's mix and the pooled rows a little.
 - The fight has no hidden chance, so a very easy fish is landed every time by a skilled player, where today's chance stops at 95%.
 - The pooled table averages every pool a rod can reach with equal weight, as the legacy baseline does, and ignores the 80% chance of no bite when only the default fish is on offer. Fish per hour is not modelled: location choice, bait supply and respawn are outside the study.
-- Gate 6 weighs the time a fight adds (8.0 s a turn is unmeasured) against the XP multiplier, so the multipliers are starting values: they shrink or grow with the real seconds per turn, and a fight that turns out shorter than modelled would pay more than today's XP per hour.
+- Gate 6 weighs the time a fight adds (8.0 s a turn is unmeasured) against the XP multiplier, so the multipliers are starting values: they shrink or grow with the real seconds per turn. The game keeps the pace from below: the first action is free and each later one waits the turn, so the fastest possible player finishes a fight of n actions in n - 1 turns, about a quarter faster than the model at the fight lengths measured here (4 to 6 actions), and a slower player earns less than today per hour.
 - The multiplier raises the XP of a bite about sevenfold, because the fight takes several times as long as the cast it follows; the catch rate per bite stays near today's, so fish per hour falls by the same factor. Gate 6 asks for it; it is flagged here for the owner.
 - Perks, food and status effects are not modelled except where an evidence table names a perk. The client was not run.

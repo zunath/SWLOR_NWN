@@ -24,6 +24,12 @@ namespace SWLOR.Game.Server.Service.FishingService
         /// <summary>Checks the angler now and loses the fish if they moved, entered combat, died or closed the window. Returns true while the fight can go on.</summary>
         public static bool Revalidate(FishingFight fight) => Lifecycle.Revalidate(fight);
 
+        /// <summary>The seconds the angler must wait before their next action may resolve; 0 when it may now.</summary>
+        public static double SecondsUntilNextTurn(FishingFight fight) => Lifecycle.SecondsUntilNextTurn(fight);
+
+        /// <summary>Starts the wait for the next action, once an action has resolved.</summary>
+        public static void TurnTaken(FishingFight fight) => Lifecycle.TurnTaken(fight);
+
         /// <summary>
         /// An angler who dies loses the fish at once. The poll cannot be trusted to see it: a death that is subdued revives the angler
         /// before the next check.

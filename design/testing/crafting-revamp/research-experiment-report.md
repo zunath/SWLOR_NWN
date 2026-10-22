@@ -13,7 +13,7 @@ Command: `SWLOR.CraftSim research --runs 400 --adaptive-runs 40 --seed 1 --out d
 
 ## Length
 
-Target: 5-8 actions (research experiment). Actions are the player's turns: Tests, Analyzes and Refine Methods (Conclude would only shorten it). Research level 1 stands for the fixed levels and 3 for the random levels (3, 5 and 8).
+Target: 5-8 actions (research experiment). Actions are the player's turns: Tests, Analyzes and Refine Methods (Conclude would only shorten it). Research level 1 stands for the fixed levels and 3 for the random levels (3, 5 and 8), which are played both as a reduction decided by evidence and with licensed runs rolled (a fixed-style experiment).
 
 | Level kind | Tier | Rank | Gear | CP | Focused: mean actions | Focused: Refines | Adaptive: mean actions | Verdict |
 | --- | --- | --- | --- | --- | --- | --- | --- | --- |
@@ -38,52 +38,57 @@ Target: 5-8 actions (research experiment). Actions are the player's turns: Tests
 | Fixed (1) | 3 | 50 | no gear | 37 | 7.0 | 1.00 | 7.0 | Passed |
 | Fixed (1) | 3 | 50 | mid gear | 63 | 8.0 | 2.00 | 7.0 | Passed |
 | Fixed (1) | 3 | 50 | best gear | 74 | 8.0 | 2.00 | 7.0 | Passed |
-| Random (3) | 1 | 10 | no gear | 7 | 6.0 | 0.00 | 6.0 | Passed |
-| Random (3) | 1 | 10 | mid gear | 33 | 7.0 | 1.00 | 7.0 | Passed |
-| Random (3) | 1 | 10 | best gear | 44 | 7.0 | 1.00 | 7.0 | Passed |
-| Random (3) | 2 | 20 | no gear | 15 | 6.0 | 0.00 | 6.0 | Passed |
-| Random (3) | 2 | 20 | mid gear | 41 | 7.0 | 1.00 | 7.0 | Passed |
-| Random (3) | 2 | 20 | best gear | 52 | 7.0 | 1.00 | 7.0 | Passed |
-| Random (3) | 3 | 30 | no gear | 22 | 6.0 | 0.00 | 6.0 | Passed |
-| Random (3) | 3 | 30 | mid gear | 48 | 7.0 | 1.00 | 7.0 | Passed |
-| Random (3) | 3 | 30 | best gear | 59 | 7.0 | 1.00 | 7.0 | Passed |
-| Random (3) | 4 | 40 | no gear | 30 | 7.0 | 1.00 | 7.0 | Passed |
-| Random (3) | 4 | 40 | mid gear | 56 | 7.0 | 1.00 | 7.0 | Passed |
-| Random (3) | 4 | 40 | best gear | 67 | 8.0 | 2.00 | 7.0 | Passed |
-| Random (3) | 5 | 50 | no gear | 37 | 7.0 | 1.00 | 7.0 | Passed |
-| Random (3) | 5 | 50 | mid gear | 63 | 8.0 | 2.00 | 7.0 | Passed |
-| Random (3) | 5 | 50 | best gear | 74 | 8.0 | 2.00 | 7.0 | Passed |
-| Random (3) | 1 | 50 | no gear | 37 | 7.0 | 1.00 | 7.0 | Passed |
-| Random (3) | 1 | 50 | mid gear | 63 | 8.0 | 2.00 | 7.0 | Passed |
-| Random (3) | 1 | 50 | best gear | 74 | 8.0 | 2.00 | 7.0 | Passed |
-| Random (3) | 3 | 50 | no gear | 37 | 7.0 | 1.00 | 7.0 | Passed |
-| Random (3) | 3 | 50 | mid gear | 63 | 8.0 | 2.00 | 7.0 | Passed |
-| Random (3) | 3 | 50 | best gear | 74 | 8.0 | 2.00 | 7.0 | Passed |
+| Random (3), reductions | 1 | 10 | no gear | 7 | 6.0 | 0.00 | 6.0 | Passed |
+| Random (3), reductions | 1 | 10 | mid gear | 33 | 7.0 | 1.00 | 7.0 | Passed |
+| Random (3), reductions | 1 | 10 | best gear | 44 | 7.0 | 1.00 | 7.0 | Passed |
+| Random (3), reductions | 2 | 20 | no gear | 15 | 6.0 | 0.00 | 6.0 | Passed |
+| Random (3), reductions | 2 | 20 | mid gear | 41 | 7.0 | 1.00 | 7.0 | Passed |
+| Random (3), reductions | 2 | 20 | best gear | 52 | 7.0 | 1.00 | 7.0 | Passed |
+| Random (3), reductions | 3 | 30 | no gear | 22 | 6.0 | 0.00 | 6.0 | Passed |
+| Random (3), reductions | 3 | 30 | mid gear | 48 | 7.0 | 1.00 | 7.0 | Passed |
+| Random (3), reductions | 3 | 30 | best gear | 59 | 7.0 | 1.00 | 7.0 | Passed |
+| Random (3), reductions | 4 | 40 | no gear | 30 | 7.0 | 1.00 | 7.0 | Passed |
+| Random (3), reductions | 4 | 40 | mid gear | 56 | 7.0 | 1.00 | 7.0 | Passed |
+| Random (3), reductions | 4 | 40 | best gear | 67 | 8.0 | 2.00 | 7.0 | Passed |
+| Random (3), reductions | 5 | 50 | no gear | 37 | 7.0 | 1.00 | 7.0 | Passed |
+| Random (3), reductions | 5 | 50 | mid gear | 63 | 8.0 | 2.00 | 7.0 | Passed |
+| Random (3), reductions | 5 | 50 | best gear | 74 | 8.0 | 2.00 | 7.0 | Passed |
+| Random (3), reductions | 1 | 50 | no gear | 37 | 7.0 | 1.00 | 7.0 | Passed |
+| Random (3), reductions | 1 | 50 | mid gear | 63 | 8.0 | 2.00 | 7.0 | Passed |
+| Random (3), reductions | 1 | 50 | best gear | 74 | 8.0 | 2.00 | 7.0 | Passed |
+| Random (3), reductions | 3 | 50 | no gear | 37 | 7.0 | 1.00 | 7.0 | Passed |
+| Random (3), reductions | 3 | 50 | mid gear | 63 | 8.0 | 2.00 | 7.0 | Passed |
+| Random (3), reductions | 3 | 50 | best gear | 74 | 8.0 | 2.00 | 7.0 | Passed |
+| Random (3), runs rolled | 1 | 10 | no gear | 7 | 6.0 | 0.00 | 6.0 | Passed |
+| Random (3), runs rolled | 1 | 10 | mid gear | 33 | 7.0 | 1.00 | 7.0 | Passed |
+| Random (3), runs rolled | 1 | 10 | best gear | 44 | 7.0 | 1.00 | 7.0 | Passed |
+| Random (3), runs rolled | 2 | 20 | no gear | 15 | 6.0 | 0.00 | 6.0 | Passed |
+| Random (3), runs rolled | 2 | 20 | mid gear | 41 | 7.0 | 1.00 | 7.0 | Passed |
+| Random (3), runs rolled | 2 | 20 | best gear | 52 | 7.0 | 1.00 | 7.0 | Passed |
+| Random (3), runs rolled | 3 | 30 | no gear | 22 | 6.0 | 0.00 | 6.0 | Passed |
+| Random (3), runs rolled | 3 | 30 | mid gear | 48 | 7.0 | 1.00 | 7.0 | Passed |
+| Random (3), runs rolled | 3 | 30 | best gear | 59 | 7.0 | 1.00 | 7.0 | Passed |
+| Random (3), runs rolled | 4 | 40 | no gear | 30 | 7.0 | 1.00 | 7.0 | Passed |
+| Random (3), runs rolled | 4 | 40 | mid gear | 56 | 7.0 | 1.00 | 7.0 | Passed |
+| Random (3), runs rolled | 4 | 40 | best gear | 67 | 8.0 | 2.00 | 7.0 | Passed |
+| Random (3), runs rolled | 5 | 50 | no gear | 37 | 7.0 | 1.00 | 7.0 | Passed |
+| Random (3), runs rolled | 5 | 50 | mid gear | 63 | 8.0 | 2.00 | 7.0 | Passed |
+| Random (3), runs rolled | 5 | 50 | best gear | 74 | 8.0 | 2.00 | 7.0 | Passed |
+| Random (3), runs rolled | 1 | 50 | no gear | 37 | 7.0 | 1.00 | 7.0 | Passed |
+| Random (3), runs rolled | 1 | 50 | mid gear | 63 | 8.0 | 2.00 | 7.0 | Passed |
+| Random (3), runs rolled | 1 | 50 | best gear | 74 | 8.0 | 2.00 | 7.0 | Passed |
+| Random (3), runs rolled | 3 | 50 | no gear | 37 | 7.0 | 1.00 | 7.0 | Passed |
+| Random (3), runs rolled | 3 | 50 | mid gear | 63 | 8.0 | 2.00 | 7.0 | Passed |
+| Random (3), runs rolled | 3 | 50 | best gear | 74 | 8.0 | 2.00 | 7.0 | Passed |
 
 Verdict: every case takes 5-8 actions (research experiment) for both players.
 
-## Bonus size against today's dice (random levels 3, 5 and 8)
+## Reduction size against today's dice (random levels 3, 5 and 8)
 
-Today a random level rolls one of three bonuses by weight 300:400:400 and then its die. The Experiment lets the player choose the candidate and sizes it by evidence, never above today's dice maximum. "Mean size" counts an experiment with no evidence as 0 (it falls back to today's roll); "Mean size with evidence" leaves those out.
+Owner decision (October 2026): licensed runs stay random. When the experiment opens, the level rolls whether it grants licensed runs at today's weight (300 of 1100, or 310 of 1150 with an enhancement slot) and today's d3; the experiment then earns only the time cut, XP and the extra-bonus chance. Otherwise the level grants a reduction and evidence decides between credit reduction and time reduction and sizes the winner, never above today's d10. "Mean size" counts an experiment with no evidence as 0 (it falls back to today's roll between the two); "Mean size with evidence" leaves those out.
 
 | Candidate | Tier | Rank | Gear | Refine | Test chance | Mean evidence | No evidence | Mean size | Mean size with evidence | Today: dice average | Experiment / dice average | Reaches the maximum |
 | --- | --- | --- | --- | --- | --- | --- | --- | --- | --- | --- | --- | --- |
-| Licensed Runs | 1 | 10 | no gear | yes | 60% | 3.60 | 0.2% | 2.06 | 2.07 | 2.0 | 1.03x | 22% |
-| Licensed Runs | 1 | 10 | no gear | no | 60% | 3.60 | 0.2% | 2.06 | 2.07 | 2.0 | 1.03x | 22% |
-| Licensed Runs | 1 | 10 | mid gear | yes | 60% | 3.73 | 0.2% | 2.12 | 2.13 | 2.0 | 1.06x | 28% |
-| Licensed Runs | 1 | 10 | best gear | yes | 60% | 3.70 | 0.2% | 2.09 | 2.10 | 2.0 | 1.05x | 24% |
-| Licensed Runs | 3 | 30 | no gear | yes | 60% | 3.57 | 0.8% | 2.06 | 2.08 | 2.0 | 1.04x | 24% |
-| Licensed Runs | 3 | 30 | no gear | no | 60% | 3.57 | 0.8% | 2.06 | 2.08 | 2.0 | 1.04x | 24% |
-| Licensed Runs | 3 | 30 | mid gear | yes | 60% | 3.73 | 0.2% | 2.11 | 2.12 | 2.0 | 1.06x | 28% |
-| Licensed Runs | 3 | 30 | best gear | yes | 60% | 3.69 | 0.0% | 2.09 | 2.09 | 2.0 | 1.05x | 26% |
-| Licensed Runs | 5 | 50 | no gear | yes | 60% | 3.85 | 0.5% | 2.18 | 2.19 | 2.0 | 1.10x | 35% |
-| Licensed Runs | 5 | 50 | no gear | no | 60% | 3.69 | 1.0% | 2.10 | 2.12 | 2.0 | 1.06x | 30% |
-| Licensed Runs | 5 | 50 | mid gear | yes | 60% | 3.82 | 0.0% | 2.16 | 2.16 | 2.0 | 1.08x | 27% |
-| Licensed Runs | 5 | 50 | best gear | yes | 60% | 3.89 | 0.2% | 2.20 | 2.21 | 2.0 | 1.10x | 31% |
-| Licensed Runs | 1 | 50 | no gear | yes | 75% | 4.64 | 0.0% | 2.54 | 2.54 | 2.0 | 1.27x | 57% |
-| Licensed Runs | 1 | 50 | no gear | no | 75% | 4.47 | 0.0% | 2.46 | 2.46 | 2.0 | 1.23x | 50% |
-| Licensed Runs | 1 | 50 | mid gear | yes | 75% | 4.75 | 0.0% | 2.60 | 2.60 | 2.0 | 1.30x | 62% |
-| Licensed Runs | 1 | 50 | best gear | yes | 75% | 4.83 | 0.0% | 2.65 | 2.65 | 2.0 | 1.33x | 66% |
 | Credit Reduction | 1 | 10 | no gear | yes | 60% | 3.60 | 0.2% | 5.65 | 5.66 | 5.5 | 1.03x | 3% |
 | Credit Reduction | 1 | 10 | no gear | no | 60% | 3.60 | 0.2% | 5.65 | 5.66 | 5.5 | 1.03x | 3% |
 | Credit Reduction | 1 | 10 | mid gear | yes | 60% | 3.73 | 0.2% | 5.86 | 5.87 | 5.5 | 1.07x | 5% |
@@ -119,15 +124,15 @@ Today a random level rolls one of three bonuses by weight 300:400:400 and then i
 
 ### Expected supply per random level
 
-Today one random level adds, on average, the weighted mix below. Under the Experiment the player picks the bonus, so a player who always wants one kind gets that kind's size every time and none of the others. The columns give each choice's mean size across the focused cases above (with Refine Method, evidence gathered) and the change against today's expected amount of that kind per random level.
+Today one random level adds, on average, the weighted mix below. Under the Experiment the licensed runs are still rolled (same odds, same d3), so their supply is exactly today's. The rest of the time the level grants a reduction, and the player picks the kind with their evidence: a player who always wants one kind gets that kind's size whenever the level is a reduction, and none of the other kind. The "Experiment" column is the chance the level is a reduction times that kind's mean size across the focused cases above (with Refine Method, evidence gathered).
 
-| If the player always chooses | Today: expected per random level | Experiment: mean size across the cases above | Change in that kind's supply | Dice maximum |
+| Kind | Today: expected per random level | Experiment: expected per random level | Change in that kind's supply | Dice maximum |
 | --- | --- | --- | --- | --- |
-| Licensed Runs | 0.55 runs | 2.24 runs | 4.1x (+311%) | 3 runs |
-| Credit Reduction | 2.00% | 6.31% | 3.2x (+216%) | 10% |
-| Time Reduction | 2.00% | 6.31% | 3.2x (+216%) | 10% |
+| Licensed Runs (rolled) | 0.545 runs | 0.545 runs | 1.0x (unchanged) | 3 runs |
+| Credit Reduction (if always chosen) | 2.00% | 4.59% | 2.3x (+130%) | 10% |
+| Time Reduction (if always chosen) | 2.00% | 4.59% | 2.3x (+130%) | 10% |
 
-The power ceiling is unchanged: one bonus per random level and never above the dice maximum. What changes is that the bonus is chosen and averages about the same as the die of the chosen kind, instead of being a one-in-three draw. Total supply across the three kinds rises when everyone picks the kind they value most, and falls back toward today's if the player mixes kinds across levels 3, 5 and 8.
+Licensed runs: today a random level rolls runs 27.3% of the time for 1-3 (mean 2), so 0.545 runs per random level on average; the Experiment rolls the same chance and die when it opens, so the expected licensed runs per blueprint are identical (a test enumerates every roll of both). The power ceiling is unchanged for every kind: one bonus per random level and never above the dice maximum. The reduction supply rises because the player chooses the kind and the evidence sizes it near the die's average instead of a one-in-two draw; it falls back toward today's if the player mixes kinds across levels 3, 5 and 8.
 
 ## Time cut (fixed levels)
 

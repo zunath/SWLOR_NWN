@@ -96,7 +96,8 @@ namespace SWLOR.CraftSim.Tests.Scenario
                     writer,
                     new ScenarioRegistry(new ICraftScenario[] { new ExperimentScenario() }),
                     SharedData.Recipes,
-                    SharedData.Gear);
+                    SharedData.Gear,
+                    SharedData.Enhancements);
 
                 code.Should().Be(0);
                 writer.ToString().Should().Contain("Length: Passed");
@@ -166,7 +167,7 @@ namespace SWLOR.CraftSim.Tests.Scenario
         [Test]
         public void ABaseResearcherWithAFocusedPlanAveragesAboutTodaysDiceForTheChosenBonus()
         {
-            foreach (var candidate in new[] { ResearchCandidate.LicensedRuns, ResearchCandidate.CreditReduction, ResearchCandidate.TimeReduction })
+            foreach (var candidate in new[] { ResearchCandidate.CreditReduction, ResearchCandidate.TimeReduction })
             {
                 var sample = ExperimentStudy.Play(
                     new ExperimentCase(3, 1, 10, None), () => new ExperimentFocusedPolicy(candidate), candidate, 4000, 5);
@@ -178,7 +179,7 @@ namespace SWLOR.CraftSim.Tests.Scenario
         [Test]
         public void NoOutcomeEverExceedsTodaysDiceMaximum()
         {
-            foreach (var candidate in new[] { ResearchCandidate.LicensedRuns, ResearchCandidate.CreditReduction, ResearchCandidate.TimeReduction })
+            foreach (var candidate in new[] { ResearchCandidate.CreditReduction, ResearchCandidate.TimeReduction })
             {
                 var sample = ExperimentStudy.Play(
                     new ExperimentCase(5, 1, 50, Best), () => new ExperimentFocusedPolicy(candidate), candidate, 500, 5);
@@ -276,7 +277,7 @@ namespace SWLOR.CraftSim.Tests.Scenario
                 var report = File.ReadAllText(path);
                 report.Should().Contain("# Crafting revamp: the research Experiment");
                 report.Should().Contain("Seed 4; 30 experiments per case");
-                report.Should().Contain("## Length").And.Contain("## Bonus size against today's dice").And.Contain("### Expected supply per random level");
+                report.Should().Contain("## Length").And.Contain("## Reduction size against today's dice").And.Contain("### Expected supply per random level");
                 report.Should().Contain("## Time cut (fixed levels)").And.Contain("## Fabrication XP per real hour").And.Contain("## Limitations");
                 report.Should().Contain("Verdict: every case takes 5-8 actions");
                 report.Should().MatchRegex("^[\\x20-\\x7E\\r\\n]*$");

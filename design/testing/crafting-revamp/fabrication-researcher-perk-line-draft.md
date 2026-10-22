@@ -34,7 +34,7 @@ The line rewards a researcher who plans the experiment: how many trials, how rel
 | 15 | 2 | Broader Hypotheses | trait | The experiment has 1 more trial (6 becomes 7). | `ExperimentTrials` +1 |
 | 20 | 2 | Methodical | style | The experiment has 2 more trials and every Test has 10 fewer points of chance. Cannot be owned with Intuitive. | `ExperimentTrials` +2, `ExperimentTestChancePercent` -10 (both carried by the perk) |
 | 20 | 2 | Intuitive | style | Every Test has 15 more points of chance and the experiment has 2 fewer trials. Cannot be owned with Methodical. | `ExperimentTestChancePercent` +15, `ExperimentTrials` -2 (both carried by the perk) |
-| 25 | 3 | Peer Review | active | A new action that costs 25 CP and no trial, once per experiment: it moves half of one candidate's evidence (rounded up) to another candidate you name. It does nothing at a fixed level, which has one candidate. | `ExperimentPeerReviewUnlocked` (flag) |
+| 25 | 3 | Peer Review | active | A new action that costs 25 CP and no trial, once per experiment: it moves half of one candidate's evidence (rounded up) to the other. It does nothing unless evidence decides between credit reduction and time reduction (levels 3, 5 and 8 when licensed runs were not rolled), because every other experiment has one candidate. | `ExperimentPeerReviewUnlocked` (flag) |
 | 30 | 3 | Efficient Analysis I | trait | Analyze cuts 1 more percent of the job's time for each piece of spare evidence (5% becomes 6%). The 25% cap stays. | `ExperimentTimeCutPerEvidencePercent` +1 |
 | 35 | 3 | Second Opinion | trait | Refine Method raises the next Test by 5 more points (15 becomes 20). | `ExperimentRefineChancePercent` +5 |
 | 40 | 3 | Field Notes II | trait | Every Test has 6 more points of chance in total (this rank replaces Field Notes I's 3). | `ExperimentTestChancePercent` +6 |
@@ -47,7 +47,7 @@ Decisions the line creates:
 
 - Methodical against Intuitive (the plan's pair): more trials mean more evidence and more room for Refine Method, but a longer experiment and a lower chance per Test; fewer, surer Tests give a shorter experiment. See the balance notes: the plan's numbers do not make these equal.
 - Steady Hands and Second Opinion against Efficient Analysis: Refine Method (CP and a better next Test) against turning leftover evidence into a shorter job.
-- Peer Review at a random level: spread evidence while undecided, then pool it into the candidate you commit to. Evidence behind the leader can also be analyzed instead, so Peer Review is the choice to keep it as bonus size.
+- Peer Review where credit and time reduction compete: spread evidence while undecided, then pool it into the reduction you commit to. Evidence behind the leader can also be analyzed instead, so Peer Review is the choice to keep it as bonus size.
 - Breakthrough: a guaranteed Test is worth most late, when the leader is one piece short of the next size, or early at a fixed level to bank a piece of evidence before Analyze.
 
 ## Interactions and limits
@@ -76,7 +76,7 @@ Names only; the IDs are reserved against current master and the HAK when the own
 
 - A builder that sums the seven stats into an `ExperimentTuning`, plus two optional flags on `ExperimentSetup`.
 - Two actions (`peer_review`, `breakthrough`) with their previews, and the state they need: a Peer Review used flag, a Breakthrough armed-or-used flag and a time-cut multiplier. All of it lives in `ExperimentState`.
-- Peer Review needs a source and a target: at three candidates that is six pairs. The window can show one button per candidate pair only when Peer Review is owned and the level is random, or use the leader as the source and offer two buttons for the target (proposed in the open questions).
+- Peer Review needs a source and a target; with two candidates that is two directions, so the window shows two buttons (credit to time, time to credit) only when Peer Review is owned and evidence decides between the reductions.
 - A job's stored record keeps the trials it was opened with (`TrialsTotal`), so a perk change between sittings cannot change a saved experiment.
 - Unit tests for each stat at each rank, style exclusivity, the 95% and 25% caps with every perk owned, Peer Review's rounding and Breakthrough's once-per-experiment limit.
 
@@ -101,5 +101,5 @@ Expected evidence is trials times Test chance, before Refine Method (one Refine 
 1. **Breakthrough's "winner's time cut".** The plan says the winner's time cut doubles. An experiment has one time cut (Analyze's, on the job), not one per candidate, and doubling the Time Reduction bonus would pass today's 10% dice maximum. This draft doubles what each piece of spare evidence cuts for the rest of the experiment, inside the 25% cap. If you mean that the cap itself doubles to 50%, or that a winning Time Reduction doubles, say so; both raise the plan's power ceiling.
 2. **Style balance.** The plan's Methodical and Intuitive numbers, or the proposed alternative above?
 3. **Length per style.** Does the 5-8 turn target apply to an experiment with a style, or only to an unperked one?
-4. **Peer Review's targeting.** A source and a target are two choices in a window with no prompt. Proposed: the source is always the leader (the candidate with the most evidence, ties to the lowest in the list), and the player picks the target with one of two buttons. Or six pair buttons, shown only when Peer Review is owned at a random level.
+4. **Peer Review's targeting.** Owner decision October 2026: licensed runs are rolled when the experiment opens, so evidence decides between only two reductions. Peer Review is then two buttons (move from credit reduction to time reduction, or the reverse). It has no use at the other levels.
 5. **Breakthrough as an action.** It is drafted as a free action the player chooses to spend, which makes the guaranteed Test a decision. As a trait it would instead turn the first inconclusive Test of the experiment into a success.

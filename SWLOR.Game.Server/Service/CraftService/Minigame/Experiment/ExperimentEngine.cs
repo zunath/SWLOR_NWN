@@ -8,8 +8,9 @@ namespace SWLOR.Game.Server.Service.CraftService.Minigame.Experiment;
 /// <summary>
 /// The Experiment: the short run of trials every research level now starts with. Test gathers evidence toward a candidate with its
 /// chance shown, Refine Method spends Fabrication CP to raise the next Test's chance, and Analyze spends spare evidence to cut the
-/// job's time. A random level (3, 5 and 8) has three candidates and the best-evidenced one wins; a fixed level has one, and all its
-/// evidence is spare. The experiment ends when the trials run out or the player concludes, and it cannot fail, so the engine reports
+/// job's time. A random level (3, 5 and 8) that grants a reduction has two candidates, credit reduction and time reduction, and the
+/// best-evidenced one wins; a fixed level, and a random level that rolled licensed runs when it opened, has one, and all its evidence
+/// is spare. The experiment ends when the trials run out or the player concludes, and it cannot fail, so the engine reports
 /// <see cref="MinigameStatus.Succeeded"/> for both and never <see cref="MinigameStatus.Failed"/>. Progress is the trials used, so a
 /// Test or an Analyze is a turn that costs a trial and Refine Method and Conclude are free of one. Nothing is left to chance but the
 /// Test itself, whose chance every preview shows.
@@ -91,7 +92,7 @@ public sealed class ExperimentEngine : MinigameEngineBase<ExperimentState>
                 if (SpareOf(state) <= 0)
                 {
                     return MinigameActionRule<ExperimentState>.Disabled(
-                        info, 0, 0, _setup.IsRandomLevel ? "No spare evidence: only evidence behind the leader can be analyzed." : "Run a Test first: there is no evidence to analyze.");
+                        info, 0, 0, _setup.IsContested ? "No spare evidence: only evidence behind the leader can be analyzed." : "Run a Test first: there is no evidence to analyze.");
                 }
 
                 if (state.TimeCutPercent >= _setup.TimeCutCap)
@@ -174,7 +175,7 @@ public sealed class ExperimentEngine : MinigameEngineBase<ExperimentState>
         var best = state.LeadingEvidence;
         for (var index = 0; index < evidence.Length; index++)
         {
-            if (!_setup.IsRandomLevel || evidence[index] < best)
+            if (!_setup.IsContested || evidence[index] < best)
                 evidence = evidence.SetItem(index, 0);
         }
 
@@ -207,7 +208,7 @@ public sealed class ExperimentEngine : MinigameEngineBase<ExperimentState>
 
     private int SpareOf(ExperimentState state)
     {
-        if (!_setup.IsRandomLevel)
+        if (!_setup.IsContested)
             return state.TotalEvidence;
 
         var best = state.LeadingEvidence;
@@ -229,7 +230,7 @@ public sealed class ExperimentEngine : MinigameEngineBase<ExperimentState>
         var actions = new List<MinigameActionInfo>();
         foreach (var candidate in setup.Candidates)
         {
-            actions.Add(setup.IsRandomLevel
+            actions.Add(setup.IsContested
                 ? new MinigameActionInfo(
                     ExperimentActionIds.TestFor(candidate),
                     $"Test: {setup.NameOf(candidate)}",
@@ -247,7 +248,7 @@ public sealed class ExperimentEngine : MinigameEngineBase<ExperimentState>
         actions.Add(new MinigameActionInfo(
             ExperimentActionIds.Analyze,
             "Analyze",
-            setup.IsRandomLevel
+            setup.IsContested
                 ? "Spend the evidence on candidates behind the leader to cut the job's time. The leaders keep theirs. Uses one trial."
                 : "Spend your evidence to cut the job's time. Uses one trial."));
         actions.Add(new MinigameActionInfo(

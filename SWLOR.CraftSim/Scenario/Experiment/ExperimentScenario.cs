@@ -46,7 +46,7 @@ namespace SWLOR.CraftSim.Scenario.Experiment
         public IReadOnlyList<string> Limitations => new[]
         {
             "The experiment has no quality, styles or perks yet, so gates 1, 2, 3 and 5 do not apply and gate 6 has no legacy loop to compare with; run `--gates length`.",
-            "Each recipe is played at one research level, chosen from its identity so the sample covers all ten; the length of a fixed level and of a random level differ only by the extra Test actions.",
+            "Each recipe is played at one research level, chosen from its identity so the sample covers all ten. A random level is played in its two-candidate form (credit and time reduction); when licensed runs are rolled it plays like a fixed level.",
             "The adaptive player values evidence (the leader's plus what Analyze spent) and ignores the time cut and the bonus size, so it is a floor on how long a skilled player stays in the experiment, not a model of what players choose."
         };
 

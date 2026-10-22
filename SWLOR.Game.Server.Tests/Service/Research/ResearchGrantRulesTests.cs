@@ -28,13 +28,15 @@ public class ResearchGrantRulesTests
         int targetLevel,
         ResearchCandidate winner = ResearchCandidate.FixedGrant,
         int magnitude = 0,
-        bool extraBonus = false) => new()
+        bool extraBonus = false,
+        int licensedRunsGrant = 0) => new()
     {
         Status = ResearchExperimentStatus.Settled,
         TargetLevel = targetLevel,
         Winner = winner,
         Magnitude = magnitude,
-        ExtraBonus = extraBonus
+        ExtraBonus = extraBonus,
+        LicensedRunsGrant = licensedRunsGrant
     };
 
     private static (ResearchCompletion Completion, List<int> Bonuses) Complete(
@@ -113,7 +115,6 @@ public class ResearchGrantRulesTests
         completion.ExtraBonusTier.Should().Be(1);
     }
 
-    [TestCase(ResearchCandidate.LicensedRuns, 3, 3, 0, 0)]
     [TestCase(ResearchCandidate.CreditReduction, 6, 0, 6, 0)]
     [TestCase(ResearchCandidate.TimeReduction, 10, 0, 0, 10)]
     public void ARandomLevelGrantsExactlyTheStoredWinnerAndMagnitudeWithoutRolling(
@@ -139,18 +140,54 @@ public class ResearchGrantRulesTests
         }
     }
 
+    [TestCase(1, 3)]
+    [TestCase(2, 3)]
+    [TestCase(3, 5)]
+    [TestCase(2, 8)]
+    public void ARandomLevelThatRolledLicensedRunsGrantsExactlyThoseRunsWithoutRolling(int runs, int level)
+    {
+        var blueprint = BlueprintAtLevel(level - 1);
+        blueprint.LicensedRuns = 4;
+
+        var (completion, bonuses) = Complete(blueprint, Settled(level, ResearchCandidate.FixedGrant, 0, false, runs));
+
+        blueprint.LicensedRuns.Should().Be(4 + runs);
+        blueprint.CreditReduction.Should().Be(0);
+        blueprint.TimeReduction.Should().Be(0);
+        completion.Candidate.Should().Be(ResearchCandidate.LicensedRuns);
+        completion.Amount.Should().Be(runs);
+        completion.FromExperiment.Should().BeTrue();
+        bonuses.Should().BeEmpty();
+    }
+
     [Test]
-    public void ARandomLevelWithNoEvidenceFallsBackToTodaysWeightedRollAndDice()
+    public void ARandomLevelThatRolledLicensedRunsStillGrantsItsStoredExtraBonus()
+    {
+        var blueprint = BlueprintAtLevel(4);
+
+        var (completion, bonuses) = Complete(blueprint, Settled(5, ResearchCandidate.FixedGrant, 0, true, 3));
+
+        blueprint.LicensedRuns.Should().Be(3);
+        bonuses.Should().Equal(1);
+        completion.ExtraBonusTier.Should().Be(1);
+    }
+
+    [TestCase(0, ResearchCandidate.CreditReduction)]
+    [TestCase(399, ResearchCandidate.CreditReduction)]
+    [TestCase(400, ResearchCandidate.TimeReduction)]
+    [TestCase(799, ResearchCandidate.TimeReduction)]
+    public void ARandomLevelWithNoEvidenceFallsBackToTodaysRollBetweenTheTwoReductionsAndTheD10(int roll, ResearchCandidate expected)
     {
         var blueprint = BlueprintAtLevel(2);
 
-        // A weighted roll of 300 is credit reduction, and the die rolls 7.
-        var (completion, _) = Complete(blueprint, Settled(3, ResearchCandidate.None, extraBonus: false), 300, 7);
+        var (completion, _) = Complete(blueprint, Settled(3, ResearchCandidate.None, extraBonus: false), roll, 7);
 
-        blueprint.CreditReduction.Should().Be(7);
-        completion.Candidate.Should().Be(ResearchCandidate.CreditReduction);
+        blueprint.CreditReduction.Should().Be(expected == ResearchCandidate.CreditReduction ? 7 : 0);
+        blueprint.TimeReduction.Should().Be(expected == ResearchCandidate.TimeReduction ? 7 : 0);
+        blueprint.LicensedRuns.Should().Be(0, "licensed runs were ruled out when the experiment opened");
+        completion.Candidate.Should().Be(expected);
         completion.Amount.Should().Be(7);
-        completion.FromExperiment.Should().BeFalse("today's roll decided the bonus");
+        completion.FromExperiment.Should().BeFalse("today's roll decided the reduction");
     }
 
     [Test]
@@ -160,9 +197,111 @@ public class ResearchGrantRulesTests
 
         var (completion, bonuses) = Complete(blueprint, Settled(5, ResearchCandidate.None, extraBonus: true), 0, 2);
 
-        blueprint.LicensedRuns.Should().Be(2);
+        blueprint.CreditReduction.Should().Be(2);
         bonuses.Should().Equal(1);
         completion.ExtraBonusTier.Should().Be(1);
+    }
+
+    [TestCase(299, 2, 2)]
+    [TestCase(299, 1, 1)]
+    [TestCase(299, 3, 3)]
+    [TestCase(0, 3, 3)]
+    [TestCase(300, 2, 0)]
+    [TestCase(1099, 3, 0)]
+    public void ALicensedRunsGrantIsRolledAtTodaysWeightOf300In1100AndTheD3(int weightedRoll, int die, int expected)
+    {
+        var random = new ScriptedMinigameRandom(weightedRoll, die);
+
+        ResearchGrantRules.RollLicensedRunsGrant(3, false, random).Should().Be(expected);
+    }
+
+    [TestCase(309, 2, 2)]
+    [TestCase(310, 2, 0)]
+    [TestCase(1149, 3, 0)]
+    public void ABlueprintWithAnEnhancementSlotRollsLicensedRunsAtTodays310In1150(int weightedRoll, int die, int expected)
+    {
+        var random = new ScriptedMinigameRandom(weightedRoll, die);
+
+        ResearchGrantRules.RollLicensedRunsGrant(5, true, random).Should().Be(expected);
+    }
+
+    [Test]
+    public void OnlyARandomLevelRollsLicensedRunsAndAFixedLevelRollsNothing()
+    {
+        foreach (var level in new[] { 1, 2, 4, 6, 7, 9, 10 })
+            ResearchGrantRules.RollLicensedRunsGrant(level, false, new ScriptedMinigameRandom()).Should().Be(0, $"level {level}");
+    }
+
+    [TestCase(false)]
+    [TestCase(true)]
+    public void TheExpectedLicensedRunsPerRandomLevelEqualTodaysExactly(bool enhancementSlot)
+    {
+        var weights = enhancementSlot ? new[] { 310, 420, 420 } : new[] { 300, 400, 400 };
+        var total = weights.Sum();
+
+        double Expected(Func<IMinigameRandom, int> runsOf)
+        {
+            // Every weighted roll is equally likely, and the d3 is uniform: average the licensed runs over all of them.
+            double sum = 0;
+            for (var roll = 0; roll < total; roll++)
+            {
+                double perDie = 0;
+                for (var die = 1; die <= 3; die++)
+                    perDie += runsOf(new ScriptedMinigameRandom(roll, die, 5));
+
+                sum += perDie / 3;
+            }
+
+            return sum / total;
+        }
+
+        var today = Expected(random =>
+        {
+            var blueprint = BlueprintAtLevel(2, enhancementSlot ? 1 : 0);
+            var (candidate, amount) = ResearchGrantRules.RollRandomBonus(blueprint, random);
+            return candidate == ResearchCandidate.LicensedRuns ? amount : 0;
+        });
+        var experiment = Expected(random => ResearchGrantRules.RollLicensedRunsGrant(3, enhancementSlot, random));
+
+        experiment.Should().BeApproximately(today, 1e-12);
+        experiment.Should().BeApproximately(weights[0] * 2.0 / total, 1e-12);
+    }
+
+    [TestCase(false)]
+    [TestCase(true)]
+    public void ABlueprintsLicensedRunsFromRandomLevelsAreTheSameWithAnExperimentAsUnderTodaysRoll(bool enhancementSlot)
+    {
+        const int Blueprints = 120_000;
+        var legacyRandom = new SeededMinigameRandom(11);
+        var experimentRandom = new SeededMinigameRandom(12);
+        long legacyRuns = 0;
+        long experimentRuns = 0;
+        long experimentReductionPoints = 0;
+        foreach (var level in new[] { 3, 5, 8 })
+        {
+            for (var draw = 0; draw < Blueprints / 3; draw++)
+            {
+                var legacy = BlueprintAtLevel(level - 1, enhancementSlot ? 1 : 0);
+                ResearchGrantRules.Complete(legacy, null, legacyRandom, _ => { });
+                legacyRuns += legacy.LicensedRuns;
+
+                var grant = ResearchGrantRules.RollLicensedRunsGrant(level, enhancementSlot, experimentRandom);
+                var record = ResearchExperimentLifecycle.Open(level, 6, 3600, false, grant);
+                ResearchExperimentLifecycle.Settle(new ResearchJob { Experiment = record }, experimentRandom);
+                var blueprint = BlueprintAtLevel(level - 1, enhancementSlot ? 1 : 0);
+                ResearchGrantRules.Complete(blueprint, record, experimentRandom, _ => { });
+                experimentRuns += blueprint.LicensedRuns;
+                experimentReductionPoints += blueprint.CreditReduction + blueprint.TimeReduction;
+
+                if (grant > 0)
+                    (blueprint.CreditReduction + blueprint.TimeReduction).Should().Be(0, "a level that grants runs grants no reduction");
+                else
+                    blueprint.LicensedRuns.Should().Be(0, "a level that grants a reduction grants no runs");
+            }
+        }
+
+        (experimentRuns / (double)Blueprints).Should().BeApproximately(legacyRuns / (double)Blueprints, 0.02);
+        experimentReductionPoints.Should().BeGreaterThan(0);
     }
 
     [Test]

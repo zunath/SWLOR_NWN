@@ -7,14 +7,17 @@ using SWLOR.Game.Server.Service.CraftService.Research;
 
 namespace SWLOR.CraftSim.Scenario.Experiment
 {
-    /// <summary>One experiment to play: the research level, the researcher's Fabrication rank and gear, and the recipe's tier.</summary>
-    public sealed record ExperimentCase(int ResearchLevel, int Tier, int Rank, GearLevel Gear)
+    /// <summary>
+    /// One experiment to play: the research level, the researcher's Fabrication rank and gear, the recipe's tier, and at a random level
+    /// the licensed runs rolled when it opened (0 for the two-candidate form, where evidence decides between the reductions).
+    /// </summary>
+    public sealed record ExperimentCase(int ResearchLevel, int Tier, int Rank, GearLevel Gear, int LicensedRunsGrant = 0)
     {
         /// <summary>The lowest Fabrication rank that can research the tier.</summary>
         public int RequiredRank => CraftRankMilestones.RequiredFabricationRankForResearchTier(Tier);
 
         public ExperimentSetup CreateSetup(ExperimentTuning tuning = null) =>
-            new(ResearchLevel, Rank, RequiredRank, Gear.CpBonus, extraBonus: false, tuning);
+            new(ResearchLevel, Rank, RequiredRank, Gear.CpBonus, extraBonus: false, tuning, LicensedRunsGrant);
     }
 
     /// <summary>What many experiments played by one policy at one case came to.</summary>
@@ -37,7 +40,7 @@ namespace SWLOR.CraftSim.Scenario.Experiment
         /// <summary>The share of experiments that ended with no evidence on any candidate, which fall back to today's roll.</summary>
         public double NoEvidenceShare { get; init; }
 
-        /// <summary>The mean size of the chosen candidate's bonus, an experiment with none counting 0 (licensed runs, or percent).</summary>
+        /// <summary>The mean size of the chosen reduction in percent, an experiment with no evidence counting 0.</summary>
         public double MeanTargetMagnitude { get; init; }
 
         /// <summary>The mean size of the chosen candidate's bonus over the experiments that gathered evidence.</summary>
@@ -103,7 +106,7 @@ namespace SWLOR.CraftSim.Scenario.Experiment
             var maximum = 0;
             var withEvidenceRuns = 0;
             var setup = experimentCase.CreateSetup(tuning);
-            var isRandom = setup.IsRandomLevel;
+            var isRandom = setup.IsContested;
             var tracked = isRandom ? target : ResearchCandidate.FixedGrant;
 
             for (var run = 0; run < runs; run++)
@@ -125,7 +128,8 @@ namespace SWLOR.CraftSim.Scenario.Experiment
                 if (!isRandom)
                     continue;
 
-                var (winner, size) = ResearchOutcomeRules.Resolve(experimentCase.ResearchLevel, snapshot.Evidence, random);
+                var (winner, size) = ResearchOutcomeRules.Resolve(
+                    experimentCase.ResearchLevel, experimentCase.LicensedRunsGrant, snapshot.Evidence, random);
                 if (winner == ResearchCandidate.None)
                 {
                     noEvidence++;

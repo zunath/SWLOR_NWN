@@ -348,6 +348,8 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
                     var now = DateTime.UtcNow;
                     var targetLevel = researchJob.CurrentLevel + 1;
                     var extraBonus = ResearchGrantRules.RollExtraBonus(targetLevel, ServiceMinigameRandom.Instance);
+                    var licensedRunsGrant = ResearchGrantRules.RollLicensedRunsGrant(
+                        targetLevel, researchJob.EnhancementSlots > 0, ServiceMinigameRandom.Instance);
                     var dbResearchJob = new ResearchJob
                     {
                         ParentPropertyId = _researchTerminalPropertyId,
@@ -357,7 +359,8 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
                         SerializedItem = GetIsObjectValid(_blueprintItem) ? ObjectPlugin.Serialize(_blueprintItem) : string.Empty,
                         Level = researchJob.CurrentLevel,
                         Recipe = _recipeType,
-                        Experiment = ResearchExperimentLifecycle.Open(targetLevel, ExperimentRules.Trials, researchJob.TimeCost, extraBonus)
+                        Experiment = ResearchExperimentLifecycle.Open(
+                            targetLevel, ExperimentRules.Trials, researchJob.TimeCost, extraBonus, licensedRunsGrant)
                     };
                     DB.Set(dbResearchJob);
 

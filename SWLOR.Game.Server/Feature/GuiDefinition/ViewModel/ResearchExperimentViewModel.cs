@@ -22,15 +22,14 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
         public const string ContentElement = "research_experiment_content";
         public const string MainPartial = "RESEARCH_EXPERIMENT_MAIN";
 
-        /// <summary>The evidence bars: one per candidate of a random level, the first alone at a fixed level.</summary>
-        public const int EvidenceSlotCount = 3;
+        /// <summary>The evidence bars: one per candidate where evidence decides between two, the first alone otherwise.</summary>
+        public const int EvidenceSlotCount = 2;
 
-        /// <summary>The action buttons: up to three Tests, then Refine Method, Analyze and Conclude.</summary>
-        public const int ActionCount = 6;
+        /// <summary>The action buttons: up to two Tests, then Refine Method, Analyze and Conclude.</summary>
+        public const int ActionCount = 5;
 
         private static readonly GuiColor[] EvidenceColors =
         {
-            new(80, 200, 120),
             new(0, 191, 255),
             new(255, 165, 0)
         };
@@ -60,53 +59,43 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
 
         public string EvidenceText0 => Get<string>();
         public string EvidenceText1 => Get<string>();
-        public string EvidenceText2 => Get<string>();
         public string EvidenceProjection0 => Get<string>();
         public string EvidenceProjection1 => Get<string>();
-        public string EvidenceProjection2 => Get<string>();
         public float EvidencePercent0 => Get<float>();
         public float EvidencePercent1 => Get<float>();
-        public float EvidencePercent2 => Get<float>();
         public bool EvidenceVisible0 => Get<bool>();
         public bool EvidenceVisible1 => Get<bool>();
-        public bool EvidenceVisible2 => Get<bool>();
 
         public string ActionText0 => Get<string>();
         public string ActionText1 => Get<string>();
         public string ActionText2 => Get<string>();
         public string ActionText3 => Get<string>();
         public string ActionText4 => Get<string>();
-        public string ActionText5 => Get<string>();
         public string ActionSummary0 => Get<string>();
         public string ActionSummary1 => Get<string>();
         public string ActionSummary2 => Get<string>();
         public string ActionSummary3 => Get<string>();
         public string ActionSummary4 => Get<string>();
-        public string ActionSummary5 => Get<string>();
         public string ActionTooltip0 => Get<string>();
         public string ActionTooltip1 => Get<string>();
         public string ActionTooltip2 => Get<string>();
         public string ActionTooltip3 => Get<string>();
         public string ActionTooltip4 => Get<string>();
-        public string ActionTooltip5 => Get<string>();
         public GuiColor ActionColor0 => Get<GuiColor>();
         public GuiColor ActionColor1 => Get<GuiColor>();
         public GuiColor ActionColor2 => Get<GuiColor>();
         public GuiColor ActionColor3 => Get<GuiColor>();
         public GuiColor ActionColor4 => Get<GuiColor>();
-        public GuiColor ActionColor5 => Get<GuiColor>();
         public bool ActionEnabled0 => Get<bool>();
         public bool ActionEnabled1 => Get<bool>();
         public bool ActionEnabled2 => Get<bool>();
         public bool ActionEnabled3 => Get<bool>();
         public bool ActionEnabled4 => Get<bool>();
-        public bool ActionEnabled5 => Get<bool>();
         public bool ActionVisible0 => Get<bool>();
         public bool ActionVisible1 => Get<bool>();
         public bool ActionVisible2 => Get<bool>();
         public bool ActionVisible3 => Get<bool>();
         public bool ActionVisible4 => Get<bool>();
-        public bool ActionVisible5 => Get<bool>();
 
         public static string EvidenceTextProperty(int slot) => $"EvidenceText{slot}";
         public static string EvidenceProjectionProperty(int slot) => $"EvidenceProjection{slot}";
@@ -159,16 +148,21 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
                 job.Experiment.TargetLevel,
                 Skill.GetCreatureSkillRank(Player, SkillType.Fabrication),
                 gearCp,
-                job.Experiment.ExtraBonus);
+                job.Experiment.ExtraBonus,
+                licensedRunsGrant: job.Experiment.LicensedRunsGrant);
 
             _engine = new ExperimentEngine(ServiceMinigameRandom.Instance, setup);
             MapActions();
 
             RecipeName = $"Recipe: {recipe.Quantity}x {Cache.GetItemNameByResref(recipe.Resref)}";
-            LevelText = $"Research level {setup.TargetLevel}: {ResearchGrantRules.Describe(setup.TargetLevel)}";
+            LevelText = setup.IsContested
+                ? $"Research level {setup.TargetLevel}: a Credit Reduction or a Time Reduction. Evidence decides which."
+                : setup.IsRandomLevel
+                    ? $"Research level {setup.TargetLevel}: {setup.NameOf(ResearchCandidate.FixedGrant)} (rolled when the experiment opened)"
+                    : $"Research level {setup.TargetLevel}: {ResearchGrantRules.Describe(setup.TargetLevel)}";
             SetStatus(
-                setup.IsRandomLevel
-                    ? "Test the bonus you want. The candidate with the most evidence wins."
+                setup.IsContested
+                    ? "Test the reduction you want. The candidate with the most evidence wins."
                     : "Gather evidence, then Analyze it for a shorter job.",
                 GuiColor.White);
             Refresh();

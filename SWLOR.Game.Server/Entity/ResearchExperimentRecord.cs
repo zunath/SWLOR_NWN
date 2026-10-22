@@ -44,6 +44,12 @@ namespace SWLOR.Game.Server.Entity
         /// <summary>True when the extra guaranteed bonus was rolled at the start and will be granted on completion.</summary>
         public bool ExtraBonus { get; set; }
 
+        /// <summary>
+        /// At a random level (3, 5 and 8), the licensed runs (1 to 3) the level grants, rolled when the experiment opened; 0 when the
+        /// level grants a credit or time reduction that evidence decides, and at every other level.
+        /// </summary>
+        public int LicensedRunsGrant { get; set; }
+
         /// <summary>The winning candidate once settled; <see cref="ResearchCandidate.None"/> when a random level gathered no evidence.</summary>
         public ResearchCandidate Winner { get; set; }
 

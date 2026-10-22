@@ -35,11 +35,13 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition
             $"up to {ExperimentRules.TimeCutCapPercent}% in all. It uses one trial, so keep one back for it.\n" +
             "- Conclude: end the experiment now with the evidence so far.\n\n" +
             "LEVELS 3, 5 AND 8\n" +
-            $"These levels grant one of three bonuses: licensed runs (up to +{ResearchGrantRules.LicensedRunsMaximum}), credit reduction " +
-            $"(up to {ResearchGrantRules.ReductionMaximum}%) or time reduction (up to {ResearchGrantRules.ReductionMaximum}%). Test the one " +
-            "you want. The candidate with the most evidence wins, and more evidence pays more, never beyond those limits. A tie goes to " +
-            "one of the tied candidates at random. Evidence behind the leader is spare and can be analyzed; the leader keeps its own. " +
-            "If you finish with no evidence on any candidate, the bonus is rolled when the job completes, as it always was.\n\n" +
+            "These levels grant a blueprint bonus, rolled when the experiment opens and shown in this window. As always, licensed runs " +
+            $"come up about 3 times in 11 (up to +{ResearchGrantRules.LicensedRunsMaximum}); then the grant is fixed, and your evidence " +
+            "only buys a shorter job. Otherwise the level grants a credit reduction or a time reduction (up to " +
+            $"{ResearchGrantRules.ReductionMaximum}% each). Test the one you want. The candidate with the most evidence wins, and more " +
+            "evidence pays more, never beyond that limit. A tie goes to one of the tied candidates at random. Evidence behind the leader " +
+            "is spare and can be analyzed; the leader keeps its own. If you finish with no evidence on either candidate, the reduction " +
+            "is rolled when the job completes, as it always was.\n\n" +
             "OTHER LEVELS\n" +
             "The level's grant is fixed. All your evidence is spare, so Analyze it for a shorter job.\n\n" +
             "EXTRA BONUS\n" +

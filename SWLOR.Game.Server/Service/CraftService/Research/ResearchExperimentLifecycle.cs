@@ -18,14 +18,24 @@ public static class ResearchExperimentLifecycle
     /// <param name="trials">The trials the experiment has.</param>
     /// <param name="fullDurationSeconds">The job's length before any time cut.</param>
     /// <param name="extraBonus">The extra guaranteed bonus, rolled once when the experiment opens.</param>
-    public static ResearchExperimentRecord Open(int targetLevel, int trials, int fullDurationSeconds, bool extraBonus) => new()
+    /// <param name="licensedRunsGrant">
+    /// At a random level, the licensed runs rolled when the experiment opens (<see cref="ResearchGrantRules.RollLicensedRunsGrant"/>),
+    /// or 0 when the level grants a reduction that evidence decides.
+    /// </param>
+    public static ResearchExperimentRecord Open(
+        int targetLevel,
+        int trials,
+        int fullDurationSeconds,
+        bool extraBonus,
+        int licensedRunsGrant = 0) => new()
     {
         Status = ResearchExperimentStatus.InProgress,
         TargetLevel = targetLevel,
         FullDurationSeconds = Math.Max(0, fullDurationSeconds),
         TrialsTotal = trials,
-        Evidence = ResearchGrantRules.CandidatesFor(targetLevel).ToDictionary(candidate => candidate, _ => 0),
-        ExtraBonus = extraBonus
+        Evidence = ResearchGrantRules.CandidatesFor(targetLevel, licensedRunsGrant).ToDictionary(candidate => candidate, _ => 0),
+        ExtraBonus = extraBonus,
+        LicensedRunsGrant = ResearchGrantRules.IsRandomLevel(targetLevel) ? Math.Max(0, licensedRunsGrant) : 0
     };
 
     public const string CannotCancelMessage = "This job cannot be cancelled: its experiment has already decided the result.";
@@ -77,7 +87,8 @@ public static class ResearchExperimentLifecycle
             return false;
 
         var experiment = job.Experiment;
-        var (winner, magnitude) = ResearchOutcomeRules.Resolve(experiment.TargetLevel, experiment.Evidence, random);
+        var (winner, magnitude) = ResearchOutcomeRules.Resolve(
+            experiment.TargetLevel, experiment.LicensedRunsGrant, experiment.Evidence, random);
         experiment.Winner = winner;
         experiment.Magnitude = magnitude;
         experiment.Status = ResearchExperimentStatus.Settled;
@@ -97,15 +108,16 @@ public static class ResearchExperimentLifecycle
         switch (experiment.Winner)
         {
             case ResearchCandidate.None:
-                lines.Add("Blueprint bonus: no evidence, so it is rolled when the job completes.");
+                lines.Add("Blueprint bonus: no evidence, so credit or time reduction is rolled when the job completes.");
                 break;
             case ResearchCandidate.FixedGrant:
-                lines.Add($"Grant: {ResearchGrantRules.Describe(experiment.TargetLevel)}.");
+                lines.Add(experiment.LicensedRunsGrant > 0
+                    ? $"Blueprint bonus: Licensed Runs +{experiment.LicensedRunsGrant}."
+                    : $"Grant: {ResearchGrantRules.Describe(experiment.TargetLevel)}.");
                 break;
             default:
                 var name = ResearchGrantRules.CandidateName(experiment.Winner, experiment.TargetLevel);
-                var unit = experiment.Winner == ResearchCandidate.LicensedRuns ? string.Empty : "%";
-                lines.Add($"Blueprint bonus: {name} +{experiment.Magnitude}{unit}.");
+                lines.Add($"Blueprint bonus: {name} +{experiment.Magnitude}%.");
                 break;
         }
 

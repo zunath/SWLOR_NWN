@@ -15,7 +15,18 @@ public sealed class ExperimentSetup
     /// <param name="gearCp">The Fabrication CP from the researcher's gear.</param>
     /// <param name="extraBonus">True when the extra guaranteed bonus was rolled for this job.</param>
     /// <param name="tuning">The numbers perks and the simulator change; null uses the starting values.</param>
-    public ExperimentSetup(int targetLevel, int rank, int requiredRank, int gearCp, bool extraBonus, ExperimentTuning tuning = null)
+    /// <param name="licensedRunsGrant">
+    /// At a random level, the licensed runs (1 to 3) rolled when the experiment opened, or 0 when the level grants a reduction that
+    /// evidence decides. Must be 0 at every other level.
+    /// </param>
+    public ExperimentSetup(
+        int targetLevel,
+        int rank,
+        int requiredRank,
+        int gearCp,
+        bool extraBonus,
+        ExperimentTuning tuning = null,
+        int licensedRunsGrant = 0)
     {
         tuning ??= ExperimentTuning.Default;
         if (tuning.Trials < 1)
@@ -24,8 +35,16 @@ public sealed class ExperimentSetup
         if (targetLevel < 1 || targetLevel > ResearchGrantRules.MaxLevel)
             throw new ArgumentOutOfRangeException(nameof(targetLevel), targetLevel, "Research levels run 1 to 10.");
 
+        if (licensedRunsGrant < 0 || licensedRunsGrant > ResearchGrantRules.LicensedRunsMaximum ||
+            (licensedRunsGrant > 0 && !ResearchGrantRules.IsRandomLevel(targetLevel)))
+        {
+            throw new ArgumentOutOfRangeException(
+                nameof(licensedRunsGrant), licensedRunsGrant, "Only a random level rolls licensed runs, from 1 to 3.");
+        }
+
         TargetLevel = targetLevel;
-        Candidates = ResearchGrantRules.CandidatesFor(targetLevel);
+        LicensedRunsGrant = licensedRunsGrant;
+        Candidates = ResearchGrantRules.CandidatesFor(targetLevel, licensedRunsGrant);
         Rank = Math.Max(0, rank);
         RequiredRank = Math.Max(0, requiredRank);
         GearCp = Math.Max(0, gearCp);
@@ -48,10 +67,19 @@ public sealed class ExperimentSetup
 
     public int TargetLevel { get; }
 
-    /// <summary>True at research levels 3, 5 and 8, where the evidence decides which of three blueprint bonuses is granted.</summary>
-    public bool IsRandomLevel => Candidates.Count > 1;
+    /// <summary>True at research levels 3, 5 and 8, which grant either licensed runs or a reduction.</summary>
+    public bool IsRandomLevel => ResearchGrantRules.IsRandomLevel(TargetLevel);
 
-    /// <summary>The candidates the player gathers evidence toward: one fixed grant, or the three blueprint bonuses.</summary>
+    /// <summary>The licensed runs a random level rolled when the experiment opened; 0 when it grants a reduction, and at other levels.</summary>
+    public int LicensedRunsGrant { get; }
+
+    /// <summary>True when evidence decides between two candidates, credit reduction and time reduction.</summary>
+    public bool IsContested => Candidates.Count > 1;
+
+    /// <summary>
+    /// The candidates the player gathers evidence toward: the level's own grant (a fixed level's, or licensed runs when they were
+    /// rolled), or credit reduction and time reduction.
+    /// </summary>
     public IReadOnlyList<ResearchCandidate> Candidates { get; }
 
     public int Rank { get; }
@@ -87,7 +115,8 @@ public sealed class ExperimentSetup
         throw new ArgumentException($"This experiment has no {candidate} candidate.", nameof(candidate));
     }
 
-    public string NameOf(ResearchCandidate candidate) => ResearchGrantRules.CandidateName(candidate, TargetLevel);
+    public string NameOf(ResearchCandidate candidate) =>
+        ResearchGrantRules.CandidateName(candidate, TargetLevel, LicensedRunsGrant);
 
     /// <summary>Builds the setup for a recipe a researcher is taking to <paramref name="targetLevel"/>.</summary>
     public static ExperimentSetup ForRecipe(
@@ -96,7 +125,8 @@ public sealed class ExperimentSetup
         int fabricationRank,
         int gearCp,
         bool extraBonus,
-        ExperimentTuning tuning = null)
+        ExperimentTuning tuning = null,
+        int licensedRunsGrant = 0)
     {
         if (recipe == null)
             throw new ArgumentNullException(nameof(recipe));
@@ -108,6 +138,7 @@ public sealed class ExperimentSetup
             CraftRankMilestones.RequiredFabricationRankForResearchTier(tier),
             gearCp,
             extraBonus,
-            tuning);
+            tuning,
+            licensedRunsGrant);
     }
 }

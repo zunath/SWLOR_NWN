@@ -81,27 +81,27 @@ namespace SWLOR.CraftSim.Scenario.Experiment
             var target = LengthTarget.ResearchExperiment;
             text.AppendLine("## Length");
             text.AppendLine();
-            text.AppendLine($"Target: {target}. Actions are the player's turns: Tests, Analyzes and Refine Methods (Conclude would only shorten it). Research level 1 stands for the fixed levels and 3 for the random levels (3, 5 and 8).");
+            text.AppendLine($"Target: {target}. Actions are the player's turns: Tests, Analyzes and Refine Methods (Conclude would only shorten it). Research level 1 stands for the fixed levels and 3 for the random levels (3, 5 and 8), which are played both as a reduction decided by evidence and with licensed runs rolled (a fixed-style experiment).");
             text.AppendLine();
 
             var table = new MarkdownTable("Level kind", "Tier", "Rank", "Gear", "CP", "Focused: mean actions", "Focused: Refines", "Adaptive: mean actions", "Verdict");
             var failures = new List<string>();
-            foreach (var level in new[] { 1, 3 })
+            foreach (var (level, runs) in new[] { (1, 0), (3, 0), (3, 2) })
             {
                 foreach (var (tier, rank) in TierRanks())
                 {
                     foreach (var gearLevel in gear)
                     {
-                        var experimentCase = new ExperimentCase(level, tier, rank, gearLevel);
+                        var experimentCase = new ExperimentCase(level, tier, rank, gearLevel, runs);
                         var focused = ExperimentStudy.Play(experimentCase, () => new ExperimentFocusedPolicy(ResearchCandidate.CreditReduction), ResearchCandidate.CreditReduction, options.Runs, options.Seed);
                         var adaptive = PlayAdaptive(experimentCase, options);
                         var worst = Math.Max(focused.MeanActions, adaptive);
                         var passed = target.Contains(focused.MeanActions) && target.Contains(adaptive);
                         if (!passed)
-                            failures.Add($"{Kind(level)} tier {tier} rank {rank} {gearLevel.Name} ({Number(focused.MeanActions)} / {Number(adaptive)})");
+                            failures.Add($"{Kind(level, runs)} tier {tier} rank {rank} {gearLevel.Name} ({Number(focused.MeanActions)} / {Number(adaptive)})");
 
                         table.Add(
-                            Kind(level), tier.ToString(), rank.ToString(), gearLevel.Name, MaxCp(experimentCase).ToString(),
+                            Kind(level, runs), tier.ToString(), rank.ToString(), gearLevel.Name, MaxCp(experimentCase).ToString(),
                             Number(focused.MeanActions), Number(focused.MeanRefines, 2), Number(adaptive), passed ? "Passed" : $"Outside ({Number(worst)})");
                     }
                 }
@@ -116,16 +116,16 @@ namespace SWLOR.CraftSim.Scenario.Experiment
 
         private static void AppendMagnitude(StringBuilder text, ResearchReportOptions options, IReadOnlyList<GearLevel> gear)
         {
-            text.AppendLine("## Bonus size against today's dice (random levels 3, 5 and 8)");
+            text.AppendLine("## Reduction size against today's dice (random levels 3, 5 and 8)");
             text.AppendLine();
-            text.AppendLine("Today a random level rolls one of three bonuses by weight 300:400:400 and then its die. The Experiment lets the player choose the candidate and sizes it by evidence, never above today's dice maximum. \"Mean size\" counts an experiment with no evidence as 0 (it falls back to today's roll); \"Mean size with evidence\" leaves those out.");
+            text.AppendLine("Owner decision (October 2026): licensed runs stay random. When the experiment opens, the level rolls whether it grants licensed runs at today's weight (300 of 1100, or 310 of 1150 with an enhancement slot) and today's d3; the experiment then earns only the time cut, XP and the extra-bonus chance. Otherwise the level grants a reduction and evidence decides between credit reduction and time reduction and sizes the winner, never above today's d10. \"Mean size\" counts an experiment with no evidence as 0 (it falls back to today's roll between the two); \"Mean size with evidence\" leaves those out.");
             text.AppendLine();
 
             var table = new MarkdownTable(
                 "Candidate", "Tier", "Rank", "Gear", "Refine", "Test chance", "Mean evidence", "No evidence", "Mean size", "Mean size with evidence",
                 "Today: dice average", "Experiment / dice average", "Reaches the maximum");
             var summary = new List<(ResearchCandidate Candidate, double Ratio)>();
-            foreach (var candidate in new[] { ResearchCandidate.LicensedRuns, ResearchCandidate.CreditReduction, ResearchCandidate.TimeReduction })
+            foreach (var candidate in new[] { ResearchCandidate.CreditReduction, ResearchCandidate.TimeReduction })
             {
                 foreach (var (tier, rank) in MagnitudeCases())
                 {
@@ -162,27 +162,32 @@ namespace SWLOR.CraftSim.Scenario.Experiment
         {
             text.AppendLine("### Expected supply per random level");
             text.AppendLine();
-            text.AppendLine("Today one random level adds, on average, the weighted mix below. Under the Experiment the player picks the bonus, so a player who always wants one kind gets that kind's size every time and none of the others. The columns give each choice's mean size across the focused cases above (with Refine Method, evidence gathered) and the change against today's expected amount of that kind per random level.");
+            text.AppendLine("Today one random level adds, on average, the weighted mix below. Under the Experiment the licensed runs are still rolled (same odds, same d3), so their supply is exactly today's. The rest of the time the level grants a reduction, and the player picks the kind with their evidence: a player who always wants one kind gets that kind's size whenever the level is a reduction, and none of the other kind. The \"Experiment\" column is the chance the level is a reduction times that kind's mean size across the focused cases above (with Refine Method, evidence gathered).");
             text.AppendLine();
 
+            var runsShare = ResearchGrantRules.TodayWeightShare(ResearchCandidate.LicensedRuns, false);
+            var runsToday = runsShare * ResearchGrantRules.AverageDice(ResearchCandidate.LicensedRuns);
             var table = new MarkdownTable(
-                "If the player always chooses", "Today: expected per random level", "Experiment: mean size across the cases above", "Change in that kind's supply", "Dice maximum");
-            foreach (var candidate in new[] { ResearchCandidate.LicensedRuns, ResearchCandidate.CreditReduction, ResearchCandidate.TimeReduction })
+                "Kind", "Today: expected per random level", "Experiment: expected per random level", "Change in that kind's supply", "Dice maximum");
+            table.Add(
+                "Licensed Runs (rolled)", Number(runsToday, 3) + " runs", Number(runsToday, 3) + " runs", "1.0x (unchanged)",
+                ResearchGrantRules.LicensedRunsMaximum + " runs");
+            foreach (var candidate in new[] { ResearchCandidate.CreditReduction, ResearchCandidate.TimeReduction })
             {
                 var today = ResearchGrantRules.TodayWeightShare(candidate, false) * ResearchGrantRules.AverageDice(candidate);
                 var ratios = summary.Where(entry => entry.Candidate == candidate).Select(entry => entry.Ratio).ToList();
                 var meanSize = ratios.Average() * ResearchGrantRules.AverageDice(candidate);
-                var unit = candidate == ResearchCandidate.LicensedRuns ? " runs" : "%";
+                var experiment = (1 - runsShare) * meanSize;
                 table.Add(
-                    ResearchGrantRules.CandidateName(candidate, 3),
-                    Number(today, 2) + unit,
-                    Number(meanSize, 2) + unit,
-                    $"{Number(meanSize / today, 1)}x ({Signed((int)Math.Round((meanSize / today - 1) * 100))}%)",
-                    ResearchGrantRules.MaximumAmount(candidate) + unit);
+                    ResearchGrantRules.CandidateName(candidate, 3) + " (if always chosen)",
+                    Number(today, 2) + "%",
+                    Number(experiment, 2) + "%",
+                    $"{Number(experiment / today, 1)}x ({Signed((int)Math.Round((experiment / today - 1) * 100))}%)",
+                    ResearchGrantRules.ReductionMaximum + "%");
             }
 
             text.AppendLine(table.ToString());
-            text.AppendLine("The power ceiling is unchanged: one bonus per random level and never above the dice maximum. What changes is that the bonus is chosen and averages about the same as the die of the chosen kind, instead of being a one-in-three draw. Total supply across the three kinds rises when everyone picks the kind they value most, and falls back toward today's if the player mixes kinds across levels 3, 5 and 8.");
+            text.AppendLine($"Licensed runs: today a random level rolls runs {Percent(runsShare, 1)} of the time for 1-3 (mean 2), so {Number(runsToday, 3)} runs per random level on average; the Experiment rolls the same chance and die when it opens, so the expected licensed runs per blueprint are identical (a test enumerates every roll of both). The power ceiling is unchanged for every kind: one bonus per random level and never above the dice maximum. The reduction supply rises because the player chooses the kind and the evidence sizes it near the die's average instead of a one-in-two draw; it falls back toward today's if the player mixes kinds across levels 3, 5 and 8.");
             text.AppendLine();
         }
 
@@ -346,7 +351,8 @@ namespace SWLOR.CraftSim.Scenario.Experiment
 
         private static int MaxCp(ExperimentCase experimentCase) => experimentCase.CreateSetup().MaxCp;
 
-        private static string Kind(int level) => level == 1 ? "Fixed (1)" : "Random (3)";
+        private static string Kind(int level, int licensedRuns) =>
+            level == 1 ? "Fixed (1)" : licensedRuns > 0 ? "Random (3), runs rolled" : "Random (3), reductions";
 
         private static string Duration(double seconds)
         {

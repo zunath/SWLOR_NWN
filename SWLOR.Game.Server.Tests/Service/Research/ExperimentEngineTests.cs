@@ -17,7 +17,7 @@ public class ExperimentEngineTests
 
     private static readonly string[] RandomActions =
     {
-        ExperimentActionIds.TestLicensedRuns, ExperimentActionIds.TestCreditReduction, ExperimentActionIds.TestTimeReduction,
+        ExperimentActionIds.TestCreditReduction, ExperimentActionIds.TestTimeReduction,
         ExperimentActionIds.RefineMethod, ExperimentActionIds.Analyze, ExperimentActionIds.Conclude
     };
 
@@ -27,8 +27,9 @@ public class ExperimentEngineTests
         int requiredRank = 10,
         int gearCp = 0,
         bool extraBonus = false,
-        ExperimentTuning tuning = null) =>
-        new(level, rank, requiredRank, gearCp, extraBonus, tuning);
+        ExperimentTuning tuning = null,
+        int licensedRunsGrant = 0) =>
+        new(level, rank, requiredRank, gearCp, extraBonus, tuning, licensedRunsGrant);
 
     /// <summary>An engine whose Tests find evidence (a roll of 1) or miss (a roll of 100), as scripted.</summary>
     private static ExperimentEngine Engine(ExperimentSetup setup = null, params int[] rolls) =>
@@ -57,11 +58,52 @@ public class ExperimentEngineTests
         var engine = Engine(Setup(RandomLevel));
 
         engine.Setup.IsRandomLevel.Should().BeTrue();
-        engine.Setup.Candidates.Should().Equal(
-            ResearchCandidate.LicensedRuns, ResearchCandidate.CreditReduction, ResearchCandidate.TimeReduction);
+        engine.Setup.Candidates.Should().Equal(ResearchCandidate.CreditReduction, ResearchCandidate.TimeReduction);
+        engine.Setup.IsContested.Should().BeTrue();
         engine.Actions.Select(action => action.Id).Should().Equal(RandomActions);
         engine.Actions.Select(action => action.Name).Should().Equal(
-            "Test: Licensed Runs", "Test: Credit Reduction", "Test: Time Reduction", "Refine Method", "Analyze", "Conclude");
+            "Test: Credit Reduction", "Test: Time Reduction", "Refine Method", "Analyze", "Conclude");
+    }
+
+    [TestCase(1)]
+    [TestCase(2)]
+    [TestCase(3)]
+    public void ARandomLevelThatRolledLicensedRunsPlaysLikeAFixedLevel(int runs)
+    {
+        var engine = Engine(Setup(RandomLevel, licensedRunsGrant: runs));
+
+        engine.Setup.IsRandomLevel.Should().BeTrue();
+        engine.Setup.IsContested.Should().BeFalse();
+        engine.Setup.LicensedRunsGrant.Should().Be(runs);
+        engine.Setup.Candidates.Should().Equal(ResearchCandidate.FixedGrant);
+        engine.Setup.NameOf(ResearchCandidate.FixedGrant).Should().Be($"Licensed Runs +{runs}");
+        engine.Actions.Select(action => action.Id).Should().Equal(
+            ExperimentActionIds.TestFixed, ExperimentActionIds.RefineMethod, ExperimentActionIds.Analyze, ExperimentActionIds.Conclude);
+        engine.Preview(ExperimentActionIds.Analyze).Enabled.Should().BeFalse();
+    }
+
+    [Test]
+    public void AllEvidenceIsSpareWhereLicensedRunsWereRolledSoItBuysOnlyTimeAtThatLevel()
+    {
+        var engine = Engine(Setup(RandomLevel, licensedRunsGrant: 2), Hits(3));
+        engine.Perform(ExperimentActionIds.TestFixed);
+        engine.Perform(ExperimentActionIds.TestFixed);
+
+        engine.SpareEvidence.Should().Be(2);
+        engine.Perform(ExperimentActionIds.Analyze);
+        engine.TimeCutPercent.Should().Be(10);
+    }
+
+    [Test]
+    public void OnlyARandomLevelCanRollLicensedRuns()
+    {
+        var onFixed = () => Setup(FixedLevel, licensedRunsGrant: 1);
+        var tooMany = () => Setup(RandomLevel, licensedRunsGrant: 4);
+        var negative = () => Setup(RandomLevel, licensedRunsGrant: -1);
+
+        onFixed.Should().Throw<ArgumentOutOfRangeException>();
+        tooMany.Should().Throw<ArgumentOutOfRangeException>();
+        negative.Should().Throw<ArgumentOutOfRangeException>();
     }
 
     [TestCase(1, false)]
@@ -109,11 +151,11 @@ public class ExperimentEngineTests
 
         meters.Select(meter => meter.Id).Should().Equal(
             MinigameMeterIds.Progress, MinigameMeterIds.Quality, MinigameMeterIds.Integrity, MinigameMeterIds.Cp,
-            "evidence_licensedruns", "evidence_creditreduction", "evidence_timereduction",
+            "evidence_creditreduction", "evidence_timereduction",
             ExperimentActionIds.TimeCutMeter, ExperimentActionIds.MethodMeter);
         meters.Select(meter => meter.Label).Should().Equal(
             "Trials used", "Findings", "Integrity", "CP",
-            "Licensed Runs evidence", "Credit Reduction evidence", "Time Reduction evidence", "Job time cut (%)", "Next Test bonus (%)");
+            "Credit Reduction evidence", "Time Reduction evidence", "Job time cut (%)", "Next Test bonus (%)");
         var timeCut = meters.Single(meter => meter.Id == ExperimentActionIds.TimeCutMeter);
         timeCut.Max.Should().Be(25);
         timeCut.Mark.Should().Be(MinigameMeterMark.Line(25, "Cap"));
@@ -177,14 +219,15 @@ public class ExperimentEngineTests
     {
         var engine = Engine(Setup(RandomLevel), 1, 1, 1, 100);
 
-        engine.Perform(ExperimentActionIds.TestLicensedRuns);
+        engine.Perform(ExperimentActionIds.TestTimeReduction);
         engine.Perform(ExperimentActionIds.TestCreditReduction);
         engine.Perform(ExperimentActionIds.TestCreditReduction);
         engine.Perform(ExperimentActionIds.TestTimeReduction);
 
-        engine.EvidenceOf(ResearchCandidate.LicensedRuns).Should().Be(1);
+        engine.EvidenceOf(ResearchCandidate.TimeReduction).Should().Be(1);
         engine.EvidenceOf(ResearchCandidate.CreditReduction).Should().Be(2);
-        engine.EvidenceOf(ResearchCandidate.TimeReduction).Should().Be(0);
+        var noRuns = () => engine.EvidenceOf(ResearchCandidate.LicensedRuns);
+        noRuns.Should().Throw<ArgumentException>("licensed runs are not a candidate");
     }
 
     [Test]
@@ -394,14 +437,14 @@ public class ExperimentEngineTests
         var engine = Engine(Setup(RandomLevel), Hits(5));
         engine.Perform(ExperimentActionIds.TestCreditReduction);
         engine.Perform(ExperimentActionIds.TestCreditReduction);
-        engine.Perform(ExperimentActionIds.TestLicensedRuns);
+        engine.Perform(ExperimentActionIds.TestCreditReduction);
+        engine.Perform(ExperimentActionIds.TestTimeReduction);
         engine.Perform(ExperimentActionIds.TestTimeReduction);
 
         engine.SpareEvidence.Should().Be(2);
         engine.Perform(ExperimentActionIds.Analyze);
 
-        engine.EvidenceOf(ResearchCandidate.CreditReduction).Should().Be(2);
-        engine.EvidenceOf(ResearchCandidate.LicensedRuns).Should().Be(0);
+        engine.EvidenceOf(ResearchCandidate.CreditReduction).Should().Be(3);
         engine.EvidenceOf(ResearchCandidate.TimeReduction).Should().Be(0);
         engine.TimeCutPercent.Should().Be(10);
         engine.SpentEvidence.Should().Be(2);
@@ -589,14 +632,14 @@ public class ExperimentEngineTests
         var engine = Engine(Setup(RandomLevel), Hits(4));
         engine.Perform(ExperimentActionIds.TestCreditReduction);
         engine.Perform(ExperimentActionIds.TestCreditReduction);
-        engine.Perform(ExperimentActionIds.TestLicensedRuns);
+        engine.Perform(ExperimentActionIds.TestTimeReduction);
         engine.Perform(ExperimentActionIds.Analyze);
 
         var snapshot = engine.Snapshot();
 
         snapshot.Evidence[ResearchCandidate.CreditReduction].Should().Be(2);
-        snapshot.Evidence[ResearchCandidate.LicensedRuns].Should().Be(0);
         snapshot.Evidence[ResearchCandidate.TimeReduction].Should().Be(0);
+        snapshot.Evidence.Keys.Should().BeEquivalentTo(new[] { ResearchCandidate.CreditReduction, ResearchCandidate.TimeReduction });
         snapshot.TrialsUsed.Should().Be(4);
         snapshot.SpentEvidence.Should().Be(1);
         snapshot.TimeCutPercent.Should().Be(5);

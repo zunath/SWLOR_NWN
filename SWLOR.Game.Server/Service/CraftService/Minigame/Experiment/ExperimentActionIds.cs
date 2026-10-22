@@ -6,7 +6,6 @@ namespace SWLOR.Game.Server.Service.CraftService.Minigame.Experiment;
 public static class ExperimentActionIds
 {
     public const string TestFixed = "test_fixed";
-    public const string TestLicensedRuns = "test_runs";
     public const string TestCreditReduction = "test_credit";
     public const string TestTimeReduction = "test_time";
     public const string RefineMethod = "refine";
@@ -20,7 +19,6 @@ public static class ExperimentActionIds
     public static string TestFor(ResearchCandidate candidate) => candidate switch
     {
         ResearchCandidate.FixedGrant => TestFixed,
-        ResearchCandidate.LicensedRuns => TestLicensedRuns,
         ResearchCandidate.CreditReduction => TestCreditReduction,
         ResearchCandidate.TimeReduction => TestTimeReduction,
         _ => throw new ArgumentOutOfRangeException(nameof(candidate), candidate, "That candidate cannot be tested.")
@@ -32,7 +30,6 @@ public static class ExperimentActionIds
         candidate = actionId switch
         {
             TestFixed => ResearchCandidate.FixedGrant,
-            TestLicensedRuns => ResearchCandidate.LicensedRuns,
             TestCreditReduction => ResearchCandidate.CreditReduction,
             TestTimeReduction => ResearchCandidate.TimeReduction,
             _ => ResearchCandidate.None

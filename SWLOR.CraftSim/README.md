@@ -104,7 +104,7 @@ The game server changes only by `ICraftMinigameEngine.Fork`, which every engine 
 
 ### Research Experiment
 
-`Scenario/Experiment` plugs the research Experiment in as the `experiment` scenario (`gates --scenario experiment --gates length` checks its 5-8 turn target; the other gates do not apply to an experiment, which has no quality, styles or legacy loop). The `research` command writes the Experiment's own evidence: length, the size of the bonus against today's dice and the change in supply of licensed runs and reductions, the time cut at fixed levels, and Fabrication XP per real hour against at-level crafting.
+`Scenario/Experiment` plugs the research Experiment in as the `experiment` scenario (`gates --scenario experiment --gates length` checks its 5-8 turn target; the other gates do not apply to an experiment, which has no quality, styles or legacy loop). The `research` command writes the Experiment's own evidence: length, the size of the reductions against today's dice and the change in supply (licensed runs stay random at today's odds, so theirs is unchanged), the time cut at fixed levels, and Fabrication XP per real hour against at-level crafting.
 
 ```powershell
 dotnet SWLOR.CraftSim/bin/Debug/net10.0/SWLOR.CraftSim.dll research --runs 400 --adaptive-runs 40 --seed 1 --out design/testing/crafting-revamp/research-experiment-report.md

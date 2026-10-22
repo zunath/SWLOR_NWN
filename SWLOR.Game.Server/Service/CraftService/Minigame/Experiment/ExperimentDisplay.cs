@@ -101,9 +101,7 @@ public static class ExperimentDisplay
         if (amount <= 0)
             return "No evidence yet.";
 
-        return candidate == ResearchCandidate.LicensedRuns
-            ? $"Pays +{amount} licensed run{(amount == 1 ? string.Empty : "s")} (most {ResearchGrantRules.LicensedRunsMaximum})."
-            : $"Pays +{amount}% (most {ResearchGrantRules.ReductionMaximum}%).";
+        return $"Pays +{amount}% (most {ResearchGrantRules.ReductionMaximum}%).";
     }
 
     public static string MeterText(string label, MinigameMeter meter) =>

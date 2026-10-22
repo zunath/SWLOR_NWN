@@ -30,9 +30,17 @@ public class ResearchExperimentLifecycleTests
         Experiment = ResearchExperimentLifecycle.Open(targetLevel, ExperimentRules.Trials, JobSeconds, extraBonus)
     };
 
+    private static ResearchJob OpenJobWithRuns(int targetLevel, int licensedRuns)
+    {
+        var job = OpenJob(targetLevel);
+        job.Experiment = ResearchExperimentLifecycle.Open(targetLevel, ExperimentRules.Trials, JobSeconds, false, licensedRuns);
+        return job;
+    }
+
     private static ExperimentEngine EngineFor(ResearchJob job, params int[] rolls) => new(
         new ScriptedMinigameRandom(rolls),
-        new ExperimentSetup(job.Experiment.TargetLevel, 30, 10, 0, job.Experiment.ExtraBonus));
+        new ExperimentSetup(
+            job.Experiment.TargetLevel, 30, 10, 0, job.Experiment.ExtraBonus, null, job.Experiment.LicensedRunsGrant));
 
     private static string Json(object value) => JsonConvert.SerializeObject(value);
 
@@ -57,9 +65,9 @@ public class ResearchExperimentLifecycleTests
         record.TrialsUsed.Should().Be(0);
         record.FullDurationSeconds.Should().Be(5400);
         record.ExtraBonus.Should().BeTrue();
-        record.Evidence.Keys.Should().BeEquivalentTo(
-            new[] { ResearchCandidate.LicensedRuns, ResearchCandidate.CreditReduction, ResearchCandidate.TimeReduction });
+        record.Evidence.Keys.Should().BeEquivalentTo(new[] { ResearchCandidate.CreditReduction, ResearchCandidate.TimeReduction });
         record.Evidence.Values.Should().OnlyContain(value => value == 0);
+        record.LicensedRunsGrant.Should().Be(0);
         record.TimeCutPercent.Should().Be(0);
         record.XpGranted.Should().BeFalse();
         record.Winner.Should().Be(ResearchCandidate.None);
@@ -69,6 +77,49 @@ public class ResearchExperimentLifecycleTests
     public void AFixedLevelsExperimentTracksOneCandidate()
     {
         ResearchExperimentLifecycle.Open(2, 6, 100, false).Evidence.Keys.Should().Equal(ResearchCandidate.FixedGrant);
+    }
+
+    [Test]
+    public void ARandomLevelThatRolledLicensedRunsTracksOneCandidateAndStoresTheRunsRolledAtTheStart()
+    {
+        var record = ResearchExperimentLifecycle.Open(5, 6, 100, false, 2);
+
+        record.Evidence.Keys.Should().Equal(ResearchCandidate.FixedGrant);
+        record.LicensedRunsGrant.Should().Be(2);
+    }
+
+    [Test]
+    public void AFixedLevelNeverStoresLicensedRuns()
+    {
+        ResearchExperimentLifecycle.Open(4, 6, 100, false, 3).LicensedRunsGrant.Should().Be(0);
+    }
+
+    [Test]
+    public void SettlingARandomLevelThatRolledLicensedRunsKeepsTheRunsAndNeedsNoEvidence()
+    {
+        var job = OpenJobWithRuns(8, 3);
+
+        ResearchExperimentLifecycle.Settle(job, new ScriptedMinigameRandom());
+
+        job.Experiment.Winner.Should().Be(ResearchCandidate.FixedGrant);
+        job.Experiment.LicensedRunsGrant.Should().Be(3);
+        ResearchExperimentLifecycle.Describe(job.Experiment).Should().Equal("Blueprint bonus: Licensed Runs +3.");
+        var blueprint = new BlueprintDetail { Level = 7 };
+        ResearchGrantRules.Complete(blueprint, job.Experiment, new ScriptedMinigameRandom(), _ => { });
+        blueprint.LicensedRuns.Should().Be(3);
+    }
+
+    [Test]
+    public void TheRunsRolledAtTheStartSurviveASaveAndReload()
+    {
+        var job = OpenJobWithRuns(3, 2);
+        ResearchExperimentLifecycle.Settle(job, new ScriptedMinigameRandom());
+
+        for (var reload = 0; reload < 3; reload++)
+            job = JsonConvert.DeserializeObject<ResearchJob>(Json(job));
+
+        job.Experiment.LicensedRunsGrant.Should().Be(2);
+        job.Experiment.Evidence.Keys.Should().Equal(ResearchCandidate.FixedGrant);
     }
 
     [Test]
@@ -162,7 +213,7 @@ public class ResearchExperimentLifecycleTests
         foreach (var action in new[]
                  {
                      ExperimentActionIds.TestCreditReduction, ExperimentActionIds.TestCreditReduction, ExperimentActionIds.TestCreditReduction,
-                     ExperimentActionIds.TestLicensedRuns, ExperimentActionIds.TestCreditReduction
+                     ExperimentActionIds.TestTimeReduction, ExperimentActionIds.TestCreditReduction
                  })
         {
             engine.Perform(action);
@@ -263,7 +314,7 @@ public class ResearchExperimentLifecycleTests
         var engine = EngineFor(job, 1, 1, 1, 1);
         engine.Perform(ExperimentActionIds.TestTimeReduction);
         engine.Perform(ExperimentActionIds.TestTimeReduction);
-        engine.Perform(ExperimentActionIds.TestLicensedRuns);
+        engine.Perform(ExperimentActionIds.TestCreditReduction);
         engine.Perform(ExperimentActionIds.Analyze);
         ResearchExperimentLifecycle.Record(job, engine.Snapshot());
         ResearchExperimentLifecycle.Settle(job, new ScriptedMinigameRandom());
@@ -288,16 +339,16 @@ public class ResearchExperimentLifecycleTests
     {
         var job = OpenJob(3);
         var engine = EngineFor(job, 1, 1);
-        engine.Perform(ExperimentActionIds.TestLicensedRuns);
-        engine.Perform(ExperimentActionIds.TestLicensedRuns);
+        engine.Perform(ExperimentActionIds.TestCreditReduction);
+        engine.Perform(ExperimentActionIds.TestCreditReduction);
         ResearchExperimentLifecycle.Record(job, engine.Snapshot());
 
         var reloaded = JsonConvert.DeserializeObject<ResearchJob>(Json(job));
         ResearchExperimentLifecycle.IsOpen(reloaded).Should().BeTrue();
         ResearchExperimentLifecycle.Settle(reloaded, new ScriptedMinigameRandom());
 
-        reloaded.Experiment.Winner.Should().Be(ResearchCandidate.LicensedRuns);
-        reloaded.Experiment.Magnitude.Should().Be(1);
+        reloaded.Experiment.Winner.Should().Be(ResearchCandidate.CreditReduction);
+        reloaded.Experiment.Magnitude.Should().Be(3);
     }
 
     [Test]
@@ -348,10 +399,10 @@ public class ResearchExperimentLifecycleTests
             TrialsUsed = 5,
             Evidence = new Dictionary<ResearchCandidate, int>
             {
-                [ResearchCandidate.LicensedRuns] = 1,
                 [ResearchCandidate.CreditReduction] = 3,
                 [ResearchCandidate.TimeReduction] = 0
             },
+            LicensedRunsGrant = 0,
             SpentEvidence = 2,
             TimeCutPercent = 10,
             ExtraBonus = true,

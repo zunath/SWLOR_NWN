@@ -123,7 +123,7 @@ public class ExperimentWindowTests
                 new ExperimentSetup(3, rank, 10, 1000, false));
             engine.Perform(ExperimentActionIds.TestCreditReduction);
             engine.Perform(ExperimentActionIds.TestCreditReduction);
-            engine.Perform(ExperimentActionIds.TestLicensedRuns);
+            engine.Perform(ExperimentActionIds.TestTimeReduction);
 
             foreach (var action in engine.Actions)
             {
@@ -191,9 +191,7 @@ public class ExperimentWindowTests
         view.Summary.Should().Be("Unavailable: Run a Test first: there is no evidence to analyze.");
     }
 
-    [TestCase(ResearchCandidate.LicensedRuns, 0, "No evidence yet.")]
-    [TestCase(ResearchCandidate.LicensedRuns, 1, "Pays +1 licensed run (most 3).")]
-    [TestCase(ResearchCandidate.LicensedRuns, 5, "Pays +3 licensed runs (most 3).")]
+    [TestCase(ResearchCandidate.CreditReduction, 0, "No evidence yet.")]
     [TestCase(ResearchCandidate.CreditReduction, 3, "Pays +5% (most 10%).")]
     [TestCase(ResearchCandidate.TimeReduction, 6, "Pays +10% (most 10%).")]
     [TestCase(ResearchCandidate.FixedGrant, 4, "Fixed grant. Evidence only buys a shorter job.")]
@@ -242,14 +240,14 @@ public class ExperimentWindowTests
         {
             Status = SWLOR.Game.Server.Entity.ResearchExperimentStatus.Settled,
             TargetLevel = 5,
-            Winner = ResearchCandidate.LicensedRuns,
+            Winner = ResearchCandidate.TimeReduction,
             Magnitude = 2,
             ExtraBonus = true,
             TimeCutPercent = 15
         };
 
         ResearchExperimentLifecycle.Describe(record).Should().Equal(
-            "Blueprint bonus: Licensed Runs +2.",
+            "Blueprint bonus: Time Reduction +2%.",
             "Extra guaranteed bonus: tier 1.",
             "Job time cut by 15%.");
         ResearchExperimentLifecycle.Describe(null).Should().BeEmpty();

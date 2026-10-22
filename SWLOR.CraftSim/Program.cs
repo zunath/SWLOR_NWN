@@ -17,7 +17,7 @@ SWLOR crafting simulator
   gates --list
       Lists the scenarios minigames have added.
   research [--runs 400] [--adaptive-runs 40] [--seed 1] [--seconds-per-action 6] [--job-overhead-seconds 30] [--out report.md] [--repo path]
-      Plays the research Experiment and writes its report: length, bonus size against today's dice and the supply change, the time cut, and Fabrication XP per real hour.
+      Plays the research Experiment and writes its report: length, reduction size against today's dice and the supply change, the time cut, and Fabrication XP per real hour.
 """;
 
 if (args.Length == 0 || args[0] is "-h" or "--help" or "help")

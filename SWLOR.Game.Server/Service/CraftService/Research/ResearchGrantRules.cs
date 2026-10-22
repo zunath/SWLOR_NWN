@@ -58,17 +58,24 @@ public static class ResearchGrantRules
         };
     }
 
-    /// <summary>The candidates an experiment at this level gathers evidence toward.</summary>
-    public static IReadOnlyList<ResearchCandidate> CandidatesFor(int level) => IsRandomLevel(level)
-        ? new[] { ResearchCandidate.LicensedRuns, ResearchCandidate.CreditReduction, ResearchCandidate.TimeReduction }
-        : new[] { ResearchCandidate.FixedGrant };
+    /// <summary>
+    /// The candidates an experiment at this level gathers evidence toward. A fixed level has its own grant, and so does a random level
+    /// whose licensed-run roll came up (<paramref name="licensedRunsGrant"/> above 0). Any other random level grants a reduction, and
+    /// evidence decides between credit reduction and time reduction.
+    /// </summary>
+    public static IReadOnlyList<ResearchCandidate> CandidatesFor(int level, int licensedRunsGrant) =>
+        IsRandomLevel(level) && licensedRunsGrant <= 0
+            ? new[] { ResearchCandidate.CreditReduction, ResearchCandidate.TimeReduction }
+            : new[] { ResearchCandidate.FixedGrant };
 
-    public static string CandidateName(ResearchCandidate candidate, int level) => candidate switch
+    public static string CandidateName(ResearchCandidate candidate, int level, int licensedRunsGrant = 0) => candidate switch
     {
         ResearchCandidate.LicensedRuns => "Licensed Runs",
         ResearchCandidate.CreditReduction => "Credit Reduction",
         ResearchCandidate.TimeReduction => "Time Reduction",
-        ResearchCandidate.FixedGrant => Describe(level),
+        ResearchCandidate.FixedGrant => IsRandomLevel(level) && licensedRunsGrant > 0
+            ? $"Licensed Runs +{licensedRunsGrant}"
+            : Describe(level),
         _ => "Nothing"
     };
 
@@ -113,6 +120,42 @@ public static class ResearchGrantRules
         random.Next(0, ExtraBonusSides) <= ExtraBonusCeilings[CeilingIndex(level)];
 
     /// <summary>
+    /// Rolls, when a random level's experiment opens, whether the level grants licensed runs and how many. Licensed runs keep today's
+    /// odds (300 of 1100, or 310 of 1150 for a blueprint with an enhancement slot, the weight of the old roll) and today's d3, so a
+    /// blueprint's expected licensed runs are unchanged. Returns 0 when the level grants a reduction instead, and at a fixed level.
+    /// </summary>
+    public static int RollLicensedRunsGrant(int level, bool blueprintHasEnhancementSlot, IMinigameRandom random)
+    {
+        if (!IsRandomLevel(level))
+            return 0;
+
+        var weights = blueprintHasEnhancementSlot ? EnhancedWeights : StandardWeights;
+        if (random.Next(0, weights.Sum()) >= weights[0])
+            return 0;
+
+        return random.Next(1, LicensedRunsMaximum + 1);
+    }
+
+    /// <summary>
+    /// The reduction a random level grants when its experiment gathered no evidence, as today's roll gives it once licensed runs are
+    /// ruled out: credit reduction or time reduction by their weights (400 each), then the d10. Applied to the blueprint.
+    /// </summary>
+    public static (ResearchCandidate Candidate, int Amount) RollReductionBonus(BlueprintDetail blueprint, IMinigameRandom random)
+    {
+        var weights = blueprint.EnhancementSlots > 0 && blueprint.Level < MaxLevel ? EnhancedWeights : StandardWeights;
+        var credit = random.Next(0, weights[1] + weights[2]) < weights[1];
+        var amount = random.Next(1, ReductionMaximum + 1);
+        if (credit)
+        {
+            blueprint.CreditReduction += amount;
+            return (ResearchCandidate.CreditReduction, amount);
+        }
+
+        blueprint.TimeReduction += amount;
+        return (ResearchCandidate.TimeReduction, amount);
+    }
+
+    /// <summary>
     /// Today's random blueprint bonus: a weighted pick among licensed runs +d3, credit reduction +d10 percent and time reduction
     /// +d10 percent, applied to the blueprint. The weights shift slightly for a blueprint that has an enhancement slot.
     /// </summary>
@@ -147,7 +190,8 @@ public static class ResearchGrantRules
     /// <summary>
     /// Raises the blueprint one research level and grants what the new level gives. A settled experiment decides a random level's
     /// bonus and whether the extra guaranteed bonus appears; with none (a job created before experiments), today's rolls decide both.
-    /// A random level whose experiment gathered no evidence falls back to today's weighted roll and dice.
+    /// A random level whose experiment rolled licensed runs when it opened grants exactly those runs; one decided by evidence that
+    /// gathered none falls back to today's roll between credit and time reduction and the d10.
     /// </summary>
     /// <param name="blueprint">The blueprint, changed in place.</param>
     /// <param name="experiment">The job's stored experiment, or null for a job created before experiments.</param>
@@ -187,16 +231,26 @@ public static class ResearchGrantRules
                 blueprint.LicensedRuns++;
                 break;
             case ResearchLevelGrant.RandomBlueprintBonus:
-                if (stored && experiment.Winner != ResearchCandidate.None)
+                if (stored && experiment.LicensedRunsGrant > 0)
+                {
+                    candidate = ResearchCandidate.LicensedRuns;
+                    amount = experiment.LicensedRunsGrant;
+                    ApplyBonus(blueprint, candidate, amount);
+                }
+                else if (stored && experiment.Winner != ResearchCandidate.None)
                 {
                     candidate = experiment.Winner;
                     amount = experiment.Magnitude;
                     ApplyBonus(blueprint, candidate, amount);
                 }
+                else if (stored)
+                {
+                    (candidate, amount) = RollReductionBonus(blueprint, random);
+                    fromExperiment = false;
+                }
                 else
                 {
                     (candidate, amount) = RollRandomBonus(blueprint, random);
-                    fromExperiment = false;
                 }
                 break;
             case ResearchLevelGrant.GuaranteedTierThreeBonus:

@@ -417,6 +417,147 @@ public class CraftMinigameContractTests
         meter.Add(50).Value.Should().Be(3);
     }
 
+    [Test]
+    public void Fork_ContinuesFromTheExactAttemptAndEvolvesIndependently()
+    {
+        var originalRandom = new ScriptedMinigameRandom(100);
+        var original = new TestForgeEngine(originalRandom, 40);
+        original.Perform(TestForgeEngine.Heat);
+        var metersBefore = original.DescribeMeters();
+
+        var forkRandom = new ScriptedMinigameRandom(1, 100);
+        var fork = (TestForgeEngine)original.Fork(forkRandom);
+
+        fork.Turn.Should().Be(1);
+        fork.Status.Should().Be(MinigameStatus.InProgress);
+        fork.Thermal.Should().Be(60);
+        fork.DescribeMeters().Should().Equal(metersBefore);
+
+        fork.Perform(TestForgeEngine.Strike).Outcome.Label.Should().Be("Clean strike");
+
+        fork.Turn.Should().Be(2);
+        fork.Hits.Should().Be(1);
+        fork.Thermal.Should().Be(55);
+        fork.Meters.Progress.Value.Should().Be(30);
+
+        // The original is exactly where it was, and the fork never touched its source of chance.
+        original.Turn.Should().Be(1);
+        original.Hits.Should().Be(0);
+        original.Thermal.Should().Be(60);
+        original.DescribeMeters().Should().Equal(metersBefore);
+        originalRandom.Calls.Should().Be(1);
+        forkRandom.Calls.Should().Be(2);
+    }
+
+    [Test]
+    public void Fork_IsNotChangedByLaterActionsOnTheOriginal()
+    {
+        var original = new TestForgeEngine(new ScriptedMinigameRandom(100, 100), 40);
+        var fork = (TestForgeEngine)original.Fork(new ScriptedMinigameRandom());
+        var forkMeters = fork.DescribeMeters();
+
+        original.Perform(TestForgeEngine.Heat);
+        original.Perform(TestForgeEngine.Polish);
+
+        original.Turn.Should().Be(2);
+        fork.Turn.Should().Be(0);
+        fork.Thermal.Should().Be(40);
+        fork.DescribeMeters().Should().Equal(forkMeters);
+    }
+
+    [Test]
+    public void Fork_RollsItsAnnouncementsFromItsOwnRandomAndKeepsTheOriginalsOpportunity()
+    {
+        var original = new TestForgeEngine(new ScriptedMinigameRandom(1), 50);
+        original.Perform(TestForgeEngine.Polish);
+        original.NextOpportunity.Should().NotBeNull("the scripted forecast roll of 1 announces Stable Containment");
+
+        var fork = original.Fork(new ScriptedMinigameRandom(100));
+        fork.NextOpportunity.Should().Be(original.NextOpportunity);
+
+        fork.Perform(TestForgeEngine.Polish);
+
+        fork.NextOpportunity.Should().BeNull("the fork's own forecast roll of 100 announces nothing");
+        original.NextOpportunity.Should().NotBeNull();
+    }
+
+    [Test]
+    public void Fork_OfAFinishedAttemptIsFinishedAndRefusesActions()
+    {
+        var original = new TestForgeEngine(new ScriptedMinigameRandom(1), 50);
+        original.Perform(TestForgeEngine.Rush).Status.Should().Be(MinigameStatus.Succeeded);
+
+        var fork = original.Fork(new ScriptedMinigameRandom());
+
+        fork.Status.Should().Be(MinigameStatus.Succeeded);
+        fork.Perform(TestForgeEngine.Polish).Performed.Should().BeFalse();
+        fork.Preview(TestForgeEngine.Polish).Enabled.Should().BeFalse();
+    }
+
+    [Test]
+    public void Fork_OfAForkIsIndependentOfBoth()
+    {
+        var original = new TestForgeEngine(new ScriptedMinigameRandom(100), 40);
+        var first = original.Fork(new ScriptedMinigameRandom(100));
+        first.Perform(TestForgeEngine.Heat);
+        var second = first.Fork(new ScriptedMinigameRandom(100));
+
+        second.Perform(TestForgeEngine.Heat);
+
+        original.Turn.Should().Be(0);
+        first.Turn.Should().Be(1);
+        second.Turn.Should().Be(2);
+        ((TestForgeEngine)first).Thermal.Should().Be(60);
+        ((TestForgeEngine)second).Thermal.Should().Be(80);
+    }
+
+    [Test]
+    public void Fork_RequiresASourceOfChance()
+    {
+        var act = () => new TestForgeEngine(new ScriptedMinigameRandom()).Fork(null!);
+
+        act.Should().Throw<ArgumentNullException>();
+    }
+
+    [Test]
+    public void EveryEngineKeepsItsMutableValuesInItsState_SoFork_CannotShareThem()
+    {
+        var engineTypes = typeof(MinigameEngineBase<>).Assembly.GetTypes()
+            .Concat(typeof(TestForgeEngine).Assembly.GetTypes())
+            .Where(type => !type.IsAbstract && !type.IsGenericTypeDefinition && IsMinigameEngine(type))
+            .ToList();
+        engineTypes.Should().Contain(typeof(TestForgeEngine), "the check must find the engines to be useful");
+
+        var mutableFields = new List<string>();
+        foreach (var type in engineTypes)
+        {
+            for (var current = type; current != null && !IsBase(current); current = current.BaseType)
+            {
+                mutableFields.AddRange(current
+                    .GetFields(System.Reflection.BindingFlags.Instance | System.Reflection.BindingFlags.Public |
+                               System.Reflection.BindingFlags.NonPublic | System.Reflection.BindingFlags.DeclaredOnly)
+                    .Where(field => !field.IsInitOnly)
+                    .Select(field => $"{current.Name}.{field.Name}"));
+            }
+        }
+
+        mutableFields.Should().BeEmpty(
+            "an engine's fields may hold immutable configuration only (declared readonly); a mutable value belongs in the TState record");
+
+        static bool IsBase(Type type) => type.IsGenericType && type.GetGenericTypeDefinition() == typeof(MinigameEngineBase<>);
+
+        static bool IsMinigameEngine(Type type)
+        {
+            for (var current = type.BaseType; current != null; current = current.BaseType)
+            {
+                if (IsBase(current))
+                    return true;
+            }
+
+            return false;
+        }
+    }
+
     /// <summary>A refused action changes no state, advances nothing and rolls nothing, not even a forecast.</summary>
     private static void AssertRefusedWithoutChange(TestForgeEngine engine, ScriptedMinigameRandom random, string actionId, string reason)
     {

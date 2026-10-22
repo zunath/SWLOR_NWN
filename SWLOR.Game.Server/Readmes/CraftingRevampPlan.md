@@ -1,0 +1,618 @@
+# Crafting Revamp Implementation Plan
+
+Owner-approved design from the October 2026 design interview, written for the agent that implements it. Every decision below was confirmed by the owner. Numbers marked *starting value* are first guesses for the simulator to tune; everything else is a decision. A change to a decision needs the owner's approval.
+
+Sections: Goals · Scope · Read first · Current system · Shared framework · Minigames · Progression and perks · Migration and release · Art and animation · Fixes and things left alone · Delivery · Verification · Defaults · Prior attempts
+
+## Goals
+
+Players report that one rotation works for every crafted item, and every craft plays the same. The audit confirmed it.
+
+- **One minigame for every craft.** Smithery, Engineering, Fabrication, cooking and Espionage share the 11 actions in `CraftViewModel.cs`, with the same unlock ranks and formulas. Recipes differ only by level (`RecipeLevelChart.cs`).
+- **One rotation wins.** Rank 40's flat +115 quality bonus makes Basic Touch the best value, so Waste Not, then Basic Touch repeated, repaired with Master's Mend, wins nearly everywhere.
+- **Gathering and research are gated by perks, and nothing else is active.**
+  - Gathering rank alone does nothing; every tier is a perk.
+  - Research is a Fabrication perk line, and its loop is a passive timer.
+  - Fishing, harvesting, scavenging and refining are click-and-wait.
+
+The revamp aligns crafting with the combat upgrade:
+
+1. **Progression comes from skill rank.** No perk only unlocks tiers or blueprints.
+2. **Perks are optional build choices**, as in combat.
+3. **Every craft gets its own minigame** with its own actions.
+4. **Every loop is turn-based**, with no real-time reactions. Pressure comes from limited actions and resources.
+
+## Scope
+
+**In scope**
+- Smithery, Engineering, Fabrication (including Research) and Agriculture (cooking and fishing).
+- Gathering (harvesting, scavenging, refining).
+- Espionage's poison and trap crafting.
+
+**Out of scope**
+- **Farming.** It comes later and will add a third Agriculture line, Farmer, at 25 SP.
+- **Space.** Asteroid mining and ship content wait for the space revamp. Engineering's starship, module, ship enhancement and ammo recipes (about 250) only switch to the new Engineering minigame, with no changes to their items, stats or recipes. The space revamp may move them later.
+- **Lightsaber workbenches.**
+- **Espionage's perks.** Poisoncraft, Trapcraft and Master Saboteur stay as they are.
+- **NPC store gear.** NPC stores are meant to sell unenhanced copies of crafted equipment.
+- **Skills.** Research stays with Fabrication and fishing with Agriculture.
+
+**Hard constraints**
+- **Power ceiling.** Crafted item stats do not change. Fully enhanced crafted gear stays the ceiling that `RareLootBalanceTests` measures. Research cannot grant more blueprint bonuses than today.
+- **Research.** Research keeps its credit costs and real-time durations. Researchable types stay as today: weapons, armor and food.
+- **Attributes.** No attributes in item crafting, gathering or fishing. Gathering rank and tool tier replace Might, Perception and Willpower.
+- **Espionage.** Espionage crafting stays tied to Espionage rank and XP.
+
+## Read first
+
+- `AGENTS.md`, then these guides in `Readmes/`:
+  - `CodingStandards.md` (StatType design, renames, Module JSON, TLK/2DA)
+  - `ContentStandards.md` (items, balance)
+  - `SkillPerkStandards.md` (lines, mechanical contract, balance evidence)
+  - `Migrations.md`
+  - `PullRequests.md`
+  - `AgentEnvironment.md`
+  - `InEngineVisualVerification.md`
+  - `EngineTesting.md`
+  - `NuiLayoutRules.md` and `GuiWindowAuthoring.md`
+  - `IconStandards.md`
+  - `DesignBibleWorkbookRules.md`
+  - `EconomyRestrictedItems.md`
+- Skills:
+  - `skills/swlor-gui-window-generation/SKILL.md` for every new window.
+  - `skills/swlor-blaster-models/SKILL.md` and `Readmes/BlasterModelImport.md` for the Trellis2 workflow.
+  - `skills/swlor-release-notes/SKILL.md` at release.
+- `design/animations/README.md` and `ANIMATION-PLAN.md` for authored animations. The tooling is in `tools/SWLOR.AnimationDrafts/`.
+- The Bible tabs in `design/bible/SWLOR Design Bible.xlsx`:
+  - Smithery, Engineering, Fabrication, Research, Agriculture, Gathering, Fishing, General.
+  - Crafting Calc and the four recipe tabs.
+  - System Changes & Migrations.
+
+## Current system
+
+Paths are under `SWLOR.Game.Server/`.
+
+| Area | Files |
+| --- | --- |
+| Stations and recipe window | `Service/Craft.cs` (`UseCraftingDevice`, `RecipeSkillUnlockOffset = 3`, enhancements, blueprints, research costs `:1147-1195`), `Feature/GuiDefinition/ViewModel/RecipesViewModel.cs` |
+| Minigame (being replaced) | `Feature/GuiDefinition/ViewModel/CraftViewModel.cs` (all rules inline: actions `:1727-1864`, CP `:446-454`, progress/quality `:1354-1384`, success `:1407-1500`, 65% loss on failure `:1601`), `Feature/GuiDefinition/CraftDefinition.cs`, `Service/CraftService/RecipeLevelChart.cs` |
+| Recipes | `Service/CraftService/RecipeBuilder.cs`, `RecipeDetail.cs`, `Feature/RecipeDefinition/<Skill>RecipeDefinition/`. About 3,400 recipes: Engineering 1,826, Smithery 775, Fabrication 456, Agriculture 318, Espionage 15 |
+| Research | `Feature/GuiDefinition/ViewModel/ResearchViewModel.cs`, `Entity/ResearchJob.cs`, `Craft.UseResearchTerminal` (`Craft.cs:980-1034`), `Craft.IsResearchableRecipe` (`:178`) |
+| Gathering | `Feature/ItemDefinition/HarvesterItemDefinition.cs`, `Feature/ScavengePoint.cs`, `Feature/GuiDefinition/ViewModel/RefineryViewModel.cs`, `Feature/LootTableDefinition/HarvestingLootTableDefinition.cs`, `*ResourceSpawnDefinition.cs` |
+| Fishing | `Service/Fishing.cs`, `Service/FishingService/`, `Feature/FishingLocationDefinition/`, `Feature/ItemDefinition/FishingRodItemDefinition.cs`, clips `sw_fishing6/7/8` (`design/animations/fishing/`) |
+| Perks | `Feature/PerkDefinition/GatheringPerkDefinition.cs`, `FabricationPerkDefinition.cs`, `EngineeringPerkDefinition.cs`; direct `Perk.GetPerkLevel` checks in `Loot.cs`, `ScavengePoint.cs`, `HarvesterItemDefinition.cs`, `RefineryViewModel.cs`, `ResearchViewModel.cs`, `Craft.cs:553-561,986-992`, `Droid.cs` |
+| Gear stats | Item properties Control 88, Craftsmanship 89, CPBonus 115 (subtypes 1-4 = Smithery, Engineering, Fabrication, Agriculture), applied in `Feature/EquipmentStats.cs:929-1075`, stored per skill on `Player.Control`/`Craftsmanship`/`CPBonus` |
+| XP | `Service/Skill.XPChart.cs` (`GetDeltaXP`; 0 XP at 5+ ranks past the activity level) |
+| Saved data | `Player.UnlockedRecipes`, `Player.CraftedRecipes` (first craft per recipe), `ResearchJob`, blueprint item properties (`ItemPropertyType.Blueprint`) |
+| Stations | Placeables `smithery_bench`, `engineering_term`, `fabrication_term`, `cookpot`, `espionage_bench`, `research_term`; StructureTypes Cookpot 219, EngineeringTerminal 220, FabricationTerminal 221, Refinery 222, SmitheryBench 223, ResearchTerminal 272 |
+| NUI board precedent | `Feature/GuiDefinition/ViewModel/SlicingViewModel.cs` (Espionage slicing). No new minigame may copy slicing's tile-board play |
+| Balance tooling precedent | `SWLOR.CombatSim/` |
+
+## Shared framework
+
+Build this first, because every minigame depends on it. It is a dependency, not a pilot.
+
+### Rules engine and windows
+
+- **One engine per minigame.** Each is a pure C# rules engine under `Service/CraftService/`, unit-testable without NUI.
+  - Each engine owns its meters, actions, previews, opportunities and outcome.
+  - Its view model only binds and forwards input.
+  - Shared pieces live once: session lifecycle, previews, the outcome contract, quick craft, XP settlement and the help page.
+- **Windows.** Each minigame has its own window, following the GUI guides. The recipe window (`RecipesViewModel`) still selects the recipe, enhancements and blueprint, then opens the skill's minigame.
+- **Rules every minigame follows:**
+  - **Previews.** Every action shows its exact cost and its result, or the result range when a chance is involved, before the click. One rules implementation feeds both the preview and the resolution.
+  - **Budgets.** Each attempt has a limited action or resource budget.
+  - **Visible randomness.** Success chances are visible, and the next state or opportunity is telegraphed at least one step ahead.
+  - **Opportunities only.** Random events only create opportunities and never punish.
+  - **One exception:** harvesting seams start hidden, and discovering them is the point.
+- **Length targets:**
+  - At-level manual craft: 10-20 actions, about 1-2 minutes.
+  - Gathering node: 3-8 actions.
+  - Fishing fight: 3-6 turns.
+  - Research experiment: 5-8 turns.
+- **Help.** Each window has a Help page, like slicing's `HelpPartial`. It opens automatically on a character's first use of that minigame; record first use per minigame on the player.
+
+### Outcome contract
+
+These rules apply to every item craft, in every minigame.
+
+- **Success.** The craft succeeds when its progress meter completes, and the item is created at once. The action that would complete it shows a "Finishes the item" warning. Each minigame names its own progress meter.
+- **Quality.** Every craft ends with a quality percentage.
+- **Enhancements.** Each enhancement slot has a visible quality threshold.
+  - Meeting the threshold guarantees the transfer. *Starting values:* first slot 50%, second slot 85%.
+  - This replaces today's per-enhancement chance roll (`quality / max quality`).
+  - The window shows which thresholds the current quality meets.
+- **Food.** Duration scales across the whole quality range, up to today's 100% bonus. This replaces the `(int)qualityPercent` branch that only paid at 100%.
+- **XP and sale value.** Both keep scaling with quality, using today's `+quality%` XP and vendor bonus. Base XP still comes from recipe level against rank (`Skill.XPChart.cs`).
+- **Failure.** The piece breaks when the minigame's integrity meter reaches 0. Each component stack and each selected enhancement then has today's 65% loss chance, and the window shows this rule before the materials are committed.
+- **Blueprints.** Fees, licensed runs and blueprint bonuses behave as today.
+
+### Gear stats
+
+The three existing per-skill gear stats stay. No new item properties are added, and about 323 crafting-gear blueprints are untouched.
+
+- **Craftsmanship** powers each minigame's progress actions.
+- **Control** powers its quality actions.
+- **CP** (gear CP + 0.75 × rank) is the action budget.
+- **The +31 CP passive at rank 25** is re-tuned per minigame by the simulator.
+- **Retired passives.** Today's hard-coded rank passives (+21 progress at rank 20, +115 quality at rank 40) and action unlock ranks (`CraftViewModel.cs:39-48`) are retired with the old minigame. Each new minigame's actions unlock by skill rank as defined below.
+- **Espionage** has no crafting gear today and gets none. Its minigame scales from Espionage rank only.
+
+### Per-recipe parameters
+
+Every recipe gets its own minigame parameters.
+
+- **The generator.** A deterministic generator under `tools/`, or `SWLOR.CLI`, computes each recipe's values:
+  - It starts from the recipe's category and its components.
+  - It then applies a fixed per-recipe variation within bounds, seeded by the recipe's identity, so values never change between runs.
+  - Examples: heat range, cooling, overload line, sub-assembly sizes, flavor target, reaction cycle.
+- **Storage.**
+  - Values are written explicitly into the recipe definitions, through new `RecipeBuilder` methods and `RecipeDetail` fields, so they are reviewable and stable.
+  - They are also written into new columns on the Bible recipe tabs. Extend `CombatUpgradeBibleRecipeParityTests` to cover them.
+- **Coverage test.** Add a test that fails on any active recipe with missing parameters, values outside the generator's bounds, or a difficulty outside its level's budget.
+- **Overrides.** A category or a single recipe may override generated values where it matters, and the override is recorded in code and the Bible.
+
+### Quick craft
+
+- **Availability.** Quick craft unlocks when rank is at least recipe level + 5, the range where XP is already 0, and after one manual success of that recipe.
+  - `Player.CraftedRecipes` counts, so recipes crafted before the revamp qualify.
+- **Batches.** Up to 10 per batch, materials permitting. Each item takes a short crafting animation, and the player stays at the station.
+  - Cancelling stops the batch. Completed items are kept and unused materials stay in the inventory.
+- **Output.** The base item only, with no enhancements, no blueprint, no blueprint bonuses and no XP.
+
+### Balance gates and tooling
+
+Build `SWLOR.CraftSim` (tool and tests) on the `SWLOR.CombatSim` pattern. It drives the real rules engines rather than a copy of them, with repeatable seeds. A minigame ships only when all of these pass:
+
+1. **No fixed rotation.**
+   - A solver searches for the best fixed action sequence per recipe.
+   - Adaptive play must clearly beat it in average quality on every recipe band and gear level.
+   - *Starting target:* at least 10 quality points.
+2. **Style balance.**
+   - For every style pair, each style must be the better choice on at least 30% of recipes, or fish for the Angler.
+   - Neither style may beat the other by more than about 5 quality points on average.
+3. **Perks optional.** An unperked rank-50 crafter with good gear can reach max quality on at-level recipes through skilled play. Perks change how, and how efficiently.
+4. **Length.** The targets above are met.
+5. **Economy parity.**
+   - Gathering yield per node and per scavenge site at each rank stays near today's expected yield.
+   - Research credits and times are unchanged.
+   - Material use per crafted item at matched quality stays near today's.
+
+Report inputs, seeds, results and limitations as `SkillPerkStandards.md` requires, and keep the reports under `design/testing/`.
+
+## Minigames
+
+These are the starting designs. Action names and meters are final unless the owner approves a change. Effect magnitudes are starting values the simulator tunes. Unless stated otherwise, every action costs the minigame's integrity meter a small amount; repair actions restore it.
+
+### Smithery: the Plasma Forge
+
+You keep the piece within its metal's thermal working range while shaping and finishing it. The setting is Star Wars, not fantasy: plasma forge, hydraulic press, vibro tools.
+
+- **Meters:** Thermal (0-100, working range marked), Shape (progress), Finish (quality), Integrity, CP.
+  - Thermal falls by the recipe's cooling rate after every action.
+- **Actions:**
+  - **Ramp Plasma:** raises Thermal, costs CP.
+  - **Hydro-Press:** large Shape gain that rises with Thermal across the range. Below the range it does little and cracks Integrity; above it, it works more but cracks Integrity harder.
+  - **Vibro-Hone:** Finish, best in the cool half of the range and weak outside it.
+  - **Rebond:** molecular rebond that restores Integrity at a Thermal and CP cost.
+  - **Cryo-Quench:** once per craft. A large Finish bonus if Thermal is in range, more near the center. Afterward the piece is set: Ramp Plasma and Hydro-Press are disabled, and Vibro-Hone works at a flat rate.
+- **Telegraphed opportunity:** **Stable Containment** next turn: the next Hydro-Press or Vibro-Hone gets +50%.
+- **Per-recipe parameters:**
+  - Working range center and width, cooling rate, starting Thermal.
+  - Shape/Finish split: armor needs more Shape, weapons more Finish.
+  - Leather and synthweave goods use a low, wide range ("heat-sealing").
+- **The decision:** press while it's hot or ramp first, and spend heat on shaping or let it cool into finishing range.
+
+### Engineering: the Circuit
+
+You build circuit load to amplify your work, then discharge it before it overloads. All Engineering recipes use it, including space recipes and droid parts.
+
+- **Meters:** Load (0-10, overload line marked), Assembly (progress), Calibration (quality), Integrity, CP.
+  - Each Load point raises output; *starting value* +10% per point.
+- **Actions:**
+  - **Wire:** Assembly, +1 Load.
+  - **Tune:** Calibration, +1 Load, costs CP.
+  - **Boost:** +3 Load, costs CP.
+  - **Discharge:** spends all Load as a burst into Assembly or Calibration, the player's choice, scaled by the Load spent.
+  - **Ground:** safely lowers Load, costs CP.
+  - **Patch:** restores Integrity, costs CP.
+- **Overload:**
+  - Above the line, each action shows an overload chance that rises per point.
+  - An overload costs a large amount of Integrity and resets Load to 0. The triggering action still resolves.
+- **Telegraphed opportunity:** **Clean Signal**: the next Tune is doubled.
+- **Per-recipe parameters:**
+  - Component grade sets the overload line.
+  - Category sets the per-Load multiplier: droid parts, enhancements and modules amplify differently.
+  - The Assembly/Calibration split.
+- **The decision:** push your luck for a bigger discharge, or bank it now.
+
+### Fabrication: the Fabricator
+
+You run an industrial fabricator with three tool heads to build the item's three sub-assemblies. It must not resemble slicing's tile board.
+
+- **Meters:** progress and quality for each of Frame, Shell and Fittings; Machine Condition (integrity); CP.
+- **Tool heads:**
+  - Cutter serves Frame, Extruder serves Shell, Bonder serves Fittings.
+  - One head is active at a time. **Retool** switches heads and costs CP.
+- **Actions with the active head:**
+  - **Run:** progress on the head's own sub-assembly, or half effect on another without retooling.
+  - **Precision Pass:** quality on the head's own sub-assembly only.
+  - **Service:** restores Machine Condition, costs CP.
+- **Assemble:** available once all three sub-assemblies are complete; it finishes the item.
+  - Quality is the average of the three, capped at the weakest + 20 points.
+- **Telegraphed opportunity:** **Prime Feedstock** for one named head next turn: that head's next action gets +50%.
+- **Per-recipe parameters:**
+  - Sub-assembly sizes and quality shares: a bed is mostly Frame, a terminal mostly Fittings.
+  - Wear rate from the materials.
+- **The decision:** when to retool and when to work off-head, and which sub-assembly to lift.
+
+### Agriculture cooking: the Kitchen
+
+You steer a dish's flavor toward the recipe's target while it cooks. Pet food and cooking enhancements use it too.
+
+- **Meters:**
+  - A three-axis flavor profile (Savory, Sweet, Spice), shown against the recipe's target zone.
+  - Doneness (progress).
+  - Freshness (integrity; falls every turn, and the dish is ruined at 0).
+  - CP.
+- **Heat setting:**
+  - Low, Medium or High, changed with **Adjust Heat**, which takes a turn.
+  - Low cooks slowly and holds flavor steady.
+  - High cooks fast and drifts flavor each turn. The next drift is telegraphed.
+- **Actions:**
+  - **Add:** one of the recipe's committed ingredients, or a free pantry seasoning (salt, sugar, spice). Each push is shown as a vector and range, and Control narrows the range.
+  - **Simmer:** Doneness at Low or Medium.
+  - **Sear:** large Doneness at High, costs Freshness.
+  - **Stir:** cancels the current drift, costs CP.
+  - **Cover:** halves Freshness loss for 3 turns, costs CP.
+- **Quality:** 100% inside the target's inner radius, falling to 0 at the outer radius.
+- **Telegraphed opportunity:** **Peak Aroma**: the next Add is twice as strong.
+- **Per-recipe parameters:**
+  - Target center and radii, by food category: soups, roasts, sweets, pet food.
+  - Ingredient flavor vectors from a component table.
+  - Freshness maximum.
+- **The decision:** what to add and when, and when to turn the heat up or down.
+
+### Espionage: the Reaction
+
+You work a volatile poison or trap mechanism through a visible reaction cycle.
+
+- **Cycle:** Calm, Rising, Peak, Settling. It advances every turn, and the current phase plus the next two are shown. Poisons and traps use different cycle patterns.
+- **Meters:** Potency (progress), Subtlety (quality), Stability (integrity), CP.
+- **Actions:**
+  - **Measure:** small Potency, safe in any phase.
+  - **Charge:** large Potency, doubled at Peak. It costs heavy Stability unless the phase is Calm.
+  - **Refine:** Subtlety, doubled in Settling and halved at Peak.
+  - **Dampen:** costs CP; holds the current phase one more turn.
+  - **Stabilize:** restores Stability, costs CP.
+- **Per-recipe parameters:** cycle pattern and length; tier sets Peak intensity.
+- **Progression:**
+  - It scales from Espionage rank only, with Espionage XP.
+  - Poisoncraft, Trapcraft and Master Saboteur ownership gates and the character-type restriction stay.
+
+### Fabrication research: the Experiment
+
+Research stays a real-time job that runs offline, with today's credit costs and durations (`Craft.cs:1147-1195`). Each research level now starts with a short experiment.
+
+1. **Start.** Starting a level charges credits exactly as today, then opens the experiment.
+2. **Candidates.** Three are drawn, using today's weights, from that level's random bonus outcomes: licensed runs, credit reduction, time reduction, and the item-bonus outcomes.
+   - Fixed grants stay fixed: level 7's guaranteed item bonus and level 10's enhancement slot.
+   - Today's small chance of an extra guaranteed bonus stays as an opportunity.
+3. **Trials.** *Starting value:* 6 trials.
+   - **Test** adds evidence to a candidate, with the success chance shown.
+   - **Refine Method** costs CP and raises the next Test's chance.
+   - **Analyze** spends spare evidence to shorten the job. *Starting cap:* -25% of the job's time.
+4. **Result.**
+   - The best-evidenced candidate is granted when the real-time job completes.
+   - Its magnitude is set by the evidence earned, within today's dice range. For example, a "+d3 runs" outcome pays 1-3 runs, never more.
+5. **XP.** Fabrication XP is awarded for the experiment and on job completion, based on recipe level against Fabrication rank. Research gives no XP today.
+6. **Gates and capacity.**
+   - Research tier gates come from Fabrication rank (see Progression).
+   - The Research Terminal stays Lab-only furniture.
+   - Blueprints stay ordinary tradable items, so Fabricators can research for others.
+7. **In-flight jobs.** Jobs started before the release finish under today's random roll.
+
+### Gathering harvesting: Prospecting
+
+Using a harvester on a vein or tree opens a short node session. Harvester charges are the action budget.
+
+- **Node:**
+  - **Yield:** a pool of units. Tune the pool against today's d4 harvests per node for economy parity.
+  - **Stability:** 100; the node collapses at 0 and the session ends.
+  - **Seams:** 1-3 hidden ones, either a rich seam (extra ore roll) or a gem pocket (the node's gem entries).
+- **Actions:**
+  - **Survey:** reveals one seam. Gathering rank milestones reveal more and replace Perception.
+  - **Strike:** 1-2 units, costs Stability.
+  - **Heavy Strike:** 2-4 units, costs more Stability. It shows the chance of shattering an unsurveyed gem pocket. Gathering rank milestones add yield and replace Might.
+  - **Extract:** claims a revealed seam for extra charges.
+  - **Leave:** ends the session. The remaining yield stays for others.
+- **Rules:**
+  - One player works a node at a time; others see that it is in use.
+  - Harvester and node tiers work as today, gated by rank.
+  - XP stays `GetDeltaXP(activity level - rank)` × units.
+- **Animations:** survey, strike, heavy strike, extract.
+
+### Gathering scavenging: Search
+
+A scavenge site opens a 3x3 search board. It is a choose-a-spot board, not slicing's tile puzzle.
+
+- **Board:**
+  - Some spots are marked promising; Gathering rank sets how many, replacing Perception.
+  - Gathering rank milestones set the number of searches, absorbing Hard Look.
+  - Tune the search count for economy parity.
+- **Actions:**
+  - **Search:** rolls the site's loot table; promising spots roll better.
+  - **Dig Deeper:** searches the same spot again for a rare item, at a shown risk of spoiling the spot.
+  - **Sift:** costs one search; reveals which neighboring spots are promising.
+- **Rules:**
+  - Treasure Hunter's rare weight still applies.
+  - XP and the once-per-site rule stay as today.
+- **Animations:** search, dig.
+
+### Gathering refining
+
+Refining stays a quick batch conversion with no minigame.
+
+- **Gates:** ore tier gates come from Gathering rank.
+- **Batch size:** each power core's batch grows with rank (see Progression).
+- **XP:** use the same rank-difference curve as harvesting, `GetDeltaXP(activity level - rank)` per unit, instead of today's flat 25-150 XP per unit (`RefineryViewModel.cs:337-352`). Cheap ore must stop training high ranks.
+- **Unrefinable ores:** Ochne, Croknor, Hemorgite and Bisteiss are not in the game. Leave their entries alone.
+
+### Agriculture fishing: the Line
+
+Casting, bait, location and time of day work as today, and still pick the fish (`FishingLocationDetail.GetRandomFish`). The existing `sw_fishing6/7/8` clips stay for the cast and wait. A bite now opens a fight.
+
+- **Fish state:**
+  - Distance: landed at 0, escapes at its maximum.
+  - Stamina.
+  - A telegraphed next move: Run, Dive, Thrash or Tire.
+- **Your state:** line Tension. At its maximum the line snaps and the fish is lost; the bait is spent at the bite, as today.
+- **Actions:**
+  - **Reel:** closes Distance and adds Tension, a lot against a Run, extra Distance against Tire.
+  - **Give Line:** lowers Tension and lets out Distance.
+  - **Hold:** drains Stamina and is strong against Thrash.
+  - **Set Hook:** first turn only.
+- **Tuning:**
+  - The rod tier and Agriculture rank set the Tension cap and reel strength, replacing Willpower.
+  - Fish level against rank sets Stamina and aggression.
+  - Rare fish get trickier move patterns.
+- **Unchanged:** XP (awarded per bite), bait use, point bite counts, and respawn timers, which are randomized at restart on purpose.
+- **Animations:** reel, give line, hold, land, added to the existing fishing animation set.
+
+## Progression and perks
+
+### Retired perks and their rank milestones
+
+Retire every perk in this table, refund it (see Migration), and grant its effect to everyone at the same skill rank the perk required. Keep the `PerkType` members for the refund migration.
+
+| Retired perk (PerkType) | Replacement for everyone |
+| --- | --- |
+| Harvesting I-V (157) | Harvester tiers 1-5 at Gathering 0/10/20/30/40 |
+| Refining I-V (158) | Ore tiers 1-5 at Gathering 0/10/20/30/40 |
+| Refinery Management I-VI (159) | Power cores refine +1 item at each of Gathering 0/10/20/30/40/45 (3 + 6 = 9 at 45) |
+| Scavenging I-V (160) | Scavenge site levels 1-5 at Gathering 0/10/20/30/40 |
+| Hard Look I-V (161) | Absorbed into the Search board's rank-based search count |
+| Research I-V (297) | Research tiers 1-5 at Fabrication 10/20/30/40/50 (tier = recipe level / 10 + 1) |
+| Research Projects I-II (299) | +1 concurrent research job at Fabrication 25 and 50 |
+| Scientific Networking I-II (256) | +1 licensed run on new blueprints at Fabrication 25 and 50 |
+| Droid Assembly I-V (264) | Droid tiers 1-5 at Engineering 0/10/20/30/40 |
+
+Replace each direct `Perk.GetPerkLevel` gate in the files listed under Current system with a rank check. Update `GatheringPerkRegressionTests`, `ResearchPerkRegressionTests` and the `GatheringPerkCoverage` and `FabricationPerkCoverage` engine tests to the new rules.
+
+### Treasure Hunter and Creditfinder
+
+- **Move** `TreasureHunter` (181) and `CreditFinder` (182) to `PerkCategoryType.General`, keeping their IDs and effects.
+- **Swap their requirements onto Armor:**
+  - Treasure Hunter I-III: Armor 20/40/50 at 3/3/4 SP.
+  - Creditfinder I-III: Armor 15/30/45 at 3/3/4 SP.
+- **Refund every owned rank in the migration** so players re-buy them under the new requirements.
+
+### Line schedule
+
+The structure is the same for every crafting skill:
+
+- **Two independent, optional lines per skill**, 25 SP each, 50 SP per skill.
+- **Purchases:** 10 per line, at ranks 5/10/15/20/25/30/35/40/45/50, priced 1/1/2/2/3/3/3/3/3/4 SP.
+- **Rank 20 is the line's style,** the crafting equivalent of a stance.
+  - Only one style can be active at a time; it is toggled in the craft window.
+  - In activity-split lines (Agriculture, Fabrication), the rank-20 purchase is a choice of two mutually exclusive styles through `PerkRequirementCannotHavePerk`. Switching costs a Perk Refund Token, like any perk.
+- **Rank 50 is the capstone,** with no quest requirement.
+- **Ranked purchases:** the rest of the line is ranked actives and traits built on the anchor perks below. Draft the full 10 rows per line in the Bible, following `SkillPerkStandards.md`, and get the owner's approval of the rows before coding them.
+- **Perks grant StatType adjustments that the minigame engines read** (`CodingStandards.md`).
+  - No perk-name switches in gameplay code.
+  - Declare each new StatType's classification, polarity and category on its enum entry.
+  - Reserve PerkType, StatType, icon and TLK IDs against current master and the HAK. PR #2393 had reserved stat IDs 1089-1108 on an unmerged branch; check that nothing collides.
+  - New perk icons follow `IconStandards.md`.
+- **Each line's perks act only on its own skill's minigame or activity.** Espionage's Reaction takes no crafting perks.
+
+### Lines
+
+| Skill | Line | Anchors (style at 20, capstone at 50) |
+| --- | --- | --- |
+| Smithery | **Forgemaster** (fast, hot work) | Style *Hot Forging*: the working range shifts up, Hydro-Press +25%, Vibro-Hone -25%. *Heat Retention*: Thermal falls slower. *Overdrive Press*: a large Shape active. Capstone *Red Line*: once per craft, a Hydro-Press above the range costs no Integrity and gives double Shape. |
+| Smithery | **Artisan** (precise finishing) | Style *Cold Working*: the mirror of Hot Forging. *Clean Containment*: Stable Containment appears more often. *Micro-Hone*: Finish that ignores Thermal. Capstone *Perfect Temper*: a Cryo-Quench at the range's center gives +50% Finish. |
+| Engineering | **Overclocker** (high load) | Style *Overclock*: extra Load per action and a higher boost per point. *Heat Sinks*: the overload line rises by 2. *Cascade Discharge*: one Discharge into both meters. Capstone *Surge*: once per craft, an overload becomes a full-strength Discharge instead of costing Integrity. |
+| Engineering | **Technician** (stable, precise) | Style *Safe Mode*: no overload chance until 2 past the line, but a lower boost per point. *Diagnostics*: the forecast shows two turns ahead. *Micro-Tune*: Calibration with no Load gain. Capstone *Failsafe*: the first time Integrity would reach 0, it stays at 1. |
+| Gathering | **Prospector** (volume) | Style *Strip Mining*: Strikes +1 unit at a higher Stability cost. *Efficient Strikes*: lower Stability cost. *Bulk Refining*: larger batches per power core. *Core Sample*: reveals every seam's type. Capstone *Mother Lode*: one double-yield Heavy Strike per node. |
+| Gathering | **Treasure Seeker** (rare finds) | Style *Careful Hands*: less yield, a better rare-seam chance. *Keen Eye*: one more promising spot on Search boards. *Steady Dig*: halves Dig Deeper's risk. *Deep Scan*: Survey reveals 2 seams. Capstone *Jackpot*: the first Extract per node adds a bonus gem. |
+| Agriculture | **Chef** (cooking) | Style choice *Slow Cooking* (Low heat cooks faster, steadier flavor) or *Flash Cooking* (High heat drifts less). *Seasoned Palate*: half-strength Adds. *Reduce*: pulls the profile toward center. Capstone *Signature Dish*: once per craft, snaps one flavor axis onto target. |
+| Agriculture | **Angler** (fishing) | Style choice *Patient Angler* (Give Line loses less Distance) or *Aggressive Angler* (stronger Reel, more Tension). *Strong Line*: +Tension cap. *Fish Sense*: shows the fish's next two moves. *Hard Set*: Set Hook drains much more Stamina. Capstone *Trophy Catch*: better odds on rare fish. Tune it without raising the economy's rare-fish supply beyond the simulator's parity check. |
+| Fabrication | **Builder** (Fabricator) | Style choice *Production Run* (Run +25%, Precision Pass -25%) or *Fine Tolerance* (the mirror). *Quick Change*: cheaper Retool. *Dual Feed*: one Run advances two sub-assemblies at 60% each. *Field Service*: Service restores more. Capstone *Master Assembler*: the Assemble cap rises from weakest + 20 to weakest + 35. |
+| Fabrication | **Researcher** (Experiment) | Style choice *Methodical* (+2 trials, -10% Test chance) or *Intuitive* (+15% Test chance, -2 trials). *Broader Hypotheses*: 4 candidates instead of 3. *Peer Review*: moves half of one candidate's evidence to another. *Efficient Analysis*: Analyze cuts more time. Capstone *Breakthrough*: once per experiment, redraw one candidate, and the winner's time cut doubles. It grants no extra bonuses. |
+
+Espionage gets no new lines.
+
+## Migration and release
+
+Follow `Migrations.md`.
+
+### One migration per release
+
+The newest migrations today are server `_29_CorrectStoredCarapaceBracers` and player `_24_CorrectCarapaceBracers`. Before adding a version, ask the owner whether the newest migration of that kind has shipped to production.
+
+### Perk refunds
+
+The owner asked for these refunds in the migration. This departs from `Migrations.md`'s rule against one-off refund migrations, so update that rule's line to record the exception in the same PR.
+
+- Refund every retired perk above, plus Treasure Hunter and Creditfinder, through the existing refund path:
+  - `LegacyPerkRefundMigration.Migrate(player, removedPerks)` runs in this release's server migration and prices perks from its historical table.
+  - Verify each perk's entry and prices in that table first.
+  - Use `CharacterRecalculation.RefundPerk` only for data that lives in the character file.
+  - Players get a login notice listing their refunds.
+
+### Rebuild token
+
+Grant one rebuild token per character with `RebuildTokenGrant.Grant(player)` in this release's character migration's `MigratePlayerData`, as `_15_RemoveObsoleteCombatInstructionDiscs` does. Do not force a full rebuild (`Player.RebuildComplete`).
+
+### Saved data
+
+- `Player.CraftedRecipes` stays and now gates quick craft.
+- Record first-use flags for each minigame's help page.
+- `ResearchJob` gains whatever the experiment needs to store: the chosen candidate, its magnitude and the time cut. Jobs created before the release finish under the old roll.
+- Existing blueprints and crafted items are not changed.
+- Any enum rename needs its migration (`Migrations.md`, "Enum renames"). Prefer adding members over renaming.
+
+### Bible and release notes
+
+- Update the Bible's System Changes & Migrations tab.
+- Write release notes with `skills/swlor-release-notes/SKILL.md`.
+
+## Art and animation
+
+### Stations
+
+The seven stations get new models made with the Trellis2 workflow. They are replaced in place: resrefs, tags, scripts and StructureTypes stay the same, so no placed station in the module or in player properties moves or breaks.
+
+| Station | New look |
+| --- | --- |
+| Smithery | Plasma forge |
+| Engineering | Engineering workbench |
+| Fabrication | Industrial fabricator with three heads |
+| Cooking | Galley station |
+| Espionage | Espionage bench |
+| Research | Research terminal |
+| Gathering | Refinery |
+
+- **Adapting Trellis2.** The documented workflow (`Readmes/BlasterModelImport.md`, `tools/workflows/trellis2_*.json`, `tools/Trellis*.py`) covers weapons and shields. Adapting it to placeables is part of this work: an image-to-GLB workflow, Blender export to MDL, walkmesh, textures and placeables.2da.
+- **Documentation.** Record the placeable procedure beside the weapon one in that readme.
+- **Where the work lands:**
+  - Model and 2DA work goes in the HAK.
+  - Furniture-type stations keep their StructureType mapping.
+  - Check whether the Refinery appearance is a placeable or a structure before swapping it.
+
+### Animations
+
+Author these with the established animation tooling (`design/animations/`, `tools/SWLOR.AnimationDrafts/`) for the playable species on the normal phenotype only:
+
+- **Stations:** one looping work animation per station craft (Smithery, Engineering, Fabrication, cooking, Espionage), also used by quick craft.
+- **Gathering:** survey, strike, heavy strike, extract, search, dig.
+- **Fishing:** reel, give line, hold, land. Reuse the existing `sw_fishing6/7/8` cast-and-wait clips.
+
+Every model and animation needs client evidence (`InEngineVisualVerification.md`).
+
+## Fixes and things left alone
+
+**Fix, in the workstream that touches each system:**
+- **Research terminal message.** It says "Another player's incubation job is active" (`Craft.cs:1021`). It should name a research job.
+- **Bible SP totals.** The Engineering, Fabrication, Agriculture and Gathering tabs show cached SP totals that disagree with their rows, and some SP Price cells are stored as text. Fix them with the workbook rules, then rewrite those tabs for the new lines.
+- **Refining XP.** Use the rank-difference curve, as above.
+- **Character sheet tooltips.** They describe a retired "auto-craft chance" (`CharacterSheetDefinition.cs:258-259`). Rewrite them for the new stat roles.
+- **Player guide text.** Update the crafting, gathering, fishing and research text in `PlayerGuideViewModel.cs`, keeping `PlayerGuideContentTests` passing.
+- **Old minigame defects.** These disappear when the old minigame is deleted; make sure none survives in shared code:
+  - CP labels: Careful Synthesis and Precise Touch show 15 CP but spend 10.
+  - The max-progress sign errors.
+  - Veneration spending its step on a refused action.
+  - The food duration cast that only paid at 100%.
+  - The unused `DifficultyAdjustment`.
+- **Harvesting bonus-item chance.** `d100 <= 5*MightMod*5` is removed with the attribute dependency.
+
+**Leave alone:**
+- NPC store equipment.
+- The four unavailable ores.
+- Fishing point respawn randomization.
+- Espionage's perks and slicing.
+- Lightsaber workbenches.
+- Ship content.
+- Droid assembly beyond its rank gate.
+- Item stats.
+- Recipe components.
+
+## Delivery
+
+The combat upgrade's model applies, with no pilot: build every minigame, then test them together.
+
+- **Branch.** Create one long-lived feature branch from up-to-date `origin/master`, for example `feature/crafting-revamp`; `feature/crafting-upgrade` was #2393's. Pair it with a companion HAK branch.
+- **PRs.** Land each workstream as its own reviewable PR into the feature branch, following `Readmes/PullRequests.md`: Codex review loop, resolved threads, base merged in.
+  - Keep each PR under about 100 files so automated review can run; #2393's 133 files exceeded the limit.
+- **Release.** Merge the feature branch to master once for one player release. That release carries the migration, refunds, rebuild token and Treasure Hunter/Creditfinder move.
+
+**Workstreams.** 1 comes first; 2-10 can run in parallel after it; 11 closes.
+
+1. **Foundation.**
+   - Session framework, outcome contract, quick craft and help pages.
+   - Per-recipe parameter generator, `RecipeBuilder` fields and Bible columns.
+   - `SWLOR.CraftSim` with the gates.
+   - Rank milestones replacing retired perks.
+   - Treasure Hunter/Creditfinder move.
+   - Migration: refunds and token.
+   - Research message fix and Bible SP total fix.
+2. **Smithery:** Plasma Forge, plus the Forgemaster and Artisan lines.
+3. **Engineering:** Circuit, plus the Overclocker and Technician lines.
+4. **Fabrication:** Fabricator, plus the Builder line.
+5. **Research:** Experiment, plus the Researcher line.
+6. **Cooking:** Kitchen, plus the Chef line.
+7. **Fishing:** Line, plus the Angler line and the fishing animations.
+8. **Espionage:** Reaction.
+9. **Gathering:** Prospecting, Search and refining changes, plus the Prospector and Treasure Seeker lines and the gathering animations.
+10. **Art:** Trellis2 placeable adaptation, seven station models, and the five station work loops.
+11. **Closeout.**
+    - Delete the old minigame (`CraftViewModel` rules, `CraftDefinition`, retired level-chart fields).
+    - Final Bible sync, player guide text and tooltips.
+    - Joint test pass across every minigame.
+    - Release notes.
+
+## Verification
+
+- **Build and test.** Build once with `-p:RunPostBuildEvent=Never -v q -clp:ErrorsOnly`, then run focused filters for each change.
+- **New unit tests.**
+  - Each rules engine: every action, preview, opportunity, threshold, failure and lifecycle path.
+  - Quick craft.
+  - Per-recipe parameter coverage.
+  - Rank milestones.
+  - Perk StatType effects, including style exclusivity and switching.
+  - Migration from legacy data, refunds and the token (`Migrations.md`, Testing).
+- **Existing tests to keep green or update:**
+  - `CraftTests`, `RecipeSearchTests`, `RecipeLearningSourceTests`, `FoodRecipeBalanceTests`
+  - `EquipmentRecipeProgressionTests`, `RecipeCategoryBaseItemTests`, `CombatUpgradeBibleRecipeParityTests`
+  - `GatheringPerkRegressionTests`, `ResearchPerkRegressionTests`
+  - `EconomyObtainabilityCoverageTests`, `RareLootBalanceTests`, `PlayerGuideContentTests`
+  - `PerkRankProgressionTests`, and the GUI layout validation tests.
+- **Engine tests:**
+  - `FishingBaitEngineTests`
+  - `GatheringPerkCoverage` and `FabricationPerkCoverage`
+  - New engine coverage for each station flow, node sessions, the fight window, research jobs, and migration on saved characters.
+- **Balance evidence:** CraftSim reports for every gate, stored under `design/testing/`.
+- **Client evidence:** every new window, action, help page, station model and animation, and a quick-craft batch, through `InEngineVisualVerification.md`.
+- **Handoff reports.** Each handoff states separately:
+  - Module repack, HAK and TLK rebuild, and server deploy.
+  - What was observed in the client.
+  - Anything unverified, with the reason.
+
+## Defaults
+
+The owner did not decide these explicitly; they follow today's behavior or the nearest established rule. Raise any that turn out wrong.
+
+- **Ending a craft early.** Closing the window, logging out, dying, moving away or a server restart mid-craft ends the attempt as a failure under the 65% rule, as today. Other players cannot bump a crafter off a station (fixed in #2776; keep it fixed).
+- **Exclusive use.** One player per station session and per gathering node session.
+- **Thresholds.** Enhancement thresholds are shown per slot. An item with one slot uses the first threshold.
+- **Pantry seasonings** in the Kitchen are free and unlimited, with small pushes; recipe ingredients push harder and are limited to the committed quantity.
+- **Research XP** is awarded for the experiment and on completion. The other research rules are as stated above.
+- **Fishing XP** stays per bite.
+
+## Prior attempts
+
+- **[zunath/SWLOR_NWN#2393](https://github.com/zunath/SWLOR_NWN/pull/2393)**, "Add adaptive crafting and distinct profession perk trees", closed unmerged. Its plan is readable at commit `d9538da6` as `SWLOR.Game.Server/Readmes/CraftingEngagementPlan.md`.
+  - **What it did:** it kept one shared action set and added recipe profiles, a random condition deck, and 20 SP perk trees.
+  - **Keep its good ideas:** exact action previews, opportunities-only randomness, turn-based pacing, a rules engine separate from the view model, and simulator-backed gates.
+  - **Do not repeat:** one shared action set across crafts, identity coming only from perks, and a single oversized PR.
+- **[zunath/SWLOR_NWN#2056](https://github.com/zunath/SWLOR_NWN/pull/2056)**, "Add Farming system", closed unmerged. Farming is out of scope.

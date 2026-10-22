@@ -95,6 +95,11 @@ namespace SWLOR.Game.Server.Service
         }
 
         /// <summary>
+        /// Whether a droid is still being summoned and restoring its saved equipment.
+        /// </summary>
+        public static bool IsSpawning(uint droid) => GetLocalBool(droid, DroidIsSpawning);
+
+        /// <summary>
         /// Retrieves the controller item associated with a droid.
         /// If not found, OBJECT_INVALID will be returned.
         /// </summary>
@@ -855,6 +860,7 @@ namespace SWLOR.Game.Server.Service
             TwinPistolEquipment.EnsurePair(droid);
 
             DeleteLocalBool(droid, DroidIsSpawning);
+            DroidEquipmentDiagnostics.RememberHands(droid);
             SaveItemSnapshot(droid);
             AssignCommand(GetModule(), () =>
             {

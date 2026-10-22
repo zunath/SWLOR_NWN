@@ -71,6 +71,15 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition
                             .BindIsEnabled(model => model.IsPlaceableSelected)
                             .SetHeight(35f);
                     });
+
+                    col.AddRow(row =>
+                    {
+                        row.AddButton()
+                            .SetText("Battle Grid")
+                            .SetTooltip("Project a sizable grid over this area for battles")
+                            .BindOnClicked(model => model.OnOpenBattleGrid())
+                            .SetHeight(35f);
+                    });
                 })
 
                 .AddColumn(col =>

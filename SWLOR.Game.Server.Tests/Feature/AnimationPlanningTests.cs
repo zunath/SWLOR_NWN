@@ -184,10 +184,18 @@ public class AnimationPlanningTests
             entry => entry.GetProperty("Name").GetString()!);
         foreach (var entry in names)
             installed[entry.Key].GetProperty("AnimationName").GetString().Should().Be(entry.Value);
-        installed.Keys.Except(names.Keys).Should().BeEquivalentTo("Fishing6", "Fishing7", "Fishing8", "TwinPistolCycle");
+        var motionNames = new Dictionary<string, string>
+        {
+            ["TwinPistolCycle"] = "sw_twinpisto",
+            ["BlasterSlideTravel"] = "sw_blastersl",
+            ["PistolRushTravel"] = "sw_pistolrus",
+            ["GrappleShotTravel"] = "sw_grapplesh",
+        };
+        installed.Keys.Except(names.Keys).Should().BeEquivalentTo(
+            new[] { "Fishing6", "Fishing7", "Fishing8" }.Concat(motionNames.Keys));
         foreach (var id in installed.Keys.Except(names.Keys))
         {
-            var expectedName = id == "TwinPistolCycle" ? "sw_twinpisto" : "sw_" + id.ToLowerInvariant();
+            var expectedName = motionNames.TryGetValue(id, out var motionName) ? motionName : "sw_" + id.ToLowerInvariant();
             installed[id].GetProperty("AnimationName").GetString().Should().Be(expectedName);
             File.Exists(Path.Combine(Root, installed[id].GetProperty("ProjectPath").GetString()!)).Should().BeTrue();
         }

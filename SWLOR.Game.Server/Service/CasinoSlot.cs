@@ -1,6 +1,7 @@
 using SWLOR.Game.Server.Core;
 using SWLOR.Game.Server.Entity;
-using SWLOR.Game.Server.Feature.DialogDefinition;
+using SWLOR.Game.Server.Feature.GuiDefinition.Payload;
+using SWLOR.Game.Server.Service.GuiService;
 using SWLOR.Game.Server.Service.LogService;
 
 namespace SWLOR.Game.Server.Service
@@ -40,7 +41,7 @@ namespace SWLOR.Game.Server.Service
         {
             var player = GetLastUsedBy();
             if (CanUse(player, OBJECT_SELF))
-                ConversationMenu.TryStart(player, OBJECT_SELF, nameof(CasinoSlotDialog));
+                Gui.TogglePlayerWindow(player, GuiWindowType.CasinoSlot, new CasinoSlotPayload(OBJECT_SELF), OBJECT_SELF);
         }
 
         private static CasinoDailyPlay GetDailyPlay(uint player)
@@ -69,20 +70,20 @@ namespace SWLOR.Game.Server.Service
                    "Resets daily at 10:00 UTC. Changing characters does not reset your allowance.\n" + failure;
         }
 
-        public static string Spin(uint player, uint machine)
+        public static CasinoSpinResult Spin(uint player, uint machine)
         {
             if (!CanUse(player, machine))
-                return "You must be beside the slot machine in the Smuggler's Moon Casino.";
+                return new CasinoSpinResult(false, 0, "You must be beside the slot machine in the Smuggler's Moon Casino.");
 
             var now = DateTime.UtcNow;
             var play = GetDailyPlay(player);
             if (play == null)
-                return "Your casino account could not be loaded. No credits were taken.";
+                return new CasinoSpinResult(false, 0, "Your casino account could not be loaded. No credits were taken.");
             var failure = CasinoDailyLimit.GetFailure(play, now);
             if (!string.IsNullOrEmpty(failure))
-                return failure;
+                return new CasinoSpinResult(false, 0, failure);
             if (GetGold(player) < SpinCost)
-                return "You need 100 credits to spin.";
+                return new CasinoSpinResult(false, 0, "You need 100 credits to spin.");
 
             var payout = Math.Min(GetPayout(Random.Next(10000)), MaximumPayout);
             CasinoDailyLimit.RecordSpin(play, now, payout);
@@ -109,7 +110,7 @@ namespace SWLOR.Game.Server.Service
             AssignCommand(player, () => PlaySound("gui_prompt"));
             if (payout == MaximumPayout)
                 AssignCommand(machine, () => SpeakString("Jackpot! This machine has paid out 10,000 credits!"));
-            return result;
+            return new CasinoSpinResult(true, payout, result);
         }
     }
 }

@@ -146,14 +146,19 @@ public class CraftMinigameXpTests
     public void OnlyCraftingCodeReadsTheCraftsBaseXp_SoCombatAndPilotingXpCannotPickUpThePaceMultiplier()
     {
         var serverRoot = Path.Combine(FindRepositoryRoot(), "SWLOR.Game.Server");
-        var readers = Directory.EnumerateFiles(serverRoot, "*.cs", SearchOption.AllDirectories)
+        var files = Directory.EnumerateFiles(serverRoot, "*.cs", SearchOption.AllDirectories)
             .Where(path => !path.Contains($"{Path.DirectorySeparatorChar}obj{Path.DirectorySeparatorChar}") && !path.Contains($"{Path.DirectorySeparatorChar}bin{Path.DirectorySeparatorChar}"))
-            .Where(path => File.ReadAllText(path).Contains("CraftMinigameXp.", StringComparison.Ordinal))
-            .Select(path => Path.GetFileName(path))
-            .OrderBy(name => name, StringComparer.Ordinal)
             .ToList();
 
-        readers.Should().Equal("CraftSessionLifecycle.cs", "CraftViewModel.cs");
+        string[] Mentioning(params string[] needles) => files
+            .Where(path => needles.Any(needle => File.ReadAllText(path).Contains(needle, StringComparison.Ordinal)))
+            .Select(path => Path.GetFileName(path))
+            .OrderBy(name => name, StringComparer.Ordinal)
+            .ToArray();
+
+        // BaseXp is the only member that applies the pace; the fishing fight scales its own XP with the Line's band alone.
+        Mentioning("CraftMinigameXp.BaseXp(").Should().Equal("CraftSessionLifecycle.cs", "CraftViewModel.cs");
+        Mentioning("CraftingPaceMultiplier", "PaceMultiplierFor", "AppliesCraftingPace").Should().Equal("CraftMinigameXp.cs");
     }
 
     private static string FindRepositoryRoot()

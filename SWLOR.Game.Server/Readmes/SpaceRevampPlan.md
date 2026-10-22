@@ -87,7 +87,7 @@ Before any work, read `AGENTS.md` and these guides, plus every guide named in th
 | Attributes | AGI accuracy/evasion, PER attack/crit, VIT hull defense, WIL shields/capacitor/repair, MGT STM for maneuvers, SOC command and trade prices. |
 | Activation | Modules with a cycle are toggles that fire themselves each cycle and switch off when they can't fire. Lit icons show what's on, and a Ship HUD shows targets. |
 | Crew | Stations on Large and Capital hulls, with droid crew. Ships at launch. |
-| Death | Modules drop only on PvP deaths. Everyone aboard ejects in escape pods and takes the normal XP debt. Cargo spills. |
+| Death | Modules drop only on PvP deaths in Wild Space. Everyone aboard ejects in escape pods and takes the normal XP debt. Cargo spills on any death. |
 | Enemies | Every NPC ship gets a size and a role behavior. New groups: pirates, customs patrols, Hutt enforcers, derelict defenses, convoys, aces. |
 | World | 3 new small-ship zones with 3 new materials. Salvage from wrecks. Starlane fixes. Size limits on docking. |
 | Trade | Cargo held as ship data, about 20 commodities, dock exchanges with moving prices, contraband and customs, pirates, freight contracts, faction standing, city tariffs. |
@@ -157,7 +157,7 @@ Paths are relative to `SWLOR.Game.Server/`.
 | Shield regen | 1 point every N s; bigger hulls slower | Per second, growing with size and WIL |
 | Speed | Same for every ship | Set per hull |
 | PvP | Any ship can shoot any player ship | Ground hostility and area rules, PvP ramps |
-| Ship death | 65% drop per module on every death; everyone inside killed | PvE keeps modules; PvP 65% drop; escape pods; cargo spills |
+| Ship death | 65% drop per module on every death; everyone inside killed | Modules drop only on PvP deaths in Wild Space; escape pods; cargo spills |
 | Crew | Passengers only | Stations on Large and Capital hulls; droid crew |
 | Mining | Piloting perks and XP | Gathering perks and XP; gas harvesting; salvage |
 | Trade | None | Cargo, exchanges, contraband, pirates, freight contracts, factions |
@@ -345,13 +345,14 @@ Two ships in the same role are sidegrades, never strict upgrades.
 
 Toggled modules are the ship's auto-attacks; perk abilities are the buttons, as on the ground.
 
-- **Toggles:** every module with a cycle is an on/off toggle that fires itself each time its cycle ends. That covers:
-  - weapons (missiles while ammo lasts)
+- **The rule:** toggles do steady work every cycle. One-press modules deliver a single timed burst, with a cycle of 18 s or longer or a scarce consumable spent per use. Each family's setting is written explicitly in Appendix B ("Use"), so a later cycle-time retune never moves a family to the other category by accident.
+- **Toggles:** an on/off toggle fires itself each time its cycle ends. That covers:
+  - weapons other than the burst ones below (missiles while ammo lasts)
   - Mining Lasers, Salvagers and Gas Harvesters
   - repairers and capacitor transfer
   - Jammers, Target Painters, Ion Webs and Interdictors
   - Shield Hardeners and the Afterburner, which pay capacitor each cycle
-- **One press:** consumables (Hypermatter Injector) and every perk ability.
+- **One press:** the Torpedo Launcher, the Assault Concussion Missile, the Laser Battery, the Hypermatter Injector, the Data Analyzer, and every perk ability.
 - **Targets:**
   - Offensive modules fire at the ship's current target and follow it when the pilot switches targets.
   - Support modules (repairers, capacitor transfer) lock onto the target selected when they were turned on. They keep it until it dies or they are turned off.
@@ -430,7 +431,7 @@ Toggled modules are the ship's auto-attacks; perk abilities are the buttons, as 
   - Remote repair and buffs follow the same hostility rules.
 - **Death:**
   - **Escape pods:** a destroyed ship ejects everyone aboard (pilot, crew and passengers) alive to the dock the ship is towed to. Each takes the normal ground XP debt (`Death.ApplyPenalties`).
-  - **Modules:** they drop only on a PvP death, at today's 65% chance, and the attacker can loot them. On a PvE death, modules stay installed.
+  - **Modules:** they drop only on a PvP death **in Wild Space** (section 23), at today's 65% chance per module, and the attacker can loot them. Everywhere else, including every existing orbit, modules stay installed on any death; players are used to those orbits being safe.
   - **Cargo:** spills on any death (section 13).
   - **Repairs:** the owner pays a repair bill scaled by hull size. The SOC and starport discounts stay.
 - **Global recast:** none for toggled modules (section 8, Activation). One-press items and perk abilities follow the ground ability rules, and each crew member has their own.
@@ -878,6 +879,7 @@ Everything in Part II ships in the same release as Part I. It builds on Part I's
 - **Rakatan Remnant:** a new automaton enemy faction that uses all 8 role behaviors together. Its stats are drafted from the ground tier-5.5 presets. Models come from unused hak ships, or from Trellis2 (section 20).
 - **Loot:** named rank-50 module recipe unlocks, Design Schematics, Thorilide, Aurodium, tier-5.5 Rift Keys, rare component traits, and **Rakatan relics**. Relics are a research input that improves blueprint bonuses (section 14).
 - **Stations:** 1-2 anchor sites per system (section 25). Jump Beacons never connect into or out of Wild Space.
+- **Higher stakes:** Wild Space is the only place a PvP death can drop modules (section 9).
 
 ## 24. Scanning and exploration
 
@@ -1222,9 +1224,10 @@ Every family has an item every 5 ranks (0-45); capital families start at rank 40
 | Ion Cannon | High | Gunnery | Toggle | EM damage, strong against shields; slows on hull hits. | Ion Cannon |
 | Beam Cannon | High | Gunnery | Toggle | Thermal damage over a few ticks at short range. | Beam Cannon |
 | Missile Launcher | High | Gunnery | Toggle | Explosive damage at long range; uses missiles; bonus against low shields. Ion, incendiary and seeker ammo variants. | Missile Launcher |
-| Torpedo Launcher | High | Gunnery | Toggle | Heavy explosive damage to Large and Capital hulls; bypasses shields; ignores the size penalty; uses torpedoes. | Proton Bomb Launcher |
+| Torpedo Launcher | High | Gunnery | One press | Heavy explosive damage to Large and Capital hulls; bypasses shields; ignores the size penalty; uses torpedoes. | Proton Bomb Launcher |
 | Point-Defense Turret | High | Gunnery | Toggle | Always fires as Light; bonus against Small hulls. | New |
-| Turbolaser, Quad Laser, Laser Battery, Storm Cannon, Assault Concussion Missile | High | Gunnery | Toggle | Capital weapons. Capital hulls only. | Capital weapons |
+| Turbolaser, Quad Laser, Storm Cannon | High | Gunnery | Toggle | Capital weapons on short cycles. Capital hulls only. | Capital weapons |
+| Laser Battery, Assault Concussion Missile | High | Gunnery | One press | Capital burst weapons: an area volley, or a heavy missile using rare ammo. Capital hulls only. | Capital weapons |
 | Mining Laser | High | Gathering | Toggle | Mines asteroids up to its tier. | Mining Laser |
 | Strip Miner | High | Gathering | Toggle | Large and Capital hulls; strips a whole asteroid and roots the ship while it runs. | Strip Miner |
 | Salvager | High | Gathering | Toggle | Salvages wrecks for scrap, components and rare finds. | New |

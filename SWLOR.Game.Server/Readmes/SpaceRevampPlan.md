@@ -416,6 +416,7 @@ Toggled modules are the ship's auto-attacks; perk abilities are the buttons, as 
   - every module that is on, with its target and cycle progress
   - a **Retarget** button on each support module, which locks it to the current target
   - an **All Weapons** on/off button, also available as a hotbar feat
+  - a **Stats** tab with every stat of the player's ship: hull, shield and capacitor with their regen, Attack and Defense, resistances, accuracy, evasion, critical rate, speed, cargo and slot counts. Today players see only hull, shield and capacitor (Ship Management); `/shipstats` is a DM command that only the test server opens to everyone.
 
   The HUD exists so support-module locks are never confusing: a player can always see what each module is aimed at and change it in one click.
 
@@ -585,7 +586,7 @@ Ships at launch.
 
   Each needs item blueprints, refinery entries where needed, loot tables, icons and `EconomyRestrictedItems.md` coverage.
 - **Starlanes:**
-  - Add Dantooine-Korriban.
+  - No Dantooine-Korriban lane: a direct link between the Jedi enclave world and the Sith homeworld clashes with the lore.
   - Give Smuggler's Moon (`narshadorbit`, unreachable through space today) dangerous lanes to Hutlar and Tatooine.
   - Make the Korriban route return the way it came.
 
@@ -706,7 +707,7 @@ There is no new crafting skill. Space work spreads across the existing crafts by
 
 ### Stores and economy
 
-- The dockhand store sells rank-0 modules, starter Small hulls, and Mining Lasers through rank 40 (today's Mining Lasers I-IV, mapped as in section 15). Non-crafters can still mine ore and lyase. Weapons and other modules above rank 0 are crafted only.
+- The dockhand store sells rank-0 modules, starter Small hulls, Mining Lasers through rank 40 (today's Mining Lasers I-IV, mapped as in section 15), and the lowest-tier missile. Non-crafters can still mine ore and lyase, and Ordnance pilots (launchers are the MGT damage path, section 5) are never stranded without a crafter; today the dockhand sells a launcher but no missiles. Weapons and other modules above rank 0, torpedoes, higher-tier missiles and ammo variants are crafted only.
 - Every new item source must be registered for `EconomyObtainabilityCoverageTests` and follow `EconomyRestrictedItems.md`.
 - Game text uses ASCII punctuation (`CodingStandards.md`).
 
@@ -811,7 +812,7 @@ Draft each in the Bible, check it with the combat simulator where it affects com
 - **Scanning:** signal gained per cycle, spawn rates per signature type, Sensor Sweep range and cooldown, Jump to Signature spool.
 - **Stations:** Station Core recipe, anchor site count per area, Asteroid Drill output, Shipyard build times, Jump Beacon fuel cost and hull caps.
 - **Holdings:** price, upkeep, output, upgrade costs, Processing Plant recipes, event odds, droid boost.
-- **Droids:** Industry per industrial part, stat cuts, instruction effects.
+- **Droids:** Industry per industrial part, stat cuts, instruction effects, derelict salvage team timer and yield.
 - **Slicing:** Data Analyzer range, slicing tiers per zone for data cans, locked caches, data cores and space lockboxes, space lockbox drop rates, customs spoof tier per patrol, space slicing XP and reward odds.
 - **Activities:** agent mission pay and token prices, incursion schedule and rewards, Rift Run timers and loot, cloak speed penalty and reveal range.
 - **IDs:** confirm the new skill IDs (53 and 54) were never used historically, since saved data keys skills by ID.
@@ -845,7 +846,7 @@ Everything merges to one integration branch and releases together.
 | W12 | Wild Space and exploration | 6 Wild Space areas and environments, rifts, Rift Raiders, Probe Launcher, signatures, Jump to Signature, Sensor Sweep, data/cache/gas/combat sites, Scanner HUD tab, space slicing (Data Analyzer, new slicing sources, space reward tables, customs spoofing) | W2, W3, W5 |
 | W13 | Stations | Station city layout, Station Core, anchor sites, deck areas, Shipyard, Asteroid Drill, Jump Beacons, Station Fuel, passenger shuttle route | W3, W7 |
 | W14 | Holdings and droids | Holdings terminal, types, upgrades, production chains, events, ground sites; industrial droid parts, Industry stat, AI instructions, droid bays | W7, W9 |
-| W15 | Activities | Derelict boarding (including contested derelicts), faction agents and token stores, incursions, Rift Runs | W5, W7, W12 |
+| W15 | Activities | Derelict boarding (including contested derelicts and droid salvage teams), faction agents and token stores, incursions, Rift Runs | W5, W7, W12 |
 | W16 | Cloaking | Cloaking Device, reveal rules, stealth unblock in space | W2, W12 |
 | W11 | Release | Balance pass, client evidence, docs (section 19), player release notes | All |
 
@@ -874,14 +875,14 @@ Everything merges to one integration branch and releases together.
 - **Client evidence** (`InEngineVisualVerification.md`) for:
   - The Mid hotbar row.
   - Lit and unlit module icons, and a module switching itself off.
-  - The Ship HUD with a support module retargeted.
+  - The Ship HUD with a support module retargeted, and its Stats tab.
   - A signature scanned from 0% to 100%, then Jump to Signature.
   - A rift crossing into Wild Space, an environment effect, and a collapse ejection.
   - Founding a station at an anchor site, docking, and a Jump Beacon jump.
   - A holding's ground site, an event fight, and cargo pickup.
   - An industrial droid in a droid bay and at a crew station.
   - A ship transfer and a market ship sale, with the interior intact.
-  - Boarding a derelict, a contested derelict's waves, a data site slicing game, a customs spoof, a wreck data core, a space lockbox, a DM-spawned squad, an agent mission, a Rift Run timer, and cloak and reveal.
+  - Boarding a derelict, a contested derelict's waves, a droid salvage team, a data site slicing game, a customs spoof, a wreck data core, a space lockbox, a DM-spawned squad, an agent mission, a Rift Run timer, and cloak and reveal.
   - Every Hull Design at ship scale.
   - Crew camera view.
   - The exchange window.
@@ -1072,11 +1073,12 @@ A station is a **player city in space** and follows every city mechanic, in `Ser
   - They are Engineering recipes at each Droid Assembly tier and go in the Bible's Equipment - Droids tab.
 - **Cost:** industrial parts cost about half the materials of combat parts at the same tier, so a crew droid is affordable while a top-tier one is still an investment.
 - **Industry rating:** a droid's Industry is the sum of its parts. Mixing combat and industrial parts gives a middling droid at both.
-- **Industry pays off in four places:**
+- **Industry pays off in five places:**
   - **Planetary Holdings:** an output boost.
   - **Ship droid crew** (section 10): station effectiveness comes from Industry, so a combat droid makes poor crew.
   - **Droid bays:** Mining Barge, Industrial and Logistics hulls get one, using the unused `ShipDetail.HasDroidBay`. A droid riding in the bay boosts mining, gas and salvage yield, or Logistics repair output.
   - **Station buildings:** faster Shipyard builds, more Asteroid Drill output.
+  - **Derelict salvage teams** (section 28): a faster timer and a better yield.
 - **Droid limit:** working droids don't count toward the one-droid limit (section 10).
 - **New AI instructions,** which compete with combat instructions for AI slots:
   - **Efficiency Protocol:** holding, drill and droid-bay output.
@@ -1095,6 +1097,7 @@ A station is a **player city in space** and follows every city mechanic, in `Ser
   - Each wave cleared raises the boarders' loot.
   - If no defending ship is left, enemy boarders reinforce the derelict's interior.
   - It reuses combat-site waves (section 24) and the derelict dungeon, and gives a mixed space and ground group one shared goal.
+- **Droid salvage teams:** instead of boarding, a docked ship can send its working droids (station crew or droid-bay droids, section 27) to strip the derelict on a timer while the pilot holds off waves outside, using the contested-derelict waves. The droids' Industry rating sets the timer and the yield. It pays less than boarding on foot and gives solo pilots and small groups a way in.
 
 ## 29. Faction agents
 

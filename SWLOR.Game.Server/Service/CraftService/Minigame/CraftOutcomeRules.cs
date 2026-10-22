@@ -26,8 +26,14 @@ public static class CraftOutcomeRules
     /// <summary>The quality an enhancement in the first slot needs to be guaranteed.</summary>
     public const int FirstSlotQualityThresholdPercent = 50;
 
-    /// <summary>The quality an enhancement in the second slot, and any later slot, needs to be guaranteed.</summary>
+    /// <summary>The quality an enhancement in the second slot needs to be guaranteed.</summary>
     public const int SecondSlotQualityThresholdPercent = 85;
+
+    /// <summary>
+    /// The quality an enhancement in the third slot, and any later slot, needs to be guaranteed (research level 10 adds the third
+    /// slot). A starting value that reuses the second slot's 85% until balance gate 7 (enhancement parity, <c>CraftSim</c>) sets it.
+    /// </summary>
+    public const int ThirdSlotQualityThresholdPercent = 85;
 
     /// <summary>
     /// The item local that holds a crafted food's extra duration in seconds. The food item reads it when eaten, because an item
@@ -43,7 +49,7 @@ public static class CraftOutcomeRules
 
     /// <summary>
     /// The quality percentage each enhancement slot needs, in slot order. An item with one slot uses the first threshold,
-    /// and slots past the second use the second.
+    /// and slots past the third use the third.
     /// </summary>
     public static IReadOnlyList<int> GetEnhancementThresholds(int slotCount)
     {
@@ -56,7 +62,11 @@ public static class CraftOutcomeRules
 
     /// <summary>The quality percentage the enhancement in a slot (counting from 1) needs for a guaranteed transfer.</summary>
     public static int GetEnhancementThreshold(int slot) =>
-        slot <= 1 ? FirstSlotQualityThresholdPercent : SecondSlotQualityThresholdPercent;
+        slot <= 1
+            ? FirstSlotQualityThresholdPercent
+            : slot == 2
+                ? SecondSlotQualityThresholdPercent
+                : ThirdSlotQualityThresholdPercent;
 
     /// <summary>The recipe's base XP after its minigame's XP multiplier, which scales a failed craft's XP with it.</summary>
     public static int ScaleBaseXp(int baseXp, double xpMultiplier) =>

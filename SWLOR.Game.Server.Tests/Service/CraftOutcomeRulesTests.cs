@@ -136,6 +136,16 @@ public class CraftOutcomeRulesTests
         CraftOutcomeRules.GetEnhancementThresholds(0).Should().BeEmpty();
     }
 
+    [Test]
+    public void EnhancementThresholds_TheThirdSlotHasItsOwnNamedValue_StillEightyFiveUntilGateSevenSetsIt()
+    {
+        CraftOutcomeRules.ThirdSlotQualityThresholdPercent.Should().Be(85, "a starting value that reuses the second slot's until gate 7 sets it");
+        CraftOutcomeRules.GetEnhancementThreshold(1).Should().Be(CraftOutcomeRules.FirstSlotQualityThresholdPercent);
+        CraftOutcomeRules.GetEnhancementThreshold(2).Should().Be(CraftOutcomeRules.SecondSlotQualityThresholdPercent);
+        CraftOutcomeRules.GetEnhancementThreshold(3).Should().Be(CraftOutcomeRules.ThirdSlotQualityThresholdPercent);
+        CraftOutcomeRules.GetEnhancementThreshold(4).Should().Be(CraftOutcomeRules.ThirdSlotQualityThresholdPercent, "later slots use the third");
+    }
+
     [TestCase(0, 100, false, false)]
     [TestCase(49, 100, false, false)]
     [TestCase(50, 100, true, false)]

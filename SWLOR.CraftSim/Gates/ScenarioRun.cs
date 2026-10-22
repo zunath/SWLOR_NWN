@@ -4,6 +4,7 @@ using SWLOR.CraftSim.Legacy.Crafting;
 using SWLOR.CraftSim.Play;
 using SWLOR.CraftSim.Rng;
 using SWLOR.CraftSim.Scenario;
+using SWLOR.Game.Server.Service.CraftService;
 using SWLOR.Game.Server.Service.CraftService.Minigame;
 
 namespace SWLOR.CraftSim.Gates
@@ -28,6 +29,9 @@ namespace SWLOR.CraftSim.Gates
 
         /// <summary>The summed quality fraction of the attempts that made the item.</summary>
         public double QualitySum { get; set; }
+
+        /// <summary>For each whole quality percentage (0-100, rounded down as the outcome rules do), the attempts that made the item at that quality.</summary>
+        public int[] QualityPercentCounts { get; } = new int[101];
 
         public long Actions { get; set; }
         public long CpSpent { get; set; }
@@ -83,6 +87,15 @@ namespace SWLOR.CraftSim.Gates
         }
     }
 
+    /// <summary>A recipe that can hold an enhancement, with the representative real enhancement item it is played with.</summary>
+    public sealed record EnhancedRecipe(RecipeEntry Recipe, EnhancementItem Item)
+    {
+        public CraftEnhancementConfiguration Configuration(int count) => new(count, Item.ProgressPenalty);
+    }
+
+    /// <summary>One band of a cohort restricted to recipes that can be enhanced, and the sampled recipes that were left out for lack of an enhancement to use.</summary>
+    public sealed record EnhancedBand(CohortBand Band, IReadOnlyList<EnhancedRecipe> Recipes, IReadOnlyList<string> Dropped);
+
     /// <summary>
     /// The plays one evaluation of a scenario shares between its gates: the cohort, the gear levels, and a memo of every adaptive cell
     /// and legacy cell so no gate plays what another already has. Everything is repeatable from the context's seed; cells are played in
@@ -92,6 +105,8 @@ namespace SWLOR.CraftSim.Gates
     {
         private readonly ConcurrentDictionary<(int Recipe, int Rank, int Gear, string Style), Lazy<CohortCell>> _adaptive = new();
         private readonly ConcurrentDictionary<(int Level, int Rank, int Gear), Lazy<LegacyCell>> _legacy = new();
+        private readonly ConcurrentDictionary<(int Recipe, int Rank, int Gear, int Count, int Penalty), Lazy<CohortCell>> _adaptiveEnhanced = new();
+        private readonly ConcurrentDictionary<(int Level, int Rank, int Gear, int Count, int Penalty), Lazy<LegacyEnhancementCell>> _legacyEnhanced = new();
 
         public ScenarioRun(ICraftScenario scenario, GateThresholds thresholds, GateContext context)
         {
@@ -119,6 +134,68 @@ namespace SWLOR.CraftSim.Gates
 
         public int RankFor(RecipeEntry recipe) => Cohort.RankFor(recipe);
 
+        /// <summary>True when any recipe of the scenario's cohort has an enhancement slot and a kind of enhancement to put in it.</summary>
+        public bool HasEnhanceableRecipes => Cohort.Recipes(Context.Recipes).Any(IsEnhanceable);
+
+        private static bool IsEnhanceable(RecipeEntry recipe) => recipe.EnhancementSlots > 0 && recipe.EnhancementType != RecipeEnhancementType.None;
+
+        /// <summary>
+        /// The cohort's recipes that can hold an enhancement, an even sample of each band (the cohort's own bands unless
+        /// <paramref name="bands"/> are given), each with the representative enhancement of its kind at the best level it accepts. Empty when the
+        /// context has no enhancement items.
+        /// </summary>
+        public IReadOnlyList<EnhancedBand> EnhancedBands(IReadOnlyList<RecipeBand> bands = null)
+        {
+            var catalog = Context.Enhancements;
+            if (catalog == null)
+                return Array.Empty<EnhancedBand>();
+
+            var enhanceable = RecipeCatalog.From(Context.Recipes.Recipes.Where(IsEnhanceable));
+            var result = new List<EnhancedBand>();
+            foreach (var band in Cohort.Select(enhanceable, Thresholds.RecipesPerBand, bands))
+            {
+                var recipes = new List<EnhancedRecipe>();
+                var dropped = new List<string>();
+                foreach (var recipe in band.Recipes)
+                {
+                    var item = catalog.ForRecipe(recipe.EnhancementType, recipe.Level);
+                    if (item == null)
+                        dropped.Add($"{recipe.Resref} (level {recipe.Level}, {recipe.EnhancementType})");
+                    else
+                        recipes.Add(new EnhancedRecipe(recipe, item));
+                }
+
+                if (recipes.Count > 0 || dropped.Count > 0)
+                    result.Add(new EnhancedBand(band, recipes, dropped));
+            }
+
+            return result;
+        }
+
+        /// <summary>
+        /// The recipes whose engine does not get harder with enhancements, though the scenario says it models them: the progress maximum of an
+        /// engine built with the largest enhancement count is compared with a plain one. An unmodeled engine would make enhanced crafts as easy
+        /// as plain ones and let the gates pass vacuously.
+        /// </summary>
+        public IReadOnlyList<string> UnmodeledRecipes(IEnumerable<EnhancedRecipe> recipes, Func<RecipeEntry, int> rankFor, int gearIndex, int largestCount)
+        {
+            var problems = new List<string>();
+            var gear = Gear[gearIndex];
+            foreach (var entry in recipes)
+            {
+                var rank = rankFor(entry.Recipe);
+                var plain = CreateEngine(entry.Recipe, rank, gear, null, new SimMinigameRandom(new SimRandom(1)));
+                var enhanced = CreateEngine(entry.Recipe, rank, gear, null, new SimMinigameRandom(new SimRandom(1)), entry.Configuration(largestCount));
+                if (enhanced.Meters.Progress.Max <= plain.Meters.Progress.Max)
+                {
+                    problems.Add($"{entry.Recipe.Resref} (level {entry.Recipe.Level}): progress maximum {plain.Meters.Progress.Max} without enhancements " +
+                                 $"and {enhanced.Meters.Progress.Max} with {largestCount} x {entry.Item.ProgressPenalty}");
+                }
+            }
+
+            return problems;
+        }
+
         /// <summary>The solver's effort: the thresholds' override, or the scenario's own.</summary>
         public FixedRotationSolverOptions SolverOptions => Thresholds.SolverOptions ?? Scenario.SolverOptions;
 
@@ -129,6 +206,30 @@ namespace SWLOR.CraftSim.Gates
 
         public LegacyCell Legacy(int level, int rank, int gearIndex) =>
             _legacy.GetOrAdd((level, rank, gearIndex), _ => new Lazy<LegacyCell>(() => PlayLegacy(level, rank, gearIndex))).Value;
+
+        /// <summary>The adaptive player's attempts at a recipe with enhancements slotted: the scenario applies their progress penalty to its engine.</summary>
+        public CohortCell AdaptiveEnhanced(RecipeEntry recipe, int rank, int gearIndex, CraftEnhancementConfiguration enhancements) =>
+            _adaptiveEnhanced.GetOrAdd(
+                (StableId(recipe), rank, gearIndex, enhancements.Count, enhancements.ProgressPenaltyEach),
+                _ => new Lazy<CohortCell>(() => PlayAdaptive(recipe, rank, gearIndex, null, enhancements))).Value;
+
+        /// <summary>The old minigame's lookahead player at a recipe level with enhancements slotted.</summary>
+        public LegacyEnhancementCell LegacyEnhanced(int level, int rank, int gearIndex, CraftEnhancementConfiguration enhancements) =>
+            _legacyEnhanced.GetOrAdd(
+                (level, rank, gearIndex, enhancements.Count, enhancements.ProgressPenaltyEach),
+                _ => new Lazy<LegacyEnhancementCell>(() => LegacyEnhancementBaseline.PlayCell(
+                    level, rank, Gear[gearIndex], gearIndex, LegacyEnhancementBaseline.LookaheadIndex, enhancements, Context.Runs, Context.Seed))).Value;
+
+        /// <summary>Plays the enhanced adaptive cells and their legacy cells in parallel so the gate that reads them finds them done.</summary>
+        public void PrepareEnhanced(IEnumerable<(RecipeEntry Recipe, int Rank, int GearIndex, CraftEnhancementConfiguration Enhancements)> cells)
+        {
+            var list = cells.ToList();
+            Parallel.ForEach(list, Parallelism, cell =>
+            {
+                AdaptiveEnhanced(cell.Recipe, cell.Rank, cell.GearIndex, cell.Enhancements);
+                LegacyEnhanced(cell.Recipe.Level, cell.Rank, cell.GearIndex, cell.Enhancements);
+            });
+        }
 
         /// <summary>Plays the cells in parallel so the gates that read them find them done.</summary>
         public void PrepareAdaptive(IEnumerable<(RecipeEntry Recipe, int Rank, int GearIndex, CraftStyle Style)> cells) =>
@@ -142,27 +243,34 @@ namespace SWLOR.CraftSim.Gates
             Bands.SelectMany(band => band.Recipes).SelectMany(recipe =>
                 Enumerable.Range(0, Gear.Count).Select(gear => (recipe, RankFor(recipe), gear, (CraftStyle)null)));
 
-        public ICraftMinigameEngine CreateEngine(RecipeEntry recipe, int rank, GearLevel gear, CraftStyle style, IMinigameRandom random) =>
-            Scenario.CreateEngine(new CraftEngineRequest(recipe, rank, gear, style, Context.Seed, random));
+        public ICraftMinigameEngine CreateEngine(
+            RecipeEntry recipe, int rank, GearLevel gear, CraftStyle style, IMinigameRandom random, CraftEnhancementConfiguration enhancements = null) =>
+            Scenario.CreateEngine(new CraftEngineRequest(recipe, rank, gear, style, Context.Seed, random, enhancements));
 
         /// <summary>A number that names a recipe in a random stream: stable across runs, unlike a string hash.</summary>
         public static int StableId(RecipeEntry recipe) => (int)recipe.Type;
 
-        private CohortCell PlayAdaptive(RecipeEntry recipe, int rank, int gearIndex, CraftStyle style)
+        private CohortCell PlayAdaptive(RecipeEntry recipe, int rank, int gearIndex, CraftStyle style, CraftEnhancementConfiguration enhancements = null)
         {
             var gear = Gear[gearIndex];
             var baseXp = CraftOutcomeRules.ScaleBaseXp(ServerXp.ForRecipe(recipe, rank), Scenario.XpMultiplier);
             var cell = new CohortCell { Recipe = recipe, Rank = rank, Gear = gear.Name, Style = style, Runs = Context.Runs };
             var id = StableId(recipe);
+            var enhanced = enhancements is { IsNone: false };
 
             for (var run = 0; run < Context.Runs; run++)
             {
 
                 // The style is left out of the streams on purpose: two styles of one recipe are played on the same dice (common random
-                // numbers), so a difference between them is the styles' and not the luck of two independent samples.
-                var random = SimMinigameRandom.ForRun(Context.Seed, SimStreams.Adaptive, id, rank, gearIndex, run);
-                var policySeed = unchecked((int)SimRandom.ForRun(Context.Seed, SimStreams.AdaptivePolicy, id, rank, gearIndex, run).NextUInt64());
-                var engine = CreateEngine(recipe, rank, gear, style, random);
+                // numbers), so a difference between them is the styles' and not the luck of two independent samples. Enhanced attempts
+                // have their own streams, so gate 7 never moves another gate's dice.
+                var random = enhanced
+                    ? SimMinigameRandom.ForRun(Context.Seed, SimStreams.AdaptiveEnhanced, id, rank, gearIndex, enhancements.Count, enhancements.ProgressPenaltyEach, run)
+                    : SimMinigameRandom.ForRun(Context.Seed, SimStreams.Adaptive, id, rank, gearIndex, run);
+                var policySeed = unchecked((int)(enhanced
+                    ? SimRandom.ForRun(Context.Seed, SimStreams.AdaptiveEnhancedPolicy, id, rank, gearIndex, enhancements.Count, enhancements.ProgressPenaltyEach, run)
+                    : SimRandom.ForRun(Context.Seed, SimStreams.AdaptivePolicy, id, rank, gearIndex, run)).NextUInt64());
+                var engine = CreateEngine(recipe, rank, gear, style, random, enhanced ? enhancements : null);
                 var result = CraftPlayer.Play(engine, new AdaptivePolicy(Scenario.AdaptiveOptions, policySeed), Thresholds.ActionLimit);
 
                 cell.Actions += result.Actions;
@@ -174,6 +282,7 @@ namespace SWLOR.CraftSim.Gates
                 {
                     cell.Successes++;
                     cell.QualitySum += result.QualityFraction;
+                    cell.QualityPercentCounts[Math.Clamp(result.QualityPercent, 0, 100)]++;
                     if (result.ReachedMaxQuality)
                         cell.FullQuality++;
 

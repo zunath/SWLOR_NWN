@@ -17,7 +17,9 @@ namespace SWLOR.CraftSim.Play
     /// <param name="ReachedMaxQuality">True when the item was made with the quality meter full.</param>
     /// <param name="Actions">Actions performed.</param>
     /// <param name="CpSpent">CP spent.</param>
-    public readonly record struct CraftPlayResult(MinigameStatus Status, double QualityFraction, bool ReachedMaxQuality, int Actions, int CpSpent)
+    /// <param name="QualityPercent">The quality meter as a whole percentage, rounded down: the "quality percent" the enhancement thresholds are compared with (<c>MinigameMeter.Percent</c>).</param>
+    public readonly record struct CraftPlayResult(
+        MinigameStatus Status, double QualityFraction, bool ReachedMaxQuality, int Actions, int CpSpent, int QualityPercent = 0)
     {
         public bool Succeeded => Status == MinigameStatus.Succeeded;
 
@@ -89,7 +91,8 @@ namespace SWLOR.CraftSim.Play
                 meters.Quality.Fraction,
                 engine.Status == MinigameStatus.Succeeded && meters.Quality.IsFull,
                 engine.Turn - startingTurn,
-                meters.Cp.Max - meters.Cp.Value);
+                meters.Cp.Max - meters.Cp.Value,
+                meters.Quality.Percent);
         }
     }
 }

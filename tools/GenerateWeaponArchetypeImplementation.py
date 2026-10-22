@@ -3628,6 +3628,10 @@ def generate_ability_definitions(rows, feat_values, recast_values):
                 status_type = stance_status_type(base, status_effect_types)
                 statuses = [status_type] if status_type else []
                 profile_status = statuses[0] if statuses else None
+            if row["Type"] in {"Stance", "Toggle", "Aura"}:
+                # A stance stays on until toggled off. Any "for N seconds" in its description
+                # belongs to a rider the stance grants, not to the stance itself.
+                duration = 0
             primary = f"typeof({statuses[0]})" if statuses else "null"
             profile = profile_expression(row, level, profile_status)
             additional = (

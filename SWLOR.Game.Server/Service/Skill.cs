@@ -80,14 +80,14 @@ namespace SWLOR.Game.Server.Service
 
         /// <summary>
         /// Retrieves the rank limit a player set on a skill, or null when the skill has none.
-        /// Only skills which count toward the skill cap can be limited.
+        /// Every skill can be limited, languages included. Only skills which count toward the skill cap decay.
         /// </summary>
         /// <param name="pcSkill">The player's skill record.</param>
         /// <param name="details">The skill's details.</param>
         /// <returns>The rank limit, clamped to the skill's rank range, or null.</returns>
         public static int? GetRankLimit(PlayerSkill pcSkill, SkillAttribute details)
         {
-            if (!details.ContributesToSkillCap || pcSkill.RankLimit == null)
+            if (pcSkill.RankLimit == null)
                 return null;
 
             return Math.Clamp(pcSkill.RankLimit.Value, 0, details.MaxRank);
@@ -284,7 +284,8 @@ namespace SWLOR.Game.Server.Service
                 if (clearedXP)
                     Gui.PublishRefreshEvent(player, new SkillXPRefreshEvent(new List<SkillType> { skill }));
 
-                if (rankCeiling < details.MaxRank)
+                // Languages gain XP from overheard speech, so a limited language would warn whenever someone speaks it.
+                if (rankCeiling < details.MaxRank && details.ContributesToSkillCap)
                     PlayerFeedback.SendWarningToPlayer(player, "SKILL_LIMIT", ColorToken.Red($"{details.Name} is at your limit of {rankCeiling}. Raise it in the Skills window."));
 
                 return debtRemoved;

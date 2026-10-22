@@ -272,6 +272,10 @@ namespace SWLOR.CombatSim.Engine
                             throw new InvalidDataException($"'{use.Feat}' cannot apply Flow to calibrated final damage; supply explicit authored WeaponPower or omit Flow.");
                         if (_resolvedUses[use].Info.TwinPistol != null && spec.WeaponLoadout == null)
                             throw new InvalidDataException($"'{use.Feat}' needs a WeaponLoadout to resolve its captured hands and traits.");
+                        // The loadout autoattack path carries only calibrated queues; a formula queue rides the formula swing.
+                        if (_resolvedUses[use].Info.IsQueuedWeapon && use.WeaponPower.HasValue && spec.WeaponLoadout != null)
+                            throw new InvalidDataException(
+                                $"'{spec.Name}' queues the formula weapon ability '{use.Feat}', which a WeaponLoadout cannot carry.");
                         // Only a landed autoattack can carry a queued weapon ability.
                         if (_resolvedUses[use].Info.IsQueuedWeapon && spec.AutoAttack is not { AttacksPerSecond: > 0 } && spec.WeaponLoadout == null)
                             throw new InvalidDataException(

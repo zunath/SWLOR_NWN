@@ -231,6 +231,16 @@ public class WeaponLineTests
     }
 
     [Test]
+    public void RiotBlade_FormulaQueueIsRefusedOnAWeaponLoadout()
+    {
+        var attacker = Fighter("Attacker");
+        attacker.WeaponLoadout = new WeaponLoadoutSpec();
+        attacker.Abilities.Add(new() { Feat = "RiotBlade4", Target = AbilityTarget.Enemy });
+        var spawn = () => Duel(attacker, Fighter("Victim"));
+        spawn.Should().Throw<InvalidDataException>().WithMessage("*WeaponLoadout cannot carry*");
+    }
+
+    [Test]
     public void SavageCleave_HitsItsSelfCenteredSphereAndRefusesUnmodeledSecondaryStaminaRestore()
     {
         var attacker = Fighter("Attacker");

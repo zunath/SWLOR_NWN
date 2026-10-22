@@ -352,6 +352,27 @@ public class ReactionEngineTests
     }
 
     [Test]
+    public void AnActionThatFillsPotencyAndEmptiesStabilityTogetherStillFinishesTheItem()
+    {
+        // Rank 50 against a level 3 recipe at intensity 5: thirty Refines leave 40 Stability with the cycle back at Calm,
+        // then three Charges bring the Peak Charge, which fills Potency and costs more Stability than is left.
+        var engine = EngineAt(CalmStart, Settings(rank: 50, level: 3, intensity: 5));
+        for (var turn = 0; turn < 30; turn++)
+            engine.Perform(ReactionEngine.Refine);
+        for (var turn = 0; turn < 3; turn++)
+            engine.Perform(ReactionEngine.Charge);
+        engine.CurrentPhase.Should().Be(ReactionPhase.Peak);
+        engine.Meters.Integrity.Value.Should().BeLessThan(ReactionRules.ActionStability + ReactionRules.PeakChargeStability(5));
+
+        var preview = engine.Preview(ReactionEngine.Charge);
+
+        preview.FinishesItem.Should().BeTrue();
+        preview.CanBreakItem.Should().BeFalse();
+        engine.Perform(ReactionEngine.Charge).Status.Should().Be(MinigameStatus.Succeeded);
+        engine.Meters.Integrity.Value.Should().Be(0);
+    }
+
+    [Test]
     public void ABrokenPieceEndsTheAttemptAndTheActionThatBreaksItIsPreviewedAsBreakingIt()
     {
         var engine = EngineAt(CalmStart);

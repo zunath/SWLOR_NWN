@@ -27,7 +27,8 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.EngineeringRecipeDefinition
                 .Level(5)
                 .Quantity(1)
                 .Component("elec_ruined", 3)
-                .Component("ref_tilarium", 2);
+                .Component("ref_tilarium", 2)
+                .CircuitParameters(overloadLine: 5, loadBoostPercent: 9, assemblySharePercent: 43);
 
             // Song Disc: Tavern 1
             _builder.Create(RecipeType.SongDiscTavern1, SkillType.Engineering)
@@ -36,7 +37,8 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.EngineeringRecipeDefinition
                 .Level(1)
                 .Quantity(1)
                 .Component("elec_ruined", 2)
-                .Component("ref_tilarium", 1);
+                .Component("ref_tilarium", 1)
+                .CircuitParameters(overloadLine: 5, loadBoostPercent: 9, assemblySharePercent: 50);
 
             // Song Disc: Tavern 2
             _builder.Create(RecipeType.SongDiscTavern2, SkillType.Engineering)
@@ -45,7 +47,8 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.EngineeringRecipeDefinition
                 .Level(2)
                 .Quantity(1)
                 .Component("elec_ruined", 2)
-                .Component("ref_tilarium", 1);
+                .Component("ref_tilarium", 1)
+                .CircuitParameters(overloadLine: 5, loadBoostPercent: 10, assemblySharePercent: 46);
 
             // Song Disc: Tavern 3
             _builder.Create(RecipeType.SongDiscTavern3, SkillType.Engineering)
@@ -54,7 +57,8 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.EngineeringRecipeDefinition
                 .Level(3)
                 .Quantity(1)
                 .Component("elec_ruined", 2)
-                .Component("ref_tilarium", 1);
+                .Component("ref_tilarium", 1)
+                .CircuitParameters(overloadLine: 3, loadBoostPercent: 10, assemblySharePercent: 49);
 
             // Song Disc: Tavern 4
             _builder.Create(RecipeType.SongDiscTavern4, SkillType.Engineering)
@@ -63,7 +67,8 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.EngineeringRecipeDefinition
                 .Level(4)
                 .Quantity(1)
                 .Component("elec_ruined", 2)
-                .Component("ref_tilarium", 1);
+                .Component("ref_tilarium", 1)
+                .CircuitParameters(overloadLine: 5, loadBoostPercent: 11, assemblySharePercent: 44);
 
             // Song Disc: Celebration
             _builder.Create(RecipeType.SongDiscCelebration, SkillType.Engineering)
@@ -72,7 +77,8 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.EngineeringRecipeDefinition
                 .Level(5)
                 .Quantity(1)
                 .Component("elec_ruined", 2)
-                .Component("ref_tilarium", 1);
+                .Component("ref_tilarium", 1)
+                .CircuitParameters(overloadLine: 3, loadBoostPercent: 10, assemblySharePercent: 45);
 
             // Song Disc: Humor 1
             _builder.Create(RecipeType.SongDiscHumor1, SkillType.Engineering)
@@ -81,7 +87,8 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.EngineeringRecipeDefinition
                 .Level(6)
                 .Quantity(1)
                 .Component("elec_ruined", 2)
-                .Component("ref_tilarium", 1);
+                .Component("ref_tilarium", 1)
+                .CircuitParameters(overloadLine: 4, loadBoostPercent: 11, assemblySharePercent: 42);
 
             // Song Disc: Holidays 1
             _builder.Create(RecipeType.SongDiscHolidays1, SkillType.Engineering)
@@ -90,7 +97,8 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.EngineeringRecipeDefinition
                 .Level(7)
                 .Quantity(1)
                 .Component("elec_ruined", 2)
-                .Component("ref_tilarium", 1);
+                .Component("ref_tilarium", 1)
+                .CircuitParameters(overloadLine: 4, loadBoostPercent: 10, assemblySharePercent: 45);
 
             // Song Disc: Holidays 2
             _builder.Create(RecipeType.SongDiscHolidays2, SkillType.Engineering)
@@ -99,7 +107,8 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.EngineeringRecipeDefinition
                 .Level(8)
                 .Quantity(1)
                 .Component("elec_ruined", 2)
-                .Component("ref_tilarium", 1);
+                .Component("ref_tilarium", 1)
+                .CircuitParameters(overloadLine: 4, loadBoostPercent: 9, assemblySharePercent: 41);
 
             // Song Disc: Generic 1
             _builder.Create(RecipeType.SongDiscGeneric1, SkillType.Engineering)
@@ -108,7 +117,8 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.EngineeringRecipeDefinition
                 .Level(9)
                 .Quantity(1)
                 .Component("elec_ruined", 2)
-                .Component("ref_tilarium", 1);
+                .Component("ref_tilarium", 1)
+                .CircuitParameters(overloadLine: 5, loadBoostPercent: 9, assemblySharePercent: 40);
 
             // Song Disc: Generic 2
             _builder.Create(RecipeType.SongDiscGeneric2, SkillType.Engineering)
@@ -117,7 +127,8 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.EngineeringRecipeDefinition
                 .Level(10)
                 .Quantity(1)
                 .Component("elec_ruined", 2)
-                .Component("ref_tilarium", 1);
+                .Component("ref_tilarium", 1)
+                .CircuitParameters(overloadLine: 3, loadBoostPercent: 9, assemblySharePercent: 42);
 
             // Song Disc: Generic 3
             _builder.Create(RecipeType.SongDiscGeneric3, SkillType.Engineering)
@@ -126,7 +137,8 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.EngineeringRecipeDefinition
                 .Level(11)
                 .Quantity(1)
                 .Component("elec_flawed", 2)
-                .Component("ref_currian", 1);
+                .Component("ref_currian", 1)
+                .CircuitParameters(overloadLine: 5, loadBoostPercent: 10, assemblySharePercent: 48);
 
             // Song Disc: Sunrise 2
             _builder.Create(RecipeType.SongDiscSunrise2, SkillType.Engineering)
@@ -135,7 +147,8 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.EngineeringRecipeDefinition
                 .Level(12)
                 .Quantity(1)
                 .Component("elec_flawed", 2)
-                .Component("ref_currian", 1);
+                .Component("ref_currian", 1)
+                .CircuitParameters(overloadLine: 6, loadBoostPercent: 9, assemblySharePercent: 42);
 
             // Song Disc: Sunset 2
             _builder.Create(RecipeType.SongDiscSunset2, SkillType.Engineering)
@@ -144,7 +157,8 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.EngineeringRecipeDefinition
                 .Level(13)
                 .Quantity(1)
                 .Component("elec_flawed", 2)
-                .Component("ref_currian", 1);
+                .Component("ref_currian", 1)
+                .CircuitParameters(overloadLine: 5, loadBoostPercent: 10, assemblySharePercent: 48);
 
             // Song Disc: Race 1
             _builder.Create(RecipeType.SongDiscRace1, SkillType.Engineering)
@@ -153,7 +167,8 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.EngineeringRecipeDefinition
                 .Level(14)
                 .Quantity(1)
                 .Component("elec_flawed", 2)
-                .Component("ref_currian", 1);
+                .Component("ref_currian", 1)
+                .CircuitParameters(overloadLine: 6, loadBoostPercent: 9, assemblySharePercent: 44);
 
             // Song Disc: Race 2
             _builder.Create(RecipeType.SongDiscRace2, SkillType.Engineering)
@@ -162,7 +177,8 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.EngineeringRecipeDefinition
                 .Level(15)
                 .Quantity(1)
                 .Component("elec_flawed", 2)
-                .Component("ref_currian", 1);
+                .Component("ref_currian", 1)
+                .CircuitParameters(overloadLine: 6, loadBoostPercent: 9, assemblySharePercent: 46);
 
             // Song Disc: Race 3
             _builder.Create(RecipeType.SongDiscRace3, SkillType.Engineering)
@@ -171,7 +187,8 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.EngineeringRecipeDefinition
                 .Level(16)
                 .Quantity(1)
                 .Component("elec_flawed", 2)
-                .Component("ref_currian", 1);
+                .Component("ref_currian", 1)
+                .CircuitParameters(overloadLine: 4, loadBoostPercent: 10, assemblySharePercent: 41);
 
             // Song Disc: Race 4
             _builder.Create(RecipeType.SongDiscRace4, SkillType.Engineering)
@@ -180,7 +197,8 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.EngineeringRecipeDefinition
                 .Level(17)
                 .Quantity(1)
                 .Component("elec_flawed", 2)
-                .Component("ref_currian", 1);
+                .Component("ref_currian", 1)
+                .CircuitParameters(overloadLine: 4, loadBoostPercent: 10, assemblySharePercent: 44);
 
             // Song Disc: Race 5
             _builder.Create(RecipeType.SongDiscRace5, SkillType.Engineering)
@@ -189,7 +207,8 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.EngineeringRecipeDefinition
                 .Level(18)
                 .Quantity(1)
                 .Component("elec_flawed", 2)
-                .Component("ref_currian", 1);
+                .Component("ref_currian", 1)
+                .CircuitParameters(overloadLine: 5, loadBoostPercent: 9, assemblySharePercent: 49);
 
             // Song Disc: Race 6
             _builder.Create(RecipeType.SongDiscRace6, SkillType.Engineering)
@@ -198,7 +217,8 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.EngineeringRecipeDefinition
                 .Level(19)
                 .Quantity(1)
                 .Component("elec_flawed", 2)
-                .Component("ref_currian", 1);
+                .Component("ref_currian", 1)
+                .CircuitParameters(overloadLine: 4, loadBoostPercent: 11, assemblySharePercent: 43);
 
             // Song Disc: Feel Hot Nightclub
             _builder.Create(RecipeType.SongDiscFeelHotNightclub, SkillType.Engineering)
@@ -207,7 +227,8 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.EngineeringRecipeDefinition
                 .Level(20)
                 .Quantity(1)
                 .Component("elec_flawed", 2)
-                .Component("ref_currian", 1);
+                .Component("ref_currian", 1)
+                .CircuitParameters(overloadLine: 6, loadBoostPercent: 11, assemblySharePercent: 49);
 
             // Song Disc: Musik Box Nightclub
             _builder.Create(RecipeType.SongDiscMusikBoxNightclub, SkillType.Engineering)
@@ -216,7 +237,8 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.EngineeringRecipeDefinition
                 .Level(21)
                 .Quantity(1)
                 .Component("elec_good", 2)
-                .Component("ref_idailia", 1);
+                .Component("ref_idailia", 1)
+                .CircuitParameters(overloadLine: 6, loadBoostPercent: 9, assemblySharePercent: 40);
 
             // Song Disc: Gloom 1
             _builder.Create(RecipeType.SongDiscGloom1, SkillType.Engineering)
@@ -225,7 +247,8 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.EngineeringRecipeDefinition
                 .Level(22)
                 .Quantity(1)
                 .Component("elec_good", 2)
-                .Component("ref_idailia", 1);
+                .Component("ref_idailia", 1)
+                .CircuitParameters(overloadLine: 7, loadBoostPercent: 9, assemblySharePercent: 45);
 
             // Song Disc: Gloom 2
             _builder.Create(RecipeType.SongDiscGloom2, SkillType.Engineering)
@@ -234,7 +257,8 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.EngineeringRecipeDefinition
                 .Level(23)
                 .Quantity(1)
                 .Component("elec_good", 2)
-                .Component("ref_idailia", 1);
+                .Component("ref_idailia", 1)
+                .CircuitParameters(overloadLine: 5, loadBoostPercent: 9, assemblySharePercent: 40);
 
             // Song Disc: Mystery 1
             _builder.Create(RecipeType.SongDiscMystery1, SkillType.Engineering)
@@ -243,7 +267,8 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.EngineeringRecipeDefinition
                 .Level(24)
                 .Quantity(1)
                 .Component("elec_good", 2)
-                .Component("ref_idailia", 1);
+                .Component("ref_idailia", 1)
+                .CircuitParameters(overloadLine: 6, loadBoostPercent: 10, assemblySharePercent: 40);
 
             // Song Disc: Tragic 2
             _builder.Create(RecipeType.SongDiscTragic2, SkillType.Engineering)
@@ -252,7 +277,8 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.EngineeringRecipeDefinition
                 .Level(25)
                 .Quantity(1)
                 .Component("elec_good", 2)
-                .Component("ref_idailia", 1);
+                .Component("ref_idailia", 1)
+                .CircuitParameters(overloadLine: 6, loadBoostPercent: 10, assemblySharePercent: 40);
 
             // Song Disc: Opera 1
             _builder.Create(RecipeType.SongDiscOpera1, SkillType.Engineering)
@@ -261,7 +287,8 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.EngineeringRecipeDefinition
                 .Level(26)
                 .Quantity(1)
                 .Component("elec_good", 2)
-                .Component("ref_idailia", 1);
+                .Component("ref_idailia", 1)
+                .CircuitParameters(overloadLine: 6, loadBoostPercent: 10, assemblySharePercent: 49);
 
             // Song Disc: Baroque Recital
             _builder.Create(RecipeType.SongDiscBaroqueRecital, SkillType.Engineering)
@@ -270,7 +297,8 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.EngineeringRecipeDefinition
                 .Level(27)
                 .Quantity(1)
                 .Component("elec_good", 2)
-                .Component("ref_idailia", 1);
+                .Component("ref_idailia", 1)
+                .CircuitParameters(overloadLine: 5, loadBoostPercent: 10, assemblySharePercent: 49);
 
             // Song Disc: City Marketplace
             _builder.Create(RecipeType.SongDiscCityMarketplace, SkillType.Engineering)
@@ -279,7 +307,8 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.EngineeringRecipeDefinition
                 .Level(28)
                 .Quantity(1)
                 .Component("elec_good", 2)
-                .Component("ref_idailia", 1);
+                .Component("ref_idailia", 1)
+                .CircuitParameters(overloadLine: 7, loadBoostPercent: 10, assemblySharePercent: 49);
 
             // Song Disc: Generic Store
             _builder.Create(RecipeType.SongDiscGenericStore, SkillType.Engineering)
@@ -288,7 +317,8 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.EngineeringRecipeDefinition
                 .Level(29)
                 .Quantity(1)
                 .Component("elec_good", 2)
-                .Component("ref_idailia", 1);
+                .Component("ref_idailia", 1)
+                .CircuitParameters(overloadLine: 7, loadBoostPercent: 11, assemblySharePercent: 42);
 
             // Song Disc: Generic Wealthy House
             _builder.Create(RecipeType.SongDiscGenericWealthyHouse, SkillType.Engineering)
@@ -297,7 +327,8 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.EngineeringRecipeDefinition
                 .Level(30)
                 .Quantity(1)
                 .Component("elec_good", 2)
-                .Component("ref_idailia", 1);
+                .Component("ref_idailia", 1)
+                .CircuitParameters(overloadLine: 7, loadBoostPercent: 10, assemblySharePercent: 46);
 
             // Song Disc: City Wealthy
             _builder.Create(RecipeType.SongDiscCityWealthy, SkillType.Engineering)
@@ -306,7 +337,8 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.EngineeringRecipeDefinition
                 .Level(31)
                 .Quantity(1)
                 .Component("elec_imperfect", 2)
-                .Component("ref_barinium", 1);
+                .Component("ref_barinium", 1)
+                .CircuitParameters(overloadLine: 8, loadBoostPercent: 9, assemblySharePercent: 40);
 
             // Song Disc: Design Salon 1
             _builder.Create(RecipeType.SongDiscDesignSalon1, SkillType.Engineering)
@@ -315,7 +347,8 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.EngineeringRecipeDefinition
                 .Level(32)
                 .Quantity(1)
                 .Component("elec_imperfect", 2)
-                .Component("ref_barinium", 1);
+                .Component("ref_barinium", 1)
+                .CircuitParameters(overloadLine: 6, loadBoostPercent: 11, assemblySharePercent: 43);
 
             // Song Disc: Design Salon 3
             _builder.Create(RecipeType.SongDiscDesignSalon3, SkillType.Engineering)
@@ -324,7 +357,8 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.EngineeringRecipeDefinition
                 .Level(33)
                 .Quantity(1)
                 .Component("elec_imperfect", 2)
-                .Component("ref_barinium", 1);
+                .Component("ref_barinium", 1)
+                .CircuitParameters(overloadLine: 7, loadBoostPercent: 11, assemblySharePercent: 43);
 
             // Song Disc: Jungle 1
             _builder.Create(RecipeType.SongDiscJungle1, SkillType.Engineering)
@@ -333,7 +367,8 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.EngineeringRecipeDefinition
                 .Level(34)
                 .Quantity(1)
                 .Component("elec_imperfect", 2)
-                .Component("ref_barinium", 1);
+                .Component("ref_barinium", 1)
+                .CircuitParameters(overloadLine: 6, loadBoostPercent: 9, assemblySharePercent: 48);
 
             // Song Disc: Jungle 2
             _builder.Create(RecipeType.SongDiscJungle2, SkillType.Engineering)
@@ -342,7 +377,8 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.EngineeringRecipeDefinition
                 .Level(35)
                 .Quantity(1)
                 .Component("elec_imperfect", 2)
-                .Component("ref_barinium", 1);
+                .Component("ref_barinium", 1)
+                .CircuitParameters(overloadLine: 7, loadBoostPercent: 10, assemblySharePercent: 45);
 
             // Song Disc: Swamp 1
             _builder.Create(RecipeType.SongDiscSwamp1, SkillType.Engineering)
@@ -351,7 +387,8 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.EngineeringRecipeDefinition
                 .Level(36)
                 .Quantity(1)
                 .Component("elec_imperfect", 2)
-                .Component("ref_barinium", 1);
+                .Component("ref_barinium", 1)
+                .CircuitParameters(overloadLine: 7, loadBoostPercent: 9, assemblySharePercent: 48);
 
             // Song Disc: Swamp 2
             _builder.Create(RecipeType.SongDiscSwamp2, SkillType.Engineering)
@@ -360,7 +397,8 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.EngineeringRecipeDefinition
                 .Level(37)
                 .Quantity(1)
                 .Component("elec_imperfect", 2)
-                .Component("ref_barinium", 1);
+                .Component("ref_barinium", 1)
+                .CircuitParameters(overloadLine: 6, loadBoostPercent: 10, assemblySharePercent: 40);
 
             // Song Disc: Battle 1
             _builder.Create(RecipeType.SongDiscBattle1, SkillType.Engineering)
@@ -369,7 +407,8 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.EngineeringRecipeDefinition
                 .Level(38)
                 .Quantity(1)
                 .Component("elec_imperfect", 2)
-                .Component("ref_barinium", 1);
+                .Component("ref_barinium", 1)
+                .CircuitParameters(overloadLine: 6, loadBoostPercent: 11, assemblySharePercent: 46);
 
             // Song Disc: Battle 2
             _builder.Create(RecipeType.SongDiscBattle2, SkillType.Engineering)
@@ -378,7 +417,8 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.EngineeringRecipeDefinition
                 .Level(39)
                 .Quantity(1)
                 .Component("elec_imperfect", 2)
-                .Component("ref_barinium", 1);
+                .Component("ref_barinium", 1)
+                .CircuitParameters(overloadLine: 6, loadBoostPercent: 11, assemblySharePercent: 47);
 
             // Song Disc: Battle 3
             _builder.Create(RecipeType.SongDiscBattle3, SkillType.Engineering)
@@ -387,7 +427,8 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.EngineeringRecipeDefinition
                 .Level(40)
                 .Quantity(1)
                 .Component("elec_imperfect", 2)
-                .Component("ref_barinium", 1);
+                .Component("ref_barinium", 1)
+                .CircuitParameters(overloadLine: 8, loadBoostPercent: 9, assemblySharePercent: 50);
 
             // Song Disc: Battle 4
             _builder.Create(RecipeType.SongDiscBattle4, SkillType.Engineering)
@@ -396,7 +437,8 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.EngineeringRecipeDefinition
                 .Level(41)
                 .Quantity(1)
                 .Component("elec_high", 2)
-                .Component("ref_gostian", 1);
+                .Component("ref_gostian", 1)
+                .CircuitParameters(overloadLine: 9, loadBoostPercent: 10, assemblySharePercent: 41);
 
             // Song Disc: Battle 5
             _builder.Create(RecipeType.SongDiscBattle5, SkillType.Engineering)
@@ -405,7 +447,8 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.EngineeringRecipeDefinition
                 .Level(42)
                 .Quantity(1)
                 .Component("elec_high", 2)
-                .Component("ref_gostian", 1);
+                .Component("ref_gostian", 1)
+                .CircuitParameters(overloadLine: 9, loadBoostPercent: 10, assemblySharePercent: 50);
 
             // Song Disc: Battle 6
             _builder.Create(RecipeType.SongDiscBattle6, SkillType.Engineering)
@@ -414,7 +457,8 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.EngineeringRecipeDefinition
                 .Level(43)
                 .Quantity(1)
                 .Component("elec_high", 2)
-                .Component("ref_gostian", 1);
+                .Component("ref_gostian", 1)
+                .CircuitParameters(overloadLine: 8, loadBoostPercent: 9, assemblySharePercent: 48);
 
             // Song Disc: Battle 7
             _builder.Create(RecipeType.SongDiscBattle7, SkillType.Engineering)
@@ -423,7 +467,8 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.EngineeringRecipeDefinition
                 .Level(44)
                 .Quantity(1)
                 .Component("elec_high", 2)
-                .Component("ref_gostian", 1);
+                .Component("ref_gostian", 1)
+                .CircuitParameters(overloadLine: 7, loadBoostPercent: 10, assemblySharePercent: 42);
 
             // Song Disc: Theme Republic
             _builder.Create(RecipeType.SongDiscThemeRepublic, SkillType.Engineering)
@@ -432,7 +477,8 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.EngineeringRecipeDefinition
                 .Level(45)
                 .Quantity(1)
                 .Component("elec_high", 2)
-                .Component("ref_gostian", 1);
+                .Component("ref_gostian", 1)
+                .CircuitParameters(overloadLine: 7, loadBoostPercent: 11, assemblySharePercent: 49);
 
             // Song Disc: Theme Czerka
             _builder.Create(RecipeType.SongDiscThemeCzerka, SkillType.Engineering)
@@ -441,7 +487,8 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.EngineeringRecipeDefinition
                 .Level(46)
                 .Quantity(1)
                 .Component("elec_high", 2)
-                .Component("ref_gostian", 1);
+                .Component("ref_gostian", 1)
+                .CircuitParameters(overloadLine: 7, loadBoostPercent: 9, assemblySharePercent: 41);
 
             // Song Disc: Rebel Alliance
             _builder.Create(RecipeType.SongDiscRebelAlliance, SkillType.Engineering)
@@ -450,7 +497,8 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.EngineeringRecipeDefinition
                 .Level(47)
                 .Quantity(1)
                 .Component("elec_high", 2)
-                .Component("ref_gostian", 1);
+                .Component("ref_gostian", 1)
+                .CircuitParameters(overloadLine: 7, loadBoostPercent: 11, assemblySharePercent: 47);
 
             // Song Disc: Stormtroopers
             _builder.Create(RecipeType.SongDiscStormtroopers, SkillType.Engineering)
@@ -459,7 +507,8 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.EngineeringRecipeDefinition
                 .Level(48)
                 .Quantity(1)
                 .Component("elec_high", 2)
-                .Component("ref_gostian", 1);
+                .Component("ref_gostian", 1)
+                .CircuitParameters(overloadLine: 8, loadBoostPercent: 11, assemblySharePercent: 49);
 
             // Song Disc: Theme, Lando
             _builder.Create(RecipeType.SongDiscThemeLando, SkillType.Engineering)
@@ -468,7 +517,8 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.EngineeringRecipeDefinition
                 .Level(49)
                 .Quantity(1)
                 .Component("elec_high", 2)
-                .Component("ref_gostian", 1);
+                .Component("ref_gostian", 1)
+                .CircuitParameters(overloadLine: 9, loadBoostPercent: 10, assemblySharePercent: 46);
 
             // Song Disc: Lando Calrissian
             _builder.Create(RecipeType.SongDiscLandoCalrissian, SkillType.Engineering)
@@ -477,7 +527,8 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.EngineeringRecipeDefinition
                 .Level(50)
                 .Quantity(1)
                 .Component("elec_high", 2)
-                .Component("ref_gostian", 1);
+                .Component("ref_gostian", 1)
+                .CircuitParameters(overloadLine: 7, loadBoostPercent: 11, assemblySharePercent: 50);
         }
     }
 }

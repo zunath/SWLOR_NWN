@@ -28,7 +28,8 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.EngineeringRecipeDefinition
                 .Level(5)
                 .Quantity(1)
                 .Component("manip_arm1", 2)
-                .Component("discharge_unit1", 1);
+                .Component("discharge_unit1", 1)
+                .CircuitParameters(overloadLine: 5, loadBoostPercent: 11, assemblySharePercent: 51);
 
             // Droid Arms MPW I
             _builder.Create(RecipeType.DroidArmsMPW1, SkillType.Engineering)
@@ -37,7 +38,8 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.EngineeringRecipeDefinition
                 .Level(8)
                 .Quantity(1)
                 .Component("manip_arm1", 2)
-                .Component("discharge_unit1", 1);
+                .Component("discharge_unit1", 1)
+                .CircuitParameters(overloadLine: 5, loadBoostPercent: 13, assemblySharePercent: 57);
 
             // Droid Arms MPA I
             _builder.Create(RecipeType.DroidArmsMPA1, SkillType.Engineering)
@@ -46,7 +48,8 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.EngineeringRecipeDefinition
                 .Level(9)
                 .Quantity(1)
                 .Component("manip_arm1", 2)
-                .Component("discharge_unit1", 1);
+                .Component("discharge_unit1", 1)
+                .CircuitParameters(overloadLine: 4, loadBoostPercent: 12, assemblySharePercent: 53);
 
             // Droid Arms MPS I
             _builder.Create(RecipeType.DroidArmsMPS1, SkillType.Engineering)
@@ -55,7 +58,8 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.EngineeringRecipeDefinition
                 .Level(10)
                 .Quantity(1)
                 .Component("manip_arm1", 2)
-                .Component("discharge_unit1", 1);
+                .Component("discharge_unit1", 1)
+                .CircuitParameters(overloadLine: 5, loadBoostPercent: 13, assemblySharePercent: 58);
 
             // Droid Arms MVW I
             _builder.Create(RecipeType.DroidArmsMVW1, SkillType.Engineering)
@@ -64,7 +68,8 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.EngineeringRecipeDefinition
                 .Level(7)
                 .Quantity(1)
                 .Component("manip_arm1", 2)
-                .Component("discharge_unit1", 1);
+                .Component("discharge_unit1", 1)
+                .CircuitParameters(overloadLine: 3, loadBoostPercent: 11, assemblySharePercent: 53);
 
             // Droid Arms MVA I
             _builder.Create(RecipeType.DroidArmsMVA1, SkillType.Engineering)
@@ -73,7 +78,8 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.EngineeringRecipeDefinition
                 .Level(6)
                 .Quantity(1)
                 .Component("manip_arm1", 2)
-                .Component("discharge_unit1", 1);
+                .Component("discharge_unit1", 1)
+                .CircuitParameters(overloadLine: 3, loadBoostPercent: 12, assemblySharePercent: 50);
 
             // Droid Arms MVS I
             _builder.Create(RecipeType.DroidArmsMVS1, SkillType.Engineering)
@@ -82,7 +88,8 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.EngineeringRecipeDefinition
                 .Level(9)
                 .Quantity(1)
                 .Component("manip_arm1", 2)
-                .Component("discharge_unit1", 1);
+                .Component("discharge_unit1", 1)
+                .CircuitParameters(overloadLine: 5, loadBoostPercent: 11, assemblySharePercent: 50);
 
             // Droid Arms MWA I
             _builder.Create(RecipeType.DroidArmsMWA1, SkillType.Engineering)
@@ -91,7 +98,8 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.EngineeringRecipeDefinition
                 .Level(5)
                 .Quantity(1)
                 .Component("manip_arm1", 2)
-                .Component("discharge_unit1", 1);
+                .Component("discharge_unit1", 1)
+                .CircuitParameters(overloadLine: 3, loadBoostPercent: 12, assemblySharePercent: 58);
 
             // Droid Arms MWS I
             _builder.Create(RecipeType.DroidArmsMWS1, SkillType.Engineering)
@@ -100,7 +108,8 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.EngineeringRecipeDefinition
                 .Level(8)
                 .Quantity(1)
                 .Component("manip_arm1", 2)
-                .Component("discharge_unit1", 1);
+                .Component("discharge_unit1", 1)
+                .CircuitParameters(overloadLine: 5, loadBoostPercent: 13, assemblySharePercent: 60);
 
             // Droid Arms MAS I
             _builder.Create(RecipeType.DroidArmsMAS1, SkillType.Engineering)
@@ -109,7 +118,8 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.EngineeringRecipeDefinition
                 .Level(10)
                 .Quantity(1)
                 .Component("manip_arm1", 2)
-                .Component("discharge_unit1", 1);
+                .Component("discharge_unit1", 1)
+                .CircuitParameters(overloadLine: 3, loadBoostPercent: 13, assemblySharePercent: 58);
 
             // Droid Arms PVW I
             _builder.Create(RecipeType.DroidArmsPVW1, SkillType.Engineering)
@@ -118,7 +128,8 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.EngineeringRecipeDefinition
                 .Level(7)
                 .Quantity(1)
                 .Component("manip_arm1", 2)
-                .Component("discharge_unit1", 1);
+                .Component("discharge_unit1", 1)
+                .CircuitParameters(overloadLine: 4, loadBoostPercent: 11, assemblySharePercent: 55);
 
             // Droid Arms PVA I
             _builder.Create(RecipeType.DroidArmsPVA1, SkillType.Engineering)
@@ -127,7 +138,8 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.EngineeringRecipeDefinition
                 .Level(6)
                 .Quantity(1)
                 .Component("manip_arm1", 2)
-                .Component("discharge_unit1", 1);
+                .Component("discharge_unit1", 1)
+                .CircuitParameters(overloadLine: 3, loadBoostPercent: 11, assemblySharePercent: 59);
 
             // Droid Arms PVS I
             _builder.Create(RecipeType.DroidArmsPVS1, SkillType.Engineering)
@@ -136,7 +148,8 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.EngineeringRecipeDefinition
                 .Level(9)
                 .Quantity(1)
                 .Component("manip_arm1", 2)
-                .Component("discharge_unit1", 1);
+                .Component("discharge_unit1", 1)
+                .CircuitParameters(overloadLine: 4, loadBoostPercent: 12, assemblySharePercent: 58);
 
             // Droid Arms VWA I
             _builder.Create(RecipeType.DroidArmsVWA1, SkillType.Engineering)
@@ -145,7 +158,8 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.EngineeringRecipeDefinition
                 .Level(5)
                 .Quantity(1)
                 .Component("manip_arm1", 2)
-                .Component("discharge_unit1", 1);
+                .Component("discharge_unit1", 1)
+                .CircuitParameters(overloadLine: 5, loadBoostPercent: 11, assemblySharePercent: 56);
 
             // Droid Arms VWS I
             _builder.Create(RecipeType.DroidArmsVWS1, SkillType.Engineering)
@@ -154,7 +168,8 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.EngineeringRecipeDefinition
                 .Level(8)
                 .Quantity(1)
                 .Component("manip_arm1", 2)
-                .Component("discharge_unit1", 1);
+                .Component("discharge_unit1", 1)
+                .CircuitParameters(overloadLine: 5, loadBoostPercent: 13, assemblySharePercent: 50);
 
             // Droid Arms VAS I
             _builder.Create(RecipeType.DroidArmsVAS1, SkillType.Engineering)
@@ -163,7 +178,8 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.EngineeringRecipeDefinition
                 .Level(10)
                 .Quantity(1)
                 .Component("manip_arm1", 2)
-                .Component("discharge_unit1", 1);
+                .Component("discharge_unit1", 1)
+                .CircuitParameters(overloadLine: 4, loadBoostPercent: 12, assemblySharePercent: 52);
 
             // Droid Arms WAS I
             _builder.Create(RecipeType.DroidArmsWAS1, SkillType.Engineering)
@@ -172,7 +188,8 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.EngineeringRecipeDefinition
                 .Level(7)
                 .Quantity(1)
                 .Component("manip_arm1", 2)
-                .Component("discharge_unit1", 1);
+                .Component("discharge_unit1", 1)
+                .CircuitParameters(overloadLine: 3, loadBoostPercent: 11, assemblySharePercent: 54);
 
 
         }
@@ -186,7 +203,8 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.EngineeringRecipeDefinition
                 .Level(15)
                 .Quantity(1)
                 .Component("manip_arm2", 2)
-                .Component("discharge_unit2", 1);
+                .Component("discharge_unit2", 1)
+                .CircuitParameters(overloadLine: 6, loadBoostPercent: 13, assemblySharePercent: 54);
 
             // Droid Arms MPW II
             _builder.Create(RecipeType.DroidArmsMPW2, SkillType.Engineering)
@@ -195,7 +213,8 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.EngineeringRecipeDefinition
                 .Level(18)
                 .Quantity(1)
                 .Component("manip_arm2", 2)
-                .Component("discharge_unit2", 1);
+                .Component("discharge_unit2", 1)
+                .CircuitParameters(overloadLine: 5, loadBoostPercent: 13, assemblySharePercent: 53);
 
             // Droid Arms MPA II
             _builder.Create(RecipeType.DroidArmsMPA2, SkillType.Engineering)
@@ -204,7 +223,8 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.EngineeringRecipeDefinition
                 .Level(19)
                 .Quantity(1)
                 .Component("manip_arm2", 2)
-                .Component("discharge_unit2", 1);
+                .Component("discharge_unit2", 1)
+                .CircuitParameters(overloadLine: 5, loadBoostPercent: 12, assemblySharePercent: 60);
 
             // Droid Arms MPS II
             _builder.Create(RecipeType.DroidArmsMPS2, SkillType.Engineering)
@@ -213,7 +233,8 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.EngineeringRecipeDefinition
                 .Level(20)
                 .Quantity(1)
                 .Component("manip_arm2", 2)
-                .Component("discharge_unit2", 1);
+                .Component("discharge_unit2", 1)
+                .CircuitParameters(overloadLine: 4, loadBoostPercent: 11, assemblySharePercent: 56);
 
             // Droid Arms MVW II
             _builder.Create(RecipeType.DroidArmsMVW2, SkillType.Engineering)
@@ -222,7 +243,8 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.EngineeringRecipeDefinition
                 .Level(17)
                 .Quantity(1)
                 .Component("manip_arm2", 2)
-                .Component("discharge_unit2", 1);
+                .Component("discharge_unit2", 1)
+                .CircuitParameters(overloadLine: 5, loadBoostPercent: 12, assemblySharePercent: 50);
 
             // Droid Arms MVA II
             _builder.Create(RecipeType.DroidArmsMVA2, SkillType.Engineering)
@@ -231,7 +253,8 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.EngineeringRecipeDefinition
                 .Level(16)
                 .Quantity(1)
                 .Component("manip_arm2", 2)
-                .Component("discharge_unit2", 1);
+                .Component("discharge_unit2", 1)
+                .CircuitParameters(overloadLine: 5, loadBoostPercent: 13, assemblySharePercent: 53);
 
             // Droid Arms MVS II
             _builder.Create(RecipeType.DroidArmsMVS2, SkillType.Engineering)
@@ -240,7 +263,8 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.EngineeringRecipeDefinition
                 .Level(19)
                 .Quantity(1)
                 .Component("manip_arm2", 2)
-                .Component("discharge_unit2", 1);
+                .Component("discharge_unit2", 1)
+                .CircuitParameters(overloadLine: 4, loadBoostPercent: 12, assemblySharePercent: 57);
 
             // Droid Arms MWA II
             _builder.Create(RecipeType.DroidArmsMWA2, SkillType.Engineering)
@@ -249,7 +273,8 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.EngineeringRecipeDefinition
                 .Level(15)
                 .Quantity(1)
                 .Component("manip_arm2", 2)
-                .Component("discharge_unit2", 1);
+                .Component("discharge_unit2", 1)
+                .CircuitParameters(overloadLine: 6, loadBoostPercent: 12, assemblySharePercent: 60);
 
             // Droid Arms MWS II
             _builder.Create(RecipeType.DroidArmsMWS2, SkillType.Engineering)
@@ -258,7 +283,8 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.EngineeringRecipeDefinition
                 .Level(18)
                 .Quantity(1)
                 .Component("manip_arm2", 2)
-                .Component("discharge_unit2", 1);
+                .Component("discharge_unit2", 1)
+                .CircuitParameters(overloadLine: 5, loadBoostPercent: 11, assemblySharePercent: 51);
 
             // Droid Arms MAS II
             _builder.Create(RecipeType.DroidArmsMAS2, SkillType.Engineering)
@@ -267,7 +293,8 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.EngineeringRecipeDefinition
                 .Level(20)
                 .Quantity(1)
                 .Component("manip_arm2", 2)
-                .Component("discharge_unit2", 1);
+                .Component("discharge_unit2", 1)
+                .CircuitParameters(overloadLine: 5, loadBoostPercent: 12, assemblySharePercent: 58);
 
             // Droid Arms PVW II
             _builder.Create(RecipeType.DroidArmsPVW2, SkillType.Engineering)
@@ -276,7 +303,8 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.EngineeringRecipeDefinition
                 .Level(17)
                 .Quantity(1)
                 .Component("manip_arm2", 2)
-                .Component("discharge_unit2", 1);
+                .Component("discharge_unit2", 1)
+                .CircuitParameters(overloadLine: 5, loadBoostPercent: 11, assemblySharePercent: 56);
 
             // Droid Arms PVA II
             _builder.Create(RecipeType.DroidArmsPVA2, SkillType.Engineering)
@@ -285,7 +313,8 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.EngineeringRecipeDefinition
                 .Level(16)
                 .Quantity(1)
                 .Component("manip_arm2", 2)
-                .Component("discharge_unit2", 1);
+                .Component("discharge_unit2", 1)
+                .CircuitParameters(overloadLine: 6, loadBoostPercent: 12, assemblySharePercent: 52);
 
             // Droid Arms PVS II
             _builder.Create(RecipeType.DroidArmsPVS2, SkillType.Engineering)
@@ -294,7 +323,8 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.EngineeringRecipeDefinition
                 .Level(19)
                 .Quantity(1)
                 .Component("manip_arm2", 2)
-                .Component("discharge_unit2", 1);
+                .Component("discharge_unit2", 1)
+                .CircuitParameters(overloadLine: 5, loadBoostPercent: 11, assemblySharePercent: 56);
 
             // Droid Arms VWA II
             _builder.Create(RecipeType.DroidArmsVWA2, SkillType.Engineering)
@@ -303,7 +333,8 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.EngineeringRecipeDefinition
                 .Level(15)
                 .Quantity(1)
                 .Component("manip_arm2", 2)
-                .Component("discharge_unit2", 1);
+                .Component("discharge_unit2", 1)
+                .CircuitParameters(overloadLine: 6, loadBoostPercent: 11, assemblySharePercent: 53);
 
             // Droid Arms VWS II
             _builder.Create(RecipeType.DroidArmsVWS2, SkillType.Engineering)
@@ -312,7 +343,8 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.EngineeringRecipeDefinition
                 .Level(18)
                 .Quantity(1)
                 .Component("manip_arm2", 2)
-                .Component("discharge_unit2", 1);
+                .Component("discharge_unit2", 1)
+                .CircuitParameters(overloadLine: 6, loadBoostPercent: 12, assemblySharePercent: 54);
 
             // Droid Arms VAS II
             _builder.Create(RecipeType.DroidArmsVAS2, SkillType.Engineering)
@@ -321,7 +353,8 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.EngineeringRecipeDefinition
                 .Level(20)
                 .Quantity(1)
                 .Component("manip_arm2", 2)
-                .Component("discharge_unit2", 1);
+                .Component("discharge_unit2", 1)
+                .CircuitParameters(overloadLine: 5, loadBoostPercent: 13, assemblySharePercent: 55);
 
             // Droid Arms WAS II
             _builder.Create(RecipeType.DroidArmsWAS2, SkillType.Engineering)
@@ -330,7 +363,8 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.EngineeringRecipeDefinition
                 .Level(17)
                 .Quantity(1)
                 .Component("manip_arm2", 2)
-                .Component("discharge_unit2", 1);
+                .Component("discharge_unit2", 1)
+                .CircuitParameters(overloadLine: 5, loadBoostPercent: 11, assemblySharePercent: 51);
 
 
         }
@@ -344,7 +378,8 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.EngineeringRecipeDefinition
                 .Quantity(1)
                 .EnhancementSlots(RecipeEnhancementType.Droid, 1)
                 .Component("manip_arm3", 2)
-                .Component("discharge_unit3", 1);
+                .Component("discharge_unit3", 1)
+                .CircuitParameters(overloadLine: 7, loadBoostPercent: 12, assemblySharePercent: 58);
 
             // Droid Arms MPW III
             _builder.Create(RecipeType.DroidArmsMPW3, SkillType.Engineering)
@@ -354,7 +389,8 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.EngineeringRecipeDefinition
                 .Quantity(1)
                 .EnhancementSlots(RecipeEnhancementType.Droid, 1)
                 .Component("manip_arm3", 2)
-                .Component("discharge_unit3", 1);
+                .Component("discharge_unit3", 1)
+                .CircuitParameters(overloadLine: 6, loadBoostPercent: 12, assemblySharePercent: 56);
 
             // Droid Arms MPA III
             _builder.Create(RecipeType.DroidArmsMPA3, SkillType.Engineering)
@@ -364,7 +400,8 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.EngineeringRecipeDefinition
                 .Quantity(1)
                 .EnhancementSlots(RecipeEnhancementType.Droid, 1)
                 .Component("manip_arm3", 2)
-                .Component("discharge_unit3", 1);
+                .Component("discharge_unit3", 1)
+                .CircuitParameters(overloadLine: 6, loadBoostPercent: 12, assemblySharePercent: 55);
 
             // Droid Arms MPS III
             _builder.Create(RecipeType.DroidArmsMPS3, SkillType.Engineering)
@@ -374,7 +411,8 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.EngineeringRecipeDefinition
                 .Quantity(1)
                 .EnhancementSlots(RecipeEnhancementType.Droid, 1)
                 .Component("manip_arm3", 2)
-                .Component("discharge_unit3", 1);
+                .Component("discharge_unit3", 1)
+                .CircuitParameters(overloadLine: 7, loadBoostPercent: 11, assemblySharePercent: 59);
 
             // Droid Arms MVW III
             _builder.Create(RecipeType.DroidArmsMVW3, SkillType.Engineering)
@@ -384,7 +422,8 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.EngineeringRecipeDefinition
                 .Quantity(1)
                 .EnhancementSlots(RecipeEnhancementType.Droid, 1)
                 .Component("manip_arm3", 2)
-                .Component("discharge_unit3", 1);
+                .Component("discharge_unit3", 1)
+                .CircuitParameters(overloadLine: 7, loadBoostPercent: 12, assemblySharePercent: 52);
 
             // Droid Arms MVA III
             _builder.Create(RecipeType.DroidArmsMVA3, SkillType.Engineering)
@@ -394,7 +433,8 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.EngineeringRecipeDefinition
                 .Quantity(1)
                 .EnhancementSlots(RecipeEnhancementType.Droid, 1)
                 .Component("manip_arm3", 2)
-                .Component("discharge_unit3", 1);
+                .Component("discharge_unit3", 1)
+                .CircuitParameters(overloadLine: 6, loadBoostPercent: 13, assemblySharePercent: 60);
 
             // Droid Arms MVS III
             _builder.Create(RecipeType.DroidArmsMVS3, SkillType.Engineering)
@@ -404,7 +444,8 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.EngineeringRecipeDefinition
                 .Quantity(1)
                 .EnhancementSlots(RecipeEnhancementType.Droid, 1)
                 .Component("manip_arm3", 2)
-                .Component("discharge_unit3", 1);
+                .Component("discharge_unit3", 1)
+                .CircuitParameters(overloadLine: 6, loadBoostPercent: 11, assemblySharePercent: 50);
 
             // Droid Arms MWA III
             _builder.Create(RecipeType.DroidArmsMWA3, SkillType.Engineering)
@@ -414,7 +455,8 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.EngineeringRecipeDefinition
                 .Quantity(1)
                 .EnhancementSlots(RecipeEnhancementType.Droid, 1)
                 .Component("manip_arm3", 2)
-                .Component("discharge_unit3", 1);
+                .Component("discharge_unit3", 1)
+                .CircuitParameters(overloadLine: 5, loadBoostPercent: 11, assemblySharePercent: 54);
 
             // Droid Arms MWS III
             _builder.Create(RecipeType.DroidArmsMWS3, SkillType.Engineering)
@@ -424,7 +466,8 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.EngineeringRecipeDefinition
                 .Quantity(1)
                 .EnhancementSlots(RecipeEnhancementType.Droid, 1)
                 .Component("manip_arm3", 2)
-                .Component("discharge_unit3", 1);
+                .Component("discharge_unit3", 1)
+                .CircuitParameters(overloadLine: 6, loadBoostPercent: 12, assemblySharePercent: 54);
 
             // Droid Arms MAS III
             _builder.Create(RecipeType.DroidArmsMAS3, SkillType.Engineering)
@@ -434,7 +477,8 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.EngineeringRecipeDefinition
                 .Quantity(1)
                 .EnhancementSlots(RecipeEnhancementType.Droid, 1)
                 .Component("manip_arm3", 2)
-                .Component("discharge_unit3", 1);
+                .Component("discharge_unit3", 1)
+                .CircuitParameters(overloadLine: 7, loadBoostPercent: 13, assemblySharePercent: 57);
 
             // Droid Arms PVW III
             _builder.Create(RecipeType.DroidArmsPVW3, SkillType.Engineering)
@@ -444,7 +488,8 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.EngineeringRecipeDefinition
                 .Quantity(1)
                 .EnhancementSlots(RecipeEnhancementType.Droid, 1)
                 .Component("manip_arm3", 2)
-                .Component("discharge_unit3", 1);
+                .Component("discharge_unit3", 1)
+                .CircuitParameters(overloadLine: 5, loadBoostPercent: 13, assemblySharePercent: 56);
 
             // Droid Arms PVA III
             _builder.Create(RecipeType.DroidArmsPVA3, SkillType.Engineering)
@@ -454,7 +499,8 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.EngineeringRecipeDefinition
                 .Quantity(1)
                 .EnhancementSlots(RecipeEnhancementType.Droid, 1)
                 .Component("manip_arm3", 2)
-                .Component("discharge_unit3", 1);
+                .Component("discharge_unit3", 1)
+                .CircuitParameters(overloadLine: 7, loadBoostPercent: 11, assemblySharePercent: 58);
 
             // Droid Arms PVS III
             _builder.Create(RecipeType.DroidArmsPVS3, SkillType.Engineering)
@@ -464,7 +510,8 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.EngineeringRecipeDefinition
                 .Quantity(1)
                 .EnhancementSlots(RecipeEnhancementType.Droid, 1)
                 .Component("manip_arm3", 2)
-                .Component("discharge_unit3", 1);
+                .Component("discharge_unit3", 1)
+                .CircuitParameters(overloadLine: 7, loadBoostPercent: 13, assemblySharePercent: 55);
 
             // Droid Arms VWA III
             _builder.Create(RecipeType.DroidArmsVWA3, SkillType.Engineering)
@@ -474,7 +521,8 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.EngineeringRecipeDefinition
                 .Quantity(1)
                 .EnhancementSlots(RecipeEnhancementType.Droid, 1)
                 .Component("manip_arm3", 2)
-                .Component("discharge_unit3", 1);
+                .Component("discharge_unit3", 1)
+                .CircuitParameters(overloadLine: 7, loadBoostPercent: 13, assemblySharePercent: 60);
 
             // Droid Arms VWS III
             _builder.Create(RecipeType.DroidArmsVWS3, SkillType.Engineering)
@@ -484,7 +532,8 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.EngineeringRecipeDefinition
                 .Quantity(1)
                 .EnhancementSlots(RecipeEnhancementType.Droid, 1)
                 .Component("manip_arm3", 2)
-                .Component("discharge_unit3", 1);
+                .Component("discharge_unit3", 1)
+                .CircuitParameters(overloadLine: 7, loadBoostPercent: 12, assemblySharePercent: 52);
 
             // Droid Arms VAS III
             _builder.Create(RecipeType.DroidArmsVAS3, SkillType.Engineering)
@@ -494,7 +543,8 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.EngineeringRecipeDefinition
                 .Quantity(1)
                 .EnhancementSlots(RecipeEnhancementType.Droid, 1)
                 .Component("manip_arm3", 2)
-                .Component("discharge_unit3", 1);
+                .Component("discharge_unit3", 1)
+                .CircuitParameters(overloadLine: 6, loadBoostPercent: 13, assemblySharePercent: 59);
 
             // Droid Arms WAS III
             _builder.Create(RecipeType.DroidArmsWAS3, SkillType.Engineering)
@@ -504,7 +554,8 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.EngineeringRecipeDefinition
                 .Quantity(1)
                 .EnhancementSlots(RecipeEnhancementType.Droid, 1)
                 .Component("manip_arm3", 2)
-                .Component("discharge_unit3", 1);
+                .Component("discharge_unit3", 1)
+                .CircuitParameters(overloadLine: 5, loadBoostPercent: 12, assemblySharePercent: 59);
 
 
         }
@@ -518,7 +569,8 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.EngineeringRecipeDefinition
                 .Quantity(1)
                 .EnhancementSlots(RecipeEnhancementType.Droid, 1)
                 .Component("manip_arm4", 2)
-                .Component("discharge_unit4", 1);
+                .Component("discharge_unit4", 1)
+                .CircuitParameters(overloadLine: 7, loadBoostPercent: 11, assemblySharePercent: 51);
 
             // Droid Arms MPW IV
             _builder.Create(RecipeType.DroidArmsMPW4, SkillType.Engineering)
@@ -528,7 +580,8 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.EngineeringRecipeDefinition
                 .Quantity(1)
                 .EnhancementSlots(RecipeEnhancementType.Droid, 1)
                 .Component("manip_arm4", 2)
-                .Component("discharge_unit4", 1);
+                .Component("discharge_unit4", 1)
+                .CircuitParameters(overloadLine: 6, loadBoostPercent: 13, assemblySharePercent: 56);
 
             // Droid Arms MPA IV
             _builder.Create(RecipeType.DroidArmsMPA4, SkillType.Engineering)
@@ -538,7 +591,8 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.EngineeringRecipeDefinition
                 .Quantity(1)
                 .EnhancementSlots(RecipeEnhancementType.Droid, 1)
                 .Component("manip_arm4", 2)
-                .Component("discharge_unit4", 1);
+                .Component("discharge_unit4", 1)
+                .CircuitParameters(overloadLine: 7, loadBoostPercent: 11, assemblySharePercent: 52);
 
             // Droid Arms MPS IV
             _builder.Create(RecipeType.DroidArmsMPS4, SkillType.Engineering)
@@ -548,7 +602,8 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.EngineeringRecipeDefinition
                 .Quantity(1)
                 .EnhancementSlots(RecipeEnhancementType.Droid, 1)
                 .Component("manip_arm4", 2)
-                .Component("discharge_unit4", 1);
+                .Component("discharge_unit4", 1)
+                .CircuitParameters(overloadLine: 8, loadBoostPercent: 13, assemblySharePercent: 53);
 
             // Droid Arms MVW IV
             _builder.Create(RecipeType.DroidArmsMVW4, SkillType.Engineering)
@@ -558,7 +613,8 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.EngineeringRecipeDefinition
                 .Quantity(1)
                 .EnhancementSlots(RecipeEnhancementType.Droid, 1)
                 .Component("manip_arm4", 2)
-                .Component("discharge_unit4", 1);
+                .Component("discharge_unit4", 1)
+                .CircuitParameters(overloadLine: 8, loadBoostPercent: 12, assemblySharePercent: 51);
 
             // Droid Arms MVA IV
             _builder.Create(RecipeType.DroidArmsMVA4, SkillType.Engineering)
@@ -568,7 +624,8 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.EngineeringRecipeDefinition
                 .Quantity(1)
                 .EnhancementSlots(RecipeEnhancementType.Droid, 1)
                 .Component("manip_arm4", 2)
-                .Component("discharge_unit4", 1);
+                .Component("discharge_unit4", 1)
+                .CircuitParameters(overloadLine: 6, loadBoostPercent: 11, assemblySharePercent: 56);
 
             // Droid Arms MVS IV
             _builder.Create(RecipeType.DroidArmsMVS4, SkillType.Engineering)
@@ -578,7 +635,8 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.EngineeringRecipeDefinition
                 .Quantity(1)
                 .EnhancementSlots(RecipeEnhancementType.Droid, 1)
                 .Component("manip_arm4", 2)
-                .Component("discharge_unit4", 1);
+                .Component("discharge_unit4", 1)
+                .CircuitParameters(overloadLine: 8, loadBoostPercent: 11, assemblySharePercent: 52);
 
             // Droid Arms MWA IV
             _builder.Create(RecipeType.DroidArmsMWA4, SkillType.Engineering)
@@ -588,7 +646,8 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.EngineeringRecipeDefinition
                 .Quantity(1)
                 .EnhancementSlots(RecipeEnhancementType.Droid, 1)
                 .Component("manip_arm4", 2)
-                .Component("discharge_unit4", 1);
+                .Component("discharge_unit4", 1)
+                .CircuitParameters(overloadLine: 8, loadBoostPercent: 13, assemblySharePercent: 54);
 
             // Droid Arms MWS IV
             _builder.Create(RecipeType.DroidArmsMWS4, SkillType.Engineering)
@@ -598,7 +657,8 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.EngineeringRecipeDefinition
                 .Quantity(1)
                 .EnhancementSlots(RecipeEnhancementType.Droid, 1)
                 .Component("manip_arm4", 2)
-                .Component("discharge_unit4", 1);
+                .Component("discharge_unit4", 1)
+                .CircuitParameters(overloadLine: 8, loadBoostPercent: 13, assemblySharePercent: 57);
 
             // Droid Arms MAS IV
             _builder.Create(RecipeType.DroidArmsMAS4, SkillType.Engineering)
@@ -608,7 +668,8 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.EngineeringRecipeDefinition
                 .Quantity(1)
                 .EnhancementSlots(RecipeEnhancementType.Droid, 1)
                 .Component("manip_arm4", 2)
-                .Component("discharge_unit4", 1);
+                .Component("discharge_unit4", 1)
+                .CircuitParameters(overloadLine: 6, loadBoostPercent: 11, assemblySharePercent: 53);
 
             // Droid Arms PVW IV
             _builder.Create(RecipeType.DroidArmsPVW4, SkillType.Engineering)
@@ -618,7 +679,8 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.EngineeringRecipeDefinition
                 .Quantity(1)
                 .EnhancementSlots(RecipeEnhancementType.Droid, 1)
                 .Component("manip_arm4", 2)
-                .Component("discharge_unit4", 1);
+                .Component("discharge_unit4", 1)
+                .CircuitParameters(overloadLine: 6, loadBoostPercent: 13, assemblySharePercent: 55);
 
             // Droid Arms PVA IV
             _builder.Create(RecipeType.DroidArmsPVA4, SkillType.Engineering)
@@ -628,7 +690,8 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.EngineeringRecipeDefinition
                 .Quantity(1)
                 .EnhancementSlots(RecipeEnhancementType.Droid, 1)
                 .Component("manip_arm4", 2)
-                .Component("discharge_unit4", 1);
+                .Component("discharge_unit4", 1)
+                .CircuitParameters(overloadLine: 7, loadBoostPercent: 11, assemblySharePercent: 58);
 
             // Droid Arms PVS IV
             _builder.Create(RecipeType.DroidArmsPVS4, SkillType.Engineering)
@@ -638,7 +701,8 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.EngineeringRecipeDefinition
                 .Quantity(1)
                 .EnhancementSlots(RecipeEnhancementType.Droid, 1)
                 .Component("manip_arm4", 2)
-                .Component("discharge_unit4", 1);
+                .Component("discharge_unit4", 1)
+                .CircuitParameters(overloadLine: 7, loadBoostPercent: 12, assemblySharePercent: 54);
 
             // Droid Arms VWA IV
             _builder.Create(RecipeType.DroidArmsVWA4, SkillType.Engineering)
@@ -648,7 +712,8 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.EngineeringRecipeDefinition
                 .Quantity(1)
                 .EnhancementSlots(RecipeEnhancementType.Droid, 1)
                 .Component("manip_arm4", 2)
-                .Component("discharge_unit4", 1);
+                .Component("discharge_unit4", 1)
+                .CircuitParameters(overloadLine: 6, loadBoostPercent: 12, assemblySharePercent: 53);
 
             // Droid Arms VWS IV
             _builder.Create(RecipeType.DroidArmsVWS4, SkillType.Engineering)
@@ -658,7 +723,8 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.EngineeringRecipeDefinition
                 .Quantity(1)
                 .EnhancementSlots(RecipeEnhancementType.Droid, 1)
                 .Component("manip_arm4", 2)
-                .Component("discharge_unit4", 1);
+                .Component("discharge_unit4", 1)
+                .CircuitParameters(overloadLine: 8, loadBoostPercent: 13, assemblySharePercent: 58);
 
             // Droid Arms VAS IV
             _builder.Create(RecipeType.DroidArmsVAS4, SkillType.Engineering)
@@ -668,7 +734,8 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.EngineeringRecipeDefinition
                 .Quantity(1)
                 .EnhancementSlots(RecipeEnhancementType.Droid, 1)
                 .Component("manip_arm4", 2)
-                .Component("discharge_unit4", 1);
+                .Component("discharge_unit4", 1)
+                .CircuitParameters(overloadLine: 6, loadBoostPercent: 11, assemblySharePercent: 52);
 
             // Droid Arms WAS IV
             _builder.Create(RecipeType.DroidArmsWAS4, SkillType.Engineering)
@@ -678,7 +745,8 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.EngineeringRecipeDefinition
                 .Quantity(1)
                 .EnhancementSlots(RecipeEnhancementType.Droid, 1)
                 .Component("manip_arm4", 2)
-                .Component("discharge_unit4", 1);
+                .Component("discharge_unit4", 1)
+                .CircuitParameters(overloadLine: 7, loadBoostPercent: 13, assemblySharePercent: 56);
 
 
         }
@@ -692,7 +760,8 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.EngineeringRecipeDefinition
                 .Quantity(1)
                 .EnhancementSlots(RecipeEnhancementType.Droid, 1)
                 .Component("manip_arm5", 2)
-                .Component("discharge_unit5", 1);
+                .Component("discharge_unit5", 1)
+                .CircuitParameters(overloadLine: 9, loadBoostPercent: 12, assemblySharePercent: 57);
 
             // Droid Arms MPW V
             _builder.Create(RecipeType.DroidArmsMPW5, SkillType.Engineering)
@@ -702,7 +771,8 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.EngineeringRecipeDefinition
                 .Quantity(1)
                 .EnhancementSlots(RecipeEnhancementType.Droid, 1)
                 .Component("manip_arm5", 2)
-                .Component("discharge_unit5", 1);
+                .Component("discharge_unit5", 1)
+                .CircuitParameters(overloadLine: 9, loadBoostPercent: 11, assemblySharePercent: 54);
 
             // Droid Arms MPA V
             _builder.Create(RecipeType.DroidArmsMPA5, SkillType.Engineering)
@@ -712,7 +782,8 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.EngineeringRecipeDefinition
                 .Quantity(1)
                 .EnhancementSlots(RecipeEnhancementType.Droid, 1)
                 .Component("manip_arm5", 2)
-                .Component("discharge_unit5", 1);
+                .Component("discharge_unit5", 1)
+                .CircuitParameters(overloadLine: 8, loadBoostPercent: 11, assemblySharePercent: 60);
 
             // Droid Arms MPS V
             _builder.Create(RecipeType.DroidArmsMPS5, SkillType.Engineering)
@@ -722,7 +793,8 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.EngineeringRecipeDefinition
                 .Quantity(1)
                 .EnhancementSlots(RecipeEnhancementType.Droid, 1)
                 .Component("manip_arm5", 2)
-                .Component("discharge_unit5", 1);
+                .Component("discharge_unit5", 1)
+                .CircuitParameters(overloadLine: 8, loadBoostPercent: 13, assemblySharePercent: 55);
 
             // Droid Arms MVW V
             _builder.Create(RecipeType.DroidArmsMVW5, SkillType.Engineering)
@@ -732,7 +804,8 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.EngineeringRecipeDefinition
                 .Quantity(1)
                 .EnhancementSlots(RecipeEnhancementType.Droid, 1)
                 .Component("manip_arm5", 2)
-                .Component("discharge_unit5", 1);
+                .Component("discharge_unit5", 1)
+                .CircuitParameters(overloadLine: 8, loadBoostPercent: 11, assemblySharePercent: 60);
 
             // Droid Arms MVA V
             _builder.Create(RecipeType.DroidArmsMVA5, SkillType.Engineering)
@@ -742,7 +815,8 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.EngineeringRecipeDefinition
                 .Quantity(1)
                 .EnhancementSlots(RecipeEnhancementType.Droid, 1)
                 .Component("manip_arm5", 2)
-                .Component("discharge_unit5", 1);
+                .Component("discharge_unit5", 1)
+                .CircuitParameters(overloadLine: 7, loadBoostPercent: 11, assemblySharePercent: 51);
 
             // Droid Arms MVS V
             _builder.Create(RecipeType.DroidArmsMVS5, SkillType.Engineering)
@@ -752,7 +826,8 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.EngineeringRecipeDefinition
                 .Quantity(1)
                 .EnhancementSlots(RecipeEnhancementType.Droid, 1)
                 .Component("manip_arm5", 2)
-                .Component("discharge_unit5", 1);
+                .Component("discharge_unit5", 1)
+                .CircuitParameters(overloadLine: 8, loadBoostPercent: 11, assemblySharePercent: 56);
 
             // Droid Arms MWA V
             _builder.Create(RecipeType.DroidArmsMWA5, SkillType.Engineering)
@@ -762,7 +837,8 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.EngineeringRecipeDefinition
                 .Quantity(1)
                 .EnhancementSlots(RecipeEnhancementType.Droid, 1)
                 .Component("manip_arm5", 2)
-                .Component("discharge_unit5", 1);
+                .Component("discharge_unit5", 1)
+                .CircuitParameters(overloadLine: 8, loadBoostPercent: 11, assemblySharePercent: 57);
 
             // Droid Arms MWS V
             _builder.Create(RecipeType.DroidArmsMWS5, SkillType.Engineering)
@@ -772,7 +848,8 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.EngineeringRecipeDefinition
                 .Quantity(1)
                 .EnhancementSlots(RecipeEnhancementType.Droid, 1)
                 .Component("manip_arm5", 2)
-                .Component("discharge_unit5", 1);
+                .Component("discharge_unit5", 1)
+                .CircuitParameters(overloadLine: 7, loadBoostPercent: 13, assemblySharePercent: 60);
 
             // Droid Arms MAS V
             _builder.Create(RecipeType.DroidArmsMAS5, SkillType.Engineering)
@@ -782,7 +859,8 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.EngineeringRecipeDefinition
                 .Quantity(1)
                 .EnhancementSlots(RecipeEnhancementType.Droid, 1)
                 .Component("manip_arm5", 2)
-                .Component("discharge_unit5", 1);
+                .Component("discharge_unit5", 1)
+                .CircuitParameters(overloadLine: 8, loadBoostPercent: 13, assemblySharePercent: 52);
 
             // Droid Arms PVW V
             _builder.Create(RecipeType.DroidArmsPVW5, SkillType.Engineering)
@@ -792,7 +870,8 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.EngineeringRecipeDefinition
                 .Quantity(1)
                 .EnhancementSlots(RecipeEnhancementType.Droid, 1)
                 .Component("manip_arm5", 2)
-                .Component("discharge_unit5", 1);
+                .Component("discharge_unit5", 1)
+                .CircuitParameters(overloadLine: 8, loadBoostPercent: 13, assemblySharePercent: 52);
 
             // Droid Arms PVA V
             _builder.Create(RecipeType.DroidArmsPVA5, SkillType.Engineering)
@@ -802,7 +881,8 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.EngineeringRecipeDefinition
                 .Quantity(1)
                 .EnhancementSlots(RecipeEnhancementType.Droid, 1)
                 .Component("manip_arm5", 2)
-                .Component("discharge_unit5", 1);
+                .Component("discharge_unit5", 1)
+                .CircuitParameters(overloadLine: 8, loadBoostPercent: 11, assemblySharePercent: 54);
 
             // Droid Arms PVS V
             _builder.Create(RecipeType.DroidArmsPVS5, SkillType.Engineering)
@@ -812,7 +892,8 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.EngineeringRecipeDefinition
                 .Quantity(1)
                 .EnhancementSlots(RecipeEnhancementType.Droid, 1)
                 .Component("manip_arm5", 2)
-                .Component("discharge_unit5", 1);
+                .Component("discharge_unit5", 1)
+                .CircuitParameters(overloadLine: 7, loadBoostPercent: 12, assemblySharePercent: 57);
 
             // Droid Arms VWA V
             _builder.Create(RecipeType.DroidArmsVWA5, SkillType.Engineering)
@@ -822,7 +903,8 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.EngineeringRecipeDefinition
                 .Quantity(1)
                 .EnhancementSlots(RecipeEnhancementType.Droid, 1)
                 .Component("manip_arm5", 2)
-                .Component("discharge_unit5", 1);
+                .Component("discharge_unit5", 1)
+                .CircuitParameters(overloadLine: 9, loadBoostPercent: 12, assemblySharePercent: 52);
 
             // Droid Arms VWS V
             _builder.Create(RecipeType.DroidArmsVWS5, SkillType.Engineering)
@@ -832,7 +914,8 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.EngineeringRecipeDefinition
                 .Quantity(1)
                 .EnhancementSlots(RecipeEnhancementType.Droid, 1)
                 .Component("manip_arm5", 2)
-                .Component("discharge_unit5", 1);
+                .Component("discharge_unit5", 1)
+                .CircuitParameters(overloadLine: 7, loadBoostPercent: 12, assemblySharePercent: 60);
 
             // Droid Arms VAS V
             _builder.Create(RecipeType.DroidArmsVAS5, SkillType.Engineering)
@@ -842,7 +925,8 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.EngineeringRecipeDefinition
                 .Quantity(1)
                 .EnhancementSlots(RecipeEnhancementType.Droid, 1)
                 .Component("manip_arm5", 2)
-                .Component("discharge_unit5", 1);
+                .Component("discharge_unit5", 1)
+                .CircuitParameters(overloadLine: 8, loadBoostPercent: 13, assemblySharePercent: 52);
 
             // Droid Arms WAS V
             _builder.Create(RecipeType.DroidArmsWAS5, SkillType.Engineering)
@@ -852,7 +936,8 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.EngineeringRecipeDefinition
                 .Quantity(1)
                 .EnhancementSlots(RecipeEnhancementType.Droid, 1)
                 .Component("manip_arm5", 2)
-                .Component("discharge_unit5", 1);
+                .Component("discharge_unit5", 1)
+                .CircuitParameters(overloadLine: 9, loadBoostPercent: 13, assemblySharePercent: 51);
 
 
         }

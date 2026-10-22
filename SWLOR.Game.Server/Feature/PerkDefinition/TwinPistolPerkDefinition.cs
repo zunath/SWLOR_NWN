@@ -281,7 +281,7 @@ namespace SWLOR.Game.Server.Feature.PerkDefinition
 
                 .AddPerkLevel()
                 .GrantsFeat(FeatType.TwinPistolMomentumTrait)
-                .Description("After moving at least 2m, landing a hostile weapon attack grants 1 Flow, max 3. Lasts 12 seconds. Each charge gives +2 Accuracy to weapon auto-attacks. Your next hostile weapon ability that costs STM spends all Flow for +2 DMG per charge, applied once per weapon across the whole ability.")
+                .Description("After moving at least 2m, landing a hostile weapon attack grants 1 Flow, max 3. Lasts 12 seconds. Each charge gives +2 Accuracy to weapon auto-attacks. Your next Grapple Shot, Final Salvo, or other skill's hostile weapon ability that costs STM spends all Flow for +2 DMG per charge, applied once per weapon across the whole ability. Other Twin Pistol abilities keep Flow.")
                 .IncreasesStat(StatType.PairedRangedMomentumMaximum, 3)
                 .IncreasesStat(StatType.PairedRangedMomentumDurationSeconds, 12)
                 .IncreasesStat(StatType.PairedRangedMomentumAccuracyPerCharge, 2)

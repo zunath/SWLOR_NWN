@@ -23,8 +23,6 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
         public const string SetupPartial = "CIRCUIT_SETUP";
         public const string CraftPartial = "CIRCUIT_CRAFT";
 
-        private static readonly GuiColor Gold = new(255, 215, 0);
-
         private RecipeType _recipe;
         private uint _blueprintItem;
         private CraftSession _session;

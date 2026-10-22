@@ -353,13 +353,15 @@ namespace SWLOR.Game.Server.Service
         /// A retreat takes the first lane away from the target that passes movement validation and keeps a line
         /// of fire to the target, so a rock or ally directly behind the caster does not refuse the ability while
         /// open ground lies beside it. With no legal lane, <paramref name="error"/> says why before anything is
-        /// paid: the straight retreat's movement error, or that every open lane loses the line of fire.
+        /// paid: the straight retreat's movement error, that every lane ends out of range, or that every open lane loses
+        /// the line of fire.
         /// </summary>
         private static Location GetRetreatDestination(uint actor, uint target, NumericsVector3 origin,
             NumericsVector3 direction, TwinPistolAbilitySpec spec, out string error)
         {
             error = string.Empty;
             Location straight = null;
+            var anyInRange = false;
             var targetPosition = GetPosition(target);
             foreach (var endpoint in RetreatEndpoints(new(origin.X, origin.Y), new(direction.X, direction.Y),
                          spec.MinimumMovementMeters, spec.MaxMovementMeters))
@@ -369,13 +371,15 @@ namespace SWLOR.Game.Server.Service
                 var destination = Location(GetArea(actor), position, GetFacing(actor));
                 straight ??= destination;
                 if (NumericsVector3.Distance(position, targetPosition) > spec.ArrivalRangeMeters) continue;
+                anyInRange = true;
                 // The arrival volley checks line of sight from where the actor stops; a lane behind cover would
                 // spend the cast without an attack. The move counts as arrived up to the arrival tolerance short
-                // of its end point, so both must see the target. LineOfSightVector needs the actor's script context.
+                // of its end point, so both must see the target. LineOfSightVector tests in the caller's area, so any
+                // caller there works, such as the owner whose combat round drives companion AI.
                 var travel = new NumericsVector3(position.X - origin.X, position.Y - origin.Y, 0);
                 var early = position - travel * (WeaponRepositioning.ArrivalTolerance / travel.Length());
                 early.Z = GetGroundHeight(Location(GetArea(actor), early, GetFacing(actor)));
-                if (OBJECT_SELF == actor && (!HasLineOfFire(position, targetPosition) || !HasLineOfFire(early, targetPosition)))
+                if (GetArea(OBJECT_SELF) == GetArea(actor) && (!HasLineOfFire(position, targetPosition) || !HasLineOfFire(early, targetPosition)))
                     continue;
                 if (string.IsNullOrEmpty(WeaponRepositioning.Validate(actor, GetLocation(actor), destination,
                         spec.MinimumMovementMeters, spec.MaxMovementMeters)))
@@ -388,7 +392,10 @@ namespace SWLOR.Game.Server.Service
             }
             error = WeaponRepositioning.Validate(actor, GetLocation(actor), straight,
                 spec.MinimumMovementMeters, spec.MaxMovementMeters);
-            if (string.IsNullOrEmpty(error)) error = "No retreat path keeps a line of fire to the target.";
+            if (string.IsNullOrEmpty(error))
+                error = anyInRange
+                    ? "No retreat path keeps a line of fire to the target."
+                    : "The target would be out of range after retreating.";
             return straight;
         }
 

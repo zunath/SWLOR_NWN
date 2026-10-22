@@ -257,6 +257,10 @@ namespace SWLOR.CombatSim.Engine
                         ResolveUse(use);
                         if (use.WeaponPower.HasValue && spec.WeaponCombat == null)
                             throw new InvalidDataException("WeaponPower requires WeaponCombat calibration.");
+                        if (spec.WeaponCombat != null && _resolvedUses[use].Info.UnmodeledRiders.Count > 0)
+                            throw new InvalidDataException($"'{use.Feat}' has source riders the weapon simulation does not model: {string.Join(", ", _resolvedUses[use].Info.UnmodeledRiders)}.");
+                        if (spec.WeaponCombat != null && _resolvedUses[use].Effect is { Kind: EffectKind.SelfStatus } selfStatus)
+                            WeaponCombatState.RequireSupportedStatus(selfStatus.StatusType);
                         if (_resolvedUses[use].Info.Technique != null && spec.WeaponCombat?.AllowTechniqueAbilities != true)
                             throw new InvalidDataException("Technique abilities require an eligible weapon calibration.");
                         if (use.Damage?.WeaponPower != null &&
@@ -268,6 +272,10 @@ namespace SWLOR.CombatSim.Engine
                             throw new InvalidDataException($"'{use.Feat}' cannot apply Flow to calibrated final damage; supply explicit authored WeaponPower or omit Flow.");
                         if (_resolvedUses[use].Info.TwinPistol != null && spec.WeaponLoadout == null)
                             throw new InvalidDataException($"'{use.Feat}' needs a WeaponLoadout to resolve its captured hands and traits.");
+                        // The loadout autoattack path carries only calibrated queues; a formula queue rides the formula swing.
+                        if (_resolvedUses[use].Info.IsQueuedWeapon && use.WeaponPower.HasValue && spec.WeaponLoadout != null)
+                            throw new InvalidDataException(
+                                $"'{spec.Name}' queues the formula weapon ability '{use.Feat}', which a WeaponLoadout cannot carry.");
                         // Only a landed autoattack can carry a queued weapon ability.
                         if (_resolvedUses[use].Info.IsQueuedWeapon && spec.AutoAttack is not { AttacksPerSecond: > 0 } && spec.WeaponLoadout == null)
                             throw new InvalidDataException(
@@ -438,9 +446,9 @@ namespace SWLOR.CombatSim.Engine
                 throw new InvalidDataException("MinimumStaminaBeforeUse must be nonnegative.");
             if (use.RequiredSetup is not ("Any" or "None" or "Opening" or "Finish" or "Distraction") || use.WeaponPower is < 0 or > 10000 || use.WeaponHits is < 1 or > 10 || use.WeaponDamagePercent is < 0 or > 100)
                 throw new InvalidDataException("Unsupported weapon ability calibration or rotation condition.");
-            if (use.WeaponPower.HasValue && (use.Damage != null || !info.IsHostile || info.IsQueuedWeapon ||
-                !SWLOR.Game.Server.Service.Combat.IsWeaponSkillType(info.SkillType)))
-                throw new InvalidDataException("WeaponPower supports hostile casted weapon abilities with no flat Damage profile.");
+            if (use.WeaponPower.HasValue && (use.Damage != null || !info.IsHostile ||
+                !SWLOR.Game.Server.Service.Combat.IsWeaponSkillType(info.WeaponImpactSkillType != SkillType.Invalid ? info.WeaponImpactSkillType : info.SkillType)))
+                throw new InvalidDataException("WeaponPower supports hostile weapon abilities with no flat Damage profile.");
             EffectCatalog.TryGet(feat, out var effect);
             if (effect == null && use.Damage == null && !use.WeaponPower.HasValue && info.TwinPistol == null)
                 throw new InvalidDataException($"'{use.Feat}' has no modeled effect; give it a damage profile or add it to the effect catalog.");
@@ -691,7 +699,7 @@ namespace SWLOR.CombatSim.Engine
         private void Decide(Combatant caster)
         {
             ExpireQueuedWeaponAbility(caster);
-            if (caster.Casting != null || _now < caster.NextActionAt || caster.Weapon?.Control.IsDazed(_now) == true)
+            if (caster.Casting != null || _now < caster.NextActionAt || caster.Weapon?.Control.IsIncapacitated(_now) == true)
                 return;
 
             var starved = false;
@@ -929,7 +937,7 @@ namespace SWLOR.CombatSim.Engine
                 return;
             }
 
-            if (cast.Ability.IsQueuedWeapon && cast.Use.Damage != null)
+            if (cast.Ability.IsQueuedWeapon && (cast.Use.Damage != null || cast.Use.WeaponPower.HasValue))
             {
                 // The game holds a paid weapon ability for the next landed attack, for up to 30 seconds.
                 caster.QueuedWeaponAbility = new QueuedWeaponAbility
@@ -1260,9 +1268,9 @@ namespace SWLOR.CombatSim.Engine
                 return;
             }
             var attack = attacker.Spec.AutoAttack;
-            if (attacker.Weapon?.Control.IsDazed(_now) == true)
+            if (attacker.Weapon?.Control.IsIncapacitated(_now) == true)
             {
-                attacker.NextAttackAt = Math.Max(attacker.NextAttackAt, attacker.Weapon.Control.DazedUntil);
+                attacker.NextAttackAt = Math.Max(attacker.NextAttackAt, attacker.Weapon.Control.IncapacitatedUntil);
                 return;
             }
             if (attack == null || attacker.Weapon == null && attack.AttacksPerSecond <= 0 || attacker.Casting != null)
@@ -1301,12 +1309,17 @@ namespace SWLOR.CombatSim.Engine
                 ExpireQueuedWeaponAbility(attacker);
                 var queued = attacker.QueuedWeaponAbility;
                 if (queued != null) attacker.Weapon?.Target(target, _now);
-                if (queued == null)
+                if (queued == null || attacker.Weapon != null && queued.Use.WeaponPower.HasValue)
                 {
                     if (attacker.Weapon != null)
                     {
                         var attacks = attacker.Weapon.TakeSwingAttacks(swingAt);
-                        for (var i = 0; i < attacks && !target.IsDead; i++) ApplyWeaponOrdinary(attacker, target);
+                        for (var i = 0; i < attacks && !target.IsDead; i++)
+                        {
+                            // A formula weapon ability rides the swing's next attack; a miss keeps it queued.
+                            if (attacker.QueuedWeaponAbility is { Use.WeaponPower: not null } carried) ApplyQueuedWeaponAbility(attacker, target, carried);
+                            else ApplyWeaponOrdinary(attacker, target);
+                        }
                     }
                     else ApplyDamageProfile(attacker, target, attack.Damage, 0f, at: swingAt);
                     continue;
@@ -1750,6 +1763,9 @@ namespace SWLOR.CombatSim.Engine
             target.WeaponTraits.Paired.ClearTransientState();
             target.WeaponTraits.Haste.Reset();
             target.KilledByPlayer = killer != null && IsPlayerVersusPlayer(killer, target);
+            // Combat.ApplyDefeatedEnemyEffects runs from the creature death script, which players do not run.
+            if (killer?.Weapon != null && killer != target && !killer.IsDead && target.Spec.IsNpc)
+                killer.Weapon.DefeatedEnemy();
             // Death ends PvP combat, as the game's PvpCombat.EndOnDeath does, so a revive starts a new one.
             target.PvpCombatStartedAt = double.NegativeInfinity;
             target.LastPvpActivityAt = double.NegativeInfinity;

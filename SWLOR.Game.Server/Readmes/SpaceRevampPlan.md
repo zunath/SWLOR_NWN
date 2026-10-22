@@ -65,6 +65,7 @@ Before any work, read `AGENTS.md` and these guides, plus every guide named in th
 | Crafting | A new Engineering component layer with trade-off traits. Research blueprints work for hulls and modules. |
 | Combat | Shared ground rules: crits, one Attack and one Defense, EM/Thermal/Explosive resistances, shared status effects, threat, PvP rules. |
 | Attributes | AGI accuracy/evasion, PER attack/crit, VIT hull defense, WIL shields/capacitor/repair, MGT STM for maneuvers, SOC command and trade prices. |
+| Activation | Modules with a cycle are toggles that fire themselves each cycle and switch off when they can't fire. Lit icons show what's on, and a Ship HUD shows targets. |
 | Crew | Stations on Large and Capital hulls, with droid crew. Ships at launch. |
 | Death | Modules drop only on PvP deaths. Everyone aboard ejects in escape pods and takes the normal XP debt. Cargo spills. |
 | Enemies | Every NPC ship gets a size and a role behavior. New groups: pirates, customs patrols, Hutt enforcers, derelict defenses, convoys, aces. |
@@ -264,6 +265,38 @@ Each space skill has two styles of 60 SP, the same as a weapon skill.
 - **Fitting limits:** slot counts plus capital-only weapons; capacitor is the running cost.
 - **Slot tags:** each slot carries a tag, **Helm** or a station (Gunner, Engineer, Sensors), for crew (section 10).
 
+### Activation: toggles and auto-fire
+
+Toggled modules are the ship's auto-attacks; perk abilities are the buttons, as on the ground.
+
+- **Toggles:** every module with a cycle is an on/off toggle that fires itself each time its cycle ends. That covers:
+  - weapons (missiles while ammo lasts)
+  - Mining Lasers, Salvagers and Gas Harvesters
+  - repairers and capacitor transfer
+  - Jammers, Target Painters, Ion Webs and Interdictors
+  - Shield Hardeners and the Afterburner, which pay capacitor each cycle
+- **One press:** consumables (Hypermatter Injector) and every perk ability.
+- **Targets:**
+  - Offensive modules fire at the ship's current target and follow it when the pilot switches targets.
+  - Support modules (repairers, capacitor transfer) lock onto the target selected when they were turned on. They keep it until it dies or they are turned off.
+- **Auto-off:** a toggled module turns itself off, with one short message, when:
+  - its target dies, becomes invalid or leaves range
+  - capacitor can't pay its next cycle
+  - its ammo runs out
+  - its asteroid, gas cloud or wreck is used up
+  - the ship leaves space, jumps a starlane or is destroyed
+- **No global recast for toggles:** each runs on its own cycle. One-press items and perk abilities follow the ground ability rules.
+- **Balance:** every fitted module now fires every cycle. Sustained damage on hulls with many slots roughly doubles compared to today, where the 2 s global recast limited how many modules a pilot could cycle. Rebalance damage, capacitor cost and cycle time for each family in the Bible draft.
+- **State:** toggle state lives in `ShipStatus.ActiveModules`, which exists but is unused today. One auto-fire loop drives players and NPCs (folding in `ProcessSpaceNPCAI` firing). It runs at sub-second resolution so cycles aren't held back by the 1 s ship tick.
+- **Lit icons (required):** a module that is on shows a lit variant of its icon: the same art with an "active" border, generated with the icon tools (`IconStandards.md`). It is swapped through the slot texture override that `Space.ApplyShipModuleFeat` already uses, and the cooldown sweep runs each cycle. Every module family and rank needs both variants, and client evidence must show on, off and auto-off states.
+- **Ship HUD:** a NUI window built to `NuiLayoutRules.md`, `GuiWindowAuthoring.md` and `skills/swlor-gui-window-generation/SKILL.md`. It shows:
+  - the current target with its hull and shield
+  - every module that is on, with its target and cycle progress
+  - a **Retarget** button on each support module, which locks it to the current target
+  - an **All Weapons** on/off button, also available as a hotbar feat
+
+  The HUD exists so support-module locks are never confusing: a player can always see what each module is aimed at and change it in one click.
+
 ### Families
 
 *New* marks a new family. Existing families keep their identity and move rows as listed.
@@ -322,7 +355,7 @@ Each space skill has two styles of 60 SP, the same as a weapon skill.
   - **Modules:** they drop only on a PvP death, at today's 65% chance, and the attacker can loot them. On a PvE death, modules stay installed.
   - **Cargo:** spills on any death (section 13).
   - **Repairs:** the owner pays a repair bill scaled by hull size. The SOC and starport discounts stay.
-- **Global recast:** 2 s per player, as today. Crew each have their own.
+- **Global recast:** none for toggled modules (section 8, Activation). One-press items and perk abilities follow the ground ability rules, and each crew member has their own.
 
 ## 10. Crew stations
 
@@ -333,7 +366,7 @@ Ships at launch.
   - Capital hulls: Pilot, 2 Gunners, Engineer and Sensors.
   - Small and Medium hulls are solo.
 - **Slot control:**
-  - Gunners fire the High slots tagged as their turrets.
+  - Gunners toggle the High slots tagged as their turrets and pick their own target, independent of the pilot.
   - The Engineer runs active shield and hull modules, plus a new **power-routing** ability that shifts capacitor regen between weapons, shields and engines.
   - Sensors runs Mid electronic warfare and tackle.
   - The Pilot runs Helm slots, Afterburner, Thrusters and maneuvers. The pilot cannot fire station slots.
@@ -345,7 +378,7 @@ Ships at launch.
   - The server keeps the hidden character beside the ship every second and re-attaches the camera after every area transition. The camera drops on transitions.
   - Everything a station does is fired from the ship. The crew member's own rank, attributes and perks set the strength.
 - **Droid crew:**
-  - A player-built droid (Engineering) can work any station. It fires that station's modules at the pilot's target at reduced effect.
+  - A player-built droid (Engineering) can work any station at reduced effect. It turns that station's modules on whenever the pilot has a valid target, and back on after an auto-off once a new valid target is picked.
   - Its logic reuses `ProcessSpaceNPCAI`.
 - **Permissions and edge cases:**
   - Add a crew property permission next to `PilotShip`.
@@ -558,7 +591,7 @@ Fix these as part of the rewrite. Most go away with the code that replaces them.
 13. Starship enhancement subtype 58 is labelled "Starship - Agility" but builds an ability bonus.
 14. `recipe_aurek`, `recipe_sfight` and `recipe_basilisk` cannot be obtained. Design Schematics fix this.
 15. Missile ammo: `Missile35` is recipe level 25, recipe type names don't match quantities, and the Bible rows are stale.
-16. `ShipDetail` Accuracy, Evasion, defenses, IndustryBonus and HasDroidBay, plus `ShipStatus.ActiveModules`, are never read.
+16. `ShipDetail` Accuracy, Evasion, defenses, IndustryBonus and HasDroidBay are never read. `ShipStatus.ActiveModules` is never read either; it becomes the toggle state (section 8).
 17. NPC config modules are stored under negative Low-slot keys. Removed with configs.
 18. The asteroid space object points at an item tag ("asteroid") that isn't a registered ship.
 19. `PerkType.StarshipBlueprints` (152) is unreferenced.
@@ -576,6 +609,7 @@ Draft each in the Bible, check it with the combat simulator where it affects com
 - **Components:** recipes, variant trait sizes, salvaged trait odds.
 - **Perks:** every row for Ace, Wing Commander, Broadside, Ordnance, Bulwark and Operator, plus the Gathering space perks.
 - **Combat:** STM costs, capacitor and shield regen formulas, crit factors.
+- **Activation:** cycle time and capacitor per cycle for every family once the global recast is gone, and the auto-fire loop interval.
 - **Crew:** droid crew effectiveness, power-routing amounts.
 - **Enemies:** space NPC stat presets per role and tier, ambush odds, convoy and patrol sizes.
 - **Trade:**
@@ -603,8 +637,8 @@ Everything merges to one integration branch and releases together.
 |---|---|---|---|
 | W0 | Bible drafts | Piloting, Gunnery and Ship Systems perk tabs; Starships tab rewrite (hulls, modules, components, traits); space enemy sections; trade tab (commodities, prices) | Owner approval gates W2-W9 numbers |
 | W1 | Foundations | Skills, `CombatPointCategoryType.Starship`, space `StatType`s, resistance types, High/Mid/Low and slot tags in `ShipStatus`, removing configs, size x role data model, `RequiresSkill` on space items | - |
-| W2 | Combat rules | Shared crit, resist, status and threat; attribute mapping; regen; PvP; escape pods; repair bills | W1 |
-| W3 | Hulls and modules | 12 role hulls, Hull Designs and Refit, about 20 module families x rank steps, size scaling, icons, store | W1, W0 |
+| W2 | Combat rules | Shared crit, resist, status and threat; attribute mapping; regen; toggle and auto-fire loop; Ship HUD; PvP; escape pods; repair bills | W1 |
+| W3 | Hulls and modules | 12 role hulls, Hull Designs and Refit, about 20 module families x rank steps, size scaling, icons with lit variants, store | W1, W0 |
 | W4 | Perks and abilities | Six styles, Gathering space perks, space abilities and IDs | W1, W2, W0 |
 | W5 | Enemies | NPC conversion, role AI, new groups, aces, encounters, spawn tables | W2, W3 |
 | W6 | World | Salvage and wrecks, gas harvesting, new materials, 3 zones (Module JSON), station flags, starlanes, docking limits | W3 |
@@ -621,7 +655,7 @@ Everything merges to one integration branch and releases together.
 - **Build and tests:**
   - Build once with `-p:RunPostBuildEvent=Never -v q -clp:ErrorsOnly`.
   - Run focused NUnit filters for each slice.
-  - Add tests for: rank gating, size rules, slot rows, migration (refunds, token, item mapping, ship rebuild), trade pricing and flooding, cargo spill, customs, XP split and range, PvP gating, escape pods.
+  - Add tests for: rank gating, size rules, slot rows, migration (refunds, token, item mapping, ship rebuild), trade pricing and flooding, cargo spill, customs, XP split and range, PvP gating, escape pods, every auto-off trigger, support-module target locks and Retarget, All Weapons.
 - **Engine tests** (`EngineTesting.md`) for:
   - Entering space with Mid slots.
   - Crew boarding, camera attach and re-attach after a starlane jump.
@@ -634,6 +668,8 @@ Everything merges to one integration branch and releases together.
   - A crewed capital vs the same pilots in separate ships.
 - **Client evidence** (`InEngineVisualVerification.md`) for:
   - The Mid hotbar row.
+  - Lit and unlit module icons, and a module switching itself off.
+  - The Ship HUD with a support module retargeted.
   - Every Hull Design at ship scale.
   - Crew camera view.
   - The exchange window.

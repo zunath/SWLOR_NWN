@@ -329,7 +329,7 @@ public class MaxHitPointsReconciliationTests
         var migration = CSharpSyntaxTree.ParseText(File.ReadAllText(Path.Combine(_root,
                 "SWLOR.Game.Server", "Service", "Migration.cs"))).GetRoot()
             .DescendantNodes().OfType<MethodDeclarationSyntax>().Single(method => method.Identifier.ValueText == "AfterCharacterInitialization");
-        migration.Body!.Statements.Last().ToString().Should().Be("Stat.RefreshPlayerMaxHP(player);");
+        migration.Body!.Statements.Select(statement => statement.ToString()).Should().Contain("Stat.RefreshPlayerMaxHP(player);");
     }
 
     private int MaxHP() => (int)Call("MaxHP")!;

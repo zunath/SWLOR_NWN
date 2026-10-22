@@ -680,6 +680,101 @@ namespace SWLOR.Game.Server.Service
         }
 
         /// <summary>
+        /// Sets a player's stored equipment Defense (per type), Evasion, maximum FP and maximum STM to what the worn
+        /// gear grants. Like max HP, these records are kept by adding and removing each equipment change, so one missed,
+        /// failed or repeated change leaves them off for good.
+        /// </summary>
+        /// <param name="player">The player to reconcile</param>
+        /// <param name="stats">The records to rebuild</param>
+        /// <returns>The records that were corrected</returns>
+        public static EquipmentRecordStats RefreshPlayerEquipmentStats(uint player, EquipmentRecordStats stats = EquipmentRecordStats.All)
+        {
+            if (stats == EquipmentRecordStats.None ||
+                !GetIsObjectValid(player) || !GetIsPC(player) ||
+                GetIsDM(player) || GetIsDMPossessed(player))
+                return EquipmentRecordStats.None;
+
+            var playerId = GetObjectUUID(player);
+            var dbPlayer = DB.Get<Player>(playerId);
+            if (dbPlayer == null)
+                return EquipmentRecordStats.None;
+
+            var corrected = ApplyEquipmentStatTotals(dbPlayer, GetEquippedStatTotals(player), stats);
+            if (corrected == EquipmentRecordStats.None)
+                return corrected;
+
+            // A lower maximum caps the current pool, as removing gear does.
+            dbPlayer.FP = Math.Clamp(dbPlayer.FP, 0, Math.Max(0, GetMaxFP(player, dbPlayer)));
+            dbPlayer.Stamina = Math.Clamp(dbPlayer.Stamina, 0, Math.Max(0, GetMaxStamina(player, dbPlayer)));
+            DB.Set(dbPlayer);
+            return corrected;
+        }
+
+        /// <summary>
+        /// Sums the record stats the worn gear grants, counting the same properties equipping does.
+        /// </summary>
+        public static EquipmentStatTotals GetEquippedStatTotals(uint creature)
+        {
+            var totals = new EquipmentStatTotals();
+            for (var index = 0; index < NumberOfInventorySlots; index++)
+            {
+                var item = GetItemInSlot((InventorySlot)index, creature);
+                if (!GetIsObjectValid(item) || GetBaseItemType(item) == BaseItem.CompanionPistol)
+                    continue;
+
+                for (var ip = GetFirstItemProperty(item); GetIsItemPropertyValid(ip); ip = GetNextItemProperty(item))
+                {
+                    totals.Add(GetItemPropertyType(ip), GetItemPropertySubType(ip), GetItemPropertyCostTableValue(ip));
+                }
+            }
+
+            return totals;
+        }
+
+        /// <summary>
+        /// Writes the gear totals into the selected records: Defense for every defense type, Evasion, and maximum FP
+        /// and STM above their bases. Pools are left alone.
+        /// </summary>
+        /// <returns>The records that changed</returns>
+        public static EquipmentRecordStats ApplyEquipmentStatTotals(Player entity, EquipmentStatTotals totals, EquipmentRecordStats stats)
+        {
+            var corrected = EquipmentRecordStats.None;
+
+            if (stats.HasFlag(EquipmentRecordStats.Defense))
+            {
+                foreach (var type in Combat.GetDefenseDamageTypes())
+                {
+                    var amount = totals.GetDefense(type);
+                    if (entity.Defenses.TryGetValue(type, out var current) && current == amount)
+                        continue;
+
+                    entity.Defenses[type] = amount;
+                    corrected |= EquipmentRecordStats.Defense;
+                }
+            }
+
+            if (stats.HasFlag(EquipmentRecordStats.Evasion) && entity.Evasion != totals.Evasion)
+            {
+                entity.Evasion = totals.Evasion;
+                corrected |= EquipmentRecordStats.Evasion;
+            }
+
+            if (stats.HasFlag(EquipmentRecordStats.FP) && entity.MaxFP != BaseFP + totals.FP)
+            {
+                entity.MaxFP = BaseFP + totals.FP;
+                corrected |= EquipmentRecordStats.FP;
+            }
+
+            if (stats.HasFlag(EquipmentRecordStats.Stamina) && entity.MaxStamina != BaseSTM + totals.Stamina)
+            {
+                entity.MaxStamina = BaseSTM + totals.Stamina;
+                corrected |= EquipmentRecordStats.Stamina;
+            }
+
+            return corrected;
+        }
+
+        /// <summary>
         /// Modifies a player's maximum FP by a certain amount.
         /// This method will not persist the changes so be sure you call DB.Set after calling this.
         /// </summary>

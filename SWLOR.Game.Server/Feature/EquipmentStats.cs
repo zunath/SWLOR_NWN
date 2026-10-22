@@ -6,6 +6,7 @@ using SWLOR.Game.Server.Feature.GuiDefinition.RefreshEvent;
 using SWLOR.Game.Server.Service;
 using SWLOR.Game.Server.Service.CombatService;
 using SWLOR.Game.Server.Service.SkillService;
+using SWLOR.Game.Server.Service.StatService;
 using SWLOR.NWN.API.NWNX;
 using SWLOR.NWN.API.NWScript.Enum;
 using SWLOR.NWN.API.NWScript.Enum.Item;
@@ -176,6 +177,27 @@ namespace SWLOR.Game.Server.Feature
                     Gui.PublishRefreshEvent(OBJECT_SELF, new PlayerStatusRefreshEvent(PlayerStatusRefreshEvent.StatType.HP));
                 return;
             }
+        }
+
+        [NWNEventHandler(ScriptName.OnItemEquipValidateAfter)]
+        [NWNEventHandler(ScriptName.OnItemUnequipAfter)]
+        public static void RefreshEquipmentRecordsAfterEquipmentChange()
+        {
+            // Defense, Evasion, FP and STM are also added and removed before the change completes.
+            // Rebuild the ones this item carries from the slots.
+            var item = StringToObject(EventsPlugin.GetEventData("ITEM"));
+            var stats = EquipmentRecordStats.None;
+            for (var ip = GetFirstItemProperty(item); GetIsItemPropertyValid(ip); ip = GetNextItemProperty(item))
+            {
+                stats |= EquipmentStatTotals.GetRecordStat(GetItemPropertyType(ip));
+            }
+
+            var corrected = Stat.RefreshPlayerEquipmentStats(OBJECT_SELF, stats);
+            // The status window refreshed before the change, from the uncorrected maximums.
+            if (corrected.HasFlag(EquipmentRecordStats.FP))
+                Gui.PublishRefreshEvent(OBJECT_SELF, new PlayerStatusRefreshEvent(PlayerStatusRefreshEvent.StatType.FP));
+            if (corrected.HasFlag(EquipmentRecordStats.Stamina))
+                Gui.PublishRefreshEvent(OBJECT_SELF, new PlayerStatusRefreshEvent(PlayerStatusRefreshEvent.StatType.STM));
         }
 
         /// <summary>

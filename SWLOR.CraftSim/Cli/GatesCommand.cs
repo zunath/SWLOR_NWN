@@ -24,10 +24,11 @@ namespace SWLOR.CraftSim.Cli
         private static readonly string[] Flags = { "--all-recipes", "--list", "--strict", "--thorough" };
 
         public static int Run(string[] args, TextWriter output, ScenarioRegistry registry = null) =>
-            Run(args, output, registry, null, null);
+            Run(args, output, registry, null, null, null);
 
         /// <summary>The same command with the game data already loaded, so a test does not read every recipe again.</summary>
-        internal static int Run(string[] args, TextWriter output, ScenarioRegistry registry, RecipeCatalog recipes, CraftingGearCatalog gear)
+        internal static int Run(
+            string[] args, TextWriter output, ScenarioRegistry registry, RecipeCatalog recipes, CraftingGearCatalog gear, EnhancementCatalog enhancements)
         {
             var options = CommandLineOptions.Parse(args, ValueOptions, Flags);
             registry ??= ScenarioRegistry.Discover();
@@ -80,7 +81,9 @@ namespace SWLOR.CraftSim.Cli
 
             recipes ??= RecipeCatalog.Load();
             gear ??= CraftingGearCatalog.Build(GearItemReader.ReadAll(RepositoryPaths.ModuleItems(root)), recipes);
-            var context = new GateContext(recipes, gear, runs, seed, AttributeSweep.Default);
+            // Gates 6 and 7 play enhanced crafts, so they need the module's enhancement items; the others never look at them.
+            enhancements ??= gates.Any(gate => gate.Name is GateNames.XpRate or GateNames.EnhancementParity) ? EnhancementCatalog.Load(root) : null;
+            var context = new GateContext(recipes, gear, runs, seed, AttributeSweep.Default, enhancements: enhancements);
 
             var results = new List<GateResult>();
             foreach (var gate in gates)

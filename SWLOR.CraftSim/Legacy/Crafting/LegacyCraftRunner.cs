@@ -22,7 +22,8 @@ namespace SWLOR.CraftSim.Legacy.Crafting
                 succeeded,
                 succeeded ? state.Quality / (double)context.MaxQuality : 0,
                 state.Actions,
-                context.MaxCp - state.Cp);
+                context.MaxCp - state.Cp,
+                succeeded ? LegacyEnhancementRules.TransferChancePercent(state.Quality, context.MaxQuality) : 0);
         }
     }
 }

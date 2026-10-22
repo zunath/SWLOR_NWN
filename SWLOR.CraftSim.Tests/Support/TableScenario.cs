@@ -18,11 +18,13 @@ namespace SWLOR.CraftSim.Tests.Support
         private static readonly MinigameActionInfo[] ActionList = { new(Make, "Make", "Makes the item.") };
 
         private readonly int _qualityPoints;
+        private readonly int _progressMax;
 
-        public TableEngine(IMinigameRandom random, int qualityPoints)
-            : base(random, new TableState(MinigameMeters.Start(100, 100, 100, 10), null))
+        public TableEngine(IMinigameRandom random, int qualityPoints, int progressMax = 100)
+            : base(random, new TableState(MinigameMeters.Start(progressMax, 100, 100, 10), null))
         {
             _qualityPoints = qualityPoints;
+            _progressMax = progressMax;
         }
 
         public override CraftMinigameType Type => CraftMinigameType.Forge;
@@ -35,9 +37,10 @@ namespace SWLOR.CraftSim.Tests.Support
                 throw new ArgumentException($"Unknown action '{actionId}'.", nameof(actionId));
 
             var points = _qualityPoints;
+            var progress = _progressMax;
             return new MinigameActionRule<TableState>(ActionList[0], 0, 0, new[]
             {
-                new MinigameOutcomeRule<TableState>("Made", 100, s => s.Adjust(new MinigameMeterDelta(Progress: 100, Quality: points)))
+                new MinigameOutcomeRule<TableState>("Made", 100, s => s.Adjust(new MinigameMeterDelta(Progress: progress, Quality: points)))
             });
         }
     }
@@ -45,6 +48,9 @@ namespace SWLOR.CraftSim.Tests.Support
     /// <summary>A scenario whose quality for each recipe and style is a function the test supplies.</summary>
     internal sealed class TableScenario : ICraftScenario
     {
+        /// <summary>The progress a unit of the old window's enhancement penalty adds to the table's piece: one for one, so any penalty shows.</summary>
+        public const int ProgressPerPenaltyPoint = 1;
+
         public string Name => "table";
         public string Title => "Quality Table";
         public SkillType Skill => SkillType.Smithery;
@@ -54,9 +60,19 @@ namespace SWLOR.CraftSim.Tests.Support
         /// <summary>The quality (0-100) of an item of this recipe made in this style (null for none).</summary>
         public Func<RecipeEntry, CraftStyle, int> Quality { get; init; } = (_, _) => 100;
 
+        /// <summary>The quality (0-100) of an item of this recipe made with these enhancements; null uses <see cref="Quality"/> with no style.</summary>
+        public Func<RecipeEntry, CraftEnhancementConfiguration, int> EnhancedQuality { get; init; }
+
+        public EnhancementSupport Enhancements { get; init; } = EnhancementSupport.Modeled;
+
         public IReadOnlyList<CraftStylePair> StylePairs { get; init; } = Array.Empty<CraftStylePair>();
 
-        public ICraftMinigameEngine CreateEngine(CraftEngineRequest request) =>
-            new TableEngine(request.Random, Quality(request.Recipe, request.Style));
+        public ICraftMinigameEngine CreateEngine(CraftEngineRequest request)
+        {
+            var quality = request.Enhancements.IsNone || EnhancedQuality == null
+                ? Quality(request.Recipe, request.Style)
+                : EnhancedQuality(request.Recipe, request.Enhancements);
+            return new TableEngine(request.Random, quality, 100 + request.Enhancements.TotalProgressPenalty * ProgressPerPenaltyPoint);
+        }
     }
 }

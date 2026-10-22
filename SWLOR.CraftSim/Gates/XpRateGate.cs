@@ -55,6 +55,12 @@ namespace SWLOR.CraftSim.Gates
 
         IReadOnlyList<XpRateCase> Cases(GateContext context);
 
+        /// <summary>
+        /// Why the cohort could not play everything the plan asks of it, or null when it did. The gate then passes nothing it did not
+        /// play: it reports the cases it could and is not run (or failed, if a played case failed) rather than passed.
+        /// </summary>
+        string Incomplete(GateContext context) => null;
+
         /// <summary>Plays the legacy loop for the case with the context's runs and seed.</summary>
         XpLoopSample PlayLegacy(XpRateCase xpCase, GateContext context);
 
@@ -137,12 +143,21 @@ namespace SWLOR.CraftSim.Gates
                     $"{Number(replacementTiming.SecondsPerAction)} s per action new; unmeasured estimates)")
             };
 
-            return failures.Count == 0
+            var incomplete = _cohort.Incomplete(context);
+            var skipped = incomplete == null ? string.Empty : $" Cases not played: {incomplete}";
+            if (failures.Count > 0)
+            {
+                return new GateResult(Name, GateVerdict.Failed,
+                    $"{_cohort.Name}: XP per hour falls below {Number(_thresholds.XpRateMinimumRatio, 2)}x the legacy rate in {failures.Count} case(s): {string.Join("; ", failures)}.{skipped}",
+                    tables);
+            }
+
+            return incomplete == null
                 ? new GateResult(Name, GateVerdict.Passed,
                     $"{_cohort.Name}: XP per hour is at least {Number(_thresholds.XpRateMinimumRatio, 2)}x the legacy rate in every case (lowest {Number(lowest, 2)}x in {lowestCase}).",
                     tables)
-                : new GateResult(Name, GateVerdict.Failed,
-                    $"{_cohort.Name}: XP per hour falls below {Number(_thresholds.XpRateMinimumRatio, 2)}x the legacy rate in {failures.Count} case(s): {string.Join("; ", failures)}.",
+                : new GateResult(Name, GateVerdict.NotRun,
+                    $"{_cohort.Name}: the cases played reach at least {Number(_thresholds.XpRateMinimumRatio, 2)}x the legacy rate (lowest {Number(lowest, 2)}x in {lowestCase}), but the gate is not complete.{skipped}",
                     tables);
         }
     }

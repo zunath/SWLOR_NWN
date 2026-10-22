@@ -13,5 +13,14 @@ namespace SWLOR.CraftSim.Rng
         public const int FixedEvaluation = 105;
         public const int SolverSeedLines = 106;
         public const int Legacy = 107;
+
+        /// <summary>The old minigame played with enhancements (gate 7 and the legacy enhancement baseline).</summary>
+        public const int LegacyEnhanced = 108;
+
+        /// <summary>The adaptive player's dice with enhancements slotted (gate 7).</summary>
+        public const int AdaptiveEnhanced = 109;
+
+        /// <summary>The adaptive player's own choices with enhancements slotted (gate 7).</summary>
+        public const int AdaptiveEnhancedPolicy = 110;
     }
 }

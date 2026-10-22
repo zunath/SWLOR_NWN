@@ -23,7 +23,8 @@ namespace SWLOR.CraftSim.Data
             int quantity = 1,
             int enhancementSlots = 0,
             int? practiceRankLimit = null,
-            RecipeDetail detail = null)
+            RecipeDetail detail = null,
+            RecipeEnhancementType enhancementType = RecipeEnhancementType.None)
         {
             Type = type;
             Skill = skill;
@@ -35,6 +36,7 @@ namespace SWLOR.CraftSim.Data
             EnhancementSlots = enhancementSlots;
             PracticeRankLimit = practiceRankLimit;
             Detail = detail;
+            EnhancementType = detail?.EnhancementType ?? enhancementType;
         }
 
         public RecipeType Type { get; }
@@ -45,6 +47,9 @@ namespace SWLOR.CraftSim.Data
         public IReadOnlyDictionary<string, int> Components { get; }
         public int Quantity { get; }
         public int EnhancementSlots { get; }
+
+        /// <summary>The kind of enhancement item the recipe accepts (armor, weapon, structure, food, starship, module or droid), or none.</summary>
+        public RecipeEnhancementType EnhancementType { get; }
 
         /// <summary>Set for a tiered activity such as Espionage's, whose base XP comes from <c>Skill.GetPracticeXP</c> instead of the XP chart.</summary>
         public int? PracticeRankLimit { get; }

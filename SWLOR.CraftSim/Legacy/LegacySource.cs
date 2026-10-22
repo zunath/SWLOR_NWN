@@ -83,6 +83,30 @@ namespace SWLOR.CraftSim.Legacy
             "Components and enhancements lost on failure", CraftViewModel, 1601, 1641,
             "const int ChanceToLoseItem = 65;", "Random.D100(1) > ChanceToLoseItem", "foreach (var serialized in _components)");
 
+        public static readonly SourceReference EnhancementSlots = new(
+            "Enhancement slots", CraftViewModel, 397, 406,
+            "var enhancementSlots = recipe.EnhancementSlots + blueprint.EnhancementSlots;", "IsEnhancement3Visible = enhancementSlots >= 3;");
+
+        public static readonly SourceReference EnhancementKinds = new(
+            "Enhancement kinds and level limit", CraftViewModel, 601, 666,
+            "typeIP = ItemPropertyType.ArmorEnhancement;", "typeIP = ItemPropertyType.WeaponEnhancement;",
+            "typeIP = ItemPropertyType.StructureEnhancement;", "typeIP = ItemPropertyType.FoodEnhancement;",
+            "typeIP = ItemPropertyType.StarshipEnhancement;", "typeIP = ItemPropertyType.ModuleEnhancement;",
+            "typeIP = ItemPropertyType.DroidEnhancement;", "enhancementLevel = GetItemPropertyCostTableValue(ip);",
+            "var levelDiff = enhancementLevel - recipe.Level;", "if (levelDiff > 5)");
+
+        public static readonly SourceReference EnhancementProgressPenalty = new(
+            "Enhancement progress penalty", CraftViewModel, 695, 754,
+            "if (type == ItemPropertyType.ProgressPenalty)", "progressPenalty += GetItemPropertyCostTableValue(ip);",
+            "var progressPenalty = CalculateProgressPenaltyAndProcessItemProperties(item, _itemPropertiesEnhancement1);",
+            "_maxProgress += progressPenalty;");
+
+        public static readonly SourceReference EnhancementTransfer = new(
+            "Enhancement transfer chance", CraftViewModel, 1420, 1468,
+            "var propertyTransferChance = (int)(((float)_quality / (float)_maxQuality) * 100);",
+            "GetItemPropertyType(allProperties[index]) == ItemPropertyType.DMG", "if (Random.D100(1) <= propertyTransferChance)",
+            "ApplyProperty(item, property);");
+
         public static readonly SourceReference RecipeUnlockOffset = new(
             "Recipe rank requirement", Craft, 327, 331,
             "var requiredRank = recipe.Level - RecipeSkillUnlockOffset;", "return Math.Max(requiredRank, 0);");
@@ -145,7 +169,8 @@ namespace SWLOR.CraftSim.Legacy
         public static readonly IReadOnlyList<SourceReference> All = new[]
         {
             ActionRanks, MaxCp, MaxDurability, MaxProgress, MaxQuality, LevelChart, Progress, Quality, HandleAction, Actions,
-            SessionReset, FailureLoss, RecipeUnlockOffset, GearStats, HarvestNodeCount, HarvestBonusItem, HarvestXp,
+            SessionReset, FailureLoss, EnhancementSlots, EnhancementKinds, EnhancementProgressPenalty, EnhancementTransfer,
+            RecipeUnlockOffset, GearStats, HarvestNodeCount, HarvestBonusItem, HarvestXp,
             ScavengeAttempts, ScavengeRoll, RefineryOres, RefineryBatch, RefineryCores, RefineryXp, FishingCatch, FishingBite
         };
     }

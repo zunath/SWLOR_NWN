@@ -742,6 +742,8 @@ namespace SWLOR.Game.Server.Service
 
             if (stats.HasFlag(EquipmentRecordStats.Defense))
             {
+                // Legacy records can lack the map, and login can run before another handler fills it.
+                entity.Defenses ??= new Dictionary<CombatDamageType, int>();
                 foreach (var type in Combat.GetDefenseDamageTypes())
                 {
                     var amount = totals.GetDefense(type);

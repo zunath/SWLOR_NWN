@@ -82,6 +82,22 @@ namespace SWLOR.Game.Server.Feature
             }
         }
 
+        private const string DisplacedRecordStatsVariable = "EQUIPMENT_DISPLACED_RECORD_STATS";
+
+        /// <summary>
+        /// The equipment records an item's properties feed.
+        /// </summary>
+        private static EquipmentRecordStats GetRecordStats(uint item)
+        {
+            var stats = EquipmentRecordStats.None;
+            for (var ip = GetFirstItemProperty(item); GetIsItemPropertyValid(ip); ip = GetNextItemProperty(item))
+            {
+                stats |= EquipmentStatTotals.GetRecordStat(GetItemPropertyType(ip));
+            }
+
+            return stats;
+        }
+
         /// <summary>
         /// When an item is equipped, if it has any custom status, apply them now.
         /// This should be run in the "after" event because any restrictions should be checked first.
@@ -99,7 +115,12 @@ namespace SWLOR.Game.Server.Feature
             // If there's an item in the slot, run the stat removals first.
             var existingItemInSlot = GetItemInSlot(slot, creature);
             if (GetIsObjectValid(existingItemInSlot))
+            {
                 ApplyItemStats(creature, existingItemInSlot, false);
+                // The after event names only the incoming item; remember the records the displaced one fed.
+                SetLocalInt(creature, DisplacedRecordStatsVariable,
+                    GetLocalInt(creature, DisplacedRecordStatsVariable) | (int)GetRecordStats(existingItemInSlot));
+            }
 
             ApplyItemStats(creature, item, true);
         }
@@ -184,13 +205,10 @@ namespace SWLOR.Game.Server.Feature
         public static void RefreshEquipmentRecordsAfterEquipmentChange()
         {
             // Defense, Evasion, FP and STM are also added and removed before the change completes.
-            // Rebuild the ones this item carries from the slots.
+            // Rebuild the ones this item, and any item it displaced, feed from the slots.
             var item = StringToObject(EventsPlugin.GetEventData("ITEM"));
-            var stats = EquipmentRecordStats.None;
-            for (var ip = GetFirstItemProperty(item); GetIsItemPropertyValid(ip); ip = GetNextItemProperty(item))
-            {
-                stats |= EquipmentStatTotals.GetRecordStat(GetItemPropertyType(ip));
-            }
+            var stats = GetRecordStats(item) | (EquipmentRecordStats)GetLocalInt(OBJECT_SELF, DisplacedRecordStatsVariable);
+            DeleteLocalInt(OBJECT_SELF, DisplacedRecordStatsVariable);
 
             var corrected = Stat.RefreshPlayerEquipmentStats(OBJECT_SELF, stats);
             // The status window refreshed before the change, from the uncorrected maximums.

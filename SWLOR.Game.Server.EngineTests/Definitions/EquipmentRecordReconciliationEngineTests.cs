@@ -115,7 +115,9 @@ namespace SWLOR.Game.Server.EngineTests.Definitions
             AssertRecord(ctx, player, physical: 10, force: 10, evasion: 0, fp: Stat.BaseFP + 8, stamina: Stat.BaseSTM + 8, "the first ring");
 
             // Equipping into an occupied slot removes the worn item's stats without an unequip event. Whether
-            // the engine completes or cancels the swap, the records must match what is worn afterwards.
+            // the engine completes or cancels the swap, the records must match what is worn afterwards. The
+            // second ring carries no FP, so only the displaced ring can trigger the FP rebuild of this drift.
+            fixture.Update(record => record.MaxFP = 10000);
             await ctx.ExecuteInCreatureContextAsync(player, () => ActionEquipItem(second, InventorySlot.RightRing));
             for (var frame = 0; frame < 60 && GetItemInSlot(InventorySlot.RightRing, player) != second; frame++)
                 await ctx.WaitFrameAsync();
@@ -124,10 +126,13 @@ namespace SWLOR.Game.Server.EngineTests.Definitions
             ctx.Log($"Swap {(worn == second ? "completed" : "canceled")}.");
             if (worn == second)
                 AssertRecord(ctx, player, physical: 11, force: 9, evasion: 10, fp: Stat.BaseFP, stamina: Stat.BaseSTM,
-                    "only the second ring counts after the swap");
+                    "only the second ring counts after the swap, and the displaced ring's FP record is rebuilt");
             else
-                AssertRecord(ctx, player, physical: 10, force: 10, evasion: 0, fp: Stat.BaseFP + 8, stamina: Stat.BaseSTM + 8,
-                    "a canceled swap leaves the first ring's records");
+            {
+                AssertRecord(ctx, player, physical: 10, force: 10, evasion: 0, fp: Record(player).MaxFP, stamina: Stat.BaseSTM + 8,
+                    "a canceled swap leaves the first ring's Defense records");
+                fixture.Update(record => record.MaxFP = Stat.BaseFP + 8);
+            }
 
             await UnequipAsync(ctx, player, worn);
             AssertRecord(ctx, player, physical: 0, force: 0, evasion: 0, fp: Stat.BaseFP, stamina: Stat.BaseSTM,

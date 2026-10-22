@@ -97,6 +97,19 @@ public class EquipmentRecordReconciliationTests
     }
 
     [Test]
+    public void LegacyRecordWithoutADefenseMap_IsRebuiltInsteadOfThrowing()
+    {
+        var record = Record(physical: 0, force: 0, evasion: 0, maxFP: Stat.BaseFP, maxStamina: Stat.BaseSTM);
+        record.Defenses = null!;
+
+        var corrected = Stat.ApplyEquipmentStatTotals(record, Totals(ReportedGear), EquipmentRecordStats.All);
+
+        corrected.Should().HaveFlag(EquipmentRecordStats.Defense);
+        record.Defenses[CombatDamageType.Physical].Should().Be(86);
+        record.Defenses[CombatDamageType.Force].Should().Be(100);
+    }
+
+    [Test]
     public void MatchingRecord_IsNotCorrected()
     {
         var record = Record(physical: 86, force: 100, evasion: 0, maxFP: Stat.BaseFP + 18, maxStamina: Stat.BaseSTM + 16);

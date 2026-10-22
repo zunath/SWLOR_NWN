@@ -4,16 +4,17 @@ using System.Linq;
 namespace SWLOR.Game.Server.Service.CraftService.Minigame;
 
 /// <summary>
-/// An engine's complete description of one action in its current state: exact costs, whether it can be used, and every
-/// outcome it can have. <see cref="MinigameEngineBase"/> turns it into both the preview and the result.
+/// An engine's complete description of one action in a given state: exact costs, whether it can be used, and every outcome it can
+/// have. <see cref="MinigameEngineBase{TState}"/> turns it into both the preview and the result.
 /// </summary>
-public sealed class MinigameActionRule
+public sealed class MinigameActionRule<TState>
+    where TState : IMinigameState<TState>
 {
     public MinigameActionRule(
         MinigameActionInfo action,
         int cpCost,
         int integrityCost,
-        IReadOnlyList<MinigameOutcomeRule> outcomes)
+        IReadOnlyList<MinigameOutcomeRule<TState>> outcomes)
     {
         if (outcomes == null || outcomes.Count == 0)
             throw new ArgumentException("An enabled action needs at least one outcome.", nameof(outcomes));
@@ -35,7 +36,7 @@ public sealed class MinigameActionRule
         Action = action;
         CpCost = cpCost;
         IntegrityCost = integrityCost;
-        Outcomes = Array.Empty<MinigameOutcomeRule>();
+        Outcomes = Array.Empty<MinigameOutcomeRule<TState>>();
         Enabled = false;
         DisabledReason = reason;
     }
@@ -50,9 +51,9 @@ public sealed class MinigameActionRule
 
     public string DisabledReason { get; }
 
-    public IReadOnlyList<MinigameOutcomeRule> Outcomes { get; }
+    public IReadOnlyList<MinigameOutcomeRule<TState>> Outcomes { get; }
 
     /// <summary>An action that cannot be used now, with the reason to show beside it.</summary>
-    public static MinigameActionRule Disabled(MinigameActionInfo action, int cpCost, int integrityCost, string reason) =>
+    public static MinigameActionRule<TState> Disabled(MinigameActionInfo action, int cpCost, int integrityCost, string reason) =>
         new(action, cpCost, integrityCost, reason);
 }

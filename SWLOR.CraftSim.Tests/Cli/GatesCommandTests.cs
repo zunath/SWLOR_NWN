@@ -141,6 +141,7 @@ namespace SWLOR.CraftSim.Tests.Cli
         [TestCase("--seed", "x", "--seed needs a whole number")]
         [TestCase("--recipes-per-band", "0", "--recipes-per-band needs a whole number")]
         [TestCase("--gates", "rotation,balance", "--gates names")]
+        [TestCase("--gates", ",,", "--gates needs at least one of")]
         [TestCase("--legacy-seconds-per-action", "0", "--legacy-seconds-per-action needs a number above zero")]
         [TestCase("--legacy-seconds-per-action", "fast", "--legacy-seconds-per-action needs a number above zero")]
         [TestCase("--bogus", "1", "Unknown option '--bogus'")]

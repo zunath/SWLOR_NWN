@@ -99,7 +99,8 @@ namespace SWLOR.CraftSim.Gates
             Thresholds = thresholds;
             Context = context;
             Gear = context.Gear.Levels(scenario.Skill);
-            Bands = scenario.Cohort.Select(context.Recipes, thresholds.RecipesPerBand);
+            Cohort = scenario.Cohort;
+            Bands = Cohort.Select(context.Recipes, thresholds.RecipesPerBand);
 
             // The XP chart loads once, before the parallel plays read it.
             ServerXp.ForDelta(0);
@@ -110,10 +111,13 @@ namespace SWLOR.CraftSim.Gates
         public GateContext Context { get; }
         public IReadOnlyList<GearLevel> Gear { get; }
 
+        /// <summary>The scenario's cohort, read once.</summary>
+        public ScenarioCohort Cohort { get; }
+
         /// <summary>The cohort's bands with the recipes played.</summary>
         public IReadOnlyList<CohortBand> Bands { get; }
 
-        public int RankFor(RecipeEntry recipe) => Scenario.Cohort.RankFor(recipe);
+        public int RankFor(RecipeEntry recipe) => Cohort.RankFor(recipe);
 
         /// <summary>The solver's effort: the thresholds' override, or the scenario's own.</summary>
         public FixedRotationSolverOptions SolverOptions => Thresholds.SolverOptions ?? Scenario.SolverOptions;
@@ -144,34 +148,20 @@ namespace SWLOR.CraftSim.Gates
         /// <summary>A number that names a recipe in a random stream: stable across runs, unlike a string hash.</summary>
         public static int StableId(RecipeEntry recipe) => (int)recipe.Type;
 
-        /// <summary>A number that names a style in a random stream, 0 for none: stable across runs and machines.</summary>
-        public static int StableId(CraftStyle style)
-        {
-            if (style == null)
-                return 0;
-
-            unchecked
-            {
-                var hash = (int)2166136261;
-                foreach (var character in style.Name)
-                    hash = (hash ^ character) * 16777619;
-
-                return hash;
-            }
-        }
-
         private CohortCell PlayAdaptive(RecipeEntry recipe, int rank, int gearIndex, CraftStyle style)
         {
             var gear = Gear[gearIndex];
             var baseXp = ServerXp.ForRecipe(recipe, rank);
             var cell = new CohortCell { Recipe = recipe, Rank = rank, Gear = gear.Name, Style = style, Runs = Context.Runs };
             var id = StableId(recipe);
-            var styleId = StableId(style);
 
             for (var run = 0; run < Context.Runs; run++)
             {
-                var random = SimMinigameRandom.ForRun(Context.Seed, SimStreams.Adaptive, id, rank, gearIndex, styleId, run);
-                var policySeed = unchecked((int)SimRandom.ForRun(Context.Seed, SimStreams.AdaptivePolicy, id, rank, gearIndex, styleId, run).NextUInt64());
+
+                // The style is left out of the streams on purpose: two styles of one recipe are played on the same dice (common random
+                // numbers), so a difference between them is the styles' and not the luck of two independent samples.
+                var random = SimMinigameRandom.ForRun(Context.Seed, SimStreams.Adaptive, id, rank, gearIndex, run);
+                var policySeed = unchecked((int)SimRandom.ForRun(Context.Seed, SimStreams.AdaptivePolicy, id, rank, gearIndex, run).NextUInt64());
                 var engine = CreateEngine(recipe, rank, gear, style, random);
                 var result = CraftPlayer.Play(engine, new AdaptivePolicy(Scenario.AdaptiveOptions, policySeed), Thresholds.ActionLimit);
 

@@ -16,9 +16,9 @@ namespace SWLOR.CraftSim.Tests.Support
         public int MaxQuality { get; init; } = 100;
         public int MaxIntegrity { get; init; } = 60;
         public int MaxCp { get; init; } = 40;
-        public int PressInWindow { get; init; } = 25;
+        public int PressInWindow { get; init; } = 30;
         public int PressOutside { get; init; } = 3;
-        public int PolishInWindow { get; init; } = 30;
+        public int PolishInWindow { get; init; } = 34;
         public int PolishOutside { get; init; } = 2;
 
         /// <summary>Adds an action that adds progress and quality at a flat rate, whatever the Heat: a rotation of it beats everything.</summary>

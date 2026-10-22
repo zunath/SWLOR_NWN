@@ -126,7 +126,7 @@ namespace SWLOR.CraftSim.Gates
                     Number(replacement.ActionsPerRun),
                     Number(newRate, 0),
                     double.IsInfinity(ratio) ? "n/a" : Number(ratio, 2),
-                    passed || newRate <= 0 ? "-" : Number(legacyRate / newRate, 2) + "x",
+                    passed ? "-" : newRate <= 0 ? "unbounded (earns no XP)" : Number(legacyRate / newRate, 2) + "x",
                     passed ? "Passed" : "Failed");
             }
 

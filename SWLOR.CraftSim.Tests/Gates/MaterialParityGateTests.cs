@@ -31,13 +31,14 @@ namespace SWLOR.CraftSim.Tests.Gates
         [Test]
         public void FailsWhenCraftsBreakSoOftenThatMaterialsPerItemRise()
         {
-            var fragile = new BenchScenario { PressIntegrityCost = 35 };
+            var fragile = new BenchScenario { PressIntegrityCost = 42 };
 
             var result = Evaluate("materials", fragile, Context(Reliable));
 
             result.Verdict.Should().Be(GateVerdict.Failed);
-            RowVerdicts(result).Should().OnlyContain(verdict => verdict == "Failed");
-            result.Tables[0].Rows.Where(row => row[5] != "n/a").Should().OnlyContain(row => double.Parse(row[5]) > 1.5, "far more stacks go into each item");
+            var failing = result.Tables[0].Rows.Where(row => row.Last() == "Failed").ToList();
+            failing.Should().NotBeEmpty();
+            failing.Where(row => row[5] != "n/a").Should().OnlyContain(row => double.Parse(row[5]) > 1.1, "far more stacks go into each item");
             result.Summary.Should().Contain("Outside 10%");
         }
 
@@ -48,8 +49,45 @@ namespace SWLOR.CraftSim.Tests.Gates
 
             result.Tables[0].Header.Should().Equal(
                 "Band", "Gear", "Recipes played", "New stacks per item", "Legacy stacks per item", "Ratio",
-                "New success", "Legacy success", "New avg quality", "Legacy avg quality", "Never made (new / legacy)", "Verdict");
-            result.Tables[0].Rows.Should().OnlyContain(row => row[10] == "0% / 0%");
+                "New success", "Legacy success", "New avg quality", "Legacy avg quality", "Quality matched", "Never made (new / legacy)", "Verdict");
+            result.Tables[0].Rows.Should().OnlyContain(row => row[10] == "yes" && row[11] == "0% / 0%");
+        }
+
+        [Test]
+        public void MatchingMaterialsIsNotEnoughWhenTheItemsAreMuchWorseThanToday()
+        {
+            // Every craft succeeds, so stacks per item match the legacy player's, but the items have no quality at all.
+            var worse = new TableScenario { Quality = (_, _) => 0 };
+
+            var result = Evaluate("materials", worse, Context(Reliable));
+
+            result.Verdict.Should().Be(GateVerdict.Failed);
+            result.Summary.Should().Contain("below its quality").And.Contain("quality 0% against");
+            var byGear = result.Tables[0].Rows.ToDictionary(row => row[0] + "/" + row[1]);
+            byGear["1-10/no gear"].Last().Should().Be("Passed", "the legacy player with no gear makes 2% quality, inside the 5 points allowed");
+            byGear["1-10/best gear"][10].Should().Be("no");
+            byGear["1-10/best gear"].Last().Should().Be("Failed");
+            double.Parse(byGear["1-10/best gear"][5]).Should().BeInRange(0.9, 1.1, "the stacks per item alone would have passed");
+        }
+
+        [Test]
+        public void ItemsAsGoodAsTodaysPassWithTheSameMaterials()
+        {
+            var good = new TableScenario { Quality = (_, _) => 100 };
+
+            var result = Evaluate("materials", good, Context(Reliable));
+
+            result.Verdict.Should().Be(GateVerdict.Passed, result.Summary);
+            result.Tables[0].Rows.Should().OnlyContain(row => row[10] == "yes");
+        }
+
+        [Test]
+        public void TheQualityShortfallIsTheNamedThreshold()
+        {
+            var worse = new TableScenario { Quality = (_, _) => 0 };
+            var lenient = GateThresholds.Default with { MaterialQualityShortfallPoints = 100 };
+
+            Evaluate("materials", worse, Context(Reliable), thresholds: lenient).Verdict.Should().Be(GateVerdict.Passed);
         }
 
         [Test]

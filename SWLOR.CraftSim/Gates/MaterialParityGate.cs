@@ -10,7 +10,9 @@ namespace SWLOR.CraftSim.Gates
     /// every recipe band and gear tier. Both sides play the same recipes at the same ranks and gear; the legacy side is the old minigame's
     /// lookahead player, recomputed here with the legacy model and the same seed. Stacks per item is the baseline's own figure: a success
     /// consumes every stack, a failure each stack at the 65% loss chance, so stacks x (p + 0.65 x (1 - p)) per attempt for a success
-    /// chance p, divided by the items an attempt makes.
+    /// chance p, divided by the items an attempt makes. "At matched quality": the new minigame's average quality must also be at least the
+    /// legacy player's, within <see cref="GateThresholds.MaterialQualityShortfallPoints"/>, so a minigame that makes much worse items
+    /// cannot match materials per item by being easy; the materials are then those of items at least as good as today's.
     /// </summary>
     public sealed class MaterialParityGate : IBalanceGate
     {
@@ -34,7 +36,7 @@ namespace SWLOR.CraftSim.Gates
 
             var table = new EvidenceTable(
                 "Band", "Gear", "Recipes played", "New stacks per item", "Legacy stacks per item", "Ratio",
-                "New success", "Legacy success", "New avg quality", "Legacy avg quality", "Never made (new / legacy)", "Verdict");
+                "New success", "Legacy success", "New avg quality", "Legacy avg quality", "Quality matched", "Never made (new / legacy)", "Verdict");
             var failures = new List<string>();
             var compared = 0;
 
@@ -57,7 +59,7 @@ namespace SWLOR.CraftSim.Gates
                     if (legacySide.Items <= 0)
                     {
                         table.Add(band.Band.Name, run.Gear[gearIndex].Name, band.Recipes.Count.ToString(), newSide.Items <= 0 ? "never made" : Number(newSide.StacksPerItem, 2), "n/a", "n/a",
-                            Percent(newSide.SuccessRate), Percent(legacySide.SuccessRate), Percent(newSide.Quality), Percent(legacySide.Quality),
+                            Percent(newSide.SuccessRate), Percent(legacySide.SuccessRate), Percent(newSide.Quality), Percent(legacySide.Quality), "n/a",
                             $"{Percent(newSide.NeverShare)} / {Percent(legacySide.NeverShare)}", "Skipped: the legacy baseline makes no item here");
                         continue;
                     }
@@ -66,9 +68,14 @@ namespace SWLOR.CraftSim.Gates
                     var ratio = newSide.Items <= 0 ? double.PositiveInfinity : newSide.StacksPerItem / legacySide.StacksPerItem;
                     var withinTolerance = Math.Abs(ratio - 1) <= run.Thresholds.MaterialTolerance;
                     var neverOk = newSide.NeverShare <= legacySide.NeverShare + run.Thresholds.MaterialExtraNeverCraftedShare;
-                    var passed = withinTolerance && neverOk;
+                    var qualityMatched = newSide.Quality * 100 + run.Thresholds.MaterialQualityShortfallPoints >= legacySide.Quality * 100;
+                    var passed = withinTolerance && neverOk && qualityMatched;
                     if (!passed)
-                        failures.Add($"{label} (ratio {(double.IsInfinity(ratio) ? "never made" : Number(ratio, 2))})");
+                    {
+                        failures.Add(
+                            $"{label} (ratio {(double.IsInfinity(ratio) ? "never made" : Number(ratio, 2))}" +
+                            (qualityMatched ? ")" : $", quality {Percent(newSide.Quality)} against {Percent(legacySide.Quality)})"));
+                    }
 
                     table.Add(
                         band.Band.Name,
@@ -81,6 +88,7 @@ namespace SWLOR.CraftSim.Gates
                         Percent(legacySide.SuccessRate),
                         Percent(newSide.Quality),
                         Percent(legacySide.Quality),
+                        qualityMatched ? "yes" : "no",
                         $"{Percent(newSide.NeverShare)} / {Percent(legacySide.NeverShare)}",
                         passed ? "Passed" : "Failed");
                 }
@@ -96,8 +104,8 @@ namespace SWLOR.CraftSim.Gates
 
             var tolerance = Percent(run.Thresholds.MaterialTolerance);
             return failures.Count == 0
-                ? new GateResult(Name, GateVerdict.Passed, $"Component stacks per item are within {tolerance} of the legacy baseline in every band and gear tier.", tables)
-                : new GateResult(Name, GateVerdict.Failed, $"Outside {tolerance} of the legacy baseline: {string.Join("; ", failures)}.", tables);
+                ? new GateResult(Name, GateVerdict.Passed, $"Component stacks per item are within {tolerance} of the legacy baseline, at no less quality, in every band and gear tier.", tables)
+                : new GateResult(Name, GateVerdict.Failed, $"Outside {tolerance} of the legacy baseline, or below its quality: {string.Join("; ", failures)}.", tables);
         }
 
         /// <summary>The materials a band's recipes use on one side of the comparison.</summary>

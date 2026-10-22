@@ -43,6 +43,8 @@ namespace SWLOR.CraftSim.Tests.Gates
             suite.Select(new[] { "XP", "length", "length" }).Select(gate => gate.Name).Should().Equal(GateNames.Length, GateNames.XpRate);
             var act = () => suite.Select(new[] { "balance" });
             act.Should().Throw<ArgumentException>().WithMessage("*--gates names rotation, styles, perks, length, materials, xp, not 'balance'*");
+            var none = () => suite.Select(Array.Empty<string>());
+            none.Should().Throw<ArgumentException>().WithMessage("*--gates needs at least one of rotation*");
         }
 
         [Test]
@@ -139,7 +141,7 @@ namespace SWLOR.CraftSim.Tests.Gates
             described.Select(d => d.Name).Should().Contain(new[]
             {
                 "RotationMarginPoints", "StyleMinimumWinShare", "StyleMaximumMeanDifferencePoints", "PerksOptionalRank",
-                "PerksOptionalMinimumFullQualityShare", "MaterialTolerance", "XpRateMinimumRatio", "LegacySecondsPerAction", "RecipesPerBand"
+                "PerksOptionalMinimumFullQualityShare", "MaterialTolerance", "MaterialQualityShortfallPoints", "XpRateMinimumRatio", "LegacySecondsPerAction", "RecipesPerBand"
             });
             described.Single(d => d.Name == "RotationMarginPoints").Value.Should().Be("10");
             described.Single(d => d.Name == "StyleMinimumWinShare").Value.Should().Be("30%");
@@ -147,6 +149,7 @@ namespace SWLOR.CraftSim.Tests.Gates
             described.Single(d => d.Name == "PerksOptionalRank").Value.Should().Be("50");
             described.Single(d => d.Name == "PerksOptionalMinimumFullQualityShare").Value.Should().Be("50%");
             described.Single(d => d.Name == "MaterialTolerance").Value.Should().Be("10%");
+            described.Single(d => d.Name == "MaterialQualityShortfallPoints").Value.Should().Be("5");
             described.Single(d => d.Name == "XpRateMinimumRatio").Value.Should().Be("1");
         }
 

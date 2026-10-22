@@ -59,6 +59,19 @@ namespace SWLOR.CraftSim.Tests.Gates
         }
 
         [Test]
+        public void ALoopThatEarnsNoXpNeedsAnUnboundedMultiplier()
+        {
+            var cohort = new FakeCohort { LegacyXp = 100, LegacyActions = 10, NewXp = 0, NewActions = 10 };
+
+            var result = new XpRateGate(cohort).Evaluate(Empty());
+
+            result.Verdict.Should().Be(GateVerdict.Failed);
+            var row = result.Tables[0].Rows.Single();
+            row[8].Should().Be("0.00");
+            row[9].Should().Be("unbounded (earns no XP)");
+        }
+
+        [Test]
         public void UsesEachLoopsOwnSecondsPerAction()
         {
             // Twice the actions at half the time per action is the same rate.

@@ -69,8 +69,8 @@ namespace SWLOR.CraftSim.Tests.Support
                 {
                     MaxQuality = QualityDemand,
                     MaxCp = 36 + request.Rank / 3 + request.Gear.CpBonus / 2,
-                    PressInWindow = (int)((25 + request.Gear.Craftsmanship / 10) * style.PressFactor),
-                    PolishInWindow = (int)((30 + request.Gear.Control / 10) * style.PolishFactor),
+                    PressInWindow = (int)((30 + request.Gear.Craftsmanship / 10) * style.PressFactor),
+                    PolishInWindow = (int)((34 + request.Gear.Control / 10) * style.PolishFactor),
                     HasPerfect = Dominant,
                     PressIntegrityCost = PressIntegrityCost
                 });

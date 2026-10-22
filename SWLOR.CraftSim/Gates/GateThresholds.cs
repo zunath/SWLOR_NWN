@@ -52,6 +52,12 @@ namespace SWLOR.CraftSim.Gates
         /// <summary>The share of a band's recipes the new minigame may never make beyond the legacy share; recipes never made are left out of the stack figure, so this stops them hiding there.</summary>
         public double MaterialExtraNeverCraftedShare { get; init; } = 0.10;
 
+        /// <summary>
+        /// "At matched quality": the new minigame's average quality (a failed craft counting 0) may fall at most this many points below the
+        /// legacy player's, so a minigame that makes much worse items cannot match materials per item by being easy.
+        /// </summary>
+        public double MaterialQualityShortfallPoints { get; init; } = 5;
+
         // Gate 6: XP rate.
 
         /// <summary>New XP per hour divided by the legacy rate must be at least this: "at least today's".</summary>
@@ -88,6 +94,7 @@ namespace SWLOR.CraftSim.Gates
             ("PerksOptionalBands", string.Join(", ", PerksOptionalBands.Select(b => b.Name)), "gate 3: the at-level recipe bands"),
             ("MaterialTolerance", Percent(MaterialTolerance), "gate 5: component stacks per item within this share of the legacy baseline"),
             ("MaterialExtraNeverCraftedShare", Percent(MaterialExtraNeverCraftedShare), "gate 5: recipes never made may exceed the legacy share by at most this"),
+            ("MaterialQualityShortfallPoints", Number(MaterialQualityShortfallPoints), "gate 5: the new average quality may be at most this many points below the legacy player's"),
             ("XpRateMinimumRatio", Number(XpRateMinimumRatio), "gate 6: XP per hour divided by the legacy rate"),
             ("LegacySecondsPerAction", Number(LegacySecondsPerAction), "gate 6: seconds per action in the old craft window (unmeasured estimate)"),
             ("OverheadSecondsPerAttempt", Number(OverheadSecondsPerAttempt), "gate 6: seconds per craft besides actions, both loops (unmeasured estimate)"),

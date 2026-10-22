@@ -24,7 +24,7 @@ namespace SWLOR.CraftSim.Gates
         {
             var run = _suite.RunFor(context);
             var thresholds = run.Thresholds;
-            var bands = run.Scenario.Cohort.Select(context.Recipes, thresholds.RecipesPerBand, thresholds.PerksOptionalBands);
+            var bands = run.Cohort.Select(context.Recipes, thresholds.RecipesPerBand, thresholds.PerksOptionalBands);
             if (bands.Count == 0)
                 return GateResult.NotRun(Name, "The scenario's cohort has no recipes at the at-level bands.");
 

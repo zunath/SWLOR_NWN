@@ -57,6 +57,9 @@ namespace SWLOR.CraftSim.Gates
                     selected.Add(Gates[index]);
             }
 
+            if (selected.Count == 0)
+                throw new ArgumentException($"--gates needs at least one of {string.Join(", ", GateKeys)}.");
+
             return selected.OrderBy(gate => Gates.ToList().IndexOf(gate)).ToList();
         }
 
@@ -116,7 +119,7 @@ namespace SWLOR.CraftSim.Gates
                 "- The recipes are an even sample of each band (or all of them, as the inputs say), weighted equally. A recipe the sample skipped can behave differently.",
                 "- The adaptive player is a bounded-depth expectimax over the previews with a generic heuristic. It is a floor on skilled play, not an optimal player; a deeper search or a scenario heuristic can only raise it.",
                 "- The fixed-rotation solver is a beam search with local search, not a proof. A fixed rotation it did not find would narrow the margin; raise the solver options to look harder. The rotation is scored on separate attempts, so its figure is not flattered by the search.",
-                "- Gate 5 compares at matched rank, gear and effort (both sides play to maximize quality), not at an equal quality target. Quality is reported beside it. Enhancements are not committed in either model.",
+                "- Gate 5 compares at matched rank, gear and effort (both sides play to maximize quality) and requires the new minigame's average quality to be at least the legacy player's (within `MaterialQualityShortfallPoints`); it does not compare at an equal quality target. Enhancements are not committed in either model.",
                 "- Gate 6 uses estimated seconds per action. The legacy comparator is the old minigame's lookahead player, one step of policy improvement over the rotation players report, not an optimal player.",
                 "- Gathering, scavenging, fishing and research are not covered here; their cohorts implement `IXpRateCohort` and their economy checks belong to their own gates.",
                 "- No attributes, food, status effects, blueprints, first-craft bonus or quick craft are modeled, and the client was not run."

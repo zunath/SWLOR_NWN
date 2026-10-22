@@ -12,6 +12,24 @@ namespace SWLOR.CraftSim.Tests.Gates
     [TestFixture]
     public class StyleBalanceGateTests
     {
+        /// <summary>Records the first roll of every attempt's source of chance, then makes an item at a fixed quality.</summary>
+        private sealed class SpyScenario : ICraftScenario
+        {
+            public string Name => "spy";
+            public string Title => "Spy";
+            public SWLOR.Game.Server.Service.SkillService.SkillType Skill => SWLOR.Game.Server.Service.SkillService.SkillType.Smithery;
+            public SWLOR.Game.Server.Service.CraftService.Minigame.CraftMinigameType Minigame => SWLOR.Game.Server.Service.CraftService.Minigame.CraftMinigameType.Forge;
+            public double SecondsPerAction => 6;
+            public IReadOnlyList<CraftStylePair> StylePairs { get; init; } = Array.Empty<CraftStylePair>();
+            public System.Collections.Concurrent.ConcurrentBag<(int Recipe, string Style, int Roll)> FirstRolls { get; } = new();
+
+            public SWLOR.Game.Server.Service.CraftService.Minigame.ICraftMinigameEngine CreateEngine(CraftEngineRequest request)
+            {
+                FirstRolls.Add(((int)request.Recipe.Type, request.Style?.Name ?? "", request.Random.D100()));
+                return new TableEngine(request.Random, 70);
+            }
+        }
+
         private static readonly int[] Levels = { 25, 45 };
         private static readonly CraftStyle Press = BenchScenario.PressStyle;
         private static readonly CraftStyle Polish = BenchScenario.PolishStyle;
@@ -138,6 +156,22 @@ namespace SWLOR.CraftSim.Tests.Gates
             result.Tables[0].Rows.Select(row => row[0] + "/" + row[1]).Should().Equal(
                 "Heavy Press vs Fine Polish/no gear", "Heavy Press vs Fine Polish/mid gear", "Heavy Press vs Fine Polish/best gear",
                 "Overpowered vs Plain/no gear", "Overpowered vs Plain/mid gear", "Overpowered vs Plain/best gear");
+        }
+
+        [Test]
+        public void TwoStylesOfARecipeAreBuiltOnTheSameDice()
+        {
+            var scenario = new SpyScenario { StylePairs = new[] { new CraftStylePair(Press, Polish) } };
+
+            Evaluate("styles", scenario, Context(Levels, runs: 12), recipesPerBand: 2);
+
+            var byRecipeAndStyle = scenario.FirstRolls.GroupBy(roll => (roll.Recipe, roll.Style)).ToDictionary(g => g.Key, g => g.Select(r => r.Roll).Order().ToList());
+            foreach (var recipe in byRecipeAndStyle.Keys.Select(key => key.Recipe).Distinct())
+            {
+                byRecipeAndStyle[(recipe, Press.Name)].Should().HaveCount(36).And.Equal(byRecipeAndStyle[(recipe, Polish.Name)], "attempt n of each style uses the same dice");
+            }
+
+            byRecipeAndStyle.Values.SelectMany(rolls => rolls).Distinct().Count().Should().BeGreaterThan(1, "the dice differ between attempts");
         }
 
         [Test]

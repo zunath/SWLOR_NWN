@@ -68,6 +68,12 @@ namespace SWLOR.Game.Server.Service.ChatPortraitTellService
             RemoveScrolledOut(log, speakers);
         }
 
+        /// <summary>How many chat lines from other players have reached the observer's client.</summary>
+        public long CountLinesReceived(uint observer)
+        {
+            return _logsByObserver.TryGetValue(observer, out var log) ? log.LinesReceived : 0;
+        }
+
         /// <summary>Drops an observer's history once their client, and with it their chat log, is gone.</summary>
         public void ForgetObserver(uint observer)
         {

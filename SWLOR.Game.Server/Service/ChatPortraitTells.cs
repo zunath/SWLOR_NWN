@@ -59,6 +59,13 @@ namespace SWLOR.Game.Server.Service
             Guard.RecordLine(recipient.m_oidPCObject, speakerClient.m_nPlayerID, GetCharacterId(speakerClient));
         }
 
+        /// <summary>How many chat lines from other players have reached the player's client this session.</summary>
+        public static long CountLinesReceived(uint player)
+        {
+            var client = NWNXLib.g_pAppManager.m_pServerExoApp.GetClientObjectByObjectId(player);
+            return client == null ? 0 : Guard.CountLinesReceived(client.m_oidPCObject);
+        }
+
         [NWNEventHandler(ScriptName.OnModuleGuiEvent)]
         public static void CheckPortraitClick()
         {

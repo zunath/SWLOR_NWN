@@ -1687,6 +1687,27 @@
     "Call": "FloatingTextStringOnCreature($\"XP cannot be distributed while dead.\", Player, false)"
   },
   {
+    "File": "SWLOR.Game.Server/Feature/GuiDefinition/ViewModel/DMBattleGridViewModel.cs",
+    "Line": 93,
+    "Member": "ReportPlacement",
+    "Delivery": "Retained",
+    "Call": "DMPresence.SendMessage(Player, ColorToken.Red(\"The grid could not be drawn there. Pick a spot inside the map.\"))"
+  },
+  {
+    "File": "SWLOR.Game.Server/Feature/GuiDefinition/ViewModel/DMBattleGridViewModel.cs",
+    "Line": 120,
+    "Member": "Move",
+    "Delivery": "Retained",
+    "Call": "DMPresence.SendMessage(Player, ColorToken.Red(\"The grid moved off the map and was removed. Place it again.\"))"
+  },
+  {
+    "File": "SWLOR.Game.Server/Feature/GuiDefinition/ViewModel/DMBattleGridViewModel.cs",
+    "Line": 143,
+    "Member": "OnPlaceAtTarget",
+    "Delivery": "Retained",
+    "Call": "DMPresence.SendMessage(Player, ColorToken.Red(\"Pick the ground or an object in this area to center the grid.\"))"
+  },
+  {
     "File": "SWLOR.Game.Server/Feature/GuiDefinition/ViewModel/DMChooserViewModel.cs",
     "Line": 384,
     "Member": "GetLiveSelection",
@@ -1765,22 +1786,22 @@
   },
   {
     "File": "SWLOR.Game.Server/Feature/GuiDefinition/ViewModel/DMPlayerSearchViewModel.cs",
-    "Line": 470,
-    "Member": "OnClickBringChecked",
+    "Line": 478,
+    "Member": "OnClickBringSelected",
     "Delivery": "Retained",
-    "Call": "DMPresence.SendMessage(Player, $\"{name} is no longer online.\")"
+    "Call": "DMPresence.SendMessage(Player, $\"{result.Name} is no longer online.\")"
   },
   {
     "File": "SWLOR.Game.Server/Feature/GuiDefinition/ViewModel/DMPlayerSearchViewModel.cs",
-    "Line": 479,
-    "Member": "OnClickBringChecked",
+    "Line": 487,
+    "Member": "OnClickBringSelected",
     "Delivery": "Retained",
     "Call": "DMPresence.SendMessage(Player, error)"
   },
   {
     "File": "SWLOR.Game.Server/Feature/GuiDefinition/ViewModel/DMPlayerSearchViewModel.cs",
-    "Line": 482,
-    "Member": "OnClickBringChecked",
+    "Line": 490,
+    "Member": "OnClickBringSelected",
     "Delivery": "Retained",
     "Call": "DMPresence.SendMessage(Player, $\"Brought {brought} character{(brought == 1 ? string.Empty : \"s\")} to you.\")"
   },
@@ -2388,6 +2409,27 @@
   },
   {
     "File": "SWLOR.Game.Server/Feature/GuiDefinition/ViewModel/PlayerListViewModel.cs",
+    "Line": 381,
+    "Member": "OnClickJumpHere",
+    "Delivery": "Retained",
+    "Call": "DMPresence.SendMessage(Player, ColorToken.Red(error))"
+  },
+  {
+    "File": "SWLOR.Game.Server/Feature/GuiDefinition/ViewModel/PlayerListViewModel.cs",
+    "Line": 407,
+    "Member": "OnClickBoot",
+    "Delivery": "Retained",
+    "Call": "DMPresence.SendMessage(Player, ColorToken.Red(\"That player is no longer online.\"))"
+  },
+  {
+    "File": "SWLOR.Game.Server/Feature/GuiDefinition/ViewModel/PlayerListViewModel.cs",
+    "Line": 414,
+    "Member": "OnClickBoot",
+    "Delivery": "Retained",
+    "Call": "DMPresence.SendMessage(Player, ColorToken.Red(state.DisabledReason))"
+  },
+  {
+    "File": "SWLOR.Game.Server/Feature/GuiDefinition/ViewModel/PlayerListViewModel.cs",
     "Line": 377,
     "Member": "OnClickMakeLeader",
     "Delivery": "Retained",
@@ -2420,6 +2462,13 @@
     "Member": "OnClickAbandonQuest",
     "Delivery": "Retained",
     "Call": "SendMessageToPC(Player, \"You are busy.\")"
+  },
+  {
+    "File": "SWLOR.Game.Server/Feature/GuiDefinition/ViewModel/RecipesViewModel.cs",
+    "Line": 562,
+    "Member": "OnClickCraftOrResearch",
+    "Delivery": "Retained",
+    "Call": "SendMessageToPC(Player, \"Finish or cancel your quick craft first.\")"
   },
   {
     "File": "SWLOR.Game.Server/Feature/GuiDefinition/ViewModel/RecipesViewModel.cs",
@@ -4261,6 +4310,34 @@
     "Member": "UseResearchTerminal",
     "Delivery": "Retained",
     "Call": "SendMessageToPC(player, $\"Another player's research job is active. This job has completed.\")"
+  },
+  {
+    "File": "SWLOR.Game.Server/Service/CraftService/Minigame/NwnCraftSessionWorld.cs",
+    "Line": 53,
+    "Member": "ChargeBlueprint",
+    "Delivery": "Retained",
+    "Call": "SendMessageToPC(player, $\"Remaining licensed runs: {details.LicensedRuns}\")"
+  },
+  {
+    "File": "SWLOR.Game.Server/Service/CraftService/Minigame/NwnCraftSessionWorld.cs",
+    "Line": 191,
+    "Member": "ApplyBlueprintBonuses",
+    "Delivery": "Retained",
+    "Call": "SendMessageToPC(player, ColorToken.Green($\"Blueprint Bonus applied: {bonusName} +{bonus.Amount}\"))"
+  },
+  {
+    "File": "SWLOR.Game.Server/Service/CraftService/Minigame/NwnCraftSessionWorld.cs",
+    "Line": 206,
+    "Member": "Message",
+    "Delivery": "Retained",
+    "Call": "SendMessageToPC(player, text)"
+  },
+  {
+    "File": "SWLOR.Game.Server/Service/CraftService/Minigame/NwnQuickCraftWorld.cs",
+    "Line": 50,
+    "Member": "Message",
+    "Delivery": "Retained",
+    "Call": "SendMessageToPC(player, text)"
   },
   {
     "File": "SWLOR.Game.Server/Service/Death.cs",

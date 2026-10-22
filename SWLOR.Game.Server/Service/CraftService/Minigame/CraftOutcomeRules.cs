@@ -6,8 +6,8 @@ namespace SWLOR.Game.Server.Service.CraftService.Minigame;
 /// <summary>
 /// The rules every item craft ends under, whichever minigame produced the quality. XP, vendor value and the loss chance copy
 /// the formulas the original crafting window used (<c>CraftViewModel.ProcessSuccess</c>, <c>CalculateXP</c> and
-/// <c>ProcessFailure</c>); enhancement transfer and food duration are the revamp's replacements for its chance roll and its
-/// full-quality-only branch.
+/// <c>ProcessFailure</c>). Enhancements transfer by quality threshold instead of by chance, and food duration scales with quality
+/// instead of paying only at full quality.
 /// </summary>
 public static class CraftOutcomeRules
 {

@@ -29,8 +29,11 @@ public sealed class NwnQuickCraftWorld : IQuickCraftWorld
     public void EndBatch(uint player)
     {
         NwnCraftSessionWorld.Instance.EndStationWork(player);
-        if (GetIsObjectValid(player))
-            AssignCommand(player, () => ClearAllActions());
+        if (!GetIsObjectValid(player))
+            return;
+
+        AssignCommand(player, () => ClearAllActions());
+        PlayerPlugin.StopGuiTimingBar(player);
     }
 
     public void PlayItemAnimation(uint player, float seconds)

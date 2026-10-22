@@ -1,7 +1,7 @@
 namespace SWLOR.Game.Server.Service.CraftService.Minigame;
 
 /// <summary>
-/// The minigames of the crafting revamp. Values are stored per player, so existing members keep their numbers.
+/// The crafting and gathering minigames. Values are stored per player, so existing members keep their numbers.
 /// </summary>
 public enum CraftMinigameType
 {

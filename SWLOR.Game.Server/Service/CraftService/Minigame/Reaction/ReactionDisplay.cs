@@ -37,7 +37,7 @@ public static class ReactionDisplay
     /// <summary>The window's description of the Peak: how violent it is and what a Charge there costs.</summary>
     public static string PeakText(ReactionSettings settings) =>
         $"Peak intensity {settings.PeakIntensity} of 5: a Charge at Peak costs " +
-        $"{ReactionRules.ActionStability + settings.PeakChargeStability} Stability.";
+        $"{settings.ActionStability + settings.PeakChargeStability} Stability.";
 
     public static string MeterText(string label, MinigameMeter meter) =>
         meter.Max > 0 ? $"{label}: {meter.Value}/{meter.Max}" : $"{label}: {meter.Value}";

@@ -109,7 +109,7 @@ public sealed class CraftSessionLifecycle
         var outcome = CraftOutcomeRules.CalculateSuccess(
             quality,
             recipe.Level,
-            Craft.GetBaseRecipeXP(recipe, GetRank(dbPlayer, recipe)),
+            CraftMinigameXp.BaseXp(recipe, GetRank(dbPlayer, recipe)),
             firstTime,
             blueprintLevel,
             recipe.Category == RecipeCategoryType.Food,
@@ -168,7 +168,7 @@ public sealed class CraftSessionLifecycle
             _random,
             enhancements.Count,
             record.Components.Count,
-            Craft.GetBaseRecipeXP(recipe, GetRank(dbPlayer, recipe)),
+            CraftMinigameXp.BaseXp(recipe, GetRank(dbPlayer, recipe)),
             record.BlueprintLevel);
 
         var kept = new List<string>();

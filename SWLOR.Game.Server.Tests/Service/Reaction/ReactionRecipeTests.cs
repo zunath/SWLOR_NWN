@@ -123,20 +123,40 @@ public class ReactionRecipeTests
     }
 
     [TestCaseSource(nameof(EveryRecipe))]
-    public void EveryRecipeCanBeWorkedToAnEnd_AndFinishedAtItsLevel(RecipeType type)
+    public void TheReactionPaysPracticeXpTimesItsOneNamedMultiplier(RecipeType type)
     {
         var recipe = Recipe(type);
-        var atLevel = ReactionSettings.ForRecipe(recipe, recipe.Level);
 
-        for (var start = 0; start < atLevel.Cycle.StartPositionCount; start++)
+        foreach (var rank in new[] { 0, recipe.Level, recipe.PracticeRankLimit!.Value })
         {
-            var engine = new ReactionEngine(new SeededMinigameRandom(1), atLevel, start);
-            Play(engine);
-            engine.Status.Should().Be(MinigameStatus.Succeeded, $"a careful crafter at level finishes {type} from position {start}");
-            engine.Turn.Should().BeInRange(8, 30);
+            CraftMinigameXp.BaseXp(recipe, rank).Should().Be(
+                CraftMinigameXp.ScaleBaseXp(Craft.GetBaseRecipeXP(recipe, rank), ReactionRules.XpMultiplier), $"rank {rank}");
         }
+    }
 
-        foreach (var rank in new[] { 0, Math.Max(recipe.Level - 3, 0), 50 })
+    [TestCaseSource(nameof(EveryRecipe))]
+    public void EveryRecipeCanBeFinishedAtItsLevelFromEveryStartingPosition(RecipeType type)
+    {
+        var recipe = Recipe(type);
+        var settings = ReactionSettings.ForRecipe(recipe, recipe.Level);
+
+        for (var start = 0; start < settings.Cycle.StartPositionCount; start++)
+        {
+            var engine = new ReactionEngine(new SeededMinigameRandom(1), settings, start);
+
+            var path = ReactionPlanner.FindPath(engine, minimumQuality: 90);
+
+            path.Should().NotBeNull($"{type} can be finished at quality 90 or better from position {start}");
+            path!.Count.Should().BeInRange(8, 25, $"{type} from position {start}");
+        }
+    }
+
+    [TestCaseSource(nameof(EveryRecipe))]
+    public void EveryRankRunsToAnEnd(RecipeType type)
+    {
+        var recipe = Recipe(type);
+
+        foreach (var rank in new[] { 0, Math.Max(recipe.Level - 3, 0), recipe.Level, 50 })
         {
             var engine = new ReactionEngine(new SeededMinigameRandom(2), ReactionSettings.ForRecipe(recipe, rank));
             Play(engine);
@@ -145,15 +165,14 @@ public class ReactionRecipeTests
     }
 
     [Test]
-    public void ACarefulCrafterOfTheRightRankReachesFullQualityOnEveryRecipe()
+    public void ARecipeAtItsMinimumRankCanStillBeFinished()
     {
         foreach (var (type, recipe) in EspionageRecipes.Value)
         {
-            var engine = new ReactionEngine(new SeededMinigameRandom(1), ReactionSettings.ForRecipe(recipe, Math.Max(recipe.Level, 0)), 0);
-            Play(engine);
+            var settings = ReactionSettings.ForRecipe(recipe, Math.Max(recipe.Level - 3, 0));
+            var engine = new ReactionEngine(new SeededMinigameRandom(1), settings, 0);
 
-            engine.Status.Should().Be(MinigameStatus.Succeeded, type.ToString());
-            engine.Meters.Quality.Percent.Should().BeGreaterThanOrEqualTo(80, type.ToString());
+            ReactionPlanner.FindPath(engine, minimumQuality: 70).Should().NotBeNull($"{type} at its minimum rank");
         }
     }
 
@@ -176,15 +195,16 @@ public class ReactionRecipeTests
             new CraftSessionStartRequest(RecipeType.VenomCoating2, OBJECT_INVALID, Array.Empty<uint>()));
         start.Succeeded.Should().BeTrue(start.Message);
         player.ActiveCraftSession.Should().NotBeNull("the committed materials are saved before the attempt is played");
-        var engine = new ReactionEngine(new SeededMinigameRandom(1), ReactionSettings.ForRecipe(recipe, rank));
-        Play(engine);
+        var engine = new ReactionEngine(new SeededMinigameRandom(1), ReactionSettings.ForRecipe(recipe, rank), 0);
+        ReactionPlanner.Play(engine, ReactionPlanner.FindPath(engine, minimumQuality: 90)!);
         engine.Status.Should().Be(MinigameStatus.Succeeded);
 
         var success = lifecycle.Succeed(FakeCraftSessionWorld.PlayerHandle, player, start.Session, engine.Meters.Quality);
 
         success.Should().NotBeNull();
         success!.Outcome.QualityPercent.Should().Be(engine.Meters.Quality.Percent);
-        var baseXp = Skill.GetPracticeXP(recipe.Level, rank, recipe.PracticeRankLimit!.Value);
+        var baseXp = CraftMinigameXp.ScaleBaseXp(
+            Skill.GetPracticeXP(recipe.Level, rank, recipe.PracticeRankLimit!.Value), ReactionRules.XpMultiplier);
         success.Outcome.Xp.Should().Be(CraftOutcomeRules.CalculateXp(baseXp, 0, true, engine.Meters.Quality.Fraction));
         world.XpGiven.Should().ContainSingle().Which.Skill.Should().Be(SkillType.Espionage);
         world.Events.Should().Contain($"create:{recipe.Resref}");
@@ -214,7 +234,7 @@ public class ReactionRecipeTests
 
         var settlement = lifecycle.Fail(FakeCraftSessionWorld.PlayerHandle, player, CraftSessionEndReason.Broken);
 
-        var baseXp = Craft.GetBaseRecipeXP(recipe, rank);
+        var baseXp = CraftMinigameXp.BaseXp(recipe, rank);
         settlement.Settled.Should().BeTrue();
         settlement.ItemsLost.Should().Be(1);
         settlement.ItemsKept.Should().Be(1);

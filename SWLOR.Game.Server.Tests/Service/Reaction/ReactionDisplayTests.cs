@@ -27,7 +27,7 @@ public class ReactionDisplayTests
 
         view.Kind.Should().Be(ReactionActionKind.Normal);
         view.Summary.Should().Contain($"Potency +{engine.Settings.ChargePotency * 2}");
-        view.Summary.Should().Contain($"Stability -{ReactionRules.ActionStability + engine.Settings.PeakChargeStability}");
+        view.Summary.Should().Contain($"Stability -{engine.Settings.ActionStability + engine.Settings.PeakChargeStability}");
         view.Summary.Should().EndWith("Next: Settling");
         view.Tooltip.Should().Contain("Charge in Peak");
         view.Tooltip.Should().Contain("Cost:");
@@ -62,7 +62,7 @@ public class ReactionDisplayTests
     public void TheActionThatCouldBreakThePieceSaysSoBeforeTheClick()
     {
         var engine = EngineAt(0);
-        for (var turn = 0; turn < 49; turn++)
+        while (engine.Meters.Integrity.Value > engine.Settings.ActionStability)
             engine.Perform(ReactionEngine.Refine);
 
         var view = View(engine, ReactionEngine.Refine);
@@ -79,11 +79,14 @@ public class ReactionDisplayTests
 
         var full = View(engine, ReactionEngine.Stabilize);
         var noCp = View(EngineAt(0, rank: 0, level: 3), ReactionEngine.Dampen);
+        var locked = View(EngineAt(0, rank: 5, level: 3), ReactionEngine.Stabilize);
 
         full.Kind.Should().Be(ReactionActionKind.Unavailable);
         full.Summary.Should().Be("Unavailable: Stability is already full.");
         noCp.Kind.Should().Be(ReactionActionKind.Unavailable);
         noCp.Summary.Should().Be("Unavailable: Not enough CP.");
+        locked.Kind.Should().Be(ReactionActionKind.Unavailable);
+        locked.Summary.Should().Be("Unavailable: Unlocks at Espionage rank 10.");
     }
 
     [Test]
@@ -104,7 +107,7 @@ public class ReactionDisplayTests
         var text = ReactionDisplay.PeakText(settings);
 
         text.Should().Contain("intensity 4");
-        text.Should().Contain((ReactionRules.ActionStability + ReactionRules.PeakChargeStability(4)).ToString());
+        text.Should().Contain((settings.ActionStability + ReactionRules.PeakChargeStability(4)).ToString());
     }
 
     [Test]

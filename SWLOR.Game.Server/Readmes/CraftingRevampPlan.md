@@ -28,6 +28,7 @@ The revamp aligns crafting with the combat upgrade:
 - Smithery, Engineering, Fabrication (including Research) and Agriculture (cooking and fishing).
 - Gathering (harvesting, scavenging, refining).
 - Espionage's poison and trap crafting.
+- **Progression pace** (added by the owner after player feedback, October 2026): the crafting XP curve and guild ranks. Players report slow crafting progression and guild ranks that are a required chore, and bypass both with RP XP or rebuilds. The design is pending: research today's rates first, then get the owner's approval of the changes before coding (workstream 11).
 
 **Out of scope**
 - **Farming.** It comes later and will add a third Agriculture line, Farmer, at 25 SP.
@@ -164,6 +165,7 @@ Every recipe gets its own minigame parameters.
 - **Batches.** Up to 10 per batch, materials permitting. Each item takes a short crafting animation, and the player stays at the station.
   - Cancelling stops the batch. Completed items are kept and unused materials stay in the inventory.
 - **Output.** The base item only, with no enhancements, no blueprint, no blueprint bonuses and no XP.
+- **Threshold kept.** Players asked for easier bulk orders (October 2026). The owner kept rank >= recipe level + 5, so recipes above level 45 stay manual even at rank 50.
 
 ### Balance gates and tooling
 
@@ -183,6 +185,11 @@ Build `SWLOR.CraftSim` (tool and tests) on the `SWLOR.CombatSim` pattern. It dri
    - Fish caught per bite at each rank stays near today's catch rate.
    - Research base credits and times are unchanged; the Analyze cut stays within its cap.
    - Material use per crafted item at matched quality stays near today's.
+6. **XP rate** (owner decision after player feedback, October 2026).
+   - At matched rank and gear, XP per hour of play in each minigame is at least today's.
+   - CraftSim estimates minutes per craft from actions taken and a seconds-per-action estimate. Measure that estimate in the client evidence, separately for today's minigame and each new one.
+   - If a minigame falls short, scale its per-craft XP up, recorded in code and the Bible. Do not shorten the minigame below its length target to pass.
+   - Today's actions per craft are in `design/testing/crafting-revamp/legacy-crafting-baseline.md`: 5-9 at levels 1-10, rising to 20-28 at levels 21-53 with gear.
 
 **Baselines.**
 - **Legacy model.** CraftSim ports today's rules as a legacy baseline, checked formula by formula against the code: the old minigame (`CraftViewModel.cs`), harvesting, scavenging, refining and the fishing catch roll. Build it in Foundation, before Closeout deletes the old minigame.
@@ -618,7 +625,7 @@ The combat upgrade's model applies, with no pilot: build every minigame, then te
   - Merge Bible-editing PRs into the feature branch one at a time. After a conflict, take the base's workbook and re-run the PR's script.
 - **Merging master in.** Merge `origin/master` into the feature branch regularly, and re-run the focused tests after each merge.
 
-**Workstreams.** 1 comes first; 2-10 can run in parallel after it; 11 closes.
+**Workstreams.** 1 comes first; 2-11 can run in parallel after it; 12 closes.
 
 1. **Foundation**, as four PRs that can run in parallel:
    - **1a Progression and migration:** rank milestones replacing retired perks, Treasure Hunter/Creditfinder move, migration with refunds and token, the `Migrations.md` exception, research message fix, Bible SP total fix and the Bible perk-row changes. The only Foundation PR that edits the Bible.
@@ -634,7 +641,8 @@ The combat upgrade's model applies, with no pilot: build every minigame, then te
 8. **Espionage:** Reaction.
 9. **Gathering:** Prospecting, Search and refining changes, plus the Prospector and Treasure Seeker lines and the gathering animations.
 10. **Art:** Trellis2 placeable adaptation, seven station models, and the five station work loops.
-11. **Closeout.**
+11. **Progression pace:** the crafting XP curve and guild-rank requirements. It starts with research and an owner-approved proposal, and can run beside 2-10. Any XP change must keep the XP-rate gate meaningful: measure the gate against today's XP, then apply the curve change on top.
+12. **Closeout.**
     - Delete the old minigame (`CraftViewModel` rules, `CraftDefinition`, retired level-chart fields).
     - Final Bible sync, player guide text and tooltips.
     - Joint test pass across every minigame.

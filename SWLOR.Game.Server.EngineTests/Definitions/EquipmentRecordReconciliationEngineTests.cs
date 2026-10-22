@@ -101,8 +101,8 @@ namespace SWLOR.Game.Server.EngineTests.Definitions
             ctx.AssertEqual(EquipmentRecordStats.None, corrected, "a matching record is left alone");
         }
 
-        [EngineTest("Swapping gear in a slot keeps the records equal to the worn gear", Category = Category, TimeoutSeconds = 60f)]
-        public static async Task SwapKeepsRecordsConsistent(EngineTestContext ctx)
+        [EngineTest("A canceled equip into an occupied slot leaves the records on the worn gear", Category = Category, TimeoutSeconds = 60f)]
+        public static async Task CanceledSwapKeepsRecordsConsistent(EngineTestContext ctx)
         {
             using var fixture = await PlayerAbilityFixture.CreateAsync(ctx);
             var player = fixture.Creature;
@@ -114,27 +114,15 @@ namespace SWLOR.Game.Server.EngineTests.Definitions
             await EquipAsync(ctx, player, first, InventorySlot.RightRing);
             AssertRecord(ctx, player, physical: 10, force: 10, evasion: 0, fp: Stat.BaseFP + 8, stamina: Stat.BaseSTM + 8, "the first ring");
 
-            // Equipping into an occupied slot removes the worn item's stats without an unequip event. Whether
-            // the engine completes or cancels the swap, the records must match what is worn afterwards. The
-            // second ring carries no FP, so only the displaced ring can trigger the FP rebuild of this drift.
-            fixture.Update(record => record.MaxFP = 10000);
+            // The equip validator cancels an equip into an occupied slot before any stats move.
             await ctx.ExecuteInCreatureContextAsync(player, () => ActionEquipItem(second, InventorySlot.RightRing));
-            for (var frame = 0; frame < 60 && GetItemInSlot(InventorySlot.RightRing, player) != second; frame++)
+            for (var frame = 0; frame < 30; frame++)
                 await ctx.WaitFrameAsync();
-            await ctx.WaitFrameAsync();
-            var worn = GetItemInSlot(InventorySlot.RightRing, player);
-            ctx.Log($"Swap {(worn == second ? "completed" : "canceled")}.");
-            if (worn == second)
-                AssertRecord(ctx, player, physical: 11, force: 9, evasion: 10, fp: Stat.BaseFP, stamina: Stat.BaseSTM,
-                    "only the second ring counts after the swap, and the displaced ring's FP record is rebuilt");
-            else
-            {
-                AssertRecord(ctx, player, physical: 10, force: 10, evasion: 0, fp: Record(player).MaxFP, stamina: Stat.BaseSTM + 8,
-                    "a canceled swap leaves the first ring's Defense records");
-                fixture.Update(record => record.MaxFP = Stat.BaseFP + 8);
-            }
+            ctx.AssertEqual(first, GetItemInSlot(InventorySlot.RightRing, player), "the occupied-slot equip is canceled");
+            AssertRecord(ctx, player, physical: 10, force: 10, evasion: 0, fp: Stat.BaseFP + 8, stamina: Stat.BaseSTM + 8,
+                "a canceled equip leaves the first ring's records");
 
-            await UnequipAsync(ctx, player, worn);
+            await UnequipAsync(ctx, player, first);
             AssertRecord(ctx, player, physical: 0, force: 0, evasion: 0, fp: Stat.BaseFP, stamina: Stat.BaseSTM,
                 "nothing worn leaves every record at its base");
         }

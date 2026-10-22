@@ -81,9 +81,15 @@ namespace SWLOR.CraftSim.Play
     /// <param name="SelectionScore">Its mean score on separate attempts, which it was only chosen on.</param>
     public sealed record SolvedRotation(IReadOnlyList<string> Sequence, double TrainingScore, double SelectionScore);
 
+    /// <summary>One recipe's attempts that a rotation is scored on: how to build an attempt, and the numbers that name this recipe's random streams.</summary>
+    /// <param name="Factory">Builds an attempt that has not started, on the source of chance it is given.</param>
+    /// <param name="Stream">Numbers that tell this recipe's dice from every other recipe's (the recipe, rank and gear).</param>
+    public sealed record RotationCase(Func<IMinigameRandom, ICraftMinigameEngine> Factory, int[] Stream);
+
     /// <summary>
     /// The adversary of the no-fixed-rotation gate: it searches for the fixed sequence of actions with the best mean quality (a broken
-    /// piece counts 0) for one recipe. Candidates come from four places, all scored on the same seeded attempts: a beam search that
+    /// piece counts 0). <see cref="Solve"/> finds the best sequence for one recipe; <see cref="SolveShared"/> finds the best single
+    /// sequence for several recipes at once, every recipe weighing the same, which is what gate 1 asks about. Candidates come from four places, all scored on the same seeded attempts: a beam search that
     /// extends sequences one action at a time (an unfinished prefix ranked by a heuristic, a finished one by its exact result), every
     /// short repeating cycle of actions, and the action lines a skilled adaptive player takes. A local search then tries replacing,
     /// swapping, deleting and inserting single actions of the best few, scoring each variant on whole attempts. The best candidates are
@@ -118,7 +124,7 @@ namespace SWLOR.CraftSim.Play
         }
 
         /// <summary>
-        /// Searches for the best fixed rotation.
+        /// Searches for the best fixed rotation of one recipe.
         /// </summary>
         /// <param name="factory">Builds an attempt that has not started, on the source of chance it is given.</param>
         /// <param name="seed">The seed every attempt's chance comes from.</param>
@@ -128,9 +134,36 @@ namespace SWLOR.CraftSim.Play
             Func<IMinigameRandom, ICraftMinigameEngine> factory,
             int seed,
             int[] stream,
+            IReadOnlyList<IReadOnlyList<string>> seedLines = null) =>
+            SolveShared(new[] { new RotationCase(factory, stream) }, seed, seedLines);
+
+        /// <summary>
+        /// Searches for the best single fixed rotation for several recipes: the one sequence with the highest mean score over all of them,
+        /// each recipe weighing the same (every recipe is played on <see cref="FixedRotationSolverOptions.TrainingRuns"/> attempts of its
+        /// own dice). An action that a recipe's engine does not offer, or that is unavailable when its turn comes, is skipped there, as it
+        /// is for a player following the rotation. With one case it is <see cref="Solve"/>.
+        /// </summary>
+        /// <param name="cases">The recipes the one rotation is played on.</param>
+        /// <param name="seed">The seed every attempt's chance comes from.</param>
+        /// <param name="seedLines">Action lines worth trying as rotations, such as each recipe's own best; may be null.</param>
+        public SolvedRotation SolveShared(
+            IReadOnlyList<RotationCase> cases,
+            int seed,
             IReadOnlyList<IReadOnlyList<string>> seedLines = null)
         {
-            var actions = factory(new SimMinigameRandom(new SimRandom(0))).Actions.Select(action => action.Id).ToList();
+            if (cases == null || cases.Count == 0)
+                throw new ArgumentException("A rotation needs at least one recipe to be played on.", nameof(cases));
+
+            var actions = new List<string>();
+            foreach (var recipe in cases)
+            {
+                foreach (var action in recipe.Factory(new SimMinigameRandom(new SimRandom(0))).Actions)
+                {
+                    if (!actions.Contains(action.Id))
+                        actions.Add(action.Id);
+                }
+            }
+
             var trainingCaches = new Dictionary<int, Dictionary<string, double>>();
 
             // Round k of the local search scores on its own block of attempts, so a variant has to hold up on dice the last round did not use.
@@ -144,8 +177,8 @@ namespace SWLOR.CraftSim.Play
                     var key = Key(sequence);
                     if (!cache.TryGetValue(key, out var score))
                     {
-                        score = Score(
-                            factory, sequence, seed, SimStreams.SolverTraining, stream, _options.TrainingRuns, _actionLimit,
+                        score = ScoreShared(
+                            cases, sequence, seed, SimStreams.SolverTraining, _options.TrainingRuns, _actionLimit,
                             firstRun: round * _options.TrainingRuns);
                         cache[key] = score;
                     }
@@ -155,8 +188,8 @@ namespace SWLOR.CraftSim.Play
             }
 
             var candidates = new List<List<string>>();
-            candidates.AddRange(Beam(factory, actions, seed, stream));
-            candidates.AddRange(Cycles(factory, actions, seed, stream));
+            candidates.AddRange(Beam(cases, actions, seed));
+            candidates.AddRange(Cycles(cases, actions, seed));
             if (seedLines != null)
                 candidates.AddRange(seedLines.Where(line => line.Count > 0 && line.All(actions.Contains)).Select(line => line.Take(_maximumLength).ToList()));
 
@@ -170,7 +203,7 @@ namespace SWLOR.CraftSim.Play
             var winnerSelection = double.MinValue;
             foreach (var sequence in finalists)
             {
-                var selection = Score(factory, sequence, seed, SimStreams.SolverSelection, stream, _options.SelectionRuns, _actionLimit);
+                var selection = ScoreShared(cases, sequence, seed, SimStreams.SolverSelection, _options.SelectionRuns, _actionLimit);
                 if (selection > winnerSelection + Improvement)
                 {
                     winner = sequence;
@@ -213,6 +246,39 @@ namespace SWLOR.CraftSim.Play
             var engine = factory(new SimMinigameRandom(SimRandom.ForRun(seed, Stream(streamKind, stream, 0, run))));
             return CraftPlayer.PlayFixed(engine, sequence, actionLimit);
         }
+
+        /// <summary>
+        /// The mean score of one fixed rotation over several recipes: each recipe's mean over <paramref name="runs"/> attempts of its own
+        /// dice (a broken piece counting 0), every recipe weighing the same.
+        /// </summary>
+        public static double ScoreShared(
+            IReadOnlyList<RotationCase> cases,
+            IReadOnlyList<string> sequence,
+            int seed,
+            int streamKind,
+            int runs,
+            int actionLimit,
+            int firstRun = 0)
+        {
+            var total = 0.0;
+            foreach (var recipe in cases)
+            {
+                for (var run = firstRun; run < firstRun + runs; run++)
+                    total += PlayRun(recipe.Factory, sequence, seed, streamKind, recipe.Stream, run, actionLimit).Score;
+            }
+
+            return total / ((double)runs * cases.Count);
+        }
+
+        /// <summary>The mean score of one fixed rotation on each recipe separately, in the order of <paramref name="cases"/>.</summary>
+        public static double[] ScoreEach(
+            IReadOnlyList<RotationCase> cases,
+            IReadOnlyList<string> sequence,
+            int seed,
+            int streamKind,
+            int runs,
+            int actionLimit) =>
+            cases.Select(recipe => Score(recipe.Factory, sequence, seed, streamKind, recipe.Stream, runs, actionLimit)).ToArray();
 
         /// <summary>
         /// The action lines an adaptive player takes on attempts of their own, to hand to <see cref="Solve"/> as seeds. A skilled line is
@@ -270,13 +336,23 @@ namespace SWLOR.CraftSim.Play
             public bool Finished;
         }
 
-        /// <summary>Beam search: the finished sequences it met, best first, or the longest prefixes when none finished.</summary>
-        private List<List<string>> Beam(Func<IMinigameRandom, ICraftMinigameEngine> factory, List<string> actions, int seed, int[] stream)
+        /// <summary>
+        /// Beam search: the finished sequences it met, best first, or the longest prefixes when none finished. An entry holds an engine for
+        /// every training attempt of every recipe, the engine of attempt <c>run</c> of recipe <c>recipe</c> at <c>run * cases + recipe</c>,
+        /// so the first few engines span the recipes.
+        /// </summary>
+        private List<List<string>> Beam(IReadOnlyList<RotationCase> cases, List<string> actions, int seed)
         {
             var samples = _options.TrainingRuns;
-            var root = new Entry { Sequence = new List<string>(), Engines = new ICraftMinigameEngine[samples] };
+            var root = new Entry { Sequence = new List<string>(), Engines = new ICraftMinigameEngine[samples * cases.Count] };
             for (var run = 0; run < samples; run++)
-                root.Engines[run] = factory(new SimMinigameRandom(SimRandom.ForRun(seed, Stream(SimStreams.SolverTraining, stream, 0, run))));
+            {
+                for (var recipe = 0; recipe < cases.Count; recipe++)
+                {
+                    root.Engines[run * cases.Count + recipe] = cases[recipe].Factory(
+                        new SimMinigameRandom(SimRandom.ForRun(seed, Stream(SimStreams.SolverTraining, cases[recipe].Stream, 0, run))));
+                }
+            }
 
             var beam = new List<Entry> { root };
             var finished = new List<Entry>();
@@ -290,7 +366,7 @@ namespace SWLOR.CraftSim.Play
                 {
                     foreach (var action in actions)
                     {
-                        var child = Extend(entry, action, step, seed, stream);
+                        var child = Extend(entry, action, step, seed, cases);
                         if (child == null)
                             continue;
 
@@ -315,20 +391,25 @@ namespace SWLOR.CraftSim.Play
                 .ToList();
         }
 
-        /// <summary>The entry after one more action on every training attempt that is still going, or null when the action changed nothing anywhere.</summary>
-        private Entry Extend(Entry entry, string action, int step, int seed, int[] stream)
+        /// <summary>
+        /// The entry after one more action on every training attempt that is still going, or null when the action changed nothing anywhere.
+        /// A recipe whose engine does not offer the action skips it.
+        /// </summary>
+        private Entry Extend(Entry entry, string action, int step, int seed, IReadOnlyList<RotationCase> cases)
         {
             var engines = new ICraftMinigameEngine[entry.Engines.Length];
             var changed = false;
             var allEnded = true;
             var total = 0.0;
 
-            for (var run = 0; run < engines.Length; run++)
+            for (var index = 0; index < engines.Length; index++)
             {
-                var engine = entry.Engines[run];
-                if (engine.Status == MinigameStatus.InProgress)
+                var engine = entry.Engines[index];
+                if (engine.Status == MinigameStatus.InProgress && CraftPlayer.Offers(engine, action))
                 {
-                    var copy = engine.Fork(new SimMinigameRandom(SimRandom.ForRun(seed, Stream(SimStreams.SolverTraining, stream, step, run))));
+                    var recipe = index % cases.Count;
+                    var run = index / cases.Count;
+                    var copy = engine.Fork(new SimMinigameRandom(SimRandom.ForRun(seed, Stream(SimStreams.SolverTraining, cases[recipe].Stream, step, run))));
                     if (copy.Perform(action).Performed)
                     {
                         engine = copy;
@@ -336,7 +417,7 @@ namespace SWLOR.CraftSim.Play
                     }
                 }
 
-                engines[run] = engine;
+                engines[index] = engine;
                 switch (engine.Status)
                 {
                     case MinigameStatus.Succeeded:
@@ -379,7 +460,7 @@ namespace SWLOR.CraftSim.Play
         }
 
         /// <summary>Every cycle of up to <see cref="FixedRotationSolverOptions.CycleLength"/> actions, repeated to the longest rotation, screened on a few attempts; the best few.</summary>
-        private List<List<string>> Cycles(Func<IMinigameRandom, ICraftMinigameEngine> factory, List<string> actions, int seed, int[] stream)
+        private List<List<string>> Cycles(IReadOnlyList<RotationCase> cases, List<string> actions, int seed)
         {
             var scored = new List<(List<string> Sequence, double Score)>();
             for (var length = 1; length <= _options.CycleLength; length++)
@@ -392,7 +473,7 @@ namespace SWLOR.CraftSim.Play
 
                     sequence.RemoveRange(_maximumLength, sequence.Count - _maximumLength);
                     var screening = Math.Min(_options.ScreeningRuns, _options.TrainingRuns);
-                    scored.Add((sequence, Score(factory, sequence, seed, SimStreams.SolverTraining, stream, screening, _actionLimit)));
+                    scored.Add((sequence, ScoreShared(cases, sequence, seed, SimStreams.SolverTraining, screening, _actionLimit)));
                 }
             }
 

@@ -151,6 +151,23 @@ namespace SWLOR.CraftSim.Tests.Play
         }
 
         [Test]
+        public void AnActionTheEngineDoesNotOfferIsSkippedLikeAnUnavailableOne()
+        {
+            // A rotation shared by several recipes can name an action that one recipe's engine does not have.
+            var sequence = new[] { "nonsense", ToyEngine.B, ToyEngine.B, ToyEngine.B, "nonsense", ToyEngine.A, ToyEngine.A, ToyEngine.A };
+
+            var direct = CraftPlayer.PlayFixed(new ToyEngine(SimMinigameRandom.ForRun(1)), sequence);
+            var viaPolicy = CraftPlayer.Play(new ToyEngine(SimMinigameRandom.ForRun(1)), new FixedSequencePolicy(sequence));
+
+            direct.Succeeded.Should().BeTrue();
+            direct.QualityFraction.Should().BeApproximately(1.0, 1e-6);
+            direct.Actions.Should().Be(6, "the two unknown actions took no turn");
+            viaPolicy.Should().Be(direct);
+            CraftPlayer.PlayFixed(new ToyEngine(SimMinigameRandom.ForRun(1)), new[] { "nonsense" }).Actions.Should().Be(0, "a last action that is not offered is not repeated");
+            new FixedSequencePolicy(new[] { "nonsense" }).Choose(new ToyEngine(SimMinigameRandom.ForRun(1))).Should().BeNull();
+        }
+
+        [Test]
         public void ARotationIsDescribedWithItsRunsCollapsed()
         {
             FixedSequencePolicy.Describe(new[] { "stoke", "stoke", "press", "polish", "polish", "polish" }).Should().Be("stoke x2 > press > polish x3");

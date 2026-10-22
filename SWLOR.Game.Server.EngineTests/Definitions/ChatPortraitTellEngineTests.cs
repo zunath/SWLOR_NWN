@@ -47,6 +47,9 @@ namespace SWLOR.Game.Server.EngineTests.Definitions
                         "player list tell"));
                 ctx.AssertEqual(ChatPortraitClick.CurrentHolder, ChatPortraitTells.ClickPortrait(second.Creature, observer.Creature),
                     "the player list tell reaches the new holder");
+                // The Player List tell left the stale click's prompt unsent, so that prompt is still refused.
+                ctx.Assert(ChatPortraitTells.RefuseStalePortraitTell(observer.Creature, second.Creature, false),
+                    "the stale prompt sent after a player list tell");
             }
             finally
             {

@@ -94,6 +94,10 @@ namespace SWLOR.Game.Server.Service
         /// </summary>
         public static bool RefuseStalePortraitTell(uint sender, uint target, bool isDirectTell)
         {
+            // A Player List tell does not send the chat prompt, so a refused click's prompt may still be open.
+            if (isDirectTell)
+                return false;
+
             var server = NWNXLib.g_pAppManager.m_pServerExoApp;
             var senderClient = server.GetClientObjectByObjectId(sender);
             if (senderClient == null)
@@ -101,7 +105,7 @@ namespace SWLOR.Game.Server.Service
 
             var targetClient = server.GetClientObjectByObjectId(target);
             var refused = Guard.ConsumeRefusedTell(senderClient.m_oidPCObject, targetClient?.m_nPlayerID ?? uint.MaxValue, DateTime.UtcNow);
-            if (!refused || isDirectTell)
+            if (!refused)
                 return false;
 
             SendMessageToPC(sender, ColorToken.Red("Tell not sent: the chat portrait you clicked may belong to a player who has logged out. " +

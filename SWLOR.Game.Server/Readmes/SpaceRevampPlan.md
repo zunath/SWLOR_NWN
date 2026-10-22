@@ -334,6 +334,7 @@ Two ships in the same role are sidegrades, never strict upgrades.
 - **More designs later:** the Trellis2 pipeline generates more designs per ship over time (section 20).
 - **Unlocking:** a **Design Schematic: <Ship> - <Design>** unlocks one design for the character. Sources: aces, bosses, Wild Space, rare salvage and faction stores.
 - **Refit:** a starport Refit swaps a ship to another design unlocked for it, for a fee.
+- **Exterior only:** designs change the outside of the ship. Interior designs are a later pass, because there are few interior layouts (section 21).
 - **Ship Schematics** are the recipe unlocks for Advanced ships. They replace the orphaned `recipe_aurek`, `recipe_sfight` and `recipe_basilisk`.
 - **Migration:** owners keep today's look as a design of the ship they're mapped to (section 15).
 
@@ -436,7 +437,7 @@ Toggled modules are the ship's auto-attacks; perk abilities are the buttons, as 
   - Hit chance uses `Combat.CalculateHitRate`, as today.
   - Damage uses `Combat.CalculateDamage` with one ship Attack and one ship Defense, replacing today's three per-type pairs. The damage attribute is PER for energy weapons and MGT for launchers (section 5).
 - **Accuracy and evasion:** accuracy is the weapon's accuracy attribute x 3 (AGI for energy weapons, PER for launchers; section 5) + Gunnery rank. Evasion is AGI x 3 + Piloting rank. Both add hull and modules.
-- **Crits:** on, following the ground formula. Gunnery rank stands in for weapon rank, with PER against VIT.
+- **Crits:** on, following the ground formula. Gunnery rank stands in for weapon rank, with PER against VIT. The ground's 5-50% range applies (`Combat.MinimumCriticalRate` and `MaximumCriticalRate`). The ground formula gives at most 13% before perks, and every perk draft is checked so its crit bonuses fit under the cap.
 - **Resistances:** add `ResistanceType` Thermal, Explosive and EM, each from -100 to 100. `CombatDamageType` already has Thermal 20, Explosive 21 and EM 22.
 - **Status effects:** go through `StatusEffect` with its resistance families.
   - Ion slow uses the Mobility family.
@@ -484,6 +485,11 @@ Ships at launch.
   - Handle disconnects at a station, crew leaving mid-fight, and ship death (escape pods).
 - **Balance:** a ship crewed by N players must not beat N separate ships. The combat simulator checks this.
 - **Wing Commander:** its crew bonuses apply to everyone aboard.
+- **Ship-to-ship docking:** a Small or Medium ship can dock with a player's Large or Capital ship when the host's owner grants a new **Dock** permission (next to `PilotShip`).
+  - The visiting ship is attached and hidden beside the host, the way crew characters are kept beside the ship. Its pilot and passengers walk into the host's interior.
+  - Undocking returns them to their own ship at the host's position.
+  - Docked ships travel with the host. If the host is destroyed, docked ships detach where it was and their crews return to them.
+  - It reuses the derelict docking flow (section 28). Docking is friendly only; hostile boarding is out of scope (section 21).
 
 ## 11. Enemies
 
@@ -596,7 +602,7 @@ Ships at launch.
   - Standing unlocks better prices and higher-paying contracts.
   - Getting caught smuggling, or raiding convoys, costs lawful standing.
 - **City hubs:** a city starport exchange charges a mayor-set tariff paid into the treasury.
-- **Earning targets:** measure credits per hour of space combat at each tier first (loot gold plus sold drops), then set:
+- **Earning targets:** measure credits per hour of space combat at each tier first (loot gold plus sold drops), and hold it to the ground's rate at the same tier (reward parity, section 19). Then set:
   - Freight contracts: about 75% of that rate.
   - Open trading: about 100-125%.
   - Contraband: about 150-200%.
@@ -800,7 +806,7 @@ Everything merges to one integration branch and releases together.
 | W5 | Enemies | NPC conversion, role AI, new groups, aces, encounters, spawn tables, DM Space tab | W2, W3 |
 | W6 | World | Salvage and wrecks, gas harvesting, new materials, 3 zones (Module JSON), station flags, starlanes, docking limits | W3 |
 | W7 | Trade | Cargo data, exchange NUI, pricing service, HoloNet board, contraband and customs, pirates, freight contracts, factions, city tariffs, trade XP | W3, W5, W6 |
-| W8 | Crew | Stations, consoles, `AttachCamera` and hidden crew, droid crew, permissions, power routing, Wing Commander crew bonuses | W2, W3, W4 |
+| W8 | Crew | Stations, consoles, `AttachCamera` and hidden crew, droid crew, permissions, power routing, Wing Commander crew bonuses, ship-to-ship docking and the Dock permission | W2, W3, W4 |
 | W9 | Crafting and rewards | Component layer and traits, recipes, research blueprints, named modules, Design Schematics, trophies and decor, ammo variants, achievements | W3, W6 |
 | W10 | Migration | Rebuild Token, perk refunds, item and ship conversion, stamp cleanup, design unlocks, notices | W1, W3, W9 |
 | W12 | Wild Space and exploration | 6 Wild Space areas and environments, rifts, Rift Raiders, Probe Launcher, signatures, Jump to Signature, Sensor Sweep, data/cache/gas/combat sites, Scanner HUD tab, space slicing (Data Analyzer, new slicing sources, space reward tables, customs spoofing) | W2, W3, W5 |
@@ -824,6 +830,7 @@ Everything merges to one integration branch and releases together.
   - Droid crew.
   - Wrecks and salvage.
   - The saved-data item sweep.
+- **Reward parity:** before release, credits per hour and loot value from space content at each tier must land within about 15% of ground content at the same tier. Measure both with the same method and record the results.
 - **Combat simulator:** extend `SWLOR.CombatSim` with the ship model (the rules are shared). Report seeded results at entry, middle and endgame ranks for:
   - Damage pilot vs tank vs support.
   - Small vs Large vs Capital under the size rules.
@@ -866,10 +873,12 @@ New models go through the Trellis2 pipeline (`Readmes/BlasterModelImport.md`) as
 
 - Any ground ability in space, or any space ability on the ground.
 - Fuel for ordinary flight. Station Fuel is spent only by Jump Beacons (section 25).
-- Capital jump drives. Jump Beacons (section 25) and rifts (section 23) are the only travel beyond starlanes.
+- Capital jump drives, and jumping to hyperspace from anywhere (hyperdrive cooldowns, emergency or random jumps). Jump Beacons (section 25) and rifts (section 23) are the only travel beyond starlanes, so interdiction, pirate ambushes and trade risk keep working.
+- Hostile boarding of player ships (a later pass). Ship-to-ship docking is friendly only (section 10).
+- Interior Hull Designs (a later pass; section 7).
 - Tier 6 content and the reserved ores (Ochne, Croknor, Hemorgite, Bisteiss). Wild Space is tier 5.5.
 - Station raids and the Defense Grid building (a later pass).
-- A Capital Industrial role (a later pass). The proposal: convert the Czerka Armored Transport and the Hutt Corvette into capital industrials that refine ore aboard, carry a large ore hold and droid bays, and boost nearby miners' yield.
+- A Capital Industrial role (a later pass). The proposal: convert the Czerka Armored Transport and the Hutt Corvette into capital industrials that refine ore aboard, carry a large ore hold and droid bays, and boost nearby miners' yield. A passive that mines several asteroids at once was also suggested.
 - Faction warfare, bounties on players, and racing.
 - New 3D models (section 20).
 - Player-posted hauling contracts. Items already teleport through the bank, so they add nothing.
@@ -1141,7 +1150,7 @@ Draft rows for the Bible. Where a ground perk does the same job, its numbers are
 | 38 | 4 | Strafing Run III | Combat | 10 | 24 s | As I, with +36 DMG. | Interrupting Shot III |
 | 40 | 5 | Evasive Roll IV | Combat | 12 | 18 s | As I, with +18% Evasion and +18% Critical Rate. | Quick Draw IV crit |
 | 45 | 4 | Tight Turns III | Trait | - | - | +8% Evasion while moving. | New |
-| 50 | 6 | Untouchable | Capstone | 15 | 90 s | For 30 s, every attack you evade resets Evasive Roll's cooldown and gives your weapons' next cycle +20% Critical Rate. | Last Word |
+| 50 | 6 | Untouchable | Capstone | 15 | 90 s | For 30 s, every attack you evade resets Evasive Roll's cooldown and gives your weapons' next cycle +25% critical damage (`ApplyCriticalDamageModifier`), because a Critical Rate bonus would overflow the 50% cap. | Last Word |
 
 ### Piloting: Wing Commander (SOC primary, WIL secondary)
 

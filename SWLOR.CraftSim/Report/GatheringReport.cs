@@ -44,12 +44,14 @@ namespace SWLOR.CraftSim.Report
             var rules = new MarkdownTable("Rule", "Source");
             foreach (var source in LegacySource.All.Where(s =>
                          s.File.EndsWith("HarvesterItemDefinition.cs") || s.File.EndsWith("ScavengePoint.cs") ||
-                         s.File.EndsWith("RefineryViewModel.cs") || s.File.EndsWith("Fishing.cs")))
+                         s.File.EndsWith("RefineryViewModel.cs") || s.File.Contains("Fishing")))
             {
                 rules.Add(source.Name, $"`{source.Citation}`");
             }
 
             text.AppendLine(rules.ToString());
+            text.AppendLine("The fishing catch roll (`40 + 10 x (rank - fish level) + 2 x Willpower`, kept from 0 to 95) was in `FinishFishing` until the Line fight replaced it. It is ported here from `Service/Fishing.cs` at commit d5f1c0466, where it was checked against the source, and is no longer checked.");
+            text.AppendLine();
             text.AppendLine("The server's XP chart (`GetDeltaXP`), by the activity's level minus the rank:");
             text.AppendLine();
             var chart = new MarkdownTable(new[] { "Level - rank" }.Concat(Enumerable.Range(-5, 13).Reverse().Select(Signed)).ToArray());

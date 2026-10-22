@@ -113,6 +113,23 @@ Gathering and fishing implement `IXpRateCohort` instead: it pairs the legacy loo
 
 The game server changes only by `ICraftMinigameEngine.Fork`, which every engine inherits from `MinigameEngineBase<TState>`, and by the third enhancement slot's own threshold constant in `CraftOutcomeRules` (a starting value that gate 7 sets).
 
+### The fishing study
+
+Fishing is not an item craft, so it has no `ICraftScenario`. The `fishing` command plays the Line (`Fishing/`) against the catch roll it replaced and runs the gates that apply to it:
+
+```powershell
+dotnet SWLOR.CraftSim/bin/Release/net10.0/SWLOR.CraftSim.dll fishing --runs 1000 --seed 1 --out design/testing/crafting-revamp/fishing-line-parity.md
+```
+
+It takes `--runs` (fights per case, default 200), `--seed`, `--seconds-per-turn` (default 8), `--out` (default `design/testing/crafting-revamp/fishing-line-parity.md`), `--json`, `--strict` (exit 2 when a gate failed or was not run) and `--repo`. The same seed repeats a report exactly; build in Release for a 1,000-fight run (about two minutes).
+
+- **Economy parity** (`FishingCatchRateGate`): the adaptive player's catch rate against today's `40 + 10 x (rank - fish level) + 2 x Willpower`, over the Willpower sweep, by rank above the fish's level and per rank over the real rod, bait and location pools. The corridor is Willpower 10-14 with a tolerance in points (`FishingParityOptions`).
+- **Length** (`FishingLengthGate`): the adaptive player's mean turns against `LengthTarget.FishingFight`.
+- **XP rate**: `FishingXpRateCohort` implements `IXpRateCohort` as the plan pins it: fish-level bands (0-10, 11-20, 21-30, 31-40, 41-52), rank equal to the fish level (at most 50), the best rod tier that rank allows, and every (rod, bait) table of every location that rod reaches weighted equally, half by day and half by night (a table with only a day pool or only a night pool keeps its half). XP is paid per bite (today's at the bite, the rest of the multiplied XP when the fight ends on its own, in proportion to its length up to `LineRules.XpFullTurns` turns, so neither abandoning a fight nor losing it on purpose earns more per hour than today), and the game keeps the pace from below with `LineRules.TurnSeconds` between two actions. The loops differ in time and in the multiplier the game server puts on the bite's XP: `LineRules.XpMultiplierForLevel`, read through `CraftMinigameXp`, one per fish-level band and each the least multiple of 0.05 that passes the band. `FishingXpRateCohort` takes an optional multiplier function to show what another multiplier would do, and `FishingParityOptions.FreeOpeningTurn` plays the fastest allowed pace (first action at once, so a fight of n actions lasts n - 1 turns), which the report shows as evidence next to the gate.
+- **Evidence tables** for the Angler perk draft: each proposed purchase, the two rank-20 styles against each other, and the rare fish with Trophy Catch.
+
+The rule-of-thumb player (`RuleOfThumbPolicy`) marks the other end of skill: it reads the announced move and answers by a fixed rule. The legacy catch roll is ported in `Legacy/Gathering/FishingCatchModel.cs` from `Service/Fishing.cs` at commit d5f1c0466, where it was checked against the source; it left `Fishing.cs` with the Line and is no longer checked.
+
 ### Research Experiment
 
 `Scenario/Experiment` plugs the research Experiment in as the `experiment` scenario (`gates --scenario experiment --gates length` checks its 5-8 turn target; the other gates do not apply to an experiment, which has no quality, styles or legacy loop). The `research` command writes the Experiment's own evidence: length, the size of the reductions against today's dice and the change in supply (licensed runs stay random at today's odds, so theirs is unchanged), the time cut at fixed levels, and Fabrication XP per real hour against at-level crafting.

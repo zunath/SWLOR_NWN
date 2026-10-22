@@ -60,7 +60,7 @@ Before any work, read `AGENTS.md` and these guides, plus every guide named in th
 | Perks | Each space skill gets 2 styles of 60 SP on the ground template: abilities, stances, traits, capstone. |
 | Hulls | Size (Small/Medium/Large/Capital) x role, one stat block per role, Piloting gates 0/10/25/40. No hull tiers. |
 | Looks | Called **Hull Designs**. Any existing hak model can be a design. Rare designs come from Design Schematics. Starports **Refit** designs. |
-| Slots | High / Mid / Low, like EVE. No configuration slot, no power or CPU budget. |
+| Slots | High / Mid / Low. No configuration slot. |
 | Modules | About 20 families, an item every 5 ranks (0-45), rank-50 named boss modules. A weapon fires at its hull's size. |
 | Crafting | A new Engineering component layer with trade-off traits. Research blueprints work for hulls and modules. |
 | Combat | Shared ground rules: crits, one Attack and one Defense, EM/Thermal/Explosive resistances, shared status effects, threat, PvP rules. |
@@ -260,9 +260,8 @@ Each space skill has two styles of 60 SP, the same as a weapon skill.
   - Mid (new): feats 21-30 (`ShipModuleFeat.cs` already defines `ShipModule21-30` and the `ife_sm21-30` icons).
 - **Data model:** add `MidPowerModules` to `ShipStatus`.
 - **Activity:** active modules can sit in any row.
-- **Removed:**
-  - The configuration slot is removed.
-  - There is no power or CPU fitting budget. Fitting limits are slot counts plus capital-only weapons; capacitor is the running cost.
+- **Removed:** the configuration slot.
+- **Fitting limits:** slot counts plus capital-only weapons; capacitor is the running cost.
 - **Slot tags:** each slot carries a tag, **Helm** or a station (Gunner, Engineer, Sensors), for crew (section 10).
 
 ### Families
@@ -660,7 +659,6 @@ New models go through the Trellis2 pipeline (`Readmes/BlasterModelImport.md`) as
 - Any ground ability in space, or any space ability on the ground.
 - Fuel.
 - Hyperspace travel beyond starlanes.
-- An EVE-style power or CPU budget.
 - Tier 6 content and the reserved ores (Ochne, Croknor, Hemorgite, Bisteiss).
 - New 3D models (section 20).
 - Player-posted hauling contracts. Items already teleport through the bank, so they add nothing.

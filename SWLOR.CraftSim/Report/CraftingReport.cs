@@ -19,6 +19,7 @@ namespace SWLOR.CraftSim.Report
             text.AppendLine();
             AppendInputs(text, results, recipes, command);
             AppendGear(text, results);
+            AppendSummary(text, results);
             AppendSkillTables(text, results);
             AppendSensitivity(text, results);
             AppendLimitations(text);
@@ -41,7 +42,8 @@ namespace SWLOR.CraftSim.Report
             text.AppendLine("- Policies:");
             text.AppendLine("  - **Dominant rotation**: Waste Not, then Basic Touch repeated, repaired with Master's Mend, then synthesis to finish. It keeps back the durability the finish needs, counting the repairs its remaining CP can buy, and finishes with the affordable synthesis of highest expected progress while keeping one repair affordable. It never uses Steady Hand, Muscle Memory, Veneration, Standard Touch or Precise Touch.");
             text.AppendLine("  - **Lookahead**: at every step it tries each usable action against 8 sampled futures (the same dice for every candidate), finishes each future with the dominant rotation, and takes the action with the best mean score (0 for a failed craft, 0.5 plus half the quality fraction for a success). It is one step of policy improvement over the rotation, not an optimal player.");
-            text.AppendLine("- Material use: a success consumes every committed component stack once, and each failure consumes each stack at 65% (`CraftViewModel.cs:1601-1641`), so stacks per success = stacks x (1 + 0.65 x (1 - p) / p) for a success chance p. A stack is one distinct component line of the recipe; enhancements are not committed.");
+            text.AppendLine("- Material use: a success consumes every committed component stack once, and each failure consumes each stack at 65% (`CraftViewModel.cs:1601-1641`), so stacks per success = stacks x (1 + 0.65 x (1 - p) / p) for a success chance p. A stack is one distinct component line of the recipe; enhancements are not committed. " +
+                            $"{recipes.Recipes.Count(r => r.Quantity > 1)} of {recipes.Recipes.Count} recipes make more than one item per craft, and a successful craft counts once whatever its quantity.");
             text.AppendLine();
             text.AppendLine("Rules ported, each checked against the source by `LegacySourceTests`:");
             text.AppendLine();
@@ -69,6 +71,51 @@ namespace SWLOR.CraftSim.Report
                     gear.CpBonus.ToString(),
                     LegacyCraftRules.MaxCp(gear.CpBonus, 25).ToString(),
                     LegacyCraftRules.MaxCp(gear.CpBonus, 50).ToString());
+            }
+
+            text.AppendLine(table.ToString());
+        }
+
+        private static void AppendSummary(StringBuilder text, CraftingBaselineResults results)
+        {
+            var skills = CraftingGearCatalog.GearSkills;
+            text.AppendLine("## Summary across the four gear skills");
+            text.AppendLine();
+            text.AppendLine("Smithery, Engineering, Fabrication and Agriculture pooled, each skill's recipes counted once. The columns are the ones of the per-skill tables below.");
+            text.AppendLine();
+            var header = new List<string> { "Levels", "Gear" };
+            foreach (var policy in results.Policies)
+                header.AddRange(new[] { $"{policy}: success", "quality", "full", "actions", "stacks" });
+
+            var table = new MarkdownTable(header.ToArray());
+            var rows = results.Bands.Where(b => skills.Contains(b.Skill) && b.RankOffset == 0).ToList();
+            foreach (var band in RecipeBand.Default.Select(b => b.Name))
+            {
+                foreach (var gear in new[] { CraftingGearCatalog.NoGearName, CraftingGearCatalog.MidGearName, CraftingGearCatalog.BestGearName })
+                {
+                    var cells = new List<string> { band, gear };
+                    var any = false;
+                    foreach (var policy in results.Policies)
+                    {
+                        var group = rows.Where(r => r.Band == band && r.Gear == gear && r.Policy == policy).ToList();
+                        if (group.Count == 0)
+                        {
+                            cells.AddRange(new[] { "-", "-", "-", "-", "-" });
+                            continue;
+                        }
+
+                        any = true;
+                        var pooled = CraftBandSummary.Pool(group);
+                        cells.AddRange(new[]
+                        {
+                            Percent(pooled.SuccessRate), Percent(pooled.QualityFraction), Percent(pooled.FullQualityShare),
+                            Number(pooled.ActionsPerCraft), Stacks(pooled)
+                        });
+                    }
+
+                    if (any)
+                        table.Add(cells.ToArray());
+                }
             }
 
             text.AppendLine(table.ToString());
@@ -170,7 +217,7 @@ namespace SWLOR.CraftSim.Report
         {
             text.AppendLine("## Limitations");
             text.AppendLine();
-            text.AppendLine("- Only the two policies above are played. Neither is optimal, so a result is evidence of what these plays reach, not a ceiling. The lookahead uses 8 futures per action, so its choices carry sampling noise.");
+            text.AppendLine("- Only the two policies above are played. Neither is optimal, so a result is evidence of what these plays reach, not a ceiling. The lookahead samples 8 futures per action, so its choices carry sampling noise, and its score weighs quality as well as success, so it can accept a slightly lower success rate for more quality. Espionage has no crafting gear, so it plays without any.");
             text.AppendLine("- A craft is played at one rank. Real crafters pass through ranks, and rank thresholds (5, 8, 10, 15, 20, 25, 30, 35, 40) change the actions available.");
             text.AppendLine("- Gear is the sets derived above. Mixed or partial sets, food and other status bonuses to Control, Craftsmanship and CP are not played.");
             text.AppendLine("- Components are counted as one stack per component line. The real count depends on how the player's inventory splits each line (`AggregateComponents`), and a stack can be partly committed. Enhancements, blueprints and licensed runs are not played, and the 65% loss on failure also applies to selected enhancements.");

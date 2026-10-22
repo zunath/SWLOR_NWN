@@ -104,6 +104,32 @@ namespace SWLOR.CraftSim.Tests.Legacy.Crafting
         }
 
         [Test]
+        public void PoolingWeightsEachSkillsRowByItsRecipes()
+        {
+            var smithery = new CraftBandRow
+            {
+                Skill = SkillType.Smithery, Band = "1-10", Gear = "no gear", Policy = "P", Recipes = 3, SuccessRate = 1.0, QualityFraction = 0.2,
+                FullQualityShare = 0, ActionsPerCraft = 10, StacksUsed = 6, ItemsMade = 3, NeverCraftedShare = 0
+            };
+            var engineering = new CraftBandRow
+            {
+                Skill = SkillType.Engineering, Band = "1-10", Gear = "no gear", Policy = "P", Recipes = 1, SuccessRate = 0.5, QualityFraction = 0.8,
+                FullQualityShare = 1.0, ActionsPerCraft = 20, StacksUsed = 2, ItemsMade = 0.5, NeverCraftedShare = 0.5
+            };
+
+            var pooled = CraftBandSummary.Pool(new[] { smithery, engineering });
+
+            pooled.Recipes.Should().Be(4);
+            pooled.SuccessRate.Should().BeApproximately(0.875, 1e-9);
+            pooled.QualityFraction.Should().BeApproximately(1.0 / 3.5, 1e-9);
+            pooled.FullQualityShare.Should().BeApproximately(0.5 / 3.5, 1e-9);
+            pooled.ActionsPerCraft.Should().BeApproximately(12.5, 1e-9);
+            pooled.StacksPerSuccess.Should().BeApproximately(8 / 3.5, 1e-9);
+            pooled.NeverCraftedShare.Should().BeApproximately(0.125, 1e-9);
+            (pooled.Band, pooled.Gear, pooled.Policy).Should().Be(("1-10", "no gear", "P"));
+        }
+
+        [Test]
         public void ALevelWithoutACell_IsSkipped()
         {
             var recipes = RecipeCatalog.From(new[] { Recipe(10, 1), Recipe(12, 1) });

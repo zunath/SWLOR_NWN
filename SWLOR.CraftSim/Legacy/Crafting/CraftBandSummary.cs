@@ -29,6 +29,30 @@ namespace SWLOR.CraftSim.Legacy.Crafting
             return rows;
         }
 
+        /// <summary>Combines rows of one band, gear level and policy from several skills, weighting each by its recipes.</summary>
+        public static CraftBandRow Pool(IReadOnlyList<CraftBandRow> rows)
+        {
+            var recipes = rows.Sum(r => r.Recipes);
+            var successes = rows.Sum(r => r.Recipes * r.SuccessRate);
+            return new CraftBandRow
+            {
+                Skill = SkillType.Invalid,
+                Band = rows[0].Band,
+                Gear = rows[0].Gear,
+                Policy = rows[0].Policy,
+                RankOffset = rows[0].RankOffset,
+                Recipes = recipes,
+                Runs = rows[0].Runs,
+                SuccessRate = successes / recipes,
+                QualityFraction = successes > 0 ? rows.Sum(r => r.Recipes * r.SuccessRate * r.QualityFraction) / successes : 0,
+                FullQualityShare = successes > 0 ? rows.Sum(r => r.Recipes * r.SuccessRate * r.FullQualityShare) / successes : 0,
+                ActionsPerCraft = rows.Sum(r => r.Recipes * r.ActionsPerCraft) / recipes,
+                StacksUsed = rows.Sum(r => r.StacksUsed),
+                ItemsMade = rows.Sum(r => r.ItemsMade),
+                NeverCraftedShare = rows.Sum(r => r.Recipes * r.NeverCraftedShare) / recipes
+            };
+        }
+
         private static CraftBandRow Summarize(
             SkillType skill,
             string gear,
@@ -88,7 +112,8 @@ namespace SWLOR.CraftSim.Legacy.Crafting
                 QualityFraction = weightedSuccess > 0 ? weightedQuality / weightedSuccess : 0,
                 FullQualityShare = weightedSuccess > 0 ? weightedFull / weightedSuccess : 0,
                 ActionsPerCraft = weightedActions / weight,
-                StacksPerSuccess = itemsMade > 0 ? stacksUsed / itemsMade : null,
+                StacksUsed = stacksUsed,
+                ItemsMade = itemsMade,
                 NeverCraftedShare = (recipeCount - craftableRecipes) / (double)recipeCount
             };
         }

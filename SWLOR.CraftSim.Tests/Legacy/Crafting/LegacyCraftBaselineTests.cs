@@ -51,6 +51,17 @@ namespace SWLOR.CraftSim.Tests.Legacy.Crafting
         }
 
         [Test]
+        public void Simulate_RefusesABatchLargerThanTheCraftLimit()
+        {
+            var recipes = Catalog(Recipe(SkillType.Smithery, 10, "a"));
+            var options = new LegacyCraftBaselineOptions { Runs = (int)(LegacyCraftBaseline.MaximumCrafts / 2) + 1, Skills = new[] { SkillType.Smithery } };
+
+            var act = () => LegacyCraftBaseline.Simulate(recipes, NoGear, options);
+
+            act.Should().Throw<ArgumentException>().WithMessage("*more than*crafts*");
+        }
+
+        [Test]
         public void Simulate_IsRepeatableFromTheSeedAndChangesWithIt()
         {
             var recipes = Catalog(Recipe(SkillType.Smithery, 30, "a"), Recipe(SkillType.Engineering, 45, "a"));

@@ -6,7 +6,7 @@ namespace SWLOR.CraftSim.Data
     public static class ServerXp
     {
         private static readonly object Gate = new();
-        private static bool _loaded;
+        private static volatile bool _loaded;
 
         /// <summary>XP for an activity whose level is <paramref name="delta"/> above the crafter's rank.</summary>
         public static int ForDelta(int delta)

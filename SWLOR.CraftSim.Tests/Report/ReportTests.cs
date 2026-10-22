@@ -77,6 +77,7 @@ namespace SWLOR.CraftSim.Tests.Report
             report.Should().Contain("# Crafting revamp: legacy baseline of the old craft minigame");
             report.Should().Contain("Seed 3; 10 crafts per recipe level");
             report.Should().Contain("## Gear levels").And.Contain("## Results by skill").And.Contain("## Rank sensitivity").And.Contain("## Limitations");
+            report.Should().Contain("## Summary across the four gear skills");
             report.Should().Contain("### Smithery").And.Contain("### Espionage");
             report.Should().Contain("| Smithery | best gear | 5 | 29 | 30 | 37 | 86 | 105 |");
             report.Should().Contain("Dominant rotation: success").And.Contain("Lookahead: success");

@@ -75,10 +75,11 @@ namespace SWLOR.CraftSim.Tests.Legacy.Crafting
             new RolloutPolicy().Choose(state, context, new SimRandom(1)).Should().BeOneOf(LegacyAction.BasicSynthesis, LegacyAction.WasteNot);
         }
 
-        [Test]
-        public void Lookahead_NeedsAtLeastOneFuture()
+        [TestCase(0)]
+        [TestCase(RolloutPolicy.MaximumRollouts + 1)]
+        public void Lookahead_SamplesAtLeastOneAndAtMostTheMaximumNumberOfFutures(int futures)
         {
-            var act = () => new RolloutPolicy(0);
+            var act = () => new RolloutPolicy(futures);
 
             act.Should().Throw<ArgumentOutOfRangeException>();
         }

@@ -6,6 +6,7 @@ namespace SWLOR.CraftSim.Legacy.Crafting
     public sealed class RolloutPolicy : ILegacyCraftPolicy
     {
         public const int DefaultRollouts = 8;
+        public const int MaximumRollouts = 256;
         private const int RolloutStepLimit = 200;
 
         private readonly ILegacyCraftPolicy _continuation;
@@ -13,8 +14,8 @@ namespace SWLOR.CraftSim.Legacy.Crafting
 
         public RolloutPolicy(int rollouts = DefaultRollouts, ILegacyCraftPolicy continuation = null)
         {
-            if (rollouts < 1)
-                throw new ArgumentOutOfRangeException(nameof(rollouts), "A lookahead needs at least one future to sample.");
+            if (rollouts < 1 || rollouts > MaximumRollouts)
+                throw new ArgumentOutOfRangeException(nameof(rollouts), $"A lookahead samples 1 to {MaximumRollouts} futures.");
 
             _rollouts = rollouts;
             _continuation = continuation ?? new DominantRotationPolicy();

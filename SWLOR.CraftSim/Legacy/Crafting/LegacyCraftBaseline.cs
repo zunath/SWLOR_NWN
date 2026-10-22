@@ -8,6 +8,9 @@ namespace SWLOR.CraftSim.Legacy.Crafting
     /// <summary>Plays the old minigame at every recipe level, gear level and policy.</summary>
     public static class LegacyCraftBaseline
     {
+        /// <summary>Crafts across all cells; the lookahead is far slower than the rotation, so a batch this size takes many minutes.</summary>
+        public const long MaximumCrafts = 20_000_000;
+
         public static int RankFor(int recipeLevel, int offset) =>
             Math.Clamp(
                 recipeLevel + offset,
@@ -36,6 +39,12 @@ namespace SWLOR.CraftSim.Legacy.Crafting
                         }
                     }
                 }
+            }
+
+            if ((long)work.Count * options.Runs > MaximumCrafts)
+            {
+                throw new ArgumentException(
+                    $"{options.Runs} runs of {work.Count} cells is more than {MaximumCrafts} crafts; use fewer runs or --skills.");
             }
 
             var cells = new ConcurrentBag<(int Order, CraftCell Cell)>();

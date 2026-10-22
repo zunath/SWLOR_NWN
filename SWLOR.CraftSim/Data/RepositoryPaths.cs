@@ -18,8 +18,6 @@ namespace SWLOR.CraftSim.Data
 
         public static string ModuleItems(string root) => Path.Combine(root, "Module", "uti");
 
-        public static string ServerSource(string root) => Path.Combine(root, "SWLOR.Game.Server");
-
         public static string HakTwoDa(string root) => Path.Combine(root, "SWLOR_Haks", "sw_2da");
     }
 }

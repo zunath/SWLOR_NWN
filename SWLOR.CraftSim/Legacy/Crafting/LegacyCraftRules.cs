@@ -13,9 +13,6 @@ namespace SWLOR.CraftSim.Legacy.Crafting
         /// <summary>The chance, in percent, that each component stack and enhancement is lost when a craft fails.</summary>
         public const int FailureLossPercent = 65;
 
-        /// <summary>Failed crafts pay this share of the base XP.</summary>
-        public const float FailureXpShare = 0.15f;
-
         /// <summary>Highest skill rank any crafting skill reaches.</summary>
         public const int MaximumRank = 50;
 
@@ -76,9 +73,7 @@ namespace SWLOR.CraftSim.Legacy.Crafting
             return (int)((baseQuality + muscleMemoryBonus + control * 0.75f) * recipeDiff);
         }
 
-        /// <summary>
-        /// The lowest rank that may craft a recipe (Craft.cs:327-331), and the highest the simulator uses.
-        /// </summary>
+        /// <summary>The lowest rank that may craft a recipe (Craft.cs:327-331).</summary>
         public static int RequiredRank(int recipeLevel) => Math.Max(recipeLevel - RecipeUnlockOffset, 0);
 
         /// <summary>Stacks consumed per success: n x (1 + 0.65 x (1 - p) / p), as failures lose each stack at 65% (CraftViewModel.cs:1601-1641).</summary>

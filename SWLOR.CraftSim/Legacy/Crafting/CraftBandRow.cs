@@ -23,8 +23,14 @@ namespace SWLOR.CraftSim.Legacy.Crafting
 
         public double ActionsPerCraft { get; init; }
 
+        /// <summary>Component stacks consumed across one attempt at each of the band's craftable recipes.</summary>
+        public double StacksUsed { get; init; }
+
+        /// <summary>Items made across one attempt at each of the band's craftable recipes.</summary>
+        public double ItemsMade { get; init; }
+
         /// <summary>Component stacks consumed per successful item when the band's craftable recipes are attempted equally often; null when none ever succeeded.</summary>
-        public double? StacksPerSuccess { get; init; }
+        public double? StacksPerSuccess => ItemsMade > 0 ? StacksUsed / ItemsMade : null;
 
         /// <summary>The share of the band's recipes that never succeeded in the simulated runs; they are left out of the material figure.</summary>
         public double NeverCraftedShare { get; init; }

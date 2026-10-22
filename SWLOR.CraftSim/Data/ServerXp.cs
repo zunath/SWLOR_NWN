@@ -15,6 +15,15 @@ namespace SWLOR.CraftSim.Data
             return Skill.GetDeltaXP(delta);
         }
 
+        /// <summary>The base XP of one craft or activity, as <c>Craft.GetBaseRecipeXP</c> gives it: tiered activities use their practice XP.</summary>
+        public static int ForRecipe(RecipeEntry recipe, int rank)
+        {
+            EnsureLoaded();
+            return recipe.PracticeRankLimit.HasValue
+                ? Skill.GetPracticeXP(recipe.Level, rank, recipe.PracticeRankLimit.Value)
+                : Skill.GetDeltaXP(recipe.Level - rank);
+        }
+
         private static void EnsureLoaded()
         {
             if (_loaded)

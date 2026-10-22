@@ -8,6 +8,11 @@ SWLOR crafting simulator
       Plays today's rules (the old craft minigame, harvesting, scavenging, refining and the fishing catch roll) and writes the legacy baseline.
   gear [--repo path]
       Prints the gear levels derived from the module's crafting gear.
+  gates --scenario <name> [--runs 100] [--seed 1] [--recipes-per-band 6 | --all-recipes] [--gates rotation,styles,perks,length,materials,xp] [--legacy-seconds-per-action 6] [--thorough] [--out report.md] [--json results.json] [--strict] [--repo path]
+      Runs the crafting balance gates for a minigame scenario and writes the report (default design/testing/crafting-revamp/<scenario>-gates.md).
+      --thorough gives gate 1's fixed-rotation solver a much longer search. --strict exits 2 when a gate failed or was not run.
+  gates --list
+      Lists the scenarios minigames have added.
 """;
 
 if (args.Length == 0 || args[0] is "-h" or "--help" or "help")
@@ -22,6 +27,7 @@ try
     {
         "baseline" => BaselineCommand.Run(args.Skip(1).ToArray(), Console.Out),
         "gear" => GearCommand.Run(args.Skip(1).ToArray(), Console.Out),
+        "gates" => GatesCommand.Run(args.Skip(1).ToArray(), Console.Out),
         _ => Fail($"Unknown command '{args[0]}'.")
     };
 }

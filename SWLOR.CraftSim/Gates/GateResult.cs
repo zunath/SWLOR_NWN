@@ -16,5 +16,7 @@ namespace SWLOR.CraftSim.Gates
         public IReadOnlyList<GateTable> Tables { get; }
 
         public static GateResult NotRun(string gate, string reason) => new(gate, GateVerdict.NotRun, reason);
+
+        public static GateResult NotApplicable(string gate, string reason) => new(gate, GateVerdict.NotApplicable, reason);
     }
 }

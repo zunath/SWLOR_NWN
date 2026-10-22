@@ -13,11 +13,18 @@ namespace SWLOR.Game.Server.Service.CraftService.Minigame;
 /// <item>if the attempt is still going, <see cref="EndTurn"/> runs (cooling, decay, applying what was telegraphed, advancing a cycle);</item>
 /// <item>if the attempt is still going, <see cref="RollForecast"/> rolls what the next turn will announce. A preview never includes it.</item>
 /// </list>
+/// <para>
+/// Subclasses must keep every mutable value in <typeparamref name="TState"/>. Their own fields may hold immutable configuration
+/// only (recipe parameters, rank, gear and perk stats, action lists), declared <c>readonly</c>. <see cref="Fork"/> copies an engine
+/// with a shallow <see cref="object.MemberwiseClone"/> and shares those fields, so a field an action could change would leak
+/// between a simulation's copies and the original.
+/// </para>
 /// </summary>
 public abstract class MinigameEngineBase<TState> : ICraftMinigameEngine
     where TState : IMinigameState<TState>
 {
-    private readonly IMinigameRandom _random;
+    // Not readonly only so that Fork can give the copy its own source of chance; nothing else assigns it.
+    private IMinigameRandom _random;
 
     protected MinigameEngineBase(IMinigameRandom random, TState initialState)
     {
@@ -95,6 +102,18 @@ public abstract class MinigameEngineBase<TState> : ICraftMinigameEngine
         };
 
     public IReadOnlyList<MinigameMeterView> DescribeMeters() => DescribeMeters(State);
+
+    public ICraftMinigameEngine Fork(IMinigameRandom random)
+    {
+        if (random == null)
+            throw new ArgumentNullException(nameof(random));
+
+        // The state is an immutable value and the status and turn are copied by value, so the copy continues from this exact
+        // attempt and an action on either one replaces only its own state. Configuration fields are shared on purpose.
+        var copy = (MinigameEngineBase<TState>)MemberwiseClone();
+        copy._random = random;
+        return copy;
+    }
 
     public MinigameActionPreview Preview(string actionId) => BuildPreview(ResolveAction(State, actionId));
 

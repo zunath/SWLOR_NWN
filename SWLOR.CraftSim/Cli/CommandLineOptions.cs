@@ -124,5 +124,21 @@ namespace SWLOR.CraftSim.Cli
 
             return value;
         }
+
+        /// <summary>A number option above zero from <see cref="Parse"/>'s result, or the default when it was not given.</summary>
+        public static double GetPositiveNumber(IReadOnlyDictionary<string, List<string>> options, string name, double defaultValue)
+        {
+            if (!options.TryGetValue(name, out var values))
+                return defaultValue;
+
+            if (values.Count != 1 ||
+                !double.TryParse(values[0], System.Globalization.NumberStyles.Float, System.Globalization.CultureInfo.InvariantCulture, out var value) ||
+                double.IsNaN(value) || double.IsInfinity(value) || value <= 0)
+            {
+                throw new ArgumentException($"{name} needs a number above zero.");
+            }
+
+            return value;
+        }
     }
 }

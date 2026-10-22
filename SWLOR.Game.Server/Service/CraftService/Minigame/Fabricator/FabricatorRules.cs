@@ -62,12 +62,25 @@ public static class FabricatorRules
     public const int RankPassiveCpRank = 25;
     public const int RankPassiveCp = 31;
 
-    /// <summary>
-    /// The multiplier on the base XP of every Fabricator craft (see <see cref="CraftMinigameXp"/>). The Fabricator's 10-20 action loop at
-    /// 8 seconds an action pays less XP per hour than the old window's 5-28 action loop at 6 seconds in the lowest bands, so the
-    /// CraftSim XP-rate gate needs it. A starting value until client timing replaces the seconds per action.
-    /// </summary>
-    public const double XpMultiplier = 2.5;
+    // The multiplier on the base XP of every Fabricator craft in a recipe-level band (see CraftMinigameXp), each the least that keeps
+    // the CraftSim XP-rate gate (gate 6) passing in its band at every gear tier and enhancement count. The Fabricator's 10-20 action loop
+    // at 8 seconds an action pays less XP per hour than the old window's 5-28 action loop at 6 seconds, and the old window is fastest
+    // at the lowest levels. Starting values until client timing replaces the seconds per action.
+    public const double XpMultiplierLevels1To10 = 2.4;
+    public const double XpMultiplierLevels11To20 = 1.45;
+    public const double XpMultiplierLevels21To30 = 1.25;
+    public const double XpMultiplierLevels31To40 = 1.1;
+    public const double XpMultiplierLevels41Up = 1.0;
+
+    /// <summary>The multiplier on the base XP of a Fabricator craft at a recipe level. A level of 0 or less takes the lowest band's.</summary>
+    public static double XpMultiplierForLevel(int recipeLevel) => recipeLevel switch
+    {
+        <= 10 => XpMultiplierLevels1To10,
+        <= 20 => XpMultiplierLevels11To20,
+        <= 30 => XpMultiplierLevels21To30,
+        <= 40 => XpMultiplierLevels31To40,
+        _ => XpMultiplierLevels41Up
+    };
 
     /// <summary>The Fabrication rank that unlocks Service. Every other action is available from rank 0.</summary>
     public const int ServiceRank = 10;

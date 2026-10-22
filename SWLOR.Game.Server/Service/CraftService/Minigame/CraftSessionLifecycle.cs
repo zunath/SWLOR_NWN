@@ -109,7 +109,7 @@ public sealed class CraftSessionLifecycle
         var outcome = CraftOutcomeRules.CalculateSuccess(
             quality,
             recipe.Level,
-            BaseXp(dbPlayer, recipe),
+            CraftMinigameXp.BaseXp(recipe, GetRank(dbPlayer, recipe)),
             firstTime,
             blueprintLevel,
             recipe.Category == RecipeCategoryType.Food,
@@ -168,7 +168,7 @@ public sealed class CraftSessionLifecycle
             _random,
             enhancements.Count,
             record.Components.Count,
-            BaseXp(dbPlayer, recipe),
+            CraftMinigameXp.BaseXp(recipe, GetRank(dbPlayer, recipe)),
             record.BlueprintLevel);
 
         var kept = new List<string>();
@@ -266,10 +266,6 @@ public sealed class CraftSessionLifecycle
 
         return slots;
     }
-
-    /// <summary>The recipe's base XP at the crafter's rank, scaled by the multiplier of the minigame that crafts the skill.</summary>
-    private static int BaseXp(Player dbPlayer, RecipeDetail recipe) =>
-        CraftMinigameXp.Scale(Craft.GetBaseRecipeXP(recipe, GetRank(dbPlayer, recipe)), CraftMinigameXp.MultiplierFor(recipe.Skill));
 
     private static int GetRank(Player dbPlayer, RecipeDetail recipe) =>
         dbPlayer.Skills.TryGetValue(recipe.Skill, out var skill) ? skill.Rank : 0;

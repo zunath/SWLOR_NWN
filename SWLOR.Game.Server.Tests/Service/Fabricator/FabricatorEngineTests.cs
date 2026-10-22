@@ -78,6 +78,16 @@ public class FabricatorEngineTests
         enhanced.RunGain(true, false).Should().Be(plain.RunGain(true, false), "enhancements add to what is needed, not to what a Run does");
     }
 
+    [Test]
+    public void AnEnhancedPiecesMachineConditionGrowsWithTheWorkItNeeds_SoTheMachineLastsTheLongerRun()
+    {
+        Setup().MaxMachineCondition.Should().Be(FabricatorRules.MaxMachineCondition);
+        Setup(penalty: BaseProgress).MaxMachineCondition.Should().Be(2 * FabricatorRules.MaxMachineCondition, "twice the work");
+        Setup(penalty: 45).MaxMachineCondition.Should().Be(151, "100 x 134 / 89");
+        Engine(Setup(penalty: 45)).Meters.Integrity.Should().Be(new MinigameMeter(151, 151));
+        Engine(Setup()).Meters.Integrity.Should().Be(new MinigameMeter(FabricatorRules.MaxMachineCondition, FabricatorRules.MaxMachineCondition));
+    }
+
     [TestCase(24, 38)]
     [TestCase(25, 69)]
     [TestCase(50, 20 + 37 + 31)]
@@ -671,27 +681,22 @@ public class FabricatorEngineTests
     [Test]
     public void AnEmptyMachineConditionBreaksThePiece_AndThePreviewWarnsBeforeTheClick()
     {
-        var setup = Setup(penalty: 5000, parameters: Parameters(wear: 9));
-        var engine = Engine(setup, Enumerable.Repeat(NoPrime, 30).ToArray());
-        for (var i = 0; i < 10; i++)
-            engine.Perform(FabricatorActionIds.RunFittings).Performed.Should().BeTrue();
-        engine.Meters.Integrity.Value.Should().Be(10);
+        var (engine, breaking) = WearToTheBreak();
+        engine.Meters.Integrity.Value.Should().BeLessThanOrEqualTo(Math.Max(9, FabricatorRules.RetoolWear));
 
-        var preview = engine.Preview(FabricatorActionIds.RunFittings);
-        preview.CanBreakItem.Should().BeFalse("10 Machine Condition covers a wear of 9");
-        engine.Perform(FabricatorActionIds.RunFittings);
-        engine.Meters.Integrity.Value.Should().Be(1);
+        var preview = engine.Preview(breaking);
+        preview.CanBreakItem.Should().BeTrue();
+        preview.Outcomes[0].ResultingStatus.Should().Be(MinigameStatus.Failed);
+        preview.FinishesItem.Should().BeFalse();
 
-        var last = engine.Preview(FabricatorActionIds.RunFittings);
-        last.CanBreakItem.Should().BeTrue();
-        last.Outcomes[0].ResultingStatus.Should().Be(MinigameStatus.Failed);
+        var result = engine.Perform(breaking);
 
-        var result = engine.Perform(FabricatorActionIds.RunFittings);
-
+        result.Performed.Should().BeTrue();
         result.Status.Should().Be(MinigameStatus.Failed);
         engine.Status.Should().Be(MinigameStatus.Failed);
         engine.Meters.Integrity.IsEmpty.Should().BeTrue();
-        engine.Perform(FabricatorActionIds.RunFittings).Performed.Should().BeFalse();
+        engine.Perform(breaking).Performed.Should().BeFalse();
+        engine.PreviewAll().Should().OnlyContain(p => !p.Enabled);
     }
 
     [Test]

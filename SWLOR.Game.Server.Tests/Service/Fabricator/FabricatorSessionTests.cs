@@ -122,9 +122,8 @@ public class FabricatorSessionTests
         // Rolls above 65 keep an item and rolls of 65 or less lose it: the enhancements first, then the component stacks.
         var lifecycle = Lifecycle(100, 1, 100, 1);
         StartSession(lifecycle);
-        var engine = Engine(Setup(penalty: 5000, parameters: Parameters(wear: 9)), Enumerable.Repeat(NoPrime, 30).ToArray());
-        while (engine.Status == MinigameStatus.InProgress)
-            engine.Perform(FabricatorActionIds.RunFittings);
+        var (engine, breaking) = WearToTheBreak();
+        engine.Perform(breaking);
 
         var settlement = lifecycle.Fail(FakeCraftSessionWorld.PlayerHandle, _player, CraftSessionEndReason.Broken);
 
@@ -163,7 +162,8 @@ public class FabricatorSessionTests
         var lifecycle = Lifecycle(1, 1, 1, 1);
         var recipe = _world.Recipes[TestRecipe];
         var baseXp = Craft.GetBaseRecipeXP(recipe, 25);
-        var scaled = CraftMinigameXp.Scale(baseXp, FabricatorRules.XpMultiplier);
+        var scaled = CraftMinigameXp.ScaleBaseXp(baseXp, FabricatorRules.XpMultiplierForLevel(recipe.Level));
+        CraftMinigameXp.BaseXp(recipe, 25).Should().Be(scaled, "the lifecycle reads the base XP through CraftMinigameXp");
         var session = StartSession(lifecycle);
 
         var success = lifecycle.Succeed(FakeCraftSessionWorld.PlayerHandle, _player, session, new MinigameMeter(60, 100));
@@ -181,16 +181,33 @@ public class FabricatorSessionTests
     }
 
     [Test]
-    public void OnlyTheFabricatorHasAnXpMultiplier_AndNoMultiplierChangesTheBaseXp()
+    public void OnlyTheFabricatorHasAnXpMultiplier_AndItDiffersByLevelBand()
     {
-        CraftMinigameXp.MultiplierFor(CraftMinigameType.Fabricator).Should().Be(FabricatorRules.XpMultiplier);
-        CraftMinigameXp.MultiplierFor(SkillType.Fabrication).Should().Be(FabricatorRules.XpMultiplier);
-        CraftMinigameXp.MultiplierFor(CraftMinigameType.Circuit).Should().Be(1.0);
-        CraftMinigameXp.MultiplierFor(CraftMinigameType.Forge).Should().Be(1.0);
-        CraftMinigameXp.MultiplierFor((CraftMinigameType?)null).Should().Be(1.0);
-        CraftMinigameXp.MultiplierFor(SkillType.Smithery).Should().Be(1.0);
-        CraftMinigameXp.Scale(600, 1.0).Should().Be(600);
-        CraftMinigameXp.Scale(600, 2.5).Should().Be(1500);
-        CraftMinigameXp.Scale(7, 1.5).Should().Be(11, "halves round away from zero");
+        CraftMinigameXp.MultiplierFor(CraftMinigameType.Fabricator, 5).Should().Be(FabricatorRules.XpMultiplierLevels1To10);
+        CraftMinigameXp.MultiplierFor(CraftMinigameType.Fabricator, 10).Should().Be(FabricatorRules.XpMultiplierLevels1To10);
+        CraftMinigameXp.MultiplierFor(CraftMinigameType.Fabricator, 11).Should().Be(FabricatorRules.XpMultiplierLevels11To20);
+        CraftMinigameXp.MultiplierFor(CraftMinigameType.Fabricator, 30).Should().Be(FabricatorRules.XpMultiplierLevels21To30);
+        CraftMinigameXp.MultiplierFor(CraftMinigameType.Fabricator, 40).Should().Be(FabricatorRules.XpMultiplierLevels31To40);
+        CraftMinigameXp.MultiplierFor(CraftMinigameType.Fabricator, 53).Should().Be(FabricatorRules.XpMultiplierLevels41Up);
+        CraftMinigameXp.MultiplierFor(CraftMinigameType.Fabricator).Should().Be(FabricatorRules.XpMultiplierLevels1To10, "no level takes the lowest band");
+        new[]
+        {
+            FabricatorRules.XpMultiplierLevels1To10, FabricatorRules.XpMultiplierLevels11To20, FabricatorRules.XpMultiplierLevels21To30,
+            FabricatorRules.XpMultiplierLevels31To40, FabricatorRules.XpMultiplierLevels41Up
+        }.Should().OnlyContain(multiplier => multiplier >= 1.0, "a multiplier only ever lifts the XP");
+        CraftMinigameXp.MultiplierFor(CraftMinigameType.Circuit, 20).Should().Be(1.0);
+        CraftMinigameXp.MultiplierFor(CraftMinigameType.Forge, 20).Should().Be(1.0);
+        CraftMinigameXp.ScaleBaseXp(600, 1.0).Should().Be(600);
+        CraftMinigameXp.ScaleBaseXp(600, 2.5).Should().Be(1500);
+        CraftMinigameXp.ScaleBaseXp(7, 1.5).Should().Be(11, "halves round away from zero");
+    }
+
+    [Test]
+    public void ARecipeWhoseSkillHasNoMinigameKeepsTodaysXp()
+    {
+        var recipe = new RecipeDetail { Skill = SkillType.Armor, Level = 20 };
+
+        CraftMinigameRouting.GetRoute(SkillType.Armor).IsLegacy.Should().BeTrue();
+        CraftMinigameXp.BaseXp(recipe, 15).Should().Be(Craft.GetBaseRecipeXP(recipe, 15));
     }
 }

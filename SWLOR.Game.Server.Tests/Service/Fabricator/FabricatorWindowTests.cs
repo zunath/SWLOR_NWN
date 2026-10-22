@@ -96,12 +96,9 @@ public class FabricatorWindowTests
     [Test]
     public void ARunThatWouldBreakThePieceSaysSo()
     {
-        var engine = Engine(Setup(penalty: 5000, parameters: Parameters(wear: 9)), Enumerable.Repeat(NoPrime, 30).ToArray());
-        for (var i = 0; i < 11; i++)
-            engine.Perform(FabricatorActionIds.RunFittings).Performed.Should().BeTrue();
-        engine.Meters.Integrity.Value.Should().Be(1);
+        var (engine, breaking) = WearToTheBreak();
 
-        ResultText(engine, FabricatorActionIds.RunFrame).Should().Contain(FabricatorActionText.BreaksPiece);
+        ResultText(engine, breaking).Should().EndWith(FabricatorActionText.BreaksPiece);
     }
 
     [Test]

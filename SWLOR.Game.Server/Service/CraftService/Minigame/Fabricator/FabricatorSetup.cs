@@ -34,8 +34,11 @@ public sealed class FabricatorSetup
         GearCp = Math.Max(0, gearCp);
         EnhancementProgressPenalty = Math.Max(0, enhancementProgressPenalty);
 
-        BaseWork = Math.Max(1, baseProgress) * FabricatorRules.ProgressScale;
-        var total = (Math.Max(1, baseProgress) + EnhancementProgressPenalty) * FabricatorRules.ProgressScale;
+        var basePoints = Math.Max(1, baseProgress);
+        BaseWork = basePoints * FabricatorRules.ProgressScale;
+        var total = (basePoints + EnhancementProgressPenalty) * FabricatorRules.ProgressScale;
+        MaxMachineCondition = (int)Math.Round(
+            FabricatorRules.MaxMachineCondition * (basePoints + EnhancementProgressPenalty) / (double)basePoints, MidpointRounding.AwayFromZero);
         FrameSize = Math.Max(1, (int)Math.Round(total * Parameters.FrameSizePercent / 100.0, MidpointRounding.AwayFromZero));
         ShellSize = Math.Max(1, (int)Math.Round(total * Parameters.ShellSizePercent / 100.0, MidpointRounding.AwayFromZero));
         FittingsSize = Math.Max(1, total - FrameSize - ShellSize);
@@ -93,6 +96,13 @@ public sealed class FabricatorSetup
     public int FittingsSize { get; }
 
     public int MaxCp { get; }
+
+    /// <summary>
+    /// The Machine Condition the fabricator starts with: <see cref="FabricatorRules.MaxMachineCondition"/> for a plain piece, and more
+    /// in the same proportion as the work an enhanced piece needs, so an enhancement lengthens the production run (more Runs and Precision
+    /// Passes, and a longer craft) without making the machine give out before the piece is built.
+    /// </summary>
+    public int MaxMachineCondition { get; }
 
     public int WearRate => Parameters.WearRate;
 
@@ -178,7 +188,7 @@ public sealed class FabricatorSetup
         Math.Min(FabricatorRules.MaxQuality, Math.Min(frame, Math.Min(shell, fittings)) + FabricatorRules.AssembleCapPoints);
 
     public MinigameMeters StartingMeters() =>
-        MinigameMeters.Start(MaxProgress, FabricatorRules.MaxQuality, FabricatorRules.MaxMachineCondition, MaxCp);
+        MinigameMeters.Start(MaxProgress, FabricatorRules.MaxQuality, MaxMachineCondition, MaxCp);
 
     /// <summary>The unlock rank of an action, or -1 for an unknown action.</summary>
     public static int UnlockRank(string actionId) => actionId switch

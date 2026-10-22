@@ -29,7 +29,8 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition
             "TOOL HEADS\n" +
             "One head is loaded at a time. Run builds a sub-assembly: at full effect when its own head is loaded, and at half effect when another head is loaded, with no retooling. " +
             "Precision Pass raises quality, and it only works on the sub-assembly the loaded head serves, so to refine all three you must retool. " +
-            "Retool loads another head and costs CP. Every Run and Precision Pass wears the machine; this recipe's wear is shown above, and harder materials wear it faster.\n\n" +
+            "Retool loads another head and costs CP. Every Run and Precision Pass wears the machine; this recipe's wear is shown above, and harder materials wear it faster. " +
+            "Enhancements make the piece bigger: it needs more Runs and Precision Passes, and the Machine Condition you start with grows in step.\n\n" +
             "QUALITY\n" +
             "The piece's quality is the average of the three sub-assemblies' quality, weighted by this recipe's quality shares (a bed is mostly Frame, a terminal mostly Fittings), " +
             $"and it can be no higher than the weakest sub-assembly plus {FabricatorRules.AssembleCapPoints}. The cap is shown on the quality meter. Lift your weakest sub-assembly to raise it.\n\n" +

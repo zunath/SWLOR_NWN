@@ -33,9 +33,19 @@ namespace SWLOR.CraftSim.Scenario.Fabricator
         /// </summary>
         public AdaptivePolicyOptions AdaptiveOptions => AdaptivePolicyOptions.Default with { Heuristic = new FabricatorLeafHeuristic() };
 
+        /// <summary>The Fabricator's multiplier at the lowest level band, the largest; <see cref="XpMultiplierFor"/> gives each band's.</summary>
+        public double XpMultiplier => CraftMinigameXp.MultiplierFor(Minigame);
+
+        public double XpMultiplierFor(int recipeLevel) => CraftMinigameXp.MultiplierFor(Minigame, recipeLevel);
+
+        /// <summary>
+        /// The request's total progress penalty reaches the engine as the setup's enhancement progress penalty, the same way the crafting
+        /// window passes the selected enhancements': it raises the progress every sub-assembly needs, in proportion to its size.
+        /// </summary>
+        public EnhancementSupport Enhancements => EnhancementSupport.Modeled;
+
         public IReadOnlyList<string> Limitations => new[]
         {
-            "No enhancements are slotted: the item is made at its base size, the way the gates' cohort plays every minigame.",
             "Prime Feedstock is the only chance in the Fabricator, so the adaptive player's edge over a fixed rotation comes from it and from the recipe's state, not from luck at the actions themselves."
         };
 
@@ -44,7 +54,8 @@ namespace SWLOR.CraftSim.Scenario.Fabricator
             var recipe = request.Recipe;
             var gear = request.Gear;
             var setup = recipe.Detail != null
-                ? FabricatorSetup.ForRecipe(recipe.Detail, request.Rank, gear.Craftsmanship, gear.Control, gear.CpBonus)
+                ? FabricatorSetup.ForRecipe(
+                    recipe.Detail, request.Rank, gear.Craftsmanship, gear.Control, gear.CpBonus, request.Enhancements.TotalProgressPenalty)
                 : new FabricatorSetup(
                     null,
                     recipe.Level,
@@ -52,7 +63,8 @@ namespace SWLOR.CraftSim.Scenario.Fabricator
                     request.Rank,
                     gear.Craftsmanship,
                     gear.Control,
-                    gear.CpBonus);
+                    gear.CpBonus,
+                    request.Enhancements.TotalProgressPenalty);
 
             return new FabricatorEngine(request.Random, setup);
         }

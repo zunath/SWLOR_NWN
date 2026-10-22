@@ -33,6 +33,9 @@ namespace SWLOR.CraftSim.Tests.Scenario
             scenario.SecondsPerAction.Should().Be(8.0, "the starting estimate until client timing replaces it");
             scenario.LengthTarget.Should().Be(LengthTarget.ItemCraft);
             scenario.StylePairs.Should().BeEmpty("no perks exist yet, so the style-balance gate is not applicable");
+            scenario.Enhancements.Should().Be(EnhancementSupport.Modeled);
+            scenario.XpMultiplierFor(5).Should().Be(FabricatorRules.XpMultiplierLevels1To10);
+            scenario.XpMultiplierFor(45).Should().Be(FabricatorRules.XpMultiplierLevels41Up);
             scenario.AdaptiveOptions.Heuristic.Should().BeOfType<FabricatorLeafHeuristic>();
             scenario.Cohort.Recipes(SharedData.Recipes).Should().OnlyContain(recipe => recipe.Skill == SkillType.Fabrication);
         }
@@ -55,6 +58,25 @@ namespace SWLOR.CraftSim.Tests.Scenario
             engine.Setup.Rank.Should().Be(25);
             engine.Setup.RecipeLevel.Should().Be(recipe.Level);
             engine.Meters.Cp.Max.Should().Be(engine.Setup.MaxCp);
+        }
+
+        [Test]
+        public void TheRequestsEnhancementPenaltyRaisesTheProgressEverySubAssemblyNeeds_InProportionToItsSize()
+        {
+            var scenario = new FabricatorScenario();
+            var recipe = Recipe(25);
+            var gear = SharedData.Gear.Levels(SkillType.Fabrication).Last();
+            var plain = (FabricatorEngine)scenario.CreateEngine(Request(recipe, gear, 25));
+
+            var request = new CraftEngineRequest(
+                recipe, 25, gear, null, 7, SimMinigameRandom.ForRun(7, 1, (int)recipe.Type), new CraftEnhancementConfiguration(3, 12));
+            var enhanced = (FabricatorEngine)scenario.CreateEngine(request);
+
+            enhanced.Setup.EnhancementProgressPenalty.Should().Be(36);
+            enhanced.Meters.Progress.Max.Should().Be(plain.Meters.Progress.Max + 36 * FabricatorRules.ProgressScale);
+            foreach (var part in FabricatorHeads.AllParts)
+                enhanced.Setup.SizeOf(part).Should().BeGreaterThan(plain.Setup.SizeOf(part));
+            enhanced.Setup.RunGain(true, false).Should().Be(plain.Setup.RunGain(true, false), "an enhancement adds Runs, it does not weaken one");
         }
 
         [Test]

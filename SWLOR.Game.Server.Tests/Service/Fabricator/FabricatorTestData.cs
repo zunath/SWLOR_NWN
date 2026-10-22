@@ -85,4 +85,31 @@ internal static class FabricatorTestData
                 engine.Perform(FabricatorActionIds.PrecisionPass).Performed.Should().BeTrue();
         }
     }
+
+    /// <summary>
+    /// Plays Runs, Precision Passes and Retools (never Service or Assemble) with a machine that wears fast, until the next action would
+    /// empty the Machine Condition. Returns the engine, still in progress, and that action.
+    /// </summary>
+    public static (FabricatorEngine Engine, string BreakingAction) WearToTheBreak(int wear = 9)
+    {
+        var engine = new FabricatorEngine(new SeededMinigameRandom(1), Setup(parameters: Parameters(wear: wear)));
+        while (engine.Status == MinigameStatus.InProgress)
+        {
+            var open = engine.PreviewAll()
+                .Where(p => p.Enabled && p.Action.Id != FabricatorActionIds.Service && p.Action.Id != FabricatorActionIds.Assemble)
+                .ToList();
+            var next = open.FirstOrDefault(p => p.Action.Id.StartsWith("run_"))
+                       ?? open.FirstOrDefault(p => p.Action.Id == FabricatorActionIds.PrecisionPass)
+                       ?? open.First(p => p.Action.Id.StartsWith("retool_") && RetoolHasWork(engine, p.Action.Id));
+            if (next.CanBreakItem)
+                return (engine, next.Action.Id);
+
+            engine.Perform(next.Action.Id).Performed.Should().BeTrue();
+        }
+
+        throw new InvalidOperationException("The attempt ended without an action that breaks the piece.");
+    }
+
+    private static bool RetoolHasWork(FabricatorEngine engine, string retoolId) =>
+        FabricatorHeads.AllHeads.Any(head => head.RetoolActionId() == retoolId && engine.Part(head.Serves()).Quality < FabricatorRules.MaxQuality);
 }

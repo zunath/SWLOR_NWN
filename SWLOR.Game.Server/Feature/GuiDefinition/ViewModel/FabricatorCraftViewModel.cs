@@ -142,8 +142,8 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
                 $"Quality: Frame {parameters.FrameQualityPercent}%, Shell {parameters.ShellQualityPercent}%, Fittings {parameters.FittingsQualityPercent}%. " +
                 $"Wear {parameters.WearRate} Machine Condition per Run or Precision Pass. Starts with the {setup.StartingHead} loaded.";
             NeedsSummary = setup.EnhancementProgressPenalty > 0
-                ? $"Needs {setup.MaxProgress} progress in all ({setup.EnhancementProgressPenalty * FabricatorRules.ProgressScale} added by enhancements). Retool costs {setup.RetoolCp} CP and Service {setup.ServiceCp} CP."
-                : $"Needs {setup.MaxProgress} progress in all. Retool costs {setup.RetoolCp} CP and Service {setup.ServiceCp} CP.";
+                ? $"Needs {setup.MaxProgress} progress in all ({setup.EnhancementProgressPenalty * FabricatorRules.ProgressScale} added by enhancements) and starts with {setup.MaxMachineCondition} Machine Condition. Retool costs {setup.RetoolCp} CP and Service {setup.ServiceCp} CP."
+                : $"Needs {setup.MaxProgress} progress in all and starts with {setup.MaxMachineCondition} Machine Condition. Retool costs {setup.RetoolCp} CP and Service {setup.ServiceCp} CP.";
             SlotHeader = _slotItems.Count == 0
                 ? "This recipe has no enhancement slots."
                 : "Enhancement slots. An enhancement transfers when the quality reaches its slot's threshold.";

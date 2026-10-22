@@ -24,14 +24,14 @@ namespace SWLOR.CraftSim.Progression
         private const double RankingSecondsPerUnmodelledUnit = 20.0;
 
         /// <summary>A recipe the model gives a success chance below this is treated as having it, so the attempts to a first success stay finite.</summary>
-        private const double MinimumSuccessRate = 0.02;
+        public const double MinimumSuccessRate = 0.02;
 
-        /// <param name="cells">The legacy craft results for the skill and gear level, one per recipe level 1 to 49 (keyed by level).</param>
+        /// <param name="results">The legacy craft results for the skill and gear level, by recipe level and rank.</param>
         /// <param name="plan">Guild hand-ins made along the way, or null for none.</param>
         public static SkillPath Simulate(
             SkillType skill,
             string gear,
-            IReadOnlyDictionary<int, CraftCell> cells,
+            ICraftResults results,
             RecipeCatalog recipes,
             ComponentSupply supply,
             ProgressionAssumptions assumptions,
@@ -59,8 +59,10 @@ namespace SWLOR.CraftSim.Progression
                 // The crafter gathers their own components with a Gathering rank that follows their crafting rank, which sets Hard Look at
                 // scavenge sites.
                 var gathering = assumptions with { GatheringTier = CraftRankMilestones.TierForRank(rank) };
-                if (!cells.TryGetValue(level, out var cell))
-                    throw new InvalidDataException($"No {skill} {gear} craft results for recipe level {level}.");
+
+                // Rank 0 crafts the level-1 recipe at rank 0, which is not the result of the same recipe at rank 1: CP, progress and the actions
+                // unlocked all depend on the rank.
+                var cell = results.At(level, rank);
 
                 if (!demand.TryGetValue(level, out var levelDemand))
                 {
@@ -136,7 +138,7 @@ namespace SWLOR.CraftSim.Progression
                             var byHand = eligible
                                 .Select((t, index) =>
                                 {
-                                    var attemptCell = cells[t.Level.Value];
+                                    var attemptCell = results.At(t.Level.Value, rank);
                                     var attempts = 1 / Math.Max(attemptCell.SuccessRate, MinimumSuccessRate);
                                     return attempts * (attemptCell.ActionsPerCraft * assumptions.SecondsPerAction + assumptions.OverheadSecondsPerCraft +
                                                        ConsumedShare(attemptCell.SuccessRate) * gather[index]);
@@ -222,7 +224,7 @@ namespace SWLOR.CraftSim.Progression
             return new SkillPath(skill, gear, steps, guildRank, lowestCatchUpChance, restartsWaited);
         }
 
-        private static double ConsumedShare(double success) =>
+        public static double ConsumedShare(double success) =>
             success + LegacyCraftRules.FailureLossPercent / 100.0 * (1 - success);
 
         /// <summary>What a craft costs when it is a guild task recipe: the components of the level's tasks that a crafter at the guild rank may hand in.</summary>

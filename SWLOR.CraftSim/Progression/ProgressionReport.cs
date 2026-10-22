@@ -420,7 +420,7 @@ namespace SWLOR.CraftSim.Progression
             var choreDetail = new MarkdownTable("Guild", "Tier", "Item", "Item level", "Guild points each", "Hand-ins", "Hours", "Chance a board holds an eligible item");
             foreach (var guild in new[] { GuildType.SmitheryGuild, GuildType.EngineeringGuild, GuildType.FabricationGuild, GuildType.AgricultureGuild })
             {
-                var rows = GuildCohorts.Chore(guilds, model.Supply, guild, a);
+                var rows = GuildCohorts.Chore(guilds, model.Supply, guild, a, ResultsOrNull(model, GuildTaskCatalog.SkillOf(guild), mid));
                 chore.Add(
                     guild.ToString(), Number(rows.Sum(r => r.HandIns), 0), Number(rows.Sum(r => r.Hours), 1), Whole(rows.Sum(r => r.Credits)),
                     Whole(rows.Sum(r => r.Credits) / rows.Sum(r => r.Hours)), Percent(rows.Min(r => r.BoardChance)), Number(rows.Sum(r => r.ExpectedRestartsWaited), 2));
@@ -456,7 +456,7 @@ namespace SWLOR.CraftSim.Progression
 
             text.AppendLine("### What limits the hand-ins");
             text.AppendLine();
-            var rate = GuildCohorts.Chore(guilds, model.Supply, GuildType.SmitheryGuild, a);
+            var rate = GuildCohorts.Chore(guilds, model.Supply, GuildType.SmitheryGuild, a, ResultsOrNull(model, SkillType.Smithery, mid));
             text.AppendLine("Every hand-in consumes one real player-crafted item (or four caught fish), which already limits the rate: the components. Nothing else limits it once the cap is lifted: the board's ten tasks per tier no longer bound it, because a completed task returns at once and one task can be repeated. " +
                             $"Quick craft makes a base item in {QuickCraftBatch.SecondsPerItem:0} s, so for a high-rank crafter the real bounds are the components and the turn-in time. " +
                             $"Credits are the lever that matters: a task pays {Whole(guilds.RewardOfTier(GuildType.SmitheryGuild, 0).Credits)} to {Whole(guilds.RewardOfTier(GuildType.SmitheryGuild, 4).Credits)} credits plus the Guild Relations and Social bonuses, and the Smithery rank climb alone pays " +
@@ -694,6 +694,10 @@ namespace SWLOR.CraftSim.Progression
             text.AppendLine("- Fishing is shown for catch tasks only; Agriculture's fishing path is not part of the hours above, and fish availability by location is not modelled.");
             text.AppendLine("- The research cohort assumes the award follows `GetDeltaXP`; the Research workstream sets the real amount, and the ceiling is the bound on it.");
         }
+
+        /// <summary>The craft results of a skill the run played, or null for one a <c>--skills</c> subset left out.</summary>
+        private static ICraftResults ResultsOrNull(ProgressionModel model, SkillType skill, string gear) =>
+            model.Skills.Contains(skill) ? model.Results(skill, gear) : null;
 
         private static string Whole(double value) => value.ToString("N0", System.Globalization.CultureInfo.InvariantCulture);
 

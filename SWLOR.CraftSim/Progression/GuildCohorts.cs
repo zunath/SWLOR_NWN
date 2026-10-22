@@ -52,8 +52,12 @@ namespace SWLOR.CraftSim.Progression
         /// What raising the guild rank costs a rank-50 crafter who quick-crafts the cheapest eligible task item of each tier and hands it
         /// in: no minigame, no XP, the components and the turn-in time. The task cap used to allow ten tasks a tier per server start.
         /// </summary>
+        /// <param name="results">
+        /// The guild skill's craft results, to price the one successful craft by hand that unlocks quick craft for each tier's item at rank 50
+        /// (expected attempts to a first success, failed attempts losing their components); null leaves that craft out.
+        /// </param>
         public static IReadOnlyList<GuildChoreRow> Chore(
-            GuildTaskCatalog guilds, ComponentSupply supply, GuildType guild, ProgressionAssumptions assumptions)
+            GuildTaskCatalog guilds, ComponentSupply supply, GuildType guild, ProgressionAssumptions assumptions, ICraftResults results = null)
         {
             Guild.LoadData();
             assumptions = assumptions with { GatheringTier = CraftRankMilestones.TierForRank(ProgressionAssumptions.MaximumRank) };
@@ -76,11 +80,24 @@ namespace SWLOR.CraftSim.Progression
                     .ToList();
                 var tierTasks = guilds.For(guild).Count(t => t.Tier == tier);
                 var (boardChance, itemSeconds) = GuildBoard.PreferredOnBoard(perItem, tierTasks);
+                var manualSeconds = 0.0;
+                if (results != null)
+                {
+                    var byHand = eligible.Select(t =>
+                    {
+                        var cell = results.At(t.Level.Value, ProgressionAssumptions.MaximumRank);
+                        var attempts = 1 / Math.Max(cell.SuccessRate, CraftingProgression.MinimumSuccessRate);
+                        return attempts * (cell.ActionsPerCraft * assumptions.SecondsPerAction + assumptions.OverheadSecondsPerCraft +
+                                           CraftingProgression.ConsumedShare(cell.SuccessRate) * LevelDemand.SecondsOf(t.Recipe, supply, assumptions));
+                    }).ToList();
+                    manualSeconds = GuildBoard.PreferredOnBoard(byHand, tierTasks).ExpectedCost;
+                }
+
                 var task = eligible[0];
                 var pointsEach = GuildHandInPlan.GuildPointsFor(task.GuildPoints, tier);
                 var threshold = Guild.GetGPRequiredForRank(tier);
                 var handIns = (threshold - previousThreshold) / (double)pointsEach;
-                rows.Add(new GuildChoreRow(guild, tier, task.Resref, task.Level.Value, pointsEach, handIns, handIns * itemSeconds / 3600, handIns * task.Credits, boardChance));
+                rows.Add(new GuildChoreRow(guild, tier, task.Resref, task.Level.Value, pointsEach, handIns, (handIns * itemSeconds + manualSeconds) / 3600, handIns * task.Credits, boardChance));
                 previousThreshold = threshold;
             }
 

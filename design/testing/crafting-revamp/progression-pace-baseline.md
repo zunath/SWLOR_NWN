@@ -8,7 +8,7 @@ A new crafter (rank 0, nothing handed in to a guild) who always crafts recipes o
 
 | Skill | Crafts to 50 (mid gear) | Craft window h | Gathering h | Total h: no gear | Total h: mid gear | Total h: best gear | XP per hour (mid gear) | Component units no node supplies (mid gear) |
 | --- | --- | --- | --- | --- | --- | --- | --- | --- |
-| Smithery | 536 | 20.1 | 79.9 | 107.4 | 99.9 | 93.0 | 4,114 | 887 |
+| Smithery | 536 | 20.0 | 79.9 | 107.4 | 99.9 | 93.0 | 4,114 | 887 |
 | Engineering | 539 | 19.8 | 43.7 | 66.7 | 63.5 | 60.3 | 6,475 | 949 |
 | Fabrication | 530 | 20.4 | 33.0 | 55.0 | 53.4 | 51.3 | 7,692 | 450 |
 | Agriculture | 539 | 19.7 | 16.7 | 36.2 | 36.4 | 36.2 | 11,289 | 1856 |
@@ -71,18 +71,18 @@ A band is the hours to climb from its first rank to the next band's first rank (
 
 | Ranks | XP | Crafts (mid) | Craft window h | Gathering h | Total h: no gear | Total h: mid gear | Total h: best gear | XP per hour (mid) | RP XP h |
 | --- | --- | --- | --- | --- | --- | --- | --- | --- | --- |
-| 0-10 | 17,545 | 28 | 0.5 | 1.1 | 1.7 | 1.6 | 1.5 | 10,687 | 5.8 |
+| 0-10 | 17,545 | 28 | 0.5 | 1.1 | 1.7 | 1.6 | 1.5 | 10,688 | 5.8 |
 | 10-20 | 50,960 | 77 | 2.1 | 4.4 | 7.0 | 6.5 | 5.9 | 7,883 | 17.0 |
 | 20-30 | 89,340 | 130 | 4.4 | 20.2 | 25.4 | 24.5 | 22.8 | 3,640 | 29.8 |
 | 30-40 | 107,950 | 159 | 6.0 | 29.3 | 36.7 | 35.3 | 33.6 | 3,058 | 36.0 |
 | 40-50 | 145,330 | 142 | 7.1 | 24.8 | 36.5 | 32.0 | 29.1 | 4,546 | 48.4 |
-| 0-50 | 411,125 | 536 | 20.1 | 79.9 | 107.4 | 99.9 | 93.0 | 4,114 | 137.0 |
+| 0-50 | 411,125 | 536 | 20.0 | 79.9 | 107.4 | 99.9 | 93.0 | 4,114 | 137.0 |
 
 ### Engineering
 
 | Ranks | XP | Crafts (mid) | Craft window h | Gathering h | Total h: no gear | Total h: mid gear | Total h: best gear | XP per hour (mid) | RP XP h |
 | --- | --- | --- | --- | --- | --- | --- | --- | --- | --- |
-| 0-10 | 17,545 | 28 | 0.5 | 0.4 | 1.0 | 0.9 | 0.9 | 18,793 | 5.8 |
+| 0-10 | 17,545 | 28 | 0.5 | 0.4 | 1.0 | 0.9 | 0.9 | 18,791 | 5.8 |
 | 10-20 | 50,960 | 77 | 2.0 | 2.0 | 4.3 | 4.0 | 3.8 | 12,621 | 17.0 |
 | 20-30 | 89,340 | 131 | 4.2 | 13.2 | 17.7 | 17.4 | 16.6 | 5,132 | 29.8 |
 | 30-40 | 107,950 | 160 | 5.9 | 13.1 | 19.1 | 19.0 | 18.7 | 5,691 | 36.0 |
@@ -226,10 +226,10 @@ The cohort crafts at level as before and, whenever the board has a task for that
 | Skill | Award share | Total h (mid gear) | Change vs no guild | Change vs the 0% award | At-level hand-ins | Catch-up hand-ins | Catch-up h | Lowest chance a board held a catch-up item | Server starts waited | Guild rank at rank 50 | Hand-in XP | Share of the climb's XP | Credits earned |
 | --- | --- | --- | --- | --- | --- | --- | --- | --- | --- | --- | --- | --- | --- |
 | Smithery | no guild | 99.9 | - | - | - | - | - | - | - | - | - | - | - |
-| Smithery | 0% (hand-ins for credits and points only) | 85.9 | -14% | - | 360 | 28 | 0.5 | 100% | 0.00 | 5 | 0 | 0% | 1,795,664 |
+| Smithery | 0% (hand-ins for credits and points only) | 85.9 | -14% | - | 360 | 28 | 0.6 | 100% | 0.00 | 5 | 0 | 0% | 1,795,664 |
 | Smithery | 25% | 77.2 | -23% | -10% | 314 | 31 | 0.6 | 100% | 0.00 | 5 | 47,071 | 11% | 1,579,668 |
 | Smithery | 50% | 70.6 | -29% | -18% | 278 | 33 | 0.7 | 100% | 0.00 | 5 | 83,431 | 20% | 1,413,623 |
-| Smithery | 100% | 61.2 | -39% | -29% | 227 | 48 | 1.0 | 100% | 0.00 | 5 | 136,136 | 33% | 1,205,097 |
+| Smithery | 100% | 61.2 | -39% | -29% | 227 | 48 | 1.1 | 100% | 0.00 | 5 | 136,136 | 33% | 1,205,097 |
 | Engineering | no guild | 63.5 | - | - | - | - | - | - | - | - | - | - | - |
 | Engineering | 0% (hand-ins for credits and points only) | 64.6 | 2% | - | 413 | 24 | 0.3 | 100% | 0.00 | 5 | 0 | 0% | 2,021,724 |
 | Engineering | 25% | 56.5 | -11% | -13% | 357 | 27 | 0.3 | 100% | 0.00 | 5 | 53,493 | 13% | 1,762,643 |
@@ -237,14 +237,14 @@ The cohort crafts at level as before and, whenever the board has a task for that
 | Engineering | 100% | 41.3 | -35% | -36% | 254 | 37 | 0.4 | 100% | 0.00 | 5 | 152,445 | 37% | 1,291,900 |
 | Fabrication | no guild | 53.4 | - | - | - | - | - | - | - | - | - | - | - |
 | Fabrication | 0% (hand-ins for credits and points only) | 51.5 | -4% | - | 361 | 26 | 0.5 | 100% | 0.00 | 5 | 0 | 0% | 1,758,220 |
-| Fabrication | 25% | 45.5 | -15% | -12% | 318 | 29 | 0.5 | 100% | 0.00 | 5 | 47,669 | 12% | 1,563,004 |
+| Fabrication | 25% | 45.5 | -15% | -12% | 318 | 29 | 0.6 | 100% | 0.00 | 5 | 47,669 | 12% | 1,563,004 |
 | Fabrication | 50% | 40.8 | -24% | -21% | 284 | 31 | 0.6 | 100% | 0.00 | 5 | 85,170 | 21% | 1,408,821 |
-| Fabrication | 100% | 34.0 | -36% | -34% | 234 | 39 | 0.7 | 100% | 0.00 | 5 | 140,565 | 34% | 1,193,099 |
+| Fabrication | 100% | 34.0 | -36% | -34% | 234 | 39 | 0.8 | 100% | 0.00 | 5 | 140,565 | 34% | 1,193,099 |
 | Agriculture | no guild | 36.4 | - | - | - | - | - | - | - | - | - | - | - |
 | Agriculture | 0% (hand-ins for credits and points only) | 38.5 | 6% | - | 295 | 31 | 0.1 | 100% | 0.00 | 5 | 0 | 0% | 1,446,620 |
 | Agriculture | 25% | 34.7 | -5% | -10% | 264 | 33 | 0.1 | 100% | 0.00 | 5 | 39,661 | 10% | 1,308,335 |
 | Agriculture | 50% | 31.7 | -13% | -18% | 240 | 38 | 0.2 | 100% | 0.00 | 5 | 71,942 | 17% | 1,206,094 |
-| Agriculture | 100% | 27.0 | -26% | -30% | 203 | 53 | 0.3 | 100% | 0.00 | 5 | 121,566 | 30% | 1,076,501 |
+| Agriculture | 100% | 27.1 | -26% | -30% | 203 | 53 | 0.3 | 100% | 0.00 | 5 | 121,566 | 30% | 1,076,501 |
 
 Read the award's effect against the 0% row, not against no guild: handing in the task recipes already changes the hours at a 0% award, because their components differ from the level's average recipe. Hand-in XP's share of the climb is the figure to read for the award: the proposal should land it between a fifth and a third, so it neither dominates nor vanishes.
 
@@ -253,22 +253,22 @@ The same cohort by rank band at the recommended 50% award. The task tier a craft
 | Skill | Ranks | Task tier at level | Items per task | At-level hand-ins | Quick-crafted catch-up hand-ins | Hand-in hours (turn-in and catch-up) | Hand-in XP | Share of the band's XP |
 | --- | --- | --- | --- | --- | --- | --- | --- | --- |
 | Smithery | 0-10 | 0 | 1 | 15 | 0 | 0.04 | 4,420 | 25% |
-| Smithery | 10-20 | 1 | 1 | 39 | 33 | 0.75 | 11,754 | 23% |
+| Smithery | 10-20 | 1 | 1 | 39 | 33 | 0.76 | 11,754 | 23% |
 | Smithery | 20-30 | 2 | 1 | 67 | 0 | 0.23 | 19,960 | 22% |
 | Smithery | 30-40 | 3 | 1 | 79 | 0 | 0.22 | 23,691 | 22% |
 | Smithery | 40-50 | 4 | 1 | 79 | 0 | 0.22 | 23,605 | 16% |
 | Engineering | 0-10 | 0 | 1 | 15 | 0 | 0.04 | 4,617 | 26% |
-| Engineering | 10-20 | 1 | 1 | 44 | 30 | 0.46 | 13,087 | 26% |
+| Engineering | 10-20 | 1 | 1 | 44 | 30 | 0.47 | 13,087 | 26% |
 | Engineering | 20-30 | 2 | 1 | 75 | 0 | 0.21 | 22,530 | 25% |
 | Engineering | 30-40 | 3 | 1 | 90 | 0 | 0.25 | 27,138 | 25% |
 | Engineering | 40-50 | 4 | 1 | 89 | 0 | 0.25 | 26,849 | 18% |
 | Fabrication | 0-10 | 0 | 1 | 14 | 0 | 0.04 | 4,264 | 24% |
-| Fabrication | 10-20 | 1 | 1 | 39 | 31 | 0.69 | 11,846 | 23% |
+| Fabrication | 10-20 | 1 | 1 | 39 | 31 | 0.70 | 11,846 | 23% |
 | Fabrication | 20-30 | 2 | 1 | 68 | 0 | 0.19 | 20,412 | 23% |
 | Fabrication | 30-40 | 3 | 1 | 82 | 0 | 0.23 | 24,646 | 23% |
 | Fabrication | 40-50 | 4 | 1 | 80 | 0 | 0.22 | 24,002 | 17% |
 | Agriculture | 0-10 | 0 | 1 | 12 | 0 | 0.03 | 3,547 | 20% |
-| Agriculture | 10-20 | 1 | 1 | 33 | 34 | 0.23 | 10,036 | 20% |
+| Agriculture | 10-20 | 1 | 1 | 33 | 34 | 0.24 | 10,036 | 20% |
 | Agriculture | 20-30 | 2 | 1 | 59 | 4 | 0.20 | 17,647 | 20% |
 | Agriculture | 30-40 | 3 | 1 | 71 | 0 | 0.20 | 21,243 | 20% |
 | Agriculture | 40-50 | 4 | 1 | 65 | 0 | 0.18 | 19,470 | 13% |
@@ -279,33 +279,33 @@ What raising a guild from rank 0 to 5 costs a rank-50 crafter who quick-crafts t
 
 | Guild | Hand-ins | Hours | Credits earned | Credits per hour | Lowest chance a board holds an eligible item | Server starts waited (not charged) |
 | --- | --- | --- | --- | --- | --- | --- |
-| SmitheryGuild | 238 | 5.0 | 954,321 | 189,920 | 100% | 0.00 |
-| EngineeringGuild | 238 | 7.8 | 954,321 | 121,695 | 100% | 0.00 |
-| FabricationGuild | 238 | 3.1 | 954,321 | 306,468 | 100% | 0.00 |
-| AgricultureGuild | 238 | 0.9 | 954,321 | 1,068,177 | 100% | 0.00 |
+| SmitheryGuild | 238 | 5.3 | 954,321 | 179,604 | 100% | 0.00 |
+| EngineeringGuild | 238 | 8.2 | 954,321 | 116,707 | 100% | 0.00 |
+| FabricationGuild | 238 | 3.4 | 954,321 | 283,918 | 100% | 0.00 |
+| AgricultureGuild | 238 | 1.1 | 954,321 | 871,159 | 100% | 0.00 |
 
 | Guild | Tier | Item | Item level | Guild points each | Hand-ins | Hours | Chance a board holds an eligible item |
 | --- | --- | --- | --- | --- | --- | --- | --- |
-| SmitheryGuild | 0 | `b_knife` | 1 | 21 | 48 | 0.86 | 100% |
-| SmitheryGuild | 1 | `tit_knife` | 11 | 101 | 40 | 0.73 | 100% |
-| SmitheryGuild | 2 | `del_knife` | 21 | 175 | 57 | 1.33 | 100% |
-| SmitheryGuild | 3 | `proto_knife` | 31 | 273 | 55 | 1.08 | 100% |
-| SmitheryGuild | 4 | `oph_knife` | 41 | 390 | 38 | 1.03 | 100% |
-| EngineeringGuild | 0 | `min_laser_b` | 1 | 21 | 48 | 0.50 | 100% |
-| EngineeringGuild | 1 | `min_laser_1` | 11 | 101 | 40 | 0.42 | 100% |
-| EngineeringGuild | 2 | `min_laser_2` | 21 | 175 | 57 | 3.79 | 100% |
-| EngineeringGuild | 3 | `min_laser_3` | 31 | 273 | 55 | 0.58 | 100% |
-| EngineeringGuild | 4 | `min_laser_4` | 41 | 390 | 38 | 2.55 | 100% |
-| FabricationGuild | 0 | `structure_0132` | 1 | 21 | 48 | 0.73 | 100% |
-| FabricationGuild | 1 | `structure_0026` | 11 | 101 | 40 | 0.52 | 100% |
-| FabricationGuild | 2 | `structure_0004` | 21 | 175 | 57 | 0.74 | 100% |
-| FabricationGuild | 3 | `structure_0155` | 31 | 273 | 55 | 0.61 | 100% |
-| FabricationGuild | 4 | `structure_0163` | 41 | 390 | 38 | 0.51 | 100% |
-| AgricultureGuild | 0 | `mynock_broth` | 3 | 21 | 48 | 0.16 | 100% |
-| AgricultureGuild | 1 | `raivor_broth` | 13 | 101 | 40 | 0.13 | 100% |
-| AgricultureGuild | 2 | `ara_broth` | 23 | 175 | 57 | 0.19 | 100% |
-| AgricultureGuild | 3 | `womp_broth` | 33 | 273 | 55 | 0.18 | 100% |
-| AgricultureGuild | 4 | `wild_broth` | 43 | 390 | 38 | 0.23 | 100% |
+| SmitheryGuild | 0 | `b_knife` | 1 | 21 | 48 | 0.89 | 100% |
+| SmitheryGuild | 1 | `tit_knife` | 11 | 101 | 40 | 0.78 | 100% |
+| SmitheryGuild | 2 | `del_knife` | 21 | 175 | 57 | 1.40 | 100% |
+| SmitheryGuild | 3 | `proto_knife` | 31 | 273 | 55 | 1.14 | 100% |
+| SmitheryGuild | 4 | `oph_knife` | 41 | 390 | 38 | 1.11 | 100% |
+| EngineeringGuild | 0 | `min_laser_b` | 1 | 21 | 48 | 0.52 | 100% |
+| EngineeringGuild | 1 | `min_laser_1` | 11 | 101 | 40 | 0.45 | 100% |
+| EngineeringGuild | 2 | `min_laser_2` | 21 | 175 | 57 | 3.90 | 100% |
+| EngineeringGuild | 3 | `min_laser_3` | 31 | 273 | 55 | 0.63 | 100% |
+| EngineeringGuild | 4 | `min_laser_4` | 41 | 390 | 38 | 2.67 | 100% |
+| FabricationGuild | 0 | `structure_0132` | 1 | 21 | 48 | 0.76 | 100% |
+| FabricationGuild | 1 | `structure_0026` | 11 | 101 | 40 | 0.56 | 100% |
+| FabricationGuild | 2 | `structure_0004` | 21 | 175 | 57 | 0.80 | 100% |
+| FabricationGuild | 3 | `structure_0155` | 31 | 273 | 55 | 0.67 | 100% |
+| FabricationGuild | 4 | `structure_0163` | 41 | 390 | 38 | 0.57 | 100% |
+| AgricultureGuild | 0 | `mynock_broth` | 3 | 21 | 48 | 0.18 | 100% |
+| AgricultureGuild | 1 | `raivor_broth` | 13 | 101 | 40 | 0.17 | 100% |
+| AgricultureGuild | 2 | `ara_broth` | 23 | 175 | 57 | 0.24 | 100% |
+| AgricultureGuild | 3 | `womp_broth` | 33 | 273 | 55 | 0.23 | 100% |
+| AgricultureGuild | 4 | `wild_broth` | 43 | 390 | 38 | 0.28 | 100% |
 
 ### Catch tasks (Agriculture)
 
@@ -323,7 +323,7 @@ Fishing pays several times what the cooking loop does per hour at this bite time
 
 ### What limits the hand-ins
 
-Every hand-in consumes one real player-crafted item (or four caught fish), which already limits the rate: the components. Nothing else limits it once the cap is lifted: the board's ten tasks per tier no longer bound it, because a completed task returns at once and one task can be repeated. Quick craft makes a base item in 2 s, so for a high-rank crafter the real bounds are the components and the turn-in time. Credits are the lever that matters: a task pays 1,000 to 7,200 credits plus the Guild Relations and Social bonuses, and the Smithery rank climb alone pays 954,321 credits for 5.0 hours of work. Nothing was added in this PR; the owner decides whether credits need a limit (see the proposals).
+Every hand-in consumes one real player-crafted item (or four caught fish), which already limits the rate: the components. Nothing else limits it once the cap is lifted: the board's ten tasks per tier no longer bound it, because a completed task returns at once and one task can be repeated. Quick craft makes a base item in 2 s, so for a high-rank crafter the real bounds are the components and the turn-in time. Credits are the lever that matters: a task pays 1,000 to 7,200 credits plus the Guild Relations and Social bonuses, and the Smithery rank climb alone pays 954,321 credits for 5.3 hours of work. Nothing was added in this PR; the owner decides whether credits need a limit (see the proposals).
 
 ## Research cohort
 
@@ -389,9 +389,9 @@ What each target needs on top of the guild award. A multiplier of x1.00 means th
 
 | Median skill target (h) | Multiplier needed | Rank cost cap needed (XP) | Smithery h at that multiplier | Engineering h at that multiplier | Fabrication h at that multiplier | Agriculture h at that multiplier |
 | --- | --- | --- | --- | --- | --- | --- |
-| 45 | x1.01 | 14,514 | 69.8 | 49.6 | 40.4 | 31.3 |
-| 35 | x1.31 | 8,282 | 54.4 | 38.5 | 31.5 | 24.3 |
-| 25 | x1.95 | 5,353 | 38.1 | 27.7 | 22.3 | 16.7 |
+| 45 | x1.01 | 14,495 | 69.8 | 49.6 | 40.4 | 31.3 |
+| 35 | x1.31 | 8,278 | 54.4 | 38.5 | 31.5 | 24.4 |
+| 25 | x1.95 | 5,344 | 38.1 | 27.7 | 22.3 | 16.7 |
 
 | Option | Change | Smithery h | Engineering h | Fabrication h | Agriculture h | Median skill | Slowest skill | Migration of stored XP |
 | --- | --- | --- | --- | --- | --- | --- | --- | --- |
@@ -417,7 +417,7 @@ Each crafting-guild hand-in awards XP in the guild's skill. **Formula:** award =
 | none | 99.9 | - | 63.5 | - | 53.4 | - | 36.4 | - |
 | 25% | 77.2 | 11% | 56.5 | 13% | 45.5 | 12% | 34.7 | 10% |
 | 50% | 70.6 | 20% | 50.2 | 23% | 40.8 | 21% | 31.7 | 17% |
-| 100% | 61.2 | 33% | 41.3 | 37% | 34.0 | 34% | 27.0 | 30% |
+| 100% | 61.2 | 33% | 41.3 | 37% | 34.0 | 34% | 27.1 | 30% |
 
 - **Option 1, 25%.** Hand-ins supply 11% of the climb's XP: a small bonus that is easy to ignore.
 - **Option 2, 50% (recommended).** Hand-ins supply 20%: a real part of the pace that does not replace crafting. Quantity matters for catch tasks: at this share a four-fish task's hand-in XP is 23% of the task's XP when the award is per fish and 7% when it is per task, so the award is per item.

@@ -1,5 +1,6 @@
 using SWLOR.CraftSim.Data;
 using SWLOR.CraftSim.Legacy.Crafting;
+using SWLOR.CraftSim.Rng;
 using SWLOR.Game.Server.Service.SkillService;
 
 namespace SWLOR.CraftSim.Progression
@@ -16,6 +17,12 @@ namespace SWLOR.CraftSim.Progression
 
         /// <summary>Lookahead futures sampled per action; the legacy baseline's default.</summary>
         public int Rollouts { get; init; } = RolloutPolicy.DefaultRollouts;
+
+        /// <summary>
+        /// Crafts played per recipe level and rank for the pairings the at-level climb does not cover: a rank-0 craft of a level-1 recipe, and the
+        /// one craft by hand that unlocks a lower-level recipe for quick craft. They are played on demand, so this stays small.
+        /// </summary>
+        public int OffLevelRuns { get; init; } = 100;
     }
 
     /// <summary>
@@ -24,7 +31,7 @@ namespace SWLOR.CraftSim.Progression
     /// </summary>
     public sealed class ProgressionModel
     {
-        private readonly Dictionary<(SkillType Skill, string Gear), Dictionary<int, CraftCell>> _cells;
+        private readonly Dictionary<(SkillType Skill, string Gear), CraftResults> _results;
         private readonly Dictionary<SkillType, IReadOnlyList<string>> _gearNames;
 
         private ProgressionModel(
@@ -32,14 +39,14 @@ namespace SWLOR.CraftSim.Progression
             ComponentSupply supply,
             GuildTaskCatalog guilds,
             ProgressionOptions options,
-            Dictionary<(SkillType, string), Dictionary<int, CraftCell>> cells,
+            Dictionary<(SkillType, string), CraftResults> results,
             Dictionary<SkillType, IReadOnlyList<string>> gearNames)
         {
             Recipes = recipes;
             Supply = supply;
             Guilds = guilds;
             Options = options;
-            _cells = cells;
+            _results = results;
             _gearNames = gearNames;
         }
 
@@ -63,13 +70,54 @@ namespace SWLOR.CraftSim.Progression
                 Skills = options.Skills
             };
 
-            var cells = LegacyCraftBaseline.Simulate(recipes, gear, baseline)
+            var atLevel = LegacyCraftBaseline.Simulate(recipes, gear, baseline)
                 .Where(c => c.RankOffset == 0)
                 .GroupBy(c => (c.Skill, c.Gear))
                 .ToDictionary(g => g.Key, g => g.ToDictionary(c => c.RecipeLevel));
 
             var gearNames = options.Skills.ToDictionary(skill => skill, skill => (IReadOnlyList<string>)gear.Levels(skill).Select(l => l.Name).ToList());
-            return new ProgressionModel(recipes, ComponentSupply.Build(recipes), guilds, options, cells, gearNames);
+            var results = atLevel.ToDictionary(
+                pair => pair.Key,
+                pair => new CraftResults(pair.Value, (level, rank) => PlayOffLevel(gear, options, pair.Key.Skill, pair.Key.Gear, level, rank)));
+            return new ProgressionModel(recipes, ComponentSupply.Build(recipes), guilds, options, results, gearNames);
+        }
+
+        /// <summary>Plays a recipe level at a rank with the lookahead player, from the seed, the way the legacy baseline plays an at-level cell.</summary>
+        private static CraftCell PlayOffLevel(CraftingGearCatalog gear, ProgressionOptions options, SkillType skill, string gearName, int level, int rank)
+        {
+            var gearLevels = gear.Levels(skill);
+            var gearIndex = gearLevels.ToList().FindIndex(g => g.Name == gearName);
+            var gearLevel = gearLevels[gearIndex];
+            var policy = new RolloutPolicy(options.Rollouts);
+            var context = new LegacyCraftContext(level, rank, gearLevel.Control, gearLevel.Craftsmanship, gearLevel.CpBonus);
+            var cell = new CraftCell
+            {
+                Skill = skill,
+                RecipeLevel = level,
+                Rank = rank,
+                RankOffset = rank - level,
+                Gear = gearName,
+                Policy = policy.Name,
+                Runs = options.OffLevelRuns
+            };
+
+            for (var run = 0; run < options.OffLevelRuns; run++)
+            {
+                // A stream of its own: the baseline's offsets are small, so rank + 1000 never meets one.
+                var rng = SimRandom.ForRun(options.Seed, (int)skill, level, gearIndex, 0, rank + 1000, run);
+                var result = LegacyCraftRunner.Play(context, policy, rng);
+                cell.Actions += result.Actions;
+                cell.CpSpent += result.CpSpent;
+                if (!result.Succeeded)
+                    continue;
+
+                cell.Successes++;
+                cell.QualitySum += result.QualityFraction;
+                if (result.QualityFraction >= 1.0)
+                    cell.FullQualitySuccesses++;
+            }
+
+            return cell;
         }
 
         /// <summary>Builds a model from craft results played elsewhere, such as a test's hand-made ones.</summary>
@@ -78,7 +126,8 @@ namespace SWLOR.CraftSim.Progression
             ComponentSupply supply,
             GuildTaskCatalog guilds,
             ProgressionOptions options,
-            IEnumerable<CraftCell> cells)
+            IEnumerable<CraftCell> cells,
+            Func<SkillType, string, int, int, CraftCell> playOffLevel = null)
         {
             var byKey = cells
                 .GroupBy(c => (c.Skill, c.Gear))
@@ -86,14 +135,24 @@ namespace SWLOR.CraftSim.Progression
             var gearNames = options.Skills.ToDictionary(
                 skill => skill,
                 skill => (IReadOnlyList<string>)byKey.Keys.Where(k => k.Skill == skill).Select(k => k.Gear).OrderBy(n => n, StringComparer.Ordinal).ToList());
-            return new ProgressionModel(recipes, supply, guilds, options, byKey, gearNames);
+
+            // A pairing that is not at-level reuses the level's own cell unless the caller supplies one.
+            var results = byKey.ToDictionary(
+                pair => pair.Key,
+                pair => new CraftResults(
+                    pair.Value,
+                    (level, rank) => playOffLevel != null ? playOffLevel(pair.Key.Skill, pair.Key.Gear, level, rank) : pair.Value[level]));
+            return new ProgressionModel(recipes, supply, guilds, options, results, gearNames);
         }
 
         /// <summary>The crafter's results at one recipe level, from the played crafts.</summary>
-        public CraftCell Cell(SkillType skill, string gear, int level) => _cells[(skill, gear)][level];
+        public CraftCell Cell(SkillType skill, string gear, int level) => _results[(skill, gear)].At(level, level);
+
+        /// <summary>The craft results a skill and gear level read, including the pairings played on demand.</summary>
+        public CraftResults Results(SkillType skill, string gear) => _results[(skill, gear)];
 
         public SkillPath Path(SkillType skill, string gear, ProgressionAssumptions assumptions, GuildHandInPlan plan = null) =>
-            CraftingProgression.Simulate(skill, gear, _cells[(skill, gear)], Recipes, Supply, assumptions, plan);
+            CraftingProgression.Simulate(skill, gear, _results[(skill, gear)], Recipes, Supply, assumptions, plan);
 
         public GatheringPath Gathering(GatheringStrategy strategy, ProgressionAssumptions assumptions) =>
             GatheringProgression.Simulate(strategy, Supply, assumptions);

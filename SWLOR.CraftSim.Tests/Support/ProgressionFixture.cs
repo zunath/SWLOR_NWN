@@ -46,7 +46,7 @@ namespace SWLOR.CraftSim.Tests.Support
 
         public static ProgressionModel Model(
             RecipeCatalog recipes, ComponentSupply supply, GuildTaskCatalog guilds, double success, double quality, double actions,
-            IReadOnlyList<SkillType> skills = null)
+            IReadOnlyList<SkillType> skills = null, Func<SkillType, string, int, int, CraftCell> playOffLevel = null)
         {
             skills ??= CraftingGearCatalog.GearSkills;
             return ProgressionModel.FromCells(
@@ -54,7 +54,8 @@ namespace SWLOR.CraftSim.Tests.Support
                 supply,
                 guilds,
                 new ProgressionOptions { Skills = skills, Runs = 100, Seed = 1 },
-                skills.SelectMany(skill => Cells(skill, success, quality, actions)));
+                skills.SelectMany(skill => Cells(skill, success, quality, actions)),
+                playOffLevel);
         }
 
         /// <summary>One recipe per level 1-53 for a skill, each committing the given components.</summary>

@@ -70,6 +70,23 @@ Gathering and fishing implement `IXpRateCohort` instead: it pairs the legacy loo
 
 The game server changes only by `ICraftMinigameEngine.Fork`, which every engine inherits from `MinigameEngineBase<TState>`.
 
+### The fishing study
+
+Fishing is not an item craft, so it has no `ICraftScenario`. The `fishing` command plays the Line (`Fishing/`) against the catch roll it replaced and runs the gates that apply to it:
+
+```powershell
+dotnet SWLOR.CraftSim/bin/Release/net10.0/SWLOR.CraftSim.dll fishing --runs 1000 --seed 1 --out design/testing/crafting-revamp/fishing-line-parity.md
+```
+
+It takes `--runs` (fights per case, default 200), `--seed`, `--seconds-per-turn` (default 8), `--out` (default `design/testing/crafting-revamp/fishing-line-parity.md`), `--json`, `--strict` (exit 2 when a gate failed or was not run) and `--repo`. The same seed repeats a report exactly; build in Release for a 1,000-fight run (about two minutes).
+
+- **Economy parity** (`FishingCatchRateGate`): the adaptive player's catch rate against today's `40 + 10 x (rank - fish level) + 2 x Willpower`, over the Willpower sweep, by rank above the fish's level and per rank over the real rod, bait and location pools. The corridor is Willpower 10-14 with a tolerance in points (`FishingParityOptions`).
+- **Length** (`FishingLengthGate`): the adaptive player's mean turns against `LengthTarget.FishingFight`.
+- **XP rate**: `FishingXpRateCohort` implements `IXpRateCohort` as the plan pins it: fish-level bands (0-10, 11-20, 21-30, 31-40, 41-52), rank equal to the fish level (at most 50), the best rod tier that rank allows, and every (rod, bait) table of every location that rod reaches weighted equally, half by day and half by night. XP is paid per bite, so the loops differ only in time.
+- **Evidence tables** for the Angler perk draft: each proposed purchase, the two rank-20 styles against each other, and the rare fish with Trophy Catch.
+
+The rule-of-thumb player (`RuleOfThumbPolicy`) marks the other end of skill: it reads the announced move and answers by a fixed rule. The legacy catch roll is ported in `Legacy/Gathering/FishingCatchModel.cs` from `Service/Fishing.cs` at commit d5f1c0466, where it was checked against the source; it left `Fishing.cs` with the Line and is no longer checked.
+
 ### Test bench
 
 `SWLOR.CraftSim.Tests/Support` holds a test-only engine (`BenchEngine`: a working window the player must keep Heat inside, a chance-dependent Stoke and a telegraphed opportunity), a variant with a dominant action, a one-action table engine whose quality is set per recipe and style, and their scenarios. The tests run every gate runner end to end on them with seeds, including a dominant rotation (gate 1 fails) and an adaptive game (gate 1 passes).

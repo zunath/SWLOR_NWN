@@ -72,6 +72,7 @@ namespace SWLOR.CraftSim.Fishing
                 "against the angler's rank (`LineSetup.ForFish`); the rod tier and the rank set the Tension cap and the reel.",
                 $"- Adaptive player: {LineFights.AdaptiveOptions.Describe()}. It is a floor on skilled play. Rule-of-thumb player: reads the announced move and answers it by a fixed rule, never looking further ahead.",
                 $"- Time: {Number(options.CastSeconds)} s for a cast and the wait for a bite (6-8 s in the game), in both loops; {Number(options.SecondsPerTurn)} s for each turn of the fight. Both are estimates until the client run measures them.",
+                "- XP cohort (gate 6): fish-level bands 0-10, 11-20, 21-30, 31-40 and 41-52; the angler's rank equals the fish's level (at most 50) with the best rod tier that rank allows; every (rod, bait) table of every location that rod reaches counts equally, half by day and half by night, so both loops draw the same fish. XP is per bite.",
                 $"- Tolerance: the adaptive player's catch rate is near today's when it sits within {Number(options.TolerancePoints, 0)} points of the corridor. XP: per bite, caught or not, unchanged.",
                 "- Rod tiers: Bamboo, Carbon and Clothespole 0; Composite, Ebisu and Fastwater 10; Glass Fiber, Halcyon and Judge 20; Maze Monger, Willow and Yew 30; Butterfly, Tranquility and LuShang 40.",
                 "- Named starting values of the fight (`LineRules`), all tunable:"

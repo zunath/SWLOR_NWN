@@ -22,29 +22,29 @@ namespace SWLOR.CraftSim.Fishing
         public static readonly IReadOnlyList<int> FishAboveRank = new[] { 0, 3 };
 
         public static readonly AnglerPerkVariant Patient = new(
-            "Patient Angler (Give Line lets out 3 less Distance)",
-            new LineAnglerEffects(GiveLineDistanceReduction: 3));
+            "Patient Angler (Give Line lets out 2 less Distance)",
+            new LineAnglerEffects(GiveLineDistanceReduction: 2));
 
         public static readonly AnglerPerkVariant Aggressive = new(
-            "Aggressive Angler (Reel pulls 2 more Distance and adds 9 more Tension)",
-            new LineAnglerEffects(ReelDistanceBonus: 2, ReelTensionBonus: 9));
+            "Aggressive Angler (Reel pulls 2 more Distance and adds 2 more Tension)",
+            new LineAnglerEffects(ReelDistanceBonus: 2, ReelTensionBonus: 2));
 
         /// <summary>Everything the line grants below the capstone, with the Patient Angler style.</summary>
         public static readonly LineAnglerEffects WholeLinePatient =
-            new(TensionCapBonus: 3, SetHookDrainBonus: 3, HoldDrainBonus: 1, ForecastDepth: 2, GiveLineDistanceReduction: 3);
+            new(TensionCapBonus: 3, SetHookDrainBonus: 4, HoldDrainBonus: 1, ForecastDepth: 2, GiveLineDistanceReduction: 2);
 
         /// <summary>Everything the line grants below the capstone, with the Aggressive Angler style.</summary>
         public static readonly LineAnglerEffects WholeLineAggressive =
-            new(TensionCapBonus: 3, SetHookDrainBonus: 3, HoldDrainBonus: 1, ForecastDepth: 2, ReelDistanceBonus: 2, ReelTensionBonus: 9);
+            new(TensionCapBonus: 3, SetHookDrainBonus: 4, HoldDrainBonus: 1, ForecastDepth: 2, ReelDistanceBonus: 2, ReelTensionBonus: 2);
 
         public static readonly IReadOnlyList<AnglerPerkVariant> Variants = new[]
         {
             new AnglerPerkVariant("Strong Line I (+1 Tension cap)", new LineAnglerEffects(TensionCapBonus: 1)),
             new AnglerPerkVariant("Strong Line II (+2 Tension cap)", new LineAnglerEffects(TensionCapBonus: 2)),
             new AnglerPerkVariant("Strong Line III (+3 Tension cap)", new LineAnglerEffects(TensionCapBonus: 3)),
-            new AnglerPerkVariant("Hard Set I (Set Hook drains 1 more Stamina)", new LineAnglerEffects(SetHookDrainBonus: 1)),
-            new AnglerPerkVariant("Hard Set II (Set Hook drains 2 more Stamina)", new LineAnglerEffects(SetHookDrainBonus: 2)),
-            new AnglerPerkVariant("Hard Set III (Set Hook drains 3 more Stamina)", new LineAnglerEffects(SetHookDrainBonus: 3)),
+            new AnglerPerkVariant("Hard Set I (Set Hook drains 2 more Stamina)", new LineAnglerEffects(SetHookDrainBonus: 2)),
+            new AnglerPerkVariant("Hard Set II (Set Hook drains 3 more Stamina)", new LineAnglerEffects(SetHookDrainBonus: 3)),
+            new AnglerPerkVariant("Hard Set III (Set Hook drains 4 more Stamina)", new LineAnglerEffects(SetHookDrainBonus: 4)),
             new AnglerPerkVariant("Steady Hold I (Hold drains 1 more Stamina)", new LineAnglerEffects(HoldDrainBonus: 1)),
             new AnglerPerkVariant("Steady Hold II (Hold drains 2 more Stamina)", new LineAnglerEffects(HoldDrainBonus: 2)),
             new AnglerPerkVariant("Fish Sense (sees the next two moves)", new LineAnglerEffects(ForecastDepth: 2)),

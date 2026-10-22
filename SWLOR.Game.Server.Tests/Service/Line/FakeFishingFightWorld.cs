@@ -20,6 +20,7 @@ internal sealed class FakeFishingFightWorld : IFishingFightWorld
     public bool Busy { get; private set; }
     public bool WindowOpen { get; set; }
     public bool CanOpenWindow { get; set; } = true;
+    public bool OpeningTheWindowThrows { get; set; }
     public bool IsValid { get; set; } = true;
     public bool IsDead { get; set; }
     public bool IsInCombat { get; set; }
@@ -78,6 +79,9 @@ internal sealed class FakeFishingFightWorld : IFishingFightWorld
     public bool OpenWindow(uint player, FishingFight fight)
     {
         Log.Add("open");
+        if (OpeningTheWindowThrows)
+            throw new InvalidOperationException("The window cannot be created.");
+
         if (!CanOpenWindow)
             return false;
 

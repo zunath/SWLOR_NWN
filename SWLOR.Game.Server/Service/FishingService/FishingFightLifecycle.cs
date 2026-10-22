@@ -77,7 +77,18 @@ namespace SWLOR.Game.Server.Service.FishingService
             _active[bite.Player] = fight;
             _world.BeginFight(bite.Player);
 
-            if (!_world.OpenWindow(bite.Player, fight))
+            bool opened;
+            try
+            {
+                opened = _world.OpenWindow(bite.Player, fight);
+            }
+            catch
+            {
+                Abandon(fight, FishingFightEnd.Left);
+                throw;
+            }
+
+            if (!opened)
             {
                 Abandon(fight, FishingFightEnd.Left);
                 return null;

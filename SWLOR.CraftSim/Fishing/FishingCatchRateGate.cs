@@ -90,7 +90,7 @@ namespace SWLOR.CraftSim.Fishing
         {
             var header = new List<string> { "Rank - fish level" };
             header.AddRange(scores.Select(score => $"Today, Willpower {score}"));
-            header.AddRange(new[] { "Fight, adaptive", "Adaptive, by rank", "Fight, rule of thumb", "Adaptive turns", "Verdict" });
+            header.AddRange(new[] { "Fight, adaptive", "Adaptive, by rank", "Fight, rule of thumb", "Between the two players", "Adaptive turns", "Verdict" });
             var table = new EvidenceTable(header.ToArray());
 
             var outside = new List<string>();
@@ -118,7 +118,9 @@ namespace SWLOR.CraftSim.Fishing
                 row.AddRange(scores.Select(score => Today(delta, score) + "%"));
                 row.Add(Number(adaptive, 0) + "%");
                 row.Add($"{Number(played.Min(p => p.Adaptive.LandedPercent), 0)}-{Number(played.Max(p => p.Adaptive.LandedPercent), 0)}%");
-                row.Add(Number(played.Average(p => p.Rule.LandedPercent), 0) + "%");
+                var casual = played.Average(p => p.Rule.LandedPercent);
+                row.Add(Number(casual, 0) + "%");
+                row.Add(Number((adaptive + casual) / 2, 0) + "%");
                 row.Add(Number(played.Average(p => p.Adaptive.MeanTurns)));
                 row.Add(near ? "Near" : "Outside");
                 table.Add(row.ToArray());
@@ -140,6 +142,7 @@ namespace SWLOR.CraftSim.Fishing
                 $"Today, Willpower {scores.Min()}-{scores.Max()}",
                 "Fight, adaptive",
                 "Fight, rule of thumb",
+                "Between the two players",
                 "Adaptive turns",
                 "Pools",
                 "Verdict");
@@ -166,13 +169,15 @@ namespace SWLOR.CraftSim.Fishing
                     outside.Add($"rank {rank} ({Number(adaptive, 0)}% against {Number(low, 0)}-{Number(high, 0)}%)");
 
                 var sweep = scores.Select(TodayAt).ToList();
+                var casual = Fight(LinePlayer.RuleOfThumb, sample => sample.LandedPercent);
                 table.Add(
                     rank.ToString(),
                     Number(low, 0) + "%",
                     Number(high, 0) + "%",
                     $"{Number(sweep.Min(), 0)}-{Number(sweep.Max(), 0)}%",
                     Number(adaptive, 0) + "%",
-                    Number(Fight(LinePlayer.RuleOfThumb, sample => sample.LandedPercent), 0) + "%",
+                    Number(casual, 0) + "%",
+                    Number((adaptive + casual) / 2, 0) + "%",
                     Number(Fight(LinePlayer.Adaptive, sample => sample.MeanTurns)),
                     reachable.Count.ToString(),
                     near ? "Near" : "Outside");

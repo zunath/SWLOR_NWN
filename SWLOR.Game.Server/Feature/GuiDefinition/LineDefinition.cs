@@ -26,7 +26,7 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition
             "Before every turn the fish announces its move, and each action answers it differently:\n" +
             "- Run: the fish bolts. It takes line unless you reel against it, and reeling then strains the line badly.\n" +
             "- Dive: the fish plunges and the line goes taut whatever you do. Give Line absorbs half of it.\n" +
-            "- Thrash: the fish thrashes and the Tension spikes. Only Hold shrugs it off.\n" +
+            "- Thrash: the fish thrashes and the Tension spikes. Hold shrugs it off, and Give Line absorbs half.\n" +
             "- Tire: the fish rests and loses Stamina. Reeling pulls it in further.\n" +
             "A fish with no Stamina left only tires, so wearing it down makes the rest easy.\n\n" +
             "ACTIONS\n" +

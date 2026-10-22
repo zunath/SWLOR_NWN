@@ -114,7 +114,7 @@ public class LineWindowTests
 
         LineActionText.MoveHint(setup, FishMove.Run).Should().Contain("adds 5 extra Tension");
         LineActionText.MoveHint(setup, FishMove.Dive).Should().Contain("takes 3 Tension");
-        LineActionText.MoveHint(setup, FishMove.Thrash).Should().Contain("takes 5 Tension").And.Contain("only Hold");
+        LineActionText.MoveHint(setup, FishMove.Thrash).Should().Contain("takes 5 Tension").And.Contain("Hold shrugs it off");
         LineActionText.MoveHint(setup, FishMove.Tire).Should().Contain("loses 2 Stamina");
         LineActionText.ForecastText(new[] { FishMove.Run, FishMove.Thrash }).Should().Be("RUN, then THRASH");
         LineActionText.MeterText("Tension", 3, 10, "the line snaps at 10").Should().Be("Tension: 3 of 10 (the line snaps at 10)");

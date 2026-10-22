@@ -151,6 +151,21 @@ public class FishingFightLifecycleTests
     }
 
     [Test]
+    public void WhenOpeningTheWindowFails_TheAnglerIsNotLeftBusy_AndTheErrorIsNotHidden()
+    {
+        _world.OpeningTheWindowThrows = true;
+        var lifecycle = Lifecycle();
+
+        var act = () => lifecycle.Bite(Bite(level: 20, rank: 20));
+
+        act.Should().Throw<InvalidOperationException>();
+        _world.Busy.Should().BeFalse();
+        lifecycle.GetActive(Player).Should().BeNull();
+        _world.ScheduledCount.Should().Be(0);
+        _world.Bait[Rod].Should().Be(4, "the bait is spent at the bite, as today");
+    }
+
+    [Test]
     public void ALandedFish_GoesToTheAngler_FreesThemToCastAgain_AndIsSettledOnce()
     {
         var lifecycle = Lifecycle();

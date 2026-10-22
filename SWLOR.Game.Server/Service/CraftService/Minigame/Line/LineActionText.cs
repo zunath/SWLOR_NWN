@@ -30,7 +30,7 @@ public static class LineActionText
         FishMove.Dive =>
             $"The fish plunges. The line takes {setup.Pull} Tension whatever you do, except that Give Line absorbs half.",
         FishMove.Thrash =>
-            $"The fish thrashes. The line takes {setup.Pull + LineRules.ThrashSpike} Tension, and only Hold shrugs it off.",
+            $"The fish thrashes. The line takes {setup.Pull + LineRules.ThrashSpike} Tension. Hold shrugs it off and Give Line absorbs half.",
         _ =>
             $"The fish rests and loses {LineRules.TireStaminaLoss} Stamina. Reeling now pulls it in {LineRules.TireReelDistance} further."
     };

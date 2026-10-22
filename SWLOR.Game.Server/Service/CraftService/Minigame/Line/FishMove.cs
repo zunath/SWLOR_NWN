@@ -11,7 +11,7 @@ public enum FishMove
     /// <summary>The fish plunges: Tension rises whatever the player does, except that giving line absorbs half of it.</summary>
     Dive = 2,
 
-    /// <summary>The fish thrashes: a spike of Tension that only Hold shrugs off.</summary>
+    /// <summary>The fish thrashes: a spike of Tension that Hold shrugs off and Give Line halves.</summary>
     Thrash = 3,
 
     /// <summary>The fish rests and loses Stamina; a Reel pulls it in further.</summary>

@@ -58,7 +58,7 @@ namespace SWLOR.Game.Server.Service
                 return new WeaponAbilityTraitActivation(
                     new PairedRangedAbilityTraitsSnapshot(Guid.NewGuid(), false, false, 0, 0) { StateGeneration = -1 }, 0);
             var configuration = GetConfiguration(actor);
-            return new WeaponAbilityTraitActivation(CaptureAbility(actor, true, true),
+            return new WeaponAbilityTraitActivation(CaptureAbility(actor, true, !ability.KeepsWeaponAbilityFlow),
                 ability.WeaponAbilityFlowDamagePerCharge ?? configuration.MomentumDamagePerCharge)
                 { PrimaryWeapon = Combat.GetAbilityAttackWeapon(actor, ability.SkillType) };
         }

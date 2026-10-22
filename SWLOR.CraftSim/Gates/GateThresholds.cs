@@ -72,6 +72,31 @@ namespace SWLOR.CraftSim.Gates
         /// <summary>Seconds a craft costs besides its actions (opening the recipe, collecting the item), the same for both loops. Unmeasured; 0 until it is.</summary>
         public double OverheadSecondsPerAttempt { get; init; } = 0.0;
 
+        // Gate 7: enhancement parity.
+
+        /// <summary>The rank of the crafter: rank 50, the cap, so the at-level bands above 50 are played a few levels short.</summary>
+        public int EnhancementParityRank { get; init; } = 50;
+
+        /// <summary>The recipe levels the gate plays, the plan's at-level bands of a rank-50 crafter. Only recipes with an enhancement slot are played.</summary>
+        public IReadOnlyList<RecipeBand> EnhancementParityBands { get; init; } = new[]
+        {
+            new RecipeBand("41-45", 41, 45),
+            new RecipeBand("46-50", 46, 50),
+            new RecipeBand("51-53", 51, int.MaxValue)
+        };
+
+        /// <summary>
+        /// The numbers of enhancements the gates play: items with one, two and three enhancement slots filled. Gate 7 compares them, and
+        /// gate 6 plays each as a case of its item-craft cohort beside the plain crafts.
+        /// </summary>
+        public IReadOnlyList<int> EnhancementSlotCounts { get; init; } = new[] { 1, 2, 3 };
+
+        /// <summary>
+        /// Expected enhancements transferred per enhanced craft under the new thresholds, divided by today's, must be at least this in every
+        /// band and for every slot count: "at least today's".
+        /// </summary>
+        public double EnhancementParityMinimumRatio { get; init; } = 1.0;
+
         // Sampling.
 
         /// <summary>The fixed-rotation solver's effort for every scenario; null leaves each scenario's own <see cref="Scenario.ICraftScenario.SolverOptions"/>.</summary>
@@ -98,6 +123,10 @@ namespace SWLOR.CraftSim.Gates
             ("XpRateMinimumRatio", Number(XpRateMinimumRatio), "gate 6: XP per hour divided by the legacy rate"),
             ("LegacySecondsPerAction", Number(LegacySecondsPerAction), "gate 6: seconds per action in the old craft window (unmeasured estimate)"),
             ("OverheadSecondsPerAttempt", Number(OverheadSecondsPerAttempt), "gate 6: seconds per craft besides actions, both loops (unmeasured estimate)"),
+            ("EnhancementParityRank", EnhancementParityRank.ToString(), "gate 7: rank of the enhancing crafter (best gear)"),
+            ("EnhancementParityBands", string.Join(", ", EnhancementParityBands.Select(b => b.Name)), "gate 7: the at-level recipe bands"),
+            ("EnhancementSlotCounts", string.Join(", ", EnhancementSlotCounts), "gates 6 and 7: numbers of filled enhancement slots played"),
+            ("EnhancementParityMinimumRatio", Number(EnhancementParityMinimumRatio), "gate 7: expected transferred enhancements per enhanced craft divided by today's"),
             ("RecipesPerBand", RecipesPerBand?.ToString() ?? "all", "recipes played per band"),
             ("SolverOptions", SolverOptions == null ? "the scenario's" : "overridden", "effort of the fixed-rotation solver"),
             ("ActionLimit", ActionLimit.ToString(), "actions after which an attempt counts as stalled")

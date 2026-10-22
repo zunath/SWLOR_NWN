@@ -6,11 +6,14 @@ SWLOR crafting simulator
 
   baseline [--section crafting|gathering|all] [--runs 200] [--seed 1] [--gathering-runs 20000] [--skills Smithery,...] [--out report.md] [--json results.json] [--repo path]
       Plays today's rules (the old craft minigame, harvesting, scavenging, refining and the fishing catch roll) and writes the legacy baseline.
+  legacy-enhancements [--runs 200] [--seed 1] [--recipes-per-band 6] [--skills Smithery,...] [--gear all|best] [--out report.md] [--json results.json] [--repo path]
+      Plays today's rules with 1, 2 and 3 enhancements slotted and writes the expected transferred enhancements per band, tier and slot count (the yardstick of gate 7).
   gear [--repo path]
       Prints the gear levels derived from the module's crafting gear.
-  gates --scenario <name> [--runs 100] [--seed 1] [--recipes-per-band 6 | --all-recipes] [--gates rotation,styles,perks,length,materials,xp] [--legacy-seconds-per-action 6] [--thorough] [--out report.md] [--json results.json] [--strict] [--repo path]
+  gates --scenario <name> [--runs 100] [--seed 1] [--recipes-per-band 6 | --all-recipes] [--gates rotation,styles,perks,length,materials,xp,enhancements] [--legacy-seconds-per-action 6] [--thorough] [--out report.md] [--json results.json] [--strict] [--repo path]
       Runs the crafting balance gates for a minigame scenario and writes the report (default design/testing/crafting-revamp/<scenario>-gates.md).
       --thorough gives gate 1's fixed-rotation solver a much longer search. --strict exits 2 when a gate failed or was not run.
+      --gates also takes gate numbers, 1 to 7 (7 is enhancement parity).
   gates --list
       Lists the scenarios minigames have added.
   research [--runs 400] [--adaptive-runs 40] [--seed 1] [--seconds-per-action 6] [--job-overhead-seconds 30] [--out report.md] [--repo path]
@@ -28,6 +31,7 @@ try
     return args[0] switch
     {
         "baseline" => BaselineCommand.Run(args.Skip(1).ToArray(), Console.Out),
+        "legacy-enhancements" => LegacyEnhancementsCommand.Run(args.Skip(1).ToArray(), Console.Out),
         "gear" => GearCommand.Run(args.Skip(1).ToArray(), Console.Out),
         "gates" => GatesCommand.Run(args.Skip(1).ToArray(), Console.Out),
         "research" => ResearchCommand.Run(args.Skip(1).ToArray(), Console.Out),

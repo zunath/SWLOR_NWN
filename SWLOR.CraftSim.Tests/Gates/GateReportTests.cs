@@ -12,9 +12,9 @@ namespace SWLOR.CraftSim.Tests.Gates
         private static GateContext Context() => new(SharedData.Recipes, SharedData.Gear, 100, 7, AttributeSweep.Default);
 
         [Test]
-        public void TheSixGatesOfThePlanAreNamed()
+        public void TheSevenGatesOfThePlanAreNamed()
         {
-            GateNames.All.Should().Equal("No fixed rotation", "Style balance", "Perks optional", "Length", "Economy parity", "XP rate");
+            GateNames.All.Should().Equal("No fixed rotation", "Style balance", "Perks optional", "Length", "Economy parity", "XP rate", "Enhancement parity");
         }
 
         [Test]

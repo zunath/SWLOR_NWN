@@ -85,7 +85,7 @@ public class ReactionCycleTests
     }
 
     [Test]
-    public void AnAttemptMayStartOnlyInCalmOrRising()
+    public void AnAttemptMayStartAnywhereInTheCycle()
     {
         foreach (var pattern in Enum.GetValues<ReactionCyclePattern>())
         {
@@ -93,9 +93,8 @@ public class ReactionCycleTests
             {
                 var cycle = new ReactionCycle(pattern, length);
 
-                cycle.StartPositionCount.Should().Be(cycle.TurnsIn(ReactionPhase.Calm) + cycle.TurnsIn(ReactionPhase.Rising));
-                Enumerable.Range(0, cycle.StartPositionCount).Select(cycle.PhaseAt)
-                    .Should().OnlyContain(phase => phase == ReactionPhase.Calm || phase == ReactionPhase.Rising);
+                cycle.StartPositionCount.Should().Be(length);
+                Enumerable.Range(0, cycle.StartPositionCount).Select(cycle.PhaseAt).Distinct().Should().Equal(InOrder);
             }
         }
     }

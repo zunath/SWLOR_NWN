@@ -522,12 +522,17 @@ namespace SWLOR.Game.Server.Service
             while (currentRank < reachableRank)
             {
                 var requiredXPForNextRank = GetRequiredXP(currentRank);
-                var xpNeededForThisRank = requiredXPForNextRank - currentXP;
+                var xpNeededForThisRank = Math.Max(0, requiredXPForNextRank - currentXP);
 
                 totalDistributableXP += xpNeededForThisRank;
                 currentRank++;
                 currentXP = 0; // After first rank, we start from 0 XP for subsequent ranks
             }
+
+            // When the skill cap stopped a rank-up, the stored XP can already pay for the next rank.
+            // Any award then completes that rank, so accept 1 XP to trigger it.
+            if (totalDistributableXP <= 0 && reachableRank > currentSkill.Rank)
+                return 1;
 
             return totalDistributableXP;
         }

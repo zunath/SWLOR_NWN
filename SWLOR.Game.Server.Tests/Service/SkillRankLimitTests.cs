@@ -504,6 +504,19 @@ public class SkillRankLimitTests
     }
 
     [Test]
+    public void MaxDistributableXP_AcceptsOneXPToCompleteARankTheCapHeldBack()
+    {
+        var player = CreatePlayer(Skill.SkillCap,
+            (SkillType.Mimicry, S(10, xp: Skill.GetRequiredXP(10))),
+            (SkillType.Unarmed, S(21, limit: 20)));
+
+        Skill.GetMaxDistributableXP(player, SkillType.Mimicry).Should().Be(1);
+        Award(player, SkillType.Mimicry, 1);
+        player.Skills[SkillType.Mimicry].Rank.Should().Be(11);
+        player.Skills[SkillType.Unarmed].Rank.Should().Be(20);
+    }
+
+    [Test]
     public void MaxDistributableXP_BelowTheCap_CountsFreeRanksBeforeDecay()
     {
         var player = CreatePlayer(Skill.SkillCap - 1,

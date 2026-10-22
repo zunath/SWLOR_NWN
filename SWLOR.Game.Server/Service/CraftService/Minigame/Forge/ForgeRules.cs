@@ -77,11 +77,25 @@ public static class ForgeRules
     public const int PostQuenchHoneFinish = 84;
     public const int PostQuenchHoneShape = 72;
 
-    /// <summary>
-    /// The factor on every Smithery craft's base XP, success and failure alike. The old window's early crafts take 6 actions at 6 seconds,
-    /// so the Forge's 10-20 actions would otherwise pay less XP per hour at the lowest ranks (the XP-rate gate).
-    /// </summary>
-    public const double XpMultiplier = 1.55;
+    // The factor on a Smithery craft's base XP, success and failure alike, per recipe-level band: the minimum that keeps every gear tier
+    // and every enhancement count at or above the old window's XP per hour in the CraftSim XP-rate gate (gate 6). The old window is fastest
+    // in the lowest bands (its 1-10 crafts take 6 actions at 6 seconds against the Forge's 14 at 8), so they need the most.
+    // Starting values until client timing replaces the seconds per action.
+    public const double XpMultiplierLevels1To10 = 1.54;
+    public const double XpMultiplierLevels11To20 = 1.09;
+    public const double XpMultiplierLevels21To30 = 1.15;
+    public const double XpMultiplierLevels31To40 = 1.07;
+    public const double XpMultiplierLevels41Up = 1.0;
+
+    /// <summary>The multiplier on the base XP of a Smithery craft at a recipe level. A level of 0 or less takes the lowest band's.</summary>
+    public static double XpMultiplierForLevel(int recipeLevel) => recipeLevel switch
+    {
+        <= 10 => XpMultiplierLevels1To10,
+        <= 20 => XpMultiplierLevels11To20,
+        <= 30 => XpMultiplierLevels21To30,
+        <= 40 => XpMultiplierLevels31To40,
+        _ => XpMultiplierLevels41Up
+    };
 
     public const string StableContainmentId = "stable_containment";
     public const int StableContainmentChancePercent = 35;

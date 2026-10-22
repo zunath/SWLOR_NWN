@@ -37,8 +37,10 @@ namespace SWLOR.CraftSim.Tests.Scenario
         [Test]
         public void TheScenariosXpMultiplierIsTheOneTheGameRouteApplies()
         {
-            Scenario.XpMultiplier.Should().Be(ForgeRules.XpMultiplier);
-            Scenario.XpMultiplier.Should().Be(CraftMinigameXp.MultiplierFor(CraftMinigameType.Forge));
+            Scenario.XpMultiplier.Should().Be(ForgeRules.XpMultiplierLevels1To10, "the lowest band's, the largest");
+            Scenario.XpMultiplierFor(5).Should().Be(ForgeRules.XpMultiplierLevels1To10);
+            Scenario.XpMultiplierFor(45).Should().Be(ForgeRules.XpMultiplierLevels41Up);
+            Scenario.XpMultiplierFor(25).Should().Be(CraftMinigameXp.MultiplierFor(CraftMinigameType.Forge, 25));
         }
 
         [Test]

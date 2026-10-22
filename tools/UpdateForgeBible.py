@@ -1,6 +1,6 @@
-"""Record the Plasma Forge's Smithery XP multiplier in the Design Bible.
+"""Record the Plasma Forge's Smithery XP multipliers in the Design Bible.
 
-The multiplier is `ForgeRules.XpMultiplier` in code. This writes it as an entry on the "System Changes & Migrations" tab: the
+The multipliers are the `ForgeRules.XpMultiplier...` constants in code, one per recipe-level band. This writes them as an entry on the "System Changes & Migrations" tab: the
 row whose text starts with the marker below is rewritten, or a new numbered row is added after the last one. Only that sheet's
 XML changes and every other workbook entry is copied byte for byte. Safe to rerun, and after a workbook merge conflict take the
 base workbook and run it again.
@@ -38,22 +38,39 @@ MARKER = "Smithery recipes are crafted in the Plasma Forge"
 TEMPLATE_ROW = 13
 
 
-def read_multiplier() -> str:
-    match = re.search(r"XpMultiplier\s*=\s*(\d+(?:\.\d+)?)\s*;", RULES.read_text(encoding="utf-8"))
-    if not match:
-        raise SystemExit(f"XpMultiplier was not found in {RULES}.")
-    return match.group(1)
+BANDS = (
+    ("Levels1To10", "levels 1-10"),
+    ("Levels11To20", "levels 11-20"),
+    ("Levels21To30", "levels 21-30"),
+    ("Levels31To40", "levels 31-40"),
+    ("Levels41Up", "level 41 and up"),
+)
 
 
-def entry_text(multiplier: str) -> str:
+def read_multipliers() -> list[tuple[str, str]]:
+    """The band label and multiplier of every recipe-level band, read from ForgeRules."""
+    source = RULES.read_text(encoding="utf-8")
+    bands = []
+    for name, label in BANDS:
+        match = re.search(rf"XpMultiplier{name}\s*=\s*(\d+(?:\.\d+)?)\s*;", source)
+        if not match:
+            raise SystemExit(f"XpMultiplier{name} was not found in {RULES}.")
+        bands.append((label, match.group(1)))
+    return bands
+
+
+def entry_text(bands: list[tuple[str, str]]) -> str:
+    listed = ", ".join(f"{multiplier} at {label}" for label, multiplier in bands)
     return (
-        f"{MARKER}, and the base XP of every Smithery craft is multiplied by {multiplier}, a failed craft's included. The Forge's"
-        " crafts take 10 to 20 actions where the old window's early crafts took about 6, so without the multiplier Smithery"
-        " would pay less XP per hour at low ranks than today. The factor is ForgeRules.XpMultiplier and applies to Smithery only.")
+        f"{MARKER}, and the base XP of a Smithery craft is multiplied by a factor for the recipe's level band, a failed craft's"
+        f" included: {listed}. The Forge's crafts take 10 to 20 actions where the old window's early crafts took about 6, so"
+        " without the multiplier Smithery would pay less XP per hour at low levels than today. Each factor is the smallest that"
+        " keeps every gear tier and enhancement count at or above today's XP per hour. The factors are the"
+        " ForgeRules.XpMultiplier constants and apply to Smithery only.")
 
 
-def update_sheet(sheet: Sheet, multiplier: str) -> None:
-    text = entry_text(multiplier)
+def update_sheet(sheet: Sheet, bands: list[tuple[str, str]]) -> None:
+    text = entry_text(bands)
     template = sheet.row_cells(TEMPLATE_ROW)
     number_style, text_style = cell_style(template["A"]), cell_style(template["B"])
 
@@ -90,7 +107,7 @@ def update_sheet(sheet: Sheet, multiplier: str) -> None:
 
 
 def update_workbook(path: Path, check: bool) -> bool:
-    multiplier = read_multiplier()
+    bands = read_multipliers()
     with zipfile.ZipFile(path) as source:
         infos = source.infolist()
         original = {info.filename: source.read(info.filename) for info in infos}
@@ -99,10 +116,10 @@ def update_workbook(path: Path, check: bool) -> bool:
 
     entry = paths[SHEET]
     sheet = Sheet(SHEET, original[entry].decode("utf-8"), strings)
-    update_sheet(sheet, multiplier)
+    update_sheet(sheet, bands)
     updated = sheet.xml.encode("utf-8")
     if updated == original[entry]:
-        print("The workbook already records the Smithery XP multiplier.")
+        print("The workbook already records the Smithery XP multipliers.")
         return False
     if check:
         print("The workbook would change.")
@@ -128,7 +145,7 @@ def update_workbook(path: Path, check: bool) -> bool:
         if os.path.exists(temp_name):
             os.remove(temp_name)
 
-    print(f"Recorded the Smithery XP multiplier {multiplier} on the {SHEET} tab.")
+    print(f"Recorded the Smithery XP multipliers ({', '.join(m for _, m in bands)}) on the {SHEET} tab.")
     return True
 
 

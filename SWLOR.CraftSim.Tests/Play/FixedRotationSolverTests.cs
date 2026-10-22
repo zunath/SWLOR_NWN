@@ -185,6 +185,105 @@ namespace SWLOR.CraftSim.Tests.Play
             lines.Should().OnlyContain(line => line.Count <= 5);
         }
 
+        private static RotationCase Combo(string favored, int recipe, IReadOnlyList<string> offered = null) =>
+            new(random => new ComboEngine(random, favored, offered), new[] { recipe, 1, 1 });
+
+        private static readonly IReadOnlyList<string> EachRecipeItsOwnFavorite = new[] { ComboEngine.Red, ComboEngine.Green, ComboEngine.Blue };
+
+        [Test]
+        public void ASharedRotationScoresTheBestSingleSequenceAcrossRecipesThatFavorDifferentActions()
+        {
+            var cases = EachRecipeItsOwnFavorite.Select((favored, index) => Combo(favored, index + 1)).ToList();
+
+            var shared = new FixedRotationSolver(Small).SolveShared(cases, 1);
+
+            // Ten actions make the item whatever they are. Each is the favorite of one recipe in three: (100 + 20 + 20) / 3 whatever the order.
+            shared.SelectionScore.Should().BeApproximately(0.4667, 0.001);
+            FixedRotationSolver.ScoreShared(cases, shared.Sequence, 1, SimStreams.FixedEvaluation, 3, CraftPlayer.DefaultActionLimit)
+                .Should().BeApproximately(0.4667, 0.001);
+            foreach (var recipe in cases)
+            {
+                new FixedRotationSolver(Small).Solve(recipe.Factory, 1, recipe.Stream).SelectionScore
+                    .Should().Be(1.0, "each recipe alone has a rotation that makes it at full quality");
+            }
+        }
+
+        [Test]
+        public void ASharedRotationOfRecipesThatFavorTheSameActionIsTheirCommonBest()
+        {
+            var cases = new[] { Combo(ComboEngine.Red, 1), Combo(ComboEngine.Red, 2), Combo(ComboEngine.Red, 3) };
+
+            var shared = new FixedRotationSolver(Small).SolveShared(cases, 1);
+
+            shared.SelectionScore.Should().Be(1.0);
+            shared.Sequence.Should().OnlyContain(action => action == ComboEngine.Red);
+        }
+
+        [Test]
+        public void ASharedSearchOfOneRecipeIsTheSearchOfThatRecipe()
+        {
+            var one = new[] { Combo(ComboEngine.Green, 7) };
+
+            var shared = new FixedRotationSolver(Small).SolveShared(one, 3);
+            var alone = new FixedRotationSolver(Small).Solve(one[0].Factory, 3, one[0].Stream);
+
+            shared.Sequence.Should().Equal(alone.Sequence);
+            shared.SelectionScore.Should().Be(alone.SelectionScore);
+        }
+
+        [Test]
+        public void ASharedRotationIsRepeatableFromTheSeedAndTheSeedLinesOnlyHelp()
+        {
+            var cases = EachRecipeItsOwnFavorite.Select((favored, index) => Combo(favored, index + 1)).ToList();
+            var lines = new IReadOnlyList<string>[] { new[] { ComboEngine.Green, ComboEngine.Green } };
+
+            var first = new FixedRotationSolver(Small).SolveShared(cases, 5, lines);
+            var second = new FixedRotationSolver(Small).SolveShared(cases, 5, lines);
+            var without = new FixedRotationSolver(Small).SolveShared(cases, 5);
+
+            second.Sequence.Should().Equal(first.Sequence);
+            second.SelectionScore.Should().Be(first.SelectionScore);
+            first.SelectionScore.Should().BeGreaterThanOrEqualTo(without.SelectionScore - 1e-9);
+        }
+
+        [Test]
+        public void ASharedRotationWeighsEveryRecipeTheSameAndScoresEachOnItsOwn()
+        {
+            var cases = EachRecipeItsOwnFavorite.Select((favored, index) => Combo(favored, index + 1)).ToList();
+            var allRed = Enumerable.Repeat(ComboEngine.Red, 10).ToList();
+
+            var each = FixedRotationSolver.ScoreEach(cases, allRed, 1, SimStreams.FixedEvaluation, 2, CraftPlayer.DefaultActionLimit);
+            var mean = FixedRotationSolver.ScoreShared(cases, allRed, 1, SimStreams.FixedEvaluation, 2, CraftPlayer.DefaultActionLimit);
+
+            each.Should().HaveCount(3);
+            each[0].Should().BeApproximately(1.0, 1e-6);
+            each[1].Should().BeApproximately(0.2, 1e-6);
+            each[2].Should().BeApproximately(0.2, 1e-6);
+            mean.Should().BeApproximately(1.4 / 3, 1e-6);
+        }
+
+        [Test]
+        public void ASharedRotationSkipsAnActionARecipeDoesNotOfferInsteadOfFailing()
+        {
+            var redAndGreenOnly = new[] { ComboEngine.Red, ComboEngine.Green };
+            var cases = new[] { Combo(ComboEngine.Red, 1, redAndGreenOnly), Combo(ComboEngine.Blue, 2) };
+            var sequence = new[] { ComboEngine.Blue, ComboEngine.Red, ComboEngine.Red, ComboEngine.Red, ComboEngine.Red, ComboEngine.Red, ComboEngine.Red, ComboEngine.Red, ComboEngine.Red, ComboEngine.Red, ComboEngine.Red };
+
+            var each = FixedRotationSolver.ScoreEach(cases, sequence, 1, SimStreams.FixedEvaluation, 2, CraftPlayer.DefaultActionLimit);
+            var shared = new FixedRotationSolver(Small).SolveShared(cases, 1);
+
+            each[0].Should().Be(1.0, "the first recipe has no blue, so it skips that action and plays red");
+            each[1].Should().BeApproximately(0.28, 1e-6, "one blue (10) and nine reds (2 each) for the recipe that favors blue");
+            shared.Sequence.Should().Contain(ComboEngine.Blue, "the union of the recipes' actions is searched").And.Contain(ComboEngine.Red);
+        }
+
+        [Test]
+        public void ASharedRotationNeedsAtLeastOneRecipe()
+        {
+            ((Action)(() => new FixedRotationSolver(Small).SolveShared(Array.Empty<RotationCase>(), 1))).Should().Throw<ArgumentException>();
+            ((Action)(() => new FixedRotationSolver(Small).SolveShared(null, 1))).Should().Throw<ArgumentException>();
+        }
+
         [Test]
         public void OptionsOutsideTheirRangesAreRejected()
         {

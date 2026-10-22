@@ -29,7 +29,10 @@ namespace SWLOR.CraftSim.Scenario.Forge
         /// <summary>An estimate for the new window until the client evidence measures it; the old window's is 6.</summary>
         public double SecondsPerAction => 8.0;
 
+        /// <summary>The Forge's multiplier at the lowest level band, the largest; <see cref="XpMultiplierFor"/> gives each band's.</summary>
         public double XpMultiplier => CraftMinigameXp.MultiplierFor(Minigame);
+
+        public double XpMultiplierFor(int recipeLevel) => CraftMinigameXp.MultiplierFor(Minigame, recipeLevel);
 
         public EnhancementSupport Enhancements => EnhancementSupport.Modeled;
 

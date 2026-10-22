@@ -27,7 +27,8 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.FabricationRecipeDefinition
                 .EnhancementSlots(RecipeEnhancementType.Structure, 1)
                 .Component("lth_ruined", 3)
                 .Component("fiberp_ruined", 2)
-                .Component("ae_echo", 1);
+                .Component("ae_echo", 1)
+                .FabricatorParameters(frameSizePercent: 51, shellSizePercent: 34, frameQualityPercent: 61, shellQualityPercent: 23, wearRate: 3);
 
             // Resonant Signal Lamp
             _builder.Create(RecipeType.ResonantSignalLamp, SkillType.Fabrication)
@@ -39,7 +40,8 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.FabricationRecipeDefinition
                 .EnhancementSlots(RecipeEnhancementType.Structure, 1)
                 .Component("fiberp_ruined", 3)
                 .Component("ref_veldite", 1)
-                .Component("ae_echo", 1);
+                .Component("ae_echo", 1)
+                .FabricatorParameters(frameSizePercent: 16, shellSizePercent: 33, frameQualityPercent: 15, shellQualityPercent: 34, wearRate: 3);
 
             // Resonant Trophy Stand
             _builder.Create(RecipeType.ResonantTrophyStand, SkillType.Fabrication)
@@ -51,7 +53,8 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.FabricationRecipeDefinition
                 .EnhancementSlots(RecipeEnhancementType.Structure, 1)
                 .Component("wood", 3)
                 .Component("ref_veldite", 2)
-                .Component("ae_echo", 1);
+                .Component("ae_echo", 1)
+                .FabricatorParameters(frameSizePercent: 34, shellSizePercent: 21, frameQualityPercent: 30, shellQualityPercent: 23, wearRate: 4);
 
             // Resonant Low Table
             _builder.Create(RecipeType.ResonantLowTable, SkillType.Fabrication)
@@ -63,7 +66,8 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.FabricationRecipeDefinition
                 .EnhancementSlots(RecipeEnhancementType.Structure, 1)
                 .Component("wood", 3)
                 .Component("fiberp_ruined", 2)
-                .Component("ae_echo", 1);
+                .Component("ae_echo", 1)
+                .FabricatorParameters(frameSizePercent: 38, shellSizePercent: 41, frameQualityPercent: 37, shellQualityPercent: 44, wearRate: 4);
 
             // Resonant Wall Banner
             _builder.Create(RecipeType.ResonantWallBanner, SkillType.Fabrication)
@@ -75,7 +79,8 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.FabricationRecipeDefinition
                 .EnhancementSlots(RecipeEnhancementType.Structure, 1)
                 .Component("fiberp_ruined", 3)
                 .Component("lth_ruined", 2)
-                .Component("ae_echo", 1);
+                .Component("ae_echo", 1)
+                .FabricatorParameters(frameSizePercent: 36, shellSizePercent: 49, frameQualityPercent: 29, shellQualityPercent: 56, wearRate: 4);
 
             // Resonant Supply Locker
             _builder.Create(RecipeType.ResonantSupplyLocker, SkillType.Fabrication)
@@ -87,7 +92,8 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.FabricationRecipeDefinition
                 .EnhancementSlots(RecipeEnhancementType.Structure, 1)
                 .Component("wood", 3)
                 .Component("ref_veldite", 2)
-                .Component("ae_echo", 1);
+                .Component("ae_echo", 1)
+                .FabricatorParameters(frameSizePercent: 31, shellSizePercent: 35, frameQualityPercent: 30, shellQualityPercent: 36, wearRate: 3);
 
             // Resonant Floor Mat
             _builder.Create(RecipeType.ResonantFloorMat, SkillType.Fabrication)
@@ -99,7 +105,8 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.FabricationRecipeDefinition
                 .EnhancementSlots(RecipeEnhancementType.Structure, 1)
                 .Component("lth_ruined", 3)
                 .Component("fiberp_ruined", 2)
-                .Component("ae_echo", 1);
+                .Component("ae_echo", 1)
+                .FabricatorParameters(frameSizePercent: 22, shellSizePercent: 58, frameQualityPercent: 20, shellQualityPercent: 61, wearRate: 3);
 
             // Resonant Data Console
             _builder.Create(RecipeType.ResonantDataConsole, SkillType.Fabrication)
@@ -111,7 +118,8 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.FabricationRecipeDefinition
                 .EnhancementSlots(RecipeEnhancementType.Structure, 1)
                 .Component("elec_ruined", 3)
                 .Component("fiberp_ruined", 2)
-                .Component("ae_echo", 1);
+                .Component("ae_echo", 1)
+                .FabricatorParameters(frameSizePercent: 22, shellSizePercent: 23, frameQualityPercent: 20, shellQualityPercent: 23, wearRate: 2);
 
             // Resonant Display Plinth
             _builder.Create(RecipeType.ResonantDisplayPlinth, SkillType.Fabrication)
@@ -123,7 +131,8 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.FabricationRecipeDefinition
                 .EnhancementSlots(RecipeEnhancementType.Structure, 1)
                 .Component("wood", 3)
                 .Component("ref_veldite", 2)
-                .Component("ae_echo", 1);
+                .Component("ae_echo", 1)
+                .FabricatorParameters(frameSizePercent: 29, shellSizePercent: 52, frameQualityPercent: 21, shellQualityPercent: 58, wearRate: 3);
 
             // Resonant Work Stool
             _builder.Create(RecipeType.ResonantWorkStool, SkillType.Fabrication)
@@ -135,7 +144,8 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.FabricationRecipeDefinition
                 .EnhancementSlots(RecipeEnhancementType.Structure, 1)
                 .Component("wood", 3)
                 .Component("lth_ruined", 2)
-                .Component("ae_echo", 1);
+                .Component("ae_echo", 1)
+                .FabricatorParameters(frameSizePercent: 48, shellSizePercent: 35, frameQualityPercent: 44, shellQualityPercent: 40, wearRate: 4);
         }
     }
 }

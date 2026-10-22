@@ -36,8 +36,8 @@ namespace SWLOR.CraftSim.Tests.Gates
             var plain = Suite(new BenchScenario()).Inputs(context);
             var scaled = Suite(new BenchScenario { XpMultiplier = 3.0 }).Inputs(context);
 
-            plain.Should().NotContain(line => line.Contains("XP multiplier"));
-            scaled.Should().Contain(line => line.Contains("XP multiplier") && line.Contains("3"));
+            plain.Should().Contain(line => line.Contains("XP multiplier: none"));
+            scaled.Should().Contain(line => line.Contains("XP multiplier") && line.Contains("3.00x"));
         }
     }
 }

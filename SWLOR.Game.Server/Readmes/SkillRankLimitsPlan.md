@@ -2,7 +2,7 @@
 
 Owner-approved design for an optional rank limit on each skill. A player can say "stop Piloting at 25" and stop worrying about decay. The feature is off unless a player sets a limit.
 
-It ships on its own pull request, ahead of the space revamp (`SpaceRevampPlan.md`), so players can set limits before they spend the Rebuild Token that release grants. Delete this file after release; the lasting rules live in the code, the tests and the Player Guide.
+It ships on its own pull request, ahead of the space revamp, so players can set limits before they spend the Rebuild Token that release grants. The space revamp plan is not on `master` yet: it is `SWLOR.Game.Server/Readmes/SpaceRevampPlan.md` on branch `claude/festive-edison-bbnnxi`. Its migration section grants every character one Rebuild Token and points back to this plan. Delete this file after release; the lasting rules live in the code, the tests and the Player Guide.
 
 ## 1. What players get
 
@@ -26,10 +26,12 @@ It ships on its own pull request, ahead of the space revamp (`SpaceRevampPlan.md
    - A limited skill at or below its limit never decays.
 5. **Blocked at the cap:** when no candidate remains, XP is blocked as today. Update both existing `SKILL_CAP` messages to say "locked or at their limits" instead of "locked from decay".
 6. **Scope:** only skills with `ContributesToSkillCap`, the same set as the decay lock. Languages and other non-contributing skills have no limit control and ignore any stored value.
-7. **RP XP** (`Feature/GuiDefinition/ViewModel/DistributeRPXPViewModel.cs`):
-   - The window refuses a skill at its limit.
-   - It caps the amount at the XP needed to reach the limit. Distribution calls `GiveSkillXP` with `ignoreBonuses: true` and no henchman penalty, so the needed XP is exact.
-   - The window explains the refusal or the cap in its own text.
+7. **RP XP** (`Feature/GuiDefinition/ViewModel/DistributeRPXPViewModel.cs`): RP XP is never lost to a blocked award.
+   - **Today's bug:** the window subtracts the amount from `UnallocatedXP` *before* calling `GiveSkillXP`. If the award is then blocked (at the cap with every other skill locked), the RP XP is lost. Limits make that state more common, so fix it here.
+   - **Return the accepted amount:** change `GiveSkillXP` to return the XP it actually used: XP debt repaid plus XP applied to the skill. It returns 0 when it blocks the award. Existing callers can ignore the return value.
+   - **Debit only what was accepted:** the window calls `GiveSkillXP` first, re-reads the player, and subtracts only the returned amount from `UnallocatedXP`.
+   - **Refuse up front** when the skill is at its limit, or when the player is at the cap and no decay candidate remains (rule 5). Explain why in the window's own text.
+   - **Cap the amount** at the XP needed to reach the limit. Distribution calls `GiveSkillXP` with `ignoreBonuses: true` and no henchman penalty, so the needed XP is exact.
 8. **Rebuilds:** `CharacterFullRebuildViewModel` ignores limits during manual allocation. `RefundAllSkills` leaves `RankLimit` untouched; it still resets `IsLocked` as today. Limits persist through full rebuilds and Rebuild Tokens.
 9. **Other rank writers:**
    - `PlayerInitialization` sets language ranks, and languages are out of scope.
@@ -73,9 +75,13 @@ Keep `PlayerGuideContentTests` passing. Game text uses ASCII punctuation (`Codin
   - XP blocked when every other skill is locked or at its limit
   - non-contributing skills ignoring limits
   - the RP XP refusal and amount cap
+  - RP XP kept, not debited, when the award is blocked at the cap with no decay candidate
+  - `GiveSkillXP` returning the accepted amount, including debt repayment
   - limits surviving a rebuild reset
 - **Existing tests to keep green:** `PlayerSkillPointAccountingTests` and `CharacterRebuildSkillAvailabilityTests`.
-- **Message audit:** add the new `SKILL_LIMIT` message and the changed `SKILL_CAP` text to `Readmes/PlayerMessageAudit.json` (`PlayerFeedback.md`).
+- **Message audit:**
+  - Add the new `SKILL_LIMIT` message and the changed `SKILL_CAP` text to `Readmes/PlayerMessageAudit.json` (`PlayerFeedback.md`).
+  - Update `PlayerMessageAuditTests.SkillCapWarnings_ShareOneProductionLimitAcrossSkillsAndOutcomes`. It requires exactly two `SendWarningToPlayer` calls in `Skill.cs`, all keyed `SKILL_CAP`. Keep that invariant for the cap warnings, and allow and assert exactly one separate `SKILL_LIMIT` warning.
 - **Client evidence** (`InEngineVisualVerification.md`):
   - the Skills window with limits set
   - the limit warning after earning XP at a limit

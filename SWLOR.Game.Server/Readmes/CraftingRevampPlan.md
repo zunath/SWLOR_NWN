@@ -28,7 +28,7 @@ The revamp aligns crafting with the combat upgrade:
 - Smithery, Engineering, Fabrication (including Research) and Agriculture (cooking and fishing).
 - Gathering (harvesting, scavenging, refining).
 - Espionage's poison and trap crafting.
-- **Progression pace** (added by the owner after player feedback, October 2026): the crafting XP curve and guild ranks. Players report slow crafting progression and guild ranks that are a required chore, and bypass both with RP XP or rebuilds. The design is pending: research today's rates first, then get the owner's approval of the changes before coding (workstream 11).
+- **Progression pace** (added by the owner after player feedback, October 2026): crafting XP speed and the crafting guilds' task cap. Players report slow crafting progression and guild ranks that are a required chore, and bypass both with RP XP or rebuilds (workstream 11).
 
 **Out of scope**
 - **Farming.** It comes later and will add a third Agriculture line, Farmer, at 25 SP.
@@ -188,10 +188,11 @@ Build `SWLOR.CraftSim` (tool and tests) on the `SWLOR.CombatSim` pattern. It dri
    - Material use per crafted item at matched quality stays near today's.
 6. **XP rate** (owner decision after player feedback, October 2026).
    - At matched rank and gear, XP per hour of play in each minigame is at least today's.
-   - **Cohort**, identical for the legacy and new runs: each recipe band (1-10, 11-20, 21-30, 31-40, 41-53) with rank equal to recipe level; no gear, mid and best gear tiers; the band's active recipes weighted equally; no blueprint and not a first craft; quality and failures as each policy actually plays them (legacy: the lookahead policy; new: CraftSim's adaptive policy), counting the 15% failure XP. Each band and gear tier must pass on its own.
-   - CraftSim estimates minutes per craft from actions taken and a seconds-per-action estimate. Measure that estimate in the client evidence, separately for today's minigame and each new one.
-   - If a minigame falls short, scale its per-craft XP up, recorded in code and the Bible. Do not shorten the minigame below its length target to pass.
-   - Today's actions per craft are in `design/testing/crafting-revamp/legacy-crafting-baseline.md`: 5-9 at levels 1-10, rising to 20-28 at levels 21-53 with gear.
+   - **Item-craft cohort**, identical for the legacy and new runs: each recipe band (1-10, 11-20, 21-30, 31-40, 41-53) with rank equal to recipe level, capped at rank 50 (levels 51-53 run at rank 50); no gear, mid and best gear tiers; the band's active recipes weighted equally; no blueprint and not a first craft; quality and failures as each policy actually plays them (legacy: the lookahead policy; new: CraftSim's adaptive policy), counting the 15% failure XP. Each band and gear tier must pass on its own.
+   - **Activity cohorts:** harvesting per node tier with rank equal to the vein level (XP per item); scavenging per site level with rank equal to 10 × site level (XP per attempt, quarter on failure); fishing per fish-level band (0-10, ..., 41-52, rank equal to fish level, capped at 50; XP per bite). Each pairs the legacy loop with its replacement at the parity attribute medians. Refining has no minigame, and research XP is new, so neither is gated here.
+   - CraftSim estimates minutes per craft, node, site or fight from actions taken and a seconds-per-action estimate. Measure that estimate in the client evidence, separately for each legacy loop and each new one.
+   - If a loop falls short, scale its XP per craft, item, attempt or bite up, recorded in code and the Bible. Do not shorten it below its length target to pass.
+   - **Legacy timing input:** Foundation 1d (PR #2803) commits today's actions per craft in `design/testing/crafting-revamp/legacy-crafting-baseline.md` (5-9 at levels 1-10, rising to 20-28 at levels 21-53 with gear) and the gathering baseline beside it. Re-run them with the committed seeds when the inputs change.
 
 **Baselines.**
 - **Legacy model.** CraftSim ports today's rules as a legacy baseline, checked formula by formula against the code: the old minigame (`CraftViewModel.cs`), harvesting, scavenging, refining and the fishing catch roll. Build it in Foundation, before Closeout deletes the old minigame.
@@ -643,9 +644,13 @@ The combat upgrade's model applies, with no pilot: build every minigame, then te
 8. **Espionage:** Reaction.
 9. **Gathering:** Prospecting, Search and refining changes, plus the Prospector and Treasure Seeker lines and the gathering animations.
 10. **Art:** Trellis2 placeable adaptation, seven station models, and the five station work loops.
-11. **Progression pace:** the crafting XP curve and guild-rank requirements. It starts with research and an owner-approved proposal, and can run beside 2-10. Any XP change must keep the XP-rate gate meaningful: measure the gate against today's XP, then apply the curve change on top.
-    - **Isolate the change.** `Skill.GetRequiredXP` and `GetDeltaXP` take no skill and also drive combat and Piloting, and `Guild._rankProgression` is shared by every guild, including the Hunter's Guild. Changes apply only to the crafting skills and crafting guilds, through crafting-specific tables or a skill or guild parameter, with tests that combat, Piloting and Hunter's Guild progression are unchanged.
-    - **Existing progress.** If required XP per rank changes, the proposal says how stored XP and ranks convert (a migration, with tests on legacy records) so no character loses a rank.
+11. **Progression pace:** crafting XP speed and the crafting guilds' task cap. It can run beside 2-10. Owner decisions (October 2026), after research:
+    - **Today.** One XP table serves every skill; rank 50 costs 411,125 XP, about 340-420 at-level crafts plus 2,000-4,000 components, with Gathering needing its own 411,125. Guild rank 5 needs 45,000 GP (about 240 hand-in tasks), and each tier offers only 10 tasks per server boot (`Guild.cs:127-169`, `GuildTasksViewModel.cs:140-146`), so rank 5 takes at least 14-21 days. RP XP pays about 3,000 XP per hour with no materials.
+    - **Guild task cap.** For the Smithery, Engineering, Fabrication and Agriculture guilds, completing a task no longer hides it until the next boot; the board refreshes after completion. GP thresholds, GP per task and guild rank gates stay as they are. The Hunter's Guild is unchanged.
+    - **Guild tasks give XP.** Each crafting-guild hand-in also awards XP in that guild's skill. Propose the amount (measured against the task's recipe level) for the owner's approval.
+    - **XP speed: measure, then set a target.** Model today's hours to rank 50 for each crafting skill in CraftSim, including the gathering that supplies it, then bring the owner a target and the crafting-only multiplier or curve that meets it. Measure the XP-rate gate against today's XP first, then apply the change on top.
+    - **Isolate the change.** `Skill.GetRequiredXP` and `GetDeltaXP` take no skill and also drive combat and Piloting, and guild code is shared with the Hunter's Guild. Changes apply only to the crafting skills and crafting guilds, through crafting-specific tables or a skill or guild parameter, with tests that combat, Piloting and Hunter's Guild progression are unchanged.
+    - **Existing progress.** If required XP per rank changes, convert stored XP and ranks (a migration, with tests on legacy records) so no character loses a rank. Guild points and ranks need no conversion, because their thresholds do not change.
 12. **Closeout.**
     - Delete the old minigame (`CraftViewModel` rules, `CraftDefinition`, retired level-chart fields).
     - Final Bible sync, player guide text and tooltips.

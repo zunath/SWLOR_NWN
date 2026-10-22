@@ -39,7 +39,7 @@ public class ChatPortraitTellGuardTests
     }
 
     [Test]
-    public void SharedDescriptorsOnlineTogether_EachPortraitReachesItsOwnSpeaker()
+    public void SharedDescriptorsOnlineTogether_NeitherPortraitIsStale()
     {
         var guard = new ChatPortraitTellGuard(Lifetime);
         guard.RecordLine(Observer, SharedSlot, FirstSpecialist);

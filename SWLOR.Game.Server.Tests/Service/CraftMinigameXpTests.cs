@@ -14,7 +14,7 @@ public class CraftMinigameXpTests
     [Test]
     public void OnlyAMinigameThatNeedsOneHasAMultiplier_AndOnlyForTheRecipeLevelsThatNeedIt()
     {
-        foreach (var minigame in Enum.GetValues<CraftMinigameType>().Where(minigame => minigame != CraftMinigameType.Reaction))
+        foreach (var minigame in Enum.GetValues<CraftMinigameType>().Where(minigame => minigame is not (CraftMinigameType.Reaction or CraftMinigameType.Fabricator)))
         {
             foreach (var level in new[] { 1, 10, 11, 50 })
                 CraftMinigameXp.MultiplierFor(minigame, level).Should().Be(1.0, $"{minigame} level {level}");

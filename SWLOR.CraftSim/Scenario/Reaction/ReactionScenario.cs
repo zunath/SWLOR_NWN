@@ -1,4 +1,3 @@
-using SWLOR.CraftSim.Data;
 using SWLOR.CraftSim.Play;
 using SWLOR.Game.Server.Service.CraftService;
 using SWLOR.Game.Server.Service.CraftService.Minigame;
@@ -25,8 +24,11 @@ namespace SWLOR.CraftSim.Scenario.Reaction
         /// <summary>The starting estimate for a new minigame's window; the client evidence replaces it.</summary>
         public double SecondsPerAction => 8.0;
 
-        /// <summary>The Reaction's multiplier on a craft's base XP, the same one the game applies.</summary>
-        public double XpMultiplierFor(RecipeEntry recipe) => CraftMinigameXp.MultiplierFor(Minigame, recipe.Level);
+        /// <summary>The Reaction's multiplier at the lowest level band, the largest; <see cref="XpMultiplierFor"/> gives each band's.</summary>
+        public double XpMultiplier => CraftMinigameXp.MultiplierFor(Minigame);
+
+        /// <summary>The Reaction's multiplier on a craft's base XP at a recipe level, the same one the game applies.</summary>
+        public double XpMultiplierFor(int recipeLevel) => CraftMinigameXp.MultiplierFor(Minigame, recipeLevel);
 
         public EnhancementSupport Enhancements => EnhancementSupport.NoSlots;
 

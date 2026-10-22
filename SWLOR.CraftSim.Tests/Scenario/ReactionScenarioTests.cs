@@ -55,7 +55,7 @@ namespace SWLOR.CraftSim.Tests.Scenario
             ICraftScenario variant = new ReactionAtMinimumRankScenario();
 
             foreach (var recipe in EspionageRecipes())
-                variant.XpMultiplierFor(recipe).Should().Be(ReactionRules.XpMultiplier(recipe.Level), recipe.Resref);
+                variant.XpMultiplierFor(recipe.Level).Should().Be(ReactionRules.XpMultiplier(recipe.Level), recipe.Resref);
 
             variant.Enhancements.Should().Be(EnhancementSupport.NoSlots);
         }
@@ -108,10 +108,10 @@ namespace SWLOR.CraftSim.Tests.Scenario
             ICraftScenario scenario = new ReactionScenario();
 
             foreach (var recipe in EspionageRecipes())
-                scenario.XpMultiplierFor(recipe).Should().Be(ReactionRules.XpMultiplier(recipe.Level), recipe.Resref);
+                scenario.XpMultiplierFor(recipe.Level).Should().Be(ReactionRules.XpMultiplier(recipe.Level), recipe.Resref);
 
-            scenario.XpMultiplierFor(EspionageRecipes().First(recipe => recipe.Level <= 10)).Should().BeGreaterThan(1.0);
-            scenario.XpMultiplierFor(EspionageRecipes().First(recipe => recipe.Level > 10)).Should().Be(1.0, "only the lowest band needs a multiplier");
+            scenario.XpMultiplierFor(EspionageRecipes().First(recipe => recipe.Level <= 10).Level).Should().BeGreaterThan(1.0);
+            scenario.XpMultiplierFor(EspionageRecipes().First(recipe => recipe.Level > 10).Level).Should().Be(1.0, "only the lowest band needs a multiplier");
             scenario.SecondsPerAction.Should().Be(8.0);
         }
 

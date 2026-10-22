@@ -37,8 +37,6 @@ namespace SWLOR.CraftSim.Tests.Support
         /// <summary>The multiplier on the new loop's base XP; 1 leaves it alone.</summary>
         public double XpMultiplier { get; init; } = 1.0;
 
-        public double XpMultiplierFor(RecipeEntry recipe) => XpMultiplier;
-
         /// <summary>Adds the Perfect action, so a fixed rotation of it is as good as anything.</summary>
         public bool Dominant { get; init; }
 

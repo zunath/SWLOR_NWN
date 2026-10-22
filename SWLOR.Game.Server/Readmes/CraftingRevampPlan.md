@@ -180,10 +180,11 @@ Every recipe gets its own minigame parameters.
 
 Build `SWLOR.CraftSim` (tool and tests) on the `SWLOR.CombatSim` pattern. It drives the real rules engines rather than a copy of them, with repeatable seeds. A minigame ships only when all of these pass:
 
-1. **No fixed rotation.**
-   - A solver searches for the best fixed action sequence per recipe.
-   - Adaptive play must clearly beat it in average quality on every recipe band and gear level.
+1. **No single rotation** (owner decision, October 2026; CraftSim still names the gate "No fixed rotation").
+   - The player complaint was one rotation winning across every craft. A solver searches for the best single fixed action sequence per recipe band and gear level, searched across the band's sampled recipes (an action that is unavailable when its turn comes is skipped).
+   - Adaptive play must beat it in average quality, by the target below, on every recipe band and gear level.
    - *Starting target:* at least 10 quality points.
+   - The best fixed sequence for each recipe alone stays in the report as a metric and is not a pass/fail gate. The Forge and Fabricator show their full state and have almost no randomness, so a sequence per recipe that matches adaptive play always exists, and a gate on it could only be passed by adding the randomness players asked to reduce.
 2. **Style balance.**
    - For every style pair, each style must be the better choice on at least 30% of recipes, or fish for the Angler.
    - Neither style may beat the other by more than about 5 quality points on average.
@@ -193,7 +194,9 @@ Build `SWLOR.CraftSim` (tool and tests) on the `SWLOR.CombatSim` pattern. It dri
    - Gathering yield per node and per scavenge site at each rank stays near today's expected yield. Quick Harvest and Quick Search equal it, and a skilled session stays within +15% of it (starting value).
    - Fish caught per bite at each rank stays near today's catch rate.
    - Research base credits and times are unchanged; the Analyze cut stays within its cap.
-   - Material use per crafted item at matched quality stays near today's.
+   - Material use per crafted item at matched quality (owner decision, October 2026), per recipe band and gear level:
+     - Where the legacy policy's success rate is at least 90% (starting value), component stacks per item stay within 10% of today's, either way.
+     - Where it is lower, today's failures waste material, so the cell fails only if the new minigame uses more than 10% more than today. Lower use passes, and the report shows it.
 6. **XP rate** (owner decision after player feedback, October 2026).
    - At matched rank and gear, XP per hour of play in each minigame is at least today's.
    - **Item-craft cohort**, identical for the legacy and new runs: each recipe band (1-10, 11-20, 21-30, 31-40, 41-53) with rank equal to recipe level, capped at rank 50 (levels 51-53 run at rank 50); no gear, mid and best gear tiers; the band's active recipes weighted equally; no blueprint and not a first craft; quality and failures as each policy actually plays them (legacy: the lookahead policy; new: CraftSim's adaptive policy), counting the 15% failure XP. Run it with no enhancements and with representative enhancements for each slot count the recipes support (one, two, three), applying each side's enhancement difficulty. Each band, gear tier and enhancement count must pass on its own.

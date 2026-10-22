@@ -103,6 +103,12 @@ namespace SWLOR.Game.Server.Service.CraftService.RecipeParameters
                         $"is outside [{definition.Min}, {definition.Max}].");
                 }
 
+                if (definition.EnumType != null && !definition.IsOnGrid(value))
+                {
+                    throw new InvalidOperationException(
+                        $"Profile {profile.Key} base value {definition.Name}={value} on {recipe.Type} is not a member of {definition.EnumType.Name}.");
+                }
+
                 values[definition.Name] = definition.Snap(value);
             }
 

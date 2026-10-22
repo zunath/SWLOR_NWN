@@ -177,6 +177,26 @@ public class RecipeParameterGeneratorTests
         Assert.That(exception!.Message, Does.Contain("center"));
     }
 
+    [TestCase(2.6)]
+    [TestCase(0.4)]
+    public void Generate_ThrowsWhenABaseEnumValueIsNotAMember(double style)
+    {
+        var profile = new ConfigurableTestProfile(
+            _ =>
+            {
+                var values = ConfigurableTestProfile.FlatBase().ToDictionary(pair => pair.Key, pair => pair.Value);
+                values["style"] = style;
+                return values;
+            },
+            parameters => 0,
+            _ => new DifficultyBudget(0, 1));
+
+        var exception = Assert.Throws<InvalidOperationException>(
+            () => RecipeParameterGenerator.Generate(profile, Context(RecipeType.AdventTunic)));
+
+        Assert.That(exception!.Message, Does.Contain("style"));
+    }
+
     [Test]
     public void Generate_ThrowsWhenABaseValueIsMissing()
     {

@@ -190,6 +190,22 @@ public class RecipeParameterAuditTests
     }
 
     [Test]
+    public void ValidateProfile_FlagsABibleHeaderThatDoesNotStartWithTheProfileKey()
+    {
+        var definitions = new[]
+        {
+            RecipeParameterDefinition.Integer("center", "Skill Level", 0, 10),
+            RecipeParameterDefinition.Integer("width", "Configurable Width", 0, 10),
+            RecipeParameterDefinition.Decimal("cooling", "Configurable Cooling", 0.0, 10.0, 1),
+            RecipeParameterDefinition.Enumeration<TestForgeStyle>("style", "Configurable Style"),
+        };
+
+        var problems = RecipeParameterAudit.ValidateProfile(Configurable(definitions: definitions));
+
+        Assert.That(problems, Is.EqualTo(new[] { "Bible header 'Skill Level' must start with 'Configurable '" }));
+    }
+
+    [Test]
     public void ValidateProfile_FlagsAHeaderThatCollidesWithTheOverrideColumn()
     {
         var definitions = new[]

@@ -33,6 +33,11 @@ namespace SWLOR.Game.Server.Service.CraftService.RecipeParameters
                 problems.Add($"parameter name '{duplicate.Key}' is declared twice");
             }
 
+            foreach (var definition in definitions.Where(d => !d.Header.StartsWith(profile.Key + " ", StringComparison.Ordinal)))
+            {
+                problems.Add($"Bible header '{definition.Header}' must start with '{profile.Key} '");
+            }
+
             var headers = definitions.Select(d => d.Header).Append(RecipeParameterBibleColumns.OverrideHeader(profile)).ToList();
             foreach (var duplicate in headers.GroupBy(h => h, StringComparer.OrdinalIgnoreCase).Where(g => g.Count() > 1))
             {

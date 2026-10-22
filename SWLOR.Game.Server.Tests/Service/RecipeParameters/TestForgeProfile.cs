@@ -11,10 +11,10 @@ public sealed class TestForgeProfile : RecipeParameterProfile<TestForgeParameter
 {
     private static readonly IReadOnlyList<RecipeParameterDefinition> _definitions = new[]
     {
-        RecipeParameterDefinition.Integer("center", "Test Forge Center", 20, 80, 6),
-        RecipeParameterDefinition.Integer("width", "Test Forge Width", 8, 40, 4),
-        RecipeParameterDefinition.Decimal("cooling", "Test Forge Cooling", 0.5, 3.0, 1, 0.4),
-        RecipeParameterDefinition.Enumeration<TestForgeStyle>("style", "Test Forge Style"),
+        RecipeParameterDefinition.Integer("center", "TestForge Center", 20, 80, 6),
+        RecipeParameterDefinition.Integer("width", "TestForge Width", 8, 40, 4),
+        RecipeParameterDefinition.Decimal("cooling", "TestForge Cooling", 0.5, 3.0, 1, 0.4),
+        RecipeParameterDefinition.Enumeration<TestForgeStyle>("style", "TestForge Style"),
     };
 
     private readonly SkillType _skill;

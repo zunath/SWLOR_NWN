@@ -12,9 +12,9 @@ namespace SWLOR.CraftSim.Tests.Gates
         private static GateContext Context() => new(SharedData.Recipes, SharedData.Gear, 100, 7, AttributeSweep.Default);
 
         [Test]
-        public void TheFiveGatesOfThePlanAreNamed()
+        public void TheSixGatesOfThePlanAreNamed()
         {
-            GateNames.All.Should().Equal("No fixed rotation", "Style balance", "Perks optional", "Length", "Economy parity");
+            GateNames.All.Should().Equal("No fixed rotation", "Style balance", "Perks optional", "Length", "Economy parity", "XP rate");
         }
 
         [Test]
@@ -67,6 +67,41 @@ namespace SWLOR.CraftSim.Tests.Gates
             var oneNotRun = EveryGate(GateVerdict.Passed);
             oneNotRun[3] = GateResult.NotRun(GateNames.Length, "no engine");
             GateReport.AllPassed(oneNotRun).Should().BeFalse();
+        }
+
+        [Test]
+        public void Build_WritesTheInputsAndLimitationsAroundTheVerdicts()
+        {
+            var results = new[] { new GateResult(GateNames.Length, GateVerdict.Passed, "ok") };
+
+            var report = GateReport.Build(
+                "Title", Context(), results, "cmd", new[] { "- Scenario: Bench.", "- Gear: none." }, new[] { "- Sampled recipes." });
+
+            report.Should().Contain("## Inputs").And.Contain("- Scenario: Bench.").And.Contain("## Limitations").And.Contain("- Sampled recipes.");
+            report.IndexOf("## Inputs", StringComparison.Ordinal).Should().BeLessThan(report.IndexOf("## Verdicts", StringComparison.Ordinal));
+            report.IndexOf("## Verdicts", StringComparison.Ordinal).Should().BeLessThan(report.IndexOf("## Limitations", StringComparison.Ordinal));
+        }
+
+        [Test]
+        public void Build_LeavesOutEmptyInputsAndLimitations()
+        {
+            var report = GateReport.Build("Title", Context(), new[] { new GateResult(GateNames.Length, GateVerdict.Passed, "ok") }, "cmd");
+
+            report.Should().NotContain("## Inputs").And.NotContain("## Limitations");
+        }
+
+        [Test]
+        public void AllPassed_LetsAGateThatDoesNotApplyThroughButNotOneThatWasNotRun()
+        {
+            var results = EveryGate(GateVerdict.Passed);
+            results[1] = GateResult.NotApplicable(GateNames.StyleBalance, "no styles");
+
+            GateReport.AllPassed(results).Should().BeTrue();
+            results[1].Verdict.Should().Be(GateVerdict.NotApplicable);
+            results[1].Summary.Should().Be("no styles");
+
+            results[2] = GateResult.NotRun(GateNames.PerksOptional, "not played");
+            GateReport.AllPassed(results).Should().BeFalse();
         }
 
         [Test]

@@ -226,6 +226,12 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
             var creditAmount = task.Rewards.OfType<GoldReward>().Sum(x => Quest.CalculateQuestGoldReward(Player, true, x.Amount));
 
             TaskDetails = $"Task: {task.Name}\n\nRewards:\nCredits: {creditAmount}\nGuild Points: {gpAmount}";
+
+            // A crafting guild's task also gives XP in its skill, for the rank the player has now.
+            var xpReward = task.Rewards.OfType<GuildTaskXpReward>().FirstOrDefault();
+            if (xpReward != null && GuildTaskXp.GivesXp(xpReward.Guild))
+                TaskDetails += $"\n{Skill.GetSkillDetails(GuildTaskXp.SkillOf(xpReward.Guild)).Name} XP: {xpReward.Preview(Player)}";
+
             if (isExpired)
             {
                 TaskDetails += "\n\nStatus: Expired task. This task is no longer in the current guild task rotation.";

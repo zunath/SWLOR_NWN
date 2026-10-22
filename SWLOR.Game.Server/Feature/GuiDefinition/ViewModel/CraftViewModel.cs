@@ -7,6 +7,7 @@ using SWLOR.Game.Server.Feature.GuiDefinition.RefreshEvent;
 using SWLOR.Game.Server.Service;
 using SWLOR.Game.Server.Service.CombatService;
 using SWLOR.Game.Server.Service.CraftService;
+using SWLOR.Game.Server.Service.CraftService.Minigame;
 using SWLOR.Game.Server.Service.GuiService;
 using SWLOR.Game.Server.Service.GuiService.Component;
 using SWLOR.Game.Server.Service.LogService;
@@ -1390,7 +1391,7 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
             bool firstTime,
             float qualityPercent)
         {
-            var xp = Craft.GetBaseRecipeXP(recipe, playerLevel);
+            var xp = CraftMinigameXp.BaseXp(recipe, playerLevel);
             // 20% bonus for the first time.
             if (firstTime)
                 xp += (int)(xp * 0.20f);

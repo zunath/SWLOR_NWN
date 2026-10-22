@@ -56,7 +56,7 @@ public class CraftSessionLifecycleTests
         return result.Session;
     }
 
-    private int BaseXp => Craft.GetBaseRecipeXP(_recipe, 10);
+    private int BaseXp => CraftMinigameXp.BaseXp(_recipe, 10);
 
     [Test]
     public void Start_CommitsTheMaterialsAndSavesThemOnThePlayerBeforeTheStationLocksIn()

@@ -134,7 +134,7 @@ public class ForgeSessionFlowTests
         settlement.ItemsKept.Should().Be(2);
         _world.Returned.Should().Equal("enh-a", "wire x2");
         _world.Events.Should().NotContain("create:test_item");
-        settlement.Xp.Should().Be(CraftOutcomeRules.CalculateFailureXp(Craft.GetBaseRecipeXP(_recipe, 20), 0));
+        settlement.Xp.Should().Be(CraftOutcomeRules.CalculateFailureXp(CraftMinigameXp.BaseXp(_recipe, 20), 0));
         _player.ActiveCraftSession.Should().BeNull();
         session.Should().NotBeNull();
     }

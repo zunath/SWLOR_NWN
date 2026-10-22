@@ -238,8 +238,8 @@ namespace SWLOR.CraftSim.Scenario.Experiment
             text.AppendLine();
             text.AppendLine(
                 "Each row is the best case for a tier: the researcher is at the tier's first rank and researches the highest-level recipe of the tier, which is where the chart pays most. " +
-                "XP per hour assumes every job slot is kept busy (one at ranks 10-24, two from 25, three from 50), each job restarted the moment it completes, with the experiment's mean time cut and the player's active time per job (the experiment's actions plus the overhead). " +
-                "A researcher can run only one experiment at a time, so short jobs are limited by the player's time.");
+                "XP per hour assumes every job slot is kept busy (one at ranks 10-24, two from 25, three from 50), each job restarted the moment it completes, with the experiment's mean time cut. A job's timer starts before its experiment opens, so the experiment runs inside the job's length; " +
+                "the researcher still plays only one experiment at a time, so a round takes at least the active time per job (the experiment's actions plus the overhead) times the concurrent jobs.");
             text.AppendLine();
 
             var middle = gear.Count > 1 ? gear[1] : gear[0];

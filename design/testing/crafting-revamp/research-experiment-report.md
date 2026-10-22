@@ -161,23 +161,23 @@ All of a fixed level's evidence is spare. The focused player Tests and Analyzes 
 
 XP is the experiment (100% of the chart XP at full effort) plus completion (50%), each raised 10% per research level reached; the chart XP is `Skill.GetDeltaXP(recipe level - Fabrication rank)`, 0 once the recipe is 5 or more ranks below the researcher. The values are named constants in `ResearchXpRules`, in one place, so a ceiling can be applied there.
 
-Each row is the best case for a tier: the researcher is at the tier's first rank and researches the highest-level recipe of the tier, which is where the chart pays most. XP per hour assumes every job slot is kept busy (one at ranks 10-24, two from 25, three from 50), each job restarted the moment it completes, with the experiment's mean time cut and the player's active time per job (the experiment's actions plus the overhead). A researcher can run only one experiment at a time, so short jobs are limited by the player's time.
+Each row is the best case for a tier: the researcher is at the tier's first rank and researches the highest-level recipe of the tier, which is where the chart pays most. XP per hour assumes every job slot is kept busy (one at ranks 10-24, two from 25, three from 50), each job restarted the moment it completes, with the experiment's mean time cut. A job's timer starts before its experiment opens, so the experiment runs inside the job's length; the researcher still plays only one experiment at a time, so a round takes at least the active time per job (the experiment's actions plus the overhead) times the concurrent jobs.
 
 | Tier | Rank | Recipe level | Research level | Concurrent jobs | Chart XP | Experiment XP | Completion XP | Job length (after cut) | Active time per job | XP per real hour |
 | --- | --- | --- | --- | --- | --- | --- | --- | --- | --- | --- |
-| 1 | 10 | 9 | 1 | 1 | 450 | 495 | 247 | 2.8 min | 1.2 min | 11135 |
-| 1 | 10 | 9 | 5 | 1 | 450 | 675 | 337 | 1.4 h | 1.2 min | 718 |
-| 1 | 10 | 9 | 10 | 1 | 450 | 900 | 450 | 4.7 h | 1.2 min | 287 |
-| 2 | 20 | 19 | 1 | 1 | 450 | 495 | 247 | 13.0 min | 1.2 min | 3142 |
-| 2 | 20 | 19 | 5 | 1 | 450 | 675 | 337 | 6.4 h | 1.2 min | 158 |
+| 1 | 10 | 9 | 1 | 1 | 450 | 495 | 247 | 2.8 min | 1.2 min | 15909 |
+| 1 | 10 | 9 | 5 | 1 | 450 | 675 | 337 | 1.4 h | 1.2 min | 729 |
+| 1 | 10 | 9 | 10 | 1 | 450 | 900 | 450 | 4.7 h | 1.2 min | 288 |
+| 2 | 20 | 19 | 1 | 1 | 450 | 495 | 247 | 13.0 min | 1.2 min | 3432 |
+| 2 | 20 | 19 | 5 | 1 | 450 | 675 | 337 | 6.4 h | 1.2 min | 159 |
 | 2 | 20 | 19 | 10 | 1 | 450 | 900 | 450 | 21.4 h | 1.2 min | 63 |
-| 3 | 30 | 29 | 1 | 2 | 450 | 495 | 247 | 31.5 min | 1.2 min | 2719 |
+| 3 | 30 | 29 | 1 | 2 | 450 | 495 | 247 | 31.5 min | 1.2 min | 2823 |
 | 3 | 30 | 29 | 5 | 2 | 450 | 675 | 337 | 15.6 h | 1.2 min | 130 |
 | 3 | 30 | 29 | 10 | 2 | 450 | 900 | 450 | 52.7 h | 1.2 min | 51 |
-| 4 | 40 | 39 | 1 | 2 | 450 | 495 | 247 | 59.6 min | 1.2 min | 1466 |
+| 4 | 40 | 39 | 1 | 2 | 450 | 495 | 247 | 59.6 min | 1.2 min | 1495 |
 | 4 | 40 | 39 | 5 | 2 | 450 | 675 | 337 | 29.3 h | 1.2 min | 69 |
 | 4 | 40 | 39 | 10 | 2 | 450 | 900 | 450 | 98.7 h | 1.2 min | 27 |
-| 5 | 50 | 52 | 1 | 3 | 750 | 825 | 412 | 1.6 h | 1.3 min | 2285 |
+| 5 | 50 | 52 | 1 | 3 | 750 | 825 | 412 | 1.6 h | 1.3 min | 2316 |
 | 5 | 50 | 52 | 5 | 3 | 750 | 1125 | 562 | 47.9 h | 1.3 min | 106 |
 | 5 | 50 | 52 | 10 | 3 | 750 | 1500 | 750 | 159.1 h | 1.3 min | 42 |
 
@@ -185,7 +185,7 @@ Each row is the best case for a tier: the researcher is at the tier's first rank
 
 At level (recipe level equal to rank), chart XP is 600. A craft of 15 actions (the middle of the 10-20 target) at 6.0 s each takes 90.0 s and pays 24000 XP per hour at 0% quality, 36000 at 50% and 48000 at 100% (`CraftOutcomeRules.CalculateXp`, no blueprint, not a first craft).
 
-The highest research row above is 11135 XP per hour (tier 1, rank 10, recipe level 9, research level 1, 1 concurrent job(s)), 46% of the 0%-quality at-level crafting rate and 31% of the 50%-quality rate. Research XP falls with research level because the job length grows with the square of the level while the XP grows by 10% per level.
+The highest research row above is 15909 XP per hour (tier 1, rank 10, recipe level 9, research level 1, 1 concurrent job(s)), 66% of the 0%-quality at-level crafting rate and 44% of the 50%-quality rate. Research XP falls with research level because the job length grows with the square of the level while the XP grows by 10% per level.
 
 ## Limitations
 

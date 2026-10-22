@@ -221,7 +221,18 @@ namespace SWLOR.CraftSim.Tests.Scenario
                 ConcurrentJobs = 2, ExperimentXp = 100, CompletionXp = 50, JobSeconds = 3510, ActiveSeconds = 90
             };
 
-            row.XpPerHour.Should().BeApproximately(2 * 150 / 3600.0 * 3600, 1e-9);
+            row.XpPerHour.Should().BeApproximately(2 * 150 / 3510.0 * 3600, 1e-9);
+        }
+
+        [Test]
+        public void TheExperimentRunsInsideTheJobsTimerSoItAddsNothingToALongJobsCycle()
+        {
+            var row = new ResearchXpRow
+            {
+                ConcurrentJobs = 1, ExperimentXp = 100, CompletionXp = 50, JobSeconds = 170, ActiveSeconds = 72
+            };
+
+            row.XpPerHour.Should().BeApproximately(150 / 170.0 * 3600, 1e-9);
         }
 
         [Test]

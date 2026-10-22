@@ -372,6 +372,12 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
 
         public Action ClickCancelJob() => () =>
         {
+            if (!ResearchExperimentLifecycle.CanCancel(GetJob()))
+            {
+                FloatingTextStringOnCreature(ResearchExperimentLifecycle.CannotCancelMessage, Player, false);
+                return;
+            }
+
             ShowModal("Canceling the research job will forfeit all credits spent and progress made towards the next level. You will not be refunded! Are you sure you want to cancel this research job?",
                 () =>
                 {

@@ -47,7 +47,7 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition
             "window, and added when the job completes. Evidence does not change it.\n\n" +
             "LEAVING\n" +
             "Closing this window, walking away from the terminal or logging out ends the experiment with the evidence gathered so far. " +
-            "The job keeps running either way.\n\n" +
+            "The job keeps running either way, and a job with an experiment cannot be cancelled, so the result you see is the result you get.\n\n" +
             "XP\n" +
             "The experiment and the finished job give Fabrication XP, based on the recipe's level against your Fabrication rank. Research " +
             "far below your rank gives none.";

@@ -63,14 +63,15 @@ namespace SWLOR.CraftSim.Scenario.Experiment
         public int XpPerJob => ExperimentXp + CompletionXp;
 
         /// <summary>
-        /// XP per real hour of a researcher who keeps every job slot busy: each job runs its (shortened) length plus the time the
-        /// researcher spends in its experiment, and the researcher can run only one experiment at a time.
+        /// XP per real hour of a researcher who keeps every job slot busy. A job's timer starts before its experiment opens, so the
+        /// experiment runs inside the job's length: a slot is ready again after the job's (shortened) length, but the researcher can
+        /// run only one experiment at a time and needs <see cref="ConcurrentJobs"/> experiments' worth of active time per round.
         /// </summary>
         public double XpPerHour
         {
             get
             {
-                var cycle = Math.Max(JobSeconds + ActiveSeconds, ConcurrentJobs * ActiveSeconds);
+                var cycle = Math.Max(JobSeconds, ConcurrentJobs * ActiveSeconds);
                 return cycle <= 0 ? 0 : ConcurrentJobs * XpPerJob / cycle * 3600;
             }
         }

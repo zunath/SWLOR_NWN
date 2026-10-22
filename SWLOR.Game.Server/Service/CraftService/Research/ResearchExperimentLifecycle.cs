@@ -28,6 +28,15 @@ public static class ResearchExperimentLifecycle
         ExtraBonus = extraBonus
     };
 
+    public const string CannotCancelMessage = "This job cannot be cancelled: its experiment has already decided the result.";
+
+    /// <summary>
+    /// A job can be cancelled only when it has no experiment. A cancelled job returns the blueprint, and an experiment shows its extra
+    /// bonus and its evidence, so cancelling would let a player pay the credits again for a better draw. A job created before
+    /// experiments existed shows nothing and can still be cancelled.
+    /// </summary>
+    public static bool CanCancel(ResearchJob job) => job != null && job.Experiment == null;
+
     /// <summary>True while the job has an experiment that is not settled.</summary>
     public static bool IsOpen(ResearchJob job) => job?.Experiment is { Status: ResearchExperimentStatus.InProgress };
 

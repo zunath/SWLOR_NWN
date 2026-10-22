@@ -36,6 +36,16 @@ public class ResearchExperimentLifecycleTests
 
     private static string Json(object value) => JsonConvert.SerializeObject(value);
 
+    private static string RepositoryRoot()
+    {
+        var directory = new DirectoryInfo(TestContext.CurrentContext.TestDirectory);
+        while (directory != null && !File.Exists(Path.Combine(directory.FullName, "SWLOR.Game.Server.sln")))
+            directory = directory.Parent;
+
+        directory.Should().NotBeNull();
+        return directory!.FullName;
+    }
+
     [Test]
     public void OpeningAnExperimentRecordsTheLevelTheTrialsTheFullLengthAndTheExtraBonus()
     {
@@ -189,6 +199,31 @@ public class ResearchExperimentLifecycleTests
 
         again.Should().BeFalse();
         Json(job.Experiment).Should().Be(stored);
+    }
+
+    [Test]
+    public void AJobWithAnExperimentCannotBeCancelledSoItsOutcomeCannotBeRerolledForCredits()
+    {
+        var open = OpenJob(3);
+        var settled = OpenJob(3);
+        ResearchExperimentLifecycle.Settle(settled, new ScriptedMinigameRandom());
+
+        ResearchExperimentLifecycle.CanCancel(open).Should().BeFalse("its extra bonus is already shown");
+        ResearchExperimentLifecycle.CanCancel(settled).Should().BeFalse("its evidence outcome is already shown");
+        ResearchExperimentLifecycle.CanCancel(new ResearchJob()).Should().BeTrue("a job created before experiments shows nothing");
+        ResearchExperimentLifecycle.CanCancel(null).Should().BeFalse();
+        ResearchExperimentLifecycle.CannotCancelMessage.Should().MatchRegex("^[\x20-\x7E]*$");
+    }
+
+    [Test]
+    public void TheCancelButtonChecksTheRuleBeforeAskingToConfirm()
+    {
+        var source = File.ReadAllText(Path.Combine(
+            RepositoryRoot(), "SWLOR.Game.Server", "Feature", "GuiDefinition", "ViewModel", "ResearchViewModel.cs"));
+        var cancel = source[source.IndexOf("public Action ClickCancelJob()", StringComparison.Ordinal)..];
+
+        cancel.IndexOf("ResearchExperimentLifecycle.CanCancel(GetJob())", StringComparison.Ordinal)
+            .Should().BeGreaterThan(0).And.BeLessThan(cancel.IndexOf("ShowModal(", StringComparison.Ordinal));
     }
 
     [Test]

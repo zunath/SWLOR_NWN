@@ -145,6 +145,7 @@ The three existing per-skill gear stats stay. No new item properties are added, 
   - The integrity-repair action unlocks at rank 10: Rebond (Forge), Patch (Circuit), Service (Fabricator) and Stabilize (Reaction). The Kitchen has none.
   - The once-per-craft finisher unlocks at rank 20. Only the Forge has one (Cryo-Quench).
   - Nothing else is gated by rank; rank changes power and CP only. Gathering, fishing and the Experiment have no rank-gated actions.
+  - The Forge, Circuit and Reaction merged with other unlock ranks before this rule. Their phase-2 tuning PRs align them.
 - **Espionage** has no crafting gear today and gets none. Its minigame scales from Espionage rank only.
 
 ### Per-recipe parameters
@@ -195,13 +196,13 @@ Build `SWLOR.CraftSim` (tool and tests) on the `SWLOR.CombatSim` pattern. It dri
    - Material use per crafted item at matched quality stays near today's.
 6. **XP rate** (owner decision after player feedback, October 2026).
    - At matched rank and gear, XP per hour of play in each minigame is at least today's.
-   - **Item-craft cohort**, identical for the legacy and new runs: each recipe band (1-10, 11-20, 21-30, 31-40, 41-53) with rank equal to recipe level, capped at rank 50 (levels 51-53 run at rank 50); no gear, mid and best gear tiers; the band's active recipes weighted equally; no blueprint and not a first craft; quality and failures as each policy actually plays them (legacy: the lookahead policy; new: CraftSim's adaptive policy), counting the 15% failure XP. Each band and gear tier must pass on its own.
+   - **Item-craft cohort**, identical for the legacy and new runs: each recipe band (1-10, 11-20, 21-30, 31-40, 41-53) with rank equal to recipe level, capped at rank 50 (levels 51-53 run at rank 50); no gear, mid and best gear tiers; the band's active recipes weighted equally; no blueprint and not a first craft; quality and failures as each policy actually plays them (legacy: the lookahead policy; new: CraftSim's adaptive policy), counting the 15% failure XP. Run it with no enhancements and with representative enhancements for each slot count the recipes support (one, two, three), applying each side's enhancement difficulty. Each band, gear tier and enhancement count must pass on its own.
    - **Activity cohorts:** each pairs the legacy loop with its replacement at the parity attribute values, using identical tool inputs:
      - Harvesting: per node tier, rank equal to the vein level, and the highest harvester tier that rank allows (`CraftRankMilestones`); XP per item.
      - Scavenging: per site level, rank equal to 10 × site level; XP per attempt, quarter on failure. No tool.
      - Fishing: per fish-level band (0-10, ..., 41-52), rank equal to fish level and capped at 50, and the highest rod tier that rank allows. Every fishing location's (rod, bait) tables reachable with that rod are weighted equally, half by day and half by night, so both runs draw the same fish mix. XP per bite.
      - Refining has no minigame, and research XP is new, so neither has a legacy rate to match. Research XP is bounded instead by workstream 11's research ceiling.
-   - CraftSim estimates minutes per craft, node, site or fight from actions taken and a seconds-per-action estimate. Measure that estimate in the client evidence, separately for each legacy loop and each new one.
+   - CraftSim estimates minutes per craft, node, site or fight from actions taken and a seconds-per-action estimate, plus each loop's fixed time (fishing's 6-8 s cast wait, the harvester delay, window setup). Measure both in the client evidence, separately for each legacy loop and each new one.
    - If a loop falls short, scale its XP per craft, item, attempt or bite up, recorded in code and the Bible. Do not shorten it below its length target to pass.
    - **Legacy timing input:** Foundation 1d (PR #2803) commits today's actions per craft in `design/testing/crafting-revamp/legacy-crafting-baseline.md` (5-9 at levels 1-10, rising to 20-28 at levels 21-53 with gear) and the gathering baseline beside it. Re-run them with the committed seeds when the inputs change.
 7. **Enhancement parity** (owner decision after player feedback, October 2026). With enhancement difficulty modeled for both the legacy model and each minigame, the expected number of transferred enhancements per enhanced craft at rank 50, best gear and at level is at least today's, for items with one, two and three enhancement slots. The gate reports the threshold values that meet it; the thresholds are shared by every minigame.
@@ -373,7 +374,7 @@ Today (`HarvesterItemDefinition.cs`): a node holds d4 harvests, set on the first
   - **Heavy Strike:** 2-4 units, costs more Stability. It shows the chance of shattering an unsurveyed gem pocket. Gathering rank milestones add yield and replace Might.
   - **Extract:** claims a revealed seam for extra charges.
   - **Leave:** ends the session. The remaining yield stays for others.
-  - **Quick Harvest** (owner decision after player feedback, October 2026): resolves the node at once, with no seams claimed. It yields today's expected units and XP for that node and harvester, spends the matching charges, and plays one harvest animation. Playing the session adds bounded upside (rich seams, gem pockets), which the parity gate caps.
+  - **Quick Harvest** (owner decision after player feedback, October 2026): resolves the node without seams. It yields today's expected units and XP for that node and harvester, spends the matching charges, and takes as long as today's harvests of that node (one harvest delay per unit) with the harvest animation, so it never trains Gathering faster than today. Playing the session adds bounded upside (rich seams, gem pockets), which the parity gate caps.
 - **Rules:**
   - One player works a node at a time; others see that it is in use.
   - Harvester and node tiers work as today, gated by rank.
@@ -394,7 +395,7 @@ Today (`ScavengePoint.cs`): one attempt, plus a second at `HardLook × 10 + Perc
   - **Search:** rolls the site's loot table; promising spots roll better.
   - **Dig Deeper:** searches the same spot again for a rare item, at a shown risk of spoiling the spot.
   - **Sift:** costs one search; reveals which neighboring spots are promising.
-  - **Quick Search** (owner decision after player feedback, October 2026): resolves the site at once at today's expected rolls and XP, with no Dig Deeper. Playing the board adds bounded upside, which the parity gate caps.
+  - **Quick Search** (owner decision after player feedback, October 2026): resolves the site at today's expected rolls and XP, with no Dig Deeper, taking as long as today's attempts. Playing the board adds bounded upside, which the parity gate caps.
 - **Rules:**
   - Treasure Hunter's rare weight still applies.
   - XP and the once-per-site rule stay as today.
@@ -664,6 +665,7 @@ The combat upgrade's model applies, with no pilot: build every minigame, then te
     - **Guild task cap.** For the Smithery, Engineering, Fabrication and Agriculture guilds, completing a task no longer hides it until the next boot; the board refreshes after completion. GP thresholds, GP per task and guild rank gates stay as they are. The Hunter's Guild is unchanged.
     - **Guild tasks give XP.** Each crafting-guild hand-in also awards XP in that guild's skill. Propose the amount for the owner's approval. The level basis is the recipe level for crafted hand-ins and the fish's `FishType` level for Agriculture catch tasks (such as `agr_tsk_017`); the proposal also states how a task's item quantity scales the award.
     - **XP speed: measure, then set a target.** Model today's hours to rank 50 for each crafting skill in CraftSim, including the gathering that supplies it, then bring the owner a target and the crafting-only multiplier or curve that meets it. Measure the XP-rate gate against today's XP first, then apply the change on top.
+    - **Quick gathering in the model.** The hours-to-50 model includes Quick Harvest and Quick Search cohorts as well as the played sessions, and reports Gathering XP per hour for each; neither may exceed today's.
     - **Guild tasks in the model.** With the cap lifted, hand-ins become a repeatable XP source. The hours-to-50 model includes a representative task cohort (task tier for the rank, item quantity, how the item is obtained, including quick craft, and turn-in time) and reports hand-in XP's share of the pace, so the proposed award neither dominates nor vanishes.
     - **Research ceiling.** Research now gives Fabrication XP. The model includes a research cohort (experiment time, job duration, concurrent jobs at Fabrication 25 and 50, blueprint acquisition), and the proposal sets a ceiling: research XP per real hour stays below at-level Fabrication crafting XP per hour.
     - **Isolate the change.** `Skill.GetRequiredXP` and `GetDeltaXP` take no skill and also drive combat and Piloting, and guild code is shared with the Hunter's Guild. Changes apply only to the crafting skills and crafting guilds, through crafting-specific tables or a skill or guild parameter, with tests that combat, Piloting and Hunter's Guild progression are unchanged.

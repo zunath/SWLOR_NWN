@@ -14,7 +14,7 @@ Draft for the owner's approval. No perk code, no StatType or PerkType IDs and no
 
 ## The base minigame these perks build on
 
-The Fabricator (`Service/CraftService/Minigame/Fabricator/`; every value below is a starting value in `FabricatorRules` that CraftSim tuned in phase 2): a piece is three sub-assemblies, the Frame (Cutter head), the Shell (Extruder head) and the Fittings (Bonder head). One head is loaded at a time. Machine Condition is the integrity meter (100; the piece breaks at 0).
+The Fabricator (`Service/CraftService/Minigame/Fabricator/`; every value below is a starting value in `FabricatorRules` that CraftSim tuned in phase 2): a piece is three sub-assemblies, the Frame (Cutter head), the Shell (Extruder head) and the Fittings (Bonder head). One head is loaded at a time. Machine Condition is the integrity meter (100 for a plain piece, and more in proportion to the extra work an enhanced piece needs; the piece breaks at 0).
 
 | Action | Unlocks at Fabrication rank | Cost | Result |
 | --- | --- | --- | --- |
@@ -26,7 +26,7 @@ The Fabricator (`Service/CraftService/Minigame/Fabricator/`; every value below i
 
 **Prime Feedstock** (telegraphed): each action with none in play, each head that still has work has a 12% chance to be named. The named head's next action gets +50%, and the prime waits for it for 2 actions, so a Retool to it in time catches it. It only ever helps.
 
-CP is gear CP plus 0.75 per rank, plus 31 from rank 25. Fabrication XP per craft is multiplied by 2.5 (`FabricatorRules.XpMultiplier`, see `fabricator-gates.md`).
+CP is gear CP plus 0.75 per rank, plus 31 from rank 25. Fabrication XP per craft is multiplied by a constant per recipe-level band, 2.4 / 1.45 / 1.25 / 1.1 / 1.0 for levels 1-10 / 11-20 / 21-30 / 31-40 / 41 and up (`FabricatorRules.XpMultiplierLevels*`, see `fabricator-gates.md`).
 
 ## How the engine reads perks
 
@@ -93,4 +93,4 @@ Names only; the IDs are reserved against current master and the HAK when the own
 
 1. The style is owned and exclusive (plan: `PerkRequirementCannotHavePerk`, refund token to switch) and always active, with no window toggle. Is that the intended reading of "toggled in the craft window" for an activity-split line?
 2. Dual Feed is two actions (one per other sub-assembly) so the preview is exact. Is a target chosen in the window preferred instead?
-3. Are the capstone's +15 (cap weakest + 35 in all) and the 2.5 XP multiplier acceptable as the starting values the plan asks the simulator to tune?
+3. Are the capstone's +15 (cap weakest + 35 in all) and the per-band XP multipliers acceptable as the starting values the plan asks the simulator to tune?

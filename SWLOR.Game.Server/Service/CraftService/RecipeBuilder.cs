@@ -232,6 +232,18 @@ namespace SWLOR.Game.Server.Service.CraftService
         }
 
         /// <summary>
+        /// Sets the Plasma Forge parameters of the recipe.
+        /// </summary>
+        /// <param name="rangeCenter">The middle of the working range on the 0-100 Thermal meter.</param>
+        /// <param name="rangeWidth">How many Thermal points the working range spans.</param>
+        /// <param name="coolingRate">The Thermal the piece loses after every action.</param>
+        /// <param name="startingThermal">The Thermal the piece starts at.</param>
+        /// <param name="shapeShare">The percentage of the work that is Shape; the rest is Finish.</param>
+        /// <returns>A recipe builder with the configured options</returns>
+        public RecipeBuilder ForgeParameters(int rangeCenter, int rangeWidth, int coolingRate, int startingThermal, int shapeShare) =>
+            MinigameParameters(new ForgeParameters(rangeCenter, rangeWidth, coolingRate, startingThermal, shapeShare));
+
+        /// <summary>
         /// Returns a built list of recipes.
         /// </summary>
         /// <returns>A list of built recipes.</returns>

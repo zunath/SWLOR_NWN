@@ -68,6 +68,16 @@ public class CraftMinigameRoutingTests
     }
 
     [Test]
+    public void SmitheryCraftsInThePlasmaForge()
+    {
+        var route = CraftMinigameRouting.GetRoute(SkillType.Smithery);
+
+        route.Window.Should().Be(GuiWindowType.Forge);
+        route.Minigame.Should().Be(CraftMinigameType.Forge);
+        route.IsLegacy.Should().BeFalse();
+    }
+
+    [Test]
     public void AgricultureCooksInTheKitchenWindow()
     {
         var route = CraftMinigameRouting.GetRoute(SkillType.Agriculture);
@@ -75,6 +85,31 @@ public class CraftMinigameRoutingTests
         route.Window.Should().Be(GuiWindowType.Kitchen);
         route.Minigame.Should().Be(CraftMinigameType.Kitchen);
         route.IsLegacy.Should().BeFalse();
+    }
+
+    [Test]
+    public void TheCraftWindowsAreTheOriginalAndEveryRoutedMinigameWindow()
+    {
+        var windows = CraftMinigameRouting.GetCraftWindows();
+
+        windows.Should().Contain(GuiWindowType.Craft);
+        windows.Should().Contain(RegisteredRoutes().Values.Select(route => route.Window));
+        windows.Should().OnlyHaveUniqueItems();
+    }
+
+    [Test]
+    public void EquippingIsBlockedWhileAnyRoutedCraftWindowIsOpen()
+    {
+        var directory = new DirectoryInfo(AppContext.BaseDirectory);
+        while (directory != null && !File.Exists(Path.Combine(directory.FullName, "SWLOR.Game.Server.sln")))
+            directory = directory.Parent;
+        directory.Should().NotBeNull();
+
+        var source = File.ReadAllText(Path.Combine(directory!.FullName, "SWLOR.Game.Server", "Service", "Item.cs"));
+
+        source.Should().Contain("CraftMinigameRouting.IsAnyCraftWindowOpen(creature)");
+        source.Should().NotContain("Gui.IsWindowOpen(creature, GuiWindowType.Craft)",
+            "a minigame's window must block equipping like the original one");
     }
 
     [Test]

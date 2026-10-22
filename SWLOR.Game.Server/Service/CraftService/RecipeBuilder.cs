@@ -175,6 +175,29 @@ namespace SWLOR.Game.Server.Service.CraftService
         }
 
         /// <summary>
+        /// Sets the minigame parameters of the recipe. Each minigame's builder method calls this with
+        /// its own parameter type. A null value leaves the recipe without parameters, and a second
+        /// call with the same parameter type replaces the first.
+        /// </summary>
+        /// <param name="parameters">The parameters the recipe's minigame reads.</param>
+        /// <returns>A recipe builder with the configured options</returns>
+        public RecipeBuilder MinigameParameters(RecipeMinigameParameters parameters)
+        {
+            if (parameters == null)
+                return this;
+
+            var existing = _activeRecipe.MinigameParameters;
+            if (existing != null && existing.GetType() != parameters.GetType())
+            {
+                throw new InvalidOperationException(
+                    $"Recipe {_activeType} already has {existing.GetType().Name}; a recipe uses one minigame.");
+            }
+
+            _activeRecipe.MinigameParameters = parameters;
+            return this;
+        }
+
+        /// <summary>
         /// Returns a built list of recipes.
         /// </summary>
         /// <returns>A list of built recipes.</returns>

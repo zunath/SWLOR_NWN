@@ -81,10 +81,10 @@ public class CircuitWindowTests
     {
         var engine = Engine(Setup(rank: 5, level: 5), 0);
 
-        var boost = engine.Preview(CircuitActionIds.Boost);
+        var patch = engine.Preview(CircuitActionIds.Patch);
 
-        CircuitActionText.ResultText(boost).Should().Be("Unlocks at Engineering rank 20.");
-        CircuitActionText.RiskText(boost).Should().BeEmpty();
+        CircuitActionText.ResultText(patch).Should().Be("Unlocks at Engineering rank 10.");
+        CircuitActionText.RiskText(patch).Should().BeEmpty();
 
         var tooltip = CircuitActionText.Tooltip(Engine(Setup(), 8).Preview(CircuitActionIds.Wire));
         tooltip.Should().StartWith("Builds Assembly and adds 1 Load.");

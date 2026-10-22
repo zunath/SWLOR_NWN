@@ -164,6 +164,22 @@ namespace SWLOR.CraftSim.Tests.Gates
         }
 
         [Test]
+        public void TheScenariosXpMultiplierScalesTheNewLoopsXpAndNotTheLegacyLoops()
+        {
+            var context = Context(new[] { 25 }, runs: 30);
+            var xpCase = new XpRateCase("21-30", "best gear");
+            var plain = Suite(new BenchScenario()).XpCohort;
+            var doubled = Suite(new BenchScenario { XpMultiplier = 2 }).XpCohort;
+
+            var before = plain.PlayReplacement(xpCase, context);
+            var after = doubled.PlayReplacement(xpCase, context);
+
+            after.ActionsPerRun.Should().Be(before.ActionsPerRun, "the multiplier changes XP and nothing the player does");
+            after.XpPerRun.Should().BeApproximately(before.XpPerRun * 2, before.XpPerRun * 0.03);
+            doubled.PlayLegacy(xpCase, context).XpPerRun.Should().Be(plain.PlayLegacy(xpCase, context).XpPerRun);
+        }
+
+        [Test]
         public void TheLegacySideIsTheOldMinigamesLookaheadPlayerOnTheSameRecipes()
         {
             var context = Context(new[] { 25 }, runs: 30);

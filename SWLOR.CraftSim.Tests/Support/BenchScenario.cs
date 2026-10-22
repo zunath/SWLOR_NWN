@@ -34,6 +34,8 @@ namespace SWLOR.CraftSim.Tests.Support
 
         public double SecondsPerAction { get; init; } = 6;
 
+        public double XpMultiplier { get; init; } = 1;
+
         /// <summary>Adds the Perfect action, so a fixed rotation of it is as good as anything.</summary>
         public bool Dominant { get; init; }
 

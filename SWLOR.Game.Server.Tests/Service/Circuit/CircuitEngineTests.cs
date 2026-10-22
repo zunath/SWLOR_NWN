@@ -82,7 +82,7 @@ public class CircuitEngineTests
         setup.OverloadLine.Should().Be(6);
     }
 
-    [TestCase(22, 7)]
+    [TestCase(22, 6)]
     [TestCase(25, 8)]
     [TestCase(30, 11)]
     [TestCase(45, 11)]
@@ -91,7 +91,7 @@ public class CircuitEngineTests
         Setup(rank: rank).WireGain(0).Should().Be(wire);
     }
 
-    [TestCase(22, 68)]
+    [TestCase(22, 56)]
     [TestCase(25, 81)]
     [TestCase(45, 81)]
     public void RankAgainstTheRecipe_PenalizesCalibrationBelowButNeverRewardsAbove(int rank, int tune)
@@ -201,15 +201,17 @@ public class CircuitEngineTests
     }
 
     [Test]
-    public void NothingIsAnnouncedBeforeTuneUnlocks_AndTheForecastSpendsNoChance()
+    public void ACleanSignalCanBeAnnouncedAtRankZero_BecauseTuneIsOpenFromTheStart()
     {
-        var random = new ScriptedMinigameRandom();
-        var engine = new CircuitEngine(random, Setup(rank: 4));
+        var random = new ScriptedMinigameRandom(NoSignal, Signal);
+        var engine = new CircuitEngine(random, Setup(rank: 0, level: 1));
 
         engine.Perform(CircuitActionIds.Wire);
-
-        random.Calls.Should().Be(0);
         engine.NextOpportunity.Should().BeNull();
+        engine.Perform(CircuitActionIds.Wire);
+
+        engine.NextOpportunity!.Id.Should().Be(CircuitActionIds.CleanSignal);
+        random.Calls.Should().Be(2);
     }
 
     [Test]
@@ -513,11 +515,11 @@ public class CircuitEngineTests
 
     [TestCase(CircuitActionIds.Wire, 0)]
     [TestCase(CircuitActionIds.DischargeAssembly, 0)]
-    [TestCase(CircuitActionIds.Tune, 5)]
-    [TestCase(CircuitActionIds.DischargeCalibration, 5)]
+    [TestCase(CircuitActionIds.Tune, 0)]
+    [TestCase(CircuitActionIds.DischargeCalibration, 0)]
     [TestCase(CircuitActionIds.Patch, 10)]
-    [TestCase(CircuitActionIds.Ground, 15)]
-    [TestCase(CircuitActionIds.Boost, 20)]
+    [TestCase(CircuitActionIds.Ground, 0)]
+    [TestCase(CircuitActionIds.Boost, 0)]
     public void EveryActionUnlocksAtItsRank(string actionId, int unlockRank)
     {
         CircuitSetup.UnlockRank(actionId).Should().Be(unlockRank);
@@ -545,13 +547,13 @@ public class CircuitEngineTests
     public void ALockedActionIsRefused_ChangingNothing()
     {
         var random = new ScriptedMinigameRandom();
-        var engine = new CircuitEngine(random, Setup(rank: 0, level: 1), 5);
+        var engine = new CircuitEngine(random, Setup(rank: 9, level: 9), 5);
         var before = engine.DescribeMeters();
 
-        var result = engine.Perform(CircuitActionIds.Boost);
+        var result = engine.Perform(CircuitActionIds.Patch);
 
         result.Performed.Should().BeFalse();
-        result.RejectedReason.Should().Be("Unlocks at Engineering rank 20.");
+        result.RejectedReason.Should().Be("Unlocks at Engineering rank 10.");
         engine.DescribeMeters().Should().Equal(before);
         random.Calls.Should().Be(0);
         engine.Turn.Should().Be(0);

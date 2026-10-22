@@ -40,6 +40,12 @@ namespace SWLOR.CraftSim.Scenario
         /// </summary>
         ICraftMinigameEngine CreateEngine(CraftEngineRequest request);
 
+        /// <summary>
+        /// What the minigame multiplies a craft's base XP by, as its route declares it in the game. 1 by default; a minigame whose XP per
+        /// hour fell short of the old window's raises it, and the XP-rate gate then plays the new loop with it.
+        /// </summary>
+        double XpMultiplier => 1.0;
+
         /// <summary>Which recipes the gates play and at which ranks. By default every recipe of <see cref="Skill"/>, at its own level up to rank 50.</summary>
         ScenarioCohort Cohort => ScenarioCohort.ForSkill(Skill);
 

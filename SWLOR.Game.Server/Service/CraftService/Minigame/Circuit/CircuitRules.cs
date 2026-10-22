@@ -59,6 +59,12 @@ public static class CircuitRules
     public const int RankPassiveCpRank = 25;
     public const int RankPassiveCp = 31;
 
+    /// <summary>
+    /// What a Circuit craft's base XP is multiplied by, for an item and for a failure alike. CraftSim's XP-rate gate found the Circuit pays
+    /// less XP per hour than the old window at low levels, where the old window took 6 to 9 actions and the Circuit takes 10 or more.
+    /// </summary>
+    public const double XpMultiplier = 2.4;
+
     /// <summary>The Engineering rank that unlocks Patch. Every other action is open from rank 0; rank changes power and CP only.</summary>
     public const int PatchRank = 10;
 }

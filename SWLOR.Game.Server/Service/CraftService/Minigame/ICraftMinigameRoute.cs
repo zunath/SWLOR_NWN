@@ -15,4 +15,10 @@ public interface ICraftMinigameRoute
     GuiWindowType Window { get; }
 
     CraftMinigameType Minigame { get; }
+
+    /// <summary>
+    /// What the minigame multiplies a craft's base XP by, for both a finished item and a failed one. 1 unless CraftSim's XP-rate gate
+    /// showed the minigame pays less XP per hour than the old window and the plan scaled it up.
+    /// </summary>
+    double XpMultiplier => 1.0;
 }

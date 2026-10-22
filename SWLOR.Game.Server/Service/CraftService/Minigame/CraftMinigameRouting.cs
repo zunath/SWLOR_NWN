@@ -24,6 +24,10 @@ public static class CraftMinigameRouting
 
     public static GuiWindowType GetWindow(SkillType skill) => GetRoute(skill).Window;
 
+    /// <summary>A recipe's base XP after its skill's minigame multiplier, rounded to the nearest whole XP.</summary>
+    public static int ScaleBaseXp(SkillType skill, int baseXp) =>
+        (int)Math.Round(baseXp * GetRoute(skill).XpMultiplier, MidpointRounding.AwayFromZero);
+
     /// <summary>Every window that crafts items: the original one and each minigame's.</summary>
     public static IReadOnlyList<GuiWindowType> GetCraftWindows()
     {
@@ -47,7 +51,7 @@ public static class CraftMinigameRouting
             if (routes.ContainsKey(declaration.Skill))
                 throw new InvalidOperationException($"More than one crafting window is registered for {declaration.Skill}.");
 
-            routes[declaration.Skill] = new CraftMinigameRoute(declaration.Skill, declaration.Window, declaration.Minigame);
+            routes[declaration.Skill] = new CraftMinigameRoute(declaration.Skill, declaration.Window, declaration.Minigame, declaration.XpMultiplier);
         }
 
         return routes;

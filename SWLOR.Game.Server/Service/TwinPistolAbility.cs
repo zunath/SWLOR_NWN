@@ -42,7 +42,8 @@ namespace SWLOR.Game.Server.Service
             if (WeaponRepositioning.IsMoving(actor)) return "Finish your current movement first.";
             if (spec.Movement != TwinPistolMovementType.FreeDestination &&
                 (!IsLegalTarget(actor, target, spec.MaxRange))) return "Choose a hostile target within range and line of fire.";
-            var destination = GetDestination(actor, target, targetLocation, spec);
+            var destination = GetDestination(actor, target, targetLocation, spec, out var retreatError);
+            if (!string.IsNullOrEmpty(retreatError)) return retreatError;
             if (GetAreaFromLocation(destination) != GetArea(actor)) return "Choose a destination in your current area.";
             var distance = NumericsVector3.Distance(GetPosition(actor), GetPositionFromLocation(destination));
             if (distance < .01f && spec.Movement is TwinPistolMovementType.None or TwinPistolMovementType.Approach)
@@ -283,8 +284,13 @@ namespace SWLOR.Game.Server.Service
             GetArea(actor) == GetArea(target) && GetIsReactionTypeHostile(target, actor) &&
             GetDistanceBetween(actor, target) <= range && LineOfSightObject(actor, target);
 
-        private static Location GetDestination(uint actor, uint target, Location targetLocation, TwinPistolAbilitySpec spec)
+        private static Location GetDestination(uint actor, uint target, Location targetLocation, TwinPistolAbilitySpec spec) =>
+            GetDestination(actor, target, targetLocation, spec, out _);
+
+        private static Location GetDestination(uint actor, uint target, Location targetLocation, TwinPistolAbilitySpec spec,
+            out string retreatError)
         {
+            retreatError = string.Empty;
             var origin = GetPosition(actor);
             if (spec.Movement == TwinPistolMovementType.None) return GetLocation(actor);
             if (spec.Movement == TwinPistolMovementType.FreeDestination)
@@ -296,8 +302,9 @@ namespace SWLOR.Game.Server.Service
                 return GetLocation(actor);
             var direction = distance > .001f ? delta / distance : new NumericsVector3(
                 (float)Math.Cos(GetFacing(actor) * Math.PI / 180), (float)Math.Sin(GetFacing(actor) * Math.PI / 180), 0);
-            var travel = spec.Movement == TwinPistolMovementType.Retreat ? spec.MaxMovementMeters
-                : -Math.Min(spec.MaxMovementMeters, Math.Max(0, distance - spec.StopDistanceMeters));
+            if (spec.Movement == TwinPistolMovementType.Retreat)
+                return GetRetreatDestination(actor, target, origin, direction, spec, out retreatError);
+            var travel = -Math.Min(spec.MaxMovementMeters, Math.Max(0, distance - spec.StopDistanceMeters));
             var position = origin + direction * travel;
             var destination = Location(GetArea(actor), position, GetFacing(actor));
             position.Z = GetGroundHeight(destination);
@@ -340,6 +347,87 @@ namespace SWLOR.Game.Server.Service
                     return destination;
             }
             return null;
+        }
+
+        /// <summary>
+        /// A retreat takes the first lane away from the target that passes movement validation and keeps a line
+        /// of fire to the target, so a rock or ally directly behind the caster does not refuse the ability while
+        /// open ground lies beside it. With no legal lane, <paramref name="error"/> says why before anything is
+        /// paid: the straight retreat's movement error, that every lane ends out of range, or that every open lane loses
+        /// the line of fire.
+        /// </summary>
+        private static Location GetRetreatDestination(uint actor, uint target, NumericsVector3 origin,
+            NumericsVector3 direction, TwinPistolAbilitySpec spec, out string error)
+        {
+            error = string.Empty;
+            Location straight = null;
+            var anyInRange = false;
+            var targetPosition = GetPosition(target);
+            foreach (var endpoint in RetreatEndpoints(new(origin.X, origin.Y), new(direction.X, direction.Y),
+                         spec.MinimumMovementMeters, spec.MaxMovementMeters))
+            {
+                var position = new NumericsVector3(endpoint.X, endpoint.Y, origin.Z);
+                position.Z = GetGroundHeight(Location(GetArea(actor), position, GetFacing(actor)));
+                var destination = Location(GetArea(actor), position, GetFacing(actor));
+                straight ??= destination;
+                if (NumericsVector3.Distance(position, targetPosition) > spec.ArrivalRangeMeters) continue;
+                anyInRange = true;
+                // The arrival volley checks line of sight from where the actor stops; a lane behind cover would
+                // spend the cast without an attack. The move counts as arrived up to the arrival tolerance short
+                // of its end point, so both must see the target. LineOfSightVector tests in the caller's area, so any
+                // caller there works, such as the owner whose combat round drives companion AI.
+                var travel = new NumericsVector3(position.X - origin.X, position.Y - origin.Y, 0);
+                var early = position - travel * (WeaponRepositioning.ArrivalTolerance / travel.Length());
+                early.Z = GetGroundHeight(Location(GetArea(actor), early, GetFacing(actor)));
+                if (GetArea(OBJECT_SELF) == GetArea(actor) && (!HasLineOfFire(position, targetPosition) || !HasLineOfFire(early, targetPosition)))
+                    continue;
+                if (string.IsNullOrEmpty(WeaponRepositioning.Validate(actor, GetLocation(actor), destination,
+                        spec.MinimumMovementMeters, spec.MaxMovementMeters)))
+                    return destination;
+            }
+            if (straight == null)
+            {
+                error = "Invalid movement destination.";
+                return GetLocation(actor);
+            }
+            error = WeaponRepositioning.Validate(actor, GetLocation(actor), straight,
+                spec.MinimumMovementMeters, spec.MaxMovementMeters);
+            if (string.IsNullOrEmpty(error))
+                error = anyInRange
+                    ? "No retreat path keeps a line of fire to the target."
+                    : "The target would be out of range after retreating.";
+            return straight;
+        }
+
+        private static bool HasLineOfFire(NumericsVector3 from, NumericsVector3 target) =>
+            LineOfSightVector(from + new NumericsVector3(0, 0, 1f), target + new NumericsVector3(0, 0, 1f));
+
+        /// <summary>
+        /// The native move may report arrival up to 0.35m short, and slide rewards need the minimum distance
+        /// actually travelled, so the shortest retreat endpoint keeps this much headroom above the minimum.
+        /// </summary>
+        private const float RetreatArrivalHeadroomMeters = .5f;
+
+        /// <summary>
+        /// Retreat endpoints in preference order: straight away from the target, then lanes turned 30 and 60
+        /// degrees to either side; each lane tries the full distance first and shortens one meter at a time,
+        /// ending half a meter above the minimum.
+        /// </summary>
+        public static IEnumerable<System.Numerics.Vector2> RetreatEndpoints(System.Numerics.Vector2 origin,
+            System.Numerics.Vector2 awayFromTarget, float minimumMeters, float maximumMeters)
+        {
+            if (awayFromTarget.LengthSquared() < .000001f || maximumMeters <= 0 || minimumMeters > maximumMeters) yield break;
+            var away = System.Numerics.Vector2.Normalize(awayFromTarget);
+            var shortest = Math.Min(maximumMeters, minimumMeters + RetreatArrivalHeadroomMeters);
+            foreach (var degrees in new[] { 0f, 30f, -30f, 60f, -60f })
+            {
+                var radians = degrees * MathF.PI / 180f;
+                var (sin, cos) = MathF.SinCos(radians);
+                var heading = new System.Numerics.Vector2(away.X * cos - away.Y * sin, away.X * sin + away.Y * cos);
+                for (var length = maximumMeters; length > shortest + .001f; length -= 1f)
+                    yield return origin + heading * length;
+                yield return origin + heading * shortest;
+            }
         }
 
         /// <summary>

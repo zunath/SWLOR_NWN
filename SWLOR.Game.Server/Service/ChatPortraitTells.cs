@@ -104,7 +104,9 @@ namespace SWLOR.Game.Server.Service
                 return false;
 
             var targetClient = server.GetClientObjectByObjectId(target);
-            var refused = Guard.ConsumeRefusedTell(senderClient.m_oidPCObject, targetClient?.m_nPlayerID ?? uint.MaxValue, DateTime.UtcNow);
+            var refused = targetClient == null
+                ? Guard.ConsumeRefusedTell(senderClient.m_oidPCObject, uint.MaxValue, string.Empty, DateTime.UtcNow)
+                : Guard.ConsumeRefusedTell(senderClient.m_oidPCObject, targetClient.m_nPlayerID, GetCharacterId(targetClient), DateTime.UtcNow);
             if (!refused)
                 return false;
 

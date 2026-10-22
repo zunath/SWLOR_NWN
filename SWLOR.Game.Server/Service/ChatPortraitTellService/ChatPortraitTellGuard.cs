@@ -1,10 +1,11 @@
 using System.Collections.Generic;
+using System.Linq;
 
 namespace SWLOR.Game.Server.Service.ChatPortraitTellService
 {
     public enum ChatPortraitClick
     {
-        /// <summary>No chat line from the slot was recorded for the observer, so there is nothing to compare.</summary>
+        /// <summary>No chat line from the slot is still recorded for the observer, so there is nothing to compare.</summary>
         Unrecorded,
         /// <summary>Every recorded line from the slot came from the character who holds it now.</summary>
         CurrentHolder,
@@ -23,82 +24,113 @@ namespace SWLOR.Game.Server.Service.ChatPortraitTellService
     /// </summary>
     public sealed class ChatPortraitTellGuard
     {
-        private readonly TimeSpan _refusalLifetime;
-        private readonly Dictionary<uint, Dictionary<uint, HashSet<string>>> _speakersBySlotByObserver = new();
-        private readonly Dictionary<uint, (uint Slot, DateTime Expires)> _refusedClicks = new();
+        /// <summary>
+        /// Chat lines an observer receives after a speaker's last line before that speaker's portraits count as
+        /// scrolled out of the chat log. The client keeps 264 messages by default, and combat and server feedback,
+        /// which are not counted here, fill the same log, so this is well past what a default log still shows.
+        /// </summary>
+        public const int ChatLogHorizon = 1000;
 
-        /// <param name="refusalLifetime">How long after a refused portrait click its tell is still refused.</param>
-        public ChatPortraitTellGuard(TimeSpan refusalLifetime)
+        private sealed class ObserverLog
         {
-            _refusalLifetime = refusalLifetime;
+            public long LinesReceived;
+            public readonly Dictionary<uint, Dictionary<string, long>> LastLineBySpeakerBySlot = new();
+        }
+
+        private sealed record PortraitClick(uint Slot, string Holder, bool Refused, DateTime Expires);
+
+        private readonly TimeSpan _clickLifetime;
+        private readonly Dictionary<uint, ObserverLog> _logsByObserver = new();
+        private readonly Dictionary<uint, PortraitClick> _clicksByObserver = new();
+
+        /// <param name="clickLifetime">How long after a portrait click its tell is still checked.</param>
+        public ChatPortraitTellGuard(TimeSpan clickLifetime)
+        {
+            _clickLifetime = clickLifetime;
         }
 
         /// <summary>Records that a chat line from the speaker, who holds the slot, reached the observer's client.</summary>
         public void RecordLine(uint observer, uint speakerSlot, string speaker)
         {
-            if (!_speakersBySlotByObserver.TryGetValue(observer, out var speakersBySlot))
+            if (!_logsByObserver.TryGetValue(observer, out var log))
             {
-                speakersBySlot = new Dictionary<uint, HashSet<string>>();
-                _speakersBySlotByObserver[observer] = speakersBySlot;
+                log = new ObserverLog();
+                _logsByObserver[observer] = log;
             }
 
-            if (!speakersBySlot.TryGetValue(speakerSlot, out var speakers))
+            if (!log.LastLineBySpeakerBySlot.TryGetValue(speakerSlot, out var speakers))
             {
-                speakers = new HashSet<string>();
-                speakersBySlot[speakerSlot] = speakers;
+                speakers = new Dictionary<string, long>();
+                log.LastLineBySpeakerBySlot[speakerSlot] = speakers;
             }
 
-            speakers.Add(speaker);
+            speakers[speaker] = ++log.LinesReceived;
+            RemoveScrolledOut(log, speakers);
         }
 
         /// <summary>Drops an observer's history once their client, and with it their chat log, is gone.</summary>
         public void ForgetObserver(uint observer)
         {
-            _speakersBySlotByObserver.Remove(observer);
-            _refusedClicks.Remove(observer);
+            _logsByObserver.Remove(observer);
+            _clicksByObserver.Remove(observer);
         }
 
         /// <summary>
-        /// Classifies a portrait click that resolved to the slot's current holder. A click that may not belong to
-        /// the holder is remembered so the tell it starts can be refused.
+        /// Classifies a portrait click that resolved to the slot's current holder, and remembers it so the tell it
+        /// starts can be checked.
         /// </summary>
         public ChatPortraitClick Click(uint observer, uint slot, string holder, DateTime now)
         {
             var result = Classify(observer, slot, holder);
-            if (result is ChatPortraitClick.FormerHolder or ChatPortraitClick.Ambiguous)
-                _refusedClicks[observer] = (slot, now + _refusalLifetime);
-            else
-                _refusedClicks.Remove(observer);
-
+            var refused = result is ChatPortraitClick.FormerHolder or ChatPortraitClick.Ambiguous;
+            _clicksByObserver[observer] = new PortraitClick(slot, holder, refused, now + _clickLifetime);
             return result;
         }
 
         /// <summary>
-        /// Whether a tell is the one a refused portrait click started. Any tell ends the click, since the
-        /// prompt the click filled in has been sent.
+        /// Whether to refuse a tell because it is the one a portrait click started and the click may not belong to
+        /// the character the tell now reaches: either it already looked stale, or the slot changed hands since.
+        /// Any tell ends the click, since the prompt the click filled in has been sent.
         /// </summary>
-        public bool ConsumeRefusedTell(uint observer, uint targetSlot, DateTime now)
+        public bool ConsumeRefusedTell(uint observer, uint targetSlot, string target, DateTime now)
         {
-            if (!_refusedClicks.Remove(observer, out var click))
+            if (!_clicksByObserver.Remove(observer, out var click))
                 return false;
 
-            return click.Slot == targetSlot && now <= click.Expires;
+            if (click.Slot != targetSlot || now > click.Expires)
+                return false;
+
+            return click.Refused || click.Holder != target;
         }
 
         private ChatPortraitClick Classify(uint observer, uint slot, string holder)
         {
-            if (!_speakersBySlotByObserver.TryGetValue(observer, out var speakersBySlot) ||
-                !speakersBySlot.TryGetValue(slot, out var speakers))
+            if (!_logsByObserver.TryGetValue(observer, out var log) ||
+                !log.LastLineBySpeakerBySlot.TryGetValue(slot, out var speakers))
             {
                 return ChatPortraitClick.Unrecorded;
             }
 
-            if (!speakers.Contains(holder))
+            RemoveScrolledOut(log, speakers);
+            if (speakers.Count == 0)
+            {
+                log.LastLineBySpeakerBySlot.Remove(slot);
+                return ChatPortraitClick.Unrecorded;
+            }
+
+            if (!speakers.ContainsKey(holder))
                 return ChatPortraitClick.FormerHolder;
 
             return speakers.Count == 1
                 ? ChatPortraitClick.CurrentHolder
                 : ChatPortraitClick.Ambiguous;
+        }
+
+        // Portraits of lines older than the chat log can no longer be clicked.
+        private static void RemoveScrolledOut(ObserverLog log, Dictionary<string, long> speakers)
+        {
+            foreach (var scrolledOut in speakers.Where(speaker => log.LinesReceived - speaker.Value >= ChatLogHorizon).ToList())
+                speakers.Remove(scrolledOut.Key);
         }
     }
 }

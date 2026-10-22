@@ -28,7 +28,7 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition
             _builder.CreateWindow(GuiWindowType.Skills)
                 .SetIsResizable(true)
                 .SetIsCollapsible(true)
-                .SetInitialGeometry(0, 0, 650f, 295.5f)
+                .SetInitialGeometry(0, 0, 820f, 460f)
                 .SetTitle("Skills")
                 .AddColumn(column =>
                 {

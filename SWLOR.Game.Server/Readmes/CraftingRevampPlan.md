@@ -320,7 +320,7 @@ You work a volatile poison or trap mechanism through a visible reaction cycle.
   - **Measure:** small Potency, safe in any phase.
   - **Charge:** large Potency, doubled at Peak. It costs heavy Stability unless the phase is Calm.
   - **Refine:** Subtlety, doubled in Settling and halved at Peak.
-  - **Dampen:** costs CP; holds the current phase one more turn.
+  - **Dampen:** costs CP; holds the current phase one more turn and restores a little Stability. Owner decision, October 2026: Dampen keeps its hold and also restores a little Stability. It wears the piece by nothing. Tuned with the gates: it restores 8 Stability and costs 3 CP for every 20 recipe levels (at least 2), a quarter of Stabilize's CP, so a crafter at the recipe's level has one to spare beside a Stabilize, and a crafter who has not learned Stabilize yet has a few.
   - **Stabilize:** restores Stability, costs CP.
 - **Per-recipe parameters:** cycle pattern and length; tier sets Peak intensity.
 - **Progression:**

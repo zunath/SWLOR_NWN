@@ -29,7 +29,7 @@ public sealed class ReactionEngine : MinigameEngineBase<ReactionState>
             "Charge",
             "Drive the reaction: a lot of Potency, doubled at Peak. It costs heavy Stability unless the phase is Calm."),
         new MinigameActionInfo(Refine, "Refine", "Purify the mixture: Subtlety, doubled in Settling and halved at Peak."),
-        new MinigameActionInfo(Dampen, "Dampen", "Hold the current phase for one more turn. Costs CP."),
+        new MinigameActionInfo(Dampen, "Dampen", "Hold the current phase for one more turn and restore a little Stability, without wearing the piece. Costs CP."),
         new MinigameActionInfo(Stabilize, "Stabilize", "Steady the mixture and restore Stability. Costs CP.")
     };
 
@@ -74,7 +74,7 @@ public sealed class ReactionEngine : MinigameEngineBase<ReactionState>
         switch (actionId)
         {
             case Measure:
-                return OneOutcome(info, 0, ReactionRules.ActionStability, "Measured", s =>
+                return OneOutcome(info, 0, _settings.ActionStability, "Measured", s =>
                     s.Adjust(new MinigameMeterDelta(Progress: _settings.MeasurePotency)));
 
             case Charge:
@@ -95,7 +95,7 @@ public sealed class ReactionEngine : MinigameEngineBase<ReactionState>
                     _ => "Strained charge"
                 };
 
-                return OneOutcome(info, 0, ReactionRules.ActionStability + strain, label, s =>
+                return OneOutcome(info, 0, _settings.ActionStability + strain, label, s =>
                     s.Adjust(new MinigameMeterDelta(Progress: potency)));
             }
 
@@ -114,19 +114,25 @@ public sealed class ReactionEngine : MinigameEngineBase<ReactionState>
                     _ => "Refined"
                 };
 
-                return OneOutcome(info, 0, ReactionRules.ActionStability, label, s =>
+                return OneOutcome(info, 0, _settings.ActionStability, label, s =>
                     s.Adjust(new MinigameMeterDelta(Quality: subtlety)));
             }
 
             case Dampen:
-                return OneOutcome(info, ReactionRules.DampenCp, ReactionRules.ActionStability, "Phase held", s =>
-                    s with { HoldCycle = true });
+                return OneOutcome(info, _settings.DampenCp, 0, "Phase held", s =>
+                    s.Adjust(new MinigameMeterDelta(Integrity: ReactionRules.DampenRestore)) with { HoldCycle = true });
 
             case Stabilize:
-                if (state.Meters.Integrity.Value >= state.Meters.Integrity.Max)
-                    return MinigameActionRule<ReactionState>.Disabled(info, ReactionRules.StabilizeCp, 0, "Stability is already full.");
+                if (!_settings.StabilizeUnlocked)
+                {
+                    return MinigameActionRule<ReactionState>.Disabled(
+                        info, _settings.StabilizeCp, 0, $"Unlocks at Espionage rank {ReactionRules.StabilizeUnlockRank}.");
+                }
 
-                return OneOutcome(info, ReactionRules.StabilizeCp, 0, "Stabilized", s =>
+                if (state.Meters.Integrity.Value >= state.Meters.Integrity.Max)
+                    return MinigameActionRule<ReactionState>.Disabled(info, _settings.StabilizeCp, 0, "Stability is already full.");
+
+                return OneOutcome(info, _settings.StabilizeCp, 0, "Stabilized", s =>
                     s.Adjust(new MinigameMeterDelta(Integrity: ReactionRules.StabilizeRestore)));
 
             default:
@@ -184,7 +190,7 @@ public sealed class ReactionEngine : MinigameEngineBase<ReactionState>
         var meters = MinigameMeters.Start(
             ReactionRules.MeterMaximum,
             ReactionRules.MeterMaximum,
-            ReactionRules.MeterMaximum,
+            ReactionRules.StabilityMaximum,
             settings.MaxCp);
         return new ReactionState(meters, null, position, false);
     }

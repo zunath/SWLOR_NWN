@@ -1,7 +1,9 @@
 using System.Reflection;
+using System.Text.RegularExpressions;
 using FluentAssertions;
 using NUnit.Framework;
 using SWLOR.Game.Server.Feature.PerkDefinition;
+using SWLOR.Game.Server.Service.CraftService;
 using SWLOR.Game.Server.Service.PerkService;
 using SWLOR.Game.Server.Service.SkillService;
 using SWLOR.NWN.API.NWScript.Enum;
@@ -10,6 +12,12 @@ namespace SWLOR.Game.Server.Tests.Perks;
 
 public class GatheringPerkRegressionTests
 {
+    private static readonly string[] RetiredPerkNames =
+    {
+        "Harvesting", "Refining", "RefineryManagement", "Scavenging", "HardLook",
+        "Research", "ResearchProjects", "ScientificNetworking", "DroidAssembly"
+    };
+
     [Test]
     public void GatheringPerkIds_RemainCompatibleWithPersistedPlayerData()
     {
@@ -20,72 +28,50 @@ public class GatheringPerkRegressionTests
         ((int)PerkType.HardLook).Should().Be(161);
         ((int)PerkType.TreasureHunter).Should().Be(181);
         ((int)PerkType.CreditFinder).Should().Be(182);
+        ((int)PerkType.DroidAssembly).Should().Be(264);
     }
 
     [Test]
-    public void GatheringPerkDefinitions_MatchCurrentApprovedRanks()
+    public void RetiredCraftingPerks_HaveNoDefinitionAndNoGameplayCallSite()
     {
-        var perks = BuildGatheringPerksWithout2daLookup();
+        var pattern = new Regex($@"PerkType\.({string.Join("|", RetiredPerkNames)})\b", RegexOptions.Compiled);
+        var serverRoot = Path.Combine(FindRepositoryRoot().FullName, "SWLOR.Game.Server");
+        var references = new List<string>();
 
-        AssertPerk(
+        foreach (var file in Directory.EnumerateFiles(serverRoot, "*.cs", SearchOption.AllDirectories))
+        {
+            var relative = Path.GetRelativePath(serverRoot, file).Replace('\\', '/');
+            // The refund migration keeps the retired members by name; no other code may name them.
+            if (relative.StartsWith("obj/") || relative.StartsWith("bin/") ||
+                relative.EndsWith("_25_ConvertCraftingPerksToRanks.cs"))
+                continue;
+
+            foreach (Match match in pattern.Matches(File.ReadAllText(file)))
+                references.Add($"{relative}: {match.Value}");
+        }
+
+        references.Should().BeEmpty(
+            "Perk.GetPerkLevel throws for a perk without a definition, so nothing may query a retired perk");
+    }
+
+    [Test]
+    public void TreasureHunterAndCreditfinder_AreGeneralPerksRequiringArmor()
+    {
+        var perks = BuildGeneralPerksWithout2daLookup();
+
+        AssertGeneralPerk(
             perks[PerkType.TreasureHunter],
             "Treasure Hunter",
-            new ExpectedRank(3, 15, "Increases the chance to find rare items by 10.", FeatType.TreasureHunterTrait),
-            new ExpectedRank(3, 30, "Increases the chance to find rare items by 20."),
-            new ExpectedRank(4, 45, "Increases the chance to find rare items by 30."));
+            new ExpectedRank(3, 20, "Rare items are more likely to be chosen when loot is rolled, and rare loot tables gain up to +10% drop chance.", FeatType.TreasureHunterTrait),
+            new ExpectedRank(3, 40, "Rare items are more likely to be chosen when loot is rolled, and rare loot tables gain up to +20% drop chance."),
+            new ExpectedRank(4, 50, "Rare items are more likely to be chosen when loot is rolled, and rare loot tables gain up to +30% drop chance."));
 
-        AssertPerk(
+        AssertGeneralPerk(
             perks[PerkType.CreditFinder],
             "Creditfinder",
-            new ExpectedRank(3, 20, "Increases the amount of credits found by 20%.", FeatType.CreditFinderTrait),
-            new ExpectedRank(3, 40, "Increases the amount of credits found by 40%."),
-            new ExpectedRank(4, 50, "Increases the amount of credits found by 60%."));
-
-        AssertPerk(
-            perks[PerkType.Harvesting],
-            "Harvesting",
-            new ExpectedRank(1, null, "You can use tier 1 harvesters.", FeatType.Harvesting1),
-            new ExpectedRank(1, 10, "You can use tier 2 harvesters.", FeatType.Harvesting2),
-            new ExpectedRank(2, 20, "You can use tier 3 harvesters.", FeatType.Harvesting3),
-            new ExpectedRank(3, 30, "You can use tier 4 harvesters.", FeatType.Harvesting4),
-            new ExpectedRank(4, 40, "You can use tier 5 harvesters.", FeatType.Harvesting5));
-
-        AssertPerk(
-            perks[PerkType.Refining],
-            "Refining",
-            new ExpectedRank(1, null, "You can refine Veldite and Tilarium.", FeatType.Refining1),
-            new ExpectedRank(1, 10, "You can refine Veldite, Tilarium, Scordspar, and Currian.", FeatType.Refining2),
-            new ExpectedRank(2, 20, "You can refine Veldite, Tilarium, Scordspar, Currian, Plagionite, and Idailia.", FeatType.Refining3),
-            new ExpectedRank(3, 30, "You can refine Veldite, Tilarium, Scordspar, Currian, Plagionite, Idailia, Keromber, and Barinium.", FeatType.Refining4),
-            new ExpectedRank(4, 40, "You can refine Veldite, Tilarium, Scordspar, Currian, Plagionite, Idailia, Keromber, Barinium, Jasioclase, and Gostian.", FeatType.Refining5));
-
-        AssertPerk(
-            perks[PerkType.RefineryManagement],
-            "Refinery Management",
-            new ExpectedRank(1, null, "Power cores refine one additional item.", FeatType.RefineryManagement1),
-            new ExpectedRank(1, 10, "Power cores refine two additional items.", FeatType.RefineryManagement2),
-            new ExpectedRank(2, 20, "Power cores refine three additional items.", FeatType.RefineryManagement3),
-            new ExpectedRank(2, 30, "Power cores refine four additional items.", FeatType.RefineryManagement4),
-            new ExpectedRank(3, 40, "Power cores refine five additional items.", FeatType.RefineryManagement5),
-            new ExpectedRank(4, 45, "Power cores refine six additional items.", FeatType.RefineryManagement6));
-
-        AssertPerk(
-            perks[PerkType.Scavenging],
-            "Scavenging",
-            new ExpectedRank(1, null, "You can scavenge tier 1 resources.", FeatType.Scavenging1),
-            new ExpectedRank(1, 10, "You can scavenge tier 2 resources.", FeatType.Scavenging2),
-            new ExpectedRank(2, 20, "You can scavenge tier 3 resources.", FeatType.Scavenging3),
-            new ExpectedRank(3, 30, "You can scavenge tier 4 resources.", FeatType.Scavenging4),
-            new ExpectedRank(4, 40, "You can scavenge tier 5 resources.", FeatType.Scavenging5));
-
-        AssertPerk(
-            perks[PerkType.HardLook],
-            "Hard Look",
-            new ExpectedRank(1, null, "Grants a 10% chance to search a second time at each search site.", FeatType.HardLook1),
-            new ExpectedRank(1, 10, "Grants a 20% chance to search a second time at each search site.", FeatType.HardLook2),
-            new ExpectedRank(2, 20, "Grants a 30% chance to search a second time at each search site.", FeatType.HardLook3),
-            new ExpectedRank(3, 30, "Grants a 40% chance to search a second time at each search site.", FeatType.HardLook4),
-            new ExpectedRank(3, 40, "Grants a 50% chance to search a second time at each search site.", FeatType.HardLook5));
+            new ExpectedRank(3, 15, "Increases the amount of credits found by 20%.", FeatType.CreditFinderTrait),
+            new ExpectedRank(3, 30, "Increases the amount of credits found by 40%."),
+            new ExpectedRank(4, 45, "Increases the amount of credits found by 60%."));
     }
 
     [Test]
@@ -120,31 +106,37 @@ public class GatheringPerkRegressionTests
         chooseItem.Should().Contain("weight += treasureHunterLevel * 10;");
     }
 
-    [TestCase(0, 0, 0)]
-    [TestCase(1, 0, 10)]
-    [TestCase(3, 0, 30)]
-    [TestCase(5, 2, 60)]
-    public void HardLook_PreservesSecondSearchChance(
-        int hardLookRank,
-        int perceptionModifier,
-        int expectedChance)
+    [TestCase(0, 10)]
+    [TestCase(9, 10)]
+    [TestCase(10, 20)]
+    [TestCase(30, 40)]
+    [TestCase(40, 50)]
+    [TestCase(50, 50)]
+    public void HardLook_UsesTheGatheringRankMilestoneForTheSecondSearchChance(int gatheringRank, int expectedBaseChance)
     {
-        CalculateHardLookChance(hardLookRank, perceptionModifier).Should().Be(expectedChance);
+        var hardLookLevel = CraftRankMilestones.TierForRank(gatheringRank);
+
+        CalculateHardLookChance(hardLookLevel, 0).Should().Be(expectedBaseChance);
+        CalculateHardLookChance(hardLookLevel, 2).Should().Be(expectedBaseChance + 10);
 
         var scavengePoint = ReadSource("Feature", "ScavengePoint.cs");
         var onOpened = ExtractMethod(scavengePoint, "public static void OnOpened()");
+        onOpened.Should().Contain("CraftRankMilestones.GetHardLookLevel(user)");
         onOpened.Should().Contain("hardLookLevel * 10 + GetAbilityModifier(AbilityType.Perception, user) * 5");
         onOpened.Should().Contain("attempts++;");
     }
 
     [Test]
-    public void Scavenging_PreservesTierGateAndGatheringLootModifiers()
+    public void Scavenging_GatesSitesByGatheringRankAndKeepsGatheringLootModifiers()
     {
         var scavengePoint = ReadSource("Feature", "ScavengePoint.cs");
         var onOpened = ExtractMethod(scavengePoint, "public static void OnOpened()");
 
-        onOpened.Should().Contain("Perk.GetPerkLevel(user, PerkType.Scavenging)");
+        onOpened.Should().Contain("CraftRankMilestones.GetScavengingTier(user)");
         onOpened.Should().Contain("if (scavengingLevel < requiredLevel)");
+        onOpened.Should().Contain("CraftRankMilestones.RequiredRankForTier(requiredLevel)");
+        onOpened.Should().NotContain("PerkType.Scavenging");
+        onOpened.Should().NotContain("PerkType.HardLook");
         onOpened.Should().Contain("Perk.GetPerkLevel(user, PerkType.TreasureHunter)");
         onOpened.Should().Contain("Perk.GetPerkLevel(user, PerkType.CreditFinder)");
         onOpened.Should().Contain("var creditPercentIncrease = creditFinderLevel * 0.2f;");
@@ -154,7 +146,7 @@ public class GatheringPerkRegressionTests
     }
 
     [Test]
-    public void Harvesting_PreservesHarvesterAndResourceTierGates()
+    public void Harvesting_GatesHarvestersByGatheringRankAndKeepsResourceTierGates()
     {
         var harvester = ReadSource("Feature", "ItemDefinition", "HarvesterItemDefinition.cs");
         var buildItems = ExtractMethod(harvester, "public Dictionary<string, ItemDetail> BuildItems()");
@@ -167,15 +159,16 @@ public class GatheringPerkRegressionTests
         buildItems.Should().Contain("Harvester(\"harvest_r_3\", 4);");
         buildItems.Should().Contain("Harvester(\"harvest_r_4\", 5);");
 
-        harvesterDefinition.Should().Contain("Perk.GetPerkLevel(user, PerkType.Harvesting)");
-        harvesterDefinition.Should().Contain("if (perkLevel < requiredLevel)");
+        harvesterDefinition.Should().Contain("if (CraftRankMilestones.GetHarvesterTier(user) < requiredLevel)");
+        harvesterDefinition.Should().Contain("CraftRankMilestones.RequiredRankForTier(requiredLevel)");
+        harvesterDefinition.Should().NotContain("PerkType.Harvesting");
         harvesterDefinition.Should().Contain("var harvesterLevel = requiredLevel < 1 ? 1 : requiredLevel;");
         harvesterDefinition.Should().Contain("if (resourceLevel > harvesterLevel)");
         harvesterDefinition.Should().Contain(".ReducesItemCharge()");
     }
 
     [Test]
-    public void Refining_PreservesMaterialTierGates()
+    public void Refining_GatesMaterialsByGatheringRank()
     {
         var refinery = ReadSource("Feature", "GuiDefinition", "ViewModel", "RefineryViewModel.cs");
         var addItem = ExtractMethod(refinery, "public Action OnClickAddItem() => () =>");
@@ -199,8 +192,10 @@ public class GatheringPerkRegressionTests
             refinery.Should().Contain($"{{\"{resref}\", new OreDetail({requiredLevel},");
         }
 
-        addItem.Should().Contain("Perk.GetPerkLevel(Player, PerkType.Refining)");
-        addItem.Should().Contain("if (perkLevel < _ores[resref].RequiredLevel)");
+        addItem.Should().Contain("CraftRankMilestones.GetRefiningTier(Player)");
+        addItem.Should().Contain("if (refiningTier < _ores[resref].RequiredLevel)");
+        addItem.Should().Contain("CraftRankMilestones.RequiredRankForTier(_ores[resref].RequiredLevel)");
+        addItem.Should().NotContain("PerkType.Refining");
     }
 
     [TestCase(0, 4, 2)]
@@ -208,36 +203,37 @@ public class GatheringPerkRegressionTests
     [TestCase(3, 12, 2)]
     [TestCase(6, 9, 1)]
     [TestCase(6, 10, 2)]
-    public void RefineryManagement_PreservesThreePlusRankItemsPerCore(
-        int rank,
+    public void RefineryManagement_PreservesThreePlusLevelItemsPerCore(
+        int level,
         int itemCount,
         int expectedCores)
     {
-        CalculateRequiredPowerCores(rank, itemCount).Should().Be(expectedCores);
+        CalculateRequiredPowerCores(level, itemCount).Should().Be(expectedCores);
 
         var refinery = ReadSource("Feature", "GuiDefinition", "ViewModel", "RefineryViewModel.cs");
         var calculation = ExtractMethod(refinery, "private void CalculateCoresRequired()");
         refinery.Should().Contain("private const int BaseItemsRefinedPerCore = 3;");
-        calculation.Should().Contain("Perk.GetPerkLevel(Player, PerkType.RefineryManagement)");
+        calculation.Should().Contain("CraftRankMilestones.GetRefineryManagementLevel(Player)");
+        calculation.Should().NotContain("PerkType.RefineryManagement");
         calculation.Should().Contain("var itemsPerCore = BaseItemsRefinedPerCore + refineryManagement;");
         calculation.Should().Contain("Math.Ceiling(ItemCount / (float)itemsPerCore)");
     }
 
-    private static int CalculateHardLookChance(int hardLookRank, int perceptionModifier)
+    private static int CalculateHardLookChance(int hardLookLevel, int perceptionModifier)
     {
-        return hardLookRank * 10 + perceptionModifier * 5;
+        return hardLookLevel * 10 + perceptionModifier * 5;
     }
 
-    private static int CalculateRequiredPowerCores(int refineryManagementRank, int itemCount)
+    private static int CalculateRequiredPowerCores(int refineryManagementLevel, int itemCount)
     {
         const int BaseItemsRefinedPerCore = 3;
-        var itemsPerCore = BaseItemsRefinedPerCore + refineryManagementRank;
+        var itemsPerCore = BaseItemsRefinedPerCore + refineryManagementLevel;
         return (int)Math.Ceiling(itemCount / (float)itemsPerCore);
     }
 
-    private static void AssertPerk(PerkDetail perk, string name, params ExpectedRank[] expectedRanks)
+    private static void AssertGeneralPerk(PerkDetail perk, string name, params ExpectedRank[] expectedRanks)
     {
-        perk.Category.Should().Be(PerkCategoryType.Gathering);
+        perk.Category.Should().Be(PerkCategoryType.General);
         perk.Name.Should().Be(name);
         perk.PerkLevels.Keys.OrderBy(x => x).Should().Equal(Enumerable.Range(1, expectedRanks.Length));
 
@@ -250,17 +246,9 @@ public class GatheringPerkRegressionTests
             level.Description.Should().Be(expected.Description);
             level.StatBonuses.Should().BeEmpty();
 
-            var skillRequirements = level.Requirements.OfType<PerkRequirementSkill>().ToList();
-            if (expected.SkillRank.HasValue)
-            {
-                var requirement = skillRequirements.Should().ContainSingle().Which;
-                requirement.Type.Should().Be(SkillType.Gathering);
-                requirement.RequiredRank.Should().Be(expected.SkillRank.Value);
-            }
-            else
-            {
-                skillRequirements.Should().BeEmpty();
-            }
+            var requirement = level.Requirements.OfType<PerkRequirementSkill>().Should().ContainSingle().Which;
+            requirement.Type.Should().Be(SkillType.Armor);
+            requirement.RequiredRank.Should().Be(expected.SkillRank);
 
             if (expected.Feat.HasValue)
                 level.GrantedFeats.Should().ContainSingle().Which.Should().Be(expected.Feat.Value);
@@ -269,28 +257,17 @@ public class GatheringPerkRegressionTests
         }
     }
 
-    private static Dictionary<PerkType, PerkDetail> BuildGatheringPerksWithout2daLookup()
+    private static Dictionary<PerkType, PerkDetail> BuildGeneralPerksWithout2daLookup()
     {
-        var definition = new GatheringPerkDefinition();
-        var methodNames = new[]
+        var definition = new ArmorPerkDefinition();
+        foreach (var methodName in new[] { "TreasureHunter", "Creditfinder" })
         {
-            "TreasureHunter",
-            "Creditfinder",
-            "Harvesting",
-            "Refining",
-            "RefineryManagement",
-            "Scavenging",
-            "HardLook"
-        };
-
-        foreach (var methodName in methodNames)
-        {
-            typeof(GatheringPerkDefinition)
+            typeof(ArmorPerkDefinition)
                 .GetMethod(methodName, BindingFlags.Instance | BindingFlags.NonPublic)!
                 .Invoke(definition, null);
         }
 
-        var builder = typeof(GatheringPerkDefinition)
+        var builder = typeof(ArmorPerkDefinition)
             .GetField("_builder", BindingFlags.Instance | BindingFlags.NonPublic)!
             .GetValue(definition);
 
@@ -349,7 +326,7 @@ public class GatheringPerkRegressionTests
 
     private sealed record ExpectedRank(
         int Price,
-        int? SkillRank,
+        int SkillRank,
         string Description,
         FeatType? Feat = null);
 }

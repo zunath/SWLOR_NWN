@@ -205,7 +205,7 @@ namespace SWLOR.Game.Server.Feature.QuestDefinition
                 .PrerequisiteQuest("ore_collection")
 
                 .AddState()
-                .SetStateJournalText("Avix Tatham wants you to go down and gather more ore. This time, though, he needs you to refine it at one of the refineries near him. You will need the perk 'Refining I' to refine the ore. When you have four pieces of refined Veldite return to him to give them to him.")
+                .SetStateJournalText("Avix Tatham wants you to go down and gather more ore. This time, though, he needs you to refine it at one of the refineries near him. When you have four pieces of refined Veldite return to him to give them to him.")
                 .AddCollectItemObjective("ref_veldite", 4)
 
                 .AddState()

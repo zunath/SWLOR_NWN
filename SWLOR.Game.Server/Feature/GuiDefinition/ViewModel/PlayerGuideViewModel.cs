@@ -831,9 +831,9 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
                         new ArticleBlock("Closing the Window",
                             "Closing before craft mode begins returns inserted items. Closing after the craft begins immediately fails the craft, so finish the attempt before closing the window."),
                         new ArticleBlock("Research",
-                            "Research terminals require Research I. Research jobs cost credits and time, work with weapon, armor, and food recipes, and can create a level 1 blueprint or improve one up to level 10. The recipe determines the required Research rank. You may run 1 personal job plus 1 per Research Projects rank, but each terminal handles only one job at a time. Cancelling forfeits credits and progress but returns the blueprint."),
+                            "Research terminals require Fabrication rank 10. Research jobs cost credits and time, work with weapon, armor, and food recipes, and can create a level 1 blueprint or improve one up to level 10. The recipe determines the required Fabrication rank: 10 per recipe tier, up to 50. You may run 1 personal job, plus 1 at Fabrication 25 and another at Fabrication 50, but each terminal handles only one job at a time. Cancelling forfeits credits and progress but returns the blueprint."),
                         new ArticleBlock("Refining",
-                            "Refineries turn raw materials into refined materials. Refining requires the material's Refining rank, takes 6 seconds, consumes Power Cores, and grants Gathering XP. One Power Core processes 3 items plus 1 additional item per Refinery Management rank.")
+                            "Refineries turn raw materials into refined materials. Refining requires the Gathering rank for the material's tier (0, 10, 20, 30, or 40), takes 6 seconds, consumes Power Cores, and grants Gathering XP. One Power Core processes 3 items plus 1 additional item at Gathering 0, 10, 20, 30, 40, and 45.")
                     },
                     new[]
                     {
@@ -853,11 +853,11 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
                     new[]
                     {
                         new ArticleBlock("Harvesting Resources",
-                            "Use a charged harvester on a matching resource node. The harvester and resource can require an appropriate Harvesting perk rank. Harvesting takes 5 seconds, consumes a harvester charge, grants Gathering XP, and Might can provide bonus material."),
+                            "Use a charged harvester on a matching resource node. The harvester and resource can require a minimum Gathering rank: tier 1 at rank 0, then one more tier every 10 ranks. Harvesting takes 5 seconds, consumes a harvester charge, grants Gathering XP, and Might can provide bonus material."),
                         new ArticleBlock("Scavenging",
-                            "Scavenge sites require the displayed Scavenging rank. Each search rolls Perception against the site, grants Gathering XP even on failure, and marks that site fully searched. Hard Look plus Perception can grant a second search attempt, Treasure Hunter improves item results, and Credit Finder improves credit finds."),
+                            "Scavenge sites require a Gathering rank that matches the site's tier. Each search rolls Perception against the site, grants Gathering XP even on failure, and marks that site fully searched. Your Gathering rank plus Perception can grant a second search attempt, Treasure Hunter improves item results, and Credit Finder improves credit finds."),
                         new ArticleBlock("Refining Materials",
-                            "Raw materials can be processed at refineries when you have the matching Refining rank. Refining consumes Power Cores and grants Gathering XP; see Crafting for the batch-size and timing details."),
+                            "Raw materials can be processed at refineries when you have the matching Gathering rank. Refining consumes Power Cores and grants Gathering XP; see Crafting for the batch-size and timing details."),
                         new ArticleBlock("Loading A Fishing Rod",
                             "Equip a fishing rod in your right hand. Use the rod on bait in your inventory to load it. Loading different bait first unloads any remaining bait back into your inventory."),
                         new ArticleBlock("Fishing",
@@ -865,8 +865,8 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
                     },
                     new[]
                     {
-                        new QuestionAnswer("Why won't my harvester work?", "It may be out of charges, too far from the node, the wrong harvester, or require a higher matching Harvesting rank."),
-                        new QuestionAnswer("What improves scavenging?", "Scavenging unlocks harder sites; Perception, Hard Look, Treasure Hunter, and Credit Finder improve different parts of the result."),
+                        new QuestionAnswer("Why won't my harvester work?", "It may be out of charges, too far from the node, the wrong harvester, or require a higher Gathering rank."),
+                        new QuestionAnswer("What improves scavenging?", "Gathering rank unlocks harder sites and a better chance of a second search; Perception, Treasure Hunter, and Credit Finder improve different parts of the result."),
                         new QuestionAnswer("How do I load bait?", "Equip the fishing rod, use it, and target bait in your inventory."),
                         new QuestionAnswer("Why did fishing stop?", "Moving during the 6 to 8 second cast interrupts the attempt.")
                     },
@@ -943,15 +943,15 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
                     new[]
                     {
                         new ArticleBlock("Droid Assembly",
-                            "Droid assembly terminals require Droid Assembly I. A complete droid needs a CPU, head, body, arms, legs, personality, and name. Assembly consumes the selected parts and creates a Droid Control Unit."),
+                            "Anyone can use a droid assembly terminal. A complete droid needs a CPU, head, body, arms, legs, personality, and name. Assembly consumes the selected parts and creates a Droid Control Unit."),
                         new ArticleBlock("Part Tiers",
-                            "Your Droid Assembly rank must meet the CPU tier. Head, body, arms, and legs cannot exceed the CPU tier. The chosen parts determine the droid's statistics, equipment, appearance options, and AI capacity."),
+                            "Your Engineering rank must reach the CPU tier: tier 1 at rank 0, then one more tier every 10 ranks. Head, body, arms, and legs cannot exceed the CPU tier. The chosen parts determine the droid's statistics, equipment, appearance options, and AI capacity."),
                         new ArticleBlock("Activating A Droid",
                             "Use the controller's first action to activate the droid. Droid tier requires an average combat level of tier x 10 minus 10. That level is half the sum of your Armor rank and your highest supported weapon, Force, Devices, or First Aid rank, rounded down. You cannot activate or adjust droids in space, and a droid uses the same single companion slot as a beast."),
                         new ArticleBlock("Appearance and Equipment",
                             "Use the controller's appearance action while that droid is active. Droids can carry equipment and inventory appropriate to their assembled design; their state is saved back to the controller when dismissed."),
                         new ArticleBlock("Programming AI",
-                            "Dismiss the droid before adjusting its AI. Your Droid Assembly rank must meet its tier. Uploading a matching instruction disc permanently consumes the disc and teaches its routine; instruction tier cannot exceed droid tier. Choose learned routines up to the controller's available AI-slot budget."),
+                            "Dismiss the droid before adjusting its AI. Your Engineering rank must reach its tier. Uploading a matching instruction disc permanently consumes the disc and teaches its routine; instruction tier cannot exceed droid tier. Choose learned routines up to the controller's available AI-slot budget."),
                         new ArticleBlock("Dismissal and Destruction",
                             "Dismissing a droid or losing it in combat saves it to the controller and starts a 30 minute Droid Controller cooldown before it can be activated again. Entering space also dismisses an active droid.")
                     },

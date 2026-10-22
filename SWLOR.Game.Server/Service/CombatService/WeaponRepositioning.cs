@@ -23,6 +23,9 @@ public static unsafe class WeaponRepositioning
     private const int ArrivalTimeoutMilliseconds = 3000;
     /// <summary>A move counts as arrived this close to its destination.</summary>
     public const float ArrivalTolerance = 0.35f;
+    // The native move cycles these base run clips; the weapon carry layers would pin the arms.
+    private static readonly string[] RunAnimations = { "run", "runfl", "runfr" };
+    private static readonly string[] RunCarryLayers = { "run_swordr", "run_swordl", "run_bowl", "run_shieldl" };
 
     public static bool IsMoving(uint actor) => _moving.ContainsKey(actor);
 
@@ -112,7 +115,8 @@ public static unsafe class WeaponRepositioning
         return NumericsVector2.Distance(position, start + fraction * segment) < radius;
     }
 
-    public static void Begin(uint actor, Location destination, Action<bool, float> onArrival)
+    /// <param name="travelAnimation">Authored clip shown instead of running for this move, or null for the native run.</param>
+    public static void Begin(uint actor, Location destination, Action<bool, float> onArrival, string travelAnimation = null)
     {
         var validation = Validate(actor, GetLocation(actor), destination, 0f, 6f);
         if (!string.IsNullOrEmpty(validation)) { onArrival(false, 0f); return; }
@@ -121,6 +125,7 @@ public static unsafe class WeaponRepositioning
             Actor = actor, Area = GetArea(actor), Origin = GetPosition(actor), Destination = GetPositionFromLocation(destination),
             MainHand = GetItemInSlot(InventorySlot.RightHand, actor), OffHand = GetItemInSlot(InventorySlot.LeftHand, actor),
             Started = Environment.TickCount64, OnArrival = onArrival, LastPosition = GetPosition(actor),
+            TravelAnimation = travelAnimation,
         };
         _moving[actor] = operation;
         foreach (var expired in _lockouts.Where(pair => pair.Value <= operation.Started && !_moving.ContainsKey(pair.Key))
@@ -131,6 +136,7 @@ public static unsafe class WeaponRepositioning
             // AssignCommand may run after a stop/equipment callback cancelled this operation.
             if (!_moving.TryGetValue(actor, out var current) || current.Id != operation.Id) return;
             ClearAllActions();
+            ApplyTravelAnimation(operation);
             ActionMoveToLocation(Location(operation.Area, operation.Destination, GetFacing(actor)), true);
             operation.ActionGroup = GetActionGroup(actor);
             ActionDoCommand(() => Finish(operation, IsCurrentAndValid(operation) && IsInsideCapturedCorridor(operation) &&
@@ -195,6 +201,7 @@ public static unsafe class WeaponRepositioning
     {
         if (!_moving.TryGetValue(operation.Actor, out var current) || current.Id != operation.Id) return;
         _moving.Remove(operation.Actor);
+        RestoreTravelAnimation(operation);
         if (stopOwnedMove && GetIsObjectValid(operation.Actor) && operation.ActionGroup.HasValue &&
             GetActionGroup(operation.Actor) == operation.ActionGroup)
             AssignCommand(operation.Actor, () =>
@@ -204,6 +211,20 @@ public static unsafe class WeaponRepositioning
         var distance = GetIsObjectValid(operation.Actor) ? NumericsVector2.Distance(
             new(operation.Origin.X, operation.Origin.Y), new(GetPosition(operation.Actor).X, GetPosition(operation.Actor).Y)) : 0f;
         operation.OnArrival(arrived, distance);
+    }
+
+    private static void ApplyTravelAnimation(WeaponRepositioningOperation operation)
+    {
+        if (string.IsNullOrEmpty(operation.TravelAnimation)) return;
+        foreach (var name in RunAnimations) ReplaceObjectAnimation(operation.Actor, name, operation.TravelAnimation);
+        foreach (var name in RunCarryLayers) ReplaceObjectAnimation(operation.Actor, name, NamedAnimationPlayback.NoHoldName);
+    }
+
+    private static void RestoreTravelAnimation(WeaponRepositioningOperation operation)
+    {
+        if (string.IsNullOrEmpty(operation.TravelAnimation) || !GetIsObjectValid(operation.Actor)) return;
+        foreach (var name in RunAnimations) ReplaceObjectAnimation(operation.Actor, name);
+        foreach (var name in RunCarryLayers) ReplaceObjectAnimation(operation.Actor, name);
     }
 
     private static bool IsInsideCapturedCorridor(WeaponRepositioningOperation operation)

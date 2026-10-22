@@ -108,7 +108,22 @@ namespace SWLOR.Game.Server.Service
                     UsePerkFeat.ResumeAttackAfterReposition(actor, activation.ResumeTarget);
                 }
                 finally { Combat.CompleteDeferredAbilityStaminaCostContext(actor, ability); }
-            });
+            }, TravelAnimation(actor, spec));
+        }
+
+        /// <summary>
+        /// The authored travel clips hold both pistols, so other grips keep the native run.
+        /// </summary>
+        private static string TravelAnimation(uint actor, TwinPistolAbilitySpec spec)
+        {
+            if (!AbilityAnimationEquipment.IsCompatible(AnimationEquipmentRequirement.TwinPistol, actor)) return null;
+            return spec.Movement switch
+            {
+                TwinPistolMovementType.Retreat => AuthoredAnimation.BlasterSlideTravel.Name,
+                TwinPistolMovementType.FreeDestination => AuthoredAnimation.PistolRushTravel.Name,
+                TwinPistolMovementType.Approach => AuthoredAnimation.GrappleShotTravel.Name,
+                _ => null
+            };
         }
 
         public static void Cancel(uint actor, CombatRecordInterruptCause cause = CombatRecordInterruptCause.Other)

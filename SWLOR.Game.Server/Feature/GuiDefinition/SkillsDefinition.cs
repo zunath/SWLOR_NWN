@@ -1,8 +1,10 @@
 using System.Linq;
 using SWLOR.Game.Server.Core.Beamdog;
+using SWLOR.Game.Server.Extension;
 using SWLOR.Game.Server.Feature.GuiDefinition.ViewModel;
 using SWLOR.Game.Server.Service;
 using SWLOR.Game.Server.Service.GuiService;
+using SWLOR.Game.Server.Service.SkillService;
 
 namespace SWLOR.Game.Server.Feature.GuiDefinition
 {
@@ -17,9 +19,11 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition
             var activeCategories = Skill.GetAllActiveSkillCategories()
                 .OrderBy(category => category.Value.Sequence)
                 .ToList();
-            var maxLimitRank = Skill.GetAllSkills()
-                .Where(skill => skill.Value.ContributesToSkillCap)
-                .Max(skill => skill.Value.MaxRank);
+            // Read the attributes directly: the skill cache may not be loaded when windows are built.
+            var maxLimitRank = Enum.GetValues<SkillType>()
+                .Select(skill => skill.GetAttribute<SkillType, SkillAttribute>())
+                .Where(skill => skill.ContributesToSkillCap)
+                .Max(skill => skill.MaxRank);
 
             _builder.CreateWindow(GuiWindowType.Skills)
                 .SetIsResizable(true)

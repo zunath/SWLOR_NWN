@@ -135,16 +135,17 @@ namespace SWLOR.CraftSim.Tests.Progression
         }
 
         [Test]
-        public void TheCeilingScaleKeepsTheStartingValuesUnderCrafting()
+        public void TheProposedScaleKeepsResearchUnderCraftingPerElapsedHourAtEveryRank()
         {
             var rows = ResearchCohort.Rows(ProgressionFixture.RealRecipes, ProgressionFixture.Gear, Assumptions).Where(r => r.BaseXp > 0).ToList();
-            var scale = rows.Min(r => Math.Min(r.CeilingShare.Value, r.ActiveCeilingShare.Value) / r.StartingShare.Value);
+            var scale = rows.Min(r => r.CeilingShare.Value / r.StartingShare.Value);
 
+            scale.Should().BeLessThan(1, "the starting values break the ceiling at the first rank of tier 1");
             foreach (var row in rows)
-            {
-                (row.StartingShare.Value * scale * row.ResearchXpPerActiveHourAtFullShare).Should().BeLessThanOrEqualTo(row.CraftingXpPerHour * 1.0000001);
-                (row.StartingShare.Value * scale * row.ResearchXpPerHourAtFullShare).Should().BeLessThanOrEqualTo(row.CraftingXpPerHour * 1.0000001);
-            }
+                (row.StartingToCraftingRatio.Value * scale).Should().BeLessThanOrEqualTo(1.0000001, $"rank {row.FabricationRank}");
+
+            // The own-time yardstick is stricter still, which is why the report shows it as the owner's call.
+            rows.Min(r => r.ActiveCeilingShare.Value / r.StartingShare.Value).Should().BeLessThan(scale);
         }
 
         [Test]

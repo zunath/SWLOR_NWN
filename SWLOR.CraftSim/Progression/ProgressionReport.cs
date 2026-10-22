@@ -654,18 +654,22 @@ namespace SWLOR.CraftSim.Progression
             var rows = skills.Contains(SkillType.Fabrication) ? ResearchCohort.Rows(model, mid, a).Where(r => r.BaseXp > 0).ToList() : new List<ResearchRow>();
             if (rows.Count > 0)
             {
-                var floor = rows.Min(r => Math.Min(r.ActiveCeilingShare.Value, r.CeilingShare.Value));
                 var startingShare = rows.Max(r => r.StartingShare.Value);
-                var scale = rows.Min(r => Math.Min(r.CeilingShare.Value, r.ActiveCeilingShare.Value) / r.StartingShare.Value);
+                var scale = rows.Min(r => r.CeilingShare.Value / r.StartingShare.Value);
+                var binding = rows.OrderBy(r => r.CeilingShare.Value / r.StartingShare.Value).First();
                 var experiment = (int)Math.Floor(ResearchXpRules.ExperimentXpPercent * scale);
                 var completion = (int)Math.Floor(ResearchXpRules.CompletionXpPercent * scale);
-                var elapsedOnly = rows.Min(r => r.CeilingShare.Value / r.StartingShare.Value);
+                var ownScale = rows.Min(r => r.ActiveCeilingShare.Value / r.StartingShare.Value);
+                var ownBroken = rows.Count(r => r.StartingActiveToCraftingRatio > 1);
                 text.AppendLine($"The Research workstream's starting values pay {Percent(startingShare)} of the chart XP for a level-1 job (`ResearchXpRules`: {ResearchXpRules.ExperimentXpPercent}% experiment, {ResearchXpRules.CompletionXpPercent}% completion, +{ResearchXpRules.LevelBonusPercentPerLevel}% per level). " +
-                                $"**Ceiling: research XP per real hour stays below at-level Fabrication crafting XP per hour, which at the lowest-ceiling rank means a level-1 job pays at most {Percent(floor)} of the chart XP** (measured per hour of the player's own time against the whole crafting loop). " +
+                                "**Ceiling, as the plan words it: research XP per real hour, with every job slot busy, stays below at-level Fabrication crafting XP per hour at the same rank** (the whole crafting loop, gathering and overhead included). " +
                                 (scale >= 1
-                                    ? "The starting values already sit under it."
-                                    : $"**Proposal: scale the starting values to {Percent(scale)} of themselves, `ExperimentXpPercent` {experiment} and `CompletionXpPercent` {completion}.** Counting only elapsed hours with every slot busy, the starting values could be {Percent(elapsedOnly)} of themselves before they break the ceiling, so the own-time yardstick is the one that binds, and a researcher who runs the jobs and plays the experiments is the one who exceeds crafting.") +
-                                " Keep a rule that a research award never exceeds the base XP of a craft of the same recipe level. " +
+                                    ? "The starting values already sit under it. "
+                                    : $"They break it at Fabrication {binding.FabricationRank}, where a level-1 job on a tier-1 recipe takes minutes and the lone slot restarts it all hour. " +
+                                      $"**Proposal: scale the starting values to {Percent(scale)} of themselves, `ExperimentXpPercent` {experiment} and `CompletionXpPercent` {completion}**, which keeps research under crafting at every rank. ") +
+                                $"Counted per hour of the player's own time at the terminal ({Number(binding.ActiveSecondsPerJob, 0)} s a job, because the jobs run offline), the starting values exceed crafting at {ownBroken} of the {rows.Count} paying ranks and would need {Percent(ownScale)} of themselves; " +
+                                "the plan's wording is the elapsed hour, so that is shown as the owner's call, not proposed. " +
+                                "Keep a rule that a research award never exceeds the base XP of a craft of the same recipe level. " +
                                 "Credits give a second bound: the first job on a new blueprint costs 200-4,200 credits and the level-10 job of a tier-4 recipe takes about five days. " +
                                 "Because the chart pays nothing for recipes five or more levels below the rank, the owner may want a floor for research (like `GetPracticeXP`'s 150) so researchers are not paid only in the first four ranks of each tier; a floor must sit under the same ceiling.");
             }

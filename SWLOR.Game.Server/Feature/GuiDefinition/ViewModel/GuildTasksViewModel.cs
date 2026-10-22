@@ -227,10 +227,11 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
 
             TaskDetails = $"Task: {task.Name}\n\nRewards:\nCredits: {creditAmount}\nGuild Points: {gpAmount}";
 
-            // A crafting guild's task also gives XP in its skill, for the rank the player has now.
+            // A crafting guild's task also gives XP in its skill, for the rank the player has now. The preview is the chart's XP; Social, food
+            // and DM bonuses and any XP debt change what the hand-in pays, so the line says so.
             var xpReward = task.Rewards.OfType<GuildTaskXpReward>().FirstOrDefault();
             if (xpReward != null && GuildTaskXp.GivesXp(xpReward.Guild))
-                TaskDetails += $"\n{Skill.GetSkillDetails(GuildTaskXp.SkillOf(xpReward.Guild)).Name} XP: {xpReward.Preview(Player)}";
+                TaskDetails += $"\n{Skill.GetSkillDetails(GuildTaskXp.SkillOf(xpReward.Guild)).Name} XP (before bonuses): {xpReward.Preview(Player)}";
 
             if (isExpired)
             {

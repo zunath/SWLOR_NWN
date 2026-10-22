@@ -74,7 +74,14 @@ def row_text(values: dict[str, str]) -> str:
     )
 
 
-def cell_text(cell_body: str) -> str:
+def cell_text(cell_body: str, attributes: str = "", shared: list[str] | None = None) -> str:
+    """The text of a cell: its inline string, or the shared string a `t="s"` cell points at (a workbook re-exported from Google stores text there)."""
+    if re.search(r'(?:^|\s)t="s"', attributes or ""):
+        index = _NUMBER.search(cell_body or "")
+        if index and shared and index.group(1).strip().isdigit() and int(index.group(1)) < len(shared):
+            return shared[int(index.group(1))]
+        return ""
+
     text = "".join(_TEXT.findall(cell_body or ""))
     return unescape(text, {"&quot;": '"', "&apos;": "'"})
 
@@ -98,7 +105,7 @@ def build_row(number: int, ordinal: float, text: str) -> str:
     )
 
 
-def update_sheet(xml: str, text: str) -> str:
+def update_sheet(xml: str, text: str, shared: list[str] | None = None) -> str:
     start = xml.index("<sheetData>") + len("<sheetData>")
     end = xml.index("</sheetData>")
     rows = list(_ROW.finditer(xml, start, end))
@@ -107,7 +114,7 @@ def update_sheet(xml: str, text: str) -> str:
     last_ordinal = 0.0
     for match in rows:
         cells = row_cells(match.group("body"))
-        if "B" in cells and cell_text(cells["B"][1]).startswith(MARKER):
+        if "B" in cells and cell_text(cells["B"][1], cells["B"][0], shared).startswith(MARKER):
             number = int(match.group("number"))
             ordinal = _NUMBER.search(cells["A"][1]).group(1) if "A" in cells and _NUMBER.search(cells["A"][1]) else str(float(last_ordinal + 1))
             replacement = build_row(number, float(ordinal), text)
@@ -145,7 +152,7 @@ def update_workbook(workbook: Path, check: bool = False) -> bool:
     path = paths.get(TAB) or paths[TAB.replace("&", "&amp;")]
 
     xml = entries[path].decode("utf-8")
-    updated = update_sheet(xml, row_text(read_values()))
+    updated = update_sheet(xml, row_text(read_values()), _SHARED.shared_strings(entries))
     if updated == xml:
         return False
 

@@ -32,16 +32,16 @@ What the numbers say:
 
 Hours to rank 50 at mid gear, today against with decisions 1 and 2 (hand-ins at the recommended award, crafts at the pace multiplier; the same unmeasured timings as the rest of this report):
 
-| Skill | Today h | With the decisions h | Change | Crafts to 50 today | Crafts to 50 with the decisions | Hand-in XP share of the climb | Hand-ins | Guild rank at rank 50 |
-| --- | --- | --- | --- | --- | --- | --- | --- | --- |
-| Smithery | 100.1 | 67.9 | -32% | 536 | 408 | 20% | 268 | 5 |
-| Engineering | 63.7 | 48.4 | -24% | 539 | 397 | 22% | 302 | 5 |
-| Fabrication | 53.4 | 39.3 | -26% | 530 | 401 | 20% | 273 | 5 |
-| Agriculture | 36.5 | 30.6 | -16% | 539 | 424 | 17% | 230 | 5 |
-| Median skill | 58.6 | 43.8 | -25% | - | - | - | - | - |
-| Slowest skill | 100.1 | 67.9 | -32% | - | - | - | - | - |
+| Skill | Today h | With the decisions h | Change | Crafts to 50 today | Crafts to 50 with the decisions | Hand-in XP share of the climb | At-level hand-ins | Catch-up hand-ins (quick craft) | Catch-up h (in the total) | Guild rank at rank 50 |
+| --- | --- | --- | --- | --- | --- | --- | --- | --- | --- | --- |
+| Smithery | 100.1 | 67.9 | -32% | 536 | 408 | 20% | 268 | 35 | 0.7 | 5 |
+| Engineering | 63.7 | 48.4 | -24% | 539 | 397 | 22% | 302 | 31 | 0.4 | 5 |
+| Fabrication | 53.4 | 39.3 | -26% | 530 | 401 | 20% | 273 | 32 | 0.6 | 5 |
+| Agriculture | 36.5 | 30.6 | -16% | 539 | 424 | 17% | 230 | 40 | 0.2 | 5 |
+| Median skill | 58.6 | 43.8 | -25% | - | - | - | - | - | - | - |
+| Slowest skill | 100.1 | 67.9 | -32% | - | - | - | - | - | - | - |
 
-The proposed target was the median skill at 45 h or fewer. With the decisions it is 43.8 h, which meets it. Hand-ins add no crafts: each is one of the crafter's own crafts of a task recipe, which the model makes whenever the ten-task board holds one.
+The proposed target was the median skill at 45 h or fewer. With the decisions it is 43.8 h, which meets it. An at-level hand-in is one of the crafter's own crafts of a task recipe, which the model makes whenever the ten-task board holds one, so it adds no craft. A catch-up hand-in is a quick-crafted item that raises the guild rank when the rank stands in the way; its quick-craft and turn-in time is in the hours above and its XP is not paid (quick-crafted items sit five or more levels below the rank).
 
 Research under the new values: the highest research XP per elapsed hour against at-level crafting XP per hour (with the x1.05) is 98% at Fabrication 10, under the plan's ceiling at every rank. Before the change the starting values (100% and 50%) paid 167% at Fabrication 10 in the baseline.
 

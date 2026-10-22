@@ -138,7 +138,8 @@ namespace SWLOR.CraftSim.Progression
             text.AppendLine("Hours to rank 50 at mid gear, today against with decisions 1 and 2 (hand-ins at the recommended award, crafts at the pace multiplier; the same unmeasured timings as the rest of this report):");
             text.AppendLine();
             var table = new MarkdownTable(
-                "Skill", "Today h", "With the decisions h", "Change", "Crafts to 50 today", "Crafts to 50 with the decisions", "Hand-in XP share of the climb", "Hand-ins", "Guild rank at rank 50");
+                "Skill", "Today h", "With the decisions h", "Change", "Crafts to 50 today", "Crafts to 50 with the decisions", "Hand-in XP share of the climb", "At-level hand-ins",
+                "Catch-up hand-ins (quick craft)", "Catch-up h (in the total)", "Guild rank at rank 50");
             var todayHours = new List<double>();
             var afterHours = new List<double>();
             foreach (var skill in skills)
@@ -150,7 +151,8 @@ namespace SWLOR.CraftSim.Progression
                 afterHours.Add(path.TotalHours);
                 table.Add(
                     skill.ToString(), Number(before.TotalHours, 1), Number(path.TotalHours, 1), Percent(path.TotalHours / before.TotalHours - 1), Number(before.Crafts, 0),
-                    Number(path.Crafts, 0), Percent(path.GuildXp / path.RequiredXp), Number(path.HandIns, 0), path.GuildRankReached.ToString());
+                    Number(path.Crafts, 0), Percent(path.GuildXp / path.RequiredXp), Number(path.HandIns, 0), Number(path.CatchUpHandIns, 0), Number(path.CatchUpHours, 1),
+                    path.GuildRankReached.ToString());
             }
 
             double Median(List<double> values)
@@ -159,12 +161,13 @@ namespace SWLOR.CraftSim.Progression
                 return (ordered[(ordered.Count - 1) / 2] + ordered[ordered.Count / 2]) / 2;
             }
 
-            table.Add("Median skill", Number(Median(todayHours), 1), Number(Median(afterHours), 1), Percent(Median(afterHours) / Median(todayHours) - 1), "-", "-", "-", "-", "-");
-            table.Add("Slowest skill", Number(todayHours.Max(), 1), Number(afterHours.Max(), 1), Percent(afterHours.Max() / todayHours.Max() - 1), "-", "-", "-", "-", "-");
+            table.Add("Median skill", Number(Median(todayHours), 1), Number(Median(afterHours), 1), Percent(Median(afterHours) / Median(todayHours) - 1), "-", "-", "-", "-", "-", "-", "-");
+            table.Add("Slowest skill", Number(todayHours.Max(), 1), Number(afterHours.Max(), 1), Percent(afterHours.Max() / todayHours.Max() - 1), "-", "-", "-", "-", "-", "-", "-");
             text.AppendLine(table.ToString());
             text.AppendLine($"The proposed target was the median skill at {Number(TargetHours, 0)} h or fewer. With the decisions it is {Number(Median(afterHours), 1)} h" +
                             (Median(afterHours) <= TargetHours ? ", which meets it." : $", {Number(Median(afterHours) - TargetHours, 1)} h over it.") +
-                            " Hand-ins add no crafts: each is one of the crafter's own crafts of a task recipe, which the model makes whenever the ten-task board holds one.");
+                            " An at-level hand-in is one of the crafter's own crafts of a task recipe, which the model makes whenever the ten-task board holds one, so it adds no craft. " +
+                            "A catch-up hand-in is a quick-crafted item that raises the guild rank when the rank stands in the way; its quick-craft and turn-in time is in the hours above and its XP is not paid (quick-crafted items sit five or more levels below the rank).");
             text.AppendLine();
 
             if (skills.Contains(SkillType.Fabrication))

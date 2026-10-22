@@ -74,6 +74,28 @@ class UpdateProgressionPaceBibleTests(unittest.TestCase):
         self.assertNotIn("is 1.1 times", twice)
         self.assertIn('<c r="A4" s="3"><v>2.0</v></c>', twice)
 
+    def test_rewrites_its_own_row_in_place_when_the_text_is_a_shared_string(self):
+        # A workbook saved by Google keeps cell text in sharedStrings.xml, so the marker is found through the index.
+        existing = '<row r="4"><c r="A4" s="3"><v>2.0</v></c><c r="B4" s="4" t="s"><v>1</v></c></row>'
+        xml = sheet(numbered(3, "1.0", "One") + existing + blank_rows(22, 23))
+        shared = ["One", "Crafting progression pace: an older wording"]
+
+        updated = BIBLE.update_sheet(xml, TEXT, shared)
+
+        self.assertEqual(updated.count("Crafting progression pace"), 1)
+        self.assertNotIn('<row r="5"', updated)
+        self.assertIn('<c r="B4" s="4" t="inlineStr">', updated)
+        self.assertEqual(updated, BIBLE.update_sheet(updated, TEXT, shared))
+
+    def test_a_shared_string_that_is_not_the_marker_is_left_alone(self):
+        existing = '<row r="4"><c r="A4" s="3"><v>2.0</v></c><c r="B4" s="4" t="s"><v>0</v></c></row>'
+        xml = sheet(numbered(3, "1.0", "One") + existing + blank_rows(22, 23))
+
+        updated = BIBLE.update_sheet(xml, TEXT, ["Cooking minigame"])
+
+        self.assertIn('<c r="B4" s="4" t="s"><v>0</v></c>', updated)
+        self.assertIn('<row r="5"><c r="A5" s="3"><v>3.0</v></c>', updated)
+
     def test_goes_after_rows_other_workstreams_added(self):
         xml = sheet(numbered(3, "1.0", "One") + numbered(4, "2.0", "Cooking minigame") + blank_rows(22, 23))
 

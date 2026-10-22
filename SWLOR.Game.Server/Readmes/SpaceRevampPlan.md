@@ -254,7 +254,12 @@ Each space skill has two styles of 60 SP, the same as a weapon skill.
 - **Abilities:** space abilities use the shared ability system with `.CanBeUsedInSpace()` (`Service/AbilityService/AbilityBuilder.cs:105`). No ground ability gets that flag.
 - **Source:** abilities act from the ship. Range, line of sight, threat and damage source are all the ship's.
 - **Perk effects:** perks grant `StatType` values that the shared space code reads. Add space `StatType`s as needed (`Service/StatService/StatType.cs`) following the StatType rules in `CodingStandards.md`. There is no `Perk.GetPerkLevel` check in space code; today's Energy Management check at `Space.cs` ~1310 goes away.
-- **Bible rows:** the implementing agent moves Appendix A into new **Gunnery** and **Ship Systems** tabs, a rewritten **Piloting** tab and the **Gathering** tab, using the existing perk-table columns. Values are run through the combat simulator, and the owner approves before code.
+- **Bible rows:** Appendix A is already in the Design Bible on this branch, with SP prices and a full description for every rank, all marked Dev Status **Proposed**:
+  - new tabs **Piloting (Revamp)**, **Gunnery** and **Ship Systems** on the Twin Pistol layout
+  - a **Space Industry** group at the bottom of the **Gathering** tab, with its own proposed total (44 SP) so the live Total SP is unchanged
+  - The live **Piloting** tab stays as it is until release, because `CombatUpgradeBibleSyncTests` requires every live perk to keep an Implemented row.
+  - The new tabs are not in `UpdateCombatUpgradeAudit.ps1`'s tab list yet; add them when `SkillType.Gunnery` and `SkillType.ShipSystems` exist.
+  - At implementation: run values through the combat simulator, get owner approval, replace the Piloting tab's rows with Piloting (Revamp)'s and delete that tab, and set rows to Implemented as they land.
 - **IDs:** reserve feat, spell, `spells.2da` and TLK IDs following `AbilityTargeting.md`.
 
 ## 7. Hulls
@@ -820,12 +825,13 @@ Everything merges to one integration branch and releases together.
   - Create `feature/space-revamp` from up-to-date `origin/master`.
   - Each workstream slice goes on its own branch and pull request into it, with the Codex review loop (`PullRequests.md`).
   - **Bible edits happen on one branch only**, because separate branches that edit the `.xlsx` cannot be merged. Make them on the integration branch, one at a time.
+  - The plan branch (`claude/festive-edison-bbnnxi`) already edits the Bible (the proposed space perk tabs). Start the integration branch from it, or merge it first. If master's Bible changes in the meantime, redo the tabs on the new base with the same rows instead of merging the binary.
   - Merge `origin/master` into the integration branch regularly.
   - The final pull request goes to `master`.
 
 | # | Workstream | Contents | Needs |
 |---|---|---|---|
-| W0 | Bible drafts | Piloting, Gunnery and Ship Systems perk tabs; Starships tab rewrite (hulls, modules, components, traits); space enemy sections; trade tab (commodities, prices) | Owner approval gates W2-W9 numbers |
+| W0 | Bible drafts | Piloting, Gunnery and Ship Systems perk tabs (drafted as Proposed on the plan branch); Starships tab rewrite (hulls, modules, components, traits); space enemy sections; trade tab (commodities, prices) | Owner approval gates W2-W9 numbers |
 | W1 | Foundations | Skills, `CombatPointCategoryType.Starship`, space `StatType`s, resistance types, High/Mid/Low and slot tags in `ShipStatus`, removing configs, size x role data model, `RequiresSkill` on space items | - |
 | W2 | Combat rules | Shared crit, resist, status and threat; attribute mapping; regen; toggle and auto-fire loop; Ship HUD; PvP; escape pods; repair bills | W1 |
 | W3 | Ships and modules | 100 ships (Appendix C) with model scales, Hull Designs and Refit, about 20 module families x rank steps, size scaling, icons with lit variants, store, moving recipes to their new crafting skills, ship transfers and market sales | W1, W0 |

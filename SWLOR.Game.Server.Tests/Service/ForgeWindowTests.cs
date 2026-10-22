@@ -67,6 +67,16 @@ public class ForgeWindowTests
         ForgePreviewText.Describe(preview, engine.Setup).Should().EndWith(ForgePreviewText.BreaksItem);
     }
 
+    [TestCase(0, 80, "No enhancement slots.")]
+    [TestCase(1, 49, "Enhancements: Slot 1 not met (50%)")]
+    [TestCase(1, 50, "Enhancements: Slot 1 met (50%)")]
+    [TestCase(2, 84, "Enhancements: Slot 1 met (50%), Slot 2 not met (85%)")]
+    [TestCase(3, 85, "Enhancements: Slot 1 met (50%), Slot 2 met (85%), Slot 3 met (85%)")]
+    public void TheThresholdLineShowsWhichSlotsTheFinishSoFarMeets(int slots, int qualityPercent, string expected)
+    {
+        ForgePreviewText.Thresholds(slots, qualityPercent).Should().Be(expected);
+    }
+
     [Test]
     public void ADisabledActionShowsWhyInPlaceOfAResult()
     {

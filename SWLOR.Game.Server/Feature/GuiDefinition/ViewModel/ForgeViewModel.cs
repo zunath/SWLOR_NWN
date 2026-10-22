@@ -195,6 +195,8 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
             if (parameters == null)
                 return;
 
+            // Everything the forge needs is read before the materials are committed.
+            var setup = BuildSetup(parameters);
             var request = new CraftSessionStartRequest(
                 _recipe,
                 _hasBlueprint ? _blueprintItem : OBJECT_INVALID,
@@ -208,7 +210,6 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
             }
 
             _session = started.Session;
-            var setup = BuildSetup(parameters);
             _engine = new ForgeEngine(setup, ServiceMinigameRandom.Instance);
             for (var index = 0; index < _enhancementItems.Count; index++)
                 _enhancementItems[index] = OBJECT_INVALID;
@@ -371,7 +372,7 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
 
             var thermal = _engine.Thermal;
             ThermalValue = thermal / (float)ForgeRules.MaxThermal;
-            ThermalColor = _engine.Zone switch
+            ThermalColor = _engine.IsQuenched ? ColdColor : _engine.Zone switch
             {
                 ForgeThermalZone.Below => ColdColor,
                 ForgeThermalZone.Above => HotColor,
@@ -387,7 +388,7 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
             IntegrityValue = meters.Integrity.Fraction;
             CpText = $"CP {meters.Cp.Value}/{meters.Cp.Max}";
             CpValue = meters.Cp.Fraction;
-            ThresholdsText = DescribeThresholds(meters.QualityPercent);
+            ThresholdsText = ForgePreviewText.Thresholds(_slotCount, meters.QualityPercent);
 
             var opportunity = _engine.NextOpportunity;
             OpportunityText = opportunity == null
@@ -415,6 +416,9 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
 
         private string DescribeZone()
         {
+            if (_engine.IsQuenched)
+                return "quenched. The piece is set; Vibro-Hone now works at a flat rate.";
+
             switch (_engine.Zone)
             {
                 case ForgeThermalZone.Below:
@@ -427,23 +431,6 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
                         ? "cool half. Best for Vibro-Hone."
                         : "hot half. Hydro-Press hits harder here.";
             }
-        }
-
-        private string DescribeThresholds(int qualityPercent)
-        {
-            if (_recipeDetail.EnhancementSlots == 0 && !_hasBlueprint && _slotCount == 0)
-                return "No enhancement slots.";
-
-            var filled = new List<string>();
-            var slots = _slotCount;
-            for (var slot = 1; slot <= slots; slot++)
-            {
-                var threshold = CraftOutcomeRules.GetEnhancementThreshold(slot);
-                var met = qualityPercent >= threshold;
-                filled.Add($"Slot {slot} {(met ? "met" : "not met")} ({threshold}%)");
-            }
-
-            return filled.Count == 0 ? "No enhancement slots." : "Enhancements: " + string.Join(", ", filled);
         }
 
         private bool IsValidEnhancement(uint item)

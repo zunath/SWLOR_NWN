@@ -48,6 +48,17 @@ public static class ForgePreviewText
             : string.Join(" | ", preview.Outcomes.Zip(results, (outcome, text) => $"{outcome.ChancePercent}% {outcome.Label}: {text}"));
     }
 
+    /// <summary>Which enhancement slots the Finish reached so far would transfer, such as "Enhancements: Slot 1 met (50%), Slot 2 not met (85%)".</summary>
+    public static string Thresholds(int slotCount, int qualityPercent)
+    {
+        if (slotCount <= 0)
+            return "No enhancement slots.";
+
+        var slots = CraftOutcomeRules.GetEnhancementThresholds(slotCount)
+            .Select((threshold, index) => $"Slot {index + 1} {(qualityPercent >= threshold ? "met" : "not met")} ({threshold}%)");
+        return "Enhancements: " + string.Join(", ", slots);
+    }
+
     /// <summary>The action's own description with its costs, for the button's tooltip.</summary>
     public static string Tooltip(MinigameActionPreview preview)
     {

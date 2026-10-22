@@ -16,11 +16,11 @@ public class LineSetupTests
 
         var setup = LineSetup.ForFish(25, FishRarity.Common, 25, 2);
 
-        // Cap 20 + 2 + 25 / 12; reel 6 + (2 + 2) / 6 x 2; start 4 + 2 x 6; escape 16 + 2 + 2 x 6; rung 42 gives a 43.6% pull of 24.
+        // Cap 20 + 2 + 25 / 12; reel 6 + (2 + 2) / 6 x 2; start 5 + 2 x 6; escape 17 + 2 + 2 x 6; rung 42 gives a 43.6% pull of 24.
         setup.TensionCap.Should().Be(24);
         setup.ReelDistance.Should().Be(6);
-        setup.StartDistance.Should().Be(16);
-        setup.DistanceMax.Should().Be(30);
+        setup.StartDistance.Should().Be(17);
+        setup.DistanceMax.Should().Be(31);
         setup.Pull.Should().Be(10);
         setup.Stamina.Should().Be(18);
         setup.Difficulty.Should().Be(0);
@@ -75,10 +75,10 @@ public class LineSetupTests
     [Test]
     public void AFartherReelHooksTheFishFartherOut_SoAFightTakesAboutAsManyReels()
     {
-        LineSetup.BaseStartDistance(6).Should().Be(16);
-        LineSetup.BaseDistanceMax(6).Should().Be(30);
-        LineSetup.BaseStartDistance(8).Should().Be(20);
-        LineSetup.BaseDistanceMax(8).Should().Be(38);
+        LineSetup.BaseStartDistance(6).Should().Be(17);
+        LineSetup.BaseDistanceMax(6).Should().Be(31);
+        LineSetup.BaseStartDistance(8).Should().Be(21);
+        LineSetup.BaseDistanceMax(8).Should().Be(39);
     }
 
     [Test]

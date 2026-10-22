@@ -20,7 +20,7 @@ public static class LineRules
     public const int ReelDistancePerStep = 2;
 
     // The line. The fish is hooked about two reels out and escapes a couple of reels beyond that, whatever the reel strength.
-    public const int StartDistanceBase = 4;
+    public const int StartDistanceBase = 5;
     public const int StartDistancePerReelDistance = 2;
     public const int EscapeBufferBase = 2;
     public const int EscapeBufferPerReelDistance = 2;

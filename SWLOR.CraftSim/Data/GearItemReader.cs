@@ -37,9 +37,9 @@ namespace SWLOR.CraftSim.Data
                 {
                     root = JObject.Parse(text);
                 }
-                catch (JsonException)
+                catch (JsonException ex)
                 {
-                    continue;
+                    throw new InvalidDataException($"{Path.GetFileName(file)} is not valid item JSON: {ex.Message}", ex);
                 }
 
                 items.AddRange(Read(Path.GetFileName(file)[..^".uti.json".Length], root));

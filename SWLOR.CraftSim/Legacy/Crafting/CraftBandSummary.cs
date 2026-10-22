@@ -91,7 +91,7 @@ namespace SWLOR.CraftSim.Legacy.Crafting
                 foreach (var recipe in atLevel)
                 {
                     stacksUsed += recipe.ComponentStacks * (cell.SuccessRate + lossShare * (1 - cell.SuccessRate));
-                    itemsMade += cell.SuccessRate;
+                    itemsMade += cell.SuccessRate * recipe.Quantity;
                     craftableRecipes++;
                 }
             }

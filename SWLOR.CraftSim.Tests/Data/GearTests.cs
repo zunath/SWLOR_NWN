@@ -59,6 +59,38 @@ namespace SWLOR.CraftSim.Tests.Data
         }
 
         [Test]
+        public void ReadAll_ReadsEveryFileInAFolderAndRejectsOneThatIsNotJson()
+        {
+            var folder = Directory.CreateTempSubdirectory("craftsim-uti-").FullName;
+            try
+            {
+                File.WriteAllText(Path.Combine(folder, "sword.uti.json"), Item((int)BaseItem.Armor, (89, 2, 3)).ToString());
+                File.WriteAllText(Path.Combine(folder, "plain.uti.json"), "{ \"BaseItem\": { \"value\": 1 } }");
+
+                var items = GearItemReader.ReadAll(folder);
+
+                items.Should().ContainSingle().Which.Should().Match<GearItem>(i => i.Resref == "sword" && i.Skill == SkillType.Engineering && i.Craftsmanship == 3);
+
+                File.WriteAllText(Path.Combine(folder, "broken.uti.json"), "{ \"PropertyName\": ");
+                var act = () => GearItemReader.ReadAll(folder);
+
+                act.Should().Throw<InvalidDataException>().WithMessage("*broken.uti.json*");
+            }
+            finally
+            {
+                Directory.Delete(folder, true);
+            }
+        }
+
+        [Test]
+        public void ReadAll_NamesAMissingFolder()
+        {
+            var act = () => GearItemReader.ReadAll(Path.Combine(Path.GetTempPath(), "craftsim-missing-" + Guid.NewGuid().ToString("N")));
+
+            act.Should().Throw<DirectoryNotFoundException>();
+        }
+
+        [Test]
         public void ReadAll_FindsTheModulesCraftingGear()
         {
             SharedData.GearItems.Should().NotBeEmpty();

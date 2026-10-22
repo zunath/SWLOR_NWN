@@ -43,8 +43,8 @@ namespace SWLOR.CraftSim.Gates
             return text.ToString();
         }
 
-        /// <summary>A minigame ships only when no gate failed and none was left unrun.</summary>
+        /// <summary>A minigame ships only when each named gate has exactly one result and it passed.</summary>
         public static bool AllPassed(IReadOnlyList<GateResult> results) =>
-            results.Count > 0 && results.All(r => r.Verdict == GateVerdict.Passed);
+            GateNames.All.All(name => results.Count(r => r.Gate == name) == 1 && results.Single(r => r.Gate == name).Verdict == GateVerdict.Passed);
     }
 }

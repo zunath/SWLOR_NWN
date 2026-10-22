@@ -43,7 +43,7 @@ namespace SWLOR.CraftSim.Report
             text.AppendLine("  - **Dominant rotation**: Waste Not, then Basic Touch repeated, repaired with Master's Mend, then synthesis to finish. It keeps back the durability the finish needs, counting the repairs its remaining CP can buy, and finishes with the affordable synthesis of highest expected progress while keeping one repair affordable. It never uses Steady Hand, Muscle Memory, Veneration, Standard Touch or Precise Touch.");
             text.AppendLine("  - **Lookahead**: at every step it tries each usable action against 8 sampled futures (the same dice for every candidate), finishes each future with the dominant rotation, and takes the action with the best mean score (0 for a failed craft, 0.5 plus half the quality fraction for a success). It is one step of policy improvement over the rotation, not an optimal player.");
             text.AppendLine("- Material use: a success consumes every committed component stack once, and each failure consumes each stack at 65% (`CraftViewModel.cs:1601-1641`), so stacks per success = stacks x (1 + 0.65 x (1 - p) / p) for a success chance p. A stack is one distinct component line of the recipe; enhancements are not committed. " +
-                            $"{recipes.Recipes.Count(r => r.Quantity > 1)} of {recipes.Recipes.Count} recipes make more than one item per craft, and a successful craft counts once whatever its quantity.");
+                            $"{recipes.Recipes.Count(r => r.Quantity > 1)} of {recipes.Recipes.Count} recipes make more than one item per craft, so their stacks are shared across every item a success makes.");
             text.AppendLine();
             text.AppendLine("Rules ported, each checked against the source by `LegacySourceTests`:");
             text.AppendLine();
@@ -125,7 +125,7 @@ namespace SWLOR.CraftSim.Report
         {
             text.AppendLine("## Results by skill");
             text.AppendLine();
-            text.AppendLine("Crafter at the recipe's level. Success is the share of crafts that finish the item. Quality is the mean final quality of successful crafts (maximum quality is 100%); Full is the share of those that reached it. Actions counts every craft, failed or not. Stacks is component stacks consumed per successful item when the band's recipes are attempted equally often; recipes that never succeeded in these runs are left out of it, and the percentage after it is their share of the band.");
+            text.AppendLine("Crafter at the recipe's level. Success is the share of crafts that finish the item. Quality is the mean final quality of successful crafts (maximum quality is 100%); Full is the share of those that reached it. Actions counts every craft, failed or not. Stacks is component stacks consumed per item made (a success makes the recipe's quantity) when the band's recipes are attempted equally often; recipes that never succeeded in these runs are left out of it, and the percentage after it is their share of the band.");
             text.AppendLine();
 
             var policies = results.Policies;

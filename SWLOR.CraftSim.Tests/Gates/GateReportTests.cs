@@ -53,13 +53,38 @@ namespace SWLOR.CraftSim.Tests.Gates
             report.Should().NotContain("## Economy parity");
         }
 
+        private static List<GateResult> EveryGate(GateVerdict verdict) =>
+            GateNames.All.Select(name => new GateResult(name, verdict, "")).ToList();
+
         [Test]
-        public void AllPassed_NeedsEveryGateToPassAndAtLeastOne()
+        public void AllPassed_NeedsEachNamedGateToHaveOnePassingResult()
         {
+            GateReport.AllPassed(EveryGate(GateVerdict.Passed)).Should().BeTrue();
             GateReport.AllPassed(Array.Empty<GateResult>()).Should().BeFalse();
-            GateReport.AllPassed(new[] { new GateResult("a", GateVerdict.Passed, "") }).Should().BeTrue();
-            GateReport.AllPassed(new[] { new GateResult("a", GateVerdict.Passed, ""), GateResult.NotRun("b", "") }).Should().BeFalse();
-            GateReport.AllPassed(new[] { new GateResult("a", GateVerdict.Failed, "") }).Should().BeFalse();
+            GateReport.AllPassed(EveryGate(GateVerdict.Passed).Take(2).ToList()).Should().BeFalse("the other gates were never evaluated");
+            GateReport.AllPassed(EveryGate(GateVerdict.Failed)).Should().BeFalse();
+
+            var oneNotRun = EveryGate(GateVerdict.Passed);
+            oneNotRun[3] = GateResult.NotRun(GateNames.Length, "no engine");
+            GateReport.AllPassed(oneNotRun).Should().BeFalse();
+        }
+
+        [Test]
+        public void AllPassed_RejectsADuplicateResultForAGate()
+        {
+            var results = EveryGate(GateVerdict.Passed);
+            results.Add(new GateResult(GateNames.Length, GateVerdict.Passed, "again"));
+
+            GateReport.AllPassed(results).Should().BeFalse();
+        }
+
+        [Test]
+        public void AllPassed_IgnoresAGateTheSimulatorDoesNotName()
+        {
+            var results = EveryGate(GateVerdict.Passed);
+            results.Add(new GateResult("Extra", GateVerdict.Failed, ""));
+
+            GateReport.AllPassed(results).Should().BeTrue();
         }
 
         private sealed class FakeGate : IBalanceGate

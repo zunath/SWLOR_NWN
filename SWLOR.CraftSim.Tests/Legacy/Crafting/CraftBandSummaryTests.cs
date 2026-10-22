@@ -9,8 +9,8 @@ namespace SWLOR.CraftSim.Tests.Legacy.Crafting
     [TestFixture]
     public class CraftBandSummaryTests
     {
-        private static RecipeEntry Recipe(int level, int stacks) =>
-            new(default, SkillType.Smithery, level, "item", default, Enumerable.Range(0, stacks).ToDictionary(i => $"c{i}", _ => 1));
+        private static RecipeEntry Recipe(int level, int stacks, int quantity = 1) =>
+            new(default, SkillType.Smithery, level, "item", default, Enumerable.Range(0, stacks).ToDictionary(i => $"c{i}", _ => 1), quantity);
 
         private static CraftCell Cell(int level, int successes, double qualityPerSuccess, int full = 0, long actions = 0, int runs = 100, int offset = 0) => new()
         {
@@ -53,6 +53,20 @@ namespace SWLOR.CraftSim.Tests.Legacy.Crafting
             var used = 2 * 1.0 + 4 * (0.5 + 0.65 * 0.5);
             row.StacksPerSuccess.Should().BeApproximately(used / 1.5, 1e-9);
             row.NeverCraftedShare.Should().Be(0);
+        }
+
+        [Test]
+        public void ARecipeThatMakesSeveralItemsSharesItsStacksAcrossThem()
+        {
+            var recipes = RecipeCatalog.From(new[] { Recipe(5, 2, quantity: 5) });
+            var cells = new[] { Cell(5, 50, 0.5) };
+
+            var row = CraftBandSummary.Summarize(cells, recipes).Single();
+
+            var stacksUsed = 2 * (0.5 + 0.65 * 0.5);
+            row.StacksUsed.Should().BeApproximately(stacksUsed, 1e-9);
+            row.ItemsMade.Should().BeApproximately(0.5 * 5, 1e-9);
+            row.StacksPerSuccess.Should().BeApproximately(stacksUsed / 2.5, 1e-9);
         }
 
         [Test]

@@ -14,7 +14,7 @@ new minigames' economy-parity gate compares against. No new minigame is measured
 - Policies:
   - **Dominant rotation**: Waste Not, then Basic Touch repeated, repaired with Master's Mend, then synthesis to finish. It keeps back the durability the finish needs, counting the repairs its remaining CP can buy, and finishes with the affordable synthesis of highest expected progress while keeping one repair affordable. It never uses Steady Hand, Muscle Memory, Veneration, Standard Touch or Precise Touch.
   - **Lookahead**: at every step it tries each usable action against 8 sampled futures (the same dice for every candidate), finishes each future with the dominant rotation, and takes the action with the best mean score (0 for a failed craft, 0.5 plus half the quality fraction for a success). It is one step of policy improvement over the rotation, not an optimal player.
-- Material use: a success consumes every committed component stack once, and each failure consumes each stack at 65% (`CraftViewModel.cs:1601-1641`), so stacks per success = stacks x (1 + 0.65 x (1 - p) / p) for a success chance p. A stack is one distinct component line of the recipe; enhancements are not committed. 83 of 3353 recipes make more than one item per craft, and a successful craft counts once whatever its quantity.
+- Material use: a success consumes every committed component stack once, and each failure consumes each stack at 65% (`CraftViewModel.cs:1601-1641`), so stacks per success = stacks x (1 + 0.65 x (1 - p) / p) for a success chance p. A stack is one distinct component line of the recipe; enhancements are not committed. 83 of 3353 recipes make more than one item per craft, so their stacks are shared across every item a success makes.
 
 Rules ported, each checked against the source by `LegacySourceTests`:
 
@@ -61,25 +61,25 @@ Smithery, Engineering, Fabrication and Agriculture pooled, each skill's recipes 
 
 | Levels | Gear | Dominant rotation: success | quality | full | actions | stacks | Lookahead: success | quality | full | actions | stacks |
 | --- | --- | --- | --- | --- | --- | --- | --- | --- | --- | --- | --- |
-| 1-10 | no gear | 94% | 1% | 0% | 5.4 | 2.7 | 97% | 1% | 0% | 5.6 | 2.6 |
-| 1-10 | mid gear | 97% | 11% | 0% | 7.7 | 2.6 | 97% | 11% | 0% | 7.8 | 2.6 |
-| 1-10 | best gear | 99% | 25% | 0% | 8.6 | 2.6 | 97% | 25% | 0% | 9.0 | 2.6 |
-| 11-20 | no gear | 91% | 1% | 0% | 8.1 | 2.8 | 94% | 2% | 0% | 8.0 | 2.7 |
-| 11-20 | mid gear | 99% | 12% | 0% | 12.4 | 2.6 | 98% | 13% | 0% | 10.7 | 2.6 |
-| 11-20 | best gear | 100% | 30% | 0% | 15.2 | 2.6 | 99% | 30% | 0% | 14.6 | 2.6 |
-| 21-30 | no gear | 99% | 5% | 0% | 15.3 | 2.7 | 96% | 8% | 0% | 10.9 | 2.7 |
-| 21-30 | mid gear | 98% | 16% | 0% | 20.8 | 2.7 | 99% | 16% | 0% | 16.7 | 2.7 |
-| 21-30 | best gear | 98% | 31% | 0% | 23.4 | 2.7 | 99% | 29% | 0% | 22.1 | 2.7 |
-| 31-40 | no gear | 93% | 20% | 0% | 19.7 | 2.8 | 96% | 21% | 0% | 14.3 | 2.7 |
-| 31-40 | mid gear | 94% | 36% | 2% | 23.6 | 2.7 | 98% | 34% | 1% | 19.2 | 2.7 |
+| 1-10 | no gear | 94% | 1% | 0% | 5.4 | 2.6 | 97% | 1% | 0% | 5.6 | 2.5 |
+| 1-10 | mid gear | 97% | 11% | 0% | 7.7 | 2.5 | 97% | 11% | 0% | 7.8 | 2.5 |
+| 1-10 | best gear | 99% | 25% | 0% | 8.6 | 2.5 | 97% | 25% | 0% | 9.0 | 2.5 |
+| 11-20 | no gear | 91% | 1% | 0% | 8.1 | 2.6 | 94% | 2% | 0% | 8.0 | 2.6 |
+| 11-20 | mid gear | 99% | 12% | 0% | 12.4 | 2.5 | 98% | 13% | 0% | 10.7 | 2.5 |
+| 11-20 | best gear | 100% | 30% | 0% | 15.2 | 2.5 | 99% | 30% | 0% | 14.6 | 2.5 |
+| 21-30 | no gear | 99% | 5% | 0% | 15.3 | 2.4 | 96% | 8% | 0% | 10.9 | 2.4 |
+| 21-30 | mid gear | 98% | 16% | 0% | 20.8 | 2.4 | 99% | 16% | 0% | 16.7 | 2.4 |
+| 21-30 | best gear | 98% | 31% | 0% | 23.4 | 2.4 | 99% | 29% | 0% | 22.1 | 2.4 |
+| 31-40 | no gear | 93% | 20% | 0% | 19.7 | 2.7 | 96% | 21% | 0% | 14.3 | 2.6 |
+| 31-40 | mid gear | 94% | 36% | 2% | 23.6 | 2.7 | 98% | 34% | 1% | 19.2 | 2.6 |
 | 31-40 | best gear | 100% | 47% | 27% | 27.3 | 2.6 | 99% | 46% | 22% | 24.7 | 2.6 |
-| 41-53 | no gear | 51% | 51% | 0% | 18.7 | 3.7 (16% never) | 84% | 42% | 0% | 17.5 | 2.6 (16% never) |
-| 41-53 | mid gear | 78% | 77% | 1% | 25.5 | 2.7 (16% never) | 86% | 66% | 0% | 24.1 | 3.1 (1% never) |
-| 41-53 | best gear | 79% | 96% | 51% | 28.2 | 2.7 (16% never) | 93% | 82% | 23% | 28.2 | 3.1 |
+| 41-53 | no gear | 51% | 51% | 0% | 18.7 | 3.2 (16% never) | 84% | 42% | 0% | 17.5 | 2.3 (16% never) |
+| 41-53 | mid gear | 78% | 77% | 1% | 25.5 | 2.4 (16% never) | 86% | 66% | 0% | 24.1 | 2.8 (1% never) |
+| 41-53 | best gear | 79% | 96% | 51% | 28.2 | 2.4 (16% never) | 93% | 82% | 23% | 28.2 | 2.8 |
 
 ## Results by skill
 
-Crafter at the recipe's level. Success is the share of crafts that finish the item. Quality is the mean final quality of successful crafts (maximum quality is 100%); Full is the share of those that reached it. Actions counts every craft, failed or not. Stacks is component stacks consumed per successful item when the band's recipes are attempted equally often; recipes that never succeeded in these runs are left out of it, and the percentage after it is their share of the band.
+Crafter at the recipe's level. Success is the share of crafts that finish the item. Quality is the mean final quality of successful crafts (maximum quality is 100%); Full is the share of those that reached it. Actions counts every craft, failed or not. Stacks is component stacks consumed per item made (a success makes the recipe's quantity) when the band's recipes are attempted equally often; recipes that never succeeded in these runs are left out of it, and the percentage after it is their share of the band.
 
 ### Smithery
 
@@ -125,51 +125,51 @@ Crafter at the recipe's level. Success is the share of crafts that finish the it
 
 | Levels | Recipes | Gear | Dominant rotation: success | quality | full | actions | stacks | Lookahead: success | quality | full | actions | stacks |
 | --- | --- | --- | --- | --- | --- | --- | --- | --- | --- | --- | --- | --- |
-| 1-10 | 58 | no gear | 95% | 1% | 0% | 4.4 | 2.3 | 97% | 1% | 0% | 4.6 | 2.2 |
-| 1-10 | 58 | mid gear | 98% | 7% | 0% | 5.5 | 2.2 | 97% | 7% | 0% | 5.5 | 2.2 |
-| 1-10 | 58 | best gear | 99% | 17% | 0% | 5.6 | 2.2 | 98% | 17% | 0% | 5.9 | 2.2 |
-| 11-20 | 59 | no gear | 88% | 1% | 0% | 8.1 | 2.4 | 93% | 1% | 0% | 8.4 | 2.3 |
-| 11-20 | 59 | mid gear | 98% | 12% | 0% | 12.0 | 2.2 | 98% | 12% | 0% | 10.7 | 2.2 |
-| 11-20 | 59 | best gear | 100% | 31% | 0% | 15.0 | 2.2 | 99% | 31% | 0% | 14.5 | 2.2 |
-| 21-30 | 65 | no gear | 99% | 5% | 0% | 13.6 | 2.3 | 96% | 8% | 0% | 9.9 | 2.3 |
-| 21-30 | 65 | mid gear | 98% | 15% | 0% | 19.0 | 2.3 | 99% | 15% | 0% | 15.4 | 2.3 |
-| 21-30 | 65 | best gear | 99% | 30% | 0% | 21.9 | 2.3 | 99% | 30% | 0% | 20.9 | 2.3 |
-| 31-40 | 61 | no gear | 95% | 8% | 0% | 19.6 | 2.3 | 96% | 11% | 0% | 12.8 | 2.3 |
-| 31-40 | 61 | mid gear | 92% | 17% | 0% | 22.0 | 2.4 | 98% | 18% | 0% | 17.4 | 2.3 |
-| 31-40 | 61 | best gear | 100% | 30% | 5% | 27.6 | 2.3 | 99% | 29% | 4% | 24.0 | 2.3 |
-| 41-53 | 76 | no gear | 53% | 52% | 0% | 18.0 | 2.9 (22% never) | 77% | 43% | 0% | 16.5 | 2.2 (22% never) |
-| 41-53 | 76 | mid gear | 73% | 80% | 0% | 25.0 | 2.3 (22% never) | 81% | 66% | 0% | 23.3 | 2.6 |
-| 41-53 | 76 | best gear | 74% | 98% | 72% | 27.7 | 2.3 (22% never) | 92% | 79% | 30% | 28.0 | 2.4 |
+| 1-10 | 58 | no gear | 95% | 1% | 0% | 4.4 | 1.7 | 97% | 1% | 0% | 4.6 | 1.7 |
+| 1-10 | 58 | mid gear | 98% | 7% | 0% | 5.5 | 1.7 | 97% | 7% | 0% | 5.5 | 1.7 |
+| 1-10 | 58 | best gear | 99% | 17% | 0% | 5.6 | 1.7 | 98% | 17% | 0% | 5.9 | 1.7 |
+| 11-20 | 59 | no gear | 88% | 1% | 0% | 8.1 | 1.8 | 93% | 1% | 0% | 8.4 | 1.7 |
+| 11-20 | 59 | mid gear | 98% | 12% | 0% | 12.0 | 1.7 | 98% | 12% | 0% | 10.7 | 1.7 |
+| 11-20 | 59 | best gear | 100% | 31% | 0% | 15.0 | 1.7 | 99% | 31% | 0% | 14.5 | 1.7 |
+| 21-30 | 65 | no gear | 99% | 5% | 0% | 13.6 | 1.8 | 96% | 8% | 0% | 9.9 | 1.8 |
+| 21-30 | 65 | mid gear | 98% | 15% | 0% | 19.0 | 1.8 | 99% | 15% | 0% | 15.4 | 1.8 |
+| 21-30 | 65 | best gear | 99% | 30% | 0% | 21.9 | 1.8 | 99% | 30% | 0% | 20.9 | 1.8 |
+| 31-40 | 61 | no gear | 95% | 8% | 0% | 19.6 | 1.8 | 96% | 11% | 0% | 12.8 | 1.8 |
+| 31-40 | 61 | mid gear | 92% | 17% | 0% | 22.0 | 1.8 | 98% | 18% | 0% | 17.4 | 1.8 |
+| 31-40 | 61 | best gear | 100% | 30% | 5% | 27.6 | 1.7 | 99% | 29% | 4% | 24.0 | 1.7 |
+| 41-53 | 76 | no gear | 53% | 52% | 0% | 18.0 | 2.2 (22% never) | 77% | 43% | 0% | 16.5 | 1.7 (22% never) |
+| 41-53 | 76 | mid gear | 73% | 80% | 0% | 25.0 | 1.7 (22% never) | 81% | 66% | 0% | 23.3 | 2.0 |
+| 41-53 | 76 | best gear | 74% | 98% | 72% | 27.7 | 1.7 (22% never) | 92% | 79% | 30% | 28.0 | 1.9 |
 
 ### Engineering
 
 | Levels | Recipes | Gear | Dominant rotation: success | quality | full | actions | stacks | Lookahead: success | quality | full | actions | stacks |
 | --- | --- | --- | --- | --- | --- | --- | --- | --- | --- | --- | --- | --- |
-| 1-10 | 307 | no gear | 93% | 1% | 0% | 5.7 | 2.8 | 97% | 1% | 0% | 5.9 | 2.8 |
-| 1-10 | 307 | mid gear | 97% | 12% | 0% | 7.9 | 2.7 | 97% | 11% | 0% | 7.9 | 2.8 |
-| 1-10 | 307 | best gear | 98% | 26% | 0% | 9.0 | 2.7 | 97% | 26% | 0% | 9.3 | 2.8 |
-| 11-20 | 367 | no gear | 94% | 1% | 0% | 8.2 | 2.9 | 95% | 3% | 0% | 7.8 | 2.9 |
-| 11-20 | 367 | mid gear | 99% | 11% | 0% | 11.9 | 2.8 | 98% | 12% | 0% | 10.2 | 2.8 |
-| 11-20 | 367 | best gear | 100% | 29% | 0% | 15.3 | 2.8 | 99% | 29% | 0% | 14.7 | 2.8 |
-| 21-30 | 359 | no gear | 99% | 5% | 0% | 16.2 | 2.7 | 96% | 8% | 0% | 11.4 | 2.8 |
-| 21-30 | 359 | mid gear | 97% | 16% | 0% | 21.0 | 2.8 | 99% | 16% | 0% | 16.9 | 2.7 |
-| 21-30 | 359 | best gear | 98% | 31% | 0% | 24.2 | 2.7 | 99% | 29% | 0% | 22.8 | 2.7 |
+| 1-10 | 307 | no gear | 93% | 1% | 0% | 5.7 | 2.8 | 97% | 1% | 0% | 5.9 | 2.7 |
+| 1-10 | 307 | mid gear | 97% | 12% | 0% | 7.9 | 2.7 | 97% | 11% | 0% | 7.9 | 2.7 |
+| 1-10 | 307 | best gear | 98% | 26% | 0% | 9.0 | 2.7 | 97% | 26% | 0% | 9.3 | 2.7 |
+| 11-20 | 367 | no gear | 94% | 1% | 0% | 8.2 | 2.8 | 95% | 3% | 0% | 7.8 | 2.7 |
+| 11-20 | 367 | mid gear | 99% | 11% | 0% | 11.9 | 2.7 | 98% | 12% | 0% | 10.2 | 2.7 |
+| 11-20 | 367 | best gear | 100% | 29% | 0% | 15.3 | 2.6 | 99% | 29% | 0% | 14.7 | 2.7 |
+| 21-30 | 359 | no gear | 99% | 5% | 0% | 16.2 | 2.3 | 96% | 8% | 0% | 11.4 | 2.4 |
+| 21-30 | 359 | mid gear | 97% | 16% | 0% | 21.0 | 2.4 | 99% | 16% | 0% | 16.9 | 2.3 |
+| 21-30 | 359 | best gear | 98% | 31% | 0% | 24.2 | 2.3 | 99% | 29% | 0% | 22.8 | 2.3 |
 | 31-40 | 370 | no gear | 92% | 25% | 0% | 19.8 | 2.9 | 97% | 25% | 0% | 14.8 | 2.8 |
 | 31-40 | 370 | mid gear | 93% | 43% | 0% | 23.3 | 2.9 | 98% | 40% | 1% | 19.4 | 2.8 |
 | 31-40 | 370 | best gear | 100% | 54% | 36% | 27.3 | 2.7 | 99% | 52% | 29% | 24.8 | 2.7 |
-| 41-53 | 383 | no gear | 52% | 51% | 0% | 19.0 | 3.9 (13% never) | 87% | 41% | 0% | 17.8 | 2.7 (13% never) |
-| 41-53 | 383 | mid gear | 82% | 76% | 0% | 25.6 | 2.8 (13% never) | 89% | 66% | 0% | 24.0 | 2.9 (3% never) |
-| 41-53 | 383 | best gear | 82% | 96% | 49% | 28.5 | 2.8 (13% never) | 93% | 84% | 22% | 28.2 | 2.9 |
+| 41-53 | 383 | no gear | 52% | 51% | 0% | 19.0 | 3.2 (13% never) | 87% | 41% | 0% | 17.8 | 2.3 (13% never) |
+| 41-53 | 383 | mid gear | 82% | 76% | 0% | 25.6 | 2.4 (13% never) | 89% | 66% | 0% | 24.0 | 2.5 (3% never) |
+| 41-53 | 383 | best gear | 82% | 96% | 49% | 28.5 | 2.4 (13% never) | 93% | 84% | 22% | 28.2 | 2.4 |
 
 ### Espionage
 
 | Levels | Recipes | Gear | Dominant rotation: success | quality | full | actions | stacks | Lookahead: success | quality | full | actions | stacks |
 | --- | --- | --- | --- | --- | --- | --- | --- | --- | --- | --- | --- | --- |
-| 1-10 | 3 | no gear | 98% | 1% | 0% | 3.2 | 2.0 | 98% | 1% | 0% | 3.3 | 2.0 |
-| 11-20 | 3 | no gear | 97% | 0% | 0% | 9.1 | 2.0 | 92% | 1% | 0% | 9.0 | 2.1 |
-| 21-30 | 3 | no gear | 100% | 6% | 0% | 16.6 | 2.0 | 97% | 9% | 0% | 11.9 | 2.0 |
-| 31-40 | 2 | no gear | 99% | 5% | 0% | 19.4 | 2.0 | 95% | 10% | 0% | 11.2 | 2.1 |
-| 41-53 | 4 | no gear | 56% | 52% | 0% | 19.8 | 3.0 | 100% | 41% | 0% | 18.8 | 2.0 |
+| 1-10 | 3 | no gear | 98% | 1% | 0% | 3.2 | 0.5 | 98% | 1% | 0% | 3.3 | 0.5 |
+| 11-20 | 3 | no gear | 97% | 0% | 0% | 9.1 | 0.6 | 92% | 1% | 0% | 9.0 | 0.6 |
+| 21-30 | 3 | no gear | 100% | 6% | 0% | 16.6 | 0.5 | 97% | 9% | 0% | 11.9 | 0.6 |
+| 31-40 | 2 | no gear | 99% | 5% | 0% | 19.4 | 0.7 | 95% | 10% | 0% | 11.2 | 0.7 |
+| 41-53 | 4 | no gear | 56% | 52% | 0% | 19.8 | 0.7 | 100% | 41% | 0% | 18.8 | 0.5 |
 
 ## Rank sensitivity
 

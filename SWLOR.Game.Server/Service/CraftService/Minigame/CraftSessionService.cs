@@ -41,6 +41,13 @@ public static class CraftSessionService
         return dbPlayer == null ? CraftSettlement.None : Lifecycle.SettleLeftover(player, dbPlayer, reason);
     }
 
+    /// <summary>True while the player has a craft saved, whichever window is playing it.</summary>
+    public static bool IsCrafting(uint player)
+    {
+        var dbPlayer = DB.Get<Player>(GetObjectUUID(player));
+        return dbPlayer?.ActiveCraftSession != null;
+    }
+
     /// <summary>True while the session is still the player's saved craft: it has not been settled by a death, logout or window close.</summary>
     public static bool IsActive(uint player, CraftSession session)
     {

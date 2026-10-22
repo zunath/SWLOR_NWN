@@ -22,11 +22,11 @@ The Wiki repository is the content source for this workflow. Use its existing HT
 
 ## Establish coverage before writing
 
-1. Read the current upcoming notes, the latest released notes, and relevant recent Wiki update PRs or commits. Determine what is already covered and the last game commit reviewed. A prior Wiki PR description may record the game commit used as its coverage boundary.
+1. Read the current upcoming notes, the latest released notes, and recent Wiki release-note commits. Determine what is already covered and the last game commit reviewed. The previous update's commit message records that coverage boundary (older updates recorded it in their PR descriptions).
 2. Refresh the remote refs or query current GitHub state. Identify changes merged into the game's default branch since that boundary. Verify merge status and inspect the actual changes, not only PR titles or an agent's session summary. Include direct default-branch commits only when verified as integrated changes.
 3. Inspect linked asset/HAK changes and merged companion PRs where relevant. Icons, appearances, and other player-visible asset updates belong in the notes too; do not limit the review to server code.
 4. Map candidate changes against existing notes. Add missing player-visible outcomes, revise superseded descriptions, and consolidate fixes to the same feature. Omit duplicates, reverted work, and changes with no meaningful player impact.
-5. Record the reviewed game commit and supporting PRs in the Wiki commit or PR description, not in the player-facing page. This gives the next update a reliable boundary.
+5. Record the reviewed game commit, asset revision, supporting PRs, and relevant omissions in the Wiki commit message body, not in the player-facing page. This gives the next update a reliable boundary.
 
 **Merged is not the same as deployed.** Never infer a deployment from a merge timestamp. An in-progress coding session, open PR, branch, or local change is not eligible. This supersedes the early request to include an in-progress Dantooine dungeon session. Include its results only after they are merged.
 
@@ -95,9 +95,9 @@ Do this when requested or when an actual deployment is confirmed within the auth
 
 ## Save and publish within the requested scope
 
-A request for a draft, text first, or a skill file does not authorize publishing release notes. Respect explicit review holds. For ordinary Wiki maintenance in an authorized publishing session, complete the requested update end to end; the user's established preference is to merge the Wiki PR without requiring them to review it. This skill alone does not grant permission to mutate an external service in a new context.
+A request for a draft, text first, or a skill file does not authorize publishing release notes. Respect explicit review holds. For ordinary Wiki maintenance in an authorized publishing session, complete the requested update end to end; the user's established preference is to push the change directly without requiring them to review it. This skill alone does not grant permission to mutate an external service in a new context.
 
-Use a focused branch and PR when following the Git-backed workflow. Keep unrelated working changes intact. Follow repository instructions and available review/check requirements, resolve relevant issues, and merge the exact validated head when authorized. Do not merge game or asset PRs to make them eligible for notes. If the client provides a PR attachment capability, attach the created Wiki PR.
+Do not open a Wiki PR. Commit the validated change in a separate worktree based on the freshly fetched Wiki default branch, then push that commit directly to the default branch. If the push is rejected because the branch moved, rebase onto the new tip, re-check the result, and push again; never force-push. Keep unrelated working changes and other checkouts intact. Do not merge game or asset PRs to make them eligible for notes.
 
 Before publication, check:
 
@@ -111,12 +111,12 @@ Prose-only edits do not require game tests. Validate the document and the affect
 
 ## Verify the live result
 
-A merged Wiki PR is not proof that the live page has updated. Confirm the merge, then verify the actual live page and affected index entry. Check both the new text and the intended release status/category before reporting completion.
+A successful push is not proof that the live page has updated. Confirm the commit is on the remote default branch, then verify the actual live page and affected index entry. Check both the new text and the intended release status/category before reporting completion.
 
-The Wiki uses Git synchronization. If the merged content has not appeared and the signed-in administration UI is available, its storage page at `/a/storage` provides a **Force Sync** action. Inspect the current UI and run only that normal synchronization action; it respects the configured direction. Do not change storage settings or use Add Untracked Changes, Import Everything, or Purge Local Repository as a shortcut. Allow the asynchronous sync to finish before refreshing the release page; do not repeatedly trigger it while pending.
+The Wiki uses Git synchronization. If the pushed content has not appeared and the signed-in administration UI is available, its storage page at `/a/storage` provides a **Force Sync** action. Inspect the current UI and run only that normal synchronization action; it respects the configured direction. Do not change storage settings or use Add Untracked Changes, Import Everything, or Purge Local Repository as a shortcut. Allow the asynchronous sync to finish before refreshing the release page; do not repeatedly trigger it while pending.
 
 Reuse the user's authenticated Wiki session. Do not sign out, close their tab, or alter authentication settings. If sign-in needs the user's participation, hand off that step and preserve the work. Return the tab to the release notes after any administration work.
 
-If the live update cannot be verified, report exactly what is complete and what is blocked. Do not say the live page is updated solely because a PR merged. Where browser tooling requires evidence, save a screenshot of the verified page and include it in the response.
+If the live update cannot be verified, report exactly what is complete and what is blocked. Do not say the live page is updated solely because the push succeeded. Where browser tooling requires evidence, save a screenshot of the verified page and include it in the response.
 
 Finish with a concise link to the updated page and a short account of the added topics and any material limitation. Avoid exposing the sensitive details deliberately omitted from the notes.

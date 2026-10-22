@@ -214,6 +214,42 @@ public class PlayerListRulesTests
     }
 
     [Test]
+    public void DMPlayerActions_AreOnlyForDMsWithAnotherPlayerSelected()
+    {
+        static PlayerListActionState[] DMActions(PlayerListRelation relation)
+        {
+            var actions = PlayerListRules.Evaluate(relation);
+            return new[] { actions.JumpHere, actions.Examine, actions.Boot };
+        }
+
+        DMActions(new PlayerListRelation { HasTarget = true }).Select(state => state.DisabledReason)
+            .Should().Equal("Only DMs can summon players.", "Only DMs can examine players.", "Only DMs can boot players.");
+        DMActions(new PlayerListRelation { ViewerIsDM = true }).Select(state => state.DisabledReason)
+            .Should().AllBe(PlayerListRules.SelectPlayerFirst);
+        DMActions(new PlayerListRelation { ViewerIsDM = true, HasTarget = true, TargetIsSelf = true }).Select(state => state.DisabledReason)
+            .Should().Equal("You cannot summon yourself.", "You cannot examine yourself.", "You cannot boot yourself.");
+        DMActions(new PlayerListRelation { ViewerIsDM = true, HasTarget = true, TargetIsDM = true }).Select(state => state.DisabledReason)
+            .Should().Equal("DMs cannot be summoned.", "Only player characters can be examined here.", "DMs cannot be booted.");
+        DMActions(new PlayerListRelation { ViewerIsDM = true, HasTarget = true }).Should().OnlyContain(state => state.IsEnabled);
+    }
+
+    [Test]
+    public void Party_DescribesLeadersMembersAndSoloPlayers()
+    {
+        PlayerListRules.DescribeParty(true, "Kira", 1).Should().Be("None");
+        PlayerListRules.DescribeParty(true, "Kira", 3).Should().Be("Leader (3 players)");
+        PlayerListRules.DescribeParty(false, "Kira", 2).Should().Be("Led by Kira (2 players)");
+    }
+
+    [Test]
+    public void Flags_DescribeInDisplayOrder()
+    {
+        PlayerListRules.DescribeFlags(Array.Empty<PlayerListFlagType>()).Should().Be("None");
+        PlayerListRules.DescribeFlags(new[] { PlayerListFlagType.Crafting, PlayerListFlagType.GeneralRP })
+            .Should().Be("General RP, Crafting");
+    }
+
+    [Test]
     public void Status_MarksPartyHostilityAndDMs()
     {
         PlayerListRules.GetStatus(new PlayerListRelation { TargetIsSelf = true })

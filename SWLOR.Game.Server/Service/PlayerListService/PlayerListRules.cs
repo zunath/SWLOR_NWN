@@ -1,5 +1,6 @@
 using System.Collections.Generic;
 using System.Linq;
+using SWLOR.Game.Server.Extension;
 using SWLOR.Game.Server.Service.DMToolService;
 
 namespace SWLOR.Game.Server.Service.PlayerListService
@@ -79,6 +80,9 @@ namespace SWLOR.Game.Server.Service.PlayerListService
                 MakeLeader = EvaluateMakeLeader(relation),
                 LeaveParty = EvaluateLeaveParty(relation),
                 JumpTo = EvaluateJumpTo(relation),
+                JumpHere = EvaluateDMPlayerAction(relation, "summon", "DMs cannot be summoned."),
+                Examine = EvaluateDMPlayerAction(relation, "examine", "Only player characters can be examined here."),
+                Boot = EvaluateDMPlayerAction(relation, "boot", "DMs cannot be booted."),
             };
         }
 
@@ -114,6 +118,30 @@ namespace SWLOR.Game.Server.Service.PlayerListService
             return isAfk
                 ? DMListText.Fit(rowName, Math.Max(0, maxLength - AfkMarker.Length)) + AfkMarker
                 : DMListText.Fit(rowName, maxLength);
+        }
+
+        /// <summary>
+        /// Describes a character's party for staff, such as "Leader (3 players)" or "Led by Kira (2 players)".
+        /// </summary>
+        public static string DescribeParty(bool isLeader, string leaderName, int playerCount)
+        {
+            if (playerCount < 2)
+                return "None";
+
+            var size = $"({playerCount} players)";
+            return isLeader ? $"Leader {size}" : $"Led by {leaderName} {size}";
+        }
+
+        /// <summary>
+        /// Lists flag names in their display order, or None.
+        /// </summary>
+        public static string DescribeFlags(IReadOnlyCollection<PlayerListFlagType> flags)
+        {
+            var names = Enum.GetValues<PlayerListFlagType>()
+                .Where(flags.Contains)
+                .Select(flag => flag.GetAttribute<PlayerListFlagType, PlayerListFlagAttribute>().Name)
+                .ToList();
+            return names.Count == 0 ? "None" : string.Join(", ", names);
         }
 
         /// <summary>
@@ -257,6 +285,24 @@ namespace SWLOR.Game.Server.Service.PlayerListService
 
             if (relation.TargetIsSelf)
                 return PlayerListActionState.Disabled("You cannot jump to yourself.");
+
+            return PlayerListActionState.Enabled();
+        }
+
+        // DM actions that act on another player's character: Jump Here, Examine, and Boot.
+        private static PlayerListActionState EvaluateDMPlayerAction(PlayerListRelation relation, string verb, string dmTargetReason)
+        {
+            if (!relation.ViewerIsDM)
+                return PlayerListActionState.Disabled($"Only DMs can {verb} players.");
+
+            if (!relation.HasTarget)
+                return PlayerListActionState.Disabled(SelectPlayerFirst);
+
+            if (relation.TargetIsSelf)
+                return PlayerListActionState.Disabled($"You cannot {verb} yourself.");
+
+            if (relation.TargetIsDM)
+                return PlayerListActionState.Disabled(dmTargetReason);
 
             return PlayerListActionState.Enabled();
         }

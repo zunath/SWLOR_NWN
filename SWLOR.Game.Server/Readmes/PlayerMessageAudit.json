@@ -1568,6 +1568,34 @@
     "Call": "SendMessageToPC(Player, ColorToken.Green($\"Blueprint Bonus applied: {bonusName} +{bonus.Amount}\"))"
   },
   {
+    "File": "SWLOR.Game.Server/Feature/GuiDefinition/ViewModel/CreatureManagerViewModel.cs",
+    "Line": 148,
+    "Member": "EnterSpawnTargeting",
+    "Delivery": "Retained",
+    "Call": "DMPresence.SendMessage(Player, \"That saved creature no longer exists.\")"
+  },
+  {
+    "File": "SWLOR.Game.Server/Feature/GuiDefinition/ViewModel/CreatureManagerViewModel.cs",
+    "Line": 190,
+    "Member": "OnToggleFavorite",
+    "Delivery": "Retained",
+    "Call": "DMPresence.SendMessage(Player, \"That saved creature no longer exists.\")"
+  },
+  {
+    "File": "SWLOR.Game.Server/Feature/GuiDefinition/ViewModel/CreatureManagerViewModel.cs",
+    "Line": 198,
+    "Member": "OnToggleFavorite",
+    "Delivery": "Retained",
+    "Call": "DMPresence.SendMessage(Player, \"Your favorites could not be saved.\")"
+  },
+  {
+    "File": "SWLOR.Game.Server/Feature/GuiDefinition/ViewModel/CreatureManagerViewModel.cs",
+    "Line": 204,
+    "Member": "OnToggleFavorite",
+    "Delivery": "Retained",
+    "Call": "DMPresence.SendMessage(Player, $\"You already have {DMSavedCreatureFavoriteList.MaxFavorites} favorite creatures. Remove one to add another.\")"
+  },
+  {
     "File": "SWLOR.Game.Server/Feature/GuiDefinition/ViewModel/DiceViewModel.cs",
     "Line": 123,
     "Member": "DoDiceRoll",

@@ -34,6 +34,15 @@ Every pull request gets a Codex review, repeated until a review of the current h
 - The script needs an authenticated `gh` on PATH. Without one, tell the user the loop cannot run; do not skip it.
 - CodeRabbit reviews automatically. If it reports a rate limit, do not wait for it; handle any findings it posts later the same way.
 
+## Merge conflicts
+
+A pull request with merge conflicts is not ready, however clean its review. Resolving them is part of the job, never something to leave for the user.
+
+- Check every pull request, companions included, with `gh pr view <pr> --repo <owner>/<repo> --json mergeable,mergeStateStatus` before you report it ready, and again whenever you come back to it. `CONFLICTING` or `DIRTY` means it has conflicts. `UNKNOWN` means GitHub is still computing; ask again.
+- Resolve them by merging the pull request's own base branch into your branch. Read the base from `gh pr view <pr> --repo <owner>/<repo> --json baseRefName`, refresh it with `git fetch origin +refs/heads/<base>:refs/remotes/origin/<base>` (`Readmes/AgentEnvironment.md`), then `git merge origin/<base>`; don't rebase or force-push a branch under review. Keep both sides' intent, rebuild, rerun the tests that guard the change, and push.
+- A conflicting submodule pointer resolves to the companion's current head once the companion branch has its own base merged in.
+- The merge commit is a new head, so run the review loop again until the latest review of that head is clean.
+
 ## Review threads
 
 Addressing a finding means fixing it or answering it with a concrete reason it does not apply, then resolving its thread. This applies to bot reviewers too. Never resolve a thread just to hide it.
@@ -46,7 +55,7 @@ gh api --paginate repos/zunath/SWLOR_NWN/pulls/<pr>/reviews --jq '.[] | {user: .
 
 The last command catches findings Codex put in a review body instead of a thread. Body findings cannot be resolved; answer them with a pull request comment naming the fix commit or the reason. For haks companion pull requests, use `-f r=SWLOR_Haks` and `repos/zunath/SWLOR_Haks/...`.
 
-Pull request work is done when the parent and every companion have zero unresolved threads, every body finding is answered, and the latest Codex review of each current head is clean.
+Pull request work is done when the parent and every companion have zero unresolved threads, every body finding is answered, none has merge conflicts with its base, and the latest Codex review of each current head is clean.
 
 ## Public text
 

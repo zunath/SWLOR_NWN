@@ -1018,6 +1018,8 @@ namespace SWLOR.Game.Server.Feature
                 return;
             }
 
+            MeleeTechnique.HoldSetupForCast(activator, target, ability, activationId);
+
             if (CombatRecorder.IsRecording)
                 CombatRecorder.RecordAbilityCast(activator, target, targetLocation, ability, feat, activationDelay);
 

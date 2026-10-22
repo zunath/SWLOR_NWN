@@ -799,6 +799,7 @@ namespace SWLOR.CombatSim.Engine
                     info.TwinPistol?.MomentumPowerPerCharge is > 0 ? info.TwinPistol.MomentumPowerPerCharge
                         : WeaponTraitState.Configuration(caster).MomentumDamagePerCharge);
 
+            caster.Weapon?.HoldSetupForCast(cast, _now);
             caster.NextActionAt = _now + info.CastSeconds + info.ImpactDelaySeconds + caster.Spec.ReactionSeconds;
             if (info.IsHostile)
                 caster.HostileAbilityReadyAt = _now + _rules.HostileAbilityDelaySeconds;
@@ -879,7 +880,7 @@ namespace SWLOR.CombatSim.Engine
                 if (caster.Weapon != null)
                 {
                     DiscountedStamina(caster, _rules.GetStmCost(cast.Ability), true, cast.Ability);
-                    cast.Technique = caster.Weapon.Begin(cast.Ability, cast.Use, target, cast.StmCost, _now);
+                    cast.Technique = caster.Weapon.Begin(cast.Ability, cast.Use, target, cast.StmCost, _now, cast);
                     CaptureTechniqueSweep(caster, target, cast);
                 }
                 PayCosts(caster, cast);

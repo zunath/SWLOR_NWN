@@ -13,6 +13,7 @@ using SWLOR.Game.Server.Feature.GuiDefinition.ViewModel;
 using SWLOR.Game.Server.Service.DMToolService;
 using SWLOR.Game.Server.Service.GuiService;
 using SWLOR.Game.Server.Service.GuiService.Component;
+using SWLOR.Game.Server.Service.PlayerListService;
 using SWLOR.NWN.API.NWNX;
 using SWLOR.NWN.API.NWScript.Enum;
 using InventorySlot = SWLOR.NWN.API.NWScript.Enum.InventorySlot;
@@ -40,7 +41,8 @@ namespace SWLOR.Game.Server.EngineTests.Definitions
             GuiWindowType.CreatureManager,
             GuiWindowType.DMTools,
             GuiWindowType.AreaNotes,
-            GuiWindowType.MusicPicker
+            GuiWindowType.MusicPicker,
+            GuiWindowType.DMBattleGrid
         };
 
         /// <summary>
@@ -129,6 +131,115 @@ namespace SWLOR.Game.Server.EngineTests.Definitions
                 stats.m_bDMManifested = originalManifested;
                 WriteSnapshots();
             }
+        }
+
+        /// <summary>
+        /// Opens the Battle Grid through /battlegrid and Placeable Tools on a non-DM fixture (as an admin on their own
+        /// character would) and drives the window: the placed flag and section count must match the anchors that
+        /// really exist, a click past a limit must keep the drawn anchors, and a grid off the map is not reported.
+        /// </summary>
+        [EngineTest("Battle grid opens from /battlegrid and Placeable Tools and draws only what it reports", Category = "BattleGrid", TimeoutSeconds = 60f)]
+        public static async Task BattleGridDrawsAndRemovesSections(EngineTestContext ctx)
+        {
+            using var player = await PlayerAbilityFixture.CreateAsync(ctx);
+            using var windows = RegisterWindows(ctx, player);
+            var area = GetArea(player.Creature);
+            try
+            {
+                await InContext(ctx, player.Creature, () => BattleGrid.Remove(area));
+                await InContext(ctx, player.Creature, () => BattleGrid.SetSettings(area, BattleGrid.DefaultSettings));
+
+                var command = new DMChatCommand().BuildChatCommands()["battlegrid"];
+                ctx.Assert(command.ValidateArguments == null, "/battlegrid adds no check beyond the DM and Admin permission");
+                await InContext(ctx, player.Creature, () =>
+                    command.DoAction(player.Creature, OBJECT_INVALID, GetLocation(player.Creature)));
+                ctx.Assert(Gui.IsWindowOpen(player.Creature, GuiWindowType.DMBattleGrid), "/battlegrid opens the Battle Grid window");
+                await InContext(ctx, player.Creature, () =>
+                    command.DoAction(player.Creature, OBJECT_INVALID, GetLocation(player.Creature)));
+                ctx.Assert(!Gui.IsWindowOpen(player.Creature, GuiWindowType.DMBattleGrid), "/battlegrid again closes it");
+
+                await InContext(ctx, player.Creature, () => Gui.TogglePlayerWindow(player.Creature, GuiWindowType.DMTools));
+                var tools = (DMToolsViewModel)windows.ViewModel(GuiWindowType.DMTools);
+                await InContext(ctx, player.Creature, tools.OnOpenBattleGrid());
+                ctx.Assert(Gui.IsWindowOpen(player.Creature, GuiWindowType.DMBattleGrid), "Placeable Tools opens the Battle Grid window");
+                var grid = (DMBattleGridViewModel)windows.ViewModel(GuiWindowType.DMBattleGrid);
+                ctx.Assert(!grid.IsPlaced, "no grid before one is placed");
+
+                await InContext(ctx, player.Creature, grid.OnPlaceHere());
+                ctx.AssertEqual(4, GridAnchors(area).Count, "the default grid draws 2 x 2 sections");
+                ctx.Assert(grid.IsPlaced && BattleGrid.GetDrawnSections(area) == 4, "the window and service report the drawn grid");
+                ctx.AssertEqual("Grid shown: 40 x 40 squares.", grid.StatusText, "status names the full grid");
+
+                await InContext(ctx, player.Creature, grid.OnWidthUp());
+                ctx.AssertEqual(6, GridAnchors(area).Count, "one wider redraws 3 x 2 sections");
+
+                await InContext(ctx, player.Creature, grid.OnWidthDown());
+                await InContext(ctx, player.Creature, grid.OnWidthDown());
+                ctx.AssertEqual(2, GridAnchors(area).Count, "the narrowest grid is 1 x 2 sections");
+                var atLimit = GridAnchors(area);
+                await InContext(ctx, player.Creature, grid.OnWidthDown());
+                ctx.Assert(atLimit.SequenceEqual(GridAnchors(area)), "a click past the limit keeps the drawn anchors");
+
+                var before = BattleGrid.GetCenter(area);
+                await InContext(ctx, player.Creature, grid.OnMoveEast());
+                ctx.AssertEqual(before.X + BattleGrid.DefaultSettings.SquareSize, BattleGrid.GetCenter(area).X, "Move East shifts one square");
+                ctx.AssertEqual(2, GridAnchors(area).Count, "moving redraws the same sections");
+
+                // Place at Target centers on an object in this area, and ignores picks with no position here.
+                var centerBeforePicks = BattleGrid.GetCenter(area);
+                var anchorsBeforePicks = GridAnchors(area);
+                var item = OBJECT_INVALID;
+                await InContext(ctx, player.Creature, () => item = CreateItemOnObject("bag_sm", player.Creature));
+                ctx.Assert(GetIsObjectValid(item), "the fixture holds an inventory item to pick");
+                await InContext(ctx, player.Creature, grid.OnPlaceAtTarget());
+                await InContext(ctx, player.Creature, () => PendingTargetAction(player.Creature)(item));
+                ctx.AssertEqual(centerBeforePicks, BattleGrid.GetCenter(area), "picking an inventory item leaves the grid where it was");
+                ctx.Assert(anchorsBeforePicks.SequenceEqual(GridAnchors(area)), "picking an inventory item does not redraw the grid");
+
+                var marker = CreateObject(ObjectType.Placeable, "plc_invisobj", ctx.GetArenaLocation(6.3f, 2.1f));
+                ctx.Track(marker);
+                await InContext(ctx, player.Creature, grid.OnPlaceAtTarget());
+                await InContext(ctx, player.Creature, () => PendingTargetAction(player.Creature)(marker));
+                var expectedCenter = BattleGrid.SnapCenter(GetPosition(marker), BattleGrid.DefaultSettings.SquareSize);
+                ctx.AssertEqual(expectedCenter, BattleGrid.GetCenter(area), "picking an object in the area centers the grid on it");
+
+                // Far outside the map: whatever the engine creates, the reported grid matches it.
+                var drawnOffMap = 0;
+                await InContext(ctx, player.Creature, () => drawnOffMap = BattleGrid.Place(area, new System.Numerics.Vector3(-5000f, -5000f, 0f)));
+                ctx.AssertEqual(drawnOffMap, GridAnchors(area).Count, "the drawn count matches the anchors after an off-map placement");
+                ctx.AssertEqual(drawnOffMap > 0, BattleGrid.IsPlaced(area), "the area only counts as having a grid when one was drawn");
+                ctx.Log($"Sections drawn at (-5000, -5000): {drawnOffMap} of 2");
+
+                await InContext(ctx, player.Creature, grid.OnPlaceHere());
+                await InContext(ctx, player.Creature, grid.OnRemove());
+                ctx.AssertEqual(0, GridAnchors(area).Count, "Remove destroys every anchor");
+                ctx.Assert(!grid.IsPlaced && !BattleGrid.IsPlaced(area), "Remove clears the placed state");
+            }
+            finally
+            {
+                await InContext(ctx, player.Creature, () => BattleGrid.Remove(area));
+            }
+        }
+
+        // A headless fixture cannot click, so run the handler Place at Target registered for its next pick.
+        private static Action<uint> PendingTargetAction(uint creature)
+        {
+            var actions = (System.Collections.IDictionary)typeof(Targeting)
+                .GetField("_playerTargetingActions", BindingFlags.Static | BindingFlags.NonPublic)!.GetValue(null)!;
+            var detail = actions[creature] ?? throw new InvalidOperationException("No targeting action is pending.");
+            return (Action<uint>)detail.GetType().GetProperty("SelectionAction")!.GetValue(detail)!;
+        }
+
+        private static List<uint> GridAnchors(uint area)
+        {
+            var anchors = new List<uint>();
+            for (var obj = GetFirstObjectInArea(area); GetIsObjectValid(obj); obj = GetNextObjectInArea(area))
+            {
+                if (GetTag(obj) == BattleGrid.AnchorTag)
+                    anchors.Add(obj);
+            }
+
+            return anchors;
         }
 
         [EngineTest("DM chooser searches, jumps to, summons and destroys objects", Category = "DMToolbar", TimeoutSeconds = 90f)]
@@ -583,6 +694,7 @@ namespace SWLOR.Game.Server.EngineTests.Definitions
                 var model = (DMPlayerSearchViewModel)windows.ViewModel(GuiWindowType.DMPlayerSearch);
                 ctx.Assert(model.ResultNames.Contains("Vexa Zyndari"), "online characters are listed when the window opens");
 
+                await InContext(ctx, dm.Creature, () => PlayerList.SetFlag(target.Creature, PlayerListFlagType.GeneralRP, true));
                 await InContext(ctx, dm.Creature, () => model.SearchText = "lanky");
                 await InContext(ctx, dm.Creature, model.OnClickSearch());
                 ctx.AssertEqual(1, model.ResultNames.Count, "descriptor search result count");
@@ -590,6 +702,9 @@ namespace SWLOR.Game.Server.EngineTests.Definitions
                 ctx.AssertEqual("Online", model.ResultStatuses[0], "online status");
                 await SelectRow(ctx, dm.Creature, model, 0);
                 ctx.Assert(model.SelectedDetails.Contains($"Player ID: {target.Id}"), "details include the player ID");
+                ctx.Assert(model.SelectedDetails.Contains("Status: Online\n"), "details show an active player as Online");
+                ctx.Assert(model.SelectedDetails.Contains("Party: None"), "details show a solo player's party");
+                ctx.Assert(model.SelectedDetails.Contains("Flags: General RP"), "details list the player's flags");
                 ctx.Assert(model.IsSelectedOnline, "online actions enabled");
                 Capture(dm.Creature, GuiWindowType.DMPlayerSearch, "players-online-selected");
 
@@ -600,16 +715,26 @@ namespace SWLOR.Game.Server.EngineTests.Definitions
                 await InContext(ctx, dm.Creature, model.OnClickJumpHere());
                 await ctx.WaitUntilAsync(() => GetDistanceBetween(dm.Creature, target.Creature) < 3f, 5f, "the player to be brought to the DM");
 
-                // Checks gathered from separate searches bring the whole group at once.
-                ctx.Assert(!model.HasChecked, "nothing is checked when the window opens");
-                await CheckRow(ctx, dm.Creature, model, 0);
+                // Selections gathered from separate searches bring the whole group at once.
+                ctx.AssertEqual("Bring Selected Here (1)", model.BringSelectedText, "one online character is selected");
                 await InContext(ctx, dm.Creature, () => model.SearchText = "Morn Kesh");
                 await InContext(ctx, dm.Creature, model.OnClickSearch());
                 ctx.AssertEqual(1, model.ResultNames.Count, "second character search result count");
-                ctx.Assert(!model.ResultChecks[0] && model.ResultCheckEnabled[0], "an unchecked online character can be checked");
-                await CheckRow(ctx, dm.Creature, model, 0);
-                ctx.AssertEqual("Bring Checked Here (2)", model.BringCheckedText, "checks persist across searches");
-                Capture(dm.Creature, GuiWindowType.DMPlayerSearch, "players-checked");
+                ctx.Assert(!model.ResultSelections[0], "the second character starts unselected");
+                ctx.Assert(model.IsSelectedOnline, "the first selection survives a new search");
+                await SelectRow(ctx, dm.Creature, model, 0);
+                ctx.AssertEqual("Bring Selected Here (2)", model.BringSelectedText, "selections persist across searches");
+                ctx.Assert(model.ResultSelections[0] && model.SelectionSummary == "2 characters selected.", "both characters are selected");
+                ctx.Assert(!model.CanJumpTo && !model.IsSelectedOnline, "single-character actions wait for one selection");
+                ctx.AssertEqual("Select only one character to use this.", model.SingleActionReason, "the disabled actions say why");
+                ctx.Assert(model.SelectedDetails.StartsWith("2 characters selected:") && model.SelectedDetails.Contains("Morn Kesh"),
+                    "the details list the selected characters");
+                Capture(dm.Creature, GuiWindowType.DMPlayerSearch, "players-multi-selected");
+
+                await SelectRow(ctx, dm.Creature, model, 0);
+                ctx.Assert(!model.ResultSelections[0] && model.IsSelectedOnline, "selecting a selected row again deselects it");
+                await SelectRow(ctx, dm.Creature, model, 0);
+                ctx.AssertEqual("Bring Selected Here (2)", model.BringSelectedText, "the row is selected again");
 
                 AssignCommand(target.Creature, () =>
                 {
@@ -626,21 +751,22 @@ namespace SWLOR.Game.Server.EngineTests.Definitions
                     ClearAllActions();
                     JumpToLocation(ctx.GetArenaLocation(6f, 0f));
                 });
-                await ctx.WaitUntilAsync(() => GetDistanceBetween(dm.Creature, target.Creature) > 10f &&
-                                               GetDistanceBetween(dm.Creature, second.Creature) > 10f, 10f, "the DM to move away from both");
-                await InContext(ctx, dm.Creature, model.OnClickBringChecked());
+                await ctx.WaitUntilAsync(() => GetDistanceBetween(dm.Creature, target.Creature) > 10f, 10f, "the DM to move away from the first player");
+                await ctx.WaitUntilAsync(() => GetDistanceBetween(dm.Creature, second.Creature) > 10f, 10f, "the DM to move away from the second player");
+                await InContext(ctx, dm.Creature, model.OnClickBringSelected());
                 await ctx.WaitUntilAsync(() => GetDistanceBetween(dm.Creature, target.Creature) < 3f &&
-                                               GetDistanceBetween(dm.Creature, second.Creature) < 3f, 5f, "both checked players to be brought to the DM");
-                ctx.Assert(model.HasChecked, "checks stay after bringing the group, so it can be moved again");
+                                               GetDistanceBetween(dm.Creature, second.Creature) < 3f, 5f, "both selected players to be brought to the DM");
+                ctx.Assert(model.HasSelection, "selections stay after bringing the group, so it can be moved again");
 
-                await InContext(ctx, dm.Creature, model.OnClickClearChecks());
-                ctx.Assert(!model.HasChecked && !model.ResultChecks[0], "Clear Checks unchecks everyone");
+                await InContext(ctx, dm.Creature, model.OnClickClearSelection());
+                ctx.Assert(!model.HasSelection && !model.ResultSelections[0], "Clear Selection deselects everyone");
 
-                await CheckRow(ctx, dm.Creature, model, 0);
+                await SelectRow(ctx, dm.Creature, model, 0);
                 await InContext(ctx, dm.Creature, () => Gui.ClosePlayerWindow(dm.Creature, GuiWindowType.DMPlayerSearch));
                 await InContext(ctx, dm.Creature, () => Gui.TogglePlayerWindow(dm.Creature, GuiWindowType.DMPlayerSearch));
                 model = (DMPlayerSearchViewModel)windows.ViewModel(GuiWindowType.DMPlayerSearch);
-                ctx.Assert(!model.HasChecked && model.ResultChecks.All(isChecked => !isChecked), "reopening Player Search starts with nothing checked");
+                ctx.Assert(!model.HasSelection && model.ResultSelections.All(isSelected => !isSelected),
+                    "reopening Player Search starts with nothing selected");
 
                 await InContext(ctx, dm.Creature, () => model.SearchText = "lanky");
                 await InContext(ctx, dm.Creature, model.OnClickSearch());
@@ -706,12 +832,16 @@ namespace SWLOR.Game.Server.EngineTests.Definitions
                 var offlineRow = model.ResultNames.IndexOf("Qorin Zyndari");
                 ctx.Assert(offlineRow >= 0 && model.ResultNames.Contains("Vexa Zyndari"), "the combined scope lists online and offline matches");
                 ctx.Assert(model.ResultNames.IndexOf("Vexa Zyndari") < offlineRow, "online characters are listed first");
+                await InContext(ctx, dm.Creature, model.OnClickClearSelection());
                 await SelectRow(ctx, dm.Creature, model, offlineRow);
                 ctx.Assert(!model.IsSelectedOnline && model.CanJumpTo, "offline characters only allow Jump To");
-                ctx.Assert(!model.ResultCheckEnabled[offlineRow], "offline characters cannot be checked");
+                ctx.Assert(!model.CanBringSelected, "an offline selection cannot be brought");
+                ctx.AssertEqual("The character is offline.", model.SingleActionReason, "online-only actions say why");
                 ctx.Assert(model.SelectedDetails.Contains("Account: qorinaccount") && model.SelectedDetails.Contains("CD Key: QZTEST01"),
                     "offline details show the recorded account and CD key");
                 ctx.Assert(model.SelectedDetails.Contains("Last Login: 2026-10-01 18:30 UTC"), "offline details show the last login");
+                ctx.Assert(!model.SelectedDetails.Contains("Party:") && !model.SelectedDetails.Contains("Flags:"),
+                    "offline details leave out the live party and flags");
                 ctx.Assert(DMPlayerDirectory.TryGetLastLocation(offlineId, out var lastLocation) &&
                            GetAreaFromLocation(lastLocation) == Area.GetAreaByResref(savedAreaResref),
                     "offline Jump To resolves the saved area");
@@ -737,18 +867,6 @@ namespace SWLOR.Game.Server.EngineTests.Definitions
         {
             await ctx.ExecuteInCreatureContextAsync(creature, action);
             await ctx.WaitFrameAsync();
-        }
-
-        // A checkbox click reaches the server as a watch event on the whole list, so set the row and run the
-        // view model's watch handler.
-        private static Task CheckRow(EngineTestContext ctx, uint creature, DMPlayerSearchViewModel model, int row)
-        {
-            var method = typeof(DMPlayerSearchViewModel).GetMethod("OnClientPropertyUpdated", BindingFlags.Instance | BindingFlags.NonPublic)!;
-            return InContext(ctx, creature, () =>
-            {
-                model.ResultChecks[row] = true;
-                method.Invoke(model, new object[] { nameof(DMPlayerSearchViewModel.ResultChecks) });
-            });
         }
 
         // A list click reports its row through NuiGetEventArrayIndex, which only exists inside a

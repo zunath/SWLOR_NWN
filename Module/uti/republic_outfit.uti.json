@@ -122,7 +122,7 @@
   },
   "Identified": {
     "type": "byte",
-    "value": 0
+    "value": 1
   },
   "Leather1Color": {
     "type": "byte",

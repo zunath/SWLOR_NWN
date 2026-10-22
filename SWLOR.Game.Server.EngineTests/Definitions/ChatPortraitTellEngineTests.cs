@@ -189,13 +189,13 @@ namespace SWLOR.Game.Server.EngineTests.Definitions
                 $"hook adds {hookedMicroseconds - unhookedMicroseconds:F2} us per chat line");
         }
 
-        private static uint GetSlot(uint creature)
+        internal static uint GetSlot(uint creature)
         {
             return NWNXLib.g_pAppManager.m_pServerExoApp.GetClientObjectByObjectId(creature).m_nPlayerID;
         }
 
         /// <summary>Hands the engine a tell addressed by player ID, the way the client sends one.</summary>
-        private static Task SendClientTellAsync(EngineTestContext ctx, uint sender, uint targetSlot, string text)
+        internal static Task SendClientTellAsync(EngineTestContext ctx, uint sender, uint targetSlot, string text)
         {
             return ctx.ExecuteInCreatureContextAsync(sender, () => Receive(sender, message =>
             {
@@ -217,7 +217,7 @@ namespace SWLOR.Game.Server.EngineTests.Definitions
         }
 
         /// <summary>Hands the engine the GUI event the client sends when a chat-log portrait is clicked.</summary>
-        private static Task SendClientPortraitClickAsync(EngineTestContext ctx, uint player, uint portraitOwner)
+        internal static Task SendClientPortraitClickAsync(EngineTestContext ctx, uint player, uint portraitOwner)
         {
             return ctx.ExecuteInCreatureContextAsync(player, () => Receive(player, message =>
             {

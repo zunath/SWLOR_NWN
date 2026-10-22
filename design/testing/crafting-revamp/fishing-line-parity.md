@@ -9,6 +9,7 @@
 - The fight: the Line engine, 1000 fights per case, each with its own dice from seed 1. No attributes are read. Fish strength comes from the fish's level against the angler's rank (`LineSetup.ForFish`); the rod tier and the rank set the Tension cap and the reel.
 - Adaptive player: depth 3, forecast samples per result 2, budget 4000 engine copies per decision, 0.5% of value lost per extra action, heuristic LineLeafHeuristic. It is a floor on skilled play. Rule-of-thumb player: reads the announced move and answers it by a fixed rule, never looking further ahead.
 - Time: 7.0 s for a cast and the wait for a bite (6-8 s in the game), in both loops; 8.0 s for each turn of the fight. Both are estimates until the client run measures them.
+- XP cohort (gate 6): fish-level bands 0-10, 11-20, 21-30, 31-40 and 41-52; the angler's rank equals the fish's level (at most 50) with the best rod tier that rank allows; every (rod, bait) table of every location that rod reaches counts equally, half by day and half by night, so both loops draw the same fish. XP is per bite.
 - Tolerance: the adaptive player's catch rate is near today's when it sits within 10 points of the corridor. XP: per bite, caught or not, unchanged.
 - Rod tiers: Bamboo, Carbon and Clothespole 0; Composite, Ebisu and Fastwater 10; Glass Fiber, Halcyon and Judge 20; Maze Monger, Willow and Yew 30; Butterfly, Tranquility and LuShang 40.
 - Named starting values of the fight (`LineRules`), all tunable:
@@ -53,7 +54,7 @@
 | --- | --- | --- |
 | Economy parity | Passed | Catch rate per bite: the adaptive player stays within 10 points of today's Willpower 10-14 corridor at every rank above the fish's level and at every rank over the real pools (furthest outside: 5.1 points). |
 | Length | Passed | The adaptive player's fights last 3-6 actions (fishing fight) in every row. |
-| XP rate | Failed | Fishing: XP per hour falls below 1.00x the legacy rate in 6 case(s): 0-9 / rank = fish level (at most 50) (0.14x); 10-19 / rank = fish level (at most 50) (0.14x); 20-29 / rank = fish level (at most 50) (0.14x); 30-39 / rank = fish level (at most 50) (0.14x); 40-49 / rank = fish level (at most 50) (0.15x); 50-52 / rank = fish level (at most 50) (0.15x). |
+| XP rate | Failed | Fishing: XP per hour falls below 1.00x the legacy rate in 5 case(s): 0-10 / best rod for the rank, rank = fish level (at most 50) (0.14x); 11-20 / best rod for the rank, rank = fish level (at most 50) (0.14x); 21-30 / best rod for the rank, rank = fish level (at most 50) (0.14x); 31-40 / best rod for the rank, rank = fish level (at most 50) (0.14x); 41-52 / best rod for the rank, rank = fish level (at most 50) (0.15x). |
 | Evidence: Angler perk magnitudes | NotApplicable | Not a gate. What each proposed Angler purchase adds to the adaptive player's catch rate; the draft quotes it. |
 | Evidence: style balance | NotApplicable | Not a gate. Patient Angler is the better style on 69% of the cases and Aggressive Angler on 31%; the mean gap is 0.2 points (Patient less Aggressive). |
 | Evidence: rare fish and Trophy Catch | NotApplicable | Not a gate. The ceiling for the capstone is today's catch chance for a level 52 fish at rank 50 for a character with Willpower 20: 60%. |
@@ -92,9 +93,9 @@
 | 25 | 87% | 89% | 87-90% | 91% | 86% | 89% | 3.6 | 445 | Near |
 | 30 | 79% | 81% | 78-83% | 84% | 80% | 82% | 3.6 | 571 | Near |
 | 35 | 89% | 91% | 89-92% | 95% | 92% | 93% | 3.4 | 571 | Near |
-| 40 | 81% | 82% | 80-83% | 86% | 84% | 85% | 3.4 | 697 | Near |
-| 45 | 87% | 88% | 86-89% | 93% | 90% | 92% | 3.3 | 697 | Near |
-| 50 | 92% | 93% | 92-94% | 98% | 96% | 97% | 3.2 | 697 | Near |
+| 40 | 81% | 82% | 81-83% | 86% | 84% | 85% | 3.4 | 696 | Near |
+| 45 | 87% | 88% | 87-89% | 93% | 91% | 92% | 3.3 | 696 | Near |
+| 50 | 92% | 93% | 92-94% | 98% | 96% | 97% | 3.2 | 696 | Near |
 
 ## Length
 
@@ -120,12 +121,11 @@
 
 | Group | Variant | Legacy XP per bite | Legacy actions per bite | Legacy XP per hour | New XP per bite | New actions per bite | New XP per hour | Ratio | XP multiplier needed | Verdict |
 | --- | --- | --- | --- | --- | --- | --- | --- | --- | --- | --- |
-| 0-9 | rank = fish level (at most 50) | 600 | 0.0 | 308571 | 600 | 5.5 | 42141 | 0.14 | 7.32x | Failed |
-| 10-19 | rank = fish level (at most 50) | 600 | 0.0 | 308571 | 600 | 5.5 | 42561 | 0.14 | 7.25x | Failed |
-| 20-29 | rank = fish level (at most 50) | 600 | 0.0 | 308571 | 600 | 5.2 | 44432 | 0.14 | 6.94x | Failed |
-| 30-39 | rank = fish level (at most 50) | 600 | 0.0 | 308571 | 600 | 5.2 | 44159 | 0.14 | 6.99x | Failed |
-| 40-49 | rank = fish level (at most 50) | 600 | 0.0 | 308571 | 600 | 5.0 | 45710 | 0.15 | 6.75x | Failed |
-| 50-52 | rank = fish level (at most 50) | 729 | 0.0 | 374694 | 729 | 4.9 | 56821 | 0.15 | 6.59x | Failed |
+| 0-10 | best rod for the rank, rank = fish level (at most 50) | 600 | 0.0 | 308571 | 600 | 5.6 | 41948 | 0.14 | 7.36x | Failed |
+| 11-20 | best rod for the rank, rank = fish level (at most 50) | 600 | 0.0 | 308571 | 600 | 5.4 | 42847 | 0.14 | 7.20x | Failed |
+| 21-30 | best rod for the rank, rank = fish level (at most 50) | 600 | 0.0 | 308571 | 600 | 5.2 | 44256 | 0.14 | 6.97x | Failed |
+| 31-40 | best rod for the rank, rank = fish level (at most 50) | 600 | 0.0 | 308571 | 600 | 5.2 | 44517 | 0.14 | 6.93x | Failed |
+| 41-52 | best rod for the rank, rank = fish level (at most 50) | 611 | 0.0 | 314286 | 611 | 5.0 | 46611 | 0.15 | 6.74x | Failed |
 
 ## Evidence: Angler perk magnitudes
 

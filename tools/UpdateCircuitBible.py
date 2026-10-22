@@ -78,10 +78,9 @@ def entry_row(sheet: Bible.Sheet) -> tuple[int, int]:
 def update_sheet(sheet: Bible.Sheet, text: str) -> None:
     row, number = entry_row(sheet)
     template = sheet.row_cells(FIRST_ENTRY_ROW)
-    cells = {
-        "A": Bible.num_cell(f"A{row}", Bible.cell_style(template["A"]), f"{number}.0"),
-        "B": Bible.text_cell(f"B{row}", Bible.cell_style(template["B"]), text),
-    }
+    cells = sheet.row_cells(row)  # an existing entry keeps whatever it holds beyond columns A and B
+    cells["A"] = Bible.num_cell(f"A{row}", Bible.cell_style(template["A"]), f"{number}.0")
+    cells["B"] = Bible.text_cell(f"B{row}", Bible.cell_style(template["B"]), text)
     sheet.write_row(row, cells, after=row - 1)
 
 

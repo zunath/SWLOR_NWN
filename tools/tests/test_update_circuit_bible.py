@@ -73,6 +73,19 @@ class UpdateCircuitBibleTests(unittest.TestCase):
         self.assertEqual(CIRCUIT.Bible.cell_style(cells["A"]), "3")
         self.assertEqual(CIRCUIT.Bible.cell_style(cells["B"]), "4")
 
+    def test_a_rerun_keeps_the_cells_an_existing_entry_holds_beyond_columns_a_and_b(self):
+        target = system_changes()
+        CIRCUIT.update_sheet(target, "Engineering crafts use the Circuit minigame. First text.")
+        cells = target.row_cells(5)
+        cells["C"] = CIRCUIT.Bible.text_cell("C5", "4", "Reviewer note")
+        target.write_row(5, cells)
+
+        CIRCUIT.update_sheet(target, "Engineering crafts use the Circuit minigame. Second text.")
+
+        after = target.row_cells(5)
+        self.assertEqual(target.text_of(after["B"]), "Engineering crafts use the Circuit minigame. Second text.")
+        self.assertEqual(target.text_of(after["C"]), "Reviewer note")
+
     def test_the_real_rules_file_yields_the_bands_the_game_pays(self):
         text = CIRCUIT.entry_text(CIRCUIT.DEFAULT_RULES.read_text(encoding="utf-8"))
 

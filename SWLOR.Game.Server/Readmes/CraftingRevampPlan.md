@@ -138,7 +138,12 @@ The three existing per-skill gear stats stay. No new item properties are added, 
 - **Control** powers its quality actions.
 - **CP** (gear CP + 0.75 × rank) is the action budget.
 - **The +31 CP passive at rank 25** is re-tuned per minigame by the simulator.
-- **Retired passives.** Today's hard-coded rank passives (+21 progress at rank 20, +115 quality at rank 40) and action unlock ranks (`CraftViewModel.cs:39-48`) are retired with the old minigame. Each new minigame's actions unlock by skill rank as defined below.
+- **Retired passives.** Today's hard-coded rank passives (+21 progress at rank 20, +115 quality at rank 40) and action unlock ranks (`CraftViewModel.cs:39-48`) are retired with the old minigame.
+- **Action unlocks** (owner decision, October 2026), the same rule for every minigame:
+  - Every action needed to play the loop is available from rank 0.
+  - The integrity-repair action (Rebond, Patch, Service, Stabilize) unlocks at rank 10.
+  - A once-per-craft finisher (Cryo-Quench) unlocks at rank 20.
+  - Nothing else is gated by rank; rank changes power and CP only.
 - **Espionage** has no crafting gear today and gets none. Its minigame scales from Espionage rank only.
 
 ### Per-recipe parameters

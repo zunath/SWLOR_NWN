@@ -37,9 +37,8 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
         private BlueprintDetail _blueprint;
         private KitchenParameters _parameters;
         private int _slotCount;
-        private readonly uint[] _enhancementItems = new uint[MaxEnhancementSlots];
-        private readonly string[] _enhancementNames = new string[MaxEnhancementSlots];
-        private readonly int[] _enhancementPenalties = new int[MaxEnhancementSlots];
+        private KitchenEnhancementSlots _slots = new(0);
+        private IReadOnlyList<int> _committedSlots = new List<int>();
         private CraftSession _session;
         private KitchenEngine _engine;
 
@@ -281,6 +280,7 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
             _blueprint = Craft.GetBlueprintDetails(_blueprintItem);
             _parameters = recipe.MinigameParameters as KitchenParameters;
             _slotCount = Math.Min(MaxEnhancementSlots, recipe.EnhancementSlots + _blueprint.EnhancementSlots);
+            _slots = new KitchenEnhancementSlots(_slotCount);
 
             AssignDefaults();
             RefreshSetup();
@@ -413,9 +413,9 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
             for (var slot = 0; slot < _slotCount; slot++)
             {
                 var threshold = CraftOutcomeRules.GetEnhancementThreshold(slot + 1);
-                var chosen = _enhancementItems[slot] != OBJECT_INVALID;
+                var chosen = _slots.IsFilled(slot);
                 texts.Add(chosen
-                    ? $"Slot {slot + 1} (guaranteed at {threshold}% quality): {_enhancementNames[slot]}"
+                    ? $"Slot {slot + 1} (guaranteed at {threshold}% quality): {_slots.NameAt(slot)}"
                     : $"Slot {slot + 1} (guaranteed at {threshold}% quality): empty");
                 buttons.Add(chosen ? RemoveText : SelectText);
             }
@@ -444,9 +444,9 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
             if (slot < 0 || slot >= _slotCount)
                 return;
 
-            if (_enhancementItems[slot] != OBJECT_INVALID)
+            if (_slots.IsFilled(slot))
             {
-                ClearEnhancement(slot);
+                _slots.Clear(slot);
                 RefreshEnhancements();
                 return;
             }
@@ -461,25 +461,10 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
                 }
 
                 var reading = CraftEnhancementReader.Read(item, Craft.GetRecipe(_recipe));
-                _enhancementItems[slot] = item;
-                _enhancementNames[slot] = GetName(item);
-                _enhancementPenalties[slot] = reading.ProgressPenalty;
+                _slots.Fill(slot, item, GetName(item), reading.ProgressPenalty);
                 RefreshEnhancements();
             });
         };
-
-        private void ClearEnhancement(int slot)
-        {
-            _enhancementItems[slot] = OBJECT_INVALID;
-            _enhancementNames[slot] = string.Empty;
-            _enhancementPenalties[slot] = 0;
-        }
-
-        private void ClearEnhancements()
-        {
-            for (var slot = 0; slot < MaxEnhancementSlots; slot++)
-                ClearEnhancement(slot);
-        }
 
         /// <summary>The reason an item cannot be a cooking enhancement for this recipe, or an empty string when it can.</summary>
         private string ValidateEnhancement(uint item)
@@ -487,7 +472,7 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
             var recipe = Craft.GetRecipe(_recipe);
             if (GetItemPossessor(item) != Player)
                 return "Item must be in your inventory.";
-            if (_enhancementItems.Contains(item))
+            if (_slots.Contains(item))
                 return "That enhancement is already selected.";
             if (recipe.EnhancementType != RecipeEnhancementType.Food)
                 return "This recipe takes no enhancements.";
@@ -520,7 +505,7 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
             var recipe = Craft.GetRecipe(_recipe);
             var dbPlayer = DB.Get<Player>(GetObjectUUID(Player));
             var kitchen = KitchenRecipe.From(_parameters, recipe.Level, recipe.Components, Cache.GetItemNameByResref);
-            var penalty = _enhancementPenalties.Take(_slotCount).Sum();
+            var penalty = _slots.TotalProgressPenalty;
             var engine = new KitchenEngine(
                 ServiceMinigameRandom.Instance,
                 kitchen,
@@ -530,7 +515,7 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
             var request = new CraftSessionStartRequest(
                 _recipe,
                 _blueprintItem,
-                _enhancementItems.Take(_slotCount).ToList());
+                _slots.Items);
             var result = CraftSessionService.Start(Player, request);
             if (!result.Succeeded)
             {
@@ -540,6 +525,7 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
 
             _session = result.Session;
             _engine = engine;
+            _committedSlots = _slots.FilledSlotNumbers;
 
             ActionNames = BuildActionNames();
             LastResultText = string.Empty;
@@ -593,7 +579,7 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
             DriftText = KitchenText.DriftText(_engine.NextDrift, _engine.EffectiveNextDrift, _engine.Heat);
             AromaText = KitchenText.AromaText(_engine.IsPeakAromaNext);
             AromaColor = _engine.IsPeakAromaNext ? Gold : GuiColor.White;
-            ThresholdText = KitchenText.ThresholdText(meters.QualityPercent, _slotCount);
+            ThresholdText = KitchenText.ThresholdText(meters.QualityPercent, _committedSlots);
 
             var summaries = new GuiBindingList<string>();
             var tooltips = new GuiBindingList<string>();
@@ -683,7 +669,8 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
         {
             _engine = null;
             _session = null;
-            ClearEnhancements();
+            _committedSlots = new List<int>();
+            _slots.ClearAll();
             RefreshSetup();
             SetStatus(message, color);
             ChangePartialView(ContentElement, SetupPartial);

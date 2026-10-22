@@ -39,14 +39,28 @@ public static class KitchenText
     /// <summary>What one committed ingredient does, as one line for the setup list.</summary>
     public static string IngredientLine(KitchenIngredientLine line)
     {
+        var portions = Enumerable.Range(0, line.Portions).ToList();
         if (line.Kind == KitchenIngredientKind.Dilute)
         {
-            return $"{line.Name} x{line.Quantity}: thins every flavor by {line.DilutePercent}% per portion " +
+            var percents = string.Join("/", portions.Select(line.DilutePercentAt).Select(percent => percent.ToString()));
+            return $"{line.Name} x{line.Quantity}: thins every flavor by {percents}% per portion " +
                    $"({line.Portions} {Portions(line.Portions)})";
         }
 
-        return $"{line.Name} x{line.Quantity}: {VectorText(line.PortionVector)} per portion " +
-               $"({line.Portions} {Portions(line.Portions)})";
+        // A stack that does not divide evenly gives its first portions a little more, so list each portion's push.
+        var axes = Axes
+            .Where(axis => portions.Any(portion => line.PortionVectorAt(portion).Get(axis) != 0))
+            .Select(axis =>
+            {
+                var values = portions.Select(portion => line.PortionVectorAt(portion).Get(axis)).ToList();
+                var shown = values.Distinct().Count() == 1
+                    ? Signed(values[0])
+                    : string.Join("/", values.Select(Signed));
+                return $"{axis} {shown}";
+            })
+            .ToList();
+        var push = axes.Count == 0 ? "no flavor" : string.Join(", ", axes);
+        return $"{line.Name} x{line.Quantity}: {push} per portion ({line.Portions} {Portions(line.Portions)})";
     }
 
     /// <summary>A push as words, such as "Savory +13, Spice +2"; axes it does not touch are left out.</summary>
@@ -105,13 +119,13 @@ public static class KitchenText
         ? "PEAK AROMA: your next Add is twice as strong!"
         : $"Peak Aroma: not announced. Each turn has a {KitchenTuning.PeakAromaChancePercent}% chance of announcing it.";
 
-    /// <summary>Which enhancement slots the current quality already guarantees.</summary>
-    public static string ThresholdText(int qualityPercent, int filledSlots)
+    /// <summary>Which of the filled enhancement slots (numbered from 1) the current quality already guarantees.</summary>
+    public static string ThresholdText(int qualityPercent, IReadOnlyList<int> filledSlots)
     {
-        if (filledSlots <= 0)
+        if (filledSlots.Count == 0)
             return "No enhancements in this dish.";
 
-        var slots = Enumerable.Range(1, filledSlots).Select(slot =>
+        var slots = filledSlots.Select(slot =>
         {
             var threshold = CraftOutcomeRules.GetEnhancementThreshold(slot);
             return $"slot {slot} needs {threshold}% ({(qualityPercent >= threshold ? "met" : "not met")})";

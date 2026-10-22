@@ -133,10 +133,16 @@ public class KitchenTextTests
     [Test]
     public void TheThresholdText_ShowsWhichSlotsTheQualityAlreadyGuarantees()
     {
-        KitchenText.ThresholdText(60, 2).Should().Be("Enhancements: slot 1 needs 50% (met), slot 2 needs 85% (not met).");
-        KitchenText.ThresholdText(85, 2).Should().Be("Enhancements: slot 1 needs 50% (met), slot 2 needs 85% (met).");
-        KitchenText.ThresholdText(40, 1).Should().Be("Enhancements: slot 1 needs 50% (not met).");
-        KitchenText.ThresholdText(100, 0).Should().Be("No enhancements in this dish.");
+        KitchenText.ThresholdText(60, new[] { 1, 2 }).Should().Be("Enhancements: slot 1 needs 50% (met), slot 2 needs 85% (not met).");
+        KitchenText.ThresholdText(85, new[] { 1, 2 }).Should().Be("Enhancements: slot 1 needs 50% (met), slot 2 needs 85% (met).");
+        KitchenText.ThresholdText(40, new[] { 1 }).Should().Be("Enhancements: slot 1 needs 50% (not met).");
+        KitchenText.ThresholdText(100, Array.Empty<int>()).Should().Be("No enhancements in this dish.");
+    }
+
+    [Test]
+    public void TheThresholdText_LeavesOutSlotsThatHoldNothing()
+    {
+        KitchenText.ThresholdText(60, new[] { 2 }).Should().Be("Enhancements: slot 2 needs 85% (not met).");
     }
 
     [Test]
@@ -176,6 +182,18 @@ public class KitchenTextTests
     {
         KitchenText.IngredientLine(Meat()).Should().Be("Mynock Meat x3: Savory +13, Spice +2 per portion (3 portions)");
         KitchenText.IngredientLine(Water()).Should().Be("Distilled Water x1: thins every flavor by 25% per portion (1 portion)");
+    }
+
+    [Test]
+    public void AnUnevenStack_ListsWhatEachPortionPushes()
+    {
+        var bream = new KitchenIngredientLine(
+            "mercanbaligi", "Mercanbaligi", 6, new KitchenComponentFlavor(KitchenIngredientKind.Flavor, new FlavorVector(11, 1, 2)));
+
+        KitchenText.IngredientLine(bream).Should().Be(
+            "Mercanbaligi x6: Savory +17/+17/+16/+16, Sweet +2/+2/+1/+1, Spice +3 per portion (4 portions)");
+        KitchenText.IngredientLine(Water(6)).Should().Be(
+            "Distilled Water x6: thins every flavor by 38/38/37/37% per portion (4 portions)");
         KitchenText.PantryLine().Should().Be("Pantry (free, unlimited): Salt +4 Savory, Sugar +4 Sweet, Spice +4 Spice.");
     }
 
@@ -188,7 +206,7 @@ public class KitchenTextTests
             KitchenDefinition.HelpText, KitchenText.FailureRule(), KitchenText.PantryLine(), KitchenText.AromaText(true),
             KitchenText.AromaText(false), KitchenText.HeatText(KitchenHeat.High, 2),
             KitchenText.DriftText(new FlavorVector(8, 0, 0), new FlavorVector(8, 0, 0), KitchenHeat.High),
-            KitchenText.ThresholdText(70, 2)
+            KitchenText.ThresholdText(70, new[] { 1, 2 })
         };
         foreach (var preview in engine.PreviewAll())
         {

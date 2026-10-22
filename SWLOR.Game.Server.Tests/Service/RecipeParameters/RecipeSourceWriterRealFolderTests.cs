@@ -30,6 +30,8 @@ public class RecipeSourceWriterRealFolderTests
         @"\s*\.MinigameParameters\((?:parameters|recipe\.Parameters)\)|,\s*RecipeMinigameParameters (?:parameters|Parameters) = null",
         RegexOptions.Compiled);
 
+    private static readonly Regex DerivedCopy = new(@"\s*MinigameParameters = source\.MinigameParameters,", RegexOptions.Compiled);
+
     private string _scratch;
 
     [SetUp]
@@ -49,7 +51,7 @@ public class RecipeSourceWriterRealFolderTests
     {
         var recipes = RecipeDefinitionLoader.LoadGame();
         var sourceFolder = Path.Combine(FindRepositoryRoot(), "SWLOR.Game.Server", "Feature", "RecipeDefinition");
-        var originals = CopyFolder(sourceFolder, _scratch);
+        var originals = CopyPristineFolder(sourceFolder, _scratch);
         Assert.That(originals.Values.Any(text => text.Contains("TestForgeParameters")), Is.False);
 
         var derived = TwinPistolSources(recipes);
@@ -98,7 +100,7 @@ public class RecipeSourceWriterRealFolderTests
     {
         var recipes = RecipeDefinitionLoader.LoadGame();
         var sourceFolder = Path.Combine(FindRepositoryRoot(), "SWLOR.Game.Server", "Feature", "RecipeDefinition");
-        CopyFolder(sourceFolder, _scratch);
+        CopyPristineFolder(sourceFolder, _scratch);
         var derived = TwinPistolSources(recipes);
         foreach (var skill in recipes.Values.Select(recipe => recipe.Skill).Distinct())
         {
@@ -121,6 +123,30 @@ public class RecipeSourceWriterRealFolderTests
         return recipes
             .Where(pair => pair.Value.Category == RecipeCategoryType.TwinPistol)
             .ToDictionary(pair => pair.Key, pair => Enum.Parse<RecipeType>(pair.Key.ToString().Replace("TwinPistol", "Pistol")));
+    }
+
+    /// <summary>
+    /// Copies the folder as it was before any minigame wrote parameters: the parameter calls of every game profile, the helper
+    /// plumbing they use and the derived recipes' copy of their source's parameters are taken out of the copy.
+    /// </summary>
+    private static Dictionary<string, string> CopyPristineFolder(string source, string destination)
+    {
+        var pristine = new Dictionary<string, string>(StringComparer.Ordinal);
+        foreach (var (relative, text) in CopyFolder(source, destination))
+        {
+            var current = text;
+            foreach (var profile in RecipeParameterProfiles.Game)
+            {
+                var builderMethod = profile.ParametersType.Name;
+                current = RecipeSourceWriter.Rewrite(relative, current, _ => RecipeParameterPlan.Remove(builderMethod)).Text;
+            }
+
+            current = DerivedCopy.Replace(Plumbing.Replace(current, string.Empty), string.Empty);
+            File.WriteAllBytes(Path.Combine(destination, relative), new UTF8Encoding(false).GetBytes(current));
+            pristine[relative] = current;
+        }
+
+        return pristine;
     }
 
     private static Dictionary<string, string> CopyFolder(string source, string destination)

@@ -15,15 +15,18 @@ public sealed class CircuitEngine : MinigameEngineBase<CircuitState>
 
     private static readonly IReadOnlyList<MinigameActionInfo> ActionList = new[]
     {
-        new MinigameActionInfo(CircuitActionIds.Wire, "Wire", "Builds Assembly and adds 1 Load."),
-        new MinigameActionInfo(CircuitActionIds.Tune, "Tune", "Builds Calibration, adds 1 Load and costs CP."),
-        new MinigameActionInfo(CircuitActionIds.Boost, "Boost", "Adds 3 Load and costs CP."),
+        new MinigameActionInfo(CircuitActionIds.Wire, "Wire", $"Builds Assembly and adds {CircuitRules.WireLoad} Load."),
+        new MinigameActionInfo(CircuitActionIds.Tune, "Tune",
+            $"Builds Calibration, adds {CircuitRules.TuneLoad} Load and costs CP."),
+        new MinigameActionInfo(CircuitActionIds.Boost, "Boost", $"Adds {CircuitRules.BoostLoad} Load and costs CP."),
         new MinigameActionInfo(CircuitActionIds.DischargeAssembly, "Discharge (Assembly)",
             "Spends all Load as one burst of Assembly. It never overloads."),
         new MinigameActionInfo(CircuitActionIds.DischargeCalibration, "Discharge (Calibration)",
             "Spends all Load as one burst of Calibration. It never overloads."),
-        new MinigameActionInfo(CircuitActionIds.Ground, "Ground", "Safely lowers Load by 3 and costs CP."),
-        new MinigameActionInfo(CircuitActionIds.Patch, "Patch", "Restores Integrity and costs CP.")
+        new MinigameActionInfo(CircuitActionIds.Ground, "Ground",
+            $"Safely lowers Load by {CircuitRules.GroundLoad} and costs CP."),
+        new MinigameActionInfo(CircuitActionIds.Patch, "Patch",
+            $"Restores {CircuitRules.PatchRestore} Integrity and costs CP.")
     };
 
     private readonly CircuitSetup _setup;
@@ -86,7 +89,7 @@ public sealed class CircuitEngine : MinigameEngineBase<CircuitState>
             return locked;
 
         var gain = _setup.WireGain(state.Load);
-        return RiskyAction(info, state, 0, CircuitRules.WireIntegrity, loadGain: 1, "Wired",
+        return RiskyAction(info, state, 0, CircuitRules.WireIntegrity, CircuitRules.WireLoad, "Wired",
             s => s.Adjust(new MinigameMeterDelta(Progress: gain)));
     }
 
@@ -100,7 +103,7 @@ public sealed class CircuitEngine : MinigameEngineBase<CircuitState>
         if (cleanSignal)
             gain *= CircuitRules.CleanSignalMultiplier;
 
-        return RiskyAction(info, state, CircuitRules.TuneCp, CircuitRules.TuneIntegrity, loadGain: 1,
+        return RiskyAction(info, state, CircuitRules.TuneCp, CircuitRules.TuneIntegrity, CircuitRules.TuneLoad,
             cleanSignal ? "Tuned (Clean Signal)" : "Tuned",
             s => s.Adjust(new MinigameMeterDelta(Quality: gain)));
     }

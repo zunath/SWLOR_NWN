@@ -8,7 +8,7 @@ Draft for the owner's approval. No perk code, no StatType IDs and no Bible rows 
 - Ten purchases per line at Engineering ranks 5/10/15/20/25/30/35/40/45/50, priced 1/1/2/2/3/3/3/3/3/4 SP. The rank-20 purchase is the line's style; the rank-50 purchase is the capstone with no quest requirement.
 - A ranked perk occupies two purchases. Its second rank restates the first rank's benefit inside its own total (only the purchased rank's stat bonuses apply).
 - Every effect acts only on the Engineering Circuit. Perks grant StatType adjustments and the engine reads them; the engine never tests a perk by name.
-- Every action a perk improves or adds is unlocked by skill rank before the perk's own rank: Wire/Discharge (Assembly) 0, Tune and Discharge (Calibration) 5, Patch 10, Ground 15, Boost 20.
+- Every action a perk improves or adds is unlocked by skill rank at or before the perk's own rank: Wire/Discharge (Assembly) 0, Tune and Discharge (Calibration) 5, Patch 10, Ground 15, Boost 20.
 
 ## How the engine reads perks
 
@@ -45,14 +45,14 @@ The line rewards control: fewer wasted Integrity points, finer Calibration, earl
 
 | Rank | SP | Perk | Type | Effect (starting values) | StatTypes the engine reads |
 | --- | --- | --- | --- | --- | --- |
-| 5 | 1 | Insulated Traces I | trait | Wire, Tune, Boost and Discharge cost 1 less Integrity, to a minimum of 1. | `CircuitActionIntegrityReduction` +1 |
+| 5 | 1 | Insulated Traces I | trait | Wire, Tune and Discharge cost 1 less Integrity, to a minimum of 1. Boost joins at rank II, when it is unlocked. Ground (2 Integrity) and Patch (none) are left out on purpose. | `CircuitActionIntegrityReduction` +1 |
 | 10 | 1 | Fine Calibration I | trait | Tune adds 10% more Calibration. | `CircuitTunePowerPercent` +10 |
 | 15 | 2 | Diagnostics | trait | The forecast shows two actions ahead: a Clean Signal is announced two actions before it applies. | `CircuitForecastTurns` +1 |
 | 20 | 2 | Safe Mode | style | While active, an action cannot overload until Load is 2 points past the line, and each Load point adds 3 fewer percentage points of output. | `CircuitOverloadGrace` +2, `CircuitLoadBoostPercent` -3 (both carried by the style effect) |
 | 25 | 3 | Micro-Tune | active | A new action that adds Calibration equal to 70% of a Tune, adds no Load and costs 2 CP. It follows the ordinary overload rule, so it can overload only when Load already sits above the line. | `CircuitMicroTuneUnlocked` (flag) |
 | 30 | 3 | Signal Lock | trait | The chance that a Clean Signal is announced each action rises by 10 points (25% to 35%). | `CircuitSignalChancePercent` +10 |
 | 35 | 3 | Precision Patch | trait | Patch restores 10 more Integrity and costs 2 less CP. | `CircuitPatchRestore` +10, `CircuitPatchCpReduction` +2 |
-| 40 | 3 | Insulated Traces II | trait | Those actions cost 2 less Integrity in total, to a minimum of 1 (this rank replaces Insulated Traces I's 1). | `CircuitActionIntegrityReduction` +2 |
+| 40 | 3 | Insulated Traces II | trait | Wire, Tune, Boost and Discharge cost 2 less Integrity in total, to a minimum of 1 (this rank replaces Insulated Traces I's 1 and adds Boost). | `CircuitActionIntegrityReduction` +2 |
 | 45 | 3 | Fine Calibration II | trait | Tune adds 25% more Calibration in total (this rank replaces Fine Calibration I's 10%). | `CircuitTunePowerPercent` +25 |
 | 50 | 4 | Failsafe | capstone, trait | The first time Integrity would reach 0 in a craft, it stays at 1. | `CircuitFailsafeUnlocked` (flag) |
 

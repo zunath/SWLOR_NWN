@@ -28,6 +28,8 @@ public static class CircuitRules
     public const int MaxRanksBelowRecipe = 3;
     public const int MaxRanksAboveRecipe = 5;
 
+    public const int WireLoad = 1;
+    public const int TuneLoad = 1;
     public const int BoostLoad = 3;
     public const int GroundLoad = 3;
     public const int PatchRestore = 20;

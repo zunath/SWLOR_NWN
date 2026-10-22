@@ -25,7 +25,7 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition
             $"An enhancement transfers when the quality reaches its slot's threshold: {CraftOutcomeRules.FirstSlotQualityThresholdPercent}% for the first slot and " +
             $"{CraftOutcomeRules.SecondSlotQualityThresholdPercent}% for the others. The action that would fill Assembly says it finishes the item, so raise Calibration first.\n\n" +
             "LOAD\n" +
-            $"Wire and Tune add 1 Load and Boost adds {CircuitRules.BoostLoad}. Every Load point makes Wire, Tune and Discharge stronger; this recipe's percentage is shown above. " +
+            $"Wire adds {CircuitRules.WireLoad} Load, Tune adds {CircuitRules.TuneLoad} and Boost adds {CircuitRules.BoostLoad}. Every Load point makes Wire, Tune and Discharge stronger; this recipe's percentage is shown above. " +
             "Load is marked with an overload line. An action that leaves Load above the line can overload: the action still happens, then you lose a large share of " +
             $"Integrity and Load drops to 0. The chance is {CircuitRules.OverloadChancePerPointPercent}% for every point above the line and is shown beside each action. " +
             "Better component grades raise the line.\n\n" +

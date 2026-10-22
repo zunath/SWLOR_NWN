@@ -8,6 +8,7 @@ using SWLOR.Game.Server.Enumeration;
 using SWLOR.Game.Server.Service.AbilityService;
 using SWLOR.Game.Server.Service.ActivityService;
 using SWLOR.Game.Server.Service.BeastMasteryService;
+using SWLOR.Game.Server.Service.CraftService.Minigame;
 using SWLOR.Game.Server.Service.GuiService;
 using SWLOR.Game.Server.Service.ItemService;
 using SWLOR.Game.Server.Service.LogService;
@@ -540,7 +541,7 @@ namespace SWLOR.Game.Server.Service
             if ((!isPlayer && !isDroid) || GetIsDM(creature) || GetIsDMPossessed(creature))
                 return string.Empty;
 
-            if (Gui.IsWindowOpen(creature, GuiWindowType.Craft))
+            if (CraftMinigameRouting.IsAnyCraftWindowOpen(creature))
                 return "Items cannot be equipped while crafting.";
 
             if (itemType == BaseItem.CompanionPistol)

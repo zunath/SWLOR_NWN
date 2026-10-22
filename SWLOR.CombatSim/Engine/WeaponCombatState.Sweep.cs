@@ -21,7 +21,8 @@ public sealed partial class WeaponCombatState
     public double AvoidedAccuracyUntil { get; private set; }
     private double _avoidDiscountUntil;
 
-    public int AccuracyPercent(double now) => now < AvoidedAccuracyUntil ? Stat(StatType.AvoidedAttackAccuracyPercentAdjustment) : 0;
+    public int AccuracyPercent(double now) => (now < AvoidedAccuracyUntil ? Stat(StatType.AvoidedAttackAccuracyPercentAdjustment) : 0) +
+        Stat(StatType.AccuracyPercentAdjustment);
     public int AreaHaste(double now) => _areaHaste.Values.SelectMany(x => x).Where(x => now < x.Until).Sum(x => x.Amount);
 
     public int AvoidedAttackDiscount(int cost, bool consume, double now)

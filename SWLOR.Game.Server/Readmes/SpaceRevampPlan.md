@@ -1,6 +1,6 @@
 # Space Revamp Plan
 
-Owner-approved design for rebuilding the space system so it matches the combat upgrade (`2fa527816`, "Feature/combat upgrade (#2277)"). The decisions came out of a design interview with the owner; every one of them is final unless this file marks it as a number to draft. The work is handed to an implementing agent.
+Owner-approved design for rebuilding the space system so it matches the combat upgrade (`2fa527816`, "Feature/combat upgrade (#2277)"). The decisions came out of a design interview with the owner; every one of them is final unless this file marks it as a number to draft. The work is handed to an implementing agent. Faction, system and ship names are working names until the DM lore review (section 18).
 
 Everything in this plan, Part I and Part II, ships in **one release**. The workstreams in section 18 organize the work, not the release.
 
@@ -84,7 +84,7 @@ Before any work, read `AGENTS.md` and these guides, plus every guide named in th
 | Modules | About 20 families, an item every 5 ranks (0-45), rank-50 named boss modules. A weapon fires at its hull's size. |
 | Crafting | No new skill. Space crafting spreads across Smithery, Engineering, Fabrication, Agriculture and Gathering. A component layer has trade-off traits, manufacturer and rare components. Research blueprints work for hulls and modules. |
 | Combat | Shared ground rules: crits, one Attack and one Defense, EM/Thermal/Explosive resistances, shared status effects, threat, PvP rules. |
-| Attributes | AGI accuracy/evasion, PER attack/crit, VIT hull defense, WIL shields/capacitor/repair, MGT STM for maneuvers, SOC command and trade prices. |
+| Attributes | Energy weapons use AGI accuracy and PER damage; launchers use PER accuracy and MGT damage, like ranged and melee weapons on the ground. AGI evasion, PER crit, VIT hull defense, WIL shields/capacitor/repair, MGT STM for maneuvers, SOC command and trade prices. |
 | Activation | Modules with a cycle are toggles that fire themselves each cycle and switch off when they can't fire. Lit icons show what's on, and a Ship HUD shows targets. |
 | Crew | Stations on Large and Capital hulls, with droid crew. Ships at launch. |
 | Death | Modules drop only on PvP deaths in Wild Space. Everyone aboard ejects in escape pods and takes the normal XP debt. Cargo spills on any death. |
@@ -92,12 +92,12 @@ Before any work, read `AGENTS.md` and these guides, plus every guide named in th
 | World | 3 new small-ship zones with 3 new materials. Salvage from wrecks. Starlane fixes. Size limits on docking. |
 | Trade | Cargo held as ship data, about 20 commodities, dock exchanges with moving prices, contraband and customs, pirates, freight contracts, faction standing, city tariffs. |
 | Migration | Every character gets one Rebuild Token. Piloting perks are refunded. Ships and modules convert to their new equivalents. |
-| Wild Space | Six persistent tier-5.5 systems reached through hidden, rotating rifts, each with an environmental effect, guarded by the Rakatan Remnant. |
-| Exploration | A Probe Launcher reveals hidden sites (rift, combat, data, relic, gas, derelict) and jumps the party to them. Data sites use the slicing mini-game. |
+| Wild Space | Six persistent tier-5.5 systems reached through hidden, rotating rifts, each with an environmental effect, held by the Rift Raiders pirate coalition. |
+| Exploration | A Probe Launcher reveals hidden sites (rift, combat, data, cache, gas, derelict) and jumps the party to them. Data sites use the slicing mini-game. |
 | Stations | Player cities in space, at anchor sites, with every city mechanic, plus a Shipyard (Capital hulls), Asteroid Drill and Jump Beacons. Stations can't be attacked in this release. |
 | Holdings | Up to 3 planetary holdings per character, with cross-planet upgrades, production chains, droid staff, events and visitable ground sites. |
 | Droids | Industrial parts and AI instructions trade combat for an Industry rating used by holdings, crew, droid bays and stations. |
-| More activities | Derelict boarding (ground dungeons), faction agents at docks across the galaxy, weekly incursions, timed Rift Runs, and cloaking for Small hulls. |
+| More activities | Derelict boarding (ground dungeons, some contested from space), faction agents at docks across the galaxy, weekly incursions, timed Rift Runs, and cloaking for Small hulls. |
 
 ## 3. Current state
 
@@ -186,6 +186,8 @@ Paths are relative to `SWLOR.Game.Server/`.
     - Tank or support pilot: Piloting + Ship Systems (up to 100 ranks).
     - Everything maxed: all three (150 ranks).
     - Crew member: one station skill (50 ranks).
+    - Casual flyer: Piloting 10 + Gunnery 15 (25 ranks): Medium hulls and rank-15 weapons.
+    - Space miner: Piloting 10 + Gathering 40 (50 ranks) for a Mining Barge on top-tier ore, or Piloting 25 + Gathering 40 (65 ranks) to strip-mine in an Industrial. Today a top space miner needs Piloting 40, so a pure space miner pays about 10 more ranks. The same Gathering also covers ground harvesting, salvage and gas. Player text must give these numbers, never claim mining got cheaper.
   - **Piloting works like the Armor skill.** It gates hulls and the passive defenses that every role wears, and it owns propulsion, cargo, cloaking, maneuvers and command. It also earns XP from trade.
   - **Ship Systems is the tank and support specialty,** like First Aid or Leadership on the ground. Nobody needs it just to survive.
 - **XP rules:**
@@ -198,13 +200,18 @@ Paths are relative to `SWLOR.Game.Server/`.
 
 | Attribute | Space job |
 |---|---|
-| AGI | Accuracy and evasion (as today) |
-| PER | Weapon attack and crit |
+| AGI | Energy weapon accuracy and evasion (as today) |
+| PER | Energy weapon damage, launcher accuracy, and crit for every weapon |
 | VIT | Hull defense (as today) |
 | WIL | Max shield, max capacitor, repair strength |
-| MGT | The pilot's own STM, which pays for maneuvers and physical station actions |
+| MGT | Launcher damage, and the pilot's own STM, which pays for maneuvers and physical station actions |
 | SOC | Command abilities and auras; better exchange prices; repair discount (as today) |
 
+- **Weapons copy the ground mapping:**
+  - Energy weapons (Laser, Ion and Beam Cannons, the Point-Defense Turret and the capital lasers) use the ranged mapping: PER for damage, AGI for accuracy.
+  - Launchers (Missile Launcher, Torpedo Launcher, Assault Concussion Missile) use the melee mapping: MGT for damage, PER for accuracy.
+  - Crits use PER against VIT for both, as on the ground.
+  - Melee builds get a natural Gunnery style (Ordnance) and ranged builds get theirs (Broadside). Without this, a melee character can tank in space but barely kill.
 - **Intuitive Piloting** (WIL in place of PER for attack) is removed and refunded, since WIL now has its own job.
 - **FP** is not used in space.
 - **Space ability costs:** STM or ship capacitor. Modules keep costing capacitor.
@@ -230,8 +237,8 @@ Each space skill has two styles of 60 SP, the same as a weapon skill.
 |---|---|---|---|
 | Piloting | **Ace** | Evasion dogfighting | Maneuvers (evasive roll, burst, reverse) that turn dodges into accuracy and crit windows |
 | Piloting | **Wing Commander** | Command | SOC-scaled auras and orders for nearby allied ships, a formation stance, bonuses for crew aboard |
-| Gunnery | **Broadside** | Sustained energy fire | An overcharge rhythm for lasers, ion and beams |
-| Gunnery | **Ordnance** | Missiles and torpedoes | Volleys and lock-on; burst against big hulls |
+| Gunnery | **Broadside** | Sustained energy fire; PER damage, like ranged weapons | An overcharge rhythm for lasers, ion and beams |
+| Gunnery | **Ordnance** | Missiles and torpedoes; MGT damage, like melee weapons | Volleys and lock-on; burst against big hulls |
 | Ship Systems | **Bulwark** | Tank | A threat stance, hardening, emergency shields |
 | Ship Systems | **Operator** | Support and control | Remote repair, capacitor transfer, jamming, target painting |
 
@@ -276,10 +283,10 @@ Two ships in the same role are sidegrades, never strict upgrades.
 | Mandalorian | Hull toughness, explosive weapons | 10 |
 | Hutt | Heavy hulls, big holds, contraband | 10 |
 | Chiss | Sensors, accuracy, range, scanning | 8 |
-| Rakatan | Exotic Wild Space relic hulls (Advanced only) | 4 |
+| Rift Raider | Pirate refits of stolen hulls, found only in Wild Space (Advanced only) | 4 |
 
 **Standard and Advanced:** 74 Standard ships and 26 Advanced ships. Compared with a Standard ship, an Advanced ship has:
-- **Better stats:** higher base stats, plus either one extra slot or a stronger signature bonus.
+- **Better stats:** higher base stats, plus either one extra Mid or Low slot or a stronger signature bonus, never both. No Advanced ship gets an extra High slot, because an extra weapon outweighs every other bonus.
 - **A higher Piloting gate:** 10 ranks above its size's gate (Small 10, Medium 20, Large 35, Capital 50).
 - **A recipe unlock (Ship Schematic)** from drops or faction stores.
 - **A higher recipe level.**
@@ -326,6 +333,12 @@ Two ships in the same role are sidegrades, never strict upgrades.
 - **Refit:** a starport Refit swaps a ship to another design unlocked for it, for a fee.
 - **Ship Schematics** are the recipe unlocks for Advanced ships. They replace the orphaned `recipe_aurek`, `recipe_sfight` and `recipe_basilisk`.
 - **Migration:** owners keep today's look as a design of the ship they're mapped to (section 15).
+
+### Ship names
+
+- **In space, other players see the ship's name instead of the pilot's.** It is the ship's property name, set or changed at a starport, with the same validation as other renamed properties.
+- **Examine** shows the pilot under the normal recognition rules. Route both through `PlayerName` and `PlayerDescriptor` (the system behind `/name`), following `PlayerIdentity.md`, so known-name labels and disguises keep working.
+- **Leaving the ship** restores the pilot's normal name.
 
 ## 8. Modules
 
@@ -417,8 +430,8 @@ Toggled modules are the ship's auto-attacks; perk abilities are the buttons, as 
 
 - **Hit and damage:**
   - Hit chance uses `Combat.CalculateHitRate`, as today.
-  - Damage uses `Combat.CalculateDamage` with one ship Attack and one ship Defense, replacing today's three per-type pairs.
-- **Accuracy and evasion:** AGI x 3 + Gunnery rank (accuracy) or Piloting rank (evasion), plus hull and modules.
+  - Damage uses `Combat.CalculateDamage` with one ship Attack and one ship Defense, replacing today's three per-type pairs. The damage attribute is PER for energy weapons and MGT for launchers (section 5).
+- **Accuracy and evasion:** accuracy is the weapon's accuracy attribute x 3 (AGI for energy weapons, PER for launchers; section 5) + Gunnery rank. Evasion is AGI x 3 + Piloting rank. Both add hull and modules.
 - **Crits:** on, following the ground formula. Gunnery rank stands in for weapon rank, with PER against VIT.
 - **Resistances:** add `ResistanceType` Thermal, Explosive and EM, each from -100 to 100. `CombatDamageType` already has Thermal 20, Explosive 21 and EM 22.
 - **Status effects:** go through `StatusEffect` with its resistance families.
@@ -459,6 +472,8 @@ Ships at launch.
   - Everything a station does is fired from the ship. The crew member's own rank, attributes and perks set the strength.
 - **Droid crew:**
   - A player-built droid (Engineering) can work any station at reduced effect, scaled by its Industry rating (section 27). It turns that station's modules on whenever the pilot has a valid target, and back on after an auto-off once a new valid target is picked.
+  - Its tier sets which station modules it can switch on, the way a player's rank does. Its Industry rating sets how well it works them.
+  - **Droid limit:** a droid assigned to a ship's station, a droid bay, a holding or a station building stays at that post and doesn't count toward the one-droid limit. That limit covers only the droid that follows its owner.
   - Its logic reuses `ProcessSpaceNPCAI`.
 - **Permissions and edge cases:**
   - Add a crew property permission next to `PilotShip`.
@@ -491,7 +506,7 @@ Ships at launch.
 - **Aces:** one named rare-spawn pilot per orbit, built with `skills/swlor-rare-spawn-generation/SKILL.md`. Each has a unique loot table of Design Schematics, named-module recipes, trophies and components.
 - **Encounter types:** patrols, ambushes, convoys, mining-site defense and capital battle events.
 - **Rare Sith and Mandalorian capitals** (Harrower, Kandosii and the others) spawn only in T5-T6 orbits. Their armadas also drive weekly incursions (section 30).
-- **Rakatan Remnant:** the Wild Space automaton faction (section 23).
+- **Rift Raiders:** the Wild Space pirate coalition (section 23).
 - **Stats:** draft a space section in the Bible's Enemy Builder Guide, Enemy Stat Presets and related tabs for owner approval. Follow `NpcHitPoints.md` for HP limits.
 - **Models:** use unused hak models. Space fauna goes on the Trellis2 list.
 
@@ -584,7 +599,7 @@ Crafted intermediates that hull and module recipes consume. Appendix D lists eve
 
 - **Generic families:** Hull Frame, Ship Reactor, Energy Emitter, Ordnance Assembly, Shield Projector, Thruster Assembly, Sensor Suite, Extraction Head, Life Support System.
 - **Manufacturer components:** one per manufacturer (for example Republic Shield Matrix, Sith Targeting Core). They are not crafted. They come from that manufacturer's faction store, its NPC ships' loot, and salvage of those wrecks.
-- **Rare components** for Advanced ships: Thorilide Core, Aurodium Plating, Rakatan Relic Core, and salvaged parts carrying a rare trait.
+- **Rare components** for Advanced ships: Thorilide Core, Aurodium Plating, Prototype Core, and salvaged parts carrying a rare trait.
 - **Tiers:**
   - Five material tiers. Items at in-between ranks use their tier's component.
   - Today's capital parts (`capc_*`) become the top band.
@@ -604,7 +619,7 @@ There is no new crafting skill. Space work spreads across the existing crafts by
 | Skill | Space items |
 |---|---|
 | Smithery | Weapon modules (every Gunnery High-slot weapon, capital weapons included), Hull Plating, Resist Plating, ammo (missiles, torpedoes, concussion missiles), and the metal components: Hull Frame, Ordnance Assembly, Thruster Assembly, Aurodium Plating |
-| Engineering | Every other module (shields, repairers, capacitor, electronic warfare, tackle, sensors, Probe Launcher, Data Analyzer, Cloaking Device, Afterburner, Thrusters, Damage Amplifier, Targeting Computer, mining and salvage gear), Hypermatter capsules, enhancements, droids and industrial droid parts, and the electronic components: Ship Reactor, Energy Emitter, Shield Projector, Sensor Suite, Extraction Head, Thorilide Core, Rakatan Relic Core |
+| Engineering | Every other module (shields, repairers, capacitor, electronic warfare, tackle, sensors, Probe Launcher, Data Analyzer, Cloaking Device, Afterburner, Thrusters, Damage Amplifier, Targeting Computer, mining and salvage gear), Hypermatter capsules, enhancements, droids and industrial droid parts, and the electronic components: Ship Reactor, Energy Emitter, Shield Projector, Sensor Suite, Extraction Head, Thorilide Core, Prototype Core |
 | Fabrication | Final assembly of all 100 ships, the Cargo Expander and Smuggling Compartment, Station Cores and station buildings (Shipyard, Asteroid Drill, Jump Beacon), holding upgrades and Processing Plants, and interior trophies and decor |
 | Agriculture | Life Support System (hydroponics), a component of Light and Heavy Freighters, Cruisers and Command Ships |
 | Gathering | Refining: ores, the new materials, and Ship Scrap into electronics (no recipes) |
@@ -622,7 +637,7 @@ There is no new crafting skill. Space work spreads across the existing crafts by
 
 ### Research
 
-- Extend `IsResearchableRecipe` and the Research Terminal so starship and module recipes can be researched into blueprints: bonus stats, extra enhancement slots, cheaper runs. Rakatan relics from Wild Space (section 23) are an optional research input that raises blueprint bonuses.
+- Extend `IsResearchableRecipe` and the Research Terminal so starship and module recipes can be researched into blueprints: bonus stats, extra enhancement slots, cheaper runs. Prototype tech from Wild Space (section 23) is an optional research input that raises blueprint bonuses.
 
 ### Rewards
 
@@ -743,7 +758,7 @@ Draft each in the Bible, check it with the combat simulator where it affects com
 - **Repairs:** cost per hull size.
 - **Refit:** fee.
 - **Dockhand store:** stock above rank 0.
-- **Wild Space:** environment effect sizes, rift lifetimes, mass budgets and collapse damage, Rakatan Remnant presets, loot tables.
+- **Wild Space:** environment effect sizes, rift lifetimes, mass budgets and collapse damage, Rift Raider presets, loot tables.
 - **Scanning:** signal gained per cycle, spawn rates per signature type, Sensor Sweep range and cooldown, Jump to Signature spool.
 - **Stations:** Station Core recipe, anchor site count per area, Asteroid Drill output, Shipyard build times, Jump Beacon fuel cost and hull caps.
 - **Holdings:** price, upkeep, output, upgrade costs, Processing Plant recipes, event odds, droid boost.
@@ -755,6 +770,7 @@ Draft each in the Bible, check it with the combat simulator where it affects com
 
 Everything merges to one integration branch and releases together.
 
+- **Lore review first:** before W0, the DMs approve the Wild Space faction and system names, all 100 ship names and the faction agent setup. Liberty Fighter, Rheinland Fighter and Corsair come from another game's model labels and need Star Wars names in that review. Until then, every faction, system and ship name in this plan is a working name.
 - **Branching:**
   - Create `feature/space-revamp` from up-to-date `origin/master`.
   - Each workstream slice goes on its own branch and pull request into it, with the Codex review loop (`PullRequests.md`).
@@ -775,10 +791,10 @@ Everything merges to one integration branch and releases together.
 | W8 | Crew | Stations, consoles, `AttachCamera` and hidden crew, droid crew, permissions, power routing, Wing Commander crew bonuses | W2, W3, W4 |
 | W9 | Crafting and rewards | Component layer and traits, recipes, research blueprints, named modules, Design Schematics, trophies and decor, ammo variants, achievements | W3, W6 |
 | W10 | Migration | Rebuild Token, perk refunds, item and ship conversion, stamp cleanup, design unlocks, notices | W1, W3, W9 |
-| W12 | Wild Space and exploration | 6 Wild Space areas and environments, rifts, Rakatan Remnant, Probe Launcher, signatures, Jump to Signature, Sensor Sweep, data/relic/gas/combat sites, Scanner HUD tab | W2, W3, W5 |
+| W12 | Wild Space and exploration | 6 Wild Space areas and environments, rifts, Rift Raiders, Probe Launcher, signatures, Jump to Signature, Sensor Sweep, data/cache/gas/combat sites, Scanner HUD tab | W2, W3, W5 |
 | W13 | Stations | Station city layout, Station Core, anchor sites, deck areas, Shipyard, Asteroid Drill, Jump Beacons, Station Fuel | W3, W7 |
 | W14 | Holdings and droids | Holdings terminal, types, upgrades, production chains, events, ground sites; industrial droid parts, Industry stat, AI instructions, droid bays | W7, W9 |
-| W15 | Activities | Derelict boarding, faction agents and token stores, incursions, Rift Runs | W5, W7, W12 |
+| W15 | Activities | Derelict boarding (including contested derelicts), faction agents and token stores, incursions, Rift Runs | W5, W7, W12 |
 | W16 | Cloaking | Cloaking Device, reveal rules, stealth unblock in space | W2, W12 |
 | W11 | Release | Balance pass, client evidence, docs (section 19), player release notes | All |
 
@@ -800,6 +816,8 @@ Everything merges to one integration branch and releases together.
   - Damage pilot vs tank vs support.
   - Small vs Large vs Capital under the size rules.
   - A crewed capital vs the same pilots in separate ships.
+  - The Advanced ships in each role: each lands within 10% of the others at that role's job.
+  - A melee build (MGT, PER) on launchers vs a ranged build (PER, AGI) on energy weapons at equal ranks.
 - **Client evidence** (`InEngineVisualVerification.md`) for:
   - The Mid hotbar row.
   - Lit and unlit module icons, and a module switching itself off.
@@ -809,7 +827,7 @@ Everything merges to one integration branch and releases together.
   - Founding a station at an anchor site, docking, and a Jump Beacon jump.
   - A holding's ground site, an event fight, and cargo pickup.
   - An industrial droid in a droid bay and at a crew station.
-  - Boarding a derelict, a data site slicing game, an agent mission, a Rift Run timer, and cloak and reveal.
+  - Boarding a derelict, a contested derelict's waves, a data site slicing game, an agent mission, a Rift Run timer, and cloak and reveal.
   - Every Hull Design at ship scale.
   - Crew camera view.
   - The exchange window.
@@ -830,7 +848,7 @@ New models go through the Trellis2 pipeline (`Readmes/BlasterModelImport.md`) as
 - **Hull Designs for every ship:** several skins per ship, each usable only on that ship (section 7). Start with ships that have no launch skins.
 - Trade containers and wreck variants, if the existing placeables look wrong at ship scale.
 - Station exteriors for Small, Medium and Large stations, if scaling the existing `[mdrn]SpaceStation` placeable (placeables.2da row 1452) can't tell them apart.
-- Rakatan Remnant automaton ships, if the unused hak models (for example the Alien set, 10215-10217) don't read as ancient machines.
+- Rift Raider ships, if existing pirate models and the unused hak models (for example the Alien set, 10215-10217) don't give the coalition and its 4 refit hulls their own look.
 
 ## 21. Out of scope
 
@@ -869,15 +887,15 @@ Everything in Part II ships in the same release as Part I. It builds on Part I's
 | Ion Storm | More EM damage, weaker shields |
 | Magnetar | More damage, less evasion |
 | Red Giant | Stronger overcharges and volleys, higher capacitor cost |
-| Rakatan Graveyard | Richer salvage, weaker scanning |
+| Ship Graveyard | Richer salvage, weaker scanning |
 
 - **Rifts:**
   - Hidden signatures (section 24) connect each Wild Space system to a random known orbit or to another Wild Space system. Each system keeps about 2 connections open, and new ones appear as old ones collapse.
   - Each rift has a lifetime of 4-24 hours and a size class (Small, Medium or Large) that caps the largest hull through it. Only Large rifts take Capital hulls.
   - Each rift has a mass budget, and every passage spends some of it by hull size.
   - On collapse, ships inside get a 2-minute warning. Then any ship still in a system with no open exit is thrown to a random known orbit with hull damage.
-- **Rakatan Remnant:** a new automaton enemy faction that uses all 8 role behaviors together. Its stats are drafted from the ground tier-5.5 presets. Models come from unused hak ships, or from Trellis2 (section 20).
-- **Loot:** named rank-50 module recipe unlocks, Design Schematics, Thorilide, Aurodium, tier-5.5 Rift Keys, rare component traits, and **Rakatan relics**. Relics are a research input that improves blueprint bonuses (section 14).
+- **Rift Raiders:** a pirate coalition of cargo thieves and spice runners that preys on rift traffic, using all 8 role behaviors together. Its stats are drafted from the ground tier-5.5 presets. Their wrecks spill stolen cargo (section 13), some of it contraband, on top of normal salvage. Models come from existing pirate ships, unused hak ships, or Trellis2 (section 20).
+- **Loot:** named rank-50 module recipe unlocks, Design Schematics, Thorilide, Aurodium, tier-5.5 Rift Keys, rare component traits, and **prototype tech** (stolen experimental parts). Prototype tech is a research input that improves blueprint bonuses (section 14).
 - **Stations:** 1-2 anchor sites per system (section 25). Jump Beacons never connect into or out of Wild Space.
 - **Higher stakes:** Wild Space is the only place a PvP death can drop modules (section 9).
 
@@ -885,7 +903,7 @@ Everything in Part II ships in the same release as Part I. It builds on Part I's
 
 - **Probe Launcher** (Mid slot, Ship Systems, toggle): each cycle adds signal strength to every hidden signature in the area, system-wide.
 - **Scan strength** grows with Ship Systems rank, a crew member at the Sensors station, a droid running Survey Protocol (section 27) and the system's environment.
-- **Signature types:** rift, combat site, data site, relic site, gas site, derelict. They spawn at random points and stay hidden: **no object exists in the area until the signature reaches 100%**, so flying over the spot finds nothing.
+- **Signature types:** rift, combat site, data site, cache site, gas site, derelict. They spawn at random points and stay hidden: **no object exists in the area until the signature reaches 100%**, so flying over the spot finds nothing.
 - **Information grows with strength,** shown on a new Scanner tab of the Ship HUD:
   - 25%: type
   - 50%: tier
@@ -896,7 +914,7 @@ Everything in Part II ships in the same release as Part I. It builds on Part I's
 - **Sites:**
   - **Combat sites:** waves and a boss at the system's tier.
   - **Data sites:** a **Data Analyzer** (Mid slot, Ship Systems) runs the existing slicing mini-game (`Service/SlicingService/`) on data cans. They yield blueprints, recipe unlocks and agent intel, which unlocks special agent missions.
-  - **Relic sites:** the Salvager (Gathering) works relic cans for Rakatan relics and components.
+  - **Cache sites:** hidden pirate caches. The Salvager (Gathering) works cache containers for prototype tech and components.
   - **Gas sites:** the Gas Harvester.
   - **Derelicts:** section 28.
 - **Despawning:** sites despawn once completed or after a timer.
@@ -981,6 +999,7 @@ A station is a **player city in space** and follows every city mechanic, in `Ser
   - **Ship droid crew** (section 10): station effectiveness comes from Industry, so a combat droid makes poor crew.
   - **Droid bays:** Mining Barge, Industrial and Logistics hulls get one, using the unused `ShipDetail.HasDroidBay`. A droid riding in the bay boosts mining, gas and salvage yield, or Logistics repair output.
   - **Station buildings:** faster Shipyard builds, more Asteroid Drill output.
+- **Droid limit:** working droids don't count toward the one-droid limit (section 10).
 - **New AI instructions,** which compete with combat instructions for AI slots:
   - **Efficiency Protocol:** holding, drill and droid-bay output.
   - **Damage Control Protocol:** Engineer station and Logistics bay repairs.
@@ -993,6 +1012,11 @@ A station is a **player city in space** and follows every city mechanic, in `Ser
 - **Boarding:** a Small or Medium ship docks with the derelict and the party boards on foot.
 - **Inside:** an instanced copy of a derelict template: existing starship interior layouts dressed as wrecks, plus a few new ones. It is a ground dungeon at the system's tier, with ground enemies, ground loot and ground abilities. Each mode keeps its own abilities.
 - **Safety:** the docked ship can't be attacked while its crew is aboard the derelict. Leaving returns everyone to the ship.
+- **Contested derelicts:** some derelicts are contested.
+  - While the boarding party is inside, enemy fighters attack in waves around the derelict, and pilots who stay outside defend it. The docked ship stays safe.
+  - Each wave cleared raises the boarders' loot.
+  - If no defending ship is left, enemy boarders reinforce the derelict's interior.
+  - It reuses combat-site waves (section 24) and the derelict dungeon, and gives a mixed space and ground group one shared goal.
 
 ## 29. Faction agents
 
@@ -1132,7 +1156,7 @@ Draft rows for the Bible. Where a ground perk does the same job, its numbers are
 | 45 | 4 | Sustained Fire III | Trait | - | - | +4% damage per stack. | New |
 | 50 | 6 | Firestorm | Capstone | 15 | 90 s | For 30 s, your energy weapons cycle 30% faster and Sustained Fire stacks up to 10. | New (Dead Man's Hand shape) |
 
-### Gunnery: Ordnance (PER primary, MGT secondary)
+### Gunnery: Ordnance (MGT primary, PER secondary)
 
 | Rank | SP | Perk | Type | STM | Cooldown | Effect | Source |
 |---|---|---|---|---|---|---|---|
@@ -1274,7 +1298,7 @@ Model and Launch skins are `appearance.2da` rows. Launch skins are Hull Designs 
 | 9 | Rheinland Fighter | Small | Fighter | Sith | Standard | 0 | 10210 | 10211 | Critical hits deal +10% damage. |
 | 10 | Aurek Strikefighter | Small | Fighter | Republic | Advanced | 10 | 10074 | - | +20% shield regen; Point-Defense fires as Medium. |
 | 11 | Sith Fighter | Small | Fighter | Sith | Advanced | 10 | 10092 | 2008 | +10% Critical Rate; critical hits restore 1 capacitor. |
-| 12 | Cutlass | Small | Fighter | Corellian | Advanced | 10 | 10161 | - | +1 High slot and +10% speed. |
+| 12 | Cutlass | Small | Fighter | Corellian | Advanced | 10 | 10161 | - | +1 Mid slot. |
 | 13 | Condor | Small | Interceptor | Corellian | Standard | 0 | 10055 | - | +10% speed. |
 | 14 | Republic Scout | Small | Interceptor | Republic | Standard | 0 | 10068 | 10069, 10070 | Ion Web range +20%. |
 | 15 | Sith Scout | Small | Interceptor | Sith | Standard | 0 | 10086 | 10087, 10088 | +10% damage to webbed targets. |
@@ -1294,9 +1318,9 @@ Model and Launch skins are `appearance.2da` rows. Launch skins are Hull Designs 
 | 29 | Republic Infiltrator | Small | Explorer | Republic | Standard | 0 | 10064 | 10065, 10066, 10067 | Cloaks in 2 seconds; +10% scan strength. |
 | 30 | Sith Infiltrator | Small | Explorer | Sith | Standard | 0 | 10083 | 10084, 10085 | Sensor Sweep reveals ships 50% farther away. |
 | 31 | Chiss Hyperion | Small | Explorer | Chiss | Standard | 0 | 10230 | - | +25% scan strength; signatures show their tier from 25%. |
-| 32 | Czerka Surveyor | Small | Explorer | Czerka | Standard | 0 | 10191 | 10192 | +20% loot from data and relic sites. |
+| 32 | Czerka Surveyor | Small | Explorer | Czerka | Standard | 0 | 10191 | 10192 | +20% loot from data and cache sites. |
 | 33 | Jalshey Serendipity | Small | Explorer | Corellian | Advanced | 10 | 10221 | 10222 | Jump to Signature spools 50% faster; passes Small rifts without spending mass. |
-| 34 | Rakatan Seeker | Small | Explorer | Rakatan | Advanced | 10 | 10215 | - | Scans Wild Space 50% faster and ignores environment penalties. |
+| 34 | Raider Prowler | Small | Explorer | Rift Raider | Advanced | 10 | 10215 | - | Scans Wild Space 50% faster and ignores environment penalties. |
 | 35 | Neutral Gunship | Medium | Gunship | Corellian | Standard | 10 | 10056 | - | +1 Mid slot, -1 Low slot. |
 | 36 | Republic Gunship | Medium | Gunship | Republic | Standard | 10 | 10061 | 10062, 10063, 10148 | +10% shield resistances. |
 | 37 | Sith Gunship | Medium | Gunship | Sith | Standard | 10 | 10080 | 10081, 10082 | +10% threat generation and +5% damage. |
@@ -1304,7 +1328,7 @@ Model and Launch skins are `appearance.2da` rows. Launch skins are Hull Designs 
 | 39 | Brute Patrol Ship | Medium | Gunship | Mandalorian | Standard | 10 | 10156 | - | +10% hull resistances. |
 | 40 | Chiss Longhorn | Medium | Gunship | Chiss | Standard | 10 | 10163 | - | +10% accuracy; Jammers cycle 15% faster. |
 | 41 | Basilisk War Droid | Medium | Gunship | Mandalorian | Advanced | 20 | 10120 | - | +15% hull resistances and +10% explosive damage. |
-| 42 | Rakatan Warden | Medium | Gunship | Rakatan | Advanced | 20 | 10216 | - | 10% of damage taken returns as capacitor. |
+| 42 | Raider Bruiser | Medium | Gunship | Rift Raider | Advanced | 20 | 10216 | - | 10% of damage taken returns as capacitor. |
 | 43 | Republic Mender | Medium | Logistics | Republic | Standard | 10 | 10101 | - | +15% remote shield repair. |
 | 44 | Czerka Repair Tender | Medium | Logistics | Czerka | Standard | 10 | 10182 | - | +15% remote hull repair. |
 | 45 | Corellian Lifeline | Medium | Logistics | Corellian | Standard | 10 | 10102 | - | +20% capacitor transfer. |
@@ -1334,7 +1358,7 @@ Model and Launch skins are `appearance.2da` rows. Launch skins are Hull Designs 
 | 69 | Sith Hammerhead | Large | Frigate | Sith | Standard | 25 | 10138 | - | +5% Critical Rate. |
 | 70 | Mandalorian Raider | Large | Frigate | Mandalorian | Standard | 25 | 10121 | - | +15% max hull and +10% missile damage. |
 | 71 | Interceptor IV | Large | Frigate | Chiss | Advanced | 35 | 10224 | - | +15% weapon range. |
-| 72 | Rakatan Sentinel | Large | Frigate | Rakatan | Advanced | 35 | 10196 | 10195 | Shield regen doubles while no weapon is firing. |
+| 72 | Raider Marauder | Large | Frigate | Rift Raider | Advanced | 35 | 10196 | 10195 | Shield regen doubles while no weapon is firing. |
 | 73 | Heavy Lifter | Large | Industrial | Czerka | Standard | 25 | 10188 | - | +20% strip-mining yield. |
 | 74 | Czerka Salvager | Large | Industrial | Czerka | Standard | 25 | 10197 | 10198 | +20% salvage yield. |
 | 75 | Hutt Bulk Hauler | Large | Industrial | Hutt | Standard | 25 | 10132 | - | +30% cargo. |
@@ -1354,7 +1378,7 @@ Model and Launch skins are `appearance.2da` rows. Launch skins are Hull Designs 
 | 89 | Corellian Gunboat | Capital | Cruiser | Corellian | Standard | 40 | 10145 | - | +10% speed and evasion. |
 | 90 | Republic Valor | Capital | Cruiser | Republic | Advanced | 50 | 10117 | 10122, 2170 | +25% max shield; allied ships within 30 m regen shields 10% faster. |
 | 91 | Sith Harrower | Capital | Cruiser | Sith | Advanced | 50 | 10126 | 10238, 10239 | +15% damage; critical hits slow the target. |
-| 92 | Rakatan Dreadnought | Capital | Cruiser | Rakatan | Advanced | 50 | 10217 | - | Every hit uses whichever damage type the target resists least. |
+| 92 | Raider Dreadnought | Capital | Cruiser | Rift Raider | Advanced | 50 | 10217 | - | Every hit uses whichever damage type the target resists least. |
 | 93 | Republic Interdictor | Capital | Command Ship | Republic | Standard | 40 | 10143 | - | Command range +10 m. |
 | 94 | Sith Centurion | Capital | Command Ship | Sith | Standard | 40 | 10127 | 10141 | Focus Fire orders +5% stronger. |
 | 95 | Czerka Armored Transport | Capital | Command Ship | Czerka | Standard | 40 | 10218 | - | Crew stations +10% effective; droid crew +20%. |
@@ -1395,7 +1419,7 @@ These are not crafted. Each one comes from its manufacturer's side of the galaxy
 | Hutt Cargo Coupling | Hutt | Hutt Cartel agent store; Hutt enforcers; their wrecks |
 | Corellian Drive Kit | Corellian | Smugglers agent store; pirate raiders and the T1-T5 pirate factions; their wrecks |
 | Chiss Sensor Array | Chiss | Data sites, aces, and the black markets at Smuggler's Moon, Tatooine and Hutlar |
-| Rakatan Relic Hull | Rakatan | Wild Space only: Rakatan Remnant ships and relic sites |
+| Raider Refit Hull | Rift Raider | Wild Space only: Rift Raider ships and cache sites |
 
 ### Rare components (Advanced ships)
 
@@ -1403,7 +1427,7 @@ These are not crafted. Each one comes from its manufacturer's side of the galaxy
 |---|---|---|---|
 | Thorilide Core | Engineering | Thorilide (capital-ship kills) + Ship Reactor | Advanced Republic, Sith, Corellian and Chiss ships |
 | Aurodium Plating | Smithery | Aurodium (Korriban Debris Field, Wild Space) + Hull Frame | Advanced Mandalorian, Hutt and Czerka ships |
-| Rakatan Relic Core | Engineering | Rakatan relics (Wild Space) + Sensor Suite | Rakatan ships |
+| Prototype Core | Engineering | Prototype tech (Wild Space) + Sensor Suite | Rift Raider ships |
 
 A salvaged component carrying a rare trait can stand in for the rare component in any Advanced recipe. That makes elite and boss wrecks worth salvaging.
 
@@ -1411,7 +1435,7 @@ A salvaged component carrying a rare trait can stand in for the rare component i
 
 | Unlock | Sources |
 |---|---|
-| Ship Schematic (Advanced ship recipe) | That manufacturer's agent store at high standing, aces, incursion rewards; Chiss from data sites; Rakatan from Wild Space |
+| Ship Schematic (Advanced ship recipe) | That manufacturer's agent store at high standing, aces, incursion rewards; Chiss from data sites; Rift Raider from Wild Space |
 | Design Schematic (one ship's skin) | Aces, bosses, rare salvage, Rift Runs, faction stores |
 
 ### Loot table changes
@@ -1419,7 +1443,7 @@ A salvaged component carrying a rare trait can stand in for the rare component i
 - **Faction NPC ships** drop their manufacturer's component: a low chance on basic ships, higher on elites and bosses. Map each NPC faction to the manufacturer its ships resemble while drafting.
 - **Wrecks** (Salvager) yield Ship Scrap, salvaged generic components, the wreck's manufacturer component, and, on elites and bosses, rare-trait parts.
 - **Aces** drop Ship Schematics, Design Schematics and rare components.
-- **Wild Space** drops Rakatan relics, Rakatan Relic Hulls and Thorilide.
+- **Wild Space** drops prototype tech, Raider Refit Hulls and Thorilide.
 - **Incursions** reward Sith or Mandalorian Ship Schematics, matching the invader.
 - **Rift Runs** drop rare-trait parts and Design Schematics.
 - **Registration:** every new item source is registered for `EconomyObtainabilityCoverageTests` (`EconomyRestrictedItems.md`).

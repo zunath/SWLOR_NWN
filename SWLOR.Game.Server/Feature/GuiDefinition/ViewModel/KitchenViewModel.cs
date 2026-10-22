@@ -175,6 +175,12 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
             set => Set(value);
         }
 
+        public string LastResultText
+        {
+            get => Get<string>();
+            set => Set(value);
+        }
+
         public GuiBindingList<string> AxisNames
         {
             get => Get<GuiBindingList<string>>();
@@ -278,7 +284,8 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
 
             AssignDefaults();
             RefreshSetup();
-            SetStatus(_parameters == null ? "This recipe has no Kitchen settings yet and cannot be cooked." : string.Empty, GuiColor.Red);
+            if (_parameters == null)
+                SetStatus("This recipe has no Kitchen settings yet and cannot be cooked.", GuiColor.Red);
 
             ChangePartialView(ContentElement, SetupPartial);
             StartMinigameSession();
@@ -321,6 +328,7 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
             QualityPercentage = 0f;
             QualityText = string.Empty;
             CpText = string.Empty;
+            LastResultText = string.Empty;
             AxisNames = new GuiBindingList<string>();
             AxisValues = new GuiBindingList<float>();
             AxisTexts = new GuiBindingList<string>();
@@ -531,6 +539,7 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
                 KitchenTuning.EnhancementDoneness(penalty));
 
             ActionNames = BuildActionNames();
+            LastResultText = string.Empty;
             SetStatus("The ingredients are in the pot. Closing this window abandons the dish.", GuiColor.Green);
             RefreshCook();
             ChangePartialView(ContentElement, CookPartial);
@@ -633,6 +642,7 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
             }
 
             SetStatus($"{action.Name}: {result.Outcome.Label}.", GuiColor.Green);
+            LastResultText = KitchenText.ResultText(result.Outcome);
             if (result.Status == MinigameStatus.Succeeded)
                 FinishDish();
             else if (result.Status == MinigameStatus.Failed)

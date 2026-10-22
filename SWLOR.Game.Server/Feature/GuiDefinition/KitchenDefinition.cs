@@ -191,6 +191,7 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition
                                 CraftMinigameHelpPartial.AddHelpButton(r, "How the Kitchen works", model => model.OnHelp());
                             });
 
+                            AddNote(content, model => model.LastResultText);
                             AddMeter(content, model => model.DonenessText, model => model.DonenessPercentage, 255, 140, 0);
                             AddMeter(content, model => model.FreshnessText, model => model.FreshnessPercentage, 0, 170, 0);
                             AddMeter(content, model => model.QualityText, model => model.QualityPercentage, 0, 138, 250);

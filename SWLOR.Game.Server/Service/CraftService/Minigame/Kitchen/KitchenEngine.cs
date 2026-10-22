@@ -7,6 +7,8 @@ namespace SWLOR.Game.Server.Service.CraftService.Minigame.Kitchen;
 /// The Kitchen: the rules engine for cooking. You steer a dish's flavor (Savory, Sweet, Spice) toward the recipe's target zone
 /// while it cooks. Quality is read from where the flavor sits: 100% inside the inner radius, falling to 0% at the outer radius.
 /// Doneness is the progress meter, Freshness is the integrity meter and falls every turn, and the dish is ruined at 0.
+/// Every action is available from skill rank 0: the plan sets no unlock ranks for the Kitchen. Rank shows up in the numbers
+/// instead: CP (gear plus 0.75 per rank, with the rank passive) and the Doneness factor of rank against the recipe's level.
 /// </summary>
 public sealed class KitchenEngine : MinigameEngineBase<KitchenState>
 {

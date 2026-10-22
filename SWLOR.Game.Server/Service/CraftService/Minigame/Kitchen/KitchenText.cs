@@ -192,20 +192,24 @@ public static class KitchenText
             lines.Add($"Costs {preview.CpCost} CP.");
 
         foreach (var outcome in preview.Outcomes)
-        {
-            var changes = outcome.Changes
-                .Where(change => change.Delta != 0 && !change.Id.StartsWith("stock.", StringComparison.Ordinal) &&
-                                 change.Id != KitchenEngine.DistanceMeterId && change.Id != MinigameMeterIds.Cp)
-                .Select(change => change.Id == KitchenEngine.HeatMeterId
-                    ? $"Heat becomes {(KitchenHeat)change.After}"
-                    : $"{change.Label} {Signed(change.Delta)}")
-                .ToList();
-            var result = changes.Count == 0 ? "no change" : string.Join(", ", changes);
-            var ending = outcome.FinishesItem ? $" {FinishesWarning}" : outcome.BreaksItem ? $" {RuinsWarning}" : string.Empty;
-            lines.Add($"{outcome.ChancePercent}% {outcome.Label}: {result}.{ending}");
-        }
+            lines.Add($"{outcome.ChancePercent}% {ResultText(outcome)}");
 
         return string.Join("\n", lines);
+    }
+
+    /// <summary>What a result did, such as "Steady hand: Quality +40, Freshness -4, Savory +13." with any ending warning.</summary>
+    public static string ResultText(MinigameOutcomePreview outcome)
+    {
+        var changes = outcome.Changes
+            .Where(change => change.Delta != 0 && !change.Id.StartsWith("stock.", StringComparison.Ordinal) &&
+                             change.Id != KitchenEngine.DistanceMeterId && change.Id != MinigameMeterIds.Cp)
+            .Select(change => change.Id == KitchenEngine.HeatMeterId
+                ? $"Heat becomes {(KitchenHeat)change.After}"
+                : $"{change.Label} {Signed(change.Delta)}")
+            .ToList();
+        var result = changes.Count == 0 ? "no change" : string.Join(", ", changes);
+        var ending = outcome.FinishesItem ? $" {FinishesWarning}" : outcome.BreaksItem ? " The dish is ruined!" : string.Empty;
+        return $"{outcome.Label}: {result}.{ending}";
     }
 
     private static string Portions(int count) => count == 1 ? "portion" : "portions";

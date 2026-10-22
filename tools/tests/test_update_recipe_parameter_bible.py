@@ -307,6 +307,19 @@ class RecipeParameterBibleTests(unittest.TestCase):
         self.assertIn('<autoFilter ref="$A$1:$J$6" />', after["xl/worksheets/sheet1.xml"])
         self.assertIn("'Smithery Recipes'!$A$1:$J$6", after["xl/workbook.xml"])
 
+    def test_the_defined_filter_name_widens_from_its_own_range(self):
+        entries = read_entries(self.workbook)
+        entries["xl/workbook.xml"] = entries["xl/workbook.xml"].replace("$A$1:$F$6", "$A$1:$F$1")
+        with zipfile.ZipFile(self.workbook, "w") as archive:
+            for name, text in entries.items():
+                archive.writestr(name, text)
+
+        self.run_update()
+
+        after = read_entries(self.workbook)
+        self.assertIn("'Smithery Recipes'!$A$1:$H$1<", after["xl/workbook.xml"])
+        self.assertIn('<autoFilter ref="$A$1:$H$6" />', after["xl/worksheets/sheet1.xml"])
+
     def test_column_letters_round_trip(self):
         for index in (1, 26, 27, 52, 53, 702, 703):
             self.assertEqual(index, BIBLE.column_index(BIBLE.column_letters(index)))

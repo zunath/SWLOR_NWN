@@ -342,9 +342,7 @@ def update_workbook_entries(entries: dict[str, bytes], data: dict, layout: dict 
         report.append(f"{tab}: {len(assignment)} parameter columns ({len(new_columns)} new), {written} recipe rows, {rows_changed} rows edited")
         if result != xml:
             changed[path] = result.encode("utf-8")
-            reference = re.search(r'<autoFilter\b[^>]*?\bref="([^"]+)"', result)
-            if reference:
-                filter_ranges[tab] = reference.group(1)
+        filter_ranges[tab] = max(assignment.values())
         if layout_after is not None and tab in layout_after.get("columnsBySheet", {}):
             entries_for_tab = layout_after["columnsBySheet"][tab]
             for header, column in assignment.items():
@@ -355,9 +353,9 @@ def update_workbook_entries(entries: dict[str, bytes], data: dict, layout: dict 
     if filter_ranges:
         workbook = entries["xl/workbook.xml"].decode("utf-8")
         updated = workbook
-        for tab, reference in filter_ranges.items():
+        for tab, last_column in filter_ranges.items():
             pattern = re.compile(r"(<definedName\b[^>]*name=\"_xlnm\._FilterDatabase\"[^>]*>'" + re.escape(escape(tab)) + r"'!)([^<]+)(</definedName>)")
-            updated = pattern.sub(lambda m: m.group(1) + reference + m.group(3), updated)
+            updated = pattern.sub(lambda m: m.group(1) + (widen_range(m.group(2), last_column) or m.group(2)) + m.group(3), updated)
         if updated != workbook:
             changed["xl/workbook.xml"] = updated.encode("utf-8")
 

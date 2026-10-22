@@ -526,6 +526,27 @@ Rebuild/install `sw_pt_root.hak` together with `sw_anim_m.hak` and `sw_anim_f.ha
 the helper part IDs live in the animation bridges too, and with older bridges the
 skirts stay static. No module repack or C# deploy is required.
 
+Chest parts 154 (human bodies) and 269 (human, elf, half-orc and dwarf bodies) carry
+ankle-length coat skirts in the chest mesh. Each half of the skirt was weighted to its
+own thigh and shin, so striding pulled the halves apart: the back tore open and the legs
+showed through it. A chest part only reaches the normal body's bones, and a least-squares
+fit shows no blend of them reproduces robe 236's coat helpers. `ChestSkirtBindings.py`
+therefore moves every leg weight onto `pelvis_g`, as on rigid stock skirts, and keeps
+the other bones, the geometry, inverse binds and bone tables, so the bind shape is
+unchanged. Over the stock walk and run clips the worst skirt stretch drops below 1.4x
+(up to 11x before) and less leg shows behind the coat. Keeping even a quarter of the
+leg weight let the female chest 154 skirt tear again. The trade-off matches rigid stock
+skirts: when sitting or kneeling the coat no longer follows the legs and passes through
+the seat or the floor. The originals are read from the Git blobs recorded in
+`ChestSkirtBindings.json`. Other chest styles with leg-weighted coat tails (003, 027 to
+029, 059, 065, 072, 128, 155, 276, 290, 300, 310) are unchanged.
+Run `python -B SWLOR_Haks/tools/ChestSkirtBindings.py --apply`, then
+`python -B SWLOR_Haks/tools/GeneratePartSkinModels.py --apply`, which renumbers the
+robe-body aliases whose bone mapping changed. Both scripts' `--check` and
+`python -B -m unittest discover -s SWLOR_Haks/tools -p "TestChestSkirtBindings.py"` guard them. Rebuild
+`sw_pt_chest.hak` and `sw_2da.hak` together and restart the server, which reads the
+renumbered aliases from `partrender.2da`.
+
 Robe 236's tint map is built from its original PLT, not the March 2026 revision
 (SWLOR_Haks #291) that raised the coat's Leather 1 shade from a mean of 38 to 61 and
 made every dye render the coat much lighter. Both genders share that source. The

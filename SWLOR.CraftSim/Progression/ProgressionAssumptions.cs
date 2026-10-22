@@ -75,6 +75,12 @@ namespace SWLOR.CraftSim.Progression
         /// </summary>
         public int? RequiredXpCap { get; init; }
 
+        /// <summary>
+        /// Hours of play between server starts, which is how often the guild boards are redrawn. A catch-up whose board holds no task it can use
+        /// waits for the next start, and the crafts made meanwhile cannot be handed in. An unmeasured estimate.
+        /// </summary>
+        public double PlayHoursPerServerStart { get; init; } = 4.0;
+
         /// <summary>Seconds one guild hand-in costs besides the craft: accepting the task and giving the report. An unmeasured estimate.</summary>
         public double HandInSeconds { get; init; } = 10.0;
 

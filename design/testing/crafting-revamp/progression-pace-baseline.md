@@ -221,30 +221,30 @@ Every crafted task asks for a player-produced item, which includes quick-crafted
 
 ### Cohort: hand in what you craft
 
-The cohort crafts at level as before and, whenever the board has a task for that recipe level and the guild rank allows it, hands the item in. The board is the catch: `Guild.RefreshGuildTasks` keeps only 10 random tasks of a tier at each server start (all of them when the tier has 10 or fewer), the same for every player, and the cap change does not touch that. A level's task is therefore on the board with a chance, and the model weights every hand-in, its XP, points and credits by it (the chance that at least one of the level's tasks is among the ten drawn; Agriculture's catch tasks take board places too). A crafter who finds no task for their level on this boot's board hands nothing in, so a climb over many server starts gets the expected share. A hand-in asks for one exact recipe (the quest collector matches the item's resref), so when the board holds the level's task the crafter makes that recipe, not an arbitrary one of the level: the craft's components are the level's task recipes' mean, not the level's average over all recipes (a crafter who picks recipes by cost can do so with or without a guild; see the sensitivity table). Each hand-in costs 10 s (unmeasured). When the guild rank is what stands in the way, the crafter quick-crafts the preferred task item of their current tier that is on the board and that quick craft allows (the cheapest to gather; rank at least level + 5, after one craft by hand; 2 s per item, components gathered as above) and hands it in until the rank rises; the cost is the expected cost over which tasks the board holds, given that it holds one. A board with no eligible item makes the crafter wait for the next server start; that is calendar time, not play time, and it is not charged, so the table gives the lowest chance of such a board in any catch-up. Those items pay no XP. The award is a share of the craft's base XP (`GetDeltaXP(task level - rank)`, the same cutoff as crafting), so a hand-in five or more levels below the rank pays nothing and quick-crafted items never do.
+The cohort crafts at level as before and, whenever the board has a task for that recipe level and the guild rank allows it, hands the item in. The board is the catch: `Guild.RefreshGuildTasks` keeps only 10 random tasks of a tier at each server start (all of them when the tier has 10 or fewer), the same for every player, and the cap change does not touch that. A level's task is therefore on the board with a chance, and the model weights every hand-in, its XP, points and credits by it (the chance that at least one of the level's tasks is among the ten drawn; Agriculture's catch tasks take board places too). A crafter who finds no task for their level on this boot's board hands nothing in, so a climb over many server starts gets the expected share. A hand-in asks for one exact recipe (the quest collector matches the item's resref), so when the board holds the level's task the crafter makes that recipe, not an arbitrary one of the level: the craft's components are the level's task recipes' mean, not the level's average over all recipes (a crafter who picks recipes by cost can do so with or without a guild; see the sensitivity table). Each hand-in costs 10 s (unmeasured). When the guild rank is what stands in the way, the crafter quick-crafts the preferred task item of their current tier that is on the board and that quick craft allows (the cheapest to gather; rank at least level + 5, after one craft by hand; 2 s per item, components gathered as above) and hands it in until the rank rises; the cost is the expected cost over which tasks the board holds, given that it holds one. A board with no eligible item makes the crafter wait for the next server start. The wait is not play time and is not charged, but the crafts made meanwhile cannot be handed in, so they are made without the award for the expected number of missed boards (4 play hours per server start, unmeasured); the table gives the lowest chance of such a board and the expected server starts waited. Those items pay no XP. The award is a share of the craft's base XP (`GetDeltaXP(task level - rank)`, the same cutoff as crafting), so a hand-in five or more levels below the rank pays nothing and quick-crafted items never do.
 
-| Skill | Award share | Total h (mid gear) | Change vs no guild | Change vs the 0% award | At-level hand-ins | Catch-up hand-ins | Catch-up h | Lowest chance a board held a catch-up item | Guild rank at rank 50 | Hand-in XP | Share of the climb's XP | Credits earned |
-| --- | --- | --- | --- | --- | --- | --- | --- | --- | --- | --- | --- | --- |
-| Smithery | no guild | 108.0 | - | - | - | - | - | - | - | - | - | - |
-| Smithery | 0% (hand-ins for credits and points only) | 87.8 | -19% | - | 360 | 28 | 0.6 | 100% | 5 | 0 | 0% | 1,795,664 |
-| Smithery | 25% | 78.9 | -27% | -10% | 314 | 31 | 0.6 | 100% | 5 | 47,071 | 11% | 1,579,669 |
-| Smithery | 50% | 72.1 | -33% | -18% | 278 | 33 | 0.7 | 100% | 5 | 83,431 | 20% | 1,413,623 |
-| Smithery | 100% | 62.4 | -42% | -29% | 227 | 48 | 1.0 | 100% | 5 | 136,136 | 33% | 1,205,097 |
-| Engineering | no guild | 62.8 | - | - | - | - | - | - | - | - | - | - |
-| Engineering | 0% (hand-ins for credits and points only) | 64.7 | 3% | - | 413 | 24 | 0.3 | 100% | 5 | 0 | 0% | 2,021,724 |
-| Engineering | 25% | 56.5 | -10% | -13% | 357 | 27 | 0.3 | 100% | 5 | 53,493 | 13% | 1,762,643 |
-| Engineering | 50% | 50.2 | -20% | -22% | 314 | 30 | 0.3 | 100% | 5 | 94,222 | 23% | 1,565,738 |
-| Engineering | 100% | 41.3 | -34% | -36% | 254 | 37 | 0.4 | 100% | 5 | 152,445 | 37% | 1,291,900 |
-| Fabrication | no guild | 55.9 | - | - | - | - | - | - | - | - | - | - |
-| Fabrication | 0% (hand-ins for credits and points only) | 52.4 | -6% | - | 361 | 26 | 0.5 | 100% | 5 | 0 | 0% | 1,758,221 |
-| Fabrication | 25% | 46.3 | -17% | -12% | 318 | 29 | 0.5 | 100% | 5 | 47,669 | 12% | 1,563,006 |
-| Fabrication | 50% | 41.6 | -26% | -21% | 284 | 31 | 0.6 | 100% | 5 | 85,170 | 21% | 1,408,823 |
-| Fabrication | 100% | 34.7 | -38% | -34% | 234 | 39 | 0.7 | 100% | 5 | 140,566 | 34% | 1,193,105 |
-| Agriculture | no guild | 36.6 | - | - | - | - | - | - | - | - | - | - |
-| Agriculture | 0% (hand-ins for credits and points only) | 39.2 | 7% | - | 295 | 31 | 0.1 | 100% | 5 | 0 | 0% | 1,446,686 |
-| Agriculture | 25% | 35.3 | -4% | -10% | 264 | 33 | 0.1 | 100% | 5 | 39,664 | 10% | 1,308,392 |
-| Agriculture | 50% | 32.2 | -12% | -18% | 240 | 38 | 0.2 | 100% | 5 | 71,950 | 18% | 1,206,128 |
-| Agriculture | 100% | 27.5 | -25% | -30% | 203 | 53 | 0.3 | 100% | 5 | 121,585 | 30% | 1,076,540 |
+| Skill | Award share | Total h (mid gear) | Change vs no guild | Change vs the 0% award | At-level hand-ins | Catch-up hand-ins | Catch-up h | Lowest chance a board held a catch-up item | Server starts waited | Guild rank at rank 50 | Hand-in XP | Share of the climb's XP | Credits earned |
+| --- | --- | --- | --- | --- | --- | --- | --- | --- | --- | --- | --- | --- | --- |
+| Smithery | no guild | 108.0 | - | - | - | - | - | - | - | - | - | - | - |
+| Smithery | 0% (hand-ins for credits and points only) | 87.8 | -19% | - | 360 | 28 | 0.6 | 100% | 0.00 | 5 | 0 | 0% | 1,795,664 |
+| Smithery | 25% | 78.9 | -27% | -10% | 314 | 31 | 0.6 | 100% | 0.00 | 5 | 47,071 | 11% | 1,579,668 |
+| Smithery | 50% | 72.1 | -33% | -18% | 278 | 33 | 0.7 | 100% | 0.00 | 5 | 83,431 | 20% | 1,413,623 |
+| Smithery | 100% | 62.4 | -42% | -29% | 227 | 48 | 1.0 | 100% | 0.00 | 5 | 136,136 | 33% | 1,205,097 |
+| Engineering | no guild | 62.8 | - | - | - | - | - | - | - | - | - | - | - |
+| Engineering | 0% (hand-ins for credits and points only) | 64.7 | 3% | - | 413 | 24 | 0.3 | 100% | 0.00 | 5 | 0 | 0% | 2,021,724 |
+| Engineering | 25% | 56.5 | -10% | -13% | 357 | 27 | 0.3 | 100% | 0.00 | 5 | 53,493 | 13% | 1,762,643 |
+| Engineering | 50% | 50.2 | -20% | -22% | 314 | 30 | 0.3 | 100% | 0.00 | 5 | 94,222 | 23% | 1,565,738 |
+| Engineering | 100% | 41.3 | -34% | -36% | 254 | 37 | 0.4 | 100% | 0.00 | 5 | 152,445 | 37% | 1,291,900 |
+| Fabrication | no guild | 55.9 | - | - | - | - | - | - | - | - | - | - | - |
+| Fabrication | 0% (hand-ins for credits and points only) | 52.4 | -6% | - | 361 | 26 | 0.5 | 100% | 0.00 | 5 | 0 | 0% | 1,758,220 |
+| Fabrication | 25% | 46.3 | -17% | -12% | 318 | 29 | 0.5 | 100% | 0.00 | 5 | 47,669 | 12% | 1,563,004 |
+| Fabrication | 50% | 41.6 | -26% | -21% | 284 | 31 | 0.6 | 100% | 0.00 | 5 | 85,170 | 21% | 1,408,822 |
+| Fabrication | 100% | 34.7 | -38% | -34% | 234 | 39 | 0.7 | 100% | 0.00 | 5 | 140,565 | 34% | 1,193,099 |
+| Agriculture | no guild | 36.6 | - | - | - | - | - | - | - | - | - | - | - |
+| Agriculture | 0% (hand-ins for credits and points only) | 39.2 | 7% | - | 295 | 31 | 0.1 | 100% | 0.00 | 5 | 0 | 0% | 1,446,620 |
+| Agriculture | 25% | 35.3 | -4% | -10% | 264 | 33 | 0.1 | 100% | 0.00 | 5 | 39,661 | 10% | 1,308,335 |
+| Agriculture | 50% | 32.2 | -12% | -18% | 240 | 38 | 0.2 | 100% | 0.00 | 5 | 71,942 | 17% | 1,206,094 |
+| Agriculture | 100% | 27.5 | -25% | -30% | 203 | 53 | 0.3 | 100% | 0.00 | 5 | 121,567 | 30% | 1,076,504 |
 
 Read the award's effect against the 0% row, not against no guild: handing in the task recipes already changes the hours at a 0% award, because their components differ from the level's average recipe. Hand-in XP's share of the climb is the figure to read for the award: the proposal should land it between a fifth and a third, so it neither dominates nor vanishes.
 
@@ -254,7 +254,7 @@ The same cohort by rank band at the recommended 50% award. The task tier a craft
 | --- | --- | --- | --- | --- | --- | --- | --- | --- |
 | Smithery | 0-10 | 0 | 1 | 15 | 0 | 0.04 | 4,420 | 25% |
 | Smithery | 10-20 | 1 | 1 | 39 | 33 | 0.76 | 11,754 | 23% |
-| Smithery | 20-30 | 2 | 1 | 67 | 0 | 0.23 | 19,960 | 22% |
+| Smithery | 20-30 | 2 | 1 | 67 | 0 | 0.24 | 19,960 | 22% |
 | Smithery | 30-40 | 3 | 1 | 79 | 0 | 0.22 | 23,691 | 22% |
 | Smithery | 40-50 | 4 | 1 | 79 | 0 | 0.22 | 23,605 | 16% |
 | Engineering | 0-10 | 0 | 1 | 15 | 0 | 0.04 | 4,617 | 26% |
@@ -268,8 +268,8 @@ The same cohort by rank band at the recommended 50% award. The task tier a craft
 | Fabrication | 30-40 | 3 | 1 | 82 | 0 | 0.23 | 24,646 | 23% |
 | Fabrication | 40-50 | 4 | 1 | 80 | 0 | 0.22 | 24,002 | 17% |
 | Agriculture | 0-10 | 0 | 1 | 12 | 0 | 0.03 | 3,547 | 20% |
-| Agriculture | 10-20 | 1 | 1 | 33 | 34 | 0.23 | 10,042 | 20% |
-| Agriculture | 20-30 | 2 | 1 | 59 | 4 | 0.20 | 17,649 | 20% |
+| Agriculture | 10-20 | 1 | 1 | 33 | 34 | 0.23 | 10,036 | 20% |
+| Agriculture | 20-30 | 2 | 1 | 59 | 4 | 0.20 | 17,647 | 20% |
 | Agriculture | 30-40 | 3 | 1 | 71 | 0 | 0.20 | 21,243 | 20% |
 | Agriculture | 40-50 | 4 | 1 | 65 | 0 | 0.18 | 19,470 | 13% |
 
@@ -277,12 +277,12 @@ The same cohort by rank band at the recommended 50% award. The task tier a craft
 
 What raising a guild from rank 0 to 5 costs a rank-50 crafter who quick-crafts the cheapest eligible task item of each tier that is on the board and hands it in (a board with none makes them wait for the next server start, which is not charged). Before the change the board held ten tasks a tier per server start, so rank 5 took at least 14-21 days.
 
-| Guild | Hand-ins | Hours | Credits earned | Credits per hour | Lowest chance a board holds an eligible item |
-| --- | --- | --- | --- | --- | --- |
-| SmitheryGuild | 238 | 5.1 | 954,321 | 186,743 | 100% |
-| EngineeringGuild | 238 | 8.2 | 954,321 | 115,856 | 100% |
-| FabricationGuild | 238 | 3.2 | 954,321 | 295,343 | 100% |
-| AgricultureGuild | 238 | 0.9 | 954,321 | 1,066,797 | 100% |
+| Guild | Hand-ins | Hours | Credits earned | Credits per hour | Lowest chance a board holds an eligible item | Server starts waited (not charged) |
+| --- | --- | --- | --- | --- | --- | --- |
+| SmitheryGuild | 238 | 5.1 | 954,321 | 186,743 | 100% | 0.00 |
+| EngineeringGuild | 238 | 8.2 | 954,321 | 115,856 | 100% | 0.00 |
+| FabricationGuild | 238 | 3.2 | 954,321 | 295,343 | 100% | 0.00 |
+| AgricultureGuild | 238 | 0.9 | 954,321 | 1,066,797 | 100% | 0.00 |
 
 | Guild | Tier | Item | Item level | Guild points each | Hand-ins | Hours | Chance a board holds an eligible item |
 | --- | --- | --- | --- | --- | --- | --- | --- |
@@ -365,7 +365,7 @@ What each target needs on top of the guild award. A multiplier of x1.00 means th
 | Median skill target (h) | Multiplier needed | Rank cost cap needed (XP) | Smithery h at that multiplier | Engineering h at that multiplier | Fabrication h at that multiplier | Agriculture h at that multiplier |
 | --- | --- | --- | --- | --- | --- | --- |
 | 45 | x1.02 | 14,039 | 70.7 | 49.3 | 40.7 | 31.6 |
-| 35 | x1.32 | 8,225 | 55.1 | 38.2 | 31.8 | 24.5 |
+| 35 | x1.32 | 8,225 | 55.1 | 38.1 | 31.9 | 24.5 |
 | 25 | x1.97 | 5,305 | 38.5 | 27.5 | 22.5 | 16.8 |
 
 | Option | Change | Smithery h | Engineering h | Fabrication h | Agriculture h | Median skill | Slowest skill | Migration of stored XP |
@@ -391,7 +391,7 @@ Each crafting-guild hand-in awards XP in the guild's skill. **Formula:** award =
 | --- | --- | --- | --- | --- | --- | --- | --- | --- |
 | none | 108.0 | - | 62.8 | - | 55.9 | - | 36.6 | - |
 | 25% | 78.9 | 11% | 56.5 | 13% | 46.3 | 12% | 35.3 | 10% |
-| 50% | 72.1 | 20% | 50.2 | 23% | 41.6 | 21% | 32.2 | 18% |
+| 50% | 72.1 | 20% | 50.2 | 23% | 41.6 | 21% | 32.2 | 17% |
 | 100% | 62.4 | 33% | 41.3 | 37% | 34.7 | 34% | 27.5 | 30% |
 
 - **Option 1, 25%.** Hand-ins supply 11% of the climb's XP: a small bonus that is easy to ignore.

@@ -109,7 +109,7 @@ namespace SWLOR.CraftSim.Tests.Progression
 
                 plan.TasksPerTier.Keys.OrderBy(t => t).Should().Equal(0, 1, 2, 3, 4);
                 plan.TasksPerTier.Values.Should().OnlyContain(count => count > GuildBoard.TasksPerTier, "every tier has more tasks than the board keeps");
-                plan.OfferByRecipeLevel.Values.Should().OnlyContain(o => o.ChanceOnBoard > 0 && o.ChanceOnBoard < 1);
+                plan.OffersByRecipeLevel.Values.SelectMany(offers => offers).Should().OnlyContain(o => o.ChanceOnBoard > 0 && o.ChanceOnBoard < 1);
             }
         }
 
@@ -128,7 +128,7 @@ namespace SWLOR.CraftSim.Tests.Progression
             Guild.LoadData();
 
             // 900 points at rank 0 and 10 hand-ins of a 21-point task: the first 100/21 reach the 1,000-point threshold, the rest earn 26 each.
-            var (rank, points) = GuildHandInPlan.AddHandIns(0, 900, 10, 21);
+            var (rank, points) = GuildHandInPlan.AddHandIns(0, 900, 10, rank => GuildHandInPlan.GuildPointsFor(21, rank));
 
             var before = 100 / 21.0;
             rank.Should().Be(1);
@@ -141,7 +141,7 @@ namespace SWLOR.CraftSim.Tests.Progression
         {
             Guild.LoadData();
 
-            GuildHandInPlan.AddHandIns(2, 6000, 4, 117).Should().Be((2, 6000 + 4 * 175.0));
+            GuildHandInPlan.AddHandIns(2, 6000, 4, rank => GuildHandInPlan.GuildPointsFor(117, rank)).Should().Be((2, 6000 + 4 * 175.0));
         }
 
         [Test]
@@ -149,10 +149,77 @@ namespace SWLOR.CraftSim.Tests.Progression
         {
             Guild.LoadData();
 
-            var (rank, points) = GuildHandInPlan.AddHandIns(0, 0, 100_000, 195);
+            var (rank, points) = GuildHandInPlan.AddHandIns(0, 0, 100_000, rank => GuildHandInPlan.GuildPointsFor(195, rank));
 
             rank.Should().Be(Guild.MaxRank);
             points.Should().BeInRange(Guild.GetGPRequiredForRank(Guild.MaxRank - 1), Guild.GetGPRequiredForRank(Guild.MaxRank) - 1);
+        }
+
+        [Test]
+        public void AnItemTwoTiersAskForIsHandedInToTheHigherTierOnceItIsUnlocked()
+        {
+            // Agriculture's sliced sardine is a tier 0 and a tier 1 task (agr_tsk_037 and agr_tsk_226), so a crafter at guild rank 1 can
+            // hand it in to either board and prefers the higher tier.
+            var plan = GuildHandInPlan.For(ProgressionFixture.Guilds, GuildType.AgricultureGuild, 0.5);
+            var tasks = ProgressionFixture.Guilds.Tasks.Where(t => t.Resref == "sliced_sardine").ToList();
+            tasks.Select(t => t.Tier).Should().BeEquivalentTo(new[] { 0, 1 });
+
+            var level = tasks[0].Level.Value;
+            var offers = plan.OffersByRecipeLevel[level];
+            offers.Select(o => o.Tier).Should().Contain(new[] { 0, 1 });
+
+            var atRankZero = HandInOdds.For(plan.Unlocked(offers, 0));
+            var atRankOne = HandInOdds.For(plan.Unlocked(offers, 1));
+
+            atRankZero.Tiers.Select(t => t.Tier).Should().Equal(0);
+            atRankOne.Tiers.Select(t => t.Tier).Should().Equal(1, 0);
+            atRankOne.Chance.Should().BeGreaterThan(atRankZero.Chance, "a second board can hold a task for the level");
+            atRankOne.Tiers.Sum(t => t.Probability).Should().BeApproximately(1, 1e-12);
+            plan.ExpectedCredits(atRankOne).Should().BeGreaterThan(plan.ExpectedCredits(atRankZero), "the higher tier pays more");
+            plan.ExpectedGuildPoints(atRankOne, 1).Should().BeGreaterThan(plan.ExpectedGuildPoints(atRankZero, 1));
+        }
+
+        [Test]
+        public void TheOddsOfTwoBoardsCombineAsIndependentDraws()
+        {
+            var odds = HandInOdds.For(new[] { new LevelOffer(0, 1, 36), new LevelOffer(1, 2, 36) });
+
+            var first = 10 / 36.0;
+            var second = GuildBoard.ChanceAtLeastOne(36, 2);
+            odds.Chance.Should().BeApproximately(1 - (1 - first) * (1 - second), 1e-12);
+            odds.Tiers[0].Tier.Should().Be(1);
+            odds.Tiers[0].Probability.Should().BeApproximately(second / odds.Chance, 1e-12);
+            HandInOdds.For(Array.Empty<LevelOffer>()).Chance.Should().Be(0);
+        }
+
+        [Test]
+        public void ACatchUpWaitsForABoardAndTheCraftsMeanwhileMissTheAward()
+        {
+            var model = ProgressionFixture.RealRecipes;
+            var plan = GuildHandInPlan.For(ProgressionFixture.Guilds, GuildType.EngineeringGuild, 1.0);
+            var quick = new ProgressionAssumptions { PlayHoursPerServerStart = 0 };
+            var slow = new ProgressionAssumptions { PlayHoursPerServerStart = 200 };
+
+            var noWait = model.Path(SkillType.Engineering, ProgressionFixture.Gear, quick, plan);
+            var waits = model.Path(SkillType.Engineering, ProgressionFixture.Gear, slow, plan);
+
+            noWait.ExpectedRestartsWaited.Should().Be(waits.ExpectedRestartsWaited);
+            if (waits.ExpectedRestartsWaited > 0)
+                waits.GuildXp.Should().BeLessThan(noWait.GuildXp, "crafts made while waiting for a board cannot be handed in");
+        }
+
+        [Test]
+        public void TheFirstCraftByHandIsRetriedUntilItSucceeds()
+        {
+            var plan = GuildHandInPlan.For(ProgressionFixture.Guilds, GuildType.EngineeringGuild, 0.5);
+            var perfect = ProgressionFixture.Model(SharedData.Recipes, ProgressionFixture.Supply, ProgressionFixture.Guilds, 1.0, 0.3, 15);
+            var flaky = ProgressionFixture.Model(SharedData.Recipes, ProgressionFixture.Supply, ProgressionFixture.Guilds, 0.5, 0.3, 15);
+
+            var easy = perfect.Path(SkillType.Engineering, ProgressionFixture.Gear, new ProgressionAssumptions(), plan);
+            var hard = flaky.Path(SkillType.Engineering, ProgressionFixture.Gear, new ProgressionAssumptions(), plan);
+
+            // The one craft by hand costs about twice as many attempts at a 50% chance, so the catch-up costs more per hand-in as well.
+            hard.CatchUpHours.Should().BeGreaterThan(easy.CatchUpHours);
         }
 
         [Test]

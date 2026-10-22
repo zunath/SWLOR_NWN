@@ -361,25 +361,25 @@ namespace SWLOR.CraftSim.Progression
                             "A crafter who finds no task for their level on this boot's board hands nothing in, so a climb over many server starts gets the expected share. " +
                             "A hand-in asks for one exact recipe (the quest collector matches the item's resref), so when the board holds the level's task the crafter makes that recipe, not an arbitrary one of the level: the craft's components are the level's task recipes' mean, not the level's average over all recipes (a crafter who picks recipes by cost can do so with or without a guild; see the sensitivity table). " +
                             $"Each hand-in costs {Number(a.HandInSeconds, 0)} s (unmeasured). When the guild rank is what stands in the way, the crafter quick-crafts the preferred task item of their current tier that is on the board and that quick craft allows " +
-                            $"(the cheapest to gather; rank at least level + {QuickCraftRules.RankMargin}, after one craft by hand; {QuickCraftBatch.SecondsPerItem:0} s per item, components gathered as above) and hands it in until the rank rises; the cost is the expected cost over which tasks the board holds, given that it holds one. A board with no eligible item makes the crafter wait for the next server start; that is calendar time, not play time, and it is not charged, so the table gives the lowest chance of such a board in any catch-up. Those items pay no XP. " +
+                            $"(the cheapest to gather; rank at least level + {QuickCraftRules.RankMargin}, after one craft by hand; {QuickCraftBatch.SecondsPerItem:0} s per item, components gathered as above) and hands it in until the rank rises; the cost is the expected cost over which tasks the board holds, given that it holds one. A board with no eligible item makes the crafter wait for the next server start. The wait is not play time and is not charged, but the crafts made meanwhile cannot be handed in, so they are made without the award for the expected number of missed boards ({Number(a.PlayHoursPerServerStart, 0)} play hours per server start, unmeasured); the table gives the lowest chance of such a board and the expected server starts waited. Those items pay no XP. " +
                             "The award is a share of the craft's base XP (`GetDeltaXP(task level - rank)`, the same cutoff as crafting), so a hand-in five or more levels below the rank pays nothing and quick-crafted items never do.");
             text.AppendLine();
             var cohort = new MarkdownTable(
                 "Skill", "Award share", "Total h (mid gear)", "Change vs no guild", "Change vs the 0% award", "At-level hand-ins", "Catch-up hand-ins", "Catch-up h",
-                "Lowest chance a board held a catch-up item", "Guild rank at rank 50", "Hand-in XP", "Share of the climb's XP", "Credits earned");
+                "Lowest chance a board held a catch-up item", "Server starts waited", "Guild rank at rank 50", "Hand-in XP", "Share of the climb's XP", "Credits earned");
             foreach (var skill in skills)
             {
                 var guild = GuildTaskCatalog.GuildOf(skill);
                 var baseline = model.Path(skill, mid, a);
                 var zero = model.Path(skill, mid, a, GuildHandInPlan.For(guilds, guild, 0));
-                cohort.Add(skill.ToString(), "no guild", Number(baseline.TotalHours, 1), "-", "-", "-", "-", "-", "-", "-", "-", "-", "-");
+                cohort.Add(skill.ToString(), "no guild", Number(baseline.TotalHours, 1), "-", "-", "-", "-", "-", "-", "-", "-", "-", "-", "-");
                 foreach (var share in new[] { 0.0 }.Concat(GuildXpShares))
                 {
                     var path = model.Path(skill, mid, a, GuildHandInPlan.For(guilds, guild, share));
                     cohort.Add(
                         skill.ToString(), share == 0 ? "0% (hand-ins for credits and points only)" : Percent(share), Number(path.TotalHours, 1),
                         Percent(path.TotalHours / baseline.TotalHours - 1), share == 0 ? "-" : Percent(path.TotalHours / zero.TotalHours - 1),
-                        Number(path.HandIns, 0), Number(path.CatchUpHandIns, 0), Number(path.CatchUpHours, 1), Percent(path.LowestCatchUpBoardChance),
+                        Number(path.HandIns, 0), Number(path.CatchUpHandIns, 0), Number(path.CatchUpHours, 1), Percent(path.LowestCatchUpBoardChance), Number(path.ExpectedRestartsWaited, 2),
                         path.GuildRankReached.ToString(), Whole(path.GuildXp), Percent(path.GuildXp / path.RequiredXp), Whole(path.Credits));
                 }
             }
@@ -414,14 +414,14 @@ namespace SWLOR.CraftSim.Progression
             text.AppendLine();
             text.AppendLine("What raising a guild from rank 0 to 5 costs a rank-50 crafter who quick-crafts the cheapest eligible task item of each tier that is on the board and hands it in (a board with none makes them wait for the next server start, which is not charged). Before the change the board held ten tasks a tier per server start, so rank 5 took at least 14-21 days.");
             text.AppendLine();
-            var chore = new MarkdownTable("Guild", "Hand-ins", "Hours", "Credits earned", "Credits per hour", "Lowest chance a board holds an eligible item");
+            var chore = new MarkdownTable("Guild", "Hand-ins", "Hours", "Credits earned", "Credits per hour", "Lowest chance a board holds an eligible item", "Server starts waited (not charged)");
             var choreDetail = new MarkdownTable("Guild", "Tier", "Item", "Item level", "Guild points each", "Hand-ins", "Hours", "Chance a board holds an eligible item");
             foreach (var guild in new[] { GuildType.SmitheryGuild, GuildType.EngineeringGuild, GuildType.FabricationGuild, GuildType.AgricultureGuild })
             {
                 var rows = GuildCohorts.Chore(guilds, model.Supply, guild, a);
                 chore.Add(
                     guild.ToString(), Number(rows.Sum(r => r.HandIns), 0), Number(rows.Sum(r => r.Hours), 1), Whole(rows.Sum(r => r.Credits)),
-                    Whole(rows.Sum(r => r.Credits) / rows.Sum(r => r.Hours)), Percent(rows.Min(r => r.BoardChance)));
+                    Whole(rows.Sum(r => r.Credits) / rows.Sum(r => r.Hours)), Percent(rows.Min(r => r.BoardChance)), Number(rows.Sum(r => r.ExpectedRestartsWaited), 2));
                 foreach (var row in rows)
                     choreDetail.Add(guild.ToString(), row.Tier.ToString(), $"`{row.Resref}`", row.ItemLevel.ToString(), row.GuildPointsEach.ToString(), Number(row.HandIns, 0), Number(row.Hours, 2), Percent(row.BoardChance));
             }

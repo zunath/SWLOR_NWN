@@ -16,7 +16,11 @@ namespace SWLOR.CraftSim.Progression
     /// <param name="Credits">Credits the hand-ins pay.</param>
     /// <param name="BoardChance">The chance a board holds at least one eligible item of the tier; with none, the crafter waits for the next server start (calendar time, not charged).</param>
     public sealed record GuildChoreRow(
-        GuildType Guild, int Tier, string Resref, int ItemLevel, int GuildPointsEach, double HandIns, double Hours, double Credits, double BoardChance);
+        GuildType Guild, int Tier, string Resref, int ItemLevel, int GuildPointsEach, double HandIns, double Hours, double Credits, double BoardChance)
+    {
+        /// <summary>Server starts the crafter is expected to wait through for a board that holds an eligible item: (1 - chance) / chance. Calendar time, not charged.</summary>
+        public double ExpectedRestartsWaited => BoardChance > 0 ? (1 - BoardChance) / BoardChance : double.PositiveInfinity;
+    }
 
     /// <summary>One tier of Agriculture's catch tasks at a crafter whose rank matches the fish.</summary>
     /// <param name="Tier">The guild rank that unlocks the tier.</param>

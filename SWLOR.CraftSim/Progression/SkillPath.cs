@@ -5,13 +5,14 @@ namespace SWLOR.CraftSim.Progression
     /// <summary>A new crafter's climb from rank 0 to rank 50 in one skill at one gear level.</summary>
     public sealed class SkillPath
     {
-        public SkillPath(SkillType skill, string gear, IReadOnlyList<RankStep> steps, int guildRankReached = 0, double lowestCatchUpBoardChance = 1.0)
+        public SkillPath(SkillType skill, string gear, IReadOnlyList<RankStep> steps, int guildRankReached = 0, double lowestCatchUpBoardChance = 1.0, double expectedRestartsWaited = 0.0)
         {
             Skill = skill;
             Gear = gear;
             Steps = steps;
             GuildRankReached = guildRankReached;
             LowestCatchUpBoardChance = lowestCatchUpBoardChance;
+            ExpectedRestartsWaited = expectedRestartsWaited;
         }
 
         public SkillType Skill { get; }
@@ -27,6 +28,13 @@ namespace SWLOR.CraftSim.Progression
         /// path makes no catch-up hand-ins.
         /// </summary>
         public double LowestCatchUpBoardChance { get; }
+
+        /// <summary>
+        /// Server starts the catch-up hand-ins are expected to wait through for a board that holds a quick-craftable task. The crafts made
+        /// meanwhile are made without the hand-in award (<see cref="ProgressionAssumptions.PlayHoursPerServerStart"/> of play per start); the
+        /// wait itself is calendar time, not charged.
+        /// </summary>
+        public double ExpectedRestartsWaited { get; }
 
         public int RequiredXp => Steps.Sum(s => s.RequiredXp);
         public double Crafts => Steps.Sum(s => s.Crafts);

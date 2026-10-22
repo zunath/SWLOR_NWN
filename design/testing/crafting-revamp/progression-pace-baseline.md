@@ -123,6 +123,15 @@ Hours per band for a new gatherer. Harvesting pays `GetDeltaXP(vein level - rank
 | 40-50 | 145,330 | 1.28 | 1.15 | 1.02 | 143,178 | 48.4 |
 | 0-50 | 411,125 | 4.40 | 3.54 | 3.12 | 131,722 | 137.0 |
 
+The plan's quick gathering and the minigame sessions that replace the harvester and the search, for the same climb. **Quick Harvest** resolves a node at today's expected units and XP, one harvest delay per unit, and **Quick Search** resolves a site at today's expected rolls and XP, taking as long as today's attempts, so each is today's loop by construction and neither can train Gathering faster than the rows below. A played session may exceed it by the gate's starting value of 15%; the minigames are not built yet, so that row is the cap the parity gate enforces, not a measurement.
+
+| Cohort | Gathering XP per hour (rank 0 to 50) | Hours to rank 50 | Ceiling the plan sets |
+| --- | --- | --- | --- |
+| Quick Harvest (today's harvesting and refining) | 93,472 | 4.40 | today's rate, never above it |
+| Quick Search (today's scavenging) | 116,148 | 3.54 | today's rate, never above it |
+| Played Prospecting session at the parity cap | 107,493 | 3.82 | at most 15% above today's |
+| Played Search session at the parity cap | 133,571 | 3.08 | at most 15% above today's |
+
 Sensitivity of the better-of-two total to the node travel assumption, the only unmeasured input that moves it:
 
 | Seconds between nodes | Harvest and refine h | Scavenge h | Better of the two h |

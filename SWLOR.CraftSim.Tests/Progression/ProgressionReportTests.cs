@@ -28,6 +28,8 @@ namespace SWLOR.CraftSim.Tests.Progression
             report.Should().Contain("## Hours to rank 50 today")
                 .And.Contain("## Hours per 10-rank band")
                 .And.Contain("## Gathering rank 50")
+                .And.Contain("**Quick Harvest**")
+                .And.Contain("**Quick Search**")
                 .And.Contain("## What supplies the components")
                 .And.Contain("## Sensitivity")
                 .And.Contain("## Guild task cohort")

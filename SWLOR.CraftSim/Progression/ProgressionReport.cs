@@ -16,6 +16,9 @@ namespace SWLOR.CraftSim.Progression
         /// <summary>The guild task XP awards the report prices, as a share of the craft's base XP per item handed in.</summary>
         public static readonly IReadOnlyList<double> GuildXpShares = new[] { 0.25, 0.5, 1.0 };
 
+        /// <summary>How far above today's rate a played gathering session may train: the plan's gate 5 starting value, +15%.</summary>
+        public const double PlayedSessionParity = 1.15;
+
         /// <summary>The share the report recommends, and the one the XP target options assume.</summary>
         public const double RecommendedGuildXpShare = 0.5;
 
@@ -211,6 +214,19 @@ namespace SWLOR.CraftSim.Progression
                 Number(paths[GatheringStrategy.Scavenge].TotalHours, 2), Number(total.TotalHours, 2), Whole(total.XpPerHour),
                 Number((double)total.RequiredXp / ProgressionAssumptions.RoleplayXpPerHour, 1));
             text.AppendLine(table.ToString());
+
+            var harvestPath = paths[GatheringStrategy.HarvestAndRefine];
+            var scavengePath = paths[GatheringStrategy.Scavenge];
+            text.AppendLine("The plan's quick gathering and the minigame sessions that replace the harvester and the search, for the same climb. **Quick Harvest** resolves a node at today's expected units and XP, one harvest delay per unit, and **Quick Search** resolves a site at today's expected rolls and XP, taking as long as today's attempts, " +
+                            "so each is today's loop by construction and neither can train Gathering faster than the rows below. A played session may exceed it by the gate's starting value of " +
+                            $"{Percent(PlayedSessionParity - 1)}; the minigames are not built yet, so that row is the cap the parity gate enforces, not a measurement.");
+            text.AppendLine();
+            var quick = new MarkdownTable("Cohort", "Gathering XP per hour (rank 0 to 50)", "Hours to rank 50", "Ceiling the plan sets");
+            quick.Add("Quick Harvest (today's harvesting and refining)", Whole(harvestPath.XpPerHour), Number(harvestPath.TotalHours, 2), "today's rate, never above it");
+            quick.Add("Quick Search (today's scavenging)", Whole(scavengePath.XpPerHour), Number(scavengePath.TotalHours, 2), "today's rate, never above it");
+            quick.Add("Played Prospecting session at the parity cap", Whole(harvestPath.XpPerHour * PlayedSessionParity), Number(harvestPath.TotalHours / PlayedSessionParity, 2), $"at most {Percent(PlayedSessionParity - 1)} above today's");
+            quick.Add("Played Search session at the parity cap", Whole(scavengePath.XpPerHour * PlayedSessionParity), Number(scavengePath.TotalHours / PlayedSessionParity, 2), $"at most {Percent(PlayedSessionParity - 1)} above today's");
+            text.AppendLine(quick.ToString());
 
             text.AppendLine("Sensitivity of the better-of-two total to the node travel assumption, the only unmeasured input that moves it:");
             text.AppendLine();

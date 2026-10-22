@@ -4578,32 +4578,18 @@
     "Call": "SendMessageToPC(player, \"Not even a nibble...\")"
   },
   {
-    "File": "SWLOR.Game.Server/Service/Fishing.cs",
-    "Line": 464,
-    "Member": "FinishFishing",
-    "Delivery": "Retained",
-    "Call": "SendMessageToPC(player, ColorToken.Red(\"You failed to reel the fish in...\"))"
-  },
-  {
-    "File": "SWLOR.Game.Server/Service/Fishing.cs",
-    "Line": 470,
-    "Member": "FinishFishing",
-    "Delivery": "Retained",
-    "Call": "SendMessageToPC(player, $\"You landed a {fish.Name}!\")"
-  },
-  {
-    "File": "SWLOR.Game.Server/Service/Fishing.cs",
-    "Line": 473,
-    "Member": "FinishFishing",
-    "Delivery": "Retained",
-    "Call": "SendMessageToPC(player, $\"Bait Remaining: {remainingBait}x {baitName}\")"
-  },
-  {
-    "File": "SWLOR.Game.Server/Service/Fishing.cs",
-    "Line": 484,
-    "Member": "FinishFishing",
+    "File": "SWLOR.Game.Server/Service/FishingService/NwnFishingFightWorld.cs",
+    "Line": 31,
+    "Member": "ExhaustFishingPoint",
     "Delivery": "Retained",
     "Call": "Messaging.SendMessageNearbyToPlayers(fishingPoint, \"The fishing point has been exhausted.\")"
+  },
+  {
+    "File": "SWLOR.Game.Server/Service/FishingService/NwnFishingFightWorld.cs",
+    "Line": 41,
+    "Member": "Message",
+    "Delivery": "Retained",
+    "Call": "SendMessageToPC(player, text)"
   },
   {
     "File": "SWLOR.Game.Server/Service/Gui.cs",

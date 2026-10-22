@@ -16,5 +16,8 @@ namespace SWLOR.Game.Server.Entity
         public string SerializedItem { get; set; }
         public int Level { get; set; }
         public RecipeType Recipe { get; set; }
+
+        /// <summary>The experiment the job ran and its stored outcome. Null for a job created before experiments existed.</summary>
+        public ResearchExperimentRecord Experiment { get; set; }
     }
 }

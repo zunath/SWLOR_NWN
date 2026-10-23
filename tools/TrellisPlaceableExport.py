@@ -522,9 +522,31 @@ def orientation_flips(np, positions, indices):
     return np.asarray([bool(f) for f in flip])
 
 
+INDEX_BYTES = {5125: 4, 5123: 2, 5121: 1}
+
+
+def require_separate_index_data(doc):
+    """Reject primitives whose index data overlaps (a shared accessor or overlapping byte ranges) before anything is
+    rewritten: reorienting one primitive would silently re-wind the other, and two primitives can disagree about outward."""
+    ranges = []
+    for mesh in doc.get('meshes', []):
+        for primitive in mesh.get('primitives', []):
+            if 'indices' not in primitive:
+                raise ValueError('reorient needs indexed primitives')
+            accessor = doc['accessors'][primitive['indices']]
+            view = doc['bufferViews'][accessor['bufferView']]
+            start = view.get('byteOffset', 0) + accessor.get('byteOffset', 0)
+            ranges.append((view['buffer'], start, start + accessor['count'] * INDEX_BYTES[accessor['componentType']]))
+    ranges.sort()
+    for (buffer_a, _, end_a), (buffer_b, start_b, _) in zip(ranges, ranges[1:]):
+        if buffer_a == buffer_b and start_b < end_a:
+            raise ValueError('reorient needs separate index data per primitive; shared or overlapping indices cannot keep one winding')
+
+
 def reorient_gltf(weapon, doc, binary):
     """Apply orientation_flips to the glTF index buffers before import, so Blender, the normal basis and the native export
     all see one winding. Returns (buffer, flipped triangle count)."""
+    require_separate_index_data(doc)
     np = weapon.np
     helper = weapon.load_module_snapshot('trellis_weapon_normals', Path(weapon.__file__).with_name('TrellisWeaponNormals.py'))
     data, count = bytearray(binary), 0

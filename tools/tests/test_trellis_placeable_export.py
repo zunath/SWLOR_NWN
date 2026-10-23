@@ -198,6 +198,35 @@ class MaterialTests(unittest.TestCase):
             exporter.snap_negative_z(np, encoded)
 
 
+class ReorientTests(unittest.TestCase):
+    @staticmethod
+    def document(index_accessors, offsets=(0, 0)):
+        """Two primitives over one buffer; each index accessor is 12 triangle-corner u16 values (24 bytes) at its offset."""
+        accessors = [{'bufferView': 0, 'byteOffset': offset, 'componentType': 5123, 'count': 12} for offset in offsets]
+        primitives = [{'attributes': {'POSITION': 9}, 'indices': index} for index in index_accessors]
+        return {'meshes': [{'primitives': primitives}], 'accessors': accessors, 'bufferViews': [{'buffer': 0, 'byteOffset': 0}]}
+
+    def test_separate_index_data_is_accepted(self):
+        exporter.require_separate_index_data(self.document((0, 1), offsets=(0, 24)))
+
+    def test_a_shared_index_accessor_is_rejected_before_anything_is_rewritten(self):
+        doc = self.document((0, 0), offsets=(0, 24))
+        with self.assertRaises(ValueError):
+            exporter.require_separate_index_data(doc)
+        with self.assertRaises(ValueError):
+            exporter.reorient_gltf(object(), doc, bytes(48))
+
+    def test_distinct_accessors_over_overlapping_bytes_are_rejected(self):
+        with self.assertRaises(ValueError):
+            exporter.require_separate_index_data(self.document((0, 1), offsets=(0, 12)))
+
+    def test_unindexed_primitives_are_rejected(self):
+        doc = self.document((0, 1), offsets=(0, 24))
+        del doc['meshes'][0]['primitives'][1]['indices']
+        with self.assertRaises(ValueError):
+            exporter.require_separate_index_data(doc)
+
+
 class ManifestTests(unittest.TestCase):
     def check(self, **overrides):
         with tempfile.TemporaryDirectory() as folder:

@@ -18,7 +18,7 @@ balance gate 7 (enhancement parity). No new minigame is measured here.
 - Expected transfers: a craft that is made transfers each enhancement with probability `(int)(quality / max quality * 100) / 100` (truncated as the old window does), so it adds slots x chance; a craft that breaks the piece adds none. No transfer dice are drawn, which carries the same mean with less noise. Figures are per enhanced craft attempt.
 - Extra progress: the enhancements' total penalty over the progress the recipe needs without them in the old window (rank-adjusted), averaged over the recipes.
 
-Rules ported, each checked against the source by `LegacySourceTests`:
+Rules ported. `CraftViewModel.cs` was deleted from the game server after its rules were ported, so they are frozen and cited to commit `ded6cfaf45b66b0a5c4ffe66447bf9c3e24a2ff7`; the others are checked against the source by `LegacySourceTests`:
 
 | Rule | Source |
 | --- | --- |

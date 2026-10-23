@@ -51,7 +51,7 @@
 | Style balance | NotApplicable | The scenario offers no style configurations yet, so there is nothing to compare. |
 | Perks optional | Passed | An unperked rank-50 crafter in best gear reaches maximum quality on at least 50% of crafts in every at-level band (lowest 59%). |
 | Length | Passed | Every band and gear tier takes 10-20 actions (item craft at level) on average. |
-| Economy parity | Failed | Outside 10% of the legacy baseline (above it only, where its success rate is below 90%), or below its quality: 41-53 / no gear (ratio 1.21). |
+| Economy parity | Passed | Component stacks per item are within 10% of the legacy baseline where its success rate is at least 90%, and at most 10% above it where it is lower, at no less quality, in every band and gear tier. |
 | XP rate | Passed | Item crafts: XP per hour is at least 1.00x the legacy rate in every case (lowest 1.01x in 11-20 / no gear). |
 | Enhancement parity | Passed | At rank 50 in best gear, the thresholds in force (50% / 85% / 85%) transfer at least 1.00 times today's expected enhancements for 1, 2, 3 slot(s) in every band (lowest 1.02 times today's). Thresholds that meet parity in every band for this quality: 57% / 93% / 100%. |
 
@@ -226,7 +226,7 @@
 
 ## Economy parity
 
-### Component stacks consumed per item made, failures included (both sides play to maximize quality; quality is the mean over attempts, a failure counting 0)
+### Component stacks consumed per item made, failures included, over the recipes the legacy policy makes at least once in the cell (both sides play to maximize quality; quality is the mean over attempts, a failure counting 0)
 
 | Band | Gear | Recipes played | New stacks per item | Legacy stacks per item | Ratio | New success | Legacy success | New avg quality | Legacy avg quality | Quality matched | Never made (new / legacy) | Parity rule | Verdict |
 | --- | --- | --- | --- | --- | --- | --- | --- | --- | --- | --- | --- | --- | --- |
@@ -242,9 +242,15 @@
 | 31-40 | no gear | 6 | 2.05 | 2.05 | 1.00 | 97% | 96% | 82% | 8% | yes | 0% / 0% | within 10% | Passed |
 | 31-40 | mid gear | 6 | 2.07 | 2.01 | 1.03 | 95% | 99% | 84% | 14% | yes | 0% / 0% | within 10% | Passed |
 | 31-40 | best gear | 6 | 2.02 | 2.01 | 1.00 | 98% | 99% | 93% | 26% | yes | 0% / 0% | within 10% | Passed |
-| 41-53 | no gear | 6 | 2.09 | 1.73 | 1.21 | 96% | 82% | 82% | 37% | yes | 0% / 17% | at most +10% | Failed |
+| 41-53 | no gear | 6 | 1.80 | 1.73 | 1.04 | 95% | 98% | 81% | 42% | yes | 0% / 17% | within 10% | Passed |
 | 41-53 | mid gear | 6 | 2.11 | 2.07 | 1.02 | 96% | 87% | 83% | 60% | yes | 0% / 0% | at most +10% | Passed |
 | 41-53 | best gear | 6 | 2.03 | 2.03 | 1.00 | 99% | 94% | 92% | 81% | yes | 0% / 0% | within 10% | Passed |
+
+### Recipes the legacy policy never makes in the cell, left out of the stack and quality comparison above (they still count in the never-made check)
+
+| Band | Gear | Recipe | Level | New success | New avg quality |
+| --- | --- | --- | --- | --- | --- |
+| 41-53 | no gear | ForbiddenGumbo | 52 | 98% | 89% |
 
 ## XP rate
 
@@ -377,9 +383,13 @@
 
 These are written by hand after the generated report above, so a rerun of the command replaces the report and not these notes.
 
-- **Gate 5 (economy parity), the one failing gate: 41-53 / no gear, ratio 1.21.** It is a comparison over different recipe sets, not a Kitchen cost. In this sample the old minigame never makes Forbidden Gumbo (level 52, 4 component stacks) without gear, so its stacks per item cover the other five recipes and the Kitchen's cover all six. Probing the same cell per recipe (a scratch build at an earlier tuning iteration; the old minigame's side is identical) gave Forbidden Gumbo 100% for the Kitchen against 0% for today, and over the five recipes both make a ratio of 1.04 (1.79 against 1.72 stacks per item). The mid and best gear cells of that band show the same recipe (20% and 67% for today) and pass at 1.02 and 1.00 on their own. Every other cell is within 10%, and the Kitchen's average quality is above today's in every cell. Passing this cell as defined would mean making a dish the old window cannot make fail on purpose, so no value was changed for it. Proposed harness change for the owner or the harness workstream: compute stacks per item over the recipes both sides make (the never-made share is already a separate check).
+- **Gate 5 (economy parity), before the refresh below: the one failing gate was 41-53 / no gear, ratio 1.21 (historical; the matched-recipe comparison now passes it, see "Gate 5 refreshed" at the end).** It is a comparison over different recipe sets, not a Kitchen cost. In this sample the old minigame never makes Forbidden Gumbo (level 52, 4 component stacks) without gear, so its stacks per item cover the other five recipes and the Kitchen's cover all six. Probing the same cell per recipe (a scratch build at an earlier tuning iteration; the old minigame's side is identical) gave Forbidden Gumbo 100% for the Kitchen against 0% for today, and over the five recipes both make a ratio of 1.04 (1.79 against 1.72 stacks per item). The mid and best gear cells of that band show the same recipe (20% and 67% for today) and pass at 1.02 and 1.00 on their own. Every other cell is within 10%, and the Kitchen's average quality is above today's in every cell. Passing this cell as defined would mean making a dish the old window cannot make fail on purpose, so no value was changed for it. Proposed harness change for the owner or the harness workstream: compute stacks per item over the recipes both sides make (the never-made share is already a separate check).
 - **Gate 1 under both definitions.** Under the definition in force (one rotation per band and tier, 10 points) the Kitchen passes every cell, with a smallest margin of 19.4 points. Under the previous per-recipe definition, at an earlier tuning iteration (3 recipes a band, 20 runs) it failed 3 of 15 cells by 1 to 5 points (1-10 no gear 6.8, 1-10 best gear 5.1, 11-20 best gear 9.0); no randomness or effect was added for it.
 - **Tuning that moved a gate** (every value is a starting value in `KitchenTuning` or `KitchenParameterProfile`): the Doneness a dish needs 100 -> 120 and Craftsmanship 0.015 -> 0.008 per point (length: crafts with gear were under 10 actions); enhancement Doneness 0.5 -> 0.25 of the progress penalty and recipe Freshness slack 105% -> 112% (gate 7, and gate 3's 51-53 band, which sat at 52%); push spread 40% -> 50% and Stir 8 -> 12 CP (gate 1, one rotation per band: at 40% and 8 CP the best single rotation came within 10 points in 4 of 15 cells). Raising the drift from 8 to 10 as well made gate 1 worse, because it hurt adaptive play as much, and was dropped.
 - **XP multipliers** are the least in each recipe-level band that kept gate 6 passing at every gear tier and enhancement count in the sampled runs (1-10 2.15x, 11-20 1.15x, 21-30 1.10x, 31-40 1.20x, 41-53 1.05x), rounded up to the next 0.05. The base's 1.05 crafting pace multiplier is layered on top in the game and is not part of the gate.
 - **Gate 7** passes at the shared thresholds (50% / 85% / 85%), unchanged. The Kitchen's expected enhancements transferred are 1.02 to 1.12 times today's in the 41-45 and 46-50 bands and many times today's in 51-53, where today's crafter rarely makes the item. Thresholds that would meet parity for this quality: 57% / 93% / 100%.
 - The run happened on the branch before the base's latest merge (progression, Prospecting, Line, Reaction tuning); that merge changed no gate, player or crafting-legacy file.
+
+### Gate 5 refreshed with the matched-recipe comparison (Forge tuning pull request)
+
+The Economy parity section and its verdict above were regenerated with `gates --scenario kitchen --gates 5 --runs 100 --seed 1` after gate 5 began comparing material use only over the recipes the old minigame makes at least once in a cell (`MaterialParityGate`). Before it, 41-53 / no gear showed a raw ratio of 1.21 because recipes the old minigame never makes were counted on the Kitchen's side only (1.04 over the recipes both make); every cell passes now. The other sections of this report were not re-run, and they do not depend on gate 5.

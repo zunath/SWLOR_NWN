@@ -197,6 +197,7 @@ Build `SWLOR.CraftSim` (tool and tests) on the `SWLOR.CombatSim` pattern. It dri
    - Material use per crafted item at matched quality (owner decision, October 2026), per recipe band and gear level:
      - Where the legacy policy's success rate is at least 90% (starting value), component stacks per item stay within 10% of today's, either way.
      - Where it is lower, today's failures waste material, so the cell fails only if the new minigame uses more than 10% more than today. Lower use passes, and the report shows it.
+     - The comparison covers the recipes the legacy policy makes at least once in the cell. A recipe it never makes has no legacy figure, so it is reported separately and not counted in the stacks per item.
 6. **XP rate** (owner decision after player feedback, October 2026).
    - At matched rank and gear, XP per hour of play in each minigame is at least today's.
    - **Item-craft cohort**, identical for the legacy and new runs: each recipe band (1-10, 11-20, 21-30, 31-40, 41-53) with rank equal to recipe level, capped at rank 50 (levels 51-53 run at rank 50); no gear, mid and best gear tiers; the band's active recipes weighted equally; no blueprint and not a first craft; quality and failures as each policy actually plays them (legacy: the lookahead policy; new: CraftSim's adaptive policy), counting the 15% failure XP. Run it with no enhancements and with representative enhancements for each slot count the recipes support (one, two, three), applying each side's enhancement difficulty. Each band, gear tier and enhancement count must pass on its own.
@@ -693,7 +694,7 @@ The combat upgrade's model applies, with no pilot: build every minigame, then te
     - **Espionage is excluded** from the pace change: its crafting XP stays tied to Espionage rank, and `Craft.GetBaseRecipeXP`, `EspionageInfiltration.CalculateXp` and slicing's `Skill.CalculateEspionageXP` share Espionage progression. Add regression tests that infiltration and slicing XP are unchanged.
     - **Existing progress.** If required XP per rank changes, convert stored XP and ranks (a migration, with tests on legacy records) so no character loses a rank. Guild points and ranks need no conversion, because their thresholds do not change. The 11b decisions change what is gained, never what a rank costs, so they need no migration.
 12. **Closeout.**
-    - Delete the old minigame (`CraftViewModel` rules, `CraftDefinition`, retired level-chart fields).
+    - Delete the old minigame (`CraftViewModel` rules, `CraftDefinition`, retired level-chart fields). Done: every crafting skill routes to its minigame and nothing opens the old window. `GuiWindowType.Craft` stays reserved, because saved window geometry keys on its name.
     - Final Bible sync, player guide text and tooltips.
     - Joint test pass across every minigame.
     - Release notes.

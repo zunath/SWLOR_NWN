@@ -196,7 +196,7 @@ public class FabricatorSessionTests
             FabricatorRules.XpMultiplierLevels1To10, FabricatorRules.XpMultiplierLevels11To20, FabricatorRules.XpMultiplierLevels21To30,
             FabricatorRules.XpMultiplierLevels31To40, FabricatorRules.XpMultiplierLevels41Up
         }.Should().OnlyContain(multiplier => multiplier >= 1.0, "a multiplier only ever lifts the XP");
-        CraftMinigameXp.MultiplierFor(CraftMinigameType.Forge, 20).Should().Be(1.0);
+        CraftMinigameXp.MultiplierFor(CraftMinigameType.Experiment, 20).Should().Be(1.0);
         CraftMinigameXp.ScaleBaseXp(600, 1.0).Should().Be(600);
         CraftMinigameXp.ScaleBaseXp(600, 2.5).Should().Be(1500);
         CraftMinigameXp.ScaleBaseXp(7, 1.5).Should().Be(11, "halves round away from zero");
@@ -207,7 +207,7 @@ public class FabricatorSessionTests
     {
         var recipe = new RecipeDetail { Skill = SkillType.Armor, Level = 20 };
 
-        CraftMinigameRouting.GetRoute(SkillType.Armor).IsLegacy.Should().BeTrue();
+        CraftMinigameRouting.TryGetRoute(SkillType.Armor, out _).Should().BeFalse();
         CraftMinigameXp.BaseXp(recipe, 15).Should().Be(Craft.GetBaseRecipeXP(recipe, 15));
     }
 }

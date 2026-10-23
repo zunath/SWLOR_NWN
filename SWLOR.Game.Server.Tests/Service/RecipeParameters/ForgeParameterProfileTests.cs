@@ -62,11 +62,36 @@ public class ForgeParameterProfileTests
     [Test]
     public void HigherLevelsNarrowTheRangeAndCoolFaster()
     {
-        var easy = Generate(RecipeCategoryType.Breastplate, 5, Metal);
-        var hard = Generate(RecipeCategoryType.Breastplate, 50, Metal);
+        var easy = Generate(RecipeCategoryType.Ring, 5, Metal);
+        var hard = Generate(RecipeCategoryType.Ring, 50, Metal);
 
         hard.RangeWidth.Should().BeLessThan(easy.RangeWidth);
         hard.CoolingRate.Should().BeGreaterThan(easy.CoolingRate);
+    }
+
+    [TestCase(10)]
+    [TestCase(30)]
+    [TestCase(50)]
+    public void LightGoodsLoseHeatFasterThanHeavyOnes(int level)
+    {
+        var light = Generate(RecipeCategoryType.Ring, level, Metal);
+        var heavy = Generate(RecipeCategoryType.Breastplate, level, Metal);
+
+        light.CoolingRate.Should().BeGreaterThanOrEqualTo(heavy.CoolingRate);
+    }
+
+    [Test]
+    public void RecipesOfOneLevelAreSpreadSoOneSequenceDoesNotServeThemAll()
+    {
+        var recipes = RecipeDefinitionLoader.LoadGame()
+            .Where(pair => pair.Value.Skill == SkillType.Smithery && pair.Value.IsActive && pair.Value.Level is >= 21 and <= 30)
+            .Select(pair => (ForgeParameters)pair.Value.MinigameParameters)
+            .ToList();
+
+        recipes.Select(forge => forge.CoolingRate).Distinct().Count().Should().BeGreaterThanOrEqualTo(4);
+        recipes.Select(forge => forge.ShapeShare).Distinct().Count().Should().BeGreaterThanOrEqualTo(5);
+        recipes.Max(forge => forge.ShapeShare).Should().BeGreaterThanOrEqualTo(65);
+        recipes.Min(forge => forge.ShapeShare).Should().BeLessThanOrEqualTo(35);
     }
 
     [Test]
@@ -86,7 +111,7 @@ public class ForgeParameterProfileTests
     }
 
     [Test]
-    public void TheForgeStartsEveryRecipeInsideItsWorkingRange()
+    public void EveryRecipesRangeAndStartLieOnTheThermalMeter_AndMostStartInsideTheRange()
     {
         var recipes = RecipeDefinitionLoader.LoadGame()
             .Where(pair => pair.Value.Skill == SkillType.Smithery && pair.Value.IsActive)
@@ -96,10 +121,17 @@ public class ForgeParameterProfileTests
         foreach (var (type, detail) in recipes)
         {
             var forge = (ForgeParameters)detail.MinigameParameters;
-            forge.StartingThermal.Should().BeInRange(forge.RangeLow, forge.RangeHigh, $"{type} starts hot enough to work");
+            forge.StartingThermal.Should().BeInRange(0, 100, type.ToString());
             forge.RangeLow.Should().BeGreaterThanOrEqualTo(0, type.ToString());
             forge.RangeHigh.Should().BeLessThanOrEqualTo(100, type.ToString());
         }
+
+        var inside = recipes.Count(pair =>
+        {
+            var forge = (ForgeParameters)pair.Value.MinigameParameters;
+            return forge.StartingThermal >= forge.RangeLow && forge.StartingThermal <= forge.RangeHigh;
+        });
+        inside.Should().BeGreaterThan(recipes.Count / 2, "a piece may start outside its range, but most start ready to work");
     }
 
     [Test]

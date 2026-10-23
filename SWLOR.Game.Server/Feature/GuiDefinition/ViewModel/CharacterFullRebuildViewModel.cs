@@ -3,6 +3,7 @@ using System.Linq;
 using SWLOR.Game.Server.Core;
 using SWLOR.Game.Server.Entity;
 using SWLOR.Game.Server.Service;
+using SWLOR.Game.Server.Service.CraftService;
 using SWLOR.Game.Server.Service.GuiService;
 using SWLOR.Game.Server.Service.LogService;
 using SWLOR.Game.Server.Service.SkillService;
@@ -454,6 +455,9 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
                     }
                 }
 
+                // Every perk is refunded, so no crafting style stays selected. The record is saved below, after the
+                // refund triggers, so clearing it here cannot be overwritten by this stale copy.
+                CraftingStyleSelection.ClearAll(dbPlayer);
                 DB.Set(dbPlayer);
             }
 

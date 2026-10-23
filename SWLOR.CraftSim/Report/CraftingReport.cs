@@ -45,7 +45,7 @@ namespace SWLOR.CraftSim.Report
             text.AppendLine("- Material use: a success consumes every committed component stack once, and each failure consumes each stack at 65% (`CraftViewModel.cs:1601-1641`), so stacks per success = stacks x (1 + 0.65 x (1 - p) / p) for a success chance p. A stack is one distinct component line of the recipe; enhancements are not committed. " +
                             $"{recipes.Recipes.Count(r => r.Quantity > 1)} of {recipes.Recipes.Count} recipes make more than one item per craft, so their stacks are shared across every item a success makes.");
             text.AppendLine();
-            text.AppendLine("Rules ported, each checked against the source by `LegacySourceTests`:");
+            text.AppendLine(LegacySource.RulesPortedNote);
             text.AppendLine();
             var rules = new MarkdownTable("Rule", "Source");
             foreach (var source in LegacySource.All.Where(s => s.File.EndsWith("CraftViewModel.cs") || s.File.EndsWith("RecipeLevelChart.cs") || s.File.EndsWith("Craft.cs") || s.File.EndsWith("EquipmentStats.cs")))

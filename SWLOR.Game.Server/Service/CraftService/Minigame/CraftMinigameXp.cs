@@ -1,5 +1,6 @@
 using SWLOR.Game.Server.Service.CraftService.Minigame.Circuit;
 using SWLOR.Game.Server.Service.CraftService.Minigame.Fabricator;
+using SWLOR.Game.Server.Service.CraftService.Minigame.Forge;
 using SWLOR.Game.Server.Service.CraftService.Minigame.Kitchen;
 using SWLOR.Game.Server.Service.CraftService.Minigame.Line;
 using SWLOR.Game.Server.Service.CraftService.Minigame.Prospecting;
@@ -40,6 +41,7 @@ public static class CraftMinigameXp
     {
         CraftMinigameType.Circuit => CircuitRules.XpMultiplierFor(recipeLevel),
         CraftMinigameType.Fabricator => FabricatorRules.XpMultiplierForLevel(recipeLevel),
+        CraftMinigameType.Forge => ForgeRules.XpMultiplierForLevel(recipeLevel),
         CraftMinigameType.Kitchen => KitchenTuning.XpMultiplierForLevel(recipeLevel),
         CraftMinigameType.Line => LineRules.XpMultiplierForLevel(recipeLevel),
         CraftMinigameType.Prospecting => ProspectingRules.XpMultiplierFor(recipeLevel),
@@ -59,8 +61,9 @@ public static class CraftMinigameXp
     public static int BaseXp(RecipeDetail recipe, int skillRank)
     {
         var baseXp = Craft.GetBaseRecipeXP(recipe, skillRank);
-        var route = CraftMinigameRouting.GetRoute(recipe.Skill);
-        var gated = route.Minigame is { } minigame ? ScaleBaseXp(baseXp, MultiplierFor(minigame, recipe.Level)) : baseXp;
+        var gated = CraftMinigameRouting.TryGetRoute(recipe.Skill, out var route)
+            ? ScaleBaseXp(baseXp, MultiplierFor(route.Minigame, recipe.Level))
+            : baseXp;
         return ScaleBaseXp(gated, PaceMultiplierFor(recipe.Skill));
     }
 }

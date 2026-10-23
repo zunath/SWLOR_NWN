@@ -72,7 +72,7 @@ namespace SWLOR.CraftSim.Report
             text.AppendLine("- Expected transfers: a craft that is made transfers each enhancement with probability `(int)(quality / max quality * 100) / 100` (truncated as the old window does), so it adds slots x chance; a craft that breaks the piece adds none. No transfer dice are drawn, which carries the same mean with less noise. Figures are per enhanced craft attempt.");
             text.AppendLine("- Extra progress: the enhancements' total penalty over the progress the recipe needs without them in the old window (rank-adjusted), averaged over the recipes.");
             text.AppendLine();
-            text.AppendLine("Rules ported, each checked against the source by `LegacySourceTests`:");
+            text.AppendLine(LegacySource.RulesPortedNote);
             text.AppendLine();
             var rules = new MarkdownTable("Rule", "Source");
             foreach (var source in new[]

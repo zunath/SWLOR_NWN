@@ -4,6 +4,7 @@ using SWLOR.Game.Server.Service;
 using SWLOR.Game.Server.Service.CraftService;
 using SWLOR.Game.Server.Service.CraftService.Minigame;
 using SWLOR.Game.Server.Service.CraftService.Minigame.Circuit;
+using SWLOR.Game.Server.Service.CraftService.Minigame.Forge;
 using SWLOR.Game.Server.Service.CraftService.Minigame.Kitchen;
 using SWLOR.Game.Server.Service.CraftService.Minigame.Line;
 using SWLOR.Game.Server.Service.CraftService.Minigame.Reaction;
@@ -20,7 +21,7 @@ public class CraftMinigameXpTests
     {
         foreach (var minigame in Enum.GetValues<CraftMinigameType>().Where(minigame =>
                      minigame is not (CraftMinigameType.Reaction or CraftMinigameType.Fabricator or CraftMinigameType.Circuit or CraftMinigameType.Line
-                         or CraftMinigameType.Search or CraftMinigameType.Kitchen)))
+                         or CraftMinigameType.Search or CraftMinigameType.Kitchen or CraftMinigameType.Forge)))
         {
             foreach (var level in new[] { 1, 10, 11, 50 })
                 CraftMinigameXp.MultiplierFor(minigame, level).Should().Be(1.0, $"{minigame} level {level}");
@@ -55,6 +56,23 @@ public class CraftMinigameXpTests
             CraftMinigameXp.MultiplierFor(CraftMinigameType.Search, level).Should().Be(SearchRules.XpMultiplierForLevel(level)).And.BeGreaterThanOrEqualTo(1.0, $"Search site level {level}");
     }
 
+    [Test]
+    public void TheForgesMultiplierDiffersByRecipeLevelBand_AndOnlyEverLiftsTheXp()
+    {
+        CraftMinigameXp.MultiplierFor(CraftMinigameType.Forge, 5).Should().Be(ForgeRules.XpMultiplierLevels1To10);
+        CraftMinigameXp.MultiplierFor(CraftMinigameType.Forge, 10).Should().Be(ForgeRules.XpMultiplierLevels1To10);
+        CraftMinigameXp.MultiplierFor(CraftMinigameType.Forge, 11).Should().Be(ForgeRules.XpMultiplierLevels11To20);
+        CraftMinigameXp.MultiplierFor(CraftMinigameType.Forge, 30).Should().Be(ForgeRules.XpMultiplierLevels21To30);
+        CraftMinigameXp.MultiplierFor(CraftMinigameType.Forge, 40).Should().Be(ForgeRules.XpMultiplierLevels31To40);
+        CraftMinigameXp.MultiplierFor(CraftMinigameType.Forge, 53).Should().Be(ForgeRules.XpMultiplierLevels41Up);
+        CraftMinigameXp.MultiplierFor(CraftMinigameType.Forge).Should().Be(ForgeRules.XpMultiplierLevels1To10, "no level takes the lowest band");
+        new[]
+        {
+            ForgeRules.XpMultiplierLevels1To10, ForgeRules.XpMultiplierLevels11To20, ForgeRules.XpMultiplierLevels21To30,
+            ForgeRules.XpMultiplierLevels31To40, ForgeRules.XpMultiplierLevels41Up
+        }.Should().OnlyContain(multiplier => multiplier >= 1.0);
+    }
+
     [TestCase(10, 2.5, 25)]
     [TestCase(5, 1.5, 8)]
     [TestCase(150, 1.0, 150)]
@@ -69,7 +87,7 @@ public class CraftMinigameXpTests
     {
         var recipe = new RecipeDetail { Skill = SkillType.Armor, Level = 20 };
 
-        CraftMinigameRouting.GetRoute(SkillType.Armor).IsLegacy.Should().BeTrue();
+        CraftMinigameRouting.TryGetRoute(SkillType.Armor, out _).Should().BeFalse();
         CraftMinigameXp.BaseXp(recipe, 15).Should().Be(Craft.GetBaseRecipeXP(recipe, 15));
     }
 
@@ -108,7 +126,7 @@ public class CraftMinigameXpTests
         var recipe = new RecipeDetail { Skill = skill, Level = 20 };
         var route = CraftMinigameRouting.GetRoute(skill);
         var baseXp = Craft.GetBaseRecipeXP(recipe, 20);
-        var gated = route.Minigame is { } minigame ? CraftMinigameXp.ScaleBaseXp(baseXp, CraftMinigameXp.MultiplierFor(minigame, 20)) : baseXp;
+        var gated = CraftMinigameXp.ScaleBaseXp(baseXp, CraftMinigameXp.MultiplierFor(route.Minigame, 20));
 
         CraftMinigameXp.BaseXp(recipe, 20).Should().Be(CraftMinigameXp.ScaleBaseXp(gated, 1.05));
         CraftMinigameXp.BaseXp(recipe, 20).Should().BeGreaterThan(gated, "600 XP at level is more than 600 after the multiplier");
@@ -168,7 +186,7 @@ public class CraftMinigameXpTests
             .ToArray();
 
         // BaseXp is the only member that applies the pace; the fishing fight scales its own XP with the Line's band alone.
-        Mentioning("CraftMinigameXp.BaseXp(").Should().Equal("CraftSessionLifecycle.cs", "CraftViewModel.cs");
+        Mentioning("CraftMinigameXp.BaseXp(").Should().Equal("CraftSessionLifecycle.cs");
         Mentioning("CraftingPaceMultiplier", "PaceMultiplierFor", "AppliesCraftingPace").Should().Equal("CraftMinigameXp.cs");
     }
 

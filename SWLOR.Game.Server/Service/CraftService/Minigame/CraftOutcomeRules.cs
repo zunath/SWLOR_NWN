@@ -5,9 +5,8 @@ namespace SWLOR.Game.Server.Service.CraftService.Minigame;
 
 /// <summary>
 /// The rules every item craft ends under, whichever minigame produced the quality. XP, vendor value and the loss chance copy
-/// the formulas the original crafting window used (<c>CraftViewModel.ProcessSuccess</c>, <c>CalculateXP</c> and
-/// <c>ProcessFailure</c>). Enhancements transfer by quality threshold instead of by chance, and food duration scales with quality
-/// instead of paying only at full quality.
+/// the formulas of the crafting window the minigames replaced. Enhancements transfer by quality threshold instead of by chance,
+/// and food duration scales with quality instead of paying only at full quality.
 /// </summary>
 public static class CraftOutcomeRules
 {
@@ -44,7 +43,7 @@ public static class CraftOutcomeRules
     /// <summary>One step of a food duration bonus in seconds (<c>ConsumableItemDefinition</c>: 5 minutes per bonus).</summary>
     public const int FoodDurationSecondsPerUnit = 5 * 60;
 
-    /// <summary>The duration bonus, in steps, of a food crafted at 100% quality: the old code's <c>(int)qualityPercent</c>.</summary>
+    /// <summary>The duration bonus, in steps, of a food crafted at 100% quality: the most a food can gain.</summary>
     public const int FullQualityFoodDurationUnits = 1;
 
     /// <summary>

@@ -34,7 +34,7 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.SmitheryRecipeDefinition
                 .EnhancementSlots(RecipeEnhancementType.Armor, 1)
                 .Component("ref_veldite", 1)
                 .Component("jade", 1)
-                .ForgeParameters(rangeCenter: 47, rangeWidth: 56, coolingRate: 2, startingThermal: 68, shapeShare: 43);
+                .ForgeParameters(rangeCenter: 49, rangeWidth: 39, coolingRate: 3, startingThermal: 57, shapeShare: 38);
 
             // Spiritmaster Ring
             _builder.Create(RecipeType.SpiritmasterRing, SkillType.Smithery)
@@ -45,7 +45,7 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.SmitheryRecipeDefinition
                 .EnhancementSlots(RecipeEnhancementType.Armor, 1)
                 .Component("ref_veldite", 1)
                 .Component("jade", 1)
-                .ForgeParameters(rangeCenter: 51, rangeWidth: 52, coolingRate: 3, startingThermal: 67, shapeShare: 42);
+                .ForgeParameters(rangeCenter: 48, rangeWidth: 34, coolingRate: 3, startingThermal: 53, shapeShare: 38);
 
             // Combat Ring
             _builder.Create(RecipeType.CombatRing, SkillType.Smithery)
@@ -56,7 +56,7 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.SmitheryRecipeDefinition
                 .EnhancementSlots(RecipeEnhancementType.Armor, 1)
                 .Component("ref_veldite", 1)
                 .Component("jade", 1)
-                .ForgeParameters(rangeCenter: 51, rangeWidth: 59, coolingRate: 2, startingThermal: 70, shapeShare: 46);
+                .ForgeParameters(rangeCenter: 47, rangeWidth: 33, coolingRate: 3, startingThermal: 52, shapeShare: 38);
 
             // Advent Ring
             _builder.Create(RecipeType.AdventRing, SkillType.Smithery)
@@ -68,7 +68,7 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.SmitheryRecipeDefinition
                 .Component("ref_veldite", 5)
                 .Component("lth_ruined", 5)
                 .Component("jade", 3)
-                .ForgeParameters(rangeCenter: 50, rangeWidth: 46, coolingRate: 2, startingThermal: 68, shapeShare: 46);
+                .ForgeParameters(rangeCenter: 45, rangeWidth: 42, coolingRate: 4, startingThermal: 52, shapeShare: 38);
 
             // Amateur Ring
             _builder.Create(RecipeType.AmateurRing, SkillType.Smithery)
@@ -80,7 +80,7 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.SmitheryRecipeDefinition
                 .Component("ref_veldite", 5)
                 .Component("lth_ruined", 5)
                 .Component("jade", 3)
-                .ForgeParameters(rangeCenter: 52, rangeWidth: 48, coolingRate: 4, startingThermal: 66, shapeShare: 44);
+                .ForgeParameters(rangeCenter: 48, rangeWidth: 34, coolingRate: 4, startingThermal: 53, shapeShare: 38);
 
             // Cloth Ring
             _builder.Create(RecipeType.ClothRing, SkillType.Smithery)
@@ -92,7 +92,7 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.SmitheryRecipeDefinition
                 .Component("ref_veldite", 5)
                 .Component("lth_ruined", 5)
                 .Component("jade", 3)
-                .ForgeParameters(rangeCenter: 44, rangeWidth: 48, coolingRate: 2, startingThermal: 63, shapeShare: 45);
+                .ForgeParameters(rangeCenter: 47, rangeWidth: 37, coolingRate: 4, startingThermal: 53, shapeShare: 38);
 
             // Chef Ring
             _builder.Create(RecipeType.ChefRing, SkillType.Smithery)
@@ -104,7 +104,7 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.SmitheryRecipeDefinition
                 .Component("ref_veldite", 5)
                 .Component("lth_ruined", 5)
                 .Component("jade", 3)
-                .ForgeParameters(rangeCenter: 52, rangeWidth: 54, coolingRate: 2, startingThermal: 65, shapeShare: 43);
+                .ForgeParameters(rangeCenter: 51, rangeWidth: 33, coolingRate: 3, startingThermal: 56, shapeShare: 38);
         }
 
         private void Tier2()
@@ -118,7 +118,7 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.SmitheryRecipeDefinition
                 .EnhancementSlots(RecipeEnhancementType.Armor, 2)
                 .Component("ref_scordspar", 1)
                 .Component("agate", 1)
-                .ForgeParameters(rangeCenter: 50, rangeWidth: 50, coolingRate: 4, startingThermal: 64, shapeShare: 44);
+                .ForgeParameters(rangeCenter: 51, rangeWidth: 50, coolingRate: 5, startingThermal: 65, shapeShare: 39);
 
             // Vivid Ring
             _builder.Create(RecipeType.VividRing, SkillType.Smithery)
@@ -129,7 +129,7 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.SmitheryRecipeDefinition
                 .EnhancementSlots(RecipeEnhancementType.Armor, 2)
                 .Component("ref_scordspar", 1)
                 .Component("agate", 1)
-                .ForgeParameters(rangeCenter: 46, rangeWidth: 48, coolingRate: 2, startingThermal: 65, shapeShare: 46);
+                .ForgeParameters(rangeCenter: 48, rangeWidth: 48, coolingRate: 2, startingThermal: 61, shapeShare: 37);
 
             // Valor Ring
             _builder.Create(RecipeType.ValorRing, SkillType.Smithery)
@@ -140,7 +140,7 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.SmitheryRecipeDefinition
                 .EnhancementSlots(RecipeEnhancementType.Armor, 2)
                 .Component("ref_scordspar", 1)
                 .Component("agate", 1)
-                .ForgeParameters(rangeCenter: 51, rangeWidth: 49, coolingRate: 3, startingThermal: 67, shapeShare: 41);
+                .ForgeParameters(rangeCenter: 45, rangeWidth: 40, coolingRate: 2, startingThermal: 55, shapeShare: 39);
 
             // Frontier Ring
             _builder.Create(RecipeType.FrontierRing, SkillType.Smithery)
@@ -152,7 +152,7 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.SmitheryRecipeDefinition
                 .Component("ref_scordspar", 5)
                 .Component("lth_flawed", 5)
                 .Component("agate", 3)
-                .ForgeParameters(rangeCenter: 49, rangeWidth: 40, coolingRate: 3, startingThermal: 55, shapeShare: 46);
+                .ForgeParameters(rangeCenter: 51, rangeWidth: 33, coolingRate: 1, startingThermal: 57, shapeShare: 37);
 
             // Worker Ring
             _builder.Create(RecipeType.WorkerRing, SkillType.Smithery)
@@ -164,7 +164,7 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.SmitheryRecipeDefinition
                 .Component("ref_scordspar", 5)
                 .Component("lth_flawed", 5)
                 .Component("agate", 3)
-                .ForgeParameters(rangeCenter: 44, rangeWidth: 47, coolingRate: 5, startingThermal: 60, shapeShare: 41);
+                .ForgeParameters(rangeCenter: 47, rangeWidth: 31, coolingRate: 4, startingThermal: 49, shapeShare: 37);
 
             // Linen Ring
             _builder.Create(RecipeType.LinenRing, SkillType.Smithery)
@@ -176,7 +176,7 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.SmitheryRecipeDefinition
                 .Component("ref_scordspar", 5)
                 .Component("lth_flawed", 5)
                 .Component("agate", 3)
-                .ForgeParameters(rangeCenter: 44, rangeWidth: 40, coolingRate: 4, startingThermal: 59, shapeShare: 47);
+                .ForgeParameters(rangeCenter: 47, rangeWidth: 31, coolingRate: 7, startingThermal: 55, shapeShare: 39);
 
             // Velveteen Ring
             _builder.Create(RecipeType.VelveteenRing, SkillType.Smithery)
@@ -188,7 +188,7 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.SmitheryRecipeDefinition
                 .Component("ref_scordspar", 5)
                 .Component("lth_flawed", 5)
                 .Component("agate", 3)
-                .ForgeParameters(rangeCenter: 46, rangeWidth: 43, coolingRate: 4, startingThermal: 63, shapeShare: 44);
+                .ForgeParameters(rangeCenter: 46, rangeWidth: 39, coolingRate: 3, startingThermal: 56, shapeShare: 38);
         }
 
         private void Tier3()
@@ -202,7 +202,7 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.SmitheryRecipeDefinition
                 .EnhancementSlots(RecipeEnhancementType.Armor, 2)
                 .Component("ref_plagionite", 1)
                 .Component("citrine", 1)
-                .ForgeParameters(rangeCenter: 44, rangeWidth: 44, coolingRate: 4, startingThermal: 55, shapeShare: 42);
+                .ForgeParameters(rangeCenter: 48, rangeWidth: 29, coolingRate: 2, startingThermal: 54, shapeShare: 38);
 
             // Reginal Ring
             _builder.Create(RecipeType.ReginalRing, SkillType.Smithery)
@@ -213,7 +213,7 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.SmitheryRecipeDefinition
                 .EnhancementSlots(RecipeEnhancementType.Armor, 2)
                 .Component("ref_plagionite", 1)
                 .Component("citrine", 1)
-                .ForgeParameters(rangeCenter: 44, rangeWidth: 43, coolingRate: 4, startingThermal: 62, shapeShare: 47);
+                .ForgeParameters(rangeCenter: 48, rangeWidth: 33, coolingRate: 4, startingThermal: 44, shapeShare: 38);
 
             // Forza Ring
             _builder.Create(RecipeType.ForzaRing, SkillType.Smithery)
@@ -224,7 +224,7 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.SmitheryRecipeDefinition
                 .EnhancementSlots(RecipeEnhancementType.Armor, 2)
                 .Component("ref_plagionite", 1)
                 .Component("citrine", 1)
-                .ForgeParameters(rangeCenter: 45, rangeWidth: 43, coolingRate: 3, startingThermal: 55, shapeShare: 42);
+                .ForgeParameters(rangeCenter: 49, rangeWidth: 33, coolingRate: 6, startingThermal: 43, shapeShare: 38);
 
             // Majestic Ring
             _builder.Create(RecipeType.MajesticRing, SkillType.Smithery)
@@ -236,7 +236,7 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.SmitheryRecipeDefinition
                 .Component("ref_plagionite", 5)
                 .Component("lth_good", 5)
                 .Component("citrine", 3)
-                .ForgeParameters(rangeCenter: 48, rangeWidth: 35, coolingRate: 3, startingThermal: 54, shapeShare: 44);
+                .ForgeParameters(rangeCenter: 48, rangeWidth: 21, coolingRate: 8, startingThermal: 42, shapeShare: 38);
 
             // Mechanic Ring
             _builder.Create(RecipeType.MechanicRing, SkillType.Smithery)
@@ -248,7 +248,7 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.SmitheryRecipeDefinition
                 .Component("ref_plagionite", 5)
                 .Component("lth_good", 5)
                 .Component("citrine", 3)
-                .ForgeParameters(rangeCenter: 46, rangeWidth: 40, coolingRate: 4, startingThermal: 51, shapeShare: 44);
+                .ForgeParameters(rangeCenter: 47, rangeWidth: 26, coolingRate: 4, startingThermal: 46, shapeShare: 38);
 
             // Designer Ring
             _builder.Create(RecipeType.DesignerRing, SkillType.Smithery)
@@ -260,7 +260,7 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.SmitheryRecipeDefinition
                 .Component("ref_plagionite", 5)
                 .Component("lth_good", 5)
                 .Component("citrine", 3)
-                .ForgeParameters(rangeCenter: 45, rangeWidth: 35, coolingRate: 3, startingThermal: 57, shapeShare: 41);
+                .ForgeParameters(rangeCenter: 48, rangeWidth: 25, coolingRate: 5, startingThermal: 56, shapeShare: 38);
 
             // Silk Ring
             _builder.Create(RecipeType.SilkRing, SkillType.Smithery)
@@ -272,7 +272,7 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.SmitheryRecipeDefinition
                 .Component("ref_plagionite", 5)
                 .Component("lth_good", 5)
                 .Component("citrine", 3)
-                .ForgeParameters(rangeCenter: 47, rangeWidth: 41, coolingRate: 3, startingThermal: 52, shapeShare: 43);
+                .ForgeParameters(rangeCenter: 48, rangeWidth: 26, coolingRate: 9, startingThermal: 56, shapeShare: 38);
         }
 
         private void Tier4()
@@ -286,7 +286,7 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.SmitheryRecipeDefinition
                 .EnhancementSlots(RecipeEnhancementType.Armor, 2)
                 .Component("ref_keromber", 1)
                 .Component("ruby", 1)
-                .ForgeParameters(rangeCenter: 45, rangeWidth: 37, coolingRate: 4, startingThermal: 57, shapeShare: 46);
+                .ForgeParameters(rangeCenter: 47, rangeWidth: 27, coolingRate: 8, startingThermal: 54, shapeShare: 38);
 
             // Grenada Ring
             _builder.Create(RecipeType.GrenadaRing, SkillType.Smithery)
@@ -297,7 +297,7 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.SmitheryRecipeDefinition
                 .EnhancementSlots(RecipeEnhancementType.Armor, 2)
                 .Component("ref_keromber", 1)
                 .Component("ruby", 1)
-                .ForgeParameters(rangeCenter: 52, rangeWidth: 38, coolingRate: 5, startingThermal: 55, shapeShare: 46);
+                .ForgeParameters(rangeCenter: 45, rangeWidth: 20, coolingRate: 9, startingThermal: 43, shapeShare: 38);
 
             // Survival Ring
             _builder.Create(RecipeType.SurvivalRing, SkillType.Smithery)
@@ -308,7 +308,7 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.SmitheryRecipeDefinition
                 .EnhancementSlots(RecipeEnhancementType.Armor, 2)
                 .Component("ref_keromber", 1)
                 .Component("ruby", 1)
-                .ForgeParameters(rangeCenter: 45, rangeWidth: 32, coolingRate: 4, startingThermal: 50, shapeShare: 42);
+                .ForgeParameters(rangeCenter: 51, rangeWidth: 26, coolingRate: 9, startingThermal: 53, shapeShare: 38);
 
             // Dream Ring
             _builder.Create(RecipeType.DreamRing, SkillType.Smithery)
@@ -320,7 +320,7 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.SmitheryRecipeDefinition
                 .Component("ref_keromber", 5)
                 .Component("lth_imperfect", 5)
                 .Component("ruby", 3)
-                .ForgeParameters(rangeCenter: 48, rangeWidth: 32, coolingRate: 6, startingThermal: 52, shapeShare: 47);
+                .ForgeParameters(rangeCenter: 47, rangeWidth: 23, coolingRate: 9, startingThermal: 49, shapeShare: 38);
 
             // Devotion Ring
             _builder.Create(RecipeType.DevotionRing, SkillType.Smithery)
@@ -332,7 +332,7 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.SmitheryRecipeDefinition
                 .Component("ref_keromber", 5)
                 .Component("lth_imperfect", 5)
                 .Component("ruby", 3)
-                .ForgeParameters(rangeCenter: 46, rangeWidth: 33, coolingRate: 4, startingThermal: 48, shapeShare: 42);
+                .ForgeParameters(rangeCenter: 44, rangeWidth: 22, coolingRate: 9, startingThermal: 47, shapeShare: 38);
 
             // Oasis Ring
             _builder.Create(RecipeType.OasisRing, SkillType.Smithery)
@@ -344,7 +344,7 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.SmitheryRecipeDefinition
                 .Component("ref_keromber", 5)
                 .Component("lth_imperfect", 5)
                 .Component("ruby", 3)
-                .ForgeParameters(rangeCenter: 46, rangeWidth: 33, coolingRate: 5, startingThermal: 51, shapeShare: 46);
+                .ForgeParameters(rangeCenter: 49, rangeWidth: 25, coolingRate: 9, startingThermal: 52, shapeShare: 38);
 
             // Vintage Ring
             _builder.Create(RecipeType.VintageRing, SkillType.Smithery)
@@ -356,7 +356,7 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.SmitheryRecipeDefinition
                 .Component("ref_keromber", 5)
                 .Component("lth_imperfect", 5)
                 .Component("ruby", 3)
-                .ForgeParameters(rangeCenter: 45, rangeWidth: 35, coolingRate: 5, startingThermal: 49, shapeShare: 46);
+                .ForgeParameters(rangeCenter: 45, rangeWidth: 23, coolingRate: 9, startingThermal: 49, shapeShare: 38);
         }
 
         private void Tier5()
@@ -370,7 +370,7 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.SmitheryRecipeDefinition
                 .EnhancementSlots(RecipeEnhancementType.Armor, 2)
                 .Component("ref_jasioclase", 1)
                 .Component("emerald", 1)
-                .ForgeParameters(rangeCenter: 48, rangeWidth: 28, coolingRate: 4, startingThermal: 51, shapeShare: 44);
+                .ForgeParameters(rangeCenter: 51, rangeWidth: 23, coolingRate: 8, startingThermal: 51, shapeShare: 38);
 
             // Transcendent Ring
             _builder.Create(RecipeType.TranscendentRing, SkillType.Smithery)
@@ -381,7 +381,7 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.SmitheryRecipeDefinition
                 .EnhancementSlots(RecipeEnhancementType.Armor, 2)
                 .Component("ref_jasioclase", 1)
                 .Component("emerald", 1)
-                .ForgeParameters(rangeCenter: 47, rangeWidth: 28, coolingRate: 6, startingThermal: 49, shapeShare: 42);
+                .ForgeParameters(rangeCenter: 51, rangeWidth: 24, coolingRate: 8, startingThermal: 50, shapeShare: 38);
 
             // Supreme Ring
             _builder.Create(RecipeType.SupremeRing, SkillType.Smithery)
@@ -392,7 +392,7 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.SmitheryRecipeDefinition
                 .EnhancementSlots(RecipeEnhancementType.Armor, 2)
                 .Component("ref_jasioclase", 1)
                 .Component("emerald", 1)
-                .ForgeParameters(rangeCenter: 49, rangeWidth: 28, coolingRate: 6, startingThermal: 51, shapeShare: 46);
+                .ForgeParameters(rangeCenter: 45, rangeWidth: 23, coolingRate: 8, startingThermal: 43, shapeShare: 38);
 
             // Eternal Ring
             _builder.Create(RecipeType.EternalRing, SkillType.Smithery)
@@ -404,7 +404,7 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.SmitheryRecipeDefinition
                 .Component("ref_jasioclase", 5)
                 .Component("lth_high", 5)
                 .Component("emerald", 3)
-                .ForgeParameters(rangeCenter: 45, rangeWidth: 20, coolingRate: 5, startingThermal: 46, shapeShare: 45);
+                .ForgeParameters(rangeCenter: 47, rangeWidth: 24, coolingRate: 9, startingThermal: 55, shapeShare: 38);
 
             // Skysteel Ring
             _builder.Create(RecipeType.SkysteelRing, SkillType.Smithery)
@@ -416,7 +416,7 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.SmitheryRecipeDefinition
                 .Component("ref_jasioclase", 5)
                 .Component("lth_high", 5)
                 .Component("emerald", 3)
-                .ForgeParameters(rangeCenter: 48, rangeWidth: 23, coolingRate: 5, startingThermal: 44, shapeShare: 47);
+                .ForgeParameters(rangeCenter: 44, rangeWidth: 24, coolingRate: 8, startingThermal: 51, shapeShare: 38);
 
             // Rose Ring
             _builder.Create(RecipeType.RoseRing, SkillType.Smithery)
@@ -428,7 +428,7 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.SmitheryRecipeDefinition
                 .Component("ref_jasioclase", 5)
                 .Component("lth_high", 5)
                 .Component("emerald", 3)
-                .ForgeParameters(rangeCenter: 46, rangeWidth: 23, coolingRate: 7, startingThermal: 49, shapeShare: 45);
+                .ForgeParameters(rangeCenter: 52, rangeWidth: 24, coolingRate: 8, startingThermal: 58, shapeShare: 38);
 
             // Moonflame Ring
             _builder.Create(RecipeType.MoonflameRing, SkillType.Smithery)
@@ -440,7 +440,7 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.SmitheryRecipeDefinition
                 .Component("ref_jasioclase", 5)
                 .Component("lth_high", 5)
                 .Component("emerald", 3)
-                .ForgeParameters(rangeCenter: 51, rangeWidth: 24, coolingRate: 6, startingThermal: 44, shapeShare: 41);
+                .ForgeParameters(rangeCenter: 51, rangeWidth: 24, coolingRate: 8, startingThermal: 57, shapeShare: 38);
 
             // Chaos Ring
             _builder.Create(RecipeType.ChaosRing, SkillType.Smithery)
@@ -459,7 +459,7 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.SmitheryRecipeDefinition
                 .Component("ref_scordspar", 5)
                 .Component("ref_plagionite", 5)
                 .Component("ref_keromber", 5)
-                .ForgeParameters(rangeCenter: 46, rangeWidth: 25, coolingRate: 7, startingThermal: 51, shapeShare: 43);
+                .ForgeParameters(rangeCenter: 52, rangeWidth: 24, coolingRate: 8, startingThermal: 58, shapeShare: 38);
 
             // Arkanian Dragon Ward Ring
             _builder.Create(RecipeType.ArkanianDragonWardRing, SkillType.Smithery)
@@ -478,7 +478,7 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.SmitheryRecipeDefinition
                 .Component("ref_scordspar", 5)
                 .Component("ref_plagionite", 5)
                 .Component("ref_keromber", 5)
-                .ForgeParameters(rangeCenter: 47, rangeWidth: 27, coolingRate: 5, startingThermal: 44, shapeShare: 46);
+                .ForgeParameters(rangeCenter: 45, rangeWidth: 24, coolingRate: 8, startingThermal: 50, shapeShare: 38);
 
             // Arkanian Dragon Force Ring
             _builder.Create(RecipeType.ArkanianDragonForceRing, SkillType.Smithery)
@@ -497,7 +497,7 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.SmitheryRecipeDefinition
                 .Component("ref_scordspar", 5)
                 .Component("ref_plagionite", 5)
                 .Component("ref_keromber", 5)
-                .ForgeParameters(rangeCenter: 49, rangeWidth: 19, coolingRate: 6, startingThermal: 44, shapeShare: 41);
+                .ForgeParameters(rangeCenter: 44, rangeWidth: 24, coolingRate: 8, startingThermal: 51, shapeShare: 38);
 
             // Magus Ring
             _builder.Create(RecipeType.MagusRing, SkillType.Smithery)
@@ -516,7 +516,7 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.SmitheryRecipeDefinition
                 .Component("ref_scordspar", 5)
                 .Component("ref_plagionite", 5)
                 .Component("ref_keromber", 5)
-                .ForgeParameters(rangeCenter: 45, rangeWidth: 19, coolingRate: 6, startingThermal: 48, shapeShare: 43);
+                .ForgeParameters(rangeCenter: 51, rangeWidth: 24, coolingRate: 8, startingThermal: 57, shapeShare: 38);
 
             // Immortal Ring
             _builder.Create(RecipeType.ImmortalRing, SkillType.Smithery)
@@ -535,7 +535,7 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.SmitheryRecipeDefinition
                 .Component("ref_scordspar", 5)
                 .Component("ref_plagionite", 5)
                 .Component("ref_keromber", 5)
-                .ForgeParameters(rangeCenter: 46, rangeWidth: 26, coolingRate: 7, startingThermal: 47, shapeShare: 44);
+                .ForgeParameters(rangeCenter: 50, rangeWidth: 24, coolingRate: 9, startingThermal: 55, shapeShare: 38);
         }
 
         private void Tier1A()
@@ -550,7 +550,7 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.SmitheryRecipeDefinition
                 .Component("ref_veldite", 2)
                 .Component("jade", 2)
                 .Component("lth_ruined", 1)
-                .ForgeParameters(rangeCenter: 51, rangeWidth: 51, coolingRate: 1, startingThermal: 64, shapeShare: 46);
+                .ForgeParameters(rangeCenter: 48, rangeWidth: 32, coolingRate: 3, startingThermal: 51, shapeShare: 38);
 
             // Mystic Ring
             _builder.Create(RecipeType.MysticRing, SkillType.Smithery)
@@ -562,7 +562,7 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.SmitheryRecipeDefinition
                 .Component("ref_veldite", 2)
                 .Component("jade", 2)
                 .Component("fiberp_ruined", 1)
-                .ForgeParameters(rangeCenter: 49, rangeWidth: 53, coolingRate: 2, startingThermal: 69, shapeShare: 47);
+                .ForgeParameters(rangeCenter: 47, rangeWidth: 34, coolingRate: 3, startingThermal: 51, shapeShare: 38);
 
             // Vanguard Ring
             _builder.Create(RecipeType.VanguardRing, SkillType.Smithery)
@@ -574,7 +574,7 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.SmitheryRecipeDefinition
                 .Component("ref_veldite", 2)
                 .Component("jade", 2)
                 .Component("elec_ruined", 1)
-                .ForgeParameters(rangeCenter: 52, rangeWidth: 52, coolingRate: 2, startingThermal: 65, shapeShare: 47);
+                .ForgeParameters(rangeCenter: 46, rangeWidth: 39, coolingRate: 3, startingThermal: 52, shapeShare: 38);
         }
 
         private void Tier2A()
@@ -589,7 +589,7 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.SmitheryRecipeDefinition
                 .Component("ref_scordspar", 2)
                 .Component("agate", 2)
                 .Component("lth_flawed", 1)
-                .ForgeParameters(rangeCenter: 50, rangeWidth: 46, coolingRate: 2, startingThermal: 58, shapeShare: 42);
+                .ForgeParameters(rangeCenter: 42, rangeWidth: 34, coolingRate: 5, startingThermal: 51, shapeShare: 36);
 
             // Oracle Ring
             _builder.Create(RecipeType.OracleRing, SkillType.Smithery)
@@ -601,7 +601,7 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.SmitheryRecipeDefinition
                 .Component("ref_scordspar", 2)
                 .Component("agate", 2)
                 .Component("fiberp_flawed", 1)
-                .ForgeParameters(rangeCenter: 46, rangeWidth: 46, coolingRate: 2, startingThermal: 60, shapeShare: 45);
+                .ForgeParameters(rangeCenter: 50, rangeWidth: 52, coolingRate: 2, startingThermal: 64, shapeShare: 39);
 
             // Onslaught Ring
             _builder.Create(RecipeType.OnslaughtRing, SkillType.Smithery)
@@ -613,7 +613,7 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.SmitheryRecipeDefinition
                 .Component("ref_scordspar", 2)
                 .Component("agate", 2)
                 .Component("elec_flawed", 1)
-                .ForgeParameters(rangeCenter: 51, rangeWidth: 43, coolingRate: 4, startingThermal: 63, shapeShare: 44);
+                .ForgeParameters(rangeCenter: 44, rangeWidth: 40, coolingRate: 4, startingThermal: 55, shapeShare: 37);
         }
 
         private void Tier3A()
@@ -628,7 +628,7 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.SmitheryRecipeDefinition
                 .Component("ref_plagionite", 2)
                 .Component("citrine", 2)
                 .Component("lth_good", 1)
-                .ForgeParameters(rangeCenter: 47, rangeWidth: 44, coolingRate: 3, startingThermal: 55, shapeShare: 45);
+                .ForgeParameters(rangeCenter: 48, rangeWidth: 21, coolingRate: 9, startingThermal: 58, shapeShare: 38);
 
             // Arcanist Ring
             _builder.Create(RecipeType.ArcanistRing, SkillType.Smithery)
@@ -640,7 +640,7 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.SmitheryRecipeDefinition
                 .Component("ref_plagionite", 2)
                 .Component("citrine", 2)
                 .Component("fiberp_good", 1)
-                .ForgeParameters(rangeCenter: 48, rangeWidth: 44, coolingRate: 5, startingThermal: 53, shapeShare: 43);
+                .ForgeParameters(rangeCenter: 48, rangeWidth: 20, coolingRate: 2, startingThermal: 49, shapeShare: 38);
 
             // Maverick Ring
             _builder.Create(RecipeType.MaverickRing, SkillType.Smithery)
@@ -652,7 +652,7 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.SmitheryRecipeDefinition
                 .Component("ref_plagionite", 2)
                 .Component("citrine", 2)
                 .Component("elec_good", 1)
-                .ForgeParameters(rangeCenter: 49, rangeWidth: 37, coolingRate: 3, startingThermal: 60, shapeShare: 44);
+                .ForgeParameters(rangeCenter: 48, rangeWidth: 25, coolingRate: 6, startingThermal: 35, shapeShare: 38);
         }
 
         private void Tier4A()
@@ -667,7 +667,7 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.SmitheryRecipeDefinition
                 .Component("ref_keromber", 2)
                 .Component("ruby", 2)
                 .Component("lth_imperfect", 1)
-                .ForgeParameters(rangeCenter: 52, rangeWidth: 34, coolingRate: 6, startingThermal: 54, shapeShare: 44);
+                .ForgeParameters(rangeCenter: 51, rangeWidth: 20, coolingRate: 9, startingThermal: 53, shapeShare: 38);
 
             // Luminary Ring
             _builder.Create(RecipeType.LuminaryRing, SkillType.Smithery)
@@ -679,7 +679,7 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.SmitheryRecipeDefinition
                 .Component("ref_keromber", 2)
                 .Component("ruby", 2)
                 .Component("fiberp_imperfect", 1)
-                .ForgeParameters(rangeCenter: 48, rangeWidth: 36, coolingRate: 6, startingThermal: 55, shapeShare: 45);
+                .ForgeParameters(rangeCenter: 48, rangeWidth: 26, coolingRate: 9, startingThermal: 51, shapeShare: 38);
 
             // Apex Ring
             _builder.Create(RecipeType.ApexRing, SkillType.Smithery)
@@ -691,7 +691,7 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.SmitheryRecipeDefinition
                 .Component("ref_keromber", 2)
                 .Component("ruby", 2)
                 .Component("elec_imperfect", 1)
-                .ForgeParameters(rangeCenter: 47, rangeWidth: 35, coolingRate: 5, startingThermal: 52, shapeShare: 46);
+                .ForgeParameters(rangeCenter: 49, rangeWidth: 24, coolingRate: 9, startingThermal: 52, shapeShare: 38);
         }
 
 }

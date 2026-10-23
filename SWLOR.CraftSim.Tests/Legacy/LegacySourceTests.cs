@@ -16,7 +16,12 @@ namespace SWLOR.CraftSim.Tests.Legacy
         private static readonly Regex Citation = new(@"\b(?<file>[A-Za-z]+\.cs):(?<first>\d+)(?:-(?<last>\d+))?", RegexOptions.Compiled);
 
         public static IEnumerable<TestCaseData> References =>
-            LegacySource.All.Select(reference => new TestCaseData(reference).SetArgDisplayNames(reference.Name));
+            LegacySource.All.Where(reference => !reference.IsFrozen)
+                .Select(reference => new TestCaseData(reference).SetArgDisplayNames(reference.Name));
+
+        public static IEnumerable<TestCaseData> FrozenReferences =>
+            LegacySource.All.Where(reference => reference.IsFrozen)
+                .Select(reference => new TestCaseData(reference).SetArgDisplayNames(reference.Name));
 
         [TestCaseSource(nameof(References))]
         public void EveryAnchorIsStillInTheCitedSource(SourceReference reference)
@@ -42,6 +47,26 @@ namespace SWLOR.CraftSim.Tests.Legacy
 
             if (outside.Count > 0)
                 Assert.Warn($"{reference.Citation} ({reference.Name}) has drifted from its cited lines; update LegacySource. Anchors elsewhere: {string.Join(" | ", outside)}");
+        }
+
+        [TestCaseSource(nameof(FrozenReferences))]
+        public void AFrozenReferenceNamesTheLastCommitThatHeldAFileTheServerNoLongerHas(SourceReference reference)
+        {
+            reference.FrozenAt.Should().MatchRegex("^[0-9a-f]{40}$", $"{reference.Name} is cited to the last commit that held {reference.File}");
+            reference.Anchors.Should().BeEmpty("a frozen rule has nothing left to check against");
+            File.Exists(Path.Combine(SharedData.Root, reference.File.Replace('/', Path.DirectorySeparatorChar)))
+                .Should().BeFalse($"{reference.File} is gone, so {reference.Name} cannot be anchored to it; anchor it again if the file returns");
+        }
+
+        [Test]
+        public void EveryRuleOfTheDeletedCraftWindowIsFrozenAtOneCommit()
+        {
+            var window = LegacySource.All.Where(reference => reference.File == LegacySource.CraftViewModel).ToList();
+
+            window.Should().NotBeEmpty();
+            window.Should().OnlyContain(reference => reference.IsFrozen && reference.FrozenAt == LegacySource.CraftViewModelCommit);
+            LegacySource.All.Where(reference => reference.IsFrozen).Should().BeEquivalentTo(window,
+                "only the deleted window's rules are frozen");
         }
 
         private static IEnumerable<string> PortedCode() =>

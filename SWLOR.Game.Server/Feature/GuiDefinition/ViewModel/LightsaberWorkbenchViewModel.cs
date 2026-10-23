@@ -51,12 +51,6 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
             set => Set(value);
         }
 
-        public int SelectedLightBrightnessIndex
-        {
-            get => Get<int>();
-            set => Set(value);
-        }
-
         public int SelectedLightColor
         {
             get => Get<int>();
@@ -187,10 +181,7 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
 
             RefreshWeaponType();
             SelectedLightColor = LightsaberWorkbench.MatchBladeLightColor;
-            // Dim (5m) by default; the larger Normal (15m) light is opt-in.
-            SelectedLightBrightnessIndex = 0;
             WatchOnClient(model => model.SelectedLightColor);
-            WatchOnClient(model => model.SelectedLightBrightnessIndex);
         }
 
         private void RefreshWeaponType()
@@ -527,18 +518,8 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
                 return;
             }
 
-            if (SelectedLightBrightnessIndex != 0 &&
-                SelectedLightBrightnessIndex != 1)
-            {
-                StatusText = "Select Dim (5m) or Normal (15m) lighting.";
-                StatusColor = GuiColor.Red;
-                return;
-            }
-
             var lightColor = (LightColor)resolvedLightColor;
-            var lightBrightness = SelectedLightBrightnessIndex == 0
-                ? LightBrightness.Dim
-                : LightBrightness.Normal;
+            var lightBrightness = LightBrightness.Dim;
             if (!ValidateSelectedInputs())
             {
                 StatusText = "A selected input is no longer available. Reselect your inputs and try again.";
@@ -657,9 +638,8 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
             }
 
             ApplyBladeLight(item, lightColor, lightBrightness);
-            var lightRange = lightBrightness == LightBrightness.Dim ? "Dim (5m)" : "Normal (15m)";
             var description = GetDescription(item);
-            SetDescription(item, $"{description}\n\nLight Color: {lightColor}\nLight Range: {lightRange}");
+            SetDescription(item, $"{description}\n\nLight Color: {lightColor}\nLight Range: Dim (5m)");
 
             Currency.TakeCurrency(Player, CurrencyType.KyberToken, 1);
             SendMessageToPC(Player, $"You spend a Kyber Token constructing your {GetName(item)}. Total Kyber Tokens: {Currency.GetCurrency(Player, CurrencyType.KyberToken)}");

@@ -31,16 +31,17 @@ namespace SWLOR.CraftSim.Search
             var outside = new List<string>();
             foreach (var rank in _options.Ranks)
             {
-                var careless = _parity.Sample(rank, 1, SearchPlayerKind.Careless).ActionsPerBoard;
-                var skilled = _parity.Sample(rank, 1, SearchPlayerKind.Skilled).ActionsPerBoard;
-                var oracle = _parity.Sample(rank, 1, SearchPlayerKind.Oracle).ActionsPerBoard;
+                var effects = _options.EffectsAt(rank);
+                var careless = _parity.Sample(rank, 1, SearchPlayerKind.Careless, effects).ActionsPerBoard;
+                var skilled = _parity.Sample(rank, 1, SearchPlayerKind.Skilled, effects).ActionsPerBoard;
+                var oracle = _parity.Sample(rank, 1, SearchPlayerKind.Oracle, effects).ActionsPerBoard;
                 var inside = new[] { careless, skilled, oracle }.All(actions => target.Contains(actions));
                 if (!inside)
                     outside.Add($"rank {rank} ({Number(careless)}, {Number(skilled)}, {Number(oracle)} actions)");
 
                 table.Add(
                     rank.ToString(),
-                    SearchSetup.ForRank(rank, 1).Searches.ToString(),
+                    SearchSetup.ForRank(rank, 1, effects).Searches.ToString(),
                     Number(careless, 2),
                     Number(skilled, 2),
                     Number(oracle, 2),

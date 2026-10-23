@@ -57,12 +57,23 @@ namespace SWLOR.Game.Server.Service.ScavengeService
         public static int WeightOf(LootTableItem item, int treasureHunterLevel) =>
             item.Weight + (treasureHunterLevel > 0 && item.IsRare ? treasureHunterLevel * TreasureHunterWeightPerLevel : 0);
 
-        /// <summary>The weights of the entries a roll chooses from. A Dig Deeper's roll multiplies the weight of the rare entries.</summary>
-        public static IReadOnlyList<(LootTableItem Item, int Weight)> Weights(LootTable table, int treasureHunterLevel, bool deeper, int deeperWeightBonus = 0)
+        /// <summary>
+        /// The weights of the entries a roll chooses from. A Dig Deeper's roll multiplies the weight of the rare entries by
+        /// <see cref="DeeperWeightMultiplier"/> and the dig bonus; an ordinary find multiplies them by 1 and the find bonus (0 unless a
+        /// perk grants it, which leaves the roll exactly as scavenging always did).
+        /// </summary>
+        public static IReadOnlyList<(LootTableItem Item, int Weight)> Weights(
+            LootTable table,
+            int treasureHunterLevel,
+            bool deeper,
+            int deeperWeightBonus = 0,
+            int findWeightBonus = 0)
         {
-            var rare = deeper ? RareEntries(table) : (IReadOnlyList<LootTableItem>)Array.Empty<LootTableItem>();
+            var boosted = deeper || findWeightBonus > 0;
+            var rare = boosted ? RareEntries(table) : (IReadOnlyList<LootTableItem>)Array.Empty<LootTableItem>();
+            var multiplier = deeper ? DeeperWeightMultiplier + deeperWeightBonus : 1 + findWeightBonus;
             return table
-                .Select(item => (item, WeightOf(item, treasureHunterLevel) * (deeper && rare.Contains(item) ? DeeperWeightMultiplier + deeperWeightBonus : 1)))
+                .Select(item => (item, WeightOf(item, treasureHunterLevel) * (boosted && rare.Contains(item) ? multiplier : 1)))
                 .ToList();
         }
 
@@ -70,10 +81,10 @@ namespace SWLOR.Game.Server.Service.ScavengeService
         /// The share of a roll's chances that land on the table's rare entries: their weight over the table's total (what Treasure Hunter
         /// raises), with a Dig Deeper's multiplier on the rare entries when <paramref name="deeper"/>.
         /// </summary>
-        public static double RareShare(LootTable table, int treasureHunterLevel, bool deeper, int deeperWeightBonus = 0)
+        public static double RareShare(LootTable table, int treasureHunterLevel, bool deeper, int deeperWeightBonus = 0, int findWeightBonus = 0)
         {
             var rare = RareEntries(table);
-            var weights = Weights(table, treasureHunterLevel, deeper, deeperWeightBonus);
+            var weights = Weights(table, treasureHunterLevel, deeper, deeperWeightBonus, findWeightBonus);
             var total = weights.Sum(entry => (double)entry.Weight);
             return total <= 0 ? 0 : weights.Where(entry => rare.Contains(entry.Item)).Sum(entry => (double)entry.Weight) / total;
         }
@@ -82,12 +93,19 @@ namespace SWLOR.Game.Server.Service.ScavengeService
         /// Rolls one find. The entry is chosen by weight, then the quantity is 1 to the entry's maximum, and gold gets the Creditfinder
         /// bonus as <c>quantity += (int)(quantity * 0.2 * level)</c>.
         /// </summary>
-        public static ScavengeFind Roll(LootTable table, int treasureHunterLevel, int creditFinderLevel, bool deeper, IMinigameRandom random, int deeperWeightBonus = 0)
+        public static ScavengeFind Roll(
+            LootTable table,
+            int treasureHunterLevel,
+            int creditFinderLevel,
+            bool deeper,
+            IMinigameRandom random,
+            int deeperWeightBonus = 0,
+            int findWeightBonus = 0)
         {
             if (random == null)
                 throw new ArgumentNullException(nameof(random));
 
-            var weights = Weights(table, treasureHunterLevel, deeper, deeperWeightBonus);
+            var weights = Weights(table, treasureHunterLevel, deeper, deeperWeightBonus, findWeightBonus);
             var total = weights.Sum(entry => Math.Max(0, entry.Weight));
             LootTableItem chosen;
             if (total <= 0)

@@ -36,6 +36,9 @@ SWLOR crafting simulator
       Plays the Agriculture Angler line and writes its evidence: each purchase alone, the whole line at every rank against Quick Reel and the unperked fight, the two styles, and the special rare fish.
   chef-perks [--runs 40] [--seed 1] [--recipes-per-band 6] [--styles-only] [--mid-gear-only] [--candidates 40/25/35;...] [--out report.md] [--repo path]
       Plays the Agriculture Chef line and writes its evidence: each purchase's effect on actions, CP and quality at rank 50, the two styles compared, the whole line at every rank, and the styles' magnitudes against gate 2.
+  gathering-perks [--runs 4000] [--seed 1] [--part all|prospecting|search|styles|gates|refining|bible] [--out report.md] [--repo path]
+      Plays the Gathering Prospector and Treasure Seeker lines and writes their evidence: each purchase's effect on the Prospecting session and the Search board, the caps every loadout stays under,
+      the two styles against each other, the line against the unperked gatherer, and Bulk Refining.
   builder-perks [--runs 60] [--seed 1] [--recipes-per-band 8] [--out report.md] [--repo path]
       Plays the Fabrication Builder line and writes its evidence: each purchase's effect on actions, CP and quality at rank 50, the two styles compared, and the whole line at every rank.
 """;
@@ -62,6 +65,7 @@ try
         "builder-perks" => BuilderPerksCommand.Run(args.Skip(1).ToArray(), Console.Out),
         "angler-perks" => AnglerPerksCommand.Run(args.Skip(1).ToArray(), Console.Out),
         "chef-perks" => ChefPerksCommand.Run(args.Skip(1).ToArray(), Console.Out),
+        "gathering-perks" => GatheringPerksCommand.Run(args.Skip(1).ToArray(), Console.Out),
         "researcher-perks" => ResearcherPerksCommand.Run(args.Skip(1).ToArray(), Console.Out),
         _ => Fail($"Unknown command '{args[0]}'.")
     };

@@ -83,7 +83,7 @@ Before any work, read `AGENTS.md` and these guides, plus every guide named in th
 | Looks | **Hull Designs** are skins for one specific ship. They launch from model variants and Trellis2 adds more. They're unlocked by Design Schematics and swapped by starport **Refit**. |
 | Slots | High / Mid / Low. No configuration slot. |
 | Modules | About 20 families, an item every 5 ranks (0-45), rank-50 named boss modules. A weapon fires at its hull's size. |
-| Crafting | No new skill. Space crafting spreads across Smithery, Engineering, Fabrication, Agriculture and Gathering. A component layer has trade-off traits, manufacturer and rare components. Research blueprints work for hulls and modules. |
+| Crafting | No new skill. Engineering builds every ship and module, as today, from components that Smithery, Agriculture and Engineering make; Fabrication builds station buildings and holding upgrades; Gathering refines. A component layer has trade-off traits, manufacturer and rare components. Research blueprints work for hulls and modules. |
 | Combat | Shared ground rules: crits, one Attack and one Defense, EM/Thermal/Explosive resistances, shared status effects, threat, PvP rules. |
 | Attributes | Energy weapons use AGI accuracy and PER damage; launchers use PER accuracy and MGT damage, like ranged and melee weapons on the ground. AGI evasion, PER crit, VIT hull defense, WIL shields/capacitor/repair, MGT STM for maneuvers, SOC command and trade prices. |
 | Activation | Modules with a cycle are toggles that fire themselves each cycle and switch off when they can't fire. Lit icons show what's on, and a Ship HUD shows targets. |
@@ -92,7 +92,7 @@ Before any work, read `AGENTS.md` and these guides, plus every guide named in th
 | Enemies | Every NPC ship gets a size and a role behavior. New groups: pirates, customs patrols, Hutt enforcers, derelict defenses, convoys, aces. |
 | World | 3 new small-ship zones with 3 new materials. Salvage from wrecks. Starlane fixes. Size limits on docking. |
 | Trade | Cargo held as ship data, about 20 commodities, dock exchanges with moving prices, contraband and customs, pirates, freight contracts, faction standing, city tariffs. |
-| Migration | Piloting ranks keep their meaning and Piloting perks are refunded. No Rebuild Token. Ships and modules convert to their new equivalents. |
+| Migration | Every character gets one Rebuild Token. Piloting perks are refunded. Ships and modules convert to their new equivalents. |
 | Wild Space | Six persistent tier-5.5 systems reached through hidden, rotating rifts, each with an environmental effect, held by the Rift Raiders pirate coalition. |
 | Exploration | A Probe Launcher reveals hidden sites (rift, combat, data, cache, gas, derelict) and jumps the party to them. |
 | Slicing | Espionage's Slicing perk works in space: data cans, locked pirate caches, ace and boss wreck data cores, derelict terminals and lockboxes, lockboxes dropped by NPC ships, customs spoofing and agent data heists. Espionage XP and space reward tables. |
@@ -167,7 +167,7 @@ Paths are relative to `SWLOR.Game.Server/`.
 | Zones | 13 open orbits plus the Abandoned Station | Abandoned Station becomes Small/Medium only; 3 new Small/Medium zones |
 | Enemies | 7 hull types per faction, one shared AI | Sizes, 8 role behaviors, 5 new groups, aces, encounters |
 | Docking | Any ship at any dock | Capitals at major ports; city starport level gates size |
-| Crafting | Engineering makes everything from refined ore plus electronics | Smithery, Engineering, Fabrication, Agriculture and Gathering share the work; components with traits; research blueprints |
+| Crafting | Engineering makes everything from refined ore plus electronics | Engineering still builds ships and modules, now from components (Smithery's metal parts, Agriculture's life support, its own electronics) with traits; Fabrication builds stations and holdings; research blueprints |
 | Starlanes | Smuggler's Moon unreachable; Korriban return skips | New lanes; return fixed |
 
 ## 4. Skills
@@ -662,25 +662,25 @@ Crafted intermediates that hull and module recipes consume. Appendix D lists eve
 - **Recipe levels:** they match the rank schedule. The rule "required rank = recipe level - 3" stays.
 ### Who crafts space items
 
-There is no new crafting skill. Space work spreads across the existing crafts by theme, so a hull needs parts from several crafters and they trade with each other. Self-sufficiency costs more on purpose: no single craft builds a whole ship, the same way no ground fighter crafts their own weapon, armor and stims.
+There is no new crafting skill. Engineering keeps building every ship and module, as it does today: the 2026-10-22 crafting logs show 37 characters crafting ships, weapons, ammo or plating in a month, 25 of them at Engineering 40-50 and almost none with Smithery or Fabrication. Crafters still trade, because every hull needs metal components from a smith, and the big hulls need life support from a farmer.
 
 | Skill | Space items |
 |---|---|
-| Smithery | Weapon modules (every High-slot weapon, capital weapons included), Hull Plating, Resist Plating, ammo (missiles, torpedoes, concussion missiles), and the metal components: Hull Frame, Ordnance Assembly, Thruster Assembly, Aurodium Plating |
-| Engineering | Every other module (shields, repairers, capacitor, electronic warfare, tackle, sensors, Probe Launcher, Data Analyzer, Cloaking Device, Afterburner, Thrusters, Damage Amplifier, Targeting Computer, mining and salvage gear), Hypermatter capsules, enhancements, droids and industrial droid parts, and the electronic components: Ship Reactor, Energy Emitter, Shield Projector, Sensor Suite, Extraction Head, Thorilide Core, Prototype Core |
-| Fabrication | Final assembly of all 50 ships, the Cargo Expander and Smuggling Compartment, Station Cores and station buildings (Shipyard, Asteroid Drill, Jump Beacon), holding upgrades and Processing Plants, and interior trophies and decor |
+| Engineering | Final assembly of all 50 ships; every module (weapons and capital weapons, Hull Plating, Resist Plating, shields, repairers, capacitor, electronic warfare, tackle, sensors, Probe Launcher, Data Analyzer, Cloaking Device, Afterburner, Thrusters, Damage Amplifier, Targeting Computer, Cargo Expander, Smuggling Compartment, mining and salvage gear); ammo (missiles, torpedoes, concussion missiles); Hypermatter capsules; enhancements; droids and industrial droid parts; and the electronic components: Ship Reactor, Energy Emitter, Shield Projector, Sensor Suite, Extraction Head, Thorilide Core, Prototype Core |
+| Smithery | The metal components: Hull Frame, Ordnance Assembly, Thruster Assembly, Aurodium Plating |
 | Agriculture | Life Support System (hydroponics), a component of Light and Heavy Freighters, Cruisers and Command Ships |
+| Fabrication | Station Cores and station buildings (Shipyard, Asteroid Drill, Jump Beacon), holding upgrades and Processing Plants, and interior trophies and decor |
 | Gathering | Refining: ores, the new materials, and Ship Scrap into electronics (no recipes) |
 
 - **Hull recipes:**
-  - Each ship is one Fabrication recipe needing a Hull Frame, a Ship Reactor, a Thruster Assembly, its role's component and its manufacturer's component.
+  - Each ship is one Engineering recipe needing a Hull Frame, a Ship Reactor, a Thruster Assembly, its role's component and its manufacturer's component.
   - Advanced ships add one rare component.
   - Large and Capital Advanced ships, and every Capital ship, are assembled at a station Shipyard.
 - **Recipe levels (draft):**
   - Standard: the ship's Piloting gate + 5.
   - Advanced: its Advanced gate + 5.
   - Capital Advanced recipes are level 52, the tier-5.5 recipe level, as on the ground.
-- **Moving recipes:** today's ship, module and ammo recipes leave Engineering for the skills above. Recipe unlocks a player already has are remapped, never dropped (`CombatUpgradeMigration.md` rule).
+- **Existing recipes:** today's ship, module and ammo recipes stay in Engineering. Recipe unlocks a player already has are remapped to the new items, never dropped (`CombatUpgradeMigration.md` rule).
 - **Hull quality:** starship enhancements remain the way to improve a hull.
 
 ### Research
@@ -715,12 +715,15 @@ There is no new crafting skill. Space work spreads across the existing crafts by
 
 One release, one migration set (`Migrations.md`): server migrations first, then character migrations, then the saved-data item sweep.
 
-- **No Rebuild Token.** Piloting keeps its meaning and grows to cover every space hull and module, so nobody needs to move ranks. Miners raise Gathering normally.
+- **Rebuild Token for every character**, regardless of skills or perks.
+  - Use `CharacterMigration/RebuildTokenGrant.cs` in a new character migration.
+  - There is no forced rebuild. Piloting ranks stay as they are and keep their meaning.
+  - Skill rank limits ship first, in their own pull request (`SkillRankLimitsPlan.md`, zunath/SWLOR_NWN#2810). The login notice mentions them, so players can set limits before spending the token.
 - **Refund every Piloting perk** as SP: Starships, Defensive Modules, Offensive Modules, Mining Modules, Energy Management, Starship Mining, Intuitive Piloting.
   - Use `CharacterRecalculation.RefundPerk` with a login notice.
   - Remove their feats.
   - Clean `UnlockedPerks`.
-- **Login notice:** must say plainly that Piloting now covers every space hull and module, so every piece of gear a pilot can fit today stays fittable; that the old Piloting perks are refunded as SP to spend on the four new styles; and that space mining, gas and salvage move to Gathering.
+- **Login notice:** must say plainly that Piloting now covers every space hull and module, so every piece of gear a pilot can fit today stays fittable; that the old Piloting perks are refunded as SP to spend on the four new styles; that space mining, gas and salvage move to Gathering; and that every character has a free Rebuild Token to move ranks.
 - **Items** (inventories, storage, bank, market listings, deeds, installed modules on `PlayerShip`):
   - Converted ships keep their interior: the property keeps the layout it already has (`WorldProperty.Layout`), so no furniture moves or breaks. Only ships built after the release use the new ship's layout.
   - Old hulls map to new ships as below, and the owner gets the old model unlocked as a design of the new ship:
@@ -835,14 +838,14 @@ Everything merges to one integration branch and releases together.
 | W0 | Bible drafts | Piloting (Revamp) perk tab with four styles (drafted as Proposed on the plan branch); Starships tab rewrite (hulls, modules, components, traits); space enemy sections; trade tab (commodities, prices) | Owner approval gates W2-W9 numbers |
 | W1 | Foundations | Piloting gating and seat skills, space `StatType`s, resistance types, High/Mid/Low and slot tags in `ShipStatus`, removing configs, size x role data model, `RequiresSkill` on space items | - |
 | W2 | Combat rules | Shared crit, resist, status and threat; attribute mapping; regen; toggle and auto-fire loop; Ship HUD; PvP; escape pods; repair bills | W1 |
-| W3 | Ships and modules | 50 ships (Appendix C) with model scales, Hull Designs and Refit, about 20 module families x rank steps, size scaling, icons with lit variants, store, moving recipes to their new crafting skills, ship transfers and market sales | W1, W0 |
+| W3 | Ships and modules | 50 ships (Appendix C) with model scales, Hull Designs and Refit, about 20 module families x rank steps, size scaling, icons with lit variants, store, component inputs for the existing Engineering recipes, ship transfers and market sales | W1, W0 |
 | W4 | Perks and abilities | Four Piloting styles, Gathering space perks, space abilities and IDs | W1, W2, W0 |
 | W5 | Enemies | NPC conversion, role AI, new groups, aces, encounters, spawn tables, DM Space tab | W2, W3 |
 | W6 | World | Salvage and wrecks, gas harvesting, new materials, 3 zones (Module JSON), station flags, starlanes, docking limits | W3 |
 | W7 | Trade | Cargo data, exchange NUI, pricing service, HoloNet board, contraband and customs, pirates, freight contracts, factions, city tariffs, trade XP | W3, W5, W6 |
 | W8 | Crew | Stations, consoles, `AttachCamera` and hidden crew, droid crew, permissions, power routing, Command crew bonuses, Engineering, Espionage and Leadership seat bonuses, ship-to-ship docking and the Dock permission | W2, W3, W4 |
 | W9 | Crafting and rewards | Component layer and traits, recipes, research blueprints, named modules, Design Schematics, trophies and decor, ammo variants, achievements | W3, W6 |
-| W10 | Migration | Perk refunds, item and ship conversion, stamp cleanup, design unlocks, notices | W1, W3, W9 |
+| W10 | Migration | Rebuild Token, perk refunds, item and ship conversion, stamp cleanup, design unlocks, notices | W1, W3, W9 |
 | W12 | Wild Space and exploration | 6 Wild Space areas and environments, rifts, Rift Raiders, Probe Launcher, signatures, Jump to Signature, Sensor Sweep, data/cache/gas/combat sites, Scanner HUD tab, space slicing (Data Analyzer, new slicing sources, space reward tables, customs spoofing) | W2, W3, W5 |
 | W13 | Stations | Station city layout, Station Core, anchor sites, deck areas, Shipyard, Asteroid Drill, Jump Beacons, Station Fuel, passenger shuttle route | W3, W7 |
 | W14 | Holdings and droids | Holdings terminal, types, upgrades, production chains, events, ground sites; industrial droid parts, Industry stat, AI instructions, droid bays | W7, W9 |
@@ -1020,7 +1023,7 @@ A station is a **player city in space** and follows every city mechanic, in `Ser
 - upgrades
 
 **Founding**
-- A **Station Core**, crafted with Engineering, takes the place of the City Hall item. It is used at an **anchor site**: 2 per orbit and 1-2 per Wild Space system, one station per site.
+- A **Station Core**, crafted with Fabrication, takes the place of the City Hall item. It is used at an **anchor site**: 2 per orbit and 1-2 per Wild Space system, one station per site.
 - Founding creates two things:
   - the station exterior at the site, using the existing `[mdrn]SpaceStation` placeable scaled by city level
   - the station's own interior deck area, which is the city's land. The City Hall sits inside it.

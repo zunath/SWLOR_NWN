@@ -97,7 +97,7 @@ namespace SWLOR.CraftSim.Tests.Scenario
             var atRank = (KitchenEngine)scenario.CreateEngine(Request(
                 recipe, 30, new CraftStyle("Rank", (Func<int, KitchenPerkStats>)(rank => new KitchenPerkStats(ReducePercent: rank)))));
 
-            fixedStats.Stats.Perks.LowHeatDonenessPercent.Should().Be(80);
+            fixedStats.Stats.Perks.LowHeatDonenessPercent.Should().Be(100);
             atRank.Stats.Perks.ReducePercent.Should().Be(30);
         }
 
@@ -129,7 +129,7 @@ namespace SWLOR.CraftSim.Tests.Scenario
             slow.Limitations.Should().Contain(text => text.Contains("Slow Cooking"));
 
             var recipe = Recipe(25);
-            ((KitchenEngine)slow.CreateEngine(Request(recipe, 50))).Stats.Perks.LowHeatDonenessPercent.Should().Be(100);
+            ((KitchenEngine)slow.CreateEngine(Request(recipe, 50))).Stats.Perks.LowHeatDonenessPercent.Should().Be(80);
             ((KitchenEngine)flash.CreateEngine(Request(recipe, 50))).Stats.Perks.HighDriftReductionPercent.Should().Be(15);
             ((KitchenEngine)slow.CreateEngine(Request(recipe, 10))).Stats.Perks.LowHeatDonenessPercent.Should().Be(0, "no style below rank 20");
             ((KitchenEngine)slow.CreateEngine(Request(recipe, 25))).Stats.Perks.HasReduce.Should().BeTrue();

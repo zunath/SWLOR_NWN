@@ -100,6 +100,56 @@ public static class TwinPistolEquipmentEngineTests
         }
     }
 
+    [EngineTest("Twin Pistol removal is not reported as a stray off hand while a real stray still is", Category = "TwinPistolEquipment", TimeoutSeconds = 60f)]
+    public static async Task RemovalReportsNoStrayCompanion(EngineTestContext ctx)
+    {
+        const string strayError = "The off-hand pistol is created automatically by equipping a Twin Pistols item.";
+        using var player = await PlayerAbilityFixture.CreateAsync(ctx);
+        player.Update(record => record.Skills[SkillType.TwinPistol].Rank = 25);
+        var actor = player.Creature;
+        var main = await ctx.EquipItemAsync(actor, "b_twinpistol", InventorySlot.RightHand);
+        var spare = await WaitForPair(ctx, actor, main);
+        foreach (var hand in new[] { "main", "off" })
+        {
+            var requested = hand == "main" ? main : spare;
+            var removing = spare;
+            await ctx.ExecuteInCreatureContextAsync(actor, () =>
+            {
+                // The production guard that a native unequip request of either hand runs.
+                ctx.Assert(EquipmentUnequip.TryHandle(actor, requested), $"The {hand} hand request removes the pair");
+                // Its after-event runs before the spare's deferred destroy, with this exact arrangement.
+                ctx.Assert(GetItemInSlot(InventorySlot.RightHand, actor) != main, "The owned item has left the hand");
+                ctx.AssertEqual(removing, GetItemInSlot(InventorySlot.LeftHand, actor), "The spare is still in the hand");
+                ctx.Assert(TwinPistolEquipment.IsDestroyingCompanion(removing), "The spare is already being destroyed");
+                ctx.Assert(!TwinPistolEquipment.IsLinkedPair(actor, GetItemInSlot(InventorySlot.RightHand, actor), removing),
+                    "The leaving spare no longer belongs to an equipped item");
+                var judged = TwinPistolEquipmentValidation.TryGetHandErrors(actor, out var mainError, out var companionError);
+                ctx.Assert(!judged, $"Removing the {hand} hand is not judged mid-change; reported '{mainError}{companionError}'");
+            });
+            await WaitForRemovedPair(ctx, actor, main, removing);
+            await ctx.ExecuteInCreatureContextAsync(actor, () =>
+            {
+                var judged = TwinPistolEquipmentValidation.TryGetHandErrors(actor, out var mainError, out var companionError);
+                ctx.Assert(judged && string.IsNullOrEmpty(mainError) && string.IsNullOrEmpty(companionError),
+                    $"The settled empty hands are valid; reported '{mainError}{companionError}'");
+            });
+            AssertOwnedItems(ctx, actor, main, 0);
+            await EquipExisting(ctx, actor, main, InventorySlot.RightHand);
+            spare = await WaitForPair(ctx, actor, main);
+        }
+
+        await ctx.ExecuteInCreatureContextAsync(actor, () =>
+        {
+            // An off-hand gun that no longer belongs to the equipped item is a real stray.
+            DeleteLocalObject(spare, TwinPistolEquipment.MainWeaponVariable);
+            var judged = TwinPistolEquipmentValidation.TryGetHandErrors(actor, out _, out var companionError);
+            ctx.Assert(judged, "A stray off hand is judged");
+            ctx.AssertEqual(strayError, companionError, "A stray off-hand pistol is still reported");
+            SetLocalObject(spare, TwinPistolEquipment.MainWeaponVariable, main);
+        });
+        AssertOwnedItems(ctx, actor, main, 1);
+    }
+
     [EngineTest("Twin Pistol whole-pair removal applies equipment stat deltas exactly once", Category = "TwinPistolEquipment", TimeoutSeconds = 45f)]
     public static async Task WholePairStatDeltas(EngineTestContext ctx)
     {

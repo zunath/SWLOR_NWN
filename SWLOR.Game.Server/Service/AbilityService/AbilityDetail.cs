@@ -66,6 +66,8 @@ namespace SWLOR.Game.Server.Service.AbilityService
         public float MaxRange { get; set; }
         public bool IsHostileAbility { get; set; }
         public int? WeaponAbilityFlowDamagePerCharge { get; set; }
+        /// <summary>A Twin Pistol builder ability keeps Flow; only its finishers and other skills' weapon abilities spend it.</summary>
+        public bool KeepsWeaponAbilityFlow { get; set; }
         /// <summary>
         /// The impact schedules damage through a status or callback even when its immediate
         /// base damage is zero. Hostile hit damage bonuses remain eligible on that impact.

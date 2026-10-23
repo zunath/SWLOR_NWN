@@ -57,7 +57,9 @@ namespace SWLOR.Game.Server.Service.LogService
         [LogGroup("PrivateNames", ServerEnvironmentType.All)]
         PrivateNames,
         [LogGroup("PublicDescriptors", ServerEnvironmentType.All)]
-        PublicDescriptors
+        PublicDescriptors,
+        [LogGroup("DroidEquipment", ServerEnvironmentType.All)]
+        DroidEquipment
     }
 
     public class LogGroupAttribute : Attribute

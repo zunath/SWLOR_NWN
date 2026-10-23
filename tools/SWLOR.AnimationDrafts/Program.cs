@@ -92,6 +92,26 @@ try
         return 0;
     }
 
+    if (args.Length is 5 or 6 && args[0] == "bake-choreography")
+    {
+        // Bakes one recipe that has no inventory entry (an ordinary attack or movement clip) into its
+        // editable project, which `install` then publishes. Inventory recipes use generate-active.
+        if (args.Length == 6 && args[5] != "--overwrite") throw new ArgumentException("Unknown bake option.");
+        var modelPath = Path.GetFullPath(args[1]);
+        var bakeRecipe = ChoreographyAuthor.Read(await ReadText(args[2])).SingleOrDefault(r => r.Id == args[3])
+            ?? throw new InvalidDataException("No choreography named " + args[3]);
+        var sources = new Dictionary<string, MdlModel>();
+        foreach (var sourceName in bakeRecipe.Beats.Where(b => b.SourceModel != null).Select(b => b.SourceModel!).Distinct())
+            sources.Add(sourceName, new MdlReader().Parse(ReadBytes(Path.Combine(Path.GetDirectoryName(modelPath)!, sourceName + ".mdl"))));
+        var baked = ChoreographyAuthor.Bake(new MdlReader().Parse(ReadBytes(modelPath)), bakeRecipe, sources);
+        var bakedOutput = Path.GetFullPath(args[4]);
+        using var bakedFile = new FileStream(bakedOutput, args.Contains("--overwrite") ? FileMode.Create : FileMode.CreateNew, FileAccess.Write);
+        using var bakedWriter = new StreamWriter(bakedFile);
+        await bakedWriter.WriteAsync(baked.Serialize() + "\n");
+        Console.WriteLine($"Baked {bakeRecipe.Id} ({baked.Duration:0.00}s) to {bakedOutput}");
+        return 0;
+    }
+
     if (args.Length is 3 or 4 && args[0] == "preview")
     {
         if (args.Length == 4 && args[3] != "--overwrite") throw new ArgumentException("Unknown preview option.");

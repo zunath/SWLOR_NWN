@@ -144,12 +144,8 @@ namespace SWLOR.Game.Server.Service
                 "Weather updated for {AreaResref}: revision {Revision}, heat {Heat}, humidity {Humidity}, wind {Wind}, precipitation {Precipitation}, storm {Storm}",
                 GetResRef(area), state.Revision, conditions.Heat, conditions.Humidity, conditions.Wind,
                 conditions.Precipitation, conditions.Storm);
-            NWScript.SetWeather(area, conditions.Precipitation switch
-            {
-                Precipitation.Rain => WeatherType.Rain,
-                Precipitation.Snow => WeatherType.Snow,
-                _ => WeatherType.Clear
-            });
+            if (state.TryApplyWeather(conditions.NativeWeather, NWScript.GetWeather(area)))
+                NWScript.SetWeather(area, conditions.NativeWeather);
 
             DeleteLocalInt(area, "GS_AM_SKY_OVERRIDE");
             DeleteLocalInt(area, "DUST_STORM");

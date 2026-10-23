@@ -9,6 +9,15 @@ import re
 import sys
 from pathlib import Path
 
+# Weapon-space move of the male human's support palm from the stock clip to the shipped
+# hold bank, per pose. Must match SUPPORT_OFFSETS in
+# SWLOR_Haks/tools/GenerateRifleHoldAnimations.py (tools/tests/test_render_rifle_grip.py).
+SUPPORT_OFFSETS = {
+    'xbowr': (0.0454, -0.007, 0.04),
+    'xbowrdy': (-0.0787, -0.0136, 0.0),
+    'xbowshot': (-0.0787, -0.0136, 0.0),
+}
+
 
 def hand_pose_transforms(skeleton_text, animation_text, pose='xbowrdy'):
     """Resolve both hand geometry hooks relative to the weapon hook at pose start.
@@ -117,6 +126,8 @@ def main():
     parser.add_argument('--skeleton',type=Path,help='ASCII pmh0 skeleton for both-hand review')
     parser.add_argument('--left-hand',type=Path,help='ASCII pmh0_handl001; requires --skeleton')
     parser.add_argument('--pose',default='xbowr',choices=('xbowr','xbowrdy','xbowshot'))
+    parser.add_argument('--stock-support',action='store_true',
+                        help='Show the stock clip support palm instead of where the shipped hold bank puts it')
     parser.add_argument('--fit',type=Path)
     parser.add_argument('--output',type=Path,required=True)
     args=parser.parse_args(sys.argv[sys.argv.index('--')+1:])
@@ -145,7 +156,8 @@ def main():
         left_verts,left_faces,left_position,left_orientation=hand_geometry(args.left_hand.read_text(), 'left')
         left_mesh=bpy.data.meshes.new('Human left-hand reference');left_mesh.from_pydata(left_verts,[],left_faces);left_mesh.update()
         left=bpy.data.objects.new('Human left-hand reference',left_mesh);bpy.context.collection.objects.link(left)
-        left.matrix_world=poses['l'] @ Matrix.Translation(left_position) @ left_orientation.to_matrix().to_4x4()
+        support=Matrix.Identity(4) if args.stock_support else Matrix.Translation(Vector(SUPPORT_OFFSETS[args.pose]))
+        left.matrix_world=support @ poses['l'] @ Matrix.Translation(left_position) @ left_orientation.to_matrix().to_4x4()
         left_mesh.materials.append(material)
     scene.render.engine='BLENDER_EEVEE';scene.eevee.taa_render_samples=64
     scene.render.resolution_x=1400;scene.render.resolution_y=900;scene.render.resolution_percentage=100

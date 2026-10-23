@@ -248,6 +248,18 @@ public class SavedDataItemSweepTests
         starListing.Should().ContainSingle().Which.Should().Be(("iwthsh_042", MarketCategoryType.Throwing));
     }
 
+    [Test]
+    public void AppearanceCatalog_MovesShippedHelmetsOffRevansMask()
+    {
+        // Sentinel's Visor shipped on helmet 223 (Darth Revan's mask and hood); its blueprint now uses 187.
+        Migrate(Encode(Item("guardmst_l7", BaseItem.Helmet, 223)), out var visor, true, out _).Should().BeTrue();
+        (Int(Read(visor), "ModelPart1"), Int(Read(visor), "xModelPart1")).Should().Be((187, 187));
+
+        // The same pass also revises the visor's stats, so check only the restyled model.
+        Migrate(Encode(Item("guardmst_l7", BaseItem.Helmet, 110)), out var customized, true, out _);
+        Int(Read(customized), "ModelPart1").Should().Be(110, "a copy restyled away from 223 keeps its choice");
+    }
+
     [TestCase(30, 5, 35)]
     [TestCase(0, 5, 35)]
     [TestCase(0, 30, 30)]
@@ -278,19 +290,23 @@ public class SavedDataItemSweepTests
         Migrate(migrated, out _, true, out _).Should().BeFalse();
     }
 
-    // Shipped bracers: retired Poison Defense alone or beside crafted Poison Resistance, Poison Defense the combat
-    // replacement already converted (with and without crafting), and a copy with neither.
+    // Shipped bracers and wraps: retired Poison Defense alone or beside crafted Poison Resistance, Poison Defense the
+    // combat replacement already converted (with and without crafting), and a copy with neither.
     [TestCase(30, 0, 0)]
     [TestCase(30, 5, 5)]
     [TestCase(0, 35, 5)]
     [TestCase(0, 30, 0)]
     [TestCase(0, 0, 0)]
-    public void CarapaceBracer_RemovesRetiredPoisonProtection(int poisonDefense, int poisonResistance, int expectedResistance)
+    [TestCase(30, 0, 0, "cara_wraps")]
+    [TestCase(30, 5, 5, "cara_wraps")]
+    [TestCase(0, 35, 5, "cara_wraps")]
+    public void CarapaceBracer_RemovesRetiredPoisonProtection(int poisonDefense, int poisonResistance, int expectedResistance,
+        string resref = "cara_bracer")
     {
         var properties = new List<object> { Property(ItemPropertyType.Defense, (int)CombatDamageType.Physical, 35, 23) };
         if (poisonDefense > 0) properties.Add(Property(ItemPropertyType.Defense, (int)CombatDamageType.Poison, 35, poisonDefense));
         if (poisonResistance > 0) properties.Add(Property(ItemPropertyType.Resistance, (int)ResistanceType.Poison, 54, poisonResistance));
-        var original = Encode(Item("cara_bracer", BaseItem.Bracer, null, properties.ToArray()));
+        var original = Encode(Item(resref, resref == "cara_wraps" ? BaseItem.Gloves : BaseItem.Bracer, null, properties.ToArray()));
 
         Migrate(original, out var migrated, true, out _).Should().BeTrue();
 

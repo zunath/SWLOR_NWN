@@ -24,6 +24,22 @@ public class DMChatCommandTests
     }
 
     [Test]
+    public void BattleGrid_OpensForDMsAndAdminsWithoutATarget()
+    {
+        var commands = new DMChatCommand().BuildChatCommands();
+
+        commands.Should().ContainKey("battlegrid");
+
+        var command = commands["battlegrid"];
+        command.Authorization.Should().Be(AuthorizationLevel.DM | AuthorizationLevel.Admin);
+        command.AvailableToAllOnTestEnvironment.Should().BeFalse("the grid is shown to every player in the area");
+        command.RequiresTarget.Should().BeFalse();
+        command.ValidateArguments.Should().BeNull("an admin on a player character must not be turned away after passing the permission check");
+        // The action opening the window is covered in-engine by DMToolbarEngineTests.BattleGridDrawsAndRemovesSections.
+        command.DoAction.Should().NotBeNull();
+    }
+
+    [Test]
     public void SpawnBeastEgg_AllowsStaffAndTestUsersToCreateTypedEggs()
     {
         var commands = new DMChatCommand().BuildChatCommands();

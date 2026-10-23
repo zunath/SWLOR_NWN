@@ -154,6 +154,13 @@ namespace SWLOR.Game.Server.Service.AbilityService
             return this;
         }
 
+        /// <summary>The ability neither spends nor benefits from Flow, so it can build charges for a finisher.</summary>
+        public AbilityBuilder KeepsWeaponAbilityFlow()
+        {
+            _activeAbility.KeepsWeaponAbilityFlow = true;
+            return this;
+        }
+
         /// <summary>Retains a timed native impact gesture without adding an action-queue delay.</summary>
         public AbilityBuilder UsesImmediateNativeImpactAnimation(float duration)
         {

@@ -14,7 +14,16 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
         IGuiRefreshable<SkillXPRefreshEvent>,
         IGuiRefreshable<RPXPRefreshEvent>
     {
+        /// <summary>
+        /// The Limit combo value for a skill with no rank limit. Every other value is the rank limit plus one.
+        /// </summary>
+        public const int NoRankLimitSelection = 0;
+
         private readonly List<SkillType> _viewableSkills = new();
+        private readonly List<int> _savedRankLimitSelections = new();
+
+        public static int GetRankLimitSelection(int? rankLimit) =>
+            rankLimit == null ? NoRankLimitSelection : rankLimit.Value + 1;
 
         public string AvailableXP
         {
@@ -82,6 +91,12 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
             set => Set(value);
         }
 
+        public GuiBindingList<int> RankLimitSelections
+        {
+            get => Get<GuiBindingList<int>>();
+            set => Set(value);
+        }
+
         public GuiBindingList<bool> DistributeRPXPButtonEnabled
         {
             get => Get<GuiBindingList<bool>>();
@@ -118,6 +133,7 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
             SelectedCategoryId = 0;
             LoadSkills(Skill.GetAllActiveSkillsForDisplay());
             WatchOnClient(model => model.SelectedCategoryId);
+            WatchOnClient(model => model.RankLimitSelections);
         }
 
         private void LoadSkills(Dictionary<SkillType, SkillAttribute> skills)
@@ -126,6 +142,7 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
             var dbPlayer = DB.Get<Player>(playerId);
 
             _viewableSkills.Clear();
+            _savedRankLimitSelections.Clear();
             var skillNames = new GuiBindingList<string>();
             var levels = new GuiBindingList<int>();
             var titles = new GuiBindingList<string>();
@@ -135,6 +152,7 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
             var decayLockTexts = new GuiBindingList<string>();
             var decayLockColors = new GuiBindingList<GuiColor>();
             var decayLockButtonEnabled = new GuiBindingList<bool>();
+            var rankLimitSelections = new GuiBindingList<int>();
             var distributeRPXPButtonEnabled = new GuiBindingList<bool>();
             var distributeRPXPTooltips = new GuiBindingList<string>();
 
@@ -158,6 +176,9 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
                 decayLockTexts.Add(GetDecayLockText(playerSkill.IsLocked, skill.ContributesToSkillCap));
                 decayLockColors.Add(GetDecayLockColor(playerSkill.IsLocked, skill.ContributesToSkillCap));
                 decayLockButtonEnabled.Add(skill.ContributesToSkillCap);
+                var rankLimitSelection = GetRankLimitSelection(Skill.GetRankLimit(playerSkill, skill));
+                rankLimitSelections.Add(rankLimitSelection);
+                _savedRankLimitSelections.Add(rankLimitSelection);
                 distributeRPXPButtonEnabled.Add(dbPlayer.UnallocatedXP > 0);
                 distributeRPXPTooltips.Add($"Distribute RP XP ({dbPlayer.UnallocatedXP})");
             }
@@ -173,6 +194,7 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
             DecayLockTexts = decayLockTexts;
             DecayLockColors = decayLockColors;
             DecayLockButtonEnabled = decayLockButtonEnabled;
+            RankLimitSelections = rankLimitSelections;
             DistributeRPXPButtonEnabled = distributeRPXPButtonEnabled;
             DistributeRPXPButtonTooltips = distributeRPXPTooltips;
         }
@@ -258,6 +280,43 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
             DecayLockColors[index] = GetDecayLockColor(isLocked, true);
             DecayLockTexts[index] = GetDecayLockText(isLocked, true);
         };
+
+        protected override void OnClientPropertyUpdated(string propertyName)
+        {
+            if (propertyName != nameof(RankLimitSelections))
+                return;
+
+            var selections = RankLimitSelections;
+            if (selections == null || selections.Count != _viewableSkills.Count)
+                return;
+
+            var playerId = GetObjectUUID(Player);
+            var dbPlayer = DB.Get<Player>(playerId);
+            var changed = false;
+
+            // The client reports the whole list, so save each row whose Limit changed.
+            for (var index = 0; index < selections.Count; index++)
+            {
+                if (selections[index] == _savedRankLimitSelections[index])
+                    continue;
+
+                var type = _viewableSkills[index];
+                var details = Skill.GetSkillDetails(type);
+                var pcSkill = dbPlayer.Skills[type];
+                pcSkill.RankLimit = selections[index] == NoRankLimitSelection
+                    ? null
+                    : Math.Clamp(selections[index] - 1, 0, details.MaxRank);
+                changed = true;
+
+                var savedSelection = GetRankLimitSelection(Skill.GetRankLimit(pcSkill, details));
+                _savedRankLimitSelections[index] = savedSelection;
+                if (selections[index] != savedSelection)
+                    selections[index] = savedSelection;
+            }
+
+            if (changed)
+                DB.Set(dbPlayer);
+        }
 
         public Action OnClickDistributeRPXP() => () =>
         {

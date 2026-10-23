@@ -29,6 +29,9 @@ public sealed partial class WeaponCombatState
     public double ControlDefenseUntil { get; private set; }
     public double ReversalUntil { get; private set; }
     private float _attackDebt;
+    private const double HeldSetupResolveSeconds = 0.001;
+    private HeldSetup _heldSetup;
+    private sealed record HeldSetup(PendingCast Cast, uint Target, MeleeTechniqueStage Stage, DateTime ExpiresAt);
     private ActiveStatus _stance;
     private Combatant _windowEnemy;
     private Combatant _retaliationEnemy;
@@ -43,7 +46,8 @@ public sealed partial class WeaponCombatState
         StatusEffectBase stance = owner.Spec.WeaponCombat.Stance switch
         {
             "Flow" => new FlowStanceStatusEffect(), "Bruiser" => new BruiserStanceStatusEffect(),
-            "Berserker" => new BerserkerStanceStatusEffect(), "Scrapper" => new ScrapperStanceStatusEffect(), _ => null
+            "Berserker" => new BerserkerStanceStatusEffect(), "Scrapper" => new ScrapperStanceStatusEffect(),
+            "Crusher" => new CrusherStanceStatusEffect(), _ => null
         };
         if (stance is BerserkerStanceStatusEffect)
             typeof(BerserkerStanceStatusEffect).GetMethod("Apply", BindingFlags.Instance | BindingFlags.NonPublic)!.Invoke(stance, new object[] { 0u, 0 });
@@ -58,7 +62,7 @@ public sealed partial class WeaponCombatState
             owner.Statuses[stance.GetType().Name] = _stance;
         }
         foreach (var stat in AllSources.SelectMany(s => s.Where(x => x.Value != 0).Select(x => x.Key)).Distinct())
-            if (!SupportedStats.Contains(stat.ToString()) && !SweepSupportedStats.Contains(stat) && !Simulation.SupportsPerkStat(stat))
+            if (!SupportedStats.Contains(stat.ToString()) && !SweepSupportedStats.Contains(stat) && !FormulaSupportedStats.Contains(stat) && !Simulation.SupportsPerkStat(stat))
                 throw new InvalidDataException($"WeaponCombat does not implement perk stat {stat}.");
     }
     // Movement and enmity have no effect in stationary fights; resistance and control durations still apply.
@@ -82,6 +86,13 @@ public sealed partial class WeaponCombatState
         "DefensePercentAdjustment", "ForceDefensePercentAdjustment", "ForceAttackPercentAdjustment", "AttackPercentAdjustment", "EvasionPercentAdjustment", "AttackDelayReductionPercent",
         "MobilityResistance", "TraumaResistance", "SingleWeaponDamagePercentAdjustment"
     };
+    /// <summary>A self status put on a weapon-calibrated combatant mid-fight must carry only stats the simulation reads.</summary>
+    public static void RequireSupportedStatus(Type statusType)
+    {
+        foreach (var stat in SWLOR.CombatSim.Effects.StatusStats.Get(statusType).Where(x => x.Value != 0).Select(x => x.Key))
+            if (!SupportedStats.Contains(stat.ToString()) && !SweepSupportedStats.Contains(stat) && !FormulaSupportedStats.Contains(stat) && !Simulation.SupportsPerkStat(stat))
+                throw new InvalidDataException($"WeaponCombat does not implement {statusType.Name} stat {stat}.");
+    }
     private IEnumerable<IReadOnlyDictionary<StatType, int>> AllSources =>
         Sources.Cast<IReadOnlyDictionary<StatType, int>>().Concat(_owner.Statuses.Values.Select(s => s.Stats));
     public int Stat(StatType stat) => AllSources.Aggregate(0, (sum, s) => SWLOR.Game.Server.Service.Stat.AggregateStatAdjustment(stat, sum, s.GetValueOrDefault(stat)));
@@ -106,7 +117,7 @@ public sealed partial class WeaponCombatState
         }
         if (_retaliationEnemy?.IsDead == true) { Reactions.ClearRetaliation(); _retaliationEnemy = null; }
         if (_windowEnemy?.IsDead == true) { Reactions.ClearWindow(); _windowEnemy = null; }
-        if (Sequence.Stage != MeleeTechniqueStage.None && (SetupEnemy == null || SetupEnemy.IsDead || !Sequence.Matches(Sequence.Target, At(now)) ||
+        if (Sequence.Stage != MeleeTechniqueStage.None && (SetupEnemy == null || SetupEnemy.IsDead || !Sequence.Matches(Sequence.Target, At(now)) && !IsSetupHeld(_owner.Casting) ||
             Sequence.Stage == MeleeTechniqueStage.Distraction && (!SetupEnemy.Weapon.Rattled.TryGetValue(_owner.SimId, out var rattled) || rattled.Until <= now)))
         {
             if (SetupEnemy?.IsDead != true) Count("SetupExpired");
@@ -138,12 +149,30 @@ public sealed partial class WeaponCombatState
         if (_owner.Stm < use.MinimumStaminaBeforeUse) return false;
         if (info.Technique != null && (!_owner.Spec.WeaponCombat.AllowTechniqueAbilities || !Resources.CanActivate(At(now)))) return false;
         var stage = Stage(target, now);
+        if (info.Technique is { RequiredStages: not MeleeTechniqueStage.None } required &&
+            (Line != required.Line || (stage & required.RequiredStages) == 0)) return false;
         if (use.RequiredSetup != "Any" && use.RequiredSetup != stage.ToString()) return false;
         if (use.WaitForWeave && stage == MeleeTechniqueStage.Opening && Sequence.WeavePower > 0) return false;
         return true;
     }
-    public TechniqueActivation Begin(AbilityInfo info, AbilityUseSpec use, Combatant target, int paid, double now)
+    /// <summary>A technique that requires a setup keeps the one its cast started with (MeleeTechnique.HoldSetupForCast).</summary>
+    public void HoldSetupForCast(PendingCast cast, double now)
     {
+        _heldSetup = null;
+        var required = cast.Ability.Technique?.RequiredStages ?? MeleeTechniqueStage.None;
+        if (required == MeleeTechniqueStage.None) return;
+        Refresh(now);
+        if (Line != cast.Ability.Technique.Line || !Sequence.Matches(cast.Target.SimId, At(now)) || (Sequence.Stage & required) == 0) return;
+        _heldSetup = new HeldSetup(cast, Sequence.Target, Sequence.Stage, Sequence.ExpiresAt);
+    }
+    private bool IsSetupHeld(PendingCast cast) =>
+        cast != null && _heldSetup is { } held && held.Cast == cast &&
+        Sequence.Target == held.Target && Sequence.Stage == held.Stage && Sequence.ExpiresAt == held.ExpiresAt;
+    public TechniqueActivation Begin(AbilityInfo info, AbilityUseSpec use, Combatant target, int paid, double now, PendingCast cast = null)
+    {
+        // The game resolves the held setup at completion; renew it for this instant so the shared path spends it.
+        if (IsSetupHeld(cast)) Sequence.Begin(Sequence.Target, Sequence.Stage, At(now + HeldSetupResolveSeconds), Sequence.WeavePower);
+        _heldSetup = null;
         if (info.IsHostile && info.IsAimed) Target(target, now);
         var accuracy = info.IsHostile ? SetupAccuracy(target, now) : 0;
         var stage = MeleeTechniqueStage.None;
@@ -183,10 +212,11 @@ public sealed partial class WeaponCombatState
         Casts[use.Feat] = Casts.GetValueOrDefault(use.Feat) + 1;
         return new TechniqueActivation { Stage = stage, ConditionalPower = conditional, Accuracy = accuracy, FlatPower = flat, HitPercent = hit, PaidStamina = paid };
     }
-    public void ApplyStatusRiders(StatusEffectCategory appliedCategories, double now)
+    public void ApplyStatusRiders(StatusEffectCategory appliedCategories, double now, Combatant target = null)
     {
-        if ((appliedCategories & (StatusEffectCategory)Stat(StatType.StatusAppliedRequiredCategory)) != StatusEffectCategory.None &&
-            Stat(StatType.StatusAppliedSelfDefensePercentAdjustment) > 0 && Stat(StatType.StatusAppliedSelfDurationSeconds) > 0)
+        if ((appliedCategories & (StatusEffectCategory)Stat(StatType.StatusAppliedRequiredCategory)) == StatusEffectCategory.None) return;
+        ApplyStatusAppliedBonuses(target, now);
+        if (Stat(StatType.StatusAppliedSelfDefensePercentAdjustment) > 0 && Stat(StatType.StatusAppliedSelfDurationSeconds) > 0)
             ControlDefenseUntil = now + Stat(StatType.StatusAppliedSelfDurationSeconds);
     }
     public void Complete(AbilityInfo info, AbilityUseSpec use, TechniqueActivation activation, Combatant target, bool landed, double now)
@@ -273,6 +303,7 @@ public sealed partial class WeaponCombatState
     {
         Refresh(now);
         if (Control.IsDazed(now)) Count("DazedSeconds", Math.Min(step, Control.DazedUntil-now));
+        if (Control.IsKnockedDown(now)) Count("KnockdownSeconds", Math.Min(step, Control.KnockdownUntil-now));
         if (Reactions.GetWindowStage(At(now)) == MeleeTechniqueStage.Opening) Count("FlowEvasionSeconds", Math.Min(step, (Reactions.WindowExpires-At(now)).TotalSeconds));
         if (Reactions.GetWindowStage(At(now)) == MeleeTechniqueStage.Finish) Count("FlowHasteSeconds", Math.Min(step, (Reactions.WindowExpires-At(now)).TotalSeconds));
         if (now < HighGuardUntil) Count("HighGuardEvasionSeconds", Math.Min(step, HighGuardUntil-now));
@@ -280,6 +311,6 @@ public sealed partial class WeaponCombatState
         Count("AreaHastePercentSeconds", AreaHaste(now) * step);
         if (now < AvoidedAccuracyUntil) Count("AvoidedAccuracySeconds", Math.Min(step, AvoidedAccuracyUntil-now));
     }
-    public void Death() { ClearSweepBenefits(); Control.Clear(); _retaliationEnemy = null; _attackDebt = 0; _windowEnemy = null; _stance = null; ClearSetup(); Reactions.ClearBenefits(); Resources.ClearBenefits(); Rattled.Clear(); LowKick.Clear(); HighGuardUntil = ControlDefenseUntil = ReversalUntil = 0; }
+    public void Death() { ClearSweepBenefits(); ClearFormulaState(); Control.Clear(); _retaliationEnemy = null; _attackDebt = 0; _windowEnemy = null; _stance = null; ClearSetup(); Reactions.ClearBenefits(); Resources.ClearBenefits(); Rattled.Clear(); LowKick.Clear(); HighGuardUntil = ControlDefenseUntil = ReversalUntil = 0; }
     public static int Adjust(int value, int percent) => Math.Max(1, value + Math.Sign(percent) * (int)Math.Ceiling(value * Math.Abs(percent) / 100f));
 }

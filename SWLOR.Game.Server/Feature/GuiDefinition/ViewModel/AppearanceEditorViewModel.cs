@@ -172,7 +172,6 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
             _weaponAppearances[BaseItem.Pistol] = pistolAppearance;
             _weaponAppearances[BaseItem.Sling] = pistolAppearance;
             _weaponAppearances[BaseItem.LegacyPistol] = pistolAppearance;
-            _weaponAppearances[BaseItem.CompanionPistol] = new CompanionPistolAppearanceDefinition();
             _weaponAppearances[BaseItem.QuarterStaff] = new QuarterstaffAppearanceDefinition();
             _weaponAppearances[BaseItem.Rifle] = new RifleAppearanceDefinition();
             _weaponAppearances[BaseItem.Shuriken] = new ShurikenAppearanceDefinition();
@@ -1813,12 +1812,16 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
             }
             else if (SelectedItemTypeIndex == 4) // 4 = Weapon (Off Hand)
             {
-                return PowerGloveEquipment.ResolveAppearanceOwner(_target,
-                    GetItemInSlot(InventorySlot.LeftHand, _target));
+                return GetOffHandAppearanceOwner(GetItemInSlot(InventorySlot.LeftHand, _target));
             }
 
             return OBJECT_INVALID;
         }
+
+        // A generated off hand mirrors its owned main-hand item, so its edits apply to that item.
+        private uint GetOffHandAppearanceOwner(uint offHand) =>
+            TwinPistolEquipment.ResolveAppearanceOwner(_target,
+                PowerGloveEquipment.ResolveAppearanceOwner(_target, offHand));
 
         private void CloseForUnsupportedAppearance()
         {
@@ -2293,7 +2296,7 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
                     break;
                 case 4: // 4 = Weapon (Off Hand)
                     var offHand = GetItemInSlot(InventorySlot.LeftHand, _target);
-                    slot = PowerGloveEquipment.ResolveAppearanceOwner(_target, offHand) != offHand
+                    slot = GetOffHandAppearanceOwner(offHand) != offHand
                         ? InventorySlot.RightHand : InventorySlot.LeftHand;
                     break;
             }

@@ -382,6 +382,9 @@ namespace SWLOR.Game.Server.EngineTests.Definitions.AbilityBehaviors
                         $"target HP setup expected {desiredTargetHitPoints}/{targetMaximumHitPoints} before activation");
                 }
 
+                if (behaviorCase.PrepareActivationAsync != null)
+                    await behaviorCase.PrepareActivationAsync(ctx, caster, target);
+
                 var activationLocation = behaviorCase.SearchForSafeMovementLane
                     ? await PrepareMovementLaneAsync(ctx, behaviorCase, ability, caster, target)
                     : GetLocation(target);

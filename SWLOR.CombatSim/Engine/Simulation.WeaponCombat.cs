@@ -24,9 +24,10 @@ public sealed partial class Simulation
         var accuracy = caster.Weapon.SetupAccuracy(target, _now);
         return (Combat.CalculateHitRate(a.Accuracy + accuracy, WeaponCombatState.Adjust(d.Evasion, target.Weapon.EvasionPercent(_now)), 0) - Combat.CalculateHitRate(a.Accuracy, d.Evasion, 0)) / 100f;
     }
-    private bool ApplyWeaponAbility(Combatant caster, Combatant target, PendingCast cast)
+    private bool ApplyWeaponAbility(Combatant caster, Combatant target, PendingCast cast, bool alwaysHits = false)
     {
-        if (target.IsDead && !cast.Ability.IsAreaAbility) return false;
+        var isArea = IsWeaponArea(cast.Ability);
+        if (target.IsDead && !isArea) return false;
         var technique = cast.Ability.Technique;
         var count = technique?.ImpactCount ?? cast.Use.WeaponHits;
         var weaponPercent = technique?.WeaponDamagePercent ?? cast.Use.WeaponDamagePercent;
@@ -34,7 +35,7 @@ public sealed partial class Simulation
         var secondary = cast.Technique.SweepSecondary;
         BeginWeaponAreaImpact(caster, cast);
         List<Combatant> areaTargets = null;
-        if (cast.Ability.IsAreaAbility)
+        if (isArea)
         {
             if (cast.Ability.WeaponAreaRadius <= 0)
                 throw new InvalidDataException($"Weapon area simulation requires a source-defined self-centered sphere: {cast.Ability.Name}.");
@@ -46,25 +47,64 @@ public sealed partial class Simulation
             ? Enumerable.Range(0, count).Select(index => (Victim: index == 1 && secondary != null ? secondary : target, Index: index))
             : areaTargets.SelectMany(victim => Enumerable.Range(0, count).Select(index => (Victim: victim, Index: index)));
         var hitTargets = new HashSet<uint>();
+        // Charged Blows' bonus joins every impact's DMG until the first damaging hit consumes it (TrackedAbilityImpact).
+        var nextAttackBonus = caster.Weapon.NextAttackBonus(_now);
         foreach (var (victim, index) in impacts)
         {
             if (victim.IsDead) continue;
+            // The profile's baseDamageAdjustment reads the target before this impact's own statuses.
+            var controlled = cast.Ability.ExtraDamageIfTargetControlled != 0 && WeaponCombatState.HasCategory(victim, StatusEffectCategory.Control, _now);
             var power = cast.Use.WeaponPower.Value + (int)(0.15f * caster.Spec.WeaponCombat.WeaponSkillRank) + TechniqueSequence.ScaleWeaponDamage(caster.Spec.WeaponCombat.WeaponDamage, weaponPercent) +
-                TechniqueSequence.SplitPower(cast.Technique.ConditionalPower, count, index) + cast.Technique.FlatPower;
+                TechniqueSequence.SplitPower(cast.Technique.ConditionalPower, count, index) + cast.Technique.FlatPower +
+                (controlled ? cast.Ability.ExtraDamageIfTargetControlled : 0) + nextAttackBonus;
             var accuracy = technique == null ? caster.Weapon.SetupAccuracy(victim, _now) : victim == target ? cast.Technique.Accuracy : 0;
             var hit = RollWeapon(caster, victim, power, accuracy, cast.Technique.HitPercent, false,
                 () =>
                 {
+                    if (controlled) caster.Weapon.Count("ControlledTargetPower");
+                    if (nextAttackBonus != 0)
+                    {
+                        caster.Weapon.TakeNextAttackBonus(_now);
+                        nextAttackBonus = 0;
+                    }
                     if (!hitTargets.Contains(victim.SimId)) ApplyWeaponStatusRiders(caster, victim, cast.Ability);
                     caster.Weapon.CostlyAbilityHit(cast.Technique);
-                });
+                }, alwaysHits);
             landed |= hit;
             if (hit) hitTargets.Add(victim.SimId);
             if (hit && cast.Technique.PaidStamina >= caster.Weapon.Stat(StatType.CostlyAbilityDamageMinimumStaminaCost) && caster.Weapon.Stat(StatType.CostlyAbilityDamageBonus) > 0)
                 caster.Weapon.Count("HighGuardImpacts");
         }
         cast.Technique.ImpactedTargets = hitTargets.Count;
+        if (cast.Ability.RestoresSecondaryTargetStamina && hitTargets.Count > 1)
+            throw new InvalidDataException($"{cast.Ability.Name}'s secondary-target stamina restore is not modeled; use one target.");
         return landed;
+    }
+
+    // Savage Cleave declares a self-centered targeting sphere and a telegraphed area impact without IsAreaAbility.
+    private static bool IsWeaponArea(AbilityInfo ability) => ability.IsAreaAbility || ability.WeaponAreaRadius > 0;
+
+    /// <summary>
+    /// A paid formula weapon ability rides the next attack (ResolveAttackRoll): the native roll uses ability accuracy
+    /// without ordinary penalties, a miss keeps it queued and counts as an avoided attack, and a hit lands the whole
+    /// impact without a second roll while suppressing the carrier's own damage and auto-attack riders.
+    /// </summary>
+    private void ApplyQueuedWeaponAbility(Combatant attacker, Combatant target, QueuedWeaponAbility queued)
+    {
+        var state = attacker.Weapon;
+        state.Target(target, _now);
+        state.Refresh(_now); target.Weapon.Refresh(_now);
+        state.Count("QueuedCarrierAttempts");
+        if (_random.Next(1, 101) > WeaponHitChance(attacker, target, state.SetupAccuracy(target, _now), 0, false))
+        {
+            target.Weapon.AvoidedAttack(_now);
+            return;
+        }
+        attacker.QueuedWeaponAbility = null;
+        var cast = queued.Cast;
+        var landed = ApplyWeaponAbility(attacker, target, cast, alwaysHits: true);
+        state.Complete(cast.Ability, cast.Use, cast.Technique, target, landed, _now);
+        state.CompleteSweep(cast.Technique, _now);
     }
 
     private void CaptureTechniqueSweep(Combatant caster, Combatant target, PendingCast cast)
@@ -79,7 +119,7 @@ public sealed partial class Simulation
 
     private void BeginWeaponAreaImpact(Combatant caster, PendingCast cast)
     {
-        cast.Technique.IsArea = cast.Technique.IsSweep || cast.Ability.IsAreaAbility;
+        cast.Technique.IsArea = cast.Technique.IsSweep || IsWeaponArea(cast.Ability);
         if (cast.Technique.IsArea) caster.Weapon.AreaUsed(_now, cast.Technique.IsSweep);
     }
 
@@ -89,8 +129,84 @@ public sealed partial class Simulation
 
     private void ApplyWeaponStatusRiders(Combatant caster, Combatant target, AbilityInfo ability)
     {
-        // Tracked native impacts resolve statuses and their self riders before flushing lethal damage.
-        caster.Weapon.ApplyStatusRiders(ApplyWeaponStatuses(caster, target, ability), _now);
+        // Tracked native impacts resolve statuses and their riders before flushing lethal damage, in
+        // ApplyHostileCombatImpact's order: primary statuses, ApplySuccessfulAbilityImpactRiders, then afterSuccessfulHit.
+        caster.Weapon.ApplyStatusRiders(ApplyWeaponStatuses(caster, target, ability), _now, target);
+        caster.Weapon.ApplyAbilityTargetStatus(ability, target, _now);
+        ApplyConditionalTargetStatus(caster, target, ability);
+    }
+
+    /// <summary>WeaponAbilityProfile.ApplyTargetConditionalStatus: Ground Quake's Daze-to-Knockdown conversion and Worldbreaker's Daze.</summary>
+    private void ApplyConditionalTargetStatus(Combatant caster, Combatant target, AbilityInfo ability)
+    {
+        if (ability.ConditionalTargetStatus is not { } conditional) return;
+        if (conditional.RequiredStatus != null && !HasWeaponStatus(target, conditional.RequiredStatus)) return;
+        if (conditional.RequiredCategory != StatusEffectCategory.None && !WeaponCombatState.HasCategory(target, conditional.RequiredCategory, _now)) return;
+        var status = (IStatusEffect)Activator.CreateInstance(conditional.Status);
+        var outgoing = StatusEffect.GetOutgoingDurationPercentAdjustment(status.Categories, caster.Weapon.Stat);
+        var pvp = IsPlayerVersusPlayer(caster, target);
+        if (!conditional.ConvertsRequiredStatus)
+        {
+            if (TryApplyControl(caster, target, status, conditional.DurationSeconds, outgoing, pvp) == null)
+                throw new InvalidDataException($"Weapon simulation does not implement conditional {conditional.Status.Name}.");
+            return;
+        }
+        if (status is not KnockdownStatusEffect || conditional.RequiredStatus != typeof(DazedStatusEffect))
+            throw new InvalidDataException($"Weapon simulation does not implement converting {conditional.RequiredStatus?.Name} into {conditional.Status.Name}.");
+        var control = target.Weapon.Control;
+        var duration = target.Weapon.Stat(StatType.KnockdownImmunity) > 0 ? 0 :
+            WeaponControlState.Duration(status, conditional.DurationSeconds, outgoing, MobilityResistance(target), pvp);
+        if (duration > 0 && control.TryConvertDazeToKnockdown(_now, duration, status.Frequency))
+        {
+            caster.Weapon.Count("KnockdownsApplied");
+            caster.Weapon.Count("DazesConverted");
+            // The daze held this swing until its own end; the shorter knockdown releases it sooner.
+            target.NextAttackAt = Math.Min(target.NextAttackAt, control.KnockdownUntil);
+        }
+        else caster.Weapon.Count("KnockdownsResisted");
+    }
+
+    private bool HasWeaponStatus(Combatant target, Type status)
+    {
+        var control = target.Weapon.Control;
+        if (status == typeof(DazedStatusEffect)) return control.IsDazed(_now);
+        if (status == typeof(KnockdownStatusEffect)) return control.IsKnockedDown(_now);
+        if (status == typeof(HamstringStatusEffect)) return _now < control.HamstrungUntil;
+        throw new InvalidDataException($"Weapon simulation does not track {status.Name} as a requirement.");
+    }
+
+    private static int MobilityResistance(Combatant target) => target.Spec.WeaponCombat.MobilityResistance + target.Weapon.Stat(StatType.MobilityResistance);
+
+    /// <summary>Applies a Dazed or Knockdown status (native EffectDazed or EffectKnockdown); null for any other status type.</summary>
+    private bool? TryApplyControl(Combatant caster, Combatant target, IStatusEffect status, int seconds, int outgoing, bool pvp)
+    {
+        var control = target.Weapon.Control;
+        if (status is DazedStatusEffect)
+        {
+            var resistance = target.Spec.WeaponCombat.MindResistance + target.Weapon.Stat(StatType.MindResistance);
+            var duration = target.Weapon.Stat(StatType.DazeImmunity) > 0 ? 0 : WeaponControlState.Duration(status, seconds, outgoing, resistance, pvp);
+            if (control.TryDaze(_now, duration))
+            {
+                caster.Weapon.Count("DazesApplied");
+                target.NextAttackAt = Math.Max(target.NextAttackAt, control.DazedUntil);
+                return true;
+            }
+            caster.Weapon.Count("DazesResisted");
+            return false;
+        }
+        if (status is KnockdownStatusEffect)
+        {
+            var duration = target.Weapon.Stat(StatType.KnockdownImmunity) > 0 ? 0 : WeaponControlState.Duration(status, seconds, outgoing, MobilityResistance(target), pvp);
+            if (control.TryKnockdown(_now, duration))
+            {
+                caster.Weapon.Count("KnockdownsApplied");
+                target.NextAttackAt = Math.Max(target.NextAttackAt, control.KnockdownUntil);
+                return true;
+            }
+            caster.Weapon.Count("KnockdownsResisted");
+            return false;
+        }
+        return null;
     }
 
     private StatusEffectCategory ApplyWeaponStatuses(Combatant caster, Combatant target, AbilityInfo ability)
@@ -98,28 +214,41 @@ public sealed partial class Simulation
         var appliedCategories = StatusEffectCategory.None;
         foreach (var type in ability.ImpactStatusTypes)
         {
-            var status = (IStatusEffect)Activator.CreateInstance(type);
+            var status = ability.WeaponStatusFactory?.Invoke() is { } configured && configured.GetType() == type
+                ? configured : (IStatusEffect)Activator.CreateInstance(type);
             var outgoing = StatusEffect.GetOutgoingDurationPercentAdjustment(status.Categories, caster.Weapon.Stat);
+            var pvp = IsPlayerVersusPlayer(caster, target);
             if (status is HamstringStatusEffect)
             {
-                // Its successful application can grant riders even though movement is not simulated.
-                var mobility = target.Spec.WeaponCombat.MobilityResistance + target.Weapon.Stat(StatType.MobilityResistance);
-                if (WeaponControlState.Duration(status, ability.ImpactStatusDuration, outgoing, mobility, IsPlayerVersusPlayer(caster, target)) > 0)
+                // Movement is not simulated, but Hamstring is a control effect and its application grants riders.
+                var hamstring = WeaponControlState.Duration(status, ability.ImpactStatusDuration, outgoing, MobilityResistance(target), pvp);
+                if (hamstring > 0)
+                {
+                    target.Weapon.Control.Hamstring(_now, hamstring);
                     appliedCategories |= status.Categories;
+                }
                 continue;
             }
-            if (status is not DazedStatusEffect)
-                throw new InvalidDataException($"Weapon simulation does not implement {type.Name}.");
-            var resistance = target.Spec.WeaponCombat.MindResistance + target.Weapon.Stat(StatType.MindResistance);
-            var duration = target.Weapon.Stat(StatType.DazeImmunity) > 0 ? 0 :
-                WeaponControlState.Duration(status, ability.ImpactStatusDuration, outgoing, resistance, IsPlayerVersusPlayer(caster, target));
-            if (target.Weapon.Control.TryDaze(_now, duration))
+            if (status is ExposedStatusEffect)
             {
-                appliedCategories |= status.Categories;
-                caster.Weapon.Count("DazesApplied");
-                target.NextAttackAt = Math.Max(target.NextAttackAt, target.Weapon.Control.DazedUntil);
+                // A stat-only debuff (Rending Strike): its Defense penalty lasts its resisted duration on the target.
+                var resistance = target.Spec.WeaponCombat.TraumaResistance + target.Weapon.Stat(StatType.TraumaResistance);
+                var exposed = WeaponControlState.Duration(status, ability.ImpactStatusDuration, outgoing, resistance, pvp);
+                if (exposed > 0)
+                {
+                    target.Statuses[type.Name] = new ActiveStatus
+                    {
+                        Stats = ((StatusEffectBase)status).StatGroup.Stats.Where(x => x.Value != 0).ToDictionary(x => x.Key, x => x.Value),
+                        ExpiresAt = _now + exposed
+                    };
+                    appliedCategories |= status.Categories;
+                    caster.Weapon.Count("ExposedApplied");
+                }
+                continue;
             }
-            else caster.Weapon.Count("DazesResisted");
+            var applied = TryApplyControl(caster, target, status, ability.ImpactStatusDuration, outgoing, pvp)
+                ?? throw new InvalidDataException($"Weapon simulation does not implement {type.Name}.");
+            if (applied) appliedCategories |= status.Categories;
         }
         if (ability.InterruptsTarget && target.Casting != null)
         {
@@ -143,28 +272,43 @@ public sealed partial class Simulation
         var hit = RollWeapon(attacker, target, attacker.Spec.WeaponCombat.WeaponDamage + weave, accuracy, 0, true);
         if (weave > 0 && hit) state.Count("WeavesLanded");
     }
+    /// <summary>Accuracy against evasion; Rattled's ordinary-weapon penalty applies only to ordinary attacks.</summary>
+    private int WeaponHitChance(Combatant attacker, Combatant target, int accuracyBonus, int hitPercent, bool ordinary)
+    {
+        var a = attacker.Spec.WeaponCombat; var d = target.Spec.WeaponCombat;
+        var penalty = ordinary ? attacker.Weapon.Rattled.Values.Select(x => x.Penalty).DefaultIfEmpty().Max() : 0;
+        var evasion = WeaponCombatState.Adjust(d.Evasion, target.Weapon.EvasionPercent(_now));
+        // Stat.ApplyPostAccuracyStatusModifiers: a percent of accuracy, rounded away from zero.
+        var accuracyPercent = attacker.Weapon.AccuracyPercent(_now);
+        var accuracy = accuracyPercent == 0 ? a.Accuracy : WeaponCombatState.Adjust(a.Accuracy, accuracyPercent);
+        return Combat.CalculateHitRate(accuracy + accuracyBonus - penalty, evasion, hitPercent);
+    }
+
     private bool RollWeapon(Combatant attacker, Combatant target, int power, int accuracyBonus, int hitPercent, bool ordinary,
-        Action beforeDamage = null)
+        Action beforeDamage = null, bool alwaysHits = false)
     {
         var a = attacker.Spec.WeaponCombat; var d = target.Spec.WeaponCombat;
         attacker.Weapon.Refresh(_now); target.Weapon.Refresh(_now);
-        var penalty = ordinary ? attacker.Weapon.Rattled.Values.Select(x => x.Penalty).DefaultIfEmpty().Max() : 0;
-        var evasion = WeaponCombatState.Adjust(d.Evasion, target.Weapon.EvasionPercent(_now));
-        var accuracy = a.Accuracy + (int)Math.Ceiling(a.Accuracy * attacker.Weapon.AccuracyPercent(_now) / 100f);
-        var chance = Combat.CalculateHitRate(accuracy + accuracyBonus - penalty, evasion, hitPercent);
+        var chance = alwaysHits ? 100 : WeaponHitChance(attacker, target, accuracyBonus, hitPercent, ordinary);
         attacker.Weapon.Count(ordinary ? "OrdinaryAttempts" : "AbilityImpactsAttempted");
-        if (_random.Next(1, 101) > chance)
+        if (!alwaysHits && _random.Next(1, 101) > chance)
         {
             // Only native ordinary attack misses/deflections arm these production perks.
             if (ordinary) target.Weapon.AvoidedAttack(_now);
             return false;
         }
+        if (ordinary) power += attacker.Weapon.TakeLandedOrdinaryPower(_now);
         var criticalChance = ordinary ? Combat.CalculateCriticalRate(a.Perception, d.Vitality, a.WeaponSkillRank, 0) : Combat.CalculateAbilityCriticalChance(0);
         var critical = a.EnableCriticals && _random.Next(1, 101) <= criticalChance ? Combat.StandardCriticalRating : 0;
         var attack = WeaponCombatState.Adjust(a.Attack, attacker.Weapon.Stat(StatType.AttackPercentAdjustment));
         var defense = WeaponCombatState.Adjust(d.Defense, target.Weapon.DefensePercent(_now));
         var (min, max) = Combat.CalculateDamageRange(attack, power, a.Might, defense, d.Vitality, critical, ordinary ? Math.Clamp(a.WeaponRequiredSkillRank/10+1,1,6) : 0);
         var amount = (int)(float)(_random.NextDouble() * (max - min) + min);
+        // Production order after the roll: critical modifier, auto-attack riders, ApplyDamageDealtModifiers, then
+        // MeleeTechnique.ApplyOrdinaryDamageModifiers (Low Kick) or Combat Readiness.
+        amount = attacker.Weapon.ApplyCriticalDamage(amount, critical, target, _now);
+        if (ordinary) amount = attacker.Weapon.ApplyAutoAttackDamage(amount, () => _random.Next(1, 101));
+        amount = attacker.Weapon.ApplyDamageDealt(amount, target, ordinary, _now);
         if (ordinary) amount = Combat.ApplyPercentDamageAdjustment(amount, -attacker.Weapon.LowKick.Values.Select(x => x.Penalty).DefaultIfEmpty().Max());
         if (!ordinary && attacker.Spec.CombatReadinessPercent > 0)
             amount += (int)Math.Ceiling(amount * (attacker.Spec.CombatReadinessPercent / 100f));

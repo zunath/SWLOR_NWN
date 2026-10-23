@@ -17,4 +17,6 @@ internal sealed class WeaponRepositioningOperation
     public long Started { get; init; }
     public ushort? ActionGroup { get; set; }
     public Action<bool, float> OnArrival { get; init; }
+    /// <summary>Authored clip that replaces the run animation while this move travels, or null.</summary>
+    public string TravelAnimation { get; init; }
 }

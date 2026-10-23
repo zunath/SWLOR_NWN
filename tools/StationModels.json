@@ -1,0 +1,7 @@
+{
+  "schema_version": 1,
+  "notes": "Crafting station placeables. The blueprint resref, tag, scripts and StructureType never change; only the placeables.2da appearance row they point at does. Rows are added (never edited) so decor that shares a stock appearance is untouched. The appearance ID is the row's physical position in the file.",
+  "stations": [
+    {"blueprint": "smithery_bench", "structure_type": "SmitheryBench", "model": "swc_stn_forge", "label": "[SWLOR] Station - Plasma Forge", "sound_app_type": 13}
+  ]
+}

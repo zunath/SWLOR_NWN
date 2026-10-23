@@ -66208,7 +66208,7 @@
         },
         "Appearance": {
           "type": "dword",
-          "value": 20247
+          "value": 32094
         },
         "AutoRemoveKey": {
           "type": "byte",
@@ -66657,7 +66657,7 @@
         },
         "Appearance": {
           "type": "dword",
-          "value": 20247
+          "value": 32094
         },
         "AutoRemoveKey": {
           "type": "byte",

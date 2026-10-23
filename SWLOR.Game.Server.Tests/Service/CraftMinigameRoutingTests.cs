@@ -2,6 +2,7 @@ using FluentAssertions;
 using NUnit.Framework;
 using SWLOR.Game.Server.Extension;
 using SWLOR.Game.Server.Service.CraftService.Minigame;
+using SWLOR.Game.Server.Service.CraftService;
 using SWLOR.Game.Server.Service.GuiService;
 using SWLOR.Game.Server.Service.SkillService;
 
@@ -26,35 +27,69 @@ public class CraftMinigameRoutingTests
             .ToDictionary(route => route.Skill);
 
     [Test]
-    public void EveryCraftingSkillUsesTheOriginalWindowUntilItsMinigameLands()
+    public void EveryCraftingSkillRoutesToItsOwnMinigame()
     {
         var skills = CraftingSkills().ToList();
-        skills.Should().NotBeEmpty();
+        skills.Should().BeEquivalentTo(new[]
+        {
+            SkillType.Smithery, SkillType.Engineering, SkillType.Fabrication, SkillType.Agriculture, SkillType.Espionage
+        });
         var registered = RegisteredRoutes();
 
-        foreach (var skill in skills.Where(skill => !registered.ContainsKey(skill)))
+        foreach (var skill in skills)
         {
+            registered.Should().ContainKey(skill, $"{skill} crafts in its own minigame window");
             var route = CraftMinigameRouting.GetRoute(skill);
 
-            route.Window.Should().Be(GuiWindowType.Craft, $"{skill} has no minigame yet");
-            route.IsLegacy.Should().BeTrue();
-            route.Minigame.Should().BeNull();
-            CraftMinigameRouting.GetWindow(skill).Should().Be(GuiWindowType.Craft);
+            route.Window.Should().NotBe(GuiWindowType.Craft, $"{skill} must not open the retired crafting window");
+            route.Window.Should().NotBe(GuiWindowType.Invalid);
+            CraftMinigameRouting.GetWindow(skill).Should().Be(route.Window);
         }
+
+        skills.Select(skill => CraftMinigameRouting.GetWindow(skill)).Should().OnlyHaveUniqueItems();
+        skills.Select(skill => CraftMinigameRouting.GetRoute(skill).Minigame).Should().OnlyHaveUniqueItems();
     }
 
     [Test]
-    public void ASkillWithAMinigameOpensItsOwnWindow()
+    public void EveryRecipeInTheGameIsCraftedBySkillWithAMinigame()
     {
-        foreach (var (skill, declaration) in RegisteredRoutes())
-        {
-            var route = CraftMinigameRouting.GetRoute(skill);
+        var recipes = typeof(IRecipeListDefinition).Assembly.GetTypes()
+            .Where(type => typeof(IRecipeListDefinition).IsAssignableFrom(type) && !type.IsInterface && !type.IsAbstract)
+            .SelectMany(type => ((IRecipeListDefinition)Activator.CreateInstance(type)!).BuildRecipes())
+            .ToList();
+        recipes.Should().NotBeEmpty();
 
-            route.IsLegacy.Should().BeFalse();
-            route.Window.Should().Be(declaration.Window);
-            route.Minigame.Should().Be(declaration.Minigame);
-            CraftMinigameRouting.GetWindow(skill).Should().Be(declaration.Window);
-        }
+        var unrouted = recipes
+            .Select(pair => pair.Value.Skill)
+            .Distinct()
+            .Where(skill => !CraftMinigameRouting.TryGetRoute(skill, out _))
+            .ToList();
+
+        unrouted.Should().BeEmpty("no recipe may fall back to a window that no longer exists");
+    }
+
+    [Test]
+    public void ASkillThatCraftsNothingHasNoRoute()
+    {
+        CraftMinigameRouting.TryGetRoute(SkillType.Piloting, out _).Should().BeFalse();
+
+        var act = () => CraftMinigameRouting.GetRoute(SkillType.Piloting);
+
+        act.Should().Throw<InvalidOperationException>().WithMessage("*Piloting*");
+    }
+
+    [Test]
+    public void NoWindowDefinitionBuildsTheRetiredCraftWindow()
+    {
+        using var validationBuild = GuiLayoutValidator.BeginValidationOnlyBuild();
+        var windowTypes = typeof(IGuiWindowDefinition).Assembly.GetTypes()
+            .Where(type => typeof(IGuiWindowDefinition).IsAssignableFrom(type) && !type.IsInterface && !type.IsAbstract)
+            .Select(type => ((IGuiWindowDefinition)Activator.CreateInstance(type)!).BuildWindow().Type)
+            .ToList();
+
+        windowTypes.Should().NotContain(GuiWindowType.Craft);
+        windowTypes.Should().Contain(RegisteredRoutes().Values.Select(route => route.Window),
+            "every routed window is built by a definition");
     }
 
     [Test]
@@ -64,7 +99,6 @@ public class CraftMinigameRoutingTests
 
         route.Window.Should().Be(GuiWindowType.Reaction);
         route.Minigame.Should().Be(CraftMinigameType.Reaction);
-        route.IsLegacy.Should().BeFalse();
     }
 
     [Test]
@@ -74,7 +108,6 @@ public class CraftMinigameRoutingTests
 
         route.Window.Should().Be(GuiWindowType.Forge);
         route.Minigame.Should().Be(CraftMinigameType.Forge);
-        route.IsLegacy.Should().BeFalse();
     }
 
     [Test]
@@ -84,15 +117,14 @@ public class CraftMinigameRoutingTests
 
         route.Window.Should().Be(GuiWindowType.Kitchen);
         route.Minigame.Should().Be(CraftMinigameType.Kitchen);
-        route.IsLegacy.Should().BeFalse();
     }
 
     [Test]
-    public void TheCraftWindowsAreTheOriginalAndEveryRoutedMinigameWindow()
+    public void TheCraftWindowsAreEveryRoutedMinigameWindowAndTheExperiment()
     {
         var windows = CraftMinigameRouting.GetCraftWindows();
 
-        windows.Should().Contain(GuiWindowType.Craft);
+        windows.Should().NotContain(GuiWindowType.Craft);
         windows.Should().Contain(RegisteredRoutes().Values.Select(route => route.Window));
         windows.Should().OnlyHaveUniqueItems();
     }
@@ -117,7 +149,7 @@ public class CraftMinigameRoutingTests
 
         source.Should().Contain("CraftMinigameRouting.IsAnyCraftWindowOpen(creature)");
         source.Should().NotContain("Gui.IsWindowOpen(creature, GuiWindowType.Craft)",
-            "a minigame's window must block equipping like the original one");
+            "a minigame's window must block equipping");
     }
 
     [Test]
@@ -130,7 +162,6 @@ public class CraftMinigameRoutingTests
 
         routes[SkillType.Smithery].Window.Should().Be(GuiWindowType.DebugEnmity);
         routes[SkillType.Smithery].Minigame.Should().Be(CraftMinigameType.Forge);
-        routes[SkillType.Smithery].IsLegacy.Should().BeFalse();
         routes.Should().NotContainKey(SkillType.Engineering);
     }
 

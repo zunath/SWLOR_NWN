@@ -6,20 +6,21 @@ using SWLOR.Game.Server.Service.SkillService;
 namespace SWLOR.Game.Server.Service.CraftService.Minigame;
 
 /// <summary>
-/// Chooses the window that crafts a skill's recipes. Every skill uses the original crafting window until its minigame registers
-/// an <see cref="ICraftMinigameRoute"/>.
+/// Chooses the window that crafts a skill's recipes. Every crafting skill registers an <see cref="ICraftMinigameRoute"/>.
 /// </summary>
 public static class CraftMinigameRouting
 {
-    /// <summary>The original crafting window, which every skill without a minigame still uses.</summary>
-    public const GuiWindowType LegacyWindow = GuiWindowType.Craft;
-
     private static IReadOnlyDictionary<SkillType, CraftMinigameRoute> _routes;
 
-    public static CraftMinigameRoute GetRoute(SkillType skill)
+    /// <summary>The minigame route of a crafting skill. A skill with no minigame is an error, because no other window crafts recipes.</summary>
+    public static CraftMinigameRoute GetRoute(SkillType skill) =>
+        TryGetRoute(skill, out var route) ? route : throw new InvalidOperationException($"{skill} has no crafting minigame.");
+
+    /// <summary>The minigame route of a skill, or false for a skill that crafts nothing.</summary>
+    public static bool TryGetRoute(SkillType skill, out CraftMinigameRoute route)
     {
         _routes ??= BuildRoutes(DiscoverRoutes());
-        return _routes.TryGetValue(skill, out var route) ? route : Legacy(skill);
+        return _routes.TryGetValue(skill, out route);
     }
 
     public static GuiWindowType GetWindow(SkillType skill) => GetRoute(skill).Window;
@@ -30,18 +31,17 @@ public static class CraftMinigameRouting
     /// </summary>
     public const GuiWindowType ResearchExperimentWindow = GuiWindowType.ResearchExperiment;
 
-    /// <summary>Every window that crafts items, the original one and each minigame's, and the research Experiment, which commits the worn gear.</summary>
+    /// <summary>Every window that crafts items, each minigame's, and the research Experiment, which commits the worn gear.</summary>
     public static IReadOnlyList<GuiWindowType> GetCraftWindows()
     {
         _routes ??= BuildRoutes(DiscoverRoutes());
         return _routes.Values.Select(route => route.Window)
-            .Append(LegacyWindow)
             .Append(ResearchExperimentWindow)
             .Distinct()
             .ToList();
     }
 
-    /// <summary>True when the player has any crafting window open, the original or a minigame's, or the research Experiment.</summary>
+    /// <summary>True when the player has any crafting minigame window open, or the research Experiment.</summary>
     public static bool IsAnyCraftWindowOpen(uint player) =>
         GetCraftWindows().Any(window => Gui.IsWindowOpen(player, window));
 
@@ -59,8 +59,6 @@ public static class CraftMinigameRouting
 
         return routes;
     }
-
-    public static CraftMinigameRoute Legacy(SkillType skill) => new(skill, LegacyWindow, null);
 
     private static IEnumerable<ICraftMinigameRoute> DiscoverRoutes() =>
         typeof(ICraftMinigameRoute).Assembly.GetTypes()

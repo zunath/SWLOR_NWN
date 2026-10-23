@@ -207,7 +207,7 @@ public class FabricatorSessionTests
     {
         var recipe = new RecipeDetail { Skill = SkillType.Armor, Level = 20 };
 
-        CraftMinigameRouting.GetRoute(SkillType.Armor).IsLegacy.Should().BeTrue();
+        CraftMinigameRouting.TryGetRoute(SkillType.Armor, out _).Should().BeFalse();
         CraftMinigameXp.BaseXp(recipe, 15).Should().Be(Craft.GetBaseRecipeXP(recipe, 15));
     }
 }

@@ -4,8 +4,8 @@ using SWLOR.Game.Server.Service.SkillService;
 namespace SWLOR.Game.Server.Service.CraftService.Minigame;
 
 /// <summary>
-/// Declares which window crafts a skill's recipes. A minigame adds one implementation when it lands; skills with none keep
-/// using the original crafting window. Implementations are found by reflection and need a public parameterless constructor.
+/// Declares which window crafts a skill's recipes. Each crafting skill has one implementation. Implementations are found by
+/// reflection and need a public parameterless constructor.
 /// </summary>
 public interface ICraftMinigameRoute
 {

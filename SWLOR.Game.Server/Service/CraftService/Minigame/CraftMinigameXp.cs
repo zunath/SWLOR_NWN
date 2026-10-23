@@ -56,8 +56,9 @@ public static class CraftMinigameXp
     public static int BaseXp(RecipeDetail recipe, int skillRank)
     {
         var baseXp = Craft.GetBaseRecipeXP(recipe, skillRank);
-        var route = CraftMinigameRouting.GetRoute(recipe.Skill);
-        var gated = route.Minigame is { } minigame ? ScaleBaseXp(baseXp, MultiplierFor(minigame, recipe.Level)) : baseXp;
+        var gated = CraftMinigameRouting.TryGetRoute(recipe.Skill, out var route)
+            ? ScaleBaseXp(baseXp, MultiplierFor(route.Minigame, recipe.Level))
+            : baseXp;
         return ScaleBaseXp(gated, PaceMultiplierFor(recipe.Skill));
     }
 }

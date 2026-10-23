@@ -1512,69 +1512,6 @@
     "Call": "SendMessageToPC(_controllerPlayer, ColorToken.Red(\"This conversation encountered an error and was closed.\"))"
   },
   {
-    "File": "SWLOR.Game.Server/Feature/GuiDefinition/ViewModel/CraftViewModel.cs",
-    "Line": 507,
-    "Member": "OnWindowClosed",
-    "Delivery": "Retained",
-    "Call": "SendMessageToPC(Player, Item.ItemsHeldMessage)"
-  },
-  {
-    "File": "SWLOR.Game.Server/Feature/GuiDefinition/ViewModel/CraftViewModel.cs",
-    "Line": 597,
-    "Member": "IsValidEnhancement",
-    "Delivery": "Retained",
-    "Call": "FloatingTextStringOnCreature(\"Item must be in your inventory.\", Player, false)"
-  },
-  {
-    "File": "SWLOR.Game.Server/Feature/GuiDefinition/ViewModel/CraftViewModel.cs",
-    "Line": 632,
-    "Member": "IsValidEnhancement",
-    "Delivery": "Retained",
-    "Call": "FloatingTextStringOnCreature(\"Item must be an enhancement.\", Player, false)"
-  },
-  {
-    "File": "SWLOR.Game.Server/Feature/GuiDefinition/ViewModel/CraftViewModel.cs",
-    "Line": 657,
-    "Member": "IsValidEnhancement",
-    "Delivery": "Retained",
-    "Call": "FloatingTextStringOnCreature(\"Item must be an enhancement.\", Player, false)"
-  },
-  {
-    "File": "SWLOR.Game.Server/Feature/GuiDefinition/ViewModel/CraftViewModel.cs",
-    "Line": 664,
-    "Member": "IsValidEnhancement",
-    "Delivery": "Retained",
-    "Call": "FloatingTextStringOnCreature(\"Enhancement must be within 5 levels of recipe level.\", Player, false)"
-  },
-  {
-    "File": "SWLOR.Game.Server/Feature/GuiDefinition/ViewModel/CraftViewModel.cs",
-    "Line": 1265,
-    "Member": "SwitchToCraftMode",
-    "Delivery": "Retained",
-    "Call": "SendMessageToPC(Player, $\"Remaining licensed runs: {_activeBlueprint.LicensedRuns}\")"
-  },
-  {
-    "File": "SWLOR.Game.Server/Feature/GuiDefinition/ViewModel/CraftViewModel.cs",
-    "Line": 1462,
-    "Member": "ProcessSuccess",
-    "Delivery": "Retained",
-    "Call": "SendMessageToPC(Player, ColorToken.Green(\"Enhancement applied successfully.\"))"
-  },
-  {
-    "File": "SWLOR.Game.Server/Feature/GuiDefinition/ViewModel/CraftViewModel.cs",
-    "Line": 1466,
-    "Member": "ProcessSuccess",
-    "Delivery": "Retained",
-    "Call": "SendMessageToPC(Player, ColorToken.Red(\"Enhancement failed to apply.\"))"
-  },
-  {
-    "File": "SWLOR.Game.Server/Feature/GuiDefinition/ViewModel/CraftViewModel.cs",
-    "Line": 1562,
-    "Member": "ProcessBlueprintBonuses",
-    "Delivery": "Retained",
-    "Call": "SendMessageToPC(Player, ColorToken.Green($\"Blueprint Bonus applied: {bonusName} +{bonus.Amount}\"))"
-  },
-  {
     "File": "SWLOR.Game.Server/Feature/GuiDefinition/ViewModel/CreatureManagerViewModel.cs",
     "Line": 148,
     "Member": "EnterSpawnTargeting",

@@ -1,0 +1,1666 @@
+{
+  "clips": [
+    "sw_forgework",
+    "sw_circuitry",
+    "sw_fabricate",
+    "sw_cooking",
+    "sw_compound",
+    "sw_survey",
+    "sw_strike",
+    "sw_hvystrike",
+    "sw_extract",
+    "sw_search",
+    "sw_dig",
+    "sw_reel",
+    "sw_giveline",
+    "sw_holdrod",
+    "sw_landfish"
+  ],
+  "families": {
+    "pfa_ra090": {
+      "body": "pfa0",
+      "banks": [
+        "pfa_ra090",
+        "pfa_ra090_b01",
+        "pfa_ra090_b02"
+      ],
+      "bridge_clip_count": 1319,
+      "clips": {
+        "sw_forgework": {
+          "present": true,
+          "ownedByBridgeBank": "pfa_ra090",
+          "durationSeconds": 3.4,
+          "matchesBodyDuration": true,
+          "animatedGarmentOrBodyTracks": 55
+        },
+        "sw_circuitry": {
+          "present": true,
+          "ownedByBridgeBank": "pfa_ra090",
+          "durationSeconds": 2.9,
+          "matchesBodyDuration": true,
+          "animatedGarmentOrBodyTracks": 55
+        },
+        "sw_fabricate": {
+          "present": true,
+          "ownedByBridgeBank": "pfa_ra090",
+          "durationSeconds": 3.6,
+          "matchesBodyDuration": true,
+          "animatedGarmentOrBodyTracks": 55
+        },
+        "sw_cooking": {
+          "present": true,
+          "ownedByBridgeBank": "pfa_ra090",
+          "durationSeconds": 3.2,
+          "matchesBodyDuration": true,
+          "animatedGarmentOrBodyTracks": 55
+        },
+        "sw_compound": {
+          "present": true,
+          "ownedByBridgeBank": "pfa_ra090",
+          "durationSeconds": 3.3,
+          "matchesBodyDuration": true,
+          "animatedGarmentOrBodyTracks": 55
+        },
+        "sw_survey": {
+          "present": true,
+          "ownedByBridgeBank": "pfa_ra090_b01",
+          "durationSeconds": 3.0,
+          "matchesBodyDuration": true,
+          "animatedGarmentOrBodyTracks": 55
+        },
+        "sw_strike": {
+          "present": true,
+          "ownedByBridgeBank": "pfa_ra090_b01",
+          "durationSeconds": 1.9,
+          "matchesBodyDuration": true,
+          "animatedGarmentOrBodyTracks": 55
+        },
+        "sw_hvystrike": {
+          "present": true,
+          "ownedByBridgeBank": "pfa_ra090_b01",
+          "durationSeconds": 2.7,
+          "matchesBodyDuration": true,
+          "animatedGarmentOrBodyTracks": 55
+        },
+        "sw_extract": {
+          "present": true,
+          "ownedByBridgeBank": "pfa_ra090",
+          "durationSeconds": 2.8,
+          "matchesBodyDuration": true,
+          "animatedGarmentOrBodyTracks": 55
+        },
+        "sw_search": {
+          "present": true,
+          "ownedByBridgeBank": "pfa_ra090_b01",
+          "durationSeconds": 3.0,
+          "matchesBodyDuration": true,
+          "animatedGarmentOrBodyTracks": 55
+        },
+        "sw_dig": {
+          "present": true,
+          "ownedByBridgeBank": "pfa_ra090",
+          "durationSeconds": 3.2,
+          "matchesBodyDuration": true,
+          "animatedGarmentOrBodyTracks": 55
+        },
+        "sw_reel": {
+          "present": true,
+          "ownedByBridgeBank": "pfa_ra090_b01",
+          "durationSeconds": 3.05,
+          "matchesBodyDuration": true,
+          "animatedGarmentOrBodyTracks": 55
+        },
+        "sw_giveline": {
+          "present": true,
+          "ownedByBridgeBank": "pfa_ra090",
+          "durationSeconds": 2.4,
+          "matchesBodyDuration": true,
+          "animatedGarmentOrBodyTracks": 55
+        },
+        "sw_holdrod": {
+          "present": true,
+          "ownedByBridgeBank": "pfa_ra090_b01",
+          "durationSeconds": 3.5,
+          "matchesBodyDuration": true,
+          "animatedGarmentOrBodyTracks": 55
+        },
+        "sw_landfish": {
+          "present": true,
+          "ownedByBridgeBank": "pfa_ra090_b01",
+          "durationSeconds": 3.4,
+          "matchesBodyDuration": true,
+          "animatedGarmentOrBodyTracks": 55
+        }
+      },
+      "poseSamplesCompared": 75,
+      "poseMismatch": null
+    },
+    "pfb_ra058": {
+      "body": "pfb0",
+      "banks": [
+        "pfb_ra058"
+      ],
+      "bridge_clip_count": 1319,
+      "clips": {
+        "sw_forgework": {
+          "present": true,
+          "ownedByBridgeBank": "pfb_ra058",
+          "durationSeconds": 3.4,
+          "matchesBodyDuration": true,
+          "animatedGarmentOrBodyTracks": 21
+        },
+        "sw_circuitry": {
+          "present": true,
+          "ownedByBridgeBank": "pfb_ra058",
+          "durationSeconds": 2.9,
+          "matchesBodyDuration": true,
+          "animatedGarmentOrBodyTracks": 21
+        },
+        "sw_fabricate": {
+          "present": true,
+          "ownedByBridgeBank": "pfb_ra058",
+          "durationSeconds": 3.6,
+          "matchesBodyDuration": true,
+          "animatedGarmentOrBodyTracks": 21
+        },
+        "sw_cooking": {
+          "present": true,
+          "ownedByBridgeBank": "pfb_ra058",
+          "durationSeconds": 3.2,
+          "matchesBodyDuration": true,
+          "animatedGarmentOrBodyTracks": 21
+        },
+        "sw_compound": {
+          "present": true,
+          "ownedByBridgeBank": "pfb_ra058",
+          "durationSeconds": 3.3,
+          "matchesBodyDuration": true,
+          "animatedGarmentOrBodyTracks": 21
+        },
+        "sw_survey": {
+          "present": true,
+          "ownedByBridgeBank": "pfb_ra058",
+          "durationSeconds": 3.0,
+          "matchesBodyDuration": true,
+          "animatedGarmentOrBodyTracks": 21
+        },
+        "sw_strike": {
+          "present": true,
+          "ownedByBridgeBank": "pfb_ra058",
+          "durationSeconds": 1.9,
+          "matchesBodyDuration": true,
+          "animatedGarmentOrBodyTracks": 21
+        },
+        "sw_hvystrike": {
+          "present": true,
+          "ownedByBridgeBank": "pfb_ra058",
+          "durationSeconds": 2.7,
+          "matchesBodyDuration": true,
+          "animatedGarmentOrBodyTracks": 21
+        },
+        "sw_extract": {
+          "present": true,
+          "ownedByBridgeBank": "pfb_ra058",
+          "durationSeconds": 2.8,
+          "matchesBodyDuration": true,
+          "animatedGarmentOrBodyTracks": 21
+        },
+        "sw_search": {
+          "present": true,
+          "ownedByBridgeBank": "pfb_ra058",
+          "durationSeconds": 3.0,
+          "matchesBodyDuration": true,
+          "animatedGarmentOrBodyTracks": 21
+        },
+        "sw_dig": {
+          "present": true,
+          "ownedByBridgeBank": "pfb_ra058",
+          "durationSeconds": 3.2,
+          "matchesBodyDuration": true,
+          "animatedGarmentOrBodyTracks": 21
+        },
+        "sw_reel": {
+          "present": true,
+          "ownedByBridgeBank": "pfb_ra058",
+          "durationSeconds": 3.05,
+          "matchesBodyDuration": true,
+          "animatedGarmentOrBodyTracks": 21
+        },
+        "sw_giveline": {
+          "present": true,
+          "ownedByBridgeBank": "pfb_ra058",
+          "durationSeconds": 2.4,
+          "matchesBodyDuration": true,
+          "animatedGarmentOrBodyTracks": 21
+        },
+        "sw_holdrod": {
+          "present": true,
+          "ownedByBridgeBank": "pfb_ra058",
+          "durationSeconds": 3.5,
+          "matchesBodyDuration": true,
+          "animatedGarmentOrBodyTracks": 21
+        },
+        "sw_landfish": {
+          "present": true,
+          "ownedByBridgeBank": "pfb_ra058",
+          "durationSeconds": 3.4,
+          "matchesBodyDuration": true,
+          "animatedGarmentOrBodyTracks": 21
+        }
+      },
+      "poseSamplesCompared": 75,
+      "poseMismatch": null
+    },
+    "pfd_ra124": {
+      "body": "pfd0",
+      "banks": [
+        "pfd_ra124",
+        "pfd_ra124_b01"
+      ],
+      "bridge_clip_count": 1319,
+      "clips": {
+        "sw_forgework": {
+          "present": true,
+          "ownedByBridgeBank": "pfd_ra124",
+          "durationSeconds": 3.4,
+          "matchesBodyDuration": true,
+          "animatedGarmentOrBodyTracks": 46
+        },
+        "sw_circuitry": {
+          "present": true,
+          "ownedByBridgeBank": "pfd_ra124",
+          "durationSeconds": 2.9,
+          "matchesBodyDuration": true,
+          "animatedGarmentOrBodyTracks": 46
+        },
+        "sw_fabricate": {
+          "present": true,
+          "ownedByBridgeBank": "pfd_ra124",
+          "durationSeconds": 3.6,
+          "matchesBodyDuration": true,
+          "animatedGarmentOrBodyTracks": 46
+        },
+        "sw_cooking": {
+          "present": true,
+          "ownedByBridgeBank": "pfd_ra124",
+          "durationSeconds": 3.2,
+          "matchesBodyDuration": true,
+          "animatedGarmentOrBodyTracks": 46
+        },
+        "sw_compound": {
+          "present": true,
+          "ownedByBridgeBank": "pfd_ra124",
+          "durationSeconds": 3.3,
+          "matchesBodyDuration": true,
+          "animatedGarmentOrBodyTracks": 46
+        },
+        "sw_survey": {
+          "present": true,
+          "ownedByBridgeBank": "pfd_ra124_b01",
+          "durationSeconds": 3.0,
+          "matchesBodyDuration": true,
+          "animatedGarmentOrBodyTracks": 46
+        },
+        "sw_strike": {
+          "present": true,
+          "ownedByBridgeBank": "pfd_ra124_b01",
+          "durationSeconds": 1.9,
+          "matchesBodyDuration": true,
+          "animatedGarmentOrBodyTracks": 46
+        },
+        "sw_hvystrike": {
+          "present": true,
+          "ownedByBridgeBank": "pfd_ra124",
+          "durationSeconds": 2.7,
+          "matchesBodyDuration": true,
+          "animatedGarmentOrBodyTracks": 46
+        },
+        "sw_extract": {
+          "present": true,
+          "ownedByBridgeBank": "pfd_ra124",
+          "durationSeconds": 2.8,
+          "matchesBodyDuration": true,
+          "animatedGarmentOrBodyTracks": 46
+        },
+        "sw_search": {
+          "present": true,
+          "ownedByBridgeBank": "pfd_ra124_b01",
+          "durationSeconds": 3.0,
+          "matchesBodyDuration": true,
+          "animatedGarmentOrBodyTracks": 46
+        },
+        "sw_dig": {
+          "present": true,
+          "ownedByBridgeBank": "pfd_ra124",
+          "durationSeconds": 3.2,
+          "matchesBodyDuration": true,
+          "animatedGarmentOrBodyTracks": 46
+        },
+        "sw_reel": {
+          "present": true,
+          "ownedByBridgeBank": "pfd_ra124_b01",
+          "durationSeconds": 3.05,
+          "matchesBodyDuration": true,
+          "animatedGarmentOrBodyTracks": 46
+        },
+        "sw_giveline": {
+          "present": true,
+          "ownedByBridgeBank": "pfd_ra124",
+          "durationSeconds": 2.4,
+          "matchesBodyDuration": true,
+          "animatedGarmentOrBodyTracks": 46
+        },
+        "sw_holdrod": {
+          "present": true,
+          "ownedByBridgeBank": "pfd_ra124",
+          "durationSeconds": 3.5,
+          "matchesBodyDuration": true,
+          "animatedGarmentOrBodyTracks": 46
+        },
+        "sw_landfish": {
+          "present": true,
+          "ownedByBridgeBank": "pfd_ra124_b01",
+          "durationSeconds": 3.4,
+          "matchesBodyDuration": true,
+          "animatedGarmentOrBodyTracks": 46
+        }
+      },
+      "poseSamplesCompared": 75,
+      "poseMismatch": null
+    },
+    "pfe_ra092": {
+      "body": "pfe0",
+      "banks": [
+        "pfe_ra092",
+        "pfe_ra092_b01",
+        "pfe_ra092_b02"
+      ],
+      "bridge_clip_count": 1319,
+      "clips": {
+        "sw_forgework": {
+          "present": true,
+          "ownedByBridgeBank": "pfe_ra092",
+          "durationSeconds": 3.4,
+          "matchesBodyDuration": true,
+          "animatedGarmentOrBodyTracks": 66
+        },
+        "sw_circuitry": {
+          "present": true,
+          "ownedByBridgeBank": "pfe_ra092",
+          "durationSeconds": 2.9,
+          "matchesBodyDuration": true,
+          "animatedGarmentOrBodyTracks": 66
+        },
+        "sw_fabricate": {
+          "present": true,
+          "ownedByBridgeBank": "pfe_ra092",
+          "durationSeconds": 3.6,
+          "matchesBodyDuration": true,
+          "animatedGarmentOrBodyTracks": 66
+        },
+        "sw_cooking": {
+          "present": true,
+          "ownedByBridgeBank": "pfe_ra092",
+          "durationSeconds": 3.2,
+          "matchesBodyDuration": true,
+          "animatedGarmentOrBodyTracks": 66
+        },
+        "sw_compound": {
+          "present": true,
+          "ownedByBridgeBank": "pfe_ra092",
+          "durationSeconds": 3.3,
+          "matchesBodyDuration": true,
+          "animatedGarmentOrBodyTracks": 66
+        },
+        "sw_survey": {
+          "present": true,
+          "ownedByBridgeBank": "pfe_ra092_b02",
+          "durationSeconds": 3.0,
+          "matchesBodyDuration": true,
+          "animatedGarmentOrBodyTracks": 66
+        },
+        "sw_strike": {
+          "present": true,
+          "ownedByBridgeBank": "pfe_ra092_b01",
+          "durationSeconds": 1.9,
+          "matchesBodyDuration": true,
+          "animatedGarmentOrBodyTracks": 66
+        },
+        "sw_hvystrike": {
+          "present": true,
+          "ownedByBridgeBank": "pfe_ra092_b01",
+          "durationSeconds": 2.7,
+          "matchesBodyDuration": true,
+          "animatedGarmentOrBodyTracks": 66
+        },
+        "sw_extract": {
+          "present": true,
+          "ownedByBridgeBank": "pfe_ra092",
+          "durationSeconds": 2.8,
+          "matchesBodyDuration": true,
+          "animatedGarmentOrBodyTracks": 66
+        },
+        "sw_search": {
+          "present": true,
+          "ownedByBridgeBank": "pfe_ra092_b01",
+          "durationSeconds": 3.0,
+          "matchesBodyDuration": true,
+          "animatedGarmentOrBodyTracks": 66
+        },
+        "sw_dig": {
+          "present": true,
+          "ownedByBridgeBank": "pfe_ra092",
+          "durationSeconds": 3.2,
+          "matchesBodyDuration": true,
+          "animatedGarmentOrBodyTracks": 66
+        },
+        "sw_reel": {
+          "present": true,
+          "ownedByBridgeBank": "pfe_ra092_b01",
+          "durationSeconds": 3.05,
+          "matchesBodyDuration": true,
+          "animatedGarmentOrBodyTracks": 66
+        },
+        "sw_giveline": {
+          "present": true,
+          "ownedByBridgeBank": "pfe_ra092_b01",
+          "durationSeconds": 2.4,
+          "matchesBodyDuration": true,
+          "animatedGarmentOrBodyTracks": 66
+        },
+        "sw_holdrod": {
+          "present": true,
+          "ownedByBridgeBank": "pfe_ra092_b01",
+          "durationSeconds": 3.5,
+          "matchesBodyDuration": true,
+          "animatedGarmentOrBodyTracks": 66
+        },
+        "sw_landfish": {
+          "present": true,
+          "ownedByBridgeBank": "pfe_ra092_b01",
+          "durationSeconds": 3.4,
+          "matchesBodyDuration": true,
+          "animatedGarmentOrBodyTracks": 66
+        }
+      },
+      "poseSamplesCompared": 75,
+      "poseMismatch": null
+    },
+    "pfg_ra090": {
+      "body": "pfg0",
+      "banks": [
+        "pfg_ra090",
+        "pfg_ra090_b01",
+        "pfg_ra090_b02"
+      ],
+      "bridge_clip_count": 1319,
+      "clips": {
+        "sw_forgework": {
+          "present": true,
+          "ownedByBridgeBank": "pfg_ra090",
+          "durationSeconds": 3.4,
+          "matchesBodyDuration": true,
+          "animatedGarmentOrBodyTracks": 55
+        },
+        "sw_circuitry": {
+          "present": true,
+          "ownedByBridgeBank": "pfg_ra090",
+          "durationSeconds": 2.9,
+          "matchesBodyDuration": true,
+          "animatedGarmentOrBodyTracks": 55
+        },
+        "sw_fabricate": {
+          "present": true,
+          "ownedByBridgeBank": "pfg_ra090",
+          "durationSeconds": 3.6,
+          "matchesBodyDuration": true,
+          "animatedGarmentOrBodyTracks": 55
+        },
+        "sw_cooking": {
+          "present": true,
+          "ownedByBridgeBank": "pfg_ra090",
+          "durationSeconds": 3.2,
+          "matchesBodyDuration": true,
+          "animatedGarmentOrBodyTracks": 55
+        },
+        "sw_compound": {
+          "present": true,
+          "ownedByBridgeBank": "pfg_ra090",
+          "durationSeconds": 3.3,
+          "matchesBodyDuration": true,
+          "animatedGarmentOrBodyTracks": 55
+        },
+        "sw_survey": {
+          "present": true,
+          "ownedByBridgeBank": "pfg_ra090_b01",
+          "durationSeconds": 3.0,
+          "matchesBodyDuration": true,
+          "animatedGarmentOrBodyTracks": 55
+        },
+        "sw_strike": {
+          "present": true,
+          "ownedByBridgeBank": "pfg_ra090_b01",
+          "durationSeconds": 1.9,
+          "matchesBodyDuration": true,
+          "animatedGarmentOrBodyTracks": 55
+        },
+        "sw_hvystrike": {
+          "present": true,
+          "ownedByBridgeBank": "pfg_ra090_b01",
+          "durationSeconds": 2.7,
+          "matchesBodyDuration": true,
+          "animatedGarmentOrBodyTracks": 55
+        },
+        "sw_extract": {
+          "present": true,
+          "ownedByBridgeBank": "pfg_ra090",
+          "durationSeconds": 2.8,
+          "matchesBodyDuration": true,
+          "animatedGarmentOrBodyTracks": 55
+        },
+        "sw_search": {
+          "present": true,
+          "ownedByBridgeBank": "pfg_ra090_b01",
+          "durationSeconds": 3.0,
+          "matchesBodyDuration": true,
+          "animatedGarmentOrBodyTracks": 55
+        },
+        "sw_dig": {
+          "present": true,
+          "ownedByBridgeBank": "pfg_ra090",
+          "durationSeconds": 3.2,
+          "matchesBodyDuration": true,
+          "animatedGarmentOrBodyTracks": 55
+        },
+        "sw_reel": {
+          "present": true,
+          "ownedByBridgeBank": "pfg_ra090_b01",
+          "durationSeconds": 3.05,
+          "matchesBodyDuration": true,
+          "animatedGarmentOrBodyTracks": 55
+        },
+        "sw_giveline": {
+          "present": true,
+          "ownedByBridgeBank": "pfg_ra090",
+          "durationSeconds": 2.4,
+          "matchesBodyDuration": true,
+          "animatedGarmentOrBodyTracks": 55
+        },
+        "sw_holdrod": {
+          "present": true,
+          "ownedByBridgeBank": "pfg_ra090_b01",
+          "durationSeconds": 3.5,
+          "matchesBodyDuration": true,
+          "animatedGarmentOrBodyTracks": 55
+        },
+        "sw_landfish": {
+          "present": true,
+          "ownedByBridgeBank": "pfg_ra090_b01",
+          "durationSeconds": 3.4,
+          "matchesBodyDuration": true,
+          "animatedGarmentOrBodyTracks": 55
+        }
+      },
+      "poseSamplesCompared": 75,
+      "poseMismatch": null
+    },
+    "pfh_ra108": {
+      "body": "pfh0",
+      "banks": [
+        "pfh_ra108",
+        "pfh_ra108_b01",
+        "pfh_ra108_b02"
+      ],
+      "bridge_clip_count": 1319,
+      "clips": {
+        "sw_forgework": {
+          "present": true,
+          "ownedByBridgeBank": "pfh_ra108",
+          "durationSeconds": 3.4,
+          "matchesBodyDuration": true,
+          "animatedGarmentOrBodyTracks": 66
+        },
+        "sw_circuitry": {
+          "present": true,
+          "ownedByBridgeBank": "pfh_ra108",
+          "durationSeconds": 2.9,
+          "matchesBodyDuration": true,
+          "animatedGarmentOrBodyTracks": 66
+        },
+        "sw_fabricate": {
+          "present": true,
+          "ownedByBridgeBank": "pfh_ra108",
+          "durationSeconds": 3.6,
+          "matchesBodyDuration": true,
+          "animatedGarmentOrBodyTracks": 66
+        },
+        "sw_cooking": {
+          "present": true,
+          "ownedByBridgeBank": "pfh_ra108",
+          "durationSeconds": 3.2,
+          "matchesBodyDuration": true,
+          "animatedGarmentOrBodyTracks": 66
+        },
+        "sw_compound": {
+          "present": true,
+          "ownedByBridgeBank": "pfh_ra108",
+          "durationSeconds": 3.3,
+          "matchesBodyDuration": true,
+          "animatedGarmentOrBodyTracks": 66
+        },
+        "sw_survey": {
+          "present": true,
+          "ownedByBridgeBank": "pfh_ra108_b02",
+          "durationSeconds": 3.0,
+          "matchesBodyDuration": true,
+          "animatedGarmentOrBodyTracks": 66
+        },
+        "sw_strike": {
+          "present": true,
+          "ownedByBridgeBank": "pfh_ra108_b01",
+          "durationSeconds": 1.9,
+          "matchesBodyDuration": true,
+          "animatedGarmentOrBodyTracks": 66
+        },
+        "sw_hvystrike": {
+          "present": true,
+          "ownedByBridgeBank": "pfh_ra108_b01",
+          "durationSeconds": 2.7,
+          "matchesBodyDuration": true,
+          "animatedGarmentOrBodyTracks": 66
+        },
+        "sw_extract": {
+          "present": true,
+          "ownedByBridgeBank": "pfh_ra108",
+          "durationSeconds": 2.8,
+          "matchesBodyDuration": true,
+          "animatedGarmentOrBodyTracks": 66
+        },
+        "sw_search": {
+          "present": true,
+          "ownedByBridgeBank": "pfh_ra108_b01",
+          "durationSeconds": 3.0,
+          "matchesBodyDuration": true,
+          "animatedGarmentOrBodyTracks": 66
+        },
+        "sw_dig": {
+          "present": true,
+          "ownedByBridgeBank": "pfh_ra108",
+          "durationSeconds": 3.2,
+          "matchesBodyDuration": true,
+          "animatedGarmentOrBodyTracks": 66
+        },
+        "sw_reel": {
+          "present": true,
+          "ownedByBridgeBank": "pfh_ra108_b01",
+          "durationSeconds": 3.05,
+          "matchesBodyDuration": true,
+          "animatedGarmentOrBodyTracks": 66
+        },
+        "sw_giveline": {
+          "present": true,
+          "ownedByBridgeBank": "pfh_ra108_b01",
+          "durationSeconds": 2.4,
+          "matchesBodyDuration": true,
+          "animatedGarmentOrBodyTracks": 66
+        },
+        "sw_holdrod": {
+          "present": true,
+          "ownedByBridgeBank": "pfh_ra108_b01",
+          "durationSeconds": 3.5,
+          "matchesBodyDuration": true,
+          "animatedGarmentOrBodyTracks": 66
+        },
+        "sw_landfish": {
+          "present": true,
+          "ownedByBridgeBank": "pfh_ra108_b01",
+          "durationSeconds": 3.4,
+          "matchesBodyDuration": true,
+          "animatedGarmentOrBodyTracks": 66
+        }
+      },
+      "poseSamplesCompared": 75,
+      "poseMismatch": null
+    },
+    "pfo_ra060": {
+      "body": "pfo0",
+      "banks": [
+        "pfo_ra060",
+        "pfo_ra060_b01"
+      ],
+      "bridge_clip_count": 1319,
+      "clips": {
+        "sw_forgework": {
+          "present": true,
+          "ownedByBridgeBank": "pfo_ra060",
+          "durationSeconds": 3.4,
+          "matchesBodyDuration": true,
+          "animatedGarmentOrBodyTracks": 43
+        },
+        "sw_circuitry": {
+          "present": true,
+          "ownedByBridgeBank": "pfo_ra060",
+          "durationSeconds": 2.9,
+          "matchesBodyDuration": true,
+          "animatedGarmentOrBodyTracks": 43
+        },
+        "sw_fabricate": {
+          "present": true,
+          "ownedByBridgeBank": "pfo_ra060",
+          "durationSeconds": 3.6,
+          "matchesBodyDuration": true,
+          "animatedGarmentOrBodyTracks": 43
+        },
+        "sw_cooking": {
+          "present": true,
+          "ownedByBridgeBank": "pfo_ra060",
+          "durationSeconds": 3.2,
+          "matchesBodyDuration": true,
+          "animatedGarmentOrBodyTracks": 43
+        },
+        "sw_compound": {
+          "present": true,
+          "ownedByBridgeBank": "pfo_ra060",
+          "durationSeconds": 3.3,
+          "matchesBodyDuration": true,
+          "animatedGarmentOrBodyTracks": 43
+        },
+        "sw_survey": {
+          "present": true,
+          "ownedByBridgeBank": "pfo_ra060_b01",
+          "durationSeconds": 3.0,
+          "matchesBodyDuration": true,
+          "animatedGarmentOrBodyTracks": 43
+        },
+        "sw_strike": {
+          "present": true,
+          "ownedByBridgeBank": "pfo_ra060_b01",
+          "durationSeconds": 1.9,
+          "matchesBodyDuration": true,
+          "animatedGarmentOrBodyTracks": 43
+        },
+        "sw_hvystrike": {
+          "present": true,
+          "ownedByBridgeBank": "pfo_ra060",
+          "durationSeconds": 2.7,
+          "matchesBodyDuration": true,
+          "animatedGarmentOrBodyTracks": 43
+        },
+        "sw_extract": {
+          "present": true,
+          "ownedByBridgeBank": "pfo_ra060",
+          "durationSeconds": 2.8,
+          "matchesBodyDuration": true,
+          "animatedGarmentOrBodyTracks": 43
+        },
+        "sw_search": {
+          "present": true,
+          "ownedByBridgeBank": "pfo_ra060_b01",
+          "durationSeconds": 3.0,
+          "matchesBodyDuration": true,
+          "animatedGarmentOrBodyTracks": 43
+        },
+        "sw_dig": {
+          "present": true,
+          "ownedByBridgeBank": "pfo_ra060",
+          "durationSeconds": 3.2,
+          "matchesBodyDuration": true,
+          "animatedGarmentOrBodyTracks": 43
+        },
+        "sw_reel": {
+          "present": true,
+          "ownedByBridgeBank": "pfo_ra060_b01",
+          "durationSeconds": 3.05,
+          "matchesBodyDuration": true,
+          "animatedGarmentOrBodyTracks": 43
+        },
+        "sw_giveline": {
+          "present": true,
+          "ownedByBridgeBank": "pfo_ra060",
+          "durationSeconds": 2.4,
+          "matchesBodyDuration": true,
+          "animatedGarmentOrBodyTracks": 43
+        },
+        "sw_holdrod": {
+          "present": true,
+          "ownedByBridgeBank": "pfo_ra060",
+          "durationSeconds": 3.5,
+          "matchesBodyDuration": true,
+          "animatedGarmentOrBodyTracks": 43
+        },
+        "sw_landfish": {
+          "present": true,
+          "ownedByBridgeBank": "pfo_ra060",
+          "durationSeconds": 3.4,
+          "matchesBodyDuration": true,
+          "animatedGarmentOrBodyTracks": 43
+        }
+      },
+      "poseSamplesCompared": 75,
+      "poseMismatch": null
+    },
+    "pma_ra090": {
+      "body": "pma0",
+      "banks": [
+        "pma_ra090",
+        "pma_ra090_b01",
+        "pma_ra090_b02"
+      ],
+      "bridge_clip_count": 1319,
+      "clips": {
+        "sw_forgework": {
+          "present": true,
+          "ownedByBridgeBank": "pma_ra090",
+          "durationSeconds": 3.4,
+          "matchesBodyDuration": true,
+          "animatedGarmentOrBodyTracks": 55
+        },
+        "sw_circuitry": {
+          "present": true,
+          "ownedByBridgeBank": "pma_ra090",
+          "durationSeconds": 2.9,
+          "matchesBodyDuration": true,
+          "animatedGarmentOrBodyTracks": 55
+        },
+        "sw_fabricate": {
+          "present": true,
+          "ownedByBridgeBank": "pma_ra090",
+          "durationSeconds": 3.6,
+          "matchesBodyDuration": true,
+          "animatedGarmentOrBodyTracks": 55
+        },
+        "sw_cooking": {
+          "present": true,
+          "ownedByBridgeBank": "pma_ra090",
+          "durationSeconds": 3.2,
+          "matchesBodyDuration": true,
+          "animatedGarmentOrBodyTracks": 55
+        },
+        "sw_compound": {
+          "present": true,
+          "ownedByBridgeBank": "pma_ra090",
+          "durationSeconds": 3.3,
+          "matchesBodyDuration": true,
+          "animatedGarmentOrBodyTracks": 55
+        },
+        "sw_survey": {
+          "present": true,
+          "ownedByBridgeBank": "pma_ra090_b01",
+          "durationSeconds": 3.0,
+          "matchesBodyDuration": true,
+          "animatedGarmentOrBodyTracks": 55
+        },
+        "sw_strike": {
+          "present": true,
+          "ownedByBridgeBank": "pma_ra090_b01",
+          "durationSeconds": 1.9,
+          "matchesBodyDuration": true,
+          "animatedGarmentOrBodyTracks": 55
+        },
+        "sw_hvystrike": {
+          "present": true,
+          "ownedByBridgeBank": "pma_ra090_b01",
+          "durationSeconds": 2.7,
+          "matchesBodyDuration": true,
+          "animatedGarmentOrBodyTracks": 55
+        },
+        "sw_extract": {
+          "present": true,
+          "ownedByBridgeBank": "pma_ra090",
+          "durationSeconds": 2.8,
+          "matchesBodyDuration": true,
+          "animatedGarmentOrBodyTracks": 55
+        },
+        "sw_search": {
+          "present": true,
+          "ownedByBridgeBank": "pma_ra090_b01",
+          "durationSeconds": 3.0,
+          "matchesBodyDuration": true,
+          "animatedGarmentOrBodyTracks": 55
+        },
+        "sw_dig": {
+          "present": true,
+          "ownedByBridgeBank": "pma_ra090",
+          "durationSeconds": 3.2,
+          "matchesBodyDuration": true,
+          "animatedGarmentOrBodyTracks": 55
+        },
+        "sw_reel": {
+          "present": true,
+          "ownedByBridgeBank": "pma_ra090_b01",
+          "durationSeconds": 3.05,
+          "matchesBodyDuration": true,
+          "animatedGarmentOrBodyTracks": 55
+        },
+        "sw_giveline": {
+          "present": true,
+          "ownedByBridgeBank": "pma_ra090",
+          "durationSeconds": 2.4,
+          "matchesBodyDuration": true,
+          "animatedGarmentOrBodyTracks": 55
+        },
+        "sw_holdrod": {
+          "present": true,
+          "ownedByBridgeBank": "pma_ra090_b01",
+          "durationSeconds": 3.5,
+          "matchesBodyDuration": true,
+          "animatedGarmentOrBodyTracks": 55
+        },
+        "sw_landfish": {
+          "present": true,
+          "ownedByBridgeBank": "pma_ra090_b01",
+          "durationSeconds": 3.4,
+          "matchesBodyDuration": true,
+          "animatedGarmentOrBodyTracks": 55
+        }
+      },
+      "poseSamplesCompared": 75,
+      "poseMismatch": null
+    },
+    "pmb_ra026": {
+      "body": "pmb0",
+      "banks": [
+        "pmb_ra026"
+      ],
+      "bridge_clip_count": 1319,
+      "clips": {
+        "sw_forgework": {
+          "present": true,
+          "ownedByBridgeBank": "pmb_ra026",
+          "durationSeconds": 3.4,
+          "matchesBodyDuration": true,
+          "animatedGarmentOrBodyTracks": 21
+        },
+        "sw_circuitry": {
+          "present": true,
+          "ownedByBridgeBank": "pmb_ra026",
+          "durationSeconds": 2.9,
+          "matchesBodyDuration": true,
+          "animatedGarmentOrBodyTracks": 21
+        },
+        "sw_fabricate": {
+          "present": true,
+          "ownedByBridgeBank": "pmb_ra026",
+          "durationSeconds": 3.6,
+          "matchesBodyDuration": true,
+          "animatedGarmentOrBodyTracks": 21
+        },
+        "sw_cooking": {
+          "present": true,
+          "ownedByBridgeBank": "pmb_ra026",
+          "durationSeconds": 3.2,
+          "matchesBodyDuration": true,
+          "animatedGarmentOrBodyTracks": 21
+        },
+        "sw_compound": {
+          "present": true,
+          "ownedByBridgeBank": "pmb_ra026",
+          "durationSeconds": 3.3,
+          "matchesBodyDuration": true,
+          "animatedGarmentOrBodyTracks": 21
+        },
+        "sw_survey": {
+          "present": true,
+          "ownedByBridgeBank": "pmb_ra026",
+          "durationSeconds": 3.0,
+          "matchesBodyDuration": true,
+          "animatedGarmentOrBodyTracks": 21
+        },
+        "sw_strike": {
+          "present": true,
+          "ownedByBridgeBank": "pmb_ra026",
+          "durationSeconds": 1.9,
+          "matchesBodyDuration": true,
+          "animatedGarmentOrBodyTracks": 21
+        },
+        "sw_hvystrike": {
+          "present": true,
+          "ownedByBridgeBank": "pmb_ra026",
+          "durationSeconds": 2.7,
+          "matchesBodyDuration": true,
+          "animatedGarmentOrBodyTracks": 21
+        },
+        "sw_extract": {
+          "present": true,
+          "ownedByBridgeBank": "pmb_ra026",
+          "durationSeconds": 2.8,
+          "matchesBodyDuration": true,
+          "animatedGarmentOrBodyTracks": 21
+        },
+        "sw_search": {
+          "present": true,
+          "ownedByBridgeBank": "pmb_ra026",
+          "durationSeconds": 3.0,
+          "matchesBodyDuration": true,
+          "animatedGarmentOrBodyTracks": 21
+        },
+        "sw_dig": {
+          "present": true,
+          "ownedByBridgeBank": "pmb_ra026",
+          "durationSeconds": 3.2,
+          "matchesBodyDuration": true,
+          "animatedGarmentOrBodyTracks": 21
+        },
+        "sw_reel": {
+          "present": true,
+          "ownedByBridgeBank": "pmb_ra026",
+          "durationSeconds": 3.05,
+          "matchesBodyDuration": true,
+          "animatedGarmentOrBodyTracks": 21
+        },
+        "sw_giveline": {
+          "present": true,
+          "ownedByBridgeBank": "pmb_ra026",
+          "durationSeconds": 2.4,
+          "matchesBodyDuration": true,
+          "animatedGarmentOrBodyTracks": 21
+        },
+        "sw_holdrod": {
+          "present": true,
+          "ownedByBridgeBank": "pmb_ra026",
+          "durationSeconds": 3.5,
+          "matchesBodyDuration": true,
+          "animatedGarmentOrBodyTracks": 21
+        },
+        "sw_landfish": {
+          "present": true,
+          "ownedByBridgeBank": "pmb_ra026",
+          "durationSeconds": 3.4,
+          "matchesBodyDuration": true,
+          "animatedGarmentOrBodyTracks": 21
+        }
+      },
+      "poseSamplesCompared": 75,
+      "poseMismatch": null
+    },
+    "pmd_ra108": {
+      "body": "pmd0",
+      "banks": [
+        "pmd_ra108",
+        "pmd_ra108_b01"
+      ],
+      "bridge_clip_count": 1319,
+      "clips": {
+        "sw_forgework": {
+          "present": true,
+          "ownedByBridgeBank": "pmd_ra108",
+          "durationSeconds": 3.4,
+          "matchesBodyDuration": true,
+          "animatedGarmentOrBodyTracks": 41
+        },
+        "sw_circuitry": {
+          "present": true,
+          "ownedByBridgeBank": "pmd_ra108",
+          "durationSeconds": 2.9,
+          "matchesBodyDuration": true,
+          "animatedGarmentOrBodyTracks": 41
+        },
+        "sw_fabricate": {
+          "present": true,
+          "ownedByBridgeBank": "pmd_ra108",
+          "durationSeconds": 3.6,
+          "matchesBodyDuration": true,
+          "animatedGarmentOrBodyTracks": 41
+        },
+        "sw_cooking": {
+          "present": true,
+          "ownedByBridgeBank": "pmd_ra108",
+          "durationSeconds": 3.2,
+          "matchesBodyDuration": true,
+          "animatedGarmentOrBodyTracks": 41
+        },
+        "sw_compound": {
+          "present": true,
+          "ownedByBridgeBank": "pmd_ra108",
+          "durationSeconds": 3.3,
+          "matchesBodyDuration": true,
+          "animatedGarmentOrBodyTracks": 41
+        },
+        "sw_survey": {
+          "present": true,
+          "ownedByBridgeBank": "pmd_ra108_b01",
+          "durationSeconds": 3.0,
+          "matchesBodyDuration": true,
+          "animatedGarmentOrBodyTracks": 41
+        },
+        "sw_strike": {
+          "present": true,
+          "ownedByBridgeBank": "pmd_ra108_b01",
+          "durationSeconds": 1.9,
+          "matchesBodyDuration": true,
+          "animatedGarmentOrBodyTracks": 41
+        },
+        "sw_hvystrike": {
+          "present": true,
+          "ownedByBridgeBank": "pmd_ra108",
+          "durationSeconds": 2.7,
+          "matchesBodyDuration": true,
+          "animatedGarmentOrBodyTracks": 41
+        },
+        "sw_extract": {
+          "present": true,
+          "ownedByBridgeBank": "pmd_ra108",
+          "durationSeconds": 2.8,
+          "matchesBodyDuration": true,
+          "animatedGarmentOrBodyTracks": 41
+        },
+        "sw_search": {
+          "present": true,
+          "ownedByBridgeBank": "pmd_ra108_b01",
+          "durationSeconds": 3.0,
+          "matchesBodyDuration": true,
+          "animatedGarmentOrBodyTracks": 41
+        },
+        "sw_dig": {
+          "present": true,
+          "ownedByBridgeBank": "pmd_ra108",
+          "durationSeconds": 3.2,
+          "matchesBodyDuration": true,
+          "animatedGarmentOrBodyTracks": 41
+        },
+        "sw_reel": {
+          "present": true,
+          "ownedByBridgeBank": "pmd_ra108_b01",
+          "durationSeconds": 3.05,
+          "matchesBodyDuration": true,
+          "animatedGarmentOrBodyTracks": 41
+        },
+        "sw_giveline": {
+          "present": true,
+          "ownedByBridgeBank": "pmd_ra108",
+          "durationSeconds": 2.4,
+          "matchesBodyDuration": true,
+          "animatedGarmentOrBodyTracks": 41
+        },
+        "sw_holdrod": {
+          "present": true,
+          "ownedByBridgeBank": "pmd_ra108",
+          "durationSeconds": 3.5,
+          "matchesBodyDuration": true,
+          "animatedGarmentOrBodyTracks": 41
+        },
+        "sw_landfish": {
+          "present": true,
+          "ownedByBridgeBank": "pmd_ra108",
+          "durationSeconds": 3.4,
+          "matchesBodyDuration": true,
+          "animatedGarmentOrBodyTracks": 41
+        }
+      },
+      "poseSamplesCompared": 75,
+      "poseMismatch": null
+    },
+    "pme_ra076": {
+      "body": "pme0",
+      "banks": [
+        "pme_ra076",
+        "pme_ra076_b01",
+        "pme_ra076_b02"
+      ],
+      "bridge_clip_count": 1319,
+      "clips": {
+        "sw_forgework": {
+          "present": true,
+          "ownedByBridgeBank": "pme_ra076",
+          "durationSeconds": 3.4,
+          "matchesBodyDuration": true,
+          "animatedGarmentOrBodyTracks": 65
+        },
+        "sw_circuitry": {
+          "present": true,
+          "ownedByBridgeBank": "pme_ra076",
+          "durationSeconds": 2.9,
+          "matchesBodyDuration": true,
+          "animatedGarmentOrBodyTracks": 65
+        },
+        "sw_fabricate": {
+          "present": true,
+          "ownedByBridgeBank": "pme_ra076",
+          "durationSeconds": 3.6,
+          "matchesBodyDuration": true,
+          "animatedGarmentOrBodyTracks": 65
+        },
+        "sw_cooking": {
+          "present": true,
+          "ownedByBridgeBank": "pme_ra076",
+          "durationSeconds": 3.2,
+          "matchesBodyDuration": true,
+          "animatedGarmentOrBodyTracks": 65
+        },
+        "sw_compound": {
+          "present": true,
+          "ownedByBridgeBank": "pme_ra076",
+          "durationSeconds": 3.3,
+          "matchesBodyDuration": true,
+          "animatedGarmentOrBodyTracks": 65
+        },
+        "sw_survey": {
+          "present": true,
+          "ownedByBridgeBank": "pme_ra076_b01",
+          "durationSeconds": 3.0,
+          "matchesBodyDuration": true,
+          "animatedGarmentOrBodyTracks": 65
+        },
+        "sw_strike": {
+          "present": true,
+          "ownedByBridgeBank": "pme_ra076_b01",
+          "durationSeconds": 1.9,
+          "matchesBodyDuration": true,
+          "animatedGarmentOrBodyTracks": 65
+        },
+        "sw_hvystrike": {
+          "present": true,
+          "ownedByBridgeBank": "pme_ra076_b01",
+          "durationSeconds": 2.7,
+          "matchesBodyDuration": true,
+          "animatedGarmentOrBodyTracks": 65
+        },
+        "sw_extract": {
+          "present": true,
+          "ownedByBridgeBank": "pme_ra076",
+          "durationSeconds": 2.8,
+          "matchesBodyDuration": true,
+          "animatedGarmentOrBodyTracks": 65
+        },
+        "sw_search": {
+          "present": true,
+          "ownedByBridgeBank": "pme_ra076_b01",
+          "durationSeconds": 3.0,
+          "matchesBodyDuration": true,
+          "animatedGarmentOrBodyTracks": 65
+        },
+        "sw_dig": {
+          "present": true,
+          "ownedByBridgeBank": "pme_ra076",
+          "durationSeconds": 3.2,
+          "matchesBodyDuration": true,
+          "animatedGarmentOrBodyTracks": 65
+        },
+        "sw_reel": {
+          "present": true,
+          "ownedByBridgeBank": "pme_ra076_b01",
+          "durationSeconds": 3.05,
+          "matchesBodyDuration": true,
+          "animatedGarmentOrBodyTracks": 65
+        },
+        "sw_giveline": {
+          "present": true,
+          "ownedByBridgeBank": "pme_ra076",
+          "durationSeconds": 2.4,
+          "matchesBodyDuration": true,
+          "animatedGarmentOrBodyTracks": 65
+        },
+        "sw_holdrod": {
+          "present": true,
+          "ownedByBridgeBank": "pme_ra076_b01",
+          "durationSeconds": 3.5,
+          "matchesBodyDuration": true,
+          "animatedGarmentOrBodyTracks": 65
+        },
+        "sw_landfish": {
+          "present": true,
+          "ownedByBridgeBank": "pme_ra076_b01",
+          "durationSeconds": 3.4,
+          "matchesBodyDuration": true,
+          "animatedGarmentOrBodyTracks": 65
+        }
+      },
+      "poseSamplesCompared": 75,
+      "poseMismatch": null
+    },
+    "pmg_ra090": {
+      "body": "pmg0",
+      "banks": [
+        "pmg_ra090",
+        "pmg_ra090_b01"
+      ],
+      "bridge_clip_count": 1319,
+      "clips": {
+        "sw_forgework": {
+          "present": true,
+          "ownedByBridgeBank": "pmg_ra090",
+          "durationSeconds": 3.4,
+          "matchesBodyDuration": true,
+          "animatedGarmentOrBodyTracks": 31
+        },
+        "sw_circuitry": {
+          "present": true,
+          "ownedByBridgeBank": "pmg_ra090",
+          "durationSeconds": 2.9,
+          "matchesBodyDuration": true,
+          "animatedGarmentOrBodyTracks": 31
+        },
+        "sw_fabricate": {
+          "present": true,
+          "ownedByBridgeBank": "pmg_ra090",
+          "durationSeconds": 3.6,
+          "matchesBodyDuration": true,
+          "animatedGarmentOrBodyTracks": 31
+        },
+        "sw_cooking": {
+          "present": true,
+          "ownedByBridgeBank": "pmg_ra090",
+          "durationSeconds": 3.2,
+          "matchesBodyDuration": true,
+          "animatedGarmentOrBodyTracks": 31
+        },
+        "sw_compound": {
+          "present": true,
+          "ownedByBridgeBank": "pmg_ra090",
+          "durationSeconds": 3.3,
+          "matchesBodyDuration": true,
+          "animatedGarmentOrBodyTracks": 31
+        },
+        "sw_survey": {
+          "present": true,
+          "ownedByBridgeBank": "pmg_ra090_b01",
+          "durationSeconds": 3.0,
+          "matchesBodyDuration": true,
+          "animatedGarmentOrBodyTracks": 31
+        },
+        "sw_strike": {
+          "present": true,
+          "ownedByBridgeBank": "pmg_ra090_b01",
+          "durationSeconds": 1.9,
+          "matchesBodyDuration": true,
+          "animatedGarmentOrBodyTracks": 31
+        },
+        "sw_hvystrike": {
+          "present": true,
+          "ownedByBridgeBank": "pmg_ra090",
+          "durationSeconds": 2.7,
+          "matchesBodyDuration": true,
+          "animatedGarmentOrBodyTracks": 31
+        },
+        "sw_extract": {
+          "present": true,
+          "ownedByBridgeBank": "pmg_ra090",
+          "durationSeconds": 2.8,
+          "matchesBodyDuration": true,
+          "animatedGarmentOrBodyTracks": 31
+        },
+        "sw_search": {
+          "present": true,
+          "ownedByBridgeBank": "pmg_ra090_b01",
+          "durationSeconds": 3.0,
+          "matchesBodyDuration": true,
+          "animatedGarmentOrBodyTracks": 31
+        },
+        "sw_dig": {
+          "present": true,
+          "ownedByBridgeBank": "pmg_ra090",
+          "durationSeconds": 3.2,
+          "matchesBodyDuration": true,
+          "animatedGarmentOrBodyTracks": 31
+        },
+        "sw_reel": {
+          "present": true,
+          "ownedByBridgeBank": "pmg_ra090",
+          "durationSeconds": 3.05,
+          "matchesBodyDuration": true,
+          "animatedGarmentOrBodyTracks": 31
+        },
+        "sw_giveline": {
+          "present": true,
+          "ownedByBridgeBank": "pmg_ra090",
+          "durationSeconds": 2.4,
+          "matchesBodyDuration": true,
+          "animatedGarmentOrBodyTracks": 31
+        },
+        "sw_holdrod": {
+          "present": true,
+          "ownedByBridgeBank": "pmg_ra090",
+          "durationSeconds": 3.5,
+          "matchesBodyDuration": true,
+          "animatedGarmentOrBodyTracks": 31
+        },
+        "sw_landfish": {
+          "present": true,
+          "ownedByBridgeBank": "pmg_ra090",
+          "durationSeconds": 3.4,
+          "matchesBodyDuration": true,
+          "animatedGarmentOrBodyTracks": 31
+        }
+      },
+      "poseSamplesCompared": 75,
+      "poseMismatch": null
+    },
+    "pmh_ra091": {
+      "body": "pmh0",
+      "banks": [
+        "pmh_ra091",
+        "pmh_ra091_b01",
+        "pmh_ra091_b02"
+      ],
+      "bridge_clip_count": 1319,
+      "clips": {
+        "sw_forgework": {
+          "present": true,
+          "ownedByBridgeBank": "pmh_ra091",
+          "durationSeconds": 3.4,
+          "matchesBodyDuration": true,
+          "animatedGarmentOrBodyTracks": 65
+        },
+        "sw_circuitry": {
+          "present": true,
+          "ownedByBridgeBank": "pmh_ra091",
+          "durationSeconds": 2.9,
+          "matchesBodyDuration": true,
+          "animatedGarmentOrBodyTracks": 65
+        },
+        "sw_fabricate": {
+          "present": true,
+          "ownedByBridgeBank": "pmh_ra091",
+          "durationSeconds": 3.6,
+          "matchesBodyDuration": true,
+          "animatedGarmentOrBodyTracks": 65
+        },
+        "sw_cooking": {
+          "present": true,
+          "ownedByBridgeBank": "pmh_ra091",
+          "durationSeconds": 3.2,
+          "matchesBodyDuration": true,
+          "animatedGarmentOrBodyTracks": 65
+        },
+        "sw_compound": {
+          "present": true,
+          "ownedByBridgeBank": "pmh_ra091",
+          "durationSeconds": 3.3,
+          "matchesBodyDuration": true,
+          "animatedGarmentOrBodyTracks": 65
+        },
+        "sw_survey": {
+          "present": true,
+          "ownedByBridgeBank": "pmh_ra091_b01",
+          "durationSeconds": 3.0,
+          "matchesBodyDuration": true,
+          "animatedGarmentOrBodyTracks": 65
+        },
+        "sw_strike": {
+          "present": true,
+          "ownedByBridgeBank": "pmh_ra091_b01",
+          "durationSeconds": 1.9,
+          "matchesBodyDuration": true,
+          "animatedGarmentOrBodyTracks": 65
+        },
+        "sw_hvystrike": {
+          "present": true,
+          "ownedByBridgeBank": "pmh_ra091_b01",
+          "durationSeconds": 2.7,
+          "matchesBodyDuration": true,
+          "animatedGarmentOrBodyTracks": 65
+        },
+        "sw_extract": {
+          "present": true,
+          "ownedByBridgeBank": "pmh_ra091",
+          "durationSeconds": 2.8,
+          "matchesBodyDuration": true,
+          "animatedGarmentOrBodyTracks": 65
+        },
+        "sw_search": {
+          "present": true,
+          "ownedByBridgeBank": "pmh_ra091_b01",
+          "durationSeconds": 3.0,
+          "matchesBodyDuration": true,
+          "animatedGarmentOrBodyTracks": 65
+        },
+        "sw_dig": {
+          "present": true,
+          "ownedByBridgeBank": "pmh_ra091",
+          "durationSeconds": 3.2,
+          "matchesBodyDuration": true,
+          "animatedGarmentOrBodyTracks": 65
+        },
+        "sw_reel": {
+          "present": true,
+          "ownedByBridgeBank": "pmh_ra091_b01",
+          "durationSeconds": 3.05,
+          "matchesBodyDuration": true,
+          "animatedGarmentOrBodyTracks": 65
+        },
+        "sw_giveline": {
+          "present": true,
+          "ownedByBridgeBank": "pmh_ra091",
+          "durationSeconds": 2.4,
+          "matchesBodyDuration": true,
+          "animatedGarmentOrBodyTracks": 65
+        },
+        "sw_holdrod": {
+          "present": true,
+          "ownedByBridgeBank": "pmh_ra091_b01",
+          "durationSeconds": 3.5,
+          "matchesBodyDuration": true,
+          "animatedGarmentOrBodyTracks": 65
+        },
+        "sw_landfish": {
+          "present": true,
+          "ownedByBridgeBank": "pmh_ra091_b01",
+          "durationSeconds": 3.4,
+          "matchesBodyDuration": true,
+          "animatedGarmentOrBodyTracks": 65
+        }
+      },
+      "poseSamplesCompared": 75,
+      "poseMismatch": null
+    },
+    "pmo_ra076": {
+      "body": "pmo0",
+      "banks": [
+        "pmo_ra076",
+        "pmo_ra076_b01"
+      ],
+      "bridge_clip_count": 1319,
+      "clips": {
+        "sw_forgework": {
+          "present": true,
+          "ownedByBridgeBank": "pmo_ra076",
+          "durationSeconds": 3.4,
+          "matchesBodyDuration": true,
+          "animatedGarmentOrBodyTracks": 41
+        },
+        "sw_circuitry": {
+          "present": true,
+          "ownedByBridgeBank": "pmo_ra076",
+          "durationSeconds": 2.9,
+          "matchesBodyDuration": true,
+          "animatedGarmentOrBodyTracks": 41
+        },
+        "sw_fabricate": {
+          "present": true,
+          "ownedByBridgeBank": "pmo_ra076",
+          "durationSeconds": 3.6,
+          "matchesBodyDuration": true,
+          "animatedGarmentOrBodyTracks": 41
+        },
+        "sw_cooking": {
+          "present": true,
+          "ownedByBridgeBank": "pmo_ra076",
+          "durationSeconds": 3.2,
+          "matchesBodyDuration": true,
+          "animatedGarmentOrBodyTracks": 41
+        },
+        "sw_compound": {
+          "present": true,
+          "ownedByBridgeBank": "pmo_ra076",
+          "durationSeconds": 3.3,
+          "matchesBodyDuration": true,
+          "animatedGarmentOrBodyTracks": 41
+        },
+        "sw_survey": {
+          "present": true,
+          "ownedByBridgeBank": "pmo_ra076_b01",
+          "durationSeconds": 3.0,
+          "matchesBodyDuration": true,
+          "animatedGarmentOrBodyTracks": 41
+        },
+        "sw_strike": {
+          "present": true,
+          "ownedByBridgeBank": "pmo_ra076_b01",
+          "durationSeconds": 1.9,
+          "matchesBodyDuration": true,
+          "animatedGarmentOrBodyTracks": 41
+        },
+        "sw_hvystrike": {
+          "present": true,
+          "ownedByBridgeBank": "pmo_ra076",
+          "durationSeconds": 2.7,
+          "matchesBodyDuration": true,
+          "animatedGarmentOrBodyTracks": 41
+        },
+        "sw_extract": {
+          "present": true,
+          "ownedByBridgeBank": "pmo_ra076",
+          "durationSeconds": 2.8,
+          "matchesBodyDuration": true,
+          "animatedGarmentOrBodyTracks": 41
+        },
+        "sw_search": {
+          "present": true,
+          "ownedByBridgeBank": "pmo_ra076_b01",
+          "durationSeconds": 3.0,
+          "matchesBodyDuration": true,
+          "animatedGarmentOrBodyTracks": 41
+        },
+        "sw_dig": {
+          "present": true,
+          "ownedByBridgeBank": "pmo_ra076",
+          "durationSeconds": 3.2,
+          "matchesBodyDuration": true,
+          "animatedGarmentOrBodyTracks": 41
+        },
+        "sw_reel": {
+          "present": true,
+          "ownedByBridgeBank": "pmo_ra076_b01",
+          "durationSeconds": 3.05,
+          "matchesBodyDuration": true,
+          "animatedGarmentOrBodyTracks": 41
+        },
+        "sw_giveline": {
+          "present": true,
+          "ownedByBridgeBank": "pmo_ra076",
+          "durationSeconds": 2.4,
+          "matchesBodyDuration": true,
+          "animatedGarmentOrBodyTracks": 41
+        },
+        "sw_holdrod": {
+          "present": true,
+          "ownedByBridgeBank": "pmo_ra076",
+          "durationSeconds": 3.5,
+          "matchesBodyDuration": true,
+          "animatedGarmentOrBodyTracks": 41
+        },
+        "sw_landfish": {
+          "present": true,
+          "ownedByBridgeBank": "pmo_ra076",
+          "durationSeconds": 3.4,
+          "matchesBodyDuration": true,
+          "animatedGarmentOrBodyTracks": 41
+        }
+      },
+      "poseSamplesCompared": 75,
+      "poseMismatch": null
+    }
+  },
+  "allFamiliesCoverAllClips": true,
+  "everyClipOwnedByABridgeBank": true
+}

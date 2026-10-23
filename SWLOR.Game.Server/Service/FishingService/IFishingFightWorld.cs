@@ -1,3 +1,5 @@
+using SWLOR.Game.Server.Service.AnimationService;
+
 namespace SWLOR.Game.Server.Service.FishingService
 {
     /// <summary>
@@ -18,6 +20,9 @@ namespace SWLOR.Game.Server.Service.FishingService
         void GiveAgricultureXp(uint player, int xp);
 
         void Message(uint player, string text);
+
+        /// <summary>Plays an authored fishing clip once on the angler. The next clip replaces it.</summary>
+        void PlayAnimation(uint player, AnimationClip clip);
 
         /// <summary>Puts the landed fish in the angler's inventory.</summary>
         void CreateFish(uint player, string resref);

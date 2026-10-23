@@ -1,5 +1,6 @@
 using System.Collections.Generic;
 using SWLOR.NWN.API.NWNX;
+using SWLOR.Game.Server.Service.SkillService;
 using SWLOR.NWN.API.NWScript.Enum;
 
 namespace SWLOR.Game.Server.Service.CraftService.Minigame;
@@ -26,6 +27,8 @@ public sealed class NwnQuickCraftWorld : IQuickCraftWorld
 
     public void BeginBatch(uint player) => NwnCraftSessionWorld.Instance.BeginStationWork(player);
 
+    public void PlayStationWork(uint player, SkillType skill) => NwnCraftSessionWorld.Instance.PlayStationWork(player, skill);
+
     public void EndBatch(uint player)
     {
         NwnCraftSessionWorld.Instance.EndStationWork(player);
@@ -38,7 +41,10 @@ public sealed class NwnQuickCraftWorld : IQuickCraftWorld
 
     public void PlayItemAnimation(uint player, float seconds)
     {
-        AssignCommand(player, () => ActionPlayAnimation(Animation.LoopingGetMid, 1.0f, seconds));
+        // The station clip loops through the whole batch, so only a player without one needs the native pose per item.
+        if (!NwnCraftSessionWorld.Instance.IsStationWorkPlaying(player))
+            AssignCommand(player, () => ActionPlayAnimation(Animation.LoopingGetMid, 1.0f, seconds));
+
         PlayerPlugin.StartGuiTimingBar(player, seconds);
     }
 

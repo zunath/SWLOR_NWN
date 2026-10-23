@@ -5,15 +5,15 @@ using SWLOR.Game.Server.Service.CraftService.Minigame;
 namespace SWLOR.Game.Server.Tests.Service;
 
 /// <summary>
-/// Covers the outcome contract every item craft ends under. The legacy helpers below copy the original formulas from
-/// <c>Feature/GuiDefinition/ViewModel/CraftViewModel.cs</c> line for line, so a drift in the shared rules shows up here.
+/// Covers the outcome contract every item craft ends under. The legacy helpers below freeze the formulas of the removed
+/// crafting window (<c>CraftViewModel</c>), so a drift in the shared rules shows up here.
 /// </summary>
 public class CraftOutcomeRulesTests
 {
     private static readonly float[] QualityGrid = { 0f, 0.01f, 0.1f, 0.333f, 0.5f, 0.6789f, 0.85f, 0.9999f, 1f };
     private static readonly int[] BaseXpGrid = { 0, 1, 7, 100, 333, 1250 };
 
-    // CraftViewModel.cs:1386-1401 (CalculateXP).
+    // Removed CraftViewModel.CalculateXP.
     private static int LegacyXp(int baseXp, int blueprintLevel, bool firstTime, float qualityPercent)
     {
         var xp = baseXp;
@@ -26,7 +26,7 @@ public class CraftOutcomeRulesTests
         return xp;
     }
 
-    // CraftViewModel.cs:1659-1667 (ProcessFailure): the failure call passes false and 0f, then takes 15%.
+    // Removed CraftViewModel.ProcessFailure: the failure call passes false and 0f, then takes 15%.
     private static int LegacyFailureXp(int baseXp, int blueprintLevel)
     {
         var xp = LegacyXp(baseXp, blueprintLevel, false, 0f);
@@ -34,7 +34,7 @@ public class CraftOutcomeRulesTests
         return xp;
     }
 
-    // CraftViewModel.cs:1423-1432 (ProcessSuccess vendor value).
+    // Removed CraftViewModel.ProcessSuccess vendor value.
     private static int LegacyVendorValue(int recipeLevel, float qualityPercent)
     {
         const float LevelBucketMultiplier = 48f;
@@ -168,7 +168,7 @@ public class CraftOutcomeRulesTests
     [Test]
     public void Enhancements_RollNoChance()
     {
-        // The old transfer chance was quality/max per property (CraftViewModel.cs:1420, 1455). The same outcome is returned every time.
+        // The old transfer chance was quality/max per property. The same outcome is returned every time.
         var first = Success(new MinigameMeter(70, 100), filledSlots: new[] { 1, 2 });
         var second = Success(new MinigameMeter(70, 100), filledSlots: new[] { 1, 2 });
 
@@ -180,7 +180,7 @@ public class CraftOutcomeRulesTests
     [Test]
     public void FoodDuration_FullQualityPaysTheOldHundredPercentBonus()
     {
-        // CraftViewModel.cs:1471-1475: (int)qualityPercent is 1 only at 100%, and ConsumableItemDefinition pays 5 minutes per step.
+        // The old (int)qualityPercent was 1 only at 100%, and ConsumableItemDefinition pays 5 minutes per step.
         var oldFullQualityBonus = (int)1.0f;
 
         CraftOutcomeRules.CalculateFoodDurationBonusSeconds(1f).Should().Be(oldFullQualityBonus * 5 * 60);
@@ -216,7 +216,7 @@ public class CraftOutcomeRulesTests
     [Test]
     public void FoodCharges_KeepTheBlueprintLevelBonusAtFullQualityOnly()
     {
-        // CraftViewModel.cs:1477-1482 adds the blueprint level to the charges inside the full-quality branch.
+        // The old window added the blueprint level to the charges inside the full-quality branch.
         Success(new MinigameMeter(100, 100), isFood: true, blueprintLevel: 3).FoodBonusCharges.Should().Be(3);
         Success(new MinigameMeter(99, 100), isFood: true, blueprintLevel: 3).FoodBonusCharges.Should().Be(0);
         Success(new MinigameMeter(100, 100), isFood: false, blueprintLevel: 3).FoodBonusCharges.Should().Be(0);
@@ -238,7 +238,7 @@ public class CraftOutcomeRulesTests
     [Test]
     public void Failure_LosesAnItemOnARollOfSixtyFiveOrLower()
     {
-        // Enhancements roll first, then component stacks (CraftViewModel.cs:1604-1641). Above 65 keeps the item.
+        // Enhancements roll first, then component stacks. Above 65 keeps the item.
         var random = new ScriptedMinigameRandom(66, 65, 1, 100);
 
         var failure = CraftOutcomeRules.RollFailure(random, filledEnhancementSlots: 2, componentStacks: 2, baseXp: 100, blueprintLevel: 0);

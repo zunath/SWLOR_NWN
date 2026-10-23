@@ -692,7 +692,7 @@ The combat upgrade's model applies, with no pilot: build every minigame, then te
     - **Espionage is excluded** from the pace change: its crafting XP stays tied to Espionage rank, and `Craft.GetBaseRecipeXP`, `EspionageInfiltration.CalculateXp` and slicing's `Skill.CalculateEspionageXP` share Espionage progression. Add regression tests that infiltration and slicing XP are unchanged.
     - **Existing progress.** If required XP per rank changes, convert stored XP and ranks (a migration, with tests on legacy records) so no character loses a rank. Guild points and ranks need no conversion, because their thresholds do not change. The 11b decisions change what is gained, never what a rank costs, so they need no migration.
 12. **Closeout.**
-    - Delete the old minigame (`CraftViewModel` rules, `CraftDefinition`, retired level-chart fields).
+    - Delete the old minigame (`CraftViewModel` rules, `CraftDefinition`, retired level-chart fields). Done: every crafting skill routes to its minigame and nothing opens the old window. `GuiWindowType.Craft` stays reserved, because saved window geometry keys on its name.
     - Final Bible sync, player guide text and tooltips.
     - Joint test pass across every minigame.
     - Release notes.

@@ -21,7 +21,6 @@ public class CircuitWindowTests
 
         route.Window.Should().Be(GuiWindowType.CraftCircuit);
         route.Minigame.Should().Be(CraftMinigameType.Circuit);
-        route.IsLegacy.Should().BeFalse();
         CraftMinigameRouting.GetRoute(SkillType.Smithery).Window.Should().NotBe(GuiWindowType.CraftCircuit);
         Enum.GetValues<GuiWindowType>().Count(window => window == GuiWindowType.CraftCircuit).Should().Be(1);
     }

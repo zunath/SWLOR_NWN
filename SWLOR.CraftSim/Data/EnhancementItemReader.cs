@@ -8,7 +8,7 @@ using SWLOR.NWN.API.NWScript.Enum.Item;
 namespace SWLOR.CraftSim.Data
 {
     /// <summary>
-    /// Reads enhancement items from Module/uti the way <c>CraftViewModel.IsValidEnhancement</c> and
+    /// Reads enhancement items from Module/uti the way <c>CraftEnhancementReader</c> and the old window's <c>IsValidEnhancement</c> and
     /// <c>CalculateProgressPenaltyAndProcessItemProperties</c> do: an item is an enhancement of the kind its enhancement item property
     /// names, with an <c>EnhancementLevel</c>, and adds the sum of its <c>ProgressPenalty</c> cost-table values to the craft.
     /// </summary>

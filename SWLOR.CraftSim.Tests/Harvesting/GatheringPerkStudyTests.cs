@@ -113,6 +113,41 @@ namespace SWLOR.CraftSim.Tests.Harvesting
                 .Should().OnlyContain(result => result.Verdict == GateVerdict.Passed, string.Join(" ", results.Select(result => result.Summary)));
         }
 
+        private static GateResult SearchYield(string slug)
+        {
+            var options = SearchParityOptions.Default with { Ranks = new[] { 20, 50 }, SiteLevels = new[] { 2 }, Loadout = GatheringLoadout.Find(slug)!, Perks = Perks };
+            return SearchReport.Run(Context(4000), new SearchParity(4000, 1), options, GateThresholds.Default)
+                .Single(result => result.Gate == GateNames.EconomyParity);
+        }
+
+        [TestCase("prospector-no-style")]
+        [TestCase("prospector-strip-mining")]
+        public void AProspectorOnlyLoadoutKeepsTheUnperkedSearchLimits_BecauseItChangesNothingOnTheBoard(string slug)
+        {
+            var result = SearchYield(slug);
+
+            result.Verdict.Should().Be(GateVerdict.Passed, result.Summary);
+            result.Summary.Should().Contain("a careless board finds at least 0.85x").And.Contain("to 1.08x").And.NotContain("no floor");
+        }
+
+        [Test]
+        public void OnlyCarefulHandsLiftsTheCarelessFloor_AndOnlyTheTreasureSeekerLineOrCarefulHandsLiftTheSkilledLimit()
+        {
+            var seeker = SearchYield("treasure-seeker-no-style").Summary;
+            seeker.Should().Contain("a careless board finds at least 0.85x").And.Contain("to 1.15x");
+
+            var careful = SearchYield("treasure-seeker-careful-hands").Summary;
+            careful.Should().Contain("a careless board has no floor").And.Contain("to 1.15x");
+        }
+
+        [Test]
+        public void ThePartOptionTakesOnlyThePartsTheReportHas()
+        {
+            var act = () => SWLOR.CraftSim.Cli.GatheringPerksCommand.Run(new[] { "--part", "bibel" }, new StringWriter());
+
+            act.Should().Throw<ArgumentException>().WithMessage("*bibel*prospecting*bible*");
+        }
+
         [Test]
         public void StripMiningAgainstNoStyleIsJudgedOnNineKindsOfNodeAtEveryRankAndPooledByTheGate()
         {

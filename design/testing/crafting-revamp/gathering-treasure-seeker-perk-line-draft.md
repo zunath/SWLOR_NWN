@@ -8,7 +8,7 @@ Evidence: `scavenging-search-parity.md` (command `SWLOR.CraftSim search --runs 1
 
 This file is the original draft and stays as the record of it. The implementation changed some rows so that every loadout stays inside the economy bounds (a skilled session within 1.15x of Quick Search's rolls and of today's gems per node); the evidence is `gathering-perks.md`, and the rows live in `GatheringPerkDefinition`, `SearchPerkRules` and `ProspectingPerkRules`.
 
-The unperked skilled player's gems are already 1.06-1.12x of today's, so no Prospecting perk can add a gem: the gem rows (Careful Hands' pocket conversion, Rich Pockets, Jackpot's bonus gem) are gone, and a gem pocket is about 2% of tier 1 nodes anyway. The line's value is in the rare items a site gives instead, which no cap limits (the plan caps rolls, not what they roll): the whole line takes a skilled board to 1.13x of Quick Search's rolls and the rare items per site to about 2.4x Quick Search's (the unperked board gives 1.5x), 2.9x with Careful Hands.
+The unperked skilled player's gems are already 1.06-1.12x of today's, so no Prospecting perk can add a gem: the gem rows (Careful Hands' pocket conversion, Rich Pockets, Jackpot's bonus gem) are gone, and a gem pocket is about 2% of tier 1 nodes anyway. The line's value is in the rare items a site gives instead, which no cap limits (the plan caps rolls, not what they roll): the whole line takes a skilled board to 1.12x of Quick Search's rolls (1.08x with Careful Hands) and the rare items per site, at Gathering 50, to 3.18x Quick Search's (2.18x to 3.72x by table; the unperked board gives about 1.5x), 3.59x with Careful Hands (2.21x to 4.44x by table), as `gathering-perks.md` reports.
 
 | Rank | SP | Perk | As implemented | The draft's row |
 | --- | --- | --- | --- | --- |
@@ -21,7 +21,7 @@ The unperked skilled player's gems are already 1.06-1.12x of today's, so no Pros
 | 35 | 3 | Deep Scan | A Survey reveals 1 more seam than the rank allows (up to 3) and reveals gem pockets first (the extra seam is worth nothing at Gathering 50, where the rank already reveals 3). | seam only |
 | 40 | 3 | Fine Trowel II | x5. | as drafted |
 | 45 | 3 | Rich Pickings | A Search that finds something weighs the rare entries x2. | Rich Pockets: a gem in place of a rich seam's ore |
-| 50 | 4 | Jackpot | The first Dig Deeper find of each board weighs the rare entries 8 more. | the first Extract adds a bonus gem |
+| 50 | 4 | Jackpot | The first Dig Deeper find of each board weighs the rare entries 4 more (x7 instead of x3). | the first Extract adds a bonus gem |
 
 Careful Hands cost 3 points of Search chance in the draft; at -2 or -3 the careless and the skilled scavenger's XP per hour at the high site levels fell under today's (gate 6), so it costs 1. A Prospecting window offers only styles that do something there, and Careful Hands does nothing in Prospecting: the two styles never share a window. Quick Search is unchanged.
 

@@ -28,6 +28,9 @@ namespace SWLOR.CraftSim.Cli
 
         private static readonly string[] ValueOptions = { "--runs", "--seed", "--out", "--repo", "--part" };
 
+        /// <summary>The parts of the report <c>--part</c> can ask for on their own, besides <c>all</c>.</summary>
+        private static readonly string[] Parts = { "prospecting", "search", "styles", "gates", "refining", "bible" };
+
         public static int Run(string[] args, TextWriter output)
         {
             var options = CommandLineOptions.Parse(args, ValueOptions, Array.Empty<string>());
@@ -38,8 +41,16 @@ namespace SWLOR.CraftSim.Cli
                 ? outValues[0]
                 : Path.Combine(root, "design", "testing", "crafting-revamp", "gathering-perks.md");
             var part = options.TryGetValue("--part", out var partValues) ? partValues[0] : "all";
-            if (part == "bible" && !options.ContainsKey("--out"))
-                outPath = Path.Combine(root, "design", "testing", "crafting-revamp", "gathering-perk-bible-rows.json");
+            if (part != "all" && !Parts.Contains(part))
+                throw new ArgumentException($"--part names no part '{part}'. Choose one of: all, {string.Join(", ", Parts)}.");
+
+            // A part writes its own file, so a partial run never replaces the committed full report.
+            if (part != "all" && !options.ContainsKey("--out"))
+            {
+                outPath = Path.Combine(root, "design", "testing", "crafting-revamp", part == "bible"
+                    ? "gathering-perk-bible-rows.json"
+                    : $"gathering-perks-{part}.md");
+            }
 
             var perks = new GatheringPerkDefinition().BuildPerks();
             if (part == "bible")

@@ -36,13 +36,20 @@ namespace SWLOR.CraftSim.Search
         public string Name => GateNames.EconomyParity;
 
         /// <summary>
-        /// The least a careless board may find against Quick Search: the unperked floor. A gatherer who chose a style accepts fewer finds for
-        /// rarer ones, so the floor that keeps a careless click-through near today's applies to no perks only.
+        /// The least a careless board may find against Quick Search: the unperked floor. Careful Hands accepts fewer finds for rarer ones,
+        /// so the floor that keeps a careless click-through near today's is lifted for it only; every other loadout, the Prospector ones
+        /// included (they change nothing on the board), keeps it.
         /// </summary>
-        private double CarelessLimit => _options.Loadout == GatheringLoadout.None ? _options.CarelessMinimumRatio : 0;
+        private double CarelessLimit => _options.Loadout?.Style == GatheringStyle.CarefulHands ? 0 : _options.CarelessMinimumRatio;
 
-        /// <summary>The most a skilled board may find against Quick Search: the unperked limit, or the plan's +15% for a gatherer with perks.</summary>
-        private double SkilledLimit => _options.Loadout == GatheringLoadout.None ? _options.UnperkedSkilledMaximumRatio : _options.SkilledMaximumRatio;
+        /// <summary>
+        /// The most a skilled board may find against Quick Search: the plan's +15% for a gatherer whose perks or style act on the board
+        /// (the Treasure Seeker line, Careful Hands), the unperked limit for every other loadout.
+        /// </summary>
+        private double SkilledLimit =>
+            _options.Loadout != null && (_options.Loadout.TreasureSeeker || _options.Loadout.Style == GatheringStyle.CarefulHands)
+                ? _options.SkilledMaximumRatio
+                : _options.UnperkedSkilledMaximumRatio;
 
         /// <summary>The cases the study plays, so a report can play them all in parallel first.</summary>
         public IEnumerable<SearchKey> Keys()

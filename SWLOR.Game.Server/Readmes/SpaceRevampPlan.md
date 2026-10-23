@@ -48,7 +48,7 @@ Appendices
 
 - Appendix A: Perk drafts
 - Appendix B: Module families
-- Appendix C: The 100 ships
+- Appendix C: The 50 ships
 - Appendix D: Components and sourcing
 
 ---
@@ -75,10 +75,11 @@ Before any work, read `AGENTS.md` and these guides, plus every guide named in th
 
 | Area | Decision |
 |---|---|
-| Skills | Piloting (kept), Gunnery (new), Ship Systems (new). Space mining and salvage move to Gathering. All count toward the 400 skill cap. |
+| Skills | Piloting stays the only space skill and covers every hull and every space module, for the same 50 ranks as today. Space mining and salvage move to Gathering. Engineering, Espionage and Leadership each make one space role better. |
+| Stats | Piloting rank gives no stats. A ship's stats come from its hull, modules, attributes, perks and those three ground skills. |
 | Gating | Hulls and modules use `RequiresSkill`. The four unlock perk lines are deleted. |
-| Perks | Each space skill gets 2 styles of 60 SP on the ground template: abilities, stances, traits, capstone. |
-| Ships | 100 ships: 14 roles in 4 sizes, 8 manufacturers, each with a signature bonus. 74 Standard and 26 Advanced. Piloting gates 0/10/25/40, with Advanced 10 higher. |
+| Perks | Piloting gets 4 styles of 60 SP on the ground template, the way Devices does: Ace, Ordnance, Bulwark and Command. |
+| Ships | 50 ships: 14 roles in 4 sizes, 8 manufacturers, each with a signature bonus. 37 Standard and 13 Advanced. Piloting gates 0/10/25/40, with Advanced 10 higher. |
 | Looks | **Hull Designs** are skins for one specific ship. They launch from model variants and Trellis2 adds more. They're unlocked by Design Schematics and swapped by starport **Refit**. |
 | Slots | High / Mid / Low. No configuration slot. |
 | Modules | About 20 families, an item every 5 ranks (0-45), rank-50 named boss modules. A weapon fires at its hull's size. |
@@ -86,12 +87,12 @@ Before any work, read `AGENTS.md` and these guides, plus every guide named in th
 | Combat | Shared ground rules: crits, one Attack and one Defense, EM/Thermal/Explosive resistances, shared status effects, threat, PvP rules. |
 | Attributes | Energy weapons use AGI accuracy and PER damage; launchers use PER accuracy and MGT damage, like ranged and melee weapons on the ground. AGI evasion, PER crit, VIT hull defense, WIL shields/capacitor/repair, MGT STM for maneuvers, SOC command and trade prices. |
 | Activation | Modules with a cycle are toggles that fire themselves each cycle and switch off when they can't fire. Lit icons show what's on, and a Ship HUD shows targets. |
-| Crew | Stations on Large and Capital hulls, with droid crew. Ships at launch. |
+| Crew | Stations on Large and Capital hulls, with droid crew. Gunner seats use Piloting, the Engineer seat Engineering, the Sensors seat Espionage. Ships at launch. |
 | Death | Modules drop only on PvP deaths in Wild Space. Everyone aboard ejects in escape pods and takes the normal XP debt. Cargo spills on any death. |
 | Enemies | Every NPC ship gets a size and a role behavior. New groups: pirates, customs patrols, Hutt enforcers, derelict defenses, convoys, aces. |
 | World | 3 new small-ship zones with 3 new materials. Salvage from wrecks. Starlane fixes. Size limits on docking. |
 | Trade | Cargo held as ship data, about 20 commodities, dock exchanges with moving prices, contraband and customs, pirates, freight contracts, faction standing, city tariffs. |
-| Migration | Every character gets one Rebuild Token. Piloting perks are refunded. Ships and modules convert to their new equivalents. |
+| Migration | Piloting ranks keep their meaning and Piloting perks are refunded. No Rebuild Token. Ships and modules convert to their new equivalents. |
 | Wild Space | Six persistent tier-5.5 systems reached through hidden, rotating rifts, each with an environmental effect, held by the Rift Raiders pirate coalition. |
 | Exploration | A Probe Launcher reveals hidden sites (rift, combat, data, cache, gas, derelict) and jumps the party to them. |
 | Slicing | Espionage's Slicing perk works in space: data cans, locked pirate caches, ace and boss wreck data cores, derelict terminals and lockboxes, lockboxes dropped by NPC ships, customs spoofing and agent data heists. Espionage XP and space reward tables. |
@@ -142,10 +143,11 @@ Paths are relative to `SWLOR.Game.Server/`.
 
 | Area | Today | After the revamp |
 |---|---|---|
-| Skills | Piloting only | Piloting, Gunnery, Ship Systems; space mining, gas and salvage in Gathering |
-| Perks | 7 perks; 4 of them only unlock gear tiers (67 SP) | 6 styles of 18 perks (60 SP each) plus Gathering space perks; no perk unlocks gear (Appendix A) |
+| Skills | Piloting only | Piloting only, covering every hull and module; space mining, gas and salvage in Gathering |
+| Rank effects | Piloting rank adds attack, accuracy, defense and evasion | Rank only gates gear and perks; stats come from the ship and the build |
+| Perks | 7 perks; 4 of them only unlock gear tiers (67 SP) | 4 styles of 18 perks (60 SP each) plus Gathering space perks; no perk unlocks gear (Appendix A) |
 | Gear requirements | Perk levels stamped on examine | `RequiresSkill` rank on every hull and module |
-| Hulls | 17 hulls in T1-T5 pairs, each strictly bigger, plus 10 identical capitals | 100 ships: 14 roles, 8 manufacturers, signature bonuses, Standard and Advanced (Appendix C) |
+| Hulls | 17 hulls in T1-T5 pairs, each strictly bigger, plus 10 identical capitals | 50 ships: 14 roles, 8 manufacturers, signature bonuses, Standard and Advanced (Appendix C) |
 | Ship role | One configuration module | Built into the hull |
 | Slots | High, Low, 1 Config | High, Mid, Low |
 | Module tiers | Basic, I-IV | An item every 5 ranks (0-45) plus named rank-50 modules |
@@ -170,33 +172,31 @@ Paths are relative to `SWLOR.Game.Server/`.
 
 ## 4. Skills
 
+Piloting stays the only space skill. It covers every hull and every space module, so a pilot pays the same 50 ranks as today. Roles come from perk styles, attributes, the ship and three ground skills, never from Piloting rank.
+
 | Skill | ID | Gates | Rank adds | Combat point category |
 |---|---|---|---|---|
-| Piloting | 7 (kept) | Hull sizes; passive defenses (Shield Booster, Hull Plating, Resist Plating, Capacitor Battery); Afterburner, Thrusters, Cargo Expander, Cloaking Device | Evasion, speed | Exempt (full XP from every space kill, like Armor on the ground) |
-| Gunnery | new (next free ID, 53 today) | Weapons, Targeting Computer, Damage Amplifier | Accuracy, attack, crit | New `Starship` category (split by contribution) |
-| Ship Systems | new (54 today) | Active defense and support: shield and hull repairers, Shield Hardener, Hypermatter Injector, Capacitor Regulator, electronic warfare, tackle, Probe Launcher, Smuggling Compartment | Shield regen, capacitor regen, repair amount | New `Starship` category |
-| Gathering | 11 (kept) | Mining Laser, Strip Miner, Salvager | Yield | Gathering XP from mining, gas harvesting and salvage |
+| Piloting | 7 (kept) | Every hull size and every space module except the Gathering and Espionage ones | No stats: rank gates gear and perks only (section 9) | Exempt (full XP from every space kill you help with, like Armor on the ground) |
+| Gathering | 11 (kept) | Mining Laser, Strip Miner, Salvager, Gas Harvester | Yield | Gathering XP from mining, gas harvesting and salvage |
 
-- **Espionage** (49, kept) is not a space skill and gets no space perks, but its **Slicing** perk works in space (section 24). The Data Analyzer has no rank requirement; the Slicing tier decides what a player can crack.
-
-- **Skill attributes:** Utility category, rank 50, active, `ContributesToSkillCap = true`.
-- **Category value:** add `CombatPointCategoryType.Starship`. The loop in `Service/CombatPoint.cs` picks up new values automatically.
+- **Ground skills with a space job.** None is needed to fly. Each makes one role better, so taking it is a real choice under the 400 cap.
+  - **Engineering:** the Engineer seat checks Engineering rank, not Piloting, to switch on its modules (repairers, hardeners, the injector, capacitor modules, power routing). Engineering rank adds repair amount, capacitor transfer and power-routing strength for anyone using those modules, solo pilots included. A crafter with no Piloting can crew the Engineer seat.
+  - **Espionage:** the Sensors seat checks Espionage rank for jammers, target painters, Ion Webs, Interdictors, the Probe Launcher and the Data Analyzer. Espionage rank adds scan strength, jam and paint strength, and the range at which cloaked ships are revealed. Its **Slicing** perk works in space (section 24): the Data Analyzer has no rank requirement, and the Slicing tier decides what a player can crack.
+  - **Leadership:** Leadership rank raises the strength and range of the Command style's orders and auras, and how well crew aboard the ship work. 45% of active pilots already have it (production data, 2026-10-22).
+  - Ground weapon skills (Pistol, Rifle and the rest) have no effect in space.
+- **Skill attributes:** Piloting stays Utility, rank 50, active, `ContributesToSkillCap = true`. No new skill and no new combat point category.
 - **Mining rank:** a Mining Laser's `RequiresSkill` follows the module rank schedule in Gathering. The asteroid tier check still applies.
-- **Why each skill is worth taking:**
-  - **Minimum builds:**
-    - Glass-cannon fighter (Small hull): Gunnery 50 (50 ranks).
-    - Complete solo combat pilot: Piloting + Gunnery (100 ranks), the same as a ground melee fighter's weapon + Armor.
-    - Tank or support pilot: Piloting + Ship Systems (up to 100 ranks).
-    - Everything maxed: all three (150 ranks).
-  - **Solo targets** (checked by the combat simulator, section 19): a Gunnery 50 pilot in a Small fighter with no Piloting solos normal enemies at its tier with careful play; Piloting 50 + Gunnery 50 with no Ship Systems solos all normal content and most elites.
-    - Crew member: one station skill (50 ranks).
-    - Casual flyer: Piloting 10 + Gunnery 15 (25 ranks): Medium hulls and rank-15 weapons.
-    - Space miner: Piloting 10 + Gathering 40 (50 ranks) for a Mining Barge on top-tier ore, or Piloting 25 + Gathering 40 (65 ranks) to strip-mine in an Industrial. Today a top space miner needs Piloting 40, so a pure space miner pays about 10 more ranks. The same Gathering also covers ground harvesting, salvage and gas. Player text must give these numbers, never claim mining got cheaper.
-  - **Piloting works like the Armor skill.** It gates hulls and the passive defenses that every role wears, and it owns propulsion, cargo, cloaking, maneuvers and command. It also earns XP from trade.
-  - **Ship Systems is the tank and support specialty,** like First Aid or Leadership on the ground. Nobody needs it just to survive.
+- **What it costs:**
+  - Casual flyer: Piloting 15 (Medium hulls and rank-15 gear).
+  - Complete pilot: Piloting 50 (every hull and module), the same as today's Piloting.
+  - Crew: Piloting for the pilot and gunner seats, Engineering for the Engineer seat, Espionage for the Sensors seat, up to 50 each.
+  - Space miner: Piloting 10 + Gathering 40 (50 ranks) for a Mining Barge on top-tier ore, or Piloting 25 + Gathering 40 (65 ranks) to strip-mine in an Industrial. Today a top space miner needs Piloting 40, so a pure space miner pays about 10 more ranks. The same Gathering also covers ground harvesting, salvage and gas. Player text must give these numbers, never claim mining got cheaper.
+  - Everything: Piloting 50 plus all four styles, 240 of a character's 410 career SP.
+- **Solo target** (checked by the combat simulator, section 19): at every tier, a pilot at that tier's rank with one weapon style (60 SP) solos all normal content and most elites in any hull their rank allows. Bulwark, Command and the ground skills above are never required.
+- **Why one skill:** production data (2026-10-22, the 325 characters seen in the 5 days since login dates began recording) shows active pilots spending a median 321 of their 400 ranks outside space. Under a split into three space skills, only 36% of them could afford a complete solo pilot (100 ranks) without dropping a ground skill; at Piloting 50, 90% can. Specialization comes from SP (all four styles cost 240 of 410), attributes (cap 26), hull role, fitting, one stance at a time and the ground skills above.
 - **XP rules:**
   - The XP range must cover the longest weapon range. Today it's 40 m against a 55 m missile.
-  - Crew earn XP in their station's skill.
+  - Crew earn XP in their seat's skill: Piloting for gunners, Engineering for engineers, Espionage for Sensors officers.
   - Completed freight contracts and exchange sales give Piloting XP, scaled by route length and orbit danger. Price flooding and contract limits stop back-and-forth farming.
   - PvP gives no XP (unchanged).
 
@@ -208,24 +208,24 @@ Paths are relative to `SWLOR.Game.Server/`.
 | PER | Energy weapon damage, launcher accuracy, and crit for every weapon |
 | VIT | Hull defense (as today) |
 | WIL | Max shield, max capacitor, repair strength |
-| MGT | Launcher damage, and the pilot's own STM, which pays for maneuvers and physical station actions |
+| MGT | Launcher damage, and the pilot's own STM, which pays for perk abilities and physical station actions |
 | SOC | Command abilities and auras; better exchange prices; repair discount (as today) |
 
 - **Weapons copy the ground mapping:**
   - Energy weapons (Laser, Ion and Beam Cannons, the Point-Defense Turret and the capital lasers) use the ranged mapping: PER for damage, AGI for accuracy.
   - Launchers (Missile Launcher, Torpedo Launcher, Assault Concussion Missile) use the melee mapping: MGT for damage, PER for accuracy.
   - Crits use PER against VIT for both, as on the ground.
-  - Melee builds get a natural Gunnery style (Ordnance) and ranged builds get theirs (Broadside). Without this, a melee character can tank in space but barely kill.
+  - Melee builds get a natural Piloting style (Ordnance) and ranged builds get theirs (Ace). Without this, a melee character can tank in space but barely kill.
 - **Intuitive Piloting** (WIL in place of PER for attack) is removed and refunded, since WIL now has its own job.
 - **FP** is not used in space.
 - **Space ability costs:** STM or ship capacitor. Modules keep costing capacitor.
-- **Regen:** STM regen keeps its ground pacing unless the Bible draft proves maneuvers need their own rate. If they do, add a space-specific stat; never change ground STM.
+- **Regen:** STM regen keeps its ground pacing unless the Bible draft proves space abilities need their own rate. If they do, add a space-specific stat; never change ground STM.
 
 ## 6. Perks and abilities
 
 ### Template
 
-Each space skill has two styles of 60 SP, the same as a weapon skill.
+Piloting has four styles of 60 SP each, the way Devices does. `SkillPerkStandards.md` keeps the two-style rule for weapon skills only.
 
 - **SP schedule** (rank -> SP): 2->2, 5->2, 8->2, 10->2, 12->2, 15->4, 18->3, 20->4, 22->4, 25->4, 28->3, 30->4, 32->3, 35->2, 38->4, 40->5, 45->4, 50->6.
 - **Row mix per style:** 3 ranked abilities, 2 general traits, 3 cross-skill traits, 1 stance and 1 capstone. Each style opens with a rank-2 ability and ends with a rank-50 capstone.
@@ -237,17 +237,16 @@ Each space skill has two styles of 60 SP, the same as a weapon skill.
 
 ### Styles
 
-| Skill | Style | Identity | Signature mechanic |
+| Style | Primary / secondary | Identity | Built from |
 |---|---|---|---|
-| Piloting | **Ace** | Evasion dogfighting | Maneuvers (evasive roll, burst, reverse) that turn dodges into accuracy and crit windows |
-| Piloting | **Wing Commander** | Command | SOC-scaled auras and orders for nearby allied ships, a formation stance, bonuses for crew aboard |
-| Gunnery | **Broadside** | Sustained energy fire; PER damage, like ranged weapons | An overcharge rhythm for lasers, ion and beams |
-| Gunnery | **Ordnance** | Missiles and torpedoes; MGT damage, like melee weapons | Volleys and lock-on; burst against big hulls |
-| Ship Systems | **Bulwark** | Tank | A threat stance, hardening, emergency shields |
-| Ship Systems | **Operator** | Support and control | Remote repair, capacitor transfer, jamming, target painting |
+| **Ace** | PER / AGI | Energy weapons and evasion: debuffing shots, double shots, evasion buffs, a crit capstone | Pistol (Skirmisher, Gambler), Rifle |
+| **Ordnance** | MGT / PER | Missiles and torpedoes as area ordnance: burning blasts, flares, concussion, fragmentation | Throwing (Ordnance) |
+| **Bulwark** | VIT / WIL | Tank: a real goad, threat bursts, a threat stance, defensive buffs | Vibroblade (Bulwark), Heavy Vibroblade (Immortal), Armor's Provoke |
+| **Command** | SOC / WIL | Orders and repairs: party damage orders, an accuracy debuff, a damage-reduction aura, ship repairs; Leadership rank strengthens it | Leadership, First Aid |
 
+- **No cap on styles:** a pilot can own all four, as with Devices. All four cost 240 of a character's 410 career SP, so most pick one or two. If playtests show pilots stacking every style, the existing mutual-exclusion mechanism can cap ownership at two.
 - **Gathering:** add space mining, gas harvesting and salvage perks inside its existing tree. Starship Mining I-II are refunded.
-- **Draft rows:** Appendix A lists every perk for all six styles and the Gathering space perks.
+- **Draft rows:** Appendix A lists every perk for all four styles and the Gathering space perks.
 
 ### Implementation rules
 
@@ -255,12 +254,13 @@ Each space skill has two styles of 60 SP, the same as a weapon skill.
 - **Source:** abilities act from the ship. Range, line of sight, threat and damage source are all the ship's.
 - **Perk effects:** perks grant `StatType` values that the shared space code reads. Add space `StatType`s as needed (`Service/StatService/StatType.cs`) following the StatType rules in `CodingStandards.md`. There is no `Perk.GetPerkLevel` check in space code; today's Energy Management check at `Space.cs` ~1310 goes away.
 - **Bible rows:** Appendix A is already in the Design Bible on this branch, with SP prices and a full description for every rank, all marked Dev Status **Proposed**:
-  - new tabs **Piloting (Revamp)**, **Gunnery** and **Ship Systems** on the Twin Pistol layout
+  - a new tab, **Piloting (Revamp)**, with all four styles grouped the way Devices groups its four, on the Twin Pistol column layout (it needs the Cross Skill column)
   - a **Space Industry** group at the bottom of the **Gathering** tab, with its own proposed total (44 SP) so the live Total SP is unchanged
   - The live **Piloting** tab stays as it is until release, because `CombatUpgradeBibleSyncTests` requires every live perk to keep an Implemented row.
-  - The new tabs are not in `UpdateCombatUpgradeAudit.ps1`'s tab list yet; add them when `SkillType.Gunnery` and `SkillType.ShipSystems` exist.
+  - The new tab is not in `UpdateCombatUpgradeAudit.ps1`'s tab list; it replaces the live Piloting tab at implementation.
   - At implementation: run values through the combat simulator, get owner approval, replace the Piloting tab's rows with Piloting (Revamp)'s and delete that tab, and set rows to Implemented as they land.
 - **IDs:** reserve feat, spell, `spells.2da` and TLK IDs following `AbilityTargeting.md`.
+- **Engine work the styles need** (Appendix A shared rules): ground statuses on ships, evade events from space hit rolls, damage and heal enmity in space, hull-based low-hull triggers, auras rebuilt for space (they're torn down on space entry today), crew effectiveness, Leadership rank scaling, and space area and command radii.
 
 ## 7. Hulls
 
@@ -275,9 +275,9 @@ Each space skill has two styles of 60 SP, the same as a weapon skill.
 
 ### Ships: role, manufacturer and signature bonus
 
-There are **100 player ships**, all listed in Appendix C. Each ship's stats come from one Bible formula with three layers:
+There are **50 player ships**, all listed in Appendix C. Each ship's stats come from one Bible formula with three layers:
 
-1. **Role baseline:** slots, hull, shield, capacitor, speed, evasion, signature, cargo, interior, repair multiplier, crew stations and the role's built-in bonus.
+1. **Role baseline:** slots, hull, shield, capacitor, speed, Attack, Accuracy, Defense, Evasion, signature, cargo, interior, repair multiplier, crew stations and the role's built-in bonus.
 2. **Manufacturer theme:** a modifier.
 3. **Signature bonus:** one of its own.
 
@@ -285,16 +285,16 @@ Two ships in the same role are sidegrades, never strict upgrades.
 
 | Manufacturer | Theme | Ships |
 |---|---|---|
-| Republic | Shields, repairs, support | 20 |
-| Corellian | Speed, evasion, flexible fittings | 20 |
-| Sith | Damage and critical hits | 17 |
-| Czerka | Industry: mining, salvage, cargo, drills | 11 |
-| Mandalorian | Hull toughness, explosive weapons | 10 |
-| Hutt | Heavy hulls, big holds, contraband | 10 |
-| Chiss | Sensors, accuracy, range, scanning | 8 |
-| Rift Raider | Pirate refits of stolen hulls, found only in Wild Space (Advanced only) | 4 |
+| Republic | Shields, repairs, support | 12 |
+| Corellian | Speed, evasion, flexible fittings | 10 |
+| Sith | Damage and critical hits | 8 |
+| Czerka | Industry: mining, salvage, cargo, drills | 6 |
+| Mandalorian | Hull toughness, explosive weapons | 5 |
+| Hutt | Heavy hulls, big holds, contraband | 4 |
+| Chiss | Sensors, accuracy, range, scanning | 3 |
+| Rift Raider | Pirate refits of stolen hulls, found only in Wild Space (Advanced only) | 2 |
 
-**Standard and Advanced:** 74 Standard ships and 26 Advanced ships. Compared with a Standard ship, an Advanced ship has:
+**Standard and Advanced:** 37 Standard ships and 13 Advanced ships. Compared with a Standard ship, an Advanced ship has:
 - **Better stats:** higher base stats, plus either one extra Mid or Low slot or a stronger signature bonus, never both. No Advanced ship gets an extra High slot, because an extra weapon outweighs every other bonus.
 - **A higher Piloting gate:** 10 ranks above its size's gate (Small 10, Medium 20, Large 35, Capital 50).
 - **A recipe unlock (Ship Schematic)** from drops or faction stores.
@@ -305,7 +305,7 @@ Two ships in the same role are sidegrades, never strict upgrades.
 **Every ship defines:**
 - High/Mid/Low slot counts.
 - Base hull, shield and capacitor.
-- Speed and evasion.
+- Speed, and base Attack, Accuracy, Defense and Evasion. These replace today's Piloting rank bonus (section 9).
 - Signature (size).
 - Cargo hold.
 - Interior layout (structure and storage limits).
@@ -424,27 +424,26 @@ Toggled modules are the ship's auto-attacks; perk abilities are the buttons, as 
 
 *New* marks a new family. Existing families keep their identity and move rows as listed.
 
-| Row | Owner | Families |
+| Row | Skill (crew seat) | Families |
 |---|---|---|
-| High | Gunnery | Laser Cannon, Ion Cannon, Beam Cannon, Missile Launcher, Torpedo Launcher (today's proton bomb, expanded), *Point-Defense Turret* (always fires as Light), capital weapons (Turbolaser, Quad Laser, Laser Battery, Storm Cannon, Assault Concussion Missile) |
-| High | Gathering | Mining Laser, Strip Miner, *Salvager*, *Gas Harvester* |
-| Mid | Ship Systems | Shield Repairer, *Shield Hardener*, Hypermatter Injector, *Ion Web*, *Interdictor* (target can't jump, dock or leave space for a while), *Jammer*, *Target Painter*, capital Bulwark, Repair Field and E-War arrays |
-| Mid | Piloting | Shield Booster, Capacitor Battery, *Afterburner*, *Cloaking Device* (Small hulls and Blockade Runners; section 32) |
-| Mid | Ship Systems | *Probe Launcher* (section 24) |
-| Mid | Espionage | *Data Analyzer*: one module with no rank ladder and no rank requirement. The Slicing perk gates its targets (section 24). |
-| Mid | Gunnery | Targeting Computer |
-| Low | Ship Systems | Hull Repairer, *Capacitor Regulator*, *Smuggling Compartment* |
-| Low | Gunnery | Damage Amplifier (per type) |
-| Low | Piloting | Hull Plating, Resist Plating (one type or all types), Thrusters, *Cargo Expander* |
-| Low | Ship Systems | The six capital passives |
+| High | Piloting (Gunner) | Laser Cannon, Ion Cannon, Beam Cannon, Missile Launcher, Torpedo Launcher (today's proton bomb, expanded), *Point-Defense Turret* (always fires as Light), capital weapons (Turbolaser, Quad Laser, Laser Battery, Storm Cannon, Assault Concussion Missile) |
+| High | Gathering (Helm) | Mining Laser, Strip Miner, *Salvager*, *Gas Harvester* |
+| Mid | Piloting (Engineer: Engineering) | Shield Repairer, *Shield Hardener*, Hypermatter Injector, capital Bulwark and Repair Field arrays |
+| Mid | Piloting (Sensors: Espionage) | *Ion Web*, *Interdictor* (target can't jump, dock or leave space for a while), *Jammer*, *Target Painter*, capital E-War array, *Probe Launcher* (section 24) |
+| Mid | Piloting (Helm) | Shield Booster, Capacitor Battery, *Afterburner*, *Cloaking Device* (Small hulls and Blockade Runners; section 32), Targeting Computer |
+| Mid | Espionage (Sensors) | *Data Analyzer*: one module with no rank ladder and no rank requirement. The Slicing perk gates its targets (section 24). |
+| Low | Piloting (Engineer: Engineering) | Hull Repairer, *Capacitor Regulator* |
+| Low | Piloting (Helm) | Hull Plating, Resist Plating (one type or all types), Thrusters, *Cargo Expander*, Damage Amplifier (per type), *Smuggling Compartment*, the six capital passives |
 
+- **Who is checked:** the skill named first gates the module for a pilot fitting it on their own ship. At a crew seat the seat's skill is checked instead (section 10).
 - **Capital modules:** capital weapons and arrays fit only Capital hulls. Hull and shield repairers and the injector now work on capital ships too.
 - **NPC-only modules:** variants (`npc_*`) convert to the new families with NPC-level scaling.
 
 ### Ranks and size
 
 - **Rank steps:** every family has a distinct item every 5 ranks: 0, 5, 10 ... 45, with in-between stats. Rank N requires rank N in the owning skill.
-- **Station slots:** an owner can fit a station-slot module without meeting its rank. The crew member at that station can switch it on only if their own rank in its skill meets the requirement; a droid uses its tier (section 10).
+- **Station slots:** an owner can fit a station-slot module without meeting its rank. The crew member at that station can switch it on only if their own rank in the seat's skill meets the requirement; a droid uses its tier (section 10).
+- **Stats on gear:** Piloting rank adds no stats (section 9), so each weapon step carries its own Attack and Accuracy, and hull and defensive steps carry Defense and Evasion. Higher-rank gear is how a pilot grows stronger.
 - **Rank 50:** reserved for named boss modules (section 14).
 - **Capital families:** their ladders start at rank 40.
 - **Size scaling:** a module's output scales with the size of the hull it's fitted to. A Laser Cannon fires as Light on a Small hull and as Heavy on a Large hull.
@@ -465,8 +464,8 @@ Toggled modules are the ship's auto-attacks; perk abilities are the buttons, as 
 - **Hit and damage:**
   - Hit chance uses `Combat.CalculateHitRate`, as today.
   - Damage uses `Combat.CalculateDamage` with one ship Attack and one ship Defense, replacing today's three per-type pairs. The damage attribute is PER for energy weapons and MGT for launchers (section 5).
-- **Accuracy and evasion:** accuracy is the weapon's accuracy attribute x 3 (AGI for energy weapons, PER for launchers; section 5) + Gunnery rank. Evasion is AGI x 3 + Piloting rank. Both add hull and modules.
-- **Crits:** on, following the ground formula. Gunnery rank stands in for weapon rank, with PER against VIT. The ground's 5-50% range applies (`Combat.MinimumCriticalRate` and `MaximumCriticalRate`). The ground formula gives at most 13% before perks, and every perk draft is checked so its crit bonuses fit under the cap.
+- **Accuracy, evasion, attack and defense:** Piloting rank adds nothing, because every space player maxes it and a bonus everyone has isn't a choice. A ship's values come from its hull (role baseline, manufacturer, signature), its modules (each weapon step's Attack and Accuracy, Targeting Computers, Thrusters, plating), attributes (energy weapon accuracy AGI x 3, launcher accuracy PER x 3, evasion AGI x 3, defense VIT; section 5) and perks. NPC ships keep their level in these formulas through the space enemy presets (section 11).
+- **Crits:** on, following the ground formula. The firing module's rank stands in for weapon rank (rank / 10, and the damage formula's delta cap), with PER against VIT. The ground's 5-50% range applies (`Combat.MinimumCriticalRate` and `MaximumCriticalRate`). The ground formula gives at most 13% before perks, and every perk draft is checked so its crit bonuses fit under the cap.
 - **Resistances:** add `ResistanceType` Thermal, Explosive and EM, each from -100 to 100. `CombatDamageType` already has Thermal 20, Explosive 21 and EM 22.
 - **Status effects:** go through `StatusEffect` with its resistance families.
   - Ion slow uses the Mobility family.
@@ -495,8 +494,9 @@ Ships at launch.
   - Gunners toggle the High slots tagged as their turrets and pick their own target, independent of the pilot.
   - The Engineer runs active shield and hull modules, plus a new **power-routing** ability that shifts capacitor regen between weapons, shields and engines.
   - Sensors runs Mid electronic warfare and tackle, and the Data Analyzer. The crew member slices with their own Slicing perk, so an Espionage character can serve as a ship's slicer with no space skill.
-  - The Pilot runs Helm slots, Afterburner, Thrusters and maneuvers. The pilot cannot fire station slots.
-- **Gear rank on stations:** the owner fits station-slot modules without rank checks. Each crew member can switch on only the modules whose rank requirement they meet themselves; droid crew go by their tier. A pilot-only captain can still outfit their gunners.
+  - The Pilot runs Helm slots, Afterburner, Thrusters and their own perk abilities. The pilot cannot fire station slots.
+- **Seat skills:** each seat checks one skill. Gunner seats check Piloting, the Engineer seat Engineering, the Sensors seat Espionage. A crafter with Engineering and no Piloting can crew the Engineer seat, and a slicer with Espionage the Sensors seat. Section 4 lists what each skill's rank adds.
+- **Gear rank on stations:** the owner fits station-slot modules without rank checks. Each crew member can switch on only the modules whose rank requirement they meet in their seat's skill; droid crew go by their tier. A captain can still outfit every seat.
 - **Boarding a station:**
   - A crew member uses a console placeable in the interior. Their character moves into the space area and is hidden through `VisibilityPlugin`. It is ghosted (passes through things), can't be targeted, and is plot.
   - The camera attaches to the ship with `AttachCamera`, and a copy of them sits at the console.
@@ -515,7 +515,7 @@ Ships at launch.
   - Add a crew property permission next to `PilotShip`.
   - Handle disconnects at a station, crew leaving mid-fight, and ship death (escape pods).
 - **Balance:** a ship crewed by N players must not beat N separate ships. The combat simulator checks this.
-- **Wing Commander:** its crew bonuses apply to everyone aboard.
+- **Command:** the Command style's crew bonuses apply to everyone aboard, and the captain's Leadership rank adds to them.
 - **Ship-to-ship docking:** a Small or Medium ship can dock with a player's Large or Capital ship when the host's owner grants a new **Dock** permission (next to `PilotShip`).
   - The visiting ship is attached and hidden beside the host, the way crew characters are kept beside the ship. Its pilot and passengers walk into the host's interior.
   - Undocking returns them to their own ship at the host's position.
@@ -622,7 +622,7 @@ Ships at launch.
   - Customs patrols in lawful orbits scan passing ships. If they find contraband, the player pays a fine and loses it, or runs: the patrol turns hostile and lawful standing drops.
   - **Spoofing:** a slicer aboard (the pilot or the Sensors crew member) can instead try the slicing mini-game at the patrol's tier. Success returns a clean scan. Failure plays out as being caught: fine, confiscation and standing loss.
   - Black markets at Smuggler's Moon, Tatooine and Hutlar buy contraband at a premium.
-  - A Smuggling Compartment (Low, Ship Systems) cuts the scan chance.
+  - A Smuggling Compartment (Low, Piloting) cuts the scan chance.
 - **Risk:**
   - A destroyed ship spills its cargo as containers anyone can scoop for 5 minutes, in PvE and PvP.
   - Cargo above a value threshold can trigger a pirate ambush when the ship enters an orbit or jumps. The chance and squad size scale with cargo value and orbit tier, and every squad includes an interceptor.
@@ -666,9 +666,9 @@ There is no new crafting skill. Space work spreads across the existing crafts by
 
 | Skill | Space items |
 |---|---|
-| Smithery | Weapon modules (every Gunnery High-slot weapon, capital weapons included), Hull Plating, Resist Plating, ammo (missiles, torpedoes, concussion missiles), and the metal components: Hull Frame, Ordnance Assembly, Thruster Assembly, Aurodium Plating |
+| Smithery | Weapon modules (every High-slot weapon, capital weapons included), Hull Plating, Resist Plating, ammo (missiles, torpedoes, concussion missiles), and the metal components: Hull Frame, Ordnance Assembly, Thruster Assembly, Aurodium Plating |
 | Engineering | Every other module (shields, repairers, capacitor, electronic warfare, tackle, sensors, Probe Launcher, Data Analyzer, Cloaking Device, Afterburner, Thrusters, Damage Amplifier, Targeting Computer, mining and salvage gear), Hypermatter capsules, enhancements, droids and industrial droid parts, and the electronic components: Ship Reactor, Energy Emitter, Shield Projector, Sensor Suite, Extraction Head, Thorilide Core, Prototype Core |
-| Fabrication | Final assembly of all 100 ships, the Cargo Expander and Smuggling Compartment, Station Cores and station buildings (Shipyard, Asteroid Drill, Jump Beacon), holding upgrades and Processing Plants, and interior trophies and decor |
+| Fabrication | Final assembly of all 50 ships, the Cargo Expander and Smuggling Compartment, Station Cores and station buildings (Shipyard, Asteroid Drill, Jump Beacon), holding upgrades and Processing Plants, and interior trophies and decor |
 | Agriculture | Life Support System (hydroponics), a component of Light and Heavy Freighters, Cruisers and Command Ships |
 | Gathering | Refining: ores, the new materials, and Ship Scrap into electronics (no recipes) |
 
@@ -680,7 +680,7 @@ There is no new crafting skill. Space work spreads across the existing crafts by
   - Standard: the ship's Piloting gate + 5.
   - Advanced: its Advanced gate + 5.
   - Capital Advanced recipes are level 52, the tier-5.5 recipe level, as on the ground.
-- **Moving recipes:** today's ship, module and ammo recipes leave Engineering for the skills above. Recipe unlocks a player already has are remapped, never dropped (`CombatUpgradeMigration.md` rule). The free Rebuild Token covers anyone who wants to move ranks.
+- **Moving recipes:** today's ship, module and ammo recipes leave Engineering for the skills above. Recipe unlocks a player already has are remapped, never dropped (`CombatUpgradeMigration.md` rule).
 - **Hull quality:** starship enhancements remain the way to improve a hull.
 
 ### Research
@@ -715,15 +715,12 @@ There is no new crafting skill. Space work spreads across the existing crafts by
 
 One release, one migration set (`Migrations.md`): server migrations first, then character migrations, then the saved-data item sweep.
 
-- **Rebuild Token for every character**, regardless of skills or perks.
-  - Use `CharacterMigration/RebuildTokenGrant.cs` in a new character migration.
-  - There is no forced rebuild. Piloting ranks stay as they are; Gunnery and Ship Systems start at 0.
-  - Skill rank limits ship first, in their own pull request (`SkillRankLimitsPlan.md`, zunath/SWLOR_NWN#2810). The login notice should mention them, so pilots can cap Piloting before spending the token.
+- **No Rebuild Token.** Piloting keeps its meaning and grows to cover every space hull and module, so nobody needs to move ranks. Miners raise Gathering normally.
 - **Refund every Piloting perk** as SP: Starships, Defensive Modules, Offensive Modules, Mining Modules, Energy Management, Starship Mining, Intuitive Piloting.
   - Use `CharacterRecalculation.RefundPerk` with a login notice.
   - Remove their feats.
   - Clean `UnlockedPerks`.
-- **Login notice:** must say plainly that a pilot keeps Piloting, which still covers hull sizes and the Piloting modules (passive defenses, propulsion, cargo, cloaking), but needs Gunnery or Ship Systems ranks to fit weapons or Ship Systems modules above rank 0. The free Rebuild Token is the way to move ranks.
+- **Login notice:** must say plainly that Piloting now covers every space hull and module, so every piece of gear a pilot can fit today stays fittable; that the old Piloting perks are refunded as SP to spend on the four new styles; and that space mining, gas and salvage move to Gathering.
 - **Items** (inventories, storage, bank, market listings, deeds, installed modules on `PlayerShip`):
   - Converted ships keep their interior: the property keeps the layout it already has (`WorldProperty.Layout`), so no furniture moves or breaks. Only ships built after the release use the new ship's layout.
   - Old hulls map to new ships as below, and the owner gets the old model unlocked as a design of the new ship:
@@ -796,7 +793,9 @@ Draft each in the Bible, check it with the combat simulator where it affects com
 - **Size rules:** hit-chance and damage penalty per size step.
 - **Modules:** stats per family per rank step; capacitor cost, recast and range; Point-Defense and capital values; size scaling factors.
 - **Components:** recipes, variant trait sizes, salvaged trait odds.
-- **Perks:** every row for Ace, Wing Commander, Broadside, Ordnance, Bulwark and Operator, plus the Gathering space perks.
+- **Perks:** every row for Ace, Ordnance, Bulwark and Command, plus the Gathering space perks.
+- **Ship stats that replace rank:** hull Attack, Accuracy, Defense and Evasion per role and size; Attack and Accuracy per weapon step; Defense and Evasion per defensive step.
+- **Ground-skill bonuses per rank:** Engineering (repair amount, capacitor transfer, power routing), Espionage (scan strength, jam and paint strength, reveal range) and Leadership (order and aura strength, command range, crew effectiveness).
 - **Combat:** STM costs, capacitor and shield regen formulas, crit factors.
 - **Activation:** cycle time and capacitor per cycle for every family once the global recast is gone, and the auto-fire loop interval.
 - **Crew:** droid crew effectiveness (the best industrial droid at about 75% of a player of matching rank, a tier-1 combat droid far below), industrial part recipes (about half the materials of combat parts), power-routing amounts.
@@ -817,13 +816,12 @@ Draft each in the Bible, check it with the combat simulator where it affects com
 - **Droids:** Industry per industrial part, stat cuts, instruction effects, derelict salvage team timer and yield.
 - **Slicing:** Data Analyzer range, slicing tiers per zone for data cans, locked caches, data cores and space lockboxes, space lockbox drop rates, customs spoof tier per patrol, space slicing XP and reward odds.
 - **Activities:** agent mission pay and token prices, incursion schedule and rewards, Rift Run timers and loot, cloak speed penalty and reveal range.
-- **IDs:** confirm the new skill IDs (53 and 54) were never used historically, since saved data keys skills by ID.
 
 ## 18. Workstreams and order
 
 Everything merges to one integration branch and releases together.
 
-- **Lore review first:** before W0, the DMs approve the Wild Space faction and system names, all 100 ship names and the faction agent setup. Liberty Fighter, Rheinland Fighter and Corsair come from another game's model labels and need Star Wars names in that review. Until then, every faction, system and ship name in this plan is a working name.
+- **Lore review first:** before W0, the DMs approve the Wild Space faction and system names, all 50 ship names and the faction agent setup. Until then, every faction, system and ship name in this plan is a working name.
 - **Branching:**
   - Create `feature/space-revamp` from up-to-date `origin/master`.
   - Each workstream slice goes on its own branch and pull request into it, with the Codex review loop (`PullRequests.md`).
@@ -834,17 +832,17 @@ Everything merges to one integration branch and releases together.
 
 | # | Workstream | Contents | Needs |
 |---|---|---|---|
-| W0 | Bible drafts | Piloting, Gunnery and Ship Systems perk tabs (drafted as Proposed on the plan branch); Starships tab rewrite (hulls, modules, components, traits); space enemy sections; trade tab (commodities, prices) | Owner approval gates W2-W9 numbers |
-| W1 | Foundations | Skills, `CombatPointCategoryType.Starship`, space `StatType`s, resistance types, High/Mid/Low and slot tags in `ShipStatus`, removing configs, size x role data model, `RequiresSkill` on space items | - |
+| W0 | Bible drafts | Piloting (Revamp) perk tab with four styles (drafted as Proposed on the plan branch); Starships tab rewrite (hulls, modules, components, traits); space enemy sections; trade tab (commodities, prices) | Owner approval gates W2-W9 numbers |
+| W1 | Foundations | Piloting gating and seat skills, space `StatType`s, resistance types, High/Mid/Low and slot tags in `ShipStatus`, removing configs, size x role data model, `RequiresSkill` on space items | - |
 | W2 | Combat rules | Shared crit, resist, status and threat; attribute mapping; regen; toggle and auto-fire loop; Ship HUD; PvP; escape pods; repair bills | W1 |
-| W3 | Ships and modules | 100 ships (Appendix C) with model scales, Hull Designs and Refit, about 20 module families x rank steps, size scaling, icons with lit variants, store, moving recipes to their new crafting skills, ship transfers and market sales | W1, W0 |
-| W4 | Perks and abilities | Six styles, Gathering space perks, space abilities and IDs | W1, W2, W0 |
+| W3 | Ships and modules | 50 ships (Appendix C) with model scales, Hull Designs and Refit, about 20 module families x rank steps, size scaling, icons with lit variants, store, moving recipes to their new crafting skills, ship transfers and market sales | W1, W0 |
+| W4 | Perks and abilities | Four Piloting styles, Gathering space perks, space abilities and IDs | W1, W2, W0 |
 | W5 | Enemies | NPC conversion, role AI, new groups, aces, encounters, spawn tables, DM Space tab | W2, W3 |
 | W6 | World | Salvage and wrecks, gas harvesting, new materials, 3 zones (Module JSON), station flags, starlanes, docking limits | W3 |
 | W7 | Trade | Cargo data, exchange NUI, pricing service, HoloNet board, contraband and customs, pirates, freight contracts, factions, city tariffs, trade XP | W3, W5, W6 |
-| W8 | Crew | Stations, consoles, `AttachCamera` and hidden crew, droid crew, permissions, power routing, Wing Commander crew bonuses, ship-to-ship docking and the Dock permission | W2, W3, W4 |
+| W8 | Crew | Stations, consoles, `AttachCamera` and hidden crew, droid crew, permissions, power routing, Command crew bonuses, Engineering, Espionage and Leadership seat bonuses, ship-to-ship docking and the Dock permission | W2, W3, W4 |
 | W9 | Crafting and rewards | Component layer and traits, recipes, research blueprints, named modules, Design Schematics, trophies and decor, ammo variants, achievements | W3, W6 |
-| W10 | Migration | Rebuild Token, perk refunds, item and ship conversion, stamp cleanup, design unlocks, notices | W1, W3, W9 |
+| W10 | Migration | Perk refunds, item and ship conversion, stamp cleanup, design unlocks, notices | W1, W3, W9 |
 | W12 | Wild Space and exploration | 6 Wild Space areas and environments, rifts, Rift Raiders, Probe Launcher, signatures, Jump to Signature, Sensor Sweep, data/cache/gas/combat sites, Scanner HUD tab, space slicing (Data Analyzer, new slicing sources, space reward tables, customs spoofing) | W2, W3, W5 |
 | W13 | Stations | Station city layout, Station Core, anchor sites, deck areas, Shipyard, Asteroid Drill, Jump Beacons, Station Fuel, passenger shuttle route | W3, W7 |
 | W14 | Holdings and droids | Holdings terminal, types, upgrades, production chains, events, ground sites; industrial droid parts, Industry stat, AI instructions, droid bays | W7, W9 |
@@ -859,7 +857,7 @@ Everything merges to one integration branch and releases together.
 - **Build and tests:**
   - Build once with `-p:RunPostBuildEvent=Never -v q -clp:ErrorsOnly`.
   - Run focused NUnit filters for each slice.
-  - Add tests for: rank gating, size rules, slot rows, migration (refunds, token, item mapping, ship rebuild), trade pricing and flooding, cargo spill, customs, XP split and range, PvP gating, escape pods, every auto-off trigger, support-module target locks and Retarget, All Weapons, space slicing (tier gate, Sensors crew slicing, Espionage XP, customs spoof outcomes), ship transfers and market sales (every structure re-owned, blocking conditions, designs not shared, permissions reset, migrated interiors kept).
+  - Add tests for: rank gating, size rules, slot rows, migration (refunds, item mapping, ship rebuild), seat skill checks (Piloting, Engineering, Espionage) and the Engineering, Espionage and Leadership bonuses, Piloting rank changing no combat stat, trade pricing and flooding, cargo spill, customs, XP split and range, PvP gating, escape pods, every auto-off trigger, support-module target locks and Retarget, All Weapons, space slicing (tier gate, Sensors crew slicing, Espionage XP, customs spoof outcomes), ship transfers and market sales (every structure re-owned, blocking conditions, designs not shared, permissions reset, migrated interiors kept).
 - **Engine tests** (`EngineTesting.md`) for:
   - Entering space with Mid slots.
   - Crew boarding, camera attach and re-attach after a starlane jump.
@@ -871,7 +869,7 @@ Everything merges to one integration branch and releases together.
   - Damage pilot vs tank vs support.
   - Small vs Large vs Capital under the size rules.
   - A crewed capital vs the same pilots in separate ships.
-  - Solo targets at every tier: Gunnery 50 in a Small fighter with no Piloting solos normal enemies at its tier (elites and bosses aren't expected); Piloting 50 + Gunnery 50 with no Ship Systems solos all normal content and most elites, sustained by shield regen, rank-0 repairers (no rank needed) and consumables.
+  - The solo target at every tier: a pilot at that tier's rank with one weapon style (60 SP) solos all normal content and most elites in any hull their rank allows, sustained by shield regen, rank-0 repairers and consumables. Bulwark, Command and the seat skills are never required.
   - The Advanced ships in each role: each lands within 10% of the others at that role's job.
   - A melee build (MGT, PER) on launchers vs a ranged build (PER, AGI) on energy weapons at equal ranks.
   - **Fight length:** a matched solo pilot (same rank and attributes as the ground run) kills every normal space role at each tier within the ground's normal-enemy time at that tier, measured with the same simulator settings. No normal role takes more than 1.5x as long as the fastest one; on the ground, Melee, Ranged and Controller normals land within about 10% of each other. Capitals are compared with ground elites and bosses at the same tier.
@@ -918,7 +916,7 @@ New models go through the Trellis2 pipeline (`Readmes/BlasterModelImport.md`) as
 - **Hull Designs for every ship:** several skins per ship, each usable only on that ship (section 7). Start with ships that have no launch skins.
 - Trade containers and wreck variants, if the existing placeables look wrong at ship scale.
 - Station exteriors for Small, Medium and Large stations, if scaling the existing `[mdrn]SpaceStation` placeable (placeables.2da row 1452) can't tell them apart.
-- Rift Raider ships, if existing pirate models and the unused hak models (for example the Alien set, 10215-10217) don't give the coalition and its 4 refit hulls their own look.
+- Rift Raider ships, if existing pirate models and the unused hak models (for example the Alien set, 10215-10217) don't give the coalition and its 2 refit hulls their own look.
 
 ## 21. Out of scope
 
@@ -974,8 +972,8 @@ Everything in Part II ships in the same release as Part I. It builds on Part I's
 
 ## 24. Scanning, exploration and slicing
 
-- **Probe Launcher** (Mid slot, Ship Systems, toggle): each cycle adds signal strength to every hidden signature in the area, system-wide.
-- **Scan strength** grows with Ship Systems rank, a crew member at the Sensors station, a droid running Survey Protocol (section 27) and the system's environment.
+- **Probe Launcher** (Mid slot, Piloting, or Espionage at the Sensors seat; toggle): each cycle adds signal strength to every hidden signature in the area, system-wide.
+- **Scan strength** grows with the Espionage rank of whoever runs the launcher (the pilot or the Sensors officer), a droid running Survey Protocol (section 27) and the system's environment.
 - **Signature types:** rift, combat site, data site, cache site, gas site, derelict. They spawn at random points and stay hidden: **no object exists in the area until the signature reaches 100%**, so flying over the spot finds nothing.
 - **Information grows with strength,** shown on a new Scanner tab of the Ship HUD:
   - 25%: type
@@ -1008,7 +1006,7 @@ Espionage's Slicing perk works in space exactly as on the ground.
   - Customs scans (section 13).
   - Data-heist missions for faction agents (section 29).
   - Space lockboxes dropped by NPC ships (section 12).
-- **XP:** Espionage XP through `Skill.CalculateEspionageXP(PerkType.Slicing, tier, rank)`, never Ship Systems XP.
+- **XP:** Espionage XP through `Skill.CalculateEspionageXP(PerkType.Slicing, tier, rank)`, never Piloting XP.
 - **Rewards:** new space reward tables in `SlicingRewardCatalog` for each new source: Design Schematics, recipe unlocks, Ship Schematics, agent intel and components with rare traits. Ground lockbox and terminal rewards stay as they are. New items follow `EconomyRestrictedItems.md`.
 
 ## 25. Player stations
@@ -1167,159 +1165,120 @@ Draft rows for the Bible. Where a ground perk does the same job, its numbers are
 
 **Shared rules for every space style**
 
-- **Costs and scaling:**
-  - Every ability costs the pilot's (or crew member's) STM. Costs and cooldowns follow the ground template: 3/5/8/12 STM at 18 s, 4/8/10 at 24 s, 6/9 at 30 s, and the capstone at 15 STM and 90 s.
-  - Stances have a 30 s cooldown.
-  - Scaling uses the Bible Scaling Legend with the style's primary and secondary stat.
-- **Terms:**
-  - **Weapon DMG** is the DMG of the fitted weapon that fires.
-  - **Energy weapons** are Laser Cannon, Ion Cannon, Beam Cannon, Point-Defense Turret and the capital lasers (Turbolaser, Quad Laser, Laser Battery, Storm Cannon).
-  - **Launchers** are Missile Launcher, Torpedo Launcher and Assault Concussion Missile.
-  - **Command range** is 30 m base. Ground Leadership uses 5 m, but space weapons reach 20-55 m.
-- **New space statuses:**
-  - **Jammed:** Accuracy down; Disruption family.
-  - **Painted:** damage taken up.
-  - Slows keep using the Mobility family.
-  - None of these is hard crowd control.
+- **Ported, not invented:** every row ports an existing ground perk (Source column) with its numbers, durations, STM and cooldown. Only the targeting changes: abilities fire your ship's weapons, and allies are party ships. Unlock ranks follow the Piloting schedule, so a row can unlock at a different rank than its source. A row marked **New** has no ground match.
+- **Durations:** buffs and debuffs last 30 s and capstones 45 s, as on the ground.
+- **Activation:** every space ability has a 0 s activation delay, because movement cancels a cast (`UsePerkFeat.cs`). No channels.
+- **One impact:** an ability fires one weapon unless it says otherwise, so its damage never scales with how many weapons a ship carries. **Weapon DMG** is the DMG of the fitted weapon it fires.
+- **Areas:** "near your ship" and "near the target" use the source's radius scaled to space distances; radii are drafted in the Bible (section 17). **Command range** is 30 m base (ground Leadership uses 5 m).
+- **Allies:** party ships. Crew must be in the captain's party, so they count.
+- **Threat follows the ground enmity rules** (`Service/Enmity.cs`):
+  - Space damage goes through `Enmity.CalculateDamageEnmity`, so `DamageEnmityPercentAdjustment` (the tank stance's +100%) applies. Today modules call `ModifyEnmity` with raw damage and skip it.
+  - Repairs generate heal enmity like ground healing: half the repair, to enemies holding the repaired ship. Today repairs generate none.
+  - Goads use `Enmity.TryTaunt`: threat catches up to the highest visible rival plus a bonus, once, with no target lock.
+  - Flat bursts use `ModifyEnmity`. Percent modifiers (stances, statuses) stack to the existing +50% clamp.
+- **Statuses:** ground statuses apply to ships through the shared status system: Burn, Blind, Dazed, Exposed, Disarming Shot, Weakened and fragmentation. The hard crowd-control rules apply to Dazed.
+- **Stats:** the space formulas must read the existing Attack, Accuracy, Defense and Evasion percent stats, which `Space.cs` ignores today.
 - **Where perks apply:** a perk works wherever its condition is met, on any hull and from any station (cross-skill rule in `SkillPerkStandards.md`).
 
-### Piloting: Ace (AGI primary, MGT secondary)
+### Piloting: Ace (PER primary, AGI secondary)
+
+Energy weapons and evasion, ported from Pistol (Skirmisher and Gambler) and Rifle.
 
 | Rank | SP | Perk | Type | STM | Cooldown | Effect | Source |
 |---|---|---|---|---|---|---|---|
-| 2 | 2 | Evasive Roll I | Combat | 3 | 18 s | Gain +10% Evasion for 12 s. The first attack you evade during it gives your weapons' next cycle +10% Critical Rate. | Point Blank Burst I evasion |
-| 5 | 2 | Afterburner Discipline | Trait | - | - | Afterburner cycles cost 25% less capacitor. | New |
-| 8 | 2 | Tight Turns I | Trait | - | - | +4% Evasion while your ship is moving. | New (Snap Roll ladder shape) |
-| 10 | 2 | Strafing Run I | Combat | 4 | 24 s | Gain +20% Movement Speed for 10 s. Each weapon's next cycle on your target deals +12 DMG. | Interrupting Shot I DMG |
-| 12 | 2 | Evasive Roll II | Combat | 5 | 18 s | As I, with +12% Evasion and +12% Critical Rate. | Quick Draw II crit |
-| 15 | 4 | Slipstream | Trait | - | - | After you evade an attack, gain +10% Movement Speed for 10 s. Once every 10 s. | Kiting Instinct |
-| 18 | 3 | Break Lock I | Combat | 6 | 30 s | Drop 50% of your threat on every enemy within 30 m and gain +15% Evasion for 10 s. | New |
-| 20 | 4 | Ace Stance | Stance | - | 30 s | +15% Evasion and +10% Movement Speed; -15% max Shield. | Skirmisher Stance (penalty moved to shield) |
-| 22 | 4 | Tight Turns II | Trait | - | - | +6% Evasion while moving. | New |
-| 25 | 4 | Opportunist | Trait | - | - | Weapon cycles against a target that is attacking another ship gain +10% Critical Rate. | Quick Draw I crit |
-| 28 | 3 | Evasive Roll III | Combat | 8 | 18 s | As I, with +15% Evasion and +15% Critical Rate. | Point Blank Burst II evasion |
-| 30 | 4 | Strafing Run II | Combat | 8 | 24 s | As I, with +24 DMG. | Interrupting Shot II |
-| 32 | 3 | Break Lock II | Combat | 9 | 30 s | Drop all your threat on every enemy within 30 m and gain +25% Evasion for 10 s. | New |
-| 35 | 2 | Ace Reflexes | Trait | - | - | Below 30% hull, gain +25% Evasion for 15 s. Once per 3 minutes. | Unbreakable |
-| 38 | 4 | Strafing Run III | Combat | 10 | 24 s | As I, with +36 DMG. | Interrupting Shot III |
-| 40 | 5 | Evasive Roll IV | Combat | 12 | 18 s | As I, with +18% Evasion and +18% Critical Rate. | Quick Draw IV crit |
-| 45 | 4 | Tight Turns III | Trait | - | - | +8% Evasion while moving. | New |
-| 50 | 6 | Untouchable | Capstone | 15 | 90 s | For 30 s, every attack you evade resets Evasive Roll's cooldown and gives your weapons' next cycle +25% critical damage (`ApplyCriticalDamageModifier`), because a Critical Rate bonus would overflow the 50% cap. | Last Word |
+| 2 | 2 | Disabling Shot I | Combat | 3 | 18 s | Fire one energy weapon at your target for weapon DMG + 8 and inflict Disarming Shot for 30 s, reducing its Attack by 10%. | Disarming Shot I (Pistol) |
+| 5 | 2 | Mobile Footwork | Trait | - | - | After using a hostile ability, gain +8% Evasion for 30 s. | Mobile Footwork (Pistol) |
+| 8 | 2 | Sustained Fire I | Trait | - | - | Each consecutive energy-weapon hit against the same target grants +1 DMG, up to five stacks. Stacks expire after 30 s. | Sustained Fire I (Rifle) |
+| 10 | 2 | Double Shot I | Combat | 4 | 24 s | Fire one energy weapon twice at your target for weapon DMG + 6 each. If either shot critically hits, restore 2 STM. | Double Shot I (Pistol) |
+| 12 | 2 | Disabling Shot II | Combat | 5 | 18 s | Fire one energy weapon at your target for weapon DMG + 18 and inflict Disarming Shot for 30 s, reducing its Attack by 12%. | Disarming Shot II (Pistol) |
+| 15 | 4 | Kiting Instinct | Trait | - | - | When you move after using a hostile ability, gain +10% Movement Speed for 30 s. | Kiting Instinct (Pistol) |
+| 18 | 3 | Point Blank Burst I | Combat | 6 | 30 s | Deal weapon DMG + 16 to enemies near your ship and gain +10% Evasion for 30 s. | Point Blank Burst I (Pistol) |
+| 20 | 4 | Ace Stance | Stance | - | 30 s | While active, gain +15% Evasion and +10% Movement Speed, but your Attack is reduced by 10%. | Skirmisher Stance (Pistol) |
+| 22 | 4 | Sustained Fire II | Trait | - | - | Each consecutive energy-weapon hit against the same target grants +2 DMG, up to five stacks. Stacks expire after 30 s. | Sustained Fire II (Rifle) |
+| 25 | 4 | High Noon | Trait | - | - | Critical hits against targets above 70% hull deal +15% damage. | High Noon (Pistol) |
+| 28 | 3 | Disabling Shot III | Combat | 8 | 18 s | Fire one energy weapon at your target for weapon DMG + 28 and inflict Disarming Shot for 30 s, reducing its Attack by 15%. | Disarming Shot III (Pistol) |
+| 30 | 4 | Double Shot II | Combat | 8 | 24 s | Fire one energy weapon twice at your target for weapon DMG + 13 each. If either shot critically hits, restore 3 STM. | Double Shot II (Pistol) |
+| 32 | 3 | Point Blank Burst II | Combat | 9 | 30 s | Deal weapon DMG + 30 to enemies near your ship and gain +15% Evasion for 30 s. | Point Blank Burst II (Pistol) |
+| 35 | 2 | Evasive Reload | Trait | - | - | After you evade an attack, your next hostile ability within 30 s costs 3 less STM. | Evasive Reload (Pistol) |
+| 38 | 4 | Double Shot III | Combat | 10 | 24 s | Fire one energy weapon twice at your target for weapon DMG + 20 each. If either shot critically hits, restore 4 STM. | Double Shot III (Pistol) |
+| 40 | 5 | Disabling Shot IV | Combat | 12 | 18 s | Fire one energy weapon at your target for weapon DMG + 38 and inflict Disarming Shot for 30 s, reducing its Attack by 18%. | Disarming Shot IV (Pistol) |
+| 45 | 4 | Sustained Fire III | Trait | - | - | Each consecutive energy-weapon hit against the same target grants +3 DMG, up to five stacks. Stacks expire after 30 s. | Sustained Fire III (Rifle) |
+| 50 | 6 | Ace in the Hole | Capstone | 15 | 90 s | Fire one energy weapon at your target for weapon DMG + 30. If it critically hits, your next three weapon cycles have +20% Critical Rate and no extra delay. | Dead Man's Hand (Pistol) |
 
-### Piloting: Wing Commander (SOC primary, WIL secondary)
+### Piloting: Ordnance (MGT primary, PER secondary)
 
-| Rank | SP | Perk | Type | STM | Cooldown | Effect | Source |
-|---|---|---|---|---|---|---|---|
-| 2 | 2 | Focus Fire I | Combat | 3 | 18 s | Allied ships within command range deal +6% damage to your current target for 20 s. SOC can raise this to +8%. | Press the Attack I |
-| 5 | 2 | Steady Wings | Trait | - | - | Allied ships within command range gain +30 Mobility Resistance. | Charge Order I |
-| 8 | 2 | Wingmen I | Trait | - | - | Allied ships within command range gain +3% Accuracy. | Rallying Standard I |
-| 10 | 2 | Rally I | Combat | 4 | 24 s | Allied ships within command range gain a shield buffer of 2.5% of their max Shield for 30 s. | Rousing Shout I |
-| 12 | 2 | Focus Fire II | Combat | 5 | 18 s | As I, with +8% (SOC to +10%). | Press the Attack II |
-| 15 | 4 | Crew Morale | Trait | - | - | Crew and droid crew aboard your ship work their stations at +10% effectiveness. | New |
-| 18 | 3 | Break Formation I | Combat | 6 | 30 s | Enemies within 10 m of your target are Jammed for 30 s: -10% Accuracy (SOC to -12%). | Break Morale I |
-| 20 | 4 | Formation Stance | Stance | - | 30 s | Allied ships within command range take 6% less damage; your Attack is -20%. | Watchful Presence II, Defensive Stance penalty |
-| 22 | 4 | Wingmen II | Trait | - | - | +5% Accuracy. | Rallying Standard II |
-| 25 | 4 | Mark Target | Trait | - | - | When your module or ability damages an enemy, allied ships within command range deal +8% damage to it for 30 s. | Mark Target I |
-| 28 | 3 | Focus Fire III | Combat | 8 | 18 s | As I, with +10% (SOC to +12%). | Press the Attack III |
-| 30 | 4 | Rally II | Combat | 8 | 24 s | As I, with 3.75% of max Shield. | Rousing Shout II |
-| 32 | 3 | Break Formation II | Combat | 9 | 30 s | As I, with -15% Accuracy, plus -12% Attack (SOC to -18% and -14%). | Break Morale II |
-| 35 | 2 | Command Presence | Trait | - | - | Orders last 4 s longer and command range is 10 m larger. | Command Presence II (range space-scaled) |
-| 38 | 4 | Rally III | Combat | 10 | 24 s | As I, with 5% of max Shield. | Rousing Shout III |
-| 40 | 5 | Focus Fire IV | Combat | 12 | 18 s | As I, with +10% damage and +5% Accuracy (SOC to +12% and +6%). | Press the Attack III |
-| 45 | 4 | Wingmen III | Trait | - | - | +6% Accuracy. | New (Rallying Standard ladder) |
-| 50 | 6 | Fleet Action | Capstone | 15 | 90 s | For 45 s, allied ships within command range, yours included, gain +12% damage, +6% Accuracy and +6% Critical Rate. | Decisive Command |
-
-### Gunnery: Broadside (PER primary, AGI secondary)
+Missiles and torpedoes as area ordnance, ported from Throwing (Ordnance).
 
 | Rank | SP | Perk | Type | STM | Cooldown | Effect | Source |
 |---|---|---|---|---|---|---|---|
-| 2 | 2 | Overcharge I | Combat | 3 | 18 s | Your energy weapons' next cycle deals +8 DMG each and costs 50% more capacitor. | Disarming Shot I DMG |
-| 5 | 2 | Capacitor Discipline | Trait | - | - | Energy weapon cycles cost 10% less capacitor. | New |
-| 8 | 2 | Sustained Fire I | Trait | - | - | Each energy-weapon hit on your current target adds a stack of +2% damage, up to 5. Switching targets clears it. | New |
-| 10 | 2 | Shield Breaker I | Combat | 4 | 24 s | Your energy weapons' next cycle on your target deals +50% damage to shields. | New |
-| 12 | 2 | Overcharge II | Combat | 5 | 18 s | As I, with +18 DMG. | Disarming Shot II |
-| 15 | 4 | Steady Barrage | Trait | - | - | While Sustained Fire has 5 stacks, gain +10% Critical Rate. | Lucky Chamber |
-| 18 | 3 | Full Broadside I | Combat | 6 | 30 s | Every energy weapon fires at your target at once for weapon DMG + 14 each; their cycles restart. | Fan the Hammer I |
-| 20 | 4 | Battery Stance | Stance | - | 30 s | Energy weapons cycle 15% faster but cost 25% more capacitor. | New (Gambler Stance shape) |
-| 22 | 4 | Sustained Fire II | Trait | - | - | +3% damage per stack. | New |
-| 25 | 4 | Hull Shredder | Trait | - | - | Energy-weapon hits on a target with no shield deal +10% damage. | New |
-| 28 | 3 | Overcharge III | Combat | 8 | 18 s | As I, with +28 DMG. | Disarming Shot III |
-| 30 | 4 | Shield Breaker II | Combat | 8 | 24 s | As I, with +75% damage to shields. | New |
-| 32 | 3 | Full Broadside II | Combat | 9 | 30 s | As I, with weapon DMG + 26. | Fan the Hammer II |
-| 35 | 2 | Heat Sinks | Trait | - | - | After Overcharge, your energy weapons' following cycle costs no capacitor. | Evasive Reload shape |
-| 38 | 4 | Shield Breaker III | Combat | 10 | 24 s | As I, with +100% damage to shields. | New |
-| 40 | 5 | Overcharge IV | Combat | 12 | 18 s | As I, with +38 DMG. | Disarming Shot IV |
-| 45 | 4 | Sustained Fire III | Trait | - | - | +4% damage per stack. | New |
-| 50 | 6 | Firestorm | Capstone | 15 | 90 s | For 30 s, your energy weapons cycle 30% faster and Sustained Fire stacks up to 10. | New (Dead Man's Hand shape) |
+| 2 | 2 | Volley I | Combat | 3 | 18 s | Fire a missile at your target that deals weapon DMG + 7 to enemies near it and inflicts Burn for 30 s. | Explosive Toss I (Throwing) |
+| 5 | 2 | Proximity Warheads | Trait | - | - | Launcher hits have a 15% chance to deal 8 damage to the target and up to four other enemies near it. This splash cannot trigger other on-hit effects. | Payload Pouch (Throwing) |
+| 8 | 2 | Shrapnel Warheads I | Trait | - | - | Area launcher abilities inflict fragmentation for 3 damage every 3 s for 30 s. | Shrapnel Casing I (Throwing) |
+| 10 | 2 | Flare Missile I | Combat | 4 | 24 s | Fire a launcher at your target for weapon DMG + 12 and inflict Blind for 15 s. | Flash Toss I (Throwing) |
+| 12 | 2 | Volley II | Combat | 5 | 18 s | Fire a missile at your target that deals weapon DMG + 15 to enemies near it and inflicts Burn for 30 s. | Explosive Toss II (Throwing) |
+| 15 | 4 | Cluster Warheads | Trait | - | - | Area launcher abilities hit one additional enemy near the target for +10 DMG. | Cluster Pouch (Throwing) |
+| 18 | 3 | Concussion Barrage I | Combat | 6 | 30 s | Deal weapon DMG + 16 to up to five enemies near your ship and inflict Dazed for 15 s. | Concussive Toss I (Throwing) |
+| 20 | 4 | Ordnance Stance | Stance | - | 30 s | While active, area launcher abilities deal +10% damage, but single-target launcher damage is reduced by 10%. | Ordnance Stance (Throwing) |
+| 22 | 4 | Shrapnel Warheads II | Trait | - | - | Area launcher abilities inflict fragmentation for 5 damage every 3 s for 30 s. | Shrapnel Casing II (Throwing) |
+| 25 | 4 | Saturation Fire | Trait | - | - | Targets hit by two or more area launcher abilities within 30 s suffer Exposed for 30 s. | Saturation Toss (Throwing) |
+| 28 | 3 | Volley III | Combat | 8 | 18 s | Fire a missile at your target that deals weapon DMG + 24 to enemies near it and inflicts Burn for 30 s. | Explosive Toss III (Throwing) |
+| 30 | 4 | Flare Missile II | Combat | 8 | 24 s | Fire a launcher at your target for weapon DMG + 24 and inflict Blind for 15 s. | Flash Toss II (Throwing) |
+| 32 | 3 | Concussion Barrage II | Combat | 9 | 30 s | Deal weapon DMG + 30 to up to five enemies near your ship and inflict Dazed for 15 s. | Concussive Toss II (Throwing) |
+| 35 | 2 | Bombardier's Rhythm | Trait | - | - | After a launcher ability hits two or more enemies, restore 4 STM. | Bombardier's Rhythm (Throwing) |
+| 38 | 4 | Flare Missile III | Combat | 10 | 24 s | Fire a launcher at your target for weapon DMG + 36 and inflict Blind for 15 s. | Flash Toss III (Throwing) |
+| 40 | 5 | Volley IV | Combat | 12 | 18 s | Fire a missile at your target that deals weapon DMG + 32 to enemies near it and inflicts Burn for 30 s. | Explosive Toss IV (Throwing) |
+| 45 | 4 | Shrapnel Warheads III | Trait | - | - | Area launcher abilities inflict fragmentation for 7 damage every 3 s for 30 s. | Shrapnel Casing III (Throwing) |
+| 50 | 6 | Saturation Strike | Capstone | 15 | 90 s | Deal weapon DMG + 20 to enemies near your ship. For 45 s, area launcher abilities leave fragmentation zones that deal 8 damage every 6 s. | Rain of Steel (Throwing) |
 
-### Gunnery: Ordnance (MGT primary, PER secondary)
+### Piloting: Bulwark (VIT primary, WIL secondary)
 
-| Rank | SP | Perk | Type | STM | Cooldown | Effect | Source |
-|---|---|---|---|---|---|---|---|
-| 2 | 2 | Volley I | Combat | 3 | 18 s | Every launcher fires at your target at once for weapon DMG + 8 each, using ammo as normal; their cycles restart. | Disarming Shot I DMG |
-| 5 | 2 | Efficient Loading | Trait | - | - | Launcher cycles have a 15% chance not to use ammo. | New |
-| 8 | 2 | Lock-On I | Trait | - | - | After 5 s on the same target, your launchers gain +3% Accuracy and +3% Critical Rate against it. | New |
-| 10 | 2 | Bunker Buster I | Combat | 4 | 24 s | Your next launcher hit within 10 s deals +25% damage to a Large or Capital hull. | New |
-| 12 | 2 | Volley II | Combat | 5 | 18 s | As I, with +18 DMG. | Disarming Shot II |
-| 15 | 4 | Proximity Warheads | Trait | - | - | Missile hits also deal 25% of their damage to other enemies within 5 m of the target. | New |
-| 18 | 3 | Cluster Barrage I | Combat | 6 | 30 s | Fire at up to 3 enemies within 10 m of your target for weapon DMG + 14 each, using 1 ammo per target. | Fan the Hammer I |
-| 20 | 4 | Siege Stance | Stance | - | 30 s | Launchers deal +15% damage to Large and Capital hulls; your Evasion is -15%. | New (Skirmisher Stance size) |
-| 22 | 4 | Lock-On II | Trait | - | - | +5% Accuracy and +5% Critical Rate. | New |
-| 25 | 4 | Shield Breach | Trait | - | - | Launcher hits on a target at 10% shield or less deal +15% damage. Stacks with the Missile Launcher's own low-shield bonus. | New |
-| 28 | 3 | Volley III | Combat | 8 | 18 s | As I, with +28 DMG. | Disarming Shot III |
-| 30 | 4 | Bunker Buster II | Combat | 8 | 24 s | As I, with +40%. | New |
-| 32 | 3 | Cluster Barrage II | Combat | 9 | 30 s | As I, up to 4 enemies, weapon DMG + 26. | Fan the Hammer II |
-| 35 | 2 | Rapid Reload | Trait | - | - | After Volley, your launchers' next cycle is 30% shorter. | New (Reload Tempo shape) |
-| 38 | 4 | Bunker Buster III | Combat | 10 | 24 s | As I, with +60%. | New |
-| 40 | 5 | Volley IV | Combat | 12 | 18 s | As I, with +38 DMG. | Disarming Shot IV |
-| 45 | 4 | Lock-On III | Trait | - | - | +7% Accuracy and +7% Critical Rate. | New |
-| 50 | 6 | Saturation Strike | Capstone | 15 | 90 s | Every launcher fires at your target three times over 6 s for weapon DMG + 30 each, without using ammo. | Dead Man's Hand DMG |
-
-### Ship Systems: Bulwark (VIT primary, WIL secondary)
+Tank, ported from Vibroblade (Bulwark), Heavy Vibroblade (Immortal) and Armor's Provoke.
 
 | Rank | SP | Perk | Type | STM | Cooldown | Effect | Source |
 |---|---|---|---|---|---|---|---|
-| 2 | 2 | Defiance I | Combat | 3 | 18 s | Your weapons' next cycle on your target deals +8 DMG each, and the target generates +25% threat toward you for 30 s. | Disarming Shot I DMG, Covering Strike threat |
-| 5 | 2 | Reinforced Bulkheads | Trait | - | - | +15 Mobility Resistance and +15 Disruption Resistance. | Fortification |
-| 8 | 2 | Hardened Shields I | Trait | - | - | +8% Defense while your shield is above 0. | Bulwark I |
-| 10 | 2 | Bastion Pulse I | Combat | 4 | 24 s | Enemies within 15 m take 15 EM damage and generate +25% threat toward you for 30 s. | Covering Strike I |
-| 12 | 2 | Defiance II | Combat | 5 | 18 s | As I, with +18 DMG. | Disarming Shot II |
-| 15 | 4 | Emergency Capacitor | Trait | - | - | When your shield drops to 0, restore 15% of max capacitor. Once per 60 s. | New |
-| 18 | 3 | Shield Projection I | Combat | 6 | 45 s | Channel for up to 30 s: you and allied ships within 15 m take 20% less damage. | Shield Wall I (range space-scaled) |
-| 20 | 4 | Bulwark Stance | Stance | - | 30 s | +30% threat generation, +20% Defense, -20% Attack. You generate +100% threat from damage dealt. | Defensive Stance |
-| 22 | 4 | Hardened Shields II | Trait | - | - | +10% Defense while your shield is above 0. | Bulwark II |
-| 25 | 4 | Absorption | Trait | - | - | When an attack hits your shield, restore 4 capacitor. Once every 6 s. | Alacrity |
-| 28 | 3 | Defiance III | Combat | 8 | 18 s | As I, with +28 DMG. | Disarming Shot III |
-| 30 | 4 | Bastion Pulse II | Combat | 8 | 24 s | As I, with 25 EM damage. | Covering Strike II |
-| 32 | 3 | Shield Projection II | Combat | 9 | 45 s | As I, with 35% less damage. | Shield Wall II |
-| 35 | 2 | Last Stand | Trait | - | - | Below 25% hull, gain +40% Defense for 30 s. Once per 3 minutes. | Unbreakable |
-| 38 | 4 | Bastion Pulse III | Combat | 10 | 24 s | As I, with 30 EM damage. | Covering Strike III |
-| 40 | 5 | Defiance IV | Combat | 12 | 18 s | As I, with +38 DMG. | Disarming Shot IV |
-| 45 | 4 | Hardened Shields III | Trait | - | - | +12% Defense while your shield is above 0. | Bulwark III |
-| 50 | 6 | Unbreakable Hull | Capstone | 15 | 90 s | For 45 s, take 50% less damage and ignore slows and Interdiction. | Invincible |
+| 2 | 2 | Shield Ram I | Combat | 3 | 20 s | On your next weapon hit, deal weapon DMG and an additional instance of damage equal to 4% of your Defense. | Shield Bash I (Vibroblade) |
+| 5 | 2 | Anger Strike | Trait | - | - | Defiance hits generate +150 enmity, and your next attack within 30 s after using Defiance deals +12 DMG. | Anger Strike (Heavy Vibroblade) |
+| 8 | 2 | Bulwark I | Trait | - | - | Gain +8% Defense. | Bulwark I (Vibroblade; its Shield Deflection has no space equivalent) |
+| 10 | 2 | Defiance I | Combat | 4 | 18 s | Your next weapon hit deals weapon DMG + 10 and generates +350 enmity plus the damage dealt as enmity. You gain +10% Defense for 30 s. | Fortress Strike I (Heavy Vibroblade; unlocks at 2 there) |
+| 12 | 2 | Shield Ram II | Combat | 5 | 20 s | On your next weapon hit, deal weapon DMG and an additional instance of damage equal to 6% of your Defense. | Shield Bash II (Vibroblade) |
+| 15 | 4 | Fortification | Trait | - | - | Gain +15 Mind, Trauma and Mobility Resistance. | Fortification (Vibroblade) |
+| 18 | 3 | Hail I | Combat | - | 6 s | Goad your target into attacking you. Enmity generated increases by 1% per VIT. On a valid hit, your threat catches up to the highest visible rival plus the VIT-scaled bonus. Repeated goads while already ahead add nothing. No forced target lock. | Provoke I (Armor; unlocks at 5 there) |
+| 20 | 4 | Bulwark Stance | Stance | - | 30 s | While active, gain +30% enmity generation and +20% Defense, but your Attack is reduced by 20%. You generate +100% threat from damage dealt, before general enmity modifiers. | Defensive Stance (Vibroblade) |
+| 22 | 4 | Bulwark II | Trait | - | - | Gain +10% Defense. | Bulwark II (Vibroblade) |
+| 25 | 4 | Critical Ward | Trait | - | - | If you would receive a critical hit, it becomes a normal hit dealing minimum damage. Once every 16 s, reduced by 0.5 s per MGT to a minimum of 12 s. | Critical Ward (Heavy Vibroblade; unlocks at 35 there) |
+| 28 | 3 | Shield Ram III | Combat | 6 | 20 s | On your next weapon hit, deal weapon DMG and an additional instance of damage equal to 8% of your Defense. | Shield Bash III (Vibroblade) |
+| 30 | 4 | Defiance II | Combat | 7 | 18 s | Your next weapon hit deals weapon DMG + 20 and generates +450 enmity plus the damage dealt as enmity. You gain +20% Defense for 30 s. | Fortress Strike II (Heavy Vibroblade; unlocks at 12 there) |
+| 32 | 3 | Hail II | Combat | - | 12 s | Goad your target and all other enemies near it into attacking you, with the same catch-up rule as Hail I. No forced target lock. | Provoke II (Armor; unlocks at 15 there) |
+| 35 | 2 | Unbreakable | Trait | - | - | When reduced below 25% hull, gain +40% Defense for 30 s. Once per 3 minutes. | Unbreakable (Vibroblade) |
+| 38 | 4 | Defiance III | Combat | 10 | 18 s | Your next weapon hit deals weapon DMG + 30 and generates +550 enmity plus the damage dealt as enmity. You gain +30% Defense for 30 s. | Fortress Strike III (Heavy Vibroblade; unlocks at 30 there) |
+| 40 | 5 | Shield Ram IV | Combat | 8 | 20 s | On your next weapon hit, deal weapon DMG and an additional instance of damage equal to 10% of your Defense. | Shield Bash IV (Vibroblade) |
+| 45 | 4 | Bulwark III | Trait | - | - | Gain +12% Defense. | Bulwark III (Vibroblade) |
+| 50 | 6 | Invincible | Capstone | 15 | 90 s | For 45 s, you take 50% less damage and are immune to Knockdown and Dazed. | Invincible (Vibroblade) |
 
-### Ship Systems: Operator (WIL primary, SOC secondary)
+### Piloting: Command (SOC primary, WIL secondary)
+
+Orders and repairs, ported from Leadership (Vanguard Command and Field Steward) and First Aid. Leadership rank also raises the strength and range of Command's orders and auras (section 10); that scaling is new, since the ground scales Leadership only by SOC.
 
 | Rank | SP | Perk | Type | STM | Cooldown | Effect | Source |
 |---|---|---|---|---|---|---|---|
-| 2 | 2 | Emergency Repair I | Combat | 3 | 18 s | Repair an allied ship within 30 m for 2% of its max hull plus WIL scaling. | Med Kit I (percent part) |
-| 5 | 2 | Efficient Transfer | Trait | - | - | Repairers and capacitor transfers cost 10% less capacitor. | New |
-| 8 | 2 | Repair Efficiency I | Trait | - | - | Repairs from your modules and abilities are 5% stronger. | Medical Injector Rig I |
-| 10 | 2 | Capacitor Transfer I | Combat | 4 | 24 s | Give 10% of your max capacitor to an allied ship within 30 m. | New |
-| 12 | 2 | Emergency Repair II | Combat | 5 | 18 s | As I, with 3.5% of max hull. | Med Kit II |
-| 15 | 4 | Sensor Reach | Trait | - | - | Your Jammers, Target Painters and Ion Webs reach 10 m further. | New |
-| 18 | 3 | Sensor Blackout I | Combat | 6 | 30 s | Enemies within 10 m of your target are Jammed for 30 s: -10% Accuracy and -10% weapon range. | Break Morale I |
-| 20 | 4 | Triage Stance | Stance | - | 30 s | Your repairs are 20% stronger and your repairers cycle 10% faster; your weapons deal 25% less damage. | New |
-| 22 | 4 | Repair Efficiency II | Trait | - | - | 10% stronger. | Medical Injector Rig II |
-| 25 | 4 | Target Analysis | Trait | - | - | Targets you paint take +5% damage from all sources. | New |
-| 28 | 3 | Emergency Repair III | Combat | 8 | 18 s | As I, with 5% of max hull. | Med Kit III |
-| 30 | 4 | Capacitor Transfer II | Combat | 8 | 24 s | As I, with 15%. | New |
-| 32 | 3 | Sensor Blackout II | Combat | 9 | 30 s | As I, with -15% Accuracy and -15% weapon range. | Break Morale II |
-| 35 | 2 | Overflow | Trait | - | - | Shield repairs on a target at full shield repair its hull at 50% strength. | New |
-| 38 | 4 | Capacitor Transfer III | Combat | 10 | 24 s | As I, with 20%. | New |
-| 40 | 5 | Emergency Repair IV | Combat | 12 | 18 s | As I, with 6% of max hull. | Med Kit IV |
-| 45 | 4 | Repair Efficiency III | Trait | - | - | 15% stronger. | New (Rig ladder) |
-| 50 | 6 | Lifeline Network | Capstone | 15 | 90 s | For 30 s, your repairers also repair up to 3 other allied ships within 15 m of their target, and all your repairs are 25% stronger. | New |
+| 2 | 2 | Emergency Repair I | Combat | 4 | 10.5 s | Repair an allied ship within command range for a flat amount plus 2% of its max hull plus WIL scaling. The flat amount is drafted for ship hull in the Bible. | Med Kit I (First Aid) |
+| 5 | 2 | Mark Target I | Trait | - | - | When your hostile ability damages or debuffs an enemy, party ships within command range gain +8% damage for 30 s. SOC scaling can raise this to +10%. Once per ability use, at most once every 45 s. | Mark Target I (Leadership) |
+| 8 | 2 | Repair Efficiency I | Trait | - | - | Repairs from your modules and abilities are 5% stronger. | Medical Injector Rig I (First Aid) |
+| 10 | 2 | Focus Fire I | Combat | 4 | 24 s | Party ships within command range deal +6% damage for 30 s. SOC scaling can raise this to +8%. | Press the Attack I (Leadership) |
+| 12 | 2 | Emergency Repair II | Combat | 6 | 10.5 s | Repair an allied ship within command range for a flat amount plus 3.5% of its max hull plus WIL scaling. | Med Kit II (First Aid) |
+| 15 | 4 | Crew Morale | Trait | - | - | Crew and droid crew aboard your ship work their stations at +10% effectiveness. | New (crew stations exist only in space) |
+| 18 | 3 | Break Formation I | Combat | 7 | 45 s | Enemies within command range suffer -10% Accuracy for 30 s. SOC scaling can raise the penalty to 12%. | Break Morale I (Leadership); Accuracy as Smoke Bomb, because ship weapons roll Accuracy, not ability hit chance |
+| 20 | 4 | Formation | Aura | - | 30 s | Aura: party ships within command range take 6% less damage. SOC scaling can raise this to 7%. An aura, not a stance, so it doesn't block a stance. | Watchful Presence II (Leadership) |
+| 22 | 4 | Repair Efficiency II | Trait | - | - | Repairs from your modules and abilities are 10% stronger. | Medical Injector Rig II (First Aid) |
+| 25 | 4 | Mark Target II | Trait | - | - | When your hostile ability damages or debuffs an enemy, party ships within command range gain +12% damage and +10% Accuracy for 30 s. SOC scaling can raise these to +15% and +12%. Once per ability use, at most once every 45 s. | Mark Target II (Leadership) |
+| 28 | 3 | Emergency Repair III | Combat | 7 | 10.5 s | Repair an allied ship within command range for a flat amount plus 5% of its max hull plus WIL scaling. | Med Kit III (First Aid) |
+| 30 | 4 | Focus Fire II | Combat | 6 | 24 s | Party ships within command range deal +8% damage for 30 s. SOC scaling can raise this to +10%. | Press the Attack II (Leadership) |
+| 32 | 3 | Break Formation II | Combat | 9 | 45 s | Enemies within command range suffer -15% Accuracy and Weakened (-12% Attack) for 30 s. SOC scaling can raise these to 18% and 15%. | Break Morale II (Leadership) |
+| 35 | 2 | Command Presence | Trait | - | - | Your command auras and area orders reach further, and non-capstone orders last 4 s longer. SOC scaling can raise the duration bonus to +5 s. | Command Presence II (Leadership); the range bonus is drafted for space |
+| 38 | 4 | Focus Fire III | Combat | 9 | 30 s | Party ships within command range deal +10% damage and gain +5% Accuracy for 30 s. SOC scaling can raise these to +12% and +7%. | Press the Attack III (Leadership) |
+| 40 | 5 | Emergency Repair IV | Combat | 8 | 10.5 s | Repair an allied ship within command range for a flat amount plus 6% of its max hull plus WIL scaling. | Med Kit IV (First Aid) |
+| 45 | 4 | Repair Efficiency III | Trait | - | - | Repairs from your modules and abilities are 15% stronger. | New (the Medical Injector Rig ladder has two ranks) |
+| 50 | 6 | Fleet Action | Capstone | 15 | 90 s | For 45 s, party ships within command range, yours included, gain +12% damage, +6% Accuracy and +6% Critical Rate, and restore 1 STM every 3 s. SOC scaling can raise the bonuses to +15%, +8% and +8%. | Decisive Command (Leadership) |
 
 ### Gathering: space perks (new "Space Industry" group)
 
@@ -1340,149 +1299,99 @@ Every family has an item every 5 ranks (0-45); capital families start at rank 40
 
 | Family | Slot | Skill | Use | What it does | Today |
 |---|---|---|---|---|---|
-| Laser Cannon | High | Gunnery | Toggle | Thermal damage on a steady cycle. | Combat Laser |
-| Ion Cannon | High | Gunnery | Toggle | EM damage, strong against shields; slows on hull hits. | Ion Cannon |
-| Beam Cannon | High | Gunnery | Toggle | Thermal damage over a few ticks at short range. | Beam Cannon |
-| Missile Launcher | High | Gunnery | Toggle | Explosive damage at long range; uses missiles; bonus against low shields. Ion, incendiary and seeker ammo variants. | Missile Launcher |
-| Torpedo Launcher | High | Gunnery | One press | Heavy explosive damage to Large and Capital hulls; bypasses shields; ignores the size penalty; uses torpedoes. | Proton Bomb Launcher |
-| Point-Defense Turret | High | Gunnery | Toggle | Always fires as Light; bonus against Small hulls. | New |
-| Turbolaser, Quad Laser, Storm Cannon | High | Gunnery | Toggle | Capital weapons on short cycles. Capital hulls only. | Capital weapons |
-| Laser Battery, Assault Concussion Missile | High | Gunnery | One press | Capital burst weapons: an area volley, or a heavy missile using rare ammo. Capital hulls only. | Capital weapons |
+| Laser Cannon | High | Piloting | Toggle | Thermal damage on a steady cycle. | Combat Laser |
+| Ion Cannon | High | Piloting | Toggle | EM damage, strong against shields; slows on hull hits. | Ion Cannon |
+| Beam Cannon | High | Piloting | Toggle | Thermal damage over a few ticks at short range. | Beam Cannon |
+| Missile Launcher | High | Piloting | Toggle | Explosive damage at long range; uses missiles; bonus against low shields. Ion, incendiary and seeker ammo variants. | Missile Launcher |
+| Torpedo Launcher | High | Piloting | One press | Heavy explosive damage to Large and Capital hulls; bypasses shields; ignores the size penalty; uses torpedoes. | Proton Bomb Launcher |
+| Point-Defense Turret | High | Piloting | Toggle | Always fires as Light; bonus against Small hulls. | New |
+| Turbolaser, Quad Laser, Storm Cannon | High | Piloting | Toggle | Capital weapons on short cycles. Capital hulls only. | Capital weapons |
+| Laser Battery, Assault Concussion Missile | High | Piloting | One press | Capital burst weapons: an area volley, or a heavy missile using rare ammo. Capital hulls only. | Capital weapons |
 | Mining Laser | High | Gathering | Toggle | Mines asteroids up to its tier. | Mining Laser |
 | Strip Miner | High | Gathering | Toggle | Large and Capital hulls; strips a whole asteroid and roots the ship while it runs. | Strip Miner |
 | Salvager | High | Gathering | Toggle | Salvages wrecks for scrap, components and rare finds. | New |
 | Gas Harvester | High | Gathering | Toggle | Harvests gas clouds. | New |
 | Shield Booster | Mid | Piloting | Passive | + max shield. | Shield Booster (was Low) |
-| Shield Repairer | Mid | Ship Systems | Toggle | Repairs the shield of its locked target, or your own. | Shield Repairer (was High) |
-| Shield Hardener | Mid | Ship Systems | Toggle | + resistances while on; pays capacitor each cycle. | New |
+| Shield Repairer | Mid | Piloting | Toggle | Repairs the shield of its locked target, or your own. | Shield Repairer (was High) |
+| Shield Hardener | Mid | Piloting | Toggle | + resistances while on; pays capacitor each cycle. | New |
 | Capacitor Battery | Mid | Piloting | Passive | + max capacitor. | Capacitor Booster (was Low) |
-| Hypermatter Injector | Mid | Ship Systems | One press | Restores capacitor; uses a capsule. | Hypermatter Injector (was High) |
-| Ion Web | Mid | Ship Systems | Toggle | Slows the target. | New |
-| Interdictor | Mid | Ship Systems | Toggle | The target can't jump, dock or leave space while it holds. | New |
-| Jammer | Mid | Ship Systems | Toggle | Jams the target (Accuracy down). | New |
-| Target Painter | Mid | Ship Systems | Toggle | Paints the target (damage taken up). | New |
-| Bulwark Shield Generator, Repair Field, E-War array | Mid | Ship Systems | Toggle | Capital fleet support. Capital hulls only. | Capital support modules |
+| Hypermatter Injector | Mid | Piloting | One press | Restores capacitor; uses a capsule. | Hypermatter Injector (was High) |
+| Ion Web | Mid | Piloting | Toggle | Slows the target. | New |
+| Interdictor | Mid | Piloting | Toggle | The target can't jump, dock or leave space while it holds. | New |
+| Jammer | Mid | Piloting | Toggle | Jams the target (Accuracy down). | New |
+| Target Painter | Mid | Piloting | Toggle | Paints the target (damage taken up). | New |
+| Bulwark Shield Generator, Repair Field, E-War array | Mid | Piloting | Toggle | Capital fleet support. Capital hulls only. | Capital support modules |
 | Afterburner | Mid | Piloting | Toggle | + speed while on; pays capacitor each cycle. | New |
 | Cloaking Device | Mid | Piloting | Toggle | Hides a Small hull or Blockade Runner; no module or ability use while cloaked (section 32). | New |
-| Probe Launcher | Mid | Ship Systems | Toggle | Scans hidden signatures system-wide; pulse mode for a Sensor Sweep (section 24). | New |
+| Probe Launcher | Mid | Piloting | Toggle | Scans hidden signatures system-wide; pulse mode for a Sensor Sweep (section 24). | New |
 | Data Analyzer | Mid | Espionage (no rank; the Slicing perk gates targets) | One press | Starts the slicing mini-game on a data can, locked cache or wreck data core (section 24). | New |
-| Targeting Computer | Mid | Gunnery | Passive | + accuracy. | Targeting System (was Low) |
+| Targeting Computer | Mid | Piloting | Passive | + accuracy. | Targeting System (was Low) |
 | Hull Plating | Low | Piloting | Passive | + max hull. | Hull Booster |
-| Hull Repairer | Low | Ship Systems | Toggle | Repairs the hull of its locked target, or your own. | Hull Repairer (was High) |
+| Hull Repairer | Low | Piloting | Toggle | Repairs the hull of its locked target, or your own. | Hull Repairer (was High) |
 | Resist Plating | Low | Piloting | Passive | + one resistance, or all resistances at a cost to evasion. | Mirrored Plating, Ion Shielding, Reactive Armor, Durasteel Plating |
-| Capacitor Regulator | Low | Ship Systems | Passive | + capacitor regen. | New |
-| Smuggling Compartment | Low | Ship Systems | Passive | Lowers the customs scan chance. | New |
-| Damage Amplifier | Low | Gunnery | Passive | + one damage type. | EM, Thermal and Explosive amplifiers |
+| Capacitor Regulator | Low | Piloting | Passive | + capacitor regen. | New |
+| Smuggling Compartment | Low | Piloting | Passive | Lowers the customs scan chance. | New |
+| Damage Amplifier | Low | Piloting | Passive | + one damage type. | EM, Thermal and Explosive amplifiers |
 | Thrusters | Low | Piloting | Passive | + evasion and speed. | Evasion Booster |
 | Cargo Expander | Low | Piloting | Passive | + cargo hold. | New |
-| Capital passives | Low | Ship Systems | Passive | Advanced Thrusters, Redundant Shield Generator, Reinforced Plating, Targeting Array, Weapons Computer, Power Diverter. Capital hulls only. | Capital passives |
+| Capital passives | Low | Piloting | Passive | Advanced Thrusters, Redundant Shield Generator, Reinforced Plating, Targeting Array, Weapons Computer, Power Diverter. Capital hulls only. | Capital passives |
 
-## Appendix C: The 100 ships
+## Appendix C: The 50 ships
 
-Model and Launch skins are `appearance.2da` rows. Launch skins are Hull Designs available at release; they are other variants from the same model family. Piloting is the required rank. Signature bonus sizes are drafts for the Bible formula.
+Model and Launch skins are `appearance.2da` rows. Launch skins are Hull Designs available at release: other variants from the same model family, plus the models of the ships cut when the roster went from 100 to 50 (each went to a kept ship of the same size and role). Piloting is the required rank. Signature bonus sizes are drafts for the Bible formula.
 
 | # | Ship | Size | Role | Maker | Tier | Piloting | Model | Launch skins | Signature bonus |
 |---|---|---|---|---|---|---|---|---|---|
-| 1 | Striker | Small | Fighter | Corellian | Standard | 0 | 10057 | 10190 | Weapon cycles 5% faster. |
-| 2 | Republic Striker | Small | Fighter | Republic | Standard | 0 | 10071 | 10072, 10073 | +15% shield regen. |
-| 3 | Sith Striker | Small | Fighter | Sith | Standard | 0 | 10089 | 10090, 10091 | +5% Critical Rate with energy weapons. |
-| 4 | Davaab | Small | Fighter | Mandalorian | Standard | 0 | 10155 | - | +10% max hull and +5% missile damage. |
-| 5 | Hutt Fighter | Small | Fighter | Hutt | Standard | 0 | 10105 | - | +15% max hull and a 10-unit cargo hold. |
-| 6 | Chiss Clawcraft | Small | Fighter | Chiss | Standard | 0 | 10204 | - | +10% accuracy against targets beyond 30 m. |
-| 7 | Corsair | Small | Fighter | Corellian | Standard | 0 | 10193 | 10194 | +10% damage to slowed or interdicted targets. |
-| 8 | Liberty Fighter | Small | Fighter | Republic | Standard | 0 | 10199 | 10200 | +10% repairs received. |
-| 9 | Rheinland Fighter | Small | Fighter | Sith | Standard | 0 | 10210 | 10211 | Critical hits deal +10% damage. |
-| 10 | Aurek Strikefighter | Small | Fighter | Republic | Advanced | 10 | 10074 | - | +20% shield regen; Point-Defense fires as Medium. |
-| 11 | Sith Fighter | Small | Fighter | Sith | Advanced | 10 | 10092 | 2008 | +10% Critical Rate; critical hits restore 1 capacitor. |
-| 12 | Cutlass | Small | Fighter | Corellian | Advanced | 10 | 10161 | - | +1 Mid slot. |
-| 13 | Condor | Small | Interceptor | Corellian | Standard | 0 | 10055 | - | +10% speed. |
-| 14 | Republic Scout | Small | Interceptor | Republic | Standard | 0 | 10068 | 10069, 10070 | Ion Web range +20%. |
-| 15 | Sith Scout | Small | Interceptor | Sith | Standard | 0 | 10086 | 10087, 10088 | +10% damage to webbed targets. |
-| 16 | Teroch | Small | Interceptor | Mandalorian | Standard | 0 | 10153 | - | +10% max hull; Interdictor cycles 20% faster. |
-| 17 | Zoomer | Small | Interceptor | Corellian | Standard | 0 | 10144 | - | Afterburner costs 25% less capacitor. |
-| 18 | Chiss Nighthawk | Small | Interceptor | Chiss | Standard | 0 | 10205 | - | Sensor Sweep range +25%. |
-| 19 | Eclipse Interceptor | Small | Interceptor | Sith | Advanced | 10 | 2006 | - | +15% speed; webs also lower the target's evasion. |
-| 20 | Arrow Interceptor | Small | Interceptor | Republic | Advanced | 10 | 2001 | 2003 | +20% evasion while the Afterburner is on. |
-| 21 | Republic Bomber | Small | Bomber | Republic | Standard | 0 | 10058 | 10059, 10060 | Torpedo hits strip 10% extra shield. |
-| 22 | Sith Bomber | Small | Bomber | Sith | Standard | 0 | 10077 | 10078, 10079 | +5% torpedo Critical Rate. |
-| 23 | Hutt Bomber | Small | Bomber | Hutt | Standard | 0 | 10106 | - | +15% max hull. |
-| 24 | Phoebos Bomber | Small | Bomber | Corellian | Standard | 0 | 10104 | - | Torpedo cycles 10% faster. |
-| 25 | Ruping Bomber | Small | Bomber | Mandalorian | Standard | 0 | 10237 | - | +10% explosive damage. |
-| 26 | Chela Bomber | Small | Bomber | Republic | Advanced | 10 | 10149 | 2005 | Torpedoes ignore 25% of the target's resistances. |
-| 27 | Aurora Bomber | Small | Bomber | Sith | Advanced | 10 | 10241 | 2007 | +20% torpedo damage to Capital hulls. |
-| 28 | Starflier | Small | Explorer | Corellian | Standard | 0 | 10114 | - | +15% scan strength. |
-| 29 | Republic Infiltrator | Small | Explorer | Republic | Standard | 0 | 10064 | 10065, 10066, 10067 | Cloaks in 2 seconds; +10% scan strength. |
-| 30 | Sith Infiltrator | Small | Explorer | Sith | Standard | 0 | 10083 | 10084, 10085 | Sensor Sweep reveals ships 50% farther away. |
-| 31 | Chiss Hyperion | Small | Explorer | Chiss | Standard | 0 | 10230 | - | +25% scan strength; signatures show their tier from 25%. |
-| 32 | Czerka Surveyor | Small | Explorer | Czerka | Standard | 0 | 10191 | 10192 | +20% loot from data and cache sites. |
-| 33 | Jalshey Serendipity | Small | Explorer | Corellian | Advanced | 10 | 10221 | 10222 | Jump to Signature spools 50% faster; passes Small rifts without spending mass. |
-| 34 | Raider Prowler | Small | Explorer | Rift Raider | Advanced | 10 | 10215 | - | Scans Wild Space 50% faster and ignores environment penalties. |
-| 35 | Neutral Gunship | Medium | Gunship | Corellian | Standard | 10 | 10056 | - | +1 Mid slot, -1 Low slot. |
-| 36 | Republic Gunship | Medium | Gunship | Republic | Standard | 10 | 10061 | 10062, 10063, 10148 | +10% shield resistances. |
-| 37 | Sith Gunship | Medium | Gunship | Sith | Standard | 10 | 10080 | 10081, 10082 | +10% threat generation and +5% damage. |
-| 38 | Hutt Gunship | Medium | Gunship | Hutt | Standard | 10 | 10107 | - | +20% max hull, -10% speed. |
-| 39 | Brute Patrol Ship | Medium | Gunship | Mandalorian | Standard | 10 | 10156 | - | +10% hull resistances. |
-| 40 | Chiss Longhorn | Medium | Gunship | Chiss | Standard | 10 | 10163 | - | +10% accuracy; Jammers cycle 15% faster. |
-| 41 | Basilisk War Droid | Medium | Gunship | Mandalorian | Advanced | 20 | 10120 | - | +15% hull resistances and +10% explosive damage. |
-| 42 | Raider Bruiser | Medium | Gunship | Rift Raider | Advanced | 20 | 10216 | - | 10% of damage taken returns as capacitor. |
-| 43 | Republic Mender | Medium | Logistics | Republic | Standard | 10 | 10101 | - | +15% remote shield repair. |
-| 44 | Czerka Repair Tender | Medium | Logistics | Czerka | Standard | 10 | 10182 | - | +15% remote hull repair. |
-| 45 | Corellian Lifeline | Medium | Logistics | Corellian | Standard | 10 | 10102 | - | +20% capacitor transfer. |
-| 46 | Chiss Caretaker | Medium | Logistics | Chiss | Standard | 10 | 10103 | - | Remote repair range +25%. |
-| 47 | Jedi Transport | Medium | Logistics | Republic | Advanced | 20 | 10119 | 10157 | Repairs 20% stronger; repairs also remove one slow. |
-| 48 | Onderon Service Ship | Medium | Logistics | Czerka | Advanced | 20 | 10226 | - | Repairers cycle 15% faster; droid bay repairs +25%. |
-| 49 | Y8 Miner | Medium | Mining Barge | Czerka | Standard | 10 | 10152 | - | +15% ore yield. |
-| 50 | Gas Skimmer | Medium | Mining Barge | Corellian | Standard | 10 | 10185 | - | +15% gas yield. |
-| 51 | Hutt Ore Hauler | Medium | Mining Barge | Hutt | Standard | 10 | 10151 | - | +10% yield and a 30-unit cargo hold. |
-| 52 | Republic Survey Barge | Medium | Mining Barge | Republic | Standard | 10 | 10201 | - | +20% rare-metal chance. |
-| 53 | Deep Core Barge | Medium | Mining Barge | Czerka | Advanced | 20 | 10227 | - | Mines asteroids one tier above its laser; +20% yield. |
-| 54 | XS Freighter | Medium | Light Freighter | Corellian | Standard | 10 | 10146 | - | +20% cargo. |
-| 55 | Czerka Courier | Medium | Light Freighter | Czerka | Standard | 10 | 10054 | - | +15% speed while carrying cargo. |
-| 56 | Hutt Hauler | Medium | Light Freighter | Hutt | Standard | 10 | 10186 | - | Comes with a built-in Smuggling Compartment. |
-| 57 | Sith Transport | Medium | Light Freighter | Sith | Standard | 10 | 10240 | - | +10% max shield; Sith customs scan it 25% less. |
-| 58 | Chiss Trader | Medium | Light Freighter | Chiss | Standard | 10 | 10206 | - | HoloNet price board shows live prices. |
-| 59 | Lambda Shuttle | Medium | Light Freighter | Republic | Advanced | 20 | 2002 | - | +30% cargo and +15% max shield. |
-| 60 | Pirate Freighter | Medium | Blockade Runner | Corellian | Standard | 10 | 10184 | - | Cloaks in 2 seconds and +10% cargo. |
-| 61 | Trandoshan Runner | Medium | Blockade Runner | Hutt | Standard | 10 | 10147 | - | -25% customs scan chance. |
-| 62 | Chasemaster | Medium | Blockade Runner | Corellian | Standard | 10 | 10164 | - | +15% speed, -15% cargo. |
-| 63 | Doomtreader | Medium | Blockade Runner | Mandalorian | Standard | 10 | 10160 | - | +15% max hull; Interdictors hold it 50% shorter. |
-| 64 | Barracuda | Medium | Blockade Runner | Corellian | Advanced | 20 | 10113 | - | Immune to Ion Webs; ships must be within 5 m to reveal it. |
-| 65 | Neutral Foray | Large | Frigate | Corellian | Standard | 25 | 10133 | - | +1 High slot, -1 Mid slot. |
-| 66 | Republic Foray | Large | Frigate | Republic | Standard | 25 | 10075 | - | +10% max shield. |
-| 67 | Sith Foray | Large | Frigate | Sith | Standard | 25 | 10137 | - | +10% weapon damage. |
-| 68 | Republic Hammerhead | Large | Frigate | Republic | Standard | 25 | 10076 | 10134 | Point-Defense deals +20% damage. |
-| 69 | Sith Hammerhead | Large | Frigate | Sith | Standard | 25 | 10138 | - | +5% Critical Rate. |
-| 70 | Mandalorian Raider | Large | Frigate | Mandalorian | Standard | 25 | 10121 | - | +15% max hull and +10% missile damage. |
-| 71 | Interceptor IV | Large | Frigate | Chiss | Advanced | 35 | 10224 | - | +15% weapon range. |
-| 72 | Raider Marauder | Large | Frigate | Rift Raider | Advanced | 35 | 10196 | 10195 | Shield regen doubles while no weapon is firing. |
-| 73 | Heavy Lifter | Large | Industrial | Czerka | Standard | 25 | 10188 | - | +20% strip-mining yield. |
-| 74 | Czerka Salvager | Large | Industrial | Czerka | Standard | 25 | 10197 | 10198 | +20% salvage yield. |
-| 75 | Hutt Bulk Hauler | Large | Industrial | Hutt | Standard | 25 | 10132 | - | +30% cargo. |
-| 76 | Sith Quartermaster | Large | Industrial | Sith | Standard | 25 | 10131 | - | The Strip Miner doesn't root the ship. |
-| 77 | Czerka Refinery Ship | Large | Industrial | Czerka | Advanced | 35 | 10229 | - | Mined ore comes out already refined. |
-| 78 | Freight Train | Large | Heavy Freighter | Czerka | Standard | 25 | 10189 | 2174 | +30% cargo. |
-| 79 | Large Transport | Large | Heavy Freighter | Corellian | Standard | 25 | 10187 | - | +15% speed. |
-| 80 | Hutt Barge | Large | Heavy Freighter | Hutt | Standard | 25 | 10212 | - | Built-in Smuggling Compartment; -20% customs scan chance. |
-| 81 | Republic Quartermaster | Large | Heavy Freighter | Republic | Standard | 25 | 10130 | 10150 | +15% max shield; allied ships within 30 m take 5% less damage. |
-| 82 | Hutt Grand Barge | Large | Heavy Freighter | Hutt | Advanced | 35 | 10109 | - | +40% cargo; Jump Beacon jumps cost 50% less fuel. |
-| 83 | Neutral Thranta | Capital | Cruiser | Corellian | Standard | 40 | 10135 | - | +1 High slot. |
-| 84 | Republic Thranta | Capital | Cruiser | Republic | Standard | 40 | 10123 | - | +10% max shield. |
-| 85 | Sith Thranta | Capital | Cruiser | Sith | Standard | 40 | 10139 | - | +10% damage. |
-| 86 | Hutt Corvette | Capital | Cruiser | Hutt | Standard | 40 | 10108 | - | +20% max hull and +50% cargo. |
-| 87 | Jehavey'ir | Capital | Cruiser | Mandalorian | Standard | 40 | 10154 | - | +15% max hull and +10% explosive damage. |
-| 88 | Chiss Trireme | Capital | Cruiser | Chiss | Standard | 40 | 10162 | - | +15% weapon range. |
-| 89 | Corellian Gunboat | Capital | Cruiser | Corellian | Standard | 40 | 10145 | - | +10% speed and evasion. |
-| 90 | Republic Valor | Capital | Cruiser | Republic | Advanced | 50 | 10117 | 10122, 2170 | +25% max shield; allied ships within 30 m regen shields 10% faster. |
-| 91 | Sith Harrower | Capital | Cruiser | Sith | Advanced | 50 | 10126 | 10238, 10239 | +15% damage; critical hits slow the target. |
-| 92 | Raider Dreadnought | Capital | Cruiser | Rift Raider | Advanced | 50 | 10217 | - | Every hit uses whichever damage type the target resists least. |
-| 93 | Republic Interdictor | Capital | Command Ship | Republic | Standard | 40 | 10143 | - | Command range +10 m. |
-| 94 | Sith Centurion | Capital | Command Ship | Sith | Standard | 40 | 10127 | 10141 | Focus Fire orders +5% stronger. |
-| 95 | Czerka Armored Transport | Capital | Command Ship | Czerka | Standard | 40 | 10218 | - | Crew stations +10% effective; droid crew +20%. |
-| 96 | Terminus Corsair | Capital | Command Ship | Corellian | Standard | 40 | 10207 | - | Allied ships within command range +5% speed. |
-| 97 | Crusader Corvette | Capital | Command Ship | Mandalorian | Standard | 40 | 10260 | - | +15% max hull; allies within command range +5% explosive damage. |
-| 98 | Republic Centurion | Capital | Command Ship | Republic | Advanced | 50 | 10128 | 10129, 10124, 10125 | Command range +20 m; orders last 25% longer. |
-| 99 | Kyramud | Capital | Command Ship | Mandalorian | Advanced | 50 | 10116 | 10115 | Allied ships within command range +10% max hull. |
-| 100 | Supremacy Assault Ship | Capital | Command Ship | Sith | Advanced | 50 | 10142 | 10093, 10118, 2169 | Allied ships within command range +8% Critical Rate. |
+| 1 | Striker | Small | Fighter | Corellian | Standard | 0 | 10057 | 10190, 10193, 10194 | Weapon cycles 5% faster. |
+| 2 | Republic Striker | Small | Fighter | Republic | Standard | 0 | 10071 | 10072, 10073, 10199, 10200 | +15% shield regen. |
+| 3 | Davaab | Small | Fighter | Mandalorian | Standard | 0 | 10155 | 10105 | +10% max hull and +5% missile damage. |
+| 4 | Aurek Strikefighter | Small | Fighter | Republic | Advanced | 10 | 10074 | - | +20% shield regen; Point-Defense fires as Medium. |
+| 5 | Sith Fighter | Small | Fighter | Sith | Advanced | 10 | 10092 | 2008, 10089, 10090, 10091, 10210, 10211 | +10% Critical Rate; critical hits restore 1 capacitor. |
+| 6 | Cutlass | Small | Fighter | Corellian | Advanced | 10 | 10161 | 10204 | +1 Mid slot. |
+| 7 | Condor | Small | Interceptor | Corellian | Standard | 0 | 10055 | 10153, 10144 | +10% speed. |
+| 8 | Republic Scout | Small | Interceptor | Republic | Standard | 0 | 10068 | 10069, 10070, 10205, 2001, 2003 | Ion Web range +20%. |
+| 9 | Sith Scout | Small | Interceptor | Sith | Standard | 0 | 10086 | 10087, 10088 | +10% damage to webbed targets. |
+| 10 | Eclipse Interceptor | Small | Interceptor | Sith | Advanced | 10 | 2006 | - | +15% speed; webs also lower the target's evasion. |
+| 11 | Republic Bomber | Small | Bomber | Republic | Standard | 0 | 10058 | 10059, 10060, 10104 | Torpedo hits strip 10% extra shield. |
+| 12 | Sith Bomber | Small | Bomber | Sith | Standard | 0 | 10077 | 10078, 10079, 10106, 10241, 2007 | +5% torpedo Critical Rate. |
+| 13 | Chela Bomber | Small | Bomber | Republic | Advanced | 10 | 10149 | 2005, 10237 | Torpedoes ignore 25% of the target's resistances. |
+| 14 | Sith Infiltrator | Small | Explorer | Sith | Standard | 0 | 10083 | 10084, 10085, 10064, 10065, 10066, 10067 | Sensor Sweep reveals ships 50% farther away. |
+| 15 | Chiss Hyperion | Small | Explorer | Chiss | Standard | 0 | 10230 | 10191, 10192 | +25% scan strength; signatures show their tier from 25%. |
+| 16 | Raider Prowler | Small | Explorer | Rift Raider | Advanced | 10 | 10215 | 10114, 10221, 10222 | Scans Wild Space 50% faster and ignores environment penalties. |
+| 17 | Republic Gunship | Medium | Gunship | Republic | Standard | 10 | 10061 | 10062, 10063, 10148, 10056 | +10% shield resistances. |
+| 18 | Sith Gunship | Medium | Gunship | Sith | Standard | 10 | 10080 | 10081, 10082, 10163 | +10% threat generation and +5% damage. |
+| 19 | Hutt Gunship | Medium | Gunship | Hutt | Standard | 10 | 10107 | 10216 | +20% max hull, -10% speed. |
+| 20 | Basilisk War Droid | Medium | Gunship | Mandalorian | Advanced | 20 | 10120 | 10156 | +15% hull resistances and +10% explosive damage. |
+| 21 | Czerka Repair Tender | Medium | Logistics | Czerka | Standard | 10 | 10182 | 10226 | +15% remote hull repair. |
+| 22 | Chiss Caretaker | Medium | Logistics | Chiss | Standard | 10 | 10103 | 10102 | Remote repair range +25%. |
+| 23 | Jedi Transport | Medium | Logistics | Republic | Advanced | 20 | 10119 | 10157, 10101 | Repairs 20% stronger; repairs also remove one slow. |
+| 24 | Y8 Miner | Medium | Mining Barge | Czerka | Standard | 10 | 10152 | 10151, 10227 | +15% ore yield. |
+| 25 | Gas Skimmer | Medium | Mining Barge | Corellian | Standard | 10 | 10185 | 10201 | +15% gas yield. |
+| 26 | XS Freighter | Medium | Light Freighter | Corellian | Standard | 10 | 10146 | 10054, 10206 | +20% cargo. |
+| 27 | Hutt Hauler | Medium | Light Freighter | Hutt | Standard | 10 | 10186 | - | Comes with a built-in Smuggling Compartment. |
+| 28 | Lambda Shuttle | Medium | Light Freighter | Republic | Advanced | 20 | 2002 | 10240 | +30% cargo and +15% max shield. |
+| 29 | Pirate Freighter | Medium | Blockade Runner | Corellian | Standard | 10 | 10184 | 10147, 10160 | Cloaks in 2 seconds and +10% cargo. |
+| 30 | Barracuda | Medium | Blockade Runner | Corellian | Advanced | 20 | 10113 | 10164 | Immune to Ion Webs; ships must be within 5 m to reveal it. |
+| 31 | Republic Hammerhead | Large | Frigate | Republic | Standard | 25 | 10076 | 10134, 10075 | Point-Defense deals +20% damage. |
+| 32 | Sith Hammerhead | Large | Frigate | Sith | Standard | 25 | 10138 | 10137 | +5% Critical Rate. |
+| 33 | Mandalorian Raider | Large | Frigate | Mandalorian | Standard | 25 | 10121 | 10224 | +15% max hull and +10% missile damage. |
+| 34 | Raider Marauder | Large | Frigate | Rift Raider | Advanced | 35 | 10196 | 10195, 10133 | Shield regen doubles while no weapon is firing. |
+| 35 | Heavy Lifter | Large | Industrial | Czerka | Standard | 25 | 10188 | 10132, 10229 | +20% strip-mining yield. |
+| 36 | Czerka Salvager | Large | Industrial | Czerka | Standard | 25 | 10197 | 10198, 10131 | +20% salvage yield. |
+| 37 | Freight Train | Large | Heavy Freighter | Czerka | Standard | 25 | 10189 | 2174, 10187 | +30% cargo. |
+| 38 | Republic Quartermaster | Large | Heavy Freighter | Republic | Standard | 25 | 10130 | 10150 | +15% max shield; allied ships within 30 m take 5% less damage. |
+| 39 | Hutt Grand Barge | Large | Heavy Freighter | Hutt | Advanced | 35 | 10109 | 10212 | +40% cargo; Jump Beacon jumps cost 50% less fuel. |
+| 40 | Neutral Thranta | Capital | Cruiser | Corellian | Standard | 40 | 10135 | 10217 | +1 High slot. |
+| 41 | Republic Thranta | Capital | Cruiser | Republic | Standard | 40 | 10123 | 10117, 10122, 2170 | +10% max shield. |
+| 42 | Sith Thranta | Capital | Cruiser | Sith | Standard | 40 | 10139 | 10126, 10238, 10239 | +10% damage. |
+| 43 | Hutt Corvette | Capital | Cruiser | Hutt | Standard | 40 | 10108 | - | +20% max hull and +50% cargo. |
+| 44 | Jehavey'ir | Capital | Cruiser | Mandalorian | Standard | 40 | 10154 | - | +15% max hull and +10% explosive damage. |
+| 45 | Chiss Trireme | Capital | Cruiser | Chiss | Standard | 40 | 10162 | - | +15% weapon range. |
+| 46 | Corellian Gunboat | Capital | Cruiser | Corellian | Standard | 40 | 10145 | - | +10% speed and evasion. |
+| 47 | Czerka Armored Transport | Capital | Command Ship | Czerka | Standard | 40 | 10218 | - | Crew stations +10% effective; droid crew +20%. |
+| 48 | Terminus Corsair | Capital | Command Ship | Corellian | Standard | 40 | 10207 | 10142, 10093, 10118, 2169 | Allied ships within command range +5% speed. |
+| 49 | Crusader Corvette | Capital | Command Ship | Mandalorian | Standard | 40 | 10260 | 10116, 10115 | +15% max hull; allies within command range +5% explosive damage. |
+| 50 | Republic Centurion | Capital | Command Ship | Republic | Advanced | 50 | 10128 | 10129, 10124, 10125, 10143, 10127, 10141 | Command range +20 m; orders last 25% longer. |
 
 ## Appendix D: Components and sourcing
 

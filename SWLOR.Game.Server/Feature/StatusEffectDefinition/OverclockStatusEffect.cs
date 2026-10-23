@@ -1,5 +1,4 @@
 using SWLOR.Game.Server.Service.CraftService.Minigame.Circuit;
-using SWLOR.Game.Server.Service.StatService;
 using SWLOR.Game.Server.Service.StatusEffectService;
 using SWLOR.NWN.API.NWScript.Enum;
 
@@ -18,8 +17,8 @@ namespace SWLOR.Game.Server.Feature.StatusEffectDefinition
 
         public OverclockStatusEffect()
         {
-            StatGroup.Stats[StatType.CircuitExtraLoadPerBuildAction] = CircuitPerkRules.OverclockExtraLoad;
-            StatGroup.Stats[StatType.CircuitLoadBoostPercent] = CircuitPerkRules.OverclockLoadBoostPercent;
+            foreach (var (stat, value) in CircuitStyles.StatsOf(CircuitStyle.Overclock))
+                StatGroup.Stats[stat] = value;
         }
     }
 }

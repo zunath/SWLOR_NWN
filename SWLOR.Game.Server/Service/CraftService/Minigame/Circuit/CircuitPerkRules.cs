@@ -8,8 +8,8 @@ public static class CircuitPerkRules
 {
     // Overclocker line.
     public const int ConductiveWiringLoadBoostRank1 = 1;
-    public const int ConductiveWiringLoadBoostRank2 = 3;
-    public const int CapacitorBankDischargePercent = 10;
+    public const int ConductiveWiringLoadBoostRank2 = 2;
+    public const int CapacitorBankDischargePercent = 5;
     public const int HeatSinksLineRank1 = 1;
     public const int HeatSinksLineRank2 = 2;
     public const int OverdriveBoostExtraLoad = 1;
@@ -28,7 +28,10 @@ public static class CircuitPerkRules
 
     // Styles. Overclock trades safety for output; Safe Mode trades output for safety.
     public const int OverclockExtraLoad = 1;
-    public const int OverclockLoadBoostPercent = 3;
+    public const int OverclockLoadBoostPercent = 1;
     public const int SafeModeOverloadGrace = 2;
     public const int SafeModeLoadBoostPercent = -3;
+
+    /// <summary>"percentage point" for 1 and "percentage points" for any other amount, for the descriptions.</summary>
+    public static string PointWord(int amount) => amount == 1 ? "percentage point" : "percentage points";
 }

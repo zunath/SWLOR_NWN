@@ -14,7 +14,9 @@ namespace SWLOR.Game.Server.Feature.PerkDefinition
     /// </summary>
     public class EngineeringPerkDefinition : IPerkListDefinition
     {
-        private const string PerkIcon = "ife_gearhead";
+        // Generic crafting icons until each perk has artwork of its own.
+        private const string OverclockerIcon = "ife_gearhead";
+        private const string TechnicianIcon = "ife_mastercraft";
 
         private readonly PerkBuilder _builder = new();
 
@@ -45,16 +47,16 @@ namespace SWLOR.Game.Server.Feature.PerkDefinition
         {
             _builder.Create(PerkCategoryType.Engineering, PerkType.ConductiveWiring)
                 .Name("Conductive Wiring")
-                .Icon(PerkIcon)
+                .Icon(OverclockerIcon)
 
                 .AddPerkLevel()
-                .Description($"In the Circuit, each Load point adds {CircuitPerkRules.ConductiveWiringLoadBoostRank1} more percentage point of output to Wire, Tune and Discharge.")
+                .Description($"In the Circuit, each Load point adds {CircuitPerkRules.ConductiveWiringLoadBoostRank1} more {CircuitPerkRules.PointWord(CircuitPerkRules.ConductiveWiringLoadBoostRank1)} of output to Wire, Tune and Discharge.")
                 .Price(1)
                 .RequirementSkill(SkillType.Engineering, 5)
                 .IncreasesStat(StatType.CircuitLoadBoostPercent, CircuitPerkRules.ConductiveWiringLoadBoostRank1)
 
                 .AddPerkLevel()
-                .Description($"In the Circuit, each Load point adds {CircuitPerkRules.ConductiveWiringLoadBoostRank2} more percentage points of output to Wire, Tune and Discharge.")
+                .Description($"In the Circuit, each Load point adds {CircuitPerkRules.ConductiveWiringLoadBoostRank2} more {CircuitPerkRules.PointWord(CircuitPerkRules.ConductiveWiringLoadBoostRank2)} of output to Wire, Tune and Discharge.")
                 .Price(3)
                 .RequirementSkill(SkillType.Engineering, 45)
                 .IncreasesStat(StatType.CircuitLoadBoostPercent, CircuitPerkRules.ConductiveWiringLoadBoostRank2);
@@ -64,7 +66,7 @@ namespace SWLOR.Game.Server.Feature.PerkDefinition
         {
             _builder.Create(PerkCategoryType.Engineering, PerkType.CapacitorBank)
                 .Name("Capacitor Bank")
-                .Icon(PerkIcon)
+                .Icon(OverclockerIcon)
 
                 .AddPerkLevel()
                 .Description($"In the Circuit, Discharge bursts are {CircuitPerkRules.CapacitorBankDischargePercent}% larger.")
@@ -77,7 +79,7 @@ namespace SWLOR.Game.Server.Feature.PerkDefinition
         {
             _builder.Create(PerkCategoryType.Engineering, PerkType.HeatSinks)
                 .Name("Heat Sinks")
-                .Icon(PerkIcon)
+                .Icon(OverclockerIcon)
 
                 .AddPerkLevel()
                 .Description($"In the Circuit, the overload line rises by {CircuitPerkRules.HeatSinksLineRank1}.")
@@ -96,7 +98,7 @@ namespace SWLOR.Game.Server.Feature.PerkDefinition
         {
             _builder.Create(PerkCategoryType.Engineering, PerkType.OverclockStyle)
                 .Name("Overclock")
-                .Icon(PerkIcon)
+                .Icon(OverclockerIcon)
                 .TriggerRefund(CircuitStyles.RemoveUnowned)
 
                 .AddPerkLevel()
@@ -109,7 +111,7 @@ namespace SWLOR.Game.Server.Feature.PerkDefinition
         {
             _builder.Create(PerkCategoryType.Engineering, PerkType.CascadeDischarge)
                 .Name("Cascade Discharge")
-                .Icon(PerkIcon)
+                .Icon(OverclockerIcon)
 
                 .AddPerkLevel()
                 .Description($"Adds the Cascade Discharge action to the Circuit. It costs {CircuitRules.CascadeDischargeCp} CP and spends all Load as one burst into both Assembly and Calibration at {CircuitRules.CascadeDischargeSharePercent}% each. It never overloads.")
@@ -122,7 +124,7 @@ namespace SWLOR.Game.Server.Feature.PerkDefinition
         {
             _builder.Create(PerkCategoryType.Engineering, PerkType.OverdriveBoost)
                 .Name("Overdrive Boost")
-                .Icon(PerkIcon)
+                .Icon(OverclockerIcon)
 
                 .AddPerkLevel()
                 .Description($"In the Circuit, Boost adds {CircuitRules.BoostLoad + CircuitPerkRules.OverdriveBoostExtraLoad} Load instead of {CircuitRules.BoostLoad} and costs {CircuitPerkRules.OverdriveBoostCpReduction} less CP.")
@@ -136,7 +138,7 @@ namespace SWLOR.Game.Server.Feature.PerkDefinition
         {
             _builder.Create(PerkCategoryType.Engineering, PerkType.ShockAbsorbers)
                 .Name("Shock Absorbers")
-                .Icon(PerkIcon)
+                .Icon(OverclockerIcon)
 
                 .AddPerkLevel()
                 .Description($"In the Circuit, an overload costs a third less Integrity ({CircuitRules.OverloadIntegrityPercent}% of the piece's maximum becomes {CircuitRules.OverloadIntegrityPercent * (100 - CircuitPerkRules.ShockAbsorbersReductionPercent) / 100}%).")
@@ -149,7 +151,7 @@ namespace SWLOR.Game.Server.Feature.PerkDefinition
         {
             _builder.Create(PerkCategoryType.Engineering, PerkType.CircuitSurge)
                 .Name("Surge")
-                .Icon(PerkIcon)
+                .Icon(OverclockerIcon)
 
                 .AddPerkLevel()
                 .Description("Once per Circuit craft, the first overload does not cost Integrity. It discharges all your Load at full strength into whichever of Assembly or Calibration is further from full (Assembly on a tie).")
@@ -162,7 +164,7 @@ namespace SWLOR.Game.Server.Feature.PerkDefinition
         {
             _builder.Create(PerkCategoryType.Engineering, PerkType.InsulatedTraces)
                 .Name("Insulated Traces")
-                .Icon(PerkIcon)
+                .Icon(TechnicianIcon)
 
                 .AddPerkLevel()
                 .Description($"In the Circuit, Wire, Tune, Boost and Discharge cost {CircuitPerkRules.InsulatedTracesReductionRank1} less Integrity, to a minimum of {CircuitRules.MinimumActionIntegrity}. Ground and Patch are unchanged.")
@@ -181,7 +183,7 @@ namespace SWLOR.Game.Server.Feature.PerkDefinition
         {
             _builder.Create(PerkCategoryType.Engineering, PerkType.FineCalibration)
                 .Name("Fine Calibration")
-                .Icon(PerkIcon)
+                .Icon(TechnicianIcon)
 
                 .AddPerkLevel()
                 .Description($"In the Circuit, Tune builds {CircuitPerkRules.FineCalibrationPercentRank1}% more Calibration.")
@@ -200,7 +202,7 @@ namespace SWLOR.Game.Server.Feature.PerkDefinition
         {
             _builder.Create(PerkCategoryType.Engineering, PerkType.CircuitDiagnostics)
                 .Name("Diagnostics")
-                .Icon(PerkIcon)
+                .Icon(TechnicianIcon)
 
                 .AddPerkLevel()
                 .Description("In the Circuit, a Clean Signal is announced two actions ahead and stays announced until it applies.")
@@ -213,7 +215,7 @@ namespace SWLOR.Game.Server.Feature.PerkDefinition
         {
             _builder.Create(PerkCategoryType.Engineering, PerkType.SafeModeStyle)
                 .Name("Safe Mode")
-                .Icon(PerkIcon)
+                .Icon(TechnicianIcon)
                 .TriggerRefund(CircuitStyles.RemoveUnowned)
 
                 .AddPerkLevel()
@@ -226,7 +228,7 @@ namespace SWLOR.Game.Server.Feature.PerkDefinition
         {
             _builder.Create(PerkCategoryType.Engineering, PerkType.MicroTune)
                 .Name("Micro-Tune")
-                .Icon(PerkIcon)
+                .Icon(TechnicianIcon)
 
                 .AddPerkLevel()
                 .Description($"Adds the Micro-Tune action to the Circuit. It builds {CircuitRules.MicroTuneSharePercent}% of a Tune's Calibration, adds no Load and costs {CircuitRules.MicroTuneCp} CP and {CircuitRules.MicroTuneIntegrity} Integrity. It can overload only when Load is already over the line.")
@@ -239,7 +241,7 @@ namespace SWLOR.Game.Server.Feature.PerkDefinition
         {
             _builder.Create(PerkCategoryType.Engineering, PerkType.SignalLock)
                 .Name("Signal Lock")
-                .Icon(PerkIcon)
+                .Icon(TechnicianIcon)
 
                 .AddPerkLevel()
                 .Description($"In the Circuit, a Clean Signal is announced on {CircuitPerkRules.SignalLockChancePercent} percentage points more actions ({CircuitRules.CleanSignalChancePercent}% becomes {CircuitRules.CleanSignalChancePercent + CircuitPerkRules.SignalLockChancePercent}%).")
@@ -252,7 +254,7 @@ namespace SWLOR.Game.Server.Feature.PerkDefinition
         {
             _builder.Create(PerkCategoryType.Engineering, PerkType.PrecisionPatch)
                 .Name("Precision Patch")
-                .Icon(PerkIcon)
+                .Icon(TechnicianIcon)
 
                 .AddPerkLevel()
                 .Description($"In the Circuit, Patch restores {CircuitPerkRules.PrecisionPatchExtraRestore} more Integrity and costs {CircuitPerkRules.PrecisionPatchCpReduction} less CP.")
@@ -266,7 +268,7 @@ namespace SWLOR.Game.Server.Feature.PerkDefinition
         {
             _builder.Create(PerkCategoryType.Engineering, PerkType.CircuitFailsafe)
                 .Name("Failsafe")
-                .Icon(PerkIcon)
+                .Icon(TechnicianIcon)
 
                 .AddPerkLevel()
                 .Description("Once per Circuit craft, the first time Integrity would reach 0 it stays at 1 and the piece survives.")

@@ -1,5 +1,4 @@
 using SWLOR.Game.Server.Service.CraftService.Minigame.Circuit;
-using SWLOR.Game.Server.Service.StatService;
 using SWLOR.Game.Server.Service.StatusEffectService;
 using SWLOR.NWN.API.NWScript.Enum;
 
@@ -18,8 +17,8 @@ namespace SWLOR.Game.Server.Feature.StatusEffectDefinition
 
         public SafeModeStatusEffect()
         {
-            StatGroup.Stats[StatType.CircuitOverloadGrace] = CircuitPerkRules.SafeModeOverloadGrace;
-            StatGroup.Stats[StatType.CircuitLoadBoostPercent] = CircuitPerkRules.SafeModeLoadBoostPercent;
+            foreach (var (stat, value) in CircuitStyles.StatsOf(CircuitStyle.SafeMode))
+                StatGroup.Stats[stat] = value;
         }
     }
 }

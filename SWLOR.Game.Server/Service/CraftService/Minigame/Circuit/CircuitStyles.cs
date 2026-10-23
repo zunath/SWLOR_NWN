@@ -2,6 +2,7 @@ using System.Collections.Generic;
 using System.Linq;
 using SWLOR.Game.Server.Feature.StatusEffectDefinition;
 using SWLOR.Game.Server.Service.PerkService;
+using SWLOR.Game.Server.Service.StatService;
 
 namespace SWLOR.Game.Server.Service.CraftService.Minigame.Circuit;
 
@@ -14,6 +15,25 @@ public static class CircuitStyles
     /// <summary>Every style, in the order the window lists them.</summary>
     public static IReadOnlyList<CircuitStyle> All { get; } = new[] { CircuitStyle.Overclock, CircuitStyle.SafeMode };
 
+    private static readonly IReadOnlyDictionary<CircuitStyle, IReadOnlyDictionary<StatType, int>> StyleStats =
+        new Dictionary<CircuitStyle, IReadOnlyDictionary<StatType, int>>
+        {
+            [CircuitStyle.Overclock] = new Dictionary<StatType, int>
+            {
+                [StatType.CircuitExtraLoadPerBuildAction] = CircuitPerkRules.OverclockExtraLoad,
+                [StatType.CircuitLoadBoostPercent] = CircuitPerkRules.OverclockLoadBoostPercent
+            },
+            [CircuitStyle.SafeMode] = new Dictionary<StatType, int>
+            {
+                [StatType.CircuitOverloadGrace] = CircuitPerkRules.SafeModeOverloadGrace,
+                [StatType.CircuitLoadBoostPercent] = CircuitPerkRules.SafeModeLoadBoostPercent
+            }
+        };
+
+    /// <summary>The stat adjustments a style's status effect carries.</summary>
+    public static IReadOnlyDictionary<StatType, int> StatsOf(CircuitStyle style) =>
+        StyleStats.TryGetValue(style, out var stats) ? stats : new Dictionary<StatType, int>();
+
     public static string Name(CircuitStyle style) => style switch
     {
         CircuitStyle.Overclock => "Overclock",
@@ -25,9 +45,9 @@ public static class CircuitStyles
     public static string Description(CircuitStyle style) => style switch
     {
         CircuitStyle.Overclock =>
-            $"Wire and Tune add {CircuitPerkRules.OverclockExtraLoad} extra Load, and each Load point adds {CircuitPerkRules.OverclockLoadBoostPercent} more percentage points of output.",
+            $"Wire and Tune add {CircuitPerkRules.OverclockExtraLoad} extra Load, and each Load point adds {CircuitPerkRules.OverclockLoadBoostPercent} more {CircuitPerkRules.PointWord(CircuitPerkRules.OverclockLoadBoostPercent)} of output.",
         CircuitStyle.SafeMode =>
-            $"Actions cannot overload while Load is no more than {CircuitPerkRules.SafeModeOverloadGrace} over the line, and each Load point adds {-CircuitPerkRules.SafeModeLoadBoostPercent} fewer percentage points of output.",
+            $"Actions cannot overload while Load is no more than {CircuitPerkRules.SafeModeOverloadGrace} over the line, and each Load point adds {-CircuitPerkRules.SafeModeLoadBoostPercent} fewer {CircuitPerkRules.PointWord(-CircuitPerkRules.SafeModeLoadBoostPercent)} of output.",
         _ => "No style: the Circuit plays by its usual rules."
     };
 

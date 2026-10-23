@@ -17,17 +17,9 @@ namespace SWLOR.Game.Server.Tests.Perks;
 /// </summary>
 public class EngineeringPerkLineTests
 {
-    private static readonly PerkType[] Overclocker =
-    {
-        PerkType.ConductiveWiring, PerkType.CapacitorBank, PerkType.HeatSinks, PerkType.OverclockStyle,
-        PerkType.CascadeDischarge, PerkType.OverdriveBoost, PerkType.ShockAbsorbers, PerkType.CircuitSurge
-    };
+    private static readonly PerkType[] Overclocker = CircuitPerkLines.Overclocker.ToArray();
 
-    private static readonly PerkType[] Technician =
-    {
-        PerkType.InsulatedTraces, PerkType.FineCalibration, PerkType.CircuitDiagnostics, PerkType.SafeModeStyle,
-        PerkType.MicroTune, PerkType.SignalLock, PerkType.PrecisionPatch, PerkType.CircuitFailsafe
-    };
+    private static readonly PerkType[] Technician = CircuitPerkLines.Technician.ToArray();
 
     private static readonly int[] ScheduleRanks = { 5, 10, 15, 20, 25, 30, 35, 40, 45, 50 };
     private static readonly int[] SchedulePrices = { 1, 1, 2, 2, 3, 3, 3, 3, 3, 4 };
@@ -41,55 +33,18 @@ public class EngineeringPerkLineTests
         {
             foreach (var (level, detail) in perks[type].PerkLevels.OrderBy(pair => pair.Key))
             {
-                var rank = detail.Requirements.OfType<PerkRequirementSkill>().Single().RequiredRank;
+                var rank = CircuitPerkLines.RequiredRank(detail);
                 yield return (type, level, rank, detail.Price);
             }
         }
     }
 
-    /// <summary>The stat totals a crafter gets who owns the highest rank of each perk of the lines that their Engineering rank allows.</summary>
-    private static Dictionary<StatType, int> TotalsAt(int rank, params PerkType[][] lines)
-    {
-        var perks = Perks();
-        var totals = new Dictionary<StatType, int>();
-        foreach (var type in lines.SelectMany(line => line))
-        {
-            var owned = perks[type].PerkLevels
-                .Where(pair => pair.Value.Requirements.OfType<PerkRequirementSkill>().Single().RequiredRank <= rank)
-                .OrderBy(pair => pair.Key)
-                .LastOrDefault();
-            if (owned.Value == null)
-                continue;
-
-            foreach (var bonus in owned.Value.StatBonuses)
-                Add(totals, bonus.Stat, bonus.Calculate(0));
-        }
-
-        return totals;
-    }
-
     private static CircuitPerkStats StatsAt(int rank, params PerkType[][] lines) =>
-        CircuitPerkStats.FromStats(TotalsAt(rank, lines).GetValueOrDefault);
-
-    /// <summary>The perk stats with a style's status effect added, as the stat pipeline adds an active effect to the perks.</summary>
-    private static CircuitPerkStats WithStyle(Dictionary<StatType, int> totals, Dictionary<StatType, int> style)
-    {
-        var merged = new Dictionary<StatType, int>(totals);
-        foreach (var (stat, value) in style)
-            Add(merged, stat, value);
-
-        return CircuitPerkStats.FromStats(merged.GetValueOrDefault);
-    }
+        CircuitPerkLines.StatsAt(Perks(), lines.SelectMany(line => line), rank);
 
     /// <summary>The adjustments an effect sets, without the zero entries every stat group starts with.</summary>
     private static Dictionary<StatType, int> Granted(StatusEffectBase effect) =>
         effect.StatGroup.Stats.Where(pair => pair.Value != 0).ToDictionary(pair => pair.Key, pair => pair.Value);
-
-    private static void Add(Dictionary<StatType, int> totals, StatType stat, int value)
-    {
-        totals.TryGetValue(stat, out var current);
-        totals[stat] = Stat.AggregateStatAdjustment(stat, current, value);
-    }
 
     [TestCase(nameof(Overclocker))]
     [TestCase(nameof(Technician))]
@@ -252,7 +207,7 @@ public class EngineeringPerkLineTests
         overclock.Should().BeEquivalentTo(new Dictionary<StatType, int>
         {
             [StatType.CircuitExtraLoadPerBuildAction] = 1,
-            [StatType.CircuitLoadBoostPercent] = 3
+            [StatType.CircuitLoadBoostPercent] = 1
         });
         safeMode.Should().BeEquivalentTo(new Dictionary<StatType, int>
         {
@@ -260,7 +215,7 @@ public class EngineeringPerkLineTests
             [StatType.CircuitLoadBoostPercent] = -3
         });
         CircuitStyles.Description(CircuitStyle.Overclock).Should().Be(
-            "Wire and Tune add 1 extra Load, and each Load point adds 3 more percentage points of output.");
+            "Wire and Tune add 1 extra Load, and each Load point adds 1 more percentage point of output.");
         CircuitStyles.Description(CircuitStyle.SafeMode).Should().Be(
             "Actions cannot overload while Load is no more than 2 over the line, and each Load point adds 3 fewer percentage points of output.");
         new OverclockStatusEffect().Name.Should().Be(CircuitStyles.Name(CircuitStyle.Overclock));
@@ -271,14 +226,15 @@ public class EngineeringPerkLineTests
     [Test]
     public void AStyleAddsToThePerksOfTheLines_AndTheTwoStylesPullOppositeWays()
     {
-        var lines = TotalsAt(50, Overclocker, Technician);
-        var overclock = WithStyle(lines, Granted(new OverclockStatusEffect()));
-        var safeMode = WithStyle(lines, Granted(new SafeModeStatusEffect()));
+        var both = Overclocker.Concat(Technician).ToList();
+        var overclock = CircuitPerkLines.StatsAt(Perks(), both, 50, CircuitStyle.Overclock);
+        var safeMode = CircuitPerkLines.StatsAt(Perks(), both, 50, CircuitStyle.SafeMode);
+        CircuitPerkLines.StatsAt(Perks(), both, 19, CircuitStyle.Overclock).ExtraLoadPerBuildAction.Should().Be(0, "a style opens at rank 20");
 
-        overclock.LoadBoostPercent.Should().Be(6, "3 from Conductive Wiring and 3 from Overclock");
+        overclock.LoadBoostPercent.Should().Be(3, "2 from Conductive Wiring and 1 from Overclock");
         overclock.ExtraLoadPerBuildAction.Should().Be(1);
         overclock.OverloadGrace.Should().Be(0);
-        safeMode.LoadBoostPercent.Should().Be(0, "3 from Conductive Wiring less 3 from Safe Mode");
+        safeMode.LoadBoostPercent.Should().Be(-1, "2 from Conductive Wiring less 3 from Safe Mode");
         safeMode.OverloadGrace.Should().Be(2);
         safeMode.ExtraLoadPerBuildAction.Should().Be(0);
     }

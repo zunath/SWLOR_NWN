@@ -52,7 +52,7 @@ namespace SWLOR.CraftSim.Search
 
         /// <summary>The cases the study plays, so a report can play them all in parallel first.</summary>
         public IEnumerable<SearchKey> Keys() =>
-            _options.SiteLevels.SelectMany(level => _options.XpPlayers.Select(player => new SearchKey(RankOf(level), level, player, SearchEffects.None)));
+            _options.SiteLevels.SelectMany(level => _options.XpPlayers.Select(player => new SearchKey(RankOf(level), level, player, _options.EffectsAt(RankOf(level)))));
 
         public IReadOnlyList<XpRateCase> Cases(GateContext context) =>
             _options.SiteLevels
@@ -91,7 +91,7 @@ namespace SWLOR.CraftSim.Search
         /// <summary>The XP and actions of a board played by one player, as sites.</summary>
         public XpLoopSample Play(int siteLevel, int rank, SearchPlayerKind player)
         {
-            var sample = _parity.Sample(rank, siteLevel, player);
+            var sample = _parity.Sample(rank, siteLevel, player, _options.EffectsAt(rank));
             var xp = BoardXp(sample, siteLevel, rank);
             return new XpLoopSample(xp * SitesPerCase, sample.ActionsPerBoard * SitesPerCase, SitesPerCase);
         }

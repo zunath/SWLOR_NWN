@@ -4,6 +4,7 @@ using SWLOR.CraftSim.Gates;
 using SWLOR.CraftSim.Legacy.Gathering;
 using SWLOR.Game.Server.Service.CraftService;
 using SWLOR.Game.Server.Service.CraftService.Minigame;
+using SWLOR.Game.Server.Service.CraftService.Minigame.Gathering;
 using SWLOR.Game.Server.Service.CraftService.Minigame.Prospecting;
 using static SWLOR.CraftSim.Report.MarkdownTable;
 
@@ -291,6 +292,13 @@ namespace SWLOR.CraftSim.Harvesting
             lines.Add("- Named starting values of the session (`ProspectingRules`), all tunable:");
             foreach (var (name, value) in StartingValues())
                 lines.Add($"  - `{name}` = {value}");
+
+            if (options.Loadout != GatheringLoadout.None)
+            {
+                lines.Insert(0,
+                    $"- Gatherer: **{options.Loadout.Name}**. Every session is played by someone who owns every purchase their Gathering rank allows of the Prospector and Treasure Seeker lines (`GatheringPerkDefinition`), with the style active from rank {GatheringStyles.StyleRank}. " +
+                    "Quick Harvest reads no perk, so its rows are today's.");
+            }
 
             return lines;
         }

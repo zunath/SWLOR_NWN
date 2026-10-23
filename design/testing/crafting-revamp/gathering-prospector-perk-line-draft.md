@@ -4,6 +4,27 @@ Draft for the owner's approval. No perk code, no StatType IDs and no Bible rows 
 
 Evidence: `harvesting-prospecting-parity.md` (command `SWLOR.CraftSim harvesting --runs 20000 --seed 1`) describes the unperked session these perks build on. The effect sizes below are arithmetic on that report's numbers, not simulations: the perks are not in the engine, so nothing here has been played.
 
+## As implemented (23 October 2026)
+
+This file is the original draft and stays as the record of it. The implementation changed some rows so that every loadout stays inside the economy bounds (a skilled session of any plan within 1.15x of today's items and gems per node, at most 1.5x of today's charges, 3-8 actions a node); the evidence is `gathering-perks.md`, and the rows live in `GatheringPerkDefinition` and `ProspectingPerkRules`.
+
+A skilled session already claims nearly every seam its Stability allows, so it already yields 1.136x (1.145x for the best of nine plans) at its worst cell and gems at 1.12x. Efficient Strikes at -2 and -4 Stability took it to 1.151x and 1.163x, Rich Veins II as a cheaper Extract to 1.165x, Mother Lode's extra ore roll by the draft's own arithmetic to about 1.28x (not simulated), and Strip Mining's +1 unit cut the actions of a session from 3.3-3.8 to 2.5. So no Prospector perk adds an item, a gem or a roll, saves Stability, or cuts the session's actions: the line saves time and power cores, and the style trades items for time.
+
+| Rank | SP | Perk | As implemented | The draft's row |
+| --- | --- | --- | --- | --- |
+| 5 | 1 | Efficient Strikes I | A Strike takes 0.5 s less and a Heavy Strike 1 s less. | Stability -2 and -4 |
+| 10 | 1 | Bulk Refining I | Each power core refines 1 more item. | as drafted |
+| 15 | 2 | Rich Veins I | Extract of a rich seam takes 0.5 s less. | +10 points on the extra ore roll |
+| 20 | 2 | Strip Mining | A Strike takes 1.5 s less and costs 10 more Stability; a Survey and an Extract take 1 s more. | Strike +1 unit, +12 Stability |
+| 25 | 3 | Efficient Strikes II | 1 s and 2 s less. | Stability -4 and -8 |
+| 30 | 3 | Bulk Refining II | +2 items. | as drafted |
+| 35 | 3 | Core Sample | As drafted; a Heavy Strike lists its shatter chance only while a gem pocket is hidden. | as drafted |
+| 40 | 3 | Rich Veins II | Extract of a rich seam takes 1 s less. | +20 points on the extra ore roll |
+| 45 | 3 | Bulk Refining III | +3 items. | as drafted |
+| 50 | 4 | Mother Lode | The first Strike or Heavy Strike of each node takes half the time (once per node: the node remembers it). | an extra ore roll on a Heavy Strike of 3 or more units |
+
+Bulk Refining: 12 items per power core at most (9 from the Gathering rank at 45, plus 3), 25% fewer power cores than the plan's batch of 9 and 33% over the old maximum; refining converts ore one for one, so it is a credit saving and no supply. The open questions above are answered by the cap: the whole line is inside it, and the extra ore roll is gone. Quick Harvest is unchanged.
+
 ## Structure
 
 - One independent, optional line of 25 SP. Nothing in it is needed to work a node: an unperked skilled session already yields 1.12 to 1.14 times today's items per node, 1.06 to 1.11 times today's gems and at most 1.47 times today's harvester charges (a Survey costs none), and Quick Harvest and a strike-only session yield exactly today's items and gems.

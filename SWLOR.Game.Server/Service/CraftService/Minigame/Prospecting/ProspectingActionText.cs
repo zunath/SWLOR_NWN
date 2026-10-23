@@ -53,8 +53,19 @@ public static class ProspectingActionText
     {
         var what = WhatText(engine, preview);
         var cost = CostText(preview);
+        var time = TimeText(engine, preview);
         var ending = EndingText(preview);
-        return string.Join(". ", new[] { what, cost, ending }.Where(part => !string.IsNullOrEmpty(part)));
+        return string.Join(". ", new[] { what, cost, time, ending }.Where(part => !string.IsNullOrEmpty(part)));
+    }
+
+    /// <summary>The seconds an action takes, said only when a perk has changed them from what they usually are.</summary>
+    private static string TimeText(ProspectingEngine engine, MinigameActionPreview preview)
+    {
+        var seconds = engine.SecondsFor(preview.Action.Id);
+        var usual = ProspectingRules.SecondsFor(preview.Action.Id);
+        return usual <= 0 || Math.Abs(seconds - usual) < 0.005
+            ? string.Empty
+            : $"Takes {seconds.ToString("0.#", System.Globalization.CultureInfo.InvariantCulture)} seconds instead of {usual.ToString("0.#", System.Globalization.CultureInfo.InvariantCulture)}";
     }
 
     /// <summary>The same text for the action that was performed: what it did and what it cost.</summary>

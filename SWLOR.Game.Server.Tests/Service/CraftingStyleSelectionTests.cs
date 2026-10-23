@@ -10,6 +10,7 @@ using SWLOR.Game.Server.Feature.StatusEffectDefinition;
 using SWLOR.Game.Server.Service.CraftService;
 using SWLOR.Game.Server.Service.CraftService.Minigame.Circuit;
 using SWLOR.Game.Server.Service.CraftService.Minigame.Forge;
+using SWLOR.Game.Server.Service.CraftService.Minigame.Gathering;
 using SWLOR.Game.Server.Service.PerkService;
 using SWLOR.Game.Server.Service.SkillService;
 
@@ -34,18 +35,16 @@ public class CraftingStyleSelectionTests
     [Test]
     public void TheCircuitStylesAreRegisteredWithTheirSkillPerkAndStatusEffect()
     {
-        Definitions.Should().Contain(
-            new CraftingStyleDefinition(SkillType.Engineering, PerkType.OverclockStyle, typeof(OverclockStatusEffect)));
-        Definitions.Should().Contain(
+        Definitions.Where(definition => definition.Skill == SkillType.Engineering).Should().Equal(
+            new CraftingStyleDefinition(SkillType.Engineering, PerkType.OverclockStyle, typeof(OverclockStatusEffect)),
             new CraftingStyleDefinition(SkillType.Engineering, PerkType.SafeModeStyle, typeof(SafeModeStatusEffect)));
     }
 
     [Test]
     public void TheSmitheryStylesAreRegisteredWithTheirSkillPerkAndStatusEffect()
     {
-        Definitions.Should().Contain(
-            new CraftingStyleDefinition(SkillType.Smithery, PerkType.HotForgingStyle, typeof(HotForgingStatusEffect)));
-        Definitions.Should().Contain(
+        Definitions.Where(definition => definition.Skill == SkillType.Smithery).Should().Equal(
+            new CraftingStyleDefinition(SkillType.Smithery, PerkType.HotForgingStyle, typeof(HotForgingStatusEffect)),
             new CraftingStyleDefinition(SkillType.Smithery, PerkType.ColdWorkingStyle, typeof(ColdWorkingStatusEffect)));
         ForgeStyles.Definitions.Should().HaveCount(2);
     }
@@ -302,6 +301,139 @@ public class CraftingStyleSelectionTests
         Squash(Method(window, "Initialize")).Should().Contain("CraftingStyleSelection.Restore(Player)");
         Squash(Method(window, "Initialize")).Should().Contain("ForgeStyles.RemoveUnowned(Player)");
         Squash(Method(window, "RefreshStyles")).Should().Contain("ForgeStyles.Owned(Player)");
+    }
+
+    // The Gathering styles share the Gathering skill, so one is selected at a time, and the two windows that offer them go through
+    // the same record as the Circuit window.
+
+    [Test]
+    public void TheGatheringStylesAreRegisteredWithTheirSkillPerkAndStatusEffect()
+    {
+        Definitions.Where(definition => definition.Skill == SkillType.Gathering).Should().Equal(
+            new CraftingStyleDefinition(SkillType.Gathering, PerkType.StripMiningStyle, typeof(StripMiningStatusEffect)),
+            new CraftingStyleDefinition(SkillType.Gathering, PerkType.CarefulHandsStyle, typeof(CarefulHandsStatusEffect)));
+        Definitions.Should().Contain(GatheringStyles.Definitions, "the Gathering helper's list is the registered one");
+    }
+
+    [Test]
+    public void EveryRegisteredStyleHasItsOwnPerkAndItsOwnStatusEffect()
+    {
+        Definitions.Select(definition => definition.Perk).Should().OnlyHaveUniqueItems();
+        Definitions.Select(definition => definition.StatusEffectType).Should().OnlyHaveUniqueItems();
+    }
+
+    [TestCase(PerkType.StripMiningStyle, typeof(StripMiningStatusEffect))]
+    [TestCase(PerkType.CarefulHandsStyle, typeof(CarefulHandsStatusEffect))]
+    public void AnOwnedSelectedGatheringStyleIsRestoredAfterARelogOrADeath(PerkType selected, Type effect)
+    {
+        var player = Record(PerkType.StripMiningStyle, PerkType.CarefulHandsStyle);
+        CraftingStyleSelection.Set(player, SkillType.Gathering, selected);
+
+        // The record is all that outlives the effect: a logout drops the effect and a death strips it.
+        var reloaded = JsonConvert.DeserializeObject<Player>(JsonConvert.SerializeObject(player))!;
+
+        CraftingStyleSelection.Reconcile(reloaded, Definitions, out var active).Should().BeFalse();
+        active.Should().ContainSingle("only the selected style comes back, never both").Which.StatusEffectType.Should().Be(effect);
+        CraftingStyleSelection.Selected(reloaded, SkillType.Gathering).Should().Be(selected);
+    }
+
+    [Test]
+    public void SelectingAGatheringStyleReplacesTheOtherOne_AndLeavesTheCircuitSelectionAlone()
+    {
+        var player = Record();
+        CraftingStyleSelection.Set(player, SkillType.Engineering, PerkType.OverclockStyle);
+        CraftingStyleSelection.Set(player, SkillType.Gathering, PerkType.StripMiningStyle).Should().BeTrue();
+
+        CraftingStyleSelection.Set(player, SkillType.Gathering, PerkType.CarefulHandsStyle).Should().BeTrue();
+
+        CraftingStyleSelection.Selected(player, SkillType.Gathering).Should().Be(PerkType.CarefulHandsStyle, "one style per skill");
+        CraftingStyleSelection.Selected(player, SkillType.Engineering).Should().Be(PerkType.OverclockStyle);
+        player.SelectedCraftingStyles.Should().HaveCount(2);
+    }
+
+    [Test]
+    public void ChoosingNoGatheringStyleClearsTheGatheringEntryOnly()
+    {
+        var player = Record();
+        CraftingStyleSelection.Set(player, SkillType.Engineering, PerkType.SafeModeStyle);
+        CraftingStyleSelection.Set(player, SkillType.Gathering, PerkType.StripMiningStyle);
+
+        CraftingStyleSelection.Set(player, SkillType.Gathering, PerkType.Invalid).Should().BeTrue();
+
+        CraftingStyleSelection.Selected(player, SkillType.Gathering).Should().Be(PerkType.Invalid);
+        CraftingStyleSelection.Selected(player, SkillType.Engineering).Should().Be(PerkType.SafeModeStyle);
+    }
+
+    [Test]
+    public void AGatheringStyleWhosePerkWasRefundedIsNotRestored_AndTheEntryIsDropped()
+    {
+        var player = Record(PerkType.CarefulHandsStyle);
+        CraftingStyleSelection.Set(player, SkillType.Gathering, PerkType.StripMiningStyle);
+
+        CraftingStyleSelection.Reconcile(player, Definitions, out var active).Should().BeTrue();
+
+        active.Should().BeEmpty("the gatherer no longer owns Strip Mining, and Careful Hands was never selected");
+        CraftingStyleSelection.Selected(player, SkillType.Gathering).Should().Be(PerkType.Invalid);
+    }
+
+    [Test]
+    public void AGatheringSelectionWhosePerkIsRefundedKeepsAnotherSkillsStyle()
+    {
+        var player = Record(PerkType.OverclockStyle);
+        CraftingStyleSelection.Set(player, SkillType.Engineering, PerkType.OverclockStyle);
+        CraftingStyleSelection.Set(player, SkillType.Gathering, PerkType.CarefulHandsStyle);
+
+        CraftingStyleSelection.Reconcile(player, Definitions, out var active).Should().BeTrue();
+
+        active.Should().ContainSingle().Which.Perk.Should().Be(PerkType.OverclockStyle);
+        CraftingStyleSelection.Selected(player, SkillType.Gathering).Should().Be(PerkType.Invalid);
+    }
+
+    [Test]
+    public void AFullRebuildClearsTheGatheringSelectionWithTheRest()
+    {
+        var player = Record(PerkType.StripMiningStyle);
+        CraftingStyleSelection.Set(player, SkillType.Gathering, PerkType.StripMiningStyle);
+        CraftingStyleSelection.Set(player, SkillType.Engineering, PerkType.OverclockStyle);
+
+        CraftingStyleSelection.ClearAll(player).Should().BeTrue();
+
+        CraftingStyleSelection.Selected(player, SkillType.Gathering).Should().Be(PerkType.Invalid);
+        player.SelectedCraftingStyles.Should().BeEmpty();
+    }
+
+    [Test]
+    public void ChangingAGatheringStyleInTheWindowRecordsIt_AndARefundedStyleIsForgotten()
+    {
+        var styles = Source("Service", "CraftService", "Minigame", "Gathering", "GatheringStyles.cs");
+
+        Squash(Method(styles, "Select")).Should().Contain("CraftingStyleSelection.Record(player,Skill,PerkOf(style))");
+        Squash(Method(styles, "RemoveUnowned")).Should().Contain("CraftingStyleSelection.ClearIfSelected(player,Skill,PerkOf(style))");
+    }
+
+    [Test]
+    public void EachGatheringStylePerkClearsItsSelectionWhenRefunded()
+    {
+        var gathering = Source("Feature", "PerkDefinition", "GatheringPerkDefinition.cs");
+
+        foreach (var perk in new[] { "StripMiningStyle", "CarefulHandsStyle" })
+        {
+            Squash(Method(gathering, perk)).Should().Contain(".TriggerRefund(GatheringStyles.RemoveUnowned)", perk);
+        }
+    }
+
+    [TestCase("ProspectingViewModel.cs")]
+    [TestCase("SearchViewModel.cs")]
+    public void TheGatheringWindowsRestoreTheRecordedStyleWhenTheyOpen_AndChooseOneThroughTheSameRecord(string window)
+    {
+        var viewModel = Source("Feature", "GuiDefinition", "ViewModel", window);
+
+        var initialize = Squash(Method(viewModel, "Initialize"));
+        initialize.Should().Contain("CraftingStyleSelection.Restore(Player)");
+        initialize.IndexOf("CraftingStyleSelection.Restore(Player)", StringComparison.Ordinal)
+            .Should().BeLessThan(initialize.IndexOf("GatheringStyles.RemoveUnowned(Player)", StringComparison.Ordinal),
+                "a style comes back before an unowned one is removed, as in the Circuit window");
+        Squash(Method(viewModel, "OnClickStyle")).Should().Contain("GatheringStyles.Select(Player,_styleRows[row])");
     }
 
     private static string Squash(SyntaxNode node) => Regex.Replace(node.ToString(), @"\s+", string.Empty);

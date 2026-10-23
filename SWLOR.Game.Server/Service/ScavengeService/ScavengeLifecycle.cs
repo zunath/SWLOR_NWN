@@ -132,6 +132,25 @@ namespace SWLOR.Game.Server.Service.ScavengeService
         }
 
         /// <summary>
+        /// Rebuilds the board's rules with the scavenger's perks and style as they are now, keeping the board's hidden layout. The style is
+        /// chosen in the window, so it can change until the first action; after that the visit keeps the perks it began with. Returns
+        /// false when the visit is over or has acted.
+        /// </summary>
+        public bool RefreshEffects(ScavengeSession session, SearchEffects effects)
+        {
+            if (session == null)
+                throw new ArgumentNullException(nameof(session));
+
+            if (!CanQuickSearch(session))
+                return false;
+
+            var request = session.Request with { Effects = effects };
+            var setup = SearchSetup.ForRank(request.GatheringRank, request.SiteLevel, effects);
+            session.Reconfigure(request, new SearchEngine(_random, setup, session.Engine.Board.Promising));
+            return true;
+        }
+
+        /// <summary>
         /// Performs one action of the board for the scavenger: checks they are still there, keeps the pace, resolves the action, pays the XP
         /// of an attempt, rolls the loot of a find, and settles the visit when the last search is spent.
         /// </summary>
@@ -172,13 +191,20 @@ namespace SWLOR.Game.Server.Service.ScavengeService
 
             if (last.IsFind)
             {
+                var effects = session.Request.Effects ?? SearchEffects.None;
+                var deeper = last.Kind == SearchEventKind.DigDeeper;
+
+                // The first Dig Deeper find of a board gets the Jackpot weight on top of the dig's.
+                var jackpot = deeper && !session.JackpotSpent ? effects.JackpotWeightBonus : 0;
+                session.JackpotSpent |= deeper;
                 session.AddFind(ScavengeLoot.Roll(
                     session.Request.Table,
                     session.Request.TreasureHunterLevel,
                     session.Request.CreditFinderLevel,
-                    last.Kind == SearchEventKind.DigDeeper,
+                    deeper,
                     _random,
-                    session.Request.Effects?.DeeperWeightBonus ?? 0));
+                    effects.DeeperWeightBonus + jackpot,
+                    effects.FindWeightBonus));
             }
 
             if (result.Status == MinigameStatus.InProgress)

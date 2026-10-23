@@ -1,0 +1,223 @@
+{
+  "rows": [
+    {
+      "Line": "Prospector",
+      "Price": 1,
+      "Name": "Efficient Strikes I",
+      "Rank": 5,
+      "Type": "Trait",
+      "Description": "In Prospecting, a Strike takes 0.5 seconds less and a Heavy Strike 1 second less.",
+      "Stats": [
+        "ProspectingStrikeTimeReduction +5",
+        "ProspectingHeavyStrikeTimeReduction +10"
+      ]
+    },
+    {
+      "Line": "Prospector",
+      "Price": 1,
+      "Name": "Bulk Refining I",
+      "Rank": 10,
+      "Type": "Trait",
+      "Description": "Each power core refines 1 more item than your Gathering rank allows.",
+      "Stats": [
+        "ProspectingRefineBatch +1"
+      ]
+    },
+    {
+      "Line": "Prospector",
+      "Price": 2,
+      "Name": "Rich Veins I",
+      "Rank": 15,
+      "Type": "Trait",
+      "Description": "In Prospecting, claiming a rich seam with Extract takes 0.5 seconds less.",
+      "Stats": [
+        "ProspectingRichExtractTimeReduction +5"
+      ]
+    },
+    {
+      "Line": "Prospector",
+      "Price": 2,
+      "Name": "Strip Mining",
+      "Rank": 20,
+      "Type": "Style",
+      "Description": "Gathering style, picked in the Prospecting window with one style active at a time. In Prospecting: A Strike takes 1.5 seconds less and costs 10 more Stability, but a Survey and an Extract each take 1 second more.",
+      "Stats": []
+    },
+    {
+      "Line": "Prospector",
+      "Price": 3,
+      "Name": "Efficient Strikes II",
+      "Rank": 25,
+      "Type": "Trait",
+      "Description": "In Prospecting, a Strike takes 1 second less and a Heavy Strike 2 seconds less.",
+      "Stats": [
+        "ProspectingStrikeTimeReduction +10",
+        "ProspectingHeavyStrikeTimeReduction +20"
+      ]
+    },
+    {
+      "Line": "Prospector",
+      "Price": 3,
+      "Name": "Bulk Refining II",
+      "Rank": 30,
+      "Type": "Trait",
+      "Description": "Each power core refines 2 more items than your Gathering rank allows.",
+      "Stats": [
+        "ProspectingRefineBatch +2"
+      ]
+    },
+    {
+      "Line": "Prospector",
+      "Price": 3,
+      "Name": "Core Sample",
+      "Rank": 35,
+      "Type": "Trait",
+      "Description": "In Prospecting, the window shows how many seams the node still holds and whether each is a rich seam or a gem pocket, before you find them. A Heavy Strike shows a chance to shatter a gem pocket only when one is hidden there.",
+      "Stats": [
+        "ProspectingSeamSightUnlocked +1"
+      ]
+    },
+    {
+      "Line": "Prospector",
+      "Price": 3,
+      "Name": "Rich Veins II",
+      "Rank": 40,
+      "Type": "Trait",
+      "Description": "In Prospecting, claiming a rich seam with Extract takes 1 second less.",
+      "Stats": [
+        "ProspectingRichExtractTimeReduction +10"
+      ]
+    },
+    {
+      "Line": "Prospector",
+      "Price": 3,
+      "Name": "Bulk Refining III",
+      "Rank": 45,
+      "Type": "Trait",
+      "Description": "Each power core refines 3 more items than your Gathering rank allows.",
+      "Stats": [
+        "ProspectingRefineBatch +3"
+      ]
+    },
+    {
+      "Line": "Prospector",
+      "Price": 4,
+      "Name": "Mother Lode",
+      "Rank": 50,
+      "Type": "Trait",
+      "Description": "In Prospecting, the first Strike or Heavy Strike of each node takes 50% of its usual time.",
+      "Stats": [
+        "ProspectingMotherLodeUnlocked +1"
+      ]
+    },
+    {
+      "Line": "Treasure Seeker",
+      "Price": 1,
+      "Name": "Fine Trowel I",
+      "Rank": 5,
+      "Type": "Trait",
+      "Description": "In Search, a Dig Deeper find rolls the site's rare entries with 4 times their usual weight instead of 3.",
+      "Stats": [
+        "SearchDigRareWeight +1"
+      ]
+    },
+    {
+      "Line": "Treasure Seeker",
+      "Price": 1,
+      "Name": "Sharp Chisel I",
+      "Rank": 10,
+      "Type": "Trait",
+      "Description": "In Prospecting, a Heavy Strike is 5 points less likely to shatter a gem pocket you have not surveyed (20% becomes 15%).",
+      "Stats": [
+        "ProspectingShatterReduction +5"
+      ]
+    },
+    {
+      "Line": "Treasure Seeker",
+      "Price": 2,
+      "Name": "Steady Dig",
+      "Rank": 15,
+      "Type": "Trait",
+      "Description": "In Search, the risk that Dig Deeper ruins a spot is 15% lower (a 30% risk becomes 26%).",
+      "Stats": [
+        "SearchDigRiskReductionPercent +15"
+      ]
+    },
+    {
+      "Line": "Treasure Seeker",
+      "Price": 2,
+      "Name": "Careful Hands",
+      "Rank": 20,
+      "Type": "Style",
+      "Description": "Gathering style, picked in the Search window with one style active at a time. In Search: A Search finds 1 point less often, and a Dig Deeper find favours the site's rare entries 3 more.",
+      "Stats": []
+    },
+    {
+      "Line": "Treasure Seeker",
+      "Price": 3,
+      "Name": "Keen Eye",
+      "Rank": 25,
+      "Type": "Trait",
+      "Description": "In Search, a Search finds 1 point more often on every spot.",
+      "Stats": [
+        "SearchChancePoints +1"
+      ]
+    },
+    {
+      "Line": "Treasure Seeker",
+      "Price": 3,
+      "Name": "Sharp Chisel II",
+      "Rank": 30,
+      "Type": "Trait",
+      "Description": "In Prospecting, a Heavy Strike is 10 points less likely to shatter a gem pocket you have not surveyed (20% becomes 10%).",
+      "Stats": [
+        "ProspectingShatterReduction +10"
+      ]
+    },
+    {
+      "Line": "Treasure Seeker",
+      "Price": 3,
+      "Name": "Deep Scan",
+      "Rank": 35,
+      "Type": "Trait",
+      "Description": "In Prospecting, a Survey reveals 1 more seam than your Gathering rank allows, up to the 3 a node holds, and reveals gem pockets before rich seams.",
+      "Stats": [
+        "ProspectingSurveyReveals +1",
+        "ProspectingPocketsFirstUnlocked +1"
+      ]
+    },
+    {
+      "Line": "Treasure Seeker",
+      "Price": 3,
+      "Name": "Fine Trowel II",
+      "Rank": 40,
+      "Type": "Trait",
+      "Description": "In Search, a Dig Deeper find rolls the site's rare entries with 5 times their usual weight instead of 3.",
+      "Stats": [
+        "SearchDigRareWeight +2"
+      ]
+    },
+    {
+      "Line": "Treasure Seeker",
+      "Price": 3,
+      "Name": "Rich Pickings",
+      "Rank": 45,
+      "Type": "Trait",
+      "Description": "In Search, a Search that finds something rolls the site's rare entries with 2 times their usual weight.",
+      "Stats": [
+        "SearchFindRareWeight +1"
+      ]
+    },
+    {
+      "Line": "Treasure Seeker",
+      "Price": 4,
+      "Name": "Jackpot",
+      "Rank": 50,
+      "Type": "Trait",
+      "Description": "In Search, the first Dig Deeper find of each board rolls the site's rare entries with 7 times their usual weight instead of 3, plus what Fine Trowel and Careful Hands add.",
+      "Stats": [
+        "SearchJackpotRareWeight +4"
+      ]
+    }
+  ]
+}

@@ -1,5 +1,6 @@
 using SWLOR.Game.Server.Core;
 using SWLOR.Game.Server.Service.CraftService.Minigame;
+using SWLOR.Game.Server.Service.CraftService.Minigame.Prospecting;
 
 namespace SWLOR.Game.Server.Service.ProspectingService
 {
@@ -19,6 +20,10 @@ namespace SWLOR.Game.Server.Service.ProspectingService
         public static ProspectingActionStart StartAction(
             ProspectingSession session, string actionId, Action<ProspectingActionReport> onResolved) =>
             Lifecycle.StartAction(session, actionId, onResolved);
+
+        /// <summary>Rebuilds the session with the player's perks and style as they are now. False once the session has acted or ended.</summary>
+        public static bool RefreshEffects(ProspectingSession session, ProspectingEffects effects) =>
+            Lifecycle.RefreshEffects(session, effects);
 
         /// <summary>Starts a Quick Harvest of the node.</summary>
         public static ProspectingActionStart StartQuickHarvest(ProspectingSession session, Action<QuickHarvestReport> onProgress) =>

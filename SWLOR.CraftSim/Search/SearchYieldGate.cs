@@ -3,6 +3,7 @@ using SWLOR.CraftSim.Gates;
 using SWLOR.CraftSim.Legacy.Gathering;
 using SWLOR.CraftSim.Rng;
 using SWLOR.Game.Server.Service.CraftService;
+using SWLOR.Game.Server.Service.CraftService.Minigame.Gathering;
 using SWLOR.Game.Server.Service.CraftService.Minigame.Search;
 using SWLOR.Game.Server.Service.ScavengeService;
 using static SWLOR.CraftSim.Report.MarkdownTable;
@@ -34,13 +35,29 @@ namespace SWLOR.CraftSim.Search
 
         public string Name => GateNames.EconomyParity;
 
+        /// <summary>
+        /// The least a careless board may find against Quick Search: the unperked floor. Careful Hands accepts fewer finds for rarer ones,
+        /// so the floor that keeps a careless click-through near today's is lifted for it only; every other loadout, the Prospector ones
+        /// included (they change nothing on the board), keeps it.
+        /// </summary>
+        private double CarelessLimit => _options.Loadout?.Style == GatheringStyle.CarefulHands ? 0 : _options.CarelessMinimumRatio;
+
+        /// <summary>
+        /// The most a skilled board may find against Quick Search: the plan's +15% for a gatherer whose perks or style act on the board
+        /// (the Treasure Seeker line, Careful Hands), the unperked limit for every other loadout.
+        /// </summary>
+        private double SkilledLimit =>
+            _options.Loadout != null && (_options.Loadout.TreasureSeeker || _options.Loadout.Style == GatheringStyle.CarefulHands)
+                ? _options.SkilledMaximumRatio
+                : _options.UnperkedSkilledMaximumRatio;
+
         /// <summary>The cases the study plays, so a report can play them all in parallel first.</summary>
         public IEnumerable<SearchKey> Keys()
         {
             foreach (var rank in _options.Ranks)
             {
                 foreach (var player in new[] { SearchPlayerKind.Careless, SearchPlayerKind.Skilled, SearchPlayerKind.Oracle })
-                    yield return new SearchKey(rank, 1, player, SearchEffects.None);
+                    yield return new SearchKey(rank, 1, player, _options.EffectsAt(rank));
 
                 yield return new SearchKey(rank, 1, SearchPlayerKind.Skilled, _options.TreasureSeekerLine);
                 yield return new SearchKey(rank, 1, SearchPlayerKind.Oracle, _options.TreasureSeekerLine);
@@ -84,16 +101,17 @@ namespace SWLOR.CraftSim.Search
                     Number(ScavengeQuickSearch.ExpectedAttempts(tier), 2),
                     quickInside ? "Equal" : "Different");
 
-                var careless = _parity.Sample(rank, 1, SearchPlayerKind.Careless);
-                var skilled = _parity.Sample(rank, 1, SearchPlayerKind.Skilled);
-                var oracle = _parity.Sample(rank, 1, SearchPlayerKind.Oracle);
-                var setup = SearchSetup.ForRank(rank, 1);
+                var effects = _options.EffectsAt(rank);
+                var careless = _parity.Sample(rank, 1, SearchPlayerKind.Careless, effects);
+                var skilled = _parity.Sample(rank, 1, SearchPlayerKind.Skilled, effects);
+                var oracle = _parity.Sample(rank, 1, SearchPlayerKind.Oracle, effects);
+                var setup = SearchSetup.ForRank(rank, 1, effects);
                 var carelessRatio = careless.Finds / quickRolls;
                 var skilledRatio = skilled.Finds / quickRolls;
                 var oracleRatio = oracle.Finds / quickRolls;
-                var inside = carelessRatio >= _options.CarelessMinimumRatio - tolerance &&
+                var inside = carelessRatio >= CarelessLimit - tolerance &&
                              skilledRatio >= _options.SkilledMinimumRatio - tolerance &&
-                             skilledRatio <= _options.UnperkedSkilledMaximumRatio + tolerance &&
+                             skilledRatio <= SkilledLimit + tolerance &&
                              oracleRatio <= _options.OracleMaximumRatio + tolerance;
                 if (!inside)
                 {
@@ -145,8 +163,8 @@ namespace SWLOR.CraftSim.Search
             {
                 quick.ToGateTable("Quick Search against today's expected rolls (a Perception modifier of 0, the parity reference)"),
                 board.ToGateTable(
-                    $"Finds per board (loot-table rolls) against Quick Search: careless at least {Number(_options.CarelessMinimumRatio, 2)}x, skilled " +
-                    $"{Number(_options.SkilledMinimumRatio, 2)}x to {Number(_options.UnperkedSkilledMaximumRatio, 2)}x, oracle at most {Number(_options.OracleMaximumRatio, 2)}x"),
+                    $"Finds per board (loot-table rolls) against Quick Search: careless {(CarelessLimit > 0 ? $"at least {Number(CarelessLimit, 2)}x" : "has no floor")}, skilled " +
+                    $"{Number(_options.SkilledMinimumRatio, 2)}x to {Number(SkilledLimit, 2)}x, oracle at most {Number(_options.OracleMaximumRatio, 2)}x"),
                 play.ToGateTable("How the skilled player spends its searches"),
                 line.ToGateTable($"The whole Treasure Seeker line against the cap (skilled at most {Number(_options.SkilledMaximumRatio, 2)}x)")
             };
@@ -155,8 +173,8 @@ namespace SWLOR.CraftSim.Search
                 ? new GateResult(
                     Name,
                     GateVerdict.Passed,
-                    $"Quick Search equals today's expected rolls at every rank; a careless board finds at least {Number(_options.CarelessMinimumRatio, 2)}x, the skilled player " +
-                    $"{Number(_options.SkilledMinimumRatio, 2)}x to {Number(_options.UnperkedSkilledMaximumRatio, 2)}x, the oracle at most {Number(_options.OracleMaximumRatio, 2)}x, and the whole Treasure Seeker line stays inside the cap.",
+                    $"Quick Search equals today's expected rolls at every rank; {(CarelessLimit > 0 ? $"a careless board finds at least {Number(CarelessLimit, 2)}x" : "a careless board has no floor (a style trades finds for rarer ones)")}, the skilled player " +
+                    $"{Number(_options.SkilledMinimumRatio, 2)}x to {Number(SkilledLimit, 2)}x, the oracle at most {Number(_options.OracleMaximumRatio, 2)}x, and the whole Treasure Seeker line stays inside the cap.",
                     tables)
                 : new GateResult(Name, GateVerdict.Failed, $"Yield falls outside its limits: {string.Join("; ", failures)}.", tables);
         }

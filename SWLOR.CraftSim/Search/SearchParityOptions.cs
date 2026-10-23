@@ -1,5 +1,8 @@
 using SWLOR.CraftSim.Progression;
+using SWLOR.Game.Server.Feature.PerkDefinition;
+using SWLOR.Game.Server.Service.CraftService.Minigame.Gathering;
 using SWLOR.Game.Server.Service.CraftService.Minigame.Search;
+using SWLOR.Game.Server.Service.PerkService;
 
 namespace SWLOR.CraftSim.Search
 {
@@ -61,14 +64,25 @@ namespace SWLOR.CraftSim.Search
         /// <summary>The site levels of the XP cohort: each at the Gathering rank 10 times the level, the plan's scavenging cohort.</summary>
         public IReadOnlyList<int> SiteLevels { get; init; } = new[] { 1, 2, 3, 4, 5 };
 
+        /// <summary>The gatherer's perks and style: every board is played by someone who owns what the Gathering rank allows of them.</summary>
+        public GatheringLoadout Loadout { get; init; } = GatheringLoadout.None;
+
+        /// <summary>The perk definitions the loadout is read from.</summary>
+        public IReadOnlyDictionary<PerkType, PerkDetail> Perks { get; init; } = new GatheringPerkDefinition().BuildPerks();
+
+        /// <summary>Effects to play instead of the loadout's, by rank: a study of one purchase at a time sets it. Null plays the loadout.</summary>
+        public Func<int, SearchEffects> EffectsOverride { get; init; }
+
+        /// <summary>What the loadout's perks and style change on the board at a Gathering rank. Nothing for no perks.</summary>
+        public SearchEffects EffectsAt(int rank) => EffectsOverride?.Invoke(rank) ?? Loadout.SearchAt(Perks, rank);
+
         /// <summary>
-        /// The whole Treasure Seeker line as the Search board reads it, for the check that no perk takes a skilled session past the cap:
-        /// the perk draft's magnitudes (<c>gathering-treasure-seeker-perk-line-draft.md</c>).
+        /// The whole Treasure Seeker line as the Search board reads it with no style, for the check that no perk takes a skilled session
+        /// past the cap: every purchase the line has (the game's own perk definitions, at the highest Gathering rank).
         /// </summary>
-        public SearchEffects TreasureSeekerLine { get; init; } = new(
-            SearchChanceDelta: 1,
-            DigRiskPercent: 85,
-            DeeperWeightBonus: 2);
+        public SearchEffects TreasureSeekerLine { get; init; } =
+            new GatheringLoadout("Treasure Seeker, no style", false, true, GatheringStyle.None)
+                .SearchAt(new GatheringPerkDefinition().BuildPerks(), 50);
 
         /// <summary>Boards of the XP cohort's Quick Search check and the Monte Carlo cross-check of the exact expected rolls.</summary>
         public int QuickSearchRuns { get; init; } = 100_000;

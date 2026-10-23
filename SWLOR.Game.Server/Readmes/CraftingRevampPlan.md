@@ -584,16 +584,16 @@ Every character gets SP back for each perk this rework removes or changes, plus 
 
 ### Stations
 
-The seven stations get new models made with the Trellis2 workflow. They are replaced in place: resrefs, tags, scripts and StructureTypes stay the same, so no placed station in the module or in player properties moves or breaks. Stations use a retro-futuristic Star Wars "used future" look (weathered utilitarian metal, greebles, small inset screens, physical controls), not sleek modern designs.
+The seven stations get new models made with the Trellis2 workflow. They are replaced in place: resrefs, tags, scripts and StructureTypes stay the same, so no placed station in the module or in player properties moves or breaks. Stations use a retro-futuristic Star Wars "used future" look (light grey and off-white panelling with small red or yellow accents, dense greebles, light wear, small inset screens, physical controls), not sleek modern designs and not rusty or military-green ones.
 
 | Station | New look |
 | --- | --- |
 | Smithery | Plasma forge |
-| Engineering | Droid and electronics workbench: weathered metal bench with wiring, dials, an inset diagnostic screen and a soldering arm |
-| Fabrication | Industrial fabricator with three heavy tool heads, about 1.8 m tall, hydraulic cylinders and small inset readouts |
-| Cooking | Ship or cantina galley unit: chunky riveted metal cabinet with heating plates, vents, heat pipes and small dials |
-| Espionage | Covert tech and chemistry bench: weathered metal with vials, canisters, distillation pipes, inset readouts and toggles |
-| Research | Rebel-base analysis console: slanted weathered metal console with an inset green screen, toggles, dials and a sample drawer |
+| Engineering | Droid and electronics workbench: grey and off-white panelled bench with a wiring back panel, dials, inset green readouts, droid parts and a circuit board on the work surface |
+| Fabrication | Enclosed industrial fabricator, about 1.8 m tall, with three tool heads (press, former, welding arm) over a work bed, hydraulic pistons and small inset readouts |
+| Cooking | Starship galley unit: grey and off-white cabinet with two round heating plates, a vent hood, pipes, small dials and storage doors |
+| Espionage | Covert chemistry bench: grey and off-white cabinet with a rail of vials and canisters, a small amber readout and toggles |
+| Research | Rebel-base analysis console: slanted grey and off-white console with an inset green screen, buttons, toggles, dials and a sample drawer |
 | Gathering | Refinery |
 
 - **Adapting Trellis2.** The documented workflow (`Readmes/BlasterModelImport.md`, `tools/workflows/trellis2_*.json`, `tools/Trellis*.py`) covers weapons and shields. Adapting it to placeables is part of this work: an image-to-GLB workflow, Blender export to MDL, walkmesh, textures and placeables.2da.

@@ -16,7 +16,7 @@ width/depth/height in meters along the rotated X/Y/Z extent, or scale), center_x
 center lands in model space; the bottom always sits at Z=0), max_size [w,d,h] (hard limit on the fitted
 bounding box), walkmesh {prefix, inset, simplify, min_use_clearance, use_nodes [[x,y],...] (at most two; none keeps the
 engine's default approach)} and optional emission
-{threshold, softness, gain} (a brightness mask from the base color), double_sided_policy ('reject',
+{threshold, softness, gain, optional saturation_min} (a brightness mask from the base color), double_sided_policy ('reject',
 'closed_surface' or 'near_closed': outward-wound shells with at most max_defect_fraction stray edges) and
 normal_basis_policy ('reproject' or 'authored_tangents' for glTF triangles with mixed tangent handedness; the latter
 accepts authored_angle_limit_degrees 0.5..2 for compiler normal quantization). `reference` records the replaced station (bounds, footprint, use nodes) for the
@@ -196,11 +196,22 @@ def write_mdl_text(model, short, meshes, lo, hi):
     return '\n'.join(lines) + '\n'
 
 
-def emission_mask(color, threshold, softness, np):
-    """Smooth 0..1 mask of bright texels from an sRGB base color (H,W,3): glow without a hand-painted map."""
-    luminance = color[..., 0] * .2126 + color[..., 1] * .7152 + color[..., 2] * .0722
-    x = np.clip((luminance - threshold) / max(softness, 1e-6), 0, 1)
-    return x * x * (3 - 2 * x)
+def emission_mask(color, threshold, softness, np, saturation_min=None):
+    """Smooth 0..1 mask of glowing texels from an sRGB base color (H,W,3): glow without a hand-painted map.
+
+    By default a texel glows when its luminance passes `threshold` (white-hot metal, plasma). With `saturation_min` the
+    brightest channel passes `threshold` and the color is saturated at least that much instead, which picks out colored
+    lights (a purple hologram strip) without lighting pale surfaces."""
+    def smooth(x):
+        x = np.clip(x, 0, 1)
+        return x * x * (3 - 2 * x)
+
+    if saturation_min is None:
+        luminance = color[..., 0] * .2126 + color[..., 1] * .7152 + color[..., 2] * .0722
+        return smooth((luminance - threshold) / max(softness, 1e-6))
+    high, low = color.max(axis=-1), color.min(axis=-1)
+    saturation = (high - low) / np.maximum(high, 1e-6)
+    return smooth((high - threshold) / max(softness, 1e-6)) * smooth((saturation - saturation_min) / .15)
 
 
 def rotation_rows(item):
@@ -361,18 +372,13 @@ def accept_clamped_samplers(weapon, doc, binary):
 
 
 DEFECT_FRACTION = 0.005
+OPPOSED_FRACTION = 0.03
 
 
-def near_closed_report(weapon, objects, max_defect_fraction):
-    """Culling-safety proof for TRELLIS shells that are closed except for a few stray edges.
-
-    The weapon exporter's closed_surface policy needs every edge shared by exactly two oppositely wound faces.
-    Decimated TRELLIS stations typically have a handful of boundary or non-manifold edges. Weld positions, then require
-    the defective edges to be at most `max_defect_fraction` of all edges and every substantial shell to have positive
-    signed volume (outward winding), so single-sided culling hides only back faces, never the visible surface.
-    The report keeps the counts so the PR can state what was accepted; a visual review still decides."""
+def shell_analysis(weapon, objects):
+    """Weld positions and return (vertices, faces, face origin (object, polygon), directed and undirected edge counts, shell id per face)."""
     np = weapon.np
-    lookup, vertices, faces = {}, [], []
+    lookup, vertices, faces, origin = {}, [], [], []
     for ob in objects:
         world = ob.matrix_world
         for triangle in ob.data.loop_triangles:
@@ -385,19 +391,15 @@ def near_closed_report(weapon, objects, max_defect_fraction):
                 ids.append(lookup[point])
             if len(set(ids)) == 3:
                 faces.append(ids)
+                origin.append((ob, triangle.polygon_index))
     vertices, faces = np.asarray(vertices, np.float64), np.asarray(faces)
-    directed = {}
+    directed, undirected = {}, {}
     for a, b, c in faces:
         for edge in ((a, b), (b, c), (c, a)):
             directed[edge] = directed.get(edge, 0) + 1
-    undirected = {}
     for (a, b), count in directed.items():
         key = (a, b) if a < b else (b, a)
         undirected[key] = undirected.get(key, 0) + count
-    boundary = sum(1 for count in undirected.values() if count == 1)
-    nonmanifold = sum(1 for count in undirected.values() if count > 2)
-    same_direction = sum(1 for count in directed.values() if count > 1)
-    defects = boundary + nonmanifold + same_direction
     parent = list(range(len(faces)))
 
     def find(i):
@@ -414,24 +416,160 @@ def near_closed_report(weapon, objects, max_defect_fraction):
             else:
                 owner[key] = index
     roots = np.asarray([find(i) for i in range(len(faces))])
-    shells = []
-    for root in sorted(set(roots.tolist())):
-        chosen = faces[roots == root]
-        corners = vertices[chosen]
-        origin = corners[:, 0, :].mean(axis=0)
-        a, b, c = corners[:, 0] - origin, corners[:, 1] - origin, corners[:, 2] - origin
-        shells.append({'triangles': int(len(chosen)), 'signed_volume': float(np.einsum('ij,ij->i', a, np.cross(b, c)).sum() / 6)})
+    return vertices, faces, origin, directed, undirected, roots
+
+
+def shell_volume(np, vertices, chosen):
+    corners = vertices[chosen]
+    base = corners[:, 0, :].mean(axis=0)
+    a, b, c = corners[:, 0] - base, corners[:, 1] - base, corners[:, 2] - base
+    return float(np.einsum('ij,ij->i', a, np.cross(b, c)).sum() / 6)
+
+
+def enclosed_by(vertices, outward_faces, point):
+    """True when rays from `point` cross the outward shells an odd number of times (it lies inside one)."""
+    from mathutils import Vector
+    from mathutils.bvhtree import BVHTree
+    tree = BVHTree.FromPolygons([Vector(v) for v in vertices.tolist()], [tuple(int(i) for i in f) for f in outward_faces], all_triangles=True)
+    votes = 0
+    for direction in ((0, 0, 1), (0.31, 0.17, 0.93), (-0.23, 0.41, 0.88)):
+        step = Vector(direction).normalized()
+        origin, crossings = Vector(point) + step * 1e-4, 0
+        while crossings < 200:
+            hit = tree.ray_cast(origin, step)
+            if hit[0] is None:
+                break
+            crossings += 1
+            origin = hit[0] + step * 1e-4
+        votes += crossings % 2
+    return votes >= 2
+
+
+def opposed_fraction(weapon, objects):
+    """Area fraction of triangles whose winding opposes their authored corner normals."""
+    from mathutils import Vector
+    total = opposed = 0.0
+    for ob in objects:
+        ob.data.calc_normals_split()
+        for triangle in ob.data.loop_triangles:
+            a, b, c = (ob.matrix_world @ ob.data.vertices[i].co for i in triangle.vertices)
+            cross = (b - a).cross(c - a)
+            mean = sum((ob.data.corner_normals[i].vector for i in triangle.loops), Vector((0, 0, 0)))
+            area = cross.length / 2
+            total += area
+            if cross.dot(mean) < 0:
+                opposed += area
+    return opposed / total if total else 0.0
+
+
+def near_closed_report(weapon, objects, max_defect_fraction, max_opposed=OPPOSED_FRACTION):
+    """Culling-safety proof for TRELLIS shells that are closed except for a few stray edges.
+
+    The weapon exporter's closed_surface policy needs every edge shared by exactly two oppositely wound faces.
+    Decimated TRELLIS stations typically have a handful of boundary or non-manifold edges. Weld positions, then require
+    the open (boundary) and inconsistently wound edges to be at most `max_defect_fraction` of all edges and every
+    substantial shell to have positive signed volume (outward winding), so single-sided culling hides only back faces,
+    never the visible surface, and at most `max_opposed` (3 percent by default) of the surface area may be wound against
+    the authored corner normals, which TRELLIS bakes outward. The TRELLIS winding is kept as generated: recalculating it
+    on welded topology agreed with the authored normals worse than the original (measured on the seven stations).
+    Non-manifold edges, where machine parts intersect, are reported but harmless to culling.
+    A substantial inward-wound shell is accepted only when a ray test proves it is an internal cavity inside an outward
+    shell; such cavities are never visible and are deleted from the export (counted in the report).
+    The report keeps the counts so the PR can state what was accepted; a visual review still decides."""
+    np = weapon.np
+    vertices, faces, origin, directed, undirected, roots = shell_analysis(weapon, objects)
+    removed_cavities = []
     total = len(faces)
-    inward = [s for s in shells if s['signed_volume'] <= 0 and s['triangles'] > total * .01]
-    if not shells or max(shells, key=lambda s: s['triangles'])['signed_volume'] <= 0 or inward:
-        raise ValueError('Near-closed policy needs outward (positive volume) winding for every substantial shell: ' + str(shells[:6]))
+    volumes = {int(root): shell_volume(np, vertices, faces[roots == root]) for root in set(roots.tolist())}
+    counts = {int(root): int((roots == root).sum()) for root in volumes}
+    inward = [root for root in volumes if volumes[root] <= 0 and counts[root] > total * .01]
+    if inward:
+        outward = [root for root in volumes if volumes[root] > 0 and counts[root] > total * .01]
+        outward_faces = faces[np.isin(roots, outward)]
+        for root in inward:
+            probe = vertices[faces[roots == root][0][0]]
+            if not len(outward_faces) or not enclosed_by(vertices, outward_faces, probe):
+                raise ValueError('Near-closed policy: an inward-wound shell is not proven to be an enclosed cavity: '
+                                 + str(sorted(({'triangles': counts[r], 'signed_volume': volumes[r]} for r in volumes), key=lambda s: -s['triangles'])[:6]))
+            removed_cavities.append({'triangles': counts[root], 'signed_volume': volumes[root]})
+        doomed = {}
+        for index in np.flatnonzero(np.isin(roots, inward)):
+            ob, polygon = origin[int(index)]
+            doomed.setdefault(ob, set()).add(polygon)
+        import bmesh
+        for ob, polygons in doomed.items():
+            mesh = bmesh.new()
+            mesh.from_mesh(ob.data)
+            mesh.faces.ensure_lookup_table()
+            bmesh.ops.delete(mesh, geom=[mesh.faces[i] for i in sorted(polygons)], context='FACES')
+            mesh.to_mesh(ob.data)
+            mesh.free()
+            ob.data.update()
+            ob.data.calc_loop_triangles()
+        vertices, faces, origin, directed, undirected, roots = shell_analysis(weapon, objects)
+        total = len(faces)
+        volumes = {int(root): shell_volume(np, vertices, faces[roots == root]) for root in set(roots.tolist())}
+        counts = {int(root): int((roots == root).sum()) for root in volumes}
+    shells = [{'triangles': counts[r], 'signed_volume': volumes[r]} for r in volumes]
+    boundary = sum(1 for count in undirected.values() if count == 1)
+    nonmanifold = sum(1 for count in undirected.values() if count > 2)
+    # Inconsistent winding only counts on manifold edges: a junction of three or more faces always repeats a direction.
+    same_direction = sum(1 for (u, v), count in directed.items()
+                         if count == 2 and undirected[(u, v) if u < v else (v, u)] == 2)
+    defects = boundary + same_direction
+    bad = [s for s in shells if s['signed_volume'] <= 0 and s['triangles'] > total * .01]
+    if not shells or max(shells, key=lambda s: s['triangles'])['signed_volume'] <= 0 or bad:
+        raise ValueError('Near-closed policy needs outward (positive volume) winding for every substantial shell: '
+                         + str(sorted(shells, key=lambda s: -s['triangles'])[:6]))
     if defects > max_defect_fraction * max(len(undirected), 1):
-        raise ValueError(f'Near-closed policy: {defects} defective edges of {len(undirected)} exceed {max_defect_fraction:.4f}')
+        raise ValueError(f'Near-closed policy: {defects} open or inconsistent edges of {len(undirected)} exceed {max_defect_fraction:.4f} (boundary {boundary}, same-direction {same_direction})')
+    opposed = opposed_fraction(weapon, objects)
+    if opposed > max_opposed:
+        raise ValueError(f'Near-closed policy: {opposed:.3%} of the surface area is wound against its authored normals (limit {max_opposed:.1%})')
     return {'conversion': 'doubleSided=true to native single-sided; outward-wound near-closed shells', 'triangles': int(total),
             'edges': len(undirected), 'boundary_edges': boundary, 'nonmanifold_edges': nonmanifold,
             'same_direction_edges': same_direction, 'defect_fraction': defects / max(len(undirected), 1),
+            'opposed_area_fraction': opposed,
             'max_defect_fraction': max_defect_fraction, 'shells': sorted(shells, key=lambda s: -s['triangles'])[:8],
-            'shell_count': len(shells)}
+            'shell_count': len(shells), 'enclosed_cavities_removed': removed_cavities}
+
+
+def repair_exported_normals(weapon, fit, doc, binary, exported):
+    """Blender's glTF import can leave a corner normal at zero (it merges coincident vertices that carry different custom
+    normals). Take such a vertex's normal from the glTF vertex at the same source position instead, carried through the
+    fit rotation like every other normal; fall back to the area-weighted face normal. Returns (mesh, count)."""
+    np, Vector = weapon.np, weapon.Vector
+    verts, uvs, faces, normals = exported
+    bad = [i for i, n in enumerate(normals) if abs(sum(c * c for c in n) - 1) > .001]
+    if not bad:
+        return exported, 0
+    helper = weapon.load_module_snapshot('trellis_weapon_normals', Path(weapon.__file__).with_name('TrellisWeaponNormals.py'))
+    prim = doc['meshes'][0]['primitives'][0]
+    position = helper.accessor(doc, binary, prim['attributes']['POSITION']).astype(float)
+    normal = helper.accessor(doc, binary, prim['attributes']['NORMAL']).astype(float)
+    table = {}
+    for p, n in zip(position, normal):
+        table.setdefault(tuple(np.round(p, 4)), []).append(n)
+    inverse = fit.inverted()
+    transform = fit.to_3x3().inverted().transposed()
+    fixed = list(normals)
+    for i in bad:
+        source = inverse @ Vector(verts[i])
+        key = tuple(np.round([source.x, source.z, -source.y], 4))
+        candidates = table.get(key)
+        if candidates:
+            n = np.mean(candidates, axis=0)
+            n = Vector((n[0], -n[2], n[1]))
+            n = (transform @ n).normalized() if n.length else Vector((0, 0, 1))
+        else:
+            n = Vector((0, 0, 0))
+            for face in faces:
+                if i in face:
+                    a, b, c = (Vector(verts[j]) for j in face)
+                    n += (b - a).cross(c - a)
+            n = n.normalized() if n.length else Vector((0, 0, 1))
+        fixed[i] = tuple(n)
+    return (verts, uvs, faces, fixed), len(bad)
 
 
 def import_glb(weapon, item, out, mode):
@@ -547,7 +685,7 @@ def material_maps(weapon, item, doc, binary, index, source, cache, resources, na
     maps = {name: base, name + '_n': normal, name + '_s': spec, name + '_r': rough}
     emission = item.get('emission')
     if emission:
-        mask = emission_mask(np.asarray(base), emission['threshold'], emission['softness'], np)
+        mask = emission_mask(np.asarray(base), emission['threshold'], emission['softness'], np, emission.get('saturation_min'))
         glow = np.clip(np.asarray(base) * mask[..., None] * emission.get('gain', 1), 0, 1)
         if float(mask.max()) > 0:
             maps[name + '_e'] = glow
@@ -652,7 +790,7 @@ def export_asset(weapon, item, repo, out, mode, helpers):
     if mode == 'export' and any(mat.get('doubleSided', False) for mat in doc['materials']):
         double_sided = {i for i, mat in enumerate(doc['materials']) if mat.get('doubleSided', False)}
         if item.get('double_sided_policy') == 'near_closed':
-            surface_conversion = near_closed_report(weapon, objects, item.get('max_defect_fraction', DEFECT_FRACTION))
+            surface_conversion = near_closed_report(weapon, objects, item.get('max_defect_fraction', DEFECT_FRACTION), item.get('max_opposed_fraction', OPPOSED_FRACTION))
         else:
             surface_conversion = weapon.closed_surface_report(objects, double_sided, len(doc['materials']))
         for mat in doc['materials']:
@@ -693,7 +831,8 @@ def export_asset(weapon, item, repo, out, mode, helpers):
     texture, material_count = item['texture'], len(doc['materials'])
     names, previews, mapdims, material_dims, mesh_data, mesh_names, removed = {}, {}, {}, {}, [], [], 0
     for ob in objects:
-        exported = helpers.export_mesh(ob.data, ob.matrix_world)
+        exported, repaired = repair_exported_normals(weapon, fit, doc, binary, helpers.export_mesh(ob.data, ob.matrix_world))
+        item['_zero_normals_repaired'] = item.get('_zero_normals_repaired', 0) + repaired
         for slot in sorted({t.material_index for t in ob.data.loop_triangles}):
             index = weapon.imported_material_index(ob.data.materials[slot], material_count)
             if index not in names:
@@ -743,7 +882,8 @@ def export_asset(weapon, item, repo, out, mode, helpers):
                   materials_exported=names, map_dimensions=mapdims, removed_exact_zero_area_triangles=removed,
                   footprint=footprint, footprint_area=polygon_area(footprint), use_nodes=use_nodes,
                   use_node_clearance=[signed_distance(n, footprint) for n in use_nodes], reference=reference,
-                  max_size=item['max_size'], emission=item.get('emission'), normal_z_snapped_texels=item.get('_normal_z_snapped'))
+                  max_size=item['max_size'], emission=item.get('emission'), normal_z_snapped_texels=item.get('_normal_z_snapped'),
+                  zero_normals_repaired=item.get('_zero_normals_repaired', 0))
     report['resources_sha256'] = {p.name: hashlib.sha256(p.read_bytes()).hexdigest() for p in resources.iterdir()}
     report['walkmesh_sha256'] = {p.name: hashlib.sha256(p.read_bytes()).hexdigest() for p in walkmesh.iterdir()}
     bpy.ops.wm.save_as_mainfile(filepath=str(out / 'review.blend'))
@@ -855,7 +995,10 @@ def main():
     reports, previews = [], []
     for i, item in enumerate(config['assets']):
         folder = out / f"{i + 1:02d}_{item['asset']}"
-        reports.append(export_asset(weapon, item, repo, folder, args.mode, helpers))
+        try:
+            reports.append(export_asset(weapon, item, repo, folder, args.mode, helpers))
+        except ValueError as error:
+            raise ValueError(f"{item['asset']}: {error}") from error
         previews.append(folder / ('views.png' if args.mode == 'inspect' else 'review_0.png'))
     weapon.contact_sheet(previews, out / 'contact_sheet.png', 360)
     (out / 'reports.json').write_text(json.dumps(reports, indent=2) + '\n')

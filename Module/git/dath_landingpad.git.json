@@ -19035,7 +19035,7 @@
         },
         "Appearance": {
           "type": "dword",
-          "value": 63
+          "value": 32097
         },
         "AutoRemoveKey": {
           "type": "byte",
@@ -19262,7 +19262,7 @@
         },
         "Appearance": {
           "type": "dword",
-          "value": 63
+          "value": 32097
         },
         "AutoRemoveKey": {
           "type": "byte",
@@ -19736,7 +19736,7 @@
         },
         "Appearance": {
           "type": "dword",
-          "value": 4892
+          "value": 32096
         },
         "AutoRemoveKey": {
           "type": "byte",
@@ -19983,7 +19983,7 @@
         },
         "Appearance": {
           "type": "dword",
-          "value": 4892
+          "value": 32096
         },
         "AutoRemoveKey": {
           "type": "byte",
@@ -40511,7 +40511,7 @@
         },
         "Appearance": {
           "type": "dword",
-          "value": 20565
+          "value": 32095
         },
         "AutoRemoveKey": {
           "type": "byte",
@@ -40758,7 +40758,7 @@
         },
         "Appearance": {
           "type": "dword",
-          "value": 20565
+          "value": 32095
         },
         "AutoRemoveKey": {
           "type": "byte",

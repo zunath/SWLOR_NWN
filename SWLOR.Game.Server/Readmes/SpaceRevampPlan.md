@@ -646,7 +646,7 @@ Ships at launch.
 Crafted intermediates that hull and module recipes consume. Appendix D lists every component, which skill crafts it, and which loot tables drop it.
 
 - **Generic families:** Hull Frame, Ship Reactor, Energy Emitter, Ordnance Assembly, Shield Projector, Thruster Assembly, Sensor Suite, Extraction Head, Life Support System.
-- **Manufacturer components:** one per manufacturer (for example Republic Shield Matrix, Sith Targeting Core). They are not crafted. They come from that manufacturer's faction store, its NPC ships' loot, and salvage of those wrecks.
+- **Manufacturer components:** one per manufacturer (for example Republic Shield Matrix, Sith Targeting Core). They are not crafted. They come from that manufacturer's faction store, its NPC ships' loot and salvage of those wrecks, and more slowly from data sites and aces. They're tradeable, so no character needs faction standing to build a ship.
 - **Rare components** for Advanced ships: Thorilide Core, Aurodium Plating, Prototype Core, and salvaged parts carrying a rare trait.
 - **Tiers:**
   - Five material tiers. Items at in-between ranks use their tier's component.
@@ -1417,18 +1417,18 @@ Every ship recipe uses its generic components, its role's component, and its man
 
 ### Manufacturer components
 
-These are not crafted. Each one comes from its manufacturer's side of the galaxy, so flying a maker's ships ties you to that faction.
+These are not crafted, and they're tradeable. Each one is easiest to get from its manufacturer's side of the galaxy, so flying a maker's ships pulls you toward that faction. Every one also drops, more slowly, from data sites and aces, so no character needs standing with a faction to build its ships.
 
 | Component | Manufacturer | Sources |
 |---|---|---|
-| Republic Shield Matrix | Republic | Republic Military agent store; Republic freight contracts |
-| Sith Targeting Core | Sith | Sith Military agent store; Imperial (T6) ships and Sith capitals; their wrecks |
-| Mandalorian Plating | Mandalorian | Mandalorian agent store; Clan Zel Arun (T4) ships and Mandalorian capitals; their wrecks |
-| Czerka Industrial Frame | Czerka | Czerka agent store; Czerka freight contracts; rare output from Assembly Line holdings |
-| Hutt Cargo Coupling | Hutt | Hutt Cartel agent store; Hutt enforcers; their wrecks |
-| Corellian Drive Kit | Corellian | Smugglers agent store; pirate raiders and the T1-T5 pirate factions; their wrecks |
+| Republic Shield Matrix | Republic | Republic Military agent store; Republic freight contracts; data sites and aces (slower) |
+| Sith Targeting Core | Sith | Sith Military agent store; Imperial (T6) ships and Sith capitals; their wrecks; data sites and aces (slower) |
+| Mandalorian Plating | Mandalorian | Mandalorian agent store; Clan Zel Arun (T4) ships and Mandalorian capitals; their wrecks; data sites and aces (slower) |
+| Czerka Industrial Frame | Czerka | Czerka agent store; Czerka freight contracts; rare output from Assembly Line holdings; data sites and aces (slower) |
+| Hutt Cargo Coupling | Hutt | Hutt Cartel agent store; Hutt enforcers; their wrecks; data sites and aces (slower) |
+| Corellian Drive Kit | Corellian | Smugglers agent store; pirate raiders and the T1-T5 pirate factions; their wrecks; data sites and aces (slower) |
 | Chiss Sensor Array | Chiss | Data sites, aces, and the black markets at Smuggler's Moon, Tatooine and Hutlar |
-| Raider Refit Hull | Rift Raider | Wild Space only: Rift Raider ships and cache sites |
+| Raider Refit Hull | Rift Raider | Wild Space only: Rift Raider ships and cache sites; Wild Space data sites and aces (slower) |
 
 ### Rare components (Advanced ships)
 

@@ -1512,69 +1512,6 @@
     "Call": "SendMessageToPC(_controllerPlayer, ColorToken.Red(\"This conversation encountered an error and was closed.\"))"
   },
   {
-    "File": "SWLOR.Game.Server/Feature/GuiDefinition/ViewModel/CraftViewModel.cs",
-    "Line": 507,
-    "Member": "OnWindowClosed",
-    "Delivery": "Retained",
-    "Call": "SendMessageToPC(Player, Item.ItemsHeldMessage)"
-  },
-  {
-    "File": "SWLOR.Game.Server/Feature/GuiDefinition/ViewModel/CraftViewModel.cs",
-    "Line": 597,
-    "Member": "IsValidEnhancement",
-    "Delivery": "Retained",
-    "Call": "FloatingTextStringOnCreature(\"Item must be in your inventory.\", Player, false)"
-  },
-  {
-    "File": "SWLOR.Game.Server/Feature/GuiDefinition/ViewModel/CraftViewModel.cs",
-    "Line": 632,
-    "Member": "IsValidEnhancement",
-    "Delivery": "Retained",
-    "Call": "FloatingTextStringOnCreature(\"Item must be an enhancement.\", Player, false)"
-  },
-  {
-    "File": "SWLOR.Game.Server/Feature/GuiDefinition/ViewModel/CraftViewModel.cs",
-    "Line": 657,
-    "Member": "IsValidEnhancement",
-    "Delivery": "Retained",
-    "Call": "FloatingTextStringOnCreature(\"Item must be an enhancement.\", Player, false)"
-  },
-  {
-    "File": "SWLOR.Game.Server/Feature/GuiDefinition/ViewModel/CraftViewModel.cs",
-    "Line": 664,
-    "Member": "IsValidEnhancement",
-    "Delivery": "Retained",
-    "Call": "FloatingTextStringOnCreature(\"Enhancement must be within 5 levels of recipe level.\", Player, false)"
-  },
-  {
-    "File": "SWLOR.Game.Server/Feature/GuiDefinition/ViewModel/CraftViewModel.cs",
-    "Line": 1265,
-    "Member": "SwitchToCraftMode",
-    "Delivery": "Retained",
-    "Call": "SendMessageToPC(Player, $\"Remaining licensed runs: {_activeBlueprint.LicensedRuns}\")"
-  },
-  {
-    "File": "SWLOR.Game.Server/Feature/GuiDefinition/ViewModel/CraftViewModel.cs",
-    "Line": 1462,
-    "Member": "ProcessSuccess",
-    "Delivery": "Retained",
-    "Call": "SendMessageToPC(Player, ColorToken.Green(\"Enhancement applied successfully.\"))"
-  },
-  {
-    "File": "SWLOR.Game.Server/Feature/GuiDefinition/ViewModel/CraftViewModel.cs",
-    "Line": 1466,
-    "Member": "ProcessSuccess",
-    "Delivery": "Retained",
-    "Call": "SendMessageToPC(Player, ColorToken.Red(\"Enhancement failed to apply.\"))"
-  },
-  {
-    "File": "SWLOR.Game.Server/Feature/GuiDefinition/ViewModel/CraftViewModel.cs",
-    "Line": 1562,
-    "Member": "ProcessBlueprintBonuses",
-    "Delivery": "Retained",
-    "Call": "SendMessageToPC(Player, ColorToken.Green($\"Blueprint Bonus applied: {bonusName} +{bonus.Amount}\"))"
-  },
-  {
     "File": "SWLOR.Game.Server/Feature/GuiDefinition/ViewModel/CreatureManagerViewModel.cs",
     "Line": 148,
     "Member": "EnterSpawnTargeting",
@@ -3263,38 +3200,38 @@
   },
   {
     "File": "SWLOR.Game.Server/Feature/ScavengePoint.cs",
-    "Line": 27,
+    "Line": 36,
+    "Member": "OnOpened",
+    "Delivery": "Retained",
+    "Call": "SendMessageToPC(user, ScavengeLifecycle.SiteHeldMessage)"
+  },
+  {
+    "File": "SWLOR.Game.Server/Feature/ScavengePoint.cs",
+    "Line": 45,
+    "Member": "OnOpened",
+    "Delivery": "Retained",
+    "Call": "SendMessageToPC(user, occupant.Player == user\n                    ? \"You are already searching this site.\"\n                    : ScavengeLifecycle.SiteInUseMessage)"
+  },
+  {
+    "File": "SWLOR.Game.Server/Feature/ScavengePoint.cs",
+    "Line": 54,
     "Member": "OnOpened",
     "Delivery": "Retained",
     "Call": "SendMessageToPC(user, \"This object has already been searched through.\")"
   },
   {
     "File": "SWLOR.Game.Server/Feature/ScavengePoint.cs",
-    "Line": 39,
+    "Line": 65,
     "Member": "OnOpened",
     "Delivery": "Retained",
     "Call": "SendMessageToPC(user, $\"The assigned loot table '{lootTableName}' does not exist. Please inform an admin that this scavenge site is broken.\")"
   },
   {
     "File": "SWLOR.Game.Server/Feature/ScavengePoint.cs",
-    "Line": 47,
+    "Line": 73,
     "Member": "OnOpened",
     "Delivery": "Retained",
     "Call": "SendMessageToPC(user, $\"You aren't skilled enough to scavenge through this. (Required Gathering rank: {CraftRankMilestones.RequiredRankForTier(requiredLevel)})\")"
-  },
-  {
-    "File": "SWLOR.Game.Server/Feature/ScavengePoint.cs",
-    "Line": 83,
-    "Member": "OnOpened",
-    "Delivery": "Retained",
-    "Call": "FloatingTextStringOnCreature(ColorToken.SkillCheck($\"Search *success*: ({roll} + {GetAbilityModifier(AbilityType.Perception, user)} vs. DC: {dc})\"), user, false)"
-  },
-  {
-    "File": "SWLOR.Game.Server/Feature/ScavengePoint.cs",
-    "Line": 100,
-    "Member": "OnOpened",
-    "Delivery": "Retained",
-    "Call": "FloatingTextStringOnCreature(ColorToken.SkillCheck($\"Search *failure*: ({roll} + {GetAbilityModifier(AbilityType.Perception, user)} vs DC: {dc})\"), user, false)"
   },
   {
     "File": "SWLOR.Game.Server/Feature/ServerTasks.cs",
@@ -5584,6 +5521,20 @@
     "Member": "GiveReward",
     "Delivery": "Retained",
     "Call": "SendMessageToPC(player, $\"You earned {Amount} XP!\")"
+  },
+  {
+    "File": "SWLOR.Game.Server/Service/ScavengeService/NwnScavengeWorld.cs",
+    "Line": 29,
+    "Member": "Message",
+    "Delivery": "Retained",
+    "Call": "SendMessageToPC(player, text)"
+  },
+  {
+    "File": "SWLOR.Game.Server/Service/ScavengeService/NwnScavengeWorld.cs",
+    "Line": 34,
+    "Member": "SkillCheckMessage",
+    "Delivery": "Retained",
+    "Call": "FloatingTextStringOnCreature(ColorToken.SkillCheck(text), player, false)"
   },
   {
     "File": "SWLOR.Game.Server/Service/Shuttle.cs",

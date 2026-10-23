@@ -17,8 +17,8 @@ internal static class FabricationPerkLines
 
     public static readonly PerkType[] ResearcherPerks =
     {
-        PerkType.FieldNotes, PerkType.SteadyHands, PerkType.BroaderHypotheses, PerkType.Methodical, PerkType.Intuitive,
-        PerkType.PeerReview, PerkType.EfficientAnalysis, PerkType.SecondOpinion, PerkType.Breakthrough
+        PerkType.FieldNotes, PerkType.EfficientAnalysis, PerkType.Methodical, PerkType.Intuitive, PerkType.BroaderHypotheses,
+        PerkType.SteadyHands, PerkType.PeerReview, PerkType.SecondOpinion, PerkType.Breakthrough
     };
 
     public static IReadOnlyDictionary<PerkType, PerkDetail> Builder() => new FabricationBuilderPerkDefinition().BuildPerks();

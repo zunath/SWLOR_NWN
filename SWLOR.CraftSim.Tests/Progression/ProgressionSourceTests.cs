@@ -55,7 +55,7 @@ namespace SWLOR.CraftSim.Tests.Progression
             // The defaults are the server's constants; the anchors above prove the constants, these prove the copies.
             var defaults = new ProgressionAssumptions();
             defaults.SecondsPerHarvest.Should().Be(5.0, "HarvesterItemDefinition uses .Delay(5f)");
-            defaults.SecondsPerScavengeAttempt.Should().Be(2.0, "ScavengePoint plays a 2 second search animation per search");
+            defaults.ScavengeVisitSeconds.Should().Be(2.0, "ScavengePoint played one 2 second search animation for the whole visit, before its one or two attempts");
             defaults.RefineSecondsPerBatch.Should().Be(6.0, "RefineryViewModel.RefiningDelaySeconds is 6f");
             ProgressionAssumptions.RoleplayXpPerHour.Should().Be(1500 * 2, "RoleplayXP.cs pays 1500 base XP once every 300 six-second heartbeats");
         }

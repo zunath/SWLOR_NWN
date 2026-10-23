@@ -147,7 +147,7 @@ namespace SWLOR.CraftSim.Scenario.Experiment
 
             text.AppendLine("## Reference pairs");
             text.AppendLine();
-            text.AppendLine("The approved numbers, and the numbers in force before this search (Methodical -15), against the same Intuitive.");
+            text.AppendLine("The approved numbers (Methodical -10), the implemented -15 and -12 between them, against the same Intuitive (-1 trial, +20 points).");
             text.AppendLine();
             text.AppendLine(Table(results
                 .Where(result => result.Intuitive == ApprovedIntuitive && result.Methodical.Trials == 2 && new[] { -10, -12, -15 }.Contains(result.Methodical.Chance))

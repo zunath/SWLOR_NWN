@@ -63,6 +63,11 @@ namespace SWLOR.CraftSim.Gates
     /// chance p, divided by the items an attempt makes. "At matched quality": the new minigame's average quality must also be at least the
     /// legacy player's, within <see cref="GateThresholds.MaterialQualityShortfallPoints"/>, so a minigame that makes much worse items
     /// cannot match materials per item by being easy; the materials are then those of items at least as good as today's.
+    /// <para>
+    /// The comparison is over the recipes the legacy policy makes at least once in the cell. A recipe it never makes has no legacy
+    /// figure, and counting it on the new side alone would inflate the new stacks per item with a cost the legacy side never pays; those
+    /// recipes are reported separately (how many, and how the new minigame fares on them) and still count in the never-made check.
+    /// </para>
     /// </summary>
     public sealed class MaterialParityGate : IBalanceGate
     {
@@ -87,6 +92,8 @@ namespace SWLOR.CraftSim.Gates
             var table = new EvidenceTable(
                 "Band", "Gear", "Recipes played", "New stacks per item", "Legacy stacks per item", "Ratio",
                 "New success", "Legacy success", "New avg quality", "Legacy avg quality", "Quality matched", "Never made (new / legacy)", "Parity rule", "Verdict");
+            var unmatched = new EvidenceTable(
+                "Band", "Gear", "Recipe", "Level", "New success", "New avg quality");
             var failures = new List<string>();
             var compared = 0;
             var usesLess = 0;
@@ -95,30 +102,50 @@ namespace SWLOR.CraftSim.Gates
             {
                 for (var gearIndex = 0; gearIndex < run.Gear.Count; gearIndex++)
                 {
+                    // The stacks, success and quality figures are over the recipes the legacy policy makes at least once; the never-made
+                    // shares are over every recipe played, so a recipe only one side can make still counts against it.
                     var newSide = new Side();
                     var legacySide = new Side();
+                    var newAll = new Side();
+                    var legacyAll = new Side();
+                    var legacyNever = new List<(RecipeEntry Recipe, double SuccessRate, double MeanScore)>();
                     foreach (var recipe in band.Recipes)
                     {
                         var rank = run.RankFor(recipe);
                         var cell = run.Adaptive(recipe, rank, gearIndex);
                         var legacy = run.Legacy(recipe.Level, rank, gearIndex);
-                        newSide.Add(recipe, cell.SuccessRate, cell.MeanScore);
-                        legacySide.Add(recipe, legacy.SuccessRate, legacy.MeanScore);
+                        newAll.Add(recipe, cell.SuccessRate, cell.MeanScore);
+                        legacyAll.Add(recipe, legacy.SuccessRate, legacy.MeanScore);
+                        if (legacy.SuccessRate > 0)
+                        {
+                            newSide.Add(recipe, cell.SuccessRate, cell.MeanScore);
+                            legacySide.Add(recipe, legacy.SuccessRate, legacy.MeanScore);
+                        }
+                        else
+                        {
+                            legacyNever.Add((recipe, cell.SuccessRate, cell.MeanScore));
+                        }
+                    }
+
+                    foreach (var (recipe, successRate, meanScore) in legacyNever)
+                    {
+                        unmatched.Add(
+                            band.Band.Name, run.Gear[gearIndex].Name, recipe.Type.ToString(), recipe.Level.ToString(), Percent(successRate), Percent(meanScore));
                     }
 
                     var label = $"{band.Band.Name} / {run.Gear[gearIndex].Name}";
                     if (legacySide.Items <= 0)
                     {
-                        table.Add(band.Band.Name, run.Gear[gearIndex].Name, band.Recipes.Count.ToString(), newSide.Items <= 0 ? "never made" : Number(newSide.StacksPerItem, 2), "n/a", "n/a",
-                            Percent(newSide.SuccessRate), Percent(legacySide.SuccessRate), Percent(newSide.Quality), Percent(legacySide.Quality), "n/a",
-                            $"{Percent(newSide.NeverShare)} / {Percent(legacySide.NeverShare)}", "n/a", "Skipped: the legacy baseline makes no item here");
+                        table.Add(band.Band.Name, run.Gear[gearIndex].Name, band.Recipes.Count.ToString(), newAll.Items <= 0 ? "never made" : Number(newAll.StacksPerItem, 2), "n/a", "n/a",
+                            Percent(newAll.SuccessRate), Percent(legacyAll.SuccessRate), Percent(newAll.Quality), Percent(legacyAll.Quality), "n/a",
+                            $"{Percent(newAll.NeverShare)} / {Percent(legacyAll.NeverShare)}", "n/a", "Skipped: the legacy baseline makes no item here");
                         continue;
                     }
 
                     compared++;
                     var ratio = newSide.Items <= 0 ? double.PositiveInfinity : newSide.StacksPerItem / legacySide.StacksPerItem;
                     var parity = MaterialParityRule.Judge(ratio, legacySide.SuccessRate, run.Thresholds);
-                    var neverOk = newSide.NeverShare <= legacySide.NeverShare + run.Thresholds.MaterialExtraNeverCraftedShare;
+                    var neverOk = newAll.NeverShare <= legacyAll.NeverShare + run.Thresholds.MaterialExtraNeverCraftedShare;
                     var qualityMatched = newSide.Quality * 100 + run.Thresholds.MaterialQualityShortfallPoints >= legacySide.Quality * 100;
                     var passed = parity.Passed && neverOk && qualityMatched;
                     if (passed && parity.UsesLess)
@@ -143,16 +170,24 @@ namespace SWLOR.CraftSim.Gates
                         Percent(newSide.Quality),
                         Percent(legacySide.Quality),
                         qualityMatched ? "yes" : "no",
-                        $"{Percent(newSide.NeverShare)} / {Percent(legacySide.NeverShare)}",
+                        $"{Percent(newAll.NeverShare)} / {Percent(legacyAll.NeverShare)}",
                         parity.Describe(ratio, run.Thresholds),
                         passed ? "Passed" : "Failed");
                 }
             }
 
-            var tables = new[]
+            var tables = new List<GateTable>
             {
-                table.ToGateTable("Component stacks consumed per item made, failures included (both sides play to maximize quality; quality is the mean over attempts, a failure counting 0)")
+                table.ToGateTable(
+                    "Component stacks consumed per item made, failures included, over the recipes the legacy policy makes at least once in the cell " +
+                    "(both sides play to maximize quality; quality is the mean over attempts, a failure counting 0)")
             };
+
+            if (unmatched.RowCount > 0)
+            {
+                tables.Add(unmatched.ToGateTable(
+                    "Recipes the legacy policy never makes in the cell, left out of the stack and quality comparison above (they still count in the never-made check)"));
+            }
 
             if (compared == 0)
                 return new GateResult(Name, GateVerdict.NotRun, "The legacy baseline makes no item in any band, so there is nothing to compare.", tables);

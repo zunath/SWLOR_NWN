@@ -16,7 +16,7 @@ new minigames' economy-parity gate compares against. No new minigame is measured
   - **Lookahead**: at every step it tries each usable action against 8 sampled futures (the same dice for every candidate), finishes each future with the dominant rotation, and takes the action with the best mean score (0 for a failed craft, 0.5 plus half the quality fraction for a success). It is one step of policy improvement over the rotation, not an optimal player.
 - Material use: a success consumes every committed component stack once, and each failure consumes each stack at 65% (`CraftViewModel.cs:1601-1641`), so stacks per success = stacks x (1 + 0.65 x (1 - p) / p) for a success chance p. A stack is one distinct component line of the recipe; enhancements are not committed. 83 of 3353 recipes make more than one item per craft, so their stacks are shared across every item a success makes.
 
-Rules ported, each checked against the source by `LegacySourceTests`:
+Rules ported. `CraftViewModel.cs` was deleted from the game server after its rules were ported, so they are frozen and cited to commit `ded6cfaf45b66b0a5c4ffe66447bf9c3e24a2ff7`; the others are checked against the source by `LegacySourceTests`:
 
 | Rule | Source |
 | --- | --- |

@@ -265,7 +265,7 @@ public sealed class CircuitEngine : MinigameEngineBase<CircuitState>
             var resolved = effect(s);
             resolved = resolved with { Load = Math.Min(CircuitRules.MaxLoad, resolved.Load + loadGain) };
             if (surges)
-                return Surge(resolved);
+                return Failsafe(Surge(resolved));
 
             return Failsafe((resolved with { Load = 0 }).Adjust(new MinigameMeterDelta(Integrity: -_setup.OverloadIntegrityCost)));
         };

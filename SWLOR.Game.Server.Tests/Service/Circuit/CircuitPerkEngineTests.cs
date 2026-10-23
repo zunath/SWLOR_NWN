@@ -430,6 +430,25 @@ public class CircuitPerkEngineTests
     }
 
     [Test]
+    public void Failsafe_AlsoSavesThePieceWhenSurgeTurnsTheOverloadIntoADischarge()
+    {
+        var perks = new CircuitPerkStats { Surge = true, Failsafe = true };
+        var engine = Engine(Setup(integrity: 3, perks: perks), 6, Overloads, NoSignal);
+
+        var preview = engine.Preview(CircuitActionIds.Wire);
+        preview.Outcomes[1].Label.Should().Be(CircuitEngine.SurgeLabel);
+        preview.Outcomes[1].ResultingStatus.Should().Be(MinigameStatus.InProgress, "the Wire's own cost takes the last Integrity and Failsafe keeps it at 1");
+
+        var result = engine.Perform(CircuitActionIds.Wire);
+
+        result.Status.Should().Be(MinigameStatus.InProgress);
+        result.Outcome.Label.Should().Be(CircuitEngine.SurgeLabel);
+        engine.Meters.Integrity.Value.Should().Be(1);
+        engine.SurgeReady.Should().BeFalse();
+        engine.FailsafeReady.Should().BeFalse();
+    }
+
+    [Test]
     public void Failsafe_IsNotSpentByAnActionThatFinishesTheItem()
     {
         var setup = Setup(baseProgress: 10, craftsmanship: 1000, integrity: 3, perks: new CircuitPerkStats { Failsafe = true });

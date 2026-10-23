@@ -135,6 +135,11 @@ namespace SWLOR.Game.Server.Feature
             if (GetIsDM(creature) || GetIsDMPossessed(creature)) return;
 
             var item = StringToObject(EventsPlugin.GetEventData("ITEM"));
+            // The native unequip raises this event for any item it is asked to unequip, including one that is
+            // no longer worn, such as the second of two queued unequips. Only a worn item has stats to remove.
+            if (Item.GetItemSlot(creature, item) == InventorySlot.Invalid)
+                return;
+
             ApplyItemStats(creature, item, false);
         }
 

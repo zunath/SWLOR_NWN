@@ -3,6 +3,7 @@ using SWLOR.Game.Server.EngineTests.Framework;
 using SWLOR.Game.Server.Service.CombatService;
 using SWLOR.Game.Server.Service.SkillService;
 using SWLOR.Game.Server.Service.StatService;
+using SWLOR.NWN.API.NWNX;
 using SWLOR.NWN.API.NWScript.Enum;
 using SWLOR.NWN.API.NWScript.Enum.Item;
 using InventorySlot = SWLOR.NWN.API.NWScript.Enum.InventorySlot;
@@ -170,6 +171,81 @@ namespace SWLOR.Game.Server.EngineTests.Definitions
             await ctx.WaitFrameAsync();
             AssertRecord(ctx, player, physical: 0, force: 0, evasion: 0, fp: Stat.BaseFP, stamina: Stat.BaseSTM,
                 "the records match the gear actually worn after a login rebuild");
+        }
+
+        private static readonly (ItemPropertyType Type, int Subtype, int Amount)[] AttackRingProperties =
+        {
+            (ItemPropertyType.Defense, (int)CombatDamageType.Physical, 10),
+            (ItemPropertyType.FP, -1, 8),
+            // Attack has no rebuild, so it shows every unmatched subtraction.
+            (ItemPropertyType.Attack, -1, 20),
+        };
+
+        [EngineTest("An unequip call for an item that is not worn subtracts nothing", Category = Category, TimeoutSeconds = 60f)]
+        public static async Task UnequipOfUnwornItemSubtractsNothing(EngineTestContext ctx)
+        {
+            using var fixture = await PlayerAbilityFixture.CreateAsync(ctx);
+            var player = fixture.Creature;
+            ctx.SuppressNPCNaturalRegen(player);
+            var ring = await CreateItemAsync(ctx, player, "absdef_l6", AttackRingProperties);
+            var attack = Record(player).Attack;
+
+            // The native unequip raises its before event even for an item it then refuses to unequip.
+            await ctx.ExecuteInCreatureContextAsync(player, () => CreaturePlugin.RunUnequip(player, ring));
+            for (var frame = 0; frame < 5; frame++)
+                await ctx.WaitFrameAsync();
+            ctx.AssertEqual(OBJECT_INVALID, GetItemInSlot(InventorySlot.RightRing, player), "the ring was never worn");
+            ctx.AssertEqual(attack, Record(player).Attack, "Attack is unchanged by an unequip of an unworn item");
+        }
+
+        [EngineTest("Two queued unequips of one worn item subtract its stats once", Category = Category, TimeoutSeconds = 60f)]
+        public static async Task RepeatedUnequipSubtractsOnce(EngineTestContext ctx)
+        {
+            using var fixture = await PlayerAbilityFixture.CreateAsync(ctx);
+            var player = fixture.Creature;
+            ctx.SuppressNPCNaturalRegen(player);
+            var ring = await CreateItemAsync(ctx, player, "absdef_l6", AttackRingProperties);
+            var attack = Record(player).Attack;
+            await EquipAsync(ctx, player, ring, InventorySlot.RightRing);
+            ctx.AssertEqual(attack + 20, Record(player).Attack, "equipping adds the ring's Attack");
+
+            await ctx.ExecuteInCreatureContextAsync(player, () =>
+            {
+                ActionUnequipItem(ring);
+                ActionUnequipItem(ring);
+            });
+            for (var frame = 0; frame < 60; frame++)
+                await ctx.WaitFrameAsync();
+            ctx.AssertEqual(OBJECT_INVALID, GetItemInSlot(InventorySlot.RightRing, player), "the ring is unequipped");
+            ctx.AssertEqual(attack, Record(player).Attack, "the ring's Attack is subtracted exactly once");
+        }
+
+        [EngineTest("Moving a worn weapon to the other hand is refused and adds nothing", Category = Category, TimeoutSeconds = 60f)]
+        public static async Task MovedWeaponCountsOnce(EngineTestContext ctx)
+        {
+            using var fixture = await PlayerAbilityFixture.CreateAsync(ctx);
+            var player = fixture.Creature;
+            ctx.SuppressNPCNaturalRegen(player);
+            foreach (var hand in new[] { InventorySlot.RightHand, InventorySlot.LeftHand })
+            {
+                var held = GetItemInSlot(hand, player);
+                if (GetIsObjectValid(held)) await UnequipAsync(ctx, player, held);
+            }
+            var blade = await CreateItemAsync(ctx, player, "b_longsword", AttackRingProperties);
+            var attack = Record(player).Attack;
+            await EquipAsync(ctx, player, blade, InventorySlot.RightHand);
+            ctx.AssertEqual(attack + 20, Record(player).Attack, "the blade in the right hand counts once");
+
+            // Equipping a worn item into another slot is refused, as moving a ring between ring slots always was.
+            await ctx.ExecuteInCreatureContextAsync(player, () => ActionEquipItem(blade, InventorySlot.LeftHand));
+            for (var frame = 0; frame < 60; frame++)
+                await ctx.WaitFrameAsync();
+            ctx.AssertEqual(blade, GetItemInSlot(InventorySlot.RightHand, player), "the blade stays in the right hand");
+            ctx.AssertEqual(OBJECT_INVALID, GetItemInSlot(InventorySlot.LeftHand, player), "the left hand stays empty");
+            ctx.AssertEqual(attack + 20, Record(player).Attack, "the refused move adds nothing");
+
+            await UnequipAsync(ctx, player, blade);
+            ctx.AssertEqual(attack, Record(player).Attack, "unequipping returns Attack to its base");
         }
 
         private static Player Record(uint player) => DB.Get<Player>(GetObjectUUID(player));

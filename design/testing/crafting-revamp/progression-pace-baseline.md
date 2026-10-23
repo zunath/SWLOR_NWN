@@ -60,7 +60,7 @@ Research under the new values: the highest research XP per elapsed hour against 
 - Components no node supplies (enemy and crate drops of leather and electronics, meat, vendor goods, parts another recipe makes) are left out of the hours and counted in the summary column. The sensitivity table prices them at 20 s a unit, about a harvested unit.
 - Gathering the skill: each rank uses the better of harvesting and refining the best ground vein the tier allows (`CraftRankMilestones.TierForRank`) and searching the best scavenge site, at 30 s between nodes or sites and 2.0 s of search animation a visit. Perception modifier 0.
 
-Rules copied from the server (the model calls everything else directly), each checked against its source by `ProgressionSourceTests` or `LegacySourceTests`:
+Rules copied from the server (the model calls everything else directly), each checked against its source by `ProgressionSourceTests` or `LegacySourceTests`, except the loss rule of the deleted `CraftViewModel.cs`, which is frozen at commit `ded6cfaf45b66b0a5c4ffe66447bf9c3e24a2ff7`:
 
 | Rule | Source |
 | --- | --- |

@@ -7,6 +7,7 @@ using SWLOR.Game.Server.Service.CraftService;
 using SWLOR.Game.Server.Service.CraftService.Minigame;
 using SWLOR.Game.Server.Service.CraftService.Minigame.Reaction;
 using SWLOR.Game.Server.Service.CraftService.RecipeParameters;
+using SWLOR.Game.Server.Service.GuiService;
 using SWLOR.Game.Server.Service.PerkService;
 using SWLOR.Game.Server.Service.SkillService;
 using static SWLOR.NWN.API.NWScript.NWScript;
@@ -252,7 +253,7 @@ public class ReactionRecipeTests
         document.RootElement.GetProperty("OnUsed").GetProperty("value").GetString().Should().Be("craft_on_used");
         var skills = FindLocalInts(document.RootElement, "CRAFTING_SKILL_TYPE_ID").ToList();
         skills.Should().ContainSingle().Which.Should().Be((int)SkillType.Espionage).And.Be(49);
-        CraftMinigameRouting.GetWindow(SkillType.Espionage).Should().NotBe(CraftMinigameRouting.LegacyWindow);
+        CraftMinigameRouting.GetWindow(SkillType.Espionage).Should().Be(GuiWindowType.Reaction);
     }
 
     private static IEnumerable<int> FindLocalInts(JsonElement element, string name)

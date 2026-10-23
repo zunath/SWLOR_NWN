@@ -1,6 +1,6 @@
 namespace SWLOR.CraftSim.Legacy.Crafting
 {
-    /// <summary>The old minigame's formulas, ported one for one from CraftViewModel with its float arithmetic and int truncation.</summary>
+    /// <summary>The old minigame's formulas, ported one for one from the deleted CraftViewModel (frozen at LegacySource.CraftViewModelCommit) with its float arithmetic and int truncation.</summary>
     public static class LegacyCraftRules
     {
         public const int CpPassiveRank = 25;

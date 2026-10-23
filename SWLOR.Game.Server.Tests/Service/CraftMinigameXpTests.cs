@@ -87,7 +87,7 @@ public class CraftMinigameXpTests
     {
         var recipe = new RecipeDetail { Skill = SkillType.Armor, Level = 20 };
 
-        CraftMinigameRouting.GetRoute(SkillType.Armor).IsLegacy.Should().BeTrue();
+        CraftMinigameRouting.TryGetRoute(SkillType.Armor, out _).Should().BeFalse();
         CraftMinigameXp.BaseXp(recipe, 15).Should().Be(Craft.GetBaseRecipeXP(recipe, 15));
     }
 
@@ -126,7 +126,7 @@ public class CraftMinigameXpTests
         var recipe = new RecipeDetail { Skill = skill, Level = 20 };
         var route = CraftMinigameRouting.GetRoute(skill);
         var baseXp = Craft.GetBaseRecipeXP(recipe, 20);
-        var gated = route.Minigame is { } minigame ? CraftMinigameXp.ScaleBaseXp(baseXp, CraftMinigameXp.MultiplierFor(minigame, 20)) : baseXp;
+        var gated = CraftMinigameXp.ScaleBaseXp(baseXp, CraftMinigameXp.MultiplierFor(route.Minigame, 20));
 
         CraftMinigameXp.BaseXp(recipe, 20).Should().Be(CraftMinigameXp.ScaleBaseXp(gated, 1.05));
         CraftMinigameXp.BaseXp(recipe, 20).Should().BeGreaterThan(gated, "600 XP at level is more than 600 after the multiplier");
@@ -186,7 +186,7 @@ public class CraftMinigameXpTests
             .ToArray();
 
         // BaseXp is the only member that applies the pace; the fishing fight scales its own XP with the Line's band alone.
-        Mentioning("CraftMinigameXp.BaseXp(").Should().Equal("CraftSessionLifecycle.cs", "CraftViewModel.cs");
+        Mentioning("CraftMinigameXp.BaseXp(").Should().Equal("CraftSessionLifecycle.cs");
         Mentioning("CraftingPaceMultiplier", "PaceMultiplierFor", "AppliesCraftingPace").Should().Equal("CraftMinigameXp.cs");
     }
 

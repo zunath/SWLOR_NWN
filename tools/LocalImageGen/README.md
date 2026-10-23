@@ -10,12 +10,12 @@ This is an evaluation tool. It does not change the sanctioned icon pipelines in 
 powershell -NoProfile -File tools/LocalImageGen/Setup-LocalImageGen.ps1
 ```
 
-Installs into `D:\AI\LocalImageGen` (override with `-ImageHome` or `SWLOR_LOCAL_IMAGE_HOME`): a Python 3.13 venv, CUDA PyTorch, diffusers, and about 20 GB of weights in `hf-cache`. Nothing is written to the repository.
+Installs into `C:\AI\LocalImageGen` (override with `-ImageHome` or `SWLOR_LOCAL_IMAGE_HOME`): a Python 3.13 venv, CUDA PyTorch, diffusers, and about 20 GB of weights in `hf-cache`. Nothing is written to the repository.
 
 ## Generate
 
 ```powershell
-D:\AI\LocalImageGen\venv\Scripts\python.exe tools/LocalImageGen/local_image_gen.py --prompt "..." --out D:\AI\LocalImageGen\out\test.png --count 4
+C:\AI\LocalImageGen\venv\Scripts\python.exe tools/LocalImageGen/local_image_gen.py --prompt "..." --out C:\AI\LocalImageGen\out\test.png --count 4
 ```
 
 `--count` makes seed variations. `--size` takes `WIDTHxHEIGHT` in multiples of 16.
@@ -23,16 +23,16 @@ D:\AI\LocalImageGen\venv\Scripts\python.exe tools/LocalImageGen/local_image_gen.
 ## Compare with GPT
 
 ```powershell
-D:\AI\LocalImageGen\venv\Scripts\python.exe tools/LocalImageGen/compare_image_models.py --prompts-file tools/LocalImageGen/sample_prompts.txt --gpt codex
+C:\AI\LocalImageGen\venv\Scripts\python.exe tools/LocalImageGen/compare_image_models.py --prompts-file tools/LocalImageGen/sample_prompts.txt --gpt codex
 ```
 
-Each prompt is generated locally, then paired with a GPT image. The run writes `index.html` (side by side, with a "Better" picker per prompt), `NN_side_by_side.png`, and `manifest.json` to `D:\AI\LocalImageGen\comparisons\<timestamp>`.
+Each prompt is generated locally, then paired with a GPT image. The run writes `index.html` (side by side, with a "Better" picker per prompt), `NN_side_by_side.png`, and `manifest.json` to `C:\AI\LocalImageGen\comparisons\<timestamp>`.
 
 GPT sources:
 
 | `--gpt` | How the GPT image is made |
 | --- | --- |
-| `codex` | The script prints each prompt; paste it into the Codex app. It picks up the new image from `~/.codex/generated_images` automatically. Headless `codex exec` does not expose image generation, so this step is manual. |
+| `codex` | The script prints each prompt; paste it into the Codex app. New images in `$CODEX_HOME/generated_images` (default `~/.codex`) are listed and you pick this prompt's image by number, since other Codex sessions write to the same folder. Headless `codex exec` does not expose image generation, so this step is manual. |
 | `api` | OpenAI Images API (`--gpt-model`, default `gpt-image-2`; `--gpt-quality`, default `high`). Needs a real `OPENAI_API_KEY` and is billed per image. |
 | `folder` | Pairs existing GPT images in `--gpt-dir` with the prompts in file-name order. |
 | `none` | Local images only. |

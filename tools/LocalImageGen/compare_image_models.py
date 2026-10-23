@@ -9,7 +9,7 @@ GPT sources (--gpt):
   auto   api when OPENAI_API_KEY looks real, otherwise codex.
 
 Example:
-    D:\\AI\\LocalImageGen\\venv\\Scripts\\python.exe tools\\LocalImageGen\\compare_image_models.py \\
+    C:\\AI\\LocalImageGen\\venv\\Scripts\\python.exe tools\\LocalImageGen\\compare_image_models.py \\
         --prompts-file tools\\LocalImageGen\\sample_prompts.txt --gpt codex
 """
 
@@ -31,7 +31,7 @@ from PIL import Image, ImageDraw, ImageFont
 
 from local_image_gen import DEFAULT_HOME, MODEL_ID, LocalImageGenerator, parse_size
 
-CODEX_IMAGES = Path.home() / ".codex" / "generated_images"
+CODEX_IMAGES = Path(os.environ.get("CODEX_HOME") or Path.home() / ".codex") / "generated_images"
 IMAGE_SUFFIXES = {".png", ".jpg", ".jpeg", ".webp"}
 
 
@@ -50,6 +50,18 @@ def read_prompts(args) -> list[str]:
 def api_key() -> str | None:
     key = os.environ.get("OPENAI_API_KEY", "").strip()
     return key if key.startswith("sk-") else None
+
+
+def validate_api_size(width: int, height: int) -> None:
+    # GPT Image limits from OpenAI's image generation guide; checked up front so a bad
+    # size fails before any local image is generated.
+    pixels = width * height
+    if not 655_360 <= pixels <= 8_294_400:
+        raise SystemExit(f"--size {width}x{height} is {pixels} pixels; the GPT Image API needs 655,360 to 8,294,400.")
+    if max(width, height) > 3840:
+        raise SystemExit("The GPT Image API allows at most 3840 px per edge.")
+    if max(width, height) > 3 * min(width, height):
+        raise SystemExit("The GPT Image API allows aspect ratios up to 3:1.")
 
 
 def gpt_from_api(prompt: str, size: str, model: str, quality: str, target: Path) -> float:
@@ -78,7 +90,20 @@ def codex_images() -> set[Path]:
     return {path for path in CODEX_IMAGES.rglob("*") if path.suffix.lower() in IMAGE_SUFFIXES}
 
 
-def gpt_from_codex(prompt: str, size: str, target: Path, timeout: int) -> float:
+def choose_codex_image(fresh: list[Path]) -> Path | None:
+    """Other Codex sessions write to the same folder, so the user confirms which file is this prompt's."""
+    print("New Codex images:")
+    for number, path in enumerate(fresh, start=1):
+        print(f"  {number}. {path} ({datetime.fromtimestamp(path.stat().st_mtime):%H:%M:%S})")
+    while True:
+        answer = input("Number of this prompt's image (Enter to keep waiting): ").strip()
+        if not answer:
+            return None
+        if answer.isdigit() and 1 <= int(answer) <= len(fresh):
+            return fresh[int(answer) - 1]
+
+
+def gpt_from_codex(prompt: str, size: str, target: Path, timeout: int) -> Path:
     known = codex_images()
     print("\n" + "=" * 78)
     print("Paste this into the Codex app (any thread) and let it generate one image:\n")
@@ -90,11 +115,26 @@ def gpt_from_codex(prompt: str, size: str, target: Path, timeout: int) -> float:
         fresh = sorted(codex_images() - known, key=lambda path: path.stat().st_mtime)
         if fresh:
             time.sleep(1)  # let the writer finish
-            shutil.copyfile(fresh[0], target.with_suffix(fresh[0].suffix.lower()))
-            print(f"Picked up {fresh[0]}")
-            return time.perf_counter() - started
+            chosen = choose_codex_image(fresh)
+            if chosen:
+                copy = target.with_suffix(chosen.suffix.lower())
+                shutil.copyfile(chosen, copy)
+                return copy
+            known.update(fresh)
         time.sleep(2)
     raise SystemExit("Timed out waiting for a Codex image.")
+
+
+def new_output_dir() -> Path:
+    stamp = datetime.now().strftime("%Y%m%d-%H%M%S")
+    for suffix in range(100):
+        candidate = DEFAULT_HOME / "comparisons" / (stamp if suffix == 0 else f"{stamp}-{suffix}")
+        try:
+            candidate.mkdir(parents=True)
+            return candidate
+        except FileExistsError:
+            continue
+    raise SystemExit("Could not create a unique comparison folder.")
 
 
 def label_tile(image: Image.Image, label: str, tile: int) -> Image.Image:
@@ -189,8 +229,14 @@ def main() -> None:
         if len(gpt_files) < len(prompts):
             raise SystemExit(f"{args.gpt_dir} has {len(gpt_files)} images for {len(prompts)} prompts.")
 
-    out = args.out or DEFAULT_HOME / "comparisons" / datetime.now().strftime("%Y%m%d-%H%M%S")
-    out.mkdir(parents=True, exist_ok=True)
+    if gpt_mode == "api":
+        validate_api_size(width, height)
+
+    if args.out:
+        out = args.out
+        out.mkdir(parents=True, exist_ok=True)
+    else:
+        out = new_output_dir()
 
     print(f"Loading {MODEL_ID} ...")
     local = LocalImageGenerator(args.precision, args.offload)
@@ -221,8 +267,7 @@ def main() -> None:
                 seconds = gpt_from_api(prompt, args.size, args.gpt_model, args.gpt_quality, gpt_file)
             elif gpt_mode == "codex":
                 # Wall time here includes pasting the prompt, so it is not a model timing.
-                gpt_from_codex(prompt, args.size, gpt_file, args.codex_timeout)
-                gpt_file = next(out.glob(f"{stem}_gpt.*"))
+                gpt_file = gpt_from_codex(prompt, args.size, gpt_file, args.codex_timeout)
                 seconds = None
             else:
                 gpt_file = out / f"{stem}_gpt{gpt_files[index - 1].suffix.lower()}"

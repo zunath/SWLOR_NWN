@@ -2,7 +2,7 @@
 
 Run with the venv that Setup-LocalImageGen.ps1 creates:
 
-    D:\\AI\\LocalImageGen\\venv\\Scripts\\python.exe tools\\LocalImageGen\\local_image_gen.py \\
+    C:\\AI\\LocalImageGen\\venv\\Scripts\\python.exe tools\\LocalImageGen\\local_image_gen.py \\
         --prompt "a glowing blue kyber crystal on a stone pedestal" --out crystal.png
 """
 
@@ -13,7 +13,7 @@ import os
 import time
 from pathlib import Path
 
-DEFAULT_HOME = Path(os.environ.get("SWLOR_LOCAL_IMAGE_HOME", r"D:\AI\LocalImageGen"))
+DEFAULT_HOME = Path(os.environ.get("SWLOR_LOCAL_IMAGE_HOME", r"C:\AI\LocalImageGen"))
 MODEL_ID = "Tongyi-MAI/Z-Image-Turbo"
 
 # Weights download to the image home, not the user's C: drive Hugging Face cache.

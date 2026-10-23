@@ -11,7 +11,7 @@ by pip and the Hugging Face cache.
 powershell -NoProfile -File tools/LocalImageGen/Setup-LocalImageGen.ps1
 #>
 param(
-    [string]$ImageHome = $(if ($env:SWLOR_LOCAL_IMAGE_HOME) { $env:SWLOR_LOCAL_IMAGE_HOME } else { 'D:\AI\LocalImageGen' }),
+    [string]$ImageHome = $(if ($env:SWLOR_LOCAL_IMAGE_HOME) { $env:SWLOR_LOCAL_IMAGE_HOME } else { 'C:\AI\LocalImageGen' }),
     [string]$Python = 'py -3.13'
 )
 

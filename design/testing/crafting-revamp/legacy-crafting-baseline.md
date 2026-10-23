@@ -20,17 +20,17 @@ Rules ported, each checked against the source by `LegacySourceTests`:
 
 | Rule | Source |
 | --- | --- |
-| Craft action unlock ranks | `CraftViewModel.cs:39-48` |
-| Craft points | `CraftViewModel.cs:446-454` |
-| Durability from the level chart | `CraftViewModel.cs:456-457` |
-| Maximum progress modifier | `CraftViewModel.cs:460-478` |
-| Maximum quality from the level chart | `CraftViewModel.cs:481-482` |
+| Craft action unlock ranks | `CraftViewModel.cs:40-49` |
+| Craft points | `CraftViewModel.cs:447-455` |
+| Durability from the level chart | `CraftViewModel.cs:457-458` |
+| Maximum progress modifier | `CraftViewModel.cs:461-479` |
+| Maximum quality from the level chart | `CraftViewModel.cs:482-483` |
 | Recipe level chart | `RecipeLevelChart.cs:13-99` |
 | Progress per synthesis | `CraftViewModel.cs:1354-1367` |
 | Quality per touch | `CraftViewModel.cs:1369-1384` |
 | Action resolution order | `CraftViewModel.cs:1672-1725` |
 | The 11 craft actions | `CraftViewModel.cs:1727-1864` |
-| Flags and meters reset between crafts | `CraftViewModel.cs:1225-1232` |
+| Flags and meters reset between crafts | `CraftViewModel.cs:1226-1233` |
 | Components and enhancements lost on failure | `CraftViewModel.cs:1601-1641` |
 | Recipe rank requirement | `Craft.cs:327-331` |
 | Crafting gear stats | `EquipmentStats.cs:929-1075` |

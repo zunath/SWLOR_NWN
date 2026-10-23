@@ -1,6 +1,6 @@
 namespace SWLOR.CraftSim.Legacy.Crafting
 {
-    /// <summary>One craft action's real costs and effects (CraftViewModel.cs:1727-1864, unlock ranks :39-48).</summary>
+    /// <summary>One craft action's real costs and effects (CraftViewModel.cs:1727-1864, unlock ranks :40-49).</summary>
     public sealed class LegacyActionSpec
     {
         private LegacyActionSpec(

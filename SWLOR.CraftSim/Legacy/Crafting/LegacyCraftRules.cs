@@ -19,7 +19,7 @@ namespace SWLOR.CraftSim.Legacy.Crafting
         /// <summary>A recipe needs the crafter's rank to be at least its level minus this (Craft.cs:327-331).</summary>
         public const int RecipeUnlockOffset = 3;
 
-        /// <summary>CraftViewModel.cs:446-454: gear CP plus 0.75 per rank, and a flat 31 from rank 25.</summary>
+        /// <summary>CraftViewModel.cs:447-455: gear CP plus 0.75 per rank, and a flat 31 from rank 25.</summary>
         public static int MaxCp(int cpBonus, int rank)
         {
             var maxCp = (int)(cpBonus + rank * 0.75f);
@@ -29,7 +29,7 @@ namespace SWLOR.CraftSim.Legacy.Crafting
             return maxCp;
         }
 
-        /// <summary>CraftViewModel.cs:460-478: both signs of the rank difference raise the progress needed, and the 2.0 cap tests a negative number.</summary>
+        /// <summary>CraftViewModel.cs:461-479: both signs of the rank difference raise the progress needed, and the 2.0 cap tests a negative number.</summary>
         public static int MaxProgress(int levelProgress, int rank, int recipeLevel)
         {
             var levelDifference = rank - recipeLevel;

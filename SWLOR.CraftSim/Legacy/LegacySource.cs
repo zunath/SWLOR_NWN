@@ -16,29 +16,29 @@ namespace SWLOR.CraftSim.Legacy
         public const string EquipmentStats = Server + "Feature/EquipmentStats.cs";
 
         public static readonly SourceReference ActionRanks = new(
-            "Craft action unlock ranks", CraftViewModel, 39, 48,
+            "Craft action unlock ranks", CraftViewModel, 40, 49,
             "RapidSynthesisRequiredSkillRank = 10", "CarefulSynthesisRequiredSkillRank = 30",
             "BasicTouchRequiredSkillRank = 5", "StandardTouchRequiredSkillRank = 15", "PreciseTouchRequiredSkillRank = 35",
             "MastersMendRequiredSkillRank = 10", "SteadyHandRequiredSkillRank = 20", "MuscleMemoryRequiredSkillRank = 40",
             "VenerationRequiredSkillRank = 25", "WasteNotRequiredSkillRank = 8");
 
         public static readonly SourceReference MaxCp = new(
-            "Craft points", CraftViewModel, 446, 454,
+            "Craft points", CraftViewModel, 447, 455,
             "dbPlayer.CPBonus[recipe.Skill]", "_maxCP = (int)(cp + skill * 0.75f);",
             "if (skill >= VenerationRequiredSkillRank)", "_maxCP += 31;", "_cp = _maxCP;");
 
         public static readonly SourceReference MaxDurability = new(
-            "Durability from the level chart", CraftViewModel, 456, 457,
+            "Durability from the level chart", CraftViewModel, 457, 458,
             "_maxDurability = levelDetail.Durability;", "_durability = _maxDurability;");
 
         public static readonly SourceReference MaxProgress = new(
-            "Maximum progress modifier", CraftViewModel, 460, 478,
+            "Maximum progress modifier", CraftViewModel, 461, 479,
             "if (_levelDifference < 0)", "var adjustment = _levelDifference * 0.25f;", "progressModifier = -adjustment;",
             "else if (_levelDifference > 0)", "var adjustment = _levelDifference * 0.05f;", "if (adjustment > 0.25f)",
             "progressModifier = adjustment;", "_maxProgress = (int)(levelDetail.Progress + levelDetail.Progress * progressModifier);");
 
         public static readonly SourceReference MaxQuality = new(
-            "Maximum quality from the level chart", CraftViewModel, 481, 482,
+            "Maximum quality from the level chart", CraftViewModel, 482, 483,
             "_maxQuality = levelDetail.Quality;", "_quality = 0;");
 
         public static readonly SourceReference LevelChart = new(
@@ -77,7 +77,7 @@ namespace SWLOR.CraftSim.Legacy
             "HandleAction(\"Waste Not\", 100, 4, 0,", "_wasteNotStepsRemaining = 4;");
 
         public static readonly SourceReference SessionReset = new(
-            "Flags and meters reset between crafts", CraftViewModel, 1225, 1232,
+            "Flags and meters reset between crafts", CraftViewModel, 1226, 1233,
             "_isMuscleMemoryActive = false;", "_isSteadyHandActive = false;", "_venerationStepsRemaining = 0;",
             "_wasteNotStepsRemaining = 0;", "_durability = _maxDurability;", "_cp = _maxCP;");
 
@@ -98,7 +98,7 @@ namespace SWLOR.CraftSim.Legacy
             "var levelDiff = enhancementLevel - recipe.Level;", "if (levelDiff > 5)");
 
         public static readonly SourceReference EnhancementProgressPenalty = new(
-            "Enhancement progress penalty", CraftViewModel, 695, 754,
+            "Enhancement progress penalty", CraftViewModel, 696, 755,
             "if (type == ItemPropertyType.ProgressPenalty)", "progressPenalty += GetItemPropertyCostTableValue(ip);",
             "var progressPenalty = CalculateProgressPenaltyAndProcessItemProperties(item, _itemPropertiesEnhancement1);",
             "_maxProgress += progressPenalty;");

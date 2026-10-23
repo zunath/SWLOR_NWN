@@ -23,7 +23,7 @@ namespace SWLOR.CraftSim.Legacy
         /// <summary>Source text, without indentation, that must appear in the cited lines.</summary>
         public IReadOnlyList<string> Anchors { get; }
 
-        /// <summary>The citation as written in code comments and reports, such as <c>CraftViewModel.cs:446-454</c>.</summary>
+        /// <summary>The citation as written in code comments and reports, such as <c>CraftViewModel.cs:447-455</c>.</summary>
         public string Citation =>
             $"{System.IO.Path.GetFileName(File)}:{FirstLine}" + (LastLine > FirstLine ? $"-{LastLine}" : string.Empty);
 

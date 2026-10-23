@@ -24,9 +24,9 @@ Rules ported, each checked against the source by `LegacySourceTests`:
 | --- | --- |
 | Enhancement slots | `CraftViewModel.cs:397-406` |
 | Enhancement kinds and level limit | `CraftViewModel.cs:601-666` |
-| Enhancement progress penalty | `CraftViewModel.cs:695-754` |
+| Enhancement progress penalty | `CraftViewModel.cs:696-755` |
 | Enhancement transfer chance | `CraftViewModel.cs:1420-1468` |
-| Maximum progress modifier | `CraftViewModel.cs:460-478` |
+| Maximum progress modifier | `CraftViewModel.cs:461-479` |
 | Recipe level chart | `RecipeLevelChart.cs:13-99` |
 
 ## Representative enhancements

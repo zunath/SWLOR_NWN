@@ -82,7 +82,7 @@ namespace SWLOR.CraftSim.Tests.Report
             report.Should().Contain("### Smithery").And.Contain("### Espionage");
             report.Should().Contain("| Smithery | best gear | 5 | 29 | 30 | 37 | 86 | 105 |");
             report.Should().Contain("Dominant rotation: success").And.Contain("Lookahead: success");
-            report.Should().Contain("`CraftViewModel.cs:446-454`");
+            report.Should().Contain("`CraftViewModel.cs:447-455`");
         }
 
         [Test]

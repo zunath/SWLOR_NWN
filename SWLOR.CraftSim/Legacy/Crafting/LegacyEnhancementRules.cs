@@ -20,7 +20,7 @@ namespace SWLOR.CraftSim.Legacy.Crafting
         public static bool IsAllowedFor(int enhancementLevel, int recipeLevel) =>
             enhancementLevel - recipeLevel <= MaximumLevelAboveRecipe;
 
-        /// <summary>CraftViewModel.cs:695-754: the piece needs the sum of the enhancements' progress penalties on top of its maximum progress.</summary>
+        /// <summary>CraftViewModel.cs:696-755: the piece needs the sum of the enhancements' progress penalties on top of its maximum progress.</summary>
         public static int MaxProgressWithEnhancements(int maxProgress, int totalProgressPenalty) =>
             maxProgress + totalProgressPenalty;
 

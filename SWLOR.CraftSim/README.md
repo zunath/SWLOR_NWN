@@ -32,6 +32,16 @@ Enhancements (`LegacyEnhancementRules`, `LegacyEnhancementBaseline`, `Data/Enhan
 
 Gathering rules depend on Might, Perception and Willpower. They are swept over modifiers -1 to +5 (`AttributeSweep`) until the real medians of active characters are measured.
 
+## Progression pace
+
+`progression` models how long a new crafter takes today to reach rank 50 (workstream 11 of the plan). It plays the legacy lookahead player at every recipe level and gear level from the seed, then walks ranks 0 to 49 with expected values: at each rank the crafter makes recipes of their own level, earns `GetDeltaXP`-priced XP plus the quality share (`CraftOutcomeRules`), and gathers the components each craft consumes (`Progression/ComponentSupply`: ore veins and trees are harvested, bushes, herbs, vegetable patches and supply crates are scavenge sites, refined ore adds refining). It also models Gathering itself, a guild task cohort (hand-ins, the quick-craft catch-up that raises the guild rank, the rank-50 chore, Agriculture's catch tasks) and a research cohort (job lengths, slots, XP ceilings), and prices the proposals for the owner: the guild task XP award, the crafting-only XP multiplier or rank cost cap that meets a target, and the research ceiling.
+
+```powershell
+dotnet SWLOR.CraftSim/bin/Debug/net10.0/SWLOR.CraftSim.dll progression --runs 500 --seed 1 --out design/testing/crafting-revamp/progression-pace-baseline.md
+```
+
+`progression` takes `--runs` (lookahead crafts per recipe level, skill and gear level, default 500), `--seed`, `--skills`, `--node-seconds` (default 30), `--overhead-seconds` (per craft, default 30), `--might`, `--out`, `--json` and `--repo`. The seed repeats the report exactly; it takes about two minutes at 500 runs. Node travel, the per-craft overhead, the turn-in time, research visits and seconds per fishing bite are unmeasured estimates (`Progression/ProgressionAssumptions`); the report's sensitivity table shows how far they move the hours, and the client evidence replaces them. Nothing in the game changes: the XP and guild numbers are proposals. `ProgressionSourceTests` pins the copied rules (harvest, scavenge and refining times, RP XP pace, research job length, guild points) to the server source.
+
 ## Balance gates
 
 `Gates/` holds the plan's seven gates (`GateNames`): an `IBalanceGate` receives a `GateContext` (recipes, gear, runs, seed) and returns a `GateResult` with a verdict and evidence tables, and `GateReport` writes them as markdown with the inputs and limitations `SkillPerkStandards.md` asks for. The gates are generic over `ICraftMinigameEngine`: a minigame supplies a scenario and never writes its own solver or gate framework.
@@ -74,7 +84,7 @@ The recipes are the cohort's recipes that have an enhancement slot, an even samp
 Mapping a penalty onto a minigame: `request.Enhancements.TotalProgressPenalty` (count x penalty each, in the old window's progress units) goes through the engine's own enhancement handling, the same one its window uses when the player slots enhancements, as each phase 1 PR mapped the old progress penalty:
 
 - **Forge (Smithery):** extra Shape. `ForgeRules.EnhancementShapePercent(total, recipe.Level)` gives the percent, which `ForgeSetup` takes as its `EnhancementShapePercent`.
-- **Circuit (Engineering):** extra Assembly. `CircuitSetup` takes the total as `enhancementProgressPenalty` and adds it to `MaxAssembly`.
+- **Circuit (Engineering):** extra Assembly. `CircuitSetup` takes the total as `enhancementProgressPenalty` and adds `CircuitRules.EnhancementAssembly(total, assemblySize)` to `MaxAssembly`: the penalty, capped at `MaxEnhancementAssemblyShare` of the Assembly the recipe itself needs (low-level recipes need so little Assembly that their enhancements' penalty would more than double it).
 - **Kitchen (Agriculture):** extra Doneness. `KitchenTuning.EnhancementDoneness(total)` is passed to `KitchenEngine` as `extraDoneness`.
 - **Reaction:** `EnhancementSupport.NoSlots`.
 
@@ -102,6 +112,40 @@ Phase 2 of a minigame workstream adds one class to this project, normally under 
 Gathering and fishing implement `IXpRateCohort` instead: it pairs the legacy loop with its replacement over the plan's activity cohorts (harvesting per node tier, scavenging per site level, fishing per fish-level band) at the parity attribute medians in `GateContext.Attributes`, and `XpRateGate` compares them. `LengthTarget` already carries their 3-8, 3-6 and 5-8 action targets.
 
 The game server changes only by `ICraftMinigameEngine.Fork`, which every engine inherits from `MinigameEngineBase<TState>`, and by the third enhancement slot's own threshold constant in `CraftOutcomeRules` (a starting value that gate 7 sets).
+
+### The fishing study
+
+Fishing is not an item craft, so it has no `ICraftScenario`. The `fishing` command plays the Line (`Fishing/`) against the catch roll it replaced and runs the gates that apply to it:
+
+```powershell
+dotnet SWLOR.CraftSim/bin/Release/net10.0/SWLOR.CraftSim.dll fishing --runs 1000 --seed 1 --out design/testing/crafting-revamp/fishing-line-parity.md
+```
+
+It takes `--runs` (fights per case, default 200), `--seed`, `--seconds-per-turn` (default 8), `--out` (default `design/testing/crafting-revamp/fishing-line-parity.md`), `--json`, `--strict` (exit 2 when a gate failed or was not run) and `--repo`. The same seed repeats a report exactly; build in Release for a 1,000-fight run (about two minutes).
+
+- **Economy parity** (`FishingCatchRateGate`): the adaptive player's catch rate against today's `40 + 10 x (rank - fish level) + 2 x Willpower`, over the Willpower sweep, by rank above the fish's level and per rank over the real rod, bait and location pools. The corridor is Willpower 10-14 with a tolerance in points (`FishingParityOptions`).
+- **Length** (`FishingLengthGate`): the adaptive player's mean turns against `LengthTarget.FishingFight`.
+- **XP rate**: `FishingXpRateCohort` implements `IXpRateCohort` as the plan pins it: fish-level bands (0-10, 11-20, 21-30, 31-40, 41-52), rank equal to the fish level (at most 50), the best rod tier that rank allows, and every (rod, bait) table of every location that rod reaches weighted equally, half by day and half by night (a table with only a day pool or only a night pool keeps its half). XP is paid per bite (today's at the bite, the rest of the multiplied XP when the fight ends on its own, in proportion to its length up to `LineRules.XpFullTurns` turns, so neither abandoning a fight nor losing it on purpose earns more per hour than today), and the game keeps the pace from below with `LineRules.TurnSeconds` between two actions. The loops differ in time and in the multiplier the game server puts on the bite's XP: `LineRules.XpMultiplierForLevel`, read through `CraftMinigameXp`, one per fish-level band and each the least multiple of 0.05 that passes the band. `FishingXpRateCohort` takes an optional multiplier function to show what another multiplier would do, and `FishingParityOptions.FreeOpeningTurn` plays the fastest allowed pace (first action at once, so a fight of n actions lasts n - 1 turns), which the report shows as evidence next to the gate.
+- **Evidence tables** for the Angler perk draft: each proposed purchase, the two rank-20 styles against each other, and the rare fish with Trophy Catch.
+
+The rule-of-thumb player (`RuleOfThumbPolicy`) marks the other end of skill: it reads the announced move and answers by a fixed rule. The legacy catch roll is ported in `Legacy/Gathering/FishingCatchModel.cs` from `Service/Fishing.cs` at commit d5f1c0466, where it was checked against the source; it left `Fishing.cs` with the Line and is no longer checked.
+
+### The harvesting study
+
+Harvesting is not an item craft either. The `harvesting` command plays Quick Harvest and Prospecting sessions (`Harvesting/`) against the harvests they replace, over every node tier and Gathering rank, and runs the gates that apply:
+
+```powershell
+dotnet SWLOR.CraftSim/bin/Release/net10.0/SWLOR.CraftSim.dll harvesting --runs 20000 --seed 1 --out design/testing/crafting-revamp/harvesting-prospecting-parity.md
+```
+
+It takes `--runs` (nodes per plan and case, default 4000; 20,000 takes under a minute), `--seed`, `--out` (default `design/testing/crafting-revamp/harvesting-prospecting-parity.md`), `--json`, `--strict` and `--repo`. Nodes are made as the game makes them (`ProspectingNode.Create`), and the module's veins and trees, with their gem entries, come from `Module/utp` and the harvesting loot tables (`HarvestNodeCatalog`).
+
+- **Economy parity** (`HarvestingYieldGate`): Quick Harvest equals today's expected items, XP, seconds and charges per node (the d4 pool at the owner's attribute reference, a Might modifier of 0), and a skilled session stays within +15% of today's items per node and not below it. The skilled player is the careful plan with the most items; the +15% cap is checked against every plan, Heavy Strike plans included (`ProspectorPlan`). Two more caps are checked in the same gate: the gems per node of a session (the gems of its ordinary rolls and of its gem pockets) stay within +15% of today's at every tier and rank, whatever the plan, and a skilled session spends at most 1.5 times today's harvester charges per node (a Survey costs none). A seam is a gem pocket with `GemPocketShare` of the chance a roll of the node's table is a gem, so the gems follow the table's own gem chance at every tier.
+- **Length** (`HarvestingLengthGate`): the skilled player's mean actions per node, 3-8.
+- **XP rate**: `HarvestingXpRateCohort` implements `IXpRateCohort` for each loop (Quick Harvest, the skilled session, the strike-only session): a case per node tier at the rank equal to the vein's level, XP per item. Both loops are timed in harvest delays (5 s), a session's actions converted from the seconds `ProspectingRules` names. A separate check holds Quick Harvest to exactly today's XP per hour.
+- **Evidence tables**: charges, seconds and gems per node, the Heavy Strike plans, the rank milestones, what a collapse costs, and refining XP before and now (each unit pays its ore's flat XP times `GetDeltaXP(ore level - rank) / GetDeltaXP(0)`, where an ore's level is the level of the vein of its tier, so it is the flat XP at the ore's level).
+
+Every plan reads only what the window shows; none reads a hidden seam.
 
 ### Research Experiment
 

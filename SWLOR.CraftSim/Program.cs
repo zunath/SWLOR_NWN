@@ -6,6 +6,9 @@ SWLOR crafting simulator
 
   baseline [--section crafting|gathering|all] [--runs 200] [--seed 1] [--gathering-runs 20000] [--skills Smithery,...] [--out report.md] [--json results.json] [--repo path]
       Plays today's rules (the old craft minigame, harvesting, scavenging, refining and the fishing catch roll) and writes the legacy baseline.
+  progression [--runs 500] [--seed 1] [--skills Smithery,...] [--node-seconds 30] [--overhead-seconds 30] [--might 0] [--out report.md] [--json results.json] [--repo path]
+      Models a new crafter's hours to rank 50 in each crafting skill (components gathered included) and in Gathering, the guild task and research cohorts,
+      and writes the progression-pace report with the proposals for the owner (default design/testing/crafting-revamp/progression-pace-baseline.md is the committed one).
   legacy-enhancements [--runs 200] [--seed 1] [--recipes-per-band 6] [--skills Smithery,...] [--gear all|best] [--out report.md] [--json results.json] [--repo path]
       Plays today's rules with 1, 2 and 3 enhancements slotted and writes the expected transferred enhancements per band, tier and slot count (the yardstick of gate 7).
   gear [--repo path]
@@ -16,6 +19,12 @@ SWLOR crafting simulator
       --gates also takes gate numbers, 1 to 7 (7 is enhancement parity).
   gates --list
       Lists the scenarios minigames have added.
+  fishing [--runs 200] [--seed 1] [--seconds-per-turn 8] [--out report.md] [--json results.json] [--strict] [--repo path]
+      Plays the Line (the fishing fight) against today's catch roll over a Willpower sweep, runs the XP-rate gate over the fishing cohort,
+      and writes the report (default design/testing/crafting-revamp/fishing-line-parity.md).
+  harvesting [--runs 4000] [--seed 1] [--out report.md] [--json results.json] [--strict] [--repo path]
+      Plays Quick Harvest and Prospecting sessions against today's harvests over every node tier and Gathering rank, runs the economy-parity, length and
+      XP-rate gates over the harvesting cohort, and writes the report (default design/testing/crafting-revamp/harvesting-prospecting-parity.md).
   research [--runs 400] [--adaptive-runs 40] [--seed 1] [--seconds-per-action 6] [--job-overhead-seconds 30] [--out report.md] [--repo path]
       Plays the research Experiment and writes its report: length, reduction size against today's dice and the supply change, the time cut, and Fabrication XP per real hour.
 """;
@@ -31,10 +40,13 @@ try
     return args[0] switch
     {
         "baseline" => BaselineCommand.Run(args.Skip(1).ToArray(), Console.Out),
+        "progression" => ProgressionCommand.Run(args.Skip(1).ToArray(), Console.Out),
         "legacy-enhancements" => LegacyEnhancementsCommand.Run(args.Skip(1).ToArray(), Console.Out),
         "gear" => GearCommand.Run(args.Skip(1).ToArray(), Console.Out),
         "gates" => GatesCommand.Run(args.Skip(1).ToArray(), Console.Out),
+        "fishing" => FishingCommand.Run(args.Skip(1).ToArray(), Console.Out),
         "research" => ResearchCommand.Run(args.Skip(1).ToArray(), Console.Out),
+        "harvesting" => HarvestingCommand.Run(args.Skip(1).ToArray(), Console.Out),
         _ => Fail($"Unknown command '{args[0]}'.")
     };
 }

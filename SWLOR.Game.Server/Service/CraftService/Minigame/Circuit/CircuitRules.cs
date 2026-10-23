@@ -56,12 +56,47 @@ public static class CircuitRules
     public const int RankPassiveCpRank = 25;
     public const int RankPassiveCp = 31;
 
-    // Skill ranks at which each action unlocks.
-    public const int WireRank = 0;
-    public const int DischargeAssemblyRank = 0;
-    public const int TuneRank = 5;
-    public const int DischargeCalibrationRank = 5;
+    // What a Circuit craft's base XP is multiplied by, for an item and for a failure alike, per recipe-level band. CraftSim's XP-rate
+    // gate (gate 6) found the Circuit pays less XP per hour than the old window at low levels, where the old window took 6 to 9
+    // actions and the Circuit takes 14 to 18. Each is the smallest two-decimal multiplier at which every case of its band (every gear
+    // tier, with none to three enhancements) reaches the old window's XP per hour on both of the samples the notes name (6 recipes
+    // per band at seed 1, 10 per band at seed 2). Higher bands need little or nothing.
+    public const double XpMultiplierLevels1To10 = 2.29;
+    public const double XpMultiplierLevels11To20 = 1.54;
+    public const double XpMultiplierLevels21To30 = 1.15;
+    public const double XpMultiplierLevels31To40 = 1.0;
+    public const double XpMultiplierLevels41AndUp = 1.0;
+
+    /// <summary>The multiplier on a Circuit craft's base XP for a recipe of the given level.</summary>
+    public static double XpMultiplierFor(int recipeLevel) => recipeLevel switch
+    {
+        <= 10 => XpMultiplierLevels1To10,
+        <= 20 => XpMultiplierLevels11To20,
+        <= 30 => XpMultiplierLevels21To30,
+        <= 40 => XpMultiplierLevels31To40,
+        _ => XpMultiplierLevels41AndUp
+    };
+
+    /// <summary>The Engineering rank that unlocks Patch. Every other action is open from rank 0; rank changes power and CP only.</summary>
     public const int PatchRank = 10;
-    public const int GroundRank = 15;
-    public const int BoostRank = 20;
+
+    /// <summary>How much Assembly the Circuit adds per point of an enhancement's progress penalty. The penalty is in the old window's progress units.</summary>
+    public const double EnhancementAssemblyPerPenalty = 1.0;
+
+    /// <summary>
+    /// The most the enhancements together add to the Assembly, as a share of the Assembly the recipe itself needs. Low-level recipes
+    /// need little Assembly, so an uncapped penalty would more than double it and no craft could finish.
+    /// </summary>
+    public const double MaxEnhancementAssemblyShare = 0.3;
+
+    /// <summary>The Assembly the selected enhancements add to what a piece needs, from their total progress penalty and the Assembly the recipe itself needs.</summary>
+    public static int EnhancementAssembly(int progressPenalty, int assemblySize)
+    {
+        if (progressPenalty <= 0)
+            return 0;
+
+        var scaled = (int)Math.Round(progressPenalty * EnhancementAssemblyPerPenalty, MidpointRounding.AwayFromZero);
+        var cap = (int)Math.Round(Math.Max(1, assemblySize) * MaxEnhancementAssemblyShare, MidpointRounding.AwayFromZero);
+        return Math.Min(scaled, cap);
+    }
 }

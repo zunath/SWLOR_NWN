@@ -65,7 +65,8 @@ namespace SWLOR.CraftSim.Tests.Report
             report.Should().Contain("-1 to +5");
             report.Should().Contain("| +2 | 50% | 2.50 | 3.75 |");
             report.Should().Contain("WIL +2 (14)");
-            report.Should().Contain("`HarvesterItemDefinition.cs:102-109`").And.Contain("`Fishing.cs:452-462`");
+            report.Should().Contain("`ProspectingNode.cs:62`").And.Contain("`GatheringLevels.cs:20-23`").And.Contain("`FishingFightLifecycle.cs:52-62`");
+            report.Should().Contain("until the Line fight replaced it");
             report.Should().Contain("| 1 (5) | 1050 | 600 |");
         }
 

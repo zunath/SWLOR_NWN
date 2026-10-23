@@ -228,12 +228,9 @@ public sealed class CircuitEngine : MinigameEngineBase<CircuitState>
     /// <summary>An announced Clean Signal has been used or has passed once the action is done.</summary>
     protected override CircuitState EndTurn(CircuitState state) => state with { NextOpportunity = null };
 
-    /// <summary>Rolls whether the next turn announces a Clean Signal. Nothing is announced before Tune unlocks.</summary>
+    /// <summary>Rolls whether the next turn announces a Clean Signal.</summary>
     protected override CircuitState RollForecast(CircuitState state, IMinigameRandom random)
     {
-        if (_setup.Rank < CircuitRules.TuneRank)
-            return state;
-
         return random.D100() <= CircuitRules.CleanSignalChancePercent
             ? state with
             {

@@ -162,8 +162,9 @@ public class FabricatorSessionTests
         var lifecycle = Lifecycle(1, 1, 1, 1);
         var recipe = _world.Recipes[TestRecipe];
         var baseXp = Craft.GetBaseRecipeXP(recipe, 25);
-        var scaled = CraftMinigameXp.ScaleBaseXp(baseXp, FabricatorRules.XpMultiplierForLevel(recipe.Level));
-        CraftMinigameXp.BaseXp(recipe, 25).Should().Be(scaled, "the lifecycle reads the base XP through CraftMinigameXp");
+        var gated = CraftMinigameXp.ScaleBaseXp(baseXp, FabricatorRules.XpMultiplierForLevel(recipe.Level));
+        var scaled = CraftMinigameXp.ScaleBaseXp(gated, CraftMinigameXp.CraftingPaceMultiplier);
+        CraftMinigameXp.BaseXp(recipe, 25).Should().Be(scaled, "the lifecycle reads the base XP through CraftMinigameXp, gate multiplier then pace");
         var session = StartSession(lifecycle);
 
         var success = lifecycle.Succeed(FakeCraftSessionWorld.PlayerHandle, _player, session, new MinigameMeter(60, 100));
@@ -181,7 +182,7 @@ public class FabricatorSessionTests
     }
 
     [Test]
-    public void OnlyTheFabricatorHasAnXpMultiplier_AndItDiffersByLevelBand()
+    public void TheFabricatorsXpMultiplierDiffersByLevelBand_AndAMinigameWithoutOnePaysTodaysXp()
     {
         CraftMinigameXp.MultiplierFor(CraftMinigameType.Fabricator, 5).Should().Be(FabricatorRules.XpMultiplierLevels1To10);
         CraftMinigameXp.MultiplierFor(CraftMinigameType.Fabricator, 10).Should().Be(FabricatorRules.XpMultiplierLevels1To10);
@@ -195,7 +196,7 @@ public class FabricatorSessionTests
             FabricatorRules.XpMultiplierLevels1To10, FabricatorRules.XpMultiplierLevels11To20, FabricatorRules.XpMultiplierLevels21To30,
             FabricatorRules.XpMultiplierLevels31To40, FabricatorRules.XpMultiplierLevels41Up
         }.Should().OnlyContain(multiplier => multiplier >= 1.0, "a multiplier only ever lifts the XP");
-        CraftMinigameXp.MultiplierFor(CraftMinigameType.Circuit, 20).Should().Be(1.0);
+        CraftMinigameXp.MultiplierFor(CraftMinigameType.Kitchen, 20).Should().Be(1.0);
         CraftMinigameXp.MultiplierFor(CraftMinigameType.Forge, 20).Should().Be(1.0);
         CraftMinigameXp.ScaleBaseXp(600, 1.0).Should().Be(600);
         CraftMinigameXp.ScaleBaseXp(600, 2.5).Should().Be(1500);

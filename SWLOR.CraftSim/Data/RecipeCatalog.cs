@@ -35,6 +35,10 @@ namespace SWLOR.CraftSim.Data
         public IEnumerable<RecipeEntry> ForSkill(SkillType skill) =>
             _recipes.Where(r => r.Skill == skill).OrderBy(r => r.Level);
 
+        /// <summary>Active recipes of one skill that a crafter can make without learning them first, in level order.</summary>
+        public IEnumerable<RecipeEntry> ForNewCrafter(SkillType skill) =>
+            ForSkill(skill).Where(r => !r.RequiresLearning);
+
         private void LoadAll()
         {
             var seen = new HashSet<RecipeType>();

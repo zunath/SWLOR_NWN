@@ -3,6 +3,7 @@ using NUnit.Framework;
 using SWLOR.Game.Server.Service;
 using SWLOR.Game.Server.Service.CraftService;
 using SWLOR.Game.Server.Service.CraftService.Minigame;
+using SWLOR.Game.Server.Service.SkillService;
 
 namespace SWLOR.Game.Server.Tests.Service;
 
@@ -23,6 +24,8 @@ public class QuickCraftTests
         public bool IsPlayerAvailable(uint player) => PlayerAvailable;
 
         public void BeginBatch(uint player) => Events.Add("begin");
+
+        public void PlayStationWork(uint player, SkillType skill) => Events.Add($"loop:{skill}");
 
         public void EndBatch(uint player) => Events.Add("end");
 
@@ -57,6 +60,7 @@ public class QuickCraftTests
     private static RecipeDetail Recipe() => new()
     {
         Resref = "gadget",
+        Skill = SkillType.Smithery,
         Level = 20,
         Components = new Dictionary<string, int> { ["ore"] = 2, ["wire"] = 1 }
     };
@@ -150,7 +154,7 @@ public class QuickCraftTests
         batch.OnEnded += finished => ended = finished.Ended;
 
         batch.Start();
-        world.Events.Should().Equal("begin", $"animate:{QuickCraftBatch.SecondsPerItem}");
+        world.Events.Should().Equal("begin", "loop:Smithery", $"animate:{QuickCraftBatch.SecondsPerItem}");
         world.Created.Should().Be(0, "the first item takes its animation to make");
 
         world.FinishAnimation();
@@ -167,6 +171,27 @@ public class QuickCraftTests
         world.Events.Count(e => e.StartsWith("animate")).Should().Be(3);
         world.Events.Where(e => e.StartsWith("create")).Should().OnlyContain(e => e == "create:gadget");
         world.Messages.Should().ContainSingle().Which.Should().Be("Quick craft finished: 3 items made.");
+    }
+
+    [TestCase(SkillType.Smithery)]
+    [TestCase(SkillType.Engineering)]
+    [TestCase(SkillType.Fabrication)]
+    [TestCase(SkillType.Agriculture)]
+    [TestCase(SkillType.Espionage)]
+    public void Batch_StartsTheStationClipOfTheRecipesSkillOnceForTheWholeBatch(SkillType skill)
+    {
+        var world = WorldWith(10, 10);
+        var recipe = Recipe();
+        recipe.Skill = skill;
+        var batch = new QuickCraftBatch(world, Player, recipe, 3);
+
+        batch.Start();
+        world.FinishAnimation();
+        world.FinishAnimation();
+        world.FinishAnimation();
+
+        world.Events.Where(e => e.StartsWith("loop")).Should().Equal($"loop:{skill}");
+        world.Events.IndexOf($"loop:{skill}").Should().Be(1, "the loop starts right after the player is held at the station, before the first item");
     }
 
     [Test]

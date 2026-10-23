@@ -1,4 +1,5 @@
 using System;
+using System.Collections.Generic;
 using SWLOR.Game.Server.Service.SkillService;
 
 namespace SWLOR.Game.Server.Service.CraftService;
@@ -19,6 +20,17 @@ public static class CraftRankMilestones
 
     // Fabrication ranks that each add a concurrent research job and a licensed run on new blueprints.
     private static readonly int[] ResearchMilestoneRanks = { 25, 50 };
+
+    // Gathering ranks at which a Strike and a Heavy Strike in a Prospecting session yield more (replacing Might), and at which one
+    // Survey reveals one more seam (replacing Perception).
+    private static readonly int[] ProspectingYieldRanks = { 15, 30, 45 };
+    private static readonly int[] ProspectingSurveyRanks = { 25, 50 };
+
+    /// <summary>The most tiers of Prospecting yield a Gathering rank can earn.</summary>
+    public const int MaxProspectingYieldTier = 3;
+
+    /// <summary>The most seams one Survey can reveal.</summary>
+    public const int MaxProspectingSurveyReveals = 3;
 
     /// <summary>
     /// Tier 1 to 5 for a Gathering rank (harvesters, ores, scavenge sites, Hard Look level) or an Engineering rank
@@ -47,6 +59,18 @@ public static class CraftRankMilestones
     /// <summary>Licensed runs added to new blueprints: one at Fabrication 25 and another at 50.</summary>
     public static int BlueprintLicensedRunBonusForRank(int fabricationRank) =>
         CountReached(ResearchMilestoneRanks, fabricationRank);
+
+    /// <summary>The tier of Prospecting yield a Gathering rank earns: 0 below rank 15, then one more at ranks 15, 30 and 45.</summary>
+    public static int ProspectingYieldTierForRank(int gatheringRank) => CountReached(ProspectingYieldRanks, gatheringRank);
+
+    /// <summary>The seams one Survey reveals at a Gathering rank: 1, then one more at ranks 25 and 50.</summary>
+    public static int ProspectingSurveyRevealsForRank(int gatheringRank) => 1 + CountReached(ProspectingSurveyRanks, gatheringRank);
+
+    /// <summary>The lowest Gathering rank of each tier of Prospecting yield, for text.</summary>
+    public static IReadOnlyList<int> ProspectingYieldMilestoneRanks => ProspectingYieldRanks;
+
+    /// <summary>The Gathering ranks at which a Survey reveals one more seam, for text.</summary>
+    public static IReadOnlyList<int> ProspectingSurveyMilestoneRanks => ProspectingSurveyRanks;
 
     public static int GetHarvesterTier(uint creature) => TierForRank(GetGatheringRank(creature));
 

@@ -11,15 +11,15 @@ namespace SWLOR.CraftSim.Legacy.Gathering
         public const int LastSiteLevel = 5;
         public const int MaximumHardLook = 5;
 
-        /// <summary>ScavengePoint.cs:55: d100 &lt;= Hard Look x 10 + Perception modifier x 5.</summary>
+        /// <summary>ScavengePoint.cs:56: d100 &lt;= Hard Look x 10 + Perception modifier x 5.</summary>
         public static double SecondAttemptChance(int hardLook, int perceptionModifier) =>
             Math.Clamp(hardLook * 10 + perceptionModifier * 5, 0, 100) / 100.0;
 
-        /// <summary>ScavengePoint.cs:77: the chance that d20 + Perception modifier reaches the DC.</summary>
+        /// <summary>ScavengePoint.cs:81: the chance that d20 + Perception modifier reaches the DC.</summary>
         public static double SuccessChance(int dc, int perceptionModifier) =>
             Math.Clamp(21 - (dc - perceptionModifier), 0, 20) / 20.0;
 
-        /// <summary>The second attempt's success chance, averaged over the d3 the DC rose by (ScavengePoint.cs:103).</summary>
+        /// <summary>The second attempt's success chance, averaged over the d3 the DC rose by (ScavengePoint.cs:104).</summary>
         public static double SecondAttemptSuccessChance(int perceptionModifier)
         {
             var total = 0.0;
@@ -36,10 +36,10 @@ namespace SWLOR.CraftSim.Legacy.Gathering
         public static double ExpectedAttemptsPerSite(int hardLook, int perceptionModifier) =>
             1 + SecondAttemptChance(hardLook, perceptionModifier);
 
-        /// <summary>The level XP is measured at: 10 x the site's level (ScavengePoint.cs:69).</summary>
+        /// <summary>The level XP is measured at: 10 x the site's level (ScavengePoint.cs:70).</summary>
         public static int SiteXpLevel(int siteLevel) => 10 * siteLevel;
 
-        /// <summary>XP for a successful attempt, from the server's own chart; a failed attempt pays a quarter (ScavengePoint.cs:93-100).</summary>
+        /// <summary>XP for a successful attempt, from the server's own chart; a failed attempt pays a quarter (ScavengePoint.cs:94-101).</summary>
         public static int SuccessXp(int siteLevel, int gatheringRank) => ServerXp.ForDelta(SiteXpLevel(siteLevel) - gatheringRank);
 
         public static double ExpectedXpPerSite(int siteLevel, int gatheringRank, int hardLook, int perceptionModifier)

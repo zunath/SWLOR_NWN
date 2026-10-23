@@ -30,7 +30,10 @@ public sealed class ReactionSettings
         MeasurePotency = ReactionRules.ScaleGain(ReactionRules.MeasurePotency, Craftsmanship, progressFactor);
         ChargePotency = ReactionRules.ScaleGain(ReactionRules.ChargePotency, Craftsmanship, progressFactor);
         RefineSubtlety = ReactionRules.ScaleGain(ReactionRules.RefineSubtlety, Control, qualityFactor);
+        ActionStability = ReactionRules.ActionStability(PeakIntensity);
         PeakChargeStability = ReactionRules.PeakChargeStability(PeakIntensity);
+        StabilizeCp = ReactionRules.StabilizeCp(RecipeLevel);
+        DampenCp = ReactionRules.DampenCp(RecipeLevel);
     }
 
     public ReactionCycle Cycle { get; }
@@ -50,6 +53,9 @@ public sealed class ReactionSettings
 
     public int MaxCp { get; }
 
+    /// <summary>The Stability every action but Stabilize costs.</summary>
+    public int ActionStability { get; }
+
     /// <summary>The Potency Measure adds in any phase.</summary>
     public int MeasurePotency { get; }
 
@@ -61,6 +67,15 @@ public sealed class ReactionSettings
 
     /// <summary>The Stability a Charge at Peak costs beyond the action cost.</summary>
     public int PeakChargeStability { get; }
+
+    /// <summary>The CP Stabilize costs for this recipe.</summary>
+    public int StabilizeCp { get; }
+
+    /// <summary>The CP Dampen costs for this recipe.</summary>
+    public int DampenCp { get; }
+
+    /// <summary>True once Espionage rank reaches the rank Stabilize unlocks at.</summary>
+    public bool StabilizeUnlocked => Rank >= ReactionRules.StabilizeUnlockRank;
 
     /// <summary>Builds the settings for an Espionage recipe and the Espionage rank of the crafter.</summary>
     public static ReactionSettings ForRecipe(RecipeDetail recipe, int espionageRank)

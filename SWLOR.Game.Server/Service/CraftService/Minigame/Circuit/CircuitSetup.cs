@@ -40,7 +40,8 @@ public sealed class CircuitSetup
         AssemblySize = Math.Max(1, (int)Math.Round(baseProgress * assemblyShare / 50.0, MidpointRounding.AwayFromZero));
         CalibrationSize = Math.Max(1, (int)Math.Round(baseQuality * (100 - assemblyShare) / 50.0, MidpointRounding.AwayFromZero));
         MaxIntegrity = Math.Max(1, maxIntegrity);
-        MaxAssembly = AssemblySize + EnhancementProgressPenalty;
+        EnhancementAssembly = CircuitRules.EnhancementAssembly(EnhancementProgressPenalty, AssemblySize);
+        MaxAssembly = AssemblySize + EnhancementAssembly;
         MaxCalibration = CalibrationSize;
         MaxCp = (int)(GearCp + Rank * CircuitRules.CpPerRank) + (Rank >= CircuitRules.RankPassiveCpRank ? CircuitRules.RankPassiveCp : 0);
     }
@@ -57,7 +58,11 @@ public sealed class CircuitSetup
 
     public int GearCp { get; }
 
+    /// <summary>The selected enhancements' total progress penalty, in the old window's progress units.</summary>
     public int EnhancementProgressPenalty { get; }
+
+    /// <summary>The Assembly the enhancements add to what the piece needs: the penalty, scaled and capped by <see cref="CircuitRules.EnhancementAssembly"/>.</summary>
+    public int EnhancementAssembly { get; }
 
     /// <summary>The Assembly the recipe itself needs. Wire and Discharge output is a share of this, so enhancements do not shrink it.</summary>
     public int AssemblySize { get; }
@@ -108,18 +113,8 @@ public sealed class CircuitSetup
     public int DischargeCalibrationGain(int load) =>
         load <= 0 ? 0 : Scale(CalibrationSize, CircuitRules.DischargePercentPerLoad * load, load, CalibrationFactor());
 
-    /// <summary>The unlock rank of an action, or -1 for an unknown action.</summary>
-    public static int UnlockRank(string actionId) => actionId switch
-    {
-        CircuitActionIds.Wire => CircuitRules.WireRank,
-        CircuitActionIds.DischargeAssembly => CircuitRules.DischargeAssemblyRank,
-        CircuitActionIds.Tune => CircuitRules.TuneRank,
-        CircuitActionIds.DischargeCalibration => CircuitRules.DischargeCalibrationRank,
-        CircuitActionIds.Patch => CircuitRules.PatchRank,
-        CircuitActionIds.Ground => CircuitRules.GroundRank,
-        CircuitActionIds.Boost => CircuitRules.BoostRank,
-        _ => -1
-    };
+    /// <summary>The Engineering rank an action unlocks at: Patch at 10 and everything else at 0.</summary>
+    public static int UnlockRank(string actionId) => actionId == CircuitActionIds.Patch ? CircuitRules.PatchRank : 0;
 
     public bool IsUnlocked(string actionId) => Rank >= UnlockRank(actionId);
 

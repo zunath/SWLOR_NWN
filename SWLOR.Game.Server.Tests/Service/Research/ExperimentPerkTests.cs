@@ -407,6 +407,24 @@ public class ExperimentPerkTests
     }
 
     [Test]
+    public void BreakthroughIsRefusedWhileARefinedMethodWaits_SoTheCpIsNotSpentForNothing()
+    {
+        var engine = Engine(Breakthrough, RandomLevel, 200, Hits(10));
+        engine.Perform(ExperimentActionIds.RefineMethod).Performed.Should().BeTrue();
+
+        var preview = engine.Preview(ExperimentActionIds.Breakthrough);
+
+        preview.Enabled.Should().BeFalse();
+        preview.DisabledReason.Should().Be("Your refined method is waiting for a Test. Run it before Breakthrough.");
+        engine.Perform(ExperimentActionIds.Breakthrough).Performed.Should().BeFalse();
+        engine.MethodBonus.Should().Be(15);
+
+        engine.Perform(ExperimentActionIds.TestCreditReduction);
+
+        engine.Preview(ExperimentActionIds.Breakthrough).Enabled.Should().BeTrue("the refined Test has used the method up");
+    }
+
+    [Test]
     public void BreakthroughGrantsNoEvidenceBeyondTheOneTest_AndNoExtraBonus()
     {
         var engine = Engine(Breakthrough, RandomLevel, 200, Hits(10));

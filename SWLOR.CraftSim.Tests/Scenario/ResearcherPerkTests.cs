@@ -104,6 +104,49 @@ namespace SWLOR.CraftSim.Tests.Scenario
         }
 
         [Test]
+        public void ABreakthroughBuildMeetsTheSameDiceAtTheSameTrialAsAnUnperkedOne()
+        {
+            // Breakthrough's guaranteed Test takes no roll; every later Test must still read its own trial's roll.
+            var experimentCase = new ExperimentCase(3, 5, 50, Mid);
+            var rolls = new Dictionary<bool, List<int>> { [false] = new(), [true] = new() };
+            foreach (var breakthrough in new[] { false, true })
+            {
+                var tuning = ExperimentTuning.Default with { Breakthrough = breakthrough, Trials = 6 };
+                ExperimentEngine engine = null;
+                var random = new RecordingRandom(new TrialPairedRandom(
+                    () => engine?.TrialsUsed ?? 0,
+                    trial => SimMinigameRandom.ForRun(1, ResearcherPerkStudy.StudyStream, 3, 5, 50, Mid.Tier, 0, 0, trial)), rolls[breakthrough]);
+                engine = new ExperimentEngine(random, experimentCase.CreateSetup(tuning));
+                CraftPlayer.Play(engine, new ExperimentPerkedPolicy(ResearchCandidate.CreditReduction));
+            }
+
+            // The unperked researcher's Tests at trials 0..5 and the Breakthrough researcher's Tests at trials 1..5 read the same dice.
+            rolls[true].Should().Equal(rolls[false].Skip(rolls[false].Count - rolls[true].Count));
+        }
+
+        /// <summary>Records every D100 an engine draws.</summary>
+        private sealed class RecordingRandom : IMinigameRandom
+        {
+            private readonly IMinigameRandom _inner;
+            private readonly List<int> _rolls;
+
+            public RecordingRandom(IMinigameRandom inner, List<int> rolls)
+            {
+                _inner = inner;
+                _rolls = rolls;
+            }
+
+            public int D100()
+            {
+                var roll = _inner.D100();
+                _rolls.Add(roll);
+                return roll;
+            }
+
+            public int Next(int minInclusive, int maxExclusive) => _inner.Next(minInclusive, maxExclusive);
+        }
+
+        [Test]
         public void TheScoreIsTheShareOfTheMaximumTheExperimentIsFor()
         {
             var fixedCase = new ExperimentCase(1, 1, 10, Mid);

@@ -27,11 +27,12 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition
             $"You have {ExperimentRules.Trials} trials (Researcher perks can change that). A Test or an Analyze uses one. Refine Method and Conclude use none. The experiment " +
             "ends when the trials run out or you Conclude.\n\n" +
             "ACTIONS\n" +
+            "The numbers below are the base values. Researcher perks change them, and the window shows yours.\n" +
             "- Test: gather evidence. Each button shows its chance of finding evidence. A Test that finds some adds 1 to its candidate.\n" +
-            $"- Refine Method: costs {ExperimentRules.RefineCp} Fabrication CP and raises the chance of your next Test by " +
+            $"- Refine Method: costs {ExperimentRules.RefineCp} Fabrication CP at base and raises the chance of your next Test by " +
             $"{ExperimentRules.RefineChanceBonusPercent} points. That Test uses it up whether or not it finds evidence, and you cannot " +
             "stack it.\n" +
-            $"- Analyze: spends your spare evidence to cut the job's time, {ExperimentRules.TimeCutPercentPerEvidence}% for each piece, " +
+            $"- Analyze: spends your spare evidence to cut the job's time, {ExperimentRules.TimeCutPercentPerEvidence}% for each piece at base, " +
             $"up to {ExperimentRules.TimeCutCapPercent}% in all. It uses one trial, so keep one back for it.\n" +
             "- Conclude: end the experiment now with the evidence so far.\n\n" +
             "LEVELS 3, 5 AND 8\n" +

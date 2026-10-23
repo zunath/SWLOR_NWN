@@ -108,10 +108,15 @@ namespace SWLOR.CraftSim.Scenario.Experiment
             var noEvidence = 0;
             for (var run = 0; run < runs; run++)
             {
-                // The build is left out of the stream on purpose: two builds of one case are played on the same dice.
-                var random = SimMinigameRandom.ForRun(
-                    seed, StudyStream, experimentCase.ResearchLevel, experimentCase.Tier, experimentCase.Rank, experimentCase.Gear.Tier, experimentCase.LicensedRunsGrant, run);
-                var engine = new ExperimentEngine(random, setup);
+                // The build is left out of the stream on purpose: two builds of one case are played on the same dice, and each trial's
+                // roll is the same in both however many actions came before it (a Breakthrough Test takes no roll).
+                ExperimentEngine engine = null;
+                var random = new TrialPairedRandom(
+                    () => engine?.TrialsUsed ?? 0,
+                    trial => SimMinigameRandom.ForRun(
+                        seed, StudyStream, experimentCase.ResearchLevel, experimentCase.Tier, experimentCase.Rank, experimentCase.Gear.Tier,
+                        experimentCase.LicensedRunsGrant, run, trial));
+                engine = new ExperimentEngine(random, setup);
                 var result = CraftPlayer.Play(engine, policy(setup));
 
                 actions += result.Actions;
@@ -253,7 +258,7 @@ namespace SWLOR.CraftSim.Scenario.Experiment
             text.AppendLine(table.ToString());
             text.AppendLine(failures.Count == 0
                 ? "Verdict: every style is the better choice on at least the required share of cases and no pair differs by more than the allowed mean gap."
-                : $"Verdict: out of balance in {failures.Count} of 24 comparison(s): {string.Join("; ", failures)}.");
+                : $"Verdict: out of balance in {failures.Count} of {table.RowCount} comparison(s): {string.Join("; ", failures)}.");
             text.AppendLine();
         }
 

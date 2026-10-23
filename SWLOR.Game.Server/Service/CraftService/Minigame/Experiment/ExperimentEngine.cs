@@ -128,6 +128,12 @@ public sealed class ExperimentEngine : MinigameEngineBase<ExperimentState>
                         info, 0, 0, "Breakthrough can be used once per experiment.");
                 }
 
+                if (state.MethodBonus > 0)
+                {
+                    return MinigameActionRule<ExperimentState>.Disabled(
+                        info, 0, 0, "Your refined method is waiting for a Test. Run it before Breakthrough.");
+                }
+
                 return OneOutcome(info, 0, "Breakthrough", s => s with { BreakthroughUsed = true, BreakthroughArmed = true });
 
             case ExperimentActionIds.Conclude:

@@ -26,6 +26,7 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition
             $"each enhancement is lost on a roll of {CraftOutcomeRules.ChanceToLoseItemPercent} or lower on a D100. " +
             $"An enhancement transfers when the quality reaches its slot's threshold: {CraftOutcomeRules.FirstSlotQualityThresholdPercent}% for the first slot and " +
             $"{CraftOutcomeRules.SecondSlotQualityThresholdPercent}% for the others.\n\n" +
+            "The numbers on this page are the base values. Builder perks change them (see the last section), and the window shows yours.\n\n" +
             "TOOL HEADS\n" +
             "One head is loaded at a time. Run builds a sub-assembly: at full effect when its own head is loaded, and at half effect when another head is loaded, with no retooling. " +
             "Precision Pass raises quality, and it only works on the sub-assembly the loaded head serves, so to refine all three you must retool. " +

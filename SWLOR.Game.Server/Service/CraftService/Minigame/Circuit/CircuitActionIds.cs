@@ -11,5 +11,9 @@ public static class CircuitActionIds
     public const string Ground = "ground";
     public const string Patch = "patch";
 
+    // Actions the Overclocker and Technician perks add.
+    public const string DischargeBoth = "discharge_both";
+    public const string MicroTune = "micro_tune";
+
     public const string CleanSignal = "clean_signal";
 }

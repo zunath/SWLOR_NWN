@@ -4,6 +4,7 @@ using Microsoft.CodeAnalysis.CSharp;
 using Microsoft.CodeAnalysis.CSharp.Syntax;
 using NUnit.Framework;
 using SWLOR.Game.Server.Service.CraftService.Minigame.Circuit;
+using SWLOR.Game.Server.Service.CraftService.Minigame.Forge;
 using SWLOR.Game.Server.Service.StatService;
 using SWLOR.Game.Server.Service.StatusEffectService;
 using SWLOR.NWN.API.NWScript.Enum;
@@ -86,13 +87,14 @@ public class CraftingStyleStatusEffectTests
 
     private static IStatusEffect[] RealStyles() => CircuitStyles.All
         .Select(style => (IStatusEffect)Activator.CreateInstance(CircuitStyles.StatusEffectOf(style))!)
+        .Concat(ForgeStyles.All.Select(style => (IStatusEffect)Activator.CreateInstance(ForgeStyles.StatusEffectOf(style))!))
         .ToArray();
 
     [Test]
-    public void EveryCircuitStyleIsACraftingStyle_PassiveAndGoneOnLogout_YetStillABuff()
+    public void EveryCircuitAndForgeStyleIsACraftingStyle_PassiveAndGoneOnLogout_YetStillABuff()
     {
         var styles = RealStyles();
-        styles.Should().HaveCount(CircuitStyles.All.Count);
+        styles.Should().HaveCount(CircuitStyles.All.Count + ForgeStyles.All.Count);
         foreach (var style in styles)
         {
             style.SourceType.Should().Be(StatusEffectSourceType.CraftingStyle, style.Name);
@@ -113,6 +115,8 @@ public class CraftingStyleStatusEffectTests
         StatusEffectSelectors.WithCategory(styles, StatusEffectCategory.Buff).Should().BeEmpty();
         StatusEffectSelectors.WithStat(styles, StatType.CircuitLoadBoostPercent).Should().BeEmpty();
         StatusEffectSelectors.WithNegativeStat(styles, StatType.CircuitLoadBoostPercent).Should().BeEmpty("Safe Mode lowers it");
+        StatusEffectSelectors.WithStat(styles, StatType.ForgePressOutputPercent).Should().BeEmpty();
+        StatusEffectSelectors.WithNegativeStat(styles, StatType.ForgeHoneOutputPercent).Should().BeEmpty("Hot Forging lowers it");
         StatusEffectSelectors.Removable(styles).Should().BeEmpty();
         StatusEffectSelectors.Removable(styles, includeCraftingStyles: true).Should().BeEquivalentTo(styles,
             "a full reset takes them when it asks for them");

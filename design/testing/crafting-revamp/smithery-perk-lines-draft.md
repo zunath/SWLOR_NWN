@@ -1,6 +1,6 @@
 # Smithery perk lines: draft for owner approval
 
-Draft only. No perk is coded. The owner approves these rows before any perk code, PerkType, StatType, icon or TLK entry is created. Every magnitude and cost below is a proposal, scaled to the tuned base values in "The base minigame these perks build on"; the perk pull request tunes them with CraftSim.
+The owner approved these rows in October 2026 and the lines are implemented: see "As implemented" at the end for the IDs, the decisions that settled what the draft left open, and the magnitudes CraftSim changed. The tables below are the draft as approved; where the implementation differs the last section says so. Every magnitude and cost below was a proposal, scaled to the tuned base values in "The base minigame these perks build on"; the perk pull request tunes them with CraftSim.
 
 Source: `Readmes/CraftingRevampPlan.md` ("Smithery: the Plasma Forge", "Line schedule", the Forgemaster and Artisan rows under "Lines"). Rules: `Readmes/SkillPerkStandards.md`. The engine these perks act on is `Service/CraftService/Minigame/Forge/` (`ForgeEngine`, `ForgeRules`).
 
@@ -124,3 +124,33 @@ Under `SkillPerkStandards.md`, with `SWLOR.CraftSim`:
 - Length: 10-20 actions with each line's purchases.
 - No fixed rotation: adaptive play clearly beats the best fixed sequence, with and without perks, at the same 10-point target. Clean Containment raises the weight of the one chance in the minigame, so report it separately.
 - Setup cost: report the SP, rank and gear assumptions of each build and the preparation cost of Red Line and Perfect Temper, whose bonuses need the Thermal in a narrow window.
+
+## As implemented (October 23, 2026)
+
+Code: `SmitheryPerkDefinition`, `ForgePerkRules` (every magnitude), `ForgePerkStats`, `ForgePerkLines`, `ForgeStyles`, the two `*StatusEffect` classes, `ForgeEngine`, `ForgeSetup` and `ForgeState`, and the Plasma Forge window (`ForgeViewModel`, `ForgeDefinition`). The balance evidence is `smithery-perk-gates.md`.
+
+IDs: PerkType 884-901 (`SmitheryPlasmaEfficiency`, `SmitheryHeatRetention`, `SmitheryOverdrivePress`, `HotForgingStyle`, `SmitheryHammerRhythm`, `SmitheryScorchGuard`, `SmitherySurgePlasma`, `SmitheryFastRebond`, `SmitheryRedLine`, `SmitherySteadyHands`, `SmitheryCleanContainment`, `SmitheryMicroHone`, `ColdWorkingStyle`, `SmitherySteadyQuench`, `SmitheryCoolHand`, `SmitheryTemperHold`, `SmitheryContainmentFocus`, `SmitheryPerfectTemper`; 902-903 stay free), StatType 1208-1227 (the twenty `Forge*` stats of "Shared Forge stats" and the two lines), `EffectIconType` 513 and 514 with `effecticons.2da` rows 513 and 514, TLK 192754 and 192755 (192756-192759 stay free). Two ranked perks, Heat Retention and Clean Containment, spend two purchases each, so each line is nine perks and ten purchases.
+
+The draft proposed 22 stats and the reservation holds 20: Hammer Rhythm's cap (3 presses in a row) and Perfect Temper's window (2 Thermal) are constants in `ForgePerkRules`, not stats.
+
+Where the draft was silent:
+
+- Overdrive Press takes the style's Hydro-Press percent and Stable Containment's bonus. It is not a Hydro-Press for Hammer Rhythm: it neither takes the bonus nor continues the count, and it ends it. Its Integrity is twice the Hydro-Press's at the same Thermal after Scorch Guard.
+- Hammer Rhythm counts the Hydro-Press and the Red Line Press. The bonus adds to the style's percent before it scales the gain, and Stable Containment multiplies afterward.
+- Scorch Guard also lowers an Overdrive Press above the range. The Red Line Press costs no Integrity and no CP.
+- Micro-Hone gives Finish only and never Shape. On a set piece it gives 80% of the flat 84 Finish. The style's Vibro-Hone percent and Stable Containment (with Containment Focus) apply to it; Steady Hands does not lower its own 6 Integrity.
+- Temper Hold cools as usual on the turn it is used; the next two actions do not cool. It cannot be used while a hold runs, and it costs no Integrity.
+- Perfect Temper multiplies the quench's Finish at its Thermal, so a quench 2 from the center gives 1.5 times a slightly lower base than one at the center.
+- Heat Retention takes at most all but 1 of the recipe's cooling; a recipe that cools 1 per action cools 1 per action. Plasma Efficiency and Fast Rebond stop at 1 CP, and Surge Plasma costs 1.5 times the reduced Ramp Plasma.
+- A style's range shift moves the whole range and is limited to the room the range has on its side of the meter; a zero shift moves nothing.
+- Both styles are owned by purchase and toggled on the Plasma Forge window's setup page, one active at a time; the choice is stored through `CraftingStyleSelection` and applied again after a death or a login. The stats are read when the craft starts.
+- A refunded style perk removes its status effect and forgets the selection (`ForgeStyles.RemoveUnowned`).
+
+Magnitudes: every value is as drafted except the two styles. CraftSim's style balance gate (gate 2) failed the draft for a crafter with no line perks: with Hot Forging at +25% Hydro-Press and -25% Vibro-Hone and Cold Working at the mirror, Cold Working led by 6 to 8 points at mid and best gear, because a point of Finish is worth more than a point of Shape (the craft ends when Shape is full, so Finish is what the quality is made of). Cutting the two Finish numbers balanced plain crafts, but then Cold Working's -25% Hydro-Press made it earn only 0.4 to 0.9 times the XP rate of a crafter with no style in crafts with one to three enhancements (mean 0.63, gate 6): the extra Shape an enhancement asks for is expensive for it, and in the style stress it failed to make the item in 5 to 35% of the crafts that were under-ranked or heavily enhanced. Both styles were then made small, which kept gate 2 and brought Cold Working to 0.88 to 1.04 times (mean 0.97) in the same crafts.
+
+| Style | Draft | Implemented |
+| --- | --- | --- |
+| Hot Forging | range +10, Hydro-Press +25%, Vibro-Hone -25% | range +5, Hydro-Press +25%, Vibro-Hone -5% |
+| Cold Working | range -10, Vibro-Hone +25%, Hydro-Press -25% | range -5, Vibro-Hone +5%, Hydro-Press -5% |
+
+`smithery-perk-gates.md` has the sweeps and the gate results.

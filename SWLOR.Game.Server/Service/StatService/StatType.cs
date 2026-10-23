@@ -6534,6 +6534,86 @@ namespace SWLOR.Game.Server.Service.StatService
         [StatType(StatTypeCategory.BeneficialWhenPositive, StatTypeAggregation.Maximum)]
         ExperimentBreakthroughUnlocked = 1204,
 
+        /// <summary>Thermal points the Plasma Forge's working range moves up (positive) or down (negative). A Smithery style sets it.</summary>
+        [StatType(StatTypeCategory.BeneficialWhenPositive)]
+        ForgeRangeShift = 1208,
+
+        /// <summary>Percent added to every Plasma Forge Hydro-Press Shape gain, including the set piece's trim. A style's cost is a negative value.</summary>
+        [StatType(StatTypeCategory.BeneficialWhenPositive)]
+        ForgePressOutputPercent = 1209,
+
+        /// <summary>Percent added to every Plasma Forge Vibro-Hone Finish gain. A style's cost is a negative value.</summary>
+        [StatType(StatTypeCategory.BeneficialWhenPositive)]
+        ForgeHoneOutputPercent = 1210,
+
+        /// <summary>CP a Plasma Forge Ramp Plasma costs less than usual, to a minimum of 1.</summary>
+        [StatType(StatTypeCategory.BeneficialWhenPositive)]
+        ForgeRampCpReduction = 1211,
+
+        /// <summary>Thermal the piece loses less after every Plasma Forge action, to a minimum of 1 lost.</summary>
+        [StatType(StatTypeCategory.BeneficialWhenPositive)]
+        ForgeCoolingReduction = 1212,
+
+        /// <summary>Above 0 when the crafter has the Plasma Forge's Overdrive Press: the percent its Shape gain exceeds a Hydro-Press at the same Thermal.</summary>
+        [StatType(StatTypeCategory.BeneficialWhenPositive)]
+        ForgeOverdrivePressPercent = 1213,
+
+        /// <summary>Percent of Shape each consecutive Plasma Forge Hydro-Press before this one adds to it, up to the perk's cap.</summary>
+        [StatType(StatTypeCategory.BeneficialWhenPositive)]
+        ForgePressStreakPercent = 1214,
+
+        /// <summary>Percent of the Integrity a Plasma Forge Hydro-Press above the working range would crack that it does not.</summary>
+        [StatType(StatTypeCategory.BeneficialWhenPositive)]
+        ForgePressOverheatIntegrityReductionPercent = 1215,
+
+        /// <summary>Above 0 when the crafter has the Plasma Forge's Surge Plasma: the Thermal it raises.</summary>
+        [StatType(StatTypeCategory.BeneficialWhenPositive)]
+        ForgeSurgePlasmaThermal = 1216,
+
+        /// <summary>Thermal a Plasma Forge Rebond costs less than usual.</summary>
+        [StatType(StatTypeCategory.BeneficialWhenPositive)]
+        ForgeRebondThermalReduction = 1217,
+
+        /// <summary>CP a Plasma Forge Rebond costs less than usual, to a minimum of 1.</summary>
+        [StatType(StatTypeCategory.BeneficialWhenPositive)]
+        ForgeRebondCpReduction = 1218,
+
+        /// <summary>How many times per craft the Plasma Forge offers the Red Line Press.</summary>
+        [StatType(StatTypeCategory.BeneficialWhenPositive)]
+        ForgeRedLineCharges = 1219,
+
+        /// <summary>Integrity a Plasma Forge Vibro-Hone costs less than usual, to a minimum of 1.</summary>
+        [StatType(StatTypeCategory.BeneficialWhenPositive)]
+        ForgeHoneIntegrityReduction = 1220,
+
+        /// <summary>Percentage points added to the chance that the Plasma Forge announces Stable Containment.</summary>
+        [StatType(StatTypeCategory.BeneficialWhenPositive)]
+        ForgeContainmentChancePercent = 1221,
+
+        /// <summary>Above 0 when the crafter has the Plasma Forge's Micro-Hone: the percent of a Vibro-Hone's best Finish it gives at any Thermal.</summary>
+        [StatType(StatTypeCategory.BeneficialWhenPositive)]
+        ForgeMicroHonePercent = 1222,
+
+        /// <summary>Percentage points of its center bonus that a Plasma Forge Cryo-Quench keeps at the edge of the working range.</summary>
+        [StatType(StatTypeCategory.BeneficialWhenPositive)]
+        ForgeQuenchEdgePercent = 1223,
+
+        /// <summary>Percentage points of its best Finish that a Plasma Forge Vibro-Hone keeps at the hot edge of the working range.</summary>
+        [StatType(StatTypeCategory.BeneficialWhenPositive)]
+        ForgeHoneHotEdgePercent = 1224,
+
+        /// <summary>Above 0 when the crafter has the Plasma Forge's Temper Hold: the actions after it during which the piece does not cool.</summary>
+        [StatType(StatTypeCategory.BeneficialWhenPositive)]
+        ForgeTemperHoldActions = 1225,
+
+        /// <summary>Percentage points added to the bonus Stable Containment gives a Plasma Forge Vibro-Hone.</summary>
+        [StatType(StatTypeCategory.BeneficialWhenPositive)]
+        ForgeContainmentHonePercent = 1226,
+
+        /// <summary>Percent added to the Finish of a Plasma Forge Cryo-Quench made with Thermal at the center of the working range.</summary>
+        [StatType(StatTypeCategory.BeneficialWhenPositive)]
+        ForgePerfectTemperPercent = 1227,
+
         /// <summary>Points added to the push of each free pantry seasoning in the Kitchen.</summary>
         [StatType(StatTypeCategory.BeneficialWhenPositive)]
         KitchenPantryPush = 1228,

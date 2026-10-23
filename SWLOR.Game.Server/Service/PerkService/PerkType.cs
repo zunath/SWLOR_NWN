@@ -814,6 +814,24 @@ namespace SWLOR.Game.Server.Service.PerkService
         EfficientAnalysis = 879,
         SecondOpinion = 880,
         Breakthrough = 881,
+        SmitheryPlasmaEfficiency = 884,
+        SmitheryHeatRetention = 885,
+        SmitheryOverdrivePress = 886,
+        HotForgingStyle = 887,
+        SmitheryHammerRhythm = 888,
+        SmitheryScorchGuard = 889,
+        SmitherySurgePlasma = 890,
+        SmitheryFastRebond = 891,
+        SmitheryRedLine = 892,
+        SmitherySteadyHands = 893,
+        SmitheryCleanContainment = 894,
+        SmitheryMicroHone = 895,
+        ColdWorkingStyle = 896,
+        SmitherySteadyQuench = 897,
+        SmitheryCoolHand = 898,
+        SmitheryTemperHold = 899,
+        SmitheryContainmentFocus = 900,
+        SmitheryPerfectTemper = 901,
 
         PantryStaples = 904,
         SharpPalate = 905,
@@ -846,6 +864,6 @@ namespace SWLOR.Game.Server.Service.PerkService
         RichPickings = 936,
         Jackpot = 937,
 
-        // IDs 650, 860-863, 882-903, 919-923 and 938+ are free.
+        // IDs 650, 860-863, 882-883, 902-903, 919-923 and 938+ are free.
     }
 }

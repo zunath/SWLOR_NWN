@@ -191,7 +191,8 @@ namespace SWLOR.CraftSim.Play
                 new(
                     node.Meters.Apply(outcome.Delta),
                     outcome.ResultingStatus,
-                    outcome.ResultingStatus == MinigameStatus.InProgress ? finish : FinishEstimate.None);
+                    outcome.ResultingStatus == MinigameStatus.InProgress ? finish : FinishEstimate.None,
+                    outcome.Changes);
         }
 
         /// <summary>

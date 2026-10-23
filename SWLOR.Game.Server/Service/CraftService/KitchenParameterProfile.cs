@@ -35,8 +35,11 @@ namespace SWLOR.Game.Server.Service.CraftService
         /// <summary>The nearest a pet food's target center sits to an empty pot.</summary>
         public const int MinPetFoodDistance = 32;
 
-        /// <summary>The Freshness a recipe gets beyond the turns it needs, as a percentage.</summary>
-        private const int FreshnessSlackPercent = 105;
+        /// <summary>
+        /// The Freshness a recipe gets beyond the turns it needs, as a percentage. Tuned: 105 left too little room for the longer
+        /// crafts of the top bands, which left an unperked rank 50 cook only just above the perks-optional gate's 50% line.
+        /// </summary>
+        private const int FreshnessSlackPercent = 112;
 
         /// <summary>Turns spent adjusting heat and correcting flavor on top of the adds and the simmering.</summary>
         private const int HandlingTurns = 4;

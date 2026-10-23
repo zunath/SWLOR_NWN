@@ -158,10 +158,9 @@ namespace SWLOR.CraftSim.Progression
         public static int HardLookAt(int siteLevel, ProgressionAssumptions assumptions) =>
             Math.Min(ScavengeModel.MaximumHardLook, Math.Max(siteLevel, assumptions.GatheringTier ?? 0));
 
-        /// <summary>Seconds for one scavenge site: the walk plus the search animation of each attempt.</summary>
+        /// <summary>Seconds for one scavenge site: the walk plus the one search animation of the visit, whatever its attempts.</summary>
         public static double SecondsPerScavengeVisit(int siteLevel, ProgressionAssumptions assumptions) =>
-            assumptions.NodeTravelSeconds +
-            ScavengeModel.ExpectedAttemptsPerSite(HardLookAt(siteLevel, assumptions), assumptions.PerceptionModifier) * assumptions.SecondsPerScavengeAttempt;
+            assumptions.NodeTravelSeconds + assumptions.ScavengeVisitSeconds;
 
         /// <summary>Units of the item one visit of a scavenge site, or one use of a harvest node, gives on average.</summary>
         public static double UnitsPerVisit(GatheringSource source, ProgressionAssumptions assumptions)

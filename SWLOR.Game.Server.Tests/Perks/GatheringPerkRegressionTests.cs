@@ -5,6 +5,7 @@ using NUnit.Framework;
 using SWLOR.Game.Server.Feature.PerkDefinition;
 using SWLOR.Game.Server.Service.CraftService;
 using SWLOR.Game.Server.Service.PerkService;
+using SWLOR.Game.Server.Service.ScavengeService;
 using SWLOR.Game.Server.Service.SkillService;
 using SWLOR.NWN.API.NWScript.Enum;
 
@@ -112,18 +113,22 @@ public class GatheringPerkRegressionTests
     [TestCase(30, 40)]
     [TestCase(40, 50)]
     [TestCase(50, 50)]
-    public void HardLook_UsesTheGatheringRankMilestoneForTheSecondSearchChance(int gatheringRank, int expectedBaseChance)
+    public void HardLook_IsAbsorbedIntoTheSearchBoard_AndQuickSearchStillUsesTheRankMilestoneForItsSecondSearchChance(int gatheringRank, int expectedChance)
     {
-        var hardLookLevel = CraftRankMilestones.TierForRank(gatheringRank);
+        // Hard Look was a second attempt at (level x 10 + 5 x Perception modifier) percent. The Search board absorbed the level into the
+        // number of searches, and Quick Search keeps the second attempt at the level x 10 percent a character with no Perception investment had.
+        var hardLookLevel = CraftRankMilestones.HardLookLevelForRank(gatheringRank);
 
-        CalculateHardLookChance(hardLookLevel, 0).Should().Be(expectedBaseChance);
-        CalculateHardLookChance(hardLookLevel, 2).Should().Be(expectedBaseChance + 10);
+        hardLookLevel.Should().Be(CraftRankMilestones.TierForRank(gatheringRank));
+        ScavengeQuickSearch.SecondAttemptChance(hardLookLevel).Should().Be(expectedChance);
+        CraftRankMilestones.SearchesForRank(gatheringRank).Should().BeGreaterThanOrEqualTo(CraftRankMilestones.SearchesForRank(0));
 
         var scavengePoint = ReadSource("Feature", "ScavengePoint.cs");
         var onOpened = ExtractMethod(scavengePoint, "public static void OnOpened()");
-        onOpened.Should().Contain("CraftRankMilestones.GetHardLookLevel(user)");
-        onOpened.Should().Contain("hardLookLevel * 10 + GetAbilityModifier(AbilityType.Perception, user) * 5");
-        onOpened.Should().Contain("attempts++;");
+        onOpened.Should().NotContain("Perception");
+        onOpened.Should().NotContain("GetAbilityModifier");
+        ReadSource("Service", "ScavengeService", "ScavengeLifecycle.cs").Should().Contain("CraftRankMilestones.HardLookLevelForRank(request.GatheringRank)");
+        ReadSource("Service", "ScavengeService", "ScavengeQuickSearch.cs").Should().Contain("hardLookLevel * 10 + ReferencePerceptionModifier * 5");
     }
 
     [Test]
@@ -139,10 +144,20 @@ public class GatheringPerkRegressionTests
         onOpened.Should().NotContain("PerkType.HardLook");
         onOpened.Should().Contain("Perk.GetPerkLevel(user, PerkType.TreasureHunter)");
         onOpened.Should().Contain("Perk.GetPerkLevel(user, PerkType.CreditFinder)");
-        onOpened.Should().Contain("var creditPercentIncrease = creditFinderLevel * 0.2f;");
-        onOpened.Should().Contain("lootTable.GetRandomItem(treasureHunterLevel)");
-        onOpened.Should().Contain("quantity += (int)(quantity * creditPercentIncrease);");
-        onOpened.Should().Contain("SetLocalBool(placeable, \"FULLY_HARVESTED\", true)");
+
+        // A site is searched once: the check comes before any session starts, and the lifecycle marks the site when a visit begins.
+        onOpened.Should().Contain("GetLocalBool(placeable, NwnScavengeWorld.SearchedVariable)");
+        onOpened.IndexOf("NwnScavengeWorld.SearchedVariable", StringComparison.Ordinal)
+            .Should().BeLessThan(onOpened.IndexOf("ScavengeSessions.Start(request)", StringComparison.Ordinal));
+        NwnScavengeWorld.SearchedVariable.Should().Be("FULLY_HARVESTED");
+        ReadSource("Service", "ScavengeService", "NwnScavengeWorld.cs").Should().Contain("SetLocalBool(site, SearchedVariable, true)");
+
+        // Treasure Hunter and Creditfinder keep their effects on a find: 10 weight per level on rare entries, 20% per level on gold.
+        var loot = ReadSource("Service", "ScavengeService", "ScavengeLoot.cs");
+        loot.Should().Contain("public const int TreasureHunterWeightPerLevel = 10;");
+        loot.Should().Contain("public const float CreditFinderIncreasePerLevel = 0.2f;");
+        loot.Should().Contain("quantity += (int)(quantity * (creditFinderLevel * CreditFinderIncreasePerLevel));");
+        ReadSource("Service", "ScavengeService", "ScavengeLifecycle.cs").Should().Contain("session.Request.TreasureHunterLevel");
     }
 
     [Test]
@@ -220,11 +235,6 @@ public class GatheringPerkRegressionTests
         calculation.Should().NotContain("PerkType.RefineryManagement");
         calculation.Should().Contain("var itemsPerCore = BaseItemsRefinedPerCore + refineryManagement;");
         calculation.Should().Contain("Math.Ceiling(ItemCount / (float)itemsPerCore)");
-    }
-
-    private static int CalculateHardLookChance(int hardLookLevel, int perceptionModifier)
-    {
-        return hardLookLevel * 10 + perceptionModifier * 5;
     }
 
     private static int CalculateRequiredPowerCores(int refineryManagementLevel, int itemCount)

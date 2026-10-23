@@ -22,12 +22,15 @@ SWLOR crafting simulator
   fishing [--runs 200] [--seed 1] [--seconds-per-turn 8] [--out report.md] [--json results.json] [--strict] [--repo path]
       Plays the Line (the fishing fight) against today's catch roll over a Willpower sweep, runs the XP-rate gate over the fishing cohort,
       and writes the report (default design/testing/crafting-revamp/fishing-line-parity.md).
+  search [--runs 4000] [--seed 1] [--seconds-per-action 6] [--site-seconds 30] [--out report.md] [--json results.json] [--strict] [--repo path]
+      Plays the Search board (scavenging) against today's search over the Gathering ranks, checks Quick Search against today's expected rolls and XP, runs the economy-parity,
+      length and XP-rate gates over the scavenging cohort, and writes the report (default design/testing/crafting-revamp/scavenging-search-parity.md).
   harvesting [--runs 4000] [--seed 1] [--out report.md] [--json results.json] [--strict] [--repo path]
       Plays Quick Harvest and Prospecting sessions against today's harvests over every node tier and Gathering rank, runs the economy-parity, length and
       XP-rate gates over the harvesting cohort, and writes the report (default design/testing/crafting-revamp/harvesting-prospecting-parity.md).
   research [--runs 400] [--adaptive-runs 40] [--seed 1] [--seconds-per-action 6] [--job-overhead-seconds 30] [--out report.md] [--repo path]
       Plays the research Experiment and writes its report: length, reduction size against today's dice and the supply change, the time cut, and Fabrication XP per real hour.
-  researcher-perks [--runs 400] [--seed 1] [--seconds-per-action 6] [--craft-seconds-per-action 8] [--job-overhead-seconds 30] [--search] [--out report.md] [--repo path]
+  researcher-perks [--runs 400] [--seed 1] [--seconds-per-action 6] [--craft-seconds-per-action 8] [--job-overhead-seconds 30] [--search | --ablate | --order] [--out report.md] [--repo path]
       Plays the Fabrication Researcher line and writes its evidence: the two styles against each other, each purchase's effect, Peer Review for an undecided player, and Fabrication XP per real hour against the crafting ceiling.
   builder-perks [--runs 60] [--seed 1] [--recipes-per-band 8] [--out report.md] [--repo path]
       Plays the Fabrication Builder line and writes its evidence: each purchase's effect on actions, CP and quality at rank 50, the two styles compared, and the whole line at every rank.
@@ -49,6 +52,7 @@ try
         "gear" => GearCommand.Run(args.Skip(1).ToArray(), Console.Out),
         "gates" => GatesCommand.Run(args.Skip(1).ToArray(), Console.Out),
         "fishing" => FishingCommand.Run(args.Skip(1).ToArray(), Console.Out),
+        "search" => SearchCommand.Run(args.Skip(1).ToArray(), Console.Out),
         "research" => ResearchCommand.Run(args.Skip(1).ToArray(), Console.Out),
         "harvesting" => HarvestingCommand.Run(args.Skip(1).ToArray(), Console.Out),
         "builder-perks" => BuilderPerksCommand.Run(args.Skip(1).ToArray(), Console.Out),

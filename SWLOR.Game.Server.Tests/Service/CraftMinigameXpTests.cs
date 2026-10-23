@@ -8,6 +8,7 @@ using SWLOR.Game.Server.Service.CraftService.Minigame.Forge;
 using SWLOR.Game.Server.Service.CraftService.Minigame.Kitchen;
 using SWLOR.Game.Server.Service.CraftService.Minigame.Line;
 using SWLOR.Game.Server.Service.CraftService.Minigame.Reaction;
+using SWLOR.Game.Server.Service.CraftService.Minigame.Search;
 using SWLOR.Game.Server.Service.SkillService;
 
 namespace SWLOR.Game.Server.Tests.Service;
@@ -20,7 +21,7 @@ public class CraftMinigameXpTests
     {
         foreach (var minigame in Enum.GetValues<CraftMinigameType>().Where(minigame =>
                      minigame is not (CraftMinigameType.Reaction or CraftMinigameType.Fabricator or CraftMinigameType.Circuit or CraftMinigameType.Line
-                         or CraftMinigameType.Kitchen or CraftMinigameType.Forge)))
+                         or CraftMinigameType.Search or CraftMinigameType.Kitchen or CraftMinigameType.Forge)))
         {
             foreach (var level in new[] { 1, 10, 11, 50 })
                 CraftMinigameXp.MultiplierFor(minigame, level).Should().Be(1.0, $"{minigame} level {level}");
@@ -48,6 +49,11 @@ public class CraftMinigameXpTests
         CraftMinigameXp.MultiplierFor(CraftMinigameType.Line, 31).Should().Be(LineRules.XpMultiplierLevels31To40);
         CraftMinigameXp.MultiplierFor(CraftMinigameType.Line, 41).Should().Be(LineRules.XpMultiplierLevels41Up);
         CraftMinigameXp.MultiplierFor(CraftMinigameType.Line, 52).Should().Be(LineRules.XpMultiplierLevels41Up);
+
+        // The Search board is not a recipe minigame either: its level is the scavenge site's, 1 to 5 (a level 0 site takes level 1's). It pays today's XP per attempt
+        // unless CraftSim shows the XP rate needs more, so its multipliers are at least 1.
+        foreach (var level in new[] { 0, 1, 2, 3, 4, 5 })
+            CraftMinigameXp.MultiplierFor(CraftMinigameType.Search, level).Should().Be(SearchRules.XpMultiplierForLevel(level)).And.BeGreaterThanOrEqualTo(1.0, $"Search site level {level}");
     }
 
     [Test]

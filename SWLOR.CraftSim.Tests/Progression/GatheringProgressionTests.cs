@@ -78,7 +78,7 @@ namespace SWLOR.CraftSim.Tests.Progression
             var step = Path(GatheringStrategy.Scavenge).Steps[0];
 
             var xp = ScavengeModel.ExpectedXpPerSite(1, 0, 1, 0);
-            var seconds = Assumptions.NodeTravelSeconds + ScavengeModel.ExpectedAttemptsPerSite(1, 0) * Assumptions.SecondsPerScavengeAttempt;
+            var seconds = Assumptions.NodeTravelSeconds + Assumptions.ScavengeVisitSeconds;
             step.XpPerSecond.Should().BeApproximately(xp / seconds, 1e-9);
         }
 

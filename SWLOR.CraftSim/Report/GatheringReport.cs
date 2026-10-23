@@ -43,7 +43,7 @@ namespace SWLOR.CraftSim.Report
             text.AppendLine();
             var rules = new MarkdownTable("Rule", "Source");
             foreach (var source in LegacySource.All.Where(s =>
-                         s.File.EndsWith("ProspectingNode.cs") || s.File.EndsWith("GatheringLevels.cs") || s.File.EndsWith("ScavengePoint.cs") ||
+                         s.File.EndsWith("ProspectingNode.cs") || s.File.EndsWith("GatheringLevels.cs") || s.File.EndsWith("ScavengeQuickSearch.cs") || s.File.EndsWith("ScavengePoint.cs") ||
                          s.File.EndsWith("RefineryViewModel.cs") || s.File.Contains("Fishing")))
             {
                 rules.Add(source.Name, $"`{source.Citation}`");

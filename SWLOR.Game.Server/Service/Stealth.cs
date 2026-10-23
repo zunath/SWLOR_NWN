@@ -22,12 +22,14 @@ namespace SWLOR.Game.Server.Service
     {
         public const string CombatEntryWindowVariable = "STEALTH_COMBAT_ENTRY_WINDOW";
 
-        private const string TimedExitGenerationVariable = "STEALTH_TIMED_EXIT_GENERATION";
         private const string TimedExitActiveVariable = "STEALTH_TIMED_EXIT_ACTIVE";
         private const float DetectionCheckIntervalSeconds = 30f;
         private const int CachePruneThreshold = 2000;
 
         private static readonly Dictionary<(uint Observer, uint Target), (bool Detected, DateTime Expiry)> _verdicts = new();
+
+        // Server-wide so a timer outliving its creature never matches a window on a reused object ID.
+        private static int _lastTimedExitGeneration;
 
         /// <summary>
         /// Baseline stealth is only usable by characters with the Stealth perk and only out of
@@ -197,8 +199,7 @@ namespace SWLOR.Game.Server.Service
         /// </summary>
         public static void ScheduleTimedExit(uint creature, float durationSeconds)
         {
-            var generation = GetLocalInt(creature, TimedExitGenerationVariable) + 1;
-            SetLocalInt(creature, TimedExitGenerationVariable, generation);
+            var generation = ++_lastTimedExitGeneration;
             SetLocalInt(creature, TimedExitActiveVariable, generation);
 
             DelayCommand(durationSeconds, () =>

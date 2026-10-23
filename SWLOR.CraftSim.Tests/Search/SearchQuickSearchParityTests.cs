@@ -3,6 +3,7 @@ using NUnit.Framework;
 using SWLOR.CraftSim.Data;
 using SWLOR.CraftSim.Legacy.Gathering;
 using SWLOR.CraftSim.Rng;
+using SWLOR.CraftSim.Search;
 using SWLOR.Game.Server.Service.CraftService;
 using SWLOR.Game.Server.Service.ScavengeService;
 
@@ -101,16 +102,22 @@ namespace SWLOR.CraftSim.Tests.Search
         }
 
         [Test]
-        public void QuickSearchTakesAsLongAsTodaysAttempts_AndPaysTheSameXpInTheSameTime()
+        public void QuickSearchTakesAsLongAsTodaysSearch_OneTwoSecondAnimationWhateverTheAttempts()
         {
-            // The legacy model's time for a site is two seconds an attempt (ProgressionAssumptions.SecondsPerScavengeAttempt).
+            // The old code played one two-second animation before its whole one-or-two-attempt loop (ScavengePoint.OnOpened on master).
+            // A second attempt added no time, so neither does it here; the legacy XP-rate loop is one two-second action per site.
             var random = SimMinigameRandom.ForRun(5, SimStreams.Legacy, 9);
-            for (var run = 0; run < 200; run++)
+            var sawSecondAttempt = false;
+            for (var run = 0; run < 400; run++)
             {
-                var result = ScavengeQuickSearch.Resolve(random, 3, 600);
+                var result = ScavengeQuickSearch.Resolve(random, 5, 600);
 
-                result.Seconds.Should().Be(result.Attempts.Count * 2.0);
+                result.Seconds.Should().Be(2.0);
+                sawSecondAttempt |= result.Attempts.Count == 2;
             }
+
+            sawSecondAttempt.Should().BeTrue("at Hard Look level 5 half the sites make a second attempt");
+            new SearchParityOptions().LegacySeconds.Should().Be(2.0);
         }
 
         [Test]

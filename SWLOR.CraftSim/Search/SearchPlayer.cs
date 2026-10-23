@@ -21,15 +21,17 @@ namespace SWLOR.CraftSim.Search
     }
 
     /// <summary>
-    /// A simulated scavenger for the Search board. Careless plays by the order of the spots. Skilled and Oracle spend the searches
-    /// where they are expected to find most: every spot is a chain of actions (its Search, then its Digs), the best way to spend the
-    /// searches left is the best split among the chains (<see cref="Position.Value"/>), and a Sift is worth taking when the ground it shows
-    /// raises that value by more than the search it costs. Skilled does the sum on what it knows and the odds of the rest; Oracle
-    /// knows every spot. None of them reads a preview of an unknown spot, which would show the hidden layout.
+    /// A simulated scavenger for the Search board. Careless plays by the order of the spots. Skilled and Oracle take, at each step, the
+    /// action with the highest expected finds: the action's own find plus the best split of the searches left on the board each of its
+    /// outcomes leaves (<see cref="Position.ValueOfSearch"/>, <see cref="Position.ValueOfDig"/>, <see cref="Position.ValueAfterSift"/>).
+    /// That split treats every spot as a chain of actions (its Search, then its Digs) and is a plan made before the outcomes are
+    /// known, so the player is one step of look-ahead, not an optimal player: it can only find less than an optimal one does. Skilled
+    /// does the sum on what it knows and the odds of the rest; Oracle knows every spot. None of them reads a preview of an unknown
+    /// spot, which would show the hidden layout.
     /// </summary>
     public sealed class SearchPlayer : ICraftPolicy
     {
-        /// <summary>A Sift must raise the value of the searches left by more than this, so the player does not Sift for a rounding error.</summary>
+        /// <summary>Two actions whose values differ by less than this are tied, and the tie goes to a Search, then a Dig Deeper, then a Sift.</summary>
         public const double SiftMargin = 1e-9;
 
         private readonly SearchPlayerKind _kind;
@@ -85,31 +87,55 @@ namespace SWLOR.CraftSim.Search
         {
             var position = Position.From(board, _kind == SearchPlayerKind.Oracle);
             var remaining = board.SearchesLeft;
-            var now = position.Value(remaining);
+
+            // One step of look-ahead over the outcomes of each action: the action's own expected find, plus the best split of the
+            // searches left on the board each outcome leaves (a spoiled spot is gone, a surviving dig is one dig deeper, a searched
+            // spot's ground is known). The action with the highest total is taken; on a tie a Search (which shows the ground) comes
+            // before a Dig Deeper, and a Dig Deeper before a Sift.
+            string best = null;
+            var bestValue = double.NegativeInfinity;
+            var bestPriority = int.MaxValue;
+            var bestImmediate = double.NegativeInfinity;
+
+            // Actions of equal total (an optimal plan can start with any of them) go to a Search before a Dig Deeper before a Sift, and
+            // within a kind to the one that finds most itself, so the sure thing is taken first and the ground it shows is learned sooner.
+            void Consider(string action, double value, int priority, double immediate)
+            {
+                var better = value > bestValue + SiftMargin ||
+                             (value > bestValue - SiftMargin &&
+                              (priority < bestPriority || (priority == bestPriority && immediate > bestImmediate + SiftMargin)));
+                if (!better)
+                    return;
+
+                best = action;
+                bestValue = Math.Max(value, bestValue);
+                bestPriority = priority;
+                bestImmediate = immediate;
+            }
+
+            for (var spot = 0; spot < SearchBoard.Spots; spot++)
+            {
+                if (!board.IsSearched(spot) && !board.IsSpoiled(spot))
+                    Consider(SearchActionIds.For(SearchActionIds.Search, spot), position.ValueOfSearch(spot, remaining - 1), 0, position.ChanceOfSearch(spot));
+            }
+
+            for (var spot = 0; spot < SearchBoard.Spots; spot++)
+            {
+                if (board.IsSearched(spot) && !board.IsSpoiled(spot) && board.DigsAt(spot) < SearchBoard.MaxDigsPerSpot)
+                    Consider(SearchActionIds.For(SearchActionIds.DigDeeper, spot), position.ValueOfDig(spot, remaining - 1), 1, position.ChanceOfDig(spot));
+            }
 
             if (_kind == SearchPlayerKind.Skilled && remaining > 1)
             {
-                var bestSift = -1;
-                var bestValue = now + SiftMargin;
                 for (var spot = 0; spot < SearchBoard.Spots; spot++)
                 {
                     var reach = board.UnknownAround(spot);
-                    if (reach == 0)
-                        continue;
-
-                    var value = position.ValueAfterSift(SearchBoard.PopCount(reach), remaining - 1);
-                    if (value > bestValue)
-                    {
-                        bestValue = value;
-                        bestSift = spot;
-                    }
+                    if (reach != 0)
+                        Consider(SearchActionIds.For(SearchActionIds.Sift, spot), position.ValueAfterSift(SearchBoard.PopCount(reach), remaining - 1), 2, 0);
                 }
-
-                if (bestSift >= 0)
-                    return SearchActionIds.For(SearchActionIds.Sift, bestSift);
             }
 
-            return position.BestFirstAction(remaining);
+            return best;
         }
 
         /// <summary>
@@ -294,53 +320,78 @@ namespace SWLOR.CraftSim.Search
                 return rebuilt.Value(searches);
             }
 
-            /// <summary>
-            /// The first action of the best split: the first step of the chain that keeps the value of the searches highest once it is
-            /// taken (the step's own find plus the best split of the searches left), and of those the one that finds most itself. A chain is
-            /// not required to be one the split cannot do without: with more equally good chains than searches, none is, and the player
-            /// must still take one of the best.
-            /// </summary>
-            public string BestFirstAction(int searches)
+            /// <summary>The chance, from 0 to 1, that a Search of the spot finds something, from what is known about it.</summary>
+            public double ChanceOfSearch(int spot) => SearchChance(spot);
+
+            /// <summary>The chance, from 0 to 1, that a Dig Deeper at the spot finds something now (the engine's rounding).</summary>
+            public double ChanceOfDig(int spot) => ((100 - _setup.DigRisk(_digs[spot])) * _setup.DigFindChance + 50) / 100 / 100.0;
+
+            private Position Copy()
             {
-                var chances = SearchChances();
-                var chains = Chains(chances);
-                var bestSpot = -1;
-                var bestValue = double.NegativeInfinity;
-                var bestFirst = double.NegativeInfinity;
-                for (var spot = 0; spot < Spots; spot++)
-                {
-                    if (chains[spot].Count == 0)
-                        continue;
-
-                    var saved = chains[spot];
-                    chains[spot] = saved.Skip(1).ToList();
-                    var value = saved[0] + Knapsack(chains, searches - 1);
-                    chains[spot] = saved;
-                    if (value > bestValue + 1e-12 || (value > bestValue - 1e-12 && saved[0] > bestFirst + 1e-12))
-                    {
-                        bestValue = value;
-                        bestFirst = saved[0];
-                        bestSpot = spot;
-                    }
-                }
-
-                if (bestSpot < 0)
-                {
-                    // Nothing is worth a search: spend it on the first spot that can take one.
-                    for (var spot = 0; spot < Spots; spot++)
-                    {
-                        if (chains[spot].Count > 0)
-                            return Action(spot);
-                    }
-
-                    return null;
-                }
-
-                return Action(bestSpot);
+                var copy = new Position(_setup);
+                Array.Copy(_searched, copy._searched, Spots);
+                Array.Copy(_spoiled, copy._spoiled, Spots);
+                Array.Copy(_digs, copy._digs, Spots);
+                Array.Copy(_knowledge, copy._knowledge, Spots);
+                copy.UnknownSpots = UnknownSpots;
+                copy.UnknownPromising = UnknownPromising;
+                return copy;
             }
 
-            private string Action(int spot) =>
-                SearchActionIds.For(_searched[spot] ? SearchActionIds.DigDeeper : SearchActionIds.Search, spot);
+            /// <summary>
+            /// The expected finds of a Search of the spot now and then the best split of <paramref name="searchesLeftAfter"/> searches on
+            /// the board it leaves. A Search shows the spot's ground, so ground not yet known is promising with the odds the unknown ground
+            /// gives and each case is valued on its own board.
+            /// </summary>
+            public double ValueOfSearch(int spot, int searchesLeftAfter)
+            {
+                var promising = _setup.PromisingChance / 100.0;
+                var ordinary = _setup.OrdinaryChance / 100.0;
+                if (_knowledge[spot] != SearchSpotKnowledge.Unknown)
+                {
+                    var after = Copy();
+                    after._searched[spot] = true;
+                    return (_knowledge[spot] == SearchSpotKnowledge.Promising ? promising : ordinary) + after.Value(searchesLeftAfter);
+                }
+
+                var share = UnknownSpots == 0 ? 0 : Math.Min(1.0, UnknownPromising / (double)UnknownSpots);
+                double total = 0;
+                foreach (var isPromising in new[] { true, false })
+                {
+                    var odds = isPromising ? share : 1 - share;
+                    if (odds <= 0)
+                        continue;
+
+                    var after = Copy();
+                    after._searched[spot] = true;
+                    after._knowledge[spot] = isPromising ? SearchSpotKnowledge.Promising : SearchSpotKnowledge.Ordinary;
+                    after.UnknownSpots--;
+                    if (isPromising)
+                        after.UnknownPromising--;
+
+                    total += odds * ((isPromising ? promising : ordinary) + after.Value(searchesLeftAfter));
+                }
+
+                return total;
+            }
+
+            /// <summary>
+            /// The expected finds of a Dig Deeper at the spot now and then the best split of <paramref name="searchesLeftAfter"/> searches
+            /// on the board each outcome leaves: a dig that ruins the spot takes its chain off the board and gives the search back to the
+            /// others, a dig that does not leaves the spot one dig deeper whether or not it found.
+            /// </summary>
+            public double ValueOfDig(int spot, int searchesLeftAfter)
+            {
+                var riskPercent = _setup.DigRisk(_digs[spot]);
+                var findPercent = ((100 - riskPercent) * _setup.DigFindChance + 50) / 100;
+                var spoiled = Copy();
+                spoiled._spoiled[spot] = true;
+                var deeper = Copy();
+                deeper._digs[spot]++;
+                return findPercent / 100.0 +
+                       riskPercent / 100.0 * spoiled.Value(searchesLeftAfter) +
+                       (100 - riskPercent) / 100.0 * deeper.Value(searchesLeftAfter);
+            }
 
             private static double Hypergeometric(int population, int successes, int draws, int observed)
             {

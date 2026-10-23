@@ -473,7 +473,7 @@ public class ScavengeLifecycleTests
         session.XpPaid.Should().Be(DeltaXp);
         _world.Created.Should().Equal((Site, "fiberp_ruined", 2));
         _world.BonusLoot.Should().HaveCount(1);
-        _world.Opened.Should().Equal((Site, SearchRules.QuickSearchSecondsPerAttempt));
+        _world.Opened.Should().Equal((Site, SearchRules.QuickSearchSeconds));
         _world.WindowOpen.Should().BeFalse();
     }
 
@@ -489,7 +489,7 @@ public class ScavengeLifecycleTests
         _world.SkillChecks.Should().Equal("Search *failure*: (3 vs DC: 6)", "Search *failure*: (5 vs DC: 7)");
         _world.Xp.Should().Equal(DeltaXp / 4, DeltaXp / 4);
         _world.Created.Should().BeEmpty();
-        _world.Destroyed.Should().Equal((Site, 2 * SearchRules.QuickSearchSecondsPerAttempt));
+        _world.Destroyed.Should().Equal((Site, SearchRules.QuickSearchSeconds)); // a second attempt adds no time: the old search played one animation for the visit
         _world.Opened.Should().BeEmpty();
     }
 
@@ -521,13 +521,13 @@ public class ScavengeLifecycleTests
     }
 
     [Test]
-    public void QuickSearchTakesAsLongAsTodaysAttempts_ToTheSecond()
+    public void QuickSearchTakesAsLongAsTodaysSearch_TwoSecondsWhateverTheAttempts()
     {
         var lifecycle = Lifecycle(50, 12, 2, 0, 2);
 
         lifecycle.QuickSearch(lifecycle.Start(Request()));
 
-        SearchRules.QuickSearchSecondsPerAttempt.Should().Be(2.0, "the old search played a two second animation for an attempt");
+        SearchRules.QuickSearchSeconds.Should().Be(2.0, "the old search played one two second animation for the whole visit");
         _world.Opened.Single().Seconds.Should().Be(2.0);
     }
 

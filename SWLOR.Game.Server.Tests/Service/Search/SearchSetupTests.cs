@@ -61,7 +61,7 @@ public class SearchSetupTests
         CraftRankMilestones.SearchSchedule().Select(step => step.Rank).Should().Equal(new[] { 0, 10, 20, 30, 40 }, "the promising chance steps at the ranks Hard Look did");
         CraftRankMilestones.SearchSchedule().Select(step => step.PromisingChance).Should().BeInAscendingOrder().And.OnlyHaveUniqueItems("every tier is a better board");
         CraftRankMilestones.PromisingChanceForRank(0).Should().Be(29);
-        CraftRankMilestones.PromisingChanceForRank(50).Should().Be(42);
+        CraftRankMilestones.PromisingChanceForRank(50).Should().Be(43);
         CraftRankMilestones.PromisingChanceForRank(9).Should().Be(CraftRankMilestones.PromisingChanceForRank(0), "it steps at the tier, not between");
     }
 

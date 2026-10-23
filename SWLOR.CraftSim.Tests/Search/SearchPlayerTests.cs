@@ -95,6 +95,27 @@ namespace SWLOR.CraftSim.Tests.Search
         }
 
         [Test]
+        public void ADigIsValuedOnTheBoardEachOutcomeLeaves_SoARuinedSpotGivesTheSearchBackToTheOtherSpots()
+        {
+            // Two searches, 10% ordinary and 30% promising ground, a dig that ruins its spot half the time and otherwise finds 40%.
+            // After a Search of the top left (ordinary ground), a Dig Deeper there with one search left is worth
+            //   its own find (50% safe x 40% = 20%)
+            // + a ruined spot (50%) x the best fresh Search left (10% + 20% x the 2 promising spots in the 8 unknown = 15%)
+            // + a surviving dig (50%) x the best of a second dig (50% x 40% = 20%) and a fresh Search (15%) = 20%
+            // = 0.375. Counting the second dig as still there after a ruin would give 0.40.
+            var setup = new SearchSetup(2, 2, 10, 30, 50, 0, 40);
+            var engine = new SearchEngine(SimMinigameRandom.ForRun(1, 57), setup, SearchBoard.Bit(7) | SearchBoard.Bit(8));
+            engine.Perform(SearchActionIds.For(SearchActionIds.Search, 0));
+
+            var position = SearchPlayer.Position.From(engine, false);
+
+            position.ValueOfDig(0, 1).Should().BeApproximately(0.375, 1e-9);
+
+            // A fresh Search of the top spot is promising with odds 2 in 8: 25% x (30% + the best dig left, 20%) + 75% x (10% + 20%) = 0.35.
+            position.ValueOfSearch(1, 1).Should().BeApproximately(0.35, 1e-9);
+        }
+
+        [Test]
         public void TheOraclePlayerSearchesAPromisingSpotFirst_BecauseItWasToldWhereTheyAre()
         {
             var layout = SearchBoard.Bit(2) | SearchBoard.Bit(6);

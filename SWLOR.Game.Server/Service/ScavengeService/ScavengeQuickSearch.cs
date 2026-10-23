@@ -16,8 +16,8 @@ namespace SWLOR.Game.Server.Service.ScavengeService
 
         public int TotalXp => Attempts.Sum(attempt => attempt.Xp);
 
-        /// <summary>The time it takes: as long as today's attempts (<see cref="SearchRules.QuickSearchSecondsPerAttempt"/> each).</summary>
-        public double Seconds => Attempts.Count * SearchRules.QuickSearchSecondsPerAttempt;
+        /// <summary>The time it takes: as long as today's search, one <see cref="SearchRules.QuickSearchSeconds"/> animation for the whole visit however many attempts it made.</summary>
+        public double Seconds => SearchRules.QuickSearchSeconds;
     }
 
     /// <summary>

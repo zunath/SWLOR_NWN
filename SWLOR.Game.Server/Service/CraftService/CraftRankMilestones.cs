@@ -29,7 +29,7 @@ public static class CraftRankMilestones
     // Perception, and which steps at the same ranks Hard Look did.
     private static readonly (int Rank, int Value)[] SearchesSteps = { (0, 6) };
     private static readonly (int Rank, int Value)[] PromisingSpotSteps = { (0, 2) };
-    private static readonly (int Rank, int Value)[] PromisingChanceSteps = { (0, 29), (10, 33), (20, 36), (30, 39), (40, 42) };
+    private static readonly (int Rank, int Value)[] PromisingChanceSteps = { (0, 29), (10, 32), (20, 36), (30, 39), (40, 43) };
 
     // Gathering ranks at which a Strike and a Heavy Strike in a Prospecting session yield more (replacing Might), and at which one
     // Survey reveals one more seam (replacing Perception).

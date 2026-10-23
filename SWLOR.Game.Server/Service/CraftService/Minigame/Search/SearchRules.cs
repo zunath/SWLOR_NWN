@@ -9,8 +9,8 @@ namespace SWLOR.Game.Server.Service.CraftService.Minigame.Search;
 public static class SearchRules
 {
     // The ground. A Search finds with this chance, by the ground at the spot. Promising ground is the point of Sifting: it finds
-    // several times as often as ordinary ground (3.6 times at Gathering 0, 5.3 times at Gathering 40), at the chance the rank gives
-    // (CraftRankMilestones.PromisingChanceForRank, 29% to 42%).
+    // several times as often as ordinary ground (3.6 times at Gathering 0, 5.4 times at Gathering 40), at the chance the rank gives
+    // (CraftRankMilestones.PromisingChanceForRank, 29% to 43%).
     public const int OrdinaryChance = 8;
     public const int MinimumChance = 1;
     public const int MaximumChance = 95;
@@ -29,18 +29,20 @@ public static class SearchRules
     // clicking cannot finish a board in seconds and be paid the multiplier for it.
     public const double ActionSeconds = 6.0;
 
-    // Quick Search. It takes as long as today's attempts: the get-low animation each attempt played, twice a second.
-    public const double QuickSearchSecondsPerAttempt = 2.0;
+    // Quick Search. It takes as long as today's search: the old code played one two-second get-low animation for the whole visit, before
+    // its one or two attempts, so a second attempt added no time.
+    public const double QuickSearchSeconds = 2.0;
 
     // The multiplier on the XP of a Search or Dig Deeper attempt (see CraftMinigameXp), by the site's level: the least that keeps the
-    // CraftSim XP-rate gate (gate 6) passing at the site level. Today a site takes about two seconds an attempt; the board takes six
-    // seconds an action, but it has more attempts for the time, so today's XP per attempt already passes. Starting values until client timing replaces the seconds
-    // per action; 1.0 at every level restores today's XP per attempt. Level 0 sites (no perk, no tier) use the level 1 value.
+    // CraftSim XP-rate gate (gate 6) passing at the site level. Today a visit takes two seconds of animation however many attempts it
+    // makes; the board takes six seconds an action, but it has more attempts for the time, so today's XP per attempt nearly passes.
+    // Starting values until client timing replaces the seconds per action; 1.0 at every level restores today's XP per attempt. Level 0
+    // sites (no perk, no tier) use the level 1 value.
     public const double XpMultiplierLevel1 = 1.05;
     public const double XpMultiplierLevel2 = 1.05;
     public const double XpMultiplierLevel3 = 1.10;
-    public const double XpMultiplierLevel4 = 1.10;
-    public const double XpMultiplierLevel5 = 1.10;
+    public const double XpMultiplierLevel4 = 1.12;
+    public const double XpMultiplierLevel5 = 1.12;
 
     /// <summary>
     /// The Gathering XP of one action: what the site pays against the scavenger's rank (a success pays all of

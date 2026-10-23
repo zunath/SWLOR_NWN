@@ -31,7 +31,7 @@ namespace SWLOR.CraftSim.Search
         {
             ("No perks", SearchEffects.None),
             ("Keen Eye (+1 point on every Search)", new SearchEffects(SearchChanceDelta: 1)),
-            ("Steady Dig (20% less dig risk)", new SearchEffects(DigRiskPercent: 80)),
+            ("Steady Dig (15% less dig risk)", new SearchEffects(DigRiskPercent: 85)),
             ("Fine Trowel I (rare entries weigh 1 more in a dig)", new SearchEffects(DeeperWeightBonus: 1)),
             ("Fine Trowel II (rare entries weigh 2 more in a dig)", new SearchEffects(DeeperWeightBonus: 2)),
             ("Careful Hands (style: -3 search chance, rare entries weigh 3 more in a dig)", CarefulHands),

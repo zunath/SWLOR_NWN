@@ -52,8 +52,11 @@ namespace SWLOR.CraftSim.Search
         /// <summary>Seconds one action of the board takes the player, reading the previews included: <see cref="SearchRules.ActionSeconds"/>.</summary>
         public double SecondsPerAction { get; init; } = SearchRules.ActionSeconds;
 
-        /// <summary>Seconds one of today's attempts takes (a Quick Search attempt takes the same): <see cref="SearchRules.QuickSearchSecondsPerAttempt"/>.</summary>
-        public double LegacySecondsPerAttempt { get; init; } = SearchRules.QuickSearchSecondsPerAttempt;
+        /// <summary>
+        /// Seconds a visit to a site took in the old code, after reaching it: one get-low animation before its one or two attempts, so a
+        /// second attempt added nothing. A Quick Search takes the same: <see cref="SearchRules.QuickSearchSeconds"/>.
+        /// </summary>
+        public double LegacySeconds { get; init; } = SearchRules.QuickSearchSeconds;
 
         /// <summary>The site levels of the XP cohort: each at the Gathering rank 10 times the level, the plan's scavenging cohort.</summary>
         public IReadOnlyList<int> SiteLevels { get; init; } = new[] { 1, 2, 3, 4, 5 };
@@ -64,7 +67,7 @@ namespace SWLOR.CraftSim.Search
         /// </summary>
         public SearchEffects TreasureSeekerLine { get; init; } = new(
             SearchChanceDelta: 1,
-            DigRiskPercent: 80,
+            DigRiskPercent: 85,
             DeeperWeightBonus: 2);
 
         /// <summary>Boards of the XP cohort's Quick Search check and the Monte Carlo cross-check of the exact expected rolls.</summary>

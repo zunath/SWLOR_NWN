@@ -85,8 +85,8 @@ namespace SWLOR.CraftSim.Search
                 var quick = ScavengeQuickSearch.ExpectedXp(tier, delta);
                 var todayAttempts = ScavengeModel.ExpectedAttemptsPerSite(tier, ScavengeQuickSearch.ReferencePerceptionModifier);
                 var quickAttempts = ScavengeQuickSearch.ExpectedAttempts(tier);
-                var todayRate = today / (todayAttempts * options.LegacySecondsPerAttempt + options.SiteSeconds) * 3600;
-                var quickRate = quick / (quickAttempts * SearchRules.QuickSearchSecondsPerAttempt + options.SiteSeconds) * 3600;
+                var todayRate = today / (options.LegacySeconds + options.SiteSeconds) * 3600;
+                var quickRate = quick / (SearchRules.QuickSearchSeconds + options.SiteSeconds) * 3600;
                 var ratio = quickRate / todayRate;
                 var equal = Math.Abs(ratio - 1) <= 1e-9 && ratio <= thresholds.XpRateMinimumRatio + 1e-9;
                 if (!equal)
@@ -155,7 +155,7 @@ namespace SWLOR.CraftSim.Search
                 "is a small knapsack, and it Sifts when the ground a Sift would show raises that value by more than the search it costs. It is a floor on skilled play, not an optimal player. **Oracle** is told the whole layout for free; no real player can reach it.",
                 $"- Yield is the loot-table rolls a site gives (a find is one roll). Limits: Quick Search equals today's expected rolls exactly; careless at least {Number(options.CarelessMinimumRatio, 2)}x of it; skilled {Number(options.SkilledMinimumRatio, 2)}x to {Number(options.UnperkedSkilledMaximumRatio, 2)}x with no perks; " +
                 $"oracle at most {Number(options.OracleMaximumRatio, 2)}x; each within {Number(options.Tolerance, 2)} for sampling error. With the whole Treasure Seeker line the skilled player stays within the plan's +15% ({Number(options.SkilledMaximumRatio, 2)}x), the line being sized to stay inside the cap with its value in the rare finds ({Describe(options.TreasureSeekerLine)}).",
-                $"- Time: {Number(options.SiteSeconds)} s to reach and open each site in both loops (the progression model's estimate, unmeasured); today's attempts take {Number(options.LegacySecondsPerAttempt)} s each (the get-low animation) and a board action {Number(options.SecondsPerAction)} s " +
+                $"- Time: {Number(options.SiteSeconds)} s to reach and open each site in both loops (the progression model's estimate, unmeasured); today's search takes {Number(options.LegacySeconds)} s once the site is open (one get-low animation before its one or two attempts, so a second attempt adds no time) and a board action {Number(options.SecondsPerAction)} s " +
                 $"(`SearchRules.ActionSeconds`, which the game enforces as the least time between two actions, the first free). Both are estimates until the client run measures them.",
                 $"- XP: every action pays Gathering XP. A Search or Dig Deeper attempt pays what the site pays against the Gathering rank (`Skill.GetDeltaXP(10 x site level - rank)`), a quarter on failure, as scavenging always did, times the multiplier by site level the game applies (`CraftMinigameXp`): " +
                 string.Join(", ", Enumerable.Range(1, 5).Select(level => $"level {level} {SearchRules.XpMultiplierForLevel(level).ToString("0.##", System.Globalization.CultureInfo.InvariantCulture)}x")) +

@@ -68,7 +68,7 @@ Rules copied from the server (the model calls everything else directly), each ch
 | Guild points per hand-in | `Guild.cs:62-80` |
 | Ten guild tasks per tier on the board | `Guild.cs:124-170` |
 | Seconds per harvester use | `ProspectingRules.cs:71` |
-| Seconds per scavenge attempt | `SearchRules.cs:33` |
+| Seconds of the scavenge animation | `SearchRules.cs:34` |
 | Seconds per refining operation | `RefineryViewModel.cs:58-64` |
 | Research job length and credits | `Craft.cs:1145-1192` |
 | A first research job creates the blueprint | `ResearchViewModel.cs:387-410` |

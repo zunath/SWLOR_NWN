@@ -36,8 +36,8 @@ namespace SWLOR.CraftSim.Progression
             "public const double HarvestSeconds = 5.0;");
 
         public static readonly SourceReference ScavengeSearch = new(
-            "Seconds per scavenge attempt", SearchRulesFile, 33, 33,
-            "public const double QuickSearchSecondsPerAttempt = 2.0;");
+            "Seconds of the scavenge animation", SearchRulesFile, 34, 34,
+            "public const double QuickSearchSeconds = 2.0;");
 
         public static readonly SourceReference RefineDelay = new(
             "Seconds per refining operation", Refinery, 58, 64,

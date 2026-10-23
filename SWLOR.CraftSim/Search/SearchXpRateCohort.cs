@@ -11,7 +11,7 @@ namespace SWLOR.CraftSim.Search
     /// <summary>
     /// The scavenging cohort of the XP-rate gate, as the plan pins it: one case for each site level 1 to 5, the scavenger's Gathering rank
     /// 10 times the level, XP per attempt (a quarter on failure), no tool. Both loops spend the same time to reach and open the site
-    /// (<see cref="SearchParityOptions.SiteSeconds"/>); today's loop then takes two seconds an attempt, and the board takes
+    /// (<see cref="SearchParityOptions.SiteSeconds"/>); today's loop then takes one two-second animation for the visit whatever its attempts, and the board takes
     /// <see cref="SearchParityOptions.SecondsPerAction"/> an action. Today's loop is played exactly (the legacy model's expected XP and
     /// attempts at a Perception modifier of 0), and the board is played by the scavengers in <see cref="SearchParityOptions.XpPlayers"/>,
     /// the gate judging the one that earns least per hour, so both the careless and the skilled player reach today's rate.
@@ -42,8 +42,8 @@ namespace SWLOR.CraftSim.Search
 
         public string RunName => "site";
 
-        /// <summary>Today's search takes the walk and then two seconds an attempt.</summary>
-        public XpLoopTiming LegacyTiming => new(_options.LegacySecondsPerAttempt, _options.SiteSeconds);
+        /// <summary>Today's search takes the walk and then one two-second animation for the visit, however many attempts it makes (one action per site).</summary>
+        public XpLoopTiming LegacyTiming => new(_options.LegacySeconds, _options.SiteSeconds);
 
         public XpLoopTiming ReplacementTiming => new(_options.SecondsPerAction, _options.SiteSeconds);
 
@@ -65,8 +65,8 @@ namespace SWLOR.CraftSim.Search
             var tier = CraftRankMilestones.HardLookLevelForRank(rank);
             ServerXp.ForDelta(0);
             var xp = ScavengeModel.ExpectedXpPerSite(level, rank, tier, ScavengeQuickSearch.ReferencePerceptionModifier);
-            var attempts = ScavengeModel.ExpectedAttemptsPerSite(tier, ScavengeQuickSearch.ReferencePerceptionModifier);
-            return new XpLoopSample(xp * SitesPerCase, attempts * SitesPerCase, SitesPerCase);
+            // The old code played one animation for the visit, whatever its attempts, so a site is one action.
+            return new XpLoopSample(xp * SitesPerCase, SitesPerCase, SitesPerCase);
         }
 
         public XpLoopSample PlayReplacement(XpRateCase xpCase, GateContext context)

@@ -13,22 +13,22 @@ namespace SWLOR.Game.Server.EngineTests.Definitions.PerkCoverage
                 {
                     Perk = PerkType.FieldNotes,
                     MaxLevel = 2,
-                    Prices = new[] { 1, 3 },
-                    Notes = "Fabrication 5 and 40.",
+                    Prices = new[] { 1, 2 },
+                    Notes = "Fabrication 5 and 15.",
                 },
                 new()
                 {
                     Perk = PerkType.SteadyHands,
                     MaxLevel = 1,
-                    Prices = new[] { 1 },
-                    Notes = "Fabrication 10.",
+                    Prices = new[] { 3 },
+                    Notes = "Fabrication 35.",
                 },
                 new()
                 {
                     Perk = PerkType.BroaderHypotheses,
                     MaxLevel = 1,
-                    Prices = new[] { 2 },
-                    Notes = "Fabrication 15.",
+                    Prices = new[] { 3 },
+                    Notes = "Fabrication 25.",
                 },
                 new()
                 {
@@ -49,21 +49,21 @@ namespace SWLOR.Game.Server.EngineTests.Definitions.PerkCoverage
                     Perk = PerkType.PeerReview,
                     MaxLevel = 1,
                     Prices = new[] { 3 },
-                    Notes = "Fabrication 25.",
+                    Notes = "Fabrication 40.",
                 },
                 new()
                 {
                     Perk = PerkType.EfficientAnalysis,
                     MaxLevel = 2,
-                    Prices = new[] { 3, 3 },
-                    Notes = "Fabrication 30 and 45.",
+                    Prices = new[] { 1, 3 },
+                    Notes = "Fabrication 10 and 30.",
                 },
                 new()
                 {
                     Perk = PerkType.SecondOpinion,
                     MaxLevel = 1,
                     Prices = new[] { 3 },
-                    Notes = "Fabrication 35.",
+                    Notes = "Fabrication 45.",
                 },
                 new()
                 {

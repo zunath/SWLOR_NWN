@@ -82,7 +82,7 @@ namespace SWLOR.CraftSim.Scenario.Experiment
             double Actions, double TrialsUsed, double Trials, double TimeCut, double Magnitude, double AtMaximum, double AtCap, double NoEvidence);
 
         /// <summary>One comparison of two styles: a level kind and a gear level over every rank and tier the study plays.</summary>
-        private sealed record StyleRow(
+        internal sealed record StyleRow(
             int Level, string Gear, int Cases, double FirstWins, double SecondWins, double Gap, double FirstActions, double SecondActions, bool Passed);
 
         public static string Build(ResearcherPerkStudyOptions options, string command)
@@ -190,9 +190,11 @@ namespace SWLOR.CraftSim.Scenario.Experiment
                 yield return new ExperimentCase(level, tier, rank, gear);
         }
 
-        private static List<StyleRow> CompareStyles(
-            ResearcherPerkStudyOptions options, IReadOnlyList<GearLevel> gear, Func<int, ExperimentTuning> first, Func<int, ExperimentTuning> second)
+        internal static List<StyleRow> CompareStyles(
+            ResearcherPerkStudyOptions options, IReadOnlyList<GearLevel> gear, Func<int, ExperimentTuning> first, Func<int, ExperimentTuning> second,
+            Func<ExperimentCase, ExperimentTuning, Sample> play = null)
         {
+            play ??= (experimentCase, tuning) => Play(experimentCase, tuning, Focused, options.Runs, options.Seed);
             var rows = new List<StyleRow>();
             foreach (var level in new[] { FixedLevel, ContestedLevel })
             {
@@ -202,8 +204,8 @@ namespace SWLOR.CraftSim.Scenario.Experiment
                     var cases = StyleCases(level, gearLevel).ToList();
                     foreach (var experimentCase in cases)
                     {
-                        var a = Play(experimentCase, first(experimentCase.Rank), Focused, options.Runs, options.Seed);
-                        var b = Play(experimentCase, second(experimentCase.Rank), Focused, options.Runs, options.Seed);
+                        var a = play(experimentCase, first(experimentCase.Rank));
+                        var b = play(experimentCase, second(experimentCase.Rank));
                         var difference = Score(experimentCase, a) - Score(experimentCase, b);
                         gap += difference;
                         firstActions += a.Actions;

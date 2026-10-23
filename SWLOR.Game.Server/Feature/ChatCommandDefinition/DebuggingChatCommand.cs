@@ -18,6 +18,7 @@ namespace SWLOR.Game.Server.Feature.ChatCommandDefinition
             //MoveDoor();
             EnmityDebugger();
             NuiGallery();
+            CasinoPreview();
             AnimationTester();
             GetObjectId();
             ResetBeast();
@@ -99,6 +100,19 @@ namespace SWLOR.Game.Server.Feature.ChatCommandDefinition
                 .Action((user, target, location, args) =>
                 {
                     Gui.TogglePlayerWindow(user, GuiWindowType.DebugNuiGallery);
+                });
+        }
+
+        private void CasinoPreview()
+        {
+            _builder.Create("casinopreview")
+                .Description("Opens the casino window artwork preview.")
+                .Permissions(AuthorizationLevel.Admin)
+                .AvailableToAllOnTestEnvironment()
+                .Action((user, target, location, args) =>
+                {
+                    Gui.TogglePlayerWindow(user, GuiWindowType.CasinoSlot,
+                        new SWLOR.Game.Server.Feature.GuiDefinition.Payload.CasinoSlotPayload(OBJECT_INVALID));
                 });
         }
 

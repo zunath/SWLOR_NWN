@@ -22,23 +22,23 @@ namespace SWLOR.CraftSim.Search
         public double SkilledMaximumRatio { get; init; } = 1.15;
 
         /// <summary>
-        /// The most a skilled session finds with no perks, as a multiple of Quick Search's expected rolls: Quick Search is the choice for
-        /// yield and the board the choice for XP and the rare finds, so an unperked board does not beat it. The Treasure Seeker line is
-        /// sized to lift a skilled scavenger up to <see cref="SkilledMaximumRatio"/> and no further (the Quick Reel precedent for fishing).
+        /// The most a skilled session finds with no perks, as a multiple of Quick Search's expected rolls (owner rule: playing the board
+        /// adds bounded upside over Quick Search, about 1.03x to 1.08x). The Treasure Seeker line then stays inside
+        /// <see cref="SkilledMaximumRatio"/> with its value in the rare finds.
         /// </summary>
-        public double UnperkedSkilledMaximumRatio { get; init; } = 1.00;
+        public double UnperkedSkilledMaximumRatio { get; init; } = 1.08;
 
-        /// <summary>The least a skilled session finds with no perks: the board stays near today's yield.</summary>
-        public double SkilledMinimumRatio { get; init; } = 0.80;
+        /// <summary>The least a skilled session finds with no perks: the board is worth playing, so it beats Quick Search.</summary>
+        public double SkilledMinimumRatio { get; init; } = 1.03;
 
         /// <summary>The least a careless session finds: clicking Search on every spot in turn stays near today's yield.</summary>
-        public double CarelessMinimumRatio { get; init; } = 0.70;
+        public double CarelessMinimumRatio { get; init; } = 0.85;
 
         /// <summary>
         /// The most that even a scavenger with no perks who is told the whole layout may find. No real player reaches it; it shows that
-        /// the cap holds for anyone, with room for a cleverer player than the skilled one.
+        /// the cap does not depend on how well the skilled player plays, with room for a cleverer player than the skilled one.
         /// </summary>
-        public double OracleMaximumRatio { get; init; } = 1.30;
+        public double OracleMaximumRatio { get; init; } = 1.40;
 
         /// <summary>The sampling error the ratios may sit outside their limits by, since each is the mean of a few thousand boards.</summary>
         public double Tolerance { get; init; } = 0.02;
@@ -63,8 +63,8 @@ namespace SWLOR.CraftSim.Search
         /// the perk draft's magnitudes (<c>gathering-treasure-seeker-perk-line-draft.md</c>).
         /// </summary>
         public SearchEffects TreasureSeekerLine { get; init; } = new(
-            ExtraPromisingSpots: 1,
-            DigRiskPercent: 50,
+            SearchChanceDelta: 1,
+            DigRiskPercent: 80,
             DeeperWeightBonus: 2);
 
         /// <summary>Boards of the XP cohort's Quick Search check and the Monte Carlo cross-check of the exact expected rolls.</summary>

@@ -31,7 +31,7 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition
             "Quick Search is only a choice before your first action.\n\n" +
             "THE BOARD\n" +
             "The ground is nine spots. Some of them are promising, and a Search finds several times as often on promising ground, but " +
-            "you cannot see which. Your Gathering rank sets how many spots are promising and how many searches you have. Every action " +
+            "you cannot see which. Your Gathering rank sets how often a Search of promising ground finds something. Every action " +
             "costs one search, and the board ends when they are spent. A site can be searched once, by one scavenger at a time.\n\n" +
             "ACTIONS\n" +
             "Click a spot, then an action:\n" +

@@ -16,14 +16,14 @@ public class SearchSetupTests
     [TestCase(25)]
     [TestCase(40)]
     [TestCase(50)]
-    public void TheRankSetsTheSearchesAndThePromisingSpots_AndNothingElseIsRead(int rank)
+    public void TheRankSetsTheSearchesThePromisingSpotsAndThePromisingChance_AndNothingElseIsRead(int rank)
     {
         var setup = SearchSetup.ForRank(rank, 3);
 
         setup.Searches.Should().Be(CraftRankMilestones.SearchesForRank(rank));
         setup.PromisingSpots.Should().Be(CraftRankMilestones.PromisingSpotsForRank(rank));
         setup.OrdinaryChance.Should().Be(SearchRules.OrdinaryChance);
-        setup.PromisingChance.Should().Be(SearchRules.PromisingChance);
+        setup.PromisingChance.Should().Be(CraftRankMilestones.PromisingChanceForRank(rank));
         setup.DigRiskBase.Should().Be(SearchRules.DigRiskBase);
         setup.DigFindChance.Should().Be(SearchRules.DigFindChance);
         setup.Rank.Should().Be(rank);
@@ -31,34 +31,42 @@ public class SearchSetupTests
     }
 
     [Test]
-    public void TheSearchesAndPromisingSpotsNeverFallAsTheRankRises_AndStayInsideTheGatheringLengthTarget()
+    public void TheSearchesPromisingSpotsAndPromisingChanceNeverFallAsTheRankRises_AndStayInsideTheGatheringLengthTarget()
     {
         var searches = 0;
         var promising = 0;
+        var chance = 0;
         for (var rank = 0; rank <= 50; rank++)
         {
             var setup = SearchSetup.ForRank(rank, 1);
 
             setup.Searches.Should().BeGreaterThanOrEqualTo(searches, $"rank {rank}");
             setup.PromisingSpots.Should().BeGreaterThanOrEqualTo(promising, $"rank {rank}");
+            setup.PromisingChance.Should().BeGreaterThanOrEqualTo(chance, $"rank {rank}");
             setup.Searches.Should().BeInRange(3, 8, "a gathering node is 3 to 8 actions");
             setup.PromisingSpots.Should().BeInRange(1, SearchBoard.Spots - 1);
+            setup.PromisingChance.Should().BeGreaterThan(setup.OrdinaryChance, "promising ground finds more often than ordinary ground");
             searches = setup.Searches;
             promising = setup.PromisingSpots;
+            chance = setup.PromisingChance;
         }
     }
 
     [Test]
-    public void TheSearchesAbsorbedHardLook_ButQuickSearchStillReadsItsLevel()
+    public void TheRankImprovesTheBoardThroughThePromisingChance_StepByStepAtTheRanksHardLookSteppedAt()
     {
         foreach (var rank in new[] { 0, 9, 10, 29, 30, 49, 50 })
             CraftRankMilestones.HardLookLevelForRank(rank).Should().Be(CraftRankMilestones.TierForRank(rank));
 
-        CraftRankMilestones.SearchSchedule().Select(step => step.Rank).Should().Equal(new[] { 0, 10, 20, 30, 40 }, "the searches step at the ranks Hard Look did");
+        CraftRankMilestones.SearchSchedule().Select(step => step.Rank).Should().Equal(new[] { 0, 10, 20, 30, 40 }, "the promising chance steps at the ranks Hard Look did");
+        CraftRankMilestones.SearchSchedule().Select(step => step.PromisingChance).Should().BeInAscendingOrder().And.OnlyHaveUniqueItems("every tier is a better board");
+        CraftRankMilestones.PromisingChanceForRank(0).Should().Be(29);
+        CraftRankMilestones.PromisingChanceForRank(50).Should().Be(42);
+        CraftRankMilestones.PromisingChanceForRank(9).Should().Be(CraftRankMilestones.PromisingChanceForRank(0), "it steps at the tier, not between");
     }
 
     [Test]
-    public void KeenEye_AddsPromisingSpots_UpToTheWholeBoard()
+    public void ExtraPromisingSpots_AddSpots_UpToTheWholeBoard()
     {
         var plain = SearchSetup.ForRank(20, 2);
 
@@ -74,7 +82,7 @@ public class SearchSetupTests
         var ruinous = SearchSetup.ForRank(20, 2, new SearchEffects(SearchChanceDelta: -500));
 
         careful.OrdinaryChance.Should().Be(SearchRules.OrdinaryChance - 5);
-        careful.PromisingChance.Should().Be(SearchRules.PromisingChance - 5);
+        careful.PromisingChance.Should().Be(CraftRankMilestones.PromisingChanceForRank(20) - 5);
         absurd.PromisingChance.Should().Be(SearchRules.MaximumChance);
         ruinous.OrdinaryChance.Should().Be(SearchRules.MinimumChance);
     }

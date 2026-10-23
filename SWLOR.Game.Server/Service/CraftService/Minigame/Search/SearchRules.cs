@@ -3,15 +3,15 @@ namespace SWLOR.Game.Server.Service.CraftService.Minigame.Search;
 /// <summary>
 /// The numbers of the Search board. Every value here is a starting value for the simulator to tune; the engine and the setup read
 /// them and nothing else, so a tuning pass changes this file (and the rank schedule in <see cref="CraftRankMilestones"/>) only.
-/// How many searches a scavenger gets and how many spots are promising come from Gathering rank; they replaced Hard Look and
-/// Perception (<see cref="SearchSetup.ForRank"/>).
+/// How many searches a scavenger gets, how many spots are promising and how often a Search of promising ground finds come from
+/// Gathering rank; they replaced Hard Look and Perception (<see cref="SearchSetup.ForRank"/>).
 /// </summary>
 public static class SearchRules
 {
     // The ground. A Search finds with this chance, by the ground at the spot. Promising ground is the point of Sifting: it finds
-    // several times as often as ordinary ground.
+    // several times as often as ordinary ground (3.6 times at Gathering 0, 5.3 times at Gathering 40), at the chance the rank gives
+    // (CraftRankMilestones.PromisingChanceForRank, 29% to 42%).
     public const int OrdinaryChance = 8;
-    public const int PromisingChance = 30;
     public const int MinimumChance = 1;
     public const int MaximumChance = 95;
 

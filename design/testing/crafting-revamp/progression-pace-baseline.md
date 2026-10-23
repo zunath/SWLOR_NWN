@@ -68,7 +68,7 @@ Rules copied from the server (the model calls everything else directly), each ch
 | Guild points per hand-in | `Guild.cs:62-80` |
 | Ten guild tasks per tier on the board | `Guild.cs:124-170` |
 | Seconds per harvester use | `ProspectingRules.cs:71` |
-| Seconds per scavenge attempt | `ScavengePoint.cs:55-70` |
+| Seconds per scavenge attempt | `SearchRules.cs:33` |
 | Seconds per refining operation | `RefineryViewModel.cs:58-64` |
 | Research job length and credits | `Craft.cs:1145-1192` |
 | A first research job creates the blueprint | `ResearchViewModel.cs:387-410` |
@@ -76,8 +76,10 @@ Rules copied from the server (the model calls everything else directly), each ch
 | Recipe rank requirement | `Craft.cs:327-331` |
 | Harvests per node | `ProspectingNode.cs:62` |
 | Harvest XP | `GatheringLevels.cs:20-23` |
-| Scavenge second attempt | `ScavengePoint.cs:53-58` |
-| Scavenge success roll and DC | `ScavengePoint.cs:64-104` |
+| Scavenge chances at the reference Perception modifier | `ScavengeQuickSearch.cs:38-49` |
+| Scavenge second attempt | `ScavengeQuickSearch.cs:97-99` |
+| Scavenge success roll and DC | `ScavengeQuickSearch.cs:101-108` |
+| Scavenge XP level | `ScavengePoint.cs:89` |
 | Ore tiers and XP per unit | `RefineryViewModel.cs:35-52` |
 | Refinery batch size | `RefineryViewModel.cs:61` |
 | Power cores per batch | `RefineryViewModel.cs:173-174` |

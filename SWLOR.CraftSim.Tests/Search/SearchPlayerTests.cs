@@ -77,6 +77,24 @@ namespace SWLOR.CraftSim.Tests.Search
         }
 
         [Test]
+        public void WhenFreshGroundIsWorthMoreThanADig_TheInformedPlayersSearchItInsteadOfDiggingTheSpotTheyJustSearched()
+        {
+            // Eight fresh spots are each worth more than a dig (a search finds about 16%, a first dig about 14%) and there are more of
+            // them than searches left, so the best split does not need any one of them. The player once took "a chain the split cannot
+            // do without", found none, and fell back to the first spot it could act on: a dig of the spot it had just searched.
+            var setup = new SearchSetup(5, 2, 12, 30, 30, 20, 20);
+            foreach (var kind in new[] { SearchPlayerKind.Skilled, SearchPlayerKind.Oracle })
+            {
+                var engine = new SearchEngine(SimMinigameRandom.ForRun(1, 56, (int)kind), setup, SearchBoard.Bit(7) | SearchBoard.Bit(8));
+                engine.Perform(SearchActionIds.For(SearchActionIds.Search, 0));
+
+                var action = new SearchPlayer(kind).Choose(engine);
+
+                action.Should().NotStartWith(SearchActionIds.DigDeeper, $"{kind} has fresh ground worth more than a dig");
+            }
+        }
+
+        [Test]
         public void TheOraclePlayerSearchesAPromisingSpotFirst_BecauseItWasToldWhereTheyAre()
         {
             var layout = SearchBoard.Bit(2) | SearchBoard.Bit(6);

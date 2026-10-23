@@ -294,29 +294,31 @@ namespace SWLOR.CraftSim.Search
                 return rebuilt.Value(searches);
             }
 
-            /// <summary>The first action of the best split: the chain with the highest first step among those the split uses.</summary>
+            /// <summary>
+            /// The first action of the best split: the first step of the chain that keeps the value of the searches highest once it is
+            /// taken (the step's own find plus the best split of the searches left), and of those the one that finds most itself. A chain is
+            /// not required to be one the split cannot do without: with more equally good chains than searches, none is, and the player
+            /// must still take one of the best.
+            /// </summary>
             public string BestFirstAction(int searches)
             {
                 var chances = SearchChances();
                 var chains = Chains(chances);
                 var bestSpot = -1;
+                var bestValue = double.NegativeInfinity;
                 var bestFirst = double.NegativeInfinity;
                 for (var spot = 0; spot < Spots; spot++)
                 {
                     if (chains[spot].Count == 0)
                         continue;
 
-                    // Only a chain the best split uses: dropping it must lower the value of the searches.
-                    var withIt = Knapsack(chains, searches);
                     var saved = chains[spot];
-                    chains[spot] = new List<double>();
-                    var without = Knapsack(chains, searches);
+                    chains[spot] = saved.Skip(1).ToList();
+                    var value = saved[0] + Knapsack(chains, searches - 1);
                     chains[spot] = saved;
-                    if (withIt - without <= 1e-12)
-                        continue;
-
-                    if (saved[0] > bestFirst + 1e-12)
+                    if (value > bestValue + 1e-12 || (value > bestValue - 1e-12 && saved[0] > bestFirst + 1e-12))
                     {
+                        bestValue = value;
                         bestFirst = saved[0];
                         bestSpot = spot;
                     }

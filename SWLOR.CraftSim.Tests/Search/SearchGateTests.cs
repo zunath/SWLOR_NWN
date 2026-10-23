@@ -76,7 +76,7 @@ namespace SWLOR.CraftSim.Tests.Search
         }
 
         [Test]
-        public void TheTreasureSeekerLineLiftsASkilledScavengerUpToTheCapAndNoFurther()
+        public void TheBoardBeatsQuickSearchByAFewPercentWithoutPerks_AndTheWholeLineStaysInsideTheCap()
         {
             var parity = Parity();
             foreach (var rank in Options.Ranks)
@@ -85,8 +85,9 @@ namespace SWLOR.CraftSim.Tests.Search
                 var plain = parity.Sample(rank, 1, SearchPlayerKind.Skilled).Finds / quick;
                 var line = parity.Sample(rank, 1, SearchPlayerKind.Skilled, Options.TreasureSeekerLine).Finds / quick;
 
-                plain.Should().BeLessThanOrEqualTo(Options.UnperkedSkilledMaximumRatio + Options.Tolerance, $"rank {rank}");
+                plain.Should().BeInRange(Options.SkilledMinimumRatio - Options.Tolerance, Options.UnperkedSkilledMaximumRatio + Options.Tolerance, $"rank {rank}: playing the board is worth a few percent more finds than Quick Search");
                 line.Should().BeGreaterThan(plain, $"rank {rank}: the line helps");
+                (line - plain).Should().BeLessThan(0.12, $"rank {rank}: the line's value is in the rare finds, not the count of finds");
                 line.Should().BeLessThanOrEqualTo(Options.SkilledMaximumRatio + Options.Tolerance, $"rank {rank}");
             }
         }

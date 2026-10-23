@@ -96,8 +96,9 @@ public sealed class SearchSetup
 
     /// <summary>
     /// The setup for a scavenger of the Gathering rank at a site of the level. The rank sets the searches
-    /// (<see cref="CraftRankMilestones.SearchesForRank"/>) and the promising spots (<see cref="CraftRankMilestones.PromisingSpotsForRank"/>);
-    /// the perks add promising spots, change the chance of a Search, and reduce the dig risk or raise its find chance. No attribute is read.
+    /// (<see cref="CraftRankMilestones.SearchesForRank"/>), the promising spots (<see cref="CraftRankMilestones.PromisingSpotsForRank"/>)
+    /// and the chance a Search finds on promising ground (<see cref="CraftRankMilestones.PromisingChanceForRank"/>); the perks add
+    /// promising spots, change the chance of a Search, and reduce the dig risk or raise its find chance. No attribute is read.
     /// </summary>
     public static SearchSetup ForRank(int gatheringRank, int siteLevel, SearchEffects effects = null)
     {
@@ -107,7 +108,7 @@ public sealed class SearchSetup
             CraftRankMilestones.SearchesForRank(gatheringRank),
             promising,
             ClampChance(SearchRules.OrdinaryChance + effects.SearchChanceDelta),
-            ClampChance(SearchRules.PromisingChance + effects.SearchChanceDelta),
+            ClampChance(CraftRankMilestones.PromisingChanceForRank(gatheringRank) + effects.SearchChanceDelta),
             SearchRules.DigRiskBase,
             SearchRules.DigRiskStep,
             Math.Clamp(SearchRules.DigFindChance + effects.DigFindBonus, SearchRules.MinimumChance, SearchRules.MaximumDigFindChance),

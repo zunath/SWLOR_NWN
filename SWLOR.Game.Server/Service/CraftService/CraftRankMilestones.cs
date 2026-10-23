@@ -22,10 +22,14 @@ public static class CraftRankMilestones
     // Fabrication ranks that each add a concurrent research job and a licensed run on new blueprints.
     private static readonly int[] ResearchMilestoneRanks = { 25, 50 };
 
-    // The Search board's schedule (starting values for CraftSim to tune): the Gathering rank that first gives each value. The number of
-    // searches replaced Hard Look, so it steps at the same ranks Hard Look did; the number of promising spots replaced Perception.
-    private static readonly (int Rank, int Value)[] SearchesSteps = { (0, 5), (10, 5), (20, 6), (30, 6), (40, 6) };
-    private static readonly (int Rank, int Value)[] PromisingSpotSteps = { (0, 2), (10, 2), (20, 2), (30, 2), (40, 3) };
+    // The Search board's schedule (tuned by CraftSim, see scavenging-search-parity.md): the Gathering rank that first gives each value.
+    // The searches and the promising spots are the same at every rank, because a step in either is worth more than a rank's step in
+    // Quick Search's expected rolls (which rise 0.065 a tier), so a count that steps cannot keep the board at the same share of Quick
+    // Search at every rank. Gathering rank improves the board through the chance a Search finds on promising ground, which replaced
+    // Perception, and which steps at the same ranks Hard Look did.
+    private static readonly (int Rank, int Value)[] SearchesSteps = { (0, 6) };
+    private static readonly (int Rank, int Value)[] PromisingSpotSteps = { (0, 2) };
+    private static readonly (int Rank, int Value)[] PromisingChanceSteps = { (0, 29), (10, 33), (20, 36), (30, 39), (40, 42) };
 
     // Gathering ranks at which a Strike and a Heavy Strike in a Prospecting session yield more (replacing Might), and at which one
     // Survey reveals one more seam (replacing Perception).
@@ -93,6 +97,12 @@ public static class CraftRankMilestones
     /// <summary>The spots of a scavenge site's board that are promising at a Gathering rank. They replaced Perception.</summary>
     public static int PromisingSpotsForRank(int gatheringRank) => ValueAt(PromisingSpotSteps, gatheringRank);
 
+    /// <summary>
+    /// The chance, in percent, that a Search of promising ground finds something at a Gathering rank. It rises with rank, which is how
+    /// Gathering rank improves the board in place of Perception.
+    /// </summary>
+    public static int PromisingChanceForRank(int gatheringRank) => ValueAt(PromisingChanceSteps, gatheringRank);
+
     /// <summary>The Hard Look level a Gathering rank is worth, which sets Quick Search's chance of a second attempt: the rank's tier.</summary>
     public static int HardLookLevelForRank(int gatheringRank) => TierForRank(gatheringRank);
 
@@ -105,9 +115,16 @@ public static class CraftRankMilestones
 
     public static int GetPromisingSpots(uint creature) => PromisingSpotsForRank(GetGatheringRank(creature));
 
-    /// <summary>The Gathering ranks at which the Search board's searches or promising spots change, for reports.</summary>
-    public static IReadOnlyList<(int Rank, int Searches, int PromisingSpots)> SearchSchedule() =>
-        SearchesSteps.Select(step => (step.Rank, step.Value, PromisingSpotsForRank(step.Rank))).ToList();
+    public static int GetPromisingChance(uint creature) => PromisingChanceForRank(GetGatheringRank(creature));
+
+    /// <summary>The Gathering ranks at which anything on the Search board's schedule changes, with the board's numbers from there, for reports.</summary>
+    public static IReadOnlyList<(int Rank, int Searches, int PromisingSpots, int PromisingChance)> SearchSchedule() =>
+        SearchesSteps.Concat(PromisingSpotSteps).Concat(PromisingChanceSteps)
+            .Select(step => step.Rank)
+            .Distinct()
+            .OrderBy(rank => rank)
+            .Select(rank => (rank, SearchesForRank(rank), PromisingSpotsForRank(rank), PromisingChanceForRank(rank)))
+            .ToList();
 
     public static int GetDroidAssemblyTier(uint creature) =>
         TierForRank(Skill.GetCreatureSkillRank(creature, SkillType.Engineering));

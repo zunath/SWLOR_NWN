@@ -855,7 +855,7 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
                         new ArticleBlock("Harvesting Resources",
                             "Use a charged harvester on a matching resource node. The harvester and resource can require a minimum Gathering rank: tier 1 at rank 0, then one more tier every 10 ranks. Harvesting takes 5 seconds, consumes a harvester charge, grants Gathering XP, and Might can provide bonus material."),
                         new ArticleBlock("Scavenging",
-                            "Scavenge sites require a Gathering rank that matches the site's tier. Opening one offers Quick Search, which searches the whole site at once, or a 3x3 search board. On the board, your Gathering rank sets how many searches you get and how many spots are promising. Search a spot, Sift to see which neighboring spots are promising, or Dig Deeper at a searched spot for better odds at rare items, at a shown risk of spoiling it. Every action grants Gathering XP, and a site can be searched once, by one scavenger at a time. Treasure Hunter improves item results, and Credit Finder improves credit finds."),
+                            "Scavenge sites require a Gathering rank that matches the site's tier. Opening one offers Quick Search, which searches the whole site at once, or a 3x3 search board. On the board, your Gathering rank sets how often a Search of promising ground finds something. Search a spot, Sift to see which neighboring spots are promising, or Dig Deeper at a searched spot for better odds at rare items, at a shown risk of spoiling it. Every action grants Gathering XP, and a site can be searched once, by one scavenger at a time. Treasure Hunter improves item results, and Credit Finder improves credit finds."),
                         new ArticleBlock("Refining Materials",
                             "Raw materials can be processed at refineries when you have the matching Gathering rank. Refining consumes Power Cores and grants Gathering XP; see Crafting for the batch-size and timing details."),
                         new ArticleBlock("Loading A Fishing Rod",
@@ -866,7 +866,7 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
                     new[]
                     {
                         new QuestionAnswer("Why won't my harvester work?", "It may be out of charges, too far from the node, the wrong harvester, or require a higher Gathering rank."),
-                        new QuestionAnswer("What improves scavenging?", "Gathering rank unlocks harder sites and gives you more searches and more promising spots on the board; Treasure Hunter and Credit Finder improve different parts of the result."),
+                        new QuestionAnswer("What improves scavenging?", "Gathering rank unlocks harder sites and makes promising ground on the board pay off more often; Treasure Hunter and Credit Finder improve different parts of the result."),
                         new QuestionAnswer("How do I load bait?", "Equip the fishing rod, use it, and target bait in your inventory."),
                         new QuestionAnswer("Why did fishing stop?", "Moving during the 6 to 8 second cast interrupts the attempt.")
                     },

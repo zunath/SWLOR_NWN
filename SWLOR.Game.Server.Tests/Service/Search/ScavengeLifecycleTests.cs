@@ -206,24 +206,26 @@ public class ScavengeLifecycleTests
     [Test]
     public void TheLastSearchSettlesTheVisit_PuttingEveryFindInTheSite_AndOpeningItForTheScavenger()
     {
-        // Five searches of ordinary ground, spots 4 to 8: spots 4 and 6 find (roll 1 of 10%), the others do not.
+        // Six searches of ordinary ground, spots 4 to 8 and then 3: spots 4 and 6 find (roll 1 of 8%), the others do not.
         var lifecycle = Lifecycle(
             1, 0, 2,
             100,
             1, 52, 1,
             100,
+            100,
             100);
         var session = lifecycle.Start(Request());
+        session.Engine.Setup.Searches.Should().Be(6);
 
         ScavengeStep last = null;
-        foreach (var spot in new[] { 4, 5, 6, 7, 8 })
+        foreach (var spot in new[] { 4, 5, 6, 7, 8, 3 })
         {
             last = lifecycle.Act(session, SearchAt(spot));
             last.Performed.Should().BeTrue();
             NextTurn();
         }
 
-        last.Result.Should().NotBeNull("the fifth search spends the last one");
+        last.Result.Should().NotBeNull("the sixth search spends the last one");
         last.Result.End.Should().Be(ScavengeEnd.Completed);
         session.Settled.Should().BeTrue();
         _world.Created.Should().Equal((Site, "fiberp_ruined", 2), (Site, "fiberp_flawed", 1));
@@ -254,10 +256,10 @@ public class ScavengeLifecycleTests
     [Test]
     public void AVisitThatFoundNothing_RemovesTheSite_AndNeverOpensIt()
     {
-        var lifecycle = Lifecycle(100, 100, 100, 100, 100);
+        var lifecycle = Lifecycle(100, 100, 100, 100, 100, 100);
         var session = lifecycle.Start(Request());
 
-        foreach (var spot in new[] { 4, 5, 6, 7, 8 })
+        foreach (var spot in new[] { 4, 5, 6, 7, 8, 3 })
         {
             lifecycle.Act(session, SearchAt(spot));
             NextTurn();

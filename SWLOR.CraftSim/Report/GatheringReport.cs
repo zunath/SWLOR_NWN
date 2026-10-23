@@ -43,13 +43,15 @@ namespace SWLOR.CraftSim.Report
             text.AppendLine();
             var rules = new MarkdownTable("Rule", "Source");
             foreach (var source in LegacySource.All.Where(s =>
-                         s.File.EndsWith("HarvesterItemDefinition.cs") || s.File.EndsWith("ScavengePoint.cs") ||
+                         s.File.EndsWith("ProspectingNode.cs") || s.File.EndsWith("GatheringLevels.cs") || s.File.EndsWith("ScavengePoint.cs") ||
                          s.File.EndsWith("RefineryViewModel.cs") || s.File.Contains("Fishing")))
             {
                 rules.Add(source.Name, $"`{source.Citation}`");
             }
 
             text.AppendLine(rules.ToString());
+            text.AppendLine("Harvesting now runs in Prospecting: a node keeps its d4 pool (`ProspectingNode`) and a unit pays `GetDeltaXP(vein level - rank)` (`GatheringLevels`). Quick Harvest plays today's loop at a Might modifier of 0. The harvest bonus item (`d100 <= 25 x Might modifier`) was in `HarvesterItemDefinition.cs` until Prospecting replaced it. It is ported here from that file at commit 64b712fc8, where it was checked against the source, and is no longer checked. Refining still pays each ore's flat XP per unit (25 to 150 by ore tier), scaled by the rank: `GetDeltaXP(ore level - rank) / GetDeltaXP(0)`, so it is the flat XP at the ore's level (`GatheringLevels.RefiningXp`).");
+            text.AppendLine();
             text.AppendLine("The fishing catch roll (`40 + 10 x (rank - fish level) + 2 x Willpower`, kept from 0 to 95) was in `FinishFishing` until the Line fight replaced it. It is ported here from `Service/Fishing.cs` at commit d5f1c0466, where it was checked against the source, and is no longer checked.");
             text.AppendLine();
             text.AppendLine("The server's XP chart (`GetDeltaXP`), by the activity's level minus the rank:");
@@ -135,7 +137,7 @@ namespace SWLOR.CraftSim.Report
             var ores = RefiningModel.Ores();
             text.AppendLine("## Refining");
             text.AppendLine();
-            text.AppendLine("Each power core refines 3 + Refinery Management units. Every unit grants a flat XP set by its ore, whatever the refiner's rank. The ores the game does not have (Ochne, Croknor, Hemorgite, Bisteiss) are left out.");
+            text.AppendLine("Each power core refines 3 + Refinery Management units. Every unit grants a flat XP set by its ore, to a refiner whose rank is the ore's level (5, 15, 25, 35 and 45 by ore tier); the rank scales it by the curve harvesting uses, `GetDeltaXP(ore level - rank) / GetDeltaXP(0)`, which the harvesting study tabulates. The ores the game does not have (Ochne, Croknor, Hemorgite, Bisteiss) are left out.");
             text.AppendLine();
             var cores = new MarkdownTable("Refinery Management", "Units per core", "Cores for 100 units", "Cores for 9 units");
             for (var level = 0; level <= RefiningModel.MaximumRefineryManagement; level++)
@@ -148,7 +150,7 @@ namespace SWLOR.CraftSim.Report
             }
 
             text.AppendLine(cores.ToString());
-            text.AppendLine("XP per refined unit (the same at every rank), against what harvesting a node of the same tier pays per item at the tier's unlock rank (10 x (tier - 1)), five ranks later and ten ranks later:");
+            text.AppendLine("XP per refined unit at the ore's level, against what harvesting a node of the same tier pays per item at the tier's unlock rank (10 x (tier - 1)), five ranks later and ten ranks later:");
             text.AppendLine();
             var xp = new MarkdownTable("Ore", "Ore tier", "Refining XP per unit", "XP per core at 3 units", "XP per core at 9 units", "Harvest XP per item at unlock rank", "+5 ranks", "+10 ranks");
             foreach (var ore in ores)
@@ -211,7 +213,7 @@ namespace SWLOR.CraftSim.Report
             text.AppendLine("- Harvesting counts items, not their value: the loot-table roll behind each item, and the extra `LOOT_TABLE_` rolls some nodes add through `Loot.SpawnLoot`, are not played. Scavenging counts successful rolls, not the loot they return, and ignores Treasure Hunter and Creditfinder.");
             text.AppendLine("- Respawn, node density and travel time are not modelled, so these are yields per node or site, not per hour.");
             text.AppendLine("- The fishing pool average ignores that most pools are unreachable for a given rod, and the 80% chance of no bite when only the default fish is available. Real anglers choose their location, rod and bait.");
-            text.AppendLine("- Refining XP does not depend on rank today, so its rows are the same at every rank.");
+            text.AppendLine("- Refining XP is shown at the ore's level; how it falls as the rank passes the level is in the harvesting study. The progression-pace baseline still counts the flat XP at every rank.");
         }
     }
 }

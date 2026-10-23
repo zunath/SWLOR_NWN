@@ -209,7 +209,8 @@ namespace SWLOR.CraftSim.Progression
             text.AppendLine("- Components no node supplies (enemy and crate drops of leather and electronics, meat, vendor goods, parts another recipe makes) are left out of the hours and counted in the summary column. The sensitivity table prices them at 20 s a unit, about a harvested unit.");
             text.AppendLine($"- Gathering the skill: each rank uses the better of harvesting and refining the best ground vein the tier allows (`CraftRankMilestones.TierForRank`) and searching the best scavenge site, at {Number(a.NodeTravelSeconds, 0)} s between nodes or sites and {Number(a.SecondsPerScavengeAttempt)} s per scavenge attempt. Perception modifier {a.PerceptionModifier}.");
             text.AppendLine();
-            text.AppendLine("Rules copied from the server (the model calls everything else directly), each checked against its source by `ProgressionSourceTests` or `LegacySourceTests`:");
+            text.AppendLine("Rules copied from the server (the model calls everything else directly), each checked against its source by `ProgressionSourceTests` or `LegacySourceTests`, "
+                            + "except the loss rule of the deleted `CraftViewModel.cs`, which is frozen at commit `" + LegacySource.CraftViewModelCommit + "`:");
             text.AppendLine();
             var rules = new MarkdownTable("Rule", "Source");
             foreach (var source in ProgressionSource.All.Concat(LegacySource.All.Where(s =>

@@ -69,6 +69,15 @@ namespace SWLOR.CraftSim.Tests.Search
         }
 
         [Test]
+        public void TheReportSaysEveryActionPaysXp_ASiftTheQuarterAFailurePays()
+        {
+            var report = WriteReport(out _);
+
+            report.Should().Contain("every action pays Gathering XP").And.Contain("A Sift finds nothing, so it pays the quarter an attempt that finds nothing pays");
+            report.Should().NotContain("pays nothing").And.NotContain("A Sift pays none");
+        }
+
+        [Test]
         public void TheRareSupplyEvidenceNamesTheRealTablesItWasAskedFor()
         {
             var report = WriteReport(out _);

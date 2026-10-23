@@ -3263,35 +3263,35 @@
   },
   {
     "File": "SWLOR.Game.Server/Feature/ScavengePoint.cs",
-    "Line": 38,
+    "Line": 36,
     "Member": "OnOpened",
     "Delivery": "Retained",
     "Call": "SendMessageToPC(user, ScavengeLifecycle.SiteHeldMessage)"
   },
   {
     "File": "SWLOR.Game.Server/Feature/ScavengePoint.cs",
-    "Line": 47,
+    "Line": 45,
     "Member": "OnOpened",
     "Delivery": "Retained",
     "Call": "SendMessageToPC(user, occupant.Player == user\n                    ? \"You are already searching this site.\"\n                    : ScavengeLifecycle.SiteInUseMessage)"
   },
   {
     "File": "SWLOR.Game.Server/Feature/ScavengePoint.cs",
-    "Line": 56,
+    "Line": 54,
     "Member": "OnOpened",
     "Delivery": "Retained",
     "Call": "SendMessageToPC(user, \"This object has already been searched through.\")"
   },
   {
     "File": "SWLOR.Game.Server/Feature/ScavengePoint.cs",
-    "Line": 67,
+    "Line": 65,
     "Member": "OnOpened",
     "Delivery": "Retained",
     "Call": "SendMessageToPC(user, $\"The assigned loot table '{lootTableName}' does not exist. Please inform an admin that this scavenge site is broken.\")"
   },
   {
     "File": "SWLOR.Game.Server/Feature/ScavengePoint.cs",
-    "Line": 75,
+    "Line": 73,
     "Member": "OnOpened",
     "Delivery": "Retained",
     "Call": "SendMessageToPC(user, $\"You aren't skilled enough to scavenge through this. (Required Gathering rank: {CraftRankMilestones.RequiredRankForTier(requiredLevel)})\")"

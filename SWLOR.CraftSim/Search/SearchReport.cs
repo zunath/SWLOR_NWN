@@ -157,9 +157,9 @@ namespace SWLOR.CraftSim.Search
                 $"oracle at most {Number(options.OracleMaximumRatio, 2)}x; each within {Number(options.Tolerance, 2)} for sampling error. With the whole Treasure Seeker line the skilled player stays within the plan's +15% ({Number(options.SkilledMaximumRatio, 2)}x), the line being sized to lift a skilled scavenger up to the cap and no further ({Describe(options.TreasureSeekerLine)}).",
                 $"- Time: {Number(options.SiteSeconds)} s to reach and open each site in both loops (the progression model's estimate, unmeasured); today's attempts take {Number(options.LegacySecondsPerAttempt)} s each (the get-low animation) and a board action {Number(options.SecondsPerAction)} s " +
                 $"(`SearchRules.ActionSeconds`, which the game enforces as the least time between two actions, the first free). Both are estimates until the client run measures them.",
-                $"- XP: a Search or Dig Deeper attempt pays what the site pays against the Gathering rank (`Skill.GetDeltaXP(10 x site level - rank)`), a quarter on failure, as scavenging always did, times the multiplier by site level the game applies (`CraftMinigameXp`): " +
+                $"- XP: every action pays Gathering XP. A Search or Dig Deeper attempt pays what the site pays against the Gathering rank (`Skill.GetDeltaXP(10 x site level - rank)`), a quarter on failure, as scavenging always did, times the multiplier by site level the game applies (`CraftMinigameXp`): " +
                 string.Join(", ", Enumerable.Range(1, 5).Select(level => $"level {level} {SearchRules.XpMultiplierForLevel(level).ToString("0.##", System.Globalization.CultureInfo.InvariantCulture)}x")) +
-                ". A Sift pays nothing. 1.0 everywhere is today's XP per attempt.",
+                ". A Sift finds nothing, so it pays the quarter an attempt that finds nothing pays.",
                 "- XP cohort (gate 6): site levels 1 to 5, the Gathering rank 10 times the level, no tool. The gate judges the lower XP per hour of the careless and the skilled player.",
                 "- Named starting values of the board (`SearchRules`), all tunable:"
             };

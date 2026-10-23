@@ -16,8 +16,8 @@ namespace SWLOR.Game.Server.Service.ScavengeService
         /// </summary>
         public const string OpeningVariable = "SCAVENGE_OPENING_FOR_SEARCHER";
 
-        /// <summary>How long after the search animation a site stays held for the scavenger who searched it.</summary>
-        public const float OpeningHoldSeconds = 10f;
+        /// <summary>How long after the search animation a site stays held for the scavenger who searched it, if they never close it.</summary>
+        public const float OpeningHoldSeconds = 60f;
 
         /// <summary>Set on a site while a player has closed its inventory to open the board, so closing it does not remove the site.</summary>
         public const string DoNotDestroyVariable = "DO_NOT_DESTROY";

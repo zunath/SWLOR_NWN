@@ -25,15 +25,13 @@ namespace SWLOR.Game.Server.Feature
             var placeable = OBJECT_SELF;
 
             // A site's inventory opens for the scavenger who just searched it, so they can take what it gave. It says nothing for them.
-            // Until they open it (the search animation runs first) nobody else may: the site is held for the scavenger it was opened for.
+            // The site is held for that scavenger from before the search animation ends until they close it (or the hold lapses), so
+            // nobody else can open it and take what it gave meanwhile.
             var holder = GetLocalObject(placeable, NwnScavengeWorld.OpeningVariable);
             if (GetIsObjectValid(holder))
             {
                 if (holder == user)
-                {
-                    DeleteLocalObject(placeable, NwnScavengeWorld.OpeningVariable);
                     return;
-                }
 
                 SendMessageToPC(user, ScavengeLifecycle.SiteHeldMessage);
                 CloseSiteInventory(user, placeable);
@@ -146,6 +144,10 @@ namespace SWLOR.Game.Server.Feature
             var user = GetLastClosedBy();
 
             if (!GetIsPC(user) || GetIsDM(user)) return;
+
+            // The scavenger a searched site was held for has closed it: what is left in it is anyone's, as it always was.
+            if (GetLocalObject(placeable, NwnScavengeWorld.OpeningVariable) == user)
+                DeleteLocalObject(placeable, NwnScavengeWorld.OpeningVariable);
 
             // In case the user is not skilled enough to scavenge this resource, we don't want to destroy it.
             if (GetLocalBool(placeable, "DO_NOT_DESTROY"))

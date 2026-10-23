@@ -30,26 +30,31 @@ public class ScavengePointSourceTests
     }
 
     [Test]
-    public void ASiteOpenedForItsScavenger_IsHeldForThemUntilTheyOpenIt()
+    public void ASiteOpenedForItsScavenger_IsHeldForThemUntilTheyCloseIt()
     {
-        var onOpened = Method(Source("Feature", "ScavengePoint.cs"), "public static void OnOpened()");
+        var source = Source("Feature", "ScavengePoint.cs");
+        var onOpened = Method(source, "public static void OnOpened()");
+        var onClosed = Method(source, "public static void OnClosed()");
         var world = Source("Service", "ScavengeService", "NwnScavengeWorld.cs");
 
         world.Should().Contain("SetLocalObject(site, OpeningVariable, player);");
         onOpened.Should().Contain("GetLocalObject(placeable, NwnScavengeWorld.OpeningVariable)");
         onOpened.Should().Contain("if (holder == user)");
-        onOpened.Should().Contain("DeleteLocalObject(placeable, NwnScavengeWorld.OpeningVariable);");
         onOpened.Should().Contain("ScavengeLifecycle.SiteHeldMessage");
+        onOpened.Should().NotContain("DeleteLocalObject(placeable, NwnScavengeWorld.OpeningVariable)", "opening it does not end the hold; the scavenger is still taking what it gave");
         onOpened.Should().NotContain("GetLocalBool(placeable, NwnScavengeWorld.OpeningVariable)", "the hold is on a player, not a flag anyone can use");
+        onClosed.Should().Contain("GetLocalObject(placeable, NwnScavengeWorld.OpeningVariable) == user");
+        onClosed.Should().Contain("DeleteLocalObject(placeable, NwnScavengeWorld.OpeningVariable);");
     }
 
     [Test]
-    public void AHoldThatIsNeverClaimedLapses()
+    public void AHoldThatIsNeverReleasedLapses()
     {
         var world = Source("Service", "ScavengeService", "NwnScavengeWorld.cs");
 
         world.Should().Contain("DeleteLocalObject(site, OpeningVariable);");
         world.Should().Contain("(float)animationSeconds + OpeningHoldSeconds");
+        world.Should().Contain("GetLocalObject(site, OpeningVariable) == player");
     }
 
     [Test]

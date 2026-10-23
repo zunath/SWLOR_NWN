@@ -4,7 +4,7 @@
   "Sheet": "Animations",
   "Model": "a_ba",
   "ModelSha256": "812a48e4a74887560c743f600f4c8e53e17bd6b66748bb52dfcc880d8bf680d3",
-  "RecipeSha256": "6c8dc1d0dcef2cec8603ebc23ceb43e13bf099b30c1acec2282bb434392a1a13",
+  "RecipeSha256": "2099e027d9e0a3cef25da9a5c5a28b50c140c70c28544fb80de5b7f436289f11",
   "Notes": "Image-informed poses authored through Codex and analytic IK. Timings are draft interpretations. No HAKs or gameplay bindings are changed.",
   "Animations": [
     {
@@ -252,6 +252,254 @@
         }
       ],
       "ProjectSha256": "e0c69aa95df8b2aa36e82cfbd30a4d96ce76cf0c28b7bfb6c30bccf074207cea"
+    },
+    {
+      "Id": "Reel",
+      "Name": "Reel in",
+      "BibleRow": 0,
+      "Reference": "",
+      "Observation": "Cranking the reel with the rod up while the fish pulls back.",
+      "Interpretation": "The rod lifts, the left hand circles the reel three times with the shoulders working against the pull, and the rod settles. It is faster and more forceful than the short reel that ends the cast.",
+      "Activity": "Fishing",
+      "Status": "Draft: visual review required",
+      "Project": "Reel.swlanim",
+      "Duration": 3.05,
+      "Keyframes": 62,
+      "Joints": 57,
+      "MdlRoundTripMaximumErrorMetres": 2.6656008E-07,
+      "Beats": [
+        {
+          "Time": 0,
+          "Label": "Idle"
+        },
+        {
+          "Time": 0.4,
+          "Label": "Brace the rod"
+        },
+        {
+          "Time": 0.55,
+          "Label": "Crank"
+        },
+        {
+          "Time": 0.7,
+          "Label": "Crank"
+        },
+        {
+          "Time": 0.85,
+          "Label": "Crank"
+        },
+        {
+          "Time": 1,
+          "Label": "Crank"
+        },
+        {
+          "Time": 1.15,
+          "Label": "Crank"
+        },
+        {
+          "Time": 1.3,
+          "Label": "Crank"
+        },
+        {
+          "Time": 1.45,
+          "Label": "Crank"
+        },
+        {
+          "Time": 1.6,
+          "Label": "Crank"
+        },
+        {
+          "Time": 1.75,
+          "Label": "Crank"
+        },
+        {
+          "Time": 1.9,
+          "Label": "Crank"
+        },
+        {
+          "Time": 2.05,
+          "Label": "Crank"
+        },
+        {
+          "Time": 2.2,
+          "Label": "Crank"
+        },
+        {
+          "Time": 2.35,
+          "Label": "Crank"
+        },
+        {
+          "Time": 2.65,
+          "Label": "Settle the rod"
+        },
+        {
+          "Time": 3.05,
+          "Label": "Idle"
+        }
+      ],
+      "ProjectSha256": "a44b5d4046fb096c68bcf6dcafe11bb829332c9d84121e86261e9d1f6c91ca6a"
+    },
+    {
+      "Id": "GiveLine",
+      "Name": "Give line",
+      "BibleRow": 0,
+      "Reference": "",
+      "Observation": "Easing the rod toward the fish and letting the reel pay out.",
+      "Interpretation": "The rod tip drops toward the water, the left hand lifts off the reel and the body leans into the slack, then the reel is gripped again.",
+      "Activity": "Fishing",
+      "Status": "Draft: visual review required",
+      "Project": "GiveLine.swlanim",
+      "Duration": 2.4,
+      "Keyframes": 49,
+      "Joints": 57,
+      "MdlRoundTripMaximumErrorMetres": 3.788091E-07,
+      "Beats": [
+        {
+          "Time": 0,
+          "Label": "Idle"
+        },
+        {
+          "Time": 0.35,
+          "Label": "Brace the rod"
+        },
+        {
+          "Time": 0.8,
+          "Label": "Release the reel"
+        },
+        {
+          "Time": 1.4,
+          "Label": "Let the line run"
+        },
+        {
+          "Time": 1.9,
+          "Label": "Take the reel again"
+        },
+        {
+          "Time": 2.4,
+          "Label": "Idle"
+        }
+      ],
+      "ProjectSha256": "38fcf9aff0e99c33389028795079b1376d6e1dbdfe69023cdce51ab43df51451"
+    },
+    {
+      "Id": "HoldRod",
+      "Name": "Hold the line",
+      "BibleRow": 0,
+      "Reference": "",
+      "Observation": "Planting the feet and holding the rod high against a thrashing fish.",
+      "Interpretation": "A wide stance, both hands on the rod, the body leaning back against the pull and trembling as the fish fights, then the stance relaxes.",
+      "Activity": "Fishing",
+      "Status": "Draft: visual review required",
+      "Project": "HoldRod.swlanim",
+      "Duration": 3.5,
+      "Keyframes": 71,
+      "Joints": 57,
+      "MdlRoundTripMaximumErrorMetres": 2.6697626E-07,
+      "Beats": [
+        {
+          "Time": 0,
+          "Label": "Idle"
+        },
+        {
+          "Time": 0.4,
+          "Label": "Plant and brace"
+        },
+        {
+          "Time": 0.7,
+          "Label": "Hold against the pull"
+        },
+        {
+          "Time": 0.95,
+          "Label": "Hold against the pull"
+        },
+        {
+          "Time": 1.2,
+          "Label": "Hold against the pull"
+        },
+        {
+          "Time": 1.45,
+          "Label": "Hold against the pull"
+        },
+        {
+          "Time": 1.7,
+          "Label": "Hold against the pull"
+        },
+        {
+          "Time": 1.95,
+          "Label": "Hold against the pull"
+        },
+        {
+          "Time": 2.2,
+          "Label": "Hold against the pull"
+        },
+        {
+          "Time": 2.45,
+          "Label": "Hold against the pull"
+        },
+        {
+          "Time": 3,
+          "Label": "Ease off"
+        },
+        {
+          "Time": 3.5,
+          "Label": "Idle"
+        }
+      ],
+      "ProjectSha256": "fd82146dd619a4c0bad52eb94af1b8527ad3d7a6dee07b40f12f5840d349e11b"
+    },
+    {
+      "Id": "LandFish",
+      "Name": "Land the fish",
+      "BibleRow": 0,
+      "Reference": "",
+      "Observation": "Heaving the rod up and back to bring the fish in, grabbing it and holding it up.",
+      "Interpretation": "A strong back-lean lifts the rod, the rod swings forward as the left hand reaches to take the fish, then the catch is raised to chest height before the arms relax.",
+      "Activity": "Fishing",
+      "Status": "Draft: visual review required",
+      "Project": "LandFish.swlanim",
+      "Duration": 3.4,
+      "Keyframes": 69,
+      "Joints": 57,
+      "MdlRoundTripMaximumErrorMetres": 3.0365115E-07,
+      "Beats": [
+        {
+          "Time": 0,
+          "Label": "Idle"
+        },
+        {
+          "Time": 0.35,
+          "Label": "Set"
+        },
+        {
+          "Time": 0.85,
+          "Label": "Heave back"
+        },
+        {
+          "Time": 1.3,
+          "Label": "Swing the fish in"
+        },
+        {
+          "Time": 1.8,
+          "Label": "Grab the fish"
+        },
+        {
+          "Time": 2.3,
+          "Label": "Raise the catch"
+        },
+        {
+          "Time": 2.8,
+          "Label": "Show the catch"
+        },
+        {
+          "Time": 3,
+          "Label": "Relax"
+        },
+        {
+          "Time": 3.4,
+          "Label": "Idle"
+        }
+      ],
+      "ProjectSha256": "34277e9b5356f32e6ef49cd2e9623898fedf0543d5321c4a67257c9759837b6a"
     }
   ]
 }

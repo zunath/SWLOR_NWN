@@ -12,8 +12,10 @@ Beast abilities are excluded because their models have separate animation sets; 
 Beast Mastery actions remain included. The Design Bible's Animations tab has been retired;
 `animation-plan.csv` now retains all 119 image references and documents every entry's
 internal name, base motion, source project, and review status.
-The installed registry and tester also include Fishing6, Fishing7, and Fishing8, for 284
-clips total. These activity clips are separate from the 281-entry ability inventory and Bible.
+The installed registry and tester also include the activity clips: Fishing6, Fishing7, Fishing8,
+the crafting-revamp fishing Line, station and gathering clips (see
+[Crafting and gathering work clips](#crafting-and-gathering-work-clips)) and TwinPistolCycle. These activity
+clips are separate from the 281-entry ability inventory and Bible.
 The seven original Vibroblade clips are preserved. The other custom ability motions have
 273 individual choreography recipes; Provoke uses stock NWN Taunt, while Throw Lightsaber
 uses the master branch's custom throw through its original animation slot in game and in the
@@ -328,6 +330,53 @@ ability definition. Generate and install with the same commands below, substitut
 The HTML preview draws a 1.72m rod proxy from the native right-hand attachment, using the
 bamboo rod's measured forward extent. It shows the saved skeletal poses, not live client
 playback. After installing, compile the banks and regenerate the clothing bridges as below.
+
+### Crafting and gathering work clips
+
+The crafting revamp adds fifteen activity clips for the playable species on the normal phenotype. They install into
+the same `a_ba` and `a_fa` chains as every other clip, have no ability definition, and appear in `/animations` under
+**Other**. The lookups that choose them are in `WorkAnimation` (`SWLOR.Game.Server/Service/AnimationService/`).
+
+| Group (folder) | Id | Internal name | Seconds | Plays |
+|---|---|---|---:|---|
+| `crafting-stations/` | `ForgeWork` | `sw_forgework` | 3.40 | Smithery: loop for the whole Plasma Forge session and quick craft |
+| | `Circuitry` | `sw_circuitry` | 2.90 | Engineering: loop for the Circuit and quick craft |
+| | `Fabricate` | `sw_fabricate` | 3.60 | Fabrication: loop for the Fabricator and quick craft |
+| | `Cooking` | `sw_cooking` | 3.20 | Cooking (Agriculture): loop for the Kitchen and quick craft |
+| | `Compound` | `sw_compound` | 3.30 | Espionage: loop for the Reaction and quick craft |
+| `gathering/` | `Survey` | `sw_survey` | 3.00 | Prospecting Survey |
+| | `Strike` | `sw_strike` | 1.90 | Prospecting Strike |
+| | `HvyStrike` | `sw_hvystrike` | 2.70 | Prospecting Heavy Strike |
+| | `Extract` | `sw_extract` | 2.80 | Prospecting Extract |
+| | `Search` | `sw_search` | 3.00 | Search: Search a spot (and Sift) |
+| | `Dig` | `sw_dig` | 3.20 | Search: Dig Deeper |
+| `fishing/` | `Reel` | `sw_reel` | 3.05 | Line: Reel |
+| | `GiveLine` | `sw_giveline` | 2.40 | Line: Give Line |
+| | `HoldRod` | `sw_holdrod` | 3.50 | Line: Hold |
+| | `LandFish` | `sw_landfish` | 3.40 | Line: the action that lands the fish |
+
+Station clips are closed loops (`"loop": true` in the recipe: the last pose equals the first, with no idle blend). The
+station session starts the clip with a ten-minute duration, so the engine repeats it natively, and the end of the station
+work stops it; a rifle or cannon holder keeps the native pose because their hold layer plays through a one-shot carrier
+(`NamedAnimation.CanLoop`). Every other clip is a one-shot that blends out of and back into the native idle, like the
+fishing cast. Set Hook has no clip.
+
+Recipes name `"activity": "Crafting"`, `"Gathering"` or `"Fishing"`. `Fishing` is an `ActivityStatusType`; the other two
+are not busy states, so the generator accepts them from `PreviewWriter.WorkActivities`. Author, install and compile
+exactly like the fishing clips:
+
+```powershell
+dotnet tools/SWLOR.AnimationDrafts/bin/Debug/net10.0/SWLOR.AnimationDrafts.dll generate SWLOR_Haks/sw_cr_creature/a_ba.mdl design/animations/gathering/recipe.json design/animations/gathering --overwrite
+dotnet tools/SWLOR.AnimationDrafts/bin/Debug/net10.0/SWLOR.AnimationDrafts.dll install . design/animations/gathering/Strike.swlanim a_ba a_fa
+# from SWLOR_Haks:
+python -B tools/CompileModels.py --since HEAD --apply
+python -B tools/TestInheritedBoneProportions.py
+```
+
+`design/animations/verification/crafting-revamp/` holds offline renders of the installed banks (male and female rigs,
+key beats of every clip). They are not NWN client evidence: the live-client check, with real equipment, is outstanding
+until the Closeout joint pass. The robe bridges (`sw_anim_m`, `sw_anim_f`) must be regenerated with the workflow in
+[Clothing animation bridges](#clothing-animation-bridges) before deployment, or robe wearers will not have these clips.
 
 ### Library layout
 

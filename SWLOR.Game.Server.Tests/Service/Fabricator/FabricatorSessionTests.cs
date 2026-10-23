@@ -162,8 +162,9 @@ public class FabricatorSessionTests
         var lifecycle = Lifecycle(1, 1, 1, 1);
         var recipe = _world.Recipes[TestRecipe];
         var baseXp = Craft.GetBaseRecipeXP(recipe, 25);
-        var scaled = CraftMinigameXp.ScaleBaseXp(baseXp, FabricatorRules.XpMultiplierForLevel(recipe.Level));
-        CraftMinigameXp.BaseXp(recipe, 25).Should().Be(scaled, "the lifecycle reads the base XP through CraftMinigameXp");
+        var gated = CraftMinigameXp.ScaleBaseXp(baseXp, FabricatorRules.XpMultiplierForLevel(recipe.Level));
+        var scaled = CraftMinigameXp.ScaleBaseXp(gated, CraftMinigameXp.CraftingPaceMultiplier);
+        CraftMinigameXp.BaseXp(recipe, 25).Should().Be(scaled, "the lifecycle reads the base XP through CraftMinigameXp, gate multiplier then pace");
         var session = StartSession(lifecycle);
 
         var success = lifecycle.Succeed(FakeCraftSessionWorld.PlayerHandle, _player, session, new MinigameMeter(60, 100));

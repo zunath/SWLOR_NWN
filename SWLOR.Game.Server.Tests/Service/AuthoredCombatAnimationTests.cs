@@ -111,13 +111,16 @@ public class AuthoredCombatAnimationTests
         runtime.Token.Should().BeEmpty();
     }
 
-    /// <summary>Checks that the preview catalog retains installed ability, ordinary attack, and fishing clips.</summary>
+    /// <summary>Checks that the preview catalog retains installed ability, ordinary attack, fishing, station and gathering clips.</summary>
     [Test]
     public void PreviewIncludesAllCatalogMovesWithCurrentAbilities()
     {
         AnimationPreviewChatCommand.Clips.Keys.Should().BeEquivalentTo(
             ActiveAbilityAnimationCatalog.Entries.Select(entry => entry.Id)
-                .Concat(new[] { "TwinPistolCycle", "Fishing6", "Fishing7", "Fishing8" }));
+                .Concat(new[] { "TwinPistolCycle", "Fishing6", "Fishing7", "Fishing8" })
+                .Concat(new[] { "Reel", "GiveLine", "HoldRod", "LandFish" })
+                .Concat(new[] { "ForgeWork", "Circuitry", "Fabricate", "Cooking", "Compound" })
+                .Concat(new[] { "Survey", "Strike", "HvyStrike", "Extract", "Search", "Dig" }));
     }
 
     [Test]

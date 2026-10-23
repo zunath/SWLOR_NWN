@@ -47,6 +47,7 @@ public sealed class QuickCraftBatch
 
         IsRunning = true;
         _world.BeginBatch(_player);
+        _world.PlayStationWork(_player, _recipe.Skill);
         BeginNextItem();
     }
 

@@ -74,6 +74,12 @@ public static class NamedAnimation
         return token;
     }
 
+    /// <summary>
+    /// True when a clip can loop for longer than its own length on this creature. A rifle or cannon is played through a one-shot
+    /// carrier that scales the clip to fit the duration, so an open-ended loop is not possible there and callers keep the native pose.
+    /// </summary>
+    public static bool CanLoop(uint creature) => !UsesRifleGrip(creature);
+
     /// <summary>Stops only this caller's playback, preserving a newer animation started by an ability.</summary>
     public static bool StopIfCurrent(uint creature, string token) => Playback.StopIfCurrent(creature, token);
 

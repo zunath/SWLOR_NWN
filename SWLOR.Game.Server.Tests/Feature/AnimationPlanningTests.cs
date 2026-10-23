@@ -184,7 +184,11 @@ public class AnimationPlanningTests
             entry => entry.GetProperty("Name").GetString()!);
         foreach (var entry in names)
             installed[entry.Key].GetProperty("AnimationName").GetString().Should().Be(entry.Value);
-        installed.Keys.Except(names.Keys).Should().BeEquivalentTo("Fishing6", "Fishing7", "Fishing8", "TwinPistolCycle");
+        // Activity clips have no ability: fishing's cast and fight, the five station work loops and gathering's six actions.
+        installed.Keys.Except(names.Keys).Should().BeEquivalentTo("Fishing6", "Fishing7", "Fishing8", "TwinPistolCycle",
+            "Reel", "GiveLine", "HoldRod", "LandFish",
+            "ForgeWork", "Circuitry", "Fabricate", "Cooking", "Compound",
+            "Survey", "Strike", "HvyStrike", "Extract", "Search", "Dig");
         foreach (var id in installed.Keys.Except(names.Keys))
         {
             var expectedName = id == "TwinPistolCycle" ? "sw_twinpisto" : "sw_" + id.ToLowerInvariant();

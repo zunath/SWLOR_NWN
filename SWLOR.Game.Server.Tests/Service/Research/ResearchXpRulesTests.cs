@@ -36,36 +36,36 @@ public class ResearchXpRulesTests
         ResearchXpRules.CompletionXp(0, 10).Should().Be(0);
     }
 
-    [TestCase(1, 100, 660)]
-    [TestCase(5, 100, 900)]
-    [TestCase(10, 100, 1200)]
-    [TestCase(10, 50, 600)]
+    [TestCase(1, 100, 409)]
+    [TestCase(5, 100, 558)]
+    [TestCase(10, 100, 744)]
+    [TestCase(10, 50, 372)]
     [TestCase(10, 0, 0)]
-    [TestCase(10, 150, 1200)]
+    [TestCase(10, 150, 744)]
     public void AnExperimentPaysTheChartXpWithALevelBonusInProportionToTheTrialsUsed(int level, int effortPercent, int expected)
     {
         ResearchXpRules.ExperimentXp(600, level, effortPercent).Should().Be(expected);
     }
 
-    [TestCase(1, 330)]
-    [TestCase(5, 450)]
-    [TestCase(10, 600)]
-    public void CompletingTheJobPaysHalfTheChartXpWithTheSameLevelBonus(int level, int expected)
+    [TestCase(1, 204)]
+    [TestCase(5, 279)]
+    [TestCase(10, 372)]
+    public void CompletingTheJobPaysAThirdOfTheChartXpWithTheSameLevelBonus(int level, int expected)
     {
         ResearchXpRules.CompletionXp(600, level).Should().Be(expected);
     }
 
     [Test]
-    public void ALevelTenJobAtLevelPaysThreeTimesTheChartXpInTotalAtFullEffort()
+    public void ALevelTenJobAtLevelPaysAboutOneAndAHalfTimesTheChartXpInTotalAtFullEffort()
     {
-        (ResearchXpRules.ExperimentXp(600, 10, 100) + ResearchXpRules.CompletionXp(600, 10)).Should().Be(1800);
+        (ResearchXpRules.ExperimentXp(600, 10, 100) + ResearchXpRules.CompletionXp(600, 10)).Should().Be(1116);
     }
 
     [Test]
     public void TheXpValuesAreNamedStartingValues()
     {
-        ResearchXpRules.ExperimentXpPercent.Should().Be(100);
-        ResearchXpRules.CompletionXpPercent.Should().Be(50);
+        ResearchXpRules.ExperimentXpPercent.Should().Be(62, "scaled from 100 by workstream 11b to meet the plan's ceiling");
+        ResearchXpRules.CompletionXpPercent.Should().Be(31, "scaled from 50 by workstream 11b");
         ResearchXpRules.LevelBonusPercentPerLevel.Should().Be(10);
     }
 
@@ -83,7 +83,7 @@ public class ResearchXpRulesTests
             }
         };
 
-        ResearchExperimentLifecycle.PendingExperimentXp(job, 600).Should().Be(450, "half the trials at level 5: 600 x 1.5 x 50%");
+        ResearchExperimentLifecycle.PendingExperimentXp(job, 600).Should().Be(279, "half the trials at level 5: 600 x 62% x 1.5 x 50%");
 
         ResearchExperimentLifecycle.MarkExperimentXpGranted(job);
 

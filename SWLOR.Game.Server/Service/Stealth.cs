@@ -22,10 +22,14 @@ namespace SWLOR.Game.Server.Service
     {
         public const string CombatEntryWindowVariable = "STEALTH_COMBAT_ENTRY_WINDOW";
 
+        private const string TimedExitActiveVariable = "STEALTH_TIMED_EXIT_ACTIVE";
         private const float DetectionCheckIntervalSeconds = 30f;
         private const int CachePruneThreshold = 2000;
 
         private static readonly Dictionary<(uint Observer, uint Target), (bool Detected, DateTime Expiry)> _verdicts = new();
+
+        // Server-wide so a timer outliving its creature never matches a window on a reused object ID.
+        private static int _lastTimedExitGeneration;
 
         /// <summary>
         /// Baseline stealth is only usable by characters with the Stealth perk and only out of
@@ -80,6 +84,7 @@ namespace SWLOR.Game.Server.Service
                     });
                 }
 
+                DeleteLocalInt(creature, TimedExitActiveVariable);
                 StatusEffect.RemoveStatusEffect<StealthStatusEffect>(creature);
                 return;
             }
@@ -188,11 +193,37 @@ namespace SWLOR.Game.Server.Service
             SendMessageToPC(attacker, "Your attack gives away your position.");
         }
 
+        /// <summary>
+        /// Ends the stealth an ability grants after <paramref name="durationSeconds"/>. Leaving
+        /// stealth first releases the window, so a later stealth entry is never ended by this timer.
+        /// </summary>
+        public static void ScheduleTimedExit(uint creature, float durationSeconds)
+        {
+            var generation = ++_lastTimedExitGeneration;
+            SetLocalInt(creature, TimedExitActiveVariable, generation);
+
+            DelayCommand(durationSeconds, () =>
+            {
+                if (!GetIsObjectValid(creature) || GetLocalInt(creature, TimedExitActiveVariable) != generation)
+                    return;
+
+                DeleteLocalInt(creature, TimedExitActiveVariable);
+                if (!GetActionMode(creature, ActionMode.Stealth))
+                    return;
+
+                AssignCommand(creature, () =>
+                {
+                    SetActionMode(creature, ActionMode.Stealth, false);
+                });
+            });
+        }
+
         [NWNEventHandler(ScriptName.OnStealthExitAfter)]
         public static void OnStealthExited()
         {
             var creature = OBJECT_SELF;
 
+            DeleteLocalInt(creature, TimedExitActiveVariable);
             EspionageInfiltration.CancelPlayer(creature);
             StatusEffect.RemoveStatusEffect<StealthStatusEffect>(creature);
             ClearVerdictsForTarget(creature);

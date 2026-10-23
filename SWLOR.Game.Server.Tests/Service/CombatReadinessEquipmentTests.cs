@@ -376,8 +376,8 @@ public class CombatReadinessEquipmentTests
                 "SWLOR.Game.Server", "Service", "Migration.cs"))).GetRoot()
             .DescendantNodes().OfType<MethodDeclarationSyntax>().Single(method => method.Identifier.ValueText == "AfterCharacterInitialization");
         migration.AttributeLists.ToString().Should().Contain("ScriptName.OnCharacterInitAfter");
-        migration.Body!.Statements[^2].ToString().Should().Be("Stat.RefreshCombatReadinessEquipment(player);");
-        migration.Body.Statements[^3].ToString().Should().Be("Perk.RestorePlayerFeats(player);");
+        migration.Body!.Statements[^3].ToString().Should().Be("Stat.RefreshCombatReadinessEquipment(player);");
+        migration.Body.Statements[^4].ToString().Should().Be("Perk.RestorePlayerFeats(player);");
     }
 
     private int Read() => (int)Call("GetCombatReadinessPercent", 1u)!;

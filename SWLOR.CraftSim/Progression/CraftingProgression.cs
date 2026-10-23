@@ -167,7 +167,7 @@ namespace SWLOR.CraftSim.Progression
                     var odds = offers == null || locked ? HandInOdds.None : HandInOdds.For(plan.Unlocked(offers, guildRank));
                     var handIn = odds.Chance > 0;
                     var handInChance = success * odds.Chance;
-                    var handInXp = plan == null ? 0 : handInChance * plan.XpFraction * baseXp * multiplier;
+                    var handInXp = plan == null ? 0 : handInChance * plan.XpFraction * baseXp; // hand-ins are not crafting XP: no pace multiplier
                     var xp = craftXp + handInXp;
                     if (xp <= 0)
                         throw new InvalidOperationException($"{skill} {gear} rank {rank} earns no XP, so the climb never ends.");

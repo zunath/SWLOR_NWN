@@ -1,0 +1,1630 @@
+{
+  "workbook": "",
+  "model": "a_ba",
+  "readyShield": {
+    "root": [
+      0,
+      0,
+      1.14
+    ],
+    "chest": [
+      3,
+      0,
+      0
+    ],
+    "hips": [
+      0,
+      0,
+      0
+    ],
+    "leftHand": [
+      -0.06,
+      0.34,
+      1.25
+    ],
+    "rightHand": [
+      0.18,
+      0.36,
+      1.3
+    ],
+    "blade": [
+      0,
+      0.9,
+      0.44
+    ],
+    "leftFoot": [
+      -0.18,
+      0.08,
+      0.14
+    ],
+    "rightFoot": [
+      0.18,
+      -0.08,
+      0.14
+    ],
+    "shield": [
+      0,
+      0,
+      0
+    ]
+  },
+  "readyBlade": {
+    "root": [
+      0,
+      0,
+      1.14
+    ],
+    "chest": [
+      3,
+      0,
+      0
+    ],
+    "hips": [
+      0,
+      0,
+      0
+    ],
+    "leftHand": [
+      -0.06,
+      0.34,
+      1.25
+    ],
+    "rightHand": [
+      0.18,
+      0.36,
+      1.3
+    ],
+    "blade": [
+      0,
+      0.9,
+      0.44
+    ],
+    "leftFoot": [
+      -0.18,
+      0.08,
+      0.14
+    ],
+    "rightFoot": [
+      0.18,
+      -0.08,
+      0.14
+    ],
+    "shield": [
+      0,
+      0,
+      0
+    ]
+  },
+  "motions": [
+    {
+      "id": "Survey",
+      "name": "Survey",
+      "bibleRow": 0,
+      "reference": "",
+      "observation": "A prospector sweeps a handheld scanner across a vein or tree to find what is hidden in it.",
+      "interpretation": "Planted feet; the scanner comes up in the right hand while the left taps its screen, the torso turns to sweep right, then left, and a last steady ping before the arm lowers.",
+      "shield": false,
+      "beats": [
+        {
+          "time": 0,
+          "label": "Idle",
+          "pose": {}
+        },
+        {
+          "time": 0.45,
+          "label": "Raise the scanner",
+          "pose": {
+            "chest": [
+              3.0,
+              0.0,
+              0.0
+            ],
+            "rightHand": [
+              0.22,
+              0.42,
+              1.4
+            ],
+            "leftHand": [
+              -0.04,
+              0.34,
+              1.28
+            ],
+            "blade": [
+              0.0,
+              0.95,
+              0.2
+            ],
+            "leftFoot": [
+              -0.18,
+              0.08,
+              0.14
+            ],
+            "rightFoot": [
+              0.18,
+              -0.08,
+              0.14
+            ]
+          }
+        },
+        {
+          "time": 0.95,
+          "label": "Sweep right",
+          "pose": {
+            "chest": [
+              3.0,
+              -24.0,
+              0.0
+            ],
+            "rightHand": [
+              0.3718,
+              0.2942,
+              1.4
+            ],
+            "leftHand": [
+              0.1017,
+              0.3269,
+              1.28
+            ],
+            "blade": [
+              0.3864,
+              0.8679,
+              0.2
+            ],
+            "leftFoot": [
+              -0.18,
+              0.08,
+              0.14
+            ],
+            "rightFoot": [
+              0.18,
+              -0.08,
+              0.14
+            ]
+          },
+          "through": true
+        },
+        {
+          "time": 1.75,
+          "label": "Sweep left",
+          "pose": {
+            "chest": [
+              3.0,
+              24.0,
+              0.0
+            ],
+            "rightHand": [
+              0.0302,
+              0.4732,
+              1.4
+            ],
+            "leftHand": [
+              -0.1748,
+              0.2943,
+              1.28
+            ],
+            "blade": [
+              -0.3864,
+              0.8679,
+              0.2
+            ],
+            "leftFoot": [
+              -0.18,
+              0.08,
+              0.14
+            ],
+            "rightFoot": [
+              0.18,
+              -0.08,
+              0.14
+            ]
+          },
+          "through": true
+        },
+        {
+          "time": 2.2,
+          "label": "Ping the target",
+          "pose": {
+            "chest": [
+              5.0,
+              0.0,
+              0.0
+            ],
+            "rightHand": [
+              0.22,
+              0.46,
+              1.4
+            ],
+            "leftHand": [
+              -0.04,
+              0.34,
+              1.28
+            ],
+            "blade": [
+              0.0,
+              0.95,
+              0.2
+            ],
+            "leftFoot": [
+              -0.18,
+              0.08,
+              0.14
+            ],
+            "rightFoot": [
+              0.18,
+              -0.08,
+              0.14
+            ]
+          }
+        },
+        {
+          "time": 2.6,
+          "label": "Lower the scanner",
+          "pose": {}
+        },
+        {
+          "time": 3.0,
+          "label": "Idle",
+          "pose": {}
+        }
+      ],
+      "abilityDefinition": "",
+      "activity": "Gathering"
+    },
+    {
+      "id": "Strike",
+      "name": "Strike",
+      "bibleRow": 0,
+      "reference": "",
+      "observation": "A single two-handed pick swing into a vein or a trunk.",
+      "interpretation": "The tool goes up behind the right shoulder, drops through a quick overhead arc with the body leaning into it, rebounds off the impact and recovers.",
+      "shield": false,
+      "beats": [
+        {
+          "time": 0,
+          "label": "Idle",
+          "pose": {}
+        },
+        {
+          "time": 0.4,
+          "label": "Wind up",
+          "pose": {
+            "root": [
+              0.0,
+              -0.02,
+              1.14
+            ],
+            "chest": [
+              -6.0,
+              -12.0,
+              0.0
+            ],
+            "rightHand": [
+              0.3,
+              0.0,
+              1.78
+            ],
+            "leftHand": [
+              0.18,
+              0.08,
+              1.62
+            ],
+            "blade": [
+              0.2,
+              -0.4,
+              0.9
+            ],
+            "leftFoot": [
+              -0.2,
+              0.1,
+              0.14
+            ],
+            "rightFoot": [
+              0.2,
+              -0.08,
+              0.14
+            ]
+          }
+        },
+        {
+          "time": 0.62,
+          "label": "Swing",
+          "pose": {
+            "root": [
+              0.0,
+              0.03,
+              1.1
+            ],
+            "chest": [
+              10.0,
+              -4.0,
+              0.0
+            ],
+            "rightHand": [
+              0.22,
+              0.38,
+              1.5
+            ],
+            "leftHand": [
+              0.12,
+              0.34,
+              1.42
+            ],
+            "blade": [
+              0.1,
+              0.7,
+              0.3
+            ],
+            "leftFoot": [
+              -0.2,
+              0.1,
+              0.14
+            ],
+            "rightFoot": [
+              0.2,
+              -0.08,
+              0.14
+            ]
+          },
+          "through": true
+        },
+        {
+          "time": 0.82,
+          "label": "Impact",
+          "pose": {
+            "root": [
+              0.0,
+              0.1,
+              1.04
+            ],
+            "chest": [
+              28.0,
+              2.0,
+              0.0
+            ],
+            "rightHand": [
+              0.14,
+              0.56,
+              1.02
+            ],
+            "leftHand": [
+              0.04,
+              0.5,
+              0.98
+            ],
+            "blade": [
+              0.0,
+              0.85,
+              -0.45
+            ],
+            "leftFoot": [
+              -0.2,
+              0.1,
+              0.14
+            ],
+            "rightFoot": [
+              0.2,
+              -0.08,
+              0.14
+            ]
+          }
+        },
+        {
+          "time": 1.0,
+          "label": "Rebound",
+          "pose": {
+            "root": [
+              0.0,
+              0.09,
+              1.05
+            ],
+            "chest": [
+              25.0,
+              1.0,
+              0.0
+            ],
+            "rightHand": [
+              0.15,
+              0.54,
+              1.06
+            ],
+            "leftHand": [
+              0.05,
+              0.48,
+              1.02
+            ],
+            "blade": [
+              0.0,
+              0.85,
+              -0.35
+            ],
+            "leftFoot": [
+              -0.2,
+              0.1,
+              0.14
+            ],
+            "rightFoot": [
+              0.2,
+              -0.08,
+              0.14
+            ]
+          }
+        },
+        {
+          "time": 1.5,
+          "label": "Recover",
+          "pose": {
+            "root": [
+              0.0,
+              0.02,
+              1.13
+            ],
+            "chest": [
+              6.0,
+              0.0,
+              0.0
+            ],
+            "rightHand": [
+              0.18,
+              0.36,
+              1.2
+            ],
+            "leftHand": [
+              0.0,
+              0.3,
+              1.1
+            ],
+            "blade": [
+              0.0,
+              0.8,
+              -0.1
+            ],
+            "leftFoot": [
+              -0.2,
+              0.1,
+              0.14
+            ],
+            "rightFoot": [
+              0.2,
+              -0.08,
+              0.14
+            ]
+          }
+        },
+        {
+          "time": 1.9,
+          "label": "Idle",
+          "pose": {}
+        }
+      ],
+      "abilityDefinition": "",
+      "activity": "Gathering"
+    },
+    {
+      "id": "HvyStrike",
+      "name": "Heavy strike",
+      "bibleRow": 0,
+      "reference": "",
+      "observation": "A full overhead slam with a heavy tool, using the whole body.",
+      "interpretation": "A wider stance and a slow lift above the head, a held beat at the top, then a hard drop with the torso folding over and the knees taking the impact. It reads heavier and slower than Strike.",
+      "shield": false,
+      "beats": [
+        {
+          "time": 0,
+          "label": "Idle",
+          "pose": {}
+        },
+        {
+          "time": 0.55,
+          "label": "Gather",
+          "pose": {
+            "root": [
+              0.0,
+              0.0,
+              1.12
+            ],
+            "chest": [
+              -4.0,
+              0.0,
+              0.0
+            ],
+            "rightHand": [
+              0.2,
+              0.2,
+              1.6
+            ],
+            "leftHand": [
+              0.08,
+              0.24,
+              1.5
+            ],
+            "blade": [
+              0.0,
+              0.2,
+              0.98
+            ],
+            "leftFoot": [
+              -0.24,
+              0.1,
+              0.14
+            ],
+            "rightFoot": [
+              0.24,
+              -0.1,
+              0.14
+            ]
+          }
+        },
+        {
+          "time": 1.05,
+          "label": "Lift overhead",
+          "pose": {
+            "root": [
+              0.0,
+              -0.03,
+              1.16
+            ],
+            "chest": [
+              -14.0,
+              -8.0,
+              0.0
+            ],
+            "rightHand": [
+              0.22,
+              -0.02,
+              1.92
+            ],
+            "leftHand": [
+              0.1,
+              0.02,
+              1.78
+            ],
+            "blade": [
+              0.1,
+              -0.5,
+              0.85
+            ],
+            "leftFoot": [
+              -0.24,
+              0.1,
+              0.14
+            ],
+            "rightFoot": [
+              0.24,
+              -0.1,
+              0.14
+            ]
+          },
+          "through": true
+        },
+        {
+          "time": 1.3,
+          "label": "Hold at the top",
+          "pose": {
+            "root": [
+              0.0,
+              -0.03,
+              1.16
+            ],
+            "chest": [
+              -14.0,
+              -8.0,
+              0.0
+            ],
+            "rightHand": [
+              0.22,
+              -0.02,
+              1.93
+            ],
+            "leftHand": [
+              0.1,
+              0.02,
+              1.79
+            ],
+            "blade": [
+              0.1,
+              -0.5,
+              0.85
+            ],
+            "leftFoot": [
+              -0.24,
+              0.1,
+              0.14
+            ],
+            "rightFoot": [
+              0.24,
+              -0.1,
+              0.14
+            ]
+          }
+        },
+        {
+          "time": 1.55,
+          "label": "Slam",
+          "pose": {
+            "root": [
+              0.0,
+              0.1,
+              0.96
+            ],
+            "chest": [
+              38.0,
+              3.0,
+              0.0
+            ],
+            "rightHand": [
+              0.12,
+              0.52,
+              0.86
+            ],
+            "leftHand": [
+              0.02,
+              0.48,
+              0.82
+            ],
+            "blade": [
+              0.0,
+              0.8,
+              -0.6
+            ],
+            "leftFoot": [
+              -0.24,
+              0.1,
+              0.14
+            ],
+            "rightFoot": [
+              0.24,
+              -0.1,
+              0.14
+            ]
+          },
+          "through": true
+        },
+        {
+          "time": 1.8,
+          "label": "Impact",
+          "pose": {
+            "root": [
+              0.0,
+              0.1,
+              0.96
+            ],
+            "chest": [
+              38.0,
+              3.0,
+              0.0
+            ],
+            "rightHand": [
+              0.12,
+              0.52,
+              0.86
+            ],
+            "leftHand": [
+              0.02,
+              0.48,
+              0.82
+            ],
+            "blade": [
+              0.0,
+              0.8,
+              -0.6
+            ],
+            "leftFoot": [
+              -0.24,
+              0.1,
+              0.14
+            ],
+            "rightFoot": [
+              0.24,
+              -0.1,
+              0.14
+            ]
+          }
+        },
+        {
+          "time": 2.25,
+          "label": "Straighten",
+          "pose": {
+            "root": [
+              0.0,
+              0.03,
+              1.1
+            ],
+            "chest": [
+              10.0,
+              0.0,
+              0.0
+            ],
+            "rightHand": [
+              0.16,
+              0.4,
+              1.12
+            ],
+            "leftHand": [
+              0.0,
+              0.34,
+              1.02
+            ],
+            "blade": [
+              0.0,
+              0.8,
+              -0.2
+            ],
+            "leftFoot": [
+              -0.24,
+              0.1,
+              0.14
+            ],
+            "rightFoot": [
+              0.24,
+              -0.1,
+              0.14
+            ]
+          }
+        },
+        {
+          "time": 2.7,
+          "label": "Idle",
+          "pose": {}
+        }
+      ],
+      "abilityDefinition": "",
+      "activity": "Gathering"
+    },
+    {
+      "id": "Extract",
+      "name": "Extract",
+      "bibleRow": 0,
+      "reference": "",
+      "observation": "Prying a revealed seam out of the rock or wood.",
+      "interpretation": "The prospector crouches, grips the seam with both hands, then heaves back with a twist and lifts the find to chest height to check it before standing.",
+      "shield": false,
+      "beats": [
+        {
+          "time": 0,
+          "label": "Idle",
+          "pose": {}
+        },
+        {
+          "time": 0.5,
+          "label": "Crouch to the seam",
+          "pose": {
+            "root": [
+              0.0,
+              0.08,
+              0.88
+            ],
+            "chest": [
+              36.0,
+              0.0,
+              0.0
+            ],
+            "rightHand": [
+              0.14,
+              0.46,
+              0.8
+            ],
+            "leftHand": [
+              -0.06,
+              0.46,
+              0.8
+            ],
+            "blade": [
+              0.0,
+              0.9,
+              -0.1
+            ],
+            "leftFoot": [
+              -0.2,
+              0.14,
+              0.14
+            ],
+            "rightFoot": [
+              0.2,
+              -0.1,
+              0.14
+            ]
+          }
+        },
+        {
+          "time": 0.95,
+          "label": "Grip the seam",
+          "pose": {
+            "root": [
+              0.0,
+              0.1,
+              0.82
+            ],
+            "chest": [
+              40.0,
+              0.0,
+              0.0
+            ],
+            "rightHand": [
+              0.12,
+              0.48,
+              0.7
+            ],
+            "leftHand": [
+              -0.08,
+              0.48,
+              0.7
+            ],
+            "blade": [
+              0.0,
+              0.9,
+              -0.1
+            ],
+            "leftFoot": [
+              -0.2,
+              0.14,
+              0.14
+            ],
+            "rightFoot": [
+              0.2,
+              -0.1,
+              0.14
+            ]
+          }
+        },
+        {
+          "time": 1.5,
+          "label": "Heave back",
+          "pose": {
+            "root": [
+              0.0,
+              0.02,
+              1.0
+            ],
+            "chest": [
+              14.0,
+              4.0,
+              0.0
+            ],
+            "rightHand": [
+              0.14,
+              0.38,
+              0.98
+            ],
+            "leftHand": [
+              -0.06,
+              0.38,
+              0.96
+            ],
+            "blade": [
+              0.2,
+              0.7,
+              -0.4
+            ],
+            "leftFoot": [
+              -0.2,
+              0.14,
+              0.14
+            ],
+            "rightFoot": [
+              0.2,
+              -0.1,
+              0.14
+            ]
+          },
+          "through": true
+        },
+        {
+          "time": 1.95,
+          "label": "Lift the find",
+          "pose": {
+            "root": [
+              0.0,
+              0.0,
+              1.1
+            ],
+            "chest": [
+              6.0,
+              0.0,
+              0.0
+            ],
+            "rightHand": [
+              0.14,
+              0.34,
+              1.28
+            ],
+            "leftHand": [
+              -0.02,
+              0.34,
+              1.24
+            ],
+            "blade": [
+              0.0,
+              0.7,
+              0.2
+            ],
+            "leftFoot": [
+              -0.2,
+              0.14,
+              0.14
+            ],
+            "rightFoot": [
+              0.2,
+              -0.1,
+              0.14
+            ]
+          }
+        },
+        {
+          "time": 2.4,
+          "label": "Straighten",
+          "pose": {
+            "root": [
+              0.0,
+              0.0,
+              1.13
+            ],
+            "chest": [
+              3.0,
+              0.0,
+              0.0
+            ],
+            "rightHand": [
+              0.16,
+              0.34,
+              1.26
+            ],
+            "leftHand": [
+              -0.04,
+              0.32,
+              1.22
+            ],
+            "blade": [
+              0.0,
+              0.8,
+              0.3
+            ],
+            "leftFoot": [
+              -0.2,
+              0.14,
+              0.14
+            ],
+            "rightFoot": [
+              0.2,
+              -0.1,
+              0.14
+            ]
+          }
+        },
+        {
+          "time": 2.8,
+          "label": "Idle",
+          "pose": {}
+        }
+      ],
+      "abilityDefinition": "",
+      "activity": "Gathering"
+    },
+    {
+      "id": "Search",
+      "name": "Search",
+      "bibleRow": 0,
+      "reference": "",
+      "observation": "Bending over a scavenge site and sifting its surface with a hand.",
+      "interpretation": "A half crouch with the left hand braced on the knee while the right sweeps across the surface twice, then lifts something up to inspect.",
+      "shield": false,
+      "beats": [
+        {
+          "time": 0,
+          "label": "Idle",
+          "pose": {}
+        },
+        {
+          "time": 0.5,
+          "label": "Crouch over the site",
+          "pose": {
+            "root": [
+              0.0,
+              0.1,
+              0.74
+            ],
+            "chest": [
+              42.0,
+              0.0,
+              0.0
+            ],
+            "rightHand": [
+              0.3,
+              0.44,
+              0.58
+            ],
+            "leftHand": [
+              -0.16,
+              0.28,
+              0.6
+            ],
+            "blade": [
+              0.0,
+              0.9,
+              0.05
+            ],
+            "leftFoot": [
+              -0.2,
+              0.16,
+              0.14
+            ],
+            "rightFoot": [
+              0.2,
+              -0.1,
+              0.14
+            ]
+          }
+        },
+        {
+          "time": 0.95,
+          "label": "Sweep right",
+          "pose": {
+            "root": [
+              0.0,
+              0.1,
+              0.74
+            ],
+            "chest": [
+              42.0,
+              -6.0,
+              0.0
+            ],
+            "rightHand": [
+              0.4,
+              0.46,
+              0.54
+            ],
+            "leftHand": [
+              -0.16,
+              0.28,
+              0.6
+            ],
+            "blade": [
+              0.5,
+              0.8,
+              0.0
+            ],
+            "leftFoot": [
+              -0.2,
+              0.16,
+              0.14
+            ],
+            "rightFoot": [
+              0.2,
+              -0.1,
+              0.14
+            ]
+          },
+          "through": true
+        },
+        {
+          "time": 1.45,
+          "label": "Sweep left",
+          "pose": {
+            "root": [
+              0.0,
+              0.1,
+              0.74
+            ],
+            "chest": [
+              42.0,
+              6.0,
+              0.0
+            ],
+            "rightHand": [
+              0.04,
+              0.5,
+              0.54
+            ],
+            "leftHand": [
+              -0.16,
+              0.28,
+              0.6
+            ],
+            "blade": [
+              -0.4,
+              0.8,
+              0.0
+            ],
+            "leftFoot": [
+              -0.2,
+              0.16,
+              0.14
+            ],
+            "rightFoot": [
+              0.2,
+              -0.1,
+              0.14
+            ]
+          },
+          "through": true
+        },
+        {
+          "time": 1.85,
+          "label": "Sweep right again",
+          "pose": {
+            "root": [
+              0.0,
+              0.1,
+              0.74
+            ],
+            "chest": [
+              42.0,
+              -4.0,
+              0.0
+            ],
+            "rightHand": [
+              0.28,
+              0.46,
+              0.56
+            ],
+            "leftHand": [
+              -0.16,
+              0.28,
+              0.6
+            ],
+            "blade": [
+              0.3,
+              0.8,
+              0.0
+            ],
+            "leftFoot": [
+              -0.2,
+              0.16,
+              0.14
+            ],
+            "rightFoot": [
+              0.2,
+              -0.1,
+              0.14
+            ]
+          },
+          "through": true
+        },
+        {
+          "time": 2.3,
+          "label": "Lift a find",
+          "pose": {
+            "root": [
+              0.0,
+              0.04,
+              1.02
+            ],
+            "chest": [
+              16.0,
+              0.0,
+              0.0
+            ],
+            "rightHand": [
+              0.16,
+              0.34,
+              1.02
+            ],
+            "leftHand": [
+              -0.08,
+              0.3,
+              0.96
+            ],
+            "blade": [
+              0.0,
+              0.6,
+              0.2
+            ],
+            "leftFoot": [
+              -0.2,
+              0.16,
+              0.14
+            ],
+            "rightFoot": [
+              0.2,
+              -0.1,
+              0.14
+            ]
+          }
+        },
+        {
+          "time": 2.65,
+          "label": "Straighten",
+          "pose": {
+            "root": [
+              0.0,
+              0.0,
+              1.12
+            ],
+            "chest": [
+              4.0,
+              0.0,
+              0.0
+            ],
+            "rightHand": [
+              0.16,
+              0.34,
+              1.16
+            ],
+            "leftHand": [
+              -0.06,
+              0.3,
+              1.1
+            ],
+            "blade": [
+              0.0,
+              0.8,
+              0.2
+            ],
+            "leftFoot": [
+              -0.2,
+              0.16,
+              0.14
+            ],
+            "rightFoot": [
+              0.2,
+              -0.1,
+              0.14
+            ]
+          }
+        },
+        {
+          "time": 3.0,
+          "label": "Idle",
+          "pose": {}
+        }
+      ],
+      "abilityDefinition": "",
+      "activity": "Gathering"
+    },
+    {
+      "id": "Dig",
+      "name": "Dig",
+      "bibleRow": 0,
+      "reference": "",
+      "observation": "Digging deeper into the same spot of a scavenge site with both hands.",
+      "interpretation": "A low crouch. The right hand claws down and flings the dirt aside, the left hand follows on the other side, then both lift a find clear before standing.",
+      "shield": false,
+      "beats": [
+        {
+          "time": 0,
+          "label": "Idle",
+          "pose": {}
+        },
+        {
+          "time": 0.45,
+          "label": "Crouch to dig",
+          "pose": {
+            "chest": [
+              46.0,
+              0.0,
+              0.0
+            ],
+            "rightHand": [
+              0.14,
+              0.46,
+              0.44
+            ],
+            "leftHand": [
+              -0.12,
+              0.46,
+              0.44
+            ],
+            "blade": [
+              0.0,
+              0.9,
+              0.05
+            ],
+            "root": [
+              0.0,
+              0.12,
+              0.72
+            ],
+            "leftFoot": [
+              -0.22,
+              0.18,
+              0.14
+            ],
+            "rightFoot": [
+              0.22,
+              -0.1,
+              0.14
+            ]
+          }
+        },
+        {
+          "time": 0.8,
+          "label": "Right hand claws back",
+          "pose": {
+            "chest": [
+              44.0,
+              -4.0,
+              0.0
+            ],
+            "rightHand": [
+              0.16,
+              0.28,
+              0.52
+            ],
+            "leftHand": [
+              -0.12,
+              0.46,
+              0.44
+            ],
+            "blade": [
+              -0.3,
+              0.8,
+              0.0
+            ],
+            "root": [
+              0.0,
+              0.12,
+              0.72
+            ],
+            "leftFoot": [
+              -0.22,
+              0.18,
+              0.14
+            ],
+            "rightFoot": [
+              0.22,
+              -0.1,
+              0.14
+            ]
+          },
+          "through": true
+        },
+        {
+          "time": 1.05,
+          "label": "Fling it aside",
+          "pose": {
+            "chest": [
+              42.0,
+              -8.0,
+              0.0
+            ],
+            "rightHand": [
+              0.42,
+              0.22,
+              0.6
+            ],
+            "leftHand": [
+              -0.12,
+              0.44,
+              0.46
+            ],
+            "blade": [
+              0.8,
+              0.3,
+              0.1
+            ],
+            "root": [
+              0.0,
+              0.12,
+              0.72
+            ],
+            "leftFoot": [
+              -0.22,
+              0.18,
+              0.14
+            ],
+            "rightFoot": [
+              0.22,
+              -0.1,
+              0.14
+            ]
+          },
+          "through": true
+        },
+        {
+          "time": 1.4,
+          "label": "Left hand claws back",
+          "pose": {
+            "chest": [
+              44.0,
+              4.0,
+              0.0
+            ],
+            "rightHand": [
+              0.14,
+              0.46,
+              0.44
+            ],
+            "leftHand": [
+              -0.14,
+              0.28,
+              0.52
+            ],
+            "blade": [
+              0.0,
+              0.9,
+              0.05
+            ],
+            "root": [
+              0.0,
+              0.12,
+              0.72
+            ],
+            "leftFoot": [
+              -0.22,
+              0.18,
+              0.14
+            ],
+            "rightFoot": [
+              0.22,
+              -0.1,
+              0.14
+            ]
+          },
+          "through": true
+        },
+        {
+          "time": 1.75,
+          "label": "Fling it aside",
+          "pose": {
+            "chest": [
+              42.0,
+              8.0,
+              0.0
+            ],
+            "rightHand": [
+              0.14,
+              0.42,
+              0.48
+            ],
+            "leftHand": [
+              -0.42,
+              0.22,
+              0.6
+            ],
+            "blade": [
+              0.0,
+              0.9,
+              0.05
+            ],
+            "root": [
+              0.0,
+              0.12,
+              0.72
+            ],
+            "leftFoot": [
+              -0.22,
+              0.18,
+              0.14
+            ],
+            "rightFoot": [
+              0.22,
+              -0.1,
+              0.14
+            ]
+          },
+          "through": true
+        },
+        {
+          "time": 2.1,
+          "label": "Both hands in",
+          "pose": {
+            "chest": [
+              46.0,
+              0.0,
+              0.0
+            ],
+            "rightHand": [
+              0.14,
+              0.42,
+              0.46
+            ],
+            "leftHand": [
+              -0.12,
+              0.42,
+              0.46
+            ],
+            "blade": [
+              0.0,
+              0.9,
+              0.05
+            ],
+            "root": [
+              0.0,
+              0.12,
+              0.72
+            ],
+            "leftFoot": [
+              -0.22,
+              0.18,
+              0.14
+            ],
+            "rightFoot": [
+              0.22,
+              -0.1,
+              0.14
+            ]
+          }
+        },
+        {
+          "time": 2.5,
+          "label": "Lift the find",
+          "pose": {
+            "root": [
+              0.0,
+              0.04,
+              0.96
+            ],
+            "chest": [
+              26.0,
+              0.0,
+              0.0
+            ],
+            "rightHand": [
+              0.1,
+              0.4,
+              0.84
+            ],
+            "leftHand": [
+              -0.06,
+              0.4,
+              0.82
+            ],
+            "blade": [
+              0.0,
+              0.6,
+              -0.2
+            ],
+            "leftFoot": [
+              -0.22,
+              0.18,
+              0.14
+            ],
+            "rightFoot": [
+              0.22,
+              -0.1,
+              0.14
+            ]
+          }
+        },
+        {
+          "time": 2.85,
+          "label": "Straighten",
+          "pose": {
+            "root": [
+              0.0,
+              0.0,
+              1.12
+            ],
+            "chest": [
+              4.0,
+              0.0,
+              0.0
+            ],
+            "rightHand": [
+              0.16,
+              0.34,
+              1.16
+            ],
+            "leftHand": [
+              -0.06,
+              0.32,
+              1.1
+            ],
+            "blade": [
+              0.0,
+              0.8,
+              0.2
+            ],
+            "leftFoot": [
+              -0.22,
+              0.18,
+              0.14
+            ],
+            "rightFoot": [
+              0.22,
+              -0.1,
+              0.14
+            ]
+          }
+        },
+        {
+          "time": 3.2,
+          "label": "Idle",
+          "pose": {}
+        }
+      ],
+      "abilityDefinition": "",
+      "activity": "Gathering"
+    }
+  ]
+}

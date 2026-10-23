@@ -56,7 +56,7 @@ public class CraftSessionLifecycleTests
         return result.Session;
     }
 
-    private int BaseXp => Craft.GetBaseRecipeXP(_recipe, 10);
+    private int BaseXp => CraftMinigameXp.BaseXp(_recipe, 10);
 
     [Test]
     public void Start_CommitsTheMaterialsAndSavesThemOnThePlayerBeforeTheStationLocksIn()
@@ -76,6 +76,30 @@ public class CraftSessionLifecycleTests
         _world.Inventory["ore"].Should().Be(2);
         _world.Inventory["wire"].Should().Be(0);
         _world.Events.IndexOf("save").Should().BeLessThan(_world.Events.IndexOf("begin-work"));
+    }
+
+    [TestCase(SkillType.Smithery)]
+    [TestCase(SkillType.Engineering)]
+    [TestCase(SkillType.Fabrication)]
+    [TestCase(SkillType.Agriculture)]
+    [TestCase(SkillType.Espionage)]
+    public void Start_StartsTheStationWorkClipOfTheRecipesSkill(SkillType skill)
+    {
+        _recipe.Skill = skill;
+
+        StartSession(Lifecycle());
+
+        _world.StationAnimations.Should().Equal(skill);
+    }
+
+    [Test]
+    public void Start_StartsNoStationWorkClip_WhenTheCraftIsRefused()
+    {
+        _world.Inventory["wire"] = 1;
+
+        Lifecycle().Start(FakeCraftSessionWorld.PlayerHandle, _player, Request()).Succeeded.Should().BeFalse();
+
+        _world.StationAnimations.Should().BeEmpty();
     }
 
     [Test]

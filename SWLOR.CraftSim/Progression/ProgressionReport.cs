@@ -37,12 +37,14 @@ namespace SWLOR.CraftSim.Progression
             text.AppendLine("# Crafting revamp: progression pace baseline (workstream 11)");
             text.AppendLine();
             text.AppendLine("How long a new crafter takes today to reach rank 50 in each crafting skill and in Gathering, with the component gathering that supplies the crafts, " +
-                            "and the proposals this gives the owner. **Nothing in the game's XP changes in this PR**; the numbers below are today's pace, measured with the legacy " +
-                            "craft model (`design/testing/crafting-revamp/legacy-crafting-baseline.md`). The XP-rate gate (gate 6) measures new minigames against today's XP first; " +
-                            "any change proposed here applies on top of that result.");
+                            "measured with the legacy craft model (`design/testing/crafting-revamp/legacy-crafting-baseline.md`), and what the owner's October 2026 decisions change. " +
+                            "The tables below the decisions are today's pace; the decisions are applied in code in workstream 11b and their resulting hours are in \"Decisions applied\". " +
+                            "The XP-rate gate (gate 6) measures new minigames against today's XP first; the decisions apply on top of that result.");
             text.AppendLine();
 
+            var after = a with { CraftXpMultiplier = CraftMinigameXp.CraftingPaceMultiplier };
             AppendSummary(text, model, a, paths, rpHours, gearNames);
+            AppendDecisions(text, model, a, after, skills);
             AppendInputs(text, model, a, command, skills);
             AppendBands(text, model, a, paths, gearNames, skills);
             AppendGathering(text, model, a);
@@ -50,7 +52,7 @@ namespace SWLOR.CraftSim.Progression
             AppendSensitivity(text, model, a, skills);
             AppendGuildCohort(text, model, a, skills);
             if (skills.Contains(SkillType.Fabrication))
-                AppendResearchCohort(text, model, a);
+                AppendResearchCohort(text, model, after);
             AppendProposals(text, model, a, skills, rpHours);
             AppendLimitations(text);
             return text.ToString();
@@ -117,6 +119,70 @@ namespace SWLOR.CraftSim.Progression
             text.AppendLine("- **Gathering is quick for the skill itself.** Each harvested item pays up to 1,200 XP and refining pays 25-150 XP per unit whatever the rank, so Gathering rank 50 takes hours, not days, if nodes are free. Node respawns and contention are not modelled.");
             text.AppendLine("- **Agriculture has a faster path than the one modelled here.** Fishing pays the same chart per bite (600-1,200 XP); see the catch task table in the guild section.");
             text.AppendLine();
+        }
+
+        private static void AppendDecisions(
+            StringBuilder text, ProgressionModel model, ProgressionAssumptions today, ProgressionAssumptions after, List<SkillType> skills)
+        {
+            var mid = CraftingGearCatalog.MidGearName;
+            text.AppendLine("## Decisions applied (owner, October 2026)");
+            text.AppendLine();
+            text.AppendLine($"1. **Guild hand-ins give XP.** The Smithery, Engineering, Fabrication and Agriculture guilds pay {GuildTaskXp.XpPercent}% of `Skill.GetDeltaXP(task level - rank)` for every item handed in, in the guild's skill " +
+                            "(`GuildTaskXp`), with the task level the recipe level for a crafted item and the `FishType` level for a catch task. It goes through the crafting XP path, so Social and food bonuses apply, and the chart's cutoff stays: " +
+                            "a hand-in five or more levels below the rank pays nothing, as crafting and quick craft (rank at least level + 5) do. The Hunter's Guild gives none.");
+            text.AppendLine($"2. **Crafting XP x{Number(CraftMinigameXp.CraftingPaceMultiplier, 2)}.** `CraftMinigameXp.CraftingPaceMultiplier` multiplies the base XP of crafts in Smithery, Engineering, Fabrication and Agriculture's cooking, on top of each minigame's gate-6 band multiplier. " +
+                            "It does not apply to Gathering, Espionage, fishing, guild hand-ins, research, combat or Piloting. Gate 6 is still measured against today's XP, before this multiplier.");
+            text.AppendLine($"3. **Research XP scaled.** `ResearchXpRules` now pays {ResearchXpRules.ExperimentXpPercent}% (experiment) and {ResearchXpRules.CompletionXpPercent}% (completion) of the chart XP, +{ResearchXpRules.LevelBonusPercentPerLevel}% per research level, " +
+                            "down from 100% and 50%, so research XP per real hour stays under at-level Fabrication crafting XP per hour (see the research cohort).");
+            text.AppendLine();
+            text.AppendLine("Hours to rank 50 at mid gear, today against with decisions 1 and 2 (hand-ins at the recommended award, crafts at the pace multiplier; the same unmeasured timings as the rest of this report):");
+            text.AppendLine();
+            var table = new MarkdownTable(
+                "Skill", "Today h", "With the decisions h", "Change", "Crafts to 50 today", "Crafts to 50 with the decisions", "Hand-in XP share of the climb", "At-level hand-ins",
+                "Catch-up hand-ins (quick craft)", "Catch-up h (in the total)", "Guild rank at rank 50");
+            var todayHours = new List<double>();
+            var afterHours = new List<double>();
+            foreach (var skill in skills)
+            {
+                var before = model.Path(skill, mid, today);
+                var plan = GuildHandInPlan.For(model.Guilds, GuildTaskCatalog.GuildOf(skill), GuildTaskXp.XpPercent / 100.0);
+                var path = model.Path(skill, mid, after, plan);
+                todayHours.Add(before.TotalHours);
+                afterHours.Add(path.TotalHours);
+                table.Add(
+                    skill.ToString(), Number(before.TotalHours, 1), Number(path.TotalHours, 1), Percent(path.TotalHours / before.TotalHours - 1), Number(before.Crafts, 0),
+                    Number(path.Crafts, 0), Percent(path.GuildXp / path.RequiredXp), Number(path.HandIns, 0), Number(path.CatchUpHandIns, 0), Number(path.CatchUpHours, 1),
+                    path.GuildRankReached.ToString());
+            }
+
+            double Median(List<double> values)
+            {
+                var ordered = values.OrderBy(v => v).ToList();
+                return (ordered[(ordered.Count - 1) / 2] + ordered[ordered.Count / 2]) / 2;
+            }
+
+            table.Add("Median skill", Number(Median(todayHours), 1), Number(Median(afterHours), 1), Percent(Median(afterHours) / Median(todayHours) - 1), "-", "-", "-", "-", "-", "-", "-");
+            table.Add("Slowest skill", Number(todayHours.Max(), 1), Number(afterHours.Max(), 1), Percent(afterHours.Max() / todayHours.Max() - 1), "-", "-", "-", "-", "-", "-", "-");
+            text.AppendLine(table.ToString());
+            text.AppendLine($"The proposed target was the median skill at {Number(TargetHours, 0)} h or fewer. With the decisions it is {Number(Median(afterHours), 1)} h" +
+                            (Median(afterHours) <= TargetHours ? ", which meets it." : $", {Number(Median(afterHours) - TargetHours, 1)} h over it.") +
+                            " An at-level hand-in is one of the crafter's own crafts of a task recipe, which the model makes whenever the ten-task board holds one, so it adds no craft. " +
+                            "A catch-up hand-in is a quick-crafted item that raises the guild rank when the rank stands in the way; its quick-craft and turn-in time is in the hours above and its XP is not paid (quick-crafted items sit five or more levels below the rank).");
+            text.AppendLine();
+
+            if (skills.Contains(SkillType.Fabrication))
+            {
+                var rows = ResearchCohort.Rows(model, mid, after).Where(r => r.BaseXp > 0).ToList();
+                if (rows.Count > 0)
+                {
+                    var worst = rows.OrderByDescending(r => r.StartingToCraftingRatio).First();
+                    text.AppendLine($"Research under the new values: the highest research XP per elapsed hour against at-level crafting XP per hour (with the x{Number(CraftMinigameXp.CraftingPaceMultiplier, 2)}) is " +
+                                    $"{Percent(worst.StartingToCraftingRatio.Value)} at Fabrication {worst.FabricationRank}" +
+                                    (worst.StartingToCraftingRatio <= 1 ? ", under the plan's ceiling at every rank." : ", **above the ceiling**.") +
+                                    " Before the change the starting values (100% and 50%) paid 167% at Fabrication 10 in the baseline.");
+                    text.AppendLine();
+                }
+            }
         }
 
         private static void AppendInputs(StringBuilder text, ProgressionModel model, ProgressionAssumptions a, string command, List<SkillType> skills)
@@ -484,7 +550,7 @@ namespace SWLOR.CraftSim.Progression
             text.AppendLine();
             var table = new MarkdownTable(
                 "Fabrication rank", "Tier", "Recipe level", "Base XP", "Job slots", "Level-1 job", "Level-10 job", "Level-1 job credits", "Fast loop jobs per h", "Climb jobs per h",
-                "Crafting XP per h (incl. gathering)", "Research XP per h at a 100% award");
+                "Crafting XP per h (incl. gathering and the pace multiplier)", "Research XP per h at a 100% award");
             foreach (var row in rows.Where(r => r.FabricationRank % 5 == 0 || r.FabricationRank == ProgressionAssumptions.MaximumRank - 1))
             {
                 table.Add(
@@ -591,7 +657,7 @@ namespace SWLOR.CraftSim.Progression
                 ("Today", "nothing", a, null, "no"),
                 ("0", "hand in the guild's task recipes for credits and points, no XP award (isolates the recipe choice)", a, 0.0, "no"),
                 ("A", "guild task XP only", a, RecommendedGuildXpShare, "no"),
-                ("B", $"A, and crafting XP x{Number(optionB, 2)} (crafts and hand-ins)", a with { CraftXpMultiplier = optionB }, RecommendedGuildXpShare, "no"),
+                ("B", $"A, and crafting XP x{Number(optionB, 2)} (crafts only)", a with { CraftXpMultiplier = optionB }, RecommendedGuildXpShare, "no"),
                 ("C", $"A, and no rank costs more than {Whole(optionC)} XP", a with { RequiredXpCap = optionC }, RecommendedGuildXpShare, "yes")
             };
             var option = new MarkdownTable(new[] { "Option", "Change" }.Concat(skills.Select(s => $"{s} h")).Concat(new[] { "Median skill", "Slowest skill", "Migration of stored XP" }).ToArray());
@@ -609,7 +675,7 @@ namespace SWLOR.CraftSim.Progression
             text.AppendLine("- **Row 0 is not an option.** It shows that handing in the guild's task recipes, with no award at all, already changes the hours, because the task recipes' components differ from the level's average recipe; the award's own effect is the difference between rows 0 and A.");
             text.AppendLine($"- **A: guild task XP only.** No craft XP change; the smallest change, with no stored-data conversion. It takes the median skill to {Number(medianA, 1)} h, " +
                             (medianA <= TargetHours ? "which meets the target." : $"which is {Number(medianA - TargetHours, 1)} h short of the {Number(TargetHours, 0)} h target."));
-            text.AppendLine($"- **B: A plus one crafting-only multiplier, x{Number(optionB, 2)}.** The smallest round multiplier that brings the median skill to the target ({Number(medianB, 1)} h). One parameter on what crafts and hand-ins pay, retuned from the client timings later. It changes gains only, so stored XP and ranks need no conversion.");
+            text.AppendLine($"- **B: A plus one crafting-only multiplier, x{Number(optionB, 2)}.** The smallest round multiplier that brings the median skill to the target ({Number(medianB, 1)} h). One parameter on what crafts pay, retuned from the client timings later. It changes gains only, so stored XP and ranks need no conversion.");
             text.AppendLine($"- **C: A plus a cap of {Whole(optionC)} XP on any rank's cost.** The same median as B by a different route: it cuts the climb from {Whole(Enumerable.Range(0, ProgressionAssumptions.MaximumRank).Sum(Skill.GetRequiredXP))} to {Whole(optionCTotal)} XP and spares the late ranks that cost up to 16,000 XP and need 15-25 crafts each, while leaving the early ranks alone. " +
                             "It changes required XP per rank for the crafting skills, so it needs a crafting-specific table and the plan's migration (convert stored XP and ranks so nobody loses a rank).");
             text.AppendLine();
@@ -653,7 +719,9 @@ namespace SWLOR.CraftSim.Progression
             // Research ceiling.
             text.AppendLine("### Research XP ceiling");
             text.AppendLine();
-            var rows = skills.Contains(SkillType.Fabrication) ? ResearchCohort.Rows(model, mid, a).Where(r => r.BaseXp > 0).ToList() : new List<ResearchRow>();
+            var rows = skills.Contains(SkillType.Fabrication)
+                ? ResearchCohort.Rows(model, mid, a with { CraftXpMultiplier = CraftMinigameXp.CraftingPaceMultiplier }).Where(r => r.BaseXp > 0).ToList()
+                : new List<ResearchRow>();
             if (rows.Count > 0)
             {
                 var startingShare = rows.Max(r => r.StartingShare.Value);
@@ -666,7 +734,7 @@ namespace SWLOR.CraftSim.Progression
                 text.AppendLine($"The Research workstream's starting values pay {Percent(startingShare)} of the chart XP for a level-1 job (`ResearchXpRules`: {ResearchXpRules.ExperimentXpPercent}% experiment, {ResearchXpRules.CompletionXpPercent}% completion, +{ResearchXpRules.LevelBonusPercentPerLevel}% per level). " +
                                 "**Ceiling, as the plan words it: research XP per real hour, with every job slot busy, stays below at-level Fabrication crafting XP per hour at the same rank** (the whole crafting loop, gathering and overhead included). " +
                                 (scale >= 1
-                                    ? "The starting values already sit under it. "
+                                    ? $"The values in `ResearchXpRules` ({ResearchXpRules.ExperimentXpPercent}% and {ResearchXpRules.CompletionXpPercent}%) already sit under it. "
                                     : $"They break it at Fabrication {binding.FabricationRank}, where a level-1 job on a tier-1 recipe takes minutes and the lone slot restarts it all hour. " +
                                       $"**Proposal: scale the starting values to {Percent(scale)} of themselves, `ExperimentXpPercent` {experiment} and `CompletionXpPercent` {completion}**, which keeps research under crafting at every rank. ") +
                                 $"Counted per hour of the player's own time at the terminal ({Number(binding.ActiveSecondsPerJob, 0)} s a job, because the jobs run offline), the starting values exceed crafting at {ownBroken} of the {rows.Count} paying ranks and would need {Percent(ownScale)} of themselves; " +

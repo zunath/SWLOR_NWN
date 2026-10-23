@@ -3,6 +3,7 @@ using System.Linq;
 using SWLOR.Game.Server.Core.Bioware;
 using SWLOR.Game.Server.Entity;
 using SWLOR.Game.Server.Feature;
+using SWLOR.Game.Server.Service.AnimationService;
 using SWLOR.Game.Server.Service.CombatService;
 using SWLOR.Game.Server.Service.LogService;
 using SWLOR.Game.Server.Service.SkillService;
@@ -19,6 +20,8 @@ public sealed class NwnCraftSessionWorld : ICraftSessionWorld
     public static readonly NwnCraftSessionWorld Instance = new();
 
     private static readonly BlueprintBonuses BlueprintBonusPicker = new();
+
+    private const string StationAnimationVariable = "CRAFT_STATION_ANIMATION";
 
     public RecipeDetail GetRecipe(RecipeType recipe) => Craft.GetRecipe(recipe);
 
@@ -135,7 +138,38 @@ public sealed class NwnCraftSessionWorld : ICraftSessionWorld
         PlayerTemporaryEffects.ApplyCutsceneGhostToPlayer(player);
     }
 
-    public void EndStationWork(uint player) => RemoveEffectByTag(player, PlayerActivityEffectTag.CraftingImmobilize);
+    public void PlayStationWork(uint player, SkillType skill)
+    {
+        // A second craft at the station replaces the first one's loop instead of stacking on it.
+        StopStationAnimation(player);
+
+        var clip = WorkAnimation.ForStation(skill);
+        if (clip == null || !NamedAnimation.CanLoop(player))
+            return;
+
+        var token = NamedAnimation.Play(player, clip, WorkAnimation.StationLoopSeconds);
+        if (!string.IsNullOrEmpty(token))
+            SetLocalString(player, StationAnimationVariable, token);
+    }
+
+    /// <summary>True while a station work clip started by <see cref="PlayStationWork"/> is the player's.</summary>
+    public bool IsStationWorkPlaying(uint player) => !string.IsNullOrEmpty(GetLocalString(player, StationAnimationVariable));
+
+    public void EndStationWork(uint player)
+    {
+        RemoveEffectByTag(player, PlayerActivityEffectTag.CraftingImmobilize);
+        StopStationAnimation(player);
+    }
+
+    private static void StopStationAnimation(uint player)
+    {
+        var token = GetLocalString(player, StationAnimationVariable);
+        if (string.IsNullOrEmpty(token))
+            return;
+
+        DeleteLocalString(player, StationAnimationVariable);
+        NamedAnimation.StopIfCurrent(player, token);
+    }
 
     public uint CreateCraftedItem(uint player, RecipeDetail recipe)
     {

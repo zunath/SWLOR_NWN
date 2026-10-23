@@ -53,8 +53,11 @@ namespace SWLOR.Game.Server.Feature
                 !GetIsDMPossessed(creature);
             var canUseItem = Item.CanEquip(creature, item, slot);
             // Equipping a worn item into another slot adds its stats again while the engine leaves it where it is,
-            // so a worn item must be unequipped first, as rings always had to be.
-            var isMovingWornItem = Item.GetItemSlot(creature, item) != InventorySlot.Invalid;
+            // so a worn item must be unequipped first, as rings always had to be. Normalized ammunition still
+            // moves between ammunition slots.
+            var wornSlot = Item.GetItemSlot(creature, item);
+            var isMovingWornItem = wornSlot != InventorySlot.Invalid &&
+                                   !(IsAmmunitionSlot(wornSlot) && IsAmmunitionSlot(slot));
             var mainHand = GetItemInSlot(InventorySlot.RightHand, creature);
             var offHand = GetItemInSlot(InventorySlot.LeftHand, creature);
             canUseItem = GetPowerGloveEquipmentError(GetBaseItemType(item), slot,
@@ -208,6 +211,9 @@ namespace SWLOR.Game.Server.Feature
                 ? warning
                 : $"{description.TrimEnd()}\n{warning}";
         }
+
+        private static bool IsAmmunitionSlot(InventorySlot slot) =>
+            slot is InventorySlot.Arrows or InventorySlot.Bullets or InventorySlot.Bolts;
 
         private static bool IsItemSwapping(uint creature, uint item, InventorySlot slot)
         {

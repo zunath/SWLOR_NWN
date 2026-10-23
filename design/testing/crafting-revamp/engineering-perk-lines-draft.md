@@ -1,6 +1,6 @@
 # Engineering perk lines: Overclocker and Technician (draft)
 
-Draft for the owner's approval. No perk code, no StatType IDs and no Bible rows exist yet; this file is the only artifact. Every magnitude below is a proposal: CraftSim tuned the Circuit's own values in phase 2 (`circuit-gates.md`), and the perk magnitudes are measured against those tuned values only once the owner approves the rows and the engine reads them. Rules followed: `CraftingRevampPlan.md` (Line schedule, Lines) and `SkillPerkStandards.md`.
+The owner approved these rows in October 2026 and the lines are implemented: see "As implemented" at the end for the IDs, the decisions that settled the open questions, and the magnitudes CraftSim changed. The tables below are the draft as approved; where the implementation differs the last section says so. Every magnitude below was a proposal: CraftSim tuned the Circuit's own values in phase 2 (`circuit-gates.md`), and the perk magnitudes are measured against those tuned values only once the owner approves the rows and the engine reads them. Rules followed: `CraftingRevampPlan.md` (Line schedule, Lines) and `SkillPerkStandards.md`.
 
 ## Structure
 
@@ -106,3 +106,27 @@ Names only; the IDs are reserved against current master and the HAK when the own
 2. Surge's target: "the meter that is further from full" is a rule that needs no prompt in the middle of a craft. Should the player choose the meter instead?
 3. Diagnostics shows the next two actions' announcements. Should a Clean Signal announced two actions ahead then also remain visible when it is one action ahead? (The draft says yes.)
 4. Are both line capstones acceptable as traits rather than actives? Surge triggers by itself on the first overload, and Failsafe triggers by itself on the first break.
+
+## As implemented (October 22, 2026)
+
+Code: `EngineeringPerkDefinition`, `CircuitPerkRules` (every magnitude), `CircuitPerkStats`, `CircuitPerkLines`, `CircuitStyles`, the two `*StatusEffect` classes and `CircuitEngine`/`CircuitSetup`. PerkType 844-859 (`ConductiveWiring`, `CapacitorBank`, `HeatSinks`, `OverclockStyle`, `CascadeDischarge`, `OverdriveBoost`, `ShockAbsorbers`, `CircuitSurge`, `InsulatedTraces`, `FineCalibration`, `CircuitDiagnostics`, `SafeModeStyle`, `MicroTune`, `SignalLock`, `PrecisionPatch`, `CircuitFailsafe`), StatType 1168-1185 as named in "Proposed StatTypes", `EffectIconType` 511-512.
+
+The owner's answers to the open questions: styles are a status effect; Surge goes into the meter further from full; Diagnostics keeps the signal visible from two actions ahead through one ahead; both capstones are automatic traits.
+
+Where the draft was silent:
+
+- A Clean Signal doubles a Tune, not a Micro-Tune.
+- Micro-Tune costs 2 Integrity. Insulated Traces reduces it and Cascade Discharge as well as Wire, Tune, Boost and Discharge, to a minimum of 1.
+- Micro-Tune's Calibration is 70% of a Tune at the same Load, with Fine Calibration applied; Cascade Discharge is 60% of a Discharge for each meter, with Capacitor Bank applied.
+- Safe Mode's grace is a band: no overload chance while Load is at most 2 over the line, and the usual 8% per point over the line beyond it. Heat Sinks move the line itself.
+- Surge picks by each meter's share of its maximum after the triggering action resolved, Assembly on a tie, and uses the Discharge formula at the Load the action left. Failsafe keeps Integrity at 1 once per craft, including after an overload, and is not spent by an action that finishes the item.
+- Diagnostics' first forecast of a craft rolls both the next action and the one after, so every action has the same chance of a signal.
+- A style stays active until the player picks another or "None", and not across logout. The window re-checks it against the perks owned when it opens and when a craft starts.
+
+Magnitudes: every value is as drafted except three, which CraftSim's length gate (gate 4) pushed down. Each is still a real purchase and a ranked perk's second rank is still larger than its first.
+
+| Perk | Draft | Implemented |
+| --- | --- | --- |
+| Conductive Wiring II | +3 points per Load | +2 |
+| Capacitor Bank | +10% | +5% |
+| Overclock | +3 points per Load, +1 Load per Wire and Tune | +1 point per Load, +1 Load per Wire and Tune |

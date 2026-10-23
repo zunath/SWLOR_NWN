@@ -48,9 +48,9 @@ namespace SWLOR.CraftSim.Scenario.Experiment
         /// <summary>The stream that separates the study's dice from every gate's and from the research report's.</summary>
         public const int StudyStream = 137;
 
-        private const int FixedLevel = 1;
-        private const int ContestedLevel = 3;
-        private const double TieMargin = 0.5;
+        internal const int FixedLevel = 1;
+        internal const int ContestedLevel = 3;
+        internal const double TieMargin = 0.5;
 
         /// <summary>The trials a style adds and the points of Test chance it gives (negative for a cost), as candidates a retune could try.</summary>
         private static readonly (string Name, int Trials, int Chance)[] MethodicalCandidates =
@@ -154,7 +154,7 @@ namespace SWLOR.CraftSim.Scenario.Experiment
                 noEvidence / (double)runs);
         }
 
-        private static Func<ExperimentSetup, ICraftPolicy> Focused { get; } =
+        internal static Func<ExperimentSetup, ICraftPolicy> Focused { get; } =
             _ => new ExperimentPerkedPolicy(ResearchCandidate.CreditReduction);
 
         private static Func<ExperimentSetup, ICraftPolicy> Undecided { get; } =
@@ -184,7 +184,7 @@ namespace SWLOR.CraftSim.Scenario.Experiment
 
         // ---- style balance --------------------------------------------------------------------------------------------
 
-        private static IEnumerable<ExperimentCase> StyleCases(int level, GearLevel gear)
+        internal static IEnumerable<ExperimentCase> StyleCases(int level, GearLevel gear)
         {
             foreach (var (tier, rank) in new[] { (2, 20), (3, 30), (4, 40), (5, 50), (1, 50), (3, 50) })
                 yield return new ExperimentCase(level, tier, rank, gear);
@@ -271,7 +271,7 @@ namespace SWLOR.CraftSim.Scenario.Experiment
         }
 
         /// <summary>The numbers of a researcher with every purchase but the styles, at this rank, plus a style's trials and Test chance.</summary>
-        private static ExperimentTuning LineWith(int rank, int trials, int chance)
+        internal static ExperimentTuning LineWith(int rank, int trials, int chance)
         {
             var line = LineWithoutAStyle.TuningAt(rank);
             return line with { Trials = line.Trials + trials, TestChanceBonusPercent = line.TestChanceBonusPercent + chance };
@@ -432,6 +432,6 @@ namespace SWLOR.CraftSim.Scenario.Experiment
 
         private static string Kind(int level) => level == FixedLevel ? "Fixed levels (time cut)" : "Evidence decides (reduction)";
 
-        private static string SignedNumber(double value) => (value > 0 ? "+" : string.Empty) + Number(value);
+        internal static string SignedNumber(double value) => (value > 0 ? "+" : string.Empty) + Number(value);
     }
 }

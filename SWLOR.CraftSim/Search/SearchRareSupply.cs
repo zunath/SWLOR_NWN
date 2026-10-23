@@ -54,9 +54,14 @@ namespace SWLOR.CraftSim.Search
                 var share = ScavengeLoot.RareShare(loot, treasureHunterLevel, false);
                 var deeperShare = ScavengeLoot.RareShare(loot, treasureHunterLevel, true);
                 var skilledDeeperShare = ScavengeLoot.RareShare(loot, treasureHunterLevel, true, effects.DeeperWeightBonus);
+                var skilledFindShare = ScavengeLoot.RareShare(loot, treasureHunterLevel, false, 0, effects.FindWeightBonus);
+                var jackpotShare = ScavengeLoot.RareShare(loot, treasureHunterLevel, true, effects.DeeperWeightBonus + effects.JackpotWeightBonus);
                 var quick = quickRolls * share;
                 var carelessRare = careless.Ordinary * share + careless.Deeper * deeperShare;
-                var skilledRare = skilled.Ordinary * share + skilled.Deeper * skilledDeeperShare;
+
+                // The first Dig Deeper find of a board that has one rolls with the Jackpot's weight on top of the dig's.
+                var firstFinds = effects.JackpotWeightBonus > 0 ? skilled.DeeperBoardShare : 0;
+                var skilledRare = skilled.Ordinary * skilledFindShare + (skilled.Deeper - firstFinds) * skilledDeeperShare + firstFinds * jackpotShare;
                 var flagged = loot.Count(item => item.IsRare);
                 table.Add(
                     name,

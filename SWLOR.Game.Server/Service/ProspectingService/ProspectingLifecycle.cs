@@ -179,7 +179,7 @@ namespace SWLOR.Game.Server.Service.ProspectingService
             if (!preview.Enabled)
                 return ProspectingActionStart.Refused(preview.DisabledReason);
 
-            var seconds = ProspectingRules.SecondsFor(actionId);
+            var seconds = session.Engine.SecondsFor(actionId);
             if (seconds <= 0)
             {
                 Resolve(session, actionId, onResolved);

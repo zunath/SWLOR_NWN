@@ -1,9 +1,12 @@
 using System.Collections.Concurrent;
 using SWLOR.CraftSim.Data;
 using SWLOR.CraftSim.Legacy.Gathering;
+using SWLOR.Game.Server.Feature.PerkDefinition;
 using SWLOR.Game.Server.Service.CraftService;
 using SWLOR.Game.Server.Service.CraftService.Minigame;
+using SWLOR.Game.Server.Service.CraftService.Minigame.Gathering;
 using SWLOR.Game.Server.Service.CraftService.Minigame.Prospecting;
+using SWLOR.Game.Server.Service.PerkService;
 
 namespace SWLOR.CraftSim.Harvesting
 {
@@ -53,6 +56,18 @@ namespace SWLOR.CraftSim.Harvesting
 
         /// <summary>The charges of the harvester the sessions are played with.</summary>
         public int Charges { get; init; } = ProspectingPlays.FreshHarvesterCharges;
+
+        /// <summary>The gatherer's perks and style: every session is played by someone who owns what the Gathering rank allows of them.</summary>
+        public GatheringLoadout Loadout { get; init; } = GatheringLoadout.None;
+
+        /// <summary>The perk definitions the loadout is read from.</summary>
+        public IReadOnlyDictionary<PerkType, PerkDetail> Perks { get; init; } = new GatheringPerkDefinition().BuildPerks();
+
+        /// <summary>Effects to play instead of the loadout's, by rank: a study of one purchase at a time sets it. Null plays the loadout.</summary>
+        public Func<int, ProspectingEffects> EffectsOverride { get; init; }
+
+        /// <summary>What the loadout's perks and style change at a Gathering rank. Nothing for no perks.</summary>
+        public ProspectingEffects EffectsAt(int rank) => EffectsOverride?.Invoke(rank) ?? Loadout.ProspectingAt(Perks, rank);
     }
 
     /// <summary>
@@ -158,7 +173,8 @@ namespace SWLOR.CraftSim.Harvesting
                 Runs,
                 Seed,
                 ProspectingPlays.Stream(key.Case.Tier, key.Case.Rank, key.Case.GemChance, key.Plan),
-                _options.Charges));
+                _options.Charges,
+                _options.EffectsAt(key.Case.Rank)));
 
         public ProspectingSample QuickHarvestSample(HarvestCase harvestCase) =>
             _quick.GetOrAdd(harvestCase, key => ProspectingPlays.QuickHarvest(

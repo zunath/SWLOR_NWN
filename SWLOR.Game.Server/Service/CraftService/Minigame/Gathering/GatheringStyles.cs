@@ -26,13 +26,12 @@ public static class GatheringStyles
         {
             [GatheringStyle.StripMining] = new Dictionary<StatType, int>
             {
-                [StatType.ProspectingStrikeUnits] = ProspectingPerkRules.StripMiningStrikeUnits,
+                [StatType.ProspectingStrikeTimeReduction] = ProspectingPerkRules.StripMiningStrikeTimeTenths,
+                [StatType.ProspectingSeamWorkTimeReduction] = -ProspectingPerkRules.StripMiningSeamWorkTimeTenths,
                 [StatType.ProspectingStrikeStabilityReduction] = -ProspectingPerkRules.StripMiningStrikeStability
             },
             [GatheringStyle.CarefulHands] = new Dictionary<StatType, int>
             {
-                [StatType.ProspectingStrikeBigChancePoints] = ProspectingPerkRules.CarefulHandsStrikeBigChancePoints,
-                [StatType.ProspectingSurveyStabilityReduction] = ProspectingPerkRules.CarefulHandsSurveyStabilityReduction,
                 [StatType.SearchChancePoints] = SearchPerkRules.CarefulHandsSearchChancePoints,
                 [StatType.SearchDigRareWeight] = SearchPerkRules.CarefulHandsDigRareWeight
             }
@@ -53,9 +52,7 @@ public static class GatheringStyles
     public static string ProspectingDescription(GatheringStyle style) => style switch
     {
         GatheringStyle.StripMining =>
-            $"A Strike takes {ProspectingPerkRules.StripMiningStrikeUnits} more unit and costs {ProspectingPerkRules.StripMiningStrikeStability} more Stability.",
-        GatheringStyle.CarefulHands =>
-            $"A Strike is {-ProspectingPerkRules.CarefulHandsStrikeBigChancePoints} points less likely to take its larger result, and a Survey costs {ProspectingPerkRules.CarefulHandsSurveyStabilityReduction} less Stability.",
+            $"A Strike takes {ProspectingPerkRules.SecondsText(ProspectingPerkRules.StripMiningStrikeTimeTenths)} seconds less and costs {ProspectingPerkRules.StripMiningStrikeStability} more Stability, but a Survey and an Extract each take {ProspectingPerkRules.SecondsText(ProspectingPerkRules.StripMiningSeamWorkTimeTenths)} second more.",
         _ => string.Empty
     };
 

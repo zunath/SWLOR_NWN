@@ -51,8 +51,13 @@ namespace SWLOR.Game.Server.Feature.PerkDefinition
 
         private static string ItemWord(int count) => count == 1 ? "item" : "items";
 
-        private static string StrikeText(int strike, int heavy) =>
-            $"In Prospecting, a Strike costs {strike} less Stability and a Heavy Strike {heavy} less, to a minimum of 1.";
+        private static string StrikeText(int strikeTenths, int heavyTenths) =>
+            $"In Prospecting, a Strike takes {ProspectingPerkRules.SecondsText(strikeTenths)} {SecondWord(strikeTenths)} less and a Heavy Strike {ProspectingPerkRules.SecondsText(heavyTenths)} {SecondWord(heavyTenths)} less.";
+
+        private static string SecondWord(int tenths) => tenths == 10 ? "second" : "seconds";
+
+        private static string RichVeinsText(int tenths) =>
+            $"In Prospecting, claiming a rich seam with Extract takes {ProspectingPerkRules.SecondsText(tenths)} {SecondWord(tenths)} less.";
 
         private static string TimesText(int bonus) => bonus == 1 ? "1 more" : $"{bonus} more";
 
@@ -72,18 +77,18 @@ namespace SWLOR.Game.Server.Feature.PerkDefinition
                 .Icon(ProspectorIcon)
 
                 .AddPerkLevel()
-                .Description(StrikeText(ProspectingPerkRules.EfficientStrikesStrikeRank1, ProspectingPerkRules.EfficientStrikesHeavyRank1))
+                .Description(StrikeText(ProspectingPerkRules.EfficientStrikesStrikeTenthsRank1, ProspectingPerkRules.EfficientStrikesHeavyTenthsRank1))
                 .Price(1)
                 .RequirementSkill(SkillType.Gathering, 5)
-                .IncreasesStat(StatType.ProspectingStrikeStabilityReduction, ProspectingPerkRules.EfficientStrikesStrikeRank1)
-                .IncreasesStat(StatType.ProspectingHeavyStrikeStabilityReduction, ProspectingPerkRules.EfficientStrikesHeavyRank1)
+                .IncreasesStat(StatType.ProspectingStrikeTimeReduction, ProspectingPerkRules.EfficientStrikesStrikeTenthsRank1)
+                .IncreasesStat(StatType.ProspectingHeavyStrikeTimeReduction, ProspectingPerkRules.EfficientStrikesHeavyTenthsRank1)
 
                 .AddPerkLevel()
-                .Description(StrikeText(ProspectingPerkRules.EfficientStrikesStrikeRank2, ProspectingPerkRules.EfficientStrikesHeavyRank2))
+                .Description(StrikeText(ProspectingPerkRules.EfficientStrikesStrikeTenthsRank2, ProspectingPerkRules.EfficientStrikesHeavyTenthsRank2))
                 .Price(3)
                 .RequirementSkill(SkillType.Gathering, 25)
-                .IncreasesStat(StatType.ProspectingStrikeStabilityReduction, ProspectingPerkRules.EfficientStrikesStrikeRank2)
-                .IncreasesStat(StatType.ProspectingHeavyStrikeStabilityReduction, ProspectingPerkRules.EfficientStrikesHeavyRank2);
+                .IncreasesStat(StatType.ProspectingStrikeTimeReduction, ProspectingPerkRules.EfficientStrikesStrikeTenthsRank2)
+                .IncreasesStat(StatType.ProspectingHeavyStrikeTimeReduction, ProspectingPerkRules.EfficientStrikesHeavyTenthsRank2);
         }
 
         private void BulkRefining()
@@ -118,17 +123,16 @@ namespace SWLOR.Game.Server.Feature.PerkDefinition
                 .Icon(ProspectorIcon)
 
                 .AddPerkLevel()
-                .Description($"In Prospecting, claiming a rich seam with Extract costs {ProspectingPerkRules.RichVeinsChargeReduction} less charge.")
+                .Description(RichVeinsText(ProspectingPerkRules.RichVeinsTimeTenthsRank1))
                 .Price(2)
                 .RequirementSkill(SkillType.Gathering, 15)
-                .IncreasesStat(StatType.ProspectingRichExtractChargeReduction, ProspectingPerkRules.RichVeinsChargeReduction)
+                .IncreasesStat(StatType.ProspectingRichExtractTimeReduction, ProspectingPerkRules.RichVeinsTimeTenthsRank1)
 
                 .AddPerkLevel()
-                .Description($"In Prospecting, claiming a rich seam with Extract costs {ProspectingPerkRules.RichVeinsChargeReduction} less charge and {ProspectingPerkRules.RichVeinsStabilityReductionRank2} less Stability, to a minimum of 1.")
+                .Description(RichVeinsText(ProspectingPerkRules.RichVeinsTimeTenthsRank2))
                 .Price(3)
                 .RequirementSkill(SkillType.Gathering, 40)
-                .IncreasesStat(StatType.ProspectingRichExtractChargeReduction, ProspectingPerkRules.RichVeinsChargeReduction)
-                .IncreasesStat(StatType.ProspectingRichExtractStabilityReduction, ProspectingPerkRules.RichVeinsStabilityReductionRank2);
+                .IncreasesStat(StatType.ProspectingRichExtractTimeReduction, ProspectingPerkRules.RichVeinsTimeTenthsRank2);
         }
 
         private void StripMiningStyle()
@@ -164,7 +168,7 @@ namespace SWLOR.Game.Server.Feature.PerkDefinition
                 .Icon(ProspectorIcon)
 
                 .AddPerkLevel()
-                .Description($"In Prospecting, the first Heavy Strike of each node takes {ProspectingPerkRules.MotherLodeMultiplier} times its usual units, never more than the node holds. Units sealed in a seam you have not claimed are lost with it.")
+                .Description($"In Prospecting, the first Strike or Heavy Strike of each node takes {ProspectingPerkRules.MotherLodeTimePercent}% of its usual time.")
                 .Price(4)
                 .RequirementSkill(SkillType.Gathering, 50)
                 .IncreasesStat(StatType.ProspectingMotherLodeUnlocked, 1);
@@ -229,7 +233,7 @@ namespace SWLOR.Game.Server.Feature.PerkDefinition
                 .TriggerRefund(GatheringStyles.RemoveUnowned)
 
                 .AddPerkLevel()
-                .Description(StyleDescription(GatheringStyle.CarefulHands, "Prospecting or Search"))
+                .Description(StyleDescription(GatheringStyle.CarefulHands, "Search"))
                 .Price(2)
                 .RequirementSkill(SkillType.Gathering, GatheringStyles.StyleRank);
         }

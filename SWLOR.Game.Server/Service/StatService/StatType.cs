@@ -6538,73 +6538,65 @@ namespace SWLOR.Game.Server.Service.StatService
         [StatType(StatTypeCategory.BeneficialWhenPositive)]
         ProspectingStrikeStabilityReduction = 1248,
 
-        /// <summary>Stability a Prospecting Heavy Strike costs less, to a minimum of 1.</summary>
+        /// <summary>Tenths of a second a Prospecting Strike takes less.</summary>
         [StatType(StatTypeCategory.BeneficialWhenPositive)]
-        ProspectingHeavyStrikeStabilityReduction = 1249,
+        ProspectingStrikeTimeReduction = 1249,
 
-        /// <summary>Units a Prospecting Strike takes beyond its usual 1 or 2.</summary>
+        /// <summary>Tenths of a second a Prospecting Survey and Extract take less; a style's cost is a negative value.</summary>
         [StatType(StatTypeCategory.BeneficialWhenPositive)]
-        ProspectingStrikeUnits = 1250,
+        ProspectingSeamWorkTimeReduction = 1250,
 
-        /// <summary>Percentage points added to the chance a Prospecting Strike takes its larger result; a style's cost is a negative value.</summary>
+        /// <summary>Tenths of a second a Prospecting Heavy Strike takes less.</summary>
         [StatType(StatTypeCategory.BeneficialWhenPositive)]
-        ProspectingStrikeBigChancePoints = 1251,
+        ProspectingHeavyStrikeTimeReduction = 1251,
 
-        /// <summary>Charges a Prospecting Extract of a rich seam costs less, to a minimum of 1.</summary>
+        /// <summary>Tenths of a second a Prospecting Extract of a rich seam takes less.</summary>
         [StatType(StatTypeCategory.BeneficialWhenPositive)]
-        ProspectingRichExtractChargeReduction = 1252,
-
-        /// <summary>Stability a Prospecting Extract of a rich seam costs less, to a minimum of 1.</summary>
-        [StatType(StatTypeCategory.BeneficialWhenPositive)]
-        ProspectingRichExtractStabilityReduction = 1253,
+        ProspectingRichExtractTimeReduction = 1252,
 
         /// <summary>Non-zero when the Prospecting window shows how many seams a node still holds and what each one is.</summary>
         [StatType(StatTypeCategory.BeneficialWhenPositive, StatTypeAggregation.Maximum)]
-        ProspectingSeamSightUnlocked = 1254,
+        ProspectingSeamSightUnlocked = 1253,
 
-        /// <summary>Non-zero when the first Prospecting Heavy Strike of each node takes double the units.</summary>
+        /// <summary>Non-zero when the first Prospecting Strike or Heavy Strike of each node takes half the time.</summary>
         [StatType(StatTypeCategory.BeneficialWhenPositive, StatTypeAggregation.Maximum)]
-        ProspectingMotherLodeUnlocked = 1255,
+        ProspectingMotherLodeUnlocked = 1254,
 
         /// <summary>Items each power core refines beyond the Gathering rank's batch.</summary>
         [StatType(StatTypeCategory.BeneficialWhenPositive)]
-        ProspectingRefineBatch = 1256,
+        ProspectingRefineBatch = 1255,
 
         /// <summary>Percentage points off the chance a Prospecting Heavy Strike shatters a gem pocket that has not been surveyed.</summary>
         [StatType(StatTypeCategory.BeneficialWhenPositive)]
-        ProspectingShatterReduction = 1257,
+        ProspectingShatterReduction = 1256,
 
         /// <summary>Seams a Prospecting Survey reveals beyond its Gathering rank's, never more than a node holds.</summary>
         [StatType(StatTypeCategory.BeneficialWhenPositive)]
-        ProspectingSurveyReveals = 1258,
+        ProspectingSurveyReveals = 1257,
 
         /// <summary>Non-zero when a Prospecting Survey reveals gem pockets before rich seams.</summary>
         [StatType(StatTypeCategory.BeneficialWhenPositive, StatTypeAggregation.Maximum)]
-        ProspectingPocketsFirstUnlocked = 1259,
-
-        /// <summary>Stability a Prospecting Survey costs less, to a minimum of 1.</summary>
-        [StatType(StatTypeCategory.BeneficialWhenPositive)]
-        ProspectingSurveyStabilityReduction = 1260,
+        ProspectingPocketsFirstUnlocked = 1258,
 
         /// <summary>Added to the multiplier a Search Dig Deeper find puts on the weight of the site's rare entries.</summary>
         [StatType(StatTypeCategory.BeneficialWhenPositive)]
-        SearchDigRareWeight = 1261,
+        SearchDigRareWeight = 1259,
 
         /// <summary>Percent off the risk that a Search Dig Deeper ruins the spot.</summary>
         [StatType(StatTypeCategory.BeneficialWhenPositive)]
-        SearchDigRiskReductionPercent = 1262,
+        SearchDigRiskReductionPercent = 1260,
 
         /// <summary>Percentage points added to the chance a Search finds something on every spot; a style's cost is a negative value.</summary>
         [StatType(StatTypeCategory.BeneficialWhenPositive)]
-        SearchChancePoints = 1263,
+        SearchChancePoints = 1261,
 
         /// <summary>Added to the multiplier an ordinary Search find puts on the weight of the site's rare entries.</summary>
         [StatType(StatTypeCategory.BeneficialWhenPositive)]
-        SearchFindRareWeight = 1264,
+        SearchFindRareWeight = 1262,
 
         /// <summary>Added to the rare-entry multiplier of the first Search Dig Deeper find of each board.</summary>
         [StatType(StatTypeCategory.BeneficialWhenPositive)]
-        SearchJackpotRareWeight = 1265,
+        SearchJackpotRareWeight = 1263,
     }
 
     public class StatTypeAttribute : Attribute

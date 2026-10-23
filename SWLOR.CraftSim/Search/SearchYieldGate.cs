@@ -3,6 +3,7 @@ using SWLOR.CraftSim.Gates;
 using SWLOR.CraftSim.Legacy.Gathering;
 using SWLOR.CraftSim.Rng;
 using SWLOR.Game.Server.Service.CraftService;
+using SWLOR.Game.Server.Service.CraftService.Minigame.Gathering;
 using SWLOR.Game.Server.Service.CraftService.Minigame.Search;
 using SWLOR.Game.Server.Service.ScavengeService;
 using static SWLOR.CraftSim.Report.MarkdownTable;
@@ -34,13 +35,16 @@ namespace SWLOR.CraftSim.Search
 
         public string Name => GateNames.EconomyParity;
 
+        /// <summary>The most a skilled board may find against Quick Search: the unperked limit, or the plan's +15% for a gatherer with perks.</summary>
+        private double SkilledLimit => _options.Loadout == GatheringLoadout.None ? _options.UnperkedSkilledMaximumRatio : _options.SkilledMaximumRatio;
+
         /// <summary>The cases the study plays, so a report can play them all in parallel first.</summary>
         public IEnumerable<SearchKey> Keys()
         {
             foreach (var rank in _options.Ranks)
             {
                 foreach (var player in new[] { SearchPlayerKind.Careless, SearchPlayerKind.Skilled, SearchPlayerKind.Oracle })
-                    yield return new SearchKey(rank, 1, player, SearchEffects.None);
+                    yield return new SearchKey(rank, 1, player, _options.EffectsAt(rank));
 
                 yield return new SearchKey(rank, 1, SearchPlayerKind.Skilled, _options.TreasureSeekerLine);
                 yield return new SearchKey(rank, 1, SearchPlayerKind.Oracle, _options.TreasureSeekerLine);
@@ -84,16 +88,17 @@ namespace SWLOR.CraftSim.Search
                     Number(ScavengeQuickSearch.ExpectedAttempts(tier), 2),
                     quickInside ? "Equal" : "Different");
 
-                var careless = _parity.Sample(rank, 1, SearchPlayerKind.Careless);
-                var skilled = _parity.Sample(rank, 1, SearchPlayerKind.Skilled);
-                var oracle = _parity.Sample(rank, 1, SearchPlayerKind.Oracle);
-                var setup = SearchSetup.ForRank(rank, 1);
+                var effects = _options.EffectsAt(rank);
+                var careless = _parity.Sample(rank, 1, SearchPlayerKind.Careless, effects);
+                var skilled = _parity.Sample(rank, 1, SearchPlayerKind.Skilled, effects);
+                var oracle = _parity.Sample(rank, 1, SearchPlayerKind.Oracle, effects);
+                var setup = SearchSetup.ForRank(rank, 1, effects);
                 var carelessRatio = careless.Finds / quickRolls;
                 var skilledRatio = skilled.Finds / quickRolls;
                 var oracleRatio = oracle.Finds / quickRolls;
                 var inside = carelessRatio >= _options.CarelessMinimumRatio - tolerance &&
                              skilledRatio >= _options.SkilledMinimumRatio - tolerance &&
-                             skilledRatio <= _options.UnperkedSkilledMaximumRatio + tolerance &&
+                             skilledRatio <= SkilledLimit + tolerance &&
                              oracleRatio <= _options.OracleMaximumRatio + tolerance;
                 if (!inside)
                 {
@@ -146,7 +151,7 @@ namespace SWLOR.CraftSim.Search
                 quick.ToGateTable("Quick Search against today's expected rolls (a Perception modifier of 0, the parity reference)"),
                 board.ToGateTable(
                     $"Finds per board (loot-table rolls) against Quick Search: careless at least {Number(_options.CarelessMinimumRatio, 2)}x, skilled " +
-                    $"{Number(_options.SkilledMinimumRatio, 2)}x to {Number(_options.UnperkedSkilledMaximumRatio, 2)}x, oracle at most {Number(_options.OracleMaximumRatio, 2)}x"),
+                    $"{Number(_options.SkilledMinimumRatio, 2)}x to {Number(SkilledLimit, 2)}x, oracle at most {Number(_options.OracleMaximumRatio, 2)}x"),
                 play.ToGateTable("How the skilled player spends its searches"),
                 line.ToGateTable($"The whole Treasure Seeker line against the cap (skilled at most {Number(_options.SkilledMaximumRatio, 2)}x)")
             };

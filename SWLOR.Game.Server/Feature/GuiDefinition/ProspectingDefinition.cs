@@ -53,10 +53,11 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition
             "ONE AT A TIME\n" +
             "Only one harvester works a node at a time. Anyone else is told it is in use until you finish.\n\n" +
             "PERKS AND STYLES\n" +
-            "The Prospector and Treasure Seeker perk lines change these numbers and never touch Quick Harvest. At Gathering " + GatheringStyles.StyleRank +
-            " each line offers a style: Strip Mining takes bigger Strikes for more Stability, and Careful Hands takes smaller Strikes for a gentler " +
-            "Survey. Pick one in the list below before your first action; only one can be active at a time, and it stays until you pick another. " +
-            "Core Sample shows what is hidden in the node, and Mother Lode makes your first Heavy Strike of a node take double the units.\n\n" +
+            "The Prospector and Treasure Seeker perk lines never touch Quick Harvest. Efficient Strikes, Rich Veins and Mother Lode make actions " +
+            "quicker, Core Sample shows what is hidden in a node, and Sharp Chisel and Deep Scan look after gem pockets. At Gathering " +
+            GatheringStyles.StyleRank + " the Strip Mining style makes Strikes quicker for more Stability, but Surveys and Extracts take longer; it " +
+            "suits quick work that leaves the seams alone. Pick a style in the list below before your first action. Only one style can be active at a " +
+            "time, and it stays until you pick another.\n\n" +
             "YOUR RANK\n" +
             "Your Gathering rank replaces your attributes here. At Gathering ranks " + string.Join(", ", CraftRankMilestones.ProspectingYieldMilestoneRanks) +
             " a Strike and a Heavy Strike take more units, and at ranks " + string.Join(" and ", CraftRankMilestones.ProspectingSurveyMilestoneRanks) +

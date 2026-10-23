@@ -321,14 +321,14 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
         private void RefreshStyles()
         {
             _styleRows.Clear();
-            var owned = GatheringStyles.Owned(Player);
-            if (owned.Count > 0)
+            var owned = GatheringStyles.Owned(Player).Where(style => GatheringStyles.ProspectingDescription(style).Length > 0).ToList();
+            var active = GatheringStyles.Active(Player);
+            if (owned.Count > 0 || active != GatheringStyle.None)
             {
                 _styleRows.Add(GatheringStyle.None);
                 _styleRows.AddRange(owned);
             }
 
-            var active = GatheringStyles.Active(Player);
             var locked = _session == null || _session.Settled || _session.HasActed || _session.Working != null;
             var labels = new GuiBindingList<string>();
             var buttons = new GuiBindingList<string>();
@@ -338,12 +338,13 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
                 labels.Add(style == GatheringStyle.None
                     ? "None: Prospecting plays by its usual rules."
                     : $"{GatheringStyles.Name(style)}: {GatheringStyles.ProspectingDescription(style)}");
-                buttons.Add(style == active ? "Selected" : "Select");
-                enabled.Add(!locked && style != active);
+                var selected = style == active || (style == GatheringStyle.None && !owned.Contains(active));
+                buttons.Add(selected ? "Selected" : "Select");
+                enabled.Add(!locked && !selected);
             }
 
-            StyleHeader = owned.Count == 0
-                ? $"Styles: learn a Gathering style perk at Gathering {GatheringStyles.StyleRank} to choose one here."
+            StyleHeader = _styleRows.Count == 0
+                ? $"Styles: learn the Strip Mining style at Gathering {GatheringStyles.StyleRank} to choose it here."
                 : locked
                     ? "Style: locked once you begin working the node."
                     : "Style: pick one before your first action. Only one can be active at a time.";

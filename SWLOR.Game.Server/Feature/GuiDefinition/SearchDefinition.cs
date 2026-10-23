@@ -44,10 +44,10 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition
             "- Sift: shows whether the spots next to the one you sift are promising. It finds nothing, but it tells you where to search.\n" +
             "Each button shows the exact chances before you click.\n\n" +
             "PERKS AND STYLES\n" +
-            "The Treasure Seeker perk line changes these numbers and never touches Quick Search. Most of its perks make a Dig Deeper find, " +
-            "or an ordinary find, favour the site's rare items. At Gathering " + GatheringStyles.StyleRank + " it offers the Careful Hands style: " +
-            "Searches find a little less often, and a Dig Deeper favours rare items much more. Pick the style in the list below before your " +
-            "first action; only one style can be active at a time, and it stays until you pick another.\n\n" +
+            "The Treasure Seeker perk line never touches Quick Search. Most of its perks make a find, and above all a Dig Deeper find, favour " +
+            "the site's rare items; the rest make a Search find a little more often and a Dig Deeper safer. At Gathering " + GatheringStyles.StyleRank +
+            " it offers the Careful Hands style: Searches find a little less often, and a Dig Deeper favours rare items much more. Pick the style in " +
+            "the list below before your first action. Only one style can be active at a time, and it stays until you pick another.\n\n" +
             "THE PACE\n" +
             "Your first action is free. After every action you wait " + ActionSecondsText + " seconds before the next one counts.\n\n" +
             "XP AND LEAVING\n" +

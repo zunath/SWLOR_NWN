@@ -44,13 +44,9 @@ public sealed class ProspectingSetup
         Rank = rank;
         NodeTier = nodeTier;
         Effects = effects;
-        StrikeYield = ProspectingRules.StrikeYield(yieldTier, effects);
+        StrikeYield = ProspectingRules.StrikeYield(yieldTier);
         HeavyStrikeYield = ProspectingRules.HeavyStrikeYield(yieldTier);
-        SurveyStability = Math.Max(1, ProspectingRules.SurveyStability - effects.SurveyStabilityReduction);
         StrikeStability = Math.Max(1, ProspectingRules.StrikeStability - effects.StrikeStabilityReduction);
-        HeavyStrikeStability = Math.Max(1, ProspectingRules.HeavyStrikeStability - effects.HeavyStrikeStabilityReduction);
-        RichExtractCharges = Math.Max(1, ProspectingRules.ExtractCharges - effects.RichExtractChargeReduction);
-        RichExtractStability = Math.Max(1, ProspectingRules.ExtractStability - effects.RichExtractStabilityReduction);
         ShatterPercent = Math.Max(0, ProspectingRules.ShatterPercent - effects.ShatterReduction);
     }
 
@@ -73,20 +69,38 @@ public sealed class ProspectingSetup
     /// <summary>The harvester's perks and style.</summary>
     public ProspectingEffects Effects { get; }
 
-    /// <summary>The Stability a Survey costs, perks included.</summary>
-    public int SurveyStability { get; }
-
-    /// <summary>The Stability a Strike costs, perks and style included.</summary>
+    /// <summary>The Stability a Strike costs, style included.</summary>
     public int StrikeStability { get; }
 
-    /// <summary>The Stability a Heavy Strike costs, perks included.</summary>
-    public int HeavyStrikeStability { get; }
+    /// <summary>
+    /// The seconds an action takes to resolve, and so the least time between two actions, perks and style included. <paramref name="motherLode"/>
+    /// is true for the first Strike or Heavy Strike of a node when the harvester has Mother Lode, which takes a share of its time, and
+    /// <paramref name="seam"/> is the kind of seam an Extract would claim.
+    /// </summary>
+    public double SecondsFor(string actionId, bool motherLode = false, ProspectingSeamKind? seam = null)
+    {
+        var seconds = ProspectingRules.SecondsFor(actionId);
+        switch (actionId)
+        {
+            case ProspectingActionIds.Survey:
+                return Math.Max(0.5, seconds - Effects.SeamWorkTimeReductionTenths / 10.0);
 
-    /// <summary>The charges an Extract of a rich seam costs, perks included. A gem pocket costs <see cref="ProspectingRules.ExtractCharges"/>.</summary>
-    public int RichExtractCharges { get; }
+            case ProspectingActionIds.Extract:
+                var rich = seam == ProspectingSeamKind.Rich ? Effects.RichExtractTimeReductionTenths : 0;
+                return Math.Max(0.5, seconds - (rich + Effects.SeamWorkTimeReductionTenths) / 10.0);
 
-    /// <summary>The Stability an Extract of a rich seam costs, perks included. A gem pocket costs <see cref="ProspectingRules.ExtractStability"/>.</summary>
-    public int RichExtractStability { get; }
+            case ProspectingActionIds.Strike:
+                seconds = Math.Max(0.5, seconds - Effects.StrikeTimeReductionTenths / 10.0);
+                return motherLode ? seconds * ProspectingPerkRules.MotherLodeTimePercent / 100.0 : seconds;
+
+            case ProspectingActionIds.HeavyStrike:
+                seconds = Math.Max(0.5, seconds - Effects.HeavyStrikeTimeReductionTenths / 10.0);
+                return motherLode ? seconds * ProspectingPerkRules.MotherLodeTimePercent / 100.0 : seconds;
+
+            default:
+                return seconds;
+        }
+    }
 
     /// <summary>The chance, in percent, that a Heavy Strike shatters a gem pocket that has not been surveyed, perks included.</summary>
     public int ShatterPercent { get; }

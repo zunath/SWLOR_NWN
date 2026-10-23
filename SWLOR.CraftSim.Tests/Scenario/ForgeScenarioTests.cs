@@ -141,6 +141,8 @@ namespace SWLOR.CraftSim.Tests.Scenario
         [TestCase("forge-artisan", ForgeStyle.ColdWorking, false, true)]
         [TestCase("forge-both", ForgeStyle.HotForging, true, true)]
         [TestCase("forge-both-cold", ForgeStyle.ColdWorking, true, true)]
+        [TestCase("forge-hot", ForgeStyle.HotForging, false, false)]
+        [TestCase("forge-cold", ForgeStyle.ColdWorking, false, false)]
         public void ThePerkedScenariosPlayTheirLoadoutWithoutAStyleAndOfferNoStylePairs(string name, ForgeStyle style, bool forgemaster, bool artisan)
         {
             var scenario = ScenarioRegistry.Discover().Find(name);

@@ -26,6 +26,9 @@ namespace SWLOR.Game.Server.Service.ScavengeService
     {
         public const string SiteInUseMessage = "Another scavenger is searching this site.";
 
+        /// <summary>Shown to a player who opens a site the scavenger who searched it has not yet opened to collect what it gave.</summary>
+        public const string SiteHeldMessage = "Another scavenger is collecting from this site.";
+
         /// <summary>How often a board in progress checks that the scavenger is still there and safe.</summary>
         public const float CheckSeconds = 1.0f;
 

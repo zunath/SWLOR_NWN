@@ -10,8 +10,14 @@ namespace SWLOR.Game.Server.Service.ScavengeService
     {
         public static readonly NwnScavengeWorld Instance = new();
 
-        /// <summary>Set on a site while its inventory is being opened for the scavenger who searched it, so opening it says nothing.</summary>
+        /// <summary>
+        /// The scavenger a site's inventory is being opened for, set until they open it. Opening it says nothing for them, and nobody else
+        /// may open the site meanwhile.
+        /// </summary>
         public const string OpeningVariable = "SCAVENGE_OPENING_FOR_SEARCHER";
+
+        /// <summary>How long after the search animation a site stays held for the scavenger who searched it.</summary>
+        public const float OpeningHoldSeconds = 10f;
 
         /// <summary>Set on a site while a player has closed its inventory to open the board, so closing it does not remove the site.</summary>
         public const string DoNotDestroyVariable = "DO_NOT_DESTROY";
@@ -51,7 +57,14 @@ namespace SWLOR.Game.Server.Service.ScavengeService
 
         public void OpenSite(uint player, uint site, double animationSeconds)
         {
-            SetLocalBool(site, OpeningVariable, true);
+            // Hold the site for the scavenger until they open it, so nobody else can take what it gave while the search animation runs.
+            SetLocalObject(site, OpeningVariable, player);
+            AssignCommand(GetModule(), () => DelayCommand((float)animationSeconds + OpeningHoldSeconds, () =>
+            {
+                // A scavenger who never opens it (they logged out) must not hold the site for good.
+                if (GetIsObjectValid(site) && GetLocalObject(site, OpeningVariable) == player)
+                    DeleteLocalObject(site, OpeningVariable);
+            }));
             AssignCommand(player, () =>
             {
                 if (animationSeconds > 0)

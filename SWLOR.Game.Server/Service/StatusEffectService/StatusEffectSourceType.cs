@@ -20,7 +20,8 @@ namespace SWLOR.Game.Server.Service.StatusEffectService
         /// the same pattern): a choice the player makes in a craft window that carries stat adjustments the minigame engine reads.
         /// Every bulk removal (cleanse, purge, remove by category or stat, remove all, the clear on death) skips these effects
         /// (<see cref="StatusEffectSelectors"/>); only the craft window, a perk refund, logout, a full rebuild and entering space
-        /// remove one. The engine itself strips every native effect when a creature dies, so a style is picked again after a respawn.
+        /// remove one. The engine strips every native effect when a creature dies and a logout drops the style, so the selection is
+        /// also kept on the player record and applied again (<c>CraftingStyleSelection</c>).
         /// Exclusivity is per skill and belongs to the skill's own style helper, such as
         /// <c>CircuitStyles</c>, because a crafter may hold one style of each skill at the same time.
         /// </summary>

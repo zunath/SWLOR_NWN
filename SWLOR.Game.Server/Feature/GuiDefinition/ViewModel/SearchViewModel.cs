@@ -132,7 +132,12 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
             _session = initialPayload.Session;
             _selected = -1;
 
+            // The record holds the selected style; a death, a login or a trip to space may have cost the scavenger its effect.
+            // The session read its effects before this window opened, so they are read again while the board is untouched.
+            CraftingStyleSelection.Restore(Player);
             GatheringStyles.RemoveUnowned(Player);
+            if (_session != null && ScavengeSessions.IsActive(_session))
+                RefreshSessionEffects();
             ClearDisplay();
             ChangePartialView(ContentElement, BoardPartial);
             if (_session != null && ScavengeSessions.IsActive(_session))
@@ -167,9 +172,12 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
             }
 
             GatheringStyles.Select(Player, _styleRows[row]);
-            ScavengeSessions.RefreshEffects(_session, SearchEffects.FromStats(stat => Stat.GetStatAdjustment(Player, stat)));
+            RefreshSessionEffects();
             RefreshBoard();
         };
+
+        private void RefreshSessionEffects() =>
+            ScavengeSessions.RefreshEffects(_session, SearchEffects.FromStats(stat => Stat.GetStatAdjustment(Player, stat)));
 
         private void SelectSpot(int spot)
         {

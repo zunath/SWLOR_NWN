@@ -4,6 +4,7 @@ using SWLOR.Game.Server.Feature.StatusEffectDefinition;
 using SWLOR.Game.Server.Service.CraftService.Minigame.Prospecting;
 using SWLOR.Game.Server.Service.CraftService.Minigame.Search;
 using SWLOR.Game.Server.Service.PerkService;
+using SWLOR.Game.Server.Service.SkillService;
 using SWLOR.Game.Server.Service.StatService;
 
 namespace SWLOR.Game.Server.Service.CraftService.Minigame.Gathering;
@@ -11,15 +12,23 @@ namespace SWLOR.Game.Server.Service.CraftService.Minigame.Gathering;
 /// <summary>
 /// The gatherer's styles: which they own, which is active and how the Prospecting and Search windows switch between them. A style is a
 /// status effect that carries the style's stat adjustments, so at most one is active and the engines read it like any other stat. Gathering
-/// is not split by activity, so a gatherer can own both styles and picks one in the window.
+/// is not split by activity, so a gatherer can own both styles and picks one in the window. The selection is also kept on the
+/// player record (<see cref="CraftingStyleSelection"/>), which applies the effect again after a death or a login.
 /// </summary>
 public static class GatheringStyles
 {
     /// <summary>The Gathering rank both styles open at.</summary>
     public const int StyleRank = 20;
 
+    /// <summary>The skill whose windows offer these styles. Both styles belong to it, so a gatherer has one selected at a time.</summary>
+    public const SkillType Skill = SkillType.Gathering;
+
     /// <summary>Every style, in the order the windows list them.</summary>
     public static IReadOnlyList<GatheringStyle> All { get; } = new[] { GatheringStyle.StripMining, GatheringStyle.CarefulHands };
+
+    /// <summary>The styles as <see cref="CraftingStyleSelection"/> knows them.</summary>
+    public static IReadOnlyList<CraftingStyleDefinition> Definitions =>
+        All.Select(style => new CraftingStyleDefinition(Skill, PerkOf(style), StatusEffectOf(style))).ToList();
 
     private static readonly IReadOnlyDictionary<GatheringStyle, IReadOnlyDictionary<StatType, int>> StyleStats =
         new Dictionary<GatheringStyle, IReadOnlyDictionary<StatType, int>>
@@ -97,7 +106,10 @@ public static class GatheringStyles
     public static GatheringStyle Active(uint player) =>
         All.FirstOrDefault(style => StatusEffect.HasEffect(StatusEffectOf(style), player));
 
-    /// <summary>Makes <paramref name="style"/> the only active style. A style the player does not own, or <see cref="GatheringStyle.None"/>, clears them all.</summary>
+    /// <summary>
+    /// Makes <paramref name="style"/> the only active style and records it as the gatherer's selection. A style the player does not own,
+    /// or <see cref="GatheringStyle.None"/>, clears them all.
+    /// </summary>
     public static void Select(uint player, GatheringStyle style)
     {
         if (!IsOwned(player, style))
@@ -107,12 +119,18 @@ public static class GatheringStyles
 
         if (style != GatheringStyle.None && !StatusEffect.HasEffect(StatusEffectOf(style), player))
             StatusEffect.ApplyPermanentStatusEffect(StatusEffectOf(style), player, player);
+
+        CraftingStyleSelection.Record(player, Skill, PerkOf(style));
     }
 
-    /// <summary>Removes an active style the player no longer owns, such as after refunding its perk.</summary>
+    /// <summary>Removes an active style the player no longer owns, such as after refunding its perk, and forgets it as their selection.</summary>
     public static void RemoveUnowned(uint player)
     {
-        Remove(player, All.Where(style => !IsOwned(player, style)));
+        var unowned = All.Where(style => !IsOwned(player, style)).ToList();
+        Remove(player, unowned);
+
+        foreach (var style in unowned)
+            CraftingStyleSelection.ClearIfSelected(player, Skill, PerkOf(style));
     }
 
     private static void Remove(uint player, IEnumerable<GatheringStyle> styles)

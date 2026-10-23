@@ -110,7 +110,12 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
         {
             _session = initialPayload.Session;
 
+            // The record holds the selected style; a death, a login or a trip to space may have cost the harvester its effect.
+            // The session read its effects before this window opened, so they are read again while the node is untouched.
+            CraftingStyleSelection.Restore(Player);
             GatheringStyles.RemoveUnowned(Player);
+            if (_session != null && ProspectingSessions.IsActive(_session))
+                RefreshSessionEffects();
             ClearDisplay();
             ChangePartialView(ContentElement, NodePartial);
             if (_session != null && ProspectingSessions.IsActive(_session))
@@ -143,9 +148,12 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
             }
 
             GatheringStyles.Select(Player, _styleRows[row]);
-            ProspectingSessions.RefreshEffects(_session, ProspectingEffects.FromStats(stat => Stat.GetStatAdjustment(Player, stat)));
+            RefreshSessionEffects();
             RefreshSession();
         };
+
+        private void RefreshSessionEffects() =>
+            ProspectingSessions.RefreshEffects(_session, ProspectingEffects.FromStats(stat => Stat.GetStatAdjustment(Player, stat)));
 
         private void PerformAction(int index)
         {

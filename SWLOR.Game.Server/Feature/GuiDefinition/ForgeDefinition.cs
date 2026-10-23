@@ -14,6 +14,10 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition
         private const float ButtonWidth = 190f;
         private const float MeterBarHeight = 18f;
         private const float SlotIconSize = 36f;
+        private const float StyleRowHeight = 56f;
+        private const float StyleListHeight = 3 * StyleRowHeight + 8f;
+        private const float ActionRowHeight = 52f;
+        private const float ActionListHeight = 8 * ActionRowHeight + 8f;
 
         private const string HelpText =
             "THE GOAL\n" +
@@ -41,6 +45,12 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition
             "YOUR GEAR\n" +
             "Craftsmanship raises Shape gains and Control raises Finish gains. Craft points are your gear's CP plus three quarters of " +
             "your Smithery rank.\n\n" +
+            "PERKS AND STYLES\n" +
+            "The Forgemaster and Artisan perk lines change these numbers and add five actions: Overdrive Press, Surge Plasma and the " +
+            "Red Line Press for the Forgemaster, and Micro-Hone and Temper Hold for the Artisan. At Smithery 20 each line offers a style, " +
+            "Hot Forging or Cold Working. You can own both; pick one before you craft, and only one is active at a time. Hot Forging " +
+            "moves the working range up and favors Hydro-Press, and Cold Working moves it down and favors Vibro-Hone. The list shows " +
+            "the exact result of every action, perks included.\n\n" +
             "ENHANCEMENTS AND FAILURE\n" +
             "Each enhancement slot has a Finish threshold: if your Finish meets it when the item is finished, the enhancement transfers " +
             "for certain. The piece breaks if Integrity reaches 0. Stopping early, closing the window or walking away also ends the " +
@@ -51,7 +61,7 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition
         public GuiConstructedWindow BuildWindow()
         {
             var window = _builder.CreateWindow(GuiWindowType.Forge)
-                .SetInitialGeometry(0, 0, 680f, 760f)
+                .SetInitialGeometry(0, 0, 680f, 900f)
                 .SetTitle("Plasma Forge")
                 .SetIsResizable(true)
                 .SetIsCollapsible(true)
@@ -129,6 +139,32 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition
                         .SetHeight(210f));
 
                     content.AddRow(row => row.AddLabel()
+                        .BindText(model => model.StyleHeader)
+                        .SetHorizontalAlign(NuiHorizontalAlign.Left)
+                        .SetHeight(20f));
+
+                    content.AddRow(row => row.AddList(template =>
+                    {
+                        template.AddCell(cell => cell.AddText()
+                            .BindText(model => model.StyleLabels)
+                            .SetShowBorder(false)
+                            .SetScrollbars(NuiScrollbars.None));
+                        template.AddCell(cell =>
+                        {
+                            cell.SetWidth(90f);
+                            cell.SetIsVariable(false);
+                            cell.AddButton()
+                                .BindText(model => model.StyleButtonTexts)
+                                .BindIsEnabled(model => model.StyleButtonEnabled)
+                                .BindOnClicked(model => model.OnClickStyle());
+                        });
+                    })
+                        .BindRowCount(model => model.StyleLabels)
+                        .SetWidth(ContentWidth)
+                        .SetRowHeight(StyleRowHeight)
+                        .SetHeight(StyleListHeight));
+
+                    content.AddRow(row => row.AddLabel()
                         .BindText(model => model.StatusText)
                         .BindColor(model => model.StatusColor)
                         .SetHorizontalAlign(NuiHorizontalAlign.Center)
@@ -177,6 +213,11 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition
                     AddMeter(content, model => model.CpText, model => model.CpValue, 255, 215, 0);
 
                     content.AddRow(row => row.AddLabel()
+                        .BindText(model => model.PerkText)
+                        .SetHorizontalAlign(NuiHorizontalAlign.Left)
+                        .SetHeight(20f));
+
+                    content.AddRow(row => row.AddLabel()
                         .SetText("Actions")
                         .SetHorizontalAlign(NuiHorizontalAlign.Left)
                         .SetHeight(20f));
@@ -201,8 +242,8 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition
                     })
                         .BindRowCount(model => model.ActionNames)
                         .SetWidth(ContentWidth)
-                        .SetRowHeight(52f)
-                        .SetHeight(270f));
+                        .SetRowHeight(ActionRowHeight)
+                        .SetHeight(ActionListHeight));
 
                     content.AddRow(row => row.AddText()
                         .BindText(model => model.LastResultText)

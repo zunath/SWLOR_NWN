@@ -42,6 +42,9 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
         private ForgeEngine _engine;
         private CraftSession _session;
 
+        // One entry per row of the style list: None first, then each style the crafter owns.
+        private readonly List<ForgeStyle> _styleRows = new();
+
         protected override CraftMinigameType Minigame => CraftMinigameType.Forge;
 
         public string RecipeName { get => Get<string>(); set => Set(value); }
@@ -58,7 +61,12 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
         public GuiBindingList<string> SlotLabels { get => Get<GuiBindingList<string>>(); set => Set(value); }
         public GuiBindingList<string> RecipeDescription { get => Get<GuiBindingList<string>>(); set => Set(value); }
         public GuiBindingList<GuiColor> RecipeColors { get => Get<GuiBindingList<GuiColor>>(); set => Set(value); }
+        public string StyleHeader { get => Get<string>(); set => Set(value); }
+        public GuiBindingList<string> StyleLabels { get => Get<GuiBindingList<string>>(); set => Set(value); }
+        public GuiBindingList<string> StyleButtonTexts { get => Get<GuiBindingList<string>>(); set => Set(value); }
+        public GuiBindingList<bool> StyleButtonEnabled { get => Get<GuiBindingList<bool>>(); set => Set(value); }
 
+        public string PerkText { get => Get<string>(); set => Set(value); }
         public string OpportunityText { get => Get<string>(); set => Set(value); }
         public GuiColor OpportunityTextColor { get => Get<GuiColor>(); set => Set(value); }
         public string ThermalText { get => Get<string>(); set => Set(value); }
@@ -94,6 +102,10 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
             _engine = null;
             _session = null;
 
+            // The record holds the selected style; a death, a login or a trip to space may have cost the crafter its effect.
+            CraftingStyleSelection.Restore(Player);
+            ForgeStyles.RemoveUnowned(Player);
+
             var itemName = Cache.GetItemNameByResref(_recipeDetail.Resref);
             RecipeName = $"Recipe: {_recipeDetail.Quantity}x {itemName}";
             RecipeLevelText = $"Recipe level: {_recipeDetail.Level}";
@@ -110,6 +122,11 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
             SlotLabels = new GuiBindingList<string>();
             RecipeDescription = new GuiBindingList<string>();
             RecipeColors = new GuiBindingList<GuiColor>();
+            StyleHeader = string.Empty;
+            StyleLabels = new GuiBindingList<string>();
+            StyleButtonTexts = new GuiBindingList<string>();
+            StyleButtonEnabled = new GuiBindingList<bool>();
+            PerkText = string.Empty;
             OpportunityText = string.Empty;
             OpportunityTextColor = GuiColor.Grey;
             ThermalText = string.Empty;
@@ -144,6 +161,7 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
 
             RefreshSkillText();
             RefreshSlots();
+            RefreshStyles();
             ChangePartialView(ContentElement, SetupPartial);
             StartMinigameSession();
         }
@@ -186,6 +204,19 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
             });
         };
 
+        public Action OnClickStyle() => () =>
+        {
+            if (_engine != null)
+                return;
+
+            var row = NuiGetEventArrayIndex();
+            if (row < 0 || row >= _styleRows.Count)
+                return;
+
+            ForgeStyles.Select(Player, _styleRows[row]);
+            RefreshStyles();
+        };
+
         public Action OnClickCraft() => () =>
         {
             if (_engine != null || !IsCraftEnabled)
@@ -195,7 +226,8 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
             if (parameters == null)
                 return;
 
-            // Everything the forge needs is read before the materials are committed.
+            // Everything the forge needs, the active style and the perks' stats included, is read before the materials are committed.
+            ForgeStyles.RemoveUnowned(Player);
             var setup = BuildSetup(parameters);
             var request = new CraftSessionStartRequest(
                 _recipe,
@@ -232,10 +264,10 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
             }
 
             var index = NuiGetEventArrayIndex();
-            if (index < 0 || index >= ForgeRules.ActionIds.Count)
+            if (index < 0 || index >= _engine.Actions.Count)
                 return;
 
-            var result = _engine.Perform(ForgeRules.ActionIds[index]);
+            var result = _engine.Perform(_engine.Actions[index].Id);
             if (!result.Performed)
             {
                 LastResultText = result.RejectedReason;
@@ -301,8 +333,10 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
             StatusText = text;
             StatusColor = color;
             _enhancementShapePercent = 0;
+            PerkText = string.Empty;
             RefreshSkillText();
             RefreshSlots();
+            RefreshStyles();
             ChangePartialView(ContentElement, SetupPartial);
         }
 
@@ -320,7 +354,40 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
                 Stat.CalculateCraftsmanship(Player, skill),
                 Stat.CalculateControl(Player, skill),
                 gearCp,
-                _enhancementShapePercent);
+                _enhancementShapePercent,
+                ForgePerkStats.FromStats(stat => Stat.GetStatAdjustment(Player, stat)));
+        }
+
+        /// <summary>Lists the styles the crafter owns with what each does, and which one is active. Smithery is not split, so they may own both and toggle here before the craft starts.</summary>
+        private void RefreshStyles()
+        {
+            _styleRows.Clear();
+            var owned = ForgeStyles.Owned(Player);
+            if (owned.Count > 0)
+            {
+                _styleRows.Add(ForgeStyle.None);
+                _styleRows.AddRange(owned);
+            }
+
+            var active = ForgeStyles.Active(Player);
+            var labels = new GuiBindingList<string>();
+            var buttons = new GuiBindingList<string>();
+            var enabled = new GuiBindingList<bool>();
+            foreach (var style in _styleRows)
+            {
+                labels.Add(style == ForgeStyle.None
+                    ? "None: the Plasma Forge plays by its usual rules."
+                    : $"{ForgeStyles.Name(style)}: {ForgeStyles.Description(style)}");
+                buttons.Add(style == active ? "Selected" : "Select");
+                enabled.Add(style != active);
+            }
+
+            StyleHeader = owned.Count == 0
+                ? $"Styles: learn a style perk at Smithery {ForgePerkRules.StyleRank} to choose one here."
+                : "Style: pick one to craft with. Only one can be active at a time.";
+            StyleLabels = labels;
+            StyleButtonTexts = buttons;
+            StyleButtonEnabled = enabled;
         }
 
         private void RefreshSkillText()
@@ -389,6 +456,7 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
             CpText = $"CP {meters.Cp.Value}/{meters.Cp.Max}";
             CpValue = meters.Cp.Fraction;
             ThresholdsText = ForgePreviewText.Thresholds(_slotCount, meters.QualityPercent);
+            PerkText = ForgePreviewText.PerkSummary(_engine, ForgeStyles.Active(Player));
 
             var opportunity = _engine.NextOpportunity;
             OpportunityText = opportunity == null

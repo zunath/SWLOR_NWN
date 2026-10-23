@@ -103,6 +103,73 @@ namespace SWLOR.CraftSim.Tests.Scenario
         }
 
         [Test]
+        public void TheStylePairsComparePlainStylesAndFullLines_AndEachStyleCarriesItsLoadout()
+        {
+            var pairs = new ForgeScenario().StylePairs;
+
+            pairs.Should().HaveCount(2).And.OnlyContain(pair => pair.MinimumRank == ForgePerkRules.StyleRank);
+            pairs.Select(pair => pair.Name).Should().Equal(
+                "Hot Forging (no lines) vs Cold Working (no lines)", "Hot Forging (both lines) vs Cold Working (both lines)");
+            ((ForgeLoadout)pairs[0].First.Configuration).Should().Be(new ForgeLoadout(ForgeStyle.HotForging, false, false));
+            ((ForgeLoadout)pairs[1].Second.Configuration).Should().Be(new ForgeLoadout(ForgeStyle.ColdWorking, true, true));
+        }
+
+        [Test]
+        public void AStyleBuildsTheEngineWithThePerksItsRankAllows()
+        {
+            var recipe = Recipe();
+            var gear = GearLevel.None(SkillType.Smithery);
+            var hot = new ForgeLoadout(ForgeStyle.HotForging, true, true).ToStyle("Hot Forging (both lines)");
+
+            var plain = (ForgeEngine)Scenario.CreateEngine(new CraftEngineRequest(recipe, 30, gear, null, 1, new SeededMinigameRandom(1)));
+            var early = (ForgeEngine)Scenario.CreateEngine(new CraftEngineRequest(recipe, 4, gear, hot, 1, new SeededMinigameRandom(1)));
+            var perked = (ForgeEngine)Scenario.CreateEngine(new CraftEngineRequest(recipe, 30, gear, hot, 1, new SeededMinigameRandom(1)));
+            var full = (ForgeEngine)Scenario.CreateEngine(new CraftEngineRequest(recipe, 50, gear, hot, 1, new SeededMinigameRandom(1)));
+
+            plain.Setup.Perks.Should().Be(ForgePerkStats.None, "no style means no perks");
+            early.Setup.Perks.Should().Be(ForgePerkStats.None, "no purchase opens before Smithery 5");
+            perked.Setup.Perks.RangeShift.Should().Be(ForgePerkRules.HotForgingRangeShift, "Hot Forging is open from rank 20");
+            perked.Setup.Perks.OverdrivePressPercent.Should().BePositive("Overdrive Press opens at 15");
+            perked.Setup.Perks.RedLineCharges.Should().Be(0, "Red Line is the rank 50 capstone");
+            full.Setup.Perks.RedLineCharges.Should().Be(1);
+            full.Setup.Perks.PerfectTemperPercent.Should().BePositive();
+            perked.Actions.Should().Contain(action => action.Id == ForgeActionIds.OverdrivePress);
+            plain.Actions.Should().NotContain(action => action.Id == ForgeActionIds.OverdrivePress);
+        }
+
+        [TestCase("forge-forgemaster", ForgeStyle.HotForging, true, false)]
+        [TestCase("forge-artisan", ForgeStyle.ColdWorking, false, true)]
+        [TestCase("forge-both", ForgeStyle.HotForging, true, true)]
+        [TestCase("forge-both-cold", ForgeStyle.ColdWorking, true, true)]
+        [TestCase("forge-hot", ForgeStyle.HotForging, false, false)]
+        [TestCase("forge-cold", ForgeStyle.ColdWorking, false, false)]
+        public void ThePerkedScenariosPlayTheirLoadoutWithoutAStyleAndOfferNoStylePairs(string name, ForgeStyle style, bool forgemaster, bool artisan)
+        {
+            var scenario = ScenarioRegistry.Discover().Find(name);
+            var engine = (ForgeEngine)scenario.CreateEngine(
+                new CraftEngineRequest(Recipe(), 50, GearLevel.None(SkillType.Smithery), null, 1, new SeededMinigameRandom(1)));
+
+            scenario.StylePairs.Should().BeEmpty();
+            scenario.Skill.Should().Be(SkillType.Smithery);
+            engine.Setup.Perks.Should().Be(new ForgeLoadout(style, forgemaster, artisan).StatsAt(50));
+            (engine.Setup.Perks.RedLineCharges > 0).Should().Be(forgemaster);
+            (engine.Setup.Perks.PerfectTemperPercent > 0).Should().Be(artisan);
+        }
+
+        [Test]
+        public void ThePerkedScenariosSayWhichLoadoutTheyPlay_AndThePlainOneDoesNot()
+        {
+            var both = ScenarioRegistry.Discover().Find("forge-both");
+            var artisan = ScenarioRegistry.Discover().Find("forge-artisan");
+            var plain = ScenarioRegistry.Discover().Find("forge");
+
+            both.Limitations.Should().Contain(
+                "Every craft in this scenario is played by a crafter who bought both perk lines in full (every purchase their Smithery rank allows) and plays Hot Forging, so no gate here is an unperked result.");
+            artisan.Limitations.Should().Contain(line => line.Contains("the Artisan line in full") && line.Contains("plays Cold Working"));
+            plain.Limitations.Should().NotContain(line => line.Contains("Every craft in this scenario"));
+        }
+
+        [Test]
         public void EverySmitheryRecipeInTheCohortHasParameters()
         {
             var recipes = Scenario.Cohort.Recipes(SharedData.Recipes);

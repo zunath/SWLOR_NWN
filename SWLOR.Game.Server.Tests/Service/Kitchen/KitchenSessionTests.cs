@@ -150,9 +150,14 @@ public class KitchenSessionTests
     [Test]
     public void TheKitchensXpMultiplierScalesTheBaseXpOfASuccessAndOfAFailure()
     {
-        var baseXp = Craft.GetBaseRecipeXP(_recipe, 20);
-        var scaled = CraftMinigameXp.ScaleBaseXp(baseXp, KitchenTuning.XpMultiplierForLevel(_recipe.Level));
-        CraftMinigameXp.BaseXp(_recipe, 20).Should().Be(scaled, "the lifecycle reads the base XP through CraftMinigameXp");
+        // At the recipe's own level, where the plain base XP is worth something.
+        _player.Skills[SkillType.Agriculture].Rank = _recipe.Level;
+        var baseXp = Craft.GetBaseRecipeXP(_recipe, _recipe.Level);
+        baseXp.Should().BeGreaterThan(0);
+        var gated = CraftMinigameXp.ScaleBaseXp(baseXp, KitchenTuning.XpMultiplierForLevel(_recipe.Level));
+        var scaled = CraftMinigameXp.ScaleBaseXp(gated, CraftMinigameXp.PaceMultiplierFor(SkillType.Agriculture));
+        scaled.Should().BeGreaterThan(baseXp);
+        CraftMinigameXp.BaseXp(_recipe, _recipe.Level).Should().Be(scaled, "the lifecycle reads the base XP through CraftMinigameXp");
         var lifecycle = Lifecycle(66, 66, 66);
         var session = Start(lifecycle);
 

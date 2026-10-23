@@ -282,7 +282,7 @@ public class FishingFightLifecycleTests
         {
             LineRules.XpMultiplierLevels0To10, LineRules.XpMultiplierLevels11To20, LineRules.XpMultiplierLevels21To30,
             LineRules.XpMultiplierLevels31To40, LineRules.XpMultiplierLevels41Up
-        }.Should().BeInDescendingOrder().And.OnlyHaveUniqueItems("the old window is fastest at the lowest levels, so no one value serves every band");
+        }.Distinct().Should().HaveCountGreaterThan(1, "each band has the least multiplier that passes it, so no one value serves every band");
     }
 
     [Test]

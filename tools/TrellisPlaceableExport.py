@@ -9,19 +9,23 @@ This is the placeable counterpart of TrellisWeaponExport.py and reuses its GLB, 
 normal-reprojection, compile and DDS code. A placeable differs from a weapon in its fit (a ground origin and a
 footprint instead of a grip), its extra resources (a PWK walkmesh with use nodes, no icons) and its 2DA row.
 
-Schema 1 assets: asset, source (relative GLB), sha256, model (resref, <=16 chars), short (dummy prefix, <=8),
-texture (<=14 characters), texture_size (512/1024), optional scalar_texture_size (specular/roughness maps),
-yaw_degrees or orientation (proper 3x3 rotation of the imported Blender world model), fit (exactly one of
-width/depth/height in meters along the rotated X/Y/Z extent, or scale), center_xy (where the bounding box
-center lands in model space; the bottom always sits at Z=0), max_size [w,d,h] (hard limit on the fitted
-bounding box), walkmesh {prefix, inset, simplify, min_use_clearance, use_nodes [[x,y],...] (at most two; none keeps the
-engine's default approach)} and optional emission
-{threshold, softness, gain, optional saturation_min} (a brightness mask from the base color), double_sided_policy ('reject',
-'closed_surface' or 'near_closed': outward-wound shells with at most max_defect_fraction stray edges) and
-normal_basis_policy ('reproject' or 'authored_tangents' for glTF triangles with mixed tangent handedness; the latter
-accepts authored_angle_limit_degrees 0.5..2 for compiler normal quantization). `reference` records the replaced station (bounds, footprint, use nodes) for the
-report only. Output per asset: resources/ (ASCII MDL, MTR, TGA maps), walkmesh/<model>.pwk, review renders and
-report.json. Package output is compiled MDL + MTR + DDS + PWK only. Native verification is separate.
+Schema 1 assets (all paths relative to the manifest):
+  asset, source (GLB), sha256 (of that GLB), model (resref, 16 characters), short (effect dummy prefix, 8),
+  texture (14 characters), texture_size (512 or 1024), scalar_texture_size (specular and roughness maps, optional);
+  yaw_degrees or orientation (proper 3x3 rotation of the imported Blender world model);
+  fit: exactly one of width/depth/height (meters along the rotated X/Y/Z extent) or scale;
+  center_xy (where the bounding box center lands in model space; the bottom always sits on Z=0);
+  max_size [w, d, h] (hard limit on the fitted bounding box);
+  walkmesh {prefix, inset, simplify, min_use_clearance, use_nodes [[x, y], ...]}: at most two use nodes, none keeps the
+    engine's default approach;
+  emission {threshold, softness, gain, saturation_min?}: a glow map from the brightest base-color texels;
+  double_sided_policy: reject, closed_surface (exact closure, as weapons) or near_closed (outward-wound shells with at
+    most max_defect_fraction open edges and max_opposed_fraction of the area wound against its normals);
+  normal_basis_policy: reproject, or authored_tangents (mixed tangent handedness) with authored_angle_limit_degrees
+    0.5..2 for compiler normal quantization;
+  reference: the replaced station (bounds, footprint, use nodes), recorded in the report and the review renders only.
+Output per asset: resources/ (ASCII MDL, MTR, TGA maps), walkmesh/<model>.pwk, review renders and report.json. Package
+output is compiled MDL + MTR + DDS + PWK only. Native verification is separate.
 """
 from __future__ import annotations
 
@@ -284,8 +288,11 @@ def validate_item(item, manifest_dir, haks_names=None, inspect_only=False):
         raise ValueError(f'{asset}: walkmesh.inset must be 0..0.3, simplify 0..0.2 and min_use_clearance finite')
     emission = item.get('emission')
     if emission is not None and (not isinstance(emission, dict) or not all(
-            finite(emission.get(k, 0)) for k in ('threshold', 'softness', 'gain'))):
-        raise ValueError(f'{asset}: emission needs numeric threshold, softness and gain')
+            finite(emission.get(k, 0)) for k in ('threshold', 'softness', 'gain', 'saturation_min'))):
+        raise ValueError(f'{asset}: emission needs numeric threshold, softness and gain (and optionally saturation_min)')
+    for key in ('max_defect_fraction', 'max_opposed_fraction'):
+        if not finite(item.get(key, 0)) or not 0 <= item.get(key, 0) <= .25:
+            raise ValueError(f'{asset}: {key} must be 0..0.25')
     if item.get('normal_basis_policy', 'reproject') not in ('reproject', 'authored_tangents'):
         raise ValueError(f'{asset}: unknown normal_basis_policy')
     if not finite(item.get('authored_angle_limit_degrees', .5)) or not .5 <= item.get('authored_angle_limit_degrees', .5) <= 2:
@@ -356,7 +363,10 @@ def accept_clamped_samplers(weapon, doc, binary):
         return {}
     for i in changed:
         sampler = samplers[i]
-        if sampler.get('extensions') or sampler.get('wrapS', REPEAT) not in (CLAMP, REPEAT)                 or sampler.get('wrapT', REPEAT) not in (CLAMP, REPEAT) or sampler.get('magFilter', LINEAR) != LINEAR                 or sampler.get('minFilter', TRILINEAR) not in (LINEAR, TRILINEAR):
+        unsupported = (sampler.get('extensions') or sampler.get('wrapS', REPEAT) not in (CLAMP, REPEAT)
+                       or sampler.get('wrapT', REPEAT) not in (CLAMP, REPEAT) or sampler.get('magFilter', LINEAR) != LINEAR
+                       or sampler.get('minFilter', TRILINEAR) not in (LINEAR, TRILINEAR))
+        if unsupported:
             raise ValueError('Unsupported texture sampler; explicit conversion required')
     normals = weapon.load_module_snapshot('trellis_weapon_normals', Path(weapon.__file__).with_name('TrellisWeaponNormals.py'))
     low, high = 1e9, -1e9
@@ -471,7 +481,7 @@ def near_closed_report(weapon, objects, max_defect_fraction, max_opposed=OPPOSED
     substantial shell to have positive signed volume (outward winding), so single-sided culling hides only back faces,
     never the visible surface, and at most `max_opposed` (3 percent by default) of the surface area may be wound against
     the authored corner normals, which TRELLIS bakes outward. The TRELLIS winding is kept as generated: recalculating it
-    on welded topology agreed with the authored normals worse than the original (measured on the seven stations).
+    on welded topology agreed with the authored normals worse than the original (measured on the refinery and galley).
     Non-manifold edges, where machine parts intersect, are reported but harmless to culling.
     A substantial inward-wound shell is accepted only when a ray test proves it is an internal cavity inside an outward
     shell; such cavities are never visible and are deleted from the export (counted in the report).

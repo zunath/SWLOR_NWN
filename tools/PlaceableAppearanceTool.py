@@ -5,7 +5,8 @@
   python tools/PlaceableAppearanceTool.py check
 
 `install-haks` copies the packaged MDL/PWK/MTR/DDS files into SWLOR_Haks/sw_plc and appends one placeables.2da row per
-station model (existing rows are never edited or removed; an existing ModelName is reused). `swap-module` then sets the
+station model (existing rows are never edited or removed; an existing ModelName is reused). A row's appearance ID is its
+physical position in the file, not its first-column label (the labels have gaps). `swap-module` then sets the
 Appearance of each station's blueprint (Module/utp) and of every placed instance in Module/git to that row. Edits are
 byte-level (CRLF and float formatting untouched); the Appearance dword is the only byte range that changes.
 `check` is read-only: it fails when a station still points at another appearance or a resource is missing.
@@ -98,7 +99,6 @@ def install_haks(package, haks, only):
     selected = [s for s in stations if s['model'] in packaged_models]
     if not selected:
         raise ValueError('No station model from the configuration is in the package')
-    own = {p.stem.lower() for p in files}
     for source in files:
         target = folder / source.name
         if target.exists() and target.read_bytes() != source.read_bytes():

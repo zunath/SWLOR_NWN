@@ -191,6 +191,29 @@ class MaterialTests(unittest.TestCase):
         self.assertLess(float(exporter.apply_color_gain(weapon, base, .5).max()), .5)
 
     @unittest.skipIf(np is None, 'numpy not installed')
+    def test_greeble_draws_panel_detail_on_flat_cells_only_and_is_deterministic(self):
+        from types import SimpleNamespace
+        weapon = SimpleNamespace(np=np)
+        base = np.full((256, 256, 3), .6)
+        flat = np.zeros((256, 256, 3))
+        flat[..., 2] = 1
+        flat = flat * .5 + .5
+        self.assertEqual(exporter.apply_greeble(weapon, base, flat, 0, 'a')[0].shape, base.shape)
+        self.assertIs(exporter.apply_greeble(weapon, base, flat, 0, 'a')[0], base)
+        painted, bevelled = exporter.apply_greeble(weapon, base, flat, 1, 'a')
+        again, _ = exporter.apply_greeble(weapon, base, flat, 1, 'a')
+        self.assertTrue(np.array_equal(painted, again))
+        self.assertGreater(int((painted != .6).any(-1).sum()), 500)
+        self.assertGreater(float(np.abs(bevelled - flat).max()), .05)
+        self.assertGreater(float(bevelled[..., 2].min()), .5)
+        tilted = flat.copy()
+        tilted[..., 0] = .9
+        untouched, _ = exporter.apply_greeble(weapon, base, tilted, 1, 'a')
+        self.assertTrue(np.array_equal(untouched, base))
+        small, _ = exporter.apply_greeble(weapon, base[:32, :32], flat[:32, :32], 1, 'a')
+        self.assertTrue(np.array_equal(small, base[:32, :32]))
+
+    @unittest.skipIf(np is None, 'numpy not installed')
     def test_wear_darkens_seams_deterministically_and_leaves_clean_input_alone(self):
         from types import SimpleNamespace
         weapon = SimpleNamespace(np=np)
@@ -331,6 +354,12 @@ class ManifestTests(unittest.TestCase):
         for gain in (0, .1, 3.5, float('nan'), '2'):
             with self.subTest(gain=gain), self.assertRaises(ValueError):
                 self.check(color_gain=gain)
+
+    def test_greeble_must_be_a_fraction(self):
+        self.assertIn('greeble', self.check(greeble=.7))
+        for greeble in (-.1, 1.5, float('nan'), '1'):
+            with self.subTest(greeble=greeble), self.assertRaises(ValueError):
+                self.check(greeble=greeble)
 
     def test_wear_must_be_a_fraction(self):
         self.assertIn('wear', self.check(wear=.5))

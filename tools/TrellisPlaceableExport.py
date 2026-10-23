@@ -21,6 +21,8 @@ Schema 1 assets (all paths relative to the manifest):
   emission {threshold, softness, gain?, saturation_min?}: a glow map from the brightest base-color texels;
   color_gain (0.25..3, default 1): linear-light brightness of the base color, applied after the glow map is taken;
   wear (0..1, default 0): light grime (darker, warmer seams and soft blotches) for a texture that came out too clean;
+  greeble (0..1, default 0): vent slots, rows of small square buttons and panel outlines drawn on flat texture cells, with
+    matching normal bevels, for a texture of plain flat panels;
   double_sided_policy: reject, closed_surface (exact closure, as weapons) or near_closed (outward-wound shells with at
     most max_defect_fraction open edges and max_opposed_fraction of the area wound against its normals);
   normal_basis_policy: reproject, or authored_tangents (mixed tangent handedness) with authored_angle_limit_degrees
@@ -301,6 +303,8 @@ def validate_item(item, manifest_dir, haks_names=None, inspect_only=False):
         raise ValueError(f'{asset}: color_gain must be 0.25..3')
     if not finite(item.get('wear', 0)) or not 0 <= item.get('wear', 0) <= 1:
         raise ValueError(f'{asset}: wear must be 0..1')
+    if not finite(item.get('greeble', 0)) or not 0 <= item.get('greeble', 0) <= 1:
+        raise ValueError(f'{asset}: greeble must be 0..1')
     if item.get('normal_basis_policy', 'reproject') not in ('reproject', 'authored_tangents'):
         raise ValueError(f'{asset}: unknown normal_basis_policy')
     if not finite(item.get('authored_angle_limit_degrees', .5)) or not .5 <= item.get('authored_angle_limit_degrees', .5) <= 90:
@@ -797,6 +801,68 @@ def smooth_noise(np, size, seed, cells):
     return (field - low) / max(high - low, 1e-6)
 
 
+def apply_greeble(weapon, base, normal, amount, name):
+    """Panel detail for a model whose texture came out as plain flat panels: on texture cells that are flat in the normal
+    map, draw vent slots, rows of small square buttons (a few amber or red) and panel outlines with rivets, with matching
+    bevels in the normal map. Seeded by the texture name, so an export is reproducible. Returns (base, normal)."""
+    if not amount:
+        return base, normal
+    import zlib
+    np = weapon.np
+    base, normal = np.array(base, dtype=np.float64), np.array(normal, dtype=np.float64)
+    if base.ndim != 3 or normal.shape != base.shape or base.shape[0] < 64:
+        return base, normal
+    size, cell = base.shape[0], max(64, base.shape[0] // 16)
+    rng = np.random.default_rng(zlib.crc32(name.encode()) + 7)
+    flat = np.sqrt(((normal[..., :2] * 2 - 1) ** 2).sum(-1)) < .12
+    tilt = np.zeros((size, size, 2))
+
+    def bevel(y0, y1, x0, x1):
+        """Tilt the normal outward on the four sides of a rectangle (a raised or cut edge)."""
+        tilt[y0:y0 + 1, x0:x1, 1] -= .35
+        tilt[y1 - 1:y1, x0:x1, 1] += .35
+        tilt[y0:y1, x0:x0 + 1, 0] -= .35
+        tilt[y0:y1, x1 - 1:x1, 0] += .35
+
+    for cy in range(0, size - cell + 1, cell):
+        for cx in range(0, size - cell + 1, cell):
+            if flat[cy:cy + cell, cx:cx + cell].mean() < .9 or rng.random() > amount * .6:
+                continue
+            kind = rng.integers(0, 3)
+            if kind == 0:  # vent slots
+                for row in range(int(rng.integers(3, 7))):
+                    y = cy + 6 + row * 7
+                    if y + 4 > cy + cell - 4:
+                        break
+                    x0, x1 = cx + 6, cx + cell - 6
+                    base[y:y + 4, x0:x1] *= .22
+                    bevel(y, y + 4, x0, x1)
+            elif kind == 1:  # rows of small square buttons
+                columns = (cell - 8) // 9
+                for row in range(int(rng.integers(1, 3))):
+                    y = cy + 8 + row * 12
+                    for column in range(columns):
+                        x = cx + 6 + column * 9
+                        if y + 7 > cy + cell - 4:
+                            continue
+                        pick = rng.random()
+                        color = np.array([.9, .55, .1]) if pick < .12 else np.array([.78, .1, .08]) if pick < .22 else np.array([.78, .8, .82])
+                        base[y - 1:y + 8, x - 1:x + 8] *= .4
+                        base[y:y + 7, x:x + 7] = color
+                        bevel(y, y + 7, x, x + 7)
+            else:  # panel outline with corner rivets
+                y0, y1, x0, x1 = cy + 5, cy + cell - 5, cx + 5, cx + cell - 5
+                for edge in (base[y0:y0 + 2, x0:x1], base[y1 - 2:y1, x0:x1], base[y0:y1, x0:x0 + 2], base[y0:y1, x1 - 2:x1]):
+                    edge *= .38
+                for ry, rx in ((y0 + 4, x0 + 4), (y0 + 4, x1 - 6), (y1 - 6, x0 + 4), (y1 - 6, x1 - 6)):
+                    base[ry:ry + 2, rx:rx + 2] = np.minimum(base[ry:ry + 2, rx:rx + 2] * 1.5, 1)
+                bevel(y0, y1, x0, x1)
+    vector = normal * 2 - 1
+    vector[..., :2] += tilt
+    vector[..., 2] = np.sqrt(np.clip(1 - (vector[..., :2] ** 2).sum(-1), 0, 1))
+    return np.clip(base, 0, 1), vector * .5 + .5
+
+
 def apply_wear(weapon, base, normal, wear, name):
     """Light grime for a texture that came out too clean: darken and warm the base color in the seams (where the normal map
     leaves flat) and in soft blotches. The pattern is seeded by the texture name, so an export is reproducible."""
@@ -866,6 +932,7 @@ def material_maps(weapon, item, doc, binary, index, source, cache, resources, na
         glow = np.clip(np.asarray(base) * mask[..., None] * emission.get('gain', 1), 0, 1)
         if float(mask.max()) > 0:
             maps[name + '_e'] = glow
+    maps[name], maps[name + '_n'] = apply_greeble(weapon, maps[name], maps[name + '_n'], item.get('greeble', 0), name)
     maps[name] = apply_wear(weapon, maps[name], maps[name + '_n'], item.get('wear', 0), name)
     maps[name] = apply_color_gain(weapon, maps[name], item.get('color_gain', 1))
     dims = {key: weapon.save_texture(resources / (key + '.tga'), value) for key, value in maps.items()}

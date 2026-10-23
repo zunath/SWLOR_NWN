@@ -24,7 +24,7 @@ public class KitchenTextTests
 
         var line = Line(engine, KitchenActionIds.AddIngredient(MeatLine));
 
-        line.Summary.Should().Be("Savory +13 (+8 to +18) | Spice +2 (+1 to +3) | Quality +40 (+17 to +62) | Freshness -4 | Chances 25/50/25%");
+        line.Summary.Should().Be("Savory +13 (+7 to +20) | Spice +2 (+1 to +3) | Quality +40 (+13 to +68) | Freshness -4 | Chances 25/50/25%");
         line.Tone.Should().Be(KitchenActionTone.Normal);
     }
 
@@ -50,7 +50,7 @@ public class KitchenTextTests
         var engine = Engine(Script(Rolls()));
         engine.Perform(KitchenActionIds.Simmer);
 
-        Line(engine, KitchenActionIds.Stir).Summary.Should().Be("CP -8 | Freshness -4");
+        Line(engine, KitchenActionIds.Stir).Summary.Should().Be($"CP -{KitchenTuning.StirCp} | Freshness -4");
         Line(engine, KitchenActionIds.Cover).Summary.Should().Be("Lid on | CP -6 | Freshness -2");
     }
 
@@ -68,7 +68,7 @@ public class KitchenTextTests
     [Test]
     public void TheActionThatFinishesTheDishCarriesTheFinishesTheItemWarning()
     {
-        var engine = Engine(Script(Rolls(), Rolls(), Rolls()), Soup(), Cook(craftsmanship: 100));
+        var engine = Engine(Script(Rolls(), Rolls(), Rolls()), Soup(), QuarterCook());
         engine.Perform(KitchenActionIds.Simmer);
         engine.Perform(KitchenActionIds.Simmer);
         engine.Perform(KitchenActionIds.Simmer);
@@ -100,9 +100,9 @@ public class KitchenTextTests
         var tooltip = KitchenText.Tooltip(engine.Preview(KitchenActionIds.AddIngredient(MeatLine)));
 
         tooltip.Should().Contain("Add Mynock Meat");
-        tooltip.Should().Contain("25% Light hand: Quality +17, Freshness -4, Savory +8, Spice +1.");
+        tooltip.Should().Contain("25% Light hand: Quality +13, Freshness -4, Savory +7, Spice +1.");
         tooltip.Should().Contain("50% Steady hand: Quality +40, Freshness -4, Savory +13, Spice +2.");
-        tooltip.Should().Contain("25% Heavy hand: Quality +62, Freshness -4, Savory +18, Spice +3.");
+        tooltip.Should().Contain("25% Heavy hand: Quality +68, Freshness -4, Savory +20, Spice +3.");
     }
 
     [Test]

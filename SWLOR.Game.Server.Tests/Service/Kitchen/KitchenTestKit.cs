@@ -68,6 +68,28 @@ internal static class KitchenTestKit
     public static KitchenStats Cook(int craftsmanship = 0, int control = 0, int gearCp = 40, int rank = 20) =>
         new(rank, craftsmanship, control, gearCp);
 
+    /// <summary>
+    /// The smallest Craftsmanship at which an action of this base Doneness gives at least this much at the test level, so a test that
+    /// needs a fast cook does not depend on the tuned Craftsmanship rate.
+    /// </summary>
+    public static int CraftsmanshipFor(int baseDoneness, int atLeast)
+    {
+        for (var craftsmanship = 0; craftsmanship <= 100000; craftsmanship++)
+        {
+            if (new KitchenStats(Level, craftsmanship, 0, 0).Doneness(baseDoneness, Level) >= atLeast)
+                return craftsmanship;
+        }
+
+        throw new InvalidOperationException($"No Craftsmanship gives {atLeast} Doneness from a base of {baseDoneness}.");
+    }
+
+    /// <summary>A cook whose Medium simmer gives about a quarter of the Doneness the dish needs: three simmers do not finish it and the fourth does.</summary>
+    public static KitchenStats QuarterCook() =>
+        Cook(craftsmanship: CraftsmanshipFor(KitchenTuning.SimmerMediumDoneness, (KitchenTuning.DonenessMax + 3) / 4));
+
+    /// <summary>The Doneness of one Medium simmer by <see cref="QuarterCook"/>.</summary>
+    public static int QuarterSimmer => QuarterCook().Doneness(KitchenTuning.SimmerMediumDoneness, Level);
+
     public static KitchenEngine Engine(
         IMinigameRandom random,
         KitchenRecipe recipe = null,

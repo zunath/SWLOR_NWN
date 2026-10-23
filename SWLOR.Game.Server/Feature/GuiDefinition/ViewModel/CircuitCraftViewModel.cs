@@ -404,7 +404,7 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
             IntegrityFraction = meters.Integrity.Fraction;
             CpText = $"CP: {meters.Cp.Value} / {meters.Cp.Max}";
             LoadText = $"Load: {load} / {CircuitRules.MaxLoad}  (overload line {setup.OverloadLine})";
-            LoadColor = load > setup.OverloadLine ? GuiColor.Red : GuiColor.White;
+            LoadColor = load > setup.SafeLoad ? GuiColor.Red : GuiColor.White;
             LoadFraction = (float)load / CircuitRules.MaxLoad;
             LoadRuleText = CircuitActionText.LoadRule(setup);
             PerkText = CircuitActionText.PerkSummary(_engine, CircuitStyles.Active(Player));

@@ -120,7 +120,7 @@ Where the draft was silent:
 - Micro-Tune's Calibration is 70% of a Tune at the same Load, with Fine Calibration applied; Cascade Discharge is 60% of a Discharge for each meter, with Capacitor Bank applied.
 - Safe Mode's grace is a band: no overload chance while Load is at most 2 over the line, and the usual 8% per point over the line beyond it. Heat Sinks move the line itself.
 - Surge picks by each meter's share of its maximum after the triggering action resolved, Assembly on a tie, and uses the Discharge formula at the Load the action left. Failsafe keeps Integrity at 1 once per craft, including after an overload, and is not spent by an action that finishes the item.
-- Diagnostics' first forecast of a craft rolls both the next action and the one after, so every action has the same chance of a signal.
+- Diagnostics rolls the first two actions when the craft starts and one action ahead after each action, so every action, the first included, has the same chance of a signal. Without Diagnostics the first action never has one: a signal is announced after an action.
 - A style stays active until the player picks another or "None", and not across logout. The window re-checks it against the perks owned when it opens and when a craft starts.
 
 Magnitudes: every value is as drafted except three, which CraftSim's length gate (gate 4) pushed down. Each is still a real purchase and a ranked perk's second rank is still larger than its first.

@@ -22,7 +22,7 @@ public sealed class CircuitEngine : MinigameEngineBase<CircuitState>
     /// <param name="setup">The recipe, the crafter and the enhancements.</param>
     /// <param name="startingLoad">The Load the attempt starts with; a craft starts at 0, a simulation may start elsewhere.</param>
     public CircuitEngine(IMinigameRandom random, CircuitSetup setup, int startingLoad = 0)
-        : base(random, CreateInitialState(setup, startingLoad))
+        : base(random, CreateInitialState(setup, startingLoad, random))
     {
         _setup = setup;
         _actions = BuildActions(setup);
@@ -48,12 +48,21 @@ public sealed class CircuitEngine : MinigameEngineBase<CircuitState>
     /// <summary>The chance, in percent, that an action leaving Load at the given level overloads.</summary>
     public int OverloadChancePercent(int loadAfterAction) => _setup.OverloadChancePercent(loadAfterAction);
 
-    private static CircuitState CreateInitialState(CircuitSetup setup, int startingLoad)
+    private static CircuitState CreateInitialState(CircuitSetup setup, int startingLoad, IMinigameRandom random)
     {
         if (setup == null)
             throw new ArgumentNullException(nameof(setup));
 
-        return new CircuitState(setup.StartingMeters(), null, Math.Clamp(startingLoad, 0, CircuitRules.MaxLoad));
+        if (random == null)
+            throw new ArgumentNullException(nameof(random));
+
+        var meters = setup.StartingMeters();
+        var load = Math.Clamp(startingLoad, 0, CircuitRules.MaxLoad);
+
+        // Diagnostics announces two actions ahead, so a craft that starts with it already knows about its first two actions.
+        return setup.ForecastDepth > 1
+            ? new CircuitState(meters, RollCleanSignal(setup, random, 1), load, RollCleanSignal(setup, random, 2))
+            : new CircuitState(meters, null, load);
     }
 
     private static IReadOnlyList<MinigameActionInfo> BuildActions(CircuitSetup setup)
@@ -315,32 +324,16 @@ public sealed class CircuitEngine : MinigameEngineBase<CircuitState>
         state with { NextOpportunity = Advance(state.LaterOpportunity), LaterOpportunity = null };
 
     /// <summary>
-    /// Rolls whether a Clean Signal is announced. Without Diagnostics it is announced for the next action. With it, it is announced
-    /// for the action after the next, and the attempt's first forecast also rolls the next action, which no earlier forecast could
-    /// announce, so every action has the same chance of a signal.
+    /// Rolls whether a Clean Signal is announced after an action. Without Diagnostics it is announced for the next action; with it, for
+    /// the action after the next (the next action's was announced by the forecast before).
     /// </summary>
-    protected override CircuitState RollForecast(CircuitState state, IMinigameRandom random)
-    {
-        var next = state.NextOpportunity;
-        var later = state.LaterOpportunity;
+    protected override CircuitState RollForecast(CircuitState state, IMinigameRandom random) =>
+        _setup.ForecastDepth > 1
+            ? state with { LaterOpportunity = RollCleanSignal(_setup, random, 2) }
+            : state with { NextOpportunity = RollCleanSignal(_setup, random, 1) ?? state.NextOpportunity };
 
-        if (_setup.ForecastDepth > 1)
-        {
-            if (!state.ForecastStarted)
-                next = RollCleanSignal(random, 1) ?? next;
-
-            later = RollCleanSignal(random, 2);
-        }
-        else
-        {
-            next = RollCleanSignal(random, 1) ?? next;
-        }
-
-        return state with { NextOpportunity = next, LaterOpportunity = later, ForecastStarted = true };
-    }
-
-    private MinigameOpportunity RollCleanSignal(IMinigameRandom random, int turnsAway) =>
-        random.D100() <= _setup.CleanSignalChancePercent
+    private static MinigameOpportunity RollCleanSignal(CircuitSetup setup, IMinigameRandom random, int turnsAway) =>
+        random.D100() <= setup.CleanSignalChancePercent
             ? new MinigameOpportunity(CircuitActionIds.CleanSignal, "Clean Signal", "Your next Tune is doubled.", turnsAway)
             : null;
 

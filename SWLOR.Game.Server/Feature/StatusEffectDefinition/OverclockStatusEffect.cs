@@ -8,7 +8,7 @@ namespace SWLOR.Game.Server.Feature.StatusEffectDefinition
     public sealed class OverclockStatusEffect : StatusEffectBase
     {
         public override string Name => "Overclock";
-        public override float Frequency => 1f;
+        public override StatusEffectActivationType ActivationType => StatusEffectActivationType.Passive;
         public override EffectIconType Icon => EffectIconType.OverclockStatusEffect;
         public override StatusEffectCategory Categories => StatusEffectCategory.Buff;
         public override bool PersistsOnLogout => false;

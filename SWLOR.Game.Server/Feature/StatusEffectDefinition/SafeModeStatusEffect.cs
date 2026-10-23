@@ -8,7 +8,7 @@ namespace SWLOR.Game.Server.Feature.StatusEffectDefinition
     public sealed class SafeModeStatusEffect : StatusEffectBase
     {
         public override string Name => "Safe Mode";
-        public override float Frequency => 1f;
+        public override StatusEffectActivationType ActivationType => StatusEffectActivationType.Passive;
         public override EffectIconType Icon => EffectIconType.SafeModeStatusEffect;
         public override StatusEffectCategory Categories => StatusEffectCategory.Buff;
         public override bool PersistsOnLogout => false;

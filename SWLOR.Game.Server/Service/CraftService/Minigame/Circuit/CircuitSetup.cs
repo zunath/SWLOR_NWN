@@ -129,6 +129,9 @@ public sealed class CircuitSetup
     /// <summary>The actions ahead a Clean Signal is announced: 1, or 2 with Diagnostics.</summary>
     public int ForecastDepth => 1 + Math.Clamp(Perks.ForecastTurns, 0, CircuitRules.MaxForecastTurns);
 
+    /// <summary>The highest Load at which no action can overload: the line plus the perks' grace.</summary>
+    public int SafeLoad => Math.Min(CircuitRules.MaxLoad, OverloadLine + Math.Max(0, Perks.OverloadGrace));
+
     public MinigameMeters StartingMeters() => MinigameMeters.Start(MaxAssembly, MaxCalibration, MaxIntegrity, MaxCp);
 
     /// <summary>The multiplier a Load level gives to Wire, Tune and Discharge output: the recipe's boost per point, per point.</summary>

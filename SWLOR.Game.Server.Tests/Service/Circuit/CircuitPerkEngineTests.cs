@@ -466,8 +466,11 @@ public class CircuitPerkEngineTests
         var perks = new CircuitPerkStats { ForecastTurns = 1 };
         Setup(perks: perks).ForecastDepth.Should().Be(2);
 
-        // First action: the next action and the one after are both rolled (no signal next, a signal after). Later actions roll one.
-        var engine = Perked(perks, 0, NoSignal, Signal, NoSignal, NoSignal);
+        // The craft's start rolls the first two actions (no signal for either); the first action's forecast then rolls the third.
+        var engine = Perked(perks, 0, NoSignal, NoSignal, Signal, NoSignal, NoSignal);
+        engine.NextOpportunity.Should().BeNull();
+        engine.LaterOpportunity.Should().BeNull();
+
         engine.Perform(CircuitActionIds.Wire);
 
         engine.NextOpportunity.Should().BeNull();
@@ -489,22 +492,31 @@ public class CircuitPerkEngineTests
     }
 
     [Test]
-    public void Diagnostics_RollsBothSlotsOnTheFirstForecastAndOneSlotAfter_SoEveryActionHasTheSameChance()
+    public void Diagnostics_RollsTheFirstTwoActionsWhenTheCraftStarts_ThenOneActionAheadAfterEveryAction()
     {
         var random = new ScriptedMinigameRandom(Signal, Signal, Signal);
         var engine = new CircuitEngine(random, Setup(perks: new CircuitPerkStats { ForecastTurns = 1 }));
 
-        engine.Perform(CircuitActionIds.Wire);
-
-        random.Calls.Should().Be(2);
-        engine.NextOpportunity.Should().NotBeNull("the second action can be announced by the first forecast");
+        random.Calls.Should().Be(2, "the first action and the one after it are rolled before the first action");
+        engine.NextOpportunity.Should().NotBeNull("the first action can carry a signal too");
+        engine.NextOpportunity!.TurnsAway.Should().Be(1);
         engine.LaterOpportunity.Should().NotBeNull();
+        engine.LaterOpportunity!.TurnsAway.Should().Be(2);
 
         engine.Perform(CircuitActionIds.Wire);
 
-        random.Calls.Should().Be(3, "from the second forecast on, one roll per action");
+        random.Calls.Should().Be(3, "one roll per action from then on");
         engine.NextOpportunity!.TurnsAway.Should().Be(1, "the signal announced two ahead is one ahead now");
         engine.LaterOpportunity!.TurnsAway.Should().Be(2);
+    }
+
+    [Test]
+    public void Diagnostics_LetsTheFirstActionBeDoubledWhenTheCraftStartsWithASignal()
+    {
+        var engine = Perked(new CircuitPerkStats { ForecastTurns = 1 }, 0, Signal, NoSignal);
+
+        engine.Preview(CircuitActionIds.Tune).Outcomes[0].Label.Should().Contain("Clean Signal");
+        CircuitActionText.OpportunityText(engine).Should().StartWith("Clean Signal next action");
     }
 
     [Test]
@@ -512,7 +524,6 @@ public class CircuitPerkEngineTests
     {
         var random = new ScriptedMinigameRandom(NoSignal, Signal);
         var engine = new CircuitEngine(random, Setup(perks: new CircuitPerkStats { ForecastTurns = 1 }));
-        engine.Perform(CircuitActionIds.Wire);
         var calls = random.Calls;
 
         engine.PreviewAll();
@@ -521,12 +532,21 @@ public class CircuitPerkEngineTests
         engine.LaterOpportunity.Should().NotBeNull();
     }
 
+    [Test]
+    public void SafeLoad_IsTheLinePlusTheGrace_NeverPastTheHighestLoad()
+    {
+        Setup().SafeLoad.Should().Be(6);
+        Setup(perks: new CircuitPerkStats { OverloadGrace = 2 }).SafeLoad.Should().Be(8);
+        Setup(perks: new CircuitPerkStats { OverloadGrace = 2, OverloadLine = 2 }).SafeLoad.Should().Be(10);
+        Setup(line: 9, perks: new CircuitPerkStats { OverloadGrace = 2, OverloadLine = 2 }).SafeLoad.Should().Be(10);
+    }
+
     // ---- the whole line --------------------------------------------------------------------------------------------------
 
     [Test]
     public void WithEveryPerk_TheActionsAreTheSevenPlusTheTwoAddedOnes()
     {
-        Perked(EveryPerk).Actions.Select(action => action.Id).Should().Equal(
+        Perked(EveryPerk, 0, NoSignal, NoSignal).Actions.Select(action => action.Id).Should().Equal(
             CircuitActionIds.Wire, CircuitActionIds.Tune, CircuitActionIds.MicroTune, CircuitActionIds.Boost,
             CircuitActionIds.DischargeAssembly, CircuitActionIds.DischargeCalibration, CircuitActionIds.DischargeBoth,
             CircuitActionIds.Ground, CircuitActionIds.Patch);
@@ -535,7 +555,7 @@ public class CircuitPerkEngineTests
     [Test]
     public void WithEveryPerk_AcrossManySeeds_PerformAlwaysLandsOnAPreviewedOutcomeAndTheSavesAreSpentOnce()
     {
-        var actionIds = Perked(EveryPerk).Actions.Select(action => action.Id).ToArray();
+        var actionIds = Perked(EveryPerk, 0, NoSignal, NoSignal).Actions.Select(action => action.Id).ToArray();
         var surges = 0;
         var failsafes = 0;
         var signalsTwoAhead = 0;
@@ -613,7 +633,7 @@ public class CircuitPerkEngineTests
     [Test]
     public void TheNewActionsReadAsTheirOwnRows_AndEveryPerkedTextIsAscii()
     {
-        var engine = Perked(EveryPerk, 9);
+        var engine = Perked(EveryPerk, 9, NoSignal, NoSignal);
         var texts = engine.PreviewAll().SelectMany(preview => new[]
         {
             CircuitActionText.ButtonText(preview), CircuitActionText.RowText(preview), CircuitActionText.Tooltip(preview),

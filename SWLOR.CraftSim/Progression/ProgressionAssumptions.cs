@@ -28,7 +28,7 @@ namespace SWLOR.CraftSim.Progression
         /// </summary>
         public double NodeTravelSeconds { get; init; } = 30.0;
 
-        /// <summary>Seconds per harvester use: the item's <c>Delay(5f)</c> (HarvesterItemDefinition.cs).</summary>
+        /// <summary>Seconds per harvester use: the harvest delay of today's harvests and of Quick Harvest (<c>ProspectingRules.HarvestSeconds</c>).</summary>
         public double SecondsPerHarvest { get; init; } = 5.0;
 
         /// <summary>Seconds of search animation per scavenge attempt (ScavengePoint.cs).</summary>
@@ -70,7 +70,7 @@ namespace SWLOR.CraftSim.Progression
         public bool VarietyPlay { get; init; }
 
         /// <summary>
-        /// A crafting-only multiplier on the XP crafts and guild hand-ins pay (a proposal, not today's game). The XP chart's cutoff is not
+        /// A crafting-only multiplier on the XP crafts pay (the crafting pace, CraftMinigameXp.CraftingPaceMultiplier; 1 is today). Guild hand-ins are not multiplied. The XP chart cutoff is not
         /// moved: a craft at least five levels below the rank still pays nothing.
         /// </summary>
         public double CraftXpMultiplier { get; init; } = 1.0;

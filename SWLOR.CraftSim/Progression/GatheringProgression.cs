@@ -46,8 +46,8 @@ namespace SWLOR.CraftSim.Progression
 
     /// <summary>
     /// Plays a new gatherer from rank 0 to rank 50 with expected values, using today's harvest, refining and scavenging rules. Harvesting
-    /// pays <c>GetDeltaXP</c> of the vein's level minus the rank for every item gathered, so a vein two tiers down pays nothing; refining pays a
-    /// flat XP per raw unit whatever the rank; a scavenge site pays by its level. The harvester, refinery and scavenge tiers are the
+    /// pays <c>GetDeltaXP</c> of the vein's level minus the rank for every item gathered, so a vein two tiers down pays nothing; refining pays the
+    /// ore's XP per raw unit at every rank (the game scales it down once the rank passes the ore's level); a scavenge site pays by its level. The harvester, refinery and scavenge tiers are the
     /// Gathering rank's tier (<see cref="CraftRankMilestones.TierForRank"/>).
     /// </summary>
     public static class GatheringProgression

@@ -439,6 +439,6 @@ public class ResearchExperimentLifecycleTests
         ResearchExperimentLifecycle.Settle(job, new ScriptedMinigameRandom());
 
         job.Experiment.EffortPercent.Should().Be(33);
-        ResearchExperimentLifecycle.PendingExperimentXp(job, 600).Should().Be(840 * 33 / 100);
+        ResearchExperimentLifecycle.PendingExperimentXp(job, 600).Should().Be(520 * 33 / 100, "600 x 62% x 1.4 for the level-4 target, a third of the trials used");
     }
 }

@@ -34,6 +34,9 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
         private readonly List<string> _slotNames = new();
         private readonly List<int> _slotPenalties = new();
 
+        // One entry per row of the style list: None first, then each style the crafter owns.
+        private readonly List<CircuitStyle> _styleRows = new();
+
         protected override CraftMinigameType Minigame => CraftMinigameType.Circuit;
 
         public string RecipeName { get => Get<string>(); set => Set(value); }
@@ -50,6 +53,10 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
         public GuiBindingList<GuiColor> RecipeColors { get => Get<GuiBindingList<GuiColor>>(); set => Set(value); }
         public GuiBindingList<string> SlotLabels { get => Get<GuiBindingList<string>>(); set => Set(value); }
         public GuiBindingList<string> SlotButtonTexts { get => Get<GuiBindingList<string>>(); set => Set(value); }
+        public string StyleHeader { get => Get<string>(); set => Set(value); }
+        public GuiBindingList<string> StyleLabels { get => Get<GuiBindingList<string>>(); set => Set(value); }
+        public GuiBindingList<string> StyleButtonTexts { get => Get<GuiBindingList<string>>(); set => Set(value); }
+        public GuiBindingList<bool> StyleButtonEnabled { get => Get<GuiBindingList<bool>>(); set => Set(value); }
 
         public string AssemblyText { get => Get<string>(); set => Set(value); }
         public float AssemblyFraction { get => Get<float>(); set => Set(value); }
@@ -62,6 +69,7 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
         public GuiColor LoadColor { get => Get<GuiColor>(); set => Set(value); }
         public float LoadFraction { get => Get<float>(); set => Set(value); }
         public string LoadRuleText { get => Get<string>(); set => Set(value); }
+        public string PerkText { get => Get<string>(); set => Set(value); }
         public string OpportunityText { get => Get<string>(); set => Set(value); }
         public GuiColor OpportunityColor { get => Get<GuiColor>(); set => Set(value); }
         public string ThresholdText { get => Get<string>(); set => Set(value); }
@@ -82,6 +90,7 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
             var blueprint = Craft.GetBlueprintDetails(_blueprintItem);
             ResetSlots(recipe.EnhancementSlots + blueprint.EnhancementSlots);
 
+            CircuitStyles.RemoveUnowned(Player);
             ClearCraftView();
             StatusText = string.Empty;
             StatusColor = GuiColor.Green;
@@ -124,7 +133,8 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
                 Stat.CalculateCraftsmanship(Player, recipe.Skill),
                 Stat.CalculateControl(Player, recipe.Skill),
                 gearCp,
-                _slotPenalties.Sum());
+                _slotPenalties.Sum(),
+                CircuitPerkStats.FromStats(stat => Stat.GetStatAdjustment(Player, stat)));
         }
 
         private void RefreshSetup()
@@ -140,7 +150,7 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
             GearSummary =
                 $"Craftsmanship {setup.Craftsmanship} (+{setup.Craftsmanship}% Assembly)  |  Control {setup.Control} (+{setup.Control}% Calibration)  |  CP {setup.MaxCp}";
             CircuitSummary =
-                $"Overload line {parameters.OverloadLine}  |  Each Load point adds {parameters.LoadBoostPercent}% output  |  " +
+                $"Overload line {setup.OverloadLine}  |  Each Load point adds {setup.LoadBoostPercent}% output  |  " +
                 $"Work: {parameters.AssemblySharePercent}% Assembly, {100 - parameters.AssemblySharePercent}% Calibration";
             NeedsSummary = setup.EnhancementAssembly > 0
                 ? $"Needs {setup.MaxAssembly} Assembly ({setup.EnhancementAssembly} added by enhancements) and {setup.MaxCalibration} Calibration. Integrity {setup.MaxIntegrity}."
@@ -159,7 +169,52 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
             RecipeDescription = description;
             RecipeColors = colors;
             RefreshSlots();
+            RefreshStyles();
         }
+
+        private void RefreshStyles()
+        {
+            _styleRows.Clear();
+            var owned = CircuitStyles.Owned(Player);
+            if (owned.Count > 0)
+            {
+                _styleRows.Add(CircuitStyle.None);
+                _styleRows.AddRange(owned);
+            }
+
+            var active = CircuitStyles.Active(Player);
+            var labels = new GuiBindingList<string>();
+            var buttons = new GuiBindingList<string>();
+            var enabled = new GuiBindingList<bool>();
+            foreach (var style in _styleRows)
+            {
+                labels.Add(style == CircuitStyle.None
+                    ? "None: the Circuit plays by its usual rules."
+                    : $"{CircuitStyles.Name(style)}: {CircuitStyles.Description(style)}");
+                buttons.Add(style == active ? "Selected" : "Select");
+                enabled.Add(style != active);
+            }
+
+            StyleHeader = owned.Count == 0
+                ? $"Styles: learn a style perk at Engineering {CircuitRules.StyleRank} to choose one here."
+                : "Style: pick one to craft with. Only one can be active at a time.";
+            StyleLabels = labels;
+            StyleButtonTexts = buttons;
+            StyleButtonEnabled = enabled;
+        }
+
+        public Action OnClickStyle() => () =>
+        {
+            if (_session != null)
+                return;
+
+            var row = NuiGetEventArrayIndex();
+            if (row < 0 || row >= _styleRows.Count)
+                return;
+
+            CircuitStyles.Select(Player, _styleRows[row]);
+            RefreshSetup();
+        };
 
         private void RefreshSlots()
         {
@@ -225,6 +280,7 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
             if (_session != null)
                 return;
 
+            CircuitStyles.RemoveUnowned(Player);
             var result = CraftSessionService.Start(Player, new CraftSessionStartRequest(_recipe, _blueprintItem, _slotItems.ToList()));
             if (!result.Succeeded)
             {
@@ -348,17 +404,13 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
             IntegrityFraction = meters.Integrity.Fraction;
             CpText = $"CP: {meters.Cp.Value} / {meters.Cp.Max}";
             LoadText = $"Load: {load} / {CircuitRules.MaxLoad}  (overload line {setup.OverloadLine})";
-            LoadColor = load > setup.OverloadLine ? GuiColor.Red : GuiColor.White;
+            LoadColor = load > setup.SafeLoad ? GuiColor.Red : GuiColor.White;
             LoadFraction = (float)load / CircuitRules.MaxLoad;
-            LoadRuleText =
-                $"Safe at or below Load {setup.OverloadLine}. An action that leaves Load above it can overload: +{CircuitRules.OverloadChancePerPointPercent}% per point, " +
-                $"costing {setup.OverloadIntegrityCost} Integrity and resetting Load to 0. Discharge and Ground never overload.";
+            LoadRuleText = CircuitActionText.LoadRule(setup);
+            PerkText = CircuitActionText.PerkSummary(_engine, CircuitStyles.Active(Player));
 
-            var opportunity = _engine.NextOpportunity;
-            OpportunityText = opportunity == null
-                ? "No signal announced for the next action."
-                : $"{opportunity.Name} next action: {opportunity.Description}";
-            OpportunityColor = opportunity == null ? GuiColor.Grey : GuiColor.Green;
+            OpportunityText = CircuitActionText.OpportunityText(_engine);
+            OpportunityColor = _engine.NextOpportunity == null && _engine.LaterOpportunity == null ? GuiColor.Grey : GuiColor.Green;
             ThresholdText = BuildThresholdText(meters.QualityPercent);
 
             var names = new GuiBindingList<string>();
@@ -409,6 +461,7 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
             LoadColor = GuiColor.White;
             LoadFraction = 0f;
             LoadRuleText = string.Empty;
+            PerkText = string.Empty;
             OpportunityText = string.Empty;
             OpportunityColor = GuiColor.Grey;
             ThresholdText = string.Empty;
@@ -416,6 +469,10 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
             ActionTexts = new GuiBindingList<string>();
             ActionTooltips = new GuiBindingList<string>();
             ActionEnabled = new GuiBindingList<bool>();
+            StyleHeader = string.Empty;
+            StyleLabels = new GuiBindingList<string>();
+            StyleButtonTexts = new GuiBindingList<string>();
+            StyleButtonEnabled = new GuiBindingList<bool>();
         }
     }
 }

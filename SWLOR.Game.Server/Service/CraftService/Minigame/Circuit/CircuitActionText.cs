@@ -100,4 +100,53 @@ public static class CircuitActionText
     }
 
     public static string Signed(int value) => value > 0 ? $"+{value}" : value.ToString();
+
+    /// <summary>The overload rule for this craft: where the line is, how the chance grows, what an overload costs and any grace or Surge.</summary>
+    public static string LoadRule(CircuitSetup setup)
+    {
+        var grace = Math.Max(0, setup.Perks.OverloadGrace);
+        var safe = grace > 0
+            ? $"Actions cannot overload at or below Load {setup.OverloadLine + grace} (the line is {setup.OverloadLine}, plus {grace} of grace)."
+            : $"Safe at or below Load {setup.OverloadLine}.";
+        var overload = setup.Perks.Surge
+            ? $"Above that an action can overload: +{CircuitRules.OverloadChancePerPointPercent}% per point over the line. An overload costs {setup.OverloadIntegrityCost} Integrity and resets Load to 0, " +
+              "except the first one, which Surge turns into a Discharge."
+            : $"An action that leaves Load above it can overload: +{CircuitRules.OverloadChancePerPointPercent}% per point over the line, costing {setup.OverloadIntegrityCost} Integrity and resetting Load to 0.";
+        return $"{safe} {overload} Discharge and Ground never overload.";
+    }
+
+    /// <summary>The Clean Signal announced for the next action or the one after it, or that none is.</summary>
+    public static string OpportunityText(CircuitEngine engine)
+    {
+        var next = engine.NextOpportunity;
+        var later = engine.LaterOpportunity;
+        if (next != null && later != null)
+            return $"{next.Name} next action: {next.Description} Another {later.Name} in 2 actions.";
+
+        if (next != null)
+            return $"{next.Name} next action: {next.Description}";
+
+        if (later != null)
+            return $"{later.Name} in 2 actions: your Tune then is doubled.";
+
+        return engine.Setup.ForecastDepth > 1
+            ? "No signal announced for the next two actions."
+            : "No signal announced for the next action.";
+    }
+
+    /// <summary>The active style and the once-per-craft saves still ready, or an empty string when the crafter has none.</summary>
+    public static string PerkSummary(CircuitEngine engine, CircuitStyle style)
+    {
+        var parts = new List<string>();
+        if (style != CircuitStyle.None)
+            parts.Add($"Style: {CircuitStyles.Name(style)}");
+
+        if (engine.Setup.Perks.Surge)
+            parts.Add(engine.SurgeReady ? "Surge ready" : "Surge used");
+
+        if (engine.Setup.Perks.Failsafe)
+            parts.Add(engine.FailsafeReady ? "Failsafe ready" : "Failsafe used");
+
+        return string.Join("  |  ", parts);
+    }
 }

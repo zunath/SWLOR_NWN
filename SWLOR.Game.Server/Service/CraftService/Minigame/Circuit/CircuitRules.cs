@@ -51,6 +51,22 @@ public static class CircuitRules
     public const int CleanSignalChancePercent = 25;
     public const int CleanSignalMultiplier = 2;
 
+    // The actions the Overclocker and Technician perks add. Their sizes are shares of the ordinary action's.
+    public const int CascadeDischargeCp = 5;
+    public const int CascadeDischargeSharePercent = 60;
+    public const int MicroTuneCp = 2;
+    public const int MicroTuneIntegrity = 2;
+    public const int MicroTuneSharePercent = 70;
+
+    /// <summary>The Engineering rank at which each perk line offers its style.</summary>
+    public const int StyleRank = 20;
+
+    /// <summary>The lowest Integrity an action costs once a perk reduces its cost.</summary>
+    public const int MinimumActionIntegrity = 1;
+
+    /// <summary>The most actions beyond the next at which a Clean Signal can be announced.</summary>
+    public const int MaxForecastTurns = 1;
+
     // CP: gear CP plus this share of the rank, plus a flat bonus from rank 25.
     public const double CpPerRank = 0.75;
     public const int RankPassiveCpRank = 25;

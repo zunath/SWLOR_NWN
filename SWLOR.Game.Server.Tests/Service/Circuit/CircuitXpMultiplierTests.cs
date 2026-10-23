@@ -73,7 +73,9 @@ public class CircuitXpMultiplierTests
                 CraftMinigameXp.ScaleBaseXp(Craft.GetBaseRecipeXP(smithery, 5), CraftMinigameXp.MultiplierFor(CraftMinigameType.Forge, 5)),
                 CraftMinigameXp.CraftingPaceMultiplier));
         CraftMinigameXp.BaseXp(Recipe(SkillType.Agriculture, 5), 5).Should().Be(
-            CraftMinigameXp.ScaleBaseXp(Craft.GetBaseRecipeXP(Recipe(SkillType.Agriculture, 5), 5), CraftMinigameXp.CraftingPaceMultiplier));
+            CraftMinigameXp.ScaleBaseXp(
+                CraftMinigameXp.ScaleBaseXp(Craft.GetBaseRecipeXP(Recipe(SkillType.Agriculture, 5), 5), CraftMinigameXp.MultiplierFor(CraftMinigameType.Kitchen, 5)),
+                CraftMinigameXp.CraftingPaceMultiplier));
     }
 
     [Test]

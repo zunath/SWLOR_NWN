@@ -1,6 +1,7 @@
 using SWLOR.Game.Server.Core;
 using SWLOR.Game.Server.Service;
 using SWLOR.Game.Server.Service.CraftService;
+using SWLOR.Game.Server.Service.CraftService.Minigame.Search;
 using SWLOR.Game.Server.Service.PerkService;
 using SWLOR.Game.Server.Service.ScavengeService;
 using SWLOR.Game.Server.Service.SkillService;
@@ -92,7 +93,8 @@ namespace SWLOR.Game.Server.Feature
                 rank,
                 Skill.GetDeltaXP(10 * requiredLevel - rank),
                 Perk.GetPerkLevel(user, PerkType.TreasureHunter),
-                Perk.GetPerkLevel(user, PerkType.CreditFinder));
+                Perk.GetPerkLevel(user, PerkType.CreditFinder),
+                SearchEffects.FromStats(stat => Stat.GetStatAdjustment(user, stat)));
 
             ScavengeSessions.Start(request);
         }

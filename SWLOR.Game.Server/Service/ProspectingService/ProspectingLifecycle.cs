@@ -109,7 +109,7 @@ namespace SWLOR.Game.Server.Service.ProspectingService
                 return new ProspectingBegin(ProspectingBeginStatus.NoCharges, null);
             }
 
-            var setup = ProspectingSetup.ForNode(node, charges, request.Rank, request.NodeTier);
+            var setup = ProspectingSetup.ForNode(node, charges, request.Rank, request.NodeTier, request.Effects);
             var session = new ProspectingSession(Guid.NewGuid().ToString(), request, new ProspectingEngine(_random, setup), charges);
             session.LastActivityAt = _world.UtcNow;
             _byPlayer[request.Player] = session;
@@ -135,6 +135,25 @@ namespace SWLOR.Game.Server.Service.ProspectingService
 
             _world.Schedule(CheckSeconds, () => Check(session));
             return new ProspectingBegin(ProspectingBeginStatus.Opened, session);
+        }
+
+        /// <summary>
+        /// Rebuilds the session's engine with the player's perks and style as they are now. The harvester's style is chosen in the window,
+        /// so it can change until the first action; after that the session keeps the perks it began with. Returns false when the session
+        /// is over, has acted, or is working an action.
+        /// </summary>
+        public bool RefreshEffects(ProspectingSession session, ProspectingEffects effects)
+        {
+            if (session == null)
+                throw new ArgumentNullException(nameof(session));
+
+            if (session.Settled || session.HasActed || session.Working != null)
+                return false;
+
+            var engine = session.Engine;
+            var setup = ProspectingSetup.ForNode(engine.ToNode(), engine.ChargesAtStart, session.Request.Rank, session.Request.NodeTier, effects);
+            session.Reconfigure(session.Request with { Effects = effects }, new ProspectingEngine(_random, setup));
+            return true;
         }
 
         /// <summary>

@@ -18,13 +18,20 @@ namespace SWLOR.Game.Server.Service.ProspectingService
 
         public string Id { get; }
 
-        public ProspectingRequest Request { get; }
+        public ProspectingRequest Request { get; private set; }
 
         public uint Player => Request.Player;
 
         public uint Node => Request.Node;
 
-        public ProspectingEngine Engine { get; }
+        public ProspectingEngine Engine { get; private set; }
+
+        /// <summary>Replaces the engine and the perks it was built from. Only the lifecycle does this, before the player's first action.</summary>
+        internal void Reconfigure(ProspectingRequest request, ProspectingEngine engine)
+        {
+            Request = request ?? throw new ArgumentNullException(nameof(request));
+            Engine = engine ?? throw new ArgumentNullException(nameof(engine));
+        }
 
         /// <summary>True once the session has ended, however it ended. Nothing more can happen to it.</summary>
         public bool Settled { get; private set; }

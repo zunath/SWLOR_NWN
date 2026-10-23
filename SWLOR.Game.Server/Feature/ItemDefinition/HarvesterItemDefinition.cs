@@ -4,6 +4,7 @@ using SWLOR.Game.Server.Service;
 using SWLOR.Game.Server.Service.ItemService;
 using SWLOR.Game.Server.Service.LogService;
 using SWLOR.Game.Server.Service.CraftService;
+using SWLOR.Game.Server.Service.CraftService.Minigame.Prospecting;
 using SWLOR.Game.Server.Service.ProspectingService;
 using SWLOR.Game.Server.Service.SkillService;
 using SWLOR.NWN.API.NWScript.Enum;
@@ -106,7 +107,8 @@ namespace SWLOR.Game.Server.Feature.ItemDefinition
                         GetLocalString(target, "HARVESTING_LOOT_TABLE"),
                         Math.Clamp(GetLocalInt(target, "HARVESTER_REQUIRED_LEVEL"), 1, CraftRankMilestones.MaxTier),
                         Skill.GetCreatureSkillRank(user, SkillType.Gathering),
-                        GetPosition(user)));
+                        GetPosition(user),
+                        ProspectingEffects.FromStats(stat => Stat.GetStatAdjustment(user, stat))));
                 });
         }
     }

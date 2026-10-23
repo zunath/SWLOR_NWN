@@ -1,8 +1,11 @@
+using System.Collections.Generic;
+using System.Linq;
 using SWLOR.Game.Server.Feature.GuiDefinition.Payload;
 using SWLOR.Game.Server.Service;
 using SWLOR.Game.Server.Service.AnimationService;
 using SWLOR.Game.Server.Service.CraftService;
 using SWLOR.Game.Server.Service.CraftService.Minigame;
+using SWLOR.Game.Server.Service.CraftService.Minigame.Gathering;
 using SWLOR.Game.Server.Service.CraftService.Minigame.Search;
 using SWLOR.Game.Server.Service.GuiService;
 using SWLOR.Game.Server.Service.GuiService.Component;
@@ -47,6 +50,9 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
         private ScavengeSession _session;
         private int _selected = -1;
 
+        // One entry per row of the style list: None first, then each style the scavenger owns that does something in Search.
+        private readonly List<GatheringStyle> _styleRows = new();
+
         protected override CraftMinigameType Minigame => CraftMinigameType.Search;
 
         public string HeaderText { get => Get<string>(); set => Set(value); }
@@ -63,6 +69,10 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
         public float SearchesPercent { get => Get<float>(); set => Set(value); }
         public string SelectedText { get => Get<string>(); set => Set(value); }
         public string CloseText { get => Get<string>(); set => Set(value); }
+        public string StyleHeader { get => Get<string>(); set => Set(value); }
+        public GuiBindingList<string> StyleLabels { get => Get<GuiBindingList<string>>(); set => Set(value); }
+        public GuiBindingList<string> StyleButtonTexts { get => Get<GuiBindingList<string>>(); set => Set(value); }
+        public GuiBindingList<bool> StyleButtonEnabled { get => Get<GuiBindingList<bool>>(); set => Set(value); }
 
         public string SpotText0 => Get<string>();
         public string SpotText1 => Get<string>();
@@ -122,6 +132,7 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
             _session = initialPayload.Session;
             _selected = -1;
 
+            GatheringStyles.RemoveUnowned(Player);
             ClearDisplay();
             ChangePartialView(ContentElement, BoardPartial);
             if (_session != null && ScavengeSessions.IsActive(_session))
@@ -142,6 +153,23 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
         public Action OnClickQuickSearch() => () => PerformQuickSearch();
 
         public Action OnClickClose() => () => Gui.ClosePlayerWindow(Player, WindowType);
+
+        public Action OnClickStyle() => () =>
+        {
+            var row = NuiGetEventArrayIndex();
+            if (_session == null || _session.Result != null || row < 0 || row >= _styleRows.Count)
+                return;
+
+            if (!ScavengeSessions.CanQuickSearch(_session))
+            {
+                SetStatus("Your style is locked once you have begun searching.", GuiColor.Red);
+                return;
+            }
+
+            GatheringStyles.Select(Player, _styleRows[row]);
+            ScavengeSessions.RefreshEffects(_session, SearchEffects.FromStats(stat => Stat.GetStatAdjustment(Player, stat)));
+            RefreshBoard();
+        };
 
         private void SelectSpot(int spot)
         {
@@ -217,10 +245,46 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
             RefreshBoard();
         }
 
+        private void RefreshStyles()
+        {
+            _styleRows.Clear();
+            var owned = GatheringStyles.Owned(Player).Where(style => GatheringStyles.SearchDescription(style).Length > 0).ToList();
+            var active = GatheringStyles.Active(Player);
+            if (owned.Count > 0 || active != GatheringStyle.None)
+            {
+                _styleRows.Add(GatheringStyle.None);
+                _styleRows.AddRange(owned);
+            }
+
+            var locked = _session == null || _session.Result != null || !ScavengeSessions.CanQuickSearch(_session);
+            var labels = new GuiBindingList<string>();
+            var buttons = new GuiBindingList<string>();
+            var enabled = new GuiBindingList<bool>();
+            foreach (var style in _styleRows)
+            {
+                var selected = style == active || (style == GatheringStyle.None && !owned.Contains(active));
+                labels.Add(style == GatheringStyle.None
+                    ? "None: Search plays by its usual rules."
+                    : $"{GatheringStyles.Name(style)}: {GatheringStyles.SearchDescription(style)}");
+                buttons.Add(selected ? "Selected" : "Select");
+                enabled.Add(!locked && !selected);
+            }
+
+            StyleHeader = _styleRows.Count == 0
+                ? $"Styles: learn the Careful Hands style at Gathering {GatheringStyles.StyleRank} to choose it here."
+                : locked
+                    ? "Style: locked once you begin searching."
+                    : "Style: pick one before your first action. Only one can be active at a time.";
+            StyleLabels = labels;
+            StyleButtonTexts = buttons;
+            StyleButtonEnabled = enabled;
+        }
+
         private void RefreshBoard()
         {
             var engine = _session.Engine;
             HeaderText = BoardHeader;
+            RefreshStyles();
             SearchesText = SearchActionText.SearchesText(engine);
             FindsText = $"Finds: {engine.Finds}";
             SearchesPercent = engine.Setup.Searches <= 0 ? 0f : (float)engine.SearchesSpent / engine.Setup.Searches;
@@ -285,6 +349,7 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
             QuickSearchEnabled = false;
             BoardLabelText = string.Empty;
             SelectedText = string.Empty;
+            RefreshStyles();
             SetStatus(message, GuiColor.Green);
 
             for (var index = 0; index < ActionCount; index++)
@@ -306,6 +371,10 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
             SelectedText = string.Empty;
             CloseText = "Leave the site";
             SetStatus(string.Empty, GuiColor.White);
+            StyleHeader = string.Empty;
+            StyleLabels = new GuiBindingList<string>();
+            StyleButtonTexts = new GuiBindingList<string>();
+            StyleButtonEnabled = new GuiBindingList<bool>();
 
             for (var spot = 0; spot < SpotCount; spot++)
             {

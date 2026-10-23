@@ -15,7 +15,15 @@ public sealed class ProspectingSetup
     /// <param name="yieldTier">The tier of yield the Gathering rank earned, 0 to <see cref="CraftRankMilestones.MaxProspectingYieldTier"/>.</param>
     /// <param name="rank">The player's Gathering rank, for display and reports.</param>
     /// <param name="nodeTier">The node's tier, 1 to 5, for display and reports.</param>
-    public ProspectingSetup(ProspectingNode node, int charges, int surveyReveals = 1, int yieldTier = 0, int rank = 0, int nodeTier = 1)
+    /// <param name="effects">The harvester's perks and style, or null for none.</param>
+    public ProspectingSetup(
+        ProspectingNode node,
+        int charges,
+        int surveyReveals = 1,
+        int yieldTier = 0,
+        int rank = 0,
+        int nodeTier = 1,
+        ProspectingEffects effects = null)
     {
         Node = node ?? throw new ArgumentNullException(nameof(node));
         if (node.IsSpent)
@@ -29,13 +37,21 @@ public sealed class ProspectingSetup
         if (nodeTier < 1 || nodeTier > CraftRankMilestones.MaxTier)
             throw new ArgumentOutOfRangeException(nameof(nodeTier), "A node's tier is 1 to 5.");
 
+        effects ??= ProspectingEffects.None;
         Charges = charges;
         SurveyReveals = surveyReveals;
         YieldTier = yieldTier;
         Rank = rank;
         NodeTier = nodeTier;
-        StrikeYield = ProspectingRules.StrikeYield(yieldTier);
+        Effects = effects;
+        StrikeYield = ProspectingRules.StrikeYield(yieldTier, effects);
         HeavyStrikeYield = ProspectingRules.HeavyStrikeYield(yieldTier);
+        SurveyStability = Math.Max(1, ProspectingRules.SurveyStability - effects.SurveyStabilityReduction);
+        StrikeStability = Math.Max(1, ProspectingRules.StrikeStability - effects.StrikeStabilityReduction);
+        HeavyStrikeStability = Math.Max(1, ProspectingRules.HeavyStrikeStability - effects.HeavyStrikeStabilityReduction);
+        RichExtractCharges = Math.Max(1, ProspectingRules.ExtractCharges - effects.RichExtractChargeReduction);
+        RichExtractStability = Math.Max(1, ProspectingRules.ExtractStability - effects.RichExtractStabilityReduction);
+        ShatterPercent = Math.Max(0, ProspectingRules.ShatterPercent - effects.ShatterReduction);
     }
 
     /// <summary>The node as the session begins.</summary>
@@ -54,6 +70,27 @@ public sealed class ProspectingSetup
 
     public int NodeTier { get; }
 
+    /// <summary>The harvester's perks and style.</summary>
+    public ProspectingEffects Effects { get; }
+
+    /// <summary>The Stability a Survey costs, perks included.</summary>
+    public int SurveyStability { get; }
+
+    /// <summary>The Stability a Strike costs, perks and style included.</summary>
+    public int StrikeStability { get; }
+
+    /// <summary>The Stability a Heavy Strike costs, perks included.</summary>
+    public int HeavyStrikeStability { get; }
+
+    /// <summary>The charges an Extract of a rich seam costs, perks included. A gem pocket costs <see cref="ProspectingRules.ExtractCharges"/>.</summary>
+    public int RichExtractCharges { get; }
+
+    /// <summary>The Stability an Extract of a rich seam costs, perks included. A gem pocket costs <see cref="ProspectingRules.ExtractStability"/>.</summary>
+    public int RichExtractStability { get; }
+
+    /// <summary>The chance, in percent, that a Heavy Strike shatters a gem pocket that has not been surveyed, perks included.</summary>
+    public int ShatterPercent { get; }
+
     /// <summary>The chances of the units a Strike takes at this rank, before the pool caps them.</summary>
     public IReadOnlyList<(int Units, int Chance)> StrikeYield { get; }
 
@@ -63,13 +100,22 @@ public sealed class ProspectingSetup
     /// <summary>The level the node's units pay XP at: <see cref="GatheringLevels.ForTier"/> for the node's tier.</summary>
     public int VeinLevel => GatheringLevels.ForTier(NodeTier);
 
-    /// <summary>The session of a Gathering rank at a node: the rank sets what a Survey reveals and how much a Strike yields.</summary>
-    public static ProspectingSetup ForNode(ProspectingNode node, int charges, int gatheringRank, int nodeTier) =>
-        new(
+    /// <summary>
+    /// The session of a Gathering rank at a node: the rank sets what a Survey reveals and how much a Strike yields, and the harvester's
+    /// perks and style change the costs, the units and what a Survey reveals (never more than a node holds).
+    /// </summary>
+    public static ProspectingSetup ForNode(ProspectingNode node, int charges, int gatheringRank, int nodeTier, ProspectingEffects effects = null)
+    {
+        effects ??= ProspectingEffects.None;
+        return new ProspectingSetup(
             node,
             charges,
-            CraftRankMilestones.ProspectingSurveyRevealsForRank(gatheringRank),
+            Math.Min(
+                CraftRankMilestones.MaxProspectingSurveyReveals,
+                CraftRankMilestones.ProspectingSurveyRevealsForRank(gatheringRank) + effects.SurveyReveals),
             CraftRankMilestones.ProspectingYieldTierForRank(gatheringRank),
             gatheringRank,
-            nodeTier);
+            nodeTier,
+            effects);
+    }
 }

@@ -2,6 +2,7 @@ using System.Linq.Expressions;
 using SWLOR.Game.Server.Core.Beamdog;
 using SWLOR.Game.Server.Feature.GuiDefinition.ViewModel;
 using SWLOR.Game.Server.Service.CraftService.Minigame;
+using SWLOR.Game.Server.Service.CraftService.Minigame.Gathering;
 using SWLOR.Game.Server.Service.CraftService.Minigame.Search;
 using SWLOR.Game.Server.Service.GuiService;
 using SWLOR.Game.Server.Service.GuiService.Component;
@@ -20,6 +21,8 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition
         private const float QuickSearchButtonHeight = 40f;
         private const float MeterLabelHeight = 20f;
         private const float MeterBarHeight = 18f;
+        private const float StyleRowHeight = 40f;
+        private const float StyleListHeight = 2 * StyleRowHeight + 8f;
 
         private static readonly string ActionSecondsText = SearchRules.ActionSeconds.ToString("0", System.Globalization.CultureInfo.InvariantCulture);
 
@@ -40,6 +43,11 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition
             "risk grows with every dig there. A ruined spot gives nothing more.\n" +
             "- Sift: shows whether the spots next to the one you sift are promising. It finds nothing, but it tells you where to search.\n" +
             "Each button shows the exact chances before you click.\n\n" +
+            "PERKS AND STYLES\n" +
+            "The Treasure Seeker perk line changes these numbers and never touches Quick Search. Most of its perks make a Dig Deeper find, " +
+            "or an ordinary find, favour the site's rare items. At Gathering " + GatheringStyles.StyleRank + " it offers the Careful Hands style: " +
+            "Searches find a little less often, and a Dig Deeper favours rare items much more. Pick the style in the list below before your " +
+            "first action; only one style can be active at a time, and it stays until you pick another.\n\n" +
             "THE PACE\n" +
             "Your first action is free. After every action you wait " + ActionSecondsText + " seconds before the next one counts.\n\n" +
             "XP AND LEAVING\n" +
@@ -52,7 +60,7 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition
         public GuiConstructedWindow BuildWindow()
         {
             var window = _builder.CreateWindow(GuiWindowType.Search)
-                .SetInitialGeometry(0, 0, 620f, 720f)
+                .SetInitialGeometry(0, 0, 620f, 820f)
                 .SetTitle("Search the Site")
                 .SetIsResizable(true)
                 .SetIsCollapsible(true)
@@ -121,6 +129,32 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition
                     .SetHorizontalAlign(NuiHorizontalAlign.Left)
                     .SetVerticalAlign(NuiVerticalAlign.Middle);
             });
+            content.AddRow(row =>
+            {
+                row.AddLabel()
+                    .BindText(model => model.StyleHeader)
+                    .SetHeight(MeterLabelHeight)
+                    .SetHorizontalAlign(NuiHorizontalAlign.Left);
+            });
+            content.AddRow(row => row.AddList(template =>
+                {
+                    template.AddCell(cell => cell.AddText()
+                        .BindText(model => model.StyleLabels)
+                        .SetShowBorder(false)
+                        .SetScrollbars(NuiScrollbars.None));
+                    template.AddCell(cell =>
+                    {
+                        cell.SetWidth(90f);
+                        cell.SetIsVariable(false);
+                        cell.AddButton()
+                            .BindText(model => model.StyleButtonTexts)
+                            .BindIsEnabled(model => model.StyleButtonEnabled)
+                            .BindOnClicked(model => model.OnClickStyle());
+                    });
+                })
+                .BindRowCount(model => model.StyleLabels)
+                .SetRowHeight(StyleRowHeight)
+                .SetHeight(StyleListHeight));
             content.AddRow(row =>
             {
                 row.AddLabel()

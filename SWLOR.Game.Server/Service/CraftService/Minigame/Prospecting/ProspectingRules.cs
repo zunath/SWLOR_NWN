@@ -94,11 +94,22 @@ public static class ProspectingRules
     public const int StrikeYieldShiftPercent = 5;
     public const int HeavyStrikeYieldShiftPercent = 5;
 
-    /// <summary>The chances of the units a Strike takes, at the tier of yield the Gathering rank earned (0 to 3). 1 or 2 units.</summary>
-    public static IReadOnlyList<(int Units, int Chance)> StrikeYield(int yieldTier)
+    /// <summary>
+    /// The chances of the units a Strike takes, at the tier of yield the Gathering rank earned (0 to 3). 1 or 2 units, each more with a
+    /// style that adds units to a Strike, and a larger share of the bigger result with a perk or style that moves it.
+    /// </summary>
+    public static IReadOnlyList<(int Units, int Chance)> StrikeYield(int yieldTier, ProspectingEffects effects = null)
     {
+        effects ??= ProspectingEffects.None;
         var shift = StrikeYieldShiftPercent * ClampTier(yieldTier);
-        return new[] { (1, 70 - shift), (2, 30 + shift) };
+        var big = Math.Clamp(30 + shift + effects.StrikeBigChancePoints, 0, 100);
+        var yield = new List<(int Units, int Chance)>(2);
+        if (big < 100)
+            yield.Add((1 + effects.StrikeUnits, 100 - big));
+        if (big > 0)
+            yield.Add((2 + effects.StrikeUnits, big));
+
+        return yield;
     }
 
     /// <summary>The chances of the units a Heavy Strike takes, at the tier of yield the Gathering rank earned (0 to 3). 2 to 4 units.</summary>

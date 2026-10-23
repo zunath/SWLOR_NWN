@@ -4,6 +4,7 @@ using SWLOR.Game.Server.Core.Beamdog;
 using SWLOR.Game.Server.Feature.GuiDefinition.ViewModel;
 using SWLOR.Game.Server.Service.CraftService;
 using SWLOR.Game.Server.Service.CraftService.Minigame;
+using SWLOR.Game.Server.Service.CraftService.Minigame.Gathering;
 using SWLOR.Game.Server.Service.CraftService.Minigame.Prospecting;
 using SWLOR.Game.Server.Service.GuiService;
 using SWLOR.Game.Server.Service.GuiService.Component;
@@ -20,6 +21,8 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition
         private const float MeterLabelHeight = 20f;
         private const float MeterBarHeight = 18f;
         private const float SeamRowHeight = 20f;
+        private const float StyleRowHeight = 40f;
+        private const float StyleListHeight = 3 * StyleRowHeight + 8f;
 
         private static string Number(double value) => value.ToString("0.#", CultureInfo.InvariantCulture);
 
@@ -49,6 +52,11 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition
             "working the node.\n\n" +
             "ONE AT A TIME\n" +
             "Only one harvester works a node at a time. Anyone else is told it is in use until you finish.\n\n" +
+            "PERKS AND STYLES\n" +
+            "The Prospector and Treasure Seeker perk lines change these numbers and never touch Quick Harvest. At Gathering " + GatheringStyles.StyleRank +
+            " each line offers a style: Strip Mining takes bigger Strikes for more Stability, and Careful Hands takes smaller Strikes for a gentler " +
+            "Survey. Pick one in the list below before your first action; only one can be active at a time, and it stays until you pick another. " +
+            "Core Sample shows what is hidden in the node, and Mother Lode makes your first Heavy Strike of a node take double the units.\n\n" +
             "YOUR RANK\n" +
             "Your Gathering rank replaces your attributes here. At Gathering ranks " + string.Join(", ", CraftRankMilestones.ProspectingYieldMilestoneRanks) +
             " a Strike and a Heavy Strike take more units, and at ranks " + string.Join(" and ", CraftRankMilestones.ProspectingSurveyMilestoneRanks) +
@@ -61,7 +69,7 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition
         public GuiConstructedWindow BuildWindow()
         {
             var window = _builder.CreateWindow(GuiWindowType.Prospecting)
-                .SetInitialGeometry(0, 0, 620f, 720f)
+                .SetInitialGeometry(0, 0, 620f, 900f)
                 .SetTitle("Prospecting")
                 .SetIsResizable(true)
                 .SetIsCollapsible(true)
@@ -136,6 +144,41 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition
                         .SetHorizontalAlign(NuiHorizontalAlign.Left);
                 });
             }
+
+            content.AddRow(row =>
+            {
+                row.AddLabel()
+                    .BindText(model => model.CoreSampleText)
+                    .SetHeight(MeterLabelHeight)
+                    .SetHorizontalAlign(NuiHorizontalAlign.Left);
+            });
+
+            content.AddRow(row =>
+            {
+                row.AddLabel()
+                    .BindText(model => model.StyleHeader)
+                    .SetHeight(MeterLabelHeight)
+                    .SetHorizontalAlign(NuiHorizontalAlign.Left);
+            });
+            content.AddRow(row => row.AddList(template =>
+                {
+                    template.AddCell(cell => cell.AddText()
+                        .BindText(model => model.StyleLabels)
+                        .SetShowBorder(false)
+                        .SetScrollbars(NuiScrollbars.None));
+                    template.AddCell(cell =>
+                    {
+                        cell.SetWidth(90f);
+                        cell.SetIsVariable(false);
+                        cell.AddButton()
+                            .BindText(model => model.StyleButtonTexts)
+                            .BindIsEnabled(model => model.StyleButtonEnabled)
+                            .BindOnClicked(model => model.OnClickStyle());
+                    });
+                })
+                .BindRowCount(model => model.StyleLabels)
+                .SetRowHeight(StyleRowHeight)
+                .SetHeight(StyleListHeight));
 
             content.AddRow(row =>
             {

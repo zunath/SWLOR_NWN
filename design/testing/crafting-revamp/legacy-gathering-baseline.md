@@ -14,17 +14,18 @@ Rules ported, each checked against the source by `LegacySourceTests`:
 
 | Rule | Source |
 | --- | --- |
-| Harvests per node | `HarvesterItemDefinition.cs:102-109` |
-| Harvest bonus item | `HarvesterItemDefinition.cs:113-124` |
-| Harvest XP | `HarvesterItemDefinition.cs:144-153` |
-| Scavenge second attempt | `ScavengePoint.cs:51-57` |
-| Scavenge success roll and DC | `ScavengePoint.cs:63-105` |
-| Ore tiers and XP per unit | `RefineryViewModel.cs:30-53` |
-| Refinery batch size | `RefineryViewModel.cs:58` |
-| Power cores per batch | `RefineryViewModel.cs:169-171` |
-| Refining XP | `RefineryViewModel.cs:337-352` |
-| Fishing catch chance | `Fishing.cs:452-462` |
-| Fishing bite and XP | `Fishing.cs:424-491` |
+| Harvests per node | `ProspectingNode.cs:62` |
+| Harvest XP | `GatheringLevels.cs:20-23` |
+| Scavenge second attempt | `ScavengePoint.cs:53-58` |
+| Scavenge success roll and DC | `ScavengePoint.cs:64-104` |
+| Ore tiers | `RefineryViewModel.cs:30-51` |
+| Refinery batch size | `RefineryViewModel.cs:56` |
+| Power cores per batch | `RefineryViewModel.cs:168-169` |
+| Fishing XP per bite | `FishingFightLifecycle.cs:52-62` |
+
+Harvesting now runs in Prospecting: a node keeps its d4 pool (`ProspectingNode`) and a unit pays `GetDeltaXP(vein level - rank)` (`GatheringLevels`). Quick Harvest plays today's loop at a Might modifier of 0. The harvest bonus item (`d100 <= 25 x Might modifier`) and refining's flat XP per unit (25 to 150 by ore tier) were in `HarvesterItemDefinition.cs` and `RefineryViewModel.cs` until Prospecting and the rank-difference refining XP replaced them. They are ported here from those files at commit 64b712fc8, where they were checked against the source, and are no longer checked.
+
+The fishing catch roll (`40 + 10 x (rank - fish level) + 2 x Willpower`, kept from 0 to 95) was in `FinishFishing` until the Line fight replaced it. It is ported here from `Service/Fishing.cs` at commit d5f1c0466, where it was checked against the source, and is no longer checked.
 
 The server's XP chart (`GetDeltaXP`), by the activity's level minus the rank:
 

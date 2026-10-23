@@ -26,9 +26,9 @@ public static class ProspectingRules
     // Seams. A node holds one to three hidden seams, never more than its pool has units (each seals one); the weights are the chance
     // of each count. A seam is a gem pocket with GemPocketPercent chance when the node's loot table has gem entries, and a rich seam
     // otherwise.
-    public const int OneSeamWeight = 50;
-    public const int TwoSeamsWeight = 35;
-    public const int ThreeSeamsWeight = 15;
+    public const int OneSeamWeight = 30;
+    public const int TwoSeamsWeight = 40;
+    public const int ThreeSeamsWeight = 30;
     public const int GemPocketPercent = 25;
 
     /// <summary>The seams every node can hold at most.</summary>
@@ -52,7 +52,7 @@ public static class ProspectingRules
     public const int ExtractStability = 24;
     public const double ExtractSeconds = 3.0;
 
-    /// <summary>The chance, in percent, that a Heavy Strike shatters one gem pocket that has not been surveyed. Keep it a multiple of 5.</summary>
+    /// <summary>The chance, in percent, that a Heavy Strike shatters one gem pocket that has not been surveyed. Keep it a multiple of 20, so every outcome of a Heavy Strike stays a whole percentage (the engine refuses otherwise).</summary>
     public const int ShatterPercent = 20;
 
     /// <summary>The chance, in percent, that a claimed rich seam gives an extra ore roll beyond its own unit. This is the one place a session yields more than the pool.</summary>
@@ -91,7 +91,7 @@ public static class ProspectingRules
     public static IReadOnlyList<(int Units, int Chance)> StrikeYield(int yieldTier)
     {
         var shift = StrikeYieldShiftPercent * ClampTier(yieldTier);
-        return new[] { (1, 60 - shift), (2, 40 + shift) };
+        return new[] { (1, 70 - shift), (2, 30 + shift) };
     }
 
     /// <summary>The chances of the units a Heavy Strike takes, at the tier of yield the Gathering rank earned (0 to 3). 2 to 4 units.</summary>

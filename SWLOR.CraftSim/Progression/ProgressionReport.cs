@@ -147,7 +147,8 @@ namespace SWLOR.CraftSim.Progression
             text.AppendLine();
             var rules = new MarkdownTable("Rule", "Source");
             foreach (var source in ProgressionSource.All.Concat(LegacySource.All.Where(s =>
-                         s.File.EndsWith("HarvesterItemDefinition.cs") || s.File.EndsWith("ScavengePoint.cs") || s.File.EndsWith("RefineryViewModel.cs") ||
+                         s.File.EndsWith("ProspectingNode.cs") || s.File.EndsWith("GatheringLevels.cs") || s.File.EndsWith("ScavengePoint.cs") ||
+                         s.File.EndsWith("RefineryViewModel.cs") ||
                          s == LegacySource.FailureLoss || s == LegacySource.RecipeUnlockOffset)))
             {
                 rules.Add(source.Name, $"`{source.Citation}`");

@@ -8,6 +8,8 @@ namespace SWLOR.CraftSim.Legacy
         public const string RecipeLevelChart = Server + "Service/CraftService/RecipeLevelChart.cs";
         public const string Craft = Server + "Service/Craft.cs";
         public const string Harvester = Server + "Feature/ItemDefinition/HarvesterItemDefinition.cs";
+        public const string ProspectingNode = Server + "Service/CraftService/Minigame/Prospecting/ProspectingNode.cs";
+        public const string GatheringLevels = Server + "Service/CraftService/GatheringLevels.cs";
         public const string Scavenge = Server + "Feature/ScavengePoint.cs";
         public const string Refinery = Server + "Feature/GuiDefinition/ViewModel/RefineryViewModel.cs";
         public const string FishingFight = Server + "Service/FishingService/FishingFightLifecycle.cs";
@@ -116,45 +118,42 @@ namespace SWLOR.CraftSim.Legacy
             "Stat.AdjustControl(dbPlayer, skillType, amount);", "Stat.AdjustCraftsmanship(dbPlayer, skillType, amount);",
             "Stat.AdjustCPBonus(dbPlayer, skillType, amount);", "GetItemPropertyCostTableValue(ip)");
 
+        // The harvest rules live in Prospecting now. A node still holds a d4 pool of units, set when it is first worked, and Quick Harvest
+        // takes all of it, a charge and a harvest delay for each; a unit still pays GetDeltaXP(10 x (tier - 1) + 5 - rank). The bonus item
+        // chance (d100 <= 5 x Might modifier x 5) was removed with the attribute dependency, and is ported from HarvesterItemDefinition.cs
+        // at commit 64b712fc8 without being checked against the source (HarvestModel.BonusItemChance).
         public static readonly SourceReference HarvestNodeCount = new(
-            "Harvests per node", Harvester, 102, 109,
-            "var resourceCount = GetLocalInt(target, \"RESOURCE_COUNT\");", "resourceCount = Random.D4(1);", "resourceCount--;");
-
-        public static readonly SourceReference HarvestBonusItem = new(
-            "Harvest bonus item", Harvester, 113, 124,
-            "if (d100() <= 5 * GetAbilityModifier(AbilityType.Might, user) * 5)", "lootTable.GetRandomItem()", "itemsGathered++;");
+            "Harvests per node", ProspectingNode, 62, 62,
+            "var pool = random.Next(1, ProspectingRules.PoolDie + 1);");
 
         public static readonly SourceReference HarvestXp = new(
-            "Harvest XP", Harvester, 144, 153,
-            "var veinLevel = 10 * (resourceLevel - 1) + 5;", "var delta = veinLevel - dbSkill.Rank;",
-            "var deltaXP = Skill.GetDeltaXP(delta);", "deltaXP * itemsGathered");
+            "Harvest XP", GatheringLevels, 20, 23,
+            "LevelsPerTier * (Math.Max(1, tier) - 1) + FirstTierLevel", "Skill.GetDeltaXP(ForTier(tier) - gatheringRank)");
 
         public static readonly SourceReference ScavengeAttempts = new(
-            "Scavenge second attempt", Scavenge, 51, 57,
+            "Scavenge second attempt", Scavenge, 53, 58,
             "var attempts = 1;", "Random.D100(1) <= (hardLookLevel * 10 + GetAbilityModifier(AbilityType.Perception, user) * 5)", "attempts++;");
 
         public static readonly SourceReference ScavengeRoll = new(
-            "Scavenge success roll and DC", Scavenge, 63, 105,
+            "Scavenge success roll and DC", Scavenge, 64, 104,
             "var dc = 6;", "var roll = Random.D20(1);", "if (roll + GetAbilityModifier(AbilityType.Perception, user) >= dc)",
             "var scavLevel = 10 * requiredLevel;", "xp = deltaXP;", "xp = deltaXP / 4;", "dc += Random.D3(1);");
 
+        // Refining's flat XP per unit (25 for tier 1 ore up to 150 for tier 5, whatever the rank) is ported from RefineryViewModel.cs at
+        // commit 64b712fc8 (RefiningModel.LegacyXpPerUnit) and is no longer in the source: refining now pays GetDeltaXP(ore level - rank).
         public static readonly SourceReference RefineryOres = new(
-            "Ore tiers and XP per unit", Refinery, 30, 53,
-            "{\"raw_veldite\", new OreDetail(1, \"ref_veldite\", 25)}", "{\"raw_scordspar\", new OreDetail(2, \"ref_scordspar\", 50)}",
-            "{\"raw_plagionite\", new OreDetail(3, \"ref_plagionite\", 75)}", "{\"raw_keromber\", new OreDetail(4, \"ref_keromber\", 100)}",
-            "{\"raw_jasioclase\", new OreDetail(5, \"ref_jasioclase\", 125)}", "{\"raw_arkoxit\", new OreDetail(5, \"ref_arkoxit\", 150)}");
+            "Ore tiers", Refinery, 30, 51,
+            "{\"raw_veldite\", new OreDetail(1, \"ref_veldite\")}", "{\"raw_scordspar\", new OreDetail(2, \"ref_scordspar\")}",
+            "{\"raw_plagionite\", new OreDetail(3, \"ref_plagionite\")}", "{\"raw_keromber\", new OreDetail(4, \"ref_keromber\")}",
+            "{\"raw_jasioclase\", new OreDetail(5, \"ref_jasioclase\")}", "{\"raw_arkoxit\", new OreDetail(5, \"ref_arkoxit\")}");
 
         public static readonly SourceReference RefineryBatch = new(
-            "Refinery batch size", Refinery, 58, 58,
+            "Refinery batch size", Refinery, 56, 56,
             "private const int BaseItemsRefinedPerCore = 3;");
 
         public static readonly SourceReference RefineryCores = new(
-            "Power cores per batch", Refinery, 169, 171,
+            "Power cores per batch", Refinery, 168, 169,
             "var itemsPerCore = BaseItemsRefinedPerCore + refineryManagement;", "(int)Math.Ceiling(ItemCount / (float)itemsPerCore)");
-
-        public static readonly SourceReference RefineryXp = new(
-            "Refining XP", Refinery, 337, 352,
-            "xp += refinedItem.XPGranted * stackSize;", "Skill.GiveSkillXP(Player, SkillType.Gathering, xp, false, false);");
 
         public static readonly SourceReference FishingXp = new(
             "Fishing XP per bite", FishingFight, 52, 62,
@@ -164,8 +163,8 @@ namespace SWLOR.CraftSim.Legacy
         {
             ActionRanks, MaxCp, MaxDurability, MaxProgress, MaxQuality, LevelChart, Progress, Quality, HandleAction, Actions,
             SessionReset, FailureLoss, EnhancementSlots, EnhancementKinds, EnhancementProgressPenalty, EnhancementTransfer,
-            RecipeUnlockOffset, GearStats, HarvestNodeCount, HarvestBonusItem, HarvestXp,
-            ScavengeAttempts, ScavengeRoll, RefineryOres, RefineryBatch, RefineryCores, RefineryXp, FishingXp
+            RecipeUnlockOffset, GearStats, HarvestNodeCount, HarvestXp,
+            ScavengeAttempts, ScavengeRoll, RefineryOres, RefineryBatch, RefineryCores, FishingXp
         };
     }
 }

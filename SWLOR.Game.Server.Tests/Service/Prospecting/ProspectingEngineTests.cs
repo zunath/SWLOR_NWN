@@ -127,7 +127,7 @@ public class ProspectingEngineTests
 
         var preview = engine.Preview(ProspectingActionIds.Strike);
 
-        preview.Outcomes.Select(o => (o.Label, o.ChancePercent)).Should().Equal(("Takes 1 unit", 60), ("Takes 2 units", 40));
+        preview.Outcomes.Select(o => (o.Label, o.ChancePercent)).Should().Equal(("Takes 1 unit", 70), ("Takes 2 units", 30));
         preview.CpCost.Should().Be(ProspectingRules.StrikeCharges);
         preview.IntegrityCost.Should().Be(ProspectingRules.StrikeStability);
         preview.FinishesItem.Should().BeFalse();
@@ -205,12 +205,12 @@ public class ProspectingEngineTests
         engine.Preview(ProspectingActionIds.Strike).Enabled.Should().BeFalse();
     }
 
-    [TestCase(0, 60, 40)]
-    [TestCase(14, 60, 40)]
-    [TestCase(15, 55, 45)]
-    [TestCase(30, 50, 50)]
-    [TestCase(45, 45, 55)]
-    [TestCase(50, 45, 55)]
+    [TestCase(0, 70, 30)]
+    [TestCase(14, 70, 30)]
+    [TestCase(15, 65, 35)]
+    [TestCase(30, 60, 40)]
+    [TestCase(45, 55, 45)]
+    [TestCase(50, 55, 45)]
     public void GatheringRankMilestonesAddYieldToAStrike(int rank, int oneUnit, int twoUnits)
     {
         var engine = Engine(Node(4), rank: rank);
@@ -647,7 +647,7 @@ public class ProspectingEngineTests
                 .Should().OnlyContain(remainder => remainder == 0, "a Heavy Strike's outcomes must be whole percentages");
         }
 
-        ProspectingRules.ExpectedUnits(ProspectingRules.StrikeYield(0)).Should().BeApproximately(1.4, 1e-9);
+        ProspectingRules.ExpectedUnits(ProspectingRules.StrikeYield(0)).Should().BeApproximately(1.3, 1e-9);
         ProspectingRules.ExpectedUnits(ProspectingRules.StrikeYield(3)).Should().BeGreaterThan(ProspectingRules.ExpectedUnits(ProspectingRules.StrikeYield(0)));
     }
 }

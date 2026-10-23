@@ -43,13 +43,15 @@ namespace SWLOR.CraftSim.Report
             text.AppendLine();
             var rules = new MarkdownTable("Rule", "Source");
             foreach (var source in LegacySource.All.Where(s =>
-                         s.File.EndsWith("HarvesterItemDefinition.cs") || s.File.EndsWith("ScavengePoint.cs") ||
+                         s.File.EndsWith("ProspectingNode.cs") || s.File.EndsWith("GatheringLevels.cs") || s.File.EndsWith("ScavengePoint.cs") ||
                          s.File.EndsWith("RefineryViewModel.cs") || s.File.Contains("Fishing")))
             {
                 rules.Add(source.Name, $"`{source.Citation}`");
             }
 
             text.AppendLine(rules.ToString());
+            text.AppendLine("Harvesting now runs in Prospecting: a node keeps its d4 pool (`ProspectingNode`) and a unit pays `GetDeltaXP(vein level - rank)` (`GatheringLevels`). Quick Harvest plays today's loop at a Might modifier of 0. The harvest bonus item (`d100 <= 25 x Might modifier`) and refining's flat XP per unit (25 to 150 by ore tier) were in `HarvesterItemDefinition.cs` and `RefineryViewModel.cs` until Prospecting and the rank-difference refining XP replaced them. They are ported here from those files at commit 64b712fc8, where they were checked against the source, and are no longer checked.");
+            text.AppendLine();
             text.AppendLine("The fishing catch roll (`40 + 10 x (rank - fish level) + 2 x Willpower`, kept from 0 to 95) was in `FinishFishing` until the Line fight replaced it. It is ported here from `Service/Fishing.cs` at commit d5f1c0466, where it was checked against the source, and is no longer checked.");
             text.AppendLine();
             text.AppendLine("The server's XP chart (`GetDeltaXP`), by the activity's level minus the rank:");

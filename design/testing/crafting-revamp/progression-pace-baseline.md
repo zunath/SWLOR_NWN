@@ -46,22 +46,20 @@ Rules copied from the server (the model calls everything else directly), each ch
 | RP XP per hour | `RoleplayXP.cs:16-93` |
 | Guild points per hand-in | `Guild.cs:62-80` |
 | Ten guild tasks per tier on the board | `Guild.cs:124-170` |
-| Seconds per harvester use | `HarvesterItemDefinition.cs:50-60` |
+| Seconds per harvester use | `ProspectingRules.cs:71` |
 | Seconds per scavenge attempt | `ScavengePoint.cs:55-70` |
 | Seconds per refining operation | `RefineryViewModel.cs:58-64` |
 | Research job length and credits | `Craft.cs:1145-1192` |
 | A first research job creates the blueprint | `ResearchViewModel.cs:387-410` |
 | Components and enhancements lost on failure | `CraftViewModel.cs:1601-1641` |
 | Recipe rank requirement | `Craft.cs:327-331` |
-| Harvests per node | `HarvesterItemDefinition.cs:102-109` |
-| Harvest bonus item | `HarvesterItemDefinition.cs:113-124` |
-| Harvest XP | `HarvesterItemDefinition.cs:144-153` |
-| Scavenge second attempt | `ScavengePoint.cs:51-57` |
-| Scavenge success roll and DC | `ScavengePoint.cs:63-105` |
-| Ore tiers and XP per unit | `RefineryViewModel.cs:30-53` |
-| Refinery batch size | `RefineryViewModel.cs:58` |
-| Power cores per batch | `RefineryViewModel.cs:169-171` |
-| Refining XP | `RefineryViewModel.cs:337-352` |
+| Harvests per node | `ProspectingNode.cs:62` |
+| Harvest XP | `GatheringLevels.cs:20-23` |
+| Scavenge second attempt | `ScavengePoint.cs:53-58` |
+| Scavenge success roll and DC | `ScavengePoint.cs:64-104` |
+| Ore tiers | `RefineryViewModel.cs:30-51` |
+| Refinery batch size | `RefineryViewModel.cs:56` |
+| Power cores per batch | `RefineryViewModel.cs:168-169` |
 
 ## Hours per 10-rank band
 

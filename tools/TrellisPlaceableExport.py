@@ -20,6 +20,7 @@ Schema 1 assets (all paths relative to the manifest):
     engine's default approach;
   emission {threshold, softness, gain?, saturation_min?}: a glow map from the brightest base-color texels;
   color_gain (0.25..3, default 1): linear-light brightness of the base color, applied after the glow map is taken;
+  black_lift (0..0.5, default 0): raises the darkest texels in linear light so near-black panels stay readable in a dim room;
   wear (0..1, default 0): light grime (darker, warmer seams and soft blotches) for a texture that came out too clean;
   greeble (0..1, default 0): vent slots, rows of small square buttons and panel outlines drawn on flat texture cells, with
     matching normal bevels, for a texture of plain flat panels;
@@ -305,6 +306,8 @@ def validate_item(item, manifest_dir, haks_names=None, inspect_only=False):
         raise ValueError(f'{asset}: wear must be 0..1')
     if not finite(item.get('greeble', 0)) or not 0 <= item.get('greeble', 0) <= 1:
         raise ValueError(f'{asset}: greeble must be 0..1')
+    if not finite(item.get('black_lift', 0)) or not 0 <= item.get('black_lift', 0) <= .5:
+        raise ValueError(f'{asset}: black_lift must be 0..0.5')
     if item.get('normal_basis_policy', 'reproject') not in ('reproject', 'authored_tangents'):
         raise ValueError(f'{asset}: unknown normal_basis_policy')
     if not finite(item.get('authored_angle_limit_degrees', .5)) or not .5 <= item.get('authored_angle_limit_degrees', .5) <= 90:
@@ -885,6 +888,14 @@ def apply_wear(weapon, base, normal, wear, name):
     return np.clip(base * (1 - grime) + base * dirt * grime, 0, 1)
 
 
+def apply_black_lift(weapon, base, lift):
+    """Raise the darkest texels in linear light (v -> lift + (1 - lift) * v), so near-black panels that a dim interior would
+    swallow whole keep their panel detail; whites stay white."""
+    if not lift:
+        return base
+    return weapon.srgb(lift + (1 - lift) * weapon.linear(weapon.np.asarray(base)))
+
+
 def apply_color_gain(weapon, base, gain):
     """Scale the base color in linear light (after the glow map is taken from it), so a dark TRELLIS texture can be lifted to
     read in the game's dim interiors without the washed-out look of an sRGB multiply."""
@@ -935,6 +946,7 @@ def material_maps(weapon, item, doc, binary, index, source, cache, resources, na
     maps[name], maps[name + '_n'] = apply_greeble(weapon, maps[name], maps[name + '_n'], item.get('greeble', 0), name)
     maps[name] = apply_wear(weapon, maps[name], maps[name + '_n'], item.get('wear', 0), name)
     maps[name] = apply_color_gain(weapon, maps[name], item.get('color_gain', 1))
+    maps[name] = apply_black_lift(weapon, maps[name], item.get('black_lift', 0))
     dims = {key: weapon.save_texture(resources / (key + '.tga'), value) for key, value in maps.items()}
     lines = ['renderhint NormalAndSpecMapped', 'texture0 ' + name, 'texture1 ' + name + '_n', 'texture2 ' + name + '_s',
              'texture3 ' + name + '_r']

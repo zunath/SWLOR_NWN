@@ -191,6 +191,18 @@ class MaterialTests(unittest.TestCase):
         self.assertLess(float(exporter.apply_color_gain(weapon, base, .5).max()), .5)
 
     @unittest.skipIf(np is None, 'numpy not installed')
+    def test_black_lift_raises_blacks_and_keeps_whites(self):
+        from types import SimpleNamespace
+        weapon = SimpleNamespace(np=np, linear=lambda x: x ** 2.2, srgb=lambda x: x ** (1 / 2.2))
+        base = np.array([[[0., 0., 0.], [1., 1., 1.], [.5, .5, .5]]])
+        self.assertIs(exporter.apply_black_lift(weapon, base, 0), base)
+        lifted = exporter.apply_black_lift(weapon, base, .1)
+        self.assertGreater(float(lifted[0, 0, 0]), .3)
+        self.assertAlmostEqual(float(lifted[0, 1, 0]), 1.0, places=6)
+        self.assertGreater(float(lifted[0, 2, 0]), .5)
+        self.assertTrue(bool(np.all(np.diff(lifted[0, :, 0][[0, 2, 1]]) > 0)))
+
+    @unittest.skipIf(np is None, 'numpy not installed')
     def test_greeble_draws_panel_detail_on_flat_cells_only_and_is_deterministic(self):
         from types import SimpleNamespace
         weapon = SimpleNamespace(np=np)
@@ -354,6 +366,12 @@ class ManifestTests(unittest.TestCase):
         for gain in (0, .1, 3.5, float('nan'), '2'):
             with self.subTest(gain=gain), self.assertRaises(ValueError):
                 self.check(color_gain=gain)
+
+    def test_black_lift_must_be_a_small_fraction(self):
+        self.assertIn('black_lift', self.check(black_lift=.2))
+        for lift in (-.1, .6, float('nan'), '0.1'):
+            with self.subTest(lift=lift), self.assertRaises(ValueError):
+                self.check(black_lift=lift)
 
     def test_greeble_must_be_a_fraction(self):
         self.assertIn('greeble', self.check(greeble=.7))

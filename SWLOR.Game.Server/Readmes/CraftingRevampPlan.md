@@ -602,9 +602,9 @@ The seven stations get new models made with the Trellis2 workflow. They are repl
 | --- | --- |
 | Smithery | Plasma forge |
 | Engineering | Droid and electronics workbench: grey and off-white panelled bench with a wiring back panel, dials, inset green readouts, droid parts and a circuit board on the work surface |
-| Fabrication | Enclosed industrial fabricator, about 1.8 m tall, with three tool heads (press, former, welding arm) over a work bed, hydraulic pistons and small inset readouts |
-| Cooking | Starship galley unit: grey and off-white cabinet with two round heating plates, a vent hood, pipes, small dials and storage doors |
-| Espionage | Covert chemistry bench: grey and off-white cabinet with a rail of vials and canisters, a small amber readout and toggles |
+| Fabrication | Enclosed industrial fabricator, about 1.8 m tall, grey with a yellow stripe: an open bay of tool heads and pistons over a work bed, vents and a control box |
+| Cooking | Starship galley unit: dark and mid grey cabinet with two round heating plates and a grill, a vent hood, pipe runs, rows of buttons, a small inset readout and storage doors |
+| Espionage | Covert chemistry bench: mid grey cabinet with a rail of vials and canisters, a gauge, push buttons and indicator lamps |
 | Research | Rebel-base analysis console: slanted grey and off-white console with an inset green screen, buttons, toggles, dials and a sample drawer |
 | Gathering | Refinery |
 

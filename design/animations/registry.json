@@ -3048,5 +3048,155 @@
       "SWLOR_Haks/sw_cr_creature/a_fa.mdl"
     ],
     "ProjectPath": "design/animations/unarmed/Haymaker.swlanim"
+  },
+  {
+    "Name": "ForgeWork",
+    "AnimationName": "sw_forgework",
+    "Duration": 3.4,
+    "Targets": [
+      "SWLOR_Haks/sw_cr_creature/a_ba.mdl",
+      "SWLOR_Haks/sw_cr_creature/a_fa.mdl"
+    ],
+    "ProjectPath": "design/animations/crafting-stations/ForgeWork.swlanim"
+  },
+  {
+    "Name": "Circuitry",
+    "AnimationName": "sw_circuitry",
+    "Duration": 2.9,
+    "Targets": [
+      "SWLOR_Haks/sw_cr_creature/a_ba.mdl",
+      "SWLOR_Haks/sw_cr_creature/a_fa.mdl"
+    ],
+    "ProjectPath": "design/animations/crafting-stations/Circuitry.swlanim"
+  },
+  {
+    "Name": "Fabricate",
+    "AnimationName": "sw_fabricate",
+    "Duration": 3.6,
+    "Targets": [
+      "SWLOR_Haks/sw_cr_creature/a_ba.mdl",
+      "SWLOR_Haks/sw_cr_creature/a_fa.mdl"
+    ],
+    "ProjectPath": "design/animations/crafting-stations/Fabricate.swlanim"
+  },
+  {
+    "Name": "Cooking",
+    "AnimationName": "sw_cooking",
+    "Duration": 3.2,
+    "Targets": [
+      "SWLOR_Haks/sw_cr_creature/a_ba.mdl",
+      "SWLOR_Haks/sw_cr_creature/a_fa.mdl"
+    ],
+    "ProjectPath": "design/animations/crafting-stations/Cooking.swlanim"
+  },
+  {
+    "Name": "Compound",
+    "AnimationName": "sw_compound",
+    "Duration": 3.3,
+    "Targets": [
+      "SWLOR_Haks/sw_cr_creature/a_ba.mdl",
+      "SWLOR_Haks/sw_cr_creature/a_fa.mdl"
+    ],
+    "ProjectPath": "design/animations/crafting-stations/Compound.swlanim"
+  },
+  {
+    "Name": "Survey",
+    "AnimationName": "sw_survey",
+    "Duration": 3,
+    "Targets": [
+      "SWLOR_Haks/sw_cr_creature/a_ba.mdl",
+      "SWLOR_Haks/sw_cr_creature/a_fa.mdl"
+    ],
+    "ProjectPath": "design/animations/gathering/Survey.swlanim"
+  },
+  {
+    "Name": "Strike",
+    "AnimationName": "sw_strike",
+    "Duration": 1.9,
+    "Targets": [
+      "SWLOR_Haks/sw_cr_creature/a_ba.mdl",
+      "SWLOR_Haks/sw_cr_creature/a_fa.mdl"
+    ],
+    "ProjectPath": "design/animations/gathering/Strike.swlanim"
+  },
+  {
+    "Name": "HvyStrike",
+    "AnimationName": "sw_hvystrike",
+    "Duration": 2.7,
+    "Targets": [
+      "SWLOR_Haks/sw_cr_creature/a_ba.mdl",
+      "SWLOR_Haks/sw_cr_creature/a_fa.mdl"
+    ],
+    "ProjectPath": "design/animations/gathering/HvyStrike.swlanim"
+  },
+  {
+    "Name": "Extract",
+    "AnimationName": "sw_extract",
+    "Duration": 2.8,
+    "Targets": [
+      "SWLOR_Haks/sw_cr_creature/a_ba.mdl",
+      "SWLOR_Haks/sw_cr_creature/a_fa.mdl"
+    ],
+    "ProjectPath": "design/animations/gathering/Extract.swlanim"
+  },
+  {
+    "Name": "Search",
+    "AnimationName": "sw_search",
+    "Duration": 3,
+    "Targets": [
+      "SWLOR_Haks/sw_cr_creature/a_ba.mdl",
+      "SWLOR_Haks/sw_cr_creature/a_fa.mdl"
+    ],
+    "ProjectPath": "design/animations/gathering/Search.swlanim"
+  },
+  {
+    "Name": "Dig",
+    "AnimationName": "sw_dig",
+    "Duration": 3.2,
+    "Targets": [
+      "SWLOR_Haks/sw_cr_creature/a_ba.mdl",
+      "SWLOR_Haks/sw_cr_creature/a_fa.mdl"
+    ],
+    "ProjectPath": "design/animations/gathering/Dig.swlanim"
+  },
+  {
+    "Name": "Reel",
+    "AnimationName": "sw_reel",
+    "Duration": 3.05,
+    "Targets": [
+      "SWLOR_Haks/sw_cr_creature/a_ba.mdl",
+      "SWLOR_Haks/sw_cr_creature/a_fa.mdl"
+    ],
+    "ProjectPath": "design/animations/fishing/Reel.swlanim"
+  },
+  {
+    "Name": "GiveLine",
+    "AnimationName": "sw_giveline",
+    "Duration": 2.4,
+    "Targets": [
+      "SWLOR_Haks/sw_cr_creature/a_ba.mdl",
+      "SWLOR_Haks/sw_cr_creature/a_fa.mdl"
+    ],
+    "ProjectPath": "design/animations/fishing/GiveLine.swlanim"
+  },
+  {
+    "Name": "HoldRod",
+    "AnimationName": "sw_holdrod",
+    "Duration": 3.5,
+    "Targets": [
+      "SWLOR_Haks/sw_cr_creature/a_ba.mdl",
+      "SWLOR_Haks/sw_cr_creature/a_fa.mdl"
+    ],
+    "ProjectPath": "design/animations/fishing/HoldRod.swlanim"
+  },
+  {
+    "Name": "LandFish",
+    "AnimationName": "sw_landfish",
+    "Duration": 3.4,
+    "Targets": [
+      "SWLOR_Haks/sw_cr_creature/a_ba.mdl",
+      "SWLOR_Haks/sw_cr_creature/a_fa.mdl"
+    ],
+    "ProjectPath": "design/animations/fishing/LandFish.swlanim"
   }
 ]

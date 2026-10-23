@@ -412,7 +412,7 @@ Refining stays a quick batch conversion with no minigame.
 
 - **Gates:** ore tier gates come from Gathering rank.
 - **Batch size:** each power core's batch grows with rank (see Progression).
-- **XP:** use the same rank-difference curve as harvesting, `GetDeltaXP(activity level - rank)` per unit, instead of today's flat 25-150 XP per unit (`RefineryViewModel.cs:337-352`). Cheap ore must stop training high ranks.
+- **XP:** keep today's flat XP per unit for each ore (25-150) at the ore's level, and scale it by the rank on harvesting's curve: `flat XP x GetDeltaXP(ore level - rank) / GetDeltaXP(0)` per unit (`GatheringLevels.RefiningXp`). An ore's level is the level of the vein of its tier (5, 15, 25, 35, 45). Refining XP per hour at level is today's; a refiner five ranks past the ore's level earns nothing, so cheap ore stops training high ranks.
 - **Unrefinable ores:** Ochne, Croknor, Hemorgite and Bisteiss are not in the game. Leave their entries alone.
 
 ### Agriculture fishing: the Line
@@ -614,7 +614,7 @@ Every model and animation needs client evidence (`InEngineVisualVerification.md`
 **Fix, in the workstream that touches each system:**
 - **Research terminal message.** It says "Another player's incubation job is active" (`Craft.cs:1021`). It should name a research job.
 - **Bible SP totals.** The Engineering, Fabrication, Agriculture and Gathering tabs show cached SP totals that disagree with their rows, and some SP Price cells are stored as text. Fix them with the workbook rules, then rewrite those tabs for the new lines.
-- **Refining XP.** Use the rank-difference curve, as above.
+- **Refining XP.** Scale today's flat XP by the rank-difference curve, as above.
 - **Character sheet tooltips.** They describe a retired "auto-craft chance" (`CharacterSheetDefinition.cs:258-259`). Rewrite them for the new stat roles.
 - **Player guide text.** Update the crafting, gathering, fishing and research text in `PlayerGuideViewModel.cs`, keeping `PlayerGuideContentTests` passing.
 - **Old minigame defects.** These disappear when the old minigame is deleted; make sure none survives in shared code:

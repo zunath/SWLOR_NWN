@@ -39,6 +39,14 @@ namespace SWLOR.CraftSim.Scenario.Circuit
             }
         }
 
+        /// <summary>The loadout in words for a report, such as "both perk lines in full (every purchase their Engineering rank allows) and plays Overclock".</summary>
+        public string Describe()
+        {
+            var lines = Overclocker && Technician ? "both perk lines" : Overclocker ? "the Overclocker line" : Technician ? "the Technician line" : "no perk line";
+            var style = Style == CircuitStyle.None ? "plays no style" : $"plays {CircuitStyles.Name(Style)}";
+            return $"{lines}{(Overclocker || Technician ? " in full (every purchase their Engineering rank allows)" : string.Empty)} and {style}";
+        }
+
         /// <summary>A style named for the gates, such as "Overclock (both lines)".</summary>
         public CraftStyle ToStyle(string name) => new(name, this);
     }

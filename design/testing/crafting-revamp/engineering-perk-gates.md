@@ -25,7 +25,7 @@ Scenarios (`gates --scenario <name>`):
 
 - **Gate 1 fails for the unperked Circuit already** (`circuit-tuning.md`, "Gate 1"): the margin is the same kind of failure and no perked line makes it worse, so the perks neither cause nor fix it.
 - **Gate 2 passes, but quality saturates.** At mid and best gear both styles reach about 100 quality on at-level recipes, so almost every recipe is a tie (half a win each) and the table reads 50% / 50%. Only "no gear" separates the styles (Overclock 62% / Safe Mode 38% with no line perks; 57% / 42% with both lines, mean gap +0.7 and +1.2 points). The gate cannot see speed, which is where they differ; see below.
-- **Gate 4 is the finding.** Every other gate holds for every build.
+- **Gate 4 is the finding.** It is the one gate that passes for the unperked Circuit and fails for a perked build. Gates 5, 6 and 7 hold for every build, and gate 1 fails for every build as it already does unperked.
 
 ## Gate 4: why the Overclocker cannot keep every cell above 10 actions
 

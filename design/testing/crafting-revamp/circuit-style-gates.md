@@ -7,7 +7,7 @@
 
 - Scenario: Circuit (`circuit`), Engineering recipes, minigame Circuit.
 - Quality: the quality meter's share of its maximum when the item is made, in points (0-100). A broken or abandoned piece counts 0, so every average includes the crafts that failed.
-- Crafter: the rank the scenario's cohort gives each recipe (by default the recipe's level, at most 50, so a crafter works at their own level), with no food or status bonuses and no perks unless a gate names a style. Gear levels are the plan's none, middle and best tier of the skill's crafting gear:
+- Crafter: the rank the scenario's cohort gives each recipe (by default the recipe's level, at most 50, so a crafter works at their own level), with no food or status bonuses and no perks unless a gate names a style or the scenario's limitations say it plays a perk loadout. Gear levels are the plan's none, middle and best tier of the skill's crafting gear:
   - no gear (Control 0, Craftsmanship 0, CP 0)
   - mid gear (Control 13, Craftsmanship 12, CP 20)
   - best gear (Control 29, Craftsmanship 30, CP 37)

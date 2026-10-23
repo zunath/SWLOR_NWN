@@ -7,7 +7,7 @@
 
 - Scenario: Circuit (both lines, Overclock) (`circuit-both`), Engineering recipes, minigame Circuit.
 - Quality: the quality meter's share of its maximum when the item is made, in points (0-100). A broken or abandoned piece counts 0, so every average includes the crafts that failed.
-- Crafter: the rank the scenario's cohort gives each recipe (by default the recipe's level, at most 50, so a crafter works at their own level), with no food or status bonuses and no perks unless a gate names a style. Gear levels are the plan's none, middle and best tier of the skill's crafting gear:
+- Crafter: the rank the scenario's cohort gives each recipe (by default the recipe's level, at most 50, so a crafter works at their own level), with no food or status bonuses and no perks unless a gate names a style or the scenario's limitations say it plays a perk loadout. Gear levels are the plan's none, middle and best tier of the skill's crafting gear:
   - no gear (Control 0, Craftsmanship 0, CP 0)
   - mid gear (Control 13, Craftsmanship 12, CP 20)
   - best gear (Control 29, Craftsmanship 30, CP 37)
@@ -365,3 +365,4 @@
 - An enhancement's difficulty is the old window's progress penalty added to the Assembly the piece needs, capped at 30% of the Assembly the recipe itself needs; the Circuit's Wire, Tune and Discharge outputs do not change with it.
 - Without a style the crafter plays without perks, which is what the perks-optional gate and every gate of the plain scenario play; the style-balance gate plays Overclock and Safe Mode with no line perks and with both lines bought in full (every purchase the crafter's rank allows).
 - Seconds per action is an estimate of 8 s until the client evidence measures it.
+- Every craft in this scenario is played by a crafter who bought both perk lines in full (every purchase their Engineering rank allows) and plays Overclock, so no gate here is an unperked result.

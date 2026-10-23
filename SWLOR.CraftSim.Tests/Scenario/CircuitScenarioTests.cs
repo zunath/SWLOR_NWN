@@ -137,5 +137,18 @@ namespace SWLOR.CraftSim.Tests.Scenario
             engine.Setup.Perks.Surge.Should().Be(overclocker);
             engine.Setup.Perks.Failsafe.Should().Be(technician);
         }
+
+        [Test]
+        public void ThePerkedScenariosSayWhichLoadoutTheyPlay_AndThePlainOneDoesNot()
+        {
+            var both = ScenarioRegistry.Discover().Find("circuit-both");
+            var technician = ScenarioRegistry.Discover().Find("circuit-technician");
+            var plain = ScenarioRegistry.Discover().Find("circuit");
+
+            both.Limitations.Should().Contain(
+                "Every craft in this scenario is played by a crafter who bought both perk lines in full (every purchase their Engineering rank allows) and plays Overclock, so no gate here is an unperked result.");
+            technician.Limitations.Should().Contain(line => line.Contains("the Technician line in full") && line.Contains("plays Safe Mode"));
+            plain.Limitations.Should().NotContain(line => line.Contains("Every craft in this scenario"));
+        }
     }
 }

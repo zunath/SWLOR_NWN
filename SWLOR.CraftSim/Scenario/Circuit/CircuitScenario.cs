@@ -92,6 +92,8 @@ namespace SWLOR.CraftSim.Scenario.Circuit
             $"An enhancement's difficulty is the old window's progress penalty added to the Assembly the piece needs, capped at {CircuitRules.MaxEnhancementAssemblyShare * 100:0}% of the Assembly the recipe itself needs; the Circuit's Wire, Tune and Discharge outputs do not change with it.",
             "Without a style the crafter plays without perks, which is what the perks-optional gate and every gate of the plain scenario play; the style-balance gate plays Overclock and Safe Mode with no line perks and with both lines bought in full (every purchase the crafter's rank allows).",
             "Seconds per action is an estimate of 8 s until the client evidence measures it."
-        };
+        }.Concat(_defaultLoadout == null
+            ? Array.Empty<string>()
+            : new[] { $"Every craft in this scenario is played by a crafter who bought {_defaultLoadout.Describe()}, so no gate here is an unperked result." }).ToList();
     }
 }

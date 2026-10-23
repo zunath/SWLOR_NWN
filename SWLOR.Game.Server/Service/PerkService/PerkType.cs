@@ -833,6 +833,22 @@ namespace SWLOR.Game.Server.Service.PerkService
         SmitheryContainmentFocus = 900,
         SmitheryPerfectTemper = 901,
 
+        PantryStaples = 904,
+        SharpPalate = 905,
+        SeasonedPalate = 906,
+        SlowCooking = 907,
+        FlashCooking = 908,
+        KitchenReduce = 909,
+        AromaticKitchen = 910,
+        SteadyWrist = 911,
+        SignatureDish = 912,
+        StrongLine = 913,
+        HardSet = 914,
+        FishSense = 915,
+        PatientAngler = 916,
+        AggressiveAngler = 917,
+        TrophyCatch = 918,
+
         EfficientStrikes = 924,
         BulkRefining = 925,
         RichVeins = 926,
@@ -848,6 +864,6 @@ namespace SWLOR.Game.Server.Service.PerkService
         RichPickings = 936,
         Jackpot = 937,
 
-        // IDs 650, 860-863, 882-883, 902-923 and 938+ are free.
+        // IDs 650, 860-863, 882-883, 902-903, 919-923 and 938+ are free.
     }
 }

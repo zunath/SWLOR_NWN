@@ -8,10 +8,12 @@ namespace SWLOR.CraftSim.Fishing
 {
     /// <summary>
     /// The bound on the fight (owner decision, October 2026): fighting a bite is optional, keeps its multiplied XP for its time and may catch
-    /// better than Quick Reel, but a skilled fight's expected catch rate stays within <see cref="FishingParityOptions.FightBoundRelative"/> of
-    /// Quick Reel's for the same fish and angler. The adaptive player stands for the skilled fight. The gate holds it to the bound for the
-    /// angler with no perks, for each rank over the real pools, for the Angler line the perk draft proposes (both styles) and for the special
-    /// rare fish with and without Trophy Catch.
+    /// better than Quick Reel, but an unperked skilled fight's expected catch rate stays within <see cref="FishingParityOptions.FightBoundRelative"/>
+    /// of Quick Reel's for the same fish and angler. The adaptive player stands for the skilled fight. The gate holds the angler with no perks
+    /// to the bound at each rank and over the real pools. The Angler line may lift the fight further, to the owner's target of about
+    /// <see cref="FishingParityOptions.PerkedTargetPercent"/>% of the fish at the angler's own level (both styles, at rank 50 where the line is
+    /// complete), and the special rare fish, which take the fight perks at half strength and Trophy Catch at full strength, stay within the
+    /// bound with no perks and with Trophy Catch alone.
     /// </summary>
     public sealed class FishingFightBoundGate : IBalanceGate
     {
@@ -35,42 +37,45 @@ namespace SWLOR.CraftSim.Fishing
 
             var unperked = ByDelta();
             var pooled = ByRank(pools);
-            var line = AnglerLine();
+            var line = FishingAnglerEvidence.PerkedLine(_parity, _options);
             var rare = FishingAnglerEvidence.RareFishVerdicts(_parity, _options).Where(verdict => verdict.Case.Gated).ToList();
 
-            var over = unperked.Over.Concat(pooled.Over).Concat(line.Over)
+            var over = unperked.Over.Concat(pooled.Over)
                 .Concat(rare.Where(verdict => !verdict.Within).Select(verdict =>
                     $"{verdict.Case.Name} ({Number(verdict.Landed, 0)}% against {Number(verdict.Bound, 1)}%)"))
                 .ToList();
             var tables = new[] { unperked.Table, pooled.Table, line.Table, FishingAnglerEvidence.RareFish(_parity, new[] { _options.CorridorLowScore, _options.CorridorHighScore }, _options) };
 
             var rule = $"{Number(_options.FightBoundRelative * 100, 0)}% above Quick Reel's chance plus {Number(_options.FightBoundSlackPoints, 0)} points";
-            if (over.Count == 0)
+            var target = $"{Number(_options.PerkedTargetPercent, 0)}% of the fish at the angler's own level (within {Number(_options.PerkedTolerancePoints, 0)} points)";
+            if (over.Count == 0 && line.Outside.Count == 0)
             {
                 return new GateResult(
                     Name,
                     GateVerdict.Passed,
-                    $"The skilled (adaptive) fight lands at most {rule} for the same fish: with no perks at every rank above the fish's level and over the real pools, " +
-                    $"with the whole Angler line in either style, and on the special rare fish with and without Trophy Catch (furthest below the bound by {Number(Math.Min(unperked.Margin, Math.Min(pooled.Margin, line.Margin)), 1)} points in the tables).",
+                    $"With no perks the skilled (adaptive) fight lands at most {rule} for the same fish, at every rank above the fish's level and over the real pools " +
+                    $"(furthest below the bound by {Number(Math.Min(unperked.Margin, pooled.Margin), 1)} points in the tables). The whole Angler line, in either style, lands about {target} at rank 50, " +
+                    $"and the special rare fish stay within the bound with no perks and with Trophy Catch alone (the rows with the fight perks at half strength are shown, not judged).",
                     tables);
             }
 
+            var problems = over.Concat(line.Outside.Select(row => "the whole Angler line misses its target at " + row)).ToList();
             return new GateResult(
                 Name,
                 GateVerdict.Failed,
-                $"The skilled (adaptive) fight lands more than {rule} in {over.Count} row(s): {string.Join("; ", over)}.",
+                $"The fight is out of bounds in {problems.Count} row(s) (no perks: at most {rule}; whole line: about {target}): {string.Join("; ", problems)}.",
                 tables);
         }
 
         private void Prepare(IReadOnlyList<FishingPool> pools)
         {
             var keys = new List<CatchKey>();
-            foreach (var effects in new[] { LineAnglerEffects.None, FishingAnglerEvidence.WholeLinePatient, FishingAnglerEvidence.WholeLineAggressive })
+            foreach (var build in new[] { AnglerBuild.Unperked }.Concat(FishingAnglerEvidence.Lines))
             {
                 foreach (var rank in _options.ReferenceRanks)
                 {
                     foreach (var delta in _options.Deltas.Where(delta => rank - delta >= 0))
-                        keys.Add(new CatchKey(rank - delta, FishRarity.Common, rank, FishingParity.NominalRodTier(rank), LinePlayer.Adaptive, effects));
+                        keys.Add(new CatchKey(rank - delta, FishRarity.Common, rank, FishingParity.NominalRodTier(rank), LinePlayer.Adaptive, build.EffectsAt(rank)));
                 }
             }
 
@@ -175,45 +180,6 @@ namespace SWLOR.CraftSim.Fishing
 
             return (table.ToGateTable(
                     "No perks: landed per bite by Agriculture rank, over every rod and bait pool the angler can use (pools weighted equally, fish within a pool by frequency)"),
-                over,
-                margin);
-        }
-
-        private (GateTable Table, IReadOnlyList<string> Over, double Margin) AnglerLine()
-        {
-            var table = new EvidenceTable(
-                "Rank - fish level", $"Quick Reel (Willpower {_options.QuickReelWillpowerScore})", "Bound", "No perks", "Whole line, Patient Angler", "Whole line, Aggressive Angler", "Verdict");
-            var over = new List<string>();
-            var margin = double.MaxValue;
-            foreach (var delta in _options.Deltas)
-            {
-                if (_options.ReferenceRanks.All(rank => rank - delta < 0))
-                    continue;
-
-                var quickReel = _options.QuickReel(delta, 0);
-                var bound = _options.FightBound(quickReel);
-                var none = Adaptive(delta, LineAnglerEffects.None);
-                var patient = Adaptive(delta, FishingAnglerEvidence.WholeLinePatient);
-                var aggressive = Adaptive(delta, FishingAnglerEvidence.WholeLineAggressive);
-                var worst = Math.Max(patient, aggressive);
-                var within = worst <= bound;
-                margin = Math.Min(margin, bound - worst);
-                if (!within)
-                    over.Add($"{Signed(delta)} with the whole line ({Number(worst, 0)}% against {Number(bound, 1)}%)");
-
-                table.Add(
-                    Signed(delta),
-                    quickReel + "%",
-                    Number(bound, 1) + "%",
-                    Number(none, 0) + "%",
-                    Number(patient, 0) + "%",
-                    Number(aggressive, 0) + "%",
-                    within ? "Within" : "Over");
-            }
-
-            return (table.ToGateTable(
-                    "The Angler line below the capstone (Strong Line I, Hard Set I and a style; the perk draft): landed per bite by rank above the fish's level, " +
-                    $"at ranks {string.Join(", ", _options.ReferenceRanks)} ({_parity.Runs} fights per fish)"),
                 over,
                 margin);
         }

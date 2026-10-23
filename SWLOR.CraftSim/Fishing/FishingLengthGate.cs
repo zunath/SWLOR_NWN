@@ -21,11 +21,14 @@ namespace SWLOR.CraftSim.Fishing
 
         private readonly FishingParity _parity;
         private readonly FishingParityOptions _options;
+        private readonly AnglerBuild _build;
 
-        public FishingLengthGate(FishingParity parity, FishingParityOptions options = null)
+        /// <param name="build">The Angler perks the fisher owns at each rank, or null for none.</param>
+        public FishingLengthGate(FishingParity parity, FishingParityOptions options = null, AnglerBuild build = null)
         {
             _parity = parity ?? throw new ArgumentNullException(nameof(parity));
             _options = options ?? FishingParityOptions.Default;
+            _build = build ?? AnglerBuild.Unperked;
         }
 
         public string Name => GateNames.Length;
@@ -37,8 +40,8 @@ namespace SWLOR.CraftSim.Fishing
             var outside = new List<string>();
             foreach (var delta in _options.Deltas.Where(delta => delta >= LowestDelta && delta <= HighestDelta))
             {
-                var turns = Turns(delta, LinePlayer.Adaptive);
-                var casual = Turns(delta, LinePlayer.RuleOfThumb);
+                var turns = Turns(delta, LinePlayer.Adaptive, _build);
+                var casual = Turns(delta, LinePlayer.RuleOfThumb, AnglerBuild.Unperked);
                 if (double.IsNaN(turns))
                     continue;
 
@@ -49,7 +52,7 @@ namespace SWLOR.CraftSim.Fishing
                 table.Add(Signed(delta), Number(turns), Number(casual), inside ? "Within" : "Outside");
             }
 
-            var title = $"Fight length by rank above the fish's level (target {target}; mean over ranks {string.Join(", ", _options.ReferenceRanks)})";
+            var title = $"Fight length by rank above the fish's level, {_build.Name} (target {target}; mean over ranks {string.Join(", ", _options.ReferenceRanks)})";
             return outside.Count == 0
                 ? new GateResult(Name, GateVerdict.Passed, $"The adaptive player's fights last {target} in every row.", new[] { table.ToGateTable(title) })
                 : new GateResult(
@@ -59,11 +62,11 @@ namespace SWLOR.CraftSim.Fishing
                     new[] { table.ToGateTable(title) });
         }
 
-        private double Turns(int delta, LinePlayer player)
+        private double Turns(int delta, LinePlayer player, AnglerBuild build)
         {
             var turns = _options.ReferenceRanks
                 .Where(rank => rank - delta >= 0)
-                .Select(rank => _parity.Catch(rank - delta, FishRarity.Common, rank, FishingParity.NominalRodTier(rank), player).MeanTurns)
+                .Select(rank => _parity.Catch(rank - delta, FishRarity.Common, rank, FishingParity.NominalRodTier(rank), player, build.EffectsAt(rank)).MeanTurns)
                 .ToList();
             return turns.Count == 0 ? double.NaN : turns.Average();
         }

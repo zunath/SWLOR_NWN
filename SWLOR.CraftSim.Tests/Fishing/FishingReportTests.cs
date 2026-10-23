@@ -38,6 +38,10 @@ namespace SWLOR.CraftSim.Tests.Fishing
                 GateNames.Length,
                 GateNames.XpRate,
                 "Evidence: XP rate at the fastest allowed pace",
+                $"{GateNames.Length} (Patient Angler (full line))",
+                $"{GateNames.XpRate} (Patient Angler (full line))",
+                $"{GateNames.Length} (Aggressive Angler (full line))",
+                $"{GateNames.XpRate} (Aggressive Angler (full line))",
                 "Evidence: Angler perk magnitudes",
                 "Evidence: style balance");
             report.Should().StartWith("# " + FishingReport.Title);
@@ -106,15 +110,17 @@ namespace SWLOR.CraftSim.Tests.Fishing
         {
             var parity = new FishingParity(8, 3);
 
-            var perks = FishingAnglerEvidence.PerkMagnitudes(parity);
+            var perks = AnglerPerkStudy.PurchaseTable(parity, FishingParityOptions.Default);
+            var atLevel = AnglerPerkStudy.AtLevelTable(parity, FishingParityOptions.Default);
             var style = FishingAnglerEvidence.StyleBalance(parity);
             var rare = FishingAnglerEvidence.RareFish(parity, new[] { 10, 14 });
 
-            perks.Rows.Should().HaveCount(FishingAnglerEvidence.Variants.Count + FishingAnglerEvidence.RejectedVariants.Count + 1);
+            perks.Rows.Should().HaveCount(AnglerPerkStudy.Purchases().Count + 1, "every purchase of the line, and the unperked row");
+            perks.Rows.Select(row => row[0]).Should().OnlyHaveUniqueItems();
+            atLevel.Rows.Should().HaveCount(AnglerPerkStudy.LineRanks.Count, "a row for each rank of the line");
             style.Table.Rows.Should().HaveCount(FishingAnglerEvidence.Ranks.Count * FishingAnglerEvidence.StyleDeltas.Count);
             (style.PatientShare + style.AggressiveShare).Should().BeApproximately(1.0, 1e-9);
             rare.Rows.Select(row => row[0]).Should().Contain(name => name.Contains("Trophy Catch"));
-            FishingAnglerEvidence.Variants.Concat(FishingAnglerEvidence.RejectedVariants).Select(variant => variant.Name).Should().OnlyHaveUniqueItems();
         }
 
         [Test]

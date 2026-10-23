@@ -8,6 +8,7 @@ using SWLOR.Game.Server.Service.CraftService.Minigame;
 using SWLOR.Game.Server.Service.CraftService.Minigame.Kitchen;
 using SWLOR.Game.Server.Service.GuiService;
 using SWLOR.Game.Server.Service.GuiService.Component;
+using SWLOR.Game.Server.Service.StatService;
 using SWLOR.NWN.API.NWScript.Enum;
 using SWLOR.NWN.API.NWScript.Enum.Item;
 using SWLOR.NWN.API.NWScript.Enum.Item.Property;
@@ -29,6 +30,8 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
         private const string StartText = "Start Cooking";
         private const string SelectText = "Select";
         private const string RemoveText = "Remove";
+        private const string PalateOnText = "On";
+        private const string PalateOffText = "Off";
 
         private static readonly GuiColor Gold = new(255, 200, 0);
 
@@ -41,6 +44,7 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
         private IReadOnlyList<int> _committedSlots = new List<int>();
         private CraftSession _session;
         private KitchenEngine _engine;
+        private bool _seasonedPalateOn;
 
         protected override CraftMinigameType Minigame => CraftMinigameType.Kitchen;
 
@@ -113,6 +117,19 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
         public GuiBindingList<GuiColor> RecipeColors
         {
             get => Get<GuiBindingList<GuiColor>>();
+            set => Set(value);
+        }
+
+        /// <summary>One row when the cook has Seasoned Palate, otherwise none: its label and, in <see cref="PalateButtons"/>, its switch.</summary>
+        public GuiBindingList<string> PalateLabels
+        {
+            get => Get<GuiBindingList<string>>();
+            set => Set(value);
+        }
+
+        public GuiBindingList<string> PalateButtons
+        {
+            get => Get<GuiBindingList<string>>();
             set => Set(value);
         }
 
@@ -320,6 +337,8 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
             RecipeColors = new GuiBindingList<GuiColor>();
             EnhancementTexts = new GuiBindingList<string>();
             EnhancementButtons = new GuiBindingList<string>();
+            PalateLabels = new GuiBindingList<string>();
+            PalateButtons = new GuiBindingList<string>();
 
             DonenessPercentage = 0f;
             DonenessText = string.Empty;
@@ -386,12 +405,27 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
                     colors.Add(GuiColor.White);
                 }
 
-                description.Add(KitchenText.PantryLine());
+                description.Add(KitchenText.PantryLine(stats.PantryPush));
                 colors.Add(GuiColor.White);
                 description.Add($"The dish starts with {kitchen.Freshness} Freshness and is ruined at 0.");
                 colors.Add(GuiColor.White);
                 description.Add(string.Empty);
                 colors.Add(GuiColor.White);
+
+                var perkLines = KitchenText.PerkLines(stats.Perks, stats);
+                if (perkLines.Count > 0)
+                {
+                    description.Add("[CHEF PERKS]");
+                    colors.Add(Gold);
+                    foreach (var line in perkLines)
+                    {
+                        description.Add(line);
+                        colors.Add(GuiColor.White);
+                    }
+
+                    description.Add(string.Empty);
+                    colors.Add(GuiColor.White);
+                }
             }
 
             var (details, detailColors) = Craft.BuildRecipeDetail(Player, _recipe, _blueprint);
@@ -403,8 +437,32 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
 
             RecipeDescription = description;
             RecipeColors = colors;
+            RefreshPalate(stats.Perks);
             RefreshEnhancements();
         }
+
+        private void RefreshPalate(KitchenPerkStats perks)
+        {
+            var labels = new GuiBindingList<string>();
+            var buttons = new GuiBindingList<string>();
+            if (perks.SeasonedPalateOwned)
+            {
+                labels.Add("Seasoned Palate: each Add of a committed ingredient pushes half as far. Chosen for the whole dish.");
+                buttons.Add(perks.SeasonedPalateOn ? PalateOnText : PalateOffText);
+            }
+
+            PalateLabels = labels;
+            PalateButtons = buttons;
+        }
+
+        public Action OnClickPalate() => () =>
+        {
+            if (_engine != null)
+                return;
+
+            _seasonedPalateOn = !_seasonedPalateOn;
+            RefreshSetup();
+        };
 
         private void RefreshEnhancements()
         {
@@ -432,7 +490,8 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
                 rank,
                 Stat.CalculateCraftsmanship(Player, recipe.Skill),
                 Stat.CalculateControl(Player, recipe.Skill),
-                gearCp);
+                gearCp,
+                KitchenPerkStats.FromStatTotals(stat => Stat.GetStatAdjustment(Player, stat), _seasonedPalateOn));
         }
 
         public Action OnClickEnhancement() => () =>
@@ -576,8 +635,8 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
             DistanceText = KitchenText.DistanceText(_engine.DistanceFromCenter, target);
             DistanceColor = _engine.DistanceFromCenter <= target.InnerRadius ? GuiColor.Green : GuiColor.White;
             HeatText = KitchenText.HeatText(_engine.Heat, _engine.CoverTurns);
-            DriftText = KitchenText.DriftText(_engine.NextDrift, _engine.EffectiveNextDrift, _engine.Heat);
-            AromaText = KitchenText.AromaText(_engine.IsPeakAromaNext);
+            DriftText = KitchenText.DriftText(_engine.NextDrift, _engine.EffectiveNextDrift, _engine.Heat, _engine.Stats);
+            AromaText = KitchenText.AromaText(_engine.IsPeakAromaNext, _engine.Stats.PeakAromaChancePercent);
             AromaColor = _engine.IsPeakAromaNext ? Gold : GuiColor.White;
             ThresholdText = KitchenText.ThresholdText(meters.QualityPercent, _committedSlots);
 

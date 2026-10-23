@@ -127,6 +127,51 @@ namespace SWLOR.Game.Server.EngineTests.Definitions
                 "nothing worn leaves every record at its base");
         }
 
+        [EngineTest("Vanilla appearance crafting of worn armor keeps the records on the worn gear", Category = Category, TimeoutSeconds = 60f)]
+        public static async Task AppearanceCraftingCopyIsCorrected(EngineTestContext ctx)
+        {
+            // The retired native Craft dialogue modified worn armor by copying it with the new part, destroying the
+            // worn original and equipping the copy. Destroying a worn item raises the unequip event, so the records
+            // follow the gear; the login rebuild is the backstop for any change that does not.
+            using var fixture = await PlayerAbilityFixture.CreateAsync(ctx);
+            var player = fixture.Creature;
+            ctx.SuppressNPCNaturalRegen(player);
+            var chest = GetItemInSlot(InventorySlot.Chest, player);
+            if (GetIsObjectValid(chest)) await UnequipAsync(ctx, player, chest);
+            var armor = await CreateItemAsync(ctx, player, "ec_armor", RingProperties);
+            fixture.Update(record => record.Evasion = 0);
+            await EquipAsync(ctx, player, armor, InventorySlot.Chest);
+            AssertRecord(ctx, player, physical: 10, force: 10, evasion: 0, fp: Stat.BaseFP + 8, stamina: Stat.BaseSTM + 8, "the original armor");
+
+            var copy = OBJECT_INVALID;
+            await ctx.ExecuteInCreatureContextAsync(player, () =>
+                copy = CopyItemAndModify(armor, ItemAppearanceType.ArmorModel, (int)AppearanceArmor.Robe, 1, true));
+            await ctx.WaitFrameAsync();
+            ctx.Assert(GetIsObjectValid(copy), "the appearance copy is created");
+            ctx.Track(copy);
+            await ctx.ExecuteInCreatureContextAsync(player, () => DestroyObject(armor));
+            for (var frame = 0; frame < 10; frame++)
+                await ctx.WaitFrameAsync();
+            var afterDestroy = Record(player);
+            ctx.Log($"After destroying the worn original: Physical {afterDestroy.Defenses[CombatDamageType.Physical]}, " +
+                    $"Force {afterDestroy.Defenses[CombatDamageType.Force]}, max FP {afterDestroy.MaxFP}, max STM {afterDestroy.MaxStamina}.");
+
+            await EquipAsync(ctx, player, copy, InventorySlot.Chest);
+            AssertRecord(ctx, player, physical: 10, force: 10, evasion: 0, fp: Stat.BaseFP + 8, stamina: Stat.BaseSTM + 8,
+                "equipping the copy rebuilds the records from the worn copy");
+
+            // Destroying the worn copy leaves nothing worn.
+            await ctx.ExecuteInCreatureContextAsync(player, () => DestroyObject(copy));
+            for (var frame = 0; frame < 10; frame++)
+                await ctx.WaitFrameAsync();
+            var stale = Record(player);
+            ctx.Log($"After destroying the worn copy: Physical {stale.Defenses[CombatDamageType.Physical]}, max FP {stale.MaxFP}.");
+            await ctx.ExecuteInCreatureContextAsync(player, () => Stat.RefreshPlayerEquipmentStats(player));
+            await ctx.WaitFrameAsync();
+            AssertRecord(ctx, player, physical: 0, force: 0, evasion: 0, fp: Stat.BaseFP, stamina: Stat.BaseSTM,
+                "the records match the gear actually worn after a login rebuild");
+        }
+
         private static Player Record(uint player) => DB.Get<Player>(GetObjectUUID(player));
 
         private static void Drift(PlayerAbilityFixture fixture) => fixture.Update(record =>

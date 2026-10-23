@@ -156,6 +156,18 @@ namespace SWLOR.CraftSim.Tests.Scenario
             (engine.Setup.Perks.PerfectTemperPercent > 0).Should().Be(artisan);
         }
 
+        [TestCase("forge-forgemaster")]
+        [TestCase("forge-artisan")]
+        [TestCase("forge-both")]
+        [TestCase("forge-both-cold")]
+        [TestCase("forge-hot")]
+        [TestCase("forge-cold")]
+        public void AnyPerkedBuildKeepsTheEightActionFloor_WhileTheUnperkedForgeKeepsTen(string name)
+        {
+            ScenarioRegistry.Discover().Find(name).LengthTarget.Should().Be(LengthTarget.PerkedItemCraft);
+            ScenarioRegistry.Discover().Find("forge").LengthTarget.Should().Be(LengthTarget.ItemCraft);
+        }
+
         [Test]
         public void ThePerkedScenariosSayWhichLoadoutTheyPlay_AndThePlainOneDoesNot()
         {

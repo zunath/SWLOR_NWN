@@ -1,3 +1,4 @@
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using SWLOR.Game.Server.Feature.StatusEffectDefinition;
@@ -28,19 +29,25 @@ public static class ForgeStyles
     private static readonly IReadOnlyDictionary<ForgeStyle, IReadOnlyDictionary<StatType, int>> StyleStats =
         new Dictionary<ForgeStyle, IReadOnlyDictionary<StatType, int>>
         {
-            [ForgeStyle.HotForging] = new Dictionary<StatType, int>
-            {
-                [StatType.ForgeRangeShift] = ForgePerkRules.HotForgingRangeShift,
-                [StatType.ForgePressOutputPercent] = ForgePerkRules.HotForgingPressPercent,
-                [StatType.ForgeHoneOutputPercent] = ForgePerkRules.HotForgingHonePercent
-            },
-            [ForgeStyle.ColdWorking] = new Dictionary<StatType, int>
-            {
-                [StatType.ForgeRangeShift] = ForgePerkRules.ColdWorkingRangeShift,
-                [StatType.ForgeHoneOutputPercent] = ForgePerkRules.ColdWorkingHonePercent,
-                [StatType.ForgePressOutputPercent] = ForgePerkRules.ColdWorkingPressPercent
-            }
+            [ForgeStyle.HotForging] = Stats(
+                ForgePerkRules.HotForgingRangeShift, ForgePerkRules.HotForgingPressPercent, ForgePerkRules.HotForgingHonePercent),
+            [ForgeStyle.ColdWorking] = Stats(
+                ForgePerkRules.ColdWorkingRangeShift, ForgePerkRules.ColdWorkingPressPercent, ForgePerkRules.ColdWorkingHonePercent)
         };
+
+    /// <summary>The stat adjustments of a style with the given range shift and Hydro-Press and Vibro-Hone percents; a zero grants nothing.</summary>
+    private static IReadOnlyDictionary<StatType, int> Stats(int rangeShift, int pressPercent, int honePercent)
+    {
+        var stats = new Dictionary<StatType, int>();
+        if (rangeShift != 0)
+            stats[StatType.ForgeRangeShift] = rangeShift;
+        if (pressPercent != 0)
+            stats[StatType.ForgePressOutputPercent] = pressPercent;
+        if (honePercent != 0)
+            stats[StatType.ForgeHoneOutputPercent] = honePercent;
+
+        return stats;
+    }
 
     /// <summary>The stat adjustments a style's status effect carries.</summary>
     public static IReadOnlyDictionary<StatType, int> StatsOf(ForgeStyle style) =>
@@ -57,11 +64,32 @@ public static class ForgeStyles
     public static string Description(ForgeStyle style) => style switch
     {
         ForgeStyle.HotForging =>
-            $"The working range moves up {ForgePerkRules.HotForgingRangeShift} Thermal. Hydro-Press gains {ForgePerkRules.HotForgingPressPercent}% more Shape and Vibro-Hone gains {-ForgePerkRules.HotForgingHonePercent}% less Finish.",
+            Describe(ForgePerkRules.HotForgingRangeShift, ForgePerkRules.HotForgingPressPercent, ForgePerkRules.HotForgingHonePercent),
         ForgeStyle.ColdWorking =>
-            $"The working range moves down {-ForgePerkRules.ColdWorkingRangeShift} Thermal. Vibro-Hone gains {ForgePerkRules.ColdWorkingHonePercent}% more Finish and Hydro-Press gains {-ForgePerkRules.ColdWorkingPressPercent}% less Shape.",
+            Describe(ForgePerkRules.ColdWorkingRangeShift, ForgePerkRules.ColdWorkingPressPercent, ForgePerkRules.ColdWorkingHonePercent),
         _ => "No style: the Plasma Forge plays by its usual rules."
     };
+
+    /// <summary>
+    /// A style in words: the range move first, then the Hydro-Press and Vibro-Hone changes, leaving out whatever is zero, such as
+    /// "The working range moves down 5 Thermal. Vibro-Hone gains 5% more Finish."
+    /// </summary>
+    public static string Describe(int rangeShift, int pressPercent, int honePercent)
+    {
+        var changes = new List<string>();
+        if (pressPercent != 0)
+            changes.Add($"Hydro-Press gains {Math.Abs(pressPercent)}% {(pressPercent > 0 ? "more" : "less")} Shape");
+        if (honePercent != 0)
+            changes.Add($"Vibro-Hone gains {Math.Abs(honePercent)}% {(honePercent > 0 ? "more" : "less")} Finish");
+
+        var sentences = new List<string>();
+        if (rangeShift != 0)
+            sentences.Add($"The working range moves {(rangeShift > 0 ? "up" : "down")} {Math.Abs(rangeShift)} Thermal.");
+        if (changes.Count > 0)
+            sentences.Add(string.Join(" and ", changes) + ".");
+
+        return string.Join(" ", sentences);
+    }
 
     public static PerkType PerkOf(ForgeStyle style) => style switch
     {

@@ -121,6 +121,8 @@ namespace SWLOR.CraftSim.Tests.Scenario
             LengthTarget.FishingFight.ToString().Should().Be("3-6 actions (fishing fight)");
             LengthTarget.ResearchExperiment.Contains(5).Should().BeTrue();
             LengthTarget.ItemCraft.Contains(9.9).Should().BeFalse();
+            LengthTarget.PerkedItemCraft.Should().Be(new LengthTarget(8, 20, "item craft at level, perked build"));
+            LengthTarget.PerkedItemCraft.Contains(9.9).Should().BeTrue();
         }
 
         [Test]

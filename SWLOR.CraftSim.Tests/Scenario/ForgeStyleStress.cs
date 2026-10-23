@@ -16,7 +16,7 @@ namespace SWLOR.CraftSim.Tests.Scenario
     /// Compares Hot Forging with Cold Working where at-level quality does not saturate: crafts under the recipe's rank, without gear and
     /// with a heavy enhancement (<c>design/testing/crafting-revamp/smithery-perk-gates.md</c>), for a crafter with no line perks and for
     /// one with both lines in full. Explicit: a long run, never part of a normal test run. The report goes to
-    /// <c>%TEMP%/claude-crafting-revamp-perks-smithery/stress.txt</c>.
+    /// <c>%TEMP%/claude-crafting-revamp-perks-smithery-tuning/stress.txt</c>.
     /// </summary>
     [TestFixture, Explicit]
     public class ForgeStyleStress
@@ -63,7 +63,7 @@ namespace SWLOR.CraftSim.Tests.Scenario
                 }
             }
 
-            var path = Path.Combine(Path.GetTempPath(), "claude-crafting-revamp-perks-smithery", "stress.txt");
+            var path = Path.Combine(Path.GetTempPath(), "claude-crafting-revamp-perks-smithery-tuning", "stress.txt");
             Directory.CreateDirectory(Path.GetDirectoryName(path)!);
             File.WriteAllLines(path, lines);
         }

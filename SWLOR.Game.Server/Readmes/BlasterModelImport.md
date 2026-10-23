@@ -405,7 +405,9 @@ policies below. The export refuses a resource name that already exists in the ha
   - The 8-bit normal bake has a few grazing texels at Z of about -0.004, which are raised onto the horizon (anything
     below -0.02 still fails).
   - Triangles with mixed tangent handedness need `normal_basis_policy: "authored_tangents"`, and the compiler's normal
-    quantization may then need `authored_angle_limit_degrees` up to 1 (the weapon default stays 0.5).
+    quantization may then need `authored_angle_limit_degrees` up to 1 (the weapon default stays 0.5). Blocky consoles with
+    hard creases measured up to 80 degrees (the package report lists the maxima), probably because the face match picks a
+    neighbouring source face at a crease; such a model needs a wide limit, so check its render before accepting it.
 - **Walkmesh.** The PWK is the convex hull of the model in plan, simplified, inset by `walkmesh.inset` and laid flat at
   Z=0 as nonwalkable surface 7, as the old stations do. `use_nodes` (at most two) become `<4 characters>pwk_use01/02`; the
   engine silently ignores any other name and any node left at the origin (`PlaceableWalkmeshUseNodeTests`). A node must

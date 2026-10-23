@@ -190,6 +190,23 @@ class MaterialTests(unittest.TestCase):
         self.assertTrue(np.allclose(exporter.apply_color_gain(weapon, np.ones((1, 1, 3)), 3), 1))
         self.assertLess(float(exporter.apply_color_gain(weapon, base, .5).max()), .5)
 
+    @unittest.skipIf(np is None, 'numpy not installed')
+    def test_wear_darkens_seams_deterministically_and_leaves_clean_input_alone(self):
+        from types import SimpleNamespace
+        weapon = SimpleNamespace(np=np)
+        base = np.full((64, 64, 3), .8)
+        normal = np.zeros((64, 64, 3))
+        normal[..., 2] = 1
+        normal = normal * .5 + .5
+        normal[30:34, :, 1] = .9
+        self.assertIs(exporter.apply_wear(weapon, base, normal, 0, 'stn_a'), base)
+        worn = exporter.apply_wear(weapon, base, normal, .8, 'stn_a')
+        self.assertTrue(np.array_equal(worn, exporter.apply_wear(weapon, base, normal, .8, 'stn_a')))
+        self.assertFalse(np.array_equal(worn, exporter.apply_wear(weapon, base, normal, .8, 'stn_b')))
+        self.assertLess(float(worn.max()), float(base.max()) + 1e-9)
+        self.assertLess(float(worn[30:34].mean()), float(worn[:10].mean()))
+        self.assertTrue(np.array_equal(exporter.apply_wear(weapon, base, normal[:8, :8], .8, 'x'), base))
+
     def test_snap_negative_z_raises_grazing_texels_onto_the_horizon(self):
         encoded = np.zeros((1, 2, 4), np.float32)
         encoded[0, 0, :3] = (0.5, 0.5, 1.0)
@@ -297,7 +314,7 @@ class ManifestTests(unittest.TestCase):
                 exporter.validate_item(item(folder), Path(folder), {'stn_forge_n'})
 
     def test_policies_are_checked(self):
-        for key, value in (('normal_basis_policy', 'guess'), ('double_sided_policy', 'ignore'), ('authored_angle_limit_degrees', 5)):
+        for key, value in (('normal_basis_policy', 'guess'), ('double_sided_policy', 'ignore'), ('authored_angle_limit_degrees', 120), ('authored_angle_limit_degrees', 0.1)):
             with self.subTest(key=key), self.assertRaises(ValueError):
                 self.check(**{key: value})
 
@@ -314,6 +331,12 @@ class ManifestTests(unittest.TestCase):
         for gain in (0, .1, 3.5, float('nan'), '2'):
             with self.subTest(gain=gain), self.assertRaises(ValueError):
                 self.check(color_gain=gain)
+
+    def test_wear_must_be_a_fraction(self):
+        self.assertIn('wear', self.check(wear=.5))
+        for wear in (-.1, 1.5, float('nan'), '1'):
+            with self.subTest(wear=wear), self.assertRaises(ValueError):
+                self.check(wear=wear)
 
     def test_material_texture_names_keep_room_for_the_map_suffixes(self):
         self.assertEqual(exporter.material_texture_name('a', 'stn_forge', 1, 0), 'stn_forge')

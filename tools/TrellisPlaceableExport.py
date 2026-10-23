@@ -20,10 +20,12 @@ Schema 1 assets (all paths relative to the manifest):
     engine's default approach;
   emission {threshold, softness, gain?, saturation_min?}: a glow map from the brightest base-color texels;
   color_gain (0.25..3, default 1): linear-light brightness of the base color, applied after the glow map is taken;
+  wear (0..1, default 0): light grime (darker, warmer seams and soft blotches) for a texture that came out too clean;
   double_sided_policy: reject, closed_surface (exact closure, as weapons) or near_closed (outward-wound shells with at
     most max_defect_fraction open edges and max_opposed_fraction of the area wound against its normals);
   normal_basis_policy: reproject, or authored_tangents (mixed tangent handedness) with authored_angle_limit_degrees
-    0.5..2 for compiler normal quantization;
+    0.5..90: up to 2 for compiler normal quantization; blocky hard-edged consoles measured up to 80 (probably a neighbouring
+    source face matched at a crease; the package report lists the maxima), so read the report and the render before widening it;
   reference: the replaced station (bounds, footprint, use nodes), recorded in the report and the review renders only.
 Output per asset: resources/ (ASCII MDL, MTR, TGA maps), walkmesh/<model>.pwk, review renders and report.json. Package
 output is compiled MDL + MTR + DDS + PWK only. Native verification is separate.
@@ -297,10 +299,12 @@ def validate_item(item, manifest_dir, haks_names=None, inspect_only=False):
             raise ValueError(f'{asset}: {key} must be 0..0.25')
     if not finite(item.get('color_gain', 1)) or not .25 <= item.get('color_gain', 1) <= 3:
         raise ValueError(f'{asset}: color_gain must be 0.25..3')
+    if not finite(item.get('wear', 0)) or not 0 <= item.get('wear', 0) <= 1:
+        raise ValueError(f'{asset}: wear must be 0..1')
     if item.get('normal_basis_policy', 'reproject') not in ('reproject', 'authored_tangents'):
         raise ValueError(f'{asset}: unknown normal_basis_policy')
-    if not finite(item.get('authored_angle_limit_degrees', .5)) or not .5 <= item.get('authored_angle_limit_degrees', .5) <= 2:
-        raise ValueError(f'{asset}: authored_angle_limit_degrees must be 0.5..2')
+    if not finite(item.get('authored_angle_limit_degrees', .5)) or not .5 <= item.get('authored_angle_limit_degrees', .5) <= 90:
+        raise ValueError(f'{asset}: authored_angle_limit_degrees must be 0.5..90')
     if item.get('reorient') not in (None, 'propagate'):
         raise ValueError(f'{asset}: reorient must be "propagate" when given')
     if item.get('double_sided_policy', 'reject') not in ('reject', 'closed_surface', 'near_closed'):
@@ -608,11 +612,12 @@ def near_closed_report(weapon, objects, max_defect_fraction, max_opposed=OPPOSED
     vertices, faces, origin, directed, undirected, roots = shell_analysis(weapon, objects)
     removed_cavities = []
     total = len(faces)
+    substantial = total * .01  # fixed before cavities are deleted, so a deletion cannot make a small shell newly substantial
     volumes = {int(root): shell_volume(np, vertices, faces[roots == root]) for root in set(roots.tolist())}
     counts = {int(root): int((roots == root).sum()) for root in volumes}
-    inward = [root for root in volumes if volumes[root] <= 0 and counts[root] > total * .01]
+    inward = [root for root in volumes if volumes[root] <= 0 and counts[root] > substantial]
     if inward:
-        outward = [root for root in volumes if volumes[root] > 0 and counts[root] > total * .01]
+        outward = [root for root in volumes if volumes[root] > 0 and counts[root] > substantial]
         outward_faces = faces[np.isin(roots, outward)]
         for root in inward:
             probe = vertices[faces[roots == root][0][0]]
@@ -645,7 +650,7 @@ def near_closed_report(weapon, objects, max_defect_fraction, max_opposed=OPPOSED
     same_direction = sum(1 for (u, v), count in directed.items()
                          if count == 2 and undirected[(u, v) if u < v else (v, u)] == 2)
     defects = boundary + same_direction
-    bad = [s for s in shells if s['signed_volume'] <= 0 and s['triangles'] > total * .01]
+    bad = [s for s in shells if s['signed_volume'] <= 0 and s['triangles'] > substantial]
     if not shells or max(shells, key=lambda s: s['triangles'])['signed_volume'] <= 0 or bad:
         raise ValueError('Near-closed policy needs outward (positive volume) winding for every substantial shell: '
                          + str(sorted(shells, key=lambda s: -s['triangles'])[:6]))
@@ -781,6 +786,39 @@ def snap_negative_z(np, pixels, tolerance=NEGATIVE_Z_TOLERANCE):
     return out, int(bad.sum())
 
 
+def smooth_noise(np, size, seed, cells):
+    """Deterministic low-frequency noise in 0..1 (random cells, repeated and blurred)."""
+    cell = np.random.default_rng(seed).random((cells, cells))
+    step = -(-size // cells)
+    field = np.repeat(np.repeat(cell, step, 0), step, 1)[:size, :size]
+    for _ in range(8):
+        field = (field + np.roll(field, 1, 0) + np.roll(field, -1, 0) + np.roll(field, 1, 1) + np.roll(field, -1, 1)) / 5
+    low, high = float(field.min()), float(field.max())
+    return (field - low) / max(high - low, 1e-6)
+
+
+def apply_wear(weapon, base, normal, wear, name):
+    """Light grime for a texture that came out too clean: darken and warm the base color in the seams (where the normal map
+    leaves flat) and in soft blotches. The pattern is seeded by the texture name, so an export is reproducible."""
+    if not wear:
+        return base
+    import zlib
+    np = weapon.np
+    base, normal = np.asarray(base), np.asarray(normal)
+    if base.ndim != 3 or normal.shape != base.shape:
+        return base
+    size = base.shape[0]
+    slope = np.sqrt(((normal[..., :2] * 2 - 1) ** 2).sum(-1))
+    seam = np.clip(slope * 2.5, 0, 1)
+    for _ in range(2):
+        seam = (seam + np.roll(seam, 1, 0) + np.roll(seam, -1, 0) + np.roll(seam, 1, 1) + np.roll(seam, -1, 1)) / 5
+    seed = zlib.crc32(name.encode())
+    noise = .6 * smooth_noise(np, size, seed, 16) + .4 * smooth_noise(np, size, seed + 1, 64)
+    grime = np.clip(wear * (.6 * seam + .5 * noise ** 2), 0, .8)[..., None]
+    dirt = np.array([.78, .76, .72])
+    return np.clip(base * (1 - grime) + base * dirt * grime, 0, 1)
+
+
 def apply_color_gain(weapon, base, gain):
     """Scale the base color in linear light (after the glow map is taken from it), so a dark TRELLIS texture can be lifted to
     read in the game's dim interiors without the washed-out look of an sRGB multiply."""
@@ -828,6 +866,7 @@ def material_maps(weapon, item, doc, binary, index, source, cache, resources, na
         glow = np.clip(np.asarray(base) * mask[..., None] * emission.get('gain', 1), 0, 1)
         if float(mask.max()) > 0:
             maps[name + '_e'] = glow
+    maps[name] = apply_wear(weapon, maps[name], maps[name + '_n'], item.get('wear', 0), name)
     maps[name] = apply_color_gain(weapon, maps[name], item.get('color_gain', 1))
     dims = {key: weapon.save_texture(resources / (key + '.tga'), value) for key, value in maps.items()}
     lines = ['renderhint NormalAndSpecMapped', 'texture0 ' + name, 'texture1 ' + name + '_n', 'texture2 ' + name + '_s',

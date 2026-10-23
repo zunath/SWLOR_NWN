@@ -29,13 +29,13 @@ The Plasma Forge (`ForgeEngine`, starting values for the simulator to tune): The
 
 | Action | Unlocks at Smithery rank | Cost | Result |
 | --- | --- | --- | --- |
-| Hydro-Press | 0 | 5 Integrity in range; more outside | Shape 170 x (0.7 at the cool edge rising to 1.2 at the hot edge; 1.2 up to 1.6 above the range; 0.25 below) |
-| Vibro-Hone | 0 | 4 Integrity | Finish 140 x (1.0 in the cool half, falling to 0.6 at the hot edge; 0.35 outside) |
-| Ramp Plasma | 0 | 5 CP, 2 Integrity | Thermal +25 |
-| Rebond | 10 | 8 CP, 12 Thermal | Integrity +25 |
-| Cryo-Quench | 20 | 4 Integrity | Once per craft, at 80% Shape or more: Finish +360 at the center of the range, 180 at an edge, 54 outside it. Then Ramp Plasma and Hydro-Press are disabled and Vibro-Hone gives a flat 84 Finish and 72 Shape |
+| Hydro-Press | 0 | 10 Integrity in range; 12 or more below it, 20 or more above it | Shape 190 x (0.7 at the cool edge rising to 1.2 at the hot edge; 1.2 up to 1.6 above the range; 0.1 below) |
+| Vibro-Hone | 0 | 8 Integrity | Finish 90 x (1.0 in the cool half, falling to 0.6 at the hot edge; 0.1 outside) |
+| Ramp Plasma | 0 | 3 CP plus 0.35 per recipe level (10 CP at level 20), 3 Integrity | Thermal +22 |
+| Rebond | 10 | 6 CP plus 0.4 per recipe level (14 CP at level 20), 12 Thermal | Integrity +25 |
+| Cryo-Quench | 20 | 6 Integrity | Once per craft, at 80% Shape or more: Finish +600 at the center of the range, 180 at an edge, 90 outside it. Then Ramp Plasma and Hydro-Press are disabled and Vibro-Hone gives a flat 84 Finish and 48 Shape |
 
-Shape and Finish are 1000 at an even split. A recipe's Shape share (35-65%) scales the Shape meter up and the Finish meter down, so armor needs more Shape and weapons more Finish. Leather and synthweave goods are heat-sealed: a low, wide range that cools slowly.
+Shape and Finish are 1000 at an even split. A recipe's Shape share (25-75%) scales the Shape meter up and the Finish meter down, so armor needs much more Shape and weapons much more Finish. Leather and synthweave goods are heat-sealed: a low, wide range that cools slowly. Recipes of one level band differ in range width, cooling rate (light goods cool faster than heavy ones), starting Thermal and Shape share, so no single sequence of actions serves them all; some start outside their range.
 
 ## Shared Forge stats
 
@@ -53,21 +53,21 @@ The Forgemaster shapes quickly while the piece is hot, spends CP on heat and tra
 
 | Rank | SP | Perk | Type | Player-facing effect (starting values) | StatType(s) the engine reads |
 | --- | --- | --- | --- | --- | --- |
-| 5 | 1 | Plasma Efficiency | trait | Ramp Plasma costs 1 less CP (5 becomes 4). | `ForgeRampCpReduction` +1 |
+| 5 | 1 | Plasma Efficiency | trait | Ramp Plasma costs 2 less CP (10 becomes 8 at level 20), never less than 1. | `ForgeRampCpReduction` +2 |
 | 10 | 1 | Heat Retention I | trait | The piece loses 1 less Thermal after every action, never less than 1. | `ForgeCoolingReduction` +1 |
-| 15 | 2 | Overdrive Press | active | A new action. A large Shape gain: 175% of a Hydro-Press at the current Thermal, using the same range rules. Costs 8 CP and twice the press's Integrity. Cannot be used twice in a row. | `ForgeOverdrivePressPercent` 75 (the action is available when above 0) |
+| 15 | 2 | Overdrive Press | active | A new action. A large Shape gain: 175% of a Hydro-Press at the current Thermal, using the same range rules. Costs 12 CP and twice the press's Integrity. Cannot be used twice in a row. | `ForgeOverdrivePressPercent` 75 (the action is available when above 0) |
 | 20 | 2 | Hot Forging | style | The working range moves up 10 Thermal. Hydro-Press gains +25% Shape and Vibro-Hone gains -25% Finish. Only one style is active at a time. | `ForgeRangeShift` +10, `ForgePressOutputPercent` +25, `ForgeHoneOutputPercent` -25 (while active) |
 | 25 | 3 | Hammer Rhythm | trait | A Hydro-Press right after another Hydro-Press gains +8% Shape, stacking up to +24%. Any other action resets it. | `ForgePressStreakPercent` 8, `ForgePressStreakMax` 3 |
 | 30 | 3 | Heat Retention II | trait | The piece loses 2 less Thermal after every action, never less than 1. Replaces Heat Retention I. | `ForgeCoolingReduction` +2 |
 | 35 | 3 | Scorch Guard | trait | A Hydro-Press above the working range cracks 25% less Integrity. | `ForgePressOverheatIntegrityReductionPercent` 25 |
-| 40 | 3 | Surge Plasma | active | A new action. Raises Thermal by 45 for 9 CP and 2 Integrity, one action instead of two Ramp Plasmas. | `ForgeSurgePlasmaThermal` 45 (the action is available when above 0) |
-| 45 | 3 | Fast Rebond | trait | Rebond costs 6 less Thermal and 2 less CP (8 becomes 6). | `ForgeRebondThermalReduction` 6, `ForgeRebondCpReduction` 2 |
+| 40 | 3 | Surge Plasma | active | A new action. Raises Thermal by 44 for 1.5 times a Ramp Plasma's CP and 3 Integrity, one action instead of two Ramp Plasmas. | `ForgeSurgePlasmaThermal` 44 (the action is available when above 0) |
+| 45 | 3 | Fast Rebond | trait | Rebond costs 6 less Thermal and 3 less CP (14 becomes 11 at level 20). | `ForgeRebondThermalReduction` 6, `ForgeRebondCpReduction` 3 |
 | 50 | 4 | Red Line | active (capstone) | Once per craft, a Red Line Press: a Hydro-Press that is only available while Thermal is above the working range. It costs no Integrity and gives double Shape. | `ForgeRedLineCharges` 1 (the action is available when above 0, and per craft while a charge remains) |
 
 Notes on the Forgemaster rows:
 
 - **Why Overdrive Press and Surge Plasma are actives:** they add tempo choices (fewer actions, more CP and Integrity) the base five actions do not offer, and each shows an exact preview.
-- **Heat Retention I and II** are two purchases of one anchor perk. Retention matters most at high levels, where cooling is 4-6 per action and a single Ramp Plasma covers about four actions; at level 1 cooling is already 1.
+- **Heat Retention I and II** are two purchases of one anchor perk. Retention matters most at high levels, where light goods cool 5-10 per action and a single Ramp Plasma covers about three actions; at level 1 cooling is already 1.
 - **Red Line is an action, not an automatic trigger,** so a player never spends the charge by accident. It is disabled whenever Thermal is inside or below the range, and the window shows why.
 - **Hot Forging** raises the range, which helps Hydro-Press (best hot) and hurts Vibro-Hone (best cool), and the style's -25% Finish makes that trade explicit. Pair it with Shape-heavy recipes (armor) and Hammer Rhythm.
 
@@ -77,14 +77,14 @@ The Artisan finishes carefully: steadier Thermal, more Stable Containment, and F
 
 | Rank | SP | Perk | Type | Player-facing effect (starting values) | StatType(s) the engine reads |
 | --- | --- | --- | --- | --- | --- |
-| 5 | 1 | Steady Hands | trait | Vibro-Hone costs 1 less Integrity (4 becomes 3). | `ForgeHoneIntegrityReduction` +1 |
+| 5 | 1 | Steady Hands | trait | Vibro-Hone costs 2 less Integrity (8 becomes 6). | `ForgeHoneIntegrityReduction` +2 |
 | 10 | 1 | Clean Containment I | trait | Stable Containment is announced 10 percentage points more often (35% becomes 45%). | `ForgeContainmentChancePercent` +10 |
-| 15 | 2 | Micro-Hone | active | A new action. Finish at 80% of a Vibro-Hone's best result whatever the Thermal, for 3 CP and 3 Integrity. Works after a Cryo-Quench too. Stable Containment applies. | `ForgeMicroHonePercent` 80 (the action is available when above 0) |
+| 15 | 2 | Micro-Hone | active | A new action. Finish at 80% of a Vibro-Hone's best result whatever the Thermal, for 4 CP and 6 Integrity. Works after a Cryo-Quench too. Stable Containment applies. | `ForgeMicroHonePercent` 80 (the action is available when above 0) |
 | 20 | 2 | Cold Working | style | The working range moves down 10 Thermal. Vibro-Hone gains +25% Finish and Hydro-Press gains -25% Shape. Only one style is active at a time. | `ForgeRangeShift` -10, `ForgeHoneOutputPercent` +25, `ForgePressOutputPercent` -25 (while active) |
 | 25 | 3 | Clean Containment II | trait | Stable Containment is announced 20 percentage points more often (35% becomes 55%). Replaces Clean Containment I. | `ForgeContainmentChancePercent` +20 |
-| 30 | 3 | Steady Quench | trait | Cryo-Quench loses less toward the edges of the range: at an edge it gives 70% of its center bonus instead of 50%. | `ForgeQuenchEdgePercent` +20 |
+| 30 | 3 | Steady Quench | trait | Cryo-Quench loses less toward the edges of the range: at an edge it gives 70% of its center bonus instead of 30%. | `ForgeQuenchEdgePercent` +40 |
 | 35 | 3 | Cool Hand | trait | Vibro-Hone in the hot half of the range falls to 80% of its best result at the hot edge instead of 60%. | `ForgeHoneHotEdgePercent` +20 |
-| 40 | 3 | Temper Hold | active | A new action. For the next 2 actions the piece does not cool. Costs 6 CP. | `ForgeTemperHoldActions` 2 (the action is available when above 0) |
+| 40 | 3 | Temper Hold | active | A new action. For the next 2 actions the piece does not cool. Costs 10 CP. | `ForgeTemperHoldActions` 2 (the action is available when above 0) |
 | 45 | 3 | Containment Focus | trait | Stable Containment gives Vibro-Hone +75% instead of +50%. | `ForgeContainmentHonePercent` +25 |
 | 50 | 4 | Perfect Temper | trait (capstone) | A Cryo-Quench with Thermal within 2 of the range's center gives +50% Finish. | `ForgePerfectTemperPercent` 50, `ForgePerfectTemperWindow` 2 |
 
@@ -111,7 +111,7 @@ A character who owns both styles toggles whichever suits the recipe. The styles 
 - **Triggers and scope.** Every effect applies to the Plasma Forge only, to the owner's own craft, and to the named action. Hammer Rhythm counts Hydro-Press actions that were performed, not previews. Style effects count while the style is active.
 - **Resources and state.** Red Line has one charge per craft, spent when a Red Line Press is performed. Temper Hold's remaining actions count down once per performed action. Overdrive Press cannot follow itself, tracked by a per-craft flag. All of it resets when a craft ends.
 - **Costs.** CP and Integrity costs are paid when the action is performed and shown in the preview. A refused action spends nothing.
-- **No refund loops.** Fast Rebond lowers Rebond's CP cost to 6; the Integrity it restores cannot exceed the meter's maximum, and Rebond is refused at full Integrity.
+- **No refund loops.** Fast Rebond lowers Rebond's CP cost by 3; the Integrity it restores cannot exceed the meter's maximum, and Rebond is refused at full Integrity.
 - **Lifecycle.** A craft that ends early (window closed, death, restart) settles as a failure under the 65% rule; per-craft counters die with it. Gear and perk stats are read once, when the craft starts, so changing gear mid-craft changes nothing.
 - **Stacking.** Output percentages add together before they scale a gain. The Stable Containment bonus multiplies afterward. Range shift moves both edges and is clamped to 0-100.
 

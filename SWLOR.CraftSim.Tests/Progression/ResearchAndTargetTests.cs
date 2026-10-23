@@ -4,6 +4,7 @@ using SWLOR.CraftSim.Progression;
 using SWLOR.CraftSim.Tests.Support;
 using SWLOR.Game.Server.Service;
 using SWLOR.Game.Server.Service.CraftService;
+using SWLOR.Game.Server.Service.CraftService.Minigame;
 using SWLOR.Game.Server.Service.CraftService.Minigame.Experiment;
 using SWLOR.Game.Server.Service.CraftService.Research;
 using SWLOR.Game.Server.Service.SkillService;
@@ -104,9 +105,9 @@ namespace SWLOR.CraftSim.Tests.Progression
                 row.BaseXp.Should().Be(ResearchXpRules.BaseXp(row.RecipeLevel, row.FabricationRank));
             }
 
-            // 450 chart XP: 100% x 1.1 and 50% x 1.1 for a level-1 job.
-            ResearchCohort.StartingXpPerJob(450, 1).Should().Be(495 + 247);
-            ResearchCohort.StartingXpPerJob(450, 10).Should().Be(900 + 450);
+            // 450 chart XP: 62% x 1.1 and 31% x 1.1 for a level-1 job, and 62% x 2 and 31% x 2 for a level-10 job.
+            ResearchCohort.StartingXpPerJob(450, 1).Should().Be(306 + 153);
+            ResearchCohort.StartingXpPerJob(450, 10).Should().Be(558 + 279);
         }
 
         [Test]
@@ -135,14 +136,19 @@ namespace SWLOR.CraftSim.Tests.Progression
         }
 
         [Test]
-        public void TheProposedScaleKeepsResearchUnderCraftingPerElapsedHourAtEveryRank()
+        public void TheShippedPercentsKeepResearchUnderCraftingPerElapsedHourAtEveryRank()
         {
-            var rows = ResearchCohort.Rows(ProgressionFixture.RealRecipes, ProgressionFixture.Gear, Assumptions).Where(r => r.BaseXp > 0).ToList();
+            // Crafting pays the pace multiplier (workstream 11b), so the ceiling is measured against that rate.
+            var paced = Assumptions with { CraftXpMultiplier = CraftMinigameXp.CraftingPaceMultiplier };
+            var rows = ResearchCohort.Rows(ProgressionFixture.RealRecipes, ProgressionFixture.Gear, paced).Where(r => r.BaseXp > 0).ToList();
             var scale = rows.Min(r => r.CeilingShare.Value / r.StartingShare.Value);
 
-            scale.Should().BeLessThan(1, "the starting values break the ceiling at the first rank of tier 1");
             foreach (var row in rows)
-                (row.StartingToCraftingRatio.Value * scale).Should().BeLessThanOrEqualTo(1.0000001, $"rank {row.FabricationRank}");
+                row.StartingToCraftingRatio.Value.Should().BeLessThanOrEqualTo(1.0000001, $"rank {row.FabricationRank}");
+
+            // The model's ceiling is the most the percents could be multiplied by; the shipped pair sits under it, with room for the unmeasured timings.
+            scale.Should().BeGreaterThanOrEqualTo(1, "the shipped percents are under the ceiling");
+            (ResearchXpRules.ExperimentXpPercent / (double)ResearchXpRules.CompletionXpPercent).Should().Be(2);
 
             // The own-time yardstick is stricter still, which is why the report shows it as the owner's call.
             rows.Min(r => r.ActiveCeilingShare.Value / r.StartingShare.Value).Should().BeLessThan(scale);

@@ -30,6 +30,9 @@ internal sealed class FakeCraftSessionWorld : ICraftSessionWorld
     public List<string> Events { get; } = new();
     public List<string> Returned { get; } = new();
     public List<string> Messages { get; } = new();
+
+    /// <summary>The skills whose station work clip was started, in order. Kept apart from <see cref="Events"/> so ordering tests stay as they are.</summary>
+    public List<SkillType> StationAnimations { get; } = new();
     public List<(SkillType Skill, int Xp)> XpGiven { get; } = new();
     public List<string> AppliedEnhancements { get; } = new();
     public List<(int Seconds, int Charges)> FoodBonuses { get; } = new();
@@ -89,6 +92,8 @@ internal sealed class FakeCraftSessionWorld : ICraftSessionWorld
     }
 
     public void BeginStationWork(uint player) => Events.Add("begin-work");
+
+    public void PlayStationWork(uint player, SkillType skill) => StationAnimations.Add(skill);
 
     public void EndStationWork(uint player) => Events.Add("end-work");
 

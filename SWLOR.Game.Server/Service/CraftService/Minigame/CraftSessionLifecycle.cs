@@ -86,6 +86,7 @@ public sealed class CraftSessionLifecycle
         };
         _world.SaveRecord(dbPlayer);
         _world.BeginStationWork(player);
+        _world.PlayStationWork(player, recipe.Skill);
 
         return CraftSessionStartResult.Started(new CraftSession(sessionId, request.Recipe, blueprint));
     }

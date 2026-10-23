@@ -39,6 +39,9 @@ namespace SWLOR.Game.Server.Service.FishingService
         /// <summary>Starts the wait for the next action, once an action has resolved.</summary>
         public static void TurnTaken(FishingFight fight) => Lifecycle.TurnTaken(fight);
 
+        /// <summary>Plays the clip of an action that resolved while the fight goes on. Landing the fish plays its own clip when the fight settles.</summary>
+        public static void PlayAction(FishingFight fight, string actionId) => Lifecycle.PlayAction(fight, actionId);
+
         /// <summary>
         /// An angler who dies loses the fish at once. The poll cannot be trusted to see it: a death that is subdued revives the angler
         /// before the next check.

@@ -169,10 +169,13 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
 
             if (result.Status != MinigameStatus.InProgress)
             {
+                // Settling a landed fish plays the landing clip.
                 var settled = FishingFights.Settle(_fight);
                 ShowEnd(settled?.Message ?? string.Empty, engine.Ending);
                 return;
             }
+
+            FishingFights.PlayAction(_fight, actionId);
 
             var effect = LineActionText.OutcomeText(engine, result.Outcome);
             SetStatus(

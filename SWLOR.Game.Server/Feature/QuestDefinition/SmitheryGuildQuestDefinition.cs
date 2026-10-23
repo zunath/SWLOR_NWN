@@ -240,7 +240,8 @@ namespace SWLOR.Game.Server.Feature.QuestDefinition
                 .AddCollectItemObjective(resref, amount, CollectItemProducerRequirementType.PlayerProduced)
 
                 .AddGoldReward(rewardDetails.Gold)
-                .AddGPReward(GuildType.SmitheryGuild, rewardDetails.GP);
+                .AddGPReward(GuildType.SmitheryGuild, rewardDetails.GP)
+                .AddGuildTaskXpReward(GuildType.SmitheryGuild, resref, amount, true);
         }
     }
 }

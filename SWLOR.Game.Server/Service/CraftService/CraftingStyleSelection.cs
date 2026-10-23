@@ -3,6 +3,7 @@ using System.Linq;
 using SWLOR.Game.Server.Core;
 using SWLOR.Game.Server.Entity;
 using SWLOR.Game.Server.Service.CraftService.Minigame.Circuit;
+using SWLOR.Game.Server.Service.CraftService.Minigame.Forge;
 using SWLOR.Game.Server.Service.PerkService;
 using SWLOR.Game.Server.Service.SkillService;
 
@@ -20,8 +21,11 @@ public sealed record CraftingStyleDefinition(SkillType Skill, PerkType Perk, Typ
 /// </summary>
 public static class CraftingStyleSelection
 {
-    /// <summary>Every crafting style of every skill. The Smithery, Agriculture and Gathering helpers add their own here.</summary>
-    public static IReadOnlyList<CraftingStyleDefinition> Definitions => CircuitStyles.Definitions;
+    /// <summary>Every crafting style of every skill. The Agriculture and Gathering helpers add their own here.</summary>
+    public static IReadOnlyList<CraftingStyleDefinition> Definitions =>
+        CircuitStyles.Definitions
+            .Concat(ForgeStyles.Definitions)
+            .ToList();
 
     /// <summary>The perk of the style selected for <paramref name="skill"/>, or <see cref="PerkType.Invalid"/>.</summary>
     public static PerkType Selected(Player record, SkillType skill) =>

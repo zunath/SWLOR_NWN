@@ -59,6 +59,32 @@ public static class ForgePreviewText
         return "Enhancements: " + string.Join(", ", slots);
     }
 
+    /// <summary>
+    /// The active style and what the crafter's perks are counting right now: Hammer Rhythm's bonus on the next Hydro-Press, the Red
+    /// Line Press and the actions Temper Hold has left. An empty string when the crafter has neither a style nor such a perk.
+    /// </summary>
+    public static string PerkSummary(ForgeEngine engine, ForgeStyle style)
+    {
+        var parts = new List<string>();
+        var perks = engine.Setup.Perks;
+        if (style != ForgeStyle.None)
+            parts.Add($"Style: {ForgeStyles.Name(style)}");
+
+        if (perks.PressStreakPercent > 0)
+        {
+            var bonus = Math.Min(engine.PressStreak, ForgePerkRules.HammerRhythmMaxStacks) * perks.PressStreakPercent;
+            parts.Add($"Hammer Rhythm: next Hydro-Press +{bonus}%");
+        }
+
+        if (perks.RedLineCharges > 0)
+            parts.Add(engine.RedLineReady ? "Red Line ready" : "Red Line used");
+
+        if (perks.TemperHoldActions > 0 && engine.TemperHoldLeft > 0)
+            parts.Add($"Temper Hold: {engine.TemperHoldLeft} {(engine.TemperHoldLeft == 1 ? "action" : "actions")} left");
+
+        return string.Join("  |  ", parts);
+    }
+
     /// <summary>The action's own description with its costs, for the button's tooltip.</summary>
     public static string Tooltip(MinigameActionPreview preview)
     {

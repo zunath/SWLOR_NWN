@@ -246,15 +246,15 @@ public class AgriculturePerkLineTests
         LineAnglerEffects.FromStatTotals(Totals(line, 4)).Should().Be(LineAnglerEffects.None);
         LineAnglerEffects.FromStatTotals(Totals(line, 5)).Should().Be(new LineAnglerEffects(TensionCapBonus: 2));
         LineAnglerEffects.FromStatTotals(Totals(line, 15)).Should().Be(
-            new LineAnglerEffects(TensionCapBonus: 2, SetHookDrainBonus: 1, ForecastDepth: 2, ForecastTurns: 1));
+            new LineAnglerEffects(TensionCapBonus: 2, SetHookDrainBonus: 1, ForecastDepth: 2, ForecastTurns: 2));
 
         LineAnglerEffects.FromStatTotals(Totals(line, 25, PerkType.AggressiveAngler)).Should().Be(new LineAnglerEffects(
-            TensionCapBonus: 5, SetHookDrainBonus: 1, ForecastDepth: 2, ForecastTurns: 1, GiveLineDistanceReduction: 1));
+            TensionCapBonus: 5, SetHookDrainBonus: 1, ForecastDepth: 2, ForecastTurns: 2, GiveLineDistanceReduction: 1));
 
         LineAnglerEffects.FromStatTotals(Totals(line, 50, PerkType.AggressiveAngler)).Should().Be(new LineAnglerEffects(
-            TensionCapBonus: 8, SetHookDrainBonus: 3, ForecastDepth: 2, ForecastTurns: 3, GiveLineDistanceReduction: 1, RareFishRungReduction: 4));
+            TensionCapBonus: 8, SetHookDrainBonus: 3, ForecastDepth: 2, ForecastTurns: 4, GiveLineDistanceReduction: 1, RareFishRungReduction: 4));
         LineAnglerEffects.FromStatTotals(Totals(line, 50, PerkType.PatientAngler)).Should().Be(new LineAnglerEffects(
-            TensionCapBonus: 8, SetHookDrainBonus: 3, ForecastDepth: 2, ForecastTurns: 3, ReelDistanceBonus: 1, RareFishRungReduction: 4));
+            TensionCapBonus: 8, SetHookDrainBonus: 3, ForecastDepth: 2, ForecastTurns: 4, ReelDistanceBonus: 1, RareFishRungReduction: 4));
     }
 
     [Test]

@@ -16,12 +16,12 @@ namespace SWLOR.CraftSim.Tests.Fishing
             AnglerBuild.Unperked.EffectsAt(50).Should().Be(LineAnglerEffects.None);
             AnglerBuild.PatientLine.EffectsAt(4).Should().Be(LineAnglerEffects.None);
             AnglerBuild.PatientLine.EffectsAt(5).Should().Be(new LineAnglerEffects(TensionCapBonus: 2));
-            AnglerBuild.PatientLine.EffectsAt(19).Should().Be(new LineAnglerEffects(TensionCapBonus: 2, SetHookDrainBonus: 1, ForecastDepth: 2, ForecastTurns: 1));
+            AnglerBuild.PatientLine.EffectsAt(19).Should().Be(new LineAnglerEffects(TensionCapBonus: 2, SetHookDrainBonus: 1, ForecastDepth: 2, ForecastTurns: 2));
             AnglerBuild.PatientLine.EffectsAt(20).GiveLineDistanceReduction.Should().Be(1, "the style opens at Agriculture 20");
             AnglerBuild.AggressiveLine.EffectsAt(20).ReelDistanceBonus.Should().Be(1);
             AnglerBuild.PatientLine.EffectsAt(49).RareFishRungReduction.Should().Be(0);
             AnglerBuild.PatientLine.EffectsAt(50).Should().Be(new LineAnglerEffects(
-                TensionCapBonus: 8, SetHookDrainBonus: 3, ForecastDepth: 2, ForecastTurns: 3, GiveLineDistanceReduction: 1, RareFishRungReduction: 4));
+                TensionCapBonus: 8, SetHookDrainBonus: 3, ForecastDepth: 2, ForecastTurns: 4, GiveLineDistanceReduction: 1, RareFishRungReduction: 4));
             AnglerBuild.PatientBelowCapstone.EffectsAt(50).RareFishRungReduction.Should().Be(0);
         }
 

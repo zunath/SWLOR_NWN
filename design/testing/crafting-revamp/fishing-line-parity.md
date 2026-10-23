@@ -11,7 +11,7 @@
 - Adaptive player: depth 3, forecast samples per result 2, budget 4000 engine copies per decision, 0.5% of value lost per extra action, heuristic LineLeafHeuristic. It is a floor on skilled play. Rule-of-thumb player: reads the announced move and answers it by a fixed rule, never looking further ahead.
 - Time: 7.0 s for a cast and the wait for a bite (6-8 s in the game), in both loops; 8.0 s for each turn of the fight. Both are estimates until the client run measures them. The game enforces the turn as the least time between two actions (`LineRules.TurnSeconds`, the first action free), so fast clicking cannot beat the pace the XP multipliers assume.
 - XP cohort (gate 6): fish-level bands 0-10, 11-20, 21-30, 31-40 and 41-52; the angler's rank equals the fish's level (at most 50) with the best rod tier that rank allows; every (rod, bait) table of every location that rod reaches counts equally, half by day and half by night, so both loops draw the same fish. XP is per bite.
-- XP: today's XP for the fish against the rank is paid at the bite, caught or not, as today; the rest of the multiplied XP is paid when the fight ends on its own (landed, snapped or escaped), in proportion to how long the fight lasted up to 5 turns of 8.0 s, and never for a fight the angler abandons, so neither skipping the fight nor losing it on purpose after one move earns more per hour than today. The multiplied XP is today's times a multiplier by the fish's level band, as the game server applies it (`CraftMinigameXp`): 0-10 8.55x, 11-20 8.65x, 21-30 8.35x, 31-40 8.65x, 41-52 8x. Each is the least multiple of 0.05 that keeps gate 6 passing in its band at this report's runs and seed; 1.0 in every band restores today's XP per bite.
+- XP: today's XP for the fish against the rank is paid at the bite, caught or not, as today; the rest of the multiplied XP is paid when the fight ends on its own (landed, snapped or escaped), in proportion to how long the fight lasted up to 5 turns of 8.0 s, and never for a fight the angler abandons, so neither skipping the fight nor losing it on purpose after one move earns more per hour than today. The multiplied XP is today's times a multiplier by the fish's level band, as the game server applies it (`CraftMinigameXp`): 0-10 8.55x, 11-20 8.5x, 21-30 8x, 31-40 8.2x, 41-52 8x. Each is the least multiple of 0.05 that keeps gate 6 passing in its band at this report's runs and seed; 1.0 in every band restores today's XP per bite.
 - Rod tiers: Bamboo, Carbon and Clothespole 0; Composite, Ebisu and Fastwater 10; Glass Fiber, Halcyon and Judge 20; Maze Monger, Willow and Yew 30; Butterfly, Tranquility and LuShang 40.
 - Named starting values of the fight (`LineRules`), all tunable:
   - `StartTension` = 0
@@ -55,9 +55,9 @@
   - `FishSenseTurns` = 1
   - `XpFullTurns` = 5
   - `XpMultiplierLevels0To10` = 8.55
-  - `XpMultiplierLevels11To20` = 8.65
-  - `XpMultiplierLevels21To30` = 8.35
-  - `XpMultiplierLevels31To40` = 8.65
+  - `XpMultiplierLevels11To20` = 8.5
+  - `XpMultiplierLevels21To30` = 8
+  - `XpMultiplierLevels31To40` = 8.2
   - `XpMultiplierLevels41Up` = 8
 
 ## Verdicts
@@ -65,16 +65,16 @@
 | Gate | Verdict | Summary |
 | --- | --- | --- |
 | Economy parity | Passed | Quick Reel rolls today's formula at Willpower 10 (a character with no attribute investment; owner decision) and stays inside today's Willpower 10-14 corridor at every rank above the fish's level and at every rank over the real pools. Quick Reel lands 1.00x to 1.00x of today's fish per hour at Willpower 10 (0.88x to 1.00x across the Willpower 10-14 corridor, by band) and pays 1.00x to 1.00x of today's XP per hour. |
-| Fight bound | Passed | With no perks the skilled (adaptive) fight lands at most 15% above Quick Reel's chance plus 3 points for the same fish, at every rank above the fish's level and over the real pools (furthest below the bound by 2.4 points in the tables). The whole Angler line, in either style, lands about 90% of the fish at the angler's own level (within 5 points) at rank 50, and the special rare fish stay within the bound with and without Trophy Catch. |
+| Fight bound | Passed | With no perks the skilled (adaptive) fight lands at most 15% above Quick Reel's chance plus 3 points for the same fish, at every rank above the fish's level and over the real pools (furthest below the bound by 2.4 points in the tables). The whole Angler line, in either style, lands about 90% of the fish at the angler's own level (within 5 points) at rank 50, and the special rare fish stay within the bound with no perks and with Trophy Catch alone (the rows with the fight perks at half strength are shown, not judged). |
 | Length | Passed | The adaptive player's fights last 3-6 actions (fishing fight) in every row. |
 | XP rate | Passed | Fishing: XP per hour is at least 1.00x the legacy rate in every case (lowest 1.00x in 0-10 / best rod for the rank, rank = fish level (at most 50)). |
-| Evidence: XP rate at the fastest allowed pace | NotApplicable | Not a gate. A player who takes the free first action at once and then waits the turn each time earns 1.03x to 1.08x of today's XP per hour across the bands; the multipliers above are calibrated for the typical player, who reads the first move for a turn like the others. |
+| Evidence: XP rate at the fastest allowed pace | NotApplicable | Not a gate. A player who takes the free first action at once and then waits the turn each time earns 1.03x to 1.03x of today's XP per hour across the bands; the multipliers above are calibrated for the typical player, who reads the first move for a turn like the others. |
 | Length (Patient Angler (full line)) | Passed | The adaptive player's fights last 3-6 actions (fishing fight) in every row. |
-| XP rate (Patient Angler (full line)) | Passed | Fishing (Patient Angler (full line)): XP per hour is at least 1.00x the legacy rate in every case (lowest 1.00x in 31-40 / best rod for the rank, rank = fish level (at most 50)). |
+| XP rate (Patient Angler (full line)) | Failed | Fishing (Patient Angler (full line)): XP per hour falls below 1.00x the legacy rate in 3 case(s): 11-20 / best rod for the rank, rank = fish level (at most 50) (0.99x); 21-30 / best rod for the rank, rank = fish level (at most 50) (0.96x); 31-40 / best rod for the rank, rank = fish level (at most 50) (0.95x). |
 | Length (Aggressive Angler (full line)) | Passed | The adaptive player's fights last 3-6 actions (fishing fight) in every row. |
-| XP rate (Aggressive Angler (full line)) | Passed | Fishing (Aggressive Angler (full line)): XP per hour is at least 1.00x the legacy rate in every case (lowest 1.01x in 11-20 / best rod for the rank, rank = fish level (at most 50)). |
+| XP rate (Aggressive Angler (full line)) | Passed | Fishing (Aggressive Angler (full line)): XP per hour is at least 1.00x the legacy rate in every case (lowest 1.00x in 11-20 / best rod for the rank, rank = fish level (at most 50)). |
 | Evidence: Angler perk magnitudes | NotApplicable | Not a gate. What each purchase of the Angler line adds to the adaptive player's catch rate on its own, and the line's catch rate at the fish's own level at every rank; the perk-line evidence file quotes it. |
-| Evidence: style balance | NotApplicable | Not a gate. With the whole line, Patient Angler is the better style on 52% of the cases and Aggressive Angler on 48%; the mean gap is 0.8 points (Patient less Aggressive). |
+| Evidence: style balance | NotApplicable | Not a gate. With the whole line, Patient Angler is the better style on 62% of the cases and Aggressive Angler on 38%; the mean gap is 1.4 points (Patient less Aggressive). |
 
 ## Economy parity
 
@@ -119,9 +119,9 @@
 | Fish-level band | Today, fish per hour, Willpower 10 | Today, fish per hour, Willpower 12 | Today, fish per hour, Willpower 14 | Quick Reel, fish per hour | Quick Reel against today (Willpower 10) | Quick Reel against today (Willpower 10-14) | Fight, fish per hour | Fight against today (Willpower 10) | Today, XP per hour | Quick Reel, XP per hour | Fight, XP per hour | Fight XP against today |
 | --- | --- | --- | --- | --- | --- | --- | --- | --- | --- | --- | --- | --- |
 | 0-10 | 309 | 329 | 350 | 309 | 1.00x | 1.00x-0.88x | 38 | 0.12x | 308571 | 308571 | 308623 | 1.00x |
-| 11-20 | 309 | 329 | 350 | 309 | 1.00x | 1.00x-0.88x | 38 | 0.12x | 308571 | 308571 | 314241 | 1.02x |
-| 21-30 | 309 | 329 | 350 | 309 | 1.00x | 1.00x-0.88x | 44 | 0.14x | 308571 | 308571 | 322794 | 1.05x |
-| 31-40 | 309 | 329 | 350 | 309 | 1.00x | 1.00x-0.88x | 49 | 0.16x | 308571 | 308571 | 326487 | 1.06x |
+| 11-20 | 309 | 329 | 350 | 309 | 1.00x | 1.00x-0.88x | 38 | 0.12x | 308571 | 308571 | 308917 | 1.00x |
+| 21-30 | 309 | 329 | 350 | 309 | 1.00x | 1.00x-0.88x | 44 | 0.14x | 308571 | 308571 | 309649 | 1.00x |
+| 31-40 | 309 | 329 | 350 | 309 | 1.00x | 1.00x-0.88x | 49 | 0.16x | 308571 | 308571 | 309922 | 1.00x |
 | 41-52 | 297 | 317 | 338 | 297 | 1.00x | 1.00x-0.88x | 47 | 0.16x | 317473 | 317473 | 318882 | 1.00x |
 
 ## Fight bound
@@ -167,10 +167,10 @@
 | Rank | Quick Reel | No perks | Patient Angler line | Aggressive Angler line | Target | Verdict |
 | --- | --- | --- | --- | --- | --- | --- |
 | 10 | 60% | 56% | 66% | 66% | - | - |
-| 20 | 60% | 59% | 80% | 78% | - | - |
-| 30 | 60% | 65% | 86% | 83% | - | - |
-| 40 | 60% | 66% | 94% | 94% | - | - |
-| 50 | 60% | 64% | 92% | 91% | 85-95% | Within |
+| 20 | 60% | 59% | 82% | 75% | - | - |
+| 30 | 60% | 65% | 88% | 85% | - | - |
+| 40 | 60% | 66% | 95% | 96% | - | - |
+| 50 | 60% | 64% | 92% | 89% | 85-95% | Within |
 
 ### The six special fish (level 52) at Agriculture rank 50 with a tier 4 rod, against Quick Reel's chance and the bound (1000 fights per case). A rare fish takes the fight perks at half strength, rounded down; Trophy Catch is the only perk at full strength
 
@@ -180,10 +180,10 @@
 | Fight, a common fish of level 52 (for comparison) | - | - | - | - | 41% | 22% | 4.7 | Not judged |
 | Fight, a rare fish: No perks | - | - | - | - | 39% | 16% | 4.9 | Yes |
 | Fight, a rare fish: Patient Angler and the line below the capstone (half strength) | - | - | - | - | 51% | 30% | 4.7 | Not judged |
-| Fight, a rare fish: Aggressive Angler and the line below the capstone (half strength) | - | - | - | - | 51% | 30% | 4.8 | Not judged |
+| Fight, a rare fish: Aggressive Angler and the line below the capstone (half strength) | - | - | - | - | 47% | 27% | 4.7 | Not judged |
 | Fight, a rare fish: Trophy Catch alone | - | - | - | - | 46% | 18% | 4.6 | Yes |
-| Fight, a rare fish: Patient Angler, the whole line with Trophy Catch | - | - | - | - | 49% | 39% | 4.9 | Not judged |
-| Fight, a rare fish: Aggressive Angler, the whole line with Trophy Catch | - | - | - | - | 52% | 36% | 4.9 | Not judged |
+| Fight, a rare fish: Patient Angler, the whole line with Trophy Catch | - | - | - | - | 52% | 37% | 4.8 | Not judged |
+| Fight, a rare fish: Aggressive Angler, the whole line with Trophy Catch | - | - | - | - | 48% | 40% | 4.8 | Not judged |
 
 ## Length
 
@@ -210,9 +210,9 @@
 | Group | Variant | Legacy XP per bite | Legacy actions per bite | Legacy XP per hour | New XP per bite | New actions per bite | New XP per hour | Ratio | XP multiplier needed | Verdict |
 | --- | --- | --- | --- | --- | --- | --- | --- | --- | --- | --- |
 | 0-10 | best rod for the rank, rank = fish level (at most 50) | 600 | 0.0 | 308571 | 4345 | 5.5 | 308623 | 1.00 | - | Passed |
-| 11-20 | best rod for the rank, rank = fish level (at most 50) | 600 | 0.0 | 308571 | 4413 | 5.4 | 314241 | 1.02 | - | Passed |
-| 21-30 | best rod for the rank, rank = fish level (at most 50) | 600 | 0.0 | 308571 | 4144 | 4.9 | 322794 | 1.05 | - | Passed |
-| 31-40 | best rod for the rank, rank = fish level (at most 50) | 600 | 0.0 | 308571 | 4365 | 5.1 | 326487 | 1.06 | - | Passed |
+| 11-20 | best rod for the rank, rank = fish level (at most 50) | 600 | 0.0 | 308571 | 4338 | 5.4 | 308917 | 1.00 | - | Passed |
+| 21-30 | best rod for the rank, rank = fish level (at most 50) | 600 | 0.0 | 308571 | 3975 | 4.9 | 309649 | 1.00 | - | Passed |
+| 31-40 | best rod for the rank, rank = fish level (at most 50) | 600 | 0.0 | 308571 | 4143 | 5.1 | 309922 | 1.00 | - | Passed |
 | 41-52 | best rod for the rank, rank = fish level (at most 50) | 617 | 0.0 | 317473 | 4157 | 5.0 | 318882 | 1.00 | - | Passed |
 
 ## Evidence: XP rate at the fastest allowed pace
@@ -222,9 +222,9 @@
 | Group | Variant | Legacy XP per bite | Legacy actions per bite | Legacy XP per hour | New XP per bite | New actions per bite | New XP per hour | Ratio | XP multiplier needed | Verdict |
 | --- | --- | --- | --- | --- | --- | --- | --- | --- | --- | --- |
 | 0-10 | best rod for the rank, rank = fish level (at most 50) | 600 | 0.0 | 308571 | 3771 | 4.5 | 318049 | 1.03 | - | Passed |
-| 11-20 | best rod for the rank, rank = fish level (at most 50) | 600 | 0.0 | 308571 | 3830 | 4.4 | 323990 | 1.05 | - | Passed |
-| 21-30 | best rod for the rank, rank = fish level (at most 50) | 600 | 0.0 | 308571 | 3497 | 3.9 | 329398 | 1.07 | - | Passed |
-| 31-40 | best rod for the rank, rank = fish level (at most 50) | 600 | 0.0 | 308571 | 3719 | 4.1 | 333638 | 1.08 | - | Passed |
+| 11-20 | best rod for the rank, rank = fish level (at most 50) | 600 | 0.0 | 308571 | 3767 | 4.4 | 318633 | 1.03 | - | Passed |
+| 21-30 | best rod for the rank, rank = fish level (at most 50) | 600 | 0.0 | 308571 | 3359 | 3.9 | 316404 | 1.03 | - | Passed |
+| 31-40 | best rod for the rank, rank = fish level (at most 50) | 600 | 0.0 | 308571 | 3536 | 4.1 | 317179 | 1.03 | - | Passed |
 | 41-52 | best rod for the rank, rank = fish level (at most 50) | 617 | 0.0 | 317473 | 3528 | 4.0 | 326315 | 1.03 | - | Passed |
 
 ## Length (Patient Angler (full line))
@@ -239,10 +239,10 @@
 | -3 | 4.8 | 3.4 | Within |
 | -2 | 5.0 | 4.2 | Within |
 | -1 | 5.2 | 4.7 | Within |
-| 0 | 5.1 | 5.6 | Within |
+| 0 | 5.0 | 5.6 | Within |
 | +1 | 4.5 | 5.4 | Within |
 | +2 | 4.1 | 5.4 | Within |
-| +3 | 3.9 | 5.4 | Within |
+| +3 | 3.8 | 5.4 | Within |
 | +4 | 3.4 | 5.5 | Within |
 
 ## XP rate (Patient Angler (full line))
@@ -252,10 +252,10 @@
 | Group | Variant | Legacy XP per bite | Legacy actions per bite | Legacy XP per hour | New XP per bite | New actions per bite | New XP per hour | Ratio | XP multiplier needed | Verdict |
 | --- | --- | --- | --- | --- | --- | --- | --- | --- | --- | --- |
 | 0-10 | best rod for the rank, rank = fish level (at most 50) | 600 | 0.0 | 308571 | 4326 | 5.3 | 312849 | 1.01 | - | Passed |
-| 11-20 | best rod for the rank, rank = fish level (at most 50) | 600 | 0.0 | 308571 | 4308 | 5.4 | 310315 | 1.01 | - | Passed |
-| 21-30 | best rod for the rank, rank = fish level (at most 50) | 600 | 0.0 | 308571 | 4177 | 5.2 | 310006 | 1.00 | - | Passed |
-| 31-40 | best rod for the rank, rank = fish level (at most 50) | 600 | 0.0 | 308571 | 4238 | 5.3 | 308924 | 1.00 | - | Passed |
-| 41-52 | best rod for the rank, rank = fish level (at most 50) | 617 | 0.0 | 317473 | 3842 | 4.5 | 322141 | 1.01 | - | Passed |
+| 11-20 | best rod for the rank, rank = fish level (at most 50) | 600 | 0.0 | 308571 | 4208 | 5.3 | 306942 | 0.99 | 1.01x | Failed |
+| 21-30 | best rod for the rank, rank = fish level (at most 50) | 600 | 0.0 | 308571 | 3946 | 5.1 | 295001 | 0.96 | 1.05x | Failed |
+| 31-40 | best rod for the rank, rank = fish level (at most 50) | 600 | 0.0 | 308571 | 3989 | 5.2 | 293327 | 0.95 | 1.05x | Failed |
+| 41-52 | best rod for the rank, rank = fish level (at most 50) | 617 | 0.0 | 317473 | 3836 | 4.5 | 324066 | 1.02 | - | Passed |
 
 ## Length (Aggressive Angler (full line))
 
@@ -263,15 +263,15 @@
 
 | Rank - fish level | Adaptive turns | Rule-of-thumb turns | Verdict |
 | --- | --- | --- | --- |
-| -6 | 4.0 | 2.8 | Within |
+| -6 | 3.9 | 2.8 | Within |
 | -5 | 4.2 | 3.0 | Within |
-| -4 | 4.5 | 3.1 | Within |
+| -4 | 4.4 | 3.1 | Within |
 | -3 | 4.6 | 3.4 | Within |
 | -2 | 4.7 | 4.2 | Within |
-| -1 | 5.0 | 4.7 | Within |
+| -1 | 4.9 | 4.7 | Within |
 | 0 | 4.8 | 5.6 | Within |
 | +1 | 4.3 | 5.4 | Within |
-| +2 | 4.0 | 5.4 | Within |
+| +2 | 3.9 | 5.4 | Within |
 | +3 | 3.7 | 5.4 | Within |
 | +4 | 3.3 | 5.5 | Within |
 
@@ -282,10 +282,10 @@
 | Group | Variant | Legacy XP per bite | Legacy actions per bite | Legacy XP per hour | New XP per bite | New actions per bite | New XP per hour | Ratio | XP multiplier needed | Verdict |
 | --- | --- | --- | --- | --- | --- | --- | --- | --- | --- | --- |
 | 0-10 | best rod for the rank, rank = fish level (at most 50) | 600 | 0.0 | 308571 | 4326 | 5.3 | 312849 | 1.01 | - | Passed |
-| 11-20 | best rod for the rank, rank = fish level (at most 50) | 600 | 0.0 | 308571 | 4304 | 5.3 | 312292 | 1.01 | - | Passed |
-| 21-30 | best rod for the rank, rank = fish level (at most 50) | 600 | 0.0 | 308571 | 4119 | 4.9 | 323180 | 1.05 | - | Passed |
-| 31-40 | best rod for the rank, rank = fish level (at most 50) | 600 | 0.0 | 308571 | 4208 | 5.0 | 321955 | 1.04 | - | Passed |
-| 41-52 | best rod for the rank, rank = fish level (at most 50) | 617 | 0.0 | 317473 | 3810 | 4.3 | 330453 | 1.04 | - | Passed |
+| 11-20 | best rod for the rank, rank = fish level (at most 50) | 600 | 0.0 | 308571 | 4204 | 5.3 | 308803 | 1.00 | - | Passed |
+| 21-30 | best rod for the rank, rank = fish level (at most 50) | 600 | 0.0 | 308571 | 3905 | 4.8 | 310032 | 1.00 | - | Passed |
+| 31-40 | best rod for the rank, rank = fish level (at most 50) | 600 | 0.0 | 308571 | 3934 | 4.8 | 310673 | 1.01 | - | Passed |
+| 41-52 | best rod for the rank, rank = fish level (at most 50) | 617 | 0.0 | 317473 | 3826 | 4.3 | 332665 | 1.05 | - | Passed |
 
 ## Evidence: Angler perk magnitudes
 
@@ -296,12 +296,12 @@
 | No perks | - | 63.5% | 33.2% | - |
 | Strong Line I | cap +2 | 64.0% | 39.8% | 3.5 |
 | Hard Set I | Set Hook drain +1 | 66.3% | 32.0% | 0.8 |
-| Fish Sense I | two moves ahead for 1 turn(s) | 68.8% | 38.7% | 5.4 |
+| Fish Sense I | two moves ahead for 2 turn(s) | 72.9% | 38.6% | 7.4 |
 | Patient Angler | Give Line -1 | 64.7% | 29.9% | -1.1 |
 | Aggressive Angler | Reel +1 | 66.6% | 32.7% | 1.3 |
 | Strong Line II | cap +5 | 66.4% | 44.6% | 7.2 |
 | Hard Set II | Set Hook drain +2 | 66.2% | 34.0% | 1.8 |
-| Fish Sense II | two moves ahead for 3 turn(s) | 71.6% | 42.5% | 8.7 |
+| Fish Sense II | two moves ahead for 4 turn(s) | 73.6% | 41.8% | 9.3 |
 | Strong Line III | cap +8 | 70.4% | 51.1% | 12.4 |
 | Hard Set III | Set Hook drain +3 | 67.3% | 34.0% | 2.3 |
 | Trophy Catch | rare fish -4 rungs | 59.9% | 31.6% | -2.6 |
@@ -312,14 +312,14 @@
 | --- | --- | --- | --- | --- | --- | --- |
 | 5 | 60% | 72.0% | 53.5% | 60.8% | 60.8% | - |
 | 10 | 60% | 72.0% | 55.9% | 65.8% | 65.8% | - |
-| 15 | 60% | 72.0% | 54.1% | 76.2% | 76.2% | - |
-| 20 | 60% | 72.0% | 58.6% | 79.9% | 78.4% | - |
-| 25 | 60% | 72.0% | 55.3% | 79.6% | 76.2% | - |
-| 30 | 60% | 72.0% | 65.0% | 86.0% | 83.4% | - |
-| 35 | 60% | 72.0% | 66.5% | 87.6% | 86.2% | - |
-| 40 | 60% | 72.0% | 65.9% | 93.8% | 94.4% | - |
-| 45 | 60% | 72.0% | 63.6% | 96.1% | 96.0% | - |
-| 50 | 60% | 72.0% | 63.5% | 91.5% | 90.6% | 90% |
+| 15 | 60% | 72.0% | 54.1% | 76.9% | 76.9% | - |
+| 20 | 60% | 72.0% | 58.6% | 82.3% | 75.0% | - |
+| 25 | 60% | 72.0% | 55.3% | 82.7% | 78.6% | - |
+| 30 | 60% | 72.0% | 65.0% | 88.0% | 85.0% | - |
+| 35 | 60% | 72.0% | 66.5% | 89.4% | 87.5% | - |
+| 40 | 60% | 72.0% | 65.9% | 95.3% | 95.9% | - |
+| 45 | 60% | 72.0% | 63.6% | 97.4% | 96.8% | - |
+| 50 | 60% | 72.0% | 63.5% | 91.5% | 88.6% | 90% |
 
 ## Evidence: style balance
 
@@ -327,26 +327,26 @@
 
 | Rank | Rank - fish level | Patient Angler (full line) | Aggressive Angler (full line) | Better |
 | --- | --- | --- | --- | --- |
-| 20 | -4 | 16% | 14% | Tie |
-| 20 | -3 | 37% | 40% | Aggressive |
-| 20 | -2 | 49% | 46% | Patient |
-| 20 | -1 | 64% | 61% | Patient |
-| 20 | 0 | 80% | 78% | Tie |
-| 20 | +1 | 86% | 83% | Patient |
-| 20 | +2 | 88% | 86% | Tie |
-| 35 | -4 | 40% | 39% | Tie |
-| 35 | -3 | 54% | 52% | Tie |
-| 35 | -2 | 66% | 65% | Tie |
-| 35 | -1 | 82% | 80% | Tie |
-| 35 | 0 | 88% | 86% | Tie |
-| 35 | +1 | 95% | 94% | Tie |
+| 20 | -4 | 15% | 17% | Aggressive |
+| 20 | -3 | 43% | 42% | Tie |
+| 20 | -2 | 53% | 51% | Tie |
+| 20 | -1 | 69% | 66% | Patient |
+| 20 | 0 | 82% | 75% | Patient |
+| 20 | +1 | 88% | 84% | Patient |
+| 20 | +2 | 89% | 88% | Tie |
+| 35 | -4 | 42% | 41% | Tie |
+| 35 | -3 | 53% | 54% | Tie |
+| 35 | -2 | 68% | 67% | Tie |
+| 35 | -1 | 82% | 83% | Tie |
+| 35 | 0 | 89% | 88% | Tie |
+| 35 | +1 | 95% | 95% | Tie |
 | 35 | +2 | 100% | 100% | Tie |
-| 50 | -4 | 44% | 46% | Aggressive |
-| 50 | -3 | 60% | 60% | Tie |
-| 50 | -2 | 64% | 65% | Tie |
-| 50 | -1 | 84% | 83% | Tie |
-| 50 | 0 | 92% | 91% | Tie |
-| 50 | +1 | 99% | 99% | Tie |
+| 50 | -4 | 49% | 47% | Tie |
+| 50 | -3 | 61% | 58% | Patient |
+| 50 | -2 | 68% | 66% | Patient |
+| 50 | -1 | 84% | 82% | Tie |
+| 50 | 0 | 92% | 89% | Patient |
+| 50 | +1 | 100% | 99% | Tie |
 | 50 | +2 | 100% | 100% | Tie |
 
 ## Limitations

@@ -84,16 +84,16 @@ namespace SWLOR.Game.Server.Feature.PerkDefinition
                 .Icon("ife_fish_eyes")
 
                 .AddPerkLevel()
-                .Description("In the Line, the window shows the fish's next two moves on the first turn of a fight. It does not work on a rare fish.")
+                .Description("In the Line, the window shows the fish's next two moves on the first 2 turns of a fight. It does not work on a rare fish.")
                 .Price(2)
                 .RequirementSkill(SkillType.Agriculture, 15)
-                .IncreasesStat(StatType.AnglerForecastTurns, 1)
+                .IncreasesStat(StatType.AnglerForecastTurns, 2)
 
                 .AddPerkLevel()
-                .Description("In the Line, the window shows the fish's next two moves on the first 3 turns of a fight. It does not work on a rare fish.")
+                .Description("In the Line, the window shows the fish's next two moves on the first 4 turns of a fight. It does not work on a rare fish.")
                 .Price(3)
                 .RequirementSkill(SkillType.Agriculture, 35)
-                .IncreasesStat(StatType.AnglerForecastTurns, 3);
+                .IncreasesStat(StatType.AnglerForecastTurns, 4);
         }
 
         private void PatientAngler()

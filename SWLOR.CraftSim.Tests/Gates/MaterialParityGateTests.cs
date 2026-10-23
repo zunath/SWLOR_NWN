@@ -129,6 +129,45 @@ namespace SWLOR.CraftSim.Tests.Gates
         }
 
         [Test]
+        public void OnlyTheRecipesTodaysCrafterMakesAreComparedAndTheOthersAreReportedSeparately()
+        {
+            // At rank 52 with no gear the old minigame never finishes the heavy recipe, but it makes the level 45 one every time. The heavy
+            // recipe uses three times the stacks, so counting it on the new side alone would triple the new stacks per item.
+            var light = new Dictionary<string, int> { ["plate"] = 1, ["wire"] = 1 };
+            var heavy = new Dictionary<string, int> { ["a"] = 1, ["b"] = 1, ["c"] = 1, ["d"] = 1, ["e"] = 1, ["f"] = 1 };
+            var catalog = RecipeCatalog.From(new[]
+            {
+                new RecipeEntry((RecipeType)91011, SkillType.Smithery, 45, "light", RecipeCategoryType.Breastplate, light),
+                new RecipeEntry((RecipeType)91012, SkillType.Smithery, 52, "heavy", RecipeCategoryType.Longsword, heavy)
+            });
+            var reliable = new TableScenario { Quality = (_, _) => 100 };
+            var context = new GateContext(catalog, SharedData.Gear, 20, 1, AttributeSweep.Default);
+
+            var result = Evaluate("materials", reliable, context, recipesPerBand: 2);
+
+            var noGear = result.Tables[0].Rows.Single(row => row[1] == "no gear");
+            noGear[2].Should().Be("2", "both recipes are played");
+            double.Parse(noGear[3]).Should().BeApproximately(2.0, 0.05, "only the recipe today's crafter makes is counted");
+            double.Parse(noGear[5]).Should().BeInRange(0.9, 1.1);
+            noGear[11].Should().Be("0% / 50%", "the never-made check still sees every recipe");
+            noGear[^1].Should().Be("Passed", result.Summary);
+
+            result.Tables.Should().HaveCount(2);
+            var separate = result.Tables[1];
+            separate.Header.Should().Equal("Band", "Gear", "Recipe", "Level", "New success", "New avg quality");
+            separate.Rows.Should().Contain(row => row[1] == "no gear" && row[2] == "91012" && row[3] == "52" && row[4] == "100%");
+            separate.Rows.Should().NotContain(row => row[3] == "45" && row[1] == "no gear", "the recipe today's crafter makes is compared, not set aside");
+        }
+
+        [Test]
+        public void AllTheRecipesAreComparedAndNothingIsSetAsideWhenTodaysCrafterMakesThemAll()
+        {
+            var result = Evaluate("materials", new BenchScenario(), Context(Reliable));
+
+            result.Tables.Should().HaveCount(1);
+        }
+
+        [Test]
         public void TheToleranceIsTheNamedThreshold()
         {
             var tight = GateThresholds.Default with { MaterialTolerance = 0.0 };

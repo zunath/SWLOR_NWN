@@ -77,7 +77,7 @@ namespace SWLOR.CraftSim.Tests.Legacy.Crafting
             {
                 "Enhancement slots", "Enhancement kinds and level limit", "Enhancement progress penalty", "Enhancement transfer chance"
             });
-            LegacySource.EnhancementProgressPenalty.Citation.Should().Be("CraftViewModel.cs:696-755");
+            LegacySource.EnhancementProgressPenalty.Citation.Should().Be("CraftViewModel.cs:695-754");
         }
     }
 

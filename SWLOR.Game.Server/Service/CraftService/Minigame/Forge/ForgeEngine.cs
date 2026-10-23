@@ -88,7 +88,7 @@ public sealed class ForgeEngine : MinigameEngineBase<ForgeState>
 
     private MinigameActionRule<ForgeState> ResolveRamp(MinigameActionInfo info, ForgeState state)
     {
-        const int Cp = ForgeRules.RampCp;
+        var Cp = ForgeRules.RampCp(_setup.RecipeLevel);
         const int Integrity = ForgeRules.RampIntegrity;
 
         var locked = LockedReason(info.Id);
@@ -145,7 +145,7 @@ public sealed class ForgeEngine : MinigameEngineBase<ForgeState>
 
     private MinigameActionRule<ForgeState> ResolveRebond(MinigameActionInfo info, ForgeState state)
     {
-        const int Cp = ForgeRules.RebondCp;
+        var Cp = ForgeRules.RebondCp(_setup.RecipeLevel);
 
         var locked = LockedReason(info.Id);
         if (locked != null)

@@ -3,7 +3,7 @@ namespace SWLOR.CraftSim.Data
     /// <summary>
     /// The enhancements an attempt is made with, for the enhancement-parity gate: how many slots hold an enhancement and the progress
     /// penalty each adds, in the old craft window's progress units (the sum of the enhancement item's <c>ProgressPenalty</c> item
-    /// properties, which <c>CraftViewModel</c> adds to the progress the piece needs). A minigame's scenario maps the total onto its own
+    /// properties, which the old crafting window added to the progress the piece needs). A minigame's scenario maps the total onto its own
     /// progress meter through its engine's enhancement handling, such as the Forge's extra Shape or the Kitchen's extra Doneness.
     /// </summary>
     public sealed record CraftEnhancementConfiguration

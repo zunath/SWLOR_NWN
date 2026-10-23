@@ -24,7 +24,7 @@ namespace SWLOR.Game.Server.Service.GuiService
         DistributeRPXP = 19,
         ShipManagement = 20,
         ChangeDescription = 21,
-        Craft = 22,
+        Craft = 22, // Retired: saved window geometry keys on the name.
         ManageStaff = 23,
         ManageCitizenship = 24,
         ManageCity = 25,
@@ -88,6 +88,7 @@ namespace SWLOR.Game.Server.Service.GuiService
         CraftFabricator = 88,
         Line = 89,
         Prospecting = 90,
+        Search = 91,
 
         DebugEnmity = 900,
         DebugNuiGallery = 901,

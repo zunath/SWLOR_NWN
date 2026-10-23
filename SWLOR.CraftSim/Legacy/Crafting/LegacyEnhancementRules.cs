@@ -1,7 +1,7 @@
 namespace SWLOR.CraftSim.Legacy.Crafting
 {
     /// <summary>
-    /// How enhancements work in the old craft window, ported one for one from CraftViewModel with its float arithmetic and int
+    /// How enhancements work in the old craft window, ported one for one from the deleted CraftViewModel with its float arithmetic and int
     /// truncation: each enhancement adds its progress penalty to the progress the piece needs, and on a success each enhancement
     /// property transfers by an independent roll at a chance equal to the quality percentage.
     /// </summary>
@@ -20,7 +20,7 @@ namespace SWLOR.CraftSim.Legacy.Crafting
         public static bool IsAllowedFor(int enhancementLevel, int recipeLevel) =>
             enhancementLevel - recipeLevel <= MaximumLevelAboveRecipe;
 
-        /// <summary>CraftViewModel.cs:696-755: the piece needs the sum of the enhancements' progress penalties on top of its maximum progress.</summary>
+        /// <summary>CraftViewModel.cs:695-754: the piece needs the sum of the enhancements' progress penalties on top of its maximum progress.</summary>
         public static int MaxProgressWithEnhancements(int maxProgress, int totalProgressPenalty) =>
             maxProgress + totalProgressPenalty;
 

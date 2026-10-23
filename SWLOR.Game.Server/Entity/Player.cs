@@ -86,6 +86,7 @@ namespace SWLOR.Game.Server.Entity
             UnlockedRecipes = new Dictionary<RecipeType, DateTime>();
             CraftedRecipes = new Dictionary<RecipeType, DateTime>();
             CraftMinigameHelpSeen = new Dictionary<CraftMinigameType, DateTime>();
+            SelectedCraftingStyles = new Dictionary<SkillType, PerkType>();
             HeldCraftItems = new List<string>();
             LearnedTechniques = new Dictionary<FeatType, DateTime>();
             EquippedTechniques = new List<FeatType>();
@@ -232,6 +233,10 @@ namespace SWLOR.Game.Server.Entity
         public List<string> HeldCraftItems { get; set; }
         // When the player first opened each crafting minigame, which is when its help page opened by itself.
         public Dictionary<CraftMinigameType, DateTime> CraftMinigameHelpSeen { get; set; }
+        // The crafting style the crafter selected for each crafting skill, named by the style's perk. The style's status effect is
+        // applied again from this after a death or a login, and a refunded or rebuilt perk clears its entry. Records saved before
+        // styles were remembered have no entry.
+        public Dictionary<SkillType, PerkType> SelectedCraftingStyles { get; set; }
         public Dictionary<FeatType, DateTime> LearnedTechniques { get; set; }
         public List<FeatType> EquippedTechniques { get; set; }
         public List<MimicryLoadout> MimicryLoadouts { get; set; }

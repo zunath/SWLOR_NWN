@@ -42,7 +42,7 @@ namespace SWLOR.CraftSim.Tests.Cli
             report.Should().Contain("## By band, enhancement tier and slot count").And.Contain("## Limitations");
             report.Should().Contain("Seed 3; 6 crafts per recipe level, skill, gear level, policy, enhancement penalty and slot count");
             report.Should().Contain("Command: `SWLOR.CraftSim legacy-enhancements --skills Agriculture");
-            report.Should().Contain("`CraftViewModel.cs:696-755`").And.Contain("`CraftViewModel.cs:1420-1468`");
+            report.Should().Contain("`CraftViewModel.cs:695-754`").And.Contain("`CraftViewModel.cs:1420-1468`");
             report.Should().Contain("### Agriculture").And.Contain("Check against player reports");
             report.Should().Contain("Lookahead: made").And.Contain("Dominant: made").And.Contain("enhancements transferred");
         }

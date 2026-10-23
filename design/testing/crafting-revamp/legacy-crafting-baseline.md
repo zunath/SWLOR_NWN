@@ -16,21 +16,21 @@ new minigames' economy-parity gate compares against. No new minigame is measured
   - **Lookahead**: at every step it tries each usable action against 8 sampled futures (the same dice for every candidate), finishes each future with the dominant rotation, and takes the action with the best mean score (0 for a failed craft, 0.5 plus half the quality fraction for a success). It is one step of policy improvement over the rotation, not an optimal player.
 - Material use: a success consumes every committed component stack once, and each failure consumes each stack at 65% (`CraftViewModel.cs:1601-1641`), so stacks per success = stacks x (1 + 0.65 x (1 - p) / p) for a success chance p. A stack is one distinct component line of the recipe; enhancements are not committed. 83 of 3353 recipes make more than one item per craft, so their stacks are shared across every item a success makes.
 
-Rules ported, each checked against the source by `LegacySourceTests`:
+Rules ported. `CraftViewModel.cs` was deleted from the game server after its rules were ported, so they are frozen and cited to commit `ded6cfaf45b66b0a5c4ffe66447bf9c3e24a2ff7`; the others are checked against the source by `LegacySourceTests`:
 
 | Rule | Source |
 | --- | --- |
-| Craft action unlock ranks | `CraftViewModel.cs:40-49` |
-| Craft points | `CraftViewModel.cs:447-455` |
-| Durability from the level chart | `CraftViewModel.cs:457-458` |
-| Maximum progress modifier | `CraftViewModel.cs:461-479` |
-| Maximum quality from the level chart | `CraftViewModel.cs:482-483` |
+| Craft action unlock ranks | `CraftViewModel.cs:39-48` |
+| Craft points | `CraftViewModel.cs:446-454` |
+| Durability from the level chart | `CraftViewModel.cs:456-457` |
+| Maximum progress modifier | `CraftViewModel.cs:460-478` |
+| Maximum quality from the level chart | `CraftViewModel.cs:481-482` |
 | Recipe level chart | `RecipeLevelChart.cs:13-99` |
 | Progress per synthesis | `CraftViewModel.cs:1354-1367` |
 | Quality per touch | `CraftViewModel.cs:1369-1384` |
 | Action resolution order | `CraftViewModel.cs:1672-1725` |
 | The 11 craft actions | `CraftViewModel.cs:1727-1864` |
-| Flags and meters reset between crafts | `CraftViewModel.cs:1226-1233` |
+| Flags and meters reset between crafts | `CraftViewModel.cs:1225-1232` |
 | Components and enhancements lost on failure | `CraftViewModel.cs:1601-1641` |
 | Recipe rank requirement | `Craft.cs:327-331` |
 | Crafting gear stats | `EquipmentStats.cs:929-1075` |

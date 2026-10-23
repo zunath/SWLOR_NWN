@@ -10,7 +10,8 @@ namespace SWLOR.CraftSim.Legacy
         public const string Harvester = Server + "Feature/ItemDefinition/HarvesterItemDefinition.cs";
         public const string ProspectingNode = Server + "Service/CraftService/Minigame/Prospecting/ProspectingNode.cs";
         public const string GatheringLevels = Server + "Service/CraftService/GatheringLevels.cs";
-        public const string Scavenge = Server + "Feature/ScavengePoint.cs";
+        public const string Scavenge = Server + "Service/ScavengeService/ScavengeQuickSearch.cs";
+        public const string ScavengeSite = Server + "Feature/ScavengePoint.cs";
         public const string Refinery = Server + "Feature/GuiDefinition/ViewModel/RefineryViewModel.cs";
         public const string FishingFight = Server + "Service/FishingService/FishingFightLifecycle.cs";
         public const string EquipmentStats = Server + "Feature/EquipmentStats.cs";
@@ -130,14 +131,26 @@ namespace SWLOR.CraftSim.Legacy
             "Harvest XP", GatheringLevels, 20, 23,
             "LevelsPerTier * (Math.Max(1, tier) - 1) + FirstTierLevel", "Skill.GetDeltaXP(ForTier(tier) - gatheringRank)");
 
+        // The scavenge rules live in Quick Search now, which plays today's search at the parity reference (Perception modifier 0). The
+        // legacy model still takes the modifier as a parameter, so the old baseline stays reproducible; the rules it ports are checked here.
+        public static readonly SourceReference ScavengeChance = new(
+            "Scavenge chances at the reference Perception modifier", Scavenge, 38, 49,
+            "public const int ReferencePerceptionModifier = 0;", "public const int BaseDc = 6;",
+            "Math.Clamp(hardLookLevel * 10 + ReferencePerceptionModifier * 5, 0, 100);",
+            "Math.Clamp(21 - (dc - ReferencePerceptionModifier), 0, 20) / 20.0;");
+
         public static readonly SourceReference ScavengeAttempts = new(
-            "Scavenge second attempt", Scavenge, 53, 58,
-            "var attempts = 1;", "Random.D100(1) <= (hardLookLevel * 10 + GetAbilityModifier(AbilityType.Perception, user) * 5)", "attempts++;");
+            "Scavenge second attempt", Scavenge, 97, 99,
+            "var attempts = 1;", "random.D100() <= SecondAttemptChance(hardLookLevel)", "attempts++;");
 
         public static readonly SourceReference ScavengeRoll = new(
-            "Scavenge success roll and DC", Scavenge, 64, 104,
-            "var dc = 6;", "var roll = Random.D20(1);", "if (roll + GetAbilityModifier(AbilityType.Perception, user) >= dc)",
-            "var scavLevel = 10 * requiredLevel;", "xp = deltaXP;", "xp = deltaXP / 4;", "dc += Random.D3(1);");
+            "Scavenge success roll and DC", Scavenge, 101, 108,
+            "var dc = BaseDc;", "var roll = random.Next(1, 21);", "var success = roll + ReferencePerceptionModifier >= dc;",
+            "success ? deltaXp : deltaXp / 4", "dc += random.Next(1, 4);");
+
+        public static readonly SourceReference ScavengeXp = new(
+            "Scavenge XP level", ScavengeSite, 93, 93,
+            "Skill.GetDeltaXP(10 * requiredLevel - rank),");
 
         public static readonly SourceReference RefineryOres = new(
             "Ore tiers and XP per unit", Refinery, 35, 52,
@@ -168,7 +181,7 @@ namespace SWLOR.CraftSim.Legacy
             ActionRanks, MaxCp, MaxDurability, MaxProgress, MaxQuality, LevelChart, Progress, Quality, HandleAction, Actions,
             SessionReset, FailureLoss, EnhancementSlots, EnhancementKinds, EnhancementProgressPenalty, EnhancementTransfer,
             RecipeUnlockOffset, GearStats, HarvestNodeCount, HarvestXp,
-            ScavengeAttempts, ScavengeRoll, RefineryOres, RefineryBatch, RefineryCores, RefineryXp, FishingXp
+            ScavengeChance, ScavengeAttempts, ScavengeRoll, ScavengeXp, RefineryOres, RefineryBatch, RefineryCores, RefineryXp, FishingXp
         };
     }
 }

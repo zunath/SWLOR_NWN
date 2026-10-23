@@ -22,6 +22,9 @@ SWLOR crafting simulator
   fishing [--runs 200] [--seed 1] [--seconds-per-turn 8] [--out report.md] [--json results.json] [--strict] [--repo path]
       Plays the Line (the fishing fight) against today's catch roll over a Willpower sweep, runs the XP-rate gate over the fishing cohort,
       and writes the report (default design/testing/crafting-revamp/fishing-line-parity.md).
+  search [--runs 4000] [--seed 1] [--seconds-per-action 6] [--site-seconds 30] [--out report.md] [--json results.json] [--strict] [--repo path]
+      Plays the Search board (scavenging) against today's search over the Gathering ranks, checks Quick Search against today's expected rolls and XP, runs the economy-parity,
+      length and XP-rate gates over the scavenging cohort, and writes the report (default design/testing/crafting-revamp/scavenging-search-parity.md).
   harvesting [--runs 4000] [--seed 1] [--out report.md] [--json results.json] [--strict] [--repo path]
       Plays Quick Harvest and Prospecting sessions against today's harvests over every node tier and Gathering rank, runs the economy-parity, length and
       XP-rate gates over the harvesting cohort, and writes the report (default design/testing/crafting-revamp/harvesting-prospecting-parity.md).
@@ -49,6 +52,7 @@ try
         "gear" => GearCommand.Run(args.Skip(1).ToArray(), Console.Out),
         "gates" => GatesCommand.Run(args.Skip(1).ToArray(), Console.Out),
         "fishing" => FishingCommand.Run(args.Skip(1).ToArray(), Console.Out),
+        "search" => SearchCommand.Run(args.Skip(1).ToArray(), Console.Out),
         "research" => ResearchCommand.Run(args.Skip(1).ToArray(), Console.Out),
         "harvesting" => HarvestingCommand.Run(args.Skip(1).ToArray(), Console.Out),
         "builder-perks" => BuilderPerksCommand.Run(args.Skip(1).ToArray(), Console.Out),

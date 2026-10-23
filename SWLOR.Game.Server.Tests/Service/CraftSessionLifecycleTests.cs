@@ -78,6 +78,30 @@ public class CraftSessionLifecycleTests
         _world.Events.IndexOf("save").Should().BeLessThan(_world.Events.IndexOf("begin-work"));
     }
 
+    [TestCase(SkillType.Smithery)]
+    [TestCase(SkillType.Engineering)]
+    [TestCase(SkillType.Fabrication)]
+    [TestCase(SkillType.Agriculture)]
+    [TestCase(SkillType.Espionage)]
+    public void Start_StartsTheStationWorkClipOfTheRecipesSkill(SkillType skill)
+    {
+        _recipe.Skill = skill;
+
+        StartSession(Lifecycle());
+
+        _world.StationAnimations.Should().Equal(skill);
+    }
+
+    [Test]
+    public void Start_StartsNoStationWorkClip_WhenTheCraftIsRefused()
+    {
+        _world.Inventory["wire"] = 1;
+
+        Lifecycle().Start(FakeCraftSessionWorld.PlayerHandle, _player, Request()).Succeeded.Should().BeFalse();
+
+        _world.StationAnimations.Should().BeEmpty();
+    }
+
     [Test]
     public void Start_KeepsEmptyEnhancementSlotsInPlaceSoSlotNumbersSurvive()
     {

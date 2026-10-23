@@ -1,5 +1,6 @@
 using SWLOR.Game.Server.Feature.GuiDefinition.Payload;
 using SWLOR.Game.Server.Service.ActivityService;
+using SWLOR.Game.Server.Service.AnimationService;
 using SWLOR.Game.Server.Service.GuiService;
 using SWLOR.Game.Server.Service.SkillService;
 using SWLOR.NWN.API.NWScript.Enum;
@@ -39,6 +40,12 @@ namespace SWLOR.Game.Server.Service.FishingService
         public void Message(uint player, string text)
         {
             SendMessageToPC(player, text);
+        }
+
+        public void PlayAnimation(uint player, AnimationClip clip)
+        {
+            if (GetIsObjectValid(player) && !GetIsDead(player))
+                NamedAnimation.Play(player, clip);
         }
 
         public void CreateFish(uint player, string resref)

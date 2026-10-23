@@ -10,13 +10,14 @@ namespace SWLOR.CraftSim.Scenario.Kitchen
     /// <summary>
     /// Plugs the Kitchen (Agriculture cooking, pet food and cooking enhancements) into the balance gates. It builds the real
     /// <see cref="KitchenEngine"/> from each recipe's stored <see cref="KitchenParameters"/>, the crafter's rank and the gear worn,
-    /// and maps enhancements the way the Kitchen window does: the total progress penalty becomes extra Doneness.
+    /// and maps enhancements the way the Kitchen window does: the total progress penalty becomes extra Doneness. Played unperked, it
+    /// compares the two Chef styles for gate 2; the Chef scenarios play a cook who owns a style and the rest of the line.
     /// </summary>
-    public sealed class KitchenScenario : ICraftScenario
+    public class KitchenScenario : ICraftScenario
     {
-        public string Name => "kitchen";
+        public virtual string Name => "kitchen";
 
-        public string Title => "Kitchen";
+        public virtual string Title => "Kitchen";
 
         public SkillType Skill => SkillType.Agriculture;
 
@@ -43,6 +44,17 @@ namespace SWLOR.CraftSim.Scenario.Kitchen
             Heuristic = new KitchenLeafHeuristic()
         };
 
+        /// <summary>
+        /// The two Chef styles, compared alone, with the rest of the line each cook owns at the rank the recipe is played at (the
+        /// purchases that rank allows, Seasoned Palate switched off) and with Seasoned Palate switched on, from rank 20 where the style opens.
+        /// </summary>
+        public virtual IReadOnlyList<CraftStylePair> StylePairs => new[]
+        {
+            new CraftStylePair(KitchenBuild.SlowCookingAlone.AsStyle(), KitchenBuild.FlashCookingAlone.AsStyle()),
+            new CraftStylePair(KitchenBuild.SlowCookingLine.AsStyle(), KitchenBuild.FlashCookingLine.AsStyle()),
+            new CraftStylePair(KitchenBuild.SlowCookingLineSeasoned.AsStyle(), KitchenBuild.FlashCookingLineSeasoned.AsStyle())
+        };
+
         public ICraftMinigameEngine CreateEngine(CraftEngineRequest request)
         {
             var detail = request.Recipe.Detail
@@ -51,7 +63,7 @@ namespace SWLOR.CraftSim.Scenario.Kitchen
                 throw new InvalidOperationException($"{request.Recipe.Type} has no Kitchen parameters.");
 
             var recipe = KitchenRecipe.From(parameters, request.Recipe.Level, request.Recipe.Components);
-            var stats = new KitchenStats(request.Rank, request.Gear.Craftsmanship, request.Gear.Control, request.Gear.CpBonus);
+            var stats = new KitchenStats(request.Rank, request.Gear.Craftsmanship, request.Gear.Control, request.Gear.CpBonus, PerkStatsFor(request));
             return new KitchenEngine(
                 request.Random,
                 recipe,
@@ -59,9 +71,19 @@ namespace SWLOR.CraftSim.Scenario.Kitchen
                 KitchenTuning.EnhancementDoneness(request.Enhancements.TotalProgressPenalty));
         }
 
-        public IReadOnlyList<string> Limitations => new[]
+        /// <summary>The Chef perks the engine is built with: the request's style, or none.</summary>
+        protected virtual KitchenPerkStats PerkStatsFor(CraftEngineRequest request) => request.Style?.Configuration switch
         {
-            "The Kitchen has no perks yet: the Chef line is a draft, so gate 2 does not apply and gates run without styles.",
+            KitchenBuild build => build.StatsAt(request.Rank),
+            KitchenPerkStats stats => stats,
+            Func<int, KitchenPerkStats> atRank => atRank(request.Rank),
+            _ => KitchenPerkStats.None
+        };
+
+        public virtual IReadOnlyList<string> Limitations => new[]
+        {
+            "The unperked scenario plays no perks except in the style-balance gate, which compares the two Chef styles. A Chef is played with the numbers of the game's own perk definitions at the rank the recipe is played at.",
+            "Seasoned Palate is a switch the cook makes for each dish. The Chef scenarios play it off; the Seasoned Palate scenarios play it on for every dish. A real cook would choose per dish.",
             "Seconds per action is an estimate (8 s) until the client evidence measures it.",
             "Ingredient names are the resrefs here; the window shows item names."
         };

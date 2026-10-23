@@ -32,9 +32,66 @@ public static class KitchenText
         $"{(int)(CraftOutcomeRules.FailureXpFraction * 100)}% of the XP.";
 
     /// <summary>The pantry seasonings every cook may add for free, as one line.</summary>
-    public static string PantryLine() =>
-        $"Pantry (free, unlimited): Salt {Signed(KitchenTuning.PantryPush)} Savory, " +
-        $"Sugar {Signed(KitchenTuning.PantryPush)} Sweet, Spice {Signed(KitchenTuning.PantryPush)} Spice.";
+    public static string PantryLine(int push = KitchenTuning.PantryPush) =>
+        $"Pantry (free, unlimited): Salt {Signed(push)} Savory, " +
+        $"Sugar {Signed(push)} Sweet, Spice {Signed(push)} Spice.";
+
+    /// <summary>
+    /// The numbers the cook's Chef perks change, one short line each for the setup list. Empty when the cook has none. The lines
+    /// describe what changes, so they stay exact whatever perk gave it.
+    /// </summary>
+    public static IReadOnlyList<string> PerkLines(KitchenPerkStats perks, KitchenStats stats = null)
+    {
+        if (perks == null)
+            throw new ArgumentNullException(nameof(perks));
+
+        stats ??= new KitchenStats(0, 0, 0, 0, perks);
+        var lines = new List<string>();
+        if (perks.PantryPushBonus > 0)
+            lines.Add($"Each pantry pinch pushes {stats.PantryPush} instead of {KitchenTuning.PantryPush}.");
+        if (perks.PushSpreadReduction > 0)
+        {
+            lines.Add(
+                $"Pushes spread {Math.Max(0, KitchenTuning.BasePushSpreadPercent - perks.PushSpreadReduction)}% " +
+                $"instead of {KitchenTuning.BasePushSpreadPercent}% (before Control narrows them).");
+        }
+
+        if (perks.SeasonedPalateOwned)
+        {
+            lines.Add(perks.SeasonedPalateOn
+                ? "Seasoned Palate is ON: each Add of a committed ingredient pushes half as far."
+                : "Seasoned Palate is off: switch it on to halve the push of each committed Add.");
+            if (perks.SeasonedPalateOn && perks.SeasonedPalateSpreadPercent > 0)
+                lines.Add($"While it is on, pushes are also {perks.SeasonedPalateSpreadPercent}% less random.");
+        }
+
+        if (perks.LowHeatDonenessPercent > 0)
+            lines.Add($"At Low heat, Simmer gives {perks.LowHeatDonenessPercent}% more Doneness.");
+        if (perks.MediumDriftReductionPercent > 0)
+            lines.Add($"At Medium heat, the flavor drifts {perks.MediumDriftReductionPercent}% less.");
+        if (perks.HighDriftReductionPercent > 0)
+            lines.Add($"At High heat, the flavor drifts {perks.HighDriftReductionPercent}% less.");
+        if (perks.HasReduce)
+        {
+            lines.Add($"Reduce: {stats.ReduceCp} CP, pulls the flavor {perks.ReducePercent}% of the way to the target's center.");
+        }
+
+        if (perks.PeakAromaChancePoints > 0)
+            lines.Add($"Each turn has a {stats.PeakAromaChancePercent}% chance of announcing Peak Aroma.");
+        if (perks.StirCpReduction > 0 || perks.StirDonenessPercent > 0)
+        {
+            var doneness = perks.StirDonenessPercent > 0
+                ? $" and at Medium heat gives {perks.StirDonenessPercent}% of a Simmer's Doneness"
+                : string.Empty;
+            lines.Add($"Stir costs {stats.StirCp} CP{doneness}.");
+        }
+
+        if (perks.SignatureDish)
+            lines.Add("Signature Dish: once per dish, sets one flavor exactly to the center (no CP).");
+
+        return lines;
+    }
+
 
     /// <summary>What one committed ingredient does, as one line for the setup list.</summary>
     public static string IngredientLine(KitchenIngredientLine line)
@@ -101,23 +158,23 @@ public static class KitchenText
         return $"Heat {heat}: {description}.{lid}";
     }
 
-    /// <summary>The announced drift and what it will do at the current heat.</summary>
-    public static string DriftText(FlavorVector announced, FlavorVector effective, KitchenHeat heat)
+    /// <summary>The announced drift and what it will do at the current heat, with the cook's perks taken into account.</summary>
+    public static string DriftText(FlavorVector announced, FlavorVector effective, KitchenHeat heat, KitchenStats stats = null)
     {
         if (announced.IsZero)
             return "No drift is announced.";
 
-        var atHigh = announced.Scaled(KitchenTuning.DriftPercentAtHigh);
-        var atMedium = announced.Scaled(KitchenTuning.DriftPercentAtMedium);
+        var atHigh = stats?.Drift(announced, KitchenHeat.High) ?? announced.Scaled(KitchenTuning.DriftPercentAtHigh);
+        var atMedium = stats?.Drift(announced, KitchenHeat.Medium) ?? announced.Scaled(KitchenTuning.DriftPercentAtMedium);
         var now = effective.IsZero
             ? $"At {heat} heat it does nothing."
             : $"At {heat} heat: {VectorText(effective)}.";
         return $"Next drift: {VectorText(atHigh)} at High, {VectorText(atMedium)} at Medium, none at Low. {now}";
     }
 
-    public static string AromaText(bool peakAromaNext) => peakAromaNext
+    public static string AromaText(bool peakAromaNext, int chancePercent = KitchenTuning.PeakAromaChancePercent) => peakAromaNext
         ? "PEAK AROMA: your next Add is twice as strong!"
-        : $"Peak Aroma: not announced. Each turn has a {KitchenTuning.PeakAromaChancePercent}% chance of announcing it.";
+        : $"Peak Aroma: not announced. Each turn has a {chancePercent}% chance of announcing it.";
 
     /// <summary>Which of the filled enhancement slots (numbered from 1) the current quality already guarantees.</summary>
     public static string ThresholdText(int qualityPercent, IReadOnlyList<int> filledSlots)

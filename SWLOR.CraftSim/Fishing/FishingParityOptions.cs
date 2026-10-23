@@ -48,6 +48,15 @@ namespace SWLOR.CraftSim.Fishing
         /// </summary>
         public double FightBoundSlackPoints { get; init; } = 3;
 
+        /// <summary>
+        /// What the perked Angler line aims at for a fish of the angler's own level (owner decision, October 2026): the adaptive player with
+        /// the whole line lands about this share. The bound above applies to the unperked skilled fight only.
+        /// </summary>
+        public double PerkedTargetPercent { get; init; } = 90;
+
+        /// <summary>How far, in points, the perked line's at-level catch rate may sit from <see cref="PerkedTargetPercent"/> and still be "about" it.</summary>
+        public double PerkedTolerancePoints { get; init; } = 5;
+
         /// <summary>The most a fight may land, in percent, when Quick Reel lands <paramref name="quickReelPercent"/>.</summary>
         public double FightBound(double quickReelPercent) => quickReelPercent * (1 + FightBoundRelative) + FightBoundSlackPoints;
 

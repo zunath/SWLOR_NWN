@@ -39,6 +39,7 @@ namespace SWLOR.CraftSim.Fishing
         private readonly FishingParity _parity;
         private readonly FishingParityOptions _options;
         private readonly Func<int, double> _xpMultiplierFor;
+        private readonly AnglerBuild _build;
         private readonly Lazy<IReadOnlyDictionary<string, IReadOnlyList<FishingMixEntry>>> _mixes;
 
         /// <param name="parity">The played fights.</param>
@@ -47,15 +48,18 @@ namespace SWLOR.CraftSim.Fishing
         /// The multiplier on a bite's XP by the fish's level. By default it is the one the game server applies (<c>CraftMinigameXp</c>);
         /// a study passes another to see what a different multiplier would do.
         /// </param>
-        public FishingXpRateCohort(FishingParity parity, FishingParityOptions options = null, Func<int, double> xpMultiplierFor = null)
+        /// <param name="build">The Angler perks the fisher owns at each rank, or null for none.</param>
+        public FishingXpRateCohort(FishingParity parity, FishingParityOptions options = null, Func<int, double> xpMultiplierFor = null, AnglerBuild build = null)
         {
             _parity = parity ?? throw new ArgumentNullException(nameof(parity));
+            _build = build ?? AnglerBuild.Unperked;
             _options = options ?? FishingParityOptions.Default;
             _xpMultiplierFor = xpMultiplierFor ?? (level => CraftMinigameXp.MultiplierFor(CraftMinigameType.Line, level));
             _mixes = new Lazy<IReadOnlyDictionary<string, IReadOnlyList<FishingMixEntry>>>(BuildMixes);
         }
 
-        public string Name => _options.FreeOpeningTurn ? "Fishing at the fastest allowed pace" : "Fishing";
+        public string Name => (_options.FreeOpeningTurn ? "Fishing at the fastest allowed pace" : "Fishing") +
+                              (ReferenceEquals(_build, AnglerBuild.Unperked) ? string.Empty : $" ({_build.Name})");
 
         public string RunName => "bite";
 
@@ -77,7 +81,7 @@ namespace SWLOR.CraftSim.Fishing
                 entry.Rank,
                 entry.RodTier,
                 LinePlayer.Adaptive,
-                LineAnglerEffects.None)));
+                _build.EffectsAt(entry.Rank))));
         }
 
         public IReadOnlyList<XpRateCase> Cases(GateContext context) =>
@@ -95,7 +99,7 @@ namespace SWLOR.CraftSim.Fishing
             foreach (var entry in Mix(xpCase.Group))
             {
                 var bites = entry.Weight * BitesPerCase;
-                var sample = _parity.Catch(entry.Level, entry.Rarity, entry.Rank, entry.RodTier);
+                var sample = _parity.Catch(entry.Level, entry.Rarity, entry.Rank, entry.RodTier, LinePlayer.Adaptive, _build.EffectsAt(entry.Rank));
 
                 // The bite pays today's XP at once and the rest of the multiplied XP (rounded to a whole XP as the game server rounds it)
                 // when the fight ends, in proportion to how long it lasted: the modelled player takes SecondsPerTurn for every action.

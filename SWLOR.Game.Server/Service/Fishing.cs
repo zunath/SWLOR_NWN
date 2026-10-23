@@ -7,6 +7,7 @@ using SWLOR.Game.Server.Entity;
 using SWLOR.Game.Server.Extension;
 using SWLOR.Game.Server.Service.ActivityService;
 using SWLOR.Game.Server.Service.AnimationService;
+using SWLOR.Game.Server.Service.CraftService.Minigame.Line;
 using SWLOR.Game.Server.Service.FishingService;
 using SWLOR.Game.Server.Service.SkillService;
 using SWLOR.NWN.API.NWNX;
@@ -454,7 +455,8 @@ namespace SWLOR.Game.Server.Service
                 GetLocalInt(rod, RemainingBaitVariable),
                 baitName,
                 GetLocalInt(fishingPoint, FishingPointRemainingAttemptsVariable),
-                position));
+                position,
+                LineAnglerEffects.FromStatTotals(stat => Stat.GetStatAdjustment(player, stat))));
         }
 
         /// <summary>Releases this attempt's animation and state without clearing a replacement activity.</summary>

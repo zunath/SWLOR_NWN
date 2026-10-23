@@ -1,90 +1,78 @@
-# Agriculture: Chef perk line (draft)
+# Agriculture perk line: Chef (implemented)
 
-Status: draft for owner approval. Nothing here is coded. The Angler line belongs to the fishing workstream.
+The line is implemented on `claude/crafting-revamp-perks-agriculture`. This file started as the draft for the owner's approval; it now records what was built, the owner's decisions of October 2026 that amended the draft, the balance call on the styles, and the balance evidence. Rules followed: `CraftingRevampPlan.md` (Line schedule, the Chef row under Lines, Agriculture cooking) and `SkillPerkStandards.md`.
 
-The Chef line acts only on the Kitchen minigame (cooking, pet food and cooking enhancements). It is one of Agriculture's two independent, optional lines: 10 purchases at skill ranks 5/10/15/20/25/30/35/40/45/50, priced 1/1/2/2/3/3/3/3/3/4 SP, 25 SP in all. The plan fixes the anchors: the rank 20 style choice (Slow Cooking or Flash Cooking), Seasoned Palate, Reduce, and the rank 50 capstone Signature Dish (no quest requirement). **Every magnitude below is a proposal.** Phase 2 tuned the unperked Kitchen against the CraftSim gates, so these numbers are written against the tuned engine values; the perks themselves are not in the simulator yet, so no gate has measured them.
+- Code: `Feature/PerkDefinition/AgricultureChefPerkDefinition.cs` (nine perks, ten purchases), `KitchenPerkStats` (the one place stats become engine numbers), `KitchenStats`, `KitchenEngine`, `KitchenText`, `KitchenViewModel` and `KitchenDefinition` (the setup view's perk lines and the Seasoned Palate switch, the help page).
+- IDs: PerkType 904-912, StatType 1228-1240 (inside the reserved ranges 904-923 and 1228-1247). `iprp_resperk.2da` needs no rows (no perk here restricts an item), and no TLK strings are new (perk names and descriptions are C# text). No effect icon: the owned style is always active and is not a status effect, so the reserved EffectIconType 515-518 and TLK 192760-192769 are unused.
+- Bible: the Agriculture tab, rows 16-27, written by `tools/UpdateAgriculturePerkBible.py` from the perk definitions.
+- Evidence: `agriculture-chef-perks.md` (`SWLOR.CraftSim chef-perks`), `kitchen-perks-gates.md` (gates 2 and 3), `kitchen-slow-cooking-gates.md` and `kitchen-flash-cooking-gates.md` (the other gates for a Chef).
 
-Revision after phase 2: the engine values in "Sources" are the tuned ones, Sharp Palate and Steady Wrist were re-based on them, and the owner's decisions on the open questions are applied (see "Owner decisions").
+## Structure
 
-## Sources and comparators
+- The Chef line acts only on the Kitchen (cooking, pet food and cooking enhancements alike). It is one of Agriculture's two independent, optional lines: 10 purchases at skill ranks 5/10/15/20/25/30/35/40/45/50, priced 1/1/2/2/3/3/3/3/3/4 SP, 25 SP in all.
+- **Rank 20 is the style, a choice of two.** *Slow Cooking* and *Flash Cooking* use `RequirementCannotHavePerk` against each other, and switching costs a Perk Refund Token like any perk. The owned style is always active in the Kitchen: there is no toggle in the window (owner decision).
+- Rank 50 is the capstone, with no quest requirement.
+- A ranked perk occupies two purchases (Seasoned Palate at 15 and 30, Reduce at 25 and 40); each rank restates the one before inside its own total, because only the purchased rank's stat bonuses apply.
+- Perks grant `StatType` adjustments. The window reads them once into a `KitchenPerkStats` record when the dish starts (`KitchenStats.Perks`), so previews and results stay pure and the engine never tests a perk by name. A perk refunded or bought during a dish changes the next dish. A cook without perks plays exactly the Kitchen as tuned (the existing Kitchen tests, unchanged, prove it).
+- Every action a perk improves or adds is available at or before the perk's own rank: all Kitchen actions are available from rank 0.
 
-- Anchors, schedule and price list: `Readmes/CraftingRevampPlan.md` ("Line schedule", "Lines", "Agriculture cooking: the Kitchen").
-- Engine values the perks bend: `Service/CraftService/Minigame/Kitchen/KitchenTuning.cs`. After phase 2 tuning: a dish needs 120 Doneness (was 100); Simmer gives 5 at Low and 12 at Medium; Sear gives 36 for 6 Freshness; Craftsmanship adds 0.8% to each of those per point (was 1.5%); pantry push 4; push spread 50% before Control (was 40%); drift 8 at High and 4 at Medium; Cover 3 turns for 6 CP; Stir 12 CP (was 8); Peak Aroma 25%. Recipe Freshness carries 12% slack over the turns the dish needs (was 5%).
-- Comparators: the rank-20 style and rank-50 capstone anchors of the other crafting lines in the same plan table (Hot Forging/Red Line, Overclock/Surge, Production Run/Master Assembler). The weapon schedule table in `SkillPerkStandards.md` does not apply to crafting lines; the plan's schedule does.
-- No character-sheet stat changes: Craftsmanship and Control keep their roles (Doneness speed, narrower pushes). Perks add `StatType` adjustments that `KitchenStats` collects when the window opens the dish; the engine reads those and never checks a perk by name.
+## The base minigame these perks build on
 
-## The line
+The Kitchen (`Service/CraftService/Minigame/Kitchen/`; every value is a starting value in `KitchenTuning` that CraftSim tuned in phase 2, `kitchen-gates.md`): a dish is a point in a Savory/Sweet/Spice cube (each 0-100) steered toward the recipe's target. Quality is 100% inside the target's inner radius and falls to 0 at the outer radius. Doneness (120) is the progress meter, Freshness the integrity meter (the dish is ruined at 0), CP is gear CP plus 0.75 per rank plus 31 from rank 25. Heat is Low, Medium or High; the announced drift is 8 on one flavor and 100% at High, 50% at Medium, 0 at Low. Simmer gives 5 Doneness at Low and 12 at Medium, Sear 36 at High for 6 Freshness; Stir (12 CP) cancels the announced drift; Cover (6 CP) halves Freshness loss for 3 turns; a pantry pinch pushes 4, a committed ingredient's portion its listed vector, each push landing 50% light or heavy (narrowed by Control); Peak Aroma (25% of turns) doubles the next Add.
 
-| Rank | SP | Perk | Type | Effect (proposed magnitude) |
-| --- | --- | --- | --- | --- |
-| 5 | 1 | Pantry Staples | Trait | Salt, Sugar and Spice push 5 instead of 4. |
-| 10 | 1 | Sharp Palate | Trait | Every push lands closer to its listed strength: the light and heavy results are 5 points nearer (50% becomes 45% before Control). |
-| 15 | 2 | Seasoned Palate I | Active (toggle) | Turn it on in the setup view. While on, every Add pushes half as far but still uses one whole portion, so you can creep up on the target. Pantry pinches are not changed. |
-| 20 | 2 | Slow Cooking or Flash Cooking | Style | One of the two. Slow Cooking: Simmer at Low gives 40% more Doneness (5 becomes 7), and the drift at Medium is 25% weaker. Flash Cooking: the drift at High is 35% weaker (8 becomes 5) and Sear costs 1 less Freshness. |
-| 25 | 3 | Reduce I | Active | Takes a turn and 12 CP. Moves the flavor 20% of the way toward the target's center on every axis. |
-| 30 | 3 | Seasoned Palate II | Trait | While Seasoned Palate is on, pushes are also 25% less random (the spread is multiplied by 0.75 after Control). |
-| 35 | 3 | Aromatic Kitchen | Trait | Peak Aroma is announced with a 35% chance each turn instead of 25%. |
-| 40 | 3 | Reduce II | Trait | Reduce moves the flavor 35% of the way and costs 9 CP. |
-| 45 | 3 | Steady Wrist | Trait | Stir costs 4 less CP (12 becomes 8) and also gives half of a Simmer's Doneness at the current heat. |
-| 50 | 4 | Signature Dish | Active (once per craft) | Takes a turn and no CP. Snaps one flavor axis, your choice, exactly onto the target's center value. |
+## Chef (cooking)
 
-Prices total 1+1+2+2+3+3+3+3+3+4 = 25 SP.
+| Rank | SP | Perk | Type | Effect | StatTypes the engine reads |
+| --- | --- | --- | --- | --- | --- |
+| 5 | 1 | Pantry Staples | trait | Each free pantry pinch (Salt, Sugar, Spice) pushes 5 instead of 4. | `KitchenPantryPush` +1 |
+| 10 | 1 | Sharp Palate | trait | Every push lands closer to its listed strength: the base spread is 45% instead of 50%, before Control narrows it. | `KitchenPushSpreadReduction` +5 |
+| 15 | 2 | Seasoned Palate I | toggle | A switch in the Kitchen's setup view. While it is on, every Add of a committed ingredient pushes half as far but still uses a whole portion. Pantry pinches are not changed. | `KitchenSeasonedPalate` (flag) |
+| 20 | 2 | Slow Cooking | style (exclusive with Flash Cooking) | A Simmer at Low heat gives 80% more Doneness (9 instead of 5), and the flavor drifts 25% less at Medium heat (4 becomes 3). | `KitchenLowHeatDonenessPercent` +80, `KitchenMediumDriftReductionPercent` +25 |
+| 20 | 2 | Flash Cooking | style (exclusive with Slow Cooking) | The flavor drifts 15% less at High heat (8 becomes 7). | `KitchenHighHeatDriftReductionPercent` +15 |
+| 25 | 3 | Reduce I | active | A new action: takes a turn and 12 CP and pulls the flavor 20% of the way toward the target's center on every flavor. | `KitchenReducePercent` +20 |
+| 30 | 3 | Seasoned Palate II | trait | While Seasoned Palate is on, every push is also 25% less random, after Control narrows it. | `KitchenSeasonedPalate` (flag), `KitchenSeasonedPalateSpreadPercent` +25 |
+| 35 | 3 | Aromatic Kitchen | trait | Each turn has a 35% chance of announcing Peak Aroma instead of 25%. | `KitchenPeakAromaChancePoints` +10 |
+| 40 | 3 | Reduce II | active | Reduce pulls 35% of the way and costs 9 CP. | `KitchenReducePercent` +35, `KitchenReduceCpReduction` +3 |
+| 45 | 3 | Steady Wrist | trait | Stir costs 4 less CP (8 instead of 12) and, at Medium heat, also gives half of a Simmer's Doneness. There is no Simmer at High heat, so Stir adds nothing there. | `KitchenStirCpReduction` +4, `KitchenStirDonenessPercent` +50 |
+| 50 | 4 | Signature Dish | capstone, active | A new action, once per dish: takes a turn and no CP and sets one flavor of your choice exactly to the target's center. It is three actions (`Signature Dish: Savory`, `Sweet`, `Spice`). | `KitchenSignatureDish` (flag) |
 
-### Style exclusivity
+SP check: 1 + 1 + 2 + 2 + 3 + 3 + 3 + 3 + 3 + 4 = 25. Only one of the two rank-20 perks can be bought.
 
-Slow Cooking and Flash Cooking are mutually exclusive through `PerkRequirementCannotHavePerk`, so only one can be owned. Switching costs a Perk Refund Token, like any perk. A player who owns the style picks it up in the setup view of the Kitchen window; it is part of the craft and cannot change once cooking starts. Seasoned Palate is toggled the same way, in setup, and also stays fixed for the craft.
+Owner decisions applied (October 2026): Seasoned Palate halves an Add's push strength and keeps whole portions (so with it on the committed ingredients reach only half of their flavor and the dish needs pantry pinches for the rest); Reduce pulls toward the target's center; Signature Dish snaps exactly to the center (even where no push could reach it in one); Reduce and Signature Dish work on every Kitchen recipe, pet food and cooking enhancements included.
 
-### How each perk meets the engine
+Engine details: a halved push rounds each flavor half away from zero; Peak Aroma doubles the halved push; Water (a diluting ingredient) is halved the same way (25% becomes 13%); Reduce moves each flavor by the rounded share of its distance and is refused when that would change nothing; Signature Dish is refused for a flavor already on the center and once it has been used; the announced drift still happens at the end of the turn that Signature Dish or Reduce used, so a cook snaps a flavor the drift is not about to push; Stir's CP and Reduce's CP never fall below 1.
 
-- Pantry Staples: `KitchenPantryPush` (+1) is added to the pantry push in `AddFlavor`.
-- Sharp Palate: `KitchenPushSpreadReduction` (5 points) is taken off `KitchenStats.PushSpreadPercent` after the Control formula, never below 0.
-- Seasoned Palate: `KitchenSeasonedPalate` (1 enables the toggle). When the craft starts with it on, `KitchenIngredientLine` halves its portion vector and keeps its portion count, which the existing stock, preview and Peak Aroma code already handle. `KitchenSeasonedPalateSpreadPercent` (25 at rank II) scales the spread.
-- Slow Cooking: `KitchenLowHeatDonenessPercent` (+40) scales the Low-heat Simmer, and `KitchenMediumDriftReductionPercent` (25) scales the Medium drift.
-- Flash Cooking: `KitchenHighHeatDriftReductionPercent` (35) scales the High drift, and `KitchenSearFreshnessCostReduction` (1) lowers the Sear cost.
-- Reduce: `KitchenReducePercent` (20, then 35) enables the action and sets how far it pulls toward the target's center, and `KitchenReduceCpReduction` (3 at rank II) lowers its CP cost. It is one more action in `ResolveAction`, with a preview like every other action.
-- Aromatic Kitchen: `KitchenPeakAromaChancePoints` (+10) raises the forecast roll's threshold.
-- Steady Wrist: `KitchenStirCpReduction` (4) and `KitchenStirDonenessPercent` (50) change the Stir rule.
-- Signature Dish: `KitchenSignatureDish` (1 enables the action). The engine remembers in its immutable state that it has been used.
+### Mechanical contract
 
-### Proposed StatType names
+- **Triggers:** every effect applies to the Kitchen only, on the cook's own dish, for every Kitchen recipe (food, pet food and cooking enhancements alike). None touches combat, other crafting minigames or fishing.
+- **Resources and state:** Reduce spends CP and a turn; Signature Dish spends a turn and is limited to once per dish by engine state (`KitchenState.SignatureUsed`), not by a cooldown. Seasoned Palate and the style are fixed when cooking starts. Nothing carries between dishes.
+- **Costs and previews:** Reduce and Signature Dish show their exact result in the action list before the click, like Add, and are refused with a reason when they cannot be used (too little CP, nothing to change, already used).
+- **Rank carry-over:** Seasoned Palate II and Reduce II restate the rank I effect and add to it, so owning the later purchase never loses the earlier one (`PerkRankProgressionTests` and `AgriculturePerkLineTests`).
+- **Lifecycle:** closing the window, logging out, dying or a restart ends the dish as a failure under the 65% rule, and perk values are read from the player's perks when cooking starts, so a refund or purchase during a dish changes nothing until the next dish.
+- **Perks optional:** an unperked rank-50 cook reaches full quality on at least half of at-level crafts (gate 3) by cooking at Medium or High heat, stirring against the announced drift and correcting with the pantry. The line changes how and how efficiently, not whether.
 
-Names only, in the order above. IDs are reserved when the lines are coded: the next free StatType at this writing is 1168, and the PerkType numbers are checked against master and `iprp_resperk.2da` then. Each would carry a `StatTypeAttribute` on its enum entry.
+### Balance call: the styles (delegated by the owner, 23 October 2026)
 
-| Name | Category | Aggregation |
-| --- | --- | --- |
-| KitchenPantryPush | BeneficialWhenPositive | Additive |
-| KitchenPushSpreadReduction | BeneficialWhenPositive | Additive |
-| KitchenSeasonedPalate | BeneficialWhenPositive | Maximum |
-| KitchenSeasonedPalateSpreadPercent | BeneficialWhenPositive | Maximum |
-| KitchenLowHeatDonenessPercent | BeneficialWhenPositive | Additive |
-| KitchenMediumDriftReductionPercent | BeneficialWhenPositive | Additive |
-| KitchenHighHeatDriftReductionPercent | BeneficialWhenPositive | Additive |
-| KitchenSearFreshnessCostReduction | BeneficialWhenPositive | Additive |
-| KitchenReducePercent | BeneficialWhenPositive | Maximum |
-| KitchenReduceCpReduction | BeneficialWhenPositive | Additive |
-| KitchenPeakAromaChancePoints | BeneficialWhenPositive | Additive |
-| KitchenStirCpReduction | BeneficialWhenPositive | Additive |
-| KitchenStirDonenessPercent | BeneficialWhenPositive | Additive |
-| KitchenSignatureDish | BeneficialWhenPositive | Maximum |
-
-## Mechanical contract
-
-- Triggers: every effect applies to the Kitchen only, on the cook's own dish, for every Kitchen recipe (food, pet food and cooking enhancements alike). None of them touch combat, other crafting minigames or fishing.
-- Resources and state: Reduce spends CP and a turn; Signature Dish spends a turn and is limited to once per craft by engine state, not by a cooldown. Seasoned Palate and the style are fixed when cooking starts. Nothing carries between crafts.
-- Costs and previews: Reduce and Signature Dish show their exact result in the action list before the click, like Add, and are refused with a reason when they cannot be used (for example Reduce with too little CP).
-- Rank carry-over: Seasoned Palate II and Reduce II restate the rank I effect and add to it, so owning the later purchase never loses the earlier one.
-- Lifecycle: closing the window, logging out, dying or a restart ends the craft as a failure under the 65% rule, and perk values are read from the player's perks when cooking starts, so a refund or purchase during a craft changes nothing until the next craft.
-- Perks optional: an unperked rank-50 cook reaches full quality on at least half of at-level crafts (gate 3, `kitchen-gates.md`) by cooking at Medium or High heat, stirring against the announced drift and correcting with the pantry. The line changes how and how efficiently, not whether.
-
-## Owner decisions
-
-Applied from the owner's answers to the four open questions of the first draft:
-
-1. Seasoned Palate halves each Add's push strength and keeps whole portions (it does not double the number of Adds). Consequence to check when it is coded: with the toggle on, the committed ingredients reach only half of their flavor, so the dish needs pantry pinches (4 each, 5 with Pantry Staples) to cover the rest. That trades reach for precision and spends a turn and Freshness on every pinch; the style, length and perks-optional gates should be run with it on before the magnitude is final.
-2. Reduce pulls toward the target's center.
-3. Signature Dish snaps one axis exactly onto the center value, even where the cook could not otherwise have reached it.
-4. Reduce and Signature Dish work on every Kitchen recipe, pet food and cooking enhancements included.
+The drafted styles failed gate 2 (style balance). Slow Cooking as drafted (a Low heat Simmer +40%, Medium drift -25%) lost to Flash Cooking as drafted (High drift -35%, Sear 1 Freshness cheaper) on 79-88% of recipes with a mean gap of 4 to 7 quality points at every gear: the Sear saving and the stronger High drift reduction make the fast High-heat route (a Sear gives three times a Medium Simmer's Doneness) far better, while a Low heat Simmer at 7 is still much slower than a Medium one at 12. The retune (`agriculture-chef-perks.md`, "The styles' magnitudes"; a drift is a whole number, so a reduction only matters where it changes the rounded drift: High 8 becomes 7 at 15% and 6 at 20%, Medium 4 becomes 3 at 25% and stays 3 up to 37%) drops Flash Cooking's Sear saving, cuts its High drift reduction to 15% and raises Slow Cooking's Low heat Simmer to +80% (9, close to a Medium simmer's 12, with no drift at all). Tried and rejected: Slow +40% / Flash -35% with the Sear saving (Flash better on 79-88% of recipes), Slow +100% / Flash -20% (Flash better on 71-75% of recipes alone), Slow +100% / Flash -15% and Slow +120% / Flash -15% (Slow better on 79-83% of recipes with the full line at no gear), Slow +60% / Flash -15% (Slow better on 71% with the full line at no gear). The Sear saving (`KitchenSearFreshnessCostReduction`) was dropped with it, so the StatType IDs run 1228-1240 for the Chef.
 
 ## Balance evidence
 
-Phase 2 measured the unperked Kitchen: `design/testing/crafting-revamp/kitchen-gates.md` has the seeds, runs, inputs and limitations. For this line, the gates that still have to be run once the perks are in the simulator are style balance (each style the better choice on at least 30% of recipes, neither more than about 5 quality points ahead; gate 2 is not applicable today because the Kitchen offers no styles), and length, perks-optional and no-single-rotation with Seasoned Palate and Reduce on, which are the perks most likely to move them. Seasoned Palate, Reduce and Signature Dish also change the quality an unperked cook can reach, so the enhancement-parity gate (gate 7) should be re-run with the full line.
+`agriculture-chef-perks.md` (seed 1, 40 attempts per cell, 6 recipes per band; rank 50 plays recipes of levels 41-53) and the gate reports. The adaptive player is the model of skilled play throughout.
+
+**Rank 50, per purchase** (`agriculture-chef-perks.md`, 20 attempts per recipe, 4 recipes per band; quality change against the unperked cook at the same gear, no gear / mid gear / best gear):
+- The whole line, either style, is worth +12 to +19 quality points and 3.4 to 4.8 fewer actions per craft, and 82% to 98% of its crafts reach full quality (the unperked cook: 54% to 72%).
+- The strongest single purchases are Reduce (+5.0 / +2.4 / +6.7 points, 1.3 to 2.5 fewer actions) and Signature Dish (+3.9 / +2.3 / +6.7 points, 1.4 to 3.1 fewer actions). Slow Cooking and Flash Cooking alone are worth +1.6 to +4.3 points.
+- Pantry Staples, Sharp Palate, Aromatic Kitchen and Steady Wrist are small on their own (-7.3 to +3.4 points; the smallest ones are within the sample's noise) and mainly make the other purchases work.
+- Seasoned Palate switched on, alone, costs quality (-3.7 / -7.2 / -13.6 points) because half-strength Adds need pantry pinches to finish; with the rest of the line it is within 2 points of leaving it off (best gear, Slow Cooking: 99.9 against 98.0 quality, 98% of crafts at full quality). That is the choice the switch offers.
+
+**Gate 2, style balance** (`kitchen-perks-gates.md`, the gate's own sample of 6 recipes per band, 40 runs): passed in all nine cells (the styles alone, with the full line, and with the full line and Seasoned Palate on, each at no, mid and best gear). The better-recipe shares run 33% to 67% and no mean gap passes 1.6 points. At a smaller sample of 4 recipes per band, three cells failed on the tie rule (for example 88% / 12% at no gear with the full line, mean gap 4.0 points); the verdict depends on the recipes sampled, so the gate's own sample is the one recorded.
+
+**Gate 3, perks optional**: passed (lowest 58% of unperked rank-50 crafts reach full quality in best gear; the bands run 58% to 88%).
+
+**Gates 4, 5, 6 and 7 for a Chef** (`kitchen-slow-cooking-gates.md`, `kitchen-flash-cooking-gates.md`): passed for both styles. Length 10.1 to 16.1 actions per craft (the perked floor is 8), XP per hour at least 1.04x (Slow Cooking) and 1.06x (Flash Cooking) of the legacy rate, enhancement parity at least 1.07x, material parity within tolerance. Neither needed a change to the Kitchen's base tuning or XP multipliers.
+
+**Gate 1, no fixed rotation**: open for perked Chef builds, as for the Circuit, Fabricator and perked Forge (owner, October 2026; see the plan's gate 1 note). Not retuned here; judged from player feedback. Details in `kitchen-perks-gates.md`.
+
+## Player descriptions
+
+The Bible and the perk window use the text in `AgricultureChefPerkDefinition.cs` (ASCII, no internal terms). The Kitchen window's setup list shows one line for every number the cook's perks change, the Seasoned Palate switch appears only for a cook who owns it, and the help page has a Chef paragraph.

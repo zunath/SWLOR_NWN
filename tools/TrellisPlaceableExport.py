@@ -19,10 +19,16 @@ Schema 1 assets (all paths relative to the manifest):
   walkmesh {prefix, inset, simplify, min_use_clearance, use_nodes [[x, y], ...]}: at most two use nodes, none keeps the
     engine's default approach;
   emission {threshold, softness, gain?, saturation_min?}: a glow map from the brightest base-color texels;
+  color_gain (0.25..3, default 1): linear-light brightness of the base color, applied after the glow map is taken;
+  black_lift (0..0.5, default 0): raises the darkest texels in linear light so near-black panels stay readable in a dim room;
+  wear (0..1, default 0): light grime (darker, warmer seams and soft blotches) for a texture that came out too clean;
+  greeble (0..1, default 0): vent slots, rows of small square buttons and panel outlines drawn on flat texture cells, with
+    matching normal bevels, for a texture of plain flat panels;
   double_sided_policy: reject, closed_surface (exact closure, as weapons) or near_closed (outward-wound shells with at
     most max_defect_fraction open edges and max_opposed_fraction of the area wound against its normals);
   normal_basis_policy: reproject, or authored_tangents (mixed tangent handedness) with authored_angle_limit_degrees
-    0.5..2 for compiler normal quantization;
+    0.5..90: up to 2 for compiler normal quantization; blocky hard-edged consoles measured up to 80 (probably a neighbouring
+    source face matched at a crease; the package report lists the maxima), so read the report and the render before widening it;
   reference: the replaced station (bounds, footprint, use nodes), recorded in the report and the review renders only.
 Output per asset: resources/ (ASCII MDL, MTR, TGA maps), walkmesh/<model>.pwk, review renders and report.json. Package
 output is compiled MDL + MTR + DDS + PWK only. Native verification is separate.
@@ -294,10 +300,18 @@ def validate_item(item, manifest_dir, haks_names=None, inspect_only=False):
     for key in ('max_defect_fraction', 'max_opposed_fraction'):
         if not finite(item.get(key, 0)) or not 0 <= item.get(key, 0) <= .25:
             raise ValueError(f'{asset}: {key} must be 0..0.25')
+    if not finite(item.get('color_gain', 1)) or not .25 <= item.get('color_gain', 1) <= 3:
+        raise ValueError(f'{asset}: color_gain must be 0.25..3')
+    if not finite(item.get('wear', 0)) or not 0 <= item.get('wear', 0) <= 1:
+        raise ValueError(f'{asset}: wear must be 0..1')
+    if not finite(item.get('greeble', 0)) or not 0 <= item.get('greeble', 0) <= 1:
+        raise ValueError(f'{asset}: greeble must be 0..1')
+    if not finite(item.get('black_lift', 0)) or not 0 <= item.get('black_lift', 0) <= .5:
+        raise ValueError(f'{asset}: black_lift must be 0..0.5')
     if item.get('normal_basis_policy', 'reproject') not in ('reproject', 'authored_tangents'):
         raise ValueError(f'{asset}: unknown normal_basis_policy')
-    if not finite(item.get('authored_angle_limit_degrees', .5)) or not .5 <= item.get('authored_angle_limit_degrees', .5) <= 2:
-        raise ValueError(f'{asset}: authored_angle_limit_degrees must be 0.5..2')
+    if not finite(item.get('authored_angle_limit_degrees', .5)) or not .5 <= item.get('authored_angle_limit_degrees', .5) <= 90:
+        raise ValueError(f'{asset}: authored_angle_limit_degrees must be 0.5..90')
     if item.get('reorient') not in (None, 'propagate'):
         raise ValueError(f'{asset}: reorient must be "propagate" when given')
     if item.get('double_sided_policy', 'reject') not in ('reject', 'closed_surface', 'near_closed'):
@@ -605,11 +619,12 @@ def near_closed_report(weapon, objects, max_defect_fraction, max_opposed=OPPOSED
     vertices, faces, origin, directed, undirected, roots = shell_analysis(weapon, objects)
     removed_cavities = []
     total = len(faces)
+    substantial = total * .01  # fixed before cavities are deleted, so a deletion cannot make a small shell newly substantial
     volumes = {int(root): shell_volume(np, vertices, faces[roots == root]) for root in set(roots.tolist())}
     counts = {int(root): int((roots == root).sum()) for root in volumes}
-    inward = [root for root in volumes if volumes[root] <= 0 and counts[root] > total * .01]
+    inward = [root for root in volumes if volumes[root] <= 0 and counts[root] > substantial]
     if inward:
-        outward = [root for root in volumes if volumes[root] > 0 and counts[root] > total * .01]
+        outward = [root for root in volumes if volumes[root] > 0 and counts[root] > substantial]
         outward_faces = faces[np.isin(roots, outward)]
         for root in inward:
             probe = vertices[faces[roots == root][0][0]]
@@ -642,7 +657,7 @@ def near_closed_report(weapon, objects, max_defect_fraction, max_opposed=OPPOSED
     same_direction = sum(1 for (u, v), count in directed.items()
                          if count == 2 and undirected[(u, v) if u < v else (v, u)] == 2)
     defects = boundary + same_direction
-    bad = [s for s in shells if s['signed_volume'] <= 0 and s['triangles'] > total * .01]
+    bad = [s for s in shells if s['signed_volume'] <= 0 and s['triangles'] > substantial]
     if not shells or max(shells, key=lambda s: s['triangles'])['signed_volume'] <= 0 or bad:
         raise ValueError('Near-closed policy needs outward (positive volume) winding for every substantial shell: '
                          + str(sorted(shells, key=lambda s: -s['triangles'])[:6]))
@@ -778,6 +793,117 @@ def snap_negative_z(np, pixels, tolerance=NEGATIVE_Z_TOLERANCE):
     return out, int(bad.sum())
 
 
+def smooth_noise(np, size, seed, cells):
+    """Deterministic low-frequency noise in 0..1 (random cells, repeated and blurred)."""
+    cell = np.random.default_rng(seed).random((cells, cells))
+    step = -(-size // cells)
+    field = np.repeat(np.repeat(cell, step, 0), step, 1)[:size, :size]
+    for _ in range(8):
+        field = (field + np.roll(field, 1, 0) + np.roll(field, -1, 0) + np.roll(field, 1, 1) + np.roll(field, -1, 1)) / 5
+    low, high = float(field.min()), float(field.max())
+    return (field - low) / max(high - low, 1e-6)
+
+
+def apply_greeble(weapon, base, normal, amount, name):
+    """Panel detail for a model whose texture came out as plain flat panels: on texture cells that are flat in the normal
+    map, draw vent slots, rows of small square buttons (a few amber or red) and panel outlines with rivets, with matching
+    bevels in the normal map. Seeded by the texture name, so an export is reproducible. Returns (base, normal)."""
+    if not amount:
+        return base, normal
+    import zlib
+    np = weapon.np
+    base, normal = np.array(base, dtype=np.float64), np.array(normal, dtype=np.float64)
+    if base.ndim != 3 or normal.shape != base.shape or base.shape[0] < 64:
+        return base, normal
+    size, cell = base.shape[0], max(64, base.shape[0] // 16)
+    rng = np.random.default_rng(zlib.crc32(name.encode()) + 7)
+    flat = np.sqrt(((normal[..., :2] * 2 - 1) ** 2).sum(-1)) < .12
+    tilt = np.zeros((size, size, 2))
+
+    def bevel(y0, y1, x0, x1):
+        """Tilt the normal outward on the four sides of a rectangle (a raised or cut edge)."""
+        tilt[y0:y0 + 1, x0:x1, 1] -= .35
+        tilt[y1 - 1:y1, x0:x1, 1] += .35
+        tilt[y0:y1, x0:x0 + 1, 0] -= .35
+        tilt[y0:y1, x1 - 1:x1, 0] += .35
+
+    for cy in range(0, size - cell + 1, cell):
+        for cx in range(0, size - cell + 1, cell):
+            if flat[cy:cy + cell, cx:cx + cell].mean() < .9 or rng.random() > amount * .6:
+                continue
+            kind = rng.integers(0, 3)
+            if kind == 0:  # vent slots
+                for row in range(int(rng.integers(3, 7))):
+                    y = cy + 6 + row * 7
+                    if y + 4 > cy + cell - 4:
+                        break
+                    x0, x1 = cx + 6, cx + cell - 6
+                    base[y:y + 4, x0:x1] *= .22
+                    bevel(y, y + 4, x0, x1)
+            elif kind == 1:  # rows of small square buttons
+                columns = (cell - 8) // 9
+                for row in range(int(rng.integers(1, 3))):
+                    y = cy + 8 + row * 12
+                    for column in range(columns):
+                        x = cx + 6 + column * 9
+                        if y + 7 > cy + cell - 4:
+                            continue
+                        pick = rng.random()
+                        color = np.array([.9, .55, .1]) if pick < .12 else np.array([.78, .1, .08]) if pick < .22 else np.array([.78, .8, .82])
+                        base[y - 1:y + 8, x - 1:x + 8] *= .4
+                        base[y:y + 7, x:x + 7] = color
+                        bevel(y, y + 7, x, x + 7)
+            else:  # panel outline with corner rivets
+                y0, y1, x0, x1 = cy + 5, cy + cell - 5, cx + 5, cx + cell - 5
+                for edge in (base[y0:y0 + 2, x0:x1], base[y1 - 2:y1, x0:x1], base[y0:y1, x0:x0 + 2], base[y0:y1, x1 - 2:x1]):
+                    edge *= .38
+                for ry, rx in ((y0 + 4, x0 + 4), (y0 + 4, x1 - 6), (y1 - 6, x0 + 4), (y1 - 6, x1 - 6)):
+                    base[ry:ry + 2, rx:rx + 2] = np.minimum(base[ry:ry + 2, rx:rx + 2] * 1.5, 1)
+                bevel(y0, y1, x0, x1)
+    vector = normal * 2 - 1
+    vector[..., :2] += tilt
+    vector[..., 2] = np.sqrt(np.clip(1 - (vector[..., :2] ** 2).sum(-1), 0, 1))
+    return np.clip(base, 0, 1), vector * .5 + .5
+
+
+def apply_wear(weapon, base, normal, wear, name):
+    """Light grime for a texture that came out too clean: darken and warm the base color in the seams (where the normal map
+    leaves flat) and in soft blotches. The pattern is seeded by the texture name, so an export is reproducible."""
+    if not wear:
+        return base
+    import zlib
+    np = weapon.np
+    base, normal = np.asarray(base), np.asarray(normal)
+    if base.ndim != 3 or normal.shape != base.shape:
+        return base
+    size = base.shape[0]
+    slope = np.sqrt(((normal[..., :2] * 2 - 1) ** 2).sum(-1))
+    seam = np.clip(slope * 2.5, 0, 1)
+    for _ in range(2):
+        seam = (seam + np.roll(seam, 1, 0) + np.roll(seam, -1, 0) + np.roll(seam, 1, 1) + np.roll(seam, -1, 1)) / 5
+    seed = zlib.crc32(name.encode())
+    noise = .6 * smooth_noise(np, size, seed, 16) + .4 * smooth_noise(np, size, seed + 1, 64)
+    grime = np.clip(wear * (.6 * seam + .5 * noise ** 2), 0, .8)[..., None]
+    dirt = np.array([.78, .76, .72])
+    return np.clip(base * (1 - grime) + base * dirt * grime, 0, 1)
+
+
+def apply_black_lift(weapon, base, lift):
+    """Raise the darkest texels in linear light (v -> lift + (1 - lift) * v), so near-black panels that a dim interior would
+    swallow whole keep their panel detail; whites stay white."""
+    if not lift:
+        return base
+    return weapon.srgb(lift + (1 - lift) * weapon.linear(weapon.np.asarray(base)))
+
+
+def apply_color_gain(weapon, base, gain):
+    """Scale the base color in linear light (after the glow map is taken from it), so a dark TRELLIS texture can be lifted to
+    read in the game's dim interiors without the washed-out look of an sRGB multiply."""
+    if gain == 1:
+        return base
+    return weapon.srgb(weapon.np.clip(weapon.linear(weapon.np.asarray(base)) * gain, 0, 1))
+
+
 def material_maps(weapon, item, doc, binary, index, source, cache, resources, name):
     """Same PBR conversion as the weapon exporter, with independent color/normal and scalar map sizes and an
     optional brightness-derived emissive map."""
@@ -817,6 +943,10 @@ def material_maps(weapon, item, doc, binary, index, source, cache, resources, na
         glow = np.clip(np.asarray(base) * mask[..., None] * emission.get('gain', 1), 0, 1)
         if float(mask.max()) > 0:
             maps[name + '_e'] = glow
+    maps[name], maps[name + '_n'] = apply_greeble(weapon, maps[name], maps[name + '_n'], item.get('greeble', 0), name)
+    maps[name] = apply_wear(weapon, maps[name], maps[name + '_n'], item.get('wear', 0), name)
+    maps[name] = apply_color_gain(weapon, maps[name], item.get('color_gain', 1))
+    maps[name] = apply_black_lift(weapon, maps[name], item.get('black_lift', 0))
     dims = {key: weapon.save_texture(resources / (key + '.tga'), value) for key, value in maps.items()}
     lines = ['renderhint NormalAndSpecMapped', 'texture0 ' + name, 'texture1 ' + name + '_n', 'texture2 ' + name + '_s',
              'texture3 ' + name + '_r']
@@ -986,7 +1116,7 @@ def export_asset(weapon, item, repo, out, mode, helpers):
         for slot in sorted({t.material_index for t in ob.data.loop_triangles}):
             index = weapon.imported_material_index(ob.data.materials[slot], material_count)
             if index not in names:
-                name = material_texture_name(asset, texture, material_count, index)
+                name = material_texture_name(item['asset'], texture, material_count, index)
                 dims, maps = material_maps(weapon, item, doc, binary, index, source, cache, resources, name)
                 preview = weapon.preview_material(resources, name, maps)
                 # NWN draws single-sided: review renders must cull back faces or a flipped sheet looks fine in Blender

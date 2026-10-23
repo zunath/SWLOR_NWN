@@ -12,6 +12,7 @@ namespace SWLOR.Game.Server.Service.CraftService.Minigame.Kitchen;
 /// <param name="CoverTurns">The turns left on the lid; Freshness loss is halved while it is above 0.</param>
 /// <param name="NextDrift">The drift announced for the end of the next turn, before the heat scales it.</param>
 /// <param name="Stock">The portions left of each committed ingredient line.</param>
+/// <param name="SignatureUsed">True once Signature Dish has been used on this dish.</param>
 public sealed record KitchenState(
     MinigameMeters Meters,
     MinigameOpportunity NextOpportunity,
@@ -20,7 +21,8 @@ public sealed record KitchenState(
     KitchenHeat Heat,
     int CoverTurns,
     FlavorVector NextDrift,
-    KitchenStock Stock) : IMinigameState<KitchenState>
+    KitchenStock Stock,
+    bool SignatureUsed = false) : IMinigameState<KitchenState>
 {
     /// <summary>The state with other shared meters; quality is re-derived from the profile whatever the new meters say.</summary>
     public KitchenState WithMeters(MinigameMeters meters) =>
@@ -35,9 +37,6 @@ public sealed record KitchenState(
 
     /// <summary>The state with one portion of an ingredient line used up.</summary>
     public KitchenState UsePortion(int line) => this with { Stock = Stock.Use(line) };
-
-    /// <summary>The drift that would move the flavor at the end of the next turn at the current heat.</summary>
-    public FlavorVector EffectiveNextDrift => NextDrift.Scaled(KitchenTuning.DriftPercent(Heat));
 
     public static MinigameMeter QualityMeter(KitchenTarget target, FlavorVector profile) =>
         new(target.QualityPercent(profile), KitchenTuning.QualityMax);

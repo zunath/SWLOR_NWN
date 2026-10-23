@@ -17,6 +17,14 @@ public static class KitchenActionIds
     public const string AddSugar = "add.sugar";
     public const string AddSpice = "add.spice";
 
+    /// <summary>Reduce, an action only a cook with the Reduce perk has.</summary>
+    public const string Reduce = "reduce";
+
+    // Signature Dish, an action only a cook with the perk has: one id for each flavor it can snap onto the target's center.
+    public const string SignatureSavory = "signature.savory";
+    public const string SignatureSweet = "signature.sweet";
+    public const string SignatureSpice = "signature.spice";
+
     private const string IngredientPrefix = "add.ingredient.";
 
     /// <summary>The id of Add for the recipe's nth committed ingredient line, counting from 0.</summary>
@@ -36,6 +44,34 @@ public static class KitchenActionIds
         KitchenHeat.Low => HeatLow,
         KitchenHeat.Medium => HeatMedium,
         _ => HeatHigh
+    };
+
+    /// <summary>The flavor a Signature Dish id snaps onto the target's center, or false when the id is not a Signature Dish action.</summary>
+    public static bool TryGetSignatureAxis(string actionId, out KitchenAxis axis)
+    {
+        switch (actionId)
+        {
+            case SignatureSavory:
+                axis = KitchenAxis.Savory;
+                return true;
+            case SignatureSweet:
+                axis = KitchenAxis.Sweet;
+                return true;
+            case SignatureSpice:
+                axis = KitchenAxis.Spice;
+                return true;
+            default:
+                axis = KitchenAxis.Savory;
+                return false;
+        }
+    }
+
+    /// <summary>The Signature Dish id for a flavor.</summary>
+    public static string Signature(KitchenAxis axis) => axis switch
+    {
+        KitchenAxis.Savory => SignatureSavory,
+        KitchenAxis.Sweet => SignatureSweet,
+        _ => SignatureSpice
     };
 
     /// <summary>The pantry seasoning an id adds, or false when the id is not a pantry action.</summary>

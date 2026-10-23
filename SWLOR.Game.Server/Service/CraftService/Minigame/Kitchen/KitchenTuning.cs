@@ -103,6 +103,9 @@ public static class KitchenTuning
     public const int StirCp = 12;
     public const int CoverCp = 6;
 
+    /// <summary>The CP Reduce costs, an action only a cook with the Reduce perk has.</summary>
+    public const int ReduceCp = 12;
+
     /// <summary>Gear CP plus this much per skill rank, as every crafting skill's CP.</summary>
     public const double CpPerRank = 0.75;
 

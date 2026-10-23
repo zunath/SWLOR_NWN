@@ -80,7 +80,8 @@ namespace SWLOR.Game.Server.Service.FishingService
                 bite.Fish.Level,
                 bite.Fish.Rarity,
                 bite.Rank,
-                FishingRodTier.Tier(bite.RodType));
+                FishingRodTier.Tier(bite.RodType),
+                bite.Effects);
             var fight = new FishingFight(Guid.NewGuid().ToString(), bite, new LineEngine(_random, setup))
             {
                 XpOnFinish = fightXp - xp,

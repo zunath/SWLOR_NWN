@@ -147,30 +147,55 @@ namespace SWLOR.CraftSim.Tests.Fishing
         };
 
         [Test]
-        public void TheXpRateGate_PassesInEveryBand_WithTheMultipliersTheGameServerApplies()
+        public void TheXpRateGate_PassesInEveryBand_WithTheMultipliersTheGameServerApplies_ForTheUnperkedAndTheAggressiveAngler()
         {
-            var cohort = new FishingXpRateCohort(ReportParity.Value);
+            foreach (var build in new[] { AnglerBuild.Unperked, AnglerBuild.AggressiveLine })
+            {
+                var cohort = new FishingXpRateCohort(ReportParity.Value, build: build);
 
-            var result = new XpRateGate(cohort).Evaluate(Context());
+                var result = new XpRateGate(cohort).Evaluate(Context());
 
-            result.Verdict.Should().Be(GateVerdict.Passed, result.Summary);
-            result.Tables.Single().Rows.Should().OnlyContain(row => row[10] == "Passed");
+                result.Verdict.Should().Be(GateVerdict.Passed, $"{build.Name}: {result.Summary}");
+                result.Tables.Single().Rows.Should().OnlyContain(row => row[10] == "Passed", build.Name);
+            }
+        }
+
+        // Open item for the owner (agriculture-angler-perk-line-draft.md, "Needs an owner decision" 3): the multipliers are the unperked
+        // ones and a perked build is fixed with perk magnitudes only, but no magnitude moves Patient Angler, whose cheaper Give Line makes
+        // its fights about 0.3 turns longer. This pins how far short it is so that it cannot get worse unnoticed.
+        [Test]
+        public void ThePatientAngler_IsShortOfTheXpRateOnlyInBands11To40_AndByNoMoreThan6Percent()
+        {
+            var cohort = new FishingXpRateCohort(ReportParity.Value, build: AnglerBuild.PatientLine);
+
+            var rows = new XpRateGate(cohort).Evaluate(Context()).Tables.Single().Rows;
+
+            foreach (var row in rows)
+            {
+                var ratio = double.Parse(row[8], System.Globalization.CultureInfo.InvariantCulture);
+                ratio.Should().BeGreaterThanOrEqualTo(0.94, $"{row[0]}: Patient Angler is at most 6% under today's XP per hour");
+                if (row[0] is "0-10" or "41-52")
+                    row[10].Should().Be("Passed", row[0]);
+            }
         }
 
         [Test]
-        public void EveryMultiplier_IsTheLeastStepOfOneTwentiethThatPassesItsBand()
+        public void EveryMultiplier_IsTheLeastStepOfOneTwentiethThatPassesItsBand_ForTheUnperkedAngler()
         {
             var parity = ReportParity.Value;
 
             foreach (var (band, firstLevel) in new[] { ("0-10", 0), ("11-20", 11), ("21-30", 21), ("31-40", 31), ("41-52", 41) })
             {
                 var shipped = LineRules.XpMultiplierForLevel(firstLevel);
-                var lower = new FishingXpRateCohort(parity, null, level => LineRules.XpMultiplierForLevel(level) - (InBand(band, level) ? 0.05 : 0));
+                var failing = new[] { AnglerBuild.Unperked }.Where(build =>
+                {
+                    var lower = new FishingXpRateCohort(parity, null, level => LineRules.XpMultiplierForLevel(level) - (InBand(band, level) ? 0.05 : 0), build);
+                    var result = new XpRateGate(lower).Evaluate(Context());
+                    return result.Tables.Single().Rows.Single(r => r[0] == band)[10] == "Failed";
+                }).ToList();
 
-                var result = new XpRateGate(lower).Evaluate(Context());
-
-                var row = result.Tables.Single().Rows.Single(r => r[0] == band);
-                row[10].Should().Be("Failed", $"{shipped - 0.05}x is below what band {band} needs, so {shipped}x is the least step that passes");
+                failing.Should().NotBeEmpty(
+                    $"{shipped - 0.05}x is below what band {band} needs for the unperked angler, so {shipped}x is the least step that passes");
             }
         }
 

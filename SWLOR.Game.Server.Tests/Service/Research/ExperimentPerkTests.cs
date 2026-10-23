@@ -71,15 +71,15 @@ public class ExperimentPerkTests
     // ---- trials and Test chance: the styles and the traits ---------------------------------------------------------
 
     [Test]
-    public void Methodical_GivesTwoMoreTrialsAndTenFewerPointsOfTestChance()
+    public void Methodical_GivesTwoMoreTrialsAndFifteenFewerPointsOfTestChance()
     {
-        var engine = Engine(ExperimentTuning.Default with { Trials = 8, TestChanceBonusPercent = -10 });
+        var engine = Engine(ExperimentTuning.Default with { Trials = 8, TestChanceBonusPercent = -15 });
 
         engine.Meters.Progress.Max.Should().Be(8);
         engine.TrialsRemaining.Should().Be(8);
         engine.Setup.Trials.Should().Be(8);
-        engine.TestChancePercent.Should().Be(50);
-        engine.Preview(ExperimentActionIds.TestCreditReduction).Outcomes[0].ChancePercent.Should().Be(50);
+        engine.TestChancePercent.Should().Be(45);
+        engine.Preview(ExperimentActionIds.TestCreditReduction).Outcomes[0].ChancePercent.Should().Be(45);
     }
 
     [Test]

@@ -1,4 +1,4 @@
-# Crafting revamp: style balance and perks-optional gates of the Fabricator, with the Builder line
+# Crafting revamp: balance gates of the Fabricator minigame
 
 - Command: `SWLOR.CraftSim gates --scenario fabricator --gates styles,perks --runs 100 --seed 1 --recipes-per-band 6 --out design/testing/crafting-revamp/fabricator-perks-gates.md`
 - Seed 1; 100 runs per case.
@@ -16,7 +16,7 @@
 - Fixed-rotation solver: beam 8, cycles up to 3, 8 adaptive lines as seeds, up to 40 actions, 64 training attempts per local-search round and 150 selection attempts for each of 12 finalists, local search from the best 3 candidate(s) for up to 3 round(s) each. Gate 1 searches one sequence for each band and gear tier across the band's sampled recipes (every recipe weighing the same; an action a recipe's engine cannot take is skipped there), and also each recipe's own best sequence as a reported metric. The winner is chosen on separate attempts and then scored on a third set (hold-out) with 100 attempts per recipe.
 - Legacy comparator (gates 5 and 6): the old minigame's lookahead player (`SWLOR.CraftSim baseline`), replayed here with the same seed on the same recipes, ranks and gear.
 - Time: 8.0 s per action in the new window and 6.0 s in the old one, plus 0.0 s per craft in both. These are estimates; the client evidence replaces them.
-- XP multiplier on the base XP of every craft, failures included, as the game server applies it (`CraftMinigameXp`): 1-10 2.40x, 11-20 1.45x, 21-30 1.25x, 31-40 1.10x, 41-53 1.00x. The new side's XP below includes it; the legacy loop's does not.
+- XP multiplier on the base XP of every craft, failures included, as the game server applies it (`CraftMinigameXp`): 1-10 2.40x, 11-20 1.50x, 21-30 1.25x, 31-40 1.10x, 41-53 1.00x. The new side's XP below includes it; the legacy loop's does not.
 - Thresholds (starting values, all in `GateThresholds`):
   - `RotationMarginPoints` = 10: gate 1: adaptive beats the best single fixed rotation (one sequence for a whole band) by at least this many quality points
   - `StyleMinimumWinShare` = 30%: gate 2: each style is the better choice on at least this share of recipes
@@ -57,11 +57,11 @@
 
 | Style pair | Gear | Recipes | First better | Second better | First avg quality | Second avg quality | Difference | Verdict |
 | --- | --- | --- | --- | --- | --- | --- | --- | --- |
-| Production Run vs Fine Tolerance | no gear | 19 | 42% | 58% | 99.6 | 99.8 | -0.2 | Passed |
-| Production Run vs Fine Tolerance | mid gear | 19 | 34% | 66% | 99.3 | 99.8 | -0.4 | Passed |
-| Production Run vs Fine Tolerance | best gear | 19 | 34% | 66% | 99.5 | 100.0 | -0.5 | Passed |
+| Production Run vs Fine Tolerance | no gear | 19 | 37% | 63% | 99.3 | 99.8 | -0.4 | Passed |
+| Production Run vs Fine Tolerance | mid gear | 19 | 50% | 50% | 100.0 | 99.8 | +0.2 | Passed |
+| Production Run vs Fine Tolerance | best gear | 19 | 50% | 50% | 100.0 | 100.0 | 0.0 | Passed |
 | Production Run (full line) vs Fine Tolerance (full line) | no gear | 19 | 50% | 50% | 100.0 | 100.0 | -0.0 | Passed |
-| Production Run (full line) vs Fine Tolerance (full line) | mid gear | 19 | 47% | 53% | 99.6 | 99.9 | -0.3 | Passed |
+| Production Run (full line) vs Fine Tolerance (full line) | mid gear | 19 | 50% | 50% | 100.0 | 99.9 | +0.1 | Passed |
 | Production Run (full line) vs Fine Tolerance (full line) | best gear | 19 | 50% | 50% | 100.0 | 100.0 | 0.0 | Passed |
 
 ## Perks optional

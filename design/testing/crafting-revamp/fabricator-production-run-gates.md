@@ -1,6 +1,6 @@
 # Crafting revamp: balance gates of the Fabricator (Production Run Builder) minigame
 
-- Command: `SWLOR.CraftSim gates --scenario fabricator-production-run --runs 100 --seed 1 --recipes-per-band 6 --out design/testing/crafting-revamp/fabricator-production-run-gates.md
+- Command: `SWLOR.CraftSim gates --scenario fabricator-production-run --runs 100 --seed 1 --recipes-per-band 6 --out design/testing/crafting-revamp/fabricator-production-run-gates.md`
 - Seed 1; 100 runs per case.
 
 ## Inputs
@@ -16,7 +16,7 @@
 - Fixed-rotation solver: beam 8, cycles up to 3, 8 adaptive lines as seeds, up to 40 actions, 64 training attempts per local-search round and 150 selection attempts for each of 12 finalists, local search from the best 3 candidate(s) for up to 3 round(s) each. Gate 1 searches one sequence for each band and gear tier across the band's sampled recipes (every recipe weighing the same; an action a recipe's engine cannot take is skipped there), and also each recipe's own best sequence as a reported metric. The winner is chosen on separate attempts and then scored on a third set (hold-out) with 100 attempts per recipe.
 - Legacy comparator (gates 5 and 6): the old minigame's lookahead player (`SWLOR.CraftSim baseline`), replayed here with the same seed on the same recipes, ranks and gear.
 - Time: 8.0 s per action in the new window and 6.0 s in the old one, plus 0.0 s per craft in both. These are estimates; the client evidence replaces them.
-- XP multiplier on the base XP of every craft, failures included, as the game server applies it (`CraftMinigameXp`): 1-10 2.40x, 11-20 1.45x, 21-30 1.25x, 31-40 1.10x, 41-53 1.00x. The new side's XP below includes it; the legacy loop's does not.
+- XP multiplier on the base XP of every craft, failures included, as the game server applies it (`CraftMinigameXp`): 1-10 2.40x, 11-20 1.50x, 21-30 1.25x, 31-40 1.10x, 41-53 1.00x. The new side's XP below includes it; the legacy loop's does not.
 - Thresholds (starting values, all in `GateThresholds`):
   - `RotationMarginPoints` = 10: gate 1: adaptive beats the best single fixed rotation (one sequence for a whole band) by at least this many quality points
   - `StyleMinimumWinShare` = 30%: gate 2: each style is the better choice on at least this share of recipes
@@ -49,10 +49,10 @@
 | --- | --- | --- |
 | No fixed rotation | Failed | One fixed rotation comes within 10 points of adaptive play in 15 case(s): 1-10 / no gear; 1-10 / mid gear; 1-10 / best gear; 11-20 / no gear; 11-20 / mid gear; 11-20 / best gear; 21-30 / no gear; 21-30 / mid gear; 21-30 / best gear; 31-40 / no gear; 31-40 / mid gear; 31-40 / best gear; 41-53 / no gear; 41-53 / mid gear; 41-53 / best gear (smallest margin -5.0 in 1-10 / no gear). The best rotation for each recipe alone, a reported metric, is -5.0 to 0.0 points behind adaptive play. |
 | Style balance | NotApplicable | The scenario offers no style configurations yet, so there is nothing to compare. |
-| Perks optional | Passed | An unperked rank-50 crafter in best gear reaches maximum quality on at least 50% of crafts in every at-level band (lowest 88%). |
+| Perks optional | Passed | An unperked rank-50 crafter in best gear reaches maximum quality on at least 50% of crafts in every at-level band (lowest 92%). |
 | Length | Passed | Every band and gear tier takes 10-20 actions (item craft at level) on average. |
 | Economy parity | Passed | Component stacks per item are within 10% of the legacy baseline where its success rate is at least 90%, and at most 10% above it where it is lower, at no less quality, in every band and gear tier. |
-| XP rate | Failed | Item crafts: XP per hour falls below 1.00x the legacy rate in 1 case(s): 11-20 / no gear (0.99x). |
+| XP rate | Passed | Item crafts: XP per hour is at least 1.00x the legacy rate in every case (lowest 1.03x in 11-20 / no gear). |
 | Enhancement parity | Passed | At rank 50 in best gear, the thresholds in force (50% / 85% / 85%) transfer at least 1.00 times today's expected enhancements for 1, 2, 3 slot(s) in every band (lowest 1.07 times today's). Thresholds that meet parity in every band for this quality: 100% / 100% / 100%. |
 
 ## No fixed rotation
@@ -65,16 +65,16 @@
 | 1-10 | mid gear | 6 | 100.0 | 100.0 | 0.0 | >= 10 | 100.0 | Failed |
 | 1-10 | best gear | 6 | 100.0 | 100.0 | 0.0 | >= 10 | 100.0 | Failed |
 | 11-20 | no gear | 6 | 99.8 | 100.0 | -0.2 | >= 10 | 100.0 | Failed |
-| 11-20 | mid gear | 6 | 99.9 | 100.0 | -0.1 | >= 10 | 100.0 | Failed |
+| 11-20 | mid gear | 6 | 100.0 | 100.0 | 0.0 | >= 10 | 100.0 | Failed |
 | 11-20 | best gear | 6 | 100.0 | 100.0 | 0.0 | >= 10 | 100.0 | Failed |
 | 21-30 | no gear | 6 | 100.0 | 100.0 | 0.0 | >= 10 | 100.0 | Failed |
-| 21-30 | mid gear | 6 | 99.6 | 100.0 | -0.4 | >= 10 | 100.0 | Failed |
+| 21-30 | mid gear | 6 | 100.0 | 100.0 | 0.0 | >= 10 | 100.0 | Failed |
 | 21-30 | best gear | 6 | 100.0 | 100.0 | 0.0 | >= 10 | 100.0 | Failed |
 | 31-40 | no gear | 6 | 100.0 | 100.0 | 0.0 | >= 10 | 100.0 | Failed |
-| 31-40 | mid gear | 6 | 99.5 | 100.0 | -0.5 | >= 10 | 100.0 | Failed |
+| 31-40 | mid gear | 6 | 100.0 | 100.0 | 0.0 | >= 10 | 100.0 | Failed |
 | 31-40 | best gear | 6 | 100.0 | 100.0 | 0.0 | >= 10 | 100.0 | Failed |
-| 41-53 | no gear | 6 | 99.9 | 100.0 | -0.1 | >= 10 | 100.0 | Failed |
-| 41-53 | mid gear | 6 | 99.8 | 100.0 | -0.2 | >= 10 | 100.0 | Failed |
+| 41-53 | no gear | 6 | 100.0 | 100.0 | -0.0 | >= 10 | 100.0 | Failed |
+| 41-53 | mid gear | 6 | 100.0 | 100.0 | 0.0 | >= 10 | 100.0 | Failed |
 | 41-53 | best gear | 6 | 100.0 | 100.0 | 0.0 | >= 10 | 100.0 | Failed |
 
 ### The single rotation found for each band and gear tier, searched across the band's sampled recipes (average quality in points)
@@ -85,17 +85,17 @@
 | 1-10 | mid gear | run_frame x2 > run_shell > retool_cutter > precision_pass > retool_extruder > precision_pass > run_fittings > retool_bonder > run_shell > precision_pass x2 > run_frame > run_fittings > run_shell > retool_cutter > precision_pass > retool_extruder > precision_pass > assemble | 100.0 | 100.0 | 100.0 | 100.0 |
 | 1-10 | best gear | run_shell > retool_cutter > run_frame > precision_pass > retool_extruder > run_shell > precision_pass x2 > retool_cutter > run_frame > run_fittings > precision_pass > retool_bonder > run_fittings > run_shell > precision_pass x2 > assemble | 100.0 | 100.0 | 100.0 | 100.0 |
 | 11-20 | no gear | run_fittings > run_frame > retool_extruder > run_fittings > run_shell > precision_pass > run_frame > precision_pass > retool_bonder > precision_pass > run_fittings > precision_pass > retool_bonder > precision_pass x2 > retool_cutter > run_frame > precision_pass x3 > retool_extruder > precision_pass > run_shell > run_frame > run_fittings > retool_bonder > precision_pass > assemble | 100.0 | 100.0 | 100.0 | 99.8 |
-| 11-20 | mid gear | retool_extruder > run_frame > run_fittings > service > run_fittings > run_frame > service > run_shell > precision_pass > service > run_shell > precision_pass > run_frame > precision_pass > retool_cutter > precision_pass x2 > run_frame > run_shell x2 > run_fittings > precision_pass > retool_bonder > precision_pass > run_fittings > precision_pass x2 > assemble | 100.0 | 100.0 | 100.0 | 99.9 |
-| 11-20 | best gear | run_frame > retool_extruder > run_shell > precision_pass > run_frame > precision_pass > retool_cutter > precision_pass x2 > run_fittings > retool_bonder > precision_pass x3 > run_shell > run_frame > run_fittings > retool_extruder > precision_pass > retool_cutter > precision_pass > assemble | 100.0 | 100.0 | 100.0 | 100.0 |
-| 21-30 | no gear | retool_bonder > dual_feed_second > run_fittings > run_frame > precision_pass x3 > retool_cutter > precision_pass x3 > run_shell > dual_feed_second > run_shell > run_frame > run_fittings > run_shell > retool_extruder > precision_pass x3 > assemble | 100.0 | 100.0 | 100.0 | 100.0 |
-| 21-30 | mid gear | retool_bonder > dual_feed_second > run_fittings > precision_pass > run_frame > precision_pass x2 > retool_cutter > precision_pass > run_shell > precision_pass x2 > run_fittings > run_frame > run_shell > retool_extruder > precision_pass x3 > assemble | 100.0 | 100.0 | 100.0 | 99.6 |
-| 21-30 | best gear | run_shell > service > run_fittings > precision_pass > run_frame > retool_bonder > precision_pass x2 > retool_cutter > precision_pass x2 > dual_feed_first > retool_extruder > precision_pass > run_shell > precision_pass > retool_cutter > precision_pass > retool_bonder > precision_pass > retool_extruder > precision_pass > assemble | 100.0 | 100.0 | 100.0 | 100.0 |
-| 31-40 | no gear | retool_extruder > dual_feed_first > precision_pass x2 > retool_cutter > precision_pass x3 > dual_feed_second > run_fittings x3 > retool_bonder > precision_pass > run_shell x2 > precision_pass x2 > retool_extruder > precision_pass > assemble | 100.0 | 100.0 | 100.0 | 100.0 |
-| 31-40 | mid gear | dual_feed_second > dual_feed_first > retool_extruder > precision_pass x2 > retool_cutter > precision_pass x2 > retool_bonder > dual_feed_second > precision_pass > run_shell > run_frame > precision_pass x2 > retool_cutter > precision_pass > retool_extruder > precision_pass > assemble | 100.0 | 100.0 | 100.0 | 99.5 |
-| 31-40 | best gear | run_shell x2 > run_frame > precision_pass > service > run_shell > precision_pass > run_fittings > retool_extruder > precision_pass x2 > retool_bonder > precision_pass > retool_cutter > precision_pass > run_fittings > precision_pass > retool_bonder > precision_pass x2 > run_frame > run_shell > retool_extruder > precision_pass > retool_cutter > precision_pass > assemble | 100.0 | 100.0 | 100.0 | 100.0 |
-| 41-53 | no gear | dual_feed_first > retool_extruder > run_shell > precision_pass x2 > retool_cutter > dual_feed_first > precision_pass x3 > dual_feed_second > retool_bonder > precision_pass > run_fittings > precision_pass x2 > retool_extruder > precision_pass > assemble | 100.0 | 100.0 | 100.0 | 99.9 |
-| 41-53 | mid gear | dual_feed_first > precision_pass x2 > retool_cutter > precision_pass x2 > retool_cutter > dual_feed_first > precision_pass > service > precision_pass > service > precision_pass > service > retool_extruder > dual_feed_second > run_fittings > precision_pass > run_frame > retool_extruder > precision_pass > retool_bonder > precision_pass x3 > dual_feed_first > run_fittings > retool_extruder > precision_pass > assemble | 100.0 | 100.0 | 100.0 | 99.8 |
-| 41-53 | best gear | dual_feed_first > retool_bonder > dual_feed_second > run_shell > precision_pass > retool_extruder > precision_pass > retool_bonder > precision_pass > retool_cutter > precision_pass x2 > retool_extruder > dual_feed_second > precision_pass > run_frame > precision_pass > retool_bonder > precision_pass > retool_cutter > precision_pass > assemble | 100.0 | 100.0 | 100.0 | 100.0 |
+| 11-20 | mid gear | run_shell > run_frame > precision_pass x2 > retool_bonder > run_fittings > precision_pass x2 > retool_cutter > precision_pass x2 > retool_extruder > precision_pass x2 > run_frame > run_shell > run_fittings > run_frame > run_fittings > assemble | 100.0 | 100.0 | 100.0 | 100.0 |
+| 11-20 | best gear | run_shell > run_frame > precision_pass x2 > retool_bonder > run_fittings > precision_pass x2 > retool_cutter > precision_pass x2 > retool_extruder > precision_pass x2 > run_shell > run_frame > run_fittings > assemble | 100.0 | 100.0 | 100.0 | 100.0 |
+| 21-30 | no gear | dual_feed_second > retool_cutter > run_shell > run_fittings > service > run_shell > run_frame x2 > precision_pass x2 > run_shell > retool_extruder > service > precision_pass x3 > retool_bonder > precision_pass x3 > run_frame > run_shell > retool_cutter > precision_pass > assemble | 100.0 | 100.0 | 100.0 | 100.0 |
+| 21-30 | mid gear | retool_bonder > dual_feed_second > run_fittings > precision_pass > run_frame > precision_pass > retool_cutter > precision_pass x2 > retool_extruder > run_shell > precision_pass x2 > run_fittings > run_frame > assemble | 100.0 | 100.0 | 100.0 | 100.0 |
+| 21-30 | best gear | retool_bonder > run_fittings > run_frame > dual_feed_second > precision_pass x2 > retool_cutter > precision_pass x2 > retool_extruder > precision_pass > run_shell > precision_pass x2 > run_fittings > run_frame > assemble | 100.0 | 100.0 | 100.0 | 100.0 |
+| 31-40 | no gear | run_fittings > retool_extruder > run_shell > precision_pass x2 > retool_cutter > run_frame > precision_pass x2 > run_fittings > retool_bonder > precision_pass > run_shell > precision_pass > retool_extruder > precision_pass > retool_cutter > precision_pass > retool_bonder > precision_pass > assemble | 100.0 | 100.0 | 100.0 | 100.0 |
+| 31-40 | mid gear | dual_feed_first > retool_extruder > dual_feed_second > precision_pass > retool_cutter > precision_pass x2 > retool_bonder > dual_feed_second > precision_pass x2 > run_frame > retool_extruder > precision_pass > assemble | 100.0 | 100.0 | 100.0 | 100.0 |
+| 31-40 | best gear | retool_extruder > dual_feed_second > run_fittings > dual_feed_first > run_frame > precision_pass x2 > retool_cutter > precision_pass > retool_bonder > dual_feed_second > run_frame > precision_pass x2 > retool_cutter > precision_pass > assemble | 100.0 | 100.0 | 100.0 | 100.0 |
+| 41-53 | no gear | dual_feed_second > service > dual_feed_first > retool_bonder > precision_pass x2 > retool_cutter > precision_pass x2 > run_shell > retool_extruder > precision_pass x3 > run_frame > dual_feed_second > retool_bonder > precision_pass > retool_cutter > precision_pass > assemble | 100.0 | 100.0 | 100.0 | 100.0 |
+| 41-53 | mid gear | dual_feed_second > dual_feed_first > retool_extruder > precision_pass > dual_feed_second > retool_cutter > precision_pass > retool_bonder > precision_pass > retool_cutter > precision_pass > retool_extruder > precision_pass > retool_bonder > precision_pass > run_frame > assemble | 100.0 | 100.0 | 100.0 | 100.0 |
+| 41-53 | best gear | precision_pass > dual_feed_first > dual_feed_second > retool_extruder > dual_feed_first > precision_pass > dual_feed_second > retool_cutter > precision_pass > retool_bonder > precision_pass > retool_cutter > dual_feed_first > precision_pass > retool_extruder > precision_pass > retool_bonder > precision_pass > assemble | 100.0 | 100.0 | 100.0 | 100.0 |
 
 ### Reported metric, not gated: the best fixed rotation for each recipe alone, and what the band's single rotation scores on the same recipe (average quality in points)
 
@@ -124,73 +124,73 @@
 | 11-20 | no gear | structure_0339 (level 14) | run_shell > precision_pass > run_shell > precision_pass > run_frame > retool_cutter > precision_pass x2 > run_fittings > retool_bonder > precision_pass x3 > run_frame x2 > run_fittings > retool_extruder > precision_pass > retool_cutter > precision_pass > assemble | 100.0 | 100.0 | 100.0 |
 | 11-20 | no gear | structure_0018 (level 16) | run_shell > precision_pass > run_fittings > precision_pass > retool_bonder > precision_pass x2 > retool_cutter > run_frame > precision_pass x3 > retool_extruder > precision_pass > run_shell > run_frame > run_fittings > retool_bonder > precision_pass > assemble | 100.0 | 100.0 | 100.0 |
 | 11-20 | no gear | structure_0005 (level 18) | run_frame > precision_pass > run_shell > precision_pass > retool_extruder > precision_pass > retool_bonder > run_fittings > precision_pass x3 > retool_extruder > run_shell > run_frame > run_fittings > precision_pass x2 > retool_cutter > precision_pass > assemble | 100.0 | 100.0 | 99.9 |
-| 11-20 | no gear | structure_0014 (level 20) | run_shell > precision_pass x2 > run_fittings > precision_pass > retool_bonder > precision_pass x2 > run_frame > retool_cutter > precision_pass > run_shell > run_frame > run_fittings > precision_pass > retool_bonder > precision_pass > retool_cutter > precision_pass > assemble | 100.0 | 100.0 | 100.0 |
+| 11-20 | no gear | structure_0014 (level 20) | run_shell > precision_pass > run_frame > precision_pass > retool_cutter > precision_pass x3 > retool_bonder > run_fittings > precision_pass x3 > run_frame > run_shell > retool_extruder > precision_pass > assemble | 100.0 | 100.0 | 100.0 |
 | 11-20 | mid gear | structure_0341 (level 11) | run_frame x2 > run_shell x2 > run_fittings > run_shell > precision_pass x2 > retool_extruder > precision_pass x2 > retool_bonder > run_fittings > precision_pass x2 > assemble | 100.0 | 100.0 | 100.0 |
 | 11-20 | mid gear | structure_0139 (level 13) | run_fittings > precision_pass > run_frame > precision_pass > run_frame > run_shell > run_fittings > retool_cutter > precision_pass x2 > retool_extruder > precision_pass x2 > run_shell > assemble | 100.0 | 100.0 | 100.0 |
 | 11-20 | mid gear | structure_0339 (level 14) | run_shell > precision_pass x2 > retool_cutter > run_frame > run_shell > run_fittings > precision_pass x2 > retool_bonder > run_shell > run_fittings > precision_pass x2 > assemble | 100.0 | 100.0 | 100.0 |
 | 11-20 | mid gear | structure_0018 (level 16) | run_shell x2 > precision_pass x2 > retool_cutter > run_frame > precision_pass > run_frame > run_fittings > precision_pass > retool_bonder > precision_pass > run_fittings > precision_pass > assemble | 100.0 | 100.0 | 100.0 |
 | 11-20 | mid gear | structure_0005 (level 18) | run_frame > run_shell > precision_pass x2 > retool_extruder > run_fittings > precision_pass > retool_bonder > run_shell > run_fittings > run_frame > run_shell > precision_pass x2 > retool_extruder > precision_pass > assemble | 100.0 | 100.0 | 100.0 |
-| 11-20 | mid gear | structure_0014 (level 20) | run_shell > precision_pass > run_frame > run_fittings > run_shell > run_frame > run_fittings > precision_pass x2 > retool_cutter > precision_pass x2 > retool_bonder > precision_pass x2 > retool_cutter > precision_pass > retool_bonder > precision_pass > assemble | 100.0 | 100.0 | 99.5 |
+| 11-20 | mid gear | structure_0014 (level 20) | run_shell > run_frame > run_fittings > run_shell > precision_pass x2 > retool_cutter > precision_pass x2 > retool_bonder > precision_pass x2 > assemble | 100.0 | 100.0 | 100.0 |
 | 11-20 | best gear | structure_0341 (level 11) | run_frame > run_shell > precision_pass x2 > retool_extruder > run_fittings > precision_pass x2 > retool_bonder > run_shell > run_frame > precision_pass x2 > assemble | 100.0 | 100.0 | 100.0 |
 | 11-20 | best gear | structure_0139 (level 13) | run_fittings > precision_pass x2 > run_frame > run_shell > run_fittings > run_frame > retool_cutter > precision_pass x2 > retool_extruder > precision_pass x2 > run_shell > assemble | 100.0 | 100.0 | 100.0 |
 | 11-20 | best gear | structure_0339 (level 14) | run_shell > precision_pass x2 > retool_cutter > run_frame > run_shell > run_fittings > precision_pass x2 > retool_bonder > precision_pass x2 > assemble | 100.0 | 100.0 | 100.0 |
 | 11-20 | best gear | structure_0018 (level 16) | run_shell > run_frame > precision_pass > retool_cutter > run_fittings > precision_pass x2 > retool_bonder > run_frame > run_shell > precision_pass x2 > retool_extruder > precision_pass > assemble | 100.0 | 100.0 | 100.0 |
 | 11-20 | best gear | structure_0005 (level 18) | run_frame > run_shell > precision_pass x2 > retool_extruder > precision_pass > retool_bonder > run_fittings > run_shell > precision_pass x2 > retool_extruder > precision_pass > assemble | 100.0 | 100.0 | 100.0 |
-| 11-20 | best gear | structure_0014 (level 20) | run_shell > precision_pass > run_frame > precision_pass > retool_cutter > precision_pass x2 > run_fittings > retool_bonder > precision_pass x3 > run_shell > run_frame > run_fittings > retool_extruder > precision_pass > retool_cutter > precision_pass > assemble | 100.0 | 100.0 | 100.0 |
-| 21-30 | no gear | structure_0147 (level 22) | run_frame > precision_pass > run_shell x2 > precision_pass > retool_extruder > precision_pass x3 > run_fittings > retool_bonder > precision_pass x3 > run_frame > run_shell > retool_cutter > precision_pass > assemble | 100.0 | 100.0 | 100.0 |
-| 21-30 | no gear | structure_0037 (level 25) | dual_feed_first > precision_pass x2 > dual_feed_second > precision_pass > run_frame > retool_cutter > precision_pass x3 > run_shell > retool_extruder > precision_pass x3 > assemble | 100.0 | 100.0 | 100.0 |
-| 21-30 | no gear | structure_0298 (level 26) | dual_feed_first > precision_pass x3 > dual_feed_second > retool_cutter > precision_pass x3 > retool_extruder > precision_pass x3 > dual_feed_first > run_frame > assemble | 100.0 | 100.0 | 100.0 |
-| 21-30 | no gear | structure_0377 (level 27) | dual_feed_first > precision_pass x3 > retool_cutter > precision_pass > run_shell x2 > run_fittings > retool_bonder > precision_pass x2 > retool_cutter > run_fittings > run_shell > precision_pass x2 > retool_bonder > precision_pass > assemble | 100.0 | 100.0 | 100.0 |
-| 21-30 | no gear | structure_0093 (level 29) | dual_feed_first > precision_pass x3 > retool_cutter > precision_pass x2 > retool_bonder > run_fittings > precision_pass > run_shell x2 > run_frame > precision_pass x2 > retool_cutter > precision_pass > assemble | 100.0 | 100.0 | 100.0 |
+| 11-20 | best gear | structure_0014 (level 20) | run_shell > run_frame > run_fittings > precision_pass x2 > retool_cutter > precision_pass x2 > retool_bonder > precision_pass x2 > assemble | 100.0 | 100.0 | 100.0 |
+| 21-30 | no gear | structure_0147 (level 22) | run_frame > run_fittings > precision_pass x2 > retool_extruder > run_shell > precision_pass x2 > retool_bonder > run_frame > precision_pass x2 > retool_cutter > precision_pass > retool_extruder > precision_pass > retool_bonder > precision_pass > assemble | 100.0 | 100.0 | 100.0 |
+| 21-30 | no gear | structure_0037 (level 25) | dual_feed_first > dual_feed_second > precision_pass x3 > run_frame > retool_cutter > precision_pass x3 > retool_extruder > precision_pass x3 > run_shell > assemble | 100.0 | 100.0 | 100.0 |
+| 21-30 | no gear | structure_0298 (level 26) | dual_feed_second > precision_pass x2 > dual_feed_first > precision_pass > retool_cutter > precision_pass x3 > retool_extruder > precision_pass x3 > run_frame > assemble | 100.0 | 100.0 | 100.0 |
+| 21-30 | no gear | structure_0377 (level 27) | dual_feed_first > precision_pass x2 > retool_cutter > precision_pass x2 > retool_bonder > dual_feed_second > precision_pass > run_shell > precision_pass > retool_extruder > precision_pass > retool_cutter > precision_pass > retool_bonder > precision_pass > assemble | 100.0 | 100.0 | 100.0 |
+| 21-30 | no gear | structure_0093 (level 29) | dual_feed_second > dual_feed_first > service > dual_feed_first > precision_pass x2 > retool_bonder > precision_pass x3 > retool_cutter > dual_feed_first > precision_pass x3 > dual_feed_first > retool_extruder > precision_pass > assemble | 100.0 | 100.0 | 100.0 |
 | 21-30 | no gear | structure_0356 (level 30) | dual_feed_first > precision_pass > dual_feed_second > precision_pass x2 > run_frame > retool_cutter > precision_pass x3 > retool_extruder > precision_pass x3 > run_shell > assemble | 100.0 | 100.0 | 100.0 |
-| 21-30 | mid gear | structure_0147 (level 22) | run_frame > precision_pass x2 > retool_extruder > run_shell > precision_pass x3 > run_fittings > retool_bonder > precision_pass x3 > run_frame > retool_cutter > precision_pass > assemble | 100.0 | 100.0 | 99.7 |
-| 21-30 | mid gear | structure_0037 (level 25) | dual_feed_second > precision_pass x2 > dual_feed_first > precision_pass > retool_cutter > precision_pass x3 > retool_extruder > precision_pass x3 > dual_feed_first > run_shell > assemble | 100.0 | 100.0 | 99.7 |
-| 21-30 | mid gear | structure_0298 (level 26) | dual_feed_first > precision_pass x3 > dual_feed_second > run_frame > retool_cutter > precision_pass x3 > retool_extruder > precision_pass x3 > run_shell > assemble | 100.0 | 100.0 | 99.5 |
-| 21-30 | mid gear | structure_0377 (level 27) | run_shell > precision_pass x2 > run_frame > precision_pass > retool_cutter > precision_pass x2 > retool_bonder > dual_feed_second > precision_pass > run_frame > precision_pass x2 > retool_cutter > precision_pass > assemble | 100.0 | 100.0 | 99.6 |
-| 21-30 | mid gear | structure_0093 (level 29) | dual_feed_first > precision_pass x3 > retool_cutter > precision_pass x2 > dual_feed_second > retool_bonder > precision_pass x3 > run_shell x2 > retool_cutter > precision_pass > assemble | 100.0 | 100.0 | 99.7 |
-| 21-30 | mid gear | structure_0356 (level 30) | dual_feed_first > precision_pass x3 > dual_feed_second > run_frame > retool_cutter > precision_pass x3 > retool_extruder > precision_pass x3 > run_shell > assemble | 100.0 | 100.0 | 99.6 |
-| 21-30 | best gear | structure_0147 (level 22) | run_frame > precision_pass > run_shell > precision_pass > retool_extruder > precision_pass > run_fittings > precision_pass > retool_bonder > run_shell > precision_pass x2 > retool_cutter > precision_pass > retool_extruder > precision_pass > retool_bonder > precision_pass > assemble | 100.0 | 100.0 | 100.0 |
-| 21-30 | best gear | structure_0037 (level 25) | dual_feed_second > dual_feed_first > precision_pass x3 > retool_cutter > precision_pass x3 > retool_extruder > precision_pass x3 > run_frame > assemble | 100.0 | 100.0 | 100.0 |
-| 21-30 | best gear | structure_0298 (level 26) | dual_feed_second > precision_pass x2 > dual_feed_first > precision_pass > retool_cutter > precision_pass x3 > retool_extruder > precision_pass x3 > run_frame > assemble | 100.0 | 100.0 | 100.0 |
-| 21-30 | best gear | structure_0377 (level 27) | dual_feed_first > precision_pass x2 > retool_cutter > precision_pass x2 > retool_bonder > dual_feed_second > precision_pass > run_shell > precision_pass > retool_extruder > precision_pass > retool_cutter > precision_pass > retool_bonder > precision_pass > assemble | 100.0 | 100.0 | 100.0 |
-| 21-30 | best gear | structure_0093 (level 29) | dual_feed_first > precision_pass x2 > retool_cutter > precision_pass x2 > retool_bonder > dual_feed_second > precision_pass x3 > run_shell > retool_extruder > precision_pass > retool_cutter > precision_pass > assemble | 100.0 | 100.0 | 100.0 |
-| 21-30 | best gear | structure_0356 (level 30) | dual_feed_first > precision_pass > dual_feed_second > precision_pass x2 > run_frame > retool_cutter > precision_pass x3 > retool_extruder > precision_pass x3 > run_shell > assemble | 100.0 | 100.0 | 100.0 |
-| 31-40 | no gear | structure_0379 (level 31) | dual_feed_first > precision_pass x3 > retool_cutter > precision_pass x2 > retool_bonder > dual_feed_first > precision_pass > run_shell x2 > precision_pass x2 > retool_cutter > precision_pass > assemble | 100.0 | 100.0 | 100.0 |
-| 31-40 | no gear | structure_0424 (level 32) | dual_feed_first > precision_pass x2 > retool_cutter > precision_pass x3 > retool_extruder > precision_pass > retool_bonder > dual_feed_second > precision_pass > run_frame > run_shell > precision_pass x2 > assemble | 100.0 | 100.0 | 100.0 |
-| 31-40 | no gear | structure_0384 (level 34) | dual_feed_first > precision_pass x2 > retool_cutter > precision_pass x3 > dual_feed_first > run_fittings > retool_bonder > precision_pass x2 > retool_extruder > precision_pass > retool_bonder > precision_pass > assemble | 100.0 | 100.0 | 100.0 |
-| 31-40 | no gear | structure_0108 (level 36) | dual_feed_second > precision_pass x3 > run_shell > retool_extruder > precision_pass x3 > retool_bonder > precision_pass > run_shell > run_frame > run_shell > precision_pass x2 > assemble | 100.0 | 100.0 | 100.0 |
-| 31-40 | no gear | structure_0325 (level 37) | dual_feed_first > precision_pass x2 > retool_cutter > precision_pass x3 > retool_extruder > precision_pass > dual_feed_second > retool_bonder > precision_pass > run_frame > run_shell > precision_pass x2 > assemble | 100.0 | 100.0 | 100.0 |
-| 31-40 | no gear | structure_0104 (level 40) | dual_feed_second > precision_pass > dual_feed_first > precision_pass x2 > dual_feed_first > retool_cutter > precision_pass x3 > retool_extruder > precision_pass x3 > run_shell > assemble | 100.0 | 100.0 | 100.0 |
-| 31-40 | mid gear | structure_0379 (level 31) | dual_feed_first > precision_pass x2 > retool_cutter > precision_pass x2 > run_fittings > retool_bonder > precision_pass > run_shell x2 > run_frame > precision_pass x2 > retool_cutter > precision_pass > retool_extruder > precision_pass > assemble | 100.0 | 100.0 | 99.5 |
-| 31-40 | mid gear | structure_0424 (level 32) | dual_feed_first > precision_pass x2 > retool_cutter > precision_pass x3 > dual_feed_second > retool_bonder > precision_pass x3 > retool_extruder > run_shell > precision_pass > assemble | 100.0 | 100.0 | 99.4 |
-| 31-40 | mid gear | structure_0384 (level 34) | dual_feed_first > precision_pass x2 > retool_cutter > precision_pass x3 > dual_feed_second > retool_bonder > precision_pass x3 > run_shell > retool_extruder > precision_pass > assemble | 100.0 | 100.0 | 99.6 |
-| 31-40 | mid gear | structure_0108 (level 36) | dual_feed_first > precision_pass x2 > retool_extruder > precision_pass x3 > dual_feed_second > retool_bonder > precision_pass x3 > run_frame > retool_cutter > precision_pass > assemble | 100.0 | 100.0 | 99.5 |
-| 31-40 | mid gear | structure_0325 (level 37) | dual_feed_first > precision_pass x3 > retool_cutter > precision_pass x2 > retool_bonder > dual_feed_first > precision_pass x3 > run_shell x2 > retool_cutter > precision_pass > assemble | 100.0 | 100.0 | 99.6 |
-| 31-40 | mid gear | structure_0104 (level 40) | dual_feed_second > precision_pass x2 > dual_feed_first > precision_pass > retool_cutter > precision_pass x3 > retool_extruder > precision_pass x3 > run_frame > assemble | 100.0 | 100.0 | 99.4 |
-| 31-40 | best gear | structure_0379 (level 31) | run_shell > precision_pass x2 > retool_cutter > dual_feed_first > precision_pass x2 > retool_bonder > run_fittings > precision_pass x2 > retool_extruder > precision_pass > retool_cutter > precision_pass > retool_bonder > precision_pass > assemble | 100.0 | 100.0 | 100.0 |
-| 31-40 | best gear | structure_0424 (level 32) | run_frame > service > run_shell > precision_pass > run_fittings > precision_pass > retool_bonder > precision_pass > retool_cutter > precision_pass > run_fittings > precision_pass > retool_bonder > precision_pass x2 > run_frame > run_shell > retool_extruder > precision_pass > retool_cutter > precision_pass > assemble | 100.0 | 100.0 | 100.0 |
-| 31-40 | best gear | structure_0384 (level 34) | dual_feed_first > run_fittings > precision_pass > retool_cutter > precision_pass x2 > retool_extruder > precision_pass > retool_bonder > run_shell > precision_pass > run_frame > precision_pass > retool_extruder > precision_pass > retool_cutter > precision_pass > retool_bonder > precision_pass > assemble | 100.0 | 100.0 | 100.0 |
-| 31-40 | best gear | structure_0108 (level 36) | dual_feed_second > precision_pass x2 > dual_feed_first > retool_extruder > precision_pass x2 > retool_bonder > precision_pass > run_shell > precision_pass > retool_cutter > precision_pass > retool_extruder > precision_pass > retool_bonder > precision_pass > assemble | 100.0 | 100.0 | 100.0 |
-| 31-40 | best gear | structure_0325 (level 37) | dual_feed_second > precision_pass x2 > retool_bonder > precision_pass > retool_cutter > run_frame > precision_pass x3 > retool_bonder > run_shell > precision_pass > retool_extruder > precision_pass > retool_bonder > precision_pass > assemble | 100.0 | 100.0 | 100.0 |
-| 31-40 | best gear | structure_0104 (level 40) | dual_feed_second > dual_feed_first > precision_pass x3 > retool_cutter > precision_pass x3 > retool_extruder > precision_pass x3 > run_frame > assemble | 100.0 | 100.0 | 100.0 |
-| 41-53 | no gear | structure_0048 (level 42) | dual_feed_second > precision_pass x3 > retool_bonder > precision_pass > run_frame > retool_cutter > precision_pass x3 > retool_bonder > run_shell x2 > run_frame > precision_pass x2 > assemble | 100.0 | 100.0 | 100.0 |
-| 41-53 | no gear | structure_0317 (level 44) | dual_feed_first > precision_pass x3 > dual_feed_first > run_shell x2 > retool_cutter > precision_pass x3 > retool_extruder > precision_pass x3 > assemble | 100.0 | 100.0 | 100.0 |
-| 41-53 | no gear | structure_0103 (level 46) | dual_feed_first > precision_pass x2 > retool_cutter > precision_pass x3 > retool_bonder > dual_feed_second > precision_pass x3 > run_frame > dual_feed_second > retool_extruder > precision_pass > assemble | 100.0 | 100.0 | 99.8 |
-| 41-53 | no gear | structure_5015 (level 47) | dual_feed_first > precision_pass x3 > dual_feed_second x2 > retool_cutter > precision_pass x3 > retool_extruder > precision_pass x3 > run_frame > assemble | 100.0 | 100.0 | 99.9 |
-| 41-53 | no gear | structure_0324 (level 49) | dual_feed_first > precision_pass x3 > retool_cutter > precision_pass x3 > retool_bonder > dual_feed_second > precision_pass > run_frame > run_shell > precision_pass x2 > assemble | 100.0 | 100.0 | 99.8 |
-| 41-53 | no gear | structure_5003 (level 50) | dual_feed_first > precision_pass x2 > dual_feed_second > precision_pass > run_frame > retool_cutter > precision_pass x3 > retool_extruder > precision_pass x3 > run_shell > assemble | 100.0 | 100.0 | 100.0 |
-| 41-53 | mid gear | structure_0048 (level 42) | dual_feed_second > precision_pass x3 > retool_bonder > precision_pass > run_frame > retool_cutter > precision_pass x3 > retool_bonder > run_shell x2 > run_frame > precision_pass x2 > assemble | 100.0 | 100.0 | 99.6 |
-| 41-53 | mid gear | structure_0317 (level 44) | dual_feed_first > precision_pass x3 > dual_feed_second > retool_cutter > precision_pass x3 > retool_extruder > precision_pass x3 > run_frame > run_shell > assemble | 100.0 | 100.0 | 99.5 |
-| 41-53 | mid gear | structure_0103 (level 46) | dual_feed_first > run_shell > precision_pass > dual_feed_first > precision_pass x2 > retool_cutter > precision_pass x2 > retool_bonder > dual_feed_first > precision_pass x3 > run_fittings > retool_cutter > precision_pass > assemble | 100.0 | 100.0 | 99.9 |
-| 41-53 | mid gear | structure_5015 (level 47) | dual_feed_first > precision_pass > dual_feed_second > precision_pass x2 > dual_feed_second > run_frame > retool_cutter > precision_pass x3 > retool_extruder > precision_pass x3 > assemble | 100.0 | 100.0 | 99.9 |
-| 41-53 | mid gear | structure_0324 (level 49) | dual_feed_first > precision_pass x2 > retool_cutter > precision_pass x3 > retool_extruder > precision_pass > dual_feed_second > retool_bonder > precision_pass > run_frame > run_shell > precision_pass x2 > assemble | 100.0 | 100.0 | 100.0 |
-| 41-53 | mid gear | structure_5003 (level 50) | dual_feed_first > precision_pass x2 > dual_feed_second > precision_pass > run_frame > retool_cutter > precision_pass x3 > retool_extruder > precision_pass x3 > run_shell > assemble | 100.0 | 100.0 | 100.0 |
-| 41-53 | best gear | structure_0048 (level 42) | dual_feed_second > precision_pass x2 > retool_bonder > precision_pass x2 > retool_cutter > dual_feed_first > precision_pass > run_shell > precision_pass > retool_extruder > precision_pass > retool_cutter > precision_pass > retool_bonder > precision_pass > assemble | 100.0 | 100.0 | 100.0 |
-| 41-53 | best gear | structure_0317 (level 44) | dual_feed_second > dual_feed_first > precision_pass x3 > retool_cutter > precision_pass x3 > retool_extruder > precision_pass x3 > run_frame > assemble | 100.0 | 100.0 | 100.0 |
-| 41-53 | best gear | structure_0103 (level 46) | dual_feed_first > precision_pass x2 > retool_cutter > precision_pass x2 > retool_bonder > dual_feed_second > precision_pass x2 > retool_extruder > precision_pass > retool_cutter > precision_pass > retool_bonder > precision_pass > assemble | 100.0 | 100.0 | 100.0 |
-| 41-53 | best gear | structure_5015 (level 47) | dual_feed_second > precision_pass x3 > dual_feed_first > retool_cutter > precision_pass x3 > retool_extruder > precision_pass x3 > assemble | 100.0 | 100.0 | 100.0 |
-| 41-53 | best gear | structure_0324 (level 49) | run_shell > precision_pass > dual_feed_second > precision_pass > run_frame > retool_cutter > precision_pass x2 > retool_bonder > precision_pass > run_frame > precision_pass > retool_extruder > precision_pass > retool_cutter > precision_pass > retool_bonder > precision_pass > assemble | 100.0 | 100.0 | 100.0 |
-| 41-53 | best gear | structure_5003 (level 50) | dual_feed_second > precision_pass x3 > dual_feed_first > retool_cutter > precision_pass > retool_extruder > precision_pass x3 > retool_cutter > precision_pass x2 > run_frame > assemble | 100.0 | 100.0 | 100.0 |
+| 21-30 | mid gear | structure_0147 (level 22) | run_frame > run_shell > precision_pass x2 > retool_extruder > run_fittings > run_shell > precision_pass x2 > retool_bonder > precision_pass x2 > assemble | 100.0 | 100.0 | 100.0 |
+| 21-30 | mid gear | structure_0037 (level 25) | dual_feed_second > precision_pass x2 > dual_feed_first > retool_cutter > precision_pass x2 > retool_extruder > precision_pass x2 > run_frame > assemble | 100.0 | 100.0 | 100.0 |
+| 21-30 | mid gear | structure_0298 (level 26) | dual_feed_second > dual_feed_first > precision_pass x2 > retool_cutter > precision_pass x2 > retool_extruder > precision_pass x2 > run_frame > assemble | 100.0 | 100.0 | 100.0 |
+| 21-30 | mid gear | structure_0377 (level 27) | dual_feed_first > precision_pass x2 > retool_cutter > run_shell > run_fittings > precision_pass x2 > retool_bonder > run_shell > precision_pass x2 > assemble | 100.0 | 100.0 | 100.0 |
+| 21-30 | mid gear | structure_0093 (level 29) | dual_feed_first > precision_pass x2 > retool_cutter > run_shell > run_fittings > precision_pass x2 > retool_bonder > precision_pass x2 > assemble | 100.0 | 100.0 | 100.0 |
+| 21-30 | mid gear | structure_0356 (level 30) | dual_feed_first > dual_feed_second > precision_pass x2 > run_frame > retool_cutter > precision_pass x2 > retool_extruder > precision_pass x2 > run_shell > assemble | 100.0 | 100.0 | 100.0 |
+| 21-30 | best gear | structure_0147 (level 22) | run_frame > run_shell > precision_pass x2 > retool_extruder > run_fittings > run_shell > precision_pass x2 > retool_bonder > precision_pass x2 > assemble | 100.0 | 100.0 | 100.0 |
+| 21-30 | best gear | structure_0037 (level 25) | dual_feed_first > precision_pass x2 > dual_feed_second > retool_cutter > precision_pass x2 > retool_extruder > precision_pass x2 > assemble | 100.0 | 100.0 | 100.0 |
+| 21-30 | best gear | structure_0298 (level 26) | dual_feed_second > precision_pass x2 > dual_feed_first > retool_cutter > precision_pass x2 > retool_extruder > precision_pass x2 > run_frame > assemble | 100.0 | 100.0 | 100.0 |
+| 21-30 | best gear | structure_0377 (level 27) | run_shell > run_frame > run_fittings > precision_pass x2 > retool_cutter > precision_pass x2 > retool_bonder > precision_pass x2 > assemble | 100.0 | 100.0 | 100.0 |
+| 21-30 | best gear | structure_0093 (level 29) | dual_feed_first > precision_pass x2 > retool_cutter > run_shell > run_fittings > precision_pass x2 > retool_bonder > precision_pass x2 > assemble | 100.0 | 100.0 | 100.0 |
+| 21-30 | best gear | structure_0356 (level 30) | dual_feed_second > precision_pass x2 > retool_cutter > run_frame > precision_pass x2 > retool_extruder > precision_pass x2 > assemble | 100.0 | 100.0 | 100.0 |
+| 31-40 | no gear | structure_0379 (level 31) | run_shell > precision_pass x2 > retool_cutter > run_frame > precision_pass x2 > run_fittings > retool_bonder > precision_pass > run_shell > precision_pass > retool_extruder > precision_pass > retool_cutter > precision_pass > retool_bonder > precision_pass > assemble | 100.0 | 100.0 | 100.0 |
+| 31-40 | no gear | structure_0424 (level 32) | dual_feed_first x2 > precision_pass x2 > retool_cutter > precision_pass x2 > run_fittings > retool_bonder > precision_pass x2 > retool_extruder > precision_pass > retool_cutter > precision_pass > retool_bonder > precision_pass > assemble | 100.0 | 100.0 | 100.0 |
+| 31-40 | no gear | structure_0384 (level 34) | dual_feed_first > precision_pass x2 > retool_cutter > precision_pass x2 > run_fittings > retool_bonder > precision_pass x2 > run_frame > run_shell > retool_extruder > precision_pass > retool_cutter > precision_pass > retool_bonder > precision_pass > assemble | 100.0 | 100.0 | 100.0 |
+| 31-40 | no gear | structure_0108 (level 36) | dual_feed_second > precision_pass > retool_extruder > run_shell > precision_pass x2 > retool_cutter > precision_pass > retool_bonder > precision_pass > run_frame > precision_pass > retool_cutter > precision_pass > retool_extruder > precision_pass > retool_bonder > precision_pass > assemble | 100.0 | 100.0 | 100.0 |
+| 31-40 | no gear | structure_0325 (level 37) | dual_feed_second > precision_pass x2 > retool_bonder > precision_pass x2 > retool_cutter > run_frame > precision_pass > run_shell > precision_pass > retool_extruder > precision_pass > retool_cutter > precision_pass > retool_bonder > precision_pass > assemble | 100.0 | 100.0 | 100.0 |
+| 31-40 | no gear | structure_0104 (level 40) | dual_feed_second > precision_pass > dual_feed_first > precision_pass x2 > retool_cutter > precision_pass x3 > retool_extruder > precision_pass x3 > run_frame > assemble | 100.0 | 100.0 | 100.0 |
+| 31-40 | mid gear | structure_0379 (level 31) | dual_feed_first > precision_pass x2 > retool_cutter > run_shell > run_fittings > run_shell > precision_pass x2 > retool_bonder > precision_pass x2 > assemble | 100.0 | 100.0 | 100.0 |
+| 31-40 | mid gear | structure_0424 (level 32) | dual_feed_first > precision_pass x2 > retool_cutter > precision_pass > run_shell > run_frame > run_fittings > precision_pass > retool_bonder > precision_pass x2 > assemble | 100.0 | 100.0 | 100.0 |
+| 31-40 | mid gear | structure_0384 (level 34) | dual_feed_first > precision_pass x2 > retool_cutter > precision_pass > run_shell > run_frame > run_fittings > precision_pass > retool_bonder > precision_pass x2 > assemble | 100.0 | 100.0 | 100.0 |
+| 31-40 | mid gear | structure_0108 (level 36) | dual_feed_first > precision_pass x2 > retool_extruder > precision_pass > run_frame > run_shell > run_fittings > precision_pass > retool_bonder > precision_pass x2 > assemble | 100.0 | 100.0 | 100.0 |
+| 31-40 | mid gear | structure_0325 (level 37) | dual_feed_first > precision_pass x2 > retool_cutter > precision_pass > run_shell > run_frame > run_fittings > precision_pass > retool_bonder > precision_pass x2 > assemble | 100.0 | 100.0 | 100.0 |
+| 31-40 | mid gear | structure_0104 (level 40) | dual_feed_second > precision_pass x2 > dual_feed_first > retool_cutter > precision_pass x2 > retool_extruder > precision_pass x2 > run_frame > assemble | 100.0 | 100.0 | 100.0 |
+| 31-40 | best gear | structure_0379 (level 31) | dual_feed_first > precision_pass x2 > retool_cutter > run_shell > run_fittings > precision_pass x2 > retool_bonder > precision_pass x2 > assemble | 100.0 | 100.0 | 100.0 |
+| 31-40 | best gear | structure_0424 (level 32) | dual_feed_first > precision_pass x2 > retool_cutter > precision_pass > retool_bonder > dual_feed_second > run_frame > precision_pass x2 > retool_cutter > precision_pass > assemble | 100.0 | 100.0 | 100.0 |
+| 31-40 | best gear | structure_0384 (level 34) | dual_feed_first > precision_pass x2 > retool_cutter > precision_pass > run_shell > run_frame > run_fittings > precision_pass > retool_bonder > precision_pass x2 > assemble | 100.0 | 100.0 | 100.0 |
+| 31-40 | best gear | structure_0108 (level 36) | dual_feed_first > precision_pass x2 > retool_extruder > precision_pass > run_frame > run_shell > run_fittings > precision_pass > retool_bonder > precision_pass x2 > assemble | 100.0 | 100.0 | 100.0 |
+| 31-40 | best gear | structure_0325 (level 37) | dual_feed_first > precision_pass x2 > retool_cutter > run_fittings > precision_pass x2 > retool_bonder > run_shell > precision_pass x2 > assemble | 100.0 | 100.0 | 100.0 |
+| 31-40 | best gear | structure_0104 (level 40) | dual_feed_first > precision_pass x2 > dual_feed_second > retool_cutter > precision_pass x2 > retool_extruder > precision_pass x2 > assemble | 100.0 | 100.0 | 100.0 |
+| 41-53 | no gear | structure_0048 (level 42) | dual_feed_first > precision_pass x2 > retool_cutter > precision_pass x2 > run_fittings > retool_bonder > precision_pass x3 > run_shell x2 > retool_extruder > precision_pass > retool_cutter > precision_pass > assemble | 100.0 | 100.0 | 100.0 |
+| 41-53 | no gear | structure_0317 (level 44) | dual_feed_first > precision_pass x3 > dual_feed_second > run_frame > retool_cutter > precision_pass x3 > retool_extruder > precision_pass x3 > assemble | 100.0 | 100.0 | 100.0 |
+| 41-53 | no gear | structure_0103 (level 46) | dual_feed_first > precision_pass > dual_feed_second > precision_pass > retool_bonder > precision_pass > retool_bonder > retool_cutter > dual_feed_first > precision_pass x2 > retool_bonder > precision_pass > retool_extruder > precision_pass > retool_bonder > precision_pass > retool_cutter > precision_pass > assemble | 100.0 | 100.0 | 100.0 |
+| 41-53 | no gear | structure_5015 (level 47) | dual_feed_first > precision_pass x3 > dual_feed_second > retool_cutter > precision_pass x2 > retool_extruder > precision_pass x3 > retool_cutter > precision_pass > run_shell > assemble | 100.0 | 100.0 | 100.0 |
+| 41-53 | no gear | structure_0324 (level 49) | dual_feed_first > precision_pass x2 > retool_cutter > precision_pass x2 > run_fittings > retool_bonder > precision_pass x3 > retool_extruder > precision_pass > dual_feed_first > retool_cutter > precision_pass > assemble | 100.0 | 100.0 | 100.0 |
+| 41-53 | no gear | structure_5003 (level 50) | dual_feed_second > dual_feed_first > precision_pass x3 > retool_cutter > precision_pass > retool_extruder > precision_pass x3 > retool_cutter > precision_pass x2 > dual_feed_first > run_shell > assemble | 100.0 | 100.0 | 100.0 |
+| 41-53 | mid gear | structure_0048 (level 42) | dual_feed_first > precision_pass x2 > retool_cutter > run_shell > run_fittings > run_shell > precision_pass > retool_bonder > precision_pass x2 > retool_cutter > precision_pass > assemble | 100.0 | 100.0 | 100.0 |
+| 41-53 | mid gear | structure_0317 (level 44) | dual_feed_first > precision_pass x2 > retool_cutter > precision_pass x2 > dual_feed_first > retool_extruder > precision_pass x2 > run_fittings > assemble | 100.0 | 100.0 | 100.0 |
+| 41-53 | mid gear | structure_0103 (level 46) | dual_feed_first > precision_pass x2 > retool_cutter > run_fittings > precision_pass > retool_bonder > run_shell > precision_pass x2 > retool_cutter > precision_pass > assemble | 100.0 | 100.0 | 100.0 |
+| 41-53 | mid gear | structure_5015 (level 47) | dual_feed_second > precision_pass x2 > dual_feed_first > retool_cutter > precision_pass x2 > retool_extruder > precision_pass x2 > assemble | 100.0 | 100.0 | 100.0 |
+| 41-53 | mid gear | structure_0324 (level 49) | dual_feed_first > precision_pass x2 > retool_cutter > run_fittings > precision_pass > retool_bonder > run_shell > precision_pass x2 > retool_cutter > precision_pass > assemble | 100.0 | 100.0 | 100.0 |
+| 41-53 | mid gear | structure_5003 (level 50) | dual_feed_second > precision_pass x2 > dual_feed_first > retool_cutter > precision_pass x2 > retool_extruder > precision_pass x2 > run_frame > assemble | 100.0 | 100.0 | 100.0 |
+| 41-53 | best gear | structure_0048 (level 42) | dual_feed_first > precision_pass x2 > retool_cutter > run_shell > run_fittings > precision_pass x2 > retool_bonder > precision_pass x2 > assemble | 100.0 | 100.0 | 100.0 |
+| 41-53 | best gear | structure_0317 (level 44) | dual_feed_first > precision_pass x2 > retool_cutter > precision_pass x2 > dual_feed_first > retool_extruder > precision_pass x2 > assemble | 100.0 | 100.0 | 100.0 |
+| 41-53 | best gear | structure_0103 (level 46) | dual_feed_first > precision_pass x2 > retool_cutter > run_fittings > precision_pass x2 > retool_bonder > run_shell > precision_pass x2 > assemble | 100.0 | 100.0 | 100.0 |
+| 41-53 | best gear | structure_5015 (level 47) | dual_feed_second > precision_pass x2 > dual_feed_first > retool_cutter > precision_pass x2 > retool_extruder > precision_pass x2 > assemble | 100.0 | 100.0 | 100.0 |
+| 41-53 | best gear | structure_0324 (level 49) | dual_feed_first > precision_pass x2 > retool_cutter > run_shell > run_fittings > precision_pass x2 > retool_bonder > precision_pass x2 > assemble | 100.0 | 100.0 | 100.0 |
+| 41-53 | best gear | structure_5003 (level 50) | dual_feed_first > precision_pass x2 > dual_feed_second > retool_cutter > precision_pass x2 > retool_extruder > precision_pass x2 > assemble | 100.0 | 100.0 | 100.0 |
 
 ## Perks optional
 
@@ -198,9 +198,9 @@
 
 | Band | Recipes played | Attempts | Reach maximum quality | Make the item | Avg quality of items made | Required | Verdict |
 | --- | --- | --- | --- | --- | --- | --- | --- |
-| 41-45 | 6 | 600 | 92% | 100% | 100% | >= 50% | Passed |
-| 46-50 | 6 | 600 | 88% | 100% | 100% | >= 50% | Passed |
-| 51-53 | 6 | 600 | 94% | 100% | 100% | >= 50% | Passed |
+| 41-45 | 6 | 600 | 100% | 100% | 100% | >= 50% | Passed |
+| 46-50 | 6 | 600 | 100% | 100% | 100% | >= 50% | Passed |
+| 51-53 | 6 | 600 | 92% | 100% | 100% | >= 50% | Passed |
 
 ## Length
 
@@ -211,18 +211,18 @@
 | 1-10 | no gear | 6 | 15.8 | 12.7 | 17.2 | 0 | 10-20 | Passed |
 | 1-10 | mid gear | 6 | 15.4 | 15.0 | 15.8 | 0 | 10-20 | Passed |
 | 1-10 | best gear | 6 | 15.1 | 14.5 | 15.3 | 0 | 10-20 | Passed |
-| 11-20 | no gear | 6 | 18.7 | 18.1 | 19.2 | 0 | 10-20 | Passed |
-| 11-20 | mid gear | 6 | 16.0 | 15.3 | 18.0 | 0 | 10-20 | Passed |
-| 11-20 | best gear | 6 | 15.1 | 14.3 | 17.9 | 0 | 10-20 | Passed |
-| 21-30 | no gear | 6 | 17.0 | 16.4 | 18.0 | 0 | 10-20 | Passed |
-| 21-30 | mid gear | 6 | 16.5 | 16.0 | 17.4 | 0 | 10-20 | Passed |
-| 21-30 | best gear | 6 | 16.6 | 16.2 | 17.1 | 0 | 10-20 | Passed |
-| 31-40 | no gear | 6 | 16.7 | 16.4 | 17.0 | 0 | 10-20 | Passed |
-| 31-40 | mid gear | 6 | 16.1 | 15.8 | 16.5 | 0 | 10-20 | Passed |
-| 31-40 | best gear | 6 | 16.5 | 16.3 | 16.7 | 0 | 10-20 | Passed |
-| 41-53 | no gear | 6 | 16.6 | 16.1 | 17.1 | 0 | 10-20 | Passed |
-| 41-53 | mid gear | 6 | 15.9 | 15.5 | 16.4 | 0 | 10-20 | Passed |
-| 41-53 | best gear | 6 | 16.4 | 16.1 | 16.7 | 0 | 10-20 | Passed |
+| 11-20 | no gear | 6 | 18.6 | 17.9 | 19.2 | 0 | 10-20 | Passed |
+| 11-20 | mid gear | 6 | 15.2 | 13.2 | 16.0 | 0 | 10-20 | Passed |
+| 11-20 | best gear | 6 | 14.2 | 12.3 | 15.0 | 0 | 10-20 | Passed |
+| 21-30 | no gear | 6 | 16.9 | 16.4 | 17.9 | 0 | 10-20 | Passed |
+| 21-30 | mid gear | 6 | 12.7 | 12.1 | 13.3 | 0 | 10-20 | Passed |
+| 21-30 | best gear | 6 | 12.5 | 12.0 | 13.2 | 0 | 10-20 | Passed |
+| 31-40 | no gear | 6 | 16.4 | 16.2 | 16.8 | 0 | 10-20 | Passed |
+| 31-40 | mid gear | 6 | 13.0 | 12.7 | 13.0 | 0 | 10-20 | Passed |
+| 31-40 | best gear | 6 | 12.7 | 12.3 | 13.2 | 0 | 10-20 | Passed |
+| 41-53 | no gear | 6 | 16.5 | 16.2 | 16.8 | 0 | 10-20 | Passed |
+| 41-53 | mid gear | 6 | 12.7 | 12.3 | 13.1 | 0 | 10-20 | Passed |
+| 41-53 | best gear | 6 | 11.5 | 11.0 | 12.2 | 0 | 10-20 | Passed |
 
 ## Economy parity
 
@@ -264,54 +264,54 @@
 | 1-10 | best gear, 1 enhancement | 694 | 7.4 | 56259 | 2880 | 16.9 | 76694 | 1.36 | - | Passed |
 | 1-10 | best gear, 2 enhancements | 665 | 8.0 | 50077 | 2880 | 19.1 | 67676 | 1.35 | - | Passed |
 | 1-10 | best gear, 3 enhancements | 646 | 8.2 | 47369 | 2880 | 21.5 | 60326 | 1.27 | - | Passed |
-| 11-20 | no gear | 562 | 8.0 | 42142 | 1738 | 18.7 | 41921 | 0.99 | 1.01x | Failed |
-| 11-20 | no gear, 1 enhancement | 174 | 6.7 | 15665 | 1737 | 21.3 | 36656 | 2.34 | - | Passed |
-| 11-20 | no gear, 2 enhancements | 171 | 7.1 | 14541 | 1739 | 24.6 | 31831 | 2.19 | - | Passed |
-| 11-20 | no gear, 3 enhancements | 170 | 7.5 | 13664 | 1739 | 27.4 | 28584 | 2.09 | - | Passed |
-| 11-20 | mid gear | 675 | 12.1 | 33472 | 1739 | 16.0 | 48834 | 1.46 | - | Passed |
-| 11-20 | mid gear, 1 enhancement | 643 | 12.8 | 30058 | 1739 | 18.0 | 43450 | 1.45 | - | Passed |
-| 11-20 | mid gear, 2 enhancements | 608 | 13.9 | 26253 | 1740 | 20.4 | 38306 | 1.46 | - | Passed |
-| 11-20 | mid gear, 3 enhancements | 547 | 15.5 | 21187 | 1740 | 23.2 | 33729 | 1.59 | - | Passed |
-| 11-20 | best gear | 779 | 14.4 | 32454 | 1740 | 15.1 | 51831 | 1.60 | - | Passed |
-| 11-20 | best gear, 1 enhancement | 749 | 14.9 | 30162 | 1740 | 17.2 | 45625 | 1.51 | - | Passed |
-| 11-20 | best gear, 2 enhancements | 743 | 16.2 | 27482 | 1740 | 19.2 | 40700 | 1.48 | - | Passed |
-| 11-20 | best gear, 3 enhancements | 703 | 15.9 | 26489 | 1740 | 21.5 | 36402 | 1.37 | - | Passed |
-| 21-30 | no gear | 635 | 11.0 | 34628 | 1500 | 17.0 | 39725 | 1.15 | - | Passed |
-| 21-30 | no gear, 1 enhancement | 612 | 11.7 | 31429 | 1500 | 19.2 | 35177 | 1.12 | - | Passed |
-| 21-30 | no gear, 2 enhancements | 584 | 13.0 | 26972 | 1500 | 21.1 | 31961 | 1.18 | - | Passed |
-| 21-30 | no gear, 3 enhancements | 559 | 14.8 | 22666 | 1500 | 22.7 | 29751 | 1.31 | - | Passed |
-| 21-30 | mid gear | 700 | 17.9 | 23471 | 1497 | 16.5 | 40844 | 1.74 | - | Passed |
-| 21-30 | mid gear, 1 enhancement | 678 | 17.5 | 23268 | 1497 | 18.7 | 35954 | 1.55 | - | Passed |
-| 21-30 | mid gear, 2 enhancements | 661 | 18.0 | 22054 | 1498 | 20.2 | 33423 | 1.52 | - | Passed |
-| 21-30 | mid gear, 3 enhancements | 630 | 18.0 | 20982 | 1499 | 22.1 | 30552 | 1.46 | - | Passed |
-| 21-30 | best gear | 776 | 22.4 | 20795 | 1500 | 16.6 | 40626 | 1.95 | - | Passed |
-| 21-30 | best gear, 1 enhancement | 757 | 21.5 | 21107 | 1500 | 17.9 | 37776 | 1.79 | - | Passed |
-| 21-30 | best gear, 2 enhancements | 742 | 22.4 | 19894 | 1500 | 19.1 | 35350 | 1.78 | - | Passed |
-| 21-30 | best gear, 3 enhancements | 716 | 21.7 | 19836 | 1500 | 20.7 | 32609 | 1.64 | - | Passed |
-| 31-40 | no gear | 677 | 13.6 | 29783 | 1320 | 16.7 | 35661 | 1.20 | - | Passed |
-| 31-40 | no gear, 1 enhancement | 645 | 14.9 | 26066 | 1320 | 17.8 | 33449 | 1.28 | - | Passed |
-| 31-40 | no gear, 2 enhancements | 616 | 14.5 | 25455 | 1320 | 18.8 | 31627 | 1.24 | - | Passed |
-| 31-40 | no gear, 3 enhancements | 596 | 15.5 | 22998 | 1320 | 19.9 | 29779 | 1.29 | - | Passed |
-| 31-40 | mid gear | 748 | 19.8 | 22630 | 1317 | 16.1 | 36874 | 1.63 | - | Passed |
-| 31-40 | mid gear, 1 enhancement | 736 | 20.5 | 21573 | 1317 | 17.1 | 34581 | 1.60 | - | Passed |
-| 31-40 | mid gear, 2 enhancements | 719 | 20.5 | 21086 | 1318 | 18.1 | 32757 | 1.55 | - | Passed |
-| 31-40 | mid gear, 3 enhancements | 684 | 19.6 | 20927 | 1319 | 19.3 | 30789 | 1.47 | - | Passed |
-| 31-40 | best gear | 822 | 24.7 | 19971 | 1320 | 16.5 | 36018 | 1.80 | - | Passed |
-| 31-40 | best gear, 1 enhancement | 817 | 25.3 | 19347 | 1320 | 17.0 | 35017 | 1.81 | - | Passed |
-| 31-40 | best gear, 2 enhancements | 802 | 25.7 | 18713 | 1320 | 17.7 | 33623 | 1.80 | - | Passed |
-| 31-40 | best gear, 3 enhancements | 774 | 24.3 | 19081 | 1320 | 18.2 | 32554 | 1.71 | - | Passed |
-| 41-53 | no gear | 842 | 19.1 | 26466 | 1199 | 16.6 | 32426 | 1.23 | - | Passed |
-| 41-53 | no gear, 1 enhancement | 770 | 17.7 | 26166 | 1199 | 17.6 | 30651 | 1.17 | - | Passed |
-| 41-53 | no gear, 2 enhancements | 705 | 17.7 | 23862 | 1199 | 18.6 | 28957 | 1.21 | - | Passed |
-| 41-53 | no gear, 3 enhancements | 613 | 17.9 | 20584 | 1199 | 19.6 | 27539 | 1.34 | - | Passed |
-| 41-53 | mid gear | 1036 | 26.7 | 23298 | 1199 | 15.9 | 33949 | 1.46 | - | Passed |
-| 41-53 | mid gear, 1 enhancement | 974 | 25.3 | 23068 | 1199 | 16.8 | 32200 | 1.40 | - | Passed |
-| 41-53 | mid gear, 2 enhancements | 888 | 23.2 | 22982 | 1199 | 17.7 | 30437 | 1.32 | - | Passed |
-| 41-53 | mid gear, 3 enhancements | 808 | 22.3 | 21722 | 1200 | 18.7 | 28907 | 1.33 | - | Passed |
-| 41-53 | best gear | 1142 | 28.9 | 23727 | 1200 | 16.4 | 32870 | 1.39 | - | Passed |
-| 41-53 | best gear, 1 enhancement | 1111 | 28.7 | 23211 | 1200 | 16.9 | 32000 | 1.38 | - | Passed |
-| 41-53 | best gear, 2 enhancements | 1034 | 27.0 | 22927 | 1200 | 17.3 | 31139 | 1.36 | - | Passed |
-| 41-53 | best gear, 3 enhancements | 985 | 26.2 | 22581 | 1200 | 18.0 | 30025 | 1.33 | - | Passed |
+| 11-20 | no gear | 562 | 8.0 | 42142 | 1798 | 18.6 | 43422 | 1.03 | - | Passed |
+| 11-20 | no gear, 1 enhancement | 174 | 6.7 | 15665 | 1797 | 21.1 | 38240 | 2.44 | - | Passed |
+| 11-20 | no gear, 2 enhancements | 171 | 7.1 | 14541 | 1799 | 24.2 | 33478 | 2.30 | - | Passed |
+| 11-20 | no gear, 3 enhancements | 170 | 7.5 | 13664 | 1799 | 27.0 | 30025 | 2.20 | - | Passed |
+| 11-20 | mid gear | 675 | 12.1 | 33472 | 1800 | 15.2 | 53237 | 1.59 | - | Passed |
+| 11-20 | mid gear, 1 enhancement | 643 | 12.8 | 30058 | 1800 | 17.2 | 46979 | 1.56 | - | Passed |
+| 11-20 | mid gear, 2 enhancements | 608 | 13.9 | 26253 | 1800 | 19.7 | 41186 | 1.57 | - | Passed |
+| 11-20 | mid gear, 3 enhancements | 547 | 15.5 | 21187 | 1800 | 22.4 | 36217 | 1.71 | - | Passed |
+| 11-20 | best gear | 779 | 14.4 | 32454 | 1800 | 14.2 | 57163 | 1.76 | - | Passed |
+| 11-20 | best gear, 1 enhancement | 749 | 14.9 | 30162 | 1800 | 16.6 | 48834 | 1.62 | - | Passed |
+| 11-20 | best gear, 2 enhancements | 743 | 16.2 | 27482 | 1800 | 18.7 | 43416 | 1.58 | - | Passed |
+| 11-20 | best gear, 3 enhancements | 703 | 15.9 | 26489 | 1800 | 20.7 | 39064 | 1.47 | - | Passed |
+| 21-30 | no gear | 635 | 11.0 | 34628 | 1500 | 16.9 | 40032 | 1.16 | - | Passed |
+| 21-30 | no gear, 1 enhancement | 612 | 11.7 | 31429 | 1500 | 17.8 | 38013 | 1.21 | - | Passed |
+| 21-30 | no gear, 2 enhancements | 584 | 13.0 | 26972 | 1500 | 19.3 | 34909 | 1.29 | - | Passed |
+| 21-30 | no gear, 3 enhancements | 559 | 14.8 | 22666 | 1500 | 20.9 | 32341 | 1.43 | - | Passed |
+| 21-30 | mid gear | 700 | 17.9 | 23471 | 1500 | 12.7 | 53136 | 2.26 | - | Passed |
+| 21-30 | mid gear, 1 enhancement | 678 | 17.5 | 23268 | 1500 | 14.1 | 47821 | 2.06 | - | Passed |
+| 21-30 | mid gear, 2 enhancements | 661 | 18.0 | 22054 | 1500 | 15.4 | 43864 | 1.99 | - | Passed |
+| 21-30 | mid gear, 3 enhancements | 630 | 18.0 | 20982 | 1500 | 16.6 | 40541 | 1.93 | - | Passed |
+| 21-30 | best gear | 776 | 22.4 | 20795 | 1500 | 12.5 | 54029 | 2.60 | - | Passed |
+| 21-30 | best gear, 1 enhancement | 757 | 21.5 | 21107 | 1500 | 13.6 | 49505 | 2.35 | - | Passed |
+| 21-30 | best gear, 2 enhancements | 742 | 22.4 | 19894 | 1500 | 14.5 | 46552 | 2.34 | - | Passed |
+| 21-30 | best gear, 3 enhancements | 716 | 21.7 | 19836 | 1500 | 15.9 | 42457 | 2.14 | - | Passed |
+| 31-40 | no gear | 677 | 13.6 | 29783 | 1320 | 16.4 | 36131 | 1.21 | - | Passed |
+| 31-40 | no gear, 1 enhancement | 645 | 14.9 | 26066 | 1320 | 16.9 | 35200 | 1.35 | - | Passed |
+| 31-40 | no gear, 2 enhancements | 616 | 14.5 | 25455 | 1320 | 17.6 | 33756 | 1.33 | - | Passed |
+| 31-40 | no gear, 3 enhancements | 596 | 15.5 | 22998 | 1320 | 18.2 | 32610 | 1.42 | - | Passed |
+| 31-40 | mid gear | 748 | 19.8 | 22630 | 1320 | 13.0 | 45839 | 2.03 | - | Passed |
+| 31-40 | mid gear, 1 enhancement | 736 | 20.5 | 21573 | 1320 | 13.1 | 45448 | 2.11 | - | Passed |
+| 31-40 | mid gear, 2 enhancements | 719 | 20.5 | 21086 | 1320 | 13.9 | 42806 | 2.03 | - | Passed |
+| 31-40 | mid gear, 3 enhancements | 684 | 19.6 | 20927 | 1320 | 14.6 | 40666 | 1.94 | - | Passed |
+| 31-40 | best gear | 822 | 24.7 | 19971 | 1320 | 12.7 | 46870 | 2.35 | - | Passed |
+| 31-40 | best gear, 1 enhancement | 817 | 25.3 | 19347 | 1320 | 12.8 | 46310 | 2.39 | - | Passed |
+| 31-40 | best gear, 2 enhancements | 802 | 25.7 | 18713 | 1320 | 13.4 | 44323 | 2.37 | - | Passed |
+| 31-40 | best gear, 3 enhancements | 774 | 24.3 | 19081 | 1320 | 14.0 | 42535 | 2.23 | - | Passed |
+| 41-53 | no gear | 842 | 19.1 | 26466 | 1200 | 16.5 | 32740 | 1.24 | - | Passed |
+| 41-53 | no gear, 1 enhancement | 770 | 17.7 | 26166 | 1200 | 16.9 | 31890 | 1.22 | - | Passed |
+| 41-53 | no gear, 2 enhancements | 705 | 17.7 | 23862 | 1200 | 17.4 | 31073 | 1.30 | - | Passed |
+| 41-53 | no gear, 3 enhancements | 613 | 17.9 | 20584 | 1200 | 18.1 | 29818 | 1.45 | - | Passed |
+| 41-53 | mid gear | 1036 | 26.7 | 23298 | 1200 | 12.7 | 42587 | 1.83 | - | Passed |
+| 41-53 | mid gear, 1 enhancement | 974 | 25.3 | 23068 | 1200 | 13.4 | 40399 | 1.75 | - | Passed |
+| 41-53 | mid gear, 2 enhancements | 888 | 23.2 | 22982 | 1200 | 13.9 | 38886 | 1.69 | - | Passed |
+| 41-53 | mid gear, 3 enhancements | 808 | 22.3 | 21722 | 1200 | 14.7 | 36710 | 1.69 | - | Passed |
+| 41-53 | best gear | 1142 | 28.9 | 23727 | 1200 | 11.5 | 46943 | 1.98 | - | Passed |
+| 41-53 | best gear, 1 enhancement | 1111 | 28.7 | 23211 | 1200 | 12.5 | 43154 | 1.86 | - | Passed |
+| 41-53 | best gear, 2 enhancements | 1034 | 27.0 | 22927 | 1200 | 12.9 | 41774 | 1.82 | - | Passed |
+| 41-53 | best gear, 3 enhancements | 985 | 26.2 | 22581 | 1200 | 13.5 | 40025 | 1.77 | - | Passed |
 
 ## Enhancement parity
 
@@ -325,8 +325,8 @@
 | 46-50 | 1 | 6 | 60 | 32% | 100% | 83% | 0.82 | 100% | 100.0% | 1.00 (+/- 0.00) | 1.22 | >= 1.00 | Passed |
 | 46-50 | 2 | 6 | 60 | 64% | 99% | 73% | 1.45 | 100% | 100.0% | 2.00 (+/- 0.00) | 1.38 | >= 1.00 | Passed |
 | 46-50 | 3 | 6 | 60 | 96% | 99% | 65% | 1.91 | 100% | 100.0% | 3.00 (+/- 0.00) | 1.57 | >= 1.00 | Passed |
-| 51-53 | 1 | 6 | 60 | 10% | 68% | 14% | 0.09 | 100% | 100.0% | 1.00 (+/- 0.00) | 10.77 | >= 1.00 | Passed |
-| 51-53 | 2 | 6 | 60 | 20% | 58% | 13% | 0.14 | 100% | 100.0% | 2.00 (+/- 0.00) | 14.02 | >= 1.00 | Passed |
+| 51-53 | 1 | 6 | 60 | 10% | 68% | 14% | 0.09 | 100% | 99.9% | 1.00 (+/- 0.00) | 10.77 | >= 1.00 | Passed |
+| 51-53 | 2 | 6 | 60 | 20% | 58% | 13% | 0.14 | 100% | 99.9% | 2.00 (+/- 0.00) | 14.02 | >= 1.00 | Passed |
 | 51-53 | 3 | 6 | 60 | 30% | 34% | 13% | 0.12 | 100% | 100.0% | 3.00 (+/- 0.00) | 24.41 | >= 1.00 | Passed |
 
 ### Thresholds, first / second / third slot, that would meet parity for the quality measured (the strictest set that keeps every case at least at today's, never falling from one slot to the next)
@@ -348,9 +348,9 @@
 | 46-50 | 1 | 100% | 100% | 100% | 100% | 100% | 100% | 100% |
 | 46-50 | 2 | 100% | 100% | 100% | 100% | 100% | 100% | 100% |
 | 46-50 | 3 | 100% | 100% | 100% | 100% | 100% | 100% | 100% |
-| 51-53 | 1 | 100% | 100% | 100% | 100% | 100% | 100% | 100% |
-| 51-53 | 2 | 100% | 100% | 100% | 100% | 100% | 100% | 100% |
-| 51-53 | 3 | 100% | 100% | 100% | 100% | 100% | 100% | 100% |
+| 51-53 | 1 | 100% | 100% | 100% | 100% | 100% | 100% | 94% |
+| 51-53 | 2 | 100% | 100% | 100% | 100% | 100% | 100% | 93% |
+| 51-53 | 3 | 100% | 100% | 100% | 100% | 100% | 100% | 95% |
 
 ### Representative enhancements: for each recipe kind the real item at the best level the recipe accepts (the old window refuses one more than 5 levels above the recipe) whose penalty is the lower median of that level
 

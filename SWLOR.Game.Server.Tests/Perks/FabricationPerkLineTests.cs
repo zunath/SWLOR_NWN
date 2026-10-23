@@ -229,7 +229,7 @@ public class FabricationPerkLineTests
             new FabricatorPerkStats(WearReduction: 1, RetoolCpReductionPercent: 25, ServiceRestoreBonus: 10, ServiceCpReduction: 2));
 
         FabricatorPerkStats.FromStatTotals(Totals(line, 25, PerkType.FineTolerance)).Should().Be(new FabricatorPerkStats(
-            RunPowerPercent: 25, PrecisionPowerPercent: -25, WearReduction: 1, RetoolCpReductionPercent: 25,
+            RunPowerPercent: 60, PrecisionPowerPercent: -3, WearReduction: 1, RetoolCpReductionPercent: 25,
             ServiceRestoreBonus: 10, ServiceCpReduction: 2, DualFeedUnlocked: true));
 
         FabricatorPerkStats.FromStatTotals(Totals(line, 50, PerkType.ProductionRun)).Should().Be(new FabricatorPerkStats(
@@ -247,9 +247,9 @@ public class FabricationPerkLineTests
         ExperimentTuning.FromStatTotals(Totals(line, 10, PerkType.Intuitive, PerkType.Methodical)).Should().Be(
             ExperimentTuning.Default with { TestChanceBonusPercent = 3, RefineCp = 25 });
 
-        // Methodical at rank 50: 6 + 1 (Broader Hypotheses) + 2 trials, 6 - 10 points of Test chance, every trait.
+        // Methodical at rank 50: 6 + 1 (Broader Hypotheses) + 2 trials, 6 - 15 points of Test chance, every trait.
         ExperimentTuning.FromStatTotals(Totals(line, 50, PerkType.Intuitive)).Should().Be(new ExperimentTuning(
-            Trials: 9, TestChanceBonusPercent: 6 - 10, RefineChanceBonus: 20, RefineCp: 25, TimeCutPerEvidence: 7,
+            Trials: 9, TestChanceBonusPercent: 6 - 15, RefineChanceBonus: 20, RefineCp: 25, TimeCutPerEvidence: 7,
             TimeCutCap: 25, PeerReview: true, Breakthrough: true));
 
         // Intuitive at rank 50: 6 + 1 - 1 trials, 6 + 20 points of Test chance.

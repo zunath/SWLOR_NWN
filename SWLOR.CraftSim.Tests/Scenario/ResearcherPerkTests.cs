@@ -22,9 +22,9 @@ namespace SWLOR.CraftSim.Tests.Scenario
         {
             ResearcherBuild.Unperked.TuningAt(50).Should().Be(ExperimentTuning.Default);
             ResearcherBuild.MethodicalAlone.TuningAt(19).Should().Be(ExperimentTuning.Default, "the style opens at Fabrication 20");
-            ResearcherBuild.MethodicalAlone.TuningAt(20).Should().Be(ExperimentTuning.Default with { Trials = 8, TestChanceBonusPercent = -10 });
+            ResearcherBuild.MethodicalAlone.TuningAt(20).Should().Be(ExperimentTuning.Default with { Trials = 8, TestChanceBonusPercent = -15 });
             ResearcherBuild.IntuitiveAlone.TuningAt(50).Should().Be(ExperimentTuning.Default with { Trials = 5, TestChanceBonusPercent = 20 });
-            ResearcherBuild.MethodicalLine.TuningAt(50).Should().Be(new ExperimentTuning(9, -4, 20, 25, 7, 25, true, true));
+            ResearcherBuild.MethodicalLine.TuningAt(50).Should().Be(new ExperimentTuning(9, -9, 20, 25, 7, 25, true, true));
             ResearcherBuild.IntuitiveLine.TuningAt(50).Should().Be(new ExperimentTuning(6, 26, 20, 25, 7, 25, true, true));
             ResearcherBuild.Alone(PerkType.FieldNotes).TuningAt(39).TestChanceBonusPercent.Should().Be(3);
             ResearcherBuild.Alone(PerkType.FieldNotes).TuningAt(40).TestChanceBonusPercent.Should().Be(6);
@@ -169,7 +169,7 @@ namespace SWLOR.CraftSim.Tests.Scenario
             report.Should().Contain("## Each purchase alone, and the whole line");
             report.Should().Contain("## Peer Review for a player who has not decided");
             report.Should().Contain("## Fabrication XP per real hour with the line");
-            report.Should().Contain("Methodical +2 trials, -10 points (approved)");
+            report.Should().Contain("Methodical +2 trials, -15 points");
             ResearcherPerkStudy.Build(options, "test").Should().Be(report);
             report.Should().MatchRegex("^[\\x20-\\x7E\\r\\n]*$", "a report is ASCII");
         }

@@ -55,18 +55,26 @@ namespace SWLOR.CraftSim.Scenario.Experiment
         /// <summary>The trials a style adds and the points of Test chance it gives (negative for a cost), as candidates a retune could try.</summary>
         private static readonly (string Name, int Trials, int Chance)[] MethodicalCandidates =
         {
-            ("Methodical +2 trials, -10 points (approved)", 2, -10),
             ("Methodical +2 trials, -15 points", 2, -15),
+            ("Methodical +2 trials, -14 points", 2, -14),
+            ("Methodical +2 trials, -13 points", 2, -13),
+            ("Methodical +2 trials, -12 points", 2, -12),
+            ("Methodical +2 trials, -11 points", 2, -11),
+            ("Methodical +2 trials, -10 points (the plan's number)", 2, -10),
             ("Methodical +2 trials, -5 points", 2, -5),
             ("Methodical +3 trials, -10 points", 3, -10)
         };
 
+        /// <summary>The line's other purchases with no style, so a candidate style can be added to it.</summary>
+        private static readonly ResearcherBuild LineWithoutAStyle = new(
+            "Line without a style",
+            ResearcherBuild.AllPerks.Where(perk => perk != PerkType.Methodical && perk != PerkType.Intuitive));
+
         private static readonly (string Name, int Trials, int Chance)[] IntuitiveCandidates =
         {
-            ("Intuitive -1 trial, +20 points (approved)", -1, 20),
+            ("Intuitive -1 trial, +20 points", -1, 20),
             ("Intuitive -1 trial, +15 points", -1, 15),
-            ("Intuitive -1 trial, +25 points", -1, 25),
-            ("Intuitive -2 trials, +30 points", -2, 30)
+            ("Intuitive -1 trial, +25 points", -1, 25)
         };
 
         /// <summary>What many experiments of one build at one case came to.</summary>
@@ -262,15 +270,23 @@ namespace SWLOR.CraftSim.Scenario.Experiment
             text.AppendLine();
         }
 
+        /// <summary>The numbers of a researcher with every purchase but the styles, at this rank, plus a style's trials and Test chance.</summary>
+        private static ExperimentTuning LineWith(int rank, int trials, int chance)
+        {
+            var line = LineWithoutAStyle.TuningAt(rank);
+            return line with { Trials = line.Trials + trials, TestChanceBonusPercent = line.TestChanceBonusPercent + chance };
+        }
+
         private static void AppendStyleMagnitudes(StringBuilder text, ResearcherPerkStudyOptions options, IReadOnlyList<GearLevel> gear)
         {
             text.AppendLine("## The styles' magnitudes");
             text.AppendLine();
-            text.AppendLine("Each row pairs a Methodical and an Intuitive candidate, the styles alone, over the same 36 cases as the table above (two level kinds, three gear levels, six rank and tier combinations). The first row is the approved pair. \"Failed\" counts the six comparisons (two level kinds by three gear levels) that miss gate 2's thresholds; the gaps are the mean score gap over all cases of the level kind (positive favors Methodical).");
+            text.AppendLine("Each row pairs a Methodical and an Intuitive candidate over the same 36 cases as the table above (two level kinds, three gear levels, six rank and tier combinations): the styles alone, and each style on top of every other purchase of the line (the full line). \"Failed\" counts the six comparisons (two level kinds by three gear levels) that miss gate 2's thresholds; the gaps are the mean score gap over all cases of the level kind (positive favors Methodical), for the styles alone.");
             text.AppendLine();
 
             var table = new MarkdownTable(
-                "Methodical", "Intuitive", "Failed of 6", "Fixed levels: mean gap", "Evidence decides: mean gap", "Methodical mean actions", "Intuitive mean actions");
+                "Methodical", "Intuitive", "Alone: failed of 6", "Full line: failed of 6", "Fixed levels: mean gap", "Evidence decides: mean gap",
+                "Full line fixed levels: mean gap", "Full line evidence decides: mean gap", "Methodical mean actions", "Intuitive mean actions");
             foreach (var methodical in MethodicalCandidates)
             {
                 foreach (var intuitive in IntuitiveCandidates)
@@ -280,10 +296,17 @@ namespace SWLOR.CraftSim.Scenario.Experiment
                         gear,
                         _ => ExperimentTuning.Default with { Trials = ExperimentRules.Trials + methodical.Trials, TestChanceBonusPercent = methodical.Chance },
                         _ => ExperimentTuning.Default with { Trials = ExperimentRules.Trials + intuitive.Trials, TestChanceBonusPercent = intuitive.Chance });
+                    var lineRows = CompareStyles(
+                        options,
+                        gear,
+                        rank => LineWith(rank, methodical.Trials, methodical.Chance),
+                        rank => LineWith(rank, intuitive.Trials, intuitive.Chance));
                     table.Add(
-                        methodical.Name, intuitive.Name, rows.Count(row => !row.Passed).ToString(),
+                        methodical.Name, intuitive.Name, rows.Count(row => !row.Passed).ToString(), lineRows.Count(row => !row.Passed).ToString(),
                         SignedNumber(rows.Where(row => row.Level == FixedLevel).Average(row => row.Gap)),
                         SignedNumber(rows.Where(row => row.Level == ContestedLevel).Average(row => row.Gap)),
+                        SignedNumber(lineRows.Where(row => row.Level == FixedLevel).Average(row => row.Gap)),
+                        SignedNumber(lineRows.Where(row => row.Level == ContestedLevel).Average(row => row.Gap)),
                         Number(rows.Average(row => row.FirstActions)), Number(rows.Average(row => row.SecondActions)));
                 }
             }

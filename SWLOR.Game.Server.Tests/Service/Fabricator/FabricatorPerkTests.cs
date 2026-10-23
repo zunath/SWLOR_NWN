@@ -87,13 +87,13 @@ public class FabricatorPerkTests
     // ---- Run and Precision Pass (the styles) ----------------------------------------------------------------------
 
     [Test]
-    public void ProductionRun_MakesARunAQuarterStronger_AndAPrecisionPassAQuarterWeaker()
+    public void ProductionRun_MakesARunSixtyPercentStronger_AndAPrecisionPassThreePercentWeaker()
     {
-        var setup = Perked(new FabricatorPerkStats(RunPowerPercent: 25, PrecisionPowerPercent: -25));
+        var setup = Perked(new FabricatorPerkStats(RunPowerPercent: 60, PrecisionPowerPercent: -3));
 
-        setup.RunGain(true, false).Should().Be(349, "249.2 x 1.12 x 1.25");
-        setup.RunGain(false, false).Should().Be(174, "an off-head Run is half of the stronger Run");
-        setup.PrecisionGain(false).Should().Be(39, "46 x 1.13 x 0.75");
+        setup.RunGain(true, false).Should().Be(447, "249.2 x 1.12 x 1.6");
+        setup.RunGain(false, false).Should().Be(223, "an off-head Run is half of the stronger Run");
+        setup.PrecisionGain(false).Should().Be(50, "46 x 1.13 x 0.97");
     }
 
     [Test]

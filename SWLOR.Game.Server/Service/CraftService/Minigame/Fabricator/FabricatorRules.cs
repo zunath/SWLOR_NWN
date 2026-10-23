@@ -67,7 +67,7 @@ public static class FabricatorRules
     // at 8 seconds an action pays less XP per hour than the old window's 5-28 action loop at 6 seconds, and the old window is fastest
     // at the lowest levels. Starting values until client timing replaces the seconds per action.
     public const double XpMultiplierLevels1To10 = 2.4;
-    public const double XpMultiplierLevels11To20 = 1.45;
+    public const double XpMultiplierLevels11To20 = 1.50;
     public const double XpMultiplierLevels21To30 = 1.25;
     public const double XpMultiplierLevels31To40 = 1.1;
     public const double XpMultiplierLevels41Up = 1.0;

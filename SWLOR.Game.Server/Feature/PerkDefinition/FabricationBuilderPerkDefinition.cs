@@ -89,12 +89,12 @@ namespace SWLOR.Game.Server.Feature.PerkDefinition
                 .Icon("ife_mastercraft")
 
                 .AddPerkLevel()
-                .Description("Your Fabricator style, always active: Run is 25% stronger and Precision Pass 25% weaker. Cannot be purchased with Fine Tolerance.")
+                .Description("Your Fabricator style, always active: Run is 60% stronger and Precision Pass 3% weaker. Cannot be purchased with Fine Tolerance.")
                 .Price(2)
                 .RequirementSkill(SkillType.Fabrication, 20)
                 .RequirementCannotHavePerk(PerkType.FineTolerance)
-                .IncreasesStat(StatType.FabricatorRunPowerPercent, 25)
-                .IncreasesStat(StatType.FabricatorPrecisionPowerPercent, -25);
+                .IncreasesStat(StatType.FabricatorRunPowerPercent, 60)
+                .IncreasesStat(StatType.FabricatorPrecisionPowerPercent, -3);
         }
 
         private void FineTolerance()

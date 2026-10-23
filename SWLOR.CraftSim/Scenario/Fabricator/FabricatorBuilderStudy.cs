@@ -18,6 +18,9 @@ namespace SWLOR.CraftSim.Scenario.Fabricator
 
         /// <summary>The recipes sampled from each at-level band.</summary>
         public int RecipesPerBand { get; init; } = 8;
+
+        /// <summary>Plays only the styles' magnitudes table (the quick way to try a retune).</summary>
+        public bool StylesOnly { get; init; }
     }
 
     /// <summary>
@@ -29,6 +32,7 @@ namespace SWLOR.CraftSim.Scenario.Fabricator
     public static class FabricatorBuilderStudy
     {
         private const double QualityTieMargin = 0.5;
+        private const int StyleMinimumRank = 20;
         private const double ActionsTieMargin = 0.25;
 
         private sealed record Summary(double Quality, double FullQuality, double Success, double Actions, double Cp, double CpAvailable);
@@ -46,8 +50,12 @@ namespace SWLOR.CraftSim.Scenario.Fabricator
             text.AppendLine($"Command: `{command}`");
             text.AppendLine();
             AppendInputs(text, run, options);
-            AppendRankFifty(text, run);
-            AppendThroughTheRanks(text, run);
+            if (!options.StylesOnly)
+            {
+                AppendRankFifty(text, run);
+                AppendThroughTheRanks(text, run);
+            }
+
             AppendStyleMagnitudes(text, run);
             AppendLimitations(text);
             return text.ToString();
@@ -190,32 +198,40 @@ namespace SWLOR.CraftSim.Scenario.Fabricator
 
         private static readonly StyleCandidate[] StyleCandidates =
         {
-            StyleCandidate.Mirror(25, -25, " (approved)"),
-            StyleCandidate.Mirror(40, -10),
-            StyleCandidate.Mirror(50, -15),
-            StyleCandidate.Mirror(60, -10),
-            new("Production Run +60% / -10%, Fine Tolerance +25% / -25%", 60, -10, 25, -25)
+            Pair(60, -3, 25, -25),
+            Pair(60, -4, 25, -25),
+            Pair(60, -5, 25, -25),
+            Pair(60, -10, 25, -25),
+            Pair(80, -3, 25, -25),
+            Pair(40, -3, 25, -25),
+            Pair(100, -25, 25, -25),
+            StyleCandidate.Mirror(25, -25, " (the plan's original numbers)")
         };
+
+        private static StyleCandidate Pair(int runUp, int precisionDown, int precisionUp, int runDown) =>
+            new($"Production Run +{runUp}% / {precisionDown}%, Fine Tolerance +{precisionUp}% / {runDown}%", runUp, precisionDown, precisionUp, runDown);
 
         private static void AppendStyleMagnitudes(StringBuilder text, ScenarioRun run)
         {
-            var bands = run.Bands.Where(band => band.Band.First >= 21).ToList();
-            var recipes = bands.SelectMany(band => band.Recipes).ToList();
+            // The style-balance gate's recipes: every sampled recipe played at rank 20 or more.
+            var recipes = run.Bands.SelectMany(band => band.Recipes).Where(recipe => run.RankFor(recipe) >= StyleMinimumRank).ToList();
             CraftStyle unperked = null;
             var pairs = StyleCandidates.Select(candidate => (
                 candidate.Name,
-                Production: new CraftStyle($"Production Run {candidate.Name}", new FabricatorPerkStats(RunPowerPercent: candidate.RunUp, PrecisionPowerPercent: candidate.PrecisionDown)),
-                Fine: new CraftStyle($"Fine Tolerance {candidate.Name}", new FabricatorPerkStats(RunPowerPercent: candidate.RunDown, PrecisionPowerPercent: candidate.PrecisionUp)))).ToList();
+                Production: new CraftStyle($"Run {candidate.RunUp:+0;-0}% / Precision {candidate.PrecisionDown:+0;-0}%", new FabricatorPerkStats(RunPowerPercent: candidate.RunUp, PrecisionPowerPercent: candidate.PrecisionDown)),
+                Fine: new CraftStyle($"Run {candidate.RunDown:+0;-0}% / Precision {candidate.PrecisionUp:+0;-0}%", new FabricatorPerkStats(RunPowerPercent: candidate.RunDown, PrecisionPowerPercent: candidate.PrecisionUp)))).ToList();
 
+            // Styles with the same numbers share a name, and so share their games.
             Prepare(run, recipes, run.RankFor, pairs.SelectMany(pair => new[] { pair.Production, pair.Fine }).Append(unperked));
 
             text.AppendLine("## The styles' magnitudes");
             text.AppendLine();
-            text.AppendLine("Each candidate gives Production Run a Run bonus and a Precision Pass penalty, and Fine Tolerance a Precision Pass bonus and a Run penalty (a mirror uses the same sizes both ways), the style alone, at-level crafts of levels 21 to 53 (the rank equal to the level). The first is the approved pair; the others are what a retune could try. \"Actions\" is the change against the unperked crafter at the same gear; a negative change is a shorter craft. Gate 2 reads quality only, which every candidate keeps near the maximum, so the actions columns are where the styles differ.");
+            text.AppendLine($"Each candidate gives Production Run a Run bonus and a Precision Pass penalty, and Fine Tolerance a Precision Pass bonus and a Run penalty (a mirror uses the same sizes both ways), the style alone, at-level crafts of levels {StyleMinimumRank} to 53 (the rank equal to the level), the style-balance gate's recipes. The \"better\" columns and the verdict are gate 2's rule (a tie within {Number(QualityTieMargin)} point gives each style half a recipe; each style must lead on at least {Percent(GateThresholds.Default.StyleMinimumWinShare)} and the mean gap must not pass {Number(GateThresholds.Default.StyleMaximumMeanDifferencePoints, 0)} points). \"Actions\" is the change against the unperked crafter at the same gear; a negative change is a shorter craft. Gate 2 reads quality only, which every candidate keeps near the maximum, so the actions columns are where the styles differ.");
             text.AppendLine();
 
             var table = new MarkdownTable(
-                "Candidate", "Gear", "Production Run quality", "Production Run actions", "Fine Tolerance quality", "Fine Tolerance actions", "Fine Tolerance - Production Run actions");
+                "Candidate", "Gear", "Production Run quality", "Production Run actions", "Fine Tolerance quality", "Fine Tolerance actions", "Fine Tolerance - Production Run actions",
+                "Production Run better", "Fine Tolerance better", "Mean quality gap", "Gate 2");
             for (var gearIndex = 0; gearIndex < run.Gear.Count; gearIndex++)
             {
                 var baseline = Summarize(run, recipes, run.RankFor, gearIndex, unperked);
@@ -223,10 +239,24 @@ namespace SWLOR.CraftSim.Scenario.Fabricator
                 {
                     var production = Summarize(run, recipes, run.RankFor, gearIndex, pair.Production);
                     var fine = Summarize(run, recipes, run.RankFor, gearIndex, pair.Fine);
+                    double productionBetter = 0, fineBetter = 0, gap = 0;
+                    foreach (var recipe in recipes)
+                    {
+                        var difference = (run.Adaptive(recipe, run.RankFor(recipe), gearIndex, pair.Production).MeanScore
+                                          - run.Adaptive(recipe, run.RankFor(recipe), gearIndex, pair.Fine).MeanScore) * 100;
+                        gap += difference;
+                        Split(difference, QualityTieMargin, ref productionBetter, ref fineBetter);
+                    }
+
+                    var count = (double)recipes.Count;
+                    var passes = productionBetter / count >= GateThresholds.Default.StyleMinimumWinShare &&
+                                 fineBetter / count >= GateThresholds.Default.StyleMinimumWinShare &&
+                                 Math.Abs(gap / count) <= GateThresholds.Default.StyleMaximumMeanDifferencePoints;
                     table.Add(
                         pair.Name, run.Gear[gearIndex].Name,
                         Number(production.Quality), SignedNumber(production.Actions - baseline.Actions),
-                        Number(fine.Quality), SignedNumber(fine.Actions - baseline.Actions), SignedNumber(fine.Actions - production.Actions));
+                        Number(fine.Quality), SignedNumber(fine.Actions - baseline.Actions), SignedNumber(fine.Actions - production.Actions),
+                        Percent(productionBetter / count), Percent(fineBetter / count), SignedNumber(gap / count), passes ? "Passes" : "Fails");
                 }
             }
 

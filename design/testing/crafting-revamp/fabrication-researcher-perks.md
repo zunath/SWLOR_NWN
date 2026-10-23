@@ -17,43 +17,51 @@ The generic gates have no scoring rule for an experiment (it has no quality mete
 
 | Pair | Level kind | Gear | Cases | Methodical better | Intuitive better | Mean score gap (Methodical - Intuitive) | Methodical mean actions | Intuitive mean actions | Verdict |
 | --- | --- | --- | --- | --- | --- | --- | --- | --- | --- |
-| Methodical vs Intuitive | Fixed levels (time cut) | no gear | 6 | 100% | 0% | +7.6 | 8.7 | 5.3 | Failed |
-| Methodical vs Intuitive | Fixed levels (time cut) | mid gear | 6 | 100% | 0% | +7.1 | 9.5 | 5.8 | Failed |
-| Methodical vs Intuitive | Fixed levels (time cut) | best gear | 6 | 100% | 0% | +7.0 | 9.7 | 6.0 | Failed |
-| Methodical vs Intuitive | Evidence decides (reduction) | no gear | 6 | 75% | 25% | +3.2 | 8.7 | 5.3 | Failed |
-| Methodical vs Intuitive | Evidence decides (reduction) | mid gear | 6 | 50% | 50% | +2.7 | 9.5 | 5.8 | Passed |
-| Methodical vs Intuitive | Evidence decides (reduction) | best gear | 6 | 67% | 33% | +3.8 | 9.7 | 6.0 | Passed |
-| Methodical (full line) vs Intuitive (full line) | Fixed levels (time cut) | no gear | 6 | 25% | 75% | -1.2 | 10.2 | 6.8 | Failed |
-| Methodical (full line) vs Intuitive (full line) | Fixed levels (time cut) | mid gear | 6 | 25% | 75% | -1.3 | 11.2 | 7.5 | Failed |
-| Methodical (full line) vs Intuitive (full line) | Fixed levels (time cut) | best gear | 6 | 25% | 75% | -1.5 | 11.5 | 7.8 | Failed |
-| Methodical (full line) vs Intuitive (full line) | Evidence decides (reduction) | no gear | 6 | 33% | 67% | -2.2 | 10.2 | 6.8 | Passed |
-| Methodical (full line) vs Intuitive (full line) | Evidence decides (reduction) | mid gear | 6 | 33% | 67% | -1.7 | 11.2 | 7.5 | Passed |
-| Methodical (full line) vs Intuitive (full line) | Evidence decides (reduction) | best gear | 6 | 33% | 67% | -2.0 | 11.5 | 7.8 | Passed |
+| Methodical vs Intuitive | Fixed levels (time cut) | no gear | 6 | 42% | 58% | +1.3 | 8.7 | 5.3 | Passed |
+| Methodical vs Intuitive | Fixed levels (time cut) | mid gear | 6 | 33% | 67% | +1.5 | 9.5 | 5.8 | Passed |
+| Methodical vs Intuitive | Fixed levels (time cut) | best gear | 6 | 33% | 67% | +1.2 | 9.7 | 6.0 | Passed |
+| Methodical vs Intuitive | Evidence decides (reduction) | no gear | 6 | 33% | 67% | -2.6 | 8.7 | 5.3 | Passed |
+| Methodical vs Intuitive | Evidence decides (reduction) | mid gear | 6 | 33% | 67% | -3.0 | 9.5 | 5.8 | Passed |
+| Methodical vs Intuitive | Evidence decides (reduction) | best gear | 6 | 33% | 67% | -2.8 | 9.7 | 6.0 | Passed |
+| Methodical (full line) vs Intuitive (full line) | Fixed levels (time cut) | no gear | 6 | 25% | 75% | -3.7 | 10.2 | 6.8 | Failed |
+| Methodical (full line) vs Intuitive (full line) | Fixed levels (time cut) | mid gear | 6 | 25% | 75% | -3.7 | 11.2 | 7.5 | Failed |
+| Methodical (full line) vs Intuitive (full line) | Fixed levels (time cut) | best gear | 6 | 25% | 75% | -3.8 | 11.5 | 7.8 | Failed |
+| Methodical (full line) vs Intuitive (full line) | Evidence decides (reduction) | no gear | 6 | 17% | 83% | -7.0 | 10.2 | 6.8 | Failed |
+| Methodical (full line) vs Intuitive (full line) | Evidence decides (reduction) | mid gear | 6 | 25% | 75% | -6.6 | 11.2 | 7.5 | Failed |
+| Methodical (full line) vs Intuitive (full line) | Evidence decides (reduction) | best gear | 6 | 25% | 75% | -6.6 | 11.5 | 7.8 | Failed |
 
-Verdict: out of balance in 7 of 12 comparison(s): Methodical vs Intuitive / Fixed levels (time cut) / no gear; Methodical vs Intuitive / Fixed levels (time cut) / mid gear; Methodical vs Intuitive / Fixed levels (time cut) / best gear; Methodical vs Intuitive / Evidence decides (reduction) / no gear; Methodical (full line) vs Intuitive (full line) / Fixed levels (time cut) / no gear; Methodical (full line) vs Intuitive (full line) / Fixed levels (time cut) / mid gear; Methodical (full line) vs Intuitive (full line) / Fixed levels (time cut) / best gear.
+Verdict: out of balance in 6 of 12 comparison(s): Methodical (full line) vs Intuitive (full line) / Fixed levels (time cut) / no gear; Methodical (full line) vs Intuitive (full line) / Fixed levels (time cut) / mid gear; Methodical (full line) vs Intuitive (full line) / Fixed levels (time cut) / best gear; Methodical (full line) vs Intuitive (full line) / Evidence decides (reduction) / no gear; Methodical (full line) vs Intuitive (full line) / Evidence decides (reduction) / mid gear; Methodical (full line) vs Intuitive (full line) / Evidence decides (reduction) / best gear.
 
 ## The styles' magnitudes
 
-Each row pairs a Methodical and an Intuitive candidate, the styles alone, over the same 36 cases as the table above (two level kinds, three gear levels, six rank and tier combinations). The first row is the approved pair. "Failed" counts the six comparisons (two level kinds by three gear levels) that miss gate 2's thresholds; the gaps are the mean score gap over all cases of the level kind (positive favors Methodical).
+Each row pairs a Methodical and an Intuitive candidate over the same 36 cases as the table above (two level kinds, three gear levels, six rank and tier combinations): the styles alone, and each style on top of every other purchase of the line (the full line). "Failed" counts the six comparisons (two level kinds by three gear levels) that miss gate 2's thresholds; the gaps are the mean score gap over all cases of the level kind (positive favors Methodical), for the styles alone.
 
-| Methodical | Intuitive | Failed of 6 | Fixed levels: mean gap | Evidence decides: mean gap | Methodical mean actions | Intuitive mean actions |
-| --- | --- | --- | --- | --- | --- | --- |
-| Methodical +2 trials, -10 points (approved) | Intuitive -1 trial, +20 points (approved) | 4 | +7.2 | +3.2 | 9.3 | 5.7 |
-| Methodical +2 trials, -10 points (approved) | Intuitive -1 trial, +15 points | 6 | +10.7 | +7.0 | 9.3 | 6.3 |
-| Methodical +2 trials, -10 points (approved) | Intuitive -1 trial, +25 points | 3 | +5.3 | +1.2 | 9.3 | 5.7 |
-| Methodical +2 trials, -10 points (approved) | Intuitive -2 trials, +30 points | 6 | +21.8 | +15.1 | 9.3 | 4.7 |
-| Methodical +2 trials, -15 points | Intuitive -1 trial, +20 points (approved) | 0 | +1.3 | -2.8 | 9.3 | 5.7 |
-| Methodical +2 trials, -15 points | Intuitive -1 trial, +15 points | 3 | +4.7 | +1.0 | 9.3 | 6.3 |
-| Methodical +2 trials, -15 points | Intuitive -1 trial, +25 points | 0 | -0.6 | -4.9 | 9.3 | 5.7 |
-| Methodical +2 trials, -15 points | Intuitive -2 trials, +30 points | 6 | +15.9 | +9.1 | 9.3 | 4.7 |
-| Methodical +2 trials, -5 points | Intuitive -1 trial, +20 points (approved) | 6 | +12.4 | +9.1 | 9.3 | 5.7 |
-| Methodical +2 trials, -5 points | Intuitive -1 trial, +15 points | 6 | +15.8 | +12.9 | 9.3 | 6.3 |
-| Methodical +2 trials, -5 points | Intuitive -1 trial, +25 points | 6 | +10.4 | +7.0 | 9.3 | 5.7 |
-| Methodical +2 trials, -5 points | Intuitive -2 trials, +30 points | 6 | +26.9 | +21.0 | 9.3 | 4.7 |
-| Methodical +3 trials, -10 points | Intuitive -1 trial, +20 points (approved) | 6 | +13.7 | +10.2 | 10.3 | 5.7 |
-| Methodical +3 trials, -10 points | Intuitive -1 trial, +15 points | 6 | +17.2 | +14.0 | 10.3 | 6.3 |
-| Methodical +3 trials, -10 points | Intuitive -1 trial, +25 points | 6 | +11.8 | +8.1 | 10.3 | 5.7 |
-| Methodical +3 trials, -10 points | Intuitive -2 trials, +30 points | 6 | +28.3 | +22.1 | 10.3 | 4.7 |
+| Methodical | Intuitive | Alone: failed of 6 | Full line: failed of 6 | Fixed levels: mean gap | Evidence decides: mean gap | Full line fixed levels: mean gap | Full line evidence decides: mean gap | Methodical mean actions | Intuitive mean actions |
+| --- | --- | --- | --- | --- | --- | --- | --- | --- | --- |
+| Methodical +2 trials, -15 points | Intuitive -1 trial, +20 points | 0 | 6 | +1.3 | -2.8 | -3.7 | -6.8 | 9.3 | 5.7 |
+| Methodical +2 trials, -15 points | Intuitive -1 trial, +15 points | 3 | 6 | +4.7 | +1.0 | -2.3 | -3.9 | 9.3 | 6.3 |
+| Methodical +2 trials, -15 points | Intuitive -1 trial, +25 points | 0 | 6 | -0.6 | -4.9 | -5.1 | -9.5 | 9.3 | 5.7 |
+| Methodical +2 trials, -14 points | Intuitive -1 trial, +20 points | 0 | 6 | +2.5 | -1.6 | -3.2 | -5.8 | 9.3 | 5.7 |
+| Methodical +2 trials, -14 points | Intuitive -1 trial, +15 points | 4 | 4 | +6.0 | +2.2 | -1.8 | -2.9 | 9.3 | 6.3 |
+| Methodical +2 trials, -14 points | Intuitive -1 trial, +25 points | 0 | 6 | +0.6 | -3.6 | -4.6 | -8.5 | 9.3 | 5.7 |
+| Methodical +2 trials, -13 points | Intuitive -1 trial, +20 points | 3 | 4 | +3.7 | -0.3 | -2.7 | -4.7 | 9.3 | 5.7 |
+| Methodical +2 trials, -13 points | Intuitive -1 trial, +15 points | 5 | 4 | +7.2 | +3.5 | -1.3 | -1.9 | 9.3 | 6.3 |
+| Methodical +2 trials, -13 points | Intuitive -1 trial, +25 points | 0 | 6 | +1.8 | -2.3 | -4.1 | -7.5 | 9.3 | 5.7 |
+| Methodical +2 trials, -12 points | Intuitive -1 trial, +20 points | 3 | 3 | +4.9 | +0.9 | -2.3 | -3.7 | 9.3 | 5.7 |
+| Methodical +2 trials, -12 points | Intuitive -1 trial, +15 points | 6 | 2 | +8.4 | +4.7 | -0.8 | -0.8 | 9.3 | 6.3 |
+| Methodical +2 trials, -12 points | Intuitive -1 trial, +25 points | 0 | 6 | +3.0 | -1.1 | -3.7 | -6.4 | 9.3 | 5.7 |
+| Methodical +2 trials, -11 points | Intuitive -1 trial, +20 points | 3 | 3 | +6.1 | +2.1 | -1.8 | -2.8 | 9.3 | 5.7 |
+| Methodical +2 trials, -11 points | Intuitive -1 trial, +15 points | 6 | 0 | +9.5 | +5.9 | -0.4 | +0.1 | 9.3 | 6.3 |
+| Methodical +2 trials, -11 points | Intuitive -1 trial, +25 points | 3 | 6 | +4.2 | +0.0 | -3.2 | -5.5 | 9.3 | 5.7 |
+| Methodical +2 trials, -10 points (the plan's number) | Intuitive -1 trial, +20 points | 4 | 3 | +7.2 | +3.2 | -1.3 | -1.9 | 9.3 | 5.7 |
+| Methodical +2 trials, -10 points (the plan's number) | Intuitive -1 trial, +15 points | 6 | 1 | +10.7 | +7.0 | +0.1 | +0.9 | 9.3 | 6.3 |
+| Methodical +2 trials, -10 points (the plan's number) | Intuitive -1 trial, +25 points | 3 | 4 | +5.3 | +1.2 | -2.7 | -4.7 | 9.3 | 5.7 |
+| Methodical +2 trials, -5 points | Intuitive -1 trial, +20 points | 6 | 3 | +12.4 | +9.1 | +0.4 | +2.0 | 9.3 | 5.7 |
+| Methodical +2 trials, -5 points | Intuitive -1 trial, +15 points | 6 | 5 | +15.8 | +12.9 | +1.9 | +4.8 | 9.3 | 6.3 |
+| Methodical +2 trials, -5 points | Intuitive -1 trial, +25 points | 6 | 2 | +10.4 | +7.0 | -1.0 | -0.7 | 9.3 | 5.7 |
+| Methodical +3 trials, -10 points | Intuitive -1 trial, +20 points | 6 | 3 | +13.7 | +10.2 | +0.6 | +2.2 | 10.3 | 5.7 |
+| Methodical +3 trials, -10 points | Intuitive -1 trial, +15 points | 6 | 5 | +17.2 | +14.0 | +2.1 | +5.1 | 10.3 | 6.3 |
+| Methodical +3 trials, -10 points | Intuitive -1 trial, +25 points | 6 | 1 | +11.8 | +8.1 | -0.8 | -0.5 | 10.3 | 5.7 |
 
 ## Each purchase alone, and the whole line (rank 50, tier 5, mid gear)
 
@@ -65,13 +73,13 @@ Each row is a rank-50 researcher who owns the one perk named (at its highest ran
 | Field Notes | 6 | 66% | 8.0 | 6.72% | 0.0% | 12% | 8.0 | 18.0% | 18% |
 | Steady Hands | 6 | 60% | 8.0 | 6.15% | 0.2% | 9% | 8.0 | 16.6% | 10% |
 | Broader Hypotheses | 7 | 60% | 9.0 | 7.11% | 0.0% | 22% | 9.0 | 19.3% | 29% |
-| Methodical | 8 | 50% | 10.0 | 6.70% | 0.2% | 15% | 10.0 | 18.6% | 31% |
+| Methodical | 8 | 45% | 10.0 | 6.15% | 0.5% | 11% | 10.0 | 17.1% | 21% |
 | Intuitive | 5 | 80% | 7.0 | 6.70% | 0.0% | 0% | 7.0 | 17.6% | 0% |
 | Peer Review | 6 | 60% | 8.0 | 6.15% | 0.2% | 9% | 8.0 | 16.6% | 10% |
 | Efficient Analysis | 6 | 60% | 8.0 | 6.15% | 0.2% | 9% | 8.0 | 21.1% | 46% |
 | Second Opinion | 6 | 60% | 8.0 | 6.29% | 0.0% | 9% | 8.0 | 17.1% | 12% |
 | Breakthrough | 6 | 60% | 9.0 | 6.83% | 0.0% | 13% | 9.0 | 24.3% | 89% |
-| Methodical (full line) | 9 | 56% | 12.0 | 8.88% | 0.0% | 60% | 12.0 | 25.0% | 100% |
+| Methodical (full line) | 9 | 51% | 12.0 | 8.35% | 0.0% | 47% | 12.0 | 25.0% | 100% |
 | Intuitive (full line) | 6 | 86% | 9.0 | 8.96% | 0.0% | 57% | 9.0 | 25.0% | 100% |
 
 ## Peer Review for a player who has not decided
@@ -94,10 +102,10 @@ Rows follow the research report: the researcher is at the tier's first rank and 
 | Rank | Tier | Recipe level | Jobs | Unperked XP per hour | Methodical (full line) | Intuitive (full line) | Most any build can reach (the cap) | At-level Fabricator crafting XP per hour (0% quality) | Most / crafting |
 | --- | --- | --- | --- | --- | --- | --- | --- | --- | --- |
 | 10 | 1 | 9 | 1 | 9818 | 9901 | 9901 | 11016 | 43200 | 26% |
-| 20 | 2 | 19 | 1 | 2122 | 2259 | 2278 | 2400 | 26100 | 9% |
-| 30 | 3 | 29 | 2 | 1755 | 1902 | 1927 | 1965 | 22500 | 9% |
-| 40 | 4 | 39 | 2 | 931 | 1024 | 1028 | 1044 | 19800 | 5% |
-| 50 | 5 | 52 | 3 | 1438 | 1599 | 1599 | 1599 | 18000 | 9% |
+| 20 | 2 | 19 | 1 | 2122 | 2217 | 2278 | 2400 | 27000 | 9% |
+| 30 | 3 | 29 | 2 | 1755 | 1871 | 1927 | 1965 | 22500 | 9% |
+| 40 | 4 | 39 | 2 | 931 | 1013 | 1028 | 1044 | 19800 | 5% |
+| 50 | 5 | 52 | 3 | 1438 | 1598 | 1599 | 1599 | 18000 | 9% |
 
 The highest unperked row is 9818 XP per hour; the highest with the line is 9901 (1.008x), and no build can exceed 11016 (1.12x the unperked peak) because the time cut's cap does not move. The crafting column is a Fabricator craft of 15 actions (the middle of the 10-20 target) at 8.0 s each with the Fabricator's XP multiplier for the rank's level band (`CraftMinigameXp`), no blueprint, not a first craft, at 0% quality, the lowest crafting rate; chart XP at level is 600.
 

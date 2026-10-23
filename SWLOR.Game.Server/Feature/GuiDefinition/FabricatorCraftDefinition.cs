@@ -46,7 +46,7 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition
             "Craftsmanship makes Run stronger and Control makes Precision Pass stronger. CP is your gear's CP plus a share of your Fabrication rank.\n\n" +
             "BUILDER PERKS\n" +
             "The Builder perks you own change the numbers above, and the window shows your own. The style you chose at Fabrication 20 is always active: " +
-            "Production Run makes Run stronger and Precision Pass weaker, and Fine Tolerance is the mirror. Production Run builds the work faster, so it suits large " +
+            "Production Run makes Run much stronger and Precision Pass a little weaker, and Fine Tolerance makes Precision Pass stronger and Run weaker. Production Run builds the work faster, so it suits large " +
             "Frames and floors; Fine Tolerance lifts quality faster, so it suits terminals and tools. Dual Feed, if you own it, builds two sub-assemblies in one action: " +
             $"each gets {FabricatorRules.DualFeedPercent:0}% of a full Run, it costs the CP of a Retool and one Run's wear, and the loaded head stays loaded.";
 

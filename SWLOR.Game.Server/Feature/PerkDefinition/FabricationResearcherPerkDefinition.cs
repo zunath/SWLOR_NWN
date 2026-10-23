@@ -81,12 +81,12 @@ namespace SWLOR.Game.Server.Feature.PerkDefinition
                 .Icon("ife_sci_net")
 
                 .AddPerkLevel()
-                .Description("Your research style, always active: every research experiment has 2 more trials, and every Test has 10 fewer points of chance. Cannot be purchased with Intuitive.")
+                .Description("Your research style, always active: every research experiment has 2 more trials, and every Test has 15 fewer points of chance. Cannot be purchased with Intuitive.")
                 .Price(2)
                 .RequirementSkill(SkillType.Fabrication, 20)
                 .RequirementCannotHavePerk(PerkType.Intuitive)
                 .IncreasesStat(StatType.ExperimentTrials, 2)
-                .IncreasesStat(StatType.ExperimentTestChancePercent, -10);
+                .IncreasesStat(StatType.ExperimentTestChancePercent, -15);
         }
 
         private void Intuitive()

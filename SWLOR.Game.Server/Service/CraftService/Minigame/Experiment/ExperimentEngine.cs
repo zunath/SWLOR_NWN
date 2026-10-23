@@ -47,6 +47,15 @@ public sealed class ExperimentEngine : MinigameEngineBase<ExperimentState>
 
     public bool Concluded => State.Concluded;
 
+    /// <summary>True once Peer Review has moved evidence this experiment.</summary>
+    public bool PeerReviewUsed => State.PeerReviewUsed;
+
+    /// <summary>True once Breakthrough was spent: each piece of spare evidence cuts more of the job's time from now on.</summary>
+    public bool BreakthroughUsed => State.BreakthroughUsed;
+
+    /// <summary>True while Breakthrough waits for the Test it makes succeed.</summary>
+    public bool BreakthroughArmed => State.BreakthroughArmed;
+
     /// <summary>The evidence on every candidate that is not behind the leader: all of a fixed level's, none of the leaders' at a random one.</summary>
     public int SpareEvidence => SpareOf(State);
 
@@ -80,6 +89,12 @@ public sealed class ExperimentEngine : MinigameEngineBase<ExperimentState>
                         info, _setup.RefineCp, 0, "Your method is already refined for the next Test.");
                 }
 
+                if (state.BreakthroughArmed)
+                {
+                    return MinigameActionRule<ExperimentState>.Disabled(
+                        info, _setup.RefineCp, 0, "Your next Test is already guaranteed by Breakthrough.");
+                }
+
                 if (TestChance(state) >= ExperimentRules.MaximumTestChancePercent)
                 {
                     return MinigameActionRule<ExperimentState>.Disabled(
@@ -99,6 +114,27 @@ public sealed class ExperimentEngine : MinigameEngineBase<ExperimentState>
                     return MinigameActionRule<ExperimentState>.Disabled(info, 0, 0, "The job's time cut is already at its cap.");
 
                 return OneOutcome(info, 0, "Evidence analyzed", Analyze);
+
+            case ExperimentActionIds.PeerReviewCreditToTime:
+                return PeerReview(info, state, ResearchCandidate.CreditReduction, ResearchCandidate.TimeReduction);
+
+            case ExperimentActionIds.PeerReviewTimeToCredit:
+                return PeerReview(info, state, ResearchCandidate.TimeReduction, ResearchCandidate.CreditReduction);
+
+            case ExperimentActionIds.Breakthrough:
+                if (state.BreakthroughUsed)
+                {
+                    return MinigameActionRule<ExperimentState>.Disabled(
+                        info, 0, 0, "Breakthrough can be used once per experiment.");
+                }
+
+                if (state.MethodBonus > 0)
+                {
+                    return MinigameActionRule<ExperimentState>.Disabled(
+                        info, 0, 0, "Your refined method is waiting for a Test. Run it before Breakthrough.");
+                }
+
+                return OneOutcome(info, 0, "Breakthrough", s => s with { BreakthroughUsed = true, BreakthroughArmed = true });
 
             case ExperimentActionIds.Conclude:
                 return OneOutcome(info, 0, "Experiment concluded", s => s with { Concluded = true });
@@ -149,9 +185,43 @@ public sealed class ExperimentEngine : MinigameEngineBase<ExperimentState>
         return meters;
     }
 
+    /// <summary>
+    /// Peer Review: moves half of one candidate's evidence (rounded up) to the other. It costs CP and no trial, and once per
+    /// experiment. Only a two-candidate experiment offers it.
+    /// </summary>
+    private MinigameActionRule<ExperimentState> PeerReview(
+        MinigameActionInfo info, ExperimentState state, ResearchCandidate from, ResearchCandidate to)
+    {
+        var cp = ExperimentRules.PeerReviewCp;
+        if (state.PeerReviewUsed)
+            return MinigameActionRule<ExperimentState>.Disabled(info, cp, 0, "Peer Review can be used once per experiment.");
+
+        var fromIndex = _setup.IndexOf(from);
+        var toIndex = _setup.IndexOf(to);
+        var moved = (state.Evidence[fromIndex] + 1) / 2;
+        if (moved <= 0)
+            return MinigameActionRule<ExperimentState>.Disabled(info, cp, 0, $"There is no {_setup.NameOf(from)} evidence to move.");
+
+        return OneOutcome(info, cp, $"Moved {moved} evidence from {_setup.NameOf(from)} to {_setup.NameOf(to)}", s =>
+            WithFindings(s with
+            {
+                Evidence = s.Evidence.SetItem(fromIndex, s.Evidence[fromIndex] - moved).SetItem(toIndex, s.Evidence[toIndex] + moved),
+                PeerReviewUsed = true
+            }));
+    }
+
     private MinigameActionRule<ExperimentState> Test(MinigameActionInfo info, ExperimentState state, ResearchCandidate candidate)
     {
         var index = _setup.IndexOf(candidate);
+        if (state.BreakthroughArmed)
+        {
+            var sure = new MinigameOutcomeRule<ExperimentState>(
+                "Evidence found (Breakthrough)",
+                100,
+                s => UseTrial(s with { Evidence = s.Evidence.SetItem(index, s.Evidence[index] + 1), BreakthroughArmed = false }));
+            return new MinigameActionRule<ExperimentState>(info, 0, 0, new[] { sure });
+        }
+
         var chance = TestChance(state);
 
         var found = new MinigameOutcomeRule<ExperimentState>(
@@ -183,9 +253,13 @@ public sealed class ExperimentEngine : MinigameEngineBase<ExperimentState>
         {
             Evidence = evidence,
             SpentEvidence = state.SpentEvidence + spare,
-            TimeCutPercent = Math.Min(_setup.TimeCutCap, state.TimeCutPercent + spare * _setup.TimeCutPerEvidence)
+            TimeCutPercent = Math.Min(_setup.TimeCutCap, state.TimeCutPercent + spare * TimeCutPerEvidence(state))
         });
     }
+
+    /// <summary>The share of the job's time one piece of spare evidence cuts: its usual share, multiplied once Breakthrough was spent.</summary>
+    private int TimeCutPerEvidence(ExperimentState state) =>
+        _setup.TimeCutPerEvidence * (state.BreakthroughUsed ? ExperimentRules.BreakthroughTimeCutMultiplier : 1);
 
     /// <summary>One trial gone: progress moves, any waiting Refine Method is used up whether or not it helped, and Findings follows.</summary>
     private static ExperimentState UseTrial(ExperimentState state)
@@ -251,6 +325,28 @@ public sealed class ExperimentEngine : MinigameEngineBase<ExperimentState>
             setup.IsContested
                 ? "Spend the evidence on candidates behind the leader to cut the job's time. The leaders keep theirs. Uses one trial."
                 : "Spend your evidence to cut the job's time. Uses one trial."));
+        if (setup.PeerReviewUnlocked && setup.IsContested)
+        {
+            var credit = setup.NameOf(ResearchCandidate.CreditReduction);
+            var time = setup.NameOf(ResearchCandidate.TimeReduction);
+            actions.Add(new MinigameActionInfo(
+                ExperimentActionIds.PeerReviewCreditToTime,
+                "Peer Review: credit to time",
+                $"Move half of your {credit} evidence (rounded up) to {time}. Costs {ExperimentRules.PeerReviewCp} CP and no trial. Once per experiment."));
+            actions.Add(new MinigameActionInfo(
+                ExperimentActionIds.PeerReviewTimeToCredit,
+                "Peer Review: time to credit",
+                $"Move half of your {time} evidence (rounded up) to {credit}. Costs {ExperimentRules.PeerReviewCp} CP and no trial. Once per experiment."));
+        }
+
+        if (setup.BreakthroughUnlocked)
+        {
+            actions.Add(new MinigameActionInfo(
+                ExperimentActionIds.Breakthrough,
+                "Breakthrough",
+                $"Your next Test succeeds automatically, and for the rest of the experiment each piece of spare evidence you Analyze cuts {ExperimentRules.BreakthroughTimeCutMultiplier} times its usual share of the job's time, within the cap. Free: no CP and no trial. Once per experiment."));
+        }
+
         actions.Add(new MinigameActionInfo(
             ExperimentActionIds.Conclude,
             "Conclude",

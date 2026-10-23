@@ -11,6 +11,9 @@ public static class ExperimentActionIds
     public const string RefineMethod = "refine";
     public const string Analyze = "analyze";
     public const string Conclude = "conclude";
+    public const string PeerReviewCreditToTime = "peer_review_credit_to_time";
+    public const string PeerReviewTimeToCredit = "peer_review_time_to_credit";
+    public const string Breakthrough = "breakthrough";
 
     public const string TimeCutMeter = "timecut";
     public const string MethodMeter = "method";

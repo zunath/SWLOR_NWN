@@ -51,7 +51,7 @@ public class CircuitXpMultiplierTests
         foreach (var level in new[] { 1, 10, 11, 25, 40, 53 })
             CraftMinigameXp.MultiplierFor(CraftMinigameType.Circuit, level).Should().Be(CircuitRules.XpMultiplierFor(level));
 
-        CraftMinigameXp.MultiplierFor(CraftMinigameType.Search, 5).Should().Be(1.0);
+        CraftMinigameXp.MultiplierFor(CraftMinigameType.Forge, 5).Should().Be(1.0);
         CraftMinigameXp.ScaleBaseXp(100, 2.5).Should().Be(250);
         CraftMinigameXp.ScaleBaseXp(7, 1.5).Should().Be(11, "10.5 rounds away from zero");
         CraftMinigameXp.ScaleBaseXp(0, 2.5).Should().Be(0);
@@ -72,7 +72,10 @@ public class CircuitXpMultiplierTests
             CraftMinigameXp.ScaleBaseXp(
                 CraftMinigameXp.ScaleBaseXp(Craft.GetBaseRecipeXP(smithery, 5), CraftMinigameXp.MultiplierFor(CraftMinigameType.Forge, 5)),
                 CraftMinigameXp.CraftingPaceMultiplier));
-        CraftMinigameXp.BaseXp(Recipe(SkillType.Armor, 5), 5).Should().Be(Craft.GetBaseRecipeXP(Recipe(SkillType.Armor, 5), 5), "a skill with no minigame keeps today's XP");
+        CraftMinigameXp.BaseXp(Recipe(SkillType.Agriculture, 5), 5).Should().Be(
+            CraftMinigameXp.ScaleBaseXp(
+                CraftMinigameXp.ScaleBaseXp(Craft.GetBaseRecipeXP(Recipe(SkillType.Agriculture, 5), 5), CraftMinigameXp.MultiplierFor(CraftMinigameType.Kitchen, 5)),
+                CraftMinigameXp.CraftingPaceMultiplier));
     }
 
     [Test]

@@ -96,6 +96,36 @@ namespace SWLOR.CraftSim.Tests.Fishing
         }
 
         [Test]
+        public void AnUnperkedSkilledFight_LandsSlightlyMoreThanQuickReelAtTheFishsLevel()
+        {
+            var options = FishingParityOptions.Default;
+            var parity = ReportParity.Value;
+            new FishingFightBoundGate(parity).Evaluate(new GateContext(null, null, 1000, 1, AttributeSweep.Default));
+
+            var fight = options.ReferenceRanks.Average(rank =>
+                parity.Catch(rank, FishRarity.Common, rank, FishingParity.NominalRodTier(rank), LinePlayer.Adaptive, LineAnglerEffects.None).LandedPercent);
+            var quickReel = options.QuickReel(0, 0);
+
+            (fight / quickReel).Should().BeInRange(1.02, 1.08, "fighting is optional, for a slightly better catch: about 1.03-1.08 times Quick Reel's at the fish's own level");
+        }
+
+        [Test]
+        public void TheOpenRowsOfTheAnglerLine_HaveNoRoom_ForFishSenseAtItsSmallest_OrForTheWholeOfStrongLineIIAndHardSetII()
+        {
+            var parity = ReportParity.Value;
+            new FishingFightBoundGate(parity).Evaluate(new GateContext(null, null, 1000, 1, AttributeSweep.Default));
+
+            var verdicts = FishingAnglerEvidence.OpenPurchases(parity).Verdicts.ToDictionary(verdict => verdict.Name, verdict => verdict.Within);
+
+            verdicts["Whole line (Patient Angler)"].Should().BeTrue();
+            verdicts["Whole line (Aggressive Angler)"].Should().BeTrue();
+            verdicts["Whole line (Patient Angler) with Fish Sense (two moves ahead on the first turn)"].Should().BeFalse(
+                "Fish Sense at its smallest still adds more at the fish's own level than the room beside a style leaves");
+            verdicts["Whole line (Aggressive Angler) with Fish Sense (two moves ahead on the first turn)"].Should().BeFalse();
+            verdicts["Whole line (Patient Angler) with Strong Line II and Hard Set II"].Should().BeFalse();
+        }
+
+        [Test]
         public void TrophyCatch_StaysWithinTheBound_OnTheSpecialFishAtRankFifty_AloneAndWithTheWholeLine()
         {
             var options = FishingParityOptions.Default;
@@ -114,13 +144,25 @@ namespace SWLOR.CraftSim.Tests.Fishing
         }
 
         [Test]
-        public void ARareFishTakesNoPerkButTrophyCatch_SoTheWholeLineAddsNothingToIt()
+        public void ARareFishTakesTheWholeLineAtHalfStrength_WhichAtTheLinesSizesIsNothing()
         {
-            var parity = ReportParity.Value;
-            var plain = parity.Catch(FishingAnglerEvidence.RareFishLevel, FishRarity.Rare, 50, 4, LinePlayer.Adaptive, LineAnglerEffects.None).LandedPercent;
-            var withLine = parity.Catch(FishingAnglerEvidence.RareFishLevel, FishRarity.Rare, 50, 4, LinePlayer.Adaptive, FishingAnglerEvidence.WholeLinePatient).LandedPercent;
+            var plain = LineSetup.ForFish(FishingAnglerEvidence.RareFishLevel, FishRarity.Rare, 50, 4);
 
-            Math.Abs(withLine - plain).Should().BeLessThan(5, "the line is ignored; the two differ only by the dice of two samples of 1000 fights");
-        }
-    }
+            foreach (var line in new[] { FishingAnglerEvidence.WholeLinePatient, FishingAnglerEvidence.WholeLineAggressive })
+            {
+                var withLine = LineSetup.ForFish(FishingAnglerEvidence.RareFishLevel, FishRarity.Rare, 50, 4, line);
+
+                withLine.TensionCap.Should().Be(plain.TensionCap);
+                withLine.SetHookDrain.Should().Be(plain.SetHookDrain);
+                withLine.GiveLineDistance.Should().Be(plain.GiveLineDistance);
+                withLine.ReelDistance.Should().Be(plain.ReelDistance);
+                withLine.Pull.Should().Be(plain.Pull);
+                withLine.Stamina.Should().Be(plain.Stamina);
+            }
+
+            var withTrophy = LineSetup.ForFish(
+                FishingAnglerEvidence.RareFishLevel, FishRarity.Rare, 50, 4, FishingAnglerEvidence.WholeLinePatient with { RareFishRungReduction = FishingAnglerEvidence.TrophyCatchRungs });
+            withTrophy.Pull.Should().BeLessThan(plain.Pull + 1);
+            withTrophy.Stamina.Should().BeLessThan(plain.Stamina);
+        }    }
 }

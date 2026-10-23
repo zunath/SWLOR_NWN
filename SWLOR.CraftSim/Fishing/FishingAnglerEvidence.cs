@@ -31,22 +31,20 @@ namespace SWLOR.CraftSim.Fishing
 
         /// <summary>Everything the line grants below the capstone, with the Patient Angler style.</summary>
         public static readonly LineAnglerEffects WholeLinePatient =
-            new(TensionCapBonus: 2, SetHookDrainBonus: 2, ForecastDepth: 2, GiveLineDistanceReduction: 1);
+            new(TensionCapBonus: 1, SetHookDrainBonus: 1, GiveLineDistanceReduction: 1);
 
         /// <summary>Everything the line grants below the capstone, with the Aggressive Angler style.</summary>
         public static readonly LineAnglerEffects WholeLineAggressive =
-            new(TensionCapBonus: 2, SetHookDrainBonus: 2, ForecastDepth: 2, ReelDistanceBonus: 1);
+            new(TensionCapBonus: 1, SetHookDrainBonus: 1, ReelDistanceBonus: 1);
 
         /// <summary>The rungs Trophy Catch takes off a rare fish's difficulty.</summary>
-        public const int TrophyCatchRungs = 8;
+        public const int TrophyCatchRungs = 4;
 
+        /// <summary>The purchases the line has, one at a time and together.</summary>
         public static readonly IReadOnlyList<AnglerPerkVariant> Variants = new[]
         {
             new AnglerPerkVariant("Strong Line I (+1 Tension cap)", new LineAnglerEffects(TensionCapBonus: 1)),
-            new AnglerPerkVariant("Strong Line II (+2 Tension cap)", new LineAnglerEffects(TensionCapBonus: 2)),
             new AnglerPerkVariant("Hard Set I (Set Hook drains 1 more Stamina)", new LineAnglerEffects(SetHookDrainBonus: 1)),
-            new AnglerPerkVariant("Hard Set II (Set Hook drains 2 more Stamina)", new LineAnglerEffects(SetHookDrainBonus: 2)),
-            new AnglerPerkVariant("Fish Sense (sees the next two moves)", new LineAnglerEffects(ForecastDepth: 2)),
             Patient,
             Aggressive,
             new AnglerPerkVariant("Whole line below the capstone, Patient Angler", WholeLinePatient),
@@ -55,7 +53,7 @@ namespace SWLOR.CraftSim.Fishing
 
         /// <summary>
         /// The draft's first whole line, kept to show how far over the bound it went. Each of its purchases alone is within the bound; it is the
-        /// sum that is not, which is why the line was cut to seven purchases.
+        /// sum that is not, which is why the line was cut.
         /// </summary>
         public static readonly IReadOnlyList<AnglerPerkVariant> RejectedVariants = new[]
         {
@@ -64,14 +62,49 @@ namespace SWLOR.CraftSim.Fishing
                 new LineAnglerEffects(TensionCapBonus: 3, SetHookDrainBonus: 4, HoldDrainBonus: 1, ForecastDepth: 2, GiveLineDistanceReduction: 2))
         };
 
+        /// <summary>
+        /// Purchases the line could take if the owner fills its open rows, each added to the whole line, with what that does to the
+        /// room under the bound. The bound has no room for them with the unperked fight where it is.
+        /// </summary>
+        public static readonly IReadOnlyList<AnglerPerkVariant> OpenLines = new[]
+        {
+            new AnglerPerkVariant("Whole line (Patient Angler)", WholeLinePatient),
+            new AnglerPerkVariant("Whole line (Patient Angler) with Strong Line II (+2 cap in all)", WholeLinePatient with { TensionCapBonus = 2 }),
+            new AnglerPerkVariant("Whole line (Patient Angler) with Hard Set II (+2 drain in all)", WholeLinePatient with { SetHookDrainBonus = 2 }),
+            new AnglerPerkVariant(
+                "Whole line (Patient Angler) with Strong Line II and Hard Set II",
+                WholeLinePatient with { TensionCapBonus = 2, SetHookDrainBonus = 2 }),
+            new AnglerPerkVariant(
+                "Whole line (Patient Angler) with Fish Sense (two moves ahead on the first turn)",
+                WholeLinePatient with { ForecastDepth = 2 }),
+            new AnglerPerkVariant("Whole line (Aggressive Angler)", WholeLineAggressive),
+            new AnglerPerkVariant("Whole line (Aggressive Angler) with Strong Line II (+2 cap in all)", WholeLineAggressive with { TensionCapBonus = 2 }),
+            new AnglerPerkVariant(
+                "Whole line (Aggressive Angler) with Fish Sense (two moves ahead on the first turn)",
+                WholeLineAggressive with { ForecastDepth = 2 }),
+            new AnglerPerkVariant("Fish Sense alone (two moves ahead on the first turn)", new LineAnglerEffects(ForecastDepth: 2)),
+            new AnglerPerkVariant("Strong Line II alone (+2 Tension cap)", new LineAnglerEffects(TensionCapBonus: 2)),
+            new AnglerPerkVariant("Hard Set II alone (Set Hook drains 2 more Stamina)", new LineAnglerEffects(SetHookDrainBonus: 2))
+        };
+
         /// <summary>The rung reductions Trophy Catch is tried at.</summary>
-        public static readonly IReadOnlyList<int> TrophyReductions = new[] { 4, 6, TrophyCatchRungs, 10, 12 };
+        public static readonly IReadOnlyList<int> TrophyReductions = new[] { 2, TrophyCatchRungs, 6, 8 };
 
         /// <summary>The level of the special fish, which are all the same.</summary>
         public const int RareFishLevel = 52;
 
         public static IEnumerable<CatchKey> Keys()
         {
+            var defaults = FishingParityOptions.Default;
+            foreach (var line in OpenLines)
+            {
+                foreach (var rank in defaults.ReferenceRanks)
+                {
+                    foreach (var delta in defaults.Deltas.Where(delta => rank - delta >= 0))
+                        yield return new CatchKey(rank - delta, FishRarity.Common, rank, FishingParity.NominalRodTier(rank), LinePlayer.Adaptive, line.Effects);
+                }
+            }
+
             foreach (var rank in Ranks)
             {
                 foreach (var above in FishAboveRank)
@@ -147,6 +180,56 @@ namespace SWLOR.CraftSim.Fishing
                 $"Angler perk magnitudes: the adaptive player's catch rate at ranks {string.Join(", ", Ranks)}, averaged over the ranks " +
                 $"({parity.Runs} fights per case). The bound is Quick Reel's chance plus {Number(options.FightBoundRelative * 100, 0)}% plus " +
                 $"{Number(options.FightBoundSlackPoints, 0)} points: {Number(boundAtLevel, 1)}% at the rank's level and {Number(boundHarder, 1)}% for fish 3 levels above");
+        }
+
+        /// <summary>
+        /// What each purchase the line could still take would do to the room under the bound: the adaptive player's catch rate at the fish's
+        /// own level, the fewest points left under the bound over every rank above the fish's level, the row that is tightest and whether
+        /// the whole stays within the bound.
+        /// </summary>
+        public static (GateTable Table, IReadOnlyList<(string Name, bool Within)> Verdicts) OpenPurchases(FishingParity parity, FishingParityOptions options = null)
+        {
+            options ??= FishingParityOptions.Default;
+            var table = new EvidenceTable(
+                "Candidate for an open row", "Landed, fish at the rank's level", "Added at the rank's level, against the whole line (Patient Angler)",
+                "Points left under the bound, tightest row", "Tightest row (rank - fish level)", "Within the bound");
+            var verdicts = new List<(string Name, bool Within)>();
+
+            double Landed(int delta, LineAnglerEffects effects) => options.ReferenceRanks
+                .Where(rank => rank - delta >= 0)
+                .Average(rank => parity.Catch(rank - delta, FishRarity.Common, rank, FishingParity.NominalRodTier(rank), LinePlayer.Adaptive, effects).LandedPercent);
+
+            var baseline = Landed(0, WholeLinePatient);
+            foreach (var line in OpenLines)
+            {
+                var tightest = double.MaxValue;
+                var tightestDelta = 0;
+                foreach (var delta in options.Deltas.Where(delta => options.ReferenceRanks.Any(rank => rank - delta >= 0)))
+                {
+                    var margin = options.FightBound(options.QuickReel(delta, 0)) - Landed(delta, line.Effects);
+                    if (margin < tightest)
+                    {
+                        tightest = margin;
+                        tightestDelta = delta;
+                    }
+                }
+
+                var atLevel = Landed(0, line.Effects);
+                var within = tightest >= 0;
+                verdicts.Add((line.Name, within));
+                table.Add(
+                    line.Name,
+                    Number(atLevel, 1) + "%",
+                    Signed((int)Math.Round(atLevel - baseline)),
+                    Number(tightest, 1),
+                    Signed(tightestDelta),
+                    within ? "Yes" : "No: over by " + Number(-tightest, 1) + " points");
+            }
+
+            return (table.ToGateTable(
+                    "Open rows of the Angler line: each candidate added to the whole line (or alone), judged against the bound at every rank above the fish's level " +
+                    $"from {Signed(options.LowestDelta)} to {Signed(options.HighestDelta)} ({parity.Runs} fights per fish, ranks {string.Join(", ", options.ReferenceRanks)})"),
+                verdicts);
         }
 
         /// <summary>The two rank-20 styles against each other over fish from four levels above the rank to two below it.</summary>

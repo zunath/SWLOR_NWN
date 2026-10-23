@@ -261,7 +261,7 @@ public class LineEngineTests
     }
 
     [Test]
-    public void SeeingTwoMovesAhead_ShowsBothAndShiftsTheSecondUpAfterEachTurn()
+    public void SeeingTwoMovesAhead_ShowsBothOnTheFirstTurn_AndTheSecondComesUpAsAnnounced()
     {
         var engine = EngineSeeingTwo(Setup(effects: SeesTwoMoves), FishMove.Run, FishMove.Thrash, FishMove.Tire);
 
@@ -269,30 +269,28 @@ public class LineEngineTests
 
         engine.Perform(LineActionIds.GiveLine);
 
-        engine.Forecast.Should().Equal(FishMove.Thrash, FishMove.Tire);
+        engine.Forecast.Should().Equal(FishMove.Thrash);
     }
 
     [Test]
-    public void FishSense_ShowsTwoMovesOnlyForItsFirstTurns_ThenOne_AndTheMovesStayTheOnesThatWereAnnounced()
+    public void FishSense_ShowsTwoMovesOnlyOnItsFirstTurns_ThenOne_AndTheMovesStayTheOnesThatWereAnnounced()
     {
-        LineRules.FishSenseTurns.Should().Be(2);
-        // Move 1 and 2 are announced together; the roll on turn 1 picks move 3; from turn 2 on only the current move is shown.
-        var engine = EngineSeeingTwo(Setup(effects: SeesTwoMoves, stamina: 40, cap: 40, start: 16, max: 60), FishMove.Run, FishMove.Dive, FishMove.Thrash, FishMove.Tire, FishMove.Run);
+        LineRules.FishSenseTurns.Should().Be(1);
+        // Moves 1 and 2 are announced together; from turn 1 on only the current move is shown, and move 2 comes up as announced.
+        var engine = EngineSeeingTwo(Setup(effects: SeesTwoMoves, stamina: 40, cap: 40, start: 16, max: 60), FishMove.Run, FishMove.Dive, FishMove.Thrash, FishMove.Tire);
 
         engine.Forecast.Should().Equal(FishMove.Run, FishMove.Dive);
 
         engine.Perform(LineActionIds.GiveLine);
-        engine.Forecast.Should().Equal(FishMove.Dive, FishMove.Thrash);
+        engine.Move.Should().Be(FishMove.Dive, "the move announced as 'then' comes up as announced");
+        engine.Forecast.Should().Equal(FishMove.Dive);
 
         engine.Perform(LineActionIds.GiveLine);
-        engine.Move.Should().Be(FishMove.Thrash, "the move announced as 'then' comes up as announced");
+        engine.Move.Should().Be(FishMove.Thrash, "a move nobody saw coming is rolled when it is due");
         engine.Forecast.Should().Equal(FishMove.Thrash);
 
-        engine.Perform(LineActionIds.Hold);
-        engine.Forecast.Should().HaveCount(1);
         engine.Setup.SeesTwoMoves(0).Should().BeTrue();
-        engine.Setup.SeesTwoMoves(1).Should().BeTrue();
-        engine.Setup.SeesTwoMoves(2).Should().BeFalse();
+        engine.Setup.SeesTwoMoves(1).Should().BeFalse();
         Setup().SeesTwoMoves(0).Should().BeFalse("without the perk nobody sees two moves");
     }
 

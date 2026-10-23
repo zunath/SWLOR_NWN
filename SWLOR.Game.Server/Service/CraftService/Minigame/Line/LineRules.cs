@@ -47,11 +47,16 @@ public static class LineRules
     // every rung adds a little pull, Stamina and aggression, so the chance of landing it falls smoothly with each level the fish
     // is above the rank. The pull is a share of the angler's Tension cap before perks, so a better rod meets stronger fish of
     // its own tier and perks that raise the cap do not make the fish weaker. RungAtRank is where a fish of the angler's own level
-    // sits. It is set high enough that a skilled angler with no perks lands fewer fish than Quick Reel would (the fight is the XP
-    // choice, and Quick Reel is the fish choice), which leaves room for the Angler line to lift a skilled angler up to, and not past,
-    // the bound on the fight's catch rate (FishingParityOptions.FightBoundRelative in CraftSim).
-    public const int RungAtRank = 54;
+    // sits. It is set so that a skilled angler with no perks lands slightly more fish than Quick Reel at the fish's own level (about
+    // 1.03 times; the owner's reading of "fighting is optional, for a slightly better catch"), which leaves the Angler line the room
+    // between that and the bound on the fight's catch rate (FishingParityOptions.FightBoundRelative in CraftSim).
+    public const int RungAtRank = 44;
     public const int RungsPerLevel = 5;
+
+    // A fish above the rank climbs the ladder faster than one below it descends: the first HardLevelsFrom levels above the rank take
+    // RungsPerLevelAbove rungs each. Quick Reel loses 10 points a level, and a fight against fish above the rank must lose points at
+    // least as fast so that it stays within the bound there too.
+    public const int RungsPerLevelAbove = 7;
 
     // A fish more than HardLevelsFrom levels above the rank climbs the ladder faster, RungsPerHardLevel rungs for each level beyond
     // it: Quick Reel cannot land a fish 6 levels above the rank at all, and the fight must not either, whatever the angler's perks.
@@ -73,9 +78,10 @@ public static class LineRules
     public const double TurnSeconds = 8.0;
 
     // Fish Sense. The angler who has it sees the fish's next two moves, but only on the first FishSenseTurns turns of a fight: after
-    // that the window shows one move, as for everyone. The full forecast was the largest single purchase of the Angler line, and the
-    // fight bound leaves the line room for a smaller one.
-    public const int FishSenseTurns = 2;
+    // that the window shows one move, as for everyone. The full forecast was the largest single purchase of the Angler line. Even
+    // limited to the first turn it adds more at the fish's own level than the room under the fight bound leaves beside a style, so
+    // the Angler draft holds it open for the owner.
+    public const int FishSenseTurns = 1;
 
     // The multiplier on the XP of a bite (see CraftMinigameXp), by the fish's level band: the least that keeps the CraftSim XP-rate
     // gate (gate 6) passing in the band. Today's cast takes about seven seconds; the fight adds three to six turns of TurnSeconds to
@@ -86,10 +92,10 @@ public static class LineRules
     // restores today's XP per bite.
     public const int XpFullTurns = 5;
     public const double XpMultiplierLevels0To10 = 8.55;
-    public const double XpMultiplierLevels11To20 = 8.35;
-    public const double XpMultiplierLevels21To30 = 7.75;
-    public const double XpMultiplierLevels31To40 = 8.05;
-    public const double XpMultiplierLevels41Up = 7.5;
+    public const double XpMultiplierLevels11To20 = 8.5;
+    public const double XpMultiplierLevels21To30 = 8.0;
+    public const double XpMultiplierLevels31To40 = 8.2;
+    public const double XpMultiplierLevels41Up = 8.0;
 
     /// <summary>
     /// The share, from 0 to 1, of a fight's multiplied XP that a fight lasting <paramref name="fightSeconds"/> has earned: all of it from

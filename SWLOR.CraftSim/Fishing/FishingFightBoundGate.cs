@@ -212,7 +212,7 @@ namespace SWLOR.CraftSim.Fishing
             }
 
             return (table.ToGateTable(
-                    "The Angler line below the capstone (Strong Line II, Hard Set II, Fish Sense and a style; the perk draft): landed per bite by rank above the fish's level, " +
+                    "The Angler line below the capstone (Strong Line I, Hard Set I and a style; the perk draft): landed per bite by rank above the fish's level, " +
                     $"at ranks {string.Join(", ", _options.ReferenceRanks)} ({_parity.Runs} fights per fish)"),
                 over,
                 margin);

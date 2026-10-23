@@ -16,28 +16,28 @@ public class LineSetupTests
 
         var setup = LineSetup.ForFish(25, FishRarity.Common, 25, 2);
 
-        // Cap 20 + 2 + 25 / 12; reel 6 + (2 + 2) / 6 x 2; start 5 + 2 x 6; escape 17 + 2 + 2 x 6; rung 54 gives a 53.2% pull of 24.
+        // Cap 20 + 2 + 25 / 12; reel 6 + (2 + 2) / 6 x 2; start 5 + 2 x 6; escape 17 + 2 + 2 x 6; rung 44 gives a 45.2% pull of 24.
         setup.TensionCap.Should().Be(24);
         setup.ReelDistance.Should().Be(6);
         setup.StartDistance.Should().Be(17);
         setup.DistanceMax.Should().Be(31);
-        setup.Pull.Should().Be(13);
-        setup.Stamina.Should().Be(21);
+        setup.Pull.Should().Be(11);
+        setup.Stamina.Should().Be(19);
         setup.Difficulty.Should().Be(0);
-        setup.Pattern.Weight(null, FishMove.Tire).Should().Be(21, "the Tire weight on rung 54 is 45 less 0.45 per rung");
+        setup.Pattern.Weight(null, FishMove.Tire).Should().Be(25, "the Tire weight on rung 44 is 45 less 0.45 per rung");
     }
 
-    [TestCase(25, 25, 54)]
-    [TestCase(26, 25, 59)]
-    [TestCase(28, 25, 69)]
-    [TestCase(29, 25, 78)]
-    [TestCase(30, 25, 87)]
-    [TestCase(24, 25, 49)]
-    [TestCase(20, 25, 29)]
+    [TestCase(25, 25, 44)]
+    [TestCase(26, 25, 51)]
+    [TestCase(28, 25, 65)]
+    [TestCase(29, 25, 74)]
+    [TestCase(30, 25, 83)]
+    [TestCase(24, 25, 39)]
+    [TestCase(20, 25, 19)]
     [TestCase(10, 25, 0)]
     [TestCase(40, 25, 100)]
-    [TestCase(52, 50, 64)]
-    public void TheRungRisesFiveForEachLevelTheFishIsAboveTheRank_AndNineBeyondThreeLevels_WithinTheLadder(int level, int rank, int rung)
+    [TestCase(52, 50, 58)]
+    public void TheRungFallsFiveForEachLevelBelowTheRank_RisesSevenForEachLevelAboveIt_AndNineBeyondThreeLevels_WithinTheLadder(int level, int rank, int rung)
     {
         LineSetup.Rung(level, rank).Should().Be(rung);
     }

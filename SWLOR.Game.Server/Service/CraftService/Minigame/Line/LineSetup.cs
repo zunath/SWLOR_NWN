@@ -144,8 +144,10 @@ public sealed class LineSetup
     public static int Rung(int fishLevel, int rank)
     {
         var above = fishLevel - rank;
-        var steps = LineRules.RungsPerLevel * Math.Min(above, LineRules.HardLevelsFrom) +
-                    LineRules.RungsPerHardLevel * Math.Max(0, above - LineRules.HardLevelsFrom);
+        var steps = above <= 0
+            ? LineRules.RungsPerLevel * above
+            : LineRules.RungsPerLevelAbove * Math.Min(above, LineRules.HardLevelsFrom) +
+              LineRules.RungsPerHardLevel * Math.Max(0, above - LineRules.HardLevelsFrom);
         return Math.Clamp(LineRules.RungAtRank + steps, LineRules.RungMinimum, LineRules.RungMaximum);
     }
 

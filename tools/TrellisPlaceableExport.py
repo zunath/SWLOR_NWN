@@ -297,6 +297,8 @@ def validate_item(item, manifest_dir, haks_names=None, inspect_only=False):
         raise ValueError(f'{asset}: unknown normal_basis_policy')
     if not finite(item.get('authored_angle_limit_degrees', .5)) or not .5 <= item.get('authored_angle_limit_degrees', .5) <= 2:
         raise ValueError(f'{asset}: authored_angle_limit_degrees must be 0.5..2')
+    if item.get('reorient') not in (None, 'propagate'):
+        raise ValueError(f'{asset}: reorient must be "propagate" when given')
     if item.get('double_sided_policy', 'reject') not in ('reject', 'closed_surface', 'near_closed'):
         raise ValueError(f'{asset}: unknown double_sided_policy')
     return item
@@ -455,6 +457,82 @@ def enclosed_by(vertices, outward_faces, point):
     return votes >= 2
 
 
+def orientation_flips(np, positions, indices):
+    """Which triangles to flip so every manifold shell is consistently wound and faces outward.
+
+    Works on position-welded topology (UV seams split vertices): neighbours across manifold edges are made to agree by
+    propagation, then a shell whose signed volume is not positive is flipped as a whole. TRELLIS sometimes winds a thin
+    panel (the front of a desk body) against the rest of its shell; the single-sided game then draws a hole there."""
+    lookup, ids = {}, []
+    for point in positions:
+        ids.append(lookup.setdefault(tuple(np.round(point, 6)), len(lookup)))
+    welded = np.zeros((len(lookup), 3))
+    for point, index in zip(positions, ids):
+        welded[index] = point
+    faces = np.asarray(ids)[indices]
+    live = (faces[:, 0] != faces[:, 1]) & (faces[:, 1] != faces[:, 2]) & (faces[:, 0] != faces[:, 2])
+    edge_faces = {}
+    for index, (a, b, c) in enumerate(faces):
+        if live[index]:
+            for u, v in ((a, b), (b, c), (c, a)):
+                edge_faces.setdefault((u, v) if u < v else (v, u), []).append(index)
+    flip = [None] * len(faces)
+    for start in range(len(faces)):
+        if flip[start] is not None or not live[start]:
+            continue
+        flip[start] = False
+        stack, members = [start], [start]
+        while stack:
+            current = stack.pop()
+            a, b, c = faces[current]
+            for u, v in ((a, b), (b, c), (c, a)):
+                shared = edge_faces[(u, v) if u < v else (v, u)]
+                if len(shared) != 2:
+                    continue
+                other = shared[0] if shared[1] == current else shared[1]
+                if flip[other] is not None:
+                    continue
+                effective = (v, u) if flip[current] else (u, v)
+                x, y, z = faces[other]
+                flip[other] = effective in ((x, y), (y, z), (z, x))
+                stack.append(other)
+                members.append(other)
+        corners = welded[faces[members]]
+        corners = np.where(np.asarray([flip[m] for m in members])[:, None, None], corners[:, ::-1, :], corners)
+        base = corners[:, 0, :].mean(axis=0)
+        volume = np.einsum('ij,ij->i', corners[:, 0] - base, np.cross(corners[:, 1] - base, corners[:, 2] - base)).sum() / 6
+        if volume < 0:
+            for m in members:
+                flip[m] = not flip[m]
+    return np.asarray([bool(f) for f in flip])
+
+
+def reorient_gltf(weapon, doc, binary):
+    """Apply orientation_flips to the glTF index buffers before import, so Blender, the normal basis and the native export
+    all see one winding. Returns (buffer, flipped triangle count)."""
+    np = weapon.np
+    helper = weapon.load_module_snapshot('trellis_weapon_normals', Path(weapon.__file__).with_name('TrellisWeaponNormals.py'))
+    data, count = bytearray(binary), 0
+    for mesh in doc.get('meshes', []):
+        for primitive in mesh.get('primitives', []):
+            position = helper.accessor(doc, bytes(data), primitive['attributes']['POSITION']).astype(float)
+            accessor = doc['accessors'][primitive['indices']]
+            triangles = helper.accessor(doc, bytes(data), primitive['indices']).reshape(-1).astype(np.int64).reshape(-1, 3)
+            flips = orientation_flips(np, position, triangles)
+            if not flips.any():
+                continue
+            triangles = triangles.copy()
+            triangles[flips] = triangles[flips][:, [0, 2, 1]]
+            dtype = np.dtype({5125: '<u4', 5123: '<u2', 5121: 'u1'}[accessor['componentType']])
+            view = doc['bufferViews'][accessor['bufferView']]
+            if view.get('byteStride', dtype.itemsize) != dtype.itemsize:
+                raise ValueError('Strided index buffers are not supported')
+            start = view.get('byteOffset', 0) + accessor.get('byteOffset', 0)
+            data[start:start + accessor['count'] * dtype.itemsize] = triangles.reshape(-1).astype(dtype).tobytes()
+            count += int(flips.sum())
+    return bytes(data), count
+
+
 def opposed_fraction(weapon, objects):
     """Area fraction of triangles whose winding opposes their authored corner normals."""
     from mathutils import Vector
@@ -597,6 +675,9 @@ def import_glb(weapon, item, out, mode):
     cache = out / 'source_images'
     cache.mkdir()
     policy = item.get('double_sided_policy', 'reject')
+    item['_reoriented_triangles'] = 0
+    if mode == 'export' and item.get('reorient') == 'propagate':
+        binary, item['_reoriented_triangles'] = reorient_gltf(weapon, doc, binary)
     if mode == 'export':
         weapon.validate_glb_geometry(doc, policy in ('closed_surface', 'near_closed'))
     imported = json.loads(json.dumps(doc))
@@ -787,6 +868,27 @@ def review_renders(weapon, out, model_objects, footprint, use_nodes, reference, 
     scene.render.filepath = str(path)
     bpy.ops.render.render(write_still=True)
     paths.append(path)
+    # Engine-faithful check: Workbench with back-face culling and flat studio lighting shows a sheet or panel whose winding
+    # faces away as a hole, exactly as the single-sided game draws it (EEVEE material culling is not enough to trust).
+    scene.render.engine = 'BLENDER_WORKBENCH'
+    shading = scene.display.shading
+    shading.light, shading.color_type, shading.show_backface_culling = 'STUDIO', 'SINGLE', True
+    shading.single_color = (.85, .85, .9)
+    for ob in bpy.data.objects:
+        if ob.name.startswith(('ground', 'footprint', 'old_footprint', 'use', 'figure')):
+            ob.hide_render = True
+    camera.data.type = 'PERSP'
+    camera.data.lens = 40
+    culled = []
+    for index, angle in enumerate((35, 125, 215, 305)):
+        a = math.radians(angle)
+        camera.location = center + Vector((math.sin(a) * 1.7 * span, -math.cos(a) * 1.7 * span, .55 * span))
+        camera.rotation_euler = (center - camera.location).to_track_quat('-Z', 'Y').to_euler()
+        path = out / f'culled_{index}.png'
+        scene.render.filepath = str(path)
+        bpy.ops.render.render(write_still=True)
+        culled.append(path)
+    weapon.contact_sheet(culled, out / 'culled_sheet.png', 360)
     return paths
 
 
@@ -811,6 +913,7 @@ def export_asset(weapon, item, repo, out, mode, helpers):
               'source_bounds_min': list(lo), 'source_bounds_max': list(hi), 'dimensions': list(hi - lo),
               'triangles': sum(len(ob.data.loop_triangles) for ob in objects), 'surface_conversion': surface_conversion,
               'sampler_normalization': item.get('_sampler_normalization'),
+              'triangles_reoriented_outward': item.get('_reoriented_triangles', 0),
               'components': weapon.component_reports(objects)[:12]}
     if mode == 'inspect':
         scene, camera, pts, center, span = weapon.render_setup(objects)
@@ -848,7 +951,11 @@ def export_asset(weapon, item, repo, out, mode, helpers):
             if index not in names:
                 name = texture if material_count == 1 else texture + f'_{index}'
                 dims, maps = material_maps(weapon, item, doc, binary, index, source, cache, resources, name)
-                names[index], previews[index] = name, weapon.preview_material(resources, name, maps)
+                preview = weapon.preview_material(resources, name, maps)
+                # NWN draws single-sided: review renders must cull back faces or a flipped sheet looks fine in Blender
+                # and vanishes in the game.
+                preview.use_backface_culling = True
+                names[index], previews[index] = name, preview
                 mapdims.update(dims)
                 material_dims[index] = dims
             mesh, zero = weapon.compact_subset(exported, ob.data.loop_triangles, slot)

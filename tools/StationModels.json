@@ -5,6 +5,7 @@
     {"blueprint": "smithery_bench", "structure_type": "SmitheryBench", "model": "swc_stn_forge", "label": "[SWLOR] Station - Plasma Forge", "sound_app_type": 13},
     {"blueprint": "espionage_bench", "structure_type": null, "model": "swc_stn_spybench", "label": "[SWLOR] Station - Espionage Bench", "sound_app_type": 49},
     {"blueprint": "cookpot", "structure_type": "Cookpot", "model": "swc_stn_galley", "label": "[SWLOR] Station - Galley", "sound_app_type": 26},
-    {"blueprint": "cft_forge", "structure_type": "Refinery", "model": "swc_stn_refinery", "label": "[SWLOR] Station - Refinery", "sound_app_type": 26}
+    {"blueprint": "cft_forge", "structure_type": "Refinery", "model": "swc_stn_refinery", "label": "[SWLOR] Station - Refinery", "sound_app_type": 26},
+    {"blueprint": "research_term", "structure_type": "ResearchTerminal", "model": "swc_stn_research", "label": "[SWLOR] Station - Research Terminal", "sound_app_type": null}
   ]
 }

@@ -32,7 +32,9 @@ public static class ExperimentDisplay
         var lines = new List<string>();
         foreach (var outcome in preview.Outcomes)
         {
-            var result = DescribeOutcome(outcome);
+            var result = preview.Action.Id == ExperimentActionIds.Breakthrough
+                ? "your next Test succeeds, and Analyze cuts more time per piece of evidence"
+                : DescribeOutcome(outcome);
             lines.Add(single ? result : $"{outcome.ChancePercent}% {outcome.Label}: {result}");
             tooltip.Append(single ? "\nResult: " : $"\n{outcome.ChancePercent}% {outcome.Label}: ").Append(result).Append('.');
         }
@@ -102,6 +104,28 @@ public static class ExperimentDisplay
             return "No evidence yet.";
 
         return $"Pays +{amount}% (most {ResearchGrantRules.ReductionMaximum}%).";
+    }
+
+    /// <summary>The line the window shows for the researcher's perks: each number they change, or a note that they have none.</summary>
+    public static string PerkSummary(ExperimentTuning tuning)
+    {
+        var parts = new List<string>();
+        if (tuning.Trials != ExperimentRules.Trials)
+            parts.Add($"{tuning.Trials} trials");
+        if (tuning.TestChanceBonusPercent != 0)
+            parts.Add($"Test chance {Signed(tuning.TestChanceBonusPercent)} points");
+        if (tuning.RefineCp != ExperimentRules.RefineCp)
+            parts.Add($"Refine Method costs {tuning.RefineCp} CP");
+        if (tuning.RefineChanceBonus != ExperimentRules.RefineChanceBonusPercent)
+            parts.Add($"Refine Method adds {tuning.RefineChanceBonus} points");
+        if (tuning.TimeCutPerEvidence != ExperimentRules.TimeCutPercentPerEvidence)
+            parts.Add($"Analyze cuts {tuning.TimeCutPerEvidence}% per evidence");
+        if (tuning.PeerReview)
+            parts.Add("Peer Review");
+        if (tuning.Breakthrough)
+            parts.Add("Breakthrough");
+
+        return parts.Count == 0 ? "Researcher perks: none." : $"Researcher perks: {string.Join(", ", parts)}.";
     }
 
     public static string MeterText(string label, MinigameMeter meter) =>

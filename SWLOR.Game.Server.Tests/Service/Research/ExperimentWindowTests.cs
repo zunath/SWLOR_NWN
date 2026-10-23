@@ -79,8 +79,41 @@ public class ExperimentWindowTests
     {
         var engine = Engine(3);
 
-        engine.Actions.Count.Should().Be(ResearchExperimentViewModel.ActionCount);
+        engine.Actions.Count.Should().Be(5, "two Tests, Refine Method, Analyze and Conclude");
+        engine.Actions.Count.Should().BeLessThan(ResearchExperimentViewModel.ActionCount);
         engine.Setup.Candidates.Count.Should().Be(ResearchExperimentViewModel.EvidenceSlotCount);
+
+        var perked = new ExperimentEngine(
+            new ScriptedMinigameRandom(), new ExperimentSetup(3, 30, 10, 200, false, new ExperimentTuning(PeerReview: true, Breakthrough: true)));
+
+        perked.Actions.Count.Should().Be(ResearchExperimentViewModel.ActionCount, "a researcher with Peer Review and Breakthrough has them too");
+    }
+
+    [Test]
+    public void ThePerkActionsHaveTheirOwnSlotsBelowTheCpMeter_SoAResearcherWithoutThemHasBlankRowsAtTheFootOnly()
+    {
+        var source = ReadSource("Feature", "GuiDefinition", "ResearchExperimentDefinition.cs");
+        var cpMeter = source.IndexOf("model => model.CpText", StringComparison.Ordinal);
+        var firstPerkRow = source.IndexOf("EvidenceSlotCount + 3; action < ResearchExperimentViewModel.ActionCount", StringComparison.Ordinal);
+
+        cpMeter.Should().BeGreaterThan(0);
+        firstPerkRow.Should().BeGreaterThan(cpMeter, "the actions a researcher learns come after the CP meter");
+
+        var viewModel = ReadSource("Feature", "GuiDefinition", "ViewModel", "ResearchExperimentViewModel.cs");
+        viewModel.Should().Contain("ExperimentTuning.FromStatTotals(stat => Stat.GetStatAdjustment(Player, stat))");
+        viewModel.Should().Contain("job.Experiment.TrialsTotal", "a saved experiment keeps the trials it was opened with");
+        viewModel.Should().Contain("ExperimentActionIds.PeerReviewCreditToTime");
+        viewModel.Should().Contain("ExperimentActionIds.Breakthrough");
+    }
+
+    [Test]
+    public void TheResearchWindowOpensEachExperimentWithTheTrialsTheResearchersPerksGive()
+    {
+        var source = ReadSource("Feature", "GuiDefinition", "ViewModel", "ResearchViewModel.cs");
+
+        source.Should().Contain("ExperimentTuning.FromStatTotals(stat => Stat.GetStatAdjustment(Player, stat)).Trials");
+        source.Should().Contain("targetLevel, trials, researchJob.TimeCost, extraBonus, licensedRunsGrant");
+        source.Should().NotContain("ExperimentRules.Trials, researchJob.TimeCost");
     }
 
     [Test]

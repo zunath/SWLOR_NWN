@@ -32,7 +32,9 @@ namespace SWLOR.CraftSim.Tests.Scenario
             scenario.Minigame.Should().Be(CraftMinigameType.Fabricator);
             scenario.SecondsPerAction.Should().Be(8.0, "the starting estimate until client timing replaces it");
             scenario.LengthTarget.Should().Be(LengthTarget.ItemCraft);
-            scenario.StylePairs.Should().BeEmpty("no perks exist yet, so the style-balance gate is not applicable");
+            scenario.StylePairs.Select(pair => pair.Name).Should().Equal(
+                "Production Run vs Fine Tolerance", "Production Run (full line) vs Fine Tolerance (full line)");
+            scenario.StylePairs.Should().OnlyContain(pair => pair.MinimumRank == 20, "the styles open at Fabrication 20");
             scenario.Enhancements.Should().Be(EnhancementSupport.Modeled);
             scenario.XpMultiplierFor(5).Should().Be(FabricatorRules.XpMultiplierLevels1To10);
             scenario.XpMultiplierFor(45).Should().Be(FabricatorRules.XpMultiplierLevels41Up);

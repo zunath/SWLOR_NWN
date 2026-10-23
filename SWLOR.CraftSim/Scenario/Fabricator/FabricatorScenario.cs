@@ -11,11 +11,11 @@ namespace SWLOR.CraftSim.Scenario.Fabricator
     /// definition through <see cref="FabricatorSetup.ForRecipe"/>, the same call the crafting window makes, so the gates play the
     /// rules the game ships and not a copy of them.
     /// </summary>
-    public sealed class FabricatorScenario : ICraftScenario
+    public class FabricatorScenario : ICraftScenario
     {
-        public string Name => "fabricator";
+        public virtual string Name => "fabricator";
 
-        public string Title => "Fabricator";
+        public virtual string Title => "Fabricator";
 
         public SkillType Skill => SkillType.Fabrication;
 
@@ -44,18 +44,30 @@ namespace SWLOR.CraftSim.Scenario.Fabricator
         /// </summary>
         public EnhancementSupport Enhancements => EnhancementSupport.Modeled;
 
-        public IReadOnlyList<string> Limitations => new[]
+        /// <summary>
+        /// The two Builder styles, compared alone and with the rest of the line each build owns at the rank it is played at (the
+        /// purchases that rank allows), from rank 20 where the style opens.
+        /// </summary>
+        public virtual IReadOnlyList<CraftStylePair> StylePairs => new[]
         {
-            "Prime Feedstock is the only chance in the Fabricator, so the adaptive player's edge over a fixed rotation comes from it and from the recipe's state, not from luck at the actions themselves."
+            new CraftStylePair(FabricatorBuild.ProductionRunAlone.AsStyle(), FabricatorBuild.FineToleranceAlone.AsStyle()),
+            new CraftStylePair(FabricatorBuild.ProductionRunLine.AsStyle(), FabricatorBuild.FineToleranceLine.AsStyle())
+        };
+
+        public virtual IReadOnlyList<string> Limitations => new[]
+        {
+            "Prime Feedstock is the only chance in the Fabricator, so the adaptive player's edge over a fixed rotation comes from it and from the recipe's state, not from luck at the actions themselves.",
+            "A Builder is played with the numbers of the game's own perk definitions at the rank the recipe is played at. The unperked scenario plays no perks except in the style-balance gate, which compares the styles."
         };
 
         public ICraftMinigameEngine CreateEngine(CraftEngineRequest request)
         {
             var recipe = request.Recipe;
             var gear = request.Gear;
+            var perks = PerkStatsFor(request);
             var setup = recipe.Detail != null
                 ? FabricatorSetup.ForRecipe(
-                    recipe.Detail, request.Rank, gear.Craftsmanship, gear.Control, gear.CpBonus, request.Enhancements.TotalProgressPenalty)
+                    recipe.Detail, request.Rank, gear.Craftsmanship, gear.Control, gear.CpBonus, request.Enhancements.TotalProgressPenalty, perks)
                 : new FabricatorSetup(
                     null,
                     recipe.Level,
@@ -64,9 +76,18 @@ namespace SWLOR.CraftSim.Scenario.Fabricator
                     gear.Craftsmanship,
                     gear.Control,
                     gear.CpBonus,
-                    request.Enhancements.TotalProgressPenalty);
+                    request.Enhancements.TotalProgressPenalty,
+                    perks);
 
             return new FabricatorEngine(request.Random, setup);
         }
+
+        /// <summary>The Builder perks the engine is built with: the request's style, or none.</summary>
+        protected virtual FabricatorPerkStats PerkStatsFor(CraftEngineRequest request) => request.Style?.Configuration switch
+        {
+            FabricatorBuild build => build.StatsAt(request.Rank),
+            FabricatorPerkStats stats => stats,
+            _ => FabricatorPerkStats.None
+        };
     }
 }

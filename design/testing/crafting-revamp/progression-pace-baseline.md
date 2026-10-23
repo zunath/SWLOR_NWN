@@ -79,7 +79,7 @@ Rules copied from the server (the model calls everything else directly), each ch
 | Scavenge chances at the reference Perception modifier | `ScavengeQuickSearch.cs:38-49` |
 | Scavenge second attempt | `ScavengeQuickSearch.cs:97-99` |
 | Scavenge success roll and DC | `ScavengeQuickSearch.cs:101-108` |
-| Scavenge XP level | `ScavengePoint.cs:89` |
+| Scavenge XP level | `ScavengePoint.cs:93` |
 | Ore tiers and XP per unit | `RefineryViewModel.cs:35-52` |
 | Refinery batch size | `RefineryViewModel.cs:61` |
 | Power cores per batch | `RefineryViewModel.cs:173-174` |

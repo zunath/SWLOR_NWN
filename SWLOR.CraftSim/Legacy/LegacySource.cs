@@ -149,7 +149,7 @@ namespace SWLOR.CraftSim.Legacy
             "success ? deltaXp : deltaXp / 4", "dc += random.Next(1, 4);");
 
         public static readonly SourceReference ScavengeXp = new(
-            "Scavenge XP level", ScavengeSite, 89, 89,
+            "Scavenge XP level", ScavengeSite, 93, 93,
             "Skill.GetDeltaXP(10 * requiredLevel - rank),");
 
         public static readonly SourceReference RefineryOres = new(

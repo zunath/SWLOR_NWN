@@ -36,7 +36,7 @@ namespace SWLOR.CraftSim.Legacy.Gathering
         public static double ExpectedAttemptsPerSite(int hardLook, int perceptionModifier) =>
             1 + SecondAttemptChance(hardLook, perceptionModifier);
 
-        /// <summary>The level XP is measured at: 10 x the site's level (ScavengePoint.cs:89).</summary>
+        /// <summary>The level XP is measured at: 10 x the site's level (ScavengePoint.cs:93).</summary>
         public static int SiteXpLevel(int siteLevel) => 10 * siteLevel;
 
         /// <summary>XP for a successful attempt, from the server's own chart; a failed attempt pays a quarter (ScavengeQuickSearch.cs:107).</summary>

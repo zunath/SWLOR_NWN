@@ -17,10 +17,17 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition
         private const float MeterLabelHeight = 20f;
         private const float MeterBarHeight = 18f;
         private const float MoveHintHeight = 48f;
+        private const float QuickReelButtonWidth = 180f;
+        private const float QuickReelButtonHeight = 40f;
 
         private static readonly string TurnSecondsText = LineRules.TurnSeconds.ToString("0", System.Globalization.CultureInfo.InvariantCulture);
 
         private static readonly string HelpText =
+            "TWO CHOICES\n" +
+            "When a fish bites you can use Quick Reel or fight it. Quick Reel lands the fish at once by the old catch roll, " +
+            "your Agriculture rank against the fish's level, with no fight and the XP a bite always paid. Fighting takes longer, " +
+            "pays much more XP for your time, and skill can land more fish than a quick reel would. Quick Reel is only a choice " +
+            "before your first move.\n\n" +
             "THE FIGHT\n" +
             "A bite hooks a fish. You win by reeling it in before it escapes or the line snaps. Three numbers tell you how it " +
             "stands: Distance (0 lands the fish, and at its maximum the fish escapes), Tension (at its maximum the line snaps) " +
@@ -54,7 +61,7 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition
         public GuiConstructedWindow BuildWindow()
         {
             var window = _builder.CreateWindow(GuiWindowType.Line)
-                .SetInitialGeometry(0, 0, 620f, 640f)
+                .SetInitialGeometry(0, 0, 620f, 700f)
                 .SetTitle("On the Line")
                 .SetIsResizable(true)
                 .SetIsCollapsible(true)
@@ -104,6 +111,24 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition
                     .SetHeight(24f)
                     .SetHorizontalAlign(NuiHorizontalAlign.Center);
             });
+            // Quick Reel is the first choice, and the one the window encourages: the angler may take it at once or fight the fish.
+            content.AddRow(row =>
+            {
+                row.AddButton()
+                    .BindText(model => model.QuickReelText)
+                    .BindTooltip(model => model.QuickReelTooltip)
+                    .BindIsEnabled(model => model.QuickReelEnabled)
+                    .BindIsEncouraged(model => model.QuickReelEnabled)
+                    .BindOnClicked(model => model.OnClickQuickReel())
+                    .SetWidth(QuickReelButtonWidth)
+                    .SetHeight(QuickReelButtonHeight);
+                row.AddLabel()
+                    .BindText(model => model.QuickReelSummary)
+                    .BindColor(model => model.QuickReelColor)
+                    .SetHeight(QuickReelButtonHeight)
+                    .SetHorizontalAlign(NuiHorizontalAlign.Left)
+                    .SetVerticalAlign(NuiVerticalAlign.Middle);
+            });
             content.AddRow(row =>
             {
                 row.AddLabel()
@@ -135,7 +160,7 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition
             content.AddRow(row =>
             {
                 row.AddLabel()
-                    .SetText("Actions")
+                    .BindText(model => model.FightLabelText)
                     .SetHeight(24f)
                     .SetHorizontalAlign(NuiHorizontalAlign.Left);
             });

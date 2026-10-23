@@ -32,33 +32,73 @@ namespace SWLOR.CraftSim.Tests.Fishing
         }
 
         [Test]
-        public void AGenerousTolerance_PassesAndTheTablesShowEveryRow()
+        public void QuickReel_StaysInsideTodaysCorridor_AndTheTablesShowEveryRow()
         {
-            var gate = new FishingCatchRateGate(new FishingParity(30, 1), Small with { TolerancePoints = 100 });
+            var gate = new FishingCatchRateGate(new FishingParity(30, 1), Small);
 
             var result = gate.Evaluate(Context());
 
             result.Gate.Should().Be(GateNames.EconomyParity);
             result.Verdict.Should().Be(GateVerdict.Passed, result.Summary);
-            result.Tables.Should().HaveCount(2);
+            result.Tables.Should().HaveCount(3);
             var byDelta = result.Tables[0];
             byDelta.Rows.Should().HaveCount(5);
             byDelta.Rows.Select(row => row[0]).Should().Equal("-2", "-1", "0", "+1", "+2");
-            byDelta.Header.Should().Contain("Today, Willpower 8").And.Contain("Today, Willpower 20").And.Contain("Fight, adaptive");
+            byDelta.Header.Should().Contain("Today, Willpower 8").And.Contain("Today, Willpower 20").And.Contain("Quick Reel (Willpower 10)");
             byDelta.Rows[2][2].Should().Be("60%", "today's chance at Willpower 10 and no rank difference (the second of seven columns)");
+            byDelta.Rows[2].Should().Contain("60%", "Quick Reel at Willpower 10 and no rank difference");
+            byDelta.Rows.Select(row => row.Last()).Should().OnlyContain(verdict => verdict == "Inside");
             result.Tables[1].Rows.Select(row => row[0]).Should().Equal("0", "30");
+            result.Tables[1].Rows.Select(row => row.Last()).Should().OnlyContain(verdict => verdict == "Inside");
+            result.Summary.Should().Contain("Willpower 10").And.Contain("no attribute investment").And.Contain("1.00x");
         }
 
         [Test]
-        public void ATolerance_NoCatchRateCanMeet_FailsAndNamesTheRowsOutside()
+        public void QuickReel_LandsTheSameFishAndPaysTheSameXpPerHourAsToday_ByBand()
         {
-            var gate = new FishingCatchRateGate(new FishingParity(30, 1), Small with { TolerancePoints = -1 });
+            var parity = new FishingParity(30, 1);
+            var options = Small;
+            var cohort = new FishingXpRateCohort(parity, options);
+
+            var rows = FishingPerHour.Rows(cohort, parity, options, Context());
+
+            rows.Select(row => row.Band).Should().Equal("0-10", "11-20", "21-30", "31-40", "41-52");
+            foreach (var row in rows)
+            {
+                (row.QuickReelFish / row.TodayFishReference).Should().BeApproximately(1.0, 1e-9, $"{row.Band}: Quick Reel is today's formula at the reference Willpower");
+                (row.QuickReelXp / row.TodayXp).Should().BeApproximately(1.0, 1e-9, $"{row.Band}: Quick Reel pays today's XP in today's time");
+                row.QuickReelFish.Should().BeInRange(Math.Min(row.TodayFishLow, row.TodayFishHigh) - 1e-6, Math.Max(row.TodayFishLow, row.TodayFishHigh) + 1e-6);
+                row.FightFish.Should().BeLessThan(row.QuickReelFish / 3, "the fight takes several times the cast");
+                row.FightXp.Should().BeGreaterThan(row.TodayXp * 0.5, "the multipliers keep the fight's XP per hour near today's (the gate checks it exactly at the report's runs)");
+            }
+        }
+
+        [Test]
+        public void AReferenceWillpowerOutsideTheCorridor_FailsTheGateAndNamesTheRows()
+        {
+            var gate = new FishingCatchRateGate(new FishingParity(30, 1), Small with { QuickReelWillpowerScore = 20 });
 
             var result = gate.Evaluate(Context());
 
             result.Verdict.Should().Be(GateVerdict.Failed);
-            result.Summary.Should().Contain("more than -1 points outside").And.Contain("row(s)");
-            result.Tables[0].Rows.Select(row => row.Last()).Should().OnlyContain(verdict => verdict == "Outside");
+            result.Summary.Should().Contain("Quick Reel leaves today's corridor in").And.Contain("row(s)");
+            result.Tables[0].Rows.Select(row => row.Last()).Should().Contain("Outside");
+        }
+
+        [Test]
+        public void QuickReelsFormula_IsTheSameInTheGameServerAndInTheLegacyModel()
+        {
+            foreach (var rank in new[] { 0, 3, 10, 25, 50 })
+            {
+                foreach (var level in new[] { 0, 1, 8, 20, 33, 52, 80 })
+                {
+                    foreach (var willpower in new[] { 0, 8, 12, 14, 20 })
+                    {
+                        FishingQuickReel.CatchChancePercent(rank, level, willpower).Should().Be(
+                            FishingCatchModel.CatchChancePercent(rank, level, willpower), $"rank {rank}, level {level}, Willpower {willpower}");
+                    }
+                }
+            }
         }
 
         [Test]
@@ -89,6 +129,11 @@ namespace SWLOR.CraftSim.Tests.Fishing
             FishingParityOptions.Default.CorridorLowScore.Should().Be(10);
             FishingParityOptions.Default.CorridorHighScore.Should().Be(14);
             FishingParityOptions.Default.SecondsPerTurn.Should().Be(8);
+            FishingParityOptions.Default.QuickReelWillpowerScore.Should().Be(10, "a character with no attribute investment (owner decision, October 2026)");
+            FishingParityOptions.Default.FightBoundRelative.Should().Be(0.15);
+            FishingParityOptions.Default.FightBoundSlackPoints.Should().Be(3);
+            FishingParityOptions.Default.FightBound(60).Should().BeApproximately(72.0, 1e-9);
+            FishingParityOptions.Default.FightBound(0).Should().Be(3);
             FishingParityOptions.Default.Deltas.Should().HaveCount(15).And.StartWith(-8).And.EndWith(6);
         }
     }

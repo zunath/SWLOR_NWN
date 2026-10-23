@@ -88,7 +88,7 @@ namespace SWLOR.CraftSim.Search
             var names = options.RareSupplyTables.Where(tables.ContainsKey).ToList();
             var table = new EvidenceTable(
                 "Purchase or loadout", "Skilled finds per board", "Added finds", "Skilled / Quick Search (highest rank)", "Dig Deeper finds",
-                "Rare items per site / Quick Search (mean of tables)", "Lowest table", "Highest table");
+                "Rare items per site / Quick Search at the highest rank (mean of tables)", "Lowest table", "Highest table");
             double baseline = double.NaN;
             foreach (var probe in probes)
             {
@@ -101,7 +101,7 @@ namespace SWLOR.CraftSim.Search
                 var perTable = names.Select(name =>
                 {
                     double quick = 0, skilled = 0;
-                    foreach (var entry in samples)
+                    foreach (var entry in samples.Where(entry => entry.Rank == Ranks.Max()))
                     {
                         var (q, s) = RarePerSite(tables[name], entry.Rank, entry.Sample, entry.Effects, 0);
                         quick += q;

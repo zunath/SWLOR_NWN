@@ -21,7 +21,7 @@ public class GatheringStyleTests
         "A Strike takes 1.5 seconds less and costs 10 more Stability, but a Survey and an Extract each take 1 second more.";
 
     private const string CarefulHandsSearch =
-        "A Search finds 3 points less often, and a Dig Deeper find favours the site's rare entries 3 more.";
+        "A Search finds 1 point less often, and a Dig Deeper find favours the site's rare entries 3 more.";
 
     private static readonly Dictionary<StatType, int> StripMiningStats = new()
     {

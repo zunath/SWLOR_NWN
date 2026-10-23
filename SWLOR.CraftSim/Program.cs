@@ -32,7 +32,7 @@ SWLOR crafting simulator
       Plays the research Experiment and writes its report: length, reduction size against today's dice and the supply change, the time cut, and Fabrication XP per real hour.
   researcher-perks [--runs 400] [--seed 1] [--seconds-per-action 6] [--craft-seconds-per-action 8] [--job-overhead-seconds 30] [--search | --ablate | --order] [--out report.md] [--repo path]
       Plays the Fabrication Researcher line and writes its evidence: the two styles against each other, each purchase's effect, Peer Review for an undecided player, and Fabrication XP per real hour against the crafting ceiling.
-  gathering-perks [--runs 4000] [--seed 1] [--part all|prospecting|search] [--out report.md] [--repo path]
+  gathering-perks [--runs 4000] [--seed 1] [--part all|prospecting|search|styles|gates|refining|bible] [--out report.md] [--repo path]
       Plays the Gathering Prospector and Treasure Seeker lines and writes their evidence: each purchase's effect on the Prospecting session and the Search board, the caps every loadout stays under,
       the two styles against each other, the line against the unperked gatherer, and Bulk Refining.
   builder-perks [--runs 60] [--seed 1] [--recipes-per-band 8] [--out report.md] [--repo path]

@@ -38,9 +38,19 @@ namespace SWLOR.CraftSim.Cli
                 ? outValues[0]
                 : Path.Combine(root, "design", "testing", "crafting-revamp", "gathering-perks.md");
             var part = options.TryGetValue("--part", out var partValues) ? partValues[0] : "all";
+            if (part == "bible" && !options.ContainsKey("--out"))
+                outPath = Path.Combine(root, "design", "testing", "crafting-revamp", "gathering-perk-bible-rows.json");
+
+            var perks = new GatheringPerkDefinition().BuildPerks();
+            if (part == "bible")
+            {
+                Directory.CreateDirectory(Path.GetDirectoryName(Path.GetFullPath(outPath))!);
+                OutputFile.WriteAllText(outPath, GatheringPerkBibleRows.ToJson(GatheringPerkBibleRows.Read(perks)));
+                output.WriteLine($"Wrote {outPath}");
+                return 0;
+            }
 
             var nodes = HarvestNodeCatalog.Read(Path.Combine(root, "Module", "utp"));
-            var perks = new GatheringPerkDefinition().BuildPerks();
             var thresholds = GateThresholds.Default;
             var context = new GateContext(null, null, runs, seed, AttributeSweep.Default);
             var text = new StringBuilder();

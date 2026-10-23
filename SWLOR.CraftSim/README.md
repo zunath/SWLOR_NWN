@@ -166,6 +166,20 @@ It takes `--runs` (nodes per plan and case, default 4000; 20,000 takes under a m
 
 Every plan reads only what the window shows; none reads a hidden seam.
 
+### The Gathering perk lines
+
+`gathering-perks` plays the Prospector and Treasure Seeker lines (`Harvesting/ProspectorPerkStudy`, `Search/TreasureSeekerPerkStudy`, `Harvesting/ProspectorStyleBalance`) and writes `design/testing/crafting-revamp/gathering-perks.md`:
+
+```powershell
+dotnet SWLOR.CraftSim/bin/Release/net10.0/SWLOR.CraftSim.dll gathering-perks --runs 20000 --seed 1
+```
+
+`--part prospecting|search|styles|gates|refining|bible` writes one part (`bible` writes the Bible rows as JSON for `tools/UpdateGatheringPerkBible.py`). The perks are read from the game's own definitions: a `GatheringLoadout` is a build (a line or both, a style), and its gatherer owns every purchase the Gathering rank allows (`GatheringPerkLines.StatsAt`, the same pipeline the game reads). `harvesting --loadout <name>` and `search --loadout <name>` run the economy-parity, length and XP-rate gates of the harvesting and search studies for a loadout (`prospector-no-style`, `prospector-strip-mining`, `treasure-seeker-no-style`, `treasure-seeker-careful-hands`, `both-lines-no-style`, `both-lines-strip-mining`, `both-lines-careful-hands`); with no `--loadout` they are the unperked studies, and Quick Harvest and Quick Search read no perk.
+
+- **Caps**: a skilled session of any plan stays within +15% of today's items and gems per node and of Quick Search's rolls per board, and spends at most 1.5x of today's charges. A perk that saves Stability, or adds an item, a roll or a gem, lifts the Prospecting session past the cap (it already claims nearly every seam its Stability allows), and a perk that cuts the session's actions takes it under the 3-8 actions a node should last, so the Prospector line saves time and power cores.
+- **Gate 2** (`ProspectorStyleBalance`): Strip Mining against no style on the nine kinds of node at ranks 20-50, played on the same nodes and dice, each by the best skilled plan, scored by items per second with the travel time to the next node; the pooled row is the verdict. Careful Hands has no partner on the Search board.
+- **Gate 3**: the unperked harvesting report is byte-identical to the committed one and the unperked search report differs only in its evidence tables (they now use the real line); the study shows how little of the line value is yield.
+
 ### Research Experiment
 
 `Scenario/Experiment` plugs the research Experiment in as the `experiment` scenario (`gates --scenario experiment --gates length` checks its 5-8 turn target; the other gates do not apply to an experiment, which has no quality, styles or legacy loop). The `research` command writes the Experiment's own evidence: length, the size of the reductions against today's dice and the change in supply (licensed runs stay random at today's odds, so theirs is unchanged), the time cut at fixed levels, and Fabrication XP per real hour against at-level crafting.

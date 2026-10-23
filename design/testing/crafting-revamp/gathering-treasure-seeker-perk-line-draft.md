@@ -4,6 +4,27 @@ Draft for the owner's approval. No perk code, no StatType IDs and no Bible rows 
 
 Evidence: `scavenging-search-parity.md` (command `SWLOR.CraftSim search --runs 12000 --seed 1`). Every figure below is the skilled player's finds per board (loot-table rolls) averaged over Gathering ranks 20, 35 and 50, 12000 boards per case, against Quick Search's expected rolls at the same rank.
 
+## As implemented (23 October 2026)
+
+This file is the original draft and stays as the record of it. The implementation changed some rows so that every loadout stays inside the economy bounds (a skilled session within 1.15x of Quick Search's rolls and of today's gems per node); the evidence is `gathering-perks.md`, and the rows live in `GatheringPerkDefinition`, `SearchPerkRules` and `ProspectingPerkRules`.
+
+The unperked skilled player's gems are already 1.06-1.12x of today's, so no Prospecting perk can add a gem: the gem rows (Careful Hands' pocket conversion, Rich Pockets, Jackpot's bonus gem) are gone, and a gem pocket is about 2% of tier 1 nodes anyway. The line's value is in the rare items a site gives instead, which no cap limits (the plan caps rolls, not what they roll): the whole line takes a skilled board to 1.13x of Quick Search's rolls and the rare items per site to about 2.4x Quick Search's (the unperked board gives 1.5x), 2.9x with Careful Hands.
+
+| Rank | SP | Perk | As implemented | The draft's row |
+| --- | --- | --- | --- | --- |
+| 5 | 1 | Fine Trowel I | A Dig Deeper find weighs the rare entries x4 instead of x3. | as drafted |
+| 10 | 1 | Sharp Chisel I | Heavy Strike 5 points less likely to shatter an unsurveyed pocket. | as drafted |
+| 15 | 2 | Steady Dig | Dig Deeper risks 15% less. | as drafted |
+| 20 | 2 | Careful Hands (style) | Search only: a Search finds 1 point less often and a Dig Deeper find weighs the rare entries 3 more. | also a smaller Strike and a gem in place of a rich seam's ore |
+| 25 | 3 | Keen Eye | A Search finds 1 point more often. | as drafted |
+| 30 | 3 | Sharp Chisel II | 10 points in total. | as drafted |
+| 35 | 3 | Deep Scan | A Survey reveals 1 more seam than the rank allows (up to 3) and reveals gem pockets first (the extra seam is worth nothing at Gathering 50, where the rank already reveals 3). | seam only |
+| 40 | 3 | Fine Trowel II | x5. | as drafted |
+| 45 | 3 | Rich Pickings | A Search that finds something weighs the rare entries x2. | Rich Pockets: a gem in place of a rich seam's ore |
+| 50 | 4 | Jackpot | The first Dig Deeper find of each board weighs the rare entries 8 more. | the first Extract adds a bonus gem |
+
+Careful Hands cost 3 points of Search chance in the draft; at -2 or -3 the careless and the skilled scavenger's XP per hour at the high site levels fell under today's (gate 6), so it costs 1. A Prospecting window offers only styles that do something there, and Careful Hands does nothing in Prospecting: the two styles never share a window. Quick Search is unchanged.
+
 ## Structure
 
 - One independent, optional line of 25 SP. It is not needed to scavenge: a scavenger with no perks already searches every site, and Quick Search gives today's yield.

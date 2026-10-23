@@ -479,7 +479,7 @@ public class GatheringPerkLineTests
             .And.Contain($"costs {ProspectingPerkRules.StripMiningStrikeStability} more Stability")
             .And.Contain($"each take {ProspectingPerkRules.SecondsText(ProspectingPerkRules.StripMiningSeamWorkTimeTenths)} second more");
         GatheringStyles.SearchDescription(GatheringStyle.CarefulHands).Should()
-            .Contain($"A Search finds {-SearchPerkRules.CarefulHandsSearchChancePoints} points less often")
+            .Contain($"A Search finds {-SearchPerkRules.CarefulHandsSearchChancePoints} point{(SearchPerkRules.CarefulHandsSearchChancePoints == -1 ? "" : "s")} less often")
             .And.Contain($"favours the site's rare entries {SearchPerkRules.CarefulHandsDigRareWeight} more");
         GatheringStyles.SearchDescription(GatheringStyle.StripMining).Should().BeEmpty();
         GatheringStyles.ProspectingDescription(GatheringStyle.CarefulHands).Should().BeEmpty();

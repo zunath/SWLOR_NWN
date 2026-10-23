@@ -19,12 +19,12 @@ public static class SearchPerkRules
     public const int KeenEyePoints = 1;
 
     // Careful Hands (style), Search half: fewer finds, rarer digs.
-    public const int CarefulHandsSearchChancePoints = -3;
+    public const int CarefulHandsSearchChancePoints = -1;
     public const int CarefulHandsDigRareWeight = 3;
 
     // Rich Pickings (Gathering 45): added to the multiplier an ordinary Search find puts on the weight of the rare entries.
     public const int RichPickingsRareWeight = 1;
 
     // Jackpot (Gathering 50): added to the rare-entry multiplier of the first Dig Deeper find of each board.
-    public const int JackpotRareWeight = 8;
+    public const int JackpotRareWeight = 4;
 }

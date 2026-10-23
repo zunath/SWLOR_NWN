@@ -5,6 +5,7 @@ using SWLOR.CraftSim.Legacy.Gathering;
 using SWLOR.CraftSim.Report;
 using SWLOR.Game.Server.Service.CraftService;
 using SWLOR.Game.Server.Service.CraftService.Minigame;
+using SWLOR.Game.Server.Service.CraftService.Minigame.Gathering;
 using SWLOR.Game.Server.Service.CraftService.Minigame.Search;
 using SWLOR.Game.Server.Service.ScavengeService;
 using static SWLOR.CraftSim.Report.MarkdownTable;
@@ -167,6 +168,13 @@ namespace SWLOR.CraftSim.Search
             foreach (var (name, value) in StartingValues())
                 lines.Add($"  - `{name}` = {value}");
 
+            if (options.Loadout != GatheringLoadout.None)
+            {
+                lines.Insert(0,
+                    $"- Gatherer: **{options.Loadout.Name}**. Every board is played by someone who owns every purchase their Gathering rank allows of the Prospector and Treasure Seeker lines (`GatheringPerkDefinition`), with the style active from rank {GatheringStyles.StyleRank}. " +
+                    "Quick Search reads no perk, and the skilled player may find up to the plan's +15% of its rolls.");
+            }
+
             return lines;
         }
 
@@ -181,7 +189,9 @@ namespace SWLOR.CraftSim.Search
             $"{(effects.SearchChanceDelta >= 0 ? "+" : string.Empty)}{effects.SearchChanceDelta} points on every Search, {effects.DigRiskPercent}% of the dig risk" +
             (effects.ExtraPromisingSpots != 0 ? $", +{effects.ExtraPromisingSpots} promising spot" : string.Empty) +
             (effects.DigFindBonus != 0 ? $", +{effects.DigFindBonus} points of dig find chance" : string.Empty) +
-            (effects.DeeperWeightBonus > 0 ? $", rare entries weigh {effects.DeeperWeightBonus} more in a dig" : string.Empty);
+            (effects.DeeperWeightBonus > 0 ? $", rare entries weigh {effects.DeeperWeightBonus} more in a dig" : string.Empty) +
+            (effects.FindWeightBonus > 0 ? $", rare entries weigh {effects.FindWeightBonus} more in an ordinary find" : string.Empty) +
+            (effects.JackpotWeightBonus > 0 ? $", rare entries weigh {effects.JackpotWeightBonus} more in the first dig find of a board" : string.Empty);
 
         public static IReadOnlyList<string> Limitations(SearchParityOptions options) => new[]
         {

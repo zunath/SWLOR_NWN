@@ -7,6 +7,7 @@ namespace SWLOR.Game.Server.Feature.AppearanceDefinition.TintMap
     {
         public const string Prefix = "TM_";
         private const string CreatureColorStatePrefix = "TMC_";
+        private const string HeadColorStatePrefix = "TMH_";
         private const string ItemGlobalColorStatePrefix = "TMG_";
         private const string ItemGlobalInheritanceStatePrefix = "TMI_";
 
@@ -24,6 +25,23 @@ namespace SWLOR.Game.Server.Feature.AppearanceDefinition.TintMap
                 throw new ArgumentOutOfRangeException(nameof(layer), layer, "Layer is not a creature color.");
 
             return $"{CreatureColorStatePrefix}{(int)layer}";
+        }
+
+        public static string GetHeadColorStateName(TintMapLayerType layer)
+        {
+            if (!Enum.IsDefined(layer) || IsCreatureColorLayer(layer))
+                throw new ArgumentOutOfRangeException(nameof(layer), layer, "Layer is not an additional head color.");
+
+            return $"{HeadColorStatePrefix}{(int)layer}";
+        }
+
+        public static bool IsHeadColorStateName(string variableName)
+        {
+            return !string.IsNullOrWhiteSpace(variableName) &&
+                   variableName.StartsWith(HeadColorStatePrefix, StringComparison.Ordinal) &&
+                   int.TryParse(variableName[HeadColorStatePrefix.Length..], out var value) &&
+                   Enum.IsDefined(typeof(TintMapLayerType), value) &&
+                   !IsCreatureColorLayer((TintMapLayerType)value);
         }
 
         public static string GetItemGlobalColorStateName(TintMapLayerType layer)

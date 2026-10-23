@@ -2,8 +2,8 @@ namespace SWLOR.Game.Server.Feature.AppearanceDefinition.RacialAppearance
 {
     public class MonCalamariRacialAppearanceDefinition: RacialAppearanceBaseDefinition
     {
-        public override int[] MaleHeads { get; } = { 6, 44, 48, 49, 104, 105, 106, 107, 108, 112, 113, 114, 117, 119, 120, 127 };
-        public override int[] FemaleHeads { get; } = { 3, 6, 16, 17, 21, 26, 29, 41, 43, 47, 109, 110, 115, 119, 122 };
+        public override int[] MaleHeads { get; } = { 6, 44, 48, 49, 104, 105, 106, 107, 108, 112, 113, 114, 117, 119, 120, 127, 331, 332 };
+        public override int[] FemaleHeads { get; } = { 3, 6, 16, 17, 21, 26, 29, 41, 43, 47, 109, 110, 115, 119, 122, 324, 325, 330 };
 
         public override int[] Torsos { get; } = { 204 };
         public override int[] Pelvis { get; } = { 204 };

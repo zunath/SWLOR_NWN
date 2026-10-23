@@ -4,6 +4,7 @@ using SWLOR.Game.Server.Feature.GuiDefinition.ViewModel;
 using SWLOR.Game.Server.Service.GuiService;
 using SWLOR.Game.Server.Service.GuiService.Component;
 using System.Linq.Expressions;
+using SWLOR.NWN.API.NWScript.Enum;
 using SWLOR.NWN.API.NWScript.Enum.Item;
 
 namespace SWLOR.Game.Server.Feature.GuiDefinition
@@ -1078,24 +1079,32 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition
                     row.AddSpacer();
                 });
 
+                col.AddRow(row => row.AddLabel().SetText("Head").SetHeight(28f));
+                AddHeadSettingRow(col, "Size", "ae_head",
+                    model => model.HeadSizeText,
+                    model => model.OnDecreaseHeadScale(), model => model.OnIncreaseHeadScale());
+                AddHeadSettingRow(col, "Position X", "ae_head_x",
+                    model => model.HeadPositionXText,
+                    model => model.OnAdjustHeadPosition(ObjectVisualTransform.TranslateX, false),
+                    model => model.OnAdjustHeadPosition(ObjectVisualTransform.TranslateX, true));
+                AddHeadSettingRow(col, "Position Y", "ae_head_y",
+                    model => model.HeadPositionYText,
+                    model => model.OnAdjustHeadPosition(ObjectVisualTransform.TranslateY, false),
+                    model => model.OnAdjustHeadPosition(ObjectVisualTransform.TranslateY, true));
+                AddHeadSettingRow(col, "Position Z", "ae_head_z",
+                    model => model.HeadPositionZText,
+                    model => model.OnAdjustHeadPosition(ObjectVisualTransform.TranslateZ, false),
+                    model => model.OnAdjustHeadPosition(ObjectVisualTransform.TranslateZ, true));
+
                 col.AddRow(row =>
                 {
                     row.AddSpacer();
-
                     row.AddButton()
-                        .SetId("ae_head_increase")
-                        .SetText("Increase Head")
-                        .SetHeight(32f)
+                        .SetId("ae_head_reset")
+                        .SetText("Reset Head")
                         .SetWidth(128f)
-                        .BindOnClicked(model => model.OnIncreaseHeadScale());
-
-                    row.AddButton()
-                        .SetId("ae_head_decrease")
-                        .SetText("Decrease Head")
                         .SetHeight(32f)
-                        .SetWidth(128f)
-                        .BindOnClicked(model => model.OnDecreaseHeadScale());
-
+                        .BindOnClicked(model => model.OnResetHead());
                     row.AddSpacer();
                 });
 
@@ -1110,6 +1119,24 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition
                     row.AddSpacer();
                     row.BindIsVisible(model => model.IsPlayerSettingsVisible);
                 });
+            });
+        }
+
+        private static void AddHeadSettingRow(GuiColumn<AppearanceEditorViewModel> column,
+            string label, string id, Expression<Func<AppearanceEditorViewModel, string>> value,
+            Expression<Func<AppearanceEditorViewModel, Action>> decrease,
+            Expression<Func<AppearanceEditorViewModel, Action>> increase)
+        {
+            column.AddRow(row =>
+            {
+                row.AddSpacer();
+                row.AddLabel().SetText(label).SetWidth(120f).SetHeight(32f);
+                row.AddButton().SetId(id + "_decrease").SetText("-").SetWidth(64f).SetHeight(32f)
+                    .BindOnClicked(decrease);
+                row.AddButton().SetId(id + "_increase").SetText("+").SetWidth(64f).SetHeight(32f)
+                    .BindOnClicked(increase);
+                row.AddLabel().SetId(id + "_value").BindText(value).SetWidth(72f).SetHeight(32f);
+                row.AddSpacer();
             });
         }
 

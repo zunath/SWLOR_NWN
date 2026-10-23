@@ -46,6 +46,21 @@ public class AppearanceEditorLayoutTests
     }
 
     [Test]
+    public void SettingsExposeFourHeadRowsWithMinusPlusAndReadout()
+    {
+        var widgets = Walk(_partials[AppearanceEditorViewModel.SettingsPartial]).ToArray();
+        foreach (var id in new[] { "ae_head", "ae_head_x", "ae_head_y", "ae_head_z" })
+        {
+            widgets.Should().ContainSingle(w => w.Id == id + "_decrease");
+            widgets.Should().ContainSingle(w => w.Id == id + "_increase");
+            widgets.Should().ContainSingle(w => w.Id == id + "_value");
+        }
+        var reset = widgets.Single(w => w.Id == "ae_head_reset");
+        reset.Events.Values.Should().ContainSingle(e => e.Method.Name == nameof(AppearanceEditorViewModel.OnResetHead));
+        _window.LayoutFindings.Should().BeEmpty();
+    }
+
+    [Test]
     public void WeaponsContainOnlyPartControlsWithoutReservedTintSpace()
     {
         var weapon = _partials[AppearanceEditorViewModel.EditorWeaponPartial];
@@ -484,7 +499,7 @@ public class AppearanceEditorLayoutTests
         Walk(settings).Where(widget => widget is GuiGroup<AppearanceEditorViewModel> or GuiColumn<AppearanceEditorViewModel>)
             .Should().OnlyContain(widget => Width(widget) == 0f);
         Walk(settings).OfType<GuiRow<AppearanceEditorViewModel>>()
-            .Should().OnlyContain(row => Width(row) == 0f && NaturalWidth(row) <= 256f,
+            .Should().OnlyContain(row => Width(row) == 0f && NaturalWidth(row) <= _window.InitialGeometry.Width - 60f,
                 "fixed controls must leave the surrounding spacers free to follow the client width");
     }
 

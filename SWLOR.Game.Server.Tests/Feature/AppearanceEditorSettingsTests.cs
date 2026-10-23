@@ -6,6 +6,7 @@ using Microsoft.CodeAnalysis.CSharp.Syntax;
 using NUnit.Framework;
 using SWLOR.Game.Server.Feature.GuiDefinition.ViewModel;
 using SWLOR.Game.Server.Tests.Service;
+using SWLOR.NWN.API.NWScript.Enum;
 
 namespace SWLOR.Game.Server.Tests.Feature;
 
@@ -14,6 +15,9 @@ public class AppearanceEditorSettingsTests
     private MethodInfo _execute = null!;
     private MethodInfo _adjustScale = null!;
     private MethodInfo _loadDMItems = null!;
+    private MethodInfo _adjustPosition = null!;
+    private MethodInfo _editPosition = null!;
+    private MethodInfo _resetHead = null!;
 
     [OneTimeSetUp]
     public void CompileSettingsWithRecordingEngineAndDatabase()
@@ -24,8 +28,11 @@ public class AppearanceEditorSettingsTests
         directory.Should().NotBeNull();
         var source = File.ReadAllText(Path.Combine(directory!.FullName,
             "SWLOR.Game.Server", "Feature", "GuiDefinition", "ViewModel", "AppearanceEditorViewModel.cs"));
+        source += File.ReadAllText(Path.Combine(directory.FullName,
+            "SWLOR.Game.Server", "Feature", "GuiDefinition", "ViewModel", "AppearanceEditorViewModel.HeadSettings.cs"));
         var names = new[] { "InitializeSettings", "LoadSettings", "LoadDMArmorDisplay", "OnClickSaveSettings", "SendScaleMessage",
-            "OnIncreaseAppearanceScale", "OnDecreaseAppearanceScale", "OnIncreaseHeadScale", "OnDecreaseHeadScale" };
+            "OnIncreaseAppearanceScale", "OnDecreaseAppearanceScale", "OnIncreaseHeadScale", "OnDecreaseHeadScale",
+            "RefreshHeadTransformSettings", "OnAdjustHeadPosition", "OnResetHead", "OnCloseWindow" };
         var methods = string.Concat(CSharpSyntaxTree.ParseText(source).GetRoot().DescendantNodes()
             .OfType<MethodDeclarationSyntax>().Where(node => names.Contains(node.Identifier.Text))
             .Select(node => node.ToFullString()));
@@ -37,7 +44,9 @@ public class AppearanceEditorSettingsTests
                          DMPossessionHarness.Method("Service/DMPresence.cs", "SendMessage");
         var harness = $$"""
             using System;
+            using System.Globalization;
             using System.Linq.Expressions;
+            using SWLOR.Game.Server.Feature.AppearanceDefinition;
             using SWLOR.Game.Server.Feature.AppearanceDefinition.RacialAppearance;
             using SWLOR.NWN.API.NWScript.Enum;
             using DMPreferences = SWLOR.Game.Server.Entity.DMPreferences;
@@ -47,7 +56,8 @@ public class AppearanceEditorSettingsTests
             {
                 public static bool ViewerDM, ViewerPossessed, TargetPC, TargetDM, TargetPossessed;
                 public static bool WearsHelmet, HelmetShown, WearsCloak, CloakHidden;
-                public static float Height, Head;
+                public static float Height, Head, X, Y, Z;
+                public static ObjectVisualTransformDataScopeType LastScope;
                 public static uint Recipient;
                 public static string Message;
                 // The window owner (1) is what the viewer controls; a possessing DM's avatar (3) is not a PC.
@@ -58,8 +68,22 @@ public class AppearanceEditorSettingsTests
                 public static AppearanceType GetAppearanceType(uint creature) => AppearanceType.Human;
                 public static string GetObjectUUID(uint creature) => "test-player";
                 public static void SendMessageToPC(uint creature, string message) { Recipient = creature; Message = message; }
-                public static float GetObjectVisualTransform(uint creature, ObjectVisualTransform transform) => Height;
-                public static void SetObjectVisualTransform(uint creature, ObjectVisualTransform transform, float scale) => Height = scale;
+                public static float GetObjectVisualTransform(uint creature, ObjectVisualTransform transform,
+                    bool bCurrentLerp = false, ObjectVisualTransformDataScopeType nScope = ObjectVisualTransformDataScopeType.Base)
+                {
+                    LastScope = nScope;
+                    if (nScope != ObjectVisualTransformDataScopeType.CreatureHead) return Height;
+                    return transform == ObjectVisualTransform.TranslateX ? X : transform == ObjectVisualTransform.TranslateY ? Y : Z;
+                }
+                public static void SetObjectVisualTransform(uint creature, ObjectVisualTransform transform, float value,
+                    ObjectVisualTransformDataScopeType nScope = ObjectVisualTransformDataScopeType.Base)
+                {
+                    LastScope = nScope;
+                    if (nScope != ObjectVisualTransformDataScopeType.CreatureHead) Height = value;
+                    else if (transform == ObjectVisualTransform.TranslateX) X = value;
+                    else if (transform == ObjectVisualTransform.TranslateY) Y = value;
+                    else Z = value;
+                }
                 public const uint Helmet = 10, Cloak = 11, OBJECT_INVALID = 0x7F000000;
                 public static uint GetItemInSlot(InventorySlot slot, uint creature) =>
                     slot == InventorySlot.Head ? (WearsHelmet ? Helmet : OBJECT_INVALID) : (WearsCloak ? Cloak : OBJECT_INVALID);
@@ -110,6 +134,11 @@ public class AppearanceEditorSettingsTests
                 private uint _target = 2;
                 public uint Player = 1;
                 public bool IsSettingsVisible, IsPlayerSettingsVisible, IsArmorDisplayVisible, ShowHelmet, ShowCloak;
+                public string HeadSizeText, HeadPositionXText, HeadPositionYText, HeadPositionZText;
+                private int _tintEditGeneration;
+                private void FlushPendingPickerColor() { }
+                private void CancelTintPickerGesture() { }
+                private void CommitCustomTintComponents() { }
                 private bool _isDMArmorDisplay;
                 private int _watches;
                 private void WatchOnClient(Expression<Func<Harness, bool>> binding) => _watches++;
@@ -124,6 +153,7 @@ public class AppearanceEditorSettingsTests
                     TargetPC = targetPC; TargetDM = targetDM; TargetPossessed = targetPossessed;
                     WearsHelmet = WearsCloak = false;
                     Height = 0.92f; Head = 1.07f;
+                    X = Y = Z = 0f;
                     DB.Record = new Player { AppearanceScale = 1f, HeadAppearanceScale = 1f };
                     DB.Record.Settings.ShowHelmet = false;
                     DB.Record.Settings.ShowCloak = false;
@@ -160,14 +190,64 @@ public class AppearanceEditorSettingsTests
                     action();
                     return (Recipient, Message, Height, Head);
                 }
+                public static (float X, float Y, float Z, float Height, string Display, ObjectVisualTransformDataScopeType Scope)
+                    AdjustPosition(ObjectVisualTransform axis, bool increase, float start)
+                {
+                    TargetPC = true; TargetDM = TargetPossessed = ViewerDM = ViewerPossessed = false;
+                    Height = 0.92f; Head = 1.07f; X = Y = Z = start;
+                    var harness = new Harness();
+                    harness.OnAdjustHeadPosition(axis, increase)();
+                    var text = axis == ObjectVisualTransform.TranslateX ? harness.HeadPositionXText :
+                        axis == ObjectVisualTransform.TranslateY ? harness.HeadPositionYText : harness.HeadPositionZText;
+                    return (X, Y, Z, Height, text, LastScope);
+                }
+                public static (float X, float Y, float Z, int Writes) EditPosition(bool save)
+                {
+                    TargetPC = true; TargetDM = TargetPossessed = ViewerDM = ViewerPossessed = false;
+                    Height = 0.92f; Head = 1.07f; X = -0.05f; Y = 0.02f; Z = 0.03f;
+                    DB.Writes = 0;
+                    DB.Record = new Player { AppearanceScale = Height, HeadAppearanceScale = Head,
+                        HeadAppearancePositionX = X, HeadAppearancePositionY = Y, HeadAppearancePositionZ = Z };
+                    var harness = new Harness();
+                    harness.InitializeSettings();
+                    harness.OnAdjustHeadPosition(ObjectVisualTransform.TranslateX, true)();
+                    harness.OnAdjustHeadPosition(ObjectVisualTransform.TranslateY, false)();
+                    harness.OnAdjustHeadPosition(ObjectVisualTransform.TranslateZ, true)();
+                    if (save) harness.OnClickSaveSettings()();
+                    harness.OnCloseWindow()();
+                    if (X != DB.Record.HeadAppearancePositionX || Y != DB.Record.HeadAppearancePositionY ||
+                        Z != DB.Record.HeadAppearancePositionZ)
+                        throw new Exception("Closing the window did not restore the saved head position");
+                    X = Y = Z = 0f;
+                    HeadPosition.ApplySaved(2, DB.Record);
+                    return (X, Y, Z, DB.Writes);
+                }
+                public static (float Head, float X, float Y, float Z, float Height, int Writes) ResetHead(bool save)
+                {
+                    TargetPC = true; TargetDM = TargetPossessed = ViewerDM = ViewerPossessed = false;
+                    Height = 0.92f; Head = 1.11f; X = 0.1f; Y = -0.1f; Z = 0.05f; DB.Writes = 0;
+                    DB.Record = new Player { AppearanceScale = Height, HeadAppearanceScale = Head,
+                        HeadAppearancePositionX = X, HeadAppearancePositionY = Y, HeadAppearancePositionZ = Z };
+                    var harness = new Harness();
+                    harness.InitializeSettings();
+                    harness.OnResetHead()();
+                    if (Head != 1f || X != 0f || Y != 0f || Z != 0f || harness.HeadSizeText != "1.00" ||
+                        harness.HeadPositionXText != "0.00" || harness.HeadPositionYText != "0.00" || harness.HeadPositionZText != "0.00")
+                        throw new Exception("Reset did not preview default head transforms and readouts");
+                    if (save) harness.OnClickSaveSettings()();
+                    harness.OnCloseWindow()();
+                    return (Head, X, Y, Z, Height, DB.Writes);
+                }
             }
             """;
         var referencePaths = ((string)AppContext.GetData("TRUSTED_PLATFORM_ASSEMBLIES")!)
             .Split(Path.PathSeparator).Concat(new[] { typeof(AppearanceEditorViewModel).Assembly.Location,
                 typeof(SWLOR.NWN.API.NWScript.Enum.AppearanceType).Assembly.Location });
         var references = referencePaths.Distinct().Select(path => MetadataReference.CreateFromFile(path));
+        var positionSource = "using static World;\n" + File.ReadAllText(Path.Combine(directory.FullName,
+            "SWLOR.Game.Server", "Feature", "AppearanceDefinition", "HeadPosition.cs"));
         var compilation = CSharpCompilation.Create("AppearanceEditorSettingsHarness",
-            [CSharpSyntaxTree.ParseText(harness)], references,
+            [CSharpSyntaxTree.ParseText(harness), CSharpSyntaxTree.ParseText(positionSource)], references,
             new CSharpCompilationOptions(OutputKind.DynamicallyLinkedLibrary));
         using var stream = new MemoryStream();
         var result = compilation.Emit(stream);
@@ -176,6 +256,45 @@ public class AppearanceEditorSettingsTests
         _execute = harnessType.GetMethod("Execute")!;
         _loadDMItems = harnessType.GetMethod("LoadDMItems")!;
         _adjustScale = harnessType.GetMethod("AdjustScale")!;
+        _adjustPosition = harnessType.GetMethod("AdjustPosition")!;
+        _editPosition = harnessType.GetMethod("EditPosition")!;
+        _resetHead = harnessType.GetMethod("ResetHead")!;
+    }
+
+    [TestCase(ObjectVisualTransform.TranslateX)]
+    [TestCase(ObjectVisualTransform.TranslateY)]
+    [TestCase(ObjectVisualTransform.TranslateZ)]
+    public void HeadPositionAdjustsOnlyItsAxisAndClampsAtBothLimits(ObjectVisualTransform axis)
+    {
+        foreach (var (start, increase, expected) in new[] { (0f, true, 0.01f), (0f, false, -0.01f),
+                     (0.09f, true, 0.10f), (0.10f, true, 0.10f), (-0.09f, false, -0.10f), (-0.10f, false, -0.10f) })
+        {
+            var result = ((float X, float Y, float Z, float Height, string Display, ObjectVisualTransformDataScopeType Scope))
+                _adjustPosition.Invoke(null, [axis, increase, start])!;
+            result.X.Should().Be(axis == ObjectVisualTransform.TranslateX ? expected : start);
+            result.Y.Should().Be(axis == ObjectVisualTransform.TranslateY ? expected : start);
+            result.Z.Should().Be(axis == ObjectVisualTransform.TranslateZ ? expected : start);
+            result.Height.Should().Be(0.92f);
+            result.Scope.Should().Be(ObjectVisualTransformDataScopeType.CreatureHead);
+            result.Display.Should().Be(expected.ToString("0.00", System.Globalization.CultureInfo.InvariantCulture));
+        }
+    }
+
+    [TestCase(false, -0.05f, 0.02f, 0.03f, 0)]
+    [TestCase(true, -0.04f, 0.01f, 0.04f, 1)]
+    public void HeadPositionUsesSavedValuesAfterCloseAndReload(bool save, float x, float y, float z, int writes)
+    {
+        var result = ((float X, float Y, float Z, int Writes))_editPosition.Invoke(null, [save])!;
+        result.Should().Be((x, y, z, writes));
+    }
+
+    [TestCase(false, 1.11f, 0.1f, -0.1f, 0.05f, 0)]
+    [TestCase(true, 1f, 0f, 0f, 0f, 1)]
+    public void ResetHeadPreviewsDefaultsAndUsesTheExistingSaveCancelBehavior(bool save,
+        float head, float x, float y, float z, int writes)
+    {
+        var result = ((float Head, float X, float Y, float Z, float Height, int Writes))_resetHead.Invoke(null, [save])!;
+        result.Should().Be((head, x, y, z, 0.92f, writes));
     }
 
     [TestCase(true, false, false, false, false, false)]

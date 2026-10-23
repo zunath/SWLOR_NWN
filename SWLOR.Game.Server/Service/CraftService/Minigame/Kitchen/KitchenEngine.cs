@@ -21,9 +21,18 @@ public sealed class KitchenEngine : MinigameEngineBase<KitchenState>
 
     private const string StockMeterPrefix = "stock.";
 
+    private static readonly KitchenAxis[] Axes = { KitchenAxis.Savory, KitchenAxis.Sweet, KitchenAxis.Spice };
+    private static readonly string[] AxisNames = { "Savory", "Sweet", "Spice" };
+    private static readonly string[] AxisIds = { SavoryMeterId, SweetMeterId, SpiceMeterId };
+
     private readonly KitchenRecipe _recipe;
     private readonly KitchenStats _stats;
     private readonly IReadOnlyList<MinigameActionInfo> _actions;
+
+    // A preview describes every meter for every result, so what never changes is built once.
+    private readonly MinigameMeterMark[] _axisMarks;
+    private readonly MinigameMeterMark _distanceMark;
+    private readonly string[] _stockIds;
 
     public KitchenEngine(IMinigameRandom random, KitchenRecipe recipe, KitchenStats stats, int extraDoneness = 0)
         : base(random, CreateStart(recipe, stats, extraDoneness))
@@ -31,6 +40,13 @@ public sealed class KitchenEngine : MinigameEngineBase<KitchenState>
         _recipe = recipe;
         _stats = stats;
         _actions = BuildActions(recipe);
+        _axisMarks = Axes.Select(axis =>
+        {
+            var perfect = recipe.Target.PerfectRange(axis);
+            return MinigameMeterMark.Range(perfect.From, perfect.To, "Perfect");
+        }).ToArray();
+        _distanceMark = MinigameMeterMark.Range(recipe.Target.InnerRadius, recipe.Target.OuterRadius, "Quality falls");
+        _stockIds = Enumerable.Range(0, recipe.Lines.Count).Select(StockMeterId).ToArray();
     }
 
     public override CraftMinigameType Type => CraftMinigameType.Kitchen;
@@ -306,39 +322,30 @@ public sealed class KitchenEngine : MinigameEngineBase<KitchenState>
 
     protected override IReadOnlyList<MinigameMeterView> DescribeMeters(KitchenState state)
     {
-        var meters = DescribeSharedMeters(
-            state.Meters,
-            progressLabel: "Doneness",
-            qualityLabel: "Quality",
-            integrityLabel: "Freshness").ToList();
-
-        foreach (var axis in DescribeAxes(state))
+        var shared = state.Meters;
+        var profile = state.Profile;
+        var meters = new List<MinigameMeterView>(10 + _stockIds.Length)
         {
-            meters.Add(new MinigameMeterView(
-                AxisMeterId(axis.Axis),
-                axis.Name,
-                axis.Value,
+            new(MinigameMeterIds.Progress, "Doneness", shared.Progress.Value, 0, shared.Progress.Max),
+            new(MinigameMeterIds.Quality, "Quality", shared.Quality.Value, 0, shared.Quality.Max),
+            new(MinigameMeterIds.Integrity, "Freshness", shared.Integrity.Value, 0, shared.Integrity.Max),
+            new(MinigameMeterIds.Cp, "CP", shared.Cp.Value, 0, shared.Cp.Max),
+            new(AxisIds[0], AxisNames[0], profile.Savory, 0, KitchenTuning.AxisMax, _axisMarks[0]),
+            new(AxisIds[1], AxisNames[1], profile.Sweet, 0, KitchenTuning.AxisMax, _axisMarks[1]),
+            new(AxisIds[2], AxisNames[2], profile.Spice, 0, KitchenTuning.AxisMax, _axisMarks[2]),
+            new(
+                DistanceMeterId,
+                "Off Target",
+                (int)Math.Round(state.Target.DistanceTo(profile), MidpointRounding.AwayFromZero),
                 0,
-                KitchenTuning.AxisMax,
-                MinigameMeterMark.Range(axis.PerfectFrom, axis.PerfectTo, "Perfect")));
-        }
+                KitchenTuning.MaxDistance,
+                _distanceMark),
+            new(HeatMeterId, "Heat", (int)state.Heat, 0, (int)KitchenHeat.High),
+            new(CoverMeterId, "Cover", state.CoverTurns, 0, KitchenTuning.CoverTurns)
+        };
 
-        var target = state.Target;
-        meters.Add(new MinigameMeterView(
-            DistanceMeterId,
-            "Off Target",
-            (int)Math.Round(target.DistanceTo(state.Profile), MidpointRounding.AwayFromZero),
-            0,
-            KitchenTuning.MaxDistance,
-            MinigameMeterMark.Range(target.InnerRadius, target.OuterRadius, "Quality falls")));
-        meters.Add(new MinigameMeterView(HeatMeterId, "Heat", (int)state.Heat, 0, (int)KitchenHeat.High));
-        meters.Add(new MinigameMeterView(CoverMeterId, "Cover", state.CoverTurns, 0, KitchenTuning.CoverTurns));
-
-        for (var line = 0; line < _recipe.Lines.Count; line++)
-        {
-            var ingredient = _recipe.Lines[line];
-            meters.Add(new MinigameMeterView(StockMeterId(line), ingredient.Name, state.Stock.Remaining(line), 0, ingredient.Portions));
-        }
+        for (var line = 0; line < _stockIds.Length; line++)
+            meters.Add(new MinigameMeterView(_stockIds[line], _recipe.Lines[line].Name, state.Stock.Remaining(line), 0, _recipe.Lines[line].Portions));
 
         return meters;
     }
@@ -346,13 +353,13 @@ public sealed class KitchenEngine : MinigameEngineBase<KitchenState>
     private static IReadOnlyList<KitchenAxisView> DescribeAxes(KitchenState state)
     {
         var views = new List<KitchenAxisView>();
-        foreach (var axis in new[] { KitchenAxis.Savory, KitchenAxis.Sweet, KitchenAxis.Spice })
+        foreach (var axis in Axes)
         {
             var perfect = state.Target.PerfectRange(axis);
             var tolerance = state.Target.ToleranceRange(axis);
             views.Add(new KitchenAxisView(
                 axis,
-                axis.ToString(),
+                AxisNames[(int)axis],
                 state.Profile.Get(axis),
                 state.Target.Center.Get(axis),
                 perfect.From,
@@ -363,11 +370,4 @@ public sealed class KitchenEngine : MinigameEngineBase<KitchenState>
 
         return views;
     }
-
-    private static string AxisMeterId(KitchenAxis axis) => axis switch
-    {
-        KitchenAxis.Savory => SavoryMeterId,
-        KitchenAxis.Sweet => SweetMeterId,
-        _ => SpiceMeterId
-    };
 }

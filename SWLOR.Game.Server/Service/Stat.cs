@@ -704,8 +704,10 @@ namespace SWLOR.Game.Server.Service
                 return corrected;
 
             // A lower maximum caps the current pool, as removing gear does.
-            dbPlayer.FP = Math.Clamp(dbPlayer.FP, 0, Math.Max(0, GetMaxFP(player, dbPlayer)));
-            dbPlayer.Stamina = Math.Clamp(dbPlayer.Stamina, 0, Math.Max(0, GetMaxStamina(player, dbPlayer)));
+            if (corrected.HasFlag(EquipmentRecordStats.FP))
+                dbPlayer.FP = Math.Clamp(dbPlayer.FP, 0, Math.Max(0, GetMaxFP(player, dbPlayer)));
+            if (corrected.HasFlag(EquipmentRecordStats.Stamina))
+                dbPlayer.Stamina = Math.Clamp(dbPlayer.Stamina, 0, Math.Max(0, GetMaxStamina(player, dbPlayer)));
             DB.Set(dbPlayer);
             return corrected;
         }

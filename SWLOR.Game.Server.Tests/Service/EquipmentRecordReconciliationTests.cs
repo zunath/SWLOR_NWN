@@ -15,9 +15,8 @@ namespace SWLOR.Game.Server.Tests.Service;
 
 public class EquipmentRecordReconciliationTests
 {
-    // A reported character's worn gear: eight pieces granting 86 Physical, 100 Force, 18 FP and 16 STM,
-    // with boots that still carry the retired Poison Defense 30.
-    private static readonly (ItemPropertyType Type, int Subtype, int Amount)[] ReportedGear =
+    // Eight pieces granting 86 Physical, 100 Force, 18 FP and 16 STM, with retired Poison Defense on the boots.
+    private static readonly (ItemPropertyType Type, int Subtype, int Amount)[] WornGear =
     {
         (ItemPropertyType.Defense, (int)CombatDamageType.Physical, 13), (ItemPropertyType.Defense, (int)CombatDamageType.Force, 24), (ItemPropertyType.FP, 0, 10),
         (ItemPropertyType.Defense, (int)CombatDamageType.Physical, 9), (ItemPropertyType.Defense, (int)CombatDamageType.Force, 20), (ItemPropertyType.FP, 0, 8),
@@ -55,7 +54,7 @@ public class EquipmentRecordReconciliationTests
     [Test]
     public void Totals_CountDefenseTypesAndSkipRetiredDefense()
     {
-        var totals = Totals(ReportedGear);
+        var totals = Totals(WornGear);
 
         totals.GetDefense(CombatDamageType.Physical).Should().Be(86);
         totals.GetDefense(CombatDamageType.Force).Should().Be(100);
@@ -66,13 +65,11 @@ public class EquipmentRecordReconciliationTests
     }
 
     [Test]
-    public void ReportedDriftedRecord_IsRebuiltFromTheWornGear()
+    public void DriftedRecord_IsRebuiltFromTheWornGear()
     {
-        // Naked, the reported character showed Force DEF 13 below Physical and FP 18 below its base:
-        // the running sums sat below zero.
         var record = Record(physical: 86 - 32, force: 100 - 47, evasion: 0, maxFP: Stat.BaseFP, maxStamina: Stat.BaseSTM + 16);
 
-        var corrected = Stat.ApplyEquipmentStatTotals(record, Totals(ReportedGear), EquipmentRecordStats.All);
+        var corrected = Stat.ApplyEquipmentStatTotals(record, Totals(WornGear), EquipmentRecordStats.All);
 
         corrected.Should().Be(EquipmentRecordStats.Defense | EquipmentRecordStats.FP);
         record.Defenses[CombatDamageType.Physical].Should().Be(86);
@@ -102,7 +99,7 @@ public class EquipmentRecordReconciliationTests
         var record = Record(physical: 0, force: 0, evasion: 0, maxFP: Stat.BaseFP, maxStamina: Stat.BaseSTM);
         record.Defenses = null!;
 
-        var corrected = Stat.ApplyEquipmentStatTotals(record, Totals(ReportedGear), EquipmentRecordStats.All);
+        var corrected = Stat.ApplyEquipmentStatTotals(record, Totals(WornGear), EquipmentRecordStats.All);
 
         corrected.Should().HaveFlag(EquipmentRecordStats.Defense);
         record.Defenses[CombatDamageType.Physical].Should().Be(86);
@@ -114,7 +111,7 @@ public class EquipmentRecordReconciliationTests
     {
         var record = Record(physical: 86, force: 100, evasion: 0, maxFP: Stat.BaseFP + 18, maxStamina: Stat.BaseSTM + 16);
 
-        Stat.ApplyEquipmentStatTotals(record, Totals(ReportedGear), EquipmentRecordStats.All)
+        Stat.ApplyEquipmentStatTotals(record, Totals(WornGear), EquipmentRecordStats.All)
             .Should().Be(EquipmentRecordStats.None);
     }
 
@@ -123,7 +120,7 @@ public class EquipmentRecordReconciliationTests
     {
         var record = Record(physical: 0, force: 0, evasion: 5, maxFP: 0, maxStamina: 0);
 
-        var corrected = Stat.ApplyEquipmentStatTotals(record, Totals(ReportedGear), EquipmentRecordStats.Stamina);
+        var corrected = Stat.ApplyEquipmentStatTotals(record, Totals(WornGear), EquipmentRecordStats.Stamina);
 
         corrected.Should().Be(EquipmentRecordStats.Stamina);
         record.MaxStamina.Should().Be(Stat.BaseSTM + 16);
@@ -138,7 +135,7 @@ public class EquipmentRecordReconciliationTests
         // A clean running sum after equipping each piece in turn equals the rebuilt totals at every step.
         var record = Record(0, 0, 0, Stat.BaseFP, Stat.BaseSTM);
         var worn = new List<(ItemPropertyType, int, int)>();
-        foreach (var property in ReportedGear)
+        foreach (var property in WornGear)
         {
             worn.Add(property);
             Stat.ApplyEquipmentStatTotals(record, Totals(worn.ToArray()), EquipmentRecordStats.All);

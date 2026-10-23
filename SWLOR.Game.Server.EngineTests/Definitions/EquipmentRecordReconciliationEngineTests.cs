@@ -12,9 +12,7 @@ using Player = SWLOR.Game.Server.Entity.Player;
 namespace SWLOR.Game.Server.EngineTests.Definitions
 {
     /// <summary>
-    /// A player's stored equipment Defense, Evasion, max FP and max STM are kept by adding and removing each equipment
-    /// change. A reported character showed Force DEF 13 below Physical DEF naked (Willpower 2 above Vitality) and FP 18
-    /// below its base: both running sums had drifted below zero.
+    /// Stored equipment Defense, Evasion, max FP and max STM follow the gear actually worn.
     /// </summary>
     public static class EquipmentRecordReconciliationEngineTests
     {
@@ -47,14 +45,14 @@ namespace SWLOR.Game.Server.EngineTests.Definitions
             ctx.SuppressNPCNaturalRegen(player);
             var belt = await CreateItemAsync(ctx, player, "advent_belt", BeltProperties);
             var ring = await CreateItemAsync(ctx, player, "absdef_l6", RingProperties);
-            // Armor rank keeps the drifted Defense above the one-point floor, so the gap is visible.
+            // Armor rank keeps the drifted Defense above the one-point floor.
             fixture.Update(record => record.Skills[SkillType.Armor].Rank = 50);
             Drift(fixture);
 
             var vitality = GetAbilityScore(player, AbilityType.Vitality);
             var willpower = GetAbilityScore(player, AbilityType.Willpower);
             ctx.AssertEqual(willpower - vitality + DriftedForce - DriftedPhysical, ForceGap(player),
-                "the drifted record pulls naked Force DEF below Physical DEF (13 below for the reported character)");
+                "the drifted record pulls naked Force DEF below Physical DEF");
 
             await EquipAsync(ctx, player, belt, InventorySlot.Belt);
             AssertRecord(ctx, player, physical: 11, force: 9, evasion: 10, fp: Stat.BaseFP - 18, stamina: Stat.BaseSTM,
@@ -100,6 +98,30 @@ namespace SWLOR.Game.Server.EngineTests.Definitions
 
             await ctx.ExecuteInCreatureContextAsync(player, () => corrected = Stat.RefreshPlayerEquipmentStats(player));
             ctx.AssertEqual(EquipmentRecordStats.None, corrected, "a matching record is left alone");
+        }
+
+        [EngineTest("A Defense-only equip leaves the FP and STM pools alone", Category = Category, TimeoutSeconds = 60f)]
+        public static async Task DefenseOnlyEquipLeavesPools(EngineTestContext ctx)
+        {
+            using var fixture = await PlayerAbilityFixture.CreateAsync(ctx);
+            var player = fixture.Creature;
+            ctx.SuppressNPCNaturalRegen(player);
+            var plate = await CreateItemAsync(ctx, player, "advent_belt", new[] { (ItemPropertyType.Defense, (int)CombatDamageType.Physical, 10) });
+            // Drifted maximums below the current pools; only gear that feeds them may rebuild and cap them.
+            fixture.Update(record =>
+            {
+                record.MaxFP = 0;
+                record.FP = 500;
+                record.MaxStamina = 0;
+                record.Stamina = 500;
+            });
+
+            await EquipAsync(ctx, player, plate, InventorySlot.Belt);
+            var record = Record(player);
+            ctx.AssertEqual(10, record.Defenses[CombatDamageType.Physical], "the Defense record is rebuilt");
+            ctx.AssertEqual(0, record.MaxFP, "max FP is not rebuilt by a Defense-only item");
+            ctx.AssertEqual(500, record.FP, "current FP is not capped by an unrebuilt maximum");
+            ctx.AssertEqual(500, record.Stamina, "current STM is not capped by an unrebuilt maximum");
         }
 
         [EngineTest("A canceled equip into an occupied slot leaves the records on the worn gear", Category = Category, TimeoutSeconds = 60f)]

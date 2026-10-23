@@ -197,7 +197,7 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
 
             StyleHeader = owned.Count == 0
                 ? $"Styles: learn a style perk at Engineering {CircuitRules.StyleRank} to choose one here."
-                : "Style. Only one can be active, and it holds for this craft.";
+                : "Style: pick one to craft with. Only one can be active at a time.";
             StyleLabels = labels;
             StyleButtonTexts = buttons;
             StyleButtonEnabled = enabled;

@@ -15,7 +15,7 @@ Scenarios (`gates --scenario <name>`):
 
 | Gate | Unperked (`circuit-gates.md`) | Overclocker | Technician | Both lines |
 | --- | --- | --- | --- | --- |
-| 1 No single rotation | Failed (smallest margin -7.5) | Failed (-7.0) | Failed (-6.8) | Failed (-5.9) |
+| 1 No single rotation | Failed (smallest margin -7.5) | Failed (-7.0) | Failed (-7.2) | Failed (-5.9) |
 | 2 Style balance | NotApplicable | Passed in both pairs, every gear tier (see the caveat below) | | |
 | 3 Perks optional | Passed (lowest 95%) | Passed (lowest 95%, unchanged: no style means no perks) | | |
 | 4 Length | Passed | **Failed** in 2 cells: 31-40 best gear 9.7, 41-53 best gear 9.2 | Passed | **Failed** in 3 cells: 31-40 best gear 9.5, 41-53 mid gear 9.8, 41-53 best gear 8.5 |
@@ -24,7 +24,7 @@ Scenarios (`gates --scenario <name>`):
 | 7 Enhancement parity | Passed (lowest 1.08x) | Passed (1.08x) | Passed (1.08x) | Passed (1.08x) |
 
 - **Gate 1 fails for the unperked Circuit already** (`circuit-tuning.md`, "Gate 1"): the margin is the same kind of failure and no perked line makes it worse, so the perks neither cause nor fix it.
-- **Gate 2 passes, but quality saturates.** At mid and best gear both styles reach about 100 quality on at-level recipes, so almost every recipe is a tie (half a win each) and the table reads 50% / 50%. Only "no gear" separates the styles (Overclock 62% / Safe Mode 38% with no line perks; 57% / 42% with both lines, mean gap +0.7 and +1.2 points). The gate cannot see speed, which is where they differ; see below.
+- **Gate 2 passes, but quality saturates.** At mid and best gear both styles reach about 100 quality on at-level recipes, so almost every recipe is a tie (half a win each) and the table reads 50% / 50%. Only "no gear" separates the styles (Overclock 62% / Safe Mode 38% with no line perks; 57% / 42% with both lines, mean gap +0.7 and +1.0 points). The gate cannot see speed, which is where they differ; see below.
 - **Gate 4 is the finding.** It is the one gate that passes for the unperked Circuit and fails for a perked build. Gates 5, 6 and 7 hold for every build, and gate 1 fails for every build as it already does unperked.
 
 ## Gate 4: why the Overclocker cannot keep every cell above 10 actions
@@ -91,6 +91,6 @@ Overclock is 10-20% faster in every row and has the better or equal quality in f
 
 - CraftSim's adaptive player is a depth-3 search on the previews and plays the Circuit very well, so the length and style figures are for skilled play. Seconds per action (8 s) are unmeasured, so gate 6 is as soft as before.
 - Gates 4 to 7 for a perked crafter play one fixed loadout (each line in full); a crafter who bought part of a line sits between the unperked and the full-line figures.
-- The `circuit-both` report was run after CodeRabbit's finding that Surge's Discharge skipped Failsafe (fixed in `db275fd77`); the `circuit-overclocker` and `circuit-technician` reports have only one of the two capstones, so the fix does not change them.
+- Two review fixes landed after the first runs (Surge's Discharge now gets Failsafe, and Diagnostics rolls the first two actions when the craft starts), so `circuit-style`, `circuit-technician` and `circuit-both` were rerun on the final engine. `circuit-overclocker` has neither Failsafe nor Diagnostics, so its first run stands.
 - The tables in "Gate 4" and "Style balance beyond quality" come from two explicit tests, `CircuitPerkLengthBudget` and `CircuitStyleStress.Compare` in `SWLOR.CraftSim.Tests` (run them with `dotnet test SWLOR.CraftSim.Tests --filter "FullyQualifiedName=..."`). They are the same engine and policy as the gates on a smaller sample, written to explain the gate results, not gates themselves.
 - No client was run.

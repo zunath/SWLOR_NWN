@@ -120,7 +120,7 @@
     {
       "Gate": "No fixed rotation",
       "Verdict": "Failed",
-      "Summary": "One fixed rotation comes within 10 points of adaptive play in 15 case(s): 1-10 / no gear; 1-10 / mid gear; 1-10 / best gear; 11-20 / no gear; 11-20 / mid gear; 11-20 / best gear; 21-30 / no gear; 21-30 / mid gear; 21-30 / best gear; 31-40 / no gear; 31-40 / mid gear; 31-40 / best gear; 41-53 / no gear; 41-53 / mid gear; 41-53 / best gear (smallest margin -5.9 in 1-10 / mid gear). The best rotation for each recipe alone, a reported metric, is -6.6 to 0.2 points behind adaptive play.",
+      "Summary": "One fixed rotation comes within 10 points of adaptive play in 15 case(s): 1-10 / no gear; 1-10 / mid gear; 1-10 / best gear; 11-20 / no gear; 11-20 / mid gear; 11-20 / best gear; 21-30 / no gear; 21-30 / mid gear; 21-30 / best gear; 31-40 / no gear; 31-40 / mid gear; 31-40 / best gear; 41-53 / no gear; 41-53 / mid gear; 41-53 / best gear (smallest margin -5.9 in 1-10 / mid gear). The best rotation for each recipe alone, a reported metric, is -6.6 to -0.0 points behind adaptive play.",
       "Tables": [
         {
           "Title": "Average quality: adaptive play against the best single fixed rotation of each band and gear tier (quality points; a broken piece counts 0)",
@@ -173,11 +173,11 @@
               "11-20",
               "no gear",
               "6",
-              "87.3",
-              "90.1",
+              "87.8",
+              "90.5",
               "-2.8",
               ">= 10",
-              "91.3",
+              "91.9",
               "Failed"
             ],
             [
@@ -199,7 +199,7 @@
               "100.0",
               "-0.0",
               ">= 10",
-              "99.8",
+              "100.0",
               "Failed"
             ],
             [
@@ -207,8 +207,8 @@
               "no gear",
               "6",
               "100.0",
-              "99.8",
-              "0.1",
+              "99.7",
+              "0.3",
               ">= 10",
               "100.0",
               "Failed"
@@ -219,7 +219,7 @@
               "6",
               "100.0",
               "100.0",
-              "-0.0",
+              "0.0",
               ">= 10",
               "100.0",
               "Failed"
@@ -287,7 +287,7 @@
               "100.0",
               "-0.0",
               ">= 10",
-              "99.9",
+              "100.0",
               "Failed"
             ],
             [
@@ -345,11 +345,11 @@
             [
               "11-20",
               "no gear",
-              "wire > discharge_calibration > wire x3 > tune x3 > discharge_calibration > wire x2 > discharge_calibration > tune > discharge_calibration x2 > wire x2 > discharge_calibration > wire x2 > discharge_calibration > tune > wire > discharge_calibration > wire x3 > discharge_calibration > wire",
+              "wire x3 > tune x3 > discharge_calibration > wire > boost > discharge_calibration x2 > tune > wire x2 > discharge_calibration > wire x2 > discharge_calibration > wire x2 > discharge_calibration > wire > discharge_calibration > wire",
               "90.9",
-              "90.6",
-              "90.1",
-              "87.3"
+              "90.9",
+              "90.5",
+              "87.8"
             ],
             [
               "11-20",
@@ -375,13 +375,13 @@
               "tune x4 > discharge_calibration > wire > tune x2 > discharge_calibration > wire x4 > discharge_both > discharge_calibration > wire x2 > discharge_both > wire > discharge_assembly > wire",
               "100.0",
               "99.9",
-              "99.8",
+              "99.7",
               "100.0"
             ],
             [
               "21-30",
               "mid gear",
-              "wire > discharge_calibration > tune > wire > discharge_calibration > tune > wire > discharge_calibration > tune > wire > discharge_calibration > tune > wire > discharge_calibration > tune > wire > discharge_calibration > tune > wire > discharge_calibration > tune > wire > discharge_calibration > tune > wire > discharge_calibration > tune > wire > discharge_calibration > tune > wire > discharge_calibration > tune > wire > discharge_calibration > tune > wire > discharge_calibration > tune > wire",
+              "tune x4 > discharge_calibration > wire > tune x2 > discharge_assembly > wire > tune > wire x2 > discharge_both > wire x3",
               "100.0",
               "100.0",
               "100.0",
@@ -399,9 +399,9 @@
             [
               "31-40",
               "no gear",
-              "wire > micro_tune > discharge_calibration > wire > micro_tune > discharge_calibration > wire > micro_tune > discharge_calibration > wire > micro_tune > discharge_calibration > wire > micro_tune > discharge_calibration > wire > micro_tune > discharge_calibration > wire > micro_tune > discharge_calibration > wire > micro_tune > discharge_calibration > wire > micro_tune > discharge_calibration > wire > micro_tune > discharge_calibration > wire > micro_tune > discharge_calibration > wire > micro_tune > discharge_calibration > wire > micro_tune > discharge_calibration > wire",
+              "boost > tune x2 > discharge_calibration > tune x4 > discharge_both > wire x3 > discharge_assembly > tune > wire > discharge_both > tune > wire > discharge_assembly",
               "100.0",
-              "100.0",
+              "99.9",
               "100.0",
               "100.0"
             ],
@@ -417,7 +417,7 @@
             [
               "31-40",
               "best gear",
-              "tune x4 > discharge_calibration > wire > tune > wire x2 > discharge_both > wire x2 > tune x2 > discharge_both > wire",
+              "tune x4 > discharge_calibration > wire > tune > wire x2 > discharge_both > wire x2 > tune > discharge_both > wire > discharge_both",
               "100.0",
               "100.0",
               "100.0",
@@ -435,7 +435,7 @@
             [
               "41-53",
               "mid gear",
-              "boost > tune x3 > discharge_both > tune x3 > wire > discharge_both > wire x4 > discharge_both",
+              "tune > discharge_assembly > tune > discharge_assembly > tune > discharge_assembly > tune > discharge_assembly > tune > discharge_assembly > tune > discharge_assembly > tune > discharge_assembly > tune > discharge_assembly > tune > discharge_assembly > tune > discharge_assembly > tune > discharge_assembly > tune > discharge_assembly > tune > discharge_assembly > tune > discharge_assembly > tune > discharge_assembly > tune > discharge_assembly > tune > discharge_assembly > tune > discharge_assembly > tune > discharge_assembly > tune > discharge_assembly",
               "100.0",
               "100.0",
               "100.0",
@@ -632,35 +632,35 @@
               "dhbr002 (level 13)",
               "wire x3 > tune x3 > discharge_calibration > wire > discharge_calibration > wire x2 > discharge_calibration > wire x4 > discharge_calibration > wire",
               "79.0",
-              "75.2",
+              "76.4",
               "65.7"
             ],
             [
               "11-20",
               "no gear",
               "song_579 (level 15)",
-              "wire > boost x2 > tune x2 > discharge_calibration > wire x3 > discharge_calibration > wire x3 > discharge_calibration > wire x3 > discharge_calibration > wire > discharge_calibration > wire > discharge_calibration > wire",
+              "wire x4 > tune x3 > discharge_calibration > wire > discharge_calibration > wire x5 > discharge_calibration > wire x3 > discharge_calibration > wire > discharge_calibration > wire > discharge_calibration > wire",
+              "86.3",
               "80.9",
-              "80.6",
-              "75.6"
+              "83.0"
             ],
             [
               "11-20",
               "no gear",
               "eva_boost_1 (level 18)",
               "boost > tune x3 > discharge_calibration > wire x3 > discharge_calibration > wire x5 > discharge_calibration > wire x2 > discharge_calibration > wire x2 > discharge_calibration > wire",
-              "90.0",
-              "89.8",
-              "89.2"
+              "88.4",
+              "89.7",
+              "89.0"
             ],
             [
               "11-20",
               "no gear",
               "d_ar_pvs2 (level 19)",
-              "wire > discharge_calibration > wire > boost > tune x3 > discharge_calibration > wire x6 > discharge_calibration > wire x2 > discharge_calibration > wire > discharge_calibration > wire > discharge_calibration > wire > discharge_calibration > wire",
-              "98.1",
-              "95.1",
-              "94.4"
+              "wire > boost > tune x3 > discharge_calibration > wire x3 > discharge_calibration > wire x3 > discharge_calibration > wire x3 > discharge_calibration > wire > discharge_calibration > wire > discharge_calibration > wire",
+              "97.5",
+              "97.0",
+              "89.0"
             ],
             [
               "11-20",
@@ -675,10 +675,10 @@
               "11-20",
               "no gear",
               "id_pinningtoss1 (level 20)",
-              "wire > boost > discharge_calibration > wire > boost > discharge_calibration > wire > boost > discharge_calibration > wire > boost > discharge_calibration > wire > boost > discharge_calibration > wire > boost > discharge_calibration > wire > boost > discharge_calibration > wire > boost > discharge_calibration > wire > boost > discharge_calibration > wire > boost > discharge_calibration > wire > boost > discharge_calibration > wire > boost > discharge_calibration > wire > boost > discharge_calibration > wire",
+              "tune x3 > discharge_calibration > tune x2 > discharge_calibration > wire x2 > discharge_calibration > wire x3 > discharge_calibration > wire x2 > discharge_calibration > wire x2 > discharge_assembly > wire",
               "100.0",
-              "100.0",
-              "99.2"
+              "99.3",
+              "100.0"
             ],
             [
               "11-20",
@@ -702,7 +702,7 @@
               "11-20",
               "mid gear",
               "eva_boost_1 (level 18)",
-              "tune x5 > discharge_calibration > tune x4 > wire x2 > discharge_assembly > tune > wire x4 > discharge_assembly > wire",
+              "tune x5 > discharge_calibration > tune x5 > discharge_assembly > wire x5 > discharge_assembly",
               "100.0",
               "100.0",
               "100.0"
@@ -711,7 +711,7 @@
               "11-20",
               "mid gear",
               "d_ar_pvs2 (level 19)",
-              "boost > tune x3 > discharge_calibration > tune x5 > wire x2 > discharge_assembly > wire x4 > discharge_assembly > wire",
+              "boost > tune x3 > discharge_calibration > tune x5 > wire x8",
               "100.0",
               "100.0",
               "100.0"
@@ -720,7 +720,7 @@
               "11-20",
               "mid gear",
               "darg002 (level 20)",
-              "boost > tune x2 > discharge_calibration > tune x4 > discharge_assembly > wire x3 > discharge_assembly > wire x3",
+              "boost > tune x2 > discharge_calibration > tune x4 > discharge_assembly > boost > wire x2 > discharge_assembly > wire x3",
               "100.0",
               "100.0",
               "100.0"
@@ -729,7 +729,7 @@
               "11-20",
               "mid gear",
               "id_pinningtoss1 (level 20)",
-              "wire > boost > discharge_calibration > wire > boost > discharge_calibration > wire > boost > discharge_calibration > wire > boost > discharge_calibration > wire > boost > discharge_calibration > wire > boost > discharge_calibration > wire > boost > discharge_calibration > wire > boost > discharge_calibration > wire > boost > discharge_calibration > wire > boost > discharge_calibration > wire > boost > discharge_calibration > wire > boost > discharge_calibration > wire > boost > discharge_calibration > wire",
+              "tune x3 > discharge_calibration > tune x3 > discharge_calibration > wire x2 > discharge_calibration > wire x2 > discharge_assembly > wire x2 > discharge_assembly > tune > wire",
               "100.0",
               "100.0",
               "100.0"
@@ -756,7 +756,7 @@
               "11-20",
               "best gear",
               "eva_boost_1 (level 18)",
-              "tune x5 > discharge_calibration > tune x3 > wire x2 > discharge_assembly > wire > tune > wire x3",
+              "tune x5 > discharge_calibration > tune x3 > wire x2 > discharge_assembly > wire x3 > tune > wire",
               "100.0",
               "100.0",
               "100.0"
@@ -765,7 +765,7 @@
               "11-20",
               "best gear",
               "d_ar_pvs2 (level 19)",
-              "boost > tune x3 > discharge_calibration > tune x4 > wire x2 > discharge_assembly > wire x3",
+              "tune x5 > discharge_calibration > tune x3 > wire x3 > discharge_assembly > wire x2",
               "100.0",
               "100.0",
               "100.0"
@@ -784,7 +784,7 @@
               "best gear",
               "id_pinningtoss1 (level 20)",
               "tune x3 > discharge_calibration > tune x3 > discharge_calibration > wire x2 > discharge_assembly > wire x2 > discharge_calibration > wire x3",
-              "99.0",
+              "100.0",
               "100.0",
               "100.0"
             ],
@@ -792,10 +792,10 @@
               "21-30",
               "no gear",
               "wen_cft_smth3 (level 23)",
-              "wire > tune x3 > discharge_calibration > tune x2 > discharge_calibration > wire x2 > discharge_calibration > wire x4 > discharge_assembly",
+              "tune x4 > discharge_calibration > tune > wire > discharge_calibration > wire x2 > discharge_calibration > wire x4 > discharge_assembly",
               "100.0",
               "100.0",
-              "99.8"
+              "99.9"
             ],
             [
               "21-30",
@@ -803,14 +803,14 @@
               "ion_armor_3 (level 25)",
               "tune x4 > discharge_calibration > tune x3 > discharge_both > wire x2 > discharge_both > wire x3 > discharge_both > tune > wire x2",
               "100.0",
-              "99.0",
+              "98.0",
               "100.0"
             ],
             [
               "21-30",
               "no gear",
               "de_vblade_b1 (level 27)",
-              "tune x4 > discharge_calibration > tune x3 > discharge_both > wire x4 > discharge_assembly > wire x2",
+              "tune x4 > discharge_calibration > tune x4 > discharge_assembly > wire x4 > discharge_both > wire",
               "100.0",
               "100.0",
               "100.0"
@@ -828,7 +828,7 @@
               "21-30",
               "no gear",
               "dsbr003 (level 30)",
-              "boost > tune x2 > discharge_calibration > tune x4 > discharge_assembly > boost > wire x2 > discharge_both",
+              "boost > tune x2 > discharge_calibration > tune x3 > discharge_both > wire x4 > discharge_assembly",
               "100.0",
               "100.0",
               "100.0"
@@ -846,7 +846,7 @@
               "21-30",
               "mid gear",
               "wen_cft_smth3 (level 23)",
-              "wire > tune x3 > discharge_calibration > tune x4 > discharge_assembly > wire x2 > discharge_assembly > wire x2",
+              "tune x4 > discharge_calibration > tune x2 > wire > tune > discharge_assembly > wire x2 > discharge_assembly > wire x2",
               "100.0",
               "100.0",
               "100.0"
@@ -855,9 +855,9 @@
               "21-30",
               "mid gear",
               "ion_armor_3 (level 25)",
-              "boost > tune x2 > discharge_calibration > tune x2 > discharge_calibration > tune x2 > wire x2 > discharge_assembly > wire x4 > discharge_assembly",
+              "tune x4 > discharge_calibration > tune x3 > discharge_both > wire x3 > discharge_assembly > tune > wire > discharge_both",
               "100.0",
-              "100.0",
+              "99.9",
               "100.0"
             ],
             [
@@ -882,7 +882,7 @@
               "21-30",
               "mid gear",
               "dsbr003 (level 30)",
-              "tune x4 > discharge_calibration > boost > tune > wire > discharge_assembly > wire x2 > discharge_both",
+              "tune x4 > discharge_calibration > boost > discharge_both > wire x4 > discharge_assembly",
               "100.0",
               "100.0",
               "100.0"
@@ -909,7 +909,7 @@
               "21-30",
               "best gear",
               "ion_armor_3 (level 25)",
-              "boost > tune x2 > discharge_calibration > tune x3 > discharge_both > wire x3 > discharge_assembly > wire",
+              "tune x3 > discharge_calibration > tune x3 > discharge_both > wire x3 > discharge_assembly > wire",
               "100.0",
               "100.0",
               "100.0"
@@ -963,8 +963,8 @@
               "31-40",
               "no gear",
               "config_ind4 (level 35)",
-              "boost > tune x3 > discharge_calibration > tune x3 > discharge_both > wire x2 > tune > wire > discharge_assembly > tune > wire x2",
-              "99.7",
+              "boost > tune x2 > discharge_calibration > tune x4 > discharge_assembly > tune > wire x3 > discharge_both",
+              "100.0",
               "100.0",
               "100.0"
             ],
@@ -972,7 +972,7 @@
               "31-40",
               "no gear",
               "d_lg_mws4 (level 37)",
-              "boost > tune x2 > discharge_calibration > tune x4 > discharge_assembly > tune > wire x2 > discharge_assembly > wire",
+              "boost > tune x2 > discharge_calibration > tune x3 > discharge_both > wire x4 > discharge_assembly",
               "100.0",
               "100.0",
               "100.0"
@@ -1017,7 +1017,7 @@
               "31-40",
               "mid gear",
               "config_ind4 (level 35)",
-              "tune x4 > discharge_calibration > tune x2 > wire > discharge_assembly > tune > wire x2 > discharge_assembly > wire",
+              "tune x4 > discharge_calibration > tune x2 > wire x2 > discharge_assembly > wire x2 > discharge_both",
               "100.0",
               "100.0",
               "100.0"
@@ -1035,7 +1035,7 @@
               "31-40",
               "mid gear",
               "d_hd_mwa4 (level 39)",
-              "boost > tune x2 > discharge_calibration > boost > tune x2 > discharge_assembly > wire x2 > discharge_assembly > wire",
+              "tune x4 > discharge_calibration > wire > tune > wire x2 > discharge_assembly > wire",
               "100.0",
               "100.0",
               "100.0"
@@ -1053,7 +1053,7 @@
               "31-40",
               "mid gear",
               "id_conctoss2 (level 40)",
-              "boost > tune x2 > discharge_calibration > tune x4 > discharge_assembly > boost > wire x2 > discharge_both > wire",
+              "boost > tune x2 > discharge_calibration > tune x3 > discharge_both > wire x4 > discharge_assembly",
               "100.0",
               "100.0",
               "100.0"
@@ -1062,7 +1062,7 @@
               "31-40",
               "best gear",
               "aen_cft_fab4 (level 33)",
-              "boost > tune x2 > discharge_calibration > tune x3 > discharge_both > wire x4 > discharge_both > wire > tune > discharge_both > wire",
+              "tune > discharge_assembly > tune > discharge_assembly > tune > discharge_assembly > tune > discharge_assembly > tune > discharge_assembly > tune > discharge_assembly > tune > discharge_assembly > tune > discharge_assembly > tune > discharge_assembly > tune > discharge_assembly > tune > discharge_assembly > tune > discharge_assembly > tune > discharge_assembly > tune > discharge_assembly > tune > discharge_assembly > tune > discharge_assembly > tune > discharge_assembly > tune > discharge_assembly > tune > discharge_assembly > tune > discharge_assembly",
               "100.0",
               "100.0",
               "100.0"
@@ -1089,7 +1089,7 @@
               "31-40",
               "best gear",
               "d_hd_mwa4 (level 39)",
-              "tune x4 > discharge_both > tune x2 > wire x2 > discharge_both",
+              "tune x4 > discharge_calibration > boost > wire x2 > discharge_assembly > wire",
               "100.0",
               "100.0",
               "100.0"
@@ -1107,7 +1107,7 @@
               "31-40",
               "best gear",
               "id_conctoss2 (level 40)",
-              "boost > tune x3 > discharge_calibration > wire x4 > discharge_assembly",
+              "tune x4 > discharge_calibration > wire > tune > wire x2 > discharge_assembly > tune > wire",
               "100.0",
               "100.0",
               "100.0"
@@ -1116,7 +1116,7 @@
               "41-53",
               "no gear",
               "dhbr005 (level 43)",
-              "tune x4 > discharge_calibration > tune x3 > wire x2 > discharge_assembly > tune > wire x3 > discharge_assembly",
+              "tune x4 > discharge_calibration > tune x2 > wire > tune > wire > discharge_assembly > boost > wire x2 > discharge_assembly",
               "100.0",
               "100.0",
               "100.0"
@@ -1134,7 +1134,7 @@
               "41-53",
               "no gear",
               "wen_eva5 (level 48)",
-              "tune x4 > discharge_calibration > tune x3 > wire x2 > discharge_assembly > tune > wire x3 > discharge_assembly",
+              "tune x4 > discharge_calibration > tune x3 > wire > discharge_assembly > wire x3 > discharge_both > wire",
               "100.0",
               "100.0",
               "100.0"
@@ -1152,7 +1152,7 @@
               "41-53",
               "no gear",
               "id_infusion2 (level 50)",
-              "boost > tune x2 > discharge_calibration > tune x4 > discharge_assembly > wire x4 > discharge_both",
+              "tune x4 > discharge_calibration > tune x3 > wire x3 > discharge_assembly",
               "100.0",
               "100.0",
               "100.0"
@@ -1188,7 +1188,7 @@
               "41-53",
               "mid gear",
               "wen_eva5 (level 48)",
-              "tune x4 > discharge_calibration > tune x2 > wire x3 > discharge_assembly > wire x3 > discharge_assembly",
+              "tune x4 > discharge_calibration > tune x2 > wire x2 > discharge_assembly > wire x3",
               "100.0",
               "100.0",
               "100.0"
@@ -1198,7 +1198,7 @@
               "mid gear",
               "d_lg_mpv5 (level 49)",
               "boost > tune x3 > discharge_both > tune x2 > wire x3 > discharge_both > wire",
-              "99.5",
+              "100.0",
               "100.0",
               "100.0"
             ],
@@ -1206,16 +1206,16 @@
               "41-53",
               "mid gear",
               "id_infusion2 (level 50)",
-              "tune x4 > discharge_calibration > micro_tune > tune > wire x3 > discharge_assembly > wire > discharge_both",
+              "tune x4 > discharge_calibration > tune x2 > wire x3 > discharge_assembly",
               "100.0",
-              "99.9",
+              "100.0",
               "100.0"
             ],
             [
               "41-53",
               "mid gear",
               "cap_quadlas1 (level 52)",
-              "boost > tune x3 > discharge_calibration > tune > wire x3 > discharge_assembly > wire x2",
+              "boost > tune x3 > discharge_calibration > wire x4 > discharge_assembly > wire > discharge_both",
               "100.0",
               "100.0",
               "100.0"
@@ -1245,7 +1245,7 @@
               "tune x4 > discharge_calibration > tune > wire x3 > discharge_assembly > wire",
               "100.0",
               "100.0",
-              "99.9"
+              "100.0"
             ],
             [
               "41-53",
@@ -1335,8 +1335,8 @@
               "no gear",
               "6",
               "15.3",
-              "13.7",
-              "17.1",
+              "13.6",
+              "17.0",
               "0",
               "10-20",
               "Passed"
@@ -1345,8 +1345,8 @@
               "11-20",
               "mid gear",
               "6",
-              "14.3",
-              "11.1",
+              "14.5",
+              "11.0",
               "16.3",
               "0",
               "10-20",
@@ -1356,8 +1356,8 @@
               "11-20",
               "best gear",
               "6",
-              "12.8",
-              "10.2",
+              "12.6",
+              "10.3",
               "14.6",
               "0",
               "10-20",
@@ -1367,9 +1367,9 @@
               "21-30",
               "no gear",
               "6",
-              "13.1",
-              "10.9",
-              "14.6",
+              "13.0",
+              "11.2",
+              "14.7",
               "0",
               "10-20",
               "Passed"
@@ -1378,9 +1378,9 @@
               "21-30",
               "mid gear",
               "6",
-              "11.7",
-              "10.0",
-              "12.4",
+              "11.6",
+              "10.2",
+              "12.2",
               "0",
               "10-20",
               "Passed"
@@ -1389,9 +1389,9 @@
               "21-30",
               "best gear",
               "6",
-              "10.5",
+              "10.3",
               "9.2",
-              "11.1",
+              "10.9",
               "0",
               "10-20",
               "Passed"
@@ -1400,9 +1400,9 @@
               "31-40",
               "no gear",
               "6",
-              "12.0",
-              "10.9",
-              "13.6",
+              "11.8",
+              "10.8",
+              "13.4",
               "0",
               "10-20",
               "Passed"
@@ -1411,9 +1411,9 @@
               "31-40",
               "mid gear",
               "6",
-              "10.6",
-              "9.7",
-              "12.2",
+              "10.4",
+              "9.5",
+              "11.8",
               "0",
               "10-20",
               "Passed"
@@ -1423,7 +1423,7 @@
               "best gear",
               "6",
               "9.5",
-              "8.8",
+              "8.9",
               "10.9",
               "0",
               "10-20",
@@ -1435,7 +1435,7 @@
               "6",
               "10.8",
               "9.0",
-              "12.2",
+              "12.0",
               "0",
               "10-20",
               "Passed"
@@ -1445,8 +1445,8 @@
               "mid gear",
               "6",
               "9.8",
-              "8.2",
-              "11.2",
+              "8.3",
+              "10.9",
               "0",
               "10-20",
               "Failed"
@@ -1456,7 +1456,7 @@
               "best gear",
               "6",
               "8.5",
-              "7.0",
+              "7.1",
               "9.1",
               "0",
               "10-20",
@@ -1547,7 +1547,7 @@
               "0.95",
               "100%",
               "93%",
-              "89%",
+              "90%",
               "3%",
               "yes",
               "0% / 0%",
@@ -1917,9 +1917,9 @@
               "577",
               "8.0",
               "43466",
-              "1731",
+              "1735",
               "15.3",
-              "50757",
+              "50951",
               "1.17",
               "-",
               "Passed"
@@ -1930,9 +1930,9 @@
               "390",
               "8.7",
               "27067",
-              "1777",
+              "1780",
               "16.7",
-              "47835",
+              "48017",
               "1.77",
               "-",
               "Passed"
@@ -1943,9 +1943,9 @@
               "262",
               "7.3",
               "21603",
-              "1766",
-              "16.7",
-              "47519",
+              "1769",
+              "16.8",
+              "47486",
               "2.20",
               "-",
               "Passed"
@@ -1956,10 +1956,10 @@
               "251",
               "8.0",
               "18827",
-              "1775",
-              "16.8",
-              "47552",
-              "2.53",
+              "1771",
+              "16.7",
+              "47848",
+              "2.54",
               "-",
               "Passed"
             ],
@@ -1970,9 +1970,9 @@
               "10.4",
               "38034",
               "1848",
-              "14.3",
-              "57981",
-              "1.52",
+              "14.5",
+              "57400",
+              "1.51",
               "-",
               "Passed"
             ],
@@ -1983,9 +1983,9 @@
               "11.6",
               "32975",
               "1847",
-              "15.5",
-              "53472",
-              "1.62",
+              "15.4",
+              "54124",
+              "1.64",
               "-",
               "Passed"
             ],
@@ -1996,9 +1996,9 @@
               "12.8",
               "29212",
               "1846",
-              "15.5",
-              "53774",
-              "1.84",
+              "15.3",
+              "54284",
+              "1.86",
               "-",
               "Passed"
             ],
@@ -2009,9 +2009,9 @@
               "13.9",
               "24621",
               "1846",
-              "15.5",
-              "53699",
-              "2.18",
+              "15.4",
+              "53984",
+              "2.19",
               "-",
               "Passed"
             ],
@@ -2022,9 +2022,9 @@
               "14.6",
               "31378",
               "1848",
-              "12.8",
-              "65025",
-              "2.07",
+              "12.6",
+              "66007",
+              "2.10",
               "-",
               "Passed"
             ],
@@ -2035,9 +2035,9 @@
               "15.3",
               "29481",
               "1848",
-              "13.6",
-              "61251",
-              "2.08",
+              "13.5",
+              "61530",
+              "2.09",
               "-",
               "Passed"
             ],
@@ -2048,9 +2048,9 @@
               "16.1",
               "27545",
               "1848",
-              "13.6",
-              "61188",
-              "2.22",
+              "13.5",
+              "61619",
+              "2.24",
               "-",
               "Passed"
             ],
@@ -2061,9 +2061,9 @@
               "16.6",
               "25960",
               "1848",
-              "13.6",
-              "61252",
-              "2.36",
+              "13.7",
+              "60649",
+              "2.34",
               "-",
               "Passed"
             ],
@@ -2074,9 +2074,9 @@
               "11.3",
               "33568",
               "1380",
-              "13.1",
-              "47367",
-              "1.41",
+              "13.0",
+              "47813",
+              "1.42",
               "-",
               "Passed"
             ],
@@ -2087,9 +2087,9 @@
               "12.3",
               "30162",
               "1379",
-              "14.0",
-              "44460",
-              "1.47",
+              "13.7",
+              "45433",
+              "1.51",
               "-",
               "Passed"
             ],
@@ -2099,10 +2099,10 @@
               "605",
               "13.1",
               "27717",
-              "1380",
-              "13.8",
-              "44880",
-              "1.62",
+              "1379",
+              "13.7",
+              "45244",
+              "1.63",
               "-",
               "Passed"
             ],
@@ -2114,8 +2114,8 @@
               "24961",
               "1380",
               "13.7",
-              "45449",
-              "1.82",
+              "45255",
+              "1.81",
               "-",
               "Passed"
             ],
@@ -2126,9 +2126,9 @@
               "16.8",
               "24373",
               "1380",
-              "11.7",
-              "52977",
-              "2.17",
+              "11.6",
+              "53703",
+              "2.20",
               "-",
               "Passed"
             ],
@@ -2139,9 +2139,9 @@
               "17.4",
               "23323",
               "1380",
-              "12.2",
-              "50837",
-              "2.18",
+              "12.1",
+              "51200",
+              "2.20",
               "-",
               "Passed"
             ],
@@ -2151,10 +2151,10 @@
               "657",
               "17.7",
               "22315",
-              "1378",
-              "12.2",
-              "50791",
-              "2.28",
+              "1380",
+              "12.1",
+              "51115",
+              "2.29",
               "-",
               "Passed"
             ],
@@ -2165,9 +2165,9 @@
               "17.9",
               "21904",
               "1380",
-              "12.2",
-              "51030",
-              "2.33",
+              "12.0",
+              "51689",
+              "2.36",
               "-",
               "Passed"
             ],
@@ -2178,9 +2178,9 @@
               "22.5",
               "20425",
               "1380",
-              "10.5",
-              "59283",
-              "2.90",
+              "10.3",
+              "60183",
+              "2.95",
               "-",
               "Passed"
             ],
@@ -2191,9 +2191,9 @@
               "22.7",
               "20084",
               "1380",
-              "10.9",
-              "56814",
-              "2.83",
+              "10.8",
+              "57401",
+              "2.86",
               "-",
               "Passed"
             ],
@@ -2204,9 +2204,9 @@
               "23.3",
               "19334",
               "1380",
-              "10.9",
-              "56865",
-              "2.94",
+              "10.7",
+              "57792",
+              "2.99",
               "-",
               "Passed"
             ],
@@ -2217,9 +2217,9 @@
               "23.1",
               "19223",
               "1380",
-              "10.8",
-              "57312",
-              "2.98",
+              "10.7",
+              "57844",
+              "3.01",
               "-",
               "Passed"
             ],
@@ -2230,9 +2230,9 @@
               "14.5",
               "29893",
               "1200",
-              "12.0",
-              "45129",
-              "1.51",
+              "11.8",
+              "45594",
+              "1.53",
               "-",
               "Passed"
             ],
@@ -2243,9 +2243,9 @@
               "14.5",
               "28109",
               "1200",
-              "12.3",
-              "43752",
-              "1.56",
+              "12.4",
+              "43535",
+              "1.55",
               "-",
               "Passed"
             ],
@@ -2257,8 +2257,8 @@
               "24578",
               "1200",
               "12.4",
-              "43424",
-              "1.77",
+              "43658",
+              "1.78",
               "-",
               "Passed"
             ],
@@ -2269,9 +2269,9 @@
               "16.0",
               "22065",
               "1200",
-              "12.5",
-              "43325",
-              "1.96",
+              "12.4",
+              "43465",
+              "1.97",
               "-",
               "Passed"
             ],
@@ -2282,9 +2282,9 @@
               "18.9",
               "25624",
               "1200",
-              "10.6",
-              "51021",
-              "1.99",
+              "10.4",
+              "51682",
+              "2.02",
               "-",
               "Passed"
             ],
@@ -2296,8 +2296,8 @@
               "24177",
               "1200",
               "11.1",
-              "48626",
-              "2.01",
+              "48750",
+              "2.02",
               "-",
               "Passed"
             ],
@@ -2308,9 +2308,9 @@
               "19.1",
               "23010",
               "1200",
-              "11.1",
-              "48508",
-              "2.11",
+              "11.2",
+              "48399",
+              "2.10",
               "-",
               "Passed"
             ],
@@ -2321,9 +2321,9 @@
               "18.4",
               "22225",
               "1200",
-              "11.1",
-              "48473",
-              "2.18",
+              "11.0",
+              "48941",
+              "2.20",
               "-",
               "Passed"
             ],
@@ -2335,7 +2335,7 @@
               "21677",
               "1200",
               "9.5",
-              "57032",
+              "56931",
               "2.63",
               "-",
               "Passed"
@@ -2348,8 +2348,8 @@
               "20886",
               "1200",
               "9.8",
-              "55270",
-              "2.65",
+              "55017",
+              "2.63",
               "-",
               "Passed"
             ],
@@ -2360,9 +2360,9 @@
               "25.3",
               "20213",
               "1200",
-              "9.8",
-              "55186",
-              "2.73",
+              "9.7",
+              "55488",
+              "2.75",
               "-",
               "Passed"
             ],
@@ -2374,7 +2374,7 @@
               "20539",
               "1200",
               "9.7",
-              "55535",
+              "55392",
               "2.70",
               "-",
               "Passed"
@@ -2387,8 +2387,8 @@
               "24786",
               "1250",
               "10.8",
-              "52008",
-              "2.10",
+              "52226",
+              "2.11",
               "-",
               "Passed"
             ],
@@ -2399,9 +2399,9 @@
               "16.0",
               "23699",
               "1250",
-              "11.3",
-              "49658",
-              "2.10",
+              "11.4",
+              "49490",
+              "2.09",
               "-",
               "Passed"
             ],
@@ -2412,9 +2412,9 @@
               "16.6",
               "19443",
               "1250",
-              "11.4",
-              "49152",
-              "2.53",
+              "11.5",
+              "49059",
+              "2.52",
               "-",
               "Passed"
             ],
@@ -2425,9 +2425,9 @@
               "17.4",
               "15739",
               "1250",
-              "11.5",
-              "48931",
-              "3.11",
+              "11.4",
+              "49453",
+              "3.14",
               "-",
               "Passed"
             ],
@@ -2439,8 +2439,8 @@
               "21886",
               "1250",
               "9.8",
-              "57131",
-              "2.61",
+              "57610",
+              "2.63",
               "-",
               "Passed"
             ],
@@ -2452,8 +2452,8 @@
               "21084",
               "1250",
               "10.0",
-              "56389",
-              "2.67",
+              "56428",
+              "2.68",
               "-",
               "Passed"
             ],
@@ -2465,8 +2465,8 @@
               "20347",
               "1250",
               "10.1",
-              "55472",
-              "2.73",
+              "55737",
+              "2.74",
               "-",
               "Passed"
             ],
@@ -2478,7 +2478,7 @@
               "18273",
               "1250",
               "10.2",
-              "55218",
+              "55172",
               "3.02",
               "-",
               "Passed"
@@ -2491,8 +2491,8 @@
               "21964",
               "1250",
               "8.5",
-              "66392",
-              "3.02",
+              "66484",
+              "3.03",
               "-",
               "Passed"
             ],
@@ -2504,8 +2504,8 @@
               "20940",
               "1250",
               "8.6",
-              "65243",
-              "3.12",
+              "65104",
+              "3.11",
               "-",
               "Passed"
             ],
@@ -2517,7 +2517,7 @@
               "20354",
               "1250",
               "8.7",
-              "64929",
+              "64928",
               "3.19",
               "-",
               "Passed"
@@ -2530,7 +2530,7 @@
               "19959",
               "1250",
               "8.8",
-              "64004",
+              "64066",
               "3.21",
               "-",
               "Passed"
@@ -2637,7 +2637,7 @@
               "67%",
               "1.31",
               "100%",
-              "100.0%",
+              "99.9%",
               "2.00 (+/- 0.00)",
               "1.52",
               ">= 1.00",
@@ -2811,7 +2811,7 @@
               "100%",
               "100%",
               "100%",
-              "97%"
+              "96%"
             ],
             [
               "46-50",
@@ -2822,7 +2822,7 @@
               "100%",
               "100%",
               "100%",
-              "97%"
+              "98%"
             ],
             [
               "51-53",
@@ -2833,7 +2833,7 @@
               "100%",
               "100%",
               "100%",
-              "100%"
+              "99%"
             ],
             [
               "51-53",
@@ -2855,7 +2855,7 @@
               "100%",
               "100%",
               "100%",
-              "100%"
+              "99%"
             ]
           ]
         },

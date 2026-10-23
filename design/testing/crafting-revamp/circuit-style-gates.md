@@ -60,7 +60,7 @@
 | Overclock (no lines) vs Safe Mode (no lines) | no gear | 20 | 62% | 38% | 98.5 | 97.8 | +0.7 | Passed |
 | Overclock (no lines) vs Safe Mode (no lines) | mid gear | 20 | 52% | 48% | 99.7 | 99.7 | +0.1 | Passed |
 | Overclock (no lines) vs Safe Mode (no lines) | best gear | 20 | 50% | 50% | 100.0 | 100.0 | +0.0 | Passed |
-| Overclock (both lines) vs Safe Mode (both lines) | no gear | 20 | 57% | 42% | 99.9 | 98.7 | +1.2 | Passed |
+| Overclock (both lines) vs Safe Mode (both lines) | no gear | 20 | 57% | 42% | 100.0 | 99.0 | +1.0 | Passed |
 | Overclock (both lines) vs Safe Mode (both lines) | mid gear | 20 | 50% | 50% | 100.0 | 100.0 | -0.0 | Passed |
 | Overclock (both lines) vs Safe Mode (both lines) | best gear | 20 | 50% | 50% | 100.0 | 100.0 | +0.0 | Passed |
 

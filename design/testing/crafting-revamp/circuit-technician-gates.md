@@ -48,10 +48,10 @@
 
 | Gate | Verdict | Summary |
 | --- | --- | --- |
-| No fixed rotation | Failed | One fixed rotation comes within 10 points of adaptive play in 15 case(s): 1-10 / no gear; 1-10 / mid gear; 1-10 / best gear; 11-20 / no gear; 11-20 / mid gear; 11-20 / best gear; 21-30 / no gear; 21-30 / mid gear; 21-30 / best gear; 31-40 / no gear; 31-40 / mid gear; 31-40 / best gear; 41-53 / no gear; 41-53 / mid gear; 41-53 / best gear (smallest margin -6.8 in 1-10 / mid gear). The best rotation for each recipe alone, a reported metric, is -7.2 to 0.2 points behind adaptive play. |
+| No fixed rotation | Failed | One fixed rotation comes within 10 points of adaptive play in 15 case(s): 1-10 / no gear; 1-10 / mid gear; 1-10 / best gear; 11-20 / no gear; 11-20 / mid gear; 11-20 / best gear; 21-30 / no gear; 21-30 / mid gear; 21-30 / best gear; 31-40 / no gear; 31-40 / mid gear; 31-40 / best gear; 41-53 / no gear; 41-53 / mid gear; 41-53 / best gear (smallest margin -7.2 in 11-20 / no gear). The best rotation for each recipe alone, a reported metric, is -7.2 to 0.3 points behind adaptive play. |
 | Length | Passed | Every band and gear tier takes 10-20 actions (item craft at level) on average. |
 | Economy parity | Passed | Component stacks per item are within 10% of the legacy baseline where its success rate is at least 90%, and at most 10% above it where it is lower, at no less quality, in every band and gear tier. |
-| XP rate | Passed | Item crafts: XP per hour is at least 1.00x the legacy rate in every case (lowest 1.02x in 21-30 / no gear). |
+| XP rate | Passed | Item crafts: XP per hour is at least 1.00x the legacy rate in every case (lowest 1.02x in 1-10 / no gear). |
 | Enhancement parity | Passed | At rank 50 in best gear, the thresholds in force (50% / 85% / 85%) transfer at least 1.00 times today's expected enhancements for 1, 2, 3 slot(s) in every band (lowest 1.08 times today's). Thresholds that meet parity in every band for this quality: 100% / 100% / 100%. |
 
 ## No fixed rotation
@@ -63,10 +63,10 @@
 | 1-10 | no gear | 6 | 48.6 | 50.9 | -2.3 | >= 10 | 52.6 | Failed |
 | 1-10 | mid gear | 6 | 92.8 | 99.6 | -6.8 | >= 10 | 100.0 | Failed |
 | 1-10 | best gear | 6 | 97.5 | 99.7 | -2.2 | >= 10 | 100.0 | Failed |
-| 11-20 | no gear | 6 | 79.9 | 86.7 | -6.8 | >= 10 | 86.3 | Failed |
-| 11-20 | mid gear | 6 | 99.9 | 100.0 | -0.1 | >= 10 | 100.0 | Failed |
+| 11-20 | no gear | 6 | 80.0 | 87.3 | -7.2 | >= 10 | 86.1 | Failed |
+| 11-20 | mid gear | 6 | 99.8 | 100.0 | -0.2 | >= 10 | 100.0 | Failed |
 | 11-20 | best gear | 6 | 100.0 | 100.0 | -0.0 | >= 10 | 100.0 | Failed |
-| 21-30 | no gear | 6 | 98.8 | 98.9 | -0.0 | >= 10 | 98.6 | Failed |
+| 21-30 | no gear | 6 | 98.8 | 98.9 | -0.1 | >= 10 | 98.6 | Failed |
 | 21-30 | mid gear | 6 | 100.0 | 100.0 | -0.0 | >= 10 | 100.0 | Failed |
 | 21-30 | best gear | 6 | 100.0 | 100.0 | -0.0 | >= 10 | 100.0 | Failed |
 | 31-40 | no gear | 6 | 100.0 | 100.0 | -0.0 | >= 10 | 100.0 | Failed |
@@ -83,16 +83,16 @@
 | 1-10 | no gear | wire x3 > tune x2 > discharge_calibration > wire x3 > discharge_calibration > wire x3 > discharge_calibration > wire > discharge_calibration > tune > wire > discharge_calibration > wire | 50.7 | 50.6 | 50.9 | 48.6 |
 | 1-10 | mid gear | tune x4 > discharge_calibration > tune > wire > tune > discharge_calibration > wire x3 > tune > discharge_calibration > wire x3 > discharge_calibration > tune > wire x3 | 99.5 | 99.7 | 99.6 | 92.8 |
 | 1-10 | best gear | discharge_assembly > tune > discharge_calibration > tune x2 > patch > tune > discharge_calibration > wire > tune x2 > discharge_calibration > patch > tune > wire x3 > discharge_calibration > discharge_assembly > wire x2 | 99.7 | 99.8 | 99.7 | 97.5 |
-| 11-20 | no gear | wire x3 > tune x3 > discharge_calibration > wire x3 > tune x2 > discharge_calibration > wire x3 > discharge_calibration > wire > discharge_calibration > wire > discharge_calibration > wire | 87.3 | 87.2 | 86.7 | 79.9 |
-| 11-20 | mid gear | boost > wire > discharge_calibration > boost > wire > discharge_calibration > boost > wire > discharge_calibration > boost > wire > discharge_calibration > boost > wire > discharge_calibration > boost > wire > discharge_calibration > boost > wire > discharge_calibration > boost > wire > discharge_calibration > boost > wire > discharge_calibration > boost > wire > discharge_calibration > boost > wire > discharge_calibration > boost > wire > discharge_calibration > boost > wire > discharge_calibration > boost | 100.0 | 100.0 | 100.0 | 99.9 |
+| 11-20 | no gear | wire x3 > tune x3 > discharge_calibration > wire x4 > tune x2 > discharge_calibration > wire > discharge_calibration x2 > tune > wire > discharge_calibration > wire > discharge_calibration > wire > discharge_calibration > wire > discharge_calibration > wire > discharge_calibration > wire | 87.7 | 87.6 | 87.3 | 80.0 |
+| 11-20 | mid gear | boost > wire > discharge_calibration > boost > wire > discharge_calibration > boost > wire > discharge_calibration > boost > wire > discharge_calibration > boost > wire > discharge_calibration > boost > wire > discharge_calibration > boost > wire > discharge_calibration > boost > wire > discharge_calibration > boost > wire > discharge_calibration > boost > wire > discharge_calibration > boost > wire > discharge_calibration > boost > wire > discharge_calibration > boost > wire > discharge_calibration > boost | 100.0 | 100.0 | 100.0 | 99.8 |
 | 11-20 | best gear | wire > tune > discharge_calibration > wire > tune > discharge_calibration > wire > tune > discharge_calibration > wire > tune > discharge_calibration > wire > tune > discharge_calibration > wire > tune > discharge_calibration > wire > tune > discharge_calibration > wire > tune > discharge_calibration > wire > tune > discharge_calibration > wire > tune > discharge_calibration > wire > tune > discharge_calibration > wire > tune > discharge_calibration > wire > tune > discharge_calibration > wire | 100.0 | 100.0 | 100.0 | 100.0 |
-| 21-30 | no gear | micro_tune > boost > tune > wire > tune > micro_tune x2 > wire > tune x2 > discharge_calibration > tune x4 > discharge_calibration > wire > tune x2 > wire x7 > discharge_calibration > wire > discharge_calibration > wire x3 > discharge_calibration > wire | 98.9 | 98.8 | 98.9 | 98.8 |
-| 21-30 | mid gear | boost > tune x5 > discharge_calibration > tune x3 > wire x5 > discharge_assembly > tune > wire > tune > wire | 100.0 | 100.0 | 100.0 | 100.0 |
-| 21-30 | best gear | boost > tune x5 > discharge_calibration > tune x2 > wire x5 > discharge_assembly > tune > wire | 100.0 | 100.0 | 100.0 | 100.0 |
+| 21-30 | no gear | boost > tune > micro_tune x2 > wire x2 > tune x3 > discharge_calibration > tune x6 > wire x2 > ground > wire x3 > ground > tune > micro_tune x3 > tune > wire x3 > discharge_calibration > wire x3 > discharge_calibration > wire | 99.1 | 98.9 | 98.9 | 98.8 |
+| 21-30 | mid gear | tune x8 > discharge_calibration > wire x8 > tune > discharge_assembly > wire | 100.0 | 100.0 | 100.0 | 100.0 |
+| 21-30 | best gear | boost > tune x4 > discharge_calibration > tune x4 > wire x4 > discharge_assembly > tune > wire x2 | 100.0 | 100.0 | 100.0 | 100.0 |
 | 31-40 | no gear | boost > tune x5 > discharge_calibration > tune x4 > wire x4 > discharge_assembly > tune > wire x3 > tune > wire | 100.0 | 100.0 | 100.0 | 100.0 |
 | 31-40 | mid gear | boost > tune x5 > discharge_calibration > tune x3 > wire x5 > discharge_assembly > tune > wire > tune > wire | 100.0 | 100.0 | 100.0 | 100.0 |
-| 31-40 | best gear | boost > tune x5 > discharge_calibration > tune > wire x5 > discharge_assembly > tune > wire > tune > wire | 100.0 | 100.0 | 100.0 | 100.0 |
-| 41-53 | no gear | boost > tune x6 > discharge_calibration > tune x2 > wire x6 > discharge_assembly > tune > wire x2 | 100.0 | 100.0 | 100.0 | 100.0 |
+| 31-40 | best gear | boost > tune x5 > discharge_calibration > wire > tune > wire x4 > discharge_assembly > tune > wire > tune > wire | 100.0 | 100.0 | 100.0 | 100.0 |
+| 41-53 | no gear | boost > tune x6 > discharge_calibration > tune > wire x5 > discharge_assembly > tune > wire x3 > tune > wire | 100.0 | 100.0 | 100.0 | 100.0 |
 | 41-53 | mid gear | wire > tune x2 > wire > tune x2 > wire > tune x2 > wire > tune x2 > wire > tune x2 > wire > tune x2 > wire > tune x2 > wire > tune x2 > wire > tune x2 > wire > tune x2 > wire > tune x2 > wire > tune x2 > wire > tune x2 > wire | 100.0 | 100.0 | 100.0 | 100.0 |
 | 41-53 | best gear | boost > tune x5 > discharge_calibration > tune > wire x5 > discharge_assembly > tune > wire x2 | 100.0 | 100.0 | 100.0 | 100.0 |
 
@@ -118,77 +118,77 @@
 | 1-10 | best gear | song_460 (level 8) | tune x5 > discharge_calibration > tune x3 > wire > discharge_calibration > wire x3 > discharge_assembly > wire x3 > tune > discharge_calibration > wire | 100.0 | 99.8 | 100.0 |
 | 1-10 | best gear | d_lg_pvw1 (level 10) | wire > discharge_calibration > tune > wire > discharge_calibration > tune > wire > discharge_calibration > tune > wire > discharge_calibration > tune > wire > discharge_calibration > tune > wire > discharge_calibration > tune > wire > discharge_calibration > tune > wire > discharge_calibration > tune > wire > discharge_calibration > tune > wire > discharge_calibration > tune > wire > discharge_calibration > tune > wire > discharge_calibration > tune > wire > discharge_calibration > tune > wire | 100.0 | 99.5 | 98.8 |
 | 1-10 | best gear | id_soulstrike1 (level 10) | tune x5 > discharge_calibration > tune x4 > wire > discharge_assembly > wire x5 | 100.0 | 100.0 | 100.0 |
-| 11-20 | no gear | dhbr002 (level 13) | wire x3 > tune x3 > discharge_calibration > wire x2 > discharge_calibration > wire > discharge_calibration > wire x4 > discharge_calibration > wire | 74.7 | 74.0 | 62.4 |
-| 11-20 | no gear | song_579 (level 15) | wire x4 > tune x3 > discharge_calibration > wire > discharge_calibration > wire x5 > discharge_calibration > wire x2 > discharge_calibration > wire x2 > discharge_calibration > wire | 78.5 | 78.5 | 74.8 |
-| 11-20 | no gear | eva_boost_1 (level 18) | wire > tune x5 > discharge_calibration > wire x4 > discharge_calibration > wire x5 > discharge_calibration > wire > discharge_calibration > wire | 79.9 | 82.4 | 83.0 |
-| 11-20 | no gear | d_ar_pvs2 (level 19) | boost > tune x3 > discharge_calibration > wire x4 > discharge_calibration > wire > discharge_calibration > wire x5 > discharge_calibration > wire x2 > discharge_calibration > wire | 91.8 | 94.0 | 85.7 |
-| 11-20 | no gear | darg002 (level 20) | wire x2 > tune > wire > tune x5 > discharge_calibration > wire x4 > discharge_calibration > wire x3 > discharge_calibration > wire x3 > discharge_calibration > wire > discharge_calibration > wire | 100.0 | 98.9 | 94.1 |
-| 11-20 | no gear | id_pinningtoss1 (level 20) | wire > tune x5 > discharge_calibration > wire x6 > discharge_calibration > wire > discharge_calibration > wire x3 > discharge_calibration > wire x2 > discharge_calibration > wire | 93.0 | 92.2 | 79.3 |
+| 11-20 | no gear | dhbr002 (level 13) | wire x3 > tune x3 > discharge_calibration > wire x2 > discharge_calibration > wire > discharge_calibration > wire x4 > discharge_calibration > wire | 74.7 | 74.1 | 62.4 |
+| 11-20 | no gear | song_579 (level 15) | discharge_assembly > discharge_calibration > wire x2 > boost > tune x2 > discharge_calibration > wire x3 > tune > wire x3 > discharge_calibration > wire x2 > discharge_calibration > wire > discharge_calibration > wire > discharge_calibration > wire > discharge_calibration > wire | 75.5 | 77.7 | 71.3 |
+| 11-20 | no gear | eva_boost_1 (level 18) | wire > tune x4 > discharge_calibration > wire x5 > discharge_calibration > wire x4 > discharge_calibration > wire > discharge_calibration > wire x2 > discharge_calibration > wire | 81.8 | 82.4 | 84.9 |
+| 11-20 | no gear | d_ar_pvs2 (level 19) | boost > tune x3 > discharge_calibration > wire x4 > discharge_calibration > wire > discharge_calibration > wire x5 > discharge_calibration > wire x2 > discharge_calibration > wire | 91.4 | 95.5 | 86.4 |
+| 11-20 | no gear | darg002 (level 20) | wire x3 > tune x5 > discharge_calibration > wire x4 > discharge_calibration > wire x3 > discharge_calibration > wire x3 > discharge_calibration > wire > discharge_calibration > wire | 100.0 | 99.1 | 94.7 |
+| 11-20 | no gear | id_pinningtoss1 (level 20) | wire > tune x5 > discharge_calibration > wire x6 > discharge_calibration > wire x3 > discharge_calibration > wire > discharge_calibration > wire > discharge_calibration > wire | 93.3 | 94.7 | 80.6 |
 | 11-20 | mid gear | dhbr002 (level 13) | wire > discharge_calibration > boost > wire > discharge_calibration > boost > wire > discharge_calibration > boost > wire > discharge_calibration > boost > wire > discharge_calibration > boost > wire > discharge_calibration > boost > wire > discharge_calibration > boost > wire > discharge_calibration > boost > wire > discharge_calibration > boost > wire > discharge_calibration > boost > wire > discharge_calibration > boost > wire > discharge_calibration > boost > wire > discharge_calibration > boost > wire | 100.0 | 100.0 | 99.4 |
-| 11-20 | mid gear | song_579 (level 15) | tune x6 > discharge_calibration > wire > tune x3 > wire x2 > discharge_assembly > wire x4 | 100.0 | 100.0 | 100.0 |
-| 11-20 | mid gear | eva_boost_1 (level 18) | wire > discharge_calibration > tune > wire > discharge_calibration > tune > wire > discharge_calibration > tune > wire > discharge_calibration > tune > wire > discharge_calibration > tune > wire > discharge_calibration > tune > wire > discharge_calibration > tune > wire > discharge_calibration > tune > wire > discharge_calibration > tune > wire > discharge_calibration > tune > wire > discharge_calibration > tune > wire > discharge_calibration > tune > wire > discharge_calibration > tune > wire | 100.0 | 100.0 | 99.9 |
-| 11-20 | mid gear | d_ar_pvs2 (level 19) | tune x5 > discharge_calibration > tune x4 > wire x2 > discharge_assembly > tune > wire x4 > discharge_assembly > wire | 100.0 | 100.0 | 100.0 |
+| 11-20 | mid gear | song_579 (level 15) | tune x6 > discharge_calibration > wire > tune x3 > wire x2 > discharge_assembly > wire x4 | 100.0 | 100.0 | 99.3 |
+| 11-20 | mid gear | eva_boost_1 (level 18) | wire > discharge_calibration > tune > wire > discharge_calibration > tune > wire > discharge_calibration > tune > wire > discharge_calibration > tune > wire > discharge_calibration > tune > wire > discharge_calibration > tune > wire > discharge_calibration > tune > wire > discharge_calibration > tune > wire > discharge_calibration > tune > wire > discharge_calibration > tune > wire > discharge_calibration > tune > wire > discharge_calibration > tune > wire > discharge_calibration > tune > wire | 100.0 | 100.0 | 100.0 |
+| 11-20 | mid gear | d_ar_pvs2 (level 19) | tune x5 > discharge_calibration > tune x4 > wire x6 > tune > discharge_assembly > wire | 100.0 | 100.0 | 100.0 |
 | 11-20 | mid gear | darg002 (level 20) | boost > tune x5 > discharge_calibration > tune x2 > wire x5 > discharge_assembly > wire | 100.0 | 100.0 | 100.0 |
 | 11-20 | mid gear | id_pinningtoss1 (level 20) | tune x6 > discharge_calibration > tune x4 > wire x2 > discharge_assembly > wire x4 > discharge_assembly > tune > wire | 100.0 | 100.0 | 100.0 |
 | 11-20 | best gear | dhbr002 (level 13) | wire > tune > discharge_calibration > wire > tune > discharge_calibration > wire > tune > discharge_calibration > wire > tune > discharge_calibration > wire > tune > discharge_calibration > wire > tune > discharge_calibration > wire > tune > discharge_calibration > wire > tune > discharge_calibration > wire > tune > discharge_calibration > wire > tune > discharge_calibration > wire > tune > discharge_calibration > wire > tune > discharge_calibration > wire > tune > discharge_calibration > wire | 100.0 | 100.0 | 100.0 |
 | 11-20 | best gear | song_579 (level 15) | tune x6 > discharge_calibration > tune x2 > wire x4 > discharge_assembly > wire | 100.0 | 100.0 | 100.0 |
-| 11-20 | best gear | eva_boost_1 (level 18) | tune x4 > discharge_calibration > tune x5 > wire x2 > discharge_assembly > wire > tune > wire x2 > discharge_assembly > wire | 100.0 | 100.0 | 100.0 |
+| 11-20 | best gear | eva_boost_1 (level 18) | tune x4 > discharge_calibration > tune x5 > discharge_assembly > wire x4 > discharge_assembly > tune > wire x3 | 100.0 | 100.0 | 100.0 |
 | 11-20 | best gear | d_ar_pvs2 (level 19) | tune x5 > discharge_calibration > tune x3 > wire x3 > discharge_assembly > tune > wire x4 | 100.0 | 100.0 | 100.0 |
 | 11-20 | best gear | darg002 (level 20) | boost > tune x5 > discharge_calibration > boost > wire x4 > discharge_assembly > wire | 100.0 | 100.0 | 100.0 |
 | 11-20 | best gear | id_pinningtoss1 (level 20) | tune x6 > discharge_calibration > tune > wire > tune > wire x3 > discharge_assembly > wire x2 > tune > wire | 100.0 | 100.0 | 100.0 |
-| 21-30 | no gear | wen_cft_smth3 (level 23) | boost x2 > tune x3 > discharge_calibration > wire x9 > discharge_calibration > wire > discharge_calibration > wire | 91.6 | 93.2 | 93.1 |
-| 21-30 | no gear | ion_armor_3 (level 25) | boost > tune x4 > discharge_calibration > tune x6 > wire x2 > discharge_assembly > wire > tune > wire x2 > discharge_assembly > wire | 100.0 | 100.0 | 100.0 |
-| 21-30 | no gear | de_vblade_b1 (level 27) | tune x7 > discharge_calibration > tune x4 > wire x4 > discharge_assembly > tune > wire x4 | 100.0 | 100.0 | 100.0 |
+| 21-30 | no gear | wen_cft_smth3 (level 23) | boost x2 > tune x3 > discharge_calibration > wire x9 > discharge_calibration > wire > discharge_calibration > wire | 91.4 | 93.4 | 93.0 |
+| 21-30 | no gear | ion_armor_3 (level 25) | tune x8 > discharge_calibration > tune x2 > wire x6 > discharge_assembly > wire | 100.0 | 100.0 | 100.0 |
+| 21-30 | no gear | de_vblade_b1 (level 27) | tune x8 > discharge_calibration > wire > tune x2 > wire x5 > discharge_assembly > tune > wire x2 | 100.0 | 100.0 | 100.0 |
 | 21-30 | no gear | dhbe003 (level 29) | boost > tune x5 > discharge_calibration > tune x4 > wire x4 > discharge_assembly > wire x3 | 100.0 | 100.0 | 100.0 |
-| 21-30 | no gear | dsbr003 (level 30) | boost > tune x6 > discharge_calibration > tune > wire x6 > discharge_assembly > wire | 100.0 | 100.0 | 100.0 |
+| 21-30 | no gear | dsbr003 (level 30) | boost > tune x5 > discharge_calibration > tune x3 > wire x5 > discharge_assembly > tune > wire | 100.0 | 100.0 | 100.0 |
 | 21-30 | no gear | id_linebreaker3 (level 30) | tune x8 > discharge_calibration > tune x2 > wire x6 > discharge_assembly > wire > tune > wire | 100.0 | 100.0 | 100.0 |
 | 21-30 | mid gear | wen_cft_smth3 (level 23) | tune x8 > discharge_calibration > tune > wire x6 > discharge_assembly > wire > tune > wire | 100.0 | 100.0 | 100.0 |
-| 21-30 | mid gear | ion_armor_3 (level 25) | boost > tune x5 > discharge_calibration > tune x3 > wire x5 > discharge_assembly > tune > wire | 100.0 | 100.0 | 100.0 |
-| 21-30 | mid gear | de_vblade_b1 (level 27) | tune x8 > discharge_calibration > wire > tune > wire x5 > discharge_assembly > tune > wire | 100.0 | 100.0 | 100.0 |
-| 21-30 | mid gear | dhbe003 (level 29) | boost > tune x5 > discharge_calibration > tune x2 > wire x5 > discharge_assembly > tune > wire | 100.0 | 100.0 | 100.0 |
+| 21-30 | mid gear | ion_armor_3 (level 25) | boost > tune x4 > discharge_calibration > tune x4 > wire x3 > discharge_assembly > wire x2 > tune > wire x2 | 100.0 | 100.0 | 100.0 |
+| 21-30 | mid gear | de_vblade_b1 (level 27) | tune x8 > discharge_calibration > tune > wire x6 > discharge_assembly > tune > wire | 100.0 | 100.0 | 100.0 |
+| 21-30 | mid gear | dhbe003 (level 29) | boost > tune x4 > discharge_calibration > tune x4 > wire x4 > discharge_assembly > tune > wire | 100.0 | 100.0 | 100.0 |
 | 21-30 | mid gear | dsbr003 (level 30) | boost > tune x5 > discharge_calibration > tune x2 > wire x5 > discharge_assembly > wire | 100.0 | 100.0 | 100.0 |
-| 21-30 | mid gear | id_linebreaker3 (level 30) | tune x7 > discharge_calibration > wire > tune x2 > wire x4 > discharge_assembly > wire > tune > wire | 100.0 | 100.0 | 100.0 |
-| 21-30 | best gear | wen_cft_smth3 (level 23) | boost > tune x4 > discharge_calibration > tune x4 > wire x4 > discharge_assembly > tune > wire | 100.0 | 100.0 | 100.0 |
-| 21-30 | best gear | ion_armor_3 (level 25) | boost > tune x5 > discharge_calibration > tune x2 > wire x5 > discharge_assembly | 100.0 | 100.0 | 100.0 |
+| 21-30 | mid gear | id_linebreaker3 (level 30) | tune x8 > discharge_calibration > boost > wire x5 > discharge_assembly > boost > wire > tune > wire | 100.0 | 100.0 | 100.0 |
+| 21-30 | best gear | wen_cft_smth3 (level 23) | tune x7 > discharge_calibration > wire > tune > wire x4 > discharge_assembly > wire > tune > wire | 100.0 | 100.0 | 100.0 |
+| 21-30 | best gear | ion_armor_3 (level 25) | tune x7 > discharge_calibration > tune > wire x5 > discharge_assembly > wire | 100.0 | 100.0 | 100.0 |
 | 21-30 | best gear | de_vblade_b1 (level 27) | tune x8 > discharge_calibration > wire x6 > discharge_assembly > wire | 100.0 | 100.0 | 100.0 |
 | 21-30 | best gear | dhbe003 (level 29) | boost > tune x5 > discharge_calibration > tune > wire x5 > discharge_assembly > wire | 100.0 | 100.0 | 100.0 |
 | 21-30 | best gear | dsbr003 (level 30) | boost > tune x5 > discharge_calibration > boost > wire x4 > discharge_assembly | 100.0 | 100.0 | 100.0 |
-| 21-30 | best gear | id_linebreaker3 (level 30) | tune x7 > discharge_calibration > tune > wire x5 > discharge_assembly > wire > tune > wire | 100.0 | 100.0 | 100.0 |
-| 31-40 | no gear | aen_cft_fab4 (level 33) | tune x7 > discharge_calibration > tune x3 > wire x5 > discharge_assembly > tune > wire x2 > tune > wire | 100.0 | 100.0 | 100.0 |
-| 31-40 | no gear | config_ind4 (level 35) | boost > tune x5 > discharge_calibration > tune x4 > wire x4 > discharge_assembly > tune > wire x3 | 100.0 | 100.0 | 100.0 |
+| 21-30 | best gear | id_linebreaker3 (level 30) | tune x8 > discharge_calibration > wire x6 > discharge_assembly > wire | 100.0 | 100.0 | 100.0 |
+| 31-40 | no gear | aen_cft_fab4 (level 33) | tune x8 > discharge_calibration > wire > tune > wire x6 > discharge_assembly > tune x2 > wire | 100.0 | 100.0 | 100.0 |
+| 31-40 | no gear | config_ind4 (level 35) | tune x8 > discharge_calibration > tune > wire x6 > discharge_assembly > tune > wire x2 | 100.0 | 100.0 | 100.0 |
 | 31-40 | no gear | d_lg_mws4 (level 37) | boost > tune x5 > discharge_calibration > tune x3 > wire x5 > discharge_assembly > tune > wire | 100.0 | 100.0 | 100.0 |
 | 31-40 | no gear | d_hd_mwa4 (level 39) | boost > tune x5 > discharge_calibration > tune > wire > tune > wire x4 > discharge_assembly > tune > wire x2 | 100.0 | 100.0 | 100.0 |
 | 31-40 | no gear | dfhl004 (level 40) | boost > tune x5 > discharge_calibration > tune x2 > wire x5 > discharge_assembly > tune > wire x2 | 100.0 | 100.0 | 100.0 |
-| 31-40 | no gear | id_conctoss2 (level 40) | tune x8 > discharge_calibration > tune x2 > wire x6 > discharge_assembly > wire > tune > wire | 100.0 | 100.0 | 100.0 |
-| 31-40 | mid gear | aen_cft_fab4 (level 33) | boost > tune x4 > discharge_calibration > tune x5 > wire x3 > discharge_assembly > wire x3 > tune > wire | 100.0 | 100.0 | 100.0 |
-| 31-40 | mid gear | config_ind4 (level 35) | boost > tune x5 > discharge_calibration > tune x2 > wire x4 > discharge_assembly > wire x3 > tune > wire | 100.0 | 100.0 | 100.0 |
+| 31-40 | no gear | id_conctoss2 (level 40) | tune x9 > discharge_calibration > wire x7 > discharge_assembly > wire > tune > wire | 100.0 | 100.0 | 100.0 |
+| 31-40 | mid gear | aen_cft_fab4 (level 33) | tune x8 > discharge_calibration > boost > wire x5 > discharge_assembly > tune > wire | 100.0 | 100.0 | 100.0 |
+| 31-40 | mid gear | config_ind4 (level 35) | boost > tune x5 > discharge_calibration > tune x3 > wire x5 > discharge_assembly > tune > wire | 100.0 | 100.0 | 100.0 |
 | 31-40 | mid gear | d_lg_mws4 (level 37) | boost > tune x5 > discharge_calibration > tune x2 > wire x5 > discharge_assembly > tune > wire | 100.0 | 100.0 | 100.0 |
 | 31-40 | mid gear | d_hd_mwa4 (level 39) | boost > tune x5 > discharge_calibration > wire x2 > tune > wire x3 > discharge_assembly > wire x2 | 100.0 | 100.0 | 100.0 |
-| 31-40 | mid gear | dfhl004 (level 40) | boost > tune x5 > discharge_calibration > wire x2 > tune > wire x4 > discharge_assembly | 100.0 | 100.0 | 100.0 |
-| 31-40 | mid gear | id_conctoss2 (level 40) | tune x7 > discharge_calibration > wire > tune x2 > wire x5 > discharge_assembly > tune > wire | 100.0 | 100.0 | 100.0 |
+| 31-40 | mid gear | dfhl004 (level 40) | boost > tune x5 > discharge_calibration > tune > wire x5 > discharge_assembly > tune > wire x2 | 100.0 | 100.0 | 100.0 |
+| 31-40 | mid gear | id_conctoss2 (level 40) | tune x8 > discharge_calibration > wire x8 > tune > wire | 100.0 | 100.0 | 100.0 |
 | 31-40 | best gear | aen_cft_fab4 (level 33) | tune x7 > discharge_calibration > wire > tune > wire x4 > discharge_assembly > wire | 100.0 | 100.0 | 100.0 |
-| 31-40 | best gear | config_ind4 (level 35) | boost > tune x5 > discharge_calibration > tune x2 > wire x5 > discharge_assembly | 100.0 | 100.0 | 100.0 |
+| 31-40 | best gear | config_ind4 (level 35) | tune x7 > discharge_calibration > wire x5 > discharge_assembly > wire > tune > wire | 100.0 | 100.0 | 100.0 |
 | 31-40 | best gear | d_lg_mws4 (level 37) | boost > tune x5 > discharge_calibration > tune > wire x5 > discharge_assembly > wire | 100.0 | 100.0 | 100.0 |
 | 31-40 | best gear | d_hd_mwa4 (level 39) | boost > tune x5 > discharge_calibration > boost > wire x4 > discharge_assembly | 100.0 | 100.0 | 100.0 |
 | 31-40 | best gear | dfhl004 (level 40) | boost > tune x5 > discharge_calibration > boost > wire x4 > discharge_assembly | 100.0 | 100.0 | 100.0 |
 | 31-40 | best gear | id_conctoss2 (level 40) | tune x7 > discharge_calibration > tune > wire x5 > discharge_assembly > wire > tune > wire | 100.0 | 100.0 | 100.0 |
-| 41-53 | no gear | dhbr005 (level 43) | boost > tune x5 > discharge_calibration > tune x3 > wire x5 > discharge_assembly > tune > wire | 100.0 | 100.0 | 100.0 |
-| 41-53 | no gear | therm_amp_4 (level 46) | boost > tune x6 > discharge_calibration > wire x6 > discharge_assembly > tune > wire x2 | 100.0 | 100.0 | 100.0 |
-| 41-53 | no gear | wen_eva5 (level 48) | boost > tune x6 > discharge_calibration > tune x2 > wire x6 > discharge_assembly > wire > tune > wire | 100.0 | 100.0 | 100.0 |
+| 41-53 | no gear | dhbr005 (level 43) | boost > tune x5 > discharge_calibration > wire > tune x3 > wire x4 > discharge_assembly > tune > wire x2 | 100.0 | 100.0 | 100.0 |
+| 41-53 | no gear | therm_amp_4 (level 46) | boost > tune x6 > discharge_calibration > boost > wire x5 > discharge_assembly > tune > wire | 100.0 | 100.0 | 100.0 |
+| 41-53 | no gear | wen_eva5 (level 48) | tune x8 > discharge_calibration > tune > wire x7 > discharge_assembly > tune > wire | 100.0 | 100.0 | 100.0 |
 | 41-53 | no gear | d_lg_mpv5 (level 49) | boost > tune x6 > discharge_calibration > boost > wire x5 > discharge_assembly > tune > wire | 100.0 | 100.0 | 100.0 |
-| 41-53 | no gear | id_infusion2 (level 50) | boost > tune x6 > discharge_calibration > wire > tune x2 > wire x3 > discharge_assembly > wire x5 | 100.0 | 100.0 | 100.0 |
+| 41-53 | no gear | id_infusion2 (level 50) | tune x8 > discharge_calibration > wire x6 > discharge_assembly > wire x2 > tune > wire | 100.0 | 100.0 | 100.0 |
 | 41-53 | no gear | cap_quadlas1 (level 52) | boost > tune x6 > discharge_calibration > tune x2 > wire x6 > discharge_assembly > tune > wire x2 | 100.0 | 100.0 | 100.0 |
 | 41-53 | mid gear | dhbr005 (level 43) | boost > tune x5 > discharge_calibration > tune x2 > wire x5 > discharge_assembly > tune > wire | 100.0 | 100.0 | 100.0 |
-| 41-53 | mid gear | therm_amp_4 (level 46) | boost > tune x6 > discharge_calibration > wire x6 > discharge_assembly > wire | 100.0 | 100.0 | 100.0 |
-| 41-53 | mid gear | wen_eva5 (level 48) | boost > tune x6 > discharge_calibration > tune > wire x6 > discharge_assembly > tune > wire | 100.0 | 100.0 | 100.0 |
+| 41-53 | mid gear | therm_amp_4 (level 46) | boost > tune x5 > discharge_calibration > tune > wire x5 > discharge_assembly > tune > wire x2 | 100.0 | 100.0 | 100.0 |
+| 41-53 | mid gear | wen_eva5 (level 48) | tune x8 > discharge_calibration > wire x7 > discharge_assembly > wire | 100.0 | 100.0 | 100.0 |
 | 41-53 | mid gear | d_lg_mpv5 (level 49) | boost > tune x6 > discharge_calibration > wire x6 > discharge_assembly > wire | 100.0 | 100.0 | 100.0 |
-| 41-53 | mid gear | id_infusion2 (level 50) | boost > tune x6 > discharge_calibration > tune > wire x4 > discharge_assembly > wire x4 | 100.0 | 100.0 | 100.0 |
+| 41-53 | mid gear | id_infusion2 (level 50) | tune x9 > discharge_assembly > tune > wire x4 > discharge_assembly > tune > wire | 100.0 | 100.0 | 100.0 |
 | 41-53 | mid gear | cap_quadlas1 (level 52) | boost > tune x5 > discharge_calibration > tune x2 > wire x6 > discharge_assembly > tune > wire | 100.0 | 100.0 | 100.0 |
-| 41-53 | best gear | dhbr005 (level 43) | boost > tune x5 > discharge_calibration > boost > wire x4 > discharge_assembly > tune > wire | 100.0 | 100.0 | 100.0 |
+| 41-53 | best gear | dhbr005 (level 43) | boost > tune x5 > discharge_calibration > tune > wire x5 > discharge_assembly > wire | 100.0 | 100.0 | 100.0 |
 | 41-53 | best gear | therm_amp_4 (level 46) | boost > tune x5 > discharge_calibration > boost > wire x4 > discharge_assembly > wire | 100.0 | 100.0 | 100.0 |
-| 41-53 | best gear | wen_eva5 (level 48) | tune x6 > discharge_calibration > tune x2 > wire x5 > discharge_assembly > wire | 100.0 | 100.0 | 100.0 |
+| 41-53 | best gear | wen_eva5 (level 48) | tune x7 > discharge_calibration > wire x6 > discharge_assembly > tune > wire | 100.0 | 100.0 | 100.0 |
 | 41-53 | best gear | d_lg_mpv5 (level 49) | boost > tune x5 > discharge_calibration > boost > wire x4 > discharge_assembly > wire | 100.0 | 100.0 | 100.0 |
-| 41-53 | best gear | id_infusion2 (level 50) | boost > tune x5 > discharge_calibration > tune > wire x5 > discharge_assembly > wire | 100.0 | 100.0 | 100.0 |
+| 41-53 | best gear | id_infusion2 (level 50) | tune x8 > discharge_assembly > tune > wire x3 > discharge_assembly > tune > wire | 100.0 | 100.0 | 100.0 |
 | 41-53 | best gear | cap_quadlas1 (level 52) | boost > tune x6 > discharge_calibration > wire x6 > discharge_assembly > wire | 100.0 | 100.0 | 100.0 |
 
 ## Length
@@ -200,18 +200,18 @@
 | 1-10 | no gear | 6 | 14.4 | 12.1 | 16.3 | 0 | 10-20 | Passed |
 | 1-10 | mid gear | 6 | 17.1 | 16.0 | 17.8 | 0 | 10-20 | Passed |
 | 1-10 | best gear | 6 | 15.6 | 14.1 | 16.4 | 0 | 10-20 | Passed |
-| 11-20 | no gear | 6 | 16.7 | 15.1 | 18.3 | 0 | 10-20 | Passed |
-| 11-20 | mid gear | 6 | 16.5 | 15.0 | 18.4 | 0 | 10-20 | Passed |
-| 11-20 | best gear | 6 | 14.5 | 13.5 | 16.3 | 0 | 10-20 | Passed |
-| 21-30 | no gear | 6 | 18.1 | 16.1 | 19.4 | 0 | 10-20 | Passed |
-| 21-30 | mid gear | 6 | 16.4 | 14.8 | 17.6 | 0 | 10-20 | Passed |
-| 21-30 | best gear | 6 | 14.4 | 12.4 | 15.5 | 0 | 10-20 | Passed |
-| 31-40 | no gear | 6 | 17.2 | 15.7 | 18.6 | 0 | 10-20 | Passed |
-| 31-40 | mid gear | 6 | 15.5 | 14.2 | 16.7 | 0 | 10-20 | Passed |
-| 31-40 | best gear | 6 | 13.7 | 12.8 | 14.8 | 0 | 10-20 | Passed |
-| 41-53 | no gear | 6 | 16.7 | 14.2 | 18.1 | 0 | 10-20 | Passed |
-| 41-53 | mid gear | 6 | 14.9 | 12.6 | 16.5 | 0 | 10-20 | Passed |
-| 41-53 | best gear | 6 | 13.2 | 11.6 | 14.3 | 0 | 10-20 | Passed |
+| 11-20 | no gear | 6 | 16.7 | 15.1 | 18.2 | 0 | 10-20 | Passed |
+| 11-20 | mid gear | 6 | 16.3 | 14.7 | 18.2 | 0 | 10-20 | Passed |
+| 11-20 | best gear | 6 | 14.3 | 13.3 | 15.9 | 0 | 10-20 | Passed |
+| 21-30 | no gear | 6 | 18.0 | 16.2 | 19.5 | 0 | 10-20 | Passed |
+| 21-30 | mid gear | 6 | 16.2 | 14.6 | 17.3 | 0 | 10-20 | Passed |
+| 21-30 | best gear | 6 | 14.3 | 12.3 | 15.3 | 0 | 10-20 | Passed |
+| 31-40 | no gear | 6 | 17.0 | 15.7 | 18.2 | 0 | 10-20 | Passed |
+| 31-40 | mid gear | 6 | 15.2 | 13.8 | 16.3 | 0 | 10-20 | Passed |
+| 31-40 | best gear | 6 | 13.5 | 12.4 | 14.7 | 0 | 10-20 | Passed |
+| 41-53 | no gear | 6 | 16.4 | 13.9 | 17.9 | 0 | 10-20 | Passed |
+| 41-53 | mid gear | 6 | 14.7 | 12.3 | 16.1 | 0 | 10-20 | Passed |
+| 41-53 | best gear | 6 | 12.9 | 11.3 | 14.4 | 0 | 10-20 | Passed |
 
 ## Economy parity
 
@@ -253,54 +253,54 @@
 | 1-10 | best gear, 1 enhancement | 722 | 9.1 | 47421 | 2497 | 17.9 | 62809 | 1.32 | - | Passed |
 | 1-10 | best gear, 2 enhancements | 716 | 9.6 | 44932 | 2464 | 17.6 | 62904 | 1.40 | - | Passed |
 | 1-10 | best gear, 3 enhancements | 689 | 10.0 | 41440 | 2486 | 17.8 | 62843 | 1.52 | - | Passed |
-| 11-20 | no gear | 577 | 8.0 | 43466 | 1662 | 16.7 | 44694 | 1.03 | - | Passed |
-| 11-20 | no gear, 1 enhancement | 390 | 8.7 | 27067 | 1751 | 19.1 | 41327 | 1.53 | - | Passed |
-| 11-20 | no gear, 2 enhancements | 262 | 7.3 | 21603 | 1738 | 19.1 | 40885 | 1.89 | - | Passed |
-| 11-20 | no gear, 3 enhancements | 251 | 8.0 | 18827 | 1749 | 19.1 | 41214 | 2.19 | - | Passed |
-| 11-20 | mid gear | 656 | 10.4 | 38034 | 1847 | 16.5 | 50373 | 1.32 | - | Passed |
-| 11-20 | mid gear, 1 enhancement | 639 | 11.6 | 32975 | 1845 | 17.8 | 46532 | 1.41 | - | Passed |
-| 11-20 | mid gear, 2 enhancements | 621 | 12.8 | 29212 | 1845 | 17.8 | 46756 | 1.60 | - | Passed |
-| 11-20 | mid gear, 3 enhancements | 568 | 13.9 | 24621 | 1844 | 17.8 | 46706 | 1.90 | - | Passed |
-| 11-20 | best gear | 766 | 14.6 | 31378 | 1848 | 14.5 | 57429 | 1.83 | - | Passed |
-| 11-20 | best gear, 1 enhancement | 753 | 15.3 | 29481 | 1848 | 15.7 | 52979 | 1.80 | - | Passed |
-| 11-20 | best gear, 2 enhancements | 739 | 16.1 | 27545 | 1848 | 15.8 | 52671 | 1.91 | - | Passed |
-| 11-20 | best gear, 3 enhancements | 718 | 16.6 | 25960 | 1848 | 15.8 | 52788 | 2.03 | - | Passed |
-| 21-30 | no gear | 630 | 11.3 | 33568 | 1372 | 18.1 | 34124 | 1.02 | - | Passed |
-| 21-30 | no gear, 1 enhancement | 618 | 12.3 | 30162 | 1373 | 19.1 | 32304 | 1.07 | - | Passed |
-| 21-30 | no gear, 2 enhancements | 605 | 13.1 | 27717 | 1373 | 19.1 | 32266 | 1.16 | - | Passed |
-| 21-30 | no gear, 3 enhancements | 575 | 13.8 | 24961 | 1375 | 19.2 | 32297 | 1.29 | - | Passed |
-| 21-30 | mid gear | 684 | 16.8 | 24373 | 1380 | 16.4 | 37850 | 1.55 | - | Passed |
-| 21-30 | mid gear, 1 enhancement | 676 | 17.4 | 23323 | 1380 | 17.3 | 35829 | 1.54 | - | Passed |
-| 21-30 | mid gear, 2 enhancements | 657 | 17.7 | 22315 | 1380 | 17.2 | 36150 | 1.62 | - | Passed |
-| 21-30 | mid gear, 3 enhancements | 655 | 17.9 | 21904 | 1380 | 17.4 | 35737 | 1.63 | - | Passed |
-| 21-30 | best gear | 766 | 22.5 | 20425 | 1380 | 14.4 | 43019 | 2.11 | - | Passed |
-| 21-30 | best gear, 1 enhancement | 761 | 22.7 | 20084 | 1380 | 15.0 | 41265 | 2.05 | - | Passed |
-| 21-30 | best gear, 2 enhancements | 752 | 23.3 | 19334 | 1380 | 14.9 | 41551 | 2.15 | - | Passed |
-| 21-30 | best gear, 3 enhancements | 741 | 23.1 | 19223 | 1380 | 15.0 | 41385 | 2.15 | - | Passed |
-| 31-40 | no gear | 723 | 14.5 | 29893 | 1200 | 17.2 | 31355 | 1.05 | - | Passed |
-| 31-40 | no gear, 1 enhancement | 680 | 14.5 | 28109 | 1200 | 18.2 | 29701 | 1.06 | - | Passed |
-| 31-40 | no gear, 2 enhancements | 621 | 15.2 | 24578 | 1200 | 18.1 | 29883 | 1.22 | - | Passed |
-| 31-40 | no gear, 3 enhancements | 588 | 16.0 | 22065 | 1200 | 18.2 | 29636 | 1.34 | - | Passed |
-| 31-40 | mid gear | 808 | 18.9 | 25624 | 1200 | 15.5 | 34943 | 1.36 | - | Passed |
-| 31-40 | mid gear, 1 enhancement | 784 | 19.5 | 24177 | 1200 | 16.1 | 33521 | 1.39 | - | Passed |
-| 31-40 | mid gear, 2 enhancements | 734 | 19.1 | 23010 | 1200 | 16.2 | 33393 | 1.45 | - | Passed |
-| 31-40 | mid gear, 3 enhancements | 683 | 18.4 | 22225 | 1200 | 16.1 | 33490 | 1.51 | - | Passed |
-| 31-40 | best gear | 888 | 24.6 | 21677 | 1200 | 13.7 | 39456 | 1.82 | - | Passed |
-| 31-40 | best gear, 1 enhancement | 881 | 25.3 | 20886 | 1200 | 14.3 | 37848 | 1.81 | - | Passed |
-| 31-40 | best gear, 2 enhancements | 854 | 25.3 | 20213 | 1200 | 14.2 | 37972 | 1.88 | - | Passed |
-| 31-40 | best gear, 3 enhancements | 815 | 23.8 | 20539 | 1200 | 14.1 | 38341 | 1.87 | - | Passed |
-| 41-53 | no gear | 723 | 17.5 | 24786 | 1250 | 16.7 | 33752 | 1.36 | - | Passed |
-| 41-53 | no gear, 1 enhancement | 633 | 16.0 | 23699 | 1250 | 16.7 | 33705 | 1.42 | - | Passed |
-| 41-53 | no gear, 2 enhancements | 537 | 16.6 | 19443 | 1250 | 16.8 | 33500 | 1.72 | - | Passed |
-| 41-53 | no gear, 3 enhancements | 455 | 17.4 | 15739 | 1250 | 16.8 | 33384 | 2.12 | - | Passed |
-| 41-53 | mid gear | 871 | 23.9 | 21886 | 1250 | 14.9 | 37658 | 1.72 | - | Passed |
-| 41-53 | mid gear, 1 enhancement | 777 | 22.1 | 21084 | 1250 | 15.0 | 37481 | 1.78 | - | Passed |
-| 41-53 | mid gear, 2 enhancements | 679 | 20.0 | 20347 | 1250 | 15.2 | 36892 | 1.81 | - | Passed |
-| 41-53 | mid gear, 3 enhancements | 587 | 19.3 | 18273 | 1250 | 15.2 | 36892 | 2.02 | - | Passed |
-| 41-53 | best gear | 1042 | 28.5 | 21964 | 1250 | 13.2 | 42769 | 1.95 | - | Passed |
-| 41-53 | best gear, 1 enhancement | 961 | 27.5 | 20940 | 1250 | 13.2 | 42758 | 2.04 | - | Passed |
-| 41-53 | best gear, 2 enhancements | 880 | 25.9 | 20354 | 1250 | 13.2 | 42505 | 2.09 | - | Passed |
-| 41-53 | best gear, 3 enhancements | 775 | 23.3 | 19959 | 1250 | 13.4 | 42055 | 2.11 | - | Passed |
+| 11-20 | no gear | 577 | 8.0 | 43466 | 1663 | 16.7 | 44822 | 1.03 | - | Passed |
+| 11-20 | no gear, 1 enhancement | 390 | 8.7 | 27067 | 1755 | 19.0 | 41539 | 1.53 | - | Passed |
+| 11-20 | no gear, 2 enhancements | 262 | 7.3 | 21603 | 1746 | 19.0 | 41292 | 1.91 | - | Passed |
+| 11-20 | no gear, 3 enhancements | 251 | 8.0 | 18827 | 1747 | 19.0 | 41280 | 2.19 | - | Passed |
+| 11-20 | mid gear | 656 | 10.4 | 38034 | 1846 | 16.3 | 50889 | 1.34 | - | Passed |
+| 11-20 | mid gear, 1 enhancement | 639 | 11.6 | 32975 | 1844 | 17.7 | 46973 | 1.42 | - | Passed |
+| 11-20 | mid gear, 2 enhancements | 621 | 12.8 | 29212 | 1845 | 17.8 | 46664 | 1.60 | - | Passed |
+| 11-20 | mid gear, 3 enhancements | 568 | 13.9 | 24621 | 1844 | 17.8 | 46655 | 1.89 | - | Passed |
+| 11-20 | best gear | 766 | 14.6 | 31378 | 1848 | 14.3 | 58118 | 1.85 | - | Passed |
+| 11-20 | best gear, 1 enhancement | 753 | 15.3 | 29481 | 1848 | 15.6 | 53427 | 1.81 | - | Passed |
+| 11-20 | best gear, 2 enhancements | 739 | 16.1 | 27545 | 1848 | 15.7 | 52990 | 1.92 | - | Passed |
+| 11-20 | best gear, 3 enhancements | 718 | 16.6 | 25960 | 1848 | 15.7 | 52850 | 2.04 | - | Passed |
+| 21-30 | no gear | 630 | 11.3 | 33568 | 1372 | 18.0 | 34307 | 1.02 | - | Passed |
+| 21-30 | no gear, 1 enhancement | 618 | 12.3 | 30162 | 1371 | 18.9 | 32589 | 1.08 | - | Passed |
+| 21-30 | no gear, 2 enhancements | 605 | 13.1 | 27717 | 1371 | 19.0 | 32429 | 1.17 | - | Passed |
+| 21-30 | no gear, 3 enhancements | 575 | 13.8 | 24961 | 1373 | 18.9 | 32649 | 1.31 | - | Passed |
+| 21-30 | mid gear | 684 | 16.8 | 24373 | 1380 | 16.2 | 38262 | 1.57 | - | Passed |
+| 21-30 | mid gear, 1 enhancement | 676 | 17.4 | 23323 | 1380 | 17.1 | 36397 | 1.56 | - | Passed |
+| 21-30 | mid gear, 2 enhancements | 657 | 17.7 | 22315 | 1380 | 17.2 | 36175 | 1.62 | - | Passed |
+| 21-30 | mid gear, 3 enhancements | 655 | 17.9 | 21904 | 1380 | 17.1 | 36297 | 1.66 | - | Passed |
+| 21-30 | best gear | 766 | 22.5 | 20425 | 1380 | 14.3 | 43511 | 2.13 | - | Passed |
+| 21-30 | best gear, 1 enhancement | 761 | 22.7 | 20084 | 1380 | 14.9 | 41793 | 2.08 | - | Passed |
+| 21-30 | best gear, 2 enhancements | 752 | 23.3 | 19334 | 1380 | 14.9 | 41808 | 2.16 | - | Passed |
+| 21-30 | best gear, 3 enhancements | 741 | 23.1 | 19223 | 1380 | 14.9 | 41713 | 2.17 | - | Passed |
+| 31-40 | no gear | 723 | 14.5 | 29893 | 1200 | 17.0 | 31795 | 1.06 | - | Passed |
+| 31-40 | no gear, 1 enhancement | 680 | 14.5 | 28109 | 1200 | 18.0 | 30021 | 1.07 | - | Passed |
+| 31-40 | no gear, 2 enhancements | 621 | 15.2 | 24578 | 1200 | 18.0 | 30004 | 1.22 | - | Passed |
+| 31-40 | no gear, 3 enhancements | 588 | 16.0 | 22065 | 1200 | 18.1 | 29897 | 1.35 | - | Passed |
+| 31-40 | mid gear | 808 | 18.9 | 25624 | 1200 | 15.2 | 35470 | 1.38 | - | Passed |
+| 31-40 | mid gear, 1 enhancement | 784 | 19.5 | 24177 | 1200 | 15.8 | 34182 | 1.41 | - | Passed |
+| 31-40 | mid gear, 2 enhancements | 734 | 19.1 | 23010 | 1200 | 15.9 | 33890 | 1.47 | - | Passed |
+| 31-40 | mid gear, 3 enhancements | 683 | 18.4 | 22225 | 1200 | 15.9 | 33978 | 1.53 | - | Passed |
+| 31-40 | best gear | 888 | 24.6 | 21677 | 1200 | 13.5 | 39954 | 1.84 | - | Passed |
+| 31-40 | best gear, 1 enhancement | 881 | 25.3 | 20886 | 1200 | 14.0 | 38523 | 1.84 | - | Passed |
+| 31-40 | best gear, 2 enhancements | 854 | 25.3 | 20213 | 1200 | 14.0 | 38477 | 1.90 | - | Passed |
+| 31-40 | best gear, 3 enhancements | 815 | 23.8 | 20539 | 1200 | 13.9 | 38758 | 1.89 | - | Passed |
+| 41-53 | no gear | 723 | 17.5 | 24786 | 1250 | 16.4 | 34378 | 1.39 | - | Passed |
+| 41-53 | no gear, 1 enhancement | 633 | 16.0 | 23699 | 1250 | 16.5 | 34049 | 1.44 | - | Passed |
+| 41-53 | no gear, 2 enhancements | 537 | 16.6 | 19443 | 1250 | 16.6 | 33871 | 1.74 | - | Passed |
+| 41-53 | no gear, 3 enhancements | 455 | 17.4 | 15739 | 1250 | 16.7 | 33762 | 2.15 | - | Passed |
+| 41-53 | mid gear | 871 | 23.9 | 21886 | 1250 | 14.7 | 38238 | 1.75 | - | Passed |
+| 41-53 | mid gear, 1 enhancement | 777 | 22.1 | 21084 | 1250 | 14.9 | 37868 | 1.80 | - | Passed |
+| 41-53 | mid gear, 2 enhancements | 679 | 20.0 | 20347 | 1250 | 14.9 | 37632 | 1.85 | - | Passed |
+| 41-53 | mid gear, 3 enhancements | 587 | 19.3 | 18273 | 1250 | 15.1 | 37349 | 2.04 | - | Passed |
+| 41-53 | best gear | 1042 | 28.5 | 21964 | 1250 | 12.9 | 43457 | 1.98 | - | Passed |
+| 41-53 | best gear, 1 enhancement | 961 | 27.5 | 20940 | 1250 | 13.0 | 43423 | 2.07 | - | Passed |
+| 41-53 | best gear, 2 enhancements | 880 | 25.9 | 20354 | 1250 | 13.1 | 43069 | 2.12 | - | Passed |
+| 41-53 | best gear, 3 enhancements | 775 | 23.3 | 19959 | 1250 | 13.3 | 42371 | 2.12 | - | Passed |
 
 ## Enhancement parity
 
@@ -331,15 +331,15 @@
 
 | Band | Slots filled | Items made | 10th percentile | 25th percentile | Median | 75th percentile | 90th percentile | Made at 100% |
 | --- | --- | --- | --- | --- | --- | --- | --- | --- |
-| 41-45 | 1 | 100% | 100% | 100% | 100% | 100% | 100% | 99% |
+| 41-45 | 1 | 100% | 100% | 100% | 100% | 100% | 100% | 98% |
 | 41-45 | 2 | 100% | 100% | 100% | 100% | 100% | 100% | 98% |
 | 41-45 | 3 | 100% | 100% | 100% | 100% | 100% | 100% | 98% |
 | 46-50 | 1 | 100% | 100% | 100% | 100% | 100% | 100% | 98% |
 | 46-50 | 2 | 100% | 100% | 100% | 100% | 100% | 100% | 97% |
 | 46-50 | 3 | 100% | 100% | 100% | 100% | 100% | 100% | 97% |
 | 51-53 | 1 | 100% | 100% | 100% | 100% | 100% | 100% | 98% |
-| 51-53 | 2 | 100% | 100% | 100% | 100% | 100% | 100% | 97% |
-| 51-53 | 3 | 100% | 100% | 100% | 100% | 100% | 100% | 97% |
+| 51-53 | 2 | 100% | 100% | 100% | 100% | 100% | 100% | 99% |
+| 51-53 | 3 | 100% | 100% | 100% | 100% | 100% | 100% | 98% |
 
 ### Representative enhancements: for each recipe kind the real item at the best level the recipe accepts (the old window refuses one more than 5 levels above the recipe) whose penalty is the lower median of that level
 

@@ -23,8 +23,9 @@ internal static class CircuitTestData
         int penalty = 0,
         int baseProgress = 89,
         int baseQuality = 1296,
-        int integrity = 70) =>
-        new(new CircuitParameters(line, boost, share), level, baseProgress, baseQuality, integrity, rank, craftsmanship, control, gearCp, penalty);
+        int integrity = 70,
+        CircuitPerkStats perks = null) =>
+        new(new CircuitParameters(line, boost, share), level, baseProgress, baseQuality, integrity, rank, craftsmanship, control, gearCp, penalty, perks);
 
     public static CircuitEngine Engine(CircuitSetup setup, int startingLoad = 0, params int[] rolls) =>
         new(new ScriptedMinigameRandom(rolls), setup, startingLoad);

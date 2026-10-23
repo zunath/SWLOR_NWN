@@ -24,14 +24,15 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition
             "real time as before. The experiment can shorten the job, pick and size the blueprint bonus at levels 3, 5 and 8, and " +
             "earns Fabrication XP.\n\n" +
             "TRIALS\n" +
-            $"You have {ExperimentRules.Trials} trials. A Test or an Analyze uses one. Refine Method and Conclude use none. The experiment " +
+            $"You have {ExperimentRules.Trials} trials (Researcher perks can change that). A Test or an Analyze uses one. Refine Method and Conclude use none. The experiment " +
             "ends when the trials run out or you Conclude.\n\n" +
             "ACTIONS\n" +
+            "The numbers below are the base values. Researcher perks change them, and the window shows yours.\n" +
             "- Test: gather evidence. Each button shows its chance of finding evidence. A Test that finds some adds 1 to its candidate.\n" +
-            $"- Refine Method: costs {ExperimentRules.RefineCp} Fabrication CP and raises the chance of your next Test by " +
+            $"- Refine Method: costs {ExperimentRules.RefineCp} Fabrication CP at base and raises the chance of your next Test by " +
             $"{ExperimentRules.RefineChanceBonusPercent} points. That Test uses it up whether or not it finds evidence, and you cannot " +
             "stack it.\n" +
-            $"- Analyze: spends your spare evidence to cut the job's time, {ExperimentRules.TimeCutPercentPerEvidence}% for each piece, " +
+            $"- Analyze: spends your spare evidence to cut the job's time, {ExperimentRules.TimeCutPercentPerEvidence}% for each piece at base, " +
             $"up to {ExperimentRules.TimeCutCapPercent}% in all. It uses one trial, so keep one back for it.\n" +
             "- Conclude: end the experiment now with the evidence so far.\n\n" +
             "LEVELS 3, 5 AND 8\n" +
@@ -50,6 +51,13 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition
             "LEAVING\n" +
             "Closing this window, walking away from the terminal or logging out ends the experiment with the evidence gathered so far. " +
             "The job keeps running either way, and a job with an experiment cannot be cancelled, so the result you see is the result you get.\n\n" +
+            "RESEARCHER PERKS\n" +
+            "The Researcher perks you own change the numbers above, and the window shows your own. The style you chose at Fabrication 20 is always active: " +
+            "Methodical gives more trials but lowers every Test's chance, so a long, careful experiment; Intuitive gives fewer trials but raises " +
+            "every Test's chance, so a short, sure one. " +
+            $"Peer Review, where evidence decides between a credit and a time reduction, moves half of one candidate's evidence (rounded up) to the other for {ExperimentRules.PeerReviewCp} CP and no trial, once. " +
+            "Breakthrough is free and used once: your next Test succeeds, and from then on each piece of spare evidence you Analyze cuts twice as much of the job's time, within the same cap. " +
+            "None of them changes the extra guaranteed bonus or the largest reduction a level can grant.\n\n" +
             "XP\n" +
             "The experiment and the finished job give Fabrication XP, based on the recipe's level against your Fabrication rank. Research " +
             "far below your rank gives none.";
@@ -59,7 +67,7 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition
         public GuiConstructedWindow BuildWindow()
         {
             var window = _builder.CreateWindow(GuiWindowType.ResearchExperiment)
-                .SetInitialGeometry(0, 0, 640f, 800f)
+                .SetInitialGeometry(0, 0, 640f, 920f)
                 .SetTitle("Research Experiment")
                 .SetIsResizable(true)
                 .SetIsCollapsible(true)
@@ -131,6 +139,14 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition
                     .SetHeight(20f)
                     .SetHorizontalAlign(NuiHorizontalAlign.Left);
             });
+            content.AddRow(row =>
+            {
+                row.AddText()
+                    .BindText(model => model.PerkText)
+                    .SetShowBorder(false)
+                    .SetScrollbars(NuiScrollbars.None)
+                    .SetHeight(40f);
+            });
 
             AddMeter(content, model => model.TrialsText, model => model.TrialsPercent, 200, 200, 200);
 
@@ -146,7 +162,9 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition
 
             AddMeter(content, model => model.TimeCutText, model => model.TimeCutPercent, 255, 165, 0);
 
-            for (var action = ResearchExperimentViewModel.EvidenceSlotCount; action < ResearchExperimentViewModel.ActionCount; action++)
+            // Refine Method, Analyze and Conclude. The actions a researcher learns come after the CP meter, so a researcher without them
+            // has the blank rows at the foot of the window and not between the buttons.
+            for (var action = ResearchExperimentViewModel.EvidenceSlotCount; action < ResearchExperimentViewModel.EvidenceSlotCount + 3; action++)
             {
                 var index = action;
                 content.AddRow(row =>
@@ -156,6 +174,15 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition
             }
 
             AddMeter(content, model => model.CpText, model => model.CpPercent, 0, 138, 250);
+
+            for (var action = ResearchExperimentViewModel.EvidenceSlotCount + 3; action < ResearchExperimentViewModel.ActionCount; action++)
+            {
+                var index = action;
+                content.AddRow(row =>
+                {
+                    AddActionRow(row, index);
+                });
+            }
 
             content.AddRow(row =>
             {

@@ -39,6 +39,7 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
         public string RecipeLevel { get => Get<string>(); set => Set(value); }
         public string GearSummary { get => Get<string>(); set => Set(value); }
         public string FabricatorSummary { get => Get<string>(); set => Set(value); }
+        public string PerkSummary { get => Get<string>(); set => Set(value); }
         public string NeedsSummary { get => Get<string>(); set => Set(value); }
         public string SlotHeader { get => Get<string>(); set => Set(value); }
         public string RuleText { get => Get<string>(); set => Set(value); }
@@ -122,7 +123,8 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
                 Stat.CalculateCraftsmanship(Player, recipe.Skill),
                 Stat.CalculateControl(Player, recipe.Skill),
                 gearCp,
-                _slotPenalties.Sum());
+                _slotPenalties.Sum(),
+                FabricatorPerkStats.FromStatTotals(stat => Stat.GetStatAdjustment(Player, stat)));
         }
 
         private void RefreshSetup()
@@ -140,7 +142,8 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
             FabricatorSummary =
                 $"Work: Frame {parameters.FrameSizePercent}%, Shell {parameters.ShellSizePercent}%, Fittings {parameters.FittingsSizePercent}%. " +
                 $"Quality: Frame {parameters.FrameQualityPercent}%, Shell {parameters.ShellQualityPercent}%, Fittings {parameters.FittingsQualityPercent}%. " +
-                $"Wear {parameters.WearRate} Machine Condition per Run or Precision Pass. Starts with the {setup.StartingHead} loaded.";
+                $"Wear {setup.WearRate} Machine Condition per Run or Precision Pass. Starts with the {setup.StartingHead} loaded.";
+            PerkSummary = FabricatorActionText.PerkSummary(setup.PerkStats);
             NeedsSummary = setup.EnhancementProgressPenalty > 0
                 ? $"Needs {setup.MaxProgress} progress in all ({setup.EnhancementProgressPenalty * FabricatorRules.ProgressScale} added by enhancements) and starts with {setup.MaxMachineCondition} Machine Condition. Retool costs {setup.RetoolCp} CP and Service {setup.ServiceCp} CP."
                 : $"Needs {setup.MaxProgress} progress in all and starts with {setup.MaxMachineCondition} Machine Condition. Retool costs {setup.RetoolCp} CP and Service {setup.ServiceCp} CP.";
@@ -349,7 +352,7 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
             (ShellText, ShellProgress, ShellQuality) = DescribePart(SubAssembly.Shell);
             (FittingsText, FittingsProgress, FittingsQuality) = DescribePart(SubAssembly.Fittings);
 
-            QualityText = $"Quality: {meters.QualityPercent}%  |  Assembled now: {_engine.AssembledQuality}% (the cap is {_engine.QualityCap}%: your weakest sub-assembly + {FabricatorRules.AssembleCapPoints})";
+            QualityText = $"Quality: {meters.QualityPercent}%  |  Assembled now: {_engine.AssembledQuality}% (the cap is {_engine.QualityCap}%: your weakest sub-assembly + {setup.AssembleCapPoints})";
             QualityFraction = meters.Quality.Fraction;
             MachineText = $"Machine Condition: {meters.Integrity.Value} / {meters.Integrity.Max}  (wear {setup.WearRate} per Run or Precision Pass)";
             MachineFraction = meters.Integrity.Fraction;
@@ -401,6 +404,7 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
 
         private void ClearCraftView()
         {
+            PerkSummary = string.Empty;
             HeadText = string.Empty;
             OpportunityText = string.Empty;
             OpportunityColor = GuiColor.Grey;

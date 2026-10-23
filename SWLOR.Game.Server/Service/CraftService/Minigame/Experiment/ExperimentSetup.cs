@@ -63,7 +63,19 @@ public sealed class ExperimentSetup
         RefineChanceBonus = tuning.RefineChanceBonus;
         TimeCutPerEvidence = tuning.TimeCutPerEvidence;
         TimeCutCap = tuning.TimeCutCap;
+        PeerReviewUnlocked = tuning.PeerReview;
+        BreakthroughUnlocked = tuning.Breakthrough;
+        Tuning = tuning;
     }
+
+    /// <summary>The numbers perks and the simulator changed from the starting values.</summary>
+    public ExperimentTuning Tuning { get; }
+
+    /// <summary>True when the researcher has Peer Review. It is offered only where evidence decides between two candidates.</summary>
+    public bool PeerReviewUnlocked { get; }
+
+    /// <summary>True when the researcher has Breakthrough.</summary>
+    public bool BreakthroughUnlocked { get; }
 
     public int TargetLevel { get; }
 

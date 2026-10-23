@@ -25,8 +25,18 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
         /// <summary>The evidence bars: one per candidate where evidence decides between two, the first alone otherwise.</summary>
         public const int EvidenceSlotCount = 2;
 
-        /// <summary>The action buttons: up to two Tests, then Refine Method, Analyze and Conclude.</summary>
-        public const int ActionCount = 5;
+        /// <summary>
+        /// The action buttons: up to two Tests, then Refine Method, Analyze and Conclude, then the two directions of Peer Review and
+        /// Breakthrough, which only a researcher who has learned them is offered.
+        /// </summary>
+        public const int ActionCount = 8;
+
+        private const int RefineSlot = EvidenceSlotCount;
+        private const int AnalyzeSlot = EvidenceSlotCount + 1;
+        private const int ConcludeSlot = EvidenceSlotCount + 2;
+        private const int PeerReviewCreditSlot = EvidenceSlotCount + 3;
+        private const int PeerReviewTimeSlot = EvidenceSlotCount + 4;
+        private const int BreakthroughSlot = EvidenceSlotCount + 5;
 
         private static readonly GuiColor[] EvidenceColors =
         {
@@ -56,6 +66,7 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
         public float TimeCutPercent { get => Get<float>(); set => Set(value); }
         public string CpText { get => Get<string>(); set => Set(value); }
         public float CpPercent { get => Get<float>(); set => Set(value); }
+        public string PerkText { get => Get<string>(); set => Set(value); }
 
         public string EvidenceText0 => Get<string>();
         public string EvidenceText1 => Get<string>();
@@ -71,31 +82,49 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
         public string ActionText2 => Get<string>();
         public string ActionText3 => Get<string>();
         public string ActionText4 => Get<string>();
+        public string ActionText5 => Get<string>();
+        public string ActionText6 => Get<string>();
+        public string ActionText7 => Get<string>();
         public string ActionSummary0 => Get<string>();
         public string ActionSummary1 => Get<string>();
         public string ActionSummary2 => Get<string>();
         public string ActionSummary3 => Get<string>();
         public string ActionSummary4 => Get<string>();
+        public string ActionSummary5 => Get<string>();
+        public string ActionSummary6 => Get<string>();
+        public string ActionSummary7 => Get<string>();
         public string ActionTooltip0 => Get<string>();
         public string ActionTooltip1 => Get<string>();
         public string ActionTooltip2 => Get<string>();
         public string ActionTooltip3 => Get<string>();
         public string ActionTooltip4 => Get<string>();
+        public string ActionTooltip5 => Get<string>();
+        public string ActionTooltip6 => Get<string>();
+        public string ActionTooltip7 => Get<string>();
         public GuiColor ActionColor0 => Get<GuiColor>();
         public GuiColor ActionColor1 => Get<GuiColor>();
         public GuiColor ActionColor2 => Get<GuiColor>();
         public GuiColor ActionColor3 => Get<GuiColor>();
         public GuiColor ActionColor4 => Get<GuiColor>();
+        public GuiColor ActionColor5 => Get<GuiColor>();
+        public GuiColor ActionColor6 => Get<GuiColor>();
+        public GuiColor ActionColor7 => Get<GuiColor>();
         public bool ActionEnabled0 => Get<bool>();
         public bool ActionEnabled1 => Get<bool>();
         public bool ActionEnabled2 => Get<bool>();
         public bool ActionEnabled3 => Get<bool>();
         public bool ActionEnabled4 => Get<bool>();
+        public bool ActionEnabled5 => Get<bool>();
+        public bool ActionEnabled6 => Get<bool>();
+        public bool ActionEnabled7 => Get<bool>();
         public bool ActionVisible0 => Get<bool>();
         public bool ActionVisible1 => Get<bool>();
         public bool ActionVisible2 => Get<bool>();
         public bool ActionVisible3 => Get<bool>();
         public bool ActionVisible4 => Get<bool>();
+        public bool ActionVisible5 => Get<bool>();
+        public bool ActionVisible6 => Get<bool>();
+        public bool ActionVisible7 => Get<bool>();
 
         public static string EvidenceTextProperty(int slot) => $"EvidenceText{slot}";
         public static string EvidenceProjectionProperty(int slot) => $"EvidenceProjection{slot}";
@@ -143,13 +172,18 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
             var recipe = Craft.GetRecipe(job.Recipe);
             var dbPlayer = DB.Get<Player>(GetObjectUUID(Player));
             var gearCp = dbPlayer != null && dbPlayer.CPBonus != null && dbPlayer.CPBonus.TryGetValue(SkillType.Fabrication, out var cp) ? cp : 0;
+            var tuning = ExperimentTuning.FromStatTotals(stat => Stat.GetStatAdjustment(Player, stat)) with
+            {
+                Trials = Math.Max(ExperimentRules.MinimumTrials, job.Experiment.TrialsTotal)
+            };
             var setup = ExperimentSetup.ForRecipe(
                 recipe,
                 job.Experiment.TargetLevel,
                 Skill.GetCreatureSkillRank(Player, SkillType.Fabrication),
                 gearCp,
                 job.Experiment.ExtraBonus,
-                licensedRunsGrant: job.Experiment.LicensedRunsGrant);
+                tuning,
+                job.Experiment.LicensedRunsGrant);
 
             _engine = new ExperimentEngine(ServiceMinigameRandom.Instance, setup);
             MapActions();
@@ -253,9 +287,17 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
             for (var index = 0; index < tests.Count; index++)
                 _slotActions[index] = tests[index];
 
-            _slotActions[EvidenceSlotCount] = ExperimentActionIds.RefineMethod;
-            _slotActions[EvidenceSlotCount + 1] = ExperimentActionIds.Analyze;
-            _slotActions[EvidenceSlotCount + 2] = ExperimentActionIds.Conclude;
+            _slotActions[RefineSlot] = ExperimentActionIds.RefineMethod;
+            _slotActions[AnalyzeSlot] = ExperimentActionIds.Analyze;
+            _slotActions[ConcludeSlot] = ExperimentActionIds.Conclude;
+
+            var offered = _engine.Actions.Select(action => action.Id).ToHashSet();
+            if (offered.Contains(ExperimentActionIds.PeerReviewCreditToTime))
+                _slotActions[PeerReviewCreditSlot] = ExperimentActionIds.PeerReviewCreditToTime;
+            if (offered.Contains(ExperimentActionIds.PeerReviewTimeToCredit))
+                _slotActions[PeerReviewTimeSlot] = ExperimentActionIds.PeerReviewTimeToCredit;
+            if (offered.Contains(ExperimentActionIds.Breakthrough))
+                _slotActions[BreakthroughSlot] = ExperimentActionIds.Breakthrough;
         }
 
         private void Refresh()
@@ -269,6 +311,7 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
             TimeCutPercent = setup.TimeCutCap <= 0 ? 0f : (float)_engine.TimeCutPercent / setup.TimeCutCap;
             CpText = ExperimentDisplay.MeterText("CP", _engine.Meters.Cp);
             CpPercent = _engine.Meters.Cp.Fraction;
+            PerkText = ExperimentDisplay.PerkSummary(setup.Tuning);
 
             ExtraBonusText = setup.ExtraBonus
                 ? $"Extra guaranteed bonus: YES (tier {setup.ExtraBonusTier}). It is added when the job completes."
@@ -348,6 +391,7 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
             TimeCutPercent = 0f;
             CpText = string.Empty;
             CpPercent = 0f;
+            PerkText = string.Empty;
 
             for (var slot = 0; slot < EvidenceSlotCount; slot++)
             {

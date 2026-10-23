@@ -13,5 +13,13 @@ public static class FabricatorActionIds
     public const string Service = "service";
     public const string Assemble = "assemble";
 
+    /// <summary>
+    /// Dual Feed runs the loaded head's sub-assembly and one other at once. The first and second are the other two sub-assemblies in
+    /// the order Frame, Shell, Fittings, so with the Extruder loaded the first is the Frame and the second the Fittings.
+    /// </summary>
+    public const string DualFeedFirst = "dual_feed_first";
+
+    public const string DualFeedSecond = "dual_feed_second";
+
     public const string PrimeFeedstock = "prime_feedstock";
 }

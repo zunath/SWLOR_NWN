@@ -14,8 +14,10 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition
         private const float PanelWidth = 660f;
         private const float SlotRowHeight = 30f;
         private const float SlotListHeight = 4 * SlotRowHeight + 8f;
+        private const float StyleRowHeight = 40f;
+        private const float StyleListHeight = 3 * StyleRowHeight + 8f;
         private const float ActionRowHeight = 50f;
-        private const float ActionListHeight = 7 * ActionRowHeight + 8f;
+        private const float ActionListHeight = 9 * ActionRowHeight + 8f;
         private const float ActionButtonWidth = 170f;
 
         public static readonly string HelpText =
@@ -38,6 +40,11 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition
             $"Boost adds {CircuitRules.BoostLoad} Load and costs CP.\n\n" +
             "CLEAN SIGNAL\n" +
             "Sometimes the next action is announced as a Clean Signal: your next Tune is doubled. It lasts for that one action.\n\n" +
+            "PERKS AND STYLES\n" +
+            "The Overclocker and Technician perk lines change these numbers and add two actions, Cascade Discharge and Micro-Tune. " +
+            $"At Engineering {CircuitRules.StyleRank} each line offers a style. Pick one before you craft; only one can be active at a time. " +
+            "Overclock adds Load and output, and Safe Mode makes overloads rarer at the cost of output. " +
+            "The last perk of each line, Surge and Failsafe, works by itself once per craft.\n\n" +
             "GEAR\n" +
             "Craftsmanship makes Assembly work stronger and Control makes Calibration work stronger. CP is your gear's CP plus a share of your Engineering rank.";
 
@@ -53,7 +60,7 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition
         public GuiConstructedWindow BuildWindow()
         {
             var window = _builder.CreateWindow(GuiWindowType.CraftCircuit)
-                .SetInitialGeometry(0, 0, 740f, 760f)
+                .SetInitialGeometry(0, 0, 740f, 940f)
                 .SetTitle("Circuit Assembly")
                 .SetIsResizable(true)
                 .SetIsCollapsible(true)
@@ -108,6 +115,26 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition
                                 .BindRowCount(model => model.SlotLabels)
                                 .SetRowHeight(SlotRowHeight)
                                 .SetHeight(SlotListHeight));
+                            AddLabelRow(content, model => model.StyleHeader);
+                            content.AddRow(row2 => row2.AddList(template =>
+                                {
+                                    template.AddCell(cell => cell.AddText()
+                                        .BindText(model => model.StyleLabels)
+                                        .SetShowBorder(false)
+                                        .SetScrollbars(NuiScrollbars.None));
+                                    template.AddCell(cell =>
+                                    {
+                                        cell.SetWidth(90f);
+                                        cell.SetIsVariable(false);
+                                        cell.AddButton()
+                                            .BindText(model => model.StyleButtonTexts)
+                                            .BindIsEnabled(model => model.StyleButtonEnabled)
+                                            .BindOnClicked(model => model.OnClickStyle());
+                                    });
+                                })
+                                .BindRowCount(model => model.StyleLabels)
+                                .SetRowHeight(StyleRowHeight)
+                                .SetHeight(StyleListHeight));
                             content.AddRow(row2 => row2.AddText()
                                 .BindText(model => model.RuleText)
                                 .SetShowBorder(false)
@@ -177,6 +204,7 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition
                                 .SetScrollbars(NuiScrollbars.None)
                                 .SetHeight(48f));
                             AddLabelRow(content, model => model.CpText);
+                            AddLabelRow(content, model => model.PerkText);
                             content.AddRow(row2 => row2.AddLabel()
                                 .BindText(model => model.OpportunityText)
                                 .BindColor(model => model.OpportunityColor)

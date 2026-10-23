@@ -1,0 +1,262 @@
+{
+  "scenario": {
+    "Name": "circuit",
+    "Title": "Circuit",
+    "Skill": "Engineering",
+    "Minigame": "Circuit"
+  },
+  "seed": 1,
+  "runs": 100,
+  "command": "SWLOR.CraftSim gates --scenario circuit --gates styles,perks --runs 100 --recipes-per-band 6 --seed 1 --out design\\testing\\crafting-revamp\\circuit-style-gates.md --json design\\testing\\crafting-revamp\\circuit-style-gates.json",
+  "thresholds": [
+    {
+      "Name": "RotationMarginPoints",
+      "Value": "10",
+      "Meaning": "gate 1: adaptive beats the best single fixed rotation (one sequence for a whole band) by at least this many quality points"
+    },
+    {
+      "Name": "StyleMinimumWinShare",
+      "Value": "30%",
+      "Meaning": "gate 2: each style is the better choice on at least this share of recipes"
+    },
+    {
+      "Name": "StyleMaximumMeanDifferencePoints",
+      "Value": "5",
+      "Meaning": "gate 2: neither style beats the other by more on average"
+    },
+    {
+      "Name": "StyleTieMarginPoints",
+      "Value": "0.5",
+      "Meaning": "gate 2: a recipe within this many points is a tie, half a win each"
+    },
+    {
+      "Name": "PerksOptionalRank",
+      "Value": "50",
+      "Meaning": "gate 3: rank of the unperked crafter"
+    },
+    {
+      "Name": "PerksOptionalMinimumFullQualityShare",
+      "Value": "50%",
+      "Meaning": "gate 3: share of crafts that reach maximum quality, per at-level band"
+    },
+    {
+      "Name": "PerksOptionalBands",
+      "Value": "41-45, 46-50, 51-53",
+      "Meaning": "gate 3: the at-level recipe bands"
+    },
+    {
+      "Name": "MaterialTolerance",
+      "Value": "10%",
+      "Meaning": "gate 5: component stacks per item within this share of the legacy baseline (above it only, where the legacy success rate is below the next value)"
+    },
+    {
+      "Name": "MaterialTwoSidedMinimumLegacySuccess",
+      "Value": "90%",
+      "Meaning": "gate 5: cells where the legacy policy succeeds at least this often keep the two-sided parity; below it, using less material passes"
+    },
+    {
+      "Name": "MaterialExtraNeverCraftedShare",
+      "Value": "10%",
+      "Meaning": "gate 5: recipes never made may exceed the legacy share by at most this"
+    },
+    {
+      "Name": "MaterialQualityShortfallPoints",
+      "Value": "5",
+      "Meaning": "gate 5: the new average quality may be at most this many points below the legacy player's"
+    },
+    {
+      "Name": "XpRateMinimumRatio",
+      "Value": "1",
+      "Meaning": "gate 6: XP per hour divided by the legacy rate"
+    },
+    {
+      "Name": "LegacySecondsPerAction",
+      "Value": "6",
+      "Meaning": "gate 6: seconds per action in the old craft window (unmeasured estimate)"
+    },
+    {
+      "Name": "OverheadSecondsPerAttempt",
+      "Value": "0",
+      "Meaning": "gate 6: seconds per craft besides actions, both loops (unmeasured estimate)"
+    },
+    {
+      "Name": "EnhancementParityRank",
+      "Value": "50",
+      "Meaning": "gate 7: rank of the enhancing crafter (best gear)"
+    },
+    {
+      "Name": "EnhancementParityBands",
+      "Value": "41-45, 46-50, 51-53",
+      "Meaning": "gate 7: the at-level recipe bands"
+    },
+    {
+      "Name": "EnhancementSlotCounts",
+      "Value": "1, 2, 3",
+      "Meaning": "gates 6 and 7: numbers of filled enhancement slots played"
+    },
+    {
+      "Name": "EnhancementParityMinimumRatio",
+      "Value": "1",
+      "Meaning": "gate 7: expected transferred enhancements per enhanced craft divided by today's"
+    },
+    {
+      "Name": "RecipesPerBand",
+      "Value": "6",
+      "Meaning": "recipes played per band"
+    },
+    {
+      "Name": "SolverOptions",
+      "Value": "the scenario's",
+      "Meaning": "effort of the fixed-rotation solver"
+    },
+    {
+      "Name": "ActionLimit",
+      "Value": "100",
+      "Meaning": "actions after which an attempt counts as stalled"
+    }
+  ],
+  "allGatesPassed": false,
+  "results": [
+    {
+      "Gate": "Style balance",
+      "Verdict": "Passed",
+      "Summary": "Every style is the better choice on at least 30% of recipes and no pair differs by more than 5 points on average.",
+      "Tables": [
+        {
+          "Title": "Style pairs: how often each style is better, and the average quality (quality points; ties count half a win each)",
+          "Header": [
+            "Style pair",
+            "Gear",
+            "Recipes",
+            "First better",
+            "Second better",
+            "First avg quality",
+            "Second avg quality",
+            "Difference",
+            "Verdict"
+          ],
+          "Rows": [
+            [
+              "Overclock (no lines) vs Safe Mode (no lines)",
+              "no gear",
+              "20",
+              "62%",
+              "38%",
+              "98.5",
+              "97.8",
+              "+0.7",
+              "Passed"
+            ],
+            [
+              "Overclock (no lines) vs Safe Mode (no lines)",
+              "mid gear",
+              "20",
+              "52%",
+              "48%",
+              "99.7",
+              "99.7",
+              "+0.1",
+              "Passed"
+            ],
+            [
+              "Overclock (no lines) vs Safe Mode (no lines)",
+              "best gear",
+              "20",
+              "50%",
+              "50%",
+              "100.0",
+              "100.0",
+              "+0.0",
+              "Passed"
+            ],
+            [
+              "Overclock (both lines) vs Safe Mode (both lines)",
+              "no gear",
+              "20",
+              "57%",
+              "42%",
+              "99.9",
+              "98.7",
+              "+1.2",
+              "Passed"
+            ],
+            [
+              "Overclock (both lines) vs Safe Mode (both lines)",
+              "mid gear",
+              "20",
+              "50%",
+              "50%",
+              "100.0",
+              "100.0",
+              "-0.0",
+              "Passed"
+            ],
+            [
+              "Overclock (both lines) vs Safe Mode (both lines)",
+              "best gear",
+              "20",
+              "50%",
+              "50%",
+              "100.0",
+              "100.0",
+              "+0.0",
+              "Passed"
+            ]
+          ]
+        }
+      ]
+    },
+    {
+      "Gate": "Perks optional",
+      "Verdict": "Passed",
+      "Summary": "An unperked rank-50 crafter in best gear reaches maximum quality on at least 50% of crafts in every at-level band (lowest 95%).",
+      "Tables": [
+        {
+          "Title": "Rank 50, best gear, no perks: adaptive attempts that reach maximum quality, by recipe band",
+          "Header": [
+            "Band",
+            "Recipes played",
+            "Attempts",
+            "Reach maximum quality",
+            "Make the item",
+            "Avg quality of items made",
+            "Required",
+            "Verdict"
+          ],
+          "Rows": [
+            [
+              "41-45",
+              "6",
+              "600",
+              "95%",
+              "100%",
+              "100%",
+              ">= 50%",
+              "Passed"
+            ],
+            [
+              "46-50",
+              "6",
+              "600",
+              "99%",
+              "100%",
+              "100%",
+              ">= 50%",
+              "Passed"
+            ],
+            [
+              "51-53",
+              "6",
+              "600",
+              "96%",
+              "100%",
+              "100%",
+              ">= 50%",
+              "Passed"
+            ]
+          ]
+        }
+      ]
+    }
+  ]
+}

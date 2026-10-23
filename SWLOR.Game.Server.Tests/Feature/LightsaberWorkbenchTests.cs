@@ -411,11 +411,10 @@ public class LightsaberWorkbenchTests
             "LightsaberWorkbenchViewModel.cs"));
         viewModel.Should().Contain("var lightColor = (LightColor)resolvedLightColor;");
         viewModel.Should().Contain("ApplyBladeLight(item, lightColor, lightBrightness);");
-        Regex.Replace(viewModel, @"\s+", " ").Should().Contain("SelectedLightBrightnessIndex == 0 ? LightBrightness.Dim : LightBrightness.Normal");
+        viewModel.Should().Contain("var lightBrightness = LightBrightness.Dim;");
         viewModel.Should().Contain("WatchOnClient(model => model.SelectedLightColor);");
-        viewModel.Should().Contain("WatchOnClient(model => model.SelectedLightBrightnessIndex);");
-        viewModel.Should().Contain("SelectedLightBrightnessIndex = 0;", "the workbench defaults to Dim (5m) light");
-        viewModel.Should().NotContain("SelectedLightBrightnessIndex = 1;");
+        viewModel.Should().NotContain("SelectedLightBrightnessIndex");
+        viewModel.Should().NotContain("LightBrightness.Normal");
         viewModel.Should().Contain("ItemPropertyLight(lightBrightness, lightColor)");
         viewModel.Should().Contain("GetItemPropertyType(ip) == ItemPropertyType.Light");
     }

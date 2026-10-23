@@ -14,8 +14,11 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
     {
         private class OreDetail
         {
+            /// <summary>The ore's tier, 1 to 5. It gates the ore by Gathering rank and sets the level its refining XP falls off from.</summary>
             public int RequiredLevel { get; }
             public string RefinedItemResref { get; }
+
+            /// <summary>The XP one unit pays a refiner whose rank equals the ore's level; the rank scales it (<see cref="GatheringLevels.RefiningXp"/>).</summary>
             public int XPGranted { get; }
 
 
@@ -336,6 +339,11 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
 
                 var xp = 0;
 
+                // Each unit pays its ore's flat XP at the ore's level, as it always has, scaled by harvesting's rank-difference curve:
+                // GetDeltaXP(ore level - rank) / GetDeltaXP(0), where an ore's level is the level of the vein of its tier (5, 15, 25,
+                // 35, 45). So refining at level pays what it paid, and cheap ore stops training high ranks.
+                var gatheringRank = Skill.GetCreatureSkillRank(Player, SkillType.Gathering);
+
                 for (var index = _inputItems.Count - 1; index >= 0; index--)
                 {
                     var oreResref = _inputItemResrefs[index];
@@ -345,7 +353,7 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
                     // Spawn the refined item onto the player.
                     CreateItemOnObject(refinedItem.RefinedItemResref, Player, stackSize);
 
-                    xp += refinedItem.XPGranted * stackSize;
+                    xp += GatheringLevels.RefiningXp(refinedItem.XPGranted, refinedItem.RequiredLevel, gatheringRank, stackSize);
                 }
 
                 DeleteLocalBool(Player, "IS_REFINING");

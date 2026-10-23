@@ -13,8 +13,8 @@ namespace SWLOR.CraftSim.Progression
         private const string Server = "SWLOR.Game.Server/";
         public const string RoleplayXp = Server + "Feature/RoleplayXP.cs";
         public const string Guild = Server + "Service/Guild.cs";
-        public const string Harvester = Server + "Feature/ItemDefinition/HarvesterItemDefinition.cs";
-        public const string Scavenge = Server + "Feature/ScavengePoint.cs";
+        public const string ProspectingRulesFile = Server + "Service/CraftService/Minigame/Prospecting/ProspectingRules.cs";
+        public const string SearchRulesFile = Server + "Service/CraftService/Minigame/Search/SearchRules.cs";
         public const string Refinery = Server + "Feature/GuiDefinition/ViewModel/RefineryViewModel.cs";
         public const string Craft = Server + "Service/Craft.cs";
         public const string ResearchViewModel = Server + "Feature/GuiDefinition/ViewModel/ResearchViewModel.cs";
@@ -32,12 +32,12 @@ namespace SWLOR.CraftSim.Progression
             "if (potentialTasks.Count <= 10)", ".OrderBy(o => Random.Next())", ".Take(10)", "_activeGuildTasksByRank[type][rank] = tasks;");
 
         public static readonly SourceReference HarvestDelay = new(
-            "Seconds per harvester use", Harvester, 50, 60,
-            ".Delay(5f)", ".ReducesItemCharge()");
+            "Seconds per harvester use", ProspectingRulesFile, 71, 71,
+            "public const double HarvestSeconds = 5.0;");
 
         public static readonly SourceReference ScavengeSearch = new(
-            "Seconds per scavenge attempt", Scavenge, 55, 70,
-            "ActionPlayAnimation(Animation.LoopingGetLow, 1.0f, 2.0f)");
+            "Seconds per scavenge attempt", SearchRulesFile, 33, 33,
+            "public const double QuickSearchSecondsPerAttempt = 2.0;");
 
         public static readonly SourceReference RefineDelay = new(
             "Seconds per refining operation", Refinery, 58, 64,

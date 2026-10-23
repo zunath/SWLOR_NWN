@@ -179,7 +179,10 @@ public class GatheringPerkRegressionTests
         harvesterDefinition.Should().NotContain("PerkType.Harvesting");
         harvesterDefinition.Should().Contain("var harvesterLevel = requiredLevel < 1 ? 1 : requiredLevel;");
         harvesterDefinition.Should().Contain("if (resourceLevel > harvesterLevel)");
-        harvesterDefinition.Should().Contain(".ReducesItemCharge()");
+        // A session spends the harvester's charges itself, so the item no longer takes one for each use.
+        harvesterDefinition.Should().Contain(".ReducesItemCharge((user, item, target, location, itemPropertyIndex) => false)");
+        harvesterDefinition.Should().Contain("ProspectingSessions.Begin(");
+        harvesterDefinition.Should().Contain("ProspectingSessions.IsInUseByAnother(target, user)");
     }
 
     [Test]

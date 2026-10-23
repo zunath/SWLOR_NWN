@@ -25,6 +25,9 @@ SWLOR crafting simulator
   search [--runs 4000] [--seed 1] [--seconds-per-action 6] [--site-seconds 30] [--out report.md] [--json results.json] [--strict] [--repo path]
       Plays the Search board (scavenging) against today's search over the Gathering ranks, checks Quick Search against today's expected rolls and XP, runs the economy-parity,
       length and XP-rate gates over the scavenging cohort, and writes the report (default design/testing/crafting-revamp/scavenging-search-parity.md).
+  harvesting [--runs 4000] [--seed 1] [--out report.md] [--json results.json] [--strict] [--repo path]
+      Plays Quick Harvest and Prospecting sessions against today's harvests over every node tier and Gathering rank, runs the economy-parity, length and
+      XP-rate gates over the harvesting cohort, and writes the report (default design/testing/crafting-revamp/harvesting-prospecting-parity.md).
   research [--runs 400] [--adaptive-runs 40] [--seed 1] [--seconds-per-action 6] [--job-overhead-seconds 30] [--out report.md] [--repo path]
       Plays the research Experiment and writes its report: length, reduction size against today's dice and the supply change, the time cut, and Fabrication XP per real hour.
 """;
@@ -47,6 +50,7 @@ try
         "fishing" => FishingCommand.Run(args.Skip(1).ToArray(), Console.Out),
         "search" => SearchCommand.Run(args.Skip(1).ToArray(), Console.Out),
         "research" => ResearchCommand.Run(args.Skip(1).ToArray(), Console.Out),
+        "harvesting" => HarvestingCommand.Run(args.Skip(1).ToArray(), Console.Out),
         _ => Fail($"Unknown command '{args[0]}'.")
     };
 }

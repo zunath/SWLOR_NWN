@@ -1,12 +1,12 @@
 using SWLOR.Game.Server.Feature.GuiDefinition.Payload;
 using SWLOR.Game.Server.Service;
+using SWLOR.Game.Server.Service.AnimationService;
 using SWLOR.Game.Server.Service.CraftService;
 using SWLOR.Game.Server.Service.CraftService.Minigame;
 using SWLOR.Game.Server.Service.CraftService.Minigame.Search;
 using SWLOR.Game.Server.Service.GuiService;
 using SWLOR.Game.Server.Service.GuiService.Component;
 using SWLOR.Game.Server.Service.ScavengeService;
-using SWLOR.NWN.API.NWScript.Enum;
 
 namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
 {
@@ -201,9 +201,9 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
                 return;
             }
 
-            // The search and dig animations come from a separate pull request; until then an existing one plays.
-            var animation = ActionIds[index] == SearchActionIds.DigDeeper ? Animation.LoopingGetMid : Animation.LoopingGetLow;
-            AssignCommand(Player, () => ActionPlayAnimation(animation, 1.0f, 2.0f));
+            // Dig Deeper plays the dig clip; Search and Sift play the search clip.
+            var gathering = ActionIds[index] == SearchActionIds.DigDeeper ? GatheringAction.Dig : GatheringAction.Search;
+            NamedAnimation.Play(Player, WorkAnimation.ForGathering(gathering));
 
             var engine = _session.Engine;
             var text = SearchActionText.EventText(engine, engine.Last);

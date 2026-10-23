@@ -146,6 +146,23 @@ It takes `--runs` (boards per case, default 4000), `--seed`, `--seconds-per-acti
 - **XP rate**: `SearchXpRateCohort` implements `IXpRateCohort` as the plan pins it: site levels 1-5, the Gathering rank 10 times the level, no tool. Today's loop is played exactly from the legacy model; the board is played by the careless and the skilled player, and the gate judges the lower XP per hour. Every action pays Gathering XP (a Sift the quarter a failure pays), times `SearchRules.XpMultiplierForLevel`, read through `CraftMinigameXp`, each the least multiple of 0.05 that passes its level.
 - **Evidence tables**: the rare items real scavenge tables give with Quick Search against the board (`SearchRareSupply`, rolling every `ILootTableDefinition` the game has), and what each proposed Treasure Seeker purchase adds to the skilled player (`SearchPerkEvidence`).
 
+### The harvesting study
+
+Harvesting is not an item craft either. The `harvesting` command plays Quick Harvest and Prospecting sessions (`Harvesting/`) against the harvests they replace, over every node tier and Gathering rank, and runs the gates that apply:
+
+```powershell
+dotnet SWLOR.CraftSim/bin/Release/net10.0/SWLOR.CraftSim.dll harvesting --runs 20000 --seed 1 --out design/testing/crafting-revamp/harvesting-prospecting-parity.md
+```
+
+It takes `--runs` (nodes per plan and case, default 4000; 20,000 takes under a minute), `--seed`, `--out` (default `design/testing/crafting-revamp/harvesting-prospecting-parity.md`), `--json`, `--strict` and `--repo`. Nodes are made as the game makes them (`ProspectingNode.Create`), and the module's veins and trees, with their gem entries, come from `Module/utp` and the harvesting loot tables (`HarvestNodeCatalog`).
+
+- **Economy parity** (`HarvestingYieldGate`): Quick Harvest equals today's expected items, XP, seconds and charges per node (the d4 pool at the owner's attribute reference, a Might modifier of 0), and a skilled session stays within +15% of today's items per node and not below it. The skilled player is the careful plan with the most items; the +15% cap is checked against every plan, Heavy Strike plans included (`ProspectorPlan`). Two more caps are checked in the same gate: the gems per node of a session (the gems of its ordinary rolls and of its gem pockets) stay within +15% of today's at every tier and rank, whatever the plan, and a skilled session spends at most 1.5 times today's harvester charges per node (a Survey costs none). A seam is a gem pocket with `GemPocketShare` of the chance a roll of the node's table is a gem, so the gems follow the table's own gem chance at every tier.
+- **Length** (`HarvestingLengthGate`): the skilled player's mean actions per node, 3-8.
+- **XP rate**: `HarvestingXpRateCohort` implements `IXpRateCohort` for each loop (Quick Harvest, the skilled session, the strike-only session): a case per node tier at the rank equal to the vein's level, XP per item. Both loops are timed in harvest delays (5 s), a session's actions converted from the seconds `ProspectingRules` names. A separate check holds Quick Harvest to exactly today's XP per hour.
+- **Evidence tables**: charges, seconds and gems per node, the Heavy Strike plans, the rank milestones, what a collapse costs, and refining XP before and now (each unit pays its ore's flat XP times `GetDeltaXP(ore level - rank) / GetDeltaXP(0)`, where an ore's level is the level of the vein of its tier, so it is the flat XP at the ore's level).
+
+Every plan reads only what the window shows; none reads a hidden seam.
+
 ### Research Experiment
 
 `Scenario/Experiment` plugs the research Experiment in as the `experiment` scenario (`gates --scenario experiment --gates length` checks its 5-8 turn target; the other gates do not apply to an experiment, which has no quality, styles or legacy loop). The `research` command writes the Experiment's own evidence: length, the size of the reductions against today's dice and the change in supply (licensed runs stay random at today's odds, so theirs is unchanged), the time cut at fixed levels, and Fabrication XP per real hour against at-level crafting.

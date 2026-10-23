@@ -7,9 +7,9 @@ Evidence: `scavenging-search-parity.md` (command `SWLOR.CraftSim search --runs 1
 ## Structure
 
 - One independent, optional line of 25 SP. It is not needed to scavenge: a scavenger with no perks already searches every site, and Quick Search gives today's yield.
-- Ten purchases at Gathering ranks 5/10/15/20/25/30/35/40/45/50, priced 1/1/2/2/3/3/3/3/3/4 SP. Rank 20 is the line's style, **Careful Hands**. It is one style, not a choice of two (the plan names only one), so it is a toggle: the player turns it on and off, and only one style of the line can be on. Rank 50 is the capstone, **Jackpot**, with no quest requirement.
+- Ten purchases at Gathering ranks 5/10/15/20/25/30/35/40/45/50, priced 1/1/2/2/3/3/3/3/3/4 SP. Rank 20 is the line's style, **Careful Hands**. It is one style, not a choice of two (the plan names only one): the player picks it in the window before the first action of a visit (it locks for that visit), and only one style can be active (see the Two styles note below). Rank 50 is the capstone, **Jackpot**, with no quest requirement.
 - Ranked perks use two purchases. Each rank restates the benefit inside its own total (only the purchased rank's stat bonuses apply).
-- The line acts on two engines. The **Search board** (this PR) reads Keen Eye, Steady Dig, Fine Trowel and the Search half of Careful Hands. The **Prospecting** node session (workstream 9a) reads Sharp Chisel, Deep Scan, Rich Pockets, the Prospecting half of Careful Hands and Jackpot. The plan's wording is used for the Prospecting rows (Survey, gem pockets, Heavy Strike, Extract); **9a's draft sets their magnitudes**, and this file names only the StatTypes.
+- The line acts on two engines. The **Search board** (this PR) reads Keen Eye, Steady Dig, Fine Trowel and the Search half of Careful Hands. The **Prospecting** node session (workstream 9a) reads Sharp Chisel, Deep Scan, Rich Pockets, the Prospecting half of Careful Hands and Jackpot. The Prospecting rows take their magnitudes from `gathering-prospector-perk-line-draft.md` ("Magnitudes for the Treasure Seeker line's Prospecting rows"), which sizes them against the harvesting engine; this file names the rows and the StatTypes.
 - No perk unlocks an action: Search, Dig Deeper and Sift are open from Gathering rank 0. Each perk adjusts one number.
 - No perk reads an attribute, and no perk changes Quick Search: it is today's search at the parity reference.
 
@@ -38,21 +38,22 @@ A unit test pins what each one changes.
 | Rank | SP | Perk | Type | Effect (starting values) | StatTypes the engine reads |
 | --- | --- | --- | --- | --- | --- |
 | 5 | 1 | Fine Trowel I | trait | [Search] A Dig Deeper find favours the table's rare entries more: their weight in a dig is x4 instead of x3. | `TreasureSeekerDigRareWeight` +1 |
-| 10 | 1 | Sharp Chisel I | trait | [Prospecting] Heavy Strike is 5 points less likely to shatter an unsurveyed gem pocket. | `TreasureSeekerPocketShatter` -5 |
+| 10 | 1 | Sharp Chisel I | trait | [Prospecting] A Heavy Strike is 5 points less likely to shatter an unsurveyed gem pocket (20% becomes 15%). | `TreasureSeekerPocketShatter` -5 |
 | 15 | 2 | Steady Dig | trait | [Search] Dig Deeper risks half as much of ruining a spot (30%, 50%, 70% become 15%, 25%, 35%). | `TreasureSeekerDigRiskPercent` -50 |
-| 20 | 2 | Careful Hands | style (toggle) | [Search] Searches find 3 points less often on every spot, and a Dig Deeper find favours the rare entries 3 more (x6, with both Fine Trowels x9). [Prospecting] Strikes give less yield and a hidden seam is likelier to be a gem pocket; 9a sets the numbers. | `TreasureSeekerSearchChance` -3, `TreasureSeekerDigRareWeight` +3, plus 9a's Prospecting stats |
+| 20 | 2 | Careful Hands | style (chosen before the first action) | [Search] Searches find 3 points less often on every spot, and a Dig Deeper find favours the rare entries 3 more (x6, with both Fine Trowels x9). [Prospecting] A Strike's chance of taking 2 units falls 15 points (30% becomes 15%), and extracting a rich seam gives a gem in place of its ore with half the chance a roll of the node's table is a gem (4.5% on a tier 1 node, 1% on a tier 5 node). | `TreasureSeekerSearchChance` -3, `TreasureSeekerDigRareWeight` +3, plus the Prospecting stats of 9a's draft |
 | 25 | 3 | Keen Eye | trait | [Search] One more promising spot on every board (2 becomes 3, 3 becomes 4). | `TreasureSeekerPromisingSpots` +1 |
-| 30 | 3 | Sharp Chisel II | trait | [Prospecting] Heavy Strike is 10 points less likely in total to shatter an unsurveyed gem pocket (this rank replaces Sharp Chisel I's 5). | `TreasureSeekerPocketShatter` -10 |
-| 35 | 3 | Deep Scan | trait | [Prospecting] Survey reveals 2 seams instead of 1. | `TreasureSeekerSurveySeams` +1 |
+| 30 | 3 | Sharp Chisel II | trait | [Prospecting] A Heavy Strike is 10 points less likely in total to shatter an unsurveyed gem pocket (20% becomes 10%; this rank replaces Sharp Chisel I's 5). | `TreasureSeekerPocketShatter` -10 |
+| 35 | 3 | Deep Scan | trait | [Prospecting] A Survey reveals 1 more seam than your Gathering rank allows, never more than the 3 a node holds (the rank gives 2 seams from Gathering 25 and 3 from 50, so Deep Scan is worth a seam until Gathering 50 and nothing at 50). | `TreasureSeekerSurveySeams` +1 |
 | 40 | 3 | Fine Trowel II | trait | [Search] A dig's rare-entry weight is x5 in total (this rank replaces Fine Trowel I's +1 with +2). | `TreasureSeekerDigRareWeight` +2 |
-| 45 | 3 | Rich Pockets | trait | [Prospecting] A node's hidden seams are 10 points likelier to be gem pockets; 9a confirms the number. | `TreasureSeekerPocketChance` +10 |
-| 50 | 4 | Jackpot | capstone, trait | [Prospecting] The first Extract on each node adds a bonus gem from the node's gem entries. | `TreasureSeekerJackpot` 1 (flag) |
+| 45 | 3 | Rich Pockets | trait | [Prospecting] Extracting a rich seam gives a gem in place of its ore with half the chance a roll of the node's table is a gem (4.5% on a tier 1 node, 1% on a tier 5 node; about +27% of today's gems at every tier). | `TreasureSeekerPocketChance` +10 |
+| 50 | 4 | Jackpot | capstone, trait | [Prospecting] The first Extract on each node has a chance equal to the node table's gem chance (9% on a tier 1 node, 2% on a tier 5 node) of adding a bonus gem from the node's gem entries, outside the pool; the chance is shown in the Extract preview. | `TreasureSeekerJackpot` 1 (flag) |
 
 Decisions the line creates:
 
 - **Careful Hands on or off.** On, a Search finds less and the dig favours the rare entries much more, so a scavenger hunting the rare items plays the style and one after volume leaves it off. The style takes about 0.08 finds off a board (-8%) in exchange for a rarer dig.
 - **Keen Eye against Steady Dig.** Keen Eye makes searching better (and digging less needed), Steady Dig makes digging worth doing. They pull the same board in different directions: with Keen Eye alone the skilled player digs 0.4 times a board, with Steady Dig alone 1.5.
 - **The Prospecting half is a separate build.** A scavenger who only searches sites gets nothing from Sharp Chisel, Deep Scan, Rich Pockets or Jackpot, and a prospector gets nothing from Keen Eye or Steady Dig. Both are in one line because the plan puts rare finds in one line, so the line is worth 25 SP only to a Gathering character who does both.
+- **Two styles, one active.** A character with Careful Hands here and Strip Mining in the Prospector line owns two styles and only one is active. Each window shows the owned styles and lets the player pick one until the first action of a visit or session; it then locks for that visit. Styles are stored as a status effect, as the owner decided for the Engineering styles.
 
 ## Evidence
 
@@ -77,8 +78,8 @@ Rare supply. A dig rolls the site's loot table with its rare entries weighted x3
 1. **An unperked board finds less than Quick Search.** The cap is a +15% ceiling for a skilled session, and the Quick Reel precedent (fishing) sizes the line to reach the cap and no further, so an unperked skilled board sits at 0.81-0.94x. Raising the baseline to Quick Search's yield would put the whole line at about 1.3x. The owner decides whether the board should instead match Quick Search unperked and the line be cut to about +15% in total (Keen Eye alone is +12%).
 2. **Rare supply.** The plan caps the rolls a site gives, not what they roll, so the cap does not bound the rare items. If the owner wants a cap on them, the levers are the dig's x3 base weight (`ScavengeLoot.DeeperWeightMultiplier`) and Careful Hands' +3. With both at 0 the board's rare supply is a skilled board's finds times the table's ordinary rare share.
 3. **Keen Eye is the largest purchase** (+0.12 finds, about 13% of Quick Search) and sits at rank 25 for 3 SP. Moving it later or pricing it higher is a choice for the owner; Steady Dig (+0.05) at 2 SP is cheaper per find.
-4. **The Prospecting rows are placeholders** until 9a's draft: Sharp Chisel, Rich Pockets and the Prospecting half of Careful Hands are named from the plan's mechanics (Heavy Strike's shatter chance, a hidden seam being a gem pocket, a Strike's yield). If 9a's engine has no such number, those rows change; the Search rows do not depend on them.
-5. **Help text.** The Search window's help describes the board without perks. If the owner wants the style and the perks explained in the game, the help page needs a paragraph for Careful Hands once the perks exist, and the window needs a Careful Hands toggle.
+4. **The Prospecting rows are 9a's sizing.** Their magnitudes come from 9a's draft against the harvesting engine (Heavy Strike's 20% shatter chance, a Strike's 30% chance of 2 units, the node table's gem chance). Careful Hands, Rich Pockets and Jackpot each move the gem supply by a share of today's (about +27%, +27% and +36%, about 2x for all three) and Deep Scan is worth nothing at Gathering 50; 9a's draft raises both for the owner. The Search rows do not depend on them.
+5. **Help text.** The Search window's help describes the board without perks. If the owner wants the style and the perks explained in the game, the help page needs a paragraph for Careful Hands once the perks exist, and the window needs the same row of owned styles the Prospecting window gets.
 
 ## Proposed StatTypes
 
@@ -110,7 +111,7 @@ The style is stored the way the other lines' styles are (the owner's October 22 
 
 ## Integration notes
 
-- Perks act on the visit's snapshot at the moment the site is opened. A perk bought or toggled during a visit changes the next visit. A visit that ends early (window closed, moving away, combat, death, logout) keeps what it found and loses the searches not yet spent, with or without perks.
+- Perks act on the visit's snapshot at the moment the site is opened. A perk bought, or a style chosen or changed, during a visit changes the next visit. A visit that ends early (window closed, moving away, combat, death, logout) keeps what it found and loses the searches not yet spent, with or without perks.
 - Treasure Hunter's rare weight (+10 on rare-flagged entries per level) applies to every roll, a dig's too, before the dig's multiplier; Creditfinder raises gold finds. Neither is part of this line (they are General perks).
 - The XP of an action is the site's XP against the Gathering rank times `SearchRules.XpMultiplierForLevel`, the same with or without perks. No perk changes the pace: the game keeps `SearchRules.ActionSeconds` between two actions, so no perk can speed the board.
 - Quick Search is unchanged by every perk.

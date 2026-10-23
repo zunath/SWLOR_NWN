@@ -35,6 +35,15 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
                     },
                     "Perks", "Combat Basics", "First Aid Combat Styles", "Rifle Combat Styles"),
 
+                CraftingTopic("Engineering", "Choose Engineering perks for a Circuit that runs hot and strong, or one that runs stable and precise.",
+                    new[]
+                    {
+                        Style("Engineering - Overclocker", "Overclocker perks reward a high Load in the Circuit: more output from Wire, Tune and Discharge, with tools to survive the heat. Overclock is its style."),
+                        Style("Engineering - Technician", "Technician perks reward a steady, precise Circuit: fewer mistakes, finer calibration and a safety net. Safe Mode is its style."),
+                        Style("Choosing a style", "Engineering styles are picked in the Engineering craft window, one active at a time. Check the Perks window for requirements and current effects.")
+                    },
+                    "Perks", "Crafting", "Skills"),
+
                 Topic("Espionage", "Choose between evasive repositioning and delayed traps in the Espionage combat trees.",
                     new[]
                     {
@@ -42,6 +51,15 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
                         Style("Espionage - Saboteur", "Saboteur places visible traps that arm after a delay and trigger damage or conditions when enemies reach them.")
                     },
                     "Perks", "Combat Basics", "Vibroknife Combat Styles", "Pistol Combat Styles"),
+
+                CraftingTopic("Fabrication", "Choose Fabrication perks to speed up or steady the Fabricator, or to improve research experiments.",
+                    new[]
+                    {
+                        Style("Fabrication - Builder", "Builder perks change the Fabricator. At Fabrication 20 you choose Production Run, which makes Run much stronger, or Fine Tolerance, which makes Precision Pass stronger and Run weaker. Other Builder perks make Retool and Service cheaper, reduce wear, build two sub-assemblies in one action, and improve Prime Feedstock and the final Assemble."),
+                        Style("Fabrication - Researcher", "Researcher perks change research experiments. At Fabrication 20 you choose Methodical, which adds trials but lowers every Test's chance, or Intuitive, which raises every Test's chance but removes a trial. Other Researcher perks add Test chance and trials, make Refine Method cheaper and stronger, and add Peer Review and Breakthrough."),
+                        Style("Choosing a style", "The Fabrication style you own is always active, and you cannot own both styles of a line. Switching costs a Perk Refund Token. Check the Perks window for requirements and current effects.")
+                    },
+                    "Perks", "Crafting", "Skills"),
 
                 Topic("First Aid", "Choose First Aid perks to heal allies, clear conditions, or prepare with combat consumables.",
                     new[]
@@ -205,6 +223,33 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
 
             return new PlayerGuideViewModel.PlayerGuideTopic(
                 $"{family} Combat Styles",
+                "Combat Styles",
+                summary,
+                family,
+                styles,
+                questions,
+                related);
+        }
+
+        /// <summary>
+        /// A crafting perk tree. The Player Guide lists it with the combat trees so a search for the tree's exact name finds it; the topic is
+        /// named for its perk lines and not for combat.
+        /// </summary>
+        private static PlayerGuideViewModel.PlayerGuideTopic CraftingTopic(
+            string family,
+            string summary,
+            IReadOnlyList<PlayerGuideViewModel.ArticleBlock> styles,
+            params string[] related)
+        {
+            var questions = new[]
+            {
+                new PlayerGuideViewModel.QuestionAnswer(
+                    $"What does {family} focus on?",
+                    summary)
+            };
+
+            return new PlayerGuideViewModel.PlayerGuideTopic(
+                $"{family} Perk Lines",
                 "Combat Styles",
                 summary,
                 family,

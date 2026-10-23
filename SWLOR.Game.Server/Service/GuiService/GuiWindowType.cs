@@ -88,6 +88,7 @@ namespace SWLOR.Game.Server.Service.GuiService
         CraftFabricator = 88,
         Line = 89,
         Prospecting = 90,
+        Search = 91,
 
         DebugEnmity = 900,
         DebugNuiGallery = 901,

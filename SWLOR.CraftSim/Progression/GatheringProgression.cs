@@ -108,8 +108,7 @@ namespace SWLOR.CraftSim.Progression
             for (var level = ScavengeModel.FirstSiteLevel; level <= Math.Min(tier, ScavengeModel.LastSiteLevel); level++)
             {
                 var xp = ScavengeModel.ExpectedXpPerSite(level, rank, tier, assumptions.PerceptionModifier);
-                var attempts = ScavengeModel.ExpectedAttemptsPerSite(tier, assumptions.PerceptionModifier);
-                var seconds = assumptions.NodeTravelSeconds + attempts * assumptions.SecondsPerScavengeAttempt;
+                var seconds = assumptions.NodeTravelSeconds + assumptions.ScavengeVisitSeconds;
                 if (xp / seconds > best.XpPerSecond)
                     best = ($"scavenge level {level} sites", xp / seconds);
             }

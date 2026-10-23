@@ -8,19 +8,19 @@ A new crafter (rank 0, nothing handed in to a guild) who always crafts recipes o
 
 | Skill | Crafts to 50 (mid gear) | Craft window h | Gathering h | Total h: no gear | Total h: mid gear | Total h: best gear | XP per hour (mid gear) | Component units no node supplies (mid gear) |
 | --- | --- | --- | --- | --- | --- | --- | --- | --- |
-| Smithery | 536 | 20.0 | 80.0 | 107.5 | 100.1 | 93.1 | 4,108 | 887 |
-| Engineering | 539 | 19.8 | 43.9 | 66.9 | 63.7 | 60.5 | 6,456 | 949 |
-| Fabrication | 530 | 20.4 | 33.0 | 55.0 | 53.4 | 51.3 | 7,692 | 450 |
-| Agriculture | 539 | 19.7 | 16.8 | 36.3 | 36.5 | 36.3 | 11,261 | 1856 |
-| Gathering (the skill) | - | - | 3.1 | 3.1 | 3.1 | 3.1 | 131,722 | - |
+| Smithery | 536 | 20.0 | 78.9 | 106.2 | 98.9 | 92.1 | 4,156 | 887 |
+| Engineering | 539 | 19.8 | 43.3 | 66.2 | 63.1 | 59.9 | 6,517 | 949 |
+| Fabrication | 530 | 20.4 | 32.6 | 54.5 | 53.0 | 50.8 | 7,761 | 450 |
+| Agriculture | 539 | 19.7 | 16.4 | 35.8 | 36.1 | 36.0 | 11,380 | 1856 |
+| Gathering (the skill) | - | - | 3.1 | 3.1 | 3.1 | 3.1 | 133,429 | - |
 
 Rank 50 costs 411,125 XP in every skill (`Skill.GetRequiredXP`, ranks 0-49). RP XP pays 3,000 XP per hour with no materials (1,500 base XP every 30 minutes; the public mechanism in `RoleplayXP.cs`), which is 137 hours for the same XP. Gathering takes 4.4 h by harvesting and refining alone, 3.5 h by scavenging alone and 3.1 h taking the better of the two at each rank.
 
 What the numbers say:
 
 - **Crafts, not just components.** Mid gear needs about 536 at-level crafts to reach rank 50, not the 340-420 in the plan's research: that range assumes near-full quality, and the lookahead player's quality at mid gear is 30% on average (quality adds up to 100% to a craft's XP).
-- **Pace.** The craft loop pays 4,108-11,261 XP per hour with its gathering, 1.4-3.8 times what RP XP pays. Players who bypass crafting with RP XP are buying out the materials and gathering, not a faster rate.
-- **Gathering dominates Smithery.** 80% of its hours are gathering. The three components that cost the most are `lth_good` (19.1 h), `ruby` (11.1 h), `lth_high` (9.3 h); each drops on a small share of rolls (gems 2-9%, crate goods 15%), so one unit costs 3.4-7.4 minutes.
+- **Pace.** The craft loop pays 4,156-11,380 XP per hour with its gathering, 1.4-3.8 times what RP XP pays. Players who bypass crafting with RP XP are buying out the materials and gathering, not a faster rate.
+- **Gathering dominates Smithery.** 80% of its hours are gathering. The three components that cost the most are `lth_good` (18.6 h), `ruby` (11.1 h), `lth_high` (9.0 h); each drops on a small share of rolls (gems 2-9%, crate goods 15%), so one unit costs 3.2-7.4 minutes.
 - **Gathering is quick for the skill itself.** Each harvested item pays up to 1,200 XP and refining pays 25-150 XP per unit at the ore's level (the model counts that at every rank), so Gathering rank 50 takes hours, not days, if nodes are free. Node respawns and contention are not modelled.
 - **Agriculture has a faster path than the one modelled here.** Fishing pays the same chart per bite (600-1,200 XP); see the catch task table in the guild section.
 
@@ -34,14 +34,14 @@ Hours to rank 50 at mid gear, today against with decisions 1 and 2 (hand-ins at 
 
 | Skill | Today h | With the decisions h | Change | Crafts to 50 today | Crafts to 50 with the decisions | Hand-in XP share of the climb | At-level hand-ins | Catch-up hand-ins (quick craft) | Catch-up h (in the total) | Guild rank at rank 50 |
 | --- | --- | --- | --- | --- | --- | --- | --- | --- | --- | --- |
-| Smithery | 100.1 | 67.9 | -32% | 536 | 408 | 20% | 268 | 35 | 0.7 | 5 |
-| Engineering | 63.7 | 48.4 | -24% | 539 | 397 | 22% | 302 | 31 | 0.4 | 5 |
-| Fabrication | 53.4 | 39.3 | -26% | 530 | 401 | 20% | 273 | 32 | 0.6 | 5 |
-| Agriculture | 36.5 | 30.6 | -16% | 539 | 424 | 17% | 230 | 40 | 0.2 | 5 |
-| Median skill | 58.6 | 43.8 | -25% | - | - | - | - | - | - | - |
-| Slowest skill | 100.1 | 67.9 | -32% | - | - | - | - | - | - | - |
+| Smithery | 98.9 | 67.1 | -32% | 536 | 408 | 20% | 268 | 35 | 0.7 | 5 |
+| Engineering | 63.1 | 47.8 | -24% | 539 | 397 | 22% | 302 | 31 | 0.4 | 5 |
+| Fabrication | 53.0 | 39.0 | -26% | 530 | 401 | 20% | 273 | 32 | 0.6 | 5 |
+| Agriculture | 36.1 | 30.2 | -16% | 539 | 424 | 17% | 230 | 40 | 0.2 | 5 |
+| Median skill | 58.0 | 43.4 | -25% | - | - | - | - | - | - | - |
+| Slowest skill | 98.9 | 67.1 | -32% | - | - | - | - | - | - | - |
 
-The proposed target was the median skill at 45 h or fewer. With the decisions it is 43.8 h, which meets it. An at-level hand-in is one of the crafter's own crafts of a task recipe, which the model makes whenever the ten-task board holds one, so it adds no craft. A catch-up hand-in is a quick-crafted item that raises the guild rank when the rank stands in the way; its quick-craft and turn-in time is in the hours above and its XP is not paid (quick-crafted items sit five or more levels below the rank).
+The proposed target was the median skill at 45 h or fewer. With the decisions it is 43.4 h, which meets it. An at-level hand-in is one of the crafter's own crafts of a task recipe, which the model makes whenever the ten-task board holds one, so it adds no craft. A catch-up hand-in is a quick-crafted item that raises the guild rank when the rank stands in the way; its quick-craft and turn-in time is in the hours above and its XP is not paid (quick-crafted items sit five or more levels below the rank).
 
 Research under the new values: the highest research XP per elapsed hour against at-level crafting XP per hour (with the x1.05) is 98% at Fabrication 10, under the plan's ceiling at every rank. Before the change the starting values (100% and 50%) paid 167% at Fabrication 10 in the baseline.
 
@@ -53,12 +53,12 @@ Research under the new values: the highest research XP per elapsed hour against 
 - Gear: none, tier 3 (mid) and tier 5 (best) of the skill's own crafting gear (`legacy-crafting-baseline.md`, "Gear levels"). Food and status bonuses are not played.
 - Craft player and XP: the legacy lookahead (`RolloutPolicy`) at the recipe's level and rank. A success pays the base XP plus the quality share; a failure pays 15% of the base (`CraftOutcomeRules`). No blueprint, no enhancements, no XP bonuses from Social or food, and no first-craft bonus unless the variety row below says so.
 - Time in the craft window: 6.0 s per action (the legacy window's estimate) plus **30 s per craft** to open the station, pick the recipe, commit the components and collect the item. The overhead is an unmeasured estimate; the gates' own overhead defaults to 0. The sensitivity table shows 15 s and 60 s.
-- Components: a craft commits every component stack of the recipe and a failure loses each stack on 65% of rolls (`CraftViewModel.cs:1601-1641`), so a craft consumes success + 0.65 x failure of the committed units. A unit is priced at the cheapest loot table in `HarvestingLootTableDefinition` that drops it, worked the way the game works that table. Ore veins and trees are harvested (`res_used` on the placeable): each harvester use takes 5.0 s (the item's `Delay(5f)`) plus its share of 30 s node travel over the node's 2.5 average harvests, and rolls the table once (plus the Might bonus roll; Might modifier 0). Bushes, herbs, vegetable patches and supply crates are scavenge sites (`scav_opened`, `SCAVENGE_POINT_LOOT_TABLE_NAME`): a visit costs the 30 s walk plus 2.0 s per search, the site can be searched once, and each successful search (`d20 + Perception >= 6`, then 6 + d3 on the second attempt that Hard Look gives) is one roll of the table, giving 1 to the item's maximum quantity. Hard Look follows the gatherer's Gathering tier (`CraftRankMilestones.GetHardLookLevel`), which the model sets to the tier of the crafter's own crafting rank at each step (tier 1 below rank 10, one more every 10 ranks) and never below the site's level, so a higher-rank crafter searches low-level sites twice more often; the Perception modifier is 0. A roll yields one item of the table, so a recipe that needs two items of one table is priced at the expected visits until both counts are met (the expected maximum of the items' independent arrival times, checked against an exact multinomial calculation in the tests), which lies between the scarcer item's time and the sum of both.
+- Components: a craft commits every component stack of the recipe and a failure loses each stack on 65% of rolls (`CraftViewModel.cs:1601-1641`), so a craft consumes success + 0.65 x failure of the committed units. A unit is priced at the cheapest loot table in `HarvestingLootTableDefinition` that drops it, worked the way the game works that table. Ore veins and trees are harvested (`res_used` on the placeable): each harvester use takes 5.0 s (the item's `Delay(5f)`) plus its share of 30 s node travel over the node's 2.5 average harvests, and rolls the table once (plus the Might bonus roll; Might modifier 0). Bushes, herbs, vegetable patches and supply crates are scavenge sites (`scav_opened`, `SCAVENGE_POINT_LOOT_TABLE_NAME`): a visit costs the 30 s walk plus 2.0 s for the one search animation of the visit (a second attempt adds no time), the site can be searched once, and each successful search (`d20 + Perception >= 6`, then 6 + d3 on the second attempt that Hard Look gives) is one roll of the table, giving 1 to the item's maximum quantity. Hard Look follows the gatherer's Gathering tier (`CraftRankMilestones.GetHardLookLevel`), which the model sets to the tier of the crafter's own crafting rank at each step (tier 1 below rank 10, one more every 10 ranks) and never below the site's level, so a higher-rank crafter searches low-level sites twice more often; the Perception modifier is 0. A roll yields one item of the table, so a recipe that needs two items of one table is priced at the expected visits until both counts are met (the expected maximum of the items' independent arrival times, checked against an exact multinomial calculation in the tests), which lies between the scarcer item's time and the sum of both.
 - Refined ore (`ref_*`) costs the raw ore plus refining: 6 s per operation (`RefiningDelaySeconds`) over a batch of 99 units (a full 99-unit stack; the refinery accepts several stacks per operation, so this is cautious). The sensitivity table also prices a batch of one power core (4 units). Power cores cost credits, not time.
 - Asteroid ores (`ore_*`, the Engineering recipes' `ref_tilarium` and the like) are priced like a ground node of the same tier. Space mining is not modelled.
 - Node travel: **30 s** between nodes, unmeasured. Respawn waits and other players at the node are not modelled, so gathering hours are a lower bound. Gathering rank is not a gate: the crafter is assumed to reach every node tier the recipe needs.
 - Components no node supplies (enemy and crate drops of leather and electronics, meat, vendor goods, parts another recipe makes) are left out of the hours and counted in the summary column. The sensitivity table prices them at 20 s a unit, about a harvested unit.
-- Gathering the skill: each rank uses the better of harvesting and refining the best ground vein the tier allows (`CraftRankMilestones.TierForRank`) and searching the best scavenge site, at 30 s between nodes or sites and 2.0 s per scavenge attempt. Perception modifier 0.
+- Gathering the skill: each rank uses the better of harvesting and refining the best ground vein the tier allows (`CraftRankMilestones.TierForRank`) and searching the best scavenge site, at 30 s between nodes or sites and 2.0 s of search animation a visit. Perception modifier 0.
 
 Rules copied from the server (the model calls everything else directly), each checked against its source by `ProgressionSourceTests` or `LegacySourceTests`, except the loss rule of the deleted `CraftViewModel.cs`, which is frozen at commit `ded6cfaf45b66b0a5c4ffe66447bf9c3e24a2ff7`:
 
@@ -68,7 +68,7 @@ Rules copied from the server (the model calls everything else directly), each ch
 | Guild points per hand-in | `Guild.cs:62-80` |
 | Ten guild tasks per tier on the board | `Guild.cs:124-170` |
 | Seconds per harvester use | `ProspectingRules.cs:71` |
-| Seconds per scavenge attempt | `ScavengePoint.cs:55-70` |
+| Seconds of the scavenge animation | `SearchRules.cs:34` |
 | Seconds per refining operation | `RefineryViewModel.cs:58-64` |
 | Research job length and credits | `Craft.cs:1145-1192` |
 | A first research job creates the blueprint | `ResearchViewModel.cs:387-410` |
@@ -76,8 +76,10 @@ Rules copied from the server (the model calls everything else directly), each ch
 | Recipe rank requirement | `Craft.cs:327-331` |
 | Harvests per node | `ProspectingNode.cs:62` |
 | Harvest XP | `GatheringLevels.cs:20-23` |
-| Scavenge second attempt | `ScavengePoint.cs:53-58` |
-| Scavenge success roll and DC | `ScavengePoint.cs:64-104` |
+| Scavenge chances at the reference Perception modifier | `ScavengeQuickSearch.cs:38-49` |
+| Scavenge second attempt | `ScavengeQuickSearch.cs:97-99` |
+| Scavenge success roll and DC | `ScavengeQuickSearch.cs:101-108` |
+| Scavenge XP level | `ScavengePoint.cs:93` |
 | Ore tiers and XP per unit | `RefineryViewModel.cs:35-52` |
 | Refinery batch size | `RefineryViewModel.cs:61` |
 | Power cores per batch | `RefineryViewModel.cs:173-174` |
@@ -91,45 +93,45 @@ A band is the hours to climb from its first rank to the next band's first rank (
 
 | Ranks | XP | Crafts (mid) | Craft window h | Gathering h | Total h: no gear | Total h: mid gear | Total h: best gear | XP per hour (mid) | RP XP h |
 | --- | --- | --- | --- | --- | --- | --- | --- | --- | --- |
-| 0-10 | 17,545 | 28 | 0.5 | 1.1 | 1.7 | 1.6 | 1.5 | 10,666 | 5.8 |
-| 10-20 | 50,960 | 77 | 2.1 | 4.4 | 7.1 | 6.5 | 5.9 | 7,855 | 17.0 |
-| 20-30 | 89,340 | 130 | 4.4 | 20.2 | 25.4 | 24.6 | 22.9 | 3,631 | 29.8 |
-| 30-40 | 107,950 | 159 | 6.0 | 29.4 | 36.8 | 35.4 | 33.7 | 3,053 | 36.0 |
-| 40-50 | 145,330 | 142 | 7.1 | 24.8 | 36.6 | 32.0 | 29.1 | 4,544 | 48.4 |
-| 0-50 | 411,125 | 536 | 20.0 | 80.0 | 107.5 | 100.1 | 93.1 | 4,108 | 137.0 |
+| 0-10 | 17,545 | 28 | 0.5 | 1.1 | 1.7 | 1.6 | 1.5 | 10,679 | 5.8 |
+| 10-20 | 50,960 | 77 | 2.1 | 4.4 | 7.1 | 6.5 | 5.9 | 7,869 | 17.0 |
+| 20-30 | 89,340 | 130 | 4.4 | 20.0 | 25.2 | 24.4 | 22.7 | 3,665 | 29.8 |
+| 30-40 | 107,950 | 159 | 6.0 | 29.0 | 36.3 | 34.9 | 33.3 | 3,089 | 36.0 |
+| 40-50 | 145,330 | 142 | 7.1 | 24.4 | 36.0 | 31.5 | 28.7 | 4,615 | 48.4 |
+| 0-50 | 411,125 | 536 | 20.0 | 78.9 | 106.2 | 98.9 | 92.1 | 4,156 | 137.0 |
 
 ### Engineering
 
 | Ranks | XP | Crafts (mid) | Craft window h | Gathering h | Total h: no gear | Total h: mid gear | Total h: best gear | XP per hour (mid) | RP XP h |
 | --- | --- | --- | --- | --- | --- | --- | --- | --- | --- |
-| 0-10 | 17,545 | 28 | 0.5 | 0.4 | 1.0 | 0.9 | 0.9 | 18,668 | 5.8 |
-| 10-20 | 50,960 | 77 | 2.0 | 2.1 | 4.4 | 4.1 | 3.9 | 12,489 | 17.0 |
-| 20-30 | 89,340 | 131 | 4.2 | 13.2 | 17.8 | 17.5 | 16.6 | 5,114 | 29.8 |
-| 30-40 | 107,950 | 160 | 5.9 | 13.1 | 19.2 | 19.0 | 18.8 | 5,672 | 36.0 |
-| 40-50 | 145,330 | 143 | 7.1 | 15.1 | 24.6 | 22.2 | 20.3 | 6,557 | 48.4 |
-| 0-50 | 411,125 | 539 | 19.8 | 43.9 | 66.9 | 63.7 | 60.5 | 6,456 | 137.0 |
+| 0-10 | 17,545 | 28 | 0.5 | 0.4 | 1.0 | 0.9 | 0.9 | 18,670 | 5.8 |
+| 10-20 | 50,960 | 77 | 2.0 | 2.1 | 4.4 | 4.1 | 3.9 | 12,492 | 17.0 |
+| 20-30 | 89,340 | 131 | 4.2 | 13.1 | 17.6 | 17.3 | 16.5 | 5,164 | 29.8 |
+| 30-40 | 107,950 | 160 | 5.9 | 13.0 | 19.0 | 18.9 | 18.7 | 5,714 | 36.0 |
+| 40-50 | 145,330 | 143 | 7.1 | 14.8 | 24.3 | 21.9 | 20.1 | 6,645 | 48.4 |
+| 0-50 | 411,125 | 539 | 19.8 | 43.3 | 66.2 | 63.1 | 59.9 | 6,517 | 137.0 |
 
 ### Fabrication
 
 | Ranks | XP | Crafts (mid) | Craft window h | Gathering h | Total h: no gear | Total h: mid gear | Total h: best gear | XP per hour (mid) | RP XP h |
 | --- | --- | --- | --- | --- | --- | --- | --- | --- | --- |
-| 0-10 | 17,545 | 28 | 0.5 | 0.8 | 1.3 | 1.3 | 1.2 | 13,548 | 5.8 |
-| 10-20 | 50,960 | 76 | 2.2 | 2.5 | 4.9 | 4.7 | 4.3 | 10,954 | 17.0 |
-| 20-30 | 89,340 | 130 | 4.4 | 14.1 | 18.8 | 18.5 | 17.4 | 4,833 | 29.8 |
-| 30-40 | 107,950 | 158 | 6.1 | 7.7 | 13.3 | 13.7 | 14.0 | 7,859 | 36.0 |
-| 40-50 | 145,330 | 139 | 7.2 | 8.1 | 16.7 | 15.3 | 14.4 | 9,512 | 48.4 |
-| 0-50 | 411,125 | 530 | 20.4 | 33.0 | 55.0 | 53.4 | 51.3 | 7,692 | 137.0 |
+| 0-10 | 17,545 | 28 | 0.5 | 0.8 | 1.3 | 1.3 | 1.2 | 13,565 | 5.8 |
+| 10-20 | 50,960 | 76 | 2.2 | 2.5 | 4.9 | 4.6 | 4.3 | 10,974 | 17.0 |
+| 20-30 | 89,340 | 130 | 4.4 | 13.8 | 18.5 | 18.3 | 17.2 | 4,890 | 29.8 |
+| 30-40 | 107,950 | 158 | 6.1 | 7.6 | 13.2 | 13.6 | 13.9 | 7,911 | 36.0 |
+| 40-50 | 145,330 | 139 | 7.2 | 7.9 | 16.5 | 15.1 | 14.2 | 9,612 | 48.4 |
+| 0-50 | 411,125 | 530 | 20.4 | 32.6 | 54.5 | 53.0 | 50.8 | 7,761 | 137.0 |
 
 ### Agriculture
 
 | Ranks | XP | Crafts (mid) | Craft window h | Gathering h | Total h: no gear | Total h: mid gear | Total h: best gear | XP per hour (mid) | RP XP h |
 | --- | --- | --- | --- | --- | --- | --- | --- | --- | --- |
-| 0-10 | 17,545 | 28 | 0.5 | 0.8 | 1.4 | 1.3 | 1.2 | 13,113 | 5.8 |
-| 10-20 | 50,960 | 77 | 2.0 | 2.1 | 4.4 | 4.1 | 3.9 | 12,395 | 17.0 |
-| 20-30 | 89,340 | 131 | 4.2 | 2.8 | 6.4 | 7.0 | 7.3 | 12,736 | 29.8 |
-| 30-40 | 107,950 | 160 | 5.9 | 6.6 | 12.0 | 12.5 | 12.9 | 8,670 | 36.0 |
-| 40-50 | 145,330 | 143 | 7.1 | 4.5 | 12.1 | 11.6 | 11.0 | 12,537 | 48.4 |
-| 0-50 | 411,125 | 539 | 19.7 | 16.8 | 36.3 | 36.5 | 36.3 | 11,261 | 137.0 |
+| 0-10 | 17,545 | 28 | 0.5 | 0.8 | 1.4 | 1.3 | 1.2 | 13,166 | 5.8 |
+| 10-20 | 50,960 | 77 | 2.0 | 2.1 | 4.4 | 4.1 | 3.9 | 12,473 | 17.0 |
+| 20-30 | 89,340 | 131 | 4.2 | 2.7 | 6.3 | 7.0 | 7.2 | 12,832 | 29.8 |
+| 30-40 | 107,950 | 160 | 5.9 | 6.4 | 11.8 | 12.3 | 12.8 | 8,783 | 36.0 |
+| 40-50 | 145,330 | 143 | 7.1 | 4.4 | 11.9 | 11.5 | 10.9 | 12,687 | 48.4 |
+| 0-50 | 411,125 | 539 | 19.7 | 16.4 | 35.8 | 36.1 | 36.0 | 11,380 | 137.0 |
 
 ## Gathering rank 50
 
@@ -137,30 +139,30 @@ Hours per band for a new gatherer. Harvesting pays `GetDeltaXP(vein level - rank
 
 | Ranks | XP | Harvest and refine h | Scavenge h | Better of the two h | XP per hour (better) | RP XP h |
 | --- | --- | --- | --- | --- | --- | --- |
-| 0-10 | 17,545 | 0.31 | 0.19 | 0.17 | 101,025 | 5.8 |
-| 10-20 | 50,960 | 0.69 | 0.50 | 0.44 | 116,714 | 17.0 |
-| 20-30 | 89,340 | 1.02 | 0.80 | 0.70 | 127,665 | 29.8 |
-| 30-40 | 107,950 | 1.10 | 0.90 | 0.80 | 135,612 | 36.0 |
-| 40-50 | 145,330 | 1.28 | 1.15 | 1.02 | 143,178 | 48.4 |
-| 0-50 | 411,125 | 4.40 | 3.54 | 3.12 | 131,722 | 137.0 |
+| 0-10 | 17,545 | 0.31 | 0.19 | 0.17 | 101,407 | 5.8 |
+| 10-20 | 50,960 | 0.69 | 0.49 | 0.43 | 117,560 | 17.0 |
+| 20-30 | 89,340 | 1.02 | 0.78 | 0.69 | 129,082 | 29.8 |
+| 30-40 | 107,950 | 1.10 | 0.88 | 0.78 | 137,556 | 36.0 |
+| 40-50 | 145,330 | 1.28 | 1.11 | 1.00 | 145,645 | 48.4 |
+| 0-50 | 411,125 | 4.40 | 3.46 | 3.08 | 133,429 | 137.0 |
 
 The plan's quick gathering and the minigame sessions that replace the harvester and the search, for the same climb. **Quick Harvest** resolves a node at today's expected units and XP, one harvest delay per unit, and **Quick Search** resolves a site at today's expected rolls and XP, taking as long as today's attempts, so each is today's loop by construction and neither can train Gathering faster than the rows below. A played session may exceed it by the gate's starting value of 15%; the minigames are not built yet, so that row is the cap the parity gate enforces, not a measurement.
 
 | Cohort | Gathering XP per hour (rank 0 to 50) | Hours to rank 50 | Ceiling the plan sets |
 | --- | --- | --- | --- |
 | Quick Harvest (today's harvesting and refining) | 93,472 | 4.40 | today's rate, never above it |
-| Quick Search (today's scavenging) | 116,148 | 3.54 | today's rate, never above it |
+| Quick Search (today's scavenging) | 118,795 | 3.46 | today's rate, never above it |
 | Played Prospecting session at the parity cap | 107,493 | 3.82 | at most 15% above today's |
-| Played Search session at the parity cap | 133,571 | 3.08 | at most 15% above today's |
+| Played Search session at the parity cap | 136,614 | 3.01 | at most 15% above today's |
 
 Sensitivity of the better-of-two total to the node travel assumption, the only unmeasured input that moves it:
 
 | Seconds between nodes | Harvest and refine h | Scavenge h | Better of the two h |
 | --- | --- | --- | --- |
-| 15 | 2.9 | 1.9 | 1.8 |
+| 15 | 2.9 | 1.8 | 1.8 |
 | 30 | 4.4 | 3.5 | 3.1 |
-| 60 | 7.5 | 6.8 | 5.6 |
-| 120 | 13.7 | 13.3 | 10.7 |
+| 60 | 7.5 | 6.7 | 5.6 |
+| 120 | 13.7 | 13.2 | 10.7 |
 | 300 | 32.2 | 32.7 | 25.8 |
 
 ## What supplies the components
@@ -178,31 +180,31 @@ Gathering hours of the mid gear climb by kind of node. Each component is priced 
 
 | Skill | asteroids | bushes | herbs | ore veins | supply crates | trees | vegetable patches |
 | --- | --- | --- | --- | --- | --- | --- | --- |
-| Smithery | 0.0 | 8.3 | 0.0 | 31.0 | 38.8 | 1.9 | 0.0 |
-| Engineering | 6.6 | 0.6 | 0.0 | 12.7 | 24.1 | 0.0 | 0.0 |
-| Fabrication | 0.1 | 3.3 | 0.0 | 5.7 | 18.3 | 5.6 | 0.0 |
-| Agriculture | 0.0 | 0.0 | 2.5 | 0.0 | 0.0 | 0.0 | 14.3 |
+| Smithery | 0.0 | 8.1 | 0.0 | 31.0 | 37.8 | 1.9 | 0.0 |
+| Engineering | 6.6 | 0.5 | 0.0 | 12.7 | 23.5 | 0.0 | 0.0 |
+| Fabrication | 0.1 | 3.3 | 0.0 | 5.7 | 17.9 | 5.6 | 0.0 |
+| Agriculture | 0.0 | 0.0 | 2.4 | 0.0 | 0.0 | 0.0 | 14.0 |
 
 The five components that cost the most gathering hours in each skill's mid gear climb:
 
 | Skill | Component | Gathering h | Share of the skill's gathering |
 | --- | --- | --- | --- |
-| Smithery | `lth_good` | 19.1 | 24% |
+| Smithery | `lth_good` | 18.6 | 24% |
 | Smithery | `ruby` | 11.1 | 14% |
-| Smithery | `lth_high` | 9.3 | 12% |
+| Smithery | `lth_high` | 9.0 | 11% |
 | Smithery | `citrine` | 7.9 | 10% |
-| Smithery | `elec_good` | 5.9 | 7% |
-| Engineering | `elec_good` | 13.4 | 30% |
-| Engineering | `elec_high` | 8.1 | 18% |
+| Smithery | `elec_good` | 5.7 | 7% |
+| Engineering | `elec_good` | 13.1 | 30% |
+| Engineering | `elec_high` | 7.9 | 18% |
 | Engineering | `ruby` | 5.0 | 11% |
 | Engineering | `citrine` | 3.0 | 7% |
 | Engineering | `agate` | 1.5 | 4% |
-| Fabrication | `lth_good` | 7.4 | 22% |
-| Fabrication | `elec_good` | 6.2 | 19% |
-| Fabrication | `elec_high` | 3.8 | 11% |
+| Fabrication | `lth_good` | 7.3 | 22% |
+| Fabrication | `elec_good` | 6.1 | 19% |
+| Fabrication | `elec_high` | 3.7 | 11% |
 | Fabrication | `aracia_wood` | 1.9 | 6% |
 | Fabrication | `ref_keromber` | 1.7 | 5% |
-| Agriculture | `tomato` | 2.2 | 13% |
+| Agriculture | `tomato` | 2.1 | 13% |
 | Agriculture | `melon` | 1.8 | 11% |
 | Agriculture | `plant_butter` | 1.4 | 8% |
 | Agriculture | `mushroom` | 1.2 | 7% |
@@ -214,17 +216,17 @@ Total hours to rank 50 at mid gear when one unmeasured input or play choice chan
 
 | Scenario | Smithery | Engineering | Fabrication | Agriculture |
 | --- | --- | --- | --- | --- |
-| Baseline | 100.1 | 63.7 | 53.4 | 36.5 |
-| Overhead 15 s per craft | 97.8 | 61.4 | 51.2 | 34.3 |
-| Overhead 60 s per craft | 104.5 | 68.2 | 57.9 | 41.0 |
-| Node travel 15 s | 66.9 | 45.6 | 39.5 | 28.8 |
-| Node travel 60 s | 166.4 | 99.8 | 81.3 | 51.9 |
-| Node travel 120 s | 299.0 | 172.1 | 137.1 | 82.6 |
-| Might modifier +2 (half the harvests drop a second item) | 89.1 | 57.3 | 49.6 | 36.5 |
-| Refining one power core (4 units) per operation | 100.6 | 64.2 | 53.9 | 36.5 |
-| Components no node supplies cost 20 s a unit | 105.0 | 69.0 | 55.9 | 46.8 |
-| Crafts the cheapest quarter of each level's recipes | 51.7 | 30.1 | 31.9 | 19.7 |
-| Rotates through each level's recipes (20% first-craft bonus on each) | 88.3 | 53.3 | 48.2 | 33.2 |
+| Baseline | 98.9 | 63.1 | 53.0 | 36.1 |
+| Overhead 15 s per craft | 96.7 | 60.8 | 50.8 | 33.9 |
+| Overhead 60 s per craft | 103.4 | 67.6 | 57.4 | 40.6 |
+| Node travel 15 s | 65.8 | 45.0 | 39.0 | 28.4 |
+| Node travel 60 s | 165.2 | 99.2 | 80.8 | 51.5 |
+| Node travel 120 s | 297.8 | 171.5 | 136.6 | 82.2 |
+| Might modifier +2 (half the harvests drop a second item) | 88.0 | 56.7 | 49.2 | 36.1 |
+| Refining one power core (4 units) per operation | 99.5 | 63.6 | 53.4 | 36.1 |
+| Components no node supplies cost 20 s a unit | 103.9 | 68.4 | 55.5 | 46.4 |
+| Crafts the cheapest quarter of each level's recipes | 51.3 | 30.0 | 31.8 | 19.7 |
+| Rotates through each level's recipes (20% first-craft bonus on each) | 87.3 | 52.7 | 47.7 | 32.9 |
 
 ## Guild task cohort
 
@@ -245,26 +247,26 @@ The cohort crafts at level as before and, whenever the board has a task for that
 
 | Skill | Award share | Total h (mid gear) | Change vs no guild | Change vs the 0% award | At-level hand-ins | Catch-up hand-ins | Catch-up h | Lowest chance a board held a catch-up item | Server starts waited | Guild rank at rank 50 | Hand-in XP | Share of the climb's XP | Credits earned |
 | --- | --- | --- | --- | --- | --- | --- | --- | --- | --- | --- | --- | --- | --- |
-| Smithery | no guild | 100.1 | - | - | - | - | - | - | - | - | - | - | - |
-| Smithery | 0% (hand-ins for credits and points only) | 85.9 | -14% | - | 360 | 28 | 0.6 | 100% | 0.00 | 5 | 0 | 0% | 1,795,664 |
-| Smithery | 25% | 77.3 | -23% | -10% | 314 | 31 | 0.6 | 100% | 0.00 | 5 | 47,071 | 11% | 1,579,668 |
-| Smithery | 50% | 70.7 | -29% | -18% | 278 | 33 | 0.7 | 100% | 0.00 | 5 | 83,431 | 20% | 1,413,623 |
-| Smithery | 100% | 61.3 | -39% | -29% | 227 | 48 | 1.1 | 100% | 0.00 | 5 | 136,136 | 33% | 1,205,097 |
-| Engineering | no guild | 63.7 | - | - | - | - | - | - | - | - | - | - | - |
-| Engineering | 0% (hand-ins for credits and points only) | 64.7 | 2% | - | 413 | 24 | 0.3 | 100% | 0.00 | 5 | 0 | 0% | 2,021,724 |
-| Engineering | 25% | 56.5 | -11% | -13% | 357 | 27 | 0.3 | 100% | 0.00 | 5 | 53,493 | 13% | 1,762,643 |
-| Engineering | 50% | 50.2 | -21% | -22% | 314 | 30 | 0.3 | 100% | 0.00 | 5 | 94,222 | 23% | 1,565,738 |
-| Engineering | 100% | 41.3 | -35% | -36% | 254 | 37 | 0.4 | 100% | 0.00 | 5 | 152,445 | 37% | 1,291,900 |
-| Fabrication | no guild | 53.4 | - | - | - | - | - | - | - | - | - | - | - |
-| Fabrication | 0% (hand-ins for credits and points only) | 51.5 | -4% | - | 361 | 26 | 0.5 | 100% | 0.00 | 5 | 0 | 0% | 1,758,220 |
-| Fabrication | 25% | 45.5 | -15% | -12% | 318 | 29 | 0.6 | 100% | 0.00 | 5 | 47,669 | 12% | 1,563,004 |
-| Fabrication | 50% | 40.8 | -24% | -21% | 284 | 31 | 0.6 | 100% | 0.00 | 5 | 85,170 | 21% | 1,408,821 |
-| Fabrication | 100% | 34.0 | -36% | -34% | 234 | 39 | 0.8 | 100% | 0.00 | 5 | 140,565 | 34% | 1,193,099 |
-| Agriculture | no guild | 36.5 | - | - | - | - | - | - | - | - | - | - | - |
-| Agriculture | 0% (hand-ins for credits and points only) | 38.7 | 6% | - | 295 | 31 | 0.1 | 100% | 0.00 | 5 | 0 | 0% | 1,446,620 |
-| Agriculture | 25% | 34.9 | -4% | -10% | 264 | 33 | 0.1 | 100% | 0.00 | 5 | 39,661 | 10% | 1,308,335 |
-| Agriculture | 50% | 31.8 | -13% | -18% | 240 | 38 | 0.2 | 100% | 0.00 | 5 | 71,942 | 17% | 1,206,094 |
-| Agriculture | 100% | 27.2 | -26% | -30% | 203 | 53 | 0.3 | 100% | 0.00 | 5 | 121,566 | 30% | 1,076,501 |
+| Smithery | no guild | 98.9 | - | - | - | - | - | - | - | - | - | - | - |
+| Smithery | 0% (hand-ins for credits and points only) | 84.9 | -14% | - | 360 | 28 | 0.6 | 100% | 0.00 | 5 | 0 | 0% | 1,795,664 |
+| Smithery | 25% | 76.4 | -23% | -10% | 314 | 31 | 0.6 | 100% | 0.00 | 5 | 47,071 | 11% | 1,579,668 |
+| Smithery | 50% | 69.9 | -29% | -18% | 278 | 33 | 0.7 | 100% | 0.00 | 5 | 83,431 | 20% | 1,413,623 |
+| Smithery | 100% | 60.6 | -39% | -29% | 227 | 48 | 1.1 | 100% | 0.00 | 5 | 136,136 | 33% | 1,205,097 |
+| Engineering | no guild | 63.1 | - | - | - | - | - | - | - | - | - | - | - |
+| Engineering | 0% (hand-ins for credits and points only) | 63.9 | 1% | - | 413 | 24 | 0.3 | 100% | 0.00 | 5 | 0 | 0% | 2,021,724 |
+| Engineering | 25% | 55.9 | -11% | -13% | 357 | 27 | 0.3 | 100% | 0.00 | 5 | 53,493 | 13% | 1,762,643 |
+| Engineering | 50% | 49.7 | -21% | -22% | 314 | 30 | 0.3 | 100% | 0.00 | 5 | 94,222 | 23% | 1,565,738 |
+| Engineering | 100% | 40.8 | -35% | -36% | 254 | 37 | 0.4 | 100% | 0.00 | 5 | 152,445 | 37% | 1,291,900 |
+| Fabrication | no guild | 53.0 | - | - | - | - | - | - | - | - | - | - | - |
+| Fabrication | 0% (hand-ins for credits and points only) | 51.2 | -3% | - | 361 | 26 | 0.5 | 100% | 0.00 | 5 | 0 | 0% | 1,758,220 |
+| Fabrication | 25% | 45.2 | -15% | -12% | 318 | 29 | 0.6 | 100% | 0.00 | 5 | 47,669 | 12% | 1,563,004 |
+| Fabrication | 50% | 40.5 | -24% | -21% | 284 | 31 | 0.6 | 100% | 0.00 | 5 | 85,170 | 21% | 1,408,821 |
+| Fabrication | 100% | 33.8 | -36% | -34% | 234 | 39 | 0.8 | 100% | 0.00 | 5 | 140,565 | 34% | 1,193,099 |
+| Agriculture | no guild | 36.1 | - | - | - | - | - | - | - | - | - | - | - |
+| Agriculture | 0% (hand-ins for credits and points only) | 38.3 | 6% | - | 295 | 31 | 0.1 | 100% | 0.00 | 5 | 0 | 0% | 1,446,620 |
+| Agriculture | 25% | 34.5 | -4% | -10% | 264 | 33 | 0.1 | 100% | 0.00 | 5 | 39,661 | 10% | 1,308,335 |
+| Agriculture | 50% | 31.5 | -13% | -18% | 240 | 38 | 0.2 | 100% | 0.00 | 5 | 71,942 | 17% | 1,206,094 |
+| Agriculture | 100% | 26.9 | -26% | -30% | 203 | 53 | 0.3 | 100% | 0.00 | 5 | 121,566 | 30% | 1,076,501 |
 
 Read the award's effect against the 0% row, not against no guild: handing in the task recipes already changes the hours at a 0% award, because their components differ from the level's average recipe. Hand-in XP's share of the climb is the figure to read for the award: the proposal should land it between a fifth and a third, so it neither dominates nor vanishes.
 
@@ -299,23 +301,23 @@ What raising a guild from rank 0 to 5 costs a rank-50 crafter who quick-crafts t
 
 | Guild | Hand-ins | Hours | Credits earned | Credits per hour | Lowest chance a board holds an eligible item | Server starts waited (not charged) |
 | --- | --- | --- | --- | --- | --- | --- |
-| SmitheryGuild | 238 | 5.3 | 954,321 | 179,602 | 100% | 0.00 |
-| EngineeringGuild | 238 | 8.2 | 954,321 | 116,707 | 100% | 0.00 |
-| FabricationGuild | 238 | 3.4 | 954,321 | 283,918 | 100% | 0.00 |
-| AgricultureGuild | 238 | 1.1 | 954,321 | 871,140 | 100% | 0.00 |
+| SmitheryGuild | 238 | 5.3 | 954,321 | 180,522 | 100% | 0.00 |
+| EngineeringGuild | 238 | 8.0 | 954,321 | 119,115 | 100% | 0.00 |
+| FabricationGuild | 238 | 3.4 | 954,321 | 284,549 | 100% | 0.00 |
+| AgricultureGuild | 238 | 1.1 | 954,321 | 873,641 | 100% | 0.00 |
 
 | Guild | Tier | Item | Item level | Guild points each | Hand-ins | Hours | Chance a board holds an eligible item |
 | --- | --- | --- | --- | --- | --- | --- | --- |
-| SmitheryGuild | 0 | `b_knife` | 1 | 21 | 48 | 0.89 | 100% |
-| SmitheryGuild | 1 | `tit_knife` | 11 | 101 | 40 | 0.78 | 100% |
-| SmitheryGuild | 2 | `del_knife` | 21 | 175 | 57 | 1.40 | 100% |
-| SmitheryGuild | 3 | `proto_knife` | 31 | 273 | 55 | 1.14 | 100% |
-| SmitheryGuild | 4 | `oph_knife` | 41 | 390 | 38 | 1.11 | 100% |
+| SmitheryGuild | 0 | `b_knife` | 1 | 21 | 48 | 0.88 | 100% |
+| SmitheryGuild | 1 | `tit_knife` | 11 | 101 | 40 | 0.77 | 100% |
+| SmitheryGuild | 2 | `del_knife` | 21 | 175 | 57 | 1.39 | 100% |
+| SmitheryGuild | 3 | `proto_knife` | 31 | 273 | 55 | 1.13 | 100% |
+| SmitheryGuild | 4 | `oph_knife` | 41 | 390 | 38 | 1.10 | 100% |
 | EngineeringGuild | 0 | `min_laser_b` | 1 | 21 | 48 | 0.52 | 100% |
 | EngineeringGuild | 1 | `min_laser_1` | 11 | 101 | 40 | 0.45 | 100% |
-| EngineeringGuild | 2 | `min_laser_2` | 21 | 175 | 57 | 3.90 | 100% |
+| EngineeringGuild | 2 | `min_laser_2` | 21 | 175 | 57 | 3.80 | 100% |
 | EngineeringGuild | 3 | `min_laser_3` | 31 | 273 | 55 | 0.63 | 100% |
-| EngineeringGuild | 4 | `min_laser_4` | 41 | 390 | 38 | 2.67 | 100% |
+| EngineeringGuild | 4 | `min_laser_4` | 41 | 390 | 38 | 2.60 | 100% |
 | FabricationGuild | 0 | `structure_0132` | 1 | 21 | 48 | 0.76 | 100% |
 | FabricationGuild | 1 | `structure_0026` | 11 | 101 | 40 | 0.56 | 100% |
 | FabricationGuild | 2 | `structure_0004` | 21 | 175 | 57 | 0.80 | 100% |
@@ -354,14 +356,14 @@ Time at the terminal per job: an experiment of 6 trials at 6 s, plus 30 s to sta
 | Fabrication rank | Tier | Recipe level | Base XP | Job slots | Level-1 job | Level-10 job | Level-1 job credits | Fast loop jobs per h | Climb jobs per h | Crafting XP per h (incl. gathering and the pace multiplier) | Research XP per h at a 100% award |
 | --- | --- | --- | --- | --- | --- | --- | --- | --- | --- | --- | --- |
 | 10 | 1 | 9 | 450 | 1 | 3.3 min | 5.6 h | 200 | 24.0 | 0.62 | 11,203 | 10,800 |
-| 15 | 1 | 9 | 0 | 1 | 3.3 min | 5.6 h | 200 | 24.0 | 0.62 | 12,945 | 0 |
-| 20 | 2 | 19 | 450 | 1 | 15.3 min | 25.5 h | 918 | 5.2 | 0.14 | 9,953 | 2,353 |
-| 25 | 2 | 9 | 0 | 2 | 3.3 min | 5.6 h | 200 | 37.5 | 1.25 | 6,425 | 0 |
-| 30 | 3 | 29 | 450 | 2 | 37.4 min | 62.3 h | 2,242 | 4.3 | 0.11 | 3,834 | 1,927 |
+| 15 | 1 | 9 | 0 | 1 | 3.3 min | 5.6 h | 200 | 24.0 | 0.62 | 12,969 | 0 |
+| 20 | 2 | 19 | 450 | 1 | 15.3 min | 25.5 h | 918 | 5.2 | 0.14 | 10,007 | 2,353 |
+| 25 | 2 | 9 | 0 | 2 | 3.3 min | 5.6 h | 200 | 37.5 | 1.25 | 6,481 | 0 |
+| 30 | 3 | 29 | 450 | 2 | 37.4 min | 62.3 h | 2,242 | 4.3 | 0.11 | 3,894 | 1,927 |
 | 35 | 3 | 9 | 0 | 2 | 3.3 min | 5.6 h | 200 | 37.5 | 1.25 | 12,822 | 0 |
 | 40 | 4 | 39 | 450 | 2 | 1.2 h | 117.3 h | 4,222 | 2.3 | 0.06 | 14,015 | 1,023 |
-| 45 | 4 | 9 | 0 | 2 | 3.3 min | 5.6 h | 200 | 37.5 | 1.25 | 11,198 | 0 |
-| 49 | 4 | 9 | 0 | 2 | 3.3 min | 5.6 h | 200 | 37.5 | 1.25 | 7,192 | 0 |
+| 45 | 4 | 9 | 0 | 2 | 3.3 min | 5.6 h | 200 | 37.5 | 1.25 | 11,302 | 0 |
+| 49 | 4 | 9 | 0 | 2 | 3.3 min | 5.6 h | 200 | 37.5 | 1.25 | 7,275 | 0 |
 
 The tier gate lags the rank, so the best recipe a researcher may start is between 1 and 10 levels below their rank, and the XP chart pays nothing for a recipe five or more levels below. 24 of the 40 Fabrication ranks 10-49 have no researchable recipe that pays XP at all under the starting values; research XP arrives in bursts in the first four ranks of each tier. The third job slot (Fabrication 50) arrives when the skill stops paying XP, so it matters for blueprints only.
 
@@ -370,21 +372,21 @@ The starting values against at-level Fabrication crafting at the same rank (the 
 | Fabrication rank | Base XP | Level-1 job XP (starting values) | Starting values as a share of base XP | Research XP per elapsed h | Crafting XP per h | Research / crafting, elapsed | Research / crafting, player's own time |
 | --- | --- | --- | --- | --- | --- | --- | --- |
 | 10 | 450 | 459 | 102% | 11,016 | 11,203 | 98% | 154% |
-| 11 | 300 | 306 | 102% | 7,344 | 14,383 | 51% | 80% |
-| 12 | 150 | 153 | 102% | 3,672 | 16,258 | 23% | 35% |
+| 11 | 300 | 306 | 102% | 7,344 | 14,426 | 51% | 80% |
+| 12 | 150 | 153 | 102% | 3,672 | 16,275 | 23% | 35% |
 | 13 | 76 | 76 | 100% | 1,824 | 16,453 | 11% | 17% |
-| 20 | 450 | 459 | 102% | 2,400 | 9,953 | 24% | 173% |
-| 21 | 300 | 306 | 102% | 1,600 | 7,919 | 20% | 145% |
-| 22 | 150 | 153 | 102% | 800 | 8,990 | 9% | 64% |
-| 23 | 76 | 76 | 100% | 397 | 6,830 | 6% | 42% |
-| 30 | 450 | 459 | 102% | 1,965 | 3,834 | 51% | 449% |
+| 20 | 450 | 459 | 102% | 2,400 | 10,007 | 24% | 172% |
+| 21 | 300 | 306 | 102% | 1,600 | 8,001 | 20% | 143% |
+| 22 | 150 | 153 | 102% | 800 | 9,070 | 9% | 63% |
+| 23 | 76 | 76 | 100% | 397 | 6,899 | 6% | 41% |
+| 30 | 450 | 459 | 102% | 1,965 | 3,894 | 50% | 442% |
 | 31 | 300 | 306 | 102% | 1,310 | 13,816 | 9% | 83% |
-| 32 | 150 | 153 | 102% | 655 | 11,139 | 6% | 52% |
-| 33 | 76 | 76 | 100% | 325 | 11,383 | 3% | 25% |
+| 32 | 150 | 153 | 102% | 655 | 11,167 | 6% | 51% |
+| 33 | 76 | 76 | 100% | 325 | 11,443 | 3% | 25% |
 | 40 | 450 | 459 | 102% | 1,044 | 14,015 | 7% | 123% |
-| 41 | 300 | 306 | 102% | 696 | 15,163 | 5% | 76% |
-| 42 | 150 | 153 | 102% | 348 | 13,008 | 3% | 44% |
-| 43 | 76 | 76 | 100% | 173 | 14,359 | 1% | 20% |
+| 41 | 300 | 306 | 102% | 696 | 15,271 | 5% | 75% |
+| 42 | 150 | 153 | 102% | 348 | 13,128 | 3% | 44% |
+| 43 | 76 | 76 | 100% | 173 | 14,434 | 1% | 20% |
 
 Per elapsed hour with every slot busy, the starting values stay under crafting at 16 of the 16 paying ranks. Per hour of the player's own time at the terminal (96 s a job) they break it at 5 of the 16 ranks (the lowest ratio is 17%), because a researcher who plays only the experiments and lets the jobs run earns a level-1 job's XP for about a minute and a half of attention.
 
@@ -403,30 +405,30 @@ These are options with their measured effect, not code. All of them apply to the
 
 ### XP target
 
-Today the four skills take Smithery 100 h, Engineering 64 h, Fabrication 53 h, Agriculture 37 h at mid gear with the model's unmeasured timings: a median of 59 h and a slowest of 100 h, against 137 h of RP XP. **Proposed target: the median crafting skill reaches rank 50 in 45 focused hours or fewer** (33% of the RP XP time), with the 50% guild award below. The target is set on the median skill because the slowest (Smithery) is slow from gathering, not from XP: 80% of its hours are spent gathering. Hours scale with 1 / multiplier, because the components and the craft time scale with the crafts, so one crafting-only multiplier moves every skill together and cannot close that gap.
+Today the four skills take Smithery 99 h, Engineering 63 h, Fabrication 53 h, Agriculture 36 h at mid gear with the model's unmeasured timings: a median of 58 h and a slowest of 99 h, against 137 h of RP XP. **Proposed target: the median crafting skill reaches rank 50 in 45 focused hours or fewer** (33% of the RP XP time), with the 50% guild award below. The target is set on the median skill because the slowest (Smithery) is slow from gathering, not from XP: 80% of its hours are spent gathering. Hours scale with 1 / multiplier, because the components and the craft time scale with the crafts, so one crafting-only multiplier moves every skill together and cannot close that gap.
 
 What each target needs on top of the guild award. A multiplier of x1.00 means the award alone meets it:
 
 | Median skill target (h) | Multiplier needed | Rank cost cap needed (XP) | Smithery h at that multiplier | Engineering h at that multiplier | Fabrication h at that multiplier | Agriculture h at that multiplier |
 | --- | --- | --- | --- | --- | --- | --- |
-| 45 | x1.02 | 14,482 | 69.8 | 49.7 | 40.3 | 31.4 |
-| 35 | x1.40 | 8,276 | 53.7 | 38.5 | 31.5 | 24.2 |
-| 25 | x2.21 | 5,342 | 37.2 | 27.8 | 22.2 | 16.4 |
+| 45 | x1.00 | 15,364 | 69.7 | 49.6 | 40.4 | 31.4 |
+| 35 | x1.38 | 8,365 | 53.6 | 38.5 | 31.5 | 24.2 |
+| 25 | x2.18 | 5,405 | 37.2 | 27.7 | 22.3 | 16.4 |
 
 | Option | Change | Smithery h | Engineering h | Fabrication h | Agriculture h | Median skill | Slowest skill | Migration of stored XP |
 | --- | --- | --- | --- | --- | --- | --- | --- | --- |
-| Today | nothing | 100.1 | 63.7 | 53.4 | 36.5 | 58.6 | 100.1 | no |
-| 0 | hand in the guild's task recipes for credits and points, no XP award (isolates the recipe choice) | 85.9 | 64.7 | 51.5 | 38.7 | 58.1 | 85.9 | no |
-| A | guild task XP only | 70.7 | 50.2 | 40.8 | 31.8 | 45.5 | 70.7 | no |
-| B | A, and crafting XP x1.05 (crafts only) | 67.9 | 48.4 | 39.3 | 30.6 | 43.8 | 67.9 | no |
-| C | A, and no rank costs more than 13,100 XP | 67.9 | 48.0 | 39.6 | 30.6 | 43.8 | 67.9 | yes |
+| Today | nothing | 98.9 | 63.1 | 53.0 | 36.1 | 58.0 | 98.9 | no |
+| 0 | hand in the guild's task recipes for credits and points, no XP award (isolates the recipe choice) | 84.9 | 63.9 | 51.2 | 38.3 | 57.5 | 84.9 | no |
+| A | guild task XP only | 69.9 | 49.7 | 40.5 | 31.5 | 45.1 | 69.9 | no |
+| B | A, and crafting XP x1.05 (crafts only) | 67.1 | 47.8 | 39.0 | 30.2 | 43.4 | 67.1 | no |
+| C | A, and no rank costs more than 13,100 XP | 67.2 | 47.5 | 39.3 | 30.3 | 43.4 | 67.2 | yes |
 
 - **Row 0 is not an option.** It shows that handing in the guild's task recipes, with no award at all, already changes the hours, because the task recipes' components differ from the level's average recipe; the award's own effect is the difference between rows 0 and A.
-- **A: guild task XP only.** No craft XP change; the smallest change, with no stored-data conversion. It takes the median skill to 45.5 h, which is 0.5 h short of the 45 h target.
-- **B: A plus one crafting-only multiplier, x1.05.** The smallest round multiplier that brings the median skill to the target (43.8 h). One parameter on what crafts pay, retuned from the client timings later. It changes gains only, so stored XP and ranks need no conversion.
+- **A: guild task XP only.** No craft XP change; the smallest change, with no stored-data conversion. It takes the median skill to 45.1 h, which is 0.1 h short of the 45 h target.
+- **B: A plus one crafting-only multiplier, x1.05.** The smallest round multiplier that brings the median skill to the target (43.4 h). One parameter on what crafts pay, retuned from the client timings later. It changes gains only, so stored XP and ranks need no conversion.
 - **C: A plus a cap of 13,100 XP on any rank's cost.** The same median as B by a different route: it cuts the climb from 411,125 to 395,425 XP and spares the late ranks that cost up to 16,000 XP and need 15-25 crafts each, while leaving the early ranks alone. It changes required XP per rank for the crafting skills, so it needs a crafting-specific table and the plan's migration (convert stored XP and ranks so nobody loses a rank).
 
-**Recommendation: B.** The guild award alone leaves the median skill at 45.5 h, so the target needs a crafting-only multiplier of about x1.05 on top; B reaches it with no migration. Treat the multiplier as a starting point: the model's hours move more with the node travel time (Smithery runs from 67 h at 15 s to 299 h at 120 s) than any option moves them, so measure it, re-run `progression`, and retune. Smithery stays far above the median under every option here because its components are scarce drops (gems and crate goods); that is a supply question for the gathering workstream, not an XP one.
+**Recommendation: B.** The guild award alone leaves the median skill at 45.1 h, so the target needs a crafting-only multiplier of about x1.05 on top; B reaches it with no migration. Treat the multiplier as a starting point: the model's hours move more with the node travel time (Smithery runs from 66 h at 15 s to 298 h at 120 s) than any option moves them, so measure it, re-run `progression`, and retune. Smithery stays far above the median under every option here because its components are scarce drops (gems and crate goods); that is a supply question for the gathering workstream, not an XP one.
 
 ### Guild task XP
 
@@ -434,10 +436,10 @@ Each crafting-guild hand-in awards XP in the guild's skill. **Formula:** award =
 
 | Share of base XP | Smithery h | Smithery XP share | Engineering h | Engineering XP share | Fabrication h | Fabrication XP share | Agriculture h | Agriculture XP share |
 | --- | --- | --- | --- | --- | --- | --- | --- | --- |
-| none | 100.1 | - | 63.7 | - | 53.4 | - | 36.5 | - |
-| 25% | 77.3 | 11% | 56.5 | 13% | 45.5 | 12% | 34.9 | 10% |
-| 50% | 70.7 | 20% | 50.2 | 23% | 40.8 | 21% | 31.8 | 17% |
-| 100% | 61.3 | 33% | 41.3 | 37% | 34.0 | 34% | 27.2 | 30% |
+| none | 98.9 | - | 63.1 | - | 53.0 | - | 36.1 | - |
+| 25% | 76.4 | 11% | 55.9 | 13% | 45.2 | 12% | 34.5 | 10% |
+| 50% | 69.9 | 20% | 49.7 | 23% | 40.5 | 21% | 31.5 | 17% |
+| 100% | 60.6 | 33% | 40.8 | 37% | 33.8 | 34% | 26.9 | 30% |
 
 - **Option 1, 25%.** Hand-ins supply 11% of the climb's XP: a small bonus that is easy to ignore.
 - **Option 2, 50% (recommended).** Hand-ins supply 20%: a real part of the pace that does not replace crafting. Quantity matters for catch tasks: at this share a four-fish task's hand-in XP is 23% of the task's XP when the award is per fish and 7% when it is per task, so the award is per item.
@@ -447,7 +449,7 @@ The credit faucet is the risk to weigh with this: every hand-in pays 1,000-7,200
 
 ### Research XP ceiling
 
-The Research workstream's starting values pay 102% of the chart XP for a level-1 job (`ResearchXpRules`: 62% experiment, 31% completion, +10% per level). **Ceiling, as the plan words it: research XP per real hour, with every job slot busy, stays below at-level Fabrication crafting XP per hour at the same rank** (the whole crafting loop, gathering and overhead included). The values in `ResearchXpRules` (62% and 31%) already sit under it. Counted per hour of the player's own time at the terminal (96 s a job, because the jobs run offline), the starting values exceed crafting at 5 of the 16 paying ranks and would need 22% of themselves; the plan's wording is the elapsed hour, so that is shown as the owner's call, not proposed. Keep a rule that a research award never exceeds the base XP of a craft of the same recipe level. Credits give a second bound: the first job on a new blueprint costs 200-4,200 credits and the level-10 job of a tier-4 recipe takes about five days. Because the chart pays nothing for recipes five or more levels below the rank, the owner may want a floor for research (like `GetPracticeXP`'s 150) so researchers are not paid only in the first four ranks of each tier; a floor must sit under the same ceiling.
+The Research workstream's starting values pay 102% of the chart XP for a level-1 job (`ResearchXpRules`: 62% experiment, 31% completion, +10% per level). **Ceiling, as the plan words it: research XP per real hour, with every job slot busy, stays below at-level Fabrication crafting XP per hour at the same rank** (the whole crafting loop, gathering and overhead included). The values in `ResearchXpRules` (62% and 31%) already sit under it. Counted per hour of the player's own time at the terminal (96 s a job, because the jobs run offline), the starting values exceed crafting at 5 of the 16 paying ranks and would need 23% of themselves; the plan's wording is the elapsed hour, so that is shown as the owner's call, not proposed. Keep a rule that a research award never exceeds the base XP of a craft of the same recipe level. Credits give a second bound: the first job on a new blueprint costs 200-4,200 credits and the level-10 job of a tier-4 recipe takes about five days. Because the chart pays nothing for recipes five or more levels below the rank, the owner may want a floor for research (like `GetPracticeXP`'s 150) so researchers are not paid only in the first four ranks of each tier; a floor must sit under the same ceiling.
 
 ## Limitations
 

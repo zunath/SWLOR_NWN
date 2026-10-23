@@ -258,18 +258,18 @@ public class SmitheryPerkLineTests
         {
             [StatType.ForgeRangeShift] = 10,
             [StatType.ForgePressOutputPercent] = 25,
-            [StatType.ForgeHoneOutputPercent] = -25
+            [StatType.ForgeHoneOutputPercent] = -5
         });
         cold.Should().BeEquivalentTo(new Dictionary<StatType, int>
         {
             [StatType.ForgeRangeShift] = -10,
-            [StatType.ForgeHoneOutputPercent] = 25,
+            [StatType.ForgeHoneOutputPercent] = 10,
             [StatType.ForgePressOutputPercent] = -25
         });
         ForgeStyles.Description(ForgeStyle.HotForging).Should().Be(
-            "The working range moves up 10 Thermal. Hydro-Press gains 25% more Shape and Vibro-Hone gains 25% less Finish.");
+            "The working range moves up 10 Thermal. Hydro-Press gains 25% more Shape and Vibro-Hone gains 5% less Finish.");
         ForgeStyles.Description(ForgeStyle.ColdWorking).Should().Be(
-            "The working range moves down 10 Thermal. Vibro-Hone gains 25% more Finish and Hydro-Press gains 25% less Shape.");
+            "The working range moves down 10 Thermal. Vibro-Hone gains 10% more Finish and Hydro-Press gains 25% less Shape.");
         new HotForgingStatusEffect().Name.Should().Be(ForgeStyles.Name(ForgeStyle.HotForging));
         new ColdWorkingStatusEffect().Name.Should().Be(ForgeStyles.Name(ForgeStyle.ColdWorking));
         new HotForgingStatusEffect().Icon.Should().NotBe(new ColdWorkingStatusEffect().Icon);
@@ -310,10 +310,10 @@ public class SmitheryPerkLineTests
 
         hot.RangeShift.Should().Be(10);
         hot.PressOutputPercent.Should().Be(25);
-        hot.HoneOutputPercent.Should().Be(-25);
+        hot.HoneOutputPercent.Should().Be(-5);
         cold.RangeShift.Should().Be(-10);
         cold.PressOutputPercent.Should().Be(-25);
-        cold.HoneOutputPercent.Should().Be(25);
+        cold.HoneOutputPercent.Should().Be(10);
         hot.OverdrivePressPercent.Should().Be(cold.OverdrivePressPercent, "the lines' perks do not depend on the style");
     }
 

@@ -45,9 +45,9 @@ public static class ForgePerkRules
     // Styles. Hot Forging trades Finish for Shape, and Cold Working trades Shape for Finish.
     public const int HotForgingRangeShift = 10;
     public const int HotForgingPressPercent = 25;
-    public const int HotForgingHonePercent = -25;
+    public const int HotForgingHonePercent = -5;
     public const int ColdWorkingRangeShift = -10;
-    public const int ColdWorkingHonePercent = 25;
+    public const int ColdWorkingHonePercent = 10;
     public const int ColdWorkingPressPercent = -25;
 
     /// <summary>"percentage point" for 1 and "percentage points" for any other amount, for the descriptions.</summary>

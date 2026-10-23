@@ -90,6 +90,8 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
             var blueprint = Craft.GetBlueprintDetails(_blueprintItem);
             ResetSlots(recipe.EnhancementSlots + blueprint.EnhancementSlots);
 
+            // The record holds the selected style; a death, a login or a trip to space may have cost the crafter its effect.
+            CraftingStyleSelection.Restore(Player);
             CircuitStyles.RemoveUnowned(Player);
             ClearCraftView();
             StatusText = string.Empty;

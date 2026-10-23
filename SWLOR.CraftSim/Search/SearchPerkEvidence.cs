@@ -17,7 +17,8 @@ namespace SWLOR.CraftSim.Search
         public static readonly IReadOnlyList<int> Ranks = new[] { 20, 35, 50 };
 
         /// <summary>The style: a worse Search for a better chance that a Dig Deeper find is a rare one.</summary>
-        public static readonly SearchEffects CarefulHands = new(SearchChanceDelta: -3, DeeperWeightBonus: 3);
+        public static readonly SearchEffects CarefulHands = new(
+            SearchChanceDelta: SearchPerkRules.CarefulHandsSearchChancePoints, DeeperWeightBonus: SearchPerkRules.CarefulHandsDigRareWeight);
 
         /// <summary>A scavenger's other perks with the style on: its worse Search and its rarer dig finds on top of theirs.</summary>
         public static SearchEffects WithCarefulHands(SearchEffects others) => others with
@@ -30,11 +31,11 @@ namespace SWLOR.CraftSim.Search
         public static IReadOnlyList<(string Name, SearchEffects Effects)> Probes(SearchParityOptions options) => new (string, SearchEffects)[]
         {
             ("No perks", SearchEffects.None),
-            ("Keen Eye (+1 point on every Search)", new SearchEffects(SearchChanceDelta: 1)),
-            ("Steady Dig (15% less dig risk)", new SearchEffects(DigRiskPercent: 85)),
-            ("Fine Trowel I (rare entries weigh 1 more in a dig)", new SearchEffects(DeeperWeightBonus: 1)),
-            ("Fine Trowel II (rare entries weigh 2 more in a dig)", new SearchEffects(DeeperWeightBonus: 2)),
-            ("Careful Hands (style: -3 search chance, rare entries weigh 3 more in a dig)", CarefulHands),
+            ($"Keen Eye (+{SearchPerkRules.KeenEyePoints} point on every Search)", new SearchEffects(SearchChanceDelta: SearchPerkRules.KeenEyePoints)),
+            ($"Steady Dig ({SearchPerkRules.SteadyDigRiskReductionPercent}% less dig risk)", new SearchEffects(DigRiskPercent: 100 - SearchPerkRules.SteadyDigRiskReductionPercent)),
+            ($"Fine Trowel I (rare entries weigh {SearchPerkRules.FineTrowelRank1} more in a dig)", new SearchEffects(DeeperWeightBonus: SearchPerkRules.FineTrowelRank1)),
+            ($"Fine Trowel II (rare entries weigh {SearchPerkRules.FineTrowelRank2} more in a dig)", new SearchEffects(DeeperWeightBonus: SearchPerkRules.FineTrowelRank2)),
+            ($"Careful Hands (style: {SearchPerkRules.CarefulHandsSearchChancePoints} search chance, rare entries weigh {SearchPerkRules.CarefulHandsDigRareWeight} more in a dig)", CarefulHands),
             ("Whole line below the capstone, no style", options.TreasureSeekerLine),
             ("Whole line with Careful Hands", WithCarefulHands(options.TreasureSeekerLine))
         };

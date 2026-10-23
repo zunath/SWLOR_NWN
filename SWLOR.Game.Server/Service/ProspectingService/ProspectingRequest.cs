@@ -1,3 +1,5 @@
+using SWLOR.Game.Server.Service.CraftService.Minigame.Prospecting;
+
 namespace SWLOR.Game.Server.Service.ProspectingService
 {
     /// <summary>
@@ -11,6 +13,7 @@ namespace SWLOR.Game.Server.Service.ProspectingService
     /// <param name="NodeTier">The node's tier, 1 to 5: its <c>HARVESTER_REQUIRED_LEVEL</c>.</param>
     /// <param name="Rank">The player's Gathering rank when they began.</param>
     /// <param name="Position">Where the player stood, which they must not leave during the session.</param>
+    /// <param name="Effects">The player's perks and style, or null for none.</param>
     public sealed record ProspectingRequest(
         uint Player,
         uint Harvester,
@@ -18,5 +21,6 @@ namespace SWLOR.Game.Server.Service.ProspectingService
         string LootTable,
         int NodeTier,
         int Rank,
-        System.Numerics.Vector3 Position);
+        System.Numerics.Vector3 Position,
+        ProspectingEffects Effects = null);
 }

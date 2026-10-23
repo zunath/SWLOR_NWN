@@ -1,5 +1,6 @@
 using SWLOR.Game.Server.Core;
 using SWLOR.Game.Server.Service.CraftService.Minigame;
+using SWLOR.Game.Server.Service.CraftService.Minigame.Search;
 
 namespace SWLOR.Game.Server.Service.ScavengeService
 {
@@ -28,6 +29,9 @@ namespace SWLOR.Game.Server.Service.ScavengeService
 
         /// <summary>Resolves the site by the rules scavenging had before the board. Returns null when it was refused.</summary>
         public static ScavengeResult QuickSearch(ScavengeSession session) => Lifecycle.QuickSearch(session);
+
+        /// <summary>Rebuilds the board's rules with the scavenger's perks and style as they are now. False once the visit has acted or ended.</summary>
+        public static bool RefreshEffects(ScavengeSession session, SearchEffects effects) => Lifecycle.RefreshEffects(session, effects);
 
         /// <summary>Performs one action of the board.</summary>
         public static ScavengeStep Act(ScavengeSession session, string actionId) => Lifecycle.Act(session, actionId);

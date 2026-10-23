@@ -64,13 +64,23 @@ namespace SWLOR.Game.Server.Service.ScavengeService
 
         public string Id { get; }
 
-        public ScavengeRequest Request { get; }
+        public ScavengeRequest Request { get; private set; }
 
         public uint Player => Request.Player;
 
         public uint Site => Request.Site;
 
-        public SearchEngine Engine { get; }
+        public SearchEngine Engine { get; private set; }
+
+        /// <summary>True once a Dig Deeper find has had the Jackpot weight, which only the first find of a board gets.</summary>
+        internal bool JackpotSpent { get; set; }
+
+        /// <summary>Replaces the engine and the perks it was built from. Only the lifecycle does this, before the scavenger's first action.</summary>
+        internal void Reconfigure(ScavengeRequest request, SearchEngine engine)
+        {
+            Request = request ?? throw new ArgumentNullException(nameof(request));
+            Engine = engine ?? throw new ArgumentNullException(nameof(engine));
+        }
 
         public ScavengeMode Mode { get; internal set; }
 

@@ -4,6 +4,7 @@ using SWLOR.Game.Server.Feature.GuiDefinition.Payload;
 using SWLOR.Game.Server.Service;
 using SWLOR.Game.Server.Service.CraftService;
 using SWLOR.Game.Server.Service.CraftService.Minigame;
+using SWLOR.Game.Server.Service.CraftService.Minigame.Gathering;
 using SWLOR.Game.Server.Service.CraftService.Minigame.Prospecting;
 using SWLOR.Game.Server.Service.GuiService;
 using SWLOR.Game.Server.Service.GuiService.Component;
@@ -39,6 +40,9 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
 
         private ProspectingSession _session;
 
+        // One entry per row of the style list: None first, then each style the harvester owns.
+        private readonly List<GatheringStyle> _styleRows = new();
+
         protected override CraftMinigameType Minigame => CraftMinigameType.Prospecting;
 
         public string HeaderText { get => Get<string>(); set => Set(value); }
@@ -55,6 +59,11 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
         public string QuickHarvestTooltip { get => Get<string>(); set => Set(value); }
         public bool IsQuickHarvestEnabled { get => Get<bool>(); set => Set(value); }
         public string CloseText { get => Get<string>(); set => Set(value); }
+        public string StyleHeader { get => Get<string>(); set => Set(value); }
+        public GuiBindingList<string> StyleLabels { get => Get<GuiBindingList<string>>(); set => Set(value); }
+        public GuiBindingList<string> StyleButtonTexts { get => Get<GuiBindingList<string>>(); set => Set(value); }
+        public GuiBindingList<bool> StyleButtonEnabled { get => Get<GuiBindingList<bool>>(); set => Set(value); }
+        public string CoreSampleText { get => Get<string>(); set => Set(value); }
 
         public string SeamText0 => Get<string>();
         public string SeamText1 => Get<string>();
@@ -101,6 +110,12 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
         {
             _session = initialPayload.Session;
 
+            // The record holds the selected style; a death, a login or a trip to space may have cost the harvester its effect.
+            // The session read its effects before this window opened, so they are read again while the node is untouched.
+            CraftingStyleSelection.Restore(Player);
+            GatheringStyles.RemoveUnowned(Player);
+            if (_session != null && ProspectingSessions.IsActive(_session))
+                RefreshSessionEffects();
             ClearDisplay();
             ChangePartialView(ContentElement, NodePartial);
             if (_session != null && ProspectingSessions.IsActive(_session))
@@ -119,6 +134,26 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
         public Action OnClickQuickHarvest() => () => PerformQuickHarvest();
 
         public Action OnClickClose() => () => Gui.ClosePlayerWindow(Player, WindowType);
+
+        public Action OnClickStyle() => () =>
+        {
+            var row = NuiGetEventArrayIndex();
+            if (_session == null || _session.Settled || row < 0 || row >= _styleRows.Count)
+                return;
+
+            if (_session.HasActed || _session.Working != null)
+            {
+                SetStatus("Your style is locked once you have begun working the node.", GuiColor.Red);
+                return;
+            }
+
+            GatheringStyles.Select(Player, _styleRows[row]);
+            RefreshSessionEffects();
+            RefreshSession();
+        };
+
+        private void RefreshSessionEffects() =>
+            ProspectingSessions.RefreshEffects(_session, ProspectingEffects.FromStats(stat => Stat.GetStatAdjustment(Player, stat)));
 
         private void PerformAction(int index)
         {
@@ -264,7 +299,66 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
                 Set(preview.Enabled, ActionEnabledProperty(index));
             }
 
+            RefreshStyles();
+            CoreSampleText = CoreSampleSummary(engine);
             RefreshQuickHarvest();
+        }
+
+        /// <summary>The seams a harvester with Core Sample can see before finding them, or nothing for anyone else.</summary>
+        private static string CoreSampleSummary(ProspectingEngine engine)
+        {
+            if (!engine.Setup.Effects.SeesSeamTypes)
+                return string.Empty;
+
+            var hidden = engine.SeenHiddenSeams;
+            if (hidden.Count == 0)
+                return "Core Sample: no seams are hidden in the node.";
+
+            var rich = hidden.Count(kind => kind == ProspectingSeamKind.Rich);
+            var pockets = hidden.Count - rich;
+            var parts = new List<string>();
+            if (rich > 0)
+                parts.Add(rich == 1 ? "1 rich seam" : $"{rich} rich seams");
+
+            if (pockets > 0)
+                parts.Add(pockets == 1 ? "1 gem pocket" : $"{pockets} gem pockets");
+
+            return $"Core Sample: {(hidden.Count == 1 ? "1 seam is" : $"{hidden.Count} seams are")} hidden in the node: {string.Join(" and ", parts)}.";
+        }
+
+        private void RefreshStyles()
+        {
+            _styleRows.Clear();
+            var owned = GatheringStyles.Owned(Player).Where(style => GatheringStyles.ProspectingDescription(style).Length > 0).ToList();
+            var active = GatheringStyles.Active(Player);
+            if (owned.Count > 0 || active != GatheringStyle.None)
+            {
+                _styleRows.Add(GatheringStyle.None);
+                _styleRows.AddRange(owned);
+            }
+
+            var locked = _session == null || _session.Settled || _session.HasActed || _session.Working != null;
+            var labels = new GuiBindingList<string>();
+            var buttons = new GuiBindingList<string>();
+            var enabled = new GuiBindingList<bool>();
+            foreach (var style in _styleRows)
+            {
+                labels.Add(style == GatheringStyle.None
+                    ? "None: Prospecting plays by its usual rules."
+                    : $"{GatheringStyles.Name(style)}: {GatheringStyles.ProspectingDescription(style)}");
+                var selected = style == active || (style == GatheringStyle.None && !owned.Contains(active));
+                buttons.Add(selected ? "Selected" : "Select");
+                enabled.Add(!locked && !selected);
+            }
+
+            StyleHeader = _styleRows.Count == 0
+                ? $"Styles: learn the Strip Mining style at Gathering {GatheringStyles.StyleRank} to choose it here."
+                : locked
+                    ? "Style: locked once you begin working the node."
+                    : "Style: pick one before your first action. Only one can be active at a time.";
+            StyleLabels = labels;
+            StyleButtonTexts = buttons;
+            StyleButtonEnabled = enabled;
         }
 
         private void RefreshQuickHarvest()
@@ -287,6 +381,7 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
         {
             SetStatus($"{name}...", GuiColor.White);
             IsQuickHarvestEnabled = false;
+            RefreshStyles();
             for (var index = 0; index < ActionCount; index++)
                 Set(false, ActionEnabledProperty(index));
         }
@@ -301,6 +396,7 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
                 StatusText = string.IsNullOrEmpty(StatusText) ? message : $"{StatusText} {message}";
 
             QuickHarvestText = string.Empty;
+            RefreshStyles();
             for (var index = 0; index < ActionCount; index++)
             {
                 Set(ActionNames[index], ActionTextProperty(index));
@@ -327,6 +423,11 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
             CloseText = "Leave and close";
             SetStatus(string.Empty, GuiColor.White);
             _shatteredBefore = 0;
+            StyleHeader = string.Empty;
+            StyleLabels = new GuiBindingList<string>();
+            StyleButtonTexts = new GuiBindingList<string>();
+            StyleButtonEnabled = new GuiBindingList<bool>();
+            CoreSampleText = string.Empty;
 
             for (var row = 0; row < SeamRows; row++)
             {

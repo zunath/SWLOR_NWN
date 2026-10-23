@@ -97,17 +97,20 @@ namespace SWLOR.CraftSim.Harvesting
 
             LearnFromTheLastSurvey(node);
 
+            var setup = node.Setup;
+
             var strikes = StrikesToFinish(node);
-            var stabilityToFinish = strikes * ProspectingRules.StrikeStability;
+            var stabilityToFinish = strikes * setup.StrikeStability;
             var chargesToFinish = strikes * ProspectingRules.StrikeCharges;
 
-            if (_plan.ExtractSeams && node.NextExtract != null &&
-                CanSpend(node, ProspectingRules.ExtractStability, ProspectingRules.ExtractCharges, stabilityToFinish, chargesToFinish))
+            if (_plan.ExtractSeams && node.NextExtract != null)
             {
-                return ProspectingActionIds.Extract;
+                var (extractStability, extractCharges) = ExtractCost(setup, node.NextExtract.Value);
+                if (CanSpend(node, extractStability, extractCharges, stabilityToFinish, chargesToFinish))
+                    return ProspectingActionIds.Extract;
             }
 
-            if (_surveys < _plan.MaxSurveys && !_foundAll &&
+            if (_surveys < _plan.MaxSurveys && !LearnedAllSeams(node) &&
                 CanSpend(
                     node,
                     ProspectingRules.SurveyStability + (_plan.ExtractSeams ? ProspectingRules.ExtractStability : 0),
@@ -121,11 +124,22 @@ namespace SWLOR.CraftSim.Harvesting
                 return ProspectingActionIds.Survey;
             }
 
-            if (_plan.HeavyStrikes && node.Pool >= 3 && node.Charges >= ProspectingRules.HeavyStrikeCharges && !MayShatterAGem())
+            if (_plan.HeavyStrikes && node.Pool >= 3 && node.Charges >= ProspectingRules.HeavyStrikeCharges && !MayShatterAGem(node))
                 return ProspectingActionIds.HeavyStrike;
 
             return node.Charges >= ProspectingRules.StrikeCharges ? ProspectingActionIds.Strike : null;
         }
+
+        /// <summary>What an Extract of the seam costs in Stability and charges, perks included.</summary>
+        private static (int Stability, int Charges) ExtractCost(ProspectingSetup setup, ProspectingSeam seam) =>
+            (ProspectingRules.ExtractStability, ProspectingRules.ExtractCharges);
+
+        /// <summary>
+        /// Whether the player knows there is nothing left to find: a Survey told them (it revealed fewer seams than it can, or the most a
+        /// node holds), or the window shows no hidden seam (Core Sample).
+        /// </summary>
+        private bool LearnedAllSeams(ProspectingEngine node) =>
+            _foundAll || node.Setup.Effects.SeesSeamTypes && node.SeenHiddenSeams.Count == 0;
 
         /// <summary>The Strikes it takes to mine what is left of the pool, never fewer than one, by the plan's reserve.</summary>
         private int StrikesToFinish(ProspectingEngine node)
@@ -154,7 +168,10 @@ namespace SWLOR.CraftSim.Harvesting
         /// a hidden rich seam. A player who claims seams Heavy Strikes only once every seam has been found; one who never extracts has
         /// nothing to lose.
         /// </summary>
-        private bool MayShatterAGem() => _plan.ExtractSeams && !_foundAll;
+        private bool MayShatterAGem(ProspectingEngine node) =>
+            node.Setup.Effects.SeesSeamTypes
+                ? node.SeenHiddenSeams.Contains(ProspectingSeamKind.GemPocket)
+                : _plan.ExtractSeams && !_foundAll;
 
         private void LearnFromTheLastSurvey(ProspectingEngine node)
         {

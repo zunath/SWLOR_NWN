@@ -233,8 +233,9 @@ public class GatheringPerkRegressionTests
         refinery.Should().Contain("private const int BaseItemsRefinedPerCore = 3;");
         calculation.Should().Contain("CraftRankMilestones.GetRefineryManagementLevel(Player)");
         calculation.Should().NotContain("PerkType.RefineryManagement");
-        calculation.Should().Contain("var itemsPerCore = BaseItemsRefinedPerCore + refineryManagement;");
-        calculation.Should().Contain("Math.Ceiling(ItemCount / (float)itemsPerCore)");
+        calculation.Should().Contain("ItemsPerCore(refineryManagement, bulkRefining)");
+        refinery.Should().Contain("BaseItemsRefinedPerCore + Math.Max(0, refineryManagementLevel) + Math.Max(0, bulkRefining)");
+        refinery.Should().Contain("Math.Ceiling(itemCount / (float)Math.Max(1, itemsPerCore))");
     }
 
     private static int CalculateRequiredPowerCores(int refineryManagementLevel, int itemCount)

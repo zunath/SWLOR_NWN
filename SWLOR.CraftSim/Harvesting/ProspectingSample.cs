@@ -77,7 +77,8 @@ namespace SWLOR.CraftSim.Harvesting
             int runs,
             int seed,
             int stream,
-            int charges = FreshHarvesterCharges)
+            int charges = FreshHarvesterCharges,
+            ProspectingEffects effects = null)
         {
             double items = 0, units = 0, rich = 0, gems = 0, actions = 0, seconds = 0, spent = 0, poolLeft = 0;
             int collapsed = 0, minedOut = 0;
@@ -86,7 +87,7 @@ namespace SWLOR.CraftSim.Harvesting
             {
                 var random = SimMinigameRandom.ForRun(seed, SimStreams.Adaptive, stream, run);
                 var node = ProspectingNode.Create(random, gemChance);
-                var engine = new ProspectingEngine(random, ProspectingSetup.ForNode(node, charges, rank, nodeTier));
+                var engine = new ProspectingEngine(random, ProspectingSetup.ForNode(node, charges, rank, nodeTier, effects));
                 var played = 0;
                 double time = 0;
                 var policy = new ProspectorPolicy(plan);
@@ -96,6 +97,7 @@ namespace SWLOR.CraftSim.Harvesting
                     if (action == null)
                         break;
 
+                    var actionSeconds = engine.SecondsFor(action);
                     var result = engine.Perform(action);
                     if (!result.Performed)
                         break;
@@ -103,7 +105,7 @@ namespace SWLOR.CraftSim.Harvesting
                     if (action != ProspectingActionIds.Leave)
                     {
                         played++;
-                        time += ProspectingRules.SecondsFor(action);
+                        time += actionSeconds;
                     }
                 }
 

@@ -109,7 +109,7 @@ namespace SWLOR.Game.Server.Service.ProspectingService
                 return new ProspectingBegin(ProspectingBeginStatus.NoCharges, null);
             }
 
-            var setup = ProspectingSetup.ForNode(node, charges, request.Rank, request.NodeTier);
+            var setup = ProspectingSetup.ForNode(node, charges, request.Rank, request.NodeTier, request.Effects);
             var session = new ProspectingSession(Guid.NewGuid().ToString(), request, new ProspectingEngine(_random, setup), charges);
             session.LastActivityAt = _world.UtcNow;
             _byPlayer[request.Player] = session;
@@ -138,6 +138,25 @@ namespace SWLOR.Game.Server.Service.ProspectingService
         }
 
         /// <summary>
+        /// Rebuilds the session's engine with the player's perks and style as they are now. The harvester's style is chosen in the window,
+        /// so it can change until the first action; after that the session keeps the perks it began with. Returns false when the session
+        /// is over, has acted, or is working an action.
+        /// </summary>
+        public bool RefreshEffects(ProspectingSession session, ProspectingEffects effects)
+        {
+            if (session == null)
+                throw new ArgumentNullException(nameof(session));
+
+            if (session.Settled || session.HasActed || session.Working != null)
+                return false;
+
+            var engine = session.Engine;
+            var setup = ProspectingSetup.ForNode(engine.ToNode(), engine.ChargesAtStart, session.Request.Rank, session.Request.NodeTier, effects);
+            session.Reconfigure(session.Request with { Effects = effects }, new ProspectingEngine(_random, setup));
+            return true;
+        }
+
+        /// <summary>
         /// Starts an action. It takes the seconds the action takes, with the harvest animation, and then resolves; <paramref name="onResolved"/>
         /// is called with what it did. A refused action (not enough charges, nothing to extract, another action still going) changes nothing.
         /// Leave resolves at once.
@@ -160,7 +179,7 @@ namespace SWLOR.Game.Server.Service.ProspectingService
             if (!preview.Enabled)
                 return ProspectingActionStart.Refused(preview.DisabledReason);
 
-            var seconds = ProspectingRules.SecondsFor(actionId);
+            var seconds = session.Engine.SecondsFor(actionId);
             if (seconds <= 0)
             {
                 Resolve(session, actionId, onResolved);

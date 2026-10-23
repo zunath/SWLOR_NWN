@@ -34,6 +34,23 @@ public class SearchActionTextTests
     }
 
     [Test]
+    public void ASearchOfKnownGroundWithAZeroChance_SaysSo_InsteadOfFailingOnTheMissingFindOutcome()
+    {
+        // A zero chance leaves the preview with no Find outcome. The words come from the setup, not from the outcome list.
+        var setup = Setup(ordinary: 0, promisingChance: 0);
+        var engine = Engine(setup);
+        engine.Perform(Sift(Center));
+
+        var ordinary = SearchActionText.Describe(engine, Left, SearchActionIds.Search);
+        var promising = SearchActionText.Describe(engine, Top, SearchActionIds.Search);
+
+        engine.Preview(SearchAt(Left)).Outcomes.Should().NotContain(outcome => outcome.Label == "Find");
+        ordinary.Summary.Should().Be("Finds 0% of the time on ordinary ground. Uses 1 search.");
+        promising.Summary.Should().Be("Finds 0% of the time on promising ground. Uses 1 search.");
+        SearchActionText.Describe(engine, TopLeft, SearchActionIds.Search).Summary.Should().Be("Finds 0% on ordinary ground, 0% on promising ground. Uses 1 search.");
+    }
+
+    [Test]
     public void ADigShowsEveryResultAndItsChance_AndIsColouredAsRisky()
     {
         var engine = Engine(100);

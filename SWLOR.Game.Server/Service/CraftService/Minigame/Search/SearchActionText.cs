@@ -103,7 +103,7 @@ public static class SearchActionText
             case SearchActionIds.Search:
                 summary = engine.Knowledge(spot) == SearchSpotKnowledge.Unknown
                     ? $"Finds {engine.Setup.UnknownChanceText}."
-                    : $"Finds {preview.Outcomes.First(outcome => outcome.Label == "Find").ChancePercent}% of the time on {GroundText(engine.Knowledge(spot))}.";
+                    : $"Finds {engine.Setup.SearchChance(engine.Knowledge(spot) == SearchSpotKnowledge.Promising)}% of the time on {GroundText(engine.Knowledge(spot))}.";
                 break;
             case SearchActionIds.DigDeeper:
                 summary = DigText(preview.Outcomes);

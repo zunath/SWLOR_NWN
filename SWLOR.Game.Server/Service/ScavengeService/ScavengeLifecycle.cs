@@ -291,12 +291,16 @@ namespace SWLOR.Game.Server.Service.ScavengeService
 
             var request = session.Request;
             var state = _world.GetPlayerState(session.Player, session.Site);
+
+            // A scavenger who is leaving the game is absent even though the engine still reports the creature as valid: the client leave
+            // event runs before the creature is removed. Nothing is said to them, rolled for them or held for them.
+            var present = state.IsValid && reason != ScavengeEnd.Left;
             var names = session.Finds
                 .Select(find => $"{find.Quantity}x {_world.CreateItem(request.Site, find.Resref, find.Quantity)}")
                 .ToList();
 
             // The site's extra loot tables roll once for every search that found something, as they always did. A find from Dig Deeper skips them.
-            if (state.IsValid)
+            if (present)
             {
                 var searchFinds = session.Finds.Count(find => !find.Deeper);
                 for (var find = 0; find < searchFinds; find++)
@@ -304,15 +308,15 @@ namespace SWLOR.Game.Server.Service.ScavengeService
             }
 
             var message = Summary(reason, names);
-            if (state.IsValid && message.Length > 0)
+            if (present && message.Length > 0)
                 _world.Message(session.Player, message);
 
-            if (reason != ScavengeEnd.WindowClosed && state.IsValid && state.HasWindowOpen)
+            if (reason != ScavengeEnd.WindowClosed && present && state.HasWindowOpen)
                 _world.CloseWindow(session.Player);
 
             if (session.Finds.Count > 0)
             {
-                if (state.IsValid && !state.IsDead)
+                if (present && !state.IsDead)
                     _world.OpenSite(session.Player, request.Site, animationSeconds);
             }
             else

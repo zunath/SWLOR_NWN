@@ -97,9 +97,20 @@ namespace SWLOR.CraftSim.Tests.Progression
             source.SiteLevel.Should().Be(2);
             source.Share.Should().Be(1.0);
 
-            var visit = Assumptions.NodeTravelSeconds + ScavengeModel.ExpectedAttemptsPerSite(2, 0) * Assumptions.SecondsPerScavengeAttempt;
+            var visit = Assumptions.NodeTravelSeconds + Assumptions.ScavengeVisitSeconds;
             ComponentSupply.SecondsPerScavengeVisit(2, Assumptions).Should().BeApproximately(visit, 1e-12);
             Supply.SecondsPerUnit("herb_m", Assumptions).Should().BeApproximately(visit / ScavengeModel.ExpectedSuccessesPerSite(2, 0), 1e-9);
+        }
+
+        [Test]
+        public void ASecondAttemptAddsNoTimeToAScavengeVisit_TheOldCodePlayedOneAnimationForTheVisit()
+        {
+            // Hard Look 1 makes a second attempt 10% of the time and Hard Look 5 half of it; the visit takes the walk and one animation either way.
+            var low = ComponentSupply.SecondsPerScavengeVisit(1, Assumptions with { GatheringTier = 1 });
+            var high = ComponentSupply.SecondsPerScavengeVisit(5, Assumptions with { GatheringTier = 5 });
+
+            high.Should().Be(low);
+            low.Should().Be(Assumptions.NodeTravelSeconds + 2.0);
         }
 
         [Test]

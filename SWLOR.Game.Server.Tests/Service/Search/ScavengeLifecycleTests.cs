@@ -426,6 +426,29 @@ public class ScavengeLifecycleTests
     }
 
     [Test]
+    public void AScavengerWhoIsLeavingTheGame_IsAbsentEvenWhileTheEngineStillReportsThemValid()
+    {
+        // The client leave event runs before the creature is removed, so the world still says the player is valid (and has the window
+        // open). The visit must still treat them as gone: no extra loot, no message, no window to close, and no hold on the site for them.
+        var lifecycle = Lifecycle(1, 0, 3);
+        var session = lifecycle.Start(Request());
+        lifecycle.Act(session, SearchAt(0));
+        _world.IsValid.Should().BeTrue();
+        _world.WindowOpen.Should().BeTrue();
+
+        lifecycle.Abandon(session, ScavengeEnd.Left);
+
+        _world.Created.Should().Equal((Site, "fiberp_ruined", 3)); // what they found is still put in the site
+        _world.BonusLoot.Should().BeEmpty();
+        _world.Messages.Should().BeEmpty();
+        _world.Opened.Should().BeEmpty("the site is not held for a player who is leaving");
+        _world.Destroyed.Should().BeEmpty();
+        _world.WindowOpen.Should().BeTrue("there is no one to close it for");
+        session.Result.End.Should().Be(ScavengeEnd.Left);
+        lifecycle.IsInUse(Site).Should().BeFalse();
+    }
+
+    [Test]
     public void AWindowThatCannotOpen_LeavesTheVisitToQuickSearch_SoTheSiteIsNotWasted()
     {
         _world.CanOpenWindow = false;

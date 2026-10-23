@@ -24,10 +24,10 @@ namespace SWLOR.CraftSim.Tests.Scenario
             ResearcherBuild.MethodicalAlone.TuningAt(19).Should().Be(ExperimentTuning.Default, "the style opens at Fabrication 20");
             ResearcherBuild.MethodicalAlone.TuningAt(20).Should().Be(ExperimentTuning.Default with { Trials = 8, TestChanceBonusPercent = -15 });
             ResearcherBuild.IntuitiveAlone.TuningAt(50).Should().Be(ExperimentTuning.Default with { Trials = 5, TestChanceBonusPercent = 20 });
-            ResearcherBuild.MethodicalLine.TuningAt(50).Should().Be(new ExperimentTuning(9, -9, 20, 25, 7, 25, true, true));
-            ResearcherBuild.IntuitiveLine.TuningAt(50).Should().Be(new ExperimentTuning(6, 26, 20, 25, 7, 25, true, true));
-            ResearcherBuild.Alone(PerkType.FieldNotes).TuningAt(39).TestChanceBonusPercent.Should().Be(3);
-            ResearcherBuild.Alone(PerkType.FieldNotes).TuningAt(40).TestChanceBonusPercent.Should().Be(6);
+            ResearcherBuild.MethodicalLine.TuningAt(50).Should().Be(new ExperimentTuning(9, -3, 20, 25, 7, 25, true, true));
+            ResearcherBuild.IntuitiveLine.TuningAt(50).Should().Be(new ExperimentTuning(6, 32, 20, 25, 7, 25, true, true));
+            ResearcherBuild.Alone(PerkType.FieldNotes).TuningAt(39).TestChanceBonusPercent.Should().Be(6);
+            ResearcherBuild.Alone(PerkType.FieldNotes).TuningAt(40).TestChanceBonusPercent.Should().Be(12);
             ResearcherBuild.AllPerks.Should().HaveCount(9);
         }
 
@@ -202,6 +202,24 @@ namespace SWLOR.CraftSim.Tests.Scenario
             report.Should().Contain("## The implemented pair, case by case");
             report.Should().Contain("1024 pairs");
             report.Should().MatchRegex("^[\x20-\x7E\r\n]*$", "a report is ASCII");
+        }
+
+        [Test]
+        public void TheLineAblationDescribesTheLineUnderTestAndNamesEachSharedPurchase()
+        {
+            ResearcherLineAblation.DescribeLine().Should().Be(
+                "Broader Hypotheses (+1 trial) from rank 35, Second Opinion from rank 15, Field Notes +6 from rank 5 then +12 from rank 40");
+
+            var options = new ResearcherPerkStudyOptions { Runs = 2, Seed = 1, Gear = new[] { GearLevel.None(SkillType.Fabrication), Mid } };
+            var report = ResearcherLineAblation.Build(options, "test");
+
+            report.Should().Contain("## The whole line, one purchase taken out");
+            report.Should().Contain("Whole line without Broader Hypotheses");
+            report.Should().Contain("Styles with Efficient Analysis");
+            report.Should().Contain("## Candidate rebalances of the line");
+            report.Should().Contain("## Grid: where Broader Hypotheses sits and how large Field Notes is");
+            report.Should().MatchRegex("^[\x20-\x7E\r\n]*$", "a report is ASCII");
+            ResearcherLineAblation.SharedPerks.Should().NotContain(new[] { PerkType.Methodical, PerkType.Intuitive }).And.HaveCount(7);
         }
 
         /// <summary>A source of chance whose every roll is the same.</summary>

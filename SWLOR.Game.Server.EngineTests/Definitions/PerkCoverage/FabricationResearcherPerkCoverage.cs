@@ -27,8 +27,8 @@ namespace SWLOR.Game.Server.EngineTests.Definitions.PerkCoverage
                 {
                     Perk = PerkType.BroaderHypotheses,
                     MaxLevel = 1,
-                    Prices = new[] { 2 },
-                    Notes = "Fabrication 15.",
+                    Prices = new[] { 3 },
+                    Notes = "Fabrication 35.",
                 },
                 new()
                 {
@@ -62,8 +62,8 @@ namespace SWLOR.Game.Server.EngineTests.Definitions.PerkCoverage
                 {
                     Perk = PerkType.SecondOpinion,
                     MaxLevel = 1,
-                    Prices = new[] { 3 },
-                    Notes = "Fabrication 35.",
+                    Prices = new[] { 2 },
+                    Notes = "Fabrication 15.",
                 },
                 new()
                 {

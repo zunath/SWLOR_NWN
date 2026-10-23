@@ -18,12 +18,12 @@ namespace SWLOR.Game.Server.Feature.PerkDefinition
         {
             FieldNotes();
             SteadyHands();
-            BroaderHypotheses();
+            SecondOpinion();
             Methodical();
             Intuitive();
             PeerReview();
             EfficientAnalysis();
-            SecondOpinion();
+            BroaderHypotheses();
             Breakthrough();
 
             return _builder.Build();
@@ -36,16 +36,16 @@ namespace SWLOR.Game.Server.Feature.PerkDefinition
                 .Icon("ife_rsrch")
 
                 .AddPerkLevel()
-                .Description("In a research experiment, every Test has 3 more points of chance to find evidence.")
+                .Description("In a research experiment, every Test has 6 more points of chance to find evidence.")
                 .Price(1)
                 .RequirementSkill(SkillType.Fabrication, 5)
-                .IncreasesStat(StatType.ExperimentTestChancePercent, 3)
+                .IncreasesStat(StatType.ExperimentTestChancePercent, 6)
 
                 .AddPerkLevel()
-                .Description("In a research experiment, every Test has 6 more points of chance to find evidence.")
+                .Description("In a research experiment, every Test has 12 more points of chance to find evidence.")
                 .Price(3)
                 .RequirementSkill(SkillType.Fabrication, 40)
-                .IncreasesStat(StatType.ExperimentTestChancePercent, 6);
+                .IncreasesStat(StatType.ExperimentTestChancePercent, 12);
         }
 
         private void SteadyHands()
@@ -69,8 +69,8 @@ namespace SWLOR.Game.Server.Feature.PerkDefinition
 
                 .AddPerkLevel()
                 .Description("Every research experiment has 1 more trial.")
-                .Price(2)
-                .RequirementSkill(SkillType.Fabrication, 15)
+                .Price(3)
+                .RequirementSkill(SkillType.Fabrication, 35)
                 .IncreasesStat(StatType.ExperimentTrials, 1);
         }
 
@@ -144,8 +144,8 @@ namespace SWLOR.Game.Server.Feature.PerkDefinition
 
                 .AddPerkLevel()
                 .Description("In a research experiment, Refine Method raises the chance of your next Test by 20 points instead of 15.")
-                .Price(3)
-                .RequirementSkill(SkillType.Fabrication, 35)
+                .Price(2)
+                .RequirementSkill(SkillType.Fabrication, 15)
                 .IncreasesStat(StatType.ExperimentRefineChancePercent, 5);
         }
 

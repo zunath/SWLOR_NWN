@@ -82,7 +82,7 @@ namespace SWLOR.CraftSim.Scenario.Experiment
             double Actions, double TrialsUsed, double Trials, double TimeCut, double Magnitude, double AtMaximum, double AtCap, double NoEvidence);
 
         /// <summary>One comparison of two styles: a level kind and a gear level over every rank and tier the study plays.</summary>
-        private sealed record StyleRow(
+        internal sealed record StyleRow(
             int Level, string Gear, int Cases, double FirstWins, double SecondWins, double Gap, double FirstActions, double SecondActions, bool Passed);
 
         public static string Build(ResearcherPerkStudyOptions options, string command)
@@ -190,7 +190,7 @@ namespace SWLOR.CraftSim.Scenario.Experiment
                 yield return new ExperimentCase(level, tier, rank, gear);
         }
 
-        private static List<StyleRow> CompareStyles(
+        internal static List<StyleRow> CompareStyles(
             ResearcherPerkStudyOptions options, IReadOnlyList<GearLevel> gear, Func<int, ExperimentTuning> first, Func<int, ExperimentTuning> second)
         {
             var rows = new List<StyleRow>();

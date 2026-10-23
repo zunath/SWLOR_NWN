@@ -50,9 +50,14 @@ namespace SWLOR.CraftSim.Tests.Scenario
                              ("3 ranks under, mid gear, heavy enhancement", 3, 40, gears[1]),
                          })
                 {
+                    // A style opens at rank 20, so a recipe the crafter would play below it is left out of a style comparison.
+                    var eligible = sample.Where(recipe => Math.Min(recipe.Level, 50) - rankBelow >= ForgePerkRules.StyleRank).ToList();
+                    if (eligible.Count == 0)
+                        continue;
+
                     foreach (var (name, loadout) in loadouts)
                     {
-                        var (actions, success, quality, full, n) = Play(sample, gear, rankBelow, penalty, loadout, options, 16);
+                        var (actions, success, quality, full, n) = Play(eligible, gear, rankBelow, penalty, loadout, options, 16);
                         lines.Add($"band {levelLow}-{levelHigh} | {condition,-42} | {name,-14} | actions {actions:F1} make {success:P0} quality {quality:F1} full {full:P0} (n {n})");
                     }
                 }

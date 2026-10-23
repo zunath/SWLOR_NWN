@@ -119,6 +119,32 @@ public class ForgePerkEngineTests
     }
 
     [Test]
+    public void RangeShift_OfZeroLeavesARangeThatReachesPastTheMeterWhereItIs()
+    {
+        // Centered at 5 and at 95 with a width of 30, the ranges run -10 to 20 and 80 to 110: past the 0-100 meter on one side.
+        var below = Setup(new ForgePerkStats { RangeShift = 0 }, center: 5, width: 30);
+        var above = Setup(new ForgePerkStats { RangeShift = 0 }, center: 95, width: 30);
+
+        (below.RangeLow, below.RangeHigh).Should().Be((-10, 20));
+        (above.RangeLow, above.RangeHigh).Should().Be((80, 110));
+    }
+
+    [Test]
+    public void RangeShift_NeverPushesARangeFurtherPastTheMeter_AndNeverThrowsForOneWiderThanTheMeter()
+    {
+        Setup(new ForgePerkStats { RangeShift = -10 }, center: 5, width: 30).RangeShift.Should().Be(0, "it is already past the low edge");
+        Setup(new ForgePerkStats { RangeShift = 10 }, center: 5, width: 30).RangeShift.Should().Be(10, "there is room above");
+        Setup(new ForgePerkStats { RangeShift = 10 }, center: 95, width: 30).RangeShift.Should().Be(0, "it is already past the high edge");
+        Setup(new ForgePerkStats { RangeShift = -10 }, center: 95, width: 30).RangeShift.Should().Be(-10, "there is room below");
+
+        var wider = () => (
+            Setup(new ForgePerkStats { RangeShift = 10 }, center: 50, width: 140).RangeShift,
+            Setup(new ForgePerkStats { RangeShift = -10 }, center: 50, width: 140).RangeShift);
+        wider.Should().NotThrow();
+        wider().Should().Be((0, 0));
+    }
+
+    [Test]
     public void PressOutputPercent_ScalesEveryHydroPressGain_IncludingTheSetPiecesTrim()
     {
         Only(Engine(new ForgePerkStats { PressOutputPercent = 25 }), ForgeActionIds.HydroPress).Delta.Progress.Should().Be(226, "190 x 0.95 x 1.25");

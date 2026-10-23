@@ -27,10 +27,15 @@ public sealed record ForgeSetup(
 
     /// <summary>
     /// How far the style moves the working range, in Thermal points. The whole range moves together and stays inside 0 to 100, so a
-    /// range at the edge of the meter moves less rather than narrowing.
+    /// range at the edge of the meter moves less rather than narrowing. No shift is no shift: a recipe whose own range reaches past the
+    /// meter is left where it is.
     /// </summary>
-    public int RangeShift =>
-        Math.Clamp(Perks.RangeShift, -Parameters.RangeLow, ForgeRules.MaxThermal - Parameters.RangeHigh);
+    public int RangeShift => Perks.RangeShift switch
+    {
+        > 0 => Math.Min(Perks.RangeShift, Math.Max(0, ForgeRules.MaxThermal - Parameters.RangeHigh)),
+        < 0 => Math.Max(Perks.RangeShift, Math.Min(0, -Parameters.RangeLow)),
+        _ => 0
+    };
 
     /// <summary>The lowest Thermal inside the working range, with the style's shift.</summary>
     public int RangeLow => Parameters.RangeLow + RangeShift;

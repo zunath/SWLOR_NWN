@@ -59,7 +59,7 @@ namespace SWLOR.CraftSim.Progression
         }
 
         /// <summary>
-        /// The smallest multiplier on crafting XP (crafts and hand-ins) that brings the metric to the target, or null when no multiplier up to
+        /// The smallest multiplier on crafting XP (crafts; hand-ins are not multiplied) that brings the metric to the target, or null when no multiplier up to
         /// 64 does. Hours only fall as the multiplier rises.
         /// </summary>
         public double? SolveMultiplier(ProgressionAssumptions assumptions, double targetHours, XpTargetMetric metric = XpTargetMetric.SlowestSkill)

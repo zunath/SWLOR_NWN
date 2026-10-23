@@ -150,8 +150,9 @@ public class PowerGloveContentTests
         var middleParts = new PowerGloveAppearanceDefinition().MiddleParts
             .Select(id => (part: "m", native: id % 100 * 10 + id / 100, visible: id != 106));
         foreach (var (part, native, visible) in new[] { ("t", 11, false), ("b", 11, false) }.Concat(middleParts))
+        foreach (var itemClass in new[] { "wpg", "wpl" })
         {
-            var resref = $"wpg_{part}_{native:000}";
+            var resref = $"{itemClass}_{part}_{native:000}";
             var model = File.ReadAllBytes(Path.Combine(folder, resref + ".mdl"));
             BitConverter.ToUInt32(model, 0).Should().Be(0, $"{resref} must be compiled by the native compiler");
             var modelLength = BitConverter.ToUInt32(model, 4);
@@ -171,6 +172,36 @@ public class PowerGloveContentTests
         File.ReadAllBytes(Path.Combine(folder, "iwpg_m_061.tga")).Should()
             .Equal(File.ReadAllBytes(Path.Combine(folder, "iwpg_m_011.tga")),
                 "the invisible equipped appearance must retain a visible inventory icon");
+    }
+
+    [Test]
+    public void LeftHandModelsMirrorTheRightHandModelsAcrossTheHookXAxis()
+    {
+        var folder = Path.Combine(Root(), "SWLOR_Haks/sw_weapon");
+        foreach (var id in new PowerGloveAppearanceDefinition().MiddleParts.Where(id => id != 106))
+        {
+            var native = $"m_{id % 100 * 10 + id / 100:000}";
+            var right = File.ReadAllBytes(Path.Combine(folder, $"wpg_{native}.mdl"));
+            var left = File.ReadAllBytes(Path.Combine(folder, $"wpl_{native}.mdl"));
+            var (rightMin, rightMax) = MeshBounds(right);
+            var (leftMin, leftMax) = MeshBounds(left);
+            leftMin.X.Should().BeApproximately(-rightMax.X, .0001f, $"wpl_{native} mirrors the right hand across X");
+            leftMax.X.Should().BeApproximately(-rightMin.X, .0001f, $"wpl_{native} mirrors the right hand across X");
+            leftMin.Y.Should().BeApproximately(rightMin.Y, .0001f, $"wpl_{native} keeps the punching axis");
+            leftMax.Y.Should().BeApproximately(rightMax.Y, .0001f, $"wpl_{native} keeps the punching axis");
+        }
+    }
+
+    private static (System.Numerics.Vector3 Min, System.Numerics.Vector3 Max) MeshBounds(byte[] model)
+    {
+        // Compiled offsets are relative to the 12-byte file header: geometry root, its first child, then that
+        // trimesh's bounding box after the 112-byte node header.
+        var root = 12 + (int)BitConverter.ToUInt32(model, 12 + 72);
+        var children = 12 + (int)BitConverter.ToUInt32(model, root + 72);
+        var mesh = 12 + (int)BitConverter.ToUInt32(model, children) + 112 + 0x14;
+        System.Numerics.Vector3 Read(int offset) => new(BitConverter.ToSingle(model, offset),
+            BitConverter.ToSingle(model, offset + 4), BitConverter.ToSingle(model, offset + 8));
+        return (Read(mesh), Read(mesh + 12));
     }
 
     private static (int Property, int Subtype, int Cost, int Table) PropertyBudget(JsonElement property) =>

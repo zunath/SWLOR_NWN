@@ -112,7 +112,7 @@ public class PowerGloveEquipmentTests
             data[column].Should().Be("****", $"the cosmetic hand must use the native nonweapon default for {column}");
         Convert.ToInt32(data["EquipableSlots"], 16).Should().Be(0x20, "only the cosmetic left hand is equipable");
         data["ModelType"].Should().Be("2");
-        data["ItemClass"].Should().BeEquivalentTo("WPG");
+        data["ItemClass"].Should().BeEquivalentTo("WPL", "the left hand renders the mirrored glove models");
 
         using var document = JsonDocument.Parse(File.ReadAllText(Path.Combine(root, "Module/uti/pg_companion.uti.json")));
         var item = document.RootElement;

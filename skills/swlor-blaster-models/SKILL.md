@@ -26,6 +26,7 @@ conversion, fitting and export helpers in the process tooling.
 ## Choose and author
 
 For local image-to-GLB generation, follow the guide's [TRELLIS.2 workflow](../../SWLOR.Game.Server/Readmes/BlasterModelImport.md#generate-local-weapon-sources-with-trellis2); preflight the local runtime and keep all per-model sources in ignored staging.
+Crafting stations and other placeables (ground fit, PWK walkmesh with use nodes, `placeables.2da` row) use the guide's [Placeables section](../../SWLOR.Game.Server/Readmes/BlasterModelImport.md#placeables-crafting-stations-with-trellis2) and `tools/TrellisPlaceableExport.py`, not the weapon fit.
 
 - Resolve the requested slot from the catalog, assets and blueprint users. A
   shared slot replacement changes persisted items too. Ask only if intent cannot

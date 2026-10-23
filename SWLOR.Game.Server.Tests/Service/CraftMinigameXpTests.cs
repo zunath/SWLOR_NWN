@@ -4,6 +4,7 @@ using SWLOR.Game.Server.Service;
 using SWLOR.Game.Server.Service.CraftService;
 using SWLOR.Game.Server.Service.CraftService.Minigame;
 using SWLOR.Game.Server.Service.CraftService.Minigame.Circuit;
+using SWLOR.Game.Server.Service.CraftService.Minigame.Kitchen;
 using SWLOR.Game.Server.Service.CraftService.Minigame.Line;
 using SWLOR.Game.Server.Service.CraftService.Minigame.Reaction;
 using SWLOR.Game.Server.Service.CraftService.Minigame.Search;
@@ -18,7 +19,8 @@ public class CraftMinigameXpTests
     public void OnlyAMinigameThatNeedsOneHasAMultiplier_AndOnlyForTheRecipeLevelsThatNeedIt()
     {
         foreach (var minigame in Enum.GetValues<CraftMinigameType>().Where(minigame =>
-                     minigame is not (CraftMinigameType.Reaction or CraftMinigameType.Fabricator or CraftMinigameType.Circuit or CraftMinigameType.Line or CraftMinigameType.Search)))
+                     minigame is not (CraftMinigameType.Reaction or CraftMinigameType.Fabricator or CraftMinigameType.Circuit or CraftMinigameType.Line
+                         or CraftMinigameType.Search or CraftMinigameType.Kitchen)))
         {
             foreach (var level in new[] { 1, 10, 11, 50 })
                 CraftMinigameXp.MultiplierFor(minigame, level).Should().Be(1.0, $"{minigame} level {level}");
@@ -31,6 +33,9 @@ public class CraftMinigameXpTests
 
         foreach (var level in new[] { 1, 10, 11, 50 })
             CraftMinigameXp.MultiplierFor(CraftMinigameType.Circuit, level).Should().Be(CircuitRules.XpMultiplierFor(level), $"Circuit level {level}");
+
+        foreach (var level in new[] { 1, 10, 11, 20, 30, 31, 41, 50 })
+            CraftMinigameXp.MultiplierFor(CraftMinigameType.Kitchen, level).Should().Be(KitchenTuning.XpMultiplierForLevel(level), $"Kitchen level {level}");
 
         // The Line is not a recipe minigame: its level is the fish's, and every level band of fish has a multiplier.
         foreach (var level in new[] { 1, 10, 11, 50, 52 })

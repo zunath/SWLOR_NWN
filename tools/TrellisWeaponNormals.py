@@ -277,12 +277,13 @@ def reproject_texture(source,meshes,input_path,output_path):
     return {'source_tga_sha256':hashlib.sha256(original).hexdigest(),'reprojected_tga_sha256':hashlib.sha256(output_path.read_bytes()).hexdigest(),'native_triangles_matched':matched,'covered_texels':int(coverage.sum()),'dilated_texels':int((filled&~coverage).sum()),'padding':'full_texture_nearest_toroidal_manhattan','conflicting_uv_texels':overlap,'max_quantization_error_degrees':max_error,'negative_z_clamped':False}
 
 
-def preserve_authored_tangents(path,sources):
+def preserve_authored_tangents(path,sources,angle_limit=.5):
     """Explicit policy: preserve uniquely owned authored frames, never merge conflicts.
 
     Native positions, indices, UVs, normals, materials and controllers are immutable.
     Only existing tangent/sign float streams are patched; normals remain the
-    compiler's retained, quantized authored normals.
+    compiler's retained, quantized authored normals. `angle_limit` (degrees) bounds how far the retained native
+    normals and orthogonalized tangents may sit from the authored ones; 0.5 unless a manifest explicitly widens it.
     """
     before=path.read_bytes();after=bytearray(before);allowed=set();rows=[]
     for mesh in native_meshes(path):
@@ -300,7 +301,7 @@ def preserve_authored_tangents(path,sources):
                     if error>1e-6:raise ValueError(f'Authored tangent conflict at compiled vertex {vertex} of {path.name}; do not average')
                 else:owned[int(vertex)]=candidate
         # Bound importer normal quantization instead of silently changing the normals.
-        if max_normal_angle>.5 or max_tangent_angle>.5:
+        if max_normal_angle>angle_limit or max_tangent_angle>angle_limit:
             raise ValueError('Authored basis differs materially from retained native normals')
         for vertex,value in owned.items():
             tangent=mesh['tangent_offset']+vertex*12;sign=mesh['sign_offset']+vertex*4

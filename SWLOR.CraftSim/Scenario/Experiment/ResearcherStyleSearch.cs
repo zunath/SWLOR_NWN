@@ -153,12 +153,52 @@ namespace SWLOR.CraftSim.Scenario.Experiment
                 .Where(result => result.Intuitive == ApprovedIntuitive && result.Methodical.Trials == 2 && new[] { -10, -12, -15 }.Contains(result.Methodical.Chance))
                 .OrderBy(result => result.Methodical.Chance)));
 
+            AppendDetail(text, options, "The implemented pair, case by case", ImplementedMethodical, ImplementedIntuitive);
+            var leader = passing.Count > 0 ? passing[0] : results.OrderBy(result => result.Failed).ThenBy(result => result.Distance).First();
+            if (leader.Methodical != ImplementedMethodical || leader.Intuitive != ImplementedIntuitive)
+                AppendDetail(text, options, "The leading pair, case by case", leader.Methodical, leader.Intuitive);
+
             text.AppendLine("## Limitations");
             text.AppendLine();
             text.AppendLine("- The same score analog and thresholds as `researcher-perks`: the generic gates have no scoring rule for an experiment, and each comparison has only six cases, so a share is a multiple of one twelfth and one case decides a comparison. A pair that passes here at a few hundred experiments per case can miss at another seed; run `researcher-perks` on the chosen numbers.");
             text.AppendLine("- Length is reported (mean actions of each style alone) and not ranked: Methodical +3 trials gives experiments longer than the owner's one-or-two-turns allowance.");
             return text.ToString();
         }
+
+        /// <summary>The numbers in force when the search was written: Methodical +2 trials and -15 points, Intuitive -1 trial and +20 points.</summary>
+        public static readonly StyleNumbers ImplementedMethodical = new(2, -15);
+
+        public static readonly StyleNumbers ImplementedIntuitive = new(-1, 20);
+
+        private static void AppendDetail(StringBuilder text, ResearcherPerkStudyOptions options, string heading, StyleNumbers methodical, StyleNumbers intuitive)
+        {
+            var gear = options.Gear;
+            var middle = gear.Count > 1 ? gear[1] : gear[0];
+            text.AppendLine($"## {heading}");
+            text.AppendLine();
+            text.AppendLine($"{methodical.Describe("Methodical")} against {intuitive.Describe("Intuitive")}, at {middle.Name}. A score is out of 100 (the time cut as a share of the cap at a fixed level, the reduction won as a share of today's largest where evidence decides); a case within {Number(ResearcherPerkStudy.TieMargin)} point is a tie. \"Line\" is each style on top of every other purchase the rank allows.");
+            text.AppendLine();
+            var table = new MarkdownTable(
+                "Level kind", "Tier", "Rank", "Alone: Methodical", "Alone: Intuitive", "Alone: leads", "Line: Methodical", "Line: Intuitive", "Line: leads");
+            foreach (var level in new[] { ResearcherPerkStudy.FixedLevel, ResearcherPerkStudy.ContestedLevel })
+            {
+                foreach (var experimentCase in ResearcherPerkStudy.StyleCases(level, middle))
+                {
+                    var m = Play(methodical, new[] { experimentCase }, options);
+                    var i = Play(intuitive, new[] { experimentCase }, options);
+                    table.Add(
+                        level == ResearcherPerkStudy.FixedLevel ? "Fixed levels (time cut)" : "Evidence decides (reduction)",
+                        experimentCase.Tier.ToString(), experimentCase.Rank.ToString(),
+                        Number(m.AloneScore[0]), Number(i.AloneScore[0]), Leads(m.AloneScore[0] - i.AloneScore[0]),
+                        Number(m.LineScore[0]), Number(i.LineScore[0]), Leads(m.LineScore[0] - i.LineScore[0]));
+                }
+            }
+
+            text.AppendLine(table.ToString());
+        }
+
+        private static string Leads(double difference) =>
+            Math.Abs(difference) <= ResearcherPerkStudy.TieMargin ? "tie" : difference > 0 ? "Methodical" : "Intuitive";
 
         private static string Table(IEnumerable<PairResult> rows)
         {

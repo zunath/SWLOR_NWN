@@ -174,6 +174,36 @@ namespace SWLOR.CraftSim.Tests.Scenario
             report.Should().MatchRegex("^[\\x20-\\x7E\\r\\n]*$", "a report is ASCII");
         }
 
+        [Test]
+        public void TheStyleSearchJudgesEachPairingFromOnePlayOfEachStyle_AndIsRepeatable()
+        {
+            var options = new ResearcherPerkStudyOptions { Runs = 4, Seed = 1, Gear = new[] { GearLevel.None(SkillType.Fabrication), Mid } };
+            var methodical = new[] { new ResearcherStyleSearch.StyleNumbers(2, -15), new ResearcherStyleSearch.StyleNumbers(3, -20) };
+            var intuitive = new[] { ResearcherStyleSearch.ApprovedIntuitive };
+
+            var results = ResearcherStyleSearch.Search(options, methodical, intuitive);
+
+            results.Should().HaveCount(2);
+            results.Select(result => result.Distance).Should().Equal(new[] { 5, 15 }, "the distance counts points of chance and 5 points a trial");
+            results.Should().OnlyContain(result => result.AloneFailed >= 0 && result.AloneFailed <= 4 && result.LineFailed >= 0 && result.LineFailed <= 4);
+            ResearcherStyleSearch.Search(options, methodical, intuitive).Should().Equal(results);
+            ResearcherStyleSearch.Distance(ResearcherStyleSearch.ApprovedMethodical, ResearcherStyleSearch.ApprovedIntuitive).Should().Be(0);
+        }
+
+        [Test]
+        public void TheStyleSearchReportNamesTheClosestPassingPairOrTheBestOfThoseThatFail()
+        {
+            var options = new ResearcherPerkStudyOptions { Runs = 2, Seed = 1, Gear = new[] { GearLevel.None(SkillType.Fabrication), Mid } };
+
+            var report = ResearcherStyleSearch.Build(options, "test");
+
+            report.Should().Contain("## Result");
+            report.Should().Contain("Pairs that pass both:");
+            report.Should().Contain("## The implemented pair, case by case");
+            report.Should().Contain("1024 pairs");
+            report.Should().MatchRegex("^[\x20-\x7E\r\n]*$", "a report is ASCII");
+        }
+
         /// <summary>A source of chance whose every roll is the same.</summary>
         private sealed class ScriptedRandom : IMinigameRandom
         {

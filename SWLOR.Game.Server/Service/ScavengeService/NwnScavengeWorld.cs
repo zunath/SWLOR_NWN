@@ -16,7 +16,16 @@ namespace SWLOR.Game.Server.Service.ScavengeService
         /// </summary>
         public const string OpeningVariable = "SCAVENGE_OPENING_FOR_SEARCHER";
 
-        /// <summary>How long after the search animation a site stays held for the scavenger who searched it, if they never close it.</summary>
+        /// <summary>
+        /// Set on a site once the scavenger it is held for has opened its inventory. While they have it open the hold does not lapse: they are
+        /// still taking what the site gave, however long that takes. Closing the site releases the hold.
+        /// </summary>
+        public const string HolderOpenedVariable = "SCAVENGE_HOLDER_OPENED";
+
+        /// <summary>
+        /// How long after the search animation a site stays held for the scavenger who searched it if they never open it, and how often a hold
+        /// on an open site is checked for a scavenger who has gone.
+        /// </summary>
         public const float OpeningHoldSeconds = 60f;
 
         /// <summary>Set on a site while a player has closed its inventory to open the board, so closing it does not remove the site.</summary>
@@ -59,12 +68,8 @@ namespace SWLOR.Game.Server.Service.ScavengeService
         {
             // Hold the site for the scavenger until they open it, so nobody else can take what it gave while the search animation runs.
             SetLocalObject(site, OpeningVariable, player);
-            AssignCommand(GetModule(), () => DelayCommand((float)animationSeconds + OpeningHoldSeconds, () =>
-            {
-                // A scavenger who never opens it (they logged out) must not hold the site for good.
-                if (GetIsObjectValid(site) && GetLocalObject(site, OpeningVariable) == player)
-                    DeleteLocalObject(site, OpeningVariable);
-            }));
+            DeleteLocalBool(site, HolderOpenedVariable);
+            ScheduleHoldLapse(site, player, (float)animationSeconds + OpeningHoldSeconds);
             AssignCommand(player, () =>
             {
                 if (animationSeconds > 0)
@@ -72,6 +77,29 @@ namespace SWLOR.Game.Server.Service.ScavengeService
 
                 ActionInteractObject(site);
             });
+        }
+
+        /// <summary>
+        /// Ends the hold on a site a scavenger never opened (they logged out) so it is not held for good. A scavenger who has it open keeps
+        /// the hold for as long as they stay by the site; it is checked again every <see cref="OpeningHoldSeconds"/> in case they left without closing it.
+        /// </summary>
+        private static void ScheduleHoldLapse(uint site, uint player, float seconds)
+        {
+            AssignCommand(GetModule(), () => DelayCommand(seconds, () =>
+            {
+                if (!GetIsObjectValid(site) || GetLocalObject(site, OpeningVariable) != player)
+                    return;
+
+                if (GetLocalBool(site, HolderOpenedVariable) && GetIsObjectValid(player) &&
+                    GetArea(player) == GetArea(site) && GetDistanceBetween(player, site) <= ScavengeLifecycle.MaxDistance)
+                {
+                    ScheduleHoldLapse(site, player, OpeningHoldSeconds);
+                    return;
+                }
+
+                DeleteLocalObject(site, OpeningVariable);
+                DeleteLocalBool(site, HolderOpenedVariable);
+            }));
         }
 
         public void DestroySite(uint player, uint site, double animationSeconds)

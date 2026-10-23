@@ -31,7 +31,11 @@ namespace SWLOR.Game.Server.Feature
             if (GetIsObjectValid(holder))
             {
                 if (holder == user)
+                {
+                    // They are taking what it gave: the hold does not lapse while they have it open.
+                    SetLocalBool(placeable, NwnScavengeWorld.HolderOpenedVariable, true);
                     return;
+                }
 
                 SendMessageToPC(user, ScavengeLifecycle.SiteHeldMessage);
                 CloseSiteInventory(user, placeable);
@@ -147,7 +151,10 @@ namespace SWLOR.Game.Server.Feature
 
             // The scavenger a searched site was held for has closed it: what is left in it is anyone's, as it always was.
             if (GetLocalObject(placeable, NwnScavengeWorld.OpeningVariable) == user)
+            {
                 DeleteLocalObject(placeable, NwnScavengeWorld.OpeningVariable);
+                DeleteLocalBool(placeable, NwnScavengeWorld.HolderOpenedVariable);
+            }
 
             // In case the user is not skilled enough to scavenge this resource, we don't want to destroy it.
             if (GetLocalBool(placeable, "DO_NOT_DESTROY"))

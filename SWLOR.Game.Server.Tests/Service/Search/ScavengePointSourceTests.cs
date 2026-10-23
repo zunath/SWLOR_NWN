@@ -54,7 +54,26 @@ public class ScavengePointSourceTests
 
         world.Should().Contain("DeleteLocalObject(site, OpeningVariable);");
         world.Should().Contain("(float)animationSeconds + OpeningHoldSeconds");
-        world.Should().Contain("GetLocalObject(site, OpeningVariable) == player");
+        world.Should().Contain("GetLocalObject(site, OpeningVariable) != player");
+    }
+
+    [Test]
+    public void AHoldDoesNotLapseWhileItsScavengerHasTheSiteOpen_AndEndsWhenTheyLeaveOrClose()
+    {
+        var world = Source("Service", "ScavengeService", "NwnScavengeWorld.cs");
+        var onOpened = Method(Source("Feature", "ScavengePoint.cs"), "public static void OnOpened()");
+        var onClosed = Method(Source("Feature", "ScavengePoint.cs"), "public static void OnClosed()");
+        var lapse = Method(world, "private static void ScheduleHoldLapse(");
+
+        onOpened.Should().Contain("SetLocalBool(placeable, NwnScavengeWorld.HolderOpenedVariable, true);", "opening the site is recorded so the hold outlives the first minute");
+        lapse.Should().Contain("GetLocalBool(site, HolderOpenedVariable)");
+        lapse.Should().Contain("ScheduleHoldLapse(site, player, OpeningHoldSeconds);", "an open site is checked again, not released");
+        lapse.Should().Contain("GetIsObjectValid(player)", "a scavenger who logged out must not hold the site for good");
+        lapse.Should().Contain("GetDistanceBetween(player, site) <= ScavengeLifecycle.MaxDistance", "a scavenger who walked away must not hold the site for good");
+        lapse.IndexOf("ScheduleHoldLapse(site, player, OpeningHoldSeconds);", StringComparison.Ordinal)
+            .Should().BeLessThan(lapse.IndexOf("DeleteLocalObject(site, OpeningVariable);", StringComparison.Ordinal));
+        onClosed.Should().Contain("DeleteLocalBool(placeable, NwnScavengeWorld.HolderOpenedVariable);");
+        world.Should().Contain("DeleteLocalBool(site, HolderOpenedVariable);", "a new hold starts unopened");
     }
 
     [Test]

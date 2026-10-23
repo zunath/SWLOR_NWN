@@ -16,7 +16,7 @@ namespace SWLOR.Game.Server.Service.CraftService.Minigame.Prospecting;
 /// <param name="Gems">Gems from the gem pockets claimed, each in place of the unit it sealed.</param>
 /// <param name="Shattered">Gem pockets a Heavy Strike shattered.</param>
 /// <param name="Ending">How the session stands: going, or how it ended.</param>
-/// <param name="MotherLodeSpent">Whether the first Heavy Strike of the node, the one Mother Lode doubles, has been made.</param>
+/// <param name="MotherLodeSpent">Whether the first Strike or Heavy Strike of the node, the one Mother Lode makes quick, has been made.</param>
 public sealed record ProspectingState(
     MinigameMeters Meters,
     MinigameOpportunity NextOpportunity,

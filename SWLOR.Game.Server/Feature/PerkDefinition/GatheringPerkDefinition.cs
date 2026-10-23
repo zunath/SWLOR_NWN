@@ -54,7 +54,7 @@ namespace SWLOR.Game.Server.Feature.PerkDefinition
         private static string StrikeText(int strikeTenths, int heavyTenths) =>
             $"In Prospecting, a Strike takes {ProspectingPerkRules.SecondsText(strikeTenths)} {SecondWord(strikeTenths)} less and a Heavy Strike {ProspectingPerkRules.SecondsText(heavyTenths)} {SecondWord(heavyTenths)} less.";
 
-        private static string SecondWord(int tenths) => tenths == 10 ? "second" : "seconds";
+        private static string SecondWord(int tenths) => ProspectingPerkRules.SecondsWord(tenths);
 
         private static string RichVeinsText(int tenths) =>
             $"In Prospecting, claiming a rich seam with Extract takes {ProspectingPerkRules.SecondsText(tenths)} {SecondWord(tenths)} less.";
@@ -285,7 +285,7 @@ namespace SWLOR.Game.Server.Feature.PerkDefinition
                 .Icon(TreasureSeekerIcon)
 
                 .AddPerkLevel()
-                .Description($"In Search, the first Dig Deeper find of each board rolls the site's rare entries with {SearchPerkRules.JackpotRareWeight} more times their usual weight.")
+                .Description($"In Search, the first Dig Deeper find of each board rolls the site's rare entries with {DigWeight(SearchPerkRules.JackpotRareWeight)} times their usual weight instead of {DigWeight(0)}, plus what Fine Trowel and Careful Hands add.")
                 .Price(4)
                 .RequirementSkill(SkillType.Gathering, 50)
                 .IncreasesStat(StatType.SearchJackpotRareWeight, SearchPerkRules.JackpotRareWeight);

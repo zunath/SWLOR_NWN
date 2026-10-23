@@ -52,7 +52,7 @@ public static class GatheringStyles
     public static string ProspectingDescription(GatheringStyle style) => style switch
     {
         GatheringStyle.StripMining =>
-            $"A Strike takes {ProspectingPerkRules.SecondsText(ProspectingPerkRules.StripMiningStrikeTimeTenths)} seconds less and costs {ProspectingPerkRules.StripMiningStrikeStability} more Stability, but a Survey and an Extract each take {ProspectingPerkRules.SecondsText(ProspectingPerkRules.StripMiningSeamWorkTimeTenths)} second more.",
+            $"A Strike takes {ProspectingPerkRules.SecondsText(ProspectingPerkRules.StripMiningStrikeTimeTenths)} {ProspectingPerkRules.SecondsWord(ProspectingPerkRules.StripMiningStrikeTimeTenths)} less and costs {ProspectingPerkRules.StripMiningStrikeStability} more Stability, but a Survey and an Extract each take {ProspectingPerkRules.SecondsText(ProspectingPerkRules.StripMiningSeamWorkTimeTenths)} {ProspectingPerkRules.SecondsWord(ProspectingPerkRules.StripMiningSeamWorkTimeTenths)} more.",
         _ => string.Empty
     };
 
@@ -60,7 +60,7 @@ public static class GatheringStyles
     public static string SearchDescription(GatheringStyle style) => style switch
     {
         GatheringStyle.CarefulHands =>
-            $"A Search finds {-SearchPerkRules.CarefulHandsSearchChancePoints} points less often, and a Dig Deeper find favours the site's rare entries {SearchPerkRules.CarefulHandsDigRareWeight} more.",
+            $"A Search finds {-SearchPerkRules.CarefulHandsSearchChancePoints} {(SearchPerkRules.CarefulHandsSearchChancePoints == -1 ? "point" : "points")} less often, and a Dig Deeper find favours the site's rare entries {SearchPerkRules.CarefulHandsDigRareWeight} more.",
         _ => string.Empty
     };
 

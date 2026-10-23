@@ -47,4 +47,7 @@ public static class ProspectingPerkRules
     /// <summary>A tenth-of-a-second figure as the text says it: 5 is "0.5", 10 is "1", 15 is "1.5".</summary>
     public static string SecondsText(int tenths) =>
         (tenths / 10.0).ToString("0.#", System.Globalization.CultureInfo.InvariantCulture);
+
+    /// <summary>"second" for exactly one second and "seconds" for any other figure.</summary>
+    public static string SecondsWord(int tenths) => tenths == 10 ? "second" : "seconds";
 }

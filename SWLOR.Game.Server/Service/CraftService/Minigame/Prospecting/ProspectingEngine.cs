@@ -101,7 +101,7 @@ public sealed class ProspectingEngine : MinigameEngineBase<ProspectingState>
     /// <summary>How the session stands: going, or how it ended.</summary>
     public ProspectingEnding Ending => State.Ending;
 
-    /// <summary>True once the first Heavy Strike of the node, the one Mother Lode doubles, has been made.</summary>
+    /// <summary>True once the first Strike or Heavy Strike of the node, the one Mother Lode makes quick, has been made.</summary>
     public bool MotherLodeSpent => State.MotherLodeSpent;
 
     /// <summary>
@@ -133,7 +133,7 @@ public sealed class ProspectingEngine : MinigameEngineBase<ProspectingState>
     /// The node as it stands, with its hidden seams, for the game to store: the pool left, the Stability, and every seam not yet claimed
     /// or shattered. It is not for the window, which must not show how many seams are hidden.
     /// </summary>
-    public ProspectingNode ToNode() => new(State.Pool, Math.Max(0, State.Stability), State.Seams);
+    public ProspectingNode ToNode() => new(State.Pool, Math.Max(0, State.Stability), State.Seams, State.MotherLodeSpent);
 
     private static ProspectingState CreateInitialState(ProspectingSetup setup)
     {
@@ -147,7 +147,7 @@ public sealed class ProspectingEngine : MinigameEngineBase<ProspectingState>
             new MinigameMeter(node.Stability, ProspectingRules.MaxStability),
             new MinigameMeter(setup.Charges, setup.Charges));
 
-        return new ProspectingState(meters, null, node.Seams, 0, 0, 0, 0, ProspectingEnding.InProgress);
+        return new ProspectingState(meters, null, node.Seams, 0, 0, 0, 0, ProspectingEnding.InProgress, node.MotherLodeSpent);
     }
 
     protected override MinigameActionRule<ProspectingState> ResolveAction(ProspectingState state, string actionId)
@@ -189,7 +189,6 @@ public sealed class ProspectingEngine : MinigameEngineBase<ProspectingState>
                 }
 
                 var seam = state.Seams[state.NextExtractIndex.Value];
-                var rich = seam.Kind == ProspectingSeamKind.Rich;
                 return Costly(
                     state, info,
                     ProspectingRules.ExtractCharges,
@@ -271,7 +270,7 @@ public sealed class ProspectingEngine : MinigameEngineBase<ProspectingState>
         var lode = MotherLodeReady(state);
         return chances
             .Select(pair => new MinigameOutcomeRule<ProspectingState>(
-                lode ? TakesLabel(pair.Key) + " in half the time (Mother Lode)" : TakesLabel(pair.Key),
+                lode ? TakesLabel(pair.Key) + " quickly (Mother Lode)" : TakesLabel(pair.Key),
                 pair.Value,
                 s =>
                 {
@@ -308,7 +307,7 @@ public sealed class ProspectingEngine : MinigameEngineBase<ProspectingState>
             {
                 var taken = key.Units;
                 var shatters = key.Shatters;
-                var label = lode ? TakesLabel(taken) + " in half the time (Mother Lode)" : TakesLabel(taken);
+                var label = lode ? TakesLabel(taken) + " quickly (Mother Lode)" : TakesLabel(taken);
                 return new MinigameOutcomeRule<ProspectingState>(
                     shatters ? label + " and shatters a gem pocket if one is hidden" : label,
                     percentages[index],

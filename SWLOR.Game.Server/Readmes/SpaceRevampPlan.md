@@ -560,7 +560,7 @@ Ships at launch.
 - **Mining:**
   - Moves to Gathering: XP, perks and module gating.
   - Fix the mining lock, the strip miner tier check and the yield math (section 16).
-  - Mined ore still goes to the pilot's inventory.
+  - Mining, gas and salvage yields go into the ship's interior storage while it has room, and into the pilot's inventory only when storage is full or the ship has none. Today every cycle creates the item on the pilot (`MiningLaserModuleDefinition.cs:134`), so miners keep flying home over carry weight.
 - **Gas harvesting:** a Gas Harvester cycles on gas-cloud placeables in the nebula.
 - **Salvage:**
   - A destroyed NPC ship leaves a wreck placeable for a few minutes.
@@ -662,7 +662,7 @@ Crafted intermediates that hull and module recipes consume. Appendix D lists eve
 - **Recipe levels:** they match the rank schedule. The rule "required rank = recipe level - 3" stays.
 ### Who crafts space items
 
-There is no new crafting skill. Engineering keeps building every ship and module, as it does today: the 2026-10-22 crafting logs show 37 characters crafting ships, weapons, ammo or plating in a month, 25 of them at Engineering 40-50 and almost none with Smithery or Fabrication. Crafters still trade, because every hull needs metal components from a smith, and the big hulls need life support from a farmer.
+There is no new crafting skill. Engineering keeps building every ship and module, as it does today: the 2026-10-22 crafting logs show 37 characters crafting ships, weapons, ammo or plating in a month, 25 of them at Engineering 40-50 and almost none with Smithery or Fabrication. Crafters still trade, because every hull needs metal components from a smith, and the big hulls need life support from a farmer. Hull Frames, Thruster Assemblies and Ordnance Assemblies also come from salvage, so a solo engineer can still build a ship.
 
 | Skill | Space items |
 |---|---|
@@ -814,7 +814,7 @@ Draft each in the Bible, check it with the combat simulator where it affects com
 - **Dockhand store:** prices for its stock (section 14).
 - **Wild Space:** environment effect sizes, rift lifetimes, mass budgets and collapse damage, Rift Raider presets, loot tables.
 - **Scanning:** signal gained per cycle, spawn rates per signature type, Sensor Sweep range and cooldown, Jump to Signature spool.
-- **Stations:** Station Core recipe, anchor site count per area, Asteroid Drill output, Shipyard build times, Jump Beacon fuel cost and hull caps.
+- **Stations:** Station Core recipe, Shipyard fee cap, anchor site count per area, Asteroid Drill output, Shipyard build times, Jump Beacon fuel cost and hull caps.
 - **Holdings:** price, upkeep, output, upgrade costs, Processing Plant recipes, event odds, droid boost.
 - **Droids:** Industry per industrial part, stat cuts, instruction effects, derelict salvage team timer and yield.
 - **Slicing:** Data Analyzer range, slicing tiers per zone for data cans, locked caches, data cores and space lockboxes, space lockbox drop rates, customs spoof tier per patrol, space slicing XP and reward odds.
@@ -860,7 +860,7 @@ Everything merges to one integration branch and releases together.
 - **Build and tests:**
   - Build once with `-p:RunPostBuildEvent=Never -v q -clp:ErrorsOnly`.
   - Run focused NUnit filters for each slice.
-  - Add tests for: rank gating, size rules, slot rows, migration (refunds, item mapping, ship rebuild), seat skill checks (Piloting, Engineering, Espionage) and the Engineering, Espionage and Leadership bonuses, Piloting rank changing no combat stat, trade pricing and flooding, cargo spill, customs, XP split and range, PvP gating, escape pods, every auto-off trigger, support-module target locks and Retarget, All Weapons, space slicing (tier gate, Sensors crew slicing, Espionage XP, customs spoof outcomes), ship transfers and market sales (every structure re-owned, blocking conditions, designs not shared, permissions reset, migrated interiors kept).
+  - Add tests for: rank gating, size rules, slot rows, migration (refunds, item mapping, ship rebuild), seat skill checks (Piloting, Engineering, Espionage) and the Engineering, Espionage and Leadership bonuses, Piloting rank changing no combat stat, trade pricing and flooding, cargo spill, customs, XP split and range, PvP gating, escape pods, every auto-off trigger, support-module target locks and Retarget, All Weapons, space slicing (tier gate, Sensors crew slicing, Espionage XP, customs spoof outcomes), mining yield into ship storage (and the overflow to inventory), Shipyard access and fee, ship transfers and market sales (every structure re-owned, blocking conditions, designs not shared, permissions reset, migrated interiors kept).
 - **Engine tests** (`EngineTesting.md`) for:
   - Entering space with Mid slots.
   - Crew boarding, camera attach and re-attach after a starlane jump.
@@ -1035,6 +1035,7 @@ A station is a **player city in space** and follows every city mechanic, in `Ser
 - **City buildings:** all of them: City Hall, Starport (with the Trade Exchange and its tariff), Medical Center (respawn), Bank, Cantina.
 - **Station-only buildings:**
   - **Shipyard:** Capital hull recipes can only be crafted at a Shipyard. A droid assigned to it shortens builds.
+    - **Access:** the mayor decides who can build there: citizens only (the default) or anyone. The mayor can also set an optional Shipyard fee paid into the treasury, added as a new `PropertyTaxType` beside Citizenship and Transportation and edited with the existing `EditTaxes` permission. Several stations can each have a Shipyard, so the first one can't lock out everyone else.
   - **Asteroid Drill:** extracts the anchor site's ore over time into station storage, at the system's tier. An assigned droid raises output.
   - **Jump Beacon:** jumps a docked ship to any other beacon whose city permits it.
     - Each jump costs **Station Fuel**, a trade good.

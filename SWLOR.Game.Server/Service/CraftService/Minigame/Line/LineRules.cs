@@ -77,24 +77,25 @@ public static class LineRules
     // fast clicking cannot finish a fight in seconds and be paid the multiplier for it.
     public const double TurnSeconds = 8.0;
 
-    // Fish Sense. The angler who has it sees the fish's next two moves, but only on the first FishSenseTurns turns of a fight: after
-    // that the window shows one move, as for everyone. The full forecast was the largest single purchase of the Angler line. Even
-    // limited to the first turn it adds more at the fish's own level than the room under the fight bound leaves beside a style, so
-    // the Angler draft holds it open for the owner.
+    // Fish Sense. The angler who has it sees the fish's next two moves, but only on the first turns of a fight (the perk sets how many,
+    // LineAnglerEffects.ForecastTurns): after that the window shows one move, as for everyone. The full forecast was the largest single
+    // purchase of the Angler line, so the owner limited it. FishSenseTurns is the first purchase's turns, the default of an angler who
+    // sees two moves ahead.
     public const int FishSenseTurns = 1;
 
     // The multiplier on the XP of a bite (see CraftMinigameXp), by the fish's level band: the least that keeps the CraftSim XP-rate
-    // gate (gate 6) passing in the band. Today's cast takes about seven seconds; the fight adds three to six turns of TurnSeconds to
-    // that, so the same XP per bite would cut the XP per hour to a seventh. Today's XP is still paid at the bite, caught or not. The
+    // gate (gate 6) passing in the band for the angler with no perks and for the whole Angler line in either style, whose perks shorten
+    // the fight and so the XP it pays (bands 11-40 are higher than they would be for the unperked angler alone). Today's cast takes
+    // about seven seconds; the fight adds three to six turns of TurnSeconds to that, so the same XP per bite would cut the XP per hour to a seventh. Today's XP is still paid at the bite, caught or not. The
     // rest of the multiplied XP is paid when the fight ends on its own (landed, snapped or escaped), in proportion to how long the
     // fight lasted up to XpFullTurns turns (XpShare), so neither abandoning a fight to cast again nor losing it on purpose in one
     // move earns more per hour than today. Starting values until client timing replaces the seconds per turn; 1.0 in every band
     // restores today's XP per bite.
     public const int XpFullTurns = 5;
     public const double XpMultiplierLevels0To10 = 8.55;
-    public const double XpMultiplierLevels11To20 = 8.5;
-    public const double XpMultiplierLevels21To30 = 8.0;
-    public const double XpMultiplierLevels31To40 = 8.2;
+    public const double XpMultiplierLevels11To20 = 8.65;
+    public const double XpMultiplierLevels21To30 = 8.35;
+    public const double XpMultiplierLevels31To40 = 8.65;
     public const double XpMultiplierLevels41Up = 8.0;
 
     /// <summary>

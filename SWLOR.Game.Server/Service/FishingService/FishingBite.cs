@@ -1,3 +1,5 @@
+using SWLOR.Game.Server.Service.CraftService.Minigame.Line;
+
 namespace SWLOR.Game.Server.Service.FishingService
 {
     /// <summary>
@@ -14,6 +16,7 @@ namespace SWLOR.Game.Server.Service.FishingService
     /// <param name="BaitName">The name of the loaded bait, for the "Bait Remaining" line.</param>
     /// <param name="PointAttemptsRemaining">The bites the fishing point had left before this one.</param>
     /// <param name="Position">Where the angler stood, which they must not leave during the fight.</param>
+/// <param name="Effects">What the angler's perks change in the fight, read when the fish bites; null fights with none.</param>
     public sealed record FishingBite(
         uint Player,
         uint Rod,
@@ -24,5 +27,6 @@ namespace SWLOR.Game.Server.Service.FishingService
         int BaitRemaining,
         string BaitName,
         int PointAttemptsRemaining,
-        System.Numerics.Vector3 Position);
+        System.Numerics.Vector3 Position,
+    LineAnglerEffects Effects = null);
 }

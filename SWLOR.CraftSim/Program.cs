@@ -29,6 +29,10 @@ SWLOR crafting simulator
       Plays the research Experiment and writes its report: length, reduction size against today's dice and the supply change, the time cut, and Fabrication XP per real hour.
   researcher-perks [--runs 400] [--seed 1] [--seconds-per-action 6] [--craft-seconds-per-action 8] [--job-overhead-seconds 30] [--search] [--out report.md] [--repo path]
       Plays the Fabrication Researcher line and writes its evidence: the two styles against each other, each purchase's effect, Peer Review for an undecided player, and Fabrication XP per real hour against the crafting ceiling.
+  angler-perks [--runs 400] [--seed 1] [--out report.md] [--repo path]
+      Plays the Agriculture Angler line and writes its evidence: each purchase alone, the whole line at every rank against Quick Reel and the unperked fight, the two styles, and the special rare fish.
+  chef-perks [--runs 40] [--seed 1] [--recipes-per-band 6] [--styles-only] [--mid-gear-only] [--candidates 40/25/35;...] [--out report.md] [--repo path]
+      Plays the Agriculture Chef line and writes its evidence: each purchase's effect on actions, CP and quality at rank 50, the two styles compared, the whole line at every rank, and the styles' magnitudes against gate 2.
   builder-perks [--runs 60] [--seed 1] [--recipes-per-band 8] [--out report.md] [--repo path]
       Plays the Fabrication Builder line and writes its evidence: each purchase's effect on actions, CP and quality at rank 50, the two styles compared, and the whole line at every rank.
 """;
@@ -52,6 +56,8 @@ try
         "research" => ResearchCommand.Run(args.Skip(1).ToArray(), Console.Out),
         "harvesting" => HarvestingCommand.Run(args.Skip(1).ToArray(), Console.Out),
         "builder-perks" => BuilderPerksCommand.Run(args.Skip(1).ToArray(), Console.Out),
+        "angler-perks" => AnglerPerksCommand.Run(args.Skip(1).ToArray(), Console.Out),
+        "chef-perks" => ChefPerksCommand.Run(args.Skip(1).ToArray(), Console.Out),
         "researcher-perks" => ResearcherPerksCommand.Run(args.Skip(1).ToArray(), Console.Out),
         _ => Fail($"Unknown command '{args[0]}'.")
     };

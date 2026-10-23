@@ -815,6 +815,22 @@ namespace SWLOR.Game.Server.Service.PerkService
         SecondOpinion = 880,
         Breakthrough = 881,
 
-        // IDs 650, 860-863 and 882+ are free.
+        PantryStaples = 904,
+        SharpPalate = 905,
+        SeasonedPalate = 906,
+        SlowCooking = 907,
+        FlashCooking = 908,
+        KitchenReduce = 909,
+        AromaticKitchen = 910,
+        SteadyWrist = 911,
+        SignatureDish = 912,
+        StrongLine = 913,
+        HardSet = 914,
+        FishSense = 915,
+        PatientAngler = 916,
+        AggressiveAngler = 917,
+        TrophyCatch = 918,
+
+        // IDs 650, 860-863, 882-903 and 919+ are free.
     }
 }

@@ -105,9 +105,9 @@ public sealed class LineSetup
 
     /// <summary>
     /// Whether the angler sees the move after next on the given turn (0 is the first). Fish Sense shows two moves ahead only on the
-    /// first <see cref="LineRules.FishSenseTurns"/> turns.
+    /// first <see cref="LineAnglerEffects.ForecastTurns"/> turns of a fight.
     /// </summary>
-    public bool SeesTwoMoves(int round) => ForecastDepth >= 2 && round < LineRules.FishSenseTurns;
+    public bool SeesTwoMoves(int round) => ForecastDepth >= 2 && round < Effects.ForecastTurns;
 
     public int FishLevel { get; }
 

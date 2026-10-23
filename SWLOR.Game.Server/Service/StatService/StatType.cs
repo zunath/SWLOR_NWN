@@ -6533,6 +6533,82 @@ namespace SWLOR.Game.Server.Service.StatService
         /// <summary>Non-zero when the research Experiment offers Breakthrough.</summary>
         [StatType(StatTypeCategory.BeneficialWhenPositive, StatTypeAggregation.Maximum)]
         ExperimentBreakthroughUnlocked = 1204,
+
+        /// <summary>Points added to the push of each free pantry seasoning in the Kitchen.</summary>
+        [StatType(StatTypeCategory.BeneficialWhenPositive)]
+        KitchenPantryPush = 1228,
+
+        /// <summary>Percentage points taken off the base spread of a Kitchen push, before Control narrows it.</summary>
+        [StatType(StatTypeCategory.BeneficialWhenPositive)]
+        KitchenPushSpreadReduction = 1229,
+
+        /// <summary>Non-zero when the cook may switch on Seasoned Palate, which halves the push of every committed ingredient Add.</summary>
+        [StatType(StatTypeCategory.BeneficialWhenPositive, StatTypeAggregation.Maximum)]
+        KitchenSeasonedPalate = 1230,
+
+        /// <summary>Percent by which Seasoned Palate narrows the spread of a Kitchen push, after Control, while it is switched on.</summary>
+        [StatType(StatTypeCategory.BeneficialWhenPositive, StatTypeAggregation.Maximum)]
+        KitchenSeasonedPalateSpreadPercent = 1231,
+
+        /// <summary>Percent added to the Doneness a Kitchen Simmer gives at Low heat.</summary>
+        [StatType(StatTypeCategory.BeneficialWhenPositive)]
+        KitchenLowHeatDonenessPercent = 1232,
+
+        /// <summary>Percent taken off the flavor drift a Kitchen dish takes at Medium heat.</summary>
+        [StatType(StatTypeCategory.BeneficialWhenPositive)]
+        KitchenMediumDriftReductionPercent = 1233,
+
+        /// <summary>Percent taken off the flavor drift a Kitchen dish takes at High heat.</summary>
+        [StatType(StatTypeCategory.BeneficialWhenPositive)]
+        KitchenHighHeatDriftReductionPercent = 1234,
+
+        /// <summary>Percent of the way toward the target's center that Kitchen Reduce moves the flavor on every axis; non-zero also adds the action.</summary>
+        [StatType(StatTypeCategory.BeneficialWhenPositive, StatTypeAggregation.Maximum)]
+        KitchenReducePercent = 1235,
+
+        /// <summary>CP Kitchen Reduce costs less, to a minimum of 1 CP.</summary>
+        [StatType(StatTypeCategory.BeneficialWhenPositive)]
+        KitchenReduceCpReduction = 1236,
+
+        /// <summary>Percentage points added to the chance each Kitchen turn announces Peak Aroma.</summary>
+        [StatType(StatTypeCategory.BeneficialWhenPositive)]
+        KitchenPeakAromaChancePoints = 1237,
+
+        /// <summary>CP a Kitchen Stir costs less, to a minimum of 1 CP.</summary>
+        [StatType(StatTypeCategory.BeneficialWhenPositive)]
+        KitchenStirCpReduction = 1238,
+
+        /// <summary>Percent of a Simmer's Doneness at the current heat that a Kitchen Stir also gives.</summary>
+        [StatType(StatTypeCategory.BeneficialWhenPositive)]
+        KitchenStirDonenessPercent = 1239,
+
+        /// <summary>Non-zero when the Kitchen offers Signature Dish, once per dish.</summary>
+        [StatType(StatTypeCategory.BeneficialWhenPositive, StatTypeAggregation.Maximum)]
+        KitchenSignatureDish = 1240,
+
+        /// <summary>Tension the fishing line holds beyond its usual cap.</summary>
+        [StatType(StatTypeCategory.BeneficialWhenPositive)]
+        AnglerTensionCap = 1241,
+
+        /// <summary>Stamina Set Hook drains from the fish beyond its usual amount.</summary>
+        [StatType(StatTypeCategory.BeneficialWhenPositive)]
+        AnglerSetHookDrain = 1242,
+
+        /// <summary>Turns at the start of a fight in which the window shows the fish's next two moves (Fish Sense).</summary>
+        [StatType(StatTypeCategory.BeneficialWhenPositive, StatTypeAggregation.Maximum)]
+        AnglerForecastTurns = 1243,
+
+        /// <summary>Distance Give Line lets out less than usual.</summary>
+        [StatType(StatTypeCategory.BeneficialWhenPositive)]
+        AnglerGiveLineDistanceReduction = 1244,
+
+        /// <summary>Distance a Reel pulls the fish in beyond its usual amount.</summary>
+        [StatType(StatTypeCategory.BeneficialWhenPositive)]
+        AnglerReelDistance = 1245,
+
+        /// <summary>Rungs of the difficulty ladder a rare fish is moved down, which makes it easier to land.</summary>
+        [StatType(StatTypeCategory.BeneficialWhenPositive)]
+        AnglerRareFishRungs = 1246,
     }
 
     public class StatTypeAttribute : Attribute

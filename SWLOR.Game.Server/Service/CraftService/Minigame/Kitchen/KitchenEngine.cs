@@ -9,6 +9,8 @@ namespace SWLOR.Game.Server.Service.CraftService.Minigame.Kitchen;
 /// Doneness is the progress meter, Freshness is the integrity meter and falls every turn, and the dish is ruined at 0.
 /// Every action is available from skill rank 0: the plan sets no unlock ranks for the Kitchen. Rank shows up in the numbers
 /// instead: CP (gear plus 0.75 per rank, with the rank passive) and the Doneness factor of rank against the recipe's level.
+/// A Chef's perks (<see cref="KitchenPerkStats"/>) change those numbers and add Reduce and Signature Dish; the engine reads them
+/// through <see cref="KitchenStats"/> and never checks a perk.
 /// </summary>
 public sealed class KitchenEngine : MinigameEngineBase<KitchenState>
 {
@@ -39,7 +41,7 @@ public sealed class KitchenEngine : MinigameEngineBase<KitchenState>
     {
         _recipe = recipe;
         _stats = stats;
-        _actions = BuildActions(recipe);
+        _actions = BuildActions(recipe, stats.Perks);
         _axisMarks = Axes.Select(axis =>
         {
             var perfect = recipe.Target.PerfectRange(axis);
@@ -69,7 +71,10 @@ public sealed class KitchenEngine : MinigameEngineBase<KitchenState>
     public FlavorVector NextDrift => State.NextDrift;
 
     /// <summary>The drift that will move the flavor at the end of the next turn if the heat stays as it is.</summary>
-    public FlavorVector EffectiveNextDrift => State.EffectiveNextDrift;
+    public FlavorVector EffectiveNextDrift => EffectiveDrift(State);
+
+    /// <summary>True once Signature Dish has been used on this dish.</summary>
+    public bool SignatureUsed => State.SignatureUsed;
 
     public double DistanceFromCenter => _recipe.Target.DistanceTo(State.Profile);
 
@@ -108,7 +113,7 @@ public sealed class KitchenEngine : MinigameEngineBase<KitchenState>
             new KitchenStock(recipe.Lines.Select(line => line.Portions))).WithMeters(meters);
     }
 
-    private static IReadOnlyList<MinigameActionInfo> BuildActions(KitchenRecipe recipe)
+    private static IReadOnlyList<MinigameActionInfo> BuildActions(KitchenRecipe recipe, KitchenPerkStats perks)
     {
         var actions = new List<MinigameActionInfo>
         {
@@ -120,9 +125,19 @@ public sealed class KitchenEngine : MinigameEngineBase<KitchenState>
                 "Takes a turn. High heat cooks fast and drifts the flavor every turn."),
             new(KitchenActionIds.Simmer, "Simmer", "Adds Doneness at Low or Medium heat."),
             new(KitchenActionIds.Sear, "Sear", "Adds a lot of Doneness at High heat and costs Freshness."),
-            new(KitchenActionIds.Stir, "Stir", "Cancels the announced drift."),
+            new(KitchenActionIds.Stir, "Stir", perks.StirDonenessPercent > 0
+                ? "Cancels the announced drift, and at Medium heat adds some Doneness."
+                : "Cancels the announced drift."),
             new(KitchenActionIds.Cover, "Cover", "Halves Freshness loss for 3 turns.")
         };
+
+        if (perks.HasReduce)
+        {
+            actions.Add(new MinigameActionInfo(
+                KitchenActionIds.Reduce,
+                "Reduce",
+                $"Takes a turn. Pulls the flavor {perks.ReducePercent}% of the way toward the target's center on every flavor."));
+        }
 
         for (var line = 0; line < recipe.Lines.Count; line++)
         {
@@ -136,6 +151,17 @@ public sealed class KitchenEngine : MinigameEngineBase<KitchenState>
         actions.Add(new MinigameActionInfo(KitchenActionIds.AddSalt, "Add Salt", "A free pinch of salt. A small push toward Savory."));
         actions.Add(new MinigameActionInfo(KitchenActionIds.AddSugar, "Add Sugar", "A free pinch of sugar. A small push toward Sweet."));
         actions.Add(new MinigameActionInfo(KitchenActionIds.AddSpice, "Add Spice", "A free pinch of spice. A small push toward Spice."));
+
+        if (perks.SignatureDish)
+        {
+            foreach (var axis in Axes)
+            {
+                actions.Add(new MinigameActionInfo(
+                    KitchenActionIds.Signature(axis),
+                    $"Signature Dish: {AxisNames[(int)axis]}",
+                    $"Once per dish, takes no CP. Sets {AxisNames[(int)axis]} exactly to the target's center."));
+            }
+        }
 
         return actions;
     }
@@ -161,13 +187,18 @@ public sealed class KitchenEngine : MinigameEngineBase<KitchenState>
                 return Stir(state, info);
             case KitchenActionIds.Cover:
                 return Cover(state, info);
+            case KitchenActionIds.Reduce:
+                return Reduce(state, info);
         }
 
         if (KitchenActionIds.TryGetPantryAxis(actionId, out var axis))
         {
-            var push = FlavorVector.Zero.With(axis, KitchenTuning.PantryPush);
+            var push = FlavorVector.Zero.With(axis, _stats.PantryPush);
             return AddFlavor(state, info, push, null);
         }
+
+        if (KitchenActionIds.TryGetSignatureAxis(actionId, out var signatureAxis))
+            return Signature(state, info, signatureAxis);
 
         // Every other id was found in the action list, so it is an ingredient line.
         KitchenActionIds.TryParseIngredient(actionId, out var line);
@@ -187,8 +218,7 @@ public sealed class KitchenEngine : MinigameEngineBase<KitchenState>
         if (state.Heat == KitchenHeat.High)
             return MinigameActionRule<KitchenState>.Disabled(info, 0, 0, "Turn the heat down to Medium or Low to simmer.");
 
-        var amount = state.Heat == KitchenHeat.Low ? KitchenTuning.SimmerLowDoneness : KitchenTuning.SimmerMediumDoneness;
-        var doneness = _stats.Doneness(amount, _recipe.Level);
+        var doneness = _stats.Doneness(_stats.SimmerBase(state.Heat), _recipe.Level);
         return Single(info, 0, 0, "Simmered", s => s.Adjust(new MinigameMeterDelta(Progress: doneness)));
     }
 
@@ -202,15 +232,17 @@ public sealed class KitchenEngine : MinigameEngineBase<KitchenState>
         return Single(info, 0, cost, "Seared", s => s.Adjust(new MinigameMeterDelta(Progress: doneness)));
     }
 
-    private static MinigameActionRule<KitchenState> Stir(KitchenState state, MinigameActionInfo info)
+    private MinigameActionRule<KitchenState> Stir(KitchenState state, MinigameActionInfo info)
     {
-        if (state.EffectiveNextDrift.IsZero)
+        var cost = _stats.StirCp;
+        if (EffectiveDrift(state).IsZero)
         {
             var reason = state.Heat == KitchenHeat.Low ? "Low heat holds the flavor steady." : "Nothing is drifting.";
-            return MinigameActionRule<KitchenState>.Disabled(info, KitchenTuning.StirCp, 0, reason);
+            return MinigameActionRule<KitchenState>.Disabled(info, cost, 0, reason);
         }
 
-        return Single(info, KitchenTuning.StirCp, 0, "Stirred", s => s with { NextDrift = FlavorVector.Zero });
+        var doneness = _stats.StirBase(state.Heat) > 0 ? _stats.Doneness(_stats.StirBase(state.Heat), _recipe.Level) : 0;
+        return Single(info, cost, 0, "Stirred", s => (s with { NextDrift = FlavorVector.Zero }).Adjust(new MinigameMeterDelta(Progress: doneness)));
     }
 
     private static MinigameActionRule<KitchenState> Cover(KitchenState state, MinigameActionInfo info)
@@ -221,6 +253,41 @@ public sealed class KitchenEngine : MinigameEngineBase<KitchenState>
         return Single(info, KitchenTuning.CoverCp, 0, "Covered", s => s with { CoverTurns = KitchenTuning.CoverTurns });
     }
 
+    /// <summary>The flavor after a Reduce: every flavor moved toward the target's center by the perk's share of its distance.</summary>
+    private FlavorVector Reduced(FlavorVector profile)
+    {
+        var center = _recipe.Target.Center;
+        int Move(KitchenAxis axis)
+        {
+            var from = profile.Get(axis);
+            var delta = (center.Get(axis) - from) * _stats.Perks.ReducePercent / 100.0;
+            return from + (int)Math.Round(delta, MidpointRounding.AwayFromZero);
+        }
+
+        return new FlavorVector(Move(KitchenAxis.Savory), Move(KitchenAxis.Sweet), Move(KitchenAxis.Spice));
+    }
+
+    private MinigameActionRule<KitchenState> Reduce(KitchenState state, MinigameActionInfo info)
+    {
+        var cost = _stats.ReduceCp;
+        if (Reduced(state.Profile) == state.Profile)
+            return MinigameActionRule<KitchenState>.Disabled(info, cost, 0, "The flavor is already as close to the center as Reduce can bring it.");
+
+        return Single(info, cost, 0, "Reduced", s => s.WithProfile(Reduced(s.Profile)));
+    }
+
+    private MinigameActionRule<KitchenState> Signature(KitchenState state, MinigameActionInfo info, KitchenAxis axis)
+    {
+        if (state.SignatureUsed)
+            return MinigameActionRule<KitchenState>.Disabled(info, 0, 0, "Signature Dish was already used on this dish.");
+
+        var center = _recipe.Target.Center.Get(axis);
+        if (state.Profile.Get(axis) == center)
+            return MinigameActionRule<KitchenState>.Disabled(info, 0, 0, $"{AxisNames[(int)axis]} is already on the target's center.");
+
+        return Single(info, 0, 0, "Signature", s => (s.WithProfile(s.Profile.With(axis, center)) with { SignatureUsed = true }));
+    }
+
     private MinigameActionRule<KitchenState> AddIngredient(KitchenState state, MinigameActionInfo info, int line)
     {
         var ingredient = _recipe.Lines[line];
@@ -229,15 +296,16 @@ public sealed class KitchenEngine : MinigameEngineBase<KitchenState>
 
         // The portions added so far decide which share of the stack this one carries.
         var portion = ingredient.Portions - state.Stock.Remaining(line);
+        var seasoned = _stats.Perks.SeasonedPalateOn;
         if (ingredient.Kind == KitchenIngredientKind.Dilute)
         {
-            var percent = IsPeakAroma(state)
-                ? Math.Min(100, ingredient.DilutePercentAt(portion) * KitchenTuning.PeakAromaMultiplier)
-                : ingredient.DilutePercentAt(portion);
+            var listed = seasoned ? HalfOf(ingredient.DilutePercentAt(portion)) : ingredient.DilutePercentAt(portion);
+            var percent = IsPeakAroma(state) ? Math.Min(100, listed * KitchenTuning.PeakAromaMultiplier) : listed;
             return Single(info, 0, 0, "Diluted", s => s.WithProfile(s.Profile.Scaled(100 - percent)).UsePortion(line));
         }
 
-        return AddFlavor(state, info, ingredient.PortionVectorAt(portion), line);
+        var push = ingredient.PortionVectorAt(portion);
+        return AddFlavor(state, info, seasoned ? push.Scaled(50) : push, line);
     }
 
     /// <summary>
@@ -283,6 +351,12 @@ public sealed class KitchenEngine : MinigameEngineBase<KitchenState>
 
     private static int Halve(int amount) => (amount + 1) / 2;
 
+    /// <summary>Half of a push's percentage, rounded half away from zero, as Seasoned Palate halves an Add.</summary>
+    private static int HalfOf(int percent) => (int)Math.Round(percent / 2.0, MidpointRounding.AwayFromZero);
+
+    /// <summary>The drift that will move the flavor at the end of the turn in the given state, after the heat and the cook's perks weaken it.</summary>
+    private FlavorVector EffectiveDrift(KitchenState state) => _stats.Drift(state.NextDrift, state.Heat);
+
     protected override KitchenState EndTurn(KitchenState state)
     {
         var decay = state.CoverTurns > 0
@@ -290,7 +364,7 @@ public sealed class KitchenEngine : MinigameEngineBase<KitchenState>
             : KitchenTuning.FreshnessDecayPerTurn;
 
         var next = state.Adjust(new MinigameMeterDelta(Integrity: -decay));
-        next = next.WithProfile(next.Profile + next.EffectiveNextDrift);
+        next = next.WithProfile(next.Profile + EffectiveDrift(next));
 
         // The lid ages, the announced drift has now happened (or was stirred away), and Peak Aroma has been used or has passed.
         return next with
@@ -308,7 +382,7 @@ public sealed class KitchenEngine : MinigameEngineBase<KitchenState>
         var drift = FlavorVector.Zero.With(axis, direction * KitchenTuning.DriftStrength);
 
         MinigameOpportunity opportunity = null;
-        if (random.D100() <= KitchenTuning.PeakAromaChancePercent)
+        if (random.D100() <= _stats.PeakAromaChancePercent)
         {
             opportunity = new MinigameOpportunity(
                 KitchenTuning.PeakAromaId,

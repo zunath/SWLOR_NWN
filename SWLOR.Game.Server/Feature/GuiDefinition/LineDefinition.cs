@@ -54,7 +54,16 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition
             "fish go, and the rest of the XP with it.\n\n" +
             "YOUR GEAR\n" +
             "Your rod and your Agriculture rank set how much Tension the line takes and how far one Reel pulls the fish. A fish " +
-            "above your rank is stronger and rests less, so it is harder to land.";
+            "above your rank is stronger and rests less, so it is harder to land.\n\n" +
+            "ANGLER PERKS\n" +
+            "Angler perks change the fight and never Quick Reel. Strong Line raises how much Tension the line takes, Hard Set makes " +
+            "Set Hook drain more Stamina, and Fish Sense shows the fish's next two moves on the first turns of a fight. Against a rare " +
+            "fish these work at half strength, rounded down, and Fish Sense not at all. Trophy Catch is the only perk that works on a " +
+            "rare fish at full strength.\n\n" +
+            "PATIENT ANGLER\n" +
+            "Give Line lets out one less Distance, so a fish you give line to stays close. Against a rare fish it does nothing.\n\n" +
+            "AGGRESSIVE ANGLER\n" +
+            "Each Reel pulls the fish in one more Distance, so you land it in fewer turns. Against a rare fish it does nothing.";
 
         private readonly GuiWindowBuilder<LineViewModel> _builder = new();
 

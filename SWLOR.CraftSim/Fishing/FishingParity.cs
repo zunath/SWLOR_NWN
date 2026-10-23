@@ -83,7 +83,8 @@ namespace SWLOR.CraftSim.Fishing
                          {
                              key.FishLevel, (int)key.Rarity, key.Rank, key.RodTier, (int)key.Player, effects.TensionCapBonus,
                              effects.ReelDistanceBonus, effects.ReelTensionBonus, effects.GiveLineDistanceReduction,
-                             effects.SetHookDrainBonus, effects.HoldDrainBonus, effects.ForecastDepth, effects.RareFishRungReduction
+                             effects.SetHookDrainBonus, effects.HoldDrainBonus, effects.ForecastDepth + (effects.ForecastDepth > 1 ? 16 * effects.ForecastTurns : 0),
+                             effects.RareFishRungReduction
                          })
                 {
                     for (var shift = 0; shift < 32; shift += 8)

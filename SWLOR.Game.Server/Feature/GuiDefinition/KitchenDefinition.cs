@@ -30,6 +30,12 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition
             "it for CP, and Cover halves Freshness loss for 3 turns for CP.\n\n" +
             "PEAK AROMA\n" +
             "Now and then Peak Aroma is announced for the next turn: your next Add is twice as strong.\n\n" +
+            "CHEF PERKS\n" +
+            "A Chef's perks change the numbers above and the setup list shows each one. Slow Cooking and Flash Cooking are the two " +
+            "styles, and you can own only one: Slow Cooking doubles the Doneness of a Low heat Simmer and weakens the drift at " +
+            "Medium heat, and Flash Cooking weakens the drift at High heat. Seasoned Palate is a switch in the " +
+            "setup view: while it is on, every Add of a committed ingredient pushes half as far. Reduce pulls the flavor toward the " +
+            "target's center for CP, and Signature Dish sets one flavor exactly onto the center, once per dish.\n\n" +
             "ENHANCEMENTS AND FAILURE\n" +
             "Each enhancement slot shows the quality that guarantees its transfer. Before you start, the window shows what a " +
             "ruined dish costs. Closing the window ruins the dish too. Craftsmanship makes cooking faster, and Control narrows " +
@@ -42,6 +48,8 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition
         private const float NoteHeight = 44f;
         private const float ButtonWidth = 190f;
         private const float EnhancementButtonWidth = 90f;
+        private const float PalateRowHeight = 40f;
+        private const float PalateButtonWidth = 70f;
         private const float AxisNameWidth = 70f;
         private const float AxisBarWidth = 130f;
         private const float StartButtonWidth = 220f;
@@ -110,7 +118,33 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition
                                 })
                                     .BindRowCount(model => model.RecipeDescription)
                                     .SetRowHeight(22f)
-                                    .SetHeight(230f);
+                                    .SetHeight(200f);
+                            });
+
+                            content.AddRow(r =>
+                            {
+                                r.AddList(template =>
+                                {
+                                    template.AddCell(cell =>
+                                    {
+                                        cell.AddText()
+                                            .BindText(model => model.PalateLabels)
+                                            .SetShowBorder(false)
+                                            .SetScrollbars(NuiScrollbars.None);
+                                    });
+                                    template.AddCell(cell =>
+                                    {
+                                        cell.SetIsVariable(false);
+                                        cell.SetWidth(PalateButtonWidth);
+                                        cell.AddButton()
+                                            .BindText(model => model.PalateButtons)
+                                            .SetWidth(PalateButtonWidth)
+                                            .BindOnClicked(model => model.OnClickPalate());
+                                    });
+                                })
+                                    .BindRowCount(model => model.PalateLabels)
+                                    .SetRowHeight(PalateRowHeight)
+                                    .SetHeight(PalateRowHeight + 4f);
                             });
 
                             AddLabel(content, null, "Enhancements (optional)");

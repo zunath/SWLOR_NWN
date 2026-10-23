@@ -7,6 +7,7 @@ using SWLOR.Game.Server.Service.CraftService.Minigame;
 using SWLOR.Game.Server.Service.CraftService.Minigame.Prospecting;
 using SWLOR.Game.Server.Service.GuiService;
 using SWLOR.Game.Server.Service.GuiService.Component;
+using SWLOR.Game.Server.Service.ProspectingService;
 
 namespace SWLOR.Game.Server.Feature.GuiDefinition
 {
@@ -40,7 +41,7 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition
             "ENDING\n" +
             "Taking the last unit spends the node, and any seam still in it goes with it, so open the seams before you take the last " +
             "units. Everything you gathered is kept however the session ends. Closing this window, moving away, resting, entering combat " +
-            "or dying also ends it.\n\n" +
+            "or dying also ends it, and so does leaving the window untouched for " + (int)ProspectingLifecycle.IdleSeconds + " seconds.\n\n" +
             "QUICK HARVEST\n" +
             "Quick Harvest takes everything the node has left with no seams, one unit and one charge every " +
             Number(ProspectingRules.HarvestSeconds) + " seconds, the way harvesting always worked. It is offered only before you begin " +

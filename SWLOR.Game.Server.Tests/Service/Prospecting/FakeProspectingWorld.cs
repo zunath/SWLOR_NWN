@@ -110,6 +110,9 @@ internal sealed class FakeProspectingWorld : IProspectingWorld
     public ProspectingPlayerState GetPlayerState(uint player, uint harvester) =>
         new(IsValid, IsDead, IsInCombat, Position, WindowOpen, HasHarvester, OwnsActivity);
 
+    /// <summary>The clock the idle limit reads; a test moves it forward.</summary>
+    public DateTime UtcNow { get; set; } = new(2026, 10, 22, 12, 0, 0, DateTimeKind.Utc);
+
     public void Schedule(float seconds, Action action)
     {
         ScheduledSeconds.Add(seconds);

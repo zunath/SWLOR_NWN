@@ -59,6 +59,9 @@ namespace SWLOR.Game.Server.Service.ProspectingService
         /// <summary>The items handed to the player so far, to tell what an action added.</summary>
         public HarvestDelivery Delivered { get; internal set; }
 
+        /// <summary>When the player last acted, or began: a session left untouched for too long is let go.</summary>
+        public DateTime LastActivityAt { get; internal set; }
+
         /// <summary>The XP the session has paid so far.</summary>
         public int XpPaid { get; internal set; }
 

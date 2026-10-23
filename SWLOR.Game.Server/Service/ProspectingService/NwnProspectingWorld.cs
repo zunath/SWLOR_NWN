@@ -154,6 +154,8 @@ namespace SWLOR.Game.Server.Service.ProspectingService
                 Activity.GetBusyType(player) == ActivityStatusType.Prospecting);
         }
 
+        public DateTime UtcNow => DateTime.UtcNow;
+
         public void Schedule(float seconds, Action action)
         {
             AssignCommand(GetModule(), () => DelayCommand(seconds, action));

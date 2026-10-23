@@ -581,6 +581,59 @@ public class ProspectingLifecycleTests
         _world.ScheduledCount.Should().Be(0, "a session that is over stops checking");
     }
 
+    // Idle windows.
+
+    [Test]
+    public void AWindowLeftOpenWithoutAnActionLetsGoOfTheNode_SoNobodyIsLockedOutByAnAwayPlayer()
+    {
+        var lifecycle = Lifecycle();
+        var session = Open(lifecycle, Node(4, "r"));
+        _world.UtcNow += TimeSpan.FromSeconds(ProspectingLifecycle.IdleSeconds - 1);
+
+        lifecycle.IsInUseByAnother(NodeId, OtherPlayer).Should().BeTrue("the window was touched less than the limit ago");
+        _world.UtcNow += TimeSpan.FromSeconds(2);
+
+        lifecycle.IsInUseByAnother(NodeId, OtherPlayer).Should().BeFalse();
+        session.Abandoned.Should().Be(ProspectingEnd.Idle);
+        _world.Messages.Should().Contain(message => message.Contains("idle"));
+        lifecycle.Begin(Request(OtherPlayer, OtherHarvester)).Opened.Should().BeTrue();
+    }
+
+    [Test]
+    public void AnActionStartsTheIdleClockAgain()
+    {
+        var lifecycle = Lifecycle(StrikeOneUnit);
+        var session = Open(lifecycle, Node(4, "r"));
+        _world.UtcNow += TimeSpan.FromSeconds(ProspectingLifecycle.IdleSeconds - 5);
+        Do(lifecycle, session, ProspectingActionIds.Strike);
+
+        _world.UtcNow += TimeSpan.FromSeconds(ProspectingLifecycle.IdleSeconds - 5);
+
+        lifecycle.Revalidate(session).Should().BeTrue();
+        _world.UtcNow += TimeSpan.FromSeconds(10);
+        lifecycle.Revalidate(session).Should().BeFalse();
+        session.Abandoned.Should().Be(ProspectingEnd.Idle);
+    }
+
+    [Test]
+    public void AnActionInProgressAndAQuickHarvestAreNeverIdle()
+    {
+        var lifecycle = Lifecycle(StrikeOneUnit);
+        var working = Open(lifecycle, Node(4, "r"));
+        lifecycle.StartAction(working, ProspectingActionIds.Strike, _ => { });
+        _world.UtcNow += TimeSpan.FromSeconds(ProspectingLifecycle.IdleSeconds * 2);
+
+        lifecycle.Revalidate(working).Should().BeTrue("an action is taking its seconds");
+        lifecycle.Abandon(working, ProspectingEnd.WindowClosed);
+
+        _world.SaveNode(44, Node(4, "").Serialize());
+        var quick = lifecycle.Begin(Request(node: 44)).Session;
+        lifecycle.StartQuickHarvest(quick, _ => { });
+        _world.UtcNow += TimeSpan.FromSeconds(ProspectingLifecycle.IdleSeconds * 2);
+
+        lifecycle.Revalidate(quick).Should().BeTrue("a Quick Harvest takes as long as it takes");
+    }
+
     // Quick Harvest.
 
     [Test]

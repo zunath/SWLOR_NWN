@@ -28,6 +28,9 @@ namespace SWLOR.Game.Server.Service.ProspectingService
         Interrupted = 8,
 
         /// <summary>The node was removed from the world while it was being worked.</summary>
-        NodeGone = 9
+        NodeGone = 9,
+
+        /// <summary>The player let the window sit without acting, which would hold the node for everyone else.</summary>
+        Idle = 10
     }
 }

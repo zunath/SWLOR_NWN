@@ -30,6 +30,12 @@ namespace SWLOR.Game.Server.Service.ProspectingService
         /// <summary>How often a session in progress checks that the player is still there and still.</summary>
         public const float CheckSeconds = 1.0f;
 
+        /// <summary>
+        /// How long a window may sit without an action before the session is let go. Only one player works a node at a time, so a window
+        /// left open on a node would hold it for everyone else.
+        /// </summary>
+        public const double IdleSeconds = 120.0;
+
         private readonly IProspectingWorld _world;
         private readonly IMinigameRandom _random;
         private readonly Dictionary<uint, ProspectingSession> _byPlayer = new();
@@ -105,6 +111,7 @@ namespace SWLOR.Game.Server.Service.ProspectingService
 
             var setup = ProspectingSetup.ForNode(node, charges, request.Rank, request.NodeTier);
             var session = new ProspectingSession(Guid.NewGuid().ToString(), request, new ProspectingEngine(_random, setup), charges);
+            session.LastActivityAt = _world.UtcNow;
             _byPlayer[request.Player] = session;
             _byNode[request.Node] = session;
             _world.BeginSession(request.Player);
@@ -161,6 +168,7 @@ namespace SWLOR.Game.Server.Service.ProspectingService
             }
 
             session.Working = actionId;
+            session.LastActivityAt = _world.UtcNow;
             _world.PlayWork(session.Player, (float)seconds);
             _world.Schedule((float)seconds, () => Complete(session, actionId, onResolved));
             return ProspectingActionStart.Ok;
@@ -195,6 +203,7 @@ namespace SWLOR.Game.Server.Service.ProspectingService
 
             session.QuickHarvesting = true;
             session.QuickHarvestTotal = units;
+            session.LastActivityAt = _world.UtcNow;
             QuickHarvestStep(session, node, onProgress);
             return ProspectingActionStart.Ok;
         }
@@ -253,6 +262,8 @@ namespace SWLOR.Game.Server.Service.ProspectingService
                 end = ProspectingEnd.Moved;
             else if (!state.HasWindowOpen)
                 end = ProspectingEnd.WindowClosed;
+            else if (session.Working == null && !session.QuickHarvesting && (_world.UtcNow - session.LastActivityAt).TotalSeconds > IdleSeconds)
+                end = ProspectingEnd.Idle;
 
             if (!end.HasValue)
                 return true;
@@ -283,6 +294,7 @@ namespace SWLOR.Game.Server.Service.ProspectingService
 
         private void Resolve(ProspectingSession session, string actionId, Action<ProspectingActionReport> onResolved)
         {
+            session.LastActivityAt = _world.UtcNow;
             var engine = session.Engine;
             var revealedBefore = engine.RevealedSeams.Count;
             var result = engine.Perform(actionId);
@@ -443,6 +455,7 @@ namespace SWLOR.Game.Server.Service.ProspectingService
             ProspectingEnd.HarvesterLost => "You no longer have your harvester and stopped harvesting.",
             ProspectingEnd.Interrupted => "You stopped harvesting.",
             ProspectingEnd.NodeGone => "The node is gone.",
+            ProspectingEnd.Idle => "You stop harvesting after standing idle.",
             ProspectingEnd.Died => null,
             ProspectingEnd.Replaced => null,
             ProspectingEnd.WindowClosed => null,

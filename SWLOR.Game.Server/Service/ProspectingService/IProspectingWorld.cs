@@ -58,6 +58,9 @@ namespace SWLOR.Game.Server.Service.ProspectingService
 
         ProspectingPlayerState GetPlayerState(uint player, uint harvester);
 
+        /// <summary>The current time, which tells how long a session has sat idle.</summary>
+        DateTime UtcNow { get; }
+
         /// <summary>Runs <paramref name="action"/> after the given seconds, whether or not the player is still in the game.</summary>
         void Schedule(float seconds, Action action);
     }

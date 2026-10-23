@@ -1,4 +1,5 @@
 using System.Collections.Generic;
+using System.Linq;
 
 namespace SWLOR.Game.Server.Service.CraftService.Minigame.Prospecting;
 
@@ -52,7 +53,7 @@ public static class ProspectingRules
     public const int ExtractStability = 24;
     public const double ExtractSeconds = 3.0;
 
-    /// <summary>The chance, in percent, that a Heavy Strike shatters one gem pocket that has not been surveyed. Keep it a multiple of 20, so every outcome of a Heavy Strike stays a whole percentage (the engine refuses otherwise).</summary>
+    /// <summary>The chance, in percent, that a Heavy Strike shatters one gem pocket that has not been surveyed.</summary>
     public const int ShatterPercent = 20;
 
     /// <summary>The chance, in percent, that a claimed rich seam gives an extra ore roll beyond its own unit. This is the one place a session yields more than the pool.</summary>
@@ -99,6 +100,54 @@ public static class ProspectingRules
     {
         var shift = HeavyStrikeYieldShiftPercent * ClampTier(yieldTier);
         return new[] { (2, 25 - shift), (3, 50), (4, 25 + shift) };
+    }
+
+    /// <summary>
+    /// Turns the weights of an action's outcomes into whole percentages that add up to 100: each share is rounded down, the points left
+    /// over go to the outcomes with the largest remainders, and an outcome with any weight keeps at least 1 percent. Outcomes of equal
+    /// weight are served in order, so the result is the same on every machine.
+    /// </summary>
+    public static IReadOnlyList<int> WholePercentages(IReadOnlyList<long> weights)
+    {
+        var total = 0L;
+        foreach (var weight in weights)
+            total += Math.Max(0, weight);
+
+        if (total <= 0)
+            throw new ArgumentException("An action's outcomes need some weight.", nameof(weights));
+
+        var percentages = new int[weights.Count];
+        var remainders = new long[weights.Count];
+        var assigned = 0;
+        for (var index = 0; index < weights.Count; index++)
+        {
+            var scaled = Math.Max(0, weights[index]) * 100;
+            percentages[index] = (int)(scaled / total);
+            remainders[index] = scaled % total;
+            assigned += percentages[index];
+        }
+
+        var order = Enumerable.Range(0, weights.Count).OrderByDescending(index => remainders[index]).ThenBy(index => index).ToList();
+        for (var left = 100 - assigned; left > 0; left--)
+            percentages[order[(100 - assigned - left) % order.Count]]++;
+
+        for (var index = 0; index < weights.Count; index++)
+        {
+            if (weights[index] <= 0 || percentages[index] > 0)
+                continue;
+
+            var largest = 0;
+            for (var other = 1; other < percentages.Length; other++)
+            {
+                if (percentages[other] > percentages[largest])
+                    largest = other;
+            }
+
+            percentages[largest]--;
+            percentages[index] = 1;
+        }
+
+        return percentages;
     }
 
     /// <summary>The expected units of a Strike or a Heavy Strike, before the pool caps it.</summary>

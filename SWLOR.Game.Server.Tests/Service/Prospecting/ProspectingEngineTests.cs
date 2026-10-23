@@ -634,6 +634,31 @@ public class ProspectingEngineTests
     }
 
     [Test]
+    public void WholePercentagesAddUpToOneHundred_GivingTheLeftoverPointsToTheLargestRemainders()
+    {
+        ProspectingRules.WholePercentages(new long[] { 2000, 500, 4000, 1000, 2000, 500 }).Should().Equal(20, 5, 40, 10, 20, 5);
+        ProspectingRules.WholePercentages(new long[] { 1, 1, 1 }).Should().Equal(34, 33, 33);
+        ProspectingRules.WholePercentages(new long[] { 2125, 7875 }).Should().Equal(21, 79);
+        ProspectingRules.WholePercentages(new long[] { 1, 9999 }).Should().Equal(1, 99);
+        ProspectingRules.WholePercentages(new long[] { 0, 5000, 5000 }).Should().Equal(0, 50, 50);
+
+        var act = () => ProspectingRules.WholePercentages(new long[] { 0, 0 });
+        act.Should().Throw<ArgumentException>();
+
+        for (var seed = 1; seed <= 200; seed++)
+        {
+            var random = new Random(seed);
+            var weights = Enumerable.Range(0, random.Next(1, 8)).Select(_ => (long)random.Next(0, 10_000)).ToArray();
+            if (weights.All(weight => weight == 0))
+                continue;
+
+            var percentages = ProspectingRules.WholePercentages(weights);
+            percentages.Sum().Should().Be(100, string.Join(",", weights));
+            percentages.Zip(weights).Should().OnlyContain(pair => pair.Second > 0 ? pair.First >= 1 : pair.First == 0);
+        }
+    }
+
+    [Test]
     public void AYieldTableAddsUpToOneHundredAtEveryTier()
     {
         for (var tier = 0; tier <= CraftRankMilestones.MaxProspectingYieldTier; tier++)
@@ -642,9 +667,6 @@ public class ProspectingEngineTests
             ProspectingRules.HeavyStrikeYield(tier).Sum(entry => entry.Chance).Should().Be(100, $"Heavy Strike at tier {tier}");
             ProspectingRules.StrikeYield(tier).Should().OnlyContain(entry => entry.Chance > 0);
             ProspectingRules.HeavyStrikeYield(tier).Should().OnlyContain(entry => entry.Chance > 0);
-            (ProspectingRules.HeavyStrikeYield(tier).Select(e => e.Chance * (100 - ProspectingRules.ShatterPercent) % 100)
-                .Concat(ProspectingRules.HeavyStrikeYield(tier).Select(e => e.Chance * ProspectingRules.ShatterPercent % 100)))
-                .Should().OnlyContain(remainder => remainder == 0, "a Heavy Strike's outcomes must be whole percentages");
         }
 
         ProspectingRules.ExpectedUnits(ProspectingRules.StrikeYield(0)).Should().BeApproximately(1.3, 1e-9);

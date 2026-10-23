@@ -52,6 +52,20 @@ Rough size of each effect on a node of 2.5 units (arithmetic on the report's num
 
 The whole line below the capstone lifts the careful player's items by about 6 points (Rich Veins II) and speeds mining; with Mother Lode the unperked +9% becomes about +30% over today's items per node, for the 4 SP capstone. No perk changes Quick Harvest.
 
+## Magnitudes for the Treasure Seeker line's Prospecting rows
+
+The Treasure Seeker draft (`gathering-treasure-seeker-perk-line-draft.md`, the Search workstream) names five rows that act on the Prospecting engine and leaves their numbers to this file. Starting values against the engine above:
+
+| Treasure Seeker row | Magnitude for Prospecting | Why this size |
+| --- | --- | --- |
+| Sharp Chisel I / II (`TreasureSeekerPocketShatter`) | A Heavy Strike's chance to shatter an unsurveyed gem pocket is 5 points lower at rank 10 (20% becomes 15%) and 10 points lower in total at rank 30 (10%) | The shatter chance is 20% and is shown on the button. Outcome percentages are rounded to whole numbers (`ProspectingRules.WholePercentages`), so any chance works |
+| Deep Scan (`TreasureSeekerSurveySeams`) | A Survey reveals 1 more seam than the rank milestone allows, never more than the 3 a node can hold | The rank milestone already reveals 2 seams from Gathering 25 and 3 from 50, so Deep Scan is worth a seam at ranks 5-24, one at ranks 25-49 and nothing at 50. The Treasure Seeker draft's "reveals 2 instead of 1" is overtaken by that milestone |
+| Careful Hands, Prospecting half (style) | A Strike's chance of taking 2 units falls 15 points (30% becomes 15%), and extracting a rich seam gives a gem in place of its ore 10% of the time | Fewer units per Strike means more Strikes and a slower session with the same items; the gem chance moves value into gems without adding items. Neither adds items, so the style costs speed for gems |
+| Rich Pockets (`TreasureSeekerPocketChance`) | Extracting a rich seam gives a gem in place of its ore 10% of the time (the seam's other results scale to fit) | A gem pocket is chosen when a node is first worked, by nobody's perk, so the perk acts when the seam is opened, where the preview can show it. A rich seam is about 0.8 of the careful player's claims a node, so +10 points is about +0.08 gems a node |
+| Jackpot (`TreasureSeekerJackpot`) | The first Extract on each node has a 25% chance of adding a bonus gem from the node's gem entries, outside the pool | A bonus gem on every node would be about +0.9 items a node (+36%) and 30 times today's emeralds at tier 5. At 25% it is about +0.22 items, and the chance is shown in the Extract preview |
+
+Both Prospecting rows that add gems (Careful Hands and Rich Pockets) and Jackpot raise the gem supply, which the report already shows rising from 1.4x to 8.8x of today's with no perks. The owner decides how far that may go.
+
 ## Open questions
 
 1. **Whole-line yield.** The plan caps the unperked skilled session at +15% (`HarvestingYieldGate`), and the line adds about 21 points more at rank 50 (Rich Veins II about 6, Mother Lode about 15). Perks are optional, and the plan lets them change "how, and how efficiently", so the draft treats a volume line as the place where yield may rise. If the owner wants the whole line inside the cap, Mother Lode is the one to shrink (for example to a 50% chance of its extra roll) or drop.

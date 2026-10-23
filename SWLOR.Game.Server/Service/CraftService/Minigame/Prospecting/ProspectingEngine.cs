@@ -266,20 +266,19 @@ public sealed class ProspectingEngine : MinigameEngineBase<ProspectingState>
             AddChance(chances, (taken, true), chance * ProspectingRules.ShatterPercent);
         }
 
-        return chances
-            .Select(pair =>
+        // The weights are out of 10000; whole percentages keep the preview readable whatever the shatter chance is.
+        var keys = chances.Keys.ToList();
+        var percentages = ProspectingRules.WholePercentages(keys.Select(key => (long)chances[key]).ToList());
+        return keys
+            .Select((key, index) =>
             {
-                if (pair.Value % 100 != 0)
-                    throw new InvalidOperationException("A Heavy Strike's yield and shatter chances must give whole percentages.");
-
-                var taken = pair.Key.Units;
-                var shatters = pair.Key.Shatters;
+                var taken = key.Units;
+                var shatters = key.Shatters;
                 return new MinigameOutcomeRule<ProspectingState>(
                     shatters ? TakesLabel(taken) + " and shatters a gem pocket if one is hidden" : TakesLabel(taken),
-                    pair.Value / 100,
+                    percentages[index],
                     s => shatters ? Shatter(TakeUnits(s, taken)) : TakeUnits(s, taken));
             })
-            .Where(outcome => outcome.ChancePercent > 0)
             .ToList();
     }
 

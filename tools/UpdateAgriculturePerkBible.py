@@ -83,13 +83,14 @@ def parse_line(path: Path) -> list[dict]:
 
 
 def bible_type(purchase: dict) -> str:
-    """Style for the two rank-20 choices, Capstone at rank 50, Toggle for a per-dish switch, Trait otherwise."""
+    """
+    Style for the two rank-20 choices, Capstone at rank 50, Active for an action a perk adds to a craft window, Trait otherwise. A
+    per-dish switch (Seasoned Palate) is a Trait too: the Toggle type is a combat toggle that needs an animation plan row.
+    """
     if purchase["excludes"]:
         return "Style"
     if purchase["rank"] == 50:
         return "Capstone"
-    if purchase["perk"] in TOGGLE_PERKS and purchase["level"] == 1:
-        return "Toggle"
     if purchase["perk"] in ACTION_PERKS:
         return "Active"
     return "Trait"

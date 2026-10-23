@@ -9,27 +9,6 @@ using static SWLOR.CraftSim.Report.MarkdownTable;
 
 namespace SWLOR.CraftSim.Scenario.Kitchen
 {
-    /// <summary>What the Chef study plays and how.</summary>
-    public sealed class KitchenChefStudyOptions
-    {
-        /// <summary>Attempts per recipe, rank, gear tier and build.</summary>
-        public int Runs { get; init; } = 40;
-
-        public int Seed { get; init; } = 1;
-
-        /// <summary>The recipes sampled from each at-level band.</summary>
-        public int RecipesPerBand { get; init; } = 6;
-
-        /// <summary>Plays only the styles' magnitudes table (the quick way to try a retune).</summary>
-        public bool StylesOnly { get; init; }
-
-        /// <summary>Plays the styles' magnitudes at mid gear only, which is quicker still.</summary>
-        public bool MidGearOnly { get; init; }
-
-        /// <summary>The style magnitudes to try; null tries the numbers the perk definitions give.</summary>
-        public IReadOnlyList<KitchenChefStudy.StyleCandidate> Candidates { get; init; }
-    }
-
     /// <summary>
     /// The Chef line's own evidence, beside the generic gates: what each purchase does to the adaptive player's actions, CP and quality at
     /// rank 50, the two styles compared on quality and on actions, what the whole line does at every rank, and the styles' magnitudes tried
@@ -207,7 +186,7 @@ namespace SWLOR.CraftSim.Scenario.Kitchen
         /// <summary>The styles the perk definitions give, then the alternatives the retune tries.</summary>
         public static IReadOnlyList<StyleCandidate> StyleCandidates { get; } = new[]
         {
-            Candidate(100, 25, 20),
+            Candidate(80, 25, 15),
         };
 
         public static StyleCandidate Candidate(int slowLow, int slowMedium, int flashHigh) =>

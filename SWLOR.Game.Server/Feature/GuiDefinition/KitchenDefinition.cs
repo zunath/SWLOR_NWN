@@ -32,7 +32,7 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition
             "Now and then Peak Aroma is announced for the next turn: your next Add is twice as strong.\n\n" +
             "CHEF PERKS\n" +
             "A Chef's perks change the numbers above and the setup list shows each one. Slow Cooking and Flash Cooking are the two " +
-            "styles, and you can own only one: Slow Cooking doubles the Doneness of a Low heat Simmer and weakens the drift at " +
+            "styles, and you can own only one: Slow Cooking gives a Low heat Simmer 80% more Doneness and weakens the drift at " +
             "Medium heat, and Flash Cooking weakens the drift at High heat. Seasoned Palate is a switch in the " +
             "setup view: while it is on, every Add of a committed ingredient pushes half as far. Reduce pulls the flavor toward the " +
             "target's center for CP, and Signature Dish sets one flavor exactly onto the center, once per dish.\n\n" +

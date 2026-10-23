@@ -230,11 +230,11 @@ public class AgriculturePerkLineTests
 
         KitchenPerkStats.FromStatTotals(Totals(line, 25, PerkType.FlashCooking), seasonedPalateOn: true).Should().Be(new KitchenPerkStats(
             PantryPushBonus: 1, PushSpreadReduction: 5, SeasonedPalateOwned: true, SeasonedPalateOn: true,
-            LowHeatDonenessPercent: 100, MediumDriftReductionPercent: 25, ReducePercent: 20));
+            LowHeatDonenessPercent: 80, MediumDriftReductionPercent: 25, ReducePercent: 20));
 
         KitchenPerkStats.FromStatTotals(Totals(line, 50, PerkType.SlowCooking), seasonedPalateOn: true).Should().Be(new KitchenPerkStats(
             PantryPushBonus: 1, PushSpreadReduction: 5, SeasonedPalateOwned: true, SeasonedPalateOn: true, SeasonedPalateSpreadPercent: 25,
-            HighDriftReductionPercent: 20, ReducePercent: 35, ReduceCpReduction: 3,
+            HighDriftReductionPercent: 15, ReducePercent: 35, ReduceCpReduction: 3,
             PeakAromaChancePoints: 10, StirCpReduction: 4, StirDonenessPercent: 50, SignatureDish: true));
     }
 

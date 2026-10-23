@@ -79,7 +79,7 @@ public static class LineRules
 
     // Fish Sense. The angler who has it sees the fish's next two moves, but only on the first turns of a fight (the perk sets how many,
     // LineAnglerEffects.ForecastTurns): after that the window shows one move, as for everyone. The full forecast was the largest single
-    // purchase of the Angler line, so the owner limited it. FishSenseTurns is the first purchase's turns, the default of an angler who
+    // purchase of the Angler line, so it is limited. FishSenseTurns is the first purchase's turns, the default of an angler who
     // sees two moves ahead.
     public const int FishSenseTurns = 1;
 

@@ -13,7 +13,7 @@ namespace SWLOR.CraftSim.Fishing
     /// to the bound at each rank and over the real pools. The Angler line may lift the fight further, to the owner's target of about
     /// <see cref="FishingParityOptions.PerkedTargetPercent"/>% of the fish at the angler's own level (both styles, at rank 50 where the line is
     /// complete), and the special rare fish, which take the fight perks at half strength and Trophy Catch at full strength, stay within the
-    /// bound with and without Trophy Catch.
+    /// bound with no perks and with Trophy Catch alone.
     /// </summary>
     public sealed class FishingFightBoundGate : IBalanceGate
     {
@@ -55,7 +55,7 @@ namespace SWLOR.CraftSim.Fishing
                     GateVerdict.Passed,
                     $"With no perks the skilled (adaptive) fight lands at most {rule} for the same fish, at every rank above the fish's level and over the real pools " +
                     $"(furthest below the bound by {Number(Math.Min(unperked.Margin, pooled.Margin), 1)} points in the tables). The whole Angler line, in either style, lands about {target} at rank 50, " +
-                    $"and the special rare fish stay within the bound with and without Trophy Catch.",
+                    $"and the special rare fish stay within the bound with no perks and with Trophy Catch alone (the rows with the fight perks at half strength are shown, not judged).",
                     tables);
             }
 

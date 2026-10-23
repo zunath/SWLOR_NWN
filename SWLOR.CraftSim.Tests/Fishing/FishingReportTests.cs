@@ -117,7 +117,7 @@ namespace SWLOR.CraftSim.Tests.Fishing
 
             perks.Rows.Should().HaveCount(AnglerPerkStudy.Purchases().Count + 1, "every purchase of the line, and the unperked row");
             perks.Rows.Select(row => row[0]).Should().OnlyHaveUniqueItems();
-            atLevel.Rows.Should().HaveCount(AnglerPerkStudy.LineRanks.Count + 1, "a row for each rank of the line and the mean");
+            atLevel.Rows.Should().HaveCount(AnglerPerkStudy.LineRanks.Count, "a row for each rank of the line");
             style.Table.Rows.Should().HaveCount(FishingAnglerEvidence.Ranks.Count * FishingAnglerEvidence.StyleDeltas.Count);
             (style.PatientShare + style.AggressiveShare).Should().BeApproximately(1.0, 1e-9);
             rare.Rows.Select(row => row[0]).Should().Contain(name => name.Contains("Trophy Catch"));

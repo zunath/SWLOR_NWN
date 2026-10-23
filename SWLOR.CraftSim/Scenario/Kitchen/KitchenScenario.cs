@@ -45,13 +45,14 @@ namespace SWLOR.CraftSim.Scenario.Kitchen
         };
 
         /// <summary>
-        /// The two Chef styles, compared alone and with the rest of the line each cook owns at the rank the recipe is played at (the
-        /// purchases that rank allows, Seasoned Palate switched off), from rank 20 where the style opens.
+        /// The two Chef styles, compared alone, with the rest of the line each cook owns at the rank the recipe is played at (the
+        /// purchases that rank allows, Seasoned Palate switched off) and with Seasoned Palate switched on, from rank 20 where the style opens.
         /// </summary>
         public virtual IReadOnlyList<CraftStylePair> StylePairs => new[]
         {
             new CraftStylePair(KitchenBuild.SlowCookingAlone.AsStyle(), KitchenBuild.FlashCookingAlone.AsStyle()),
-            new CraftStylePair(KitchenBuild.SlowCookingLine.AsStyle(), KitchenBuild.FlashCookingLine.AsStyle())
+            new CraftStylePair(KitchenBuild.SlowCookingLine.AsStyle(), KitchenBuild.FlashCookingLine.AsStyle()),
+            new CraftStylePair(KitchenBuild.SlowCookingLineSeasoned.AsStyle(), KitchenBuild.FlashCookingLineSeasoned.AsStyle())
         };
 
         public ICraftMinigameEngine CreateEngine(CraftEngineRequest request)

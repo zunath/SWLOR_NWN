@@ -289,22 +289,22 @@
 
 ## Evidence: Angler perk magnitudes
 
-### Each purchase alone: the adaptive player's catch rate, averaged over ranks 20, 35, 50 (the rank-20 style is played at rank 20 and above only, so a purchase above the rank counts as owned at its first level)
+### Each purchase alone: the adaptive player's catch rate at rank 50, owning only that purchase at the level named, against a fish of the angler's own level and one 3 levels above
 
 | Purchase (alone) | Effect read by the Line | Fish at the rank's level | Fish 3 levels above | Added points (mean of both) |
 | --- | --- | --- | --- | --- |
-| No perks | - | 62.9% | 23.4% | - |
-| Strong Line I | cap +2 | 64.2% | 35.4% | 6.7 |
-| Hard Set I | Set Hook drain +1 | 66.1% | 22.5% | 1.2 |
-| Fish Sense I | two moves ahead for 1 turn(s) | 69.8% | 26.4% | 5.0 |
-| Patient Angler | Give Line -1 | 66.8% | 22.8% | 1.7 |
-| Aggressive Angler | Reel +1 | 65.2% | 24.3% | 1.6 |
-| Strong Line II | cap +5 | 64.6% | 35.3% | 6.8 |
-| Hard Set II | Set Hook drain +2 | 64.3% | 23.6% | 0.8 |
-| Fish Sense II | two moves ahead for 3 turn(s) | 67.4% | 29.3% | 5.2 |
-| Strong Line III | cap +8 | 65.2% | 29.4% | 4.1 |
-| Hard Set III | Set Hook drain +3 | 64.1% | 23.7% | 0.8 |
-| Trophy Catch | rare fish -4 rungs | 61.7% | 22.9% | -0.9 |
+| No perks | - | 63.5% | 33.2% | - |
+| Strong Line I | cap +2 | 64.0% | 39.8% | 3.5 |
+| Hard Set I | Set Hook drain +1 | 66.3% | 32.0% | 0.8 |
+| Fish Sense I | two moves ahead for 1 turn(s) | 68.8% | 38.7% | 5.4 |
+| Patient Angler | Give Line -1 | 64.7% | 29.9% | -1.1 |
+| Aggressive Angler | Reel +1 | 66.6% | 32.7% | 1.3 |
+| Strong Line II | cap +5 | 66.4% | 44.6% | 7.2 |
+| Hard Set II | Set Hook drain +2 | 66.2% | 34.0% | 1.8 |
+| Fish Sense II | two moves ahead for 3 turn(s) | 71.6% | 42.5% | 8.7 |
+| Strong Line III | cap +8 | 70.4% | 51.1% | 12.4 |
+| Hard Set III | Set Hook drain +3 | 67.3% | 34.0% | 2.3 |
+| Trophy Catch | rare fish -4 rungs | 59.9% | 31.6% | -2.6 |
 
 ### The fish at the angler's own level, by rank: the adaptive player with no perks and with the whole line the rank allows
 
@@ -313,14 +313,13 @@
 | 5 | 60% | 72.0% | 53.5% | 60.8% | 60.8% | - |
 | 10 | 60% | 72.0% | 55.9% | 65.8% | 65.8% | - |
 | 15 | 60% | 72.0% | 54.1% | 76.2% | 76.2% | - |
-| 20 | 60% | 72.0% | 58.6% | 79.9% | 78.4% | 90% |
-| 25 | 60% | 72.0% | 55.3% | 79.6% | 76.2% | 90% |
-| 30 | 60% | 72.0% | 65.0% | 86.0% | 83.4% | 90% |
-| 35 | 60% | 72.0% | 66.5% | 87.6% | 86.2% | 90% |
-| 40 | 60% | 72.0% | 65.9% | 93.8% | 94.4% | 90% |
-| 45 | 60% | 72.0% | 63.6% | 96.1% | 96.0% | 90% |
+| 20 | 60% | 72.0% | 58.6% | 79.9% | 78.4% | - |
+| 25 | 60% | 72.0% | 55.3% | 79.6% | 76.2% | - |
+| 30 | 60% | 72.0% | 65.0% | 86.0% | 83.4% | - |
+| 35 | 60% | 72.0% | 66.5% | 87.6% | 86.2% | - |
+| 40 | 60% | 72.0% | 65.9% | 93.8% | 94.4% | - |
+| 45 | 60% | 72.0% | 63.6% | 96.1% | 96.0% | - |
 | 50 | 60% | 72.0% | 63.5% | 91.5% | 90.6% | 90% |
-| Mean, ranks 20, 35, 50 | 60.0% | - | 62.9% | 86.3% | 85.1% | 90% |
 
 ## Evidence: style balance
 

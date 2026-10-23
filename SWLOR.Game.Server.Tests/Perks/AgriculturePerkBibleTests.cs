@@ -61,7 +61,7 @@ public class AgriculturePerkBibleTests
             rows.Single(row => row["C"] == name)["F"].Should().Be("Style", name);
         foreach (var name in new[] { "Signature Dish", "Trophy Catch" })
             rows.Single(row => row["C"] == name)["F"].Should().Be("Capstone", name);
-        rows.Single(row => row["C"] == "Seasoned Palate I")["F"].Should().Be("Toggle");
+        rows.Single(row => row["C"] == "Seasoned Palate I")["F"].Should().Be("Trait", "a Toggle row would need a combat animation plan entry");
         rows.Single(row => row["C"] == "Reduce I")["K"].Should().Be("12");
         rows.Single(row => row["C"] == "Reduce II")["K"].Should().Be("9");
     }

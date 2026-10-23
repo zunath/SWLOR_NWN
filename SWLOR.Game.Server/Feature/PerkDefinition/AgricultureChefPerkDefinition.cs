@@ -83,11 +83,11 @@ namespace SWLOR.Game.Server.Feature.PerkDefinition
                 .Icon("ife_coolfire")
 
                 .AddPerkLevel()
-                .Description("Your Kitchen style, always active: Simmer at Low heat gives twice the Doneness (10 instead of 5), and the flavor drifts 25% less at Medium heat. Cannot be purchased with Flash Cooking.")
+                .Description("Your Kitchen style, always active: Simmer at Low heat gives 80% more Doneness (9 instead of 5), and the flavor drifts 25% less at Medium heat. Cannot be purchased with Flash Cooking.")
                 .Price(2)
                 .RequirementSkill(SkillType.Agriculture, 20)
                 .RequirementCannotHavePerk(PerkType.FlashCooking)
-                .IncreasesStat(StatType.KitchenLowHeatDonenessPercent, 100)
+                .IncreasesStat(StatType.KitchenLowHeatDonenessPercent, 80)
                 .IncreasesStat(StatType.KitchenMediumDriftReductionPercent, 25);
         }
 
@@ -98,11 +98,11 @@ namespace SWLOR.Game.Server.Feature.PerkDefinition
                 .Icon("ife_firestarter")
 
                 .AddPerkLevel()
-                .Description("Your Kitchen style, always active: the flavor drifts 20% less at High heat. Cannot be purchased with Slow Cooking.")
+                .Description("Your Kitchen style, always active: the flavor drifts 15% less at High heat (8 becomes 7). Cannot be purchased with Slow Cooking.")
                 .Price(2)
                 .RequirementSkill(SkillType.Agriculture, 20)
                 .RequirementCannotHavePerk(PerkType.SlowCooking)
-                .IncreasesStat(StatType.KitchenHighHeatDriftReductionPercent, 20);
+                .IncreasesStat(StatType.KitchenHighHeatDriftReductionPercent, 15);
         }
 
         private void Reduce()

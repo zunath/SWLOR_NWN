@@ -26,13 +26,13 @@ namespace SWLOR.CraftSim.Tests.Scenario
         public void ABuildTakesItsNumbersFromThePerkDefinitionsAtTheRankItIsPlayedAt()
         {
             KitchenBuild.SlowCookingAlone.StatsAt(19).Should().Be(KitchenPerkStats.None, "the style opens at Agriculture 20");
-            KitchenBuild.SlowCookingAlone.StatsAt(20).Should().Be(new KitchenPerkStats(LowHeatDonenessPercent: 100, MediumDriftReductionPercent: 25));
-            KitchenBuild.FlashCookingAlone.StatsAt(50).Should().Be(new KitchenPerkStats(HighDriftReductionPercent: 20));
+            KitchenBuild.SlowCookingAlone.StatsAt(20).Should().Be(new KitchenPerkStats(LowHeatDonenessPercent: 80, MediumDriftReductionPercent: 25));
+            KitchenBuild.FlashCookingAlone.StatsAt(50).Should().Be(new KitchenPerkStats(HighDriftReductionPercent: 15));
 
             KitchenBuild.SlowCookingLine.StatsAt(24).Should().Be(new KitchenPerkStats(
-                PantryPushBonus: 1, PushSpreadReduction: 5, SeasonedPalateOwned: true, LowHeatDonenessPercent: 100, MediumDriftReductionPercent: 25));
+                PantryPushBonus: 1, PushSpreadReduction: 5, SeasonedPalateOwned: true, LowHeatDonenessPercent: 80, MediumDriftReductionPercent: 25));
             KitchenBuild.FlashCookingLine.StatsAt(50).Should().Be(new KitchenPerkStats(
-                PantryPushBonus: 1, PushSpreadReduction: 5, SeasonedPalateOwned: true, SeasonedPalateSpreadPercent: 0, HighDriftReductionPercent: 20,
+                PantryPushBonus: 1, PushSpreadReduction: 5, SeasonedPalateOwned: true, SeasonedPalateSpreadPercent: 0, HighDriftReductionPercent: 15,
                 ReducePercent: 35, ReduceCpReduction: 3, PeakAromaChancePoints: 10, StirCpReduction: 4,
                 StirDonenessPercent: 50, SignatureDish: true));
         }
@@ -97,17 +97,19 @@ namespace SWLOR.CraftSim.Tests.Scenario
             var atRank = (KitchenEngine)scenario.CreateEngine(Request(
                 recipe, 30, new CraftStyle("Rank", (Func<int, KitchenPerkStats>)(rank => new KitchenPerkStats(ReducePercent: rank)))));
 
-            fixedStats.Stats.Perks.LowHeatDonenessPercent.Should().Be(100);
+            fixedStats.Stats.Perks.LowHeatDonenessPercent.Should().Be(80);
             atRank.Stats.Perks.ReducePercent.Should().Be(30);
         }
 
         [Test]
-        public void TheUnperkedScenarioComparesTheStylesAloneAndWithTheLine()
+        public void TheUnperkedScenarioComparesTheStylesAloneWithTheLineAndWithSeasonedPalateOn()
         {
             var pairs = new KitchenScenario().StylePairs;
 
             pairs.Select(pair => pair.Name).Should().Equal(
-                "Slow Cooking vs Flash Cooking", "Slow Cooking (full line) vs Flash Cooking (full line)");
+                "Slow Cooking vs Flash Cooking",
+                "Slow Cooking (full line) vs Flash Cooking (full line)",
+                "Slow Cooking (full line, Seasoned Palate on) vs Flash Cooking (full line, Seasoned Palate on)");
             pairs.Should().OnlyContain(pair => pair.MinimumRank == 20);
         }
 
@@ -128,7 +130,7 @@ namespace SWLOR.CraftSim.Tests.Scenario
 
             var recipe = Recipe(25);
             ((KitchenEngine)slow.CreateEngine(Request(recipe, 50))).Stats.Perks.LowHeatDonenessPercent.Should().Be(100);
-            ((KitchenEngine)flash.CreateEngine(Request(recipe, 50))).Stats.Perks.HighDriftReductionPercent.Should().Be(20);
+            ((KitchenEngine)flash.CreateEngine(Request(recipe, 50))).Stats.Perks.HighDriftReductionPercent.Should().Be(15);
             ((KitchenEngine)slow.CreateEngine(Request(recipe, 10))).Stats.Perks.LowHeatDonenessPercent.Should().Be(0, "no style below rank 20");
             ((KitchenEngine)slow.CreateEngine(Request(recipe, 25))).Stats.Perks.HasReduce.Should().BeTrue();
             ((KitchenEngine)slow.CreateEngine(Request(recipe, 24))).Stats.Perks.HasReduce.Should().BeFalse();

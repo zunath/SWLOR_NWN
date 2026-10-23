@@ -9,7 +9,7 @@ public class KitchenPerkTextTests
 {
     private static readonly KitchenPerkStats WholeLine = new(
         PantryPushBonus: 1, PushSpreadReduction: 5, SeasonedPalateOwned: true, SeasonedPalateOn: true, SeasonedPalateSpreadPercent: 25,
-        LowHeatDonenessPercent: 100, MediumDriftReductionPercent: 25, HighDriftReductionPercent: 20,
+        LowHeatDonenessPercent: 80, MediumDriftReductionPercent: 25, HighDriftReductionPercent: 15,
         ReducePercent: 35, ReduceCpReduction: 3, PeakAromaChancePoints: 10, StirCpReduction: 4, StirDonenessPercent: 50, SignatureDish: true);
 
     [Test]
@@ -27,9 +27,9 @@ public class KitchenPerkTextTests
         lines.Should().Contain(line => line.Contains("spread 45% instead of 50%"));
         lines.Should().Contain(line => line.StartsWith("Seasoned Palate is ON") && line.Contains("half as far"));
         lines.Should().Contain("While it is on, pushes are also 25% less random.");
-        lines.Should().Contain("At Low heat, Simmer gives 100% more Doneness.");
+        lines.Should().Contain("At Low heat, Simmer gives 80% more Doneness.");
         lines.Should().Contain("At Medium heat, the flavor drifts 25% less.");
-        lines.Should().Contain("At High heat, the flavor drifts 20% less.");
+        lines.Should().Contain("At High heat, the flavor drifts 15% less.");
         lines.Should().Contain(line => line.StartsWith("Reduce: 9 CP") && line.Contains("35%"));
         lines.Should().Contain("Each turn has a 35% chance of announcing Peak Aroma.");
         lines.Should().Contain("Stir costs 8 CP and at Medium heat gives 50% of a Simmer's Doneness.");

@@ -46,12 +46,12 @@ Decisions the line creates:
 
 `agriculture-angler-perks.md` (seed 1, 1000 fights per case; the adaptive player stands for the skilled fight) and `fishing-line-parity.md` (the gates).
 
-- **At the fish's own level**, the unperked skilled fight lands about 64% (Quick Reel 60%, bound 72%). With every purchase the rank allows, at rank 50: **Patient Angler 92%, Aggressive Angler 91%** against the owner's target of about 90% (judged within 5 points). The line is worth +14 to +21 points at rank 20 and 30 and about +28 at ranks 40 and 50.
+- **At the fish's own level**, the unperked skilled fight lands about 64% (Quick Reel 60%, bound 72%). With every purchase the rank allows, at rank 50: **Patient Angler 92%, Aggressive Angler 91%** against the owner's target of about 90% (judged within 5 points). The line is worth about +21 points at ranks 20 to 30 and +28 to +30 at ranks 40 to 50 (Patient Angler 80% at rank 20, 86% at 30, 94% at 40).
 - **Fish above the level**: the line closes some of the gap to Quick Reel's cliff, as the tables in `agriculture-angler-perks.md` show, and no fish Quick Reel cannot land at all (6 or more levels above the rank) becomes landable.
 - **Styles**: with the whole line Patient Angler is the better style on about half the cases and Aggressive Angler on the other half, with a mean gap under 1 point (ties within 2 points count half).
 - **Length** (3-6 actions): passes for the unperked angler and for the line in either style, at every row.
 - **XP rate** (gate 6): the line shortens fights, which shortens the XP a fight pays, so the multipliers of fish-level bands 11-20, 21-30 and 31-40 rose to 8.65, 8.35 and 8.65 (`LineRules`, from 8.5, 8.0 and 8.2): the least steps that pass for the unperked angler and for both styles. The unperked angler's XP per hour is 1.00x to 1.06x of today's in those bands. Gate 6 passes for all three.
-- **Rare fish** (level 52, rank 50, tier 4 rod): no perks 39%; Trophy Catch alone 46% (the old bound is 49.0%); the line below the capstone with fight perks at half strength 51%; the whole line with Trophy Catch 49-52%. The old bound judges the rows no perk but Trophy Catch touches; the rows with the fight perks are evidence, not judged, since the owner replaced the bound with the half-strength rule.
+- **Rare fish** (level 52, rank 50, tier 4 rod): no perks 39%; Trophy Catch alone 46% (the old bound is 49.0%); the line below the capstone with fight perks at half strength 51%; the whole line with Trophy Catch 49% (Patient Angler) to 52% (Aggressive Angler). The old bound judges the rows no perk but Trophy Catch touches; the rows with the fight perks are evidence, not judged, since the owner replaced the bound with the half-strength rule.
 
 ## Needs an owner decision
 

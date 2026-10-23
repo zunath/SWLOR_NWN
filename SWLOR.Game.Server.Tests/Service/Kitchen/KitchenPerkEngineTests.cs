@@ -59,7 +59,7 @@ public class KitchenPerkEngineTests
             [StatType.KitchenPushSpreadReduction] = 5,
             [StatType.KitchenSeasonedPalate] = 1,
             [StatType.KitchenSeasonedPalateSpreadPercent] = 25,
-            [StatType.KitchenLowHeatDonenessPercent] = 100,
+            [StatType.KitchenLowHeatDonenessPercent] = 80,
             [StatType.KitchenMediumDriftReductionPercent] = 25,
             [StatType.KitchenHighHeatDriftReductionPercent] = 35,
             [StatType.KitchenReducePercent] = 35,
@@ -75,7 +75,7 @@ public class KitchenPerkEngineTests
         var off = KitchenPerkStats.FromStatTotals(Total);
 
         on.Should().Be(new KitchenPerkStats(
-            1, 5, true, true, 25, 100, 25, 35, 35, 3, 10, 4, 50, true));
+            1, 5, true, true, 25, 80, 25, 35, 35, 3, 10, 4, 50, true));
         off.Should().Be(on with { SeasonedPalateOn = false, SeasonedPalateSpreadPercent = 0 }, "Seasoned Palate and what it adds count only while it is switched on");
         off.SeasonedPalateOwned.Should().BeTrue("the window still offers the switch");
         KitchenPerkStats.FromStatTotals(_ => 0, seasonedPalateOn: true).Should().Be(KitchenPerkStats.None, "a cook without Seasoned Palate cannot switch it on");
@@ -228,7 +228,7 @@ public class KitchenPerkEngineTests
     [Test]
     public void SlowCooking_GivesMoreDonenessFromALowHeatSimmer_AndWeakensTheDriftAtMedium()
     {
-        var slow = new KitchenPerkStats(LowHeatDonenessPercent: 100, MediumDriftReductionPercent: 25);
+        var slow = new KitchenPerkStats(LowHeatDonenessPercent: 80, MediumDriftReductionPercent: 25);
         var plain = ChefEngine(KitchenPerkStats.None);
         var engine = ChefEngine(slow);
 
@@ -236,7 +236,7 @@ public class KitchenPerkEngineTests
         engine.Perform(KitchenActionIds.HeatLow);
 
         plain.Preview(KitchenActionIds.Simmer).Outcomes[0].Delta.Progress.Should().Be(5);
-        engine.Preview(KitchenActionIds.Simmer).Outcomes[0].Delta.Progress.Should().Be(10, "twice the usual 5");
+        engine.Preview(KitchenActionIds.Simmer).Outcomes[0].Delta.Progress.Should().Be(9, "5 and 80 percent more");
 
         engine.Perform(KitchenActionIds.HeatMedium);
         engine.Preview(KitchenActionIds.Simmer).Outcomes[0].Delta.Progress.Should().Be(12, "Medium is as usual");
@@ -260,7 +260,7 @@ public class KitchenPerkEngineTests
     [Test]
     public void FlashCooking_WeakensTheDriftAtHighHeat_AndLeavesSearAlone()
     {
-        var flash = new KitchenPerkStats(HighDriftReductionPercent: 20);
+        var flash = new KitchenPerkStats(HighDriftReductionPercent: 15);
         var plain = ChefEngine(KitchenPerkStats.None);
         var engine = ChefEngine(flash);
 
@@ -268,7 +268,7 @@ public class KitchenPerkEngineTests
         engine.Perform(KitchenActionIds.HeatHigh);
 
         plain.EffectiveNextDrift.Should().Be(new FlavorVector(0, 0, 8));
-        engine.EffectiveNextDrift.Should().Be(new FlavorVector(0, 0, 6), "8 less 20 percent is 6.4");
+        engine.EffectiveNextDrift.Should().Be(new FlavorVector(0, 0, 7), "8 less 15 percent is 6.8");
         engine.Preview(KitchenActionIds.Sear).IntegrityCost.Should().Be(plain.Preview(KitchenActionIds.Sear).IntegrityCost);
         engine.Preview(KitchenActionIds.Sear).Outcomes[0].Delta.Progress.Should().Be(36, "Sear gives the same Doneness");
     }
@@ -276,14 +276,14 @@ public class KitchenPerkEngineTests
     [Test]
     public void FlashCooking_TheDriftPromisedAtHighHeatIsTheDriftThatHappens()
     {
-        var engine = ChefEngine(new KitchenPerkStats(HighDriftReductionPercent: 20));
+        var engine = ChefEngine(new KitchenPerkStats(HighDriftReductionPercent: 15));
         engine.Perform(KitchenActionIds.HeatHigh);
         var promised = engine.Preview(KitchenActionIds.Sear).Outcomes[0];
 
         engine.Perform(KitchenActionIds.Sear);
 
-        Delta(promised, KitchenEngine.SpiceMeterId).Should().Be(6);
-        Meter(engine, KitchenEngine.SpiceMeterId).Should().Be(6);
+        Delta(promised, KitchenEngine.SpiceMeterId).Should().Be(7);
+        Meter(engine, KitchenEngine.SpiceMeterId).Should().Be(7);
     }
 
     #endregion

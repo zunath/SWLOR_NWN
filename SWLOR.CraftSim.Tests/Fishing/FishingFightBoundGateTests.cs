@@ -12,7 +12,7 @@ namespace SWLOR.CraftSim.Tests.Fishing
     /// <summary>
     /// Covers the bound on the fight (owner decision, October 2026): an unperked skilled fight's expected catch rate stays within +15% (starting
     /// value) of Quick Reel's, the whole Angler line lifts it to about 90% of the fish at the angler's own level, and the special rare fish
-    /// stay within the bound with and without Trophy Catch.
+    /// stay within the bound with no perks and with Trophy Catch alone.
     /// </summary>
     [TestFixture]
     public class FishingFightBoundGateTests

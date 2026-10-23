@@ -24,6 +24,9 @@ namespace SWLOR.CraftSim.Fishing
         /// <summary>Rank minus fish level: from a fish 6 levels above the rank to one 4 below it.</summary>
         public static readonly IReadOnlyList<int> Deltas = new[] { -6, -4, -3, -2, -1, 0, 1, 2, 4 };
 
+        /// <summary>The rank each purchase is played at on its own: the top, where every purchase can be owned.</summary>
+        public const int PurchaseRank = 50;
+
         public const int RareFishLevel = 52;
         public const int RareFishRank = 50;
 
@@ -39,13 +42,10 @@ namespace SWLOR.CraftSim.Fishing
                 }
             }
 
-            foreach (var rank in AverageRanks)
+            foreach (var (_, perk, level) in Purchases())
             {
-                foreach (var (_, perk, level) in Purchases())
-                {
-                    foreach (var above in new[] { 0, 3 })
-                        yield return Key(rank + above, rank, AnglerBuild.Alone(perk, level).EffectsAt(rank));
-                }
+                foreach (var above in new[] { 0, 3 })
+                    yield return Key(PurchaseRank + above, PurchaseRank, AnglerBuild.Alone(perk, level).EffectsAt(PurchaseRank));
             }
 
             foreach (var (_, effects) in RareCases())
@@ -95,7 +95,7 @@ namespace SWLOR.CraftSim.Fishing
             text.AppendLine($"- Command: `{command}`");
             text.AppendLine($"- Seed {parity.Seed}; {parity.Runs} fights per case, each with its own dice. The adaptive player ({LineFights.AdaptiveOptions.Describe()}) stands for the skilled fight.");
             text.AppendLine("- Every number is the game's own perk definition (`AgricultureAnglerPerkDefinition`) played at the rank the row names: an angler owns the purchases that rank allows, at the highest level it allows. Quick Reel is today's roll at Willpower " + fight.QuickReelWillpowerScore + ".");
-            text.AppendLine($"- The unperked fight is bounded to {Number(fight.FightBoundRelative * 100, 0)}% above Quick Reel plus {Number(fight.FightBoundSlackPoints, 0)} points. The perked line is held to the owner's target instead: about {Number(fight.PerkedTargetPercent, 0)}% at the fish's own level, averaged over ranks {string.Join(", ", AverageRanks)}.");
+            text.AppendLine($"- The unperked fight is bounded to {Number(fight.FightBoundRelative * 100, 0)}% above Quick Reel plus {Number(fight.FightBoundSlackPoints, 0)} points. The whole line is held to the owner's target instead: about {Number(fight.PerkedTargetPercent, 0)}% of the fish at the angler's own level at rank 50, where it is complete (judged within {Number(fight.PerkedTolerancePoints, 0)} points).");
             text.AppendLine();
 
             Section(text, PurchaseTable(parity, fight));
@@ -134,21 +134,21 @@ namespace SWLOR.CraftSim.Fishing
         public static GateTable PurchaseTable(FishingParity parity, FishingParityOptions options)
         {
             var table = new EvidenceTable("Purchase (alone)", "Effect read by the Line", "Fish at the rank's level", "Fish 3 levels above", "Added points (mean of both)");
-            double Mean(LineAnglerEffects effects, int above) => AverageRanks.Average(rank => Landed(parity, rank + above, rank, effects));
+            double Mean(LineAnglerEffects effects, int above) => Landed(parity, PurchaseRank + above, PurchaseRank, effects);
             var baseAt = Mean(LineAnglerEffects.None, 0);
             var baseAbove = Mean(LineAnglerEffects.None, 3);
             table.Add("No perks", "-", Number(baseAt, 1) + "%", Number(baseAbove, 1) + "%", "-");
             foreach (var (name, perk, level) in Purchases())
             {
-                double At(int above) => AverageRanks.Average(rank => Landed(parity, rank + above, rank, AnglerBuild.Alone(perk, level).EffectsAt(rank)));
-                var effects = AnglerBuild.Alone(perk, level).EffectsAt(RareFishRank);
+                double At(int above) => Landed(parity, PurchaseRank + above, PurchaseRank, AnglerBuild.Alone(perk, level).EffectsAt(PurchaseRank));
+                var effects = AnglerBuild.Alone(perk, level).EffectsAt(PurchaseRank);
                 var at = At(0);
                 var above = At(3);
                 table.Add(name, Describe(effects), Number(at, 1) + "%", Number(above, 1) + "%", Number(((at - baseAt) + (above - baseAbove)) / 2, 1));
             }
 
             return table.ToGateTable(
-                $"Each purchase alone: the adaptive player's catch rate, averaged over ranks {string.Join(", ", AverageRanks)} (the rank-20 style is played at rank 20 and above only, so a purchase above the rank counts as owned at its first level)");
+                $"Each purchase alone: the adaptive player's catch rate at rank {PurchaseRank}, owning only that purchase at the level named, against a fish of the angler's own level and one 3 levels above");
         }
 
         public static GateTable AtLevelTable(FishingParity parity, FishingParityOptions options)
@@ -164,18 +164,9 @@ namespace SWLOR.CraftSim.Fishing
                     Number(Landed(parity, rank, rank, AnglerBuild.Unperked.EffectsAt(rank)), 1) + "%",
                     Number(Landed(parity, rank, rank, AnglerBuild.PatientLine.EffectsAt(rank)), 1) + "%",
                     Number(Landed(parity, rank, rank, AnglerBuild.AggressiveLine.EffectsAt(rank)), 1) + "%",
-                    rank >= AverageRanks[0] ? Number(options.PerkedTargetPercent, 0) + "%" : "-");
+                    rank == RareFishRank ? Number(options.PerkedTargetPercent, 0) + "%" : "-");
             }
 
-            double Mean(AnglerBuild build) => AverageRanks.Average(rank => Landed(parity, rank, rank, build.EffectsAt(rank)));
-            table.Add(
-                $"Mean, ranks {string.Join(", ", AverageRanks)}",
-                Number(AverageRanks.Average(rank => options.QuickReel(rank, rank)), 1) + "%",
-                "-",
-                Number(Mean(AnglerBuild.Unperked), 1) + "%",
-                Number(Mean(AnglerBuild.PatientLine), 1) + "%",
-                Number(Mean(AnglerBuild.AggressiveLine), 1) + "%",
-                Number(options.PerkedTargetPercent, 0) + "%");
             return table.ToGateTable("The fish at the angler's own level, by rank: the adaptive player with no perks and with the whole line the rank allows");
         }
 
@@ -262,7 +253,13 @@ namespace SWLOR.CraftSim.Fishing
                 var rare = parity.Catch(RareFishLevel, FishRarity.Rare, RareFishRank, 4, LinePlayer.Adaptive, effects).LandedPercent;
                 var common = parity.Catch(RareFishLevel, FishRarity.Common, RareFishRank, 4, LinePlayer.Adaptive, effects).LandedPercent;
                 var bound = options.FightBound(quick);
-                table.Add(name, Number(rare, 0) + "%", Number(common, 0) + "%", Number(bound, 1) + "%", rare <= bound ? "Yes" : "No: over by " + Number(rare - bound, 1) + " points");
+                var judged = effects.TensionCapBonus == 0 && effects.SetHookDrainBonus == 0 && effects.GiveLineDistanceReduction == 0 && effects.ReelDistanceBonus == 0;
+                table.Add(
+                    name,
+                    Number(rare, 0) + "%",
+                    Number(common, 0) + "%",
+                    Number(bound, 1) + "%",
+                    !judged ? "Not judged (fight perks at half strength)" : rare <= bound ? "Yes" : "No: over by " + Number(rare - bound, 1) + " points");
             }
 
             foreach (var (name, perk, level) in Purchases())

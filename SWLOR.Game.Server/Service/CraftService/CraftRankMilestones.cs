@@ -1,4 +1,6 @@
 using System;
+using System.Collections.Generic;
+using System.Linq;
 using SWLOR.Game.Server.Service.SkillService;
 
 namespace SWLOR.Game.Server.Service.CraftService;
@@ -19,6 +21,11 @@ public static class CraftRankMilestones
 
     // Fabrication ranks that each add a concurrent research job and a licensed run on new blueprints.
     private static readonly int[] ResearchMilestoneRanks = { 25, 50 };
+
+    // The Search board's schedule (starting values for CraftSim to tune): the Gathering rank that first gives each value. The number of
+    // searches replaced Hard Look, so it steps at the same ranks Hard Look did; the number of promising spots replaced Perception.
+    private static readonly (int Rank, int Value)[] SearchesSteps = { (0, 5), (10, 5), (20, 6), (30, 6), (40, 6) };
+    private static readonly (int Rank, int Value)[] PromisingSpotSteps = { (0, 2), (10, 2), (20, 2), (30, 2), (40, 3) };
 
     /// <summary>
     /// Tier 1 to 5 for a Gathering rank (harvesters, ores, scavenge sites, Hard Look level) or an Engineering rank
@@ -54,10 +61,30 @@ public static class CraftRankMilestones
 
     public static int GetRefineryManagementLevel(uint creature) => RefineryManagementLevelForRank(GetGatheringRank(creature));
 
+    /// <summary>
+    /// The searches a Gathering rank gets on a scavenge site's board. They replaced Hard Look, which only gave a chance of a second
+    /// attempt; Quick Search still reads <see cref="HardLookLevelForRank"/> for that chance.
+    /// </summary>
+    public static int SearchesForRank(int gatheringRank) => ValueAt(SearchesSteps, gatheringRank);
+
+    /// <summary>The spots of a scavenge site's board that are promising at a Gathering rank. They replaced Perception.</summary>
+    public static int PromisingSpotsForRank(int gatheringRank) => ValueAt(PromisingSpotSteps, gatheringRank);
+
+    /// <summary>The Hard Look level a Gathering rank is worth, which sets Quick Search's chance of a second attempt: the rank's tier.</summary>
+    public static int HardLookLevelForRank(int gatheringRank) => TierForRank(gatheringRank);
+
     public static int GetScavengingTier(uint creature) => TierForRank(GetGatheringRank(creature));
 
-    /// <summary>The Hard Look level the Gathering rank grants, which sets the chance of a second search.</summary>
-    public static int GetHardLookLevel(uint creature) => TierForRank(GetGatheringRank(creature));
+    /// <summary>The Hard Look level the Gathering rank grants, which sets Quick Search's chance of a second search.</summary>
+    public static int GetHardLookLevel(uint creature) => HardLookLevelForRank(GetGatheringRank(creature));
+
+    public static int GetSearches(uint creature) => SearchesForRank(GetGatheringRank(creature));
+
+    public static int GetPromisingSpots(uint creature) => PromisingSpotsForRank(GetGatheringRank(creature));
+
+    /// <summary>The Gathering ranks at which the Search board's searches or promising spots change, for reports.</summary>
+    public static IReadOnlyList<(int Rank, int Searches, int PromisingSpots)> SearchSchedule() =>
+        SearchesSteps.Select(step => (step.Rank, step.Value, PromisingSpotsForRank(step.Rank))).ToList();
 
     public static int GetDroidAssemblyTier(uint creature) =>
         TierForRank(Skill.GetCreatureSkillRank(creature, SkillType.Engineering));
@@ -72,6 +99,18 @@ public static class CraftRankMilestones
         BlueprintLicensedRunBonusForRank(Skill.GetCreatureSkillRank(creature, SkillType.Fabrication));
 
     private static int GetGatheringRank(uint creature) => Skill.GetCreatureSkillRank(creature, SkillType.Gathering);
+
+    private static int ValueAt((int Rank, int Value)[] steps, int rank)
+    {
+        var value = steps[0].Value;
+        foreach (var step in steps)
+        {
+            if (rank >= step.Rank)
+                value = step.Value;
+        }
+
+        return value;
+    }
 
     private static int CountReached(int[] ranks, int rank)
     {

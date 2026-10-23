@@ -2,13 +2,15 @@ using SWLOR.Game.Server.Service.CraftService.Minigame.Circuit;
 using SWLOR.Game.Server.Service.CraftService.Minigame.Fabricator;
 using SWLOR.Game.Server.Service.CraftService.Minigame.Line;
 using SWLOR.Game.Server.Service.CraftService.Minigame.Reaction;
+using SWLOR.Game.Server.Service.CraftService.Minigame.Search;
 
 namespace SWLOR.Game.Server.Service.CraftService.Minigame;
 
 /// <summary>
 /// The base XP of a craft played in a new minigame: today's XP for the recipe, times the multiplier that keeps the minigame's XP per
 /// hour at least the old window's (CraftSim gate 6). A minigame with no multiplier pays today's XP. A multiplier may differ by the
-/// recipe's level band, because the old window is fastest in the lowest bands.
+/// recipe's level band, because the old window is fastest in the lowest bands. The gathering minigames are not recipes: the Line's
+/// level is the fish's, and the Search board's is the scavenge site's.
 /// </summary>
 public static class CraftMinigameXp
 {
@@ -22,6 +24,7 @@ public static class CraftMinigameXp
         CraftMinigameType.Fabricator => FabricatorRules.XpMultiplierForLevel(recipeLevel),
         CraftMinigameType.Line => LineRules.XpMultiplierForLevel(recipeLevel),
         CraftMinigameType.Reaction => ReactionRules.XpMultiplier(recipeLevel),
+        CraftMinigameType.Search => SearchRules.XpMultiplierForLevel(recipeLevel),
         _ => 1.0
     };
 

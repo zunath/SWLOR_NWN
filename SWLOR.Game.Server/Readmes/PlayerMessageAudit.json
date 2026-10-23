@@ -3165,38 +3165,31 @@
   },
   {
     "File": "SWLOR.Game.Server/Feature/ScavengePoint.cs",
-    "Line": 27,
+    "Line": 38,
     "Member": "OnOpened",
     "Delivery": "Retained",
-    "Call": "SendMessageToPC(user, \"This object has already been searched through.\")"
-  },
-  {
-    "File": "SWLOR.Game.Server/Feature/ScavengePoint.cs",
-    "Line": 39,
-    "Member": "OnOpened",
-    "Delivery": "Retained",
-    "Call": "SendMessageToPC(user, $\"The assigned loot table '{lootTableName}' does not exist. Please inform an admin that this scavenge site is broken.\")"
+    "Call": "SendMessageToPC(user, occupant.Player == user\n                    ? \"You are already searching this site.\"\n                    : ScavengeLifecycle.SiteInUseMessage)"
   },
   {
     "File": "SWLOR.Game.Server/Feature/ScavengePoint.cs",
     "Line": 47,
     "Member": "OnOpened",
     "Delivery": "Retained",
+    "Call": "SendMessageToPC(user, \"This object has already been searched through.\")"
+  },
+  {
+    "File": "SWLOR.Game.Server/Feature/ScavengePoint.cs",
+    "Line": 58,
+    "Member": "OnOpened",
+    "Delivery": "Retained",
+    "Call": "SendMessageToPC(user, $\"The assigned loot table '{lootTableName}' does not exist. Please inform an admin that this scavenge site is broken.\")"
+  },
+  {
+    "File": "SWLOR.Game.Server/Feature/ScavengePoint.cs",
+    "Line": 66,
+    "Member": "OnOpened",
+    "Delivery": "Retained",
     "Call": "SendMessageToPC(user, $\"You aren't skilled enough to scavenge through this. (Required Gathering rank: {CraftRankMilestones.RequiredRankForTier(requiredLevel)})\")"
-  },
-  {
-    "File": "SWLOR.Game.Server/Feature/ScavengePoint.cs",
-    "Line": 83,
-    "Member": "OnOpened",
-    "Delivery": "Retained",
-    "Call": "FloatingTextStringOnCreature(ColorToken.SkillCheck($\"Search *success*: ({roll} + {GetAbilityModifier(AbilityType.Perception, user)} vs. DC: {dc})\"), user, false)"
-  },
-  {
-    "File": "SWLOR.Game.Server/Feature/ScavengePoint.cs",
-    "Line": 100,
-    "Member": "OnOpened",
-    "Delivery": "Retained",
-    "Call": "FloatingTextStringOnCreature(ColorToken.SkillCheck($\"Search *failure*: ({roll} + {GetAbilityModifier(AbilityType.Perception, user)} vs DC: {dc})\"), user, false)"
   },
   {
     "File": "SWLOR.Game.Server/Feature/ServerTasks.cs",
@@ -5479,6 +5472,20 @@
     "Member": "GiveReward",
     "Delivery": "Retained",
     "Call": "SendMessageToPC(player, $\"You earned {Amount} XP!\")"
+  },
+  {
+    "File": "SWLOR.Game.Server/Service/ScavengeService/NwnScavengeWorld.cs",
+    "Line": 23,
+    "Member": "Message",
+    "Delivery": "Retained",
+    "Call": "SendMessageToPC(player, text)"
+  },
+  {
+    "File": "SWLOR.Game.Server/Service/ScavengeService/NwnScavengeWorld.cs",
+    "Line": 28,
+    "Member": "SkillCheckMessage",
+    "Delivery": "Retained",
+    "Call": "FloatingTextStringOnCreature(ColorToken.SkillCheck(text), player, false)"
   },
   {
     "File": "SWLOR.Game.Server/Service/Shuttle.cs",

@@ -1,0 +1,6 @@
+# One prompt per line. Lines starting with # are skipped.
+Polished fantasy RPG ability icon, centered glowing blue kyber crystal on a dark stone pedestal, dramatic rim light, painterly game art, plain dark background, no text, no watermark
+Polished sci-fi RPG ability icon, a gloved hand projecting a crackling purple force lightning arc, centered, readable at small size, plain dark background, no text
+Inventory icon of a worn bronze blaster pistol with a short barrel and leather-wrapped grip, three-quarter view, centered, plain neutral background, no text
+Portrait of a weathered Twi'lek bounty hunter in battered armor, cantina lighting, painterly Star Wars inspired concept art, head and shoulders
+Concept art of a desert spaceport at dusk, domed sandstone buildings, a freighter landing in a docking bay, twin suns low on the horizon

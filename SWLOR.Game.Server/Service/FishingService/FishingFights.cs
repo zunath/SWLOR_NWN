@@ -15,6 +15,15 @@ namespace SWLOR.Game.Server.Service.FishingService
         /// <summary>Settles a fight whose engine has ended. Returns null when it was already settled.</summary>
         public static FishingFightResult Settle(FishingFight fight) => Lifecycle.Settle(fight);
 
+        /// <summary>True while the angler may still choose Quick Reel: the fight is theirs and they have made no move in it.</summary>
+        public static bool CanQuickReel(FishingFight fight) => Lifecycle.CanQuickReel(fight);
+
+        /// <summary>The chance, in percent, that Quick Reel lands the fight's fish.</summary>
+        public static int QuickReelChance(FishingFight fight) => FishingFightLifecycle.QuickReelChance(fight);
+
+        /// <summary>Ends the fight at once by today's catch roll. Returns null when it was refused.</summary>
+        public static FishingFightResult QuickReel(FishingFight fight) => Lifecycle.QuickReel(fight);
+
         /// <summary>Loses the fish because the angler left the fight unfinished. Does nothing once the fight is settled.</summary>
         public static void Abandon(FishingFight fight, FishingFightEnd reason) => Lifecycle.Abandon(fight, reason);
 

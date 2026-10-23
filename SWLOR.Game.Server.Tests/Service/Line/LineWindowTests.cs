@@ -47,6 +47,34 @@ public class LineWindowTests
     }
 
     [Test]
+    public void TheWindowOffersQuickReelBesideTheFight()
+    {
+        foreach (var name in new[]
+                 {
+                     nameof(LineViewModel.QuickReelText), nameof(LineViewModel.QuickReelSummary), nameof(LineViewModel.QuickReelTooltip),
+                     nameof(LineViewModel.QuickReelColor), nameof(LineViewModel.QuickReelEnabled), nameof(LineViewModel.FightLabelText)
+                 })
+        {
+            typeof(LineViewModel).GetProperty(name).Should().NotBeNull(name);
+        }
+
+        typeof(LineViewModel).GetMethod(nameof(LineViewModel.OnClickQuickReel)).Should().NotBeNull();
+        typeof(LineViewModel).GetMethod(nameof(LineViewModel.OnClickAction)).Should().NotBeNull();
+    }
+
+    [Test]
+    public void TheHelpPage_ExplainsTheTwoChoices_AndIsAsciiPunctuation()
+    {
+        var help = (string)typeof(LineDefinition)
+            .GetField("HelpText", System.Reflection.BindingFlags.NonPublic | System.Reflection.BindingFlags.Static)
+            .GetValue(null);
+
+        help.Should().Contain("TWO CHOICES").And.Contain("Quick Reel").And.Contain("before your first move");
+        help.Should().Contain("the XP a bite always paid");
+        help.All(character => character < 128).Should().BeTrue();
+    }
+
+    [Test]
     public void TheHelpPageOpensOnTheFirstFightOnly()
     {
         var player = new Player("p1");

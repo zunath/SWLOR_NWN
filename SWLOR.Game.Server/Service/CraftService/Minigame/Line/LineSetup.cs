@@ -100,8 +100,14 @@ public sealed class LineSetup
 
     public LineAnglerEffects Effects { get; }
 
-    /// <summary>How many of the fish's next moves the window shows.</summary>
+    /// <summary>How many of the fish's next moves the window shows at most: 1, or 2 with Fish Sense.</summary>
     public int ForecastDepth => Effects.ForecastDepth;
+
+    /// <summary>
+    /// Whether the angler sees the move after next on the given turn (0 is the first). Fish Sense shows two moves ahead only on the
+    /// first <see cref="LineRules.FishSenseTurns"/> turns.
+    /// </summary>
+    public bool SeesTwoMoves(int round) => ForecastDepth >= 2 && round < LineRules.FishSenseTurns;
 
     public int FishLevel { get; }
 
@@ -132,13 +138,18 @@ public sealed class LineSetup
 
     /// <summary>
     /// The rung of the difficulty ladder for a fish: <see cref="LineRules.RungAtRank"/> when its level equals the rank, and
-    /// <see cref="LineRules.RungsPerLevel"/> more for each level above it, kept between the first and last rung.
+    /// <see cref="LineRules.RungsPerLevel"/> more for each level above it (<see cref="LineRules.RungsPerHardLevel"/> for each level
+    /// beyond <see cref="LineRules.HardLevelsFrom"/>), kept between the first and last rung.
     /// </summary>
-    public static int Rung(int fishLevel, int rank) =>
-        Math.Clamp(
-            LineRules.RungAtRank + LineRules.RungsPerLevel * (fishLevel - rank),
-            LineRules.RungMinimum,
-            LineRules.RungMaximum);
+    public static int Rung(int fishLevel, int rank)
+    {
+        var above = fishLevel - rank;
+        var steps = above <= 0
+            ? LineRules.RungsPerLevel * above
+            : LineRules.RungsPerLevelAbove * Math.Min(above, LineRules.HardLevelsFrom) +
+              LineRules.RungsPerHardLevel * Math.Max(0, above - LineRules.HardLevelsFrom);
+        return Math.Clamp(LineRules.RungAtRank + steps, LineRules.RungMinimum, LineRules.RungMaximum);
+    }
 
     /// <summary>The fish's pull on a rung, as a share of the Tension cap before perks.</summary>
     public static int PullAt(int rung, int baseTensionCap) =>
@@ -167,7 +178,13 @@ public sealed class LineSetup
         effects ??= LineAnglerEffects.None;
         var rung = Rung(fishLevel, rank);
         if (rarity == FishRarity.Rare)
+        {
+            // A rare fish lets the fight perks through at half strength, and Trophy Catch, the rare-fish perk, at full strength, so
+            // the rest of an angler's line cannot lift the supply of rare fish past what the fight is bounded to
+            // (see FishingParityOptions.FightBoundRelative).
+            effects = effects.AtHalfStrengthAgainstRareFish();
             rung = Math.Clamp(rung - effects.RareFishRungReduction, LineRules.RungMinimum, LineRules.RungMaximum);
+        }
 
         var reelDistance = BaseReelDistance(rodTier, rank);
         var tensionCap = BaseTensionCap(rodTier, rank);

@@ -87,7 +87,7 @@ namespace SWLOR.Game.Server.Service.GuiService
         ResearchExperiment = 87,
         CraftFabricator = 88,
         Line = 89,
-        Search = 90,
+        Search = 91,
 
         DebugEnmity = 900,
         DebugNuiGallery = 901,

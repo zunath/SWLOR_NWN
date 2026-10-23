@@ -404,7 +404,16 @@ Today (`ScavengePoint.cs`): one attempt, plus a second at `HardLook × 10 + Perc
 - **Rules:**
   - Treasure Hunter's rare weight still applies.
   - XP and the once-per-site rule stay as today.
-- **Animations:** search, dig.
+- **Animations:** search, dig. Until the animation PR lands, the board plays the existing get-low and get-mid loops.
+
+**As built (workstream 9b; numbers are starting values, `SearchRules` and `CraftRankMilestones`, tuned by `design/testing/crafting-revamp/scavenging-search-parity.md`).**
+
+- **Window.** Opening a site closes its inventory and opens the Search window with the help page, which opens by itself on a character's first use. Quick Search is its first and encouraged button and is only a choice before the first action, as Quick Reel is for a bite. What a visit found is put in the site's inventory when it ends, and the site then opens for the scavenger. Closing the window, moving away, combat, death or logout end a visit: the finds so far are kept, the searches not spent are lost, and the site stays searched. One scavenger works a site at a time.
+- **Board.** 5 searches (6 from Gathering 20) and 2 promising spots (3 from Gathering 40). The promising spots are hidden; a Search shows its own spot's ground and a Sift shows the spots above, below and beside it. Every action costs a search. A Search finds 8% on ordinary ground and 30% on promising; the window shows both chances for ground it has not learned about, never the true one.
+- **Dig Deeper.** Only at a searched spot. It risks 30%, then 50%, then 70% of ruining the spot, finds 20% of the time when it does not, and rolls the site's loot table with the rare entries (the flagged ones, or the table's least likely) weighted x3. A spoiled spot gives nothing more.
+- **Quick Search.** One attempt and a Hard Look-level chance of a second (10% a level, the level being the Gathering rank's tier), each against DC 6 rising by a d3, rolling the table once per success, at the parity reference of a Perception modifier of 0 (owner decision, October 22 2026; no new code reads an attribute). It takes 2 seconds an attempt, as today, and pays today's XP, so its expected rolls and XP per hour equal today's exactly.
+- **XP.** Every action pays Gathering XP: what the site pays against the rank when a Search or a Dig Deeper finds, a quarter of it otherwise, and a Sift the quarter, times a multiplier by site level (1.05 for levels 1-2, 1.10 for levels 3-5) that keeps the board's XP per hour at 1.02-1.08x of today's. The game keeps 6 seconds between two actions (the first is free).
+- **Cap.** An unperked skilled board finds 0.81-0.94x of Quick Search's rolls (the board is the choice for XP and rare finds, Quick Search the choice for yield), and the Treasure Seeker line lifts a skilled scavenger to at most 1.11x, inside the +15% cap.
 
 ### Gathering refining
 
@@ -459,7 +468,7 @@ Retire every perk in this table, refund it (see Migration), and grant its effect
 Replace each direct `Perk.GetPerkLevel` gate in the files listed under Current system with a rank check. Update `GatheringPerkRegressionTests` and `ResearchPerkRegressionTests` (they pin the exact `GetPerkLevel` source strings) to the new rules, and remove the retired perks' entries from the `GatheringPerkCoverage`, `FabricationPerkCoverage` and `EngineeringPerkCoverage` data sources that `PerkCoverageTests` and `PerkSweepEngineTests` consume.
 
 - **Retiring a perk.** Delete its definition and keep its `PerkType` member, as the retired Synthesis and Touch perks already are. `Perk.GetPerkLevel` throws for an undefined perk on an NPC (`Perk.cs:955`), so no call site may still query a retired perk.
-- **Hard Look until the Search board lands.** Scavenging's second-attempt chance uses the rank milestone (Gathering 0/10/20/30/40 count as Hard Look 1-5) until workstream 9 replaces it.
+- **Hard Look and the Search board.** The Search board absorbed Hard Look into its rank-based search count (`CraftRankMilestones.SearchesForRank`). Quick Search keeps today's second-attempt chance through the rank milestone (Gathering 0/10/20/30/40 count as Hard Look 1-5, `HardLookLevelForRank`).
 - **Droid Assembly** is checked in `Droid.cs`, `DroidAssemblyViewModel.cs`, `DroidAIViewModel.cs` and `DroidControlItemDefinition.cs`; all four move to the rank gate.
 
 ### Treasure Hunter and Creditfinder

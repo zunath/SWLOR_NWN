@@ -130,6 +130,22 @@ It takes `--runs` (fights per case, default 200), `--seed`, `--seconds-per-turn`
 
 The rule-of-thumb player (`RuleOfThumbPolicy`) marks the other end of skill: it reads the announced move and answers by a fixed rule. The legacy catch roll is ported in `Legacy/Gathering/FishingCatchModel.cs` from `Service/Fishing.cs` at commit d5f1c0466, where it was checked against the source; it left `Fishing.cs` with the Line and is no longer checked.
 
+### The scavenging study
+
+Scavenging is not an item craft either. The `search` command plays the Search board (`Search/`) against the search it replaced and runs the gates that apply to it:
+
+```powershell
+dotnet SWLOR.CraftSim/bin/Release/net10.0/SWLOR.CraftSim.dll search --runs 12000 --seed 1 --out design/testing/crafting-revamp/scavenging-search-parity.md
+```
+
+It takes `--runs` (boards per case, default 4000), `--seed`, `--seconds-per-action` (default 6), `--site-seconds` (default 30, the time to reach and open a site, the same in both loops), `--out` (default `design/testing/crafting-revamp/scavenging-search-parity.md`), `--json`, `--strict` and `--repo`. The same seed repeats a report exactly.
+
+- **Quick Search against today** (`SearchYieldGate`, first table): `ScavengeQuickSearch` is the server's pure copy of the old rules at the parity reference (a Perception modifier of 0). Its expected rolls, attempts and XP equal the legacy model's (`ScavengeModel`) exactly, and a played Quick Search agrees. Quick Search takes today's time (two seconds an attempt) and pays today's XP, so its XP per hour is today's and not above it (`SearchReport.QuickSearchXp`).
+- **Economy parity** (`SearchYieldGate`): finds per board (loot-table rolls) of three simulated scavengers against Quick Search's rolls, over the Gathering ranks 0-50. *Careless* searches the spots in order. *Skilled* plays only from what the window shows (the hidden layout is state in the engine, so it does not read previews of unknown spots): every spot is a chain of actions, the best split of the searches among the chains is a small knapsack, and it Sifts when the ground a Sift would show raises that value by more than the search it costs. *Oracle* is told the layout. An unperked skilled board finds near but not above Quick Search (the board is the XP and rare-find choice, Quick Search the yield choice), and the whole Treasure Seeker line lifts it up to the plan's +15% and no further (`SearchParityOptions`), the pattern Quick Reel set for fishing.
+- **Length** (`SearchLengthGate`): the actions of a board against `LengthTarget.GatheringNode`. Every action costs a search, so a board lasts as many actions as the scavenger has searches.
+- **XP rate**: `SearchXpRateCohort` implements `IXpRateCohort` as the plan pins it: site levels 1-5, the Gathering rank 10 times the level, no tool. Today's loop is played exactly from the legacy model; the board is played by the careless and the skilled player, and the gate judges the lower XP per hour. Every action pays Gathering XP (a Sift the quarter a failure pays), times `SearchRules.XpMultiplierForLevel`, read through `CraftMinigameXp`, each the least multiple of 0.05 that passes its level.
+- **Evidence tables**: the rare items real scavenge tables give with Quick Search against the board (`SearchRareSupply`, rolling every `ILootTableDefinition` the game has), and what each proposed Treasure Seeker purchase adds to the skilled player (`SearchPerkEvidence`).
+
 ### Research Experiment
 
 `Scenario/Experiment` plugs the research Experiment in as the `experiment` scenario (`gates --scenario experiment --gates length` checks its 5-8 turn target; the other gates do not apply to an experiment, which has no quality, styles or legacy loop). The `research` command writes the Experiment's own evidence: length, the size of the reductions against today's dice and the change in supply (licensed runs stay random at today's odds, so theirs is unchanged), the time cut at fixed levels, and Fabrication XP per real hour against at-level crafting.

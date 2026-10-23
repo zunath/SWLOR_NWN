@@ -65,7 +65,7 @@ namespace SWLOR.CraftSim.Search
         public SearchEffects TreasureSeekerLine { get; init; } = new(
             ExtraPromisingSpots: 1,
             DigRiskPercent: 50,
-            DeeperWeightBonus: 1);
+            DeeperWeightBonus: 2);
 
         /// <summary>Boards of the XP cohort's Quick Search check and the Monte Carlo cross-check of the exact expected rolls.</summary>
         public int QuickSearchRuns { get; init; } = 100_000;

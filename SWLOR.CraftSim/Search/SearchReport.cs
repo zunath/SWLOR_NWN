@@ -56,7 +56,7 @@ namespace SWLOR.CraftSim.Search
                 {
                     SearchRareSupply.Build(parity, options, rank, 0),
                     SearchRareSupply.Build(parity, options, rank, 3),
-                    SearchRareSupply.Build(parity, options, rank, 0, options.TreasureSeekerLine with { SearchChanceDelta = SearchPerkEvidence.CarefulHands.SearchChanceDelta, DeeperWeightBonus = options.TreasureSeekerLine.DeeperWeightBonus + SearchPerkEvidence.CarefulHands.DeeperWeightBonus }, "the whole Treasure Seeker line and Careful Hands")
+                    SearchRareSupply.Build(parity, options, rank, 0, SearchPerkEvidence.WithCarefulHands(options.TreasureSeekerLine), "the whole Treasure Seeker line and Careful Hands")
                 }));
             results.Add(new GateResult(
                 "Evidence: Treasure Seeker magnitudes",

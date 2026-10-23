@@ -19,16 +19,24 @@ namespace SWLOR.CraftSim.Search
         /// <summary>The style: a worse Search for a better chance that a Dig Deeper find is a rare one.</summary>
         public static readonly SearchEffects CarefulHands = new(SearchChanceDelta: -3, DeeperWeightBonus: 3);
 
+        /// <summary>A scavenger's other perks with the style on: its worse Search and its rarer dig finds on top of theirs.</summary>
+        public static SearchEffects WithCarefulHands(SearchEffects others) => others with
+        {
+            SearchChanceDelta = others.SearchChanceDelta + CarefulHands.SearchChanceDelta,
+            DeeperWeightBonus = others.DeeperWeightBonus + CarefulHands.DeeperWeightBonus
+        };
+
         /// <summary>The effects the draft proposes, one at a time, with the purchase each belongs to.</summary>
         public static IReadOnlyList<(string Name, SearchEffects Effects)> Probes(SearchParityOptions options) => new (string, SearchEffects)[]
         {
             ("No perks", SearchEffects.None),
             ("Keen Eye (+1 promising spot)", new SearchEffects(ExtraPromisingSpots: 1)),
             ("Steady Dig (half the dig risk)", new SearchEffects(DigRiskPercent: 50)),
-            ("Fine Trowel (rare entries weigh 1 more in a dig)", new SearchEffects(DeeperWeightBonus: 1)),
+            ("Fine Trowel I (rare entries weigh 1 more in a dig)", new SearchEffects(DeeperWeightBonus: 1)),
+            ("Fine Trowel II (rare entries weigh 2 more in a dig)", new SearchEffects(DeeperWeightBonus: 2)),
             ("Careful Hands (style: -3 search chance, rare entries weigh 3 more in a dig)", CarefulHands),
             ("Whole line below the capstone, no style", options.TreasureSeekerLine),
-            ("Whole line with Careful Hands", options.TreasureSeekerLine with { SearchChanceDelta = CarefulHands.SearchChanceDelta, DeeperWeightBonus = CarefulHands.DeeperWeightBonus })
+            ("Whole line with Careful Hands", WithCarefulHands(options.TreasureSeekerLine))
         };
 
         public static IEnumerable<SearchKey> Keys(SearchParityOptions options) =>

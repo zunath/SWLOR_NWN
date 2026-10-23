@@ -332,8 +332,8 @@ and image checks execute as well as the pure Python checks:
 The same image-to-GLB workflow makes placeables. `tools/TrellisPlaceableExport.py` is the placeable counterpart of the
 weapon adapter: it reuses its GLB, material, normal-reprojection, compile and DDS code and replaces the grip fit, icons
 and composite parts with a ground fit, a PWK walkmesh and a placeables.2da row. The seven crafting stations (Smithery,
-Engineering, Fabrication, Cooking, Espionage, Research, Refinery) were made this way; `tools/StationModels.json` lists
-each blueprint, model resref, 2DA label and sound type. Keep concept images, manifests, GLBs, renders and review scenes in
+Engineering, Fabrication, Cooking, Espionage, Research, Refinery) are made this way; `tools/StationModels.json` lists
+each finished station (blueprint, model resref, 2DA label and sound type) and gains an entry as each one lands. Keep concept images, manifests, GLBs, renders and review scenes in
 task-owned staging outside Git, as for weapons; only the finished MDL, PWK, MTR and DDS files go into `SWLOR_Haks/sw_plc/`.
 
 ### Concept images and generation

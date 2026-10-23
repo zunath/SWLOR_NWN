@@ -18,7 +18,7 @@ Schema 1 assets (all paths relative to the manifest):
   max_size [w, d, h] (hard limit on the fitted bounding box);
   walkmesh {prefix, inset, simplify, min_use_clearance, use_nodes [[x, y], ...]}: at most two use nodes, none keeps the
     engine's default approach;
-  emission {threshold, softness, gain, saturation_min?}: a glow map from the brightest base-color texels;
+  emission {threshold, softness, gain?, saturation_min?}: a glow map from the brightest base-color texels;
   double_sided_policy: reject, closed_surface (exact closure, as weapons) or near_closed (outward-wound shells with at
     most max_defect_fraction open edges and max_opposed_fraction of the area wound against its normals);
   normal_basis_policy: reproject, or authored_tangents (mixed tangent handedness) with authored_angle_limit_degrees
@@ -287,9 +287,10 @@ def validate_item(item, manifest_dir, haks_names=None, inspect_only=False):
     if not 0 <= walk.get('inset', 0) <= .3 or not finite(walk.get('min_use_clearance', .1)) or not 0 <= walk.get('simplify', .05) <= .2:
         raise ValueError(f'{asset}: walkmesh.inset must be 0..0.3, simplify 0..0.2 and min_use_clearance finite')
     emission = item.get('emission')
-    if emission is not None and (not isinstance(emission, dict) or not all(
-            finite(emission.get(k, 0)) for k in ('threshold', 'softness', 'gain', 'saturation_min'))):
-        raise ValueError(f'{asset}: emission needs numeric threshold, softness and gain (and optionally saturation_min)')
+    if emission is not None and (not isinstance(emission, dict)
+                                 or not all(finite(emission.get(k)) for k in ('threshold', 'softness'))
+                                 or not all(finite(emission[k]) for k in ('gain', 'saturation_min') if k in emission)):
+        raise ValueError(f'{asset}: emission needs numeric threshold and softness (and optionally gain and saturation_min)')
     for key in ('max_defect_fraction', 'max_opposed_fraction'):
         if not finite(item.get(key, 0)) or not 0 <= item.get(key, 0) <= .25:
             raise ValueError(f'{asset}: {key} must be 0..0.25')
@@ -320,6 +321,20 @@ def validate_manifest(config, manifest_path, haks_names=None, inspect_only=False
                 raise ValueError('Duplicate ' + key + ' ' + item[key])
             names.add((key, item[key]))
     return config
+
+
+def require_resource_check(mode, allow_existing, taken):
+    """An export must not skip the existing-resource check just because SWLOR_Haks is not a git checkout."""
+    if mode == 'export' and not allow_existing and taken is None:
+        raise ValueError('SWLOR_Haks is not a git checkout, so existing resource names cannot be checked; check it out or pass --allow-existing')
+
+
+def material_texture_name(asset, texture, material_count, index):
+    """Texture resref for one material; the _n/_s/_r/_e map suffixes need two characters of the 16-character limit."""
+    name = texture if material_count == 1 else texture + f'_{index}'
+    if len(name) > 14:
+        raise ValueError(f'{asset}: material texture name {name} exceeds 14 characters (the map suffixes need two more)')
+    return name
 
 
 def haks_resource_names(repo):
@@ -949,7 +964,7 @@ def export_asset(weapon, item, repo, out, mode, helpers):
         for slot in sorted({t.material_index for t in ob.data.loop_triangles}):
             index = weapon.imported_material_index(ob.data.materials[slot], material_count)
             if index not in names:
-                name = texture if material_count == 1 else texture + f'_{index}'
+                name = material_texture_name(asset, texture, material_count, index)
                 dims, maps = material_maps(weapon, item, doc, binary, index, source, cache, resources, name)
                 preview = weapon.preview_material(resources, name, maps)
                 # NWN draws single-sided: review renders must cull back faces or a flipped sheet looks fine in Blender
@@ -1104,6 +1119,7 @@ def main():
     manifest = args.manifest.resolve()
     config, manifest_sha = load_manifest(manifest)
     taken = haks_resource_names(repo) if args.mode == 'export' and not args.allow_existing else None
+    require_resource_check(args.mode, args.allow_existing, taken)
     validate_manifest(config, manifest, taken, args.mode == 'inspect')
     weapon = load_module('trellis_weapon_export', repo / 'tools/TrellisWeaponExport.py')
     weapon.load_blender()

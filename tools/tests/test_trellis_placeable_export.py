@@ -238,6 +238,28 @@ class ManifestTests(unittest.TestCase):
             with self.subTest(key=key), self.assertRaises(ValueError):
                 self.check(**{key: value})
 
+    def test_emission_needs_threshold_and_softness_and_numeric_optionals(self):
+        self.assertIn('emission', self.check(emission={'threshold': .8, 'softness': .1}))
+        self.assertIn('emission', self.check(emission={'threshold': .8, 'softness': .1, 'gain': 2, 'saturation_min': .4}))
+        for emission in ({}, {'softness': .1}, {'threshold': .8}, {'threshold': .8, 'softness': .1, 'gain': 'x'},
+                         {'threshold': .8, 'softness': .1, 'saturation_min': float('nan')}, [1, 2]):
+            with self.subTest(emission=emission), self.assertRaises(ValueError):
+                self.check(emission=emission)
+
+    def test_material_texture_names_keep_room_for_the_map_suffixes(self):
+        self.assertEqual(exporter.material_texture_name('a', 'stn_forge', 1, 0), 'stn_forge')
+        self.assertEqual(exporter.material_texture_name('a', 'stn_forge', 2, 1), 'stn_forge_1')
+        with self.assertRaises(ValueError):
+            exporter.material_texture_name('a', 'stn_forge_long', 2, 1)
+        self.assertEqual(exporter.material_texture_name('a', 'stn_forge_long', 1, 0), 'stn_forge_long')
+
+    def test_an_export_cannot_skip_the_existing_resource_check(self):
+        with self.assertRaises(ValueError):
+            exporter.require_resource_check('export', False, None)
+        exporter.require_resource_check('export', True, None)
+        exporter.require_resource_check('export', False, set())
+        exporter.require_resource_check('inspect', False, None)
+
     def test_inspect_only_needs_the_source_and_hash(self):
         with tempfile.TemporaryDirectory() as folder:
             value = item(folder)

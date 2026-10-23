@@ -51,10 +51,10 @@ public sealed record ProspectingNode
 
     /// <summary>
     /// A node as it is the first time it is worked: a pool of 1 to <see cref="ProspectingRules.PoolDie"/> units (today's d4 harvests), full
-    /// Stability and one to three hidden seams, no more than the pool has units. A seam is a gem pocket with
-    /// <see cref="ProspectingRules.GemPocketPercent"/> chance when the node's table has gem entries, and a rich seam otherwise.
+    /// Stability and one to three hidden seams, no more than the pool has units. A seam is a gem pocket with a small chance that
+    /// follows how often the node's table gives a gem (<see cref="ProspectingRules.GemPocketBasisPoints"/>), and a rich seam otherwise.
     /// </summary>
-    public static ProspectingNode Create(IMinigameRandom random, bool hasGems)
+    public static ProspectingNode Create(IMinigameRandom random, double gemChance)
     {
         if (random == null)
             throw new ArgumentNullException(nameof(random));
@@ -65,10 +65,11 @@ public sealed record ProspectingNode
             : seamRoll <= ProspectingRules.OneSeamWeight + ProspectingRules.TwoSeamsWeight ? 2
             : 3);
 
+        var pocketBasisPoints = ProspectingRules.GemPocketBasisPoints(gemChance);
         var seams = ImmutableArray.CreateBuilder<ProspectingSeam>(seamCount);
         for (var index = 0; index < seamCount; index++)
         {
-            var gem = hasGems && random.D100() <= ProspectingRules.GemPocketPercent;
+            var gem = pocketBasisPoints > 0 && random.Next(1, 10001) <= pocketBasisPoints;
             seams.Add(ProspectingSeam.Hidden(gem ? ProspectingSeamKind.GemPocket : ProspectingSeamKind.Rich));
         }
 

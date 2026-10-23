@@ -69,7 +69,22 @@ public class ProspectingEngineTests
     // Survey.
 
     [Test]
-    public void Survey_RevealsOneHiddenSeam_AndSpendsItsChargesAndStability()
+    public void ASurveyCostsNoCharge_AndAnExtractCostsOneMoreThanAStrike()
+    {
+        ProspectingRules.SurveyCharges.Should().Be(0, "looking for seams spends Stability and seconds, not the harvester");
+        ProspectingRules.ExtractCharges.Should().Be(ProspectingRules.StrikeCharges + 1, "an extract takes a unit, as a harvest did, and one charge more");
+
+        var engine = Engine("rg", pool: 4, rolls: [50]);
+        engine.Preview(ProspectingActionIds.Survey).CpCost.Should().Be(0);
+        engine.Perform(ProspectingActionIds.Survey);
+        engine.Charges.Should().Be(20);
+        engine.Preview(ProspectingActionIds.Extract).CpCost.Should().Be(2);
+        engine.Perform(ProspectingActionIds.Extract);
+        engine.Charges.Should().Be(18);
+    }
+
+    [Test]
+    public void Survey_RevealsOneHiddenSeam_AndSpendsItsStabilityOnly()
     {
         var engine = Engine("rg", pool: 4);
 

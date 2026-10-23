@@ -12,8 +12,8 @@ namespace SWLOR.Game.Server.Service.CraftService.Minigame.Prospecting;
 /// pool that is sealed in rock: a Strike takes the loose units first and breaks into a seam only when nothing else is left, so a
 /// player who never looks for seams still gets the whole pool. Survey finds a seam and Extract opens it: a rich seam gives its unit and,
 /// sometimes, an extra ore roll, and a gem pocket gives a gem in place of its unit. A harvest of today took one charge and 5 seconds
-/// for one unit; Quick Harvest still does. A session spends charges for each action instead, and the harvester's remaining charges
-/// are its budget.
+/// for one unit; Quick Harvest still does. A session spends charges on its Strikes and Extracts instead (a Survey costs Stability and
+/// seconds only), and the harvester's remaining charges are its budget.
 /// </para>
 /// </summary>
 public static class ProspectingRules
@@ -25,19 +25,25 @@ public static class ProspectingRules
     public const int MaxStability = 100;
 
     // Seams. A node holds one to three hidden seams, never more than its pool has units (each seals one); the weights are the chance
-    // of each count. A seam is a gem pocket with GemPocketPercent chance when the node's loot table has gem entries, and a rich seam
-    // otherwise.
+    // of each count. A seam is a gem pocket with GemPocketShare times the chance that a roll of the node's loot table is a gem (so none
+    // where the table has no gem), and a rich seam otherwise. Gems are part of the bounded upside: pockets are rare enough that a skilled
+    // session's expected gems per node, the gems its ordinary rolls give included, stay within 15% of today's at every tier.
     public const int OneSeamWeight = 30;
     public const int TwoSeamsWeight = 40;
     public const int ThreeSeamsWeight = 30;
-    public const int GemPocketPercent = 25;
+    public const double GemPocketShare = 0.15;
 
     /// <summary>The seams every node can hold at most.</summary>
     public const int MaxSeams = 3;
 
+    /// <summary>The chance, in hundredths of a percent, that a seam of a node whose table gives a gem on <paramref name="gemChance"/> of its rolls is a gem pocket.</summary>
+    public static int GemPocketBasisPoints(double gemChance) =>
+        (int)Math.Clamp(Math.Round(10000 * GemPocketShare * gemChance, MidpointRounding.AwayFromZero), 0, 10000);
+
     // Actions: harvester charges, Stability and seconds. Strike and Heavy Strike take the same time as the harvests they replace: five
-    // seconds a unit is today's pace, and a Strike takes 1.5 units on average.
-    public const int SurveyCharges = 1;
+    // seconds a unit is today's pace, and a Strike takes 1.5 units on average. A Survey costs no charge, so looking for seams spends
+    // Stability and seconds only; an Extract costs the charge of the unit it takes, which a harvest of today costs too, and one more.
+    public const int SurveyCharges = 0;
     public const int SurveyStability = 12;
     public const double SurveySeconds = 2.5;
 

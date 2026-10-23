@@ -47,30 +47,73 @@ public class GatheringXpTests
     }
 
     [Test]
-    public void RefiningPaysTheSameRankDifferenceXpAsHarvesting_ByTheOresTier()
+    public void RefiningAtTheOresLevelPaysTodaysFlatXp_OnEveryOre()
     {
         var ores = RefineryOres();
 
         ores.Where(ore => ore.Tier < 99).Should().HaveCount(12);
-        foreach (var (resref, tier) in ores.Where(ore => ore.Tier < 99))
+        foreach (var (resref, tier, flat) in ores.Where(ore => ore.Tier < 99))
         {
-            foreach (var rank in new[] { 0, 5, 15, 25, 35, 45, 50 })
+            // A rank equal to the ore's level makes the rank difference 0, which is the divisor of the curve: the flat XP, whole.
+            GatheringLevels.RefiningXp(flat, tier, GatheringLevels.ForTier(tier), 1).Should().Be(flat, resref);
+            GatheringLevels.RefiningXp(flat, tier, GatheringLevels.ForTier(tier), 7).Should().Be(7 * flat, resref);
+        }
+
+        ores.Where(ore => ore.Tier < 99).Select(ore => ore.Flat).Distinct().OrderBy(xp => xp)
+            .Should().Equal(25, 50, 75, 100, 125, 150);
+    }
+
+    [TestCase(0, 44)]
+    [TestCase(5, 25)]
+    [TestCase(6, 19)]
+    [TestCase(7, 13)]
+    [TestCase(8, 6)]
+    [TestCase(9, 3)]
+    [TestCase(10, 0)]
+    [TestCase(50, 0)]
+    public void TheRankScalesTheFlatXpByTheCurveOfHarvesting_AndTheCurveIsZeroFiveRanksPastTheLevel(int rank, int expected)
+    {
+        // Veldite is a tier 1 ore, level 5, 25 XP a unit: 1.75x at rank 0, 1x at rank 5, then down the curve to nothing at rank 10.
+        GatheringLevels.RefiningXp(25, 1, rank, 1).Should().Be(expected);
+    }
+
+    [TestCase(1, 25, 5, 25)]
+    [TestCase(2, 50, 15, 50)]
+    [TestCase(3, 75, 25, 75)]
+    [TestCase(4, 100, 35, 100)]
+    [TestCase(5, 150, 45, 150)]
+    [TestCase(5, 150, 40, 263)]
+    [TestCase(5, 150, 50, 0)]
+    public void ARefinerAtTheOresLevelEarnsTheFlatXp_AndOneBelowItEarnsMore(int tier, int flat, int rank, int expected)
+    {
+        GatheringLevels.RefiningXp(flat, tier, rank, 1).Should().Be(expected);
+    }
+
+    [Test]
+    public void TheCurveIsHarvestingsCurveOverItsOwnValueAtTheLevel_SoItNeverPaysMoreThanTwiceTheFlatXp()
+    {
+        foreach (var tier in new[] { 1, 2, 3, 4, 5 })
+        {
+            for (var rank = 0; rank <= 50; rank++)
             {
-                GatheringLevels.XpPerUnit(tier, rank).Should().Be(
-                    Skill.GetDeltaXP(GatheringLevels.ForTier(tier) - rank),
-                    $"{resref} at rank {rank} is measured at the level of a tier {tier} vein");
+                var ratio = (double)Skill.GetDeltaXP(GatheringLevels.ForTier(tier) - rank) / Skill.GetDeltaXP(0);
+                GatheringLevels.RefiningXp(100, tier, rank, 1).Should().Be((int)Math.Round(100 * ratio, MidpointRounding.AwayFromZero));
+                GatheringLevels.RefiningXp(100, tier, rank, 1).Should().BeLessThanOrEqualTo(200);
             }
         }
+
+        GatheringLevels.RefiningXp(100, 1, 0, 0).Should().Be(0);
+        GatheringLevels.RefiningXp(100, 1, 0, -3).Should().Be(0, "a negative stack is no units");
     }
 
     [Test]
     public void CheapOreStopsTrainingHighRanks_WhereTheFlatXpOfTodayNever()
     {
         // Today a unit of veldite paid 25 XP to a rank 50 refiner. Now a tier 1 ore pays nothing five ranks past its level.
-        GatheringLevels.XpPerUnit(1, 50).Should().Be(0);
-        GatheringLevels.XpPerUnit(1, 10).Should().Be(0);
-        GatheringLevels.XpPerUnit(1, 9).Should().BeGreaterThan(0);
-        GatheringLevels.XpPerUnit(4, 40).Should().Be(0);
+        GatheringLevels.RefiningXp(25, 1, 50, 1).Should().Be(0);
+        GatheringLevels.RefiningXp(25, 1, 10, 1).Should().Be(0);
+        GatheringLevels.RefiningXp(25, 1, 9, 1).Should().BeGreaterThan(0);
+        GatheringLevels.RefiningXp(100, 4, 40, 1).Should().Be(0);
     }
 
     [Test]
@@ -89,14 +132,16 @@ public class GatheringXpTests
     }
 
     [Test]
-    public void TheRefineryReadsItsXpFromTheSharedLadder_AndKeepsNoFlatXpTable()
+    public void TheRefineryScalesEachOresFlatXpByTheRank_AndKeepsItsFlatXpTable()
     {
         var source = ReadSource("Feature", "GuiDefinition", "ViewModel", "RefineryViewModel.cs");
 
-        source.Should().Contain("GatheringLevels.XpPerUnit(refinedItem.RequiredLevel, gatheringRank) * stackSize");
+        source.Should().Contain("GatheringLevels.RefiningXp(refinedItem.XPGranted, refinedItem.RequiredLevel, gatheringRank, stackSize)");
         source.Should().Contain("Skill.GetCreatureSkillRank(Player, SkillType.Gathering)");
-        source.Should().NotContain("XPGranted");
-        source.Should().Contain("{\"raw_ochne\", new OreDetail(99, \"ref_ochne\")}", "the ores that are not in the game are left alone");
+        source.Should().NotContain("refinedItem.XPGranted * stackSize", "the flat XP is no longer paid whatever the rank");
+        source.Should().Contain("{\"raw_veldite\", new OreDetail(1, \"ref_veldite\", 25)}", "the flat XP of each ore is kept");
+        source.Should().Contain("{\"raw_arkoxit\", new OreDetail(5, \"ref_arkoxit\", 150)}");
+        source.Should().Contain("{\"raw_ochne\", new OreDetail(99, \"ref_ochne\", 175)}", "the ores that are not in the game are left alone");
         source.Should().Contain("private const int BaseItemsRefinedPerCore = 3;");
     }
 
@@ -172,14 +217,16 @@ public class GatheringXpTests
         source.Should().Contain("ProspectingSessions.Begin(new ProspectingRequest(");
     }
 
-    private static List<(string Resref, int Tier)> RefineryOres()
+    private static List<(string Resref, int Tier, int Flat)> RefineryOres()
     {
         var field = typeof(RefineryViewModel).GetField("_ores", BindingFlags.NonPublic | BindingFlags.Static)!;
-        var ores = new List<(string, int)>();
+        var ores = new List<(string, int, int)>();
         foreach (DictionaryEntry entry in (IDictionary)field.GetValue(null)!)
         {
-            var tier = (int)entry.Value!.GetType().GetProperty("RequiredLevel")!.GetValue(entry.Value)!;
-            ores.Add(((string)entry.Key, tier));
+            var type = entry.Value!.GetType();
+            var tier = (int)type.GetProperty("RequiredLevel")!.GetValue(entry.Value)!;
+            var flat = (int)type.GetProperty("XPGranted")!.GetValue(entry.Value)!;
+            ores.Add(((string)entry.Key, tier, flat));
         }
 
         return ores;

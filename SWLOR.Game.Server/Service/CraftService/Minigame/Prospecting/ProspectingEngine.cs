@@ -9,7 +9,7 @@ namespace SWLOR.Game.Server.Service.CraftService.Minigame.Prospecting;
 /// harvests), a Stability of 100 and one to three hidden seams, each sealing one unit of the pool. A seam is a rich seam (its unit and
 /// sometimes an extra ore roll) or a gem pocket (a gem in place of its unit). The harvester's charges are the budget.
 /// <list type="bullet">
-/// <item><b>Survey</b> reveals hidden seams. A Gathering rank milestone reveals more at once.</item>
+/// <item><b>Survey</b> reveals hidden seams. It costs Stability and no charge. A Gathering rank milestone reveals more at once.</item>
 /// <item><b>Strike</b> takes 1 or 2 units from the pool; <b>Heavy Strike</b> takes 2 to 4, costs more, and can shatter a gem pocket that has not been surveyed. Gathering rank milestones add yield to both. Both take the loose units first and break into a seam only when no loose unit is left.</item>
 /// <item><b>Extract</b> claims a revealed seam for extra charges.</item>
 /// <item><b>Leave</b> ends the session and leaves the rest of the node for others.</item>
@@ -33,7 +33,7 @@ public sealed class ProspectingEngine : MinigameEngineBase<ProspectingState>
         new MinigameActionInfo(
             ProspectingActionIds.Survey,
             "Survey",
-            "Reveals hidden seams in the node. Gathering rank milestones reveal more at once."),
+            "Reveals hidden seams in the node for Stability only, no charge. Gathering rank milestones reveal more at once."),
         new MinigameActionInfo(
             ProspectingActionIds.Strike,
             "Strike",

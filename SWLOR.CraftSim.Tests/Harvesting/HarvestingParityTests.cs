@@ -36,7 +36,7 @@ namespace SWLOR.CraftSim.Tests.Harvesting
         {
             var parity = HarvestingFixture.Parity(runs: 3000);
 
-            var sample = parity.QuickHarvestSample(new HarvestCase(2, 15, true));
+            var sample = parity.QuickHarvestSample(new HarvestCase(2, 15, 0.1));
 
             sample.ItemsPerNode.Should().BeApproximately(2.5, 0.08);
             sample.ChargesPerNode.Should().Be(sample.ItemsPerNode);
@@ -52,7 +52,7 @@ namespace SWLOR.CraftSim.Tests.Harvesting
         {
             var parity = HarvestingFixture.Parity(runs: 500, options: new HarvestingParityOptions { Ranks = new[] { 0 }, Charges = 1 });
 
-            var sample = parity.QuickHarvestSample(new HarvestCase(1, 0, true));
+            var sample = parity.QuickHarvestSample(new HarvestCase(1, 0, 0.1));
 
             sample.ItemsPerNode.Should().Be(1.0);
             sample.ChargesPerNode.Should().Be(1.0);
@@ -72,7 +72,8 @@ namespace SWLOR.CraftSim.Tests.Harvesting
 
                     var casual = parity.Mean(tier, rank, ProspectorPlan.Casual);
                     casual.Items.Should().BeApproximately(2.5, 0.08, $"tier {tier} rank {rank}");
-                    casual.Gems.Should().Be(0);
+                    casual.PocketGems.Should().Be(0, "a player who never looks for a seam finds no pocket");
+                    casual.Gems.Should().BeApproximately(parity.TodayGemsPerNode(tier), 0.02, "its units are today's rolls of the same table");
                     casual.Collapsed.Should().Be(0);
                 }
             }
@@ -102,7 +103,57 @@ namespace SWLOR.CraftSim.Tests.Harvesting
 
             (skilled.Seconds / skilled.Items).Should().BeLessThan(ProspectingRules.HarvestSeconds);
             (skilled.Charges / skilled.Items).Should().BeGreaterThan(1.0, "Survey and Extract cost charges and make no unit of their own");
-            skilled.Gems.Should().BeGreaterThan(parity.TodayGemsPerNode(3), "a gem pocket is the upside");
+            skilled.PocketGems.Should().BeGreaterThan(0, "a gem pocket is the upside");
+            skilled.Gems.Should().BeInRange(parity.TodayGemsPerNode(3), parity.TodayGemsPerNode(3) * 1.15, "the gems of the rolls and the pockets are within the cap");
+        }
+
+        [Test]
+        public void ASkilledSessionSpendsAtMostAboutOneAndAHalfTimesTodaysChargesPerNode()
+        {
+            var parity = HarvestingFixture.Parity(runs: 3000);
+
+            foreach (var tier in new[] { 1, 3, 5 })
+            {
+                var rank = Math.Min(50, GatheringLevels.ForTier(tier));
+                var charges = parity.Skilled(tier, rank).Mean.Charges;
+
+                charges.Should().BeGreaterThan(HarvestingParity.TodayItemsPerNode, $"tier {tier}: a skilled session still pays for its extracts");
+                charges.Should().BeLessThanOrEqualTo(HarvestingParity.TodayItemsPerNode * 1.55, $"tier {tier}: a Survey costs no charge");
+            }
+        }
+
+        [Test]
+        public void TheGemsOfASessionAreItsUnitsAsRollsOfTheTable_PlusTheGemsOfItsPockets()
+        {
+            var plan = ProspectorPlan.Skilled[1];
+
+            // A table that gave a gem on a third of its rolls: pockets are common enough to find in a short run.
+            var sample = ProspectingPlays.Sample(3, 25, 1.0 / 3, plan, 3000, 1, 7);
+            var mean = ProspectingMean.Of(sample, 0, 0, 1.0 / 3);
+
+            sample.GemsPerNode.Should().BeGreaterThan(0, "a skilled player claims the pockets they find");
+            mean.PocketGems.Should().Be(sample.GemsPerNode);
+            mean.Gems.Should().BeApproximately(sample.UnitsPerNode / 3 + sample.GemsPerNode, 1e-9);
+            ProspectingMean.Of(ProspectingPlays.QuickHarvest(3, 25, 1.0 / 3, 3000, 1, 7), 0, 0, 1.0 / 3).Gems
+                .Should().BeApproximately(ProspectingQuickHarvest.ExpectedUnits / 3, 0.03, "Quick Harvest rolls the table as today's harvests did");
+        }
+
+        [Test]
+        public void TheGemsOfEachPlanStayNearTodays_AndTheSkilledPlayersWithinTheCap()
+        {
+            var parity = HarvestingFixture.Parity(runs: 3000);
+
+            foreach (var tier in new[] { 1, 5 })
+            {
+                var today = parity.TodayGemsPerNode(tier);
+                var casual = parity.Mean(tier, 50, ProspectorPlan.Casual);
+                var skilled = parity.Skilled(tier, 50).Mean;
+                var quick = parity.QuickHarvest(tier, 50);
+
+                quick.Gems.Should().BeApproximately(today, today * 0.06, $"tier {tier}: Quick Harvest rolls the table as today does");
+                casual.Gems.Should().BeApproximately(today, today * 0.06);
+                (skilled.Gems / today).Should().BeInRange(1.0, 1.15, $"tier {tier}: the skilled gems are within the cap");
+            }
         }
 
         [Test]
@@ -121,11 +172,11 @@ namespace SWLOR.CraftSim.Tests.Harvesting
         {
             var parity = HarvestingFixture.Parity(runs: 2000);
 
-            var sample = parity.Play(new HarvestCase(1, 0, true), ProspectorPlan.Reckless);
+            var sample = parity.Play(new HarvestCase(1, 0, 0.1), ProspectorPlan.Reckless);
 
             sample.CollapsedShare.Should().BeGreaterThan(0, "spending the Stability on seams first can leave too little for the pool");
             sample.PoolLeftPerNode.Should().BeGreaterThan(0);
-            parity.Play(new HarvestCase(1, 0, true), ProspectorPlan.Skilled[0]).CollapsedShare.Should().Be(0);
+            parity.Play(new HarvestCase(1, 0, 0.1), ProspectorPlan.Skilled[0]).CollapsedShare.Should().Be(0);
         }
 
         // The gates.
@@ -133,16 +184,43 @@ namespace SWLOR.CraftSim.Tests.Harvesting
         [Test]
         public void TheEconomyParityGatePassesWithTheShippedNumbers()
         {
-            var parity = HarvestingFixture.Parity(runs: 2000);
+            var parity = HarvestingFixture.Shipped;
 
             var result = new HarvestingYieldGate(parity).Evaluate(Context());
 
             result.Gate.Should().Be(GateNames.EconomyParity);
             result.Verdict.Should().Be(GateVerdict.Passed, result.Summary);
-            result.Tables.Should().HaveCount(2);
+            result.Tables.Should().HaveCount(4);
             result.Tables[0].Rows.Should().HaveCount(5, "one row for each node tier");
             result.Tables[0].Rows.Should().OnlyContain(row => row[row.Count - 1] == "Passed");
+            result.Tables[2].Rows.Should().NotBeEmpty().And.OnlyContain(row => row[row.Count - 1] == "Passed");
+            result.Tables[3].Rows.Should().NotBeEmpty().And.OnlyContain(row => row[row.Count - 1] == "Passed");
             result.Summary.Should().Contain("Quick Harvest equals today's 2.50 items, 12.5 s and charges per node");
+            result.Summary.Should().Contain("Gems per node").And.Contain("harvester charges per node");
+        }
+
+        [Test]
+        public void TheEconomyParityGateFailsWhenASkilledSessionBeatsTheGemCap()
+        {
+            var parity = HarvestingFixture.Parity(
+                runs: 1500, options: new HarvestingParityOptions { Ranks = new[] { 0, 50 }, SkilledCapShare = 0.5, GemCapShare = 0.01 });
+
+            var result = new HarvestingYieldGate(parity).Evaluate(Context());
+
+            result.Verdict.Should().Be(GateVerdict.Failed);
+            result.Summary.Should().Contain("today's gems per node");
+        }
+
+        [Test]
+        public void TheEconomyParityGateFailsWhenASkilledSessionWearsOutTheHarvesterTooFast()
+        {
+            var parity = HarvestingFixture.Parity(
+                runs: 1500, options: new HarvestingParityOptions { Ranks = new[] { 0, 50 }, SkilledCapShare = 0.5, GemCapShare = 0.5, ChargeCapShare = 0.1 });
+
+            var result = new HarvestingYieldGate(parity).Evaluate(Context());
+
+            result.Verdict.Should().Be(GateVerdict.Failed);
+            result.Summary.Should().Contain("harvester charges per node");
         }
 
         [Test]

@@ -21,7 +21,7 @@ What the numbers say:
 - **Crafts, not just components.** Mid gear needs about 536 at-level crafts to reach rank 50, not the 340-420 in the plan's research: that range assumes near-full quality, and the lookahead player's quality at mid gear is 30% on average (quality adds up to 100% to a craft's XP).
 - **Pace.** The craft loop pays 4,108-11,261 XP per hour with its gathering, 1.4-3.8 times what RP XP pays. Players who bypass crafting with RP XP are buying out the materials and gathering, not a faster rate.
 - **Gathering dominates Smithery.** 80% of its hours are gathering. The three components that cost the most are `lth_good` (19.1 h), `ruby` (11.1 h), `lth_high` (9.3 h); each drops on a small share of rolls (gems 2-9%, crate goods 15%), so one unit costs 3.4-7.4 minutes.
-- **Gathering is quick for the skill itself.** Each harvested item pays up to 1,200 XP and refining pays 25-150 XP per unit whatever the rank, so Gathering rank 50 takes hours, not days, if nodes are free. Node respawns and contention are not modelled.
+- **Gathering is quick for the skill itself.** Each harvested item pays up to 1,200 XP and refining pays 25-150 XP per unit at the ore's level (the model counts that at every rank), so Gathering rank 50 takes hours, not days, if nodes are free. Node respawns and contention are not modelled.
 - **Agriculture has a faster path than the one modelled here.** Fishing pays the same chart per bite (600-1,200 XP); see the catch task table in the guild section.
 
 ## Decisions applied (owner, October 2026)
@@ -78,9 +78,10 @@ Rules copied from the server (the model calls everything else directly), each ch
 | Harvest XP | `GatheringLevels.cs:20-23` |
 | Scavenge second attempt | `ScavengePoint.cs:53-58` |
 | Scavenge success roll and DC | `ScavengePoint.cs:64-104` |
-| Ore tiers | `RefineryViewModel.cs:30-51` |
-| Refinery batch size | `RefineryViewModel.cs:56` |
-| Power cores per batch | `RefineryViewModel.cs:168-169` |
+| Ore tiers and XP per unit | `RefineryViewModel.cs:35-52` |
+| Refinery batch size | `RefineryViewModel.cs:61` |
+| Power cores per batch | `RefineryViewModel.cs:173-174` |
+| Refining XP | `RefineryViewModel.cs:356-360` |
 
 ## Hours per 10-rank band
 
@@ -132,7 +133,7 @@ A band is the hours to climb from its first rank to the next band's first rank (
 
 ## Gathering rank 50
 
-Hours per band for a new gatherer. Harvesting pays `GetDeltaXP(vein level - rank)` for every item, and a vein two tiers below the rank pays nothing, so the gatherer always works the top vein the tier allows; refining pays a flat 25-150 XP per raw unit.
+Hours per band for a new gatherer. Harvesting pays `GetDeltaXP(vein level - rank)` for every item, and a vein two tiers below the rank pays nothing, so the gatherer always works the top vein the tier allows; refining pays 25-150 XP per raw unit, counted at every rank.
 
 | Ranks | XP | Harvest and refine h | Scavenge h | Better of the two h | XP per hour (better) | RP XP h |
 | --- | --- | --- | --- | --- | --- | --- |

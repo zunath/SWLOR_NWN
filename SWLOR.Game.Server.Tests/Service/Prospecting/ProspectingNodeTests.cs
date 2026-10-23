@@ -9,11 +9,17 @@ namespace SWLOR.Game.Server.Tests.Service.Prospecting;
 /// <summary>Covers what a node holds between sessions: how a fresh one is made, how it is stored and what taking units from it leaves.</summary>
 public class ProspectingNodeTests
 {
+    /// <summary>A table that gives a gem on a tenth of its rolls, so a seam is a pocket on 1.5% (0.15 of that tenth).</summary>
+    private const double GemChance = 0.1;
+
+    /// <summary>A roll out of 10000 that is above the chance of a pocket, so the seam is a rich one.</summary>
+    private const int RichRoll = 10000;
+
     [Test]
     public void ANodeNobodyHasWorkedHoldsToday_sD4PoolFullStabilityAndHiddenSeams()
     {
-        // The pool is Next(1, 5); then Next(1, 101) picks the seam count; then a d100 for each seam picks its kind.
-        var node = ProspectingNode.Create(new ScriptedMinigameRandom(3, 10, 100), hasGems: true);
+        // The pool is Next(1, 5); then Next(1, 101) picks the seam count; then Next(1, 10001) for each seam picks its kind.
+        var node = ProspectingNode.Create(new ScriptedMinigameRandom(3, 10, RichRoll), GemChance);
 
         node.Pool.Should().Be(3);
         node.Stability.Should().Be(ProspectingRules.MaxStability);
@@ -28,7 +34,7 @@ public class ProspectingNodeTests
     [TestCase(100, 3)]
     public void TheSeamCountFollowsTheWeights_OneToThree(int seamRoll, int expectedSeams)
     {
-        var node = ProspectingNode.Create(new ScriptedMinigameRandom(4, seamRoll, 100, 100, 100), hasGems: false);
+        var node = ProspectingNode.Create(new ScriptedMinigameRandom(4, seamRoll, RichRoll, RichRoll, RichRoll), GemChance);
 
         node.Seams.Should().HaveCount(expectedSeams);
         node.Seams.Should().OnlyContain(seam => !seam.Revealed);
@@ -37,7 +43,7 @@ public class ProspectingNodeTests
     [Test]
     public void EachSeamSealsAUnit_SoANodeHoldsNoMoreSeamsThanUnits()
     {
-        var node = ProspectingNode.Create(new ScriptedMinigameRandom(1, 100, 100, 100, 100), hasGems: false);
+        var node = ProspectingNode.Create(new ScriptedMinigameRandom(1, 100, RichRoll, RichRoll, RichRoll), GemChance);
 
         node.Pool.Should().Be(1);
         node.Seams.Should().HaveCount(1, "three seams were rolled but one unit can seal only one");
@@ -48,17 +54,29 @@ public class ProspectingNodeTests
     }
 
     [Test]
-    public void AGemPocketNeedsGemEntriesInTheTable()
+    public void AGemPocketIsAsRareAsTheTablesGemIs_AndNeedsAGemInTheTable()
     {
-        const int Pocket = ProspectingRules.GemPocketPercent;
-        const int Rich = ProspectingRules.GemPocketPercent + 1;
+        // A seam is a pocket when its roll out of 10000 is within the share of the table's gem chance. At a gem chance of 10% that is 150.
+        var basisPoints = ProspectingRules.GemPocketBasisPoints(GemChance);
+        basisPoints.Should().Be((int)Math.Round(10000 * ProspectingRules.GemPocketShare * GemChance));
 
-        ProspectingNode.Create(new ScriptedMinigameRandom(4, 100, Pocket, Pocket, Pocket), hasGems: true)
+        ProspectingNode.Create(new ScriptedMinigameRandom(4, 100, basisPoints, basisPoints, basisPoints), GemChance)
             .Seams.Should().OnlyContain(seam => seam.Kind == ProspectingSeamKind.GemPocket);
-        ProspectingNode.Create(new ScriptedMinigameRandom(4, 100, Rich, Rich, Rich), hasGems: true)
+        ProspectingNode.Create(new ScriptedMinigameRandom(4, 100, basisPoints + 1, basisPoints + 1, basisPoints + 1), GemChance)
             .Seams.Should().OnlyContain(seam => seam.Kind == ProspectingSeamKind.Rich);
-        ProspectingNode.Create(new ScriptedMinigameRandom(4, 100, Pocket, Pocket, Pocket), hasGems: false)
+        ProspectingNode.Create(new ScriptedMinigameRandom(4, 100, 1, 1, 1), 0)
             .Seams.Should().OnlyContain(seam => seam.Kind == ProspectingSeamKind.Rich, "an arkoxit node has no gem entries to fill a pocket from");
+    }
+
+    [TestCase(0.0, 0)]
+    [TestCase(0.02, 30)]
+    [TestCase(1.0 / 11, 136)]
+    [TestCase(0.1, 150)]
+    [TestCase(1.0, 1500)]
+    public void TheChanceOfAPocketIsAShareOfTheChanceTheTableGivesAGem(double gemChance, int basisPoints)
+    {
+        ProspectingRules.GemPocketShare.Should().Be(0.15);
+        ProspectingRules.GemPocketBasisPoints(gemChance).Should().Be(basisPoints);
     }
 
     [Test]
@@ -66,7 +84,7 @@ public class ProspectingNodeTests
     {
         ProspectingRules.PoolDie.Should().Be(4);
         for (var roll = 1; roll <= 4; roll++)
-            ProspectingNode.Create(new ScriptedMinigameRandom(roll, 1, 100), hasGems: false).Pool.Should().Be(roll);
+            ProspectingNode.Create(new ScriptedMinigameRandom(roll, 1, RichRoll), GemChance).Pool.Should().Be(roll);
 
         ProspectingQuickHarvest.ExpectedUnits.Should().Be(2.5);
     }

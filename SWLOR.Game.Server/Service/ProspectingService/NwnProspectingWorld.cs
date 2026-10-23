@@ -35,8 +35,8 @@ namespace SWLOR.Game.Server.Service.ProspectingService
 
         public bool NodeExists(uint node) => GetIsObjectValid(node);
 
-        public bool TableHasGems(string lootTable) =>
-            Loot.LootTableExists(lootTable) && ProspectingGems.HasGems(Loot.GetLootTableByName(lootTable));
+        public double GemChance(string lootTable) =>
+            Loot.LootTableExists(lootTable) ? ProspectingGems.GemChance(Loot.GetLootTableByName(lootTable)) : 0;
 
         public void DestroyNode(uint node)
         {

@@ -103,7 +103,7 @@ namespace SWLOR.CraftSim.Harvesting
             var table = new EvidenceTable(
                 "Node tier", "Rank", "Charges per node, today and Quick Harvest", "Charges per node, strike only", "Charges per node, skilled",
                 "Charges per item, skilled", "Seconds per node, today and Quick Harvest", "Seconds per node, strike only", "Seconds per node, skilled",
-                "Gems per node, today", "Gems per node, skilled", "Gems, skilled / today");
+                "Gems per node, today", "Gems per node, skilled", "Gems from pockets, skilled", "Gems, skilled / today", "Charges, skilled / today");
             foreach (var tier in parity.Tiers)
             {
                 var rank = Math.Min(50, GatheringLevels.ForTier(tier));
@@ -123,13 +123,15 @@ namespace SWLOR.CraftSim.Harvesting
                     Number(skilled.Seconds, 1),
                     Number(todayGems, 3),
                     Number(skilled.Gems, 3),
-                    todayGems <= 0 ? "n/a" : Number(skilled.Gems / todayGems, 1) + "x");
+                    Number(skilled.PocketGems, 3),
+                    todayGems <= 0 ? "n/a" : Number(skilled.Gems / todayGems, 3) + "x",
+                    Number(skilled.Charges / today, 2) + "x");
             }
 
             return new GateResult(
                 "Evidence: charges, time and gems",
                 GateVerdict.NotApplicable,
-                "Not a gate. What a node costs and what the skilled player's extra items are made of. Today a unit costs one charge and 5 seconds, and its roll of the table is a gem with the table's gem weight over its whole weight.",
+                "Not a gate (the gem cap is checked in the economy-parity gate). What a node costs and what the skilled player's extra items are made of. Today a unit costs one charge and 5 seconds, and its roll of the table is a gem with the table's gem weight over its whole weight. A Survey costs no charge, an Extract costs one charge more than a Strike, and a gem pocket is rare enough that the gems of a skilled session, those of its ordinary rolls and of its pockets together, stay within the cap of today's.",
                 new[] { table.ToGateTable("Charges, seconds and gems per node at rank = the vein's level (a Might modifier of 0 for today)") });
         }
 
@@ -204,13 +206,12 @@ namespace SWLOR.CraftSim.Harvesting
                 var rank = Math.Min(50, GatheringLevels.ForTier(tier));
                 var reckless = parity.Mean(tier, rank, ProspectorPlan.Reckless);
                 var skilled = parity.Skilled(tier, rank).Mean;
-                var sample = parity.Play(new HarvestCase(tier, rank, true), ProspectorPlan.Reckless);
                 table.Add(
                     tier.ToString(),
                     rank.ToString(),
                     Number(reckless.Items, 2),
                     Percent(reckless.Collapsed, 1),
-                    Number(sample.PoolLeftPerNode, 2),
+                    Number(reckless.PoolLeft, 2),
                     Number(skilled.Items, 2));
             }
 
@@ -218,15 +219,15 @@ namespace SWLOR.CraftSim.Harvesting
                 "Evidence: collapse",
                 GateVerdict.NotApplicable,
                 "Not a gate. Stability is the node's budget: a player who surveys and extracts without leaving enough to mine the pool can collapse the node and lose the units left in it. The window warns before the click.",
-                new[] { table.ToGateTable("A player who does not keep a Stability reserve (gem-bearing node kinds)") });
+                new[] { table.ToGateTable("A player who does not keep a Stability reserve (averaged over the tier's kinds of node)") });
         }
 
-        /// <summary>Refining's XP per unit now, against what harvesting pays for the same tier and what refining paid before.</summary>
+        /// <summary>Refining's XP per unit now, against what refining paid before: the same at the ore's level, falling as the rank passes it.</summary>
         private static GateResult RefiningEvidence()
         {
             var table = new EvidenceTable(
-                "Ore", "Ore tier", "Ore activity level", "Refining XP per unit before", "Refining XP per unit at rank = level", "At level + 5 ranks",
-                "At level + 10 ranks", "At rank 0", "At rank 50", "Harvest XP per item of the same tier at rank = level");
+                "Ore", "Ore tier", "Ore activity level", "Refining XP per unit before (flat)", "Now, at rank = level", "At level - 5 ranks", "At level + 1 rank",
+                "At level + 3 ranks", "At level + 5 ranks", "At rank 0", "At rank 50", "At level, now / before");
             foreach (var ore in RefiningModel.Ores())
             {
                 var level = GatheringLevels.ForTier(ore.RequiredLevel);
@@ -236,17 +237,19 @@ namespace SWLOR.CraftSim.Harvesting
                     level.ToString(),
                     ore.XpPerUnit.ToString(),
                     RefiningModel.CurrentXpPerUnit(ore, level).ToString(),
+                    RefiningModel.CurrentXpPerUnit(ore, Math.Max(0, level - 5)).ToString(),
+                    RefiningModel.CurrentXpPerUnit(ore, level + 1).ToString(),
+                    RefiningModel.CurrentXpPerUnit(ore, level + 3).ToString(),
                     RefiningModel.CurrentXpPerUnit(ore, level + 5).ToString(),
-                    RefiningModel.CurrentXpPerUnit(ore, level + 10).ToString(),
                     RefiningModel.CurrentXpPerUnit(ore, 0).ToString(),
                     RefiningModel.CurrentXpPerUnit(ore, 50).ToString(),
-                    HarvestModel.XpPerItem(ore.RequiredLevel, level).ToString());
+                    Number((double)RefiningModel.CurrentXpPerUnit(ore, level) / ore.XpPerUnit, 2) + "x");
             }
 
             return new GateResult(
                 "Evidence: refining XP",
                 GateVerdict.NotApplicable,
-                "Not a gate: refining has no minigame and no legacy rate to match. Refining pays GetDeltaXP(ore activity level - rank) for each unit, where an ore's activity level is the level of the vein of its tier (10 x (tier - 1) + 5, so 5, 15, 25, 35 and 45). The ore of the veins' tier pays the same per unit as harvesting that vein, so a unit that is harvested and then refined pays twice at the same rank.",
+                "Not a gate: refining has no minigame and no legacy rate to match. Each unit pays its ore's flat XP (25 to 150, what refining always paid) times GetDeltaXP(ore activity level - rank) / GetDeltaXP(0), where an ore's activity level is the level of the vein of its tier (10 x (tier - 1) + 5, so 5, 15, 25, 35 and 45). At the ore's level that is exactly today's flat XP, so refining XP per hour at level is today's; a refiner below the level earns up to twice the flat XP, and one five ranks above it earns nothing, so cheap ore stops training high ranks.",
                 new[] { table.ToGateTable("Refining XP per unit by ore, before and now") });
         }
 
@@ -261,7 +264,9 @@ namespace SWLOR.CraftSim.Harvesting
                 $"{Number(HarvestingParity.TodayItemsPerNode, 2)} items, charges and {Number(HarvestingParity.TodayItemsPerNode * options.SecondsPerHarvest, 1)} s per node, and no code reads an attribute now.",
                 "- Quick Harvest: `ProspectingQuickHarvest`, the rule the game runs. It takes the units the node has left, as far as the harvester's charges go, a charge and a harvest delay for each, and pays today's XP for each, with no multiplier and no rank milestone.",
                 $"- A session: the Prospecting engine, {parity.Runs} nodes per case, each with its own dice from seed {parity.Seed}. A node is made as the game makes one (`ProspectingNode.Create`): a pool of 1-4 units, Stability 100, one to three hidden seams that each seal a unit, " +
-                $"a gem pocket with {ProspectingRules.GemPocketPercent}% chance on a node whose table has a gem. Harvester: {options.Charges} charges (a fresh harvester).",
+                $"a gem pocket with {Percent(ProspectingRules.GemPocketShare)} of the chance that a roll of the node's table is a gem (so none where the table has no gem; the gem chance of each kind is listed below). Harvester: {options.Charges} charges (a fresh harvester).",
+                "- Charges: a Survey costs " + ProspectingRules.SurveyCharges + $" (Stability only), a Strike {ProspectingRules.StrikeCharges}, a Heavy Strike {ProspectingRules.HeavyStrikeCharges}, an Extract {ProspectingRules.ExtractCharges} (the unit it takes, which today costs a charge too, and one more). A skilled session may spend at most {Percent(1 + options.ChargeCapShare)} of today's charges per node.",
+                $"- Gems: a unit is a roll of the table and a roll is a gem with the table's gem chance; a pocket gives a gem in place of its unit. Today's gems per node are the units times the gem chance. A skilled session may give at most {Percent(1 + options.GemCapShare)} of them.",
                 "- Players: the skilled player is the best of three careful plans (survey once, twice or until every seam is found, extracting what is found and mining with Strikes), chosen for each tier and rank by the most items per node; every plan reads only what the window shows and keeps enough Stability and charges to mine the pool. " +
                 "The length and XP-rate gates use that player. The +15% cap is checked against every plan, three more that use Heavy Strikes included. " +
                 "The casual player strikes the node until it is spent. The reckless player surveys and extracts without a reserve.",
@@ -300,10 +305,10 @@ namespace SWLOR.CraftSim.Harvesting
         public static IReadOnlyList<string> Limitations(HarvestingParity parity) => new[]
         {
             "- The skilled player is the best of a set of plans a person can follow from the window, not an optimal player. A better plan could take more items per node, so the +15% cap is checked against these plans, and the margin below it is the room for one.",
-            "- Items are counted, not priced. A gem pocket gives a gem in place of a unit, so it adds no item but moves value into gems; the evidence table shows the gem supply against today's. The extra ore roll of a rich seam is the only way a session yields more than the pool.",
+            "- Items are counted, not priced. A gem pocket gives a gem in place of a unit, so it adds no item but moves value into gems; the economy-parity gate caps the gems of a session against today's, and a pocket is rare enough to stay within the cap (the evidence table's gems from pockets). The extra ore roll of a rich seam is the only way a session yields more than the pool.",
             "- Respawn, node density and travel are not modelled, so these are yields per node, not per hour. The XP-rate gate counts the seconds of the actions only; walking between nodes costs both loops the same.",
             $"- Seconds per action are estimates until the client run measures them. They are the cohort's only timing input: a session whose actions take longer than modelled earns less per hour than the gate shows, and one that takes less earns more.",
-            "- A skilled session spends more charges per item than today (the evidence table), because Survey and Extract cost charges and yield no unit of their own. A harvester lasts fewer skilled sessions than Quick Harvests; a strike-only session spends fewer charges than either.",
+            "- A skilled session spends more charges per item than today (the evidence table), because an Extract costs a charge more than a Strike and yields no unit of its own beyond the seam's (a Survey costs none). A harvester lasts about a third fewer skilled sessions than Quick Harvests; a strike-only session spends fewer charges than either.",
             "- Perks are not modelled; the Prospector draft's magnitudes are estimates against these sessions, and no perk code exists. The client was not run."
         };
     }

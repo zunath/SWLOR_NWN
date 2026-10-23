@@ -25,4 +25,14 @@ public static class ProspectingGems
 
     /// <summary>True when the table has a gem entry, so its nodes can hold gem pockets.</summary>
     public static bool HasGems(LootTable table) => GemEntries(table).Count > 0;
+
+    /// <summary>The share of a roll of the table that is a gem: the weight of its gem entries over its whole weight. 0 for a table with none.</summary>
+    public static double GemChance(LootTable table)
+    {
+        if (table == null)
+            return 0;
+
+        var total = table.Sum(item => (double)item.Weight);
+        return total <= 0 ? 0 : GemEntries(table).Sum(item => (double)item.Weight) / total;
+    }
 }

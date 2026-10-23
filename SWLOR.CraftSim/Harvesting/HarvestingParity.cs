@@ -7,8 +7,11 @@ using SWLOR.Game.Server.Service.CraftService.Minigame.Prospecting;
 
 namespace SWLOR.CraftSim.Harvesting
 {
-    /// <summary>One case of the study: a node tier, a Gathering rank and whether the node can hold gems.</summary>
-    public readonly record struct HarvestCase(int Tier, int Rank, bool HasGems);
+    /// <summary>
+    /// One case of the study: a node tier, a Gathering rank and how often the node's loot table gives a gem (0 for a table with none),
+    /// which sets how often a seam of the node is a gem pocket.
+    /// </summary>
+    public readonly record struct HarvestCase(int Tier, int Rank, double GemChance);
 
     /// <summary>What the study plays and how it judges: the starting values the plan leaves to the simulator. Each is recorded in the report's inputs.</summary>
     public sealed record HarvestingParityOptions
@@ -22,10 +25,22 @@ namespace SWLOR.CraftSim.Harvesting
         public double SkilledCapShare { get; init; } = 0.15;
 
         /// <summary>
+        /// A skilled session may give this much more gems per node than today's, as a share of today's. Gems are part of the bounded upside, so
+        /// they have the same cap as items, and they count the gems of the ordinary rolls as well as the pockets.
+        /// </summary>
+        public double GemCapShare { get; init; } = 0.15;
+
+        /// <summary>
         /// A skilled session must yield at least this share of today's, so playing is never worse than Quick Harvest. The small allowance
         /// is the sampling noise of the played sessions.
         /// </summary>
         public double SkilledFloorShare { get; init; } = 0.99;
+
+        /// <summary>
+        /// A skilled session may spend this much more harvester charges per node than today's, as a share of today's: the coordinator's
+        /// "at most about 1.5x", so a harvester is not worn out much faster by playing.
+        /// </summary>
+        public double ChargeCapShare { get; init; } = 0.5;
 
         /// <summary>The fewest actions per node the skilled player averages (the plan's length target for a node).</summary>
         public double LeastActions { get; init; } = 3;
@@ -40,42 +55,55 @@ namespace SWLOR.CraftSim.Harvesting
         public int Charges { get; init; } = ProspectingPlays.FreshHarvesterCharges;
     }
 
-    /// <summary>The means of a run of nodes, weighted over the kinds of node of a tier.</summary>
+    /// <summary>
+    /// The means of a run of nodes, weighted over the kinds of node of a tier. <see cref="Gems"/> counts every gem a node gave: the units
+    /// are rolls of the loot table and a roll is a gem with the table's gem chance, and the gem pockets give <see cref="PocketGems"/> more.
+    /// The units are counted by their expected gems (a unit times the table's gem chance), so only the pockets, which are rare, are counted
+    /// as played; a short run is noisy on them.
+    /// </summary>
     public readonly record struct ProspectingMean(
         double Items,
         double Units,
         double RichRolls,
         double Gems,
+        double PocketGems,
         double Actions,
         double Seconds,
         double Charges,
         double Collapsed,
+        double PoolLeft,
         double ShareWithinLength)
     {
-        public static ProspectingMean Of(ProspectingSample sample, double least, double most) => new(
+        public static ProspectingMean Of(ProspectingSample sample, double least, double most, double gemChance) => new(
             sample.ItemsPerNode,
             sample.UnitsPerNode,
             sample.RichRollsPerNode,
+            sample.UnitsPerNode * gemChance + sample.GemsPerNode,
             sample.GemsPerNode,
             sample.ActionsPerNode,
             sample.SecondsPerNode,
             sample.ChargesPerNode,
             sample.CollapsedShare,
+            sample.PoolLeftPerNode,
             sample.ShareWithActions((int)Math.Ceiling(least), (int)Math.Floor(most)));
 
-        public static ProspectingMean Blend(ProspectingMean first, double firstWeight, ProspectingMean second)
+        /// <summary>The mean of the parts, each counted by its weight.</summary>
+        public static ProspectingMean Average(IReadOnlyList<(ProspectingMean Mean, double Weight)> parts)
         {
-            var secondWeight = 1 - firstWeight;
+            var total = parts.Sum(part => part.Weight);
+            double Of(Func<ProspectingMean, double> value) => parts.Sum(part => value(part.Mean) * part.Weight) / total;
             return new ProspectingMean(
-                first.Items * firstWeight + second.Items * secondWeight,
-                first.Units * firstWeight + second.Units * secondWeight,
-                first.RichRolls * firstWeight + second.RichRolls * secondWeight,
-                first.Gems * firstWeight + second.Gems * secondWeight,
-                first.Actions * firstWeight + second.Actions * secondWeight,
-                first.Seconds * firstWeight + second.Seconds * secondWeight,
-                first.Charges * firstWeight + second.Charges * secondWeight,
-                first.Collapsed * firstWeight + second.Collapsed * secondWeight,
-                first.ShareWithinLength * firstWeight + second.ShareWithinLength * secondWeight);
+                Of(mean => mean.Items),
+                Of(mean => mean.Units),
+                Of(mean => mean.RichRolls),
+                Of(mean => mean.Gems),
+                Of(mean => mean.PocketGems),
+                Of(mean => mean.Actions),
+                Of(mean => mean.Seconds),
+                Of(mean => mean.Charges),
+                Of(mean => mean.Collapsed),
+                Of(mean => mean.PoolLeft),
+                Of(mean => mean.ShareWithinLength));
         }
     }
 
@@ -85,7 +113,8 @@ namespace SWLOR.CraftSim.Harvesting
     /// <summary>
     /// Plays Prospecting against the nodes of the game and remembers each case, so the tables of one report share their sessions. Every
     /// case takes its dice from its own stream of the seed, so a table repeats exactly whatever order the cases ran in. A tier's nodes are
-    /// weighted by the kinds the module has: the share whose loot table holds a gem can hold gem pockets, the rest cannot.
+    /// weighted by the kinds the module has: how often a seam is a gem pocket follows how often the kind's loot table gives a gem, and a
+    /// table with none has no pocket.
     /// </summary>
     public sealed class HarvestingParity
     {
@@ -124,16 +153,16 @@ namespace SWLOR.CraftSim.Harvesting
             _samples.GetOrAdd((harvestCase, plan), key => ProspectingPlays.Sample(
                 key.Case.Tier,
                 key.Case.Rank,
-                key.Case.HasGems,
+                key.Case.GemChance,
                 key.Plan,
                 Runs,
                 Seed,
-                ProspectingPlays.Stream(key.Case.Tier, key.Case.Rank, key.Case.HasGems, key.Plan),
+                ProspectingPlays.Stream(key.Case.Tier, key.Case.Rank, key.Case.GemChance, key.Plan),
                 _options.Charges));
 
         public ProspectingSample QuickHarvestSample(HarvestCase harvestCase) =>
             _quick.GetOrAdd(harvestCase, key => ProspectingPlays.QuickHarvest(
-                key.Tier, key.Rank, key.HasGems, Runs, Seed, ProspectingPlays.Stream(key.Tier, key.Rank, key.HasGems, ProspectorPlan.Casual), _options.Charges));
+                key.Tier, key.Rank, key.GemChance, Runs, Seed, ProspectingPlays.Stream(key.Tier, key.Rank, key.GemChance, ProspectorPlan.Casual), _options.Charges));
 
         /// <summary>The share of the tier's nodes that can hold gem pockets: those whose loot table has a gem entry.</summary>
         public double GemShare(int tier)
@@ -142,13 +171,27 @@ namespace SWLOR.CraftSim.Harvesting
             return ofTier.Count == 0 ? 0 : (double)ofTier.Count(node => node.HasGems) / ofTier.Count;
         }
 
+        /// <summary>
+        /// The kinds of node of the tier by how often their loot table gives a gem, each with how many of the tier's nodes are of that kind.
+        /// Two nodes whose tables give a gem equally often are one kind.
+        /// </summary>
+        public IReadOnlyList<(double GemChance, int Nodes)> GemChances(int tier) =>
+            _nodes.Where(node => node.Tier == tier)
+                .GroupBy(node => node.GemChance)
+                .OrderBy(group => group.Key)
+                .Select(group => (group.Key, group.Count()))
+                .ToList();
+
+        /// <summary>The kind of node of the tier whose table gives a gem most often: the one a gem pocket is likeliest in.</summary>
+        public double MostGemChance(int tier) => GemChances(tier).Select(kind => kind.GemChance).DefaultIfEmpty(0).Max();
+
         /// <summary>The mean of a plan over the tier's kinds of node.</summary>
         public ProspectingMean Mean(int tier, int rank, ProspectorPlan plan) =>
-            Blend(tier, hasGems => ProspectingMean.Of(Play(new HarvestCase(tier, rank, hasGems), plan), _options.LeastActions, _options.MostActions));
+            Blend(tier, gemChance => ProspectingMean.Of(Play(new HarvestCase(tier, rank, gemChance), plan), _options.LeastActions, _options.MostActions, gemChance));
 
         /// <summary>The mean of Quick Harvest over the tier's kinds of node.</summary>
         public ProspectingMean QuickHarvest(int tier, int rank) =>
-            Blend(tier, hasGems => ProspectingMean.Of(QuickHarvestSample(new HarvestCase(tier, rank, hasGems)), 0, 0));
+            Blend(tier, gemChance => ProspectingMean.Of(QuickHarvestSample(new HarvestCase(tier, rank, gemChance)), 0, 0, gemChance));
 
         /// <summary>The skilled player's best plan: the one with the most items per node, the fewer seconds winning a tie.</summary>
         public SkilledPlay Skilled(int tier, int rank)
@@ -186,6 +229,27 @@ namespace SWLOR.CraftSim.Harvesting
         }
 
         /// <summary>
+        /// The most gems per node any plan reaches, as a share of today's: the figure the gem cap is checked against. Every plan is counted
+        /// but the reckless one, which only loses units.
+        /// </summary>
+        public (ProspectorPlan Plan, double Ratio) GemCeiling(int tier, int rank)
+        {
+            var today = TodayGemsPerNode(tier);
+            var best = (Plan: ProspectorPlan.Casual, Ratio: 0.0);
+            if (today <= 0)
+                return best;
+
+            foreach (var plan in ProspectorPlan.All)
+            {
+                var ratio = Mean(tier, rank, plan).Gems / today;
+                if (ratio > best.Ratio)
+                    best = (plan, ratio);
+            }
+
+            return best;
+        }
+
+        /// <summary>
         /// Today's gems per node at a tier: 2.5 harvests, each a roll of the table, so the tier's mean share of a roll that is a gem times
         /// the units of a node.
         /// </summary>
@@ -203,9 +267,8 @@ namespace SWLOR.CraftSim.Harvesting
             {
                 foreach (var rank in RanksFor(tier))
                 {
-                    cases.Add(new HarvestCase(tier, rank, true));
-                    if (GemShare(tier) < 1)
-                        cases.Add(new HarvestCase(tier, rank, false));
+                    foreach (var (gemChance, _) in GemChances(tier))
+                        cases.Add(new HarvestCase(tier, rank, gemChance));
                 }
             }
 
@@ -236,16 +299,7 @@ namespace SWLOR.CraftSim.Harvesting
         /// <summary>The highest harvester tier a rank allows.</summary>
         public static int HighestHarvesterTier(int rank) => CraftRankMilestones.TierForRank(rank);
 
-        private ProspectingMean Blend(int tier, Func<bool, ProspectingMean> meanFor)
-        {
-            var share = GemShare(tier);
-            if (share >= 1)
-                return meanFor(true);
-
-            if (share <= 0)
-                return meanFor(false);
-
-            return ProspectingMean.Blend(meanFor(true), share, meanFor(false));
-        }
+        private ProspectingMean Blend(int tier, Func<double, ProspectingMean> meanFor) =>
+            ProspectingMean.Average(GemChances(tier).Select(kind => (meanFor(kind.GemChance), (double)kind.Nodes)).ToList());
     }
 }

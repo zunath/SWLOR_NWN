@@ -70,7 +70,7 @@ public class ProspectingWindowTests
         var heavy = ProspectingActionText.Describe(engine, engine.Preview(ProspectingActionIds.HeavyStrike));
         var leave = ProspectingActionText.Describe(engine, engine.Preview(ProspectingActionIds.Leave));
 
-        survey.Summary.Should().Be("Reveals 1 hidden seam if there is one. Stability 100 -> 88, Charges 20 -> 19");
+        survey.Summary.Should().Be("Reveals 1 hidden seam if there is one. Stability 100 -> 88", "a Survey costs Stability and no charge");
         strike.Summary.Should().Be("Takes 1 unit (70%) or 2 units (30%). Stability 100 -> 80, Charges 20 -> 19");
         heavy.Summary.Should().Be(
             "Takes 2 units (25%) or 3 units (50%) or 4 units (25%). 20% chance to shatter a gem pocket you have not surveyed. Stability 100 -> 64, Charges 20 -> 18. 25% MINES OUT THE NODE");

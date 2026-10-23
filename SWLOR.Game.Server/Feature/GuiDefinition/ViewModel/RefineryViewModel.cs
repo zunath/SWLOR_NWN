@@ -14,43 +14,48 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
     {
         private class OreDetail
         {
-            /// <summary>The ore's tier, 1 to 5. It gates the ore by Gathering rank and sets the level its refining XP is measured at.</summary>
+            /// <summary>The ore's tier, 1 to 5. It gates the ore by Gathering rank and sets the level its refining XP falls off from.</summary>
             public int RequiredLevel { get; }
             public string RefinedItemResref { get; }
 
-            public OreDetail(int requiredLevel, string refinedItemResref)
+            /// <summary>The XP one unit pays a refiner whose rank equals the ore's level; the rank scales it (<see cref="GatheringLevels.RefiningXp"/>).</summary>
+            public int XPGranted { get; }
+
+
+            public OreDetail(int requiredLevel, string refinedItemResref, int xpGranted)
             {
                 RequiredLevel = requiredLevel;
                 RefinedItemResref = refinedItemResref;
+                XPGranted = xpGranted;
             }
         }
 
         private static readonly Dictionary<string, OreDetail> _ores = new Dictionary<string, OreDetail>
         {
-            {"raw_veldite", new OreDetail(1, "ref_veldite")},
-            {"ore_tilarium", new OreDetail(1, "ref_tilarium")},
+            {"raw_veldite", new OreDetail(1, "ref_veldite", 25)},
+            {"ore_tilarium", new OreDetail(1, "ref_tilarium", 25)},
 
-            {"raw_scordspar", new OreDetail(2, "ref_scordspar")},
-            {"ore_currian", new OreDetail(2, "ref_currian")},
+            {"raw_scordspar", new OreDetail(2, "ref_scordspar", 50)},
+            {"ore_currian", new OreDetail(2, "ref_currian", 50)},
 
 
-            {"raw_plagionite", new OreDetail(3, "ref_plagionite")},
-            {"ore_idailia", new OreDetail(3, "ref_idailia")},
+            {"raw_plagionite", new OreDetail(3, "ref_plagionite", 75)},
+            {"ore_idailia", new OreDetail(3, "ref_idailia", 75)},
 
-            {"raw_keromber", new OreDetail(4, "ref_keromber")},
-            {"ore_barinium", new OreDetail(4, "ref_barinium")},
+            {"raw_keromber", new OreDetail(4, "ref_keromber", 100)},
+            {"ore_barinium", new OreDetail(4, "ref_barinium", 100)},
 
-            {"raw_jasioclase", new OreDetail(5, "ref_jasioclase")},
-            {"ore_gostian", new OreDetail(5, "ref_gostian")},
+            {"raw_jasioclase", new OreDetail(5, "ref_jasioclase", 125)},
+            {"ore_gostian", new OreDetail(5, "ref_gostian", 125)},
 
-            {"raw_arkoxit", new OreDetail(5, "ref_arkoxit")},
-            {"ore_arda", new OreDetail(5, "ref_arda")},
+            {"raw_arkoxit", new OreDetail(5, "ref_arkoxit", 150)},
+            {"ore_arda", new OreDetail(5, "ref_arda", 150)},
 
             // Options below are for further expansion down the road.
-            {"raw_ochne", new OreDetail(99, "ref_ochne")},
-            {"raw_croknor", new OreDetail(99, "ref_croknor")},
-            {"raw_hemorgite", new OreDetail(99, "ref_hemorgite")},
-            {"raw_bisteiss", new OreDetail(99, "ref_bisteiss")},
+            {"raw_ochne", new OreDetail(99, "ref_ochne", 175)},
+            {"raw_croknor", new OreDetail(99, "ref_croknor", 200)},
+            {"raw_hemorgite", new OreDetail(99, "ref_hemorgite", 225)},
+            {"raw_bisteiss", new OreDetail(99, "ref_bisteiss", 250)},
         };
 
         private const int BaseItemsRefinedPerCore = 3;
@@ -334,8 +339,9 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
 
                 var xp = 0;
 
-                // Refining pays the same rank-difference XP harvesting does: GetDeltaXP(ore level - rank) for each unit, where an ore's
-                // level is the level of the vein of its tier (5, 15, 25, 35, 45), so cheap ore stops training high ranks.
+                // Each unit pays its ore's flat XP at the ore's level, as it always has, scaled by harvesting's rank-difference curve:
+                // GetDeltaXP(ore level - rank) / GetDeltaXP(0), where an ore's level is the level of the vein of its tier (5, 15, 25,
+                // 35, 45). So refining at level pays what it paid, and cheap ore stops training high ranks.
                 var gatheringRank = Skill.GetCreatureSkillRank(Player, SkillType.Gathering);
 
                 for (var index = _inputItems.Count - 1; index >= 0; index--)
@@ -347,7 +353,7 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
                     // Spawn the refined item onto the player.
                     CreateItemOnObject(refinedItem.RefinedItemResref, Player, stackSize);
 
-                    xp += GatheringLevels.XpPerUnit(refinedItem.RequiredLevel, gatheringRank) * stackSize;
+                    xp += GatheringLevels.RefiningXp(refinedItem.XPGranted, refinedItem.RequiredLevel, gatheringRank, stackSize);
                 }
 
                 DeleteLocalBool(Player, "IS_REFINING");

@@ -91,7 +91,7 @@ namespace SWLOR.Game.Server.Service.ProspectingService
 
             if (!ProspectingNode.TryParse(_world.LoadNode(request.Node), out var node))
             {
-                node = ProspectingNode.Create(_random, _world.TableHasGems(request.LootTable));
+                node = ProspectingNode.Create(_random, _world.GemChance(request.LootTable));
                 _world.SaveNode(request.Node, node.Serialize());
             }
 

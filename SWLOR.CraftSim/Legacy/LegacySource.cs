@@ -139,21 +139,25 @@ namespace SWLOR.CraftSim.Legacy
             "var dc = 6;", "var roll = Random.D20(1);", "if (roll + GetAbilityModifier(AbilityType.Perception, user) >= dc)",
             "var scavLevel = 10 * requiredLevel;", "xp = deltaXP;", "xp = deltaXP / 4;", "dc += Random.D3(1);");
 
-        // Refining's flat XP per unit (25 for tier 1 ore up to 150 for tier 5, whatever the rank) is ported from RefineryViewModel.cs at
-        // commit 64b712fc8 (RefiningModel.LegacyXpPerUnit) and is no longer in the source: refining now pays GetDeltaXP(ore level - rank).
         public static readonly SourceReference RefineryOres = new(
-            "Ore tiers", Refinery, 30, 51,
-            "{\"raw_veldite\", new OreDetail(1, \"ref_veldite\")}", "{\"raw_scordspar\", new OreDetail(2, \"ref_scordspar\")}",
-            "{\"raw_plagionite\", new OreDetail(3, \"ref_plagionite\")}", "{\"raw_keromber\", new OreDetail(4, \"ref_keromber\")}",
-            "{\"raw_jasioclase\", new OreDetail(5, \"ref_jasioclase\")}", "{\"raw_arkoxit\", new OreDetail(5, \"ref_arkoxit\")}");
+            "Ore tiers and XP per unit", Refinery, 35, 52,
+            "{\"raw_veldite\", new OreDetail(1, \"ref_veldite\", 25)}", "{\"raw_scordspar\", new OreDetail(2, \"ref_scordspar\", 50)}",
+            "{\"raw_plagionite\", new OreDetail(3, \"ref_plagionite\", 75)}", "{\"raw_keromber\", new OreDetail(4, \"ref_keromber\", 100)}",
+            "{\"raw_jasioclase\", new OreDetail(5, \"ref_jasioclase\", 125)}", "{\"raw_arkoxit\", new OreDetail(5, \"ref_arkoxit\", 150)}");
 
         public static readonly SourceReference RefineryBatch = new(
-            "Refinery batch size", Refinery, 56, 56,
+            "Refinery batch size", Refinery, 61, 61,
             "private const int BaseItemsRefinedPerCore = 3;");
 
         public static readonly SourceReference RefineryCores = new(
-            "Power cores per batch", Refinery, 168, 169,
+            "Power cores per batch", Refinery, 173, 174,
             "var itemsPerCore = BaseItemsRefinedPerCore + refineryManagement;", "(int)Math.Ceiling(ItemCount / (float)itemsPerCore)");
+
+        // Refining pays each ore's flat XP times the rank's share of the curve (GatheringLevels.RefiningXp), not the flat XP alone.
+        public static readonly SourceReference RefineryXp = new(
+            "Refining XP", Refinery, 356, 360,
+            "xp += GatheringLevels.RefiningXp(refinedItem.XPGranted, refinedItem.RequiredLevel, gatheringRank, stackSize);",
+            "Skill.GiveSkillXP(Player, SkillType.Gathering, xp, false, false);");
 
         public static readonly SourceReference FishingXp = new(
             "Fishing XP per bite", FishingFight, 52, 62,
@@ -164,7 +168,7 @@ namespace SWLOR.CraftSim.Legacy
             ActionRanks, MaxCp, MaxDurability, MaxProgress, MaxQuality, LevelChart, Progress, Quality, HandleAction, Actions,
             SessionReset, FailureLoss, EnhancementSlots, EnhancementKinds, EnhancementProgressPenalty, EnhancementTransfer,
             RecipeUnlockOffset, GearStats, HarvestNodeCount, HarvestXp,
-            ScavengeAttempts, ScavengeRoll, RefineryOres, RefineryBatch, RefineryCores, FishingXp
+            ScavengeAttempts, ScavengeRoll, RefineryOres, RefineryBatch, RefineryCores, RefineryXp, FishingXp
         };
     }
 }

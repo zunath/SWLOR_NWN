@@ -19,7 +19,7 @@ internal sealed class FakeProspectingWorld : IProspectingWorld
     public List<float> Work { get; } = new();
     public List<float> ScheduledSeconds { get; } = new();
     public List<ProspectingSession> Opened { get; } = new();
-    public bool TableHasGemsValue { get; set; } = true;
+    public double GemChanceValue { get; set; } = 0.1;
     public int GatheringRank { get; set; } = 20;
 
     public bool Busy { get; private set; }
@@ -50,7 +50,7 @@ internal sealed class FakeProspectingWorld : IProspectingWorld
 
     public bool NodeExists(uint node) => LiveNodes.Contains(node);
 
-    public bool TableHasGems(string lootTable) => TableHasGemsValue;
+    public double GemChance(string lootTable) => GemChanceValue;
 
     public void DestroyNode(uint node)
     {

@@ -116,7 +116,7 @@ namespace SWLOR.CraftSim.Progression
                                 $"; each drops on a small share of rolls (gems 2-9%, crate goods 15%), so one unit costs {Number(perUnit.Min(), 1)}-{Number(perUnit.Max(), 1)} minutes.");
             }
 
-            text.AppendLine("- **Gathering is quick for the skill itself.** Each harvested item pays up to 1,200 XP and refining pays 25-150 XP per unit whatever the rank, so Gathering rank 50 takes hours, not days, if nodes are free. Node respawns and contention are not modelled.");
+            text.AppendLine("- **Gathering is quick for the skill itself.** Each harvested item pays up to 1,200 XP and refining pays 25-150 XP per unit at the ore's level (the model counts that at every rank), so Gathering rank 50 takes hours, not days, if nodes are free. Node respawns and contention are not modelled.");
             text.AppendLine("- **Agriculture has a faster path than the one modelled here.** Fishing pays the same chart per bite (600-1,200 XP); see the catch task table in the guild section.");
             text.AppendLine();
         }
@@ -262,7 +262,7 @@ namespace SWLOR.CraftSim.Progression
         {
             text.AppendLine("## Gathering rank 50");
             text.AppendLine();
-            text.AppendLine("Hours per band for a new gatherer. Harvesting pays `GetDeltaXP(vein level - rank)` for every item, and a vein two tiers below the rank pays nothing, so the gatherer always works the top vein the tier allows; refining pays a flat 25-150 XP per raw unit.");
+            text.AppendLine("Hours per band for a new gatherer. Harvesting pays `GetDeltaXP(vein level - rank)` for every item, and a vein two tiers below the rank pays nothing, so the gatherer always works the top vein the tier allows; refining pays 25-150 XP per raw unit, counted at every rank.");
             text.AppendLine();
             var strategies = new[] { GatheringStrategy.HarvestAndRefine, GatheringStrategy.Scavenge, GatheringStrategy.Best };
             var paths = strategies.ToDictionary(s => s, s => model.Gathering(s, a));

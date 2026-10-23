@@ -25,11 +25,11 @@ namespace SWLOR.CraftSim.Tests.Harvesting
         [Test]
         public void TheReportListsTheInputsEveryGateAndTheEvidence()
         {
-            var parity = HarvestingFixture.Parity(runs: 800);
-            var context = Context(800);
+            var parity = HarvestingFixture.Shipped;
+            var context = Context(20000);
             var results = HarvestingReport.Run(context, parity, GateThresholds.Default);
 
-            var report = HarvestingReport.Build(context, parity, GateThresholds.Default, results, "SWLOR.CraftSim harvesting --runs 800");
+            var report = HarvestingReport.Build(context, parity, GateThresholds.Default, results, "SWLOR.CraftSim harvesting --runs 20000");
 
             report.Should().StartWith("# Crafting revamp: Prospecting (harvesting) against today's harvests");
             report.Should().Contain("## Inputs").And.Contain("## Verdicts").And.Contain("## Limitations");
@@ -61,13 +61,20 @@ namespace SWLOR.CraftSim.Tests.Harvesting
             rows.Should().HaveCount(12);
             var veldite = rows.Single(row => row[0] == "raw_veldite");
             veldite[2].Should().Be("5");
-            veldite[3].Should().Be("25");
-            veldite[4].Should().Be("600");
-            veldite[5].Should().Be("0");
+            veldite[3].Should().Be("25", "the flat XP refining always paid");
+            veldite[4].Should().Be("25", "refining at the ore's level pays the flat XP");
+            veldite[5].Should().Be("44", "five ranks below the level, 1.75x");
+            veldite[6].Should().Be("19");
+            veldite[7].Should().Be("6");
+            veldite[8].Should().Be("0", "five ranks past the level");
+            veldite[9].Should().Be("44");
+            veldite[10].Should().Be("0");
+            veldite[11].Should().Be("1.00x");
             var arkoxit = rows.Single(row => row[0] == "raw_arkoxit");
             arkoxit[2].Should().Be("45");
             arkoxit[3].Should().Be("150");
-            arkoxit[9].Should().Be("600");
+            arkoxit[4].Should().Be("150");
+            arkoxit[5].Should().Be("263");
         }
 
         [Test]
@@ -121,13 +128,18 @@ namespace SWLOR.CraftSim.Tests.Harvesting
         }
 
         [Test]
-        public void TheLegacyRefiningModelKeepsTodaysFlatXp_AndCurrentRefiningUsesTheRankDifference()
+        public void RefiningPaysTheFlatXpAtTheOresLevel_AndTheRankScalesItByTheCurve()
         {
             var veldite = RefiningModel.Ores().Single(ore => ore.Ore == "raw_veldite");
 
-            RefiningModel.Xp(veldite, 9).Should().Be(225, "the flat table of the old refinery");
+            RefiningModel.Xp(veldite, 9).Should().Be(225, "the flat table of the refinery");
+            RefiningModel.CurrentXpPerUnit(veldite, 5).Should().Be(25, "at the ore's level it is today's flat XP");
+            RefiningModel.CurrentXp(veldite, 5, 9).Should().Be(225);
+            RefiningModel.CurrentXpPerUnit(veldite, 0).Should().Be(44);
+            RefiningModel.CurrentXpPerUnit(veldite, 10).Should().Be(0);
             RefiningModel.CurrentXpPerUnit(veldite, 50).Should().Be(0);
-            RefiningModel.CurrentXpPerUnit(veldite, 5).Should().Be(600);
+            foreach (var ore in RefiningModel.Ores())
+                RefiningModel.CurrentXpPerUnit(ore, 10 * (ore.RequiredLevel - 1) + 5).Should().Be(ore.XpPerUnit, ore.Ore);
         }
     }
 }

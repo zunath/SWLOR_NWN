@@ -18,12 +18,13 @@ Rules ported, each checked against the source by `LegacySourceTests`:
 | Harvest XP | `GatheringLevels.cs:20-23` |
 | Scavenge second attempt | `ScavengePoint.cs:53-58` |
 | Scavenge success roll and DC | `ScavengePoint.cs:64-104` |
-| Ore tiers | `RefineryViewModel.cs:30-51` |
-| Refinery batch size | `RefineryViewModel.cs:56` |
-| Power cores per batch | `RefineryViewModel.cs:168-169` |
+| Ore tiers and XP per unit | `RefineryViewModel.cs:35-52` |
+| Refinery batch size | `RefineryViewModel.cs:61` |
+| Power cores per batch | `RefineryViewModel.cs:173-174` |
+| Refining XP | `RefineryViewModel.cs:356-360` |
 | Fishing XP per bite | `FishingFightLifecycle.cs:52-62` |
 
-Harvesting now runs in Prospecting: a node keeps its d4 pool (`ProspectingNode`) and a unit pays `GetDeltaXP(vein level - rank)` (`GatheringLevels`). Quick Harvest plays today's loop at a Might modifier of 0. The harvest bonus item (`d100 <= 25 x Might modifier`) and refining's flat XP per unit (25 to 150 by ore tier) were in `HarvesterItemDefinition.cs` and `RefineryViewModel.cs` until Prospecting and the rank-difference refining XP replaced them. They are ported here from those files at commit 64b712fc8, where they were checked against the source, and are no longer checked.
+Harvesting now runs in Prospecting: a node keeps its d4 pool (`ProspectingNode`) and a unit pays `GetDeltaXP(vein level - rank)` (`GatheringLevels`). Quick Harvest plays today's loop at a Might modifier of 0. The harvest bonus item (`d100 <= 25 x Might modifier`) was in `HarvesterItemDefinition.cs` until Prospecting replaced it. It is ported here from that file at commit 64b712fc8, where it was checked against the source, and is no longer checked. Refining still pays each ore's flat XP per unit (25 to 150 by ore tier), scaled by the rank: `GetDeltaXP(ore level - rank) / GetDeltaXP(0)`, so it is the flat XP at the ore's level (`GatheringLevels.RefiningXp`).
 
 The fishing catch roll (`40 + 10 x (rank - fish level) + 2 x Willpower`, kept from 0 to 95) was in `FinishFishing` until the Line fight replaced it. It is ported here from `Service/Fishing.cs` at commit d5f1c0466, where it was checked against the source, and is no longer checked.
 
@@ -99,7 +100,7 @@ XP per site at Hard Look 0 and Perception modifier 0 (`GetDeltaXP(10 x site leve
 
 ## Refining
 
-Each power core refines 3 + Refinery Management units. Every unit grants a flat XP set by its ore, whatever the refiner's rank. The ores the game does not have (Ochne, Croknor, Hemorgite, Bisteiss) are left out.
+Each power core refines 3 + Refinery Management units. Every unit grants a flat XP set by its ore, to a refiner whose rank is the ore's level (5, 15, 25, 35 and 45 by ore tier); the rank scales it by the curve harvesting uses, `GetDeltaXP(ore level - rank) / GetDeltaXP(0)`, which the harvesting study tabulates. The ores the game does not have (Ochne, Croknor, Hemorgite, Bisteiss) are left out.
 
 | Refinery Management | Units per core | Cores for 100 units | Cores for 9 units |
 | --- | --- | --- | --- |
@@ -111,7 +112,7 @@ Each power core refines 3 + Refinery Management units. Every unit grants a flat 
 | 5 | 8 | 13 | 2 |
 | 6 | 9 | 12 | 1 |
 
-XP per refined unit (the same at every rank), against what harvesting a node of the same tier pays per item at the tier's unlock rank (10 x (tier - 1)), five ranks later and ten ranks later:
+XP per refined unit at the ore's level, against what harvesting a node of the same tier pays per item at the tier's unlock rank (10 x (tier - 1)), five ranks later and ten ranks later:
 
 | Ore | Ore tier | Refining XP per unit | XP per core at 3 units | XP per core at 9 units | Harvest XP per item at unlock rank | +5 ranks | +10 ranks |
 | --- | --- | --- | --- | --- | --- | --- | --- |
@@ -182,4 +183,4 @@ Catch chance per bite by Agriculture rank, averaged over every rod and bait pool
 - Harvesting counts items, not their value: the loot-table roll behind each item, and the extra `LOOT_TABLE_` rolls some nodes add through `Loot.SpawnLoot`, are not played. Scavenging counts successful rolls, not the loot they return, and ignores Treasure Hunter and Creditfinder.
 - Respawn, node density and travel time are not modelled, so these are yields per node or site, not per hour.
 - The fishing pool average ignores that most pools are unreachable for a given rod, and the 80% chance of no bite when only the default fish is available. Real anglers choose their location, rod and bait.
-- Refining XP does not depend on rank today, so its rows are the same at every rank.
+- Refining XP is shown at the ore's level; how it falls as the rank passes the level is in the harvesting study. The progression-pace baseline still counts the flat XP at every rank.

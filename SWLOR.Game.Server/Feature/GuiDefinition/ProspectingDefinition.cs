@@ -29,13 +29,14 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition
             "When Stability reaches 0 the node collapses and what was left in it is lost. One to three seams are sealed inside it, " +
             "hidden until you find them. Each seam locks up one unit of the Yield.\n\n" +
             "ACTIONS\n" +
-            "Each action spends harvester charges and Stability, takes a few seconds, and shows exactly what it will do before you click.\n" +
-            "- Survey: reveals hidden seams. It finds nothing once every seam has been found.\n" +
+            "Each action spends Stability, takes a few seconds, and shows exactly what it will do before you click. Every action but Survey " +
+            "also spends harvester charges.\n" +
+            "- Survey: reveals hidden seams. It costs no charge, only Stability. It finds nothing once every seam has been found.\n" +
             "- Strike: takes 1 or 2 units from the Yield. It takes the loose units first and only breaks into a seam when none is left, " +
             "so striking a node empty always gets you every unit.\n" +
             "- Heavy Strike: takes 2 to 4 units for more charges and Stability. It has a " + ProspectingRules.ShatterPercent + "% chance to " +
             "shatter a gem pocket you have not surveyed, which turns its gem into plain ore.\n" +
-            "- Extract: opens a seam you have found, for extra charges. A rich seam gives its unit and has a " +
+            "- Extract: opens a seam you have found, for " + ProspectingRules.ExtractCharges + " charges. A rich seam gives its unit and has a " +
             ProspectingRules.RichSeamBonusPercent + "% chance of one extra ore roll. A gem pocket gives a gem in place of its unit.\n" +
             "- Leave: stops, and leaves the rest of the node for the next harvester. The seams you found stay found.\n\n" +
             "ENDING\n" +

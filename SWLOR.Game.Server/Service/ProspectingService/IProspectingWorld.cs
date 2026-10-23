@@ -17,8 +17,8 @@ namespace SWLOR.Game.Server.Service.ProspectingService
         /// <summary>True when the node is still in the world.</summary>
         bool NodeExists(uint node);
 
-        /// <summary>True when the node's loot table has gem entries, so the node can hold gem pockets.</summary>
-        bool TableHasGems(string lootTable);
+        /// <summary>The share of a roll of the node's loot table that is a gem, which sets how often its seams are gem pockets. 0 when it has no gem.</summary>
+        double GemChance(string lootTable);
 
         /// <summary>Removes a node that is spent or has collapsed, and the prop that stands for it.</summary>
         void DestroyNode(uint node);

@@ -2,13 +2,14 @@ using System.Collections;
 using System.Reflection;
 using SWLOR.CraftSim.Data;
 using SWLOR.Game.Server.Feature.GuiDefinition.ViewModel;
+using SWLOR.Game.Server.Service.CraftService;
 
 namespace SWLOR.CraftSim.Legacy.Gathering
 {
     /// <summary>
-    /// Refining ore with power cores (RefineryViewModel.cs): 3 + Refinery Management units per core, and, until refining moved to the
-    /// rank-difference curve, a flat XP per unit from the refinery's ore table (<see cref="LegacyXpPerUnit"/>, ported from commit 64b712fc8
-    /// and no longer in the source). The ore list and tiers are still read from the refinery itself.
+    /// Refining ore with power cores (RefineryViewModel.cs): 3 + Refinery Management units per core, and a flat XP per unit from the
+    /// refinery's ore table that the refiner's rank scales (<see cref="CurrentXpPerUnit"/>). The ore list, tiers and flat XP are read from
+    /// the refinery itself.
     /// </summary>
     public static class RefiningModel
     {
@@ -16,29 +17,28 @@ namespace SWLOR.CraftSim.Legacy.Gathering
         public const int MaximumRefineryManagement = 6;
         private const int UnavailableLevel = 99;
 
-        /// <summary>RefineryViewModel.cs:168-169.</summary>
+        /// <summary>RefineryViewModel.cs:173-174.</summary>
         public static int ItemsPerCore(int refineryManagement) => BaseItemsPerCore + refineryManagement;
 
         public static int CoresRequired(int units, int refineryManagement) =>
             (int)Math.Ceiling(units / (float)ItemsPerCore(refineryManagement));
 
-        /// <summary>Flat XP per unit, whatever the crafter's rank (the removed <c>OreDetail.XPGranted</c>).</summary>
+        /// <summary>The flat XP per unit of the refinery's ore table (RefineryViewModel.cs:35-52): 25 to 150 by ore. It is what refining paid whatever the rank, and pays at the ore's level now.</summary>
         public static int Xp(OreTier ore, int units) => ore.XpPerUnit * units;
 
-        /// <summary>The flat XP per unit each refined ore paid before refining used the rank-difference curve: 25 to 150 by ore tier.</summary>
-        public static readonly IReadOnlyDictionary<string, int> LegacyXpPerUnit = new Dictionary<string, int>
-        {
-            ["raw_veldite"] = 25, ["ore_tilarium"] = 25,
-            ["raw_scordspar"] = 50, ["ore_currian"] = 50,
-            ["raw_plagionite"] = 75, ["ore_idailia"] = 75,
-            ["raw_keromber"] = 100, ["ore_barinium"] = 100,
-            ["raw_jasioclase"] = 125, ["ore_gostian"] = 125,
-            ["raw_arkoxit"] = 150, ["ore_arda"] = 150
-        };
+        /// <summary>
+        /// The XP of one unit refining pays now: the ore's flat XP times <c>GetDeltaXP(ore level - rank) / GetDeltaXP(0)</c>, at the level of the
+        /// vein of the ore's tier (<see cref="GatheringLevels.RefiningXp"/>, RefineryViewModel.cs:356). It is the flat XP at the ore's level.
+        /// </summary>
+        public static int CurrentXpPerUnit(OreTier ore, int gatheringRank) => CurrentXp(ore, gatheringRank, 1);
 
-        /// <summary>The XP per unit refining pays now: <c>GetDeltaXP(ore level - rank)</c>, at the level of the vein of the ore's tier.</summary>
-        public static int CurrentXpPerUnit(OreTier ore, int gatheringRank) =>
-            ServerXp.ForDelta(SWLOR.Game.Server.Service.CraftService.GatheringLevels.ForTier(ore.RequiredLevel) - gatheringRank);
+        /// <summary>The XP refining a stack of units of the ore pays a refiner of the rank, as the refinery rounds it.</summary>
+        public static int CurrentXp(OreTier ore, int gatheringRank, int units)
+        {
+            // The server's XP chart is cached on first use.
+            ServerXp.ForDelta(0);
+            return GatheringLevels.RefiningXp(ore.XpPerUnit, ore.RequiredLevel, gatheringRank, units);
+        }
 
         public static IReadOnlyList<OreTier> Ores() => LoadOres();
 
@@ -60,7 +60,7 @@ namespace SWLOR.CraftSim.Legacy.Gathering
                     (string)entry.Key,
                     (string)type.GetProperty("RefinedItemResref")!.GetValue(detail)!,
                     level,
-                    LegacyXpPerUnit[(string)entry.Key]));
+                    (int)type.GetProperty("XPGranted")!.GetValue(detail)!));
             }
 
             return ores.OrderBy(o => o.RequiredLevel).ThenBy(o => o.XpPerUnit).ThenBy(o => o.Ore, StringComparer.Ordinal).ToList();

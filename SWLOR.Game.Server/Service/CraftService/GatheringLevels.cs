@@ -21,4 +21,19 @@ public static class GatheringLevels
 
     /// <summary>The XP one unit of a tier pays a Gathering rank: <c>GetDeltaXP(ForTier(tier) - rank)</c>.</summary>
     public static int XpPerUnit(int tier, int gatheringRank) => Skill.GetDeltaXP(ForTier(tier) - gatheringRank);
+
+    /// <summary>
+    /// The XP refining pays for units of an ore. Each unit pays the ore's flat XP (25 to 150 by ore, what refining always paid) to a
+    /// refiner whose rank equals the ore's level, and the rank scales it on harvesting's curve:
+    /// <c>flat XP x GetDeltaXP(ore level - rank) / GetDeltaXP(0)</c>. A refiner below the level earns up to twice the flat XP, one five
+    /// ranks past it earns nothing, so cheap ore stops training high ranks while refining at level pays what it always did.
+    /// </summary>
+    /// <param name="flatXpPerUnit">The ore's XP per unit at its level.</param>
+    /// <param name="oreTier">The ore's tier, 1 to 5; its level is <see cref="ForTier"/>.</param>
+    /// <param name="gatheringRank">The refiner's Gathering rank.</param>
+    /// <param name="units">The units refined.</param>
+    public static int RefiningXp(int flatXpPerUnit, int oreTier, int gatheringRank, int units) =>
+        (int)Math.Round(
+            (double)flatXpPerUnit * Math.Max(0, units) * Skill.GetDeltaXP(ForTier(oreTier) - gatheringRank) / Skill.GetDeltaXP(0),
+            MidpointRounding.AwayFromZero);
 }

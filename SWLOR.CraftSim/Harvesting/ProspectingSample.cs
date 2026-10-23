@@ -10,7 +10,7 @@ namespace SWLOR.CraftSim.Harvesting
     /// <param name="Items">Items gathered over all the runs: pool units, extra ore rolls and gems.</param>
     /// <param name="Units">Pool units over all the runs.</param>
     /// <param name="RichRolls">Extra ore rolls from rich seams over all the runs.</param>
-    /// <param name="Gems">Gems from gem pockets over all the runs.</param>
+    /// <param name="Gems">Gems from gem pockets over all the runs, as played. The gems the units are as rolls of the table are not counted here.</param>
     /// <param name="Actions">Actions taken over all the runs. Leave is not an action a player spends time on.</param>
     /// <param name="Seconds">Seconds the actions took over all the runs.</param>
     /// <param name="Charges">Harvester charges spent over all the runs.</param>
@@ -72,7 +72,7 @@ namespace SWLOR.CraftSim.Harvesting
         public static ProspectingSample Sample(
             int nodeTier,
             int rank,
-            bool hasGems,
+            double gemChance,
             ProspectorPlan plan,
             int runs,
             int seed,
@@ -85,7 +85,7 @@ namespace SWLOR.CraftSim.Harvesting
             for (var run = 0; run < runs; run++)
             {
                 var random = SimMinigameRandom.ForRun(seed, SimStreams.Adaptive, stream, run);
-                var node = ProspectingNode.Create(random, hasGems);
+                var node = ProspectingNode.Create(random, gemChance);
                 var engine = new ProspectingEngine(random, ProspectingSetup.ForNode(node, charges, rank, nodeTier));
                 var played = 0;
                 double time = 0;
@@ -130,7 +130,7 @@ namespace SWLOR.CraftSim.Harvesting
         /// (<see cref="ProspectingQuickHarvest"/>): each takes everything its pool holds as far as the charges go, a charge and a harvest
         /// delay for each unit. Each unit is one action of <see cref="ProspectingRules.HarvestSeconds"/>.
         /// </summary>
-        public static ProspectingSample QuickHarvest(int nodeTier, int rank, bool hasGems, int runs, int seed, int stream, int charges = FreshHarvesterCharges)
+        public static ProspectingSample QuickHarvest(int nodeTier, int rank, double gemChance, int runs, int seed, int stream, int charges = FreshHarvesterCharges)
         {
             double items = 0, actions = 0, seconds = 0, spent = 0, poolLeft = 0;
             int minedOut = 0;
@@ -138,7 +138,7 @@ namespace SWLOR.CraftSim.Harvesting
             for (var run = 0; run < runs; run++)
             {
                 var random = SimMinigameRandom.ForRun(seed, SimStreams.Adaptive, stream, run);
-                var node = ProspectingNode.Create(random, hasGems);
+                var node = ProspectingNode.Create(random, gemChance);
                 var units = ProspectingQuickHarvest.Units(node, charges);
                 items += units;
                 actions += units;
@@ -154,12 +154,12 @@ namespace SWLOR.CraftSim.Harvesting
         }
 
         /// <summary>A number that names the case, the same on every machine: FNV-1a over the case's numbers and the plan's name.</summary>
-        public static int Stream(int nodeTier, int rank, bool hasGems, ProspectorPlan plan)
+        public static int Stream(int nodeTier, int rank, double gemChance, ProspectorPlan plan)
         {
             unchecked
             {
                 var hash = 2166136261u;
-                foreach (var part in new[] { nodeTier, rank, hasGems ? 1 : 0, plan.MaxSurveys, plan.ExtractSeams ? 1 : 0, plan.HeavyStrikes ? 1 : 0, (int)plan.Reserve })
+                foreach (var part in new[] { nodeTier, rank, ProspectingRules.GemPocketBasisPoints(gemChance), plan.MaxSurveys, plan.ExtractSeams ? 1 : 0, plan.HeavyStrikes ? 1 : 0, (int)plan.Reserve })
                 {
                     for (var shift = 0; shift < 32; shift += 8)
                         hash = (hash ^ (uint)((part >> shift) & 0xFF)) * 16777619u;

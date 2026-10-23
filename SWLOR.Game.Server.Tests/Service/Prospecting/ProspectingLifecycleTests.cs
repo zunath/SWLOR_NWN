@@ -22,6 +22,9 @@ public class ProspectingLifecycleTests
     private const uint OtherHarvester = 23;
     private const uint NodeId = 33;
 
+    /// <summary>A roll out of 10000 above the chance of a gem pocket, so a fresh node's seam is a rich one.</summary>
+    private const int RichRoll = 10000;
+
     private FakeProspectingWorld _world;
 
     [OneTimeSetUp]
@@ -94,8 +97,8 @@ public class ProspectingLifecycleTests
     [Test]
     public void ANodeNobodyHasWorkedIsMadeFresh_AndStoredAtOnce()
     {
-        // Next(1, 5) is the pool, Next(1, 101) the seam count, then a d100 for the seam's kind.
-        var lifecycle = Lifecycle(4, 1, 99);
+        // Next(1, 5) is the pool, Next(1, 101) the seam count, then Next(1, 10001) for the seam's kind.
+        var lifecycle = Lifecycle(4, 1, RichRoll);
 
         var begin = lifecycle.Begin(Request());
 
@@ -107,7 +110,7 @@ public class ProspectingLifecycleTests
     [Test]
     public void AnUnreadableStoredNodeIsTreatedAsOneNobodyHasWorked()
     {
-        var lifecycle = Lifecycle(2, 1, 99);
+        var lifecycle = Lifecycle(2, 1, RichRoll);
         _world.Nodes[NodeId] = "not a node";
 
         lifecycle.Begin(Request()).Opened.Should().BeTrue();
@@ -116,10 +119,24 @@ public class ProspectingLifecycleTests
     }
 
     [Test]
+    public void ATableWithAGemMakesPocketsAtAShareOfItsGemChance_AskedOfTheWorldForTheNodesTable()
+    {
+        // The world reports the table's gem chance (a tenth here); a seam is a pocket when its roll out of 10000 is within 0.15 of that.
+        var pocket = ProspectingRules.GemPocketBasisPoints(_world.GemChanceValue);
+        var lifecycle = Lifecycle(4, 100, pocket, pocket + 1, pocket);
+
+        var begin = lifecycle.Begin(Request());
+
+        begin.Session.Engine.ToNode().Seams.Select(seam => seam.Kind).Should().Equal(
+            ProspectingSeamKind.GemPocket, ProspectingSeamKind.Rich, ProspectingSeamKind.GemPocket);
+        pocket.Should().Be(150);
+    }
+
+    [Test]
     public void AGemlessTableMakesRichSeamsOnly()
     {
         var lifecycle = Lifecycle(4, 100, 1, 1, 1);
-        _world.TableHasGemsValue = false;
+        _world.GemChanceValue = 0;
 
         var begin = lifecycle.Begin(Request());
 

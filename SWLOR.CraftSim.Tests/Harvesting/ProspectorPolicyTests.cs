@@ -151,7 +151,7 @@ namespace SWLOR.CraftSim.Tests.Harvesting
                 {
                     var random = SimMinigameRandom.ForRun(seed, 5);
                     var engine = new ProspectingEngine(
-                        random, ProspectingSetup.ForNode(ProspectingNode.Create(random, true), 50, 25, 3));
+                        random, ProspectingSetup.ForNode(ProspectingNode.Create(random, 0.1), 50, 25, 3));
 
                     CraftPlayer.Play(engine, new ProspectorPolicy(plan), ProspectingPlays.ActionLimit);
 

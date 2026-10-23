@@ -96,10 +96,10 @@ public class KitchenFlavorTests
         new KitchenStats(rank, 0, 0, gearCp).MaxCp.Should().Be(expected);
     }
 
-    [TestCase(0, 40)]
-    [TestCase(13, 29)]
-    [TestCase(29, 21)]
-    [TestCase(3000, 0)]
+    [TestCase(0, 50)]
+    [TestCase(13, 36)]
+    [TestCase(29, 27)]
+    [TestCase(30000, 0)]
     public void ControlNarrowsThePushSpreadButOnlyHugeControlRemovesIt(int control, int spread)
     {
         new KitchenStats(20, 0, control, 0).PushSpreadPercent.Should().Be(spread);

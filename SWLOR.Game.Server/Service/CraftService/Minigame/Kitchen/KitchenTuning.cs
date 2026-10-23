@@ -33,8 +33,11 @@ public static class KitchenTuning
     /// <summary>Each unit of a diluting ingredient (water) shrinks every axis by this percentage.</summary>
     public const int DilutePercentPerUnit = 25;
 
-    /// <summary>With no Control, a push lands anywhere from this percentage below to this percentage above its listed strength.</summary>
-    public const int BasePushSpreadPercent = 40;
+    /// <summary>
+    /// With no Control, a push lands anywhere from this percentage below to this percentage above its listed strength. Tuned: at 40 a
+    /// single rotation of actions could match adaptive play across a band of low-level dishes (gate 1).
+    /// </summary>
+    public const int BasePushSpreadPercent = 50;
 
     /// <summary>Control narrows the spread: spread = base x 100 / (100 + this x Control).</summary>
     public const int ControlPerSpreadStep = 3;
@@ -96,7 +99,8 @@ public static class KitchenTuning
 
     // Craft points
 
-    public const int StirCp = 8;
+    /// <summary>The CP a Stir costs. Tuned: at 8 a cook with gear could stir every turn without reading the drift (gate 1).</summary>
+    public const int StirCp = 12;
     public const int CoverCp = 6;
 
     /// <summary>Gear CP plus this much per skill rank, as every crafting skill's CP.</summary>
@@ -113,11 +117,11 @@ public static class KitchenTuning
     // CraftSim XP-rate gate (gate 6) passing in its band at every gear tier and enhancement count. The Kitchen's 10-20 action loop at
     // an estimated 8 seconds an action pays less XP per hour than the old window's 4-28 action loop at 6 seconds, and the old window is
     // fastest at the lowest levels. Starting values until client timing replaces the seconds per action.
-    public const double XpMultiplierLevels1To10 = 2.1;
-    public const double XpMultiplierLevels11To20 = 1.05;
-    public const double XpMultiplierLevels21To30 = 1.05;
-    public const double XpMultiplierLevels31To40 = 1.15;
-    public const double XpMultiplierLevels41Up = 1.1;
+    public const double XpMultiplierLevels1To10 = 2.15;
+    public const double XpMultiplierLevels11To20 = 1.15;
+    public const double XpMultiplierLevels21To30 = 1.1;
+    public const double XpMultiplierLevels31To40 = 1.2;
+    public const double XpMultiplierLevels41Up = 1.05;
 
     /// <summary>The multiplier on the base XP of a Kitchen craft at a recipe level. A level of 0 or less takes the lowest band's.</summary>
     public static double XpMultiplierForLevel(int recipeLevel) => recipeLevel switch

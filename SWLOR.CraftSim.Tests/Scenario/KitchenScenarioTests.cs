@@ -37,6 +37,18 @@ namespace SWLOR.CraftSim.Tests.Scenario
         }
 
         [Test]
+        public void TheScenarioReportsTheMultiplierTheGameServerAppliesInEveryLevelBand()
+        {
+            foreach (var level in new[] { 1, 10, 11, 20, 21, 30, 31, 40, 41, 53 })
+            {
+                Scenario.XpMultiplierFor(level).Should().Be(CraftMinigameXp.MultiplierFor(CraftMinigameType.Kitchen, level));
+                Scenario.XpMultiplierFor(level).Should().Be(KitchenTuning.XpMultiplierForLevel(level));
+            }
+
+            Scenario.XpMultiplier.Should().Be(KitchenTuning.XpMultiplierLevels1To10, "the lowest band's, the largest");
+        }
+
+        [Test]
         public void TheEngineIsTheRealKitchenBuiltFromTheRecipesStoredParameters()
         {
             var recipe = Recipe(RecipeType.MynockMeatBall);

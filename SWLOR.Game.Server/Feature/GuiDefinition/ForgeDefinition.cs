@@ -22,13 +22,14 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition
             "FINISHES THE ITEM beside it.\n\n" +
             "THERMAL\n" +
             "Every metal works best inside its Working range on the Thermal meter. Thermal falls after every action by the recipe's " +
-            "cooling rate. Leather and synthweave are heat-sealed: they use a low, wide range that cools slowly.\n\n" +
+            "cooling rate; light pieces such as rings cool faster than heavy plate. Leather and synthweave are heat-sealed: they use a low, wide " +
+            "range that cools slowly. Some pieces start outside their range, so read the meter before your first action.\n\n" +
             "ACTIONS\n" +
-            "- Ramp Plasma raises Thermal and costs CP.\n" +
+            "- Ramp Plasma raises Thermal and costs CP, more for a higher-level recipe.\n" +
             "- Hydro-Press gains a large amount of Shape, more the hotter the piece is inside the range. Below the range it does little and " +
             "cracks Integrity; above it, it shapes more but cracks Integrity harder.\n" +
             "- Vibro-Hone gains Finish. It is best in the cool half of the range and weak outside it.\n" +
-            "- Rebond (rank 10) restores Integrity and costs Thermal and CP.\n" +
+            "- Rebond (rank 10) restores Integrity and costs Thermal and CP, more for a higher-level recipe.\n" +
             "- Cryo-Quench (rank 20) works once per craft, after the piece is 80% shaped. It gives a large Finish bonus when Thermal is in the range, " +
             "more near its center. Afterward the piece is set: Ramp Plasma and Hydro-Press are disabled, and Vibro-Hone works at a flat rate " +
             "and trims the set piece to size.\n" +

@@ -214,15 +214,15 @@ public class ForgeEngineTests
         var preview = Preview(engine, ForgeActionIds.RampPlasma);
 
         preview.Enabled.Should().BeTrue();
-        preview.CpCost.Should().Be(ForgeRules.RampCp);
+        preview.CpCost.Should().Be(ForgeRules.RampCp(20));
         preview.IntegrityCost.Should().Be(ForgeRules.RampIntegrity);
         var outcome = preview.Outcomes.Single();
-        outcome.Change(ForgeEngine.ThermalMeterId).Delta.Should().Be(25);
-        outcome.Delta.Should().Be(new MinigameMeterDelta(Integrity: -ForgeRules.RampIntegrity, Cp: -ForgeRules.RampCp));
+        outcome.Change(ForgeEngine.ThermalMeterId).Delta.Should().Be(ForgeRules.RampThermal);
+        outcome.Delta.Should().Be(new MinigameMeterDelta(Integrity: -ForgeRules.RampIntegrity, Cp: -ForgeRules.RampCp(20)));
 
         engine.Perform(ForgeActionIds.RampPlasma);
-        engine.Thermal.Should().Be(65);
-        engine.Meters.Cp.Value.Should().Be(15 - ForgeRules.RampCp);
+        engine.Thermal.Should().Be(40 + ForgeRules.RampThermal);
+        engine.Meters.Cp.Value.Should().Be(15 - ForgeRules.RampCp(20));
     }
 
     [Test]
@@ -252,9 +252,9 @@ public class ForgeEngineTests
 
     // Hydro-Press
 
-    [TestCase(35, 119)]
-    [TestCase(47, 153)]
-    [TestCase(65, 204)]
+    [TestCase(35, 133)]
+    [TestCase(47, 171)]
+    [TestCase(65, 228)]
     public void HydroPress_GainsMoreShapeTheHotterTheRangeInsideIt(int thermal, int shape)
     {
         var engine = Engine(Setup(startingThermal: thermal));
@@ -274,8 +274,8 @@ public class ForgeEngineTests
 
         var outcome = Only(engine, ForgeActionIds.HydroPress);
 
-        outcome.Delta.Progress.Should().Be(43);
-        outcome.Delta.Integrity.Should().Be(-11);
+        outcome.Delta.Progress.Should().Be(19);
+        outcome.Delta.Integrity.Should().Be(-16);
         outcome.Label.Should().Be("Press below the range");
     }
 
@@ -288,8 +288,8 @@ public class ForgeEngineTests
         var inRange = Only(Engine(Setup(startingThermal: 65)), ForgeActionIds.HydroPress);
         var below = Only(Engine(Setup(startingThermal: 20)), ForgeActionIds.HydroPress);
 
-        outcome.Delta.Progress.Should().Be(245);
-        outcome.Delta.Integrity.Should().Be(-15);
+        outcome.Delta.Progress.Should().Be(274);
+        outcome.Delta.Integrity.Should().Be(-25);
         outcome.Delta.Progress.Should().BeGreaterThan(inRange.Delta.Progress);
         outcome.Delta.Integrity.Should().BeLessThan(inRange.Delta.Integrity);
         outcome.Delta.Integrity.Should().BeLessThan(below.Delta.Integrity, "above the range cracks harder than below it");
@@ -310,10 +310,10 @@ public class ForgeEngineTests
 
     // Vibro-Hone
 
-    [TestCase(40, 140)]
-    [TestCase(50, 140)]
-    [TestCase(57, 114)]
-    [TestCase(65, 84)]
+    [TestCase(40, 90)]
+    [TestCase(50, 90)]
+    [TestCase(57, 73)]
+    [TestCase(65, 54)]
     public void VibroHone_IsBestInTheCoolHalfOfTheRangeAndFallsTowardTheHotEdge(int thermal, int finish)
     {
         var outcome = Only(Engine(Setup(startingThermal: thermal)), ForgeActionIds.VibroHone);
@@ -323,8 +323,8 @@ public class ForgeEngineTests
         outcome.Delta.Progress.Should().Be(0);
     }
 
-    [TestCase(20, 49)]
-    [TestCase(80, 49)]
+    [TestCase(20, 9)]
+    [TestCase(80, 9)]
     public void VibroHone_IsWeakOutsideTheRange(int thermal, int finish)
     {
         Only(Engine(Setup(startingThermal: thermal)), ForgeActionIds.VibroHone).Delta.Quality.Should().Be(finish);
@@ -338,12 +338,12 @@ public class ForgeEngineTests
         var engine = Engine(Setup(startingThermal: 60));
         engine.Perform(ForgeActionIds.VibroHone);
         engine.Perform(ForgeActionIds.VibroHone);
-        engine.Meters.Integrity.Value.Should().Be(92);
+        engine.Meters.Integrity.Value.Should().Be(100 - 2 * ForgeRules.HoneIntegrity);
 
         var outcome = Only(engine, ForgeActionIds.Rebond);
 
-        outcome.Delta.Integrity.Should().Be(8, "integrity cannot pass its maximum");
-        outcome.Delta.Cp.Should().Be(-ForgeRules.RebondCp);
+        outcome.Delta.Integrity.Should().Be(2 * ForgeRules.HoneIntegrity, "integrity cannot pass its maximum");
+        outcome.Delta.Cp.Should().Be(-ForgeRules.RebondCp(20));
         outcome.Change(ForgeEngine.ThermalMeterId).Delta.Should().Be(-ForgeRules.RebondThermal);
     }
 
@@ -352,13 +352,13 @@ public class ForgeEngineTests
     {
         var engine = Engine(Setup(startingThermal: 20));
         Press(engine, 3);
-        engine.Meters.Integrity.Value.Should().Be(100 - 3 * 11);
+        engine.Meters.Integrity.Value.Should().Be(100 - 3 * 16);
 
         engine.Perform(ForgeActionIds.Rebond);
 
-        engine.Meters.Integrity.Value.Should().Be(100 - 3 * 11 + ForgeRules.RebondIntegrity);
+        engine.Meters.Integrity.Value.Should().Be(100 - 3 * 16 + ForgeRules.RebondIntegrity);
         engine.Thermal.Should().Be(8);
-        engine.Meters.Cp.Value.Should().Be(15 - ForgeRules.RebondCp);
+        engine.Meters.Cp.Value.Should().Be(15 - ForgeRules.RebondCp(20));
     }
 
     [Test]
@@ -376,11 +376,11 @@ public class ForgeEngineTests
     [Test]
     public void Rebond_WithTooLittleCpIsRefused()
     {
-        var engine = Engine(Setup(rank: 15, level: 15, startingThermal: 20));
-        engine.Meters.Cp.Value.Should().Be(11);
+        var engine = Engine(Setup(rank: 20, level: 20, startingThermal: 20));
+        engine.Meters.Cp.Value.Should().Be(15);
         engine.Perform(ForgeActionIds.HydroPress);
         engine.Perform(ForgeActionIds.Rebond).Performed.Should().BeTrue();
-        engine.Meters.Cp.Value.Should().Be(11 - ForgeRules.RebondCp);
+        engine.Meters.Cp.Value.Should().Be(15 - ForgeRules.RebondCp(20));
 
         engine.Perform(ForgeActionIds.HydroPress);
         var preview = Preview(engine, ForgeActionIds.Rebond);
@@ -423,10 +423,10 @@ public class ForgeEngineTests
         var nearCenter = Only(Shaped(55), ForgeActionIds.CryoQuench).Delta.Quality;
         var outside = Only(Shaped(90), ForgeActionIds.CryoQuench);
 
-        center.Should().Be(360);
+        center.Should().Be(600);
         edge.Should().Be(180);
-        nearCenter.Should().Be(300);
-        outside.Delta.Quality.Should().Be(54);
+        nearCenter.Should().Be(460);
+        outside.Delta.Quality.Should().Be(90);
         outside.Label.Should().Be("Quenched outside the working range");
     }
 
@@ -545,19 +545,19 @@ public class ForgeEngineTests
     public void StableContainment_GivesTheNextHydroPressFiftyPercentMoreShape()
     {
         var engine = Engine(Setup(startingThermal: 47), new ScriptedMinigameRandom(1));
-        Only(engine, ForgeActionIds.HydroPress).Delta.Progress.Should().Be(153);
+        Only(engine, ForgeActionIds.HydroPress).Delta.Progress.Should().Be(171);
         engine.Perform(ForgeActionIds.RampPlasma);
         engine.NextOpportunity.Should().NotBeNull();
-        engine.Thermal.Should().Be(72);
+        engine.Thermal.Should().Be(47 + ForgeRules.RampThermal);
 
         var boosted = Only(engine, ForgeActionIds.HydroPress);
 
         var expected = (int)Math.Round(
-            ForgeRules.PressBaseShape * ForgeRules.PressMultiplier(72, Low, High) * 1.5, MidpointRounding.AwayFromZero);
-        expected.Should().Be(335);
-        boosted.Delta.Progress.Should().Be(335);
+            ForgeRules.PressBaseShape * ForgeRules.PressMultiplier(69, Low, High) * 1.5, MidpointRounding.AwayFromZero);
+        expected.Should().Be(360);
+        boosted.Delta.Progress.Should().Be(360);
         boosted.Label.Should().Contain("Stable Containment");
-        boosted.Delta.Integrity.Should().Be(Only(Engine(Setup(startingThermal: 72)), ForgeActionIds.HydroPress).Delta.Integrity);
+        boosted.Delta.Integrity.Should().Be(Only(Engine(Setup(startingThermal: 69)), ForgeActionIds.HydroPress).Delta.Integrity);
     }
 
     [Test]
@@ -566,11 +566,11 @@ public class ForgeEngineTests
         var engine = Engine(Setup(startingThermal: 20, control: 10), new ScriptedMinigameRandom(1));
         engine.Perform(ForgeActionIds.RampPlasma);
         engine.NextOpportunity.Should().NotBeNull();
-        engine.Thermal.Should().Be(45);
+        engine.Thermal.Should().Be(20 + ForgeRules.RampThermal);
 
         var boosted = Only(engine, ForgeActionIds.VibroHone);
 
-        boosted.Delta.Quality.Should().Be(231, "140 x 1.10 x 1.50");
+        boosted.Delta.Quality.Should().Be(149, "90 x 1.10 x 1.50");
         boosted.Label.Should().Contain("Stable Containment");
     }
 
@@ -587,8 +587,9 @@ public class ForgeEngineTests
         boostedEngine.NextOpportunity.Should().NotBeNull();
         var boosted = Only(boostedEngine, ForgeActionIds.VibroHone);
 
+        var remainingShape = boostedEngine.Meters.Progress.Max - boostedEngine.Meters.Progress.Value;
         boosted.Delta.Quality.Should().Be((int)Math.Round(plain.Delta.Quality * 1.5, MidpointRounding.AwayFromZero));
-        boosted.Delta.Progress.Should().Be((int)Math.Round(plain.Delta.Progress * 1.5, MidpointRounding.AwayFromZero));
+        boosted.Delta.Progress.Should().Be(Math.Min(remainingShape, (int)Math.Round(plain.Delta.Progress * 1.5, MidpointRounding.AwayFromZero)));
     }
 
     [Test]
@@ -773,9 +774,9 @@ public class ForgeEngineTests
         var above = Only(Engine(Setup(rank: 24, level: 20, startingThermal: 47)), ForgeActionIds.HydroPress).Delta.Progress;
         var below = Only(Engine(Setup(rank: 17, level: 20, startingThermal: 47)), ForgeActionIds.HydroPress).Delta.Progress;
 
-        atLevel.Should().Be(153);
-        above.Should().Be((int)Math.Round(153 * 1.20));
-        below.Should().Be((int)Math.Round(153 * 0.85));
+        atLevel.Should().Be(171);
+        above.Should().Be((int)Math.Round(171 * 1.20));
+        below.Should().Be((int)Math.Round(171 * 0.85));
     }
 
     [Test]
@@ -793,9 +794,9 @@ public class ForgeEngineTests
         var craftsman = Engine(Setup(startingThermal: 47, craftsmanship: 20));
         var controller = Engine(Setup(startingThermal: 47, control: 20));
 
-        Only(craftsman, ForgeActionIds.HydroPress).Delta.Progress.Should().Be(184, "153 x 1.20");
+        Only(craftsman, ForgeActionIds.HydroPress).Delta.Progress.Should().Be(205, "171 x 1.20");
         Only(craftsman, ForgeActionIds.VibroHone).Delta.Quality.Should().Be(Only(plain, ForgeActionIds.VibroHone).Delta.Quality);
-        Only(controller, ForgeActionIds.VibroHone).Delta.Quality.Should().Be(168, "140 x 1.20");
+        Only(controller, ForgeActionIds.VibroHone).Delta.Quality.Should().Be(108, "90 x 1.20");
         Only(controller, ForgeActionIds.HydroPress).Delta.Progress.Should().Be(Only(plain, ForgeActionIds.HydroPress).Delta.Progress);
     }
 

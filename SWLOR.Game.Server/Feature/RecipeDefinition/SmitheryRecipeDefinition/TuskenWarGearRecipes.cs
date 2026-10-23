@@ -31,7 +31,7 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.SmitheryRecipeDefinition
                 .Component("sun_bantha_hide", 1)
                 .Component("lth_high", 4)
                 .Component("fiberp_high", 2)
-                .ForgeParameters(rangeCenter: 41, rangeWidth: 48, coolingRate: 3, startingThermal: 40, shapeShare: 60);
+                .ForgeParameters(rangeCenter: 41, rangeWidth: 40, coolingRate: 1, startingThermal: 42, shapeShare: 70);
 
             // Scopewright Cap (light armor)
             _builder.Create(RecipeType.ScopewrightCap, SkillType.Smithery)
@@ -44,7 +44,7 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.SmitheryRecipeDefinition
                 .Component("cycler_scope", 1)
                 .Component("elec_high", 3)
                 .Component("fiberp_high", 2)
-                .ForgeParameters(rangeCenter: 39, rangeWidth: 42, coolingRate: 4, startingThermal: 44, shapeShare: 58);
+                .ForgeParameters(rangeCenter: 41, rangeWidth: 40, coolingRate: 4, startingThermal: 42, shapeShare: 62);
 
             // Windcaller Mantle (cloak)
             _builder.Create(RecipeType.WindcallerMantle, SkillType.Smithery)
@@ -57,7 +57,7 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.SmitheryRecipeDefinition
                 .Component("bone_fetish", 1)
                 .Component("fiberp_high", 3)
                 .Component("elec_high", 1)
-                .ForgeParameters(rangeCenter: 44, rangeWidth: 42, coolingRate: 4, startingThermal: 45, shapeShare: 51);
+                .ForgeParameters(rangeCenter: 41, rangeWidth: 40, coolingRate: 5, startingThermal: 40, shapeShare: 54);
 
             // Warband Helm (heavy helmet)
             _builder.Create(RecipeType.WarbandHelm, SkillType.Smithery)
@@ -70,7 +70,7 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.SmitheryRecipeDefinition
                 .Component("bone_totem", 1)
                 .Component("lth_high", 3)
                 .Component("elec_high", 2)
-                .ForgeParameters(rangeCenter: 37, rangeWidth: 43, coolingRate: 4, startingThermal: 40, shapeShare: 56);
+                .ForgeParameters(rangeCenter: 41, rangeWidth: 40, coolingRate: 2, startingThermal: 50, shapeShare: 62);
         }
     }
 }

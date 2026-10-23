@@ -34,13 +34,13 @@ public class ForgeWindowTests
         var engine = Engine(Setup(startingThermal: 65));
         for (var press = 0; press < 4; press++)
             engine.Perform(ForgeActionIds.HydroPress);
-        engine.Meters.Progress.Value.Should().Be(816);
+        engine.Meters.Progress.Value.Should().Be(912);
 
         var preview = engine.Preview(ForgeActionIds.HydroPress);
         var text = ForgePreviewText.Describe(preview, engine.Setup);
 
         preview.FinishesItem.Should().BeTrue();
-        text.Should().Be("Shape +18.4%, Integrity -5. FINISHES THE ITEM");
+        text.Should().Be("Shape +8.8%, Integrity -10. FINISHES THE ITEM");
     }
 
     [Test]
@@ -49,9 +49,9 @@ public class ForgeWindowTests
         var engine = Engine(Setup(startingThermal: 40, cooling: 5));
 
         ForgePreviewText.Describe(engine.Preview(ForgeActionIds.RampPlasma), engine.Setup)
-            .Should().Be("Integrity -2, CP -5, Thermal 40 -> 60");
+            .Should().Be("Integrity -3, CP -10, Thermal 40 -> 57");
         ForgePreviewText.Describe(engine.Preview(ForgeActionIds.VibroHone), engine.Setup)
-            .Should().Be("Finish +14.0%, Integrity -4, Thermal 40 -> 35");
+            .Should().Be("Finish +9.0%, Integrity -8, Thermal 40 -> 35");
     }
 
     [Test]
@@ -95,10 +95,10 @@ public class ForgeWindowTests
         var ramp = engine.Preview(ForgeActionIds.RampPlasma);
         var press = engine.Preview(ForgeActionIds.HydroPress);
 
-        ForgePreviewText.ButtonText(ramp).Should().Be("Ramp Plasma [5 CP]");
+        ForgePreviewText.ButtonText(ramp).Should().Be("Ramp Plasma [10 CP]");
         ForgePreviewText.ButtonText(press).Should().Be("Hydro-Press");
-        ForgePreviewText.Tooltip(ramp).Should().Contain("Raises Thermal").And.Contain("5 CP").And.Contain("2 Integrity");
-        ForgePreviewText.Tooltip(press).Should().Contain("5 Integrity").And.NotContain("CP");
+        ForgePreviewText.Tooltip(ramp).Should().Contain("Raises Thermal").And.Contain("10 CP").And.Contain("3 Integrity");
+        ForgePreviewText.Tooltip(press).Should().Contain("10 Integrity").And.NotContain("CP");
     }
 
     [Test]

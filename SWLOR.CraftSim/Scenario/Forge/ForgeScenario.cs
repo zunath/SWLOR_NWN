@@ -14,8 +14,12 @@ namespace SWLOR.CraftSim.Scenario.Forge
     {
         private static readonly AdaptivePolicyOptions Adaptive = new()
         {
-            // The Forge ends the moment Shape is full, so a skilled player keeps the integrity to finish Shape rather than hone to the last point.
-            Heuristic = new DefaultLeafHeuristic(successBonus: 0.85, safetyMargin: 3.0, progressPull: 0.02)
+            // The Forge is deterministic apart from one telegraphed opportunity, and Integrity is tight: a skilled player plans Thermal and
+            // Integrity several actions ahead (ramp before the range is lost, rebond before the next press can crack the piece). A depth of
+            // four sees that; the heuristic keeps the Integrity a Shape finish needs (a margin of 2.5) rather than honing to the last point.
+            Depth = 4,
+            SampleBudget = 6000,
+            Heuristic = new DefaultLeafHeuristic(successBonus: 0.75, safetyMargin: 2.5, progressPull: 0.02)
         };
 
         public string Name => "forge";

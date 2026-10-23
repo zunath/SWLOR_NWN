@@ -34,7 +34,7 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.SmitheryRecipeDefinition
                 .EnhancementSlots(RecipeEnhancementType.Armor, 1)
                 .Component("ref_veldite", 4)
                 .Component("fiberp_ruined", 2)
-                .ForgeParameters(rangeCenter: 67, rangeWidth: 49, coolingRate: 3, startingThermal: 80, shapeShare: 60);
+                .ForgeParameters(rangeCenter: 65, rangeWidth: 34, coolingRate: 1, startingThermal: 69, shapeShare: 70);
 
             // Spiritmaster Tunic
             _builder.Create(RecipeType.SpiritmasterTunic, SkillType.Smithery)
@@ -45,7 +45,7 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.SmitheryRecipeDefinition
                 .EnhancementSlots(RecipeEnhancementType.Armor, 1)
                 .Component("lth_ruined", 4)
                 .Component("fiberp_ruined", 2)
-                .ForgeParameters(rangeCenter: 40, rangeWidth: 60, coolingRate: 1, startingThermal: 58, shapeShare: 59);
+                .ForgeParameters(rangeCenter: 37, rangeWidth: 52, coolingRate: 1, startingThermal: 47, shapeShare: 70);
 
             // Combat Tunic
             _builder.Create(RecipeType.CombatTunic, SkillType.Smithery)
@@ -56,7 +56,7 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.SmitheryRecipeDefinition
                 .EnhancementSlots(RecipeEnhancementType.Armor, 1)
                 .Component("lth_ruined", 4)
                 .Component("fiberp_ruined", 2)
-                .ForgeParameters(rangeCenter: 40, rangeWidth: 60, coolingRate: 1, startingThermal: 61, shapeShare: 63);
+                .ForgeParameters(rangeCenter: 37, rangeWidth: 54, coolingRate: 1, startingThermal: 48, shapeShare: 70);
 
             // Advent Tunic
             _builder.Create(RecipeType.AdventTunic, SkillType.Smithery)
@@ -68,7 +68,7 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.SmitheryRecipeDefinition
                 .Component("ref_veldite", 5)
                 .Component("lth_ruined", 5)
                 .Component("jade", 3)
-                .ForgeParameters(rangeCenter: 59, rangeWidth: 49, coolingRate: 2, startingThermal: 76, shapeShare: 57);
+                .ForgeParameters(rangeCenter: 55, rangeWidth: 37, coolingRate: 1, startingThermal: 61, shapeShare: 70);
 
             // Amateur Tunic
             _builder.Create(RecipeType.AmateurTunic, SkillType.Smithery)
@@ -80,7 +80,7 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.SmitheryRecipeDefinition
                 .Component("ref_veldite", 5)
                 .Component("lth_ruined", 5)
                 .Component("jade", 3)
-                .ForgeParameters(rangeCenter: 57, rangeWidth: 53, coolingRate: 2, startingThermal: 73, shapeShare: 63);
+                .ForgeParameters(rangeCenter: 60, rangeWidth: 43, coolingRate: 1, startingThermal: 68, shapeShare: 70);
 
             // Cloth Tunic
             _builder.Create(RecipeType.ClothTunic, SkillType.Smithery)
@@ -92,7 +92,7 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.SmitheryRecipeDefinition
                 .Component("ref_veldite", 5)
                 .Component("lth_ruined", 5)
                 .Component("jade", 3)
-                .ForgeParameters(rangeCenter: 58, rangeWidth: 50, coolingRate: 1, startingThermal: 78, shapeShare: 59);
+                .ForgeParameters(rangeCenter: 58, rangeWidth: 37, coolingRate: 1, startingThermal: 64, shapeShare: 70);
 
             // Chef Tunic
             _builder.Create(RecipeType.ChefTunic, SkillType.Smithery)
@@ -104,7 +104,7 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.SmitheryRecipeDefinition
                 .Component("ref_veldite", 5)
                 .Component("lth_ruined", 5)
                 .Component("jade", 3)
-                .ForgeParameters(rangeCenter: 59, rangeWidth: 46, coolingRate: 2, startingThermal: 70, shapeShare: 57);
+                .ForgeParameters(rangeCenter: 59, rangeWidth: 38, coolingRate: 1, startingThermal: 65, shapeShare: 70);
         }
 
         private void Tier2()
@@ -118,7 +118,7 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.SmitheryRecipeDefinition
                 .EnhancementSlots(RecipeEnhancementType.Armor, 2)
                 .Component("ref_scordspar", 4)
                 .Component("fiberp_flawed", 2)
-                .ForgeParameters(rangeCenter: 60, rangeWidth: 46, coolingRate: 4, startingThermal: 75, shapeShare: 61);
+                .ForgeParameters(rangeCenter: 66, rangeWidth: 41, coolingRate: 1, startingThermal: 77, shapeShare: 69);
 
             // Vivid Tunic
             _builder.Create(RecipeType.VividTunic, SkillType.Smithery)
@@ -129,7 +129,7 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.SmitheryRecipeDefinition
                 .EnhancementSlots(RecipeEnhancementType.Armor, 2)
                 .Component("lth_flawed", 4)
                 .Component("fiberp_flawed", 2)
-                .ForgeParameters(rangeCenter: 41, rangeWidth: 60, coolingRate: 3, startingThermal: 58, shapeShare: 62);
+                .ForgeParameters(rangeCenter: 38, rangeWidth: 60, coolingRate: 1, startingThermal: 54, shapeShare: 71);
 
             // Valor Tunic
             _builder.Create(RecipeType.ValorTunic, SkillType.Smithery)
@@ -140,7 +140,7 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.SmitheryRecipeDefinition
                 .EnhancementSlots(RecipeEnhancementType.Armor, 2)
                 .Component("lth_flawed", 4)
                 .Component("fiberp_flawed", 2)
-                .ForgeParameters(rangeCenter: 40, rangeWidth: 57, coolingRate: 1, startingThermal: 54, shapeShare: 63);
+                .ForgeParameters(rangeCenter: 38, rangeWidth: 60, coolingRate: 1, startingThermal: 54, shapeShare: 71);
 
             // Frontier Tunic
             _builder.Create(RecipeType.FrontierTunic, SkillType.Smithery)
@@ -152,7 +152,7 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.SmitheryRecipeDefinition
                 .Component("ref_scordspar", 5)
                 .Component("lth_flawed", 5)
                 .Component("agate", 3)
-                .ForgeParameters(rangeCenter: 59, rangeWidth: 43, coolingRate: 4, startingThermal: 67, shapeShare: 60);
+                .ForgeParameters(rangeCenter: 61, rangeWidth: 30, coolingRate: 3, startingThermal: 64, shapeShare: 69);
 
             // Worker Tunic
             _builder.Create(RecipeType.WorkerTunic, SkillType.Smithery)
@@ -164,7 +164,7 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.SmitheryRecipeDefinition
                 .Component("ref_scordspar", 5)
                 .Component("lth_flawed", 5)
                 .Component("agate", 3)
-                .ForgeParameters(rangeCenter: 57, rangeWidth: 43, coolingRate: 2, startingThermal: 70, shapeShare: 62);
+                .ForgeParameters(rangeCenter: 55, rangeWidth: 39, coolingRate: 3, startingThermal: 65, shapeShare: 71);
 
             // Linen Tunic
             _builder.Create(RecipeType.LinenTunic, SkillType.Smithery)
@@ -176,7 +176,7 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.SmitheryRecipeDefinition
                 .Component("ref_scordspar", 5)
                 .Component("lth_flawed", 5)
                 .Component("agate", 3)
-                .ForgeParameters(rangeCenter: 62, rangeWidth: 46, coolingRate: 4, startingThermal: 73, shapeShare: 62);
+                .ForgeParameters(rangeCenter: 54, rangeWidth: 35, coolingRate: 4, startingThermal: 58, shapeShare: 71);
 
             // Velveteen Tunic
             _builder.Create(RecipeType.VelveteenTunic, SkillType.Smithery)
@@ -188,7 +188,7 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.SmitheryRecipeDefinition
                 .Component("ref_scordspar", 5)
                 .Component("lth_flawed", 5)
                 .Component("agate", 3)
-                .ForgeParameters(rangeCenter: 55, rangeWidth: 40, coolingRate: 4, startingThermal: 72, shapeShare: 61);
+                .ForgeParameters(rangeCenter: 54, rangeWidth: 35, coolingRate: 2, startingThermal: 62, shapeShare: 70);
         }
 
         private void Tier3()
@@ -202,7 +202,7 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.SmitheryRecipeDefinition
                 .EnhancementSlots(RecipeEnhancementType.Armor, 2)
                 .Component("ref_plagionite", 4)
                 .Component("fiberp_good", 2)
-                .ForgeParameters(rangeCenter: 66, rangeWidth: 39, coolingRate: 5, startingThermal: 71, shapeShare: 62);
+                .ForgeParameters(rangeCenter: 64, rangeWidth: 21, coolingRate: 3, startingThermal: 73, shapeShare: 70);
 
             // Reginal Tunic
             _builder.Create(RecipeType.ReginalTunic, SkillType.Smithery)
@@ -213,7 +213,7 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.SmitheryRecipeDefinition
                 .EnhancementSlots(RecipeEnhancementType.Armor, 2)
                 .Component("lth_good", 4)
                 .Component("fiberp_good", 2)
-                .ForgeParameters(rangeCenter: 39, rangeWidth: 57, coolingRate: 3, startingThermal: 50, shapeShare: 59);
+                .ForgeParameters(rangeCenter: 39, rangeWidth: 40, coolingRate: 5, startingThermal: 30, shapeShare: 70);
 
             // Forza Tunic
             _builder.Create(RecipeType.ForzaTunic, SkillType.Smithery)
@@ -224,7 +224,7 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.SmitheryRecipeDefinition
                 .EnhancementSlots(RecipeEnhancementType.Armor, 2)
                 .Component("lth_good", 4)
                 .Component("fiberp_good", 2)
-                .ForgeParameters(rangeCenter: 43, rangeWidth: 51, coolingRate: 4, startingThermal: 46, shapeShare: 63);
+                .ForgeParameters(rangeCenter: 39, rangeWidth: 37, coolingRate: 5, startingThermal: 42, shapeShare: 70);
 
             // Majestic Tunic
             _builder.Create(RecipeType.MajesticTunic, SkillType.Smithery)
@@ -236,7 +236,7 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.SmitheryRecipeDefinition
                 .Component("ref_plagionite", 5)
                 .Component("lth_good", 5)
                 .Component("citrine", 3)
-                .ForgeParameters(rangeCenter: 59, rangeWidth: 39, coolingRate: 5, startingThermal: 61, shapeShare: 60);
+                .ForgeParameters(rangeCenter: 59, rangeWidth: 24, coolingRate: 3, startingThermal: 62, shapeShare: 70);
 
             // Mechanic Tunic
             _builder.Create(RecipeType.MechanicTunic, SkillType.Smithery)
@@ -248,7 +248,7 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.SmitheryRecipeDefinition
                 .Component("ref_plagionite", 5)
                 .Component("lth_good", 5)
                 .Component("citrine", 3)
-                .ForgeParameters(rangeCenter: 56, rangeWidth: 35, coolingRate: 5, startingThermal: 67, shapeShare: 63);
+                .ForgeParameters(rangeCenter: 57, rangeWidth: 22, coolingRate: 1, startingThermal: 48, shapeShare: 70);
 
             // Designer Tunic
             _builder.Create(RecipeType.DesignerTunic, SkillType.Smithery)
@@ -260,7 +260,7 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.SmitheryRecipeDefinition
                 .Component("ref_plagionite", 5)
                 .Component("lth_good", 5)
                 .Component("citrine", 3)
-                .ForgeParameters(rangeCenter: 58, rangeWidth: 34, coolingRate: 3, startingThermal: 68, shapeShare: 61);
+                .ForgeParameters(rangeCenter: 58, rangeWidth: 23, coolingRate: 1, startingThermal: 52, shapeShare: 70);
 
             // Silk Tunic
             _builder.Create(RecipeType.SilkTunic, SkillType.Smithery)
@@ -272,7 +272,7 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.SmitheryRecipeDefinition
                 .Component("ref_plagionite", 5)
                 .Component("lth_good", 5)
                 .Component("citrine", 3)
-                .ForgeParameters(rangeCenter: 54, rangeWidth: 35, coolingRate: 5, startingThermal: 61, shapeShare: 62);
+                .ForgeParameters(rangeCenter: 58, rangeWidth: 19, coolingRate: 3, startingThermal: 57, shapeShare: 70);
         }
 
         private void Tier4()
@@ -286,7 +286,7 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.SmitheryRecipeDefinition
                 .EnhancementSlots(RecipeEnhancementType.Armor, 2)
                 .Component("ref_keromber", 4)
                 .Component("fiberp_imperfect", 2)
-                .ForgeParameters(rangeCenter: 61, rangeWidth: 29, coolingRate: 5, startingThermal: 72, shapeShare: 60);
+                .ForgeParameters(rangeCenter: 67, rangeWidth: 21, coolingRate: 1, startingThermal: 70, shapeShare: 70);
 
             // Grenada Tunic
             _builder.Create(RecipeType.GrenadaTunic, SkillType.Smithery)
@@ -297,7 +297,7 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.SmitheryRecipeDefinition
                 .EnhancementSlots(RecipeEnhancementType.Armor, 2)
                 .Component("lth_imperfect", 4)
                 .Component("fiberp_imperfect", 2)
-                .ForgeParameters(rangeCenter: 36, rangeWidth: 49, coolingRate: 5, startingThermal: 47, shapeShare: 58);
+                .ForgeParameters(rangeCenter: 40, rangeWidth: 42, coolingRate: 3, startingThermal: 44, shapeShare: 70);
 
             // Survival Tunic
             _builder.Create(RecipeType.SurvivalTunic, SkillType.Smithery)
@@ -308,7 +308,7 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.SmitheryRecipeDefinition
                 .EnhancementSlots(RecipeEnhancementType.Armor, 2)
                 .Component("lth_imperfect", 4)
                 .Component("fiberp_imperfect", 2)
-                .ForgeParameters(rangeCenter: 40, rangeWidth: 50, coolingRate: 3, startingThermal: 42, shapeShare: 62);
+                .ForgeParameters(rangeCenter: 40, rangeWidth: 37, coolingRate: 3, startingThermal: 44, shapeShare: 70);
 
             // Dream Tunic
             _builder.Create(RecipeType.DreamTunic, SkillType.Smithery)
@@ -320,7 +320,7 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.SmitheryRecipeDefinition
                 .Component("ref_keromber", 5)
                 .Component("lth_imperfect", 5)
                 .Component("ruby", 3)
-                .ForgeParameters(rangeCenter: 57, rangeWidth: 33, coolingRate: 5, startingThermal: 60, shapeShare: 59);
+                .ForgeParameters(rangeCenter: 60, rangeWidth: 22, coolingRate: 4, startingThermal: 64, shapeShare: 70);
 
             // DevotionTunic
             _builder.Create(RecipeType.DevotionTunic, SkillType.Smithery)
@@ -332,7 +332,7 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.SmitheryRecipeDefinition
                 .Component("ref_keromber", 5)
                 .Component("lth_imperfect", 5)
                 .Component("ruby", 3)
-                .ForgeParameters(rangeCenter: 56, rangeWidth: 27, coolingRate: 5, startingThermal: 61, shapeShare: 58);
+                .ForgeParameters(rangeCenter: 61, rangeWidth: 25, coolingRate: 4, startingThermal: 64, shapeShare: 70);
 
             // Oasis Tunic
             _builder.Create(RecipeType.OasisTunic, SkillType.Smithery)
@@ -344,7 +344,7 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.SmitheryRecipeDefinition
                 .Component("ref_keromber", 5)
                 .Component("lth_imperfect", 5)
                 .Component("ruby", 3)
-                .ForgeParameters(rangeCenter: 61, rangeWidth: 32, coolingRate: 4, startingThermal: 60, shapeShare: 63);
+                .ForgeParameters(rangeCenter: 54, rangeWidth: 23, coolingRate: 4, startingThermal: 56, shapeShare: 70);
 
             // Vintage Tunic
             _builder.Create(RecipeType.VintageTunic, SkillType.Smithery)
@@ -356,7 +356,7 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.SmitheryRecipeDefinition
                 .Component("ref_keromber", 5)
                 .Component("lth_imperfect", 5)
                 .Component("ruby", 3)
-                .ForgeParameters(rangeCenter: 61, rangeWidth: 30, coolingRate: 4, startingThermal: 59, shapeShare: 60);
+                .ForgeParameters(rangeCenter: 61, rangeWidth: 25, coolingRate: 4, startingThermal: 62, shapeShare: 70);
         }
 
         private void Tier5()
@@ -370,7 +370,7 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.SmitheryRecipeDefinition
                 .EnhancementSlots(RecipeEnhancementType.Armor, 2)
                 .Component("ref_jasioclase", 4)
                 .Component("fiberp_high", 2)
-                .ForgeParameters(rangeCenter: 65, rangeWidth: 28, coolingRate: 5, startingThermal: 62, shapeShare: 62);
+                .ForgeParameters(rangeCenter: 67, rangeWidth: 24, coolingRate: 1, startingThermal: 76, shapeShare: 70);
 
             // Transcendent Tunic
             _builder.Create(RecipeType.TranscendentTunic, SkillType.Smithery)
@@ -381,7 +381,7 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.SmitheryRecipeDefinition
                 .EnhancementSlots(RecipeEnhancementType.Armor, 2)
                 .Component("lth_high", 4)
                 .Component("fiberp_high", 2)
-                .ForgeParameters(rangeCenter: 38, rangeWidth: 46, coolingRate: 4, startingThermal: 46, shapeShare: 62);
+                .ForgeParameters(rangeCenter: 42, rangeWidth: 40, coolingRate: 2, startingThermal: 45, shapeShare: 70);
 
             // Supreme Tunic
             _builder.Create(RecipeType.SupremeTunic, SkillType.Smithery)
@@ -392,7 +392,7 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.SmitheryRecipeDefinition
                 .EnhancementSlots(RecipeEnhancementType.Armor, 2)
                 .Component("lth_high", 4)
                 .Component("fiberp_high", 2)
-                .ForgeParameters(rangeCenter: 46, rangeWidth: 40, coolingRate: 5, startingThermal: 44, shapeShare: 62);
+                .ForgeParameters(rangeCenter: 42, rangeWidth: 40, coolingRate: 2, startingThermal: 35, shapeShare: 70);
 
             // Eternal Tunic
             _builder.Create(RecipeType.EternalTunic, SkillType.Smithery)
@@ -404,7 +404,7 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.SmitheryRecipeDefinition
                 .Component("ref_jasioclase", 5)
                 .Component("lth_high", 5)
                 .Component("emerald", 3)
-                .ForgeParameters(rangeCenter: 54, rangeWidth: 21, coolingRate: 7, startingThermal: 60, shapeShare: 61);
+                .ForgeParameters(rangeCenter: 54, rangeWidth: 24, coolingRate: 4, startingThermal: 56, shapeShare: 70);
 
             // Skysteel Tunic
             _builder.Create(RecipeType.SkysteelTunic, SkillType.Smithery)
@@ -416,7 +416,7 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.SmitheryRecipeDefinition
                 .Component("ref_jasioclase", 5)
                 .Component("lth_high", 5)
                 .Component("emerald", 3)
-                .ForgeParameters(rangeCenter: 58, rangeWidth: 27, coolingRate: 5, startingThermal: 62, shapeShare: 62);
+                .ForgeParameters(rangeCenter: 58, rangeWidth: 24, coolingRate: 4, startingThermal: 60, shapeShare: 70);
 
             // Rose Tunic
             _builder.Create(RecipeType.RoseTunic, SkillType.Smithery)
@@ -428,7 +428,7 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.SmitheryRecipeDefinition
                 .Component("ref_jasioclase", 5)
                 .Component("lth_high", 5)
                 .Component("emerald", 3)
-                .ForgeParameters(rangeCenter: 58, rangeWidth: 21, coolingRate: 7, startingThermal: 58, shapeShare: 62);
+                .ForgeParameters(rangeCenter: 60, rangeWidth: 24, coolingRate: 5, startingThermal: 67, shapeShare: 70);
 
             // Moonflame Tunic
             _builder.Create(RecipeType.MoonflameTunic, SkillType.Smithery)
@@ -440,7 +440,7 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.SmitheryRecipeDefinition
                 .Component("ref_jasioclase", 5)
                 .Component("lth_high", 5)
                 .Component("emerald", 3)
-                .ForgeParameters(rangeCenter: 55, rangeWidth: 25, coolingRate: 6, startingThermal: 55, shapeShare: 58);
+                .ForgeParameters(rangeCenter: 60, rangeWidth: 24, coolingRate: 4, startingThermal: 64, shapeShare: 70);
 
             // Chaos Breastplate
             _builder.Create(RecipeType.ChaosBreastplate, SkillType.Smithery)
@@ -459,7 +459,7 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.SmitheryRecipeDefinition
                 .Component("ref_scordspar", 5)
                 .Component("ref_plagionite", 5)
                 .Component("ref_keromber", 5)
-                .ForgeParameters(rangeCenter: 62, rangeWidth: 19, coolingRate: 6, startingThermal: 67, shapeShare: 61);
+                .ForgeParameters(rangeCenter: 62, rangeWidth: 24, coolingRate: 3, startingThermal: 68, shapeShare: 70);
 
             // Magus Tunic
             _builder.Create(RecipeType.MagusTunic, SkillType.Smithery)
@@ -478,7 +478,7 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.SmitheryRecipeDefinition
                 .Component("ref_scordspar", 5)
                 .Component("ref_plagionite", 5)
                 .Component("ref_keromber", 5)
-                .ForgeParameters(rangeCenter: 57, rangeWidth: 27, coolingRate: 6, startingThermal: 58, shapeShare: 61);
+                .ForgeParameters(rangeCenter: 56, rangeWidth: 24, coolingRate: 4, startingThermal: 62, shapeShare: 70);
 
             // Immortal Tunic
             _builder.Create(RecipeType.ImmortalTunic, SkillType.Smithery)
@@ -497,7 +497,7 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.SmitheryRecipeDefinition
                 .Component("ref_scordspar", 5)
                 .Component("ref_plagionite", 5)
                 .Component("ref_keromber", 5)
-                .ForgeParameters(rangeCenter: 56, rangeWidth: 27, coolingRate: 5, startingThermal: 57, shapeShare: 58);
+                .ForgeParameters(rangeCenter: 54, rangeWidth: 24, coolingRate: 4, startingThermal: 61, shapeShare: 70);
 
             // Arkanian Dragon Breastplate
             _builder.Create(RecipeType.ArkanianDragonArmor, SkillType.Smithery)
@@ -516,7 +516,7 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.SmitheryRecipeDefinition
                 .Component("ref_scordspar", 5)
                 .Component("ref_plagionite", 5)
                 .Component("ref_keromber", 5)
-                .ForgeParameters(rangeCenter: 67, rangeWidth: 23, coolingRate: 6, startingThermal: 63, shapeShare: 62);
+                .ForgeParameters(rangeCenter: 63, rangeWidth: 24, coolingRate: 3, startingThermal: 69, shapeShare: 70);
         }
 
         private void Tier1A()
@@ -531,7 +531,7 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.SmitheryRecipeDefinition
                 .Component("ref_veldite", 6)
                 .Component("fiberp_ruined", 3)
                 .Component("lth_ruined", 3)
-                .ForgeParameters(rangeCenter: 68, rangeWidth: 49, coolingRate: 1, startingThermal: 78, shapeShare: 63);
+                .ForgeParameters(rangeCenter: 63, rangeWidth: 44, coolingRate: 1, startingThermal: 76, shapeShare: 68);
 
             // Mystic Tunic
             _builder.Create(RecipeType.MysticTunic, SkillType.Smithery)
@@ -543,7 +543,7 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.SmitheryRecipeDefinition
                 .Component("lth_ruined", 6)
                 .Component("fiberp_ruined", 3)
                 .Component("jade", 3)
-                .ForgeParameters(rangeCenter: 35, rangeWidth: 60, coolingRate: 2, startingThermal: 58, shapeShare: 59);
+                .ForgeParameters(rangeCenter: 37, rangeWidth: 60, coolingRate: 1, startingThermal: 55, shapeShare: 71);
 
             // Vanguard Tunic
             _builder.Create(RecipeType.VanguardTunic, SkillType.Smithery)
@@ -555,7 +555,7 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.SmitheryRecipeDefinition
                 .Component("lth_ruined", 6)
                 .Component("fiberp_ruined", 3)
                 .Component("elec_ruined", 3)
-                .ForgeParameters(rangeCenter: 41, rangeWidth: 57, coolingRate: 1, startingThermal: 53, shapeShare: 61);
+                .ForgeParameters(rangeCenter: 37, rangeWidth: 60, coolingRate: 1, startingThermal: 55, shapeShare: 69);
         }
 
         private void Tier2A()
@@ -570,7 +570,7 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.SmitheryRecipeDefinition
                 .Component("ref_scordspar", 6)
                 .Component("fiberp_flawed", 3)
                 .Component("lth_flawed", 3)
-                .ForgeParameters(rangeCenter: 61, rangeWidth: 43, coolingRate: 3, startingThermal: 72, shapeShare: 61);
+                .ForgeParameters(rangeCenter: 64, rangeWidth: 23, coolingRate: 5, startingThermal: 65, shapeShare: 70);
 
             // Oracle Tunic
             _builder.Create(RecipeType.OracleTunic, SkillType.Smithery)
@@ -582,7 +582,7 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.SmitheryRecipeDefinition
                 .Component("lth_flawed", 6)
                 .Component("fiberp_flawed", 3)
                 .Component("agate", 3)
-                .ForgeParameters(rangeCenter: 40, rangeWidth: 58, coolingRate: 3, startingThermal: 55, shapeShare: 58);
+                .ForgeParameters(rangeCenter: 39, rangeWidth: 40, coolingRate: 1, startingThermal: 56, shapeShare: 70);
 
             // Onslaught Tunic
             _builder.Create(RecipeType.OnslaughtTunic, SkillType.Smithery)
@@ -594,7 +594,7 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.SmitheryRecipeDefinition
                 .Component("lth_flawed", 6)
                 .Component("fiberp_flawed", 3)
                 .Component("elec_flawed", 3)
-                .ForgeParameters(rangeCenter: 37, rangeWidth: 59, coolingRate: 3, startingThermal: 53, shapeShare: 58);
+                .ForgeParameters(rangeCenter: 39, rangeWidth: 42, coolingRate: 2, startingThermal: 47, shapeShare: 70);
         }
 
         private void Tier3A()
@@ -609,7 +609,7 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.SmitheryRecipeDefinition
                 .Component("ref_plagionite", 6)
                 .Component("fiberp_good", 3)
                 .Component("lth_good", 3)
-                .ForgeParameters(rangeCenter: 60, rangeWidth: 35, coolingRate: 5, startingThermal: 69, shapeShare: 62);
+                .ForgeParameters(rangeCenter: 65, rangeWidth: 23, coolingRate: 1, startingThermal: 69, shapeShare: 70);
 
             // Arcanist Tunic
             _builder.Create(RecipeType.ArcanistTunic, SkillType.Smithery)
@@ -621,7 +621,7 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.SmitheryRecipeDefinition
                 .Component("lth_good", 6)
                 .Component("fiberp_good", 3)
                 .Component("citrine", 3)
-                .ForgeParameters(rangeCenter: 39, rangeWidth: 53, coolingRate: 2, startingThermal: 47, shapeShare: 62);
+                .ForgeParameters(rangeCenter: 40, rangeWidth: 42, coolingRate: 3, startingThermal: 46, shapeShare: 70);
 
             // Maverick Tunic
             _builder.Create(RecipeType.MaverickTunic, SkillType.Smithery)
@@ -633,7 +633,7 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.SmitheryRecipeDefinition
                 .Component("lth_good", 6)
                 .Component("fiberp_good", 3)
                 .Component("elec_good", 3)
-                .ForgeParameters(rangeCenter: 38, rangeWidth: 48, coolingRate: 3, startingThermal: 48, shapeShare: 63);
+                .ForgeParameters(rangeCenter: 40, rangeWidth: 39, coolingRate: 3, startingThermal: 46, shapeShare: 70);
         }
 
         private void Tier4A()
@@ -648,7 +648,7 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.SmitheryRecipeDefinition
                 .Component("ref_keromber", 6)
                 .Component("fiberp_imperfect", 3)
                 .Component("lth_imperfect", 3)
-                .ForgeParameters(rangeCenter: 66, rangeWidth: 29, coolingRate: 6, startingThermal: 67, shapeShare: 58);
+                .ForgeParameters(rangeCenter: 67, rangeWidth: 24, coolingRate: 1, startingThermal: 69, shapeShare: 70);
 
             // Luminary Tunic
             _builder.Create(RecipeType.LuminaryTunic, SkillType.Smithery)
@@ -660,7 +660,7 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.SmitheryRecipeDefinition
                 .Component("lth_imperfect", 6)
                 .Component("fiberp_imperfect", 3)
                 .Component("ruby", 3)
-                .ForgeParameters(rangeCenter: 38, rangeWidth: 42, coolingRate: 3, startingThermal: 45, shapeShare: 61);
+                .ForgeParameters(rangeCenter: 41, rangeWidth: 40, coolingRate: 2, startingThermal: 40, shapeShare: 70);
 
             // Apex Tunic
             _builder.Create(RecipeType.ApexTunic, SkillType.Smithery)
@@ -672,7 +672,7 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.SmitheryRecipeDefinition
                 .Component("lth_imperfect", 6)
                 .Component("fiberp_imperfect", 3)
                 .Component("elec_imperfect", 3)
-                .ForgeParameters(rangeCenter: 41, rangeWidth: 48, coolingRate: 4, startingThermal: 45, shapeShare: 60);
+                .ForgeParameters(rangeCenter: 41, rangeWidth: 40, coolingRate: 2, startingThermal: 38, shapeShare: 70);
         }
 
     }

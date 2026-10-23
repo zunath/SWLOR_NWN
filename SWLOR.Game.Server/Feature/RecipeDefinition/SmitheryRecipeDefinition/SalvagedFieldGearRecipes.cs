@@ -31,7 +31,7 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.SmitheryRecipeDefinition
                 .Component("reactor_core", 1)
                 .Component("elec_high", 4)
                 .Component("fiberp_high", 2)
-                .ForgeParameters(rangeCenter: 38, rangeWidth: 39, coolingRate: 5, startingThermal: 39, shapeShare: 60);
+                .ForgeParameters(rangeCenter: 42, rangeWidth: 40, coolingRate: 3, startingThermal: 46, shapeShare: 70);
 
             // Piston-Driven Gauntlets (gloves)
             _builder.Create(RecipeType.SalvagedPistonGauntlet, SkillType.Smithery)
@@ -44,7 +44,7 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.SmitheryRecipeDefinition
                 .Component("crusher_piston", 1)
                 .Component("elec_high", 3)
                 .Component("fiberp_high", 2)
-                .ForgeParameters(rangeCenter: 42, rangeWidth: 41, coolingRate: 4, startingThermal: 43, shapeShare: 56);
+                .ForgeParameters(rangeCenter: 42, rangeWidth: 40, coolingRate: 5, startingThermal: 49, shapeShare: 62);
 
             // Siege Optics Visor (helmet)
             _builder.Create(RecipeType.SalvagedSiegeOptics, SkillType.Smithery)
@@ -57,7 +57,7 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.SmitheryRecipeDefinition
                 .Component("targeting_lens", 1)
                 .Component("elec_high", 4)
                 .Component("fiberp_high", 2)
-                .ForgeParameters(rangeCenter: 40, rangeWidth: 39, coolingRate: 6, startingThermal: 46, shapeShare: 55);
+                .ForgeParameters(rangeCenter: 42, rangeWidth: 40, coolingRate: 3, startingThermal: 42, shapeShare: 62);
 
             // Precision Optic (helmet) - Czerka Arms Test Range
             _builder.Create(RecipeType.SalvagedPrecisionOptic, SkillType.Smithery)
@@ -70,7 +70,7 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.SmitheryRecipeDefinition
                 .Component("targeting_mod", 1)
                 .Component("elec_high", 4)
                 .Component("fiberp_high", 2)
-                .ForgeParameters(rangeCenter: 38, rangeWidth: 42, coolingRate: 6, startingThermal: 40, shapeShare: 57);
+                .ForgeParameters(rangeCenter: 42, rangeWidth: 40, coolingRate: 3, startingThermal: 44, shapeShare: 62);
 
             // Detonite Knuckle (gloves) - Czerka Arms Test Range
             _builder.Create(RecipeType.SalvagedDetoniteKnuckle, SkillType.Smithery)
@@ -83,7 +83,7 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.SmitheryRecipeDefinition
                 .Component("detonite_chg", 1)
                 .Component("elec_high", 3)
                 .Component("fiberp_high", 2)
-                .ForgeParameters(rangeCenter: 45, rangeWidth: 40, coolingRate: 5, startingThermal: 39, shapeShare: 54);
+                .ForgeParameters(rangeCenter: 42, rangeWidth: 40, coolingRate: 5, startingThermal: 48, shapeShare: 62);
 
             // Jammer Mesh (chest) - Czerka Arms Test Range
             _builder.Create(RecipeType.SalvagedJammerMesh, SkillType.Smithery)
@@ -96,162 +96,162 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.SmitheryRecipeDefinition
                 .Component("signal_disr", 1)
                 .Component("elec_high", 4)
                 .Component("fiberp_high", 2)
-                .ForgeParameters(rangeCenter: 44, rangeWidth: 42, coolingRate: 5, startingThermal: 45, shapeShare: 61);
+                .ForgeParameters(rangeCenter: 42, rangeWidth: 40, coolingRate: 3, startingThermal: 45, shapeShare: 70);
 
             // Fight Club Backrooms
             _builder.Create(RecipeType.SalvagedPitCestus, SkillType.Smithery)
                 .Category(RecipeCategoryType.Glove).Resref("pit_cestus").Level(50).Quantity(1).RequirementUnlocked()
                 .EnhancementSlots(RecipeEnhancementType.Armor, 1)
-                .Component("arena_token", 1).Component("elec_high", 3).Component("fiberp_high", 2).ForgeParameters(rangeCenter: 39, rangeWidth: 41, coolingRate: 6, startingThermal: 45, shapeShare: 57);
+                .Component("arena_token", 1).Component("elec_high", 3).Component("fiberp_high", 2).ForgeParameters(rangeCenter: 42, rangeWidth: 40, coolingRate: 5, startingThermal: 47, shapeShare: 62);
             _builder.Create(RecipeType.SalvagedDuelistVest, SkillType.Smithery)
                 .Category(RecipeCategoryType.Tunic).Resref("duel_vest").Level(50).Quantity(1).RequirementUnlocked()
                 .EnhancementSlots(RecipeEnhancementType.Armor, 1)
-                .Component("spent_charge", 1).Component("elec_high", 4).Component("fiberp_high", 2).ForgeParameters(rangeCenter: 39, rangeWidth: 38, coolingRate: 6, startingThermal: 42, shapeShare: 60);
+                .Component("spent_charge", 1).Component("elec_high", 4).Component("fiberp_high", 2).ForgeParameters(rangeCenter: 42, rangeWidth: 40, coolingRate: 3, startingThermal: 45, shapeShare: 70);
             _builder.Create(RecipeType.SalvagedCharmCowl, SkillType.Smithery)
                 .Category(RecipeCategoryType.Helmet).Resref("charm_cowl").Level(50).Quantity(1).RequirementUnlocked()
                 .EnhancementSlots(RecipeEnhancementType.Armor, 1)
-                .Component("hex_focus", 1).Component("elec_high", 4).Component("fiberp_high", 2).ForgeParameters(rangeCenter: 40, rangeWidth: 42, coolingRate: 4, startingThermal: 38, shapeShare: 56);
+                .Component("hex_focus", 1).Component("elec_high", 4).Component("fiberp_high", 2).ForgeParameters(rangeCenter: 42, rangeWidth: 40, coolingRate: 4, startingThermal: 44, shapeShare: 62);
 
             // Dathomir Grotto Apex Den
             _builder.Create(RecipeType.SalvagedFangGauntlet, SkillType.Smithery)
                 .Category(RecipeCategoryType.Glove).Resref("fang_gaunt").Level(50).Quantity(1).RequirementUnlocked()
                 .EnhancementSlots(RecipeEnhancementType.Armor, 1)
-                .Component("alpha_fang", 1).Component("lth_high", 3).Component("fiberp_high", 2).ForgeParameters(rangeCenter: 41, rangeWidth: 40, coolingRate: 6, startingThermal: 38, shapeShare: 59);
+                .Component("alpha_fang", 1).Component("lth_high", 3).Component("fiberp_high", 2).ForgeParameters(rangeCenter: 42, rangeWidth: 40, coolingRate: 5, startingThermal: 42, shapeShare: 62);
             _builder.Create(RecipeType.SalvagedRidgebonePlate, SkillType.Smithery)
                 .Category(RecipeCategoryType.Tunic).Resref("ridge_plate").Level(50).Quantity(1).RequirementUnlocked()
                 .EnhancementSlots(RecipeEnhancementType.Armor, 1)
-                .Component("spine_quill", 1).Component("lth_high", 4).Component("fiberp_high", 2).ForgeParameters(rangeCenter: 39, rangeWidth: 41, coolingRate: 5, startingThermal: 44, shapeShare: 63);
+                .Component("spine_quill", 1).Component("lth_high", 4).Component("fiberp_high", 2).ForgeParameters(rangeCenter: 42, rangeWidth: 40, coolingRate: 3, startingThermal: 50, shapeShare: 70);
             _builder.Create(RecipeType.SalvagedRiteCrown, SkillType.Smithery)
                 .Category(RecipeCategoryType.Helmet).Resref("rite_crown").Level(50).Quantity(1).RequirementUnlocked()
                 .EnhancementSlots(RecipeEnhancementType.Armor, 1)
-                .Component("spirit_totem", 1).Component("lth_high", 4).Component("fiberp_high", 2).ForgeParameters(rangeCenter: 39, rangeWidth: 43, coolingRate: 5, startingThermal: 44, shapeShare: 58);
+                .Component("spirit_totem", 1).Component("lth_high", 4).Component("fiberp_high", 2).ForgeParameters(rangeCenter: 42, rangeWidth: 40, coolingRate: 3, startingThermal: 42, shapeShare: 62);
 
 
             // Veles Militia Annex
             _builder.Create(RecipeType.SalvagedInvictusGauntlets, SkillType.Smithery)
                 .Category(RecipeCategoryType.Glove).Resref("invictuscr").Level(50).Quantity(1).RequirementUnlocked()
                 .EnhancementSlots(RecipeEnhancementType.Armor, 1)
-                .Component("invictuscm", 1).Component("elec_high", 3).Component("fiberp_high", 2).ForgeParameters(rangeCenter: 45, rangeWidth: 44, coolingRate: 5, startingThermal: 41, shapeShare: 58);
+                .Component("invictuscm", 1).Component("elec_high", 3).Component("fiberp_high", 2).ForgeParameters(rangeCenter: 42, rangeWidth: 40, coolingRate: 5, startingThermal: 46, shapeShare: 62);
             _builder.Create(RecipeType.SalvagedRuptorVisor, SkillType.Smithery)
                 .Category(RecipeCategoryType.Helmet).Resref("ruptorvanecr").Level(50).Quantity(1).RequirementUnlocked()
                 .EnhancementSlots(RecipeEnhancementType.Armor, 1)
-                .Component("ruptorvanecm", 1).Component("elec_high", 4).Component("fiberp_high", 2).ForgeParameters(rangeCenter: 44, rangeWidth: 38, coolingRate: 5, startingThermal: 46, shapeShare: 57);
+                .Component("ruptorvanecm", 1).Component("elec_high", 4).Component("fiberp_high", 2).ForgeParameters(rangeCenter: 42, rangeWidth: 40, coolingRate: 4, startingThermal: 49, shapeShare: 62);
             _builder.Create(RecipeType.SalvagedBlackoutCuirass, SkillType.Smithery)
                 .Category(RecipeCategoryType.Tunic).Resref("blackoutwrdcr").Level(50).Quantity(1).RequirementUnlocked()
                 .EnhancementSlots(RecipeEnhancementType.Armor, 1)
-                .Component("blackoutwrdcm", 1).Component("elec_high", 4).Component("fiberp_high", 2).ForgeParameters(rangeCenter: 43, rangeWidth: 43, coolingRate: 4, startingThermal: 44, shapeShare: 60);
+                .Component("blackoutwrdcm", 1).Component("elec_high", 4).Component("fiberp_high", 2).ForgeParameters(rangeCenter: 42, rangeWidth: 40, coolingRate: 3, startingThermal: 44, shapeShare: 70);
 
             // Dantooine Jedi Enclave Trial Halls
             _builder.Create(RecipeType.SalvagedSabraeGauntlets, SkillType.Smithery)
                 .Category(RecipeCategoryType.Glove).Resref("sabraetrialcr").Level(50).Quantity(1).RequirementUnlocked()
                 .EnhancementSlots(RecipeEnhancementType.Armor, 1)
-                .Component("sabraetrialcm", 1).Component("elec_high", 3).Component("fiberp_high", 2).ForgeParameters(rangeCenter: 40, rangeWidth: 37, coolingRate: 4, startingThermal: 41, shapeShare: 56);
+                .Component("sabraetrialcm", 1).Component("elec_high", 3).Component("fiberp_high", 2).ForgeParameters(rangeCenter: 42, rangeWidth: 40, coolingRate: 5, startingThermal: 47, shapeShare: 62);
             _builder.Create(RecipeType.SalvagedSentinelVisor, SkillType.Smithery)
                 .Category(RecipeCategoryType.Helmet).Resref("enclavesentlcr").Level(50).Quantity(1).RequirementUnlocked()
                 .EnhancementSlots(RecipeEnhancementType.Armor, 1)
-                .Component("enclavesentlcm", 1).Component("elec_high", 4).Component("fiberp_high", 2).ForgeParameters(rangeCenter: 44, rangeWidth: 36, coolingRate: 5, startingThermal: 45, shapeShare: 54);
+                .Component("enclavesentlcm", 1).Component("elec_high", 4).Component("fiberp_high", 2).ForgeParameters(rangeCenter: 42, rangeWidth: 40, coolingRate: 3, startingThermal: 42, shapeShare: 62);
             _builder.Create(RecipeType.SalvagedCycloneCuirass, SkillType.Smithery)
                 .Category(RecipeCategoryType.Tunic).Resref("cycloneadptcr").Level(50).Quantity(1).RequirementUnlocked()
                 .EnhancementSlots(RecipeEnhancementType.Armor, 1)
-                .Component("cycloneadptcm", 1).Component("elec_high", 4).Component("fiberp_high", 2).ForgeParameters(rangeCenter: 45, rangeWidth: 40, coolingRate: 5, startingThermal: 41, shapeShare: 62);
+                .Component("cycloneadptcm", 1).Component("elec_high", 4).Component("fiberp_high", 2).ForgeParameters(rangeCenter: 42, rangeWidth: 40, coolingRate: 3, startingThermal: 50, shapeShare: 70);
 
             // Korriban Forge Caverns
             _builder.Create(RecipeType.SalvagedForgeGauntlets, SkillType.Smithery)
                 .Category(RecipeCategoryType.Glove).Resref("forgewrightcr").Level(50).Quantity(1).RequirementUnlocked()
                 .EnhancementSlots(RecipeEnhancementType.Armor, 1)
-                .Component("forgewrightcm", 1).Component("elec_high", 3).Component("fiberp_high", 2).ForgeParameters(rangeCenter: 45, rangeWidth: 42, coolingRate: 4, startingThermal: 38, shapeShare: 56);
+                .Component("forgewrightcm", 1).Component("elec_high", 3).Component("fiberp_high", 2).ForgeParameters(rangeCenter: 42, rangeWidth: 40, coolingRate: 5, startingThermal: 47, shapeShare: 62);
             _builder.Create(RecipeType.SalvagedFlameVisor, SkillType.Smithery)
                 .Category(RecipeCategoryType.Helmet).Resref("flameweavercr").Level(50).Quantity(1).RequirementUnlocked()
                 .EnhancementSlots(RecipeEnhancementType.Armor, 1)
-                .Component("flameweavercm", 1).Component("elec_high", 4).Component("fiberp_high", 2).ForgeParameters(rangeCenter: 43, rangeWidth: 42, coolingRate: 4, startingThermal: 41, shapeShare: 56);
+                .Component("flameweavercm", 1).Component("elec_high", 4).Component("fiberp_high", 2).ForgeParameters(rangeCenter: 42, rangeWidth: 40, coolingRate: 4, startingThermal: 46, shapeShare: 62);
             _builder.Create(RecipeType.SalvagedBaneCuirass, SkillType.Smithery)
                 .Category(RecipeCategoryType.Tunic).Resref("banecallercr").Level(50).Quantity(1).RequirementUnlocked()
                 .EnhancementSlots(RecipeEnhancementType.Armor, 1)
-                .Component("banecallercm", 1).Component("elec_high", 4).Component("fiberp_high", 2).ForgeParameters(rangeCenter: 38, rangeWidth: 42, coolingRate: 4, startingThermal: 38, shapeShare: 59);
+                .Component("banecallercm", 1).Component("elec_high", 4).Component("fiberp_high", 2).ForgeParameters(rangeCenter: 42, rangeWidth: 40, coolingRate: 3, startingThermal: 45, shapeShare: 70);
 
             // Anchorhead Canyon Range
             _builder.Create(RecipeType.SalvagedCanyonGauntlets, SkillType.Smithery)
                 .Category(RecipeCategoryType.Glove).Resref("canyonbulwrkcr").Level(50).Quantity(1).RequirementUnlocked()
                 .EnhancementSlots(RecipeEnhancementType.Armor, 1)
-                .Component("canyonbulwrkcm", 1).Component("elec_high", 3).Component("fiberp_high", 2).ForgeParameters(rangeCenter: 42, rangeWidth: 37, coolingRate: 4, startingThermal: 42, shapeShare: 59);
+                .Component("canyonbulwrkcm", 1).Component("elec_high", 3).Component("fiberp_high", 2).ForgeParameters(rangeCenter: 42, rangeWidth: 40, coolingRate: 5, startingThermal: 45, shapeShare: 62);
             _builder.Create(RecipeType.SalvagedDeadeyeVisor, SkillType.Smithery)
                 .Category(RecipeCategoryType.Helmet).Resref("dunedeadeyecr").Level(50).Quantity(1).RequirementUnlocked()
                 .EnhancementSlots(RecipeEnhancementType.Armor, 1)
-                .Component("dunedeadeyecm", 1).Component("elec_high", 4).Component("fiberp_high", 2).ForgeParameters(rangeCenter: 41, rangeWidth: 39, coolingRate: 4, startingThermal: 46, shapeShare: 55);
+                .Component("dunedeadeyecm", 1).Component("elec_high", 4).Component("fiberp_high", 2).ForgeParameters(rangeCenter: 42, rangeWidth: 40, coolingRate: 3, startingThermal: 48, shapeShare: 62);
             _builder.Create(RecipeType.SalvagedDeadHandCuirass, SkillType.Smithery)
                 .Category(RecipeCategoryType.Tunic).Resref("deadhandzephcr").Level(50).Quantity(1).RequirementUnlocked()
                 .EnhancementSlots(RecipeEnhancementType.Armor, 1)
-                .Component("deadhandzephcm", 1).Component("elec_high", 4).Component("fiberp_high", 2).ForgeParameters(rangeCenter: 43, rangeWidth: 43, coolingRate: 4, startingThermal: 43, shapeShare: 58);
+                .Component("deadhandzephcm", 1).Component("elec_high", 4).Component("fiberp_high", 2).ForgeParameters(rangeCenter: 42, rangeWidth: 40, coolingRate: 4, startingThermal: 45, shapeShare: 70);
 
             // Hutlar Qion Test Site
             _builder.Create(RecipeType.SalvagedFlurryGauntlets, SkillType.Smithery)
                 .Category(RecipeCategoryType.Glove).Resref("flurrychampcr").Level(50).Quantity(1).RequirementUnlocked()
                 .EnhancementSlots(RecipeEnhancementType.Armor, 1)
-                .Component("flurrychampcm", 1).Component("elec_high", 3).Component("fiberp_high", 2).ForgeParameters(rangeCenter: 44, rangeWidth: 37, coolingRate: 6, startingThermal: 41, shapeShare: 55);
+                .Component("flurrychampcm", 1).Component("elec_high", 3).Component("fiberp_high", 2).ForgeParameters(rangeCenter: 42, rangeWidth: 40, coolingRate: 5, startingThermal: 46, shapeShare: 62);
             _builder.Create(RecipeType.SalvagedThermalVisor, SkillType.Smithery)
                 .Category(RecipeCategoryType.Helmet).Resref("thermlancercr").Level(50).Quantity(1).RequirementUnlocked()
                 .EnhancementSlots(RecipeEnhancementType.Armor, 1)
-                .Component("thermlancercm", 1).Component("elec_high", 4).Component("fiberp_high", 2).ForgeParameters(rangeCenter: 40, rangeWidth: 43, coolingRate: 6, startingThermal: 40, shapeShare: 56);
+                .Component("thermlancercm", 1).Component("elec_high", 4).Component("fiberp_high", 2).ForgeParameters(rangeCenter: 42, rangeWidth: 40, coolingRate: 3, startingThermal: 48, shapeShare: 62);
             _builder.Create(RecipeType.SalvagedBarrierCuirass, SkillType.Smithery)
                 .Category(RecipeCategoryType.Tunic).Resref("barrieroversecr").Level(50).Quantity(1).RequirementUnlocked()
                 .EnhancementSlots(RecipeEnhancementType.Armor, 1)
-                .Component("barrieroversecm", 1).Component("elec_high", 4).Component("fiberp_high", 2).ForgeParameters(rangeCenter: 42, rangeWidth: 44, coolingRate: 6, startingThermal: 41, shapeShare: 58);
+                .Component("barrieroversecm", 1).Component("elec_high", 4).Component("fiberp_high", 2).ForgeParameters(rangeCenter: 42, rangeWidth: 40, coolingRate: 3, startingThermal: 44, shapeShare: 70);
 
             // Korriban Sith Crypt Depths
             _builder.Create(RecipeType.SalvagedCryptGauntlets, SkillType.Smithery)
                 .Category(RecipeCategoryType.Glove).Resref("cryptwardencr").Level(50).Quantity(1).RequirementUnlocked()
                 .EnhancementSlots(RecipeEnhancementType.Armor, 1)
-                .Component("cryptwardencm", 1).Component("elec_high", 3).Component("fiberp_high", 2).ForgeParameters(rangeCenter: 38, rangeWidth: 37, coolingRate: 6, startingThermal: 38, shapeShare: 59);
+                .Component("cryptwardencm", 1).Component("elec_high", 3).Component("fiberp_high", 2).ForgeParameters(rangeCenter: 42, rangeWidth: 40, coolingRate: 5, startingThermal: 49, shapeShare: 62);
             _builder.Create(RecipeType.SalvagedHungerVisor, SkillType.Smithery)
                 .Category(RecipeCategoryType.Helmet).Resref("markahungercr").Level(50).Quantity(1).RequirementUnlocked()
                 .EnhancementSlots(RecipeEnhancementType.Armor, 1)
-                .Component("markahungercm", 1).Component("elec_high", 4).Component("fiberp_high", 2).ForgeParameters(rangeCenter: 45, rangeWidth: 42, coolingRate: 4, startingThermal: 45, shapeShare: 59);
+                .Component("markahungercm", 1).Component("elec_high", 4).Component("fiberp_high", 2).ForgeParameters(rangeCenter: 42, rangeWidth: 40, coolingRate: 3, startingThermal: 44, shapeShare: 62);
             _builder.Create(RecipeType.SalvagedEclipseCuirass, SkillType.Smithery)
                 .Category(RecipeCategoryType.Tunic).Resref("eclipseshadecr").Level(50).Quantity(1).RequirementUnlocked()
                 .EnhancementSlots(RecipeEnhancementType.Armor, 1)
-                .Component("eclipseshadecm", 1).Component("elec_high", 4).Component("fiberp_high", 2).ForgeParameters(rangeCenter: 42, rangeWidth: 39, coolingRate: 6, startingThermal: 46, shapeShare: 61);
+                .Component("eclipseshadecm", 1).Component("elec_high", 4).Component("fiberp_high", 2).ForgeParameters(rangeCenter: 42, rangeWidth: 40, coolingRate: 3, startingThermal: 44, shapeShare: 70);
 
             // Viscara Republic Engineering Bunker
             _builder.Create(RecipeType.SalvagedBunkerGauntlets, SkillType.Smithery)
                 .Category(RecipeCategoryType.Glove).Resref("bunkerbreakcr").Level(50).Quantity(1).RequirementUnlocked()
                 .EnhancementSlots(RecipeEnhancementType.Armor, 1)
-                .Component("bunkerbreakcm", 1).Component("elec_high", 3).Component("fiberp_high", 2).ForgeParameters(rangeCenter: 45, rangeWidth: 37, coolingRate: 6, startingThermal: 39, shapeShare: 59);
+                .Component("bunkerbreakcm", 1).Component("elec_high", 3).Component("fiberp_high", 2).ForgeParameters(rangeCenter: 42, rangeWidth: 40, coolingRate: 5, startingThermal: 42, shapeShare: 62);
             _builder.Create(RecipeType.SalvagedBeaconVisor, SkillType.Smithery)
                 .Category(RecipeCategoryType.Helmet).Resref("beaconmarkscr").Level(50).Quantity(1).RequirementUnlocked()
                 .EnhancementSlots(RecipeEnhancementType.Armor, 1)
-                .Component("beaconmarkscm", 1).Component("elec_high", 4).Component("fiberp_high", 2).ForgeParameters(rangeCenter: 44, rangeWidth: 41, coolingRate: 4, startingThermal: 39, shapeShare: 56);
+                .Component("beaconmarkscm", 1).Component("elec_high", 4).Component("fiberp_high", 2).ForgeParameters(rangeCenter: 42, rangeWidth: 40, coolingRate: 3, startingThermal: 44, shapeShare: 62);
             _builder.Create(RecipeType.SalvagedDecurionCuirass, SkillType.Smithery)
                 .Category(RecipeCategoryType.Tunic).Resref("decurioncmdcr").Level(50).Quantity(1).RequirementUnlocked()
                 .EnhancementSlots(RecipeEnhancementType.Armor, 1)
-                .Component("decurioncmdcm", 1).Component("elec_high", 4).Component("fiberp_high", 2).ForgeParameters(rangeCenter: 41, rangeWidth: 39, coolingRate: 5, startingThermal: 46, shapeShare: 63);
+                .Component("decurioncmdcm", 1).Component("elec_high", 4).Component("fiberp_high", 2).ForgeParameters(rangeCenter: 42, rangeWidth: 40, coolingRate: 3, startingThermal: 46, shapeShare: 70);
 
             // Dantooine Medical Sublevel
             _builder.Create(RecipeType.SalvagedTriageGauntlets, SkillType.Smithery)
                 .Category(RecipeCategoryType.Glove).Resref("triagewardencr").Level(50).Quantity(1).RequirementUnlocked()
                 .EnhancementSlots(RecipeEnhancementType.Armor, 1)
-                .Component("triagewardencm", 1).Component("elec_high", 3).Component("fiberp_high", 2).ForgeParameters(rangeCenter: 45, rangeWidth: 41, coolingRate: 6, startingThermal: 44, shapeShare: 56);
+                .Component("triagewardencm", 1).Component("elec_high", 3).Component("fiberp_high", 2).ForgeParameters(rangeCenter: 42, rangeWidth: 40, coolingRate: 5, startingThermal: 43, shapeShare: 62);
             _builder.Create(RecipeType.SalvagedChemVisor, SkillType.Smithery)
                 .Category(RecipeCategoryType.Helmet).Resref("chemslingercr").Level(50).Quantity(1).RequirementUnlocked()
                 .EnhancementSlots(RecipeEnhancementType.Armor, 1)
-                .Component("chemslingercm", 1).Component("elec_high", 4).Component("fiberp_high", 2).ForgeParameters(rangeCenter: 41, rangeWidth: 36, coolingRate: 4, startingThermal: 41, shapeShare: 53);
+                .Component("chemslingercm", 1).Component("elec_high", 4).Component("fiberp_high", 2).ForgeParameters(rangeCenter: 42, rangeWidth: 40, coolingRate: 3, startingThermal: 48, shapeShare: 62);
             _builder.Create(RecipeType.SalvagedConduitCuirass, SkillType.Smithery)
                 .Category(RecipeCategoryType.Tunic).Resref("conduitmatrncr").Level(50).Quantity(1).RequirementUnlocked()
                 .EnhancementSlots(RecipeEnhancementType.Armor, 1)
-                .Component("conduitmatrncm", 1).Component("elec_high", 4).Component("fiberp_high", 2).ForgeParameters(rangeCenter: 39, rangeWidth: 38, coolingRate: 4, startingThermal: 45, shapeShare: 63);
+                .Component("conduitmatrncm", 1).Component("elec_high", 4).Component("fiberp_high", 2).ForgeParameters(rangeCenter: 42, rangeWidth: 40, coolingRate: 3, startingThermal: 43, shapeShare: 70);
 
             // Dathomir Tarn Jungle Preserve
             _builder.Create(RecipeType.SalvagedApexGauntlets, SkillType.Smithery)
                 .Category(RecipeCategoryType.Glove).Resref("tarnapexmawcr").Level(50).Quantity(1).RequirementUnlocked()
                 .EnhancementSlots(RecipeEnhancementType.Armor, 1)
-                .Component("tarnapexmawcm", 1).Component("lth_high", 3).Component("fiberp_high", 2).ForgeParameters(rangeCenter: 46, rangeWidth: 37, coolingRate: 6, startingThermal: 45, shapeShare: 54);
+                .Component("tarnapexmawcm", 1).Component("lth_high", 3).Component("fiberp_high", 2).ForgeParameters(rangeCenter: 42, rangeWidth: 40, coolingRate: 5, startingThermal: 43, shapeShare: 62);
             _builder.Create(RecipeType.SalvagedQuillVisor, SkillType.Smithery)
                 .Category(RecipeCategoryType.Helmet).Resref("quillstalkercr").Level(50).Quantity(1).RequirementUnlocked()
                 .EnhancementSlots(RecipeEnhancementType.Armor, 1)
-                .Component("quillstalkercm", 1).Component("lth_high", 4).Component("fiberp_high", 2).ForgeParameters(rangeCenter: 46, rangeWidth: 40, coolingRate: 4, startingThermal: 45, shapeShare: 58);
+                .Component("quillstalkercm", 1).Component("lth_high", 4).Component("fiberp_high", 2).ForgeParameters(rangeCenter: 42, rangeWidth: 40, coolingRate: 3, startingThermal: 46, shapeShare: 62);
             _builder.Create(RecipeType.SalvagedRhydelCuirass, SkillType.Smithery)
                 .Category(RecipeCategoryType.Tunic).Resref("rhydelalphacr").Level(50).Quantity(1).RequirementUnlocked()
                 .EnhancementSlots(RecipeEnhancementType.Armor, 1)
-                .Component("rhydelalphacm", 1).Component("lth_high", 4).Component("fiberp_high", 2).ForgeParameters(rangeCenter: 41, rangeWidth: 38, coolingRate: 4, startingThermal: 40, shapeShare: 59);
+                .Component("rhydelalphacm", 1).Component("lth_high", 4).Component("fiberp_high", 2).ForgeParameters(rangeCenter: 42, rangeWidth: 40, coolingRate: 3, startingThermal: 43, shapeShare: 70);
 
             // Sorting-Arm Harness (belt) - Hutlar Droid Foundry
             _builder.Create(RecipeType.SalvagedSortingHarness, SkillType.Smithery)
@@ -264,7 +264,7 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.SmitheryRecipeDefinition
                 .Component("sorting_actuator", 1)
                 .Component("elec_high", 3)
                 .Component("fiberp_high", 2)
-                .ForgeParameters(rangeCenter: 44, rangeWidth: 42, coolingRate: 4, startingThermal: 45, shapeShare: 50);
+                .ForgeParameters(rangeCenter: 41, rangeWidth: 40, coolingRate: 5, startingThermal: 37, shapeShare: 54);
 
             // Assembly-Line Gauntlets (gloves) - Hutlar Droid Foundry
             _builder.Create(RecipeType.SalvagedAssemblyGauntlet, SkillType.Smithery)
@@ -277,7 +277,7 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.SmitheryRecipeDefinition
                 .Component("torque_regulator", 1)
                 .Component("elec_high", 3)
                 .Component("fiberp_high", 2)
-                .ForgeParameters(rangeCenter: 42, rangeWidth: 38, coolingRate: 5, startingThermal: 44, shapeShare: 56);
+                .ForgeParameters(rangeCenter: 42, rangeWidth: 40, coolingRate: 5, startingThermal: 48, shapeShare: 62);
 
             // Null-Field Collar (necklace) - Hutlar Droid Foundry
             _builder.Create(RecipeType.SalvagedNullFieldCollar, SkillType.Smithery)
@@ -290,7 +290,7 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.SmitheryRecipeDefinition
                 .Component("faultscan_optic", 1)
                 .Component("elec_high", 3)
                 .Component("fiberp_high", 2)
-                .ForgeParameters(rangeCenter: 45, rangeWidth: 44, coolingRate: 6, startingThermal: 41, shapeShare: 46);
+                .ForgeParameters(rangeCenter: 42, rangeWidth: 40, coolingRate: 7, startingThermal: 48, shapeShare: 38);
 
             // Breach-Seal Belt (belt) - Abandoned Station
             _builder.Create(RecipeType.SalvagedBreachSealBelt, SkillType.Smithery)
@@ -303,7 +303,7 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.SmitheryRecipeDefinition
                 .Component("override_spike", 1)
                 .Component("lth_good", 3)
                 .Component("fiberp_good", 2)
-                .ForgeParameters(rangeCenter: 43, rangeWidth: 49, coolingRate: 3, startingThermal: 48, shapeShare: 54);
+                .ForgeParameters(rangeCenter: 40, rangeWidth: 40, coolingRate: 4, startingThermal: 46, shapeShare: 54);
 
             // Serum-Cell Necklace (necklace) - Abandoned Station
             _builder.Create(RecipeType.SalvagedSerumCellNecklace, SkillType.Smithery)
@@ -316,7 +316,7 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.SmitheryRecipeDefinition
                 .Component("plague_culture", 1)
                 .Component("ref_plagionite", 2)
                 .Component("citrine", 1)
-                .ForgeParameters(rangeCenter: 52, rangeWidth: 40, coolingRate: 4, startingThermal: 53, shapeShare: 41);
+                .ForgeParameters(rangeCenter: 48, rangeWidth: 22, coolingRate: 7, startingThermal: 44, shapeShare: 38);
         }
     }
 }

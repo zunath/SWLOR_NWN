@@ -63,10 +63,10 @@ public class ForgeSessionFlowTests
         new(new ForgeSetup((ForgeParameters)_recipe.MinigameParameters, _recipe.Level, 20, 0, 0, 0),
             new ScriptedMinigameRandom(Enumerable.Repeat(100, 100).ToArray()));
 
-    /// <summary>Hones in the cool half of the range, then presses until the Shape is full: 70% Finish, enough for the first slot but not the second.</summary>
+    /// <summary>Hones in the cool half of the range, then presses until the Shape is full: 51% Finish, enough for the first slot but not the second.</summary>
     private static void PlayToHalfQuality(ForgeEngine engine)
     {
-        for (var hone = 0; hone < 7; hone++)
+        for (var hone = 0; hone < 8; hone++)
             engine.Perform(ForgeActionIds.VibroHone).Performed.Should().BeTrue();
 
         while (engine.Status == MinigameStatus.InProgress)

@@ -36,6 +36,13 @@ public interface ICraftSessionWorld
     /// <summary>Keeps the player at the station and walkable-through: the immobilize and collision ghost of a craft in progress.</summary>
     void BeginStationWork(uint player);
 
+    /// <summary>
+    /// Starts the looping work clip of the skill's station for as long as the station work lasts, where one can play (not for a
+    /// rifle or cannon holder, who keeps the native pose). <see cref="EndStationWork"/> stops it.
+    /// </summary>
+    void PlayStationWork(uint player, SkillType skill);
+
+    /// <summary>Releases the player from the station and stops the work clip.</summary>
     void EndStationWork(uint player);
 
     uint CreateCraftedItem(uint player, RecipeDetail recipe);

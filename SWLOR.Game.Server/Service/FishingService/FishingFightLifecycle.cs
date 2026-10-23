@@ -1,4 +1,5 @@
 using System.Collections.Generic;
+using SWLOR.Game.Server.Service.AnimationService;
 using SWLOR.Game.Server.Service.CraftService.Minigame;
 using SWLOR.Game.Server.Service.CraftService.Minigame.Line;
 using SWLOR.Game.Server.Service.SkillService;
@@ -130,6 +131,7 @@ namespace SWLOR.Game.Server.Service.FishingService
                     _world.CreateFish(fight.Player, fight.Fish.Resref);
                     message = $"You landed a {fight.Fish.Name}!";
                     _world.Message(fight.Player, message);
+                    _world.PlayAnimation(fight.Player, WorkAnimation.FishLanded);
                     break;
                 case LineEnding.Snapped:
                     message = SnappedMessage;
@@ -208,6 +210,20 @@ namespace SWLOR.Game.Server.Service.FishingService
 
             Abandon(fight, end.Value);
             return false;
+        }
+
+        /// <summary>
+        /// Plays the clip of the action the angler just took, while the fight goes on. Set Hook has none. The action that lands the
+        /// fish plays the landing instead, when the fight settles.
+        /// </summary>
+        public void PlayAction(FishingFight fight, string actionId)
+        {
+            if (fight == null)
+                throw new ArgumentNullException(nameof(fight));
+
+            var clip = WorkAnimation.ForFishing(actionId);
+            if (clip != null && IsActive(fight))
+                _world.PlayAnimation(fight.Player, clip);
         }
 
         /// <summary>

@@ -3,6 +3,7 @@ using SWLOR.Game.Server.Service.CraftService.Minigame.Fabricator;
 using SWLOR.Game.Server.Service.CraftService.Minigame.Line;
 using SWLOR.Game.Server.Service.CraftService.Minigame.Reaction;
 using SWLOR.Game.Server.Service.CraftService.Minigame.Search;
+using SWLOR.Game.Server.Service.SkillService;
 
 namespace SWLOR.Game.Server.Service.CraftService.Minigame;
 
@@ -14,6 +15,20 @@ namespace SWLOR.Game.Server.Service.CraftService.Minigame;
 /// </summary>
 public static class CraftMinigameXp
 {
+    /// <summary>
+    /// The crafting pace multiplier (owner decision, October 2026, workstream 11): crafting XP in Smithery, Engineering, Fabrication and
+    /// Agriculture's cooking is this much more than the recipe and minigame say. It is layered on top of a minigame's gate-6 multiplier, so the
+    /// gate stays measured against today's XP. It does not apply to Gathering, Espionage, fishing, guild hand-ins, research, combat or Piloting.
+    /// </summary>
+    public const double CraftingPaceMultiplier = 1.05;
+
+    /// <summary>True for the skills the crafting pace multiplier applies to.</summary>
+    public static bool AppliesCraftingPace(SkillType skill) =>
+        skill is SkillType.Smithery or SkillType.Engineering or SkillType.Fabrication or SkillType.Agriculture;
+
+    /// <summary>The crafting pace multiplier for a skill's crafts: <see cref="CraftingPaceMultiplier"/>, or 1 for any other skill.</summary>
+    public static double PaceMultiplierFor(SkillType skill) => AppliesCraftingPace(skill) ? CraftingPaceMultiplier : 1.0;
+
     /// <summary>
     /// The multiplier a minigame puts on its crafts' base XP at a recipe level; 1 when it needs none. A level of 0 or less asks for the
     /// lowest band's, which is the largest.
@@ -34,12 +49,13 @@ public static class CraftMinigameXp
 
     /// <summary>
     /// The XP a craft of the recipe is worth before bonuses: <c>Craft.GetBaseRecipeXP</c> times the multiplier of the minigame that
-    /// crafts the recipe's skill, at the recipe's level.
+    /// crafts the recipe's skill, at the recipe's level, times the crafting pace multiplier of the recipe's skill.
     /// </summary>
     public static int BaseXp(RecipeDetail recipe, int skillRank)
     {
         var baseXp = Craft.GetBaseRecipeXP(recipe, skillRank);
         var route = CraftMinigameRouting.GetRoute(recipe.Skill);
-        return route.Minigame is { } minigame ? ScaleBaseXp(baseXp, MultiplierFor(minigame, recipe.Level)) : baseXp;
+        var gated = route.Minigame is { } minigame ? ScaleBaseXp(baseXp, MultiplierFor(minigame, recipe.Level)) : baseXp;
+        return ScaleBaseXp(gated, PaceMultiplierFor(recipe.Skill));
     }
 }

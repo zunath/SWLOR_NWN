@@ -1,3 +1,5 @@
+using SWLOR.Game.Server.Service.SkillService;
+
 namespace SWLOR.Game.Server.Service.CraftService.Minigame;
 
 /// <summary>What a quick craft batch needs from the game engine. <c>NwnQuickCraftWorld</c> is the engine implementation.</summary>
@@ -9,9 +11,15 @@ public interface IQuickCraftWorld
     /// <summary>Holds the player at the station for the whole batch.</summary>
     void BeginBatch(uint player);
 
+    /// <summary>Starts the station's looping work clip for the whole batch, where one can play. <see cref="EndBatch"/> stops it.</summary>
+    void PlayStationWork(uint player, SkillType skill);
+
     void EndBatch(uint player);
 
-    /// <summary>Plays the crafting animation for one item.</summary>
+    /// <summary>
+    /// Shows the progress of one item. The native crafting pose plays only when the batch has no station clip, as for a rifle
+    /// holder.
+    /// </summary>
     void PlayItemAnimation(uint player, float seconds);
 
     /// <summary>Takes exactly one craft's components. Returns false, taking nothing, when any are missing.</summary>

@@ -1,6 +1,6 @@
 # Crafting revamp: progression pace baseline (workstream 11)
 
-How long a new crafter takes today to reach rank 50 in each crafting skill and in Gathering, with the component gathering that supplies the crafts, and the proposals this gives the owner. **Nothing in the game's XP changes in this PR**; the numbers below are today's pace, measured with the legacy craft model (`design/testing/crafting-revamp/legacy-crafting-baseline.md`). The XP-rate gate (gate 6) measures new minigames against today's XP first; any change proposed here applies on top of that result.
+How long a new crafter takes today to reach rank 50 in each crafting skill and in Gathering, with the component gathering that supplies the crafts, measured with the legacy craft model (`design/testing/crafting-revamp/legacy-crafting-baseline.md`), and what the owner's October 2026 decisions change. The tables below the decisions are today's pace; the decisions are applied in code in workstream 11b and their resulting hours are in "Decisions applied". The XP-rate gate (gate 6) measures new minigames against today's XP first; the decisions apply on top of that result.
 
 ## Hours to rank 50 today
 
@@ -23,6 +23,27 @@ What the numbers say:
 - **Gathering dominates Smithery.** 80% of its hours are gathering. The three components that cost the most are `lth_good` (19.1 h), `ruby` (11.1 h), `lth_high` (9.3 h); each drops on a small share of rolls (gems 2-9%, crate goods 15%), so one unit costs 3.4-7.4 minutes.
 - **Gathering is quick for the skill itself.** Each harvested item pays up to 1,200 XP and refining pays 25-150 XP per unit whatever the rank, so Gathering rank 50 takes hours, not days, if nodes are free. Node respawns and contention are not modelled.
 - **Agriculture has a faster path than the one modelled here.** Fishing pays the same chart per bite (600-1,200 XP); see the catch task table in the guild section.
+
+## Decisions applied (owner, October 2026)
+
+1. **Guild hand-ins give XP.** The Smithery, Engineering, Fabrication and Agriculture guilds pay 50% of `Skill.GetDeltaXP(task level - rank)` for every item handed in, in the guild's skill (`GuildTaskXp`), with the task level the recipe level for a crafted item and the `FishType` level for a catch task. It goes through the crafting XP path, so Social and food bonuses apply, and the chart's cutoff stays: a hand-in five or more levels below the rank pays nothing, as crafting and quick craft (rank at least level + 5) do. The Hunter's Guild gives none.
+2. **Crafting XP x1.05.** `CraftMinigameXp.CraftingPaceMultiplier` multiplies the base XP of crafts in Smithery, Engineering, Fabrication and Agriculture's cooking, on top of each minigame's gate-6 band multiplier. It does not apply to Gathering, Espionage, fishing, guild hand-ins, research, combat or Piloting. Gate 6 is still measured against today's XP, before this multiplier.
+3. **Research XP scaled.** `ResearchXpRules` now pays 62% (experiment) and 31% (completion) of the chart XP, +10% per research level, down from 100% and 50%, so research XP per real hour stays under at-level Fabrication crafting XP per hour (see the research cohort).
+
+Hours to rank 50 at mid gear, today against with decisions 1 and 2 (hand-ins at the recommended award, crafts at the pace multiplier; the same unmeasured timings as the rest of this report):
+
+| Skill | Today h | With the decisions h | Change | Crafts to 50 today | Crafts to 50 with the decisions | Hand-in XP share of the climb | At-level hand-ins | Catch-up hand-ins (quick craft) | Catch-up h (in the total) | Guild rank at rank 50 |
+| --- | --- | --- | --- | --- | --- | --- | --- | --- | --- | --- |
+| Smithery | 100.1 | 67.9 | -32% | 536 | 408 | 20% | 268 | 35 | 0.7 | 5 |
+| Engineering | 63.7 | 48.4 | -24% | 539 | 397 | 22% | 302 | 31 | 0.4 | 5 |
+| Fabrication | 53.4 | 39.3 | -26% | 530 | 401 | 20% | 273 | 32 | 0.6 | 5 |
+| Agriculture | 36.5 | 30.6 | -16% | 539 | 424 | 17% | 230 | 40 | 0.2 | 5 |
+| Median skill | 58.6 | 43.8 | -25% | - | - | - | - | - | - | - |
+| Slowest skill | 100.1 | 67.9 | -32% | - | - | - | - | - | - | - |
+
+The proposed target was the median skill at 45 h or fewer. With the decisions it is 43.8 h, which meets it. An at-level hand-in is one of the crafter's own crafts of a task recipe, which the model makes whenever the ten-task board holds one, so it adds no craft. A catch-up hand-in is a quick-crafted item that raises the guild rank when the rank stands in the way; its quick-craft and turn-in time is in the hours above and its XP is not paid (quick-crafted items sit five or more levels below the rank).
+
+Research under the new values: the highest research XP per elapsed hour against at-level crafting XP per hour (with the x1.05) is 98% at Fabrication 10, under the plan's ceiling at every rank. Before the change the starting values (100% and 50%) paid 167% at Fabrication 10 in the baseline.
 
 ## Inputs and assumptions
 
@@ -327,21 +348,21 @@ Every hand-in consumes one real player-crafted item (or four caught fish), which
 
 ## Research cohort
 
-Research is a Fabrication XP source in the revamp. The Research workstream set starting values in `ResearchXpRules`: the experiment pays 100% of the chart XP at full effort and completing the job 50%, each raised 10% per research level reached, where the chart XP is `GetDeltaXP(recipe level - Fabrication rank)`. This cohort is a Fabrication researcher at the tier their rank opens, doing the job loop that pays the most XP per hour, and it calls those rules directly. A job's length in seconds and its credit cost are one formula, `200 x tier^2.2 x level^2` (tier = recipe level / 10 + 1, at most 5; `Craft.CalculateResearchCost`), where level is the blueprint's new research level 1-10. A recipe's blueprint is first acquired by starting its level-1 job with no blueprint, so "blueprint acquisition" is that job. The tier gate is Fabrication rank / 10 and the job slots are 1, 2 from rank 25 and 3 from rank 50 (`CraftRankMilestones`). The experiment cuts up to 25% of a job's time (`ExperimentRules.TimeCutCapPercent`), which the cohort takes as the best case.
+Research is a Fabrication XP source in the revamp. The Research workstream set starting values in `ResearchXpRules`: the experiment pays 62% of the chart XP at full effort and completing the job 31%, each raised 10% per research level reached, where the chart XP is `GetDeltaXP(recipe level - Fabrication rank)`. This cohort is a Fabrication researcher at the tier their rank opens, doing the job loop that pays the most XP per hour, and it calls those rules directly. A job's length in seconds and its credit cost are one formula, `200 x tier^2.2 x level^2` (tier = recipe level / 10 + 1, at most 5; `Craft.CalculateResearchCost`), where level is the blueprint's new research level 1-10. A recipe's blueprint is first acquired by starting its level-1 job with no blueprint, so "blueprint acquisition" is that job. The tier gate is Fabrication rank / 10 and the job slots are 1, 2 from rank 25 and 3 from rank 50 (`CraftRankMilestones`). The experiment cuts up to 25% of a job's time (`ExperimentRules.TimeCutCapPercent`), which the cohort takes as the best case.
 
 Time at the terminal per job: an experiment of 6 trials at 6 s, plus 30 s to start the job and 30 s to collect it (96 s; unmeasured). The recipe researched is the one the research window lists (`Craft.IsResearchableRecipe`: weapons, armor and food) that needs no learning and whose level pays the most against the rank within the tier. "Fast loop" keeps every slot on level-1 jobs for new blueprints; "climb" runs each slot up one blueprint from level 1 to 10. Base XP is the chart XP for the recipe level against the rank.
 
-| Fabrication rank | Tier | Recipe level | Base XP | Job slots | Level-1 job | Level-10 job | Level-1 job credits | Fast loop jobs per h | Climb jobs per h | Crafting XP per h (incl. gathering) | Research XP per h at a 100% award |
+| Fabrication rank | Tier | Recipe level | Base XP | Job slots | Level-1 job | Level-10 job | Level-1 job credits | Fast loop jobs per h | Climb jobs per h | Crafting XP per h (incl. gathering and the pace multiplier) | Research XP per h at a 100% award |
 | --- | --- | --- | --- | --- | --- | --- | --- | --- | --- | --- | --- |
-| 10 | 1 | 9 | 450 | 1 | 3.3 min | 5.6 h | 200 | 24.0 | 0.62 | 10,669 | 10,800 |
-| 15 | 1 | 9 | 0 | 1 | 3.3 min | 5.6 h | 200 | 24.0 | 0.62 | 12,329 | 0 |
-| 20 | 2 | 19 | 450 | 1 | 15.3 min | 25.5 h | 918 | 5.2 | 0.14 | 9,479 | 2,353 |
-| 25 | 2 | 9 | 0 | 2 | 3.3 min | 5.6 h | 200 | 37.5 | 1.25 | 6,119 | 0 |
-| 30 | 3 | 29 | 450 | 2 | 37.4 min | 62.3 h | 2,242 | 4.3 | 0.11 | 3,652 | 1,927 |
-| 35 | 3 | 9 | 0 | 2 | 3.3 min | 5.6 h | 200 | 37.5 | 1.25 | 12,211 | 0 |
-| 40 | 4 | 39 | 450 | 2 | 1.2 h | 117.3 h | 4,222 | 2.3 | 0.06 | 13,348 | 1,023 |
-| 45 | 4 | 9 | 0 | 2 | 3.3 min | 5.6 h | 200 | 37.5 | 1.25 | 10,665 | 0 |
-| 49 | 4 | 9 | 0 | 2 | 3.3 min | 5.6 h | 200 | 37.5 | 1.25 | 6,850 | 0 |
+| 10 | 1 | 9 | 450 | 1 | 3.3 min | 5.6 h | 200 | 24.0 | 0.62 | 11,203 | 10,800 |
+| 15 | 1 | 9 | 0 | 1 | 3.3 min | 5.6 h | 200 | 24.0 | 0.62 | 12,945 | 0 |
+| 20 | 2 | 19 | 450 | 1 | 15.3 min | 25.5 h | 918 | 5.2 | 0.14 | 9,953 | 2,353 |
+| 25 | 2 | 9 | 0 | 2 | 3.3 min | 5.6 h | 200 | 37.5 | 1.25 | 6,425 | 0 |
+| 30 | 3 | 29 | 450 | 2 | 37.4 min | 62.3 h | 2,242 | 4.3 | 0.11 | 3,834 | 1,927 |
+| 35 | 3 | 9 | 0 | 2 | 3.3 min | 5.6 h | 200 | 37.5 | 1.25 | 12,822 | 0 |
+| 40 | 4 | 39 | 450 | 2 | 1.2 h | 117.3 h | 4,222 | 2.3 | 0.06 | 14,015 | 1,023 |
+| 45 | 4 | 9 | 0 | 2 | 3.3 min | 5.6 h | 200 | 37.5 | 1.25 | 11,198 | 0 |
+| 49 | 4 | 9 | 0 | 2 | 3.3 min | 5.6 h | 200 | 37.5 | 1.25 | 7,192 | 0 |
 
 The tier gate lags the rank, so the best recipe a researcher may start is between 1 and 10 levels below their rank, and the XP chart pays nothing for a recipe five or more levels below. 24 of the 40 Fabrication ranks 10-49 have no researchable recipe that pays XP at all under the starting values; research XP arrives in bursts in the first four ranks of each tier. The third job slot (Fabrication 50) arrives when the skill stops paying XP, so it matters for blueprints only.
 
@@ -349,31 +370,31 @@ The starting values against at-level Fabrication crafting at the same rank (the 
 
 | Fabrication rank | Base XP | Level-1 job XP (starting values) | Starting values as a share of base XP | Research XP per elapsed h | Crafting XP per h | Research / crafting, elapsed | Research / crafting, player's own time |
 | --- | --- | --- | --- | --- | --- | --- | --- |
-| 10 | 450 | 742 | 165% | 17,808 | 10,669 | 167% | 261% |
-| 11 | 300 | 495 | 165% | 11,880 | 13,698 | 87% | 136% |
-| 12 | 150 | 247 | 165% | 5,928 | 15,484 | 38% | 60% |
-| 13 | 76 | 124 | 163% | 2,976 | 15,669 | 19% | 30% |
-| 20 | 450 | 742 | 165% | 3,880 | 9,479 | 41% | 294% |
-| 21 | 300 | 495 | 165% | 2,588 | 7,542 | 34% | 246% |
-| 22 | 150 | 247 | 165% | 1,292 | 8,562 | 15% | 108% |
-| 23 | 76 | 124 | 163% | 648 | 6,505 | 10% | 71% |
-| 30 | 450 | 742 | 165% | 3,177 | 3,652 | 87% | 762% |
-| 31 | 300 | 495 | 165% | 2,120 | 13,158 | 16% | 141% |
-| 32 | 150 | 247 | 165% | 1,058 | 10,608 | 10% | 87% |
-| 33 | 76 | 124 | 163% | 531 | 10,841 | 5% | 43% |
-| 40 | 450 | 742 | 165% | 1,687 | 13,348 | 13% | 208% |
-| 41 | 300 | 495 | 165% | 1,126 | 14,441 | 8% | 129% |
-| 42 | 150 | 247 | 165% | 562 | 12,389 | 5% | 75% |
-| 43 | 76 | 124 | 163% | 282 | 13,675 | 2% | 34% |
+| 10 | 450 | 459 | 102% | 11,016 | 11,203 | 98% | 154% |
+| 11 | 300 | 306 | 102% | 7,344 | 14,383 | 51% | 80% |
+| 12 | 150 | 153 | 102% | 3,672 | 16,258 | 23% | 35% |
+| 13 | 76 | 76 | 100% | 1,824 | 16,453 | 11% | 17% |
+| 20 | 450 | 459 | 102% | 2,400 | 9,953 | 24% | 173% |
+| 21 | 300 | 306 | 102% | 1,600 | 7,919 | 20% | 145% |
+| 22 | 150 | 153 | 102% | 800 | 8,990 | 9% | 64% |
+| 23 | 76 | 76 | 100% | 397 | 6,830 | 6% | 42% |
+| 30 | 450 | 459 | 102% | 1,965 | 3,834 | 51% | 449% |
+| 31 | 300 | 306 | 102% | 1,310 | 13,816 | 9% | 83% |
+| 32 | 150 | 153 | 102% | 655 | 11,139 | 6% | 52% |
+| 33 | 76 | 76 | 100% | 325 | 11,383 | 3% | 25% |
+| 40 | 450 | 459 | 102% | 1,044 | 14,015 | 7% | 123% |
+| 41 | 300 | 306 | 102% | 696 | 15,163 | 5% | 76% |
+| 42 | 150 | 153 | 102% | 348 | 13,008 | 3% | 44% |
+| 43 | 76 | 76 | 100% | 173 | 14,359 | 1% | 20% |
 
-Per elapsed hour with every slot busy, the starting values stay under crafting at 15 of the 16 paying ranks and break it at rank 10. Per hour of the player's own time at the terminal (96 s a job) they break it at 9 of the 16 ranks (the lowest ratio is 30%), because a researcher who plays only the experiments and lets the jobs run earns a level-1 job's XP for about a minute and a half of attention.
+Per elapsed hour with every slot busy, the starting values stay under crafting at 16 of the 16 paying ranks. Per hour of the player's own time at the terminal (96 s a job) they break it at 5 of the 16 ranks (the lowest ratio is 17%), because a researcher who plays only the experiments and lets the jobs run earns a level-1 job's XP for about a minute and a half of attention.
 
 Ceilings in terms of an award, as a share of base XP per job: the largest award that keeps research XP per hour under at-level Fabrication crafting XP per hour at that rank, by two yardsticks.
 
 | Yardstick | Lowest ceiling over the paying ranks | At Fabrication rank |
 | --- | --- | --- |
-| Per elapsed hour with every job slot busy (research runs while the player does other things) | 99% | 10 |
-| Per hour of the player's own time at the terminal | 22% | 30 |
+| Per elapsed hour with every job slot busy (research runs while the player does other things) | 104% | 10 |
+| Per hour of the player's own time at the terminal | 23% | 30 |
 
 The Research workstream's own report compares its best row with crafting at 24,000 XP per hour (15 actions at 6 s, no overhead, no gathering); this report's crafting rate includes the per-craft overhead and the gathering the crafts need, so it is lower and the ceiling tighter.
 
@@ -389,22 +410,22 @@ What each target needs on top of the guild award. A multiplier of x1.00 means th
 
 | Median skill target (h) | Multiplier needed | Rank cost cap needed (XP) | Smithery h at that multiplier | Engineering h at that multiplier | Fabrication h at that multiplier | Agriculture h at that multiplier |
 | --- | --- | --- | --- | --- | --- | --- |
-| 45 | x1.01 | 14,482 | 69.9 | 49.7 | 40.3 | 31.4 |
-| 35 | x1.31 | 8,276 | 54.4 | 38.5 | 31.5 | 24.5 |
-| 25 | x1.95 | 5,342 | 38.1 | 27.7 | 22.3 | 16.8 |
+| 45 | x1.02 | 14,482 | 69.8 | 49.7 | 40.3 | 31.4 |
+| 35 | x1.40 | 8,276 | 53.7 | 38.5 | 31.5 | 24.2 |
+| 25 | x2.21 | 5,342 | 37.2 | 27.8 | 22.2 | 16.4 |
 
 | Option | Change | Smithery h | Engineering h | Fabrication h | Agriculture h | Median skill | Slowest skill | Migration of stored XP |
 | --- | --- | --- | --- | --- | --- | --- | --- | --- |
 | Today | nothing | 100.1 | 63.7 | 53.4 | 36.5 | 58.6 | 100.1 | no |
 | 0 | hand in the guild's task recipes for credits and points, no XP award (isolates the recipe choice) | 85.9 | 64.7 | 51.5 | 38.7 | 58.1 | 85.9 | no |
 | A | guild task XP only | 70.7 | 50.2 | 40.8 | 31.8 | 45.5 | 70.7 | no |
-| B | A, and crafting XP x1.05 (crafts and hand-ins) | 67.4 | 47.9 | 38.9 | 30.3 | 43.4 | 67.4 | no |
-| C | A, and no rank costs more than 12,600 XP | 67.2 | 47.4 | 39.2 | 30.3 | 43.3 | 67.2 | yes |
+| B | A, and crafting XP x1.05 (crafts only) | 67.9 | 48.4 | 39.3 | 30.6 | 43.8 | 67.9 | no |
+| C | A, and no rank costs more than 13,100 XP | 67.9 | 48.0 | 39.6 | 30.6 | 43.8 | 67.9 | yes |
 
 - **Row 0 is not an option.** It shows that handing in the guild's task recipes, with no award at all, already changes the hours, because the task recipes' components differ from the level's average recipe; the award's own effect is the difference between rows 0 and A.
 - **A: guild task XP only.** No craft XP change; the smallest change, with no stored-data conversion. It takes the median skill to 45.5 h, which is 0.5 h short of the 45 h target.
-- **B: A plus one crafting-only multiplier, x1.05.** The smallest round multiplier that brings the median skill to the target (43.4 h). One parameter on what crafts and hand-ins pay, retuned from the client timings later. It changes gains only, so stored XP and ranks need no conversion.
-- **C: A plus a cap of 12,600 XP on any rank's cost.** The same median as B by a different route: it cuts the climb from 411,125 to 390,925 XP and spares the late ranks that cost up to 16,000 XP and need 15-25 crafts each, while leaving the early ranks alone. It changes required XP per rank for the crafting skills, so it needs a crafting-specific table and the plan's migration (convert stored XP and ranks so nobody loses a rank).
+- **B: A plus one crafting-only multiplier, x1.05.** The smallest round multiplier that brings the median skill to the target (43.8 h). One parameter on what crafts pay, retuned from the client timings later. It changes gains only, so stored XP and ranks need no conversion.
+- **C: A plus a cap of 13,100 XP on any rank's cost.** The same median as B by a different route: it cuts the climb from 411,125 to 395,425 XP and spares the late ranks that cost up to 16,000 XP and need 15-25 crafts each, while leaving the early ranks alone. It changes required XP per rank for the crafting skills, so it needs a crafting-specific table and the plan's migration (convert stored XP and ranks so nobody loses a rank).
 
 **Recommendation: B.** The guild award alone leaves the median skill at 45.5 h, so the target needs a crafting-only multiplier of about x1.05 on top; B reaches it with no migration. Treat the multiplier as a starting point: the model's hours move more with the node travel time (Smithery runs from 67 h at 15 s to 299 h at 120 s) than any option moves them, so measure it, re-run `progression`, and retune. Smithery stays far above the median under every option here because its components are scarce drops (gems and crate goods); that is a supply question for the gathering workstream, not an XP one.
 
@@ -427,7 +448,7 @@ The credit faucet is the risk to weigh with this: every hand-in pays 1,000-7,200
 
 ### Research XP ceiling
 
-The Research workstream's starting values pay 165% of the chart XP for a level-1 job (`ResearchXpRules`: 100% experiment, 50% completion, +10% per level). **Ceiling, as the plan words it: research XP per real hour, with every job slot busy, stays below at-level Fabrication crafting XP per hour at the same rank** (the whole crafting loop, gathering and overhead included). They break it at Fabrication 10, where a level-1 job on a tier-1 recipe takes minutes and the lone slot restarts it all hour. **Proposal: scale the starting values to 60% of themselves, `ExperimentXpPercent` 59 and `CompletionXpPercent` 29**, which keeps research under crafting at every rank. Counted per hour of the player's own time at the terminal (96 s a job, because the jobs run offline), the starting values exceed crafting at 9 of the 16 paying ranks and would need 13% of themselves; the plan's wording is the elapsed hour, so that is shown as the owner's call, not proposed. Keep a rule that a research award never exceeds the base XP of a craft of the same recipe level. Credits give a second bound: the first job on a new blueprint costs 200-4,200 credits and the level-10 job of a tier-4 recipe takes about five days. Because the chart pays nothing for recipes five or more levels below the rank, the owner may want a floor for research (like `GetPracticeXP`'s 150) so researchers are not paid only in the first four ranks of each tier; a floor must sit under the same ceiling.
+The Research workstream's starting values pay 102% of the chart XP for a level-1 job (`ResearchXpRules`: 62% experiment, 31% completion, +10% per level). **Ceiling, as the plan words it: research XP per real hour, with every job slot busy, stays below at-level Fabrication crafting XP per hour at the same rank** (the whole crafting loop, gathering and overhead included). The values in `ResearchXpRules` (62% and 31%) already sit under it. Counted per hour of the player's own time at the terminal (96 s a job, because the jobs run offline), the starting values exceed crafting at 5 of the 16 paying ranks and would need 22% of themselves; the plan's wording is the elapsed hour, so that is shown as the owner's call, not proposed. Keep a rule that a research award never exceeds the base XP of a craft of the same recipe level. Credits give a second bound: the first job on a new blueprint costs 200-4,200 credits and the level-10 job of a tier-4 recipe takes about five days. Because the chart pays nothing for recipes five or more levels below the rank, the owner may want a floor for research (like `GetPracticeXP`'s 150) so researchers are not paid only in the first four ranks of each tier; a floor must sit under the same ceiling.
 
 ## Limitations
 

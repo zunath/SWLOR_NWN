@@ -63,11 +63,17 @@ public class CircuitXpMultiplierTests
         var engineering = Recipe(SkillType.Engineering, 5);
         var smithery = Recipe(SkillType.Smithery, 5);
 
+        // The minigame's band multiplier first, then the crafting pace multiplier every crafting skill gets on top of it.
         CraftMinigameXp.BaseXp(engineering, 5).Should().Be(
-            CraftMinigameXp.ScaleBaseXp(Craft.GetBaseRecipeXP(engineering, 5), CircuitRules.XpMultiplierFor(5)));
+            CraftMinigameXp.ScaleBaseXp(
+                CraftMinigameXp.ScaleBaseXp(Craft.GetBaseRecipeXP(engineering, 5), CircuitRules.XpMultiplierFor(5)),
+                CraftMinigameXp.CraftingPaceMultiplier));
         CraftMinigameXp.BaseXp(smithery, 5).Should().Be(
-            CraftMinigameXp.ScaleBaseXp(Craft.GetBaseRecipeXP(smithery, 5), CraftMinigameXp.MultiplierFor(CraftMinigameType.Forge, 5)));
-        CraftMinigameXp.BaseXp(Recipe(SkillType.Agriculture, 5), 5).Should().Be(Craft.GetBaseRecipeXP(Recipe(SkillType.Agriculture, 5), 5));
+            CraftMinigameXp.ScaleBaseXp(
+                CraftMinigameXp.ScaleBaseXp(Craft.GetBaseRecipeXP(smithery, 5), CraftMinigameXp.MultiplierFor(CraftMinigameType.Forge, 5)),
+                CraftMinigameXp.CraftingPaceMultiplier));
+        CraftMinigameXp.BaseXp(Recipe(SkillType.Agriculture, 5), 5).Should().Be(
+            CraftMinigameXp.ScaleBaseXp(Craft.GetBaseRecipeXP(Recipe(SkillType.Agriculture, 5), 5), CraftMinigameXp.CraftingPaceMultiplier));
     }
 
     [Test]

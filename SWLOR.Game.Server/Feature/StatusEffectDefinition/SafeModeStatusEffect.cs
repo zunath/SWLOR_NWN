@@ -9,6 +9,7 @@ namespace SWLOR.Game.Server.Feature.StatusEffectDefinition
     {
         public override string Name => "Safe Mode";
         public override StatusEffectActivationType ActivationType => StatusEffectActivationType.Passive;
+        public override StatusEffectSourceType SourceType => StatusEffectSourceType.CraftingStyle;
         public override EffectIconType Icon => EffectIconType.SafeModeStatusEffect;
         public override StatusEffectCategory Categories => StatusEffectCategory.Buff;
         public override bool PersistsOnLogout => false;

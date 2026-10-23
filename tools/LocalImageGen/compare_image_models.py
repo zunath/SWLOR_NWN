@@ -10,7 +10,7 @@ GPT sources (--gpt):
 
 Example:
     C:\\AI\\LocalImageGen\\venv\\Scripts\\python.exe tools\\LocalImageGen\\compare_image_models.py \\
-        --prompts-file tools\\LocalImageGen\\sample_prompts.txt --gpt codex
+        --prompts-file C:\\AI\\LocalImageGen\\prompts.txt --gpt codex
 """
 
 from __future__ import annotations

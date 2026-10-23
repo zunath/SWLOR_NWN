@@ -23,8 +23,10 @@ C:\AI\LocalImageGen\venv\Scripts\python.exe tools/LocalImageGen/local_image_gen.
 ## Compare with GPT
 
 ```powershell
-C:\AI\LocalImageGen\venv\Scripts\python.exe tools/LocalImageGen/compare_image_models.py --prompts-file tools/LocalImageGen/sample_prompts.txt --gpt codex
+C:\AI\LocalImageGen\venv\Scripts\python.exe tools/LocalImageGen/compare_image_models.py --prompts-file C:\AI\LocalImageGen\prompts.txt --gpt codex
 ```
+
+The prompts file holds one prompt per line (`#` lines are skipped) and lives outside the repository. `--prompt "..."` (repeatable) works without a file.
 
 Each prompt is generated locally, then paired with a GPT image. The run writes `index.html` (side by side, with a "Better" picker per prompt), `NN_side_by_side.png`, and `manifest.json` to `C:\AI\LocalImageGen\comparisons\<timestamp>`.
 

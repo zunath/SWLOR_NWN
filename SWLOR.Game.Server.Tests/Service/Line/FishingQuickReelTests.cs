@@ -113,6 +113,23 @@ public class FishingQuickReelTests
     }
 
     [Test]
+    public void ALandedQuickReel_PlaysTheLandingClip_AndAMissPlaysNone()
+    {
+        var landed = Lifecycle();
+        var landedFight = landed.Bite(Bite(level: 20, rank: 20));
+        _random.Roll = 1;
+        landed.QuickReel(landedFight);
+        _world.Animations.Should().Equal("sw_landfish");
+
+        _world = new FakeFishingFightWorld();
+        var missed = Lifecycle();
+        var missedFight = missed.Bite(Bite(level: 20, rank: 20));
+        _random.Roll = 100;
+        missed.QuickReel(missedFight);
+        _world.Animations.Should().BeEmpty();
+    }
+
+    [Test]
     public void ARollOverTheChance_LosesTheFish()
     {
         var lifecycle = Lifecycle();

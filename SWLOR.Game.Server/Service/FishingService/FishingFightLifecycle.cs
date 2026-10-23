@@ -196,6 +196,7 @@ namespace SWLOR.Game.Server.Service.FishingService
                 _world.CreateFish(fight.Player, fight.Fish.Resref);
                 message = $"You landed a {fight.Fish.Name}!";
                 _world.Message(fight.Player, message);
+                _world.PlayAnimation(fight.Player, WorkAnimation.FishLanded);
             }
             else
             {

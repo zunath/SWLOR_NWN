@@ -1,7 +1,7 @@
 namespace SWLOR.CraftSim.Legacy.Crafting
 {
     /// <summary>
-    /// How enhancements work in the old craft window, ported one for one from CraftViewModel with its float arithmetic and int
+    /// How enhancements work in the old craft window, ported one for one from the deleted CraftViewModel with its float arithmetic and int
     /// truncation: each enhancement adds its progress penalty to the progress the piece needs, and on a success each enhancement
     /// property transfers by an independent roll at a chance equal to the quality percentage.
     /// </summary>

@@ -4,7 +4,7 @@ namespace SWLOR.CraftSim.Data
 {
     /// <summary>
     /// One enhancement item blueprint: what kind of recipe it enhances, its level, and the progress penalty it adds to a craft.
-    /// All three are item properties in Module/uti, read as <c>CraftViewModel</c> reads them when a player slots the item.
+    /// All three are item properties in Module/uti, read as <c>CraftEnhancementReader</c> reads them when a player slots the item.
     /// </summary>
     public sealed class EnhancementItem
     {

@@ -4,110 +4,79 @@ namespace SWLOR.CraftSim.Legacy
     public static class LegacySource
     {
         private const string Server = "SWLOR.Game.Server/";
+
+        /// <summary>The old crafting window, deleted from the server. Its rules are frozen and cited to <see cref="CraftViewModelCommit"/>.</summary>
         public const string CraftViewModel = Server + "Feature/GuiDefinition/ViewModel/CraftViewModel.cs";
+
+        /// <summary>The last commit that changed the deleted file. The cited lines are the committed reports', and a rule can sit a line below its citation.</summary>
+        public const string CraftViewModelCommit = "ded6cfaf45b66b0a5c4ffe66447bf9c3e24a2ff7";
+
+        /// <summary>The sentence a report prints above a rules table that cites the deleted window.</summary>
+        public static readonly string RulesPortedNote =
+            "Rules ported. `CraftViewModel.cs` was deleted from the game server after its rules were ported, so they are frozen and cited to commit `" +
+            CraftViewModelCommit + "`; the others are checked against the source by `LegacySourceTests`:";
+
         public const string RecipeLevelChart = Server + "Service/CraftService/RecipeLevelChart.cs";
         public const string Craft = Server + "Service/Craft.cs";
         public const string Harvester = Server + "Feature/ItemDefinition/HarvesterItemDefinition.cs";
         public const string ProspectingNode = Server + "Service/CraftService/Minigame/Prospecting/ProspectingNode.cs";
         public const string GatheringLevels = Server + "Service/CraftService/GatheringLevels.cs";
-        public const string Scavenge = Server + "Feature/ScavengePoint.cs";
+        public const string Scavenge = Server + "Service/ScavengeService/ScavengeQuickSearch.cs";
+        public const string ScavengeSite = Server + "Feature/ScavengePoint.cs";
         public const string Refinery = Server + "Feature/GuiDefinition/ViewModel/RefineryViewModel.cs";
         public const string FishingFight = Server + "Service/FishingService/FishingFightLifecycle.cs";
         public const string EquipmentStats = Server + "Feature/EquipmentStats.cs";
 
-        public static readonly SourceReference ActionRanks = new(
-            "Craft action unlock ranks", CraftViewModel, 39, 48,
-            "RapidSynthesisRequiredSkillRank = 10", "CarefulSynthesisRequiredSkillRank = 30",
-            "BasicTouchRequiredSkillRank = 5", "StandardTouchRequiredSkillRank = 15", "PreciseTouchRequiredSkillRank = 35",
-            "MastersMendRequiredSkillRank = 10", "SteadyHandRequiredSkillRank = 20", "MuscleMemoryRequiredSkillRank = 40",
-            "VenerationRequiredSkillRank = 25", "WasteNotRequiredSkillRank = 8");
+        public static readonly SourceReference ActionRanks = SourceReference.Frozen(
+            "Craft action unlock ranks", CraftViewModel, 39, 48, CraftViewModelCommit);
 
-        public static readonly SourceReference MaxCp = new(
-            "Craft points", CraftViewModel, 446, 454,
-            "dbPlayer.CPBonus[recipe.Skill]", "_maxCP = (int)(cp + skill * 0.75f);",
-            "if (skill >= VenerationRequiredSkillRank)", "_maxCP += 31;", "_cp = _maxCP;");
+        public static readonly SourceReference MaxCp = SourceReference.Frozen(
+            "Craft points", CraftViewModel, 446, 454, CraftViewModelCommit);
 
-        public static readonly SourceReference MaxDurability = new(
-            "Durability from the level chart", CraftViewModel, 456, 457,
-            "_maxDurability = levelDetail.Durability;", "_durability = _maxDurability;");
+        public static readonly SourceReference MaxDurability = SourceReference.Frozen(
+            "Durability from the level chart", CraftViewModel, 456, 457, CraftViewModelCommit);
 
-        public static readonly SourceReference MaxProgress = new(
-            "Maximum progress modifier", CraftViewModel, 460, 478,
-            "if (_levelDifference < 0)", "var adjustment = _levelDifference * 0.25f;", "progressModifier = -adjustment;",
-            "else if (_levelDifference > 0)", "var adjustment = _levelDifference * 0.05f;", "if (adjustment > 0.25f)",
-            "progressModifier = adjustment;", "_maxProgress = (int)(levelDetail.Progress + levelDetail.Progress * progressModifier);");
+        public static readonly SourceReference MaxProgress = SourceReference.Frozen(
+            "Maximum progress modifier", CraftViewModel, 460, 478, CraftViewModelCommit);
 
-        public static readonly SourceReference MaxQuality = new(
-            "Maximum quality from the level chart", CraftViewModel, 481, 482,
-            "_maxQuality = levelDetail.Quality;", "_quality = 0;");
+        public static readonly SourceReference MaxQuality = SourceReference.Frozen(
+            "Maximum quality from the level chart", CraftViewModel, 481, 482, CraftViewModelCommit);
 
         public static readonly SourceReference LevelChart = new(
             "Recipe level chart", RecipeLevelChart, 13, 99,
-            "_recipeLevels[1] = new RecipeLevelDetail(19, 312, 60, 0.0025f);",
-            "_recipeLevels[50] = new RecipeLevelDetail(186, 2641, 80, 0.018f);",
-            "_recipeLevels[80] = new RecipeLevelDetail(3943, 18262, 80, 0.018f);");
+            "_recipeLevels[1] = new RecipeLevelDetail(19, 312, 60);",
+            "_recipeLevels[50] = new RecipeLevelDetail(186, 2641, 80);",
+            "_recipeLevels[80] = new RecipeLevelDetail(3943, 18262, 80);");
 
-        public static readonly SourceReference Progress = new(
-            "Progress per synthesis", CraftViewModel, 1354, 1367,
-            "var recipeDiff = 1 + 0.05f * delta;", "dbPlayer.Skills[recipe.Skill].Rank >= SteadyHandRequiredSkillRank ? 21 : 0",
-            "(int)((baseProgress + steadyHandBonus + craftsmanship * 0.65f) * recipeDiff)");
+        public static readonly SourceReference Progress = SourceReference.Frozen(
+            "Progress per synthesis", CraftViewModel, 1354, 1367, CraftViewModelCommit);
 
-        public static readonly SourceReference Quality = new(
-            "Quality per touch", CraftViewModel, 1369, 1384,
-            "? 1 + 0.05f * delta", ": 1;", "dbPlayer.Skills[recipe.Skill].Rank >= MuscleMemoryRequiredSkillRank ? 115 : 0",
-            "(int)((baseQuality + muscleMemoryBonus + control * 0.75f) * recipeDiff)");
+        public static readonly SourceReference Quality = SourceReference.Frozen(
+            "Quality per touch", CraftViewModel, 1369, 1384, CraftViewModelCommit);
 
-        public static readonly SourceReference HandleAction = new(
-            "Action resolution order", CraftViewModel, 1672, 1725,
-            "if (_cp < cpCost)", "if (_wasteNotStepsRemaining > 0)", "_wasteNotStepsRemaining--;", "durabilityLoss /= 2;",
-            "_durability -= durabilityLoss;", "_cp -= cpCost;", "if (Random.D100(1) <= chance)",
-            "if (_progress >= _maxProgress)", "ProcessSuccess();", "else if (_durability <= 0)", "ProcessFailure();");
+        public static readonly SourceReference HandleAction = SourceReference.Frozen(
+            "Action resolution order", CraftViewModel, 1672, 1725, CraftViewModelCommit);
 
-        public static readonly SourceReference Actions = new(
-            "The 11 craft actions", CraftViewModel, 1727, 1864,
-            "var chance = _isSteadyHandActive ? 100 : 90;", "var chance = _isSteadyHandActive ? 100 : 75;",
-            "var chance = _isSteadyHandActive ? 100 : 50;", "var chance = _isMuscleMemoryActive ? 100 : 90;",
-            "var chance = _isMuscleMemoryActive ? 100 : 75;", "var chance = _isMuscleMemoryActive ? 100 : 50;",
-            "HandleAction(\"Basic Synthesis\", chance, 0, 10,", "var cpCost = 6;", "var cpCost = 10;",
-            "_venerationStepsRemaining--;", "cpCost /= 2;", "CalculateProgress(10)", "CalculateProgress(30)", "CalculateProgress(80)",
-            "HandleAction(\"Basic Touch\", chance, 3, 10,", "HandleAction(\"Standard Touch\", chance, 6, 10,",
-            "HandleAction(\"Precise Touch\",  chance, 10, 10,", "CalculateQuality(10)", "CalculateQuality(30)", "CalculateQuality(80)",
-            "HandleAction(\"Master's Mend\", 100, 10, 0,", "_durability += 30;", "HandleAction(\"Steady Hand\", 100, 12, 0,",
-            "HandleAction(\"Muscle Memory\", 100, 12, 0,", "HandleAction(\"Veneration\", 100, 8, 10,", "_venerationStepsRemaining = 4;",
-            "HandleAction(\"Waste Not\", 100, 4, 0,", "_wasteNotStepsRemaining = 4;");
+        public static readonly SourceReference Actions = SourceReference.Frozen(
+            "The 11 craft actions", CraftViewModel, 1727, 1864, CraftViewModelCommit);
 
-        public static readonly SourceReference SessionReset = new(
-            "Flags and meters reset between crafts", CraftViewModel, 1225, 1232,
-            "_isMuscleMemoryActive = false;", "_isSteadyHandActive = false;", "_venerationStepsRemaining = 0;",
-            "_wasteNotStepsRemaining = 0;", "_durability = _maxDurability;", "_cp = _maxCP;");
+        public static readonly SourceReference SessionReset = SourceReference.Frozen(
+            "Flags and meters reset between crafts", CraftViewModel, 1225, 1232, CraftViewModelCommit);
 
-        public static readonly SourceReference FailureLoss = new(
-            "Components and enhancements lost on failure", CraftViewModel, 1601, 1641,
-            "const int ChanceToLoseItem = 65;", "Random.D100(1) > ChanceToLoseItem", "foreach (var serialized in _components)");
+        public static readonly SourceReference FailureLoss = SourceReference.Frozen(
+            "Components and enhancements lost on failure", CraftViewModel, 1601, 1641, CraftViewModelCommit);
 
-        public static readonly SourceReference EnhancementSlots = new(
-            "Enhancement slots", CraftViewModel, 397, 406,
-            "var enhancementSlots = recipe.EnhancementSlots + blueprint.EnhancementSlots;", "IsEnhancement3Visible = enhancementSlots >= 3;");
+        public static readonly SourceReference EnhancementSlots = SourceReference.Frozen(
+            "Enhancement slots", CraftViewModel, 397, 406, CraftViewModelCommit);
 
-        public static readonly SourceReference EnhancementKinds = new(
-            "Enhancement kinds and level limit", CraftViewModel, 601, 666,
-            "typeIP = ItemPropertyType.ArmorEnhancement;", "typeIP = ItemPropertyType.WeaponEnhancement;",
-            "typeIP = ItemPropertyType.StructureEnhancement;", "typeIP = ItemPropertyType.FoodEnhancement;",
-            "typeIP = ItemPropertyType.StarshipEnhancement;", "typeIP = ItemPropertyType.ModuleEnhancement;",
-            "typeIP = ItemPropertyType.DroidEnhancement;", "enhancementLevel = GetItemPropertyCostTableValue(ip);",
-            "var levelDiff = enhancementLevel - recipe.Level;", "if (levelDiff > 5)");
+        public static readonly SourceReference EnhancementKinds = SourceReference.Frozen(
+            "Enhancement kinds and level limit", CraftViewModel, 601, 666, CraftViewModelCommit);
 
-        public static readonly SourceReference EnhancementProgressPenalty = new(
-            "Enhancement progress penalty", CraftViewModel, 695, 754,
-            "if (type == ItemPropertyType.ProgressPenalty)", "progressPenalty += GetItemPropertyCostTableValue(ip);",
-            "var progressPenalty = CalculateProgressPenaltyAndProcessItemProperties(item, _itemPropertiesEnhancement1);",
-            "_maxProgress += progressPenalty;");
+        public static readonly SourceReference EnhancementProgressPenalty = SourceReference.Frozen(
+            "Enhancement progress penalty", CraftViewModel, 695, 754, CraftViewModelCommit);
 
-        public static readonly SourceReference EnhancementTransfer = new(
-            "Enhancement transfer chance", CraftViewModel, 1420, 1468,
-            "var propertyTransferChance = (int)(((float)_quality / (float)_maxQuality) * 100);",
-            "GetItemPropertyType(allProperties[index]) == ItemPropertyType.DMG", "if (Random.D100(1) <= propertyTransferChance)",
-            "ApplyProperty(item, property);");
+        public static readonly SourceReference EnhancementTransfer = SourceReference.Frozen(
+            "Enhancement transfer chance", CraftViewModel, 1420, 1468, CraftViewModelCommit);
 
         public static readonly SourceReference RecipeUnlockOffset = new(
             "Recipe rank requirement", Craft, 327, 331,
@@ -130,14 +99,26 @@ namespace SWLOR.CraftSim.Legacy
             "Harvest XP", GatheringLevels, 20, 23,
             "LevelsPerTier * (Math.Max(1, tier) - 1) + FirstTierLevel", "Skill.GetDeltaXP(ForTier(tier) - gatheringRank)");
 
+        // The scavenge rules live in Quick Search now, which plays today's search at the parity reference (Perception modifier 0). The
+        // legacy model still takes the modifier as a parameter, so the old baseline stays reproducible; the rules it ports are checked here.
+        public static readonly SourceReference ScavengeChance = new(
+            "Scavenge chances at the reference Perception modifier", Scavenge, 38, 49,
+            "public const int ReferencePerceptionModifier = 0;", "public const int BaseDc = 6;",
+            "Math.Clamp(hardLookLevel * 10 + ReferencePerceptionModifier * 5, 0, 100);",
+            "Math.Clamp(21 - (dc - ReferencePerceptionModifier), 0, 20) / 20.0;");
+
         public static readonly SourceReference ScavengeAttempts = new(
-            "Scavenge second attempt", Scavenge, 53, 58,
-            "var attempts = 1;", "Random.D100(1) <= (hardLookLevel * 10 + GetAbilityModifier(AbilityType.Perception, user) * 5)", "attempts++;");
+            "Scavenge second attempt", Scavenge, 97, 99,
+            "var attempts = 1;", "random.D100() <= SecondAttemptChance(hardLookLevel)", "attempts++;");
 
         public static readonly SourceReference ScavengeRoll = new(
-            "Scavenge success roll and DC", Scavenge, 64, 104,
-            "var dc = 6;", "var roll = Random.D20(1);", "if (roll + GetAbilityModifier(AbilityType.Perception, user) >= dc)",
-            "var scavLevel = 10 * requiredLevel;", "xp = deltaXP;", "xp = deltaXP / 4;", "dc += Random.D3(1);");
+            "Scavenge success roll and DC", Scavenge, 101, 108,
+            "var dc = BaseDc;", "var roll = random.Next(1, 21);", "var success = roll + ReferencePerceptionModifier >= dc;",
+            "success ? deltaXp : deltaXp / 4", "dc += random.Next(1, 4);");
+
+        public static readonly SourceReference ScavengeXp = new(
+            "Scavenge XP level", ScavengeSite, 93, 93,
+            "Skill.GetDeltaXP(10 * requiredLevel - rank),");
 
         public static readonly SourceReference RefineryOres = new(
             "Ore tiers and XP per unit", Refinery, 35, 52,
@@ -168,7 +149,7 @@ namespace SWLOR.CraftSim.Legacy
             ActionRanks, MaxCp, MaxDurability, MaxProgress, MaxQuality, LevelChart, Progress, Quality, HandleAction, Actions,
             SessionReset, FailureLoss, EnhancementSlots, EnhancementKinds, EnhancementProgressPenalty, EnhancementTransfer,
             RecipeUnlockOffset, GearStats, HarvestNodeCount, HarvestXp,
-            ScavengeAttempts, ScavengeRoll, RefineryOres, RefineryBatch, RefineryCores, RefineryXp, FishingXp
+            ScavengeChance, ScavengeAttempts, ScavengeRoll, ScavengeXp, RefineryOres, RefineryBatch, RefineryCores, RefineryXp, FishingXp
         };
     }
 }

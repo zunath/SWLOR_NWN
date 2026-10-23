@@ -31,8 +31,8 @@ namespace SWLOR.CraftSim.Progression
         /// <summary>Seconds per harvester use: the harvest delay of today's harvests and of Quick Harvest (<c>ProspectingRules.HarvestSeconds</c>).</summary>
         public double SecondsPerHarvest { get; init; } = 5.0;
 
-        /// <summary>Seconds of search animation per scavenge attempt (ScavengePoint.cs).</summary>
-        public double SecondsPerScavengeAttempt { get; init; } = 2.0;
+        /// <summary>Seconds of the search animation a scavenge visit takes once it is open: the old code (and Quick Search, <c>SearchRules.QuickSearchSeconds</c>) played one 2 second animation for the whole visit, before its one or two attempts, so a second attempt adds no time.</summary>
+        public double ScavengeVisitSeconds { get; init; } = 2.0;
 
         /// <summary>Seconds one refining operation takes (RefineryViewModel.cs <c>RefiningDelaySeconds</c>).</summary>
         public double RefineSecondsPerBatch { get; init; } = 6.0;

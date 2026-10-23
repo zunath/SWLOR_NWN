@@ -21,13 +21,13 @@ public static class ForgeRules
     public const int HydroPressRank = 0;
 
     /// <summary>The Smithery rank that unlocks Vibro-Hone.</summary>
-    public const int VibroHoneRank = 5;
+    public const int VibroHoneRank = 0;
 
     /// <summary>The Smithery rank that unlocks Ramp Plasma.</summary>
-    public const int RampPlasmaRank = 10;
+    public const int RampPlasmaRank = 0;
 
     /// <summary>The Smithery rank that unlocks Rebond.</summary>
-    public const int RebondRank = 15;
+    public const int RebondRank = 10;
 
     /// <summary>The Smithery rank that unlocks Cryo-Quench.</summary>
     public const int CryoQuenchRank = 20;
@@ -40,46 +40,81 @@ public static class ForgeRules
     /// <summary>Each point of Craftsmanship adds this much to Shape gains, and each point of Control to Finish gains.</summary>
     public const double OutputPerGearPoint = 0.01;
 
-    public const int RampThermal = 25;
-    public const int RampCp = 8;
-    public const int RampIntegrity = 2;
+    public const int RampThermal = 22;
+    public const int RampIntegrity = 3;
 
-    public const int PressBaseShape = 130;
+    /// <summary>
+    /// Craft points are tight at every level: Ramp Plasma and Rebond cost more for a higher-level recipe, so a crafter at the recipe's
+    /// level can afford only a few of them, and the rank-25 CP passive and gear CP buy a few more rather than a free run of them.
+    /// </summary>
+    public const int RampCpBase = 3;
+    public const double RampCpPerLevel = 0.35;
+    public const int RebondCpBase = 6;
+    public const double RebondCpPerLevel = 0.4;
+
+    public const int PressBaseShape = 190;
     public const double PressRangeLowMultiplier = 0.70;
     public const double PressRangeHighMultiplier = 1.20;
     public const double PressAboveBonus = 0.40;
     public const int PressAboveSpan = 25;
-    public const double PressBelowMultiplier = 0.25;
-    public const int PressIntegrityInRange = 5;
-    public const int PressIntegrityBelowBase = 7;
+    public const double PressBelowMultiplier = 0.10;
+    public const int PressIntegrityInRange = 10;
+    public const int PressIntegrityBelowBase = 12;
     public const int PressIntegrityBelowStep = 4;
-    public const int PressIntegrityAboveBase = 10;
+    public const int PressIntegrityAboveBase = 20;
     public const int PressIntegrityAboveStep = 3;
 
-    public const int HoneBaseFinish = 105;
+    public const int HoneBaseFinish = 90;
     public const double HoneHotEdgeMultiplier = 0.60;
-    public const double HoneOutsideMultiplier = 0.35;
-    public const int HoneIntegrity = 4;
+    public const double HoneOutsideMultiplier = 0.10;
+    public const int HoneIntegrity = 8;
 
     public const int RebondIntegrity = 25;
     public const int RebondThermal = 12;
-    public const int RebondCp = 10;
 
-    public const int QuenchBaseFinish = 300;
-    public const double QuenchEdgeMultiplier = 0.50;
+    public const int QuenchBaseFinish = 600;
+    public const double QuenchEdgeMultiplier = 0.30;
     public const double QuenchOutsideMultiplier = 0.15;
-    public const int QuenchIntegrity = 4;
+    public const int QuenchIntegrity = 6;
 
     /// <summary>Cryo-Quench needs the piece at least this far shaped, as a percentage of the Shape meter.</summary>
     public const int QuenchMinimumShapePercent = 80;
 
     /// <summary>After a quench, Vibro-Hone gives these flat amounts whatever the Thermal: the set piece is trimmed to size.</summary>
-    public const int PostQuenchHoneFinish = 63;
-    public const int PostQuenchHoneShape = 55;
+    public const int PostQuenchHoneFinish = 84;
+    public const int PostQuenchHoneShape = 48;
+
+    // The factor on a Smithery craft's base XP, success and failure alike, per recipe-level band: the minimum that keeps every gear tier
+    // and every enhancement count at or above the old window's XP per hour in the CraftSim XP-rate gate (gate 6). The binding cases are
+    // enhanced crafts without gear, whose extra Shape the Forge turns into more actions than the old window needed (1-10 and 31-40).
+    // Starting values until client timing replaces the seconds per action.
+    public const double XpMultiplierLevels1To10 = 1.97;
+    public const double XpMultiplierLevels11To20 = 1.20;
+    public const double XpMultiplierLevels21To30 = 1.46;
+    public const double XpMultiplierLevels31To40 = 2.05;
+    public const double XpMultiplierLevels41Up = 1.09;
+
+    /// <summary>The multiplier on the base XP of a Smithery craft at a recipe level. A level of 0 or less takes the lowest band's.</summary>
+    public static double XpMultiplierForLevel(int recipeLevel) => recipeLevel switch
+    {
+        <= 10 => XpMultiplierLevels1To10,
+        <= 20 => XpMultiplierLevels11To20,
+        <= 30 => XpMultiplierLevels21To30,
+        <= 40 => XpMultiplierLevels31To40,
+        _ => XpMultiplierLevels41Up
+    };
 
     public const string StableContainmentId = "stable_containment";
     public const int StableContainmentChancePercent = 35;
     public const int StableContainmentBonusPercent = 50;
+
+    /// <summary>The CP Ramp Plasma costs for a recipe of the level.</summary>
+    public static int RampCp(int recipeLevel) =>
+        Math.Max(1, (int)Math.Round(RampCpBase + RampCpPerLevel * Math.Max(0, recipeLevel), MidpointRounding.AwayFromZero));
+
+    /// <summary>The CP Rebond costs for a recipe of the level.</summary>
+    public static int RebondCp(int recipeLevel) =>
+        Math.Max(1, (int)Math.Round(RebondCpBase + RebondCpPerLevel * Math.Max(0, recipeLevel), MidpointRounding.AwayFromZero));
 
     /// <summary>Craft points: gear CP plus 0.75 per rank, and the rank-25 passive.</summary>
     public static int MaxCp(int gearCp, int rank) =>

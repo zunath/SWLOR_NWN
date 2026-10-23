@@ -24,7 +24,6 @@ public class FabricatorWindowTests
 
         route.Window.Should().Be(GuiWindowType.CraftFabricator);
         route.Minigame.Should().Be(CraftMinigameType.Fabricator);
-        route.IsLegacy.Should().BeFalse();
         CraftMinigameRouting.GetRoute(SkillType.Smithery).Window.Should().NotBe(GuiWindowType.CraftFabricator);
         CraftMinigameRouting.GetRoute(SkillType.Engineering).Window.Should().NotBe(GuiWindowType.CraftFabricator);
         Enum.GetValues<GuiWindowType>().Count(window => window == GuiWindowType.CraftFabricator).Should().Be(1);

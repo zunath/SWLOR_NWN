@@ -28,7 +28,7 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.SmitheryRecipeDefinition
                 .Component("lth_flawed", 4)
                 .Component("fiberp_flawed", 2)
                 .Component("mb_shell", 1)
-                .ForgeParameters(rangeCenter: 37, rangeWidth: 55, coolingRate: 3, startingThermal: 49, shapeShare: 61);
+                .ForgeParameters(rangeCenter: 39, rangeWidth: 39, coolingRate: 6, startingThermal: 36, shapeShare: 70);
 
             // Shellward Wraps
             _builder.Create(RecipeType.ShellwardWraps, SkillType.Smithery)
@@ -41,7 +41,7 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.SmitheryRecipeDefinition
                 .Component("lth_flawed", 2)
                 .Component("fiberp_flawed", 1)
                 .Component("mb_shell", 1)
-                .ForgeParameters(rangeCenter: 40, rangeWidth: 55, coolingRate: 4, startingThermal: 53, shapeShare: 54);
+                .ForgeParameters(rangeCenter: 39, rangeWidth: 35, coolingRate: 7, startingThermal: 28, shapeShare: 62);
 
             // Shellward Treads
             _builder.Create(RecipeType.ShellwardTreads, SkillType.Smithery)
@@ -54,7 +54,7 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.SmitheryRecipeDefinition
                 .Component("lth_flawed", 2)
                 .Component("fiberp_flawed", 1)
                 .Component("mb_shell", 1)
-                .ForgeParameters(rangeCenter: 42, rangeWidth: 56, coolingRate: 3, startingThermal: 51, shapeShare: 59);
+                .ForgeParameters(rangeCenter: 39, rangeWidth: 37, coolingRate: 1, startingThermal: 49, shapeShare: 62);
 
             // Shellward Sash
             _builder.Create(RecipeType.ShellwardSash, SkillType.Smithery)
@@ -67,7 +67,7 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.SmitheryRecipeDefinition
                 .Component("lth_flawed", 2)
                 .Component("fiberp_flawed", 1)
                 .Component("mb_shell", 1)
-                .ForgeParameters(rangeCenter: 36, rangeWidth: 60, coolingRate: 2, startingThermal: 52, shapeShare: 51);
+                .ForgeParameters(rangeCenter: 39, rangeWidth: 35, coolingRate: 1, startingThermal: 42, shapeShare: 54);
 
             // Shellward Mantle
             _builder.Create(RecipeType.ShellwardMantle, SkillType.Smithery)
@@ -80,7 +80,7 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.SmitheryRecipeDefinition
                 .Component("lth_flawed", 2)
                 .Component("fiberp_flawed", 1)
                 .Component("mb_shell", 1)
-                .ForgeParameters(rangeCenter: 35, rangeWidth: 57, coolingRate: 2, startingThermal: 48, shapeShare: 51);
+                .ForgeParameters(rangeCenter: 39, rangeWidth: 39, coolingRate: 5, startingThermal: 30, shapeShare: 54);
 
             // Shellward Gorget
             _builder.Create(RecipeType.ShellwardGorget, SkillType.Smithery)
@@ -93,7 +93,7 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.SmitheryRecipeDefinition
                 .Component("lth_flawed", 2)
                 .Component("fiberp_flawed", 1)
                 .Component("mb_shell", 1)
-                .ForgeParameters(rangeCenter: 41, rangeWidth: 59, coolingRate: 4, startingThermal: 48, shapeShare: 44);
+                .ForgeParameters(rangeCenter: 39, rangeWidth: 40, coolingRate: 8, startingThermal: 29, shapeShare: 38);
 
             // Shellward Band
             _builder.Create(RecipeType.ShellwardBand, SkillType.Smithery)
@@ -106,7 +106,7 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.SmitheryRecipeDefinition
                 .Component("lth_flawed", 2)
                 .Component("fiberp_flawed", 1)
                 .Component("mb_shell", 1)
-                .ForgeParameters(rangeCenter: 40, rangeWidth: 58, coolingRate: 2, startingThermal: 54, shapeShare: 43);
+                .ForgeParameters(rangeCenter: 39, rangeWidth: 40, coolingRate: 7, startingThermal: 34, shapeShare: 38);
 
             // Shellward Guard
             _builder.Create(RecipeType.ShellwardGuard, SkillType.Smithery)
@@ -119,7 +119,7 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.SmitheryRecipeDefinition
                 .Component("lth_flawed", 2)
                 .Component("fiberp_flawed", 1)
                 .Component("mb_shell", 1)
-                .ForgeParameters(rangeCenter: 39, rangeWidth: 56, coolingRate: 3, startingThermal: 53, shapeShare: 53);
+                .ForgeParameters(rangeCenter: 39, rangeWidth: 39, coolingRate: 1, startingThermal: 37, shapeShare: 62);
 
             // Shellward Visor
             _builder.Create(RecipeType.ShellwardVisor, SkillType.Smithery)
@@ -132,7 +132,7 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.SmitheryRecipeDefinition
                 .Component("lth_flawed", 3)
                 .Component("fiberp_flawed", 2)
                 .Component("mb_shell", 1)
-                .ForgeParameters(rangeCenter: 39, rangeWidth: 58, coolingRate: 4, startingThermal: 49, shapeShare: 54);
+                .ForgeParameters(rangeCenter: 39, rangeWidth: 41, coolingRate: 7, startingThermal: 37, shapeShare: 62);
 
             // Shellward Charm
             _builder.Create(RecipeType.ShellwardCharm, SkillType.Smithery)
@@ -145,7 +145,7 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.SmitheryRecipeDefinition
                 .Component("lth_flawed", 2)
                 .Component("fiberp_flawed", 1)
                 .Component("mb_shell", 1)
-                .ForgeParameters(rangeCenter: 39, rangeWidth: 60, coolingRate: 2, startingThermal: 47, shapeShare: 47);
+                .ForgeParameters(rangeCenter: 39, rangeWidth: 38, coolingRate: 5, startingThermal: 45, shapeShare: 38);
         }
     }
 }

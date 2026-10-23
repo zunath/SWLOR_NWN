@@ -779,7 +779,7 @@ namespace SWLOR.Game.Server.Service
         {
             // Ground effects must be removed when entering space mode.
             // Otherwise players could buff on the ground, then get those same bonuses while in space.
-            StatusEffect.RemoveAllStatusEffects(player);
+            StatusEffect.RemoveAllStatusEffects(player, includeCraftingStyles: true);
             for (var effect = GetFirstEffect(player); GetIsEffectValid(effect); effect = GetNextEffect(player))
             {
                 RemoveEffect(player, effect);

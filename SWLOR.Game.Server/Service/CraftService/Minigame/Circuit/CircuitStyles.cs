@@ -2,6 +2,7 @@ using System.Collections.Generic;
 using System.Linq;
 using SWLOR.Game.Server.Feature.StatusEffectDefinition;
 using SWLOR.Game.Server.Service.PerkService;
+using SWLOR.Game.Server.Service.SkillService;
 using SWLOR.Game.Server.Service.StatService;
 
 namespace SWLOR.Game.Server.Service.CraftService.Minigame.Circuit;
@@ -9,11 +10,20 @@ namespace SWLOR.Game.Server.Service.CraftService.Minigame.Circuit;
 /// <summary>
 /// The crafter's Circuit styles: which they own, which is active and how the craft window switches between them. A style is a
 /// status effect that carries the style's stat adjustments, so at most one is active and the engine reads it like any other stat.
+/// The selection is also kept on the player record (<see cref="CraftingStyleSelection"/>), which applies the effect again after a
+/// death or a login.
 /// </summary>
 public static class CircuitStyles
 {
     /// <summary>Every style, in the order the window lists them.</summary>
     public static IReadOnlyList<CircuitStyle> All { get; } = new[] { CircuitStyle.Overclock, CircuitStyle.SafeMode };
+
+    /// <summary>The skill whose craft window offers these styles.</summary>
+    public const SkillType Skill = SkillType.Engineering;
+
+    /// <summary>The styles as <see cref="CraftingStyleSelection"/> knows them.</summary>
+    public static IReadOnlyList<CraftingStyleDefinition> Definitions =>
+        All.Select(style => new CraftingStyleDefinition(Skill, PerkOf(style), StatusEffectOf(style))).ToList();
 
     private static readonly IReadOnlyDictionary<CircuitStyle, IReadOnlyDictionary<StatType, int>> StyleStats =
         new Dictionary<CircuitStyle, IReadOnlyDictionary<StatType, int>>
@@ -75,7 +85,10 @@ public static class CircuitStyles
     public static CircuitStyle Active(uint player) =>
         All.FirstOrDefault(style => StatusEffect.HasEffect(StatusEffectOf(style), player));
 
-    /// <summary>Makes <paramref name="style"/> the only active style. A style the player does not own, or <see cref="CircuitStyle.None"/>, clears them all.</summary>
+    /// <summary>
+    /// Makes <paramref name="style"/> the only active style and records it as the crafter's selection. A style the player does not own,
+    /// or <see cref="CircuitStyle.None"/>, clears them all.
+    /// </summary>
     public static void Select(uint player, CircuitStyle style)
     {
         if (!IsOwned(player, style))
@@ -85,12 +98,18 @@ public static class CircuitStyles
 
         if (style != CircuitStyle.None && !StatusEffect.HasEffect(StatusEffectOf(style), player))
             StatusEffect.ApplyPermanentStatusEffect(StatusEffectOf(style), player, player);
+
+        CraftingStyleSelection.Record(player, Skill, PerkOf(style));
     }
 
-    /// <summary>Removes an active style the player no longer owns, such as after refunding its perk.</summary>
+    /// <summary>Removes an active style the player no longer owns, such as after refunding its perk, and forgets it as their selection.</summary>
     public static void RemoveUnowned(uint player)
     {
-        Remove(player, All.Where(style => !IsOwned(player, style)));
+        var unowned = All.Where(style => !IsOwned(player, style)).ToList();
+        Remove(player, unowned);
+
+        foreach (var style in unowned)
+            CraftingStyleSelection.ClearIfSelected(player, Skill, PerkOf(style));
     }
 
     private static void Remove(uint player, IEnumerable<CircuitStyle> styles)

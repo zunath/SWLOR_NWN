@@ -440,8 +440,12 @@ Research terminal; add that blueprint to the fixture copy of the GIT). Use the r
 Probe traps found on this work: NWScript `sin`/`cos` take degrees; a placeable's `GetFacing` is the direction of its model
 +Y axis, so local `(x, y)` maps to the world with a rotation of `GetFacing - 90`; `SetCameraFacing` pitch is measured from
 the vertical (about 12 for top-down, 35-40 for a three-quarter view); an interior area stays black beyond line of sight
-until `ExploreAreaForPlayer`; wait about 30 seconds before the first capture. Capture the old and the new model from the
-same camera, keep the native PNGs, and say that the in-game check with a real server is separate.
+until `ExploreAreaForPlayer`; wait about 30 seconds before the first capture. A frame that is black except for a round
+window around the player is not fog: it is the interior's wall or roof being cut open around the player because the camera
+sits behind a wall or above the roof. Use a pitch of about 30-40 and a camera yaw that looks over open floor (a
+three-quarter view from the side the station faces), and put wide stations (a research desk is 3.6 m) on open floor, since
+one placed against a wall is half hidden by it. Capture the old and the new model from the same camera, keep the native
+PNGs, and say that the in-game check with a real server is separate.
 
 ## Import a rigid, opaque GR2 blaster
 

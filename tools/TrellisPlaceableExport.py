@@ -19,6 +19,7 @@ Schema 1 assets (all paths relative to the manifest):
   walkmesh {prefix, inset, simplify, min_use_clearance, use_nodes [[x, y], ...]}: at most two use nodes, none keeps the
     engine's default approach;
   emission {threshold, softness, gain?, saturation_min?}: a glow map from the brightest base-color texels;
+  color_gain (0.25..3, default 1): linear-light brightness of the base color, applied after the glow map is taken;
   double_sided_policy: reject, closed_surface (exact closure, as weapons) or near_closed (outward-wound shells with at
     most max_defect_fraction open edges and max_opposed_fraction of the area wound against its normals);
   normal_basis_policy: reproject, or authored_tangents (mixed tangent handedness) with authored_angle_limit_degrees
@@ -294,6 +295,8 @@ def validate_item(item, manifest_dir, haks_names=None, inspect_only=False):
     for key in ('max_defect_fraction', 'max_opposed_fraction'):
         if not finite(item.get(key, 0)) or not 0 <= item.get(key, 0) <= .25:
             raise ValueError(f'{asset}: {key} must be 0..0.25')
+    if not finite(item.get('color_gain', 1)) or not .25 <= item.get('color_gain', 1) <= 3:
+        raise ValueError(f'{asset}: color_gain must be 0.25..3')
     if item.get('normal_basis_policy', 'reproject') not in ('reproject', 'authored_tangents'):
         raise ValueError(f'{asset}: unknown normal_basis_policy')
     if not finite(item.get('authored_angle_limit_degrees', .5)) or not .5 <= item.get('authored_angle_limit_degrees', .5) <= 2:
@@ -778,6 +781,14 @@ def snap_negative_z(np, pixels, tolerance=NEGATIVE_Z_TOLERANCE):
     return out, int(bad.sum())
 
 
+def apply_color_gain(weapon, base, gain):
+    """Scale the base color in linear light (after the glow map is taken from it), so a dark TRELLIS texture can be lifted to
+    read in the game's dim interiors without the washed-out look of an sRGB multiply."""
+    if gain == 1:
+        return base
+    return weapon.srgb(weapon.np.clip(weapon.linear(weapon.np.asarray(base)) * gain, 0, 1))
+
+
 def material_maps(weapon, item, doc, binary, index, source, cache, resources, name):
     """Same PBR conversion as the weapon exporter, with independent color/normal and scalar map sizes and an
     optional brightness-derived emissive map."""
@@ -817,6 +828,7 @@ def material_maps(weapon, item, doc, binary, index, source, cache, resources, na
         glow = np.clip(np.asarray(base) * mask[..., None] * emission.get('gain', 1), 0, 1)
         if float(mask.max()) > 0:
             maps[name + '_e'] = glow
+    maps[name] = apply_color_gain(weapon, maps[name], item.get('color_gain', 1))
     dims = {key: weapon.save_texture(resources / (key + '.tga'), value) for key, value in maps.items()}
     lines = ['renderhint NormalAndSpecMapped', 'texture0 ' + name, 'texture1 ' + name + '_n', 'texture2 ' + name + '_s',
              'texture3 ' + name + '_r']
@@ -986,7 +998,7 @@ def export_asset(weapon, item, repo, out, mode, helpers):
         for slot in sorted({t.material_index for t in ob.data.loop_triangles}):
             index = weapon.imported_material_index(ob.data.materials[slot], material_count)
             if index not in names:
-                name = material_texture_name(asset, texture, material_count, index)
+                name = material_texture_name(item['asset'], texture, material_count, index)
                 dims, maps = material_maps(weapon, item, doc, binary, index, source, cache, resources, name)
                 preview = weapon.preview_material(resources, name, maps)
                 # NWN draws single-sided: review renders must cull back faces or a flipped sheet looks fine in Blender

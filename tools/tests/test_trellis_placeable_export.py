@@ -178,6 +178,18 @@ class MaterialTests(unittest.TestCase):
         self.assertEqual(float(mask[0, 2]), 0.0)  # saturated but dark
         self.assertEqual(float(mask[0, 3]), 0.0)
 
+    @unittest.skipIf(np is None, 'numpy not installed')
+    def test_color_gain_scales_linear_light_and_clips(self):
+        from types import SimpleNamespace
+        weapon = SimpleNamespace(np=np, linear=lambda x: x ** 2.2, srgb=lambda x: x ** (1 / 2.2))
+        base = np.full((2, 2, 3), .5)
+        self.assertIs(exporter.apply_color_gain(weapon, base, 1), base)
+        brighter = exporter.apply_color_gain(weapon, base, 2)
+        self.assertTrue(np.allclose(brighter, (0.5 ** 2.2 * 2) ** (1 / 2.2)))
+        self.assertGreater(float(brighter.min()), .5)
+        self.assertTrue(np.allclose(exporter.apply_color_gain(weapon, np.ones((1, 1, 3)), 3), 1))
+        self.assertLess(float(exporter.apply_color_gain(weapon, base, .5).max()), .5)
+
     def test_snap_negative_z_raises_grazing_texels_onto_the_horizon(self):
         encoded = np.zeros((1, 2, 4), np.float32)
         encoded[0, 0, :3] = (0.5, 0.5, 1.0)
@@ -196,6 +208,28 @@ class MaterialTests(unittest.TestCase):
         encoded[0, 0, :3] = (0.5, 0.9, 0.3)
         with self.assertRaises(ValueError):
             exporter.snap_negative_z(np, encoded)
+
+
+class SourceTests(unittest.TestCase):
+    def test_no_function_reads_a_name_the_module_never_defines(self):
+        """Blender-only code paths are not run by these tests; a misspelled or out-of-scope name there fails at export time."""
+        import builtins
+        import symtable
+        source = (ROOT / 'tools/TrellisPlaceableExport.py').read_text(encoding='utf-8')
+        table = symtable.symtable(source, 'TrellisPlaceableExport.py', 'exec')
+        defined = {s.get_name() for s in table.get_symbols() if s.is_assigned() or s.is_imported() or s.is_namespace()}
+        missing = set()
+
+        def walk(scope):
+            for symbol in scope.get_symbols():
+                name = symbol.get_name()
+                if scope.get_type() == 'function' and symbol.is_global() and name not in defined and not hasattr(builtins, name):
+                    missing.add(f'{scope.get_name()}: {name}')
+            for child in scope.get_children():
+                walk(child)
+
+        walk(table)
+        self.assertEqual(missing - {'main: __file__'}, set())
 
 
 class ReorientTests(unittest.TestCase):
@@ -274,6 +308,12 @@ class ManifestTests(unittest.TestCase):
                          {'threshold': .8, 'softness': .1, 'saturation_min': float('nan')}, [1, 2]):
             with self.subTest(emission=emission), self.assertRaises(ValueError):
                 self.check(emission=emission)
+
+    def test_color_gain_must_be_a_sensible_number(self):
+        self.assertIn('color_gain', self.check(color_gain=1.6))
+        for gain in (0, .1, 3.5, float('nan'), '2'):
+            with self.subTest(gain=gain), self.assertRaises(ValueError):
+                self.check(color_gain=gain)
 
     def test_material_texture_names_keep_room_for_the_map_suffixes(self):
         self.assertEqual(exporter.material_texture_name('a', 'stn_forge', 1, 0), 'stn_forge')

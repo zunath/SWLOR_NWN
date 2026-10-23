@@ -7,6 +7,7 @@ namespace SWLOR.Game.Server.Service.ActivityService
         AbilityActivation = 2,
         Resting = 3,
         Quest = 4,
-        Fishing = 5
+        Fishing = 5,
+        Prospecting = 6
     }
 }

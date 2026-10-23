@@ -28,7 +28,7 @@ namespace SWLOR.CraftSim.Progression
         /// </summary>
         public double NodeTravelSeconds { get; init; } = 30.0;
 
-        /// <summary>Seconds per harvester use: the item's <c>Delay(5f)</c> (HarvesterItemDefinition.cs).</summary>
+        /// <summary>Seconds per harvester use: the harvest delay of today's harvests and of Quick Harvest (<c>ProspectingRules.HarvestSeconds</c>).</summary>
         public double SecondsPerHarvest { get; init; } = 5.0;
 
         /// <summary>Seconds of search animation per scavenge attempt (ScavengePoint.cs).</summary>

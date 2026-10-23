@@ -179,7 +179,7 @@ public sealed class FabricatorEngine : MinigameEngineBase<FabricatorState>
         var other = first ? firstOther : secondOther;
         var named = info with
         {
-            Name = $"Dual Feed ({main} + {other})",
+            Name = $"Dual Feed + {other}",
             Description = $"Builds the {main} and the {other} at once, each at {FabricatorRules.DualFeedPercent:0}% of a full Run. " +
                           $"Costs the CP of a Retool and one Run's wear, and the {head} stays loaded."
         };

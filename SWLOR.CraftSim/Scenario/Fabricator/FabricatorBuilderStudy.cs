@@ -178,29 +178,44 @@ namespace SWLOR.CraftSim.Scenario.Fabricator
 
         // ---- the styles' magnitudes -----------------------------------------------------------------------------------------
 
-        /// <summary>The Run bonus and Precision Pass penalty of Production Run; Fine Tolerance is the mirror, a Precision Pass bonus and a Run penalty of the same sizes.</summary>
-        private static readonly (int Up, int Down)[] StyleMagnitudes = { (25, -25), (40, -10), (50, -15), (60, -10), (100, -10) };
+        /// <summary>
+        /// A candidate pair of styles: Production Run's Run bonus and Precision Pass penalty, and Fine Tolerance's Precision Pass bonus and
+        /// Run penalty, in percent. A mirror gives Fine Tolerance the same sizes the other way round.
+        /// </summary>
+        private sealed record StyleCandidate(string Name, int RunUp, int PrecisionDown, int PrecisionUp, int RunDown)
+        {
+            public static StyleCandidate Mirror(int up, int down, string note = "") =>
+                new($"Mirror +{up}% / {down}%{note}", up, down, up, down);
+        }
+
+        private static readonly StyleCandidate[] StyleCandidates =
+        {
+            StyleCandidate.Mirror(25, -25, " (approved)"),
+            StyleCandidate.Mirror(40, -10),
+            StyleCandidate.Mirror(50, -15),
+            StyleCandidate.Mirror(60, -10),
+            new("Production Run +60% / -10%, Fine Tolerance +25% / -25%", 60, -10, 25, -25)
+        };
 
         private static void AppendStyleMagnitudes(StringBuilder text, ScenarioRun run)
         {
             var bands = run.Bands.Where(band => band.Band.First >= 21).ToList();
             var recipes = bands.SelectMany(band => band.Recipes).ToList();
             CraftStyle unperked = null;
-            var pairs = StyleMagnitudes.Select(m => (
-                m.Up,
-                m.Down,
-                Production: new CraftStyle($"Production Run {m.Up}/{m.Down}", new FabricatorPerkStats(RunPowerPercent: m.Up, PrecisionPowerPercent: m.Down)),
-                Fine: new CraftStyle($"Fine Tolerance {m.Up}/{m.Down}", new FabricatorPerkStats(RunPowerPercent: m.Down, PrecisionPowerPercent: m.Up)))).ToList();
+            var pairs = StyleCandidates.Select(candidate => (
+                candidate.Name,
+                Production: new CraftStyle($"Production Run {candidate.Name}", new FabricatorPerkStats(RunPowerPercent: candidate.RunUp, PrecisionPowerPercent: candidate.PrecisionDown)),
+                Fine: new CraftStyle($"Fine Tolerance {candidate.Name}", new FabricatorPerkStats(RunPowerPercent: candidate.RunDown, PrecisionPowerPercent: candidate.PrecisionUp)))).ToList();
 
             Prepare(run, recipes, run.RankFor, pairs.SelectMany(pair => new[] { pair.Production, pair.Fine }).Append(unperked));
 
             text.AppendLine("## The styles' magnitudes");
             text.AppendLine();
-            text.AppendLine("Each pair gives Production Run a Run bonus and a Precision Pass penalty and Fine Tolerance the mirror (a Precision Pass bonus and a Run penalty of the same sizes), the style alone, at-level crafts of levels 21 to 53 (the rank equal to the level). The first pair is the approved 25/-25; the others are what a retune could try. \"Actions\" is the change against the unperked crafter at the same gear; a negative change is a shorter craft. Gate 2 reads quality only, which every pair keeps near the maximum, so the actions columns are where the styles differ.");
+            text.AppendLine("Each candidate gives Production Run a Run bonus and a Precision Pass penalty, and Fine Tolerance a Precision Pass bonus and a Run penalty (a mirror uses the same sizes both ways), the style alone, at-level crafts of levels 21 to 53 (the rank equal to the level). The first is the approved pair; the others are what a retune could try. \"Actions\" is the change against the unperked crafter at the same gear; a negative change is a shorter craft. Gate 2 reads quality only, which every candidate keeps near the maximum, so the actions columns are where the styles differ.");
             text.AppendLine();
 
             var table = new MarkdownTable(
-                "Run up / Precision down", "Gear", "Production Run quality", "Production Run actions", "Fine Tolerance quality", "Fine Tolerance actions", "Fine Tolerance - Production Run actions");
+                "Candidate", "Gear", "Production Run quality", "Production Run actions", "Fine Tolerance quality", "Fine Tolerance actions", "Fine Tolerance - Production Run actions");
             for (var gearIndex = 0; gearIndex < run.Gear.Count; gearIndex++)
             {
                 var baseline = Summarize(run, recipes, run.RankFor, gearIndex, unperked);
@@ -209,7 +224,7 @@ namespace SWLOR.CraftSim.Scenario.Fabricator
                     var production = Summarize(run, recipes, run.RankFor, gearIndex, pair.Production);
                     var fine = Summarize(run, recipes, run.RankFor, gearIndex, pair.Fine);
                     table.Add(
-                        $"+{pair.Up}% / {pair.Down}%" + (pair.Up == 25 ? " (approved)" : string.Empty), run.Gear[gearIndex].Name,
+                        pair.Name, run.Gear[gearIndex].Name,
                         Number(production.Quality), SignedNumber(production.Actions - baseline.Actions),
                         Number(fine.Quality), SignedNumber(fine.Actions - baseline.Actions), SignedNumber(fine.Actions - production.Actions));
                 }

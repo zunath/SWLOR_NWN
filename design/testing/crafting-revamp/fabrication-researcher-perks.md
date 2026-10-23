@@ -1,0 +1,110 @@
+# Crafting revamp: the Fabrication Researcher line
+
+Command: `SWLOR.CraftSim researcher-perks --runs 400 --seed 1 --out design/testing/crafting-revamp/fabrication-researcher-perks.md`
+
+## Inputs
+
+- Seed 1; 400 experiments per case and build, every build on the same dice (the build is left out of each experiment's stream), so a difference between two builds is theirs and not the luck of two samples.
+- Every build takes its numbers from the perk definitions (`FabricationResearcherPerkDefinition`) at the researcher's rank; a perk with two ranks gives the highest rank that rank allows. Base values (`ExperimentRules`): 6 trials, Test chance 60% plus up to 15 points for rank, Refine Method 15 points for 30 CP, Analyze 5% per piece of spare evidence up to 25%, Peer Review 25 CP.
+- Gear: no gear = 0 CP; mid gear = 26 CP; best gear = 37 CP. CP is gear CP plus 0.75 per rank.
+- Cases: research level 1 stands for the fixed levels and licensed-run rolls (every Test banks evidence and the last trial Analyzes it); level 3 stands for the levels where evidence decides between a credit and a time reduction. Researchers at ranks 20, 30, 40 and 50 research the tier their rank opens, at that tier's first rank, and rank 50 also researches tiers 1 and 3 (up to 15 more points of Test chance).
+- Focused player: refines before every Test it can afford, puts every Test on one reduction (credit), Analyzes with the last trial at a fixed level, and with Breakthrough spends it first. Undecided player (Peer Review only): tests both reductions for half the trials, then backs the leader and, with Peer Review, pools the evidence behind it into the leader, keeping the CP it costs back from Refine Method.
+- Score (0-100): where evidence decides, the reduction won as a share of today's largest (10%), a run with no evidence counting 0; at a fixed level, the time cut as a share of the cap (25%). Style balance uses the style-balance gate's thresholds: each style the better choice on at least 30% of cases, a mean gap of at most 5 points, ties within 0.5 point count half.
+
+## Style balance: Methodical against Intuitive
+
+The generic gates have no scoring rule for an experiment (it has no quality meter), so this applies gate 2's thresholds to the score above, over every case. "Alone" owns the style and nothing else; "full line" owns every other purchase the rank allows too. The length columns show what each style costs in turns, which the score does not count.
+
+| Pair | Level kind | Gear | Cases | Methodical better | Intuitive better | Mean score gap (Methodical - Intuitive) | Methodical mean actions | Intuitive mean actions | Verdict |
+| --- | --- | --- | --- | --- | --- | --- | --- | --- | --- |
+| Methodical vs Intuitive | Fixed levels (time cut) | no gear | 6 | 100% | 0% | +7.7 | 8.7 | 5.3 | Failed |
+| Methodical vs Intuitive | Fixed levels (time cut) | mid gear | 6 | 100% | 0% | +7.2 | 9.5 | 5.8 | Failed |
+| Methodical vs Intuitive | Fixed levels (time cut) | best gear | 6 | 100% | 0% | +7.0 | 9.7 | 6.0 | Failed |
+| Methodical vs Intuitive | Evidence decides (reduction) | no gear | 6 | 75% | 25% | +3.0 | 8.7 | 5.3 | Failed |
+| Methodical vs Intuitive | Evidence decides (reduction) | mid gear | 6 | 50% | 50% | +3.2 | 9.5 | 5.8 | Passed |
+| Methodical vs Intuitive | Evidence decides (reduction) | best gear | 6 | 75% | 25% | +3.6 | 9.7 | 6.0 | Failed |
+| Methodical (full line) vs Intuitive (full line) | Fixed levels (time cut) | no gear | 6 | 25% | 75% | -1.7 | 10.2 | 6.8 | Failed |
+| Methodical (full line) vs Intuitive (full line) | Fixed levels (time cut) | mid gear | 6 | 25% | 75% | -1.5 | 11.2 | 7.5 | Failed |
+| Methodical (full line) vs Intuitive (full line) | Fixed levels (time cut) | best gear | 6 | 25% | 75% | -1.4 | 11.5 | 7.8 | Failed |
+| Methodical (full line) vs Intuitive (full line) | Evidence decides (reduction) | no gear | 6 | 33% | 67% | -2.5 | 10.2 | 6.8 | Passed |
+| Methodical (full line) vs Intuitive (full line) | Evidence decides (reduction) | mid gear | 6 | 33% | 67% | -2.3 | 11.2 | 7.5 | Passed |
+| Methodical (full line) vs Intuitive (full line) | Evidence decides (reduction) | best gear | 6 | 33% | 67% | -1.7 | 11.5 | 7.8 | Passed |
+
+Verdict: out of balance in 8 of 24 comparison(s): Methodical vs Intuitive / Fixed levels (time cut) / no gear; Methodical vs Intuitive / Fixed levels (time cut) / mid gear; Methodical vs Intuitive / Fixed levels (time cut) / best gear; Methodical vs Intuitive / Evidence decides (reduction) / no gear; Methodical vs Intuitive / Evidence decides (reduction) / best gear; Methodical (full line) vs Intuitive (full line) / Fixed levels (time cut) / no gear; Methodical (full line) vs Intuitive (full line) / Fixed levels (time cut) / mid gear; Methodical (full line) vs Intuitive (full line) / Fixed levels (time cut) / best gear.
+
+## The styles' magnitudes
+
+Each row pairs a Methodical and an Intuitive candidate, the styles alone, over the same 36 cases as the table above (two level kinds, three gear levels, six rank and tier combinations). The first row is the approved pair. "Failed" counts the six comparisons (two level kinds by three gear levels) that miss gate 2's thresholds; the gaps are the mean score gap over all cases of the level kind (positive favors Methodical).
+
+| Methodical | Intuitive | Failed of 6 | Fixed levels: mean gap | Evidence decides: mean gap | Methodical mean actions | Intuitive mean actions |
+| --- | --- | --- | --- | --- | --- | --- |
+| Methodical +2 trials, -10 points (approved) | Intuitive -1 trial, +20 points (approved) | 5 | +7.3 | +3.3 | 9.3 | 5.7 |
+| Methodical +2 trials, -10 points (approved) | Intuitive -1 trial, +15 points | 6 | +10.8 | +7.0 | 9.3 | 6.3 |
+| Methodical +2 trials, -10 points (approved) | Intuitive -1 trial, +25 points | 3 | +5.5 | +1.1 | 9.3 | 5.7 |
+| Methodical +2 trials, -10 points (approved) | Intuitive -2 trials, +30 points | 6 | +21.9 | +15.1 | 9.3 | 4.7 |
+| Methodical +2 trials, -15 points | Intuitive -1 trial, +20 points (approved) | 0 | +1.6 | -2.7 | 9.3 | 5.7 |
+| Methodical +2 trials, -15 points | Intuitive -1 trial, +15 points | 3 | +5.1 | +1.0 | 9.3 | 6.3 |
+| Methodical +2 trials, -15 points | Intuitive -1 trial, +25 points | 2 | -0.2 | -4.9 | 9.3 | 5.7 |
+| Methodical +2 trials, -15 points | Intuitive -2 trials, +30 points | 6 | +16.2 | +9.2 | 9.3 | 4.7 |
+| Methodical +2 trials, -5 points | Intuitive -1 trial, +20 points (approved) | 6 | +12.4 | +9.0 | 9.3 | 5.7 |
+| Methodical +2 trials, -5 points | Intuitive -1 trial, +15 points | 6 | +15.9 | +12.8 | 9.3 | 6.3 |
+| Methodical +2 trials, -5 points | Intuitive -1 trial, +25 points | 6 | +10.6 | +6.9 | 9.3 | 5.7 |
+| Methodical +2 trials, -5 points | Intuitive -2 trials, +30 points | 6 | +27.0 | +20.9 | 9.3 | 4.7 |
+| Methodical +3 trials, -10 points | Intuitive -1 trial, +20 points (approved) | 6 | +14.1 | +10.1 | 10.3 | 5.7 |
+| Methodical +3 trials, -10 points | Intuitive -1 trial, +15 points | 6 | +17.5 | +13.8 | 10.3 | 6.3 |
+| Methodical +3 trials, -10 points | Intuitive -1 trial, +25 points | 6 | +12.3 | +7.9 | 10.3 | 5.7 |
+| Methodical +3 trials, -10 points | Intuitive -2 trials, +30 points | 6 | +28.6 | +21.9 | 10.3 | 4.7 |
+
+## Each purchase alone, and the whole line (rank 50, tier 5, mid gear)
+
+Each row is a rank-50 researcher who owns the one perk named (at its highest rank), or the whole line with that style, against the unperked researcher on the same dice. "Reaches the maximum" is the share of experiments whose reduction reached today's largest; "Reaches the cap" the share that cut the full 25% of the job.
+
+| Build | Trials | Test chance | Reductions: mean actions | Mean reduction size | No evidence | Reaches the maximum | Fixed: mean actions | Mean time cut | Reaches the cap |
+| --- | --- | --- | --- | --- | --- | --- | --- | --- | --- |
+| Unperked | 6 | 60% | 8.0 | 6.12% | 0.5% | 7% | 8.0 | 16.1% | 12% |
+| Field Notes | 6 | 66% | 8.0 | 6.74% | 0.5% | 13% | 8.0 | 17.6% | 18% |
+| Steady Hands | 6 | 60% | 8.0 | 6.12% | 0.5% | 7% | 8.0 | 16.1% | 12% |
+| Broader Hypotheses | 7 | 60% | 9.0 | 7.07% | 0.2% | 21% | 9.0 | 18.6% | 29% |
+| Methodical | 8 | 50% | 10.0 | 6.81% | 0.0% | 19% | 10.0 | 18.0% | 26% |
+| Intuitive | 5 | 80% | 7.0 | 6.88% | 0.0% | 0% | 7.0 | 17.3% | 0% |
+| Peer Review | 6 | 60% | 8.0 | 6.12% | 0.5% | 7% | 8.0 | 16.1% | 12% |
+| Efficient Analysis | 6 | 60% | 8.0 | 6.12% | 0.5% | 7% | 8.0 | 20.4% | 42% |
+| Second Opinion | 6 | 60% | 8.0 | 6.30% | 0.5% | 8% | 8.0 | 16.6% | 14% |
+| Breakthrough | 6 | 60% | 9.0 | 6.80% | 0.0% | 13% | 9.0 | 24.3% | 88% |
+| Methodical (full line) | 9 | 56% | 12.0 | 9.01% | 0.0% | 65% | 12.0 | 25.0% | 100% |
+| Intuitive (full line) | 6 | 86% | 9.0 | 9.09% | 0.0% | 61% | 9.0 | 25.0% | 100% |
+
+## Peer Review for a player who has not decided
+
+The focused player never has evidence behind the leader, so Peer Review has nothing to move for them. A player who tests both reductions first and then backs the leader does: Peer Review pools the evidence behind the leader into it. Rank 50, tier 5, where evidence decides. The perk costs 25 CP, so it competes with Refine Method for CP: a no-gear researcher has 37 CP and cannot afford both.
+
+| Build | Gear | Mean actions | Mean reduction size | No evidence | Reaches the maximum |
+| --- | --- | --- | --- | --- | --- |
+| Unperked | no gear | 7.0 | 5.04% | 0.0% | 0% |
+| Peer Review | no gear | 6.5 | 5.71% | 0.2% | 5% |
+| Unperked | mid gear | 8.0 | 4.99% | 0.5% | 0% |
+| Peer Review | mid gear | 7.6 | 5.88% | 0.5% | 6% |
+| Unperked | best gear | 8.0 | 5.02% | 0.2% | 0% |
+| Peer Review | best gear | 7.6 | 5.92% | 0.8% | 8% |
+
+## Fabrication XP per real hour with the line
+
+Rows follow the research report: the researcher is at the tier's first rank and researches the highest-level recipe of the tier, in mid gear, every job slot kept busy, and research level 1 (the highest-paying level: the job length grows with the square of the level while the XP grows by 10% per level). The experiment's XP is the share of its trials used, so a researcher with more trials who plays them all earns the same XP: perks reach research XP only through the job's length, which the time cut shortens by at most 25% whatever the perks, and through the active time per job, which only matters when it exceeds the job's length. "At the cap" recomputes the row with the full 25% cut and the shortest experiment, the most any build can reach.
+
+| Rank | Tier | Recipe level | Jobs | Unperked XP per hour | Methodical (full line) | Intuitive (full line) | Most any build can reach (the cap) | At-level Fabricator crafting XP per hour (0% quality) | Most / crafting |
+| --- | --- | --- | --- | --- | --- | --- | --- | --- | --- |
+| 10 | 1 | 9 | 1 | 15891 | 16072 | 16072 | 17808 | 43200 | 41% |
+| 20 | 2 | 19 | 1 | 3457 | 3675 | 3704 | 3880 | 26100 | 15% |
+| 30 | 3 | 29 | 2 | 2825 | 3057 | 3104 | 3177 | 22500 | 14% |
+| 40 | 4 | 39 | 2 | 1511 | 1658 | 1666 | 1687 | 19800 | 9% |
+| 50 | 5 | 52 | 3 | 2308 | 2581 | 2582 | 2582 | 18000 | 14% |
+
+The highest unperked row is 15891 XP per hour; the highest with the line is 16072 (1.011x), and no build can exceed 17808 (1.12x the unperked peak) because the time cut's cap does not move. The crafting column is a Fabricator craft of 15 actions (the middle of the 10-20 target) at 8.0 s each with the Fabricator's XP multiplier for the rank's level band (`CraftMinigameXp`), no blueprint, not a first craft, at 0% quality, the lowest crafting rate; chart XP at level is 600.
+
+## Limitations
+
+- The focused and undecided players are stated strategies, not searches for the best play. A real player who mixes reductions or skips Refine Method lands between the rows.
+- Seconds per action and the per-job overhead are estimates; the client evidence replaces them. XP per hour scales directly with them.
+- The score weighs a reduction's size and a time cut against their maximums; it does not value a time cut against a credit or time reduction, or a shorter sitting against a longer one. Each Methodical turn is about six seconds, so a style's length costs far less than a shortened job saves.
+- The recipe cost modifier (0.2 on some food) and blueprint time reductions are not modeled, as in the research report.
+- No client run: the window is untested in the client.

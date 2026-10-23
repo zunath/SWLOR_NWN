@@ -342,16 +342,22 @@ public class FabricatorPerkTests
         var engine = PerkedEngine(DualFeed);
         engine.ActiveHead.Should().Be(FabricatorHead.Bonder);
 
-        engine.Preview(FabricatorActionIds.DualFeedFirst).Action.Name.Should().Be("Dual Feed (Fittings + Frame)");
-        engine.Preview(FabricatorActionIds.DualFeedSecond).Action.Name.Should().Be("Dual Feed (Fittings + Shell)");
+        // The button names the other sub-assembly; the loaded head's own is always part of it, and the description says so.
+        engine.Preview(FabricatorActionIds.DualFeedFirst).Action.Name.Should().Be("Dual Feed + Frame");
+        engine.Preview(FabricatorActionIds.DualFeedSecond).Action.Name.Should().Be("Dual Feed + Shell");
+        engine.Preview(FabricatorActionIds.DualFeedFirst).Action.Description.Should().Contain("Builds the Fittings and the Frame");
 
         engine.Perform(FabricatorActionIds.RetoolExtruder).Performed.Should().BeTrue();
-        engine.Preview(FabricatorActionIds.DualFeedFirst).Action.Name.Should().Be("Dual Feed (Shell + Frame)");
-        engine.Preview(FabricatorActionIds.DualFeedSecond).Action.Name.Should().Be("Dual Feed (Shell + Fittings)");
+        engine.Preview(FabricatorActionIds.DualFeedFirst).Action.Name.Should().Be("Dual Feed + Frame");
+        engine.Preview(FabricatorActionIds.DualFeedSecond).Action.Name.Should().Be("Dual Feed + Fittings");
+        engine.Preview(FabricatorActionIds.DualFeedSecond).Action.Description.Should().Contain("Builds the Shell and the Fittings");
 
         engine.Perform(FabricatorActionIds.RetoolCutter).Performed.Should().BeTrue();
-        engine.Preview(FabricatorActionIds.DualFeedFirst).Action.Name.Should().Be("Dual Feed (Frame + Shell)");
-        engine.Preview(FabricatorActionIds.DualFeedSecond).Action.Name.Should().Be("Dual Feed (Frame + Fittings)");
+        engine.Preview(FabricatorActionIds.DualFeedFirst).Action.Name.Should().Be("Dual Feed + Shell");
+        engine.Preview(FabricatorActionIds.DualFeedSecond).Action.Name.Should().Be("Dual Feed + Fittings");
+
+        FabricatorActionText.ButtonText(engine.Preview(FabricatorActionIds.DualFeedFirst)).Should().Be($"Dual Feed + Shell ({engine.Setup.RetoolCp} CP)")
+            .And.HaveLength(24, "as long as Retool (Extruder) with its CP, which the button holds");
     }
 
     [Test]

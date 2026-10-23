@@ -596,16 +596,16 @@ Every character gets SP back for each perk this rework removes or changes, plus 
 
 ### Stations
 
-The seven stations get new models made with the Trellis2 workflow. They are replaced in place: resrefs, tags, scripts and StructureTypes stay the same, so no placed station in the module or in player properties moves or breaks.
+The seven stations get new models made with the Trellis2 workflow. They are replaced in place: resrefs, tags, scripts and StructureTypes stay the same, so no placed station in the module or in player properties moves or breaks. Stations use a retro-futuristic Star Wars "used future" look (light grey and off-white panelling with small red or yellow accents, dense greebles, light wear, small inset screens, physical controls), not sleek modern designs and not rusty or military-green ones.
 
 | Station | New look |
 | --- | --- |
 | Smithery | Plasma forge |
-| Engineering | Engineering workbench |
-| Fabrication | Industrial fabricator with three heads |
-| Cooking | Galley station |
-| Espionage | Espionage bench |
-| Research | Research terminal |
+| Engineering | Droid and electronics workbench: grey and off-white panelled bench with a wiring back panel, dials, inset green readouts, droid parts and a circuit board on the work surface |
+| Fabrication | Enclosed industrial fabricator, about 1.8 m tall, grey with a yellow stripe: an open bay of tool heads and pistons over a work bed, vents and a control box |
+| Cooking | Starship galley unit: dark and mid grey cabinet with two round heating plates and a grill, a vent hood, pipe runs, rows of buttons, a small inset readout and storage doors |
+| Espionage | Covert chemistry bench: mid grey cabinet with a rail of vials and canisters, a gauge, push buttons and indicator lamps |
+| Research | Rebel-base analysis console: slanted grey and off-white console with an inset green screen, buttons, toggles, dials and a sample drawer |
 | Gathering | Refinery |
 
 - **Adapting Trellis2.** The documented workflow (`Readmes/BlasterModelImport.md`, `tools/workflows/trellis2_*.json`, `tools/Trellis*.py`) covers weapons and shields. Adapting it to placeables is part of this work: an image-to-GLB workflow, Blender export to MDL, walkmesh, textures and placeables.2da.

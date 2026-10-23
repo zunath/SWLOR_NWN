@@ -1,0 +1,149 @@
+using FluentAssertions;
+using NUnit.Framework;
+using SWLOR.CraftSim.Data;
+using SWLOR.CraftSim.Play;
+using SWLOR.CraftSim.Rng;
+using SWLOR.CraftSim.Scenario.Experiment;
+using SWLOR.Game.Server.Service.CraftService.Minigame;
+using SWLOR.Game.Server.Service.CraftService.Minigame.Experiment;
+using SWLOR.Game.Server.Service.CraftService.Research;
+using SWLOR.Game.Server.Service.PerkService;
+using SWLOR.Game.Server.Service.SkillService;
+
+namespace SWLOR.CraftSim.Tests.Scenario
+{
+    [TestFixture]
+    public class ResearcherPerkTests
+    {
+        private static readonly GearLevel Mid = GearLevel.Fixed("mid gear", SkillType.Fabrication, 13, 12, 26);
+
+        [Test]
+        public void ABuildTakesItsNumbersFromThePerkDefinitionsAtTheRankItIsPlayedAt()
+        {
+            ResearcherBuild.Unperked.TuningAt(50).Should().Be(ExperimentTuning.Default);
+            ResearcherBuild.MethodicalAlone.TuningAt(19).Should().Be(ExperimentTuning.Default, "the style opens at Fabrication 20");
+            ResearcherBuild.MethodicalAlone.TuningAt(20).Should().Be(ExperimentTuning.Default with { Trials = 8, TestChanceBonusPercent = -10 });
+            ResearcherBuild.IntuitiveAlone.TuningAt(50).Should().Be(ExperimentTuning.Default with { Trials = 5, TestChanceBonusPercent = 20 });
+            ResearcherBuild.MethodicalLine.TuningAt(50).Should().Be(new ExperimentTuning(9, -4, 20, 25, 7, 25, true, true));
+            ResearcherBuild.IntuitiveLine.TuningAt(50).Should().Be(new ExperimentTuning(6, 26, 20, 25, 7, 25, true, true));
+            ResearcherBuild.Alone(PerkType.FieldNotes).TuningAt(39).TestChanceBonusPercent.Should().Be(3);
+            ResearcherBuild.Alone(PerkType.FieldNotes).TuningAt(40).TestChanceBonusPercent.Should().Be(6);
+            ResearcherBuild.AllPerks.Should().HaveCount(9);
+        }
+
+        [Test]
+        public void AFullLineOwnsOneStyleOnly()
+        {
+            ResearcherBuild.MethodicalLine.Perks.Should().Contain(PerkType.Methodical).And.NotContain(PerkType.Intuitive);
+            ResearcherBuild.IntuitiveLine.Perks.Should().Contain(PerkType.Intuitive).And.NotContain(PerkType.Methodical);
+            ResearcherBuild.MethodicalLine.Perks.Should().HaveCount(ResearcherBuild.AllPerks.Count - 1);
+        }
+
+        [Test]
+        public void TheFocusedPerkedPolicySpendsBreakthroughFirst_ThenRefinesAndTests()
+        {
+            var setup = new ExperimentSetup(3, 50, 50, 200, false, ExperimentTuning.Default with { Breakthrough = true });
+            var engine = new ExperimentEngine(new SeededMinigameRandom(1), setup);
+            var policy = new ExperimentPerkedPolicy(ResearchCandidate.CreditReduction);
+
+            policy.Choose(engine).Should().Be(ExperimentActionIds.Breakthrough);
+            engine.Perform(ExperimentActionIds.Breakthrough);
+            policy.Choose(engine).Should().Be(ExperimentActionIds.TestCreditReduction, "Refine Method is unavailable while Breakthrough waits");
+            engine.Perform(ExperimentActionIds.TestCreditReduction);
+            policy.Choose(engine).Should().Be(ExperimentActionIds.RefineMethod);
+        }
+
+        [Test]
+        public void TheUndecidedPolicyTestsBothThenBacksTheLeaderAndPoolsWithPeerReview()
+        {
+            var tuning = ExperimentTuning.Default with { PeerReview = true };
+            var setup = new ExperimentSetup(3, 50, 50, 0, false, tuning);
+            var engine = new ExperimentEngine(new ScriptedRandom(1), setup);
+            var policy = new ExperimentPerkedPolicy(ResearchCandidate.CreditReduction, spread: true);
+
+            var chosen = new List<string>();
+            while (engine.Status == MinigameStatus.InProgress)
+            {
+                var action = policy.Choose(engine);
+                chosen.Add(action);
+                engine.Perform(action).Performed.Should().BeTrue(action);
+            }
+
+            chosen.Take(3).Should().Equal(
+                ExperimentActionIds.TestCreditReduction, ExperimentActionIds.TestTimeReduction, ExperimentActionIds.TestCreditReduction);
+            chosen.Should().Contain(ExperimentActionIds.PeerReviewTimeToCredit, "the evidence behind the leader is pooled into it");
+        }
+
+        [Test]
+        public void AnUndecidedPlayerWithPeerReviewKeepsItsCpBackFromRefineMethod()
+        {
+            // 62 CP: one Refine Method (30) would leave 32, which pays for Peer Review (25); a second would not.
+            var tuning = ExperimentTuning.Default with { PeerReview = true };
+            var engine = new ExperimentEngine(new ScriptedRandom(1), new ExperimentSetup(3, 50, 50, 62 - 37, false, tuning));
+            var policy = new ExperimentPerkedPolicy(ResearchCandidate.CreditReduction, spread: true);
+
+            engine.Meters.Cp.Max.Should().Be(62);
+            policy.Choose(engine).Should().Be(ExperimentActionIds.RefineMethod);
+            engine.Perform(ExperimentActionIds.RefineMethod);
+            engine.Perform(ExperimentActionIds.TestCreditReduction);
+            policy.Choose(engine).Should().NotBe(ExperimentActionIds.RefineMethod, "32 CP less 30 would leave too little for Peer Review");
+        }
+
+        [Test]
+        public void ASampleIsRepeatableFromItsSeed_AndTheBuildIsLeftOutOfTheDice()
+        {
+            var experimentCase = new ExperimentCase(3, 5, 50, Mid);
+
+            var a = ResearcherPerkStudy.Play(experimentCase, ExperimentTuning.Default, _ => new ExperimentPerkedPolicy(ResearchCandidate.CreditReduction), 50, 3);
+            var b = ResearcherPerkStudy.Play(experimentCase, ExperimentTuning.Default, _ => new ExperimentPerkedPolicy(ResearchCandidate.CreditReduction), 50, 3);
+            var other = ResearcherPerkStudy.Play(experimentCase, ExperimentTuning.Default, _ => new ExperimentPerkedPolicy(ResearchCandidate.CreditReduction), 50, 4);
+
+            b.Should().Be(a);
+            other.Should().NotBe(a);
+            a.Trials.Should().Be(6);
+        }
+
+        [Test]
+        public void TheScoreIsTheShareOfTheMaximumTheExperimentIsFor()
+        {
+            var fixedCase = new ExperimentCase(1, 1, 10, Mid);
+            var contested = new ExperimentCase(3, 1, 10, Mid);
+            var sample = new ResearcherPerkStudy.Sample(7, 6, 6, 12.5, 5, 0.1, 0.1, 0);
+
+            ResearcherPerkStudy.Score(fixedCase, sample).Should().BeApproximately(50, 1e-9, "12.5 of the 25% cap");
+            ResearcherPerkStudy.Score(contested, sample).Should().BeApproximately(50, 1e-9, "5 of today's 10%");
+        }
+
+        [Test]
+        public void TheReportHasEverySectionAndIsRepeatable()
+        {
+            var options = new ResearcherPerkStudyOptions { Runs = 4, Seed = 1, Gear = new[] { GearLevel.None(SkillType.Fabrication), Mid } };
+
+            var report = ResearcherPerkStudy.Build(options, "test");
+
+            report.Should().Contain("## Style balance: Methodical against Intuitive");
+            report.Should().Contain("## The styles' magnitudes");
+            report.Should().Contain("## Each purchase alone, and the whole line");
+            report.Should().Contain("## Peer Review for a player who has not decided");
+            report.Should().Contain("## Fabrication XP per real hour with the line");
+            report.Should().Contain("Methodical +2 trials, -10 points (approved)");
+            ResearcherPerkStudy.Build(options, "test").Should().Be(report);
+            report.Should().MatchRegex("^[\\x20-\\x7E\\r\\n]*$", "a report is ASCII");
+        }
+
+        /// <summary>A source of chance whose every roll is the same.</summary>
+        private sealed class ScriptedRandom : IMinigameRandom
+        {
+            private readonly int _roll;
+
+            public ScriptedRandom(int roll)
+            {
+                _roll = roll;
+            }
+
+            public int D100() => _roll;
+
+            public int Next(int minInclusive, int maxExclusive) => minInclusive;
+        }
+    }
+}

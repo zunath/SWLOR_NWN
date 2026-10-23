@@ -139,10 +139,55 @@ public class KitchenSessionTests
         var plain = new KitchenEngine(new FixedRolls(100), kitchen, new KitchenStats(20, 0, 0, 20));
         var enhanced = new KitchenEngine(new FixedRolls(100), kitchen, new KitchenStats(20, 0, 0, 20), KitchenTuning.EnhancementDoneness(60));
 
-        KitchenTuning.EnhancementDoneness(60).Should().Be(30);
+        var extra = (int)Math.Round(60 * KitchenTuning.EnhancementDonenessPerPenalty, MidpointRounding.AwayFromZero);
+        KitchenTuning.EnhancementDoneness(60).Should().Be(extra).And.BeGreaterThan(0);
         KitchenTuning.EnhancementDoneness(0).Should().Be(0);
         KitchenTuning.EnhancementDoneness(-5).Should().Be(0);
-        plain.Meters.Progress.Max.Should().Be(100);
-        enhanced.Meters.Progress.Max.Should().Be(130);
+        plain.Meters.Progress.Max.Should().Be(KitchenTuning.DonenessMax);
+        enhanced.Meters.Progress.Max.Should().Be(KitchenTuning.DonenessMax + extra);
+    }
+
+    [Test]
+    public void TheKitchensXpMultiplierScalesTheBaseXpOfASuccessAndOfAFailure()
+    {
+        // At the recipe's own level, where the plain base XP is worth something.
+        _player.Skills[SkillType.Agriculture].Rank = _recipe.Level;
+        var baseXp = Craft.GetBaseRecipeXP(_recipe, _recipe.Level);
+        baseXp.Should().BeGreaterThan(0);
+        var gated = CraftMinigameXp.ScaleBaseXp(baseXp, KitchenTuning.XpMultiplierForLevel(_recipe.Level));
+        var scaled = CraftMinigameXp.ScaleBaseXp(gated, CraftMinigameXp.PaceMultiplierFor(SkillType.Agriculture));
+        scaled.Should().BeGreaterThan(baseXp);
+        CraftMinigameXp.BaseXp(_recipe, _recipe.Level).Should().Be(scaled, "the lifecycle reads the base XP through CraftMinigameXp");
+        var lifecycle = Lifecycle(66, 66, 66);
+        var session = Start(lifecycle);
+
+        var success = lifecycle.Succeed(FakeCraftSessionWorld.PlayerHandle, _player, session, new MinigameMeter(60, KitchenTuning.QualityMax));
+
+        success.Outcome.Xp.Should().Be(CraftOutcomeRules.CalculateXp(scaled, 0, true, 0.6f));
+
+        foreach (var (resref, quantity) in _recipe.Components)
+            _world.Inventory[resref] = quantity;
+        Start(lifecycle);
+        var failure = lifecycle.Fail(FakeCraftSessionWorld.PlayerHandle, _player, CraftSessionEndReason.Broken);
+
+        failure.Xp.Should().Be(CraftOutcomeRules.CalculateFailureXp(scaled, 0));
+    }
+
+    [Test]
+    public void TheKitchenMultiplierFollowsTheRecipeLevelBandAndNeverLowersTheXp()
+    {
+        KitchenTuning.XpMultiplierForLevel(1).Should().Be(KitchenTuning.XpMultiplierLevels1To10);
+        KitchenTuning.XpMultiplierForLevel(10).Should().Be(KitchenTuning.XpMultiplierLevels1To10);
+        KitchenTuning.XpMultiplierForLevel(11).Should().Be(KitchenTuning.XpMultiplierLevels11To20);
+        KitchenTuning.XpMultiplierForLevel(30).Should().Be(KitchenTuning.XpMultiplierLevels21To30);
+        KitchenTuning.XpMultiplierForLevel(40).Should().Be(KitchenTuning.XpMultiplierLevels31To40);
+        KitchenTuning.XpMultiplierForLevel(53).Should().Be(KitchenTuning.XpMultiplierLevels41Up);
+        KitchenTuning.XpMultiplierForLevel(0).Should().Be(KitchenTuning.XpMultiplierLevels1To10, "no level takes the lowest band");
+        CraftMinigameXp.MultiplierFor(CraftMinigameType.Kitchen, 25).Should().Be(KitchenTuning.XpMultiplierLevels21To30);
+        new[]
+        {
+            KitchenTuning.XpMultiplierLevels1To10, KitchenTuning.XpMultiplierLevels11To20, KitchenTuning.XpMultiplierLevels21To30,
+            KitchenTuning.XpMultiplierLevels31To40, KitchenTuning.XpMultiplierLevels41Up
+        }.Should().OnlyContain(multiplier => multiplier >= 1.0, "a multiplier only ever lifts the XP");
     }
 }

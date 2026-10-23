@@ -192,7 +192,7 @@ Build `SWLOR.CraftSim` (tool and tests) on the `SWLOR.CombatSim` pattern. It dri
 4. **Length.** The targets above are met.
 5. **Economy parity.**
    - Gathering yield per node and per scavenge site at each rank stays near today's expected yield. Quick Harvest and Quick Search equal it, and a skilled session stays within +15% of it (starting value).
-   - Fish caught per bite at each rank stays near today's catch rate.
+   - Fish caught per bite at each rank stays near today's catch rate. **Quick Reel** is today's roll at a fixed Willpower score, so it passes by construction and its fish and XP per hour equal today's. A skilled fight's expected catch rate stays within +15% (starting value) of Quick Reel's for the same fish and angler, with the whole Angler line and for rare fish with Trophy Catch (owner decision, October 2026; see Agriculture fishing).
    - Research base credits and times are unchanged; the Analyze cut stays within its cap.
    - Material use per crafted item at matched quality (owner decision, October 2026), per recipe band and gear level:
      - Where the legacy policy's success rate is at least 90% (starting value), component stacks per item stay within 10% of today's, either way.
@@ -204,7 +204,7 @@ Build `SWLOR.CraftSim` (tool and tests) on the `SWLOR.CombatSim` pattern. It dri
    - **Activity cohorts:** each pairs the legacy loop with its replacement at the parity attribute values, using identical tool inputs:
      - Harvesting: per node tier, rank equal to the vein level, and the highest harvester tier that rank allows (`CraftRankMilestones`); XP per item.
      - Scavenging: per site level, rank equal to 10 × site level; XP per attempt, quarter on failure. No tool.
-     - Fishing: per fish-level band (0-10, ..., 41-52), rank equal to fish level and capped at 50, and the highest rod tier that rank allows. Every fishing location's (rod, bait) tables reachable with that rod are weighted equally, half by day and half by night, so both runs draw the same fish mix. XP per bite.
+     - Fishing: per fish-level band (0-10, ..., 41-52), rank equal to fish level and capped at 50, and the highest rod tier that rank allows. Every fishing location's (rod, bait) tables reachable with that rod are weighted equally, half by day and half by night, so both runs draw the same fish mix. XP per bite. The cohort is the fight; Quick Reel pays today's XP per bite in today's time, so it needs no multiplier.
      - Refining has no minigame, and research XP is new, so neither has a legacy rate to match. Research XP is bounded instead by workstream 11's research ceiling.
    - CraftSim estimates minutes per craft, node, site or fight from actions taken and a seconds-per-action estimate, plus each loop's fixed time (fishing's 6-8 s cast wait, the harvester delay, window setup). Measure both in the client evidence, separately for each legacy loop and each new one.
    - If a loop falls short, scale its XP per craft, item, attempt or bite up, recorded in code and the Bible. Do not shorten it below its length target to pass.
@@ -413,14 +413,18 @@ Refining stays a quick batch conversion with no minigame.
 
 - **Gates:** ore tier gates come from Gathering rank.
 - **Batch size:** each power core's batch grows with rank (see Progression).
-- **XP:** use the same rank-difference curve as harvesting, `GetDeltaXP(activity level - rank)` per unit, instead of today's flat 25-150 XP per unit (`RefineryViewModel.cs:337-352`). Cheap ore must stop training high ranks.
+- **XP:** keep today's flat XP per unit for each ore (25-150) at the ore's level, and scale it by the rank on harvesting's curve: `flat XP x GetDeltaXP(ore level - rank) / GetDeltaXP(0)` per unit (`GatheringLevels.RefiningXp`). An ore's level is the level of the vein of its tier (5, 15, 25, 35, 45). Refining XP per hour at level is today's; a refiner five ranks past the ore's level earns nothing, so cheap ore stops training high ranks.
 - **Unrefinable ores:** Ochne, Croknor, Hemorgite and Bisteiss are not in the game. Leave their entries alone.
 
 ### Agriculture fishing: the Line
 
-Casting, bait, location and time of day work as today, and still pick the fish (`FishingLocationDetail.GetRandomFish`). The existing `sw_fishing6/7/8` clips stay for the cast and wait. A bite now opens a fight.
+Casting, bait, location and time of day work as today, and still pick the fish (`FishingLocationDetail.GetRandomFish`). The existing `sw_fishing6/7/8` clips stay for the cast and wait. A bite now opens a choice between **Quick Reel** and a fight.
 
 Today (`Fishing.cs`): a bite spends one bait, then lands the fish at `40 + (Agriculture rank - fish level) × 10 + 2 × Willpower score`%, clamped to 0-95. XP is awarded on every bite, caught or not. Rod tiers come from each rod's Agriculture `RequiresSkill` property (0/10/20/30/40).
+
+**Quick Reel (owner decision, October 2026).** The player can resolve the bite at once: today's catch formula with the Willpower score fixed at one named constant (`FishingQuickReel.ReferenceWillpowerScore` = 10: today's roll for a character with no attribute investment, owner decision, October 2026), today's XP per bite with no gate 6 multiplier, bait spent as today, and no fight time. The window opens showing both choices, with Quick Reel as the first and encouraged button; it is only a choice before the first move of a fight, so a player cannot start a fight and fall back on the quick roll. Quick Reel's fish and XP per hour are today's.
+
+**The fight is optional.** It pays today's XP at the bite and the rest of a multiplied XP for its time, and it may catch better, but a skilled fight's expected catch rate is bounded to +15% (starting value, `FishingParityOptions.FightBoundRelative`) of Quick Reel's for the same fish and angler, plus 3 points for sampling error and for fish Quick Reel can hardly land. The adaptive CraftSim player stands for the skilled fight, and the bound covers the angler with no perks, each rank over the real pools, the whole Angler line in either style, and the special rare fish with Trophy Catch. Fighting is for a slightly better catch (owner decision, October 2026): `LineRules.RungAtRank` is set so an unperked skilled fight lands about 1.03 times what Quick Reel lands at the fish's own level; a fish above the rank climbs the difficulty ladder faster, so the fight falls behind Quick Reel there and a fish Quick Reel cannot land is hopeless for the fight too; the Angler line is sized to the room between the unperked fight and the bound (about 10 points at the fish's own level: Strong Line I, Hard Set I and a style, with no Steady Hold, and Fish Sense and the rest held open for the owner); and a rare fish takes the fight perks at half strength with Trophy Catch the only full-strength rare-fish perk.
 
 - **Fish state:**
   - Distance: landed at 0, escapes at its maximum.
@@ -436,7 +440,7 @@ Today (`Fishing.cs`): a bite spends one bait, then lands the fish at `40 + (Agri
   - The rod tier and Agriculture rank set the Tension cap and reel strength, replacing Willpower.
   - Fish level against rank sets Stamina and aggression.
   - Rare fish get trickier move patterns.
-- **Unchanged:** XP (awarded per bite), bait use, point bite counts, and respawn timers, which are randomized at restart on purpose.
+- **Unchanged:** bait use, point bite counts, and respawn timers, which are randomized at restart on purpose. Today's XP is still awarded at the bite, caught or not; a fought bite adds the rest of its multiplied XP when the fight ends on its own.
 - **Animations:** reel, give line, hold, land, added to the existing fishing animation set.
 
 ## Progression and perks
@@ -501,7 +505,7 @@ The structure is the same for every crafting skill:
 | Gathering | **Prospector** (volume) | Style *Strip Mining*: Strikes +1 unit at a higher Stability cost. *Efficient Strikes*: lower Stability cost. *Bulk Refining*: larger batches per power core. *Core Sample*: reveals every seam's type. Capstone *Mother Lode*: one double-yield Heavy Strike per node. |
 | Gathering | **Treasure Seeker** (rare finds) | Style *Careful Hands*: less yield, a better rare-seam chance. *Keen Eye*: one more promising spot on Search boards. *Steady Dig*: halves Dig Deeper's risk. *Deep Scan*: Survey reveals 2 seams. Capstone *Jackpot*: the first Extract per node adds a bonus gem. |
 | Agriculture | **Chef** (cooking) | Style choice *Slow Cooking* (Low heat cooks faster, steadier flavor) or *Flash Cooking* (High heat drifts less). *Seasoned Palate*: half-strength Adds. *Reduce*: pulls the profile toward center. Capstone *Signature Dish*: once per craft, snaps one flavor axis onto target. |
-| Agriculture | **Angler** (fishing) | Style choice *Patient Angler* (Give Line loses less Distance) or *Aggressive Angler* (stronger Reel, more Tension). *Strong Line*: +Tension cap. *Fish Sense*: shows the fish's next two moves. *Hard Set*: Set Hook drains much more Stamina. Capstone *Trophy Catch*: better odds on rare fish. Tune it without raising the economy's rare-fish supply beyond the simulator's parity check. |
+| Agriculture | **Angler** (fishing) | Style choice *Patient Angler* (Give Line loses less Distance) or *Aggressive Angler* (stronger Reel, more Tension). *Strong Line*: +Tension cap. *Fish Sense*: shows the fish's next two moves. *Hard Set*: Set Hook drains much more Stamina. Capstone *Trophy Catch*: better odds on rare fish. Tune it without raising the economy's rare-fish supply beyond the simulator's parity check: the fight bound (a skilled fight stays within +15% of Quick Reel's catch rate, owner decision, October 2026) holds for the whole line and for rare fish with Trophy Catch, which limits the line's catch-rate purchases to four of the ten rows (Strong Line I, Hard Set I, a style and Trophy Catch; the other six are open for the owner) (see `design/testing/crafting-revamp/agriculture-angler-perk-line-draft.md`). |
 | Fabrication | **Builder** (Fabricator) | Style choice *Production Run* (Run +25%, Precision Pass -25%) or *Fine Tolerance* (the mirror). *Quick Change*: cheaper Retool. *Dual Feed*: one Run advances two sub-assemblies at 60% each. *Field Service*: Service restores more. Capstone *Master Assembler*: the Assemble cap rises from weakest + 20 to weakest + 35. |
 | Fabrication | **Researcher** (Experiment) | Style choice *Methodical* (+2 trials, -10% Test chance) or *Intuitive* (+15% Test chance, -2 trials). *Broader Hypotheses*: +1 trial. *Peer Review*: moves half of one candidate's evidence to the other (only where evidence decides between credit and time reduction). *Efficient Analysis*: Analyze cuts more time. Capstone *Breakthrough*: once per experiment, one Test succeeds automatically, and the winner's time cut doubles. It grants no extra bonuses. (Broader Hypotheses and Breakthrough changed by the owner in October 2026: the random pool has only two evidence-decided candidates, credit and time reduction, so there is nothing to draw a third candidate or a redraw from.) |
 
@@ -615,7 +619,7 @@ Every model and animation needs client evidence (`InEngineVisualVerification.md`
 **Fix, in the workstream that touches each system:**
 - **Research terminal message.** It says "Another player's incubation job is active" (`Craft.cs:1021`). It should name a research job.
 - **Bible SP totals.** The Engineering, Fabrication, Agriculture and Gathering tabs show cached SP totals that disagree with their rows, and some SP Price cells are stored as text. Fix them with the workbook rules, then rewrite those tabs for the new lines.
-- **Refining XP.** Use the rank-difference curve, as above.
+- **Refining XP.** Scale today's flat XP by the rank-difference curve, as above.
 - **Character sheet tooltips.** They describe a retired "auto-craft chance" (`CharacterSheetDefinition.cs:258-259`). Rewrite them for the new stat roles.
 - **Player guide text.** Update the crafting, gathering, fishing and research text in `PlayerGuideViewModel.cs`, keeping `PlayerGuideContentTests` passing.
 - **Old minigame defects.** These disappear when the old minigame is deleted; make sure none survives in shared code:
@@ -721,7 +725,7 @@ The owner did not decide these explicitly; they follow today's behavior or the n
 - **Thresholds.** Enhancement thresholds are shown per slot. An item with one slot uses the first threshold.
 - **Pantry seasonings** in the Kitchen are free and unlimited, with small pushes; recipe ingredients push harder and are limited to the committed quantity.
 - **Research XP** is awarded for the experiment and on completion. The other research rules are as stated above.
-- **Fishing XP** stays per bite.
+- **Fishing XP** is awarded per bite. Quick Reel pays today's XP; a fought bite pays today's at the bite and the rest of its band multiplier when the fight ends on its own, in proportion to how long it lasted (owner decision after player feedback, October 2026).
 
 ## Declined after player feedback
 

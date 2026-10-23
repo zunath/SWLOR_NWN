@@ -1,7 +1,9 @@
 using SWLOR.Game.Server.Service.CraftService.Minigame.Circuit;
 using SWLOR.Game.Server.Service.CraftService.Minigame.Fabricator;
 using SWLOR.Game.Server.Service.CraftService.Minigame.Forge;
+using SWLOR.Game.Server.Service.CraftService.Minigame.Kitchen;
 using SWLOR.Game.Server.Service.CraftService.Minigame.Line;
+using SWLOR.Game.Server.Service.CraftService.Minigame.Prospecting;
 using SWLOR.Game.Server.Service.CraftService.Minigame.Reaction;
 using SWLOR.Game.Server.Service.SkillService;
 
@@ -30,14 +32,17 @@ public static class CraftMinigameXp
 
     /// <summary>
     /// The multiplier a minigame puts on its crafts' base XP at a recipe level; 1 when it needs none. A level of 0 or less asks for the
-    /// lowest band's, which is the largest.
+    /// lowest band's, which is the largest. For Prospecting the level is the vein's (<c>GatheringLevels.ForTier</c>), and the multiplier
+    /// applies to the units a session gathers, never to Quick Harvest.
     /// </summary>
     public static double MultiplierFor(CraftMinigameType minigame, int recipeLevel = 0) => minigame switch
     {
         CraftMinigameType.Circuit => CircuitRules.XpMultiplierFor(recipeLevel),
         CraftMinigameType.Fabricator => FabricatorRules.XpMultiplierForLevel(recipeLevel),
         CraftMinigameType.Forge => ForgeRules.XpMultiplierForLevel(recipeLevel),
+        CraftMinigameType.Kitchen => KitchenTuning.XpMultiplierForLevel(recipeLevel),
         CraftMinigameType.Line => LineRules.XpMultiplierForLevel(recipeLevel),
+        CraftMinigameType.Prospecting => ProspectingRules.XpMultiplierFor(recipeLevel),
         CraftMinigameType.Reaction => ReactionRules.XpMultiplier(recipeLevel),
         _ => 1.0
     };

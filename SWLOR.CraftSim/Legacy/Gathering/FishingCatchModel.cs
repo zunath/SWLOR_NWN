@@ -24,7 +24,7 @@ namespace SWLOR.CraftSim.Legacy.Gathering
             return chance;
         }
 
-        /// <summary>XP for a bite, caught or not (FishingFightLifecycle.cs:58).</summary>
+        /// <summary>XP for a bite, caught or not (FishingFightLifecycle.cs:64).</summary>
         public static int XpPerBite(int agricultureRank, int fishLevel) => ServerXp.ForDelta(fishLevel - agricultureRank);
 
         /// <summary>Every fish the game defines, from the fish enum.</summary>

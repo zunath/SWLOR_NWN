@@ -28,7 +28,7 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.CookingRecipeDefinition
                 .Component("viper_meat", 3)
                 .Component("herb_m", 2)
                 .Component("tide_scale", 1)
-                .KitchenParameters(dish: KitchenDish.Soup, targetSavory: 44, targetSweet: 6, targetSpice: 14, innerRadius: 8, outerRadius: 33, freshness: 82);
+                .KitchenParameters(dish: KitchenDish.Soup, targetSavory: 44, targetSweet: 6, targetSpice: 14, innerRadius: 8, outerRadius: 33, freshness: 92);
 
             // Field Ration Stew
             _builder.Create(RecipeType.FieldRationStew, SkillType.Agriculture)
@@ -41,7 +41,7 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.CookingRecipeDefinition
                 .Component("herb_c", 3)
                 .Component("distilled_water", 1)
                 .Component("field_chip", 1)
-                .KitchenParameters(dish: KitchenDish.Soup, targetSavory: 18, targetSweet: 0, targetSpice: 13, innerRadius: 10, outerRadius: 18, freshness: 80);
+                .KitchenParameters(dish: KitchenDish.Soup, targetSavory: 18, targetSweet: 0, targetSpice: 13, innerRadius: 10, outerRadius: 18, freshness: 89);
 
             // Deepwatch Broth
             _builder.Create(RecipeType.DeepwatchBroth, SkillType.Agriculture)
@@ -54,7 +54,7 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.CookingRecipeDefinition
                 .Component("c_butter", 2)
                 .Component("distilled_water", 1)
                 .Component("command_key", 1)
-                .KitchenParameters(dish: KitchenDish.Soup, targetSavory: 25, targetSweet: 5, targetSpice: 3, innerRadius: 8, outerRadius: 25, freshness: 79);
+                .KitchenParameters(dish: KitchenDish.Soup, targetSavory: 25, targetSweet: 5, targetSpice: 3, innerRadius: 8, outerRadius: 25, freshness: 88);
 
             // Midnight Ink Noodles
             _builder.Create(RecipeType.MidnightInkNoodles, SkillType.Agriculture)
@@ -67,7 +67,7 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.CookingRecipeDefinition
                 .Component("mtench_tentacle", 3)
                 .Component("distilled_water", 1)
                 .Component("midink_sac", 1)
-                .KitchenParameters(dish: KitchenDish.Soup, targetSavory: 38, targetSweet: 4, targetSpice: 3, innerRadius: 8, outerRadius: 28, freshness: 79);
+                .KitchenParameters(dish: KitchenDish.Soup, targetSavory: 38, targetSweet: 4, targetSpice: 3, innerRadius: 8, outerRadius: 28, freshness: 88);
 
             // Shatterfin Curry
             _builder.Create(RecipeType.ShatterfinCurry, SkillType.Agriculture)
@@ -80,7 +80,7 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.CookingRecipeDefinition
                 .Component("scorch_tail", 2)
                 .Component("herb_m", 2)
                 .Component("sh_chitin", 1)
-                .KitchenParameters(dish: KitchenDish.Soup, targetSavory: 21, targetSweet: 1, targetSpice: 25, innerRadius: 9, outerRadius: 32, freshness: 73);
+                .KitchenParameters(dish: KitchenDish.Soup, targetSavory: 21, targetSweet: 1, targetSpice: 25, innerRadius: 9, outerRadius: 32, freshness: 82);
         }
     }
 }

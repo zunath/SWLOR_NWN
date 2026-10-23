@@ -815,6 +815,21 @@ namespace SWLOR.Game.Server.Service.PerkService
         SecondOpinion = 880,
         Breakthrough = 881,
 
-        // IDs 650, 860-863 and 882+ are free.
+        EfficientStrikes = 924,
+        BulkRefining = 925,
+        RichVeins = 926,
+        StripMiningStyle = 927,
+        CoreSample = 928,
+        MotherLode = 929,
+        FineTrowel = 930,
+        SharpChisel = 931,
+        SteadyDig = 932,
+        CarefulHandsStyle = 933,
+        KeenEye = 934,
+        DeepScan = 935,
+        RichPickings = 936,
+        Jackpot = 937,
+
+        // IDs 650, 860-863, 882-923 and 938+ are free.
     }
 }

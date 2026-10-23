@@ -16,9 +16,11 @@ namespace SWLOR.CraftSim.Search
     /// <param name="Digs">Dig Deeper attempts made.</param>
     /// <param name="Spoiled">Spots a dig ruined.</param>
     /// <param name="Actions">Actions taken, which is every search spent.</param>
+    /// <param name="DeeperBoards">Boards that had at least one Dig Deeper find, which is every board a Jackpot pays on.</param>
     public readonly record struct SearchSample(
-        int Runs, int OrdinaryFinds, int DeeperFinds, int Attempts, int SuccessfulAttempts, int Sifts, int Digs, int Spoiled, int Actions)
+        int Runs, int OrdinaryFinds, int DeeperFinds, int Attempts, int SuccessfulAttempts, int Sifts, int Digs, int Spoiled, int Actions, int DeeperBoards = 0)
     {
+        public double DeeperBoardShare => Runs == 0 ? 0 : DeeperBoards / (double)Runs;
         public double Finds => Runs == 0 ? 0 : (OrdinaryFinds + DeeperFinds) / (double)Runs;
         public double Ordinary => Runs == 0 ? 0 : OrdinaryFinds / (double)Runs;
         public double Deeper => Runs == 0 ? 0 : DeeperFinds / (double)Runs;
@@ -79,13 +81,14 @@ namespace SWLOR.CraftSim.Search
         {
             var setup = SearchSetup.ForRank(key.Rank, key.SiteLevel, key.Effects);
             var stream = Stream(key);
-            int ordinary = 0, deeper = 0, attempts = 0, successes = 0, sifts = 0, digs = 0, spoiled = 0, actions = 0;
+            int ordinary = 0, deeper = 0, attempts = 0, successes = 0, sifts = 0, digs = 0, spoiled = 0, actions = 0, deeperBoards = 0;
             for (var run = 0; run < Runs; run++)
             {
                 var random = SimMinigameRandom.ForRun(Seed, SimStreams.Adaptive, stream, run);
                 var engine = PlayBoard(setup, key.Player, random);
                 ordinary += engine.OrdinaryFinds;
                 deeper += engine.DeeperFinds;
+                deeperBoards += engine.DeeperFinds > 0 ? 1 : 0;
                 attempts += engine.Attempts;
                 successes += engine.SuccessfulAttempts;
                 sifts += engine.Sifts;
@@ -98,7 +101,7 @@ namespace SWLOR.CraftSim.Search
                 }
             }
 
-            return new SearchSample(Runs, ordinary, deeper, attempts, successes, sifts, digs, spoiled, actions);
+            return new SearchSample(Runs, ordinary, deeper, attempts, successes, sifts, digs, spoiled, actions, deeperBoards);
         }
 
         /// <summary>A number that names the case, the same on every machine: FNV-1a over the case's numbers.</summary>

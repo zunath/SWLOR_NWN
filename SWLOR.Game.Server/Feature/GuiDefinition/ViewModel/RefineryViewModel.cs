@@ -5,6 +5,7 @@ using SWLOR.Game.Server.Service.CraftService;
 using SWLOR.Game.Server.Service.GuiService;
 using SWLOR.Game.Server.Service.GuiService.Component;
 using SWLOR.Game.Server.Service.SkillService;
+using SWLOR.Game.Server.Service.StatService;
 using SWLOR.NWN.API.NWNX;
 using SWLOR.NWN.API.NWScript.Enum;
 
@@ -167,11 +168,19 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
             return kept;
         }
 
+        /// <summary>The items one power core refines: the base batch, what the Gathering rank adds, and what Bulk Refining adds.</summary>
+        public static int ItemsPerCore(int refineryManagementLevel, int bulkRefining) =>
+            BaseItemsRefinedPerCore + Math.Max(0, refineryManagementLevel) + Math.Max(0, bulkRefining);
+
+        /// <summary>The power cores it takes to refine the items at the batch size, rounded up.</summary>
+        public static int PowerCoresFor(int itemCount, int itemsPerCore) =>
+            (int)Math.Ceiling(itemCount / (float)Math.Max(1, itemsPerCore));
+
         private void CalculateCoresRequired()
         {
             var refineryManagement = CraftRankMilestones.GetRefineryManagementLevel(Player);
-            var itemsPerCore = BaseItemsRefinedPerCore + refineryManagement;
-            _powerCoresRequired = (int)Math.Ceiling(ItemCount / (float)itemsPerCore);
+            var bulkRefining = Stat.GetStatAdjustment(Player, StatType.ProspectingRefineBatch);
+            _powerCoresRequired = PowerCoresFor(ItemCount, ItemsPerCore(refineryManagement, bulkRefining));
 
             if(_powerCoresRequired == 1)
                 RequiredPowerCores = $"{_powerCoresRequired}x Power Core Required";

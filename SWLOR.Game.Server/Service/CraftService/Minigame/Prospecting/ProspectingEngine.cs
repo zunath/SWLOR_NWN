@@ -101,6 +101,27 @@ public sealed class ProspectingEngine : MinigameEngineBase<ProspectingState>
     /// <summary>How the session stands: going, or how it ended.</summary>
     public ProspectingEnding Ending => State.Ending;
 
+    /// <summary>True once the first Strike or Heavy Strike of the node, the one Mother Lode makes quick, has been made.</summary>
+    public bool MotherLodeSpent => State.MotherLodeSpent;
+
+    /// <summary>
+    /// The kinds of the seams still hidden, in the order a Survey reveals them, for a harvester who can see them (Core Sample); empty for
+    /// anyone else, so the window cannot give away how many seams are hidden.
+    /// </summary>
+    public IReadOnlyList<ProspectingSeamKind> SeenHiddenSeams => _setup.Effects.SeesSeamTypes
+        ? SurveyOrder(State.Seams).Where(index => !State.Seams[index].Revealed).Select(index => State.Seams[index].Kind).ToList()
+        : Array.Empty<ProspectingSeamKind>();
+
+    /// <summary>The seconds the action takes to resolve now, perks and Mother Lode included. Leave is immediate.</summary>
+    public double SecondsFor(string actionId) =>
+        _setup.SecondsFor(
+            actionId,
+            actionId is ProspectingActionIds.Strike or ProspectingActionIds.HeavyStrike && MotherLodeReady(State),
+            State.NextExtractIndex is { } next ? State.Seams[next].Kind : null);
+
+    /// <summary>True while the harvester has Mother Lode and has not yet made the Strike or Heavy Strike it makes quick.</summary>
+    private bool MotherLodeReady(ProspectingState state) => _setup.Effects.MotherLode && !state.MotherLodeSpent;
+
     /// <summary>The seams the player has found and not yet claimed, in the order Extract claims them.</summary>
     public IReadOnlyList<ProspectingSeam> RevealedSeams =>
         State.Seams.Where(seam => seam.Revealed).OrderBy(seam => seam.Kind == ProspectingSeamKind.GemPocket ? 0 : 1).ToList();
@@ -112,7 +133,7 @@ public sealed class ProspectingEngine : MinigameEngineBase<ProspectingState>
     /// The node as it stands, with its hidden seams, for the game to store: the pool left, the Stability, and every seam not yet claimed
     /// or shattered. It is not for the window, which must not show how many seams are hidden.
     /// </summary>
-    public ProspectingNode ToNode() => new(State.Pool, Math.Max(0, State.Stability), State.Seams);
+    public ProspectingNode ToNode() => new(State.Pool, Math.Max(0, State.Stability), State.Seams, State.MotherLodeSpent);
 
     private static ProspectingState CreateInitialState(ProspectingSetup setup)
     {
@@ -126,7 +147,7 @@ public sealed class ProspectingEngine : MinigameEngineBase<ProspectingState>
             new MinigameMeter(node.Stability, ProspectingRules.MaxStability),
             new MinigameMeter(setup.Charges, setup.Charges));
 
-        return new ProspectingState(meters, null, node.Seams, 0, 0, 0, 0, ProspectingEnding.InProgress);
+        return new ProspectingState(meters, null, node.Seams, 0, 0, 0, 0, ProspectingEnding.InProgress, node.MotherLodeSpent);
     }
 
     protected override MinigameActionRule<ProspectingState> ResolveAction(ProspectingState state, string actionId)
@@ -143,10 +164,10 @@ public sealed class ProspectingEngine : MinigameEngineBase<ProspectingState>
 
             case ProspectingActionIds.Strike:
                 if (state.Pool <= 0)
-                    return MinigameActionRule<ProspectingState>.Disabled(info, ProspectingRules.StrikeCharges, ProspectingRules.StrikeStability, NodeSpent);
+                    return MinigameActionRule<ProspectingState>.Disabled(info, ProspectingRules.StrikeCharges, _setup.StrikeStability, NodeSpent);
 
                 return Costly(
-                    state, info, ProspectingRules.StrikeCharges, ProspectingRules.StrikeStability,
+                    state, info, ProspectingRules.StrikeCharges, _setup.StrikeStability,
                     StrikeOutcomes(state, _setup.StrikeYield));
 
             case ProspectingActionIds.HeavyStrike:
@@ -167,9 +188,12 @@ public sealed class ProspectingEngine : MinigameEngineBase<ProspectingState>
                         info, ProspectingRules.ExtractCharges, ProspectingRules.ExtractStability, NoRevealedSeam);
                 }
 
+                var seam = state.Seams[state.NextExtractIndex.Value];
                 return Costly(
-                    state, info, ProspectingRules.ExtractCharges, ProspectingRules.ExtractStability,
-                    ExtractOutcomes(state.Seams[state.NextExtractIndex.Value]));
+                    state, info,
+                    ProspectingRules.ExtractCharges,
+                    ProspectingRules.ExtractStability,
+                    ExtractOutcomes(seam));
 
             default:
                 return new MinigameActionRule<ProspectingState>(
@@ -243,9 +267,16 @@ public sealed class ProspectingEngine : MinigameEngineBase<ProspectingState>
             chances[taken] = chances.GetValueOrDefault(taken) + chance;
         }
 
+        var lode = MotherLodeReady(state);
         return chances
             .Select(pair => new MinigameOutcomeRule<ProspectingState>(
-                TakesLabel(pair.Key), pair.Value, s => TakeUnits(s, pair.Key)))
+                lode ? TakesLabel(pair.Key) + " quickly (Mother Lode)" : TakesLabel(pair.Key),
+                pair.Value,
+                s =>
+                {
+                    var next = TakeUnits(s, pair.Key);
+                    return lode ? next with { MotherLodeSpent = true } : next;
+                }))
             .ToList();
     }
 
@@ -253,8 +284,10 @@ public sealed class ProspectingEngine : MinigameEngineBase<ProspectingState>
         ProspectingState state,
         IReadOnlyList<(int Units, int Chance)> yield)
     {
-        // Whether a pocket shatters is always an outcome, so the preview does not show whether a hidden pocket exists. With none to
-        // shatter, the two results of one roll do the same thing.
+        // Whether a pocket shatters is always an outcome, so the preview does not show whether a hidden pocket exists (a harvester who
+        // can see the seams knows). With none to shatter, the two results of one roll do the same thing.
+        var lode = MotherLodeReady(state);
+        var shatterPercent = _setup.Effects.SeesSeamTypes && !state.HasHiddenGemPocket ? 0 : _setup.ShatterPercent;
         var chances = new SortedDictionary<(int Units, bool Shatters), int>();
         foreach (var (units, chance) in yield)
         {
@@ -262,8 +295,8 @@ public sealed class ProspectingEngine : MinigameEngineBase<ProspectingState>
                 continue;
 
             var taken = Math.Min(units, state.Pool);
-            AddChance(chances, (taken, false), chance * (100 - ProspectingRules.ShatterPercent));
-            AddChance(chances, (taken, true), chance * ProspectingRules.ShatterPercent);
+            AddChance(chances, (taken, false), chance * (100 - shatterPercent));
+            AddChance(chances, (taken, true), chance * shatterPercent);
         }
 
         // The weights are out of 10000; whole percentages keep the preview readable whatever the shatter chance is.
@@ -274,10 +307,16 @@ public sealed class ProspectingEngine : MinigameEngineBase<ProspectingState>
             {
                 var taken = key.Units;
                 var shatters = key.Shatters;
+                var label = lode ? TakesLabel(taken) + " quickly (Mother Lode)" : TakesLabel(taken);
                 return new MinigameOutcomeRule<ProspectingState>(
-                    shatters ? TakesLabel(taken) + " and shatters a gem pocket if one is hidden" : TakesLabel(taken),
+                    shatters ? label + " and shatters a gem pocket if one is hidden" : label,
                     percentages[index],
-                    s => shatters ? Shatter(TakeUnits(s, taken)) : TakeUnits(s, taken));
+                    s =>
+                    {
+                        var next = TakeUnits(s, taken);
+                        next = shatters ? Shatter(next) : next;
+                        return lode ? next with { MotherLodeSpent = true } : next;
+                    });
             })
             .ToList();
     }
@@ -352,8 +391,11 @@ public sealed class ProspectingEngine : MinigameEngineBase<ProspectingState>
     {
         var seams = state.Seams.ToBuilder();
         var left = _setup.SurveyReveals;
-        for (var index = 0; index < seams.Count && left > 0; index++)
+        foreach (var index in SurveyOrder(state.Seams))
         {
+            if (left <= 0)
+                break;
+
             if (seams[index].Revealed)
                 continue;
 
@@ -363,6 +405,15 @@ public sealed class ProspectingEngine : MinigameEngineBase<ProspectingState>
 
         return Settle(state with { Seams = seams.ToImmutable() });
     };
+
+    /// <summary>The order a Survey reveals the seams in: the order they are found in, gem pockets first for a harvester who finds them first.</summary>
+    private IEnumerable<int> SurveyOrder(ImmutableArray<ProspectingSeam> seams)
+    {
+        var order = Enumerable.Range(0, seams.Length);
+        return _setup.Effects.PocketsFirst
+            ? order.OrderBy(index => seams[index].Kind == ProspectingSeamKind.GemPocket ? 0 : 1).ThenBy(index => index).ToList()
+            : order.ToList();
+    }
 
     /// <summary>Opens the next revealed seam. Its unit leaves the pool: a gem pocket gives a gem for it, a rich seam gives the ore and sometimes more.</summary>
     private static ProspectingState Extract(ProspectingState state, bool bonus)

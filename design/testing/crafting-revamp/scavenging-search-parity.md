@@ -1,6 +1,6 @@
 # Crafting revamp: the Search board and Quick Search against today's scavenging
 
-- Command: `SWLOR.CraftSim search --runs 12000 --seed 1 --out design/testing/crafting-revamp/scavenging-search-parity.md`
+- Command: `SWLOR.CraftSim search --runs 12000 --seed 1`
 - Seed 1; 12000 runs per case.
 
 ## Inputs
@@ -8,7 +8,7 @@
 - Today (what Quick Search keeps): one attempt, plus a second at `Hard Look level x 10 + Perception modifier x 5` percent. An attempt succeeds on `d20 + Perception modifier` against a DC of 6, rising by a d3 after each attempt; a success rolls the site's loot table once and pays the site's XP, a failure pays a quarter of it. Hard Look level is the Gathering rank's tier (`CraftRankMilestones`). The Perception modifier is the parity reference of a character with no investment, 0 (owner decision, October 22 2026); no code reads an attribute.
 - The board: the Search engine, 12000 boards per case, each with its own dice from seed 1. A 3x3 board; the Gathering rank sets the searches (`CraftRankMilestones.SearchesForRank`, replacing Hard Look), the promising spots (`PromisingSpotsForRank`, replacing Perception) and the chance a Search finds on promising ground (`PromisingChanceForRank`): from rank 0: 6 searches, 2 promising spots, 29% on promising ground; from rank 10: 6 searches, 2 promising spots, 32% on promising ground; from rank 20: 6 searches, 2 promising spots, 36% on promising ground; from rank 30: 6 searches, 2 promising spots, 39% on promising ground; from rank 40: 6 searches, 2 promising spots, 43% on promising ground. Searches find 8% on ordinary ground. A Dig Deeper risks 30% of ruining the spot, 20 points more for each dig before it, and finds 20% of the time when it does not, rolling the loot table with its rare entries weighted x3. A Sift shows the four spots next to a spot. Every action costs one search.
 - Players: **Careless** searches the spots in reading order and never sifts or digs. **Skilled** plays from what the window shows (it does not read the hidden layout): every spot is a chain of actions, the best split of the searches among the chains is a small knapsack, and it Sifts when the ground a Sift would show raises that value by more than the search it costs. It is a floor on skilled play, not an optimal player. **Oracle** is told the whole layout for free; no real player can reach it.
-- Yield is the loot-table rolls a site gives (a find is one roll). Limits: Quick Search equals today's expected rolls exactly; careless at least 0.85x of it; skilled 1.03x to 1.08x with no perks; oracle at most 1.40x; each within 0.02 for sampling error. With the whole Treasure Seeker line the skilled player stays within the plan's +15% (1.15x), the line being sized to stay inside the cap with its value in the rare finds (+1 points on every Search, 85% of the dig risk, rare entries weigh 2 more in a dig).
+- Yield is the loot-table rolls a site gives (a find is one roll). Limits: Quick Search equals today's expected rolls exactly; careless at least 0.85x of it; skilled 1.03x to 1.08x with no perks; oracle at most 1.40x; each within 0.02 for sampling error. With the whole Treasure Seeker line the skilled player stays within the plan's +15% (1.15x), the line being sized to stay inside the cap with its value in the rare finds (+1 points on every Search, 85% of the dig risk, rare entries weigh 2 more in a dig, rare entries weigh 1 more in an ordinary find, rare entries weigh 4 more in the first dig find of a board).
 - Time: 30.0 s to reach and open each site in both loops (the progression model's estimate, unmeasured); today's search takes 2.0 s once the site is open (one get-low animation before its one or two attempts, so a second attempt adds no time) and a board action 6.0 s (`SearchRules.ActionSeconds`, which the game enforces as the least time between two actions, the first free). Both are estimates until the client run measures them.
 - XP: every action pays Gathering XP. A Search or Dig Deeper attempt pays what the site pays against the Gathering rank (`Skill.GetDeltaXP(10 x site level - rank)`), a quarter on failure, as scavenging always did, times the multiplier by site level the game applies (`CraftMinigameXp`): level 1 1.05x, level 2 1.05x, level 3 1.1x, level 4 1.12x, level 5 1.12x. A Sift finds nothing, so it pays the quarter an attempt that finds nothing pays.
 - XP cohort (gate 6): site levels 1 to 5, the Gathering rank 10 times the level, no tool. The gate judges the lower XP per hour of the careless and the skilled player.
@@ -201,18 +201,18 @@
 
 | Loot table | Entries | Rare finds | Share of a roll that is rare | Quick Search per site | Careless per site | Skilled per site | Careless / Quick | Skilled / Quick |
 | --- | --- | --- | --- | --- | --- | --- | --- | --- |
-| SCAVENGING_BUSH_1 | 2 | lowest weight | 9.1% | 0.092 | 0.080 | 0.197 | 0.9x | 2.1x |
-| SCAVENGING_BUSH_3 | 3 | lowest weight | 6.7% | 0.067 | 0.059 | 0.155 | 0.9x | 2.3x |
-| SCAVENGING_BUSH_5 | 3 | lowest weight | 6.7% | 0.067 | 0.059 | 0.155 | 0.9x | 2.3x |
-| VEGETABLES_PATCH_3 | 4 | lowest weight | 7.7% | 0.078 | 0.068 | 0.173 | 0.9x | 2.2x |
-| SUPPLY_CRATE_3 | 8 | 1 flagged | 0.8% | 0.008 | 0.007 | 0.022 | 0.9x | 2.9x |
-| SUPPLY_CRATE_5 | 8 | 1 flagged | 0.8% | 0.008 | 0.007 | 0.022 | 0.9x | 2.9x |
-| KORRIBAN_SITH_CRATE_1 | 12 | 1 flagged | 1.3% | 0.013 | 0.011 | 0.037 | 0.9x | 2.8x |
-| KORRIBAN_SITH_CRATE_3 | 23 | 13 flagged | 23.0% | 0.232 | 0.203 | 0.377 | 0.9x | 1.6x |
-| TATOOINE_TUSKEN_CRATE | 9 | 4 flagged | 5.6% | 0.056 | 0.049 | 0.134 | 0.9x | 2.4x |
-| VISCARA_COXXIAN_CRATE | 13 | 4 flagged | 4.0% | 0.040 | 0.035 | 0.101 | 0.9x | 2.5x |
-| VISCARA_MANDALORIAN_CRATE | 16 | 3 flagged | 7.8% | 0.079 | 0.069 | 0.176 | 0.9x | 2.2x |
-| QIONHIVE_RESOURCES | 8 | 1 flagged | 0.8% | 0.008 | 0.007 | 0.022 | 0.9x | 2.9x |
+| SCAVENGING_BUSH_1 | 2 | lowest weight | 9.1% | 0.092 | 0.080 | 0.288 | 0.9x | 3.1x |
+| SCAVENGING_BUSH_3 | 3 | lowest weight | 6.7% | 0.067 | 0.059 | 0.230 | 0.9x | 3.4x |
+| SCAVENGING_BUSH_5 | 3 | lowest weight | 6.7% | 0.067 | 0.059 | 0.230 | 0.9x | 3.4x |
+| VEGETABLES_PATCH_3 | 4 | lowest weight | 7.7% | 0.078 | 0.068 | 0.256 | 0.9x | 3.3x |
+| SUPPLY_CRATE_3 | 8 | 1 flagged | 0.8% | 0.008 | 0.007 | 0.036 | 0.9x | 4.7x |
+| SUPPLY_CRATE_5 | 8 | 1 flagged | 0.8% | 0.008 | 0.007 | 0.036 | 0.9x | 4.7x |
+| KORRIBAN_SITH_CRATE_1 | 12 | 1 flagged | 1.3% | 0.013 | 0.011 | 0.058 | 0.9x | 4.5x |
+| KORRIBAN_SITH_CRATE_3 | 23 | 13 flagged | 23.0% | 0.232 | 0.203 | 0.521 | 0.9x | 2.2x |
+| TATOOINE_TUSKEN_CRATE | 9 | 4 flagged | 5.6% | 0.056 | 0.049 | 0.201 | 0.9x | 3.6x |
+| VISCARA_COXXIAN_CRATE | 13 | 4 flagged | 4.0% | 0.040 | 0.035 | 0.154 | 0.9x | 3.9x |
+| VISCARA_MANDALORIAN_CRATE | 16 | 3 flagged | 7.8% | 0.079 | 0.069 | 0.259 | 0.9x | 3.3x |
+| QIONHIVE_RESOURCES | 8 | 1 flagged | 0.8% | 0.008 | 0.007 | 0.036 | 0.9x | 4.7x |
 
 ## Evidence: Treasure Seeker magnitudes
 
@@ -225,9 +225,9 @@
 | Steady Dig (15% less dig risk) | 1.092 | 0.291 | 1.83 | 1.96 | 0.020 | 1.08x |
 | Fine Trowel I (rare entries weigh 1 more in a dig) | 1.076 | 0.271 | 1.83 | 1.96 | 0.005 | 1.07x |
 | Fine Trowel II (rare entries weigh 2 more in a dig) | 1.067 | 0.264 | 1.84 | 1.95 | -0.005 | 1.06x |
-| Careful Hands (style: -3 search chance, rare entries weigh 3 more in a dig) | 1.009 | 0.268 | 1.83 | 1.96 | -0.063 | 1.00x |
+| Careful Hands (style: -1 search chance, rare entries weigh 3 more in a dig) | 1.051 | 0.269 | 1.83 | 1.96 | -0.020 | 1.04x |
 | Whole line below the capstone, no style | 1.129 | 0.257 | 1.55 | 1.77 | 0.058 | 1.12x |
-| Whole line with Careful Hands | 1.043 | 0.285 | 1.84 | 1.96 | -0.028 | 1.03x |
+| Whole line with Careful Hands | 1.093 | 0.284 | 1.83 | 1.96 | 0.021 | 1.08x |
 
 ## Limitations
 

@@ -17,8 +17,9 @@ public sealed record ProspectingNode
     private const char PoolMarker = 'P';
     private const char StabilityMarker = 'S';
     private const char SeamsMarker = ':';
+    private const char MotherLodeMarker = '*';
 
-    public ProspectingNode(int pool, int stability, ImmutableArray<ProspectingSeam> seams)
+    public ProspectingNode(int pool, int stability, ImmutableArray<ProspectingSeam> seams, bool motherLodeSpent = false)
     {
         if (pool < 0)
             throw new ArgumentOutOfRangeException(nameof(pool), "A node cannot hold a negative pool.");
@@ -32,6 +33,7 @@ public sealed record ProspectingNode
         Pool = pool;
         Stability = stability;
         Seams = seams;
+        MotherLodeSpent = motherLodeSpent;
     }
 
     /// <summary>The units of yield left to take.</summary>
@@ -42,6 +44,9 @@ public sealed record ProspectingNode
 
     /// <summary>The seams still in the node, in the order they are found. Each one seals a unit of the pool.</summary>
     public ImmutableArray<ProspectingSeam> Seams { get; }
+
+    /// <summary>True once a harvester with Mother Lode has worked the node's first Strike or Heavy Strike, which only the first of a node gets.</summary>
+    public bool MotherLodeSpent { get; }
 
     /// <summary>True when nothing is left to take.</summary>
     public bool IsSpent => Pool <= 0;
@@ -93,12 +98,13 @@ public sealed record ProspectingNode
             seams.RemoveAt(index < seams.Count ? index : 0);
         }
 
-        return new ProspectingNode(pool, Stability, seams.ToImmutable());
+        return new ProspectingNode(pool, Stability, seams.ToImmutable(), MotherLodeSpent);
     }
 
     /// <summary>
     /// The text a node is stored as: <c>P3S85:rG</c> is a pool of 3, Stability 85, a hidden rich seam and a revealed gem pocket. A hidden
-    /// seam is lower case (<c>r</c> rich, <c>g</c> gem pocket) and a revealed one upper case.
+    /// seam is lower case (<c>r</c> rich, <c>g</c> gem pocket) and a revealed one upper case. A trailing <c>*</c> means Mother Lode has
+    /// been spent on the node.
     /// </summary>
     public string Serialize()
     {
@@ -108,6 +114,9 @@ public sealed record ProspectingNode
         text.Append(SeamsMarker);
         foreach (var seam in Seams)
             text.Append(Letter(seam));
+
+        if (MotherLodeSpent)
+            text.Append(MotherLodeMarker);
 
         return text.ToString();
     }
@@ -131,8 +140,9 @@ public sealed record ProspectingNode
             return false;
         }
 
+        var spent = text.EndsWith(MotherLodeMarker);
         var seams = ImmutableArray.CreateBuilder<ProspectingSeam>();
-        foreach (var letter in text.Substring(seamsAt + 1))
+        foreach (var letter in text.Substring(seamsAt + 1).TrimEnd(MotherLodeMarker))
         {
             if (!TryReadSeam(letter, out var seam) || seams.Count >= ProspectingRules.MaxSeams)
                 return false;
@@ -143,14 +153,15 @@ public sealed record ProspectingNode
         if (seams.Count > pool)
             return false;
 
-        node = new ProspectingNode(pool, stability, seams.ToImmutable());
+        node = new ProspectingNode(pool, stability, seams.ToImmutable(), spent);
         return true;
     }
 
     public override string ToString() => Serialize();
 
     public bool Equals(ProspectingNode other) =>
-        other != null && Pool == other.Pool && Stability == other.Stability && Seams.SequenceEqual(other.Seams);
+        other != null && Pool == other.Pool && Stability == other.Stability && Seams.SequenceEqual(other.Seams) &&
+        MotherLodeSpent == other.MotherLodeSpent;
 
     public override int GetHashCode() => HashCode.Combine(Pool, Stability, Seams.Length);
 

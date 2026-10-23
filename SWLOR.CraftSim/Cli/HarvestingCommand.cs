@@ -4,6 +4,7 @@ using SWLOR.CraftSim.Data;
 using SWLOR.CraftSim.Gates;
 using SWLOR.CraftSim.Harvesting;
 using SWLOR.CraftSim.Scenario;
+using SWLOR.Game.Server.Service.CraftService.Minigame.Gathering;
 
 namespace SWLOR.CraftSim.Cli
 {
@@ -16,7 +17,7 @@ namespace SWLOR.CraftSim.Cli
         public const int MaximumRuns = 200_000;
         public const int DefaultRuns = 4000;
 
-        private static readonly string[] ValueOptions = { "--runs", "--seed", "--out", "--json", "--repo" };
+        private static readonly string[] ValueOptions = { "--runs", "--seed", "--out", "--json", "--repo", "--loadout" };
         private static readonly string[] Flags = { "--strict" };
 
         public static int Run(string[] args, TextWriter output) => Run(args, output, HarvestingParityOptions.Default);
@@ -28,9 +29,17 @@ namespace SWLOR.CraftSim.Cli
             var runs = CommandLineOptions.GetInt(options, "--runs", DefaultRuns, 1, MaximumRuns);
             var seed = CommandLineOptions.GetInt(options, "--seed", 1, int.MinValue);
             var root = options.TryGetValue("--repo", out var repo) ? RepositoryPaths.FindRoot(repo[0]) : RepositoryPaths.FindRoot();
+            var loadout = GatheringLoadout.None;
+            if (options.TryGetValue("--loadout", out var loadoutValues))
+            {
+                loadout = GatheringLoadout.Find(loadoutValues[0]) ??
+                          throw new ArgumentException($"--loadout names no loadout. Choose one of: {string.Join(", ", GatheringLoadout.All.Select(entry => entry.Slug))}.");
+                defaults = defaults with { Loadout = loadout };
+            }
+
             var outPath = options.TryGetValue("--out", out var outValues)
                 ? outValues[0]
-                : Path.Combine(root, "design", "testing", "crafting-revamp", "harvesting-prospecting-parity.md");
+                : Path.Combine(root, "design", "testing", "crafting-revamp", loadout == GatheringLoadout.None ? "harvesting-prospecting-parity.md" : $"harvesting-{loadout.Slug}.md");
 
             var outputs = new List<(string, string)> { ("--out", outPath) };
             if (options.TryGetValue("--json", out var jsonValues))

@@ -185,8 +185,11 @@ public static class ForgeRules
         }
     }
 
-    /// <summary>Vibro-Hone: best in the cool half of the range, falling toward the hot edge, and weak outside it.</summary>
-    public static double HoneMultiplier(int thermal, int low, int high)
+    /// <summary>
+    /// Vibro-Hone: best in the cool half of the range, falling toward the hot edge, and weak outside it.
+    /// <paramref name="hotEdgeMultiplier"/> is the share of its best result it keeps at the hot edge.
+    /// </summary>
+    public static double HoneMultiplier(int thermal, int low, int high, double hotEdgeMultiplier = HoneHotEdgeMultiplier)
     {
         if (ZoneOf(thermal, low, high) != ForgeThermalZone.InRange)
             return HoneOutsideMultiplier;
@@ -195,19 +198,26 @@ public static class ForgeRules
         if (position <= 0.5)
             return 1.0;
 
-        return 1.0 - (1.0 - HoneHotEdgeMultiplier) * ((position - 0.5) / 0.5);
+        return 1.0 - (1.0 - hotEdgeMultiplier) * ((position - 0.5) / 0.5);
     }
 
-    /// <summary>Cryo-Quench: large inside the range and larger near its center.</summary>
-    public static double QuenchMultiplier(int thermal, int low, int high)
+    /// <summary>
+    /// Cryo-Quench: large inside the range and larger near its center. <paramref name="edgeMultiplier"/> is the share of the
+    /// center bonus it keeps at the edge of the range.
+    /// </summary>
+    public static double QuenchMultiplier(int thermal, int low, int high, double edgeMultiplier = QuenchEdgeMultiplier)
     {
         if (ZoneOf(thermal, low, high) != ForgeThermalZone.InRange)
             return QuenchOutsideMultiplier;
 
         var half = (high - low) / 2.0;
         var distance = Math.Abs(thermal - (low + high) / 2.0);
-        return 1.0 - (1.0 - QuenchEdgeMultiplier) * Math.Min(1.0, half <= 0 ? 0.0 : distance / half);
+        return 1.0 - (1.0 - edgeMultiplier) * Math.Min(1.0, half <= 0 ? 0.0 : distance / half);
     }
+
+    /// <summary>True when Thermal is within <paramref name="window"/> points of the middle of the working range.</summary>
+    public static bool NearCenter(int thermal, int low, int high, int window) =>
+        Math.Abs(thermal - (low + high) / 2.0) <= window;
 
     /// <summary>The Smithery rank an action unlocks at.</summary>
     public static int UnlockRank(string actionId) => actionId switch
@@ -217,10 +227,18 @@ public static class ForgeRules
         ForgeActionIds.RampPlasma => RampPlasmaRank,
         ForgeActionIds.Rebond => RebondRank,
         ForgeActionIds.CryoQuench => CryoQuenchRank,
+        ForgeActionIds.OverdrivePress or ForgeActionIds.SurgePlasma or ForgeActionIds.RedLinePress or ForgeActionIds.MicroHone or
+            ForgeActionIds.TemperHold => PerkActionRank,
         _ => throw new ArgumentException($"Unknown action '{actionId}'.", nameof(actionId))
     };
 
-    /// <summary>Every action in the order the window lists them.</summary>
+    /// <summary>
+    /// The rank a perk-granted action unlocks at as an action. The perk's own rank requirement is the real gate, and the engine offers
+    /// the action only while the perk's stat is above 0, so the action itself is open from rank 0.
+    /// </summary>
+    public const int PerkActionRank = 0;
+
+    /// <summary>The five actions every crafter has, in the order the window lists them. A crafter's perks add more (see <see cref="ForgeEngine.Actions"/>).</summary>
     public static IReadOnlyList<string> ActionIds { get; } = new[]
     {
         ForgeActionIds.RampPlasma,

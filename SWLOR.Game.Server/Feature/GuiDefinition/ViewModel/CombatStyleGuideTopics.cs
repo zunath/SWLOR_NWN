@@ -141,7 +141,16 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
                     },
                     "Perks", "Combat Basics", "Lightsaber Combat Styles", "Twin Blade Combat Styles"),
 
-                Topic("Spear", "Choose Spear for attacks that interrupt or burden a target, or for evasion and positional bonuses.",
+                CraftingTopic("Smithery", "Choose Smithery perks for fast, hot work in the Plasma Forge, or for slower, precise finishing.",
+                    new[]
+                    {
+                        Style("Smithery - Forgemaster", "Forgemaster perks reward fast, hot work: cheaper Thermal, a slower cooling piece, and bigger Hydro-Press gains, with a once-per-craft Red Line Press as its capstone. Hot Forging is its style."),
+                        Style("Smithery - Artisan", "Artisan perks reward careful finishing: more Stable Containment, Finish that ignores Thermal, steadier heat and a stronger Cryo-Quench. Cold Working is its style."),
+                        Style("Choosing a style", "Smithery styles are picked in the Plasma Forge window, one active at a time. You can own both and switch between them before each craft. Check the Perks window for requirements and current effects.")
+                    },
+                    "Perks", "Crafting", "Skills"),
+
+                Topic("Spear","Choose Spear for attacks that interrupt or burden a target, or for evasion and positional bonuses.",
                     new[]
                     {
                         Style("Spear - Vigor", "Vigor pairs attacks with evasion and includes a sweep that gains damage when you are beside or behind a target."),

@@ -513,6 +513,8 @@ namespace SWLOR.NWN.API.NWScript.Enum
         UnnervedStatusEffect = 485,
         OverclockStatusEffect = 511,
         SafeModeStatusEffect = 512,
+        HotForgingStatusEffect = 513,
+        ColdWorkingStatusEffect = 514,
         StripMiningStatusEffect = 519,
         CarefulHandsStatusEffect = 520,
         // End custom status effect icons

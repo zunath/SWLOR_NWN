@@ -9,6 +9,7 @@ using SWLOR.Game.Server.Entity;
 using SWLOR.Game.Server.Feature.StatusEffectDefinition;
 using SWLOR.Game.Server.Service.CraftService;
 using SWLOR.Game.Server.Service.CraftService.Minigame.Circuit;
+using SWLOR.Game.Server.Service.CraftService.Minigame.Forge;
 using SWLOR.Game.Server.Service.CraftService.Minigame.Gathering;
 using SWLOR.Game.Server.Service.PerkService;
 using SWLOR.Game.Server.Service.SkillService;
@@ -37,6 +38,42 @@ public class CraftingStyleSelectionTests
         Definitions.Where(definition => definition.Skill == SkillType.Engineering).Should().Equal(
             new CraftingStyleDefinition(SkillType.Engineering, PerkType.OverclockStyle, typeof(OverclockStatusEffect)),
             new CraftingStyleDefinition(SkillType.Engineering, PerkType.SafeModeStyle, typeof(SafeModeStatusEffect)));
+    }
+
+    [Test]
+    public void TheSmitheryStylesAreRegisteredWithTheirSkillPerkAndStatusEffect()
+    {
+        Definitions.Where(definition => definition.Skill == SkillType.Smithery).Should().Equal(
+            new CraftingStyleDefinition(SkillType.Smithery, PerkType.HotForgingStyle, typeof(HotForgingStatusEffect)),
+            new CraftingStyleDefinition(SkillType.Smithery, PerkType.ColdWorkingStyle, typeof(ColdWorkingStatusEffect)));
+        ForgeStyles.Definitions.Should().HaveCount(2);
+    }
+
+    [Test]
+    public void ASmitheryCrafterMayOwnBothStylesButOnlyTheSelectedOneComesBack()
+    {
+        var player = Record(PerkType.HotForgingStyle, PerkType.ColdWorkingStyle, PerkType.OverclockStyle);
+        CraftingStyleSelection.Set(player, SkillType.Smithery, PerkType.ColdWorkingStyle);
+        CraftingStyleSelection.Set(player, SkillType.Engineering, PerkType.OverclockStyle);
+
+        CraftingStyleSelection.Reconcile(player, Definitions, out var active).Should().BeFalse();
+
+        active.Should().HaveCount(2, "one style of each skill");
+        active.Should().Contain(definition => definition.StatusEffectType == typeof(ColdWorkingStatusEffect));
+        active.Should().Contain(definition => definition.StatusEffectType == typeof(OverclockStatusEffect));
+        active.Should().NotContain(definition => definition.StatusEffectType == typeof(HotForgingStatusEffect));
+    }
+
+    [Test]
+    public void ASmitheryStyleWhosePerkWasRefundedIsNotRestored_AndTheEntryIsDropped()
+    {
+        var player = Record(PerkType.HotForgingStyle);
+        CraftingStyleSelection.Set(player, SkillType.Smithery, PerkType.ColdWorkingStyle);
+
+        CraftingStyleSelection.Reconcile(player, Definitions, out var active).Should().BeTrue();
+
+        active.Should().BeEmpty("the crafter no longer owns Cold Working");
+        CraftingStyleSelection.Selected(player, SkillType.Smithery).Should().Be(PerkType.Invalid);
     }
 
     [Test]
@@ -208,6 +245,15 @@ public class CraftingStyleSelectionTests
     }
 
     [Test]
+    public void ChangingTheSmitheryStyleInTheWindowRecordsIt_AndARefundedStyleIsForgotten()
+    {
+        var styles = Source("Service", "CraftService", "Minigame", "Forge", "ForgeStyles.cs");
+
+        Squash(Method(styles, "Select")).Should().Contain("CraftingStyleSelection.Record(player,Skill,PerkOf(style))");
+        Squash(Method(styles, "RemoveUnowned")).Should().Contain("CraftingStyleSelection.ClearIfSelected(player,Skill,PerkOf(style))");
+    }
+
+    [Test]
     public void EachStylePerkClearsItsSelectionWhenRefunded()
     {
         var engineering = Source("Feature", "PerkDefinition", "EngineeringPerkDefinition.cs");
@@ -215,6 +261,12 @@ public class CraftingStyleSelectionTests
         foreach (var perk in new[] { "OverclockStyle", "SafeModeStyle" })
         {
             Squash(Method(engineering, perk)).Should().Contain(".TriggerRefund(CircuitStyles.RemoveUnowned)", perk);
+        }
+
+        var smithery = Source("Feature", "PerkDefinition", "SmitheryPerkDefinition.cs");
+        foreach (var perk in new[] { "HotForging", "ColdWorking" })
+        {
+            Squash(Method(smithery, perk)).Should().Contain(".TriggerRefund(ForgeStyles.RemoveUnowned)", perk);
         }
     }
 
@@ -239,6 +291,16 @@ public class CraftingStyleSelectionTests
         var initialize = Method(Source("Feature", "GuiDefinition", "ViewModel", "CircuitCraftViewModel.cs"), "Initialize");
 
         Squash(initialize).Should().Contain("CraftingStyleSelection.Restore(Player)");
+    }
+
+    [Test]
+    public void ThePlasmaForgeWindowRestoresTheRecordedStyleWhenItOpens_AndBeforeTheCraftStarts()
+    {
+        var window = Source("Feature", "GuiDefinition", "ViewModel", "ForgeViewModel.cs");
+
+        Squash(Method(window, "Initialize")).Should().Contain("CraftingStyleSelection.Restore(Player)");
+        Squash(Method(window, "Initialize")).Should().Contain("ForgeStyles.RemoveUnowned(Player)");
+        Squash(Method(window, "RefreshStyles")).Should().Contain("ForgeStyles.Owned(Player)");
     }
 
     // The Gathering styles share the Gathering skill, so one is selected at a time, and the two windows that offer them go through

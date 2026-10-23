@@ -1,4 +1,5 @@
 using System.Numerics;
+using SWLOR.Game.Server.Service.AnimationService;
 using SWLOR.Game.Server.Service.FishingService;
 
 namespace SWLOR.Game.Server.Tests.Service.Line;
@@ -62,6 +63,14 @@ internal sealed class FakeFishingFightWorld : IFishingFightWorld
     {
         Log.Add("message");
         Messages.Add(text);
+    }
+
+    public List<string> Animations { get; } = new();
+
+    public void PlayAnimation(uint player, AnimationClip clip)
+    {
+        Log.Add("animate");
+        Animations.Add(clip.Name);
     }
 
     public void CreateFish(uint player, string resref)

@@ -381,6 +381,70 @@ public class FishingFightLifecycleTests
         _world.Xp.Should().Equal(xpBefore);
     }
 
+    [TestCase(LineActionIds.Reel, "sw_reel")]
+    [TestCase(LineActionIds.GiveLine, "sw_giveline")]
+    [TestCase(LineActionIds.Hold, "sw_holdrod")]
+    public void AnActionThatLeavesTheFightGoing_PlaysItsOwnClip(string actionId, string clip)
+    {
+        var lifecycle = Lifecycle();
+        var fight = lifecycle.Bite(EasyFish());
+
+        lifecycle.PlayAction(fight, actionId);
+
+        _world.Animations.Should().Equal(clip);
+    }
+
+    [Test]
+    public void SetHook_HasNoClip_SoNothingPlays()
+    {
+        var lifecycle = Lifecycle();
+        var fight = lifecycle.Bite(EasyFish());
+
+        lifecycle.PlayAction(fight, LineActionIds.SetHook);
+
+        _world.Animations.Should().BeEmpty();
+    }
+
+    [Test]
+    public void ASettledFight_PlaysNoActionClip_SoAClickQueuedBehindTheEndCannotRestartTheRod()
+    {
+        var lifecycle = Lifecycle();
+        var fight = lifecycle.Bite(EasyFish());
+        lifecycle.Abandon(fight, FishingFightEnd.WindowClosed);
+
+        lifecycle.PlayAction(fight, LineActionIds.Reel);
+
+        _world.Animations.Should().BeEmpty();
+    }
+
+    [Test]
+    public void ALandedFish_PlaysTheLandingClipOnce_WhenTheFightSettles()
+    {
+        var lifecycle = Lifecycle();
+        var fight = lifecycle.Bite(EasyFish());
+        Reel(fight);
+        Reel(fight);
+        Reel(fight);
+
+        lifecycle.Settle(fight);
+        lifecycle.Settle(fight);
+
+        _world.Animations.Should().Equal("sw_landfish");
+        _world.Log.Should().ContainInOrder("fish", "animate");
+    }
+
+    [Test]
+    public void ASnappedLine_OrAnEscape_PlaysNoClip()
+    {
+        var lifecycle = Lifecycle(55, 99, 99);
+        var fight = lifecycle.Bite(HopelessFish());
+        Reel(fight);
+
+        lifecycle.Settle(fight).Ending.Should().Be(LineEnding.Snapped);
+
+        _world.Animations.Should().BeEmpty();
+    }
+
     [Test]
     public void AFightSettledByItsEngine_KeepsItsResult_SoAClickQueuedBehindTheLastActionCanTellTheResultIsShown()
     {

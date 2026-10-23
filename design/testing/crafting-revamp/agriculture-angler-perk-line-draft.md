@@ -36,6 +36,14 @@ The rank-20 row appears twice because the purchase is a choice; the line has ten
 
 Owner decisions applied (October 2026): Steady Hold is dropped; Fish Sense is limited to the first turns of a fight (one turn at rank 15, three at rank 35); the +15% bound over Quick Reel applies to the unperked skilled fight only, and the whole line lifts the fight to about 90% of the fish at the angler's own level; fight perks at half strength on a rare fish and Trophy Catch the only full-strength rare-fish perk; one help paragraph per style (`LineDefinition`).
 
+Mechanical contract:
+
+- **Triggers:** every effect acts on the Line, the fishing fight, of the angler's own bite. None touches Quick Reel, fish selection, bait, the fishing point's bites, or today's XP at the bite.
+- **State and lifecycle:** the perks are read once when the fish bites; equipment, perk and rank changes during a fight do not change it, and a fight that ends early (window closed, logout, moving away, combat, death, the rod taken out of the hand) loses the fish as an escape under the same rule as an unperked fight.
+- **Previews:** every action's button shows the exact result with the perks in it, because the preview and the result are one rule.
+- **Rank carry-over:** each rank of Strong Line, Hard Set and Fish Sense restates the one before it inside its own total and never gives less (`AgriculturePerkLineTests`).
+- **XP:** the rest of a fight's multiplied XP is paid in proportion to how long the fight lasted, so a perk that shortens a fight shortens its pay; the XP multipliers of the fish-level bands were raised so gate 6 holds for both styles.
+
 Decisions the line creates:
 
 - Patient Angler against Aggressive Angler: Patient keeps the fish close by making retreat cheap, so it suits an angler who gives line to calm a Dive or a Thrash; Aggressive reels faster, so it suits one who reels against Tire and Run. The styles are balanced to within a couple of points (below).

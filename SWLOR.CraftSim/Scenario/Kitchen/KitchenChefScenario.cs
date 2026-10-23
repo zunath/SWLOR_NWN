@@ -33,6 +33,12 @@ namespace SWLOR.CraftSim.Scenario.Kitchen
         }).ToList();
 
         protected override KitchenPerkStats PerkStatsFor(CraftEngineRequest request) =>
-            request.Style?.Configuration is KitchenBuild build ? build.StatsAt(request.Rank) : _build.StatsAt(request.Rank);
+            request.Style?.Configuration switch
+            {
+                KitchenBuild build => build.StatsAt(request.Rank),
+                KitchenPerkStats stats => stats,
+                Func<int, KitchenPerkStats> atRank => atRank(request.Rank),
+                _ => _build.StatsAt(request.Rank)
+            };
     }
 }

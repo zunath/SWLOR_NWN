@@ -102,6 +102,25 @@ namespace SWLOR.CraftSim.Tests.Scenario
         }
 
         [Test]
+        public void AChefScenarioPlaysTheStatsOrTheFunctionOfTheRankARequestGives_AndItsOwnBuildOtherwise()
+        {
+            var scenario = new KitchenSlowCookingScenario();
+            var recipe = Recipe(30);
+
+            var fixedStats = (KitchenEngine)scenario.CreateEngine(Request(
+                recipe, 30, new CraftStyle("Try", new KitchenPerkStats(LowHeatDonenessPercent: 100))));
+            var atRank = (KitchenEngine)scenario.CreateEngine(Request(
+                recipe, 30, new CraftStyle("Rank", (Func<int, KitchenPerkStats>)(rank => new KitchenPerkStats(ReducePercent: rank)))));
+            var flash = (KitchenEngine)scenario.CreateEngine(Request(recipe, 50, KitchenBuild.FlashCookingLine.AsStyle()));
+            var own = (KitchenEngine)scenario.CreateEngine(Request(recipe, 50));
+
+            fixedStats.Stats.Perks.LowHeatDonenessPercent.Should().Be(100);
+            atRank.Stats.Perks.ReducePercent.Should().Be(30);
+            flash.Stats.Perks.Should().Be(KitchenBuild.FlashCookingLine.StatsAt(50));
+            own.Stats.Perks.Should().NotBe(KitchenPerkStats.None, "the scenario's own build is the Slow Cooking line");
+        }
+
+        [Test]
         public void TheUnperkedScenarioComparesTheStylesAloneWithTheLineAndWithSeasonedPalateOn()
         {
             var pairs = new KitchenScenario().StylePairs;

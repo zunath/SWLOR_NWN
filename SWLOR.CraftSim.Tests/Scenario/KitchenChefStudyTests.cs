@@ -48,5 +48,16 @@ namespace SWLOR.CraftSim.Tests.Scenario
                 .Should().Throw<ArgumentException>();
             ((Action)(() => ChefPerksCommand.Run(new[] { "--bogus", "1" }, output))).Should().Throw<ArgumentException>();
         }
+
+        [TestCase("a/b/c", "'a' is not a whole number")]
+        [TestCase("100/25/99999999999", "'99999999999' is not a whole number")]
+        [TestCase(";", "needs at least one")]
+        public void TheCommandRefusesACandidateThatIsNotWholeNumbers_WithAnArgumentException(string candidates, string message)
+        {
+            var output = new StringWriter();
+
+            ((Action)(() => ChefPerksCommand.Run(new[] { "--styles-only", "--candidates", candidates, "--out", Path.Combine(Path.GetTempPath(), "chef-never.md") }, output)))
+                .Should().Throw<ArgumentException>().WithMessage($"*{message}*");
+        }
     }
 }

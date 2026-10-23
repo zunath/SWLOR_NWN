@@ -29,11 +29,13 @@ namespace SWLOR.CraftSim.Cli
             {
                 candidates = candidateValues[0]
                     .Split(';', StringSplitOptions.RemoveEmptyEntries | StringSplitOptions.TrimEntries)
-                    .Select(group => group.Split('/').Select(int.Parse).ToArray())
+                    .Select(group => group.Split('/').Select(ParseNumber).ToArray())
                     .Select(numbers => numbers.Length == 3
                         ? KitchenChefStudy.Candidate(numbers[0], numbers[1], numbers[2])
                         : throw new ArgumentException("A candidate is slowLow/slowMedium/flashHigh."))
                     .ToList();
+                if (candidates.Count == 0)
+                    throw new ArgumentException("--candidates needs at least one slowLow/slowMedium/flashHigh group.");
             }
 
             var recipes = RecipeCatalog.Load();
@@ -57,5 +59,10 @@ namespace SWLOR.CraftSim.Cli
             output.WriteLine($"Wrote {outPath}");
             return 0;
         }
+
+        private static int ParseNumber(string text) =>
+            int.TryParse(text, System.Globalization.NumberStyles.Integer, System.Globalization.CultureInfo.InvariantCulture, out var value)
+                ? value
+                : throw new ArgumentException($"'{text}' is not a whole number in --candidates.");
     }
 }

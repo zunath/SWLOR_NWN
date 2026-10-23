@@ -10,7 +10,8 @@ namespace SWLOR.CraftSim.Cli
     /// per real hour against the crafting ceiling), to <c>design/testing/crafting-revamp/fabrication-researcher-perks.md</c> unless
     /// <c>--out</c> says otherwise. <c>--search</c> instead searches the Methodical and Intuitive numbers for a pair that passes the style
     /// balance both alone and with the whole line, and writes <c>fabrication-researcher-style-search.md</c>. <c>--ablate</c> instead takes each shared purchase out of the whole line (and adds it to the
-    /// styles alone) to show which one moves the style balance, and writes <c>fabrication-researcher-line-ablation.md</c>.
+    /// styles alone) to show which one moves the style balance, and writes <c>fabrication-researcher-line-ablation.md</c>. <c>--order</c> tries every order of the shared purchases that keeps each
+    /// one useful at its rank and writes <c>fabrication-researcher-line-order.md</c>.
     /// </summary>
     public static class ResearcherPerksCommand
     {
@@ -26,15 +27,16 @@ namespace SWLOR.CraftSim.Cli
         /// <summary>The same command with the Fabrication gear already built, so a test does not read the module's items.</summary>
         internal static int Run(string[] args, TextWriter output, IReadOnlyList<GearLevel> gear)
         {
-            var options = CommandLineOptions.Parse(args, ValueOptions, new[] { "--search", "--ablate" });
+            var options = CommandLineOptions.Parse(args, ValueOptions, new[] { "--search", "--ablate", "--order" });
             var search = options.ContainsKey("--search");
             var ablate = options.ContainsKey("--ablate");
-            if (search && ablate)
-                throw new ArgumentException("--search and --ablate are separate reports; give one.");
+            var order = options.ContainsKey("--order");
+            if ((search ? 1 : 0) + (ablate ? 1 : 0) + (order ? 1 : 0) > 1)
+                throw new ArgumentException("--search, --ablate and --order are separate reports; give one.");
             var root = options.TryGetValue("--repo", out var repo) ? RepositoryPaths.FindRoot(repo[0]) : RepositoryPaths.FindRoot();
             var outPath = options.TryGetValue("--out", out var outValues)
                 ? outValues[0]
-                : Path.Combine(root, "design", "testing", "crafting-revamp", search ? "fabrication-researcher-style-search.md" : ablate ? "fabrication-researcher-line-ablation.md" : "fabrication-researcher-perks.md");
+                : Path.Combine(root, "design", "testing", "crafting-revamp", search ? "fabrication-researcher-style-search.md" : ablate ? "fabrication-researcher-line-ablation.md" : order ? "fabrication-researcher-line-order.md" : "fabrication-researcher-perks.md");
 
             if (gear == null)
             {
@@ -54,6 +56,7 @@ namespace SWLOR.CraftSim.Cli
             var command = "SWLOR.CraftSim researcher-perks " + string.Join(" ", args);
             var report = search ? ResearcherStyleSearch.Build(studyOptions, command)
                 : ablate ? ResearcherLineAblation.Build(studyOptions, command)
+                : order ? ResearcherLineOrder.Build(studyOptions, command)
                 : ResearcherPerkStudy.Build(studyOptions, command);
 
             Directory.CreateDirectory(Path.GetDirectoryName(Path.GetFullPath(outPath))!);

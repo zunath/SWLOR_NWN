@@ -17,13 +17,13 @@ namespace SWLOR.Game.Server.Feature.PerkDefinition
         public Dictionary<PerkType, PerkDetail> BuildPerks()
         {
             FieldNotes();
-            SteadyHands();
-            SecondOpinion();
+            EfficientAnalysis();
             Methodical();
             Intuitive();
-            PeerReview();
-            EfficientAnalysis();
             BroaderHypotheses();
+            SteadyHands();
+            PeerReview();
+            SecondOpinion();
             Breakthrough();
 
             return _builder.Build();
@@ -36,16 +36,16 @@ namespace SWLOR.Game.Server.Feature.PerkDefinition
                 .Icon("ife_rsrch")
 
                 .AddPerkLevel()
-                .Description("In a research experiment, every Test has 6 more points of chance to find evidence.")
+                .Description("In a research experiment, every Test has 10 more points of chance to find evidence.")
                 .Price(1)
                 .RequirementSkill(SkillType.Fabrication, 5)
-                .IncreasesStat(StatType.ExperimentTestChancePercent, 6)
+                .IncreasesStat(StatType.ExperimentTestChancePercent, 10)
 
                 .AddPerkLevel()
-                .Description("In a research experiment, every Test has 12 more points of chance to find evidence.")
-                .Price(3)
-                .RequirementSkill(SkillType.Fabrication, 40)
-                .IncreasesStat(StatType.ExperimentTestChancePercent, 12);
+                .Description("In a research experiment, every Test has 20 more points of chance to find evidence.")
+                .Price(2)
+                .RequirementSkill(SkillType.Fabrication, 15)
+                .IncreasesStat(StatType.ExperimentTestChancePercent, 20);
         }
 
         private void SteadyHands()
@@ -56,8 +56,8 @@ namespace SWLOR.Game.Server.Feature.PerkDefinition
 
                 .AddPerkLevel()
                 .Description("In a research experiment, Refine Method costs 5 less CP, to a minimum of 1 CP.")
-                .Price(1)
-                .RequirementSkill(SkillType.Fabrication, 10)
+                .Price(3)
+                .RequirementSkill(SkillType.Fabrication, 35)
                 .IncreasesStat(StatType.ExperimentRefineCpReduction, 5);
         }
 
@@ -70,7 +70,7 @@ namespace SWLOR.Game.Server.Feature.PerkDefinition
                 .AddPerkLevel()
                 .Description("Every research experiment has 1 more trial.")
                 .Price(3)
-                .RequirementSkill(SkillType.Fabrication, 35)
+                .RequirementSkill(SkillType.Fabrication, 25)
                 .IncreasesStat(StatType.ExperimentTrials, 1);
         }
 
@@ -113,7 +113,7 @@ namespace SWLOR.Game.Server.Feature.PerkDefinition
                 .AddPerkLevel()
                 .Description("Adds Peer Review to a research experiment where evidence decides between a credit reduction and a time reduction: once per experiment, for 25 CP and no trial, move half of one candidate's evidence (rounded up) to the other.")
                 .Price(3)
-                .RequirementSkill(SkillType.Fabrication, 25)
+                .RequirementSkill(SkillType.Fabrication, 40)
                 .IncreasesStat(StatType.ExperimentPeerReviewUnlocked, 1);
         }
 
@@ -125,14 +125,14 @@ namespace SWLOR.Game.Server.Feature.PerkDefinition
 
                 .AddPerkLevel()
                 .Description("In a research experiment, Analyze cuts 6% of the job's time for each piece of spare evidence instead of 5%. The cap of 25% stays.")
-                .Price(3)
-                .RequirementSkill(SkillType.Fabrication, 30)
+                .Price(1)
+                .RequirementSkill(SkillType.Fabrication, 10)
                 .IncreasesStat(StatType.ExperimentTimeCutPerEvidencePercent, 1)
 
                 .AddPerkLevel()
                 .Description("In a research experiment, Analyze cuts 7% of the job's time for each piece of spare evidence instead of 5%. The cap of 25% stays.")
                 .Price(3)
-                .RequirementSkill(SkillType.Fabrication, 45)
+                .RequirementSkill(SkillType.Fabrication, 30)
                 .IncreasesStat(StatType.ExperimentTimeCutPerEvidencePercent, 2);
         }
 
@@ -144,8 +144,8 @@ namespace SWLOR.Game.Server.Feature.PerkDefinition
 
                 .AddPerkLevel()
                 .Description("In a research experiment, Refine Method raises the chance of your next Test by 20 points instead of 15.")
-                .Price(2)
-                .RequirementSkill(SkillType.Fabrication, 15)
+                .Price(3)
+                .RequirementSkill(SkillType.Fabrication, 45)
                 .IncreasesStat(StatType.ExperimentRefineChancePercent, 5);
         }
 

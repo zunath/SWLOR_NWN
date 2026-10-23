@@ -4,6 +4,7 @@ using SWLOR.Game.Server.Service;
 using SWLOR.Game.Server.Service.CraftService;
 using SWLOR.Game.Server.Service.CraftService.Minigame;
 using SWLOR.Game.Server.Service.CraftService.Minigame.Circuit;
+using SWLOR.Game.Server.Service.CraftService.Minigame.Forge;
 using SWLOR.Game.Server.Service.CraftService.Minigame.Kitchen;
 using SWLOR.Game.Server.Service.CraftService.Minigame.Line;
 using SWLOR.Game.Server.Service.CraftService.Minigame.Reaction;
@@ -20,7 +21,7 @@ public class CraftMinigameXpTests
     {
         foreach (var minigame in Enum.GetValues<CraftMinigameType>().Where(minigame =>
                      minigame is not (CraftMinigameType.Reaction or CraftMinigameType.Fabricator or CraftMinigameType.Circuit or CraftMinigameType.Line
-                         or CraftMinigameType.Search or CraftMinigameType.Kitchen)))
+                         or CraftMinigameType.Search or CraftMinigameType.Kitchen or CraftMinigameType.Forge)))
         {
             foreach (var level in new[] { 1, 10, 11, 50 })
                 CraftMinigameXp.MultiplierFor(minigame, level).Should().Be(1.0, $"{minigame} level {level}");
@@ -53,6 +54,23 @@ public class CraftMinigameXpTests
         // unless CraftSim shows the XP rate needs more, so its multipliers are at least 1.
         foreach (var level in new[] { 0, 1, 2, 3, 4, 5 })
             CraftMinigameXp.MultiplierFor(CraftMinigameType.Search, level).Should().Be(SearchRules.XpMultiplierForLevel(level)).And.BeGreaterThanOrEqualTo(1.0, $"Search site level {level}");
+    }
+
+    [Test]
+    public void TheForgesMultiplierDiffersByRecipeLevelBand_AndOnlyEverLiftsTheXp()
+    {
+        CraftMinigameXp.MultiplierFor(CraftMinigameType.Forge, 5).Should().Be(ForgeRules.XpMultiplierLevels1To10);
+        CraftMinigameXp.MultiplierFor(CraftMinigameType.Forge, 10).Should().Be(ForgeRules.XpMultiplierLevels1To10);
+        CraftMinigameXp.MultiplierFor(CraftMinigameType.Forge, 11).Should().Be(ForgeRules.XpMultiplierLevels11To20);
+        CraftMinigameXp.MultiplierFor(CraftMinigameType.Forge, 30).Should().Be(ForgeRules.XpMultiplierLevels21To30);
+        CraftMinigameXp.MultiplierFor(CraftMinigameType.Forge, 40).Should().Be(ForgeRules.XpMultiplierLevels31To40);
+        CraftMinigameXp.MultiplierFor(CraftMinigameType.Forge, 53).Should().Be(ForgeRules.XpMultiplierLevels41Up);
+        CraftMinigameXp.MultiplierFor(CraftMinigameType.Forge).Should().Be(ForgeRules.XpMultiplierLevels1To10, "no level takes the lowest band");
+        new[]
+        {
+            ForgeRules.XpMultiplierLevels1To10, ForgeRules.XpMultiplierLevels11To20, ForgeRules.XpMultiplierLevels21To30,
+            ForgeRules.XpMultiplierLevels31To40, ForgeRules.XpMultiplierLevels41Up
+        }.Should().OnlyContain(multiplier => multiplier >= 1.0);
     }
 
     [TestCase(10, 2.5, 25)]

@@ -51,7 +51,7 @@ public class CircuitXpMultiplierTests
         foreach (var level in new[] { 1, 10, 11, 25, 40, 53 })
             CraftMinigameXp.MultiplierFor(CraftMinigameType.Circuit, level).Should().Be(CircuitRules.XpMultiplierFor(level));
 
-        CraftMinigameXp.MultiplierFor(CraftMinigameType.Forge, 5).Should().Be(1.0);
+        CraftMinigameXp.MultiplierFor(CraftMinigameType.Experiment, 5).Should().Be(1.0);
         CraftMinigameXp.ScaleBaseXp(100, 2.5).Should().Be(250);
         CraftMinigameXp.ScaleBaseXp(7, 1.5).Should().Be(11, "10.5 rounds away from zero");
         CraftMinigameXp.ScaleBaseXp(0, 2.5).Should().Be(0);

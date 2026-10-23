@@ -11,8 +11,8 @@ namespace SWLOR.Game.Server.Tests.Service;
 /// <summary>Covers the Plasma Forge window's layout and the words it shows for the engine's previews.</summary>
 public class ForgeWindowTests
 {
-    private static ForgeSetup Setup(int startingThermal = 50, int cooling = 0, int shapeShare = 50) =>
-        new(new ForgeParameters(50, 30, cooling, startingThermal, shapeShare), 20, 20, 0, 0, 0);
+    private static ForgeSetup Setup(int startingThermal = 50, int cooling = 0, int shapeShare = 50, int enhancementShapePercent = 0) =>
+        new(new ForgeParameters(50, 30, cooling, startingThermal, shapeShare), 20, 20, 0, 0, 0, enhancementShapePercent);
 
     private static ForgeEngine Engine(ForgeSetup setup = null) =>
         new(setup ?? Setup(), new ScriptedMinigameRandom(Enumerable.Repeat(100, 50).ToArray()));
@@ -32,15 +32,15 @@ public class ForgeWindowTests
     public void ThePreviewTextShowsEveryChangeAndTheFinishesTheItemWarning()
     {
         var engine = Engine(Setup(startingThermal: 65));
-        for (var press = 0; press < 6; press++)
+        for (var press = 0; press < 4; press++)
             engine.Perform(ForgeActionIds.HydroPress);
-        engine.Meters.Progress.Value.Should().Be(936);
+        engine.Meters.Progress.Value.Should().Be(912);
 
         var preview = engine.Preview(ForgeActionIds.HydroPress);
         var text = ForgePreviewText.Describe(preview, engine.Setup);
 
         preview.FinishesItem.Should().BeTrue();
-        text.Should().Be("Shape +6.4%, Integrity -5. FINISHES THE ITEM");
+        text.Should().Be("Shape +8.8%, Integrity -10. FINISHES THE ITEM");
     }
 
     [Test]
@@ -49,15 +49,15 @@ public class ForgeWindowTests
         var engine = Engine(Setup(startingThermal: 40, cooling: 5));
 
         ForgePreviewText.Describe(engine.Preview(ForgeActionIds.RampPlasma), engine.Setup)
-            .Should().Be("Integrity -2, CP -8, Thermal 40 -> 60");
+            .Should().Be("Integrity -3, CP -10, Thermal 40 -> 57");
         ForgePreviewText.Describe(engine.Preview(ForgeActionIds.VibroHone), engine.Setup)
-            .Should().Be("Finish +10.5%, Integrity -4, Thermal 40 -> 35");
+            .Should().Be("Finish +9.0%, Integrity -8, Thermal 40 -> 35");
     }
 
     [Test]
     public void ThePreviewTextWarnsWhenAnActionMayBreakThePiece()
     {
-        var engine = Engine(Setup(startingThermal: 100, shapeShare: 60));
+        var engine = Engine(Setup(startingThermal: 100, shapeShare: 60, enhancementShapePercent: 100));
         while (engine.Meters.Integrity.Value > 22)
             engine.Perform(ForgeActionIds.HydroPress);
 
@@ -95,10 +95,10 @@ public class ForgeWindowTests
         var ramp = engine.Preview(ForgeActionIds.RampPlasma);
         var press = engine.Preview(ForgeActionIds.HydroPress);
 
-        ForgePreviewText.ButtonText(ramp).Should().Be("Ramp Plasma [8 CP]");
+        ForgePreviewText.ButtonText(ramp).Should().Be("Ramp Plasma [10 CP]");
         ForgePreviewText.ButtonText(press).Should().Be("Hydro-Press");
-        ForgePreviewText.Tooltip(ramp).Should().Contain("Raises Thermal").And.Contain("8 CP").And.Contain("2 Integrity");
-        ForgePreviewText.Tooltip(press).Should().Contain("5 Integrity").And.NotContain("CP");
+        ForgePreviewText.Tooltip(ramp).Should().Contain("Raises Thermal").And.Contain("10 CP").And.Contain("3 Integrity");
+        ForgePreviewText.Tooltip(press).Should().Contain("10 Integrity").And.NotContain("CP");
     }
 
     [Test]

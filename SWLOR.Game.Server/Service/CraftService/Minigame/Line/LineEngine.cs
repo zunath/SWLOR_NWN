@@ -103,7 +103,7 @@ public sealed class LineEngine : MinigameEngineBase<LineState>
 
         var first = firstMove ?? setup.Pattern.Roll(random, null);
         FishMove? then = null;
-        if (setup.ForecastDepth >= 2)
+        if (setup.SeesTwoMoves(0))
             then = thenMove ?? setup.Pattern.Roll(random, first);
 
         return new LineState(meters, null, first, then, 0);
@@ -139,20 +139,17 @@ public sealed class LineEngine : MinigameEngineBase<LineState>
     protected override LineState EndTurn(LineState state) => state with { Round = state.Round + 1 };
 
     /// <summary>
-    /// Announces the fish's next move. An exhausted fish only rests. Otherwise the move announced as "then" comes up now when the
-    /// angler sees two moves ahead, and a new one is picked after it.
+    /// Announces the fish's next move. An exhausted fish only rests. Otherwise the move that was announced as "then" comes up now, and
+    /// a new one is picked after it when the angler sees two moves ahead on this turn (Fish Sense, for its first turns only).
     /// </summary>
     protected override LineState RollForecast(LineState state, IMinigameRandom random)
     {
-        var sees = _setup.ForecastDepth >= 2;
+        var sees = _setup.SeesTwoMoves(state.Round);
         if (state.Exhausted)
             return state with { Move = FishMove.Tire, ThenMove = sees ? FishMove.Tire : null };
 
-        if (!sees)
-            return state with { Move = _setup.Pattern.Roll(random, state.Move), ThenMove = null };
-
         var now = state.ThenMove ?? _setup.Pattern.Roll(random, state.Move);
-        return state with { Move = now, ThenMove = _setup.Pattern.Roll(random, now) };
+        return state with { Move = now, ThenMove = sees ? _setup.Pattern.Roll(random, now) : null };
     }
 
     protected override IReadOnlyList<MinigameMeterView> DescribeMeters(LineState state) => new[]

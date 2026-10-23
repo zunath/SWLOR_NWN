@@ -16,26 +16,28 @@ public class LineSetupTests
 
         var setup = LineSetup.ForFish(25, FishRarity.Common, 25, 2);
 
-        // Cap 20 + 2 + 25 / 12; reel 6 + (2 + 2) / 6 x 2; start 5 + 2 x 6; escape 17 + 2 + 2 x 6; rung 42 gives a 43.6% pull of 24.
+        // Cap 20 + 2 + 25 / 12; reel 6 + (2 + 2) / 6 x 2; start 5 + 2 x 6; escape 17 + 2 + 2 x 6; rung 44 gives a 45.2% pull of 24.
         setup.TensionCap.Should().Be(24);
         setup.ReelDistance.Should().Be(6);
         setup.StartDistance.Should().Be(17);
         setup.DistanceMax.Should().Be(31);
-        setup.Pull.Should().Be(10);
-        setup.Stamina.Should().Be(18);
+        setup.Pull.Should().Be(11);
+        setup.Stamina.Should().Be(19);
         setup.Difficulty.Should().Be(0);
-        setup.Pattern.Weight(null, FishMove.Tire).Should().Be(26, "the Tire weight on rung 42 is 45 less 0.45 per rung");
+        setup.Pattern.Weight(null, FishMove.Tire).Should().Be(25, "the Tire weight on rung 44 is 45 less 0.45 per rung");
     }
 
-    [TestCase(25, 25, 42)]
-    [TestCase(26, 25, 47)]
-    [TestCase(30, 25, 67)]
-    [TestCase(24, 25, 37)]
-    [TestCase(20, 25, 17)]
+    [TestCase(25, 25, 44)]
+    [TestCase(26, 25, 51)]
+    [TestCase(28, 25, 65)]
+    [TestCase(29, 25, 74)]
+    [TestCase(30, 25, 83)]
+    [TestCase(24, 25, 39)]
+    [TestCase(20, 25, 19)]
     [TestCase(10, 25, 0)]
     [TestCase(40, 25, 100)]
-    [TestCase(52, 50, 52)]
-    public void TheRungRisesFiveForEachLevelTheFishIsAboveTheRank_WithinTheLadder(int level, int rank, int rung)
+    [TestCase(52, 50, 58)]
+    public void TheRungFallsFiveForEachLevelBelowTheRank_RisesSevenForEachLevelAboveIt_AndNineBeyondThreeLevels_WithinTheLadder(int level, int rank, int rung)
     {
         LineSetup.Rung(level, rank).Should().Be(rung);
     }
@@ -150,6 +152,60 @@ public class LineSetupTests
         common.Stamina.Should().Be(plainCommon.Stamina);
         rare.Pull.Should().BeLessThan(plainRare.Pull);
         rare.Stamina.Should().BeLessThan(plainRare.Stamina);
+    }
+
+    [Test]
+    public void ARareFish_TakesTheFightPerksAtHalfStrength_AndTrophyCatchAtFullStrength()
+    {
+        var wholeLine = new LineAnglerEffects(
+            TensionCapBonus: 2,
+            ReelDistanceBonus: 1,
+            ReelTensionBonus: 1,
+            GiveLineDistanceReduction: 1,
+            SetHookDrainBonus: 2,
+            HoldDrainBonus: 1,
+            ForecastDepth: 2);
+        var plain = LineSetup.ForFish(52, FishRarity.Rare, 50, 4);
+
+        var withLine = LineSetup.ForFish(52, FishRarity.Rare, 50, 4, wholeLine);
+        var withTrophy = LineSetup.ForFish(52, FishRarity.Rare, 50, 4, wholeLine with { RareFishRungReduction = 12 });
+        var common = LineSetup.ForFish(52, FishRarity.Common, 50, 4, wholeLine);
+
+        // Half strength, rounded down: a bonus of 2 becomes 1, a bonus of 1 does nothing, and Fish Sense (which cannot be halved) is off.
+        withLine.TensionCap.Should().Be(plain.TensionCap + 1);
+        withLine.SetHookDrain.Should().Be(plain.SetHookDrain + 1);
+        withLine.ReelDistance.Should().Be(plain.ReelDistance);
+        withLine.ReelTension.Should().Be(plain.ReelTension);
+        withLine.GiveLineDistance.Should().Be(plain.GiveLineDistance);
+        withLine.HoldDrain.Should().Be(plain.HoldDrain);
+        withLine.ForecastDepth.Should().Be(1, "Fish Sense does not read a rare fish's next two moves");
+        withLine.Pull.Should().Be(plain.Pull, "the perks do not move a rare fish down the ladder; only Trophy Catch does");
+
+        withTrophy.TensionCap.Should().Be(plain.TensionCap + 1, "the fight perks stay at half strength beside Trophy Catch");
+        withTrophy.ForecastDepth.Should().Be(1);
+        withTrophy.Pull.Should().BeLessThan(plain.Pull, "Trophy Catch is the one rare-fish perk at full strength");
+        withTrophy.Stamina.Should().BeLessThan(plain.Stamina);
+
+        common.TensionCap.Should().Be(plain.TensionCap + 2, "a common fish of the same level takes the whole line");
+        common.SetHookDrain.Should().Be(plain.SetHookDrain + 2);
+        common.ForecastDepth.Should().Be(2);
+    }
+
+    [Test]
+    public void HalfStrengthAgainstRareFish_RoundsEveryBonusDown_AndKeepsTrophyCatchWhole()
+    {
+        var halved = new LineAnglerEffects(
+            TensionCapBonus: 3,
+            ReelDistanceBonus: 2,
+            ReelTensionBonus: 1,
+            GiveLineDistanceReduction: 3,
+            SetHookDrainBonus: 5,
+            HoldDrainBonus: 1,
+            ForecastDepth: 2,
+            RareFishRungReduction: 12).AtHalfStrengthAgainstRareFish();
+
+        halved.Should().Be(new LineAnglerEffects(1, 1, 0, 1, 2, 0, 1, 12));
+        LineAnglerEffects.None.AtHalfStrengthAgainstRareFish().Should().Be(LineAnglerEffects.None);
     }
 
     [Test]

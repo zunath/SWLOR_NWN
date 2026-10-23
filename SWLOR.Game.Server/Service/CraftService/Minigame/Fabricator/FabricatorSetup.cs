@@ -16,6 +16,7 @@ public sealed class FabricatorSetup
     /// <param name="control">The crafter's Fabrication Control, which powers Precision Pass.</param>
     /// <param name="gearCp">The CP from the crafter's gear.</param>
     /// <param name="enhancementProgressPenalty">The progress points the selected enhancements add to what the piece needs.</param>
+    /// <param name="perkStats">The numbers the crafter's Builder perks change; null plays the Fabricator as tuned.</param>
     public FabricatorSetup(
         FabricatorParameters parameters,
         int recipeLevel,
@@ -24,8 +25,10 @@ public sealed class FabricatorSetup
         int craftsmanship,
         int control,
         int gearCp,
-        int enhancementProgressPenalty = 0)
+        int enhancementProgressPenalty = 0,
+        FabricatorPerkStats perkStats = null)
     {
+        PerkStats = perkStats ?? FabricatorPerkStats.None;
         Parameters = parameters ?? FabricatorParameters.Fallback;
         RecipeLevel = recipeLevel;
         Rank = Math.Max(0, rank);
@@ -56,7 +59,8 @@ public sealed class FabricatorSetup
         int craftsmanship,
         int control,
         int gearCp,
-        int enhancementProgressPenalty = 0)
+        int enhancementProgressPenalty = 0,
+        FabricatorPerkStats perkStats = null)
     {
         if (recipe == null)
             throw new ArgumentNullException(nameof(recipe));
@@ -69,8 +73,12 @@ public sealed class FabricatorSetup
             craftsmanship,
             control,
             gearCp,
-            enhancementProgressPenalty);
+            enhancementProgressPenalty,
+            perkStats);
     }
+
+    /// <summary>The numbers the crafter's Builder perks change.</summary>
+    public FabricatorPerkStats PerkStats { get; }
 
     public FabricatorParameters Parameters { get; }
 
@@ -104,14 +112,32 @@ public sealed class FabricatorSetup
     /// </summary>
     public int MaxMachineCondition { get; }
 
-    public int WearRate => Parameters.WearRate;
+    /// <summary>The Machine Condition a Run or Precision Pass wears: the recipe's wear rate less the crafter's perks, never below 1.</summary>
+    public int WearRate => Math.Max(1, Parameters.WearRate - Math.Max(0, PerkStats.WearReduction));
 
     /// <summary>The progress that finishes all three sub-assemblies.</summary>
     public int MaxProgress => FrameSize + ShellSize + FittingsSize;
 
-    public int RetoolCp => FabricatorRules.RetoolCp(RecipeLevel);
+    /// <summary>The CP a Retool costs: the level's cost less the crafter's perks, never below 1.</summary>
+    public int RetoolCp => FabricatorRules.ReduceCpByPercent(FabricatorRules.RetoolCp(RecipeLevel), PerkStats.RetoolCpReductionPercent);
 
-    public int ServiceCp => FabricatorRules.ServiceCp(RecipeLevel);
+    /// <summary>The CP a Service costs: the level's cost less the crafter's perks, never below 1.</summary>
+    public int ServiceCp => FabricatorRules.ReduceCp(FabricatorRules.ServiceCp(RecipeLevel), PerkStats.ServiceCpReduction);
+
+    /// <summary>The Machine Condition one Service restores.</summary>
+    public int ServiceRestore => FabricatorRules.ServiceRestore + Math.Max(0, PerkStats.ServiceRestoreBonus);
+
+    /// <summary>The number of actions, counting the next one, in which a primed head can still use its prime.</summary>
+    public int PrimeWindowActions => FabricatorRules.PrimeWindowActions + Math.Max(0, PerkStats.PrimeWindowBonusActions);
+
+    /// <summary>The bonus, in percent, a Prime Feedstock gives the primed head's next action.</summary>
+    public int PrimeBonusPercent => FabricatorRules.PrimeBonusPercent + Math.Max(0, PerkStats.PrimeBonusPercentBonus);
+
+    /// <summary>Assemble caps the piece's quality at its weakest sub-assembly plus this many points.</summary>
+    public int AssembleCapPoints => FabricatorRules.AssembleCapPoints + Math.Max(0, PerkStats.AssembleCapBonusPoints);
+
+    /// <summary>True when the crafter's perks give the Fabricator Dual Feed.</summary>
+    public bool DualFeedUnlocked => PerkStats.DualFeedUnlocked;
 
     public int SizeOf(SubAssembly part) => part switch
     {
@@ -147,11 +173,25 @@ public sealed class FabricatorSetup
     /// <param name="primed">True when Prime Feedstock gives the Run its bonus.</param>
     public int RunGain(bool onHead, bool primed)
     {
-        var gain = BaseWork * FabricatorRules.RunPercent / 100.0 * ProgressFactor;
+        var gain = FullRun;
         if (!onHead)
             gain *= FabricatorRules.OffHeadFactor;
         if (primed)
-            gain *= 1.0 + FabricatorRules.PrimeBonusPercent / 100.0;
+            gain *= 1.0 + PrimeBonusPercent / 100.0;
+
+        return Math.Max(1, (int)Math.Round(gain, MidpointRounding.AwayFromZero));
+    }
+
+    /// <summary>
+    /// The progress each of Dual Feed's two sub-assemblies gets before its size limits it: a share of a full Run, whichever head is
+    /// loaded.
+    /// </summary>
+    /// <param name="primed">True when Prime Feedstock gives the loaded head's action its bonus.</param>
+    public int DualFeedGain(bool primed)
+    {
+        var gain = FullRun * FabricatorRules.DualFeedPercent / 100.0;
+        if (primed)
+            gain *= 1.0 + PrimeBonusPercent / 100.0;
 
         return Math.Max(1, (int)Math.Round(gain, MidpointRounding.AwayFromZero));
     }
@@ -159,12 +199,18 @@ public sealed class FabricatorSetup
     /// <summary>The quality points a Precision Pass adds before the sub-assembly's maximum limits it.</summary>
     public int PrecisionGain(bool primed)
     {
-        var gain = FabricatorRules.PrecisionPoints * QualityFactor;
+        var gain = FabricatorRules.PrecisionPoints * QualityFactor * PowerFactor(PerkStats.PrecisionPowerPercent);
         if (primed)
-            gain *= 1.0 + FabricatorRules.PrimeBonusPercent / 100.0;
+            gain *= 1.0 + PrimeBonusPercent / 100.0;
 
         return Math.Max(1, (int)Math.Round(gain, MidpointRounding.AwayFromZero));
     }
+
+    /// <summary>What a Run on the head's own sub-assembly makes, before the sub-assembly's size and any prime limit it.</summary>
+    private double FullRun =>
+        BaseWork * FabricatorRules.RunPercent / 100.0 * ProgressFactor * PowerFactor(PerkStats.RunPowerPercent);
+
+    private static double PowerFactor(int percent) => Math.Max(0.0, 1.0 + percent / 100.0);
 
     /// <summary>
     /// The average of the three sub-assemblies' quality, weighted by the recipe's quality shares. The quality meter shows it while
@@ -178,14 +224,14 @@ public sealed class FabricatorSetup
 
     /// <summary>
     /// The quality the item is made at: the weighted average of the three sub-assemblies' quality, no higher than the weakest
-    /// sub-assembly plus <see cref="FabricatorRules.AssembleCapPoints"/>.
+    /// sub-assembly plus <see cref="AssembleCapPoints"/>.
     /// </summary>
     public int PieceQuality(int frame, int shell, int fittings) =>
         Math.Min(AverageQuality(frame, shell, fittings), CapFor(frame, shell, fittings));
 
     /// <summary>The highest quality the piece can have with these sub-assemblies: the weakest plus the cap.</summary>
     public int CapFor(int frame, int shell, int fittings) =>
-        Math.Min(FabricatorRules.MaxQuality, Math.Min(frame, Math.Min(shell, fittings)) + FabricatorRules.AssembleCapPoints);
+        Math.Min(FabricatorRules.MaxQuality, Math.Min(frame, Math.Min(shell, fittings)) + AssembleCapPoints);
 
     public MinigameMeters StartingMeters() =>
         MinigameMeters.Start(MaxProgress, FabricatorRules.MaxQuality, MaxMachineCondition, MaxCp);
@@ -195,7 +241,8 @@ public sealed class FabricatorSetup
     {
         FabricatorActionIds.RunFrame or FabricatorActionIds.RunShell or FabricatorActionIds.RunFittings or
             FabricatorActionIds.PrecisionPass or FabricatorActionIds.RetoolCutter or FabricatorActionIds.RetoolExtruder or
-            FabricatorActionIds.RetoolBonder or FabricatorActionIds.Assemble => 0,
+            FabricatorActionIds.RetoolBonder or FabricatorActionIds.Assemble or FabricatorActionIds.DualFeedFirst or
+            FabricatorActionIds.DualFeedSecond => 0,
         FabricatorActionIds.Service => FabricatorRules.ServiceRank,
         _ => -1
     };

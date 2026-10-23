@@ -20,29 +20,8 @@ public sealed class FabricatorEngine : MinigameEngineBase<FabricatorState>
     public const string ShellQualityId = "shell_quality";
     public const string FittingsQualityId = "fittings_quality";
 
-    private static readonly IReadOnlyList<MinigameActionInfo> ActionList = new[]
-    {
-        new MinigameActionInfo(FabricatorActionIds.RunFrame, "Run (Frame)",
-            "Builds the Frame. Full effect with the Cutter loaded, half effect with another head and no retooling."),
-        new MinigameActionInfo(FabricatorActionIds.RunShell, "Run (Shell)",
-            "Builds the Shell. Full effect with the Extruder loaded, half effect with another head and no retooling."),
-        new MinigameActionInfo(FabricatorActionIds.RunFittings, "Run (Fittings)",
-            "Builds the Fittings. Full effect with the Bonder loaded, half effect with another head and no retooling."),
-        new MinigameActionInfo(FabricatorActionIds.PrecisionPass, "Precision Pass",
-            "Raises the quality of the sub-assembly the loaded head serves. It cannot be done off-head."),
-        new MinigameActionInfo(FabricatorActionIds.RetoolCutter, "Retool (Cutter)",
-            "Loads the Cutter, which serves the Frame. Costs CP."),
-        new MinigameActionInfo(FabricatorActionIds.RetoolExtruder, "Retool (Extruder)",
-            "Loads the Extruder, which serves the Shell. Costs CP."),
-        new MinigameActionInfo(FabricatorActionIds.RetoolBonder, "Retool (Bonder)",
-            "Loads the Bonder, which serves the Fittings. Costs CP."),
-        new MinigameActionInfo(FabricatorActionIds.Service, "Service",
-            $"Restores {FabricatorRules.ServiceRestore} Machine Condition. Costs CP."),
-        new MinigameActionInfo(FabricatorActionIds.Assemble, "Assemble",
-            $"Finishes the item once the Frame, Shell and Fittings are complete. The quality is the average of the three, no higher than the weakest plus {FabricatorRules.AssembleCapPoints}.")
-    };
-
     private readonly FabricatorSetup _setup;
+    private readonly IReadOnlyList<MinigameActionInfo> _actions;
 
     /// <param name="random">The only source of chance.</param>
     /// <param name="setup">The recipe, the crafter and the enhancements.</param>
@@ -50,11 +29,12 @@ public sealed class FabricatorEngine : MinigameEngineBase<FabricatorState>
         : base(random, CreateInitialState(setup))
     {
         _setup = setup;
+        _actions = BuildActions(setup);
     }
 
     public override CraftMinigameType Type => CraftMinigameType.Fabricator;
 
-    public override IReadOnlyList<MinigameActionInfo> Actions => ActionList;
+    public override IReadOnlyList<MinigameActionInfo> Actions => _actions;
 
     public FabricatorSetup Setup => _setup;
 
@@ -77,6 +57,53 @@ public sealed class FabricatorEngine : MinigameEngineBase<FabricatorState>
     /// <summary>True when all three sub-assemblies are complete, which is when Assemble becomes available.</summary>
     public bool IsComplete => AllComplete(State);
 
+    /// <summary>The actions this crafter has: the nine every crafter has, and Dual Feed's two when the crafter's perks give it.</summary>
+    private static IReadOnlyList<MinigameActionInfo> BuildActions(FabricatorSetup setup)
+    {
+        if (setup == null)
+            throw new ArgumentNullException(nameof(setup));
+
+        var actions = new List<MinigameActionInfo>
+        {
+            new(FabricatorActionIds.RunFrame, "Run (Frame)",
+                "Builds the Frame. Full effect with the Cutter loaded, half effect with another head and no retooling."),
+            new(FabricatorActionIds.RunShell, "Run (Shell)",
+                "Builds the Shell. Full effect with the Extruder loaded, half effect with another head and no retooling."),
+            new(FabricatorActionIds.RunFittings, "Run (Fittings)",
+                "Builds the Fittings. Full effect with the Bonder loaded, half effect with another head and no retooling.")
+        };
+
+        if (setup.DualFeedUnlocked)
+        {
+            actions.Add(new MinigameActionInfo(FabricatorActionIds.DualFeedFirst, "Dual Feed",
+                DualFeedDescription("first of the other two sub-assemblies")));
+            actions.Add(new MinigameActionInfo(FabricatorActionIds.DualFeedSecond, "Dual Feed",
+                DualFeedDescription("second of the other two sub-assemblies")));
+        }
+
+        actions.AddRange(new MinigameActionInfo[]
+        {
+            new(FabricatorActionIds.PrecisionPass, "Precision Pass",
+                "Raises the quality of the sub-assembly the loaded head serves. It cannot be done off-head."),
+            new(FabricatorActionIds.RetoolCutter, "Retool (Cutter)",
+                "Loads the Cutter, which serves the Frame. Costs CP."),
+            new(FabricatorActionIds.RetoolExtruder, "Retool (Extruder)",
+                "Loads the Extruder, which serves the Shell. Costs CP."),
+            new(FabricatorActionIds.RetoolBonder, "Retool (Bonder)",
+                "Loads the Bonder, which serves the Fittings. Costs CP."),
+            new(FabricatorActionIds.Service, "Service",
+                $"Restores {setup.ServiceRestore} Machine Condition. Costs CP."),
+            new(FabricatorActionIds.Assemble, "Assemble",
+                $"Finishes the item once the Frame, Shell and Fittings are complete. The quality is the average of the three, no higher than the weakest plus {setup.AssembleCapPoints}.")
+        });
+
+        return actions;
+    }
+
+    private static string DualFeedDescription(string which) =>
+        $"Builds the loaded head's sub-assembly and the {which} at once, each at {FabricatorRules.DualFeedPercent:0}% of a full Run. " +
+        "Costs the CP of a Retool and one Run's wear, and the loaded head stays loaded.";
+
     private static FabricatorState CreateInitialState(FabricatorSetup setup)
     {
         if (setup == null)
@@ -96,7 +123,7 @@ public sealed class FabricatorEngine : MinigameEngineBase<FabricatorState>
 
     protected override MinigameActionRule<FabricatorState> ResolveAction(FabricatorState state, string actionId)
     {
-        var info = ActionList.FirstOrDefault(action => action.Id == actionId)
+        var info = _actions.FirstOrDefault(action => action.Id == actionId)
                    ?? throw new ArgumentException($"Unknown action '{actionId}'.", nameof(actionId));
 
         return actionId switch
@@ -104,6 +131,8 @@ public sealed class FabricatorEngine : MinigameEngineBase<FabricatorState>
             FabricatorActionIds.RunFrame => ResolveRun(info, state, SubAssembly.Frame),
             FabricatorActionIds.RunShell => ResolveRun(info, state, SubAssembly.Shell),
             FabricatorActionIds.RunFittings => ResolveRun(info, state, SubAssembly.Fittings),
+            FabricatorActionIds.DualFeedFirst => ResolveDualFeed(info, state, first: true),
+            FabricatorActionIds.DualFeedSecond => ResolveDualFeed(info, state, first: false),
             FabricatorActionIds.PrecisionPass => ResolvePrecision(info, state),
             FabricatorActionIds.RetoolCutter => ResolveRetool(info, state, FabricatorHead.Cutter),
             FabricatorActionIds.RetoolExtruder => ResolveRetool(info, state, FabricatorHead.Extruder),
@@ -132,6 +161,50 @@ public sealed class FabricatorEngine : MinigameEngineBase<FabricatorState>
         {
             var current = s.Part(part);
             var next = s.WithPart(part, current with { Progress = Math.Min(size, current.Progress + gain) });
+            return Sync(primed ? next.WithoutPrime() : next);
+        });
+    }
+
+    /// <summary>
+    /// Dual Feed: one action that builds the loaded head's sub-assembly and one other, each at a share of a full Run. It wears the
+    /// machine like one Run and costs a Retool's CP, so it saves an action against two Runs but needs both sub-assemblies to have work.
+    /// </summary>
+    private MinigameActionRule<FabricatorState> ResolveDualFeed(MinigameActionInfo info, FabricatorState state, bool first)
+    {
+        var wear = _setup.WearRate;
+        var cp = _setup.RetoolCp;
+        var head = state.ActiveHead;
+        var main = head.Serves();
+        var (firstOther, secondOther) = main.OtherParts();
+        var other = first ? firstOther : secondOther;
+        var named = info with
+        {
+            Name = $"Dual Feed + {other}",
+            Description = $"Builds the {main} and the {other} at once, each at {FabricatorRules.DualFeedPercent:0}% of a full Run. " +
+                          $"Costs the CP of a Retool and one Run's wear, and the {head} stays loaded."
+        };
+
+        foreach (var part in new[] { main, other })
+        {
+            if (state.Part(part).Progress >= _setup.SizeOf(part))
+                return MinigameActionRule<FabricatorState>.Disabled(named, cp, wear, $"The {part} is already complete.");
+        }
+
+        var primed = state.IsPrimed(head);
+        var gain = _setup.DualFeedGain(primed);
+        var label = $"Fed the {main} and the {other} together";
+        if (primed)
+            label += " (Prime Feedstock)";
+
+        return One(named, cp, wear, label, s =>
+        {
+            var next = s;
+            foreach (var part in new[] { main, other })
+            {
+                var current = next.Part(part);
+                next = next.WithPart(part, current with { Progress = Math.Min(_setup.SizeOf(part), current.Progress + gain) });
+            }
+
             return Sync(primed ? next.WithoutPrime() : next);
         });
     }
@@ -181,7 +254,7 @@ public sealed class FabricatorEngine : MinigameEngineBase<FabricatorState>
             return MinigameActionRule<FabricatorState>.Disabled(info, cp, 0, "Machine Condition is already full.");
 
         return One(info, cp, 0, "Serviced",
-            s => s.Adjust(new MinigameMeterDelta(Integrity: FabricatorRules.ServiceRestore)));
+            s => s.Adjust(new MinigameMeterDelta(Integrity: _setup.ServiceRestore)));
     }
 
     private MinigameActionRule<FabricatorState> ResolveAssemble(MinigameActionInfo info, FabricatorState state)
@@ -236,7 +309,7 @@ public sealed class FabricatorEngine : MinigameEngineBase<FabricatorState>
         return state.Meters.Integrity.IsEmpty ? MinigameStatus.Failed : MinigameStatus.InProgress;
     }
 
-    /// <summary>A prime that its head has not used passes after <see cref="FabricatorRules.PrimeWindowActions"/> actions.</summary>
+    /// <summary>A prime that its head has not used passes after <see cref="FabricatorSetup.PrimeWindowActions"/> actions.</summary>
     protected override FabricatorState EndTurn(FabricatorState state)
     {
         if (state.PrimedHead is not { } head)
@@ -269,8 +342,8 @@ public sealed class FabricatorEngine : MinigameEngineBase<FabricatorState>
         return state with
         {
             PrimedHead = named,
-            PrimeActionsLeft = FabricatorRules.PrimeWindowActions,
-            NextOpportunity = PrimeOpportunity(named, FabricatorRules.PrimeWindowActions)
+            PrimeActionsLeft = _setup.PrimeWindowActions,
+            NextOpportunity = PrimeOpportunity(named, _setup.PrimeWindowActions)
         };
     }
 
@@ -282,11 +355,11 @@ public sealed class FabricatorEngine : MinigameEngineBase<FabricatorState>
         return current.Progress < _setup.SizeOf(part) || current.Quality < FabricatorRules.MaxQuality;
     }
 
-    private static MinigameOpportunity PrimeOpportunity(FabricatorHead head, int actionsLeft) =>
+    private MinigameOpportunity PrimeOpportunity(FabricatorHead head, int actionsLeft) =>
         new(
             FabricatorActionIds.PrimeFeedstock,
             $"Prime Feedstock: {head}",
-            $"The {head}'s next action gets +{FabricatorRules.PrimeBonusPercent}%. It waits {ActionsText(actionsLeft)}.",
+            $"The {head}'s next action gets +{_setup.PrimeBonusPercent}%. It waits {ActionsText(actionsLeft)}.",
             1);
 
     private static string ActionsText(int actions) => actions == 1 ? "1 more action" : $"{actions} more actions";
@@ -304,7 +377,7 @@ public sealed class FabricatorEngine : MinigameEngineBase<FabricatorState>
         var meters = new List<MinigameMeterView>
         {
             shared[0],
-            quality with { Mark = MinigameMeterMark.Line(cap, $"Weakest + {FabricatorRules.AssembleCapPoints}") },
+            quality with { Mark = MinigameMeterMark.Line(cap, $"Weakest + {_setup.AssembleCapPoints}") },
             shared[2],
             shared[3]
         };

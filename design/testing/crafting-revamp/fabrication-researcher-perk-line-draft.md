@@ -1,105 +1,70 @@
-# Fabrication perk line: Researcher (draft)
+# Fabrication perk line: Researcher (implemented)
 
-Draft for the owner's approval. No perk code, no StatType IDs and no Bible rows exist yet; this file is the only artifact. Every magnitude is a starting value that CraftSim tunes later. Rules followed: `CraftingRevampPlan.md` (Line schedule, Lines, Fabrication research: the Experiment) and `SkillPerkStandards.md`. Only the Researcher line is drafted here; the Builder line belongs to the Fabricator workstream.
+The line is implemented on `claude/crafting-revamp-perks-fabrication`. This file started as the draft the owner approved; it now records what was built, the owner's decisions of 22 October 2026 that amended the draft, the balance call of 23 October 2026, and the balance evidence. Rules followed: `CraftingRevampPlan.md` (Line schedule, Lines, Fabrication research: the Experiment) and `SkillPerkStandards.md`.
+
+- Code: `Feature/PerkDefinition/FabricationResearcherPerkDefinition.cs` (nine perks), `ExperimentTuning.FromStatTotals` (the one place stats become engine numbers), the Experiment engine, `ResearchExperimentViewModel` and `ResearchViewModel`.
+- IDs: PerkType 873-881, StatType 1198-1204 (inside the reserved ranges 864-883 and 1188-1207). `iprp_resperk.2da` needs no rows (no perk here restricts an item), and no TLK strings are new (perk names and descriptions are C# text).
+- Bible: the Fabrication tab, rows 33-44, written by `tools/UpdateFabricationPerkBible.py` from the perk definitions.
+- Evidence: `fabrication-researcher-perks.md` (`SWLOR.CraftSim researcher-perks`) and `fabrication-researcher-style-search.md` (`researcher-perks --search`, the search for style numbers that pass both comparisons).
 
 ## Structure
 
-- One independent, optional line of 25 SP. It needs no other line and is not needed to run an experiment well: an unperked researcher gets the full experiment (six trials, every action) and the same bonus ceiling.
-- Ten purchases at Fabrication ranks 5/10/15/20/25/30/35/40/45/50, priced 1/1/2/2/3/3/3/3/3/4 SP. The rank-20 purchase is the line's style, a choice of two mutually exclusive perks through `PerkRequirementCannotHavePerk`; switching costs a Perk Refund Token. The rank-50 purchase is the capstone with no quest requirement.
-- A ranked perk occupies two purchases; its second rank restates the first rank's benefit inside its own total (only the purchased rank's stat bonuses apply).
-- Every effect acts only on the research Experiment (`ExperimentEngine`). Perks grant StatType adjustments, and the engine reads them; it never tests a perk by name.
-- The Experiment has no rank-gated actions (owner rule, October 2026): Test, Refine Method, Analyze and Conclude work from the first experiment at any rank. Peer Review and Breakthrough are actions the perks add, so they are unlocked by buying the perk, not by rank.
+- One independent, optional line of 25 SP. It needs no other line and is not needed to run an experiment well: an unperked researcher gets the full experiment (six trials, every base action) and the same bonus ceiling.
+- Ten purchases at Fabrication ranks 5/10/15/20/25/30/35/40/45/50, priced 1/1/2/2/3/3/3/3/3/4 SP. The rank-20 purchase is a choice of two styles, `Methodical` and `Intuitive`, made exclusive through `RequirementCannotHavePerk`; switching costs a Perk Refund Token. The owned style is always active: there is no toggle. The rank-50 purchase is the capstone with no quest requirement.
+- A ranked perk occupies two purchases (Field Notes at 5 and 40, Efficient Analysis at 30 and 45); each rank restates the one before inside its own total, because only the purchased rank's stat bonuses apply.
+- Every effect acts only on the research Experiment. Perks grant `StatType` adjustments; the window reads them once through `ExperimentTuning.FromStatTotals` when it sets the experiment up, and the engine never tests a perk by name. A job's stored record keeps the trials it was opened with (`TrialsTotal`), so a perk change cannot alter a saved experiment.
+- The Experiment has no rank-gated actions: Test, Refine Method, Analyze and Conclude work from the first experiment at any rank. Peer Review and Breakthrough are unlocked by buying the perk.
 
-## How the engine reads perks
+## Owner decisions applied (22 October 2026)
 
-The seam already exists. At the start of an experiment the window sums the researcher's stat totals into an `ExperimentTuning` record and passes it to `ExperimentSetup`, beside rank and gear. `ExperimentTuning` holds exactly the numbers a perk changes (`Trials`, `TestChanceBonusPercent`, `RefineChanceBonus`, `RefineCp`, `TimeCutPerEvidence`, `TimeCutCap`), so the traits below need no engine change. Peer Review and Breakthrough add one action each and one flag each to `ExperimentState`; previews stay pure.
-
-| Tuning field | Starting value | Stats that change it |
-| --- | --- | --- |
-| `Trials` | 6 | `ExperimentTrials` |
-| `TestChanceBonusPercent` | 0 | `ExperimentTestChancePercent` |
-| `RefineCp` | 30 | `ExperimentRefineCpReduction` |
-| `RefineChanceBonus` | 15 | `ExperimentRefineChancePercent` |
-| `TimeCutPerEvidence` | 5 | `ExperimentTimeCutPerEvidencePercent` |
-| `TimeCutCap` | 25 | none: the cap is a hard constraint of the plan and no perk raises it |
+- Intuitive is +20% Test chance and -1 trial; Methodical is +2 trials and a Test chance cost. The 22 October decision kept the plan's -10; the balance study (below) found -10 out of balance, and on 23 October 2026 the cost became **-15 points** (the plan and the Bible row now say -15).
+- A style may move the experiment's length off the 5-8 turn target by one or two turns.
+- Breakthrough doubles what each piece of spare evidence cuts from the job's time when Analyze spends it, still inside the 25% cap.
+- Breakthrough's guaranteed Test is an action the player chooses when to spend: it is free, uses no trial, and the next Test succeeds.
+- Peer Review has two directions (credit to time, and time to credit), so the window shows two buttons, only where evidence decides between the two reductions.
 
 ## Researcher (Experiment)
 
-The line rewards a researcher who plans the experiment: how many trials, how reliable each is, how far Refine Method goes, how much of the job the leftover evidence buys back, and a capstone that guarantees one good result.
-
-| Rank | SP | Perk | Type | Effect (starting values) | StatTypes the engine reads |
+| Rank | SP | Perk | Type | Effect | StatTypes the engine reads |
 | --- | --- | --- | --- | --- | --- |
 | 5 | 1 | Field Notes I | trait | Every Test has 3 more points of chance. | `ExperimentTestChancePercent` +3 |
-| 10 | 1 | Steady Hands | trait | Refine Method costs 5 less CP (30 becomes 25). | `ExperimentRefineCpReduction` +5 |
+| 10 | 1 | Steady Hands | trait | Refine Method costs 5 less CP (30 becomes 25), to a minimum of 1. | `ExperimentRefineCpReduction` +5 |
 | 15 | 2 | Broader Hypotheses | trait | The experiment has 1 more trial (6 becomes 7). | `ExperimentTrials` +1 |
-| 20 | 2 | Methodical | style | The experiment has 2 more trials and every Test has 10 fewer points of chance. Cannot be owned with Intuitive. | `ExperimentTrials` +2, `ExperimentTestChancePercent` -10 (both carried by the perk) |
-| 20 | 2 | Intuitive | style | Every Test has 15 more points of chance and the experiment has 2 fewer trials. Cannot be owned with Methodical. | `ExperimentTestChancePercent` +15, `ExperimentTrials` -2 (both carried by the perk) |
-| 25 | 3 | Peer Review | active | A new action that costs 25 CP and no trial, once per experiment: it moves half of one candidate's evidence (rounded up) to the other. It does nothing unless evidence decides between credit reduction and time reduction (levels 3, 5 and 8 when licensed runs were not rolled), because every other experiment has one candidate. | `ExperimentPeerReviewUnlocked` (flag) |
-| 30 | 3 | Efficient Analysis I | trait | Analyze cuts 1 more percent of the job's time for each piece of spare evidence (5% becomes 6%). The 25% cap stays. | `ExperimentTimeCutPerEvidencePercent` +1 |
-| 35 | 3 | Second Opinion | trait | Refine Method raises the next Test by 5 more points (15 becomes 20). | `ExperimentRefineChancePercent` +5 |
-| 40 | 3 | Field Notes II | trait | Every Test has 6 more points of chance in total (this rank replaces Field Notes I's 3). | `ExperimentTestChancePercent` +6 |
-| 45 | 3 | Efficient Analysis II | trait | Analyze cuts 2 more percent of the job's time in total for each piece of spare evidence (5% becomes 7%; this rank replaces Efficient Analysis I's 1). The 25% cap stays, so four pieces reach it. | `ExperimentTimeCutPerEvidencePercent` +2 |
-| 50 | 4 | Breakthrough | capstone, active | A new action, free and without a trial, once per experiment: the next Test succeeds automatically, and for the rest of the experiment each piece of spare evidence cuts twice as much of the job's time as it otherwise would (still inside the 25% cap). It adds no evidence beyond that one Test and grants no extra bonuses. | `ExperimentBreakthroughUnlocked` (flag) |
+| 20 | 2 | Methodical | style (exclusive with Intuitive) | 2 more trials and every Test has 15 fewer points of chance. | `ExperimentTrials` +2, `ExperimentTestChancePercent` -15 |
+| 20 | 2 | Intuitive | style (exclusive with Methodical) | Every Test has 20 more points of chance and the experiment has 1 fewer trial. | `ExperimentTestChancePercent` +20, `ExperimentTrials` -1 |
+| 25 | 3 | Peer Review | active | Where evidence decides between a credit and a time reduction: once per experiment, for 25 CP and no trial, move half of one candidate's evidence (rounded up) to the other. Two actions, credit to time and time to credit. | `ExperimentPeerReviewUnlocked` (flag) |
+| 30 | 3 | Efficient Analysis I | trait | Analyze cuts 6% of the job's time per piece of spare evidence instead of 5%. The 25% cap stays. | `ExperimentTimeCutPerEvidencePercent` +1 |
+| 35 | 3 | Second Opinion | trait | Refine Method raises the next Test by 20 points instead of 15. | `ExperimentRefineChancePercent` +5 |
+| 40 | 3 | Field Notes II | trait | Every Test has 6 more points of chance in total (replaces Field Notes I's 3). | `ExperimentTestChancePercent` +6 |
+| 45 | 3 | Efficient Analysis II | trait | Analyze cuts 7% per piece of spare evidence (replaces Efficient Analysis I's 6%). The cap stays, so four pieces reach it. | `ExperimentTimeCutPerEvidencePercent` +2 |
+| 50 | 4 | Breakthrough | capstone, active | A free action, once per experiment, no trial: the next Test succeeds, and for the rest of the experiment each piece of spare evidence cuts twice as much of the job's time, still inside the 25% cap. No extra bonuses. | `ExperimentBreakthroughUnlocked` (flag) |
 
-SP check: 1 + 1 + 2 + 2 + 3 + 3 + 3 + 3 + 3 + 4 = 25. Only one of the two rank-20 perks can be bought, so the line holds ten purchases.
+SP check: 1 + 1 + 2 + 2 + 3 + 3 + 3 + 3 + 3 + 4 = 25. Only one of the two rank-20 perks can be bought.
 
-Decisions the line creates:
-
-- Methodical against Intuitive (the plan's pair): more trials mean more evidence and more room for Refine Method, but a longer experiment and a lower chance per Test; fewer, surer Tests give a shorter experiment. See the balance notes: the plan's numbers do not make these equal.
-- Steady Hands and Second Opinion against Efficient Analysis: Refine Method (CP and a better next Test) against turning leftover evidence into a shorter job.
-- Peer Review where credit and time reduction compete: spread evidence while undecided, then pool it into the reduction you commit to. Evidence behind the leader can also be analyzed instead, so Peer Review is the choice to keep it as bonus size.
-- Breakthrough: a guaranteed Test is worth most late, when the leader is one piece short of the next size, or early at a fixed level to bank a piece of evidence before Analyze.
+Window and engine changes the perks needed: `ExperimentTuning` gained `PeerReview` and `Breakthrough`; the state gained three flags (Peer Review used, Breakthrough used, Breakthrough armed); the engine lists Peer Review's two actions only where evidence decides between the reductions and the researcher owns the perk, and Breakthrough wherever the researcher owns it; the window has eight action slots, with the two perk rows below the CP meter so a researcher without them sees blank space at the foot and not between buttons.
 
 ## Interactions and limits
 
-- **No extra bonuses.** Nothing in the line changes the extra guaranteed bonus rolled when the experiment opens; Breakthrough's own text says so. Evidence never raises it.
-- **Power ceiling.** A bonus never exceeds today's dice (licensed runs 1-3, reductions 1-10 percent), and the time cut never exceeds 25% of the job. The line makes the maximum easier to reach (more evidence), never larger.
-- **Trials and evidence.** Evidence pays today's dice maximum at 6 pieces (`EvidenceForMaximum`). Broader Hypotheses and Methodical let a researcher reach it more often; Intuitive caps evidence at 4 (5 with Broader Hypotheses), so an Intuitive researcher can never reach the dice maximum; that is part of the style's cost and another reason to review its numbers.
-- **Stacking.** Methodical with Broader Hypotheses gives 9 trials; Intuitive with Broader Hypotheses gives 5. Field Notes II (+6) with Intuitive (+15) gives 81% at the tier's first rank, and the 95% cap applies to the sum with the rank bonus (up to 15 points) and Refine Method.
-- **Refine Method.** Steady Hands and Second Opinion are the only ways to refine more often or harder. CP stays the limit: a researcher with 37 CP (rank 50, no gear) refines once at 30 CP, twice with Steady Hands only if CP is 50 or more.
+- **No extra bonuses.** Nothing in the line changes the extra guaranteed bonus rolled when the experiment opens.
+- **Power ceiling.** A bonus never exceeds today's dice (licensed runs 1-3, reductions 1-10 percent) and the time cut never exceeds 25% of the job. The line makes the maximum easier to reach, never larger.
+- **XP.** The experiment's XP is the share of its trials used, so more trials pay the same XP. Research XP per real hour moves only through the job's time cut, which is capped at 25% whatever the perks: with the whole line it is at most 1.008 times the unperked peak in the simulation, and no build can pass 1.12 times it. The peak row (rank 10, tier 1, research level 1) stays at 26% of the at-level Fabricator crafting rate at 0% quality with the band's XP multiplier even at the cap, and every other rank is 5-9% (research XP is the scaled value of the progression-pace change).
+- **Trials and evidence.** Evidence pays today's dice maximum at six pieces. Intuitive has five trials, so it cannot reach the maximum without Broader Hypotheses; that is part of its cost.
+- **Stacking.** Methodical with Broader Hypotheses has nine trials (nine to twelve turns with Refine Method); Intuitive with Broader Hypotheses has six. Intuitive with Field Notes II reaches 86% at the tier's first rank, and the 95% cap applies to the sum with the rank bonus (up to 15 points) and Refine Method.
+- **Peer Review and CP.** Its 25 CP competes with Refine Method (30, or 25 with Steady Hands). A researcher with no gear has 37 CP at rank 50 and cannot afford both.
 
-## Proposed StatTypes
+## Balance evidence
 
-Names only; the IDs are reserved against current master and the HAK when the owner approves the rows (the next free StatType is 1168). Each declares its classification, polarity and category on its enum entry. All are beneficial when positive, except the negative values carried by the style perks, which are tradeoffs.
+`fabrication-researcher-perks.md`, seed 1, 400 experiments per case, every build on the same dice. The generic gates have no scoring rule for an experiment (it has no quality meter), so the style comparison applies gate 2's thresholds to a score from 0 to 100: the reduction won as a share of today's largest where evidence decides, the time cut as a share of the cap at a fixed level.
 
-| Name | Aggregation | Used by |
-| --- | --- | --- |
-| `ExperimentTrials` | additive | Broader Hypotheses, Methodical, Intuitive |
-| `ExperimentTestChancePercent` | additive | Field Notes, Methodical, Intuitive |
-| `ExperimentRefineCpReduction` | additive | Steady Hands |
-| `ExperimentRefineChancePercent` | additive | Second Opinion |
-| `ExperimentTimeCutPerEvidencePercent` | additive | Efficient Analysis |
-| `ExperimentPeerReviewUnlocked` | maximum | Peer Review |
-| `ExperimentBreakthroughUnlocked` | maximum | Breakthrough |
+- **Gate 2 (style balance): the styles alone pass; the full line does not.** Methodical against Intuitive, each style alone, passes all six comparisons at -15 (Methodical leads on 33-42% of cases; the mean gap is +1.2 to +1.5 score points at fixed levels and -2.6 to -3.0 where evidence decides), at 3.4 more turns (9.3 against 5.7 on average). At -10 it failed four of the six (Methodical ahead by 7.2 and 3.2). With every other purchase added the sign flips: Intuitive is ahead by 3.7 to 3.8 points at fixed levels and 6.6 to 7.0 where evidence decides, Methodical leads on only 17-25% of cases, and all six full-line comparisons miss the 30% share. The cause is the ceiling: with the whole line both styles cut the full 25% of the job's time, so Methodical's extra trials stop adding, while Intuitive's chance still lifts the reduction (57% of reductions reach the maximum against 47%). No cost between -10 and -15 passes both: alone/full-line failures out of six are 4/3 at -10, 3/3 at -11 and -12, 3/4 at -13, and 0/6 at -14 and -15 (`The styles' magnitudes` table). -15 is implemented (the 23 October call); the full-line miss is open item 1.
+  - **Search (23 October 2026, `fabrication-researcher-style-search.md`, 400 experiments per case).** Every pairing of Methodical (+2 or +3 trials, -5 to -20 points) with Intuitive (+10 to +25 points, -1 or -2 trials), 1024 pairs, judged on the styles alone and on the full line: 60 pairs pass alone, 40 pass the full line, **none passes both**. The fewest comparisons failed is 4 of 12 (Methodical +2 trials and -20 points against Intuitive -2 trials and +21 points: 0 with the line and 4 alone, where Methodical leads every fixed-level case, mean gap +12.0, and Intuitive has 4.7 turns). Of the pairs near the approved numbers, -12 against +20 fails 3 and 3, -10 fails 4 and 3, the implemented -15 fails 0 and 6. Why (the implemented pair, mid gear, `The implemented pair, case by case`): alone, Intuitive leads the ranks 20 to 50 cases by 1 to 8 points and Methodical leads the two rank-50 tier 1 and 3 cases by 4 to 9, which is enough for 2 of 6 in each comparison; with the line Intuitive's lead at ranks 20 to 40 grows to 4 to 14 points (84.9 against 94.0 at rank 30) and the rank-50 cases tie at the cap, so Methodical wins one case of twelve. Likely cause, not tested: Efficient Analysis, Field Notes and the other shared purchases multiply the evidence a Test banks, and Intuitive's chance banks more of it per trial than Methodical's extra trials do. A comparison needs Methodical to lead or tie in 2 of its 6 cases; with the cap tying the three rank-50 fixed-level cases, one of ranks 20 to 40 must go Methodical's way, and every number that does so alone loses it with the line, or the reverse. Changing the style numbers cannot close a 7-8 point shift between the two comparisons; the shared purchases or the Intuitive trade are what would.
+- **Gate 3 (perks optional): unchanged.** An unperked researcher gets the full experiment and the same ceiling.
+- **Length.** Methodical 8-10 turns, Intuitive 5-7, as the owner's decision allows; Broader Hypotheses adds one more, and Breakthrough adds one turn.
+- **Per purchase (rank 50, tier 5, mid gear).** Field Notes +0.6 points of reduction and +1.4 of time cut; Broader Hypotheses +1.0 and +2.7; Efficient Analysis +4.5 of time cut; Second Opinion and Steady Hands are small (Refine Method is CP-limited); Breakthrough lifts the mean time cut from 16.6% to 24.3% and reaches the cap in 89% of fixed-level experiments, which makes it the strongest single purchase, as a capstone should be; the whole line reaches the dice maximum in 47% (Methodical) and 57% (Intuitive) of reductions and the cap in every fixed-level experiment.
+- **Peer Review.** The focused player never has evidence behind the leader, so it does nothing for them. For a player who tests both reductions first and then backs the leader, it raises the mean reduction from 5.0% to 5.8-5.9% and shortens the experiment by about half a turn.
 
-## Engine changes the perks need (after approval)
+## Open items
 
-- A builder that sums the seven stats into an `ExperimentTuning`, plus two optional flags on `ExperimentSetup`.
-- Two actions (`peer_review`, `breakthrough`) with their previews, and the state they need: a Peer Review used flag, a Breakthrough armed-or-used flag and a time-cut multiplier. All of it lives in `ExperimentState`.
-- Peer Review needs a source and a target; with two candidates that is two directions, so the window shows two buttons (credit to time, time to credit) only when Peer Review is owned and evidence decides between the reductions.
-- A job's stored record keeps the trials it was opened with (`TrialsTotal`), so a perk change between sittings cannot change a saved experiment.
-- Unit tests for each stat at each rank, style exclusivity, the 95% and 25% caps with every perk owned, Peer Review's rounding and Breakthrough's once-per-experiment limit.
-
-## Balance notes and evidence needed before coding
-
-Expected evidence is trials times Test chance, before Refine Method (one Refine adds about 0.15). Base is 6 trials at 60%.
-
-| Build | Trials | Test chance | Expected evidence | Mean actions (trials plus Refines) |
-| --- | --- | --- | --- | --- |
-| Unperked | 6 | 60% | 3.6 | 6-8 |
-| Methodical | 8 | 50% | 4.0 | 8-10 |
-| Intuitive | 4 | 75% | 3.0 | 4-6 |
-| Intuitive, proposed alternative (+20 points, 1 fewer trial) | 5 | 80% | 4.0 | 5-7 |
-
-- **The plan's style pair is not balanced.** Methodical gives 11% more evidence than the unperked researcher and Intuitive 17% less, so Intuitive is worse on evidence and only wins on time. Either accept that Intuitive trades power for a shorter sitting, or use the proposed alternative (+20 points, 1 fewer trial), which matches Methodical's evidence (4.0) in about three fewer turns (5 trials against 8). Decision for the owner.
-- **Length.** The 5-8 turn target is for the unperked experiment. Methodical lengthens it to 8-10 and Intuitive shortens it to 4-6. The length gate cannot pass for a style that changes the trials by 2; the owner should decide whether the target applies per style.
-- CraftSim (later): `ExperimentStudy.Play` already takes an `ExperimentTuning`, so each build above can be played with the focused player for evidence, magnitude and time cut. The perks-optional and style-balance gates need an Experiment scoring rule the generic gates do not have (an experiment has no quality meter).
-- SP prices: the plan's schedule (1/1/2/2/3/3/3/3/3/4) and the other crafting lines; no combat comparator applies.
-
-## Open questions for the owner
-
-1. **Breakthrough's "winner's time cut".** The plan says the winner's time cut doubles. An experiment has one time cut (Analyze's, on the job), not one per candidate, and doubling the Time Reduction bonus would pass today's 10% dice maximum. This draft doubles what each piece of spare evidence cuts for the rest of the experiment, inside the 25% cap. If you mean that the cap itself doubles to 50%, or that a winning Time Reduction doubles, say so; both raise the plan's power ceiling.
-2. **Style balance.** The plan's Methodical and Intuitive numbers, or the proposed alternative above?
-3. **Length per style.** Does the 5-8 turn target apply to an experiment with a style, or only to an unperked one?
-4. **Peer Review's targeting.** Owner decision October 2026: licensed runs are rolled when the experiment opens, so evidence decides between only two reductions. Peer Review is then two buttons (move from credit reduction to time reduction, or the reverse). It has no use at the other levels.
-5. **Breakthrough as an action.** It is drafted as a free action the player chooses to spend, which makes the guaranteed Test a decision. As a trait it would instead turn the first inconclusive Test of the experiment into a success.
+1. **Gate 2 for the full line.** With every other purchase owned, Intuitive leads, and the search (above) found no Methodical and Intuitive numbers in the allowed range that pass both comparisons. -15 is kept: it passes the styles alone and is the least lopsided there; a cost of -12 splits the misses evenly (3 alone, 3 with the line) and the best pair found (-20 against Intuitive -2 trials and +21) fails 4 comparisons alone. Options for the owner: leave it (the generic gate does not score an experiment, so this is the study's analog, not a harness gate); give Methodical a benefit that does not saturate at the cap; or rebalance a shared purchase (Efficient Analysis is the likeliest to favor Intuitive, untested).
+2. **Icons.** The nine perks reuse existing icons (`ife_rsrch`, `ife_observe`, `ife_rsrch_proj`, `ife_sci_net`, `ife_tiny_bulb`, `ife_copycat_bulb`, `ife_min_light`, `ife_prune`, `ife_spark`) set as explicit perk icons, because new art could not be produced. Passive-gold framed custom art per `IconStandards.md` is a follow-up.
+3. **Client evidence.** None yet: the owner deferred it to the Closeout joint pass. The window's eight slots and the two Peer Review buttons are unverified in the client.

@@ -170,6 +170,14 @@ class MaterialTests(unittest.TestCase):
         self.assertAlmostEqual(float(mask[0, 2]), 1.0)
         self.assertTrue(0 < mask[0, 1] < 1)
 
+    def test_saturation_mode_picks_bright_colored_light_and_ignores_pale_or_dark_texels(self):
+        color = np.array([[[0.7, 0.2, 0.95], [0.95, 0.9, 0.95], [0.2, 0.05, 0.3], [0.5, 0.5, 0.5]]])
+        mask = exporter.emission_mask(color, 0.55, 0.15, np, 0.45)
+        self.assertAlmostEqual(float(mask[0, 0]), 1.0)
+        self.assertEqual(float(mask[0, 1]), 0.0)  # bright but nearly white
+        self.assertEqual(float(mask[0, 2]), 0.0)  # saturated but dark
+        self.assertEqual(float(mask[0, 3]), 0.0)
+
     def test_snap_negative_z_raises_grazing_texels_onto_the_horizon(self):
         encoded = np.zeros((1, 2, 4), np.float32)
         encoded[0, 0, :3] = (0.5, 0.5, 1.0)

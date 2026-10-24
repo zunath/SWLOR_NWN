@@ -7,6 +7,7 @@ using SWLOR.Game.Server.Service;
 using SWLOR.Game.Server.Service.AbilityService;
 using SWLOR.Game.Server.Service.CombatService;
 using SWLOR.Game.Server.Service.CraftService;
+using SWLOR.Game.Server.Service.CraftService.Minigame;
 using SWLOR.Game.Server.Service.CurrencyService;
 using SWLOR.Game.Server.Service.FactionService;
 using SWLOR.Game.Server.Service.GuiService;
@@ -84,6 +85,10 @@ namespace SWLOR.Game.Server.Entity
             UnlockedPerks = new Dictionary<PerkType, DateTime>();
             UnlockedRecipes = new Dictionary<RecipeType, DateTime>();
             CraftedRecipes = new Dictionary<RecipeType, DateTime>();
+            CraftMinigameHelpSeen = new Dictionary<CraftMinigameType, DateTime>();
+            SelectedCraftingStyles = new Dictionary<SkillType, PerkType>();
+            HeldCraftItems = new List<string>();
+            PendingScavengeFinds = new Dictionary<string, int>();
             LearnedTechniques = new Dictionary<FeatType, DateTime>();
             EquippedTechniques = new List<FeatType>();
             MimicryLoadouts = new List<MimicryLoadout>();
@@ -223,6 +228,19 @@ namespace SWLOR.Game.Server.Entity
         public Dictionary<PerkType, DateTime> UnlockedPerks { get; set; }
         public Dictionary<RecipeType, DateTime> UnlockedRecipes { get; set; }
         public Dictionary<RecipeType, DateTime> CraftedRecipes { get; set; }
+        // The craft in progress, with the materials it took. Null when the player is not crafting.
+        public CraftSessionRecord ActiveCraftSession { get; set; }
+        // Serialized items a settled craft could not return because the inventory was full.
+        public List<string> HeldCraftItems { get; set; }
+        // What a Search board found, by item resref and quantity, while its visit has not ended. A server restart loses the board and its
+        // site, so the next login gives these to the player. Empty when no board is in progress.
+        public Dictionary<string, int> PendingScavengeFinds { get; set; }
+        // When the player first opened each crafting minigame, which is when its help page opened by itself.
+        public Dictionary<CraftMinigameType, DateTime> CraftMinigameHelpSeen { get; set; }
+        // The crafting style the crafter selected for each crafting skill, named by the style's perk. The style's status effect is
+        // applied again from this after a death or a login, and a refunded or rebuilt perk clears its entry. Records saved before
+        // styles were remembered have no entry.
+        public Dictionary<SkillType, PerkType> SelectedCraftingStyles { get; set; }
         public Dictionary<FeatType, DateTime> LearnedTechniques { get; set; }
         public List<FeatType> EquippedTechniques { get; set; }
         public List<MimicryLoadout> MimicryLoadouts { get; set; }

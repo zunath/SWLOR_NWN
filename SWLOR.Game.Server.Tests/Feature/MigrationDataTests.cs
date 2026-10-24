@@ -11,7 +11,8 @@ namespace SWLOR.Game.Server.Tests.Feature;
 
 public class MigrationDataTests
 {
-    // Production has run player migration 23 and server migration 28.
+    // Production has run player migration 23 and server migration 28. Player migration 25 is the crafting perk
+    // conversion; at release it folds into the newest player version production has not run.
     private const int ReleasedPlayerVersion = 23;
     private const int ReleasedServerVersion = 28;
     private static readonly Assembly ServerAssembly = typeof(SWLOR.Game.Server.Service.Migration).Assembly;
@@ -25,10 +26,12 @@ public class MigrationDataTests
         CharacterMigrations.VersionOf("_17_RemoveWeaponStatOverrides").Should().BeGreaterThan(CharacterMigrations.VersionOf("_16_RetireForceWeaponEnhancements"));
         migrations.Where(migration => CharacterMigrations.VersionOf(migration) >= 22).Select(migration => migration.GetType())
             .Should().BeEquivalentTo(new[] { CharacterMigrations.Named("_22_ReviseLootStats"), CharacterMigrations.Named("_23_CorrectEquipmentTypes"),
-                CharacterMigrations.Named("_24_CorrectCarapaceBracers") });
+                CharacterMigrations.Named("_24_CorrectCarapaceBracers"), CharacterMigrations.Named("_25_ConvertCraftingPerksToRanks") });
         migrations.Where(migration => CharacterMigrations.VersionOf(migration) > ReleasedPlayerVersion).Select(migration => migration.GetType())
-            .Should().BeEquivalentTo(new[] { CharacterMigrations.Named("_24_CorrectCarapaceBracers") }, "the next release must receive one combined player-item pass");
+            .Should().BeEquivalentTo(new[] { CharacterMigrations.Named("_24_CorrectCarapaceBracers"), CharacterMigrations.Named("_25_ConvertCraftingPerksToRanks") },
+                "the next release receives one combined player-item pass and the crafting perk conversion");
         CharacterMigrations.VersionOf("_24_CorrectCarapaceBracers").Should().Be(ReleasedPlayerVersion + 1);
+        CharacterMigrations.VersionOf("_25_ConvertCraftingPerksToRanks").Should().Be(ReleasedPlayerVersion + 2);
     }
 
     [Test]

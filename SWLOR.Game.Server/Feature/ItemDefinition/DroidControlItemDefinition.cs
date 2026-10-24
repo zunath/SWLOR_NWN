@@ -5,7 +5,7 @@ using SWLOR.Game.Server.Service;
 using SWLOR.Game.Server.Service.AbilityService;
 using SWLOR.Game.Server.Service.GuiService;
 using SWLOR.Game.Server.Service.ItemService;
-using SWLOR.Game.Server.Service.PerkService;
+using SWLOR.Game.Server.Service.CraftService;
 using SWLOR.Game.Server.Service.SkillService;
 using SWLOR.NWN.API.NWScript.Enum;
 
@@ -124,11 +124,9 @@ namespace SWLOR.Game.Server.Feature.ItemDefinition
                             return "Droid AI cannot be adjusted while active. Please dismiss your droid and try again.";
                         }
 
-                        var perkLevel = Perk.GetPerkLevel(user, PerkType.DroidAssembly);
-
-                        if (perkLevel < droidDetails.Tier)
+                        if (CraftRankMilestones.GetDroidAssemblyTier(user) < droidDetails.Tier)
                         {
-                            return $"Your Droid Assembly perk is too low to configure this droid's AI. (Required: {droidDetails.Tier})";
+                            return $"Your Engineering rank is too low to configure this droid's AI. (Required rank: {CraftRankMilestones.RequiredRankForTier(droidDetails.Tier)})";
                         }
                     }
 

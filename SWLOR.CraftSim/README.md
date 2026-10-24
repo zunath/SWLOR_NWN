@@ -1,0 +1,195 @@
+# SWLOR.CraftSim
+
+Balance simulator for the crafting revamp (`SWLOR.Game.Server/Readmes/CraftingRevampPlan.md`, "Balance gates and tooling"), built on the `SWLOR.CombatSim` pattern: a console tool that reads the real game data, plays it with repeatable seeds, and writes markdown and JSON evidence. Tests are in `SWLOR.CraftSim.Tests`.
+
+This project holds the **legacy baseline**: today's rules for the old craft minigame, harvesting, scavenging, refining and the fishing catch roll. It also holds the generic **balance gates** that each new minigame passes before it ships, which compare against that baseline.
+
+## Run
+
+```powershell
+dotnet build SWLOR.CraftSim -p:RunPostBuildEvent=Never -v q -clp:ErrorsOnly
+dotnet SWLOR.CraftSim/bin/Debug/net10.0/SWLOR.CraftSim.dll baseline --section crafting --runs 500 --seed 1 --out design/testing/crafting-revamp/legacy-crafting-baseline.md
+dotnet SWLOR.CraftSim/bin/Debug/net10.0/SWLOR.CraftSim.dll baseline --section gathering --seed 1 --out design/testing/crafting-revamp/legacy-gathering-baseline.md
+dotnet SWLOR.CraftSim/bin/Debug/net10.0/SWLOR.CraftSim.dll legacy-enhancements --runs 200 --seed 1 --recipes-per-band 6 --out design/testing/crafting-revamp/legacy-enhancement-baseline.md
+dotnet SWLOR.CraftSim/bin/Debug/net10.0/SWLOR.CraftSim.dll gear
+```
+
+`legacy-enhancements` plays the old minigame with one, two and three enhancements slotted and writes today's expected transferred enhancements per band, tier and slot count, the yardstick of gate 7. It takes `--runs`, `--seed`, `--recipes-per-band` (enhanceable recipes sampled per skill and band), `--skills` (Smithery, Engineering, Fabrication, Agriculture), `--gear all|best`, `--out` and `--json`. At the committed settings it takes about ten minutes.
+
+`baseline` takes `--section crafting|gathering|all`, `--runs` (crafts per recipe level, skill, gear level and policy), `--seed`, `--gathering-runs` (nodes and sites played per row), `--skills Smithery,Engineering,...`, `--out report.md` and `--json results.json`. The same seed repeats a report exactly. The crafting section takes about two minutes at 500 runs.
+
+## Data
+
+Recipes come from the server's `IRecipeListDefinition` classes and the level chart from `Craft.GetRecipeLevelDetail`, so the simulator follows the game. Gear levels come from the crafting stats in `Module/uti`: Smithery recipes make every skill's wearable crafting gear, the recipes ordered by level give tiers 1-5 per slot, and a gear level is none, tier 3 or tier 5 (`CraftingGearCatalog`). XP comes from `Skill.GetDeltaXP` after `ServerXp` runs the chart's startup step.
+
+## Legacy model
+
+`Legacy/Crafting` ports the old crafting window, `CraftViewModel.cs`, which the closeout deleted from the server (formulas in `LegacyCraftRules`, the 11 actions in `LegacyActionSpec`, resolution in `LegacyCraftEngine`) and plays it with two policies: the dominant rotation players report and a rollout lookahead. `Legacy/Gathering` ports harvesting, scavenging, refining and the fishing catch roll. Where the server exposes a static (`GetDeltaXP`, `GetRecipeLevelDetail`) it is called; the rest are re-implemented.
+
+Every ported rule is registered in `Legacy/LegacySource.cs` with its file, lines and source text, and cited in a code comment. `LegacySourceTests` fails when a quoted line moves more than 40 lines or changes, and when a comment cites lines no registered rule covers. The rules of the deleted `CraftViewModel.cs` are frozen: their references are `SourceReference.Frozen` entries with no anchors, cited to `LegacySource.CraftViewModelCommit` (read the file with `git show <commit>:<path>`), and the committed baseline reports stay as the record.
+
+Enhancements (`LegacyEnhancementRules`, `LegacyEnhancementBaseline`, `Data/Enhancement*`): each enhancement item adds its `ProgressPenalty` item property to the progress the piece needs (`LegacyCraftContext` takes a `CraftEnhancementConfiguration` of a count and a penalty each), and on a success each enhancement transfers by a roll at a chance equal to the quality percentage, truncated in floats. The model draws no transfer dice: a craft that is made adds slots x chance / 100 expected enhancements, a craft that breaks the piece adds none. The enhancement items are read from `Module/uti` (`EnhancementItemReader`: an item with a progress penalty, one enhancement property and an enhancement level). A recipe is played with the **representative enhancement** of its kind: the real item at the best level the recipe accepts (the old window refuses one more than 5 levels above the recipe) whose penalty is the lower median of that level, ties by resref (`EnhancementCatalog.ForRecipe`). The committed `legacy-enhancement-baseline.md` lists them.
+
+Gathering rules depend on Might, Perception and Willpower. They are swept over modifiers -1 to +5 (`AttributeSweep`) until the real medians of active characters are measured.
+
+## Progression pace
+
+`progression` models how long a new crafter takes today to reach rank 50 (workstream 11 of the plan). It plays the legacy lookahead player at every recipe level and gear level from the seed, then walks ranks 0 to 49 with expected values: at each rank the crafter makes recipes of their own level, earns `GetDeltaXP`-priced XP plus the quality share (`CraftOutcomeRules`), and gathers the components each craft consumes (`Progression/ComponentSupply`: ore veins and trees are harvested, bushes, herbs, vegetable patches and supply crates are scavenge sites, refined ore adds refining). It also models Gathering itself, a guild task cohort (hand-ins, the quick-craft catch-up that raises the guild rank, the rank-50 chore, Agriculture's catch tasks) and a research cohort (job lengths, slots, XP ceilings), and prices the proposals for the owner: the guild task XP award, the crafting-only XP multiplier or rank cost cap that meets a target, and the research ceiling.
+
+```powershell
+dotnet SWLOR.CraftSim/bin/Debug/net10.0/SWLOR.CraftSim.dll progression --runs 500 --seed 1 --out design/testing/crafting-revamp/progression-pace-baseline.md
+```
+
+`progression` takes `--runs` (lookahead crafts per recipe level, skill and gear level, default 500), `--seed`, `--skills`, `--node-seconds` (default 30), `--overhead-seconds` (per craft, default 30), `--might`, `--out`, `--json` and `--repo`. The seed repeats the report exactly; it takes about two minutes at 500 runs. Node travel, the per-craft overhead, the turn-in time, research visits and seconds per fishing bite are unmeasured estimates (`Progression/ProgressionAssumptions`); the report's sensitivity table shows how far they move the hours, and the client evidence replaces them. Nothing in the game changes: the XP and guild numbers are proposals. `ProgressionSourceTests` pins the copied rules (harvest, scavenge and refining times, RP XP pace, research job length, guild points) to the server source.
+
+## Balance gates
+
+`Gates/` holds the plan's seven gates (`GateNames`): an `IBalanceGate` receives a `GateContext` (recipes, gear, runs, seed) and returns a `GateResult` with a verdict and evidence tables, and `GateReport` writes them as markdown with the inputs and limitations `SkillPerkStandards.md` asks for. The gates are generic over `ICraftMinigameEngine`: a minigame supplies a scenario and never writes its own solver or gate framework.
+
+```powershell
+dotnet SWLOR.CraftSim/bin/Debug/net10.0/SWLOR.CraftSim.dll gates --list
+dotnet SWLOR.CraftSim/bin/Debug/net10.0/SWLOR.CraftSim.dll gates --scenario forge --runs 100 --seed 1 --recipes-per-band 6 --out design/testing/crafting-revamp/forge-gates.md --json forge-gates.json
+```
+
+`gates` takes `--scenario <name>` (required; `--list` shows them), `--runs` (attempts per case, default 100), `--seed`, `--recipes-per-band` (an even sample of each band, default 6) or `--all-recipes`, `--gates rotation,styles,perks,length,materials,xp,enhancements` (a subset; a gate's number, 1 to 7, names it too, so `--gates 7` runs enhancement parity), `--legacy-seconds-per-action`, `--thorough` (a much longer fixed-rotation search for a final run), `--out` (default `design/testing/crafting-revamp/<scenario>-gates.md`), `--json` and `--strict` (exit 2 when a gate failed or was not run). The same seed repeats a report exactly. Cases are played on every core. Gate 1 dominates the time: it solves a fixed rotation for every sampled recipe and gear tier, and again one rotation for every band and gear tier across its recipes, so use the sample, not `--all-recipes`, for it (`--gates` skips it).
+
+| Gate | What it checks | Starting threshold (`GateThresholds`) |
+| --- | --- | --- |
+| 1 No single rotation (named "No fixed rotation") | The adaptive player's average quality beats the best single fixed rotation, one sequence for every sampled recipe of a band at a gear tier, in every band and gear tier. The best rotation per recipe alone is reported, not gated. | at least 10 quality points (`RotationMarginPoints`) |
+| 2 Style balance | For each style pair, each style is the better choice on enough recipes and neither leads on average. Not applicable until a scenario offers `StylePairs`. | each style at least 30% of recipes, mean gap at most 5 points, ties within 0.5 point count half |
+| 3 Perks optional | At rank 50 with the best gear and no perks, the share of adaptive crafts that reach maximum quality, per at-level band (41-45, 46-50, 51-53). | at least 50% in every band |
+| 4 Length | Mean actions per attempt of the adaptive player at level, per band and gear tier. | the scenario's `LengthTarget` (item craft 10-20; a perked build, one whose scenario has a default loadout, `LengthTarget.PerkedItemCraft`, 8-20) |
+| 5 Material parity (economy parity) | Component stacks consumed per item made, failures included, against the legacy lookahead player on the same recipes, ranks and gear. | In a band and gear tier where the legacy player succeeds at least 90% of the time (`MaterialTwoSidedMinimumLegacySuccess`), within 10% either way; where it succeeds less, at most 10% above it (lower use passes and the report says so). Either way at an average quality no more than 5 points below the legacy player's (`MaterialQualityShortfallPoints`); recipes never made may exceed the legacy share by at most 10 points. The stack and quality comparison covers the recipes the legacy player makes at least once in the cell; the others are listed in a second table |
+| 6 XP rate | XP per hour against the legacy loop over the plan's item-craft cohort: each band with rank equal to level (capped at 50), no gear, mid and best gear, equal weight per recipe, no blueprint, not a first craft, failures at 15% XP. Each band, gear tier and enhancement count must pass: the cohort is played plain and again with one, two and three enhancements (the representative enhancement of gate 7, each side applying its own enhancement difficulty). A scenario that does not model enhancements leaves the enhanced cases unplayed and the gate not run. | at least 1.0 times the legacy rate |
+| 7 Enhancement parity | At rank 50 with the best gear and at level (41-45, 46-50, 51-53), the expected number of enhancements transferred per enhanced craft attempt, for items with one, two and three filled slots, against the old window's chance roll (quality percentage per enhancement) with the same enhancements slotted. The new count is read from the quality distribution of the adaptive player's crafts under the thresholds in `CraftOutcomeRules`. The report also gives the thresholds that would meet parity. Not run until the scenario models enhancements. | at least 1.0 times today's in every band and slot count (`EnhancementParityMinimumRatio`) |
+
+Quality is the quality meter's share at the end, in points, with a broken or abandoned piece counting 0. Time for gate 6 is actions times a seconds-per-action estimate (the scenario's `SecondsPerAction`, 6 s for the old window), plus an optional per-craft overhead; both are unmeasured until the client evidence replaces them. A failing XP case reports the multiplier it would need.
+
+### Gate 7: enhancement parity
+
+Today each enhancement transfers at a chance equal to the quality percentage, so 80% quality averages 2.4 of 3 enhancements; thresholds of 50/85/100 give exactly 1. Each enhancement also raises the progress the piece needs by its progress penalty, which makes the craft harder. The gate plays both:
+
+- **Today:** `LegacyEnhancementBaseline` plays the old minigame's lookahead player with the representative enhancement of the recipe's kind slotted 1, 2 and 3 times. A craft that is made adds slots x chance / 100; one that breaks adds none.
+- **New:** the scenario builds its engine with `CraftEngineRequest.Enhancements` (a `CraftEnhancementConfiguration`: the count and the progress penalty each, in the old window's units, default none), and the adaptive player crafts. A made item transfers the enhancement of slot n when its quality percent (`MinigameMeter.Percent`, rounded down) meets `CraftOutcomeRules.GetEnhancementThreshold(n)`, exactly as `CraftOutcomeRules.CalculateSuccess` decides (a test checks every quality and slot count). Changing a threshold constant there flows into the gate. A craft that breaks the piece transfers none.
+- **Report:** per band and slot count, today's and the new figure, the ratio and the verdict; the thresholds (first, second, third) that would meet parity for the measured quality distribution, for every band together and for each band alone, exact and in steps of 5 (`EnhancementThresholdSolver`: the strictest non-decreasing set that keeps every case at least at today's); the quality percentiles of the items made; and the representative enhancements used.
+
+The recipes are the cohort's recipes that have an enhancement slot, an even sample of each band. Recipes have one or two slots and research and blueprints add more, so each is played with every slot count. A scenario must say how it treats enhancements:
+
+| `ICraftScenario.Enhancements` | Meaning | Gate 7 |
+| --- | --- | --- |
+| `NotModeled` (default) | `CreateEngine` ignores `request.Enhancements`. | Not run, which blocks shipping (`GateReport.AllPassed`) |
+| `Modeled` | `CreateEngine` maps the request's total progress penalty onto the engine's progress meter. | Runs. It first checks that the engine's progress maximum rises with the enhancements and fails if not. |
+| `NoSlots` | The minigame has no enhancement slots (Reaction). | Not applicable |
+
+Mapping a penalty onto a minigame: `request.Enhancements.TotalProgressPenalty` (count x penalty each, in the old window's progress units) goes through the engine's own enhancement handling, the same one its window uses when the player slots enhancements, as each phase 1 PR mapped the old progress penalty:
+
+- **Forge (Smithery):** extra Shape. `ForgeRules.EnhancementShapePercent(total, recipe.Level)` gives the percent, which `ForgeSetup` takes as its `EnhancementShapePercent`.
+- **Circuit (Engineering):** extra Assembly. `CircuitSetup` takes the total as `enhancementProgressPenalty` and adds `CircuitRules.EnhancementAssembly(total, assemblySize)` to `MaxAssembly`: the penalty, capped at `MaxEnhancementAssemblyShare` of the Assembly the recipe itself needs (low-level recipes need so little Assembly that their enhancements' penalty would more than double it).
+- **Kitchen (Agriculture):** extra Doneness. `KitchenTuning.EnhancementDoneness(total)` is passed to `KitchenEngine` as `extraDoneness`.
+- **Reaction:** `EnhancementSupport.NoSlots`.
+
+A scenario then sets `public EnhancementSupport Enhancements => EnhancementSupport.Modeled;`. Nothing else in the scenario changes: `request.Enhancements` is `CraftEnhancementConfiguration.None` for every other gate.
+
+### The players
+
+- `AdaptivePolicy` is a depth-limited expectimax. For every available action it reads the exact results and chances from `PreviewAll()`, copies the engine with `Fork` to reach the state each result leads to (forcing that result and sampling the forecast), and averages the best follow-up. It never touches the real engine. `AdaptivePolicyOptions` sets the depth (3 by default: with two it never sets up and plays far worse), forecast samples, an engine-copy budget per decision, a small time preference and the leaf heuristic. `DefaultLeafHeuristic` weighs finishing safely (integrity and CP against the best progress rate the previews show) and quality, using only the shared meters and previews. A minigame's own heuristic can also read any other meter its window shows through `LeafPosition.Meter(id)`: the Kitchen's `KitchenLeafHeuristic` credits nearness to the target zone (its Off Target meter) while quality is still 0, because outside the zone quality says nothing about which way to go.
+- `FixedRotationSolver` is gate 1's adversary. The gate asks whether **one** rotation wins every craft of a band (owner decision, October 2026: the player complaint was one rotation across every craft, and a minigame with full state and almost no randomness always has a rotation per recipe that matches adaptive play, so that figure is reported and not gated). `SolveShared` searches one sequence across several recipes (`RotationCase`: an engine factory and its stream), every recipe weighing the same and each played on its own dice; an action a recipe's engine does not offer is skipped there. `Solve` is the one-recipe case, which the gate still runs for each recipe as the reported metric and to seed the shared search. Candidates come from a beam search, every repeating cycle of up to three actions, and the action lines an adaptive player takes; a local search (replace, swap, delete, insert) improves the best few on whole attempts; the finalists are re-scored on different attempts, and the gate scores the winner on a third set. A fixed rotation skips an action that is unavailable and repeats its last action once the list ends. `FixedRotationSolverOptions` scales the effort.
+
+Both are repeatable from the seed: every attempt, search and policy takes its dice from its own stream of the seed (`SimStreams`), so the machine's core count cannot change a result.
+
+### Plugging a minigame in
+
+Phase 2 of a minigame workstream adds one class to this project, normally under `Scenario/<Minigame>/`:
+
+1. Implement `ICraftScenario` in a public class with a public parameterless constructor. `ScenarioRegistry.Discover` finds it by reflection, so `gates --scenario <Name>` runs it with no registration.
+2. `CreateEngine(CraftEngineRequest)` builds an attempt that has not started from the recipe (`Recipe.Detail` holds the recipe's per-recipe minigame parameters when it came from the server's definitions), the rank, the gear (`Gear.Control` powers quality, `Gear.Craftsmanship` progress, `Gear.CpBonus` the CP budget), the style (null for no perks) and the source of chance (`Random`). It must build the engine on `request.Random` and keep no mutable state of its own, because attempts run on many threads.
+3. The engine must keep every mutable value in its `TState`, with only `readonly` configuration fields: `Fork` copies it with a shallow clone. A game server test checks the fields of every engine.
+4. Fill in the rest as the minigame needs, all optional: `Cohort` (which recipes and which ranks; the default is every recipe of `Skill` at its level up to rank 50), `LengthTarget`, `StylePairs` (alternative styles and the rank they open at, built from `CraftStyle`), `AdaptiveOptions` (a deeper search or a heuristic of the minigame's own), `SolverOptions` and `Limitations` (appended to the report).
+5. `SecondsPerAction` is required: the seconds a player takes per action in the new window. Measure it in the client evidence and replace the estimate.
+6. `XpMultiplier` and `XpMultiplierFor(recipeLevel)`: a minigame whose loop pays less XP per hour than the old window names a multiplier in its rules (one constant, or one per recipe-level band) and exposes it through `CraftMinigameXp`; the scenario returns it here so gate 6 measures the XP the game awards. Use the least that passes gate 6 in each band.
+7. `Enhancements`: apply `request.Enhancements` through the engine's own enhancement handling (see "Gate 7: enhancement parity" above) and return `EnhancementSupport.Modeled`, or `NoSlots` for a minigame without enhancement slots. Until then gates 6 and 7 do not run their enhanced cases and the minigame cannot ship.
+
+A minigame with perk lines gives gate 2 its `StylePairs` and runs the gates a perked crafter must still pass through extra scenarios that play a fixed loadout instead of no perks. The Circuit does this with `CircuitLoadout` (a style plus which lines were bought, with every purchase the rank allows, read from the real perk definitions through `CircuitPerkLines`): `circuit` offers the style pairs and plays no perks for every other gate, and `circuit-overclocker`, `circuit-technician` and `circuit-both` play a bought-in-full loadout in every gate (run them with `--gates rotation,length,materials,xp,enhancements`). The Plasma Forge does the same with `ForgeLoadout` and `ForgePerkLines`: `forge` offers the Hot Forging and Cold Working pairs (with no line perks and with both lines in full) and plays no perks for every other gate, and `forge-forgemaster`, `forge-artisan`, `forge-both`, `forge-both-cold`, `forge-hot` and `forge-cold` (a style alone, no line perks) play a bought-in-full loadout in every gate.
+
+Gathering and fishing implement `IXpRateCohort` instead: it pairs the legacy loop with its replacement over the plan's activity cohorts (harvesting per node tier, scavenging per site level, fishing per fish-level band) at the parity attribute medians in `GateContext.Attributes`, and `XpRateGate` compares them. `LengthTarget` already carries their 3-8, 3-6 and 5-8 action targets.
+
+The game server changes only by `ICraftMinigameEngine.Fork`, which every engine inherits from `MinigameEngineBase<TState>`, and by the third enhancement slot's own threshold constant in `CraftOutcomeRules` (a starting value that gate 7 sets).
+
+### The fishing study
+
+Fishing is not an item craft, so it has no `ICraftScenario`. The `fishing` command plays the Line (`Fishing/`) against the catch roll it replaced and runs the gates that apply to it:
+
+```powershell
+dotnet SWLOR.CraftSim/bin/Release/net10.0/SWLOR.CraftSim.dll fishing --runs 1000 --seed 1 --out design/testing/crafting-revamp/fishing-line-parity.md
+```
+
+It takes `--runs` (fights per case, default 200), `--seed`, `--seconds-per-turn` (default 8), `--out` (default `design/testing/crafting-revamp/fishing-line-parity.md`), `--json`, `--strict` (exit 2 when a gate failed or was not run) and `--repo`. The same seed repeats a report exactly; build in Release for a 1,000-fight run (about two minutes).
+
+- **Economy parity** (`FishingCatchRateGate`), for **Quick Reel** (owner decision, October 2026): the choice that resolves a bite at once by today's `40 + 10 x (rank - fish level) + 2 x Willpower` with Willpower fixed at `FishingQuickReel.ReferenceWillpowerScore` (10: today's roll for a character with no attribute investment, the low end of the 10-14 corridor; owner decision). The gate asks that Quick Reel sit inside the corridor by rank above the fish's level and per rank over the real rod, bait and location pools, and that its fish and XP per hour match today's (`FishingPerHour`: it takes no fight time and pays today's XP for the bite).
+- **Fight bound** (`FishingFightBoundGate`): the fight is optional and may catch better, but a skilled fight's expected catch rate stays within +15% of Quick Reel's (`FishingParityOptions.FightBoundRelative`, a starting value) plus 3 points (`FightBoundSlackPoints`, two standard errors of a 1000-fight case and a floor for fish Quick Reel can hardly land). It judges the adaptive player with no perks (by rank above the fish's level and over the real pools), with the whole Angler line in either style, and the special rare fish at rank 50 with and without Trophy Catch.
+- **Length** (`FishingLengthGate`): the adaptive player's mean turns against `LengthTarget.FishingFight`.
+- **XP rate**: `FishingXpRateCohort` implements `IXpRateCohort` as the plan pins it: fish-level bands (0-10, 11-20, 21-30, 31-40, 41-52), rank equal to the fish level (at most 50), the best rod tier that rank allows, and every (rod, bait) table of every location that rod reaches weighted equally, half by day and half by night (a table with only a day pool or only a night pool keeps its half). XP is paid per bite (today's at the bite, the rest of the multiplied XP when the fight ends on its own, in proportion to its length up to `LineRules.XpFullTurns` turns, so neither abandoning a fight nor losing it on purpose earns more per hour than today), and the game keeps the pace from below with `LineRules.TurnSeconds` between two actions. The loops differ in time and in the multiplier the game server puts on the bite's XP: `LineRules.XpMultiplierForLevel`, read through `CraftMinigameXp`, one per fish-level band and each the least multiple of 0.05 that passes the band. `FishingXpRateCohort` takes an optional multiplier function to show what another multiplier would do, and `FishingParityOptions.FreeOpeningTurn` plays the fastest allowed pace (first action at once, so a fight of n actions lasts n - 1 turns), which the report shows as evidence next to the gate.
+- **Evidence tables** for the Angler perk draft: each proposed purchase and whether it stays within the fight bound, the two rank-20 styles against each other, and (in the Fight bound gate) the rare fish with Trophy Catch.
+
+The rule-of-thumb player (`RuleOfThumbPolicy`) marks the other end of skill: it reads the announced move and answers by a fixed rule. The legacy catch roll is ported in `Legacy/Gathering/FishingCatchModel.cs` from `Service/Fishing.cs` at commit d5f1c0466, where it was checked against the source; it left `Fishing.cs` with the Line and is no longer checked.
+
+### The scavenging study
+
+Scavenging is not an item craft either. The `search` command plays the Search board (`Search/`) against the search it replaced and runs the gates that apply to it:
+
+```powershell
+dotnet SWLOR.CraftSim/bin/Release/net10.0/SWLOR.CraftSim.dll search --runs 12000 --seed 1 --out design/testing/crafting-revamp/scavenging-search-parity.md
+```
+
+It takes `--runs` (boards per case, default 4000), `--seed`, `--seconds-per-action` (default 6), `--site-seconds` (default 30, the time to reach and open a site, the same in both loops), `--out` (default `design/testing/crafting-revamp/scavenging-search-parity.md`), `--json`, `--strict` and `--repo`. The same seed repeats a report exactly.
+
+- **Quick Search against today** (`SearchYieldGate`, first table): `ScavengeQuickSearch` is the server's pure copy of the old rules at the parity reference (a Perception modifier of 0). Its expected rolls, attempts and XP equal the legacy model's (`ScavengeModel`) exactly, and a played Quick Search agrees. Quick Search takes today's time (one two-second animation for the visit, whatever its attempts) and pays today's XP, so its XP per hour is today's and not above it (`SearchReport.QuickSearchXp`).
+- **Economy parity** (`SearchYieldGate`): finds per board (loot-table rolls) of three simulated scavengers against Quick Search's rolls, over the Gathering ranks 0-50. *Careless* searches the spots in order. *Skilled* plays only from what the window shows (the hidden layout is state in the engine, so it does not read previews of unknown spots): every spot is a chain of actions, the best split of the searches among the chains is a small knapsack, and it Sifts when the ground a Sift would show raises that value by more than the search it costs. *Oracle* is told the layout. An unperked skilled board finds 1.03x to 1.08x of Quick Search's rolls at every rank (the owner's rule: playing the board adds bounded upside), and the whole Treasure Seeker line stays inside the plan's +15% (`SearchParityOptions`), with its value in the rare finds, not the count. The board improves with Gathering rank through the chance a Search finds on promising ground (`CraftRankMilestones.PromisingChanceForRank`); the number of searches and promising spots does not step, because a step in either is worth more than a tier of Quick Search rises.
+- **Length** (`SearchLengthGate`): the actions of a board against `LengthTarget.GatheringNode`. Every action costs a search, so a board lasts as many actions as the scavenger has searches.
+- **XP rate**: `SearchXpRateCohort` implements `IXpRateCohort` as the plan pins it: site levels 1-5, the Gathering rank 10 times the level, no tool. Today's loop is played exactly from the legacy model; the board is played by the careless and the skilled player, and the gate judges the lower XP per hour. Every action pays Gathering XP (a Sift the quarter a failure pays), times `SearchRules.XpMultiplierForLevel`, read through `CraftMinigameXp`, each the least multiple of 0.05 that passes its level.
+- **Evidence tables**: the rare items real scavenge tables give with Quick Search against the board (`SearchRareSupply`, rolling every `ILootTableDefinition` the game has), and what each proposed Treasure Seeker purchase adds to the skilled player (`SearchPerkEvidence`).
+
+### The harvesting study
+
+Harvesting is not an item craft either. The `harvesting` command plays Quick Harvest and Prospecting sessions (`Harvesting/`) against the harvests they replace, over every node tier and Gathering rank, and runs the gates that apply:
+
+```powershell
+dotnet SWLOR.CraftSim/bin/Release/net10.0/SWLOR.CraftSim.dll harvesting --runs 20000 --seed 1 --out design/testing/crafting-revamp/harvesting-prospecting-parity.md
+```
+
+It takes `--runs` (nodes per plan and case, default 4000; 20,000 takes under a minute), `--seed`, `--out` (default `design/testing/crafting-revamp/harvesting-prospecting-parity.md`), `--json`, `--strict` and `--repo`. Nodes are made as the game makes them (`ProspectingNode.Create`), and the module's veins and trees, with their gem entries, come from `Module/utp` and the harvesting loot tables (`HarvestNodeCatalog`).
+
+- **Economy parity** (`HarvestingYieldGate`): Quick Harvest equals today's expected items, XP, seconds and charges per node (the d4 pool at the owner's attribute reference, a Might modifier of 0), and a skilled session stays within +15% of today's items per node and not below it. The skilled player is the careful plan with the most items; the +15% cap is checked against every plan, Heavy Strike plans included (`ProspectorPlan`). Two more caps are checked in the same gate: the gems per node of a session (the gems of its ordinary rolls and of its gem pockets) stay within +15% of today's at every tier and rank, whatever the plan, and a skilled session spends at most 1.5 times today's harvester charges per node (a Survey costs none). A seam is a gem pocket with `GemPocketShare` of the chance a roll of the node's table is a gem, so the gems follow the table's own gem chance at every tier.
+- **Length** (`HarvestingLengthGate`): the skilled player's mean actions per node, 3-8.
+- **XP rate**: `HarvestingXpRateCohort` implements `IXpRateCohort` for each loop (Quick Harvest, the skilled session, the strike-only session): a case per node tier at the rank equal to the vein's level, XP per item. Both loops are timed in harvest delays (5 s), a session's actions converted from the seconds `ProspectingRules` names. A separate check holds Quick Harvest to exactly today's XP per hour.
+- **Evidence tables**: charges, seconds and gems per node, the Heavy Strike plans, the rank milestones, what a collapse costs, and refining XP before and now (each unit pays its ore's flat XP times `GetDeltaXP(ore level - rank) / GetDeltaXP(0)`, where an ore's level is the level of the vein of its tier, so it is the flat XP at the ore's level).
+
+Every plan reads only what the window shows; none reads a hidden seam.
+
+### The Gathering perk lines
+
+`gathering-perks` plays the Prospector and Treasure Seeker lines (`Harvesting/ProspectorPerkStudy`, `Search/TreasureSeekerPerkStudy`, `Harvesting/ProspectorStyleBalance`) and writes `design/testing/crafting-revamp/gathering-perks.md`:
+
+```powershell
+dotnet SWLOR.CraftSim/bin/Release/net10.0/SWLOR.CraftSim.dll gathering-perks --runs 20000 --seed 1
+```
+
+`--part prospecting|search|styles|gates|refining|bible` writes one part (`bible` writes the Bible rows as JSON for `tools/UpdateGatheringPerkBible.py`). The perks are read from the game's own definitions: a `GatheringLoadout` is a build (a line or both, a style), and its gatherer owns every purchase the Gathering rank allows (`GatheringPerkLines.StatsAt`, the same pipeline the game reads). `harvesting --loadout <name>` and `search --loadout <name>` run the economy-parity, length and XP-rate gates of the harvesting and search studies for a loadout (`prospector-no-style`, `prospector-strip-mining`, `treasure-seeker-no-style`, `treasure-seeker-careful-hands`, `both-lines-no-style`, `both-lines-strip-mining`, `both-lines-careful-hands`); with no `--loadout` they are the unperked studies, and Quick Harvest and Quick Search read no perk.
+
+- **Caps**: a skilled session of any plan stays within +15% of today's items and gems per node and of Quick Search's rolls per board, and spends at most 1.5x of today's charges. A perk that saves Stability, or adds an item, a roll or a gem, lifts the Prospecting session past the cap (it already claims nearly every seam its Stability allows), and a perk that cuts the session's actions takes it under the 3-8 actions a node should last, so the Prospector line saves time and power cores.
+- **Gate 2** (`ProspectorStyleBalance`): Strip Mining against no style on the nine kinds of node at ranks 20-50, played on the same nodes and dice, each by the best skilled plan, scored by items per second with the travel time to the next node; the pooled row is the verdict. Careful Hands has no partner on the Search board.
+- **Gate 3**: the unperked harvesting report is byte-identical to the committed one and the unperked search report differs only in its evidence tables (they now use the real line); the study shows how little of the line value is yield.
+
+### Research Experiment
+
+`Scenario/Experiment` plugs the research Experiment in as the `experiment` scenario (`gates --scenario experiment --gates length` checks its 5-8 turn target; the other gates do not apply to an experiment, which has no quality, styles or legacy loop). The `research` command writes the Experiment's own evidence: length, the size of the reductions against today's dice and the change in supply (licensed runs stay random at today's odds, so theirs is unchanged), the time cut at fixed levels, and Fabrication XP per real hour against at-level crafting.
+
+```powershell
+dotnet SWLOR.CraftSim/bin/Debug/net10.0/SWLOR.CraftSim.dll research --runs 400 --adaptive-runs 40 --seed 1 --out design/testing/crafting-revamp/research-experiment-report.md
+```
+
+`research` takes `--runs` (experiments per case for the focused player), `--adaptive-runs` (for the adaptive player), `--seed`, `--seconds-per-action`, `--job-overhead-seconds`, `--out` and `--repo`. The focused player (`ExperimentFocusedPolicy`) states a strategy instead of searching for one; the XP values it reports are the named constants in `ResearchXpRules`.
+
+### Test bench
+
+`SWLOR.CraftSim.Tests/Support` holds a test-only engine (`BenchEngine`: a working window the player must keep Heat inside, a chance-dependent Stoke and a telegraphed opportunity), a variant with a dominant action, a one-action table engine whose quality is set per recipe and style, a deterministic engine where each recipe has its own favored action (`ComboEngine`: no randomness, yet no single rotation serves the recipes, so gate 1 passes where a per-recipe rule would have failed), and their scenarios. The tests run every gate runner end to end on them with seeds, including a dominant rotation (gate 1 fails) and an adaptive game (gate 1 passes). Both model enhancements (a quarter of the penalty becomes extra progress, one for one in the table engine), and the table engine sets the quality of an enhanced craft by its enhancement count so gate 7's arithmetic and the threshold solver can be checked exactly.

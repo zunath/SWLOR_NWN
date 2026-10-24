@@ -4,6 +4,7 @@ using SWLOR.Game.Server.Feature.GuiDefinition.Payload;
 using SWLOR.Game.Server.Feature.GuiDefinition.RefreshEvent;
 using SWLOR.Game.Server.Service;
 using SWLOR.Game.Server.Service.CraftService;
+using SWLOR.Game.Server.Service.CraftService.Minigame;
 using SWLOR.Game.Server.Service.GuiService;
 using SWLOR.Game.Server.Service.GuiService.Component;
 using SWLOR.Game.Server.Service.PerkService;
@@ -19,10 +20,13 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
         private int _currentRecipeIndex;
         private readonly List<RecipeType> _recipeTypes = new();
         private const int RecordsPerPage = 20;
+        private const string QuickCraftButtonLabel = "Quick Craft";
+        private const string QuickCraftCancelLabel = "Cancel Quick Craft";
         private bool _skipPaginationSearch;
         private SkillType _craftingFilter;
         private uint _selectedBlueprintItem;
         private RecipesUIMode _mode;
+        private bool _isClosed;
 
         public string Title
         {
@@ -219,10 +223,45 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
                     Search();
             }
         }
+        public bool IsQuickCraftVisible
+        {
+            get => Get<bool>();
+            set => Set(value);
+        }
+
+        public bool IsQuickCraftEnabled
+        {
+            get => Get<bool>();
+            set => Set(value);
+        }
+
+        public string QuickCraftButtonText
+        {
+            get => Get<string>();
+            set => Set(value);
+        }
+
+        public string QuickCraftStatus
+        {
+            get => Get<string>();
+            set => Set(value);
+        }
+
+        public int QuickCraftCount
+        {
+            get => Get<int>();
+            set => Set(value);
+        }
+
         protected override void Initialize(RecipesPayload initialPayload)
         {
             _mode = initialPayload?.Mode ?? RecipesUIMode.Recipes;
+            _isClosed = false;
             _skipPaginationSearch = true;
+
+            // A craft left over from a logout, death or restart settles before a new one can start.
+            if (_mode == RecipesUIMode.Crafting && !CraftMinigameRouting.IsAnyCraftWindowOpen(Player))
+                CraftSessionService.SettleLeftover(Player);
 
             _selectedBlueprintItem = OBJECT_INVALID;
             _craftingFilter = initialPayload?.Skill ?? SkillType.Invalid;
@@ -257,10 +296,17 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
             ShowOnlyCraftableRecipes = false;
             _currentRecipeIndex = -1;
 
+            IsQuickCraftVisible = _mode == RecipesUIMode.Crafting && _craftingFilter != SkillType.Invalid;
+            IsQuickCraftEnabled = false;
+            QuickCraftButtonText = QuickCraftButtonLabel;
+            QuickCraftStatus = string.Empty;
+            QuickCraftCount = 1;
+
             LoadSkills();
             LoadCategories();
             Search();
 
+            WatchOnClient(model => model.QuickCraftCount);
             WatchOnClient(model => model.SearchText);
             WatchOnClient(model => model.IncludeComponents);
             WatchOnClient(model => model.SelectedSkillId);
@@ -508,8 +554,14 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
         {
             if (_mode == RecipesUIMode.Crafting)
             {
-                if (Gui.IsWindowOpen(Player, GuiWindowType.Craft))
+                if (CraftMinigameRouting.IsAnyCraftWindowOpen(Player))
                     return;
+
+                if (QuickCraftService.IsRunning(Player))
+                {
+                    SendMessageToPC(Player, "Finish or cancel your quick craft first.");
+                    return;
+                }
 
                 var blueprint = Craft.GetBlueprintDetails(_selectedBlueprintItem);
                 if (blueprint.Recipe == RecipeType.Invalid && _currentRecipeIndex < 0)
@@ -519,7 +571,8 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
                     ? blueprint.Recipe
                     : _recipeTypes[_currentRecipeIndex];
                 var payload = new CraftPayload(recipe, _selectedBlueprintItem);
-                Gui.TogglePlayerWindow(Player, GuiWindowType.Craft, payload, TetherObject);
+                var window = CraftMinigameRouting.GetWindow(Craft.GetRecipe(recipe).Skill);
+                Gui.TogglePlayerWindow(Player, window, payload, TetherObject);
             }
             else if (_mode == RecipesUIMode.Research)
             {
@@ -542,6 +595,70 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
                 Gui.TogglePlayerWindow(Player, GuiWindowType.Research, payload, TetherObject);
             }
         };
+
+        public Action OnClickQuickCraft() => () =>
+        {
+            if (_mode != RecipesUIMode.Crafting)
+                return;
+
+            if (QuickCraftService.IsRunning(Player))
+            {
+                QuickCraftService.Cancel(Player);
+                return;
+            }
+
+            if (_selectedBlueprintItem != OBJECT_INVALID || _currentRecipeIndex < 0)
+                return;
+
+            var message = QuickCraftService.Start(Player, _recipeTypes[_currentRecipeIndex], QuickCraftCount, RefreshQuickCraft);
+            RefreshQuickCraft();
+            if (!string.IsNullOrEmpty(message))
+                QuickCraftStatus = message;
+        };
+
+        /// <summary>Ends a quick craft batch that is still running when the window closes.</summary>
+        public override Action OnWindowClosed() => () =>
+        {
+            _isClosed = true;
+            QuickCraftService.Cancel(Player);
+        };
+
+        private void RefreshQuickCraft()
+        {
+            if (_isClosed || !IsQuickCraftVisible)
+                return;
+
+            if (QuickCraftService.IsRunning(Player))
+            {
+                QuickCraftButtonText = QuickCraftCancelLabel;
+                IsQuickCraftEnabled = true;
+                QuickCraftStatus = "Quick crafting. Cancel to stop after the current item.";
+                return;
+            }
+
+            QuickCraftButtonText = QuickCraftButtonLabel;
+            if (_selectedBlueprintItem != OBJECT_INVALID)
+            {
+                IsQuickCraftEnabled = false;
+                QuickCraftStatus = "Quick craft makes the base item only. Select a recipe, not a blueprint.";
+            }
+            else if (_currentRecipeIndex < 0)
+            {
+                IsQuickCraftEnabled = false;
+                QuickCraftStatus = string.Empty;
+            }
+            else
+            {
+                var recipe = _recipeTypes[_currentRecipeIndex];
+                var eligibility = QuickCraftService.Evaluate(Player, recipe);
+                var hasMaterials = !eligibility.IsEligible || QuickCraftService.ResolveBatchSize(Player, recipe, 1) > 0;
+
+                IsQuickCraftEnabled = eligibility.IsEligible && hasMaterials;
+                QuickCraftStatus = !eligibility.IsEligible
+                    ? eligibility.Reason
+                    : hasMaterials ? "Makes the base item only: no enhancements, blueprint bonuses or XP." : "You do not have the materials for this recipe.";
+            }
+        }
 
         private bool ValidateBlueprint(uint item)
         {
@@ -576,14 +693,14 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
             }
             else if (_mode == RecipesUIMode.Research)
             {
-                var researchLevel = Perk.GetPerkLevel(Player, PerkType.Research);
-                var requiredLevel = recipe.Level / 10 + 1;
-                if (requiredLevel > 5)
-                    requiredLevel = 5;
+                var researchTier = CraftRankMilestones.GetResearchTier(Player);
+                var requiredTier = recipe.Level / 10 + 1;
+                if (requiredTier > 5)
+                    requiredTier = 5;
 
-                if (researchLevel < requiredLevel)
+                if (researchTier < requiredTier)
                 {
-                    FloatingTextStringOnCreature($"Research level {requiredLevel} required.", Player, false);
+                    FloatingTextStringOnCreature($"Fabrication rank {CraftRankMilestones.RequiredFabricationRankForResearchTier(requiredTier)} is required to research this recipe.", Player, false);
                     return false;
                 }
 
@@ -660,6 +777,8 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
                 CanCraftOrResearchRecipe = Craft.CanPlayerCraftRecipe(Player, recipe);
             else if (_mode == RecipesUIMode.Research)
                 CanCraftOrResearchRecipe = Craft.CanPlayerResearchRecipe(Player, recipe);
+
+            RefreshQuickCraft();
         }
 
         private void ClearRecipeDetail()
@@ -671,6 +790,7 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
             RecipeDetailColors = new GuiBindingList<GuiColor>();
             _currentRecipeIndex = -1;
             CanCraftOrResearchRecipe = false;
+            RefreshQuickCraft();
         }
 
         private void LoadRecipeDetail()

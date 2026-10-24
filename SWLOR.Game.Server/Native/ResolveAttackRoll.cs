@@ -126,7 +126,7 @@ namespace SWLOR.Game.Server.Native
                 var pAttackData = pCombatRound.GetAttack(pCombatRound.m_nCurrentAttack);
                 // This API accepts WeaponAttackType, not a boolean off-hand flag.
                 var weapon = RangedWeaponAttackContext.GetWeapon(attacker.m_idSelf,
-                    pCombatRound.GetCurrentAttackWeapon(pCombatRound.GetWeaponAttackType()));
+                    WeaponAttackCycle.GetAttackWeapon(attacker, pCombatRound.GetWeaponAttackType()));
                 // Committed ranged projectiles retain their original resolution semantics.
                 if (pAttackData.m_bRangedAttack == 0 && !WeaponAttackEligibility.IsAllowed(
                         attacker.m_idSelf, weapon?.m_idSelf ?? OBJECT_INVALID, WeaponAttackPhase.Resolve))

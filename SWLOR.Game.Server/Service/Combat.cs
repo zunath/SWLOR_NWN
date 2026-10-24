@@ -11716,7 +11716,8 @@ namespace SWLOR.Game.Server.Service
             SkillType skillType,
             bool usesQueuedNaturalWeapon = false,
             bool requireMatchingSkill = false,
-            int? triggeringWeaponDamage = null)
+            int? triggeringWeaponDamage = null,
+            bool abilityImpact = false)
         {
             if (!IncludesCombatImpactWeaponDamage(skillType, usesQueuedNaturalWeapon))
                 return 0;
@@ -11725,9 +11726,11 @@ namespace SWLOR.Game.Server.Service
                 return triggeringWeaponDamage.Value;
 
             var weapon = GetCombatImpactWeapon(activator, skillType, usesQueuedNaturalWeapon, requireMatchingSkill);
-            return GetIsObjectValid(weapon)
-                ? WeaponDamage.GetEffectiveDMG(activator, weapon)
-                : 0;
+            if (!GetIsObjectValid(weapon))
+                return 0;
+            return abilityImpact
+                ? WeaponDamage.GetAbilityDMG(activator, weapon, skillType)
+                : WeaponDamage.GetEffectiveDMG(activator, weapon);
         }
 
         /// <summary>

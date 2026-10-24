@@ -16,6 +16,7 @@ namespace SWLOR.Game.Server.Feature.SpawnDefinition
             EshanNeoCrusaderBase();
             EshanScraplandCaves();
             EshanShattervein();
+            EshanShimmerdeep();
 
             return _builder.Build();
         }
@@ -108,6 +109,15 @@ namespace SWLOR.Game.Server.Feature.SpawnDefinition
 
                 .AddSpawn(ObjectType.Creature, "esh_nc_captain")
                 .WithFrequency(25)
+                .RandomlyWalks()
+                .ReturnsHome();
+        }
+
+        private void EshanShimmerdeep()
+        {
+            _builder.Create("ESHAN_SHIMMERDEEP_ECHAOLM", "Eshan - Shimmerdeep Echa'olm")
+                .AddSpawn(ObjectType.Creature, "esh_echaolm")
+                .WithFrequency(100)
                 .RandomlyWalks()
                 .ReturnsHome();
         }

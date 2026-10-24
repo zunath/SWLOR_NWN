@@ -39,6 +39,7 @@ namespace SWLOR.Game.Server.Service.BeastMasteryService
         Iriaz = 32,
         Gizka = 33,
         ShatterveinWolf = 34,
+        Echaolm = 35,
 
         // Incubation Beasts (1001+)
         DeeprockMauler = 1001,

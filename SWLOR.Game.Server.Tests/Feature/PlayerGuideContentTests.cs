@@ -369,6 +369,10 @@ public class PlayerGuideContentTests
 
     private static bool IsCombatManifestEntry(IReadOnlyDictionary<string, string> row)
     {
+        // The crafting and gathering lines have capstones too, but they are not combat trees.
+        if (row["Tab"] is "Smithery" or "Engineering" or "Fabrication" or "Agriculture" or "Gathering")
+            return false;
+
         if (row["Type"] is "Combat" or "Stance" or "Aura" or "Toggle" or "Capstone")
             return true;
 

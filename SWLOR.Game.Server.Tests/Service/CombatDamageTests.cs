@@ -351,7 +351,7 @@ public class CombatDamageTests
         usePerkFeatSource.Should().Contain("Ability.BeginAbilityImpact(activator, abilityDetail, triggeringWeapon: item,");
         usePerkFeatSource.Should().Contain("triggeringWeaponDamage: reservation?.TriggeringWeaponDamage");
         abilitySource.Should().Contain("trackedImpact.TriggeringWeaponDamage = triggeringWeaponDamage ?? (GetIsObjectValid(triggeringWeapon)");
-        abilitySource.Should().Contain("? WeaponDamage.GetEffectiveDMG(activator, triggeringWeapon)");
+        abilitySource.Should().Contain("? WeaponDamage.GetAbilityDMG(activator, triggeringWeapon, ability.SkillType)");
         abilitySource.Should().Contain("triggeringWeaponDamage: trackedImpact?.TriggeringWeaponDamage");
         Combat.GetCombatImpactWeaponDamage(0, SkillType.Vibroblade, triggeringWeaponDamage: 23).Should().Be(23);
         Combat.GetCombatImpactWeaponDamage(0, SkillType.Pistol, triggeringWeaponDamage: 0).Should().Be(0);
@@ -817,7 +817,7 @@ public class CombatDamageTests
             damageCalculation.Should().Contain("var usesQueuedNaturalWeapon = UsesQueuedNaturalWeapon(trackedImpact, skillType);");
             damageCalculation.Should().Contain("Combat.IsWeaponSkillType(skillType) || usesQueuedNaturalWeapon");
             damageCalculation.Should().Contain(
-                "Combat.GetCombatImpactWeaponDamage(activator, skillType, usesQueuedNaturalWeapon, triggeringWeaponDamage: trackedImpact?.TriggeringWeaponDamage)");
+                "Combat.GetCombatImpactWeaponDamage(activator, skillType, usesQueuedNaturalWeapon, triggeringWeaponDamage: trackedImpact?.TriggeringWeaponDamage, abilityImpact: true)");
         }
 
         impactWeaponDamage.Should().Contain("IncludesCombatImpactWeaponDamage(skillType, usesQueuedNaturalWeapon)");
@@ -1273,7 +1273,7 @@ public class CombatDamageTests
         var root = FindRepositoryRoot();
         var damageRollSource = File.ReadAllText(Path.Combine(root.FullName, "SWLOR.Game.Server", "Native", "GetDamageRoll.cs"));
 
-        damageRollSource.Should().Contain("var weapon = pCombatRound.GetCurrentAttackWeapon(bOffHand != 0 ? 2 : 0);");
+        damageRollSource.Should().Contain("var weapon = WeaponAttackCycle.GetAttackWeapon(attacker, bOffHand != 0 ? 2 : 0);");
         damageRollSource.Should().NotContain("var weapon = pCombatRound.GetCurrentAttackWeapon();");
         damageRollSource.Should().Contain("var damageProfile = ExtractWeaponDamageProfile(weapon);");
         damageRollSource.Should().NotContain("ExtractAttackDamageProfile");

@@ -46,7 +46,8 @@ public sealed partial class WeaponCombatState
         StatusEffectBase stance = owner.Spec.WeaponCombat.Stance switch
         {
             "Flow" => new FlowStanceStatusEffect(), "Bruiser" => new BruiserStanceStatusEffect(),
-            "Berserker" => new BerserkerStanceStatusEffect(), "Scrapper" => new ScrapperStanceStatusEffect(), _ => null
+            "Berserker" => new BerserkerStanceStatusEffect(), "Scrapper" => new ScrapperStanceStatusEffect(),
+            "Crusher" => new CrusherStanceStatusEffect(), _ => null
         };
         if (stance is BerserkerStanceStatusEffect)
             typeof(BerserkerStanceStatusEffect).GetMethod("Apply", BindingFlags.Instance | BindingFlags.NonPublic)!.Invoke(stance, new object[] { 0u, 0 });
@@ -61,7 +62,7 @@ public sealed partial class WeaponCombatState
             owner.Statuses[stance.GetType().Name] = _stance;
         }
         foreach (var stat in AllSources.SelectMany(s => s.Where(x => x.Value != 0).Select(x => x.Key)).Distinct())
-            if (!SupportedStats.Contains(stat.ToString()) && !SweepSupportedStats.Contains(stat) && !Simulation.SupportsPerkStat(stat))
+            if (!SupportedStats.Contains(stat.ToString()) && !SweepSupportedStats.Contains(stat) && !FormulaSupportedStats.Contains(stat) && !Simulation.SupportsPerkStat(stat))
                 throw new InvalidDataException($"WeaponCombat does not implement perk stat {stat}.");
     }
     // Movement and enmity have no effect in stationary fights; resistance and control durations still apply.
@@ -85,6 +86,13 @@ public sealed partial class WeaponCombatState
         "DefensePercentAdjustment", "ForceDefensePercentAdjustment", "ForceAttackPercentAdjustment", "AttackPercentAdjustment", "EvasionPercentAdjustment", "AttackDelayReductionPercent",
         "MobilityResistance", "TraumaResistance", "SingleWeaponDamagePercentAdjustment"
     };
+    /// <summary>A self status put on a weapon-calibrated combatant mid-fight must carry only stats the simulation reads.</summary>
+    public static void RequireSupportedStatus(Type statusType)
+    {
+        foreach (var stat in SWLOR.CombatSim.Effects.StatusStats.Get(statusType).Where(x => x.Value != 0).Select(x => x.Key))
+            if (!SupportedStats.Contains(stat.ToString()) && !SweepSupportedStats.Contains(stat) && !FormulaSupportedStats.Contains(stat) && !Simulation.SupportsPerkStat(stat))
+                throw new InvalidDataException($"WeaponCombat does not implement {statusType.Name} stat {stat}.");
+    }
     private IEnumerable<IReadOnlyDictionary<StatType, int>> AllSources =>
         Sources.Cast<IReadOnlyDictionary<StatType, int>>().Concat(_owner.Statuses.Values.Select(s => s.Stats));
     public int Stat(StatType stat) => AllSources.Aggregate(0, (sum, s) => SWLOR.Game.Server.Service.Stat.AggregateStatAdjustment(stat, sum, s.GetValueOrDefault(stat)));
@@ -204,10 +212,11 @@ public sealed partial class WeaponCombatState
         Casts[use.Feat] = Casts.GetValueOrDefault(use.Feat) + 1;
         return new TechniqueActivation { Stage = stage, ConditionalPower = conditional, Accuracy = accuracy, FlatPower = flat, HitPercent = hit, PaidStamina = paid };
     }
-    public void ApplyStatusRiders(StatusEffectCategory appliedCategories, double now)
+    public void ApplyStatusRiders(StatusEffectCategory appliedCategories, double now, Combatant target = null)
     {
-        if ((appliedCategories & (StatusEffectCategory)Stat(StatType.StatusAppliedRequiredCategory)) != StatusEffectCategory.None &&
-            Stat(StatType.StatusAppliedSelfDefensePercentAdjustment) > 0 && Stat(StatType.StatusAppliedSelfDurationSeconds) > 0)
+        if ((appliedCategories & (StatusEffectCategory)Stat(StatType.StatusAppliedRequiredCategory)) == StatusEffectCategory.None) return;
+        ApplyStatusAppliedBonuses(target, now);
+        if (Stat(StatType.StatusAppliedSelfDefensePercentAdjustment) > 0 && Stat(StatType.StatusAppliedSelfDurationSeconds) > 0)
             ControlDefenseUntil = now + Stat(StatType.StatusAppliedSelfDurationSeconds);
     }
     public void Complete(AbilityInfo info, AbilityUseSpec use, TechniqueActivation activation, Combatant target, bool landed, double now)
@@ -279,8 +288,11 @@ public sealed partial class WeaponCombatState
         (Reactions.GetWindowStage(At(now)) == MeleeTechniqueStage.Opening ? LineStat(WindowLine, StatType.TechniqueOpeningFinisherEvasionPercent) : 0);
     public int DefensePercent(double now) => Stat(StatType.DefensePercentAdjustment) + Stat(StatType.PhysicalDefensePercentAdjustment) + (now < ControlDefenseUntil ? Stat(StatType.StatusAppliedSelfDefensePercentAdjustment) : 0);
     public int HastePercent(double now) => Stat(StatType.AttackDelayReductionPercent) + AreaHaste(now) + _owner.Spec.WeaponCombat.ExternalHastePercent +
+        (_owner.Spec.WeaponCombat.PairedHands ? Stat(StatType.DualWieldAttackDelayReductionPercent) : 0) +
         (Reactions.GetWindowStage(At(now)) == MeleeTechniqueStage.Finish ? LineStat(WindowLine, StatType.TechniqueFinishFinisherHastePercent) : 0);
-    public double AttackSeconds(double now) => Combat.CalculateEffectiveAttackDelay(Combat.CalculateAttackDelayMilliseconds(_owner.Spec.WeaponCombat.WeaponDelayUnits, 0, HastePercent(now), 0)) / 1000d;
+    public double AttackSeconds(double now) => Combat.CalculateEffectiveAttackDelay(_owner.Spec.WeaponCombat.AttackDelayMilliseconds(HastePercent(now))) / 1000d;
+    /// <summary>Weapon rolls per attack cycle: both hands for Power Gloves, as the server's dual-wield cycle resolves.</summary>
+    public int RollsPerCycle => _owner.Spec.WeaponCombat.PairedHands ? 2 : 1;
     public double SwingSeconds(double now) => Combat.CalculateAttackSwingDelay((int)Math.Round(AttackSeconds(now)*1000)) / 1000d;
     public int TakeSwingAttacks(double now)
     {
@@ -294,6 +306,7 @@ public sealed partial class WeaponCombatState
     {
         Refresh(now);
         if (Control.IsDazed(now)) Count("DazedSeconds", Math.Min(step, Control.DazedUntil-now));
+        if (Control.IsKnockedDown(now)) Count("KnockdownSeconds", Math.Min(step, Control.KnockdownUntil-now));
         if (Reactions.GetWindowStage(At(now)) == MeleeTechniqueStage.Opening) Count("FlowEvasionSeconds", Math.Min(step, (Reactions.WindowExpires-At(now)).TotalSeconds));
         if (Reactions.GetWindowStage(At(now)) == MeleeTechniqueStage.Finish) Count("FlowHasteSeconds", Math.Min(step, (Reactions.WindowExpires-At(now)).TotalSeconds));
         if (now < HighGuardUntil) Count("HighGuardEvasionSeconds", Math.Min(step, HighGuardUntil-now));
@@ -301,6 +314,6 @@ public sealed partial class WeaponCombatState
         Count("AreaHastePercentSeconds", AreaHaste(now) * step);
         if (now < AvoidedAccuracyUntil) Count("AvoidedAccuracySeconds", Math.Min(step, AvoidedAccuracyUntil-now));
     }
-    public void Death() { ClearSweepBenefits(); Control.Clear(); _retaliationEnemy = null; _attackDebt = 0; _windowEnemy = null; _stance = null; ClearSetup(); Reactions.ClearBenefits(); Resources.ClearBenefits(); Rattled.Clear(); LowKick.Clear(); HighGuardUntil = ControlDefenseUntil = ReversalUntil = 0; }
+    public void Death() { ClearSweepBenefits(); ClearFormulaState(); Control.Clear(); _retaliationEnemy = null; _attackDebt = 0; _windowEnemy = null; _stance = null; ClearSetup(); Reactions.ClearBenefits(); Resources.ClearBenefits(); Rattled.Clear(); LowKick.Clear(); HighGuardUntil = ControlDefenseUntil = ReversalUntil = 0; }
     public static int Adjust(int value, int percent) => Math.Max(1, value + Math.Sign(percent) * (int)Math.Ceiling(value * Math.Abs(percent) / 100f));
 }

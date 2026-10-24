@@ -135,13 +135,21 @@ namespace SWLOR.Game.Server.Service
         [NWNEventHandler(ScriptName.OnNWNXChat)]
         public static void PreventAmbiguousTellTargets()
         {
-            if (ChatPlugin.GetChannel() != ChatChannel.PlayerTell)
+            var channel = ChatPlugin.GetChannel();
+            if (channel != ChatChannel.PlayerTell && channel != ChatChannel.DMTell)
                 return;
 
             var sender = ChatPlugin.GetSender();
             var target = ChatPlugin.GetTarget();
 
-            if (!GetIsObjectValid(sender) ||
+            if (ChatPortraitTells.RefuseStalePortraitTell(sender, target, GetLocalBool(sender, DirectTellVariable)))
+            {
+                ChatPlugin.SkipMessage();
+                return;
+            }
+
+            if (channel != ChatChannel.PlayerTell ||
+                !GetIsObjectValid(sender) ||
                 !GetIsObjectValid(target) ||
                 !GetIsPC(sender) ||
                 !GetIsPC(target) ||

@@ -88,7 +88,9 @@ namespace SWLOR.CombatSim.Effects
             [FeatType.ConduitStance1] = SelfStatus(typeof(ConduitStanceStatusEffect), 0f),
             [FeatType.InfiniteConduit1] = SelfStatus(typeof(InfiniteConduitStatusEffect), 45f),
             [FeatType.AkimboStance] = SelfStatus(typeof(AkimboStanceStatusEffect), 0f),
-            [FeatType.CrossfireStance] = SelfStatus(typeof(CrossfireStanceStatusEffect), 0f)
+            [FeatType.CrossfireStance] = SelfStatus(typeof(CrossfireStanceStatusEffect), 0f),
+            // Blood Frenzy applies its status for the capstone duration (not a toggle; its recast outlasts it).
+            [FeatType.BloodFrenzyBurst] = SelfStatus(typeof(BloodFrenzyStatusEffect), CapstoneAbility.ActiveDurationSeconds)
         };
 
         public static bool TryGet(FeatType feat, out AbilityEffect effect) => Effects.TryGetValue(feat, out effect);

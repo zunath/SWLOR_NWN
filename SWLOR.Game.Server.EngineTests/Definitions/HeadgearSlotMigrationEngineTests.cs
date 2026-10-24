@@ -85,6 +85,14 @@ public static partial class MigrationEngineTests
             await ctx.ExecuteInCreatureContextAsync(player, () => RemoveRequirement(head));
             await EquipAsync(ctx, player, head, InventorySlot.Head);
         }
+        // Login rebuilds max FP, max STM and Evasion from worn gear, so start from records the gear explains.
+        fixture.Update(record =>
+        {
+            record.MaxFP = Stat.BaseFP;
+            record.MaxStamina = Stat.BaseSTM;
+            record.Evasion = 0;
+        });
+        await ctx.ExecuteInCreatureContextAsync(player, () => Stat.RefreshPlayerEquipmentStats(player));
         var baseline = ReadEquipmentTotals(player);
         var baseFP = Stat.GetMaxFP(player);
         var baseSTM = Stat.GetMaxStamina(player);

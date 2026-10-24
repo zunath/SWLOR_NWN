@@ -1,3 +1,6 @@
+using System.Collections.Generic;
+using System.Linq;
+using SWLOR.Game.Server.Entity;
 using SWLOR.Game.Server.Feature.GuiDefinition.Payload;
 using SWLOR.Game.Server.Service.GuiService;
 using SWLOR.Game.Server.Service.SkillService;
@@ -52,6 +55,40 @@ namespace SWLOR.Game.Server.Service.ScavengeService
         {
             var item = CreateItemOnObject(resref, site, quantity);
             return GetIsObjectValid(item) ? GetName(item) : resref;
+        }
+
+        public void SavePendingFinds(uint player, IReadOnlyList<ScavengeFind> finds)
+        {
+            var dbPlayer = DB.Get<Player>(GetObjectUUID(player));
+            if (dbPlayer == null)
+                return;
+
+            dbPlayer.PendingScavengeFinds = finds
+                .GroupBy(find => find.Resref)
+                .ToDictionary(group => group.Key, group => group.Sum(find => find.Quantity));
+            DB.Set(dbPlayer);
+        }
+
+        /// <summary>
+        /// Gives a player who logs in the finds of a board whose visit never ended, which only a server restart leaves behind, and clears
+        /// them.
+        /// </summary>
+        public static void ReturnPendingFinds(uint player)
+        {
+            var dbPlayer = DB.Get<Player>(GetObjectUUID(player));
+            if (dbPlayer?.PendingScavengeFinds == null || dbPlayer.PendingScavengeFinds.Count == 0)
+                return;
+
+            var names = new List<string>();
+            foreach (var (resref, quantity) in dbPlayer.PendingScavengeFinds)
+            {
+                var item = CreateItemOnObject(resref, player, quantity);
+                names.Add($"{quantity}x {(GetIsObjectValid(item) ? GetName(item) : resref)}");
+            }
+
+            dbPlayer.PendingScavengeFinds.Clear();
+            DB.Set(dbPlayer);
+            SendMessageToPC(player, $"Your last search ended before you could collect it. What it found is in your inventory: {string.Join(", ", names)}.");
         }
 
         public void SpawnBonusLoot(uint site, uint player)

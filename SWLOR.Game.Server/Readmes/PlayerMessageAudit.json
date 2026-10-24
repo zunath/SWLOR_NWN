@@ -5565,6 +5565,13 @@
     "Call": "FloatingTextStringOnCreature(ColorToken.SkillCheck(text), player, false)"
   },
   {
+    "File": "SWLOR.Game.Server/Service/ScavengeService/NwnScavengeWorld.cs",
+    "Line": 91,
+    "Member": "ReturnPendingFinds",
+    "Delivery": "Retained",
+    "Call": "SendMessageToPC(player, $\"Your last search ended before you could collect it. What it found is in your inventory: {string.Join(\", \", names)}.\")"
+  },
+  {
     "File": "SWLOR.Game.Server/Service/Shuttle.cs",
     "Line": 219,
     "Member": "BoardPassengers",

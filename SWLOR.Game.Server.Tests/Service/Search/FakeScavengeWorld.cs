@@ -12,6 +12,7 @@ internal sealed class FakeScavengeWorld : IScavengeWorld
     public List<string> SkillChecks { get; } = new();
     public List<int> Xp { get; } = new();
     public List<(uint Site, string Resref, int Quantity)> Created { get; } = new();
+    public List<IReadOnlyList<ScavengeFind>> PendingSaves { get; } = new();
     public List<(uint Site, uint Player)> BonusLoot { get; } = new();
     public List<uint> Searched { get; } = new();
     public List<(uint Site, double Seconds)> Opened { get; } = new();
@@ -51,6 +52,12 @@ internal sealed class FakeScavengeWorld : IScavengeWorld
         Log.Add("create");
         Created.Add((site, resref, quantity));
         return "Item " + resref;
+    }
+
+    public void SavePendingFinds(uint player, IReadOnlyList<ScavengeFind> finds)
+    {
+        Log.Add("pending");
+        PendingSaves.Add(finds.ToList());
     }
 
     public void SpawnBonusLoot(uint site, uint player)

@@ -60,7 +60,7 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition
         public GuiConstructedWindow BuildWindow()
         {
             var window = _builder.CreateWindow(GuiWindowType.CraftCircuit)
-                .SetInitialGeometry(0, 0, 740f, 940f)
+                .SetInitialGeometry(0, 0, 740f, 660f)
                 .SetTitle("Circuit Assembly")
                 .SetIsResizable(true)
                 .SetIsCollapsible(true)

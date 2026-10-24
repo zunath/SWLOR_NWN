@@ -60,7 +60,7 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition
         public GuiConstructedWindow BuildWindow()
         {
             var window = _builder.CreateWindow(GuiWindowType.Search)
-                .SetInitialGeometry(0, 0, 620f, 820f)
+                .SetInitialGeometry(0, 0, 620f, 660f)
                 .SetTitle("Search the Site")
                 .SetIsResizable(true)
                 .SetIsCollapsible(true)

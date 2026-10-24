@@ -55,7 +55,7 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition
         public GuiConstructedWindow BuildWindow()
         {
             var window = _builder.CreateWindow(GuiWindowType.CraftFabricator)
-                .SetInitialGeometry(0, 0, 740f, 880f)
+                .SetInitialGeometry(0, 0, 740f, 660f)
                 .SetTitle("Fabricator")
                 .SetIsResizable(true)
                 .SetIsCollapsible(true)

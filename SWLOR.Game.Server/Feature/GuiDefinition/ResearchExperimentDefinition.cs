@@ -67,7 +67,7 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition
         public GuiConstructedWindow BuildWindow()
         {
             var window = _builder.CreateWindow(GuiWindowType.ResearchExperiment)
-                .SetInitialGeometry(0, 0, 640f, 920f)
+                .SetInitialGeometry(0, 0, 640f, 660f)
                 .SetTitle("Research Experiment")
                 .SetIsResizable(true)
                 .SetIsCollapsible(true)

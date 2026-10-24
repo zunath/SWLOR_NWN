@@ -88,6 +88,7 @@ namespace SWLOR.Game.Server.Entity
             CraftMinigameHelpSeen = new Dictionary<CraftMinigameType, DateTime>();
             SelectedCraftingStyles = new Dictionary<SkillType, PerkType>();
             HeldCraftItems = new List<string>();
+            PendingScavengeFinds = new Dictionary<string, int>();
             LearnedTechniques = new Dictionary<FeatType, DateTime>();
             EquippedTechniques = new List<FeatType>();
             MimicryLoadouts = new List<MimicryLoadout>();
@@ -231,6 +232,9 @@ namespace SWLOR.Game.Server.Entity
         public CraftSessionRecord ActiveCraftSession { get; set; }
         // Serialized items a settled craft could not return because the inventory was full.
         public List<string> HeldCraftItems { get; set; }
+        // What a Search board found, by item resref and quantity, while its visit has not ended. A server restart loses the board and its
+        // site, so the next login gives these to the player. Empty when no board is in progress.
+        public Dictionary<string, int> PendingScavengeFinds { get; set; }
         // When the player first opened each crafting minigame, which is when its help page opened by itself.
         public Dictionary<CraftMinigameType, DateTime> CraftMinigameHelpSeen { get; set; }
         // The crafting style the crafter selected for each crafting skill, named by the style's perk. The style's status effect is

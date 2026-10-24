@@ -307,6 +307,37 @@ public class ScavengeLifecycleTests
     }
 
     [Test]
+    public void AFind_IsSavedOnTheScavengersRecordUntilTheVisitEnds_SoARestartCannotLoseIt()
+    {
+        var lifecycle = Lifecycle(1, 0, 3);
+        var session = lifecycle.Start(Request());
+
+        lifecycle.Act(session, SearchAt(0));
+
+        _world.PendingSaves.Should().ContainSingle().Which.Should().Equal(new ScavengeFind("fiberp_ruined", 3, false));
+        _world.Created.Should().BeEmpty();
+
+        lifecycle.Abandon(session, ScavengeEnd.WindowClosed);
+
+        _world.Created.Should().Equal((Site, "fiberp_ruined", 3));
+        _world.PendingSaves.Should().HaveCount(2);
+        _world.PendingSaves[1].Should().BeEmpty("the site now holds the find, so the record no longer needs it");
+        _world.Log.LastIndexOf("pending").Should().BeGreaterThan(_world.Log.IndexOf("create"),
+            "the record is cleared only once the site holds the find");
+    }
+
+    [Test]
+    public void ASearchThatFindsNothing_SavesNothingOnTheRecord()
+    {
+        var lifecycle = Lifecycle(100);
+        var session = lifecycle.Start(Request());
+
+        lifecycle.Act(session, SearchAt(0));
+
+        _world.PendingSaves.Should().BeEmpty();
+    }
+
+    [Test]
     public void LeavingEarly_KeepsTheFindsSoFar_AndLosesTheSearchesNotSpent()
     {
         var lifecycle = Lifecycle(1, 0, 3);

@@ -1,3 +1,5 @@
+using System.Collections.Generic;
+
 namespace SWLOR.Game.Server.Service.ScavengeService
 {
     /// <summary>What a session needs to know about the scavenger to carry on: whether they are still there and safe, and how far from the site.</summary>
@@ -28,6 +30,12 @@ namespace SWLOR.Game.Server.Service.ScavengeService
 
         /// <summary>Puts an item in the site's inventory and returns the item's name for the summary.</summary>
         string CreateItem(uint site, string resref, int quantity);
+
+        /// <summary>
+        /// Saves what a board in progress has found on the scavenger's record, so a server restart before the visit ends cannot lose it. An
+        /// empty list clears it.
+        /// </summary>
+        void SavePendingFinds(uint player, IReadOnlyList<ScavengeFind> finds);
 
         /// <summary>Spawns the site's extra loot tables (<c>LOOT_TABLE_n</c>) for the scavenger, as every successful search always did.</summary>
         void SpawnBonusLoot(uint site, uint player);

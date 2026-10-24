@@ -205,6 +205,9 @@ namespace SWLOR.Game.Server.Service.ScavengeService
                     _random,
                     effects.DeeperWeightBonus + jackpot,
                     effects.FindWeightBonus));
+
+                // XP is already saved; the find must survive a restart too, until the visit ends and puts it in the site.
+                _world.SavePendingFinds(session.Player, session.Finds);
             }
 
             if (result.Status == MinigameStatus.InProgress)
@@ -324,6 +327,8 @@ namespace SWLOR.Game.Server.Service.ScavengeService
             var names = session.Finds
                 .Select(find => $"{find.Quantity}x {_world.CreateItem(request.Site, find.Resref, find.Quantity)}")
                 .ToList();
+            if (session.Finds.Count > 0)
+                _world.SavePendingFinds(session.Player, Array.Empty<ScavengeFind>());
 
             // The site's extra loot tables roll once for every search that found something, as they always did. A find from Dig Deeper skips them.
             if (present)

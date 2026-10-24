@@ -17,6 +17,17 @@ namespace SWLOR.Game.Server.Feature
         /// (<see cref="ScavengeSessions"/>): they play the board, or choose Quick Search, and what the site gave is put in its inventory when
         /// they finish. A site can be searched once (<c>FULLY_HARVESTED</c>), and one scavenger at a time.
         /// </summary>
+        /// <summary>Gives a player the finds of a Search board a server restart cut short.</summary>
+        [NWNEventHandler(ScriptName.OnModuleEnter)]
+        public static void ReturnPendingSearchFinds()
+        {
+            var player = GetEnteringObject();
+            if (!GetIsPC(player) || GetIsDM(player) || GetIsDMPossessed(player))
+                return;
+
+            NwnScavengeWorld.ReturnPendingFinds(player);
+        }
+
         [NWNEventHandler(ScriptName.OnScavengeOpened)]
         public static void OnOpened()
         {

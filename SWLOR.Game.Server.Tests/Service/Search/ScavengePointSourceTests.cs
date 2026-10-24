@@ -79,11 +79,14 @@ public class ScavengePointSourceTests
     [Test]
     public void ClosingASiteWhoseBoardIsBeingPlayed_NeverRemovesIt_HoweverManyViewersWereTurnedAway()
     {
-        var onClosed = Method(Source("Feature", "ScavengePoint.cs"), "public static void OnClosed()");
+        var source = Source("Feature", "ScavengePoint.cs");
+        var onClosed = Method(source, "public static void OnClosed()");
+        var resolve = Method(source, "public static void ResolveClosedScavengePoint(uint placeable)");
 
-        onClosed.Should().Contain("ScavengeSessions.IsInUse(placeable)");
-        onClosed.IndexOf("ScavengeSessions.IsInUse(placeable)", StringComparison.Ordinal)
-            .Should().BeLessThan(onClosed.IndexOf("GetFirstItemInInventory(placeable)", StringComparison.Ordinal), "the guard comes before the empty-inventory removal");
+        onClosed.Should().Contain("ResolveClosedScavengePoint(placeable)");
+        resolve.Should().Contain("ScavengeSessions.IsInUse(placeable)");
+        resolve.IndexOf("ScavengeSessions.IsInUse(placeable)", StringComparison.Ordinal)
+            .Should().BeLessThan(resolve.IndexOf("GetFirstItemInInventory(placeable)", StringComparison.Ordinal), "the guard comes before the empty-inventory removal");
     }
 
     [Test]

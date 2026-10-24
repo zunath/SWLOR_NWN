@@ -1,4 +1,5 @@
 using System.Collections.Generic;
+using System.Linq;
 using SWLOR.Game.Server.Core;
 using SWLOR.Game.Server.Service;
 using SWLOR.Game.Server.Service.LogService;
@@ -68,7 +69,7 @@ namespace SWLOR.Game.Server.Feature
             QueuedAttackAnimation.RestoreEquipmentAnimations += RestoreCurrentEquipmentAnimations;
         }
 
-        private static void RestoreCurrentEquipmentAnimations(uint creature) =>
+        internal static void RestoreCurrentEquipmentAnimations(uint creature) =>
             SyncKatarRemapState(creature, forceRefresh: true);
 
         [NWNEventHandler(ScriptName.OnModuleEquip)]
@@ -100,11 +101,19 @@ namespace SWLOR.Game.Server.Feature
                 return;
 
             SyncKatarRemapState(player);
+            // Module equip events can expose the old slots. Read both hands again
+            // after the transition, using current equipment rather than captured items.
+            AssignCommand(GetModule(), () => DelayCommand(0.1f, () =>
+            {
+                if (GetIsObjectValid(player))
+                    SyncKatarRemapState(player);
+            }));
         }
 
         // Determines whether remaps should be active right now and applies/restores exactly once per state change.
         private static void SyncKatarRemapState(uint creature, bool forceRefresh = false)
         {
+            Grip.Refresh(creature, forceRefresh);
             var rightHand = GetItemInSlot(InventorySlot.RightHand, creature);
             var leftHand = GetItemInSlot(InventorySlot.LeftHand, creature);
             BaseItem? rightHandBaseItem = GetIsObjectValid(rightHand) ? GetBaseItemType(rightHand) : null;
@@ -127,6 +136,8 @@ namespace SWLOR.Game.Server.Feature
             {
                 RestoreKatarRemap(creature);
                 DeleteLocalBool(creature, KatarAnimationRemapActiveVariable);
+                // Restoring clears the 1h aliases Grip installed above for the new weapon; install them again.
+                Grip.Refresh(creature, forceRefresh: true);
             }
         }
 
@@ -197,8 +208,12 @@ namespace SWLOR.Game.Server.Feature
         // Applies every configured animation replacement for this creature.
         private static void ApplyKatarRemap(uint creature)
         {
+            // A queued swing owns the swing keys; its release forces another sync.
+            var queued = QueuedAttackAnimation.IsActive(creature);
             foreach (var (oldAnimation, newAnimation) in _remapPairs)
             {
+                if (queued && QueuedAttackAnimationPlayback.SwingKeys.Contains(oldAnimation))
+                    continue;
                 ReplaceObjectAnimation(creature, oldAnimation, newAnimation);
             }
 
@@ -208,8 +223,11 @@ namespace SWLOR.Game.Server.Feature
         // Restores all replaced animation keys
         private static void RestoreKatarRemap(uint creature)
         {
+            var queued = QueuedAttackAnimation.IsActive(creature);
             foreach (var (oldAnimation, _) in _remapPairs)
             {
+                if (queued && QueuedAttackAnimationPlayback.SwingKeys.Contains(oldAnimation))
+                    continue;
                 ReplaceObjectAnimation(creature, oldAnimation);
             }
 

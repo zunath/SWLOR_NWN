@@ -682,17 +682,28 @@ namespace SWLOR.Game.Server.Feature
                     if (AbilityAnimationBinding.ActivationType(ability, activator, animationLength) == Animation.Invalid)
                         return;
 
+                    // Only the temporary grip parry is released; leave its carry-restoration timer intact.
+                    void ReleaseGripParryForNativeDodge()
+                    {
+                        if (AbilityAnimationBinding.ActivationType(ability, activator, animationLength) == Animation.FireForgetDodgeSide)
+                            Grip.ReleaseActivationParryForNativeDodge(activator);
+                    }
+
                     // Like the skipped gesture it replaces, the fallback must not occupy the action queue.
                     if (AbilityAnimationBinding.UsesGestureFallback(ability))
                     {
                         var fallbackLength = Math.Max(animationLength, ability.AuthoredAnimation?.Duration ?? 0f);
-                        AssignCommand(activator, () => PistolAnimationRemap.PlayAnimationPreservingExplicitThrow(
-                            activator,
-                            AbilityAnimationBinding.ActivationType(ability, activator, animationLength),
-                            1.0f,
-                            fallbackLength,
-                            immediate: true,
-                            releaseAuthoredPose: false));
+                        AssignCommand(activator, () =>
+                        {
+                            ReleaseGripParryForNativeDodge();
+                            PistolAnimationRemap.PlayAnimationPreservingExplicitThrow(
+                                activator,
+                                AbilityAnimationBinding.ActivationType(ability, activator, animationLength),
+                                1.0f,
+                                fallbackLength,
+                                immediate: true,
+                                releaseAuthoredPose: false);
+                        });
                         return;
                     }
 
@@ -704,6 +715,7 @@ namespace SWLOR.Game.Server.Feature
                     {
                         AssignCommand(activator, () =>
                         {
+                            ReleaseGripParryForNativeDodge();
                             PistolAnimationRemap.PlayAnimationWithTemporaryReplacementPreservingExplicitThrow(
                                 activator,
                                 AbilityAnimationBinding.ActivationType(ability, activator, animationLength),
@@ -716,13 +728,15 @@ namespace SWLOR.Game.Server.Feature
                         return;
                     }
 
-                    AssignCommand(
-                        activator,
-                        () => PistolAnimationRemap.PlayAnimationPreservingExplicitThrow(
+                    AssignCommand(activator, () =>
+                    {
+                        ReleaseGripParryForNativeDodge();
+                        PistolAnimationRemap.PlayAnimationPreservingExplicitThrow(
                             activator,
                             AbilityAnimationBinding.ActivationType(ability, activator, animationLength),
                             1.0f,
-                            animationLength));
+                            animationLength);
+                    });
                 }
 
                 // Force out of stealth unless the activation must inspect or toggle the current

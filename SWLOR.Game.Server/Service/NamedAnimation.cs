@@ -11,7 +11,15 @@ namespace SWLOR.Game.Server.Service;
 public static class NamedAnimation
 {
     private const string PlaybackTokenVariable = "_NAMED_ANIMATION_PLAYBACK";
-    private static readonly NamedAnimationPlayback Playback = new(new NativeRuntime(), ReleaseIdlePose);
+    private static readonly NamedAnimationPlayback Playback = new(new NativeRuntime(), ReleaseIdlePose,
+        creature =>
+        {
+            if (!GetIsObjectValid(creature) || GetIsDead(creature)) return;
+            // A queued swing owns the combat aliases; the queue restores them when it releases.
+            // The carry alias is not a swing key, so Grip can reapply it now.
+            if (QueuedAttackAnimation.IsActive(creature)) Grip.RestoreCarryAlias(creature);
+            else KatarAnimationRemap.RestoreCurrentEquipmentAnimations(creature);
+        });
 
     /// <summary>
     /// Queues a clip without clearing existing actions. Native mappings are restored at
@@ -163,7 +171,12 @@ public static class NamedAnimation
             if (string.IsNullOrEmpty(token)) DeleteLocalString(creature, PlaybackTokenVariable);
             else SetLocalString(creature, PlaybackTokenVariable, token);
         }
-        public void Replace(uint creature, string source, string replacement) => ReplaceObjectAnimation(creature, source, replacement);
+        public void Replace(uint creature, string source, string replacement)
+        {
+            if (source == NamedAnimationPlayback.RifleCarrierSource)
+                Grip.InvalidateTransition(creature, releaseMapping: false);
+            ReplaceObjectAnimation(creature, source, replacement);
+        }
         public ActionType CurrentAction(uint creature) => GetCurrentAction(creature);
         public void ClearActions(uint creature) => ClearAllActions(oObject: creature);
         public void Schedule(float seconds, Action callback) => AssignCommand(GetModule(), () => DelayCommand(seconds, callback));

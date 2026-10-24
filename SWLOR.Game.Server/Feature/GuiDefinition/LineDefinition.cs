@@ -70,7 +70,7 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition
         public GuiConstructedWindow BuildWindow()
         {
             var window = _builder.CreateWindow(GuiWindowType.Line)
-                .SetInitialGeometry(0, 0, 620f, 700f)
+                .SetInitialGeometry(0, 0, 620f, 660f)
                 .SetTitle("On the Line")
                 .SetIsResizable(true)
                 .SetIsCollapsible(true)

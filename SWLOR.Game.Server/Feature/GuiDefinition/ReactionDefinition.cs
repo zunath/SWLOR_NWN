@@ -55,7 +55,7 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition
         public GuiConstructedWindow BuildWindow()
         {
             var window = _builder.CreateWindow(GuiWindowType.Reaction)
-                .SetInitialGeometry(0, 0, 640f, 720f)
+                .SetInitialGeometry(0, 0, 640f, 660f)
                 .SetTitle("Reaction Bench")
                 .SetIsResizable(true)
                 .SetIsCollapsible(true)

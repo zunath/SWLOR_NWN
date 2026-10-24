@@ -61,7 +61,7 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition
         public GuiConstructedWindow BuildWindow()
         {
             var window = _builder.CreateWindow(GuiWindowType.Forge)
-                .SetInitialGeometry(0, 0, 680f, 900f)
+                .SetInitialGeometry(0, 0, 680f, 660f)
                 .SetTitle("Plasma Forge")
                 .SetIsResizable(true)
                 .SetIsCollapsible(true)

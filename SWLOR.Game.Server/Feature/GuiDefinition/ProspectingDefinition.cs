@@ -70,7 +70,7 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition
         public GuiConstructedWindow BuildWindow()
         {
             var window = _builder.CreateWindow(GuiWindowType.Prospecting)
-                .SetInitialGeometry(0, 0, 620f, 900f)
+                .SetInitialGeometry(0, 0, 620f, 660f)
                 .SetTitle("Prospecting")
                 .SetIsResizable(true)
                 .SetIsCollapsible(true)

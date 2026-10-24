@@ -106,6 +106,24 @@ namespace SWLOR.CraftSim.Tests.Gates
         }
 
         [Test]
+        public void APerkedBuildKeepsAFloorOfEightActionsWhereTheUnperkedFloorIsTen()
+        {
+            var actions = Evaluate("length", new BenchScenario(), Context(Levels)).Tables[0].Rows.Select(row => double.Parse(row[3])).ToList();
+            var floorAboveTheBench = new LengthTarget(actions.Max() + 0.5, 20, "a floor above the bench's length");
+
+            Evaluate("length", new BenchScenario { LengthTarget = floorAboveTheBench }, Context(Levels)).Verdict.Should().Be(GateVerdict.Failed);
+            var perked = Evaluate("length", new BenchScenario { LengthTarget = LengthTarget.PerkedItemCraft }, Context(Levels));
+            perked.Verdict.Should().Be(GateVerdict.Passed, perked.Summary);
+            perked.Tables[0].Rows.Should().OnlyContain(row => row[7] == "8-20");
+            perked.Tables[0].Title.Should().Contain("perked build");
+            LengthTarget.PerkedItemCraft.MinimumActions.Should().Be(8);
+            LengthTarget.PerkedItemCraft.MaximumActions.Should().Be(LengthTarget.ItemCraft.MaximumActions);
+            LengthTarget.PerkedItemCraft.Contains(8.0).Should().BeTrue();
+            LengthTarget.PerkedItemCraft.Contains(7.9).Should().BeFalse();
+            LengthTarget.ItemCraft.Contains(9.9).Should().BeFalse("an unperked crafter keeps the floor of 10");
+        }
+
+        [Test]
         public void ReportsTheShortestAndLongestRecipeOfEachBand()
         {
             var result = Evaluate("length", new BenchScenario(), Context(Levels), recipesPerBand: 2);

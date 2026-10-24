@@ -58,6 +58,9 @@ namespace SWLOR.CraftSim.Scenario.Forge
 
         public EnhancementSupport Enhancements => EnhancementSupport.Modeled;
 
+        /// <summary>A crafter who bought any Smithery perk (a line or a style) keeps the perked floor of 8 actions; the unperked Forge keeps 10.</summary>
+        public LengthTarget LengthTarget => _defaultLoadout != null ? LengthTarget.PerkedItemCraft : LengthTarget.ItemCraft;
+
         public AdaptivePolicyOptions AdaptiveOptions => Adaptive;
 
         /// <summary>

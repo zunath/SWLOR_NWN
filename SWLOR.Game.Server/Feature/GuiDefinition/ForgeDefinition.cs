@@ -49,7 +49,7 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition
             "The Forgemaster and Artisan perk lines change these numbers and add five actions: Overdrive Press, Surge Plasma and the " +
             "Red Line Press for the Forgemaster, and Micro-Hone and Temper Hold for the Artisan. At Smithery 20 each line offers a style, " +
             "Hot Forging or Cold Working. You can own both; pick one before you craft, and only one is active at a time. Hot Forging " +
-            "moves the working range up and favors Hydro-Press, and Cold Working moves it down and favors Vibro-Hone. The list shows " +
+            "favors Hydro-Press, and Cold Working moves the working range down and favors Vibro-Hone. The list shows " +
             "the exact result of every action, perks included.\n\n" +
             "ENHANCEMENTS AND FAILURE\n" +
             "Each enhancement slot has a Finish threshold: if your Finish meets it when the item is finished, the enhancement transfers " +

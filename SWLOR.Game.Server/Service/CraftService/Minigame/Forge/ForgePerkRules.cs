@@ -14,10 +14,10 @@ public static class ForgePerkRules
     public const int PlasmaEfficiencyCpReduction = 2;
     public const int HeatRetentionRank1 = 1;
     public const int HeatRetentionRank2 = 2;
-    public const int OverdrivePressPercent = 75;
+    public const int OverdrivePressPercent = 10;
     public const int OverdrivePressCp = 12;
     public const int OverdrivePressIntegrityMultiplier = 2;
-    public const int HammerRhythmPercent = 8;
+    public const int HammerRhythmPercent = 4;
     public const int HammerRhythmMaxStacks = 3;
     public const int ScorchGuardReductionPercent = 25;
     public const int SurgePlasmaThermal = 44;
@@ -34,21 +34,21 @@ public static class ForgePerkRules
     public const int MicroHonePercent = 80;
     public const int MicroHoneCp = 4;
     public const int MicroHoneIntegrity = 6;
-    public const int SteadyQuenchEdgePercent = 40;
-    public const int CoolHandHotEdgePercent = 20;
+    public const int SteadyQuenchEdgePercent = 10;
+    public const int CoolHandHotEdgePercent = 10;
     public const int TemperHoldActions = 2;
     public const int TemperHoldCp = 10;
-    public const int ContainmentFocusPercent = 25;
-    public const int PerfectTemperPercent = 50;
+    public const int ContainmentFocusPercent = 10;
+    public const int PerfectTemperPercent = 15;
     public const int PerfectTemperWindow = 2;
 
-    // Styles. Hot Forging trades Finish for Shape, and Cold Working trades Shape for Finish.
-    public const int HotForgingRangeShift = 5;
-    public const int HotForgingPressPercent = 25;
-    public const int HotForgingHonePercent = -5;
+    // Styles. Neither style costs the crafter anything (a perk must never cost XP per hour); Hot Forging favors Shape and Cold Working favors Finish.
+    public const int HotForgingRangeShift = 0;
+    public const int HotForgingPressPercent = 20;
+    public const int HotForgingHonePercent = 0;
     public const int ColdWorkingRangeShift = -5;
-    public const int ColdWorkingHonePercent = 5;
-    public const int ColdWorkingPressPercent = -5;
+    public const int ColdWorkingHonePercent = 4;
+    public const int ColdWorkingPressPercent = 0;
 
     /// <summary>"percentage point" for 1 and "percentage points" for any other amount, for the descriptions.</summary>
     public static string PointWord(int amount) => amount == 1 ? "percentage point" : "percentage points";

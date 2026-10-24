@@ -16,7 +16,7 @@ namespace SWLOR.CraftSim.Tests.Scenario
     /// How the adaptive player plays each Smithery build: actions, quality, how often it makes the item and how often it uses each perk
     /// action, which explains gates 2 and 4 for the perked scenarios (<c>design/testing/crafting-revamp/smithery-perk-gates.md</c>).
     /// Explicit: it is a long run, never part of a normal test run. The report goes to
-    /// <c>%TEMP%/claude-crafting-revamp-perks-smithery/length-budget.txt</c>.
+    /// <c>%TEMP%/claude-crafting-revamp-perks-smithery-tuning/length-budget.txt</c>.
     /// </summary>
     [TestFixture, Explicit]
     public class ForgePerkLengthBudget
@@ -65,7 +65,7 @@ namespace SWLOR.CraftSim.Tests.Scenario
                 }
             }
 
-            var path = Path.Combine(Path.GetTempPath(), "claude-crafting-revamp-perks-smithery", "length-budget.txt");
+            var path = Path.Combine(Path.GetTempPath(), "claude-crafting-revamp-perks-smithery-tuning", "length-budget.txt");
             Directory.CreateDirectory(Path.GetDirectoryName(path)!);
             File.WriteAllLines(path, lines);
         }

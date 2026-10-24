@@ -148,7 +148,11 @@ public class SmitheryPerkLineTests
     {
         var stats = StatsAt(5, Forgemaster, Artisan);
 
-        stats.Should().BeEquivalentTo(new ForgePerkStats { RampCpReduction = 2, HoneIntegrityReduction = 2 });
+        stats.Should().BeEquivalentTo(new ForgePerkStats
+        {
+            RampCpReduction = ForgePerkRules.PlasmaEfficiencyCpReduction,
+            HoneIntegrityReduction = ForgePerkRules.SteadyHandsIntegrityReduction
+        });
     }
 
     [Test]
@@ -158,10 +162,10 @@ public class SmitheryPerkLineTests
 
         stats.Should().BeEquivalentTo(new ForgePerkStats
         {
-            RampCpReduction = 2,
-            HoneIntegrityReduction = 2,
-            CoolingReduction = 1,
-            ContainmentChancePercent = 10
+            RampCpReduction = ForgePerkRules.PlasmaEfficiencyCpReduction,
+            HoneIntegrityReduction = ForgePerkRules.SteadyHandsIntegrityReduction,
+            CoolingReduction = ForgePerkRules.HeatRetentionRank1,
+            ContainmentChancePercent = ForgePerkRules.CleanContainmentRank1
         });
     }
 
@@ -254,22 +258,20 @@ public class SmitheryPerkLineTests
         var hot = Granted(new HotForgingStatusEffect());
         var cold = Granted(new ColdWorkingStatusEffect());
 
+        // Neither style costs anything, and a zero is not granted at all.
         hot.Should().BeEquivalentTo(new Dictionary<StatType, int>
         {
-            [StatType.ForgeRangeShift] = 5,
-            [StatType.ForgePressOutputPercent] = 25,
-            [StatType.ForgeHoneOutputPercent] = -5
+            [StatType.ForgePressOutputPercent] = 20
         });
         cold.Should().BeEquivalentTo(new Dictionary<StatType, int>
         {
             [StatType.ForgeRangeShift] = -5,
-            [StatType.ForgeHoneOutputPercent] = 5,
-            [StatType.ForgePressOutputPercent] = -5
+            [StatType.ForgeHoneOutputPercent] = 4
         });
-        ForgeStyles.Description(ForgeStyle.HotForging).Should().Be(
-            "The working range moves up 5 Thermal. Hydro-Press gains 25% more Shape and Vibro-Hone gains 5% less Finish.");
-        ForgeStyles.Description(ForgeStyle.ColdWorking).Should().Be(
-            "The working range moves down 5 Thermal. Vibro-Hone gains 5% more Finish and Hydro-Press gains 5% less Shape.");
+        ForgeStyles.Description(ForgeStyle.HotForging).Should().Be("Hydro-Press gains 20% more Shape.");
+        ForgeStyles.Description(ForgeStyle.ColdWorking).Should().Be("The working range moves down 5 Thermal. Vibro-Hone gains 4% more Finish.");
+        ForgeStyles.Describe(5, 25, -5).Should().Be("The working range moves up 5 Thermal. Hydro-Press gains 25% more Shape and Vibro-Hone gains 5% less Finish.");
+        ForgeStyles.Describe(0, 0, 0).Should().BeEmpty();
         new HotForgingStatusEffect().Name.Should().Be(ForgeStyles.Name(ForgeStyle.HotForging));
         new ColdWorkingStatusEffect().Name.Should().Be(ForgeStyles.Name(ForgeStyle.ColdWorking));
         new HotForgingStatusEffect().Icon.Should().NotBe(new ColdWorkingStatusEffect().Icon);
@@ -301,19 +303,19 @@ public class SmitheryPerkLineTests
     }
 
     [Test]
-    public void AStyleAddsToThePerksOfTheLines_AndTheTwoStylesPullOppositeWays()
+    public void AStyleAddsToThePerksOfTheLines_AndTheTwoStylesFavorDifferentMeters()
     {
         var both = Forgemaster.Concat(Artisan).ToList();
         var hot = ForgePerkLines.StatsAt(Perks(), both, 50, ForgeStyle.HotForging);
         var cold = ForgePerkLines.StatsAt(Perks(), both, 50, ForgeStyle.ColdWorking);
         ForgePerkLines.StatsAt(Perks(), both, 19, ForgeStyle.HotForging).RangeShift.Should().Be(0, "a style opens at rank 20");
 
-        hot.RangeShift.Should().Be(5);
-        hot.PressOutputPercent.Should().Be(25);
-        hot.HoneOutputPercent.Should().Be(-5);
+        hot.RangeShift.Should().Be(0);
+        hot.PressOutputPercent.Should().Be(20);
+        hot.HoneOutputPercent.Should().Be(0);
         cold.RangeShift.Should().Be(-5);
-        cold.PressOutputPercent.Should().Be(-5);
-        cold.HoneOutputPercent.Should().Be(5);
+        cold.PressOutputPercent.Should().Be(0);
+        cold.HoneOutputPercent.Should().Be(4);
         hot.OverdrivePressPercent.Should().Be(cold.OverdrivePressPercent, "the lines' perks do not depend on the style");
     }
 
@@ -370,11 +372,11 @@ public class SmitheryPerkLineTests
         perks[PerkType.SmitheryPlasmaEfficiency].PerkLevels[1].Description.Should().Be("In the Plasma Forge, Ramp Plasma costs 2 less CP, to a minimum of 1.");
         perks[PerkType.SmitheryHeatRetention].PerkLevels[2].Description.Should().Be(
             "In the Plasma Forge, the piece loses 2 less Thermal after every action, to a minimum of 1 lost.");
-        perks[PerkType.SmitheryHammerRhythm].PerkLevels[1].Description.Should().Contain("8% more Shape, 16% after two in a row and 24% after three or more");
+        perks[PerkType.SmitheryHammerRhythm].PerkLevels[1].Description.Should().Contain("4% more Shape, 8% after two in a row and 12% after three or more");
         perks[PerkType.SmitheryCleanContainment].PerkLevels[2].Description.Should().Contain("20 percentage points more actions (35% becomes 55%)");
-        perks[PerkType.SmitherySteadyQuench].PerkLevels[1].Description.Should().Contain("70% of its center bonus at the edge of the working range instead of 30%");
-        perks[PerkType.SmitheryCoolHand].PerkLevels[1].Description.Should().Contain("falls to 80% of its best result at the hot edge instead of 60%");
-        perks[PerkType.SmitheryContainmentFocus].PerkLevels[1].Description.Should().Contain("+75% instead of +50%");
+        perks[PerkType.SmitherySteadyQuench].PerkLevels[1].Description.Should().Contain("40% of its center bonus at the edge of the working range instead of 30%");
+        perks[PerkType.SmitheryCoolHand].PerkLevels[1].Description.Should().Contain("falls to 70% of its best result at the hot edge instead of 60%");
+        perks[PerkType.SmitheryContainmentFocus].PerkLevels[1].Description.Should().Contain("+60% instead of +50%");
         perks[PerkType.SmitherySurgePlasma].PerkLevels[1].Description.Should().Contain("1.5 times a Ramp Plasma's CP");
     }
 }

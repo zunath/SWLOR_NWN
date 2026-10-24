@@ -146,11 +146,26 @@ Where the draft was silent:
 - Both styles are owned by purchase and toggled on the Plasma Forge window's setup page, one active at a time; the choice is stored through `CraftingStyleSelection` and applied again after a death or a login. The stats are read when the craft starts.
 - A refunded style perk removes its status effect and forgets the selection (`ForgeStyles.RemoveUnowned`).
 
-Magnitudes: every value is as drafted except the two styles. CraftSim's style balance gate (gate 2) failed the draft for a crafter with no line perks: with Hot Forging at +25% Hydro-Press and -25% Vibro-Hone and Cold Working at the mirror, Cold Working led by 6 to 8 points at mid and best gear, because a point of Finish is worth more than a point of Shape (the craft ends when Shape is full, so Finish is what the quality is made of). Cutting the two Finish numbers balanced plain crafts, but then Cold Working's -25% Hydro-Press made it earn only 0.4 to 0.9 times the XP rate of a crafter with no style in crafts with one to three enhancements (mean 0.63, gate 6): the extra Shape an enhancement asks for is expensive for it, and in the style stress it failed to make the item in 5 to 35% of the crafts that were under-ranked or heavily enhanced. Both styles were then made small, which kept gate 2 and brought Cold Working to 0.88 to 1.04 times (mean 0.97) in the same crafts.
+Magnitudes, first tuning pass: every value was as drafted except the two styles. CraftSim's style balance gate (gate 2) failed the draft for a crafter with no line perks: with Hot Forging at +25% Hydro-Press and -25% Vibro-Hone and Cold Working at the mirror, Cold Working led by 6 to 8 points at mid and best gear, because a point of Finish is worth more than a point of Shape (the craft ends when Shape is full, so Finish is what the quality is made of). Cutting the two Finish numbers balanced plain crafts, but then Cold Working's -25% Hydro-Press made it earn only 0.4 to 0.9 times the XP rate of a crafter with no style in crafts with one to three enhancements (mean 0.63, gate 6): the extra Shape an enhancement asks for is expensive for it, and in the style stress it failed to make the item in 5 to 35% of the crafts that were under-ranked or heavily enhanced. Both styles were then made small, which kept gate 2 and brought Cold Working to 0.88 to 1.04 times (mean 0.97) in the same crafts.
 
-| Style | Draft | Implemented |
+| Style | Draft | First tuning (gate 2 and the enhanced-craft XP rate) | Now (gates 4 and 6) |
+| --- | --- | --- | --- |
+| Hot Forging | range +10, Hydro-Press +25%, Vibro-Hone -25% | range +5, Hydro-Press +25%, Vibro-Hone -5% | Hydro-Press +20% |
+| Cold Working | range -10, Vibro-Hone +25%, Hydro-Press -25% | range -5, Vibro-Hone +5%, Hydro-Press -5% | range -5, Vibro-Hone +4% |
+
+Gates 4 and 6 for perked builds (owner decisions of October 24, 2026): every perked build keeps an 8-action floor, and no perk or style may cost XP per hour. The first needed the strongest perks cut, because the adaptive player turns any spare power into fewer actions; the second removed every style cost, since a style that costs anything falls under 1.0x in the cells where the unperked Forge is already at 1.00x. The values that changed:
+
+| Perk | Before | Now |
 | --- | --- | --- |
-| Hot Forging | range +10, Hydro-Press +25%, Vibro-Hone -25% | range +5, Hydro-Press +25%, Vibro-Hone -5% |
-| Cold Working | range -10, Vibro-Hone +25%, Hydro-Press -25% | range -5, Vibro-Hone +5%, Hydro-Press -5% |
+| Overdrive Press (Forgemaster 15) | a Hydro-Press with 175% of the Shape | 110% |
+| Hammer Rhythm (25) | +8% per press in a row, up to +24% | +4%, up to +12% |
+| Steady Quench (Artisan 30) | keeps 40 points more of its bonus at the range's edge | 10 points |
+| Cool Hand (35) | 20 points more at the hot edge | 10 points |
+| Containment Focus (45) | +25 points to the Stable Containment bonus | +10 points |
+| Perfect Temper (50) | +50% Finish at the center | +15% |
+| Hot Forging (20) | range +5, Hydro-Press +25%, Vibro-Hone -5% | Hydro-Press +20% |
+| Cold Working (20) | range -5, Vibro-Hone +5%, Hydro-Press -5% | range -5, Vibro-Hone +4% |
+
+Every other value is as drafted. A style with a zero is not granted that stat, and its description names only what it does.
 
 `smithery-perk-gates.md` has the sweeps and the gate results.

@@ -88,6 +88,11 @@ namespace SWLOR.Game.Server.EngineTests.Definitions
 
                 QueuedAttackAnimation.Stop(player);
                 ctx.Assert(HasFullRemap(player), "The swing keys return to the unarmed animations");
+
+                // A character saved mid swing brings the clip back without its playback.
+                ReplaceObjectAnimation(player, "1hslashl", AuthoredAnimation.DoubleStrike.Name);
+                KatarAnimationRemap.SynchronizeOnLogin(player);
+                ctx.Assert(HasFullRemap(player), "Login replaces a saved queued clip that has no playback");
             });
         }
 

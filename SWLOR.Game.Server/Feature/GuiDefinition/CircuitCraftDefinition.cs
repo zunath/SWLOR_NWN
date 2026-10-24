@@ -50,7 +50,7 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition
 
         private readonly GuiWindowBuilder<CircuitCraftViewModel> _builder = new();
 
-        /// <summary>The slot thresholds as the shared outcome rules set them, such as "50% for the first slot, 85% for the second and 85% for the third and any later slot".</summary>
+        /// <summary>The slot thresholds as the shared outcome rules set them, such as "50% for the first slot, 85% for the second and 100% for the third and any later slot".</summary>
         private static string ThresholdSummary()
         {
             var thresholds = CraftOutcomeRules.GetEnhancementThresholds(3);

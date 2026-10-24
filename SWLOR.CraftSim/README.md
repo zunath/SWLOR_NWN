@@ -67,7 +67,7 @@ Quality is the quality meter's share at the end, in points, with a broken or aba
 
 ### Gate 7: enhancement parity
 
-Today each enhancement transfers at a chance equal to the quality percentage, so 80% quality averages 2.4 of 3 enhancements; thresholds of 50/85/85 give exactly 1. Each enhancement also raises the progress the piece needs by its progress penalty, which makes the craft harder. The gate plays both:
+Today each enhancement transfers at a chance equal to the quality percentage, so 80% quality averages 2.4 of 3 enhancements; thresholds of 50/85/100 give exactly 1. Each enhancement also raises the progress the piece needs by its progress penalty, which makes the craft harder. The gate plays both:
 
 - **Today:** `LegacyEnhancementBaseline` plays the old minigame's lookahead player with the representative enhancement of the recipe's kind slotted 1, 2 and 3 times. A craft that is made adds slots x chance / 100; one that breaks adds none.
 - **New:** the scenario builds its engine with `CraftEngineRequest.Enhancements` (a `CraftEnhancementConfiguration`: the count and the progress penalty each, in the old window's units, default none), and the adaptive player crafts. A made item transfers the enhancement of slot n when its quality percent (`MinigameMeter.Percent`, rounded down) meets `CraftOutcomeRules.GetEnhancementThreshold(n)`, exactly as `CraftOutcomeRules.CalculateSuccess` decides (a test checks every quality and slot count). Changing a threshold constant there flows into the gate. A craft that breaks the piece transfers none.

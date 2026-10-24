@@ -36,13 +36,13 @@ namespace SWLOR.CraftSim.Tests.Gates
             comparison.Rows.Select(row => row[0]).Should().Equal("41-45", "41-45", "41-45", "51-53", "51-53", "51-53");
             comparison.Rows.Select(row => row[1]).Should().Equal("1", "2", "3", "1", "2", "3");
             RowVerdicts(result).Should().OnlyContain(verdict => verdict == "Passed");
-            result.Summary.Should().Contain("thresholds in force (50% / 85% / 85%)").And.Contain("1, 2, 3 slot(s)");
+            result.Summary.Should().Contain("thresholds in force (50% / 85% / 100%)").And.Contain("1, 2, 3 slot(s)");
         }
 
         [Test]
         public void ItFailsWhenTheQualityMeetsTheFirstThresholdOnlyAndSaysWhichCases()
         {
-            // 60% quality: thresholds of 50/85/85 transfer exactly one, where today's chance roll averages 1.8 of 3.
+            // 60% quality: thresholds of 50/85/100 transfer exactly one, where today's chance roll averages 1.8 of 3.
             var result = Run(Constant(60), Context(AtLevel, runs: 20));
 
             result.Verdict.Should().Be(GateVerdict.Failed);
@@ -148,7 +148,7 @@ namespace SWLOR.CraftSim.Tests.Gates
             thresholds.Rows[0][0].Should().Contain("Every band together");
             thresholds.Rows[0][1].Should().Be("80% / 80% / 80%");
             thresholds.Rows[0][2].Should().Be("80% / 80% / 80%");
-            thresholds.Rows.Select(row => row[3]).Should().OnlyContain(cell => cell == "50% / 85% / 85%");
+            thresholds.Rows.Select(row => row[3]).Should().OnlyContain(cell => cell == "50% / 85% / 100%");
             thresholds.Rows.Select(row => row[0]).Should().Contain(new[] { "Band 41-45 alone", "Band 51-53 alone" });
             result.Verdict.Should().Be(GateVerdict.Failed);
             result.Summary.Should().Contain("Thresholds that meet parity in every band for this quality: 80% / 80% / 80%");

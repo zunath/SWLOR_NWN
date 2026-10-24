@@ -118,18 +118,18 @@ public class CraftOutcomeRulesTests
     }
 
     [Test]
-    public void EnhancementThresholds_StartAtFiftyAndEightyFive_AndAOneSlotItemUsesTheFirst()
+    public void EnhancementThresholds_AreFiftyEightyFiveAndAHundred_AndAOneSlotItemUsesTheFirst()
     {
         CraftOutcomeRules.GetEnhancementThresholds(1).Should().Equal(50);
         CraftOutcomeRules.GetEnhancementThresholds(2).Should().Equal(50, 85);
-        CraftOutcomeRules.GetEnhancementThresholds(3).Should().Equal(50, 85, 85);
+        CraftOutcomeRules.GetEnhancementThresholds(3).Should().Equal(50, 85, 100);
         CraftOutcomeRules.GetEnhancementThresholds(0).Should().BeEmpty();
     }
 
     [Test]
-    public void EnhancementThresholds_TheThirdSlotHasItsOwnNamedValue_StillEightyFiveUntilGateSevenSetsIt()
+    public void EnhancementThresholds_TheThirdSlotNeedsAFullQualityCraft()
     {
-        CraftOutcomeRules.ThirdSlotQualityThresholdPercent.Should().Be(85, "a starting value that reuses the second slot's until gate 7 sets it");
+        CraftOutcomeRules.ThirdSlotQualityThresholdPercent.Should().Be(100, "one, two and three transfers are each a step of their own (owner decision, October 2026)");
         CraftOutcomeRules.GetEnhancementThreshold(1).Should().Be(CraftOutcomeRules.FirstSlotQualityThresholdPercent);
         CraftOutcomeRules.GetEnhancementThreshold(2).Should().Be(CraftOutcomeRules.SecondSlotQualityThresholdPercent);
         CraftOutcomeRules.GetEnhancementThreshold(3).Should().Be(CraftOutcomeRules.ThirdSlotQualityThresholdPercent);

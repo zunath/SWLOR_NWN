@@ -10,6 +10,10 @@ namespace SWLOR.Game.Server.Service
     {
         private const string PlanetTypeIdVariable = "PLANET_TYPE_ID";
         private static readonly Dictionary<PlanetType, PlanetAttribute> _planets = new();
+        private static readonly Dictionary<string, PlanetType> _planetAreaNamePrefixes = new()
+        {
+            ["Eshan City - "] = PlanetType.Eshan
+        };
         private static readonly Dictionary<string, PlanetType> _planetAreaResrefs = new(StringComparer.OrdinalIgnoreCase)
         {
             ["area"] = PlanetType.Viscara,
@@ -170,6 +174,12 @@ namespace SWLOR.Game.Server.Service
                     continue;
 
                 return type;
+            }
+
+            foreach (var (prefix, type) in _planetAreaNamePrefixes)
+            {
+                if (areaName.StartsWith(prefix))
+                    return type;
             }
 
             return PlanetType.Invalid;

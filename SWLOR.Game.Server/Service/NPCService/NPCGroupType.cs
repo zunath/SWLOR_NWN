@@ -607,6 +607,30 @@ namespace SWLOR.Game.Server.Service.NPCService
         [NPCGroup("Station Horror")]
         AbandonedStation_Horror = 298,
 
+        [NPCGroup("Eshan Dire Wolves")]
+        Eshan_DireWolf = 309,
+        [NPCGroup("Eshan Frost Dire Wolves")]
+        Eshan_FrostWolf = 310,
+        [NPCGroup("Eshan Dire Wolf Alpha")]
+        Eshan_DireWolfAlpha = 299,
+        [NPCGroup("Eshan Neo-Crusader Scouts")]
+        Eshan_NeoCrusaderScout = 300,
+        [NPCGroup("Eshan Neo-Crusader Hunters")]
+        Eshan_NeoCrusaderHunter = 301,
+        [NPCGroup("Eshan Neo-Crusader Vanguards")]
+        Eshan_NeoCrusaderVanguard = 302,
+        [NPCGroup("Eshan Neo-Crusader Heavy Troopers")]
+        Eshan_NeoCrusaderHeavy = 303,
+        [NPCGroup("Eshan Neo-Crusader Medics")]
+        Eshan_NeoCrusaderMedic = 304,
+        [NPCGroup("Eshan Neo-Crusader Captains")]
+        Eshan_NeoCrusaderCaptain = 305,
+        [NPCGroup("Eshan Thyrsian Exiles")]
+        Eshan_SunGuard = 306,
+        [NPCGroup("Eshan Scrapyard Smugglers")]
+        Eshan_ScrapyardSmuggler = 307,
+        [NPCGroup("Gorak Vesh, the Icebound")]
+        Eshan_GorakVesh = 308,
     }
 
     public class NPCGroupAttribute : Attribute

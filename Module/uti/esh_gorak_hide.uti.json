@@ -1,0 +1,85 @@
+{
+  "__data_type": "UTI ",
+  "AddCost": {
+    "type": "dword",
+    "value": 175
+  },
+  "BaseItem": {
+    "type": "int",
+    "value": 536
+  },
+  "Charges": {
+    "type": "byte",
+    "value": 0
+  },
+  "Comment": {
+    "type": "cexostring",
+    "value": ""
+  },
+  "Cost": {
+    "type": "dword",
+    "value": 175
+  },
+  "Cursed": {
+    "type": "byte",
+    "value": 0
+  },
+  "DescIdentified": {
+    "type": "cexolocstring",
+    "value": {
+      "0": "A slab of pale, frost-hardened hide taken from Gorak Vesh, the Icebound, an ancient chirodactyl of Eshan's Silverwood Expanse. Dense ridges and silver scars mark a lifetime of surviving the frozen wilds. Echani hunters prize this unmistakable trophy as proof that the Icebound has fallen."
+    }
+  },
+  "Description": {
+    "type": "cexolocstring",
+    "value": {
+      "0": "A slab of pale, frost-hardened hide taken from Gorak Vesh, the Icebound, an ancient chirodactyl of Eshan's Silverwood Expanse. Dense ridges and silver scars mark a lifetime of surviving the frozen wilds. Echani hunters prize this unmistakable trophy as proof that the Icebound has fallen."
+    }
+  },
+  "Identified": {
+    "type": "byte",
+    "value": 1
+  },
+  "LocalizedName": {
+    "type": "cexolocstring",
+    "value": {
+      "0": "Icebound Chiro Hide"
+    }
+  },
+  "ModelPart1": {
+    "type": "byte",
+    "value": 2
+  },
+  "PaletteID": {
+    "type": "byte",
+    "value": 64
+  },
+  "Plot": {
+    "type": "byte",
+    "value": 0
+  },
+  "PropertiesList": {
+    "type": "list",
+    "value": []
+  },
+  "StackSize": {
+    "type": "word",
+    "value": 1
+  },
+  "Stolen": {
+    "type": "byte",
+    "value": 0
+  },
+  "Tag": {
+    "type": "cexostring",
+    "value": "ESH_GORAK_HIDE"
+  },
+  "TemplateResRef": {
+    "type": "resref",
+    "value": "esh_gorak_hide"
+  },
+  "xModelPart1": {
+    "type": "word",
+    "value": 2
+  }
+}

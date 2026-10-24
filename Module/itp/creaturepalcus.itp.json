@@ -19127,6 +19127,250 @@
                 "type": "dword",
                 "value": 16859854
               }
+            },
+            {
+              "__struct_id": 0,
+              "ID": {
+                "type": "byte",
+                "value": 159
+              },
+              "LIST": {
+                "type": "list",
+                "value": [
+                  {
+                    "__struct_id": 0,
+                    "CR": {
+                      "type": "float",
+                      "value": 47.0
+                    },
+                    "FACTION": {
+                      "type": "cexostring",
+                      "value": "Hostile"
+                    },
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "Neo-Crusader Scout"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "esh_nc_scout"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "CR": {
+                      "type": "float",
+                      "value": 48.0
+                    },
+                    "FACTION": {
+                      "type": "cexostring",
+                      "value": "Hostile"
+                    },
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "Neo-Crusader Hunter"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "esh_nc_hunter"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "CR": {
+                      "type": "float",
+                      "value": 48.0
+                    },
+                    "FACTION": {
+                      "type": "cexostring",
+                      "value": "Hostile"
+                    },
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "Neo-Crusader Vanguard"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "esh_nc_vanguard"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "CR": {
+                      "type": "float",
+                      "value": 49.0
+                    },
+                    "FACTION": {
+                      "type": "cexostring",
+                      "value": "Hostile"
+                    },
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "Neo-Crusader Heavy Gunner"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "esh_nc_heavy"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "CR": {
+                      "type": "float",
+                      "value": 48.0
+                    },
+                    "FACTION": {
+                      "type": "cexostring",
+                      "value": "Hostile"
+                    },
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "Neo-Crusader Field Medic"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "esh_nc_medic"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "CR": {
+                      "type": "float",
+                      "value": 50.0
+                    },
+                    "FACTION": {
+                      "type": "cexostring",
+                      "value": "Hostile"
+                    },
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "Neo-Crusader Captain"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "esh_nc_captain"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "CR": {
+                      "type": "float",
+                      "value": 46.0
+                    },
+                    "FACTION": {
+                      "type": "cexostring",
+                      "value": "Hostile"
+                    },
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "Eshan Dire Wolf"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "esh_direwolf"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "CR": {
+                      "type": "float",
+                      "value": 47.0
+                    },
+                    "FACTION": {
+                      "type": "cexostring",
+                      "value": "Hostile"
+                    },
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "Eshan Frost Dire Wolf"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "esh_frostwolf"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "CR": {
+                      "type": "float",
+                      "value": 48.0
+                    },
+                    "FACTION": {
+                      "type": "cexostring",
+                      "value": "Hostile"
+                    },
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "Eshan Dire Wolf Alpha"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "esh_wolfalpha"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "CR": {
+                      "type": "float",
+                      "value": 50.0
+                    },
+                    "FACTION": {
+                      "type": "cexostring",
+                      "value": "Hostile"
+                    },
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "Gorak Vesh, the Icebound"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "esh_gorakvesh"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "CR": {
+                      "type": "float",
+                      "value": 48.0
+                    },
+                    "FACTION": {
+                      "type": "cexostring",
+                      "value": "Hostile"
+                    },
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "Scrapyard Smuggler"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "esh_scrap_smug"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "CR": {
+                      "type": "float",
+                      "value": 50.0
+                    },
+                    "FACTION": {
+                      "type": "cexostring",
+                      "value": "Hostile"
+                    },
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "Thyrsian Exile"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "esh_sunguard"
+                    }
+                  }
+                ]
+              },
+              "NAME": {
+                "type": "cexostring",
+                "value": "Eshan"
+              }
             }
           ]
         },

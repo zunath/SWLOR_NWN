@@ -485,6 +485,50 @@ namespace SWLOR.Game.Server.Service.AchievementService
         TwinSuns = 185,
         [Achievement("Final Salvo", "Completed Pavo Orrel's Twin Pistol movement and Flow trial.", true)]
         FinalSalvo = 186,
+
+        [Achievement("Explore Eshan Orbit", "Explore the space surrounding Eshan.", true)]
+        ExploreEshanOrbit = 187,
+        [Achievement("Explore Keshan Heights", "Explore Keshan Heights on Eshan.", true)]
+        ExploreEshanKeshanHeights = 188,
+        [Achievement("Explore Silverwood Expanse", "Explore the Silverwood Expanse on Eshan.", true)]
+        ExploreEshanSilverwoodExpanse = 189,
+        [Achievement("Explore Silver Gate District", "Explore Eshan City's Silver Gate District.", true)]
+        ExploreEshanSilverGateDistrict = 190,
+        [Achievement("Explore Keshan Peaks", "Explore the Keshan Peaks on Eshan.", true)]
+        ExploreEshanKeshanPeaks = 191,
+        [Achievement("Explore Highcrest Quarter", "Explore Eshan City's Highcrest Quarter.", true)]
+        ExploreEshanHighcrestQuarter = 192,
+        [Achievement("Explore the Shimmerdeep", "Explore the Shimmerdeep on Eshan.", true)]
+        ExploreEshanShimmerdeep = 193,
+        [Achievement("Explore Eshan Farmlands", "Explore the farmlands on Eshan.", true)]
+        ExploreEshanFarmlands = 194,
+        [Achievement("Explore Eshan Battlegrounds", "Explore the battlegrounds on Eshan.", true)]
+        ExploreEshanBattlegrounds = 195,
+        [Achievement("Explore Hearth Ward", "Explore Eshan City's Hearth Ward.", true)]
+        ExploreEshanHearthWard = 196,
+        [Achievement("Explore Eshan Starport", "Explore the starport on Eshan.", true)]
+        ExploreEshanStarport = 197,
+        [Achievement("Explore Verdant Crown", "Explore Eshan City's Verdant Crown.", true)]
+        ExploreEshanVerdantCrown = 198,
+        [Achievement("Explore the Riverway", "Explore Eshan City's Riverway.", true)]
+        ExploreEshanRiverway = 199,
+
+        [Achievement("Explore the Winter Marches", "Explore the Winter Marches on Eshan.", true)]
+        ExploreEshanWinterMarches = 200,
+        [Achievement("Explore the Old Quarter", "Explore Eshan City's Old Quarter.", true)]
+        ExploreEshanOldQuarter = 201,
+        [Achievement("Explore the Veylan Groves", "Explore the Veylan Groves on Eshan.", true)]
+        ExploreEshanVeylanGroves = 202,
+        [Achievement("Explore the Grand Proving Grounds", "Explore the Grand Proving Grounds on Eshan.", true)]
+        ExploreEshanGrandProvingGrounds = 203,
+        [Achievement("Explore the Scraplands", "Explore the Scraplands on Eshan.", true)]
+        ExploreEshanScraplands = 204,
+        [Achievement("Explore Eshan City Tunnels", "Explore the tunnels beneath Eshan City.", true)]
+        ExploreEshanCityTunnels = 205,
+        [Achievement("Explore the Shattervein", "Explore the Shattervein on Eshan.", true)]
+        ExploreEshanShattervein = 206,
+        [Achievement("Explore the Scraplands Caves", "Explore the caves beneath Eshan's Scraplands.", true)]
+        ExploreEshanScraplandsCaves = 207,
 	}
 
     public class AchievementAttribute: Attribute

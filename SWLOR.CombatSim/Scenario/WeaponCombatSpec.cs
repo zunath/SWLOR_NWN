@@ -28,6 +28,8 @@ public sealed class WeaponCombatSpec
     public string Stance { get; set; } = "None";
     public bool AllowTechniqueAbilities { get; set; } = true;
     public bool EnableCriticals { get; set; } = true;
+    /// <summary>Weapon DMG an ability adds: Unarmed abilities count both Power Gloves, matching WeaponDamage.GetAbilityDMG.</summary>
+    public int AbilityWeaponDamage => PairedHands ? WeaponDamage * 2 : WeaponDamage;
     /// <summary>Raw attack delay before the engine floor, matching Combat.CalculateAttackDelay for this loadout.</summary>
     public int AttackDelayMilliseconds(int hastePercent) =>
         SWLOR.Game.Server.Service.Combat.CalculateAttackDelayMilliseconds(WeaponDelayUnits, PairedHands ? WeaponDelayUnits : 0,

@@ -72,6 +72,8 @@ public class WeaponPvpTests
         SimulationClock.RunUntil(simulation, () => weapon.Diagnostics.GetValueOrDefault("SwingAnimations") >= 3, 30, "three attack cycles");
         var cycles = weapon.Diagnostics["SwingAnimations"] + weapon.Diagnostics.GetValueOrDefault("BatchedExtraAttacks");
         weapon.Diagnostics["OrdinaryAttempts"].Should().Be(cycles * rollsPerCycle, "each cycle rolls every hand once");
+        attacker.WeaponCombat.AbilityWeaponDamage.Should().Be(attacker.WeaponCombat.WeaponDamage * rollsPerCycle,
+            "Unarmed abilities count both Power Gloves' DMG");
     }
 
     [Test]

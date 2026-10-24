@@ -68,7 +68,8 @@ bonus, including a shield; rifles, two-handed/double weapons, Power Gloves, bare
 attacks do not qualify.
 Authored NPCs retain their explicit item ratings unless given a Single Weapon stat adjustment.
 Power Gloves dual-wield like two katars. The owned glove is the off-hand attack weapon, so the pair
-uses two gloves' paired delay, Dual Wield applies, and Single Weapon and Doublehand do not. The engine's
+uses two gloves' paired delay, Dual Wield applies, and Single Weapon and Doublehand do not. Unarmed ability impacts add the owned glove's DMG twice (`WeaponDamage.GetAbilityDMG`), one per
+glove, because the pair's per-hand budget no longer carries the Single Weapon bonus; auto-attacks roll one glove per hand. The engine's
 off-hand item is the stat-less cosmetic glove: `WeaponAttackCycle.GetAttackWeapon` resolves that hand's
 attack, damage, damage power and skill from the owned glove, and the off-hand callback delivers the owned
 glove's on-hit consumers (combat points, Leadership, loot finders, queued abilities) for each landed roll,

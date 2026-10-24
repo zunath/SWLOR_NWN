@@ -206,6 +206,10 @@ public static class PowerGlovePairEngineTests
             var offHand = Sample(1);
             ctx.Assert(mainHand > 0, "The owned glove deals native ordinary damage");
             ctx.AssertEqual(mainHand, offHand, "The native off-hand roll uses the owned glove, never the cosmetic carrier");
+            ctx.AssertEqual(48, WeaponDamage.GetAbilityDMG(actor, main, SkillType.Unarmed), "Unarmed abilities count both gloves' DMG");
+            ctx.AssertEqual(48, Combat.GetCombatImpactWeaponDamage(actor, SkillType.Unarmed, abilityImpact: true), "Ability impacts add both gloves' DMG");
+            ctx.AssertEqual(24, Combat.GetCombatImpactWeaponDamage(actor, SkillType.Unarmed), "Non-ability uses keep one glove's DMG");
+            ctx.AssertEqual(24, WeaponDamage.GetAbilityDMG(actor, main, SkillType.Katar), "Only Unarmed abilities count the pair");
             ctx.AssertEqual(24, Item.GetDMG(main), "Damage resolution never rewrites the real item's raw rating");
             AssertCosmeticCompanion(ctx, companion);
             ctx.Log($"256 matched-seed native rolls per hand: main {mainHand:0.00}, off hand {offHand:0.00}; raw DMG 24 with no Single Weapon bonus.");

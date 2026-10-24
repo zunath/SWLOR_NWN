@@ -817,7 +817,7 @@ public class CombatDamageTests
             damageCalculation.Should().Contain("var usesQueuedNaturalWeapon = UsesQueuedNaturalWeapon(trackedImpact, skillType);");
             damageCalculation.Should().Contain("Combat.IsWeaponSkillType(skillType) || usesQueuedNaturalWeapon");
             damageCalculation.Should().Contain(
-                "Combat.GetCombatImpactWeaponDamage(activator, skillType, usesQueuedNaturalWeapon, triggeringWeaponDamage: trackedImpact?.TriggeringWeaponDamage)");
+                "Combat.GetCombatImpactWeaponDamage(activator, skillType, usesQueuedNaturalWeapon, triggeringWeaponDamage: trackedImpact?.TriggeringWeaponDamage, abilityImpact: true)");
         }
 
         impactWeaponDamage.Should().Contain("IncludesCombatImpactWeaponDamage(skillType, usesQueuedNaturalWeapon)");

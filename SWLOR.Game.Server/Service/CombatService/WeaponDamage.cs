@@ -1,4 +1,5 @@
 using SWLOR.Game.Server.Service.PerkService;
+using SWLOR.Game.Server.Service.SkillService;
 using SWLOR.Game.Server.Service.StatService;
 using SWLOR.NWN.API.NWScript.Enum;
 using SWLOR.NWN.API.NWScript.Enum.Item;
@@ -38,6 +39,19 @@ namespace SWLOR.Game.Server.Service.CombatService
             var qualifies = EquipmentPredicates.HasSingleWeapon(creature) &&
                             GetItemInSlot(InventorySlot.RightHand, creature) == weapon;
             return CalculateEffectiveDMG(damage, qualifies ? GetSingleWeaponPercent(creature) : 0);
+        }
+
+        /// <summary>
+        /// Weapon DMG an ability adds. Unarmed abilities strike with both Power Gloves, so they count the
+        /// owned glove's DMG once per hand; auto-attacks still roll one glove per hand.
+        /// </summary>
+        public static int GetAbilityDMG(uint creature, uint weapon, SkillType abilitySkill)
+        {
+            var damage = GetEffectiveDMG(creature, weapon);
+            return abilitySkill == SkillType.Unarmed && PowerGloveEquipment.IsActivePair(creature) &&
+                   GetItemInSlot(InventorySlot.RightHand, creature) == weapon
+                ? damage * 2
+                : damage;
         }
 
         /// <summary>Damage type a weapon deals, matching native auto-attack resolution.</summary>

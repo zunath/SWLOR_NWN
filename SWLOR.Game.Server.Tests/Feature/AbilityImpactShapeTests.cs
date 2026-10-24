@@ -2,10 +2,12 @@ using System.Collections;
 using System.Reflection;
 using FluentAssertions;
 using NUnit.Framework;
+using SWLOR.Game.Server.Feature.AbilityDefinition.Vibroblade;
 using SWLOR.Game.Server.Service;
 using SWLOR.Game.Server.Service.AbilityService;
 using SWLOR.Game.Server.Service.SkillService;
 using SWLOR.Game.Server.Service.TelegraphService;
+using SWLOR.NWN.API.NWScript.Enum;
 
 namespace SWLOR.Game.Server.Tests.Feature;
 
@@ -58,6 +60,47 @@ public class AbilityImpactShapeTests
             Ability.IsAreaImpact(Activator, ability).Should().BeTrue();
             Ability.IsSingleTargetImpact(Activator, ability).Should().BeFalse();
         });
+    }
+
+    [TestCase(typeof(SavageCleaveAbilityDefinition), FeatType.SavageCleave1)]
+    [TestCase(typeof(SavageCleaveAbilityDefinition), FeatType.SavageCleave2)]
+    [TestCase(typeof(SavageCleaveAbilityDefinition), FeatType.SavageCleave3)]
+    [TestCase(typeof(CoveringStrikeAbilityDefinition), FeatType.CoveringStrike1)]
+    [TestCase(typeof(CoveringStrikeAbilityDefinition), FeatType.CoveringStrike2)]
+    [TestCase(typeof(CoveringStrikeAbilityDefinition), FeatType.CoveringStrike3)]
+    public void SelfCenteredVibrobladeSweeps_CountAsAreaAbilities(Type definitionType, FeatType feat)
+    {
+        // Spinning Deflection, Tempest Stance, and every other "after using an area combat
+        // ability" reward read this shape; an unflagged sweep silently earns none of them.
+        var ability = ((IAbilityListDefinition)System.Activator.CreateInstance(definitionType)!).BuildAbilities()[feat];
+
+        WithTrackedImpact(ability, impact =>
+        {
+            Invoke(impact, "RecordShape", SkillType.Vibroblade, true);
+            Invoke(impact, "RecordTarget", 11u);
+
+            Ability.IsAreaImpact(Activator, ability).Should().BeTrue();
+            Ability.IsSingleTargetImpact(Activator, ability).Should().BeFalse();
+        });
+    }
+
+    [Test]
+    public void HostileAbilities_DeclareAnAreaOrSingleTargetShape()
+    {
+        // An unflagged hostile ability is neither area nor single target, so it silently skips every
+        // shape-gated perk (Spinning Deflection, area and single-target damage adjustments, and more).
+        var offenders = typeof(IAbilityListDefinition).Assembly
+            .GetTypes()
+            .Where(x => typeof(IAbilityListDefinition).IsAssignableFrom(x) && !x.IsInterface && !x.IsAbstract)
+            .SelectMany(x => ((IAbilityListDefinition)System.Activator.CreateInstance(x)!).BuildAbilities()
+                .Where(a => a.Value.IsHostileAbility &&
+                            !a.Value.IsAreaAbility &&
+                            !a.Value.IsSingleTargetAbility)
+                .Select(a => $"{x.Name}.{a.Key}"))
+            .OrderBy(x => x, StringComparer.Ordinal)
+            .ToList();
+
+        offenders.Should().BeEmpty("every hostile ability must call IsAreaAbility() or IsSingleTargetAbility()");
     }
 
     private static void WithTrackedImpact(AbilityDetail ability, Action<object> assert)

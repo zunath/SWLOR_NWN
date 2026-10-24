@@ -114,7 +114,7 @@ Open for the Circuit, the Fabricator and perked builds (the plan has the note). 
 
 ## What each perk buys
 
-The table comes from the explicit test `ForgePerkEffects` (`dotnet test SWLOR.CraftSim.Tests --filter "FullyQualifiedName~ForgePerkEffects"`, which writes `perk-effects.md` to the scratch folder). It was still running when this report was written; it is added here when it finishes.
+The table is produced by the explicit test `ForgePerkEffects` (rank 50, no and mid gear, an even sample of 6 recipes per band, 12 runs; run it with `dotnet test SWLOR.CraftSim.Tests --filter "FullyQualifiedName~ForgePerkEffects"`, which writes `perk-effects.md` under `%TEMP%/claude-crafting-revamp-perks-smithery-tuning/`). Its run is about 35,000 adaptive crafts at rank 50 and had not finished when this pass ended, so the table is not in this report yet.
 
 ## Limitations
 

@@ -34,15 +34,9 @@ namespace SWLOR.Game.Server.Feature
             SyncFromEvent(GetPCItemLastEquippedBy());
         }
 
-        [NWNEventHandler(ScriptName.OnModuleEnter)]
-        public static void OnClientEnter()
-        {
-            SynchronizeOnLogin(GetEnteringObject());
-        }
-
         /// <summary>
-        /// Login synchronization: a character loaded from the server vault can bring back mappings
-        /// that its current equipment no longer uses.
+        /// Login synchronization, run by <see cref="SavedAnimationMappings"/> after it clears the
+        /// mappings a character loaded from the server vault brought back.
         /// </summary>
         public static void SynchronizeOnLogin(uint player)
         {

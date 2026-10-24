@@ -26,12 +26,12 @@ namespace SWLOR.Game.Server.Feature
         public const string PistolShotSound = "cb_sh_blstrfire1";
 
         /// <summary>
-        /// Synchronizes a player creature's pistol animation when it enters the module.
+        /// Synchronizes a player creature's pistol animation when it enters the module, run by
+        /// <see cref="SavedAnimationMappings"/> after it clears the mappings the character brought back.
         /// </summary>
-        [NWNEventHandler(ScriptName.OnModuleEnter)]
-        public static void OnClientEnter()
+        public static void SynchronizeOnLogin(uint player)
         {
-            ResetTransientSuspensionAndSyncAnimationState(GetEnteringObject());
+            ResetTransientSuspensionAndSyncAnimationState(player);
         }
 
         /// <summary>

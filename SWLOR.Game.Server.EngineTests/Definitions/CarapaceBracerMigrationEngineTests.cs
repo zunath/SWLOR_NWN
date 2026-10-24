@@ -49,7 +49,8 @@ public static partial class MigrationEngineTests
             record.Resistances[ResistanceType.Poison] = revised;
             record.Version = SavedCharacterMigration.LatestVersion;
             record.CharacterFileVersion = 0;
-            var restored = SavedCharacterMigration.WithFileVersion(SavedCharacterMigration.SaveFile(owner), SavedCharacterMigration.LatestVersion - 1);
+            // Version 23 is the file from before migration 24, which corrects the bracer.
+            var restored = SavedCharacterMigration.WithFileVersion(SavedCharacterMigration.SaveFile(owner), 23);
 
             var upgraded = SavedCharacterMigration.Upgrade(restored, record);
             ctx.Assert(upgraded != null, "The restored file is behind and is upgraded");

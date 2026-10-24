@@ -310,6 +310,9 @@ namespace SWLOR.Game.Server.Service
             if (GetIsPC(enemy))
                 return;
 
+            if (HoloCom.IsHologram(creature) || HoloCom.IsHologram(enemy))
+                return;
+
             if (AI.IsLeashEvading(enemy))
                 return;
 

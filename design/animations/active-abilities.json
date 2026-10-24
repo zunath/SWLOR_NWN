@@ -5917,7 +5917,7 @@
     "InternalName": "sw_pairvol",
     "Category": "Twin Pistol",
     "Type": "Combat",
-    "Description": "Raise the separately held pistols, aim forward and recover with both grips intact. Movement is performed by the ability before its shooting pose.",
+    "Description": "Snap both pistols up together, fire one simultaneous paired volley with a sharp shared recoil, then lower",
     "Reference": "",
     "PerkId": "PairedVolley",
     "Feats": [
@@ -5943,7 +5943,7 @@
     "InternalName": "sw_focusbrst",
     "Category": "Twin Pistol",
     "Type": "Combat",
-    "Description": "Raise the separately held pistols, aim forward and recover with both grips intact. Movement is performed by the ability before its shooting pose.",
+    "Description": "Bring both pistols close together on one line and hold a braced channel through three tight paired recoils",
     "Reference": "",
     "PerkId": "FocusedBurst",
     "Feats": [
@@ -5968,7 +5968,7 @@
     "InternalName": "sw_ctrlbrst",
     "Category": "Twin Pistol",
     "Type": "Combat",
-    "Description": "Raise the separately held pistols, aim forward and recover with both grips intact. Movement is performed by the ability before its shooting pose.",
+    "Description": "Measured alternating fire: right pistol, left pistol, right pistol, each with its own recoil while the other stays on target",
     "Reference": "",
     "PerkId": "ControlledBurst",
     "Feats": [
@@ -5992,7 +5992,7 @@
     "InternalName": "sw_akimbo",
     "Category": "Twin Pistol",
     "Type": "Stance",
-    "Description": "Raise the separately held pistols, aim forward and recover with both grips intact. Movement is performed by the ability before its shooting pose.",
+    "Description": "Flip both pistols up beside the head, then drop them into a squared forward akimbo ready with both muzzles level",
     "Reference": "",
     "PerkId": "AkimboStance",
     "Feats": [
@@ -6015,7 +6015,7 @@
     "InternalName": "sw_twinsuns",
     "Category": "Twin Pistol",
     "Type": "Combat",
-    "Description": "Raise the separately held pistols, aim forward and recover with both grips intact. Movement is performed by the ability before its shooting pose.",
+    "Description": "Cross both pistols over the chest, then snap them out into a wide V to fire both diagonals at once before bringing them back to ready",
     "Reference": "",
     "PerkId": "TwinSuns",
     "Feats": [
@@ -6038,7 +6038,7 @@
     "InternalName": "sw_blstslide",
     "Category": "Twin Pistol",
     "Type": "Combat",
-    "Description": "Raise the separately held pistols, aim forward and recover with both grips intact. Movement is performed by the ability before its shooting pose.",
+    "Description": "Come out of the slide in a low crouch, fire both pistols twice from the crouch, then rise to ready",
     "Reference": "",
     "PerkId": "BlasterSlide",
     "Feats": [
@@ -6064,7 +6064,7 @@
     "InternalName": "sw_grapshot",
     "Category": "Twin Pistol",
     "Type": "Combat",
-    "Description": "Raise the separately held pistols, aim forward and recover with both grips intact. Movement is performed by the ability before its shooting pose.",
+    "Description": "Land from the grapple pull with the left arm still extended, reel it in while the right pistol fires point blank twice",
     "Reference": "",
     "PerkId": "GrappleShot",
     "Feats": [
@@ -6089,7 +6089,7 @@
     "InternalName": "sw_pistrush",
     "Category": "Twin Pistol",
     "Type": "Combat",
-    "Description": "Raise the separately held pistols, aim forward and recover with both grips intact. Movement is performed by the ability before its shooting pose.",
+    "Description": "Carry the dash's forward lean into an angled double volley at the target being passed, then straighten",
     "Reference": "",
     "PerkId": "PistolRush",
     "Feats": [
@@ -6113,7 +6113,7 @@
     "InternalName": "sw_crossst",
     "Category": "Twin Pistol",
     "Type": "Stance",
-    "Description": "Raise the separately held pistols, aim forward and recover with both grips intact. Movement is performed by the ability before its shooting pose.",
+    "Description": "Step into a light mobile stance and cross the wrists so both pistols cover forward in an X, ready to fire while moving",
     "Reference": "",
     "PerkId": "CrossfireStance",
     "Feats": [
@@ -6136,7 +6136,7 @@
     "InternalName": "sw_finsalvo",
     "Category": "Twin Pistol",
     "Type": "Combat",
-    "Description": "Raise the separately held pistols, aim forward and recover with both grips intact. Movement is performed by the ability before its shooting pose.",
+    "Description": "Drop into a wide braced stance, unload rapid alternating shots that build to a heavy closing double recoil, then rise",
     "Reference": "",
     "PerkId": "FinalSalvo",
     "Feats": [
@@ -6252,7 +6252,7 @@
     "InternalName": "sw_perfform",
     "Category": "Unarmed",
     "Type": "Combat",
-    "Description": "Spends your Finish against one enemy to deal weapon DMG + 45. Cannot be used without Finish, and Finish cannot expire during the cast. Practiced Form applies.",
+    "Description": "Spends your Finish against one enemy to deal weapon DMG + 75. Cannot be used without Finish, and Finish cannot expire during the cast. Practiced Form applies.",
     "Reference": "",
     "PerkId": "PerfectForm",
     "Feats": [

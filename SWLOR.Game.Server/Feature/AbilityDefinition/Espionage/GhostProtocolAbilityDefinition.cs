@@ -48,23 +48,13 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.Espionage
             // The capstone is the only stealth entry allowed while in combat; open the entry
             // window just long enough for the mode change to pass the gate.
             SetLocalInt(activator, Stealth.CombatEntryWindowVariable, 1);
+            // The stealth window closes on its own unless the player leaves stealth first.
+            Stealth.ScheduleTimedExit(activator, StealthWindowSeconds);
             AssignCommand(activator, () =>
             {
                 SetActionMode(activator, ActionMode.Stealth, true);
             });
             DelayCommand(1f, () => DeleteLocalInt(activator, Stealth.CombatEntryWindowVariable));
-
-            // The stealth window closes on its own if nothing else has broken it first.
-            DelayCommand(StealthWindowSeconds, () =>
-            {
-                if (GetIsObjectValid(activator) && GetActionMode(activator, ActionMode.Stealth))
-                {
-                    AssignCommand(activator, () =>
-                    {
-                        SetActionMode(activator, ActionMode.Stealth, false);
-                    });
-                }
-            });
 
             TemporaryStatModifier.Replace(
                 activator,

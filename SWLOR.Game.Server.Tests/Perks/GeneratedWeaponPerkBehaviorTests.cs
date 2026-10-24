@@ -545,7 +545,7 @@ public class GeneratedWeaponPerkBehaviorTests
             root.FullName, "SWLOR.Game.Server", "Native", "ResolveAttackRoll.cs"));
         nativeSource.Should().Contain("StatusEffect.NotifyAttackAttemptStatusEffects(");
         nativeSource.Should().Contain("UsePerkFeat.HasQueuedWeaponAbility(attacker.m_idSelf, weaponSkillType, attacker.m_pcCombatRound.m_nCurrentAttack)");
-        nativeSource.Should().Contain("GetCurrentAttackWeapon(pCombatRound.GetWeaponAttackType())");
+        nativeSource.Should().Contain("WeaponAttackCycle.GetAttackWeapon(attacker, pCombatRound.GetWeaponAttackType())");
         var placeableBranchIndex = nativeSource.IndexOf(
             "if (targetObject.m_nObjectType != (int)ObjectType.Creature)",
             StringComparison.Ordinal);

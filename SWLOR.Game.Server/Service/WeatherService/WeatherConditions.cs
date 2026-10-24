@@ -1,3 +1,4 @@
+using SWLOR.NWN.API.NWScript.Enum.Area;
 using Precipitation = SWLOR.NWN.API.NWScript.Enum.Weather;
 
 namespace SWLOR.Game.Server.Service.WeatherService
@@ -72,6 +73,14 @@ namespace SWLOR.Game.Server.Service.WeatherService
 
             return new WeatherConditions(heat, humidity, wind, precipitation, storm);
         }
+
+        /// <summary>Native weather for these conditions; mist is drawn with placeables over clear weather.</summary>
+        public WeatherType NativeWeather => Precipitation switch
+        {
+            Precipitation.Rain => WeatherType.Rain,
+            Precipitation.Snow => WeatherType.Snow,
+            _ => WeatherType.Clear
+        };
 
         public WeatherHazard GetHazard(bool acidRain, Precipitation? actualPrecipitation = null)
         {

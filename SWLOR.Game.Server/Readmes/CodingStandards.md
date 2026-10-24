@@ -8,6 +8,7 @@ Sections: Code · Renames · Module JSON · Stat-driven gameplay · Haks, TLK, a
 
 - Before writing code in an unfamiliar area, find two or three existing examples of the same kind of thing and follow them. Never call a method you have not found.
 - New code puts one type per file, in a folder matching its namespace and feature. When you substantially change a file that holds several types, split it.
+- Every enum gets its own file named after it. An enum may sit inside a class only when it is `private` and used only by that class; never declare a public or internal enum in another type's file.
 - Each distinct ability gets its own `*AbilityDefinition.cs` and matching `IAbilityListDefinition` class named for it. Ranks of one ability share its file; unrelated abilities never share one.
 - Match the surrounding comment density: at most a one-line comment, only for a non-obvious constraint. No dates, incident history, investigation notes, or "verified in the client" claims in code; those go in the pull request or the topic guide.
 - `[NWNEventHandler]` and `ExecuteScript` script names are constants in `SWLOR.Game.Server/Core/ScriptName.cs`, never string literals.

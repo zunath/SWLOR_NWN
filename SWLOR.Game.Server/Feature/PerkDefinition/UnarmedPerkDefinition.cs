@@ -255,7 +255,7 @@ namespace SWLOR.Game.Server.Feature.PerkDefinition
 
                 .AddPerkLevel()
                 .GrantsFeat(FeatType.PerfectForm1)
-                .Description("Spends your Finish against one enemy to deal weapon DMG + 45. Cannot be used without Finish, and Finish cannot expire during the cast. Practiced Form applies.")
+                .Description("Spends your Finish against one enemy to deal weapon DMG + 75. Cannot be used without Finish, and Finish cannot expire during the cast. Practiced Form applies.")
                 .Price(6)
                 .RequirementSkill(SkillType.Unarmed, 50)
                 .RequirementQuest(UnarmedMasteryQuestDefinition.PerfectFormMasteryQuestId)

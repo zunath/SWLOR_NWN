@@ -184,14 +184,23 @@ public class AnimationPlanningTests
             entry => entry.GetProperty("Name").GetString()!);
         foreach (var entry in names)
             installed[entry.Key].GetProperty("AnimationName").GetString().Should().Be(entry.Value);
-        // Activity clips have no ability: fishing's cast and fight, the five station work loops and gathering's six actions.
-        installed.Keys.Except(names.Keys).Should().BeEquivalentTo("Fishing6", "Fishing7", "Fishing8", "TwinPistolCycle",
-            "Reel", "GiveLine", "HoldRod", "LandFish",
-            "ForgeWork", "Circuitry", "Fabricate", "Cooking", "Compound",
-            "Survey", "Strike", "HvyStrike", "Extract", "Search", "Dig");
+        // Activity clips have no ability: fishing's cast and fight, the five station work loops, gathering's six actions,
+        // and the Twin Pistol cycle and travel runs.
+        var motionNames = new Dictionary<string, string>
+        {
+            ["TwinPistolCycle"] = "sw_twinpisto",
+            ["BlasterSlideTravel"] = "sw_blastersl",
+            ["PistolRushTravel"] = "sw_pistolrus",
+            ["GrappleShotTravel"] = "sw_grapplesh",
+        };
+        installed.Keys.Except(names.Keys).Should().BeEquivalentTo(
+            new[] { "Fishing6", "Fishing7", "Fishing8" }.Concat(motionNames.Keys)
+                .Concat(new[] { "Reel", "GiveLine", "HoldRod", "LandFish" })
+                .Concat(new[] { "ForgeWork", "Circuitry", "Fabricate", "Cooking", "Compound" })
+                .Concat(new[] { "Survey", "Strike", "HvyStrike", "Extract", "Search", "Dig" }));
         foreach (var id in installed.Keys.Except(names.Keys))
         {
-            var expectedName = id == "TwinPistolCycle" ? "sw_twinpisto" : "sw_" + id.ToLowerInvariant();
+            var expectedName = motionNames.TryGetValue(id, out var motionName) ? motionName : "sw_" + id.ToLowerInvariant();
             installed[id].GetProperty("AnimationName").GetString().Should().Be(expectedName);
             File.Exists(Path.Combine(Root, installed[id].GetProperty("ProjectPath").GetString()!)).Should().BeTrue();
         }

@@ -131,8 +131,8 @@ namespace SWLOR.CraftSim.Legacy
             "private const int BaseItemsRefinedPerCore = 3;");
 
         public static readonly SourceReference RefineryCores = new(
-            "Power cores per batch", Refinery, 173, 174,
-            "var itemsPerCore = BaseItemsRefinedPerCore + refineryManagement;", "(int)Math.Ceiling(ItemCount / (float)itemsPerCore)");
+            "Power cores per batch", Refinery, 172, 177,
+            "BaseItemsRefinedPerCore + Math.Max(0, refineryManagementLevel)", "(int)Math.Ceiling(itemCount / (float)Math.Max(1, itemsPerCore))");
 
         // Refining pays each ore's flat XP times the rank's share of the curve (GatheringLevels.RefiningXp), not the flat XP alone.
         public static readonly SourceReference RefineryXp = new(

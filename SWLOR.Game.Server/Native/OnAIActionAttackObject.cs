@@ -475,7 +475,7 @@ namespace SWLOR.Game.Server.Native
                 if (isTwinPistolCycle) offSkill = SkillType.TwinPistol;
                 if (isDualWieldCycle)
                 {
-                    var offWeapon = pCombatRound.GetCurrentAttackWeapon(WEAPON_ATTACK_TYPE_OFFHAND);
+                    var offWeapon = WeaponAttackCycle.GetAttackWeapon(pCreature, WEAPON_ATTACK_TYPE_OFFHAND);
                     if (offWeapon != null)
                     {
                         offSkill = SWLOR.Game.Server.Service.Skill.GetSkillTypeByBaseItem(

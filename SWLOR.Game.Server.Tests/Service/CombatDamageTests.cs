@@ -1273,7 +1273,7 @@ public class CombatDamageTests
         var root = FindRepositoryRoot();
         var damageRollSource = File.ReadAllText(Path.Combine(root.FullName, "SWLOR.Game.Server", "Native", "GetDamageRoll.cs"));
 
-        damageRollSource.Should().Contain("var weapon = pCombatRound.GetCurrentAttackWeapon(bOffHand != 0 ? 2 : 0);");
+        damageRollSource.Should().Contain("var weapon = WeaponAttackCycle.GetAttackWeapon(attacker, bOffHand != 0 ? 2 : 0);");
         damageRollSource.Should().NotContain("var weapon = pCombatRound.GetCurrentAttackWeapon();");
         damageRollSource.Should().Contain("var damageProfile = ExtractWeaponDamageProfile(weapon);");
         damageRollSource.Should().NotContain("ExtractAttackDamageProfile");

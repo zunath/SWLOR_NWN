@@ -1,8 +1,13 @@
 using NWN.Native.API;
 using System.Collections.Generic;
 using SWLOR.Game.Server.Core;
+using SWLOR.Game.Server.Feature;
 using SWLOR.Game.Server.Service;
 using SWLOR.Game.Server.Service.PerkService;
+using ItemPropertyType = SWLOR.NWN.API.NWScript.Enum.Item.ItemPropertyType;
+using Ability = SWLOR.Game.Server.Service.Ability;
+using Skill = SWLOR.Game.Server.Service.Skill;
+using EquipmentSlot = NWN.Native.API.EquipmentSlot;
 using InventorySlot = SWLOR.NWN.API.NWScript.Enum.InventorySlot;
 
 namespace SWLOR.Game.Server.Native
@@ -18,6 +23,22 @@ namespace SWLOR.Game.Server.Native
             int AttackIndex, int Count, int Duration);
 
         private static readonly Dictionary<uint, PendingHand> _pendingHands = new();
+        private const int OffHandAttackType = 2;
+
+        /// <summary>
+        /// Returns the item a roll strikes with. The engine's off-hand item for a Power Glove pair is the
+        /// inert cosmetic glove, so that hand's rolls use the owned glove, like a double weapon's second end.
+        /// </summary>
+        /// <param name="weaponAttackType">0 infers the current roll's hand; 1 is main hand and 2 is off hand.</param>
+        public static CNWSItem GetAttackWeapon(CNWSCreature creature, int weaponAttackType)
+        {
+            var round = creature.m_pcCombatRound;
+            var weapon = round.GetCurrentAttackWeapon(weaponAttackType);
+            var hand = weaponAttackType == 0 ? round.GetWeaponAttackType() : weaponAttackType;
+            if (hand != OffHandAttackType || !PowerGloveEquipment.IsActivePair(creature.m_idSelf))
+                return weapon;
+            return creature.m_pInventory.GetItemInSlot((uint)EquipmentSlot.RightHand) ?? weapon;
+        }
 
         /// <summary>Starts both hands on one time gate, resolving each when its swing begins.</summary>
         public static void ResolveDualWield(CNWSCreature creature, uint target, int attacks, int cycleDuration)
@@ -78,6 +99,7 @@ namespace SWLOR.Game.Server.Native
                 round.SetPauseTimer(pending.Duration);
                 creature.ResolveAttack(pending.Target, pending.Count, pending.Duration);
                 WeaponAttackAnimation.CompleteOffHand(creature, pending.AttackIndex);
+                DeliverPowerGloveOffHandHits(creature, pending);
             }
             catch
             {
@@ -88,6 +110,27 @@ namespace SWLOR.Game.Server.Native
             {
                 _pendingHands.Remove(attacker);
                 StatusEffect.EndNativeAttackSwing(attacker);
+            }
+        }
+
+        /// <summary>
+        /// The engine fires on-hit item properties from its own off-hand item, which for a Power Glove pair is the
+        /// cosmetic glove. Deliver the owned glove's on-hit event for each landed off-hand roll instead.
+        /// </summary>
+        private static void DeliverPowerGloveOffHandHits(CNWSCreature creature, PendingHand pending)
+        {
+            var attacker = creature.m_idSelf;
+            var glove = pending.MainWeapon;
+            if (pending.OffWeapon != glove || !PowerGloveEquipment.IsActivePair(attacker) ||
+                !GetItemHasItemProperty(glove, ItemPropertyType.OnHitCastSpell)) return;
+            var round = creature.m_pcCombatRound;
+            for (var index = pending.AttackIndex; index < round.m_nCurrentAttack; index++)
+            {
+                if (!ResolveAttackRoll.IsSuccessfulAttackResult(round.GetAttack(index).m_nAttackResult)) continue;
+                CombatPoint.RecordWeaponAttackPoint(attacker, pending.Target, glove, Skill.GetWeaponSkill(attacker, glove));
+                Ability.RecordLeadershipWeaponHit(attacker, pending.Target);
+                Loot.RecordWeaponHitFindBonuses(attacker, pending.Target);
+                UsePerkFeat.ResolveQueuedWeaponAbilityHit(attacker, pending.Target, glove);
             }
         }
 

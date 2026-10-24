@@ -55,6 +55,25 @@ public class WeaponPvpTests
         target.Weapon.Resources.GetDiscount(WeaponCombatState.At(simulation.Now)).Should().Be(2);
     }
 
+    [TestCase(false, 1)]
+    [TestCase(true, 2)]
+    public void PairedHands_RollEachHandPerPairedCycle(bool paired, int rollsPerCycle)
+    {
+        var attacker = Fighter("Attacker");
+        attacker.AutoAttack = new() { AttacksPerSecond = 1, Damage = new() { Min = 1, Max = 1, HitChance = 1 } };
+        attacker.WeaponCombat.PairedHands = paired;
+        attacker.WeaponCombat.OffhandDelayReductionPercent = paired ? 30 : 0;
+        var simulation = Spawn(attacker, Fighter("Target"), false);
+        var weapon = simulation.Get("Attacker").Weapon;
+        var delay = SWLOR.Game.Server.Service.Combat.CalculateAttackDelayMilliseconds(220, paired ? 220 : 0, 0, paired ? 30 : 0);
+        weapon.AttackSeconds(0).Should().Be(SWLOR.Game.Server.Service.Combat.CalculateEffectiveAttackDelay(delay) / 1000d,
+            "the sim uses the server's paired delay for Power Gloves");
+        simulation.Get("Attacker").NextAttackAt = 0;
+        SimulationClock.RunUntil(simulation, () => weapon.Diagnostics.GetValueOrDefault("SwingAnimations") >= 3, 30, "three attack cycles");
+        var cycles = weapon.Diagnostics["SwingAnimations"] + weapon.Diagnostics.GetValueOrDefault("BatchedExtraAttacks");
+        weapon.Diagnostics["OrdinaryAttempts"].Should().Be(cycles * rollsPerCycle, "each cycle rolls every hand once");
+    }
+
     [Test]
     public void TwinPistolLoadoutHits_ArmTheDefendersPaybackLikeOtherDirectDamage()
     {

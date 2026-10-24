@@ -763,7 +763,7 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
                         new ArticleBlock("Starting at Rank 0",
                             "Choose Stealth I, Poisoncraft I, Slicing I, or Trapcraft I in the Perks window. All four are available at Espionage rank 0. You can train with your chosen activity without buying the other starter perks. Craft at a marked Espionage Workbench beside a market terminal in Veles Shops."),
                         new ArticleBlock("Stealth and Back Attacks",
-                            "Stealth is activated out of combat and drains STM while maintained. Hostile actions break stealth. Back Attack bonuses require attacking from behind the target, so position matters."),
+                            "Stealth is activated out of combat and drains STM while maintained, and no STM recovers while hidden. Other players within 5m spot you more easily and more often, and a lucky player can always spot you. Hostile actions break stealth. Back Attack bonuses require attacking from behind the target, so position matters."),
                         new ArticleBlock("Slicing Lockboxes and Sealed Crates",
                             "Right-click a lockbox and choose Activate Item, or use a Sealed Field Crate to slice its electronic lock. Rotate or swap circuit tiles to connect the entry to the core before trace runs out. Every board is different and leaves little spare trace, so plan your route before you move. Each Slicing rank above a target's tier adds 1 trace, and Lockpicking gear plus Perception add up to 2 more. Tier 1 crates can be found in the Viscaran Wildlands, CZ-220 maintenance level, and Abandoned Nano Station. Slicing II-V unlock at Espionage ranks 22, 30, 42, and 48. Each tier awards XP until the next unlock; tier 5 trains to 50."),
                         new ArticleBlock("Slicing Supplies and Failure",
@@ -784,7 +784,7 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
                         new QuestionAnswer("Why did my recipe or slicing tier stop giving XP?", "You reached the next tier's unlock rank. Purchase that tier's perk and use its recipes or targets to continue training."),
                         new QuestionAnswer("Where do I craft poisons and snares?", "At a marked Espionage Workbench beside a market terminal in Veles Shops."),
                         new QuestionAnswer("How many traps can I place?", "One by default; Trap Management increases your active-trap limit."),
-                        new QuestionAnswer("What breaks stealth?", "Hostile actions break stealth, and maintaining it continuously drains STM.")
+                        new QuestionAnswer("What breaks stealth?", "Hostile actions break stealth, and maintaining it continuously drains STM with no STM recovery until you leave stealth.")
                     },
                     new[] { "Skills", "Perks", "Abilities", "Combat Basics", "Crafting" }),
 

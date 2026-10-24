@@ -51,6 +51,16 @@ namespace SWLOR.Game.Server.EngineTests.Definitions
             });
             ctx.Assert(HasFullRemap(character), "The loaded character has the saved remap and no katar");
 
+            await ctx.ExecuteInCreatureContextAsync(character, () => KatarAnimationRemap.SynchronizeOnLogin(character));
+            ctx.AssertEqual(0, KatarMappings(character).Length, "Login removes the saved remap before any equipment change");
+
+            // Equipment changes catch saved mappings on their own as well.
+            await ctx.ExecuteInCreatureContextAsync(character, () =>
+            {
+                foreach (var (source, replacement) in KatarAnimationRemapPlan.Pairs)
+                    ReplaceObjectAnimation(character, source, replacement);
+            });
+
             await ctx.EquipItemAsync(character, "nw_wswls001", InventorySlot.RightHand);
             await ctx.WaitFrameAsync();
             var remaining = KatarMappings(character);

@@ -37,7 +37,15 @@ namespace SWLOR.Game.Server.Feature
         [NWNEventHandler(ScriptName.OnModuleEnter)]
         public static void OnClientEnter()
         {
-            var player = GetEnteringObject();
+            SynchronizeOnLogin(GetEnteringObject());
+        }
+
+        /// <summary>
+        /// Login synchronization: a character loaded from the server vault can bring back mappings
+        /// that its current equipment no longer uses.
+        /// </summary>
+        public static void SynchronizeOnLogin(uint player)
+        {
             if (!GetIsPC(player) || GetIsDM(player) || GetIsDMPossessed(player))
                 return;
 

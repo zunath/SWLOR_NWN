@@ -121,6 +121,7 @@ These rules apply to every item craft, in every minigame.
 - **Quality.** Every craft ends with a quality percentage.
 - **Enhancements.** Each enhancement slot has a visible quality threshold.
   - Meeting the threshold guarantees the transfer. *Starting values:* first slot 50%, second slot 85%. A third slot (research level 10 adds one) needs its own value, set with the gate below.
+  - **Thresholds in force** (owner decision, October 2026): 50% / 85% / 100%. Gate 7 passed at 50/85/85 but with room to spare, because skilled crafters in best gear reach 85% almost every time (the strictest values that still matched today were 55/90/100, set by the Kitchen). The third slot now needs a full-quality craft, so one, two and three transfers are each a step of their own.
   - **Enhancement parity** (owner decision after player feedback, October 2026). Today each enhancement transfers at a chance equal to quality, so 80% quality averages 2.4 of 3 mods; thresholds of 50/85/85 give exactly 1. Crafters report about 80% on triple-enhanced endgame crafts with best gear. CraftSim must model the extra difficulty enhancements add (today's progress penalty, and each minigame's equivalent) and tune the thresholds so the expected number of transferred enhancements per enhanced craft, at rank 50 with best gear and at level, is at least today's for one, two and three slots. Thresholds stay deterministic and visible.
   - This replaces today's per-enhancement chance roll (`quality / max quality`).
   - The window shows which thresholds the current quality meets.

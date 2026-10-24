@@ -124,7 +124,7 @@ namespace SWLOR.CraftSim.Tests.Gates
             foreach (var (name, _, _) in GateThresholds.Default.Describe())
                 inputs.Should().Contain($"`{name}`");
 
-            inputs.Should().Contain("Enhancement thresholds in force (`CraftOutcomeRules`, read by gate 7): 50% / 85% / 85% for slots 1, 2 and 3")
+            inputs.Should().Contain("Enhancement thresholds in force (`CraftOutcomeRules`, read by gate 7): 50% / 85% / 100% for slots 1, 2 and 3")
                 .And.Contain("The scenario applies enhancements to its engine's progress meter");
 
             string.Join(Environment.NewLine, Suite(new BenchScenario()).Inputs(context)).Should().Contain("style-balance gate is not applicable");

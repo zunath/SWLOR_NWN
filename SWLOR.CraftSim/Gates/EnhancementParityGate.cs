@@ -12,7 +12,7 @@ namespace SWLOR.CraftSim.Gates
     /// Gate 7, enhancement parity: at rank 50 with the best gear and at level, an item with one, two or three enhancements must transfer
     /// at least as many of them, on average, as the old window did. Today each enhancement transfers at a chance equal to the quality
     /// percentage; the new rules transfer the enhancement of a slot whenever the quality meets that slot's threshold
-    /// (<see cref="CraftOutcomeRules"/>), so a crafter at 80% quality gets 2.4 of 3 mods today and exactly 1 under thresholds of 50/85/85.
+    /// (<see cref="CraftOutcomeRules"/>), so a crafter at 80% quality gets 2.4 of 3 mods today and exactly 1 under thresholds of 50/85/100.
     /// <para>
     /// Both sides carry the difficulty enhancements add: the old window raises the progress a piece needs by each enhancement's penalty,
     /// and the scenario maps the same penalty onto its engine's progress meter (<see cref="CraftEngineRequest.Enhancements"/>). Each recipe

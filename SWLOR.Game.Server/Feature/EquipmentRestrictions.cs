@@ -52,7 +52,12 @@ namespace SWLOR.Game.Server.Feature
                 !GetIsDM(creature) &&
                 !GetIsDMPossessed(creature);
             var canUseItem = Item.CanEquip(creature, item, slot);
-            var isRingSwappingPositions = IsRingSwappingPositions(creature, item, slot);
+            // Equipping a worn item into another slot adds its stats again while the engine leaves it where it is,
+            // so a worn item must be unequipped first, as rings always had to be. Normalized ammunition still
+            // moves between ammunition slots.
+            var wornSlot = Item.GetItemSlot(creature, item);
+            var isMovingWornItem = wornSlot != InventorySlot.Invalid &&
+                                   !(IsAmmunitionSlot(wornSlot) && IsAmmunitionSlot(slot));
             var mainHand = GetItemInSlot(InventorySlot.RightHand, creature);
             var offHand = GetItemInSlot(InventorySlot.LeftHand, creature);
             canUseItem = GetPowerGloveEquipmentError(GetBaseItemType(item), slot,
@@ -81,7 +86,7 @@ namespace SWLOR.Game.Server.Feature
 
             if (string.IsNullOrWhiteSpace(canUseItem) &&
                 !isSwapping &&
-                !isRingSwappingPositions)
+                !isMovingWornItem)
             {
                 EventsPlugin.PushEventData("ITEM", ObjectToString(item));
                 EventsPlugin.PushEventData("SLOT", Convert.ToString((int)slot));
@@ -207,6 +212,9 @@ namespace SWLOR.Game.Server.Feature
                 : $"{description.TrimEnd()}\n{warning}";
         }
 
+        private static bool IsAmmunitionSlot(InventorySlot slot) =>
+            slot is InventorySlot.Arrows or InventorySlot.Bullets or InventorySlot.Bolts;
+
         private static bool IsItemSwapping(uint creature, uint item, InventorySlot slot)
         {
             var itemInSlot = GetItemInSlot(slot, creature);
@@ -244,21 +252,6 @@ namespace SWLOR.Game.Server.Feature
 
             return GetIsObjectValid(itemInSlot);
         }
-
-        private static bool IsRingSwappingPositions(uint creature, uint item, InventorySlot slot)
-        {
-            var currentRightSlot = GetItemInSlot(InventorySlot.RightRing, creature);
-            var currentLeftSlot = GetItemInSlot(InventorySlot.LeftRing, creature);
-
-            if (currentRightSlot == item && slot == InventorySlot.LeftRing)
-                return true;
-
-            if (currentLeftSlot == item && slot == InventorySlot.RightRing)
-                return true;
-
-            return false;
-        }
-
 
         /// <summary>
         /// When an item is equipped, if any of a player's perks has an Equipped Trigger, run those actions now.

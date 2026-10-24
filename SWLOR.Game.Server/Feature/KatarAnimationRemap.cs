@@ -1,65 +1,22 @@
 using System.Collections.Generic;
 using SWLOR.Game.Server.Core;
+using SWLOR.Game.Server.Native;
 using SWLOR.Game.Server.Service;
 using SWLOR.Game.Server.Service.LogService;
 using SWLOR.Game.Server.Service.PerkService;
 using SWLOR.NWN.API.NWScript.Enum;
 using SWLOR.NWN.API.NWScript.Enum.Item;
+using NWNXLib = NWN.Native.API.NWNXLib;
 
 namespace SWLOR.Game.Server.Feature
 {
     // One owner remaps selected one-handed combat animations for katars and Power Gloves.
     public static class KatarAnimationRemap
     {
-        private const string KatarAnimationRemapActiveVariable = "KATAR_ANIM_REMAP_ACTIVE";
         private const string BaseItems2DA = "baseitems";
         private const string ItemClassColumn = "ItemClass";
         private const string SwordItemClassPrefix = "WSw";
         private static readonly HashSet<BaseItem> _swordFamilyBaseItems = BuildSwordFamilyBaseItems();
-
-        private static class AnimationKey
-        {
-            public const string OneHandReadyR = "1hreadyr";
-            public const string OneHandReadyL = "1hreadyl";
-            public const string OneHandSlashL = "1hslashl";
-            public const string OneHandSlashR = "1hslashr";
-            public const string OneHandStab = "1hstab";
-            public const string OneHandCloseH = "1hcloseh";
-            public const string OneHandCloseL = "1hclosel";
-            public const string OneHandReach = "1hreach";
-            public const string OneHandSlashO = "1hslasho";
-            public const string OneHandParryL = "1hparryl";
-            public const string OneHandParryR = "1hparryr";
-
-            public const string UnarmedReadyR = "nwreadyr";
-            public const string UnarmedReadyL = "nwreadyl";
-            public const string UnarmedSlashL = "nwslashl";
-            public const string UnarmedSlashR = "nwslashr";
-            public const string UnarmedStab = "nwstab";
-            public const string UnarmedCloseH = "nwcloseh";
-            public const string UnarmedCloseL = "nwclosel";
-            public const string UnarmedReach = "nwreach";
-            public const string UnarmedSlashO = "nwslasho";
-            public const string UnarmedDodgeS = "dodges";
-            public const string UnarmedDodgeLR = "dodgelr";
-        }
-
-        private static readonly (string Old, string New)[] _remapPairs =
-        {
-            // Core 1h attack chain -> unarmed equivalents.
-            (AnimationKey.OneHandReadyR, AnimationKey.UnarmedReadyR),
-            (AnimationKey.OneHandReadyL, AnimationKey.UnarmedReadyL),
-            (AnimationKey.OneHandSlashL, AnimationKey.UnarmedSlashL),
-            (AnimationKey.OneHandSlashR, AnimationKey.UnarmedSlashR),
-            (AnimationKey.OneHandStab, AnimationKey.UnarmedStab),
-            (AnimationKey.OneHandCloseH, AnimationKey.UnarmedCloseH),
-            (AnimationKey.OneHandCloseL, AnimationKey.UnarmedCloseL),
-            (AnimationKey.OneHandReach, AnimationKey.UnarmedReach),
-            (AnimationKey.OneHandSlashO, AnimationKey.UnarmedSlashO),
-            // 1h parries are mapped to unarmed-style dodges.
-            (AnimationKey.OneHandParryL, AnimationKey.UnarmedDodgeS),
-            (AnimationKey.OneHandParryR, AnimationKey.UnarmedDodgeLR),
-        };
 
         [NWNEventHandler(ScriptName.OnModuleCacheBefore)]
         public static void RegisterEquipmentAnimationRestoration()
@@ -69,7 +26,7 @@ namespace SWLOR.Game.Server.Feature
         }
 
         private static void RestoreCurrentEquipmentAnimations(uint creature) =>
-            SyncKatarRemapState(creature, forceRefresh: true);
+            SyncKatarRemapState(creature);
 
         [NWNEventHandler(ScriptName.OnModuleEquip)]
         public static void OnEquip()
@@ -77,10 +34,12 @@ namespace SWLOR.Game.Server.Feature
             SyncFromEvent(GetPCItemLastEquippedBy());
         }
 
-        [NWNEventHandler(ScriptName.OnModuleEnter)]
-        public static void OnClientEnter()
+        /// <summary>
+        /// Login synchronization, run by <see cref="SavedAnimationMappings"/> after it clears the
+        /// mappings a character loaded from the server vault brought back.
+        /// </summary>
+        public static void SynchronizeOnLogin(uint player)
         {
-            var player = GetEnteringObject();
             if (!GetIsPC(player) || GetIsDM(player) || GetIsDMPossessed(player))
                 return;
 
@@ -102,8 +61,9 @@ namespace SWLOR.Game.Server.Feature
             SyncKatarRemapState(player);
         }
 
-        // Determines whether remaps should be active right now and applies/restores exactly once per state change.
-        private static void SyncKatarRemapState(uint creature, bool forceRefresh = false)
+        // Brings the creature's animation mappings in line with its equipment. The engine saves these
+        // mappings with the character, so a login or equipment change can find stale ones to remove.
+        private static void SyncKatarRemapState(uint creature)
         {
             var rightHand = GetItemInSlot(InventorySlot.RightHand, creature);
             var leftHand = GetItemInSlot(InventorySlot.LeftHand, creature);
@@ -116,18 +76,20 @@ namespace SWLOR.Game.Server.Feature
                 EquipmentPredicates.HasUnarmedGrip(rightHandBaseItem, leftHandBaseItem) ||
                 HasDualWieldKatars(creature, rightHandBaseItem, leftHandBaseItem) ||
                 (HasMainHandKatar(rightHandBaseItem) && !HasOffHandDaggerOrSword(leftHandBaseItem));
-            var isRemapActive = GetLocalBool(creature, KatarAnimationRemapActiveVariable);
+            var native = NWNXLib.g_pAppManager.m_pServerExoApp.GetGameObject(creature).AsNWSObject();
+            var changes = KatarAnimationRemapPlan.GetChanges(shouldUseKatarRemap,
+                WeaponAttackAnimation.ReadAnimationReplacements(native), QueuedAttackAnimation.GetActiveSwingKeys(creature));
+            if (changes.Count == 0)
+                return;
 
-            if (shouldUseKatarRemap && (!isRemapActive || forceRefresh))
+            foreach (var (source, replacement) in changes)
             {
-                ApplyKatarRemap(creature);
-                SetLocalBool(creature, KatarAnimationRemapActiveVariable, true);
+                ReplaceObjectAnimation(creature, source, replacement);
             }
-            else if (!shouldUseKatarRemap && isRemapActive)
-            {
-                RestoreKatarRemap(creature);
-                DeleteLocalBool(creature, KatarAnimationRemapActiveVariable);
-            }
+
+            Log.Write(LogGroup.Server, shouldUseKatarRemap
+                ? $"Applied katar animation remap to {GetName(creature)} ({creature})."
+                : $"Restored default animations after katar unequip for {GetName(creature)} ({creature}).");
         }
 
         private static bool HasMainHandKatar(BaseItem? rightHandBaseItem)
@@ -192,28 +154,6 @@ namespace SWLOR.Game.Server.Feature
             }
 
             return set;
-        }
-
-        // Applies every configured animation replacement for this creature.
-        private static void ApplyKatarRemap(uint creature)
-        {
-            foreach (var (oldAnimation, newAnimation) in _remapPairs)
-            {
-                ReplaceObjectAnimation(creature, oldAnimation, newAnimation);
-            }
-
-            Log.Write(LogGroup.Server, $"Applied katar animation remap to {GetName(creature)} ({creature}).");
-        }
-
-        // Restores all replaced animation keys
-        private static void RestoreKatarRemap(uint creature)
-        {
-            foreach (var (oldAnimation, _) in _remapPairs)
-            {
-                ReplaceObjectAnimation(creature, oldAnimation);
-            }
-
-            Log.Write(LogGroup.Server, $"Restored default animations after katar unequip for {GetName(creature)} ({creature}).");
         }
     }
 }

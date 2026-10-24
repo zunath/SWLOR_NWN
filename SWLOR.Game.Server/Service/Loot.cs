@@ -133,7 +133,7 @@ namespace SWLOR.Game.Server.Service
             {
                 if (Random.D100(1) > chance) continue;
 
-                var item = table.GetRandomItem(rareBonusChance);
+                var item = table.GetRandomItemWithRareBonus(rareBonusChance);
                 var quantity = Random.Next(item.MaxQuantity) + 1;
 
                 // CreditFinder perk - Increase the quantity of gold found.

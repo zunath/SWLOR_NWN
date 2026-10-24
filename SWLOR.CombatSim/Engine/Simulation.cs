@@ -1313,7 +1313,7 @@ namespace SWLOR.CombatSim.Engine
                 {
                     if (attacker.Weapon != null)
                     {
-                        var attacks = attacker.Weapon.TakeSwingAttacks(swingAt);
+                        var attacks = attacker.Weapon.TakeSwingAttacks(swingAt) * attacker.Weapon.RollsPerCycle;
                         for (var i = 0; i < attacks && !target.IsDead; i++)
                         {
                             // A formula weapon ability rides the swing's next attack; a miss keeps it queued.
@@ -1345,7 +1345,7 @@ namespace SWLOR.CombatSim.Engine
 
         private static double AttackInterval(CombatantSpec spec) =>
             spec.WeaponCombat is { } weapon
-                ? SWLOR.Game.Server.Service.Combat.CalculateAttackSwingDelay(SWLOR.Game.Server.Service.Combat.CalculateEffectiveAttackDelay(SWLOR.Game.Server.Service.Combat.CalculateAttackDelayMilliseconds(weapon.WeaponDelayUnits, 0, weapon.ExternalHastePercent, 0))) / 1000d
+                ? SWLOR.Game.Server.Service.Combat.CalculateAttackSwingDelay(SWLOR.Game.Server.Service.Combat.CalculateEffectiveAttackDelay(weapon.AttackDelayMilliseconds(weapon.ExternalHastePercent))) / 1000d
                 : spec.WeaponLoadout != null ? WeaponInterval(spec.WeaponLoadout, spec.WeaponLoadout.HastePercent)
                 : spec.AutoAttack is { AttacksPerSecond: > 0 } attack ? 1.0 / attack.AttacksPerSecond : 2.0;
 

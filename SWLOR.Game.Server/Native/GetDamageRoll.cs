@@ -95,7 +95,7 @@ namespace SWLOR.Game.Server.Native
                 var pAttackData = pCombatRound.GetAttack(pCombatRound.m_nCurrentAttack);
                 // GetDamageRoll receives a boolean; GetCurrentAttackWeapon expects a weapon
                 // attack type (2 = off-hand, 0 = infer the current attack, including natural weapons).
-                var weapon = pCombatRound.GetCurrentAttackWeapon(bOffHand != 0 ? 2 : 0);
+                var weapon = WeaponAttackCycle.GetAttackWeapon(attacker, bOffHand != 0 ? 2 : 0);
                 weapon = RangedWeaponAttackContext.GetWeapon(attacker.m_idSelf, weapon);
 
                 var attackType = attacker.GetRangeWeaponEquipped() == 1 ? (uint)AttackType.Ranged : (uint)AttackType.Melee;
@@ -774,11 +774,22 @@ namespace SWLOR.Game.Server.Native
 
         private static byte ResolveDamagePower(CNWSCreature attacker, CNWSObject target, int offHand)
         {
+            var attack = attacker.m_pcCombatRound.GetAttack(attacker.m_pcCombatRound.m_nCurrentAttack);
+            var attackTypeBeforePower = attack.m_nWeaponAttackType;
+            if (offHand != 0 && PowerGloveEquipment.IsActivePair(attacker.m_idSelf))
+            {
+                // The cosmetic left glove carries no enhancement; penetrate with the owned glove's main-hand scope.
+                try
+                {
+                    attack.m_nWeaponAttackType = 1;
+                    return attacker.CalculateDamagePower(target, 0);
+                }
+                finally { attack.m_nWeaponAttackType = attackTypeBeforePower; }
+            }
+
             if (!RangedWeaponAttackContext.IsSimulated(attacker.m_idSelf))
                 return attacker.CalculateDamagePower(target, offHand);
 
-            var attack = attacker.m_pcCombatRound.GetAttack(attacker.m_pcCombatRound.m_nCurrentAttack);
-            var attackTypeBeforePower = attack.m_nWeaponAttackType;
             try
             {
                 // GetWeaponPower prefers the attack-data hand over its boolean argument.

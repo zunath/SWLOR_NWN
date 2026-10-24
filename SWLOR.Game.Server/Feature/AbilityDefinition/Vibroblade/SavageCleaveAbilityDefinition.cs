@@ -52,6 +52,7 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.Vibroblade
                     Radius,
                     AbilityTargetingFlags.HarmsEnemies | AbilityTargetingFlags.OriginOnSelf)
                 .IsCastedAbility()
+                .IsAreaAbility()
                 .IsHostileAbility()
                 .BreaksStealth()
                 .RequirementStamina(stamina);

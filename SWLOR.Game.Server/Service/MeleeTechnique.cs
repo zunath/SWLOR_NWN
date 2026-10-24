@@ -196,7 +196,7 @@ namespace SWLOR.Game.Server.Service
                 Weapon = main,
                 OffHand = off,
                 Area = GetArea(creature),
-                WeaponDamage = WeaponDamage.GetEffectiveDMG(creature, main),
+                WeaponDamage = WeaponDamage.GetAbilityDMG(creature, main, ability.SkillType),
                 WeaponDamageType = WeaponDamage.GetDamageType(main)
             };
         }

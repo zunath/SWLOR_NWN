@@ -130,7 +130,7 @@ namespace SWLOR.Game.Server.Service
                 trackedImpact.Sequence.WeaponTraits = weaponTraits;
             }
             trackedImpact.TriggeringWeaponDamage = triggeringWeaponDamage ?? (GetIsObjectValid(triggeringWeapon)
-                ? WeaponDamage.GetEffectiveDMG(activator, triggeringWeapon)
+                ? WeaponDamage.GetAbilityDMG(activator, triggeringWeapon, ability.SkillType)
                 : trackedImpact.TriggeringWeaponDamage);
             if (triggeringWeaponDamageType.HasValue || GetIsObjectValid(triggeringWeapon))
                 trackedImpact.TriggeringWeaponDamageType = triggeringWeaponDamageType ?? WeaponDamage.GetDamageType(triggeringWeapon);

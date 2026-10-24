@@ -77,6 +77,25 @@ public class WeaponPvpTests
     }
 
     [Test]
+    public void PairedHands_UnarmedAbilitiesAddBothGlovesDamage()
+    {
+        double JabDamage(bool paired, int weaponDamage)
+        {
+            var attacker = Fighter("Attacker");
+            attacker.WeaponCombat.PairedHands = paired;
+            attacker.WeaponCombat.WeaponDamage = weaponDamage;
+            attacker.Abilities = new() { new() { Feat = "Jab1", Target = AbilityTarget.Enemy } };
+            var simulation = Spawn(attacker, Fighter("Target"), false);
+            var target = simulation.Get("Target");
+            SimulationClock.RunUntil(simulation, () => target.Hp < 1000, 30, "a Jab hit");
+            return 1000 - target.Hp;
+        }
+        var paired = JabDamage(true, 19);
+        paired.Should().Be(JabDamage(false, 38), "a paired ability impact adds both gloves' DMG");
+        paired.Should().BeGreaterThan(JabDamage(false, 19));
+    }
+
+    [Test]
     public void TwinPistolLoadoutHits_ArmTheDefendersPaybackLikeOtherDirectDamage()
     {
         var scenario = TwinPistolScenarios.Create(false, false, 60, pvp: true, catalog: _catalog);

@@ -307,7 +307,7 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
                         new ArticleBlock("Death and Resting",
                             "If you die, you can wait for another player to revive you or respawn to your registered medical facility. Resting restores HP, FP, and STM over time, but combat, nearby enemies, nearby party combat, movement, attacks, or damage can prevent or interrupt it. Dungeons require a safe-rest area."),
                         new ArticleBlock("Crafting",
-                            "Crafting devices use recipes, materials, and optional blueprints or enhancements to make gear, food, and other items. During a craft, spend CP on actions; Progress must reach the goal before Durability reaches 0. Quality improves crafting XP, vendor value, and enhancement transfer chances. Research terminals improve blueprints, and refineries turn raw materials into refined materials."),
+                            "Crafting devices use recipes, materials, and optional blueprints or enhancements to make gear, food, and other items. Each crafting skill has its own minigame with a Help page: fill its progress meter before its integrity meter runs out, and raise quality on the way. Quality improves crafting XP, vendor value, and which enhancements transfer. Research terminals improve blueprints, and refineries turn raw materials into refined materials."),
                         new ArticleBlock("Travel and Companions",
                             "Complete the CZ-220 orientation to earn the shuttle pass used for interplanetary travel. Taxi terminals handle registered local routes. You may have only one active henchman companion at a time, either a beast or a droid."),
                         new ArticleBlock("Recognizing Players",
@@ -812,7 +812,7 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
                 new(
                     "Crafting",
                     "Activities",
-                    "Recipes, CP actions, quality, durability, enhancements, failure risks, blueprint research, and refining.",
+                    "Recipes, crafting minigames, quality, enhancements, quick craft, failure risks, blueprint research, and refining.",
                     "Recipes and refining",
                     new[]
                     {
@@ -820,40 +820,45 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
                             "The Recipes window lets you search recipes, filter to craftable recipes, and review level, quantity, enhancement slots, required components, and requirements."),
                         new ArticleBlock("Starting A Craft",
                             "Use the proper crafting device, choose a recipe or blueprint, and supply the required inventory components. Starting from a blueprint can cost credits and consumes one licensed run. Components and selected enhancements are held by the crafting session once added."),
-                        new ArticleBlock("CP, Progress, Quality, Durability",
-                            "Crafting spends CP on actions. Progress must reach the goal before Durability reaches 0. Quality increases crafting XP, vendor value, and each enhancement's transfer chance. A maximum-quality food craft gains 5 minutes of duration; when made from a blueprint, it also gains extra charges equal to the blueprint level."),
+                        new ArticleBlock("Crafting Minigames",
+                            "Each crafting skill has its own minigame: Smithery uses the Plasma Forge, Engineering the Circuit, Fabrication the Fabricator, Agriculture the Kitchen, and Espionage the Reaction. Every window has a Help page that opens the first time you craft there, and every action shows its exact cost and result before you click. Perk lines and styles change how each minigame plays."),
+                        new ArticleBlock("Progress, Quality, Integrity",
+                            "Each minigame has a progress meter, a quality meter, an integrity meter, and CP to spend on actions. At the Plasma Forge they are Shape, Finish, and Integrity; in the Kitchen, Doneness, flavor, and Freshness. The craft succeeds the moment progress is full, and the action that would finish it is marked. Quality is the item's quality and raises crafting XP and vendor value."),
                         new ArticleBlock("Using Food",
-                            "Food effects last 30 minutes by default. You cannot consume another food item while an existing food effect is active. Maximum-quality crafted food gains 5 minutes, and maximum-quality food made from a blueprint also gains extra charges equal to the blueprint level."),
+                            "Food effects last 30 minutes by default. You cannot consume another food item while an existing food effect is active. Higher-quality crafted food lasts up to 5 minutes longer, and maximum-quality food made from a blueprint also gains extra charges equal to the blueprint level."),
                         new ArticleBlock("Enhancements",
-                            "Enhancements must be in your inventory, match the recipe's enhancement slot type, and be within 5 levels of the recipe. Some enhancements make the craft harder."),
+                            "Enhancements must be in your inventory, match the recipe's enhancement slot type, and be within 5 levels of the recipe. Some enhancements make the craft harder. Each slot has a quality threshold, 50% for the first slot and 85% for the second and third; an enhancement transfers whenever the finished quality meets its slot's threshold. The window shows which thresholds you have met."),
                         new ArticleBlock("Success and Failure",
-                            "A successful craft consumes the committed components and enhancements, creates the item, and rolls each enhancement transfer separately; an enhancement is not returned if that roll fails. Success grants crafting skill XP and records first-time recipe completion. Overall craft failure grants reduced XP, and each selected component or enhancement has a 65 percent chance to be lost."),
+                            "A successful craft consumes the committed components and enhancements and creates the item; an enhancement whose threshold was not met is not returned. Success grants crafting skill XP and records first-time recipe completion. If the integrity meter reaches 0 the piece breaks: you gain 15 percent of the base XP, and each component stack and each selected enhancement has a 65 percent chance to be lost. The window shows this rule before you commit materials."),
                         new ArticleBlock("Closing the Window",
-                            "Closing before craft mode begins returns inserted items. Closing after the craft begins immediately fails the craft, so finish the attempt before closing the window."),
+                            "Closing before the craft begins returns inserted items. After it begins, closing the window, walking away from the station, dying, or logging out fails the craft, so finish the attempt first."),
+                        new ArticleBlock("Quick Craft",
+                            "Once your rank is at least the recipe's level plus 5 and you have crafted it by hand once, Quick Craft makes up to 10 at a time with no minigame, materials permitting. It makes the base item only: no enhancements, no blueprint, and no XP. Cancelling stops the batch and keeps the finished items."),
                         new ArticleBlock("Research",
-                            "Research terminals require Fabrication rank 10. Research jobs cost credits and time, work with weapon, armor, and food recipes, and can create a level 1 blueprint or improve one up to level 10. The recipe determines the required Fabrication rank: 10 per recipe tier, up to 50. You may run 1 personal job, plus 1 at Fabrication 25 and another at Fabrication 50, but each terminal handles only one job at a time. Cancelling forfeits credits and progress but returns the blueprint."),
+                            "Research terminals require Fabrication rank 10. Each research level starts with a short Experiment that can shorten the job, chooses the blueprint bonus at levels 3, 5, and 8, and grants Fabrication XP. Research jobs cost credits and time, work with weapon, armor, and food recipes, and can create a level 1 blueprint or improve one up to level 10. The recipe determines the required Fabrication rank: 10 per recipe tier, up to 50. You may run 1 personal job, plus 1 at Fabrication 25 and another at Fabrication 50, but each terminal handles only one job at a time. Once its experiment has run, a job cannot be cancelled."),
                         new ArticleBlock("Refining",
                             "Refineries turn raw materials into refined materials. Refining requires the Gathering rank for the material's tier (0, 10, 20, 30, or 40), takes 6 seconds, consumes Power Cores, and grants Gathering XP. One Power Core processes 3 items plus 1 additional item at Gathering 0, 10, 20, 30, 40, and 45.")
                     },
                     new[]
                     {
-                        new QuestionAnswer("What ends a craft?", "Success happens when Progress reaches the goal. Failure happens if Durability reaches 0 first."),
-                        new QuestionAnswer("What does Quality do?", "It increases crafting XP, vendor value, and enhancement transfer chance. Maximum-quality food gains 5 minutes, plus extra charges equal to blueprint level when a blueprint was used."),
+                        new QuestionAnswer("What ends a craft?", "It succeeds the moment its progress meter is full. It breaks if its integrity meter reaches 0 first, and it fails if you close the window or walk away."),
+                        new QuestionAnswer("What does Quality do?", "It increases crafting XP and vendor value, decides which enhancement thresholds are met, and lengthens food duration. Maximum-quality food also gains extra charges equal to blueprint level when a blueprint was used."),
+                        new QuestionAnswer("When can I use Quick Craft?", "When your rank is at least the recipe's level plus 5 and you have crafted that recipe by hand once. It makes base items with no XP."),
                         new QuestionAnswer("Why can't I use an enhancement?", "It may not match the slot type, may be too far from the recipe level, or may not be in your inventory."),
-                        new QuestionAnswer("What happens if I close crafting?", "Before craft mode, inserted items return to you. After craft mode starts, closing immediately fails the craft."),
-                        new QuestionAnswer("What does research do?", "Research spends credits and time to create or improve weapon, armor, and food blueprints up to level 10.")
+                        new QuestionAnswer("What happens if I close crafting?", "Before the craft begins, inserted items return to you. After it begins, closing the window fails the craft."),
+                        new QuestionAnswer("What does research do?", "Research spends credits and time to create or improve weapon, armor, and food blueprints up to level 10. Each level starts with a short Experiment.")
                     },
                     new[] { "Skills", "Perks", "Gathering & Fishing", "Training Store", "Housing & Markets", "Useful Windows" }),
 
                 new(
                     "Gathering & Fishing",
                     "Activities",
-                    "Harvesters, scavenging, refining links, fishing rods, bait, and gathering-skill progression.",
+                    "Prospecting, scavenging, refining links, fishing fights, bait, and gathering-skill progression.",
                     "Resources and fishing",
                     new[]
                     {
                         new ArticleBlock("Harvesting Resources",
-                            "Use a charged harvester on a matching resource node. The harvester and resource can require a minimum Gathering rank: tier 1 at rank 0, then one more tier every 10 ranks. Harvesting takes 5 seconds, consumes a harvester charge, grants Gathering XP, and Might can provide bonus material."),
+                            "Use a charged harvester on a matching vein or tree. The harvester and resource can require a minimum Gathering rank: tier 1 at rank 0, then one more tier every 10 ranks. This opens Prospecting: Survey reveals hidden seams, Strike and Heavy Strike take ore or wood, and Extract opens a found seam for a gem or extra ore, all while keeping the node's Stability above 0. Quick Harvest instead takes what is left at the old pace, with no seams. Actions spend harvester charges and grant Gathering XP; the window's Help page has the details."),
                         new ArticleBlock("Scavenging",
                             "Scavenge sites require a Gathering rank that matches the site's tier. Opening one offers Quick Search, which searches the whole site at once, or a 3x3 search board. On the board, your Gathering rank sets how often a Search of promising ground finds something. Search a spot, Sift to see which neighboring spots are promising, or Dig Deeper at a searched spot for better odds at rare items, at a shown risk of spoiling it. Every action grants Gathering XP, and a site can be searched once, by one scavenger at a time. Treasure Hunter improves item results, and Credit Finder improves credit finds."),
                         new ArticleBlock("Refining Materials",
@@ -861,11 +866,12 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
                         new ArticleBlock("Loading A Fishing Rod",
                             "Equip a fishing rod in your right hand. Use the rod on bait in your inventory to load it. Loading different bait first unloads any remaining bait back into your inventory."),
                         new ArticleBlock("Fishing",
-                            "Click a fishing point while within 10 meters, with a baited rod in your right hand. Casting takes 6 to 8 seconds and movement interrupts it. An actual fishing attempt consumes 1 bait. Agriculture skill, rod type, bait, location, and time of day affect the result, and fishing grants Agriculture XP.")
+                            "Click a fishing point while within 10 meters, with a baited rod in your right hand. Casting takes 6 to 8 seconds and movement interrupts it. A bite consumes 1 bait; rod type, bait, location, and time of day decide which fish bites. Then choose Quick Reel, which lands the fish at once on a roll of your Agriculture rank against the fish's level, or fight it on the Line: read its next move and reel it in before it escapes or snaps the line. Fighting takes longer, pays more XP for your time, and can land more fish. Fishing grants Agriculture XP.")
                     },
                     new[]
                     {
                         new QuestionAnswer("Why won't my harvester work?", "It may be out of charges, too far from the node, the wrong harvester, or require a higher Gathering rank."),
+                        new QuestionAnswer("Should I fight a fish or Quick Reel it?", "Quick Reel is fast and uses the old catch roll. A fight takes longer but pays more XP for your time, and a skilled fight lands more fish."),
                         new QuestionAnswer("What improves scavenging?", "Gathering rank unlocks harder sites and makes promising ground on the board pay off more often; Treasure Hunter and Credit Finder improve different parts of the result."),
                         new QuestionAnswer("How do I load bait?", "Equip the fishing rod, use it, and target bait in your inventory."),
                         new QuestionAnswer("Why did fishing stop?", "Moving during the 6 to 8 second cast interrupts the attempt.")

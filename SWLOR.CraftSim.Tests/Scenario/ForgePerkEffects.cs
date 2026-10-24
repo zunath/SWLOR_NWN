@@ -23,7 +23,8 @@ namespace SWLOR.CraftSim.Tests.Scenario
     public class ForgePerkEffects
     {
         private const int Rank = 50;
-        private const int Runs = 16;
+        private const int Runs = 12;
+        private const int RecipesPerBand = 6;
 
         private sealed record Effect(double Actions, double Quality, double Transfers1, double Transfers2, double Transfers3);
 
@@ -61,7 +62,8 @@ namespace SWLOR.CraftSim.Tests.Scenario
             {
                 var inBand = enhanceable.Where(recipe => recipe.Level >= low && recipe.Level <= high)
                     .OrderBy(recipe => recipe.Level).ThenBy(recipe => (int)recipe.Type).ToList();
-                recipes.AddRange(inBand.Select(recipe => (recipe, SharedData.Enhancements.ForRecipe(recipe.EnhancementType, recipe.Level))).Where(x => x.Item2 != null));
+                recipes.AddRange(ScenarioCohort.Sample(inBand, RecipesPerBand)
+                    .Select(recipe => (recipe, SharedData.Enhancements.ForRecipe(recipe.EnhancementType, recipe.Level))).Where(x => x.Item2 != null));
             }
 
             var full = new ForgeLoadout(ForgeStyle.HotForging, true, true).StatsAt(Rank);
@@ -69,7 +71,7 @@ namespace SWLOR.CraftSim.Tests.Scenario
             var cold = new ForgeLoadout(ForgeStyle.ColdWorking, true, true).StatsAt(Rank);
             var lines = new List<string>
             {
-                $"Rank {Rank}, the at-level bands 41-45, 46-50 and 51-53, {recipes.Count} enhanceable recipes, {Runs} runs each. The full build is both lines and Hot Forging; a row removes one purchase from it.",
+                $"Rank {Rank}, the at-level bands 41-45, 46-50 and 51-53, {recipes.Count} enhanceable recipes (an even sample of {RecipesPerBand} per band), {Runs} runs each. The full build is both lines and Hot Forging; a row removes one purchase from it.",
                 string.Empty,
                 "| Purchase | Gear | Actions | Quality | Transferred, 1 slot | Transferred, 2 slots | Transferred, 3 slots |",
                 "| --- | --- | --- | --- | --- | --- | --- |"

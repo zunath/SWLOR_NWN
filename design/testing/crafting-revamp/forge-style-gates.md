@@ -57,12 +57,12 @@
 
 | Style pair | Gear | Recipes | First better | Second better | First avg quality | Second avg quality | Difference | Verdict |
 | --- | --- | --- | --- | --- | --- | --- | --- | --- |
-| Hot Forging (no lines) vs Cold Working (no lines) | no gear | 20 | 48% | 52% | 82.6 | 84.1 | -1.5 | Passed |
-| Hot Forging (no lines) vs Cold Working (no lines) | mid gear | 20 | 40% | 60% | 90.4 | 93.1 | -2.7 | Passed |
-| Hot Forging (no lines) vs Cold Working (no lines) | best gear | 20 | 40% | 60% | 94.6 | 96.0 | -1.4 | Passed |
-| Hot Forging (both lines) vs Cold Working (both lines) | no gear | 20 | 52% | 48% | 96.6 | 97.2 | -0.6 | Passed |
-| Hot Forging (both lines) vs Cold Working (both lines) | mid gear | 20 | 45% | 55% | 99.4 | 99.7 | -0.3 | Passed |
-| Hot Forging (both lines) vs Cold Working (both lines) | best gear | 20 | 52% | 48% | 99.8 | 99.7 | +0.1 | Passed |
+| Hot Forging (no lines) vs Cold Working (no lines) | no gear | 20 | 35% | 65% | 84.0 | 85.5 | -1.5 | Passed |
+| Hot Forging (no lines) vs Cold Working (no lines) | mid gear | 20 | 38% | 62% | 91.6 | 92.8 | -1.2 | Passed |
+| Hot Forging (no lines) vs Cold Working (no lines) | best gear | 20 | 55% | 45% | 95.6 | 95.7 | -0.1 | Passed |
+| Hot Forging (both lines) vs Cold Working (both lines) | no gear | 20 | 57% | 42% | 97.8 | 97.3 | +0.5 | Passed |
+| Hot Forging (both lines) vs Cold Working (both lines) | mid gear | 20 | 57% | 42% | 99.8 | 99.3 | +0.5 | Passed |
+| Hot Forging (both lines) vs Cold Working (both lines) | best gear | 20 | 52% | 48% | 99.9 | 99.8 | +0.1 | Passed |
 
 ## Perks optional
 

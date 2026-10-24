@@ -58,14 +58,25 @@ def number(value: float) -> str:
     return text[:-2] if text.endswith(".0") else text
 
 
+def describe_style(shift: int, press: int, hone: int) -> str:
+    """The style in words, as ForgeStyles.Describe prints it: the range move first, then the Hydro-Press and Vibro-Hone changes, leaving out zeros."""
+    changes = []
+    if press != 0:
+        changes.append(f"Hydro-Press gains {abs(press)}% {'more' if press > 0 else 'less'} Shape")
+    if hone != 0:
+        changes.append(f"Vibro-Hone gains {abs(hone)}% {'more' if hone > 0 else 'less'} Finish")
+    sentences = []
+    if shift != 0:
+        sentences.append(f"The working range moves {'up' if shift > 0 else 'down'} {abs(shift)} Thermal.")
+    if changes:
+        sentences.append(" and ".join(changes) + ".")
+    return " ".join(sentences)
+
+
 def style_text(k: dict[str, float]) -> dict[str, str]:
     return {
-        "Hot Forging": (
-            f"The working range moves up {k['HotForgingRangeShift']} Thermal. Hydro-Press gains {k['HotForgingPressPercent']}% more Shape "
-            f"and Vibro-Hone gains {-k['HotForgingHonePercent']}% less Finish."),
-        "Cold Working": (
-            f"The working range moves down {-k['ColdWorkingRangeShift']} Thermal. Vibro-Hone gains {k['ColdWorkingHonePercent']}% more Finish "
-            f"and Hydro-Press gains {-k['ColdWorkingPressPercent']}% less Shape."),
+        "Hot Forging": describe_style(k["HotForgingRangeShift"], k["HotForgingPressPercent"], k["HotForgingHonePercent"]),
+        "Cold Working": describe_style(k["ColdWorkingRangeShift"], k["ColdWorkingPressPercent"], k["ColdWorkingHonePercent"]),
     }
 
 
@@ -96,7 +107,7 @@ def rows(k: dict[str, float]) -> list[dict]:
             notes="Stat ForgeOverdrivePressPercent. Takes the style's Hydro-Press percent and Stable Containment; it is not a Hydro-Press for Hammer Rhythm, so it ends the count."),
         row("Forgemaster", 2, "Hot Forging", k["StyleRank"], "Style",
             f"{STYLE_PREFIX}{styles['Hot Forging']}",
-            notes="Style: the status effect Hot Forging carries ForgeRangeShift, ForgePressOutputPercent and ForgeHoneOutputPercent. Smithery is not split, so it is not exclusive with Cold Working as a purchase; only one style is active."),
+            notes="Style: the status effect Hot Forging carries the stats its description names (ForgeRangeShift, ForgePressOutputPercent, ForgeHoneOutputPercent; a zero is not granted). Smithery is not split, so it is not exclusive with Cold Working as a purchase; only one style is active."),
         row("Forgemaster", 3, "Hammer Rhythm", 25, "Trait",
             f"In the Plasma Forge, a Hydro-Press made right after another gains {each}% more Shape, {each * 2}% after two in a row and {cap}% after three or more. "
             "Any other action starts the count again.",
@@ -133,7 +144,7 @@ def rows(k: dict[str, float]) -> list[dict]:
             notes="Stat ForgeMicroHonePercent. Gives Finish only, also on a set piece (80% of its flat rate). Takes the style's Vibro-Hone percent and Stable Containment."),
         row("Artisan", 2, "Cold Working", k["StyleRank"], "Style",
             f"{STYLE_PREFIX}{styles['Cold Working']}",
-            notes="Style: the status effect Cold Working carries ForgeRangeShift, ForgePressOutputPercent and ForgeHoneOutputPercent. Smithery is not split, so it is not exclusive with Hot Forging as a purchase; only one style is active."),
+            notes="Style: the status effect Cold Working carries the stats its description names (ForgeRangeShift, ForgePressOutputPercent, ForgeHoneOutputPercent; a zero is not granted). Smithery is not split, so it is not exclusive with Hot Forging as a purchase; only one style is active."),
         row("Artisan", 3, "Clean Containment II", 25, "Trait",
             f"In the Plasma Forge, Stable Containment is announced on {k['CleanContainmentRank2']} {point(k['CleanContainmentRank2'])} more actions "
             f"({chance}% becomes {chance + k['CleanContainmentRank2']}%).",

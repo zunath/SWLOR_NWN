@@ -6,6 +6,27 @@ namespace SWLOR.Game.Server.Tests.Feature;
 
 public class EshanModuleWiringTests
 {
+    [TestCase("pw_ar_sc_eshancm", "hc_access")]
+    [TestCase("pw_ar_sc_eshanto", "vc_access")]
+    public void ShuttleAccess_HasPairedUsableExitsAndSeparateArrivals(string area, string prefix)
+    {
+        using var document = Read($"Module/git/{area}.git.json");
+        var root = document.RootElement;
+        for (var side = 0; side < 2; side++)
+        {
+            var destination = $"{prefix}_arrival_{side}";
+            AssertTeleport(root, destination);
+            AssertWaypoint(root, destination);
+            var arrival = Value(root, "WaypointList").EnumerateArray().Single(item =>
+                Value(item, "Tag").GetString() == destination);
+            var exit = Value(root, "Placeable List").EnumerateArray().Single(item =>
+                Value(item, "Tag").GetString() == $"{prefix}_exit_{side}");
+            Assert.That(Value(arrival, "XPosition").GetDouble(), Is.EqualTo(Value(exit, "X").GetDouble()));
+            Assert.That(Value(arrival, "YPosition").GetDouble(), Is.EqualTo(Value(exit, "Y").GetDouble() - 1.5).Within(0.001));
+            Assert.That(Value(arrival, "ZPosition").GetDouble(), Is.EqualTo(Value(exit, "Z").GetDouble()));
+        }
+    }
+
     [TestCase("pw_ar_sc_eshancm", "pw_ar_sc_eshanto", "eshan_uppercity", "eshan_lowercity")]
     [TestCase("pw_sc_eskeshpeak", "pw_sc_eshspa", "ESHAN_INSIDE_SPA", "ESHAN_KESH_SPA_EXIT")]
     public void PublicTeleportEntrances_HaveUsableReturnRoutes(string outside, string inside, string entrance, string exit)

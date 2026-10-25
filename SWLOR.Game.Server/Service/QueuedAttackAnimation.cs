@@ -22,6 +22,15 @@ public static class QueuedAttackAnimation
 
     public static void Stop(uint creature) => Playback.Stop(creature);
 
+    /// <summary>
+    /// The swing keys a waiting queued ability owns. Its playback token is session state, so a clip
+    /// a character file brought back after a restart owns nothing.
+    /// </summary>
+    public static IReadOnlyCollection<string> GetActiveSwingKeys(uint creature) =>
+        string.IsNullOrEmpty(GetLocalString(creature, TokenVariable))
+            ? Array.Empty<string>()
+            : QueuedAttackAnimationPlayback.SwingKeys;
+
     private sealed class NativeRuntime : INamedAnimationRuntime
     {
         public bool IsValid(uint creature) => GetIsObjectValid(creature) && GetObjectType(creature) == ObjectType.Creature;

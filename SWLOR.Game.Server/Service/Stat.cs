@@ -434,6 +434,15 @@ namespace SWLOR.Game.Server.Service
         }
 
         /// <summary>
+        /// Stealth's stamina drain is its only time limit, so a stealthed player gains no Stamina
+        /// from any source: natural regeneration, healing over time, field tools, or stances.
+        /// </summary>
+        public static bool IsStaminaRestorationBlocked(bool isPlayer, bool inStealth)
+        {
+            return isPlayer && inStealth;
+        }
+
+        /// <summary>
         /// Restores an entity's Stamina by a specified amount.
         /// </summary>
         /// <param name="creature">The creature to modify.</param>
@@ -446,6 +455,9 @@ namespace SWLOR.Game.Server.Service
             if (amount <= 0) return 0;
 
             var isPlayer = GetIsPC(creature) && !GetIsDM(creature) && !GetIsDMPossessed(creature);
+            if (IsStaminaRestorationBlocked(isPlayer, isPlayer && GetActionMode(creature, ActionMode.Stealth)))
+                return 0;
+
             if (isPlayer)
             {
                 dbPlayer ??= DB.Get<Player>(GetObjectUUID(creature));

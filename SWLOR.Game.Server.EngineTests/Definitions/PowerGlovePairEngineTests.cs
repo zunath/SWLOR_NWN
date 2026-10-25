@@ -89,7 +89,7 @@ public static class PowerGlovePairEngineTests
             var equipped = DB.Get<Player>(player.Id);
             ctx.AssertEqual(hp + 7, equipped.MaxHP, "The real glove's HP property contributes exactly once");
             ctx.AssertEqual(stamina + 9, equipped.MaxStamina, "The real glove's stamina property contributes exactly once");
-            ctx.Assert(!EquipmentPredicates.HasDualWield(actor), "The cosmetic hand does not enable Dual Wield");
+            ctx.Assert(EquipmentPredicates.HasDualWield(actor), "The owned glove strikes with both hands through Dual Wield");
             ctx.Assert(EquipmentPredicates.HasUnarmedGrip(actor), "The generated hand retains Unarmed technique eligibility");
             for (var pass = 0; pass < 3; pass++)
                 await ctx.ExecuteInCreatureContextAsync(actor, () => PowerGloveEquipment.EnsurePair(actor));
@@ -174,8 +174,8 @@ public static class PowerGlovePairEngineTests
         ctx.AssertEqual(2, OwnedItems(actor).Count(PowerGloveEquipment.IsPairItem), "Escape cleanup preserves the two real gloves");
     }
 
-    [EngineTest("Power Glove linked cosmetic hand preserves Single Weapon and Doublehand on the real item once", Category = "PowerGlovePair", TimeoutSeconds = 35f)]
-    public static async Task SingleWeaponBudget(EngineTestContext ctx)
+    [EngineTest("Power Gloves receive no Single Weapon or Doublehand bonus and both hands roll the owned glove's DMG", Category = "PowerGlovePair", TimeoutSeconds = 35f)]
+    public static async Task PairedHandsUseOwnedGloveWithoutSingleWeaponBudget(EngineTestContext ctx)
     {
         using var player = await PlayerAbilityFixture.CreateAsync(ctx);
         player.Update(record => record.Skills[SkillType.Unarmed].Rank = 50);
@@ -195,33 +195,38 @@ public static class PowerGlovePairEngineTests
         await ctx.ExecuteInCreatureContextAsync(actor, () =>
         {
             ctx.AssertEqual(24, Item.GetDMG(main), "The only real item owns the raw DMG rating");
-            ctx.Assert(EquipmentPredicates.HasSingleWeapon(actor), "The valid linked cosmetic hand retains the single-weapon budget");
+            ctx.Assert(!EquipmentPredicates.HasSingleWeapon(actor), "A Power Glove pair is not a single weapon");
+            ctx.AssertEqual(main, EquipmentPredicates.GetOffhandAttackWeapon(actor), "The owned glove supplies the off-hand roll");
             player.Update(record => record.Perks[PerkType.Doublehand] = 0);
-            ctx.AssertEqual(29, WeaponDamage.GetEffectiveDMG(actor, main), "The natural 20 percent applies once to raw DMG");
-            var natural = Sample();
+            ctx.AssertEqual(24, WeaponDamage.GetEffectiveDMG(actor, main), "No natural Single Weapon bonus applies");
+            var mainHand = Sample(0);
             player.Update(record => record.Perks[PerkType.Doublehand] = 3);
-            ctx.AssertEqual(39, WeaponDamage.GetEffectiveDMG(actor, main), "Doublehand III combines with the natural bonus once");
-            var trained = Sample();
-            ctx.Assert(natural > 0 && trained / natural is > 1.2 and < 1.5,
-                "Native ordinary damage applies the combined real-item rating once, with no cosmetic-hand contribution");
-            ctx.AssertEqual(24, Item.GetDMG(main), "Bonuses never rewrite the real item's raw rating");
-            ctx.AssertEqual(Item.GetDMG(companion), WeaponDamage.GetEffectiveDMG(actor, companion), "The cosmetic carrier receives no Single Weapon multiplier");
+            ctx.AssertEqual(24, WeaponDamage.GetEffectiveDMG(actor, main), "Doublehand III does not apply to Power Gloves");
+            ctx.AssertEqual(mainHand, Sample(0), "Native main-hand damage ignores Doublehand");
+            var offHand = Sample(1);
+            ctx.Assert(mainHand > 0, "The owned glove deals native ordinary damage");
+            ctx.AssertEqual(mainHand, offHand, "The native off-hand roll uses the owned glove, never the cosmetic carrier");
+            ctx.AssertEqual(48, WeaponDamage.GetAbilityDMG(actor, main, SkillType.Unarmed), "Unarmed abilities count both gloves' DMG");
+            ctx.AssertEqual(48, Combat.GetCombatImpactWeaponDamage(actor, SkillType.Unarmed, abilityImpact: true), "Ability impacts add both gloves' DMG");
+            ctx.AssertEqual(24, Combat.GetCombatImpactWeaponDamage(actor, SkillType.Unarmed), "Non-ability uses keep one glove's DMG");
+            ctx.AssertEqual(24, WeaponDamage.GetAbilityDMG(actor, main, SkillType.Katar), "Only Unarmed abilities count the pair");
+            ctx.AssertEqual(24, Item.GetDMG(main), "Damage resolution never rewrites the real item's raw rating");
             AssertCosmeticCompanion(ctx, companion);
-            ctx.Log($"256 matched-seed native rolls: natural mean {natural:0.00}, Doublehand III mean {trained:0.00}; raw main DMG remains 24.");
+            ctx.Log($"256 matched-seed native rolls per hand: main {mainHand:0.00}, off hand {offHand:0.00}; raw DMG 24 with no Single Weapon bonus.");
         });
 
-        double Sample()
+        double Sample(int offHand)
         {
             var native = global::NWN.Native.API.NWNXLib.g_pAppManager.m_pServerExoApp.GetGameObject(actor).AsNWSCreature();
             var defender = global::NWN.Native.API.NWNXLib.g_pAppManager.m_pServerExoApp.GetGameObject(target).AsNWSObject();
             native.m_pcCombatRound.StartCombatRound(target);
             ctx.SeedRandom(12345);
-            return Enumerable.Range(0, 256).Average(_ => native.m_pStats.GetDamageRoll(defender, 0, 0, 0, 0, 0));
+            return Enumerable.Range(0, 256).Average(_ => native.m_pStats.GetDamageRoll(defender, offHand, 0, 0, 0, 0));
         }
     }
 
-    [EngineTest("Power Glove cosmetic companion adds no native ordinary attack roll or damage event", Category = "PowerGlovePair", TimeoutSeconds = 35f)]
-    public static async Task CosmeticHandDoesNotAttack(EngineTestContext ctx)
+    [EngineTest("Power Glove pair resolves a main-hand and an off-hand roll each cycle, both from the owned glove", Category = "PowerGlovePair", TimeoutSeconds = 35f)]
+    public static async Task PairedHandsAttackEachCycle(EngineTestContext ctx)
     {
         var actor = ctx.SpawnCreature("civilian", -.5f);
         var target = ctx.SpawnCreature("nw_rat001", 1f);
@@ -238,24 +243,29 @@ public static class PowerGlovePairEngineTests
                 TemporaryStatModifier.Add(target, StatType.MeleeDeflection, -100, 60f);
                 ctx.MakeHostile(target);
                 AssertCosmeticCompanion(ctx, companion);
-                ctx.Assert(!EquipmentPredicates.HasDualWield(actor), "The generated hand cannot schedule an offhand attack");
+                ctx.Assert(EquipmentPredicates.HasDualWield(actor), "The owned glove schedules an off-hand roll");
+                var gloveDelay = (int)WeaponDelay.GetWeaponDelay(BaseItem.PowerGlove) * 10;
+                ctx.AssertEqual(Combat.CalculateAttackDelayMilliseconds(gloveDelay, gloveDelay, 0, 0), Combat.CalculateAttackDelay(actor),
+                    "The pair uses the paired delay of two gloves, like two katars");
                 effectiveDelay = Combat.CalculateEffectiveAttackDelay(Combat.CalculateAttackDelay(actor));
-                ctx.Assert(effectiveDelay > 1000, "The fixture has separately observable ordinary attack cycles");
+                ctx.Assert(effectiveDelay > 1000, "The fixture has separately observable attack cycles");
             });
             _observedAttacker = actor;
             Hits.Clear();
             Combat.SetAutoAttackHitResolutionOverride(true);
             await ctx.ExecuteInCreatureContextAsync(actor, () => ActionAttack(target));
-            await ctx.WaitUntilAsync(() => Hits.Count > 0, 6f, "the first ordinary attack with a cosmetic companion");
+            await ctx.WaitUntilAsync(() => Hits.Count > 0, 6f, "the first main-hand roll");
             var round = global::NWN.Native.API.NWNXLib.g_pAppManager.m_pServerExoApp.GetGameObject(actor).AsNWSCreature().m_pcCombatRound;
-            ctx.AssertEqual(0, round.m_nOffHandAttacks, "The native combat round allocates zero offhand attack rolls to the cosmetic carrier");
-            await ctx.WaitUntilAsync(() => Hits.Count >= 3, 20f, "three ordinary attacks from the one real glove");
+            ctx.AssertEqual(1, round.m_nOffHandAttacks, "The native combat round allocates one off-hand roll to the pair");
+            await ctx.WaitUntilAsync(() => Hits.Count >= 4, 20f, "two full cycles of paired rolls");
             var observed = Hits.ToArray();
-            ctx.Assert(observed.All(hit => hit.Weapon == main), "Every actual damage event comes from the owned glove, never the companion");
-            for (var index = 1; index < observed.Length; index++)
-                ctx.Assert((observed[index].Time - observed[index - 1].Time).TotalMilliseconds >= effectiveDelay - 100,
-                    "Each actual damage roll waits for the next full single-weapon cycle");
-            ctx.Log($"Observed {observed.Length} commanded damage events from real item {main:X8}, none from cosmetic {companion:X8}; cycle {effectiveDelay}ms.");
+            ctx.Assert(observed.All(hit => hit.Weapon == main), "Every damage event comes from the owned glove, never the companion");
+            for (var index = 1; index < 4; index += 2)
+                ctx.Assert((observed[index].Time - observed[index - 1].Time).TotalMilliseconds < effectiveDelay - 100,
+                    "The off-hand roll lands within its main hand's cycle");
+            ctx.Assert((observed[2].Time - observed[0].Time).TotalMilliseconds >= effectiveDelay - 100,
+                "The next main-hand roll waits for the full paired cycle");
+            ctx.Log($"Observed {observed.Length} damage events from real item {main:X8}, none from cosmetic {companion:X8}; paired cycle {effectiveDelay}ms.");
         }
         finally
         {

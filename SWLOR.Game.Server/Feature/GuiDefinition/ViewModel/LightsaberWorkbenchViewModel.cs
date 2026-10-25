@@ -530,7 +530,7 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
             if (SelectedLightBrightnessIndex != 0 &&
                 SelectedLightBrightnessIndex != 1)
             {
-                StatusText = "Select Dim (5m) or Normal (15m) lighting.";
+                StatusText = "Select Dim (5m) or Low (10m) lighting.";
                 StatusColor = GuiColor.Red;
                 return;
             }
@@ -538,7 +538,7 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
             var lightColor = (LightColor)resolvedLightColor;
             var lightBrightness = SelectedLightBrightnessIndex == 0
                 ? LightBrightness.Dim
-                : LightBrightness.Normal;
+                : LightBrightness.Low;
             if (!ValidateSelectedInputs())
             {
                 StatusText = "A selected input is no longer available. Reselect your inputs and try again.";
@@ -657,7 +657,7 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
             }
 
             ApplyBladeLight(item, lightColor, lightBrightness);
-            var lightRange = lightBrightness == LightBrightness.Dim ? "Dim (5m)" : "Normal (15m)";
+            var lightRange = lightBrightness == LightBrightness.Dim ? "Dim (5m)" : "Low (10m)";
             var description = GetDescription(item);
             SetDescription(item, $"{description}\n\nLight Color: {lightColor}\nLight Range: {lightRange}");
 

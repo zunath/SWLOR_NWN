@@ -1,5 +1,6 @@
 using SWLOR.Game.Server.Core;
 using SWLOR.Game.Server.Core.Bioware;
+using SWLOR.NWN.API.NWNX;
 using SWLOR.NWN.API.NWScript.Enum;
 using SWLOR.NWN.API.NWScript.Enum.VisualEffect;
 
@@ -17,6 +18,13 @@ namespace SWLOR.Game.Server.Service
         private const string HolocomCallAttempt = "HOLOCOM_CALL_ATTEMPT";
         private const string HolocomHologram = "HOLOCOM_HOLOGRAM";
         private const string HologramOwner = "HOLOGRAM_OWNER";
+        private const string IsHologramVariable = "HOLOCOM_IS_HOLOGRAM";
+
+        /// <summary>
+        /// The "Neutral" faction in Module/fac/repute.fac.json, which is neither hostile to nor hated by any faction.
+        /// </summary>
+        public const int HologramFactionId = 6;
+
         [NWNEventHandler(ScriptName.OnModuleDeath)]
         public static void OnModuleDeath()
         {
@@ -121,6 +129,8 @@ namespace SWLOR.Game.Server.Service
                 ApplyEffectToObject(DurationType.Permanent, EffectVisualEffect(VisualEffect.Vfx_Dur_Ghostly_Visage_No_Sound, false), holoReceiver);
                 SetPlotFlag(holoReceiver, true);
                 SetPlotFlag(holoSender, true);
+                MakeNonCombatant(holoSender);
+                MakeNonCombatant(holoReceiver);
                 SetLocalObject(sender, HolocomHologram, holoSender);
                 SetLocalObject(receiver, HolocomHologram, holoReceiver);
 
@@ -188,6 +198,25 @@ namespace SWLOR.Game.Server.Service
                 DeleteLocalObject(receiver, HolocomCallSenderObject);
             }
         }
+        /// <summary>
+        /// Removes a call hologram from combat: it leaves the copied player's faction for one no creature
+        /// is hostile toward, so hostile abilities and aggro never select it, and its combat state is cleared.
+        /// </summary>
+        private static void MakeNonCombatant(uint hologram)
+        {
+            SetLocalBool(hologram, IsHologramVariable, true);
+            CreaturePlugin.SetFaction(hologram, HologramFactionId);
+            AssignCommand(hologram, () => ClearAllActions(true));
+        }
+
+        /// <summary>
+        /// Determines whether a creature is a HoloCom call hologram.
+        /// </summary>
+        public static bool IsHologram(uint creature)
+        {
+            return GetLocalBool(creature, IsHologramVariable);
+        }
+
         public static uint GetHoloGram(uint player)
         {
             return GetLocalObject(player, HolocomHologram);

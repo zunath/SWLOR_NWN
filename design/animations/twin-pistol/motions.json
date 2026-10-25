@@ -1,0 +1,424 @@
+[
+  {
+    "Id": "TwinPistolCycle",
+    "Description": "Ordinary paired attack: both pistols on target, right then left trigger pull with separate recoils",
+    "Duration": 1.05,
+    "Beats": [
+      {
+        "Time": 0,
+        "Label": "Neutral entry",
+        "SourceAnimation": "pause1",
+        "SourceTime": 0
+      },
+      {
+        "Time": 0.16,
+        "Label": "Both pistols on target",
+        "SourceAnimation": "bowshot",
+        "SourceTime": 0,
+        "SourceModel": "a_ba_med_weap",
+        "LeftHand": [
+          -0.17,
+          0.52,
+          1.36
+        ],
+        "RightHand": [
+          0.17,
+          0.52,
+          1.36
+        ],
+        "RootOffset": [
+          0,
+          0.015,
+          -0.012
+        ]
+      },
+      {
+        "Time": 0.3,
+        "Label": "Right shot",
+        "SourceAnimation": "bowshot",
+        "SourceTime": 0.53,
+        "SourceModel": "a_ba_med_weap",
+        "LeftHand": [
+          -0.17,
+          0.52,
+          1.36
+        ],
+        "RightHand": [
+          0.17,
+          0.45,
+          1.41
+        ],
+        "TorsoDegrees": [
+          0,
+          -3,
+          0
+        ],
+        "RootOffset": [
+          0.008,
+          0.008,
+          -0.015
+        ]
+      },
+      {
+        "Time": 0.48,
+        "Label": "Left shot",
+        "SourceAnimation": "bowshot",
+        "SourceTime": 0.53,
+        "SourceModel": "a_ba_med_weap",
+        "LeftHand": [
+          -0.17,
+          0.45,
+          1.41
+        ],
+        "RightHand": [
+          0.17,
+          0.52,
+          1.36
+        ],
+        "TorsoDegrees": [
+          0,
+          3,
+          0
+        ],
+        "RootOffset": [
+          -0.008,
+          0.008,
+          -0.015
+        ]
+      },
+      {
+        "Time": 0.66,
+        "Label": "Hold on target",
+        "SourceAnimation": "bowshot",
+        "SourceTime": 1,
+        "SourceModel": "a_ba_med_weap",
+        "LeftHand": [
+          -0.17,
+          0.52,
+          1.36
+        ],
+        "RightHand": [
+          0.17,
+          0.52,
+          1.36
+        ],
+        "RootOffset": [
+          0,
+          0.012,
+          -0.012
+        ]
+      },
+      {
+        "Time": 0.86,
+        "Label": "Lower",
+        "SourceAnimation": "bowshot",
+        "SourceTime": 0,
+        "SourceModel": "a_ba_med_weap",
+        "LeftHand": [
+          -0.3,
+          0.3,
+          1.05
+        ],
+        "RightHand": [
+          0.3,
+          0.3,
+          1.05
+        ],
+        "RootOffset": [
+          0,
+          0,
+          -0.005
+        ]
+      },
+      {
+        "Time": 1.05,
+        "Label": "Neutral recovery",
+        "SourceAnimation": "pause1",
+        "SourceTime": 0
+      }
+    ]
+  },
+  {
+    "Id": "BlasterSlideTravel",
+    "Description": "Run replacement while sliding away: drop low and lean back with both pistols trailing behind toward the enemy",
+    "Duration": 1.6,
+    "Beats": [
+      {
+        "Time": 0,
+        "Label": "Neutral entry",
+        "SourceAnimation": "pause1",
+        "SourceTime": 0
+      },
+      {
+        "Time": 0.18,
+        "Label": "Drop into slide",
+        "SourceAnimation": "dodges",
+        "SourceTime": 0.3,
+        "LeftHand": [
+          -0.36,
+          -0.34,
+          1.12
+        ],
+        "RightHand": [
+          0.36,
+          -0.34,
+          1.12
+        ],
+        "TorsoDegrees": [
+          -14,
+          0,
+          0
+        ],
+        "RootOffset": [
+          0,
+          -0.06,
+          -0.1
+        ]
+      },
+      {
+        "Time": 1.25,
+        "Label": "Hold slide aim back",
+        "SourceAnimation": "dodges",
+        "SourceTime": 0.3,
+        "LeftHand": [
+          -0.38,
+          -0.36,
+          1.14
+        ],
+        "RightHand": [
+          0.38,
+          -0.36,
+          1.14
+        ],
+        "TorsoDegrees": [
+          -14,
+          0,
+          0
+        ],
+        "RootOffset": [
+          0,
+          -0.06,
+          -0.1
+        ]
+      },
+      {
+        "Time": 1.45,
+        "Label": "Rise",
+        "SourceAnimation": "bowshot",
+        "SourceTime": 0,
+        "SourceModel": "a_ba_med_weap",
+        "LeftHand": [
+          -0.3,
+          0.2,
+          1.05
+        ],
+        "RightHand": [
+          0.3,
+          0.2,
+          1.05
+        ],
+        "RootOffset": [
+          0,
+          0,
+          -0.03
+        ]
+      },
+      {
+        "Time": 1.6,
+        "Label": "Neutral recovery",
+        "SourceAnimation": "pause1",
+        "SourceTime": 0
+      }
+    ]
+  },
+  {
+    "Id": "PistolRushTravel",
+    "Description": "Run replacement while rushing: low forward lean with both pistols pushed ahead",
+    "Duration": 1.6,
+    "Beats": [
+      {
+        "Time": 0,
+        "Label": "Neutral entry",
+        "SourceAnimation": "pause1",
+        "SourceTime": 0
+      },
+      {
+        "Time": 0.16,
+        "Label": "Lunge forward",
+        "SourceAnimation": "bowshot",
+        "SourceTime": 0,
+        "SourceModel": "a_ba_med_weap",
+        "LeftHand": [
+          -0.2,
+          0.6,
+          1.18
+        ],
+        "RightHand": [
+          0.2,
+          0.6,
+          1.18
+        ],
+        "TorsoDegrees": [
+          20,
+          0,
+          0
+        ],
+        "RootOffset": [
+          0,
+          0.1,
+          -0.07
+        ]
+      },
+      {
+        "Time": 1.25,
+        "Label": "Hold rush lean",
+        "SourceAnimation": "bowshot",
+        "SourceTime": 0,
+        "SourceModel": "a_ba_med_weap",
+        "LeftHand": [
+          -0.2,
+          0.62,
+          1.2
+        ],
+        "RightHand": [
+          0.2,
+          0.62,
+          1.2
+        ],
+        "TorsoDegrees": [
+          20,
+          0,
+          0
+        ],
+        "RootOffset": [
+          0,
+          0.1,
+          -0.07
+        ]
+      },
+      {
+        "Time": 1.45,
+        "Label": "Straighten",
+        "SourceAnimation": "bowshot",
+        "SourceTime": 0,
+        "SourceModel": "a_ba_med_weap",
+        "LeftHand": [
+          -0.3,
+          0.3,
+          1.05
+        ],
+        "RightHand": [
+          0.3,
+          0.3,
+          1.05
+        ],
+        "RootOffset": [
+          0,
+          0.02,
+          -0.02
+        ]
+      },
+      {
+        "Time": 1.6,
+        "Label": "Neutral recovery",
+        "SourceAnimation": "pause1",
+        "SourceTime": 0
+      }
+    ]
+  },
+  {
+    "Id": "GrappleShotTravel",
+    "Description": "Run replacement while pulled by the grapple: left arm stretched ahead along the line, right pistol ready at the hip, body trailing",
+    "Duration": 1.6,
+    "Beats": [
+      {
+        "Time": 0,
+        "Label": "Neutral entry",
+        "SourceAnimation": "pause1",
+        "SourceTime": 0
+      },
+      {
+        "Time": 0.16,
+        "Label": "Grapple arm forward",
+        "SourceAnimation": "bowshot",
+        "SourceTime": 0,
+        "SourceModel": "a_ba_med_weap",
+        "LeftHand": [
+          -0.12,
+          0.66,
+          1.58
+        ],
+        "RightHand": [
+          0.28,
+          0.2,
+          1.08
+        ],
+        "TorsoDegrees": [
+          16,
+          0,
+          0
+        ],
+        "RootOffset": [
+          0,
+          0.1,
+          -0.04
+        ]
+      },
+      {
+        "Time": 1.25,
+        "Label": "Pulled along the line",
+        "SourceAnimation": "bowshot",
+        "SourceTime": 0,
+        "SourceModel": "a_ba_med_weap",
+        "LeftHand": [
+          -0.12,
+          0.68,
+          1.6
+        ],
+        "RightHand": [
+          0.29,
+          0.21,
+          1.1
+        ],
+        "TorsoDegrees": [
+          16,
+          0,
+          0
+        ],
+        "RootOffset": [
+          0,
+          0.1,
+          -0.04
+        ]
+      },
+      {
+        "Time": 1.45,
+        "Label": "Release the line",
+        "SourceAnimation": "bowshot",
+        "SourceTime": 0,
+        "SourceModel": "a_ba_med_weap",
+        "LeftHand": [
+          -0.3,
+          0.3,
+          1.05
+        ],
+        "RightHand": [
+          0.3,
+          0.3,
+          1.05
+        ],
+        "RootOffset": [
+          0,
+          0.02,
+          -0.02
+        ]
+      },
+      {
+        "Time": 1.6,
+        "Label": "Neutral recovery",
+        "SourceAnimation": "pause1",
+        "SourceTime": 0
+      }
+    ]
+  }
+]

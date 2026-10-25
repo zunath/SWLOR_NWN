@@ -130,7 +130,7 @@ namespace SWLOR.Game.Server.Service
                 trackedImpact.Sequence.WeaponTraits = weaponTraits;
             }
             trackedImpact.TriggeringWeaponDamage = triggeringWeaponDamage ?? (GetIsObjectValid(triggeringWeapon)
-                ? WeaponDamage.GetEffectiveDMG(activator, triggeringWeapon)
+                ? WeaponDamage.GetAbilityDMG(activator, triggeringWeapon, ability.SkillType)
                 : trackedImpact.TriggeringWeaponDamage);
             if (triggeringWeaponDamageType.HasValue || GetIsObjectValid(triggeringWeapon))
                 trackedImpact.TriggeringWeaponDamageType = triggeringWeaponDamageType ?? WeaponDamage.GetDamageType(triggeringWeapon);
@@ -211,7 +211,7 @@ namespace SWLOR.Game.Server.Service
                 SequenceOwner = sequenceOwner?.SequenceOwner ?? sequenceOwner,
                 TriggeringWeaponDamage = triggeringWeaponDamage ?? sequenceOwner?.TriggeringWeaponDamage ??
                     MeleeTechnique.GetCapturedWeaponDamage(activator, ability) ?? Combat.GetCombatImpactWeaponDamage(
-                    activator, abilitySkillType, usesQueuedNaturalWeapon),
+                    activator, abilitySkillType, usesQueuedNaturalWeapon, abilityImpact: true),
                 // Captured with the DMG so a delayed impact cannot pair it with a weapon swapped in later.
                 TriggeringWeaponDamageType = triggeringWeaponDamageType ?? sequenceOwner?.TriggeringWeaponDamageType ??
                     MeleeTechnique.GetCapturedWeaponDamageType(activator, ability) ??
@@ -3203,7 +3203,7 @@ namespace SWLOR.Game.Server.Service
             var damage = baseDamage +
                 ScaleImpactWeaponDamage(
                     WeaponImpactProfile.Get(activator)?.Weapon.Damage ??
-                    Combat.GetCombatImpactWeaponDamage(activator, skillType, usesQueuedNaturalWeapon, triggeringWeaponDamage: trackedImpact?.TriggeringWeaponDamage),
+                    Combat.GetCombatImpactWeaponDamage(activator, skillType, usesQueuedNaturalWeapon, triggeringWeaponDamage: trackedImpact?.TriggeringWeaponDamage, abilityImpact: true),
                     trackedImpact) +
                 Combat.GetAbilityDamageBonus(activator, skillType) +
                 Combat.GetAbilityDamageFlatAdjustment(activator, perkType, skillType) +
@@ -3419,7 +3419,7 @@ namespace SWLOR.Game.Server.Service
             var scalingRank = GetNPCAbilityScalingRank(activator, skillType, damageType, combatImpactDamageAbility);
             var damage = baseDamage +
                 ScaleImpactWeaponDamage(
-                    Combat.GetCombatImpactWeaponDamage(activator, skillType, usesQueuedNaturalWeapon, triggeringWeaponDamage: trackedImpact?.TriggeringWeaponDamage),
+                    Combat.GetCombatImpactWeaponDamage(activator, skillType, usesQueuedNaturalWeapon, triggeringWeaponDamage: trackedImpact?.TriggeringWeaponDamage, abilityImpact: true),
                     trackedImpact) +
                 (int)Math.Ceiling(scalingRank * 0.15f) +
                 Combat.GetAbilityDamageFlatAdjustment(activator, perkType, skillType) +

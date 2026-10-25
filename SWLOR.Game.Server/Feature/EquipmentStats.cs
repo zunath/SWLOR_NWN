@@ -6,6 +6,7 @@ using SWLOR.Game.Server.Feature.GuiDefinition.RefreshEvent;
 using SWLOR.Game.Server.Service;
 using SWLOR.Game.Server.Service.CombatService;
 using SWLOR.Game.Server.Service.SkillService;
+using SWLOR.Game.Server.Service.StatService;
 using SWLOR.NWN.API.NWNX;
 using SWLOR.NWN.API.NWScript.Enum;
 using SWLOR.NWN.API.NWScript.Enum.Item;
@@ -81,6 +82,22 @@ namespace SWLOR.Game.Server.Feature
             }
         }
 
+        private const string DisplacedRecordStatsVariable = "EQUIPMENT_DISPLACED_RECORD_STATS";
+
+        /// <summary>
+        /// The equipment records an item's properties feed.
+        /// </summary>
+        private static EquipmentRecordStats GetRecordStats(uint item)
+        {
+            var stats = EquipmentRecordStats.None;
+            for (var ip = GetFirstItemProperty(item); GetIsItemPropertyValid(ip); ip = GetNextItemProperty(item))
+            {
+                stats |= EquipmentStatTotals.GetRecordStat(GetItemPropertyType(ip));
+            }
+
+            return stats;
+        }
+
         /// <summary>
         /// When an item is equipped, if it has any custom status, apply them now.
         /// This should be run in the "after" event because any restrictions should be checked first.
@@ -98,7 +115,12 @@ namespace SWLOR.Game.Server.Feature
             // If there's an item in the slot, run the stat removals first.
             var existingItemInSlot = GetItemInSlot(slot, creature);
             if (GetIsObjectValid(existingItemInSlot))
+            {
                 ApplyItemStats(creature, existingItemInSlot, false);
+                // The after event names only the incoming item; remember the records the displaced one fed.
+                SetLocalInt(creature, DisplacedRecordStatsVariable,
+                    GetLocalInt(creature, DisplacedRecordStatsVariable) | (int)GetRecordStats(existingItemInSlot));
+            }
 
             ApplyItemStats(creature, item, true);
         }
@@ -113,6 +135,11 @@ namespace SWLOR.Game.Server.Feature
             if (GetIsDM(creature) || GetIsDMPossessed(creature)) return;
 
             var item = StringToObject(EventsPlugin.GetEventData("ITEM"));
+            // The native unequip raises this event for any item it is asked to unequip, including one that is
+            // no longer worn, such as the second of two queued unequips. Only a worn item has stats to remove.
+            if (Item.GetItemSlot(creature, item) == InventorySlot.Invalid)
+                return;
+
             ApplyItemStats(creature, item, false);
         }
 
@@ -176,6 +203,24 @@ namespace SWLOR.Game.Server.Feature
                     Gui.PublishRefreshEvent(OBJECT_SELF, new PlayerStatusRefreshEvent(PlayerStatusRefreshEvent.StatType.HP));
                 return;
             }
+        }
+
+        [NWNEventHandler(ScriptName.OnItemEquipValidateAfter)]
+        [NWNEventHandler(ScriptName.OnItemUnequipAfter)]
+        public static void RefreshEquipmentRecordsAfterEquipmentChange()
+        {
+            // Defense, Evasion, FP and STM are also added and removed before the change completes.
+            // Rebuild the ones this item, and any item it displaced, feed from the slots.
+            var item = StringToObject(EventsPlugin.GetEventData("ITEM"));
+            var stats = GetRecordStats(item) | (EquipmentRecordStats)GetLocalInt(OBJECT_SELF, DisplacedRecordStatsVariable);
+            DeleteLocalInt(OBJECT_SELF, DisplacedRecordStatsVariable);
+
+            var corrected = Stat.RefreshPlayerEquipmentStats(OBJECT_SELF, stats);
+            // The status window refreshed before the change, from the uncorrected maximums.
+            if (corrected.HasFlag(EquipmentRecordStats.FP))
+                Gui.PublishRefreshEvent(OBJECT_SELF, new PlayerStatusRefreshEvent(PlayerStatusRefreshEvent.StatType.FP));
+            if (corrected.HasFlag(EquipmentRecordStats.Stamina))
+                Gui.PublishRefreshEvent(OBJECT_SELF, new PlayerStatusRefreshEvent(PlayerStatusRefreshEvent.StatType.STM));
         }
 
         /// <summary>

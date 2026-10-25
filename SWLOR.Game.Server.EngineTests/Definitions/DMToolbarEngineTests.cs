@@ -632,6 +632,52 @@ namespace SWLOR.Game.Server.EngineTests.Definitions
             return page.FindIndex(blueprint => string.Equals(blueprint.Resref, resref, StringComparison.OrdinalIgnoreCase));
         }
 
+        [EngineTest("DM player search message reaches its player after a stale chat portrait click", Category = "DMToolbar", TimeoutSeconds = 90f)]
+        public static async Task PlayerSearchMessageIgnoresStalePortraitClick(EngineTestContext ctx)
+        {
+            using var dm = await PlayerAbilityFixture.CreateAsync(ctx);
+            var first = await PlayerAbilityFixture.CreateAsync(ctx, 2f);
+            PlayerAbilityFixture second = null;
+            using var windows = RegisterWindows(ctx, dm);
+            try
+            {
+                var sharedSlot = ChatPortraitTellEngineTests.GetSlot(first.Creature);
+                await ChatPortraitTellEngineTests.SendClientTellAsync(ctx, first.Creature, ChatPortraitTellEngineTests.GetSlot(dm.Creature), "first line");
+                first.Dispose();
+                second = await PlayerAbilityFixture.CreateAsync(ctx, 2f);
+                second.Update(record => record.Name = "Portrait Probe Holder");
+                SetName(second.Creature, "Portrait Probe Holder");
+                ctx.AssertEqual(sharedSlot, ChatPortraitTellEngineTests.GetSlot(second.Creature), "the second player takes the freed slot");
+
+                // The DM clicks the departed speaker's portrait and leaves the refused tell unsent.
+                await ChatPortraitTellEngineTests.SendClientPortraitClickAsync(ctx, dm.Creature, second.Creature);
+
+                await ctx.ExecuteInCreatureContextAsync(dm.Creature, () =>
+                    Gui.TogglePlayerWindow(dm.Creature, GuiWindowType.DMPlayerSearch));
+                await ctx.WaitFrameAsync();
+                var model = (DMPlayerSearchViewModel)windows.ViewModel(GuiWindowType.DMPlayerSearch);
+                await InContext(ctx, dm.Creature, () => model.SearchText = "Portrait Probe Holder");
+                await InContext(ctx, dm.Creature, model.OnClickSearch());
+                ctx.AssertEqual(1, model.ResultNames.Count, "the new slot holder is found");
+                await SelectRow(ctx, dm.Creature, model, 0);
+                await InContext(ctx, dm.Creature, model.OnClickSendMessage());
+                await InContext(ctx, dm.Creature, () =>
+                {
+                    model.ModalInputText = "staff message";
+                    model.OnInputModalConfirmClick()();
+                });
+
+                ctx.AssertEqual(1L, ChatPortraitTells.CountLinesReceived(second.Creature), "the Player Search message reaches the selected player");
+                // The unsent portrait tell is still refused afterwards.
+                ctx.Assert(ChatPortraitTells.RefuseStalePortraitTell(dm.Creature, second.Creature, false), "the stale portrait tell");
+            }
+            finally
+            {
+                first.Dispose();
+                second?.Dispose();
+            }
+        }
+
         [EngineTest("DM player search finds online and offline characters and moves players", Category = "DMToolbar", TimeoutSeconds = 90f)]
         public static async Task PlayerSearchFindsOnlineAndOfflineCharacters(EngineTestContext ctx)
         {

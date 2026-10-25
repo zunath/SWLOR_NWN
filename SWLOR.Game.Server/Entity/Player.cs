@@ -270,6 +270,11 @@ namespace SWLOR.Game.Server.Entity
         public int Rank { get; set; }
         public int XP { get; set; }
         public bool IsLocked { get; set; }
+
+        /// <summary>
+        /// The rank this skill stops gaining at, and never decays below. Null means no limit.
+        /// </summary>
+        public int? RankLimit { get; set; }
     }
 
     public class PlayerQuest

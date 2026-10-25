@@ -41,6 +41,9 @@ public class GripTests
     [TestCase(BaseItem.TwinElectroBlade, 2)]
     [TestCase(BaseItem.GreatSword, 2)]
     [TestCase(BaseItem.Dagger, 0)]
+    [TestCase(BaseItem.Katar, 0)]
+    [TestCase(BaseItem.PowerGlove, 0)]
+    [TestCase(BaseItem.CompanionPowerGlove, 0)]
     public void SelectsStyleOnlyForSupportedWeaponAndEmptyOffhand(BaseItem weapon, int mode)
     {
         Grip.GetMode(true, weapon, false).Should().Be(mode);

@@ -17,7 +17,13 @@ public class SkillXPAwardTests
     private Type _harness = null!;
 
     [OneTimeSetUp]
-    public void CompileProductionXPAwardWithControlledPlayerAndFeedback()
+    public void LoadHarness() => _harness = Harness;
+
+    /// <summary>The production award flow compiled once and shared with the rank limit tests.</summary>
+    internal static Type Harness => _sharedHarness ??= CompileProductionXPAwardWithControlledPlayerAndFeedback();
+    private static Type? _sharedHarness;
+
+    private static Type CompileProductionXPAwardWithControlledPlayerAndFeedback()
     {
         var root = new DirectoryInfo(Path.GetDirectoryName(SourcePath())!);
         while (root != null && !File.Exists(Path.Combine(root.FullName, "SWLOR.Game.Server.sln")))
@@ -26,7 +32,8 @@ public class SkillXPAwardTests
         var methods = CSharpSyntaxTree.ParseText(File.ReadAllText(Path.Combine(root!.FullName,
                 "SWLOR.Game.Server", "Service", "Skill.cs"))).GetRoot()
             .DescendantNodes().OfType<MethodDeclarationSyntax>()
-            .Where(method => method.Identifier.ValueText is "GiveSkillXP" or "ShouldDecaySkillRank" or "ApplyAbilityPoint");
+            .Where(method => method.Identifier.ValueText is "GiveSkillXP" or "ShouldDecaySkillRank" or "ApplyAbilityPoint" or "GetRankLimit" or "GetRankCeiling"
+                or "GetDecayCandidates" or "IsBlockedBySkillCap" or "GetTotalContributingSkillRanks");
 
         // Run the production award flow, replacing native inputs, storage, and feedback only.
         var source = $$"""
@@ -49,10 +56,13 @@ public class SkillXPAwardTests
                 public static Player Saved;
                 public static readonly List<string> Messages = new();
                 public static readonly List<string> Warnings = new();
+                public static readonly List<string> WarningKeys = new();
+                public static int Saves;
                 public static readonly List<int> QueuedXP = new();
                 public static int Refreshes;
                 private static readonly XPQueue _xpMessages = new();
                 {{string.Join(Environment.NewLine, methods)}}
+                private static bool IsSkillCapContributingSkill(SkillType skill) => GetSkillDetails(skill).ContributesToSkillCap;
                 private static bool GetIsPC(uint player) => true;
                 private static bool GetIsDM(uint player) => false;
                 private static bool GetIsDead(uint player) => false;
@@ -66,7 +76,7 @@ public class SkillXPAwardTests
                 private static class DB
                 {
                     public static T Get<T>(string id) => (T)(object)Saved;
-                    public static void Set(Player player) => Saved = player;
+                    public static void Set(Player player) { Saved = player; Saves++; }
                 }
                 private static class Stat
                 {
@@ -79,7 +89,7 @@ public class SkillXPAwardTests
                 }
                 private static class PlayerFeedback
                 {
-                    public static void SendWarningToPlayer(uint player, string key, string message) => Warnings.Add(message);
+                    public static void SendWarningToPlayer(uint player, string key, string message) { WarningKeys.Add(key); Warnings.Add(message); }
                 }
                 private sealed class XPQueue
                 {
@@ -94,11 +104,12 @@ public class SkillXPAwardTests
                     public static void SignalEvent(string name, uint player) {}
                     public static void PushEventData(string key, string value) {}
                 }
-                public static void Award(Player player, int xp, uint source)
+                public static void Award(Player player, int xp, uint source) => AwardSkill(player, SkillType.Mimicry, xp, source);
+                public static int AwardSkill(Player player, SkillType skill, int xp, uint source)
                 {
                     Saved = player;
-                    Messages.Clear(); Warnings.Clear(); QueuedXP.Clear(); Refreshes = 0;
-                    GiveSkillXP(1, SkillType.Mimicry, xp, ignoreBonuses: true,
+                    Messages.Clear(); Warnings.Clear(); WarningKeys.Clear(); QueuedXP.Clear(); Refreshes = 0; Saves = 0;
+                    return GiveSkillXP(1, skill, xp, ignoreBonuses: true,
                         applyHenchmanPenalty: false, xpMessageSource: source);
                 }
             }
@@ -113,7 +124,7 @@ public class SkillXPAwardTests
         using var stream = new MemoryStream();
         var result = compilation.Emit(stream);
         result.Success.Should().BeTrue(string.Join(Environment.NewLine, result.Diagnostics));
-        _harness = Assembly.Load(stream.ToArray()).GetType("SkillXPHarness")!;
+        return Assembly.Load(stream.ToArray()).GetType("SkillXPHarness")!;
     }
 
     [TestCase(400, true, uint.MaxValue)]

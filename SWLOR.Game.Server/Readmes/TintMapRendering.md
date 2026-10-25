@@ -526,6 +526,22 @@ Rebuild/install `sw_pt_root.hak` together with `sw_anim_m.hak` and `sw_anim_f.ha
 the helper part IDs live in the animation bridges too, and with older bridges the
 skirts stay static. No module repack or C# deploy is required.
 
+SWLOR's custom emote slots (`customN` start, loop and end clips: crouch, kneel, squat, lie
+down and the rest) carry no tracks for the robe cloth helpers, so the engine latched the
+coat panels, skirt bones and belt flaps in their idle pose and the coat jutted out from the
+hips like a board (robe 12 on emotes). `FillRobeEmoteMotion.py` adds orientation tracks for
+every untracked cloth helper in those clips of the eight playable-body bridges. Each cloth
+chain hangs from its hip anchor, runs over the knee on its side only while that knee reaches
+out that side (front cloth forward, back cloth backward), and lies along the floor, toward
+the feet when the wearer lies down. Authored cloth tracks, body tracks, other clips and the
+skeleton stay byte-identical, and `GenerateRobeRgbModels.py` applies the same fill when it
+packages new bridges. Ability clips (`sw_*`) are unchanged: their cloth still holds its
+previous pose. Run `python -B SWLOR_Haks/tools/FillRobeEmoteMotion.py --apply` to repair the
+installed banks or `--check` to verify them;
+`python -B -m unittest discover -s SWLOR_Haks/tools -p "TestFillRobeEmoteMotion.py"` guards
+every emote clip of every playable bridge. Rebuild `sw_anim_m.hak` and `sw_anim_f.hak`; no
+module repack or C# deploy is required.
+
 Chest parts 154 (human bodies) and 269 (human, elf, half-orc and dwarf bodies) carry
 ankle-length coat skirts in the chest mesh. Each half of the skirt was weighted to its
 own thigh and shin, so striding pulled the halves apart: the back tore open and the legs

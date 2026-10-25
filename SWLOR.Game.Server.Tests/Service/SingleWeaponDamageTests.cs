@@ -43,7 +43,7 @@ public class SingleWeaponDamageTests
     [TestCase(BaseItem.QuarterStaff, false)]
     [TestCase(BaseItem.GreatAxe, false)]
     [TestCase(BaseItem.Katar, true)]
-    [TestCase(BaseItem.PowerGlove, true)]
+    [TestCase(BaseItem.PowerGlove, false)]
     [TestCase(BaseItem.Shuriken, true)]
     [TestCase(BaseItem.GreatSword, false)]
     [TestCase(BaseItem.DoubleAxe, false)]

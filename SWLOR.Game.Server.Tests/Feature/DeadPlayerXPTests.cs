@@ -9,9 +9,9 @@ public class DeadPlayerXPTests
     public void SkillXP_GuardsDeadPlayersAtAwardBoundary()
     {
         var source = ReadServerSource("Service", "Skill.cs");
-        var method = ExtractMethod(source, "public static void GiveSkillXP(");
+        var method = ExtractMethod(source, "public static int GiveSkillXP(");
 
-        AssertDeadPlayerGuardExitsBefore(method, "player", "return;", "var modifiedSkills");
+        AssertDeadPlayerGuardExitsBefore(method, "player", "return 0;", "var modifiedSkills");
     }
 
     [Test]
@@ -46,7 +46,7 @@ public class DeadPlayerXPTests
         var confirm = ExtractMethod(distributeSource, "public Action OnClickConfirm() => () =>");
 
         AssertDeadPlayerGuardExitsBefore(openWindow, "Player", "return;", "var playerId = GetObjectUUID(Player);");
-        AssertDeadPlayerGuardExitsBefore(confirm, "Player", "return;", "dbPlayer.UnallocatedXP -= amount;");
+        AssertDeadPlayerGuardExitsBefore(confirm, "Player", "return;", "Skill.GiveSkillXP(Player, _skillType, amount");
     }
 
     [Test]

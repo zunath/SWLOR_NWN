@@ -14,7 +14,19 @@ namespace SWLOR.CombatSim.Data
         public int ImpactStatusDuration { get; init; }
         public Func<SWLOR.Game.Server.Service.StatusEffectService.IStatusEffect> ImpactStatusFactory { get; init; }
         public IReadOnlyList<Type> ImpactStatusTypes { get; init; } = Array.Empty<Type>();
+        /// <summary>The source's configured instance of an impact status (Rending Strike's Exposed), when it supplies one.</summary>
+        public Func<SWLOR.Game.Server.Service.StatusEffectService.IStatusEffect> WeaponStatusFactory { get; init; }
+        /// <summary>The skill the source passes to its combat impact; Rending Strike's definition itself declares none.</summary>
+        public SkillType WeaponImpactSkillType { get; init; }
+        /// <summary>Savage Cleave II-III restore STM per secondary target hit; the simulator refuses multi-target hits rather than guess the amount.</summary>
+        public bool RestoresSecondaryTargetStamina { get; init; }
         public bool InterruptsTarget { get; init; }
+        /// <summary>Source DMG added to the impact's power against a target already affected by a control effect.</summary>
+        public int ExtraDamageIfTargetControlled { get; init; }
+        /// <summary>A second status the impact applies to a target already affected by a required status or category.</summary>
+        public ConditionalTargetStatus ConditionalTargetStatus { get; init; }
+        /// <summary>Source riders the weapon simulation does not model; a weapon-calibrated use of the ability is refused.</summary>
+        public IReadOnlyList<string> UnmodeledRiders { get; init; } = Array.Empty<string>();
         public bool IsAreaAbility { get; init; }
         public float WeaponAreaRadius { get; init; }
         public int MaximumAreaTargets { get; init; }

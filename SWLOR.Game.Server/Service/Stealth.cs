@@ -22,10 +22,17 @@ namespace SWLOR.Game.Server.Service
     {
         public const string CombatEntryWindowVariable = "STEALTH_COMBAT_ENTRY_WINDOW";
 
+        private const string TimedExitActiveVariable = "STEALTH_TIMED_EXIT_ACTIVE";
         private const float DetectionCheckIntervalSeconds = 30f;
+        private const float CloseRangeDetectionCheckIntervalSeconds = 6f;
+        private const float CloseRangeDetectionDistance = 5f;
+        private const int CloseRangeDetectionBonus = 10;
         private const int CachePruneThreshold = 2000;
 
-        private static readonly Dictionary<(uint Observer, uint Target), (bool Detected, DateTime Expiry)> _verdicts = new();
+        private static readonly Dictionary<(uint Observer, uint Target), (bool Detected, DateTime RolledAt)> _verdicts = new();
+
+        // Server-wide so a timer outliving its creature never matches a window on a reused object ID.
+        private static int _lastTimedExitGeneration;
 
         /// <summary>
         /// Baseline stealth is only usable by characters with the Stealth perk and only out of
@@ -80,6 +87,7 @@ namespace SWLOR.Game.Server.Service
                     });
                 }
 
+                DeleteLocalInt(creature, TimedExitActiveVariable);
                 StatusEffect.RemoveStatusEffect<StealthStatusEffect>(creature);
                 return;
             }
@@ -151,6 +159,28 @@ namespace SWLOR.Game.Server.Service
         }
 
         /// <summary>
+        /// The Stealth status carries the stamina drain, so a stealthed player must never be
+        /// without it. Rebuilds the status if something removed it while native stealth stayed on.
+        /// </summary>
+        [NWNEventHandler(ScriptName.OnPlayerHeartbeat)]
+        public static void EnsureStealthStatusWhileHidden()
+        {
+            var creature = OBJECT_SELF;
+
+            if (!GetIsPC(creature) ||
+                GetIsDM(creature) ||
+                !GetActionMode(creature, ActionMode.Stealth) ||
+                StatusEffect.HasStatusEffect<StealthStatusEffect>(creature))
+                return;
+
+            Log.WriteStructured(
+                LogGroup.AI,
+                "Stealth status missing during native stealth, refreshing: Creature={Creature}",
+                creature);
+            RefreshActiveStatusAfterPerkLevelChange(creature);
+        }
+
+        /// <summary>
         /// Records player-initiated combat before the attack event can add pair enmity. This lets
         /// infiltration distinguish the attack from combat caused by a successful detection.
         /// </summary>
@@ -188,11 +218,37 @@ namespace SWLOR.Game.Server.Service
             SendMessageToPC(attacker, "Your attack gives away your position.");
         }
 
+        /// <summary>
+        /// Ends the stealth an ability grants after <paramref name="durationSeconds"/>. Leaving
+        /// stealth first releases the window, so a later stealth entry is never ended by this timer.
+        /// </summary>
+        public static void ScheduleTimedExit(uint creature, float durationSeconds)
+        {
+            var generation = ++_lastTimedExitGeneration;
+            SetLocalInt(creature, TimedExitActiveVariable, generation);
+
+            DelayCommand(durationSeconds, () =>
+            {
+                if (!GetIsObjectValid(creature) || GetLocalInt(creature, TimedExitActiveVariable) != generation)
+                    return;
+
+                DeleteLocalInt(creature, TimedExitActiveVariable);
+                if (!GetActionMode(creature, ActionMode.Stealth))
+                    return;
+
+                AssignCommand(creature, () =>
+                {
+                    SetActionMode(creature, ActionMode.Stealth, false);
+                });
+            });
+        }
+
         [NWNEventHandler(ScriptName.OnStealthExitAfter)]
         public static void OnStealthExited()
         {
             var creature = OBJECT_SELF;
 
+            DeleteLocalInt(creature, TimedExitActiveVariable);
             EspionageInfiltration.CancelPlayer(creature);
             StatusEffect.RemoveStatusEffect<StealthStatusEffect>(creature);
             ClearVerdictsForTarget(creature);
@@ -335,19 +391,74 @@ namespace SWLOR.Game.Server.Service
         {
             var now = DateTime.UtcNow;
             var key = (observer, target);
+            var playerObserver = IsPlayerObserver(observer);
+            var closeRange = playerObserver && IsWithinCloseDetectionRange(observer, target);
 
-            if (_verdicts.TryGetValue(key, out var verdict) && verdict.Expiry > now)
+            // The lifetime is judged on lookup, so an observer who closes to arm's length re-rolls
+            // within the short window instead of waiting out a verdict rolled from afar.
+            if (_verdicts.TryGetValue(key, out var verdict) &&
+                verdict.RolledAt.AddSeconds(GetDetectionCheckIntervalSeconds(closeRange)) > now)
                 return verdict.Detected;
 
-            var detectionRoll = Random.D20(1) + Stat.GetDetection(observer);
-            var stealthRoll = Random.D20(1) + Stat.GetStealth(target);
-            var detected = detectionRoll > stealthRoll;
+            var detected = IsDetectionRollSuccessful(
+                Random.D20(1),
+                Stat.GetDetection(observer) + GetCloseRangeDetectionBonus(closeRange),
+                Random.D20(1),
+                Stat.GetStealth(target),
+                playerObserver);
 
             if (_verdicts.Count >= CachePruneThreshold)
                 PruneExpired(now);
 
-            _verdicts[key] = (detected, now.AddSeconds(DetectionCheckIntervalSeconds));
+            _verdicts[key] = (detected, now);
             return detected;
+        }
+
+        /// <summary>
+        /// Detection beats Stealth on a higher total; ties go to the hidden creature. For a player
+        /// observer a natural 20 always detects, so no Stealth lead hides a creature from players
+        /// entirely. NPC observers have no such floor, keeping capped NPC Detection unable to
+        /// find a fully committed sneak.
+        /// </summary>
+        public static bool IsDetectionRollSuccessful(
+            int detectionDie,
+            int detection,
+            int stealthDie,
+            int stealth,
+            bool naturalTwentyDetects)
+        {
+            return (naturalTwentyDetects && detectionDie >= 20) ||
+                   detectionDie + detection > stealthDie + stealth;
+        }
+
+        public static int GetCloseRangeDetectionBonus(bool closeRange)
+        {
+            return closeRange ? CloseRangeDetectionBonus : 0;
+        }
+
+        public static float GetDetectionCheckIntervalSeconds(bool closeRange)
+        {
+            return closeRange ? CloseRangeDetectionCheckIntervalSeconds : DetectionCheckIntervalSeconds;
+        }
+
+        /// <summary>
+        /// Player observers get the close-range and natural 20 rules. NPC observers keep the flat
+        /// check so infiltration content stays tuned as it is.
+        /// </summary>
+        private static bool IsPlayerObserver(uint observer)
+        {
+            return GetIsPC(observer) &&
+                   !GetIsDM(observer) &&
+                   !GetIsDMPossessed(observer);
+        }
+
+        /// <summary>
+        /// Observers at arm's length notice a stealthed creature more easily and more often.
+        /// </summary>
+        private static bool IsWithinCloseDetectionRange(uint observer, uint target)
+        {
+            return GetArea(observer) == GetArea(target) &&
+                   GetDistanceBetween(observer, target) <= CloseRangeDetectionDistance;
         }
 
         private static bool ResolveDetection(uint observer, uint target, bool acquireAggroOnDetection)
@@ -425,7 +536,11 @@ namespace SWLOR.Game.Server.Service
 
         private static void PruneExpired(DateTime now)
         {
-            var expired = _verdicts.Where(kvp => kvp.Value.Expiry <= now).Select(kvp => kvp.Key).ToList();
+            // The longest lifetime bounds every verdict, whatever range it was rolled at.
+            var expired = _verdicts
+                .Where(kvp => kvp.Value.RolledAt.AddSeconds(DetectionCheckIntervalSeconds) <= now)
+                .Select(kvp => kvp.Key)
+                .ToList();
             foreach (var key in expired)
             {
                 _verdicts.Remove(key);

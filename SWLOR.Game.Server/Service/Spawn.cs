@@ -16,6 +16,7 @@ namespace SWLOR.Game.Server.Service
     {
         public const int DespawnMinutes = 20;
         public const int DefaultRespawnMinutes = 5;
+        public const int LeftoverResourceDespawnMinutes = 5;
 
         private class SpawnDetail
         {
@@ -378,6 +379,46 @@ namespace SWLOR.Game.Server.Service
         }
 
         /// <summary>
+        /// Moves a spawned resource's natural despawn forward so it despawns and frees its spawn slot
+        /// no later than the given delay from now. Used for searched resources which still hold items.
+        /// An earlier scheduled despawn is kept. Resources not created by the spawn system are left alone.
+        /// </summary>
+        /// <param name="resourceObject">The resource object to despawn</param>
+        /// <param name="delay">The maximum amount of time before the resource despawns</param>
+        /// <returns>true if a despawn is scheduled, false otherwise</returns>
+        public static bool ScheduleResourceDespawn(uint resourceObject, TimeSpan delay)
+        {
+            if (!GetIsObjectValid(resourceObject))
+                return false;
+
+            if (GetLocalInt(resourceObject, "RESPAWN_QUEUED") == 1)
+                return false;
+
+            var spawnId = GetLocalString(resourceObject, "SPAWN_ID");
+            if (!Guid.TryParse(spawnId, out var spawnGuid) || !_spawns.ContainsKey(spawnGuid))
+                return false;
+
+            var despawnTime = DateTime.UtcNow.Add(delay);
+            var existing = _queuedResourceDespawns.FirstOrDefault(x => x.ResourceObject == resourceObject);
+            if (existing != null)
+            {
+                if (despawnTime < existing.DespawnTime)
+                    existing.DespawnTime = despawnTime;
+            }
+            else
+            {
+                _queuedResourceDespawns.Add(new ResourceDespawn
+                {
+                    ResourceObject = resourceObject,
+                    DespawnTime = despawnTime,
+                    SpawnDetailId = spawnGuid
+                });
+            }
+
+            return true;
+        }
+
+        /// <summary>
         /// Creates a queued spawn record which is picked up by the processor.
         /// The spawn object will be created when the respawn time has passed.
         /// </summary>
@@ -604,13 +645,24 @@ namespace SWLOR.Game.Server.Service
         /// </summary>
         private static void ProcessResourceDespawns()
         {
-            var now = DateTime.UtcNow;
+            ProcessResourceDespawns(DateTime.UtcNow);
+        }
+
+        private static void ProcessResourceDespawns(DateTime now)
+        {
             for (var index = _queuedResourceDespawns.Count - 1; index >= 0; index--)
             {
                 var resourceDespawn = _queuedResourceDespawns[index];
 
                 // Resource object no longer exists, remove from queue
                 if (!GetIsObjectValid(resourceDespawn.ResourceObject))
+                {
+                    _queuedResourceDespawns.RemoveAt(index);
+                    continue;
+                }
+
+                // The resource already queued its respawn (for example, it was emptied and died).
+                if (GetLocalInt(resourceDespawn.ResourceObject, "RESPAWN_QUEUED") == 1)
                 {
                     _queuedResourceDespawns.RemoveAt(index);
                     continue;
@@ -629,6 +681,7 @@ namespace SWLOR.Game.Server.Service
                     }
 
                     // Destroy the resource directly (avoids triggering death events which would queue duplicate respawns)
+                    SetLocalInt(resourceDespawn.ResourceObject, "RESPAWN_QUEUED", 1);
                     DestroyObject(resourceDespawn.ResourceObject);
 
                     // Queue for respawn
@@ -875,6 +928,84 @@ namespace SWLOR.Game.Server.Service
             }
 
             return new SpawnResult { SpawnObject = OBJECT_INVALID };
+        }
+
+        /// <summary>
+        /// Registers an existing placeable as an active resource spawn from the given spawn table,
+        /// with that table's natural despawn queued. Engine tests only.
+        /// </summary>
+        public static Guid RegisterResourceSpawnForTesting(uint resourceObject, string spawnTableId)
+        {
+            var spawnTable = _spawnTables[spawnTableId];
+            var area = GetArea(resourceObject);
+            var position = GetPosition(resourceObject);
+            var id = Guid.NewGuid();
+            _spawns.Add(id, new SpawnDetail
+            {
+                SpawnTableId = spawnTableId,
+                Area = area,
+                X = position.X,
+                Y = position.Y,
+                Z = position.Z,
+                Facing = GetFacing(resourceObject),
+                RespawnDelayMinutes = spawnTable.RespawnDelayMinutes,
+                RespawnDelayMaximumMinutes = spawnTable.RespawnDelayMaximumMinutes
+            });
+
+            if (!_activeSpawnsByArea.ContainsKey(area))
+                _activeSpawnsByArea[area] = new List<ActiveSpawn>();
+
+            _activeSpawnsByArea[area].Add(new ActiveSpawn { SpawnDetailId = id, SpawnObject = resourceObject });
+            SetLocalString(resourceObject, "SPAWN_ID", id.ToString());
+            QueueResourceDespawn(resourceObject, id, spawnTable.ResourceDespawnMinutes);
+
+            return id;
+        }
+
+        public static bool IsSpawnActiveForTesting(Guid spawnId)
+        {
+            return _spawns.TryGetValue(spawnId, out var detail) &&
+                   _activeSpawnsByArea.TryGetValue(detail.Area, out var activeSpawns) &&
+                   activeSpawns.Any(x => x.SpawnDetailId == spawnId);
+        }
+
+        public static int GetQueuedSpawnCountForTesting(Guid spawnId)
+        {
+            return _queuedSpawns.Count(x => x.SpawnDetailId == spawnId);
+        }
+
+        public static DateTime? GetResourceDespawnTimeForTesting(uint resourceObject)
+        {
+            return _queuedResourceDespawns.FirstOrDefault(x => x.ResourceObject == resourceObject)?.DespawnTime;
+        }
+
+        public static void ProcessResourceDespawnsForTesting(DateTime now)
+        {
+            ProcessResourceDespawns(now);
+        }
+
+        /// <summary>
+        /// Removes every trace of a spawn registered by <see cref="RegisterResourceSpawnForTesting"/>.
+        /// </summary>
+        public static void RemoveSpawnForTesting(Guid spawnId)
+        {
+            if (!_spawns.TryGetValue(spawnId, out var detail))
+                return;
+
+            foreach (var queuedSpawn in _queuedSpawns.Where(x => x.SpawnDetailId == spawnId).ToList())
+            {
+                RemoveQueuedSpawn(queuedSpawn);
+            }
+
+            if (_activeSpawnsByArea.TryGetValue(detail.Area, out var activeSpawns))
+            {
+                var spawnObjects = activeSpawns.Where(x => x.SpawnDetailId == spawnId).Select(x => x.SpawnObject).ToList();
+                activeSpawns.RemoveAll(x => x.SpawnDetailId == spawnId);
+                _queuedResourceDespawns.RemoveAll(x => spawnObjects.Contains(x.ResourceObject));
+            }
+
+            _queuedResourceDespawns.RemoveAll(x => x.SpawnDetailId == spawnId);
+            _spawns.Remove(spawnId);
         }
     }
 }

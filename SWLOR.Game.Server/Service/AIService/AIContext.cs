@@ -115,6 +115,11 @@ namespace SWLOR.Game.Server.Service.AIService
             return CountHostilesNearTarget(radius, null);
         }
 
+        /// <summary>
+        /// Counts living enemies within the radius of the evaluated target (or this creature) that
+        /// this creature can see. Enemies hidden by invisibility or undetected stealth are left out,
+        /// so they never justify an area ability.
+        /// </summary>
         public int CountHostilesNearTarget(float radius, Func<uint, bool> predicate)
         {
             var origin = GetIsObjectValid(EvaluatedTarget)
@@ -130,6 +135,7 @@ namespace SWLOR.Game.Server.Service.AIService
                 if (creature != Self &&
                     GetIsEnemy(creature, Self) &&
                     GetCurrentHitPoints(creature) > 0 &&
+                    !Stealth.IsHiddenFrom(Self, creature) &&
                     (predicate == null || predicate(creature)))
                 {
                     count++;

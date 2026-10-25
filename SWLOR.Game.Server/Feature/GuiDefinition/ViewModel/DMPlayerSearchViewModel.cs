@@ -521,7 +521,17 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
                 if (!GetIsObjectValid(target))
                     return;
 
-                ChatPlugin.SendMessage(ChatChannel.DMTell, message, DMPresence.GetDM(Player), target);
+                // The target is exact, so a chat-portrait click the DM left unsent never blocks it.
+                var speaker = DMPresence.GetDM(Player);
+                SetLocalBool(speaker, PlayerName.DirectTellVariable, true);
+                try
+                {
+                    ChatPlugin.SendMessage(ChatChannel.DMTell, message, speaker, target);
+                }
+                finally
+                {
+                    DeleteLocalBool(speaker, PlayerName.DirectTellVariable);
+                }
                 DMPresence.SendMessage(Player, $"To {result.Name}: {message}");
                 Log.Write(LogGroup.DM, $"{DMPresence.DescribeDM(Player)} messaged {result.Name} ({result.PlayerId}): {message}");
             });

@@ -1,6 +1,6 @@
 {
   "name": "Unarmed PvP: baseline, martial vs brawler",
-  "description": "Stationary PvP calibration: equal 69-SP weapon and Doublehand packages; effective weapon damage 31, delay 220 and skill rank 50; Attack/Defense 128 and Accuracy 148/Evasion 128; MGT/PER/VIT 26; 805 HP and 26 HP per 30 seconds from the existing defensive-duel player calibration; 61 STM and 21 STM per 30 seconds from MGT 26, 12 gear STM and 5 food regeneration. Costs, recasts, Unarmed effects and stance stats are loaded from production. Formula weapon attacks on both sides. Movement, Guard/deflection, spatial escape and player decision-making are outside this model. Pair with reversed-team seeds. This is a controlled balance comparison, not a prediction of live win rate.",
+  "description": "Stationary PvP calibration: equal 69-SP weapon packages plus 9 SP of Dual Wield III for Power Gloves (19 weapon damage per hand, both hands rolled each paired 220/220 cycle with 30% off-hand delay reduction, no Single Weapon bonus); delay 220 and skill rank 50; Attack/Defense 128 and Accuracy 148/Evasion 128; MGT/PER/VIT 26; 805 HP and 26 HP per 30 seconds from the existing defensive-duel player calibration; 61 STM and 21 STM per 30 seconds from MGT 26, 12 gear STM and 5 food regeneration. Costs, recasts, Unarmed effects and stance stats are loaded from production. Formula weapon attacks on both sides. Movement, Guard/deflection, spatial escape and player decision-making are outside this model. Pair with reversed-team seeds. This is a controlled balance comparison, not a prediction of live win rate.",
   "durationSeconds": 600,
   "timeStepSeconds": 0.1,
   "isPvp": true,
@@ -29,13 +29,14 @@
             "FlowStance",
             "ControlledBreathing",
             "RootedTechnique",
-            "PerfectForm",
-            "Doublehand:3"
+            "PerfectForm"
           ],
           "weaponCombat": {
-            "weaponDamage": 31,
+            "weaponDamage": 19,
             "weaponSkillRank": 50,
             "weaponDelayUnits": 220,
+            "pairedHands": true,
+            "offhandDelayReductionPercent": 30,
             "externalHastePercent": 0,
             "attack": 128,
             "accuracy": 148,
@@ -115,13 +116,14 @@
             "BruiserStance",
             "CatchYourBreath",
             "Payback",
-            "Haymaker",
-            "Doublehand:3"
+            "Haymaker"
           ],
           "weaponCombat": {
-            "weaponDamage": 31,
+            "weaponDamage": 19,
             "weaponSkillRank": 50,
             "weaponDelayUnits": 220,
+            "pairedHands": true,
+            "offhandDelayReductionPercent": 30,
             "externalHastePercent": 0,
             "attack": 128,
             "accuracy": 148,

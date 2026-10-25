@@ -197,6 +197,19 @@ public class PlayerListRulesTests
             .Call.DisabledReason.Should().Be(PlayerListRules.DMsCannotUseHoloCom);
     }
 
+    [Test]
+    public void Answer_IsRefusedInSpaceButDeclineIsNot()
+    {
+        var actions = PlayerListRules.Evaluate(new PlayerListRelation
+        {
+            ViewerCallState = PlayerListCallState.Incoming,
+            ViewerIsInSpace = true,
+        });
+
+        actions.AnswerCall.DisabledReason.Should().Be("HoloCom cannot be used in space.");
+        actions.DeclineCall.IsEnabled.Should().BeTrue();
+    }
+
     [TestCase(PlayerListCallState.None, false, false, "End Call")]
     [TestCase(PlayerListCallState.Incoming, true, false, "End Call")]
     [TestCase(PlayerListCallState.Outgoing, false, true, "Cancel Call")]

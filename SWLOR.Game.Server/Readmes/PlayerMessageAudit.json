@@ -4558,105 +4558,147 @@
   },
   {
     "File": "SWLOR.Game.Server/Service/HoloCom.cs",
-    "Line": 92,
+    "Line": 93,
     "Member": "OnModuleChat",
     "Delivery": "Retained",
     "Call": "ActionSpeakString(text, talkVolume)"
   },
   {
     "File": "SWLOR.Game.Server/Service/HoloCom.cs",
-    "Line": 137,
+    "Line": 146,
+    "Member": "AnswerCall",
+    "Delivery": "Retained",
+    "Call": "SendMessageToPC(player, ColorToken.Red(\"HoloCom cannot be used in space.\"))"
+  },
+  {
+    "File": "SWLOR.Game.Server/Service/HoloCom.cs",
+    "Line": 153,
+    "Member": "AnswerCall",
+    "Delivery": "Retained",
+    "Call": "SendMessageToPC(callSender, \"Your HoloCom call went unanswered.\")"
+  },
+  {
+    "File": "SWLOR.Game.Server/Service/HoloCom.cs",
+    "Line": 155,
+    "Member": "AnswerCall",
+    "Delivery": "Retained",
+    "Call": "SendMessageToPC(player, \"Your HoloCom stops buzzing.\")"
+  },
+  {
+    "File": "SWLOR.Game.Server/Service/HoloCom.cs",
+    "Line": 172,
     "Member": "DeclineCall",
     "Delivery": "Retained",
     "Call": "SendMessageToPC(callSender, \"Your HoloCom call was declined.\")"
   },
   {
     "File": "SWLOR.Game.Server/Service/HoloCom.cs",
-    "Line": 150,
+    "Line": 185,
     "Member": "EndCall",
     "Delivery": "Retained",
     "Call": "SendMessageToPC(player, \"You end your HoloCom call.\")"
   },
   {
     "File": "SWLOR.Game.Server/Service/HoloCom.cs",
-    "Line": 158,
+    "Line": 193,
     "Member": "EndCall",
     "Delivery": "Retained",
     "Call": "SendMessageToPC(callReceiver, \"Your HoloCom stops buzzing.\")"
   },
   {
     "File": "SWLOR.Game.Server/Service/HoloCom.cs",
-    "Line": 161,
+    "Line": 196,
     "Member": "EndCall",
     "Delivery": "Retained",
     "Call": "SendMessageToPC(player, \"You cancel your HoloCom call.\")"
   },
   {
     "File": "SWLOR.Game.Server/Service/HoloCom.cs",
-    "Line": 177,
+    "Line": 212,
     "Member": "CallPlayer",
     "Delivery": "Retained",
     "Call": "SendMessageToPC(sender, \"Your HoloCom call went unanswered.\")"
   },
   {
     "File": "SWLOR.Game.Server/Service/HoloCom.cs",
-    "Line": 187,
+    "Line": 221,
+    "Member": "CallPlayer",
+    "Delivery": "Retained",
+    "Call": "SendMessageToPC(sender, ColorToken.Red(\"HoloCom cannot be used in space.\"))"
+  },
+  {
+    "File": "SWLOR.Game.Server/Service/HoloCom.cs",
+    "Line": 231,
+    "Member": "CallPlayer",
+    "Delivery": "Retained",
+    "Call": "SendMessageToPC(sender, \"Their HoloCom line is busy.\")"
+  },
+  {
+    "File": "SWLOR.Game.Server/Service/HoloCom.cs",
+    "Line": 236,
     "Member": "CallPlayer",
     "Delivery": "Retained",
     "Call": "SendMessageToPC(sender, \"You wait for \" + receiverName + \" to answer their HoloCom.\")"
   },
   {
     "File": "SWLOR.Game.Server/Service/HoloCom.cs",
-    "Line": 204,
+    "Line": 253,
     "Member": "CallPlayer",
     "Delivery": "Retained",
     "Call": "SendMessageToPC(receiver, message)"
   },
   {
     "File": "SWLOR.Game.Server/Service/HoloCom.cs",
-    "Line": 207,
+    "Line": 256,
     "Member": "CallPlayer",
     "Delivery": "Retained",
     "Call": "FloatingTextStringOnCreature(message, receiver)"
   },
   {
     "File": "SWLOR.Game.Server/Service/HoloCom.cs",
-    "Line": 217,
+    "Line": 266,
     "Member": "CallPlayer",
     "Delivery": "Retained",
     "Call": "SendMessageToPC(sender, \"Your HoloCom call went unanswered.\")"
   },
   {
     "File": "SWLOR.Game.Server/Service/HoloCom.cs",
-    "Line": 218,
+    "Line": 267,
     "Member": "CallPlayer",
     "Delivery": "Retained",
     "Call": "SendMessageToPC(receiver, \"Your HoloCom stops buzzing.\")"
   },
   {
     "File": "SWLOR.Game.Server/Service/HoloCom.cs",
-    "Line": 241,
+    "Line": 290,
     "Member": "SetIsInCall",
     "Delivery": "Retained",
     "Call": "SendMessageToPC(sender, message)"
   },
   {
     "File": "SWLOR.Game.Server/Service/HoloCom.cs",
-    "Line": 242,
+    "Line": 291,
     "Member": "SetIsInCall",
     "Delivery": "Retained",
     "Call": "SendMessageToPC(receiver, message)"
   },
   {
     "File": "SWLOR.Game.Server/Service/HoloCom.cs",
-    "Line": 448,
+    "Line": 468,
+    "Member": "EndAttempt",
+    "Delivery": "Retained",
+    "Call": "SendMessageToPC(receiver, \"Your HoloCom stops buzzing.\")"
+  },
+  {
+    "File": "SWLOR.Game.Server/Service/HoloCom.cs",
+    "Line": 514,
     "Member": "CleanupAllHoloComState",
     "Delivery": "Retained",
     "Call": "SendMessageToPC(receiver, \"Your HoloCom stops buzzing.\")"
   },
   {
     "File": "SWLOR.Game.Server/Service/HoloCom.cs",
-    "Line": 471,
+    "Line": 537,
     "Member": "CleanupAllHoloComState",
     "Delivery": "Retained",
     "Call": "SendMessageToPC(sender, \"Your HoloCom call went unanswered.\")"

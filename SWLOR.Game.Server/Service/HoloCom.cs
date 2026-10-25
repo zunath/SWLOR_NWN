@@ -17,6 +17,7 @@ namespace SWLOR.Game.Server.Service
         private const string HolocomCallSenderObject = "HOLOCOM_CALL_SENDER_OBJECT";
         private const string HolocomCallReceiverObject = "HOLOCOM_CALL_RECEIVER_OBJECT";
         private const string HolocomCallAttempt = "HOLOCOM_CALL_ATTEMPT";
+        private const string HolocomCallToken = "HOLOCOM_CALL_TOKEN";
         private const string HolocomHologram = "HOLOCOM_HOLOGRAM";
         private const string HologramOwner = "HOLOGRAM_OWNER";
         private const string IsHologramVariable = "HOLOCOM_IS_HOLOGRAM";
@@ -92,6 +93,11 @@ namespace SWLOR.Game.Server.Service
             AssignCommand(receiver, () => ActionSpeakString(text, talkVolume));
         }
 
+        private static int _nextCallToken;
+
+        /// <summary>
+        /// Where a player stands in a call: none, ringing someone, being rung, or connected.
+        /// </summary>
         public static PlayerListCallState GetCallState(uint player)
         {
             if (IsInCall(player))
@@ -109,25 +115,54 @@ namespace SWLOR.Game.Server.Service
         /// </summary>
         public static void StartCall(uint sender, uint receiver)
         {
-            if (IsInCall(receiver) || Space.IsPlayerInSpaceMode(sender) || Space.IsPlayerInSpaceMode(receiver))
+            if (GetCallState(sender) != PlayerListCallState.None ||
+                GetCallState(receiver) != PlayerListCallState.None ||
+                Space.IsPlayerInSpaceMode(sender) ||
+                Space.IsPlayerInSpaceMode(receiver))
                 return;
 
+            // Each attempt gets its own token so a delayed callback from a cancelled attempt cannot ring for a newer one.
+            var token = ++_nextCallToken;
+            SetLocalInt(sender, HolocomCallToken, token);
             SetIsCallSender(sender);
             PlayerList.QueueRefresh();
             DelayCommand(1.0f, () =>
             {
-                CallPlayer(sender, receiver);
+                CallPlayer(sender, receiver, token);
             });
         }
 
+        /// <summary>
+        /// Connects an incoming call. Answering is refused while either player is in space.
+        /// </summary>
         public static void AnswerCall(uint player)
         {
             if (!IsCallReceiver(player) || IsInCall(player))
                 return;
 
-            SetIsInCall(player, GetCallSender(player), true);
+            var callSender = GetCallSender(player);
+            if (Space.IsPlayerInSpaceMode(player))
+            {
+                SendMessageToPC(player, ColorToken.Red("HoloCom cannot be used in space."));
+                return;
+            }
+
+            if (!GetIsObjectValid(callSender) || Space.IsPlayerInSpaceMode(callSender))
+            {
+                if (GetIsObjectValid(callSender))
+                    SendMessageToPC(callSender, "Your HoloCom call went unanswered.");
+
+                SendMessageToPC(player, "Your HoloCom stops buzzing.");
+                CleanupCallAttempt(callSender, player);
+                return;
+            }
+
+            SetIsInCall(player, callSender, true);
         }
 
+        /// <summary>
+        /// Declines an incoming call and tells the caller.
+        /// </summary>
         public static void DeclineCall(uint player)
         {
             if (!IsCallReceiver(player) || IsInCall(player))
@@ -165,23 +200,37 @@ namespace SWLOR.Game.Server.Service
             return false;
         }
 
-        private static void CallPlayer(uint sender, uint receiver)
+        private static void CallPlayer(uint sender, uint receiver, int token)
         {
-            // Check if both players are still valid before proceeding
-            if (!GetIsObjectValid(sender) || !GetIsObjectValid(receiver))
+            // A cancelled or replaced attempt has a different token, so its delayed callbacks stop here.
+            if (!GetIsObjectValid(sender) || GetLocalInt(sender, HolocomCallToken) != token)
+                return;
+
+            if (!GetIsObjectValid(receiver))
             {
-                // Clean up any remaining call attempt state
-                if (GetIsObjectValid(sender))
-                {
-                    CleanupCallAttempt(sender, receiver);
-                    SendMessageToPC(sender, "Your HoloCom call went unanswered.");
-                }
+                CleanupCallAttempt(sender, receiver);
+                SendMessageToPC(sender, "Your HoloCom call went unanswered.");
                 return;
             }
 
-            if (IsInCall(sender) || IsInCall(receiver)) return;
+            if (IsInCall(sender) || !IsCallSender(sender)) return;
 
-            if (!IsCallSender(sender)) return;
+            if (Space.IsPlayerInSpaceMode(sender) || Space.IsPlayerInSpaceMode(receiver))
+            {
+                EndAttempt(sender, receiver);
+                SendMessageToPC(sender, ColorToken.Red("HoloCom cannot be used in space."));
+                return;
+            }
+
+            // The receiver may ring from this very attempt on a retry; any other call state means a busy line.
+            var receiverState = GetCallState(receiver);
+            var isRingingFromSender = receiverState == PlayerListCallState.Incoming && GetCallSender(receiver) == sender;
+            if (receiverState != PlayerListCallState.None && !isRingingFromSender)
+            {
+                EndAttempt(sender, receiver);
+                SendMessageToPC(sender, "Their HoloCom line is busy.");
+                return;
+            }
 
             var receiverName = PlayerName.GetDisplayName(sender, receiver);
             SendMessageToPC(sender, "You wait for " + receiverName + " to answer their HoloCom.");
@@ -210,7 +259,7 @@ namespace SWLOR.Game.Server.Service
             if (GetCallAttempt(sender) <= 15)
             {
                 SetCallAttempt(sender, GetCallAttempt(sender) + 1);
-                DelayCommand(5.0f, () => { CallPlayer(sender, receiver); });
+                DelayCommand(5.0f, () => { CallPlayer(sender, receiver, token); });
             }
             else
             {
@@ -237,7 +286,7 @@ namespace SWLOR.Game.Server.Service
                 SetLocalObject(sender, HolocomCallConnectedWith, receiver);
                 SetLocalObject(receiver, HolocomCallConnectedWith, sender);
 
-                var message = "Call Connected. (Use the HoloCom or the chat command /endcall to terminate the call)";
+                var message = "Call Connected. (Use End Call in the Player List or the chat command /endcall to terminate the call)";
                 SendMessageToPC(sender, message);
                 SendMessageToPC(receiver, message);
                 var effectImmobilized = TagEffect(
@@ -321,6 +370,8 @@ namespace SWLOR.Game.Server.Service
 
                 DeleteLocalInt(sender, HolocomCallAttempt);
                 DeleteLocalInt(receiver, HolocomCallAttempt);
+                DeleteLocalInt(sender, HolocomCallToken);
+                DeleteLocalInt(receiver, HolocomCallToken);
 
                 DeleteLocalObject(sender, HolocomCallReceiverObject);
                 DeleteLocalObject(receiver, HolocomCallReceiverObject);
@@ -408,6 +459,20 @@ namespace SWLOR.Game.Server.Service
             SetLocalInt(player, HolocomCallAttempt, value);
         }
 
+        // Ends one attempt without disturbing a receiver who is on, or ringing from, a different call.
+        private static void EndAttempt(uint sender, uint receiver)
+        {
+            var isRingingFromSender = IsCallReceiver(receiver) && GetCallSender(receiver) == sender;
+            if (isRingingFromSender)
+            {
+                SendMessageToPC(receiver, "Your HoloCom stops buzzing.");
+                CleanupCallAttempt(sender, receiver);
+                return;
+            }
+
+            CleanupCallAttempt(sender, OBJECT_INVALID);
+        }
+
         /// <summary>
         /// Cleans up call attempt state for both sender and receiver
         /// </summary>
@@ -429,6 +494,7 @@ namespace SWLOR.Game.Server.Service
             DeleteLocalObject(sender, HolocomCallSenderObject);
             DeleteLocalObject(sender, HolocomCallReceiverObject);
             DeleteLocalInt(sender, HolocomCallAttempt);
+            DeleteLocalInt(sender, HolocomCallToken);
             PlayerList.QueueRefresh();
         }
 

@@ -15,6 +15,7 @@ namespace SWLOR.Game.Server.Service.PlayerListService
         // The marker the native player list showed through the name override.
         public const string AfkMarker = " [AFK]";
         public const string DMsCannotUsePartyControls = "DMs cannot use party controls.";
+        public const string NoIncomingCall = "You have no incoming call.";
         public const string DMsCannotUseHoloCom = "DMs cannot use HoloCom.";
 
         /// <summary>
@@ -77,8 +78,8 @@ namespace SWLOR.Game.Server.Service.PlayerListService
                 ToggleHostile = EvaluateToggleHostile(relation),
                 ToggleHostileText = relation.HasTarget && relation.ViewerDislikesTarget ? "Clear Hostile" : "Mark Hostile",
                 Call = EvaluateCall(relation),
-                AnswerCall = EvaluateIncomingCall(relation),
-                DeclineCall = EvaluateIncomingCall(relation),
+                AnswerCall = EvaluateAnswerCall(relation),
+                DeclineCall = EvaluateDeclineCall(relation),
                 EndCall = EvaluateEndCall(relation),
                 EndCallText = relation.ViewerCallState == PlayerListCallState.Outgoing ? "Cancel Call" : "End Call",
                 Invite = EvaluateInvite(relation),
@@ -244,11 +245,21 @@ namespace SWLOR.Game.Server.Service.PlayerListService
             return PlayerListActionState.Enabled();
         }
 
-        private static PlayerListActionState EvaluateIncomingCall(PlayerListRelation relation)
+        private static PlayerListActionState EvaluateAnswerCall(PlayerListRelation relation)
+        {
+            if (relation.ViewerCallState != PlayerListCallState.Incoming)
+                return PlayerListActionState.Disabled(NoIncomingCall);
+
+            return relation.ViewerIsInSpace
+                ? PlayerListActionState.Disabled("HoloCom cannot be used in space.")
+                : PlayerListActionState.Enabled();
+        }
+
+        private static PlayerListActionState EvaluateDeclineCall(PlayerListRelation relation)
         {
             return relation.ViewerCallState == PlayerListCallState.Incoming
                 ? PlayerListActionState.Enabled()
-                : PlayerListActionState.Disabled("You have no incoming call.");
+                : PlayerListActionState.Disabled(NoIncomingCall);
         }
 
         private static PlayerListActionState EvaluateEndCall(PlayerListRelation relation)

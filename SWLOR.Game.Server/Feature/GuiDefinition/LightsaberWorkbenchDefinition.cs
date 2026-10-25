@@ -137,7 +137,7 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition
                         row.AddSpacer();
                         row.AddComboBox()
                             .AddOption("Dim (5m)", 0)
-                            .AddOption("Normal (15m)", 1)
+                            .AddOption("Low (10m)", 1)
                             .BindSelectedIndex(model => model.SelectedLightBrightnessIndex)
                             .SetHeight(32f)
                             .SetWidth(220f);

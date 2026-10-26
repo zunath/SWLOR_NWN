@@ -17,6 +17,11 @@ try:
 except ImportError:
     bpy = None
 
+try:
+    import numpy as np
+except ImportError:
+    np = None
+
 REFERENCE = """#MAXMODEL ASCII
 newmodel c_test_ship
   classification CHARACTER
@@ -77,6 +82,18 @@ class ManifestTests(unittest.TestCase):
     def test_rejects_mirroring_orientation(self):
         with self.assertRaisesRegex(ValueError, "proper rotation"):
             ship.validate_manifest(manifest(orientation=[[-1, 0, 0], [0, 1, 0], [0, 0, 1]]))
+
+    def test_rejects_out_of_range_material_and_adjustments(self):
+        for bad in ({"material": {"ambient": [1.2, 1, 1]}}, {"material": {"specular": [0, 0, 0]}},
+                    {"texture_adjust": {"exposure": 3}}, {"texture_adjust": {"gamma": 1}},
+                    {"normal_map": "directx"}):
+            with self.assertRaises(ValueError, msg=str(bad)):
+                ship.validate_manifest(manifest(**bad))
+
+    def test_accepts_lighting_adjustments_and_normal_map(self):
+        config = ship.validate_manifest(manifest(material={"ambient": [0.7, 0.7, 0.7]}, normal_map="opengl",
+                                                 texture_adjust={"exposure": 0.9, "contrast": 1.1}))
+        self.assertEqual(config["normal_map"], "opengl")
 
     def test_rejects_non_power_of_two_texture(self):
         with self.assertRaises(ValueError):
@@ -148,6 +165,26 @@ class WriteTests(unittest.TestCase):
             ship.write_mdl(Path(tmp) / "x.mdl", "x", "x", nodes, mesh, None,
                            {"engine2": {"from": "engine", "position": [0, 0, 0]}})
 
+    def test_material_and_normal_map_lines(self):
+        _, nodes, _ = ship.parse_reference(REFERENCE)
+        mesh = ([(0, 0, 0)] * 3, [(0, 0)] * 3, [(0, 1, 2)], [(0, 0, 1)] * 3)
+        with tempfile.TemporaryDirectory() as tmp:
+            path = Path(tmp) / "x.mdl"
+            ship.write_mdl(path, "x", "x", nodes, mesh, material={"ambient": [0.7, 0.7, 0.7]}, normal_mapped=True)
+            text = path.read_text(encoding="ascii")
+        self.assertIn("ambient 0.7 0.7 0.7", text)
+        self.assertIn("diffuse 1 1 1", text)
+        self.assertIn("materialname x", text)
+        self.assertIn("renderhint NormalAndSpecMapped", text)
+
+    @unittest.skipIf(np is None, "numpy is needed for texture adjustment")
+    def test_adjust_pixels_darkens_and_keeps_alpha_opaque(self):
+        pixels = [1.0, 1.0, 1.0, 0.2, 0.5, 0.5, 0.5, 1.0]
+        out = ship.adjust_pixels(pixels, {"exposure": 0.8, "contrast": 1.0})
+        self.assertAlmostEqual(float(out[0]), 0.8, places=5)
+        self.assertAlmostEqual(float(out[4]), 0.4, places=5)
+        self.assertEqual([float(out[3]), float(out[7])], [1.0, 1.0])
+
     def test_unknown_override_fails(self):
         _, nodes, _ = ship.parse_reference(REFERENCE)
         mesh = ([(0, 0, 0)] * 3, [(0, 0)] * 3, [(0, 1, 2)], [(0, 0, 1)] * 3)
@@ -177,12 +214,21 @@ class BlenderExportTests(unittest.TestCase):
             node.image = image
             principled = material.node_tree.nodes["Principled BSDF"]
             material.node_tree.links.new(node.outputs["Color"], principled.inputs["Base Color"])
+            bumps = bpy.data.images.new("bumps", 64, 64)
+            bumps.pixels.foreach_set([0.5, 0.5, 1.0, 1.0] * (64 * 64))
+            bumps.colorspace_settings.name = "Non-Color"
+            bump_node = material.node_tree.nodes.new("ShaderNodeTexImage")
+            bump_node.image = bumps
+            normal = material.node_tree.nodes.new("ShaderNodeNormalMap")
+            material.node_tree.links.new(bump_node.outputs["Color"], normal.inputs["Color"])
+            material.node_tree.links.new(normal.outputs["Normal"], principled.inputs["Normal"])
             box.data.materials.append(material)
             glb = tmp / "box.glb"
             bpy.ops.export_scene.gltf(filepath=str(glb), export_format="GLB", export_image_format="AUTO")
             (tmp / "ref.mdl").write_text(REFERENCE, encoding="ascii")
             config = manifest(source="box.glb", sha256=hashlib.sha256(glb.read_bytes()).hexdigest(),
-                              reference="ref.mdl", max_faces=600, texture_size=256)
+                              reference="ref.mdl", max_faces=600, texture_size=256, normal_map="opengl",
+                              material={"ambient": [0.7, 0.7, 0.7]}, texture_adjust={"exposure": 0.9})
             (tmp / "fit.json").write_text(json.dumps(config), encoding="utf8")
             out = Path(tempfile.mkdtemp())
             try:
@@ -190,10 +236,15 @@ class BlenderExportTests(unittest.TestCase):
                 report = json.loads((out / "export_manifest.json").read_text(encoding="utf8"))
                 text = (out / "c_test_h1.mdl").read_text(encoding="ascii")
                 self.assertTrue((out / "c_test_h1.tga").is_file())
+                self.assertTrue((out / "c_test_h1_n.tga").is_file())
+                mtr = (out / "c_test_h1.mtr").read_bytes()
             finally:
                 for path in out.iterdir():
                     path.unlink()
                 out.rmdir()
+        self.assertEqual(mtr, b"renderhint NormalAndSpecMapped\r\ntexture0 c_test_h1\r\ntexture1 c_test_h1_n\r\ntexture2 null\r\n")
+        self.assertIn("materialname c_test_h1", text)
+        self.assertEqual(report["normal_map"], "opengl")
         self.assertLessEqual(report["faces"], 600)
         self.assertGreater(report["source_faces"], 600)
         _, _, (low, high) = ship.parse_reference(text)

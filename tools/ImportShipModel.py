@@ -25,6 +25,9 @@ RESREF = re.compile(r"^[a-z0-9_]{1,16}$")
 MESH_TYPES = {"trimesh", "skin", "danglymesh", "animmesh", "aabb"}
 CRUNCH_DIFFUSE = ["-fileformat", "dds", "-unflip", "-yflip", "-dxtQuality", "uber",
                   "-dropEmptyAlpha", "-DXT1", "-gamma", "2.2"]
+CRUNCH_NORMAL = ["-fileformat", "dds", "-unflip", "-yflip", "-dxtQuality", "uber", "-dropEmptyAlpha",
+                 "-DXN", "-normalize", "-renormalize", "-uniformMetrics", "-gamma", "1.0"]
+ADJUST_LIMITS = {"exposure": (0.3, 2.0), "contrast": (0.5, 2.0), "saturation": (0.0, 2.0)}
 
 
 def require(condition, message):
@@ -58,6 +61,16 @@ def validate_manifest(config):
     require(abs(determinant(rotation) - 1) < 1e-6, "orientation must be a proper rotation (determinant 1)")
     for name, position in config.get("node_positions", {}).items():
         require(valid_position(position), f"node_positions.{name} must be [x, y, z]")
+    material = config.get("material", {})
+    require(isinstance(material, dict) and set(material) <= {"ambient", "diffuse"}, "material accepts only ambient and diffuse")
+    for key, value in material.items():
+        require(valid_position(value) and all(0 <= v <= 1 for v in value), f"material.{key} must be three values from 0 to 1")
+    for key, value in config.get("texture_adjust", {}).items():
+        require(key in ADJUST_LIMITS, f"texture_adjust.{key} is not one of {sorted(ADJUST_LIMITS)}")
+        low, high = ADJUST_LIMITS[key]
+        require(isinstance(value, (int, float)) and low <= value <= high, f"texture_adjust.{key} must be from {low} to {high}")
+    require(config.get("normal_map", "none") in ("none", "opengl", "flip_green"),
+            "normal_map must be none, opengl or flip_green")
     for name, copy in config.get("node_copies", {}).items():
         require(RESREF.match(name), f"node_copies name {name} must be a lowercase node name")
         require(isinstance(copy, dict) and set(copy) == {"from", "position"} and valid_position(copy["position"]),
@@ -126,7 +139,8 @@ def fit_transform(low, high, ref_low, ref_high):
     return scale, offset
 
 
-def write_mdl(path, model, texture, nodes, mesh, node_positions=None, node_copies=None):
+def write_mdl(path, model, texture, nodes, mesh, node_positions=None, node_copies=None, material=None,
+              normal_mapped=False):
     """Write the ship: root, copied reference nodes, then one hull trimesh.
 
     node_copies adds a duplicate of a reference node (for example one engine
@@ -161,10 +175,17 @@ def write_mdl(path, model, texture, nodes, mesh, node_positions=None, node_copie
             if not count:
                 body += f"  {replacement}\n"
         lines += [f"node {node['type']} {node['name']}", body.rstrip("\n"), "endnode"]
+    material = material or {}
+
+    def color(key):
+        return " ".join(f"{v:.4g}" for v in material.get(key, [1, 1, 1]))
+
     lines += ["node trimesh hull", f"  parent {model}", "  position 0 0 0", "  orientation 0 0 1 0",
-              "  ambient 1 1 1", "  diffuse 1 1 1", "  specular 0 0 0", "  shininess 1",
-              f"  bitmap {texture}", "  render 1", "  shadow 0", "  beaming 0", "  transparencyhint 0",
-              f"  verts {len(verts)}"]
+              f"  ambient {color('ambient')}", f"  diffuse {color('diffuse')}", "  specular 0 0 0", "  shininess 1",
+              f"  bitmap {texture}", "  render 1", "  shadow 0", "  beaming 0", "  transparencyhint 0"]
+    if normal_mapped:
+        lines += [f"  materialname {texture}", "  renderhint NormalAndSpecMapped"]
+    lines += [f"  verts {len(verts)}"]
     lines += ["    " + " ".join(f"{c:.7g}" for c in v) for v in verts]
     lines += [f"  normals {len(normals)}"]
     lines += ["    " + " ".join(f"{c:.7g}" for c in n) for n in normals]
@@ -186,6 +207,34 @@ def empty_output(path):
 
 # ---------------------------------------------------------------- Blender export
 
+def adjust_pixels(pixels, adjust):
+    """Exposure, then contrast about mid grey, then saturation, on sRGB RGBA floats."""
+    import numpy as np
+    rgb = np.asarray(pixels, dtype=np.float32).reshape(-1, 4)[:, :3]
+    rgb = rgb * adjust.get("exposure", 1.0)
+    rgb = (rgb - 0.5) * adjust.get("contrast", 1.0) + 0.5
+    grey = (rgb @ np.array([0.2126, 0.7152, 0.0722], np.float32))[:, None]
+    rgb = grey + (rgb - grey) * adjust.get("saturation", 1.0)
+    out = np.ones((rgb.shape[0], 4), np.float32)
+    out[:, :3] = np.clip(rgb, 0, 1)
+    return out.ravel()
+
+
+def normal_image(objects):
+    images = []
+    for obj in objects:
+        for slot in obj.material_slots:
+            principled = [n for n in slot.material.node_tree.nodes if n.type == "BSDF_PRINCIPLED"][0]
+            links = principled.inputs["Normal"].links
+            require(links and links[0].from_node.type == "NORMAL_MAP", f"Material {slot.material.name} has no normal map")
+            color = links[0].from_node.inputs["Color"].links
+            require(color and color[0].from_node.type == "TEX_IMAGE", f"Material {slot.material.name} normal map has no image")
+            if color[0].from_node.image not in images:
+                images.append(color[0].from_node.image)
+    require(len(images) == 1, f"Expected one normal map, found {len(images)}")
+    return images[0]
+
+
 def base_color_image(objects):
     images = []
     for obj in objects:
@@ -203,13 +252,20 @@ def base_color_image(objects):
     return images[0]
 
 
-def save_texture(image, path, size):
-    """Resample the base color into a square, opaque TGA (Blender rows: bottom-left origin)."""
+def save_texture(image, path, size, adjust=None, flip_green=False):
+    """Resample a map into a square, opaque TGA (Blender rows: bottom-left origin)."""
     import bpy
+    import numpy as np
     scaled = image.copy()
     scaled.scale(size, size)
-    pixels = list(scaled.pixels[:])
-    pixels[3::4] = [1.0] * (size * size)
+    pixels = np.asarray(scaled.pixels[:], dtype=np.float32)
+    if adjust:
+        pixels = adjust_pixels(pixels, adjust)
+    pixels = pixels.reshape(-1, 4)
+    if flip_green:
+        pixels[:, 1] = 1.0 - pixels[:, 1]
+    pixels[:, 3] = 1.0
+    pixels = pixels.ravel()
     target = bpy.data.images.new(path.stem, width=size, height=size, alpha=False)
     target.colorspace_settings.name = image.colorspace_settings.name
     target.pixels.foreach_set(pixels)
@@ -308,10 +364,17 @@ def blender_export(manifest_path, output):
     mesh = mesh_arrays(hull.data)
     require(len(mesh[2]) <= config["max_faces"], f"Decimation left {len(mesh[2])} faces, over the budget")
 
-    save_texture(image, output / f"{config['texture']}.tga", config["texture_size"])
+    normal_mode = config.get("normal_map", "none")
+    save_texture(image, output / f"{config['texture']}.tga", config["texture_size"], config.get("texture_adjust"))
+    if normal_mode != "none":
+        save_texture(normal_image(objects), output / f"{config['texture']}_n.tga", config["texture_size"],
+                     flip_green=normal_mode == "flip_green")
+        (output / f"{config['texture']}.mtr").write_text(
+            f"renderhint NormalAndSpecMapped\ntexture0 {config['texture']}\ntexture1 {config['texture']}_n\n"
+            "texture2 null\n", encoding="ascii", newline="\r\n")
     write_mdl(output / f"{config['model']}.mdl", config["model"], config["texture"], nodes, mesh,
-              config.get("node_positions"), config.get("node_copies"))
-    report = {"schema_version": 1, "model": config["model"], "texture": config["texture"],
+              config.get("node_positions"), config.get("node_copies"), config.get("material"), normal_mode != "none")
+    report = {"schema_version": 1, "model": config["model"], "texture": config["texture"], "normal_map": normal_mode,
               "reference": ref_model, "source_sha256": config["sha256"], "source_faces": source_faces,
               "faces": len(mesh[2]), "verts": len(mesh[0]), "scale": scale, "offset": offset,
               "reference_bounds": [ref_low, ref_high], "texture_size": config["texture_size"],
@@ -364,11 +427,16 @@ def package(args):
     for name in report["copied_nodes"] + ["hull"]:
         require(re.search(rf"(?im)^\s*node\s+\S+\s+{re.escape(name)}\b", text), f"Compiled model lost node {name}")
     crunch = Path(args.crunch).resolve()
-    result = subprocess.run([str(crunch), "-file", str(export / f"{texture}.tga"), "-out",
-                             str(runtime / f"{texture}.dds"), *CRUNCH_DIFFUSE],
-                            capture_output=True, text=True, timeout=300)
-    (staging / "crunch.log").write_text(result.stdout + result.stderr, encoding="utf8")
-    require(result.returncode == 0 and (runtime / f"{texture}.dds").is_file(), "NWN Crunch failed; see staging/crunch.log")
+    maps = [(texture, CRUNCH_DIFFUSE)]
+    if report.get("normal_map", "none") != "none":
+        maps.append((f"{texture}_n", CRUNCH_NORMAL))
+        shutil.copyfile(export / f"{texture}.mtr", runtime / f"{texture}.mtr")
+    for name, options in maps:
+        result = subprocess.run([str(crunch), "-file", str(export / f"{name}.tga"), "-out",
+                                 str(runtime / f"{name}.dds"), *options],
+                                capture_output=True, text=True, timeout=300)
+        (staging / f"crunch_{name}.log").write_text(result.stdout + result.stderr, encoding="utf8")
+        require(result.returncode == 0 and (runtime / f"{name}.dds").is_file(), f"NWN Crunch failed on {name}; see staging")
     summary = {"model": model, "texture": texture, "faces": faces,
                "runtime": {p.name: sha256(p) for p in sorted(runtime.iterdir())}}
     (output / "package_report.json").write_text(json.dumps(summary, indent=2), encoding="utf8")

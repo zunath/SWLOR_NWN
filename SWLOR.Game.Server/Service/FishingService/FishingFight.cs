@@ -33,7 +33,7 @@ namespace SWLOR.Game.Server.Service.FishingService
 
         /// <summary>
         /// The most Agriculture XP still to pay when the fight ends on its own: the bite's multiplied XP less what the bite already paid.
-        /// It is paid in proportion to how long the fight lasted (<c>LineRules.XpShare</c>), and an abandoned fight never pays it.
+        /// It is paid in proportion to how long the fight lasted (<c>LineRules.XpShare</c>), counted only up to the turns taken (<c>LineRules.CountedFightSeconds</c>), and an abandoned fight never pays it.
         /// </summary>
         public int XpOnFinish { get; internal set; }
 

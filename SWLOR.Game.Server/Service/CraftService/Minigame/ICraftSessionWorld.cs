@@ -64,6 +64,15 @@ public interface ICraftSessionWorld
 
     void SaveRecord(Player dbPlayer);
 
+    /// <summary>
+    /// Writes the character file so it matches the record just saved. The record is saved at once, but the inventory lives in the
+    /// character file, which is only written when the character is exported; a crash before the next export would leave a record that
+    /// says the craft holds the materials beside a file that still has them (or a finished item the file lacks). Call it after a
+    /// record save that moved items between the inventory and the record. The engine implementation exports once the item changes
+    /// have landed and does nothing for a DM or a player who is gone.
+    /// </summary>
+    void PersistCharacter(uint player);
+
     void Message(uint player, string text);
 
     void LogCraft(uint player, string text);

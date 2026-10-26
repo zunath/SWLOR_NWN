@@ -66,6 +66,7 @@ public sealed class CraftSessionLifecycle
                 foreach (var taken in components.Concat(enhancements.Where(e => !string.IsNullOrEmpty(e))))
                     ReturnOrHold(player, dbPlayer, taken);
                 _world.SaveRecord(dbPlayer);
+                _world.PersistCharacter(player);
                 return CraftSessionStartResult.Refused("An enhancement is no longer in your inventory.");
             }
 
@@ -86,6 +87,7 @@ public sealed class CraftSessionLifecycle
             Enhancements = enhancements
         };
         _world.SaveRecord(dbPlayer);
+        _world.PersistCharacter(player);
         _world.BeginStationWork(player);
         _world.PlayStationWork(player, recipe.Skill);
 
@@ -144,6 +146,7 @@ public sealed class CraftSessionLifecycle
             dbPlayer.CraftedRecipes[record.Recipe] = DateTime.UtcNow;
         dbPlayer.ActiveCraftSession = null;
         _world.SaveRecord(dbPlayer);
+        _world.PersistCharacter(player);
         _world.EndStationWork(player);
 
         // XP last: it saves the player record itself.
@@ -199,6 +202,8 @@ public sealed class CraftSessionLifecycle
         _world.SaveRecord(dbPlayer);
         _world.EndStationWork(player);
 
+        // Returns what fits, and exports the character when it did. When nothing comes back the file already lacks the committed
+        // materials (the start exported it), so the record and the file agree.
         ReturnHeldItems(player, dbPlayer);
 
         if (reason != CraftSessionEndReason.Broken)
@@ -270,6 +275,7 @@ public sealed class CraftSessionLifecycle
             held.Clear();
             held.AddRange(remaining);
             _world.SaveRecord(dbPlayer);
+            _world.PersistCharacter(player);
         }
 
         if (held.Count > 0)

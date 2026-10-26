@@ -40,6 +40,9 @@ internal sealed class FakeCraftSessionWorld : ICraftSessionWorld
     public int BlueprintBonusCalls { get; private set; }
     public int SaveCount { get; private set; }
 
+    /// <summary>How often the character file was asked to be written, and the saves the record had had by then.</summary>
+    public List<int> PersistedAtSave { get; } = new();
+
     public RecipeDetail GetRecipe(RecipeType recipe) => Recipes[recipe];
 
     public bool CanCraft(uint player, RecipeType recipe) => MeetsRequirements;
@@ -130,6 +133,8 @@ internal sealed class FakeCraftSessionWorld : ICraftSessionWorld
         SaveCount++;
         Events.Add("save");
     }
+
+    public void PersistCharacter(uint player) => PersistedAtSave.Add(SaveCount);
 
     public void Message(uint player, string text) => Messages.Add(text);
 

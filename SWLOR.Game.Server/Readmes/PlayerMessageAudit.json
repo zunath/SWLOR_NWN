@@ -2521,56 +2521,56 @@
   },
   {
     "File": "SWLOR.Game.Server/Feature/GuiDefinition/ViewModel/ResearchViewModel.cs",
-    "Line": 351,
+    "Line": 362,
     "Member": "ClickStartJob",
     "Delivery": "Retained",
     "Call": "FloatingTextStringOnCreature(jobValidation, Player, false)"
   },
   {
     "File": "SWLOR.Game.Server/Feature/GuiDefinition/ViewModel/ResearchViewModel.cs",
-    "Line": 394,
+    "Line": 405,
     "Member": "ClickCancelJob",
     "Delivery": "Retained",
     "Call": "FloatingTextStringOnCreature(ResearchExperimentLifecycle.CannotCancelMessage, Player, false)"
   },
   {
     "File": "SWLOR.Game.Server/Feature/GuiDefinition/ViewModel/ResearchViewModel.cs",
-    "Line": 406,
+    "Line": 417,
     "Member": "ClickCancelJob",
     "Delivery": "Retained",
     "Call": "FloatingTextStringOnCreature(Item.InventoryFullMessage, Player, false)"
   },
   {
     "File": "SWLOR.Game.Server/Feature/GuiDefinition/ViewModel/ResearchViewModel.cs",
-    "Line": 412,
+    "Line": 423,
     "Member": "ClickCancelJob",
     "Delivery": "Retained",
     "Call": "FloatingTextStringOnCreature(\"Research job cancelled!\", Player, false)"
   },
   {
     "File": "SWLOR.Game.Server/Feature/GuiDefinition/ViewModel/ResearchViewModel.cs",
-    "Line": 432,
+    "Line": 443,
     "Member": "ClickCompleteJob",
     "Delivery": "Retained",
     "Call": "FloatingTextStringOnCreature(\"Finish your experiment first.\", Player, false)"
   },
   {
     "File": "SWLOR.Game.Server/Feature/GuiDefinition/ViewModel/ResearchViewModel.cs",
-    "Line": 448,
+    "Line": 459,
     "Member": "ClickCompleteJob",
     "Delivery": "Retained",
     "Call": "FloatingTextStringOnCreature(Item.InventoryFullMessage, Player, false)"
   },
   {
     "File": "SWLOR.Game.Server/Feature/GuiDefinition/ViewModel/ResearchViewModel.cs",
-    "Line": 461,
+    "Line": 472,
     "Member": "ClickCompleteJob",
     "Delivery": "Retained",
     "Call": "FloatingTextStringOnCreature(Item.InventoryFullMessage, Player, false)"
   },
   {
     "File": "SWLOR.Game.Server/Feature/GuiDefinition/ViewModel/ResearchViewModel.cs",
-    "Line": 518,
+    "Line": 529,
     "Member": "ClickCompleteJob",
     "Delivery": "Retained",
     "Call": "SendMessageToPC(Player, DescribeCompletion(completion, experimentXp + completionXp))"
@@ -4299,21 +4299,21 @@
   },
   {
     "File": "SWLOR.Game.Server/Service/CraftService/Minigame/NwnCraftSessionWorld.cs",
-    "Line": 56,
+    "Line": 58,
     "Member": "ChargeBlueprint",
     "Delivery": "Retained",
     "Call": "SendMessageToPC(player, $\"Remaining licensed runs: {details.LicensedRuns}\")"
   },
   {
     "File": "SWLOR.Game.Server/Service/CraftService/Minigame/NwnCraftSessionWorld.cs",
-    "Line": 233,
+    "Line": 235,
     "Member": "ApplyBlueprintBonuses",
     "Delivery": "Retained",
     "Call": "SendMessageToPC(player, ColorToken.Green($\"Blueprint Bonus applied: {bonusName} +{bonus.Amount}\"))"
   },
   {
     "File": "SWLOR.Game.Server/Service/CraftService/Minigame/NwnCraftSessionWorld.cs",
-    "Line": 250,
+    "Line": 274,
     "Member": "Message",
     "Delivery": "Retained",
     "Call": "SendMessageToPC(player, text)"
@@ -5601,7 +5601,7 @@
   },
   {
     "File": "SWLOR.Game.Server/Service/ScavengeService/NwnScavengeWorld.cs",
-    "Line": 91,
+    "Line": 94,
     "Member": "ReturnPendingFinds",
     "Delivery": "Retained",
     "Call": "SendMessageToPC(player, $\"Your last search ended before you could collect it. What it found is in your inventory: {string.Join(\", \", names)}.\")"

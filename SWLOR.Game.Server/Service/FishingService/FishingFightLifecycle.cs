@@ -147,9 +147,11 @@ namespace SWLOR.Game.Server.Service.FishingService
             }
 
             // The rest of the multiplied XP accrues with the time the fight took, so a fight lost on purpose after one move earns
-            // almost none of it.
+            // almost none of it. The time counts only up to the turns the angler took at the tuned pace, so a window left open
+            // without acting earns nothing extra.
             var rest = (int)Math.Round(
-                fight.XpOnFinish * LineRules.XpShare((_world.UtcNow - fight.StartedAt).TotalSeconds),
+                fight.XpOnFinish * LineRules.XpShare(
+                    LineRules.CountedFightSeconds((_world.UtcNow - fight.StartedAt).TotalSeconds, fight.Engine.Turn)),
                 MidpointRounding.AwayFromZero);
             if (rest > 0)
                 _world.GiveAgricultureXp(fight.Player, rest);

@@ -475,6 +475,104 @@ public class CraftSessionLifecycleTests
     }
 
     [Test]
+    public void Start_WritesTheCharacterFile_AfterTheRecordIsSaved_SoTheFileLosesTheMaterialsTheRecordHolds()
+    {
+        StartSession(Lifecycle(), NoItem, FakeCraftSessionWorld.FirstEnhancement);
+
+        _world.PersistedAtSave.Should().Equal(new[] { _world.SaveCount }, "one export, after the record that holds the materials was saved");
+    }
+
+    [Test]
+    public void Start_WhenALaterEnhancementIsGone_WritesTheCharacterFileAfterTheRefund()
+    {
+        _world.Enhancements.Remove(FakeCraftSessionWorld.SecondEnhancement);
+
+        Lifecycle().Start(
+            FakeCraftSessionWorld.PlayerHandle,
+            _player,
+            Request(NoItem, FakeCraftSessionWorld.FirstEnhancement, FakeCraftSessionWorld.SecondEnhancement)).Succeeded.Should().BeFalse();
+
+        _world.PersistedAtSave.Should().Equal(new[] { _world.SaveCount });
+    }
+
+    [Test]
+    public void Start_WhenRefused_WritesNoCharacterFile_BecauseNothingMoved()
+    {
+        _world.Inventory["wire"] = 1;
+
+        Lifecycle().Start(FakeCraftSessionWorld.PlayerHandle, _player, Request()).Succeeded.Should().BeFalse();
+
+        _world.PersistedAtSave.Should().BeEmpty();
+    }
+
+    [Test]
+    public void Succeed_WritesTheCharacterFile_AfterTheRecordClearsTheSession()
+    {
+        var lifecycle = Lifecycle();
+        var session = StartSession(lifecycle);
+        _world.PersistedAtSave.Clear();
+        var savesBefore = _world.SaveCount;
+
+        lifecycle.Succeed(FakeCraftSessionWorld.PlayerHandle, _player, session, new MinigameMeter(60, 100));
+
+        _world.PersistedAtSave.Should().HaveCount(1);
+        _world.PersistedAtSave.Single().Should().BeGreaterThan(savesBefore, "the export follows the record save that cleared the session");
+        _player.ActiveCraftSession.Should().BeNull();
+    }
+
+    [Test]
+    public void Fail_WritesTheCharacterFile_WhenComponentsCameBack_AndNotWhenNothingDid()
+    {
+        var lifecycle = Lifecycle(100, 100);
+        StartSession(lifecycle);
+        _world.PersistedAtSave.Clear();
+
+        lifecycle.Fail(FakeCraftSessionWorld.PlayerHandle, _player, CraftSessionEndReason.WindowClosed);
+
+        _world.Returned.Should().NotBeEmpty();
+        _world.PersistedAtSave.Should().NotBeEmpty("the returned items are in the inventory, so the file must have them");
+        _world.PersistedAtSave.Last().Should().Be(_world.SaveCount, "after the record that cleared the session and the held items");
+
+        var lost = Lifecycle(0, 0);
+        _world.Inventory["ore"] = 5;
+        _world.Inventory["wire"] = 2;
+        StartSession(lost);
+        _world.PersistedAtSave.Clear();
+
+        lost.Fail(FakeCraftSessionWorld.PlayerHandle, _player, CraftSessionEndReason.WindowClosed);
+
+        _world.PersistedAtSave.Should().BeEmpty("every item was lost, so the file already lacks them");
+    }
+
+    [Test]
+    public void SettleLeftover_AtLogin_WritesTheCharacterFileAfterTheRefund()
+    {
+        StartSession(Lifecycle());
+        var restored = JsonConvert.DeserializeObject<Player>(JsonConvert.SerializeObject(_player));
+        _world.PersistedAtSave.Clear();
+
+        Lifecycle(100, 100).SettleLeftover(FakeCraftSessionWorld.PlayerHandle, restored, CraftSessionEndReason.Interrupted);
+
+        _world.PersistedAtSave.Should().NotBeEmpty();
+        _world.PersistedAtSave.Last().Should().Be(_world.SaveCount);
+    }
+
+    [Test]
+    public void ReturnHeldItems_WritesTheCharacterFile_OnlyWhenSomethingWasGivenBack()
+    {
+        _player.HeldCraftItems.Add("ore x3");
+        _world.Room = 0;
+        var lifecycle = Lifecycle();
+
+        lifecycle.ReturnHeldItems(FakeCraftSessionWorld.PlayerHandle, _player);
+        _world.PersistedAtSave.Should().BeEmpty();
+
+        _world.Room = int.MaxValue;
+        lifecycle.ReturnHeldItems(FakeCraftSessionWorld.PlayerHandle, _player);
+        _world.PersistedAtSave.Should().Equal(new[] { _world.SaveCount });
+    }
+
+    [Test]
     public void SettleLeftover_WithNoCraft_StillReturnsHeldItems()
     {
         _player.HeldCraftItems.Add("ore x3");

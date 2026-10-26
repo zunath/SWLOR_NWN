@@ -88,6 +88,9 @@ namespace SWLOR.Game.Server.Service.ScavengeService
 
             dbPlayer.PendingScavengeFinds.Clear();
             DB.Set(dbPlayer);
+            // Save the character file with the record, so a crash cannot leave the finds cleared from the record but missing from the file.
+            if (GetIsPC(player) && !GetIsDM(player) && !GetIsDMPossessed(player))
+                ExportSingleCharacter(player);
             SendMessageToPC(player, $"Your last search ended before you could collect it. What it found is in your inventory: {string.Join(", ", names)}.");
         }
 

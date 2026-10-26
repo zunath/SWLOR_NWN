@@ -143,6 +143,10 @@ public static class ResearchExperimentLifecycle
         return ResearchXpRules.ExperimentXp(baseXp, experiment.TargetLevel, experiment.EffortPercent);
     }
 
+    /// <summary>True when the job has a settled experiment whose XP has not been given yet, so it is still owed.</summary>
+    public static bool IsExperimentXpOwed(ResearchJob job) =>
+        job?.Experiment is { Status: ResearchExperimentStatus.Settled, XpGranted: false };
+
     /// <summary>Marks the experiment's XP as given, so it is never given twice.</summary>
     public static void MarkExperimentXpGranted(ResearchJob job)
     {

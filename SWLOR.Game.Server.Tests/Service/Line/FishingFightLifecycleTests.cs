@@ -118,31 +118,37 @@ public class FishingFightLifecycleTests
         var snapped = Lifecycle(55, 99, 99);
         var snappedFight = snapped.Bite(HopelessFish());
         Reel(snappedFight);
-        AdvanceToFullPay();
+        AdvanceToFullPay(snappedFight);
         snapped.Settle(snappedFight).Ending.Should().Be(LineEnding.Snapped);
-        _world.Xp.Should().Equal(BiteXp(80, 0), FightXp(80, 0) - BiteXp(80, 0));
+        _world.Xp.Should().Equal(BiteXp(80, 0), RestPaid(80, 0, snappedFight));
 
         _world = new FakeFishingFightWorld();
         var escaped = Lifecycle(0, 99, 99);
         var escapedFight = escaped.Bite(HopelessFish());
         escapedFight.Engine.Perform(LineActionIds.GiveLine);
-        AdvanceToFullPay();
+        AdvanceToFullPay(escapedFight);
         escaped.Settle(escapedFight).Ending.Should().Be(LineEnding.Escaped);
-        _world.Xp.Should().Equal(BiteXp(80, 0), FightXp(80, 0) - BiteXp(80, 0));
+        _world.Xp.Should().Equal(BiteXp(80, 0), RestPaid(80, 0, escapedFight));
 
         _world = new FakeFishingFightWorld();
         var landed = Lifecycle(Enumerable.Repeat(99, 200).ToArray());
         var landedFight = landed.Bite(Bite(level: 20, rank: 20, rod: FishingRodType.GlassFiber));
         for (var turn = 0; turn < 30 && landedFight.Engine.Ending == LineEnding.InProgress; turn++)
             Reel(landedFight);
-        AdvanceToFullPay();
+        AdvanceToFullPay(landedFight);
         landed.Settle(landedFight).Should().NotBeNull();
-        _world.Xp.Sum().Should().Be(FightXp(20, 20), "whatever the ending, a fight that lasted the full turns pays the multiplied XP in all");
+        _world.Xp.Sum().Should().Be(BiteXp(20, 20) + RestPaid(20, 20, landedFight), "a fight played at the tuned pace pays the share of its turns, whatever the ending");
     }
 
-    /// <summary>Lets the fight last as long as the multiplied XP takes to be paid in full.</summary>
-    private void AdvanceToFullPay() =>
-        _world.UtcNow = _world.UtcNow.AddSeconds(LineRules.XpFullTurns * LineRules.TurnSeconds);
+    /// <summary>Lets the fight last as long as its turns take at the tuned pace, which is how a normally played fight runs.</summary>
+    private void AdvanceToFullPay(FishingFight fight) =>
+        _world.UtcNow = _world.UtcNow.AddSeconds(fight.Engine.Turn * LineRules.TurnSeconds);
+
+    /// <summary>The rest of the multiplied XP a fight of its turns at the tuned pace earns.</summary>
+    private static int RestPaid(int level, int rank, FishingFight fight) =>
+        (int)Math.Round(
+            (FightXp(level, rank) - BiteXp(level, rank)) * LineRules.XpShare(fight.Engine.Turn * LineRules.TurnSeconds),
+            MidpointRounding.AwayFromZero);
 
     [Test]
     public void TheRestOfTheXp_IsPaidInProportionToHowLongTheFightLasted_UpToTheFullTurns()
@@ -161,8 +167,9 @@ public class FishingFightLifecycleTests
 
             lifecycle.Settle(fight);
 
-            var expected = (int)Math.Round(rest * Math.Min(1.0, seconds / fullSeconds), MidpointRounding.AwayFromZero);
-            _world.Xp.Sum().Should().Be(BiteXp(80, 0) + expected, $"the fight lasted {seconds} s");
+            var counted = Math.Min(seconds, LineRules.TurnSeconds);
+            var expected = (int)Math.Round(rest * Math.Min(1.0, counted / fullSeconds), MidpointRounding.AwayFromZero);
+            _world.Xp.Sum().Should().Be(BiteXp(80, 0) + expected, $"the fight lasted {seconds} s over one turn");
         }
     }
 
@@ -196,6 +203,51 @@ public class FishingFightLifecycleTests
     }
 
     [Test]
+    public void AWindowLeftOpenWithoutActing_EarnsNothingExtra_BecauseTheTimeCountsOnlyUpToTheTurnsTaken()
+    {
+        var rest = FightXp(80, 0) - BiteXp(80, 0);
+        var lifecycle = Lifecycle(55, 99, 99);
+        var fight = lifecycle.Bite(HopelessFish());
+        Reel(fight);
+        fight.Engine.Turn.Should().Be(1);
+        _world.UtcNow = _world.UtcNow.AddSeconds(LineRules.XpFullTurns * LineRules.TurnSeconds * 10);
+
+        lifecycle.Settle(fight);
+
+        var paidOfTheRest = _world.Xp.Sum() - BiteXp(80, 0);
+        paidOfTheRest.Should().Be((int)Math.Round(rest * LineRules.TurnSeconds / (LineRules.XpFullTurns * LineRules.TurnSeconds), MidpointRounding.AwayFromZero),
+            "one turn counts as one turn, however long the window sat open");
+        paidOfTheRest.Should().BeLessThan(rest, "an idle fight of a few actions never reaches the full multiplier");
+    }
+
+    [Test]
+    public void ANormallyPlayedFight_OfTheFullTurns_PaysTheWholeMultipliedXp()
+    {
+        var lifecycle = Lifecycle(Enumerable.Repeat(99, 200).ToArray());
+        var fight = lifecycle.Bite(Bite(level: 20, rank: 20, rod: FishingRodType.Bamboo));
+        for (var turn = 0; turn < 30 && fight.Engine.Ending == LineEnding.InProgress; turn++)
+        {
+            fight.Engine.Perform(turn < LineRules.XpFullTurns ? LineActionIds.Hold : LineActionIds.Reel);
+            _world.UtcNow = _world.UtcNow.AddSeconds(LineRules.TurnSeconds);
+        }
+
+        fight.Engine.Turn.Should().BeGreaterThanOrEqualTo(LineRules.XpFullTurns, "the scripted fight runs long enough to earn the whole share");
+        lifecycle.Settle(fight).Should().NotBeNull();
+
+        _world.Xp.Sum().Should().Be(FightXp(20, 20));
+    }
+
+    [Test]
+    public void TheCountedFightSeconds_AreTheTimeTheFightLasted_CappedAtTheTurnsTakenAtTheTunedPace()
+    {
+        LineRules.CountedFightSeconds(100, 0).Should().Be(0);
+        LineRules.CountedFightSeconds(100, 3).Should().Be(3 * LineRules.TurnSeconds);
+        LineRules.CountedFightSeconds(10, 3).Should().Be(10, "a faster fight is measured as it lasted");
+        LineRules.CountedFightSeconds(-4, 3).Should().Be(0);
+        LineRules.XpShare(LineRules.CountedFightSeconds(600, 3)).Should().BeLessThan(1.0);
+    }
+
+    [Test]
     public void AnAbandonedFight_PaysNoMoreThanTheBiteDid_SoSkippingTheFightEarnsNoMoreThanTheOldCatchRoll()
     {
         var lifecycle = Lifecycle();
@@ -216,12 +268,12 @@ public class FishingFightLifecycleTests
         var lifecycle = Lifecycle(55, 99, 99);
         var fight = lifecycle.Bite(HopelessFish());
         Reel(fight);
-        AdvanceToFullPay();
+        AdvanceToFullPay(fight);
 
         lifecycle.Settle(fight);
         lifecycle.Settle(fight);
 
-        _world.Xp.Sum().Should().Be(FightXp(80, 0));
+        _world.Xp.Sum().Should().Be(BiteXp(80, 0) + RestPaid(80, 0, fight));
     }
 
     [Test]

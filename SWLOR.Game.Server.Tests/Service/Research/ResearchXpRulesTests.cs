@@ -91,6 +91,28 @@ public class ResearchXpRulesTests
     }
 
     [Test]
+    public void ASettledExperimentWhoseXpWasNotGiven_IsStillOwed_UntilItIsMarkedGranted()
+    {
+        var job = new ResearchJob { Experiment = new ResearchExperimentRecord { Status = ResearchExperimentStatus.Settled, TargetLevel = 5, TrialsTotal = 6, TrialsUsed = 3 } };
+
+        ResearchExperimentLifecycle.IsExperimentXpOwed(job).Should().BeTrue("a job settled at logout or while the player was dead has its XP waiting");
+
+        ResearchExperimentLifecycle.MarkExperimentXpGranted(job);
+
+        ResearchExperimentLifecycle.IsExperimentXpOwed(job).Should().BeFalse();
+    }
+
+    [Test]
+    public void NoXpIsOwedForAnOpenExperimentOrAJobWithNone_ByTheOwedCheckEither()
+    {
+        var open = new ResearchJob { Experiment = new ResearchExperimentRecord { TargetLevel = 2, TrialsTotal = 6, TrialsUsed = 6 } };
+
+        ResearchExperimentLifecycle.IsExperimentXpOwed(open).Should().BeFalse();
+        ResearchExperimentLifecycle.IsExperimentXpOwed(new ResearchJob()).Should().BeFalse();
+        ResearchExperimentLifecycle.IsExperimentXpOwed(null).Should().BeFalse();
+    }
+
+    [Test]
     public void NoXpIsOwedForAnOpenExperimentOrAJobWithNone()
     {
         var open = new ResearchJob { Experiment = new ResearchExperimentRecord { TargetLevel = 2, TrialsTotal = 6, TrialsUsed = 6 } };

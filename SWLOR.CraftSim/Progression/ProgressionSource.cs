@@ -50,7 +50,7 @@ namespace SWLOR.CraftSim.Progression
             "price += price * recipeDetail.ResearchCostModifier;", "return CalculateResearchCost(recipe, blueprintLevel, 200, reductionBonus * 0.01f);");
 
         public static readonly SourceReference ResearchBlueprint = new(
-            "A first research job creates the blueprint", ResearchViewModel, 441, 454,
+            "A first research job creates the blueprint", ResearchViewModel, 452, 465,
             "if (string.IsNullOrWhiteSpace(dbJob.SerializedItem))", "item = CreateItemOnObject(\"blueprint\", Player);", "isNewBlueprint = true;");
 
         public static readonly IReadOnlyList<SourceReference> All = new[]

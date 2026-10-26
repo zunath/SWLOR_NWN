@@ -106,6 +106,14 @@ public static class LineRules
     public static double XpShare(double fightSeconds) =>
         fightSeconds <= 0 ? 0 : Math.Min(1.0, fightSeconds / (XpFullTurns * TurnSeconds));
 
+    /// <summary>
+    /// The seconds of a fight that count toward <see cref="XpShare"/>: the time it lasted, but never more than the turns the angler
+    /// actually took at <see cref="TurnSeconds"/> each. A window left open without acting adds wall-clock time but no turns, so idling
+    /// earns nothing extra; a fight played at the pace the XP multipliers assume is measured as it lasted.
+    /// </summary>
+    public static double CountedFightSeconds(double wallSeconds, int turnsTaken) =>
+        Math.Max(0, Math.Min(wallSeconds, Math.Max(0, turnsTaken) * TurnSeconds));
+
     /// <summary>The multiplier on the XP of a bite from a fish of the level. A level of 0 or less takes the lowest band's.</summary>
     public static double XpMultiplierForLevel(int fishLevel) => fishLevel switch
     {

@@ -22,6 +22,8 @@ public sealed class NwnCraftSessionWorld : ICraftSessionWorld
     private static readonly BlueprintBonuses BlueprintBonusPicker = new();
 
     private const string StationAnimationVariable = "CRAFT_STATION_ANIMATION";
+    private const string PersistPendingVariable = "CRAFT_PERSIST_PENDING";
+    private const float PersistDelaySeconds = 0.1f;
 
     public RecipeDetail GetRecipe(RecipeType recipe) => Craft.GetRecipe(recipe);
 
@@ -246,6 +248,28 @@ public sealed class NwnCraftSessionWorld : ICraftSessionWorld
     public bool CanReceiveXp(uint player) => !GetIsDead(player) && GetCurrentHitPoints(player) > 0;
 
     public void SaveRecord(Player dbPlayer) => DB.Set(dbPlayer);
+
+    public void PersistCharacter(uint player)
+    {
+        if (!IsExportable(player) || GetLocalBool(player, PersistPendingVariable))
+            return;
+
+        // A destroyed item is only gone once the current script ends, so the export waits for it; one export covers every change
+        // made in the meantime.
+        SetLocalBool(player, PersistPendingVariable, true);
+        AssignCommand(player, () => DelayCommand(PersistDelaySeconds, () =>
+        {
+            if (!GetIsObjectValid(player))
+                return;
+
+            DeleteLocalBool(player, PersistPendingVariable);
+            if (IsExportable(player))
+                ExportSingleCharacter(player);
+        }));
+    }
+
+    private static bool IsExportable(uint player) =>
+        GetIsObjectValid(player) && GetIsPC(player) && !GetIsDM(player) && !GetIsDMPossessed(player);
 
     public void Message(uint player, string text) => SendMessageToPC(player, text);
 

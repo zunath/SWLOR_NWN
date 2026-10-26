@@ -14,7 +14,7 @@ public static class ResearchExperimentService
 {
     /// <summary>
     /// Settles every experiment of the player that is still open, with the evidence saved so far: a logout, a crash or a restart
-    /// ends it the same way closing the window does. The XP they earned is given when the job is next opened or completed.
+    /// ends it the same way closing the window does. The XP they earned is given once the player opens the Research window for the job or completes it.
     /// Returns the number settled.
     /// </summary>
     public static int SettleOpenExperiments(string playerId)

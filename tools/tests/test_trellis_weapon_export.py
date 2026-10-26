@@ -488,8 +488,49 @@ class TrellisWeaponExportTests(unittest.TestCase):
                        {'extensions':{'KHR_materials_unlit':{}}}, {'normalTexture':{'scale':float('nan')}},
                        {'pbrMetallicRoughness':{'roughnessFactor':2}}):
             with self.subTest(change=change), self.assertRaises(ValueError): exporter.validate_material(change)
-        for metal, expected in [(0,.2), (.5,1.1/3), (1,1.6/3)]:
+
+    @unittest.skipIf(np is None,'numpy required')
+    def test_metallic_to_specularity_matches_nwn_material_response(self):
+        for metal, expected in [(0,.06), (.5,1.1/3), (1,1.6/3)]:
             self.assertAlmostEqual(exporter.metallic_to_specularity(metal),expected)
+
+    @unittest.skipUnless(HAS_BLENDER,'Run Blender 4.0 to write staged TGA maps')
+    def test_material_maps_apply_the_nwn_metal_response(self):
+        response=exporter.material_response()
+        doc={'materials':[{'pbrMetallicRoughness':{'baseColorFactor':[.08,.06,.05,1],'metallicFactor':1,'roughnessFactor':.5}},
+                          {'pbrMetallicRoughness':{'baseColorFactor':[.08,.06,.05,1],'metallicFactor':0,'roughnessFactor':.5}}]}
+        with tempfile.TemporaryDirectory() as folder:
+            _,metal=exporter.material_maps(doc,b'',0,Path(folder),{},Path(folder),'metal',64)
+            _,paint=exporter.material_maps(doc,b'',1,Path(folder),{},Path(folder),'paint',64)
+        lum=lambda rgb:float(np.mean(exporter.linear(np.asarray(rgb))@response.LUMINANCE))
+        self.assertGreaterEqual(lum(metal['metal']),response.METAL_LUMINANCE_FLOOR-1e-3)
+        self.assertAlmostEqual(lum(paint['paint']),lum(exporter.srgb(np.array([.08,.06,.05]))),places=4)
+        self.assertAlmostEqual(float(np.mean(metal['metal_s'])),1.6/3,places=4)
+        self.assertAlmostEqual(float(np.mean(paint['paint_s'])),response.DIELECTRIC_SPECULARITY,places=4)
+        self.assertLessEqual(float(np.mean(metal['metal_r'])),response.METAL_ROUGHNESS_RANGE[1])
+        self.assertAlmostEqual(float(np.mean(paint['paint_r'])),.5,places=4)
+
+    @unittest.skipUnless(HAS_BLENDER,'Run Blender 4.0 to write staged TGA maps')
+    def test_constant_base_color_keeps_metal_mask_detail(self):
+        response=exporter.material_response()
+        doc={'materials':[{'pbrMetallicRoughness':{'baseColorFactor':[.08,.06,.05,1],
+                                                   'metallicRoughnessTexture':{'index':0}}}]}
+        mask=np.zeros((64,64,4),np.float32);mask[...,3]=1;mask[...,1]=.5;mask[30:32,30:32,2]=1  # one 2x2 metal spot
+        with tempfile.TemporaryDirectory() as folder, \
+                unittest.mock.patch.object(exporter,'read_image',return_value=mask):
+            _,maps=exporter.material_maps(doc,b'',0,Path(folder),{},Path(folder),'spot',64)
+        base=np.asarray(maps['spot']);self.assertEqual(base.shape[:2],(64,64))
+        lum=exporter.linear(base)@response.LUMINANCE
+        self.assertGreater(float(lum[30:32,30:32].min()),float(lum[0,0])+.05)
+        # A coarser base texture is corrected at the metal map's size too.
+        doc['materials'][0]['pbrMetallicRoughness']['baseColorTexture']={'index':1}
+        coarse=np.full((4,4,4),.1,np.float32);coarse[...,3]=1
+        with tempfile.TemporaryDirectory() as folder, \
+                unittest.mock.patch.object(exporter,'read_image',side_effect=[coarse,mask]):
+            _,maps=exporter.material_maps(doc,b'',0,Path(folder),{},Path(folder),'coarse',64)
+        lum=exporter.linear(np.asarray(maps['coarse']))@response.LUMINANCE
+        self.assertEqual(lum.shape,(64,64))
+        self.assertGreater(float(lum[30:32,30:32].min()),float(lum[0,0])+.05)
 
     def test_texture_samplers_reject_unsupported_wrapping_filtering_and_indices(self):
         doc=copy.deepcopy(self.document);doc['textures']=[{'source':0,'sampler':0}]

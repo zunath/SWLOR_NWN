@@ -41,6 +41,16 @@ public static class CraftSessionService
         return dbPlayer == null ? CraftSettlement.None : Lifecycle.SettleLeftover(player, dbPlayer, reason);
     }
 
+    /// <summary>
+    /// Settles what a crash left between the player record and the character file, then settles a craft left over as
+    /// <see cref="SettleLeftover"/> does. Call it once when a player enters the module.
+    /// </summary>
+    public static CraftSettlement RecoverAtLogin(uint player, CraftSessionEndReason reason = CraftSessionEndReason.Interrupted)
+    {
+        var dbPlayer = DB.Get<Player>(GetObjectUUID(player));
+        return dbPlayer == null ? CraftSettlement.None : Lifecycle.RecoverAtLogin(player, dbPlayer, reason);
+    }
+
     /// <summary>Gives the XP a craft earned while the player was dead, once they are alive. Call at a respawn.</summary>
     public static bool GrantPendingXp(uint player)
     {

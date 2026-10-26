@@ -611,4 +611,216 @@ public class CraftSessionLifecycleTests
         restored.HeldCraftItems.Should().Equal("held");
         restored.CraftMinigameHelpSeen.Should().ContainKey(CraftMinigameType.Forge);
     }
+
+    // ---- Crash safety: the record saves at once, the character file only on an export that follows. ----
+
+    private static Player Copy(Player player) =>
+        JsonConvert.DeserializeObject<Player>(JsonConvert.SerializeObject(player))!;
+
+    /// <summary>A crash before any queued export ran, and the login after it: the record as saved, the inventory as the file had it.</summary>
+    private Player CrashAndLogIn(Player live = null)
+    {
+        var saved = Copy(live ?? _player);
+        _world.CrashAndReload();
+        return saved;
+    }
+
+    private CraftSettlement LogIn(Player saved, params int[] rolls) =>
+        Lifecycle(rolls).RecoverAtLogin(FakeCraftSessionWorld.PlayerHandle, saved, CraftSessionEndReason.Interrupted);
+
+    [Test]
+    public void RecoverAtLogin_AfterACrashBetweenTheDebitAndTheExport_ReturnsNothing()
+    {
+        _world.ExportNow();
+        StartSession(Lifecycle(), FakeCraftSessionWorld.Blueprint, FakeCraftSessionWorld.FirstEnhancement);
+        _world.Inventory["ore"].Should().Be(2, "the components are out of the inventory in memory");
+
+        var saved = CrashAndLogIn();
+        var settlement = LogIn(saved, 100, 100, 100);
+
+        settlement.Settled.Should().BeFalse();
+        saved.ActiveCraftSession.Should().BeNull("the file still has everything the session took");
+        _world.Returned.Should().BeEmpty("a refund on top of the file would duplicate the components");
+        _world.Inventory["ore"].Should().Be(5);
+        _world.Inventory["wire"].Should().Be(2);
+        _world.XpGiven.Should().BeEmpty();
+    }
+
+    [Test]
+    public void RecoverAtLogin_AfterTheDebitWasExported_RefundsOnce()
+    {
+        _world.ExportNow();
+        StartSession(Lifecycle());
+        _world.RunQueuedExport();
+
+        var saved = CrashAndLogIn();
+        var settlement = LogIn(saved, 100, 100);
+
+        settlement.Settled.Should().BeTrue();
+        _world.Returned.Should().Equal("ore x3", "wire x2");
+        saved.ActiveCraftSession.Should().BeNull();
+
+        // The refund is exported and the player logs in again: nothing more comes back.
+        _world.RunQueuedExport();
+        var again = CrashAndLogIn(saved);
+        LogIn(again, 100, 100).Settled.Should().BeFalse();
+        _world.Returned.Should().Equal("ore x3", "wire x2");
+    }
+
+    [Test]
+    public void RecoverAtLogin_AfterACrashDuringTheRefund_GivesTheRefundBackExactlyOnce()
+    {
+        _world.ExportNow();
+        var lifecycle = Lifecycle(100, 100);
+        StartSession(lifecycle);
+        _world.RunQueuedExport();
+        lifecycle.Fail(FakeCraftSessionWorld.PlayerHandle, _player, CraftSessionEndReason.WindowClosed);
+        _world.Returned.Should().Equal("ore x3", "wire x2");
+        _player.PendingCraftReturns.Should().ContainSingle("the record must say the refund is not in a file yet");
+
+        var saved = CrashAndLogIn();
+        _world.Returned.Should().BeEmpty("the file predates the refund");
+        LogIn(saved);
+
+        _world.Returned.Should().Equal("ore x3", "wire x2");
+        saved.PendingCraftReturns.Should().ContainSingle("the redo waits for the file that will hold it");
+
+        // A second crash before the redo is exported redoes it again, once; an export ends it.
+        var second = CrashAndLogIn(saved);
+        LogIn(second);
+        _world.Returned.Should().Equal("ore x3", "wire x2");
+
+        _world.RunQueuedExport();
+        var third = CrashAndLogIn(second);
+        LogIn(third);
+        _world.Returned.Should().Equal("ore x3", "wire x2");
+        third.PendingCraftReturns.Should().BeEmpty();
+    }
+
+    [Test]
+    public void RecoverAtLogin_AfterACrashDuringSucceed_CreatesTheFinishedItemExactlyOnce()
+    {
+        _world.ExportNow();
+        var lifecycle = Lifecycle();
+        var session = StartSession(lifecycle);
+        _world.RunQueuedExport();
+        lifecycle.Succeed(FakeCraftSessionWorld.PlayerHandle, _player, session, new MinigameMeter(100, 100)).Should().NotBeNull();
+        _world.Crafted.Should().Equal("crafted test_item");
+
+        var saved = CrashAndLogIn();
+        _world.Crafted.Should().BeEmpty("the file predates the finished item");
+        saved.ActiveCraftSession.Should().BeNull("the record says the craft is over");
+        LogIn(saved);
+
+        _world.Returned.Should().Equal("crafted test_item");
+
+        _world.RunQueuedExport();
+        var again = CrashAndLogIn(saved);
+        LogIn(again);
+        _world.Returned.Should().Equal("crafted test_item");
+    }
+
+    [Test]
+    public void RecoverAtLogin_AfterAnExportedSucceed_DoesNotCreateTheItemAgain()
+    {
+        _world.ExportNow();
+        var lifecycle = Lifecycle();
+        var session = StartSession(lifecycle);
+        _world.RunQueuedExport();
+        lifecycle.Succeed(FakeCraftSessionWorld.PlayerHandle, _player, session, new MinigameMeter(100, 100));
+        _world.RunQueuedExport();
+
+        var saved = CrashAndLogIn();
+        LogIn(saved);
+
+        _world.Crafted.Should().Equal("crafted test_item");
+        _world.Returned.Should().BeEmpty();
+        saved.PendingCraftReturns.Should().BeEmpty();
+    }
+
+    [Test]
+    public void Fail_BeforeTheDebitWasExported_WritesTheFileFirst_SoACrashCannotDuplicateTheRefund()
+    {
+        _world.ExportNow();
+        var lifecycle = Lifecycle(100, 100);
+        StartSession(lifecycle);
+
+        lifecycle.Fail(FakeCraftSessionWorld.PlayerHandle, _player, CraftSessionEndReason.WindowClosed);
+        _world.Flushes.Should().Be(1);
+
+        var saved = CrashAndLogIn();
+        _world.Inventory["ore"].Should().Be(2, "the flushed file lacks the components");
+        LogIn(saved);
+
+        _world.Returned.Should().Equal("ore x3", "wire x2");
+    }
+
+    [Test]
+    public void Fail_AfterTheDebitWasExported_DoesNotWriteTheFileAgain()
+    {
+        var lifecycle = Lifecycle(100, 100);
+        StartSession(lifecycle);
+        _world.RunQueuedExport();
+
+        lifecycle.Fail(FakeCraftSessionWorld.PlayerHandle, _player, CraftSessionEndReason.WindowClosed);
+
+        _world.Flushes.Should().Be(0);
+    }
+
+    [Test]
+    public void ReturnHeldItems_AfterACrashBeforeTheExport_GivesTheHeldItemsBackExactlyOnce()
+    {
+        _world.ExportNow();
+        _player.HeldCraftItems.Add("ore x3");
+        var lifecycle = Lifecycle();
+
+        lifecycle.ReturnHeldItems(FakeCraftSessionWorld.PlayerHandle, _player);
+        _player.HeldCraftItems.Should().BeEmpty();
+
+        var saved = CrashAndLogIn();
+        _world.Returned.Should().BeEmpty();
+        LogIn(saved);
+
+        _world.Returned.Should().Equal("ore x3");
+        saved.HeldCraftItems.Should().BeEmpty();
+    }
+
+    [Test]
+    public void RecoverAtLogin_WithASessionSavedBeforeSequencesExisted_SettlesAsItAlwaysDid()
+    {
+        _player.ActiveCraftSession = new CraftSessionRecord
+        {
+            SessionId = "legacy",
+            Recipe = TestRecipe,
+            Skill = SkillType.Smithery,
+            Components = new List<string> { "ore x3", "wire x2" },
+            Enhancements = new List<string>()
+        };
+        _player.PendingCraftReturns = null;
+
+        var saved = Copy(_player);
+        saved.ActiveCraftSession.DebitSequence.Should().Be(0);
+        var settlement = LogIn(saved, 100, 100);
+
+        settlement.Settled.Should().BeTrue();
+        _world.Returned.Should().Equal("ore x3", "wire x2");
+    }
+
+    [Test]
+    public void Start_DropsPendingReturnsTheFileNowHolds()
+    {
+        _world.ExportNow();
+        var lifecycle = Lifecycle(100, 100);
+        StartSession(lifecycle);
+        _world.RunQueuedExport();
+        lifecycle.Fail(FakeCraftSessionWorld.PlayerHandle, _player, CraftSessionEndReason.WindowClosed);
+        _player.PendingCraftReturns.Should().ContainSingle();
+        _world.RunQueuedExport();
+        _world.Inventory["ore"] = 5;
+        _world.Inventory["wire"] = 2;
+
+        StartSession(lifecycle);
+
+        _player.PendingCraftReturns.Should().BeEmpty();
+    }
 }

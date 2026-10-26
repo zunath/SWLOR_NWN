@@ -29,6 +29,9 @@ internal sealed class FakeCraftSessionWorld : ICraftSessionWorld
 
     public List<string> Events { get; } = new();
     public List<string> Returned { get; } = new();
+
+    /// <summary>The finished items the player carries, by their serialized form.</summary>
+    public List<string> Crafted { get; } = new();
     public List<string> Messages { get; } = new();
 
     /// <summary>The skills whose station work clip was started, in order. Kept apart from <see cref="Events"/> so ordering tests stay as they are.</summary>
@@ -103,8 +106,13 @@ internal sealed class FakeCraftSessionWorld : ICraftSessionWorld
     public uint CreateCraftedItem(uint player, RecipeDetail recipe)
     {
         Events.Add($"create:{recipe.Resref}");
-        return _nextItem++;
+        var item = _nextItem++;
+        _craftedNames[item] = $"crafted {recipe.Resref}";
+        Crafted.Add(_craftedNames[item]);
+        return item;
     }
+
+    private readonly Dictionary<uint, string> _craftedNames = new();
 
     public void ApplyVendorValue(uint item, int addGoldPiece) => VendorValues.Add(addGoldPiece);
 
@@ -134,7 +142,80 @@ internal sealed class FakeCraftSessionWorld : ICraftSessionWorld
         Events.Add("save");
     }
 
-    public void PersistCharacter(uint player) => PersistedAtSave.Add(SaveCount);
+    public void PersistCharacter(uint player)
+    {
+        PersistedAtSave.Add(SaveCount);
+        ExportQueued = true;
+    }
+
+    public string SerializeItem(uint item) => _craftedNames[item];
+
+    /// <summary>The craft file sequence in memory: what the next character file written will carry.</summary>
+    public int Sequence { get; private set; }
+
+    /// <summary>The craft file sequence in the character file on disk.</summary>
+    public int FileSequenceOnDisk { get; private set; }
+
+    private int _exported;
+
+    public int FileSequence(uint player) => Sequence;
+
+    public int AdvanceFileSequence(uint player) => ++Sequence;
+
+    public int ExportedSequence(uint player) => _exported;
+
+    /// <summary>True from a persist request until the delayed export runs (<see cref="RunQueuedExport"/>) or a flush writes the file.</summary>
+    public bool ExportQueued { get; private set; }
+
+    public int Flushes { get; private set; }
+
+    public void FlushCharacter(uint player)
+    {
+        Flushes++;
+        WriteFile();
+    }
+
+    /// <summary>The export a persist request queues, once its delay has passed.</summary>
+    public void RunQueuedExport()
+    {
+        if (ExportQueued)
+            WriteFile();
+    }
+
+    private Dictionary<string, int> _fileInventory = new();
+    private List<string> _fileReturned = new();
+    private List<string> _fileCrafted = new();
+
+    private void WriteFile()
+    {
+        ExportQueued = false;
+        FileSequenceOnDisk = Sequence;
+        _exported = Sequence;
+        _fileInventory = new Dictionary<string, int>(Inventory);
+        _fileReturned = new List<string>(Returned);
+        _fileCrafted = new List<string>(Crafted);
+    }
+
+    /// <summary>
+    /// A process crash and the login after it: the inventory, the returned and finished items and the sequence come back from the last
+    /// character file written. Nothing queued runs. The player record is not touched, as it was saved at once.
+    /// </summary>
+    public void CrashAndReload()
+    {
+        ExportQueued = false;
+        Inventory.Clear();
+        foreach (var (resref, quantity) in _fileInventory)
+            Inventory[resref] = quantity;
+        Returned.Clear();
+        Returned.AddRange(_fileReturned);
+        Crafted.Clear();
+        Crafted.AddRange(_fileCrafted);
+        Sequence = FileSequenceOnDisk;
+        _exported = FileSequenceOnDisk;
+    }
+
+    /// <summary>Writes the character file as it stands, as a logout or an unrelated export does.</summary>
+    public void ExportNow() => WriteFile();
 
     public void Message(uint player, string text) => Messages.Add(text);
 

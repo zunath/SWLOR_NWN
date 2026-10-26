@@ -249,6 +249,33 @@ public sealed class NwnCraftSessionWorld : ICraftSessionWorld
 
     public void SaveRecord(Player dbPlayer) => DB.Set(dbPlayer);
 
+    public string SerializeItem(uint item) => ObjectPlugin.Serialize(item);
+
+    public int FileSequence(uint player) => GetLocalInt(player, CraftSessionFileSequence.Variable);
+
+    public int AdvanceFileSequence(uint player)
+    {
+        var next = GetLocalInt(player, CraftSessionFileSequence.Variable) + 1;
+        SetLocalInt(player, CraftSessionFileSequence.Variable, next);
+        return next;
+    }
+
+    public int ExportedSequence(uint player) => GetLocalInt(player, CraftSessionFileSequence.ExportedVariable);
+
+    public void FlushCharacter(uint player)
+    {
+        if (IsExportable(player))
+            ExportAndRecord(player);
+    }
+
+    private static void ExportAndRecord(uint player)
+    {
+        // The sequence is read at the moment of the export: the file written carries the value the local has now.
+        var sequence = GetLocalInt(player, CraftSessionFileSequence.Variable);
+        ExportSingleCharacter(player);
+        SetLocalInt(player, CraftSessionFileSequence.ExportedVariable, sequence);
+    }
+
     public void PersistCharacter(uint player)
     {
         if (!IsExportable(player) || GetLocalBool(player, PersistPendingVariable))
@@ -264,7 +291,7 @@ public sealed class NwnCraftSessionWorld : ICraftSessionWorld
 
             DeleteLocalBool(player, PersistPendingVariable);
             if (IsExportable(player))
-                ExportSingleCharacter(player);
+                ExportAndRecord(player);
         }));
     }
 

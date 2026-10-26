@@ -73,6 +73,27 @@ public interface ICraftSessionWorld
     /// </summary>
     void PersistCharacter(uint player);
 
+    /// <summary>Serializes an item the player carries, such as the finished craft, so a transfer can be given again after a crash.</summary>
+    string SerializeItem(uint item);
+
+    /// <summary>
+    /// The craft file sequence of the player: the value the next character file will carry. Right after a login it is the value the
+    /// loaded file carried, 0 for a file written before any craft.
+    /// </summary>
+    int FileSequence(uint player);
+
+    /// <summary>Raises the craft file sequence by one and returns the new value. Call it once the inventory changes of a transfer are made.</summary>
+    int AdvanceFileSequence(uint player);
+
+    /// <summary>The highest craft file sequence known to be in the character file: the value it was loaded with, or the value of this session's last export.</summary>
+    int ExportedSequence(uint player);
+
+    /// <summary>
+    /// Writes the character file now and records its sequence as exported. For a later script run than the inventory change it
+    /// covers, because a destroyed item is only gone once the script that destroyed it ends. Does nothing for a DM or a player who is gone.
+    /// </summary>
+    void FlushCharacter(uint player);
+
     void Message(uint player, string text);
 
     void LogCraft(uint player, string text);

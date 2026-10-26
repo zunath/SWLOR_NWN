@@ -16,7 +16,7 @@ namespace SWLOR.Game.Server.Feature
             if (!GetIsPC(player) || GetIsDM(player) || GetIsDMPossessed(player))
                 return;
 
-            CraftSessionService.SettleLeftover(player);
+            CraftSessionService.RecoverAtLogin(player);
         }
 
         [NWNEventHandler(ScriptName.OnModuleDeath)]

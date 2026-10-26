@@ -17,6 +17,13 @@ namespace SWLOR.Game.Server.Entity
         public int BlueprintLevel { get; set; }
         public DateTime StartedUtc { get; set; }
 
+        /// <summary>
+        /// The craft file sequence the debit was made at. A character file below it still holds the components, enhancements and blueprint
+        /// charge, so a login whose file is that old discards the session without returning anything. Zero (records saved before this
+        /// field) means the file is trusted to be current.
+        /// </summary>
+        public int DebitSequence { get; set; }
+
         /// <summary>One serialized item per committed component stack.</summary>
         public List<string> Components { get; set; } = new();
 

@@ -4,14 +4,22 @@ using NWNX.NET;
 using NWNX.NET.Native;
 using SWLOR.Game.Server.Core;
 using SWLOR.Game.Server.Service;
+using SWLOR.Game.Server.Service.CraftService.Minigame;
 
 namespace SWLOR.Game.Server.Native
 {
-    /// <summary>Persists the migration checkpoint in BIC exports, which omit creature locals.</summary>
+    /// <summary>
+    /// Persists the migration checkpoint and the craft file sequence in BIC exports, which omit creature locals. The craft file
+    /// sequence (<c>CraftFileSeq</c>) is how a login tells whether the character file already holds an item transfer the player
+    /// record says happened (see <c>CraftSessionLifecycle</c>); it is written only once it is above zero, so files of characters
+    /// that never crafted carry no extra field.
+    /// </summary>
     public static unsafe class PlayerFileCheckpoint
     {
         internal const string FieldName = "PlayerFileVer";
+        internal const string CraftSequenceFieldName = "CraftFileSeq";
         private static readonly byte[] FieldLabel = System.Text.Encoding.ASCII.GetBytes(FieldName + "\0");
+        private static readonly byte[] CraftSequenceLabel = System.Text.Encoding.ASCII.GetBytes(CraftSequenceFieldName + "\0");
         private static FunctionHook* _saveHook;
         private static FunctionHook* _loadHook;
         private static FunctionHook* _readStatsHook;
@@ -45,12 +53,25 @@ namespace SWLOR.Game.Server.Native
                 if (saved == 0)
                     return 0;
                 using var name = new CExoString(Migration.PlayerFileVersionVariable);
-                var version = CNWSCreature.FromPointer(creature).m_ScriptVars.GetInt(name);
-                if (version <= 0)
+                var scriptVars = CNWSCreature.FromPointer(creature).m_ScriptVars;
+                var version = scriptVars.GetInt(name);
+                if (version > 0)
+                {
+                    fixed (byte* field = FieldLabel)
+                        saved = CResGFF.FromPointer(resource)
+                            .WriteFieldINT(CResStruct.FromPointer(structure), version, field);
+                }
+
+                if (saved == 0)
+                    return 0;
+
+                using var craftName = new CExoString(CraftSessionFileSequence.Variable);
+                var craftSequence = scriptVars.GetInt(craftName);
+                if (craftSequence <= 0)
                     return saved;
-                fixed (byte* field = FieldLabel)
+                fixed (byte* field = CraftSequenceLabel)
                     return CResGFF.FromPointer(resource)
-                        .WriteFieldINT(CResStruct.FromPointer(structure), version, field);
+                        .WriteFieldINT(CResStruct.FromPointer(structure), craftSequence, field);
             }
             catch (Exception exception)
             {
@@ -116,6 +137,20 @@ namespace SWLOR.Game.Server.Native
             {
                 using var name = new CExoString(Migration.PlayerFileVersionVariable);
                 creature.m_ScriptVars.SetInt(name, version);
+            }
+
+            // The sequence loaded from the file is also what the file is known to hold, until this session exports again.
+            found = 0;
+            int craftSequence;
+            fixed (byte* field = CraftSequenceLabel)
+                craftSequence = CResGFF.FromPointer(resource)
+                    .ReadFieldINT(CResStruct.FromPointer(structure), field, &found, 0);
+            if (found != 0 && craftSequence > 0)
+            {
+                using var sequenceName = new CExoString(CraftSessionFileSequence.Variable);
+                creature.m_ScriptVars.SetInt(sequenceName, craftSequence);
+                using var exportedName = new CExoString(CraftSessionFileSequence.ExportedVariable);
+                creature.m_ScriptVars.SetInt(exportedName, craftSequence);
             }
         }
     }

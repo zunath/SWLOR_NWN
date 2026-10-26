@@ -9,6 +9,26 @@ namespace SWLOR.Game.Server.Service.CraftService.Minigame;
 /// The life of one item craft, from the moment its materials are committed to its success, failure or abandonment. The
 /// committed materials are saved on the player, so a logout, death, window close or server restart still settles the attempt
 /// as a failure under the loss rule in <see cref="CraftOutcomeRules"/>.
+/// <para>
+/// Crash safety. The player record saves at once, but the inventory is in the character file, which is written only on an export that
+/// follows the change by a moment. A crash in between leaves a record and a file that disagree about where the items are. The craft
+/// file sequence settles which is current: every transfer between the record and the inventory advances it
+/// (<see cref="ICraftSessionWorld.AdvanceFileSequence"/>), and the character file carries the value it was written at. After a crash the
+/// file's value tells whether it holds a transfer.
+/// </para>
+/// <list type="bullet">
+/// <item>A debit (<see cref="Start"/>) saves its sequence on the session (<see cref="CraftSessionRecord.DebitSequence"/>). A login whose file
+/// is below it finds the components, enhancements and blueprint charge still in the file, so the session is discarded and nothing is returned.</item>
+/// <item>A credit (a refund, a held item given back, the finished item) is written to <see cref="Player.PendingCraftReturns"/> with its sequence
+/// in the same record save that removes it from its source, so the record always accounts for the items in one place or the other. A login whose
+/// file is below the entry's sequence gives the items again; a file at or above it drops the entry. The redo is stored as a new entry, so it is
+/// itself protected until a file holds it. Entries are also dropped while playing once an export has covered them.</item>
+/// <item>A login compares every entry and the debit with the one sequence the file loaded with, before anything advances it, so each transfer
+/// ends up applied once: a file at or above a sequence holds the transfer, and a file below it lacks every effect of it.</item>
+/// <item>A credit is only made after the debit it draws on is in the file: <see cref="Fail"/> and <see cref="Succeed"/> flush the character first
+/// when the export of the debit has not run, so a file below a credit's sequence always still lacks what the credit gives.</item>
+/// <item>Records saved before the sequence existed read as 0, which no file is below, so they settle as they always did.</item>
+/// </list>
 /// </summary>
 public sealed class CraftSessionLifecycle
 {
@@ -34,6 +54,7 @@ public sealed class CraftSessionLifecycle
     /// </summary>
     public CraftSessionStartResult Start(uint player, Player dbPlayer, CraftSessionStartRequest request)
     {
+        DropExportedReturns(player, dbPlayer);
         if (dbPlayer.ActiveCraftSession != null)
             Fail(player, dbPlayer, CraftSessionEndReason.Replaced);
 
@@ -75,8 +96,12 @@ public sealed class CraftSessionLifecycle
 
         var blueprint = request.HasBlueprint ? _world.ChargeBlueprint(player, request.BlueprintItem) : null;
         var sessionId = Guid.NewGuid().ToString();
+
+        // The components, enhancements and blueprint charge are out of the inventory in memory; the file still has them until it is written.
+        var debitSequence = _world.AdvanceFileSequence(player);
         dbPlayer.ActiveCraftSession = new CraftSessionRecord
         {
+            DebitSequence = debitSequence,
             SessionId = sessionId,
             Recipe = request.Recipe,
             Skill = recipe.Skill,
@@ -105,6 +130,8 @@ public sealed class CraftSessionLifecycle
             return null;
 
         var record = dbPlayer.ActiveCraftSession;
+        DropExportedReturns(player, dbPlayer);
+        FlushDebit(player, record);
         var recipe = _world.GetRecipe(record.Recipe);
         var firstTime = !dbPlayer.CraftedRecipes.ContainsKey(record.Recipe);
         var blueprintLevel = session.Blueprint?.Level ?? 0;
@@ -144,6 +171,9 @@ public sealed class CraftSessionLifecycle
 
         if (firstTime)
             dbPlayer.CraftedRecipes[record.Recipe] = DateTime.UtcNow;
+
+        // The finished item is in the inventory only in memory: the record that ends the session carries it until a file holds it.
+        RecordReturn(player, dbPlayer, new List<string> { _world.SerializeItem(item) });
         dbPlayer.ActiveCraftSession = null;
         _world.SaveRecord(dbPlayer);
         _world.PersistCharacter(player);
@@ -167,6 +197,8 @@ public sealed class CraftSessionLifecycle
         if (record == null)
             return CraftSettlement.None;
 
+        DropExportedReturns(player, dbPlayer);
+        FlushDebit(player, record);
         var recipe = _world.GetRecipe(record.Recipe);
         var enhancements = record.Enhancements.Where(e => !string.IsNullOrEmpty(e)).ToList();
         var failure = CraftOutcomeRules.RollFailure(
@@ -221,8 +253,64 @@ public sealed class CraftSessionLifecycle
     }
 
     /// <summary>
-    /// Settles a craft left over from a logout, death or restart, then gives back any held items that now fit. Call it at login
-    /// and whenever a crafting window opens.
+    /// Settles a craft left over from a login, comparing the player record with the character file the player just loaded: a crash can
+    /// leave a file that predates item transfers the record already counts. Gives again each credit the file lacks, discards a session
+    /// whose debit the file lacks, then settles whatever craft is left as <see cref="SettleLeftover"/> does. Call it once at login, before
+    /// anything changes the inventory; it is for a freshly loaded file only, because while playing the memory is current and the file is behind.
+    /// </summary>
+    public CraftSettlement RecoverAtLogin(uint player, Player dbPlayer, CraftSessionEndReason reason)
+    {
+        var file = _world.FileSequence(player);
+        var changed = false;
+        var placed = new List<string>();
+
+        var pending = dbPlayer.PendingCraftReturns;
+        if (pending is { Count: > 0 })
+        {
+            var redo = pending.Where(entry => entry.Sequence > file).OrderBy(entry => entry.Sequence).ToList();
+            pending.Clear();
+            changed = true;
+
+            foreach (var item in redo.SelectMany(entry => entry.Items))
+            {
+                if (_world.TryReturnItem(player, item))
+                {
+                    placed.Add(item);
+                    continue;
+                }
+
+                dbPlayer.HeldCraftItems ??= new List<string>();
+                dbPlayer.HeldCraftItems.Add(item);
+            }
+
+            if (redo.Count > 0)
+                _world.LogCraft(player, $"had {redo.Sum(entry => entry.Items.Count)} craft item(s) returned again after the character file predated them (file sequence {file}).");
+
+            // The redone items are in the inventory only in memory, so they wait in a new entry until a file holds them.
+            if (placed.Count > 0)
+                RecordReturn(player, dbPlayer, placed);
+        }
+
+        var record = dbPlayer.ActiveCraftSession;
+        if (record != null && record.DebitSequence > file)
+        {
+            // The file predates the debit, so it still holds the components, the enhancements and the blueprint charge or credits.
+            dbPlayer.ActiveCraftSession = null;
+            changed = true;
+            _world.LogCraft(player, $"had an unfinished craft of '{record.Recipe}' discarded without a refund: the character file (sequence {file}) predates its debit (sequence {record.DebitSequence}).");
+        }
+
+        if (changed)
+            _world.SaveRecord(dbPlayer);
+        if (placed.Count > 0)
+            _world.PersistCharacter(player);
+
+        return SettleLeftover(player, dbPlayer, reason);
+    }
+
+    /// <summary>
+    /// Settles a craft left over from a logout, death or restart, then gives back any held items that now fit. Call it whenever a
+    /// crafting window opens; at login call <see cref="RecoverAtLogin"/>, which ends with this.
     /// </summary>
     public CraftSettlement SettleLeftover(uint player, Player dbPlayer, CraftSessionEndReason reason)
     {
@@ -263,17 +351,23 @@ public sealed class CraftSessionLifecycle
         if (held == null || held.Count == 0)
             return 0;
 
+        DropExportedReturns(player, dbPlayer);
         var remaining = new List<string>();
+        var given = new List<string>();
         foreach (var serialized in held)
         {
-            if (!_world.TryReturnItem(player, serialized))
+            if (_world.TryReturnItem(player, serialized))
+                given.Add(serialized);
+            else
                 remaining.Add(serialized);
         }
 
-        if (remaining.Count < held.Count)
+        if (given.Count > 0)
         {
+            // The items leave the record in the same save that lists them as a pending return, so a crash before the export loses none.
             held.Clear();
             held.AddRange(remaining);
+            RecordReturn(player, dbPlayer, given);
             _world.SaveRecord(dbPlayer);
             _world.PersistCharacter(player);
         }
@@ -282,6 +376,41 @@ public sealed class CraftSessionLifecycle
             _world.Message(player, HeldItemsMessage);
 
         return held.Count;
+    }
+
+    /// <summary>
+    /// Lists items just put in the inventory as a pending return at the next craft file sequence. The caller saves the record, in the same
+    /// save that takes the items off the record, and then exports the character.
+    /// </summary>
+    private void RecordReturn(uint player, Player dbPlayer, List<string> items)
+    {
+        dbPlayer.PendingCraftReturns ??= new List<PendingCraftReturn>();
+        dbPlayer.PendingCraftReturns.Add(new PendingCraftReturn
+        {
+            Sequence = _world.AdvanceFileSequence(player),
+            Items = items
+        });
+    }
+
+    /// <summary>Forgets pending returns an export has since put in the character file. The next save of the record keeps the change.</summary>
+    private void DropExportedReturns(uint player, Player dbPlayer)
+    {
+        var pending = dbPlayer.PendingCraftReturns;
+        if (pending == null || pending.Count == 0)
+            return;
+
+        var exported = _world.ExportedSequence(player);
+        pending.RemoveAll(entry => entry.Sequence <= exported);
+    }
+
+    /// <summary>
+    /// Writes the character file first when it may not yet hold the session's debit. Items only leave the record for the inventory after the
+    /// file has lost them, so a file below a later return always still lacks what the return gives.
+    /// </summary>
+    private void FlushDebit(uint player, CraftSessionRecord record)
+    {
+        if (record.DebitSequence > _world.ExportedSequence(player))
+            _world.FlushCharacter(player);
     }
 
     private void ReturnOrHold(uint player, Player dbPlayer, string serialized)

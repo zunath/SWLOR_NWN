@@ -88,6 +88,7 @@ namespace SWLOR.Game.Server.Entity
             CraftMinigameHelpSeen = new Dictionary<CraftMinigameType, DateTime>();
             SelectedCraftingStyles = new Dictionary<SkillType, PerkType>();
             HeldCraftItems = new List<string>();
+            PendingCraftReturns = new List<PendingCraftReturn>();
             PendingCraftXp = new Dictionary<SkillType, int>();
             PendingScavengeFinds = new Dictionary<string, int>();
             LearnedTechniques = new Dictionary<FeatType, DateTime>();
@@ -233,6 +234,9 @@ namespace SWLOR.Game.Server.Entity
         public CraftSessionRecord ActiveCraftSession { get; set; }
         // Serialized items a settled craft could not return because the inventory was full.
         public List<string> HeldCraftItems { get; set; }
+        // Items a craft put in the inventory that the character file may not hold yet, each with the file sequence it needs.
+        // See CraftSessionLifecycle for how a login settles them.
+        public List<PendingCraftReturn> PendingCraftReturns { get; set; }
         // Skill XP a settled craft earned while its player was dead, by skill. It is given once the player is alive again, at a
         // respawn, a login or the next crafting window.
         public Dictionary<SkillType, int> PendingCraftXp { get; set; }

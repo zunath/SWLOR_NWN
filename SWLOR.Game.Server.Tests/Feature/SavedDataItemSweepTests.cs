@@ -298,14 +298,17 @@ public class SavedDataItemSweepTests
         {
             var retired = entry.Value.Single();
             var amount = retired.Previous;
-            return new[]
+            var cases = new List<TestCaseData>
             {
-                new TestCaseData(entry.Key, retired.Subtype, amount, 0, 0),
-                new TestCaseData(entry.Key, retired.Subtype, amount, 5, 5),
-                new TestCaseData(entry.Key, retired.Subtype, 0, amount + 5, 5),
-                new TestCaseData(entry.Key, retired.Subtype, 0, amount, 0),
-                new TestCaseData(entry.Key, retired.Subtype, 0, 0, 0),
+                new(entry.Key, retired.Subtype, amount, 0, 0),
+                new(entry.Key, retired.Subtype, amount, 5, 5),
+                new(entry.Key, retired.Subtype, 0, amount, 0),
+                new(entry.Key, retired.Subtype, 0, 0, 0),
             };
+            // Item Resistance caps at 100, so a converted 100 has no room for crafted points.
+            if (amount + 5 <= Resistance.MaximumResistance)
+                cases.Add(new(entry.Key, retired.Subtype, 0, amount + 5, 5));
+            return cases;
         });
 
     [TestCaseSource(nameof(RetiredDefenseCases))]

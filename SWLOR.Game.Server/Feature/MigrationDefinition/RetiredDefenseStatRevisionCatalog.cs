@@ -35,6 +35,9 @@ public static class RetiredDefenseStatRevisionCatalog
             ["cara_cap"] = Retired(CombatDamageType.Poison, 30),
             ["cara_headdress"] = Retired(CombatDamageType.Poison, 30),
             ["cara_helmet"] = Retired(CombatDamageType.Poison, 30),
+            // Equipped by Hutlar Byysk NPCs; droppable equipment reaches players through corpse loot.
+            ["byysk_shield002"] = Retired(CombatDamageType.Poison, 100),
+            ["byyskchief_w2"] = Retired(CombatDamageType.Poison, 100),
             ["apprentice_dark_"] = Retired(CombatDamageType.Fire, 4),
             ["dan_heavy_armor"] = Retired(CombatDamageType.Fire, 10),
             ["dan_h_cloak"] = Retired(CombatDamageType.Ice, 10),

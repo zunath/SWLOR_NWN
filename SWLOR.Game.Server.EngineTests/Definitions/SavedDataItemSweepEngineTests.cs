@@ -104,7 +104,7 @@ public static partial class MigrationEngineTests
         }
 
         // Every shipped item with a retired elemental Defense: the Defense itself, and the Defense the combat
-        // replacement already converted into Resistance beside five crafted points.
+        // replacement already converted into Resistance beside five crafted points (capped at 100).
         foreach (var (resref, changes) in RetiredDefenseStatRevisionCatalog.Changes)
         foreach (var converted in new[] { false, true })
         {
@@ -222,7 +222,7 @@ public static partial class MigrationEngineTests
         {
             damageType.TryGetElementalResistanceType(out var resistance);
             AddItemProperty(DurationType.Permanent, ItemPropertyCustom(ItemPropertyType.Resistance, (int)resistance,
-                Resistance.EncodeItemPropertyCostTableValue(amount + 5)), item);
+                Resistance.EncodeItemPropertyCostTableValue(Math.Min(amount + 5, Resistance.MaximumResistance))), item);
         }
         else
             // Current constructors reject the retired elemental Defense subtypes, so they are written natively.

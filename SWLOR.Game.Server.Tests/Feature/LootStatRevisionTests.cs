@@ -92,6 +92,19 @@ public class LootStatRevisionTests
     }
 
     [Test]
+    public void RetiredDefenseCatalogBlueprints_CarryTheRevisionMarker()
+    {
+        // New drops are already correct, so the revision must never run on them.
+        foreach (var resref in RetiredDefenseStatRevisionCatalog.Changes.Keys)
+        {
+            using var blueprint = JsonDocument.Parse(File.ReadAllText(Path.Combine(
+                FindRepositoryRoot().FullName, "Module", "uti", resref + ".uti.json"), System.Text.Encoding.Latin1));
+            ReadLocalInt(blueprint.RootElement, RetiredDefenseStatRevisionCatalog.RevisionVariable)
+                .Should().Be(RetiredDefenseStatRevisionCatalog.CurrentRevision, resref);
+        }
+    }
+
+    [Test]
     public void ItemBlueprints_CarryOnlyPhysicalAndForceDefense()
     {
         // Only Physical and Force Defense count in combat; any other subtype shows on the item and does nothing.

@@ -82,6 +82,11 @@ namespace SWLOR.Game.Server.Service.AbilityService
         public bool PreservesStealthDuringActivation { get; set; }
         public bool RequiresTarget { get; set; }
         public bool HasExplicitMaxRange { get; set; }
+        /// <summary>
+        /// A location cast past <see cref="MaxRange"/> is accepted, and the ability itself shortens it
+        /// toward the clicked point, instead of being refused as out of range.
+        /// </summary>
+        public bool ClampsLocationTargetToMaxRange { get; set; }
         public bool UsesActiveAttackTarget { get; set; }
         /// <summary>Allows the optional cursor-free self-cast command for a self-legal support cast.</summary>
         public bool AllowsSelfQuickCast { get; set; }

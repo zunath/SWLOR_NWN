@@ -159,8 +159,11 @@ public class TwinPistolPerkTests
             ability.Targeting.SizeX.Should().Be(6f);
             ability.Targeting.SizeY.Should().Be(4f);
             ability.MaxRange.Should().Be(6f);
+            ability.ClampsLocationTargetToMaxRange.Should().BeTrue("a click past 6m rushes the full 6m toward it");
             ability.Targeting.Spell.Should().NotBe(Spell.Invalid);
         }
+        volley.Values.Concat(slide.Values).Concat(focus.Values).Concat(grapple.Values).Concat(controlled.Values)
+            .Should().OnlyContain(x => !x.ClampsLocationTargetToMaxRange, "only the free-destination dash clamps its click");
         rush.Values.Select(x => x.Targeting.Spell).Should().OnlyHaveUniqueItems();
         var all = volley.Values.Concat(slide.Values).Concat(focus.Values).Concat(grapple.Values)
             .Concat(controlled.Values).Concat(rush.Values).ToArray();

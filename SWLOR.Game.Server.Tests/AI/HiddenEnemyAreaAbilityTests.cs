@@ -68,15 +68,22 @@ public class HiddenEnemyAreaAbilityTests
                     return true;
                 }
             }
+            public delegate uint AITargetSelector(AIContext context);
             public class AIContext
             {
                 public uint Self => World.Self;
-                public uint EvaluatedTarget { get; init; } = OBJECT_INVALID;
+                public uint EvaluatedTarget { get; private set; } = OBJECT_INVALID;
+                public uint CurrentEnmityTarget { get; init; } = OBJECT_INVALID;
+                public void SetEvaluatedTarget(uint target) => EvaluatedTarget = target;
                 {{ExtractMethods("AIContext.cs", "CountHostilesNearTarget")}}
             }
             public static class NPCAIHarness
             {
                 {{ExtractMethods("NPCAI.cs", "CanUseAbility")}}
+            }
+            public static class AITargetHarness
+            {
+                {{ExtractMethods("AITarget.cs", "HostileCluster")}}
             }
             public static class World
             {
@@ -105,6 +112,15 @@ public class HiddenEnemyAreaAbilityTests
                     return onlyOdd
                         ? context.CountHostilesNearTarget(10f, creature => creature % 2 == 1)
                         : context.CountHostilesNearTarget(10f);
+                }
+
+                public static uint Cluster(uint target, uint[] nearby, uint[] enemies, uint[] hidden)
+                {
+                    Nearby = nearby.ToList();
+                    Enemies = enemies.ToHashSet();
+                    Hidden = hidden.ToHashSet();
+                    Dead = new HashSet<uint>();
+                    return AITargetHarness.HostileCluster(10f, 1)(new AIContext { CurrentEnmityTarget = target });
                 }
 
                 public static uint CanUse(bool hostile, bool singleTarget, bool requiresTarget, uint target)
@@ -187,6 +203,23 @@ public class HiddenEnemyAreaAbilityTests
     public void TargetedFriendlyAbility_WithNoTarget_IsNotUsed()
     {
         CanUse(hostile: false, singleTarget: true, requiresTarget: true, target: Invalid).Should().Be(Invalid);
+    }
+
+    [Test]
+    public void TargetedArea_OnALoneVisibleEnemy_CentersOnIt()
+    {
+        Cluster(target: 201, nearby: [Self, 201], enemies: [201], hidden: []).Should().Be(201);
+    }
+
+    [Test]
+    public void TargetedArea_OnAHiddenEnemy_IsNotCenteredThereByAVisibleBystander()
+    {
+        Cluster(target: 203, nearby: [Self, 201, 203], enemies: [201, 203], hidden: [203]).Should().Be(Invalid);
+    }
+
+    private uint Cluster(uint target, uint[] nearby, uint[] enemies, uint[] hidden)
+    {
+        return (uint)_world.GetMethod("Cluster")!.Invoke(null, [target, nearby, enemies, hidden])!;
     }
 
     private int Count(uint[] nearby, uint[] enemies, uint[] hidden, uint[]? dead = null, bool onlyOdd = false)

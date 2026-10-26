@@ -19,4 +19,6 @@ internal sealed class WeaponRepositioningOperation
     public Action<bool, float> OnArrival { get; init; }
     /// <summary>Authored clip that replaces the run animation while this move travels, or null.</summary>
     public string TravelAnimation { get; init; }
+    /// <summary>The move travels as a cutscene ghost so creatures on the path do not block it.</summary>
+    public bool PassesThroughCreatures { get; init; }
 }

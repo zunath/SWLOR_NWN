@@ -86,6 +86,19 @@ class DdsCodecTests(unittest.TestCase):
                 self.assertLess(float(np.sqrt(((decoded - image) ** 2).mean())), .03)
 
 
+    def test_chroma_only_block_keeps_both_colors(self):
+        # Red/green halves share luminance-free variation orthogonal to (1, 1, 1).
+        block = np.zeros((4, 4, 3), np.float32)
+        block[:, :2] = (.8, .2, .5)
+        block[:, 2:] = (.2, .8, .5)
+        info = {'header': dds_header(4, 4, 1, 'DXT1'), 'fourcc': 'DXT1', 'mips': 1, 'size': (4, 4)}
+        with tempfile.TemporaryDirectory() as folder:
+            path = Path(folder) / 'c.dds'
+            material.write_dds(path, block, info)
+            decoded, _ = material.read_dds(path)
+        self.assertLess(float(np.abs(decoded - block).max()), .05)
+
+
 class ShippedFixTests(unittest.TestCase):
     def make_material(self, folder, name, spec, rough, base_value):
         (folder / f'{name}.mtr').write_text(

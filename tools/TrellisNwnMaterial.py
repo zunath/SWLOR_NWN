@@ -221,7 +221,11 @@ def _encode_bc1(image):
     mean = colors.mean(1, keepdims=True)
     centered = colors - mean
     cov = np.einsum('nki,nkj->nij', centered, centered)
-    axis = np.ones((len(colors), 3), np.float32)
+    # Seed with the covariance column of largest norm: it lies in the variance span, so it is never
+    # orthogonal to the principal axis (a fixed (1,1,1) seed is for chroma-only variation).
+    columns = np.linalg.norm(cov, axis=1)
+    axis = np.take_along_axis(cov, columns.argmax(1)[:, None, None], 2)[..., 0]
+    axis = np.where((columns.max(1) > 0)[:, None], axis, 1)
     for _ in range(8):
         axis = np.einsum('nij,nj->ni', cov, axis)
         axis /= np.maximum(np.linalg.norm(axis, axis=1, keepdims=True), 1e-6)

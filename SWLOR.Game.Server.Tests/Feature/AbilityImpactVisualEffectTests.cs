@@ -175,6 +175,28 @@ public class AbilityImpactVisualEffectTests
         service.Should().Contain("EffectVisualEffect(impactAbility.DamageImpactVisualEffect)");
     }
 
+    [Test]
+    public void StaticBurstTechnique_AreaBurstRowHasAModelAndASound()
+    {
+        var root = FindRepositoryRoot();
+        var source = File.ReadAllText(Path.Combine(root,
+            "SWLOR.Game.Server/Feature/AbilityDefinition/Mimicry/StaticBurstTechniqueAbilityDefinition.cs"));
+        source.Should().Contain("VisualEffect.Vfx_Fnf_Electric_Explosion",
+            "row 151 (Vfx_Fnf_Storm) is a blank placeholder that renders nothing");
+        source.Should().NotContain("VisualEffect.Vfx_Fnf_Storm");
+
+        var table = File.ReadAllLines(Path.Combine(root, "SWLOR_Haks", "sw_2da", "visualeffects.2da"));
+        var header = Regex.Split(table.First(line => line.TrimStart().StartsWith("Label ")).Trim(), @"\s+");
+        var rows = table.Where(line => Regex.IsMatch(line, @"^\s*\d+\s"))
+            .Select(line => Regex.Split(line.Trim(), @"\s+"))
+            .ToDictionary(parts => int.Parse(parts[0]), parts => parts.Skip(1).ToArray());
+        var row = rows[(int)VisualEffect.Vfx_Fnf_Electric_Explosion];
+        header.Where(name => name.StartsWith("Imp_") && name.EndsWith("_Node"))
+            .Select(name => row[Array.IndexOf(header, name)])
+            .Should().Contain(value => value != "****", "the area burst needs a model");
+        row[Array.IndexOf(header, "SoundImpact")].Should().NotBe("****", "the area burst needs a sound");
+    }
+
     private static string FindRepositoryRoot()
     {
         for (var directory = new DirectoryInfo(TestContext.CurrentContext.TestDirectory); directory != null; directory = directory.Parent)

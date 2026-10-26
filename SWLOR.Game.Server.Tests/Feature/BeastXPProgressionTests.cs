@@ -82,11 +82,11 @@ public class BeastXPProgressionTests
     {
         var beast = new Beast { Level = 30, XP = 40000, XPPenaltyPercent = 20 };
 
-        _29_ClampBeastXPToHalvedChart.ClampXP(beast).Should().BeTrue();
+        _29_CorrectStoredCarapaceBracers.ClampBeastXP(beast).Should().BeTrue();
 
         beast.Level.Should().Be(30, "the migration never levels a beast up");
         beast.XP.Should().Be(BeastMastery.GetRequiredXP(30, 20) - 1, "the extra XP is not refunded");
-        _29_ClampBeastXPToHalvedChart.ClampXP(beast).Should().BeFalse("the migration can rerun safely");
+        _29_CorrectStoredCarapaceBracers.ClampBeastXP(beast).Should().BeFalse("the migration can rerun safely");
     }
 
     [Test]
@@ -94,7 +94,7 @@ public class BeastXPProgressionTests
     {
         var beast = new Beast { Level = 30, XP = BeastMastery.GetRequiredXP(30, 0) - 1 };
 
-        _29_ClampBeastXPToHalvedChart.ClampXP(beast).Should().BeFalse();
+        _29_CorrectStoredCarapaceBracers.ClampBeastXP(beast).Should().BeFalse();
         beast.XP.Should().Be(BeastMastery.GetRequiredXP(30, 0) - 1);
     }
 
@@ -103,7 +103,7 @@ public class BeastXPProgressionTests
     {
         var beast = new Beast { Level = BeastMastery.MaxLevel, XP = 0 };
 
-        _29_ClampBeastXPToHalvedChart.ClampXP(beast).Should().BeFalse();
+        _29_CorrectStoredCarapaceBracers.ClampBeastXP(beast).Should().BeFalse();
         beast.XP.Should().Be(0);
     }
 

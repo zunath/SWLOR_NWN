@@ -735,6 +735,13 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition
                                     .SetHeight(32f)
                                     .BindIsEnabled(model => model.IsBeastSelected);
 
+                                row.AddButton()
+                                    .SetText("RP XP")
+                                    .SetTooltip("Distribute RP XP to this beast.")
+                                    .BindOnClicked(model => model.OnClickDistributeRPXP())
+                                    .SetHeight(32f)
+                                    .BindIsEnabled(model => model.IsBeastSelected);
+
                                 row.AddSpacer();
                             });
                         });

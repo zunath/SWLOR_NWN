@@ -11,6 +11,7 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition
     public class ReactionDefinition : IGuiWindowDefinition
     {
         private const float PanelWidth = 580f;
+        private const float StatusTextHeight = 66f;
         private const float ActionButtonWidth = 130f;
         private const float ActionButtonHeight = 32f;
         private const float MeterLabelHeight = 20f;
@@ -124,11 +125,13 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition
                 });
                 content.AddRow(row =>
                 {
-                    row.AddLabel()
+                    // Wrapped text, not a one-line label: the result sentences run past one line.
+                    row.AddText()
                         .BindText(model => model.StatusText)
                         .BindColor(model => model.StatusColor)
-                        .SetHeight(24f)
-                        .SetHorizontalAlign(NuiHorizontalAlign.Center);
+                        .SetHeight(StatusTextHeight)
+                        .SetShowBorder(false)
+                        .SetScrollbars(NuiScrollbars.None);
                 });
                 content.AddRow(row =>
                 {
@@ -159,11 +162,13 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition
                 });
                 content.AddRow(row =>
                 {
-                    row.AddLabel()
+                    // Wrapped text, not a one-line label: the result sentences run past one line.
+                    row.AddText()
                         .BindText(model => model.StatusText)
                         .BindColor(model => model.StatusColor)
-                        .SetHeight(24f)
-                        .SetHorizontalAlign(NuiHorizontalAlign.Center);
+                        .SetHeight(StatusTextHeight)
+                        .SetShowBorder(false)
+                        .SetScrollbars(NuiScrollbars.None);
                 });
 
                 content.AddRow(row =>
@@ -289,7 +294,8 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition
                     row.AddGroup(panel =>
                     {
                         panel.SetShowBorder(false);
-                        panel.SetScrollbars(NuiScrollbars.None);
+                        // Auto: the host group only hands this panel the viewport height, so the panel is what scrolls on a short screen.
+                        panel.SetScrollbars(NuiScrollbars.Auto);
                         panel.AddColumn(buildContent);
                     })
                         .SetWidth(PanelWidth);

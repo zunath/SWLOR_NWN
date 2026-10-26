@@ -88,7 +88,8 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition
                     row.AddGroup(panel =>
                     {
                         panel.SetShowBorder(false);
-                        panel.SetScrollbars(NuiScrollbars.None);
+                        // Auto: the host group only hands this panel the viewport height, so the panel is what scrolls on a short screen.
+                        panel.SetScrollbars(NuiScrollbars.Auto);
                         panel.AddColumn(content =>
                         {
                             content.AddRow(r =>
@@ -212,7 +213,8 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition
                     row.AddGroup(panel =>
                     {
                         panel.SetShowBorder(false);
-                        panel.SetScrollbars(NuiScrollbars.None);
+                        // Auto: the host group only hands this panel the viewport height, so the panel is what scrolls on a short screen.
+                        panel.SetScrollbars(NuiScrollbars.Auto);
                         panel.AddColumn(content =>
                         {
                             content.AddRow(r =>

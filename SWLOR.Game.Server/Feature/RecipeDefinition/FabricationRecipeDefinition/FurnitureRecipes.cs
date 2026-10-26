@@ -1770,7 +1770,8 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.FabricationRecipeDefinition
                 .Level(30)
                 .Quantity(1)
                 .Component("ref_plagionite", 5)
-                .Component("elec_good", 3);
+                .Component("elec_good", 3)
+                .FabricatorParameters(frameSizePercent: 30, shellSizePercent: 33, frameQualityPercent: 35, shellQualityPercent: 34, wearRate: 6);
 
             // Fountain, Dark Grey
             _builder.Create(RecipeType.FountainDarkGrey, SkillType.Fabrication)

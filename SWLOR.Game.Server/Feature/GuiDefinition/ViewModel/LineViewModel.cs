@@ -187,6 +187,24 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
             RefreshFight();
         }
 
+        /// <summary>
+        /// Shows the three meters as the fight now stands. The end view calls it too, so a finished fight shows its final numbers and
+        /// not the last ones drawn before the move that ended it.
+        /// </summary>
+        private void RefreshMeters()
+        {
+            var engine = _fight.Engine;
+            var setup = engine.Setup;
+            DistanceText = LineActionText.MeterText(
+                "Distance", engine.Distance, setup.DistanceMax, $"0 lands the fish, {setup.DistanceMax} lets it escape");
+            TensionText = LineActionText.MeterText(
+                "Tension", engine.Tension, engine.TensionCap, $"the line snaps at {engine.TensionCap}");
+            StaminaText = LineActionText.MeterText("Fish Stamina", engine.Stamina, engine.StaminaMax, "an exhausted fish only rests");
+            DistancePercent = Fraction(engine.Distance, setup.DistanceMax);
+            TensionPercent = Fraction(engine.Tension, engine.TensionCap);
+            StaminaPercent = Fraction(engine.Stamina, engine.StaminaMax);
+        }
+
         private void RefreshFight()
         {
             var engine = _fight.Engine;
@@ -199,14 +217,7 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
             MoveHintText = LineActionText.MoveHint(setup, forecast[0]);
             MoveThenText = forecast.Count > 1 ? $"Then: {LineActionText.MoveName(forecast[1])}" : string.Empty;
 
-            DistanceText = LineActionText.MeterText(
-                "Distance", engine.Distance, setup.DistanceMax, $"0 lands the fish, {setup.DistanceMax} lets it escape");
-            TensionText = LineActionText.MeterText(
-                "Tension", engine.Tension, engine.TensionCap, $"the line snaps at {engine.TensionCap}");
-            StaminaText = LineActionText.MeterText("Fish Stamina", engine.Stamina, engine.StaminaMax, "an exhausted fish only rests");
-            DistancePercent = Fraction(engine.Distance, setup.DistanceMax);
-            TensionPercent = Fraction(engine.Tension, engine.TensionCap);
-            StaminaPercent = Fraction(engine.Stamina, engine.StaminaMax);
+            RefreshMeters();
             CloseText = "Let the fish go";
 
             var canQuickReel = FishingFights.CanQuickReel(_fight);
@@ -256,6 +267,9 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
             MoveNowText = string.Empty;
             MoveHintText = string.Empty;
             MoveThenText = string.Empty;
+            if (_fight != null)
+                RefreshMeters();
+
             CloseText = "Close";
             QuickReelText = "Quick Reel";
             QuickReelSummary = string.Empty;

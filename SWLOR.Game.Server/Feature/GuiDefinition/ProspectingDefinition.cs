@@ -16,6 +16,7 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition
     public class ProspectingDefinition : IGuiWindowDefinition
     {
         private const float PanelWidth = 560f;
+        private const float StatusTextHeight = 66f;
         private const float ActionButtonWidth = 130f;
         private const float ActionButtonHeight = 32f;
         private const float MeterLabelHeight = 20f;
@@ -93,7 +94,8 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition
                     row.AddGroup(panel =>
                     {
                         panel.SetShowBorder(false);
-                        panel.SetScrollbars(NuiScrollbars.None);
+                        // Auto: the host group only hands this panel the viewport height, so the panel is what scrolls on a short screen.
+                        panel.SetScrollbars(NuiScrollbars.Auto);
                         panel.AddColumn(AddContent);
                     })
                         .SetWidth(PanelWidth);
@@ -114,11 +116,13 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition
             });
             content.AddRow(row =>
             {
-                row.AddLabel()
+                // Wrapped text, not a one-line label: the result sentences run past one line.
+                row.AddText()
                     .BindText(model => model.StatusText)
                     .BindColor(model => model.StatusColor)
-                    .SetHeight(40f)
-                    .SetHorizontalAlign(NuiHorizontalAlign.Center);
+                    .SetHeight(StatusTextHeight)
+                    .SetShowBorder(false)
+                    .SetScrollbars(NuiScrollbars.None);
             });
 
             AddMeter(content, model => model.YieldText, model => model.YieldPercent, 70, 130, 230);

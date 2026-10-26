@@ -261,30 +261,8 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
             var node = _session.Request;
 
             HeaderText = $"Working a tier {node.NodeTier} node (vein level {GatheringLevels.ForTier(node.NodeTier)})";
-            YieldText = ProspectingActionText.MeterText("Yield", engine.Pool, engine.PoolAtStart, "units left; the last one spends the node");
-            StabilityText = ProspectingActionText.MeterText(
-                "Stability", engine.Stability, ProspectingRules.MaxStability, "the node collapses at 0");
-            ChargesText = ChargeText(engine.Charges, engine.ChargesAtStart);
-            YieldPercent = Fraction(engine.Pool, engine.PoolAtStart);
-            StabilityPercent = Fraction(engine.Stability, ProspectingRules.MaxStability);
-            ChargesPercent = Fraction(engine.Charges, engine.ChargesAtStart);
-            GatheredText = $"Gathered this session: {engine.Items}. Gathering XP earned: {_session.XpPaid}.";
             CloseText = "Leave and close";
-
-            var seams = engine.RevealedSeams;
-            for (var row = 0; row < SeamRows; row++)
-            {
-                if (row < seams.Count)
-                {
-                    Set(ProspectingActionText.SeamText(seams[row]), SeamTextProperty(row));
-                    Set(seams[row].Kind == ProspectingSeamKind.GemPocket ? new GuiColor(110, 200, 255) : new GuiColor(255, 190, 90), SeamColorProperty(row));
-                }
-                else
-                {
-                    Set(row == 0 && seams.Count == 0 ? "No seams found yet. A Survey looks for them." : string.Empty, SeamTextProperty(row));
-                    Set(GuiColor.Grey, SeamColorProperty(row));
-                }
-            }
+            RefreshMeters();
 
             var previews = engine.PreviewAll();
             for (var index = 0; index < ActionCount; index++)
@@ -302,6 +280,45 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
             RefreshStyles();
             CoreSampleText = CoreSampleSummary(engine);
             RefreshQuickHarvest();
+        }
+
+        /// <summary>
+        /// Shows the meters, the gathered line and the seams as the session now stands, from the session and its engine. The end view calls
+        /// it too, so a finished session shows its final numbers and not the last ones drawn before the action that ended it.
+        /// </summary>
+        private void RefreshMeters()
+        {
+            var engine = _session.Engine;
+
+            // A Quick Harvest takes its units from the node and the charges from the harvester without playing the engine.
+            var quick = _session.QuickHarvested > 0;
+            var pool = quick ? Math.Max(0, engine.PoolAtStart - _session.QuickHarvested) : engine.Pool;
+            var charges = quick ? _session.HarvesterCharges : engine.Charges;
+            var gathered = quick ? _session.QuickHarvested : engine.Items;
+
+            YieldText = ProspectingActionText.MeterText("Yield", pool, engine.PoolAtStart, "units left; the last one spends the node");
+            StabilityText = ProspectingActionText.MeterText(
+                "Stability", engine.Stability, ProspectingRules.MaxStability, "the node collapses at 0");
+            ChargesText = ChargeText(charges, engine.ChargesAtStart);
+            YieldPercent = Fraction(pool, engine.PoolAtStart);
+            StabilityPercent = Fraction(engine.Stability, ProspectingRules.MaxStability);
+            ChargesPercent = Fraction(charges, engine.ChargesAtStart);
+            GatheredText = $"Gathered this session: {gathered}. Gathering XP earned: {_session.XpPaid}.";
+
+            var seams = engine.RevealedSeams;
+            for (var row = 0; row < SeamRows; row++)
+            {
+                if (row < seams.Count)
+                {
+                    Set(ProspectingActionText.SeamText(seams[row]), SeamTextProperty(row));
+                    Set(seams[row].Kind == ProspectingSeamKind.GemPocket ? new GuiColor(110, 200, 255) : new GuiColor(255, 190, 90), SeamColorProperty(row));
+                }
+                else
+                {
+                    Set(row == 0 && seams.Count == 0 ? "No seams found yet. A Survey looks for them." : string.Empty, SeamTextProperty(row));
+                    Set(GuiColor.Grey, SeamColorProperty(row));
+                }
+            }
         }
 
         /// <summary>The seams a harvester with Core Sample can see before finding them, or nothing for anyone else.</summary>
@@ -392,6 +409,9 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
             HeaderText = "Session over";
             CloseText = "Close";
             IsQuickHarvestEnabled = false;
+            if (_session != null)
+                RefreshMeters();
+
             if (!keepStatus && !string.IsNullOrEmpty(message))
                 StatusText = string.IsNullOrEmpty(StatusText) ? message : $"{StatusText} {message}";
 

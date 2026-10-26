@@ -85,7 +85,7 @@ Paths are under `SWLOR.Game.Server/`.
 | Gear stats | Item properties Control 88, Craftsmanship 89, CPBonus 115 (subtypes 1-4 = Smithery, Engineering, Fabrication, Agriculture), applied in `Feature/EquipmentStats.cs:929-1075`, stored per skill on `Player.Control`/`Craftsmanship`/`CPBonus` |
 | XP | `Service/Skill.XPChart.cs` (`GetDeltaXP`; 0 XP at 5+ ranks past the activity level) |
 | Saved data | `Player.UnlockedRecipes`, `Player.CraftedRecipes` (first craft per recipe), `ResearchJob`, blueprint item properties (`ItemPropertyType.Blueprint`) |
-| Stations | Placeables `smithery_bench`, `engineering_term`, `fabrication_term`, `cookpot`, `espionage_bench` (all `craft_on_used` with local `CRAFTING_SKILL_TYPE_ID`; the Espionage bench is module data only), `research_term`; StructureTypes Cookpot 219, EngineeringTerminal 220, FabricationTerminal 221, Refinery 222 (resref `cft_forge`), SmitheryBench 223, ResearchTerminal 272. Stations have no lock today: several players can craft at one station at once |
+| Stations | Placeables `smithery_bench`, `engineering_term`, `fabrication_term`, `cookpot`, `espionage_bench` (all `craft_on_used` with local `CRAFTING_SKILL_TYPE_ID`), `research_term`; StructureTypes Cookpot 219, EngineeringTerminal 220, FabricationTerminal 221, Refinery 222 (resref `cft_forge`), SmitheryBench 223, ResearchTerminal 272, EspionageWorkbench 436 (Fabrication recipe `EspionageWorkbench`). Stations have no lock today: several players can craft at one station at once |
 | NUI board precedent | `Feature/GuiDefinition/ViewModel/SlicingViewModel.cs` (Espionage slicing). No new minigame may copy slicing's tile-board play |
 | Balance tooling precedent | `SWLOR.CombatSim/` |
 

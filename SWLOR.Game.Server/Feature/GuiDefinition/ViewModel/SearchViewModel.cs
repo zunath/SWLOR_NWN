@@ -288,14 +288,32 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
             StyleButtonEnabled = enabled;
         }
 
+        /// <summary>
+        /// Shows the searches, the finds and the board as the visit now stands. The end view calls it too, so a finished visit shows its
+        /// final numbers and not the last ones drawn before the action that ended it.
+        /// </summary>
+        private void RefreshMeters()
+        {
+            var engine = _session.Engine;
+            SearchesText = SearchActionText.SearchesText(engine);
+            FindsText = $"Finds: {engine.Finds}";
+            SearchesPercent = engine.Setup.Searches <= 0 ? 0f : (float)engine.SearchesSpent / engine.Setup.Searches;
+
+            for (var spot = 0; spot < SpotCount; spot++)
+            {
+                var text = SearchActionText.SpotButtonText(engine, spot);
+                Set(spot == _selected ? $"> {text} <" : text, SpotTextProperty(spot));
+                Set(SearchActionText.SpotTooltip(engine, spot), SpotTooltipProperty(spot));
+                Set(SpotColorFor(engine, spot), SpotColorProperty(spot));
+            }
+        }
+
         private void RefreshBoard()
         {
             var engine = _session.Engine;
             HeaderText = BoardHeader;
             RefreshStyles();
-            SearchesText = SearchActionText.SearchesText(engine);
-            FindsText = $"Finds: {engine.Finds}";
-            SearchesPercent = engine.Setup.Searches <= 0 ? 0f : (float)engine.SearchesSpent / engine.Setup.Searches;
+            RefreshMeters();
             CloseText = "Leave the site";
 
             var canQuick = ScavengeSessions.CanQuickSearch(_session);
@@ -318,14 +336,6 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
                 QuickSearchColor = GuiColor.Grey;
                 QuickSearchTooltip = "Quick Search is only a choice before your first action.";
                 BoardLabelText = $"The board ({engine.Setup.Searches} searches, {engine.Setup.PromisingSpots} promising spots):";
-            }
-
-            for (var spot = 0; spot < SpotCount; spot++)
-            {
-                var text = SearchActionText.SpotButtonText(engine, spot);
-                Set(spot == _selected ? $"> {text} <" : text, SpotTextProperty(spot));
-                Set(SearchActionText.SpotTooltip(engine, spot), SpotTooltipProperty(spot));
-                Set(SpotColorFor(engine, spot), SpotColorProperty(spot));
             }
 
             if (_selected < 0)
@@ -357,6 +367,10 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
             QuickSearchEnabled = false;
             BoardLabelText = string.Empty;
             SelectedText = string.Empty;
+            _selected = -1;
+            if (_session != null)
+                RefreshMeters();
+
             RefreshStyles();
             SetStatus(message, GuiColor.Green);
 

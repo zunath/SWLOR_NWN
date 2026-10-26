@@ -13,6 +13,7 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition
     public class SearchDefinition : IGuiWindowDefinition
     {
         private const float PanelWidth = 560f;
+        private const float StatusTextHeight = 66f;
         private const float SpotWidth = 170f;
         private const float SpotHeight = 56f;
         private const float ActionButtonWidth = 130f;
@@ -83,7 +84,8 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition
                     row.AddGroup(panel =>
                     {
                         panel.SetShowBorder(false);
-                        panel.SetScrollbars(NuiScrollbars.None);
+                        // Auto: the host group only hands this panel the viewport height, so the panel is what scrolls on a short screen.
+                        panel.SetScrollbars(NuiScrollbars.Auto);
                         panel.AddColumn(AddContent);
                     })
                         .SetWidth(PanelWidth);
@@ -104,11 +106,13 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition
             });
             content.AddRow(row =>
             {
-                row.AddLabel()
+                // Wrapped text, not a one-line label: the result sentences run past one line.
+                row.AddText()
                     .BindText(model => model.StatusText)
                     .BindColor(model => model.StatusColor)
-                    .SetHeight(24f)
-                    .SetHorizontalAlign(NuiHorizontalAlign.Center);
+                    .SetHeight(StatusTextHeight)
+                    .SetShowBorder(false)
+                    .SetScrollbars(NuiScrollbars.None);
             });
 
             // Quick Search is the first choice, and the one the window encourages: the scavenger may take it at once or play the board.

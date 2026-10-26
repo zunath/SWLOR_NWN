@@ -131,7 +131,7 @@ def recipe_documentation_payload() -> dict[str, object]:
     for index, (resref, name, _tier, _template, _identity) in enumerate(content.SMITH_OUTPUTS):
         fiber, leather, _electronics = tier_materials[index]
         sheets["xl/worksheets/sheet37.xml"].append({
-            "row": 726 + index, "style": 6,
+            "style": 6,
             "cells": standard_cells("Smithery", smith_enums[index], smith_categories[index], name,
                                     index * 10 + 5, resref, "Armor", 1, [(fiber, 3), (leather, 2)]),
         })
@@ -141,19 +141,19 @@ def recipe_documentation_payload() -> dict[str, object]:
         cells = standard_cells("Agriculture", cooking_enums[index], "Food", name, index * 10 + 5,
                                resref, "Food", 1, [(herb, 2), (hunted, 2)])
         cells["AD"] = cells.pop("AC")
-        sheets["xl/worksheets/sheet39.xml"].append({"row": 512 + index, "style": 14, "cells": cells})
+        sheets["xl/worksheets/sheet39.xml"].append({"style": 14, "cells": cells})
 
     for index, (resref, name, _tier) in enumerate(content.FUSES):
         fiber, _leather, electronics = tier_materials[index]
         sheets["xl/worksheets/sheet38.xml"].append({
-            "row": 1815 + index, "style": 6,
+            "style": 6,
             "cells": standard_cells("Engineering", fuse_enums[index], "Tool", name, index * 10 + 5,
                                     resref, "N/A", 0, [(electronics, 3), (fiber, 2)]),
         })
     for index, (resref, name, _tier) in enumerate(content.CONCENTRATES):
         creature, herb = concentrate_components[index]
         sheets["xl/worksheets/sheet38.xml"].append({
-            "row": 1820 + index, "style": 6,
+            "style": 6,
             "cells": standard_cells("Espionage", concentrate_enums[index], "Poison", name, index * 10 + 6,
                                     resref, "N/A", 0, [(creature, 1), (herb, 2)]),
         })
@@ -166,16 +166,16 @@ def recipe_documentation_payload() -> dict[str, object]:
             "J": f"structure_{structure_id:04d}", "K": 1, "L": "Structure", "M": 1,
             "N": electronics, "O": 4, "P": fiber, "Q": 3, "AD": 0,
         }
-        sheets["xl/worksheets/sheet40.xml"].append({"row": 558 + index, "style": 6, "cells": cells})
+        sheets["xl/worksheets/sheet40.xml"].append({"style": 6, "cells": cells})
 
     return {
         "worksheets": sheets,
         "espionageDescriptions": {
-            "G18": "Can slice tier 1 lockboxes and terminals.",
-            "G22": "Can slice tier 2 lockboxes and terminals. Each rank above a target's tier grants +1 trace.",
-            "G25": "Can slice tier 3 lockboxes and terminals. Each rank above a target's tier grants +1 trace.",
-            "G30": "Can slice tier 4 lockboxes and terminals. Each rank above a target's tier grants +1 trace.",
-            "G32": "Can slice tier 5 lockboxes and terminals. Each rank above a target's tier grants +1 trace.",
+            "Slicing I": "Can slice tier 1 lockboxes and terminals.",
+            "Slicing II": "Can slice tier 2 lockboxes and terminals. Each rank above a target's tier grants +1 trace.",
+            "Slicing III": "Can slice tier 3 lockboxes and terminals. Each rank above a target's tier grants +1 trace.",
+            "Slicing IV": "Can slice tier 4 lockboxes and terminals. Each rank above a target's tier grants +1 trace.",
+            "Slicing V": "Can slice tier 5 lockboxes and terminals. Each rank above a target's tier grants +1 trace.",
         },
     }
 

@@ -13,8 +13,9 @@ do not automatically reach another checkout's build inputs.
 ## Repository contents
 
 Commit only each weapon or shield's finished MDL, DDS textures, MTR and DDS inventory icon.
-Keep new and replacement inventory artwork DDS-only; do not add TGA companions
-or registration stubs as an automatic workaround for native lookup failures.
+Keep inventory artwork in the DDS. An icon with no TGA in any layer also gets the
+8x8 TGA registration stub from `tools/FixWeaponInventoryIcons.py stubs`; stock
+clients then draw the DDS (see the guide's inventory lookup section).
 Keep imported GR2/DDS inputs, manifests, Blender files, per-model authoring scripts,
 fit data, previews and reports in ignored local staging such as `.tmp/blaster/`.
 Do not add them to Git for reproducibility or make validation/builds depend on them.
@@ -74,7 +75,8 @@ are rejected. Supply both `imp_shield_1` and `imp_shield_2` using
 `attachment_dummies` with measured root-space positions and unit XYZW
 quaternions. Preserve these impact-effect hooks separately from the grip.
 Use the exact **64-by-128** transparent icon canvas (64-by-96 logical artwork)
-and DDS-only replacement icons. Inspect the actual SWLOR left hand, rear grip,
+and DDS replacement icons, plus the 8x8 TGA registration stub when no TGA of that
+name exists in any layer. Inspect the actual SWLOR left hand, rear grip,
 forearm/body clearance, attack poses, ground model and native inventory icon.
 Follow the guide's shield fit and export schema.
 
@@ -133,10 +135,9 @@ Follow the guide's shield fit and export schema.
   client. If the model changes but its icon stays the same, inspect native icon
   discovery and resource precedence; do not regenerate already-correct artwork
   or claim the issue fixed from offline checks. See the guide's inventory lookup
-  section for the version-checked Windows client compatibility patch. Stock
-  8193.37-17 checks TGA presence for composite icons, so DDS-only slots need a
-  compatible client as well as correctly encoded artwork. A HAK/server update
-  alone cannot change that native check. Client patching is a separate opt-in;
-  do not silently modify an installed executable during model generation.
+  section. Stock 8193.37-17 checks TGA presence for composite and shield icons,
+  so a DDS icon with no TGA in any layer needs the registration stub; with it the
+  client draws the DDS. Client patching is a separate opt-in; do not silently
+  modify an installed executable during model generation.
   Report unresolved native lookup failures explicitly.
   Follow companion HAK PR rules when publishing; keep PR review artifacts local.

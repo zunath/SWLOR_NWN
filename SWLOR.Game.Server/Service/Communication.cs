@@ -17,7 +17,6 @@ namespace SWLOR.Game.Server.Service
 {
     public static class Communication
     {
-        private const string DMPossessedCreature = "COMMUNICATION_DM_POSSESSED_CREATURE";
         public const string EventCommsAreaVariable = "COMMS_EVENT_AREA";
         public const string SuppressChatAuditVariable = "SUPPRESS_CHAT_AUDIT";
         private const string DisabledChannelMessage = "This chat channel is disabled.";
@@ -77,28 +76,17 @@ namespace SWLOR.Game.Server.Service
         }
 
         /// <summary>
-        /// Whenever a DM possesses a creature, track the NPC on their object so that messages can be
-        /// sent to them during the possession.
+        /// Whenever a DM possesses a creature, clear its busy status to prevent ability usage issues.
+        /// This runs before the engine accepts the possession, and the engine refuses creatures that have a
+        /// master (familiars, henchmen, and other associates), so nothing here may assume the possession happened.
         /// </summary>
         [NWNEventHandler(ScriptName.OnDMPossessBefore)]
         [NWNEventHandler(ScriptName.OnDMPossessFullPowerBefore)]
         public static void OnDMPossess()
         {
-            var dm = OBJECT_SELF;
             var target = StringToObject(EventsPlugin.GetEventData("TARGET"));
-
-            // Unpossession - Remove the variable
-            if (!GetIsObjectValid(target))
+            if (GetIsObjectValid(target))
             {
-                dm = GetMaster(dm);
-                DeleteLocalObject(dm, DMPossessedCreature);
-            }
-            // Possession - Store the variable and clear busy status
-            else
-            {
-                SetLocalObject(dm, DMPossessedCreature, target);
-
-                // Clear busy status of the possessed creature to prevent ability usage issues
                 Activity.ClearBusy(target);
             }
         }
@@ -298,29 +286,7 @@ namespace SWLOR.Game.Server.Service
 
             if (needsAreaCheck)
             {
-                foreach (var player in allPlayersAndDMs)
-                {
-                    var target = player;
-                    var possessedNPC = GetLocalObject(player, DMPossessedCreature);
-                    if (GetIsObjectValid(possessedNPC))
-                    {
-                        target = possessedNPC;
-                    }
-
-                    var distance = GetDistanceBetween(sender, target);
-
-                    // Preserve the Master behavior for overhearing: anyone in the same area and
-                    // within the channel's local range can hear the message, regardless of party
-                    // membership or long-range Comms scope. Comms scope applies only to the party
-                    // member delivery pass above.
-                    if (GetArea(target) == GetArea(sender) &&
-                        distance <= distanceCheck &&
-                        !mutedDMs.Contains(target) &&
-                        !recipients.Contains(target))
-                    {
-                        recipients.Add(target);
-                    }
-                }
+                AddNearbyListeners(sender, allPlayersAndDMs, distanceCheck, mutedDMs, recipients);
             }
 
             if (outOfRangeCommsPartyMembers > 0)
@@ -478,6 +444,42 @@ namespace SWLOR.Game.Server.Service
                 }
 
                 SendProcessedChatMessage(channel, receiver, sender, speaker, finalMessageColored);
+            }
+        }
+
+        /// <summary>
+        /// Adds every player and DM who can overhear local speech: anyone in the sender's area and within range.
+        /// Each one is addressed by the creature they control, so a possessing DM hears through the possessed creature
+        /// and a DM back on their avatar hears through the avatar.
+        /// </summary>
+        /// <param name="sender">The creature that spoke.</param>
+        /// <param name="onlinePlayers">Every object returned by GetFirstPC/GetNextPC.</param>
+        /// <param name="distanceCheck">The channel's hearing range.</param>
+        /// <param name="mutedDMs">DMs, by the creature they control, whose Comms filter hides this message.</param>
+        /// <param name="recipients">The recipient list to add to.</param>
+        private static void AddNearbyListeners(
+            uint sender,
+            List<uint> onlinePlayers,
+            float distanceCheck,
+            HashSet<uint> mutedDMs,
+            List<uint> recipients)
+        {
+            foreach (var player in onlinePlayers)
+            {
+                var target = DMPresence.GetControlledCreature(player);
+                var distance = GetDistanceBetween(sender, target);
+
+                // Preserve the Master behavior for overhearing: anyone in the same area and
+                // within the channel's local range can hear the message, regardless of party
+                // membership or long-range Comms scope. Comms scope applies only to the party
+                // member delivery pass above.
+                if (GetArea(target) == GetArea(sender) &&
+                    distance <= distanceCheck &&
+                    !mutedDMs.Contains(target) &&
+                    !recipients.Contains(target))
+                {
+                    recipients.Add(target);
+                }
             }
         }
 

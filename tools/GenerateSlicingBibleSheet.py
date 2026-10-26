@@ -58,8 +58,8 @@ def direct_rewards() -> list[list[object]]:
         rows.append([source, tier, "Field Note", "Mutation", f"Field Note: {beast_name}", resref,
                      "Unique Slicing source", description(resref)])
 
-    for index, (resref, name, _tool_type, tier, _effect) in enumerate(content.TOOLS):
-        source = "Lockbox" if index < 5 else "Terminal"
+    for resref, name, _tool_type, tier, _effect in content.TOOLS + content.LADDER_TOOLS:
+        source = "Lockbox" if resref.startswith("slt_") else "Terminal"
         rows.append([source, tier, "Tool", "Consumable", name, resref, "One tool per attempt", description(resref)])
 
     source_order = {"Lockbox": 0, "Terminal": 1}
@@ -131,7 +131,7 @@ def recipe_documentation_payload() -> dict[str, object]:
     for index, (resref, name, _tier, _template, _identity) in enumerate(content.SMITH_OUTPUTS):
         fiber, leather, _electronics = tier_materials[index]
         sheets["xl/worksheets/sheet37.xml"].append({
-            "row": 726 + index, "style": 6,
+            "style": 6,
             "cells": standard_cells("Smithery", smith_enums[index], smith_categories[index], name,
                                     index * 10 + 5, resref, "Armor", 1, [(fiber, 3), (leather, 2)]),
         })
@@ -141,19 +141,19 @@ def recipe_documentation_payload() -> dict[str, object]:
         cells = standard_cells("Agriculture", cooking_enums[index], "Food", name, index * 10 + 5,
                                resref, "Food", 1, [(herb, 2), (hunted, 2)])
         cells["AD"] = cells.pop("AC")
-        sheets["xl/worksheets/sheet39.xml"].append({"row": 512 + index, "style": 14, "cells": cells})
+        sheets["xl/worksheets/sheet39.xml"].append({"style": 14, "cells": cells})
 
     for index, (resref, name, _tier) in enumerate(content.FUSES):
         fiber, _leather, electronics = tier_materials[index]
         sheets["xl/worksheets/sheet38.xml"].append({
-            "row": 1815 + index, "style": 6,
+            "style": 6,
             "cells": standard_cells("Engineering", fuse_enums[index], "Tool", name, index * 10 + 5,
                                     resref, "N/A", 0, [(electronics, 3), (fiber, 2)]),
         })
     for index, (resref, name, _tier) in enumerate(content.CONCENTRATES):
         creature, herb = concentrate_components[index]
         sheets["xl/worksheets/sheet38.xml"].append({
-            "row": 1820 + index, "style": 6,
+            "style": 6,
             "cells": standard_cells("Espionage", concentrate_enums[index], "Poison", name, index * 10 + 6,
                                     resref, "N/A", 0, [(creature, 1), (herb, 2)]),
         })
@@ -166,16 +166,16 @@ def recipe_documentation_payload() -> dict[str, object]:
             "J": f"structure_{structure_id:04d}", "K": 1, "L": "Structure", "M": 1,
             "N": electronics, "O": 4, "P": fiber, "Q": 3, "AD": 0,
         }
-        sheets["xl/worksheets/sheet40.xml"].append({"row": 558 + index, "style": 6, "cells": cells})
+        sheets["xl/worksheets/sheet40.xml"].append({"style": 6, "cells": cells})
 
     return {
         "worksheets": sheets,
         "espionageDescriptions": {
-            "G18": "Can slice tier 1 lockboxes and terminals.",
-            "G22": "Can slice tier 2 lockboxes and terminals. Each rank above a target's tier grants +1 trace.",
-            "G25": "Can slice tier 3 lockboxes and terminals. Each rank above a target's tier grants +1 trace.",
-            "G30": "Can slice tier 4 lockboxes and terminals. Each rank above a target's tier grants +1 trace.",
-            "G32": "Can slice tier 5 lockboxes and terminals. Each rank above a target's tier grants +1 trace.",
+            "Slicing I": "Can slice tier 1 lockboxes and terminals.",
+            "Slicing II": "Can slice tier 2 lockboxes and terminals. Each rank above a target's tier grants +1 trace.",
+            "Slicing III": "Can slice tier 3 lockboxes and terminals. Each rank above a target's tier grants +1 trace.",
+            "Slicing IV": "Can slice tier 4 lockboxes and terminals. Each rank above a target's tier grants +1 trace.",
+            "Slicing V": "Can slice tier 5 lockboxes and terminals. Each rank above a target's tier grants +1 trace.",
         },
     }
 
@@ -281,7 +281,7 @@ def build_sheet() -> Sheet:
     sheet.merged("Reward Weights and Failure Curve")
     sheet.table(["Band", "Weight / Chance", "", "", "", "", "", "Notes"], [
         ["Recovered supplies", "100%", "", "", "", "", "", "3-5 units of one tier-appropriate material, rolled independently and awarded alongside the weighted bonus."],
-        ["Tool bonus", "80%", "", "", "", "", "", "One tool matching the source and security tier. Named items, schematics, and field notes replace this bonus; they never replace the supplies."],
+        ["Tool bonus", "80%", "", "", "", "", "", "One tool matching the source and security tier, split evenly across that tier's pool: a tier N pool holds one tier N copy of each tool type the source unlocks through tier N (1 tool at tier 1 up to 5 at tier 5). Named items, schematics, and field notes replace this bonus; they never replace the supplies."],
         ["Named item", "12%", "", "", "", "", "", "Exceptional item is a 0.5% absolute sub-band, one per source/tier."],
         ["Schematic", "6%", "", "", "", "", "", "Lockbox and terminal schematic pools remain separate."],
         ["Field note", "2%", "", "", "", "", "", "Fifteen DiscoveryOnly mutation notes become Slicing rewards."],
@@ -300,11 +300,12 @@ def build_sheet() -> Sheet:
     sheet.table(["Tier", "Area Resref", "Spawn Table", "Node Count", "Respawn", "Placement", "", "Notes"], area_rows)
     sheet.blank()
 
-    sheet.merged("100 New Direct Rewards")
-    sheet.table(["Source", "Tier", "Pool Category", "Item Type", "Name", "Resref", "Requirement / Rarity", "Effect / Acquisition"], direct_rewards())
+    rewards = direct_rewards()
+    sheet.merged(f"{len(rewards)} Direct Rewards")
+    sheet.table(["Source", "Tier", "Pool Category", "Item Type", "Name", "Resref", "Requirement / Rarity", "Effect / Acquisition"], rewards)
     sheet.blank()
 
-    sheet.merged("Additional Craft Outputs (Beyond the 100 Direct Rewards)")
+    sheet.merged("Additional Craft Outputs (Beyond the Direct Rewards)")
     sheet.table(["Craft", "Tier", "Name", "Resref", "Output Type", "Quantity", "Rules", "Description"], craft_outputs())
     sheet.blank()
 

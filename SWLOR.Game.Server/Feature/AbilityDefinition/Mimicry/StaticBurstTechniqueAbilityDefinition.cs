@@ -33,7 +33,7 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.Mimicry
                 CombatDamageType.Electrical,
                 ResistanceType.Electrical,
                 VisualEffect.Vfx_Imp_Lightning_S,
-                VisualEffect.Vfx_Fnf_Storm,
+                VisualEffect.Vfx_Fnf_Electric_Explosion,
                 centerOnActivator: true,
                 afterSuccessfulHit: InnateAbility.ChainOnHit(InnateAbilityProfile.Mimicry, 2, 5f, 10, typeof(ShockStatusEffect), 30, CombatDamageType.Electrical, oncePerCast: true))
                 .DisplaysVisualEffectOnSuccessfulImpact(VisualEffect.Vfx_Ability_StaticBurstTechnique)

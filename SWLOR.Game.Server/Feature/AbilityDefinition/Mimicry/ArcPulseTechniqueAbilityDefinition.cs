@@ -33,7 +33,7 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.Mimicry
                 CombatDamageType.Electrical,
                 ResistanceType.Electrical,
                 VisualEffect.Vfx_Imp_Lightning_S,
-                VisualEffect.Vfx_Fnf_Storm,
+                VisualEffect.Fnf_Dispel,
                 centerOnActivator: true)
                 .DisplaysVisualEffectOnSuccessfulImpact(VisualEffect.Vfx_Ability_ArcPulseTechnique)
                 .SkillType(SkillType.Mimicry)

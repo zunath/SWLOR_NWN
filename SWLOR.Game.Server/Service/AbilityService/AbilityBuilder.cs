@@ -635,6 +635,16 @@ namespace SWLOR.Game.Server.Service.AbilityService
         }
 
         /// <summary>
+        /// Accepts a location cast past the max range; the ability's own handlers shorten the
+        /// destination toward the clicked point. Requires <see cref="HasMaxRange"/>.
+        /// </summary>
+        public AbilityBuilder ClampsLocationTargetToMaxRange()
+        {
+            _activeAbility.ClampsLocationTargetToMaxRange = true;
+            return this;
+        }
+
+        /// <summary>
         /// Adds a stamina requirement to use the ability at this level.
         /// </summary>
         /// <param name="requiredSTM">The amount of STM needed to use this ability at this level.</param>

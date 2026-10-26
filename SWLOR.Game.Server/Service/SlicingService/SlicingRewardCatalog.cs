@@ -147,15 +147,43 @@ namespace SWLOR.Game.Server.Service.SlicingService
         private static void AddTools()
         {
             Tool(SlicingSourceType.Lockbox, 1, "slt_ratchet", "Ratchet Bypass Pin");
+
+            Tool(SlicingSourceType.Lockbox, 2, "slt_ratchet2", "Ratchet Bypass Pin II");
             Tool(SlicingSourceType.Lockbox, 2, "slt_servo", "Reversible Servo Key");
+
+            Tool(SlicingSourceType.Lockbox, 3, "slt_ratchet3", "Ratchet Bypass Pin III");
+            Tool(SlicingSourceType.Lockbox, 3, "slt_servo3", "Reversible Servo Key III");
             Tool(SlicingSourceType.Lockbox, 3, "slt_shunt", "Phase-Shunt Fork");
+
+            Tool(SlicingSourceType.Lockbox, 4, "slt_ratchet4", "Ratchet Bypass Pin IV");
+            Tool(SlicingSourceType.Lockbox, 4, "slt_servo4", "Reversible Servo Key IV");
+            Tool(SlicingSourceType.Lockbox, 4, "slt_shunt4", "Phase-Shunt Fork IV");
             Tool(SlicingSourceType.Lockbox, 4, "slt_splice", "Mnemonic Trace Splice");
+
+            Tool(SlicingSourceType.Lockbox, 5, "slt_ratchet5", "Ratchet Bypass Pin V");
+            Tool(SlicingSourceType.Lockbox, 5, "slt_servo5", "Reversible Servo Key V");
+            Tool(SlicingSourceType.Lockbox, 5, "slt_shunt5", "Phase-Shunt Fork V");
+            Tool(SlicingSourceType.Lockbox, 5, "slt_splice5", "Mnemonic Trace Splice V");
             Tool(SlicingSourceType.Lockbox, 5, "slt_lattice", "Null-Signature Lattice");
 
             Tool(SlicingSourceType.Terminal, 1, "stt_sampler", "Continuity Sampler");
+
+            Tool(SlicingSourceType.Terminal, 2, "stt_sampler2", "Continuity Sampler II");
             Tool(SlicingSourceType.Terminal, 2, "stt_spectro", "Junction Spectrograph");
+
+            Tool(SlicingSourceType.Terminal, 3, "stt_sampler3", "Continuity Sampler III");
+            Tool(SlicingSourceType.Terminal, 3, "stt_spectro3", "Junction Spectrograph III");
             Tool(SlicingSourceType.Terminal, 3, "stt_echo", "Forward-Echo Decoder");
+
+            Tool(SlicingSourceType.Terminal, 4, "stt_sampler4", "Continuity Sampler IV");
+            Tool(SlicingSourceType.Terminal, 4, "stt_spectro4", "Junction Spectrograph IV");
+            Tool(SlicingSourceType.Terminal, 4, "stt_echo4", "Forward-Echo Decoder IV");
             Tool(SlicingSourceType.Terminal, 4, "stt_overlay", "Route-Overlay Prism");
+
+            Tool(SlicingSourceType.Terminal, 5, "stt_sampler5", "Continuity Sampler V");
+            Tool(SlicingSourceType.Terminal, 5, "stt_spectro5", "Junction Spectrograph V");
+            Tool(SlicingSourceType.Terminal, 5, "stt_echo5", "Forward-Echo Decoder V");
+            Tool(SlicingSourceType.Terminal, 5, "stt_overlay5", "Route-Overlay Prism V");
             Tool(SlicingSourceType.Terminal, 5, "stt_oracle", "Core-Pattern Oracle");
         }
 

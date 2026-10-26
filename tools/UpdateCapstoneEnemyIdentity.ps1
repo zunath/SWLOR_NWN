@@ -384,7 +384,7 @@ $signatureRoleSteps = @{
     Ranged = @(
         @{ Status = "ExposedStatusEffect"; DamageType = "Physical"; Resistance = "Trauma"; Animation = "FireForgetDodgeSide"; TargetVfx = "Vfx_Com_Special_Red_White"; AreaVfx = "Vfx_Fnf_Screen_Bump"; Category = "Harmful" },
         @{ Status = "SuppressionStatusEffect"; DamageType = "Physical"; Resistance = "Mind"; Animation = "FireForgetDodgeSide"; TargetVfx = "Vfx_Com_Special_Blue_Red"; AreaVfx = "Vfx_Fnf_Screen_Bump"; Category = "Control" },
-        @{ Status = "MarkedStatusEffect"; DamageType = "Electrical"; Resistance = "Electrical"; Animation = "FireForgetDodgeSide"; TargetVfx = "Vfx_Imp_Magical_Vision"; AreaVfx = "Vfx_Fnf_Storm"; Category = "Harmful" },
+        @{ Status = "MarkedStatusEffect"; DamageType = "Electrical"; Resistance = "Electrical"; Animation = "FireForgetDodgeSide"; TargetVfx = "Vfx_Imp_Magical_Vision"; AreaVfx = "Vfx_Fnf_Word"; Category = "Harmful" },
         @{ Status = "DisorientedStatusEffect"; DamageType = "Sonic"; Resistance = "Mind"; Animation = "FireForgetDodgeSide"; TargetVfx = "Vfx_Imp_Dazed_S"; AreaVfx = "Vfx_Fnf_Sound_Burst"; Category = "Control" },
         @{ Status = "ExposedStatusEffect"; DamageType = "Physical"; Resistance = "Trauma"; Animation = "FireForgetDodgeSide"; TargetVfx = "Vfx_Com_Special_Red_White"; AreaVfx = "Vfx_Fnf_Screen_Bump"; Category = "Harmful" }
     )
@@ -400,7 +400,7 @@ $signatureRoleSteps = @{
         @{ Status = "ImmobilizedStatusEffect"; DamageType = "Electrical"; Resistance = "Mobility"; Animation = "CastOutAnimation"; TargetVfx = "Vfx_Imp_Head_Electricity"; AreaVfx = "Dur_Web"; Category = "Control" },
         @{ Status = "DazedStatusEffect"; DamageType = "Sonic"; Resistance = "Mind"; Animation = "FireForgetTaunt"; TargetVfx = "Vfx_Imp_Dazed_S"; AreaVfx = "Vfx_Fnf_Gas_Explosion_Mind"; Category = "Control" },
         @{ Status = "WeaponJam1StatusEffect"; DamageType = "Electrical"; Resistance = "Disruption"; Animation = "CastOutAnimation"; TargetVfx = "Vfx_Imp_Lightning_M"; AreaVfx = "Vfx_Fnf_Electric_Explosion"; Category = "Control" },
-        @{ Status = "StunnedStatusEffect"; DamageType = "Electrical"; Resistance = "Mobility"; Animation = "CastOutAnimation"; TargetVfx = "Vfx_Imp_Lightning_S"; AreaVfx = "Vfx_Fnf_Storm"; Category = "Control" }
+        @{ Status = "StunnedStatusEffect"; DamageType = "Electrical"; Resistance = "Mobility"; Animation = "CastOutAnimation"; TargetVfx = "Vfx_Imp_Lightning_S"; AreaVfx = "Vfx_Fnf_Pwstun"; Category = "Control" }
     )
     Support = @(
         @{ Status = "MarkedStatusEffect"; DamageType = "Sonic"; Resistance = "Mind"; Animation = "FireForgetTaunt"; TargetVfx = "Vfx_Imp_Magical_Vision"; AreaVfx = "Vfx_Fnf_Howl_War_Cry"; Category = "Control" },

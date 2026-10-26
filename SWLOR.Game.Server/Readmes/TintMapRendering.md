@@ -542,18 +542,58 @@ installed banks or `--check` to verify them;
 every emote clip of every playable bridge. Rebuild `sw_anim_m.hak` and `sw_anim_f.hak`; no
 module repack or C# deploy is required.
 
+Stock body clips also animate attachment joints that have no part ID (part -1), and the
+engine applies those tracks by joint name: `belt_g1` repeats the pelvis sway so rigid belts
+turn with the hips, and the female clips turn `lshoulder_g`/`rshoulder_g` under the shoulder
+pads (pause1, walk, the two-handed clips). Bridge generation maps body tracks by part ID
+only (`Library.body_track_names`), so every robe phenotype lost them. Rigid belts (3 to 12,
+23 and every other belt that is not a skin) then stayed square to the root while the hips turned under them, offset
+and tilted against the robe-free body; skinned belts with part-skin aliases (19, 30, 31,
+110 to 114, 153, 223 to 227) are weighted to the pelvis and were unaffected.
+`RestoreRobeBodyTracks.py` copies every such track byte for byte, with its -1 part ID, from
+the wearer's body clip into the same clip of the eight playable-body bridges, exactly as the
+stock clip carries it. Joints whose body tracks never leave the bind pose (`cloak_g`, `head`
+and others) are left alone, and garment tracks, other body tracks and the skeleton stay
+byte-identical. Keeping part -1 matters: numbering these joints would renumber every robe
+root compiled against the bridge. `GenerateRobeRgbModels.py` applies the same restoration
+when it packages new bridges. Run
+`python -B SWLOR_Haks/tools/RestoreRobeBodyTracks.py --apply --game-data "<NWN>/data"` to
+repair the installed banks or `--check` to verify them;
+`python -B -m unittest discover -s SWLOR_Haks/tools -p "TestRestoreRobeBodyTracks.py"`
+(stock animations from `NWN_GAME_DATA` or the default Steam install) checks every playable
+bridge and replays idle, walk and run on a robe wearer against the plain body. Rebuild
+`sw_anim_m.hak` and `sw_anim_f.hak`; no module repack or C# deploy is required.
+
 Chest parts 154 (human bodies) and 269 (human, elf, half-orc and dwarf bodies) carry
 ankle-length coat skirts in the chest mesh. Each half of the skirt was weighted to its
 own thigh and shin, so striding pulled the halves apart: the back tore open and the legs
 showed through it. A chest part only reaches the normal body's bones, and a least-squares
-fit shows no blend of them reproduces robe 236's coat helpers. `ChestSkirtBindings.py`
-therefore moves every leg weight onto `pelvis_g`, as on rigid stock skirts, and keeps
-the other bones, the geometry, inverse binds and bone tables, so the bind shape is
-unchanged. Over the stock walk and run clips the worst skirt stretch drops below 1.4x
-(up to 11x before) and less leg shows behind the coat. Keeping even a quarter of the
-leg weight let the female chest 154 skirt tear again. The trade-off matches rigid stock
-skirts: when sitting or kneeling the coat no longer follows the legs and passes through
-the seat or the floor. The originals are read from the Git blobs recorded in
+fit shows no blend of them reproduces robe 236's coat helpers. The first repair moved every
+leg weight onto `pelvis_g`, as on rigid stock skirts. That stopped the tearing, but the
+coat then hung frozen while the legs strode through it (test-server report, October 2026).
+The body skeleton also carries the stock back belt flap (`fb1_g01`, `fb2_g01`, `fb4_g01`),
+which the walk, run, sit, kneel, knockdown and `sw_*` ability clips swing like coat tails.
+`ChestSkirtBindings.py` moves the leg weights onto the pelvis and then hangs a share of each
+skirt vertex from that flap, split between the two flap joints that bracket the vertex's
+height. The share depends only on the vertex's bind position: none above the top flap
+joint, full from the middle joint down, full at the back and easing to about two thirds
+at the sides and a sixth at the front. Neighbouring vertices therefore move together and
+the coat cannot tear. Chest 154 takes the full share and swings much like robe 236. Chest
+269's tail is one flat panel that trailed almost level behind runners at full share, so it
+takes 60% (`FLAP_STRENGTH`). The other bones, the geometry, inverse binds and bone tables
+stay as they were; the flap joints take free palette slots. The bind shape is unchanged.
+The engine pairs clip tracks with the wearer's joints by part ID, and the dwarf (Ugnaught,
+Ewok) and half-orc (Cathar) roots number their flap joints apart from `a_ba`, so their flaps
+never move (client-verified). Chest 269 on those bodies keeps the pelvis-only binding
+(`flaps_animated`). On the human and elf bodies, over the walk and run clips, the hem now
+moves 4.5 to 28 cm against the pelvis in each stride (at most 2.5 cm when hip-bound), no
+leg sample shows behind the coat (up to 55% hip-bound, on female 154 running), and the
+99.5th-percentile edge stretch stays at or below 1.72x (up to 13.7x with the original leg
+weights). Crouching or seated, the coat hangs from the hips instead of sticking out behind
+like a board or passing through the seat.
+A few clips carry no flap tracks (`runfl`, `runfr`, `pausewalkfl`, `pausewalkfr`, injured
+walks and some custom emotes); there the coat holds its previous pose, as stock tabards do.
+The originals are read from the Git blobs recorded in
 `ChestSkirtBindings.json`. Other chest styles with leg-weighted coat tails (003, 027 to
 029, 059, 065, 072, 128, 155, 276, 290, 300, 310) are unchanged.
 Run `python -B SWLOR_Haks/tools/ChestSkirtBindings.py --apply`, then

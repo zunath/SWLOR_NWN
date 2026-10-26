@@ -33,7 +33,7 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.Mimicry
                 CombatDamageType.Electrical,
                 ResistanceType.Electrical,
                 VisualEffect.Vfx_Imp_Lightning_S,
-                VisualEffect.Vfx_Fnf_Storm)
+                VisualEffect.Vfx_Fnf_Mystical_Explosion)
                 .DisplaysVisualEffectOnSuccessfulImpact(VisualEffect.Vfx_Ability_IonBurstTechnique)
                 .SkillType(SkillType.Mimicry)
                 .Level(1)

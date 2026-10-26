@@ -556,12 +556,19 @@ skirt vertex from that flap, split between the two flap joints that bracket the 
 height. The share depends only on the vertex's bind position: none above the top flap
 joint, full from the middle joint down, full at the back and easing to about two thirds
 at the sides and a sixth at the front. Neighbouring vertices therefore move together and
-the coat cannot tear. The other bones, the geometry, inverse binds and bone tables stay as
-they were; the flap joints take free palette slots. The bind shape is unchanged.
-Over the walk and run clips the hem now moves 6 to 39 cm against the pelvis in each
-stride (at most 3 cm when hip-bound), at most 4% of the leg samples show behind the coat
-(up to 55% hip-bound, on female 154 running), and the 99.5th-percentile edge stretch
-stays at or below 1.8x (up to 13.7x with the original leg weights). Seated, the coat drapes back from the hips instead of passing through the seat.
+the coat cannot tear. Chest 154 takes the full share and swings much like robe 236. Chest
+269's tail is one flat panel that trailed almost level behind runners at full share, so it
+takes 60% (`FLAP_STRENGTH`). The other bones, the geometry, inverse binds and bone tables
+stay as they were; the flap joints take free palette slots. The bind shape is unchanged.
+The engine pairs clip tracks with the wearer's joints by part ID, and the dwarf (Ugnaught,
+Ewok) and half-orc (Cathar) roots number their flap joints apart from `a_ba`, so their flaps
+never move (client-verified). Chest 269 on those bodies keeps the pelvis-only binding
+(`flaps_animated`). On the human and elf bodies, over the walk and run clips, the hem now
+moves 4.5 to 28 cm against the pelvis in each stride (at most 2.5 cm when hip-bound), no
+leg sample shows behind the coat (up to 55% hip-bound, on female 154 running), and the
+99.5th-percentile edge stretch stays at or below 1.72x (up to 13.7x with the original leg
+weights). Crouching or seated, the coat hangs from the hips instead of sticking out behind
+like a board or passing through the seat.
 A few clips carry no flap tracks (`runfl`, `runfr`, `pausewalkfl`, `pausewalkfr`, injured
 walks and some custom emotes); there the coat holds its previous pose, as stock tabards do.
 The originals are read from the Git blobs recorded in

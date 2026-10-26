@@ -1,4 +1,4 @@
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using SWLOR.Game.Server.Core;
@@ -454,26 +454,27 @@ namespace SWLOR.Game.Server.Service
         /// </summary>
         /// <param name="sender">The creature that spoke.</param>
         /// <param name="onlinePlayers">Every object returned by GetFirstPC/GetNextPC.</param>
-        /// <param name="range">The channel's hearing range.</param>
+        /// <param name="distanceCheck">The channel's hearing range.</param>
         /// <param name="mutedDMs">DMs, by the creature they control, whose Comms filter hides this message.</param>
         /// <param name="recipients">The recipient list to add to.</param>
         private static void AddNearbyListeners(
             uint sender,
             List<uint> onlinePlayers,
-            float range,
+            float distanceCheck,
             HashSet<uint> mutedDMs,
             List<uint> recipients)
         {
             foreach (var player in onlinePlayers)
             {
                 var target = DMPresence.GetControlledCreature(player);
+                var distance = GetDistanceBetween(sender, target);
 
                 // Preserve the Master behavior for overhearing: anyone in the same area and
                 // within the channel's local range can hear the message, regardless of party
                 // membership or long-range Comms scope. Comms scope applies only to the party
                 // member delivery pass above.
                 if (GetArea(target) == GetArea(sender) &&
-                    GetDistanceBetween(sender, target) <= range &&
+                    distance <= distanceCheck &&
                     !mutedDMs.Contains(target) &&
                     !recipients.Contains(target))
                 {

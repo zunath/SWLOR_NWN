@@ -161,9 +161,9 @@ public class PlayerFacingNameBroadcastTests
         communicationSource.Should().Contain("var distance = GetDistanceBetween(sender, target);");
         normalizedCommunicationSource.Should().Contain(
             "if (GetArea(target) == GetArea(sender) &&\n" +
-            "                        distance <= distanceCheck &&\n" +
-            "                        !mutedDMs.Contains(target) &&\n" +
-            "                        !recipients.Contains(target))");
+            "                    distance <= distanceCheck &&\n" +
+            "                    !mutedDMs.Contains(target) &&\n" +
+            "                    !recipients.Contains(target))");
         communicationSource.Should().NotContain("channel != ChatChannel.PlayerParty || IsCommsReceiverInRange(sender, target)");
         communicationSource.Should().Contain("Comms scope applies only to the party");
         communicationSource.Should().Contain("else if (IsWhisperChannel(channel))");

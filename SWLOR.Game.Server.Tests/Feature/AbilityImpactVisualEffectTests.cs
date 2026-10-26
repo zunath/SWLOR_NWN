@@ -181,9 +181,16 @@ public class AbilityImpactVisualEffectTests
         var root = FindRepositoryRoot();
         var source = File.ReadAllText(Path.Combine(root,
             "SWLOR.Game.Server/Feature/AbilityDefinition/Mimicry/StaticBurstTechniqueAbilityDefinition.cs"));
-        source.Should().Contain("VisualEffect.Vfx_Fnf_Electric_Explosion",
-            "row 151 (Vfx_Fnf_Storm) is a blank placeholder that renders nothing");
-        source.Should().NotContain("VisualEffect.Vfx_Fnf_Storm");
+        source.Should().Contain("VisualEffect.Vfx_Fnf_Electric_Explosion");
+
+        // Row 151 (Vfx_Fnf_Storm) is a blank placeholder that renders nothing.
+        foreach (var file in Directory.GetFiles(
+                     Path.Combine(root, "SWLOR.Game.Server", "Feature", "AbilityDefinition"), "*.cs",
+                     SearchOption.AllDirectories))
+        {
+            File.ReadAllText(file).Should().NotContain("VisualEffect.Vfx_Fnf_Storm",
+                $"{Path.GetFileName(file)} must not use the blank Vfx_Fnf_Storm row");
+        }
 
         var table = File.ReadAllLines(Path.Combine(root, "SWLOR_Haks", "sw_2da", "visualeffects.2da"));
         var header = Regex.Split(table.First(line => line.TrimStart().StartsWith("Label ")).Trim(), @"\s+");

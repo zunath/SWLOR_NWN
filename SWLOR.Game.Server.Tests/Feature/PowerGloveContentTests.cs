@@ -189,6 +189,33 @@ public class PowerGloveContentTests
             leftMax.X.Should().BeApproximately(-rightMin.X, .0001f, $"wpl_{native} mirrors the right hand across X");
             leftMin.Y.Should().BeApproximately(rightMin.Y, .0001f, $"wpl_{native} keeps the punching axis");
             leftMax.Y.Should().BeApproximately(rightMax.Y, .0001f, $"wpl_{native} keeps the punching axis");
+            var rightPosition = MeshPosition(right);
+            var leftPosition = MeshPosition(left);
+            leftPosition.X.Should().BeApproximately(-rightPosition.X, .0001f, $"wpl_{native} mirrors the right hand's offset");
+            leftPosition.Y.Should().BeApproximately(rightPosition.Y, .0001f, $"wpl_{native} keeps the right hand's offset");
+            leftPosition.Z.Should().BeApproximately(rightPosition.Z, .0001f, $"wpl_{native} sits as high on the fist as the right hand");
+        }
+    }
+
+    [Test]
+    public void VisibleModelsSitOnTheFistInsteadOfHangingBelowIt()
+    {
+        // The rhand/lhand hook sits in the palm, and the fist runs from about 6-11 cm below it (the knuckles of
+        // the playable hands) to the wrist above it. Every design was authored with its grip at the hook and its
+        // plate hanging under it, which drew the weapon below the fist; each model is lifted on its mesh node
+        // (+3 cm for the full gloves, +8 cm for the knuckle dusters and claws) so its middle is on the fist.
+        var folder = Path.Combine(Root(), "SWLOR_Haks/sw_weapon");
+        foreach (var id in new PowerGloveAppearanceDefinition().MiddleParts.Where(id => id != 106))
+        foreach (var itemClass in new[] { "wpg", "wpl" })
+        {
+            var resref = $"{itemClass}_m_{id % 100 * 10 + id / 100:000}";
+            var model = File.ReadAllBytes(Path.Combine(folder, resref + ".mdl"));
+            var (min, max) = MeshBounds(model);
+            var lift = MeshPosition(model).Z;
+            var bottom = min.Z + lift;
+            var center = (min.Z + max.Z) / 2 + lift;
+            bottom.Should().BeGreaterThanOrEqualTo(-.11f, $"{resref} must not hang below the knuckles");
+            center.Should().BeInRange(-.02f, .05f, $"{resref} must be centered on the fist, not below or above it");
         }
     }
 
@@ -196,13 +223,33 @@ public class PowerGloveContentTests
     {
         // Compiled offsets are relative to the 12-byte file header: geometry root, its first child, then that
         // trimesh's bounding box after the 112-byte node header.
+        var mesh = MeshNode(model) + 112 + 0x14;
+        return (ReadVector(model, mesh), ReadVector(model, mesh + 12));
+    }
+
+    private static System.Numerics.Vector3 MeshPosition(byte[] model)
+    {
+        // The mesh node's static position controller (type 8): its 12-byte key gives the first value index into
+        // the node's controller data array.
+        var node = MeshNode(model);
+        var keys = 12 + (int)BitConverter.ToUInt32(model, node + 84);
+        var keyCount = (int)BitConverter.ToUInt32(model, node + 88);
+        var values = 12 + (int)BitConverter.ToUInt32(model, node + 96);
+        for (var key = keys; key < keys + keyCount * 12; key += 12)
+            if (BitConverter.ToUInt32(model, key) == 8)
+                return ReadVector(model, values + BitConverter.ToUInt16(model, key + 8) * 4);
+        throw new InvalidDataException("Power Glove mesh has no position controller.");
+    }
+
+    private static int MeshNode(byte[] model)
+    {
         var root = 12 + (int)BitConverter.ToUInt32(model, 12 + 72);
         var children = 12 + (int)BitConverter.ToUInt32(model, root + 72);
-        var mesh = 12 + (int)BitConverter.ToUInt32(model, children) + 112 + 0x14;
-        System.Numerics.Vector3 Read(int offset) => new(BitConverter.ToSingle(model, offset),
-            BitConverter.ToSingle(model, offset + 4), BitConverter.ToSingle(model, offset + 8));
-        return (Read(mesh), Read(mesh + 12));
+        return 12 + (int)BitConverter.ToUInt32(model, children);
     }
+
+    private static System.Numerics.Vector3 ReadVector(byte[] model, int offset) => new(BitConverter.ToSingle(model, offset),
+        BitConverter.ToSingle(model, offset + 4), BitConverter.ToSingle(model, offset + 8));
 
     private static (int Property, int Subtype, int Cost, int Table) PropertyBudget(JsonElement property) =>
         (Int(property, "PropertyName"), Int(property, "Subtype"), Int(property, "CostValue"), Int(property, "CostTable"));

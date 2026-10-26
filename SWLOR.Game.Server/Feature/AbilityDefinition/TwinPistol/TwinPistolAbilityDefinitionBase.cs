@@ -48,7 +48,9 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.TwinPistol
 
             if (spec.Movement == TwinPistolMovementType.FreeDestination)
             {
+                // A click past the dash's reach still rushes the full distance toward it.
                 builder.IsAreaAbility()
+                    .ClampsLocationTargetToMaxRange()
                     .HasTargetingLine(targetingSpell, spec.MaxMovementMeters, spec.LineWidthMeters,
                         AbilityTargetingFlags.HarmsEnemies | AbilityTargetingFlags.OriginOnSelf);
             }

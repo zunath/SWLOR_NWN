@@ -26,10 +26,17 @@ public static unsafe class WeaponRepositioning
     // The native move cycles these base run clips; the weapon carry layers would pin the arms.
     private static readonly string[] RunAnimations = { "run", "runfl", "runfr" };
     private static readonly string[] RunCarryLayers = { "run_swordr", "run_swordl", "run_bowl", "run_shieldl" };
+    /// <summary>Tags the temporary ghost effect that lets a pass-through move ignore creature collision.</summary>
+    public const string PassThroughEffectTag = "WEAPON_REPOSITION_PASS_THROUGH";
 
     public static bool IsMoving(uint actor) => _moving.ContainsKey(actor);
 
-    public static string Validate(uint actor, Location origin, Location destination, float minimumDistance, float maximumDistance)
+    /// <param name="passThroughCreatures">
+    /// Creatures along the path do not block the move, which travels as a cutscene ghost; it must still
+    /// end clear of every creature body. Walls, placeables, doors and walkmesh limits apply either way.
+    /// </param>
+    public static string Validate(uint actor, Location origin, Location destination, float minimumDistance, float maximumDistance,
+        bool passThroughCreatures = false)
     {
         if (!GetIsObjectValid(actor) || GetIsDead(actor) || GetCurrentHitPoints(actor) <= 0)
             return "You cannot reposition now.";
@@ -52,15 +59,22 @@ public static unsafe class WeaponRepositioning
         // Unlike GetPathExists, this engine query includes closed doors and placeable collision.
         if (nativeArea == null || nativeArea.TestDirectLine(start.X, start.Y, end.X, end.Y, personalSpace, height, 0) != 1)
             return "The direct movement path is blocked.";
-        // The native query can ignore friendly creatures. Explicitly preserve their occupied space too.
-        for (var other = GetFirstObjectInArea(area); GetIsObjectValid(other); other = GetNextObjectInArea(area))
+        if (passThroughCreatures)
         {
-            if (other == actor || GetObjectType(other) != ObjectType.Creature || GetIsDead(other)) continue;
-            var otherPosition = GetPosition(other);
-            if (Math.Abs(otherPosition.Z - start.Z) > Math.Max(height, CreaturePlugin.GetHeight(other))) continue;
-            var otherRadius = Math.Max(0.1f, CreaturePlugin.GetCreaturePersonalSpace(other));
-            if (IntersectsOccupiedCircle(start, end, otherPosition, personalSpace + otherRadius))
-                return "The direct movement path is blocked by another creature.";
+            if (IsEndpointOccupied(actor, end)) return "The destination is occupied by another creature.";
+        }
+        else
+        {
+            // The native query can ignore friendly creatures. Explicitly preserve their occupied space too.
+            for (var other = GetFirstObjectInArea(area); GetIsObjectValid(other); other = GetNextObjectInArea(area))
+            {
+                if (other == actor || GetObjectType(other) != ObjectType.Creature || GetIsDead(other)) continue;
+                var otherPosition = GetPosition(other);
+                if (Math.Abs(otherPosition.Z - start.Z) > Math.Max(height, CreaturePlugin.GetHeight(other))) continue;
+                var otherRadius = Math.Max(0.1f, CreaturePlugin.GetCreaturePersonalSpace(other));
+                if (IntersectsOccupiedCircle(start, end, otherPosition, personalSpace + otherRadius))
+                    return "The direct movement path is blocked by another creature.";
+            }
         }
         var depth = Math.Max(64, GetAreaSize(Dimension.Width, area) * GetAreaSize(Dimension.Height, area));
         if (!AreaPlugin.GetPathExists(area, start, end, depth)) return "The destination is unreachable.";
@@ -103,6 +117,24 @@ public static unsafe class WeaponRepositioning
             : string.Empty;
     }
 
+    /// <summary>True when standing at <paramref name="end"/> would overlap another living creature's body.</summary>
+    public static bool IsEndpointOccupied(uint actor, NumericsVector3 end)
+    {
+        var area = GetArea(actor);
+        var personalSpace = Math.Max(0.1f, CreaturePlugin.GetPersonalSpace(actor));
+        var height = Math.Max(0.5f, CreaturePlugin.GetHeight(actor));
+        for (var other = GetFirstObjectInArea(area); GetIsObjectValid(other); other = GetNextObjectInArea(area))
+        {
+            if (other == actor || GetObjectType(other) != ObjectType.Creature || GetIsDead(other)) continue;
+            var otherPosition = GetPosition(other);
+            if (Math.Abs(otherPosition.Z - end.Z) > Math.Max(height, CreaturePlugin.GetHeight(other))) continue;
+            var otherRadius = Math.Max(0.1f, CreaturePlugin.GetCreaturePersonalSpace(other));
+            if (NumericsVector2.Distance(new(end.X, end.Y), new(otherPosition.X, otherPosition.Y)) < personalSpace + otherRadius)
+                return true;
+        }
+        return false;
+    }
+
     public static bool IntersectsOccupiedCircle(NumericsVector3 origin, NumericsVector3 destination, NumericsVector3 body, float radius)
     {
         var start = new NumericsVector2(origin.X, origin.Y);
@@ -116,16 +148,18 @@ public static unsafe class WeaponRepositioning
     }
 
     /// <param name="travelAnimation">Authored clip shown instead of running for this move, or null for the native run.</param>
-    public static void Begin(uint actor, Location destination, Action<bool, float> onArrival, string travelAnimation = null)
+    /// <param name="passThroughCreatures">Travel as a cutscene ghost so creatures on the path do not block it.</param>
+    public static void Begin(uint actor, Location destination, Action<bool, float> onArrival, string travelAnimation = null,
+        bool passThroughCreatures = false)
     {
-        var validation = Validate(actor, GetLocation(actor), destination, 0f, 6f);
+        var validation = Validate(actor, GetLocation(actor), destination, 0f, 6f, passThroughCreatures);
         if (!string.IsNullOrEmpty(validation)) { onArrival(false, 0f); return; }
         var operation = new WeaponRepositioningOperation
         {
             Actor = actor, Area = GetArea(actor), Origin = GetPosition(actor), Destination = GetPositionFromLocation(destination),
             MainHand = GetItemInSlot(InventorySlot.RightHand, actor), OffHand = GetItemInSlot(InventorySlot.LeftHand, actor),
             Started = Environment.TickCount64, OnArrival = onArrival, LastPosition = GetPosition(actor),
-            TravelAnimation = travelAnimation,
+            TravelAnimation = travelAnimation, PassesThroughCreatures = passThroughCreatures,
         };
         _moving[actor] = operation;
         foreach (var expired in _lockouts.Where(pair => pair.Value <= operation.Started && !_moving.ContainsKey(pair.Key))
@@ -137,6 +171,7 @@ public static unsafe class WeaponRepositioning
             if (!_moving.TryGetValue(actor, out var current) || current.Id != operation.Id) return;
             ClearAllActions();
             ApplyTravelAnimation(operation);
+            ApplyPassThrough(operation);
             ActionMoveToLocation(Location(operation.Area, operation.Destination, GetFacing(actor)), true);
             operation.ActionGroup = GetActionGroup(actor);
             ActionDoCommand(() => Finish(operation, IsCurrentAndValid(operation) && IsInsideCapturedCorridor(operation) &&
@@ -202,6 +237,7 @@ public static unsafe class WeaponRepositioning
         if (!_moving.TryGetValue(operation.Actor, out var current) || current.Id != operation.Id) return;
         _moving.Remove(operation.Actor);
         RestoreTravelAnimation(operation);
+        RemovePassThrough(operation.Actor);
         if (stopOwnedMove && GetIsObjectValid(operation.Actor) && operation.ActionGroup.HasValue &&
             GetActionGroup(operation.Actor) == operation.ActionGroup)
             AssignCommand(operation.Actor, () =>
@@ -225,6 +261,21 @@ public static unsafe class WeaponRepositioning
         if (string.IsNullOrEmpty(operation.TravelAnimation) || !GetIsObjectValid(operation.Actor)) return;
         foreach (var name in RunAnimations) ReplaceObjectAnimation(operation.Actor, name);
         foreach (var name in RunCarryLayers) ReplaceObjectAnimation(operation.Actor, name);
+    }
+
+    private static void ApplyPassThrough(WeaponRepositioningOperation operation)
+    {
+        if (!operation.PassesThroughCreatures) return;
+        // The arrival timeout ends the move well before this lapses; Finish removes it on every outcome.
+        var ghost = TagEffect(SupernaturalEffect(EffectCutsceneGhost()), PassThroughEffectTag);
+        ApplyEffectToObject(DurationType.Temporary, ghost, operation.Actor, ArrivalTimeoutMilliseconds / 1000f + 1f);
+    }
+
+    private static void RemovePassThrough(uint actor)
+    {
+        if (!GetIsObjectValid(actor)) return;
+        for (var effect = GetFirstEffect(actor); GetIsEffectValid(effect); effect = GetNextEffect(actor))
+            if (GetEffectTag(effect) == PassThroughEffectTag) RemoveEffect(actor, effect);
     }
 
     private static bool IsInsideCapturedCorridor(WeaponRepositioningOperation operation)

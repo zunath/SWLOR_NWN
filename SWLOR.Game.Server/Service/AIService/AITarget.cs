@@ -67,7 +67,8 @@ namespace SWLOR.Game.Server.Service.AIService
             return context =>
             {
                 var target = context.CurrentEnmityTarget;
-                if (target == OBJECT_INVALID || !GetIsObjectValid(target))
+                // The area centers on this target, so a visible bystander must not draw it onto a hidden one.
+                if (target == OBJECT_INVALID || !GetIsObjectValid(target) || Stealth.IsHiddenFrom(context.Self, target))
                     return OBJECT_INVALID;
 
                 context.SetEvaluatedTarget(target);

@@ -56,6 +56,47 @@ namespace SWLOR.Game.Server.Tests.Service
             }
         }
 
+        [TestCase(9f)]
+        [TestCase(20f)]
+        [TestCase(6.01f)]
+        public void RushClickPastReachDashesTheFullDistance(float clicked)
+        {
+            Assert.That(TwinPistolAbility.RushEndpointLengths(clicked, 2f, 6f).First(), Is.EqualTo(6f).Within(.001f));
+        }
+
+        [Test]
+        public void RushClickWithinReachKeepsItsDistance()
+        {
+            Assert.That(TwinPistolAbility.RushEndpointLengths(4.2f, 2f, 6f).First(), Is.EqualTo(4.2f).Within(.001f));
+        }
+
+        [Test]
+        public void RushClickShortOfTheMinimumIsNotLengthened()
+        {
+            Assert.That(TwinPistolAbility.RushEndpointLengths(1f, 2f, 6f), Is.EqualTo(new[] { 1f }),
+                "movement validation still refuses a dash shorter than two meters");
+        }
+
+        [Test]
+        public void RushEndpointOnACreatureShiftsFartherThenNearerWithinLimits()
+        {
+            var lengths = TwinPistolAbility.RushEndpointLengths(4f, 2f, 6f).ToArray();
+            Assert.That(lengths.Take(5), Is.EqualTo(new[] { 4f, 4.25f, 3.75f, 4.5f, 3.5f }).Within(.001f));
+            Assert.That(lengths, Is.All.InRange(2f, 6f));
+            var atReach = TwinPistolAbility.RushEndpointLengths(12f, 2f, 6f).ToArray();
+            Assert.That(atReach.Take(3), Is.EqualTo(new[] { 6f, 5.75f, 5.5f }).Within(.001f),
+                "a clamped endpoint can only shift nearer");
+            Assert.That(atReach.Min(), Is.EqualTo(4f).Within(.001f), "the search stays within two meters of the click");
+        }
+
+        [Test]
+        public void RushHasNoEndpointWithoutADistanceOrValidLimits()
+        {
+            Assert.That(TwinPistolAbility.RushEndpointLengths(0f, 2f, 6f), Is.Empty);
+            Assert.That(TwinPistolAbility.RushEndpointLengths(float.NaN, 2f, 6f), Is.Empty);
+            Assert.That(TwinPistolAbility.RushEndpointLengths(4f, 6f, 2f), Is.Empty);
+        }
+
         [Test]
         public void AiRushHasNoEndpointWhenTheTargetIsOutOfReach()
         {

@@ -182,7 +182,79 @@ namespace SWLOR.Game.Server.Service
                 xp += (int)(xp * bonusPercentage);
             }
 
+            AddXP(player, dbBeast, xp, maxBeastLevel);
 
+            DB.Set(dbBeast);
+            ApplyStats(beast);
+
+            Gui.PublishRefreshEvent(player, new BeastGainXPRefreshEvent());
+        }
+
+        /// <summary>
+        /// Gives RP XP to one of the player's beasts, whether it is out or in the stables.
+        /// The award is capped so no XP is lost, and XP bonuses do not apply.
+        /// </summary>
+        /// <param name="player">The beast's owner</param>
+        /// <param name="beastId">The beast to receive the XP</param>
+        /// <param name="xp">The RP XP to give</param>
+        /// <returns>The XP the beast accepted</returns>
+        public static int GiveBeastRPXP(uint player, string beastId, int xp)
+        {
+            var dbBeast = DB.Get<Beast>(beastId);
+            if (dbBeast == null || dbBeast.OwnerPlayerId != GetObjectUUID(player))
+                return 0;
+
+            var tamePerkLevel = Perk.GetPerkLevel(player, PerkType.Tame);
+            var amount = Math.Min(xp, GetMaxDistributableXP(dbBeast, GetBeastLevelCap(tamePerkLevel)));
+            if (amount <= 0)
+                return 0;
+
+            var beast = GetAssociate(AssociateType.Henchman, player);
+            if (IsPlayerBeast(beast) && GetBeastId(beast) == beastId)
+            {
+                GiveBeastXP(beast, amount, true);
+            }
+            else
+            {
+                AddXP(player, dbBeast, amount, tamePerkLevel * 10);
+                DB.Set(dbBeast);
+                Gui.PublishRefreshEvent(player, new BeastGainXPRefreshEvent());
+            }
+
+            return amount;
+        }
+
+        /// <summary>
+        /// Retrieves the highest level a beast can reach with the given Tame perk level.
+        /// </summary>
+        public static int GetBeastLevelCap(int tamePerkLevel)
+        {
+            return Math.Clamp(tamePerkLevel * 10, 0, MaxLevel);
+        }
+
+        /// <summary>
+        /// Calculates how much XP a beast can take before it reaches its level cap, so none is lost.
+        /// </summary>
+        /// <param name="dbBeast">The beast entity</param>
+        /// <param name="levelCap">The highest level the beast can reach</param>
+        /// <returns>The maximum amount of XP that can be safely distributed</returns>
+        public static int GetMaxDistributableXP(Beast dbBeast, int levelCap)
+        {
+            levelCap = Math.Min(levelCap, MaxLevel);
+            var totalXP = 0L;
+            var currentXP = dbBeast.XP;
+
+            for (var level = dbBeast.Level; level < levelCap; level++)
+            {
+                totalXP += Math.Max(0, GetRequiredXP(level, dbBeast.XPPenaltyPercent) - currentXP);
+                currentXP = 0;
+            }
+
+            return (int)Math.Min(totalXP, int.MaxValue);
+        }
+
+        private static void AddXP(uint player, Beast dbBeast, int xp, int maxBeastLevel)
+        {
             var requiredXP = GetRequiredXP(dbBeast.Level, dbBeast.XPPenaltyPercent);
 
             dbBeast.XP += xp;
@@ -216,11 +288,6 @@ namespace SWLOR.Game.Server.Service
 
                 SendMessageToPC(player, $"{dbBeast.Name} reaches level {dbBeast.Level}!");
             }
-
-            DB.Set(dbBeast);
-            ApplyStats(beast);
-
-            Gui.PublishRefreshEvent(player, new BeastGainXPRefreshEvent());
         }
 
         public static int GetRequiredXP(int level, int xpPenalty)
@@ -418,7 +485,10 @@ namespace SWLOR.Game.Server.Service
             if (!_deltaXP.ContainsKey(delta))
                 return;
 
+            // Beasts get the same area XP bonus as their master's skills.
             var xp = _deltaXP[delta];
+            var areaBonus = GetLocalInt(GetArea(npc), "AREA_XP_BONUS_PERCENTAGE") * 0.01f;
+            xp += (int)(xp * areaBonus);
             GiveBeastXP(beast, xp, false);
         }
 
@@ -581,107 +651,107 @@ namespace SWLOR.Game.Server.Service
 
         private static readonly Dictionary<int, int> _beastXPRequirements = new()
         {
-            { 0,   2200 },
-            { 1,   3300 },
-            { 2,   4400 },
-            { 3,   5500 },
-            { 4,   6600 },
-            { 5,   7700 },
-            { 6,   8800 },
-            { 7,   9680 },
-            { 8,   10560 },
-            { 9,   11440 },
-            { 10,  12320 },
-            { 11,  16800 },
-            { 12,  17920 },
-            { 13,  19040 },
-            { 14,  20160 },
-            { 15,  21280 },
-            { 16,  22400 },
-            { 17,  23520 },
-            { 18,  24640 },
-            { 19,  25760 },
-            { 20,  26880 },
-            { 21,  34000 },
-            { 22,  34680 },
-            { 23,  35360 },
-            { 24,  36040 },
-            { 25,  36720 },
-            { 26,  37400 },
-            { 27,  38080 },
-            { 28,  38760 },
-            { 29,  39440 },
-            { 30,  40120 },
-            { 31,  40800 },
-            { 32,  41480 },
-            { 33,  42160 },
-            { 34,  42840 },
-            { 35,  43520 },
-            { 36,  44200 },
-            { 37,  44880 },
-            { 38,  45560 },
-            { 39,  46240 },
-            { 40,  46920 },
-            { 41,  56000 },
-            { 42,  56800 },
-            { 43,  57600 },
-            { 44,  58400 },
-            { 45,  59200 },
-            { 46,  60000 },
-            { 47,  60800 },
-            { 48,  61600 },
-            { 49,  64000 },
-            { 50,  73600 },
-            { 51,  99840 },
-            { 52,  111360 },
-            { 53,  122880 },
-            { 54,  134400 },
-            { 55,  145920 },
-            { 56,  157440 },
-            { 57,  168960 },
-            { 58,  180480 },
-            { 59,  192000 },
-            { 60,  206400 },
-            { 61,  220800 },
-            { 62,  235200 },
-            { 63,  249600 },
-            { 64,  264000 },
-            { 65,  278400 },
-            { 66,  292800 },
-            { 67,  307200 },
-            { 68,  326400 },
-            { 69,  345600 },
-            { 70,  364800 },
-            { 71,  432000 },
-            { 72,  453600 },
-            { 73,  475200 },
-            { 74,  480600 },
-            { 75,  486000 },
-            { 76,  491400 },
-            { 77,  496800 },
-            { 78,  502200 },
-            { 79,  507600 },
-            { 80,  513000 },
-            { 81,  576000 },
-            { 82,  582000 },
-            { 83,  588000 },
-            { 84,  594000 },
-            { 85,  600000 },
-            { 86,  606000 },
-            { 87,  612000 },
-            { 88,  618000 },
-            { 89,  624000 },
-            { 90,  636000 },
-            { 91,  864000 },
-            { 92,  880000 },
-            { 93,  896000 },
-            { 94,  912000 },
-            { 95,  928000 },
-            { 96,  944000 },
-            { 97,  960000 },
-            { 98,  1040000 },
-            { 99,  1120000 },
-            { 100, 1600000 }
+            { 0,   1100 },
+            { 1,   1650 },
+            { 2,   2200 },
+            { 3,   2750 },
+            { 4,   3300 },
+            { 5,   3850 },
+            { 6,   4400 },
+            { 7,   4840 },
+            { 8,   5280 },
+            { 9,   5720 },
+            { 10,  6160 },
+            { 11,  8400 },
+            { 12,  8960 },
+            { 13,  9520 },
+            { 14,  10080 },
+            { 15,  10640 },
+            { 16,  11200 },
+            { 17,  11760 },
+            { 18,  12320 },
+            { 19,  12880 },
+            { 20,  13440 },
+            { 21,  17000 },
+            { 22,  17340 },
+            { 23,  17680 },
+            { 24,  18020 },
+            { 25,  18360 },
+            { 26,  18700 },
+            { 27,  19040 },
+            { 28,  19380 },
+            { 29,  19720 },
+            { 30,  20060 },
+            { 31,  20400 },
+            { 32,  20740 },
+            { 33,  21080 },
+            { 34,  21420 },
+            { 35,  21760 },
+            { 36,  22100 },
+            { 37,  22440 },
+            { 38,  22780 },
+            { 39,  23120 },
+            { 40,  23460 },
+            { 41,  28000 },
+            { 42,  28400 },
+            { 43,  28800 },
+            { 44,  29200 },
+            { 45,  29600 },
+            { 46,  30000 },
+            { 47,  30400 },
+            { 48,  30800 },
+            { 49,  32000 },
+            { 50,  36800 },
+            { 51,  49920 },
+            { 52,  55680 },
+            { 53,  61440 },
+            { 54,  67200 },
+            { 55,  72960 },
+            { 56,  78720 },
+            { 57,  84480 },
+            { 58,  90240 },
+            { 59,  96000 },
+            { 60,  103200 },
+            { 61,  110400 },
+            { 62,  117600 },
+            { 63,  124800 },
+            { 64,  132000 },
+            { 65,  139200 },
+            { 66,  146400 },
+            { 67,  153600 },
+            { 68,  163200 },
+            { 69,  172800 },
+            { 70,  182400 },
+            { 71,  216000 },
+            { 72,  226800 },
+            { 73,  237600 },
+            { 74,  240300 },
+            { 75,  243000 },
+            { 76,  245700 },
+            { 77,  248400 },
+            { 78,  251100 },
+            { 79,  253800 },
+            { 80,  256500 },
+            { 81,  288000 },
+            { 82,  291000 },
+            { 83,  294000 },
+            { 84,  297000 },
+            { 85,  300000 },
+            { 86,  303000 },
+            { 87,  306000 },
+            { 88,  309000 },
+            { 89,  312000 },
+            { 90,  318000 },
+            { 91,  432000 },
+            { 92,  440000 },
+            { 93,  448000 },
+            { 94,  456000 },
+            { 95,  464000 },
+            { 96,  472000 },
+            { 97,  480000 },
+            { 98,  520000 },
+            { 99,  560000 },
+            { 100, 800000 }
         };
 
         private static readonly Dictionary<int, int> _deltaXP = new()

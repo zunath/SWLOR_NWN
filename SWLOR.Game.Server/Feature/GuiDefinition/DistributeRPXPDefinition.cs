@@ -13,7 +13,7 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition
             _builder.CreateWindow(GuiWindowType.DistributeRPXP)
                 .SetIsResizable(true)
                 .SetIsCollapsible(false)
-                .SetInitialGeometry(0, 0, 327f, 250f)
+                .SetInitialGeometry(0, 0, 360f, 250f)
                 .SetTitle("Distribute RP XP")
 
                 .AddColumn(col =>

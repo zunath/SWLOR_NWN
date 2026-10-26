@@ -296,7 +296,7 @@ public class SavedDataItemSweepTests
     private static IEnumerable<TestCaseData> RetiredDefenseCases() =>
         RetiredDefenseStatRevisionCatalog.Changes.SelectMany(entry =>
         {
-            var retired = entry.Value.Single();
+            var retired = RetiredDefenseStatRevisionCatalog.RetiredDefense(entry.Key);
             var amount = retired.Previous;
             var cases = new List<TestCaseData>
             {
@@ -319,15 +319,29 @@ public class SavedDataItemSweepTests
         var properties = new List<object> { Property(ItemPropertyType.Defense, (int)CombatDamageType.Physical, 35, 23) };
         if (retiredDefense > 0) properties.Add(Property(ItemPropertyType.Defense, damageType, 35, retiredDefense));
         if (resistance > 0) properties.Add(Property(ItemPropertyType.Resistance, (int)resistanceType, 54, resistance));
+        // Raised stats start at their pre-fix blueprint values.
+        foreach (var raised in RetiredDefenseStatRevisionCatalog.Changes[resref]
+                     .Where(x => x.Current > 0 && x.Previous > 0 && !(x.Type == ItemPropertyType.Defense && x.Subtype == (int)CombatDamageType.Physical)))
+            properties.Add(Property(raised.Type, raised.Subtype, raised.Type == ItemPropertyType.Defense ? 35 : 37, raised.Previous));
         var original = Encode(Item(resref, BlueprintBaseItem(resref), null, properties.ToArray()));
 
         Migrate(original, out var migrated, true, out _).Should().BeTrue();
 
         var saved = Children(Read(migrated), "PropertiesList").ToList();
+        // HP and other stats without a subtype are saved with Subtype 65535.
         int Total(ItemPropertyType type, int subtype) => saved
-            .Where(p => Int(p, "PropertyName") == (int)type && Int(p, "Subtype") == subtype)
+            .Where(p => Int(p, "PropertyName") == (int)type &&
+                        (type is not (ItemPropertyType.Defense or ItemPropertyType.Resistance) || Int(p, "Subtype") == subtype))
             .Sum(p => Int(p, "CostValue"));
-        Total(ItemPropertyType.Defense, (int)CombatDamageType.Physical).Should().Be(23, "the enhanced Physical Defense is kept");
+        // The fixture starts with an enhanced Physical Defense of 23; raised stats move by the catalog difference and
+        // keep the enhancement.
+        var physicalRaise = RetiredDefenseStatRevisionCatalog.Changes[resref]
+            .Where(x => x.Type == ItemPropertyType.Defense && x.Subtype == (int)CombatDamageType.Physical)
+            .Sum(x => x.Current - x.Previous);
+        Total(ItemPropertyType.Defense, (int)CombatDamageType.Physical).Should().Be(23 + physicalRaise, "the enhanced Physical Defense is kept");
+        foreach (var raised in RetiredDefenseStatRevisionCatalog.Changes[resref]
+                     .Where(x => x.Current > 0 && !(x.Type == ItemPropertyType.Defense && x.Subtype == (int)CombatDamageType.Physical)))
+            Total(raised.Type, raised.Subtype).Should().Be(raised.Current, $"{raised.Type} {raised.Subtype} rises to the standard");
         Total(ItemPropertyType.Defense, damageType).Should().Be(0, "the retired elemental Defense is removed");
         Total(ItemPropertyType.Resistance, (int)resistanceType).Should().Be(expectedResistance, "only crafted Resistance is kept");
         Locals(Read(migrated)).Should().Contain((RetiredDefenseStatRevisionCatalog.RevisionVariable, RetiredDefenseStatRevisionCatalog.CurrentRevision));

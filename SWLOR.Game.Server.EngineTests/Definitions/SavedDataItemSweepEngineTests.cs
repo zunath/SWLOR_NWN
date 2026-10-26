@@ -105,10 +105,10 @@ public static partial class MigrationEngineTests
 
         // Every shipped item with a retired elemental Defense: the Defense itself, and the Defense the combat
         // replacement already converted into Resistance beside five crafted points (capped at 100).
-        foreach (var (resref, changes) in RetiredDefenseStatRevisionCatalog.Changes)
+        foreach (var resref in RetiredDefenseStatRevisionCatalog.Changes.Keys)
         foreach (var converted in new[] { false, true })
         {
-            var retired = changes.Single();
+            var retired = RetiredDefenseStatRevisionCatalog.RetiredDefense(resref);
             var item = await CreateItemAsync(ctx, owner, resref, owner);
             await ctx.ExecuteInCreatureContextAsync(owner, () =>
             {

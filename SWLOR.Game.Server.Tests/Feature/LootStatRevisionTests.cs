@@ -31,9 +31,10 @@ public class LootStatRevisionTests
     [TestCase("cara_headdress",     40,  9, 20, 40, 8, 0, 2, 0)]
     [TestCase("cara_helmet",        40, 18, 10, 80, 0, 0, 0, 0)]
     [TestCase("apprentice_dark_",   20,  0, 10, 25, 0, 0, 8, 0)]
-    [TestCase("dan_heavy_armor",    40, 20,  0, 95, 0, 0, 0, 0)]
-    [TestCase("dan_h_cloak",        40, 11,  0,  5, 0, 2, 0, 0)]
-    [TestCase("dan_hyper_gloves",   40, 10, 10,  0, 9, 0, 2, 0)]
+    // Raised to the Kwi Heavy Armor, Kwi Light Cloak and Kwi Hyper Gloves loot standard.
+    [TestCase("dan_heavy_armor",    40, 25, 20, 95, 0, 0, 0, 0)]
+    [TestCase("dan_h_cloak",        40, 11,  8,  5, 0, 2, 0, 0)]
+    [TestCase("dan_hyper_gloves",   40, 10, 21, 21, 9, 0, 2, 0)]
     public void RetiredDefenseItem_UsesBibleDefenseWithoutRetiredElementalDefense(string resref, int rank, int physical, int force,
         int hp, int fp, int stamina, int fpRegen, int staminaRegen)
     {
@@ -57,7 +58,8 @@ public class LootStatRevisionTests
             .Should().Be(RetiredDefenseStatRevisionCatalog.CurrentRevision);
         RetiredDefenseStatRevisionCatalog.Changes.Should().ContainKey(resref);
         foreach (var change in RetiredDefenseStatRevisionCatalog.Changes[resref])
-            properties.GetValueOrDefault(((int)change.Type, change.Subtype)).Should().Be(change.Current);
+            properties.GetValueOrDefault(((int)change.Type, change.Type == ItemPropertyType.Defense ? change.Subtype : 0))
+                .Should().Be(change.Current);
 
         using var archive = ZipFile.OpenRead(Path.Combine(FindRepositoryRoot().FullName, "design", "bible", "SWLOR Design Bible.xlsx"));
         XNamespace ns = "http://schemas.openxmlformats.org/spreadsheetml/2006/main";

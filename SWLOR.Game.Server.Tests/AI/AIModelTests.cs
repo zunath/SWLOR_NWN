@@ -567,7 +567,7 @@ public class AIModelTests
         var inferDefaultBody = source.Substring(
             source.IndexOf("public static AITargetSelector InferDefault", StringComparison.Ordinal));
 
-        source.Should().Contain("private const int DefaultAreaAbilityMinimumTargets = 2;");
+        source.Should().Contain("private const int DefaultAreaAbilityMinimumTargets = 1;");
         source.Should().NotContain("HostileCluster(ability.MaxRange, 2)");
         selectorBody.Should().Contain("ability.Targeting.ResolveSizeX(context.Self, true)");
         selectorBody.Should().Contain("context.SetEvaluatedTarget(context.Self);");

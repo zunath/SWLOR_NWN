@@ -2,6 +2,7 @@ using System.Collections.Generic;
 using System.Linq;
 using SWLOR.Game.Server.Core;
 using SWLOR.Game.Server.Enumeration;
+using SWLOR.Game.Server.Service.CombatService;
 using SWLOR.Game.Server.Service.CurrencyService;
 using SWLOR.Game.Server.Service.GuiService;
 using SWLOR.Game.Server.Service.LightsaberWorkbenchService;
@@ -174,6 +175,24 @@ namespace SWLOR.Game.Server.Service
         /// <summary>
         /// Retrieves the bottom hilt models available for a given saber weapon type.
         /// </summary>
+        /// <summary>
+        /// Determines whether a Weapon Submission Token property carries onto the saber
+        /// built from it. Crafted stats, DMG, and an elemental damage type transfer;
+        /// the token blueprint's attack delay, skill requirement, and anti-equip Use
+        /// Limitation: Perk lock do not, and neither does a Physical damage type, which
+        /// sabers already deal.
+        /// </summary>
+        public static bool ShouldTransferSubmissionProperty(ItemPropertyType type, int subType)
+        {
+            if (type == ItemPropertyType.Delay ||
+                type == ItemPropertyType.RequiresSkill ||
+                type == ItemPropertyType.UseLimitationPerk)
+                return false;
+
+            return type != ItemPropertyType.WeaponDamageType ||
+                   subType != (int)CombatDamageType.Physical;
+        }
+
         public static IReadOnlyList<SaberHiltPart> GetHilts(BaseItem weaponType)
         {
             return weaponType == BaseItem.Saberstaff

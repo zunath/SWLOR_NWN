@@ -10,6 +10,9 @@ $repoRoot = Split-Path -Parent $PSScriptRoot
 $workbookFullPath = if ([IO.Path]::IsPathRooted($WorkbookPath)) { $WorkbookPath } else { Join-Path $repoRoot $WorkbookPath }
 $payloadPath = Join-Path ([IO.Path]::GetTempPath()) ("swlor-slicing-sheet-{0}.xml" -f [guid]::NewGuid().ToString("N"))
 $recipePayloadPath = Join-Path ([IO.Path]::GetTempPath()) ("swlor-slicing-recipes-{0}.json" -f [guid]::NewGuid().ToString("N"))
+# Edits go to a copy that replaces the workbook only after every check passes, so a
+# failed update never leaves a half-written workbook behind.
+$stagedWorkbookPath = Join-Path ([IO.Path]::GetTempPath()) ("swlor-slicing-workbook-{0}.xlsx" -f [guid]::NewGuid().ToString("N"))
 
 Add-Type -AssemblyName System.IO.Compression
 Add-Type -AssemblyName System.IO.Compression.FileSystem
@@ -109,34 +112,61 @@ function Set-CellValue {
     }
 }
 
+function Get-SharedStrings {
+    param([IO.Compression.ZipArchive]$Zip)
+    [xml]$document = Read-ZipEntryText -Zip $Zip -EntryPath "xl/sharedStrings.xml"
+    $namespace = [Xml.XmlNamespaceManager]::new($document.NameTable)
+    $namespace.AddNamespace("d", "http://schemas.openxmlformats.org/spreadsheetml/2006/main")
+    return @($document.SelectNodes("/d:sst/d:si", $namespace) | ForEach-Object {
+        (@($_.SelectNodes(".//d:t", $namespace)) | ForEach-Object { $_.InnerText }) -join ""
+    })
+}
+
+function Get-CellText {
+    param([Xml.XmlElement]$Row, [string]$Column, [string[]]$SharedStrings, [Xml.XmlNamespaceManager]$Namespace)
+    $cell = @($Row.SelectNodes("d:c", $Namespace)) |
+        Where-Object { $_.GetAttribute("r") -match "^$Column\d+$" } |
+        Select-Object -First 1
+    if ($null -eq $cell) { return "" }
+    if ($cell.GetAttribute("t") -eq "s") {
+        $value = $cell.SelectSingleNode("d:v", $Namespace)
+        return $(if ($null -eq $value) { "" } else { $SharedStrings[[int]$value.InnerText] })
+    }
+    return (@($cell.SelectNodes(".//d:t | d:v", $Namespace)) | ForEach-Object { $_.InnerText }) -join ""
+}
+
+# Rows are found by content, not by fixed row numbers, because other edits to these
+# shared tabs move rows. A missing or duplicated key stops the update instead of
+# writing into whatever row now sits at an old address.
+function Find-RowByCellText {
+    param([Xml.XmlNode]$SheetData, [string]$Column, [string]$Text, [string[]]$SharedStrings,
+          [Xml.XmlNamespaceManager]$Namespace, [string]$EntryPath)
+    $found = @($SheetData.SelectNodes("d:row", $Namespace) | Where-Object {
+        (Get-CellText -Row $_ -Column $Column -SharedStrings $SharedStrings -Namespace $Namespace) -eq $Text
+    })
+    if ($found.Count -ne 1) {
+        throw "Expected exactly one row in '$EntryPath' with column $Column '$Text', found $($found.Count)."
+    }
+    return $found[0]
+}
+
 function Set-WorksheetRecipeRows {
     param(
         [IO.Compression.ZipArchive]$Zip,
         [string]$EntryPath,
-        [object[]]$Rows
+        [object[]]$Rows,
+        [string[]]$SharedStrings
     )
     [xml]$document = Repair-InvalidXmlSpacePrefixes -Text (Read-ZipEntryText -Zip $Zip -EntryPath $EntryPath)
     $namespaceUri = "http://schemas.openxmlformats.org/spreadsheetml/2006/main"
     $namespace = [Xml.XmlNamespaceManager]::new($document.NameTable)
     $namespace.AddNamespace("d", $namespaceUri)
     $sheetData = $document.SelectSingleNode("/d:worksheet/d:sheetData", $namespace)
-    $maximumRow = 1
     foreach ($spec in $Rows) {
-        $rowNumber = [int]$spec.row
-        $maximumRow = [Math]::Max($maximumRow, $rowNumber)
-        $row = $sheetData.SelectSingleNode("d:row[@r='$rowNumber']", $namespace)
-        if ($null -eq $row) {
-            $row = $document.CreateElement("row", $namespaceUri)
-            $row.SetAttribute("r", [string]$rowNumber)
-            $nextRow = @($sheetData.SelectNodes("d:row", $namespace)) |
-                Where-Object { [int]$_.GetAttribute("r") -gt $rowNumber } |
-                Select-Object -First 1
-            if ($null -ne $nextRow) { [void]$sheetData.InsertBefore($row, $nextRow) }
-            else { [void]$sheetData.AppendChild($row) }
-        }
-        else {
-            while ($row.HasChildNodes) { [void]$row.RemoveChild($row.FirstChild) }
-        }
+        $row = Find-RowByCellText -SheetData $sheetData -Column "D" -Text ([string]$spec.cells.D) `
+            -SharedStrings $SharedStrings -Namespace $namespace -EntryPath $EntryPath
+        $rowNumber = $row.GetAttribute("r")
+        while ($row.HasChildNodes) { [void]$row.RemoveChild($row.FirstChild) }
 
         foreach ($property in $spec.cells.PSObject.Properties) {
             $cell = $document.CreateElement("c", $namespaceUri)
@@ -146,26 +176,23 @@ function Set-WorksheetRecipeRows {
         }
     }
 
-    $dimension = $document.SelectSingleNode("/d:worksheet/d:dimension", $namespace)
-    if ($null -ne $dimension -and $dimension.GetAttribute("ref") -match "^([A-Z]+\d+):([A-Z]+)(\d+)$") {
-        $existingMaximum = [int]$Matches[3]
-        if ($maximumRow -gt $existingMaximum) {
-            $dimension.SetAttribute("ref", "$($Matches[1]):$($Matches[2])$maximumRow")
-        }
-    }
     Write-ZipEntryText -Zip $Zip -EntryPath $EntryPath -Text $document.OuterXml
 }
 
 function Set-EspionageDescriptions {
-    param([IO.Compression.ZipArchive]$Zip, [object]$Descriptions)
+    param([IO.Compression.ZipArchive]$Zip, [object]$Descriptions, [string[]]$SharedStrings)
     $entryPath = "xl/worksheets/sheet30.xml"
     [xml]$document = Repair-InvalidXmlSpacePrefixes -Text (Read-ZipEntryText -Zip $Zip -EntryPath $entryPath)
     $namespaceUri = "http://schemas.openxmlformats.org/spreadsheetml/2006/main"
     $namespace = [Xml.XmlNamespaceManager]::new($document.NameTable)
     $namespace.AddNamespace("d", $namespaceUri)
+    $sheetData = $document.SelectSingleNode("/d:worksheet/d:sheetData", $namespace)
     foreach ($property in $Descriptions.PSObject.Properties) {
-        $cell = $document.SelectSingleNode("//d:c[@r='$($property.Name)']", $namespace)
-        if ($null -eq $cell) { throw "Espionage cell '$($property.Name)' was not found." }
+        $row = Find-RowByCellText -SheetData $sheetData -Column "C" -Text $property.Name `
+            -SharedStrings $SharedStrings -Namespace $namespace -EntryPath $entryPath
+        $address = "G$($row.GetAttribute("r"))"
+        $cell = $row.SelectSingleNode("d:c[@r='$address']", $namespace)
+        if ($null -eq $cell) { throw "Espionage cell '$address' for '$($property.Name)' was not found." }
         $style = if ($cell.HasAttribute("s")) { [int]$cell.GetAttribute("s") } else { 0 }
         Set-CellValue -Document $document -Cell $cell -Value $property.Value -Style $style
     }
@@ -180,8 +207,9 @@ try {
     if ($sheetValidation.DocumentElement.LocalName -ne "worksheet") { throw "Generated Slicing payload is not a worksheet." }
     $recipePayload = Get-Content -LiteralPath $recipePayloadPath -Raw | ConvertFrom-Json
 
-    $beforeHashes = Get-EntryHashes -Path $workbookFullPath -Excluded $touchedEntries
-    $zip = [IO.Compression.ZipFile]::Open($workbookFullPath, [IO.Compression.ZipArchiveMode]::Update)
+    Copy-Item -LiteralPath $workbookFullPath -Destination $stagedWorkbookPath
+    $beforeHashes = Get-EntryHashes -Path $stagedWorkbookPath -Excluded $touchedEntries
+    $zip = [IO.Compression.ZipFile]::Open($stagedWorkbookPath, [IO.Compression.ZipArchiveMode]::Update)
     try {
         $workbookXml = Read-ZipEntryText -Zip $zip -EntryPath "xl/workbook.xml"
         if ($workbookXml -notmatch 'name="Slicing"') {
@@ -208,20 +236,22 @@ try {
         Write-ZipEntryText -Zip $zip -EntryPath "xl/_rels/workbook.xml.rels" -Text $relationshipsXml
         Write-ZipEntryText -Zip $zip -EntryPath "[Content_Types].xml" -Text $contentTypesXml
         Write-ZipEntryText -Zip $zip -EntryPath "xl/worksheets/sheet70.xml" -Text $sheetXml
+        $sharedStrings = Get-SharedStrings -Zip $zip
         foreach ($worksheet in $recipePayload.worksheets.PSObject.Properties) {
-            Set-WorksheetRecipeRows -Zip $zip -EntryPath $worksheet.Name -Rows @($worksheet.Value)
+            Set-WorksheetRecipeRows -Zip $zip -EntryPath $worksheet.Name -Rows @($worksheet.Value) -SharedStrings $sharedStrings
         }
-        Set-EspionageDescriptions -Zip $zip -Descriptions $recipePayload.espionageDescriptions
+        Set-EspionageDescriptions -Zip $zip -Descriptions $recipePayload.espionageDescriptions -SharedStrings $sharedStrings
     }
     finally { $zip.Dispose() }
 
-    $afterHashes = Get-EntryHashes -Path $workbookFullPath -Excluded $touchedEntries
+    $afterHashes = Get-EntryHashes -Path $stagedWorkbookPath -Excluded $touchedEntries
     $changedUntouched = @($beforeHashes.Keys | Where-Object {
         -not $afterHashes.ContainsKey($_) -or $beforeHashes[$_] -ne $afterHashes[$_]
     })
     if ($changedUntouched.Count -gt 0) {
         throw "Untouched workbook entries changed: $($changedUntouched -join ', ')"
     }
+    Copy-Item -LiteralPath $stagedWorkbookPath -Destination $workbookFullPath -Force
 
     $layoutPath = Join-Path $repoRoot "tools\CombatUpgradeBibleWorkbookLayout.json"
     $layoutText = [IO.File]::ReadAllText($layoutPath, [Text.Encoding]::UTF8)
@@ -238,4 +268,5 @@ try {
 finally {
     if (Test-Path -LiteralPath $payloadPath) { Remove-Item -LiteralPath $payloadPath -Force }
     if (Test-Path -LiteralPath $recipePayloadPath) { Remove-Item -LiteralPath $recipePayloadPath -Force }
+    if (Test-Path -LiteralPath $stagedWorkbookPath) { Remove-Item -LiteralPath $stagedWorkbookPath -Force }
 }

@@ -215,6 +215,18 @@ TOOLS = [
 ]
 
 
+TIER_NUMERALS = {2: "II", 3: "III", 4: "IV", 5: "V"}
+
+
+# Each tier also awards higher-tier copies of the same source's earlier tool types, so
+# one tool no longer dominates a tier's tool bonus.
+LADDER_TOOLS = [
+    (f"{resref}{tier}", f"{name} {TIER_NUMERALS[tier]}", tool_type, tier, effect)
+    for resref, name, tool_type, base_tier, effect in TOOLS
+    for tier in range(base_tier + 1, 6)
+]
+
+
 FUSES = [
     ("trace_fuse_1", "Copper Trace Fuse", 1), ("trace_fuse_2", "Braided Trace Fuse", 2),
     ("trace_fuse_3", "Phase Trace Fuse", 3), ("trace_fuse_4", "Cryo Trace Fuse", 4),
@@ -432,7 +444,7 @@ def make_field_notes() -> None:
 
 def make_tools() -> None:
     template = load(UTI / "poison_vial_1.uti.json")
-    for resref, name, tool_type, tier, effect in TOOLS:
+    for resref, name, tool_type, tier, effect in TOOLS + LADDER_TOOLS:
         description = f"A consumable slicing tool. {effect} Works on security tier {tier} or lower; one tool may be used per attempt."
         if tier == 1:
             description += " Optional assistance available at the Veles General Store. Select it inside the slicing window; it is not activated from your inventory."
@@ -630,7 +642,7 @@ def update_legacy_accessories_and_lockboxes() -> None:
 
 
 def validate() -> None:
-    all_resrefs = [row[0] for row in WEAPONS + GEAR + SMITH_OUTPUTS + SCHEMATICS + TOOLS + FUSES + FOODS + CONCENTRATES]
+    all_resrefs = [row[0] for row in WEAPONS + GEAR + SMITH_OUTPUTS + SCHEMATICS + TOOLS + LADDER_TOOLS + FUSES + FOODS + CONCENTRATES]
     all_resrefs += [f"fnote_{note_id}" for note_id, _ in FIELD_NOTES]
     all_resrefs += [f"structure_{structure_id:04d}" for structure_id, *_ in STRUCTURES]
     all_resrefs += [row[2] for row in STRUCTURES]

@@ -176,20 +176,35 @@ public class AbilityImpactVisualEffectTests
     }
 
     [Test]
-    public void StaticBurstTechnique_AreaBurstRowHasAModelAndASound()
+    public void ElectricalTechniqueAreaBursts_AreUniquePerAbilityAndRenderWithASound()
     {
         var root = FindRepositoryRoot();
-        var source = File.ReadAllText(Path.Combine(root,
-            "SWLOR.Game.Server/Feature/AbilityDefinition/Mimicry/StaticBurstTechniqueAbilityDefinition.cs"));
-        source.Should().Contain("VisualEffect.Vfx_Fnf_Electric_Explosion");
+        var abilityRoot = Path.Combine(root, "SWLOR.Game.Server", "Feature", "AbilityDefinition");
 
         // Row 151 (Vfx_Fnf_Storm) is a blank placeholder that renders nothing.
-        foreach (var file in Directory.GetFiles(
-                     Path.Combine(root, "SWLOR.Game.Server", "Feature", "AbilityDefinition"), "*.cs",
-                     SearchOption.AllDirectories))
+        foreach (var file in Directory.GetFiles(abilityRoot, "*.cs", SearchOption.AllDirectories))
         {
             File.ReadAllText(file).Should().NotContain("VisualEffect.Vfx_Fnf_Storm",
                 $"{Path.GetFileName(file)} must not use the blank Vfx_Fnf_Storm row");
+        }
+
+        // Each ability has its own area burst; the player technique and its NPC twin share it.
+        var expected = new Dictionary<string, VisualEffect>
+        {
+            ["StaticBurst"] = VisualEffect.Vfx_Fnf_Electric_Explosion,
+            ["ArcPulse"] = VisualEffect.Fnf_Dispel,
+            ["IonBurst"] = VisualEffect.Vfx_Fnf_Mystical_Explosion,
+            ["FinalSuppression"] = VisualEffect.Vfx_Fnf_Pwstun,
+            ["WardenMark"] = VisualEffect.Vfx_Fnf_Word,
+        };
+        expected.Values.Distinct().Should().HaveCount(expected.Count, "each ability needs its own area burst");
+        foreach (var (name, effect) in expected)
+        {
+            foreach (var path in new[] { $"Mimicry/{name}TechniqueAbilityDefinition.cs", $"NPC/{name}AbilityDefinition.cs" })
+            {
+                File.ReadAllText(Path.Combine(abilityRoot, path)).Should().Contain($"VisualEffect.{effect}",
+                    $"{path} must use its ability's own area burst");
+            }
         }
 
         var table = File.ReadAllLines(Path.Combine(root, "SWLOR_Haks", "sw_2da", "visualeffects.2da"));
@@ -197,11 +212,14 @@ public class AbilityImpactVisualEffectTests
         var rows = table.Where(line => Regex.IsMatch(line, @"^\s*\d+\s"))
             .Select(line => Regex.Split(line.Trim(), @"\s+"))
             .ToDictionary(parts => int.Parse(parts[0]), parts => parts.Skip(1).ToArray());
-        var row = rows[(int)VisualEffect.Vfx_Fnf_Electric_Explosion];
-        header.Where(name => name.StartsWith("Imp_") && name.EndsWith("_Node"))
-            .Select(name => row[Array.IndexOf(header, name)])
-            .Should().Contain(value => value != "****", "the area burst needs a model");
-        row[Array.IndexOf(header, "SoundImpact")].Should().NotBe("****", "the area burst needs a sound");
+        foreach (var effect in expected.Values)
+        {
+            var row = rows[(int)effect];
+            header.Where(name => name.StartsWith("Imp_") && name.EndsWith("_Node"))
+                .Select(name => row[Array.IndexOf(header, name)])
+                .Should().Contain(value => value != "****", $"{effect} needs a model");
+            row[Array.IndexOf(header, "SoundImpact")].Should().NotBe("****", $"{effect} needs a sound");
+        }
     }
 
     private static string FindRepositoryRoot()

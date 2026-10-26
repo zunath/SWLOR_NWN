@@ -157,7 +157,7 @@ namespace SWLOR.Game.Server.Service
                 return;
             }
 
-            if (!GetIsObjectValid(callSender) || Space.IsPlayerInSpaceMode(callSender))
+            if (!GetIsObjectValid(callSender) || Space.IsPlayerInSpaceMode(callSender) || IsDMInvolved(callSender))
             {
                 if (GetIsObjectValid(callSender))
                     SendMessageToPC(callSender, "Your HoloCom call went unanswered.");

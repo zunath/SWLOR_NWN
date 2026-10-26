@@ -78,6 +78,15 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
         public bool CanToggleHostile { get => Get<bool>(); set => Set(value); }
         public string ToggleHostileReason { get => Get<string>(); set => Set(value); }
         public string ToggleHostileText { get => Get<string>(); set => Set(value); }
+        public bool CanCall { get => Get<bool>(); set => Set(value); }
+        public string CallReason { get => Get<string>(); set => Set(value); }
+        public bool CanAnswerCall { get => Get<bool>(); set => Set(value); }
+        public string AnswerCallReason { get => Get<string>(); set => Set(value); }
+        public bool CanDeclineCall { get => Get<bool>(); set => Set(value); }
+        public string DeclineCallReason { get => Get<string>(); set => Set(value); }
+        public bool CanEndCall { get => Get<bool>(); set => Set(value); }
+        public string EndCallReason { get => Get<string>(); set => Set(value); }
+        public string EndCallText { get => Get<string>(); set => Set(value); }
         public bool CanInvite { get => Get<bool>(); set => Set(value); }
         public string InviteReason { get => Get<string>(); set => Set(value); }
         public bool CanRemove { get => Get<bool>(); set => Set(value); }
@@ -128,6 +137,15 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
             CanToggleHostile = false;
             ToggleHostileReason = string.Empty;
             ToggleHostileText = "Mark Hostile";
+            CanCall = false;
+            CallReason = string.Empty;
+            CanAnswerCall = false;
+            AnswerCallReason = string.Empty;
+            CanDeclineCall = false;
+            DeclineCallReason = string.Empty;
+            CanEndCall = false;
+            EndCallReason = string.Empty;
+            EndCallText = "End Call";
             CanInvite = false;
             InviteReason = string.Empty;
             CanRemove = false;
@@ -255,6 +273,15 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
             CanToggleHostile = actions.ToggleHostile.IsEnabled;
             ToggleHostileReason = actions.ToggleHostile.DisabledReason;
             ToggleHostileText = actions.ToggleHostileText;
+            CanCall = actions.Call.IsEnabled;
+            CallReason = actions.Call.DisabledReason;
+            CanAnswerCall = actions.AnswerCall.IsEnabled;
+            AnswerCallReason = actions.AnswerCall.DisabledReason;
+            CanDeclineCall = actions.DeclineCall.IsEnabled;
+            DeclineCallReason = actions.DeclineCall.DisabledReason;
+            CanEndCall = actions.EndCall.IsEnabled;
+            EndCallReason = actions.EndCall.DisabledReason;
+            EndCallText = actions.EndCallText;
             CanInvite = actions.Invite.IsEnabled;
             InviteReason = actions.Invite.DisabledReason;
             CanRemove = actions.Remove.IsEnabled;
@@ -282,6 +309,8 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
                 ViewerIsDM = DMPresence.IsControlledByDM(Player),
                 ViewerIsInParty = self?.ViewerIsInParty ?? false,
                 ViewerIsPartyLeader = self?.ViewerIsPartyLeader ?? false,
+                ViewerIsInSpace = self?.ViewerIsInSpace ?? false,
+                ViewerCallState = self?.ViewerCallState ?? PlayerListCallState.None,
             };
         }
 
@@ -346,6 +375,39 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
                 if (!string.IsNullOrEmpty(error))
                     DMPresence.SendMessage(Player, ColorToken.Red(error));
             });
+        };
+
+        public Action OnClickCall() => () =>
+        {
+            var selected = GetSelectedEntry();
+            if (selected == null || !CheckAction(actions => actions.Call))
+                return;
+
+            HoloCom.StartCall(Player, selected.Player);
+        };
+
+        public Action OnClickAnswerCall() => () =>
+        {
+            if (!CheckViewerAction(actions => actions.AnswerCall))
+                return;
+
+            HoloCom.AnswerCall(Player);
+        };
+
+        public Action OnClickDeclineCall() => () =>
+        {
+            if (!CheckViewerAction(actions => actions.DeclineCall))
+                return;
+
+            HoloCom.DeclineCall(Player);
+        };
+
+        public Action OnClickEndCall() => () =>
+        {
+            if (!CheckViewerAction(actions => actions.EndCall))
+                return;
+
+            HoloCom.EndCall(Player);
         };
 
         public Action OnClickToggleHostile() => () =>
@@ -461,6 +523,20 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
 
             PlayerList.RemoveFromParty(Player);
         };
+
+        // Rechecks an action that needs no selection, such as answering a call.
+        private bool CheckViewerAction(Func<PlayerListActions, PlayerListActionState> getState)
+        {
+            var relation = PlayerList.GetRelation(Player, Player);
+            relation.HasTarget = false;
+            var state = getState(PlayerListRules.Evaluate(relation));
+            if (state.IsEnabled)
+                return true;
+
+            DMPresence.SendMessage(Player, ColorToken.Red(state.DisabledReason));
+            PlayerList.QueueRefresh();
+            return false;
+        }
 
         // Rechecks an action against the engine's current state; the list can be a frame behind.
         private bool CheckAction(Func<PlayerListActions, PlayerListActionState> getState)

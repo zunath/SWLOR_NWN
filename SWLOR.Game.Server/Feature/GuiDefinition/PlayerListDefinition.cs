@@ -287,6 +287,33 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition
             content.AddRow(row =>
             {
                 row.AddLabel()
+                    .SetText("Call")
+                    .SetColor(221, 181, 93)
+                    .SetHorizontalAlign(NuiHorizontalAlign.Left)
+                    .SetWidth(44f)
+                    .SetHeight(ButtonHeight);
+
+                AddActionButton(row, "Call", 90f, "Call the selected player on your HoloCom",
+                    model => model.CanCall, model => model.CallReason, model => model.OnClickCall());
+                AddActionButton(row, "Answer", 90f, "Answer your incoming HoloCom call",
+                    model => model.CanAnswerCall, model => model.AnswerCallReason, model => model.OnClickAnswerCall());
+                AddActionButton(row, "Decline", 90f, "Decline your incoming HoloCom call",
+                    model => model.CanDeclineCall, model => model.DeclineCallReason, model => model.OnClickDeclineCall());
+                row.AddButton()
+                    .BindText(model => model.EndCallText)
+                    .SetTooltip("End your HoloCom call or cancel the call you are placing")
+                    .BindDisabledTooltip(model => model.EndCallReason)
+                    .BindIsEnabled(model => model.CanEndCall)
+                    .BindOnClicked(model => model.OnClickEndCall())
+                    .SetWidth(110f)
+                    .SetHeight(ButtonHeight);
+
+                row.AddSpacer();
+            });
+
+            content.AddRow(row =>
+            {
+                row.AddLabel()
                     .SetText("Party")
                     .SetColor(221, 181, 93)
                     .SetHorizontalAlign(NuiHorizontalAlign.Left)

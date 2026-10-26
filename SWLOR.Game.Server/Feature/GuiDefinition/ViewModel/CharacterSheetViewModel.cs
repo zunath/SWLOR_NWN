@@ -1,7 +1,6 @@
 using SWLOR.Game.Server.Entity;
 using SWLOR.Game.Server.Core;
 using SWLOR.Game.Server.Feature.AbilityDefinition;
-using SWLOR.Game.Server.Feature.DialogDefinition;
 using SWLOR.Game.Server.Feature.GuiDefinition.Payload;
 using SWLOR.Game.Server.Feature.GuiDefinition.RefreshEvent;
 using SWLOR.Game.Server.Service;
@@ -504,12 +503,6 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
             set => Set(value);
         }
 
-        public bool IsHolocomEnabled
-        {
-            get => Get<bool>();
-            set => Set(value);
-        }
-
         public bool IsTechniquesEnabled
         {
             get => Get<bool>();
@@ -551,17 +544,6 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
         {
             var payload = new RecipesPayload(RecipesUIMode.Recipes, SkillType.Invalid);
             Gui.TogglePlayerWindow(Player, GuiWindowType.Recipes, payload);
-        };
-
-        public Action OnClickHoloCom() => () =>
-        {
-            if (Space.IsPlayerInSpaceMode(Player))
-            {
-                SendMessageToPC(Player, ColorToken.Red("Holocom cannot be used in space."));
-                return;
-            }
-
-            ConversationMenu.Start(Player, Player, nameof(HoloComDialog));
         };
 
         public Action OnClickKeyItems() => () =>
@@ -1313,7 +1295,6 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
         {
             CharacterType = GetClassByPosition(1, _target) == ClassType.Standard ? "Standard" : "Force Sensitive";
             Race = GetStringByStrRef(Convert.ToInt32(Get2DAString("racialtypes", "Name", (int)GetRacialType(_target))), GetGender(_target));
-            IsHolocomEnabled = !Space.IsPlayerInSpaceMode(_target);
             IsTechniquesEnabled = Perk.GetPerkLevel(_target, PerkType.CombatAnalyzer) >= 1;
 
             if (IsPlayerMode)

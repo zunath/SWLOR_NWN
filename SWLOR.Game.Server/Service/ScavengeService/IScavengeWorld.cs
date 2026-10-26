@@ -8,12 +8,14 @@ namespace SWLOR.Game.Server.Service.ScavengeService
     /// <param name="IsInCombat">True while the scavenger is in combat.</param>
     /// <param name="HasWindowOpen">True while the Search window is open on their screen.</param>
     /// <param name="DistanceToSite">How far the scavenger stands from the site, in metres.</param>
+    /// <param name="SiteValid">False once the site is gone from the world (removed by a DM or by cleanup).</param>
     public readonly record struct ScavengePlayerState(
         bool IsValid,
         bool IsDead,
         bool IsInCombat,
         bool HasWindowOpen,
-        float DistanceToSite);
+        float DistanceToSite,
+        bool SiteValid);
 
     /// <summary>
     /// Everything a scavenge session needs from the game engine. <see cref="ScavengeLifecycle"/> holds the rules and calls only this, so
@@ -37,6 +39,12 @@ namespace SWLOR.Game.Server.Service.ScavengeService
         /// </summary>
         void SavePendingFinds(uint player, IReadOnlyList<ScavengeFind> finds);
 
+        /// <summary>
+        /// Gives the scavenger whatever is on their record from a visit that never put it in a site, and clears the record in the same
+        /// step so it cannot be given twice. Does nothing when the record is empty.
+        /// </summary>
+        void ReturnPendingFinds(uint player);
+
         /// <summary>Spawns the site's extra loot tables (<c>LOOT_TABLE_n</c>) for the scavenger, as every successful search always did.</summary>
         void SpawnBonusLoot(uint site, uint player);
 
@@ -48,6 +56,12 @@ namespace SWLOR.Game.Server.Service.ScavengeService
         /// them. Used when the site holds items.
         /// </summary>
         void OpenSite(uint player, uint site, double animationSeconds);
+
+        /// <summary>
+        /// Holds a site that holds items for the scavenger, without opening it for them: nobody else can open it for a short while, and the
+        /// scavenger can open it themselves when they come back. Used when the scavenger is away from the site or in a fight.
+        /// </summary>
+        void HoldSite(uint player, uint site, double animationSeconds);
 
         /// <summary>Removes a site that gave nothing, after the search animation of the given length.</summary>
         void DestroySite(uint player, uint site, double animationSeconds);

@@ -12,16 +12,16 @@ namespace SWLOR.Game.Server.Service.CraftService.Minigame;
 
 /// <summary>
 /// The base XP of a craft played in a new minigame: today's XP for the recipe, times the multiplier that keeps the minigame's XP per
-/// hour at least the old window's (CraftSim gate 6). A minigame with no multiplier pays today's XP. A multiplier may differ by the
+/// hour at least the old window's (the CraftSim XP-rate gate). A minigame with no multiplier pays today's XP. A multiplier may differ by the
 /// recipe's level band, because the old window is fastest in the lowest bands. The gathering minigames are not recipes: the Line's
 /// level is the fish's, and the Search board's is the scavenge site's.
 /// </summary>
 public static class CraftMinigameXp
 {
     /// <summary>
-    /// The crafting pace multiplier (owner decision, October 2026, workstream 11): crafting XP in Smithery, Engineering, Fabrication and
-    /// Agriculture's cooking is this much more than the recipe and minigame say. It is layered on top of a minigame's gate-6 multiplier, so the
-    /// gate stays measured against today's XP. It does not apply to Gathering, Espionage, fishing, guild hand-ins, research, combat or Piloting.
+    /// The crafting pace multiplier: crafting XP in Smithery, Engineering, Fabrication and Agriculture's cooking is this much more
+    /// than the recipe and minigame say. It is layered on top of a minigame's XP-rate multiplier, so the XP-rate gate stays measured
+    /// against today's XP. It does not apply to Gathering, Espionage, fishing, guild hand-ins, research, combat or Piloting.
     /// </summary>
     public const double CraftingPaceMultiplier = 1.05;
 

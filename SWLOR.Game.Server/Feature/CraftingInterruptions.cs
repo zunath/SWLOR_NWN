@@ -5,7 +5,7 @@ namespace SWLOR.Game.Server.Feature
 {
     /// <summary>
     /// Ends crafting that cannot continue. A saved craft settles as a failure when its player dies or logs in with one still
-    /// saved, and a quick craft batch stops when its player dies or leaves.
+    /// saved, and a quick craft batch stops when its player dies or leaves. XP a death-failure earned is given at the respawn.
     /// </summary>
     public class CraftingInterruptions
     {
@@ -28,6 +28,21 @@ namespace SWLOR.Game.Server.Feature
 
             QuickCraftService.Interrupt(player);
             CraftSessionService.Fail(player, CraftSessionEndReason.Died);
+        }
+
+        [NWNEventHandler(ScriptName.OnModuleRespawn)]
+        public static void GrantPendingXpOnRespawn()
+        {
+            var player = GetLastRespawnButtonPresser();
+            if (!GetIsPC(player))
+                return;
+
+            // The resurrection from the respawn button is applied by another handler of the same event, so look once it has landed.
+            DelayCommand(1f, () =>
+            {
+                if (GetIsObjectValid(player))
+                    CraftSessionService.GrantPendingXp(player);
+            });
         }
 
         [NWNEventHandler(ScriptName.OnModuleExit)]

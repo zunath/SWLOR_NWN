@@ -48,8 +48,11 @@ namespace SWLOR.Game.Server.Service.ProspectingService
         /// <summary>Clears the busy mark the session set.</summary>
         void EndSession(uint player);
 
-        /// <summary>Plays the harvest animation and the timing bar for the seconds an action takes.</summary>
-        void PlayWork(uint player, float seconds);
+        /// <summary>
+        /// Plays the action's work animation and the timing bar for the seconds it takes. <paramref name="actionId"/> is the Prospecting
+        /// action, or null for a Quick Harvest unit, which has no authored clip and plays the plain harvest animation.
+        /// </summary>
+        void PlayWork(uint player, string actionId, float seconds);
 
         /// <summary>Opens the Prospecting window. Returns false when it could not be opened.</summary>
         bool OpenWindow(uint player, ProspectingSession session);

@@ -325,6 +325,69 @@ public class CraftSessionLifecycleTests
     }
 
     [Test]
+    public void Fail_WhileThePlayerIsDead_KeepsTheXpOnTheRecordInsteadOfLosingIt()
+    {
+        var lifecycle = Lifecycle(100, 100);
+        StartSession(lifecycle, FakeCraftSessionWorld.Blueprint);
+        _world.PlayerAlive = false;
+
+        var settlement = lifecycle.Fail(FakeCraftSessionWorld.PlayerHandle, _player, CraftSessionEndReason.Died);
+
+        _world.XpGiven.Should().BeEmpty("a dead player cannot be given XP");
+        _player.PendingCraftXp.Should().Equal(new Dictionary<SkillType, int> { [SkillType.Smithery] = settlement.Xp });
+        settlement.Xp.Should().BePositive();
+    }
+
+    [Test]
+    public void GrantPendingXp_GivesTheWaitingXpOnceThePlayerIsAlive_AndNeverTwice()
+    {
+        var lifecycle = Lifecycle(100, 100);
+        StartSession(lifecycle);
+        _world.PlayerAlive = false;
+        var xp = lifecycle.Fail(FakeCraftSessionWorld.PlayerHandle, _player, CraftSessionEndReason.Died).Xp;
+
+        lifecycle.GrantPendingXp(FakeCraftSessionWorld.PlayerHandle, _player).Should().BeFalse("the player is still dead");
+        _world.XpGiven.Should().BeEmpty();
+        _player.PendingCraftXp.Should().NotBeEmpty();
+
+        _world.PlayerAlive = true;
+        lifecycle.GrantPendingXp(FakeCraftSessionWorld.PlayerHandle, _player).Should().BeTrue();
+        lifecycle.GrantPendingXp(FakeCraftSessionWorld.PlayerHandle, _player).Should().BeFalse("a respawn and a relog must not both give it");
+        lifecycle.SettleLeftover(FakeCraftSessionWorld.PlayerHandle, _player, CraftSessionEndReason.Interrupted);
+
+        _world.XpGiven.Should().Equal((SkillType.Smithery, xp));
+        _player.PendingCraftXp.Should().BeEmpty();
+    }
+
+    [Test]
+    public void GrantPendingXp_SumsTheXpOfSeveralDeathsPerSkill()
+    {
+        var lifecycle = Lifecycle(100, 100, 100, 100);
+        _world.PlayerAlive = false;
+
+        StartSession(lifecycle);
+        var first = lifecycle.Fail(FakeCraftSessionWorld.PlayerHandle, _player, CraftSessionEndReason.Died).Xp;
+        StartSession(lifecycle);
+        var second = lifecycle.Fail(FakeCraftSessionWorld.PlayerHandle, _player, CraftSessionEndReason.Died).Xp;
+
+        _world.PlayerAlive = true;
+        lifecycle.GrantPendingXp(FakeCraftSessionWorld.PlayerHandle, _player);
+
+        _world.XpGiven.Should().Equal((SkillType.Smithery, first + second));
+    }
+
+    [Test]
+    public void GrantPendingXp_WithNothingWaiting_DoesNothing()
+    {
+        _player.PendingCraftXp = null;
+
+        Lifecycle().GrantPendingXp(FakeCraftSessionWorld.PlayerHandle, _player).Should().BeFalse();
+
+        _world.XpGiven.Should().BeEmpty();
+        _world.SaveCount.Should().Be(0);
+    }
+
+    [Test]
     public void Fail_HoldsItemsThatDoNotFitUntilThereIsRoom()
     {
         var lifecycle = Lifecycle(100, 100);

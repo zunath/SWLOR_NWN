@@ -36,10 +36,15 @@ namespace SWLOR.CraftSim.Tests.Gates
         {
             var atEighty = Dist(10, (80, 10));
             var atNinety = Dist(10, (90, 10));
+            var atHundred = Dist(10, (100, 10));
 
             atEighty.ExpectedTransfers(3, new[] { CraftOutcomeRules.GetEnhancementThreshold(1), CraftOutcomeRules.GetEnhancementThreshold(2), CraftOutcomeRules.GetEnhancementThreshold(3) })
                 .Should().Be(atEighty.ExpectedTransfers(3));
-            atNinety.ExpectedTransfers(3).Should().Be(3.0, "90% meets every threshold in force");
+            var thresholds = new[] { CraftOutcomeRules.GetEnhancementThreshold(1), CraftOutcomeRules.GetEnhancementThreshold(2), CraftOutcomeRules.GetEnhancementThreshold(3) };
+
+            atHundred.ExpectedTransfers(3).Should().Be(3.0, "100% meets every threshold in force");
+            atNinety.ExpectedTransfers(3).Should().Be(thresholds.Count(t => t <= 90), "90% meets only the thresholds at or below 90");
+            atNinety.ExpectedTransfers(3).Should().Be(2.0, "the third slot needs a full-quality craft");
         }
 
         [Test]

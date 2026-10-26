@@ -9,7 +9,7 @@ using SWLOR.Game.Server.Service.SkillService;
 namespace SWLOR.Game.Server.Service
 {
     /// <summary>
-    /// The skill XP a crafting guild hand-in gives (owner decision, October 2026, workstream 11). The Smithery, Engineering, Fabrication and
+    /// The skill XP a crafting guild hand-in gives. The Smithery, Engineering, Fabrication and
     /// Agriculture guilds pay <see cref="XpPercent"/> percent of <c>Skill.GetDeltaXP(task level - rank)</c> for every item handed in, in the
     /// guild's skill, through the same path as crafting XP so Social and food bonuses apply. The task's level is the level of the recipe that
     /// makes a crafted item, and the fish's level for a catch task. The Hunter's Guild pays no XP, and neither does a task whose level is unknown.

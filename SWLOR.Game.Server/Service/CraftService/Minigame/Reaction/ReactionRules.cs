@@ -78,13 +78,13 @@ public static class ReactionRules
 
     /// <summary>
     /// The Stability Dampen restores (it also holds the phase one more turn, and wears the piece by nothing). A little: at 10 or more the
-    /// CP a crafter has would let a fixed rotation repair its way through the 21-30 band (CraftSim gate 1).
+    /// CP a crafter has would let a fixed rotation repair its way through the 21-30 band (the CraftSim rotation gate).
     /// </summary>
     public const int DampenRestore = 8;
 
     /// <summary>
     /// The multiplier on the base XP of a Reaction craft of a recipe up to <see cref="XpMultiplierLastLevel"/>, the smallest that keeps the
-    /// Reaction's XP per hour at or above the old window's there (gate 6). The old minigame finishes these recipes in about three actions;
+    /// Reaction's XP per hour at or above the old window's there (the CraftSim XP-rate gate). The old minigame finishes these recipes in about three actions;
     /// above that level the Reaction already pays at least today's rate, so it pays today's XP.
     /// </summary>
     public const double LowLevelXpMultiplier = 3.0;

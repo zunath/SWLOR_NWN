@@ -13,6 +13,7 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition
             _builder.CreateWindow(GuiWindowType.Recipes)
                 .SetIsResizable(true)
                 .SetIsCollapsible(true)
+                .BindOnClosed(model => model.OnWindowClosed())
                 .SetInitialGeometry(0, 0, 620f, 600f)
                 .BindTitle(model => model.Title)
 

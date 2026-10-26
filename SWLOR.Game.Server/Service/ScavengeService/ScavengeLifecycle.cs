@@ -20,7 +20,8 @@ namespace SWLOR.Game.Server.Service.ScavengeService
     /// Search board, or chooses Quick Search, which resolves the site by the rules scavenging had before the board. The site is marked
     /// searched (<c>FULLY_HARVESTED</c>) when the visit begins, so a site is searched once however the visit ends. Gathering XP is paid
     /// for every Search and Dig Deeper as it happens; what the site gave is put in its inventory when the visit ends, and a visit left
-    /// unfinished (window closed, moving away, combat, death, logout) keeps the finds so far and loses the searches not yet spent.
+    /// unfinished (window closed, moving away, combat, death, logout) keeps the finds so far and loses the searches not yet spent. A
+    /// scavenger who dies or logs out keeps the finds on their record instead of in the site, and gets them back later.
     /// </summary>
     public sealed class ScavengeLifecycle
     {
@@ -83,6 +84,10 @@ namespace SWLOR.Game.Server.Service.ScavengeService
             var previous = GetActive(request.Player);
             if (previous != null)
                 End(previous, ScavengeEnd.Replaced);
+
+            // Finds a death or a logout left on the scavenger's record come back before this visit can overwrite them. This comes after
+            // the first visit ends, because a visit in progress keeps its own finds on the record until it puts them in its site.
+            _world.ReturnPendingFinds(request.Player);
 
             var setup = SearchSetup.ForRank(request.GatheringRank, request.SiteLevel, request.Effects);
             var session = new ScavengeSession(Guid.NewGuid().ToString(), request, new SearchEngine(_random, setup))
@@ -261,6 +266,8 @@ namespace SWLOR.Game.Server.Service.ScavengeService
                 end = ScavengeEnd.Left;
             else if (state.IsDead)
                 end = ScavengeEnd.Died;
+            else if (!state.SiteValid)
+                end = ScavengeEnd.SiteGone;
             else if (state.IsInCombat)
                 end = ScavengeEnd.Combat;
             else if (state.DistanceToSite > MaxDistance)
@@ -308,8 +315,11 @@ namespace SWLOR.Game.Server.Service.ScavengeService
         }
 
         /// <summary>
-        /// Settles the visit once: puts what it found in the site, tells the scavenger, closes the window, and either opens the site for
-        /// them or removes it when it gave nothing. Returns null when the visit was already settled.
+        /// Settles the visit once. What the visit found goes one of two ways. Normally it is put in the site, which is then opened for the
+        /// scavenger, held for them when they left it behind, or removed when it gave nothing. When the scavenger cannot take it from the
+        /// site (they died or logged out, or the site is gone) it stays on their record instead and is never put in the site, so nothing
+        /// is duplicated: they get it back at once if they are here and alive, otherwise on respawn, at their next visit or at login.
+        /// Returns null when the visit was already settled.
         /// </summary>
         private ScavengeResult End(ScavengeSession session, ScavengeEnd reason, double animationSeconds = 0)
         {
@@ -324,51 +334,87 @@ namespace SWLOR.Game.Server.Service.ScavengeService
             // A scavenger who is leaving the game is absent even though the engine still reports the creature as valid: the client leave
             // event runs before the creature is removed. Nothing is said to them, rolled for them or held for them.
             var present = state.IsValid && reason != ScavengeEnd.Left;
-            var names = session.Finds
-                .Select(find => $"{find.Quantity}x {_world.CreateItem(request.Site, find.Resref, find.Quantity)}")
-                .ToList();
-            if (session.Finds.Count > 0)
-                _world.SavePendingFinds(session.Player, Array.Empty<ScavengeFind>());
-
-            // The site's extra loot tables roll once for every search that found something, as they always did. A find from Dig Deeper skips them.
-            if (present)
+            var carried = !present || !state.SiteValid || state.IsDead || reason == ScavengeEnd.Died;
+            var names = new List<string>();
+            var returned = false;
+            if (carried)
             {
+                if (session.Finds.Count > 0)
+                {
+                    _world.SavePendingFinds(session.Player, session.Finds);
+                    if (present && !state.IsDead)
+                    {
+                        _world.ReturnPendingFinds(session.Player);
+                        returned = true;
+                    }
+                }
+            }
+            else
+            {
+                names = session.Finds
+                    .Select(find => $"{find.Quantity}x {_world.CreateItem(request.Site, find.Resref, find.Quantity)}")
+                    .ToList();
+                if (session.Finds.Count > 0)
+                    _world.SavePendingFinds(session.Player, Array.Empty<ScavengeFind>());
+
+                // The site's extra loot tables roll once for every search that found something, as they always did. A find from Dig Deeper skips them.
                 var searchFinds = session.Finds.Count(find => !find.Deeper);
                 for (var find = 0; find < searchFinds; find++)
                     _world.SpawnBonusLoot(request.Site, session.Player);
             }
 
-            var message = Summary(reason, names);
-            if (present && message.Length > 0)
+            var message = Summary(reason, names, carried, session.Finds.Count > 0, returned);
+            if (present && message.Length > 0 && !returned)
                 _world.Message(session.Player, message);
 
             if (reason != ScavengeEnd.WindowClosed && present && state.HasWindowOpen)
                 _world.CloseWindow(session.Player);
 
-            if (session.Finds.Count > 0)
+            if (carried || session.Finds.Count == 0)
             {
-                if (present && !state.IsDead)
-                    _world.OpenSite(session.Player, request.Site, animationSeconds);
+                // Nothing is left in the site for anyone: it gave nothing, or what it gave went to the scavenger's record.
+                _world.DestroySite(session.Player, request.Site, animationSeconds);
+            }
+            else if (reason is ScavengeEnd.Moved or ScavengeEnd.Combat or ScavengeEnd.Replaced)
+            {
+                // The scavenger is away from the site, in a fight or at another site, so it is not opened for them: what it gave waits in
+                // the site, held for them for a short while.
+                _world.HoldSite(session.Player, request.Site, animationSeconds);
             }
             else
             {
-                _world.DestroySite(session.Player, request.Site, animationSeconds);
+                _world.OpenSite(session.Player, request.Site, animationSeconds);
             }
 
             session.Result = new ScavengeResult(reason, session.Finds.ToList(), message);
             return session.Result;
         }
 
-        private static string Summary(ScavengeEnd reason, IReadOnlyList<string> names)
+        private static string Summary(ScavengeEnd reason, IReadOnlyList<string> names, bool carried, bool hasFinds, bool returned)
         {
+            if (carried)
+            {
+                if (!hasFinds)
+                    return reason == ScavengeEnd.Died ? string.Empty : "You found nothing.";
+
+                if (returned)
+                    return "What you found came to you instead of the site.";
+
+                return reason == ScavengeEnd.Died
+                    ? "You died before you could collect what you found. It will be returned to you when you respawn."
+                    : string.Empty;
+            }
+
             var found = names.Count == 0 ? "You found nothing." : $"You found {string.Join(", ", names)}.";
+            var waiting = names.Count > 0 ? " It waits in the site for a short while; go back to it to collect." : string.Empty;
             return reason switch
             {
                 ScavengeEnd.Completed => "You finish searching. " + found,
                 ScavengeEnd.QuickSearch => found,
                 ScavengeEnd.WindowClosed => "You stop searching. " + found,
-                ScavengeEnd.Moved => "You moved away and stopped searching. " + found,
-                ScavengeEnd.Combat => "The fight drew you away from the site. " + found,
+                ScavengeEnd.Moved => "You moved away and stopped searching. " + found + waiting,
+                ScavengeEnd.Combat => "The fight drew you away from the site. " + found + waiting,
+                ScavengeEnd.Replaced => "You stopped searching here. " + found + waiting,
                 _ => string.Empty
             };
         }

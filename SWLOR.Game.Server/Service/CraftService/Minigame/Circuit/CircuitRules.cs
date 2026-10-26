@@ -73,7 +73,7 @@ public static class CircuitRules
     public const int RankPassiveCp = 31;
 
     // What a Circuit craft's base XP is multiplied by, for an item and for a failure alike, per recipe-level band. CraftSim's XP-rate
-    // gate (gate 6) found the Circuit pays less XP per hour than the old window at low levels, where the old window took 6 to 9
+    // gate found the Circuit pays less XP per hour than the old window at low levels, where the old window took 6 to 9
     // actions and the Circuit takes 14 to 18. Each is the smallest two-decimal multiplier at which every case of its band (every gear
     // tier, with none to three enhancements) reaches the old window's XP per hour on both of the samples the notes name (6 recipes
     // per band at seed 1, 10 per band at seed 2). Higher bands need little or nothing.

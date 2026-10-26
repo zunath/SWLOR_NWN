@@ -114,9 +114,40 @@ public class ProspectingEngineTests
         engine.RevealedSeams.Should().HaveCount(2);
 
         var third = engine.Perform(ProspectingActionIds.Survey);
-        third.Performed.Should().BeTrue("a Survey with nothing left to find is allowed, and costs what it costs");
+        third.Performed.Should().BeTrue("the harvester cannot tell a third seam is not there until a Survey comes up short");
         engine.RevealedSeams.Should().HaveCount(2);
         engine.Stability.Should().Be(100 - 3 * ProspectingRules.SurveyStability);
+
+        var preview = engine.Preview(ProspectingActionIds.Survey);
+        preview.Enabled.Should().BeFalse("a Survey that came up short has told the harvester none is left");
+        preview.DisabledReason.Should().Be(ProspectingEngine.NothingLeftToFind);
+        engine.Perform(ProspectingActionIds.Survey).Performed.Should().BeFalse();
+        engine.Stability.Should().Be(100 - 3 * ProspectingRules.SurveyStability, "repeated Surveys cannot wear the node down to a collapse");
+    }
+
+    [Test]
+    public void Survey_IsRefusedAtOnce_OnceTheMostASeamsANodeHoldsHaveBeenSeen()
+    {
+        var engine = Engine("rrr", pool: 4);
+        engine.Perform(ProspectingActionIds.Survey);
+        engine.Perform(ProspectingActionIds.Survey);
+        engine.Preview(ProspectingActionIds.Survey).Enabled.Should().BeTrue("a third seam may still be hidden as far as the harvester can tell");
+
+        engine.Perform(ProspectingActionIds.Survey);
+
+        engine.RevealedSeams.Should().HaveCount(3);
+        engine.Preview(ProspectingActionIds.Survey).Enabled.Should().BeFalse("a node holds three seams at most, and all three are found");
+        engine.Perform(ProspectingActionIds.Survey).Performed.Should().BeFalse();
+    }
+
+    [Test]
+    public void Survey_StaysAvailable_WhileASeamIsStillHidden()
+    {
+        var engine = Engine("rg", pool: 4);
+
+        engine.Perform(ProspectingActionIds.Survey);
+
+        engine.Preview(ProspectingActionIds.Survey).Enabled.Should().BeTrue();
     }
 
     [TestCase(0, 1)]

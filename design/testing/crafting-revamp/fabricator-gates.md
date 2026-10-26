@@ -1,6 +1,6 @@
 # Crafting revamp: balance gates of the Fabricator minigame
 
-- Command: `SWLOR.CraftSim gates --scenario fabricator --runs 100 --seed 1 --out design/testing/crafting-revamp/fabricator-gates.md --json C:/Users/Zunath/AppData/Local/Temp/claude-crafting-revamp-4-fabrication-fabricator/final.json`
+- Command: `SWLOR.CraftSim gates --scenario fabricator --runs 100 --seed 1 --out design/testing/crafting-revamp/fabricator-gates.md --json <output>.json`
 - Seed 1; 100 runs per case.
 
 ## Inputs

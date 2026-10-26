@@ -1,6 +1,6 @@
 # Crafting revamp: balance gates of the Kitchen minigame
 
-- Command: `SWLOR.CraftSim gates --scenario kitchen --runs 100 --seed 1 --out design/testing/crafting-revamp/kitchen-gates.md --json C:/Users/Zunath/AppData/Local/Temp/claude-crafting-revamp-6-cooking-kitchen-tuning/final.json`
+- Command: `SWLOR.CraftSim gates --scenario kitchen --runs 100 --seed 1 --out design/testing/crafting-revamp/kitchen-gates.md --json <output>.json`
 - Seed 1; 100 runs per case.
 
 ## Inputs

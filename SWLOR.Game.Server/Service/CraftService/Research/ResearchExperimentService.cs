@@ -47,6 +47,10 @@ public static class ResearchExperimentService
         if (job?.Experiment == null || job.Experiment.Status != ResearchExperimentStatus.Settled || job.Experiment.XpGranted)
             return 0;
 
+        // A dead player cannot be given XP, and the job stays unmarked so the next open or completion gives it.
+        if (GetIsDead(player) || GetCurrentHitPoints(player) <= 0)
+            return 0;
+
         var xp = ResearchExperimentLifecycle.PendingExperimentXp(job, BaseXp(player, job));
         ResearchExperimentLifecycle.MarkExperimentXpGranted(job);
         if (xp > 0)

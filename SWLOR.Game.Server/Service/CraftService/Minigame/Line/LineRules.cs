@@ -84,7 +84,7 @@ public static class LineRules
     public const int FishSenseTurns = 1;
 
     // The multiplier on the XP of a bite (see CraftMinigameXp), by the fish's level band: the least that keeps the CraftSim XP-rate
-    // gate (gate 6) passing in the band for the angler with no perks. The Angler line's magnitudes are tuned to keep the same gate at
+    // gate passing in the band for the angler with no perks. The Angler line's magnitudes are tuned to keep the same gate at
     // 1.0x or more for a perked angler, never by raising these. Today's cast takes about seven seconds; the fight adds three to six
     // turns of TurnSeconds to that, so the same XP per bite would cut the XP per hour to a seventh. Today's XP is still paid at the
     // bite, caught or not. The

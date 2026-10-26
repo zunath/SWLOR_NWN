@@ -34,10 +34,10 @@ public static class SearchRules
     public const double QuickSearchSeconds = 2.0;
 
     // The multiplier on the XP of a Search or Dig Deeper attempt (see CraftMinigameXp), by the site's level: the least that keeps the
-    // CraftSim XP-rate gate (gate 6) passing at the site level. Today a visit takes two seconds of animation however many attempts it
-    // makes; the board takes six seconds an action, but it has more attempts for the time, so today's XP per attempt nearly passes.
-    // Starting values until client timing replaces the seconds per action; 1.0 at every level restores today's XP per attempt. Level 0
-    // sites (no perk, no tier) use the level 1 value.
+    // CraftSim XP-rate check passing at the site level. A Quick Search visit takes two seconds of animation however many attempts it
+    // makes; the board takes six seconds an action, but it has more attempts for the time, so the XP per attempt nearly matches.
+    // These are starting values until client timing replaces the seconds per action; 1.0 at every level pays the Quick Search XP per
+    // attempt. Level 0 sites (no perk, no tier) use the level 1 value.
     public const double XpMultiplierLevel1 = 1.05;
     public const double XpMultiplierLevel2 = 1.05;
     public const double XpMultiplierLevel3 = 1.10;

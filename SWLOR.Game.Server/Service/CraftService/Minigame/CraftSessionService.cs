@@ -41,6 +41,13 @@ public static class CraftSessionService
         return dbPlayer == null ? CraftSettlement.None : Lifecycle.SettleLeftover(player, dbPlayer, reason);
     }
 
+    /// <summary>Gives the XP a craft earned while the player was dead, once they are alive. Call at a respawn.</summary>
+    public static bool GrantPendingXp(uint player)
+    {
+        var dbPlayer = DB.Get<Player>(GetObjectUUID(player));
+        return dbPlayer != null && Lifecycle.GrantPendingXp(player, dbPlayer);
+    }
+
     /// <summary>True while the player has a craft saved, whichever window is playing it.</summary>
     public static bool IsCrafting(uint player)
     {

@@ -61,7 +61,10 @@ public static class SearchActionText
         return (engine.HasFound(spot) ? "searched, found something" : "searched, found nothing") + dug;
     }
 
-    /// <summary>The two lines of a spot's button: its name, and what the scavenger knows about it.</summary>
+    /// <summary>
+    /// The single line on a spot's button: what the scavenger knows about it. The button's place in the 3x3 grid names the spot, and a
+    /// button cannot hold a line break (the client draws it as "?"), so the full name and detail live in the tooltip.
+    /// </summary>
     public static string SpotButtonText(SearchEngine engine, int spot)
     {
         string line;
@@ -77,7 +80,7 @@ public static class SearchActionText
                 _ => "Unknown"
             };
 
-        return $"{SpotTitle(spot)}\n{line}";
+        return line;
     }
 
     /// <summary>The tooltip of a spot's button: its ground and what has been done there.</summary>

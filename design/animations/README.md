@@ -373,8 +373,8 @@ python -B tools/CompileModels.py --since HEAD --apply
 python -B tools/TestInheritedBoneProportions.py
 ```
 
-`design/animations/verification/crafting-revamp/` holds offline renders of the installed banks (male and female rigs,
-key beats of every clip). They are not NWN client evidence: the live-client check, with real equipment, is outstanding
+`design/animations/verification/crafting-revamp/` holds the robe bridge audit notes and scripts. The offline renders of the installed banks
+(male and female rigs, key beats of every clip) are generated, not committed, and are regenerated from the installed banks. They are not NWN client evidence: the live-client check, with real equipment, is outstanding
 until the Closeout joint pass. The robe bridges (`sw_anim_m`, `sw_anim_f`) were regenerated with the workflow in
 [Clothing animation bridges](#clothing-animation-bridges) (HAK PR #584), so every shared robe family owns all 15 clips and
 the garment attachment joints follow them. `robe-bridges.md` in the same folder records the coverage audit

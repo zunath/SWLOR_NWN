@@ -167,7 +167,7 @@ public static class ProspectingRules
     }
 
     // The multiplier on the XP of a session (see CraftMinigameXp), by the vein's level: 1 pays today's XP for each unit gathered.
-    // Quick Harvest never takes it. A tuning pass raises a band here when the XP-rate gate (gate 6) needs it.
+    // Quick Harvest never takes it. A band is raised here when CraftSim's XP-rate check needs it.
     public const double XpMultiplierVeinLevel5 = 1.0;
     public const double XpMultiplierVeinLevel15 = 1.0;
     public const double XpMultiplierVeinLevel25 = 1.0;

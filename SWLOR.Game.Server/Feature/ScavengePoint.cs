@@ -12,12 +12,7 @@ namespace SWLOR.Game.Server.Feature
 {
     public static class ScavengePoint
     {
-        /// <summary>
-        /// A player opens a scavenge site. If they have the Gathering rank for it, the Search board opens in place of the site's inventory
-        /// (<see cref="ScavengeSessions"/>): they play the board, or choose Quick Search, and what the site gave is put in its inventory when
-        /// they finish. A site can be searched once (<c>FULLY_HARVESTED</c>), and one scavenger at a time.
-        /// </summary>
-        /// <summary>Gives a player the finds of a Search board a server restart cut short.</summary>
+        /// <summary>Gives a player the finds of a Search board a server restart or a logout cut short.</summary>
         [NWNEventHandler(ScriptName.OnModuleEnter)]
         public static void ReturnPendingSearchFinds()
         {
@@ -25,9 +20,30 @@ namespace SWLOR.Game.Server.Feature
             if (!GetIsPC(player) || GetIsDM(player) || GetIsDMPossessed(player))
                 return;
 
-            NwnScavengeWorld.ReturnPendingFinds(player);
+            NwnScavengeWorld.Instance.ReturnPendingFinds(player);
         }
 
+        /// <summary>Gives a player who died mid-search the finds the board kept for them, once they respawn.</summary>
+        [NWNEventHandler(ScriptName.OnModuleRespawn)]
+        public static void ReturnPendingSearchFindsOnRespawn()
+        {
+            var player = GetLastRespawnButtonPresser();
+            if (!GetIsPC(player))
+                return;
+
+            // The resurrection from the respawn button is applied by another handler of the same event, so look once it has landed.
+            DelayCommand(1f, () =>
+            {
+                if (GetIsObjectValid(player))
+                    NwnScavengeWorld.Instance.ReturnPendingFinds(player);
+            });
+        }
+
+        /// <summary>
+        /// A player opens a scavenge site. If they have the Gathering rank for it, the Search board opens in place of the site's inventory
+        /// (<see cref="ScavengeSessions"/>): they play the board, or choose Quick Search, and what the site gave is put in its inventory when
+        /// they finish. A site can be searched once (<c>FULLY_HARVESTED</c>), and one scavenger at a time.
+        /// </summary>
         [NWNEventHandler(ScriptName.OnScavengeOpened)]
         public static void OnOpened()
         {

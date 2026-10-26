@@ -1,9 +1,9 @@
 namespace SWLOR.Game.Server.Service.CraftService.Minigame.Kitchen;
 
 /// <summary>
-/// Every number the Kitchen rules use. The plan fixes the actions and meters, not these magnitudes: phase 2 tuned the ones marked
-/// below against the CraftSim balance gates (<c>design/testing/crafting-revamp/kitchen-gates.md</c>) and the rest stay at their
-/// phase 1 starting values until the client evidence says otherwise.
+/// Every number the Kitchen rules use. The actions and meters are fixed; the magnitudes marked "Tuned" were set against the CraftSim
+/// balance gates (<c>design/testing/crafting-revamp/kitchen-gates.md</c>) and the rest are starting values until the client
+/// evidence says otherwise.
 /// </summary>
 public static class KitchenTuning
 {
@@ -35,7 +35,7 @@ public static class KitchenTuning
 
     /// <summary>
     /// With no Control, a push lands anywhere from this percentage below to this percentage above its listed strength. Tuned: at 40 a
-    /// single rotation of actions could match adaptive play across a band of low-level dishes (gate 1).
+    /// single rotation of actions could match adaptive play across a band of low-level dishes (the rotation gate).
     /// </summary>
     public const int BasePushSpreadPercent = 50;
 
@@ -63,7 +63,7 @@ public static class KitchenTuning
     /// <summary>
     /// An enhancement's progress penalty (written for the old crafting window's much larger progress scale) adds this share of
     /// itself to the Doneness the dish needs. Tuned: at 0.5 dishes with two or three enhancements failed or fell
-    /// short of quality often enough that enhancement transfers dropped below today's (gate 7).
+    /// short of quality often enough that enhancement transfers dropped below today's (the enhancement parity gate).
     /// </summary>
     public const double EnhancementDonenessPerPenalty = 0.25;
 
@@ -99,7 +99,7 @@ public static class KitchenTuning
 
     // Craft points
 
-    /// <summary>The CP a Stir costs. Tuned: at 8 a cook with gear could stir every turn without reading the drift (gate 1).</summary>
+    /// <summary>The CP a Stir costs. Tuned: at 8 a cook with gear could stir every turn without reading the drift (the rotation gate).</summary>
     public const int StirCp = 12;
     public const int CoverCp = 6;
 
@@ -117,7 +117,7 @@ public static class KitchenTuning
     // XP
 
     // The multiplier on the base XP of every Kitchen craft in a recipe-level band (see CraftMinigameXp), each the least that keeps the
-    // CraftSim XP-rate gate (gate 6) passing in its band at every gear tier and enhancement count. The Kitchen's 10-20 action loop at
+    // CraftSim XP-rate gate passing in its band at every gear tier and enhancement count. The Kitchen's 10-20 action loop at
     // an estimated 8 seconds an action pays less XP per hour than the old window's 4-28 action loop at 6 seconds, and the old window is
     // fastest at the lowest levels. Starting values until client timing replaces the seconds per action.
     public const double XpMultiplierLevels1To10 = 2.15;

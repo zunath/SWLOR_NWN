@@ -95,20 +95,23 @@ public class SearchActionTextTests
     }
 
     [Test]
-    public void ASpotsButtonNamesItAndWhatTheScavengerKnowsOfIt()
+    public void ASpotsButtonIsOneLineNamingWhatTheScavengerKnowsOfIt()
     {
         var engine = Engine(100, 50);
 
-        SearchActionText.SpotButtonText(engine, Top).Should().Be("Top\nUnknown");
+        SearchActionText.SpotButtonText(engine, Top).Should().Be("Unknown");
 
         engine.Perform(Sift(Center));
-        SearchActionText.SpotButtonText(engine, Top).Should().Be("Top\nPromising");
-        SearchActionText.SpotButtonText(engine, Left).Should().Be("Left\nOrdinary");
+        SearchActionText.SpotButtonText(engine, Top).Should().Be("Promising");
+        SearchActionText.SpotButtonText(engine, Left).Should().Be("Ordinary");
 
         engine.Perform(SearchAt(Top));
-        SearchActionText.SpotButtonText(engine, Top).Should().Be("Top\nEmpty");
+        SearchActionText.SpotButtonText(engine, Top).Should().Be("Empty");
         engine.Perform(Dig(Top));
         SearchActionText.SpotState(engine, Top).Should().Be("searched, found nothing, dug once");
+
+        for (var spot = 0; spot < SearchBoard.Spots; spot++)
+            SearchActionText.SpotButtonText(engine, spot).Should().NotContain("\n", "a NUI button draws a line break as a question mark");
     }
 
     [Test]
@@ -116,10 +119,10 @@ public class SearchActionTextTests
     {
         var engine = Engine(1, 100);
         engine.Perform(SearchAt(Top));
-        SearchActionText.SpotButtonText(engine, Top).Should().Be("Top\nFound");
+        SearchActionText.SpotButtonText(engine, Top).Should().Be("Found");
 
         engine.Perform(Dig(Top));
-        SearchActionText.SpotButtonText(engine, Top).Should().Be("Top\nSpoiled");
+        SearchActionText.SpotButtonText(engine, Top).Should().Be("Spoiled");
         SearchActionText.SpotTooltip(engine, Top).Should().Be("Top: promising ground, spoiled.");
     }
 

@@ -1,7 +1,7 @@
 namespace SWLOR.Game.Server.Service.FishingService
 {
     /// <summary>
-    /// Quick Reel: the choice a bite offers besides the fight (owner decision, October 2026). The angler lands the fish, or not, at once
+    /// Quick Reel: the choice a bite offers besides the fight. The angler lands the fish, or not, at once
     /// by the catch roll fishing had before the Line: <c>40 + (Agriculture rank - fish level) x 10 + 2 x Willpower score</c> percent, kept
     /// between 0 and 95. It takes no fight time, pays today's XP for the bite and nothing more, and spends the bait as today.
     /// </summary>
@@ -9,7 +9,7 @@ namespace SWLOR.Game.Server.Service.FishingService
     {
         /// <summary>
         /// The Willpower score Quick Reel rolls with, the same for every angler so that fishing no longer reads an attribute: 10, today's
-        /// catch roll for a character with no attribute investment (owner decision, October 2026).
+        /// catch roll for a character with no attribute investment.
         /// </summary>
         public const int ReferenceWillpowerScore = 10;
 

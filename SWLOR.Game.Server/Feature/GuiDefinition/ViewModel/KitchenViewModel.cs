@@ -291,6 +291,9 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
 
         protected override void Initialize(CraftPayload initialPayload)
         {
+            _engine = null;
+            _session = null;
+            _committedSlots = new List<int>();
             _recipe = initialPayload.Recipe;
             _blueprintItem = initialPayload.BlueprintItem;
             var recipe = Craft.GetRecipe(_recipe);
@@ -512,6 +515,9 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
 
             Targeting.EnterTargetingMode(Player, ObjectType.Item, "Please click on an enhancement within your inventory.", item =>
             {
+                if (_engine != null || !Gui.IsWindowOpen(Player, GuiWindowType.Kitchen) || slot >= _slotCount)
+                    return;
+
                 var problem = ValidateEnhancement(item);
                 if (!string.IsNullOrEmpty(problem))
                 {

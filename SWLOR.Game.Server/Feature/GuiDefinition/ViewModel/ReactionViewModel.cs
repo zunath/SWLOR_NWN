@@ -155,7 +155,7 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
                 return;
 
             ShowModal(
-                "Stop the reaction? Each stack of components has a 65% chance to be lost, and the attempt earns 15% of the base XP.",
+                $"Stop the reaction? Each stack of components has a {CraftOutcomeRules.ChanceToLoseItemPercent}% chance to be lost, and the attempt earns {(int)(CraftOutcomeRules.FailureXpFraction * 100)}% of the base XP.",
                 () =>
                 {
                     var settlement = CraftSessionService.Fail(Player, CraftSessionEndReason.WindowClosed);

@@ -114,6 +114,11 @@ internal sealed class FakeCraftSessionWorld : ICraftSessionWorld
     public void ApplyBlueprintBonuses(uint player, uint item, RecipeDetail recipe, BlueprintDetail blueprint) =>
         BlueprintBonusCalls++;
 
+    /// <summary>False while the player is dead: no skill XP can be given.</summary>
+    public bool PlayerAlive { get; set; } = true;
+
+    public bool CanReceiveXp(uint player) => PlayerAlive;
+
     public void GiveXp(uint player, SkillType skill, int xp)
     {
         Events.Add("xp");

@@ -85,7 +85,7 @@ public static class ForgeRules
     public const int PostQuenchHoneShape = 48;
 
     // The factor on a Smithery craft's base XP, success and failure alike, per recipe-level band: the minimum that keeps every gear tier
-    // and every enhancement count at or above the old window's XP per hour in the CraftSim XP-rate gate (gate 6). The binding cases are
+    // and every enhancement count at or above the old window's XP per hour in the CraftSim XP-rate gate. The binding cases are
     // enhanced crafts without gear, whose extra Shape the Forge turns into more actions than the old window needed (1-10 and 31-40).
     // Starting values until client timing replaces the seconds per action.
     public const double XpMultiplierLevels1To10 = 1.97;

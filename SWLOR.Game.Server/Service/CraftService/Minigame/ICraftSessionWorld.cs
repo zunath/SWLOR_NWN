@@ -59,6 +59,9 @@ public interface ICraftSessionWorld
 
     void GiveXp(uint player, SkillType skill, int xp);
 
+    /// <summary>True when the player can be given skill XP now. A dead player cannot, so XP earned then waits on the record.</summary>
+    bool CanReceiveXp(uint player);
+
     void SaveRecord(Player dbPlayer);
 
     void Message(uint player, string text);

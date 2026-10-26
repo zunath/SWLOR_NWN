@@ -21,15 +21,15 @@ namespace SWLOR.Game.Server.Service.ScavengeService
     }
 
     /// <summary>
-    /// Quick Search (owner decision after player feedback, October 2026): the choice the board offers besides playing it. It resolves the
+    /// Quick Search: the choice the board offers besides playing it. It resolves the
     /// site by the rules scavenging had before the board, with no Dig Deeper, paying today's XP and taking as long as today's attempts.
     /// One attempt, plus a second at <c>Hard Look level x 10</c> percent (the level Gathering rank grants,
     /// <see cref="CraftRankMilestones.HardLookLevelForRank"/>); each attempt succeeds on a d20 against a DC of 6, rising by a d3 after each
     /// attempt. It pays the XP for the site against the Gathering rank for a success and a quarter of it for a failure.
     /// <para>
-    /// Today the d20 and the second attempt also add the character's Perception modifier. Scavenging no longer reads attributes, so Quick
-    /// Search rolls at the parity reference of a character with no investment: a modifier of 0
-    /// (<see cref="ReferencePerceptionModifier"/>, owner decision, October 22 2026).
+    /// The old search added the character's Perception modifier to the d20 and to the second attempt. Scavenging no longer reads
+    /// attributes, so Quick Search rolls at the parity reference of a character with no investment: a modifier of 0
+    /// (<see cref="ReferencePerceptionModifier"/>).
     /// </para>
     /// </summary>
     public static class ScavengeQuickSearch

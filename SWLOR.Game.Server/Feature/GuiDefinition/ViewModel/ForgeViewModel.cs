@@ -190,7 +190,10 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
 
             Targeting.EnterTargetingMode(Player, ObjectType.Item, "Please click on an enhancement within your inventory.", item =>
             {
-                if (_engine != null || !IsValidEnhancement(item))
+                if (_engine != null || !Gui.IsWindowOpen(Player, GuiWindowType.Forge) || index >= _enhancementItems.Count)
+                    return;
+
+                if (!IsValidEnhancement(item))
                     return;
 
                 if (_enhancementItems.Contains(item))

@@ -323,7 +323,7 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
             for (var spot = 0; spot < SpotCount; spot++)
             {
                 var text = SearchActionText.SpotButtonText(engine, spot);
-                Set(spot == _selected ? "> " + text.Replace("\n", " <\n") : text, SpotTextProperty(spot));
+                Set(spot == _selected ? $"> {text} <" : text, SpotTextProperty(spot));
                 Set(SearchActionText.SpotTooltip(engine, spot), SpotTooltipProperty(spot));
                 Set(SpotColorFor(engine, spot), SpotColorProperty(spot));
             }

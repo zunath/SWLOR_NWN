@@ -16,6 +16,8 @@ internal sealed class FakeScavengeWorld : IScavengeWorld
     public List<(uint Site, uint Player)> BonusLoot { get; } = new();
     public List<uint> Searched { get; } = new();
     public List<(uint Site, double Seconds)> Opened { get; } = new();
+    public List<(uint Site, double Seconds)> Held { get; } = new();
+    public List<ScavengeFind> Returned { get; } = new();
     public List<(uint Site, double Seconds)> Destroyed { get; } = new();
     public List<ScavengeSession> Windows { get; } = new();
 
@@ -23,6 +25,7 @@ internal sealed class FakeScavengeWorld : IScavengeWorld
     public bool CanOpenWindow { get; set; } = true;
     public bool OpeningTheWindowThrows { get; set; }
     public bool IsValid { get; set; } = true;
+    public bool SiteValid { get; set; } = true;
     public bool IsDead { get; set; }
     public bool IsInCombat { get; set; }
     public float Distance { get; set; } = 1f;
@@ -58,6 +61,17 @@ internal sealed class FakeScavengeWorld : IScavengeWorld
     {
         Log.Add("pending");
         PendingSaves.Add(finds.ToList());
+        Pending = finds.ToList();
+    }
+
+    /// <summary>What is on the scavenger's record now: the last list saved, until it is returned.</summary>
+    public IReadOnlyList<ScavengeFind> Pending { get; private set; } = Array.Empty<ScavengeFind>();
+
+    public void ReturnPendingFinds(uint player)
+    {
+        Log.Add("return");
+        Returned.AddRange(Pending);
+        Pending = Array.Empty<ScavengeFind>();
     }
 
     public void SpawnBonusLoot(uint site, uint player)
@@ -76,6 +90,12 @@ internal sealed class FakeScavengeWorld : IScavengeWorld
     {
         Log.Add("site");
         Opened.Add((site, animationSeconds));
+    }
+
+    public void HoldSite(uint player, uint site, double animationSeconds)
+    {
+        Log.Add("hold");
+        Held.Add((site, animationSeconds));
     }
 
     public void DestroySite(uint player, uint site, double animationSeconds)
@@ -105,7 +125,7 @@ internal sealed class FakeScavengeWorld : IScavengeWorld
     }
 
     public ScavengePlayerState GetPlayerState(uint player, uint site) =>
-        new(IsValid, IsDead, IsInCombat, WindowOpen, Distance);
+        new(IsValid, IsDead, IsInCombat, WindowOpen, Distance, SiteValid);
 
     /// <summary>The clock the visit's pacing reads; a test moves it forward.</summary>
     public DateTime UtcNow { get; set; } = new(2026, 10, 22, 12, 0, 0, DateTimeKind.Utc);

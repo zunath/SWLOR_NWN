@@ -276,7 +276,7 @@ public class ProspectingLifecycleTests
     // Actions.
 
     [Test]
-    public void AnActionTakesItsSecondsWithTheHarvestAnimation_ThenResolves()
+    public void AnActionTakesItsSecondsWithItsWorkAnimation_ThenResolves()
     {
         var lifecycle = Lifecycle(StrikeTwoUnits);
         var session = Open(lifecycle, Node(4, "r"));
@@ -286,6 +286,7 @@ public class ProspectingLifecycleTests
 
         start.Started.Should().BeTrue();
         _world.Work.Should().Equal((float)ProspectingRules.StrikeSeconds);
+        _world.WorkActions.Should().Equal(ProspectingActionIds.Strike); // the world plays the Strike clip for it
         session.Working.Should().Be(ProspectingActionIds.Strike);
         session.Engine.Turn.Should().Be(0);
         report.Should().BeNull();
@@ -674,6 +675,7 @@ public class ProspectingLifecycleTests
             _world.Harvests.Should().HaveCount(pool);
             _world.Work.Should().OnlyContain(seconds => seconds == (float)ProspectingRules.HarvestSeconds);
             _world.Work.Should().HaveCount(pool, "one harvest delay and animation for each unit");
+            _world.WorkActions.Should().OnlyContain(action => action == null, "a Quick Harvest unit has no authored clip");
             _world.Xp.Should().OnlyContain(xp => xp == XpPerUnit(3, 20));
             _world.Xp.Sum().Should().Be(pool * XpPerUnit(3, 20));
             (50 - _world.Charges[Harvester]).Should().Be(pool, "one charge for each unit");

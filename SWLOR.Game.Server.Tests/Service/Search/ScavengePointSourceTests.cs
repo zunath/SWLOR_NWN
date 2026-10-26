@@ -90,6 +90,18 @@ public class ScavengePointSourceTests
     }
 
     [Test]
+    public void FindsKeptOnAScavengersRecord_AreReturnedAtLogin_AndWhenTheyRespawn()
+    {
+        var source = Source("Feature", "ScavengePoint.cs");
+        var login = Method(source, "public static void ReturnPendingSearchFinds()");
+        var respawn = Method(source, "public static void ReturnPendingSearchFindsOnRespawn()");
+
+        login.Should().Contain("NwnScavengeWorld.Instance.ReturnPendingFinds(player)");
+        respawn.Should().Contain("NwnScavengeWorld.Instance.ReturnPendingFinds(player)");
+        source.Should().Contain("[NWNEventHandler(ScriptName.OnModuleRespawn)]");
+    }
+
+    [Test]
     public void ASiteIsOnlyOpenedToAPlayerWhenNobodyIsSearchingIt_AndItWasNotSearchedBefore()
     {
         var onOpened = Method(Source("Feature", "ScavengePoint.cs"), "public static void OnOpened()");

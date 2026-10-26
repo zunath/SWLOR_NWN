@@ -187,6 +187,7 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition
 
                             row.AddButton()
                                 .SetText("Cancel Job")
+                                .BindIsEnabled(model => model.IsCancelEnabled)
                                 .BindOnClicked(model => model.ClickCancelJob());
 
                             row.AddSpacer();

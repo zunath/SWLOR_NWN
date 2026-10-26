@@ -63,7 +63,7 @@ public static class FabricatorRules
     public const int RankPassiveCp = 31;
 
     // The multiplier on the base XP of every Fabricator craft in a recipe-level band (see CraftMinigameXp), each the least that keeps
-    // the CraftSim XP-rate gate (gate 6) passing in its band at every gear tier and enhancement count. The Fabricator's 10-20 action loop
+    // the CraftSim XP-rate gate passing in its band at every gear tier and enhancement count. The Fabricator's 10-20 action loop
     // at 8 seconds an action pays less XP per hour than the old window's 5-28 action loop at 6 seconds, and the old window is fastest
     // at the lowest levels. Starting values until client timing replaces the seconds per action.
     public const double XpMultiplierLevels1To10 = 2.4;

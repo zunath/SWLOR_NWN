@@ -64,7 +64,7 @@ public class ScavengeLifecycleTests
         var session = lifecycle.Start(Request());
 
         session.Should().NotBeNull();
-        _world.Log.Should().Equal("mark", "open");
+        _world.Log.Should().Equal("return", "mark", "open");
         _world.Searched.Should().Equal(Site);
         session.Mode.Should().Be(ScavengeMode.Board);
         session.Engine.Setup.Rank.Should().Be(Rank);
@@ -425,7 +425,7 @@ public class ScavengeLifecycleTests
     }
 
     [Test]
-    public void ADeadScavenger_LeavesTheirFindsInTheSite_WithoutOpeningItOrTalkingToThem()
+    public void ADeadScavenger_KeepsTheirFindsOnTheirRecord_NotInTheSite_AndIsTold()
     {
         var lifecycle = Lifecycle(1, 0, 3);
         var session = lifecycle.Start(Request());
@@ -434,14 +434,35 @@ public class ScavengeLifecycleTests
 
         lifecycle.Abandon(session, ScavengeEnd.Died);
 
-        _world.Created.Should().Equal((Site, "fiberp_ruined", 3));
+        _world.Created.Should().BeEmpty("the finds are not put in a site anyone could loot");
+        _world.Pending.Should().Equal(new ScavengeFind("fiberp_ruined", 3, false));
+        _world.Returned.Should().BeEmpty("a dead scavenger cannot take them yet");
         _world.Opened.Should().BeEmpty();
-        _world.Destroyed.Should().BeEmpty();
-        _world.Messages.Should().BeEmpty("nothing is said on dying");
+        _world.Held.Should().BeEmpty();
+        _world.BonusLoot.Should().BeEmpty();
+        _world.Destroyed.Should().Equal(new[] { (Site, 0d) }, "the empty site is removed");
+        _world.Messages.Should().ContainSingle().Which.Should().Contain("returned to you when you respawn");
     }
 
     [Test]
-    public void ALoggedOutScavenger_LeavesTheirFindsInTheSite_AndRollsNoExtraLoot()
+    public void ADeadScavengerWhoRespawns_GetsTheFindsBackOnce_AtTheirNextVisit()
+    {
+        var lifecycle = Lifecycle(1, 0, 3, 0, 1);
+        var session = lifecycle.Start(Request());
+        lifecycle.Act(session, SearchAt(0));
+        _world.IsDead = true;
+        lifecycle.Abandon(session, ScavengeEnd.Died);
+        _world.IsDead = false;
+
+        lifecycle.Start(Request(site: 501));
+
+        _world.Returned.Should().Equal(new ScavengeFind("fiberp_ruined", 3, false));
+        _world.Pending.Should().BeEmpty("giving them back clears the record, so they cannot be given twice");
+        _world.Created.Should().BeEmpty("they were never put in the site");
+    }
+
+    [Test]
+    public void ALoggedOutScavenger_KeepsTheirFindsOnTheirRecord_AndRollsNoExtraLoot()
     {
         var lifecycle = Lifecycle(1, 0, 3);
         var session = lifecycle.Start(Request());
@@ -450,9 +471,12 @@ public class ScavengeLifecycleTests
 
         lifecycle.Abandon(session, ScavengeEnd.Left);
 
-        _world.Created.Should().Equal((Site, "fiberp_ruined", 3));
+        _world.Created.Should().BeEmpty();
+        _world.Pending.Should().Equal(new ScavengeFind("fiberp_ruined", 3, false));
+        _world.Returned.Should().BeEmpty("they get them at login");
         _world.BonusLoot.Should().BeEmpty();
         _world.Opened.Should().BeEmpty();
+        _world.Held.Should().BeEmpty();
         _world.Messages.Should().BeEmpty();
     }
 
@@ -469,14 +493,87 @@ public class ScavengeLifecycleTests
 
         lifecycle.Abandon(session, ScavengeEnd.Left);
 
-        _world.Created.Should().Equal((Site, "fiberp_ruined", 3)); // what they found is still put in the site
+        _world.Created.Should().BeEmpty("what they found waits on their record, not in the site");
+        _world.Pending.Should().Equal(new ScavengeFind("fiberp_ruined", 3, false));
+        _world.Returned.Should().BeEmpty();
         _world.BonusLoot.Should().BeEmpty();
         _world.Messages.Should().BeEmpty();
-        _world.Opened.Should().BeEmpty("the site is not held for a player who is leaving");
-        _world.Destroyed.Should().BeEmpty();
+        _world.Opened.Should().BeEmpty("the site is not opened for a player who is leaving");
+        _world.Held.Should().BeEmpty("the site is not held for a player who is leaving");
         _world.WindowOpen.Should().BeTrue("there is no one to close it for");
         session.Result.End.Should().Be(ScavengeEnd.Left);
         lifecycle.IsInUse(Site).Should().BeFalse();
+    }
+
+    [TestCase(ScavengeEnd.Moved)]
+    [TestCase(ScavengeEnd.Combat)]
+    public void AScavengerWhoMovesAwayOrFights_LeavesTheFindsInTheHeldSite_WithoutBeingPulledBack(ScavengeEnd reason)
+    {
+        var lifecycle = Lifecycle(1, 0, 3);
+        var session = lifecycle.Start(Request());
+        lifecycle.Act(session, SearchAt(0));
+        if (reason == ScavengeEnd.Moved)
+            _world.Distance = ScavengeLifecycle.MaxDistance + 1;
+        else
+            _world.IsInCombat = true;
+
+        _world.RunNextScheduled();
+
+        session.Result.End.Should().Be(reason);
+        _world.Created.Should().Equal((Site, "fiberp_ruined", 3));
+        _world.Held.Should().Equal(new[] { (Site, 0d) });
+        _world.Opened.Should().BeEmpty("opening the site would walk them back or pull them out of the fight");
+        _world.Destroyed.Should().BeEmpty();
+        _world.Messages.Should().ContainSingle().Which.Should().Contain("go back to it to collect");
+    }
+
+    [Test]
+    public void AScavengerWhoStartsAnotherVisit_LeavesTheFirstSitesFindsHeld_AndDoesNotOpenIt()
+    {
+        var lifecycle = Lifecycle(1, 0, 3, 0, 1);
+        var first = lifecycle.Start(Request());
+        lifecycle.Act(first, SearchAt(0));
+
+        lifecycle.Start(Request(site: 501));
+
+        first.Result.End.Should().Be(ScavengeEnd.Replaced);
+        _world.Created.Should().Equal((Site, "fiberp_ruined", 3));
+        _world.Held.Should().Equal(new[] { (Site, 0d) });
+        _world.Opened.Should().BeEmpty("opening the first site would force its inventory open over the new board");
+    }
+
+    [Test]
+    public void ASiteThatIsGoneMidBoard_EndsTheVisit_AndGivesTheFindsToTheScavenger_NeverToTheSite()
+    {
+        var lifecycle = Lifecycle(1, 0, 3);
+        var session = lifecycle.Start(Request());
+        lifecycle.Act(session, SearchAt(0));
+        _world.SiteValid = false;
+
+        _world.RunNextScheduled();
+
+        session.Result.End.Should().Be(ScavengeEnd.SiteGone);
+        _world.Created.Should().BeEmpty();
+        _world.Returned.Should().Equal(new ScavengeFind("fiberp_ruined", 3, false));
+        _world.Pending.Should().BeEmpty();
+        _world.Opened.Should().BeEmpty();
+        _world.Held.Should().BeEmpty();
+        _world.ScheduledCount.Should().Be(0, "an ended visit stops checking");
+    }
+
+    [Test]
+    public void ASiteThatIsGoneAtTheEndOfAQuickSearch_AlsoSendsTheFindsToTheScavenger()
+    {
+        _world.SiteValid = false;
+        _world.CanOpenWindow = false;
+        var lifecycle = Lifecycle(50, 15, 1, 0, 1);
+
+        var session = lifecycle.Start(Request());
+
+        session.Result.End.Should().Be(ScavengeEnd.QuickSearch);
+        _world.Created.Should().BeEmpty();
+        _world.Returned.Should().HaveCount(1);
+        _world.Pending.Should().BeEmpty();
     }
 
     [Test]

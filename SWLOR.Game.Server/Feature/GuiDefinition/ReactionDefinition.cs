@@ -18,7 +18,9 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition
         private const float RecipeDetailHeight = 210f;
         private const float RuleTextHeight = 52f;
 
-        private const string HelpText =
+        private static readonly int FailureXpPercent = (int)(CraftOutcomeRules.FailureXpFraction * 100);
+
+        private static readonly string HelpText =
             "THE CYCLE\n" +
             "You work a volatile poison or trap mechanism through a reaction cycle. It runs Calm, Rising, Peak and Settling, and it " +
             "advances by one turn after every action. The window always shows the current phase and the next two, and the whole cycle " +
@@ -41,14 +43,14 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition
             "you click, including the phase that follows. The action that would finish the item says so.\n\n" +
             "FAILING\n" +
             "If Stability reaches 0, or you close this window, die or walk away from the bench, the piece is lost. Each stack of " +
-            "components then has a 65% chance to be lost, and you still earn 15% of the base XP.\n\n" +
+            $"components then has a {CraftOutcomeRules.ChanceToLoseItemPercent}% chance to be lost, and you still earn {FailureXpPercent}% of the base XP.\n\n" +
             "YOUR RANK\n" +
             "Espionage rank sets how strong your actions are and how much CP you have. Poisoncraft, Trapcraft and Master Saboteur still " +
             "decide which recipes you can craft.";
 
-        private const string FailureRuleText =
-            "If the piece breaks, or you close this window, die or leave the bench, each stack of components has a 65% chance " +
-            "to be lost, and the attempt still earns 15% of the base XP.";
+        private static readonly string FailureRuleText =
+            $"If the piece breaks, or you close this window, die or leave the bench, each stack of components has a {CraftOutcomeRules.ChanceToLoseItemPercent}% chance " +
+            $"to be lost, and the attempt still earns {FailureXpPercent}% of the base XP.";
 
         private readonly GuiWindowBuilder<ReactionViewModel> _builder = new();
 
@@ -231,7 +233,7 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition
                     row.AddSpacer();
                     row.AddButton()
                         .SetText("Abort")
-                        .SetTooltip("Stop the reaction. Each stack of components has a 65% chance to be lost.")
+                        .SetTooltip($"Stop the reaction. Each stack of components has a {CraftOutcomeRules.ChanceToLoseItemPercent}% chance to be lost.")
                         .SetWidth(140f)
                         .SetHeight(34f)
                         .BindOnClicked(model => model.OnClickAbort());

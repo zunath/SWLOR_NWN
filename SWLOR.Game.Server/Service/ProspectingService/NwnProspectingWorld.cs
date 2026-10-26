@@ -4,6 +4,7 @@ using SWLOR.Game.Server.Core;
 using SWLOR.Game.Server.Feature.GuiDefinition.Payload;
 using SWLOR.Game.Server.Feature.ItemDefinition;
 using SWLOR.Game.Server.Service.ActivityService;
+using SWLOR.Game.Server.Service.AnimationService;
 using SWLOR.Game.Server.Service.CraftService.Minigame.Prospecting;
 using SWLOR.Game.Server.Service.GuiService;
 using SWLOR.Game.Server.Service.LootService;
@@ -116,9 +117,13 @@ namespace SWLOR.Game.Server.Service.ProspectingService
                 Activity.ClearBusy(player);
         }
 
-        public void PlayWork(uint player, float seconds)
+        public void PlayWork(uint player, string actionId, float seconds)
         {
-            AssignCommand(player, () => ActionPlayAnimation(Animation.LoopingGetMid, 1.0f, seconds));
+            var clip = WorkAnimation.ForProspecting(actionId);
+            if (clip != null)
+                NamedAnimation.Play(player, clip);
+            else
+                AssignCommand(player, () => ActionPlayAnimation(Animation.LoopingGetMid, 1.0f, seconds));
             if (GetIsPC(player))
                 PlayerPlugin.StartGuiTimingBar(player, seconds);
         }

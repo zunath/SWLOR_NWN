@@ -3,50 +3,6 @@ using SWLOR.Game.Server.Service.CraftService.Minigame.Search;
 
 namespace SWLOR.Game.Server.Service.ScavengeService
 {
-    /// <summary>How a session was played.</summary>
-    public enum ScavengeMode
-    {
-        /// <summary>On the board, one action at a time.</summary>
-        Board = 0,
-
-        /// <summary>By Quick Search, in one go.</summary>
-        Quick = 1
-    }
-
-    /// <summary>Why a session ended.</summary>
-    public enum ScavengeEnd
-    {
-        /// <summary>The last search was spent.</summary>
-        Completed = 0,
-
-        /// <summary>Quick Search resolved the site.</summary>
-        QuickSearch = 1,
-
-        /// <summary>The scavenger closed the window.</summary>
-        WindowClosed = 2,
-
-        /// <summary>The scavenger moved away from the site.</summary>
-        Moved = 3,
-
-        /// <summary>The scavenger entered combat.</summary>
-        Combat = 4,
-
-        /// <summary>The scavenger died.</summary>
-        Died = 5,
-
-        /// <summary>The scavenger logged out.</summary>
-        Left = 6,
-
-        /// <summary>The scavenger started another session.</summary>
-        Replaced = 7
-    }
-
-    /// <summary>How a session ended and what the scavenger is told.</summary>
-    /// <param name="End">Why it ended.</param>
-    /// <param name="Finds">The items the site gave.</param>
-    /// <param name="Message">The outcome without colour tokens, for the window.</param>
-    public sealed record ScavengeResult(ScavengeEnd End, IReadOnlyList<ScavengeFind> Finds, string Message);
-
     /// <summary>
     /// One scavenger's visit to one site: the request that started it, the board they play, and what it has found and paid so far. The
     /// lifecycle settles it once.

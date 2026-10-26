@@ -1,6 +1,7 @@
 using System.Collections.Generic;
 using System.Linq;
 using SWLOR.Game.Server.Entity;
+using SWLOR.Game.Server.Service.SkillService;
 
 namespace SWLOR.Game.Server.Service.CraftService.Minigame;
 
@@ -189,6 +190,12 @@ public sealed class CraftSessionLifecycle
         dbPlayer.HeldCraftItems ??= new List<string>();
         dbPlayer.HeldCraftItems.AddRange(kept);
         dbPlayer.ActiveCraftSession = null;
+
+        // A dead player cannot be given XP, so the failure's XP waits on the record, saved with the settlement it belongs to.
+        var xpWaits = failure.Xp > 0 && !_world.CanReceiveXp(player);
+        if (xpWaits)
+            AddPendingXp(dbPlayer, recipe.Skill, failure.Xp);
+
         _world.SaveRecord(dbPlayer);
         _world.EndStationWork(player);
 
@@ -201,7 +208,8 @@ public sealed class CraftSessionLifecycle
         }
 
         // XP last: it saves the player record itself.
-        _world.GiveXp(player, recipe.Skill, failure.Xp);
+        if (!xpWaits)
+            _world.GiveXp(player, recipe.Skill, failure.Xp);
         _world.LogCraft(player, $"failed to craft '{record.Recipe}' ({reason}).");
 
         return new CraftSettlement(true, total - kept.Count, kept.Count, failure.Xp);
@@ -213,11 +221,34 @@ public sealed class CraftSessionLifecycle
     /// </summary>
     public CraftSettlement SettleLeftover(uint player, Player dbPlayer, CraftSessionEndReason reason)
     {
+        GrantPendingXp(player, dbPlayer);
         var settlement = Fail(player, dbPlayer, reason);
         if (!settlement.Settled)
             ReturnHeldItems(player, dbPlayer);
 
         return settlement;
+    }
+
+    /// <summary>
+    /// Gives the player the XP a craft earned while they were dead, once. The record is cleared and saved before the XP is given, so
+    /// a second call, a relog or a crash cannot give it twice. Does nothing while the player is still dead. Returns whether any
+    /// XP was given.
+    /// </summary>
+    public bool GrantPendingXp(uint player, Player dbPlayer)
+    {
+        var pending = dbPlayer.PendingCraftXp;
+        if (pending == null || pending.Count == 0 || !_world.CanReceiveXp(player))
+            return false;
+
+        var owed = pending.ToList();
+        pending.Clear();
+        _world.SaveRecord(dbPlayer);
+
+        // XP last: it saves the player record itself.
+        foreach (var (skill, xp) in owed)
+            _world.GiveXp(player, skill, xp);
+
+        return true;
     }
 
     /// <summary>Gives back held items that fit the inventory now. Returns how many are still held.</summary>
@@ -254,6 +285,12 @@ public sealed class CraftSessionLifecycle
 
         dbPlayer.HeldCraftItems ??= new List<string>();
         dbPlayer.HeldCraftItems.Add(serialized);
+    }
+
+    private static void AddPendingXp(Player dbPlayer, SkillType skill, int xp)
+    {
+        dbPlayer.PendingCraftXp ??= new Dictionary<SkillType, int>();
+        dbPlayer.PendingCraftXp[skill] = dbPlayer.PendingCraftXp.GetValueOrDefault(skill) + xp;
     }
 
     private static List<int> FilledSlots(CraftSessionRecord record)

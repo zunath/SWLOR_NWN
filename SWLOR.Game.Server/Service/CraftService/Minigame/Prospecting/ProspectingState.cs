@@ -17,6 +17,8 @@ namespace SWLOR.Game.Server.Service.CraftService.Minigame.Prospecting;
 /// <param name="Shattered">Gem pockets a Heavy Strike shattered.</param>
 /// <param name="Ending">How the session stands: going, or how it ended.</param>
 /// <param name="MotherLodeSpent">Whether the first Strike or Heavy Strike of the node, the one Mother Lode makes quick, has been made.</param>
+/// <param name="SeamsFound">The seams the harvester has seen so far: those revealed when the session began and those a Survey revealed.</param>
+/// <param name="SurveyCameUpShort">Whether a Survey revealed fewer seams than it can, which tells the harvester none is left to find.</param>
 public sealed record ProspectingState(
     MinigameMeters Meters,
     MinigameOpportunity NextOpportunity,
@@ -26,7 +28,9 @@ public sealed record ProspectingState(
     int Gems,
     int Shattered,
     ProspectingEnding Ending,
-    bool MotherLodeSpent = false) : IMinigameState<ProspectingState>
+    bool MotherLodeSpent = false,
+    int SeamsFound = 0,
+    bool SurveyCameUpShort = false) : IMinigameState<ProspectingState>
 {
     public ProspectingState WithMeters(MinigameMeters meters) => this with { Meters = meters };
 

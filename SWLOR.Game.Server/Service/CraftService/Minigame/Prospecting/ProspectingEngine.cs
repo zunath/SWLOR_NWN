@@ -9,7 +9,7 @@ namespace SWLOR.Game.Server.Service.CraftService.Minigame.Prospecting;
 /// harvests), a Stability of 100 and one to three hidden seams, each sealing one unit of the pool. A seam is a rich seam (its unit and
 /// sometimes an extra ore roll) or a gem pocket (a gem in place of its unit). The harvester's charges are the budget.
 /// <list type="bullet">
-/// <item><b>Survey</b> reveals hidden seams. It costs Stability and no charge. A Gathering rank milestone reveals more at once.</item>
+/// <item><b>Survey</b> reveals hidden seams. It costs Stability and no charge. A Gathering rank milestone reveals more at once. It is refused once the harvester knows no seam is left (a Survey found fewer than it can, or they have seen the most a node holds), so it cannot be spent on nothing.</item>
 /// <item><b>Strike</b> takes 1 or 2 units from the pool; <b>Heavy Strike</b> takes 2 to 4, costs more, and can shatter a gem pocket that has not been surveyed. Gathering rank milestones add yield to both. Both take the loose units first and break into a seam only when no loose unit is left.</item>
 /// <item><b>Extract</b> claims a revealed seam for extra charges.</item>
 /// <item><b>Leave</b> ends the session and leaves the rest of the node for others.</item>
@@ -24,6 +24,7 @@ public sealed class ProspectingEngine : MinigameEngineBase<ProspectingState>
     public const string NotEnoughCharges = "Not enough harvester charges.";
     public const string NoRevealedSeam = "No seam has been found to extract.";
     public const string NodeSpent = "The node is spent.";
+    public const string NothingLeftToFind = "There is no seam left to find.";
 
     /// <summary>The id of the meter that counts what the session has gathered so far.</summary>
     public const string GatheredMeterId = "gathered";
@@ -147,7 +148,8 @@ public sealed class ProspectingEngine : MinigameEngineBase<ProspectingState>
             new MinigameMeter(node.Stability, ProspectingRules.MaxStability),
             new MinigameMeter(setup.Charges, setup.Charges));
 
-        return new ProspectingState(meters, null, node.Seams, 0, 0, 0, 0, ProspectingEnding.InProgress, node.MotherLodeSpent);
+        return new ProspectingState(
+            meters, null, node.Seams, 0, 0, 0, 0, ProspectingEnding.InProgress, node.MotherLodeSpent, node.Seams.Count(seam => seam.Revealed));
     }
 
     protected override MinigameActionRule<ProspectingState> ResolveAction(ProspectingState state, string actionId)
@@ -158,6 +160,9 @@ public sealed class ProspectingEngine : MinigameEngineBase<ProspectingState>
         switch (actionId)
         {
             case ProspectingActionIds.Survey:
+                if (KnowsNoSeamIsLeft(state))
+                    return MinigameActionRule<ProspectingState>.Disabled(info, ProspectingRules.SurveyCharges, ProspectingRules.SurveyStability, NothingLeftToFind);
+
                 return Costly(
                     state, info, ProspectingRules.SurveyCharges, ProspectingRules.SurveyStability,
                     new[] { new MinigameOutcomeRule<ProspectingState>("Surveys the node", 100, SurveyTransition) });
@@ -403,8 +408,22 @@ public sealed class ProspectingEngine : MinigameEngineBase<ProspectingState>
             left--;
         }
 
-        return Settle(state with { Seams = seams.ToImmutable() });
+        return Settle(state with
+        {
+            Seams = seams.ToImmutable(),
+            SeamsFound = state.SeamsFound + _setup.SurveyReveals - left,
+            SurveyCameUpShort = state.SurveyCameUpShort || left > 0
+        });
     };
+
+    /// <summary>
+    /// True when no seam is hidden and the harvester can tell: a Survey found fewer than it can reveal, they have seen the most a node
+    /// holds, or they see the hidden seams (Core Sample). A harvester who cannot tell may still spend one Survey to find out, which is
+    /// how a node with a seam they do not know about stays hidden; after that one Survey cannot be spent on nothing.
+    /// </summary>
+    private bool KnowsNoSeamIsLeft(ProspectingState state) =>
+        state.HiddenSeams == 0 &&
+        (state.SurveyCameUpShort || state.SeamsFound >= ProspectingRules.MaxSeams || _setup.Effects.SeesSeamTypes);
 
     /// <summary>The order a Survey reveals the seams in: the order they are found in, gem pockets first for a harvester who finds them first.</summary>
     private IEnumerable<int> SurveyOrder(ImmutableArray<ProspectingSeam> seams)

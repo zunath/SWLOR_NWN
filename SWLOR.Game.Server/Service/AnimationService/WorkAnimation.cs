@@ -1,30 +1,9 @@
 using System;
 using SWLOR.Game.Server.Service.CraftService.Minigame.Line;
+using SWLOR.Game.Server.Service.CraftService.Minigame.Prospecting;
 using SWLOR.Game.Server.Service.SkillService;
 
 namespace SWLOR.Game.Server.Service.AnimationService;
-
-/// <summary>The gathering actions that have an authored clip. The Prospecting and Search engines map their actions onto these.</summary>
-public enum GatheringAction
-{
-    /// <summary>Prospecting: Survey reveals a seam.</summary>
-    Survey = 1,
-
-    /// <summary>Prospecting: Strike.</summary>
-    Strike = 2,
-
-    /// <summary>Prospecting: Heavy Strike.</summary>
-    HeavyStrike = 3,
-
-    /// <summary>Prospecting: Extract claims a revealed seam.</summary>
-    Extract = 4,
-
-    /// <summary>Search: Search a spot of the board.</summary>
-    Search = 5,
-
-    /// <summary>Search: Dig Deeper into the same spot.</summary>
-    Dig = 6
-}
 
 /// <summary>
 /// Which authored clip each crafting-revamp action plays. Stations get one looping work clip per craft, gathering gets one clip
@@ -67,6 +46,19 @@ public static class WorkAnimation
         GatheringAction.Search => AuthoredAnimation.Search,
         GatheringAction.Dig => AuthoredAnimation.Dig,
         _ => throw new ArgumentOutOfRangeException(nameof(action), action, "No clip is authored for this gathering action.")
+    };
+
+    /// <summary>
+    /// The clip of a Prospecting action, by its id in <see cref="ProspectingActionIds"/>: Survey, Strike, Heavy Strike and Extract.
+    /// Leave has none, so it returns null.
+    /// </summary>
+    public static AnimationClip ForProspecting(string prospectingActionId) => prospectingActionId switch
+    {
+        ProspectingActionIds.Survey => ForGathering(GatheringAction.Survey),
+        ProspectingActionIds.Strike => ForGathering(GatheringAction.Strike),
+        ProspectingActionIds.HeavyStrike => ForGathering(GatheringAction.HeavyStrike),
+        ProspectingActionIds.Extract => ForGathering(GatheringAction.Extract),
+        _ => null
     };
 
     /// <summary>

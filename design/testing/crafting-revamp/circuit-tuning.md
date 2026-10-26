@@ -1,6 +1,6 @@
 # Engineering Circuit: phase 2 tuning notes
 
-Inputs and results of the CraftSim gates for the Circuit. The generated report is `circuit-gates.md` (and `circuit-gates.json`); this file records the values, what phase 2 changed, and the evidence for the one gate that does not pass.
+Inputs and results of the CraftSim gates for the Circuit. The generated report is `circuit-gates.md` (its `--json` output is not committed; the command below regenerates it); this file records the values, what phase 2 changed, and the evidence for the one gate that does not pass.
 
 Command: `SWLOR.CraftSim gates --scenario circuit --runs 100 --recipes-per-band 6 --seed 1 --out design/testing/crafting-revamp/circuit-gates.md --json design/testing/crafting-revamp/circuit-gates.json`. Seed 1, 100 runs per case, 6 recipes per band (an even sample of 307, 367, 359, 370 and 383 active Engineering recipes), crafter rank equal to recipe level (capped at 50), none, mid and best gear, and for gate 6 also one, two and three enhancements. Seconds per action is an estimate of 8 s for the Circuit (6 s for the old window); client timing replaces both. The sample is one fixed set of recipes: a different sample can move a figure that sits at its threshold (see "XP multipliers").
 

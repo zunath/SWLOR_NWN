@@ -19,7 +19,7 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition
         private const float ActionRowHeight = 52f;
         private const float ActionListHeight = 8 * ActionRowHeight + 8f;
 
-        private const string HelpText =
+        private static readonly string HelpText =
             "THE GOAL\n" +
             "Shape the piece until the Shape meter is full, and finish it as well as you can before then. The craft ends the moment Shape " +
             "is full, so the Finish you have by then is the quality of the item. The action that would complete Shape says " +
@@ -54,7 +54,7 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition
             "ENHANCEMENTS AND FAILURE\n" +
             "Each enhancement slot has a Finish threshold: if your Finish meets it when the item is finished, the enhancement transfers " +
             "for certain. The piece breaks if Integrity reaches 0. Stopping early, closing the window or walking away also ends the " +
-            "craft as a failure, and each component stack and each enhancement is then lost on a 65% chance.";
+            $"craft as a failure, and each component stack and each enhancement is then lost on a {CraftOutcomeRules.ChanceToLoseItemPercent}% chance.";
 
         private readonly GuiWindowBuilder<ForgeViewModel> _builder = new();
 

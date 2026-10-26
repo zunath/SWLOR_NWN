@@ -51,7 +51,7 @@ public sealed record LineAnglerEffects(
     }
 
     /// <summary>
-    /// What a rare fish lets through (owner decision, October 2026): every fight perk at half strength, rounded down, so a bonus of 1
+    /// What a rare fish lets through: every fight perk at half strength, rounded down, so a bonus of 1
     /// does nothing, and Fish Sense (which cannot be halved) is off. Trophy Catch, the rare-fish perk, is the only one at full strength.
     /// </summary>
     public LineAnglerEffects AtHalfStrengthAgainstRareFish() => new(

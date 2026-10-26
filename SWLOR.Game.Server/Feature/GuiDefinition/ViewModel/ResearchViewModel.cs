@@ -136,6 +136,13 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
             set => Set(value);
         }
 
+        /// <summary>A job with an experiment cannot be cancelled, so the button stays disabled for it.</summary>
+        public bool IsCancelEnabled
+        {
+            get => Get<bool>();
+            set => Set(value);
+        }
+
         public GuiBindingList<string> ExperimentLines
         {
             get => Get<GuiBindingList<string>>();
@@ -238,6 +245,7 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
                 Level = $"Level: {dbJob.Level}";
                 JobProgress = progressPercentage > 1f ? 1f : progressPercentage;
                 JobProgressTime = $"Remaining: {timeString}";
+                IsCancelEnabled = ResearchExperimentLifecycle.CanCancel(dbJob);
                 ExperimentLines = BuildExperimentLines(dbJob);
             }
             // Complete

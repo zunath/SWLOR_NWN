@@ -30,8 +30,8 @@ public static class CraftOutcomeRules
 
     /// <summary>
     /// The quality an enhancement in the third slot, and any later slot, needs to be guaranteed (research level 10 adds the third
-    /// slot). Owner decision, October 2026: a full-quality craft, so one, two and three transfers are each a step of their own.
-    /// Balance gate 7 (enhancement parity, <c>CraftSim</c>) still finds every minigame at or above today's expected transfers.
+    /// slot). It takes a full-quality craft, so one, two and three transfers are each a step of their own. CraftSim's enhancement
+    /// parity gate still finds every minigame at or above today's expected transfers.
     /// </summary>
     public const int ThirdSlotQualityThresholdPercent = 100;
 

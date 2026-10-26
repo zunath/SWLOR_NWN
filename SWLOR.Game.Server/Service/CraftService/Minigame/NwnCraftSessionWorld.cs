@@ -243,6 +243,8 @@ public sealed class NwnCraftSessionWorld : ICraftSessionWorld
 
     public void GiveXp(uint player, SkillType skill, int xp) => Skill.GiveSkillXP(player, skill, xp, false, false);
 
+    public bool CanReceiveXp(uint player) => !GetIsDead(player) && GetCurrentHitPoints(player) > 0;
+
     public void SaveRecord(Player dbPlayer) => DB.Set(dbPlayer);
 
     public void Message(uint player, string text) => SendMessageToPC(player, text);

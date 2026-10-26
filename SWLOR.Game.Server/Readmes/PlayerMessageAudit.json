@@ -1786,28 +1786,28 @@
   },
   {
     "File": "SWLOR.Game.Server/Feature/GuiDefinition/ViewModel/ForgeViewModel.cs",
-    "Line": 198,
+    "Line": 201,
     "Member": "OnClickEnhancementSlot",
     "Delivery": "Retained",
     "Call": "FloatingTextStringOnCreature(\"That enhancement is already in a slot.\", Player, false)"
   },
   {
     "File": "SWLOR.Game.Server/Feature/GuiDefinition/ViewModel/ForgeViewModel.cs",
-    "Line": 508,
+    "Line": 511,
     "Member": "IsValidEnhancement",
     "Delivery": "Retained",
     "Call": "FloatingTextStringOnCreature(\"Item must be in your inventory.\", Player, false)"
   },
   {
     "File": "SWLOR.Game.Server/Feature/GuiDefinition/ViewModel/ForgeViewModel.cs",
-    "Line": 540,
+    "Line": 543,
     "Member": "IsValidEnhancement",
     "Delivery": "Retained",
     "Call": "FloatingTextStringOnCreature(\"Item must be an enhancement.\", Player, false)"
   },
   {
     "File": "SWLOR.Game.Server/Feature/GuiDefinition/ViewModel/ForgeViewModel.cs",
-    "Line": 546,
+    "Line": 549,
     "Member": "IsValidEnhancement",
     "Delivery": "Retained",
     "Call": "FloatingTextStringOnCreature(\"Enhancement must be within 5 levels of recipe level.\", Player, false)"
@@ -1989,21 +1989,21 @@
   },
   {
     "File": "SWLOR.Game.Server/Feature/GuiDefinition/ViewModel/KitchenViewModel.cs",
-    "Line": 518,
+    "Line": 524,
     "Member": "OnClickEnhancement",
     "Delivery": "Retained",
     "Call": "FloatingTextStringOnCreature(problem, Player, false)"
   },
   {
     "File": "SWLOR.Game.Server/Feature/GuiDefinition/ViewModel/KitchenViewModel.cs",
-    "Line": 714,
+    "Line": 720,
     "Member": "FinishDish",
     "Delivery": "Retained",
     "Call": "SendMessageToPC(Player, message)"
   },
   {
     "File": "SWLOR.Game.Server/Feature/GuiDefinition/ViewModel/KitchenViewModel.cs",
-    "Line": 729,
+    "Line": 735,
     "Member": "RuinDish",
     "Delivery": "Retained",
     "Call": "SendMessageToPC(Player, message)"
@@ -2521,56 +2521,56 @@
   },
   {
     "File": "SWLOR.Game.Server/Feature/GuiDefinition/ViewModel/ResearchViewModel.cs",
-    "Line": 343,
+    "Line": 351,
     "Member": "ClickStartJob",
     "Delivery": "Retained",
     "Call": "FloatingTextStringOnCreature(jobValidation, Player, false)"
   },
   {
     "File": "SWLOR.Game.Server/Feature/GuiDefinition/ViewModel/ResearchViewModel.cs",
-    "Line": 386,
+    "Line": 394,
     "Member": "ClickCancelJob",
     "Delivery": "Retained",
     "Call": "FloatingTextStringOnCreature(ResearchExperimentLifecycle.CannotCancelMessage, Player, false)"
   },
   {
     "File": "SWLOR.Game.Server/Feature/GuiDefinition/ViewModel/ResearchViewModel.cs",
-    "Line": 398,
+    "Line": 406,
     "Member": "ClickCancelJob",
     "Delivery": "Retained",
     "Call": "FloatingTextStringOnCreature(Item.InventoryFullMessage, Player, false)"
   },
   {
     "File": "SWLOR.Game.Server/Feature/GuiDefinition/ViewModel/ResearchViewModel.cs",
-    "Line": 404,
+    "Line": 412,
     "Member": "ClickCancelJob",
     "Delivery": "Retained",
     "Call": "FloatingTextStringOnCreature(\"Research job cancelled!\", Player, false)"
   },
   {
     "File": "SWLOR.Game.Server/Feature/GuiDefinition/ViewModel/ResearchViewModel.cs",
-    "Line": 424,
+    "Line": 432,
     "Member": "ClickCompleteJob",
     "Delivery": "Retained",
     "Call": "FloatingTextStringOnCreature(\"Finish your experiment first.\", Player, false)"
   },
   {
     "File": "SWLOR.Game.Server/Feature/GuiDefinition/ViewModel/ResearchViewModel.cs",
-    "Line": 440,
+    "Line": 448,
     "Member": "ClickCompleteJob",
     "Delivery": "Retained",
     "Call": "FloatingTextStringOnCreature(Item.InventoryFullMessage, Player, false)"
   },
   {
     "File": "SWLOR.Game.Server/Feature/GuiDefinition/ViewModel/ResearchViewModel.cs",
-    "Line": 453,
+    "Line": 461,
     "Member": "ClickCompleteJob",
     "Delivery": "Retained",
     "Call": "FloatingTextStringOnCreature(Item.InventoryFullMessage, Player, false)"
   },
   {
     "File": "SWLOR.Game.Server/Feature/GuiDefinition/ViewModel/ResearchViewModel.cs",
-    "Line": 510,
+    "Line": 518,
     "Member": "ClickCompleteJob",
     "Delivery": "Retained",
     "Call": "SendMessageToPC(Player, DescribeCompletion(completion, experimentXp + completionXp))"
@@ -3137,35 +3137,35 @@
   },
   {
     "File": "SWLOR.Game.Server/Feature/ScavengePoint.cs",
-    "Line": 52,
+    "Line": 68,
     "Member": "OnOpened",
     "Delivery": "Retained",
     "Call": "SendMessageToPC(user, ScavengeLifecycle.SiteHeldMessage)"
   },
   {
     "File": "SWLOR.Game.Server/Feature/ScavengePoint.cs",
-    "Line": 61,
+    "Line": 77,
     "Member": "OnOpened",
     "Delivery": "Retained",
     "Call": "SendMessageToPC(user, occupant.Player == user\n                    ? \"You are already searching this site.\"\n                    : ScavengeLifecycle.SiteInUseMessage)"
   },
   {
     "File": "SWLOR.Game.Server/Feature/ScavengePoint.cs",
-    "Line": 70,
+    "Line": 86,
     "Member": "OnOpened",
     "Delivery": "Retained",
     "Call": "SendMessageToPC(user, \"This object has already been searched through.\")"
   },
   {
     "File": "SWLOR.Game.Server/Feature/ScavengePoint.cs",
-    "Line": 81,
+    "Line": 97,
     "Member": "OnOpened",
     "Delivery": "Retained",
     "Call": "SendMessageToPC(user, $\"The assigned loot table '{lootTableName}' does not exist. Please inform an admin that this scavenge site is broken.\")"
   },
   {
     "File": "SWLOR.Game.Server/Feature/ScavengePoint.cs",
-    "Line": 89,
+    "Line": 105,
     "Member": "OnOpened",
     "Delivery": "Retained",
     "Call": "SendMessageToPC(user, $\"You aren't skilled enough to scavenge through this. (Required Gathering rank: {CraftRankMilestones.RequiredRankForTier(requiredLevel)})\")"
@@ -4313,7 +4313,7 @@
   },
   {
     "File": "SWLOR.Game.Server/Service/CraftService/Minigame/NwnCraftSessionWorld.cs",
-    "Line": 248,
+    "Line": 250,
     "Member": "Message",
     "Delivery": "Retained",
     "Call": "SendMessageToPC(player, text)"
@@ -5237,7 +5237,7 @@
   },
   {
     "File": "SWLOR.Game.Server/Service/ProspectingService/NwnProspectingWorld.cs",
-    "Line": 104,
+    "Line": 105,
     "Member": "Message",
     "Delivery": "Retained",
     "Call": "SendMessageToPC(player, text)"

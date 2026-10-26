@@ -70,10 +70,10 @@ namespace SWLOR.Game.Server.Service.ScavengeService
         }
 
         /// <summary>
-        /// Gives a player who logs in the finds of a board whose visit never ended, which only a server restart leaves behind, and clears
-        /// them.
+        /// Gives a player the finds of a board whose visit never put them in a site (a restart, a death, a logout or a missing site), and
+        /// clears them.
         /// </summary>
-        public static void ReturnPendingFinds(uint player)
+        public void ReturnPendingFinds(uint player)
         {
             var dbPlayer = DB.Get<Player>(GetObjectUUID(player));
             if (dbPlayer?.PendingScavengeFinds == null || dbPlayer.PendingScavengeFinds.Count == 0)
@@ -101,12 +101,17 @@ namespace SWLOR.Game.Server.Service.ScavengeService
             SetLocalBool(site, SearchedVariable, true);
         }
 
-        public void OpenSite(uint player, uint site, double animationSeconds)
+        public void HoldSite(uint player, uint site, double animationSeconds)
         {
             // Hold the site for the scavenger until they open it, so nobody else can take what it gave while the search animation runs.
             SetLocalObject(site, OpeningVariable, player);
             DeleteLocalBool(site, HolderOpenedVariable);
             ScheduleHoldLapse(site, player, (float)animationSeconds + OpeningHoldSeconds);
+        }
+
+        public void OpenSite(uint player, uint site, double animationSeconds)
+        {
+            HoldSite(player, site, animationSeconds);
             AssignCommand(player, () =>
             {
                 if (animationSeconds > 0)
@@ -182,7 +187,8 @@ namespace SWLOR.Game.Server.Service.ScavengeService
                 GetIsDead(player),
                 GetIsInCombat(player),
                 Gui.IsWindowOpen(player, GuiWindowType.Search),
-                GetIsObjectValid(site) ? GetDistanceBetween(player, site) : 0f);
+                GetIsObjectValid(site) ? GetDistanceBetween(player, site) : 0f,
+                GetIsObjectValid(site));
         }
 
         public DateTime UtcNow => DateTime.UtcNow;

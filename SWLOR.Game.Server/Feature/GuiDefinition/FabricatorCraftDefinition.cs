@@ -19,13 +19,19 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition
         private const float ActionButtonWidth = 170f;
         private const float PartLabelWidth = 250f;
 
+        /// <summary>The slot thresholds as the shared outcome rules set them, such as "50% for the first slot, 85% for the second and 100% for the third and any later slot".</summary>
+        private static string ThresholdSummary()
+        {
+            var thresholds = CraftOutcomeRules.GetEnhancementThresholds(3);
+            return $"{thresholds[0]}% for the first slot, {thresholds[1]}% for the second and {thresholds[2]}% for the third and any later slot";
+        }
+
         private static readonly string HelpText =
             "GOAL\n" +
             "Build the piece's three sub-assemblies, then Assemble it. The Frame is worked by the Cutter, the Shell by the Extruder and the Fittings by the Bonder. " +
             "Each has progress, which must be full, and quality. Machine Condition is the fabricator's health: if it reaches 0 the piece breaks and each component stack and " +
             $"each enhancement is lost on a roll of {CraftOutcomeRules.ChanceToLoseItemPercent} or lower on a D100. " +
-            $"An enhancement transfers when the quality reaches its slot's threshold: {CraftOutcomeRules.FirstSlotQualityThresholdPercent}% for the first slot and " +
-            $"{CraftOutcomeRules.SecondSlotQualityThresholdPercent}% for the others.\n\n" +
+            $"An enhancement transfers when the quality reaches its slot's threshold: {ThresholdSummary()}.\n\n" +
             "The numbers on this page are the base values. Builder perks change them (see the last section), and the window shows yours.\n\n" +
             "TOOL HEADS\n" +
             "One head is loaded at a time. Run builds a sub-assembly: at full effect when its own head is loaded, and at half effect when another head is loaded, with no retooling. " +

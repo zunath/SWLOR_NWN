@@ -17,6 +17,7 @@ internal sealed class FakeProspectingWorld : IProspectingWorld
     public List<int> Xp { get; } = new();
     public List<string> Messages { get; } = new();
     public List<float> Work { get; } = new();
+    public List<string> WorkActions { get; } = new();
     public List<float> ScheduledSeconds { get; } = new();
     public List<ProspectingSession> Opened { get; } = new();
     public double GemChanceValue { get; set; } = 0.1;
@@ -90,7 +91,11 @@ internal sealed class FakeProspectingWorld : IProspectingWorld
         OwnsActivity = false;
     }
 
-    public void PlayWork(uint player, float seconds) => Work.Add(seconds);
+    public void PlayWork(uint player, string actionId, float seconds)
+    {
+        Work.Add(seconds);
+        WorkActions.Add(actionId);
+    }
 
     public bool OpenWindow(uint player, ProspectingSession session)
     {

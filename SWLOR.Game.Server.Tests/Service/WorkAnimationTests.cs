@@ -3,6 +3,7 @@ using FluentAssertions;
 using NUnit.Framework;
 using SWLOR.Game.Server.Service.AnimationService;
 using SWLOR.Game.Server.Service.CraftService.Minigame.Line;
+using SWLOR.Game.Server.Service.CraftService.Minigame.Prospecting;
 using SWLOR.Game.Server.Service.SkillService;
 
 namespace SWLOR.Game.Server.Tests.Service;
@@ -75,6 +76,17 @@ public class WorkAnimationTests
         WorkAnimation.ForGathering(GatheringAction.Extract).Should().BeSameAs(AuthoredAnimation.Extract);
         WorkAnimation.ForGathering(GatheringAction.Search).Should().BeSameAs(AuthoredAnimation.Search);
         WorkAnimation.ForGathering(GatheringAction.Dig).Should().BeSameAs(AuthoredAnimation.Dig);
+    }
+
+    [Test]
+    public void EveryProspectingWorkActionPlaysItsGatheringClip_AndLeaveHasNone()
+    {
+        WorkAnimation.ForProspecting(ProspectingActionIds.Survey).Should().BeSameAs(AuthoredAnimation.Survey);
+        WorkAnimation.ForProspecting(ProspectingActionIds.Strike).Should().BeSameAs(AuthoredAnimation.Strike);
+        WorkAnimation.ForProspecting(ProspectingActionIds.HeavyStrike).Should().BeSameAs(AuthoredAnimation.HvyStrike);
+        WorkAnimation.ForProspecting(ProspectingActionIds.Extract).Should().BeSameAs(AuthoredAnimation.Extract);
+        WorkAnimation.ForProspecting(ProspectingActionIds.Leave).Should().BeNull();
+        WorkAnimation.ForProspecting(null).Should().BeNull("a Quick Harvest unit has no authored clip");
     }
 
     [Test]

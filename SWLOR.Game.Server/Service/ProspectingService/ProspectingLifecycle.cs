@@ -188,7 +188,7 @@ namespace SWLOR.Game.Server.Service.ProspectingService
 
             session.Working = actionId;
             session.LastActivityAt = _world.UtcNow;
-            _world.PlayWork(session.Player, (float)seconds);
+            _world.PlayWork(session.Player, actionId, (float)seconds);
             _world.Schedule((float)seconds, () => Complete(session, actionId, onResolved));
             return ProspectingActionStart.Ok;
         }
@@ -291,7 +291,7 @@ namespace SWLOR.Game.Server.Service.ProspectingService
             return false;
         }
 
-        /// <summary>The XP one item pays a session at a vein of the tier: today's XP for the unit times the band's multiplier (1 unless the XP-rate gate asks for more).</summary>
+        /// <summary>The XP one item pays a session at a vein of the tier: today's XP for the unit times the band's multiplier (1 unless CraftSim's XP-rate check asks for more).</summary>
         public int XpPerItem(ProspectingSession session)
         {
             var tier = session.Request.NodeTier;
@@ -364,7 +364,7 @@ namespace SWLOR.Game.Server.Service.ProspectingService
 
         private void QuickHarvestStep(ProspectingSession session, ProspectingNode node, Action<QuickHarvestReport> onProgress)
         {
-            _world.PlayWork(session.Player, (float)ProspectingRules.HarvestSeconds);
+            _world.PlayWork(session.Player, null, (float)ProspectingRules.HarvestSeconds);
             _world.Schedule((float)ProspectingRules.HarvestSeconds, () =>
             {
                 if (session.Settled || !session.QuickHarvesting)

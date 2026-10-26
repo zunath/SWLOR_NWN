@@ -44,7 +44,8 @@ worktree lacks `tools/`). Every output directory must be new, empty and outside 
      "reference": "../ref/c_rep_aurek.mdl",
      "orientation": [[1, 0, 0], [0, 1, 0], [0, 0, 1]],
      "max_faces": 4000, "texture_size": 1024,
-     "node_positions": {"reactor": [0, -0.42, 0.52]}
+     "node_positions": {"reactor": [-0.1, -0.32, 0.53]},
+     "node_copies": {"reactor2": {"from": "reactor", "position": [0.1, -0.32, 0.53]}}
    }
    ```
 
@@ -56,7 +57,10 @@ worktree lacks `tools/`). Every output directory must be new, empty and outside 
    - `max_faces` is the hull budget. The tool collapses denser meshes to it. Small ships stay
      near the stock 1,000-2,500 faces; larger hulls may use more, up to 20,000.
    - `node_positions` moves copied nodes (usually the engine emitters) onto the new hull.
-     Positions are in the fitted model frame; read them off the export in Blender.
+     Positions are in the fitted model frame; export once without them and read the engine
+     nozzles off the exported MDL or in Blender.
+   - `node_copies` duplicates a reference node under a new name, such as one emitter per
+     engine when the design has more engines than the reference.
 
 3. **Export** (Blender) and **package** (Python):
 

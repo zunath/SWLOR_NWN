@@ -128,6 +128,26 @@ class WriteTests(unittest.TestCase):
         self.assertIn("position 0 -0.3 0.5", text)
         self.assertIn("bitmap c_test_h1", text)
 
+    def test_node_copies_add_a_second_engine(self):
+        _, nodes, _ = ship.parse_reference(REFERENCE)
+        mesh = ([(0, 0, 0)] * 3, [(0, 0)] * 3, [(0, 1, 2)], [(0, 0, 1)] * 3)
+        with tempfile.TemporaryDirectory() as tmp:
+            path = Path(tmp) / "x.mdl"
+            ship.write_mdl(path, "x", "x", nodes, mesh, {"reactor": [-0.1, -0.3, 0.5]},
+                           {"reactor2": {"from": "reactor", "position": [0.1, -0.3, 0.5]}})
+            text = path.read_text(encoding="ascii")
+        self.assertEqual(re.findall(r"(?m)^node emitter (\S+)", text), ["reactor", "reactor2"])
+        self.assertEqual(text.count("texture fxpa_flare"), 2)
+        self.assertIn("position -0.1 -0.3 0.5", text)
+        self.assertIn("position 0.1 -0.3 0.5", text)
+
+    def test_node_copy_of_unknown_node_fails(self):
+        _, nodes, _ = ship.parse_reference(REFERENCE)
+        mesh = ([(0, 0, 0)] * 3, [(0, 0)] * 3, [(0, 1, 2)], [(0, 0, 1)] * 3)
+        with tempfile.TemporaryDirectory() as tmp, self.assertRaisesRegex(ValueError, "unknown node"):
+            ship.write_mdl(Path(tmp) / "x.mdl", "x", "x", nodes, mesh, None,
+                           {"engine2": {"from": "engine", "position": [0, 0, 0]}})
+
     def test_unknown_override_fails(self):
         _, nodes, _ = ship.parse_reference(REFERENCE)
         mesh = ([(0, 0, 0)] * 3, [(0, 0)] * 3, [(0, 1, 2)], [(0, 0, 1)] * 3)

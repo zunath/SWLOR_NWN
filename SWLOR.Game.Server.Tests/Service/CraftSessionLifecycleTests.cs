@@ -367,6 +367,8 @@ public class CraftSessionLifecycleTests
 
         StartSession(lifecycle);
         var first = lifecycle.Fail(FakeCraftSessionWorld.PlayerHandle, _player, CraftSessionEndReason.Died).Xp;
+        _world.Inventory["ore"] = 5;
+        _world.Inventory["wire"] = 2;
         StartSession(lifecycle);
         var second = lifecycle.Fail(FakeCraftSessionWorld.PlayerHandle, _player, CraftSessionEndReason.Died).Xp;
 

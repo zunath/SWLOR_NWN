@@ -114,4 +114,4 @@ contact (a positive pitch raises the muzzle). `--roll` and `--yaw` then rotate
 about Y and Z through the same pivot. Imported rifle 161 uses `--pitch -4`
 and rifle 222 uses `--pitch -5`, both with pivot `0 0.02 0.01`. For the X-mirrored
 left-hand copies of a model (such as the Power Glove `wpl_*` models), negate the X
-offset, roll and yaw.
+offset, the pivot's X, roll and yaw.

@@ -132,6 +132,14 @@ class TranslateWeaponModelTests(unittest.TestCase):
         for actual, expected in zip(quaternion, (.5, .5, -.5, .5)):
             self.assertAlmostEqual(actual, expected, places=6)
 
+    def test_rotation_writes_a_unit_orientation(self):
+        base = 12
+        source = bytearray(fixture())
+        struct.pack_into("<4f", source, base + 1024 + 20, 0, 0, 0, 2)
+        rotated = translate_model(bytes(source), (0, 0, 0), 30.0, roll=20.0, yaw=10.0)
+        quaternion = struct.unpack_from("<4f", rotated, base + 1024 + 20)
+        self.assertAlmostEqual(math.sqrt(sum(value * value for value in quaternion)), 1, places=6)
+
     def test_rejects_bad_offset(self):
         for delta in ((1, 2), (math.nan, 0, 0), (math.inf, 0, 0)):
             with self.subTest(delta=delta), self.assertRaises(ValueError):

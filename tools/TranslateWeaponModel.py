@@ -222,8 +222,10 @@ def translate_model(data: bytes, delta: tuple[float, float, float], pitch: float
             position = tuple(pivot[axis] + relative[axis] for axis in range(3))
             # The rotation applies in the parent frame, after the child's own static orientation.
             rotated = _quaternion_product(rotation, orientation)
-            if not all(math.isfinite(value) for value in rotated):
-                raise ValueError("rotated orientation must remain finite")
+            length = math.sqrt(sum(value * value for value in rotated))
+            if not math.isfinite(length) or length == 0:
+                raise ValueError("rotated orientation must be a finite, nonzero quaternion")
+            rotated = tuple(value / length for value in rotated)
             struct.pack_into("<4f", result, orientation_offset, *rotated)
         for axis, amount in enumerate(offset):
             if amount == 0 and not angle:

@@ -230,6 +230,7 @@ public class PowerGloveContentTests
             var actualPosition = MeshPosition(right);
             var actualOrientation = MeshOrientation(right);
             (actualPosition - position).Length().Should().BeLessThan(.0001f, $"wpg_{native} sits where it was fitted");
+            actualOrientation.Length().Should().BeApproximately(1, .0001f, $"wpg_{native} has a unit orientation");
             MathF.Abs(System.Numerics.Quaternion.Dot(actualOrientation, orientation)).Should()
                 .BeApproximately(1, .0001f, $"wpg_{native} faces the way it was fitted");
         }

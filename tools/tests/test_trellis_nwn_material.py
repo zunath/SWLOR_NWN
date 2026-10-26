@@ -98,6 +98,21 @@ class DdsCodecTests(unittest.TestCase):
             decoded, _ = material.read_dds(path)
         self.assertLess(float(np.abs(decoded - block).max()), .05)
 
+    def test_leading_axis_wins_over_a_larger_covariance_column(self):
+        # Correlated red/green carries the most variance; independent blue has the largest column.
+        # Uncorrelated patterns: red/green alternate by column, blue by row. Red/green variance sums
+        # to 2a^2 while each red/green column has norm 1.41a^2 < b^2 < 2a^2 for blue.
+        index = np.arange(16)
+        rg = .5 + .35 * np.where(index % 2, 1, -1)
+        blue = .5 + .45 * np.where(index // 4 % 2, 1, -1)
+        block = np.stack([rg, rg, blue], -1).reshape(4, 4, 3).astype(np.float32)
+        info = {'header': dds_header(4, 4, 1, 'DXT1'), 'fourcc': 'DXT1', 'mips': 1, 'size': (4, 4)}
+        with tempfile.TemporaryDirectory() as folder:
+            path = Path(folder) / 'c.dds'
+            material.write_dds(path, block, info)
+            decoded, _ = material.read_dds(path)
+        self.assertGreater(float(np.ptp(decoded[..., 0])), .5)
+
 
 class ShippedFixTests(unittest.TestCase):
     def make_material(self, folder, name, spec, rough, base_value):

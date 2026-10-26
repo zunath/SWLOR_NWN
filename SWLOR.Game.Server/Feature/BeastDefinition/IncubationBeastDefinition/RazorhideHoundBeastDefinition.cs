@@ -122,7 +122,7 @@ namespace SWLOR.Game.Server.Feature.BeastDefinition.IncubationBeastDefinition
 		{
 			_builder
 				.AddLevel()
-				.HP(38)
+				.HP(50)
 				.FP(5)
 				.STM(5)
 				.DMG(7)
@@ -151,7 +151,7 @@ namespace SWLOR.Game.Server.Feature.BeastDefinition.IncubationBeastDefinition
 		{
 			_builder
 				.AddLevel()
-				.HP(42)
+				.HP(60)
 				.FP(5)
 				.STM(6)
 				.DMG(7)
@@ -180,7 +180,7 @@ namespace SWLOR.Game.Server.Feature.BeastDefinition.IncubationBeastDefinition
 		{
 			_builder
 				.AddLevel()
-				.HP(46)
+				.HP(70)
 				.FP(6)
 				.STM(6)
 				.DMG(7)
@@ -209,7 +209,7 @@ namespace SWLOR.Game.Server.Feature.BeastDefinition.IncubationBeastDefinition
 		{
 			_builder
 				.AddLevel()
-				.HP(50)
+				.HP(80)
 				.FP(6)
 				.STM(7)
 				.DMG(7)
@@ -238,7 +238,7 @@ namespace SWLOR.Game.Server.Feature.BeastDefinition.IncubationBeastDefinition
 		{
 			_builder
 				.AddLevel()
-				.HP(54)
+				.HP(90)
 				.FP(6)
 				.STM(7)
 				.DMG(7)
@@ -267,7 +267,7 @@ namespace SWLOR.Game.Server.Feature.BeastDefinition.IncubationBeastDefinition
 		{
 			_builder
 				.AddLevel()
-				.HP(58)
+				.HP(100)
 				.FP(6)
 				.STM(7)
 				.DMG(7)
@@ -296,7 +296,7 @@ namespace SWLOR.Game.Server.Feature.BeastDefinition.IncubationBeastDefinition
 		{
 			_builder
 				.AddLevel()
-				.HP(62)
+				.HP(110)
 				.FP(6)
 				.STM(8)
 				.DMG(7)
@@ -325,7 +325,7 @@ namespace SWLOR.Game.Server.Feature.BeastDefinition.IncubationBeastDefinition
 		{
 			_builder
 				.AddLevel()
-				.HP(66)
+				.HP(120)
 				.FP(7)
 				.STM(8)
 				.DMG(7)
@@ -354,7 +354,7 @@ namespace SWLOR.Game.Server.Feature.BeastDefinition.IncubationBeastDefinition
 		{
 			_builder
 				.AddLevel()
-				.HP(70)
+				.HP(130)
 				.FP(7)
 				.STM(9)
 				.DMG(14)
@@ -383,7 +383,7 @@ namespace SWLOR.Game.Server.Feature.BeastDefinition.IncubationBeastDefinition
 		{
 			_builder
 				.AddLevel()
-				.HP(74)
+				.HP(140)
 				.FP(7)
 				.STM(9)
 				.DMG(14)
@@ -412,7 +412,7 @@ namespace SWLOR.Game.Server.Feature.BeastDefinition.IncubationBeastDefinition
 		{
 			_builder
 				.AddLevel()
-				.HP(78)
+				.HP(150)
 				.FP(7)
 				.STM(9)
 				.DMG(14)
@@ -441,7 +441,7 @@ namespace SWLOR.Game.Server.Feature.BeastDefinition.IncubationBeastDefinition
 		{
 			_builder
 				.AddLevel()
-				.HP(82)
+				.HP(160)
 				.FP(7)
 				.STM(10)
 				.DMG(14)
@@ -470,7 +470,7 @@ namespace SWLOR.Game.Server.Feature.BeastDefinition.IncubationBeastDefinition
 		{
 			_builder
 				.AddLevel()
-				.HP(86)
+				.HP(170)
 				.FP(8)
 				.STM(10)
 				.DMG(14)
@@ -499,7 +499,7 @@ namespace SWLOR.Game.Server.Feature.BeastDefinition.IncubationBeastDefinition
 		{
 			_builder
 				.AddLevel()
-				.HP(90)
+				.HP(180)
 				.FP(8)
 				.STM(11)
 				.DMG(14)
@@ -528,7 +528,7 @@ namespace SWLOR.Game.Server.Feature.BeastDefinition.IncubationBeastDefinition
 		{
 			_builder
 				.AddLevel()
-				.HP(94)
+				.HP(190)
 				.FP(8)
 				.STM(11)
 				.DMG(14)
@@ -557,7 +557,7 @@ namespace SWLOR.Game.Server.Feature.BeastDefinition.IncubationBeastDefinition
 		{
 			_builder
 				.AddLevel()
-				.HP(98)
+				.HP(200)
 				.FP(8)
 				.STM(11)
 				.DMG(14)
@@ -586,7 +586,7 @@ namespace SWLOR.Game.Server.Feature.BeastDefinition.IncubationBeastDefinition
 		{
 			_builder
 				.AddLevel()
-				.HP(102)
+				.HP(210)
 				.FP(8)
 				.STM(12)
 				.DMG(14)
@@ -615,7 +615,7 @@ namespace SWLOR.Game.Server.Feature.BeastDefinition.IncubationBeastDefinition
 		{
 			_builder
 				.AddLevel()
-				.HP(106)
+				.HP(220)
 				.FP(9)
 				.STM(12)
 				.DMG(14)
@@ -644,7 +644,7 @@ namespace SWLOR.Game.Server.Feature.BeastDefinition.IncubationBeastDefinition
 		{
 			_builder
 				.AddLevel()
-				.HP(110)
+				.HP(230)
 				.FP(9)
 				.STM(13)
 				.DMG(25)
@@ -673,7 +673,7 @@ namespace SWLOR.Game.Server.Feature.BeastDefinition.IncubationBeastDefinition
 		{
 			_builder
 				.AddLevel()
-				.HP(114)
+				.HP(240)
 				.FP(9)
 				.STM(13)
 				.DMG(25)
@@ -702,7 +702,7 @@ namespace SWLOR.Game.Server.Feature.BeastDefinition.IncubationBeastDefinition
 		{
 			_builder
 				.AddLevel()
-				.HP(118)
+				.HP(250)
 				.FP(9)
 				.STM(13)
 				.DMG(25)
@@ -731,7 +731,7 @@ namespace SWLOR.Game.Server.Feature.BeastDefinition.IncubationBeastDefinition
 		{
 			_builder
 				.AddLevel()
-				.HP(122)
+				.HP(260)
 				.FP(9)
 				.STM(14)
 				.DMG(25)
@@ -760,7 +760,7 @@ namespace SWLOR.Game.Server.Feature.BeastDefinition.IncubationBeastDefinition
 		{
 			_builder
 				.AddLevel()
-				.HP(126)
+				.HP(270)
 				.FP(10)
 				.STM(14)
 				.DMG(25)
@@ -789,7 +789,7 @@ namespace SWLOR.Game.Server.Feature.BeastDefinition.IncubationBeastDefinition
 		{
 			_builder
 				.AddLevel()
-				.HP(130)
+				.HP(280)
 				.FP(10)
 				.STM(15)
 				.DMG(25)
@@ -818,7 +818,7 @@ namespace SWLOR.Game.Server.Feature.BeastDefinition.IncubationBeastDefinition
 		{
 			_builder
 				.AddLevel()
-				.HP(134)
+				.HP(290)
 				.FP(10)
 				.STM(15)
 				.DMG(25)
@@ -847,7 +847,7 @@ namespace SWLOR.Game.Server.Feature.BeastDefinition.IncubationBeastDefinition
 		{
 			_builder
 				.AddLevel()
-				.HP(138)
+				.HP(300)
 				.FP(10)
 				.STM(15)
 				.DMG(25)
@@ -876,7 +876,7 @@ namespace SWLOR.Game.Server.Feature.BeastDefinition.IncubationBeastDefinition
 		{
 			_builder
 				.AddLevel()
-				.HP(142)
+				.HP(310)
 				.FP(10)
 				.STM(16)
 				.DMG(25)
@@ -905,7 +905,7 @@ namespace SWLOR.Game.Server.Feature.BeastDefinition.IncubationBeastDefinition
 		{
 			_builder
 				.AddLevel()
-				.HP(146)
+				.HP(320)
 				.FP(11)
 				.STM(16)
 				.DMG(25)
@@ -934,7 +934,7 @@ namespace SWLOR.Game.Server.Feature.BeastDefinition.IncubationBeastDefinition
 		{
 			_builder
 				.AddLevel()
-				.HP(150)
+				.HP(330)
 				.FP(11)
 				.STM(17)
 				.DMG(32)
@@ -963,7 +963,7 @@ namespace SWLOR.Game.Server.Feature.BeastDefinition.IncubationBeastDefinition
 		{
 			_builder
 				.AddLevel()
-				.HP(154)
+				.HP(340)
 				.FP(11)
 				.STM(17)
 				.DMG(32)
@@ -992,7 +992,7 @@ namespace SWLOR.Game.Server.Feature.BeastDefinition.IncubationBeastDefinition
 		{
 			_builder
 				.AddLevel()
-				.HP(158)
+				.HP(350)
 				.FP(11)
 				.STM(17)
 				.DMG(32)
@@ -1021,7 +1021,7 @@ namespace SWLOR.Game.Server.Feature.BeastDefinition.IncubationBeastDefinition
 		{
 			_builder
 				.AddLevel()
-				.HP(162)
+				.HP(360)
 				.FP(11)
 				.STM(18)
 				.DMG(32)
@@ -1050,7 +1050,7 @@ namespace SWLOR.Game.Server.Feature.BeastDefinition.IncubationBeastDefinition
 		{
 			_builder
 				.AddLevel()
-				.HP(166)
+				.HP(370)
 				.FP(12)
 				.STM(18)
 				.DMG(32)
@@ -1079,7 +1079,7 @@ namespace SWLOR.Game.Server.Feature.BeastDefinition.IncubationBeastDefinition
 		{
 			_builder
 				.AddLevel()
-				.HP(170)
+				.HP(380)
 				.FP(12)
 				.STM(19)
 				.DMG(32)
@@ -1108,7 +1108,7 @@ namespace SWLOR.Game.Server.Feature.BeastDefinition.IncubationBeastDefinition
 		{
 			_builder
 				.AddLevel()
-				.HP(174)
+				.HP(390)
 				.FP(12)
 				.STM(19)
 				.DMG(32)
@@ -1137,7 +1137,7 @@ namespace SWLOR.Game.Server.Feature.BeastDefinition.IncubationBeastDefinition
 		{
 			_builder
 				.AddLevel()
-				.HP(178)
+				.HP(400)
 				.FP(12)
 				.STM(19)
 				.DMG(32)
@@ -1166,7 +1166,7 @@ namespace SWLOR.Game.Server.Feature.BeastDefinition.IncubationBeastDefinition
 		{
 			_builder
 				.AddLevel()
-				.HP(182)
+				.HP(410)
 				.FP(12)
 				.STM(20)
 				.DMG(32)
@@ -1195,7 +1195,7 @@ namespace SWLOR.Game.Server.Feature.BeastDefinition.IncubationBeastDefinition
 		{
 			_builder
 				.AddLevel()
-				.HP(186)
+				.HP(420)
 				.FP(13)
 				.STM(20)
 				.DMG(32)
@@ -1224,7 +1224,7 @@ namespace SWLOR.Game.Server.Feature.BeastDefinition.IncubationBeastDefinition
 		{
 			_builder
 				.AddLevel()
-				.HP(190)
+				.HP(430)
 				.FP(13)
 				.STM(21)
 				.DMG(37)
@@ -1253,7 +1253,7 @@ namespace SWLOR.Game.Server.Feature.BeastDefinition.IncubationBeastDefinition
 		{
 			_builder
 				.AddLevel()
-				.HP(194)
+				.HP(440)
 				.FP(13)
 				.STM(21)
 				.DMG(37)
@@ -1282,7 +1282,7 @@ namespace SWLOR.Game.Server.Feature.BeastDefinition.IncubationBeastDefinition
 		{
 			_builder
 				.AddLevel()
-				.HP(198)
+				.HP(450)
 				.FP(13)
 				.STM(21)
 				.DMG(37)
@@ -1311,7 +1311,7 @@ namespace SWLOR.Game.Server.Feature.BeastDefinition.IncubationBeastDefinition
 		{
 			_builder
 				.AddLevel()
-				.HP(202)
+				.HP(460)
 				.FP(13)
 				.STM(22)
 				.DMG(37)
@@ -1340,7 +1340,7 @@ namespace SWLOR.Game.Server.Feature.BeastDefinition.IncubationBeastDefinition
 		{
 			_builder
 				.AddLevel()
-				.HP(206)
+				.HP(470)
 				.FP(14)
 				.STM(22)
 				.DMG(37)
@@ -1369,7 +1369,7 @@ namespace SWLOR.Game.Server.Feature.BeastDefinition.IncubationBeastDefinition
 		{
 			_builder
 				.AddLevel()
-				.HP(210)
+				.HP(480)
 				.FP(14)
 				.STM(23)
 				.DMG(37)
@@ -1398,7 +1398,7 @@ namespace SWLOR.Game.Server.Feature.BeastDefinition.IncubationBeastDefinition
 		{
 			_builder
 				.AddLevel()
-				.HP(214)
+				.HP(490)
 				.FP(14)
 				.STM(23)
 				.DMG(37)
@@ -1427,7 +1427,7 @@ namespace SWLOR.Game.Server.Feature.BeastDefinition.IncubationBeastDefinition
 		{
 			_builder
 				.AddLevel()
-				.HP(218)
+				.HP(500)
 				.FP(14)
 				.STM(23)
 				.DMG(37)
@@ -1456,7 +1456,7 @@ namespace SWLOR.Game.Server.Feature.BeastDefinition.IncubationBeastDefinition
 		{
 			_builder
 				.AddLevel()
-				.HP(222)
+				.HP(510)
 				.FP(14)
 				.STM(24)
 				.DMG(37)
@@ -1485,7 +1485,7 @@ namespace SWLOR.Game.Server.Feature.BeastDefinition.IncubationBeastDefinition
 		{
 			_builder
 				.AddLevel()
-				.HP(226)
+				.HP(520)
 				.FP(15)
 				.STM(24)
 				.DMG(37)
@@ -1514,7 +1514,7 @@ namespace SWLOR.Game.Server.Feature.BeastDefinition.IncubationBeastDefinition
 		{
 			_builder
 				.AddLevel()
-				.HP(230)
+				.HP(530)
 				.FP(15)
 				.STM(25)
 				.DMG(37)

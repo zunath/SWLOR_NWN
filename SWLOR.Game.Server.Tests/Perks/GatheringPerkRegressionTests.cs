@@ -44,7 +44,7 @@ public class GatheringPerkRegressionTests
             var relative = Path.GetRelativePath(serverRoot, file).Replace('\\', '/');
             // The refund migration keeps the retired members by name; no other code may name them.
             if (relative.StartsWith("obj/") || relative.StartsWith("bin/") ||
-                relative.EndsWith("CraftingPerkConversion.cs"))
+                relative.EndsWith("_25_ConvertCraftingPerksToRanks.cs"))
                 continue;
 
             foreach (Match match in pattern.Matches(File.ReadAllText(file)))

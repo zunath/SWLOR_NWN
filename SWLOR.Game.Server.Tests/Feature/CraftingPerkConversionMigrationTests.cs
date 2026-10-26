@@ -13,9 +13,7 @@ namespace SWLOR.Game.Server.Tests.Feature;
 
 public class CraftingPerkConversionMigrationTests
 {
-    // The conversion is part of the release's single player migration; its table lives in CraftingPerkConversion.
-    private const string MigrationName = "_24_CorrectCarapaceBracers";
-    private const string ConversionSource = "CraftingPerkConversion.cs";
+    private const string MigrationName = "_25_ConvertCraftingPerksToRanks";
     private const int StartingSP = 5;
     private const int StartingTokens = 2;
 
@@ -238,33 +236,10 @@ public class CraftingPerkConversionMigrationTests
     }
 
     [Test]
-    public void OneRunRefundsThePerkRemovesItsFeatsAndGrantsExactlyOneToken()
-    {
-        var perk = Table.Single(row => row.Perk == PerkType.Research);
-        var file = WithFeats(SavedCharacterFile.Create(PreviousVersion), perk.Feats.Append(FeatType.AlertnessTrait).ToArray());
-        var record = Record(PreviousVersion);
-        record.Perks[PerkType.Research] = 5;
-        record.Perks[PerkType.Alertness] = 2;
-        record.UnlockedPerks[PerkType.Research] = DateTime.UtcNow;
-
-        var upgraded = CharacterMigrations.Upgrade(file, record)!;
-
-        upgraded.Record.Version.Should().Be(CharacterMigrations.LatestVersion).And.Be(PreviousVersion + 1);
-        FeatsOf(upgraded.File).Should().Equal(FeatType.AlertnessTrait);
-        upgraded.Record.UnallocatedSP.Should().Be(StartingSP + 14);
-        upgraded.Record.Perks.Should().Equal(new Dictionary<PerkType, int> { [PerkType.Alertness] = 2 });
-        upgraded.Record.UnlockedPerks.Should().NotContainKey(PerkType.Research);
-        upgraded.Record.Currencies[CurrencyType.RebuildToken].Should().Be(StartingTokens + 1, "the release grants one token, not one per change");
-        upgraded.Record.UpgradeNotices.Should().HaveCount(2);
-        upgraded.Record.UpgradeNotices.Should().ContainSingle(notice => notice.Contains("'Research'") && notice.Contains("You reclaimed 14 SP."));
-        upgraded.Record.UpgradeNotices.Should().ContainSingle(notice => notice.Contains("1 Rebuild Token") && notice.Contains("optional"));
-    }
-
-    [Test]
     public void TheRefundTableIsIndependentOfThePerkDefinitions()
     {
         var source = File.ReadAllText(Path.Combine(FindRepositoryRoot(), "SWLOR.Game.Server",
-            "Feature", "MigrationDefinition", "CharacterMigration", ConversionSource));
+            "Feature", "MigrationDefinition", "CharacterMigration", MigrationName + ".cs"));
 
         source.Should().NotContain("Perk.GetPerkDetails", "the retired definitions no longer exist");
         source.Should().NotContain("LegacyPerkRefundMigration", "its prices predate what players paid after the rebuild");

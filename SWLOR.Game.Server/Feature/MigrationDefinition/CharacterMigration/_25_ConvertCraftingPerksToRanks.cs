@@ -11,10 +11,10 @@ namespace SWLOR.Game.Server.Feature.MigrationDefinition.CharacterMigration;
 
 /// <summary>
 /// Retires the perks whose tiers now unlock with skill rank, and refunds the perks whose category and requirements
-/// changed. Every owned rank returns its SP and the perk leaves the record and the character's feats. The release's
-/// player migration (<c>_24_CorrectCarapaceBracers</c>) calls it and grants the single optional rebuild token.
+/// changed. Every owned rank returns its SP, the perk leaves the record and the character's feats, and the record
+/// gains one optional rebuild token.
 /// </summary>
-internal static class CraftingPerkConversion
+internal sealed class _25_ConvertCraftingPerksToRanks : ICharacterMigration
 {
     /// <summary>
     /// The prices players paid per rank, kept here because the retired definitions no longer exist.
@@ -58,15 +58,16 @@ internal static class CraftingPerkConversion
             FeatType.DroidAssemblyTrait),
     };
 
+    public int Version => 25;
+
     /// <summary>Removes the feats the refunded perks granted, so none outlives its perk.</summary>
-    public static void RemoveGrantedFeats(SavedCharacter character)
+    public void Migrate(SavedCharacter character)
     {
         foreach (var feat in RefundedPerks.SelectMany(perk => perk.GrantedFeats))
             character.RemoveFeat(feat);
     }
 
-    /// <summary>Refunds every owned rank of the retired perks and removes the perks from the record, with a notice each.</summary>
-    public static void RefundRetiredPerks(Player player)
+    public void MigratePlayerData(Player player)
     {
         player.UpgradeNotices ??= new List<string>();
 
@@ -83,6 +84,9 @@ internal static class CraftingPerkConversion
             Log.Write(LogGroup.Migration, $"{player.Name} ({player.Id}) refunded {refund} SP for perk '{perk.Type}'.");
             player.UpgradeNotices.Add($"Perk '{perk.Name}' {perk.Change} You reclaimed {refund} SP.");
         }
+
+        RebuildTokenGrant.Grant(player);
+        player.UpgradeNotices.Add("You received 1 Rebuild Token. Rebuilding your character is optional.");
     }
 
     private sealed record RefundedPerk(PerkType Type, string Name, int[] Prices, string Change, params FeatType[] GrantedFeats)

@@ -1763,6 +1763,15 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.FabricationRecipeDefinition
                 .Component("elec_good", 3)
                 .FabricatorParameters(frameSizePercent: 31, shellSizePercent: 33, frameQualityPercent: 38, shellQualityPercent: 33, wearRate: 6);
 
+            // Espionage Workbench
+            _builder.Create(RecipeType.EspionageWorkbench, SkillType.Fabrication)
+                .Category(RecipeCategoryType.Crafting)
+                .Resref("structure_0436")
+                .Level(30)
+                .Quantity(1)
+                .Component("ref_plagionite", 5)
+                .Component("elec_good", 3);
+
             // Fountain, Dark Grey
             _builder.Create(RecipeType.FountainDarkGrey, SkillType.Fabrication)
                 .Category(RecipeCategoryType.Fixtures)

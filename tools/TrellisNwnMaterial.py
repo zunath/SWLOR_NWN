@@ -332,7 +332,8 @@ def fix_shipped(folder, mtr_names, check=False):
     for _, _, spec, rough in plans:
         if pair.setdefault(rough.lower(), spec.lower()) != spec.lower():
             raise ValueError(f'Roughness map {rough} pairs with more than one specularity map')
-    report = []
+    # Convert everything in memory first: a size mismatch must not leave a batch half written and marked.
+    report, outputs = [], []
     for name, base, spec, _ in plans:
         image, info = bases[name]
         spec_image = specs[spec.lower()][0][..., 0]
@@ -341,19 +342,18 @@ def fix_shipped(folder, mtr_names, check=False):
         metal = specularity_to_metallic(spec_image)
         fixed = metal_base_color(image, metal)
         report.append((name, float((metal > .5).mean()), float(linear(image).mean()), float(linear(fixed).mean())))
-        if not check:
-            write_dds(resolve(base, '.dds'), fixed, info, color=True, mark=True)
+        outputs.append((resolve(base, '.dds'), fixed, info, True))
     for rough_name, spec_name in pair.items():
         metal = specularity_to_metallic(specs[spec_name][0][..., 0])
         rough_image, rough_info = roughs[rough_name]
         if rough_image.shape[:2] != metal.shape:
             raise ValueError(f'{rough_name}: roughness and specularity sizes differ')
-        if not check:
-            write_dds(resolve(rough_name, '.dds'), metal_roughness(rough_image[..., 0], metal)[..., None], rough_info, mark=True)
+        outputs.append((resolve(rough_name, '.dds'), metal_roughness(rough_image[..., 0], metal)[..., None], rough_info, False))
     for spec_name, (image, info) in specs.items():
-        if not check:
-            write_dds(resolve(spec_name, '.dds'), metal_specularity(specularity_to_metallic(image[..., 0]))[..., None], info,
-                      mark=True)
+        outputs.append((resolve(spec_name, '.dds'), metal_specularity(specularity_to_metallic(image[..., 0]))[..., None], info, False))
+    if not check:
+        for path, image, info, color in outputs:
+            write_dds(path, image, info, color=color, mark=True)
     return report
 
 

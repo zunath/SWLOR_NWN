@@ -125,6 +125,20 @@ class ShippedFixTests(unittest.TestCase):
             with self.assertRaisesRegex(ValueError, 'Already converted'):
                 material.fix_shipped(folder, ['metal.mtr'], check=True)
 
+    def test_size_mismatch_writes_nothing(self):
+        with tempfile.TemporaryDirectory() as tmp:
+            folder = Path(tmp)
+            write_map(folder / 'a_s.dds', np.full((8, 8, 1), .2, np.float32), 'ATI1')
+            write_map(folder / 'a_r.dds', np.full((8, 8, 1), .5, np.float32), 'ATI1')
+            write_map(folder / 'b_s.dds', np.full((8, 8, 1), .2, np.float32), 'ATI1')
+            write_map(folder / 'b_r.dds', np.full((4, 4, 1), .5, np.float32), 'ATI1')
+            self.make_material(folder, 'one', 'a_s', 'a_r', .2)
+            self.make_material(folder, 'two', 'b_s', 'b_r', .2)
+            before = {p.name: p.read_bytes() for p in folder.glob('*.dds')}
+            with self.assertRaisesRegex(ValueError, 'sizes differ'):
+                material.fix_shipped(folder, ['one.mtr', 'two.mtr'])
+            self.assertEqual({p.name: p.read_bytes() for p in folder.glob('*.dds')}, before)
+
     def test_rejects_roughness_shared_by_different_specularity_maps(self):
         with tempfile.TemporaryDirectory() as tmp:
             folder = Path(tmp)

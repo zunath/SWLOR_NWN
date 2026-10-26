@@ -207,7 +207,12 @@ public class LightsaberPerkBehaviorTests
 
         // The Force portion must be deferred off the native damage-roll hook (DelayCommand), not applied
         // synchronously mid-hook, or it re-enters the damage/AI chain and cascades with reflect effects.
-        conversion.Should().Contain("DelayCommand");
+        // Native swings run outside any script, so the deferral must be owned by the module: a bare
+        // DelayCommand there has no OBJECT_SELF and the Force share of ordinary hits is never dealt.
+        conversion.Should().Contain("AssignCommand(GetModule(), () => DelayCommand(0.0f, ApplyConvertedDamage))",
+            "the deferred Force share of a native weapon hit must have a valid owner");
+        conversion.Should().NotContain("else DelayCommand(",
+            "an unowned deferral drops the Force share of native weapon hits");
         conversion.Should().Contain("targetStatusDamagePercentAdjustment: targetStatusDamagePercentAdjustment",
             "the converted share must carry reductions already applied to the incoming hit");
         conversion.Should().Contain("outgoingModifiersAlreadyApplied: true",

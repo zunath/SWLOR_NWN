@@ -488,8 +488,24 @@ class TrellisWeaponExportTests(unittest.TestCase):
                        {'extensions':{'KHR_materials_unlit':{}}}, {'normalTexture':{'scale':float('nan')}},
                        {'pbrMetallicRoughness':{'roughnessFactor':2}}):
             with self.subTest(change=change), self.assertRaises(ValueError): exporter.validate_material(change)
-        for metal, expected in [(0,.2), (.5,1.1/3), (1,1.6/3)]:
+        for metal, expected in [(0,.06), (.5,1.1/3), (1,1.6/3)]:
             self.assertAlmostEqual(exporter.metallic_to_specularity(metal),expected)
+
+    @unittest.skipUnless(HAS_BLENDER,'Run Blender 4.0 to write staged TGA maps')
+    def test_material_maps_apply_the_nwn_metal_response(self):
+        response=exporter.material_response()
+        doc={'materials':[{'pbrMetallicRoughness':{'baseColorFactor':[.08,.06,.05,1],'metallicFactor':1,'roughnessFactor':.5}},
+                          {'pbrMetallicRoughness':{'baseColorFactor':[.08,.06,.05,1],'metallicFactor':0,'roughnessFactor':.5}}]}
+        with tempfile.TemporaryDirectory() as folder:
+            _,metal=exporter.material_maps(doc,b'',0,Path(folder),{},Path(folder),'metal',64)
+            _,paint=exporter.material_maps(doc,b'',1,Path(folder),{},Path(folder),'paint',64)
+        lum=lambda rgb:float(np.mean(exporter.linear(np.asarray(rgb))@response.LUMINANCE))
+        self.assertGreaterEqual(lum(metal['metal']),response.METAL_LUMINANCE_FLOOR-1e-3)
+        self.assertAlmostEqual(lum(paint['paint']),lum(exporter.srgb(np.array([.08,.06,.05]))),places=4)
+        self.assertAlmostEqual(float(np.mean(metal['metal_s'])),1.6/3,places=4)
+        self.assertAlmostEqual(float(np.mean(paint['paint_s'])),response.DIELECTRIC_SPECULARITY,places=4)
+        self.assertLessEqual(float(np.mean(metal['metal_r'])),response.METAL_ROUGHNESS_RANGE[1])
+        self.assertAlmostEqual(float(np.mean(paint['paint_r'])),.5,places=4)
 
     def test_texture_samplers_reject_unsupported_wrapping_filtering_and_indices(self):
         doc=copy.deepcopy(self.document);doc['textures']=[{'source':0,'sampler':0}]

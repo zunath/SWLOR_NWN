@@ -5285,8 +5285,8 @@ namespace SWLOR.Game.Server.Service
             }
             // Projectile callers retain the entire converted hit, including its reactions and
             // attribution, until arrival. Native swings and ability impacts keep next-frame dispatch.
-            // Native swings resolve outside any script, where a bare DelayCommand has no OBJECT_SELF
-            // to own it and is silently dropped; module ownership keeps the Force hit queued.
+            // Native swings resolve in a script context with no object, where a bare DelayCommand has no
+            // OBJECT_SELF to own it and is silently dropped; module ownership keeps the Force hit queued.
             if (convertedDamageScheduler != null) convertedDamageScheduler(ApplyConvertedDamage);
             else AssignCommand(GetModule(), () => DelayCommand(0.0f, ApplyConvertedDamage));
             return forcePortion;

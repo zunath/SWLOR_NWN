@@ -75,7 +75,8 @@ are rejected. Supply both `imp_shield_1` and `imp_shield_2` using
 `attachment_dummies` with measured root-space positions and unit XYZW
 quaternions. Preserve these impact-effect hooks separately from the grip.
 Use the exact **64-by-128** transparent icon canvas (64-by-96 logical artwork)
-and DDS-only replacement icons. Inspect the actual SWLOR left hand, rear grip,
+and DDS replacement icons, plus the 8x8 TGA registration stub when no TGA of that
+name exists in any layer. Inspect the actual SWLOR left hand, rear grip,
 forearm/body clearance, attack poses, ground model and native inventory icon.
 Follow the guide's shield fit and export schema.
 

@@ -154,6 +154,8 @@ def audit(haks, nwn_root=None, folder='sw_weapon'):
     # The index lists every HAK folder, including ones a sparse worktree leaves unchecked-out.
     listed = subprocess.run(['git', '-C', str(haks), 'ls-files', '--', 'sw_*'], capture_output=True, text=True, check=True).stdout
     tgas = {Path(p).stem.lower() for p in listed.splitlines() if p.lower().endswith('.tga')}
+    # Stubs written but not yet added to Git count too.
+    tgas |= {p.stem.lower() for p in haks.glob('sw_*/*') if p.suffix.lower() == '.tga'}
     if nwn_root:
         tgas |= base_game_tgas(nwn_root)
     sizes = slot_sizes(haks)

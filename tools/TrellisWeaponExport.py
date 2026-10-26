@@ -304,6 +304,9 @@ def material_maps(doc,binary,index,source,cache,resources,name,limit):
     response=material_response();metal=np.clip(metal,0,1)
     if 'baseColorTexture' not in pbr and metal.shape!=base.shape[:2]:
         base=np.broadcast_to(base[:1,:1],metal.shape+(3,))  # constant color: keep the full metal mask detail
+    elif metal.shape[0]>base.shape[0] or metal.shape[1]>base.shape[1]:
+        # A coarser base texture would sample away small metal regions; correct at the finer size.
+        base=response.resample_nearest(base,(max(base.shape[0],metal.shape[0]),max(base.shape[1],metal.shape[1])))
     base=response.metal_base_color(base,response.resample_nearest(metal,base.shape[:2]))
     rough=response.metal_roughness(rough,metal);spec=response.metal_specularity(metal)
     if 'normalTexture' in mat:

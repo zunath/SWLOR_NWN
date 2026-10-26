@@ -488,6 +488,9 @@ class TrellisWeaponExportTests(unittest.TestCase):
                        {'extensions':{'KHR_materials_unlit':{}}}, {'normalTexture':{'scale':float('nan')}},
                        {'pbrMetallicRoughness':{'roughnessFactor':2}}):
             with self.subTest(change=change), self.assertRaises(ValueError): exporter.validate_material(change)
+
+    @unittest.skipIf(np is None,'numpy required')
+    def test_metallic_to_specularity_matches_nwn_material_response(self):
         for metal, expected in [(0,.06), (.5,1.1/3), (1,1.6/3)]:
             self.assertAlmostEqual(exporter.metallic_to_specularity(metal),expected)
 
@@ -518,6 +521,15 @@ class TrellisWeaponExportTests(unittest.TestCase):
             _,maps=exporter.material_maps(doc,b'',0,Path(folder),{},Path(folder),'spot',64)
         base=np.asarray(maps['spot']);self.assertEqual(base.shape[:2],(64,64))
         lum=exporter.linear(base)@response.LUMINANCE
+        self.assertGreater(float(lum[30:32,30:32].min()),float(lum[0,0])+.05)
+        # A coarser base texture is corrected at the metal map's size too.
+        doc['materials'][0]['pbrMetallicRoughness']['baseColorTexture']={'index':1}
+        coarse=np.full((4,4,4),.1,np.float32);coarse[...,3]=1
+        with tempfile.TemporaryDirectory() as folder, \
+                unittest.mock.patch.object(exporter,'read_image',side_effect=[coarse,mask]):
+            _,maps=exporter.material_maps(doc,b'',0,Path(folder),{},Path(folder),'coarse',64)
+        lum=exporter.linear(np.asarray(maps['coarse']))@response.LUMINANCE
+        self.assertEqual(lum.shape,(64,64))
         self.assertGreater(float(lum[30:32,30:32].min()),float(lum[0,0])+.05)
 
     def test_texture_samplers_reject_unsupported_wrapping_filtering_and_indices(self):

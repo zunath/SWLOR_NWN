@@ -514,7 +514,8 @@ Z may be reconstructed for comparison rather than read as a stored BC5 channel.
 Inspect texture details and the textured model; confirm game lighting in the client.
 
 Replace each runtime TGA, including inventory icons, with its DDS using the same basename. Do not keep
-both formats for the same map: texture lookup can prefer the TGA. MTR bindings are
+both formats for the same map: texture lookup can prefer the TGA. The one exception is the 8x8
+inventory-icon registration stub described under "Inventory lookup and unique artwork". MTR bindings are
 extensionless and do not change. Vesper-9 keeps four 1024-square maps; the imported
 blaster keeps two 1024-square maps and its 256-square specular map.
 

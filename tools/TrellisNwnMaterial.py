@@ -19,7 +19,8 @@ Shipped fix (Python 3 with numpy), from the outer worktree root:
   python -B tools/TrellisNwnMaterial.py --haks SWLOR_Haks --materials LIST.txt [--check]
 LIST.txt names the MTR files (one per line) under SWLOR_Haks/sw_weapon. The fix
 rewrites their base, specularity and roughness DDS in place with the original
-dimensions, formats and mip counts, and refuses maps it has already converted.
+dimensions, formats and mip counts, marks them in a reserved header field, and
+refuses maps it has already converted.
 """
 from __future__ import annotations
 
@@ -129,7 +130,17 @@ def read_dds(path):
     return image[:height, :width] / 255.0, {'header': data[:128], 'fourcc': fourcc, 'mips': mips, 'size': (width, height)}
 
 
-def write_dds(path, image, info, color=False):
+# Stamped into the last reserved header dword (dwReserved1[10]) of every converted map;
+# readers ignore it, and it marks maps with no dielectric texels left to detect.
+CONVERTED_MARK = b'SWNM'
+MARK_OFFSET = 72
+
+
+def is_marked(info):
+    return info['header'][MARK_OFFSET:MARK_OFFSET + 4] == CONVERTED_MARK
+
+
+def write_dds(path, image, info, color=False, mark=False):
     """Encode image (H x W x C, 0-1) with the original header, format and mip count."""
     width, height = info['size']
     if image.shape[:2] != (height, width):
@@ -140,7 +151,10 @@ def write_dds(path, image, info, color=False):
         payload += _ENCODERS[info['fourcc']](level)
         if index + 1 < info['mips']:
             level = _downsample(level, color)
-    Path(path).write_bytes(info['header'] + bytes(payload))
+    header = bytearray(info['header'])
+    if mark:
+        header[MARK_OFFSET:MARK_OFFSET + 4] = CONVERTED_MARK
+    Path(path).write_bytes(bytes(header) + bytes(payload))
 
 
 def _downsample(image, color):
@@ -285,9 +299,10 @@ def material_textures(path):
     return slots['0'], slots['2'], slots['3']
 
 
-def already_converted(spec):
-    """Unconverted maps keep dielectric texels at 0.2; converted ones move them to 0.06."""
-    return float((np.abs(spec - DIELECTRIC_SPECULARITY) < .02).mean()) > .01
+def already_converted(spec, info):
+    """Converted maps carry the header mark; maps converted before it existed moved
+    dielectric texels from 0.2 to 0.06."""
+    return is_marked(info) or float((np.abs(spec - DIELECTRIC_SPECULARITY) < .02).mean()) > .01
 
 
 def fix_shipped(folder, mtr_names, check=False):
@@ -307,9 +322,11 @@ def fix_shipped(folder, mtr_names, check=False):
             specs[spec.lower()] = read_dds(resolve(spec, '.dds'))
         if rough.lower() not in roughs:
             roughs[rough.lower()] = read_dds(resolve(rough, '.dds'))
-    done = [name for name, (image, _) in specs.items() if already_converted(image[..., 0])]
+    bases = {name: read_dds(resolve(base, '.dds')) for name, base, _, _ in plans}
+    done = [name for name, (image, info) in specs.items() if already_converted(image[..., 0], info)]
+    done += [name for name, (_, info) in list(roughs.items()) + list(bases.items()) if is_marked(info)]
     if done:
-        raise ValueError('Already converted specularity maps: ' + ', '.join(sorted(done)[:10]))
+        raise ValueError('Already converted maps: ' + ', '.join(sorted(done)[:10]))
     # Roughness follows its specularity map's metal mask, so each roughness map needs one partner.
     pair = {}
     for _, _, spec, rough in plans:
@@ -317,7 +334,7 @@ def fix_shipped(folder, mtr_names, check=False):
             raise ValueError(f'Roughness map {rough} pairs with more than one specularity map')
     report = []
     for name, base, spec, _ in plans:
-        image, info = read_dds(resolve(base, '.dds'))
+        image, info = bases[name]
         spec_image = specs[spec.lower()][0][..., 0]
         if spec_image.shape != image.shape[:2]:
             raise ValueError(f'{name}: base and specularity sizes differ')
@@ -325,17 +342,18 @@ def fix_shipped(folder, mtr_names, check=False):
         fixed = metal_base_color(image, metal)
         report.append((name, float((metal > .5).mean()), float(linear(image).mean()), float(linear(fixed).mean())))
         if not check:
-            write_dds(resolve(base, '.dds'), fixed, info, color=True)
+            write_dds(resolve(base, '.dds'), fixed, info, color=True, mark=True)
     for rough_name, spec_name in pair.items():
         metal = specularity_to_metallic(specs[spec_name][0][..., 0])
         rough_image, rough_info = roughs[rough_name]
         if rough_image.shape[:2] != metal.shape:
             raise ValueError(f'{rough_name}: roughness and specularity sizes differ')
         if not check:
-            write_dds(resolve(rough_name, '.dds'), metal_roughness(rough_image[..., 0], metal)[..., None], rough_info)
+            write_dds(resolve(rough_name, '.dds'), metal_roughness(rough_image[..., 0], metal)[..., None], rough_info, mark=True)
     for spec_name, (image, info) in specs.items():
         if not check:
-            write_dds(resolve(spec_name, '.dds'), metal_specularity(specularity_to_metallic(image[..., 0]))[..., None], info)
+            write_dds(resolve(spec_name, '.dds'), metal_specularity(specularity_to_metallic(image[..., 0]))[..., None], info,
+                      mark=True)
     return report
 
 

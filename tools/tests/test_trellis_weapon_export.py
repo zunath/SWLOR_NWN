@@ -507,6 +507,19 @@ class TrellisWeaponExportTests(unittest.TestCase):
         self.assertLessEqual(float(np.mean(metal['metal_r'])),response.METAL_ROUGHNESS_RANGE[1])
         self.assertAlmostEqual(float(np.mean(paint['paint_r'])),.5,places=4)
 
+    @unittest.skipUnless(HAS_BLENDER,'Run Blender 4.0 to write staged TGA maps')
+    def test_constant_base_color_keeps_metal_mask_detail(self):
+        response=exporter.material_response()
+        doc={'materials':[{'pbrMetallicRoughness':{'baseColorFactor':[.08,.06,.05,1],
+                                                   'metallicRoughnessTexture':{'index':0}}}]}
+        mask=np.zeros((64,64,4),np.float32);mask[...,3]=1;mask[...,1]=.5;mask[30:32,30:32,2]=1  # one 2x2 metal spot
+        with tempfile.TemporaryDirectory() as folder, \
+                unittest.mock.patch.object(exporter,'read_image',return_value=mask):
+            _,maps=exporter.material_maps(doc,b'',0,Path(folder),{},Path(folder),'spot',64)
+        base=np.asarray(maps['spot']);self.assertEqual(base.shape[:2],(64,64))
+        lum=exporter.linear(base)@response.LUMINANCE
+        self.assertGreater(float(lum[30:32,30:32].min()),float(lum[0,0])+.05)
+
     def test_texture_samplers_reject_unsupported_wrapping_filtering_and_indices(self):
         doc=copy.deepcopy(self.document);doc['textures']=[{'source':0,'sampler':0}]
         doc['samplers']=[{'wrapS':10497,'wrapT':10497,'magFilter':9729,'minFilter':9987}]

@@ -302,6 +302,8 @@ def material_maps(doc,binary,index,source,cache,resources,name,limit):
     # TRELLIS metal is dark and satin; NWN renders that near black and matte. Raise metal albedo
     # (at base resolution) and tighten metal roughness before the inverse specularity mapping.
     response=material_response();metal=np.clip(metal,0,1)
+    if 'baseColorTexture' not in pbr and metal.shape!=base.shape[:2]:
+        base=np.broadcast_to(base[:1,:1],metal.shape+(3,))  # constant color: keep the full metal mask detail
     base=response.metal_base_color(base,response.resample_nearest(metal,base.shape[:2]))
     rough=response.metal_roughness(rough,metal);spec=response.metal_specularity(metal)
     if 'normalTexture' in mat:

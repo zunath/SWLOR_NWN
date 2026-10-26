@@ -113,6 +113,18 @@ class ShippedFixTests(unittest.TestCase):
             with self.assertRaisesRegex(ValueError, 'Already converted'):
                 material.fix_shipped(folder, ['one.mtr'])
 
+    def test_refuses_a_second_run_on_metal_only_maps(self):
+        with tempfile.TemporaryDirectory() as tmp:
+            folder = Path(tmp)
+            write_map(folder / 'm_s.dds', np.full((8, 8, 1), material.metal_specularity(1), np.float32), 'ATI1')
+            write_map(folder / 'm_r.dds', np.full((8, 8, 1), .5, np.float32), 'ATI1')
+            self.make_material(folder, 'metal', 'm_s', 'm_r', .2)
+            material.fix_shipped(folder, ['metal.mtr'])
+            for name in ('metal.dds', 'm_s.dds', 'm_r.dds'):
+                self.assertTrue(material.is_marked(material.read_dds(folder / name)[1]), name)
+            with self.assertRaisesRegex(ValueError, 'Already converted'):
+                material.fix_shipped(folder, ['metal.mtr'], check=True)
+
     def test_rejects_roughness_shared_by_different_specularity_maps(self):
         with tempfile.TemporaryDirectory() as tmp:
             folder = Path(tmp)

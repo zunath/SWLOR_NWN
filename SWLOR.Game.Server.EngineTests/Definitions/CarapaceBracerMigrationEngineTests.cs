@@ -60,6 +60,102 @@ public static partial class MigrationEngineTests
         });
     }
 
+    [EngineTest("Migration 24 raises worn pre-fix Tribal Protection and Dantari Hyper Gloves on the record once",
+        Category = "CarapaceBracerMigration", TimeoutSeconds = 120)]
+    public static async Task RaisedDantooineItemsOnSavedCharacter(EngineTestContext ctx)
+    {
+        using var fixture = await PlayerAbilityFixture.CreateAsync(ctx);
+        var owner = fixture.Creature;
+        foreach (var slot in new[] { InventorySlot.Chest, InventorySlot.Arms })
+        {
+            var current = GetItemInSlot(slot, owner);
+            if (GetIsObjectValid(current)) await UnequipAsync(ctx, owner, current);
+        }
+        var baseline = ReadEquipmentTotals(owner);
+
+        // Pre-fix copies: Tribal Protection 20 Physical (plus a 3-point enhancement) and Fire Defense 10; Dantari
+        // Hyper Gloves 10 Physical, 10 Force, no HP, and Ice Defense 5.
+        var armor = await CreateItemAsync(ctx, owner, "dan_heavy_armor", owner);
+        var gloves = await CreateItemAsync(ctx, owner, "dan_hyper_gloves", owner);
+        await ctx.ExecuteInCreatureContextAsync(owner, () =>
+        {
+            foreach (var item in new[] { armor, gloves })
+            {
+                RemoveRequirement(item);
+                RemoveMatching(item, ItemPropertyType.Defense, (int)CombatDamageType.Physical);
+                RemoveMatching(item, ItemPropertyType.Defense, (int)CombatDamageType.Force);
+                RemoveMatching(item, ItemPropertyType.HPBonus, 0);
+            }
+            AddItemProperty(DurationType.Permanent, ItemPropertyCustom(ItemPropertyType.Defense, (int)CombatDamageType.Physical, 23), armor);
+            AddItemProperty(DurationType.Permanent, ItemPropertyCustom(ItemPropertyType.HPBonus, -1, 95), armor);
+            AddLegacyProperty(armor, ItemPropertyType.Defense, (int)CombatDamageType.Fire, 35, 10);
+            AddItemProperty(DurationType.Permanent, ItemPropertyCustom(ItemPropertyType.Defense, (int)CombatDamageType.Physical, 10), gloves);
+            AddItemProperty(DurationType.Permanent, ItemPropertyCustom(ItemPropertyType.Defense, (int)CombatDamageType.Force, 10), gloves);
+            AddLegacyProperty(gloves, ItemPropertyType.Defense, (int)CombatDamageType.Ice, 35, 5);
+        });
+
+        // Materialize the native legacy properties through storage; the marker keeps the live revision away meanwhile.
+        foreach (var resref in new[] { "dan_heavy_armor", "dan_hyper_gloves" })
+        {
+            var item = FindHeadgear(owner, resref);
+            InventoryItem stored = null;
+            await ctx.ExecuteInCreatureContextAsync(owner, () =>
+            {
+                SetLocalInt(item, RetiredDefenseStatRevisionCatalog.RevisionVariable, RetiredDefenseStatRevisionCatalog.CurrentRevision);
+                stored = Bank.DepositItem(owner, item);
+            });
+            await ctx.WaitUntilAsync(() => !GetIsObjectValid(item), 5f, $"the pre-fix {resref} to enter storage");
+            await ctx.ExecuteInCreatureContextAsync(owner, () => Bank.WithdrawItem(owner, stored.Id));
+            await ctx.WaitFrameAsync();
+            item = FindHeadgear(owner, resref);
+            await ctx.ExecuteInCreatureContextAsync(owner, () => DeleteLocalInt(item, RetiredDefenseStatRevisionCatalog.RevisionVariable));
+        }
+        armor = FindHeadgear(owner, "dan_heavy_armor");
+        gloves = FindHeadgear(owner, "dan_hyper_gloves");
+        ctx.AssertEqual(10, PropertyValue(armor, ItemPropertyType.Defense, (int)CombatDamageType.Fire), "The pre-fix armor keeps its Fire Defense");
+        ctx.AssertEqual(5, PropertyValue(gloves, ItemPropertyType.Defense, (int)CombatDamageType.Ice), "The pre-fix gloves keep their Ice Defense");
+        await EquipAsync(ctx, owner, armor, InventorySlot.Chest);
+        await EquipAsync(ctx, owner, gloves, InventorySlot.Arms);
+        var worn = ReadEquipmentTotals(owner);
+        ctx.AssertEqual(baseline.PhysicalDefense + 23 + 10, worn.PhysicalDefense, "Pre-fix Physical Defense counts before the upgrade");
+        ctx.AssertEqual(baseline.ForceDefense + 10, worn.ForceDefense, "Pre-fix Force Defense counts before the upgrade");
+        ctx.AssertEqual(baseline.MaxHP + 95, worn.MaxHP, "Pre-fix HP counts before the upgrade");
+
+        SavedCharacterMigration.Upgraded upgraded = null;
+        await ctx.ExecuteInCreatureContextAsync(owner, () =>
+        {
+            upgraded = SavedCharacterMigration.Run(owner, DB.Get<Player>(fixture.Id), "_24_CorrectCarapaceBracers");
+            var character = SavedCharacterMigration.Load(ctx, upgraded);
+            var migratedArmor = SavedCharacterMigration.FindItem(character, "dan_heavy_armor");
+            var migratedGloves = SavedCharacterMigration.FindItem(character, "dan_hyper_gloves");
+            ctx.AssertEqual(migratedArmor, GetItemInSlot(InventorySlot.Chest, character), "The armor stays worn");
+            ctx.AssertEqual(migratedGloves, GetItemInSlot(InventorySlot.Arms, character), "The gloves stay worn");
+            ctx.AssertEqual(28, PropertyValue(migratedArmor, ItemPropertyType.Defense, (int)CombatDamageType.Physical),
+                "Physical rises from 20 to 25 and keeps the 3-point enhancement");
+            ctx.AssertEqual(20, PropertyValue(migratedArmor, ItemPropertyType.Defense, (int)CombatDamageType.Force), "The armor gains 20 Force Defense");
+            ctx.AssertEqual(-1, PropertyValue(migratedArmor, ItemPropertyType.Defense, (int)CombatDamageType.Fire), "Fire Defense is removed");
+            ctx.AssertEqual(21, PropertyValue(migratedGloves, ItemPropertyType.Defense, (int)CombatDamageType.Force), "Glove Force Defense rises to 21");
+            ctx.AssertEqual(21, PropertyValue(migratedGloves, ItemPropertyType.HPBonus), "The gloves gain 21 HP");
+            ctx.AssertEqual(-1, PropertyValue(migratedGloves, ItemPropertyType.Defense, (int)CombatDamageType.Ice), "Ice Defense is removed");
+
+            var record = ReadEquipmentTotals(upgraded.Record);
+            ctx.AssertEqual(baseline.PhysicalDefense + 28 + 10, record.PhysicalDefense, "The record counts the raised Physical Defense once");
+            ctx.AssertEqual(baseline.ForceDefense + 20 + 21, record.ForceDefense, "The record counts the raised Force Defense once");
+            ctx.AssertEqual(baseline.MaxHP + 95 + 21, record.MaxHP, "The record counts the gloves' new HP once");
+
+            var retried = SavedCharacterMigration.Run(upgraded.File, upgraded.Record, "_24_CorrectCarapaceBracers");
+            ctx.Assert(retried.File.SequenceEqual(upgraded.File), "A retry makes no further changes");
+            ctx.AssertEqual(record, ReadEquipmentTotals(retried.Record), "A retry counts nothing twice");
+        });
+
+        // The player logs in wearing the upgraded items, and the live revision finds nothing left.
+        using var login = await PlayerAbilityFixture.CreateFromCharacterAsync(ctx, upgraded.File, upgraded.Record, 3f);
+        owner = login.Creature;
+        ctx.AssertEqual(ReadEquipmentTotals(upgraded.Record), ReadEquipmentTotals(owner), "Login keeps the upgraded totals");
+        await ctx.ExecuteInCreatureContextAsync(owner, () =>
+            ctx.Assert(!LootStatRevisionMigration.MigrateObject(owner), "The live revision finds nothing left to change"));
+    }
+
     private static async Task VerifyCarapaceBracerLifecycle(EngineTestContext ctx, bool storedFirst, bool converted = false)
     {
         using var fixture = await PlayerAbilityFixture.CreateAsync(ctx);

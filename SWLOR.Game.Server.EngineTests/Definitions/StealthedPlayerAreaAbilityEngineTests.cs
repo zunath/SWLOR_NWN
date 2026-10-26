@@ -70,22 +70,24 @@ namespace SWLOR.Game.Server.EngineTests.Definitions
             Enmity.ModifyEnmity(decoy, tusken, 10);
             var screech = NPCAI.Profiles[AIProfileType.Generic].Actions
                 .Single(action => action.Type == AIActionType.Ability && action.Feat == FeatType.DisorientingScreech);
+            var context = new AIContext(tusken, AITriggerType.CombatRound, decoy,
+                new AIProfile { Type = AIProfileType.Generic }, new AIState(), Array.Empty<uint>());
             var resolveTarget = typeof(NPCAI).GetMethod("ResolveTarget", BindingFlags.NonPublic | BindingFlags.Static)!;
-            uint ResolveTarget() => (uint)resolveTarget.Invoke(null, new object[]
+            var radius = Ability.GetAbilityDetail(FeatType.DisorientingScreech).Targeting.ResolveSizeX(tusken, true);
+            int CountScreechTargets()
             {
-                new AIContext(tusken, AITriggerType.CombatRound, decoy,
-                    new AIProfile { Type = AIProfileType.Generic }, new AIState(), Array.Empty<uint>()),
-                screech
-            })!;
+                ctx.AssertEqual(tusken, (uint)resolveTarget.Invoke(null, new object[] { context, screech })!,
+                    "Disorienting Screech centers on the Tusken while it sees an enemy in range");
+                return context.CountHostilesNearTarget(radius);
+            }
 
             ctx.Assert(Stealth.IsHiddenFrom(tusken, player.Creature), "the Tusken has not detected the stealthed player");
-            ctx.AssertEqual(OBJECT_INVALID, ResolveTarget(),
-                "Disorienting Screech needs two enemies, and the Tusken sees only the decoy");
+            ctx.AssertEqual(1, CountScreechTargets(), "Disorienting Screech counts only the decoy, not the undetected player");
 
-            // Control: once the player is visible, the same two enemies are enough.
+            // Control: once the player is visible, both enemies count.
             await SetStealthAsync(ctx, player.Creature, false);
             ctx.Assert(!Stealth.IsHiddenFrom(tusken, player.Creature), "the Tusken sees the player once stealth ends");
-            ctx.AssertEqual(tusken, ResolveTarget(), "Disorienting Screech centers on the Tusken with two visible enemies in range");
+            ctx.AssertEqual(2, CountScreechTargets(), "Disorienting Screech counts both visible enemies in range");
         }
 
         private static async Task<PlayerAbilityFixture> CreateStealthedPlayerAsync(EngineTestContext ctx)

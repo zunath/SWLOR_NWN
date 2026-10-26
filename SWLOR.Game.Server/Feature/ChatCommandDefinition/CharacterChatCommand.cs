@@ -31,6 +31,8 @@ namespace SWLOR.Game.Server.Feature.ChatCommandDefinition
             CDKey();
             Skills();
             EndCall();
+            AnswerCall();
+            DeclineCall();
             Recipes();
             Perks();
             Techniques();
@@ -125,31 +127,44 @@ namespace SWLOR.Game.Server.Feature.ChatCommandDefinition
                 .Permissions(AuthorizationLevel.Player, AuthorizationLevel.DM, AuthorizationLevel.Admin)
                 .Action((user, target, location, args) =>
                 {
-                    // Handle active calls
-                    if (HoloCom.IsInCall(user))
-                    {
-                        var callTarget = HoloCom.GetTargetForActiveCall(user);
-                        HoloCom.SetIsInCall(user, callTarget, false);
-                        SendMessageToPC(user, "You end your HoloCom call.");
-                    }
-                    // Handle outgoing call attempts
-                    else if (HoloCom.IsCallSender(user))
-                    {
-                        var callReceiver = HoloCom.GetCallReceiver(user);
-                        if (GetIsObjectValid(callReceiver))
-                        {
-                            // Notify the receiver that the call attempt has ended
-                            SendMessageToPC(callReceiver, "Your HoloCom stops buzzing.");
-                        }
-
-                        // Clean up call attempt state
-                        HoloCom.CleanupCallAttempt(user, callReceiver);
-                        SendMessageToPC(user, "You cancel your HoloCom call.");
-                    }
-                    else
+                    if (!HoloCom.EndCall(user))
                     {
                         SendMessageToPC(user, "You don't have any active calls or outgoing call attempts to end.");
                     }
+                });
+        }
+
+        private void AnswerCall()
+        {
+            _builder.Create("answer")
+                .Description("Answers your incoming HoloCom call.")
+                .Permissions(AuthorizationLevel.Player)
+                .Action((user, target, location, args) =>
+                {
+                    if (!HoloCom.IsCallReceiver(user) || HoloCom.IsInCall(user))
+                    {
+                        SendMessageToPC(user, "You don't have an incoming HoloCom call.");
+                        return;
+                    }
+
+                    HoloCom.AnswerCall(user);
+                });
+        }
+
+        private void DeclineCall()
+        {
+            _builder.Create("decline")
+                .Description("Declines your incoming HoloCom call.")
+                .Permissions(AuthorizationLevel.Player)
+                .Action((user, target, location, args) =>
+                {
+                    if (!HoloCom.IsCallReceiver(user) || HoloCom.IsInCall(user))
+                    {
+                        SendMessageToPC(user, "You don't have an incoming HoloCom call.");
+                        return;
+                    }
+
+                    HoloCom.DeclineCall(user);
                 });
         }
 

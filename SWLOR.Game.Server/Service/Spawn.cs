@@ -791,6 +791,24 @@ namespace SWLOR.Game.Server.Service
             activeSpawns.RemoveAll(x => x.SpawnObject == spawnObject);
         }
 
+        private static List<Vector3> GetActivePlaceableSpawnPositions(uint area)
+        {
+            var positions = new List<Vector3>();
+            if (!_activeSpawnsByArea.TryGetValue(area, out var activeSpawns))
+                return positions;
+
+            foreach (var activeSpawn in activeSpawns)
+            {
+                if (!GetIsObjectValid(activeSpawn.SpawnObject) ||
+                    GetObjectType(activeSpawn.SpawnObject) != ObjectType.Placeable)
+                    continue;
+
+                positions.Add(GetPosition(activeSpawn.SpawnObject));
+            }
+
+            return positions;
+        }
+
         private static bool HasActiveRareSpawn(uint area, string spawnTableId)
         {
             if (string.IsNullOrWhiteSpace(spawnTableId) ||
@@ -882,9 +900,23 @@ namespace SWLOR.Game.Server.Service
                     return new SpawnResult { SpawnObject = OBJECT_INVALID };
                 }
 
-                var position = detail.UseRandomSpawnLocation ?
-                    GetPositionFromLocation(Walkmesh.GetRandomLocation(detail.Area)) :
-                    new Vector3(detail.X, detail.Y, detail.Z);
+                Vector3 position;
+                if (!detail.UseRandomSpawnLocation)
+                {
+                    position = new Vector3(detail.X, detail.Y, detail.Z);
+                }
+                // Randomly placed placeables (resource nodes, terminals) keep their distance from each other
+                // so that several of them cannot block a narrow path together.
+                else if (spawnObject.Type == ObjectType.Placeable)
+                {
+                    position = SpawnSpacing.PickSpacedPosition(
+                        () => GetPositionFromLocation(Walkmesh.GetRandomLocation(detail.Area)),
+                        GetActivePlaceableSpawnPositions(detail.Area));
+                }
+                else
+                {
+                    position = GetPositionFromLocation(Walkmesh.GetRandomLocation(detail.Area));
+                }
 
                 var facing = detail.UseRandomSpawnLocation ? Random.Next(360) : detail.Facing;
                 var location = Location(detail.Area, position, facing);

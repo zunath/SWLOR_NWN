@@ -179,6 +179,58 @@ public class PlayerListRulesTests
     }
 
     [Test]
+    public void Call_RequiresAnAvailablePlayerAndNoCallInProgress()
+    {
+        PlayerListRules.Evaluate(new PlayerListRelation { HasTarget = true }).Call.IsEnabled.Should().BeTrue();
+        PlayerListRules.Evaluate(new PlayerListRelation()).Call.DisabledReason.Should().Be(PlayerListRules.SelectPlayerFirst);
+        PlayerListRules.Evaluate(new PlayerListRelation { HasTarget = true, TargetIsSelf = true })
+            .Call.DisabledReason.Should().Be("You cannot call yourself.");
+        PlayerListRules.Evaluate(new PlayerListRelation { HasTarget = true, ViewerIsInSpace = true })
+            .Call.DisabledReason.Should().Be("HoloCom cannot be used in space.");
+        PlayerListRules.Evaluate(new PlayerListRelation { HasTarget = true, TargetIsInSpace = true })
+            .Call.IsEnabled.Should().BeFalse();
+        PlayerListRules.Evaluate(new PlayerListRelation { HasTarget = true, TargetIsInCall = true })
+            .Call.DisabledReason.Should().Be("Line busy.");
+        PlayerListRules.Evaluate(new PlayerListRelation { HasTarget = true, ViewerCallState = PlayerListCallState.Outgoing })
+            .Call.IsEnabled.Should().BeFalse();
+        PlayerListRules.Evaluate(new PlayerListRelation { HasTarget = true, ViewerIsDM = true })
+            .Call.DisabledReason.Should().Be(PlayerListRules.DMsCannotUseHoloCom);
+
+        var dmViewer = PlayerListRules.Evaluate(new PlayerListRelation
+            { HasTarget = true, ViewerIsDM = true, TargetIsDM = true, ViewerCallState = PlayerListCallState.Incoming });
+        dmViewer.Call.DisabledReason.Should().Be(PlayerListRules.DMsCannotUseHoloCom);
+        dmViewer.AnswerCall.DisabledReason.Should().Be(PlayerListRules.DMsCannotUseHoloCom);
+        dmViewer.DeclineCall.DisabledReason.Should().Be(PlayerListRules.DMsCannotUseHoloCom);
+    }
+
+    [Test]
+    public void Answer_IsRefusedInSpaceButDeclineIsNot()
+    {
+        var actions = PlayerListRules.Evaluate(new PlayerListRelation
+        {
+            ViewerCallState = PlayerListCallState.Incoming,
+            ViewerIsInSpace = true,
+        });
+
+        actions.AnswerCall.DisabledReason.Should().Be("HoloCom cannot be used in space.");
+        actions.DeclineCall.IsEnabled.Should().BeTrue();
+    }
+
+    [TestCase(PlayerListCallState.None, false, false, "End Call")]
+    [TestCase(PlayerListCallState.Incoming, true, false, "End Call")]
+    [TestCase(PlayerListCallState.Outgoing, false, true, "Cancel Call")]
+    [TestCase(PlayerListCallState.Connected, false, true, "End Call")]
+    public void CallControls_FollowTheViewersCallState(PlayerListCallState state, bool canAnswer, bool canEnd, string endText)
+    {
+        var actions = PlayerListRules.Evaluate(new PlayerListRelation { ViewerCallState = state });
+
+        actions.AnswerCall.IsEnabled.Should().Be(canAnswer);
+        actions.DeclineCall.IsEnabled.Should().Be(canAnswer);
+        actions.EndCall.IsEnabled.Should().Be(canEnd);
+        actions.EndCallText.Should().Be(endText);
+    }
+
+    [Test]
     public void TargetInAnotherParty_CannotBeInvited()
     {
         PlayerListRules.Evaluate(new PlayerListRelation { HasTarget = true, TargetIsInOtherParty = true })

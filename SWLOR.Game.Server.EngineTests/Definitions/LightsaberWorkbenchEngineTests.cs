@@ -1,12 +1,17 @@
+using System.Collections.Generic;
 using System.Linq;
 using System.Reflection;
 using System.Threading.Tasks;
 using SWLOR.Game.Server.EngineTests.Framework;
 using SWLOR.Game.Server.Entity;
 using SWLOR.Game.Server.Feature.GuiDefinition.ViewModel;
+using SWLOR.Game.Server.Service.CombatService;
 using SWLOR.Game.Server.Service.CurrencyService;
 using SWLOR.Game.Server.Service.GuiService;
+using SWLOR.NWN.API.Engine;
 using SWLOR.NWN.API.NWNX;
+using SWLOR.NWN.API.NWScript.Enum;
+using SWLOR.NWN.API.NWScript.Enum.Item;
 
 namespace SWLOR.Game.Server.EngineTests.Definitions
 {
@@ -116,6 +121,60 @@ namespace SWLOR.Game.Server.EngineTests.Definitions
             for (var item = GetFirstItemInInventory(owner); GetIsObjectValid(item); item = GetNextItemInInventory(owner))
                 if (GetResRef(item) == LightsaberWorkbench.LightsaberResref) sabers++;
             ctx.AssertEqual(1, sabers, "Exactly one constructed saber is retained in the inventory");
+        }
+
+        [EngineTest("Workbench carries a submission token's crafted DMG and elemental damage type onto the saber", Category = "LightsaberWorkbench")]
+        public static async Task SubmissionTokenTransfersCraftedDamage(EngineTestContext ctx)
+        {
+            var owner = ctx.SpawnCreature("civilian");
+            await ctx.WaitFrameAsync();
+            await ctx.ExecuteInCreatureContextAsync(owner, () =>
+            {
+                var playerId = GetObjectUUID(owner);
+                var player = new Player(playerId);
+                player.Currencies[CurrencyType.KyberToken] = 1;
+                DB.Set(player);
+                try
+                {
+                    // Mirrors the reported token: crafted DMG 5 Electrical, Accuracy 12, and
+                    // Stamina 7 on top of the blueprint's dagger delay and skill scaffolding.
+                    var token = CreateItemOnObject(LightsaberWorkbench.WeaponSubmissionTokenTag, owner);
+                    AddItemProperty(DurationType.Permanent, ItemPropertyCustom(ItemPropertyType.DMG, -1, 5), token);
+                    AddItemProperty(DurationType.Permanent, ItemPropertyCustom(ItemPropertyType.WeaponDamageType, (int)CombatDamageType.Electrical), token);
+                    AddItemProperty(DurationType.Permanent, ItemPropertyCustom(ItemPropertyType.Accuracy, -1, 12), token);
+                    AddItemProperty(DurationType.Permanent, ItemPropertyCustom(ItemPropertyType.Stamina, -1, 7), token);
+
+                    var model = Bind(owner);
+                    Set(model, "_submissionItem", token);
+                    Set(model, "_submissionId", GetObjectUUID(token));
+                    Call(model, "ConstructSaber");
+
+                    uint saber = OBJECT_INVALID;
+                    for (var item = GetFirstItemInInventory(owner); GetIsObjectValid(item); item = GetNextItemInInventory(owner))
+                        if (GetResRef(item) == LightsaberWorkbench.LightsaberResref) saber = item;
+                    ctx.Assert(GetIsObjectValid(saber), "The saber is constructed");
+
+                    var properties = new List<ItemProperty>();
+                    for (var ip = GetFirstItemProperty(saber); GetIsItemPropertyValid(ip); ip = GetNextItemProperty(saber))
+                        properties.Add(ip);
+                    int Total(ItemPropertyType type) => properties.Where(ip => GetItemPropertyType(ip) == type).Sum(GetItemPropertyCostTableValue);
+                    var damageTypes = properties.Where(ip => GetItemPropertyType(ip) == ItemPropertyType.WeaponDamageType).ToList();
+                    var delays = properties.Where(ip => GetItemPropertyType(ip) == ItemPropertyType.Delay).ToList();
+                    var skills = properties.Where(ip => GetItemPropertyType(ip) == ItemPropertyType.RequiresSkill).ToList();
+
+                    ctx.AssertEqual(10, Total(ItemPropertyType.DMG), "Token DMG adds to the saber's tier 1 DMG of 5");
+                    ctx.AssertEqual(1, properties.Count(ip => GetItemPropertyType(ip) == ItemPropertyType.DMG), "DMG merges into one property");
+                    ctx.AssertEqual(1, damageTypes.Count, "The saber carries one damage type");
+                    ctx.AssertEqual((int)CombatDamageType.Electrical, GetItemPropertySubType(damageTypes[0]), "The token's Electrical damage type carries over");
+                    ctx.AssertEqual(12, Total(ItemPropertyType.Accuracy), "Token Accuracy carries over");
+                    ctx.AssertEqual(7, Total(ItemPropertyType.Stamina), "Token Stamina carries over");
+                    ctx.AssertEqual(1, delays.Count, "The token's dagger delay is not added");
+                    ctx.AssertEqual(24, GetItemPropertyCostTableValue(delays[0]), "The saber keeps its own 240 delay");
+                    ctx.AssertEqual(1, skills.Count, "The token's skill requirement is not added");
+                    ctx.AssertEqual(0, GetItemPropertyCostTableValue(skills[0]), "The saber keeps its own tier 1 skill requirement");
+                }
+                finally { DB.Delete<Player>(playerId); }
+            });
         }
 
         [EngineTest("Workbench custom model and color survive delivery", Category = "LightsaberWorkbench")]

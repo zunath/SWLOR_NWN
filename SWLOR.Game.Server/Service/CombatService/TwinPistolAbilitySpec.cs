@@ -25,5 +25,7 @@ namespace SWLOR.Game.Server.Service.CombatService
         public float StopDistanceMeters { get; init; }
         public int MaximumTargets { get; init; } = 1;
         public float LineWidthMeters { get; init; } = 4f;
+        /// <summary>The dash ignores creature collision; walls, placeables and doors still block it.</summary>
+        public bool PassesThroughCreatures { get; init; }
     }
 }

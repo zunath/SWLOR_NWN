@@ -7,6 +7,7 @@ using SWLOR.Game.Server.Entity;
 using SWLOR.Game.Server.Native;
 using SWLOR.Game.Server.Service.AnimationService;
 using SWLOR.NWN.API.NWScript.Enum;
+using SWLOR.NWN.API.NWScript.Enum.Item;
 
 namespace SWLOR.Game.Server.EngineTests.Definitions
 {
@@ -94,6 +95,38 @@ namespace SWLOR.Game.Server.EngineTests.Definitions
                 KatarAnimationRemap.SynchronizeOnLogin(player);
                 ctx.Assert(HasFullRemap(player), "Login replaces a saved queued clip that has no playback");
             });
+        }
+
+        [EngineTest("Power Gloves drop the sword-carry arm layers and a sword gets them back", Category = Category, TimeoutSeconds = 90f)]
+        public static async Task PowerGlovesDropSwordCarryLayers(EngineTestContext ctx)
+        {
+            using var fixture = await PlayerAbilityFixture.CreateAsync(ctx);
+            var player = fixture.Creature;
+            var main = await PowerGlovePairEngineTests.EquipMain(ctx, player);
+            await PowerGlovePairEngineTests.WaitForPair(ctx, player, main);
+            await ctx.WaitUntilAsync(() => CarryMappings(player).Length == KatarAnimationRemapPlan.PowerGloveCarryPairs.Count,
+                5f, "the Power Glove carry layers on equip");
+            ctx.Assert(HasFullRemap(player), "Power Gloves keep the unarmed combat animations");
+
+            await ctx.EquipItemAsync(player, "t_katar", InventorySlot.RightHand);
+            await ctx.WaitUntilAsync(() => GetBaseItemType(GetItemInSlot(InventorySlot.RightHand, player)) != BaseItem.PowerGlove &&
+                CarryMappings(player).Length == 0, 5f, "a katar to restore the carry layers");
+            ctx.Assert(HasFullRemap(player), "A katar keeps the unarmed combat animations");
+
+            await ctx.EquipItemAsync(player, "nw_wswls001", InventorySlot.RightHand);
+            await ctx.WaitFrameAsync();
+            ctx.AssertEqual(0, CarryMappings(player).Length + KatarMappings(player).Length,
+                "A longsword uses its own combat animations and arm carry");
+        }
+
+        private static string[] CarryMappings(uint creature)
+        {
+            var native = NWNXLib.g_pAppManager.m_pServerExoApp.GetGameObject(creature).AsNWSObject();
+            var current = WeaponAttackAnimation.ReadAnimationReplacements(native);
+            return KatarAnimationRemapPlan.PowerGloveCarryPairs
+                .Where(pair => current.TryGetValue(pair.Source, out var replacement) && replacement == pair.Replacement)
+                .Select(pair => pair.Source)
+                .ToArray();
         }
 
         private static bool HasFullRemap(uint creature) =>

@@ -247,6 +247,9 @@ namespace SWLOR.Game.Server.Service.PlayerListService
 
         private static PlayerListActionState EvaluateAnswerCall(PlayerListRelation relation)
         {
+            if (relation.ViewerIsDM)
+                return PlayerListActionState.Disabled(DMsCannotUseHoloCom);
+
             if (relation.ViewerCallState != PlayerListCallState.Incoming)
                 return PlayerListActionState.Disabled(NoIncomingCall);
 
@@ -257,6 +260,9 @@ namespace SWLOR.Game.Server.Service.PlayerListService
 
         private static PlayerListActionState EvaluateDeclineCall(PlayerListRelation relation)
         {
+            if (relation.ViewerIsDM)
+                return PlayerListActionState.Disabled(DMsCannotUseHoloCom);
+
             return relation.ViewerCallState == PlayerListCallState.Incoming
                 ? PlayerListActionState.Enabled()
                 : PlayerListActionState.Disabled(NoIncomingCall);

@@ -96,6 +96,15 @@ namespace SWLOR.Game.Server.Service
         private static int _nextCallToken;
 
         /// <summary>
+        /// HoloCom is a player system: neither end of a call may be a DM or a DM-controlled creature.
+        /// </summary>
+        private static bool IsDMInvolved(uint first, uint second = OBJECT_INVALID)
+        {
+            return DMPresence.IsControlledByDM(first) ||
+                   (GetIsObjectValid(second) && DMPresence.IsControlledByDM(second));
+        }
+
+        /// <summary>
         /// Where a player stands in a call: none, ringing someone, being rung, or connected.
         /// </summary>
         public static PlayerListCallState GetCallState(uint player)
@@ -115,7 +124,8 @@ namespace SWLOR.Game.Server.Service
         /// </summary>
         public static void StartCall(uint sender, uint receiver)
         {
-            if (GetCallState(sender) != PlayerListCallState.None ||
+            if (IsDMInvolved(sender, receiver) ||
+                GetCallState(sender) != PlayerListCallState.None ||
                 GetCallState(receiver) != PlayerListCallState.None ||
                 Space.IsPlayerInSpaceMode(sender) ||
                 Space.IsPlayerInSpaceMode(receiver))
@@ -137,7 +147,7 @@ namespace SWLOR.Game.Server.Service
         /// </summary>
         public static void AnswerCall(uint player)
         {
-            if (!IsCallReceiver(player) || IsInCall(player))
+            if (!IsCallReceiver(player) || IsInCall(player) || DMPresence.IsControlledByDM(player))
                 return;
 
             var callSender = GetCallSender(player);
@@ -165,7 +175,7 @@ namespace SWLOR.Game.Server.Service
         /// </summary>
         public static void DeclineCall(uint player)
         {
-            if (!IsCallReceiver(player) || IsInCall(player))
+            if (!IsCallReceiver(player) || IsInCall(player) || DMPresence.IsControlledByDM(player))
                 return;
 
             var callSender = GetCallSender(player);
@@ -214,6 +224,12 @@ namespace SWLOR.Game.Server.Service
             }
 
             if (IsInCall(sender) || !IsCallSender(sender)) return;
+
+            if (IsDMInvolved(sender, receiver))
+            {
+                EndAttempt(sender, receiver);
+                return;
+            }
 
             if (Space.IsPlayerInSpaceMode(sender) || Space.IsPlayerInSpaceMode(receiver))
             {

@@ -195,6 +195,12 @@ public class PlayerListRulesTests
             .Call.IsEnabled.Should().BeFalse();
         PlayerListRules.Evaluate(new PlayerListRelation { HasTarget = true, ViewerIsDM = true })
             .Call.DisabledReason.Should().Be(PlayerListRules.DMsCannotUseHoloCom);
+
+        var dmViewer = PlayerListRules.Evaluate(new PlayerListRelation
+            { HasTarget = true, ViewerIsDM = true, TargetIsDM = true, ViewerCallState = PlayerListCallState.Incoming });
+        dmViewer.Call.DisabledReason.Should().Be(PlayerListRules.DMsCannotUseHoloCom);
+        dmViewer.AnswerCall.DisabledReason.Should().Be(PlayerListRules.DMsCannotUseHoloCom);
+        dmViewer.DeclineCall.DisabledReason.Should().Be(PlayerListRules.DMsCannotUseHoloCom);
     }
 
     [Test]

@@ -167,6 +167,19 @@ class ShippedFixTests(unittest.TestCase):
                 material.fix_shipped(folder, ['one.mtr', 'two.mtr'])
             self.assertEqual({p.name: p.read_bytes() for p in folder.glob('*.dds')}, before)
 
+    def test_rejects_base_shared_by_different_specularity_maps(self):
+        with tempfile.TemporaryDirectory() as tmp:
+            folder = Path(tmp)
+            for spec in ('a_s', 'b_s'):
+                write_map(folder / f'{spec}.dds', np.full((8, 8, 1), .2, np.float32), 'ATI1')
+                write_map(folder / f'{spec[0]}_r.dds', np.full((8, 8, 1), .5, np.float32), 'ATI1')
+            write_map(folder / 'shared.dds', np.full((8, 8, 3), .2, np.float32), 'DXT1', color=True)
+            for name, spec in (('one', 'a'), ('two', 'b')):
+                (folder / f'{name}.mtr').write_text(
+                    f'renderhint NormalAndSpecMapped\ntexture0 shared\ntexture1 n\ntexture2 {spec}_s\ntexture3 {spec}_r\n')
+            with self.assertRaisesRegex(ValueError, 'Base map shared pairs'):
+                material.fix_shipped(folder, ['one.mtr', 'two.mtr'])
+
     def test_rejects_roughness_shared_by_different_specularity_maps(self):
         with tempfile.TemporaryDirectory() as tmp:
             folder = Path(tmp)

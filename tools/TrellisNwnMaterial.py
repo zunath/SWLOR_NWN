@@ -331,6 +331,11 @@ def fix_shipped(folder, mtr_names, check=False):
     for _, _, spec, rough in plans:
         if pair.setdefault(rough.lower(), spec.lower()) != spec.lower():
             raise ValueError(f'Roughness map {rough} pairs with more than one specularity map')
+    # A base map is corrected once, so every material that names it must use the same metal mask.
+    base_pair = {}
+    for name, base, spec, _ in plans:
+        if base_pair.setdefault(base.lower(), spec.lower()) != spec.lower():
+            raise ValueError(f'Base map {base} pairs with more than one specularity map')
     # Convert everything in memory first: a size mismatch must not leave a batch half written and marked.
     report, outputs = [], []
     for name, base, spec, _ in plans:
@@ -341,7 +346,8 @@ def fix_shipped(folder, mtr_names, check=False):
         metal = specularity_to_metallic(spec_image)
         fixed = metal_base_color(image, metal)
         report.append((name, float((metal > .5).mean()), float(linear(image).mean()), float(linear(fixed).mean())))
-        outputs.append((resolve(base, '.dds'), fixed, info, True))
+        if all(path != resolve(base, '.dds') for path, *_ in outputs):
+            outputs.append((resolve(base, '.dds'), fixed, info, True))
     for rough_name, spec_name in pair.items():
         metal = specularity_to_metallic(specs[spec_name][0][..., 0])
         rough_image, rough_info = roughs[rough_name]

@@ -58,8 +58,8 @@ def direct_rewards() -> list[list[object]]:
         rows.append([source, tier, "Field Note", "Mutation", f"Field Note: {beast_name}", resref,
                      "Unique Slicing source", description(resref)])
 
-    for index, (resref, name, _tool_type, tier, _effect) in enumerate(content.TOOLS):
-        source = "Lockbox" if index < 5 else "Terminal"
+    for resref, name, _tool_type, tier, _effect in content.TOOLS + content.LADDER_TOOLS:
+        source = "Lockbox" if resref.startswith("slt_") else "Terminal"
         rows.append([source, tier, "Tool", "Consumable", name, resref, "One tool per attempt", description(resref)])
 
     source_order = {"Lockbox": 0, "Terminal": 1}
@@ -281,7 +281,7 @@ def build_sheet() -> Sheet:
     sheet.merged("Reward Weights and Failure Curve")
     sheet.table(["Band", "Weight / Chance", "", "", "", "", "", "Notes"], [
         ["Recovered supplies", "100%", "", "", "", "", "", "3-5 units of one tier-appropriate material, rolled independently and awarded alongside the weighted bonus."],
-        ["Tool bonus", "80%", "", "", "", "", "", "One tool matching the source and security tier. Named items, schematics, and field notes replace this bonus; they never replace the supplies."],
+        ["Tool bonus", "80%", "", "", "", "", "", "One tool matching the source and security tier, split evenly across that tier's pool: a tier N pool holds one tier N copy of each tool type the source unlocks through tier N (1 tool at tier 1 up to 5 at tier 5). Named items, schematics, and field notes replace this bonus; they never replace the supplies."],
         ["Named item", "12%", "", "", "", "", "", "Exceptional item is a 0.5% absolute sub-band, one per source/tier."],
         ["Schematic", "6%", "", "", "", "", "", "Lockbox and terminal schematic pools remain separate."],
         ["Field note", "2%", "", "", "", "", "", "Fifteen DiscoveryOnly mutation notes become Slicing rewards."],
@@ -300,11 +300,12 @@ def build_sheet() -> Sheet:
     sheet.table(["Tier", "Area Resref", "Spawn Table", "Node Count", "Respawn", "Placement", "", "Notes"], area_rows)
     sheet.blank()
 
-    sheet.merged("100 New Direct Rewards")
-    sheet.table(["Source", "Tier", "Pool Category", "Item Type", "Name", "Resref", "Requirement / Rarity", "Effect / Acquisition"], direct_rewards())
+    rewards = direct_rewards()
+    sheet.merged(f"{len(rewards)} Direct Rewards")
+    sheet.table(["Source", "Tier", "Pool Category", "Item Type", "Name", "Resref", "Requirement / Rarity", "Effect / Acquisition"], rewards)
     sheet.blank()
 
-    sheet.merged("Additional Craft Outputs (Beyond the 100 Direct Rewards)")
+    sheet.merged("Additional Craft Outputs (Beyond the Direct Rewards)")
     sheet.table(["Craft", "Tier", "Name", "Resref", "Output Type", "Quantity", "Rules", "Description"], craft_outputs())
     sheet.blank()
 

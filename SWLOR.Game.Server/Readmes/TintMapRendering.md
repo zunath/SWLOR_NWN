@@ -542,6 +542,28 @@ installed banks or `--check` to verify them;
 every emote clip of every playable bridge. Rebuild `sw_anim_m.hak` and `sw_anim_f.hak`; no
 module repack or C# deploy is required.
 
+Stock body clips also animate attachment joints that have no part ID (part -1), and the
+engine applies those tracks by joint name: `belt_g1` repeats the pelvis sway so rigid belts
+turn with the hips, and the female clips turn `lshoulder_g`/`rshoulder_g` under the shoulder
+pads (pause1, walk, the two-handed clips). Bridge generation maps body tracks by part ID
+only (`Library.body_track_names`), so every robe phenotype lost them. Rigid belts (3 to 12,
+23 and every other belt that is not a skin) then stayed square to the root while the hips turned under them, offset
+and tilted against the robe-free body; skinned belts with part-skin aliases (19, 30, 31,
+110 to 114, 153, 223 to 227) are weighted to the pelvis and were unaffected.
+`RestoreRobeBodyTracks.py` copies every such track byte for byte, with its -1 part ID, from
+the wearer's body clip into the same clip of the eight playable-body bridges, exactly as the
+stock clip carries it. Joints whose body tracks never leave the bind pose (`cloak_g`, `head`
+and others) are left alone, and garment tracks, other body tracks and the skeleton stay
+byte-identical. Keeping part -1 matters: numbering these joints would renumber every robe
+root compiled against the bridge. `GenerateRobeRgbModels.py` applies the same restoration
+when it packages new bridges. Run
+`python -B SWLOR_Haks/tools/RestoreRobeBodyTracks.py --apply --game-data "<NWN>/data"` to
+repair the installed banks or `--check` to verify them;
+`python -B -m unittest discover -s SWLOR_Haks/tools -p "TestRestoreRobeBodyTracks.py"`
+(stock animations from `NWN_GAME_DATA` or the default Steam install) checks every playable
+bridge and replays idle, walk and run on a robe wearer against the plain body. Rebuild
+`sw_anim_m.hak` and `sw_anim_f.hak`; no module repack or C# deploy is required.
+
 Chest parts 154 (human bodies) and 269 (human, elf, half-orc and dwarf bodies) carry
 ankle-length coat skirts in the chest mesh. Each half of the skirt was weighted to its
 own thigh and shin, so striding pulled the halves apart: the back tore open and the legs

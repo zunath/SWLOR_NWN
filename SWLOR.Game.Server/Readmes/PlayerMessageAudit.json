@@ -3788,28 +3788,28 @@
   },
   {
     "File": "SWLOR.Game.Server/Service/Ability.cs",
-    "Line": 1198,
+    "Line": 1199,
     "Member": "ApplyAura",
     "Delivery": "Retained",
     "Call": "SendMessageToPC(activator, ColorToken.Green($\"Aura '{effectName}' activated.\"))"
   },
   {
     "File": "SWLOR.Game.Server/Service/Ability.cs",
-    "Line": 1262,
+    "Line": 1263,
     "Member": "ToggleAura",
     "Delivery": "Retained",
     "Call": "SendMessageToPC(activator, ColorToken.Red($\"Aura '{effectName}' deactivated.\"))"
   },
   {
     "File": "SWLOR.Game.Server/Service/Ability.cs",
-    "Line": 3012,
+    "Line": 3013,
     "Member": "SendCombatImpactResultMessage",
     "Delivery": "Retained",
     "Call": "Messaging.SendMessageNearbyToPlayers(\n                target,\n                receiver => Combat.BuildAbilityCombatLogMessage(\n                    receiver,\n                    activator,\n                    target,\n                    ability.Name,\n                    attackResultType,\n                    hitRate),\n                60f)"
   },
   {
     "File": "SWLOR.Game.Server/Service/Ability.cs",
-    "Line": 3031,
+    "Line": 3032,
     "Member": "SendCombatImpactNoTargetsMessage",
     "Delivery": "Retained",
     "Call": "Messaging.SendMessageNearbyToPlayers(\n                activator,\n                receiver => Combat.BuildAbilityNoTargetCombatLogMessage(\n                    receiver,\n                    activator,\n                    ability.Name),\n                60f)"

@@ -618,12 +618,14 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
                 Craft.ApplyCraftedItemProperty(item, property);
             }
 
-            // Transfer the Weapon Submission Token's crafted stats onto the saber. The
-            // saber's damage profile is owned by its tier - it is built at tier 1 and
-            // advanced by the saber upgrade kits - so DMG, weapon damage type, and
-            // attack delay are skipped, as is the token blueprint's own skill
-            // requirement scaffolding and its anti-equip Use Limitation: Perk lock
-            // (the token is meant to be unusable on its own, not the finished saber).
+            // Transfer the Weapon Submission Token's crafted stats onto the saber through
+            // the same merge the enhancement slots use, so a token behaves like socketing
+            // its kits directly: DMG adds to the saber's tier DMG, and an elemental
+            // damage type carries over. The token blueprint carries no DMG of its own,
+            // so every DMG point on it came from a crafted enhancement. The blueprint's
+            // dagger delay, skill requirement, and anti-equip perk lock stay behind, as
+            // does a Physical damage type that must not displace an elemental type an
+            // enhancement slot applied.
             if (_submissionItem != OBJECT_INVALID)
             {
                 var submissionToken = _submissionItem;
@@ -631,12 +633,7 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
                 {
                     for (var ip = GetFirstItemProperty(submissionToken); GetIsItemPropertyValid(ip); ip = GetNextItemProperty(submissionToken))
                     {
-                        var type = GetItemPropertyType(ip);
-                        if (type == ItemPropertyType.DMG ||
-                            type == ItemPropertyType.Delay ||
-                            type == ItemPropertyType.WeaponDamageType ||
-                            type == ItemPropertyType.RequiresSkill ||
-                            type == ItemPropertyType.UseLimitationPerk)
+                        if (!LightsaberWorkbench.ShouldTransferSubmissionProperty(GetItemPropertyType(ip), GetItemPropertySubType(ip)))
                             continue;
 
                         Craft.ApplyCraftedItemProperty(item, ip);

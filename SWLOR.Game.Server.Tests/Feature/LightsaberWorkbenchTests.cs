@@ -4,6 +4,7 @@ using FluentAssertions;
 using Newtonsoft.Json.Linq;
 using NUnit.Framework;
 using SWLOR.Game.Server.Service;
+using SWLOR.Game.Server.Service.CombatService;
 using SWLOR.NWN.API.NWScript.Enum.Item;
 using SWLOR.NWN.API.NWScript.Enum.Item.Property;
 
@@ -177,7 +178,7 @@ public class LightsaberWorkbenchTests
     }
 
     [Test]
-    public void SubmissionToken_TransfersStatsExcludingDamageProfile()
+    public void SubmissionToken_TransfersCraftedDamageButNotBlueprintScaffolding()
     {
         var root = FindRepositoryRoot();
         var serverRoot = Path.Combine(root.FullName, "SWLOR.Game.Server");
@@ -185,24 +186,36 @@ public class LightsaberWorkbenchTests
         var workbench = File.ReadAllText(Path.Combine(serverRoot, "Service", "LightsaberWorkbench.cs"));
         workbench.Should().Contain("WeaponSubmissionTokenTag = \"wpn_sub_token\";");
 
-        // The submission token blueprint must exist and stay a weapon submission token.
+        // The submission token blueprint must exist, stay a weapon submission token, and
+        // carry no DMG of its own: every DMG point on a token comes from a crafted
+        // enhancement, which is why the workbench may add it to the saber's tier DMG.
         var token = JObject.Parse(File.ReadAllText(Path.Combine(root.FullName, "Module", "uti", "wpn_sub_token.uti.json")));
         token["Tag"]!["value"]!.Value<string>().Should().Be("wpn_sub_token");
+        token["PropertiesList"]!["value"]!.Children<JObject>()
+            .Select(p => p["PropertyName"]!["value"]!.Value<int>())
+            .Should().NotContain((int)ItemPropertyType.DMG);
 
-        // The workbench transfers the token's stats but never its damage profile,
-        // its own skill requirement, or its anti-equip Use Limitation: Perk lock.
+        // The workbench routes every token property through the shared filter and the
+        // same merge the enhancement slots use.
         var viewModel = File.ReadAllText(Path.Combine(serverRoot, "Feature", "GuiDefinition", "ViewModel", "LightsaberWorkbenchViewModel.cs"));
         viewModel.Should().Contain("LightsaberWorkbench.WeaponSubmissionTokenTag");
-        foreach (var excluded in new[]
-                 {
-                     "ItemPropertyType.DMG",
-                     "ItemPropertyType.Delay",
-                     "ItemPropertyType.WeaponDamageType",
-                     "ItemPropertyType.RequiresSkill",
-                     "ItemPropertyType.UseLimitationPerk",
-                 })
+        viewModel.Should().MatchRegex(@"ShouldTransferSubmissionProperty\([^;]*\)\)\s*continue;\s*Craft\.ApplyCraftedItemProperty\(item, ip\);");
+
+        var cases = new (ItemPropertyType Type, int SubType, bool Transfers)[]
         {
-            viewModel.Should().Contain(excluded, $"the submission token transfer must skip {excluded}");
+            (ItemPropertyType.DMG, -1, true),
+            (ItemPropertyType.WeaponDamageType, (int)CombatDamageType.Electrical, true),
+            (ItemPropertyType.WeaponDamageType, (int)CombatDamageType.Physical, false),
+            (ItemPropertyType.Accuracy, -1, true),
+            (ItemPropertyType.Stamina, -1, true),
+            (ItemPropertyType.Delay, -1, false),
+            (ItemPropertyType.RequiresSkill, 0, false),
+            (ItemPropertyType.UseLimitationPerk, 0, false),
+        };
+        foreach (var (type, subType, transfers) in cases)
+        {
+            LightsaberWorkbench.ShouldTransferSubmissionProperty(type, subType)
+                .Should().Be(transfers, $"{type} (subtype {subType}) transfer must be {transfers}");
         }
     }
 

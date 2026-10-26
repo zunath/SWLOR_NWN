@@ -7,23 +7,23 @@ namespace SWLOR.Game.Server.Tests.Service;
 public class SlicingRewardTests
 {
     [Test]
-    public void Catalog_HasExactlyOneHundredNewDirectRewardsInAgreedPools()
+    public void Catalog_HasExactlyOneHundredTwentyDirectRewardsInAgreedPools()
     {
         var entries = SlicingRewardCatalog.Entries;
 
-        entries.Should().HaveCount(100);
-        entries.Where(x => x.Source == SlicingSourceType.Lockbox).Should().HaveCount(50);
-        entries.Where(x => x.Source == SlicingSourceType.Terminal).Should().HaveCount(50);
+        entries.Should().HaveCount(120);
+        entries.Where(x => x.Source == SlicingSourceType.Lockbox).Should().HaveCount(60);
+        entries.Where(x => x.Source == SlicingSourceType.Terminal).Should().HaveCount(60);
 
         entries.Count(x => x.Source == SlicingSourceType.Lockbox && x.Category == SlicingRewardCategory.NamedItem).Should().Be(30);
         entries.Count(x => x.Source == SlicingSourceType.Lockbox && x.Category == SlicingRewardCategory.Schematic).Should().Be(10);
         entries.Count(x => x.Source == SlicingSourceType.Lockbox && x.Category == SlicingRewardCategory.FieldNote).Should().Be(5);
-        entries.Count(x => x.Source == SlicingSourceType.Lockbox && x.Category == SlicingRewardCategory.Tool).Should().Be(5);
+        entries.Count(x => x.Source == SlicingSourceType.Lockbox && x.Category == SlicingRewardCategory.Tool).Should().Be(15);
 
         entries.Count(x => x.Source == SlicingSourceType.Terminal && x.Category == SlicingRewardCategory.NamedItem).Should().Be(20);
         entries.Count(x => x.Source == SlicingSourceType.Terminal && x.Category == SlicingRewardCategory.Schematic).Should().Be(15);
         entries.Count(x => x.Source == SlicingSourceType.Terminal && x.Category == SlicingRewardCategory.FieldNote).Should().Be(10);
-        entries.Count(x => x.Source == SlicingSourceType.Terminal && x.Category == SlicingRewardCategory.Tool).Should().Be(5);
+        entries.Count(x => x.Source == SlicingSourceType.Terminal && x.Category == SlicingRewardCategory.Tool).Should().Be(15);
     }
 
     [Test]
@@ -37,6 +37,23 @@ public class SlicingRewardTests
         {
             entries.Count(x => x.Tier == tier && x.Source == SlicingSourceType.Lockbox && x.IsExceptional).Should().Be(1);
             entries.Count(x => x.Tier == tier && x.Source == SlicingSourceType.Terminal && x.IsExceptional).Should().Be(1);
+        }
+    }
+
+    [TestCase(SlicingSourceType.Lockbox)]
+    [TestCase(SlicingSourceType.Terminal)]
+    public void ToolBonus_SplitsEvenlyAcrossOneToolPerUnlockedToolType(SlicingSourceType source)
+    {
+        for (var tier = 1; tier <= 5; tier++)
+        {
+            var pool = SlicingRewardCatalog.Get(source, tier, SlicingRewardCategory.Tool);
+            pool.Should().HaveCount(tier);
+
+            var rolled = Enumerable.Range(0, tier * 100)
+                .Select(itemRoll => SlicingReward.Roll(source, tier, 0, itemRoll).Resref)
+                .ToList();
+            foreach (var tool in pool)
+                rolled.Count(resref => resref == tool.Resref).Should().Be(100);
         }
     }
 

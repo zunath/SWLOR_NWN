@@ -2,6 +2,7 @@ using System.Collections.Generic;
 using System.Linq;
 using SWLOR.Game.Server.Core.Bioware;
 using SWLOR.Game.Server.Entity;
+using SWLOR.Game.Server.Feature.GuiDefinition.Payload;
 using SWLOR.Game.Server.Feature.GuiDefinition.RefreshEvent;
 using SWLOR.Game.Server.Service;
 using SWLOR.Game.Server.Service.BeastMasteryService;
@@ -20,7 +21,8 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
 {
     internal class StablesViewModel : GuiViewModelBase<StablesViewModel, GuiPayloadBase>,
         IGuiRefreshable<PerkAcquiredRefreshEvent>,
-        IGuiRefreshable<PerkRefundedRefreshEvent>
+        IGuiRefreshable<PerkRefundedRefreshEvent>,
+        IGuiRefreshable<BeastGainXPRefreshEvent>
     {
         public const string BeastDetailsPartial = "BEAST_DETAILS_PARTIAL";
         public const string PartialViewStats = "PARTIAL_VIEW_STATS";
@@ -409,6 +411,11 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
             RefreshBeastCount(_beastIds.Count);
         }
 
+        public void Refresh(BeastGainXPRefreshEvent payload)
+        {
+            LoadSelectedBeast();
+        }
+
         private void ClearSelectedBeast()
         {
             if (_selectedBeastIndex > -1)
@@ -752,6 +759,37 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
                     IsPuritiesToggled = false;
                     IsStatsToggled = true;
                 });
+        };
+
+        public Action OnClickDistributeRPXP() => () =>
+        {
+            ClearInstructions();
+            if (_selectedBeastIndex <= -1)
+                return;
+
+            if (GetIsDead(Player) || GetCurrentHitPoints(Player) <= 0)
+            {
+                Instructions = "XP cannot be distributed while dead.";
+                return;
+            }
+
+            var playerId = GetObjectUUID(Player);
+            var dbPlayer = DB.Get<Player>(playerId);
+            if (dbPlayer.UnallocatedXP <= 0)
+            {
+                Instructions = "You have no RP XP to distribute.";
+                return;
+            }
+
+            var dbBeast = DB.Get<Beast>(_beastIds[_selectedBeastIndex]);
+            var payload = new RPXPPayload
+            {
+                MaxRPXP = dbPlayer.UnallocatedXP,
+                BeastId = dbBeast.Id,
+                SkillName = dbBeast.Name
+            };
+
+            Gui.TogglePlayerWindow(Player, GuiWindowType.DistributeRPXP, payload);
         };
 
         public Action OnClickStats() => () =>

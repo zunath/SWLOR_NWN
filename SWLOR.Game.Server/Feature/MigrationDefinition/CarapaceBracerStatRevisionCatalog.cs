@@ -21,5 +21,9 @@ public static class CarapaceBracerStatRevisionCatalog
             {
                 new LootStatChange(ItemPropertyType.Defense, (int)CombatDamageType.Poison, 30, 0),
             },
+            ["cara_tunic"] = new[]
+            {
+                new LootStatChange(ItemPropertyType.Defense, (int)CombatDamageType.Poison, 30, 0),
+            },
         };
 }

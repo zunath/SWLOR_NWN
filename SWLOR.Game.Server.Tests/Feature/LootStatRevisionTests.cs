@@ -14,11 +14,13 @@ namespace SWLOR.Game.Server.Tests.Feature;
 
 public class LootStatRevisionTests
 {
-    // Armor-40 values without the retired Poison Defense, matching the crafted Eclipse Bracer and Transcendent Gloves.
-    [TestCase("cara_bracer", 18, 10, 80, 0, 0)]
-    [TestCase("cara_wraps", 9, 20, 20, 8, 2)]
+    // Armor-40 values without the retired Poison Defense, matching the crafted Eclipse Bracer, Transcendent Gloves and
+    // Supreme Tunic.
+    [TestCase("cara_bracer", 18, 10, 80, 0, 0, 0, 0)]
+    [TestCase("cara_wraps", 9, 20, 20, 8, 2, 0, 0)]
+    [TestCase("cara_tunic", 14, 14, 45, 0, 0, 10, 4)]
     public void CarapaceItem_UsesBiblePhysicalDefenseWithoutRetiredElementalDefense(string resref, int physical, int force, int hp,
-        int fp, int fpRegen)
+        int fp, int fpRegen, int stamina, int staminaRegen)
     {
         using var blueprint = JsonDocument.Parse(File.ReadAllText(Path.Combine(
             FindRepositoryRoot().FullName, "Module", "uti", resref + ".uti.json")));
@@ -32,10 +34,12 @@ public class LootStatRevisionTests
         };
         if (fp > 0) expected[((int)ItemPropertyType.FP, 0)] = fp;
         if (fpRegen > 0) expected[((int)ItemPropertyType.FPRegen, 0)] = fpRegen;
+        if (stamina > 0) expected[((int)ItemPropertyType.Stamina, 0)] = stamina;
+        if (staminaRegen > 0) expected[((int)ItemPropertyType.STMRegen, 0)] = staminaRegen;
         properties.Should().BeEquivalentTo(expected);
         ReadLocalInt(blueprint.RootElement, CarapaceBracerStatRevisionCatalog.RevisionVariable)
             .Should().Be(CarapaceBracerStatRevisionCatalog.CurrentRevision);
-        CarapaceBracerStatRevisionCatalog.Changes.Keys.Should().BeEquivalentTo(new[] { "cara_bracer", "cara_wraps" });
+        CarapaceBracerStatRevisionCatalog.Changes.Keys.Should().BeEquivalentTo(new[] { "cara_bracer", "cara_wraps", "cara_tunic" });
         foreach (var change in CarapaceBracerStatRevisionCatalog.Changes[resref])
             properties.GetValueOrDefault(((int)change.Type, change.Subtype)).Should().Be(change.Current);
 
@@ -65,7 +69,9 @@ public class LootStatRevisionTests
         cells["G"].Should().Be(force.ToString());
         cells["H"].Should().Be(hp.ToString());
         cells["I"].Should().Be(fp.ToString());
+        cells["J"].Should().Be(stamina.ToString());
         cells["K"].Should().Be(fpRegen.ToString());
+        cells["L"].Should().Be(staminaRegen.ToString());
         cells["T"].Should().Be("-");
     }
 

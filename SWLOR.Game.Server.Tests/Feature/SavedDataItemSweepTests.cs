@@ -290,7 +290,7 @@ public class SavedDataItemSweepTests
         Migrate(migrated, out _, true, out _).Should().BeFalse();
     }
 
-    // Shipped bracers and wraps: retired Poison Defense alone or beside crafted Poison Resistance, Poison Defense the
+    // Shipped bracers, wraps and tunics: retired Poison Defense alone or beside crafted Poison Resistance, Poison Defense the
     // combat replacement already converted (with and without crafting), and a copy with neither.
     [TestCase(30, 0, 0)]
     [TestCase(30, 5, 5)]
@@ -300,13 +300,21 @@ public class SavedDataItemSweepTests
     [TestCase(30, 0, 0, "cara_wraps")]
     [TestCase(30, 5, 5, "cara_wraps")]
     [TestCase(0, 35, 5, "cara_wraps")]
+    [TestCase(30, 0, 0, "cara_tunic")]
+    [TestCase(30, 5, 5, "cara_tunic")]
+    [TestCase(0, 35, 5, "cara_tunic")]
     public void CarapaceBracer_RemovesRetiredPoisonProtection(int poisonDefense, int poisonResistance, int expectedResistance,
         string resref = "cara_bracer")
     {
         var properties = new List<object> { Property(ItemPropertyType.Defense, (int)CombatDamageType.Physical, 35, 23) };
         if (poisonDefense > 0) properties.Add(Property(ItemPropertyType.Defense, (int)CombatDamageType.Poison, 35, poisonDefense));
         if (poisonResistance > 0) properties.Add(Property(ItemPropertyType.Resistance, (int)ResistanceType.Poison, 54, poisonResistance));
-        var original = Encode(Item(resref, resref == "cara_wraps" ? BaseItem.Gloves : BaseItem.Bracer, null, properties.ToArray()));
+        var original = Encode(Item(resref, resref switch
+        {
+            "cara_wraps" => BaseItem.Gloves,
+            "cara_tunic" => BaseItem.Armor,
+            _ => BaseItem.Bracer,
+        }, null, properties.ToArray()));
 
         Migrate(original, out var migrated, true, out _).Should().BeTrue();
 

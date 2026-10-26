@@ -532,7 +532,7 @@ Follow `Migrations.md`.
 
 ### One migration per release
 
-The newest migrations today are server `_29_CorrectStoredCarapaceBracers` and player `_24_CorrectCarapaceBracers`, both pending as of October 19, 2026. The revamp releases much later, so write its character migration as player version 25 on the feature branch and update `MigrationDataTests`, which pins the released and pending versions. At release, ask the owner which versions shipped, and fold the revamp into the newest unshipped one if that is no longer 25.
+The owner confirmed player migration 24 (`_24_CorrectCarapaceBracers`) has not shipped, so the revamp's character migration is part of it, not a separate version: `_24_CorrectCarapaceBracers` calls `CraftingPerkConversion` (feat removal in `Migrate`, refunds in `MigratePlayerData`) and the release grants one rebuild token in total. `MigrationDataTests` pins production at player 23. If 24 ships before the revamp does, ask the owner which versions shipped and move the conversion into the newest unshipped player migration.
 
 ### Refunds and rebuild token (required)
 

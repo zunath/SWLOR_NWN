@@ -48,13 +48,13 @@ public static partial class MigrationEngineTests
             record.Version = 23;
             DB.Set(record);
             SetLocalInt(player, checkpointVariable, 23);
-            ctx.AssertEqual(24, SavedCharacterMigration.Versions.Where(version => version > 23).First(),
-                "A released version 23 character receives the combined item migration next");
+            ctx.Assert(SavedCharacterMigration.Versions.Where(version => version > 23).SequenceEqual(new[] { 24 }),
+                "A released version 23 character receives exactly one combined item migration");
             ctx.AssertEqual(223, GetItemAppearance(visor, ItemAppearanceType.SimpleModel, 0), "Fixture reproduces the shipped reserved helmet model");
             upgraded = SavedCharacterMigration.Upgrade(SavedCharacterMigration.SaveFile(player), record);
             ctx.Assert(upgraded != null, "The character upgrade repairs a version 23 character");
-            ctx.AssertEqual(SavedCharacterMigration.LatestVersion, upgraded.Record.Version, "The record checkpoint advances after repair");
-            ctx.AssertEqual(SavedCharacterMigration.LatestVersion, upgraded.FileVersion, "The saved character contains the new checkpoint");
+            ctx.AssertEqual(24, upgraded.Record.Version, "The record checkpoint advances after repair");
+            ctx.AssertEqual(24, upgraded.FileVersion, "The saved character contains the new checkpoint");
 
             var character = SavedCharacterMigration.Load(ctx, upgraded);
             var migratedVisor = GetItemInSlot(InventorySlot.Head, character);

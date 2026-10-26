@@ -194,28 +194,44 @@ public class PowerGloveContentTests
             leftPosition.X.Should().BeApproximately(-rightPosition.X, .0001f, $"wpl_{native} mirrors the right hand's offset");
             leftPosition.Y.Should().BeApproximately(rightPosition.Y, .0001f, $"wpl_{native} keeps the right hand's offset");
             leftPosition.Z.Should().BeApproximately(rightPosition.Z, .0001f, $"wpl_{native} sits as high on the fist as the right hand");
+            // Mirroring across X keeps a rotation about X and reverses rotations about Y and Z.
+            var rightOrientation = MeshOrientation(right);
+            var leftOrientation = MeshOrientation(left);
+            leftOrientation.X.Should().BeApproximately(rightOrientation.X, .0001f, $"wpl_{native} mirrors the right hand's turn");
+            leftOrientation.Y.Should().BeApproximately(-rightOrientation.Y, .0001f, $"wpl_{native} mirrors the right hand's turn");
+            leftOrientation.Z.Should().BeApproximately(-rightOrientation.Z, .0001f, $"wpl_{native} mirrors the right hand's turn");
+            leftOrientation.W.Should().BeApproximately(rightOrientation.W, .0001f, $"wpl_{native} mirrors the right hand's turn");
         }
     }
 
     [Test]
-    public void VisibleModelsSitOnTheFistInsteadOfHangingBelowIt()
+    public void ReportedDesignsAreSeatedInTheFistAndTheRestKeepTheirAuthoredPlacement()
     {
-        // The rhand/lhand hook sits in the palm, and the fist runs from about 6-11 cm below it (the knuckles of
-        // the playable hands) to the wrist above it. Every design was authored with its grip at the hook and its
-        // plate hanging under it, which drew the weapon below the fist; each model is lifted on its mesh node
-        // (+3 cm for the full gloves, +8 cm for the knuckle dusters and claws) so its middle is on the fist.
+        // The fist's grip tunnel (where the curled fingers close) is at the rhand/lhand hook on every playable body.
+        // The reported knuckle dusters were authored with their grip bar or finger loops below it, so they hung
+        // under the fist: Arc Knuckler and Ion Guard are raised onto it, and Blastknuckle, which was modeled lying
+        // flat, is turned 90 degrees about the punching axis so its finger holes ring the base of the fingers with
+        // the striking edge down. Every other design keeps its authored placement.
+        var turned = new System.Numerics.Quaternion(0, MathF.Sqrt(.5f), 0, MathF.Sqrt(.5f));
+        var fits = new Dictionary<int, (System.Numerics.Vector3 Position, System.Numerics.Quaternion Orientation)>
+        {
+            [103] = (new(.055f, -.023f, -.02f), turned),
+            [108] = (new(0, 0, .035f), System.Numerics.Quaternion.Identity),
+            [119] = (new(0, 0, .03f), System.Numerics.Quaternion.Identity),
+        };
         var folder = Path.Combine(Root(), "SWLOR_Haks/sw_weapon");
         foreach (var id in new PowerGloveAppearanceDefinition().MiddleParts.Where(id => id != 106))
-        foreach (var itemClass in new[] { "wpg", "wpl" })
         {
-            var resref = $"{itemClass}_m_{id % 100 * 10 + id / 100:000}";
-            var model = File.ReadAllBytes(Path.Combine(folder, resref + ".mdl"));
-            var (min, max) = MeshBounds(model);
-            var lift = MeshPosition(model).Z;
-            var bottom = min.Z + lift;
-            var center = (min.Z + max.Z) / 2 + lift;
-            bottom.Should().BeGreaterThanOrEqualTo(-.11f, $"{resref} must not hang below the knuckles");
-            center.Should().BeInRange(-.02f, .05f, $"{resref} must be centered on the fist, not below or above it");
+            var native = $"m_{id % 100 * 10 + id / 100:000}";
+            var (position, orientation) = fits.TryGetValue(id, out var fit)
+                ? fit
+                : (System.Numerics.Vector3.Zero, System.Numerics.Quaternion.Identity);
+            var right = File.ReadAllBytes(Path.Combine(folder, $"wpg_{native}.mdl"));
+            var actualPosition = MeshPosition(right);
+            var actualOrientation = MeshOrientation(right);
+            (actualPosition - position).Length().Should().BeLessThan(.0001f, $"wpg_{native} sits where it was fitted");
+            MathF.Abs(System.Numerics.Quaternion.Dot(actualOrientation, orientation)).Should()
+                .BeApproximately(1, .0001f, $"wpg_{native} faces the way it was fitted");
         }
     }
 
@@ -227,18 +243,27 @@ public class PowerGloveContentTests
         return (ReadVector(model, mesh), ReadVector(model, mesh + 12));
     }
 
-    private static System.Numerics.Vector3 MeshPosition(byte[] model)
+    private static System.Numerics.Vector3 MeshPosition(byte[] model) => ReadVector(model, ControllerValues(model, 8));
+
+    private static System.Numerics.Quaternion MeshOrientation(byte[] model)
     {
-        // The mesh node's static position controller (type 8): its 12-byte key gives the first value index into
-        // the node's controller data array.
+        var offset = ControllerValues(model, 20);
+        return new(BitConverter.ToSingle(model, offset), BitConverter.ToSingle(model, offset + 4),
+            BitConverter.ToSingle(model, offset + 8), BitConverter.ToSingle(model, offset + 12));
+    }
+
+    private static int ControllerValues(byte[] model, uint type)
+    {
+        // The mesh node's static controllers (8 = position, 20 = orientation): each 12-byte key gives the first
+        // value index into the node's controller data array.
         var node = MeshNode(model);
         var keys = 12 + (int)BitConverter.ToUInt32(model, node + 84);
         var keyCount = (int)BitConverter.ToUInt32(model, node + 88);
         var values = 12 + (int)BitConverter.ToUInt32(model, node + 96);
         for (var key = keys; key < keys + keyCount * 12; key += 12)
-            if (BitConverter.ToUInt32(model, key) == 8)
-                return ReadVector(model, values + BitConverter.ToUInt16(model, key + 8) * 4);
-        throw new InvalidDataException("Power Glove mesh has no position controller.");
+            if (BitConverter.ToUInt32(model, key) == type)
+                return values + BitConverter.ToUInt16(model, key + 8) * 4;
+        throw new InvalidDataException($"Power Glove mesh has no controller of type {type}.");
     }
 
     private static int MeshNode(byte[] model)

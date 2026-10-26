@@ -176,164 +176,143 @@
   },
   {
     "File": "SWLOR.Game.Server/Feature/ChatCommandDefinition/CharacterChatCommand.cs",
-    "Line": 94,
+    "Line": 96,
     "Member": "Char",
     "Delivery": "Retained",
     "Call": "SendMessageToPC(user, message)"
   },
   {
     "File": "SWLOR.Game.Server/Feature/ChatCommandDefinition/CharacterChatCommand.cs",
-    "Line": 106,
+    "Line": 108,
     "Member": "CDKey",
     "Delivery": "Retained",
     "Call": "SendMessageToPC(user, \"Your public CD Key is: \" + cdKey)"
   },
   {
     "File": "SWLOR.Game.Server/Feature/ChatCommandDefinition/CharacterChatCommand.cs",
-    "Line": 133,
-    "Member": "EndCall",
-    "Delivery": "Retained",
-    "Call": "SendMessageToPC(user, \"You end your HoloCom call.\")"
-  },
-  {
-    "File": "SWLOR.Game.Server/Feature/ChatCommandDefinition/CharacterChatCommand.cs",
-    "Line": 142,
-    "Member": "EndCall",
-    "Delivery": "Retained",
-    "Call": "SendMessageToPC(callReceiver, \"Your HoloCom stops buzzing.\")"
-  },
-  {
-    "File": "SWLOR.Game.Server/Feature/ChatCommandDefinition/CharacterChatCommand.cs",
-    "Line": 147,
-    "Member": "EndCall",
-    "Delivery": "Retained",
-    "Call": "SendMessageToPC(user, \"You cancel your HoloCom call.\")"
-  },
-  {
-    "File": "SWLOR.Game.Server/Feature/ChatCommandDefinition/CharacterChatCommand.cs",
-    "Line": 151,
+    "Line": 132,
     "Member": "EndCall",
     "Delivery": "Retained",
     "Call": "SendMessageToPC(user, \"You don't have any active calls or outgoing call attempts to end.\")"
   },
   {
     "File": "SWLOR.Game.Server/Feature/ChatCommandDefinition/CharacterChatCommand.cs",
-    "Line": 250,
+    "Line": 146,
+    "Member": "AnswerCall",
+    "Delivery": "Retained",
+    "Call": "SendMessageToPC(user, \"You don't have an incoming HoloCom call.\")"
+  },
+  {
+    "File": "SWLOR.Game.Server/Feature/ChatCommandDefinition/CharacterChatCommand.cs",
+    "Line": 163,
+    "Member": "DeclineCall",
+    "Delivery": "Retained",
+    "Call": "SendMessageToPC(user, \"You don't have an incoming HoloCom call.\")"
+  },
+  {
+    "File": "SWLOR.Game.Server/Feature/ChatCommandDefinition/CharacterChatCommand.cs",
+    "Line": 265,
     "Member": "LanguageCommand",
     "Delivery": "Retained",
     "Call": "SendMessageToPC(user, commands.Aggregate((a, b) => a + '\\n' + b))"
   },
   {
     "File": "SWLOR.Game.Server/Feature/ChatCommandDefinition/CharacterChatCommand.cs",
-    "Line": 259,
+    "Line": 274,
     "Member": "LanguageCommand",
     "Delivery": "Retained",
     "Call": "SendMessageToPC(user, ColorToken.Red(\"Wookiees can only speak Shyriiwook.\"))"
   },
   {
     "File": "SWLOR.Game.Server/Feature/ChatCommandDefinition/CharacterChatCommand.cs",
-    "Line": 269,
+    "Line": 284,
     "Member": "LanguageCommand",
     "Delivery": "Retained",
     "Call": "SendMessageToPC(user, $\"Set active language to {language.ProperName}.\")"
   },
   {
     "File": "SWLOR.Game.Server/Feature/ChatCommandDefinition/CharacterChatCommand.cs",
-    "Line": 274,
+    "Line": 289,
     "Member": "LanguageCommand",
     "Delivery": "Retained",
     "Call": "SendMessageToPC(user, ColorToken.Red($\"Unknown language {command}.\"))"
   },
   {
     "File": "SWLOR.Game.Server/Feature/ChatCommandDefinition/CharacterChatCommand.cs",
-    "Line": 325,
+    "Line": 340,
     "Member": "DeleteCommand",
     "Delivery": "Retained",
     "Call": "FloatingTextStringOnCreature(\"Please confirm your deletion by entering another \\\"/delete <CD Key>\\\" command within 30 seconds.\", user, false)"
   },
   {
     "File": "SWLOR.Game.Server/Feature/ChatCommandDefinition/CharacterChatCommand.cs",
-    "Line": 353,
+    "Line": 368,
     "Member": "ToggleEmoteStyle",
     "Delivery": "Retained",
     "Call": "SendMessageToPC(user, ColorToken.Red(\"Your emote style could not be saved.\"))"
   },
   {
     "File": "SWLOR.Game.Server/Feature/ChatCommandDefinition/CharacterChatCommand.cs",
-    "Line": 357,
+    "Line": 372,
     "Member": "ToggleEmoteStyle",
     "Delivery": "Retained",
     "Call": "SendMessageToPC(user, $\"Toggled emote style to {newStyle}.\")"
   },
   {
     "File": "SWLOR.Game.Server/Feature/ChatCommandDefinition/CharacterChatCommand.cs",
-    "Line": 428,
+    "Line": 443,
     "Member": "HeadScale",
     "Delivery": "Retained",
     "Call": "SendMessageToPC(user, \"Your appearance type does not support head scaling.\")"
   },
   {
     "File": "SWLOR.Game.Server/Feature/ChatCommandDefinition/CharacterChatCommand.cs",
-    "Line": 441,
+    "Line": 456,
     "Member": "HeadScale",
     "Delivery": "Retained",
     "Call": "SendMessageToPC(user, $\"Head Size: {current:0.##} (range {minScale}-{maxScale}). Use /headscale <value>, /headscale +, or /headscale -.\")"
   },
   {
     "File": "SWLOR.Game.Server/Feature/ChatCommandDefinition/CharacterChatCommand.cs",
-    "Line": 463,
+    "Line": 478,
     "Member": "HeadScale",
     "Delivery": "Retained",
     "Call": "SendMessageToPC(user, newScale >= maxScale\n                            ? \"You cannot increase your head size any further.\"\n                            : \"You cannot decrease your head size any further.\")"
   },
   {
     "File": "SWLOR.Game.Server/Feature/ChatCommandDefinition/CharacterChatCommand.cs",
-    "Line": 474,
+    "Line": 489,
     "Member": "HeadScale",
     "Delivery": "Retained",
     "Call": "SendMessageToPC(user, $\"Head Size: {newScale:0.##}\")"
   },
   {
     "File": "SWLOR.Game.Server/Feature/ChatCommandDefinition/CharacterChatCommand.cs",
-    "Line": 487,
+    "Line": 502,
     "Member": "AlwaysWalk",
     "Delivery": "Retained",
     "Call": "SendMessageToPC(user, $\"Walk mode {status}.\")"
   },
   {
     "File": "SWLOR.Game.Server/Feature/ChatCommandDefinition/CharacterChatCommand.cs",
-    "Line": 521,
+    "Line": 536,
     "Member": "AssociateCommands",
     "Delivery": "Retained",
     "Call": "SpeakString(message)"
   },
   {
     "File": "SWLOR.Game.Server/Feature/ChatCommandDefinition/CharacterChatCommand.cs",
-    "Line": 551,
+    "Line": 566,
     "Member": "Afk",
     "Delivery": "Retained",
     "Call": "SendMessageToPC(user, isAfk\n                        ? ColorToken.Purple(\"You are now AFK. Move or use /afk again when you return.\")\n                        : \"You are no longer AFK.\")"
   },
   {
     "File": "SWLOR.Game.Server/Feature/ChatCommandDefinition/CharacterChatCommand.cs",
-    "Line": 572,
+    "Line": 587,
     "Member": "SetKnownName",
     "Delivery": "Retained",
     "Call": "SendMessageToPC(user, ColorToken.Red(\"You may only name player characters.\"))"
-  },
-  {
-    "File": "SWLOR.Game.Server/Feature/ChatCommandDefinition/CharacterChatCommand.cs",
-    "Line": 580,
-    "Member": "SetKnownName",
-    "Delivery": "Retained",
-    "Call": "SendMessageToPC(user, ColorToken.Red(validationError))"
-  },
-  {
-    "File": "SWLOR.Game.Server/Feature/ChatCommandDefinition/CharacterChatCommand.cs",
-    "Line": 588,
-    "Member": "SetKnownName",
-    "Delivery": "Retained",
-    "Call": "SendMessageToPC(user, ColorToken.Green($\"Public description set to '{name}'. Players who have not labeled your current identity will see this in gray.\"))"
   },
   {
     "File": "SWLOR.Game.Server/Feature/ChatCommandDefinition/CharacterChatCommand.cs",
@@ -344,42 +323,56 @@
   },
   {
     "File": "SWLOR.Game.Server/Feature/ChatCommandDefinition/CharacterChatCommand.cs",
-    "Line": 616,
+    "Line": 603,
+    "Member": "SetKnownName",
+    "Delivery": "Retained",
+    "Call": "SendMessageToPC(user, ColorToken.Green($\"Public description set to '{name}'. Players who have not labeled your current identity will see this in gray.\"))"
+  },
+  {
+    "File": "SWLOR.Game.Server/Feature/ChatCommandDefinition/CharacterChatCommand.cs",
+    "Line": 610,
+    "Member": "SetKnownName",
+    "Delivery": "Retained",
+    "Call": "SendMessageToPC(user, ColorToken.Red(validationError))"
+  },
+  {
+    "File": "SWLOR.Game.Server/Feature/ChatCommandDefinition/CharacterChatCommand.cs",
+    "Line": 631,
     "Member": "SetKnownName",
     "Delivery": "Retained",
     "Call": "SendMessageToPC(user, ColorToken.Green($\"Private label saved as '{name}'. Only you can see this label.\"))"
   },
   {
     "File": "SWLOR.Game.Server/Feature/ChatCommandDefinition/CharacterChatCommand.cs",
-    "Line": 644,
+    "Line": 659,
     "Member": "ForgetKnownName",
     "Delivery": "Retained",
     "Call": "SendMessageToPC(user, ColorToken.Red(\"You may only forget names for player characters.\"))"
   },
   {
     "File": "SWLOR.Game.Server/Feature/ChatCommandDefinition/CharacterChatCommand.cs",
-    "Line": 650,
+    "Line": 665,
     "Member": "ForgetKnownName",
     "Delivery": "Retained",
     "Call": "SendMessageToPC(user, ColorToken.Red(\"You cannot forget your own name.\"))"
   },
   {
     "File": "SWLOR.Game.Server/Feature/ChatCommandDefinition/CharacterChatCommand.cs",
-    "Line": 670,
+    "Line": 685,
     "Member": "ForgetKnownName",
     "Delivery": "Retained",
     "Call": "SendMessageToPC(user, ColorToken.Green(\"Private label removed. This changes only what you see.\"))"
   },
   {
     "File": "SWLOR.Game.Server/Feature/ChatCommandDefinition/CharacterChatCommand.cs",
-    "Line": 725,
+    "Line": 740,
     "Member": "ChangeDescription",
     "Delivery": "Retained",
     "Call": "SendMessageToPC(user, \"You can only change descriptions of items in your inventory with this command.\")"
   },
   {
     "File": "SWLOR.Game.Server/Feature/ChatCommandDefinition/CharacterChatCommand.cs",
-    "Line": 810,
+    "Line": 825,
     "Member": "ResetWindows",
     "Delivery": "Retained",
     "Call": "SendMessageToPC(user, ColorToken.Green(\"All window positions and sizes have been reset to their default values.\"))"
@@ -924,76 +917,6 @@
     "Call": "SendMessageToPC(player, \"ERROR: Store object could not be found. Inform a developer that either the specified tag is wrong or the store has not been placed in the module.\")"
   },
   {
-    "File": "SWLOR.Game.Server/Feature/DialogDefinition/HoloComDialog.cs",
-    "Line": 52,
-    "Member": "MainPageInit",
-    "Delivery": "Retained",
-    "Call": "SendMessageToPC(callSender, \"Your HoloCom call was declined.\")"
-  },
-  {
-    "File": "SWLOR.Game.Server/Feature/DialogDefinition/HoloComDialog.cs",
-    "Line": 71,
-    "Member": "MainPageInit",
-    "Delivery": "Retained",
-    "Call": "SendMessageToPC(callReceiver, \"Your HoloCom stops buzzing.\")"
-  },
-  {
-    "File": "SWLOR.Game.Server/Feature/DialogDefinition/HoloComDialog.cs",
-    "Line": 76,
-    "Member": "MainPageInit",
-    "Delivery": "Retained",
-    "Call": "SendMessageToPC(player, \"You cancel your HoloCom call.\")"
-  },
-  {
-    "File": "SWLOR.Game.Server/Feature/DialogDefinition/HoloComDialog.cs",
-    "Line": 88,
-    "Member": "MainPageInit",
-    "Delivery": "Retained",
-    "Call": "SendMessageToPC(player, \"You cancel your HoloCom call.\")"
-  },
-  {
-    "File": "SWLOR.Game.Server/Feature/DialogDefinition/HoloComDialog.cs",
-    "Line": 132,
-    "Member": "CallPlayer",
-    "Delivery": "Retained",
-    "Call": "SendMessageToPC(sender, \"Your HoloCom call went unanswered.\")"
-  },
-  {
-    "File": "SWLOR.Game.Server/Feature/DialogDefinition/HoloComDialog.cs",
-    "Line": 142,
-    "Member": "CallPlayer",
-    "Delivery": "Retained",
-    "Call": "SendMessageToPC(sender, \"You wait for \" + receiverName + \" to answer their HoloCom.\")"
-  },
-  {
-    "File": "SWLOR.Game.Server/Feature/DialogDefinition/HoloComDialog.cs",
-    "Line": 158,
-    "Member": "CallPlayer",
-    "Delivery": "Retained",
-    "Call": "SendMessageToPC(receiver, message)"
-  },
-  {
-    "File": "SWLOR.Game.Server/Feature/DialogDefinition/HoloComDialog.cs",
-    "Line": 161,
-    "Member": "CallPlayer",
-    "Delivery": "Retained",
-    "Call": "FloatingTextStringOnCreature(message, receiver)"
-  },
-  {
-    "File": "SWLOR.Game.Server/Feature/DialogDefinition/HoloComDialog.cs",
-    "Line": 171,
-    "Member": "CallPlayer",
-    "Delivery": "Retained",
-    "Call": "SendMessageToPC(sender, \"Your HoloCom call went unanswered.\")"
-  },
-  {
-    "File": "SWLOR.Game.Server/Feature/DialogDefinition/HoloComDialog.cs",
-    "Line": 172,
-    "Member": "CallPlayer",
-    "Delivery": "Retained",
-    "Call": "SendMessageToPC(receiver, \"Your HoloCom stops buzzing.\")"
-  },
-  {
     "File": "SWLOR.Game.Server/Feature/DialogDefinition/IdentityBrokerDialog.cs",
     "Line": 114,
     "Member": "ConfirmationPageInit",
@@ -1198,7 +1121,7 @@
   },
   {
     "File": "SWLOR.Game.Server/Feature/EquipmentRestrictions.cs",
-    "Line": 99,
+    "Line": 104,
     "Member": "ValidateItemEquip",
     "Delivery": "Retained",
     "Call": "SendMessageToPC(messageTarget, ColorToken.Red(canUseItem))"
@@ -1401,49 +1324,42 @@
   },
   {
     "File": "SWLOR.Game.Server/Feature/GuiDefinition/ViewModel/CharacterSheetViewModel.cs",
-    "Line": 560,
-    "Member": "OnClickHoloCom",
-    "Delivery": "Retained",
-    "Call": "SendMessageToPC(Player, ColorToken.Red(\"Holocom cannot be used in space.\"))"
-  },
-  {
-    "File": "SWLOR.Game.Server/Feature/GuiDefinition/ViewModel/CharacterSheetViewModel.cs",
-    "Line": 636,
+    "Line": 618,
     "Member": "UpgradeAttribute",
     "Delivery": "Retained",
     "Call": "FloatingTextStringOnCreature($\"Stats cannot be upgraded in this area.\", _target, false)"
   },
   {
     "File": "SWLOR.Game.Server/Feature/GuiDefinition/ViewModel/CharacterSheetViewModel.cs",
-    "Line": 650,
+    "Line": 632,
     "Member": "UpgradeAttribute",
     "Delivery": "Retained",
     "Call": "FloatingTextStringOnCreature($\"You cannot upgrade this attribute beyond {MaxRacialAttributeScore} with a racial bonus.\", _target, false)"
   },
   {
     "File": "SWLOR.Game.Server/Feature/GuiDefinition/ViewModel/CharacterSheetViewModel.cs",
-    "Line": 660,
+    "Line": 642,
     "Member": "UpgradeAttribute",
     "Delivery": "Retained",
     "Call": "FloatingTextStringOnCreature($\"You cannot upgrade this attribute beyond {MaxPurchasedAttributeScore} with AP.\", _target, false)"
   },
   {
     "File": "SWLOR.Game.Server/Feature/GuiDefinition/ViewModel/CharacterSheetViewModel.cs",
-    "Line": 666,
+    "Line": 648,
     "Member": "UpgradeAttribute",
     "Delivery": "Retained",
     "Call": "FloatingTextStringOnCreature($\"You cannot upgrade this attribute beyond {MaxRacialAttributeScore}.\", _target, false)"
   },
   {
     "File": "SWLOR.Game.Server/Feature/GuiDefinition/ViewModel/CharacterSheetViewModel.cs",
-    "Line": 672,
+    "Line": 654,
     "Member": "UpgradeAttribute",
     "Delivery": "Retained",
     "Call": "FloatingTextStringOnCreature(\"You do not have enough AP to purchase this upgrade.\", _target, false)"
   },
   {
     "File": "SWLOR.Game.Server/Feature/GuiDefinition/ViewModel/CharacterSheetViewModel.cs",
-    "Line": 683,
+    "Line": 665,
     "Member": "UpgradeAttribute",
     "Delivery": "Retained",
     "Call": "FloatingTextStringOnCreature($\"Your {abilityName} attribute has increased!\", _target, false)"
@@ -1821,14 +1737,14 @@
   },
   {
     "File": "SWLOR.Game.Server/Feature/GuiDefinition/ViewModel/DMPlayerSearchViewModel.cs",
-    "Line": 524,
+    "Line": 529,
     "Member": "OnClickSendMessage",
     "Delivery": "Retained",
-    "Call": "ChatPlugin.SendMessage(ChatChannel.DMTell, message, DMPresence.GetDM(Player), target)"
+    "Call": "ChatPlugin.SendMessage(ChatChannel.DMTell, message, speaker, target)"
   },
   {
     "File": "SWLOR.Game.Server/Feature/GuiDefinition/ViewModel/DMPlayerSearchViewModel.cs",
-    "Line": 525,
+    "Line": 535,
     "Member": "OnClickSendMessage",
     "Delivery": "Retained",
     "Call": "DMPresence.SendMessage(Player, $\"To {result.Name}: {message}\")"
@@ -2409,56 +2325,63 @@
   },
   {
     "File": "SWLOR.Game.Server/Feature/GuiDefinition/ViewModel/PlayerListViewModel.cs",
-    "Line": 347,
+    "Line": 376,
     "Member": "OnClickSendTell",
     "Delivery": "Retained",
     "Call": "DMPresence.SendMessage(Player, ColorToken.Red(error))"
   },
   {
     "File": "SWLOR.Game.Server/Feature/GuiDefinition/ViewModel/PlayerListViewModel.cs",
-    "Line": 359,
+    "Line": 421,
     "Member": "OnClickToggleHostile",
     "Delivery": "Retained",
     "Call": "DMPresence.SendMessage(Player, isHostile\n                ? $\"You marked {GetReference(selected)} as hostile.\"\n                : $\"You no longer mark {GetReference(selected)} as hostile.\")"
   },
   {
     "File": "SWLOR.Game.Server/Feature/GuiDefinition/ViewModel/PlayerListViewModel.cs",
-    "Line": 381,
+    "Line": 443,
     "Member": "OnClickJumpHere",
     "Delivery": "Retained",
     "Call": "DMPresence.SendMessage(Player, ColorToken.Red(error))"
   },
   {
     "File": "SWLOR.Game.Server/Feature/GuiDefinition/ViewModel/PlayerListViewModel.cs",
-    "Line": 407,
+    "Line": 469,
     "Member": "OnClickBoot",
     "Delivery": "Retained",
     "Call": "DMPresence.SendMessage(Player, ColorToken.Red(\"That player is no longer online.\"))"
   },
   {
     "File": "SWLOR.Game.Server/Feature/GuiDefinition/ViewModel/PlayerListViewModel.cs",
-    "Line": 414,
+    "Line": 476,
     "Member": "OnClickBoot",
     "Delivery": "Retained",
     "Call": "DMPresence.SendMessage(Player, ColorToken.Red(state.DisabledReason))"
   },
   {
     "File": "SWLOR.Game.Server/Feature/GuiDefinition/ViewModel/PlayerListViewModel.cs",
-    "Line": 447,
+    "Line": 509,
     "Member": "OnClickMakeLeader",
     "Delivery": "Retained",
     "Call": "DMPresence.SendMessage(Player, ColorToken.Red(\"Party leadership could not be transferred.\"))"
   },
   {
     "File": "SWLOR.Game.Server/Feature/GuiDefinition/ViewModel/PlayerListViewModel.cs",
-    "Line": 457,
+    "Line": 519,
     "Member": "OnClickLeaveParty",
     "Delivery": "Retained",
     "Call": "DMPresence.SendMessage(Player, ColorToken.Red(state.DisabledReason))"
   },
   {
     "File": "SWLOR.Game.Server/Feature/GuiDefinition/ViewModel/PlayerListViewModel.cs",
-    "Line": 472,
+    "Line": 536,
+    "Member": "CheckViewerAction",
+    "Delivery": "Retained",
+    "Call": "DMPresence.SendMessage(Player, ColorToken.Red(state.DisabledReason))"
+  },
+  {
+    "File": "SWLOR.Game.Server/Feature/GuiDefinition/ViewModel/PlayerListViewModel.cs",
+    "Line": 548,
     "Member": "CheckAction",
     "Delivery": "Retained",
     "Call": "DMPresence.SendMessage(Player, ColorToken.Red(state.DisabledReason))"
@@ -3865,7 +3788,7 @@
   },
   {
     "File": "SWLOR.Game.Server/Service/AIService/NPCAI.cs",
-    "Line": 548,
+    "Line": 551,
     "Member": "ExecuteAction",
     "Delivery": "Retained",
     "Call": "SpeakString(action.Text)"
@@ -3988,6 +3911,20 @@
     "Member": "ProcessChatCommand",
     "Delivery": "Retained",
     "Call": "SendMessageToPC(sender, ColorToken.Red(InvalidChatCommandMessage))"
+  },
+  {
+    "File": "SWLOR.Game.Server/Service/ChatPortraitTells.cs",
+    "Line": 79,
+    "Member": "CheckPortraitClick",
+    "Delivery": "Retained",
+    "Call": "SendMessageToPC(player, ColorToken.Red(\"That chat portrait may belong to a player who has logged out, so it could now point to someone else. \" +\n                    \"A tell started from it will not be sent. Use Send Tell in the Player List instead.\"))"
+  },
+  {
+    "File": "SWLOR.Game.Server/Service/ChatPortraitTells.cs",
+    "Line": 120,
+    "Member": "RefuseStalePortraitTell",
+    "Delivery": "Retained",
+    "Call": "SendMessageToPC(sender, ColorToken.Red(\"Tell not sent: the chat portrait you clicked may belong to a player who has logged out. \" +\n                \"Use Send Tell in the Player List instead.\"))"
   },
   {
     "File": "SWLOR.Game.Server/Service/Combat.cs",
@@ -4201,21 +4138,21 @@
   },
   {
     "File": "SWLOR.Game.Server/Service/Combat.cs",
-    "Line": 12208,
+    "Line": 12211,
     "Member": "SendAbilityCriticalHitFeedback",
     "Delivery": "Retained",
     "Call": "Messaging.SendMessageNearbyToPlayers(\n                defender,\n                observer => BuildAbilityCriticalHitCombatLogMessage(\n                    observer,\n                    attacker,\n                    defender,\n                    abilityName),\n                60f)"
   },
   {
     "File": "SWLOR.Game.Server/Service/Combat.cs",
-    "Line": 12241,
+    "Line": 12244,
     "Member": "SendTemporaryHitPointDamageFeedback",
     "Delivery": "Retained",
     "Call": "Messaging.SendMessageNearbyToPlayers(\n                defender,\n                receiver => BuildTemporaryHitPointDamageCombatLogMessage(receiver, attacker, defender, damage),\n                60f)"
   },
   {
     "File": "SWLOR.Game.Server/Service/Combat.cs",
-    "Line": 12833,
+    "Line": 12836,
     "Member": "HandleParalyze",
     "Delivery": "Rate limited in Production",
     "Call": "PlayerFeedback.SendWarningNearby(\n                    attacker,\n                    \"PARALYZED\",\n                    receiver => $\"{PlayerName.GetDisplayName(receiver, attacker)} is paralyzed and cannot act!\",\n                    5)"
@@ -4621,35 +4558,147 @@
   },
   {
     "File": "SWLOR.Game.Server/Service/HoloCom.cs",
-    "Line": 83,
+    "Line": 93,
     "Member": "OnModuleChat",
     "Delivery": "Retained",
     "Call": "ActionSpeakString(text, talkVolume)"
   },
   {
     "File": "SWLOR.Game.Server/Service/HoloCom.cs",
-    "Line": 102,
+    "Line": 146,
+    "Member": "AnswerCall",
+    "Delivery": "Retained",
+    "Call": "SendMessageToPC(player, ColorToken.Red(\"HoloCom cannot be used in space.\"))"
+  },
+  {
+    "File": "SWLOR.Game.Server/Service/HoloCom.cs",
+    "Line": 153,
+    "Member": "AnswerCall",
+    "Delivery": "Retained",
+    "Call": "SendMessageToPC(callSender, \"Your HoloCom call went unanswered.\")"
+  },
+  {
+    "File": "SWLOR.Game.Server/Service/HoloCom.cs",
+    "Line": 155,
+    "Member": "AnswerCall",
+    "Delivery": "Retained",
+    "Call": "SendMessageToPC(player, \"Your HoloCom stops buzzing.\")"
+  },
+  {
+    "File": "SWLOR.Game.Server/Service/HoloCom.cs",
+    "Line": 172,
+    "Member": "DeclineCall",
+    "Delivery": "Retained",
+    "Call": "SendMessageToPC(callSender, \"Your HoloCom call was declined.\")"
+  },
+  {
+    "File": "SWLOR.Game.Server/Service/HoloCom.cs",
+    "Line": 185,
+    "Member": "EndCall",
+    "Delivery": "Retained",
+    "Call": "SendMessageToPC(player, \"You end your HoloCom call.\")"
+  },
+  {
+    "File": "SWLOR.Game.Server/Service/HoloCom.cs",
+    "Line": 193,
+    "Member": "EndCall",
+    "Delivery": "Retained",
+    "Call": "SendMessageToPC(callReceiver, \"Your HoloCom stops buzzing.\")"
+  },
+  {
+    "File": "SWLOR.Game.Server/Service/HoloCom.cs",
+    "Line": 196,
+    "Member": "EndCall",
+    "Delivery": "Retained",
+    "Call": "SendMessageToPC(player, \"You cancel your HoloCom call.\")"
+  },
+  {
+    "File": "SWLOR.Game.Server/Service/HoloCom.cs",
+    "Line": 212,
+    "Member": "CallPlayer",
+    "Delivery": "Retained",
+    "Call": "SendMessageToPC(sender, \"Your HoloCom call went unanswered.\")"
+  },
+  {
+    "File": "SWLOR.Game.Server/Service/HoloCom.cs",
+    "Line": 221,
+    "Member": "CallPlayer",
+    "Delivery": "Retained",
+    "Call": "SendMessageToPC(sender, ColorToken.Red(\"HoloCom cannot be used in space.\"))"
+  },
+  {
+    "File": "SWLOR.Game.Server/Service/HoloCom.cs",
+    "Line": 231,
+    "Member": "CallPlayer",
+    "Delivery": "Retained",
+    "Call": "SendMessageToPC(sender, \"Their HoloCom line is busy.\")"
+  },
+  {
+    "File": "SWLOR.Game.Server/Service/HoloCom.cs",
+    "Line": 236,
+    "Member": "CallPlayer",
+    "Delivery": "Retained",
+    "Call": "SendMessageToPC(sender, \"You wait for \" + receiverName + \" to answer their HoloCom.\")"
+  },
+  {
+    "File": "SWLOR.Game.Server/Service/HoloCom.cs",
+    "Line": 253,
+    "Member": "CallPlayer",
+    "Delivery": "Retained",
+    "Call": "SendMessageToPC(receiver, message)"
+  },
+  {
+    "File": "SWLOR.Game.Server/Service/HoloCom.cs",
+    "Line": 256,
+    "Member": "CallPlayer",
+    "Delivery": "Retained",
+    "Call": "FloatingTextStringOnCreature(message, receiver)"
+  },
+  {
+    "File": "SWLOR.Game.Server/Service/HoloCom.cs",
+    "Line": 266,
+    "Member": "CallPlayer",
+    "Delivery": "Retained",
+    "Call": "SendMessageToPC(sender, \"Your HoloCom call went unanswered.\")"
+  },
+  {
+    "File": "SWLOR.Game.Server/Service/HoloCom.cs",
+    "Line": 267,
+    "Member": "CallPlayer",
+    "Delivery": "Retained",
+    "Call": "SendMessageToPC(receiver, \"Your HoloCom stops buzzing.\")"
+  },
+  {
+    "File": "SWLOR.Game.Server/Service/HoloCom.cs",
+    "Line": 290,
     "Member": "SetIsInCall",
     "Delivery": "Retained",
     "Call": "SendMessageToPC(sender, message)"
   },
   {
     "File": "SWLOR.Game.Server/Service/HoloCom.cs",
-    "Line": 103,
+    "Line": 291,
     "Member": "SetIsInCall",
     "Delivery": "Retained",
     "Call": "SendMessageToPC(receiver, message)"
   },
   {
     "File": "SWLOR.Game.Server/Service/HoloCom.cs",
-    "Line": 285,
+    "Line": 468,
+    "Member": "EndAttempt",
+    "Delivery": "Retained",
+    "Call": "SendMessageToPC(receiver, \"Your HoloCom stops buzzing.\")"
+  },
+  {
+    "File": "SWLOR.Game.Server/Service/HoloCom.cs",
+    "Line": 514,
     "Member": "CleanupAllHoloComState",
     "Delivery": "Retained",
     "Call": "SendMessageToPC(receiver, \"Your HoloCom stops buzzing.\")"
   },
   {
     "File": "SWLOR.Game.Server/Service/HoloCom.cs",
-    "Line": 308,
+    "Line": 537,
     "Member": "CleanupAllHoloComState",
     "Delivery": "Retained",
     "Call": "SendMessageToPC(sender, \"Your HoloCom call went unanswered.\")"
@@ -4775,7 +4824,7 @@
   },
   {
     "File": "SWLOR.Game.Server/Service/Migration.cs",
-    "Line": 230,
+    "Line": 231,
     "Member": "DeliverUpgradeNotices",
     "Delivery": "Retained",
     "Call": "SendMessageToPC(player, notice)"
@@ -4964,7 +5013,7 @@
   },
   {
     "File": "SWLOR.Game.Server/Service/PlayerName.cs",
-    "Line": 169,
+    "Line": 177,
     "Member": "PreventAmbiguousTellTargets",
     "Delivery": "Retained",
     "Call": "SendMessageToPC(sender, ColorToken.Red($\"'{displayName}' is ambiguous. Use /name on the intended player before sending tells.\"))"
@@ -5776,7 +5825,7 @@
   },
   {
     "File": "SWLOR.Game.Server/Service/Stat.cs",
-    "Line": 486,
+    "Line": 498,
     "Member": "RestoreStamina",
     "Delivery": "Testing only",
     "Call": "PlayerFeedback.SendResourceRestored(creature, restored, \"STM\")"
@@ -5846,28 +5895,28 @@
   },
   {
     "File": "SWLOR.Game.Server/Service/Stealth.cs",
-    "Line": 45,
+    "Line": 52,
     "Member": "GateStealthEntry",
     "Delivery": "Retained",
     "Call": "SendMessageToPC(creature, ColorToken.Red(\"You have not learned to move unseen. The Stealth perk is required.\"))"
   },
   {
     "File": "SWLOR.Game.Server/Service/Stealth.cs",
-    "Line": 52,
+    "Line": 59,
     "Member": "GateStealthEntry",
     "Delivery": "Retained",
     "Call": "SendMessageToPC(creature, ColorToken.Red(\"You cannot enter stealth while in combat.\"))"
   },
   {
     "File": "SWLOR.Game.Server/Service/Stealth.cs",
-    "Line": 188,
+    "Line": 218,
     "Member": "BreakStealthOnDamageDealt",
     "Delivery": "Retained",
     "Call": "SendMessageToPC(attacker, \"Your attack gives away your position.\")"
   },
   {
     "File": "SWLOR.Game.Server/Service/Stealth.cs",
-    "Line": 414,
+    "Line": 525,
     "Member": "ExitDetectedPlayerStealth",
     "Delivery": "Retained",
     "Call": "SendMessageToPC(target, ColorToken.Red(\"You have been detected and are forced out of stealth.\"))"
@@ -5979,14 +6028,14 @@
   },
   {
     "File": "SWLOR.Game.Server/Service/Weather.cs",
-    "Line": 263,
+    "Line": 259,
     "Member": "DoWeatherEffects",
     "Delivery": "Retained",
     "Call": "SendMessageToPC(creature, message)"
   },
   {
     "File": "SWLOR.Game.Server/Service/Weather.cs",
-    "Line": 344,
+    "Line": 340,
     "Member": "Thunderstorm",
     "Delivery": "Retained",
     "Call": "SendMessageToPC(target, WeatherFeedbackText.Lightning)"

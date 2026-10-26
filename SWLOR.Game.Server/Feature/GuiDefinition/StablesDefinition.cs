@@ -14,7 +14,7 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition
             _builder.CreateWindow(GuiWindowType.Stables)
                 .SetIsResizable(true)
                 .SetIsCollapsible(true)
-                .SetInitialGeometry(0, 0, 545f, 295.5f)
+                .SetInitialGeometry(0, 0, 860f, 460f)
                 .SetTitle("Stables")
 
                 .DefinePartialView(StablesViewModel.PartialViewStats, group =>
@@ -736,8 +736,8 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition
                                     .BindIsEnabled(model => model.IsBeastSelected);
 
                                 row.AddButton()
-                                    .SetText("RP XP")
-                                    .SetTooltip("Distribute RP XP to this beast.")
+                                    .SetText("Distribute RP XP")
+                                    .SetTooltip("Spend your RP XP to level up this beast.")
                                     .BindOnClicked(model => model.OnClickDistributeRPXP())
                                     .SetHeight(32f)
                                     .BindIsEnabled(model => model.IsBeastSelected);

@@ -235,7 +235,7 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
                 return "Beast at max level - no XP accepted";
 
             var levelCap = BeastMastery.GetBeastLevelCap(Perk.GetPerkLevel(Player, PerkType.Tame));
-            return $"At your Tame limit of {levelCap} - no XP accepted";
+            return $"Tame limit of {levelCap} - no XP accepted";
         }
 
         private void UpdateMaxDistributableInfo()

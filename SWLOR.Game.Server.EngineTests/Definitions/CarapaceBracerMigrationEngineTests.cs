@@ -42,7 +42,7 @@ public static partial class MigrationEngineTests
         await EquipAsync(ctx, owner, item, InventorySlot.Arms);
         await ctx.ExecuteInCreatureContextAsync(owner, () =>
         {
-            DeleteLocalInt(item, CarapaceBracerStatRevisionCatalog.RevisionVariable);
+            DeleteLocalInt(item, RetiredDefenseStatRevisionCatalog.RevisionVariable);
             // The record was upgraded with a newer file and no longer counts the base resistance; this older file still has it.
             var record = SavedCharacterMigration.CopyRecord(DB.Get<Player>(fixture.Id));
             var revised = record.Resistances.GetValueOrDefault(ResistanceType.Poison) - 30;
@@ -77,7 +77,7 @@ public static partial class MigrationEngineTests
             AddItemProperty(DurationType.Permanent, ItemPropertyCustom(ItemPropertyType.Defense, 1, 23), item);
             AddItemProperty(DurationType.Permanent, ItemPropertyCustom(ItemPropertyType.Defense, 2, 10), item);
             AddLegacyProperty(item, ItemPropertyType.Defense, 4, 35, 30);
-            DeleteLocalInt(item, CarapaceBracerStatRevisionCatalog.RevisionVariable);
+            DeleteLocalInt(item, RetiredDefenseStatRevisionCatalog.RevisionVariable);
         });
         var uuid = GetObjectUUID(item);
         if (!storedFirst)
@@ -86,7 +86,7 @@ public static partial class MigrationEngineTests
             await ctx.ExecuteInCreatureContextAsync(owner, () =>
             {
                 // Materialize native legacy properties through storage before testing equipped removal.
-                SetLocalInt(item, CarapaceBracerStatRevisionCatalog.RevisionVariable, CarapaceBracerStatRevisionCatalog.CurrentRevision);
+                SetLocalInt(item, RetiredDefenseStatRevisionCatalog.RevisionVariable, RetiredDefenseStatRevisionCatalog.CurrentRevision);
                 carried = Bank.DepositItem(owner, item);
             });
             await ctx.WaitUntilAsync(() => !GetIsObjectValid(item), 5f, "the legacy fixture to enter storage");
@@ -103,7 +103,7 @@ public static partial class MigrationEngineTests
                     AddItemProperty(DurationType.Permanent, ItemPropertyCustom(ItemPropertyType.Resistance, 2, 35), item);
                 });
             }
-            DeleteLocalInt(item, CarapaceBracerStatRevisionCatalog.RevisionVariable);
+            DeleteLocalInt(item, RetiredDefenseStatRevisionCatalog.RevisionVariable);
         }
         if (storedFirst)
         {

@@ -169,7 +169,7 @@ public class SavedDataItemSweepTests
 
         var catalogTypes = new[] { LootStatRevisionCatalog.Changes, RareLootStatRevisionCatalog.Changes,
                 EquipmentTypeStatRevisionCatalog.Changes, FoundryLootStatRevisionCatalog.Changes, ArkanianArmorStatRevisionCatalog.Changes,
-                CarapaceBracerStatRevisionCatalog.Changes }
+                RetiredDefenseStatRevisionCatalog.Changes }
             .SelectMany(catalog => catalog.Values).SelectMany(changes => changes).Select(change => change.Type).Distinct();
         costTables.Keys.Should().Contain(catalogTypes);
         costTables.Keys.Should().Contain(ItemPropertyType.Resistance, "the Arkanian revision rebuilds Ice Resistance");
@@ -290,31 +290,33 @@ public class SavedDataItemSweepTests
         Migrate(migrated, out _, true, out _).Should().BeFalse();
     }
 
-    // Shipped bracers, wraps and tunics: retired Poison Defense alone or beside crafted Poison Resistance, Poison Defense the
-    // combat replacement already converted (with and without crafting), and a copy with neither.
-    [TestCase(30, 0, 0)]
-    [TestCase(30, 5, 5)]
-    [TestCase(0, 35, 5)]
-    [TestCase(0, 30, 0)]
-    [TestCase(0, 0, 0)]
-    [TestCase(30, 0, 0, "cara_wraps")]
-    [TestCase(30, 5, 5, "cara_wraps")]
-    [TestCase(0, 35, 5, "cara_wraps")]
-    [TestCase(30, 0, 0, "cara_tunic")]
-    [TestCase(30, 5, 5, "cara_tunic")]
-    [TestCase(0, 35, 5, "cara_tunic")]
-    public void CarapaceBracer_RemovesRetiredPoisonProtection(int poisonDefense, int poisonResistance, int expectedResistance,
-        string resref = "cara_bracer")
-    {
-        var properties = new List<object> { Property(ItemPropertyType.Defense, (int)CombatDamageType.Physical, 35, 23) };
-        if (poisonDefense > 0) properties.Add(Property(ItemPropertyType.Defense, (int)CombatDamageType.Poison, 35, poisonDefense));
-        if (poisonResistance > 0) properties.Add(Property(ItemPropertyType.Resistance, (int)ResistanceType.Poison, 54, poisonResistance));
-        var original = Encode(Item(resref, resref switch
+    // For every catalog item: the retired elemental Defense alone or beside crafted Resistance of that element, the
+    // Defense the combat replacement already converted into Resistance (with and without crafting), and a copy with
+    // neither.
+    private static IEnumerable<TestCaseData> RetiredDefenseCases() =>
+        RetiredDefenseStatRevisionCatalog.Changes.SelectMany(entry =>
         {
-            "cara_wraps" => BaseItem.Gloves,
-            "cara_tunic" => BaseItem.Armor,
-            _ => BaseItem.Bracer,
-        }, null, properties.ToArray()));
+            var retired = entry.Value.Single();
+            var amount = retired.Previous;
+            return new[]
+            {
+                new TestCaseData(entry.Key, retired.Subtype, amount, 0, 0),
+                new TestCaseData(entry.Key, retired.Subtype, amount, 5, 5),
+                new TestCaseData(entry.Key, retired.Subtype, 0, amount + 5, 5),
+                new TestCaseData(entry.Key, retired.Subtype, 0, amount, 0),
+                new TestCaseData(entry.Key, retired.Subtype, 0, 0, 0),
+            };
+        });
+
+    [TestCaseSource(nameof(RetiredDefenseCases))]
+    public void RetiredDefense_RemovesRetiredElementalProtection(string resref, int damageType, int retiredDefense,
+        int resistance, int expectedResistance)
+    {
+        ((CombatDamageType)damageType).TryGetElementalResistanceType(out var resistanceType).Should().BeTrue();
+        var properties = new List<object> { Property(ItemPropertyType.Defense, (int)CombatDamageType.Physical, 35, 23) };
+        if (retiredDefense > 0) properties.Add(Property(ItemPropertyType.Defense, damageType, 35, retiredDefense));
+        if (resistance > 0) properties.Add(Property(ItemPropertyType.Resistance, (int)resistanceType, 54, resistance));
+        var original = Encode(Item(resref, BlueprintBaseItem(resref), null, properties.ToArray()));
 
         Migrate(original, out var migrated, true, out _).Should().BeTrue();
 
@@ -323,10 +325,17 @@ public class SavedDataItemSweepTests
             .Where(p => Int(p, "PropertyName") == (int)type && Int(p, "Subtype") == subtype)
             .Sum(p => Int(p, "CostValue"));
         Total(ItemPropertyType.Defense, (int)CombatDamageType.Physical).Should().Be(23, "the enhanced Physical Defense is kept");
-        Total(ItemPropertyType.Defense, (int)CombatDamageType.Poison).Should().Be(0, "the retired Poison Defense is removed");
-        Total(ItemPropertyType.Resistance, (int)ResistanceType.Poison).Should().Be(expectedResistance, "only crafted Poison Resistance is kept");
-        Locals(Read(migrated)).Should().Contain((CarapaceBracerStatRevisionCatalog.RevisionVariable, CarapaceBracerStatRevisionCatalog.CurrentRevision));
+        Total(ItemPropertyType.Defense, damageType).Should().Be(0, "the retired elemental Defense is removed");
+        Total(ItemPropertyType.Resistance, (int)resistanceType).Should().Be(expectedResistance, "only crafted Resistance is kept");
+        Locals(Read(migrated)).Should().Contain((RetiredDefenseStatRevisionCatalog.RevisionVariable, RetiredDefenseStatRevisionCatalog.CurrentRevision));
         Migrate(migrated, out _, true, out _).Should().BeFalse();
+    }
+
+    private static BaseItem BlueprintBaseItem(string resref)
+    {
+        var path = Path.Combine(FindRepositoryRoot(), "Module", "uti", resref + ".uti.json");
+        using var blueprint = System.Text.Json.JsonDocument.Parse(File.ReadAllText(path, Encoding.Latin1));
+        return (BaseItem)blueprint.RootElement.GetProperty("BaseItem").GetProperty("value").GetInt32();
     }
 
     [Test]

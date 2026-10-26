@@ -213,7 +213,6 @@ public static class LootStatRevisionMigration
 
     private static IEnumerable<LootStatChange> ReviseRetiredDefense(uint item) =>
         RetiredDefenseStatRevisionCatalog.ConvertedResistanceChanges(GetResRef(item),
-            subtype => ReadTotal(item, ItemPropertyType.Defense, subtype).Total,
             subtype => ReadTotal(item, ItemPropertyType.Resistance, subtype).Total).ToArray();
 
     private static bool ApplyRevision(uint item, IReadOnlyDictionary<string, LootStatChange[]> catalog,

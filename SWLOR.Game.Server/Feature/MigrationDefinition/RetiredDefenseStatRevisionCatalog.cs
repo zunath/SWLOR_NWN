@@ -56,19 +56,18 @@ public static class RetiredDefenseStatRevisionCatalog
         };
 
     /// <summary>
-    /// The combat migration converted older copies' base elemental Defense into Resistance, merging it with any
-    /// Resistance of the same element by taking the larger value. For a copy with no retired Defense left, a
-    /// Resistance equal to the retired amount is that converted Defense and is removed; a larger one came from the
-    /// item's own Resistance and is kept whole.
+    /// The combat migration converted older copies' retired elemental Defense into Resistance of that element. No
+    /// version of these blueprints carried Resistance or a saving throw, and nothing adds Resistance to an existing
+    /// loot item, so that Resistance can only have come from the retired Defense. Every owned copy ends up like a new
+    /// drop: the revision removes all Resistance of the retired element.
     /// </summary>
-    public static IEnumerable<LootStatChange> ConvertedResistanceChanges(string resref,
-        Func<int, int> defenseTotal, Func<int, int> resistanceTotal)
+    public static IEnumerable<LootStatChange> ConvertedResistanceChanges(string resref, Func<int, int> resistanceTotal)
     {
         if (!Changes.ContainsKey(resref))
             yield break;
         var retired = RetiredDefense(resref);
         if (((CombatDamageType)retired.Subtype).TryGetElementalResistanceType(out var resistance) &&
-            defenseTotal(retired.Subtype) == 0 && resistanceTotal((int)resistance) == retired.Previous)
-            yield return new LootStatChange(ItemPropertyType.Resistance, (int)resistance, retired.Previous, 0);
+            resistanceTotal((int)resistance) is var total and > 0)
+            yield return new LootStatChange(ItemPropertyType.Resistance, (int)resistance, total, 0);
     }
 }

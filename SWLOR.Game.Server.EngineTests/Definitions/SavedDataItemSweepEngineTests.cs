@@ -104,7 +104,7 @@ public static partial class MigrationEngineTests
         }
 
         // Every shipped item with a retired elemental Defense: the Defense itself, and the Defense the combat
-        // replacement already converted into Resistance, merged with a larger Resistance of the item's own (capped at 100).
+        // replacement already converted into Resistance, here above the retired amount (capped at 100).
         foreach (var resref in RetiredDefenseStatRevisionCatalog.Changes.Keys)
         foreach (var converted in new[] { false, true })
         {

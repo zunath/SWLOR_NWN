@@ -320,7 +320,6 @@ internal sealed partial class StoredObjectData
     /// <summary>Mirrors <c>LootStatRevisionMigration.ReviseRetiredDefense</c>.</summary>
     private static IEnumerable<LootStatChange> ReviseRetiredDefense(Node item) =>
         RetiredDefenseStatRevisionCatalog.ConvertedResistanceChanges(ReadResRef(item),
-            subtype => ReadTotal(item, ItemPropertyType.Defense, subtype).Total,
             subtype => ReadTotal(item, ItemPropertyType.Resistance, subtype).Total).ToArray();
 
     /// <summary>

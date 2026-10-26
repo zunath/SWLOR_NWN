@@ -20,7 +20,7 @@ public static partial class MigrationEngineTests
     [EngineTest("Stored legacy Carapace Bracer correction survives two bank equip cycles", Category = "CarapaceBracerMigration", TimeoutSeconds = 120)]
     public static Task StoredCarapaceBracerLifecycle(EngineTestContext ctx) => VerifyCarapaceBracerLifecycle(ctx, true);
 
-    [EngineTest("Previously converted Carapace Bracer keeps its larger own resistance through two bank equip cycles", Category = "CarapaceBracerMigration", TimeoutSeconds = 120)]
+    [EngineTest("Previously converted Carapace Bracer ends up like a new drop through two bank equip cycles", Category = "CarapaceBracerMigration", TimeoutSeconds = 120)]
     public static Task ConvertedCarapaceBracerLifecycle(EngineTestContext ctx) => VerifyCarapaceBracerLifecycle(ctx, false, true);
 
     [EngineTest("An older file restored beside a current record corrects its worn bracer without changing the record again",
@@ -195,7 +195,7 @@ public static partial class MigrationEngineTests
                 {
                     ctx.Assert((bool)Invoke("SerializedItemResistanceMigration", "MigrateObject", item), "The old combat conversion runs first");
                     ctx.AssertEqual(30, PropertyValue(item, ItemPropertyType.Resistance, 2), "The old conversion retained the base protection as resistance");
-                    // The conversion keeps the larger of the base and the item's own resistance; this copy had 35 of its own.
+                    // A converted copy above the base: the revision still leaves no Poison Resistance, like a new drop.
                     RemoveMatching(item, ItemPropertyType.Resistance, 2);
                     AddItemProperty(DurationType.Permanent, ItemPropertyCustom(ItemPropertyType.Resistance, 2, 35), item);
                 });
@@ -232,7 +232,7 @@ public static partial class MigrationEngineTests
             ctx.AssertEqual(migrated, GetItemInSlot(InventorySlot.Arms, character), "The corrected bracer stays equipped");
             ctx.AssertEqual(23, PropertyValue(migrated, ItemPropertyType.Defense, 1), "The five-point enhancement survives the base correction");
             ctx.AssertEqual(-1, PropertyValue(migrated, ItemPropertyType.Defense, 4), "Retired defense is removed");
-            ctx.AssertEqual(converted ? 35 : -1, PropertyValue(migrated, ItemPropertyType.Resistance, 2), "The item's own larger resistance is kept whole");
+            ctx.AssertEqual(-1, PropertyValue(migrated, ItemPropertyType.Resistance, 2), "No Poison Resistance remains");
             ctx.AssertEqual(baseline + 23, ReadEquipmentTotals(upgraded.Record).PhysicalDefense, "Equipped defense updates exactly once");
             var retried = SavedCharacterMigration.Run(upgraded.File, upgraded.Record, "_24_CorrectCarapaceBracers");
             ctx.Assert(retried.File.SequenceEqual(upgraded.File), "A retry makes no further changes");
@@ -269,7 +269,7 @@ public static partial class MigrationEngineTests
             ctx.AssertEqual(1, GetItemStackSize(item), "Reload preserves quantity");
             ctx.AssertEqual(23, PropertyValue(item, ItemPropertyType.Defense, 1), "Reload preserves enhanced physical defense");
             ctx.AssertEqual(-1, PropertyValue(item, ItemPropertyType.Defense, 4), "Reload never restores retired defense");
-            ctx.AssertEqual(converted ? 35 : -1, PropertyValue(item, ItemPropertyType.Resistance, 2), "Reload preserves the item's own resistance");
+            ctx.AssertEqual(-1, PropertyValue(item, ItemPropertyType.Resistance, 2), "Reload never restores Poison Resistance");
             await EquipAsync(ctx, owner, item, InventorySlot.Arms);
             ctx.AssertEqual(baseline + 23, ReadEquipmentTotals(owner).PhysicalDefense, "Reloaded equipment remains usable without stat drift");
         }

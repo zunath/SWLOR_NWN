@@ -1,7 +1,9 @@
 using System.Collections.Generic;
+using System.Linq;
 using SWLOR.Game.Server.Core;
 using SWLOR.Game.Server.Native;
 using SWLOR.Game.Server.Service;
+using SWLOR.Game.Server.Service.CombatService;
 using SWLOR.Game.Server.Service.LogService;
 using SWLOR.Game.Server.Service.PerkService;
 using SWLOR.NWN.API.NWScript.Enum;
@@ -10,7 +12,8 @@ using NWNXLib = NWN.Native.API.NWNXLib;
 
 namespace SWLOR.Game.Server.Feature
 {
-    // One owner remaps selected one-handed combat animations for katars and Power Gloves.
+    // One owner remaps selected one-handed combat animations for katars and Power Gloves, and drops
+    // the sword-carry arm layers for Power Gloves.
     public static class KatarAnimationRemap
     {
         private const string BaseItems2DA = "baseitems";
@@ -72,13 +75,15 @@ namespace SWLOR.Game.Server.Feature
 
             // Keep remap on for dual-katar explicitly, otherwise only when main hand is katar and
             // offhand is not sword/dagger-family (those combos should keep regular 1h piercing behavior).
+            var hasPowerGloves = EquipmentPredicates.HasUnarmedGrip(rightHandBaseItem, leftHandBaseItem);
             var shouldUseKatarRemap =
-                EquipmentPredicates.HasUnarmedGrip(rightHandBaseItem, leftHandBaseItem) ||
+                hasPowerGloves ||
                 HasDualWieldKatars(creature, rightHandBaseItem, leftHandBaseItem) ||
                 (HasMainHandKatar(rightHandBaseItem) && !HasOffHandDaggerOrSword(leftHandBaseItem));
             var native = NWNXLib.g_pAppManager.m_pServerExoApp.GetGameObject(creature).AsNWSObject();
-            var changes = KatarAnimationRemapPlan.GetChanges(shouldUseKatarRemap,
-                WeaponAttackAnimation.ReadAnimationReplacements(native), QueuedAttackAnimation.GetActiveSwingKeys(creature));
+            var changes = KatarAnimationRemapPlan.GetChanges(shouldUseKatarRemap, hasPowerGloves,
+                WeaponAttackAnimation.ReadAnimationReplacements(native), QueuedAttackAnimation.GetActiveSwingKeys(creature),
+                WeaponRepositioning.IsMoving(creature));
             if (changes.Count == 0)
                 return;
 
@@ -87,9 +92,9 @@ namespace SWLOR.Game.Server.Feature
                 ReplaceObjectAnimation(creature, source, replacement);
             }
 
-            Log.Write(LogGroup.Server, shouldUseKatarRemap
-                ? $"Applied katar animation remap to {GetName(creature)} ({creature})."
-                : $"Restored default animations after katar unequip for {GetName(creature)} ({creature}).");
+            Log.Write(LogGroup.Server,
+                $"Updated katar and Power Glove animation mappings for {GetName(creature)} ({creature}): " +
+                string.Join(", ", changes.Select(change => $"{change.Source}={change.Replacement}")));
         }
 
         private static bool HasMainHandKatar(BaseItem? rightHandBaseItem)

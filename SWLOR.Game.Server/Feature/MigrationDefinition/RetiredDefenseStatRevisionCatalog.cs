@@ -56,8 +56,10 @@ public static class RetiredDefenseStatRevisionCatalog
         };
 
     /// <summary>
-    /// The combat migration converted older copies' base elemental Defense into Resistance. For a copy with no
-    /// retired Defense left, returns the change that removes that converted base and keeps crafted Resistance.
+    /// The combat migration converted older copies' base elemental Defense into Resistance, merging it with any
+    /// Resistance of the same element by taking the larger value. For a copy with no retired Defense left, a
+    /// Resistance equal to the retired amount is that converted Defense and is removed; a larger one came from the
+    /// item's own Resistance and is kept whole.
     /// </summary>
     public static IEnumerable<LootStatChange> ConvertedResistanceChanges(string resref,
         Func<int, int> defenseTotal, Func<int, int> resistanceTotal)
@@ -66,7 +68,7 @@ public static class RetiredDefenseStatRevisionCatalog
             yield break;
         var retired = RetiredDefense(resref);
         if (((CombatDamageType)retired.Subtype).TryGetElementalResistanceType(out var resistance) &&
-            defenseTotal(retired.Subtype) == 0 && resistanceTotal((int)resistance) >= retired.Previous)
+            defenseTotal(retired.Subtype) == 0 && resistanceTotal((int)resistance) == retired.Previous)
             yield return new LootStatChange(ItemPropertyType.Resistance, (int)resistance, retired.Previous, 0);
     }
 }

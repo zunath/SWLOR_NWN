@@ -290,9 +290,9 @@ public class SavedDataItemSweepTests
         Migrate(migrated, out _, true, out _).Should().BeFalse();
     }
 
-    // For every catalog item: the retired elemental Defense alone or beside crafted Resistance of that element, the
-    // Defense the combat replacement already converted into Resistance (with and without crafting), and a copy with
-    // neither.
+    // For every catalog item: the retired elemental Defense alone or beside Resistance of that element; Resistance
+    // the combat replacement converted from the Defense alone (equal to it, removed) or merged with the item's own
+    // larger Resistance (kept whole, since the conversion took the larger value); and a copy with neither.
     private static IEnumerable<TestCaseData> RetiredDefenseCases() =>
         RetiredDefenseStatRevisionCatalog.Changes.SelectMany(entry =>
         {
@@ -305,9 +305,9 @@ public class SavedDataItemSweepTests
                 new(entry.Key, retired.Subtype, 0, amount, 0),
                 new(entry.Key, retired.Subtype, 0, 0, 0),
             };
-            // Item Resistance caps at 100, so a converted 100 has no room for crafted points.
+            // Item Resistance caps at 100, so a converted 100 has no room for a larger merged value.
             if (amount + 5 <= Resistance.MaximumResistance)
-                cases.Add(new(entry.Key, retired.Subtype, 0, amount + 5, 5));
+                cases.Add(new(entry.Key, retired.Subtype, 0, amount + 5, amount + 5));
             return cases;
         });
 
@@ -343,7 +343,7 @@ public class SavedDataItemSweepTests
                      .Where(x => x.Current > 0 && !(x.Type == ItemPropertyType.Defense && x.Subtype == (int)CombatDamageType.Physical)))
             Total(raised.Type, raised.Subtype).Should().Be(raised.Current, $"{raised.Type} {raised.Subtype} rises to the standard");
         Total(ItemPropertyType.Defense, damageType).Should().Be(0, "the retired elemental Defense is removed");
-        Total(ItemPropertyType.Resistance, (int)resistanceType).Should().Be(expectedResistance, "only crafted Resistance is kept");
+        Total(ItemPropertyType.Resistance, (int)resistanceType).Should().Be(expectedResistance, "only the converted Defense leaves the Resistance");
         Locals(Read(migrated)).Should().Contain((RetiredDefenseStatRevisionCatalog.RevisionVariable, RetiredDefenseStatRevisionCatalog.CurrentRevision));
         Migrate(migrated, out _, true, out _).Should().BeFalse();
     }

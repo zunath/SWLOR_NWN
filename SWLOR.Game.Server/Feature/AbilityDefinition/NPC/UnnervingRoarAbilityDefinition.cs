@@ -31,7 +31,7 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.NPC
                 .HasActivationTargetingSphere(
                     8f,
                     AbilityTargetingFlags.HarmsEnemies | AbilityTargetingFlags.OriginOnSelf)
-                // The default for self-centered areas waits for two enemies; a lone player is the target here.
+                // Waits for the creature's own target to be within range and sight, not just any enemy nearby.
                 .HasAITarget(AITarget.SelfWithEnemyWithinRange(8f))
                 .HasImpactAction((activator, target, level, location) =>
                 {

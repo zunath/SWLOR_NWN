@@ -70,20 +70,16 @@ public class PlayerFacingNameBroadcastTests
     }
 
     [Test]
-    public void HoloComDirectory_UsesObserverSpecificDisplayNames()
+    public void HoloComCalls_UseObserverSpecificDisplayNames()
     {
         var root = FindRepositoryRoot();
         var source = File.ReadAllText(Path.Combine(
             root.FullName,
             "SWLOR.Game.Server",
-            "Feature",
-            "DialogDefinition",
-            "HoloComDialog.cs"));
+            "Service",
+            "HoloCom.cs"));
 
         source.Should().NotContain("GetName(");
-        source.Should().Contain("PlayerName.GetDisplayName(player, pc)");
-        source.Should().Contain("PlayerName.GetDisplayName(player, callSender)");
-        source.Should().Contain("PlayerName.GetDisplayName(player, callReceiver)");
         source.Should().Contain("PlayerName.GetDisplayName(sender, receiver)");
     }
 
@@ -161,9 +157,9 @@ public class PlayerFacingNameBroadcastTests
         communicationSource.Should().Contain("var distance = GetDistanceBetween(sender, target);");
         normalizedCommunicationSource.Should().Contain(
             "if (GetArea(target) == GetArea(sender) &&\n" +
-            "                        distance <= distanceCheck &&\n" +
-            "                        !mutedDMs.Contains(target) &&\n" +
-            "                        !recipients.Contains(target))");
+            "                    distance <= distanceCheck &&\n" +
+            "                    !mutedDMs.Contains(target) &&\n" +
+            "                    !recipients.Contains(target))");
         communicationSource.Should().NotContain("channel != ChatChannel.PlayerParty || IsCommsReceiverInRange(sender, target)");
         communicationSource.Should().Contain("Comms scope applies only to the party");
         communicationSource.Should().Contain("else if (IsWhisperChannel(channel))");

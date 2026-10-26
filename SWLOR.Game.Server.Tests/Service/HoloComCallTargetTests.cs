@@ -1,5 +1,6 @@
 using FluentAssertions;
 using NUnit.Framework;
+using SWLOR.Game.Server.Service.PlayerListService;
 using static SWLOR.Game.Server.Tests.Service.DMPossessionHarness;
 
 namespace SWLOR.Game.Server.Tests.Service;
@@ -61,10 +62,12 @@ public class HoloComCallTargetTests
     }
 
     [Test]
-    public void HoloComMenu_FiltersCallTargetsThroughTheDMCheck()
+    public void PlayerList_DoesNotAllowCallingDMs()
     {
-        ReadServerFile("Feature/DialogDefinition/HoloComDialog.cs")
-            .Should().Contain("DMPresence.IsControlledByDM(pc)");
+        var state = PlayerListRules.Evaluate(new PlayerListRelation { HasTarget = true, TargetIsDM = true }).Call;
+
+        state.IsEnabled.Should().BeFalse();
+        state.DisabledReason.Should().Be(PlayerListRules.DMsCannotUseHoloCom);
     }
 
     private bool IsControlledByDM(uint player) => _harness.Invoke<bool>("DMPresence", "IsControlledByDM", player);

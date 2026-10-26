@@ -33,7 +33,7 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.Mimicry
                 CombatDamageType.Electrical,
                 ResistanceType.Mobility,
                 VisualEffect.Vfx_Imp_Lightning_S,
-                VisualEffect.Vfx_Fnf_Storm,
+                VisualEffect.Vfx_Fnf_Pwstun,
                 maxTargets: 5)
                 .DisplaysVisualEffectOnSuccessfulImpact(VisualEffect.Vfx_Ability_FinalSuppressionTechnique)
                 .SkillType(SkillType.Mimicry)

@@ -32,7 +32,7 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.NPC
                 CombatDamageType.Electrical,
                 ResistanceType.Mobility,
                 VisualEffect.Vfx_Imp_Lightning_S,
-                VisualEffect.Vfx_Fnf_Storm,
+                VisualEffect.Vfx_Fnf_Pwstun,
                 maxRange: 8.0f,
                 centerOnActivator: false);
 

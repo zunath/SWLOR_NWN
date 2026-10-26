@@ -115,9 +115,14 @@ def native_icon_size(value):
     return tuple(value)
 
 
+def material_response():
+    """TRELLIS maps need NWN-specific albedo/roughness correction; see TrellisNwnMaterial.py."""
+    return load_module('trellis_nwn_material',Path(__file__).with_name('TrellisNwnMaterial.py'))
+
+
 def metallic_to_specularity(metal):
-    # Inverse of inc_material metallicness = clamp(3 * specularity - .6, 0, 1).
-    return (metal + .6) / 3
+    # Inverse of inc_material metallicness = clamp(3 * specularity - .6, 0, 1); non-metal is low dielectric.
+    return material_response().metal_specularity(metal)
 
 
 def validate_material(mat, allow_double_sided=False):
@@ -294,8 +299,16 @@ def material_maps(doc,binary,index,source,cache,resources,name,limit):
     else:
         metal=np.full((4,4),pbr.get('metallicFactor',1),np.float32)
         rough=np.full((4,4),pbr.get('roughnessFactor',1),np.float32)
-    # Inverse of NWN inc_material metallicness=clamp(3*spec-.6,0,1).
-    spec=metallic_to_specularity(np.clip(metal,0,1))
+    # TRELLIS metal is dark and satin; NWN renders that near black and matte. Raise metal albedo
+    # (at base resolution) and tighten metal roughness before the inverse specularity mapping.
+    response=material_response();metal=np.clip(metal,0,1)
+    if 'baseColorTexture' not in pbr and metal.shape!=base.shape[:2]:
+        base=np.broadcast_to(base[:1,:1],metal.shape+(3,))  # constant color: keep the full metal mask detail
+    elif metal.shape[0]>base.shape[0] or metal.shape[1]>base.shape[1]:
+        # A coarser base texture would sample away small metal regions; correct at the finer size.
+        base=response.resample_nearest(base,(max(base.shape[0],metal.shape[0]),max(base.shape[1],metal.shape[1])))
+    base=response.metal_base_color(base,response.resample_nearest(metal,base.shape[:2]))
+    rough=response.metal_roughness(rough,metal);spec=response.metal_specularity(metal)
     if 'normalTexture' in mat:
         nt=mat['normalTexture'];normal=prepare_normal_map(read_image(doc,binary,nt,source,cache),nt.get('scale',1),limit)
         normal=normal*.5+.5

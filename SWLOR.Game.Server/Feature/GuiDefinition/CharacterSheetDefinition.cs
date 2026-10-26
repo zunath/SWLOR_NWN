@@ -282,7 +282,6 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition
                         AddActionButton(actions, "Disguises", model => model.OnClickDisguises());
                         AddActionButton(actions, "Quests", model => model.OnClickQuests());
                         AddActionButton(actions, "Open Trash", model => model.OnClickOpenTrash());
-                        AddActionButton(actions, "HoloCom", model => model.OnClickHoloCom(), model => model.IsHolocomEnabled);
                         AddActionButton(actions, "Recipes", model => model.OnClickRecipes());
                         AddActionButton(actions, "Currencies", model => model.OnClickCurrencies());
                         AddActionButton(actions, "Key Items", model => model.OnClickKeyItems());

@@ -52,8 +52,9 @@ worktree lacks `tools/`). Every output directory must be new, empty and outside 
    }
    ```
 
-   - `model` and `texture` are lowercase resrefs of at most 16 characters. Hull Designs use
-     the reference name plus `_h<n>`.
+   - `model` and `texture` are lowercase resrefs of at most 16 characters (14 for `texture`
+     with a normal map, which adds `_n`). Hull Designs use the reference name plus `_h<n>`,
+     shortened when that is too long (`c_chs_trir_h1`, `c_mando_jhv_h1`).
    - `orientation` is a proper rotation applied after Blender's glTF import. The result must
      have its nose on +Y and its top on +Z, the frame stock ships use. Inspect the import in
      Blender first; a nose on -Y, for example, needs `[[-1,0,0],[0,-1,0],[0,0,1]]`.
@@ -64,6 +65,16 @@ worktree lacks `tools/`). Every output directory must be new, empty and outside 
      nozzles off the exported MDL or in Blender.
    - `node_copies` duplicates a reference node under a new name, such as one emitter per
      engine when the design has more engines than the reference.
+   - `emitters` (a list of `[x, y, z]`) replaces every reference emitter with copies of the
+     first one, named `reactor1`, `reactor2` and so on. Use it when the design's engines don't
+     match the reference's; it can't be combined with `node_positions` or `node_copies`. Place
+     each glow on its own engine's rear face, not the hull's rearmost point: render the fitted
+     hull from behind on a coordinate grid, read off each nozzle's x and z, then take the
+     rearmost vertex near that x and z within the rear half of the hull (hollow exhausts have
+     no geometry at their center).
+   - References may nest, rotate and scale their nodes (stock capitals often do). The tool
+     works out each node's world transform, measures the hull in world space and copies every
+     non-mesh node flattened onto the root. Repeated names get a numeric suffix.
    - `texture_size` is 1024 for small ships: on the Aurek design a 2048 export looked the same
      in the client at 3.5 times the size. A normal map doubles the texture cost.
    - `material` sets the hull's `ambient` and `diffuse` (default 1). Generated textures are
@@ -97,11 +108,25 @@ worktree lacks `tools/`). Every output directory must be new, empty and outside 
 4. **Register the appearance.** Copy the reference ship's `appearance.2da` row to the next free
    row, set `LABEL` to `"[SWLOR] Ship - <ship> Hull Design <n>"` and `NAME` and `RACE` to the new
    model. Keep every other column (size category, footsteps, sounds) from the reference.
+   Released designs:
+
+   | Row | Model | Ship (stock row) |
+   |---|---|---|
+   | 10269 | `c_rep_aurek_h1` | Aurek Strikefighter (10074) |
+   | 10270 | `c_sith_eclp_h1` | Eclipse Interceptor (2006) |
+   | 10271 | `c_fl_smtr_h1` | Hutt Hauler (10186) |
+   | 10272 | `c_hutt_corv_h1` | Hutt Corvette (10108) |
+   | 10273 | `c_mando_jhv_h1` | Jehavey'ir (10154) |
+   | 10274 | `c_chs_trir_h1` | Chiss Trireme (10162) |
+   | 10275 | `c_yz2500_h1` | Corellian Gunboat (10145) |
+   | 10276 | `c_fl_artr_h1` | Czerka Armored Transport (10218) |
 
 5. **Verify in the client** with the offline launcher (`InEngineVisualVerification.md`): the
    ship's space area, the new design and the stock reference side by side, from the front,
    rear (engine glow) and above. Check orientation, size, texture alignment and the emitter
-   position before committing.
+   position before committing. The camera aims above the creature, so ships sit low in the
+   frame: a pitch near 28 degrees centers most hulls, and tiny ones (the 0.13 m Eclipse) need
+   about 8. Show the owner the in-game shots before adding a batch to a pull request.
 
 ## Generating sources with Meshy
 
@@ -109,7 +134,9 @@ Meshy costs credits, so confirm the model and cost with the owner before each ta
 Meshy only for 3D: make the concept image locally (FLUX.1 [schnell] in ComfyUI) and have the
 owner pick one. Then run `meshy_image_to_3d` with `ai_model: "meshy-7.1"`, `enable_pbr: true`
 (for the normal map), `should_remesh: true` and `target_polycount` at the face budget, with
-`target_formats: ["glb"]` (30 credits). On the Aurek design this beat Smart Topology
+`target_formats: ["glb"]` (30 credits). Remesh targets used so far: 3,000 faces for Small and
+Medium ships, 4,000-5,000 for Large and Capital ones. Meshy has put every ship nose on -X and top
+on +Z, so `orientation` has been `[[0,1,0],[-1,0,0],[0,0,1]]`; check each one anyway. On the Aurek design this beat Smart Topology
 (`meshy-t2.5`, 15 credits), whose mesh was clean but whose texture was flat and soft. Unremeshed
 7.1 output is far too dense for the engine. Download the GLB into staging, never into the
 repository.

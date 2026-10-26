@@ -62,6 +62,49 @@ donemodel c_test_ship
 """
 
 
+NESTED = """newmodel c_nest
+beginmodelgeom c_nest
+node dummy c_nest
+  parent NULL
+endnode
+node dummy headconjure
+  parent c_nest
+  position 0 0 1
+  scale 0.5
+endnode
+node dummy impact
+  parent c_nest
+  position 0 0 0.5
+endnode
+node dummy rootdummy
+  parent c_nest
+  position 0 1 0
+  orientation 0 0 1 1.5707963
+endnode
+node emitter reactor
+  parent rootdummy
+  position 1 0 0
+  texture fxpa_flare
+endnode
+node emitter reactor
+  parent c_nest
+  position 0 -1 0
+  texture fxpa_flare
+endnode
+node trimesh hull
+  parent rootdummy
+  orientation 0 0 1 3.1415927
+  scale 2
+  verts 2
+    1 0 0
+    0 0.5 0.25
+  faces 0
+endnode
+endmodelgeom c_nest
+donemodel c_nest
+"""
+
+
 def manifest(**changes):
     config = {"schema_version": 1, "source": "a.glb", "sha256": "0" * 64, "model": "c_test_h1",
               "texture": "c_test_h1", "reference": "ref.mdl", "orientation": [[1, 0, 0], [0, 1, 0], [0, 0, 1]]}
@@ -90,6 +133,13 @@ class ManifestTests(unittest.TestCase):
             with self.assertRaises(ValueError, msg=str(bad)):
                 ship.validate_manifest(manifest(**bad))
 
+    def test_rejects_emitters_with_node_overrides_and_long_normal_textures(self):
+        for bad in ({"emitters": [[0, 0, 0]], "node_positions": {"reactor": [0, 0, 0]}},
+                    {"emitters": [[0, 0]]},
+                    {"normal_map": "opengl", "texture": "c_test_texture_1"}):
+            with self.assertRaises(ValueError, msg=str(bad)):
+                ship.validate_manifest(manifest(**bad))
+
     def test_accepts_lighting_adjustments_and_normal_map(self):
         config = ship.validate_manifest(manifest(material={"ambient": [0.7, 0.7, 0.7]}, normal_map="opengl",
                                                  texture_adjust={"exposure": 0.9, "contrast": 1.1}))
@@ -108,6 +158,40 @@ class ReferenceTests(unittest.TestCase):
         self.assertNotIn("#part-number", nodes[0]["body"])
         self.assertEqual(low, [-0.25, -0.4, 0.45])
         self.assertEqual(high, [0.25, 0.5, 0.55])
+
+    def test_flattens_nested_rotated_scaled_nodes(self):
+        _, nodes, (low, high) = ship.parse_reference(NESTED)
+        by_name = {n["name"]: n for n in nodes}
+        self.assertEqual(sorted(by_name), ["headconjure", "impact", "reactor", "reactor_2", "rootdummy"])
+        # rootdummy at (0,1,0) turned 90 degrees about Z: its child at local (1,0,0) lands at (0,2,0).
+        for actual, expected in zip(by_name["reactor"]["position"], [0, 2, 0]):
+            self.assertAlmostEqual(actual, expected, places=5)
+        self.assertIn("parent c_nest", by_name["reactor"]["body"])
+        self.assertNotIn("parent rootdummy", by_name["reactor"]["body"])
+        self.assertNotIn("scale", by_name["headconjure"]["body"])
+        # Hull: rotated 90 + 180 degrees about Z and scaled 2 under rootdummy.
+        self.assertAlmostEqual(low[0], 0.0, places=5)
+        self.assertAlmostEqual(high[0], 1.0, places=5)
+        self.assertAlmostEqual(low[1], -1.0, places=5)
+        self.assertAlmostEqual(high[1], 1.0, places=5)
+        self.assertAlmostEqual(high[2], 0.5, places=5)
+
+    def test_rejects_unknown_parent(self):
+        with self.assertRaisesRegex(ValueError, "unknown parent"):
+            ship.parse_reference(NESTED.replace("parent rootdummy\n  position 1", "parent ghost\n  position 1"))
+
+    def test_emitters_replace_every_reference_emitter(self):
+        _, nodes, _ = ship.parse_reference(NESTED)
+        nodes, positions = ship.replace_emitters(nodes, [[-0.1, -1, 0.5], [0.1, -1, 0.5]])
+        self.assertEqual([n["name"] for n in nodes if n["type"] == "emitter"], ["reactor1", "reactor2"])
+        mesh = ([(0, 0, 0)] * 3, [(0, 0)] * 3, [(0, 1, 2)], [(0, 0, 1)] * 3)
+        with tempfile.TemporaryDirectory() as tmp:
+            path = Path(tmp) / "x.mdl"
+            ship.write_mdl(path, "x", "x", nodes, mesh, positions)
+            text = path.read_text(encoding="ascii")
+        self.assertEqual(re.findall(r"(?m)^node emitter (\S+)", text), ["reactor1", "reactor2"])
+        self.assertIn("position -0.1 -1 0.5", text)
+        self.assertIn("position 0.1 -1 0.5", text)
 
     def test_rejects_animated_reference(self):
         with self.assertRaisesRegex(ValueError, "animations"):

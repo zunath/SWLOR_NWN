@@ -71,6 +71,12 @@ def validate_manifest(config):
         require(isinstance(value, (int, float)) and low <= value <= high, f"texture_adjust.{key} must be from {low} to {high}")
     require(config.get("normal_map", "none") in ("none", "opengl", "flip_green"),
             "normal_map must be none, opengl or flip_green")
+    require(config.get("normal_map", "none") == "none" or len(config["texture"]) <= 14,
+            "texture must be at most 14 characters with a normal map (its _n map is a 16-character resref)")
+    emitters = config.get("emitters", [])
+    require(isinstance(emitters, list) and all(valid_position(p) for p in emitters), "emitters must be a list of [x, y, z]")
+    require(not emitters or not (config.get("node_positions") or config.get("node_copies")),
+            "emitters replaces every reference emitter; do not combine it with node_positions or node_copies")
     for name, copy in config.get("node_copies", {}).items():
         require(RESREF.match(name), f"node_copies name {name} must be a lowercase node name")
         require(isinstance(copy, dict) and set(copy) == {"from", "position"} and valid_position(copy["position"]),
@@ -89,40 +95,111 @@ def determinant(m):
             + m[0][2] * (m[1][0] * m[2][1] - m[1][1] * m[2][0]))
 
 
+def quat_from_axis_angle(x, y, z, angle):
+    length = math.sqrt(x * x + y * y + z * z)
+    if length < 1e-9 or abs(angle) < 1e-9:
+        return (0.0, 0.0, 0.0, 1.0)
+    half = angle / 2
+    k = math.sin(half) / length
+    return (x * k, y * k, z * k, math.cos(half))
+
+
+def quat_mul(a, b):
+    ax, ay, az, aw = a
+    bx, by, bz, bw = b
+    return (aw * bx + ax * bw + ay * bz - az * by,
+            aw * by - ax * bz + ay * bw + az * bx,
+            aw * bz + ax * by - ay * bx + az * bw,
+            aw * bw - ax * bx - ay * by - az * bz)
+
+
+def quat_rotate(q, v):
+    x, y, z, w = q
+    vx, vy, vz = v
+    # v + 2w(q x v) + 2 q x (q x v)
+    cx, cy, cz = y * vz - z * vy, z * vx - x * vz, x * vy - y * vx
+    ccx, ccy, ccz = y * cz - z * cy, z * cx - x * cz, x * cy - y * cx
+    return (vx + 2 * (w * cx + ccx), vy + 2 * (w * cy + ccy), vz + 2 * (w * cz + ccz))
+
+
+def quat_to_axis_angle(q):
+    x, y, z, w = q
+    w = max(-1.0, min(1.0, w))
+    angle = 2 * math.acos(w)
+    s = math.sqrt(max(0.0, 1 - w * w))
+    if s < 1e-9:
+        return (0.0, 0.0, 1.0, 0.0)
+    return (x / s, y / s, z / s, angle)
+
+
 def parse_reference(text):
-    """Return (model name, non-mesh nodes, mesh bounds) from an ASCII ship MDL."""
+    """Return (model name, non-mesh nodes, mesh bounds) from an ASCII ship MDL.
+
+    Nodes may be nested and rotated. Every copied node is flattened onto the root
+    with its world position and orientation, and the hull bounds use world space.
+    Duplicate names (stock models repeat "reactor") get a numeric suffix.
+    """
     model = re.search(r"(?im)^\s*newmodel\s+(\S+)", text)
     require(model, "Reference is not an ASCII model (no newmodel line)")
     model = model[1]
     require(not re.search(r"(?im)^\s*newanim\b", text), "Reference has animations; ship designs must be static")
-    nodes = []
-    low, high = [math.inf] * 3, [-math.inf] * 3
+    parsed, transforms = [], {model.lower(): ((0.0, 0.0, 0.0), (0.0, 0.0, 0.0, 1.0), 1.0)}
     for match in re.finditer(r"(?ims)^\s*node\s+(\S+)\s+(\S+)[^\n]*\n(.*?)^\s*endnode\b", text):
         kind, name, body = match[1].lower(), match[2], match[3]
         parent = re.search(r"(?im)^\s*parent\s+(\S+)", body)
         parent = parent[1] if parent else "NULL"
         if name.lower() == model.lower() and parent.upper() == "NULL":
             continue
-        require(parent.lower() == model.lower(), f"Reference node {name} is not a direct child of the root")
+        require(parent.lower() in transforms, f"Reference node {name} has unknown parent {parent}")
+        position = re.search(r"(?im)^\s*position\s+(\S+)\s+(\S+)\s+(\S+)", body)
+        local_position = tuple(float(v) for v in position.groups()) if position else (0.0, 0.0, 0.0)
+        orientation = re.search(r"(?im)^\s*orientation\s+(\S+)\s+(\S+)\s+(\S+)\s+(\S+)", body)
+        local_rotation = quat_from_axis_angle(*(float(v) for v in orientation.groups())) if orientation else (0.0, 0.0, 0.0, 1.0)
+        scale = re.search(r"(?im)^\s*scale\s+(\S+)", body)
+        local_scale = float(scale[1]) if scale else 1.0
+        require(local_scale > 0, f"Reference node {name} has a non-positive scale")
+        parent_position, parent_rotation, parent_scale = transforms[parent.lower()]
+        offset = quat_rotate(parent_rotation, [parent_scale * v for v in local_position])
+        world = (tuple(a + b for a, b in zip(parent_position, offset)), quat_mul(parent_rotation, local_rotation),
+                 parent_scale * local_scale)
+        transforms[name.lower()] = world
+        parsed.append((kind, name, body, world))
+    nodes, seen = [], {}
+    low, high = [math.inf] * 3, [-math.inf] * 3
+    for kind, name, body, (position, rotation, scale) in parsed:
         if kind in MESH_TYPES:
-            position = re.search(r"(?im)^\s*position\s+(\S+)\s+(\S+)\s+(\S+)", body)
-            offset = [float(v) for v in position.groups()] if position else [0.0, 0.0, 0.0]
-            orientation = re.search(r"(?im)^\s*orientation\s+(\S+)\s+(\S+)\s+(\S+)\s+(\S+)", body)
-            require(not orientation or abs(float(orientation[4])) < 1e-6, f"Reference mesh {name} is rotated; unsupported")
             verts = re.search(r"(?im)^\s*verts\s+(\d+)\s*\n", body)
             require(verts, f"Reference mesh {name} has no verts")
-            lines = body[verts.end():].splitlines()[:int(verts[1])]
-            for line in lines:
-                point = [float(v) for v in line.split()[:3]]
+            for line in body[verts.end():].splitlines()[:int(verts[1])]:
+                point = quat_rotate(rotation, [scale * float(v) for v in line.split()[:3]])
                 for axis in range(3):
-                    low[axis] = min(low[axis], point[axis] + offset[axis])
-                    high[axis] = max(high[axis], point[axis] + offset[axis])
+                    value = point[axis] + position[axis]
+                    low[axis] = min(low[axis], value)
+                    high[axis] = max(high[axis], value)
             continue
         require(kind in {"dummy", "emitter", "light"}, f"Unsupported reference node type {kind} ({name})")
-        nodes.append({"type": kind, "name": name, "body": strip_comments(body)})
+        count = seen.get(name.lower(), 0) + 1
+        seen[name.lower()] = count
+        unique = name if count == 1 else f"{name}_{count}"
+        body = strip_comments(body)
+        body = re.sub(r"(?im)^\s*(parent|position|orientation|scale)\s[^\n]*\n", "", body)
+        axis_angle = quat_to_axis_angle(rotation)
+        body = (f"  parent {model}\n  position " + " ".join(f"{v:.7g}" for v in position)
+                + "\n  orientation " + " ".join(f"{v:.7g}" for v in axis_angle) + "\n" + body)
+        nodes.append({"type": kind, "name": unique, "body": body, "position": list(position)})
     require(math.isfinite(low[0]), "Reference has no hull geometry")
     require({"headconjure", "impact"} <= {n["name"].lower() for n in nodes}, "Reference is missing headconjure or impact")
     return model, nodes, (low, high)
+
+
+def replace_emitters(nodes, positions):
+    """Drop the reference emitters and place copies of the first one at each position."""
+    emitters = [n for n in nodes if n["type"] == "emitter"]
+    require(emitters, "emitters needs at least one emitter in the reference")
+    template = emitters[0]
+    kept = [n for n in nodes if n["type"] != "emitter"]
+    return kept + [{"type": "emitter", "name": f"reactor{i}", "body": template["body"], "position": list(p)}
+                   for i, p in enumerate(positions, 1)], {f"reactor{i}": p for i, p in enumerate(positions, 1)}
 
 
 def strip_comments(body):
@@ -372,8 +449,11 @@ def blender_export(manifest_path, output):
         (output / f"{config['texture']}.mtr").write_text(
             f"renderhint NormalAndSpecMapped\ntexture0 {config['texture']}\ntexture1 {config['texture']}_n\n"
             "texture2 null\n", encoding="ascii", newline="\r\n")
+    node_positions = config.get("node_positions")
+    if config.get("emitters"):
+        nodes, node_positions = replace_emitters(nodes, config["emitters"])
     write_mdl(output / f"{config['model']}.mdl", config["model"], config["texture"], nodes, mesh,
-              config.get("node_positions"), config.get("node_copies"), config.get("material"), normal_mode != "none")
+              node_positions, config.get("node_copies"), config.get("material"), normal_mode != "none")
     report = {"schema_version": 1, "model": config["model"], "texture": config["texture"], "normal_map": normal_mode,
               "reference": ref_model, "source_sha256": config["sha256"], "source_faces": source_faces,
               "faces": len(mesh[2]), "verts": len(mesh[0]), "scale": scale, "offset": offset,

@@ -6,7 +6,8 @@ namespace SWLOR.Game.Server.Service.AIService
 {
     public static class AITarget
     {
-        private const int DefaultAreaAbilityMinimumTargets = 2;
+        // NPC area abilities are part of their kit against a lone player too, not only against groups.
+        private const int DefaultAreaAbilityMinimumTargets = 1;
         private static readonly Dictionary<FeatType, AITargetSelector> _defaultOverrides = new();
 
         public static void RegisterDefault(FeatType feat, AITargetSelector selector)

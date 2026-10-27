@@ -318,23 +318,31 @@ function Invoke-Sync {
             Install-Seams -Copy $copy -Seams @(Read-Seams $root | Where-Object { $_.Kind -eq 'commit' })
             $texts = Invoke-HandlerReference -Copy $copy -Configuration $Configuration -ResultsDirectory (Join-Path $dir 'results-handlers')
         }
+        catch {
+            # The rest of the sync still runs; the manifest is then placed by hand after the cause is fixed.
+            Write-Host "WARNING: master's handler order could not be read: $($_.Exception.Message)" -ForegroundColor Yellow
+            $manualEdit = $true
+            $handlerNote = 'NOT PLACED: master''s handler order could not be read (see the warning above); run again with -PlaceHandlers after fixing it'
+        }
         finally {
             Remove-MasterCopy $copy
         }
 
-        $manifestPath = Join-Path $root $ManifestRelative
-        $manifestText = [System.IO.File]::ReadAllText($manifestPath, $script:Utf8)
-        $placed = Add-NewHandlersToManifest -ManifestText $manifestText -ReferenceText $texts['SWLOR.Game.Server.Tests/Core/Snapshots/ScriptHandlerOrder.txt']
-        if ($placed.Inserted.Count -gt 0) {
-            [System.IO.File]::WriteAllText($manifestPath, $placed.Text, $script:Utf8)
-            Write-Host "Inserted $($placed.Inserted.Count) handler(s) into $ManifestRelative where master's order puts them:"
-            foreach ($line in $placed.Inserted) { Write-Host "  + $line" }
-            $followUps.Add("$ManifestRelative (review the inserted handlers)")
+        if ($texts) {
+            $manifestPath = Join-Path $root $ManifestRelative
+            $manifestText = [System.IO.File]::ReadAllText($manifestPath, $script:Utf8)
+            $placed = Add-NewHandlersToManifest -ManifestText $manifestText -ReferenceText $texts['SWLOR.Game.Server.Tests/Core/Snapshots/ScriptHandlerOrder.txt']
+            if ($placed.Inserted.Count -gt 0) {
+                [System.IO.File]::WriteAllText($manifestPath, $placed.Text, $script:Utf8)
+                Write-Host "Inserted $($placed.Inserted.Count) handler(s) into $ManifestRelative where master's order puts them:"
+                foreach ($line in $placed.Inserted) { Write-Host "  + $line" }
+                $followUps.Add("$ManifestRelative (review the inserted handlers)")
+            }
+            foreach ($line in $placed.RenameCandidates) { Write-Host "  RENAME OR MOVE (edit the manifest line by hand, keeping its position): $line" }
+            foreach ($line in $placed.StaleLines) { Write-Host "  GONE FROM MASTER (remove the manifest line, or keep it if the branch renamed the handler): $line" }
+            if ($placed.RenameCandidates.Count -gt 0 -or $placed.StaleLines.Count -gt 0) { $manualEdit = $true }
+            $handlerNote = "$($placed.Inserted.Count) inserted, $($placed.RenameCandidates.Count) rename/move candidate(s), $($placed.StaleLines.Count) line(s) gone from master"
         }
-        foreach ($line in $placed.RenameCandidates) { Write-Host "  RENAME OR MOVE (edit the manifest line by hand, keeping its position): $line" }
-        foreach ($line in $placed.StaleLines) { Write-Host "  GONE FROM MASTER (remove the manifest line, or keep it if the branch renamed the handler): $line" }
-        if ($placed.RenameCandidates.Count -gt 0 -or $placed.StaleLines.Count -gt 0) { $manualEdit = $true }
-        $handlerNote = "$($placed.Inserted.Count) inserted, $($placed.RenameCandidates.Count) rename/move candidate(s), $($placed.StaleLines.Count) line(s) gone from master"
     }
     else {
         Write-Host $handlerNote

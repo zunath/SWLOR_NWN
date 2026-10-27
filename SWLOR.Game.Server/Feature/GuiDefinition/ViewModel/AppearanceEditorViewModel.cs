@@ -724,6 +724,30 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
             }
         }
 
+        // Values of the equipment picker; helmet (1) and cloak (2) are chosen on the armor body map.
+        public const int ArmorEquipmentValue = 0;
+        public const int MainHandEquipmentValue = 3;
+        public const int OffHandEquipmentValue = 4;
+
+        /// <summary>Equipment picker value: armor (also while its helmet or cloak is edited) or a weapon hand.</summary>
+        public int EquipmentTypeValue
+        {
+            get => Get<int>();
+            set
+            {
+                Set(value);
+                var itemType = value is MainHandEquipmentValue or OffHandEquipmentValue ? value : ArmorEquipmentValue;
+                // Armor already covers its helmet and cloak; only a weapon or a weapon-to-armor change loads a page.
+                if (itemType == ArmorEquipmentValue && SelectedItemTypeIndex is 0 or 1 or 2)
+                    return;
+                if (SelectedItemTypeIndex != itemType)
+                    SelectedItemTypeIndex = itemType;
+            }
+        }
+
+        private static int ToEquipmentTypeValue(int itemTypeIndex) =>
+            itemTypeIndex is MainHandEquipmentValue or OffHandEquipmentValue ? itemTypeIndex : ArmorEquipmentValue;
+
         public int SelectedItemTypeIndex
         {
             get => Get<int>();
@@ -735,6 +759,7 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
                     return;
                 }
                 Set(value);
+                SetIfChanged(nameof(EquipmentTypeValue), ToEquipmentTypeValue(value));
                 // Client hydration updates the binding before calling its property setter.
                 // Track the loaded page separately so an echo cannot reset a selected armor part.
                 if (value == _loadedItemTypeIndex)
@@ -902,7 +927,11 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
             var hasItemEquipped = IsValidItem();
             HasItemEquipped = hasItemEquipped;
             DoesNotHaveItemEquipped = !hasItemEquipped;
+            IsNoEditableItemVisible = !hasItemEquipped && IsEquipmentSelected;
         }
+
+        /// <summary>The tab row's "Nothing to edit" note: on the Equipment tab with no editable item.</summary>
+        public bool IsNoEditableItemVisible { get => Get<bool>(); set => Set(value); }
 
         protected override void Initialize(AppearanceEditorPayload initialPayload)
         {
@@ -932,9 +961,11 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
             _colorTarget = ColorTarget.Global;
             _selectedColorChannel = AppearanceArmorColor.Leather1;
             _selectedTabId = AppearanceTabId;
+            EnsureMinimumWindowSize();
             Set(0, nameof(EditorTabToggleValue));
             Set(-1, nameof(SettingsTabToggleValue));
             Set(0, nameof(SelectedItemTypeIndex));
+            Set(ArmorEquipmentValue, nameof(EquipmentTypeValue));
             _loadedItemTypeIndex = 0;
             RegisterColorMappings();
             _selectedSlot = AppearanceEditorSlot.Head;
@@ -966,7 +997,7 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
             WatchOnClient(model => model.SelectedColorCategoryIndex);
             WatchOnClient(model => model.SelectedPartCategoryIndex);
             WatchOnClient(model => model.SelectedPartIndex);
-            WatchOnClient(model => model.SelectedItemTypeIndex);
+            WatchOnClient(model => model.EquipmentTypeValue);
             WatchOnClient(model => model.SelectedTintColor);
             WatchOnClient(model => model.CustomTintRed);
             WatchOnClient(model => model.CustomTintGreen);
@@ -1591,6 +1622,7 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
 
             if (IsSettingsSelected)
             {
+                IsNoEditableItemVisible = false;
                 LoadSettings();
                 LoadItemTypeEditor();
                 return;

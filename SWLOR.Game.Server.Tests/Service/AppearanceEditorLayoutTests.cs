@@ -158,11 +158,7 @@ public class AppearanceEditorLayoutTests
         PathTo(main, primary).SkipLast(1).Should().OnlyContain(widget => Width(widget) == 0f);
         Width(primary).Should().Be(300f);
         Width(settings).Should().Be(150f);
-        var itemSelector = Walk(main).OfType<GuiComboBox<AppearanceEditorViewModel>>().Single();
-        ReadProperty<string>(itemSelector, "SelectedIndexBindName").Should()
-            .Be(nameof(AppearanceEditorViewModel.SelectedItemTypeIndex));
-        ReadProperty<List<GuiComboEntry>>(itemSelector, "Options").Select(option => option.Value)
-            .Should().Equal(0, 1, 2, 3, 4);
+        AssertEquipmentPicker(PathTo(main, primary).OfType<GuiRow<AppearanceEditorViewModel>>().Last());
         var slot = Walk(main).Single(widget => widget.Id == AppearanceEditorViewModel.MainPartialElement);
         PathTo(main, slot).Should().OnlyContain(widget => Width(widget) == 0f,
             "the active partial needs the full available window width");
@@ -183,13 +179,16 @@ public class AppearanceEditorLayoutTests
         var column = partial.Elements.Should().ContainSingle().Which;
         column.Should().BeOfType<GuiColumn<AppearanceEditorViewModel>>();
 
-        var rows = column.Elements;
-        rows.Should().HaveCount(2);
-        ReadProperty<string>(rows[0], "IsVisibleBindName").Should().Be(nameof(AppearanceEditorViewModel.DoesNotHaveItemEquipped));
-        ReadProperty<string>(rows[1], "IsVisibleBindName").Should().Be(nameof(AppearanceEditorViewModel.HasItemEquipped));
+        var rows = column.Elements.ToList();
+        // No hidden rows above the editors: a hidden row still takes up height.
+        rows.Should().ContainSingle();
+        Walk(partial).OfType<GuiComboBox<AppearanceEditorViewModel>>().Should().BeEmpty(
+            "the equipment picker shares the tab row");
+        var content = rows.Single();
+        ReadProperty<string>(content, "IsVisibleBindName").Should().Be(nameof(AppearanceEditorViewModel.HasItemEquipped));
 
-        rows[1].Elements.Should().AllBeOfType<GuiGroup<AppearanceEditorViewModel>>();
-        var groups = rows[1].Elements.ToArray();
+        content.Elements.Should().AllBeOfType<GuiGroup<AppearanceEditorViewModel>>();
+        var groups = content.Elements.ToArray();
         var expectedWidths = partialName == AppearanceEditorViewModel.EditorWeaponPartial
             ? new[] { AppearanceEditorDefinition.WeaponCategoryWidth, 0f }
             : new[] { AppearanceEditorDefinition.MapWidth, AppearanceEditorDefinition.ColoursWidth, 0f };
@@ -197,6 +196,21 @@ public class AppearanceEditorLayoutTests
             "the browser takes the width left beside the fixed columns");
         Slots(groups.Last()).Should().Equal(AppearanceEditorViewModel.BrowserGridElement);
         Slots(partial).Should().Equal(AppearanceEditorViewModel.BrowserGridElement);
+    }
+
+    private static void AssertEquipmentPicker(IGuiWidget row)
+    {
+        var picker = Walk(row).OfType<GuiComboBox<AppearanceEditorViewModel>>().Should().ContainSingle().Which;
+        ReadProperty<string>(picker, "SelectedIndexBindName").Should()
+            .Be(nameof(AppearanceEditorViewModel.EquipmentTypeValue));
+        ReadProperty<string>(picker, "IsVisibleBindName").Should().Be(nameof(AppearanceEditorViewModel.IsEquipmentSelected));
+        ReadProperty<List<GuiComboEntry>>(picker, "Options").Select(option => (option.Label, option.Value))
+            .Should().Equal(("Armor", 0), ("Weapon (Main)", 3), ("Weapon (Off)", 4));
+        var message = Walk(row).OfType<GuiLabel<AppearanceEditorViewModel>>().Should().ContainSingle().Which;
+        ReadProperty<string>(message, "IsVisibleBindName").Should().Be(nameof(AppearanceEditorViewModel.IsNoEditableItemVisible));
+        var outfits = Walk(row).Single(widget => widget.Id == "ae_outfits");
+        ReadProperty<string>(outfits, "IsVisibleBindName").Should().Be(nameof(AppearanceEditorViewModel.IsEquipmentSelected));
+        AssertSingleHandler(outfits, "click", nameof(AppearanceEditorViewModel.OnClickOutfits));
     }
 
     [Test]
@@ -224,8 +238,24 @@ public class AppearanceEditorLayoutTests
         width.Should().BeLessThanOrEqualTo(initial.Width - 60f,
             $"{partialName} plus its {columns}-column grid must leave the border and scrollbar allowance");
         var height = Math.Max(sides.Max(MinimumHeight), NaturalHeight(browser) + NaturalHeight(grid));
-        height.Should().BeLessThanOrEqualTo(initial.Height - 84f - 60f,
-            $"{partialName} must fit below the 84px tab panel");
+        height.Should().BeLessThanOrEqualTo(initial.Height - AppearanceEditorDefinition.TabPanelHeight - 60f,
+            $"{partialName} must fit below the tab panel");
+    }
+
+    [TestCase(AppearanceEditorViewModel.EditorMainPartial)]
+    [TestCase(AppearanceEditorViewModel.EditorArmorPartial)]
+    public void TheMinimumWindowShowsTheMapColoursAndATwoColumnBrowser(string partialName)
+    {
+        var width = AppearanceEditorDefinition.MinimumWindowWidth;
+        BrowserColumns(width, hasSideColumns: true).Should().BeGreaterThanOrEqualTo(2);
+        var browser = BrowserGroup(partialName);
+        var contentRow = PathTo(_partials[partialName], browser).OfType<GuiRow<AppearanceEditorViewModel>>().Last();
+        var sides = contentRow.Elements.Where(widget => !ReferenceEquals(widget, browser)).ToArray();
+        var grid = _partials[FullHeightGrid(2)];
+        (sides.Sum(MinimumWidth) + NaturalWidth(grid)).Should().BeLessThanOrEqualTo(width - 60f);
+        var height = sides.Max(MinimumHeight);
+        height.Should().BeLessThanOrEqualTo(AppearanceEditorDefinition.MinimumWindowHeight
+            - AppearanceEditorDefinition.TabPanelHeight - 60f, $"{partialName} side columns fit the minimum height");
     }
 
     // ------------------------------------------------------------------ body map

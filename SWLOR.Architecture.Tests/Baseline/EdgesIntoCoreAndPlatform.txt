@@ -535,7 +535,7 @@ Platform/Native -> Random | 2
 
 # Quests -> Core (18 edges)
 Faction -> DB | 2
-Feature/QuestDefinition -> Cache | 5
+Feature/QuestDefinition -> Cache | 19
 Feature/QuestDefinition -> DB | 19
 Feature/QuestDefinition -> ObjectVisibility | 5
 Quest -> Cache | 5

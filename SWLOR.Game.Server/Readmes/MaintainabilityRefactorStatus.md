@@ -40,7 +40,8 @@ Starting prompt for a new session:
 ## Branch
 
 - Integration branch: `feature/maintainability-refactor` (cut from `master` at `468f6d706`).
-- Last sync with `master`: none yet (branch created 2026-10-26).
+- Last sync with `master`: 2026-10-27, `6d49650f7` (see Sync log).
+- **Branch rule:** the repository allows only squash merges on GitHub. Anything that contains a merge of `master` (every sync) must reach this branch as a real merge commit, or later syncs re-apply `master`'s commits. Run `tools/Refactor/Sync-MaintainabilityBranch.ps1` in a worktree checked out on `feature/maintainability-refactor` itself and push the merge commit after the script passes; when a sync needs hand-ported conflict resolutions, do them on a work branch, get the Codex review, then merge that branch locally with `git merge --no-ff` and push (GitHub marks the pull request merged). Ordinary work-item pull requests are squash-merged as usual.
 - Shared packages: `Nwn.Hosting`, `Nwn.Hosting.Contracts`, `Nwn.Hosting.Testing` `0.1.0-preview.1` on
   nuget.org, source at https://github.com/zunath/NWN.Hosting (used from Phase 4).
 
@@ -66,7 +67,7 @@ Status: `open`, `in progress`, `review` (pull request open), `done`, `blocked`.
 | P1-2 | Engine seam for NWNX plugins | P1-1 | Sonnet | done | [#2922](https://github.com/zunath/SWLOR_NWN/pull/2922) | Same generator and script now emit one seam per plugin: `IXxxPlugin`, `NwnCoreXxxPlugin`, `XxxPluginRuntime`, `FakeXxxPlugin` (16 plugins, 401 members). Four data-only nested result types stay as they are. Proofs in `SWLOR.NWN.API.Tests` (341 tests); engine boots and engine tests match the base. **Phase 1 seams complete.** |
 | P2-0 | DI pilot: composition root, facade accessor, architecture rules, DependencyInjection.md, and `Achievement`, `Faction`, `Taxi` (spec: "Phase 2" in MaintainabilityRefactorSpecs.md) | P1-1 | Sonnet build, Opus review | in progress | | Worktree `.claude/worktrees/mr-p2-0` |
 | P0-6 | Scripted live smoke run with `tools/NwnLiveClient.py`; baseline recorded (spec in MaintainabilityRefactorSpecs.md) | - | Sonnet | blocked | [#2906](https://github.com/zunath/SWLOR_NWN/pull/2906) (draft) | **Blocked on the owner:** a client login needs a CD key; agents must not read or use the owner's key. Needs either a dedicated test `cdkey.ini` + public key, or the owner's explicit approval to use the guide's isolated per-run copy. Built: `tools/RunSmokeTest.ps1` / `tools/SmokeTest.py` (`-Repeat`, `-ServerOnly`, `-SkipBuild`), 31 tests, InEngineVisualVerification.md section; server boot checks pass (two identical server-only runs). Steps 3-8 still manual until a client session exists. Head `df672f48e` is unreviewed (Codex never answered). Worktree `.claude/worktrees/mr-p0-6`; server-only results in `C:\Temp\mr-p0-6` (local, 20 MB). |
-| P0-7 | Daily sync script and parity script (spec in MaintainabilityRefactorSpecs.md) | P0-4c, P0-4d1 | Sonnet | in progress | | Worktree `.claude/worktrees/mr-p0-7`; includes the first real sync |
+| P0-7 | Daily sync script and parity script (spec in MaintainabilityRefactorSpecs.md) | P0-4c, P0-4d1 | Sonnet | done | [#2921](https://github.com/zunath/SWLOR_NWN/pull/2921), fix [#2925](https://github.com/zunath/SWLOR_NWN/pull/2925) | `tools/Refactor/Sync-MaintainabilityBranch.ps1` (merge master; settle conflicts in script-owned files by taking master's version and re-running the script; place new handlers in the manifest where master's order puts them; refresh the informational edge record; build and run the sync tests; print the sync-log line; exit 2 = conflicts left, resume with `-Continue`; exit 3 = manual manifest edit) and `tools/Refactor/Test-MaintainabilityParity.ps1` (throwaway master worktree with the seams from `ParitySeams.txt` applied; characterization and handler-order comparison). Manifests: `MechanicalScripts.txt`, `ParitySeams.txt`, `SyncTests.txt`. Merged with a merge commit (see the branch rule below). Its last commit `e85031671` has no Codex review (the review hung; not re-requested). Tested under Windows PowerShell 5.1 only. `SyncTests.txt` duplicates the CI exclusion list in `scripts/ci/run-unit-tests.sh`; keep them in step. |
 | P0-8 | Cross-domain dependency guard recording today's calls (spec and domain map in MaintainabilityRefactorSpecs.md) | - | Opus map (done), Sonnet build | done | [#2911](https://github.com/zunath/SWLOR_NWN/pull/2911) | `SWLOR.Architecture.Tests`: reads `SWLOR.Game.Server.dll` IL (System.Reflection.Metadata), maps types to domains by namespace (`DomainMap.json`). Baseline: 798 guarded cross-domain edges over 172 domain pairs (top: Combat->Character 45, Gameplay->Character 36, Gameplay->Combat 34), plus 641 edges into Core/Platform recorded only. Fails on new or vanished edges and on unmapped services or Feature folders. Limit: dependencies made only through compile-time constants leave no IL reference. CodeRabbit had not reviewed when merged; check the PR for late findings. |
 | P0-9 | Feasibility check: do app-created worktrees inherit sparse checkout? | - | Opus (trivial) | done | - | Git 2.46 copies the sparse settings of the worktree `git worktree add` runs from (tested in a scratch repo). So after the haks cutover the main checkout itself must be sparse (code + `sw_2da`, `sw_tlk`, `sw_ability`), with full hak folders only in a dedicated worktree used for hak builds and local deploys. Confirm at cutover that the desktop app's worktree creation inherits it. |
 
@@ -78,7 +79,6 @@ Started 2026-10-26 by the coordinating session, each as a subagent with the agen
 
 - P2-0 (Sonnet): branch `claude/mr-p2-0`, worktree `C:\Projects\SWLOR_NWN\.claude\worktrees\mr-p2-0`.
 - P0-4d3 (Sonnet): branch `claude/mr-p0-4d3`, worktree `C:\Projects\SWLOR_NWN\.claude\worktrees\mr-p0-4d3`.
-- P0-7 (Sonnet): branch `claude/mr-p0-7`, worktree `C:\Projects\SWLOR_NWN\.claude\worktrees\mr-p0-7`.
 
 If this session ends before they report: check `gh pr list --base feature/maintainability-refactor` and the
 branches above, review any open pull request, and restart an item from its row if nothing was pushed.
@@ -87,7 +87,7 @@ branches above, review any open pull request, and restart an item from its row i
 
 1. Review and merge P0-2 (it was asked to add the CharacterizationTests project to CI); record the coverage
    baseline here.
-2. Then Phase 2 Wave A once the P2-0 pattern is merged (the P0-7 sync manifest must list both seam scripts). The rest of Phase 1 (replacing Roslyn-recompile and reflection-reset harnesses) happens inside each service's Phase 2 conversion. P0-2 must add CharacterizationTests and Architecture.Tests to CI.
+2. Daily: run the sync (branch rule above) and record it. Then Phase 2 Wave A once the P2-0 pattern is merged. The rest of Phase 1 (replacing Roslyn-recompile and reflection-reset harnesses) happens inside each service's Phase 2 conversion. P0-2 must add CharacterizationTests and Architecture.Tests to CI.
 3. Owner items: P0-6 CD key decision (see its row); GitHub Actions billing lock (blocks CI runs and P0-2b).
 3. P0-7 note: the boot-order test uses the `LoadHandlersFromAssemblies` seam, which `master` lacks; the parity
    script must apply the seam commits to its throwaway `master` copy before running the tests there.
@@ -122,6 +122,7 @@ Existing bugs found while locking outputs. They are recorded for the owner and s
 
 | Date | `master` commit merged | Conflicts | Parity | By |
 |---|---|---|---|---|
+| 2026-10-27 | 6d49650f7 | none | identical to master 6d49650f7 (132 characterization snapshot files, 662 handlers, 39 engine-test handlers); tests: 6443 passed, 0 failed. Snapshots regenerated for master's #2898 (recipe 6288 `SithPowerGlove`, 15 loot tables). | Claude Sonnet 5.5 (P0-7) |
 
 ## Port log
 

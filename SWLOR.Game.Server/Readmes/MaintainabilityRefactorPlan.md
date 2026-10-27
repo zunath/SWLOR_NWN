@@ -43,8 +43,10 @@ Progress, the work queue and the handoff procedure are in
 - `feature/maintainability-refactor` was cut from `master` at `468f6d706`. Every work item is its own branch
   cut from it and its own pull request into it, with CI and the full Codex review loop
   (`Readmes/PullRequests.md`). Never commit refactor work to `master`.
-- **Daily sync.** Once a day, merge `origin/master` into the branch (merge, never rebase or force-push),
-  build, run the unit and output-locking tests, and push. Record each sync in the status file.
+- **Daily sync.** Once a day, run `tools/Refactor/Sync-MaintainabilityBranch.ps1` on the branch: it merges
+  `origin/master` (merge, never rebase or force-push), re-runs the mechanical scripts, builds and runs the tests.
+  The merge must reach the branch as a real merge commit (the repository's GitHub setting allows only squash merges,
+  so syncs are pushed directly or merged locally with `--no-ff`). Record each sync in the status file.
 - **Conflict policy.**
   - Mechanical changes (namespace moves, `using` rewrites, handler conversion, generated engine
     interface) are committed, re-runnable scripts under `tools/Refactor/`. On a conflict, take

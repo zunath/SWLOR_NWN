@@ -15,6 +15,7 @@ namespace SWLOR.Game.Server.EngineTests.Definitions
     public static class BankListingEngineTests
     {
         private const int StoredItemCount = 60;
+        private const int LegacyItemCount = 30;
         private const string WoodResref = "wood";
 
         [EngineTest("The bank pages past 50 items and shows a new Wood deposit on the last page and in search", Category = "BankListing", TimeoutSeconds = 120f)]
@@ -31,6 +32,14 @@ namespace SWLOR.Game.Server.EngineTests.Definitions
                     for (var index = 0; index < StoredItemCount; index++)
                     {
                         recordIds.Add(Bank.DepositItem(player, CreateStorageItem(ctx, StackResref)).Id);
+                    }
+
+                    // Items deposited before deposit times were recorded index a time of 0.
+                    foreach (var id in recordIds.Take(LegacyItemCount))
+                    {
+                        var legacy = DB.Get<InventoryItem>(id);
+                        legacy.DepositedTicks = 0;
+                        DB.Set(legacy);
                     }
 
                     var wood = Bank.DepositItem(player, CreateStorageItem(ctx, WoodResref, 8));
@@ -53,7 +62,7 @@ namespace SWLOR.Game.Server.EngineTests.Definitions
                     }
 
                     ctx.AssertEqual(StoredItemCount + 1, seen.Count, "Items reachable across all pages");
-                    ctx.Assert(firstPage.Items.TrueForAll(item => item.Id != wood.Id), "Page 1 holds the older deposits");
+                    ctx.Assert(firstPage.Items.TrueForAll(item => item.DepositedTicks == 0), "Page 1 holds the items deposited before deposit times were recorded");
 
                     var lastPage = Bank.SearchItems(playerId, string.Empty, int.MaxValue);
                     ctx.AssertEqual(3, lastPage.PageIndex, "A page past the end clamps to the last page");

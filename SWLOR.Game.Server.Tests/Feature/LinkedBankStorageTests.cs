@@ -95,6 +95,15 @@ public class LinkedBankStorageTests
 
         all.Should().Contain("@StorageId:GLOBAL_BANK").And.NotContain("@Name:");
         filtered.Should().Contain("@StorageId:GLOBAL_BANK").And.Contain("@Name:");
+
+        // Pages need a fixed order: oldest deposit first, so the newest deposit is on the last page.
+        var query = (DBQuery<InventoryItem>)method.Invoke(null, new object[] { "player-id", "Wood" })!;
+        var sortField = typeof(DBQuery<InventoryItem>).GetProperty("SortByField", BindingFlags.NonPublic | BindingFlags.Instance);
+        var ascending = typeof(DBQuery<InventoryItem>).GetProperty("IsAscending", BindingFlags.NonPublic | BindingFlags.Instance);
+        sortField!.GetValue(query).Should().Be(nameof(InventoryItem.DepositedTicks));
+        ascending!.GetValue(query).Should().Be(true);
+        typeof(InventoryItem).GetProperty(nameof(InventoryItem.DepositedTicks))!
+            .GetCustomAttribute<IndexedAttribute>().Should().NotBeNull("the sort field must be indexed");
     }
 
     [Test]

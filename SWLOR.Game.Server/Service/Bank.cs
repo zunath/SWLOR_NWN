@@ -64,7 +64,8 @@ namespace SWLOR.Game.Server.Service
                 query.AddFieldSearch(nameof(InventoryItem.Name), searchText, true);
             }
 
-            return query;
+            // Oldest first, so the newest deposits are on the last page and paging is stable between pages.
+            return query.OrderBy(nameof(InventoryItem.DepositedTicks));
         }
 
         public static string GetDepositFailure(uint player, uint item)
@@ -90,7 +91,8 @@ namespace SWLOR.Game.Server.Service
                 Resref = GetResRef(item),
                 Quantity = GetItemStackSize(item),
                 Data = ObjectPlugin.Serialize(item),
-                IconResref = Item.GetIconResref(item)
+                IconResref = Item.GetIconResref(item),
+                DepositedTicks = DateTime.UtcNow.Ticks
             };
 
             DB.Set(dbItem);

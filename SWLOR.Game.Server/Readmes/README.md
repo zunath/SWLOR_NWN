@@ -41,7 +41,6 @@ One line per guide. Rule guides are required reading before working in their are
 ## Content pipelines
 
 - [BlasterModelImport.md](BlasterModelImport.md) and [RifleModelImport.md](RifleModelImport.md): weapon model import and fitting.
-- [ShipModelImport.md](ShipModelImport.md): generated starship models and Hull Designs (GLB to ship MDL).
 - [TintMapRendering.md](TintMapRendering.md): tint material rendering.
 - [MimicryBalance.md](MimicryBalance.md): the Mimicry technique balance model.
 

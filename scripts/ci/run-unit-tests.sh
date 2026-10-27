@@ -10,8 +10,8 @@
 #
 # It does not build (build the solution once first). It needs SWLOR_Haks checked out with at least sw_2da, sw_tlk
 # and sw_ability (Readmes/AgentEnvironment.md). Every project runs even when an earlier one fails; the exit code is
-# 0 only when all of them pass. Results go to <out>/<project>/ (TRX and, with coverage, the Cobertura file) and
-# <out>/<project>.log.
+# 0 only when all of them pass. Results go to <out>/<project>/ (TRX), <out>/<project>.log and, with coverage,
+# <out>/coverage/<project>.cobertura.xml.
 #
 # Exclusions are VSTest filter terms, listed per project below as "Class" (the whole class) or "Class.Method"
 # (every case of the method). Add a term only with the reason next to it, and remove it when the cause is fixed.
@@ -161,6 +161,12 @@ for project in "${PROJECTS[@]}"; do
     dotnet "${args[@]}" 2>&1 | tee "$OUT/$project.log"
     code=${PIPESTATUS[0]}
     echo "::endgroup::"
+    # The collector writes <out>/<project>/<run guid>/coverage.cobertura.xml (and a second copy deeper down). Keep one
+    # copy per project where the report step finds it.
+    if [ "$COVERAGE" = 1 ]; then
+        mkdir -p "$OUT/coverage"
+        find "$OUT/$project" -maxdepth 2 -name coverage.cobertura.xml -exec cp {} "$OUT/coverage/$project.cobertura.xml" \;
+    fi
     result="$(grep -E '^(Passed|Failed)!' "$OUT/$project.log" | tail -n 1)"
     [ -z "$result" ] && result="no test result line (exit code $code)"
     elapsed=$((SECONDS - start))

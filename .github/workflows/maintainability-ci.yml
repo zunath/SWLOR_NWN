@@ -92,10 +92,10 @@ jobs:
         if: ${{ !cancelled() && steps.tests.conclusion != 'skipped' }}
         run: |
           set -euo pipefail
-          find "$CI_OUT/results" -name coverage.cobertura.xml | grep -q . || { echo "No coverage files were produced."; exit 1; }
+          ls "$CI_OUT"/results/coverage/*.cobertura.xml > /dev/null || { echo "No coverage files were produced."; exit 1; }
           dotnet tool restore
           dotnet reportgenerator \
-            "-reports:$CI_OUT/results/**/coverage.cobertura.xml" \
+            "-reports:$CI_OUT/results/coverage/*.cobertura.xml" \
             "-targetdir:$CI_OUT/report" \
             "-reporttypes:Html;Cobertura;MarkdownSummaryGithub;TextSummary" \
             "-assemblyfilters:+SWLOR.*" \
@@ -122,7 +122,7 @@ jobs:
           path: |
             ${{ runner.temp }}/maintainability-ci/report/**
             ${{ runner.temp }}/maintainability-ci/results/**/*.trx
-            ${{ runner.temp }}/maintainability-ci/results/**/coverage.cobertura.xml
+            ${{ runner.temp }}/maintainability-ci/results/coverage/*.cobertura.xml
             ${{ runner.temp }}/maintainability-ci/results/*.log
           if-no-files-found: warn
           retention-days: 14

@@ -2,8 +2,9 @@
 <!--
   Coverage settings for the XPlat Code Coverage (coverlet) data collector.
 
-  Used by the maintainability CI (.github/workflows/maintainability-ci.yml) and by anyone measuring locally:
-    dotnet test <test project> -c Release --no-build --collect "XPlat Code Coverage" --settings coverlet.runsettings
+  Used by the maintainability CI (.github/workflows/maintainability-ci.yml) and by anyone measuring locally
+  (see scripts/ci/run-unit-tests.sh). The test command passes the collector name "XPlat Code Coverage" and this file
+  as the run settings.
 
   Scope: the repository's own production assemblies. Test assemblies, the in-engine test assembly and generated
   code are excluded, so the numbers describe hand-written code only (owner decision 3 in

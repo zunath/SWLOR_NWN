@@ -23,6 +23,7 @@
     { "name": "Planet", "domain": "World" },
     { "name": "PlayerList", "domain": "Social" },
     { "name": "PlayerMarket", "domain": "Economy" },
+    { "name": "QuestContractBoard", "domain": "Quests" },
     { "name": "Taxi", "domain": "World" },
     { "name": "Traps", "domain": "World" }
   ]

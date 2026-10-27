@@ -1,4 +1,3 @@
-using System.Reflection;
 using System.Threading.Tasks;
 using SWLOR.Game.Server.EngineTests.Framework;
 using SWLOR.Game.Server.Entity;
@@ -126,8 +125,7 @@ namespace SWLOR.Game.Server.EngineTests.Definitions
         private static void ClaimDeliveries(uint player)
         {
             // The fixture has no servervault file to save, so the claim checkpoint is a no-op.
-            typeof(QuestContractBoard).GetMethod("ClaimDeliveries", BindingFlags.NonPublic | BindingFlags.Static)
-                .Invoke(null, new object[] { player, (System.Action)(() => { }) });
+            QuestContractBoardInternals.Invoke("ClaimDeliveries", player, (System.Action)(() => { }));
         }
     }
 }

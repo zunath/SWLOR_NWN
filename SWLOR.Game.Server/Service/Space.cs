@@ -921,6 +921,9 @@ namespace SWLOR.Game.Server.Service
                 ApplyShipModuleFeat(player, shipModuleDetail, feat);
             }
 
+            // The All Weapons feat is owned before the hot bar loads, so a saved slot for it survives.
+            CreaturePlugin.AddFeat(player, FeatType.ShipAllWeapons);
+
             // Load the player's ship hot bar.
             if (!dbPlayerShip.PlayerHotBars.ContainsKey(playerId) ||
                 !CreaturePlugin.DeserializeQuickbar(player, dbPlayerShip.PlayerHotBars[playerId]))
@@ -970,6 +973,8 @@ namespace SWLOR.Game.Server.Service
 
                 dbPlayerShip.PlayerHotBars[playerId] = CreaturePlugin.SerializeQuickbar(player);
             }
+
+            SpaceHud.EnsureAllWeaponsOnHotBar(player);
 
             DB.Set(dbPlayer);
             DB.Set(dbPlayerShip);
@@ -1152,6 +1157,7 @@ namespace SWLOR.Game.Server.Service
             {
                 CreaturePlugin.RemoveFeat(player, feat);
             }
+            CreaturePlugin.RemoveFeat(player, FeatType.ShipAllWeapons);
 
             // Load the player's hot bar.
             if (string.IsNullOrWhiteSpace(dbPlayer.SerializedHotBar) ||
@@ -1466,7 +1472,7 @@ namespace SWLOR.Game.Server.Service
             if (slotNumber < 1 || slotNumber > 30)
             {
                 Log.Write(LogGroup.Error, $"Failed to locate matching ship module by its feat for player {GetName(user)}");
-                SendMessageToPC(user, "Unable to use that module.");
+                SendActivationMessage(user, "Unable to use that module.");
                 return;
             }
 
@@ -1479,20 +1485,20 @@ namespace SWLOR.Game.Server.Service
             {
                 if (slotSeat != crewSeat)
                 {
-                    SendMessageToPC(user, $"That module belongs to the {ShipCrewSeats.GetSeatName(slotSeat)}.");
+                    SendActivationMessage(user, $"That module belongs to the {ShipCrewSeats.GetSeatName(slotSeat)}.");
                     return;
                 }
 
                 var rankError = GetStationRankError(crewMember, crewSeat, shipModule);
                 if (!string.IsNullOrEmpty(rankError))
                 {
-                    SendMessageToPC(user, rankError);
+                    SendActivationMessage(user, rankError);
                     return;
                 }
             }
             else if (slotSeat != ShipCrewSeat.Pilot)
             {
-                SendMessageToPC(activator, SpaceCrew.IsSeatCrewed(activator, activatorShipStatus, slotNumber)
+                SendActivationMessage(activator, SpaceCrew.IsSeatCrewed(activator, activatorShipStatus, slotNumber)
                     ? $"This module belongs to the {ShipCrewSeats.GetSeatName(slotSeat)} station."
                     : $"This slot needs a crew member at the {ShipCrewSeats.GetSeatName(slotSeat)} station.");
                 return;
@@ -1513,7 +1519,7 @@ namespace SWLOR.Game.Server.Service
             // A dazed ship cannot switch a module on or fire one (a toggle that is on can still be switched off above).
             if (IsShipIncapacitated(activator))
             {
-                SendMessageToPC(user, "You cannot use modules while incapacitated.");
+                SendActivationMessage(user, "You cannot use modules while incapacitated.");
                 return;
             }
 
@@ -1522,7 +1528,7 @@ namespace SWLOR.Game.Server.Service
 
             if (activatorShipStatus.Capacitor < requiredCapacitor)
             {
-                SendMessageToPC(user, $"Your ship does not have enough capacitor to use that module. (Required: {requiredCapacitor})");
+                SendActivationMessage(user, $"Your ship does not have enough capacitor to use that module. (Required: {requiredCapacitor})");
                 return;
             }
 
@@ -1530,7 +1536,7 @@ namespace SWLOR.Game.Server.Service
             var now = DateTime.UtcNow;
             if (shipModule.RecastTime > now)
             {
-                SendMessageToPC(user, "That module is not ready.");
+                SendActivationMessage(user, "That module is not ready.");
                 return;
             }
 
@@ -1555,14 +1561,14 @@ namespace SWLOR.Game.Server.Service
                 !shipModuleDetails.ValidTargetTypes.Contains(GetObjectType(target)) &&
                 !(shipModuleDetails.CanTargetSelf && !GetIsObjectValid(target)))
             {
-                SendMessageToPC(user, "This module cannot be used on that target type.");
+                SendActivationMessage(user, "This module cannot be used on that target type.");
                 return;
             }
 
             // Check for a selected target that doesn't have a ship status.
             if (GetObjectType(target) != ObjectType.Placeable && targetShipStatus == null && !shipModuleDetails.CanTargetSelf)
             {
-                SendMessageToPC(user, "Invalid target.");
+                SendActivationMessage(user, "Invalid target.");
                 return;
             }
 
@@ -1570,7 +1576,7 @@ namespace SWLOR.Game.Server.Service
             var targetMode = ShipToggleRules.GetTargetMode(shipModuleDetails.Type);
             if (isToggle && targetMode == ShipToggleTargetMode.Follow && !GetIsObjectValid(target))
             {
-                SendMessageToPC(user, "Invalid target.");
+                SendActivationMessage(user, "Invalid target.");
                 return;
             }
 
@@ -1578,7 +1584,7 @@ namespace SWLOR.Game.Server.Service
             var maxDistance = shipModuleDetails.ModuleMaxDistanceAction == null ? 10f : shipModuleDetails.ModuleMaxDistanceAction(activator, activatorShipStatus, target, targetShipStatus, shipModule.ModuleBonus);
             if (GetIsPC(activator) && GetDistanceBetween(activator, target) > maxDistance)
             {
-                SendMessageToPC(user, $"Target is too far away. Maximum distance: {maxDistance} meters.");
+                SendActivationMessage(user, $"Target is too far away. Maximum distance: {maxDistance} meters.");
                 return;
             }
 
@@ -1596,7 +1602,7 @@ namespace SWLOR.Game.Server.Service
                 var result = shipModuleDetails.ModuleValidationAction(activator, activatorShipStatus, target, targetShipStatus, shipModule.ModuleBonus);
                 if (!string.IsNullOrWhiteSpace(result))
                 {
-                    SendMessageToPC(user, result);
+                    SendActivationMessage(user, result);
                     return;
                 }
             }
@@ -1653,8 +1659,6 @@ namespace SWLOR.Game.Server.Service
         /// </summary>
         private static void ApplyAutoShipRecovery(uint player, ShipStatus shipStatus)
         {
-            var wil = GetPilotScore(player, shipStatus, AbilityType.Willpower);
-
             // A Bulwark Shield Generator raises the cap while it runs; shield above the cap is lost when it lapses.
             var maxShield = shipStatus.GetEffectiveMaxShield(DateTime.UtcNow);
             if (shipStatus.Shield > maxShield)
@@ -1667,7 +1671,7 @@ namespace SWLOR.Game.Server.Service
             }
             else
             {
-                shipStatus.ShieldRegenRemainder += ShipNpcRules.ShieldRegenPerSecond(shipStatus, maxShield, wil);
+                shipStatus.ShieldRegenRemainder += GetShipShieldRegenPerSecond(player, shipStatus);
 
                 var wholeShield = (int)shipStatus.ShieldRegenRemainder;
                 if (wholeShield > 0)
@@ -1684,7 +1688,7 @@ namespace SWLOR.Game.Server.Service
             }
             else
             {
-                shipStatus.CapacitorRegenRemainder += SpaceCombatMath.CapacitorRegenPerSecond(shipStatus.CapacitorRegenPerSecond, wil);
+                shipStatus.CapacitorRegenRemainder += GetShipCapacitorRegenPerSecond(player, shipStatus);
 
                 var wholeCapacitor = (int)shipStatus.CapacitorRegenRemainder;
                 if (wholeCapacitor > 0)
@@ -2034,6 +2038,32 @@ namespace SWLOR.Game.Server.Service
                 Stat.GetStatAdjustment(defender, StatType.Defense),
                 Stat.GetStatAdjustment(defender, StatType.DefensePercentAdjustment) +
                 Stat.GetStatAdjustment(defender, StatType.SpaceDefensePercentAdjustment));
+        }
+
+        /// <summary>Shield regained per second: a preset NPC ship's own rate, otherwise the size and WIL formula.</summary>
+        public static double GetShipShieldRegenPerSecond(uint ship, ShipStatus shipStatus)
+        {
+            var wil = GetPilotScore(ship, shipStatus, AbilityType.Willpower);
+            return ShipNpcRules.ShieldRegenPerSecond(shipStatus, shipStatus.GetEffectiveMaxShield(DateTime.UtcNow), wil);
+        }
+
+        /// <summary>Capacitor regained per second: the hull's regen plus 0.05 per point of WIL.</summary>
+        public static double GetShipCapacitorRegenPerSecond(uint ship, ShipStatus shipStatus)
+        {
+            var wil = GetPilotScore(ship, shipStatus, AbilityType.Willpower);
+            return SpaceCombatMath.CapacitorRegenPerSecond(shipStatus.CapacitorRegenPerSecond, wil);
+        }
+
+        /// <summary>
+        /// A ship's critical rate against a target of equal Vitality, before weapon rank: the critical rate and
+        /// weapon critical rate stats on top of the base rate and the pilot's PER.
+        /// </summary>
+        public static int GetShipCriticalRate(uint attacker, ShipStatus attackerStatus)
+        {
+            var per = GetPilotScore(attacker, attackerStatus, AbilityType.Perception);
+            var modifier = Stat.GetStatAdjustment(attacker, StatType.CriticalRatePercentAdjustment) +
+                           Stat.GetStatAdjustment(attacker, StatType.WeaponCriticalRatePercentAdjustment);
+            return SpaceCombatMath.CriticalRate(per, per, 0, modifier);
         }
 
         /// <summary>

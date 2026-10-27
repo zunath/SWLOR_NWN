@@ -23,7 +23,7 @@ namespace SWLOR.Game.Server.Service.SpaceService
         /// <summary>The Aurodium chance per salvage cycle on a tier 5+ wreck outside the Korriban Debris Field (draft).</summary>
         public const int DefaultAurodiumPercent = 4;
 
-        /// <summary>The area local that sets a different Aurodium chance per cycle (the W6b Debris Field raises it).</summary>
+        /// <summary>The area local that sets a different Aurodium chance per cycle (the Korriban Debris Field zone raises it).</summary>
         public const string AurodiumPercentVariable = "SALVAGE_AURODIUM_PERCENT";
 
 

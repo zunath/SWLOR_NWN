@@ -87,7 +87,7 @@ namespace SWLOR.Game.Server.Feature.SpawnDefinition
 
         /// <summary>
         /// The Mid Rim nebula on the Viscara starlane (space_midrim1): Korriban's asteroids plus Tibanna Gas clouds of
-        /// tiers 3 and 4, until the W6b Mid Rim Nebula zone.
+        /// tiers 3 and 4, until the Mid Rim Nebula zone is built.
         /// </summary>
         private void MidRimNebula()
         {

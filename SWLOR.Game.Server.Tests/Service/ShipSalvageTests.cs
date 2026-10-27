@@ -284,7 +284,7 @@ public class ShipSalvageTests
     [TestCase(4, 0, 0)]
     [TestCase(5, 0, 4)]
     [TestCase(6, 0, 4)]
-    [TestCase(5, 25, 25, Description = "the W6b Debris Field sets its own chance")]
+    [TestCase(5, 25, 25, Description = "the Debris Field zone sets its own chance")]
     [TestCase(3, 25, 0)]
     public void Aurodium_ComesFromTierFiveWrecksAtALowRate(int tier, int areaPercent, int expected)
     {

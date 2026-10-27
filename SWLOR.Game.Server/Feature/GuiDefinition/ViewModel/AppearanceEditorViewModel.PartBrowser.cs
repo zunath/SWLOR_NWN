@@ -647,8 +647,8 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
         internal static int BrowserColumnsForWidth(float windowWidth, bool hasSideColumns)
         {
             const float sideColumns = AppearanceEditorDefinition.MapWidth + AppearanceEditorDefinition.ColoursWidth + 48f;
-            const float weaponColumn = AppearanceEditorDefinition.WeaponCategoryWidth + 20f;
-            const float tile = AppearanceEditorDefinition.TileSize + 10f; // a tile plus its column padding
+            const float weaponColumn = AppearanceEditorDefinition.WeaponCategoryWidth + 50f;
+            const float tile = AppearanceEditorDefinition.TileSize + 14f; // a tile plus its column spacing, measured in the client
             // Window border plus the browser group's border and padding.
             var available = windowWidth - (hasSideColumns ? sideColumns : weaponColumn) - 44f;
             return Math.Clamp((int)(available / tile), 1, MaxBrowserColumns);

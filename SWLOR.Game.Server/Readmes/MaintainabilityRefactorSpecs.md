@@ -326,6 +326,21 @@ scope, forwarding statics, and generated fakes in `SWLOR.NWN.API.Testing`. Reuse
    handler-order tests unchanged.
 6. Record in the status file: service, pull request, coverage before and after.
 
+**Decisions confirmed by the pilot (P2-0, #2928, 2026-10-27):**
+- Instance classes live in `SWLOR.Game.Server/Domain/<Domain>/` (namespace `SWLOR.Game.Server.Domain.<Domain>`), next to
+  the static facades in `Service/`. `ConvertedServices.json` in `SWLOR.Architecture.Tests` lists converted services.
+- `Composition/ContainerHost` builds the container once in the `BuildServiceContainer` bootstrap step, after
+  `InitializeSWLORSystems` and before handlers load, creating every singleton during the build. **Constructors must do no
+  work** (no engine, database or other service calls): they run at boot before the module exists; anything that ran in
+  a boot handler stays in that handler.
+- Database access in converted services goes through the injected `IDBService` (grow it with the members a service
+  needs). Until `DB` converts in Wave C it is backed by `Composition/StaticDBAdapter`, which forwards to static `DB`.
+- `Composition/` is a wiring area: its references to every service do not count as dependencies in the guard.
+- **Before Wave D**, `FacadeAccessor` must cache each resolved instance (a per-type static cache inside `Composition/`,
+  cleared when the container is rebuilt), with a measurement showing the facade call costs no more than a few
+  nanoseconds; `Combat`, `Stat` and `Ability` facades are called many times per attack.
+- Follow `Readmes/DependencyInjection.md` (written by the pilot) for the step-by-step conversion.
+
 **Order (waves; within a wave, up to three services in parallel when their files do not overlap):**
 - **P2-0 pilot:** the composition root, the facade accessor, the architecture rules, `Readmes/DependencyInjection.md`,
   and three small services with handlers: `Achievement` (Character), `Faction` (Quests), `Taxi` (World). The pilot

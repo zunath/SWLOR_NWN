@@ -48,7 +48,8 @@ public class PowerGloveRecipes : IRecipeListDefinition
             .Quantity(1)
             .EnhancementSlots(RecipeEnhancementType.Weapon, 1)
             .Component("ref_scordspar", 3)
-            .Component("fine_wood", 2);
+            .Component("fine_wood", 2)
+            .ForgeParameters(rangeCenter: 59, rangeWidth: 31, coolingRate: 6, startingThermal: 67, shapeShare: 43);
 
         builder.Create(RecipeType.VeteranPowerGlove, SkillType.Smithery)
             .Category(RecipeCategoryType.PowerGlove)

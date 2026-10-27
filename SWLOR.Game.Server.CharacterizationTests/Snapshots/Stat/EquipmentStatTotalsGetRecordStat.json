@@ -1,0 +1,17 @@
+{
+  "function": "EquipmentStatTotals.GetRecordStat(ItemPropertyType type)",
+  "description": "The equipment record an item property type feeds.",
+  "seed": null,
+  "inputs": "Defense, Evasion, FP, Stamina, HPBonus, ACBonus and Invalid.",
+  "rowCount": 7,
+  "columns": ["itemPropertyType", "=> recordStat"],
+  "rows": [
+    ["Defense", "Defense"],
+    ["Evasion", "Evasion"],
+    ["FP", "FP"],
+    ["Stamina", "Stamina"],
+    ["HPBonus", "None"],
+    ["ACBonus", "None"],
+    ["Invalid", "None"]
+  ]
+}

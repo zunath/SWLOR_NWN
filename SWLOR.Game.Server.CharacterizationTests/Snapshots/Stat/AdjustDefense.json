@@ -1,0 +1,21 @@
+{
+  "function": "Stat.AdjustDefense(Player entity, CombatDamageType type, int adjustBy)",
+  "description": "Adds to the player's stored Defense for a damage type; only the damage types that use a Defense rating are recorded.",
+  "seed": null,
+  "inputs": "every CombatDamageType member, adjusted by +7 and then by -2.",
+  "rowCount": 11,
+  "columns": ["damageType", "damageTypeName", "=> defensesAfterFirst", "=> defensesAfterSecond"],
+  "rows": [
+    [0, "Invalid", "{Physical:0,Force:0}", "{Physical:0,Force:0}"],
+    [1, "Physical", "{Physical:7,Force:0}", "{Physical:5,Force:0}"],
+    [2, "Force", "{Physical:0,Force:7}", "{Physical:0,Force:5}"],
+    [3, "Fire", "{Physical:0,Force:0}", "{Physical:0,Force:0}"],
+    [4, "Poison", "{Physical:0,Force:0}", "{Physical:0,Force:0}"],
+    [5, "Electrical", "{Physical:0,Force:0}", "{Physical:0,Force:0}"],
+    [6, "Ice", "{Physical:0,Force:0}", "{Physical:0,Force:0}"],
+    [7, "Sonic", "{Physical:0,Force:0}", "{Physical:0,Force:0}"],
+    [20, "Thermal", "{Physical:0,Force:0}", "{Physical:0,Force:0}"],
+    [21, "Explosive", "{Physical:0,Force:0}", "{Physical:0,Force:0}"],
+    [22, "EM", "{Physical:0,Force:0}", "{Physical:0,Force:0}"]
+  ]
+}

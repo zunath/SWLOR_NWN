@@ -334,8 +334,8 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition
         }
 
         /// <summary>
-        /// Spawns an enemy squad of one faction tier and role near the DM. Incursions, convoys and derelicts come
-        /// with their own systems (plan sections 13, 28 and 30) and are shown disabled until then.
+        /// Spawns an enemy squad of one faction tier and role near the DM, or a trade convoy of that tier. Incursions
+        /// and derelicts come with their own systems (plan sections 28 and 30) and are shown disabled until then.
         /// </summary>
         private static void AddSpaceTab(GuiGroup<DMToolsViewModel> host)
         {
@@ -412,8 +412,8 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition
                         .SetHeight(35f);
                     row.AddButton()
                         .SetText("Start Convoy")
-                        .SetTooltip("Comes with trade convoys")
-                        .SetIsEnabled(false)
+                        .SetTooltip("Start a trade convoy of the picked faction's tier around you")
+                        .BindOnClicked(model => model.OnStartConvoy())
                         .SetHeight(35f);
                     row.AddButton()
                         .SetText("Place Derelict")

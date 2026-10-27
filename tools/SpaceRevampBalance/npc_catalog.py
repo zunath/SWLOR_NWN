@@ -25,6 +25,11 @@ HULLS = {
 # Support modules a hull type fits beside its weapons (module family tag prefix), at the step of the ship's level. A
 # Gunship hardens below half hull; a Logistics ship repairs allies. Cargo haulers keep the Logistics row unarmed.
 SUPPORT = {"gunship": ("sm_hard",), "logistics": ("sm_hrep", "sm_shrep")}
+# The trade risk groups (W7b) copy a hull type of their tier: pirate raiders (pir), customs patrols of the Republic,
+# Czerka and the Sith (repcus, czkcus, sithcus), and trade convoys (a cargo hauler and gunship escorts).
+GROUP_HULLS = {"int": "interceptor", "ftr": "fighter", "gun": "gunship"}
+GROUP_PREFIXES = ("pir", "repcus", "czkcus", "sithcus")
+ALIASES = {"convoy": "cargo", "escort": "gunship"}
 HARDENER_RESIST = {"sm_hard": lambda step: 10 + step // 5}  # the Shield Hardener family (catalog.py FAMILIES)
 MODULE_FOR = {
     "Laser Cannon": "sm_laser_00", "Ion Cannon": "sm_ion_00", "Beam Cannon": "sm_beam_00",
@@ -61,7 +66,11 @@ def creature_level(root, tag):
 def hull_type(tag):
     if tag.startswith(("sithcap", "mandocap")):
         return "capital"
-    return re.match(r"t\d(\w+)$", tag).group(1)
+    hull = re.match(r"t\d(\w+)$", tag).group(1)
+    group = re.match(r"(%s)(%s)$" % ("|".join(GROUP_PREFIXES), "|".join(GROUP_HULLS)), hull)
+    if group:
+        return GROUP_HULLS[group.group(2)]
+    return ALIASES.get(hull, hull)
 
 
 def support_tags(hull, level):

@@ -1490,6 +1490,7 @@
 "Item","shaft","Shaft","Utility","","iit_shaft","SWLOR_Haks/sw_item_source/general/shaft.png",""
 "Item","ship_scrap","Ship Scrap","Utility","","iit_ship_scrap","SWLOR_Haks/sw_item_source/general/ship_scrap.png",""
 "Item","silo","Silo","Utility","","iit_silo","SWLOR_Haks/sw_item_source/general/silo.png",""
+"Item","smuggling_compartment","Smuggling Compartment","Utility","","iit_smsmuggle","SWLOR_Haks/sw_item_source/general/smuggling_compartment.png",""
 "Item","de_socadapt","Social Adaptation","Utility","","iit_de_socadapt","SWLOR_Haks/sw_item_source/general/de_socadapt.png",""
 "Item","elec_sogayn","Sogayn Electronics","Utility","","iit_elec_sogayn","SWLOR_Haks/sw_item_source/general/elec_sogayn.png",""
 "Item","de_spear_b","Spear Boost","Utility","","iit_de_spear_b","SWLOR_Haks/sw_item_source/general/de_spear_b.png",""

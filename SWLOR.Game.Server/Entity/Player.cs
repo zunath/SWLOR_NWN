@@ -17,6 +17,7 @@ using SWLOR.Game.Server.Service.PerkService;
 using SWLOR.Game.Server.Service.PlayerListService;
 using SWLOR.Game.Server.Service.SkillService;
 using SWLOR.Game.Server.Service.TaxiService;
+using SWLOR.Game.Server.Service.TradeService;
 using SWLOR.NWN.API.NWScript.Enum;
 
 namespace SWLOR.Game.Server.Entity
@@ -210,6 +211,13 @@ namespace SWLOR.Game.Server.Entity
         public bool HasUndisguisedDescriptionSnapshot { get; set; }
         // Player list flags for the undisguised identity; each disguise keeps its own.
         public List<PlayerListFlagType> PlayerListFlags { get; set; }
+
+        /// <summary>The freight contracts the player holds (plan section 13). Older records load with none.</summary>
+        public List<FreightContract> FreightContracts { get; set; } = new();
+
+        /// <summary>The freight offers the player took this hour and the last, so one offer cannot be taken twice.</summary>
+        public List<string> FreightOffersTaken { get; set; } = new();
+
 
         public PlayerSettings Settings { get; set; }
         public Dictionary<SkillType, int> Control { get; set; }

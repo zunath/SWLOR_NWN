@@ -47,5 +47,6 @@ namespace SWLOR.Game.Server.Service.SpaceService
         PowerDiverter = 39,
         Salvager = 40,
         GasHarvester = 41,
+        SmugglingCompartment = 42,
     }
 }

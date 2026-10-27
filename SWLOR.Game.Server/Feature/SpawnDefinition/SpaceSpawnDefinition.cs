@@ -81,6 +81,9 @@ namespace SWLOR.Game.Server.Feature.SpawnDefinition
                 .RandomlyWalks()
                 .ReturnsHome()
 
+                .AddSpawn(ObjectType.Creature, "t1convoy")
+                .WithFrequency(480)
+
                 .AddSpawn(ObjectType.Creature, "t1capital")
                 .WithFrequency(960)
                 .RandomlyWalks()
@@ -194,6 +197,9 @@ namespace SWLOR.Game.Server.Feature.SpawnDefinition
                 .WithFrequency(480)
                 .RandomlyWalks()
                 .ReturnsHome()
+
+                .AddSpawn(ObjectType.Creature, "t2convoy")
+                .WithFrequency(480)
 
                 .AddSpawn(ObjectType.Creature, "t2capital")
                 .WithFrequency(960)
@@ -309,6 +315,9 @@ namespace SWLOR.Game.Server.Feature.SpawnDefinition
                 .RandomlyWalks()
                 .ReturnsHome()
 
+                .AddSpawn(ObjectType.Creature, "t3convoy")
+                .WithFrequency(480)
+
                 .AddSpawn(ObjectType.Creature, "t3capital")
                 .WithFrequency(960)
                 .RandomlyWalks()
@@ -422,6 +431,9 @@ namespace SWLOR.Game.Server.Feature.SpawnDefinition
                 .WithFrequency(480)
                 .RandomlyWalks()
                 .ReturnsHome()
+
+                .AddSpawn(ObjectType.Creature, "t4convoy")
+                .WithFrequency(480)
 
                 .AddSpawn(ObjectType.Creature, "t4capital")
                 .WithFrequency(960)
@@ -537,6 +549,9 @@ namespace SWLOR.Game.Server.Feature.SpawnDefinition
                 .RandomlyWalks()
                 .ReturnsHome()
 
+                .AddSpawn(ObjectType.Creature, "t6convoy")
+                .WithFrequency(480)
+
                 .AddSpawn(ObjectType.Creature, "sithcap1")
                 .WithFrequency(300)
                 .RandomlyWalks()
@@ -645,6 +660,9 @@ namespace SWLOR.Game.Server.Feature.SpawnDefinition
                 .WithFrequency(480)
                 .RandomlyWalks()
                 .ReturnsHome()
+
+                .AddSpawn(ObjectType.Creature, "t5convoy")
+                .WithFrequency(480)
 
                 .AddSpawn(ObjectType.Creature, "t5capital")
                 .WithFrequency(960)
@@ -760,6 +778,9 @@ namespace SWLOR.Game.Server.Feature.SpawnDefinition
                 .RandomlyWalks()
                 .ReturnsHome()
 
+                .AddSpawn(ObjectType.Creature, "t5convoy")
+                .WithFrequency(480)
+
                 .AddSpawn(ObjectType.Creature, "t5capital")
                 .WithFrequency(960)
                 .RandomlyWalks()
@@ -843,6 +864,10 @@ namespace SWLOR.Game.Server.Feature.SpawnDefinition
             Ship("logistics", 1440);
             Ship("carrier", 480);
             Ship("capital", 960);
+
+            // A trade convoy flies its own route to a starlane (Trade.InitializeConvoy), so it neither wanders nor leashes.
+            _builder.AddSpawn(ObjectType.Creature, $"t{tier}convoy")
+                .WithFrequency(480);
         }
 
         /// <summary>Viscara Asteroid Belt (space_viscbelt): Septra Khanate (T1) and Krakenborne (T2) ships in equal shares.</summary>

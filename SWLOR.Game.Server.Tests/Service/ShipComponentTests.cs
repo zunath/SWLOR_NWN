@@ -261,6 +261,7 @@ public class ShipComponentTests
         [ShipModuleFamily.ExplosivePlating] = ShipComponentFamily.HullFrame,
         [ShipModuleFamily.AdaptivePlating] = ShipComponentFamily.HullFrame,
         [ShipModuleFamily.ReinforcedPlating] = ShipComponentFamily.HullFrame,
+        [ShipModuleFamily.SmugglingCompartment] = ShipComponentFamily.HullFrame,
         [ShipModuleFamily.Thrusters] = ShipComponentFamily.ThrusterAssembly,
         [ShipModuleFamily.AdvancedThrusters] = ShipComponentFamily.ThrusterAssembly,
         [ShipModuleFamily.TargetingComputer] = ShipComponentFamily.SensorSuite,

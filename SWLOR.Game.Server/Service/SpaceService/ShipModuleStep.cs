@@ -67,6 +67,10 @@ namespace SWLOR.Game.Server.Service.SpaceService
         public int AuraShieldPercent { get; set; }
         public int AuraAccuracy { get; set; }
 
+        // Trade
+        /// <summary>The percentage a Smuggling Compartment cuts the customs scan chance by.</summary>
+        public int ScanReduction { get; set; }
+
         /// <summary>A copy whose numbers can be changed (component traits) without touching the catalog row.</summary>
         public ShipModuleStep Clone() => (ShipModuleStep)MemberwiseClone();
     }

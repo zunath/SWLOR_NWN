@@ -165,8 +165,10 @@ namespace SWLOR.Game.Server.Service
             var dbShip = Trade.GetActiveShip(player);
             if (dbShip != null)
             {
-                stats.CargoUsed = CargoHoldRules.GetUsedVolume(dbShip.Cargo);
+                stats.CargoUsed = Trade.GetUsedVolume(dbShip);
                 stats.CargoLines = CargoHoldRules.GetLines(dbShip.Cargo);
+                stats.CargoLines.AddRange(dbShip.SealedFreight.Select(lot =>
+                    ($"Sealed freight to {TradeLookup.GetExchange(lot.Destination)?.Name}", lot.Volume)));
             }
 
             return stats;

@@ -1671,6 +1671,12 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
                         return;
                     }
 
+                    if (dbShip.SealedFreight.Count > 0)
+                    {
+                        FloatingTextStringOnCreature("Please deliver or abandon the sealed freight aboard before unregistering your ship.", Player, false);
+                        return;
+                    }
+
                     if (dbShip.Status.Hull < dbShip.Status.MaxHull ||
                         dbShip.Status.Shield < dbShip.Status.MaxShield)
                     {

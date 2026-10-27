@@ -24,6 +24,21 @@ namespace SWLOR.Game.Server.Service
             return Space.FindShipDetail(ship?.Status?.ItemTag)?.Hull?.Cargo ?? 0;
         }
 
+        /// <summary>The cargo bay volume filled: commodities and sealed freight.</summary>
+        public static int GetUsedVolume(PlayerShip ship)
+        {
+            if (ship == null)
+                return 0;
+
+            return CargoHoldRules.GetUsedVolume(ship.Cargo) + FreightContractRules.GetSealedVolume(ship.SealedFreight);
+        }
+
+        /// <summary>The cargo bay volume left for commodities, scooped pods and freight.</summary>
+        public static int GetFreeVolume(PlayerShip ship)
+        {
+            return Math.Max(0, GetCargoCapacity(ship) - GetUsedVolume(ship));
+        }
+
         /// <summary>The ship the player is flying, or null.</summary>
         public static PlayerShip GetActiveShip(uint player)
         {
@@ -95,7 +110,7 @@ namespace SWLOR.Game.Server.Service
                 GetAbilityScore(player, AbilityType.Social),
                 units,
                 capacity,
-                CargoHoldRules.GetFreeVolume(capacity, ship.Cargo),
+                GetFreeVolume(ship),
                 GetGold(player));
 
             if (order.Refusal != TradeRefusal.None)

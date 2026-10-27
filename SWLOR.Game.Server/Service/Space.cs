@@ -2575,6 +2575,9 @@ namespace SWLOR.Game.Server.Service
 
             amount = ApplyPvpDamageRamp(attacker, target, amount);
 
+            // Firing on a convoy or customs patrol turns its group hostile and costs lawful standing.
+            Trade.OnShipAttacked(attacker, target);
+
             var shieldBefore = targetShipStatus.Shield;
             var hullBefore = targetShipStatus.Hull;
 
@@ -2701,6 +2704,9 @@ namespace SWLOR.Game.Server.Service
                 return;
 
             amount = ApplyPvpDamageRamp(attacker, target, amount);
+
+            // Firing on a convoy or customs patrol turns its group hostile and costs lawful standing.
+            Trade.OnShipAttacked(attacker, target);
 
             var hullBefore = targetShipStatus.Hull;
             if (targetShipStatus.Hull > 0)

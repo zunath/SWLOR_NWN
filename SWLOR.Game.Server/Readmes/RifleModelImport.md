@@ -110,5 +110,8 @@ per-model fits locally and apply changes to the existing compiled node transform
 where possible, preserving the verified geometry, UVs, normals and tangents.
 `tools/TranslateWeaponModel.py` does this: `--offset X Y Z` translates, and
 `--pitch DEGREES --pivot X Y Z` rotates about the weapon X axis through the grip
-contact (a positive pitch raises the muzzle). Imported rifle 161 uses `--pitch -4`
-and rifle 222 uses `--pitch -5`, both with pivot `0 0.02 0.01`.
+contact (a positive pitch raises the muzzle). `--roll` and `--yaw` then rotate
+about Y and Z through the same pivot. Imported rifle 161 uses `--pitch -4`
+and rifle 222 uses `--pitch -5`, both with pivot `0 0.02 0.01`. For the X-mirrored
+left-hand copies of a model (such as the Power Glove `wpl_*` models), negate the X
+offset, the pivot's X, roll and yaw.

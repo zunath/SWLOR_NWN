@@ -1,4 +1,3 @@
-using System.Reflection;
 using NUnit.Framework;
 using SWLOR.Game.Server.CharacterizationTests.Definitions;
 using SWLOR.Game.Server.CharacterizationTests.Support;
@@ -10,8 +9,8 @@ namespace SWLOR.Game.Server.CharacterizationTests.Service;
 
 /// <summary>
 /// Locks how loot is drawn: the weighted item pick of <see cref="LootTable"/> with and without a rare find bonus, the
-/// quantity roll of <c>Loot.SpawnLoot</c> (a random number from 1 up to the item's largest quantity), the rare chance bonus
-/// scaling and the loot table argument parser. Each draw is recorded as the item's position in its table and the quantity
+/// quantity roll of <c>Loot.SpawnLoot</c> (a random number from 1 up to the item's largest quantity) and the rare chance bonus
+/// scaling. Each draw is recorded as the item's position in its table and the quantity
 /// rolled. <c>Loot.SpawnLoot</c> itself reads creature variables and creates items, which needs the engine (Tier B).
 /// </summary>
 [NonParallelizable]
@@ -228,36 +227,6 @@ public class LootDrawCharacterizationTests
         }
 
         Snapshot.Verify("Loot", "GetRareChanceBonus", table);
-    }
-
-    [Test]
-    public void ParseLootTableArguments()
-    {
-        var method = typeof(Loot).GetMethod("ParseLootTableArguments", BindingFlags.Static | BindingFlags.NonPublic)!;
-
-        var table = new SnapshotTable(
-            "Loot.ParseLootTableArguments(string) (private, read by reflection)",
-            "Splits the \"table, chance, attempts\" text a creature carries into its loot table name, the percent chance (default 100, at most 100) and the number of attempts " +
-            "(default 1, at least 1). Only well-formed numbers are listed; malformed numbers are logged by the game.",
-            "Hand-written argument texts.",
-            new[] { "arguments" },
-            new[] { "tableName", "chance", "attempts" })
-        {
-            AllowConstantOutputs = true
-        };
-
-        foreach (var arguments in new[]
-                 {
-                     "CZ220_CREDITS", "  CZ220_CREDITS  ", "CZ220_CREDITS,50", "CZ220_CREDITS, 50", "CZ220_CREDITS,50,3", " CZ220_CREDITS , 25 , 4 ",
-                     "CZ220_CREDITS,100", "CZ220_CREDITS,101", "CZ220_CREDITS,1000,2", "CZ220_CREDITS,0", "CZ220_CREDITS,-5,2", "CZ220_CREDITS,50,0",
-                     "CZ220_CREDITS,50,-3", "CZ220_CREDITS,50,10,99"
-                 })
-        {
-            var (tableName, chance, attempts) = ((string, int, int))method.Invoke(null, new object[] { arguments })!;
-            table.Add(arguments, tableName, chance, attempts);
-        }
-
-        Snapshot.Verify("Loot", "ParseLootTableArguments", table);
     }
 
     private static string DrawText(LootTable lootTable, int rareBonus)

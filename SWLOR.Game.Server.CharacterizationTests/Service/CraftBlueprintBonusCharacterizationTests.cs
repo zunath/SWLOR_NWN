@@ -56,22 +56,30 @@ public class CraftBlueprintBonusCharacterizationTests
         var table = new SnapshotTable(
             "BlueprintBonuses.PickBonus(RecipeEnhancementType, int tier, bool isCraftingItem): which combinations have a table",
             "A combination without a table returns no bonus. Weapon, armor and food have tables for tiers 1 to 3, with and without the crafting flag; " +
-            "every other enhancement type, and tiers outside 1..3, have none.",
-            "Every RecipeEnhancementType member x crafting item {false, true} x tier 0..4.",
+            "every other enhancement type, and tiers outside 1..3, have none. The pick column is the result of calling PickBonus.",
+            $"Every RecipeEnhancementType member x crafting item {{false, true}} x tier 0..4, called once each after seeding the generator with {PickSeed}.",
             new[] { "enhancementType", "isCraftingItem", "tier" },
-            new[] { "hasTable", "bonusCount", "totalWeight" })
+            new[] { "pick", "bonusCount", "totalWeight" },
+            PickSeed)
         {
             AllowConstantOutputs = true
         };
 
+        using var random = new SeededRandom(PickSeed);
         foreach (var type in Enum.GetValues<RecipeEnhancementType>().OrderBy(type => DefinitionCell.Id(type)))
         {
             foreach (var isCrafting in new[] { false, true })
             {
                 for (var tier = 0; tier <= 4; tier++)
                 {
+                    var capturedType = type;
+                    var capturedCrafting = isCrafting;
+                    var capturedTier = tier;
+                    random.Reseed(PickSeed);
+                    var pick = Outcome.Of(() => source.PickIndex(capturedType, capturedTier, capturedCrafting) == null ? "none" : "bonus");
+
                     var found = tables.TryGetValue((type, isCrafting, tier), out var entry);
-                    table.Add(type, isCrafting, tier, found, found ? entry.Bonuses.Count : 0, found ? entry.Bonuses.Sum(bonus => bonus.Weight) : 0);
+                    table.Add(type, isCrafting, tier, pick, found ? entry.Bonuses.Count : 0, found ? entry.Bonuses.Sum(bonus => bonus.Weight) : 0);
                 }
             }
         }

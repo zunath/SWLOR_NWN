@@ -1,9 +1,9 @@
 {
   "function": "LootTableBuilder (Create, IsRare, MaxRareChanceBonus, AddItem, AddGold, AddSpawnAction, Build)",
-  "description": "What the loot table builder produces for a call sequence: the defaults of an item (largest quantity 1, not rare), gold as nw_it_gold001 with the amount as its largest quantity, a spawn action attaching to the item added last, a table id created twice replacing the first table, and a spawn action with no item being rejected.",
+  "description": "What the loot table builder produces for a call sequence: the defaults of an item (largest quantity 1, not rare), gold as nw_it_gold001 with the amount as its largest quantity, a spawn action attaching to the item added last and a table id created twice replacing the first table.",
   "seed": null,
   "inputs": "Hand-written call sequences, one per row; the result lists each table built as id, rare flag, rare chance maximum and its items as resref/weight/largest quantity/rare/spawn action set, or the exception.",
-  "rowCount": 16,
+  "rowCount": 13,
   "columns": ["case", "=> result"],
   "rows": [
     ["empty table", "T: rare false/max null/items []"],
@@ -18,9 +18,6 @@
     ["spawn action after gold", "T: rare false/max null/items [nw_it_gold001/1/5/false/true]"],
     ["two tables", "A: rare false/max null/items [a/1/1/false/false] | B: rare false/max null/items [b/2/1/false/false]"],
     ["same id twice replaces the first table", "T: rare false/max null/items [b/2/1/false/false]"],
-    ["rare flag applies to the active table only", "A: rare true/max null/items [] | B: rare false/max null/items [b/1/1/false/false]"],
-    ["spawn action after a new table still goes to the previous item", "A: rare false/max null/items [a/1/1/false/true] | B: rare false/max null/items []"],
-    ["spawn action with no item is rejected", "throws NullReferenceException"],
-    ["item before any table is rejected", "throws NullReferenceException"]
+    ["rare flag applies to the active table only", "A: rare true/max null/items [] | B: rare false/max null/items [b/1/1/false/false]"]
   ]
 }

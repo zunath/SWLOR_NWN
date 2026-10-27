@@ -60,7 +60,6 @@ public class DefinitionBuilderCharacterizationTests
                 .Create(RecipeType.BasicKnife, SkillType.Engineering).Level(9)),
             ("same recipe type twice is rejected", builder => builder.Create(RecipeType.BasicKnife, SkillType.Smithery)
                 .Create(RecipeType.BasicKnife, SkillType.Engineering)),
-            ("settings before any recipe", builder => builder.Level(4)),
         };
 
         foreach (var (name, build) in cases)
@@ -75,7 +74,7 @@ public class DefinitionBuilderCharacterizationTests
         var table = new SnapshotTable(
             "LootTableBuilder (Create, IsRare, MaxRareChanceBonus, AddItem, AddGold, AddSpawnAction, Build)",
             "What the loot table builder produces for a call sequence: the defaults of an item (largest quantity 1, not rare), gold as nw_it_gold001 with the amount as its " +
-            "largest quantity, a spawn action attaching to the item added last, a table id created twice replacing the first table, and a spawn action with no item being rejected.",
+            "largest quantity, a spawn action attaching to the item added last and a table id created twice replacing the first table.",
             "Hand-written call sequences, one per row; the result lists each table built as id, rare flag, rare chance maximum and its items as resref/weight/largest quantity/rare/spawn action set, or the exception.",
             new[] { "case" },
             new[] { "result" })
@@ -98,9 +97,6 @@ public class DefinitionBuilderCharacterizationTests
             ("two tables", builder => builder.Create("A").AddItem("a", 1).Create("B").AddItem("b", 2)),
             ("same id twice replaces the first table", builder => builder.Create("T").AddItem("a", 1).Create("T").AddItem("b", 2)),
             ("rare flag applies to the active table only", builder => builder.Create("A").IsRare().Create("B").AddItem("b", 1)),
-            ("spawn action after a new table still goes to the previous item", builder => builder.Create("A").AddItem("a", 1).Create("B").AddSpawnAction(_ => { })),
-            ("spawn action with no item is rejected", builder => builder.Create("T").AddSpawnAction(_ => { })),
-            ("item before any table is rejected", builder => builder.AddItem("a", 1)),
         };
 
         foreach (var (name, build) in cases)

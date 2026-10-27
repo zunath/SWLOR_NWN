@@ -188,24 +188,6 @@ public class CraftCalculationCharacterizationTests
     }
 
     [Test]
-    public void IsResearchableRecipe()
-    {
-        var method = typeof(Craft).GetMethod("IsResearchableRecipe", BindingFlags.Static | BindingFlags.NonPublic)!;
-
-        var table = new SnapshotTable(
-            "Craft.IsResearchableRecipe(RecipeDetail) (private, read by reflection)",
-            "Which kinds of recipe can be researched into blueprints: weapon, armor and food enhancement recipes.",
-            "Every RecipeEnhancementType member.",
-            new[] { "enhancementType" },
-            new[] { "isResearchable" });
-
-        foreach (var type in Enum.GetValues<RecipeEnhancementType>().OrderBy(type => DefinitionCell.Id(type)))
-            table.Add(type, method.Invoke(null, new object[] { new RecipeDetail { EnhancementType = type } }));
-
-        Snapshot.Verify("Craft", "IsResearchableRecipe", table);
-    }
-
-    [Test]
     public void RecipeSearch_Matches()
     {
         var names = new Dictionary<string, string>

@@ -1,4 +1,3 @@
-using System.Reflection;
 using NUnit.Framework;
 using SWLOR.Game.Server.CharacterizationTests.Definitions;
 using SWLOR.Game.Server.CharacterizationTests.Support;
@@ -6,27 +5,18 @@ using SWLOR.Game.Server.Entity;
 using SWLOR.Game.Server.Extension;
 using SWLOR.Game.Server.Service;
 using SWLOR.Game.Server.Service.SkillService;
-using GameRandom = SWLOR.Game.Server.Service.Random;
 
 namespace SWLOR.Game.Server.CharacterizationTests.Service;
 
 /// <summary>
 /// Locks the rank rules of the skill XP award that work on a <see cref="Player"/> record without the engine: skill point
-/// totals, rank limits and ceilings, the total-rank skill cap, which skills may decay when the cap is reached, and how
-/// much XP a skill can still take. <c>Skill.GiveSkillXP</c> itself needs the engine (Tier B); these are the rules it applies.
+/// totals, rank limits and ceilings, the total-rank skill cap (which blocks an award when no other skill can give up a rank), and how
+/// much XP a skill can still take. <c>Skill.GiveSkillXP</c> itself needs the engine, and the choice of which skill decays is made in a
+/// private helper that no public call reaches on its own (both are Tier B); these are the public rules around them.
 /// </summary>
 [NonParallelizable]
 public class SkillRankRuleCharacterizationTests
 {
-    private const int DecayPickSeed = 4101;
-    private const int DecayPickDraws = 24;
-
-    private static readonly MethodInfo DecayCandidatesMethod =
-        typeof(Skill).GetMethod("GetDecayCandidates", BindingFlags.Static | BindingFlags.NonPublic)!;
-
-    private static readonly MethodInfo DecayCapacityMethod =
-        typeof(Skill).GetMethod("GetDecayCapacity", BindingFlags.Static | BindingFlags.NonPublic)!;
-
     private static readonly SkillType[] CappedFillers =
     {
         SkillType.Piloting, SkillType.FirstAid, SkillType.Smithery, SkillType.Fabrication, SkillType.Gathering, SkillType.Leadership,
@@ -73,6 +63,10 @@ public class SkillRankRuleCharacterizationTests
                 CappedFillers.Select((skill, index) => (skill, State(49, locked: index < 5))).ToArray()),
             new Scenario("at the cap, two skills above their limit", SkillType.Armor, State(8),
                 CappedFillers.Select((skill, index) => (skill, State(49, limit: index < 2 ? 40 : null))).ToArray()),
+            new Scenario("at the cap, one skill 3 ranks above its limit", SkillType.Armor, State(8),
+                Fillers(49, locked: true, count: 7).Append((SkillType.Force, State(49, limit: 46))).ToArray()),
+            new Scenario("at the cap, two skills 1 and 2 ranks above their limits", SkillType.Armor, State(8),
+                Fillers(49, locked: true, count: 6).Append((SkillType.BeastMastery, State(49, limit: 48))).Append((SkillType.Force, State(49, limit: 47))).ToArray()),
             new Scenario("at the cap, a skill at rank zero is not a candidate", SkillType.Armor, State(8),
                 Fillers(49, locked: true, count: 7).Append((SkillType.Force, State(49, locked: true))).Append((SkillType.Unarmed, State(0))).ToArray()),
             new Scenario("one free rank, stored XP already pays for it", SkillType.Armor, State(8, Skill.GetRequiredXP(8) + 10),
@@ -173,14 +167,13 @@ public class SkillRankRuleCharacterizationTests
         var scenarios = Scenarios();
 
         var table = new SnapshotTable(
-            "Skill.GetTotalContributingSkillRanks / Skill.IsBlockedBySkillCap / Skill.GetMaxDistributableXP(Player, SkillType) and the private GetDecayCandidates / GetDecayCapacity",
-            "For a skill about to gain XP: the total ranks counted against the cap of 400, whether the cap blocks the award (at the cap with no skill left to decay), " +
-            "the skills that decay first (unlocked skills above their limit, otherwise unlocked skills without a limit), the ranks decay can take, and the most XP " +
-            "the skill can take before any would be lost. The two private methods are read by reflection.",
+            "Skill.GetTotalContributingSkillRanks / Skill.IsBlockedBySkillCap / Skill.GetMaxDistributableXP(Player, SkillType)",
+            "For a skill about to gain XP: the total ranks counted against the cap of 400, whether the cap blocks the award (at the cap with no unlocked skill left to give up a rank), " +
+            "and the most XP the skill can take before any would be lost (limited by its rank ceiling, the free ranks under the cap and the ranks other skills can give up).",
             "Hand-built player records, one per row; see the case column. The target is Armor unless the case says language (Mirialan). Fillers are Piloting, First Aid, Smithery, Fabrication, " +
-            "Gathering, Leadership, Beast Mastery and Force, in that record order. A candidate list is in record order.",
+            "Gathering, Leadership, Beast Mastery and Force, in that record order.",
             new[] { "case", "skill", "rank", "xp", "limit" },
-            new[] { "totalRanks", "isBlocked", "decayCandidates", "decayCapacity", "maxDistributableXP" })
+            new[] { "totalRanks", "isBlocked", "maxDistributableXP" })
         {
             AllowConstantOutputs = true
         };
@@ -188,9 +181,6 @@ public class SkillRankRuleCharacterizationTests
         foreach (var scenario in scenarios)
         {
             var player = Build(scenario);
-            var candidates = ((List<SkillType>)DecayCandidatesMethod.Invoke(null, new object[] { player, scenario.Skill })!)
-                .Select(skill => DefinitionCell.Text(skill))
-                .ToArray();
             table.Add(
                 scenario.Name,
                 scenario.Skill,
@@ -199,8 +189,6 @@ public class SkillRankRuleCharacterizationTests
                 scenario.Target.RankLimit,
                 Skill.GetTotalContributingSkillRanks(player),
                 Skill.IsBlockedBySkillCap(player, scenario.Skill),
-                candidates,
-                (int)DecayCapacityMethod.Invoke(null, new object[] { player, scenario.Skill })!,
                 Skill.GetMaxDistributableXP(player, scenario.Skill));
         }
 
@@ -212,43 +200,6 @@ public class SkillRankRuleCharacterizationTests
     {
         using var cache = new SkillCacheScope();
         Assert.That(Skill.GetMaxDistributableXP(new Player(), SkillType.Invalid), Is.EqualTo(0));
-    }
-
-    [Test]
-    public void SkillDecayPick()
-    {
-        using var cache = new SkillCacheScope();
-        using var random = new SeededRandom(DecayPickSeed);
-
-        var table = new SnapshotTable(
-            "Random.Next(count) over Skill.GetDecayCandidates (the decay pick in Skill.GiveSkillXP)",
-            "When a rank-up pushes the player over the skill cap, GiveSkillXP removes a rank from one decay candidate chosen with Random.Next(candidates.Count). " +
-            "GiveSkillXP needs the engine (Tier B), so this records the candidate lists (read from the private GetDecayCandidates) and the same pick expression " +
-            "candidates[Random.Next(candidates.Count)] drawn from a seeded generator.",
-            $"The cases of SkillCapRules that have at least two decay candidates and a skill that counts toward the cap; {DecayPickDraws} consecutive picks per case from a generator reseeded with {DecayPickSeed} for each case.",
-            new[] { "case" },
-            new[] { "candidateCount", "picks" },
-            DecayPickSeed)
-        {
-            AllowConstantOutputs = true
-        };
-
-        foreach (var scenario in Scenarios())
-        {
-            var player = Build(scenario);
-            var candidates = (List<SkillType>)DecayCandidatesMethod.Invoke(null, new object[] { player, scenario.Skill })!;
-            if (candidates.Count < 2 || scenario.Skill == SkillType.Mirialan)
-                continue;
-
-            random.Reseed(DecayPickSeed);
-            var picks = new List<string>();
-            for (var draw = 0; draw < DecayPickDraws; draw++)
-                picks.Add(DefinitionCell.Text(candidates[GameRandom.Next(candidates.Count)]));
-
-            table.Add(scenario.Name, candidates.Count, picks);
-        }
-
-        Snapshot.Verify("Skill", "SkillDecayPick", table);
     }
 
     [Test]

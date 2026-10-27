@@ -39,8 +39,8 @@ if [ -z "$OUT" ]; then
     exit 2
 fi
 if [ ${#PROJECTS[@]} -eq 0 ]; then
-    PROJECTS=(SWLOR.Game.Server.Tests SWLOR.Game.Server.CharacterizationTests SWLOR.CombatSim.Tests SWLOR.CLI.Tests
-              SWLOR.NWN.Formats.Tests)
+    PROJECTS=(SWLOR.Game.Server.Tests SWLOR.Game.Server.CharacterizationTests SWLOR.Architecture.Tests
+              SWLOR.CombatSim.Tests SWLOR.CLI.Tests SWLOR.NWN.Formats.Tests)
 fi
 
 cd "$(dirname "${BASH_SOURCE[0]}")/../.."
@@ -138,6 +138,13 @@ exclusions_for() {
     esac
 }
 
+# Projects that never run with coverage: SWLOR.Architecture.Tests reads the IL of SWLOR.Game.Server.dll from disk, and
+# the collector rewrites that file in place (its own tracker calls would show up as dependencies). The project runs no
+# game code, so there is no coverage to collect from it anyway.
+without_coverage() {
+    [ "$1" = SWLOR.Architecture.Tests ]
+}
+
 # Tests that cannot run with coverage instrumentation on, one term per line in the same form as above. With coverage
 # they are left out of the instrumented pass and run on their own, uninstrumented, right after it.
 uninstrumented_for() {
@@ -151,9 +158,7 @@ uninstrumented_for() {
     esac
 }
 
-# Reads terms on stdin, one per line. "Class" matches the whole class, "Class.Method" every case of the method. The
-# class term has no trailing dot on purpose: NUnit also matches the fixture itself (named Namespace.Class), and a fixture
-# that is only partly filtered out still runs its OneTimeSetUp, which fails for the classes excluded above.
+# Reads terms on stdin, one per line. "Class" matches the whole class, "Class.Method" every case of the method.
 # $1 = exclude builds FullyQualifiedName!~.Term terms joined with &, $1 = include builds FullyQualifiedName~.Term terms
 # joined with |.
 build_filter() {
@@ -190,6 +195,20 @@ run_pass() {
     dotnet "${args[@]}" 2>&1 | tee "$OUT/$project$suffix.log"
     local code=${PIPESTATUS[0]}
     echo "::endgroup::"
+    # NUnit still runs the OneTimeSetUp of a fixture whose tests were all filtered out, and dotnet test then exits 1
+    # although every test that ran passed (seen with the excluded Roslyn-harness fixtures above). Accept that exit code
+    # only when the run passed and every fixture that failed its setup is one of the excluded classes.
+    if [ "$code" -ne 0 ] && grep -q '^Passed!' "$OUT/$project$suffix.log"; then
+        local fixture seen=0 unexpected=0
+        while IFS= read -r fixture; do
+            seen=1
+            grep -qxF "${fixture##*.}" <<< "$EXCLUDED_CLASSES" || unexpected=1
+        done < <(sed -nE 's/^Setup failed for test fixture ([^ ]+).*/\1/p' "$OUT/$project$suffix.log")
+        if [ "$seen" = 1 ] && [ "$unexpected" = 0 ]; then
+            echo "Only excluded fixtures failed their setup; counting this pass as passed."
+            code=0
+        fi
+    fi
     # The collector writes <results>/<run guid>/coverage.cobertura.xml (and a second copy deeper down). Keep one copy
     # per project where the report step finds it.
     if [ "$coverage" = 1 ]; then
@@ -210,8 +229,9 @@ failed=()
 summary_rows=()
 for project in "${PROJECTS[@]}"; do
     exclusions="$(exclusions_for "$project")"
+    EXCLUDED_CLASSES="$(grep -v '\.' <<< "$exclusions" || true)"
     uninstrumented="$(uninstrumented_for "$project")"
-    if [ "$COVERAGE" = 1 ]; then
+    if [ "$COVERAGE" = 1 ] && ! without_coverage "$project"; then
         # Instrumented pass: everything except the exclusions and the tests that cannot run instrumented.
         both="$exclusions"$'\n'"$uninstrumented"
         run_pass "$project" "$project" "$(build_filter exclude <<< "$both")" 1 "$(count_terms "$both")"

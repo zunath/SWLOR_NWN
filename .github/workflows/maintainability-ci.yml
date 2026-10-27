@@ -122,7 +122,6 @@ jobs:
           path: |
             ${{ runner.temp }}/maintainability-ci/report/**
             ${{ runner.temp }}/maintainability-ci/results/**/*.trx
-            ${{ runner.temp }}/maintainability-ci/results/coverage/*.cobertura.xml
             ${{ runner.temp }}/maintainability-ci/results/*.log
           if-no-files-found: warn
           retention-days: 14

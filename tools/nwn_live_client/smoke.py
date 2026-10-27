@@ -312,6 +312,8 @@ class SmokeRun:
         self.results = RunResults(label=label, mode='server-only' if self.server_only else 'full',
                                   started_utc=utc_now(), steps=[], commit=head_commit(live.REPO_ROOT))
         self.stack: Stack | None = None
+        # True when the stack could not be prepared, so no scenario step ran (exit code 2).
+        self.setup_failed = False
         self._clock = time.monotonic()
 
     # -- stack ------------------------------------------------------
@@ -466,6 +468,7 @@ class SmokeRun:
         try:
             self.create_stack()
         except Exception as error:
+            self.setup_failed = True
             self.results.error = f'The stack could not be prepared: {error}'
             self.finish()
             return self.results
@@ -574,11 +577,16 @@ def run_command(options: argparse.Namespace) -> int:
         label = run_label(options.name, number, options.repeat)
         results_dir = batch / label if options.repeat > 1 else batch
         results_dir.mkdir(parents=True, exist_ok=True)
-        results = SmokeRun(options, label, results_dir).execute()
+        smoke_run = SmokeRun(options, label, results_dir)
+        results = smoke_run.execute()
         documents.append(results_to_json(results))
+        if smoke_run.setup_failed:
+            # The documented "could not be prepared" code; repeating would fail the same way.
+            exit_code = 2
+            break
         if results.failed:
             exit_code = 1
-    if options.repeat > 1:
+    if options.repeat > 1 and exit_code != 2:
         differences = [difference for later in documents[1:] for difference in compare_results(documents[0], later)]
         (batch / 'comparison.json').write_text(json.dumps({'runs': options.repeat, 'differences': differences},
                                                            indent=2) + '\n', 'utf-8')

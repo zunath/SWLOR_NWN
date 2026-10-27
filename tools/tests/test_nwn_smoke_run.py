@@ -326,7 +326,31 @@ class RunTests(unittest.TestCase):
                 results = run.execute()
             self.assertIn('docker is not on PATH.', results.error)
             self.assertTrue(results.failed)
+            self.assertTrue(run.setup_failed)
             self.assertTrue((Path(folder) / 'results.json').is_file())
+
+    def test_a_setup_failure_exits_with_code_2_and_is_not_repeated(self):
+        with tempfile.TemporaryDirectory() as folder:
+            with patch.object(smoke.live, 'create', side_effect=LiveStackError('docker is not on PATH.')) as create, \
+                    patch.object(smoke.live, 'log'):
+                code = smoke.run_command(options(results_root=Path(folder), repeat=3))
+            self.assertEqual(2, code)
+            self.assertEqual(1, create.call_count)
+
+    def test_a_failed_step_exits_with_code_1_and_a_clean_run_with_0(self):
+        def outcome(status, clean):
+            def execute(self):
+                self.results.steps = [smoke.StepResult(d.id, d.title, smoke.PASS if status == smoke.PASS else status)
+                                      for d in smoke.SCENARIO]
+                self.results.teardown = {'clean': clean}
+                return self.results
+            return execute
+        with tempfile.TemporaryDirectory() as folder, patch.object(smoke.live, 'log'):
+            cases = ((smoke.PASS, True, 0), (smoke.FAIL, True, 1), (smoke.PASS, False, 1))
+            for number, (status, clean, expected) in enumerate(cases):
+                with patch.object(smoke.SmokeRun, 'execute', outcome(status, clean)):
+                    code = smoke.run_command(options(results_root=Path(folder), name=f'smoke-{number}'))
+                self.assertEqual(expected, code, (status, clean))
 
     def test_results_inside_the_repository_are_refused(self):
         inside = smoke.live.REPO_ROOT / 'smoke-results'

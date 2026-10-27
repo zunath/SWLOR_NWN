@@ -3,6 +3,8 @@
   "services": [
     { "name": "Achievement", "domain": "Character" },
     { "name": "Bank", "domain": "Economy" },
+    { "name": "ChatCommand", "domain": "Social" },
+    { "name": "ChatPortraitTells", "domain": "Social" },
     { "name": "Currency", "domain": "Economy" },
     { "name": "DMBlueprintCatalog", "domain": "Administration" },
     { "name": "DMCreatorFavorite", "domain": "Administration" },
@@ -14,6 +16,8 @@
     { "name": "DMPresence", "domain": "Administration" },
     { "name": "Faction", "domain": "Quests" },
     { "name": "Guild", "domain": "Economy" },
+    { "name": "Party", "domain": "Social" },
+    { "name": "PlayerList", "domain": "Social" },
     { "name": "PlayerMarket", "domain": "Economy" },
     { "name": "Taxi", "domain": "World" }
   ]

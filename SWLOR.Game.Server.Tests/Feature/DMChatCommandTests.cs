@@ -88,8 +88,9 @@ public class DMChatCommandTests
         var chatCommandSource = File.ReadAllText(Path.Combine(
             root.FullName,
             "SWLOR.Game.Server",
-            "Service",
-            "ChatCommand.cs"));
+            "Domain",
+            "Social",
+            "ChatCommandService.cs"));
         var targetingSource = File.ReadAllText(Path.Combine(
             root.FullName,
             "SWLOR.Game.Server",

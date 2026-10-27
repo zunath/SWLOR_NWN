@@ -68,9 +68,9 @@ Status: `open`, `in progress`, `review` (pull request open), `done`, `blocked`.
 | P1-2 | Engine seam for NWNX plugins | P1-1 | Sonnet | done | [#2922](https://github.com/zunath/SWLOR_NWN/pull/2922) | Same generator and script now emit one seam per plugin: `IXxxPlugin`, `NwnCoreXxxPlugin`, `XxxPluginRuntime`, `FakeXxxPlugin` (16 plugins, 401 members). Four data-only nested result types stay as they are. Proofs in `SWLOR.NWN.API.Tests` (341 tests); engine boots and engine tests match the base. **Phase 1 seams complete.** |
 | P2-0 | DI pilot: composition root, facade accessor, architecture rules, DependencyInjection.md, and `Achievement`, `Faction`, `Taxi` | P1-1 | Sonnet build, Opus review | done | [#2928](https://github.com/zunath/SWLOR_NWN/pull/2928) | Container built in bootstrap step `BuildServiceContainer` (before handlers); facades forward via `FacadeAccessor`; instances in `Domain/<Domain>/`; `IDBService` + `StaticDBAdapter`; `ConvertedServices.json` drives the new architecture rules. Coverage: Achievement 52/52, Faction 65/65, Taxi 45/45 lines. Decisions recorded in the specs' Phase 2 section. |
 | P2-A1 | Wave A, Economy: `Bank`, `Currency`, `Guild`, `PlayerMarket` (about 930 lines) | P2-0 | Sonnet | done | [#2933](https://github.com/zunath/SWLOR_NWN/pull/2933) | Coverage: Bank 8% -> 82%, Currency 0% -> 100%, Guild 26% -> 95%, PlayerMarket 22% -> 97%. `IDBService` gained `Delete`, `Search`, `SearchCount`; test helpers `InMemoryDBService`, `FacadeContainer`; static properties become interface properties with field-less facade getters (DependencyInjection.md). |
-| P2-A2 | Wave A, Social: `ChatPortraitTells`, `Party`, `ChatCommand`, `PlayerList` (about 2,000 lines) | P2-0 | Sonnet | in progress | | Worktree `.claude/worktrees/mr-p2-a2` |
+| P2-A2 | Wave A, Social: `ChatPortraitTells`, `Party`, `ChatCommand`, `PlayerList` (about 2,000 lines) | P2-0 | Sonnet | done | [#2934](https://github.com/zunath/SWLOR_NWN/pull/2934) | Coverage 0% -> 93-98% each. Native reads (`g_pAppManager`) sit behind `protected virtual` methods whose default is the original code; engine structures with native finalizers likewise (DependencyInjection.md). Engine tests reach party caches through `EngineTests/Framework/PartyCaches.cs`. |
 | P2-A3 | Wave A, Administration: the eight `DM*` services (about 1,970 lines) | P2-0 | Sonnet | in progress | | Worktree `.claude/worktrees/mr-p2-a3` |
-| P2-A4 | Wave A, World I: `Notes`, `Area`, `Planet`, `Traps`, `HoloCom` (about 1,600 lines) | P2-0 | Sonnet | open | | |
+| P2-A4 | Wave A, World I: `Notes`, `Area`, `Planet`, `Traps`, `HoloCom` (about 1,600 lines) | P2-0 | Sonnet | in progress | | Worktree `.claude/worktrees/mr-p2-a4` |
 | P2-A5 | Wave A, World II: `Weather`, `Music` (about 1,860 lines) | P2-0 | Sonnet | open | | |
 | P2-A6 | Wave A, World III: `Fishing`, `Shuttle` (about 2,300 lines) | P2-0 | Sonnet | open | | |
 | P2-A7 | Wave A, Quests: `QuestContractBoard`, then `Quest` (about 3,800 lines; split if needed) | P2-0 | Sonnet | open | | |
@@ -89,7 +89,7 @@ Phases 1-4 and the final cutover get their own items when Phase 0 is done.
 Started 2026-10-26 by the coordinating session, each as a subagent with the agent brief:
 
 - P2-A3 (Sonnet): branch `claude/mr-p2-a3`, worktree `C:\Projects\SWLOR_NWN\.claude\worktrees\mr-p2-a3`.
-- P2-A2 (Sonnet): branch `claude/mr-p2-a2`, worktree `C:\Projects\SWLOR_NWN\.claude\worktrees\mr-p2-a2`.
+- P2-A4 (Sonnet): branch `claude/mr-p2-a4`, worktree `C:\Projects\SWLOR_NWN\.claude\worktrees\mr-p2-a4`.
 - P0-2b (Sonnet): branch `claude/mr-p0-2b`, worktree `C:\Projects\SWLOR_NWN\.claude\worktrees\mr-p0-2b`.
 
 If this session ends before they report: check `gh pr list --base feature/maintainability-refactor` and the

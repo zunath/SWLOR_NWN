@@ -18,9 +18,12 @@ public class FacadeForwardingTests
 {
     private static IEnumerable<TestCaseData> Services() => ConvertedServiceFixtures.AsTestCases();
 
-    // The facade's methods, and the getters of its static properties (the interface lists a property as its get_ method).
+    // The facade's methods and the getters of its static properties (the interface lists a property as its get_ method),
+    // plus the internal static methods that code inside the server (a native hook, say) calls. Private members are the
+    // facade's own plumbing.
     private static IEnumerable<MethodInfo> FacadeMethods(Type facade) =>
-        facade.GetMethods(BindingFlags.Public | BindingFlags.Static | BindingFlags.DeclaredOnly)
+        facade.GetMethods(BindingFlags.Public | BindingFlags.NonPublic | BindingFlags.Static | BindingFlags.DeclaredOnly)
+            .Where(method => method.IsPublic || method.IsAssembly)
             .Where(method => !method.IsSpecialName || method.Name.StartsWith("get_", StringComparison.Ordinal));
 
     private static MethodInfo Signature(Type contract, MethodInfo facadeMethod) =>

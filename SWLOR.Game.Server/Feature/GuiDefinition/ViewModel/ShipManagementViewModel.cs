@@ -553,6 +553,162 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
             set => Set(value);
         }
 
+        public bool MidPower1Visible
+        {
+            get => Get<bool>();
+            set => Set(value);
+        }
+
+        public bool MidPower2Visible
+        {
+            get => Get<bool>();
+            set => Set(value);
+        }
+
+        public bool MidPower3Visible
+        {
+            get => Get<bool>();
+            set => Set(value);
+        }
+
+        public bool MidPower4Visible
+        {
+            get => Get<bool>();
+            set => Set(value);
+        }
+
+        public bool MidPower5Visible
+        {
+            get => Get<bool>();
+            set => Set(value);
+        }
+
+        public bool MidPower6Visible
+        {
+            get => Get<bool>();
+            set => Set(value);
+        }
+
+        public bool MidPower7Visible
+        {
+            get => Get<bool>();
+            set => Set(value);
+        }
+
+        public bool MidPower8Visible
+        {
+            get => Get<bool>();
+            set => Set(value);
+        }
+
+        public string MidPower1Tooltip
+        {
+            get => Get<string>();
+            set => Set(value);
+        }
+
+        public string MidPower2Tooltip
+        {
+            get => Get<string>();
+            set => Set(value);
+        }
+
+        public string MidPower3Tooltip
+        {
+            get => Get<string>();
+            set => Set(value);
+        }
+
+        public string MidPower4Tooltip
+        {
+            get => Get<string>();
+            set => Set(value);
+        }
+
+        public string MidPower5Tooltip
+        {
+            get => Get<string>();
+            set => Set(value);
+        }
+
+        public string MidPower6Tooltip
+        {
+            get => Get<string>();
+            set => Set(value);
+        }
+
+        public string MidPower7Tooltip
+        {
+            get => Get<string>();
+            set => Set(value);
+        }
+
+        public string MidPower8Tooltip
+        {
+            get => Get<string>();
+            set => Set(value);
+        }
+
+        public string MidPower1Resref
+        {
+            get => Get<string>();
+            set => Set(value);
+        }
+
+        public string MidPower2Resref
+        {
+            get => Get<string>();
+            set => Set(value);
+        }
+
+        public string MidPower3Resref
+        {
+            get => Get<string>();
+            set => Set(value);
+        }
+
+        public string MidPower4Resref
+        {
+            get => Get<string>();
+            set => Set(value);
+        }
+
+        public string MidPower5Resref
+        {
+            get => Get<string>();
+            set => Set(value);
+        }
+
+        public string MidPower6Resref
+        {
+            get => Get<string>();
+            set => Set(value);
+        }
+
+        public string MidPower7Resref
+        {
+            get => Get<string>();
+            set => Set(value);
+        }
+
+        public string MidPower8Resref
+        {
+            get => Get<string>();
+            set => Set(value);
+        }
+
+        public bool IsMidPowerVisible
+        {
+            get => Get<bool>();
+            set => Set(value);
+        }
+
+        public bool IsConfigurationVisible
+        {
+            get => Get<bool>();
+            set => Set(value);
+        }
+
         public bool IsBoardShipEnabled
         {
             get => Get<bool>();
@@ -816,6 +972,14 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
                 HighPower6Resref = _blank;
                 HighPower7Resref = _blank;
                 HighPower8Resref = _blank;
+
+                for (var slot = 1; slot <= 8; slot++)
+                {
+                    SetMidSlot(slot, false, _blank, string.Empty);
+                }
+
+                IsMidPowerVisible = false;
+                IsConfigurationVisible = true;
 
                 LowPower1Visible = false;
                 LowPower2Visible = false;
@@ -1157,6 +1321,17 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
                     LowPower8Tooltip = string.Empty;
                 }
 
+                for (var slot = 1; slot <= 8; slot++)
+                {
+                    var midModule = ship.Status.MidPowerModules.GetValueOrDefault(slot);
+                    var midDetail = midModule == null ? null : Space.GetShipModuleDetailByItemTag(midModule.ItemTag);
+                    SetMidSlot(slot, shipDetail.MidPowerNodes >= slot, midDetail?.Texture ?? _blank, midDetail?.Name ?? string.Empty);
+                }
+
+                // Legacy hulls have no mid slots and revamp hulls have no configuration slots.
+                IsMidPowerVisible = shipDetail.MidPowerNodes > 0;
+                IsConfigurationVisible = shipDetail.ConfigurationNodes > 0;
+
                 Configuration1Visible = shipDetail.ConfigurationNodes >= 1;
                 Configuration2Visible = shipDetail.ConfigurationNodes >= 2;
                 Configuration3Visible = shipDetail.ConfigurationNodes >= 3;
@@ -1305,6 +1480,21 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
             ToggleRegisterButtons();
         }
 
+        private void SetMidSlot(int slot, bool visible, string resref, string tooltip)
+        {
+            switch (slot)
+            {
+                case 1: MidPower1Visible = visible; MidPower1Resref = resref; MidPower1Tooltip = tooltip; break;
+                case 2: MidPower2Visible = visible; MidPower2Resref = resref; MidPower2Tooltip = tooltip; break;
+                case 3: MidPower3Visible = visible; MidPower3Resref = resref; MidPower3Tooltip = tooltip; break;
+                case 4: MidPower4Visible = visible; MidPower4Resref = resref; MidPower4Tooltip = tooltip; break;
+                case 5: MidPower5Visible = visible; MidPower5Resref = resref; MidPower5Tooltip = tooltip; break;
+                case 6: MidPower6Visible = visible; MidPower6Resref = resref; MidPower6Tooltip = tooltip; break;
+                case 7: MidPower7Visible = visible; MidPower7Resref = resref; MidPower7Tooltip = tooltip; break;
+                case 8: MidPower8Visible = visible; MidPower8Resref = resref; MidPower8Tooltip = tooltip; break;
+            }
+        }
+
         private uint GetShipLocation(WorldProperty property, out bool isDockInstanceLoading)
         {
             isDockInstanceLoading = false;
@@ -1444,6 +1634,8 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
                         Size = shipDetail.Size == ShipSize.Invalid ? ShipSize.Small : shipDetail.Size
                     }
                 };
+                // A revamp hull takes its stats from the hull and the pilot, and starts full.
+                Space.RecalculateShipStats(ship.Status, GetAbilityScore(Player, AbilityType.Willpower), true);
                 DB.Set(ship);
 
                 // Update the UI with the new ship details.
@@ -1554,11 +1746,27 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
             var moduleDetails = Space.GetShipModuleDetailByItemTag(itemTag);
             var shipDetails = Space.GetShipDetailByItemTag(dbShip.Status.ItemTag);
 
+            // A revamp hull takes only revamp modules, a legacy hull only legacy modules, and capital modules need a capital hull.
+            var fitError = ShipFitRules.GetFitError(shipDetails, moduleDetails);
+            if (!string.IsNullOrEmpty(fitError))
+            {
+                SendMessageToPC(Player, fitError);
+                return false;
+            }
+
             // No high power nodes available.
             if (moduleDetails.PowerType == ShipModulePowerType.High &&
                 dbShip.Status.HighPowerModules.Count >= shipDetails.HighPowerNodes)
             {
                 SendMessageToPC(Player, "No high power nodes are available.");
+                return false;
+            }
+
+            // No mid power nodes available.
+            if (moduleDetails.PowerType == ShipModulePowerType.Mid &&
+                dbShip.Status.MidPowerModules.Count >= shipDetails.MidPowerNodes)
+            {
+                SendMessageToPC(Player, "No mid power nodes are available.");
                 return false;
             }
 
@@ -1585,136 +1793,74 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
                 return false;
             }
 
-            var capShip = dbShip.Status.CapitalShip;
-            var capMod = moduleDetails.CapitalClassModule;
-
-            if (!capShip && capMod)
-            {
-                SendMessageToPC(Player, "Capital class modules may only be installed to capital ships.");
-                return false;
-            }
-
-            if (capShip && !capMod)
-            {
-                SendMessageToPC(Player, "Capital ships can only equip capital class modules.");
-                return false;
-            }
-
             return true;
         }
 
-        private void ProcessHighPower(int slot)
+        private void ProcessHighPower(int slot) => ProcessPower(ShipModulePowerType.High, slot);
+
+        private void ProcessMidPower(int slot) => ProcessPower(ShipModulePowerType.Mid, slot);
+
+        private void ProcessLowPower(int slot) => ProcessPower(ShipModulePowerType.Low, slot);
+
+        private static Dictionary<int, ShipStatus.ShipStatusModule> GetPowerModules(ShipStatus status, ShipModulePowerType row)
         {
-            var shipId = _shipIds[SelectedShipIndex];
-            var dbShip = DB.Get<PlayerShip>(shipId);
-            var module = dbShip.Status.HighPowerModules.ContainsKey(slot)
-                ? dbShip.Status.HighPowerModules[slot]
-                : null;
-
-            // No module is equipped in this slot.
-            // Put player into targeting mode to select a module.
-            if (module == null)
+            return row switch
             {
-                Targeting.EnterTargetingMode(Player, ObjectType.Item, "Please click on a ship high-powered module within your inventory.",
-                    item =>
-                {
-                    dbShip = DB.Get<PlayerShip>(shipId);
-                    var itemTag = GetTag(item);
-                    if (!Space.IsRegisteredShipModule(itemTag))
-                    {
-                        SendMessageToPC(Player, "Only high-powered ship modules may be installed to this slot.");
-                        return;
-                    }
-
-                    var moduleDetails = Space.GetShipModuleDetailByItemTag(itemTag);
-
-                    if (!ValidateModuleEquip(dbShip, item))
-                        return;
-
-                    if (moduleDetails.PowerType != ShipModulePowerType.High)
-                    {
-                        SendMessageToPC(Player, "Only high-powered ship modules may be installed to this slot.");
-                        return;
-                    }
-
-                    var moduleBonus = Space.GetModuleBonus(item);
-                    dbShip.Status.HighPowerModules[slot] = new ShipStatus.ShipStatusModule
-                    {
-                        ItemInstanceId = GetObjectUUID(item),
-                        SerializedItem = ObjectPlugin.Serialize(item),
-                        ItemTag = itemTag,
-                        RecastTime = DateTime.MinValue,
-                        ModuleBonus = moduleBonus,
-                        RequiredSkills = Item.GetRequiredSkills(item)
-                    };
-
-                    moduleDetails.ModuleEquippedAction?.Invoke(dbShip.Status, moduleBonus);
-
-                    DB.Set(dbShip);
-
-                    DestroyObject(item);
-                    LoadShip();
-                });
-            }
-            // A module exists. Prompt user whether they'd like to uninstall it.
-            else
-            {
-                var moduleDetail = Space.GetShipModuleDetailByItemTag(module.ItemTag);
-                ShowModal($"{moduleDetail.Name} is equipped to high slot #{slot}. Would you like to uninstall it?", () =>
-                {
-                    var item = ObjectPlugin.Deserialize(module.SerializedItem);
-                    var moduleBonus = Space.GetModuleBonus(item);
-                    if (!Item.TryAcquireItem(Player, item))
-                    {
-                        SendMessageToPC(Player, Item.InventoryFullMessage);
-                        return;
-                    }
-
-                    moduleDetail.ModuleUnequippedAction?.Invoke(dbShip.Status, moduleBonus);
-                    dbShip.Status.HighPowerModules.Remove(slot);
-                    DB.Set(dbShip);
-                    LoadShip();
-                });
-            }
+                ShipModulePowerType.High => status.HighPowerModules,
+                ShipModulePowerType.Mid => status.MidPowerModules,
+                _ => status.LowPowerModules
+            };
         }
 
-        private void ProcessLowPower(int slot)
+        private static string GetPowerRowName(ShipModulePowerType row)
         {
+            return row switch
+            {
+                ShipModulePowerType.High => "high",
+                ShipModulePowerType.Mid => "mid",
+                _ => "low"
+            };
+        }
+
+        private void ProcessPower(ShipModulePowerType row, int slot)
+        {
+            var rowName = GetPowerRowName(row);
             var shipId = _shipIds[SelectedShipIndex];
             var dbShip = DB.Get<PlayerShip>(shipId);
-            var module = dbShip.Status.LowPowerModules.ContainsKey(slot)
-                ? dbShip.Status.LowPowerModules[slot]
+            var modules = GetPowerModules(dbShip.Status, row);
+            var module = modules.ContainsKey(slot)
+                ? modules[slot]
                 : null;
 
             // No module is equipped in this slot.
             // Put player into targeting mode to select a module.
             if (module == null)
             {
-                Targeting.EnterTargetingMode(Player, ObjectType.Item, "Please click on a low-powered ship module within your inventory",
+                Targeting.EnterTargetingMode(Player, ObjectType.Item, $"Please click on a ship {rowName}-powered module within your inventory.",
                     item =>
                 {
                     dbShip = DB.Get<PlayerShip>(shipId);
+                    modules = GetPowerModules(dbShip.Status, row);
                     var itemTag = GetTag(item);
                     if (!Space.IsRegisteredShipModule(itemTag))
                     {
-                        SendMessageToPC(Player, "Only low-powered ship modules may be installed to this slot.");
+                        SendMessageToPC(Player, $"Only {rowName}-powered ship modules may be installed to this slot.");
                         return;
                     }
 
                     var moduleDetails = Space.GetShipModuleDetailByItemTag(itemTag);
-                    var moduleBonus = Space.GetModuleBonus(item);
 
                     if (!ValidateModuleEquip(dbShip, item))
                         return;
 
-                    if (moduleDetails.PowerType != ShipModulePowerType.Low)
+                    if (moduleDetails.PowerType != row)
                     {
-                        SendMessageToPC(Player, "Only low-powered ship modules may be installed to this slot.");
+                        SendMessageToPC(Player, $"Only {rowName}-powered ship modules may be installed to this slot.");
                         return;
                     }
 
-
-                    dbShip.Status.LowPowerModules[slot] = new ShipStatus.ShipStatusModule
+                    var moduleBonus = Space.GetModuleBonus(item);
+                    modules[slot] = new ShipStatus.ShipStatusModule
                     {
                         ItemInstanceId = GetObjectUUID(item),
                         SerializedItem = ObjectPlugin.Serialize(item),
@@ -1725,6 +1871,7 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
                     };
 
                     moduleDetails.ModuleEquippedAction?.Invoke(dbShip.Status, moduleBonus);
+                    Space.RecalculateShipStats(dbShip.Status, GetAbilityScore(Player, AbilityType.Willpower));
 
                     DB.Set(dbShip);
 
@@ -1736,7 +1883,7 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
             else
             {
                 var moduleDetail = Space.GetShipModuleDetailByItemTag(module.ItemTag);
-                ShowModal($"{moduleDetail.Name} is equipped to low slot #{slot}. Would you like to uninstall it?", () =>
+                ShowModal($"{moduleDetail.Name} is equipped to {rowName} slot #{slot}. Would you like to uninstall it?", () =>
                 {
                     var item = ObjectPlugin.Deserialize(module.SerializedItem);
                     var moduleBonus = Space.GetModuleBonus(item);
@@ -1747,7 +1894,8 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
                     }
 
                     moduleDetail.ModuleUnequippedAction?.Invoke(dbShip.Status, moduleBonus);
-                    dbShip.Status.LowPowerModules.Remove(slot);
+                    modules.Remove(slot);
+                    Space.RecalculateShipStats(dbShip.Status, GetAbilityScore(Player, AbilityType.Willpower));
                     DB.Set(dbShip);
                     LoadShip();
                 });
@@ -1863,6 +2011,46 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
             ProcessHighPower(8);
         };
 
+
+        public Action OnClickMidPower1() => () =>
+        {
+            ProcessMidPower(1);
+        };
+
+        public Action OnClickMidPower2() => () =>
+        {
+            ProcessMidPower(2);
+        };
+
+        public Action OnClickMidPower3() => () =>
+        {
+            ProcessMidPower(3);
+        };
+
+        public Action OnClickMidPower4() => () =>
+        {
+            ProcessMidPower(4);
+        };
+
+        public Action OnClickMidPower5() => () =>
+        {
+            ProcessMidPower(5);
+        };
+
+        public Action OnClickMidPower6() => () =>
+        {
+            ProcessMidPower(6);
+        };
+
+        public Action OnClickMidPower7() => () =>
+        {
+            ProcessMidPower(7);
+        };
+
+        public Action OnClickMidPower8() => () =>
+        {
+            ProcessMidPower(8);
+        };
 
         public Action OnClickLowPower1() => () =>
         {

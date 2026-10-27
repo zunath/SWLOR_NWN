@@ -33,6 +33,9 @@ namespace SWLOR.Game.Server.Service.SpaceService
 
         public Dictionary<PerkType, int> RequiredPerks { get; set; }
 
+        /// <summary>The revamp hull this ship comes from. Null for legacy ships.</summary>
+        public ShipHullEntry Hull { get; set; }
+
         public ShipDetail()
         {
             Name = string.Empty;

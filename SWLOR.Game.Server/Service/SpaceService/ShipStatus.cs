@@ -85,6 +85,44 @@ namespace SWLOR.Game.Server.Service.SpaceService
         /// <summary>The hull's capacitor regen per second, before the pilot's WIL is added.</summary>
         public double CapacitorRegenPerSecond { get; set; } = 1.0;
 
+        /// <summary>Critical rate bonus from the hull. Stored for the critical hit rules; nothing reads it yet.</summary>
+        public int CriticalBonus { get; set; }
+
+        /// <summary>The movement multiplier while piloting this ship (1.0 is today's speed).</summary>
+        public double SpeedMultiplier { get; set; } = 1.0;
+
+        /// <summary>A Shield Hardener keeps this resistance bonus to every type until this time.</summary>
+        public DateTime HardenedUntil { get; set; }
+
+        /// <summary>The resistance bonus a Shield Hardener grants while hardened.</summary>
+        public int HardenedAmount { get; set; }
+
+        /// <summary>Accuracy lost to an enemy E-War Array (a negative number) until <see cref="AccuracyPenaltyUntil"/>.</summary>
+        public int AccuracyPenalty { get; set; }
+        public DateTime AccuracyPenaltyUntil { get; set; }
+
+        /// <summary>Percent added to max shield by an allied Bulwark Shield Generator until <see cref="ShieldAuraUntil"/>.</summary>
+        public int ShieldAuraPercent { get; set; }
+        public DateTime ShieldAuraUntil { get; set; }
+
+        /// <summary>
+        /// Keeps the Shield Hardener bonus for one more cycle. With two hardeners running, the stronger bonus counts.
+        /// </summary>
+        public void Harden(int amount, double cycleSeconds, DateTime now)
+        {
+            HardenedAmount = HardenedUntil > now ? Math.Max(HardenedAmount, amount) : amount;
+            var until = now.AddSeconds(cycleSeconds + 0.5);
+            if (until > HardenedUntil)
+                HardenedUntil = until;
+        }
+
+        /// <summary>The Accuracy lost to an E-War Array right now (0 or negative).</summary>
+        public int GetAccuracyPenalty(DateTime now) => now < AccuracyPenaltyUntil ? AccuracyPenalty : 0;
+
+        /// <summary>Max shield including any Bulwark Shield Generator bonus that is still active.</summary>
+        public int GetEffectiveMaxShield(DateTime now) =>
+            now < ShieldAuraUntil ? MaxShield + (int)Math.Round(MaxShield * ShieldAuraPercent / 100.0) : MaxShield;
+
         /// <summary>
         /// Fractional shield and capacitor regen carried between ticks. Persisted, because a player's status is
         /// reloaded from the database every tick.

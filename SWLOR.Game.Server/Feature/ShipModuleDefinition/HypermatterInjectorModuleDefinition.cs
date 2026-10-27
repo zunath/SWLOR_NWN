@@ -12,8 +12,6 @@ namespace SWLOR.Game.Server.Feature.ShipModuleDefinition
     {
         private readonly ShipModuleBuilder _builder = new();
 
-        private const string FuelCapsuleItemResref = "ship_fuelcapsule";
-
         public Dictionary<string, ShipModuleDetail> BuildShipModules()
         {
             HypermatterInjector("cap_inject1", "Basic Hypermatter Injector", "Basic Fuel Inj", "Consumes a fuel capsule to restore 8 capacitor.", 1, 8);
@@ -40,53 +38,11 @@ namespace SWLOR.Game.Server.Feature.ShipModuleDefinition
                 .Recast(60f)
                 .OnePress()
                 .ValidationAction((activator, _, _, _, _) =>
-                {
-                    var item = GetItemPossessedBy(activator, FuelCapsuleItemResref);
-                    var stackSize = GetItemStackSize(item);
-                    if (stackSize <= 0 && GetIsPC(activator))
-                    {
-                        return "You need a fuel capsule to activate this module.";
-                    }
-
-                    return string.Empty;
-                })
+                    ShipModuleActions.AmmoError(activator, ShipModuleActions.FuelCapsuleResref, "You need a fuel capsule to activate this module."))
                 .ActivatedAction((activator, activatorShipStatus, target, targetShipStatus, moduleBonus) =>
                 {
-                    if (!GetIsObjectValid(target) || GetIsEnemy(target, activator))
-                    {
-                        target = activator;
-                        targetShipStatus = activatorShipStatus;
-                    }
-
-                    if (activator != target)
-                    {
-                        AssignCommand(activator, () =>
-                        {
-                            var beam = EffectBeam(VisualEffect.Vfx_Beam_Mind, activator, BodyNode.Chest);
-                            ApplyEffectToObject(DurationType.Temporary, beam, target, 1.0f);
-                        });
-                    }
-
-                    var item = GetItemPossessedBy(activator, FuelCapsuleItemResref);
-                    var stackSize = GetItemStackSize(item);
-                    if (stackSize <= 1)
-                    {
-                        DestroyObject(item);
-                    }
-                    else
-                    {
-                        SetItemStackSize(item, stackSize - 1);
-                    }
-
-                    ApplyEffectToObject(DurationType.Instant, EffectVisualEffect(VisualEffect.Vfx_Imp_Breach), target);
-
                     var recovery = capRestore + (moduleBonus + activatorShipStatus.Industrial) * 2;
-                    Space.RestoreCapacitor(target, targetShipStatus, recovery);
-
-                    Messaging.SendMessageNearbyToPlayers(
-                        activator,
-                        receiver => $"{PlayerName.GetDisplayName(receiver, activator)} restores {recovery} capacitor charge to {PlayerName.GetDisplayName(receiver, target)}'s ship.");
-                    CombatPoint.AddSupportCombatPoint(activator, target, SkillType.Piloting);
+                    ShipModuleActions.InjectCapacitor(activator, activatorShipStatus, target, targetShipStatus, recovery);
                 });
         }
     }

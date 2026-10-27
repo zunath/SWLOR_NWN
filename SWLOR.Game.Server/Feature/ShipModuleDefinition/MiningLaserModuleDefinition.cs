@@ -25,8 +25,6 @@ namespace SWLOR.Game.Server.Feature.ShipModuleDefinition
             return _builder.Build();
         }
 
-        private const string Mined = "BEING_MINED";
-
         private void MiningLaser(string itemTag, string name, string shortName, int requiredLevel, int capacitor, float recast)
         {
             _builder.Create(itemTag)
@@ -41,112 +39,10 @@ namespace SWLOR.Game.Server.Feature.ShipModuleDefinition
                 .RequirePerk(PerkType.MiningModules, requiredLevel)
                 .Capacitor(capacitor)
                 .Toggle(recast)
-                .ValidationAction((_, _, target, _, _) =>
-                {
-                    // Ensure an asteroid ore type has been specified by the builder.
-                    var lootTableId = GetLocalString(target, "ASTEROID_LOOT_TABLE_ID");
-                    if (string.IsNullOrWhiteSpace(lootTableId))
-                    {
-                        return "Only asteroids may be targeted with this module.";
-                    }
-
-                    // Ensure required level of the module matches or exceeds tier of asteroid.
-                    var tierRequired = GetLocalInt(target, "ASTEROID_TIER");
-                    if (requiredLevel < tierRequired)
-                    {
-                        return "This mining laser is not powerful enough to harvest that asteroid.";
-                    }
-
-                    if (GetLocalBool(target, Mined))
-                    {
-                        return "This asteroid is already being mined.";
-                    }
-
-                    return string.Empty;
-                })
+                .ValidationAction((_, _, target, _, _) => ShipModuleActions.MiningLaserError(target, requiredLevel))
                 .ActivatedAction((activator, _, target, _, moduleBonus) =>
                 {
-                    SetLocalBool(target, Mined, true);
-                    // Remaining units aren't set - pick a random number to assign.
-                    var remainingUnits = GetLocalInt(target, "ASTEROID_REMAINING_UNITS");
-                    if (remainingUnits <= 0)
-                    {
-                        remainingUnits = Random.D4(1) + 2;
-                        SetLocalInt(target, "ASTEROID_REMAINING_UNITS", remainingUnits);
-                    }
-
-                    AssignCommand(activator, () =>
-                    {
-                        var beam = EffectBeam(VisualEffect.Vfx_Beam_Holy, activator, BodyNode.Chest);
-                        ApplyEffectToObject(DurationType.Temporary, beam, target, recast + 0.1f);
-                    });
-
-                    // At the end of the process, spawn the ore on the activator and reduce remaining units.
-                    DelayCommand(recast + 0.1f, () =>
-                    {
-                        // The pilot may have left their ship before mining completes.
-                        var shipStatus = Space.GetShipStatus(activator);
-                        if (shipStatus == null)
-                            return;
-
-                        // Perk & module bonuses. These increase the overall yield of each asteroid.
-                        var industrialBonus = shipStatus.Industrial;
-
-                        var amountToMine = 1 + Perk.GetPerkLevel(activator, PerkType.StarshipMining) + (int)(industrialBonus / 4) + (int)(moduleBonus)/6f;
-
-                        // Refresh remaining units (could have changed since the start)
-                        remainingUnits = GetLocalInt(target, "ASTEROID_REMAINING_UNITS");
-
-                        // Safety check - if another player pulls all of the ore from the asteroid, give an error message.
-                        if (!GetIsObjectValid(target) || remainingUnits <= 0)
-                        {
-                            SendMessageToPC(activator, "Your target has been fully mined.");
-                            return;
-                        }
-
-                        remainingUnits -= 1 + (int)amountToMine / 2;
-
-                        // Fully deplete the rock - destroy it.
-                        if (remainingUnits <= 0)
-                        {
-                            // DestroyObject bypasses the OnDeath event, and removes the object so we can't send events.
-                            // Use EffectDeath to ensure that we trigger death processing.
-                            SetPlotFlag(target, false);
-                            ApplyEffectToObject(DurationType.Instant, EffectDeath(), target);
-
-                            SendMessageToPC(activator, $"{GetName(target)} has been fully mined.");
-                        }
-                        // Update remaining units.
-                        else
-                        {
-                            SetLocalInt(target, "ASTEROID_REMAINING_UNITS", remainingUnits);
-                        }
-
-                        Loot.SpawnLoot(target, activator, "LOOT_TABLE_");
-
-                        var lootTableId = GetLocalString(target, "ASTEROID_LOOT_TABLE_ID");
-                        var lootTable = Loot.GetLootTableByName(lootTableId);
-
-                        // Spawn the units.
-                        for (var count = 1; count <= amountToMine; count++)
-                        {
-                            var item = lootTable.GetRandomItem();
-                            CreateItemOnObject(item.Resref, activator);
-                        }
-
-                        if (GetIsPC(activator) && !GetIsDM(activator) && !GetIsDMPossessed(activator))
-                        {
-                            var playerId = GetObjectUUID(activator);
-                            var dbPlayer = DB.Get<Player>(playerId);
-                            var rank = dbPlayer.Skills[SkillType.Piloting].Rank;
-                            var asteroidLevel = GetLocalInt(target, "ASTEROID_TIER") * 10;
-                            var delta = asteroidLevel - rank;
-                            var xp = Skill.GetDeltaXP(delta);
-
-                            Skill.GiveSkillXP(activator, SkillType.Piloting, xp);
-                        }
-                    });
-                    SetLocalBool(target, Mined, false);
+                    ShipModuleActions.MineAsteroid(activator, target, recast, moduleBonus);
                 });
         }
     }

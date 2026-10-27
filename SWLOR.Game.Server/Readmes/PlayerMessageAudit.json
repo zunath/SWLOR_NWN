@@ -1590,29 +1590,36 @@
   },
   {
     "File": "SWLOR.Game.Server/Feature/GuiDefinition/ViewModel/DistributeRPXPViewModel.cs",
-    "Line": 87,
+    "Line": 90,
     "Member": "OnClickConfirm",
     "Delivery": "Retained",
     "Call": "FloatingTextStringOnCreature(GetRefusalReason(DB.Get<Player>(playerId)), Player, false)"
   },
   {
     "File": "SWLOR.Game.Server/Feature/GuiDefinition/ViewModel/DistributeRPXPViewModel.cs",
-    "Line": 96,
+    "Line": 100,
     "Member": "OnClickConfirm",
     "Delivery": "Retained",
     "Call": "FloatingTextStringOnCreature($\"XP cannot be distributed in this area.\", Player, false)"
   },
   {
     "File": "SWLOR.Game.Server/Feature/GuiDefinition/ViewModel/DistributeRPXPViewModel.cs",
-    "Line": 102,
+    "Line": 106,
     "Member": "OnClickConfirm",
     "Delivery": "Retained",
     "Call": "FloatingTextStringOnCreature($\"XP cannot be distributed while dead.\", Player, false)"
   },
   {
     "File": "SWLOR.Game.Server/Feature/GuiDefinition/ViewModel/DistributeRPXPViewModel.cs",
-    "Line": 133,
+    "Line": 143,
     "Member": "OnClickConfirm",
+    "Delivery": "Retained",
+    "Call": "FloatingTextStringOnCreature(GetRefusalReason(dbPlayer), Player, false)"
+  },
+  {
+    "File": "SWLOR.Game.Server/Feature/GuiDefinition/ViewModel/DistributeRPXPViewModel.cs",
+    "Line": 181,
+    "Member": "DistributeToBeast",
     "Delivery": "Retained",
     "Call": "FloatingTextStringOnCreature(GetRefusalReason(dbPlayer), Player, false)"
   },
@@ -2549,217 +2556,203 @@
   },
   {
     "File": "SWLOR.Game.Server/Feature/GuiDefinition/ViewModel/ShipManagementViewModel.cs",
-    "Line": 1379,
+    "Line": 1561,
     "Member": "OnClickRegisterShip",
     "Delivery": "Retained",
     "Call": "FloatingTextStringOnCreature(\"Item must be in your inventory.\", Player, false)"
   },
   {
     "File": "SWLOR.Game.Server/Feature/GuiDefinition/ViewModel/ShipManagementViewModel.cs",
-    "Line": 1385,
+    "Line": 1567,
     "Member": "OnClickRegisterShip",
     "Delivery": "Retained",
     "Call": "FloatingTextStringOnCreature(\"Only ship deeds may be targeted.\", Player, false)"
   },
   {
     "File": "SWLOR.Game.Server/Feature/GuiDefinition/ViewModel/ShipManagementViewModel.cs",
-    "Line": 1391,
+    "Line": 1573,
     "Member": "OnClickRegisterShip",
     "Delivery": "Retained",
     "Call": "FloatingTextStringOnCreature(\"You do not meet the requirements necessary to register this ship.\", Player, false)"
   },
   {
     "File": "SWLOR.Game.Server/Feature/GuiDefinition/ViewModel/ShipManagementViewModel.cs",
-    "Line": 1402,
+    "Line": 1584,
     "Member": "OnClickRegisterShip",
     "Delivery": "Retained",
     "Call": "FloatingTextStringOnCreature($\"You may only have {Space.MaxRegisteredShips} ships registered at a time.\", Player, false)"
   },
   {
     "File": "SWLOR.Game.Server/Feature/GuiDefinition/ViewModel/ShipManagementViewModel.cs",
-    "Line": 1457,
+    "Line": 1643,
     "Member": "OnClickRegisterShip",
     "Delivery": "Retained",
     "Call": "FloatingTextStringOnCreature(\"Ship registered!\", Player, false)"
   },
   {
     "File": "SWLOR.Game.Server/Feature/GuiDefinition/ViewModel/ShipManagementViewModel.cs",
-    "Line": 1475,
+    "Line": 1661,
     "Member": "OnClickUnregisterShip",
     "Delivery": "Retained",
     "Call": "FloatingTextStringOnCreature($\"Please uninstall all modules before unregistering your ship.\", Player, false)"
   },
   {
     "File": "SWLOR.Game.Server/Feature/GuiDefinition/ViewModel/ShipManagementViewModel.cs",
-    "Line": 1482,
+    "Line": 1668,
     "Member": "OnClickUnregisterShip",
     "Delivery": "Retained",
     "Call": "FloatingTextStringOnCreature(\"Please repair your ship fully before unregistering it.\", Player, false)"
   },
   {
     "File": "SWLOR.Game.Server/Feature/GuiDefinition/ViewModel/ShipManagementViewModel.cs",
-    "Line": 1488,
+    "Line": 1674,
     "Member": "OnClickUnregisterShip",
     "Delivery": "Retained",
     "Call": "FloatingTextStringOnCreature(Item.InventoryFullMessage, Player, false)"
   },
   {
     "File": "SWLOR.Game.Server/Feature/GuiDefinition/ViewModel/ShipManagementViewModel.cs",
-    "Line": 1510,
+    "Line": 1696,
     "Member": "OnClickUnregisterShip",
     "Delivery": "Retained",
     "Call": "FloatingTextStringOnCreature(\"Ship unregistered!\", Player, false)"
   },
   {
     "File": "SWLOR.Game.Server/Feature/GuiDefinition/ViewModel/ShipManagementViewModel.cs",
-    "Line": 1518,
+    "Line": 1704,
     "Member": "OnClickSaveShipName",
     "Delivery": "Retained",
     "Call": "FloatingTextStringOnCreature(\"A ship name is required.\", Player, false)"
   },
   {
     "File": "SWLOR.Game.Server/Feature/GuiDefinition/ViewModel/ShipManagementViewModel.cs",
-    "Line": 1542,
+    "Line": 1728,
     "Member": "ValidateModuleEquip",
     "Delivery": "Retained",
     "Call": "SendMessageToPC(Player, \"Only starship modules may be installed.\")"
   },
   {
     "File": "SWLOR.Game.Server/Feature/GuiDefinition/ViewModel/ShipManagementViewModel.cs",
-    "Line": 1548,
+    "Line": 1734,
     "Member": "ValidateModuleEquip",
     "Delivery": "Retained",
     "Call": "SendMessageToPC(Player, \"Item must be in your inventory.\")"
   },
   {
     "File": "SWLOR.Game.Server/Feature/GuiDefinition/ViewModel/ShipManagementViewModel.cs",
-    "Line": 1559,
+    "Line": 1745,
+    "Member": "ValidateModuleEquip",
+    "Delivery": "Retained",
+    "Call": "SendMessageToPC(Player, fitError)"
+  },
+  {
+    "File": "SWLOR.Game.Server/Feature/GuiDefinition/ViewModel/ShipManagementViewModel.cs",
+    "Line": 1753,
     "Member": "ValidateModuleEquip",
     "Delivery": "Retained",
     "Call": "SendMessageToPC(Player, \"No high power nodes are available.\")"
   },
   {
     "File": "SWLOR.Game.Server/Feature/GuiDefinition/ViewModel/ShipManagementViewModel.cs",
-    "Line": 1567,
+    "Line": 1761,
+    "Member": "ValidateModuleEquip",
+    "Delivery": "Retained",
+    "Call": "SendMessageToPC(Player, \"No mid power nodes are available.\")"
+  },
+  {
+    "File": "SWLOR.Game.Server/Feature/GuiDefinition/ViewModel/ShipManagementViewModel.cs",
+    "Line": 1769,
     "Member": "ValidateModuleEquip",
     "Delivery": "Retained",
     "Call": "SendMessageToPC(Player, \"No low power nodes are available.\")"
   },
   {
     "File": "SWLOR.Game.Server/Feature/GuiDefinition/ViewModel/ShipManagementViewModel.cs",
-    "Line": 1574,
+    "Line": 1776,
     "Member": "ValidateModuleEquip",
     "Delivery": "Retained",
     "Call": "SendMessageToPC(Player, \"You do not meet the perk requirements necessary to install this module.\")"
   },
   {
     "File": "SWLOR.Game.Server/Feature/GuiDefinition/ViewModel/ShipManagementViewModel.cs",
-    "Line": 1583,
+    "Line": 1784,
     "Member": "ValidateModuleEquip",
     "Delivery": "Retained",
-    "Call": "SendMessageToPC(Player, \"Capital class modules may only be installed to capital ships.\")"
+    "Call": "SendMessageToPC(Player, skillError)"
   },
   {
     "File": "SWLOR.Game.Server/Feature/GuiDefinition/ViewModel/ShipManagementViewModel.cs",
-    "Line": 1589,
-    "Member": "ValidateModuleEquip",
+    "Line": 1839,
+    "Member": "ProcessPower",
     "Delivery": "Retained",
-    "Call": "SendMessageToPC(Player, \"Capital ships can only equip capital class modules.\")"
+    "Call": "SendMessageToPC(Player, $\"Only {rowName}-powered ship modules may be installed to this slot.\")"
   },
   {
     "File": "SWLOR.Game.Server/Feature/GuiDefinition/ViewModel/ShipManagementViewModel.cs",
-    "Line": 1615,
-    "Member": "ProcessHighPower",
+    "Line": 1850,
+    "Member": "ProcessPower",
     "Delivery": "Retained",
-    "Call": "SendMessageToPC(Player, \"Only high-powered ship modules may be installed to this slot.\")"
+    "Call": "SendMessageToPC(Player, $\"Only {rowName}-powered ship modules may be installed to this slot.\")"
   },
   {
     "File": "SWLOR.Game.Server/Feature/GuiDefinition/ViewModel/ShipManagementViewModel.cs",
-    "Line": 1626,
-    "Member": "ProcessHighPower",
-    "Delivery": "Retained",
-    "Call": "SendMessageToPC(Player, \"Only high-powered ship modules may be installed to this slot.\")"
-  },
-  {
-    "File": "SWLOR.Game.Server/Feature/GuiDefinition/ViewModel/ShipManagementViewModel.cs",
-    "Line": 1658,
-    "Member": "ProcessHighPower",
+    "Line": 1884,
+    "Member": "ProcessPower",
     "Delivery": "Retained",
     "Call": "SendMessageToPC(Player, Item.InventoryFullMessage)"
   },
   {
     "File": "SWLOR.Game.Server/Feature/GuiDefinition/ViewModel/ShipManagementViewModel.cs",
-    "Line": 1689,
-    "Member": "ProcessLowPower",
-    "Delivery": "Retained",
-    "Call": "SendMessageToPC(Player, \"Only low-powered ship modules may be installed to this slot.\")"
-  },
-  {
-    "File": "SWLOR.Game.Server/Feature/GuiDefinition/ViewModel/ShipManagementViewModel.cs",
-    "Line": 1701,
-    "Member": "ProcessLowPower",
-    "Delivery": "Retained",
-    "Call": "SendMessageToPC(Player, \"Only low-powered ship modules may be installed to this slot.\")"
-  },
-  {
-    "File": "SWLOR.Game.Server/Feature/GuiDefinition/ViewModel/ShipManagementViewModel.cs",
-    "Line": 1733,
-    "Member": "ProcessLowPower",
-    "Delivery": "Retained",
-    "Call": "SendMessageToPC(Player, Item.InventoryFullMessage)"
-  },
-  {
-    "File": "SWLOR.Game.Server/Feature/GuiDefinition/ViewModel/ShipManagementViewModel.cs",
-    "Line": 1764,
+    "Line": 1916,
     "Member": "ProcessConfiguration",
     "Delivery": "Retained",
     "Call": "SendMessageToPC(Player, \"Only ship configuration modules may be installed to this slot.\")"
   },
   {
     "File": "SWLOR.Game.Server/Feature/GuiDefinition/ViewModel/ShipManagementViewModel.cs",
-    "Line": 1776,
+    "Line": 1928,
     "Member": "ProcessConfiguration",
     "Delivery": "Retained",
     "Call": "SendMessageToPC(Player, \"Only ship configuration modules may be installed to this slot.\")"
   },
   {
     "File": "SWLOR.Game.Server/Feature/GuiDefinition/ViewModel/ShipManagementViewModel.cs",
-    "Line": 1807,
+    "Line": 1960,
     "Member": "ProcessConfiguration",
     "Delivery": "Retained",
     "Call": "SendMessageToPC(Player, Item.InventoryFullMessage)"
   },
   {
     "File": "SWLOR.Game.Server/Feature/GuiDefinition/ViewModel/ShipManagementViewModel.cs",
-    "Line": 1932,
+    "Line": 2125,
     "Member": "OnClickBoardShip",
     "Delivery": "Retained",
     "Call": "SendMessageToPC(Player, \"You are in combat.\")"
   },
   {
     "File": "SWLOR.Game.Server/Feature/GuiDefinition/ViewModel/ShipManagementViewModel.cs",
-    "Line": 1942,
+    "Line": 2135,
     "Member": "OnClickBoardShip",
     "Delivery": "Retained",
     "Call": "FloatingTextStringOnCreature(\"You do not have permission to access that property.\", Player, false)"
   },
   {
     "File": "SWLOR.Game.Server/Feature/GuiDefinition/ViewModel/ShipManagementViewModel.cs",
-    "Line": 1981,
+    "Line": 2174,
     "Member": "OnClickRemoveAccess",
     "Delivery": "Retained",
     "Call": "FloatingTextStringOnCreature(\"Ship access removed.\", Player, false)"
   },
   {
     "File": "SWLOR.Game.Server/Feature/GuiDefinition/ViewModel/ShipManagementViewModel.cs",
-    "Line": 2062,
+    "Line": 2255,
     "Member": "OnClickRepair",
     "Delivery": "Retained",
     "Call": "FloatingTextStringOnCreature(ColorToken.Red(\"Not enough credits!\"), Player, false)"
   },
   {
     "File": "SWLOR.Game.Server/Feature/GuiDefinition/ViewModel/ShipManagementViewModel.cs",
-    "Line": 2075,
+    "Line": 2268,
     "Member": "OnClickRepair",
     "Delivery": "Retained",
     "Call": "FloatingTextStringOnCreature(ColorToken.Green(\"Ship repaired!\"), Player, false)"
@@ -3150,20 +3143,6 @@
     "Call": "SendMessageToPC(player, ColorToken.Green(\"Welcome to Star Wars: Legends of the Old Republic!\\n\") +\n                                        ColorToken.White(\"Join our Discord at: https://discord.gg/MyQAM6m\"))"
   },
   {
-    "File": "SWLOR.Game.Server/Feature/ShipModuleDefinition/AssaultConcussionMissileModuleDefinition.cs",
-    "Line": 56,
-    "Member": "PerformAttack",
-    "Delivery": "Retained",
-    "Call": "Messaging.SendMessageNearbyToPlayers(\n                target,\n                receiver => Combat.BuildCombatLogMessage(receiver, activator, target, attackId, chanceToHit),\n                60f)"
-  },
-  {
-    "File": "SWLOR.Game.Server/Feature/ShipModuleDefinition/BeamCannonModuleDefinition.cs",
-    "Line": 94,
-    "Member": "BeamCannon",
-    "Delivery": "Retained",
-    "Call": "Messaging.SendMessageNearbyToPlayers(\n                                    target,\n                                    receiver => Combat.BuildCombatLogMessage(receiver, activator, target, attackId, chanceToHit),\n                                    60f)"
-  },
-  {
     "File": "SWLOR.Game.Server/Feature/ShipModuleDefinition/BulwarkShieldGeneratorModuleDefinition.cs",
     "Line": 96,
     "Member": "BulwarkShieldGenerator",
@@ -3178,76 +3157,6 @@
     "Call": "Messaging.SendMessageNearbyToPlayers(\n                        activator,\n                        receiver => $\"{PlayerName.GetDisplayName(receiver, activator)} activates their E-War device and begins to draw fire.\")"
   },
   {
-    "File": "SWLOR.Game.Server/Feature/ShipModuleDefinition/CombatLaserModuleDefinition.cs",
-    "Line": 94,
-    "Member": "CombatLaser",
-    "Delivery": "Retained",
-    "Call": "Messaging.SendMessageNearbyToPlayers(\n                        target,\n                        receiver => Combat.BuildCombatLogMessage(receiver, activator, target, attackId, chanceToHit),\n                        60f)"
-  },
-  {
-    "File": "SWLOR.Game.Server/Feature/ShipModuleDefinition/HullRepairerModuleDefinition.cs",
-    "Line": 68,
-    "Member": "HullRepairer",
-    "Delivery": "Retained",
-    "Call": "Messaging.SendMessageNearbyToPlayers(\n                        activator,\n                        receiver => $\"{PlayerName.GetDisplayName(receiver, activator)} restores {recovery} hull HP to {PlayerName.GetDisplayName(receiver, target)}'s ship.\")"
-  },
-  {
-    "File": "SWLOR.Game.Server/Feature/ShipModuleDefinition/HypermatterInjectorModuleDefinition.cs",
-    "Line": 85,
-    "Member": "HypermatterInjector",
-    "Delivery": "Retained",
-    "Call": "Messaging.SendMessageNearbyToPlayers(\n                        activator,\n                        receiver => $\"{PlayerName.GetDisplayName(receiver, activator)} restores {recovery} capacitor charge to {PlayerName.GetDisplayName(receiver, target)}'s ship.\")"
-  },
-  {
-    "File": "SWLOR.Game.Server/Feature/ShipModuleDefinition/IonCannonModuleDefinition.cs",
-    "Line": 120,
-    "Member": "IonCannon",
-    "Delivery": "Retained",
-    "Call": "Messaging.SendMessageNearbyToPlayers(\n                        target,\n                        receiver => Combat.BuildCombatLogMessage(receiver, activator, target, attackId, chanceToHit),\n                        60f)"
-  },
-  {
-    "File": "SWLOR.Game.Server/Feature/ShipModuleDefinition/LaserCannonBatteryModuleDefinition.cs",
-    "Line": 105,
-    "Member": "LaserCannonBattery",
-    "Delivery": "Retained",
-    "Call": "Messaging.SendMessageNearbyToPlayers(\n                                        nearbyTarget,\n                                        receiver => Combat.BuildCombatLogMessage(receiver, activator, nearbyTarget, attackId, chanceToHit),\n                                        60f)"
-  },
-  {
-    "File": "SWLOR.Game.Server/Feature/ShipModuleDefinition/MiningLaserModuleDefinition.cs",
-    "Line": 103,
-    "Member": "MiningLaser",
-    "Delivery": "Retained",
-    "Call": "SendMessageToPC(activator, \"Your target has been fully mined.\")"
-  },
-  {
-    "File": "SWLOR.Game.Server/Feature/ShipModuleDefinition/MiningLaserModuleDefinition.cs",
-    "Line": 117,
-    "Member": "MiningLaser",
-    "Delivery": "Retained",
-    "Call": "SendMessageToPC(activator, $\"{GetName(target)} has been fully mined.\")"
-  },
-  {
-    "File": "SWLOR.Game.Server/Feature/ShipModuleDefinition/MissileLauncherModuleDefinition.cs",
-    "Line": 60,
-    "Member": "PerformAttack",
-    "Delivery": "Retained",
-    "Call": "Messaging.SendMessageNearbyToPlayers(\n                target,\n                receiver => Combat.BuildCombatLogMessage(receiver, activator, target, attackId, chanceToHit),\n                60f)"
-  },
-  {
-    "File": "SWLOR.Game.Server/Feature/ShipModuleDefinition/ProtonBombModuleDefinition.cs",
-    "Line": 56,
-    "Member": "PerformAttack",
-    "Delivery": "Retained",
-    "Call": "Messaging.SendMessageNearbyToPlayers(\n                target,\n                receiver => Combat.BuildCombatLogMessage(receiver, activator, target, attackId, chanceToHit),\n                60f)"
-  },
-  {
-    "File": "SWLOR.Game.Server/Feature/ShipModuleDefinition/QuadLaserCannonModuleDefinition.cs",
-    "Line": 112,
-    "Member": "QuadLaserCannon",
-    "Delivery": "Retained",
-    "Call": "Messaging.SendMessageNearbyToPlayers(\n                            target,\n                            receiver => Combat.BuildCombatLogMessage(receiver, activator, target, attackId, chanceToHit),\n                            60f)"
-  },
-  {
     "File": "SWLOR.Game.Server/Feature/ShipModuleDefinition/RepairFieldGeneratorModuleDefinition.cs",
     "Line": 92,
     "Member": "RepairFieldGenerator",
@@ -3255,32 +3164,32 @@
     "Call": "Messaging.SendMessageNearbyToPlayers(\n                        activator,\n                        receiver => $\"{PlayerName.GetDisplayName(receiver, activator)} begins restoring {recovery} armor HP to nearby ships.\")"
   },
   {
-    "File": "SWLOR.Game.Server/Feature/ShipModuleDefinition/ShieldRepairerModuleDefinition.cs",
-    "Line": 68,
-    "Member": "ShieldRepairer",
+    "File": "SWLOR.Game.Server/Feature/ShipModuleDefinition/ShipModuleActions.cs",
+    "Line": 371,
+    "Member": "MineAsteroid",
     "Delivery": "Retained",
-    "Call": "Messaging.SendMessageNearbyToPlayers(\n                        activator,\n                        receiver => $\"{PlayerName.GetDisplayName(receiver, activator)} restores {recovery} shield HP to {PlayerName.GetDisplayName(receiver, target)}'s ship.\")"
+    "Call": "SendMessageToPC(activator, \"Your target has been fully mined.\")"
   },
   {
-    "File": "SWLOR.Game.Server/Feature/ShipModuleDefinition/StormCannonModuleDefinition.cs",
-    "Line": 126,
-    "Member": "StormCannon",
+    "File": "SWLOR.Game.Server/Feature/ShipModuleDefinition/ShipModuleActions.cs",
+    "Line": 385,
+    "Member": "MineAsteroid",
     "Delivery": "Retained",
-    "Call": "Messaging.SendMessageNearbyToPlayers(\n                                    target,\n                                    receiver => Combat.BuildCombatLogMessage(receiver, activator, target, attackId, chanceToHit),\n                                    60f)"
+    "Call": "SendMessageToPC(activator, $\"{GetName(target)} has been fully mined.\")"
   },
   {
-    "File": "SWLOR.Game.Server/Feature/ShipModuleDefinition/StripMinerModuleDefinition.cs",
-    "Line": 76,
-    "Member": "StripMiner",
+    "File": "SWLOR.Game.Server/Feature/ShipModuleDefinition/ShipModuleActions.cs",
+    "Line": 432,
+    "Member": "StripAsteroid",
     "Delivery": "Retained",
     "Call": "SendMessageToPC(activator, $\"{GetName(target)} has been depleted by your strip miner.\")"
   },
   {
-    "File": "SWLOR.Game.Server/Feature/ShipModuleDefinition/TurbolaserModuleDefinition.cs",
-    "Line": 112,
-    "Member": "Turbolaser",
+    "File": "SWLOR.Game.Server/Feature/ShipModuleDefinition/ShipModuleActions.cs",
+    "Line": 520,
+    "Member": "ApplySupport",
     "Delivery": "Retained",
-    "Call": "Messaging.SendMessageNearbyToPlayers(\n                                    target,\n                                    receiver => Combat.BuildCombatLogMessage(receiver, activator, target, attackId, chanceToHit),\n                                    60f)"
+    "Call": "Messaging.SendMessageNearbyToPlayers(\n                activator,\n                receiver => $\"{PlayerName.GetDisplayName(receiver, activator)} restores {amount} {noun} to {PlayerName.GetDisplayName(receiver, target)}'s ship.\")"
   },
   {
     "File": "SWLOR.Game.Server/Feature/SlicingTerminal.cs",
@@ -3802,77 +3711,77 @@
   },
   {
     "File": "SWLOR.Game.Server/Service/BeastMastery.cs",
-    "Line": 196,
-    "Member": "GiveBeastXP",
+    "Line": 268,
+    "Member": "AddXP",
     "Delivery": "Retained",
     "Call": "SendMessageToPC(player, $\"{dbBeast.Name} earned {xp} XP.\")"
   },
   {
     "File": "SWLOR.Game.Server/Service/BeastMastery.cs",
-    "Line": 217,
-    "Member": "GiveBeastXP",
+    "Line": 289,
+    "Member": "AddXP",
     "Delivery": "Retained",
     "Call": "SendMessageToPC(player, $\"{dbBeast.Name} reaches level {dbBeast.Level}!\")"
   },
   {
     "File": "SWLOR.Game.Server/Service/BeastMastery.cs",
-    "Line": 253,
+    "Line": 320,
     "Member": "SpawnBeast",
     "Delivery": "Retained",
     "Call": "SendMessageToPC(player, companionSlotError)"
   },
   {
     "File": "SWLOR.Game.Server/Service/BeastMastery.cs",
-    "Line": 261,
+    "Line": 328,
     "Member": "SpawnBeast",
     "Delivery": "Retained",
     "Call": "SendMessageToPC(player, \"Unable to locate beast in DB. Notify an admin.\")"
   },
   {
     "File": "SWLOR.Game.Server/Service/BeastMastery.cs",
-    "Line": 460,
+    "Line": 530,
     "Member": "OnAcquireItem",
     "Delivery": "Retained",
     "Call": "SendMessageToPC(master, \"Beasts cannot hold items.\")"
   },
   {
     "File": "SWLOR.Game.Server/Service/BeastMastery.cs",
-    "Line": 575,
+    "Line": 645,
     "Member": "OpenStablesMenu",
     "Delivery": "Retained",
     "Call": "SendMessageToPC(player, ColorToken.Red(\"Only players may use this terminal.\"))"
   },
   {
     "File": "SWLOR.Game.Server/Service/BeastMastery.cs",
-    "Line": 724,
+    "Line": 794,
     "Member": "UseIncubator",
     "Delivery": "Retained",
     "Call": "SendMessageToPC(player, $\"Perk 'DNA Manipulation I' is required to use incubators.\")"
   },
   {
     "File": "SWLOR.Game.Server/Service/BeastMastery.cs",
-    "Line": 732,
+    "Line": 802,
     "Member": "UseIncubator",
     "Delivery": "Retained",
     "Call": "SendMessageToPC(player, $\"This incubator cannot be used.\")"
   },
   {
     "File": "SWLOR.Game.Server/Service/BeastMastery.cs",
-    "Line": 747,
+    "Line": 817,
     "Member": "UseIncubator",
     "Delivery": "Retained",
     "Call": "SendMessageToPC(player, $\"Another player's incubation job is active. This job will complete in: {completionTime}.\")"
   },
   {
     "File": "SWLOR.Game.Server/Service/BeastMastery.cs",
-    "Line": 751,
+    "Line": 821,
     "Member": "UseIncubator",
     "Delivery": "Retained",
     "Call": "SendMessageToPC(player, $\"Another player's incubation job is active. This job has completed.\")"
   },
   {
     "File": "SWLOR.Game.Server/Service/BeastMastery.cs",
-    "Line": 942,
+    "Line": 1012,
     "Member": "UseExtractDNAObject",
     "Delivery": "Retained",
     "Call": "SendMessageToPC(player, ColorToken.Red(\"Use a DNA Extractor on this corpse to retrieve its DNA.\"))"
@@ -5692,129 +5601,157 @@
   },
   {
     "File": "SWLOR.Game.Server/Service/Space.cs",
-    "Line": 539,
+    "Line": 544,
     "Member": "UseShipComputer",
     "Delivery": "Retained",
     "Call": "SendMessageToPC(player, ColorToken.Red(\"You do not have permission to pilot this starship.\"))"
   },
   {
     "File": "SWLOR.Game.Server/Service/Space.cs",
-    "Line": 549,
+    "Line": 554,
     "Member": "UseShipComputer",
     "Delivery": "Retained",
     "Call": "SendMessageToPC(player, ColorToken.Red(\"ERROR: Could not locate ship. Notify an admin.\"))"
   },
   {
     "File": "SWLOR.Game.Server/Service/Space.cs",
-    "Line": 556,
+    "Line": 561,
     "Member": "UseShipComputer",
     "Delivery": "Retained",
     "Call": "SendMessageToPC(player, ColorToken.Red(\"This ship's controls are in use.\"))"
   },
   {
     "File": "SWLOR.Game.Server/Service/Space.cs",
-    "Line": 562,
+    "Line": 568,
     "Member": "UseShipComputer",
     "Delivery": "Retained",
-    "Call": "SendMessageToPC(player, ColorToken.Red(\"You do not have the ability to pilot this ship.\"))"
-  },
-  {
-    "File": "SWLOR.Game.Server/Service/Space.cs",
-    "Line": 576,
-    "Member": "UseShipComputer",
-    "Delivery": "Retained",
-    "Call": "SendMessageToPC(player, ColorToken.Red(\"Unable to locate this starship's space destination. Notify an admin.\"))"
+    "Call": "SendMessageToPC(player, ColorToken.Red(string.IsNullOrEmpty(skillError)\n                    ? \"You do not have the ability to pilot this ship.\"\n                    : skillError))"
   },
   {
     "File": "SWLOR.Game.Server/Service/Space.cs",
     "Line": 584,
     "Member": "UseShipComputer",
     "Delivery": "Retained",
+    "Call": "SendMessageToPC(player, ColorToken.Red(\"Unable to locate this starship's space destination. Notify an admin.\"))"
+  },
+  {
+    "File": "SWLOR.Game.Server/Service/Space.cs",
+    "Line": 592,
+    "Member": "UseShipComputer",
+    "Delivery": "Retained",
     "Call": "SendMessageToPC(player, ColorToken.Red(\"This starship's space destination is unavailable. Notify an admin.\"))"
   },
   {
     "File": "SWLOR.Game.Server/Service/Space.cs",
-    "Line": 661,
+    "Line": 669,
     "Member": "CheckShipLaunch",
     "Delivery": "Retained",
     "Call": "SendMessageToPC(player, ColorToken.Red(\"Unable to reach this starship's space destination. Please try again or notify an admin.\"))"
   },
   {
     "File": "SWLOR.Game.Server/Service/Space.cs",
-    "Line": 1299,
-    "Member": "ActivateShipModule",
+    "Line": 1397,
+    "Member": "ActivateShipModuleCore",
     "Delivery": "Retained",
     "Call": "SendMessageToPC(activator, \"Unable to use that module.\")"
   },
   {
     "File": "SWLOR.Game.Server/Service/Space.cs",
-    "Line": 1315,
-    "Member": "ActivateShipModule",
+    "Line": 1409,
+    "Member": "ActivateShipModuleCore",
+    "Delivery": "Retained",
+    "Call": "SendMessageToPC(activator, $\"This slot needs a crew member at the {ShipStatCalculator.GetSeatName(slotTag)} station.\")"
+  },
+  {
+    "File": "SWLOR.Game.Server/Service/Space.cs",
+    "Line": 1430,
+    "Member": "ActivateShipModuleCore",
     "Delivery": "Retained",
     "Call": "SendMessageToPC(activator, $\"Your ship does not have enough capacitor to use that module. (Required: {requiredCapacitor})\")"
   },
   {
     "File": "SWLOR.Game.Server/Service/Space.cs",
-    "Line": 1323,
-    "Member": "ActivateShipModule",
+    "Line": 1438,
+    "Member": "ActivateShipModuleCore",
     "Delivery": "Retained",
     "Call": "SendMessageToPC(activator, \"That module is not ready.\")"
   },
   {
     "File": "SWLOR.Game.Server/Service/Space.cs",
-    "Line": 1339,
-    "Member": "ActivateShipModule",
+    "Line": 1459,
+    "Member": "ActivateShipModuleCore",
     "Delivery": "Retained",
     "Call": "SendMessageToPC(activator, \"This module cannot be used on that target type.\")"
   },
   {
     "File": "SWLOR.Game.Server/Service/Space.cs",
-    "Line": 1346,
-    "Member": "ActivateShipModule",
+    "Line": 1466,
+    "Member": "ActivateShipModuleCore",
     "Delivery": "Retained",
     "Call": "SendMessageToPC(activator, \"Invalid target.\")"
   },
   {
     "File": "SWLOR.Game.Server/Service/Space.cs",
-    "Line": 1354,
-    "Member": "ActivateShipModule",
+    "Line": 1474,
+    "Member": "ActivateShipModuleCore",
+    "Delivery": "Retained",
+    "Call": "SendMessageToPC(activator, \"Invalid target.\")"
+  },
+  {
+    "File": "SWLOR.Game.Server/Service/Space.cs",
+    "Line": 1482,
+    "Member": "ActivateShipModuleCore",
     "Delivery": "Retained",
     "Call": "SendMessageToPC(activator, $\"Target is too far away. Maximum distance: {maxDistance} meters.\")"
   },
   {
     "File": "SWLOR.Game.Server/Service/Space.cs",
-    "Line": 1372,
-    "Member": "ActivateShipModule",
+    "Line": 1500,
+    "Member": "ActivateShipModuleCore",
     "Delivery": "Retained",
     "Call": "SendMessageToPC(activator, result)"
   },
   {
     "File": "SWLOR.Game.Server/Service/Space.cs",
-    "Line": 2101,
+    "Line": 1991,
+    "Member": "CompleteWeaponShot",
+    "Delivery": "Retained",
+    "Call": "Messaging.SendMessageNearbyToPlayers(\n                target,\n                receiver => Combat.BuildCombatLogMessage(receiver, activator, target, attackId, result.ChanceToHit),\n                60f)"
+  },
+  {
+    "File": "SWLOR.Game.Server/Service/Space.cs",
+    "Line": 2387,
     "Member": "ApplyDeath",
     "Delivery": "Retained",
     "Call": "FloatingTextStringOnCreature(ColorToken.Red(\"The ship has exploded!\"), player, false)"
   },
   {
     "File": "SWLOR.Game.Server/Service/Space.cs",
-    "Line": 2289,
+    "Line": 2553,
     "Member": "NotifyShipDamage",
     "Delivery": "Retained",
     "Call": "Messaging.SendMessageNearbyToPlayers(attacker, buildMessage, ShipDamageMessageRange)"
   },
   {
     "File": "SWLOR.Game.Server/Service/Space.cs",
-    "Line": 2295,
+    "Line": 2559,
     "Member": "NotifyShipDamage",
     "Delivery": "Retained",
     "Call": "SendMessageToPC(target, buildMessage(target))"
   },
   {
     "File": "SWLOR.Game.Server/Service/Space.cs",
-    "Line": 2507,
+    "Line": 2771,
     "Member": "PreventSpaceStealth",
     "Delivery": "Retained",
     "Call": "SendMessageToPC(creature, ColorToken.Red($\"You cannot enter stealth mode in space.\"))"
+  },
+  {
+    "File": "SWLOR.Game.Server/Service/SpaceToggles.cs",
+    "Line": 161,
+    "Member": "TurnOffToggle",
+    "Delivery": "Retained",
+    "Call": "SendMessageToPC(creature, message)"
   },
   {
     "File": "SWLOR.Game.Server/Service/Stat.cs",

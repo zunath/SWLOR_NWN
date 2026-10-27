@@ -58,22 +58,12 @@ namespace SWLOR.Game.Server.Feature.ShipModuleDefinition
                         Accuracy = rank * 2
                     };
 
-                    var beam = EffectBeam(VisualEffect.Vfx_Beam_Holy, activator, BodyNode.Chest);
-
                     for (var i = 0; i < 3; i++)
                     {
                         var delay = i * 0.33f;
                         DelayCommand(delay, () =>
                         {
-                            if (!Space.CanShipFire(activator))
-                                return;
-
-                            AssignCommand(activator, () =>
-                            {
-                                ApplyEffectToObject(DurationType.Temporary, beam, target, 0.2f);
-                            });
-
-                            Space.ResolveWeaponShot(activator, activatorShipStatus, target, targetShipStatus, shot);
+                            ShipModuleActions.FireBeamPulse(activator, activatorShipStatus, target, targetShipStatus, shot, 0.2f);
                         });
                     }
                 });

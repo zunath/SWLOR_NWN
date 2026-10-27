@@ -57,17 +57,7 @@ namespace SWLOR.Game.Server.Feature.ShipModuleDefinition
                         Attack = rank * 2,
                         Accuracy = rank * 2
                     };
-                    var result = Space.RollWeaponShot(activator, activatorShipStatus, target, targetShipStatus, shot);
-
-                    var sound = EffectVisualEffect(VisualEffect.Vfx_Ship_Blast);
-                    var missile = EffectVisualEffect(VisualEffect.Mirv_StarWars_Bolt2);
-                    AssignCommand(activator, () =>
-                    {
-                        ApplyEffectToObject(DurationType.Instant, sound, target);
-                        ApplyEffectToObject(DurationType.Instant, missile, target);
-                    });
-
-                    Space.CompleteWeaponShot(activator, target, shot, result, 0.3f);
+                    ShipModuleActions.FireBolt(activator, activatorShipStatus, target, targetShipStatus, shot);
                 });
         }
     }

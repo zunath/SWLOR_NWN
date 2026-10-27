@@ -245,6 +245,17 @@ namespace SWLOR.Game.Server.Service.SpaceService
         }
 
         /// <summary>
+        /// Attaches the revamp hull this ship is built from.
+        /// </summary>
+        /// <param name="hull">The hull entry.</param>
+        /// <returns>A ship builder with the configured options.</returns>
+        public ShipBuilder Hull(ShipHullEntry hull)
+        {
+            _activeShip.Hull = hull;
+            return this;
+        }
+
+        /// <summary>
         /// Returns a built dictionary of ships.
         /// </summary>
         /// <returns>A dictionary of ship details.</returns>

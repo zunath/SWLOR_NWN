@@ -23,5 +23,6 @@ namespace SWLOR.Game.Server.Service.SpaceService
         StripMiner = 18,
         CapitalEwar = 19,
         CapitalPowerDiverter = 20,
+        ShieldHardener = 21,
     }
 }

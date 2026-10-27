@@ -24,8 +24,6 @@ namespace SWLOR.Game.Server.Feature.ShipModuleDefinition
             return _builder.Build();
         }
 
-        private const string MissileItemResref = "ship_missile";
-
         private void MissileLauncher(
             string itemTag,
             string name,
@@ -47,14 +45,7 @@ namespace SWLOR.Game.Server.Feature.ShipModuleDefinition
                 .Toggle(12f)
                 .ValidationAction((activator, _, _, _, _) =>
                 {
-                    var item = GetItemPossessedBy(activator, MissileItemResref);
-                    var stackSize = GetItemStackSize(item);
-                    if(stackSize <= 0 && GetIsPC(activator) == true)
-                    {
-                        return "You need a missile to fire this weapon.";
-                    }
-
-                    return string.Empty;
+                    return ShipModuleActions.AmmoError(activator, ShipModuleActions.MissileResref, "You need a missile to fire this weapon.");
                 })
                 .ActivatedAction((activator, activatorShipStatus, target, targetShipStatus, moduleBonus) =>
                 {
@@ -64,19 +55,7 @@ namespace SWLOR.Game.Server.Feature.ShipModuleDefinition
                     {
                         moduleDamage += moduleDamage / 4;
                     }
-                    var item = GetItemPossessedBy(activator, MissileItemResref);
-                    var stackSize = GetItemStackSize(item);
-                    if (stackSize <= 1)
-                    {
-                        DestroyObject(item);
-                    }
-                    else
-                    {
-                        SetItemStackSize(item, stackSize - 1);
-                    }
-
-                    var targetDistance = GetDistanceBetween(activator, target);
-                    var delay = (float)(targetDistance / (3.0 * log(targetDistance) + 2.0));
+                    ShipModuleActions.ConsumeAmmo(activator, ShipModuleActions.MissileResref);
 
                     var rank = (requiredLevel - 1) * 10;
                     var shot = new SpaceWeaponShot
@@ -88,23 +67,7 @@ namespace SWLOR.Game.Server.Feature.ShipModuleDefinition
                         Attack = rank * 2 + moduleBonus * 2,
                         Accuracy = rank * 2
                     };
-                    var result = Space.RollWeaponShot(activator, activatorShipStatus, target, targetShipStatus, shot);
-                    var isHit = result.IsHit;
-
-                    // Shoot some missiles out to the target.
-                    AssignCommand(activator, () =>
-                    {
-                        ApplyEffectToObject(DurationType.Instant, EffectVisualEffect(VisualEffect.Vfx_Ship_Trp), activator);
-                        ApplyEffectToObject(DurationType.Instant, EffectVisualEffect(VisualEffect.Mirv_Torpedo, !isHit), target);
-                    });
-
-                    // Display an explosion at the target location in a few seconds (based on travel distance of the initial missile graphic)
-                    // Then apply damage on target and those nearby.
-                    DelayCommand(delay, () =>
-                    {
-                        ApplyEffectToObject(DurationType.Instant, EffectVisualEffect(VisualEffect.Fnf_Fireball, !isHit, 0.5f), target);
-                        Space.CompleteWeaponShot(activator, target, shot, result);
-                    });
+                    ShipModuleActions.FireMissile(activator, activatorShipStatus, target, targetShipStatus, shot, false);
                 });
         }
     }

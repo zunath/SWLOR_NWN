@@ -45,47 +45,30 @@ namespace SWLOR.Game.Server.Feature.ShipModuleDefinition
 
                     ApplyEffectToObject(DurationType.Temporary, EffectVisualEffect(VisualEffect.Vfx_Dur_Aura_Pulse_Red_White), activator, 12.0f);
 
-                    const float Distance = 20f;
-                    var count = 1;
                     var repaired = new List<uint>();
 
-                    foreach (var nearby in ObjectSnapshot.InShape(Shape.Sphere, Distance, GetLocation(activator), true, ObjectType.Creature))
+                    foreach (var nearby in ShipModuleActions.GetNearbyShips(activator, 20f, 6, true))
                     {
-                        if (count > 6)
-                            break;
+                        var nearbyStatus = Space.GetShipStatus(nearby);
+                        ApplyEffectToObject(DurationType.Temporary, EffectBeam(VisualEffect.Vfx_Beam_Disintegrate, activator, BodyNode.Chest), nearby, 1.0f);
+                        Space.RestoreHull(nearby, nearbyStatus, recovery);
+                        repaired.Add(nearby);
 
-                        if (!GetIsObjectValid(nearby))
-                            continue;
-
-                        if (!GetIsEnemy(nearby, activator) &&
-                            !GetIsDead(activator) &&
-                            Space.GetShipStatus(nearby) != null &&
-                            nearby != activator)
+                        if (GetIsPC(nearby) && !GetIsDM(nearby) && !GetIsDMPossessed(nearby))
                         {
-                            var nearbyStatus = Space.GetShipStatus(nearby);
-                            ApplyEffectToObject(DurationType.Temporary, EffectBeam(VisualEffect.Vfx_Beam_Disintegrate, activator, BodyNode.Chest), nearby, 1.0f);
-                            Space.RestoreHull(nearby, nearbyStatus, recovery);
-                            repaired.Add(nearby);
+                            var playerId = GetObjectUUID(nearby);
+                            var dbPlayer = DB.Get<Player>(playerId);
+                            var dbShip = DB.Get<PlayerShip>(dbPlayer.ActiveShipId);
 
-                            if (GetIsPC(nearby) && !GetIsDM(nearby) && !GetIsDMPossessed(nearby))
+                            if (dbShip != null)
                             {
-                                var playerId = GetObjectUUID(nearby);
-                                var dbPlayer = DB.Get<Player>(playerId);
-                                var dbShip = DB.Get<PlayerShip>(dbPlayer.ActiveShipId);
+                                dbShip.Status = nearbyStatus;
+                                DB.Set(dbShip);
 
-                                if (dbShip != null)
-                                {
-                                    dbShip.Status = nearbyStatus;
-                                    DB.Set(dbShip);
-
-                                    ExecuteScript(ScriptName.OnPlayerHullAdjusted, nearby);
-                                    ExecuteScript(ScriptName.OnPlayerTargetUpdated, nearby);
-                                }
+                                ExecuteScript(ScriptName.OnPlayerHullAdjusted, nearby);
+                                ExecuteScript(ScriptName.OnPlayerTargetUpdated, nearby);
                             }
-
-                            count++;
                         }
-
                     }
 
                     Enmity.ModifyEnmityOnAll(activator, 100 + repairAmount);

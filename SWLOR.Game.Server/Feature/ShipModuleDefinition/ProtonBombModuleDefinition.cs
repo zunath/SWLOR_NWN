@@ -20,8 +20,6 @@ namespace SWLOR.Game.Server.Feature.ShipModuleDefinition
             return _builder.Build();
         }
 
-        private const string ProtonBombItemResref = "proton_bomb";
-
         private void ProtonBomb(
             string itemTag,
             string name,
@@ -43,11 +41,10 @@ namespace SWLOR.Game.Server.Feature.ShipModuleDefinition
                 .OnePress()
                 .ValidationAction((activator, _, target, _, _) =>
                 {
-                    var item = GetItemPossessedBy(activator, ProtonBombItemResref);
-                    var stackSize = GetItemStackSize(item);
-                    if (stackSize <= 0 && GetIsPC(activator) == true)
+                    var ammoError = ShipModuleActions.AmmoError(activator, ShipModuleActions.ProtonBombResref, "You need a proton bomb to fire this weapon.");
+                    if (!string.IsNullOrEmpty(ammoError))
                     {
-                        return "You need a proton bomb to fire this weapon.";
+                        return ammoError;
                     }
 
                     if (!Space.GetShipStatus(target).CapitalShip)
@@ -65,19 +62,7 @@ namespace SWLOR.Game.Server.Feature.ShipModuleDefinition
                     {
                         moduleDamage += moduleDamage / 2;
                     }
-                    var item = GetItemPossessedBy(activator, ProtonBombItemResref);
-                    var stackSize = GetItemStackSize(item);
-                    if (stackSize <= 1)
-                    {
-                        DestroyObject(item);
-                    }
-                    else
-                    {
-                        SetItemStackSize(item, stackSize - 1);
-                    }
-
-                    var targetDistance = GetDistanceBetween(activator, target);
-                    var delay = (float)(targetDistance / (3.0 * log(targetDistance) + 2.0));
+                    ShipModuleActions.ConsumeAmmo(activator, ShipModuleActions.ProtonBombResref);
 
                     // A capital-class bomb: rank 40, and it bypasses shields and the size penalty.
                     const int rank = 40;
@@ -93,24 +78,7 @@ namespace SWLOR.Game.Server.Feature.ShipModuleDefinition
                         ShieldBypass = true,
                         IgnoreSizePenalty = true
                     };
-                    var result = Space.RollWeaponShot(activator, activatorShipStatus, target, targetShipStatus, shot);
-                    var isHit = result.IsHit;
-
-                    // Shoot some missiles out to the target.
-                    AssignCommand(activator, () =>
-                    {
-                        ApplyEffectToObject(DurationType.Instant, EffectVisualEffect(VisualEffect.Vfx_Ship_Trp), activator);
-                        ApplyEffectToObject(DurationType.Instant, EffectVisualEffect(VisualEffect.Mirv_Torpedo, !isHit), target);
-                    });
-
-                    // Display an explosion at the target location in a few seconds (based on travel distance of the initial missile graphic)
-                    // Then apply damage on target and those nearby.
-                    DelayCommand(delay, () =>
-                    {
-                        ApplyEffectToObject(DurationType.Instant, EffectVisualEffect(VisualEffect.Vfx_Fnf_Screen_Shake, !isHit), target);
-                        ApplyEffectToObject(DurationType.Instant, EffectVisualEffect(VisualEffect.Vfx_Fnf_Summondragon, !isHit), target);
-                        Space.CompleteWeaponShot(activator, target, shot, result);
-                    });
+                    ShipModuleActions.FireMissile(activator, activatorShipStatus, target, targetShipStatus, shot, true);
                 });
         }
     }

@@ -68,3 +68,4 @@ SWLOR.Game.Server/Docker/prepare-server-home.sh text eol=lf
 /StartServer.sh text eol=lf
 
 /scripts/SetupRepository.sh text eol=lf
+/scripts/ci/*.sh text eol=lf

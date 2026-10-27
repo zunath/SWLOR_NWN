@@ -19,7 +19,7 @@ namespace SWLOR.NWN.API.NWNX
         /// </remarks>
         public static string GetPlayerPassword()
         {
-            return AdminPlugin.GetPlayerPassword();
+            return AdministrationPluginRuntime.Current.GetPlayerPassword();
         }
 
         /// <summary>
@@ -32,7 +32,7 @@ namespace SWLOR.NWN.API.NWNX
         /// </remarks>
         public static void SetPlayerPassword(string password)
         {
-            AdminPlugin.SetPlayerPassword(password);
+            AdministrationPluginRuntime.Current.SetPlayerPassword(password);
         }
 
         /// <summary>
@@ -44,7 +44,7 @@ namespace SWLOR.NWN.API.NWNX
         /// </remarks>
         public static void ClearPlayerPassword()
         {
-            AdminPlugin.ClearPlayerPassword();
+            AdministrationPluginRuntime.Current.ClearPlayerPassword();
         }
 
         /// <summary>
@@ -57,7 +57,7 @@ namespace SWLOR.NWN.API.NWNX
         /// </remarks>
         public static string GetDMPassword()
         {
-            return AdminPlugin.GetDMPassword();
+            return AdministrationPluginRuntime.Current.GetDMPassword();
         }
 
         /// <summary>
@@ -70,7 +70,7 @@ namespace SWLOR.NWN.API.NWNX
         /// </remarks>
         public static void SetDMPassword(string password)
         {
-            AdminPlugin.SetDMPassword(password);
+            AdministrationPluginRuntime.Current.SetDMPassword(password);
         }
 
         /// <summary>
@@ -82,7 +82,7 @@ namespace SWLOR.NWN.API.NWNX
         /// </remarks>
         public static void ShutdownServer()
         {
-            AdminPlugin.ShutdownServer();
+            AdministrationPluginRuntime.Current.ShutdownServer();
         }
 
         /// <summary>
@@ -98,7 +98,7 @@ namespace SWLOR.NWN.API.NWNX
         /// </remarks>
         public static void DeletePlayerCharacter(uint pc, bool bPreserveBackup = true, string kickMessage = "")
         {
-            AdminPlugin.DeletePlayerCharacter(pc, bPreserveBackup ? 1 : 0, kickMessage);
+            AdministrationPluginRuntime.Current.DeletePlayerCharacter(pc, bPreserveBackup, kickMessage);
         }
 
         /// <summary>
@@ -112,7 +112,7 @@ namespace SWLOR.NWN.API.NWNX
         /// </remarks>
         public static void AddBannedIP(string ip)
         {
-            AdminPlugin.AddBannedIP(ip);
+            AdministrationPluginRuntime.Current.AddBannedIP(ip);
         }
 
         /// <summary>
@@ -125,7 +125,7 @@ namespace SWLOR.NWN.API.NWNX
         /// </remarks>
         public static void RemoveBannedIP(string ip)
         {
-            AdminPlugin.RemoveBannedIP(ip);
+            AdministrationPluginRuntime.Current.RemoveBannedIP(ip);
         }
 
         /// <summary>
@@ -139,7 +139,7 @@ namespace SWLOR.NWN.API.NWNX
         /// </remarks>
         public static void AddBannedCDKey(string key)
         {
-            AdminPlugin.AddBannedCDKey(key);
+            AdministrationPluginRuntime.Current.AddBannedCDKey(key);
         }
 
         /// <summary>
@@ -152,7 +152,7 @@ namespace SWLOR.NWN.API.NWNX
         /// </remarks>
         public static void RemoveBannedCDKey(string key)
         {
-            AdminPlugin.RemoveBannedCDKey(key);
+            AdministrationPluginRuntime.Current.RemoveBannedCDKey(key);
         }
 
         /// <summary>
@@ -166,7 +166,7 @@ namespace SWLOR.NWN.API.NWNX
         /// </remarks>
         public static void AddBannedPlayerName(string playerName)
         {
-            AdminPlugin.AddBannedPlayerName(playerName);
+            AdministrationPluginRuntime.Current.AddBannedPlayerName(playerName);
         }
 
         /// <summary>
@@ -179,7 +179,7 @@ namespace SWLOR.NWN.API.NWNX
         /// </remarks>
         public static void RemoveBannedPlayerName(string playerName)
         {
-            AdminPlugin.RemoveBannedPlayerName(playerName);
+            AdministrationPluginRuntime.Current.RemoveBannedPlayerName(playerName);
         }
 
         /// <summary>
@@ -192,7 +192,7 @@ namespace SWLOR.NWN.API.NWNX
         /// </remarks>
         public static string GetBannedList()
         {
-            return AdminPlugin.GetBannedList();
+            return AdministrationPluginRuntime.Current.GetBannedList();
         }
 
         /// <summary>
@@ -205,7 +205,7 @@ namespace SWLOR.NWN.API.NWNX
         /// </remarks>
         public static void SetModuleName(string name)
         {
-            AdminPlugin.SetModuleName(name);
+            AdministrationPluginRuntime.Current.SetModuleName(name);
         }
 
         /// <summary>
@@ -218,7 +218,7 @@ namespace SWLOR.NWN.API.NWNX
         /// </remarks>
         public static void SetServerName(string name)
         {
-            AdminPlugin.SetServerName(name);
+            AdministrationPluginRuntime.Current.SetServerName(name);
         }
 
         /// <summary>
@@ -232,8 +232,7 @@ namespace SWLOR.NWN.API.NWNX
         /// </remarks>
         public static bool GetPlayOption(AdministrationOption option)
         {
-            int result = AdminPlugin.GetPlayOption((int)option);
-            return result != 0;
+            return AdministrationPluginRuntime.Current.GetPlayOption(option);
         }
 
         /// <summary>
@@ -248,7 +247,7 @@ namespace SWLOR.NWN.API.NWNX
         /// </remarks>
         public static void SetPlayOption(AdministrationOption option, bool value)
         {
-            AdminPlugin.SetPlayOption((int)option, value ? 1 : 0);
+            AdministrationPluginRuntime.Current.SetPlayOption(option, value);
         }
 
         /// <summary>
@@ -264,8 +263,7 @@ namespace SWLOR.NWN.API.NWNX
         /// </remarks>
         public static bool DeleteTURD(string playerName, string characterName)
         {
-            int result = AdminPlugin.DeleteTURD(playerName, characterName);
-            return result != 0;
+            return AdministrationPluginRuntime.Current.DeleteTURD(playerName, characterName);
         }
 
         /// <summary>
@@ -280,8 +278,7 @@ namespace SWLOR.NWN.API.NWNX
         /// </remarks>
         public static bool GetDebugValue(AdministrationDebugType type)
         {
-            int result = AdminPlugin.GetDebugValue((int)type);
-            return result != 0;
+            return AdministrationPluginRuntime.Current.GetDebugValue(type);
         }
 
         /// <summary>
@@ -296,7 +293,7 @@ namespace SWLOR.NWN.API.NWNX
         /// </remarks>
         public static void SetDebugValue(AdministrationDebugType type, bool state)
         {
-            AdminPlugin.SetDebugValue((int)type, state ? 1 : 0);
+            AdministrationPluginRuntime.Current.SetDebugValue(type, state);
         }
 
         /// <summary>
@@ -310,7 +307,7 @@ namespace SWLOR.NWN.API.NWNX
         /// </remarks>
         public static int GetMinLevel()
         {
-            return AdminPlugin.GetMinLevel();
+            return AdministrationPluginRuntime.Current.GetMinLevel();
         }
 
         /// <summary>
@@ -324,7 +321,7 @@ namespace SWLOR.NWN.API.NWNX
         /// </remarks>
         public static void SetMinLevel(int nLevel)
         {
-            AdminPlugin.SetMinLevel(nLevel);
+            AdministrationPluginRuntime.Current.SetMinLevel(nLevel);
         }
 
         /// <summary>
@@ -339,7 +336,7 @@ namespace SWLOR.NWN.API.NWNX
         /// </remarks>
         public static int GetMaxLevel()
         {
-            return AdminPlugin.GetMaxLevel();
+            return AdministrationPluginRuntime.Current.GetMaxLevel();
         }
 
         /// <summary>
@@ -355,7 +352,7 @@ namespace SWLOR.NWN.API.NWNX
         /// </remarks>
         public static void SetMaxLevel(int nLevel)
         {
-            AdminPlugin.SetMaxLevel(nLevel);
+            AdministrationPluginRuntime.Current.SetMaxLevel(nLevel);
         }
 
         /// <summary>
@@ -368,7 +365,7 @@ namespace SWLOR.NWN.API.NWNX
         /// </remarks>
         public static string GetServerName()
         {
-            return AdminPlugin.GetServerName();
+            return AdministrationPluginRuntime.Current.GetServerName();
         }
 
         /// <summary>
@@ -381,7 +378,7 @@ namespace SWLOR.NWN.API.NWNX
         /// </remarks>
         public static void ReloadRules()
         {
-            AdminPlugin.ReloadRules();
+            AdministrationPluginRuntime.Current.ReloadRules();
         }
     }
 }

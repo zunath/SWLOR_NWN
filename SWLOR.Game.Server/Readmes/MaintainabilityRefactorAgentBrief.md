@@ -33,6 +33,11 @@ task, reviews the result and merges it into `feature/maintainability-refactor`.
 - Do NOT edit `MaintainabilityRefactorStatus.md`; the coordinator keeps it current.
 - Stage explicit paths; keep the tree to your task's changes.
 
+- **CD keys (owner, 2026-10-27):** the 8-character public CD key is public and safe to read and use (for example
+  from a server log "Joined as Player" line, or `SWLOR_LIVE_PUBLIC_CDKEY` if set). The private key in `cdkey.ini` must
+  never be read, printed or committed: live-client runs only copy that file, through the procedure in
+  `Readmes/InEngineVisualVerification.md` (throwaway client profile, deleted at teardown, master server blocked).
+
 ## Pull request
 
 - Push your branch (`git -c http.sslBackend=schannel push -u origin <branch>`) and open a pull request
@@ -40,6 +45,9 @@ task, reviews the result and merges it into `feature/maintainability-refactor`.
 - The description holds what changed, why, and validation (exact build and test commands and results).
   End it with: `🤖 Generated with [Claude Code](https://claude.com/claude-code)`. Commit messages end with a
   `Co-Authored-By:` line naming the Claude model you run on (for example `Claude Sonnet 5.5 <noreply@anthropic.com>`).
+- GitHub Actions cannot run (account billing lock). If your pull request changes production code, run
+  `bash scripts/ci/run-unit-tests.sh --out <folder outside the repo>` on the final head and put the per-project results
+  in the description; otherwise run the targeted test filters for your change.
 - Run the Codex review loop from PullRequests.md (`tools/RequestCodexReview.ps1 -PullRequest <pr>`) until a
   review of the current head is clean; fix or answer every finding and resolve every thread; check
   mergeability. Do NOT merge the pull request.

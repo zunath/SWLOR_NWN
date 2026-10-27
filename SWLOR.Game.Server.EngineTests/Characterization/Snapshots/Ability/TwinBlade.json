@@ -1,0 +1,13 @@
+{
+  "function": "UsePerkFeat.TryUseAbility",
+  "description": "Activates representative TwinBlade abilities through the real activation pipeline and records the outcome of each.",
+  "seed": 20261031,
+  "inputs": "Each ability is used by a fresh nw_bandit001 (2000 HP, 9999 FP and stamina, no regeneration) on the target its behavior case names: itself, a hostile training dummy or a friendly creature one and a half metres away. The clock is frozen at 2026-01-15 12:00:00 UTC, so effect durations are the full applied durations. Random is seeded with 20261031 plus the ability's position immediately before the activation. HP columns are the change from before the activation; effects are written 'name:remainingSeconds'. The recast column is the time from the frozen clock until the cooldown the activation started ends, or 'none'.",
+  "rowCount": 3,
+  "columns": ["ability", "feat", "activation", "target", "recastGroup", "=> accepted", "=> denial", "=> impact", "=> fpSpent", "=> staminaSpent", "=> casterHP", "=> targetHP", "=> targetEnmity", "=> casterEffects", "=> targetEffects", "=> queued", "=> recast"],
+  "rows": [
+    ["BladeVortex1", 2012, "Casted", "HostileCreature", "BladeVortex", true, "", "targets 1, critical hits 0, damage 16, skill TwinBlade", 0, 6, 0, -16, 116, [], [], false, "30s"],
+    ["CycloneStance1", 2041, "Casted", "Self", "CycloneStance", true, "", "targets 0, critical hits 0, damage 0, skill TwinBlade", 0, 0, 0, 0, 0, ["Cyclone Stance:-1"], [], false, "30s"],
+    ["CrossCut1", 2276, "Casted", "HostileCreature", "CrossCut", true, "", "targets 1, critical hits 0, damage 7, skill TwinBlade", 0, 3, 0, -7, 108, [], [], false, "18s"]
+  ]
+}

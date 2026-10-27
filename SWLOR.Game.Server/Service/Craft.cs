@@ -1013,7 +1013,7 @@ namespace SWLOR.Game.Server.Service
             {
                 if (dbJob.PlayerId != playerId)
                 {
-                    var now = DateTime.UtcNow;
+                    var now = Clock.UtcNow;
                     if (dbJob.DateCompleted > now)
                     {
                         var delta = dbJob.DateCompleted - now;

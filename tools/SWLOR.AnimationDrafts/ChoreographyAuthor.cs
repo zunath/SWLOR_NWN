@@ -13,7 +13,13 @@ internal sealed record Choreography(string Id, string Description, float Duratio
 internal sealed record ChoreographyBeat(float Time, string Label, string SourceAnimation, float SourceTime = 0,
     float[]? LeftHand = null, float[]? RightHand = null, float[]? TorsoDegrees = null, string? SourceModel = null,
     [property: JsonIgnore(Condition = JsonIgnoreCondition.WhenWritingNull)] float[]? RootOffset = null,
-    [property: JsonIgnore(Condition = JsonIgnoreCondition.WhenWritingDefault)] bool FollowSourceMotion = false);
+    [property: JsonIgnore(Condition = JsonIgnoreCondition.WhenWritingDefault)] bool FollowSourceMotion = false,
+    // Optional wrist grip source: the body follows SourceAnimation while directed hands keep this
+    // native local grip (for example, running legs with pistols held at aim). Omitted fields keep
+    // older recipe hashes unchanged.
+    [property: JsonIgnore(Condition = JsonIgnoreCondition.WhenWritingNull)] string? GripAnimation = null,
+    [property: JsonIgnore(Condition = JsonIgnoreCondition.WhenWritingNull)] string? GripModel = null,
+    [property: JsonIgnore(Condition = JsonIgnoreCondition.WhenWritingDefault)] float GripTime = 0);
 
 /// <summary>Native pose choreography with explicit hand paths and native local grips.
 /// Recipes are editable motion direction, not inferred motion capture.</summary>
@@ -42,8 +48,13 @@ internal static class ChoreographyAuthor
                 string.IsNullOrWhiteSpace(beat.Label) || string.IsNullOrWhiteSpace(beat.SourceAnimation) ||
                 !float.IsFinite(beat.SourceTime) || beat.SourceTime is < 0 or > 1)
                 throw new InvalidDataException("Invalid choreography beat: " + recipe.Id);
-            if (beat.SourceModel != null && !System.Text.RegularExpressions.Regex.IsMatch(beat.SourceModel, "^[a-z0-9_]{1,16}$"))
-                throw new InvalidDataException("Source model must be a native resource name.");
+            foreach (var resource in new[] { beat.SourceModel, beat.GripModel })
+                if (resource != null && !System.Text.RegularExpressions.Regex.IsMatch(resource, "^[a-z0-9_]{1,16}$"))
+                    throw new InvalidDataException("Source model must be a native resource name.");
+            if (beat.GripAnimation == null && (beat.GripModel != null || beat.GripTime != 0) ||
+                beat.GripAnimation != null && (string.IsNullOrWhiteSpace(beat.GripAnimation) || beat.LeftHand == null && beat.RightHand == null) ||
+                !float.IsFinite(beat.GripTime) || beat.GripTime is < 0 or > 1)
+                throw new InvalidDataException("A grip source requires a directed hand and a normalized time: " + recipe.Id);
             foreach (var vector in new[] { beat.LeftHand, beat.RightHand, beat.TorsoDegrees, beat.RootOffset })
                 if (vector != null && (vector.Length != 3 || vector.Any(v => !float.IsFinite(v))))
                     throw new InvalidDataException("Choreography vectors require three finite coordinates.");
@@ -56,7 +67,7 @@ internal static class ChoreographyAuthor
                 throw new InvalidDataException("Following source motion requires the next beat to use the same source animation and model.");
         }
         foreach (var beat in new[] { recipe.Beats[0], recipe.Beats[^1] })
-            if (beat.SourceAnimation != "pause1" || beat.SourceModel != null || beat.SourceTime != 0 || beat.LeftHand != null || beat.RightHand != null || beat.TorsoDegrees != null || beat.RootOffset != null || beat.FollowSourceMotion)
+            if (beat.SourceAnimation != "pause1" || beat.SourceModel != null || beat.SourceTime != 0 || beat.LeftHand != null || beat.RightHand != null || beat.TorsoDegrees != null || beat.RootOffset != null || beat.FollowSourceMotion || beat.GripAnimation != null)
                 throw new InvalidDataException("Choreography endpoints must use unmodified native idle.");
     }
 
@@ -72,7 +83,11 @@ internal static class ChoreographyAuthor
                 ? supplied : throw new InvalidDataException("Missing choreography source model: " + sourceModel);
             return owner.Animations.SingleOrDefault(a => a.Name == name) ?? throw new InvalidDataException("Missing choreography source: " + name);
         }
-        foreach (var beat in recipe.Beats) Source(beat.SourceAnimation, beat.SourceModel);
+        foreach (var beat in recipe.Beats)
+        {
+            Source(beat.SourceAnimation, beat.SourceModel);
+            if (beat.GripAnimation != null) Source(beat.GripAnimation, beat.GripModel);
+        }
         PosedNode[] Native(string name, float fraction, string? sourceModel = null)
         {
             var clip = Source(name, sourceModel);
@@ -80,6 +95,13 @@ internal static class ChoreographyAuthor
             return rig.Joints.Select(j => sampled.TryGetValue(j.Name, out var node) ? node : j.Rest).ToArray();
         }
         static Vector3 V(float[] v) => new(v[0], v[1], v[2]);
+        var grips = new Dictionary<ChoreographyBeat, PosedNode[]>(ReferenceEqualityComparer.Instance);
+        Quaternion? Grip(ChoreographyBeat beat, int hand)
+        {
+            if (beat.GripAnimation == null) return null;
+            if (!grips.TryGetValue(beat, out var pose)) grips[beat] = pose = Native(beat.GripAnimation, beat.GripTime, beat.GripModel);
+            return pose[hand].Orientation;
+        }
         PosedNode[] Overlays(PosedNode[] pose, ChoreographyBeat first, ChoreographyBeat second, float blend)
         {
             if (first.TorsoDegrees != null || second.TorsoDegrees != null)
@@ -95,6 +117,8 @@ internal static class ChoreographyAuthor
                 if (start == null && finish == null || blend == 0 && start == null || blend == 1 && finish == null) continue;
                 var hand = Joint(name);
                 var grip = pose[hand].Orientation;
+                if (first.GripAnimation != null || second.GripAnimation != null)
+                    grip = Quaternion.Normalize(Quaternion.Slerp(Grip(first, hand) ?? grip, Grip(second, hand) ?? grip, blend));
                 var world = AnimationRig.World(rig.Joints, pose);
                 var influence = start == null ? blend : finish == null ? 1 - blend : 1;
                 // A missing target means native arm motion. Solve the full authored

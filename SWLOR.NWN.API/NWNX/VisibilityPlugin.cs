@@ -25,8 +25,7 @@ namespace SWLOR.NWN.API.NWNX
         /// <returns>The VisibilityType.</returns>
         public static VisibilityType GetVisibilityOverride(uint player, uint target)
         {
-            int result = global::NWN.Core.NWNX.VisibilityPlugin.GetVisibilityOverride(player, target);
-            return (VisibilityType)result;
+            return VisibilityPluginRuntime.Current.GetVisibilityOverride(player, target);
         }
 
         /// <summary>
@@ -54,7 +53,7 @@ namespace SWLOR.NWN.API.NWNX
         /// <param name="override">The visibility type.</param>
         public static void SetVisibilityOverride(uint player, uint target, VisibilityType @override)
         {
-            global::NWN.Core.NWNX.VisibilityPlugin.SetVisibilityOverride(player, target, (int)@override);
+            VisibilityPluginRuntime.Current.SetVisibilityOverride(player, target, @override);
         }
     }
 }

@@ -1,0 +1,18 @@
+{
+  "function": "CraftViewModel (manual craft actions)",
+  "description": "Works the crafting window for a recipe one click at a time and records what the window shows after each click; the last rows record the crafted item, the inventory left behind and the XP earned.",
+  "seed": 20261101,
+  "inputs": "Recipe TwinElectroblade1 (level 7, Smithery, makes 1x twin_elec_1, components elec_ruined x5, ref_veldite x3) crafted by a headless player with Smithery rank 7. Random is reseeded with 20261101 plus the click number before every click. The clicks are OnClickBasicTouch, OnClickBasicTouch, then OnClickBasicSynthesis until the craft ends or 24 clicks pass.",
+  "rowCount": 8,
+  "columns": ["click", "action", "=> status", "=> progress", "=> quality", "=> durability", "=> crafting points", "=> crafting"],
+  "rows": [
+    [0, "start crafting", "", "Progress (0/37)", "Quality (0/492)", "Durability (60/60)", "CP: 5/5", true],
+    [1, "BasicTouch", "Basic Touch: Success!", "Progress (0/37)", "Quality (10/492)", "Durability (50/60)", "CP: 2/5", true],
+    [2, "BasicTouch", "Not enough CP!", "Progress (0/37)", "Quality (10/492)", "Durability (50/60)", "CP: 2/5", true],
+    [3, "BasicSynthesis", "Basic Synthesis: Success!", "Progress (10/37)", "Quality (10/492)", "Durability (40/60)", "CP: 2/5", true],
+    [4, "BasicSynthesis", "Basic Synthesis: Success!", "Progress (20/37)", "Quality (10/492)", "Durability (30/60)", "CP: 2/5", true],
+    [5, "BasicSynthesis", "Basic Synthesis: Success!", "Progress (30/37)", "Quality (10/492)", "Durability (20/60)", "CP: 2/5", true],
+    [6, "BasicSynthesis", "Basic Synthesis: FAILURE", "Progress (30/37)", "Quality (10/492)", "Durability (10/60)", "CP: 2/5", true],
+    [7, "BasicSynthesis", "Successfully created the item!", "Progress (0/37)", "Quality (0/492)", "Durability (60/60)", "CP: 5/5", false]
+  ]
+}

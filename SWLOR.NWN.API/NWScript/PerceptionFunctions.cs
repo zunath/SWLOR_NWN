@@ -8,7 +8,7 @@ namespace SWLOR.NWN.API.NWScript
         /// <returns>The object that was perceived, or OBJECT_INVALID if the caller is not a valid creature</returns>
         public static uint GetLastPerceived()
         {
-            return global::NWN.Core.NWScript.GetLastPerceived();
+            return NWScriptRuntime.Current.GetLastPerceived();
         }
 
         /// <summary>
@@ -17,7 +17,7 @@ namespace SWLOR.NWN.API.NWScript
         /// <returns>TRUE if the object was heard</returns>
         public static bool GetLastPerceptionHeard()
         {
-            return global::NWN.Core.NWScript.GetLastPerceptionHeard() != 0;
+            return NWScriptRuntime.Current.GetLastPerceptionHeard();
         }
 
         /// <summary>
@@ -26,7 +26,7 @@ namespace SWLOR.NWN.API.NWScript
         /// <returns>TRUE if the object has become inaudible</returns>
         public static bool GetLastPerceptionInaudible()
         {
-            return global::NWN.Core.NWScript.GetLastPerceptionInaudible() != 0;
+            return NWScriptRuntime.Current.GetLastPerceptionInaudible();
         }
 
         /// <summary>
@@ -35,7 +35,7 @@ namespace SWLOR.NWN.API.NWScript
         /// <returns>TRUE if the object was seen</returns>
         public static bool GetLastPerceptionSeen()
         {
-            return global::NWN.Core.NWScript.GetLastPerceptionSeen() != 0;
+            return NWScriptRuntime.Current.GetLastPerceptionSeen();
         }
 
         /// <summary>
@@ -44,7 +44,7 @@ namespace SWLOR.NWN.API.NWScript
         /// <returns>TRUE if the object has vanished</returns>
         public static bool GetLastPerceptionVanished()
         {
-            return global::NWN.Core.NWScript.GetLastPerceptionVanished() != 0;
+            return NWScriptRuntime.Current.GetLastPerceptionVanished();
         }
     }
 }

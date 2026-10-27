@@ -70,6 +70,22 @@ var firstObject = GetFirstObjectInArea(area);
 var nextObject = GetNextObjectInArea(area);
 ```
 
+**Engine seam.** Every static wrapper in `SWLOR.NWN.API/NWScript` and `NWScriptCustom` forwards to `NWScriptRuntime.Current`, an `INWScript`. By default that is `NwnCoreNWScript`, which holds the original wrapper bodies and calls the engine, so game code and call sites are unchanged. A unit test swaps the engine for `FakeNWScript` (project `SWLOR.NWN.API.Testing`), which records every call and returns configured or default values (zero, empty string, `OBJECT_INVALID` for every `uint` return, empty engine structures):
+
+```csharp
+var engine = new FakeNWScript();
+engine.SetReturn("GetEnteringObject", player);          // also SetReturnSequence and SetReturnHandler
+using var scope = NWScriptRuntime.Override(engine);     // per async flow; parallel tests do not see each other
+
+Activity.WipeStatusOnEntry();
+
+engine.Calls.Select(call => call.ToString()).Should().Contain("DeleteLocalBool(1001, \"IS_BUSY\")");
+```
+
+- Wrappers that contain logic (for example `GetLocalBool`, `ClearAllActions` resolving `OBJECT_SELF`, `RemoveEffectByTag`) are faked at their own level: the fake records the call and does not run the wrapper's body, so configure the wrapper's own return value.
+- Write a new or changed wrapper as before (a static method whose body calls `global::NWN.Core.NWScript`), then run `tools/Refactor/Apply-EngineSeam.ps1`. It moves the body into `NwnCoreNWScript`, extends `INWScript` and `FakeNWScript`, and rewrites the wrapper to forward. Never edit `SWLOR.NWN.API/Generated/` or `SWLOR.NWN.API.Testing/Generated/` by hand. `-Check` writes nothing and fails when the checked-in output is out of date; `SWLOR.NWN.API.Tests` runs the same check.
+- Public constants stay static (an interface cannot hold them). The generator rejects any other member shape (generics, `ref`/`out` parameters, attributes, fields, nested types), so nothing slips past the seam.
+
 ### 2. NWNX Plugin System
 
 **Purpose**: Provides access to NWNX plugin functionality.
@@ -79,6 +95,22 @@ var nextObject = GetNextObjectInArea(area);
 - `AreaPlugin.cs` - Area management
 - `ChatPlugin.cs` - Chat system
 - Various plugin interfaces
+
+**Engine seam.** Every static wrapper in `SWLOR.NWN.API/NWNX/*Plugin.cs` forwards to its plugin's runtime, the same way the NWScript wrappers do: `ChatPlugin.SendMessage` calls `ChatPluginRuntime.Current`, an `IChatPlugin`. By default that is `NwnCoreChatPlugin`, which holds the original wrapper bodies and calls NWNX, so game code and call sites are unchanged. Each plugin has its own interface (`IChatPlugin`), pass-through (`NwnCoreChatPlugin`), runtime (`ChatPluginRuntime`) and fake (`FakeChatPlugin`, project `SWLOR.NWN.API.Testing`). A test replaces one plugin without touching the others:
+
+```csharp
+var plugin = new FakeCreaturePlugin();
+plugin.SetReturn("GetKnowsFeat", true);                      // also SetReturnSequence and SetReturnHandler
+using var scope = CreaturePluginRuntime.Override(plugin);    // per async flow; parallel tests do not see each other
+
+QuickCast.KnowsFeat(player, feat).Should().BeTrue();
+
+plugin.Calls.Select(call => call.ToString()).Should().Equal("GetKnowsFeat(1001, Alertness)");
+```
+
+- The same rules as the NWScript seam apply: wrappers with logic (an enum cast, a `bool` to `int` conversion, a result struct) are faked at their own level, and a new or changed wrapper is written as before and then moved by `tools/Refactor/Apply-EngineSeam.ps1`, which regenerates the NWScript and plugin seams together. A plugin file added to `SWLOR.NWN.API/NWNX` as `<Name>Plugin.cs` gets its own seam on the next run.
+- A plugin's data-only nested types (`ObjectPlugin.LocalVariable`, `UtilPlugin.WorldTime`, `UtilPlugin.HighResTimestamp`, `WeaponPlugin.DevastatingCriticalData`) stay in the static class and are used by the interface and fake through `using static`. The generator rejects a nested type that holds code.
+- A fake returns a new empty instance for a plain data class with a public parameterless constructor (`JournalEntry`, `QuickBarSlot`, `ItemPropertyUnpacked`), so game code that reads a field of the result does not fail on a null.
 
 **Usage**:
 ```csharp
@@ -383,6 +415,34 @@ public static void OnPlayerDamaged(uint player, uint attacker, int damage)
     Log.Write(LogGroup.Combat, $"Player {player} took {damage} damage from {attacker}");
 }
 ```
+
+### 4. Script Handler Order
+
+At boot `ScriptRegistry.LoadHandlersFromAssembly` finds every `[NWNEventHandler(ScriptName.X)]` method by reflection and registers it under its script name. A script runs its handlers front to back (a failing action handler is logged and the rest still run; every conditional handler runs and the results are ANDed). **The order is declared in `SWLOR.Game.Server/Core/ScriptHandlerOrder.txt`, the script handler manifest, and nowhere else.** Reflection order follows namespaces and file paths, so it is never consulted for a handler the manifest lists: moving a file, renaming a namespace or adding an unrelated file cannot reorder handlers. Some order is load-bearing: `Service.DB.Load` must stay ahead of `Feature.EventRegistration.OnModulePreload` in `mod_preload`, because the first connects Redis and the second reads it.
+
+**Format.** One block per script. The script name starts in column 0 (an optional `  # comment` may follow it), then one indented line per handler in run order: `action` (a `void` handler) or `conditional` (a `bool` handler), then `Namespace.Type.Method`. Blank lines, `#` comment lines and `== section ==` headings are ignored. Anything else is an error.
+
+```text
+mod_preload  # run by the engine before the module loads
+  action      SWLOR.Game.Server.Service.DB.Load
+  action      SWLOR.Game.Server.Feature.EventRegistration.OnModulePreload
+```
+
+**Adding a handler.**
+
+1. Write the `[NWNEventHandler]` method.
+2. Build, so the generator sees the new handler: `dotnet build SWLOR.Game.Server.Tests -p:RunPostBuildEvent=Never -v q -clp:ErrorsOnly`.
+3. Run the manifest generator: `SWLOR_UPDATE_SNAPSHOTS=1 dotnet test SWLOR.Game.Server.Tests --no-build --filter "FullyQualifiedName~ScriptHandlerOrderTests"`
+   (PowerShell: `$env:SWLOR_UPDATE_SNAPSHOTS='1'; dotnet test ...; Remove-Item Env:SWLOR_UPDATE_SNAPSHOTS`). It rewrites the manifest from what the server would load, so existing handlers keep their order and a new handler is **appended to the end of its script's block**.
+4. If the new handler must run before others, move its line in the manifest. The generator never reorders lines it already has.
+5. Build again (same command as step 2) and run `dotnet test SWLOR.Game.Server.Tests --no-build --filter "FullyQualifiedName~ScriptHandler"`. The server embeds the manifest, so the assembly carries the new one only after a rebuild.
+6. Commit the manifest with the handler. `ScriptHandlerOrderTests` fails while the manifest is not complete or names a handler that no longer exists.
+
+**Renaming or moving a handler method or class.** Edit its manifest line in place. Regenerating instead would drop the old line and append the new name at the end of the script, changing when it runs.
+
+**Until a handler is listed** it still runs, after every listed handler of its script and in discovery order, and the server logs it once at boot under the `Server` log group ("Script handler order: N handler(s) are not listed"). A listed handler whose method no longer exists is ignored and logged the same way ("match no handler"). Handlers in the engine test assembly are never listed; they run after the game's and are summarised in one line.
+
+**Deployment.** The manifest is an embedded resource of `SWLOR.Game.Server.dll` (`ScriptHandlerOrder.txt`), so every way of deploying the server ships it with the code it orders: `SWLOR.CLI` `DeployBuild` and the production deploy copy the whole build output into the `dotnet/` folder that the Docker compose files mount. A missing, unreadable, malformed or empty manifest stops the boot with an exception that names the problem; the server never falls back to reflection order. The embedded copy is what runs, so rebuild after editing the file.
 
 ## Core Best Practices
 

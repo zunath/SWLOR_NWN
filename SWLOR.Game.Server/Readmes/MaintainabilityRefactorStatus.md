@@ -4,7 +4,7 @@ The single source of truth for the refactor's progress and handoff. The plan and
 in [MaintainabilityRefactorPlan.md](MaintainabilityRefactorPlan.md). Update this file in the same pull
 request as the work it describes, and whenever a work item starts, finishes or gets blocked.
 
-Last updated: 2026-10-26.
+Last updated: 2026-10-27.
 
 ## Resuming (any agent, any account)
 
@@ -40,7 +40,8 @@ Starting prompt for a new session:
 ## Branch
 
 - Integration branch: `feature/maintainability-refactor` (cut from `master` at `468f6d706`).
-- Last sync with `master`: none yet (branch created 2026-10-26).
+- Last sync with `master`: 2026-10-27, `6d49650f7` (see Sync log).
+- **Branch rule:** the repository allows only squash merges on GitHub. Anything that contains a merge of `master` (every sync) must reach this branch as a real merge commit, or later syncs re-apply `master`'s commits. Run `tools/Refactor/Sync-MaintainabilityBranch.ps1` in a worktree checked out on `feature/maintainability-refactor` itself and push the merge commit after the script passes; when a sync needs hand-ported conflict resolutions, do them on a work branch, get the Codex review, then merge that branch locally with `git merge --no-ff` and push (GitHub marks the pull request merged). Ordinary work-item pull requests are squash-merged as usual.
 - Shared packages: `Nwn.Hosting`, `Nwn.Hosting.Contracts`, `Nwn.Hosting.Testing` `0.1.0-preview.1` on
   nuget.org, source at https://github.com/zunath/NWN.Hosting (used from Phase 4).
 
@@ -51,18 +52,24 @@ Status: `open`, `in progress`, `review` (pull request open), `done`, `blocked`.
 | ID | Item | Depends on | Model | Status | Pull request | Notes |
 |---|---|---|---|---|---|---|
 | P0-1 | Plan and status docs on the branch | - | Opus | done | - | First commit of the branch |
-| P0-2 | CI workflow: build + unit tests for the refactor branch; coverage collection with generated code excluded; baseline report | - | Sonnet | in progress | | Worktree `.claude/worktrees/mr-p0-2` |
-| P0-2b | Nightly and on-label engine-test workflow (feasibility first: Docker, module, haks in Actions) | P0-2 | Sonnet | open | | |
+| P0-2 | CI workflow: build + unit tests for the refactor branch; coverage collection with generated code excluded; baseline report | - | Sonnet | done | [#2904](https://github.com/zunath/SWLOR_NWN/pull/2904) | `.github/workflows/maintainability-ci.yml` (windows-2025; sparse haks `sw_2da sw_tlk sw_ability`), `scripts/ci/run-unit-tests.sh` (projects + every exclusion with its reason; run locally with `--out <dir>`), `coverlet.runsettings`, ReportGenerator summary. Runs Game.Server.Tests, CharacterizationTests, Architecture.Tests, NWN.API.Tests, CombatSim.Tests, CLI.Tests, NWN.Formats.Tests (29 min locally). **Never ran on GitHub: Actions is locked for the account by a billing issue (owner).** Coverage baseline below. |
+| P0-2b | Nightly and on-label engine-test workflow (feasibility first: Docker, module, haks in Actions) | P0-2 | Sonnet | in progress | | Worktree `.claude/worktrees/mr-p0-2b`. Owner (2026-10-27): do not wait on the billing lock; build it and verify its steps locally |
 | P0-3 | Inventory of randomness and time sources in combat, stats, perks, abilities, XP, crafting, loot | - | Haiku | done | - | Findings summarized in [MaintainabilityRefactorSpecs.md](MaintainabilityRefactorSpecs.md) |
-| P0-4a | Output-locking Tier A: combat calculations (spec in MaintainabilityRefactorSpecs.md) | P0-3 | Sonnet | in progress | | Worktree `.claude/worktrees/mr-p0-4a` |
-| P0-4b | Output-locking Tier A: stats, abilities, perks | P0-4a | Sonnet | open | | |
-| P0-4c | Output-locking Tier A: XP, crafting, loot | P0-4a | Sonnet | open | | |
-| P0-4d | Output-locking Tier B: engine scenarios with a behaviour-neutral clock seam (spec to write) | P0-4a | Opus spec, Sonnet build | open | | Needs a clock seam for about 70 direct `DateTime.UtcNow` reads |
+| P0-4a | Output-locking Tier A: combat calculations (spec in MaintainabilityRefactorSpecs.md) | P0-3 | Sonnet | done | [#2900](https://github.com/zunath/SWLOR_NWN/pull/2900) | New `SWLOR.Game.Server.CharacterizationTests` project and snapshot helper (`Support/`: `Snapshot.Verify`, `SnapshotTable`, `SeededRandom`, `Grid`; `SWLOR_SNAPSHOT_DIRECTORY` redirects output for the parity script). 41 combat functions plus 26 constants, 39 snapshots, 4,673 rows. Engine-bound combat paths listed in the PR as Tier B candidates. |
+| P0-4b | Output-locking Tier A: stats, abilities, perks | P0-4a | Sonnet | done | [#2907](https://github.com/zunath/SWLOR_NWN/pull/2907) | Stat formulas (18 snapshots), all 1,091 stat types, player-record bookkeeping, 738 abilities (definitions + presentation), 504 perks / 986 levels / 62 categories. Perks are collected through each definition's per-perk methods by reflection (proven equal to `BuildPerks()`), because `BuildPerks()` reads icons through NWScript. Guard tests fail if `AbilityDetail` or perk types gain unclassified properties. |
+| P0-4c | Output-locking Tier A: XP, crafting, loot | P0-4a | Sonnet | done | [#2909](https://github.com/zunath/SWLOR_NWN/pull/2909) | Skills/XP (16 files), crafting incl. all 3,354 recipes and 730 blueprint bonuses (24 files), loot: 564 tables / 3,549 items and seeded draws with quantities (17 files), `Random` edge cases. `Skill._allSkills` and `Craft._recipes` filled by reflection in two scope classes (their `CacheData` needs the engine). Tier A total: 148 tests, about 2.3 MB of snapshots. |
+| P0-4d1 | Clock seam applied by a re-runnable script (spec in MaintainabilityRefactorSpecs.md) | P0-4a | Sonnet | done | [#2916](https://github.com/zunath/SWLOR_NWN/pull/2916) | `Core/Clock.cs` (`UtcNow`, `TickCount64`, `OverrideForTests` scope; a guard keeps the override out of game code). Script `tools/Refactor/Apply-ClockSeam.ps1` (`-Check` mode) owns the files in `tools/Refactor/ClockSeamFiles.txt`: 103 replacements in 14 files; output reproduced byte for byte. Characterization snapshots unchanged. Follow-up: refresh the informational `EdgesIntoCoreAndPlatform.txt` record (stale after `Clock`; shows as one NUnit warning, counted as skipped). |
+| P0-4d2 | Engine characterization scenarios (seeded `Random`, frozen `Clock`) | P0-4d1 | Sonnet | done | [#2923](https://github.com/zunath/SWLOR_NWN/pull/2923) | `SWLOR.Game.Server.EngineTests/Characterization/`: 41 tests, 44 embedded snapshots (weapon attacks for 14 weapon classes, procs, 57 abilities over 20 skills, status-effect ticking, kill XP and loot, `Loot.SpawnLoot`, crafting). Run `scripts/run-engine-tests.ps1 -Filter Characterization` (about 11 min); `SWLOR_UPDATE_SNAPSHOTS=1` passes through compose. **Snapshots depend on module and hak data:** pack the module from the branch and rebuild `sw_2da`, `sw_ability`, `sw_tlk` from the pinned haks. A prepared server home is at `C:\Temp\mr-p0-4d2\home` with hak dir `C:\Temp\mr-p0-4d2\hak` (local, 330 MB; set `SWLOR_ENGINE_TEST_SERVER_HOME` / `SWLOR_ENGINE_TEST_HAK_DIR`). Not covered: Mimicry and Beastmaster abilities, delayed impacts (record acceptance and cost only), recast timestamps (`Recast` is outside the clock seam). |
+| P0-4d3 | Add `Recast` / `RecastTimestamp` (and any other clock reader the scenarios touch) to the clock seam; record recast timestamps in the engine scenarios | P0-4d2 | Sonnet | done | [#2926](https://github.com/zunath/SWLOR_NWN/pull/2926) | 9 more files in the clock seam (Recast, AbilityCooldownVisual, Enmity, MeleeTechnique, AIService, WeaponAttackAnimation, CraftViewModel, EntityBase; 45 + 5 reads). Ability scenarios record cooldowns (`recast` column); every existing cell unchanged. |
+| P0-7c | Engine snapshot refresh after syncs: pack the module and rebuild `sw_2da`, `sw_ability`, `sw_tlk` from the branch, re-run `-Filter Characterization`, regenerate, and explain every changed row by a `master` content change; document it in the sync procedure. First run: `Loot/TableDraws.json` is stale since the 2026-10-27 sync (master changed loot tables). | P0-7 | Sonnet | open | | Engine snapshots depend on module and hak content, which `master` changes often |
 | P0-5 | Boot-order and script-handler-order record test | - | Sonnet | done | [#2899](https://github.com/zunath/SWLOR_NWN/pull/2899) | Snapshot of 230 scripts / 662 handlers. Finding: handler order is not declared anywhere; it follows Roslyn's type emission order (namespace depth-first, then sorted file paths), so adding an unrelated file or moving a namespace can reorder handlers. `DB.Load` runs before `EventRegistration.OnModulePreload` only because `Service` is visited before `Feature`. A snapshot diff after a `master` sync that no handler edit explains is real drift. Seam: `ScriptRegistry.LoadHandlersFromAssemblies` (behaviour-neutral, proven against the old discovery code). |
-| P0-10 | Make handler order explicit before any file or namespace moves (declared order equal to today's snapshot; behaviour-neutral) | P0-5 | Opus spec, Sonnet build | open | | Blocks every namespace move in Phase 2 and the P0-8 domain map moves |
-| P0-6 | Scripted live smoke run with `tools/NwnLiveClient.py`; baseline recorded (spec in MaintainabilityRefactorSpecs.md) | - | Sonnet | in progress | | Worktree `.claude/worktrees/mr-p0-6` |
-| P0-7 | Daily sync script and parity script (characterization tests against a throwaway `master` worktree) | P0-4 | Sonnet | open | | |
-| P0-8 | Cross-domain dependency guard recording today's calls (domain map first) | - | Opus map, Sonnet build | open | | Decision 9 |
+| P0-10 | Make handler order explicit before any file or namespace moves (declared order equal to today's snapshot; behaviour-neutral) | P0-5 | Opus spec, Sonnet build | done | [#2915](https://github.com/zunath/SWLOR_NWN/pull/2915) | Embedded manifest `SWLOR.Game.Server/Core/ScriptHandlerOrder.txt` (230 scripts, 662 handlers); registry discovers as before, then orders by manifest; unlisted handlers run last and are logged; stale entries ignored and logged; missing or malformed manifest fails boot loudly. Proven equal to today's order, independent of discovery order, and identical on a real engine boot. `ScriptHandlerManifestBaselineTests` is temporary: delete it in the first PR that legitimately reorders reflection. P0-7 must place handlers that `master` adds where `master`'s reflection order puts them. |
+| P1-1 | Engine seam for NWScript: generator, `INWScript`, forwarding statics, fakes (spec in MaintainabilityRefactorSpecs.md) | P0-10 | Sonnet (Opus review) | done | [#2917](https://github.com/zunath/SWLOR_NWN/pull/2917) | Generator `tools/Refactor/SWLOR.EngineSeamGenerator`, run with `tools/Refactor/Apply-EngineSeam.ps1 [-Check] [-VerifyOrigin <ref>]` (writes nothing unless every moved body round-trips). 1,133 members: `INWScript` / `NwnCoreNWScript` / `FakeNWScript` (new `SWLOR.NWN.API.Testing`) as partials per wrapper file, `NWScriptRuntime` (default engine, `Override` scope). 31 constants stay static. New `SWLOR.NWN.API.Tests` proves each wrapper makes exactly one matching engine call. Engine boots match the base; about 1 ns per call, no allocation. Example: `ActivityEngineTests`. |
+| P1-2 | Engine seam for NWNX plugins | P1-1 | Sonnet | done | [#2922](https://github.com/zunath/SWLOR_NWN/pull/2922) | Same generator and script now emit one seam per plugin: `IXxxPlugin`, `NwnCoreXxxPlugin`, `XxxPluginRuntime`, `FakeXxxPlugin` (16 plugins, 401 members). Four data-only nested result types stay as they are. Proofs in `SWLOR.NWN.API.Tests` (341 tests); engine boots and engine tests match the base. **Phase 1 seams complete.** |
+| P2-0 | DI pilot: composition root, facade accessor, architecture rules, DependencyInjection.md, and `Achievement`, `Faction`, `Taxi` (spec: "Phase 2" in MaintainabilityRefactorSpecs.md) | P1-1 | Sonnet build, Opus review | in progress | | Worktree `.claude/worktrees/mr-p2-0` |
+| P0-6 | Scripted live smoke run with `tools/NwnLiveClient.py`; baseline recorded (spec in MaintainabilityRefactorSpecs.md) | - | Sonnet | in progress | [#2906](https://github.com/zunath/SWLOR_NWN/pull/2906) (draft) | **Owner approved (2026-10-27):** live-client runs copy `cdkey.ini` through the guide's procedure (its private key is never read); the 8-character public key is public and may be read from a server log (see the agent brief). Resumed. Built: `tools/RunSmokeTest.ps1` / `tools/SmokeTest.py` (`-Repeat`, `-ServerOnly`, `-SkipBuild`), 31 tests, InEngineVisualVerification.md section; server boot checks pass (two identical server-only runs). Steps 3-8 still manual until a client session exists. Head `df672f48e` is unreviewed (Codex never answered). Worktree `.claude/worktrees/mr-p0-6`; server-only results in `C:\Temp\mr-p0-6` (local, 20 MB). |
+| P0-7 | Daily sync script and parity script (spec in MaintainabilityRefactorSpecs.md) | P0-4c, P0-4d1 | Sonnet | done | [#2921](https://github.com/zunath/SWLOR_NWN/pull/2921), fix [#2925](https://github.com/zunath/SWLOR_NWN/pull/2925) | `tools/Refactor/Sync-MaintainabilityBranch.ps1` (merge master; settle conflicts in script-owned files by taking master's version and re-running the script; place new handlers in the manifest where master's order puts them; refresh the informational edge record; build and run the sync tests; print the sync-log line; exit 2 = conflicts left, resume with `-Continue`; exit 3 = manual manifest edit) and `tools/Refactor/Test-MaintainabilityParity.ps1` (throwaway master worktree with the seams from `ParitySeams.txt` applied; characterization and handler-order comparison). Manifests: `MechanicalScripts.txt`, `ParitySeams.txt`, `SyncTests.txt`. Merged with a merge commit (see the branch rule below). Its last commit `e85031671` has no Codex review (the review hung; not re-requested). Tested under Windows PowerShell 5.1 only. `SyncTests.txt` duplicates the CI exclusion list in `scripts/ci/run-unit-tests.sh`; keep them in step. |
+| P0-8 | Cross-domain dependency guard recording today's calls (spec and domain map in MaintainabilityRefactorSpecs.md) | - | Opus map (done), Sonnet build | done | [#2911](https://github.com/zunath/SWLOR_NWN/pull/2911) | `SWLOR.Architecture.Tests`: reads `SWLOR.Game.Server.dll` IL (System.Reflection.Metadata), maps types to domains by namespace (`DomainMap.json`). Baseline: 798 guarded cross-domain edges over 172 domain pairs (top: Combat->Character 45, Gameplay->Character 36, Gameplay->Combat 34), plus 641 edges into Core/Platform recorded only. Fails on new or vanished edges and on unmapped services or Feature folders. Limit: dependencies made only through compile-time constants leave no IL reference. CodeRabbit had not reviewed when merged; check the PR for late findings. |
 | P0-9 | Feasibility check: do app-created worktrees inherit sparse checkout? | - | Opus (trivial) | done | - | Git 2.46 copies the sparse settings of the worktree `git worktree add` runs from (tested in a scratch repo). So after the haks cutover the main checkout itself must be sparse (code + `sw_2da`, `sw_tlk`, `sw_ability`), with full hak folders only in a dedicated worktree used for hak builds and local deploys. Confirm at cutover that the desktop app's worktree creation inherits it. |
 
 Phases 1-4 and the final cutover get their own items when Phase 0 is done.
@@ -71,24 +78,52 @@ Phases 1-4 and the final cutover get their own items when Phase 0 is done.
 
 Started 2026-10-26 by the coordinating session, each as a subagent with the agent brief:
 
-- P0-2 (Sonnet): branch `claude/mr-p0-2`, worktree `C:\Projects\SWLOR_NWN\.claude\worktrees\mr-p0-2`.
-- P0-4a (Sonnet): branch `claude/mr-p0-4a`, worktree `C:\Projects\SWLOR_NWN\.claude\worktrees\mr-p0-4a`.
-- P0-6 (Sonnet): branch `claude/mr-p0-6`, worktree `C:\Projects\SWLOR_NWN\.claude\worktrees\mr-p0-6`.
+- P2-0 (Sonnet): branch `claude/mr-p2-0`, worktree `C:\Projects\SWLOR_NWN\.claude\worktrees\mr-p2-0`.
 
 If this session ends before they report: check `gh pr list --base feature/maintainability-refactor` and the
 branches above, review any open pull request, and restart an item from its row if nothing was pushed.
 
 ## Next actions
 
-1. Review and merge the P0-2 and P0-4a pull requests; record the coverage baseline here.
-2. Then P0-4b, P0-4c, P0-10 spec, P0-8 (domain map first), P0-6, P0-2b, P0-7, and the P0-4d spec.
+1. Review and merge P0-2 (it was asked to add the CharacterizationTests project to CI); record the coverage
+   baseline here.
+2. Daily: run the sync (branch rule above) and record it. Then Phase 2 Wave A once the P2-0 pattern is merged. The rest of Phase 1 (replacing Roslyn-recompile and reflection-reset harnesses) happens inside each service's Phase 2 conversion. P0-2 must add CharacterizationTests and Architecture.Tests to CI.
+3. No owner items open.
+4. **GitHub Actions is billing-locked; the owner said not to wait for it (2026-10-27).** Until it runs again, the gate for every pull request that changes production code is a local run of `scripts/ci/run-unit-tests.sh` (about 30 minutes) on the PR head, reported in the PR description; documentation-only and test-only pull requests may run their targeted filters instead.
 3. P0-7 note: the boot-order test uses the `LoadHandlersFromAssemblies` seam, which `master` lacks; the parity
    script must apply the seam commits to its throwaway `master` copy before running the tests there.
+
+## Coverage baseline (P0-2, 2026-10-27, branch at the P1-1 merge)
+
+Non-generated code, merged over all CI test projects. `SWLOR.Game.Server`: **54.1% lines** (114,223 / 210,975), 15.8% branches.
+
+| Folder | Line % | Branch % |
+|---|---:|---:|
+| Service | **28.2%** (14,953 / 53,026) | 18.4% |
+| Feature (no BeastDefinition) | 64.4% (98,250 / 152,649) | 12.1% |
+| Core | 33.9% | 45.5% |
+| Native | 6.0% | 6.4% |
+| Entity | 56.7% | n/a |
+
+Feature is high because definition registry tests execute definition code; `Service` is where the gap to 70% sits. Other assemblies: CombatSim 94.6%, NWN.Formats 81.3%, NWN.API 59.4%, CLI 39.7%.
+
+## Reported defects (not fixed; the refactor changes no behaviour)
+
+Existing bugs found while locking outputs. They are recorded for the owner and stay as they are on this branch.
+
+| Found by | Defect |
+|---|---|
+| P0-4c | `LootTableBuilder.AddSpawnAction` attaches the action to the previous table's last item when a new table was created since that item. |
+| P0-4c | `LootTableBuilder` and `RecipeBuilder` throw `NullReferenceException` when called before `Create`. |
+| P0-4d2 | Possible bug (observed, not investigated): Sundering Sweep I reports 19 damage to one target, but the target's HP did not change within 6 seconds in the scenario fixture. |
+| P0-2 | 25 unit tests already fail on `master` (full Windows checkout): `ResourceRestorationTests` (14) and `StealthRestTests` (8) compile methods out of `Stat.cs` that now call members their harness lacks; `FirstAidCombatUpgradeTests.FirstAidSupplyRequirements_MatchMerchantStackTemplates` asserts changed source text; `PlayerMessageAuditTests.MessageInventory_CoversEveryRuntimeCallSite` (stale `PlayerMessageAudit.json`); `CombatUpgradeBibleRecipeParityTests.LiveRecipes_AreDocumentedInBible` (EspionageWorkbench recipe missing from the Bible workbook). Excluded in CI with reasons. |
+| P0-10 | When the bootstrap throws (for example a broken build without the handler manifest), the NWNX crash handler segfault-loops after the abort and the container keeps running while flooding the log (about 12 MB in 40 s). Not yet checked whether any bootstrap exception on `master` behaves the same. |
 
 ## Sync log
 
 | Date | `master` commit merged | Conflicts | Parity | By |
 |---|---|---|---|---|
+| 2026-10-27 | 6d49650f7 | none | identical to master 6d49650f7 (132 characterization snapshot files, 662 handlers, 39 engine-test handlers); tests: 6443 passed, 0 failed. Snapshots regenerated for master's #2898 (recipe 6288 `SithPowerGlove`, 15 loot tables). | Claude Sonnet 5.5 (P0-7) |
 
 ## Port log
 

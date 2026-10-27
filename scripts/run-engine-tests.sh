@@ -327,6 +327,7 @@ for path in cryptographic_secret nwn.ini nwnplayer.ini settings.tml; do
 done
 
 rm -f /nwn/home/app_logs/engine_tests/engine-test-results.json
+rm -rf /nwn/home/app_logs/engine_tests/characterization
 : > "$snapshot"
 chmod 0600 "$snapshot"
 
@@ -396,6 +397,19 @@ if [ "$PERMISSION_RESTORE_EXIT_CODE" -ne 0 ]; then
 fi
 
 echo "docker compose exit code: $COMPOSE_EXIT_CODE"
+
+# SWLOR_UPDATE_SNAPSHOTS=1: the characterization scenarios wrote the snapshots that differ from the checked-in ones
+# next to the report. Copy them into the project so the next build embeds them, then clear the output.
+CHARACTERIZATION_OUTPUT="$SERVER_HOME/app_logs/engine_tests/characterization"
+if [ -d "$CHARACTERIZATION_OUTPUT" ]; then
+    if [ "${SWLOR_UPDATE_SNAPSHOTS:-}" = "1" ]; then
+        SNAPSHOT_TARGET="$REPO_ROOT/SWLOR.Game.Server.EngineTests/Characterization/Snapshots"
+        mkdir -p "$SNAPSHOT_TARGET"
+        cp -R "$CHARACTERIZATION_OUTPUT/." "$SNAPSHOT_TARGET/"
+        echo "Copied updated characterization snapshots to $SNAPSHOT_TARGET"
+    fi
+    rm -rf "$CHARACTERIZATION_OUTPUT"
+fi
 
 section "Engine test results"
 if [ ! -f "$REPORT_PATH" ]; then

@@ -1,0 +1,28 @@
+{
+  "function": "SkillAttribute.IsAvailableToCharacterType",
+  "description": "Whether a character type may train a skill: skills without a restriction are open to every type, others only to the restricted type.",
+  "seed": null,
+  "inputs": "Every skill whose CharacterTypeRestriction is not Invalid, plus one unrestricted skill (Armor), x every CharacterType member.",
+  "rowCount": 18,
+  "columns": ["skill", "characterType", "=> isAvailable"],
+  "rows": [
+    ["Force", "Invalid", false],
+    ["Force", "Standard", false],
+    ["Force", "ForceSensitive", true],
+    ["Armor", "Invalid", true],
+    ["Armor", "Standard", true],
+    ["Armor", "ForceSensitive", true],
+    ["Devices", "Invalid", false],
+    ["Devices", "Standard", true],
+    ["Devices", "ForceSensitive", false],
+    ["Lightsaber", "Invalid", false],
+    ["Lightsaber", "Standard", false],
+    ["Lightsaber", "ForceSensitive", true],
+    ["Saberstaff", "Invalid", false],
+    ["Saberstaff", "Standard", false],
+    ["Saberstaff", "ForceSensitive", true],
+    ["Espionage", "Invalid", false],
+    ["Espionage", "Standard", true],
+    ["Espionage", "ForceSensitive", false]
+  ]
+}

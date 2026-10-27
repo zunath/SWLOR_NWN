@@ -73,7 +73,7 @@ namespace SWLOR.Game.Server.Service
             if (!TryGetEquippedProfile(creature, out var skill, out var equipped) ||
                 skill != ability.SkillType || equipped != profile)
                 return profile.EquipmentError;
-            if (ability.IsHostileAbility && !GetOwner(creature).Resources.CanActivate(DateTime.UtcNow))
+            if (ability.IsHostileAbility && !GetOwner(creature).Resources.CanActivate(Clock.UtcNow))
                 return "Wait a moment before using another technique.";
             var required = ability.MeleeTechnique.RequiredStages;
             if (required != MeleeTechniqueStage.None && (GetRequiredSetupStage(creature, target, ability) & required) == 0)
@@ -94,7 +94,7 @@ namespace SWLOR.Game.Server.Service
             if (required == MeleeTechniqueStage.None || string.IsNullOrEmpty(activationId))
                 return;
             Refresh(creature, owner);
-            if (owner.Line != ability.MeleeTechnique.Line || !owner.Sequence.Matches(target, DateTime.UtcNow) ||
+            if (owner.Line != ability.MeleeTechnique.Line || !owner.Sequence.Matches(target, Clock.UtcNow) ||
                 (owner.Sequence.Stage & required) == 0)
                 return;
             owner.HeldCast = new HeldCast(activationId, ability, target, owner.Sequence.Stage, owner.Sequence.ExpiresAt);
@@ -105,7 +105,7 @@ namespace SWLOR.Game.Server.Service
             if (!Owners.TryGetValue(creature, out var owner))
                 return MeleeTechniqueStage.None;
             Refresh(creature, owner);
-            return owner.Line == ability.MeleeTechnique.Line && SetupMatches(creature, owner, target, ability, DateTime.UtcNow)
+            return owner.Line == ability.MeleeTechnique.Line && SetupMatches(creature, owner, target, ability, Clock.UtcNow)
                 ? owner.Sequence.Stage : MeleeTechniqueStage.None;
         }
 
@@ -147,7 +147,7 @@ namespace SWLOR.Game.Server.Service
                 ClearSetup(creature);
             OrdinaryAttempts.Remove(creature);
             Activations.Remove(creature);
-            var now = DateTime.UtcNow;
+            var now = Clock.UtcNow;
             owner.LastHostileActivity = now;
 
             // Other skills can use the earned opening without replacing or cancelling its source.
@@ -238,7 +238,7 @@ namespace SWLOR.Game.Server.Service
             if (!Owners.TryGetValue(creature, out var owner))
                 return MeleeTechniqueStage.None;
             Refresh(creature, owner);
-            return owner.Sequence.Matches(target, DateTime.UtcNow) ? owner.Sequence.Stage : MeleeTechniqueStage.None;
+            return owner.Sequence.Matches(target, Clock.UtcNow) ? owner.Sequence.Stage : MeleeTechniqueStage.None;
         }
 
         public static int GetPendingWeavePower(uint creature, uint target) =>
@@ -249,7 +249,7 @@ namespace SWLOR.Game.Server.Service
             if (!Owners.TryGetValue(creature, out var owner))
                 return 0;
             Refresh(creature, owner);
-            return owner.Reactions.GetRetaliation(target, DateTime.UtcNow);
+            return owner.Reactions.GetRetaliation(target, Clock.UtcNow);
         }
 
         public static int? GetCapturedWeaponDamage(uint creature, AbilityDetail ability) =>
@@ -283,7 +283,7 @@ namespace SWLOR.Game.Server.Service
                 var requested = GetLineStat(creature, detail.Line, StatType.TechniqueRefundStamina);
                 var cooldown = GetLineStat(creature, detail.Line, StatType.TechniqueRefundCooldownSeconds);
                 using var recorderAttribution = CombatRecorder.BeginStatTriggerAttribution(creature, StatType.TechniqueRefundStamina);
-                owner.Resources.TryRefund(paid, requested, cooldown, DateTime.UtcNow,
+                owner.Resources.TryRefund(paid, requested, cooldown, Clock.UtcNow,
                     amount => Combat.RestoreAbilityHitStamina(creature, activation.Ability, amount, retainMinimumCost: false), out _);
             }
             if (paid > 0)
@@ -302,7 +302,7 @@ namespace SWLOR.Game.Server.Service
             {
                 if (!StatusEffect.ApplyStatusEffect(creature, activation.Target, status, duration, activation.WeaponDamageType))
                     return;
-                duration = (int)Math.Ceiling(status.GetRemainingDurationSeconds(DateTime.UtcNow));
+                duration = (int)Math.Ceiling(status.GetRemainingDurationSeconds(Clock.UtcNow));
             }
             else
             {
@@ -317,7 +317,7 @@ namespace SWLOR.Game.Server.Service
             var weave = detail.CreatedStage == MeleeTechniqueStage.Opening &&
                         GetLineStat(creature, detail.Line, StatType.TechniqueWeaveEnabled) > 0
                 ? GetLineStat(creature, detail.Line, StatType.TechniqueWeavePower) : 0;
-            owner.Sequence.Begin(activation.Target, detail.CreatedStage, DateTime.UtcNow.AddSeconds(duration), weave);
+            owner.Sequence.Begin(activation.Target, detail.CreatedStage, Clock.UtcNow.AddSeconds(duration), weave);
         }
 
         private static void TryOpenFinisherWindow(uint creature, uint target, MeleeTechniqueLine line,
@@ -331,7 +331,7 @@ namespace SWLOR.Game.Server.Service
                 return;
             var duration = GetLineStat(creature, line, StatType.TechniqueFinisherWindowDurationSeconds);
             if (!owner.Reactions.TryOpenWindow(target, stage, duration,
-                    GetLineStat(creature, line, StatType.TechniqueFinisherWindowCooldownSeconds), DateTime.UtcNow))
+                    GetLineStat(creature, line, StatType.TechniqueFinisherWindowCooldownSeconds), Clock.UtcNow))
                 return;
             RemoveOwnedEffect(creature, owner.WindowStatusType);
             owner.WindowLine = line;
@@ -356,14 +356,14 @@ namespace SWLOR.Game.Server.Service
                 ClearRetaliation(creature, owner);
             if (owner.Sequence.Stage == MeleeTechniqueStage.None)
                 return 0;
-            if (!owner.Sequence.Matches(target, DateTime.UtcNow))
+            if (!owner.Sequence.Matches(target, Clock.UtcNow))
             {
                 ClearSetup(creature);
                 return 0;
             }
             if (queuedReplacement)
                 return 0;
-            var power = owner.Sequence.TakeWeave(target, DateTime.UtcNow);
+            var power = owner.Sequence.TakeWeave(target, Clock.UtcNow);
             OrdinaryAttempts[creature] = new OrdinaryAttempt(target, skill, attackIndex, power);
             return owner.OrdinaryAccuracy;
         }
@@ -391,8 +391,8 @@ namespace SWLOR.Game.Server.Service
             if (cost <= 0 || ability == null || !Owners.TryGetValue(creature, out var owner))
                 return 0;
             Refresh(creature, owner);
-            var amount = consume ? owner.Resources.TakeDiscount(cost, DateTime.UtcNow) :
-                Math.Min(cost, owner.Resources.GetDiscount(DateTime.UtcNow));
+            var amount = consume ? owner.Resources.TakeDiscount(cost, Clock.UtcNow) :
+                Math.Min(cost, owner.Resources.GetDiscount(Clock.UtcNow));
             if (consume && amount > 0)
             {
                 RemoveOwnedEffect(creature, owner.DiscountStatusType);
@@ -413,7 +413,7 @@ namespace SWLOR.Game.Server.Service
                 return;
             // Native GetCurrentHitPoints includes temporary HP; subtract its pool so absorbed hits cannot arm HP-damage reactions.
             DirectDamage[defender] = new DirectDamageSnapshot(attacker,
-                Math.Max(0, GetCurrentHitPoints(defender) - TemporaryHitPointEffects.GetRemaining(defender)), DateTime.UtcNow);
+                Math.Max(0, GetCurrentHitPoints(defender) - TemporaryHitPointEffects.GetRemaining(defender)), Clock.UtcNow);
         }
 
         [NWNEventHandler(ScriptName.OnCreatureDamagedAfter)]
@@ -423,14 +423,14 @@ namespace SWLOR.Game.Server.Service
             var creature = OBJECT_SELF;
             if (!DirectDamage.Remove(creature, out var snapshot) ||
                 snapshot.Attacker != GetLastDamager(creature) ||
-                (DateTime.UtcNow - snapshot.CapturedAt).TotalSeconds > 1 || GetIsDead(creature))
+                (Clock.UtcNow - snapshot.CapturedAt).TotalSeconds > 1 || GetIsDead(creature))
                 return;
             var hp = Math.Max(0, GetCurrentHitPoints(creature) - TemporaryHitPointEffects.GetRemaining(creature));
             if (hp >= snapshot.HitPoints || !GetIsReactionTypeHostile(snapshot.Attacker, creature))
                 return;
 
             var owner = GetOwner(creature);
-            owner.LastHostileActivity = DateTime.UtcNow;
+            owner.LastHostileActivity = Clock.UtcNow;
             Refresh(creature, owner);
             foreach (var source in Stat.GetStatSources(creature, StatType.TechniqueRetaliationPower))
             {
@@ -439,7 +439,7 @@ namespace SWLOR.Game.Server.Service
                 if (line == MeleeTechniqueLine.None || !Profiles.TryGetValue(skill, out var profile) ||
                     !IsValidEnemy(creature, snapshot.Attacker) || !owner.Reactions.TryGrantIndependentRetaliation(snapshot.Attacker,
                         source[StatType.TechniqueRetaliationPower], source[StatType.TechniqueRetaliationDurationSeconds],
-                        source[StatType.TechniqueRetaliationCooldownSeconds], DateTime.UtcNow))
+                        source[StatType.TechniqueRetaliationCooldownSeconds], Clock.UtcNow))
                     continue;
                 owner.RetaliationLine = line;
                 owner.RetaliationProfileSkill = skill;
@@ -455,7 +455,7 @@ namespace SWLOR.Game.Server.Service
                 if (!Profiles.TryGetValue(skill, out var profile) || !owner.Resources.TryGrantDiscount(
                         source[StatType.DirectHostileDamageNextAbilityStaminaDiscount],
                         source[StatType.DirectHostileDamageNextAbilityDiscountDurationSeconds],
-                        source[StatType.DirectHostileDamageNextAbilityDiscountCooldownSeconds], DateTime.UtcNow))
+                        source[StatType.DirectHostileDamageNextAbilityDiscountCooldownSeconds], Clock.UtcNow))
                     continue;
                 owner.DiscountProfileSkill = skill;
                 owner.DiscountStatusType = ApplyOwnedEffect(creature, profile.StaminaDiscountMarkerFactory(),
@@ -571,7 +571,7 @@ namespace SWLOR.Game.Server.Service
                 }
                 Refresh(creature, owner);
             }
-            foreach (var creature in DirectDamage.Where(pair => (DateTime.UtcNow - pair.Value.CapturedAt).TotalSeconds > 1)
+            foreach (var creature in DirectDamage.Where(pair => (Clock.UtcNow - pair.Value.CapturedAt).TotalSeconds > 1)
                          .Select(pair => pair.Key).ToArray())
                 DirectDamage.Remove(creature);
         }
@@ -596,26 +596,26 @@ namespace SWLOR.Game.Server.Service
 
         private static void Refresh(uint creature, OwnerState owner)
         {
-            var combatEnded = (DateTime.UtcNow - owner.LastHostileActivity).TotalSeconds > 30 && !Combat.HasRecentHostileCombatActivity(creature);
+            var combatEnded = (Clock.UtcNow - owner.LastHostileActivity).TotalSeconds > 30 && !Combat.HasRecentHostileCombatActivity(creature);
             if (!GetIsObjectValid(creature) || GetIsDead(creature) || combatEnded)
             {
                 ClearBenefits(creature);
                 return;
             }
             if (owner.Reactions.WindowTarget != 0 &&
-                (owner.Reactions.GetWindowStage(DateTime.UtcNow) == MeleeTechniqueStage.None ||
+                (owner.Reactions.GetWindowStage(Clock.UtcNow) == MeleeTechniqueStage.None ||
                  !IsValidEnemy(creature, owner.Reactions.WindowTarget) ||
                  GetLineStat(creature, owner.WindowLine, StatType.TechniqueFinisherWindowDurationSeconds) <= 0))
                 ClearReactiveWindows(creature, owner);
             if (owner.Reactions.RetaliationTarget != 0 &&
-                (owner.Reactions.GetRetaliation(owner.Reactions.RetaliationTarget, DateTime.UtcNow) <= 0 ||
+                (owner.Reactions.GetRetaliation(owner.Reactions.RetaliationTarget, Clock.UtcNow) <= 0 ||
                  !IsValidEnemy(creature, owner.Reactions.RetaliationTarget) || GetArea(creature) != owner.RetaliationArea ||
                  !Profiles.ContainsKey(owner.RetaliationProfileSkill) ||
                  GetLineStat(creature, owner.RetaliationLine, StatType.TechniqueRetaliationPower) <= 0))
                 ClearRetaliation(creature, owner);
             if (owner.Sequence.Stage == MeleeTechniqueStage.None)
                 return;
-            if (!SetupMatches(creature, owner, owner.Sequence.Target, owner.HeldCast?.Ability, DateTime.UtcNow) ||
+            if (!SetupMatches(creature, owner, owner.Sequence.Target, owner.HeldCast?.Ability, Clock.UtcNow) ||
                 !IsValidEnemy(creature, owner.Sequence.Target) ||
                 GetArea(creature) != owner.Area ||
                 owner.SourceOwnedStatusType != null && !StatusEffect.HasStatusEffect(owner.Sequence.Target, owner.SourceOwnedStatusType, creature))

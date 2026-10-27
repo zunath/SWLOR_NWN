@@ -12,7 +12,7 @@ namespace SWLOR.NWN.API.NWNX
         /// <remarks>Will not persist through saving.</remarks>
         public static void SetWeight(uint oItem, int w)
         {
-            global::NWN.Core.NWNX.ItemPlugin.SetWeight(oItem, w);
+            ItemPluginRuntime.Current.SetWeight(oItem, w);
         }
 
         /// <summary>
@@ -23,7 +23,7 @@ namespace SWLOR.NWN.API.NWNX
         /// <remarks>Total cost = base_value + additional_value. Will not persist through saving. This value will also revert if item is identified or player relogs into server. Equivalent to SetGoldPieceValue NWNX2 function.</remarks>
         public static void SetBaseGoldPieceValue(uint oItem, int g)
         {
-            global::NWN.Core.NWNX.ItemPlugin.SetBaseGoldPieceValue(oItem, g);
+            ItemPluginRuntime.Current.SetBaseGoldPieceValue(oItem, g);
         }
 
         /// <summary>
@@ -34,7 +34,7 @@ namespace SWLOR.NWN.API.NWNX
         /// <remarks>Total cost = base_value + additional_value. Will persist through saving.</remarks>
         public static void SetAddGoldPieceValue(uint oItem, int g)
         {
-            global::NWN.Core.NWNX.ItemPlugin.SetAddGoldPieceValue(oItem, g);
+            ItemPluginRuntime.Current.SetAddGoldPieceValue(oItem, g);
         }
 
         /// <summary>
@@ -44,7 +44,7 @@ namespace SWLOR.NWN.API.NWNX
         /// <returns>The base gold piece value for the item.</returns>
         public static int GetBaseGoldPieceValue(uint oItem)
         {
-            return global::NWN.Core.NWNX.ItemPlugin.GetBaseGoldPieceValue(oItem);
+            return ItemPluginRuntime.Current.GetBaseGoldPieceValue(oItem);
         }
 
         /// <summary>
@@ -54,7 +54,7 @@ namespace SWLOR.NWN.API.NWNX
         /// <returns>The additional gold piece value for the item.</returns>
         public static int GetAddGoldPieceValue(uint oItem)
         {
-            return global::NWN.Core.NWNX.ItemPlugin.GetAddGoldPieceValue(oItem);
+            return ItemPluginRuntime.Current.GetAddGoldPieceValue(oItem);
         }
 
         /// <summary>
@@ -65,7 +65,7 @@ namespace SWLOR.NWN.API.NWNX
         /// <remarks>This will not be visible until the item is refreshed (e.g. drop and take the item, or logging out and back in).</remarks>
         public static void SetBaseItemType(uint oItem, BaseItem baseitem)
         {
-            global::NWN.Core.NWNX.ItemPlugin.SetBaseItemType(oItem, (int)baseitem);
+            ItemPluginRuntime.Current.SetBaseItemType(oItem, baseitem);
         }
 
         /// <summary>
@@ -96,7 +96,7 @@ namespace SWLOR.NWN.API.NWNX
         /// </remarks>
         public static void SetItemAppearance(uint oItem, ItemAppearanceType nType, int nIndex, int nValue, bool updateCreatureAppearance = false)
         {
-            global::NWN.Core.NWNX.ItemPlugin.SetItemAppearance(oItem, (int)nType, nIndex, nValue, updateCreatureAppearance ? 1 : 0);
+            ItemPluginRuntime.Current.SetItemAppearance(oItem, nType, nIndex, nValue, updateCreatureAppearance);
         }
 
         /// <summary>
@@ -106,7 +106,7 @@ namespace SWLOR.NWN.API.NWNX
         /// <returns>A string representing the item's appearance.</returns>
         public static string GetEntireItemAppearance(uint oItem)
         {
-            return global::NWN.Core.NWNX.ItemPlugin.GetEntireItemAppearance(oItem);
+            return ItemPluginRuntime.Current.GetEntireItemAppearance(oItem);
         }
 
         /// <summary>
@@ -116,7 +116,7 @@ namespace SWLOR.NWN.API.NWNX
         /// <param name="sApp">A string representing the item's appearance.</param>
         public static void RestoreItemAppearance(uint oItem, string sApp)
         {
-            global::NWN.Core.NWNX.ItemPlugin.RestoreItemAppearance(oItem, sApp);
+            ItemPluginRuntime.Current.RestoreItemAppearance(oItem, sApp);
         }
 
         /// <summary>
@@ -126,7 +126,7 @@ namespace SWLOR.NWN.API.NWNX
         /// <returns>The base armor class.</returns>
         public static int GetBaseArmorClass(uint oItem)
         {
-            return global::NWN.Core.NWNX.ItemPlugin.GetBaseArmorClass(oItem);
+            return ItemPluginRuntime.Current.GetBaseArmorClass(oItem);
         }
 
         /// <summary>
@@ -136,7 +136,7 @@ namespace SWLOR.NWN.API.NWNX
         /// <returns>The minimum level required to equip the item.</returns>
         public static int GetMinEquipLevel(uint oItem)
         {
-            return global::NWN.Core.NWNX.ItemPlugin.GetMinEquipLevel(oItem);
+            return ItemPluginRuntime.Current.GetMinEquipLevel(oItem);
         }
 
         /// <summary>
@@ -153,8 +153,7 @@ namespace SWLOR.NWN.API.NWNX
         /// </remarks>
         public static bool MoveTo(uint oItem, uint oLocation, bool bHideAllFeedback = false)
         {
-            var result = global::NWN.Core.NWNX.ItemPlugin.MoveTo(oItem, oLocation, bHideAllFeedback ? 1 : 0);
-            return result != 0;
+            return ItemPluginRuntime.Current.MoveTo(oItem, oLocation, bHideAllFeedback);
         }
 
         /// <summary>
@@ -171,7 +170,7 @@ namespace SWLOR.NWN.API.NWNX
         /// </remarks>
         public static void SetMinEquipLevelModifier(uint oItem, int nModifier, bool bPersist = true)
         {
-            global::NWN.Core.NWNX.ItemPlugin.SetMinEquipLevelModifier(oItem, nModifier, bPersist ? 1 : 0);
+            ItemPluginRuntime.Current.SetMinEquipLevelModifier(oItem, nModifier, bPersist);
         }
 
         /// <summary>
@@ -185,7 +184,7 @@ namespace SWLOR.NWN.API.NWNX
         /// </remarks>
         public static int GetMinEquipLevelModifier(uint oItem)
         {
-            return global::NWN.Core.NWNX.ItemPlugin.GetMinEquipLevelModifier(oItem);
+            return ItemPluginRuntime.Current.GetMinEquipLevelModifier(oItem);
         }
 
         /// <summary>
@@ -202,7 +201,7 @@ namespace SWLOR.NWN.API.NWNX
         /// </remarks>
         public static void SetMinEquipLevelOverride(uint oItem, int nOverride, bool bPersist = true)
         {
-            global::NWN.Core.NWNX.ItemPlugin.SetMinEquipLevelOverride(oItem, nOverride, bPersist ? 1 : 0);
+            ItemPluginRuntime.Current.SetMinEquipLevelOverride(oItem, nOverride, bPersist);
         }
 
         /// <summary>
@@ -216,7 +215,7 @@ namespace SWLOR.NWN.API.NWNX
         /// </remarks>
         public static int GetMinEquipLevelOverride(uint oItem)
         {
-            return global::NWN.Core.NWNX.ItemPlugin.GetMinEquipLevelOverride(oItem);
+            return ItemPluginRuntime.Current.GetMinEquipLevelOverride(oItem);
         }
     }
 }

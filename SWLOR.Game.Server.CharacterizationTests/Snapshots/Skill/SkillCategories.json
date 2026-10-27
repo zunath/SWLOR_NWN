@@ -1,0 +1,15 @@
+{
+  "function": "SkillCategoryType metadata",
+  "description": "The display name, active flag and menu sequence every skill category declares through its SkillCategory attribute.",
+  "seed": null,
+  "inputs": "Every SkillCategoryType member, sorted by id.",
+  "rowCount": 5,
+  "columns": ["category", "categoryName", "=> displayName", "=> isActive", "=> sequence"],
+  "rows": [
+    [0, "Invalid", "Invalid", false, 0],
+    [1, "Combat", "Combat", true, 1],
+    [2, "Crafting", "Crafting", true, 4],
+    [3, "Utility", "Utility", true, 6],
+    [4, "Languages", "Languages", true, 8]
+  ]
+}

@@ -1,3 +1,5 @@
+using SWLOR.Game.Server.Core;
+
 namespace SWLOR.Game.Server.Service.AbilityService
 {
     /// <summary>
@@ -19,13 +21,13 @@ namespace SWLOR.Game.Server.Service.AbilityService
                 return 0f;
             }
 
-            var remaining = (float)(readyAt - DateTime.UtcNow).TotalSeconds;
+            var remaining = (float)(readyAt - Clock.UtcNow).TotalSeconds;
             return remaining > 0f ? remaining : 0f;
         }
 
         public static void Start(uint creature)
         {
-            SetLocalString(creature, ReadyAtVariable, RecastTimestamp.Format(DateTime.UtcNow.AddSeconds(Seconds)));
+            SetLocalString(creature, ReadyAtVariable, RecastTimestamp.Format(Clock.UtcNow.AddSeconds(Seconds)));
         }
 
         /// <summary>Ends the creature's delay at once. For tests only.</summary>

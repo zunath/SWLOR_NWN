@@ -20,7 +20,7 @@ namespace SWLOR.NWN.API.NWNX
         /// </remarks>
         public static void SubscribeEvent(string evt, string script)
         {
-            global::NWN.Core.NWNX.EventsPlugin.SubscribeEvent(evt, script);
+            EventsPluginRuntime.Current.SubscribeEvent(evt, script);
         }
         /// <summary>
         /// Removes a script's subscription to a specific event.
@@ -35,7 +35,7 @@ namespace SWLOR.NWN.API.NWNX
         /// </remarks>
         public static void UnsubscribeEvent(string evt, string script)
         {
-            global::NWN.Core.NWNX.EventsPlugin.UnsubscribeEvent(evt, script);
+            EventsPluginRuntime.Current.UnsubscribeEvent(evt, script);
         }
 
         /// <summary>
@@ -51,7 +51,7 @@ namespace SWLOR.NWN.API.NWNX
         /// </remarks>
         public static void PushEventData(string tag, string data)
         {
-            global::NWN.Core.NWNX.EventsPlugin.PushEventData(tag, data);
+            EventsPluginRuntime.Current.PushEventData(tag, data);
         }
 
         /// <summary>
@@ -69,8 +69,7 @@ namespace SWLOR.NWN.API.NWNX
         /// </remarks>
         public static bool SignalEvent(string evt, uint target)
         {
-            var result = global::NWN.Core.NWNX.EventsPlugin.SignalEvent(evt, target);
-            return result != 0;
+            return EventsPluginRuntime.Current.SignalEvent(evt, target);
         }
 
         /// <summary>
@@ -86,7 +85,7 @@ namespace SWLOR.NWN.API.NWNX
         /// </remarks>
         public static string GetEventData(string tag)
         {
-            return global::NWN.Core.NWNX.EventsPlugin.GetEventData(tag);
+            return EventsPluginRuntime.Current.GetEventData(tag);
         }
 
         /// <summary>
@@ -121,7 +120,7 @@ namespace SWLOR.NWN.API.NWNX
         /// </remarks>
         public static void SkipEvent()
         {
-            global::NWN.Core.NWNX.EventsPlugin.SkipEvent();
+            EventsPluginRuntime.Current.SkipEvent();
         }
 
         /// <summary>
@@ -140,7 +139,7 @@ namespace SWLOR.NWN.API.NWNX
         /// </remarks>
         public static void SetEventResult(string data)
         {
-            global::NWN.Core.NWNX.EventsPlugin.SetEventResult(data);
+            EventsPluginRuntime.Current.SetEventResult(data);
         }
 
         /// <summary>
@@ -150,7 +149,7 @@ namespace SWLOR.NWN.API.NWNX
         /// <remarks>THIS SHOULD ONLY BE CALLED FROM WITHIN AN EVENT HANDLER.</remarks>
         public static string GetCurrentEvent()
         {
-            return global::NWN.Core.NWNX.EventsPlugin.GetCurrentEvent();
+            return EventsPluginRuntime.Current.GetCurrentEvent();
         }
 
         /// <summary>
@@ -162,7 +161,7 @@ namespace SWLOR.NWN.API.NWNX
         /// <remarks>If enabled, sEvent for sScript will only be signalled if the target object is on its dispatch list.</remarks>
         public static void ToggleDispatchListMode(string sEvent, string sScript, bool bEnable)
         {
-            global::NWN.Core.NWNX.EventsPlugin.ToggleDispatchListMode(sEvent, sScript, bEnable ? 1 : 0);
+            EventsPluginRuntime.Current.ToggleDispatchListMode(sEvent, sScript, bEnable);
         }
 
         /// <summary>
@@ -173,7 +172,7 @@ namespace SWLOR.NWN.API.NWNX
         /// <param name="oObject">The object to add to the dispatch list.</param>
         public static void AddObjectToDispatchList(string sEvent, string sScript, uint oObject)
         {
-            global::NWN.Core.NWNX.EventsPlugin.AddObjectToDispatchList(sEvent, sScript, oObject);
+            EventsPluginRuntime.Current.AddObjectToDispatchList(sEvent, sScript, oObject);
         }
 
         /// <summary>
@@ -184,7 +183,7 @@ namespace SWLOR.NWN.API.NWNX
         /// <param name="oObject">The object to remove from the dispatch list.</param>
         public static void RemoveObjectFromDispatchList(string sEvent, string sScript, uint oObject)
         {
-            global::NWN.Core.NWNX.EventsPlugin.RemoveObjectFromDispatchList(sEvent, sScript, oObject);
+            EventsPluginRuntime.Current.RemoveObjectFromDispatchList(sEvent, sScript, oObject);
         }
 
 
@@ -196,7 +195,7 @@ namespace SWLOR.NWN.API.NWNX
         /// <remarks>If whitelisting is enabled, the event will only fire for IDs that are on its whitelist.</remarks>
         public static void ToggleIDWhitelist(string sEvent, bool bEnable)
         {
-            global::NWN.Core.NWNX.EventsPlugin.ToggleIDWhitelist(sEvent, bEnable ? 1 : 0);
+            EventsPluginRuntime.Current.ToggleIDWhitelist(sEvent, bEnable);
         }
 
         /// <summary>
@@ -207,7 +206,7 @@ namespace SWLOR.NWN.API.NWNX
         /// <remarks>See ToggleIDWhitelist for valid events and ID types.</remarks>
         public static void AddIDToWhitelist(string sEvent, int nID)
         {
-            global::NWN.Core.NWNX.EventsPlugin.AddIDToWhitelist(sEvent, nID);
+            EventsPluginRuntime.Current.AddIDToWhitelist(sEvent, nID);
         }
 
         /// <summary>
@@ -218,7 +217,7 @@ namespace SWLOR.NWN.API.NWNX
         /// <remarks>See ToggleIDWhitelist for valid events and ID types.</remarks>
         public static void RemoveIDFromWhitelist(string sEvent, int nID)
         {
-            global::NWN.Core.NWNX.EventsPlugin.RemoveIDFromWhitelist(sEvent, nID);
+            EventsPluginRuntime.Current.RemoveIDFromWhitelist(sEvent, nID);
         }
     }
 }

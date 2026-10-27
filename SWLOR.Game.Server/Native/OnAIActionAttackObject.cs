@@ -555,7 +555,7 @@ namespace SWLOR.Game.Server.Native
                     // Swings cannot animate faster than the engine's base delay. Effective delays
                     // below it are honored by resolving multiple attacks within a single swing.
                     var swingDelay = Combat.CalculateAttackSwingDelay(effectiveAttackDelay);
-                    var timeSinceLastAttack = (DateTime.UtcNow - _creatureAttackDelays[pCreature.m_idSelf]).TotalMilliseconds;
+                    var timeSinceLastAttack = (Clock.UtcNow - _creatureAttackDelays[pCreature.m_idSelf]).TotalMilliseconds;
 
                     if (timeSinceLastAttack < swingDelay)
                     {
@@ -744,7 +744,7 @@ namespace SWLOR.Game.Server.Native
 
                                                 // Set the delay timestamp after the attack resolves
                                                 // This ensures the first attack is instant, subsequent attacks respect delay
-                                                _creatureAttackDelays[pCreature.m_idSelf] = DateTime.UtcNow;
+                                                _creatureAttackDelays[pCreature.m_idSelf] = Clock.UtcNow;
                                             }
                                         }
                                     }
@@ -787,7 +787,7 @@ namespace SWLOR.Game.Server.Native
                                         if (pCreature.RunEquip(oidTarget, pPendingAction.m_nInventorySlot) == 1)
                                         {
                                             pCreature.m_pcCombatRound.RecomputeRound();
-                                            _creatureAttackDelays[pCreature.m_idSelf] = DateTime.UtcNow;
+                                            _creatureAttackDelays[pCreature.m_idSelf] = Clock.UtcNow;
                                             Combat.ClearAttackSwingDebt(pCreature.m_idSelf);
                                         }
                                     }
@@ -800,7 +800,7 @@ namespace SWLOR.Game.Server.Native
                                         if (pCreature.RunUnequip(oidTarget, pPendingAction.m_oidTargetRepository, pPendingAction.m_nRepositoryX, pPendingAction.m_nRepositoryY, 0) == 1)
                                         {
                                             pCreature.m_pcCombatRound.RecomputeRound();
-                                            _creatureAttackDelays[pCreature.m_idSelf] = DateTime.UtcNow;
+                                            _creatureAttackDelays[pCreature.m_idSelf] = Clock.UtcNow;
                                             Combat.ClearAttackSwingDebt(pCreature.m_idSelf);
                                         }
                                     }

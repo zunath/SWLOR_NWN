@@ -1,0 +1,14 @@
+{
+  "function": "CraftViewModel (crafting result)",
+  "description": "What the player holds and has earned once the crafting attempt has ended.",
+  "seed": 20261101,
+  "inputs": "The same attempt as the steps snapshot: recipe TwinElectroblade1, Smithery rank 7, Random seeded as described there. Items are written as 'blueprint xStackSize [Type/Subtype/Cost/Param, ...]'.",
+  "rowCount": 4,
+  "columns": ["what", "=> value"],
+  "rows": [
+    ["Smithery XP earned", 899],
+    ["Smithery rank", 7],
+    ["recipe recorded as crafted", true],
+    ["inventory item", "twin_elec_1 x1 [DMG/0/5/0, Delay/0/24/0, RequiresSkill/42/0/0, Visualeffect/2/0/0]"]
+  ]
+}

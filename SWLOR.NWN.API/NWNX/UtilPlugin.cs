@@ -12,7 +12,7 @@ namespace SWLOR.NWN.API.NWNX
         /// <returns>The name of the currently executing script.</returns>
         public static string GetCurrentScriptName(int depth = 0)
         {
-            return global::NWN.Core.NWNX.UtilPlugin.GetCurrentScriptName(depth);
+            return UtilPluginRuntime.Current.GetCurrentScriptName(depth);
         }
 
         /// <summary>
@@ -22,7 +22,7 @@ namespace SWLOR.NWN.API.NWNX
         /// <returns>A string that contains all characters at their position (e.g. 'A' at 65).</returns>
         public static string GetAsciiTableString()
         {
-            return global::NWN.Core.NWNX.UtilPlugin.GetAsciiTableString();
+            return UtilPluginRuntime.Current.GetAsciiTableString();
         }
 
         /// <summary>
@@ -32,7 +32,7 @@ namespace SWLOR.NWN.API.NWNX
         /// <returns>The hashed string as an integer.</returns>
         public static int Hash(string str)
         {
-            return global::NWN.Core.NWNX.UtilPlugin.Hash(str);
+            return UtilPluginRuntime.Current.Hash(str);
         }
 
         /// <summary>
@@ -41,7 +41,7 @@ namespace SWLOR.NWN.API.NWNX
         /// <returns>The mtime of the module file.</returns>
         public static int GetModuleMTime()
         {
-            return global::NWN.Core.NWNX.UtilPlugin.GetModuleMtime();
+            return UtilPluginRuntime.Current.GetModuleMTime();
         }
 
         /// <summary>
@@ -51,7 +51,7 @@ namespace SWLOR.NWN.API.NWNX
         /// <returns>The string representation of the token value.</returns>
         public static string GetCustomToken(int customTokenNumber)
         {
-            return global::NWN.Core.NWNX.UtilPlugin.GetCustomToken(customTokenNumber);
+            return UtilPluginRuntime.Current.GetCustomToken(customTokenNumber);
         }
 
         /// <summary>
@@ -61,8 +61,7 @@ namespace SWLOR.NWN.API.NWNX
         /// <returns>The converted itemproperty.</returns>
         public static ItemProperty EffectToItemProperty(Effect effect)
         {
-            var result = global::NWN.Core.NWNX.UtilPlugin.EffectToItemProperty(effect.Handle);
-            return new ItemProperty(result);
+            return UtilPluginRuntime.Current.EffectToItemProperty(effect);
         }
 
         /// <summary>
@@ -72,8 +71,7 @@ namespace SWLOR.NWN.API.NWNX
         /// <returns>The converted effect.</returns>
         public static Effect ItemPropertyToEffect(ItemProperty ip)
         {
-            var result = global::NWN.Core.NWNX.UtilPlugin.ItemPropertyToEffect(ip.Handle);
-            return new Effect(result);
+            return UtilPluginRuntime.Current.ItemPropertyToEffect(ip);
         }
 
         /// <summary>
@@ -83,7 +81,7 @@ namespace SWLOR.NWN.API.NWNX
         /// <returns>The new string without any color codes.</returns>
         public static string StripColors(string str)
         {
-            return global::NWN.Core.NWNX.UtilPlugin.StripColors(str);
+            return UtilPluginRuntime.Current.StripColors(str);
         }
 
         /// <summary>
@@ -93,7 +91,7 @@ namespace SWLOR.NWN.API.NWNX
         /// <returns>The value of the environment variable.</returns>
         public static string GetEnvironmentVariable(string varname)
         {
-            return global::NWN.Core.NWNX.UtilPlugin.GetEnvironmentVariable(varname);
+            return UtilPluginRuntime.Current.GetEnvironmentVariable(varname);
         }
 
         /// <summary>
@@ -102,7 +100,7 @@ namespace SWLOR.NWN.API.NWNX
         /// <returns>The minutes per hour.</returns>
         public static int GetMinutesPerHour()
         {
-            return global::NWN.Core.NWNX.UtilPlugin.GetMinutesPerHour();
+            return UtilPluginRuntime.Current.GetMinutesPerHour();
         }
 
         /// <summary>
@@ -111,7 +109,7 @@ namespace SWLOR.NWN.API.NWNX
         /// <param name="minutes">The minutes per hour.</param>
         public static void SetMinutesPerHour(int minutes)
         {
-            global::NWN.Core.NWNX.UtilPlugin.SetMinutesPerHour(minutes);
+            UtilPluginRuntime.Current.SetMinutesPerHour(minutes);
         }
 
         /// <summary>
@@ -121,7 +119,7 @@ namespace SWLOR.NWN.API.NWNX
         /// <returns>The url encoded string.</returns>
         public static string EncodeStringForURL(string url)
         {
-            return global::NWN.Core.NWNX.UtilPlugin.EncodeStringForURL(url);
+            return UtilPluginRuntime.Current.EncodeStringForURL(url);
         }
 
         /// <summary>
@@ -133,7 +131,7 @@ namespace SWLOR.NWN.API.NWNX
         /// <returns>The first resref found or "" if none is found.</returns>
         public static string GetFirstResRef(ResRefType type, string regexFilter = "", bool moduleResourcesOnly = true)
         {
-            return global::NWN.Core.NWNX.UtilPlugin.GetFirstResRef((int)type, regexFilter, moduleResourcesOnly ? 1 : 0);
+            return UtilPluginRuntime.Current.GetFirstResRef(type, regexFilter, moduleResourcesOnly);
         }
 
         /// <summary>
@@ -142,7 +140,7 @@ namespace SWLOR.NWN.API.NWNX
         /// <returns>The next resref found or "" if none is found.</returns>
         public static string GetNextResRef()
         {
-            return global::NWN.Core.NWNX.UtilPlugin.GetNextResRef();
+            return UtilPluginRuntime.Current.GetNextResRef();
         }
 
         /// <summary>
@@ -153,12 +151,7 @@ namespace SWLOR.NWN.API.NWNX
         /// <returns>A WorldTime struct with the calendar day and time of day.</returns>
         public static WorldTime GetWorldTime(float fAdjustment = 0.0f)
         {
-            var coreResult = global::NWN.Core.NWNX.UtilPlugin.GetWorldTime(fAdjustment);
-            return new WorldTime
-            {
-                TimeOfDay = coreResult.nTimeOfDay,
-                CalendarDay = coreResult.nCalendarDay
-            };
+            return UtilPluginRuntime.Current.GetWorldTime(fAdjustment);
         }
 
         /// <summary>
@@ -202,7 +195,7 @@ namespace SWLOR.NWN.API.NWNX
         /// <param name="sNewName">The new resource name or "" to clear a previous override, 16 characters or less.</param>
         public static void SetResourceOverride(int nResType, string sOldName, string sNewName)
         {
-            global::NWN.Core.NWNX.UtilPlugin.SetResourceOverride(nResType, sOldName, sNewName);
+            UtilPluginRuntime.Current.SetResourceOverride(nResType, sOldName, sNewName);
         }
 
         /// <summary>
@@ -213,7 +206,7 @@ namespace SWLOR.NWN.API.NWNX
         /// <returns>The resource override, or "" if one is not set.</returns>
         public static string GetResourceOverride(int nResType, string sName)
         {
-            return global::NWN.Core.NWNX.UtilPlugin.GetResourceOverride(nResType, sName);
+            return UtilPluginRuntime.Current.GetResourceOverride(nResType, sName);
         }
 
         /// <summary>
@@ -225,7 +218,7 @@ namespace SWLOR.NWN.API.NWNX
         /// <returns>The door, or OBJECT_INVALID on failure.</returns>
         public static uint CreateDoor(string sResRef, Location locLocation, string sNewTag)
         {
-            return global::NWN.Core.NWNX.UtilPlugin.CreateDoor(sResRef, locLocation.Handle, sNewTag);
+            return UtilPluginRuntime.Current.CreateDoor(sResRef, locLocation, sNewTag);
         }
 
         /// <summary>
@@ -234,7 +227,7 @@ namespace SWLOR.NWN.API.NWNX
         /// <param name="oObject">An object.</param>
         public static void SetItemActivator(uint oObject)
         {
-            global::NWN.Core.NWNX.UtilPlugin.SetItemActivator(oObject);
+            UtilPluginRuntime.Current.SetItemActivator(oObject);
         }
 
         /// <summary>
@@ -244,8 +237,7 @@ namespace SWLOR.NWN.API.NWNX
         /// <returns>true if script param is set, false if not or on error.</returns>
         public static bool GetScriptParamIsSet(string paramName)
         {
-            int result = global::NWN.Core.NWNX.UtilPlugin.GetScriptParamIsSet(paramName);
-            return result != 0;
+            return UtilPluginRuntime.Current.GetScriptParamIsSet(paramName);
         }
 
         /// <summary>
@@ -254,7 +246,7 @@ namespace SWLOR.NWN.API.NWNX
         /// <param name="nDawnHour">The new dawn hour</param>
         public static void SetDawnHour(int nDawnHour)
         {
-            global::NWN.Core.NWNX.UtilPlugin.SetDawnHour(nDawnHour);
+            UtilPluginRuntime.Current.SetDawnHour(nDawnHour);
         }
 
         /// <summary>
@@ -263,7 +255,7 @@ namespace SWLOR.NWN.API.NWNX
         /// <param name="nDuskHour">The new dusk hour</param>
         public static void SetDuskHour(int nDuskHour)
         {
-            global::NWN.Core.NWNX.UtilPlugin.SetDuskHour(nDuskHour);
+            UtilPluginRuntime.Current.SetDuskHour(nDuskHour);
         }
 
         /// <summary>
@@ -272,12 +264,7 @@ namespace SWLOR.NWN.API.NWNX
         /// <returns>A HighResTimestamp struct with seconds and microseconds.</returns>
         public static HighResTimestamp GetHighResTimeStamp()
         {
-            var coreResult = global::NWN.Core.NWNX.UtilPlugin.GetHighResTimeStamp();
-            return new HighResTimestamp
-            {
-                Microseconds = coreResult.microseconds,
-                Seconds = coreResult.seconds
-            };
+            return UtilPluginRuntime.Current.GetHighResTimeStamp();
         }
 }
 }

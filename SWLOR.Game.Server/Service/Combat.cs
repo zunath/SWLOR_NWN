@@ -2407,7 +2407,7 @@ namespace SWLOR.Game.Server.Service
             if (requiredCount <= 0 || windowSeconds <= 0 || staminaRestore <= 0)
                 return;
 
-            var now = DateTime.UtcNow;
+            var now = Clock.UtcNow;
             var count = 1;
             if (_criticalHitSequenceStates.TryGetValue(attacker, out var state) &&
                 (now - state.LastHit).TotalSeconds <= windowSeconds)
@@ -2850,7 +2850,7 @@ namespace SWLOR.Game.Server.Service
             if (!GetIsObjectValid(defeated))
                 return;
 
-            var now = DateTime.UtcNow;
+            var now = Clock.UtcNow;
             var recentDamagers = _recentDamageTargets
                 .Where(x => x.Key.Item2 == defeated)
                 .ToList();
@@ -3326,7 +3326,7 @@ namespace SWLOR.Game.Server.Service
             if (!GetIsObjectValid(attacker) || !GetIsObjectValid(defender) || attacker == defender)
                 return;
 
-            _recentDamageTargets[(attacker, defender)] = DateTime.UtcNow;
+            _recentDamageTargets[(attacker, defender)] = Clock.UtcNow;
         }
 
         private static void TrackRecentDamageTaken(uint creature)
@@ -3334,7 +3334,7 @@ namespace SWLOR.Game.Server.Service
             if (!GetIsObjectValid(creature))
                 return;
 
-            _recentDamageTaken[creature] = DateTime.UtcNow;
+            _recentDamageTaken[creature] = Clock.UtcNow;
         }
 
         public static bool HasRecentDamageTaken(uint creature, float windowSeconds)
@@ -3345,7 +3345,7 @@ namespace SWLOR.Game.Server.Service
             if (!_recentDamageTaken.TryGetValue(creature, out var lastDamaged))
                 return false;
 
-            var isRecent = (DateTime.UtcNow - lastDamaged).TotalSeconds <= windowSeconds;
+            var isRecent = (Clock.UtcNow - lastDamaged).TotalSeconds <= windowSeconds;
             if (!isRecent)
                 _recentDamageTaken.Remove(creature);
 
@@ -3357,7 +3357,7 @@ namespace SWLOR.Game.Server.Service
             if (!GetIsObjectValid(creature))
                 return;
 
-            var now = DateTime.UtcNow;
+            var now = Clock.UtcNow;
             ReportCombatEntryIfNeeded(creature, now);
             _lastCombatActivity[creature] = now;
         }
@@ -3367,7 +3367,7 @@ namespace SWLOR.Game.Server.Service
             if (!GetIsObjectValid(creature))
                 return;
 
-            _lastAttackActivity[creature] = DateTime.UtcNow;
+            _lastAttackActivity[creature] = Clock.UtcNow;
             StatusEffect.RemoveStatusEffect(creature, typeof(OpeningAttackReadyStatusEffect), false);
             StatusEffect.RemoveStatusEffect(creature, typeof(IdleSkillAbilityReadyStatusEffect), false);
             TrackCombatActivity(creature);
@@ -3379,7 +3379,7 @@ namespace SWLOR.Game.Server.Service
             if (!GetIsObjectValid(creature))
                 return;
 
-            var now = DateTime.UtcNow;
+            var now = Clock.UtcNow;
             ReportCombatEntryIfNeeded(creature, now);
             // Keep cast attempts separate from landed combat activity. Opening-hit riders such as
             // Venatic Recovery must still observe the previous landed-combat timestamp.
@@ -3402,7 +3402,7 @@ namespace SWLOR.Game.Server.Service
                 !GetIsReactionTypeHostile(attacker, creature))
                 return;
 
-            var now = DateTime.UtcNow;
+            var now = Clock.UtcNow;
             ReportCombatEntryIfNeeded(creature, now);
             // Incoming hostile actions start combat for First Strike visibility without consuming the
             // landed-opening timestamp that Venatic Recovery reads when the defender retaliates.
@@ -3419,7 +3419,7 @@ namespace SWLOR.Game.Server.Service
         }
 
         public static bool HasRecentHostileCombatActivity(uint creature) =>
-            GetIsObjectValid(creature) && (GetIsInCombat(creature) || HasRecentCombatEntryActivity(creature, DateTime.UtcNow));
+            GetIsObjectValid(creature) && (GetIsInCombat(creature) || HasRecentCombatEntryActivity(creature, Clock.UtcNow));
 
         private static bool HasRecentCombatEntryActivity(uint creature, DateTime now)
         {
@@ -3436,7 +3436,7 @@ namespace SWLOR.Game.Server.Service
             if (!GetIsObjectValid(creature) || !IsStealthedOrInvisible(creature))
                 return;
 
-            _stealthOpeningWindows[creature] = DateTime.UtcNow.AddSeconds(6);
+            _stealthOpeningWindows[creature] = Clock.UtcNow.AddSeconds(6);
         }
 
         private static bool ConsumeStealthOpeningWindow(uint creature)
@@ -3450,7 +3450,7 @@ namespace SWLOR.Game.Server.Service
             if (!_stealthOpeningWindows.TryGetValue(creature, out var expiresAt))
                 return false;
 
-            var isActive = expiresAt >= DateTime.UtcNow;
+            var isActive = expiresAt >= Clock.UtcNow;
             _stealthOpeningWindows.Remove(creature);
             return isActive;
         }
@@ -3484,7 +3484,7 @@ namespace SWLOR.Game.Server.Service
             if (!_lastAttackActivity.TryGetValue(creature, out var lastAttack))
                 return false;
 
-            return (DateTime.UtcNow - lastAttack).TotalSeconds <= windowSeconds;
+            return (Clock.UtcNow - lastAttack).TotalSeconds <= windowSeconds;
         }
 
         public static DateTime GetLastOffensiveActivityAt(uint creature)
@@ -3511,7 +3511,7 @@ namespace SWLOR.Game.Server.Service
 
             var lastActivity = GetLastCompletedOffensiveActivityAt(attacker);
             if (lastActivity != default &&
-                (DateTime.UtcNow - lastActivity).TotalSeconds < idleSeconds)
+                (Clock.UtcNow - lastActivity).TotalSeconds < idleSeconds)
                 return 0;
 
             TrackCombatActivity(attacker);
@@ -3706,7 +3706,7 @@ namespace SWLOR.Game.Server.Service
             if (!_recentDamageTargets.TryGetValue((attacker, defender), out var lastDamaged))
                 return false;
 
-            var isRecent = (DateTime.UtcNow - lastDamaged).TotalSeconds <= windowSeconds;
+            var isRecent = (Clock.UtcNow - lastDamaged).TotalSeconds <= windowSeconds;
             if (!isRecent)
                 _recentDamageTargets.Remove((attacker, defender));
 
@@ -3718,7 +3718,7 @@ namespace SWLOR.Game.Server.Service
             if (!GetIsObjectValid(creature))
                 return;
 
-            _recentGuardedHits[creature] = DateTime.UtcNow;
+            _recentGuardedHits[creature] = Clock.UtcNow;
             ApplyGuardedHitNextAttackEffects(creature);
             ApplyGuardedHitNextSkillAbilityEffects(creature);
             ApplyGuardedHitNextSkillAbilityStatusEffects(creature);
@@ -4171,7 +4171,7 @@ namespace SWLOR.Game.Server.Service
             if (!_recentGuardedHits.TryGetValue(creature, out var lastGuardedHit))
                 return false;
 
-            var isRecent = (DateTime.UtcNow - lastGuardedHit).TotalSeconds <= windowSeconds;
+            var isRecent = (Clock.UtcNow - lastGuardedHit).TotalSeconds <= windowSeconds;
             if (!isRecent)
                 _recentGuardedHits.Remove(creature);
 
@@ -4183,7 +4183,7 @@ namespace SWLOR.Game.Server.Service
             if (!GetIsObjectValid(creature) || source == DeflectionSource.None)
                 return;
 
-            _recentDeflections[(creature, source)] = DateTime.UtcNow;
+            _recentDeflections[(creature, source)] = Clock.UtcNow;
             ApplyDeflectionNearbyAllyGuard(creature, source);
         }
 
@@ -4221,7 +4221,7 @@ namespace SWLOR.Game.Server.Service
             if (!_recentDeflections.TryGetValue(key, out var lastDeflection))
                 return false;
 
-            var isRecent = (DateTime.UtcNow - lastDeflection).TotalSeconds <= windowSeconds;
+            var isRecent = (Clock.UtcNow - lastDeflection).TotalSeconds <= windowSeconds;
             if (!isRecent)
                 _recentDeflections.Remove(key);
 
@@ -4371,7 +4371,7 @@ namespace SWLOR.Game.Server.Service
                 return;
 
             if (!_recentDamageTargets.TryGetValue((defender, attacker), out var lastDamaged) ||
-                (DateTime.UtcNow - lastDamaged).TotalSeconds > window ||
+                (Clock.UtcNow - lastDamaged).TotalSeconds > window ||
                 Random.D100(1) > chance)
                 return;
 
@@ -4420,7 +4420,7 @@ namespace SWLOR.Game.Server.Service
                 budgets[creature] = budget;
             }
 
-            return budget.Take(CalculateMaxHPHealingBudget(maximumHP, percent), requested, DateTime.UtcNow);
+            return budget.Take(CalculateMaxHPHealingBudget(maximumHP, percent), requested, Clock.UtcNow);
         }
 
         private static int ApplyOutgoingDamageModifier(uint attacker, int damage)
@@ -4853,7 +4853,7 @@ namespace SWLOR.Game.Server.Service
                 return damage;
             }
 
-            var now = DateTime.UtcNow;
+            var now = Clock.UtcNow;
             if (!_repeatedTargetDamageStates.TryGetValue(attacker, out var state) ||
                 state.Target != defender ||
                 durationSeconds > 0 && (now - state.LastHit).TotalSeconds > durationSeconds)
@@ -4918,7 +4918,7 @@ namespace SWLOR.Game.Server.Service
 
             var maxStacks = Math.Max(1, (int)Math.Ceiling(maxBonus / (float)bonusPerHit));
             state.Stacks = Math.Min(state.Stacks + 1, maxStacks);
-            state.LastHit = DateTime.UtcNow;
+            state.LastHit = Clock.UtcNow;
             _meleeRepeatedTargetDamageStates[attacker] = state;
 
             MeleeRepeatedTargetDamageStatusEffect.Refresh(attacker, state.Stacks, statusEffectIcon);
@@ -4954,7 +4954,7 @@ namespace SWLOR.Game.Server.Service
             if (!IsWeaponSkillType(skillType))
                 return damage;
 
-            var now = DateTime.UtcNow;
+            var now = Clock.UtcNow;
             if (!_rangedRepeatedTargetDamageStates.TryGetValue(attacker, out var state) ||
                 state.Target != defender ||
                 durationSeconds > 0 && (now - state.LastHit).TotalSeconds > durationSeconds)
@@ -5012,7 +5012,7 @@ namespace SWLOR.Game.Server.Service
                 return;
             }
 
-            var now = DateTime.UtcNow;
+            var now = Clock.UtcNow;
             if (_sameTargetPressureStates.TryGetValue(attacker, out var state) &&
                 state.ReadyUntil != default)
             {
@@ -5135,7 +5135,7 @@ namespace SWLOR.Game.Server.Service
                 return false;
             }
 
-            var now = DateTime.UtcNow;
+            var now = Clock.UtcNow;
             if (!IsSameTargetPressureReadyStateActive(attacker, existing, now))
             {
                 ClearSameTargetPressureState(attacker);
@@ -5392,7 +5392,7 @@ namespace SWLOR.Game.Server.Service
                 return true;
 
             var key = (creature, statType);
-            var now = DateTime.UtcNow;
+            var now = Clock.UtcNow;
             if (_statTriggerCooldowns.TryGetValue(key, out var nextAvailable) && nextAvailable > now)
                 return false;
 
@@ -5437,7 +5437,7 @@ namespace SWLOR.Game.Server.Service
             }
             foreach (var source in suppressionSourcesToRefresh)
             {
-                RefreshOverwatchMarker(source, DateTime.UtcNow);
+                RefreshOverwatchMarker(source, Clock.UtcNow);
             }
 
             _hostileAbilitySequenceStates.Remove(creature);
@@ -6914,7 +6914,7 @@ namespace SWLOR.Game.Server.Service
             var damageBonus = Stat.GetStatAdjustment(attacker, StatType.FirstHostileAbilityHitDamageBonus);
             var state = EnsureFirstHostileAbilityHitState(attacker, maximumCount, damageBonus, out _);
 
-            var now = DateTime.UtcNow;
+            var now = Clock.UtcNow;
             if (Ability.IsAreaImpact(attacker, ability) &&
                 (now - state.LastHit).TotalSeconds <= 1)
             {
@@ -7047,7 +7047,7 @@ namespace SWLOR.Game.Server.Service
             // Exhausted stacks recharge strictly on the cooldown timer, even across separate engagements.
             if (state.Count >= maximumCount && state.RechargeAvailableAt != null)
             {
-                if (DateTime.UtcNow >= state.RechargeAvailableAt.Value)
+                if (Clock.UtcNow >= state.RechargeAvailableAt.Value)
                 {
                     _firstHostileAbilityHitCounts.Remove(attacker);
                     Log.WriteStructured(
@@ -7063,7 +7063,7 @@ namespace SWLOR.Game.Server.Service
             }
 
             // With stacks remaining, refresh to a full set once the wielder drops out of combat so each new engagement opens with all stacks.
-            if (HasRecentCombatEntryActivity(attacker, DateTime.UtcNow))
+            if (HasRecentCombatEntryActivity(attacker, Clock.UtcNow))
             {
                 return;
             }
@@ -7825,7 +7825,7 @@ namespace SWLOR.Game.Server.Service
             }
 
             var key = (activator, target);
-            var now = DateTime.UtcNow;
+            var now = Clock.UtcNow;
             var count = 1;
             if (_areaAbilityTargetHitSequences.TryGetValue(key, out var state) &&
                 (now - state.LastHit).TotalSeconds <= windowSeconds)
@@ -8970,7 +8970,7 @@ namespace SWLOR.Game.Server.Service
             if (!IsWeaponSkillType(skillType))
                 return 0;
 
-            var now = DateTime.UtcNow;
+            var now = Clock.UtcNow;
             var adjustment = Stat.GetStatAdjustment(
                 attacker,
                 StatType.RangedAttackAccuracyAgainstSuppressionStackPercentAdjustment);
@@ -9048,7 +9048,7 @@ namespace SWLOR.Game.Server.Service
 
         public static void ReconcileOverwatchStatus(uint source)
         {
-            RefreshOverwatchMarker(source, DateTime.UtcNow);
+            RefreshOverwatchMarker(source, Clock.UtcNow);
         }
 
         private static bool HasCurrentSuppressionAbilityUseStack(
@@ -10387,7 +10387,7 @@ namespace SWLOR.Game.Server.Service
             _abilityStaminaCosts[key] = new AbilityStaminaCostState
             {
                 Cost = staminaCost - nonCriticalRangedAbilityStaminaCost,
-                SpentAt = DateTime.UtcNow,
+                SpentAt = Clock.UtcNow,
                 NonCriticalRangedAbilityStaminaCost = nonCriticalRangedAbilityStaminaCost
             };
         }
@@ -10405,7 +10405,7 @@ namespace SWLOR.Game.Server.Service
             if (!_abilityStaminaCosts.TryGetValue(key, out state))
                 return false;
 
-            if ((DateTime.UtcNow - state.SpentAt).TotalSeconds <= 35)
+            if ((Clock.UtcNow - state.SpentAt).TotalSeconds <= 35)
                 return true;
 
             _abilityStaminaCosts.Remove(key);
@@ -10883,7 +10883,7 @@ namespace SWLOR.Game.Server.Service
             if (skillType == SkillType.Invalid)
                 return;
 
-            var now = DateTime.UtcNow;
+            var now = Clock.UtcNow;
             TrackSuppressionAbilityUse(activator, now);
 
             if (!ability.IsHostileAbility)
@@ -10955,12 +10955,12 @@ namespace SWLOR.Game.Server.Service
                 _hostileAbilitySequenceStates[activator] = new HostileAbilitySequenceState
                 {
                     LastFeat = feat,
-                    LastUse = DateTime.UtcNow
+                    LastUse = Clock.UtcNow
                 };
                 return;
             }
 
-            var now = DateTime.UtcNow;
+            var now = Clock.UtcNow;
             if (_hostileAbilitySequenceStates.TryGetValue(activator, out var state) &&
                 state.LastFeat != feat &&
                 (now - state.LastUse).TotalSeconds <= windowSeconds)
@@ -11064,7 +11064,7 @@ namespace SWLOR.Game.Server.Service
             if (!_lastCombatAbilityUse.TryGetValue(activator, out var lastUse))
                 return false;
 
-            return (DateTime.UtcNow - lastUse).TotalSeconds <= windowSeconds;
+            return (Clock.UtcNow - lastUse).TotalSeconds <= windowSeconds;
         }
 
         public static bool IsUsingAbility(uint creature)
@@ -11105,7 +11105,7 @@ namespace SWLOR.Game.Server.Service
             var lastOffensiveUse = GetLastCompletedOffensiveActivityAt(activator);
             var elapsedSeconds = lastOffensiveUse == default
                 ? double.MaxValue
-                : (DateTime.UtcNow - lastOffensiveUse).TotalSeconds;
+                : (Clock.UtcNow - lastOffensiveUse).TotalSeconds;
             var damageBonus = 0;
             var accuracyBonus = 0;
             var criticalDamageBonus = 0;
@@ -11183,7 +11183,7 @@ namespace SWLOR.Game.Server.Service
             var lastActivity = GetLastCompletedOffensiveActivityAt(creature);
             var elapsed = lastActivity == default
                 ? double.MaxValue
-                : (DateTime.UtcNow - lastActivity).TotalSeconds;
+                : (Clock.UtcNow - lastActivity).TotalSeconds;
 
             var openingSeconds = Stat.GetStatAdjustment(creature, StatType.OpeningAutoAttackIdleSeconds);
             if (openingSeconds > 0 && elapsed >= openingSeconds &&
@@ -11227,7 +11227,7 @@ namespace SWLOR.Game.Server.Service
 
                     var remaining = scheduledActivity == default
                         ? 0
-                        : delay - (DateTime.UtcNow - scheduledActivity).TotalSeconds;
+                        : delay - (Clock.UtcNow - scheduledActivity).TotalSeconds;
                     if (remaining > 0)
                     {
                         DelayCommand((float)Math.Max(0.1, remaining), RefreshWhenReady);
@@ -12910,7 +12910,7 @@ namespace SWLOR.Game.Server.Service
             public RepeatedTargetDamageState(uint target)
             {
                 Target = target;
-                LastHit = DateTime.UtcNow;
+                LastHit = Clock.UtcNow;
             }
         }
     }

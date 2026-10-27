@@ -88,7 +88,7 @@ namespace SWLOR.Game.Server.Service
         public static (bool, string) IsOnRecastDelay(uint creature, RecastGroup recastGroup)
         {
             if (GetIsDM(creature)) return (false, string.Empty);
-            var now = DateTime.UtcNow;
+            var now = Clock.UtcNow;
 
             // Players
             if (GetIsPC(creature) && !GetIsDMPossessed(creature))
@@ -132,7 +132,7 @@ namespace SWLOR.Game.Server.Service
         public static void ApplyRecastDelay(uint activator, RecastGroup group, float delaySeconds)
         {
             if (!GetIsObjectValid(activator) || group == RecastGroup.Invalid || delaySeconds <= 0f) return;
-            var now = DateTime.UtcNow;
+            var now = Clock.UtcNow;
             ApplyRecastDelay(activator, group, now, now.AddSeconds(delaySeconds));
         }
 
@@ -140,7 +140,7 @@ namespace SWLOR.Game.Server.Service
         public static void ApplyRecastDelay(uint activator, RecastGroup group, DateTime startedAt, DateTime endsAt,
             string sourceTexture = null, string iconTexture = null)
         {
-            if (!GetIsObjectValid(activator) || group == RecastGroup.Invalid || endsAt <= DateTime.UtcNow || endsAt <= startedAt) return;
+            if (!GetIsObjectValid(activator) || group == RecastGroup.Invalid || endsAt <= Clock.UtcNow || endsAt <= startedAt) return;
             if (!GetIsPC(activator) || GetIsDMPossessed(activator))
             {
                 SetLocalString(activator, $"ABILITY_RECAST_ID_{(int)group}", RecastTimestamp.Format(endsAt));
@@ -163,7 +163,7 @@ namespace SWLOR.Game.Server.Service
             if (group == RecastGroup.Capstone)
                 return;
 
-            var now = DateTime.UtcNow;
+            var now = Clock.UtcNow;
 
             if (!GetIsPC(activator) || GetIsDMPossessed(activator))
             {

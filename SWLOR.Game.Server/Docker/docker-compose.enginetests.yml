@@ -78,6 +78,10 @@ services:
             - SWLOR_ENGINE_TEST_ARENA_RESREF=${SWLOR_ENGINE_TEST_ARENA_RESREF:-}
             - SWLOR_ENGINE_TEST_STARTUP_DELAY_SECONDS=${SWLOR_ENGINE_TEST_STARTUP_DELAY_SECONDS:-15}
             - SWLOR_ENGINE_TEST_SHUTDOWN=${SWLOR_ENGINE_TEST_SHUTDOWN:-true}
+            # Characterization scenarios write the snapshots that differ to
+            # <results directory>/characterization/ instead of failing when this is 1; the runner scripts copy
+            # them into SWLOR.Game.Server.EngineTests/Characterization/Snapshots/.
+            - SWLOR_UPDATE_SNAPSHOTS=${SWLOR_UPDATE_SNAPSHOTS:-}
             # Pin the report location to where the runner scripts look for it
             # (<server home>/app_logs/engine_tests/), regardless of where the home's
             # swlor.env points SWLOR_APP_LOG_DIRECTORY. Without this, a home with a

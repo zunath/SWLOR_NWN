@@ -8,7 +8,7 @@ The shared procedure for NWN client evidence. Read it before verifying any chang
 - **Live server** ("Server behavior" below): anything the C# server produces, such as combat, abilities, NUI windows, conversations, chat commands, migrations, and economy behavior.
 - A change with no in-game surface (toolset app, CLI, docs, agent rules) has nothing to capture; say so in the handoff.
 
-Sections: Hard rules · Run the launcher · Build a faithful fixture · Capture · Server behavior · Client traps · Public access · Evidence and cleanup
+Sections: Hard rules · Run the launcher · Build a faithful fixture · Capture · Server behavior · Smoke run · Client traps · Public access · Evidence and cleanup
 
 ## Hard rules
 
@@ -79,6 +79,24 @@ python tools/NwnLiveClient.py down <run dir>
 - **Test conditions:** live areas spawn hostiles. Clear creatures from the test areas and wait until the character is out of combat before acting; log combat state with each step. The server's automated restart at 10:00 UTC boots everyone; do not span it.
 - **Lifetime and teardown:** the server and client stop themselves after `--max-minutes` (default 120), and a failed `up` tears itself down unless `--keep-on-failure`. `down` boots the character through the server console first (a killed client holds its CD key until the server's `net.udp.window.timeout`, which this stack raises from 60 seconds to 5 minutes on both server and client so a client stalled loading haks on a busy machine is not dropped), stops the client, runs `docker compose -p <project> down --volumes --remove-orphans` on its own project only, deletes the copied key, profile, and server home, and writes `evidence/cleanup.json`. It exits non-zero if any container, volume, network, key, or character copy remains.
 - **Evidence:** `<run dir>/evidence` (default run directory `%TEMP%\swlor-live\<project>`) keeps the captures, `captures.jsonl`, `ui-actions.log`, client and server logs, the containers' stdout (NWNX logs there), and `cleanup.json`. If the stack cannot start or a capture is incomplete, report the affected items as unverified with the error.
+
+## Smoke run
+
+The scripted live smoke run ends each phase of the maintainability refactor (`MaintainabilityRefactorPlan.md`, owner decision 4). It is one repeatable command on top of the stack in "Server behavior", so every rule there still applies.
+
+```powershell
+powershell -NoProfile -File tools/RunSmokeTest.ps1 -Repeat 2 -PublicCdKey <8-character public key>
+powershell -NoProfile -File tools/RunSmokeTest.ps1 -ServerOnly -SkipBuild
+python tools/SmokeTest.py compare <first results.json> <second results.json>
+```
+
+- **What runs:** `RunSmokeTest.ps1` builds the Release server of this checkout, then `tools/SmokeTest.py` (code in `tools/nwn_live_client/smoke.py`) creates one stack per run with `tools/nwn_live_client/stack.py`, walks the scenario, and always tears the stack down. The test character defaults to `localvault\agantarn.bic` of the NWN user folder; pass `-Character` for another. The CD key and character handling is unchanged: a copied `cdkey.ini` in the run's private profile, deleted at teardown.
+- **Scenario (one pass or fail line, detail and screenshot per step):** 1 server boots from this build and the client connects; 2 an existing test character logs in; 3 melee and ranged attacks on a training target; 4 an active ability with a cooldown; 5 bank or storage, an item in and out; 6 craft one item; 7 accept a quest; 8 transfer to another area and back; 9 log out cleanly. Steps 1, 2 and 9 are automated. Steps 3 to 8 are recorded as `manual` with a reason until they are automated; a step that cannot be automated reliably stays `manual` with its reason. Content is never changed: targets, stations and quest givers must come from the module and existing commands.
+- **Statuses:** `pass`, `fail`, `manual` (not automated, reason given), `skipped` (an earlier step failed) and `blocked` (needs something this run did not have, such as a client in `-ServerOnly`). The run fails on any `fail`, an unclean teardown, or a difference between repeated runs.
+- **Output** goes outside the repository, by default `%TEMP%\swlor-smoke\<label>-<UTC stamp>\` (`-ResultsRoot` changes it): `results.json` (statuses, checks, build revision, module hash, timings, teardown report), `results.md`, and `run\evidence\` with the numbered screenshots (`02-login-in-area.png`), client and server logs, and `cleanup.json`. With `-Repeat`, each run has its own folder and `comparison.json` lists any difference.
+- **"Same results"** means equal step statuses and equal check outcomes; timings, paths and details are not compared. A step records the server build revision and fails its first check when that is not the branch head, so a stale Release build cannot pass.
+- **`-ServerOnly`** boots and checks the server (build revision, module load, Redis, no error log written) and reads no CD key; the client steps are `blocked`. It does not replace the full run.
+- Inspect the screenshots like any other evidence; a passing check does not prove the frame shows what the step claims.
 
 ## Client traps
 

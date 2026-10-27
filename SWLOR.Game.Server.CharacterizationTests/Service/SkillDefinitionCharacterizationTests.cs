@@ -42,17 +42,24 @@ public class SkillDefinitionCharacterizationTests
     [Test]
     public void GetSkillTypeByBaseItem()
     {
-        var items = Enum.GetValues<BaseItem>().Distinct().OrderBy(item => (int)item).ToArray();
+        // A few base item numbers have several names; the name of such a number is not stable, so every name is listed, sorted.
+        var items = Enum.GetNames<BaseItem>()
+            .GroupBy(name => (int)Enum.Parse<BaseItem>(name))
+            .OrderBy(group => group.Key)
+            .ToArray();
 
         var table = new SnapshotTable(
             "Skill.GetSkillTypeByBaseItem(BaseItem) after Skill.LoadMappings()",
             "The skill a base item type trains and is trained by: weapons and ammunition map to their weapon skill, everything else to Invalid.",
-            $"Every BaseItem member ({items.Length}) in numeric order.",
-            new[] { "baseItem", "baseItemName" },
+            $"Every BaseItem number ({items.Length}) in numeric order, with all of its names (joined with | when a number has more than one).",
+            new[] { "baseItem", "baseItemNames" },
             new[] { "skill" });
 
         foreach (var item in items)
-            table.Add((int)item, item, Skill.GetSkillTypeByBaseItem(item));
+        {
+            var names = string.Join('|', item.OrderBy(name => name, StringComparer.Ordinal));
+            table.Add(item.Key, names, Skill.GetSkillTypeByBaseItem((BaseItem)item.Key));
+        }
 
         Snapshot.Verify("Skill", "GetSkillTypeByBaseItem", table);
     }

@@ -2910,6 +2910,7 @@ public class CombatUpgradeBibleSyncTests
             ("Gathering", "General") => PerkCategoryType.Gathering,
             ("Gathering", "Harvesting") => PerkCategoryType.Gathering,
             ("Gathering", "Scavenging") => PerkCategoryType.Gathering,
+            ("Gathering", "Space Industry") => PerkCategoryType.Gathering,
             ("Heavy Vibroblade", "Immortal") => PerkCategoryType.HeavyVibrobladeDefense,
             ("Heavy Vibroblade", "Berserker") => PerkCategoryType.HeavyVibrobladeOffense,
             ("Katar", "Iron Guard") => PerkCategoryType.KatarIronGuard,

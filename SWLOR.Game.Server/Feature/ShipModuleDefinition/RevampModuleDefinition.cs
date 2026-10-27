@@ -174,6 +174,7 @@ namespace SWLOR.Game.Server.Feature.ShipModuleDefinition
                 .MaxDistance(step.Range)
                 .ValidTargetType(ObjectType.Placeable)
                 .ValidationAction((_, _, target, _, _) => ShipModuleActions.MiningLaserError(target, step.MiningTier))
+                .Recast((activator, _, _) => ShipModuleActions.MiningCycleSeconds(activator, (float)step.CycleSeconds))
                 .ActivatedAction((activator, _, target, _, moduleBonus) =>
                     ShipModuleActions.MineAsteroid(activator, target, (float)step.CycleSeconds, moduleBonus));
         }
@@ -190,6 +191,7 @@ namespace SWLOR.Game.Server.Feature.ShipModuleDefinition
 
                     return ShipModuleActions.StripMinerError(target, step.MiningTier);
                 })
+                .Recast((activator, _, _) => ShipModuleActions.MiningCycleSeconds(activator, (float)step.CycleSeconds))
                 .ActivatedAction((activator, _, target, _, moduleBonus) =>
                     ShipModuleActions.StripAsteroid(activator, target, (float)step.CycleSeconds, moduleBonus));
         }

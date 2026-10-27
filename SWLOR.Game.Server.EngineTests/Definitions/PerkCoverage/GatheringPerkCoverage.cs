@@ -59,6 +59,27 @@ namespace SWLOR.Game.Server.EngineTests.Definitions.PerkCoverage
                     Prices = new[] { 1, 1, 2, 3, 3 },
                     GrantedFeats = new[] { FeatType.HardLook1, FeatType.HardLook2, FeatType.HardLook3, FeatType.HardLook4, FeatType.HardLook5 },
                 },
+                new()
+                {
+                    Perk = PerkType.Prospector,
+                    MaxLevel = 3,
+                    Prices = new[] { 2, 3, 4 },
+                    GrantedFeats = new[] { FeatType.ProspectorTrait },
+                },
+                new()
+                {
+                    Perk = PerkType.DeepCore,
+                    MaxLevel = 2,
+                    Prices = new[] { 3, 4 },
+                    GrantedFeats = new[] { FeatType.DeepCoreTrait },
+                },
+                new()
+                {
+                    Perk = PerkType.RapidExtraction,
+                    MaxLevel = 2,
+                    Prices = new[] { 3, 4 },
+                    GrantedFeats = new[] { FeatType.RapidExtractionTrait },
+                },
             };
         }
     }

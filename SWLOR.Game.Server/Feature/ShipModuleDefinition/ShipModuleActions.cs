@@ -3,6 +3,7 @@ using System.Linq;
 using SWLOR.Game.Server.Core;
 using SWLOR.Game.Server.Entity;
 using SWLOR.Game.Server.Service;
+using SWLOR.Game.Server.Service.LootService;
 using SWLOR.Game.Server.Service.PerkService;
 using SWLOR.Game.Server.Service.SkillService;
 using SWLOR.Game.Server.Service.SpaceService;
@@ -421,9 +422,33 @@ namespace SWLOR.Game.Server.Feature.ShipModuleDefinition
             return string.Empty;
         }
 
+        /// <summary>A mining laser or strip miner cycle after the pilot's Rapid Extraction (Gathering).</summary>
+        public static float MiningCycleSeconds(uint pilot, float baseSeconds)
+        {
+            return SpaceCombatMath.MiningCycleSeconds(
+                baseSeconds,
+                Stat.GetStatAdjustment(pilot, StatType.SpaceMiningCycleSpeedPercent));
+        }
+
+        /// <summary>The ore the pilot's Prospector (Gathering) adds to each mining cycle.</summary>
+        private static int GetProspectorBonus(uint pilot)
+        {
+            return Stat.GetStatAdjustment(pilot, StatType.SpaceMiningYieldBonus);
+        }
+
+        /// <summary>
+        /// One ore pick from an asteroid's table. The pilot's Deep Core (Gathering) adds percentage points to the
+        /// rare-metal chance, as a separate roll before the normal weighted pick.
+        /// </summary>
+        private static LootTableItem GetAsteroidOre(uint pilot, LootTable lootTable)
+        {
+            return lootTable.GetRandomItemWithRareChance(Stat.GetStatAdjustment(pilot, StatType.SpaceRareMetalChance));
+        }
+
         /// <summary>Mines one cycle of an asteroid and delivers the ore when the cycle ends.</summary>
         public static void MineAsteroid(uint activator, uint target, float cycleSeconds, int moduleBonus)
         {
+            cycleSeconds = MiningCycleSeconds(activator, cycleSeconds);
             SetLocalBool(target, Mined, true);
             // Remaining units aren't set - pick a random number to assign.
             var remainingUnits = GetLocalInt(target, "ASTEROID_REMAINING_UNITS");
@@ -450,7 +475,9 @@ namespace SWLOR.Game.Server.Feature.ShipModuleDefinition
                 // Perk & module bonuses. These increase the overall yield of each asteroid.
                 var industrialBonus = shipStatus.Industrial;
 
-                var amountToMine = 1 + Perk.GetPerkLevel(activator, PerkType.StarshipMining) + (int)(industrialBonus / 4) + (int)(moduleBonus) / 6f;
+                var amountToMine = SpaceCombatMath.MiningYield(
+                    1 + Perk.GetPerkLevel(activator, PerkType.StarshipMining) + (int)(industrialBonus / 4) + (int)(moduleBonus) / 6f,
+                    GetProspectorBonus(activator));
 
                 // Refresh remaining units (could have changed since the start)
                 remainingUnits = GetLocalInt(target, "ASTEROID_REMAINING_UNITS");
@@ -488,7 +515,7 @@ namespace SWLOR.Game.Server.Feature.ShipModuleDefinition
                 // Spawn the units.
                 for (var count = 1; count <= amountToMine; count++)
                 {
-                    var item = lootTable.GetRandomItem();
+                    var item = GetAsteroidOre(activator, lootTable);
                     CreateItemOnObject(item.Resref, activator);
                 }
 
@@ -500,6 +527,7 @@ namespace SWLOR.Game.Server.Feature.ShipModuleDefinition
         /// <summary>Strips a whole asteroid over <paramref name="seconds"/> while the ship is rooted.</summary>
         public static void StripAsteroid(uint activator, uint target, float seconds, int moduleBonus)
         {
+            seconds = MiningCycleSeconds(activator, seconds);
             SetLocalBool(target, Mined, true);
 
             ApplyEffectToObject(DurationType.Temporary, EffectEntangle(), activator, seconds);
@@ -514,7 +542,9 @@ namespace SWLOR.Game.Server.Feature.ShipModuleDefinition
             {
                 var industrialBonus = Space.GetShipStatus(activator).Industrial;
 
-                var amountToMine = 1 + Perk.GetPerkLevel(activator, PerkType.StarshipMining) + (int)(industrialBonus / 6) + (moduleBonus / 6);
+                var amountToMine = (int)SpaceCombatMath.MiningYield(
+                    1 + Perk.GetPerkLevel(activator, PerkType.StarshipMining) + (int)(industrialBonus / 6) + (moduleBonus / 6),
+                    GetProspectorBonus(activator));
 
                 SetPlotFlag(target, false);
                 ApplyEffectToObject(DurationType.Instant, EffectDeath(), target);
@@ -528,7 +558,7 @@ namespace SWLOR.Game.Server.Feature.ShipModuleDefinition
 
                 for (var count = 1; count <= amountToMine; count++)
                 {
-                    var item = lootTable.GetRandomItem();
+                    var item = GetAsteroidOre(activator, lootTable);
                     CreateItemOnObject(item.Resref, activator);
                 }
 

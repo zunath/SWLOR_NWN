@@ -144,14 +144,20 @@ namespace SWLOR.Game.Server.Feature.ShipModuleDefinition
         private static SpaceWeaponShot BuildShot(ShipModuleStep step, ShipStatus status, ShipStatus targetStatus) =>
             ShipShotBuilder.BuildFor(step, status, targetStatus);
 
+        /// <summary>The step as the firing module's component traits make it.</summary>
+        private static ShipModuleStep Effective(ShipModuleStep step) => ShipTraitRules.Apply(step, ShipModuleTraitContext.Current);
+
         private void Weapon(ShipModuleStep step)
         {
             _builder
                 .MaxDistance(step.Range)
                 .ValidTargetType(ObjectType.Creature)
                 .ActivatedAction((activator, status, target, targetStatus, _) =>
+                {
+                    var fired = Effective(step);
                     ShipModuleActions.FireStep(
-                        step, activator, status, target, targetStatus, BuildShot(step, status, targetStatus), false));
+                        fired, activator, status, target, targetStatus, BuildShot(fired, status, targetStatus), false);
+                });
         }
 
         private void AmmoWeapon(ShipModuleStep step, string missingAmmoMessage)
@@ -169,9 +175,10 @@ namespace SWLOR.Game.Server.Feature.ShipModuleDefinition
                 })
                 .ActivatedAction((activator, status, target, targetStatus, _) =>
                 {
-                    var shot = BuildShot(step, status, targetStatus);
+                    var fired = Effective(step);
+                    var shot = BuildShot(fired, status, targetStatus);
                     ShipModuleActions.ConsumeAmmo(activator, ammoResref);
-                    ShipModuleActions.FireStep(step, activator, status, target, targetStatus, shot, false);
+                    ShipModuleActions.FireStep(fired, activator, status, target, targetStatus, shot, false);
                 });
         }
 
@@ -232,7 +239,7 @@ namespace SWLOR.Game.Server.Feature.ShipModuleDefinition
                 .MaxDistance(step.Range)
                 .ValidTargetType(ObjectType.Creature)
                 .ActivatedAction((activator, status, target, targetStatus, _) =>
-                    repair(activator, status, target, targetStatus, ShipShotBuilder.ScaleSupport(step.Repair, status.Size)));
+                    repair(activator, status, target, targetStatus, ShipShotBuilder.ScaleSupport(Effective(step).Repair, status.Size)));
         }
 
         private void ShieldHardener(ShipModuleStep step)
@@ -242,7 +249,7 @@ namespace SWLOR.Game.Server.Feature.ShipModuleDefinition
                 .MaxDistance(SelfRange)
                 .ActivatedAction((activator, status, _, _, _) =>
                 {
-                    status.Harden(step.ResistAll, step.CycleSeconds, DateTime.UtcNow);
+                    status.Harden(Effective(step).ResistAll, step.CycleSeconds, DateTime.UtcNow);
                     ApplyEffectToObject(DurationType.Temporary, EffectVisualEffect(VisualEffect.Vfx_Dur_Aura_Pulse_Cyan_Blue), activator, 1.0f);
                 });
         }
@@ -256,7 +263,7 @@ namespace SWLOR.Game.Server.Feature.ShipModuleDefinition
                 .ValidationAction((activator, _, _, _, _) =>
                     ShipModuleActions.AmmoError(activator, ShipModuleActions.FuelCapsuleResref, "You need a fuel capsule to activate this module."))
                 .ActivatedAction((activator, status, _, _, _) =>
-                    ShipModuleActions.InjectCapacitor(activator, status, activator, status, ShipShotBuilder.ScaleSupport(step.CapacitorRestore, status.Size)));
+                    ShipModuleActions.InjectCapacitor(activator, status, activator, status, ShipShotBuilder.ScaleSupport(Effective(step).CapacitorRestore, status.Size)));
         }
 
         private void BulwarkShieldGenerator(ShipModuleStep step)
@@ -266,6 +273,7 @@ namespace SWLOR.Game.Server.Feature.ShipModuleDefinition
                 .MaxDistance(SelfRange)
                 .ActivatedAction((activator, _, _, _, _) =>
                 {
+                    var fired = Effective(step);
                     var seconds = step.CycleSeconds + 0.5;
                     ApplyEffectToObject(DurationType.Temporary, EffectVisualEffect(VisualEffect.Vfx_Dur_Aura_Pulse_Blue_White), activator, (float)step.CycleSeconds);
 
@@ -275,7 +283,7 @@ namespace SWLOR.Game.Server.Feature.ShipModuleDefinition
                         ApplyEffectToObject(DurationType.Temporary, EffectBeam(VisualEffect.Vfx_Beam_Cold, activator, BodyNode.Chest), ally, 2.0f);
                         ApplyEffectToObject(DurationType.Temporary, EffectVisualEffect(VisualEffect.Vfx_Dur_Aura_Pulse_Blue_White), ally, 2.0f);
 
-                        Space.ApplyShieldAura(ally, Space.GetShipStatus(ally), step.AuraShieldPercent, seconds);
+                        Space.ApplyShieldAura(ally, Space.GetShipStatus(ally), fired.AuraShieldPercent, seconds);
                         supported.Add(ally);
                     }
 
@@ -291,6 +299,7 @@ namespace SWLOR.Game.Server.Feature.ShipModuleDefinition
                 .MaxDistance(SelfRange)
                 .ActivatedAction((activator, _, _, _, _) =>
                 {
+                    var repair = Effective(step).Repair;
                     ApplyEffectToObject(DurationType.Temporary, EffectVisualEffect(VisualEffect.Vfx_Dur_Aura_Pulse_Red_White), activator, (float)step.CycleSeconds);
 
                     var supported = new List<uint>();
@@ -300,12 +309,12 @@ namespace SWLOR.Game.Server.Feature.ShipModuleDefinition
 
                         var allyStatus = Space.GetShipStatus(ally);
                         var shieldBefore = allyStatus.Shield;
-                        Space.RestoreAllyShield(ally, allyStatus, ShipModuleActions.ApplyRepairEfficiency(activator, step.Repair));
+                        Space.RestoreAllyShield(ally, allyStatus, ShipModuleActions.ApplyRepairEfficiency(activator, repair));
                         Space.ApplyRepairEnmity(activator, ally, allyStatus.Shield - shieldBefore);
                         supported.Add(ally);
                     }
 
-                    Enmity.ModifyEnmityOnAll(activator, 100 + step.Repair);
+                    Enmity.ModifyEnmityOnAll(activator, 100 + repair);
                     ShipModuleActions.AddSupportCombatPoint(activator, supported);
                 });
         }
@@ -317,6 +326,7 @@ namespace SWLOR.Game.Server.Feature.ShipModuleDefinition
                 .MaxDistance(SelfRange)
                 .ActivatedAction((activator, _, _, _, _) =>
                 {
+                    var accuracy = Effective(step).AuraAccuracy;
                     var seconds = step.CycleSeconds + 0.5;
                     ApplyEffectToObject(DurationType.Temporary, EffectVisualEffect(VisualEffect.Vfx_Dur_Aura_Pulse_Blue_White), activator, (float)step.CycleSeconds);
 
@@ -325,7 +335,7 @@ namespace SWLOR.Game.Server.Feature.ShipModuleDefinition
                         ApplyEffectToObject(DurationType.Temporary, EffectBeam(VisualEffect.Vfx_Beam_Cold, activator, BodyNode.Chest), enemy, 2.0f);
                         ApplyEffectToObject(DurationType.Temporary, EffectVisualEffect(VisualEffect.Vfx_Dur_Aura_Pulse_Blue_White), enemy, 2.0f);
 
-                        Space.ApplyAccuracyPenalty(enemy, Space.GetShipStatus(enemy), step.AuraAccuracy, seconds);
+                        Space.ApplyAccuracyPenalty(enemy, Space.GetShipStatus(enemy), accuracy, seconds);
                         Enmity.ModifyEnmity(activator, enemy, 100);
                     }
 

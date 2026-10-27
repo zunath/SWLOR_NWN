@@ -93,7 +93,7 @@ namespace SWLOR.Game.Server.Service
             ShipStatus.ShipStatusModule module,
             ShipModuleDetail detail)
         {
-            var cost = detail.CalculateCapacitorAction?.Invoke(ship, status, module.ModuleBonus) ?? 0;
+            var cost = ShipTraitRules.CapacitorCost(detail.CalculateCapacitorAction?.Invoke(ship, status, module.ModuleBonus) ?? 0, module.Traits);
             return PowerRoutingRules.ApplyCapacitorCost(cost, status.PowerRouting, ShipToggleRules.IsOffensive(detail.Type));
         }
 

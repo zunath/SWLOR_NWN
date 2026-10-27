@@ -356,7 +356,7 @@ public class PilotingCommandTests
         var actions = ReadServerSource("Feature", "ShipModuleDefinition", "ShipModuleActions.cs");
         actions.Should().Contain("amount = ApplyRepairEfficiency(activator, amount);");
         ReadServerSource("Feature", "ShipModuleDefinition", "RevampModuleDefinition.cs")
-            .Should().Contain("ShipModuleActions.ApplyRepairEfficiency(activator, step.Repair)");
+            .Should().Contain("ShipModuleActions.ApplyRepairEfficiency(activator, repair)");
         ReadServerSource("Feature", "ShipModuleDefinition", "RepairFieldGeneratorModuleDefinition.cs")
             .Should().Contain("ShipModuleActions.ApplyRepairEfficiency(activator, repairAmount + bonusRecovery)");
 

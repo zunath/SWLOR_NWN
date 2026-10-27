@@ -388,7 +388,7 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
             var blueprint = Craft.GetBlueprintDetails(_blueprintItem);
             _hasBlueprint = blueprint.Recipe != RecipeType.Invalid;
 
-            var itemName = Cache.GetItemNameByResref(recipe.Resref);
+            var itemName = Craft.GetRecipeName(recipe);
 
             SwitchToSetUpMode();
             StatusColor = _heldItems.Count > 0 ? GuiColor.Red : GuiColor.Green;
@@ -1101,7 +1101,7 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
                     components.Add(item);
             }
 
-            return components;
+            return ShipComponents.OrderForConsumption(recipe, components);
         }
 
         /// <summary>
@@ -1483,6 +1483,7 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
             }
 
             ProcessBlueprintBonuses(item);
+            ShipComponents.ApplyCraftedTraits(_recipe, recipe, item, _components);
 
             // Add the recipe to the completed list (unlocks auto-crafting)
             if (firstTime)

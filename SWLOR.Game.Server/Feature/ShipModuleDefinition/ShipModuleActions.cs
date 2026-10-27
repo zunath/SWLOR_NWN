@@ -459,12 +459,15 @@ namespace SWLOR.Game.Server.Feature.ShipModuleDefinition
 
         /// <summary>
         /// One ore pick from an asteroid's table. The pilot's Deep Core (Gathering) adds percentage points to the
-        /// rare-metal chance, as a separate roll before the normal weighted pick.
+        /// rare-metal chance, as a separate roll before the normal weighted pick; so do the module's RareFind traits.
         /// </summary>
-        private static LootTableItem GetAsteroidOre(uint pilot, LootTable lootTable)
+        private static LootTableItem GetAsteroidOre(uint pilot, LootTable lootTable, int traitRareFind)
         {
-            return lootTable.GetRandomItemWithRareChance(Stat.GetStatAdjustment(pilot, StatType.SpaceRareMetalChance));
+            return lootTable.GetRandomItemWithRareChance(Stat.GetStatAdjustment(pilot, StatType.SpaceRareMetalChance) + traitRareFind);
         }
+
+        /// <summary>The firing module's RareFind traits, read while its action runs.</summary>
+        private static int TraitRareFind() => ShipTraitRules.Sum(ShipModuleTraitContext.Current, ShipTraitStat.RareFind);
 
         /// <summary>The asteroid's remaining units, rolled (3-6) the first time anyone mines it.</summary>
         private static void RollAsteroidUnits(uint target)
@@ -479,6 +482,7 @@ namespace SWLOR.Game.Server.Feature.ShipModuleDefinition
             cycleSeconds = MiningCycleSeconds(activator, cycleSeconds);
             HoldExtraction(target, activator);
             RollAsteroidUnits(target);
+            var rareFind = TraitRareFind();
 
             AssignCommand(activator, () =>
             {
@@ -539,7 +543,7 @@ namespace SWLOR.Game.Server.Feature.ShipModuleDefinition
                 var ore = new List<string>();
                 for (var count = 1; count <= amountToMine; count++)
                 {
-                    ore.Add(GetAsteroidOre(activator, lootTable).Resref);
+                    ore.Add(GetAsteroidOre(activator, lootTable, rareFind).Resref);
                 }
 
                 ShipHold.DeliverYield(activator, ore);
@@ -553,6 +557,7 @@ namespace SWLOR.Game.Server.Feature.ShipModuleDefinition
             seconds = MiningCycleSeconds(activator, seconds);
             HoldExtraction(target, activator);
             RollAsteroidUnits(target);
+            var rareFind = TraitRareFind();
 
             ApplyEffectToObject(DurationType.Temporary, EffectEntangle(), activator, seconds);
 
@@ -594,7 +599,7 @@ namespace SWLOR.Game.Server.Feature.ShipModuleDefinition
                 var ore = new List<string>();
                 for (var count = 1; count <= amountToMine; count++)
                 {
-                    ore.Add(GetAsteroidOre(activator, lootTable).Resref);
+                    ore.Add(GetAsteroidOre(activator, lootTable, rareFind).Resref);
                 }
 
                 ShipHold.DeliverYield(activator, ore);

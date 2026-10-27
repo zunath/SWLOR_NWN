@@ -88,6 +88,18 @@ namespace SWLOR.Game.Server.Service.CraftService
         }
 
         /// <summary>
+        /// Sets the name the recipe lists show, for recipes that make the same item in different ways.
+        /// Without it the lists show the crafted item's name.
+        /// </summary>
+        /// <param name="name">The recipe name to display.</param>
+        /// <returns>A recipe builder with the configured options</returns>
+        public RecipeBuilder Name(string name)
+        {
+            _activeRecipe.Name = name;
+            return this;
+        }
+
+        /// <summary>
         /// Adds short lines describing what the crafted item does, shown in the recipe details.
         /// Use this for items whose effect is not visible from their item properties.
         /// </summary>

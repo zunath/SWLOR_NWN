@@ -24,6 +24,7 @@ namespace SWLOR.Game.Server.Feature.PerkDefinition
             RapidExtraction();
             GasSiphoning();
             SalvageExpert();
+            TraitHunter();
 
             return _builder.Build();
         }
@@ -367,6 +368,26 @@ namespace SWLOR.Game.Server.Feature.PerkDefinition
                 .AddPerkLevel()
                 .Description("+3 items per salvage cycle.")
                 .IncreasesStat(StatType.SpaceSalvageYieldBonus, 3)
+                .Price(4)
+                .RequirementSkill(SkillType.Gathering, 40);
+        }
+
+
+        private void TraitHunter()
+        {
+            _builder.Create(PerkCategoryType.Gathering, PerkType.TraitHunter)
+                .Name("Trait Hunter")
+
+                .AddPerkLevel()
+                .GrantsFeat(FeatType.TraitHunterTrait)
+                .Description("+10 to the rare-trait chance of salvaged components.")
+                .IncreasesStat(StatType.SpaceRareTraitChance, 10)
+                .Price(3)
+                .RequirementSkill(SkillType.Gathering, 20)
+
+                .AddPerkLevel()
+                .Description("+20 to the rare-trait chance of salvaged components.")
+                .IncreasesStat(StatType.SpaceRareTraitChance, 20)
                 .Price(4)
                 .RequirementSkill(SkillType.Gathering, 40);
         }

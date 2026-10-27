@@ -14,6 +14,7 @@ import sys
 from pathlib import Path
 
 sys.path.insert(0, str(Path(__file__).resolve().parent))
+import components as comp  # noqa: E402
 import model as m  # noqa: E402
 import npc_catalog  # noqa: E402
 import trade  # noqa: E402
@@ -172,6 +173,111 @@ def tier(rank):
     return min(5, rank // 10 + 1)
 
 
+def legacy_module_bill(rank, row, capital):
+    """A module recipe before the component layer (W3): refined ore and electronics of the rank's tier."""
+    refined, elec = MATERIALS[tier(rank)]
+    heavy = 2 if capital else 1
+    return [(refined, (3 if row == "High" else 2) * heavy), (elec, (2 if row == "High" else 1) * heavy)]
+
+
+def module_bill(family, rank, row, capital):
+    """
+    A module recipe with the component layer (W9a): its family's component of the rank's tier stands in for two
+    material units of the legacy bill (one refined ore and one electronics on a High module, two refined ore on a
+    Mid or Low one), so the unit count per rank stays where it was. Capital modules take two of everything.
+    """
+    t = tier(rank)
+    refined, elec = MATERIALS[t]
+    heavy = 2 if capital else 1
+    component = comp.resref(comp.family(comp.MODULE_COMPONENT[family])[0], t)
+    bill = [(component, heavy), (refined, (2 if row == "High" else 1) * heavy)]
+    if row == "High":
+        bill.append((elec, heavy))
+    return bill
+
+
+def legacy_hull_bill(role, adv):
+    r = m.ROLES[role]
+    gate = m.GATE[r["size"]] + (10 if adv else 0)
+    refined, elec = MATERIALS[min(5, gate // 10 + 1)]
+    qty = {"Small": 8, "Medium": 12, "Large": 18, "Capital": 30}[r["size"]]
+    return [(refined, qty), (elec, qty // 2)]
+
+
+def hull_bill(role, adv):
+    """
+    A ship deed recipe with the component layer (W9a, plan section 14): Hull Frames by size, a Ship Reactor, a
+    Thruster Assembly (two for Interceptors and Blockade Runners) and the role's components, all of the hull's tier.
+    Each component stands in for two material units of the legacy bill; the rest stays refined ore and electronics
+    (two to one), so the unit count is unchanged.
+    """
+    r = m.ROLES[role]
+    gate = m.GATE[r["size"]] + (10 if adv else 0)
+    t = min(5, gate // 10 + 1)
+    refined, elec = MATERIALS[t]
+    parts = [("HullFrame", comp.HULL_FRAMES[r["size"]]), ("ShipReactor", 1),
+             ("ThrusterAssembly", 2 if role in comp.TWO_THRUSTERS else 1)]
+    parts += [(f, 1) for f in comp.ROLE_COMPONENTS[role]]
+    units = sum(q for _, q in legacy_hull_bill(role, adv))
+    rest = units - 2 * sum(q for _, q in parts)
+    assert rest >= 2, role
+    ore = -(-2 * rest // 3)
+    bill = [(comp.resref(comp.family(f)[0], t), q) for f, q in parts]
+    return bill + [(res, q) for res, q in ((refined, ore), (elec, rest - ore)) if q > 0]
+
+
+def component_recipes(recipe_start):
+    """Every component recipe: per family and tier the plain component, then one recipe per crafted variant trait."""
+    out, recipe = [], recipe_start
+    for (short, enum, name, skill, model, _base, _sig, _desc) in comp.FAMILIES:
+        for t in comp.TIERS:
+            variants = [(None, "", "")] + [(tr[1], tr[1], tr[2]) for tr in comp.traits_for(enum, "Crafted")]
+            for trait, suffix, trait_name in variants:
+                label = f"{name} (Tier {t})" + (f": {trait_name}" if trait else "")
+                out.append(dict(RecipeName=f"ShipComponent{enum}{t}{suffix}", RecipeType=recipe, Family=enum, Tier=t,
+                                Resref=comp.resref(short, t), Skill=skill, RecipeLevel=comp.recipe_level(t),
+                                Trait=trait or "None", Name=label, Components=comp.components_for_recipe(enum, t)))
+                recipe += 1
+    return out
+
+
+def material_cost(resref):
+    d = json.loads((ROOT / "Module" / "uti" / f"{resref}.uti.json").read_text(encoding="utf-8"))
+    return d["Cost"]["value"]
+
+
+def expand_bill(bill):
+    """A recipe bill with each component replaced by its plain recipe's materials."""
+    out = {}
+    for res, q in bill:
+        item = next((x for x in COMPONENT_INDEX if x[0] == res), None)
+        parts = comp.components_for_recipe(item[1], item[2]) if item else [(res, 1)]
+        for r, n in parts:
+            out[r] = out.get(r, 0) + n * q
+    return sorted(out.items())
+
+
+COMPONENT_INDEX = [(comp.resref(f[0], t), f[1], t) for f in comp.FAMILIES for t in comp.TIERS]
+
+
+def bill_units(bill):
+    return sum(q for _, q in bill)
+
+
+def bill_value(bill):
+    return sum(material_cost(r) * q for r, q in bill)
+
+
+def component_items():
+    out = []
+    for (short, enum, name, skill, model, _base, _sig, desc) in comp.FAMILIES:
+        for t in comp.TIERS:
+            mats = comp.components_for_recipe(enum, t)
+            out.append(dict(Family=enum, Tier=t, Resref=comp.resref(short, t), Name=f"{name} (Tier {t})", Model=model,
+                            Skill=skill, Cost=sum(material_cost(r) * q for r, q in mats), Description=desc))
+    return out
+
+
 # Families added after the 50 hulls (the salvage update W6a, the trade risk update W7b). Their recipe IDs follow the
 # hulls' so no earlier RecipeType value moves.
 LATE_FAMILIES = {"Salvager", "GasHarvester", "SmugglingCompartment"}
@@ -184,8 +290,6 @@ def module_steps(late_recipe_start=None):
         for r in (CAPITAL_STEPS if capital else m.STEPS):
             mk = ROMAN[r // 5]
             s = stats(r)
-            refined, elec = MATERIALS[tier(r)]
-            heavy = 2 if capital else 1
             base, model_part, texture = ART[art]
             late = key in LATE_FAMILIES
             steps.append(dict(
@@ -194,7 +298,7 @@ def module_steps(late_recipe_start=None):
                 Texture=texture, BaseItem=base, ModelPart=model_part, Description=desc(r, s), RecipeType=late_recipe if late else recipe,
                 RecipeName=f"Ship{key}{r:02d}",
                 RecipeLevel=max(2, min(50, r + (3 if capital else 0))),
-                Components=[(refined, (3 if row == "High" else 2) * heavy), (elec, (2 if row == "High" else 1) * heavy)],
+                Components=module_bill(key, r, row, capital),
                 Cost=100 + 30 * r + (2000 if capital else 0), **s))
             if late:
                 late_recipe = None if late_recipe is None else late_recipe + 1
@@ -228,8 +332,6 @@ def ships(recipe_start):
         tags.add(tag)
         gate = m.GATE[r["size"]] + (10 if adv else 0)
         lvl = {"Small": 5, "Medium": 15, "Large": 30, "Capital": 45}[r["size"]] + (10 if adv else 0)
-        refined, elec = MATERIALS[min(5, gate // 10 + 1)]
-        qty = {"Small": 8, "Medium": 12, "Large": 18, "Capital": 30}[r["size"]]
         mk = m.MAKERS[maker]
         out.append(dict(
             Number=i, Tag=tag, Name=name, Size=r["size"], Role=role.replace(" ", ""), Manufacturer=maker.replace(" ", ""),
@@ -242,7 +344,7 @@ def ships(recipe_start):
             ExplosivePercent=h["explosive"], CriticalBonus=h["crit"], BuiltInBonus=r["bonus"], Signature=text,
             Store=name in STORE_SHIPS, RecipeType=recipe, RecipeName="ShipDeed" + "".join(c for c in name.title() if c.isalnum()),
             RecipeLevel=min(50, lvl),
-            Components=[(refined, qty), (elec, qty // 2)], Cost={"Small": 500, "Medium": 2500, "Large": 10000, "Capital": 30000}[r["size"]] * (2 if adv else 1),
+            Components=hull_bill(role, adv), Cost={"Small": 500, "Medium": 2500, "Large": 10000, "Capital": 30000}[r["size"]] * (2 if adv else 1),
             RepairCostMultiplier=r["repair"], Theme=mk["theme"]))
         recipe += 1
     return out
@@ -364,6 +466,21 @@ def blueprints(steps, hulls):
     return out
 
 
+TEMPLATE_COMPONENT = ROOT / "Module" / "uti" / "ship_scrap_1.uti.json"
+COMPONENT_BASE = 523  # ESS9, one item per slot, so each component keeps its own trait
+
+
+def component_blueprints(items):
+    out = {}
+    t = json.loads(TEMPLATE_COMPONENT.read_text(encoding="utf-8"))
+    for x in items:
+        source = f"Crafted by {x['Skill']}" + ("; also salvaged from wrecks." if x["Family"] in comp.SALVAGE_FAMILIES else ".")
+        out[f"Module/uti/{x['Resref']}.uti.json"] = uti(
+            t, x["Resref"], x["Name"], COMPONENT_BASE, x["Model"], x["Cost"],
+            copy.deepcopy(t["PropertiesList"]["value"]), f"{x['Description']} {source}")
+    return out
+
+
 RECIPE_ENUM = ROOT / "SWLOR.Game.Server" / "Service" / "CraftService" / "RecipeType.cs"
 BEGIN = "        // BEGIN space revamp catalog (generated by tools/SpaceRevampBalance/catalog.py)"
 END = "        // END space revamp catalog"
@@ -391,18 +508,87 @@ def catalog():
     return module_steps(RECIPE_TYPE_START + len(early) + len(hulls)), hulls
 
 
-def writes():
+def full_catalog():
+    """The catalog plus the component recipes (W9a), numbered after every module and hull so nothing earlier moves."""
     steps, hulls = catalog()
+    return steps, hulls, component_recipes(max(x["RecipeType"] for x in steps + hulls) + 1)
+
+
+def enum_cs(name, summary, members):
+    body = "\n".join(f"        {k} = {v}," for k, v in members)
+    return (HEADER + "namespace SWLOR.Game.Server.Service.SpaceService\n{\n"
+            f"    /// <summary>{summary}</summary>\n    public enum {name}\n    {{\n{body}\n    }}\n}}\n")
+
+
+def cs_pairs(pairs):
+    return "new[] { " + ", ".join(f"({json.dumps(r)}, {q})" for r, q in pairs) + " }"
+
+
+def component_catalog_cs(items, recipes):
+    item_rows = "\n".join(
+        f'            new ShipComponentItem {{ Family = ShipComponentFamily.{x["Family"]}, Tier = {x["Tier"]}, '
+        f'Resref = {json.dumps(x["Resref"])}, Name = {json.dumps(x["Name"])} }},' for x in items)
+    recipe_rows = "\n".join(
+        f'            new ShipComponentRecipe {{ RecipeType = RecipeType.{x["RecipeName"]}, '
+        f'Family = ShipComponentFamily.{x["Family"]}, Tier = {x["Tier"]}, Resref = {json.dumps(x["Resref"])}, '
+        f'Skill = SkillType.{x["Skill"]}, RecipeLevel = {x["RecipeLevel"]}, Trait = ShipComponentTraitType.{x["Trait"]}, '
+        f'Name = {json.dumps(x["Name"])}, Components = {cs_pairs(x["Components"])} }},' for x in recipes)
+    trait_rows = []
+    for (_tid, enum, name, kind, fams, effects) in comp.TRAITS:
+        fam = ", ".join(f"ShipComponentFamily.{f}" for f in fams)
+        eff = ", ".join(f"new ShipTraitEffect(ShipTraitStat.{st}, {v})" for st, v in effects)
+        trait_rows.append(
+            f'            new ShipComponentTrait {{ Type = ShipComponentTraitType.{enum}, Name = {json.dumps(name)}, '
+            f'Kind = ShipTraitKind.{kind}, Families = new[] {{ {fam} }}, Effects = new[] {{ {eff} }}, '
+            f'Description = {json.dumps(comp.effect_text(effects))} }},')
+
+    def odds(d):
+        return ", ".join(f"[WreckDifficulty.{k}] = {v}" for k, v in d.items())
+
+    salvage = ", ".join(f"ShipComponentFamily.{f}" for f in comp.SALVAGE_FAMILIES)
+    return (HEADER + "using System.Collections.Generic;\nusing SWLOR.Game.Server.Service.CraftService;\n"
+            "using SWLOR.Game.Server.Service.SkillService;\nusing SWLOR.Game.Server.Service.SpaceService;\n\n"
+            "namespace SWLOR.Game.Server.Feature.ShipComponentDefinition\n{\n"
+            "    public static class RevampComponentCatalog\n    {\n"
+            "        public static readonly IReadOnlyList<ShipComponentItem> Items = new List<ShipComponentItem>\n        {\n"
+            f"{item_rows}\n        }};\n\n"
+            "        public static readonly IReadOnlyList<ShipComponentRecipe> Recipes = new List<ShipComponentRecipe>\n        {\n"
+            f"{recipe_rows}\n        }};\n\n"
+            "        public static readonly IReadOnlyList<ShipComponentTrait> Traits = new List<ShipComponentTrait>\n        {\n"
+            + "\n".join(trait_rows) + "\n        };\n\n"
+            "        /// <summary>The families a wreck can yield as salvaged components (life support never comes from salvage).</summary>\n"
+            f"        public static readonly IReadOnlyList<ShipComponentFamily> SalvageFamilies = new[] {{ {salvage} }};\n\n"
+            "        /// <summary>The chance per salvage cycle of one salvaged component.</summary>\n"
+            "        public static readonly IReadOnlyDictionary<WreckDifficulty, int> SalvagedComponentPercent = "
+            f"new Dictionary<WreckDifficulty, int> {{ {odds(comp.SALVAGED_COMPONENT_PERCENT)} }};\n\n"
+            "        /// <summary>The chance a salvaged component's trait is rare, before Trait Hunter.</summary>\n"
+            "        public static readonly IReadOnlyDictionary<WreckDifficulty, int> RareTraitPercent = "
+            f"new Dictionary<WreckDifficulty, int> {{ {odds(comp.RARE_TRAIT_PERCENT)} }};\n"
+            "    }\n}\n")
+
+
+def writes():
+    steps, hulls, recipes = full_catalog()
+    items = component_items()
     files = {
         "SWLOR.Game.Server/Feature/ShipModuleDefinition/RevampModuleCatalog.cs": module_catalog_cs(steps),
         "SWLOR.Game.Server/Feature/ShipDefinition/RevampShipCatalog.cs": ship_catalog_cs(hulls),
+        "SWLOR.Game.Server/Feature/ShipComponentDefinition/RevampComponentCatalog.cs": component_catalog_cs(items, recipes),
+        "SWLOR.Game.Server/Service/SpaceService/ShipComponentFamily.cs": enum_cs(
+            "ShipComponentFamily", "A family of ship components (plan section 14, Appendix D).",
+            [("Invalid", 0)] + [(f[1], i) for i, f in enumerate(comp.FAMILIES, 1)]),
+        "SWLOR.Game.Server/Service/SpaceService/ShipComponentTraitType.cs": enum_cs(
+            "ShipComponentTraitType",
+            "A trait a ship component carries into the module built from it. Items and ship statuses store the number.",
+            [("None", 0)] + [(t[1], t[0]) for t in comp.TRAITS]),
     }
-    files["SWLOR.Game.Server/Service/CraftService/RecipeType.cs"] = recipe_enum(steps, hulls)
+    files["SWLOR.Game.Server/Service/CraftService/RecipeType.cs"] = recipe_enum(steps, hulls + recipes)
     npc_source = (ROOT / "SWLOR.Game.Server/Feature/SpaceObjectDefinition/NPCSpaceObjectDefinition.cs").read_text(encoding="utf-8")
     npc_tags = re.findall(r'_builder\.Create\("([^"]+)"\)', npc_source)
     files["SWLOR.Game.Server/Feature/SpaceObjectDefinition/RevampNpcShipCatalog.cs"] = npc_catalog.catalog_cs(
         HEADER, npc_catalog.entries(ROOT, npc_tags))
     files.update(blueprints(steps, hulls))
+    files.update(component_blueprints(items))
     return files, steps, hulls
 
 

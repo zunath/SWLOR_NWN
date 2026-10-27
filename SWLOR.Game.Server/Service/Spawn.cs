@@ -488,7 +488,7 @@ namespace SWLOR.Game.Server.Service
             var spawnId = GetLocalString(spawnObject, "SPAWN_ID");
             if (!Guid.TryParse(spawnId, out var spawnGuid) || !_spawns.TryGetValue(spawnGuid, out var detail))
             {
-                DestroyObject(spawnObject);
+                DestroySpawnObject(spawnObject);
                 return false;
             }
 
@@ -498,8 +498,27 @@ namespace SWLOR.Game.Server.Service
             CreateQueuedSpawn(spawnGuid, GetRespawnTime(detail));
             RemoveActiveSpawn(detail, spawnObject);
             SetLocalInt(spawnObject, "RESPAWN_QUEUED", 1);
-            DestroyObject(spawnObject);
+            DestroySpawnObject(spawnObject);
             return true;
+        }
+
+        /// <summary>
+        /// Destroys a spawned object without leaving anything behind. The engine drops the
+        /// inventory of a destroyed placeable into a "Remains" bag, so a resource node that
+        /// still holds items has its items destroyed first.
+        /// </summary>
+        /// <param name="spawnObject">The spawned object to destroy.</param>
+        private static void DestroySpawnObject(uint spawnObject)
+        {
+            if (GetObjectType(spawnObject) == ObjectType.Placeable && GetHasInventory(spawnObject))
+            {
+                for (var item = GetFirstItemInInventory(spawnObject); GetIsObjectValid(item); item = GetNextItemInInventory(spawnObject))
+                {
+                    DestroyObject(item);
+                }
+            }
+
+            DestroyObject(spawnObject);
         }
 
         private static DateTime GetRespawnTime(SpawnDetail detail)
@@ -608,7 +627,7 @@ namespace SWLOR.Game.Server.Service
                         foreach (var activeSpawn in _activeSpawnsByArea[area])
                         {
                             ExecuteScript("spawn_despawn", activeSpawn.SpawnObject);
-                            DestroyObject(activeSpawn.SpawnObject);
+                            DestroySpawnObject(activeSpawn.SpawnObject);
                         }
                     }
 
@@ -682,7 +701,7 @@ namespace SWLOR.Game.Server.Service
 
                     // Destroy the resource directly (avoids triggering death events which would queue duplicate respawns)
                     SetLocalInt(resourceDespawn.ResourceObject, "RESPAWN_QUEUED", 1);
-                    DestroyObject(resourceDespawn.ResourceObject);
+                    DestroySpawnObject(resourceDespawn.ResourceObject);
 
                     // Queue for respawn
                     var respawnTime = GetRespawnTime(spawnDetail);

@@ -165,8 +165,9 @@ public sealed partial class QuestConversationTests
         var obtainable = EconomyObtainabilityCoverageTests.ReadObtainableResrefs(root);
         var craftable = Directory.EnumerateFiles(Path.Combine(root, "SWLOR.Game.Server", "Feature", "RecipeDefinition"),
                 "*.cs", SearchOption.AllDirectories)
-            .SelectMany(path => Regex.Matches(File.ReadAllText(path), "\\.Resref\\(\\s*\"([^\"]+)\"")
-                .Select(match => match.Groups[1].Value)).ToHashSet();
+            .SelectMany(path => Regex.Matches(File.ReadAllText(path),
+                    "\\.Resref\\(\\s*\"([^\"]+)\"|\\(RecipeType\\.\\w+, RecipeType\\.\\w+, \"([^\"]+)\"\\)")
+                .Select(match => match.Groups[1].Success ? match.Groups[1].Value : match.Groups[2].Value)).ToHashSet();
         var objectives = 0;
         foreach (var quest in BuildQuests().Values)
         foreach (var state in quest.States.Values)

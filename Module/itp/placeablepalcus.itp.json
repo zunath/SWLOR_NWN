@@ -37658,6 +37658,28 @@
                     "__struct_id": 0,
                     "NAME": {
                       "type": "cexostring",
+                      "value": "Durelium Asteroid"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "asteroid_durel1"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "Durelium Asteroid"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "asteroid_durel2"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
                       "value": "Dantooine Herbs"
                     },
                     "RESREF": {

@@ -1,13 +1,16 @@
 using System.Text.Json;
 using FluentAssertions;
 using NUnit.Framework;
+using SWLOR.Game.Server.Feature.SpawnDefinition;
 using SWLOR.Game.Server.Service;
 using SWLOR.Game.Server.Service.SpaceService;
+using SWLOR.Game.Server.Service.SpawnService;
 
 namespace SWLOR.Game.Server.Tests.Service;
 
 /// <summary>
-/// Docking limits by hull size, the Small/Medium-only areas and the starlane graph (plan sections 7 and 12, W6b).
+/// Docking limits by hull size, the Small/Medium-only areas and the starlane graph (plan sections 7 and 12, W6b), and the
+/// three Small/Medium-only zones (W6c).
 /// </summary>
 public class ShipAccessRulesTests
 {
@@ -19,6 +22,14 @@ public class ShipAccessRulesTests
     };
 
     private static readonly string[] AbandonedStationAreas = { "zomb_abanstation", "zomb_abanstatio2", "zomb_abanstatio3" };
+
+    // The W6c zones: (area, parent orbit, creature table, resource table).
+    private static readonly (string Area, string Parent, string Creatures, string Resources)[] Zones =
+    {
+        ("space_viscbelt", "viscaraorbit", "SPACE_VISCARA_BELT", "SPACE_RESOURCES_VISCARA_BELT"),
+        ("space_midrimneb", "space_midrim1", "SPACE_MIDRIM_NEBULA", "SPACE_RESOURCES_MIDRIM_NEBULA_ZONE"),
+        ("space_korrdebris", "space_korriban", "SPACE_KORRIBAN_DEBRIS", "SPACE_RESOURCES_KORRIBAN_DEBRIS"),
+    };
 
     private static StarportDockRefusal Dock(ShipSize size, bool player = false, bool capitalDock = false, int level = 0, ShipSize areaMax = ShipSize.Invalid) =>
         ShipAccessRules.GetStarportRefusal(new StarportDockRequest
@@ -201,8 +212,86 @@ public class ShipAccessRulesTests
         foreach (var area in AbandonedStationAreas)
             AreaLocal(area, "MAX_SHIP_SIZE").Should().Be((int)ShipSize.Medium, area);
 
-        AreasContaining("MAX_SHIP_SIZE").Should().BeEquivalentTo(AbandonedStationAreas, "the three new Small/Medium zones add their own flag");
+        AreasContaining("MAX_SHIP_SIZE").Should().BeEquivalentTo(AbandonedStationAreas.Concat(Zones.Select(x => x.Area)),
+            "only the Abandoned Station and the three Small/Medium zones limit hull size");
     }
+
+    // Small/Medium-only zones (W6c)
+
+    [Test]
+    public void TheZonesAdmitOnlySmallAndMediumShips()
+    {
+        foreach (var zone in Zones)
+        {
+            AreaLocal(zone.Area, "SPACE").Should().Be(1, zone.Area);
+            var max = AreaLocal(zone.Area, "MAX_SHIP_SIZE");
+            max.Should().Be((int)ShipSize.Medium, zone.Area);
+            ShipAccessRules.AreaAdmits(ShipSize.Medium, (ShipSize)max!.Value).Should().BeTrue();
+            ShipAccessRules.AreaAdmits(ShipSize.Large, (ShipSize)max.Value).Should().BeFalse();
+        }
+    }
+
+    [Test]
+    public void TheZonesPayBetterThanOpenOrbit()
+    {
+        var creatures = new SpaceSpawnDefinition().BuildSpawnTables();
+        var resources = new SpaceResourceSpawnDefinition().BuildSpawnTables();
+        foreach (var zone in Zones)
+        {
+            AreaString(zone.Area, "CREATURE_SPAWN_TABLE_ID").Should().Be(zone.Creatures);
+            AreaString(zone.Area, "RESOURCE_SPAWN_TABLE_ID").Should().Be(zone.Resources);
+            creatures.Should().ContainKey(zone.Creatures);
+            resources.Should().ContainKey(zone.Resources);
+
+            // An open 32x32 orbit gets 50 resource nodes and 45 ships (Spawn.CalculateResourceSpawnCount and
+            // CalculateCreatureSpawnCount): the zones take 1.5x the nodes and 1.25x the ships.
+            AreaLocal(zone.Area, "RESOURCE_SPAWN_COUNT").Should().Be(75, zone.Area);
+            AreaLocal(zone.Area, "CREATURE_SPAWN_COUNT").Should().Be(56, zone.Area);
+        }
+
+        Share(resources["SPACE_RESOURCES_VISCARA_BELT"], "asteroid_durel").Should().BeGreaterThan(0.5, "Durelium is the belt's main ore");
+        Share(resources["SPACE_RESOURCES_MIDRIM_NEBULA_ZONE"], "spc_gascloud").Should().BeGreaterThan(
+            Share(resources["SPACE_RESOURCES_MIDRIM_NEBULA"], "spc_gascloud"), "the nebula zone is denser in gas than Mid Rim 1");
+        Share(resources["SPACE_RESOURCES_KORRIBAN_DEBRIS"], "asteroid_arda").Should().BeGreaterThan(
+            Share(resources["SPACE_RESOURCES_KORRIBAN_ORBIT"], "asteroid_arda"));
+
+        AreaLocal("space_korrdebris", ShipSalvageRules.AurodiumPercentVariable).Should().Be(15);
+        ShipSalvageRules.AurodiumPercent(5, 15).Should().BeGreaterThan(ShipSalvageRules.AurodiumPercent(5, 0));
+        creatures["SPACE_KORRIBAN_DEBRIS"].Spawns.Select(x => x.Resref)
+            .Should().Contain(new[] { "t5derturret1", "t5derturret2", "t5minelayer" });
+    }
+
+    [Test]
+    public void TheDerelictTurretsUseTheUnusedTurretRowsOnThePlatformPreset()
+    {
+        foreach (var (resref, appearance) in new[] { ("t5derturret1", 2153), ("t5derturret2", 2154) })
+        {
+            using var document = JsonDocument.Parse(File.ReadAllText(Path.Combine(RepositoryRoot, "Module", "utc", $"{resref}.utc.json")));
+            var root = document.RootElement;
+            root.GetProperty("Appearance_Type").GetProperty("value").GetInt32().Should().Be(appearance);
+            root.GetProperty("Tag").GetProperty("value").GetString().Should().Be("t5platform", "the space system finds a ship's preset by tag");
+            root.GetProperty("WalkRate").GetProperty("value").GetInt32().Should().Be(1, "turrets are immobile");
+        }
+    }
+
+    [Test]
+    public void TheZonesAreRegisteredAreas()
+    {
+        var ifo = File.ReadAllText(Path.Combine(RepositoryRoot, "Module", "ifo", "module.ifo.json"));
+        var planet = ReadServerSource("Service", "Planet.cs");
+        foreach (var zone in Zones)
+        {
+            ifo.Should().Contain($"\"value\": \"{zone.Area}\"", "the module lists the area");
+            planet.Should().Contain($"\"{zone.Area}\",", "Planet treats it as space");
+            using var are = JsonDocument.Parse(File.ReadAllText(Path.Combine(RepositoryRoot, "Module", "are", $"{zone.Area}.are.json")));
+            are.RootElement.GetProperty("ResRef").GetProperty("value").GetString().Should().Be(zone.Area);
+            are.RootElement.GetProperty("Tag").GetProperty("value").GetString().Should().Be(zone.Area);
+            are.RootElement.GetProperty("Name").GetProperty("value").GetProperty("0").GetString().Should().StartWith("Space - ");
+        }
+    }
+
+    private static double Share(SpawnTable table, string prefix) =>
+        (double)table.Spawns.Where(x => x.Resref.StartsWith(prefix)).Sum(x => x.Weight) / table.Spawns.Sum(x => x.Weight);
 
     // Starlanes
 
@@ -305,7 +394,18 @@ public class ShipAccessRulesTests
         graph["space_midrim1"].Should().Contain("space_midrim2").And.Contain("viscaraorbit");
         graph["space_midrim2"].Should().Contain("space_korriban").And.Contain("space_midrim1");
         graph["space_midrim2"].Should().NotContain("viscaraorbit", "the return skipped Mid Rim 1 (bug 22)");
-        graph["space_korriban"].Should().BeEquivalentTo(new[] { "space_midrim2" });
+        graph["space_korriban"].Should().BeEquivalentTo(new[] { "space_midrim2", "space_korrdebris" });
+    }
+
+    [Test]
+    public void EachZoneIsALaneFromItsParentOrbitWithALaneBack()
+    {
+        var graph = LaneGraph();
+        foreach (var zone in Zones)
+        {
+            graph[zone.Parent].Should().Contain(zone.Area);
+            graph[zone.Area].Should().BeEquivalentTo(new[] { zone.Parent }, "a zone is a dead end off its parent orbit");
+        }
     }
 
     [Test]
@@ -402,6 +502,15 @@ public class ShipAccessRulesTests
         return document.RootElement.GetProperty("VarTable").GetProperty("value").EnumerateArray()
             .Where(x => x.GetProperty("Name").GetProperty("value").GetString() == name)
             .Select(x => (int?)x.GetProperty("Value").GetProperty("value").GetInt32())
+            .SingleOrDefault();
+    }
+
+    private static string? AreaString(string area, string name)
+    {
+        using var document = JsonDocument.Parse(File.ReadAllText(Path.Combine(RepositoryRoot, "Module", "git", $"{area}.git.json")));
+        return document.RootElement.GetProperty("VarTable").GetProperty("value").EnumerateArray()
+            .Where(x => x.GetProperty("Name").GetProperty("value").GetString() == name)
+            .Select(x => x.GetProperty("Value").GetProperty("value").GetString())
             .SingleOrDefault();
     }
 

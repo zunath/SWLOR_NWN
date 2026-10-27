@@ -28,9 +28,12 @@ namespace SWLOR.Game.Server.Service
             "prefab_space2",
             "space_dathomir",
             "space_derelict_k",
+            "space_korrdebris",
             "space_korriban",
             "space_midrim1",
             "space_midrim2",
+            "space_midrimneb",
+            "space_viscbelt",
             "tatooineorbit",
             "viscaraorbit"
         };

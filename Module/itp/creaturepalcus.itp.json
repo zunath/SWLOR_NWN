@@ -1922,6 +1922,44 @@
                     "__struct_id": 0,
                     "CR": {
                       "type": "float",
+                      "value": 50.0
+                    },
+                    "FACTION": {
+                      "type": "cexostring",
+                      "value": "Hostile"
+                    },
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "Derelict Defense Turret"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "t5derturret1"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "CR": {
+                      "type": "float",
+                      "value": 50.0
+                    },
+                    "FACTION": {
+                      "type": "cexostring",
+                      "value": "Hostile"
+                    },
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "Derelict Defense Turret"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "t5derturret2"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "CR": {
+                      "type": "float",
                       "value": 43.0
                     },
                     "FACTION": {

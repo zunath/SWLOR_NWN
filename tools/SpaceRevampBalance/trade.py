@@ -4,8 +4,7 @@ usage: python trade.py            (writes the generated C# trade catalog and tun
        python trade.py --check    (exit 1 when a generated file is out of date)
        python trade.py --sim      (prints the round-trip simulation and the space combat comparison)
 
-Every trade number lives here. bible_tabs.py can call trade_tab(Sheet) to emit a Trade (Revamp) tab; it is not
-run against the workbook yet.
+Every trade number lives here. bible_tabs.py calls trade_tab(Sheet) to write the Trade (Revamp) tab.
 
 Sources:
 - Base prices: the Cost of a comparable existing item blueprint (Module/uti), named per commodity in SOURCE. NPC stores
@@ -112,18 +111,22 @@ EXCHANGES = [
 # because the table lists both as imports with no exporter. Smuggler's Moon Landing and Station share one exchange
 # (they share an orbit). Smuggler's Moon has no NPC spawns yet; tier 4 is its lanes' tier (Hutlar 3, Tatooine 4).
 
-# Starlane graph (Module/git, 2026-10-27): every lane has one back.
+# Starlane graph (Module/git, 2026-10-27): every lane has one back. The three W6c zones are dead ends with no exchange,
+# so they change no route length.
 LANES = {
-    "viscaraorbit": ["moncalaorbit", "space_midrim1"],
+    "viscaraorbit": ["moncalaorbit", "space_midrim1", "space_viscbelt"],
     "moncalaorbit": ["dantooineorbit", "hutlar_orbit", "viscaraorbit"],
     "dantooineorbit": ["moncalaorbit"],
     "hutlar_orbit": ["moncalaorbit", "narshadorbit", "tatooineorbit"],
     "narshadorbit": ["hutlar_orbit", "tatooineorbit"],
     "tatooineorbit": ["hutlar_orbit", "narshadorbit", "space_dathomir"],
     "space_dathomir": ["tatooineorbit"],
-    "space_midrim1": ["space_midrim2", "viscaraorbit"],
+    "space_midrim1": ["space_midrim2", "viscaraorbit", "space_midrimneb"],
     "space_midrim2": ["space_korriban", "space_midrim1"],
-    "space_korriban": ["space_midrim2"],
+    "space_korriban": ["space_midrim2", "space_korrdebris"],
+    "space_viscbelt": ["viscaraorbit"],
+    "space_midrimneb": ["space_midrim1"],
+    "space_korrdebris": ["space_korriban"],
 }
 
 # ---------------------------------------------------------------------------------------------------------------
@@ -500,7 +503,7 @@ WRITES = {
 
 
 # ---------------------------------------------------------------------------------------------------------------
-# Bible tab: bible_tabs.py calls trade_tab(Sheet) once the trade tab is added. Not run against the workbook here.
+# Bible tab: bible_tabs.py calls trade_tab(Sheet) to write the Trade (Revamp) tab.
 # ---------------------------------------------------------------------------------------------------------------
 def trade_tab(Sheet):
     s = Sheet("Trade (Revamp)", [24, 12, 9, 9, 14, 24, 24, 60])

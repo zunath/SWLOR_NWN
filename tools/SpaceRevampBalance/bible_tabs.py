@@ -1,7 +1,7 @@
 """Write the W0 space revamp tabs into the Design Bible at the zip/XML level.
 
-usage: python bible_tabs.py   (run checks.py first; it writes the Space Balance tab from checks.md)
-Every untouched zip entry is copied byte for byte. Re-running replaces the four tabs in place.
+usage: python bible_tabs.py   (run checks.py first; it writes the Space Balance tab from checks.md; trade.py --check too)
+Every untouched zip entry is copied byte for byte. Re-running replaces the five tabs in place.
 """
 import html
 import json
@@ -416,6 +416,38 @@ def balance():
         elif line.strip():
             s.note(line.strip())
         i += 1
+    zones(s)
+    return s
+
+
+ZONES = [
+    # Zone, area, tier, reached from, resource nodes, enemy ships, resources, enemies, salvage
+    ["Viscara Asteroid Belt", "space_viscbelt", "T1-2", "Viscara Orbit (dock corner)", 75, 56,
+     "SPACE_RESOURCES_VISCARA_BELT: Durelium asteroids T1 30 / T2 20 (Durelium 30 beside the tier ore 10), Tilarium 15, "
+     "Currian 12, Idailia 3. Durelium asteroids are 62% of nodes; Viscara Orbit has none (its Tilarium drops Durelium at weight 4 of 37).",
+     "SPACE_VISCARA_BELT: T1 and T2 ships at the open-orbit weights, every W5b role; no Sith/Mandalorian capitals.",
+     "Kills only (default 4% Aurodium needs a T5+ wreck)."],
+    ["Mid Rim Nebula", "space_midrimneb", "T3-4", "Mid Rim 1 (beside the Viscara arrival)", 75, 56,
+     "SPACE_RESOURCES_MIDRIM_NEBULA_ZONE: Tibanna Gas clouds T3 30 / T4 30, Idailia 10, Barinium 10. Clouds are 75% of "
+     "nodes (Mid Rim 1's nebula table: 43%), about 56 clouds against about 22.",
+     "SPACE_MIDRIM_NEBULA: T3 and T4 ships at the open-orbit weights, every W5b role; no Sith/Mandalorian capitals.",
+     "Kills only."],
+    ["Korriban Debris Field", "space_korrdebris", "T5", "Korriban Orbit (beside the Mid Rim 2 arrival)", 75, 56,
+     "SPACE_RESOURCES_KORRIBAN_DEBRIS: Gostian 25, Ardanium 3 (3x Korriban Orbit's Ardanium weight, 11% of nodes against 4%).",
+     "SPACE_KORRIBAN_DEBRIS: T5 ships at the open-orbit weights, minelayers x2 (3840), derelict turrets t5derturret1/2 "
+     "2400 each (turret rows 2153/2154 on the t5platform preset), Sith/Mandalorian capitals as in the T5 orbits.",
+     "SALVAGE_AURODIUM_PERCENT 15 (default 4): 3.75x the Aurodium per salvage cycle on T5-T6 wrecks."],
+]
+
+
+def zones(s):
+    s.title("Space zones (Revamp): the Small/Medium-only zones (plan section 12, W6c)")
+    s.note("Each zone sets MAX_SHIP_SIZE 2 (Small and Medium hulls only), is one starlane from its parent orbit with a lane "
+           "back, and pays better than open orbit: RESOURCE_SPAWN_COUNT 75 and CREATURE_SPAWN_COUNT 56 against the 50 nodes "
+           "and 45 ships of an open 32x32 orbit (1.5x nodes, 1.25x ships), from richer tables. Units per node are unchanged "
+           "(1d4 + 2), so a zone yields about 1.5x an orbit per respawn before the richer mix.")
+    s.table(["Tier", "Zone", "Area", "Reached from", "Nodes", "Ships", "Resources", "Enemies", "Salvage"],
+            [[z[2], z[0], z[1], z[3], z[4], z[5], z[6], z[7], z[8]] for z in ZONES])
     return s
 
 
@@ -463,6 +495,7 @@ def write(sheets):
 
 
 if __name__ == "__main__":
-    tabs = [starships(), modules(), enemies(), balance()]
+    import trade
+    tabs = [starships(), modules(), enemies(), balance(), trade.trade_tab(Sheet)]
     write(tabs)
     print({t.name: t.n for t in tabs})

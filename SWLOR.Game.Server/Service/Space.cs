@@ -1809,7 +1809,7 @@ namespace SWLOR.Game.Server.Service
 
         /// <summary>
         /// Calculates the accuracy of a ship firing the given shot: ship and module Accuracy plus the pilot's
-        /// AGI (energy) or PER (launcher) x 3. NPCs add their level.
+        /// AGI (energy) or PER (launcher) x 3. NPCs add 8 + 2 x level.
         /// </summary>
         public static int GetShipAccuracy(uint attacker, ShipStatus attackerStatus, SpaceWeaponShot shot)
         {
@@ -1820,11 +1820,11 @@ namespace SWLOR.Game.Server.Service
                 GetAbilityScore(attacker, AbilityType.Perception),
                 shot.Family);
 
-            return IsPlayerPilot(attacker) ? accuracy : accuracy + GetNpcLevel(attacker);
+            return IsPlayerPilot(attacker) ? accuracy : accuracy + 8 + 2 * GetNpcLevel(attacker);
         }
 
         /// <summary>
-        /// Calculates the evasion of a ship: ship Evasion plus the pilot's AGI x 3. NPCs add their level.
+        /// Calculates the evasion of a ship: ship Evasion plus the pilot's AGI x 3. NPCs add 8 + 2 x level.
         /// </summary>
         public static int GetShipEvasion(uint defender, ShipStatus defenderStatus)
         {
@@ -1832,7 +1832,7 @@ namespace SWLOR.Game.Server.Service
                 defenderStatus.Evasion,
                 GetAbilityScore(defender, AbilityType.Agility));
 
-            return IsPlayerPilot(defender) ? evasion : evasion + GetNpcLevel(defender);
+            return IsPlayerPilot(defender) ? evasion : evasion + 8 + 2 * GetNpcLevel(defender);
         }
 
         /// <summary>

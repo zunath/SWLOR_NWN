@@ -11,7 +11,7 @@ namespace SWLOR.NWN.API.NWScript
         /// <param name="fSeconds">Number of seconds to vibrate</param>
         public static void Vibrate(uint oPlayer, int nMotor, float fStrength, float fSeconds)
         {
-            global::NWN.Core.NWScript.Vibrate(oPlayer, nMotor, fStrength, fSeconds);
+            NWScriptRuntime.Current.Vibrate(oPlayer, nMotor, fStrength, fSeconds);
         }
 
         /// <summary>
@@ -25,7 +25,7 @@ namespace SWLOR.NWN.API.NWScript
         public static void UnlockAchievement(uint oPlayer, string sId, int nLastValue = 0, int nCurValue = 0,
             int nMaxValue = 0)
         {
-            global::NWN.Core.NWScript.UnlockAchievement(oPlayer, sId, nLastValue, nCurValue, nMaxValue);
+            NWScriptRuntime.Current.UnlockAchievement(oPlayer, sId, nLastValue, nCurValue, nMaxValue);
         }
     }
 }

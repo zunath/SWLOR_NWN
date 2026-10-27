@@ -19,7 +19,7 @@ namespace SWLOR.NWN.API.NWScript
         /// <returns>The string tag. Returns an empty string if no tag has been set</returns>
         public static string GetEffectTag(Effect eEffect)
         {
-            return global::NWN.Core.NWScript.GetEffectTag(eEffect);
+            return NWScriptRuntime.Current.GetEffectTag(eEffect);
         }
 
         /// <summary>
@@ -31,7 +31,7 @@ namespace SWLOR.NWN.API.NWScript
         /// <remarks>Any other tags in the link will be overwritten.</remarks>
         public static Effect TagEffect(Effect eEffect, string sNewTag)
         {
-            return global::NWN.Core.NWScript.TagEffect(eEffect, sNewTag);
+            return NWScriptRuntime.Current.TagEffect(eEffect, sNewTag);
         }
 
         /// <summary>
@@ -41,7 +41,7 @@ namespace SWLOR.NWN.API.NWScript
         /// <returns>The caster level. Returns 0 if not created by a creature or if created by a spell-like ability</returns>
         public static int GetEffectCasterLevel(Effect eEffect)
         {
-            return global::NWN.Core.NWScript.GetEffectCasterLevel(eEffect);
+            return NWScriptRuntime.Current.GetEffectCasterLevel(eEffect);
         }
 
         /// <summary>
@@ -51,7 +51,7 @@ namespace SWLOR.NWN.API.NWScript
         /// <returns>The total duration in seconds. Returns 0 if the duration type of the effect is not DURATION_TYPE_TEMPORARY</returns>
         public static int GetEffectDuration(Effect eEffect)
         {
-            return global::NWN.Core.NWScript.GetEffectDuration(eEffect);
+            return NWScriptRuntime.Current.GetEffectDuration(eEffect);
         }
 
         /// <summary>
@@ -61,7 +61,7 @@ namespace SWLOR.NWN.API.NWScript
         /// <returns>The remaining duration in seconds. Returns 0 if the duration type of the effect is not DURATION_TYPE_TEMPORARY</returns>
         public static int GetEffectDurationRemaining(Effect eEffect)
         {
-            return global::NWN.Core.NWScript.GetEffectDurationRemaining(eEffect);
+            return NWScriptRuntime.Current.GetEffectDurationRemaining(eEffect);
         }
 
         /// <summary>
@@ -71,7 +71,7 @@ namespace SWLOR.NWN.API.NWScript
         /// <remarks>This effect cannot be resisted.</remarks>
         public static Effect EffectCutsceneImmobilize()
         {
-            return global::NWN.Core.NWScript.EffectCutsceneImmobilize();
+            return NWScriptRuntime.Current.EffectCutsceneImmobilize();
         }
 
         /// <summary>
@@ -81,7 +81,7 @@ namespace SWLOR.NWN.API.NWScript
         /// <remarks>This will allow creatures to pathfind through other creatures without bumping into them for the duration of the effect.</remarks>
         public static Effect EffectCutsceneGhost()
         {
-            return global::NWN.Core.NWScript.EffectCutsceneGhost();
+            return NWScriptRuntime.Current.EffectCutsceneGhost();
         }
 
         /// <summary>
@@ -91,7 +91,7 @@ namespace SWLOR.NWN.API.NWScript
         /// <returns>True if the item is cursed, false otherwise</returns>
         public static bool GetItemCursedFlag(uint oItem)
         {
-            return global::NWN.Core.NWScript.GetItemCursedFlag(oItem) != 0;
+            return NWScriptRuntime.Current.GetItemCursedFlag(oItem);
         }
 
         /// <summary>
@@ -102,7 +102,7 @@ namespace SWLOR.NWN.API.NWScript
         /// <remarks>When cursed, items cannot be dropped.</remarks>
         public static void SetItemCursedFlag(uint oItem, bool nCursed)
         {
-            global::NWN.Core.NWScript.SetItemCursedFlag(oItem, nCursed ? 1 : 0);
+            NWScriptRuntime.Current.SetItemCursedFlag(oItem, nCursed);
         }
 
         /// <summary>
@@ -113,7 +113,7 @@ namespace SWLOR.NWN.API.NWScript
         /// <returns>The possessor of the item. Returns OBJECT_INVALID on error</returns>
         public static uint GetItemPossessor(uint oItem, bool returnBags = false)
         {
-            return global::NWN.Core.NWScript.GetItemPossessor(oItem, returnBags ? 1 : 0);
+            return NWScriptRuntime.Current.GetItemPossessor(oItem, returnBags);
         }
 
         /// <summary>
@@ -124,7 +124,7 @@ namespace SWLOR.NWN.API.NWScript
         /// <returns>The possessed object. Returns OBJECT_INVALID on error</returns>
         public static uint GetItemPossessedBy(uint oCreature, string sItemTag)
         {
-            return global::NWN.Core.NWScript.GetItemPossessedBy(oCreature, sItemTag);
+            return NWScriptRuntime.Current.GetItemPossessedBy(oCreature, sItemTag);
         }
 
         /// <summary>
@@ -138,9 +138,7 @@ namespace SWLOR.NWN.API.NWScript
         public static uint CreateItemOnObject(string sResRef, uint oTarget = OBJECT_INVALID, int nStackSize = 1,
             string sNewTag = "")
         {
-            if (oTarget == OBJECT_INVALID)
-                oTarget = OBJECT_SELF;
-            return global::NWN.Core.NWScript.CreateItemOnObject(sResRef, oTarget, nStackSize, sNewTag);
+            return NWScriptRuntime.Current.CreateItemOnObject(sResRef, oTarget, nStackSize, sNewTag);
         }
 
         /// <summary>
@@ -151,7 +149,7 @@ namespace SWLOR.NWN.API.NWScript
         /// <remarks>If an error occurs, the log file will contain "ActionEquipItem failed." If the creature already has an item equipped in the slot specified, it will be unequipped automatically by the call to ActionEquipItem. In order for ActionEquipItem to succeed the creature must be able to equip the item normally. This means that: 1) The item is in the creature's inventory, 2) The item must already be identified (if magical), 3) The creature has the level required to equip the item (if magical and ILR is on), 4) The creature possesses the required feats to equip the item (such as weapon proficiencies).</remarks>
         public static void ActionEquipItem(uint oItem, InventorySlot nInventorySlot)
         {
-            global::NWN.Core.NWScript.ActionEquipItem(oItem, (int)nInventorySlot);
+            NWScriptRuntime.Current.ActionEquipItem(oItem, nInventorySlot);
         }
 
         /// <summary>
@@ -160,7 +158,7 @@ namespace SWLOR.NWN.API.NWScript
         /// <param name="oItem">The item to unequip</param>
         public static void ActionUnequipItem(uint oItem)
         {
-            global::NWN.Core.NWScript.ActionUnequipItem(oItem);
+            NWScriptRuntime.Current.ActionUnequipItem(oItem);
         }
 
         /// <summary>
@@ -170,7 +168,7 @@ namespace SWLOR.NWN.API.NWScript
         /// <remarks>If an error occurs, the log file will contain "ActionPickUpItem failed."</remarks>
         public static void ActionPickUpItem(uint oItem)
         {
-            global::NWN.Core.NWScript.ActionPickUpItem(oItem);
+            NWScriptRuntime.Current.ActionPickUpItem(oItem);
         }
 
         /// <summary>
@@ -180,7 +178,7 @@ namespace SWLOR.NWN.API.NWScript
         /// <remarks>If an error occurs, the log file will contain "ActionPutDownItem failed."</remarks>
         public static void ActionPutDownItem(uint oItem)
         {
-            global::NWN.Core.NWScript.ActionPutDownItem(oItem);
+            NWScriptRuntime.Current.ActionPutDownItem(oItem);
         }
 
         /// <summary>
@@ -191,7 +189,7 @@ namespace SWLOR.NWN.API.NWScript
         /// <remarks>If oItem is not a valid item, or oGiveTo is not a valid object, nothing will happen.</remarks>
         public static void ActionGiveItem(uint oItem, uint oGiveTo)
         {
-            global::NWN.Core.NWScript.ActionGiveItem(oItem, oGiveTo);
+            NWScriptRuntime.Current.ActionGiveItem(oItem, oGiveTo);
         }
 
         /// <summary>
@@ -202,7 +200,7 @@ namespace SWLOR.NWN.API.NWScript
         /// <remarks>If oItem is not a valid item, or oTakeFrom is not a valid object, nothing will happen.</remarks>
         public static void ActionTakeItem(uint oItem, uint oTakeFrom)
         {
-            global::NWN.Core.NWScript.ActionTakeItem(oItem, oTakeFrom);
+            NWScriptRuntime.Current.ActionTakeItem(oItem, oTakeFrom);
         }
 
         /// <summary>
@@ -213,7 +211,7 @@ namespace SWLOR.NWN.API.NWScript
         /// <returns>The Death effect</returns>
         public static Effect EffectDeath(bool nSpectacularDeath = false, bool nDisplayFeedback = true)
         {
-            return global::NWN.Core.NWScript.EffectDeath(nSpectacularDeath ? 1 : 0, nDisplayFeedback ? 1 : 0);
+            return NWScriptRuntime.Current.EffectDeath(nSpectacularDeath, nDisplayFeedback);
         }
 
         /// <summary>
@@ -223,7 +221,7 @@ namespace SWLOR.NWN.API.NWScript
         /// <remarks>This effect knocks creatures off their feet, they will sit until the effect is removed. This should be applied as a temporary effect with a 3 second duration minimum (1 second to fall, 1 second sitting, 1 second to get up).</remarks>
         public static Effect EffectKnockdown()
         {
-            return global::NWN.Core.NWScript.EffectKnockdown();
+            return NWScriptRuntime.Current.EffectKnockdown();
         }
 
         /// <summary>
@@ -239,7 +237,7 @@ namespace SWLOR.NWN.API.NWScript
         public static Effect EffectCurse(int nStrMod = 1, int nDexMod = 1, int nConMod = 1, int nIntMod = 1,
             int nWisMod = 1, int nChaMod = 1)
         {
-            return global::NWN.Core.NWScript.EffectCurse(nStrMod, nDexMod, nConMod, nIntMod, nWisMod, nChaMod);
+            return NWScriptRuntime.Current.EffectCurse(nStrMod, nDexMod, nConMod, nIntMod, nWisMod, nChaMod);
         }
 
         /// <summary>
@@ -249,7 +247,7 @@ namespace SWLOR.NWN.API.NWScript
         /// <remarks>When applied, this effect will restrict the creature's movement and apply a (-2) to all attacks and a -4 to AC.</remarks>
         public static Effect EffectEntangle()
         {
-            return global::NWN.Core.NWScript.EffectEntangle();
+            return NWScriptRuntime.Current.EffectEntangle();
         }
 
         /// <summary>
@@ -263,7 +261,7 @@ namespace SWLOR.NWN.API.NWScript
         public static Effect EffectSavingThrowIncrease(int nSave, int nValue,
             SavingThrowType nSaveType = SavingThrowType.All)
         {
-            return global::NWN.Core.NWScript.EffectSavingThrowIncrease(nSave, nValue, (int)nSaveType);
+            return NWScriptRuntime.Current.EffectSavingThrowIncrease(nSave, nValue, nSaveType);
         }
 
         /// <summary>
@@ -275,7 +273,7 @@ namespace SWLOR.NWN.API.NWScript
         /// <remarks>On SWLOR, this is used for Accuracy.</remarks>
         public static Effect EffectAccuracyIncrease(int nBonus, AttackBonus nModifierType = AttackBonus.Misc)
         {
-            return global::NWN.Core.NWScript.EffectAttackIncrease(nBonus, (int)nModifierType);
+            return NWScriptRuntime.Current.EffectAccuracyIncrease(nBonus, nModifierType);
         }
 
         /// <summary>
@@ -287,7 +285,7 @@ namespace SWLOR.NWN.API.NWScript
         /// <returns>The Damage Reduction effect</returns>
         public static Effect EffectDamageReduction(int nAmount, DamagePower nDamagePower, int nLimit = 0)
         {
-            return global::NWN.Core.NWScript.EffectDamageReduction(nAmount, (int)nDamagePower, nLimit);
+            return NWScriptRuntime.Current.EffectDamageReduction(nAmount, nDamagePower, nLimit);
         }
 
         /// <summary>
@@ -299,7 +297,7 @@ namespace SWLOR.NWN.API.NWScript
         /// <remarks>You must use the DAMAGE_BONUS_* constants! Using other values may result in odd behavior.</remarks>
         public static Effect EffectDamageIncrease(int nBonus, DamageType nDamageType = DamageType.Force)
         {
-            return global::NWN.Core.NWScript.EffectDamageIncrease(nBonus, (int)nDamageType);
+            return NWScriptRuntime.Current.EffectDamageIncrease(nBonus, nDamageType);
         }
 
         /// <summary>
@@ -310,7 +308,7 @@ namespace SWLOR.NWN.API.NWScript
         /// <remarks>Effects default to magical if the subtype is not set. Magical effects are removed by resting, and by dispel magic.</remarks>
         public static Effect MagicalEffect(Effect eEffect)
         {
-            return global::NWN.Core.NWScript.MagicalEffect(eEffect);
+            return NWScriptRuntime.Current.MagicalEffect(eEffect);
         }
 
         /// <summary>
@@ -321,7 +319,7 @@ namespace SWLOR.NWN.API.NWScript
         /// <remarks>Effects default to magical if the subtype is not set. Permanent supernatural effects are not removed by resting.</remarks>
         public static Effect SupernaturalEffect(Effect eEffect)
         {
-            return global::NWN.Core.NWScript.SupernaturalEffect(eEffect);
+            return NWScriptRuntime.Current.SupernaturalEffect(eEffect);
         }
 
         /// <summary>
@@ -332,7 +330,7 @@ namespace SWLOR.NWN.API.NWScript
         /// <remarks>Effects default to magical if the subtype is not set. Extraordinary effects are removed by resting, but not by dispel magic.</remarks>
         public static Effect ExtraordinaryEffect(Effect eEffect)
         {
-            return global::NWN.Core.NWScript.ExtraordinaryEffect(eEffect);
+            return NWScriptRuntime.Current.ExtraordinaryEffect(eEffect);
         }
 
         /// <summary>
@@ -347,7 +345,7 @@ namespace SWLOR.NWN.API.NWScript
             ArmorClassModiferType nModifyType = ArmorClassModiferType.Dodge,
             AC nDamageType = AC.VsDamageTypeAll)
         {
-            return global::NWN.Core.NWScript.EffectACIncrease(nValue, (int)nModifyType, (int)nDamageType);
+            return NWScriptRuntime.Current.EffectACIncrease(nValue, nModifyType, nDamageType);
         }
 
         /// <summary>
@@ -357,7 +355,7 @@ namespace SWLOR.NWN.API.NWScript
         /// <returns>The first effect on the creature</returns>
         public static Effect GetFirstEffect(uint oCreature)
         {
-            return global::NWN.Core.NWScript.GetFirstEffect(oCreature);
+            return NWScriptRuntime.Current.GetFirstEffect(oCreature);
         }
 
         /// <summary>
@@ -367,7 +365,7 @@ namespace SWLOR.NWN.API.NWScript
         /// <returns>The next effect on the creature</returns>
         public static Effect GetNextEffect(uint oCreature)
         {
-            return global::NWN.Core.NWScript.GetNextEffect(oCreature);
+            return NWScriptRuntime.Current.GetNextEffect(oCreature);
         }
 
         /// <summary>
@@ -377,7 +375,7 @@ namespace SWLOR.NWN.API.NWScript
         /// <param name="eEffect">The effect to remove</param>
         public static void RemoveEffect(uint oCreature, Effect eEffect)
         {
-            global::NWN.Core.NWScript.RemoveEffect(oCreature, eEffect);
+            NWScriptRuntime.Current.RemoveEffect(oCreature, eEffect);
         }
 
         /// <summary>
@@ -388,7 +386,7 @@ namespace SWLOR.NWN.API.NWScript
         /// <remarks>The effect must have been applied to an object or else it will return false.</remarks>
         public static bool GetIsEffectValid(Effect eEffect)
         {
-            return global::NWN.Core.NWScript.GetIsEffectValid(eEffect) == 1;
+            return NWScriptRuntime.Current.GetIsEffectValid(eEffect);
         }
 
         /// <summary>
@@ -398,7 +396,7 @@ namespace SWLOR.NWN.API.NWScript
         /// <returns>The duration type (DURATION_TYPE_* constants). Returns -1 if the effect is not valid</returns>
         public static int GetEffectDurationType(Effect eEffect)
         {
-            return global::NWN.Core.NWScript.GetEffectDurationType(eEffect);
+            return NWScriptRuntime.Current.GetEffectDurationType(eEffect);
         }
 
         /// <summary>
@@ -408,7 +406,7 @@ namespace SWLOR.NWN.API.NWScript
         /// <returns>The subtype (SUBTYPE_* constants). Returns 0 on error</returns>
         public static int GetEffectSubType(Effect eEffect)
         {
-            return global::NWN.Core.NWScript.GetEffectSubType(eEffect);
+            return NWScriptRuntime.Current.GetEffectSubType(eEffect);
         }
 
         /// <summary>
@@ -418,7 +416,7 @@ namespace SWLOR.NWN.API.NWScript
         /// <returns>The object that created the effect. Returns OBJECT_INVALID if the effect is not valid</returns>
         public static uint GetEffectCreator(Effect eEffect)
         {
-            return global::NWN.Core.NWScript.GetEffectCreator(eEffect);
+            return NWScriptRuntime.Current.GetEffectCreator(eEffect);
         }
 
         /// <summary>
@@ -429,7 +427,7 @@ namespace SWLOR.NWN.API.NWScript
         /// <remarks>This should be applied as an instantaneous effect.</remarks>
         public static Effect EffectHeal(int nDamageToHeal)
         {
-            return global::NWN.Core.NWScript.EffectHeal(nDamageToHeal);
+            return NWScriptRuntime.Current.EffectHeal(nDamageToHeal);
         }
 
         /// <summary>
@@ -443,7 +441,7 @@ namespace SWLOR.NWN.API.NWScript
         public static Effect EffectDamage(int nDamageAmount, DamageType nDamageType = DamageType.Force,
             DamagePower nDamagePower = DamagePower.Normal)
         {
-            return global::NWN.Core.NWScript.EffectDamage(nDamageAmount, (int)nDamageType, (int)nDamagePower);
+            return NWScriptRuntime.Current.EffectDamage(nDamageAmount, nDamageType, nDamagePower);
         }
 
         /// <summary>
@@ -454,7 +452,7 @@ namespace SWLOR.NWN.API.NWScript
         /// <returns>The Ability Increase effect</returns>
         public static Effect EffectAbilityIncrease(AbilityType nAbilityToIncrease, int nModifyBy)
         {
-            return global::NWN.Core.NWScript.EffectAbilityIncrease((int)nAbilityToIncrease, nModifyBy);
+            return NWScriptRuntime.Current.EffectAbilityIncrease(nAbilityToIncrease, nModifyBy);
         }
 
         /// <summary>
@@ -466,7 +464,7 @@ namespace SWLOR.NWN.API.NWScript
         /// <returns>The Damage Resistance effect</returns>
         public static Effect EffectDamageResistance(DamageType nDamageType, int nAmount, int nLimit = 0)
         {
-            return global::NWN.Core.NWScript.EffectDamageResistance((int)nDamageType, nAmount, nLimit);
+            return NWScriptRuntime.Current.EffectDamageResistance(nDamageType, nAmount, nLimit);
         }
 
         /// <summary>
@@ -476,7 +474,7 @@ namespace SWLOR.NWN.API.NWScript
         /// <remarks>This should be applied as an instantaneous effect.</remarks>
         public static Effect EffectResurrection()
         {
-            return global::NWN.Core.NWScript.EffectResurrection();
+            return NWScriptRuntime.Current.EffectResurrection();
         }
 
         /// <summary>
@@ -493,7 +491,7 @@ namespace SWLOR.NWN.API.NWScript
         public static Effect EffectSummonCreature(string sCreatureResref, VisualEffect nVisualEffectId = VisualEffect.Vfx_Com_Sparks_Parry,
             float fDelaySeconds = 0.0f, bool nUseAppearAnimation = false, VisualEffect nUnsummonVisualEffectId = VisualEffect.Vfx_Imp_Unsummon, uint oSummonToAdd = OBJECT_INVALID)
         {
-            return global::NWN.Core.NWScript.EffectSummonCreature(sCreatureResref, (int)nVisualEffectId, fDelaySeconds, nUseAppearAnimation ? 1 : 0, (int)nUnsummonVisualEffectId, oSummonToAdd);
+            return NWScriptRuntime.Current.EffectSummonCreature(sCreatureResref, nVisualEffectId, fDelaySeconds, nUseAppearAnimation, nUnsummonVisualEffectId, oSummonToAdd);
         }
 
         /// <summary>
@@ -503,7 +501,7 @@ namespace SWLOR.NWN.API.NWScript
         /// <remarks>Works just like EffectSanctuary except that the observers get no saving throw.</remarks>
         public static Effect EffectEthereal()
         {
-            return global::NWN.Core.NWScript.EffectEthereal();
+            return NWScriptRuntime.Current.EffectEthereal();
         }
 
         /// <summary>
@@ -515,7 +513,7 @@ namespace SWLOR.NWN.API.NWScript
         public static Effect EffectSpellFailure(int nPercent = 100,
             SpellSchool nSpellSchool = SpellSchool.General)
         {
-            return global::NWN.Core.NWScript.EffectSpellFailure(nPercent, (int)nSpellSchool);
+            return NWScriptRuntime.Current.EffectSpellFailure(nPercent, nSpellSchool);
         }
 
         /// <summary>
@@ -525,7 +523,7 @@ namespace SWLOR.NWN.API.NWScript
         /// <remarks>Like EffectDominated but cannot be resisted.</remarks>
         public static Effect EffectCutsceneDominated()
         {
-            return global::NWN.Core.NWScript.EffectCutsceneDominated();
+            return NWScriptRuntime.Current.EffectCutsceneDominated();
         }
 
         /// <summary>
@@ -535,7 +533,7 @@ namespace SWLOR.NWN.API.NWScript
         /// <remarks>Currently applies EffectParalyze and the stoneskin visual effect.</remarks>
         public static Effect EffectPetrify()
         {
-            return global::NWN.Core.NWScript.EffectPetrify();
+            return NWScriptRuntime.Current.EffectPetrify();
         }
 
         /// <summary>
@@ -545,7 +543,7 @@ namespace SWLOR.NWN.API.NWScript
         /// <remarks>This effect is identical to EffectParalyze except that it cannot be resisted.</remarks>
         public static Effect EffectCutsceneParalyze()
         {
-            return global::NWN.Core.NWScript.EffectCutsceneParalyze();
+            return NWScriptRuntime.Current.EffectCutsceneParalyze();
         }
 
         /// <summary>
@@ -555,7 +553,7 @@ namespace SWLOR.NWN.API.NWScript
         /// <returns>The Turn Resistance Decrease effect</returns>
         public static Effect EffectTurnResistanceDecrease(int nHitDice)
         {
-            return global::NWN.Core.NWScript.EffectTurnResistanceDecrease(nHitDice);
+            return NWScriptRuntime.Current.EffectTurnResistanceDecrease(nHitDice);
         }
 
         /// <summary>
@@ -565,7 +563,7 @@ namespace SWLOR.NWN.API.NWScript
         /// <returns>The Turn Resistance Increase effect</returns>
         public static Effect EffectTurnResistanceIncrease(int nHitDice)
         {
-            return global::NWN.Core.NWScript.EffectTurnResistanceIncrease(nHitDice);
+            return NWScriptRuntime.Current.EffectTurnResistanceIncrease(nHitDice);
         }
 
         /// <summary>
@@ -581,7 +579,7 @@ namespace SWLOR.NWN.API.NWScript
         public static Effect EffectSwarm(int nLooping, string sCreatureTemplate1, string sCreatureTemplate2 = "",
             string sCreatureTemplate3 = "", string sCreatureTemplate4 = "")
         {
-            return global::NWN.Core.NWScript.EffectSwarm(nLooping, sCreatureTemplate1, sCreatureTemplate2, sCreatureTemplate3, sCreatureTemplate4);
+            return NWScriptRuntime.Current.EffectSwarm(nLooping, sCreatureTemplate1, sCreatureTemplate2, sCreatureTemplate3, sCreatureTemplate4);
         }
 
         /// <summary>
@@ -593,7 +591,7 @@ namespace SWLOR.NWN.API.NWScript
         /// <remarks>The object will "fly away" for the duration of the effect and will reappear at the specified location. Most creatures only have animation 1, although a few have 2 (like beholders).</remarks>
         public static Effect EffectDisappearAppear(Location lLocation, int nAnimation = 1)
         {
-            return global::NWN.Core.NWScript.EffectDisappearAppear(lLocation, nAnimation);
+            return NWScriptRuntime.Current.EffectDisappearAppear(lLocation, nAnimation);
         }
 
         /// <summary>
@@ -604,7 +602,7 @@ namespace SWLOR.NWN.API.NWScript
         /// <remarks>Most creatures only have animation 1, although a few have 2 (like beholders).</remarks>
         public static Effect EffectDisappear(int nAnimation = 1)
         {
-            return global::NWN.Core.NWScript.EffectDisappear(nAnimation);
+            return NWScriptRuntime.Current.EffectDisappear(nAnimation);
         }
 
         /// <summary>
@@ -615,7 +613,7 @@ namespace SWLOR.NWN.API.NWScript
         /// <remarks>Most creatures only have animation 1, although a few have 2 (like beholders).</remarks>
         public static Effect EffectAppear(int nAnimation = 1)
         {
-            return global::NWN.Core.NWScript.EffectAppear(nAnimation);
+            return NWScriptRuntime.Current.EffectAppear(nAnimation);
         }
 
         /// <summary>
@@ -625,7 +623,7 @@ namespace SWLOR.NWN.API.NWScript
         /// <returns>The Modify Attacks effect. Returns an effect of type EFFECT_TYPE_INVALIDEFFECT if nAttacks > 5</returns>
         public static Effect EffectModifyAttacks(int nAttacks)
         {
-            return global::NWN.Core.NWScript.EffectModifyAttacks(nAttacks);
+            return NWScriptRuntime.Current.EffectModifyAttacks(nAttacks);
         }
 
         /// <summary>
@@ -638,7 +636,7 @@ namespace SWLOR.NWN.API.NWScript
         /// <remarks>You must use the DAMAGE_BONUS_* constants! Using other values may result in odd behavior.</remarks>
         public static Effect EffectDamageShield(int nDamageAmount, DamageBonus nRandomAmount, DamageType nDamageType)
         {
-            return global::NWN.Core.NWScript.EffectDamageShield(nDamageAmount, (int)nRandomAmount, (int)nDamageType);
+            return NWScriptRuntime.Current.EffectDamageShield(nDamageAmount, nRandomAmount, nDamageType);
         }
 
         /// <summary>
@@ -649,7 +647,7 @@ namespace SWLOR.NWN.API.NWScript
         /// <returns>The Miss Chance effect. Returns an effect of type EFFECT_TYPE_INVALIDEFFECT if nPercentage < 1 or nPercentage > 100</returns>
         public static Effect EffectMissChance(int nPercentage, MissChanceType nMissChanceType = MissChanceType.Normal)
         {
-            return global::NWN.Core.NWScript.EffectMissChance(nPercentage, (int)nMissChanceType);
+            return NWScriptRuntime.Current.EffectMissChance(nPercentage, nMissChanceType);
         }
 
         /// <summary>
@@ -662,7 +660,7 @@ namespace SWLOR.NWN.API.NWScript
         public static Effect EffectSpellLevelAbsorption(int nMaxSpellLevelAbsorbed, int nTotalSpellLevelsAbsorbed = 0,
             SpellSchool nSpellSchool = SpellSchool.General)
         {
-            return global::NWN.Core.NWScript.EffectSpellLevelAbsorption(nMaxSpellLevelAbsorbed, nTotalSpellLevelsAbsorbed, (int)nSpellSchool);
+            return NWScriptRuntime.Current.EffectSpellLevelAbsorption(nMaxSpellLevelAbsorbed, nTotalSpellLevelsAbsorbed, nSpellSchool);
         }
 
         /// <summary>
@@ -673,7 +671,7 @@ namespace SWLOR.NWN.API.NWScript
         /// <remarks>If no parameter is specified, USE_CREATURE_LEVEL will be used. This will cause the dispel effect to use the level of the creature that created the effect.</remarks>
         public static Effect EffectDispelMagicBest(int nCasterLevel = USE_CREATURE_LEVEL)
         {
-            return global::NWN.Core.NWScript.EffectDispelMagicBest(nCasterLevel);
+            return NWScriptRuntime.Current.EffectDispelMagicBest(nCasterLevel);
         }
 
         /// <summary>
@@ -683,7 +681,7 @@ namespace SWLOR.NWN.API.NWScript
         /// <returns>The Invisibility effect. Returns an effect of type EFFECT_TYPE_INVALIDEFFECT if nInvisibilityType is invalid</returns>
         public static Effect EffectInvisibility(InvisibilityType nInvisibilityType)
         {
-            return global::NWN.Core.NWScript.EffectInvisibility((int)nInvisibilityType);
+            return NWScriptRuntime.Current.EffectInvisibility(nInvisibilityType);
         }
 
         /// <summary>
@@ -694,7 +692,7 @@ namespace SWLOR.NWN.API.NWScript
         /// <returns>The Concealment effect. Returns an effect of type EFFECT_TYPE_INVALIDEFFECT if nPercentage < 1 or nPercentage > 100</returns>
         public static Effect EffectConcealment(int nPercentage, MissChanceType nMissType = MissChanceType.Normal)
         {
-            return global::NWN.Core.NWScript.EffectConcealment(nPercentage, (int)nMissType);
+            return NWScriptRuntime.Current.EffectConcealment(nPercentage, nMissType);
         }
 
         /// <summary>
@@ -703,7 +701,7 @@ namespace SWLOR.NWN.API.NWScript
         /// <returns>The Darkness effect</returns>
         public static Effect EffectDarkness()
         {
-            return global::NWN.Core.NWScript.EffectDarkness();
+            return NWScriptRuntime.Current.EffectDarkness();
         }
 
         /// <summary>
@@ -714,7 +712,7 @@ namespace SWLOR.NWN.API.NWScript
         /// <remarks>If no parameter is specified, USE_CREATURE_LEVEL will be used. This will cause the dispel effect to use the level of the creature that created the effect.</remarks>
         public static Effect EffectDispelMagicAll(int nCasterLevel = USE_CREATURE_LEVEL)
         {
-            return global::NWN.Core.NWScript.EffectDispelMagicAll(nCasterLevel);
+            return NWScriptRuntime.Current.EffectDispelMagicAll(nCasterLevel);
         }
 
         /// <summary>
@@ -723,7 +721,7 @@ namespace SWLOR.NWN.API.NWScript
         /// <returns>The Ultravision effect</returns>
         public static Effect EffectUltravision()
         {
-            return global::NWN.Core.NWScript.EffectUltravision();
+            return NWScriptRuntime.Current.EffectUltravision();
         }
 
         /// <summary>
@@ -734,7 +732,7 @@ namespace SWLOR.NWN.API.NWScript
         /// <returns>The Negative Level effect. Returns an effect of type EFFECT_TYPE_INVALIDEFFECT if nNumLevels > 100</returns>
         public static Effect EffectNegativeLevel(int nNumLevels, bool bHPBonus = false)
         {
-            return global::NWN.Core.NWScript.EffectNegativeLevel(nNumLevels, bHPBonus ? 1 : 0);
+            return NWScriptRuntime.Current.EffectNegativeLevel(nNumLevels, bHPBonus);
         }
 
         /// <summary>
@@ -745,7 +743,7 @@ namespace SWLOR.NWN.API.NWScript
         /// <returns>The Polymorph effect</returns>
         public static Effect EffectPolymorph(int nPolymorphSelection, bool nLocked = false)
         {
-            return global::NWN.Core.NWScript.EffectPolymorph(nPolymorphSelection, nLocked ? 1 : 0);
+            return NWScriptRuntime.Current.EffectPolymorph(nPolymorphSelection, nLocked);
         }
 
         /// <summary>
@@ -755,7 +753,7 @@ namespace SWLOR.NWN.API.NWScript
         /// <returns>The Sanctuary effect. Returns an effect of type EFFECT_TYPE_INVALIDEFFECT if nDifficultyClass <= 0</returns>
         public static Effect EffectSanctuary(int nDifficultyClass)
         {
-            return global::NWN.Core.NWScript.EffectSanctuary(nDifficultyClass);
+            return NWScriptRuntime.Current.EffectSanctuary(nDifficultyClass);
         }
 
         /// <summary>
@@ -764,7 +762,7 @@ namespace SWLOR.NWN.API.NWScript
         /// <returns>The True Seeing effect</returns>
         public static Effect EffectTrueSeeing()
         {
-            return global::NWN.Core.NWScript.EffectTrueSeeing();
+            return NWScriptRuntime.Current.EffectTrueSeeing();
         }
 
         /// <summary>
@@ -773,7 +771,7 @@ namespace SWLOR.NWN.API.NWScript
         /// <returns>The See Invisible effect</returns>
         public static Effect EffectSeeInvisible()
         {
-            return global::NWN.Core.NWScript.EffectSeeInvisible();
+            return NWScriptRuntime.Current.EffectSeeInvisible();
         }
 
         /// <summary>
@@ -782,7 +780,7 @@ namespace SWLOR.NWN.API.NWScript
         /// <returns>The Time Stop effect</returns>
         public static Effect EffectTimeStop()
         {
-            return global::NWN.Core.NWScript.EffectTimeStop();
+            return NWScriptRuntime.Current.EffectTimeStop();
         }
 
         /// <summary>
@@ -791,7 +789,7 @@ namespace SWLOR.NWN.API.NWScript
         /// <returns>The Blindness effect</returns>
         public static Effect EffectBlindness()
         {
-            return global::NWN.Core.NWScript.EffectBlindness();
+            return NWScriptRuntime.Current.EffectBlindness();
         }
 
         /// <summary>
@@ -802,7 +800,7 @@ namespace SWLOR.NWN.API.NWScript
         /// <returns>The Ability Decrease effect</returns>
         public static Effect EffectAbilityDecrease(AbilityType nAbility, int nModifyBy)
         {
-            return global::NWN.Core.NWScript.EffectAbilityDecrease((int)nAbility, nModifyBy);
+            return NWScriptRuntime.Current.EffectAbilityDecrease(nAbility, nModifyBy);
         }
 
         /// <summary>
@@ -814,7 +812,7 @@ namespace SWLOR.NWN.API.NWScript
         /// <remarks>On SWLOR, this is used for Accuracy.</remarks>
         public static Effect EffectAccuracyDecrease(int nPenalty, AttackBonus nModifierType = AttackBonus.Misc)
         {
-            return global::NWN.Core.NWScript.EffectAttackDecrease(nPenalty, (int)nModifierType);
+            return NWScriptRuntime.Current.EffectAccuracyDecrease(nPenalty, nModifierType);
         }
 
         /// <summary>
@@ -825,7 +823,7 @@ namespace SWLOR.NWN.API.NWScript
         /// <returns>The Damage Decrease effect</returns>
         public static Effect EffectDamageDecrease(int nPenalty, DamageType nDamageType = DamageType.Force)
         {
-            return global::NWN.Core.NWScript.EffectDamageDecrease(nPenalty, (int)nDamageType);
+            return NWScriptRuntime.Current.EffectDamageDecrease(nPenalty, nDamageType);
         }
 
         /// <summary>
@@ -836,7 +834,7 @@ namespace SWLOR.NWN.API.NWScript
         /// <returns>The Damage Immunity Decrease effect</returns>
         public static Effect EffectDamageImmunityDecrease(int nDamageType, int nPercentImmunity)
         {
-            return global::NWN.Core.NWScript.EffectDamageImmunityDecrease(nDamageType, nPercentImmunity);
+            return NWScriptRuntime.Current.EffectDamageImmunityDecrease(nDamageType, nPercentImmunity);
         }
 
         /// <summary>
@@ -851,7 +849,7 @@ namespace SWLOR.NWN.API.NWScript
             ArmorClassModiferType nModifyType = ArmorClassModiferType.Dodge,
             AC nDamageType = AC.VsDamageTypeAll)
         {
-            return global::NWN.Core.NWScript.EffectACDecrease(nValue, (int)nModifyType, (int)nDamageType);
+            return NWScriptRuntime.Current.EffectACDecrease(nValue, nModifyType, nDamageType);
         }
 
         /// <summary>
@@ -862,7 +860,7 @@ namespace SWLOR.NWN.API.NWScript
         /// <remarks>0 = no change in speed, 50 = 50% slower, 99 = almost immobile</remarks>
         public static Effect EffectMovementSpeedDecrease(int nPercentChange)
         {
-            return global::NWN.Core.NWScript.EffectMovementSpeedDecrease(nPercentChange);
+            return NWScriptRuntime.Current.EffectMovementSpeedDecrease(nPercentChange);
         }
 
         /// <summary>
@@ -876,7 +874,7 @@ namespace SWLOR.NWN.API.NWScript
         public static Effect EffectSavingThrowDecrease(int nSave, int nValue,
             SavingThrowType nSaveType = SavingThrowType.All)
         {
-            return global::NWN.Core.NWScript.EffectSavingThrowDecrease(nSave, nValue, (int)nSaveType);
+            return NWScriptRuntime.Current.EffectSavingThrowDecrease(nSave, nValue, nSaveType);
         }
 
         /// <summary>
@@ -887,7 +885,7 @@ namespace SWLOR.NWN.API.NWScript
         /// <returns>The Skill Decrease effect. Returns an effect of type EFFECT_TYPE_INVALIDEFFECT if nSkill is invalid</returns>
         public static Effect EffectSkillDecrease(int nSkill, int nValue)
         {
-            return global::NWN.Core.NWScript.EffectSkillDecrease(nSkill, nValue);
+            return NWScriptRuntime.Current.EffectSkillDecrease(nSkill, nValue);
         }
 
         /// <summary>
@@ -897,7 +895,7 @@ namespace SWLOR.NWN.API.NWScript
         /// <returns>The Spell Resistance Decrease effect</returns>
         public static Effect EffectSpellResistanceDecrease(int nValue)
         {
-            return global::NWN.Core.NWScript.EffectSpellResistanceDecrease(nValue);
+            return NWScriptRuntime.Current.EffectSpellResistanceDecrease(nValue);
         }
 
         /// <summary>
@@ -909,9 +907,7 @@ namespace SWLOR.NWN.API.NWScript
         /// <returns>The Activate Item event</returns>
         public static Event EventActivateItem(uint oItem, Location lTarget, uint oTarget = OBJECT_INVALID)
         {
-            if (oTarget == OBJECT_INVALID)
-                oTarget = OBJECT_SELF;
-            return global::NWN.Core.NWScript.EventActivateItem(oItem, lTarget, oTarget);
+            return NWScriptRuntime.Current.EventActivateItem(oItem, lTarget, oTarget);
         }
 
         /// <summary>
@@ -921,7 +917,7 @@ namespace SWLOR.NWN.API.NWScript
         /// <returns>The Hit Point Change When Dying effect. Returns an effect of type EFFECT_TYPE_INVALIDEFFECT if fHitPointChangePerRound is 0</returns>
         public static Effect EffectHitPointChangeWhenDying(float fHitPointChangePerRound)
         {
-            return global::NWN.Core.NWScript.EffectHitPointChangeWhenDying(fHitPointChangePerRound);
+            return NWScriptRuntime.Current.EffectHitPointChangeWhenDying(fHitPointChangePerRound);
         }
 
         /// <summary>
@@ -931,7 +927,7 @@ namespace SWLOR.NWN.API.NWScript
         /// <remarks>Turned effects are supernatural by default.</remarks>
         public static Effect EffectTurned()
         {
-            return global::NWN.Core.NWScript.EffectTurned();
+            return NWScriptRuntime.Current.EffectTurned();
         }
 
         /// <summary>
@@ -945,7 +941,7 @@ namespace SWLOR.NWN.API.NWScript
             Alignment nLawChaos = Alignment.All,
             Alignment nGoodEvil = Alignment.All)
         {
-            return global::NWN.Core.NWScript.VersusAlignmentEffect(eEffect, (int)nLawChaos, (int)nGoodEvil);
+            return NWScriptRuntime.Current.VersusAlignmentEffect(eEffect, nLawChaos, nGoodEvil);
         }
 
         /// <summary>
@@ -956,7 +952,7 @@ namespace SWLOR.NWN.API.NWScript
         /// <returns>The modified effect</returns>
         public static Effect VersusRacialTypeEffect(Effect eEffect, RacialType nRacialType)
         {
-            return global::NWN.Core.NWScript.VersusRacialTypeEffect(eEffect, (int)nRacialType);
+            return NWScriptRuntime.Current.VersusRacialTypeEffect(eEffect, nRacialType);
         }
 
         /// <summary>
@@ -966,7 +962,7 @@ namespace SWLOR.NWN.API.NWScript
         /// <returns>The modified effect</returns>
         public static Effect VersusTrapEffect(Effect eEffect)
         {
-            return global::NWN.Core.NWScript.VersusTrapEffect(eEffect);
+            return NWScriptRuntime.Current.VersusTrapEffect(eEffect);
         }
 
         /// <summary>
@@ -977,7 +973,7 @@ namespace SWLOR.NWN.API.NWScript
         /// <returns>The Skill Increase effect. Returns an effect of type EFFECT_TYPE_INVALIDEFFECT if nSkill is invalid</returns>
         public static Effect EffectSkillIncrease(NWNSkillType nSkill, int nValue)
         {
-            return global::NWN.Core.NWScript.EffectSkillIncrease((int)nSkill, nValue);
+            return NWScriptRuntime.Current.EffectSkillIncrease(nSkill, nValue);
         }
 
         /// <summary>
@@ -987,7 +983,7 @@ namespace SWLOR.NWN.API.NWScript
         /// <returns>The Temporary Hitpoints effect. Returns an effect of type EFFECT_TYPE_INVALIDEFFECT if nHitPoints < 0</returns>
         public static Effect EffectTemporaryHitpoints(int nHitPoints)
         {
-            return global::NWN.Core.NWScript.EffectTemporaryHitpoints(nHitPoints);
+            return NWScriptRuntime.Current.EffectTemporaryHitpoints(nHitPoints);
         }
 
         /// <summary>
@@ -997,7 +993,7 @@ namespace SWLOR.NWN.API.NWScript
         /// <remarks>This only creates the event. The event won't actually trigger until SignalEvent() is called using this created conversation event as an argument. For example: SignalEvent(oCreature, EventConversation()); Once the event has been signaled, the script associated with the OnConversation event will run on the creature oCreature. To specify the OnConversation script that should run, view the Creature Properties on the creature and click on the Scripts Tab. Then specify a script for the OnConversation event.</remarks>
         public static Event EventConversation()
         {
-            return global::NWN.Core.NWScript.EventConversation();
+            return NWScriptRuntime.Current.EventConversation();
         }
 
         /// <summary>
@@ -1008,7 +1004,7 @@ namespace SWLOR.NWN.API.NWScript
         /// <returns>The Damage Immunity Increase effect</returns>
         public static Effect EffectDamageImmunityIncrease(DamageType nDamageType, int nPercentImmunity)
         {
-            return global::NWN.Core.NWScript.EffectDamageImmunityIncrease((int)nDamageType, nPercentImmunity);
+            return NWScriptRuntime.Current.EffectDamageImmunityIncrease(nDamageType, nPercentImmunity);
         }
 
         /// <summary>
@@ -1018,7 +1014,7 @@ namespace SWLOR.NWN.API.NWScript
         /// <returns>The Immunity effect</returns>
         public static Effect EffectImmunity(ImmunityType nImmunityType)
         {
-            return global::NWN.Core.NWScript.EffectImmunity((int)nImmunityType);
+            return NWScriptRuntime.Current.EffectImmunity(nImmunityType);
         }
 
         /// <summary>
@@ -1027,7 +1023,7 @@ namespace SWLOR.NWN.API.NWScript
         /// <returns>The Haste effect</returns>
         public static Effect EffectHaste()
         {
-            return global::NWN.Core.NWScript.EffectHaste();
+            return NWScriptRuntime.Current.EffectHaste();
         }
 
         /// <summary>
@@ -1036,7 +1032,7 @@ namespace SWLOR.NWN.API.NWScript
         /// <returns>The Slow effect</returns>
         public static Effect EffectSlow()
         {
-            return global::NWN.Core.NWScript.EffectSlow();
+            return NWScriptRuntime.Current.EffectSlow();
         }
 
         /// <summary>
@@ -1046,7 +1042,7 @@ namespace SWLOR.NWN.API.NWScript
         /// <returns>The Poison effect</returns>
         public static Effect EffectPoison(Poison nPoisonType)
         {
-            return global::NWN.Core.NWScript.EffectPoison((int)nPoisonType);
+            return NWScriptRuntime.Current.EffectPoison(nPoisonType);
         }
 
         /// <summary>
@@ -1056,7 +1052,7 @@ namespace SWLOR.NWN.API.NWScript
         /// <returns>The Disease effect</returns>
         public static Effect EffectDisease(Disease nDiseaseType)
         {
-            return global::NWN.Core.NWScript.EffectDisease((int)nDiseaseType);
+            return NWScriptRuntime.Current.EffectDisease(nDiseaseType);
         }
 
         /// <summary>
@@ -1065,7 +1061,7 @@ namespace SWLOR.NWN.API.NWScript
         /// <returns>The Silence effect</returns>
         public static Effect EffectSilence()
         {
-            return global::NWN.Core.NWScript.EffectSilence();
+            return NWScriptRuntime.Current.EffectSilence();
         }
 
         /// <summary>
@@ -1075,7 +1071,7 @@ namespace SWLOR.NWN.API.NWScript
         /// <returns>The Spell Resistance Increase effect</returns>
         public static Effect EffectSpellResistanceIncrease(int nValue)
         {
-            return global::NWN.Core.NWScript.EffectSpellResistanceIncrease(nValue);
+            return NWScriptRuntime.Current.EffectSpellResistanceIncrease(nValue);
         }
 
         /// <summary>
@@ -1088,7 +1084,7 @@ namespace SWLOR.NWN.API.NWScript
         /// <returns>The Beam effect. Returns an effect of type EFFECT_TYPE_INVALIDEFFECT if nBeamVisualEffect is not valid</returns>
         public static Effect EffectBeam(VisualEffect nBeamVisualEffect, uint oEffector, BodyNode nBodyPart, bool bMissEffect = false)
         {
-            return global::NWN.Core.NWScript.EffectBeam((int)nBeamVisualEffect, oEffector, (int)nBodyPart, bMissEffect ? 1 : 0);
+            return NWScriptRuntime.Current.EffectBeam(nBeamVisualEffect, oEffector, nBodyPart, bMissEffect);
         }
 
         /// <summary>
@@ -1100,7 +1096,7 @@ namespace SWLOR.NWN.API.NWScript
         /// <remarks>When applying linked effects if the target is immune to all valid effects all other effects will be removed as well. This means that if you apply a visual effect and a silence effect (in a link) and the target is immune to the silence effect that the visual effect will get removed as well. Visual Effects are not considered "valid" effects for the purposes of determining if an effect will be removed or not and as such should never be packaged only with other visual effects in a link.</remarks>
         public static Effect EffectLinkEffects(Effect eChildEffect, Effect eParentEffect)
         {
-            return global::NWN.Core.NWScript.EffectLinkEffects(eChildEffect, eParentEffect);
+            return NWScriptRuntime.Current.EffectLinkEffects(eChildEffect, eParentEffect);
         }
 
         /// <summary>
@@ -1114,7 +1110,7 @@ namespace SWLOR.NWN.API.NWScript
         /// <returns>The Visual Effect</returns>
         public static Effect EffectVisualEffect(VisualEffect visualEffectID, bool nMissEffect = false, float fScale = 1.0f, Vector3 vTranslate = new Vector3(), Vector3 vRotate = new Vector3())
         {
-            return global::NWN.Core.NWScript.EffectVisualEffect((int)visualEffectID, nMissEffect ? 1 : 0, fScale, vTranslate, vRotate);
+            return NWScriptRuntime.Current.EffectVisualEffect(visualEffectID, nMissEffect, fScale, vTranslate, vRotate);
         }
 
         /// <summary>
@@ -1127,7 +1123,7 @@ namespace SWLOR.NWN.API.NWScript
         public static void ApplyEffectToObject(DurationType nDurationType, Effect eEffect, uint oTarget,
             float fDuration = 0.0f)
         {
-            global::NWN.Core.NWScript.ApplyEffectToObject((int)nDurationType, eEffect, oTarget, fDuration);
+            NWScriptRuntime.Current.ApplyEffectToObject(nDurationType, eEffect, oTarget, fDuration);
         }
 
         /// <summary>
@@ -1137,7 +1133,7 @@ namespace SWLOR.NWN.API.NWScript
         /// <returns>The effect type (EFFECT_TYPE_* constants). Returns EFFECT_INVALIDEFFECT if the effect is invalid</returns>
         public static EffectTypeScript GetEffectType(Effect eEffect)
         {
-            return (EffectTypeScript)global::NWN.Core.NWScript.GetEffectType(eEffect);
+            return NWScriptRuntime.Current.GetEffectType(eEffect);
         }
 
         /// <summary>
@@ -1152,7 +1148,7 @@ namespace SWLOR.NWN.API.NWScript
         public static Effect EffectAreaOfEffect(AreaOfEffect nAreaEffect, string sOnEnterScript = "",
             string sHeartbeatScript = "", string sOnExitScript = "")
         {
-            return global::NWN.Core.NWScript.EffectAreaOfEffect((int)nAreaEffect, sOnEnterScript, sHeartbeatScript, sOnExitScript);
+            return NWScriptRuntime.Current.EffectAreaOfEffect(nAreaEffect, sOnEnterScript, sHeartbeatScript, sOnExitScript);
         }
 
         /// <summary>
@@ -1163,7 +1159,7 @@ namespace SWLOR.NWN.API.NWScript
         /// <returns>The Regenerate effect</returns>
         public static Effect EffectRegenerate(int nAmount, float fIntervalSeconds)
         {
-            return global::NWN.Core.NWScript.EffectRegenerate(nAmount, fIntervalSeconds);
+            return NWScriptRuntime.Current.EffectRegenerate(nAmount, fIntervalSeconds);
         }
 
         /// <summary>
@@ -1174,7 +1170,7 @@ namespace SWLOR.NWN.API.NWScript
         /// <remarks>0 = no change in speed, 50 = 50% faster, 99 = almost twice as fast</remarks>
         public static Effect EffectMovementSpeedIncrease(int nPercentChange)
         {
-            return global::NWN.Core.NWScript.EffectMovementSpeedIncrease(nPercentChange);
+            return NWScriptRuntime.Current.EffectMovementSpeedIncrease(nPercentChange);
         }
 
         /// <summary>
@@ -1183,7 +1179,7 @@ namespace SWLOR.NWN.API.NWScript
         /// <returns>The Charm effect</returns>
         public static Effect EffectCharmed()
         {
-            return global::NWN.Core.NWScript.EffectCharmed();
+            return NWScriptRuntime.Current.EffectCharmed();
         }
 
         /// <summary>
@@ -1192,7 +1188,7 @@ namespace SWLOR.NWN.API.NWScript
         /// <returns>The Confuse effect</returns>
         public static Effect EffectConfused()
         {
-            return global::NWN.Core.NWScript.EffectConfused();
+            return NWScriptRuntime.Current.EffectConfused();
         }
 
         /// <summary>
@@ -1201,7 +1197,7 @@ namespace SWLOR.NWN.API.NWScript
         /// <returns>The Frighten effect</returns>
         public static Effect EffectFrightened()
         {
-            return global::NWN.Core.NWScript.EffectFrightened();
+            return NWScriptRuntime.Current.EffectFrightened();
         }
 
         /// <summary>
@@ -1210,7 +1206,7 @@ namespace SWLOR.NWN.API.NWScript
         /// <returns>The Dominate effect</returns>
         public static Effect EffectDominated()
         {
-            return global::NWN.Core.NWScript.EffectDominated();
+            return NWScriptRuntime.Current.EffectDominated();
         }
 
         /// <summary>
@@ -1219,7 +1215,7 @@ namespace SWLOR.NWN.API.NWScript
         /// <returns>The Daze effect</returns>
         public static Effect EffectDazed()
         {
-            return global::NWN.Core.NWScript.EffectDazed();
+            return NWScriptRuntime.Current.EffectDazed();
         }
 
         /// <summary>
@@ -1228,7 +1224,7 @@ namespace SWLOR.NWN.API.NWScript
         /// <returns>The Stun effect</returns>
         public static Effect EffectStunned()
         {
-            return global::NWN.Core.NWScript.EffectStunned();
+            return NWScriptRuntime.Current.EffectStunned();
         }
 
         /// <summary>
@@ -1237,7 +1233,7 @@ namespace SWLOR.NWN.API.NWScript
         /// <returns>The Sleep effect</returns>
         public static Effect EffectSleep()
         {
-            return global::NWN.Core.NWScript.EffectSleep();
+            return NWScriptRuntime.Current.EffectSleep();
         }
 
         /// <summary>
@@ -1246,7 +1242,7 @@ namespace SWLOR.NWN.API.NWScript
         /// <returns>The Paralyze effect</returns>
         public static Effect EffectParalyze()
         {
-            return global::NWN.Core.NWScript.EffectParalyze();
+            return NWScriptRuntime.Current.EffectParalyze();
         }
 
         /// <summary>
@@ -1257,7 +1253,7 @@ namespace SWLOR.NWN.API.NWScript
         /// <remarks>There is a known bug with this function. There must be a parameter specified when this is called (even if the desired parameter is SPELL_ALL_SPELLS), otherwise an effect of type EFFECT_TYPE_INVALIDEFFECT will be returned.</remarks>
         public static Effect EffectSpellImmunity(Spell nImmunityToSpell = Spell.AllSpells)
         {
-            return global::NWN.Core.NWScript.EffectSpellImmunity((int)nImmunityToSpell);
+            return NWScriptRuntime.Current.EffectSpellImmunity(nImmunityToSpell);
         }
 
         /// <summary>
@@ -1266,7 +1262,7 @@ namespace SWLOR.NWN.API.NWScript
         /// <returns>The Deaf effect</returns>
         public static Effect EffectDeaf()
         {
-            return global::NWN.Core.NWScript.EffectDeaf();
+            return NWScriptRuntime.Current.EffectDeaf();
         }
 
 
@@ -1279,7 +1275,7 @@ namespace SWLOR.NWN.API.NWScript
         /// <remarks>Some experimentation will be needed to find the right index for the value you wish to determine.</remarks>
         public static int GetEffectInteger(Effect eEffect, int nIndex)
         {
-            return global::NWN.Core.NWScript.GetEffectInteger(eEffect, nIndex);
+            return NWScriptRuntime.Current.GetEffectInteger(eEffect, nIndex);
         }
 
         /// <summary>
@@ -1291,7 +1287,7 @@ namespace SWLOR.NWN.API.NWScript
         /// <remarks>Some experimentation will be needed to find the right index for the value you wish to determine.</remarks>
         public static float GetEffectFloat(Effect eEffect, int nIndex)
         {
-            return global::NWN.Core.NWScript.GetEffectFloat(eEffect, nIndex);
+            return NWScriptRuntime.Current.GetEffectFloat(eEffect, nIndex);
         }
 
         /// <summary>
@@ -1303,7 +1299,7 @@ namespace SWLOR.NWN.API.NWScript
         /// <remarks>Some experimentation will be needed to find the right index for the value you wish to determine.</remarks>
         public static string GetEffectString(Effect eEffect, int nIndex)
         {
-            return global::NWN.Core.NWScript.GetEffectString(eEffect, nIndex);
+            return NWScriptRuntime.Current.GetEffectString(eEffect, nIndex);
         }
 
         /// <summary>
@@ -1315,7 +1311,7 @@ namespace SWLOR.NWN.API.NWScript
         /// <remarks>Some experimentation will be needed to find the right index for the value you wish to determine.</remarks>
         public static uint GetEffectObject(Effect eEffect, int nIndex)
         {
-            return global::NWN.Core.NWScript.GetEffectObject(eEffect, nIndex);
+            return NWScriptRuntime.Current.GetEffectObject(eEffect, nIndex);
         }
 
         /// <summary>
@@ -1327,7 +1323,7 @@ namespace SWLOR.NWN.API.NWScript
         /// <remarks>Some experimentation will be needed to find the right index for the value you wish to determine.</remarks>
         public static Vector3 GetEffectVector(Effect eEffect, int nIndex)
         {
-            return global::NWN.Core.NWScript.GetEffectVector(eEffect, nIndex);
+            return NWScriptRuntime.Current.GetEffectVector(eEffect, nIndex);
         }
 
         /// <summary>
@@ -1342,7 +1338,7 @@ namespace SWLOR.NWN.API.NWScript
         /// <remarks>When applied as instant effect, only sOnAppliedScript will fire. In the scripts, OBJECT_SELF will be the object the effect is applied to. Very low interval values may have an adverse effect on performance.</remarks>
         public static Effect EffectRunScript(string sOnAppliedScript = "", string sOnRemovedScript = "", string sOnIntervalScript = "", float fInterval = 0.0f, string sData = "")
         {
-            return global::NWN.Core.NWScript.EffectRunScript(sOnAppliedScript, sOnRemovedScript, sOnIntervalScript, fInterval, sData);
+            return NWScriptRuntime.Current.EffectRunScript(sOnAppliedScript, sOnRemovedScript, sOnIntervalScript, fInterval, sData);
         }
 
         /// <summary>
@@ -1352,7 +1348,7 @@ namespace SWLOR.NWN.API.NWScript
         /// <remarks>This can be used to get the creator or tag, among others, of the EffectRunScript() in one of its scripts.</remarks>
         public static Effect GetLastRunScriptEffect()
         {
-            return global::NWN.Core.NWScript.GetLastRunScriptEffect();
+            return NWScriptRuntime.Current.GetLastRunScriptEffect();
         }
 
         /// <summary>
@@ -1361,7 +1357,7 @@ namespace SWLOR.NWN.API.NWScript
         /// <returns>The script type (RUNSCRIPT_EFFECT_SCRIPT_TYPE_* constants). Returns 0 when called outside of an EffectRunScript() script</returns>
         public static int GetLastRunScriptEffectScriptType()
         {
-            return global::NWN.Core.NWScript.GetLastRunScriptEffectScriptType();
+            return NWScriptRuntime.Current.GetLastRunScriptEffectScriptType();
         }
 
         /// <summary>
@@ -1371,7 +1367,7 @@ namespace SWLOR.NWN.API.NWScript
         /// <returns>The effect with hidden icon</returns>
         public static Effect HideEffectIcon(Effect eEffect)
         {
-            return global::NWN.Core.NWScript.HideEffectIcon(eEffect);
+            return NWScriptRuntime.Current.HideEffectIcon(eEffect);
         }
 
         /// <summary>
@@ -1386,7 +1382,7 @@ namespace SWLOR.NWN.API.NWScript
         /// </remarks>
         public static Effect EffectIcon(EffectIconType nIconId)
         {
-            return global::NWN.Core.NWScript.EffectIcon((int)nIconId);
+            return NWScriptRuntime.Current.EffectIcon(nIconId);
         }
 
         /// <summary>
@@ -1397,7 +1393,7 @@ namespace SWLOR.NWN.API.NWScript
         /// <remarks>Effects default to magical if the subtype is not set. Unyielding effects are not removed by resting, death or dispel magic, only by RemoveEffect(). Note: effects that modify state, Stunned/Knockdown/Deaf etc, WILL be removed on death.</remarks>
         public static Effect UnyieldingEffect(Effect eEffect)
         {
-            return global::NWN.Core.NWScript.UnyieldingEffect(eEffect);
+            return NWScriptRuntime.Current.UnyieldingEffect(eEffect);
         }
 
         /// <summary>
@@ -1407,7 +1403,7 @@ namespace SWLOR.NWN.API.NWScript
         /// <returns>The effect that ignores immunities</returns>
         public static Effect IgnoreEffectImmunity(Effect eEffect)
         {
-            return global::NWN.Core.NWScript.IgnoreEffectImmunity(eEffect);
+            return NWScriptRuntime.Current.IgnoreEffectImmunity(eEffect);
         }
 
         /// <summary>
@@ -1416,7 +1412,7 @@ namespace SWLOR.NWN.API.NWScript
         /// <returns>The Pacified effect</returns>
         public static Effect EffectPacified()
         {
-            return global::NWN.Core.NWScript.EffectPacified();
+            return NWScriptRuntime.Current.EffectPacified();
         }
 
         /// <summary>
@@ -1427,7 +1423,7 @@ namespace SWLOR.NWN.API.NWScript
         /// <remarks>There are no guarantees about this identifier other than it is unique and the same for all effects linked to it.</remarks>
         public static string GetEffectLinkId(Effect eEffect)
         {
-            return global::NWN.Core.NWScript.GetEffectLinkId(eEffect);
+            return NWScriptRuntime.Current.GetEffectLinkId(eEffect);
         }
 
         /// <summary>
@@ -1438,7 +1434,7 @@ namespace SWLOR.NWN.API.NWScript
         /// <remarks>These act like the Bonus Feat item property, and do not work as feat prerequisites for levelup purposes.</remarks>
         public static Effect EffectBonusFeat(int nFeat)
         {
-            return global::NWN.Core.NWScript.EffectBonusFeat(nFeat);
+            return NWScriptRuntime.Current.EffectBonusFeat(nFeat);
         }
 
         /// <summary>
@@ -1448,7 +1444,7 @@ namespace SWLOR.NWN.API.NWScript
         /// <remarks>This allows actions during other creatures' time stop effects.</remarks>
         public static Effect EffectTimeStopImmunity()
         {
-            return global::NWN.Core.NWScript.EffectTimeStopImmunity();
+            return NWScriptRuntime.Current.EffectTimeStopImmunity();
         }
 
         /// <summary>
@@ -1457,7 +1453,7 @@ namespace SWLOR.NWN.API.NWScript
         /// <returns>The Force Walk effect</returns>
         public static Effect EffectForceWalk()
         {
-            return global::NWN.Core.NWScript.EffectForceWalk();
+            return NWScriptRuntime.Current.EffectForceWalk();
         }
 
         /// <summary>
@@ -1468,7 +1464,7 @@ namespace SWLOR.NWN.API.NWScript
         /// <returns>The modified effect</returns>
         public static Effect SetEffectCreator(Effect eEffect, uint oCreator)
         {
-            return global::NWN.Core.NWScript.SetEffectCreator(eEffect, oCreator);
+            return NWScriptRuntime.Current.SetEffectCreator(eEffect, oCreator);
         }
 
         /// <summary>
@@ -1479,7 +1475,7 @@ namespace SWLOR.NWN.API.NWScript
         /// <returns>The modified effect</returns>
         public static Effect SetEffectCasterLevel(Effect eEffect, int nCasterLevel)
         {
-            return global::NWN.Core.NWScript.SetEffectCasterLevel(eEffect, nCasterLevel);
+            return NWScriptRuntime.Current.SetEffectCasterLevel(eEffect, nCasterLevel);
         }
 
         /// <summary>
@@ -1490,7 +1486,7 @@ namespace SWLOR.NWN.API.NWScript
         /// <returns>The modified effect</returns>
         public static Effect SetEffectSpellId(Effect eEffect, Spell nSpellId)
         {
-            return global::NWN.Core.NWScript.SetEffectSpellId(eEffect, (int)nSpellId);
+            return NWScriptRuntime.Current.SetEffectSpellId(eEffect, nSpellId);
         }
     }
 }

@@ -17,7 +17,7 @@ namespace SWLOR.NWN.API.NWScript
         /// <param name="sNewTag">The new tag to set</param>
         public static void SetTag(uint oObject, string sNewTag)
         {
-            global::NWN.Core.NWScript.SetTag(oObject, sNewTag);
+            NWScriptRuntime.Current.SetTag(oObject, sNewTag);
         }
 
         /// <summary>
@@ -27,7 +27,7 @@ namespace SWLOR.NWN.API.NWScript
         /// <returns>The last object that clicked, or OBJECT_INVALID if called by something other than a placeable</returns>
         public static uint GetPlaceableLastClickedBy()
         {
-            return global::NWN.Core.NWScript.GetPlaceableLastClickedBy();
+            return NWScriptRuntime.Current.GetPlaceableLastClickedBy();
         }
 
         /// <summary>
@@ -41,7 +41,7 @@ namespace SWLOR.NWN.API.NWScript
         /// <param name="sNewName">The new name that the object will use (defaults to empty string)</param>
         public static void SetName(uint oObject, string sNewName = "")
         {
-            global::NWN.Core.NWScript.SetName(oObject, sNewName);
+            NWScriptRuntime.Current.SetName(oObject, sNewName);
         }
 
         /// <summary>
@@ -56,9 +56,7 @@ namespace SWLOR.NWN.API.NWScript
         /// <returns>The Portrait Id number being used for the object</returns>
         public static int GetPortraitId(uint oTarget = OBJECT_INVALID)
         {
-            if (oTarget == OBJECT_INVALID)
-                oTarget = OBJECT_SELF;
-            return global::NWN.Core.NWScript.GetPortraitId(oTarget);
+            return NWScriptRuntime.Current.GetPortraitId(oTarget);
         }
 
         /// <summary>
@@ -72,7 +70,7 @@ namespace SWLOR.NWN.API.NWScript
         /// <param name="nPortraitId">The Id of the new portrait to use</param>
         public static void SetPortraitId(uint oTarget, int nPortraitId)
         {
-            global::NWN.Core.NWScript.SetPortraitId(oTarget, nPortraitId);
+            NWScriptRuntime.Current.SetPortraitId(oTarget, nPortraitId);
         }
 
         /// <summary>
@@ -83,9 +81,7 @@ namespace SWLOR.NWN.API.NWScript
         /// <returns>The Portrait ResRef being used for the object</returns>
         public static string GetPortraitResRef(uint oTarget = OBJECT_INVALID)
         {
-            if (oTarget == OBJECT_INVALID)
-                oTarget = OBJECT_SELF;
-            return global::NWN.Core.NWScript.GetPortraitResRef(oTarget);
+            return NWScriptRuntime.Current.GetPortraitResRef(oTarget);
         }
 
         /// <summary>
@@ -97,7 +93,7 @@ namespace SWLOR.NWN.API.NWScript
         /// <returns>The object that last clicked on the trigger</returns>
         public static uint GetClickingObject()
         {
-            return global::NWN.Core.NWScript.GetClickingObject();
+            return NWScriptRuntime.Current.GetClickingObject();
         }
 
         /// <summary>
@@ -106,7 +102,7 @@ namespace SWLOR.NWN.API.NWScript
         /// <returns>The last object that disarmed the trap, or OBJECT_INVALID if the caller is not a valid placeable, trigger or door</returns>
         public static uint GetLastDisarmed()
         {
-            return global::NWN.Core.NWScript.GetLastDisarmed();
+            return NWScriptRuntime.Current.GetLastDisarmed();
         }
 
         /// <summary>
@@ -115,9 +111,7 @@ namespace SWLOR.NWN.API.NWScript
         /// <returns>The last object that disturbed the inventory, or OBJECT_INVALID if the caller is not a valid creature or placeable</returns>
         public static uint GetLastDisturbed(uint oObject = OBJECT_INVALID)
         {
-            if (oObject == OBJECT_INVALID)
-                oObject = OBJECT_SELF;
-            return global::NWN.Core.NWScript.GetLastDisturbed(oObject);
+            return NWScriptRuntime.Current.GetLastDisturbed(oObject);
         }
 
         /// <summary>
@@ -127,9 +121,7 @@ namespace SWLOR.NWN.API.NWScript
         /// <returns>The last object that locked the specified object, or OBJECT_INVALID if the caller is not a valid door or placeable</returns>
         public static uint GetLastLocked(uint oObject = OBJECT_INVALID)
         {
-            if (oObject == OBJECT_INVALID)
-                oObject = OBJECT_SELF;
-            return global::NWN.Core.NWScript.GetLastLocked(oObject);
+            return NWScriptRuntime.Current.GetLastLocked(oObject);
         }
 
         /// <summary>
@@ -139,9 +131,7 @@ namespace SWLOR.NWN.API.NWScript
         /// <returns>The last object that unlocked the specified object, or OBJECT_INVALID if the caller is not a valid door or placeable</returns>
         public static uint GetLastUnlocked(uint oObject = OBJECT_INVALID)
         {
-            if (oObject == OBJECT_INVALID)
-                oObject = OBJECT_SELF;
-            return global::NWN.Core.NWScript.GetLastUnlocked(oObject);
+            return NWScriptRuntime.Current.GetLastUnlocked(oObject);
         }
 
         /// <summary>
@@ -154,7 +144,7 @@ namespace SWLOR.NWN.API.NWScript
         /// <param name="sPortraitResRef">The ResRef of the new portrait to use</param>
         public static void SetPortraitResRef(uint oTarget, string sPortraitResRef)
         {
-            global::NWN.Core.NWScript.SetPortraitResRef(oTarget, sPortraitResRef);
+            NWScriptRuntime.Current.SetPortraitResRef(oTarget, sPortraitResRef);
         }
 
         /// <summary>
@@ -166,7 +156,7 @@ namespace SWLOR.NWN.API.NWScript
         /// <param name="nUseable">Whether the object is useable</param>
         public static void SetUseableFlag(uint oPlaceable, bool nUseable)
         {
-            global::NWN.Core.NWScript.SetUseableFlag(oPlaceable, nUseable ? 1 : 0);
+            NWScriptRuntime.Current.SetUseableFlag(oPlaceable, nUseable);
         }
 
         /// <summary>
@@ -185,7 +175,7 @@ namespace SWLOR.NWN.API.NWScript
         public static string GetDescription(uint oObject, bool bOriginalDescription = false,
             bool bIdentifiedDescription = true)
         {
-            return global::NWN.Core.NWScript.GetDescription(oObject, bOriginalDescription ? 1 : 0, bIdentifiedDescription ? 1 : 0);
+            return NWScriptRuntime.Current.GetDescription(oObject, bOriginalDescription, bIdentifiedDescription);
         }
 
         /// <summary>
@@ -203,7 +193,7 @@ namespace SWLOR.NWN.API.NWScript
         /// <param name="bIdentifiedDescription">If the object is an item, setting this to TRUE will set the identified description, setting this to FALSE will set the unidentified description</param>
         public static void SetDescription(uint oObject, string sNewDescription = "", bool bIdentifiedDescription = true)
         {
-            global::NWN.Core.NWScript.SetDescription(oObject, sNewDescription, bIdentifiedDescription ? 1 : 0);
+            NWScriptRuntime.Current.SetDescription(oObject, sNewDescription, bIdentifiedDescription);
         }
 
         /// <summary>
@@ -215,7 +205,7 @@ namespace SWLOR.NWN.API.NWScript
         /// <returns>The color value, or -1 on error</returns>
         public static int GetColor(uint oObject, ColorChannel nColorChannel)
         {
-            return global::NWN.Core.NWScript.GetColor(oObject, (int)nColorChannel);
+            return NWScriptRuntime.Current.GetColor(oObject, nColorChannel);
         }
 
         /// <summary>
@@ -227,7 +217,7 @@ namespace SWLOR.NWN.API.NWScript
         /// <param name="nColorValue">The color you want to set (0-175)</param>
         public static void SetColor(uint oObject, ColorChannel nColorChannel, int nColorValue)
         {
-            global::NWN.Core.NWScript.SetColor(oObject, (int)nColorChannel, nColorValue);
+            NWScriptRuntime.Current.SetColor(oObject, nColorChannel, nColorValue);
         }
 
         /// <summary>
@@ -237,7 +227,7 @@ namespace SWLOR.NWN.API.NWScript
         /// <returns>The feedback message, or empty string on an error or if the game's default feedback message is being used</returns>
         public static string GetKeyRequiredFeedback(uint oObject)
         {
-            return global::NWN.Core.NWScript.GetKeyRequiredFeedback(oObject);
+            return NWScriptRuntime.Current.GetKeyRequiredFeedback(oObject);
         }
 
         /// <summary>
@@ -251,7 +241,7 @@ namespace SWLOR.NWN.API.NWScript
         /// <param name="sFeedbackMessage">The string to be displayed in the player's text window</param>
         public static void SetKeyRequiredFeedback(uint oObject, string sFeedbackMessage)
         {
-            global::NWN.Core.NWScript.SetKeyRequiredFeedback(oObject, sFeedbackMessage);
+            NWScriptRuntime.Current.SetKeyRequiredFeedback(oObject, sFeedbackMessage);
         }
 
         /// <summary>
@@ -263,7 +253,7 @@ namespace SWLOR.NWN.API.NWScript
         /// <param name="bLocked">TRUE/FALSE (defaults to TRUE)</param>
         public static void LockCameraPitch(uint oPlayer, bool bLocked = true)
         {
-            global::NWN.Core.NWScript.LockCameraPitch(oPlayer, bLocked ? 1 : 0);
+            NWScriptRuntime.Current.LockCameraPitch(oPlayer, bLocked);
         }
 
         /// <summary>
@@ -275,7 +265,7 @@ namespace SWLOR.NWN.API.NWScript
         /// <param name="bLocked">TRUE/FALSE (defaults to TRUE)</param>
         public static void LockCameraDistance(uint oPlayer, bool bLocked = true)
         {
-            global::NWN.Core.NWScript.LockCameraDistance(oPlayer, bLocked ? 1 : 0);
+            NWScriptRuntime.Current.LockCameraDistance(oPlayer, bLocked);
         }
 
         /// <summary>
@@ -287,7 +277,7 @@ namespace SWLOR.NWN.API.NWScript
         /// <param name="bLocked">TRUE/FALSE (defaults to TRUE)</param>
         public static void LockCameraDirection(uint oPlayer, bool bLocked = true)
         {
-            global::NWN.Core.NWScript.LockCameraDirection(oPlayer, bLocked ? 1 : 0);
+            NWScriptRuntime.Current.LockCameraDirection(oPlayer, bLocked);
         }
 
         /// <summary>
@@ -297,7 +287,7 @@ namespace SWLOR.NWN.API.NWScript
         /// <returns>The hardness value, or -1 on an error or if used on an object that is neither a door nor a placeable object</returns>
         public static int GetHardness(uint oObject = OBJECT_INVALID)
         {
-            return global::NWN.Core.NWScript.GetHardness(oObject);
+            return NWScriptRuntime.Current.GetHardness(oObject);
         }
 
         /// <summary>
@@ -308,7 +298,7 @@ namespace SWLOR.NWN.API.NWScript
         /// <param name="oObject">A door or placeable object (defaults to OBJECT_INVALID)</param>
         public static void SetHardness(int nHardness, uint oObject = OBJECT_INVALID)
         {
-            global::NWN.Core.NWScript.SetHardness(nHardness, oObject);
+            NWScriptRuntime.Current.SetHardness(nHardness, oObject);
         }
 
         /// <summary>
@@ -319,7 +309,7 @@ namespace SWLOR.NWN.API.NWScript
         /// <param name="nKeyRequired">TRUE/FALSE (defaults to TRUE)</param>
         public static void SetLockKeyRequired(uint oObject, bool nKeyRequired = true)
         {
-            global::NWN.Core.NWScript.SetLockKeyRequired(oObject, nKeyRequired ? 1 : 0);
+            NWScriptRuntime.Current.SetLockKeyRequired(oObject, nKeyRequired);
         }
 
         /// <summary>
@@ -332,7 +322,7 @@ namespace SWLOR.NWN.API.NWScript
         /// <param name="sNewKeyTag">The key tag required to open the locked object</param>
         public static void SetLockKeyTag(uint oObject, string sNewKeyTag)
         {
-            global::NWN.Core.NWScript.SetLockKeyTag(oObject, sNewKeyTag);
+            NWScriptRuntime.Current.SetLockKeyTag(oObject, sNewKeyTag);
         }
 
         /// <summary>
@@ -342,7 +332,7 @@ namespace SWLOR.NWN.API.NWScript
         /// <param name="nLockable">TRUE/FALSE (defaults to TRUE)</param>
         public static void SetLockLockable(uint oObject, bool nLockable = true)
         {
-            global::NWN.Core.NWScript.SetLockLockable(oObject, nLockable ? 1 : 0);
+            NWScriptRuntime.Current.SetLockLockable(oObject, nLockable);
         }
 
         /// <summary>
@@ -352,7 +342,7 @@ namespace SWLOR.NWN.API.NWScript
         /// <param name="nNewUnlockDC">Must be between 0 and 250</param>
         public static void SetLockUnlockDC(uint oObject, int nNewUnlockDC)
         {
-            global::NWN.Core.NWScript.SetLockUnlockDC(oObject, nNewUnlockDC);
+            NWScriptRuntime.Current.SetLockUnlockDC(oObject, nNewUnlockDC);
         }
 
         /// <summary>
@@ -362,7 +352,7 @@ namespace SWLOR.NWN.API.NWScript
         /// <param name="nNewLockDC">Must be between 0 and 250</param>
         public static void SetLockLockDC(uint oObject, int nNewLockDC)
         {
-            global::NWN.Core.NWScript.SetLockLockDC(oObject, nNewLockDC);
+            NWScriptRuntime.Current.SetLockLockDC(oObject, nNewLockDC);
         }
 
         /// <summary>
@@ -372,7 +362,7 @@ namespace SWLOR.NWN.API.NWScript
         /// <param name="nWillSave">Must be between 0 and 250</param>
         public static void SetWillSavingThrow(uint oObject, int nWillSave)
         {
-            global::NWN.Core.NWScript.SetWillSavingThrow(oObject, nWillSave);
+            NWScriptRuntime.Current.SetWillSavingThrow(oObject, nWillSave);
         }
 
         /// <summary>
@@ -382,7 +372,7 @@ namespace SWLOR.NWN.API.NWScript
         /// <param name="nReflexSave">Must be between 0 and 250</param>
         public static void SetReflexSavingThrow(uint oObject, int nReflexSave)
         {
-            global::NWN.Core.NWScript.SetReflexSavingThrow(oObject, nReflexSave);
+            NWScriptRuntime.Current.SetReflexSavingThrow(oObject, nReflexSave);
         }
 
         /// <summary>
@@ -392,7 +382,7 @@ namespace SWLOR.NWN.API.NWScript
         /// <param name="nFortitudeSave">Must be between 0 and 250</param>
         public static void SetFortitudeSavingThrow(uint oObject, int nFortitudeSave)
         {
-            global::NWN.Core.NWScript.SetFortitudeSavingThrow(oObject, nFortitudeSave);
+            NWScriptRuntime.Current.SetFortitudeSavingThrow(oObject, nFortitudeSave);
         }
 
         /// <summary>
@@ -403,9 +393,7 @@ namespace SWLOR.NWN.API.NWScript
         /// <returns>The weight in tenths of pounds</returns>
         public static int GetWeight(uint oTarget = OBJECT_INVALID)
         {
-            if (oTarget == OBJECT_INVALID)
-                oTarget = OBJECT_SELF;
-            return global::NWN.Core.NWScript.GetWeight(oTarget);
+            return NWScriptRuntime.Current.GetWeight(oTarget);
         }
 
         /// <summary>
@@ -414,7 +402,7 @@ namespace SWLOR.NWN.API.NWScript
         /// <returns>The object that acquired the module item</returns>
         public static uint GetModuleItemAcquiredBy()
         {
-            return global::NWN.Core.NWScript.GetModuleItemAcquiredBy();
+            return NWScriptRuntime.Current.GetModuleItemAcquiredBy();
         }
 
         /// <summary>
@@ -425,7 +413,7 @@ namespace SWLOR.NWN.API.NWScript
         /// <param name="nTalkVolume">TALKVOLUME_* constant (defaults to TalkVolume.Talk)</param>
         public static void SpeakStringByStrRef(int nStrRef, TalkVolume nTalkVolume = TalkVolume.Talk)
         {
-            global::NWN.Core.NWScript.SpeakStringByStrRef(nStrRef, (int)nTalkVolume);
+            NWScriptRuntime.Current.SpeakStringByStrRef(nStrRef, nTalkVolume);
         }
 
         /// <summary>
@@ -444,7 +432,7 @@ namespace SWLOR.NWN.API.NWScript
         /// <returns>The copied object</returns>
         public static uint CopyObject(uint oSource, Location locLocation, uint oOwner = OBJECT_INVALID, string sNewTag = "", bool bCopyLocalState = false)
         {
-            return global::NWN.Core.NWScript.CopyObject(oSource, locLocation, oOwner, sNewTag, bCopyLocalState ? 1 : 0);
+            return NWScriptRuntime.Current.CopyObject(oSource, locLocation, oOwner, sNewTag, bCopyLocalState);
         }
 
         /// <summary>
@@ -454,7 +442,7 @@ namespace SWLOR.NWN.API.NWScript
         /// <returns>The template resref, or empty string when no template found</returns>
         public static string GetResRef(uint oObject)
         {
-            return global::NWN.Core.NWScript.GetResRef(oObject);
+            return NWScriptRuntime.Current.GetResRef(oObject);
         }
 
         /// <summary>
@@ -466,7 +454,7 @@ namespace SWLOR.NWN.API.NWScript
         /// <returns>TRUE if the object has an inventory, FALSE otherwise</returns>
         public static bool GetHasInventory(uint oObject)
         {
-            return global::NWN.Core.NWScript.GetHasInventory(oObject) == 1;
+            return NWScriptRuntime.Current.GetHasInventory(oObject);
         }
 
         /// <summary>
@@ -476,7 +464,7 @@ namespace SWLOR.NWN.API.NWScript
         /// <returns>The deity name, or empty string if the creature is invalid or if the deity name is blank</returns>
         public static string GetDeity(uint oCreature)
         {
-            return global::NWN.Core.NWScript.GetDeity(oCreature);
+            return NWScriptRuntime.Current.GetDeity(oCreature);
         }
 
         /// <summary>
@@ -486,7 +474,7 @@ namespace SWLOR.NWN.API.NWScript
         /// <returns>The sub race name, or empty string if the creature is invalid or if sub race is blank</returns>
         public static string GetSubRace(uint oTarget)
         {
-            return global::NWN.Core.NWScript.GetSubRace(oTarget);
+            return NWScriptRuntime.Current.GetSubRace(oTarget);
         }
 
         /// <summary>
@@ -497,7 +485,7 @@ namespace SWLOR.NWN.API.NWScript
         /// <returns>The fortitude saving throw value, or 0 if the target is invalid</returns>
         public static int GetFortitudeSavingThrow(uint oTarget)
         {
-            return global::NWN.Core.NWScript.GetFortitudeSavingThrow(oTarget);
+            return NWScriptRuntime.Current.GetFortitudeSavingThrow(oTarget);
         }
 
         /// <summary>
@@ -508,7 +496,7 @@ namespace SWLOR.NWN.API.NWScript
         /// <returns>The will saving throw value, or 0 if the target is invalid</returns>
         public static int GetWillSavingThrow(uint oTarget)
         {
-            return global::NWN.Core.NWScript.GetWillSavingThrow(oTarget);
+            return NWScriptRuntime.Current.GetWillSavingThrow(oTarget);
         }
 
         /// <summary>
@@ -519,7 +507,7 @@ namespace SWLOR.NWN.API.NWScript
         /// <returns>The reflex saving throw value, or 0 if the target is invalid</returns>
         public static int GetReflexSavingThrow(uint oTarget)
         {
-            return global::NWN.Core.NWScript.GetReflexSavingThrow(oTarget);
+            return NWScriptRuntime.Current.GetReflexSavingThrow(oTarget);
         }
 
         /// <summary>
@@ -529,7 +517,7 @@ namespace SWLOR.NWN.API.NWScript
         /// <returns>The challenge rating, or 0.0 if the creature is invalid</returns>
         public static float GetChallengeRating(uint oCreature)
         {
-            return global::NWN.Core.NWScript.GetChallengeRating(oCreature);
+            return NWScriptRuntime.Current.GetChallengeRating(oCreature);
         }
 
         /// <summary>
@@ -539,7 +527,7 @@ namespace SWLOR.NWN.API.NWScript
         /// <returns>The age, or 0 if the creature is invalid</returns>
         public static int GetAge(uint oCreature)
         {
-            return global::NWN.Core.NWScript.GetAge(oCreature);
+            return NWScriptRuntime.Current.GetAge(oCreature);
         }
 
         /// <summary>
@@ -549,7 +537,7 @@ namespace SWLOR.NWN.API.NWScript
         /// <returns>The movement rate, or 0 if the creature is invalid</returns>
         public static int GetMovementRate(uint oCreature)
         {
-            return global::NWN.Core.NWScript.GetMovementRate(oCreature);
+            return NWScriptRuntime.Current.GetMovementRate(oCreature);
         }
 
         /// <summary>
@@ -559,7 +547,7 @@ namespace SWLOR.NWN.API.NWScript
         /// <returns>TRUE if the target is a plot object</returns>
         public static bool GetPlotFlag(uint oTarget = OBJECT_INVALID)
         {
-            return global::NWN.Core.NWScript.GetPlotFlag(oTarget) != 0;
+            return NWScriptRuntime.Current.GetPlotFlag(oTarget);
         }
 
         /// <summary>
@@ -569,7 +557,7 @@ namespace SWLOR.NWN.API.NWScript
         /// <param name="nPlotFlag">The plot flag status</param>
         public static void SetPlotFlag(uint oTarget, bool nPlotFlag)
         {
-            global::NWN.Core.NWScript.SetPlotFlag(oTarget, nPlotFlag ? 1 : 0);
+            NWScriptRuntime.Current.SetPlotFlag(oTarget, nPlotFlag);
         }
 
         /// <summary>
@@ -579,7 +567,7 @@ namespace SWLOR.NWN.API.NWScript
         /// <param name="oTarget">The target (defaults to OBJECT_INVALID)</param>
         public static void PlayVoiceChat(VoiceChat nVoiceChatID, uint oTarget = OBJECT_INVALID)
         {
-            global::NWN.Core.NWScript.PlayVoiceChat((int)nVoiceChatID, oTarget);
+            NWScriptRuntime.Current.PlayVoiceChat(nVoiceChatID, oTarget);
         }
 
         /// <summary>
@@ -589,9 +577,7 @@ namespace SWLOR.NWN.API.NWScript
         /// <returns>The amount of gold</returns>
         public static int GetGold(uint oTarget = OBJECT_INVALID)
         {
-            if (oTarget == OBJECT_INVALID)
-                oTarget = OBJECT_SELF;
-            return global::NWN.Core.NWScript.GetGold(oTarget);
+            return NWScriptRuntime.Current.GetGold(oTarget);
         }
 
         /// <summary>
@@ -600,7 +586,7 @@ namespace SWLOR.NWN.API.NWScript
         /// <param name="oSound">The sound object to play</param>
         public static void SoundObjectPlay(uint oSound)
         {
-            global::NWN.Core.NWScript.SoundObjectPlay(oSound);
+            NWScriptRuntime.Current.SoundObjectPlay(oSound);
         }
 
         /// <summary>
@@ -609,7 +595,7 @@ namespace SWLOR.NWN.API.NWScript
         /// <param name="oSound">The sound object to stop</param>
         public static void SoundObjectStop(uint oSound)
         {
-            global::NWN.Core.NWScript.SoundObjectStop(oSound);
+            NWScriptRuntime.Current.SoundObjectStop(oSound);
         }
 
         /// <summary>
@@ -619,7 +605,7 @@ namespace SWLOR.NWN.API.NWScript
         /// <param name="nVolume">Volume level (0-127)</param>
         public static void SoundObjectSetVolume(uint oSound, int nVolume)
         {
-            global::NWN.Core.NWScript.SoundObjectSetVolume(oSound, nVolume);
+            NWScriptRuntime.Current.SoundObjectSetVolume(oSound, nVolume);
         }
 
         /// <summary>
@@ -629,7 +615,7 @@ namespace SWLOR.NWN.API.NWScript
         /// <param name="vPosition">The position to set</param>
         public static void SoundObjectSetPosition(uint oSound, Vector3 vPosition)
         {
-            global::NWN.Core.NWScript.SoundObjectSetPosition(oSound, vPosition);
+            NWScriptRuntime.Current.SoundObjectSetPosition(oSound, vPosition);
         }
 
         /// <summary>
@@ -639,7 +625,7 @@ namespace SWLOR.NWN.API.NWScript
         /// <param name="oTokenTarget">This must be specified if there are creature-specific tokens in the string (defaults to OBJECT_INVALID)</param>
         public static void SpeakOneLinerConversation(string sDialogResRef = "", uint oTokenTarget = OBJECT_INVALID)
         {
-            global::NWN.Core.NWScript.SpeakOneLinerConversation(sDialogResRef, oTokenTarget);
+            NWScriptRuntime.Current.SpeakOneLinerConversation(sDialogResRef, oTokenTarget);
         }
 
         /// <summary>
@@ -652,9 +638,7 @@ namespace SWLOR.NWN.API.NWScript
         public static void SetIsDestroyable(bool bDestroyable = true, bool bRaiseable = true,
             bool bSelectableWhenDead = false, uint oObject = OBJECT_INVALID)
         {
-            if (oObject == OBJECT_INVALID)
-                oObject = OBJECT_SELF;
-            global::NWN.Core.NWScript.SetIsDestroyable(bDestroyable ? 1 : 0, bRaiseable ? 1 : 0, bSelectableWhenDead ? 1 : 0, oObject);
+            NWScriptRuntime.Current.SetIsDestroyable(bDestroyable, bRaiseable, bSelectableWhenDead, oObject);
         }
 
         /// <summary>
@@ -664,7 +648,7 @@ namespace SWLOR.NWN.API.NWScript
         /// <param name="nLocked">The locked state</param>
         public static void SetLocked(uint oTarget, bool nLocked)
         {
-            global::NWN.Core.NWScript.SetLocked(oTarget, nLocked ? 1 : 0);
+            NWScriptRuntime.Current.SetLocked(oTarget, nLocked);
         }
 
         /// <summary>
@@ -674,7 +658,7 @@ namespace SWLOR.NWN.API.NWScript
         /// <returns>The locked state</returns>
         public static bool GetLocked(uint oTarget)
         {
-            return global::NWN.Core.NWScript.GetLocked(oTarget) != 0;
+            return NWScriptRuntime.Current.GetLocked(oTarget);
         }
 
         /// <summary>
@@ -690,7 +674,7 @@ namespace SWLOR.NWN.API.NWScript
         public static uint CreateObject(ObjectType nObjectType, string sTemplate, Location lLocation,
             bool nUseAppearAnimation = false, string sNewTag = "")
         {
-            return global::NWN.Core.NWScript.CreateObject((int)nObjectType, sTemplate, lLocation, nUseAppearAnimation ? 1 : 0, sNewTag);
+            return NWScriptRuntime.Current.CreateObject(nObjectType, sTemplate, lLocation, nUseAppearAnimation, sNewTag);
         }
 
         /// <summary>
@@ -702,9 +686,7 @@ namespace SWLOR.NWN.API.NWScript
         /// <returns>The nearest object, or OBJECT_INVALID on error</returns>
         public static uint GetNearestObject(ObjectType nObjectType = ObjectType.All, uint oTarget = OBJECT_INVALID, int nNth = 1)
         {
-            if (oTarget == OBJECT_INVALID)
-                oTarget = OBJECT_SELF;
-            return global::NWN.Core.NWScript.GetNearestObject((int)nObjectType, oTarget, nNth);
+            return NWScriptRuntime.Current.GetNearestObject(nObjectType, oTarget, nNth);
         }
 
         /// <summary>
@@ -717,7 +699,7 @@ namespace SWLOR.NWN.API.NWScript
         public static uint GetNearestObjectToLocation(Location lLocation, ObjectType nObjectType = ObjectType.All,
             int nNth = 1)
         {
-            return global::NWN.Core.NWScript.GetNearestObjectToLocation((int)nObjectType, lLocation, nNth);
+            return NWScriptRuntime.Current.GetNearestObjectToLocation(lLocation, nObjectType, nNth);
         }
 
         /// <summary>
@@ -729,9 +711,7 @@ namespace SWLOR.NWN.API.NWScript
         /// <returns>The nearest object with the tag, or OBJECT_INVALID on error</returns>
         public static uint GetNearestObjectByTag(string sTag, uint oTarget = OBJECT_INVALID, int nNth = 1)
         {
-            if (oTarget == OBJECT_INVALID)
-                oTarget = OBJECT_SELF;
-            return global::NWN.Core.NWScript.GetNearestObjectByTag(sTag, oTarget, nNth);
+            return NWScriptRuntime.Current.GetNearestObjectByTag(sTag, oTarget, nNth);
         }
 
         /// <summary>
@@ -742,7 +722,7 @@ namespace SWLOR.NWN.API.NWScript
         /// <returns>The armour class, or -1 if the object is not a creature, item, door or placeable</returns>
         public static int GetAC(uint oObject)
         {
-            return global::NWN.Core.NWScript.GetAC(oObject, 0);
+            return NWScriptRuntime.Current.GetAC(oObject);
         }
 
         /// <summary>
@@ -752,7 +732,7 @@ namespace SWLOR.NWN.API.NWScript
         /// <returns>The object type (OBJECT_TYPE_*), or -1 if the target is not a valid object</returns>
         public static ObjectType GetObjectType(uint oTarget)
         {
-            return (ObjectType)global::NWN.Core.NWScript.GetObjectType(oTarget);
+            return NWScriptRuntime.Current.GetObjectType(oTarget);
         }
 
         /// <summary>
@@ -762,9 +742,7 @@ namespace SWLOR.NWN.API.NWScript
         /// <returns>The current hitpoints, or 0 on error</returns>
         public static int GetCurrentHitPoints(uint oObject = OBJECT_INVALID)
         {
-            if (oObject == OBJECT_INVALID)
-                oObject = OBJECT_SELF;
-            return global::NWN.Core.NWScript.GetCurrentHitPoints(oObject);
+            return NWScriptRuntime.Current.GetCurrentHitPoints(oObject);
         }
 
         /// <summary>
@@ -774,9 +752,7 @@ namespace SWLOR.NWN.API.NWScript
         /// <returns>The maximum hitpoints, or 0 on error</returns>
         public static int GetMaxHitPoints(uint oObject = OBJECT_INVALID)
         {
-            if (oObject == OBJECT_INVALID)
-                oObject = OBJECT_SELF;
-            return global::NWN.Core.NWScript.GetMaxHitPoints(oObject);
+            return NWScriptRuntime.Current.GetMaxHitPoints(oObject);
         }
 
         /// <summary>
@@ -786,7 +762,7 @@ namespace SWLOR.NWN.API.NWScript
         /// <returns>TRUE if the object is valid</returns>
         public static bool GetIsObjectValid(uint oObject)
         {
-            return global::NWN.Core.NWScript.GetIsObjectValid(oObject) != 0;
+            return NWScriptRuntime.Current.GetIsObjectValid(oObject);
         }
 
         /// <summary>
@@ -797,7 +773,7 @@ namespace SWLOR.NWN.API.NWScript
         /// <returns>The object reference</returns>
         public static uint StringToObject(string sHex)
         {
-            return global::NWN.Core.NWScript.StringToObject(sHex);
+            return NWScriptRuntime.Current.StringToObject(sHex);
         }
 
 
@@ -812,7 +788,7 @@ namespace SWLOR.NWN.API.NWScript
         /// <param name="sNew">The new texture name (defaults to empty string)</param>
         public static void ReplaceObjectTexture(uint oObject, string sOld, string sNew = "")
         {
-            global::NWN.Core.NWScript.ReplaceObjectTexture(oObject, sOld, sNew);
+            NWScriptRuntime.Current.ReplaceObjectTexture(oObject, sOld, sNew);
         }
 
         /// <summary>
@@ -828,7 +804,7 @@ namespace SWLOR.NWN.API.NWScript
         /// <param name="nHitPoints">The hitpoints to set</param>
         public static void SetCurrentHitPoints(uint oObject, int nHitPoints)
         {
-            global::NWN.Core.NWScript.SetCurrentHitPoints(oObject, nHitPoints);
+            NWScriptRuntime.Current.SetCurrentHitPoints(oObject, nHitPoints);
         }
 
         /// <summary>
@@ -851,7 +827,7 @@ namespace SWLOR.NWN.API.NWScript
         public static uint GetFirstObjectInShape(Shape nShape, float fSize, Location lTarget, bool bLineOfSight = false,
             ObjectType nObjectFilter = ObjectType.Creature, Vector3 vOrigin = default)
         {
-            return global::NWN.Core.NWScript.GetFirstObjectInShape((int)nShape, fSize, lTarget, bLineOfSight ? 1 : 0, (int)nObjectFilter, vOrigin);
+            return NWScriptRuntime.Current.GetFirstObjectInShape(nShape, fSize, lTarget, bLineOfSight, nObjectFilter, vOrigin);
         }
 
         /// <summary>
@@ -874,7 +850,7 @@ namespace SWLOR.NWN.API.NWScript
         public static uint GetNextObjectInShape(Shape nShape, float fSize, Location lTarget, bool bLineOfSight = false,
             ObjectType nObjectFilter = ObjectType.Creature, Vector3 vOrigin = default)
         {
-            return global::NWN.Core.NWScript.GetNextObjectInShape((int)nShape, fSize, lTarget, bLineOfSight ? 1 : 0, (int)nObjectFilter, vOrigin);
+            return NWScriptRuntime.Current.GetNextObjectInShape(nShape, fSize, lTarget, bLineOfSight, nObjectFilter, vOrigin);
         }
 
         /// <summary>
@@ -884,9 +860,7 @@ namespace SWLOR.NWN.API.NWScript
         /// <param name="oObject">The target object (defaults to OBJECT_SELF)</param>
         public static void SetFacingPoint(Vector3 vTarget, uint oObject = OBJECT_INVALID)
         {
-            if (oObject == OBJECT_INVALID)
-                oObject = OBJECT_SELF;
-            global::NWN.Core.NWScript.SetFacingPoint(vTarget, oObject);
+            NWScriptRuntime.Current.SetFacingPoint(vTarget, oObject);
         }
 
         /// <summary>
@@ -897,7 +871,7 @@ namespace SWLOR.NWN.API.NWScript
         /// <returns>The distance in metres, or 0.0f if either object is invalid</returns>
         public static float GetDistanceBetween(uint oObjectA, uint oObjectB)
         {
-            return global::NWN.Core.NWScript.GetDistanceBetween(oObjectA, oObjectB);
+            return NWScriptRuntime.Current.GetDistanceBetween(oObjectA, oObjectB);
         }
 
         /// <summary>
@@ -907,9 +881,7 @@ namespace SWLOR.NWN.API.NWScript
         /// <param name="oTarget">The target object (defaults to OBJECT_SELF)</param>
         public static void SetCommandable(bool nCommandable, uint oTarget = OBJECT_INVALID)
         {
-            if (oTarget == OBJECT_INVALID)
-                oTarget = OBJECT_SELF;
-            global::NWN.Core.NWScript.SetCommandable(nCommandable ? 1 : 0, oTarget);
+            NWScriptRuntime.Current.SetCommandable(nCommandable, oTarget);
         }
 
         /// <summary>
@@ -919,9 +891,7 @@ namespace SWLOR.NWN.API.NWScript
         /// <returns>TRUE if the target is commandable</returns>
         public static bool GetCommandable(uint oTarget = OBJECT_INVALID)
         {
-            if (oTarget == OBJECT_INVALID)
-                oTarget = OBJECT_SELF;
-            return global::NWN.Core.NWScript.GetCommandable(oTarget) != 0;
+            return NWScriptRuntime.Current.GetCommandable(oTarget);
         }
 
         /// <summary>
@@ -931,7 +901,7 @@ namespace SWLOR.NWN.API.NWScript
         /// <returns>The tag, or empty string if the object is not a valid object</returns>
         public static string GetTag(uint oObject)
         {
-            return global::NWN.Core.NWScript.GetTag(oObject);
+            return NWScriptRuntime.Current.GetTag(oObject);
         }
 
         /// <summary>
@@ -941,7 +911,7 @@ namespace SWLOR.NWN.API.NWScript
         /// <returns>TRUE if the object is listening</returns>
         public static bool GetIsListening(uint oObject)
         {
-            return global::NWN.Core.NWScript.GetIsListening(oObject) != 0;
+            return NWScriptRuntime.Current.GetIsListening(oObject);
         }
 
         /// <summary>
@@ -951,7 +921,7 @@ namespace SWLOR.NWN.API.NWScript
         /// <param name="bValue">Whether the object is listening</param>
         public static void SetListening(uint oObject, bool bValue)
         {
-            global::NWN.Core.NWScript.SetListening(oObject, bValue ? 1 : 0);
+            NWScriptRuntime.Current.SetListening(oObject, bValue);
         }
 
         /// <summary>
@@ -963,7 +933,7 @@ namespace SWLOR.NWN.API.NWScript
         /// <param name="nNumber">The pattern number (defaults to 0)</param>
         public static void SetListenPattern(uint oObject, string sPattern, int nNumber = 0)
         {
-            global::NWN.Core.NWScript.SetListenPattern(oObject, sPattern, nNumber);
+            NWScriptRuntime.Current.SetListenPattern(oObject, sPattern, nNumber);
         }
 
         /// <summary>
@@ -973,7 +943,7 @@ namespace SWLOR.NWN.API.NWScript
         /// <returns>The pattern number, or -1 if no string matched</returns>
         public static int GetListenPatternNumber()
         {
-            return global::NWN.Core.NWScript.GetListenPatternNumber();
+            return NWScriptRuntime.Current.GetListenPatternNumber();
         }
 
         /// <summary>
@@ -983,7 +953,7 @@ namespace SWLOR.NWN.API.NWScript
         /// <returns>The waypoint, or OBJECT_INVALID if the waypoint cannot be found</returns>
         public static uint GetWaypointByTag(string sWaypointTag)
         {
-            return global::NWN.Core.NWScript.GetWaypointByTag(sWaypointTag);
+            return NWScriptRuntime.Current.GetWaypointByTag(sWaypointTag);
         }
 
         /// <summary>
@@ -997,7 +967,7 @@ namespace SWLOR.NWN.API.NWScript
         /// <returns>The destination object, or OBJECT_INVALID if the transition does not hold a target</returns>
         public static uint GetTransitionTarget(uint oTransition)
         {
-            return global::NWN.Core.NWScript.GetTransitionTarget(oTransition);
+            return NWScriptRuntime.Current.GetTransitionTarget(oTransition);
         }
 
         /// <summary>
@@ -1009,7 +979,7 @@ namespace SWLOR.NWN.API.NWScript
         /// <returns>The object, or OBJECT_INVALID if the object cannot be found</returns>
         public static uint GetObjectByTag(string sTag, int nNth = 0)
         {
-            return global::NWN.Core.NWScript.GetObjectByTag(sTag, nNth);
+            return NWScriptRuntime.Current.GetObjectByTag(sTag, nNth);
         }
 
         /// <summary>
@@ -1019,7 +989,7 @@ namespace SWLOR.NWN.API.NWScript
         /// <returns>The sitting creature, or OBJECT_INVALID if the chair is not a valid placeable</returns>
         public static uint GetSittingCreature(uint oChair)
         {
-            return global::NWN.Core.NWScript.GetSittingCreature(oChair);
+            return NWScriptRuntime.Current.GetSittingCreature(oChair);
         }
 
         /// <summary>
@@ -1029,7 +999,7 @@ namespace SWLOR.NWN.API.NWScript
         /// <param name="nTalkVolume">TALKVOLUME_* constant (defaults to TalkVolume.Talk)</param>
         public static void SpeakString(string sStringToSpeak, TalkVolume nTalkVolume = TalkVolume.Talk)
         {
-            global::NWN.Core.NWScript.SpeakString(sStringToSpeak, (int)nTalkVolume);
+            NWScriptRuntime.Current.SpeakString(sStringToSpeak, nTalkVolume);
         }
 
         /// <summary>
@@ -1040,7 +1010,7 @@ namespace SWLOR.NWN.API.NWScript
         /// <returns>The name, or empty string on error</returns>
         public static string GetName(uint oObject, bool bOriginalName = false)
         {
-            return global::NWN.Core.NWScript.GetName(oObject, bOriginalName ? 1 : 0);
+            return NWScriptRuntime.Current.GetName(oObject, bOriginalName);
         }
 
         /// <summary>
@@ -1050,7 +1020,7 @@ namespace SWLOR.NWN.API.NWScript
         /// <returns>The hexadecimal string representation of the object</returns>
         public static string ObjectToString(uint oObject)
         {
-            return global::NWN.Core.NWScript.ObjectToString(oObject);
+            return NWScriptRuntime.Current.ObjectToString(oObject);
         }
     }
 }

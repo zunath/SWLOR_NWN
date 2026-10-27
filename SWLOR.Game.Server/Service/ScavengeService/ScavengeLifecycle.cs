@@ -194,15 +194,6 @@ namespace SWLOR.Game.Server.Service.ScavengeService
             session.LastActivityAt = _world.UtcNow;
 
             var last = engine.Last;
-            if (last.PaysXp)
-            {
-                var xp = SearchRules.AttemptXp(session.Request.DeltaXp, session.Request.SiteLevel, last.IsFind);
-                if (xp > 0)
-                    _world.GiveGatheringXp(session.Player, xp);
-
-                session.XpPaid += xp;
-            }
-
             if (last.IsFind)
             {
                 var effects = session.Request.Effects ?? SearchEffects.None;
@@ -220,8 +211,17 @@ namespace SWLOR.Game.Server.Service.ScavengeService
                     effects.DeeperWeightBonus + jackpot,
                     effects.FindWeightBonus));
 
-                // XP is already saved; the find must survive a restart too, until the visit ends and puts it in the site.
+                // The find is saved before the action's XP is given, so a restart in between never leaves XP paid for a lost find.
                 _world.SavePendingFinds(session.Player, session.Finds);
+            }
+
+            if (last.PaysXp)
+            {
+                var xp = SearchRules.AttemptXp(session.Request.DeltaXp, session.Request.SiteLevel, last.IsFind);
+                if (xp > 0)
+                    _world.GiveGatheringXp(session.Player, xp);
+
+                session.XpPaid += xp;
             }
 
             if (result.Status == MinigameStatus.InProgress)

@@ -164,7 +164,7 @@ public class CraftSessionLifecycleTests
     }
 
     [Test]
-    public void Start_ReturnsTheComponentsAndEnhancements_WhenALaterEnhancementIsGone()
+    public void Start_RefusesAndTakesNothing_WhenALaterEnhancementIsGone()
     {
         _world.Enhancements.Remove(FakeCraftSessionWorld.SecondEnhancement);
 
@@ -176,8 +176,10 @@ public class CraftSessionLifecycleTests
         result.Succeeded.Should().BeFalse();
         result.Message.Should().Be("An enhancement is no longer in your inventory.");
         _player.ActiveCraftSession.Should().BeNull();
-        _world.Returned.Should().BeEquivalentTo("ore x3", "wire x2", "enh-a");
-        _world.Events.Should().NotContain("charge-blueprint");
+        _player.HeldCraftItems.Should().BeNullOrEmpty();
+        _world.Returned.Should().BeEmpty();
+        _world.Events.Should().NotContain(e => e.StartsWith("take") || e == "charge-blueprint" || e == "save");
+        _world.Enhancements.Should().ContainKey(FakeCraftSessionWorld.FirstEnhancement);
     }
 
     [Test]
@@ -230,6 +232,23 @@ public class CraftSessionLifecycleTests
         _world.Crafted.Should().HaveCount(2);
         _world.Events.Should().ContainInOrder("create:test_item", "copy:test_item", "save");
         _player.PendingCraftReturns.SelectMany(entry => entry.Items).Should().BeEquivalentTo(_world.Crafted);
+    }
+
+    [Test]
+    public void Succeed_UnitsThatDoNotFit_AreHeldSoTheFullQuantityIsKept()
+    {
+        _recipe.Quantity = 3;
+        _world.NonStackingResrefs.Add(_recipe.Resref);
+        _world.OutputRoom = 1;
+        var lifecycle = Lifecycle();
+        var session = StartSession(lifecycle);
+
+        lifecycle.SucceedAtPace(_world, FakeCraftSessionWorld.PlayerHandle, _player, session, new MinigameMeter(60, 100));
+
+        _world.Crafted.Should().ContainSingle();
+        _player.HeldCraftItems.Should().Equal("crafted test_item", "crafted test_item");
+        _player.PendingCraftReturns.SelectMany(entry => entry.Items).Should().Equal(_world.Crafted);
+        _world.Messages.Should().Contain(CraftSessionLifecycle.HeldItemsMessage);
     }
 
     [Test]
@@ -685,7 +704,7 @@ public class CraftSessionLifecycleTests
     }
 
     [Test]
-    public void Start_WhenALaterEnhancementIsGone_WritesTheCharacterFileAfterTheRefund()
+    public void Start_WhenALaterEnhancementIsGone_WritesNoCharacterFile_BecauseNothingMoved()
     {
         _world.Enhancements.Remove(FakeCraftSessionWorld.SecondEnhancement);
 
@@ -694,7 +713,8 @@ public class CraftSessionLifecycleTests
             _player,
             Request(NoItem, FakeCraftSessionWorld.FirstEnhancement, FakeCraftSessionWorld.SecondEnhancement)).Succeeded.Should().BeFalse();
 
-        _world.PersistedAtSave.Should().Equal(new[] { _world.SaveCount });
+        _world.PersistedAtSave.Should().BeEmpty();
+        _world.SaveCount.Should().Be(0);
     }
 
     [Test]

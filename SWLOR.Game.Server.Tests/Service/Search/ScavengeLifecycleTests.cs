@@ -327,6 +327,18 @@ public class ScavengeLifecycleTests
     }
 
     [Test]
+    public void AFind_IsSavedBeforeItsXpIsGiven_SoARestartCannotLeaveXpForALostFind()
+    {
+        var lifecycle = Lifecycle(1, 0, 3);
+        var session = lifecycle.Start(Request());
+
+        lifecycle.Act(session, SearchAt(0));
+
+        _world.Xp.Should().NotBeEmpty();
+        _world.Log.IndexOf("pending").Should().BeLessThan(_world.Log.IndexOf("xp"));
+    }
+
+    [Test]
     public void ASearchThatFindsNothing_SavesNothingOnTheRecord()
     {
         var lifecycle = Lifecycle(100);

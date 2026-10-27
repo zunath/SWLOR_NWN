@@ -84,16 +84,13 @@ internal sealed class FakeCraftSessionWorld : ICraftSessionWorld
         return true;
     }
 
-    public bool TryTakeEnhancement(uint player, uint item, out string serialized)
-    {
-        if (!Enhancements.Remove(item, out serialized))
-        {
-            serialized = string.Empty;
-            return false;
-        }
+    public bool HasEnhancement(uint player, uint item) => Enhancements.ContainsKey(item);
 
+    public string TakeEnhancement(uint player, uint item)
+    {
+        Enhancements.Remove(item, out var serialized);
         Events.Add($"take-enhancement:{serialized}");
-        return true;
+        return serialized;
     }
 
     public bool TryReturnItem(uint player, string serialized)
@@ -125,22 +122,38 @@ internal sealed class FakeCraftSessionWorld : ICraftSessionWorld
     /// <summary>Resrefs whose template does not stack, so a multi-unit recipe's extra units are made as copies.</summary>
     public HashSet<string> NonStackingResrefs { get; } = new();
 
-    public List<uint> CopyCraftedUnits(uint player, uint item, RecipeDetail recipe)
-    {
-        var copies = new List<uint>();
-        if (recipe.Quantity <= 1 || !NonStackingResrefs.Contains(recipe.Resref))
-            return copies;
+    /// <summary>How many of the finished units fit the inventory; the rest are held.</summary>
+    public int OutputRoom { get; set; } = int.MaxValue;
 
-        for (var unit = 1; unit < recipe.Quantity; unit++)
+    public CraftedUnits FinishUnits(uint player, uint item, RecipeDetail recipe)
+    {
+        var result = new CraftedUnits(new List<uint>(), new List<string>());
+        var units = NonStackingResrefs.Contains(recipe.Resref) ? System.Math.Max(1, recipe.Quantity) : 1;
+        var original = _craftedNames[item];
+        Crafted.Remove(original);
+
+        for (var unit = 0; unit < units; unit++)
         {
-            Events.Add($"copy:{recipe.Resref}");
-            var copy = _nextItem++;
-            _craftedNames[copy] = $"{_craftedNames[item]} copy {unit}";
-            Crafted.Add(_craftedNames[copy]);
-            copies.Add(copy);
+            var made = item;
+            if (unit > 0)
+            {
+                Events.Add($"copy:{recipe.Resref}");
+                made = _nextItem++;
+                _craftedNames[made] = $"{original} copy {unit}";
+            }
+
+            if (result.Delivered.Count < OutputRoom)
+            {
+                result.Delivered.Add(made);
+                Crafted.Add(_craftedNames[made]);
+            }
+            else
+            {
+                result.Held.Add(original);
+            }
         }
 
-        return copies;
+        return result;
     }
 
     public void ApplyVendorValue(uint item, int addGoldPiece) => VendorValues.Add(addGoldPiece);

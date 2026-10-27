@@ -1,3 +1,4 @@
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using SWLOR.Game.Server.Core.Bioware;
@@ -111,15 +112,13 @@ public sealed class NwnCraftSessionWorld : ICraftSessionWorld
         return true;
     }
 
-    public bool TryTakeEnhancement(uint player, uint item, out string serialized)
-    {
-        serialized = string.Empty;
-        if (!GetIsObjectValid(item) || GetItemPossessor(item) != player)
-            return false;
+    public bool HasEnhancement(uint player, uint item) => GetIsObjectValid(item) && GetItemPossessor(item) == player;
 
-        serialized = ObjectPlugin.Serialize(item);
+    public string TakeEnhancement(uint player, uint item)
+    {
+        var serialized = ObjectPlugin.Serialize(item);
         DestroyObject(item);
-        return true;
+        return serialized;
     }
 
     public bool TryReturnItem(uint player, string serialized)
@@ -182,22 +181,34 @@ public sealed class NwnCraftSessionWorld : ICraftSessionWorld
         return item;
     }
 
-    public List<uint> CopyCraftedUnits(uint player, uint item, RecipeDetail recipe)
+    public CraftedUnits FinishUnits(uint player, uint item, RecipeDetail recipe)
     {
-        var copies = new List<uint>();
-        if (recipe.Quantity <= 1 || !GetIsObjectValid(item))
-            return copies;
-        if (StringToInt(Get2DAString("baseitems", "Stacking", (int)GetBaseItemType(item))) > 1)
-            return copies;
+        var result = new CraftedUnits(new List<uint>(), new List<string>());
+        if (!GetIsObjectValid(item))
+            return result;
 
-        for (var unit = 1; unit < recipe.Quantity; unit++)
+        var serialized = ObjectPlugin.Serialize(item);
+        var stacks = StringToInt(Get2DAString("baseitems", "Stacking", (int)GetBaseItemType(item))) > 1;
+        var units = stacks ? 1 : Math.Max(1, recipe.Quantity);
+
+        var made = new List<uint> { item };
+        for (var unit = 1; unit < units; unit++)
+            made.Add(CopyItem(item, player, true));
+
+        foreach (var unit in made)
         {
-            var copy = CopyItem(item, player, true);
-            if (GetIsObjectValid(copy))
-                copies.Add(copy);
+            if (GetIsObjectValid(unit) && GetItemPossessor(unit) == player)
+            {
+                result.Delivered.Add(unit);
+                continue;
+            }
+
+            if (GetIsObjectValid(unit))
+                DestroyObject(unit);
+            result.Held.Add(serialized);
         }
 
-        return copies;
+        return result;
     }
 
     public void ApplyVendorValue(uint item, int addGoldPiece) => ItemPlugin.SetAddGoldPieceValue(item, addGoldPiece);

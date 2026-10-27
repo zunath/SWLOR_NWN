@@ -426,20 +426,7 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
             if (SelectedLevelId > 0)
             {
                 recipes = recipes
-                    .Where(x =>
-                    {
-                        var level = x.Value.Level;
-                        return SelectedLevelId switch
-                        {
-                            1 => level >= 0 && level <= 10,
-                            2 => level >= 11 && level <= 20,
-                            3 => level >= 21 && level <= 30,
-                            4 => level >= 31 && level <= 40,
-                            5 => level >= 41 && level <= 50,
-                            6 => level >= 51,
-                            _ => false
-                        };
-                    })
+                    .Where(x => RecipeLevelBands.Contains(SelectedLevelId, x.Value.Level))
                     .ToDictionary(x => x.Key, y => y.Value);
             }
 

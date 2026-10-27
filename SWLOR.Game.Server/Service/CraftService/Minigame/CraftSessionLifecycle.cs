@@ -69,30 +69,17 @@ public sealed class CraftSessionLifecycle
                 return CraftSessionStartResult.Refused(problem);
         }
 
+        // Every check runs before anything is taken, so a refusal never has items to give back.
+        if (request.EnhancementItems.Any(item => item != OBJECT_INVALID && !_world.HasEnhancement(player, item)))
+            return CraftSessionStartResult.Refused("An enhancement is no longer in your inventory.");
+
         var components = new List<string>();
         if (!_world.TryTakeComponents(player, recipe, components))
             return CraftSessionStartResult.Refused("Missing components!");
 
-        var enhancements = new List<string>();
-        foreach (var item in request.EnhancementItems)
-        {
-            if (item == OBJECT_INVALID)
-            {
-                enhancements.Add(string.Empty);
-                continue;
-            }
-
-            if (!_world.TryTakeEnhancement(player, item, out var serialized))
-            {
-                foreach (var taken in components.Concat(enhancements.Where(e => !string.IsNullOrEmpty(e))))
-                    ReturnOrHold(player, dbPlayer, taken);
-                _world.SaveRecord(dbPlayer);
-                _world.PersistCharacter(player);
-                return CraftSessionStartResult.Refused("An enhancement is no longer in your inventory.");
-            }
-
-            enhancements.Add(serialized);
-        }
+        var enhancements = request.EnhancementItems
+            .Select(item => item == OBJECT_INVALID ? string.Empty : _world.TakeEnhancement(player, item))
+            .ToList();
 
         var blueprint = request.HasBlueprint ? _world.ChargeBlueprint(player, request.BlueprintItem) : null;
         var sessionId = Guid.NewGuid().ToString();
@@ -177,13 +164,19 @@ public sealed class CraftSessionLifecycle
         if (firstTime)
             dbPlayer.CraftedRecipes[record.Recipe] = DateTime.UtcNow;
 
-        // A template that does not stack made one item: the rest of the quantity are copies of it, bonuses included.
-        var units = new List<uint> { item };
-        units.AddRange(_world.CopyCraftedUnits(player, item, recipe));
+        // The full quantity is accounted for: units in the inventory are delivered, the rest are held until there is room.
+        var units = _world.FinishUnits(player, item, recipe);
+        if (units.Held.Count > 0)
+        {
+            dbPlayer.HeldCraftItems ??= new List<string>();
+            dbPlayer.HeldCraftItems.AddRange(units.Held);
+            _world.Message(player, HeldItemsMessage);
+        }
 
         // The finished items are in the inventory only in memory: the record that ends the session carries them until a file holds them.
         // The XP the craft earned is entitled in the same save, so a stop between this save and the award loses neither.
-        RecordReturn(player, dbPlayer, units.Select(_world.SerializeItem).ToList());
+        if (units.Delivered.Count > 0)
+            RecordReturn(player, dbPlayer, units.Delivered.Select(_world.SerializeItem).ToList());
         dbPlayer.ActiveCraftSession = null;
         if (outcome.Xp > 0)
             AddPendingXp(dbPlayer, recipe.Skill, outcome.Xp);
@@ -449,15 +442,6 @@ public sealed class CraftSessionLifecycle
         return CraftMinigameXp.ScaleBaseXp(
             CraftMinigameXp.BaseXp(recipe, rank),
             CraftMinigameXp.PaceShare(elapsedSeconds, actionsTaken));
-    }
-
-    private void ReturnOrHold(uint player, Player dbPlayer, string serialized)
-    {
-        if (_world.TryReturnItem(player, serialized))
-            return;
-
-        dbPlayer.HeldCraftItems ??= new List<string>();
-        dbPlayer.HeldCraftItems.Add(serialized);
     }
 
     private static void AddPendingXp(Player dbPlayer, SkillType skill, int xp)

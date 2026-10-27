@@ -30,8 +30,11 @@ public interface ICraftSessionWorld
     /// </summary>
     bool TryTakeComponents(uint player, RecipeDetail recipe, List<string> taken);
 
-    /// <summary>Serializes and removes an enhancement the player carries. Returns false when the player no longer carries it.</summary>
-    bool TryTakeEnhancement(uint player, uint item, out string serialized);
+    /// <summary>True when the player carries the enhancement item.</summary>
+    bool HasEnhancement(uint player, uint item);
+
+    /// <summary>Serializes and removes an enhancement the player carries (checked with <see cref="HasEnhancement"/> first).</summary>
+    string TakeEnhancement(uint player, uint item);
 
     /// <summary>Gives a serialized item back to the player. Returns false, leaving the item serialized, when the inventory is full.</summary>
     bool TryReturnItem(uint player, string serialized);
@@ -51,11 +54,11 @@ public interface ICraftSessionWorld
     uint CreateCraftedItem(uint player, RecipeDetail recipe);
 
     /// <summary>
-    /// Makes the rest of a multi-unit recipe's output as copies of the finished <paramref name="item"/>, with its bonuses, when the
-    /// template does not stack (one <see cref="CreateCraftedItem"/> call then makes a single item). Returns the copies; none for a
-    /// template that stacks, since its stack already holds the full quantity.
+    /// Settles where the finished <paramref name="item"/> (with its bonuses) goes. A template that does not stack made one item, so the
+    /// rest of the recipe's quantity are copies of it. Every unit in the inventory is delivered; a unit that landed outside it, or a copy
+    /// that could not be made, is held in the finished item's serialized form instead, so the full quantity is always accounted for.
     /// </summary>
-    List<uint> CopyCraftedUnits(uint player, uint item, RecipeDetail recipe);
+    CraftedUnits FinishUnits(uint player, uint item, RecipeDetail recipe);
 
     void ApplyVendorValue(uint item, int addGoldPiece);
 

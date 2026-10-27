@@ -13,12 +13,15 @@ namespace SWLOR.Game.Server.Service.SpaceService
 
         /// <summary>
         /// A weapon with a fixed size fires as that size with its Dmg as is. Any other weapon fires as the firing hull's
-        /// size with its Dmg times that size's weapon multiplier.
+        /// size with its Dmg times that size's weapon multiplier. A preset NPC ship passes its fitted weapon's
+        /// <paramref name="npcShot"/>, whose Dmg, Attack, Accuracy and Rank replace the step's with no size scaling;
+        /// the family, damage type, flags and riders stay the step's.
         /// </summary>
-        public static SpaceWeaponShot Build(ShipModuleStep step, ShipSize firingSize, ShipSize targetSize, int targetShield)
+        public static SpaceWeaponShot Build(
+            ShipModuleStep step, ShipSize firingSize, ShipSize targetSize, int targetShield, ShipNpcWeapon npcShot = null)
         {
-            var damage = (double)step.Dmg;
-            if (!step.FixedSize.HasValue)
+            var damage = (double)(npcShot?.Dmg ?? step.Dmg);
+            if (npcShot == null && !step.FixedSize.HasValue)
                 damage *= ShipStatCalculator.WeaponSizeMultiplier(firingSize);
 
             if (step.Family == ShipModuleFamily.MissileLauncher && targetShield <= 0)
@@ -35,9 +38,9 @@ namespace SWLOR.Game.Server.Service.SpaceService
                 Family = step.WeaponFamily,
                 DamageType = step.DamageType,
                 Dmg = Math.Max(1, (int)Math.Round(damage, MidpointRounding.AwayFromZero)),
-                Rank = step.Rank,
-                Attack = step.Attack,
-                Accuracy = step.Accuracy,
+                Rank = npcShot?.Rank ?? step.Rank,
+                Attack = npcShot?.Attack ?? step.Attack,
+                Accuracy = npcShot?.Accuracy ?? step.Accuracy,
                 Size = step.FixedSize,
                 ShieldBypass = step.ShieldBypass,
                 IgnoreSizePenalty = step.IgnoreSizePenalty,

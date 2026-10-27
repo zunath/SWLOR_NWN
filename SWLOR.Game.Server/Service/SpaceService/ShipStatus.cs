@@ -1,4 +1,6 @@
 using System.Collections.Generic;
+using System.Linq;
+using Newtonsoft.Json;
 using SWLOR.Game.Server.Service.CombatService;
 using SWLOR.Game.Server.Service.SkillService;
 
@@ -19,6 +21,9 @@ namespace SWLOR.Game.Server.Service.SpaceService
             /// RequiresSkill ranks on the module item when it was installed. Null when it had none.
             /// </summary>
             public Dictionary<SkillType, int> RequiredSkills { get; set; }
+
+            /// <summary>The numbers a preset NPC ship fires this weapon with. Null for player ships and other modules.</summary>
+            public ShipNpcWeapon NpcShot { get; set; }
         }
 
         /// <summary>
@@ -37,6 +42,13 @@ namespace SWLOR.Game.Server.Service.SpaceService
         }
 
         public string ItemTag { get; set; }
+
+        /// <summary>The pilot block of a preset space NPC ship. Null for player ships and legacy NPC ships.</summary>
+        public ShipNpcPilot NpcPilot { get; set; }
+
+        /// <summary>Whether this is a preset space NPC ship (its values come from the preset, not from a level term).</summary>
+        [JsonIgnore]
+        public bool IsPresetNpc => NpcPilot != null;
 
         /// <summary>
         /// RequiresSkill ranks on the ship's deed item when it was registered. Null when it had none.
@@ -169,6 +181,15 @@ namespace SWLOR.Game.Server.Service.SpaceService
         /// Crew station tags keyed by hotbar feat slot number (1-30). Used for crew stations (plan section 10).
         /// </summary>
         public Dictionary<int, ShipSlotTag> SlotTags { get; set; }
+
+        /// <summary>The fitted weapon override of a preset NPC ship for a module tag, or null when it has none.</summary>
+        public ShipNpcWeapon FindNpcShot(string moduleTag)
+        {
+            return HighPowerModules.Values
+                .Concat(MidPowerModules.Values)
+                .Concat(LowPowerModules.Values)
+                .FirstOrDefault(x => x.ItemTag == moduleTag && x.NpcShot != null)?.NpcShot;
+        }
 
         public ShipStatus()
         {

@@ -6,6 +6,7 @@ using SWLOR.Game.Server.Core.NWNX.Enum;
 using SWLOR.Game.Server.Entity;
 using SWLOR.Game.Server.Enumeration;
 using SWLOR.Game.Server.Feature.AppearanceDefinition.TintMap;
+using SWLOR.Game.Server.Feature.SpaceObjectDefinition;
 using SWLOR.Game.Server.Service.CombatService;
 using SWLOR.Game.Server.Service.DBService;
 using SWLOR.Game.Server.Service.GuiService;
@@ -33,6 +34,7 @@ namespace SWLOR.Game.Server.Service
         private static readonly Dictionary<string, SpaceObjectDetail> _spaceObjects = new();
 
         private static readonly Dictionary<uint, ShipStatus> _shipNPCs = new();
+        private static readonly Dictionary<string, ShipNpcEntry> _npcPresets = RevampNpcShipCatalog.Ships.ToDictionary(x => x.CreatureTag);
         private static readonly Dictionary<uint, ShipStatus> _spaceObjectInstances = new();
 
         public static Dictionary<FeatType, ShipModuleFeat> ShipModuleFeats { get; } = ShipModuleFeat.GetAll();
@@ -1547,7 +1549,7 @@ namespace SWLOR.Game.Server.Service
         /// </summary>
         private static void ApplyAutoShipRecovery(uint player, ShipStatus shipStatus)
         {
-            var wil = GetAbilityScore(player, AbilityType.Willpower);
+            var wil = GetPilotScore(player, shipStatus, AbilityType.Willpower);
 
             // A Bulwark Shield Generator raises the cap while it runs; shield above the cap is lost when it lapses.
             var maxShield = shipStatus.GetEffectiveMaxShield(DateTime.UtcNow);
@@ -1561,11 +1563,7 @@ namespace SWLOR.Game.Server.Service
             }
             else
             {
-                shipStatus.ShieldRegenRemainder += SpaceCombatMath.ShieldRegenPerSecond(
-                    maxShield,
-                    NormalizeShipSize(shipStatus.Size),
-                    wil,
-                    shipStatus.ShieldRegenBonusPercent);
+                shipStatus.ShieldRegenRemainder += ShipNpcRules.ShieldRegenPerSecond(shipStatus, maxShield, wil);
 
                 var wholeShield = (int)shipStatus.ShieldRegenRemainder;
                 if (wholeShield > 0)
@@ -1692,6 +1690,13 @@ namespace SWLOR.Game.Server.Service
 
             var registeredEnemyType = _spaceObjects[creatureTag];
             var shipDetail = _shipTypes[registeredEnemyType.ShipItemTag];
+
+            // A creature with a preset gets its ship from the preset rather than the legacy hull and loadout.
+            if (_npcPresets.TryGetValue(creatureTag, out var preset))
+            {
+                _shipNPCs[creature] = ShipNpcRules.BuildStatus(preset, registeredEnemyType.ShipItemTag, shipDetail.CapitalShip, DateTime.UtcNow);
+                return;
+            }
 
             var shipStatus = new ShipStatus
             {
@@ -1828,6 +1833,22 @@ namespace SWLOR.Game.Server.Service
             return Stat.GetNPCStats(creature).Level;
         }
 
+        /// <summary>
+        /// A pilot attribute for the ship math: a preset NPC ship's own, otherwise the creature's ability score.
+        /// </summary>
+        private static int GetPilotScore(uint creature, ShipStatus status, AbilityType ability)
+        {
+            return ShipNpcRules.PilotScore(status, ability, type => GetAbilityScore(creature, type));
+        }
+
+        /// <summary>The level term a legacy NPC ship adds to a value; zero for players and preset NPC ships.</summary>
+        private static int GetNpcLevelBonus(uint creature, ShipStatus status, Func<int, int> bonusForLevel)
+        {
+            return ShipNpcRules.UsesLevelTerm(IsPlayerPilot(creature), status)
+                ? bonusForLevel(GetNpcLevel(creature))
+                : 0;
+        }
+
         private static ShipSize NormalizeShipSize(ShipSize size)
         {
             return size == ShipSize.Invalid ? ShipSize.Small : size;
@@ -1835,65 +1856,65 @@ namespace SWLOR.Game.Server.Service
 
         /// <summary>
         /// Calculates the accuracy of a ship firing the given shot: ship and module Accuracy plus the pilot's
-        /// AGI (energy) or PER (launcher) x 3. NPCs add 8 + 2 x level.
+        /// AGI (energy) or PER (launcher) x 3. A legacy NPC adds 8 + 2 x level; a preset NPC's values include it.
         /// </summary>
         public static int GetShipAccuracy(uint attacker, ShipStatus attackerStatus, SpaceWeaponShot shot)
         {
             var accuracy = SpaceCombatMath.Accuracy(
                 attackerStatus.Accuracy + attackerStatus.GetAccuracyPenalty(DateTime.UtcNow),
                 shot.Accuracy,
-                GetAbilityScore(attacker, AbilityType.Agility),
-                GetAbilityScore(attacker, AbilityType.Perception),
+                GetPilotScore(attacker, attackerStatus, AbilityType.Agility),
+                GetPilotScore(attacker, attackerStatus, AbilityType.Perception),
                 shot.Family);
 
-            return IsPlayerPilot(attacker) ? accuracy : accuracy + 8 + 2 * GetNpcLevel(attacker);
+            return accuracy + GetNpcLevelBonus(attacker, attackerStatus, level => 8 + 2 * level);
         }
 
         /// <summary>
-        /// Calculates the evasion of a ship: ship Evasion plus the pilot's AGI x 3. NPCs add 8 + 2 x level.
+        /// Calculates the evasion of a ship: ship Evasion plus the pilot's AGI x 3. A legacy NPC adds 8 + 2 x level.
         /// </summary>
         public static int GetShipEvasion(uint defender, ShipStatus defenderStatus)
         {
             var evasion = SpaceCombatMath.Evasion(
                 defenderStatus.Evasion,
-                GetAbilityScore(defender, AbilityType.Agility));
+                GetPilotScore(defender, defenderStatus, AbilityType.Agility));
 
-            return IsPlayerPilot(defender) ? evasion : evasion + 8 + 2 * GetNpcLevel(defender);
+            return evasion + GetNpcLevelBonus(defender, defenderStatus, level => 8 + 2 * level);
         }
 
         /// <summary>
         /// Calculates the attack of a ship firing the given shot: ship and module Attack plus the pilot's damage
-        /// attribute (PER for energy, MGT for launchers). NPCs add 8 + 2 x level.
+        /// attribute (PER for energy, MGT for launchers). A legacy NPC adds 8 + 2 x level.
         /// </summary>
         public static int GetShipAttack(uint attacker, ShipStatus attackerStatus, SpaceWeaponShot shot)
         {
-            var damageAttribute = GetDamageAttribute(attacker, shot.Family);
+            var damageAttribute = GetDamageAttribute(attacker, attackerStatus, shot.Family);
             var attack = SpaceCombatMath.Attack(attackerStatus.Attack, shot.Attack, damageAttribute);
 
-            return IsPlayerPilot(attacker) ? attack : attack + 8 + 2 * GetNpcLevel(attacker);
+            return attack + GetNpcLevelBonus(attacker, attackerStatus, level => 8 + 2 * level);
         }
 
         /// <summary>
-        /// Calculates the defense of a ship: ship Defense plus the pilot's VIT. NPCs add 8 + 1.2 x level.
+        /// Calculates the defense of a ship: ship Defense plus the pilot's VIT. A legacy NPC adds 8 + 1.2 x level.
         /// </summary>
         public static int GetShipDefense(uint defender, ShipStatus defenderStatus)
         {
             var defense = SpaceCombatMath.Defense(
                 defenderStatus.Defense,
-                GetAbilityScore(defender, AbilityType.Vitality));
+                GetPilotScore(defender, defenderStatus, AbilityType.Vitality));
 
-            return IsPlayerPilot(defender) ? defense : defense + 8 + (int)(1.2f * GetNpcLevel(defender));
+            return defense + GetNpcLevelBonus(defender, defenderStatus, level => 8 + (int)(1.2f * level));
         }
 
         /// <summary>
         /// Gets the ability score a weapon family's damage scales with: PER for energy weapons, MGT for launchers.
         /// </summary>
-        public static int GetDamageAttribute(uint attacker, SpaceWeaponFamily family)
+        public static int GetDamageAttribute(uint attacker, ShipStatus attackerStatus, SpaceWeaponFamily family)
         {
             return SpaceCombatMath.DamageAttribute(
                 family,
-                GetAbilityScore(attacker, AbilityType.Perception),
-                GetAbilityScore(attacker, AbilityType.Might));
+                GetPilotScore(attacker, attackerStatus, AbilityType.Perception),
+                GetPilotScore(attacker, attackerStatus, AbilityType.Might));
         }
 
         private static ResistanceType GetShipResistanceType(CombatDamageType damageType)
@@ -1929,11 +1950,11 @@ namespace SWLOR.Game.Server.Service
                 shot.IgnoreSizePenalty);
             var result = new ShipShotResult { ChanceToHit = chanceToHit };
 
-            var per = GetAbilityScore(activator, AbilityType.Perception);
-            var targetVit = GetAbilityScore(target, AbilityType.Vitality);
+            var per = GetPilotScore(activator, activatorStatus, AbilityType.Perception);
+            var targetVit = GetPilotScore(target, targetStatus, AbilityType.Vitality);
             var attack = GetShipAttack(activator, activatorStatus, shot);
             var defense = GetShipDefense(target, targetStatus);
-            var damageAttribute = GetDamageAttribute(activator, shot.Family);
+            var damageAttribute = GetDamageAttribute(activator, activatorStatus, shot.Family);
 
             if (Random.D100(1) > chanceToHit)
             {
@@ -2562,15 +2583,7 @@ namespace SWLOR.Game.Server.Service
 
         private static bool IsOffensiveShipModule(ShipModuleType type)
         {
-            return type == ShipModuleType.LaserBattery ||
-                   type == ShipModuleType.AssaultConcussionMissile ||
-                   type == ShipModuleType.StormCannon ||
-                   type == ShipModuleType.QuadLaser ||
-                   type == ShipModuleType.ProtonBomb ||
-                   type == ShipModuleType.Missile ||
-                   type == ShipModuleType.IonCannon ||
-                   type == ShipModuleType.BeamLaser ||
-                   type == ShipModuleType.CombatLaser;
+            return ShipToggleRules.IsOffensive(type);
         }
 
         private static float GetShipModuleMaxDistance(

@@ -352,6 +352,22 @@ def enemies():
     s.table(["Preset Key", "Level", "Difficulty", "Role", "Size", "Hull", "Shield", "Shield regen/s", "Attack", "Accuracy", "Defense",
              "Evasion", "DMG", "Cycle s", "Weapon", "Resist", "Attributes"], rows)
     s.note("Accuracy and Evasion exclude AGI x 3 (or PER x 3), which the game adds from the attributes column.")
+    s.blank()
+    s.title("NPC ship roster (every space NPC creature; level from its skin)")
+    import re as _re
+    import npc_catalog
+    source = (m.REPO / "SWLOR.Game.Server/Feature/SpaceObjectDefinition/NPCSpaceObjectDefinition.cs").read_text(encoding="utf-8")
+    rows = []
+    for e in npc_catalog.entries(m.REPO, _re.findall(r'_builder\.Create\("([^"]+)"\)', source)):
+        weapons = ", ".join(f"{t} DMG {d}" for t, d, _a, _acc, _r in e["Weapons"])
+        rows.append([e["CreatureTag"], e["Level"], e["Difficulty"], e["Role"], e["Size"], e["Hull"], e["Shield"],
+                     e["ShieldRegenPerSecond"], e["Attack"], e["Accuracy"], e["Defense"], e["Evasion"], "", "", "",
+                     e["ResistAll"], f"AGI {e['Agility']}, PER {e['Perception']}, VIT {e['Vitality']}, MGT {e['Might']}; {weapons}"])
+    s.table(["Creature", "Level", "Difficulty", "Role", "Size", "Hull", "Shield", "Shield regen/s", "Attack", "Accuracy",
+             "Defense", "Evasion", "", "", "", "Resist", "Attributes and weapons (DMG per module cycle)"], rows)
+    s.note("Defense here excludes VIT, which the game adds. Faction capitals (sithcap, mandocap) are all level 65 and keep their "
+           "old size ladder: HP x1 to x10 of the Thranta Corvette, DMG x1 to x2. Weapon DMG is per module cycle "
+           "(lasers 3 s, turbolasers 4 s, Point-Defense 2.5 s, torpedoes 18 s, fired only at Large and Capital targets).")
     return s
 
 

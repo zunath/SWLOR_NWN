@@ -1,16 +1,17 @@
 using System.Linq;
 using System.Threading.Tasks;
 using SWLOR.Game.Server.EngineTests.Framework;
+using SWLOR.Game.Server.Service.SpaceService;
 using SWLOR.NWN.API.NWScript.Enum;
 
 namespace SWLOR.Game.Server.EngineTests.Definitions
 {
     public static class SpaceNPCShipRangeEngineTests
     {
-        // t1interceptor fits only Combat Laser B (30m); t1cargo is a registered ship to shoot at.
+        // t1interceptor fits only a Laser Cannon (40m); t1cargo is a registered ship to shoot at.
         private const string AttackerResref = "t1interceptor";
         private const string TargetResref = "t1cargo";
-        private const float WeaponRange = 30f;
+        private const float WeaponRange = 40f;
         private const string SpaceAreaResref = "prefab_space";
 
         [EngineTest("NPC ship fires on an enmity target inside weapon range", Category = "SpaceNPCAI", TimeoutSeconds = 45f)]
@@ -25,7 +26,7 @@ namespace SWLOR.Game.Server.EngineTests.Definitions
         [EngineTest("NPC ship holds fire on an enmity target beyond weapon range", Category = "SpaceNPCAI", TimeoutSeconds = 45f)]
         public static async Task HoldsFireBeyondWeaponRange(EngineTestContext ctx)
         {
-            var (attacker, target) = await SpawnShipsAsync(ctx, 45f, immobilizeAttacker: true);
+            var (attacker, target) = await SpawnShipsAsync(ctx, 55f, immobilizeAttacker: true);
             var distance = GetDistanceBetween(attacker, target);
             ctx.Assert(distance > WeaponRange + 5f, $"setup places the target beyond weapon range ({distance:0.0}m)");
 
@@ -36,7 +37,7 @@ namespace SWLOR.Game.Server.EngineTests.Definitions
         [EngineTest("NPC ship closes on an enmity target beyond weapon range", Category = "SpaceNPCAI", TimeoutSeconds = 45f)]
         public static async Task ClosesBeyondWeaponRange(EngineTestContext ctx)
         {
-            var (attacker, target) = await SpawnShipsAsync(ctx, 45f, immobilizeAttacker: false);
+            var (attacker, target) = await SpawnShipsAsync(ctx, 55f, immobilizeAttacker: false);
             var startDistance = GetDistanceBetween(attacker, target);
             var startPosition = GetPosition(attacker);
             ctx.Assert(startDistance > WeaponRange + 5f, "setup places the target beyond weapon range");
@@ -47,50 +48,47 @@ namespace SWLOR.Game.Server.EngineTests.Definitions
             ctx.Assert(damaged, "target takes ship damage once the attacker is in range");
         }
 
-        [EngineTest("NPC ship closes past weapons that cannot target the current ship", Category = "SpaceNPCAI", TimeoutSeconds = 45f)]
-        public static async Task ClosesPastIneligibleWeapons(EngineTestContext ctx)
+        [EngineTest("NPC bomber skips its torpedo against a Medium ship and still fires its missile", Category = "SpaceNPCAI", TimeoutSeconds = 45f)]
+        public static async Task BomberSkipsTorpedoAgainstMediumShip(EngineTestContext ctx)
         {
-            // mandocap2's 50m Assault Concussion Missile only targets capital ships; its batteries reach 20m.
-            var (attacker, target) = await SpawnShipsAsync(ctx, "mandocap2", TargetResref, 35f, immobilizeAttacker: false);
-            ctx.Assert(!Space.GetShipStatus(target).CapitalShip, "target is not a capital ship");
+            // The torpedo only targets Large and Capital ships, so against a Medium cargo ship only the missile fires.
+            var (attacker, target) = await SpawnShipsAsync(ctx, "t1bomber", TargetResref, 35f, immobilizeAttacker: true);
+            ctx.AssertEqual(ShipSize.Medium, Space.GetShipStatus(target).Size, "target hull size");
+            var torpedo = Space.GetShipStatus(attacker).HighPowerModules.Values.Single(x => x.ItemTag == "sm_torp_00");
+            var initialRecast = torpedo.RecastTime;
 
-            await ctx.WaitUntilAsync(() => GetDistanceBetween(attacker, target) <= 20f, 20f,
-                $"the attacker to move within battery range (now {GetDistanceBetween(attacker, target):0.0}m)");
             var damaged = await WaitForDamageAsync(ctx, target, 20f);
-            ctx.Assert(damaged, "target takes ship damage once the batteries are in range");
+            ctx.Assert(damaged, "target takes missile damage");
+            ctx.Assert(torpedo.RecastTime == initialRecast, "the torpedo never fires at a Medium ship");
         }
 
-        [EngineTest("NPC bomber fires its proton bomb at a capital ship in bomb range", Category = "SpaceNPCAI", TimeoutSeconds = 45f)]
-        public static async Task BomberFiresProtonBomb(EngineTestContext ctx)
+        [EngineTest("NPC bomber fires its torpedo at a capital ship in range", Category = "SpaceNPCAI", TimeoutSeconds = 45f)]
+        public static async Task BomberFiresTorpedo(EngineTestContext ctx)
         {
-            // The 10m proton bomb must fire before the bomber repositions; its recast starts only on activation.
+            // The torpedo must fire before the bomber repositions; its recast starts only on activation.
             var (attacker, target) = await SpawnShipsAsync(ctx, "t5bomber", "mandocap2", 8f, immobilizeAttacker: false);
             ctx.Assert(Space.GetShipStatus(target).CapitalShip, "target is a capital ship");
-            var bomb = Space.GetShipStatus(attacker).HighPowerModules.Values.Single(x => x.ItemTag == "protbomblnch");
-            var initialRecast = bomb.RecastTime;
+            var torpedo = Space.GetShipStatus(attacker).HighPowerModules.Values.Single(x => x.ItemTag == "sm_torp_00");
+            var initialRecast = torpedo.RecastTime;
             var startDistance = GetDistanceBetween(attacker, target);
 
-            await ctx.WaitUntilAsync(() => bomb.RecastTime != initialRecast, 10f,
-                $"the proton bomb to activate (start {startDistance:0.0}m, now {GetDistanceBetween(attacker, target):0.0}m)");
+            await ctx.WaitUntilAsync(() => torpedo.RecastTime != initialRecast, 10f,
+                $"the torpedo to activate (start {startDistance:0.0}m, now {GetDistanceBetween(attacker, target):0.0}m)");
         }
 
-        [EngineTest("NPC laser battery fires at a nearby enemy while its target is out of range", Category = "SpaceNPCAI", TimeoutSeconds = 45f)]
-        public static async Task BatteryFiresAtNearbyEnemy(EngineTestContext ctx)
+        [EngineTest("NPC capital turns its turbolasers on against its enmity target", Category = "SpaceNPCAI", TimeoutSeconds = 45f)]
+        public static async Task CapitalTurnsOnTurbolasers(EngineTestContext ctx)
         {
-            // The battery hits enemies within 20m of the firing ship, independent of the selected target.
-            var (attacker, target) = await SpawnShipsAsync(ctx, "mandocap2", TargetResref, 45f, immobilizeAttacker: true);
-            var nearbyEnemy = SpawnShip(ctx, GetArea(attacker), "t1fighter", 50f);
-            await ctx.WaitUntilAsync(() => Space.GetShipStatus(nearbyEnemy) != null, 5f,
-                $"the nearby enemy to register as an NPC ship (valid={GetIsObjectValid(nearbyEnemy)}, dead={GetIsDead(nearbyEnemy)}, tag={GetTag(nearbyEnemy)})");
-            ApplyEffectToObject(DurationType.Permanent, EffectCutsceneImmobilize(), nearbyEnemy);
-            ctx.MakeHostile(nearbyEnemy);
-            ctx.Assert(GetIsEnemy(nearbyEnemy, attacker), "nearby ship is an enemy of the attacker");
+            // mandocap2 fits two turbolasers in High slots 1 and 2; the AI switches them on against the top enmity target.
+            var (attacker, target) = await SpawnShipsAsync(ctx, "mandocap2", TargetResref, 35f, immobilizeAttacker: true);
+            var status = Space.GetShipStatus(attacker);
+            ctx.Assert(status.HighPowerModules[1].ItemTag == "sm_turbo_40" && status.HighPowerModules[2].ItemTag == "sm_turbo_40",
+                "mandocap2 fits turbolasers in its first two High slots");
 
-            var battery = Space.GetShipStatus(attacker).HighPowerModules.Values.First(x => x.ItemTag == "npcautolas11");
-            var initialRecast = battery.RecastTime;
-
-            await ctx.WaitUntilAsync(() => battery.RecastTime != initialRecast, 10f,
-                $"the laser battery to activate (target {GetDistanceBetween(attacker, target):0.0}m, nearby enemy {GetDistanceBetween(attacker, nearbyEnemy):0.0}m)");
+            await ctx.WaitUntilAsync(() => Space.IsShipToggleOn(status, 1) && Space.IsShipToggleOn(status, 2), 10f,
+                $"both turbolasers to switch on (target {GetDistanceBetween(attacker, target):0.0}m away)");
+            var damaged = await WaitForDamageAsync(ctx, target, 15f);
+            ctx.Assert(damaged, "target takes turbolaser damage");
         }
 
         private static Task<(uint Attacker, uint Target)> SpawnShipsAsync(EngineTestContext ctx, float separation, bool immobilizeAttacker)

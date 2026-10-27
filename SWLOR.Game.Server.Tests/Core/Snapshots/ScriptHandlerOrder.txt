@@ -1,0 +1,1131 @@
+# SWLOR script handler order: SWLOR.Game.Server only (a production server; engine tests disabled)
+# One line per handler, in the order the registry runs them: kind, then Namespace.Type.Method.
+# Kinds: action = void handler, run in this order; conditional = bool handler, every one runs and the results are ANDed.
+# The order is whatever reflection returns for the compiled assembly (see ScriptHandlerOrderTests for what drives it).
+# Regenerate: SWLOR_UPDATE_SNAPSHOTS=1 dotnet test SWLOR.Game.Server.Tests --no-build --filter "FullyQualifiedName~ScriptHandlerOrderTests"
+
+== BOOT BUCKETS (in the order the server reaches them) ==
+
+mod_preload  # run by the engine before the module loads (NWNX_UTIL_PRE_MODULE_START_SCRIPT=mod_preload in Docker/swlor.env)
+  action      SWLOR.Game.Server.Service.DB.Load
+  action      SWLOR.Game.Server.Feature.EventRegistration.OnModulePreload
+  action      SWLOR.Game.Server.Feature.ServerTasks.ProcessBootStart
+
+mod_content_chg  # run by EventRegistration.OnModulePreload through ExecuteScript, only when the module file changed since the last boot
+  action      SWLOR.Game.Server.Service.Walkmesh.LoadWalkmeshes
+
+mod_cache_bef  # run by EventRegistration.OnModulePreload through ExecuteScript
+  action      SWLOR.Game.Server.Service.Ability.CacheData
+  action      SWLOR.Game.Server.Service.Achievement.LoadAchievements
+  action      SWLOR.Game.Server.Service.Area.CacheData
+  action      SWLOR.Game.Server.Service.BeastMastery.CacheData
+  action      SWLOR.Game.Server.Service.Cache.CacheData
+  action      SWLOR.Game.Server.Service.ChatCommand.OnModuleLoad
+  action      SWLOR.Game.Server.Service.Combat.LoadDamageTypes
+  action      SWLOR.Game.Server.Service.ConversationMenu.CacheData
+  action      SWLOR.Game.Server.Service.Currency.CacheCurrencies
+  action      SWLOR.Game.Server.Service.Droid.CacheData
+  action      SWLOR.Game.Server.Service.Faction.LoadFactions
+  action      SWLOR.Game.Server.Service.Fishing.CacheData
+  action      SWLOR.Game.Server.Service.Guild.LoadData
+  action      SWLOR.Game.Server.Service.Item.CacheData
+  action      SWLOR.Game.Server.Service.KeyItem.LoadData
+  action      SWLOR.Game.Server.Service.Loot.RegisterLootTables
+  action      SWLOR.Game.Server.Service.MeleeTechnique.ResetProfiles
+  action      SWLOR.Game.Server.Service.Music.LoadSongList
+  action      SWLOR.Game.Server.Service.NPCGroup.CacheData
+  action      SWLOR.Game.Server.Service.ObjectVisibility.LoadVisibilityObjects
+  action      SWLOR.Game.Server.Service.Perk.CacheData
+  action      SWLOR.Game.Server.Service.Planet.CacheData
+  action      SWLOR.Game.Server.Service.PlayerMarket.CacheData
+  action      SWLOR.Game.Server.Service.Property.CacheData
+  action      SWLOR.Game.Server.Service.Quest.CacheData
+  action      SWLOR.Game.Server.Service.Recast.CacheRecastGroups
+  action      SWLOR.Game.Server.Service.Skill.CacheData
+  action      SWLOR.Game.Server.Service.Skill.LoadMappings
+  action      SWLOR.Game.Server.Service.Skill.CacheXPChartData
+  action      SWLOR.Game.Server.Service.Snippet.CacheData
+  action      SWLOR.Game.Server.Service.Space.LoadSpaceSystem
+  action      SWLOR.Game.Server.Service.Spawn.CacheData
+  action      SWLOR.Game.Server.Service.Stat.CacheData
+  action      SWLOR.Game.Server.Service.StatusEffect.CacheData
+  action      SWLOR.Game.Server.Service.Taxi.LoadTaxiDestinations
+  action      SWLOR.Game.Server.Service.Weather.LoadData
+  action      SWLOR.Game.Server.Feature.KatarAnimationRemap.RegisterEquipmentAnimationRestoration
+  action      SWLOR.Game.Server.Feature.UnarmedMastery.Register
+  action      SWLOR.Game.Server.Feature.AppearanceDefinition.TintMap.NeckModelRenderer.Load
+  action      SWLOR.Game.Server.Feature.AppearanceDefinition.TintMap.PartSkinModelRenderer.Load
+  action      SWLOR.Game.Server.Feature.AppearanceDefinition.TintMap.RobeModelRenderer.Load
+  action      SWLOR.Game.Server.Feature.AppearanceDefinition.TintMap.ShoulderModelRenderer.Load
+  action      SWLOR.Game.Server.Feature.AppearanceDefinition.TintMap.TintMapMaterialRegistry.Load
+
+mod_cache_aft  # run by EventRegistration.OnModulePreload through ExecuteScript, after every mod_cache_bef handler
+  action      SWLOR.Game.Server.Service.AbilityCooldownVisual.CacheData
+  action      SWLOR.Game.Server.Service.AI.CacheAIData
+  action      SWLOR.Game.Server.Service.Conversation.CacheData
+  action      SWLOR.Game.Server.Service.DMBlueprintCatalog.LoadCustomPalettes
+  action      SWLOR.Game.Server.Service.Gui.CacheData
+  action      SWLOR.Game.Server.Service.IncubationFieldNote.LoadDisplayText
+  action      SWLOR.Game.Server.Service.Migration.AfterCacheLoaded
+  action      SWLOR.Game.Server.Service.Mimicry.CacheData
+  action      SWLOR.Game.Server.Service.Perk.CachePerkFeatData
+  action      SWLOR.Game.Server.Service.AnimationService.AnimationPreviewCatalog.CacheCategories
+  action      SWLOR.Game.Server.Feature.PowerGlovePairLifecycle.RegisterUnequipGuard
+  action      SWLOR.Game.Server.Feature.PowerGlovePairLifecycle.RegisterAttackRules
+  action      SWLOR.Game.Server.Feature.TwinPistolPairLifecycle.RegisterUnequipGuard
+  action      SWLOR.Game.Server.Feature.UnarmedTechniqueProfile.Register
+  action      SWLOR.Game.Server.Feature.ChatCommandDefinition.DMChatCommand.CacheSpawnBeastEggHelp
+
+mod_load  # run by the engine as the module OnModuleLoad event, which EventRegistration.OnModulePreload points at this script
+  action      SWLOR.Game.Server.Service.Achievement.ReserveGuiIds
+  action      SWLOR.Game.Server.Service.Area.RemoveInstancesFromCache
+  action      SWLOR.Game.Server.Service.FrameProfiler.Load
+  action      SWLOR.Game.Server.Service.Language.LoadTranslators
+  action      SWLOR.Game.Server.Service.PlayerMarket.RemoveOldListings
+  action      SWLOR.Game.Server.Service.Property.OnModuleLoad
+  action      SWLOR.Game.Server.Service.Race.LoadRaces
+  action      SWLOR.Game.Server.Service.Resistance.LoadResistanceTypes
+  action      SWLOR.Game.Server.Service.Shuttle.LoadShuttleFlights
+  action      SWLOR.Game.Server.Service.Space.LoadLandingPoints
+  action      SWLOR.Game.Server.Service.Walkmesh.RetrieveWalkmeshes
+  action      SWLOR.Game.Server.Service.Weather.InitializeWeather
+  action      SWLOR.Game.Server.Native.ChatPortraitSpeakers.RegisterHooks
+  action      SWLOR.Game.Server.Native.GetDamageRoll.RegisterHook
+  action      SWLOR.Game.Server.Native.NeckAppearanceSerialization.RegisterHook
+  action      SWLOR.Game.Server.Native.OnAIActionAttackObject.RegisterHook
+  action      SWLOR.Game.Server.Native.PlayerCreation.RegisterHook
+  action      SWLOR.Game.Server.Native.PlayerFileCheckpoint.RegisterHooks
+  action      SWLOR.Game.Server.Native.PlayerListNamePrivacy.RegisterHook
+  action      SWLOR.Game.Server.Native.QuickbarFeatLoading.RegisterHook
+  action      SWLOR.Game.Server.Native.ResolveAttackRoll.RegisterHook
+  action      SWLOR.Game.Server.Native.SavedPlayerInventory.RegisterHook
+  action      SWLOR.Game.Server.Native.VitalityHitPoints.RegisterHooks
+  action      SWLOR.Game.Server.Native.WeaponAttackAnimation.RegisterHooks
+  action      SWLOR.Game.Server.Feature.AreaConfiguration.ApplyAreaConfiguration
+  action      SWLOR.Game.Server.Feature.CZ220FlightsTerminal.SpawnHangarFlightsTerminal
+  action      SWLOR.Game.Server.Feature.EquipmentStats.RegisterStatActions
+  action      SWLOR.Game.Server.Feature.FeatConfiguration.ConfigureFeats
+  action      SWLOR.Game.Server.Feature.FeedbackMessageConfiguration.ConfigureFeedbackMessages
+  action      SWLOR.Game.Server.Feature.RoleplayXP.LoadOOCDetection
+  action      SWLOR.Game.Server.Feature.ServerTasks.ProcessBootUp
+  action      SWLOR.Game.Server.Feature.StoreManagement.ProcessStores
+  action      SWLOR.Game.Server.Feature.TlkOverrides.OverrideTlks
+  action      SWLOR.Game.Server.Feature.GuiDefinition.ViewModel.AppearanceEditorViewModel.LoadAppearances
+  action      SWLOR.Game.Server.Feature.GuiDefinition.ViewModel.MarketBuyViewModel.LoadCategories
+  action      SWLOR.Game.Server.Feature.DialogDefinition.CoxxionTerminalDialog.LoadDoors
+
+== OTHER SCRIPTS (alphabetical; the registry never reads its script names in order) ==
+
+action
+  action      SWLOR.Game.Server.Service.Snippet.ConversationAction
+
+actions
+  action      SWLOR.Game.Server.Service.Snippet.ConversationAction
+
+apartment_term
+  action      SWLOR.Game.Server.Service.Property.StartApartmentConversation
+
+app_shutdown
+  action      SWLOR.Game.Server.Service.CombatRecorder.StopOnShutdown
+  action      SWLOR.Game.Server.Service.Log.OnApplicationShutdown
+
+appear
+  conditional SWLOR.Game.Server.Service.Snippet.ConversationAppearsWhen
+
+appearance_edit
+  action      SWLOR.Game.Server.Service.Droid.EditDroidAppearance
+  action      SWLOR.Game.Server.Feature.AppearanceDefinition.TintMap.TintMapService.OnAppearanceEdit
+
+appears
+  conditional SWLOR.Game.Server.Service.Snippet.ConversationAppearsWhen
+
+area_enter
+  action      SWLOR.Game.Server.Service.Area.EnterArea
+  action      SWLOR.Game.Server.Service.Conversation.EndOnAreaEnter
+  action      SWLOR.Game.Server.Service.Gui.CloseAllWindows
+  action      SWLOR.Game.Server.Service.Music.ApplyPlayerMusic
+  action      SWLOR.Game.Server.Service.Property.EnterPropertyInstance
+  action      SWLOR.Game.Server.Service.Space.UpdateSpacePosition
+  action      SWLOR.Game.Server.Service.Spawn.SpawnArea
+  action      SWLOR.Game.Server.Service.Telegraph.OnAreaEnter
+  action      SWLOR.Game.Server.Service.Weather.OnAreaEnter
+  action      SWLOR.Game.Server.Service.QuestService.QuestEncounter.OnAreaEnter
+  action      SWLOR.Game.Server.Native.PairedRangedPresentation.OnAreaEnter
+  action      SWLOR.Game.Server.Feature.AchievementProgression.EnterArea
+  action      SWLOR.Game.Server.Feature.DMToolbarWindow.OpenToolbar
+  action      SWLOR.Game.Server.Feature.DMToolbarWindow.RefreshCurrentAreaWindows
+  action      SWLOR.Game.Server.Feature.MiniMaps.DisableMiniMap
+  action      SWLOR.Game.Server.Feature.PersistentLocation.SaveLocationOnAreaEnter
+  action      SWLOR.Game.Server.Feature.PersistentLocation.LoadLocationOnEnter
+  action      SWLOR.Game.Server.Feature.PersistentMapProgression.LoadMapProgression
+  action      SWLOR.Game.Server.Feature.PlayerStatusWindow.LoadPlayerStatusWindow
+  action      SWLOR.Game.Server.Feature.TwinPistolCombatLifecycle.OnAreaEnter
+  action      SWLOR.Game.Server.Feature.AppearanceDefinition.TintMap.TintMapService.OnAreaEnter
+
+area_exit
+  action      SWLOR.Game.Server.Service.Area.ExitArea
+  action      SWLOR.Game.Server.Service.CombatPoint.OnPlayerExit
+  action      SWLOR.Game.Server.Service.Conversation.EndOnAreaExit
+  action      SWLOR.Game.Server.Service.Enmity.PlayerExit
+  action      SWLOR.Game.Server.Service.EspionageInfiltration.OnPlayerExit
+  action      SWLOR.Game.Server.Service.MeleeTechnique.OnExit
+  action      SWLOR.Game.Server.Service.Mimicry.ClearAnalysisOnPlayerExit
+  action      SWLOR.Game.Server.Service.Property.ExitPropertyInstance
+  action      SWLOR.Game.Server.Service.Shuttle.HandleShuttleAreaExit
+  action      SWLOR.Game.Server.Service.Space.ClearTargetOnAreaExit
+  action      SWLOR.Game.Server.Service.Spawn.QueueDespawnArea
+  action      SWLOR.Game.Server.Service.SlicingService.SlicingSession.OnPlayerExit
+  action      SWLOR.Game.Server.Service.CompanionControlService.CompanionControl.OnOwnerAreaExit
+  action      SWLOR.Game.Server.Native.PairedRangedPresentation.OnExit
+  action      SWLOR.Game.Server.Feature.MiniMaps.EnableMiniMap
+  action      SWLOR.Game.Server.Feature.OrdinaryAttackCombatLifecycle.OnAreaExit
+  action      SWLOR.Game.Server.Feature.PersistentMapProgression.SaveMapProgression
+  action      SWLOR.Game.Server.Feature.TwinPistolCombatLifecycle.OnAreaExit
+
+asso_add_bef
+  action      SWLOR.Game.Server.Service.Party.AssociateJoinParty
+
+asso_rem_bef
+  action      SWLOR.Game.Server.Service.BeastMastery.RemoveAssociate
+  action      SWLOR.Game.Server.Service.Droid.RemoveAssociate
+  action      SWLOR.Game.Server.Service.Party.AssociateLeaveParty
+
+assoc_stateffect
+  action      SWLOR.Game.Server.Service.Stat.ReapplyFoodHP
+
+aura_enter
+  action      SWLOR.Game.Server.Service.Ability.AuraEnter
+
+aura_exit
+  action      SWLOR.Game.Server.Service.Ability.AuraExit
+
+bart_end_bef
+  action      SWLOR.Game.Server.Feature.SaveCharacters.RemoveBarteringFlag
+
+bart_start_bef
+  action      SWLOR.Game.Server.Feature.SaveCharacters.SetBarteringFlag
+
+beast_attacked
+  action      SWLOR.Game.Server.Service.BeastMastery.BeastOnPhysicalAttacked
+
+beast_blocked
+  action      SWLOR.Game.Server.Service.BeastMastery.BeastOnBlocked
+
+beast_convers
+  action      SWLOR.Game.Server.Service.BeastMastery.BeastOnConversation
+
+beast_damaged
+  action      SWLOR.Game.Server.Service.BeastMastery.BeastOnDamaged
+
+beast_death
+  action      SWLOR.Game.Server.Service.BeastMastery.BeastOnDeath
+
+beast_disturbed
+  action      SWLOR.Game.Server.Service.BeastMastery.BeastOnDisturbed
+
+beast_hb
+  action      SWLOR.Game.Server.Service.BeastMastery.BeastOnHeartbeat
+
+beast_rest
+  action      SWLOR.Game.Server.Service.BeastMastery.BeastOnRested
+
+beast_roundend
+  action      SWLOR.Game.Server.Service.BeastMastery.BeastOnEndCombatRound
+
+beast_spawn
+  action      SWLOR.Game.Server.Service.BeastMastery.BeastOnSpawn
+
+beast_spellcast
+  action      SWLOR.Game.Server.Service.BeastMastery.BeastOnSpellCastAt
+
+beast_term
+  action      SWLOR.Game.Server.Service.BeastMastery.OpenStablesMenu
+
+beast_userdef
+  action      SWLOR.Game.Server.Service.BeastMastery.BeastOnUserDefined
+
+brdcast_aoo_bef
+  action      SWLOR.Game.Server.Feature.DisableAttackOfOpportunity.OnAttackOfOpportunity
+
+buy_rebuild
+  action      SWLOR.Game.Server.Feature.PlaceableScripts.PurchaseRebuild
+
+buy_stat_rebuild
+  action      SWLOR.Game.Server.Feature.GuiDefinition.ViewModel.CharacterStatRebuildViewModel.LoadCharacterStatRebuild
+
+char_init_after
+  action      SWLOR.Game.Server.Service.Migration.AfterCharacterInitialization
+  action      SWLOR.Game.Server.Feature.PlayerAccountRecord.RecordAccountDetails
+
+char_rebuild
+  action      SWLOR.Game.Server.Feature.GuiDefinition.ViewModel.CharacterFullRebuildViewModel.LoadCharacterMigrationWindow
+
+client_conn_bef
+  action      SWLOR.Game.Server.Feature.ClientVersionCheck.CheckVersion
+
+condition
+  conditional SWLOR.Game.Server.Service.Snippet.ConversationAppearsWhen
+
+conditions
+  conditional SWLOR.Game.Server.Service.Snippet.ConversationAppearsWhen
+
+corpse_closed
+  action      SWLOR.Game.Server.Service.Loot.CloseCorpseContainer
+
+corpse_disturbed
+  action      SWLOR.Game.Server.Service.Loot.DisturbCorpseContainer
+
+cp_xp_distribute
+  action      SWLOR.Game.Server.Service.BeastMastery.CombatPointXPDistributed
+  action      SWLOR.Game.Server.Service.Mimicry.CombatPointXPDistributed
+
+craft_on_used
+  action      SWLOR.Game.Server.Service.Craft.UseCraftingDevice
+
+craft_success
+  action      SWLOR.Game.Server.Feature.AchievementProgression.CompleteCraftSuccessfully
+
+crea_aggro_enter
+  action      SWLOR.Game.Server.Service.AI.CreatureAggroEnter
+
+crea_aggro_exit
+  action      SWLOR.Game.Server.Service.AI.CreatureAggroExit
+
+crea_attack_aft
+  action      SWLOR.Game.Server.Service.AI.CreaturePhysicalAttacked
+  action      SWLOR.Game.Server.Service.QuestService.QuestEncounter.TrackEncounterActivity
+
+crea_attack_bef
+  action      SWLOR.Game.Server.Service.Enmity.CreatureAttacked
+  action      SWLOR.Game.Server.Service.Music.StartBattleThemeOnAttack
+  action      SWLOR.Game.Server.Service.Stealth.RecordPlayerCombatInitiation
+
+crea_block_aft
+  action      SWLOR.Game.Server.Service.AI.CreatureBlocked
+
+crea_convo_aft
+  action      SWLOR.Game.Server.Service.AI.CreatureConversation
+
+crea_convo_bef
+  action      SWLOR.Game.Server.Service.Conversation.StartAssignedCreatureConversation
+
+crea_damaged_aft
+  action      SWLOR.Game.Server.Service.AI.CreatureDamaged
+  action      SWLOR.Game.Server.Service.Combat.ApplyDamageTakenEffects
+  action      SWLOR.Game.Server.Service.MeleeTechnique.OnDirectDamageApplied
+  action      SWLOR.Game.Server.Service.QuestService.QuestEncounter.TrackEncounterActivity
+
+crea_damaged_bef
+  action      SWLOR.Game.Server.Service.Enmity.CreatureDamaged
+  action      SWLOR.Game.Server.Service.Music.StartBattleThemeOnDamage
+
+crea_death_aft
+  action      SWLOR.Game.Server.Service.AI.CreatureDeath
+  action      SWLOR.Game.Server.Service.CombatPoint.OnCreatureDeath
+  action      SWLOR.Game.Server.Service.Enmity.CreatureDeath
+  action      SWLOR.Game.Server.Service.EspionageInfiltration.OnNpcRemoved
+  action      SWLOR.Game.Server.Service.MeleeTechnique.OnDeath
+  action      SWLOR.Game.Server.Service.Mimicry.OnCreatureDeath
+  action      SWLOR.Game.Server.Service.Space.CreatureDeath
+  action      SWLOR.Game.Server.Service.Spawn.QueueRespawn
+  action      SWLOR.Game.Server.Native.PairedRangedPresentation.OnCreatureDeath
+  action      SWLOR.Game.Server.Feature.CreatureDeathAnimation.OnDeath
+  action      SWLOR.Game.Server.Feature.OrdinaryAttackCombatLifecycle.OnCreatureDeath
+  action      SWLOR.Game.Server.Feature.TwinPistolCombatLifecycle.OnCreatureDeath
+  action      SWLOR.Game.Server.Feature.TwinPistolEquipmentValidation.OnDeath
+
+crea_death_bef
+  action      SWLOR.Game.Server.Service.Combat.ApplyDefeatedEnemyEffects
+  action      SWLOR.Game.Server.Service.CombatRecorder.RecordCreatureDeath
+  action      SWLOR.Game.Server.Service.Loot.SpawnLootOnCreatureDeath
+  action      SWLOR.Game.Server.Service.Loot.ProcessCorpse
+  action      SWLOR.Game.Server.Service.Quest.ProgressKillTargetObjectives
+  action      SWLOR.Game.Server.Feature.AchievementProgression.KillEnemy
+  action      SWLOR.Game.Server.Feature.TrapDefinition.SpawnLarvaeOnSlugDeath.CreatureDeath
+
+crea_disturb_aft
+  action      SWLOR.Game.Server.Service.AI.CreatureDisturbed
+
+crea_hb_aft
+  action      SWLOR.Game.Server.Service.AI.CreatureHeartbeat
+
+crea_leash_end
+  action      SWLOR.Game.Server.Service.Space.RestoreLeashedShip
+
+crea_leash_start
+  action      SWLOR.Game.Server.Service.Space.RestoreLeashedShip
+
+crea_perc_aft
+  action      SWLOR.Game.Server.Service.AI.CreaturePerception
+
+crea_rested_aft
+  action      SWLOR.Game.Server.Service.AI.CreatureRested
+
+crea_rndend_aft
+  action      SWLOR.Game.Server.Service.AI.CreatureCombatRoundEnd
+
+crea_spawn_aft
+  action      SWLOR.Game.Server.Service.AI.CreatureSpawn
+  action      SWLOR.Game.Server.Feature.PistolAnimationRemap.OnCreatureSpawn
+  action      SWLOR.Game.Server.Feature.TrapDefinition.SpawnLarvaeOnSlugDeath.MessageOnDeath
+  action      SWLOR.Game.Server.Feature.AppearanceDefinition.TintMap.TintMapService.OnCreatureSpawn
+  action      SWLOR.Game.Server.Feature.AppearanceDefinition.ItemAppearance.PowerGloveFit.OnSpawn
+
+crea_spawn_bef
+  action      SWLOR.Game.Server.Service.Loot.SpawnStealLoot
+  action      SWLOR.Game.Server.Service.Space.CreatureSpawn
+
+crea_splcast_aft
+  action      SWLOR.Game.Server.Service.AI.CreatureSpellCastAt
+
+crea_userdef_aft
+  action      SWLOR.Game.Server.Service.AI.CreatureUserDefined
+
+db_loaded
+  action      SWLOR.Game.Server.Service.Migration.AfterDatabaseLoaded
+
+det_listen_bef
+  action      SWLOR.Game.Server.Service.Stealth.SuppressListenDetection
+
+det_spot_bef
+  action      SWLOR.Game.Server.Service.Stealth.ResolveSpotDetection
+
+dialog_start
+  action      SWLOR.Game.Server.Service.ConversationMenu.StartFromObjectEvent
+
+dm_ai_aft
+  action      SWLOR.Game.Server.Service.AI.DMToggleAIAfter
+
+dm_appear_aft
+  action      SWLOR.Game.Server.Feature.DMToolbarWindow.RefreshAppearButton
+
+dm_disappear_aft
+  action      SWLOR.Game.Server.Feature.DMToolbarWindow.RefreshAppearButton
+
+dm_givelvl_bef
+  action      SWLOR.Game.Server.Feature.DMActions.DisableGiveLevel
+
+dm_givexp_bef
+  action      SWLOR.Game.Server.Feature.DMActions.GrantRPXPViaDMCommand
+
+dm_jumpall_bef
+  action      SWLOR.Game.Server.Feature.DMActions.DisableTeleportAll
+
+dm_limbo_bef
+  action      SWLOR.Game.Server.Service.Enmity.CreatureLimbo
+
+dm_poss_bef
+  action      SWLOR.Game.Server.Service.Communication.OnDMPossess
+  action      SWLOR.Game.Server.Service.PlayerList.MoveWindowOnPossession
+  action      SWLOR.Game.Server.Service.Stat.ClearWalkModeBeforeDMPossessionChange
+  action      SWLOR.Game.Server.Service.Telegraph.ResendShaderStateOnDMPossess
+  action      SWLOR.Game.Server.Feature.DMToolbarWindow.MoveToolbarOnPossession
+  action      SWLOR.Game.Server.Feature.DMToolbarWindow.RefreshAvatarFadeOnRelease
+  action      SWLOR.Game.Server.Feature.DMToolbarWindow.MoveSettingsOnPossession
+  action      SWLOR.Game.Server.Feature.GuiDefinition.ViewModel.AppearanceEditorViewModel.CloseAppearanceWindowOnPossessionBefore
+  action      SWLOR.Game.Server.Feature.AbilityDefinition.AbilityTargeting.RefreshClientTargetingOnDMPossess
+
+dm_possfull_bef
+  action      SWLOR.Game.Server.Service.Communication.OnDMPossess
+  action      SWLOR.Game.Server.Service.PlayerList.MoveWindowOnPossession
+  action      SWLOR.Game.Server.Service.Stat.ClearWalkModeBeforeDMPossessionChange
+  action      SWLOR.Game.Server.Service.Telegraph.ResendShaderStateOnDMPossess
+  action      SWLOR.Game.Server.Feature.DMToolbarWindow.MoveToolbarOnPossession
+  action      SWLOR.Game.Server.Feature.DMToolbarWindow.RefreshAvatarFadeOnRelease
+  action      SWLOR.Game.Server.Feature.DMToolbarWindow.MoveSettingsOnPossession
+  action      SWLOR.Game.Server.Feature.GuiDefinition.ViewModel.AppearanceEditorViewModel.CloseAppearanceWindowOnPossessionBefore
+  action      SWLOR.Game.Server.Feature.AbilityDefinition.AbilityTargeting.RefreshClientTargetingOnDMPossess
+
+dm_spwnobj_aft
+  action      SWLOR.Game.Server.Service.Spawn.DMSpawnCreature
+  action      SWLOR.Game.Server.Feature.DMActions.OnDMSpawnObject
+
+dna_extract_used
+  action      SWLOR.Game.Server.Service.BeastMastery.UseExtractDNAObject
+
+door_relock_open
+  action      SWLOR.Game.Server.Feature.DoorScripts.ScheduleCloseAndRelock
+
+door_relock_shut
+  action      SWLOR.Game.Server.Feature.DoorScripts.RelockClosedDoor
+
+droid_ass_used
+  action      SWLOR.Game.Server.Service.Droid.UseDroidAssemblyTerminal
+
+droid_attacked
+  action      SWLOR.Game.Server.Service.Droid.DroidOnPhysicalAttacked
+
+droid_blocked
+  action      SWLOR.Game.Server.Service.Droid.DroidOnBlocked
+
+droid_convers
+  action      SWLOR.Game.Server.Service.Droid.DroidOnConversation
+
+droid_damaged
+  action      SWLOR.Game.Server.Service.Droid.DroidOnDamaged
+
+droid_death
+  action      SWLOR.Game.Server.Service.Droid.DroidOnDeath
+
+droid_disturbed
+  action      SWLOR.Game.Server.Service.Droid.DroidOnDisturbed
+
+droid_hb
+  action      SWLOR.Game.Server.Service.Droid.DroidOnHeartbeat
+  action      SWLOR.Game.Server.Service.DroidEquipmentDiagnostics.CheckHands
+
+droid_rest
+  action      SWLOR.Game.Server.Service.Droid.DroidOnRested
+
+droid_roundend
+  action      SWLOR.Game.Server.Service.Droid.DroidOnEndCombatRound
+
+droid_spawn
+  action      SWLOR.Game.Server.Service.Droid.DroidOnSpawn
+  action      SWLOR.Game.Server.Feature.AppearanceDefinition.TintMap.TintMapService.OnCreatureSpawn
+  action      SWLOR.Game.Server.Feature.AppearanceDefinition.ItemAppearance.PowerGloveFit.OnSpawn
+
+droid_spellcast
+  action      SWLOR.Game.Server.Service.Droid.DroidOnSpellCastAt
+
+droid_userdef
+  action      SWLOR.Game.Server.Service.Droid.DroidOnUserDefined
+
+effect_app_aft
+  action      SWLOR.Game.Server.Feature.PlayerStatusWindow.PlayerTemporaryHitPointsChanged
+
+effect_rem_aft
+  action      SWLOR.Game.Server.Feature.PlayerStatusWindow.PlayerTemporaryHitPointsChanged
+
+enmity_changed
+  action      SWLOR.Game.Server.Feature.GuiDefinition.ViewModel.DebugEnmityViewModel.OnEnmityChanged
+
+enter_property
+  action      SWLOR.Game.Server.Service.Property.EnterBuilding
+
+enter_world
+  action      SWLOR.Game.Server.Feature.GameWorldEntry.EnterGameWorld
+
+equip_uneqp_bef
+  action      SWLOR.Game.Server.Service.DroidEquipmentDiagnostics.OnUnequipping
+  action      SWLOR.Game.Server.Service.EquipmentUnequip.BeforeUnequip
+
+espn_trap_used
+  action      SWLOR.Game.Server.Service.Traps.DisarmTrap
+
+examine_aft
+  action      SWLOR.Game.Server.Feature.GuiDefinition.ViewModel.DMPlayerExamineViewModel.ExaminePlayer
+
+examine_bef
+  action      SWLOR.Game.Server.Service.Space.ExamineShipModuleItem
+  action      SWLOR.Game.Server.Service.Space.ExamineShipItem
+  action      SWLOR.Game.Server.Feature.EquipmentRestrictions.MarkLegacyOffHandPistolOnExamine
+
+exit_rebuild
+  action      SWLOR.Game.Server.Feature.GuiDefinition.ViewModel.CharacterFullRebuildViewModel.ExitRebuildArea
+
+exit_spending
+  action      SWLOR.Game.Server.Feature.GuiDefinition.ViewModel.CharacterFullRebuildViewModel.ExitSpendingArea
+
+explore_trigger
+  action      SWLOR.Game.Server.Feature.ExplorationTrigger.EnterExplorationTrigger
+
+feat_use_bef
+  action      SWLOR.Game.Server.Service.Property.PropertyMenu
+  action      SWLOR.Game.Server.Service.Space.HandleShipModuleFeats
+  action      SWLOR.Game.Server.Feature.UsePerkFeat.UseFeat
+
+fish_point
+  action      SWLOR.Game.Server.Service.Fishing.ClickFishingPoint
+
+generic_convo
+  action      SWLOR.Game.Server.Feature.PlaceableScripts.GenericConversation
+
+get_key_item
+  action      SWLOR.Game.Server.Service.KeyItem.ObtainKeyItem
+
+heal_aft
+  action      SWLOR.Game.Server.Service.Enmity.HealingCompleted
+  action      SWLOR.Game.Server.Feature.PlayerStatusWindow.PlayerHealed
+
+heal_bef
+  action      SWLOR.Game.Server.Service.Enmity.HealingStarted
+  action      SWLOR.Game.Server.Service.PvpCombat.ReduceHealing
+
+incubator_term
+  action      SWLOR.Game.Server.Service.BeastMastery.UseIncubator
+
+input_atk_bef
+  action      SWLOR.Game.Server.Service.Space.SelectTarget
+  action      SWLOR.Game.Server.Feature.StatusEffectDefinition.RestStatusEffect.RemoveRestOnAttack
+
+interval_pc_6s
+  action      SWLOR.Game.Server.Service.Combat.ClearCombatState
+  action      SWLOR.Game.Server.Service.Music.StopBattleThemeAfterCombat
+  action      SWLOR.Game.Server.Feature.OrdinaryAttackCombatLifecycle.Reconcile
+  action      SWLOR.Game.Server.Feature.TwinPistolCombatLifecycle.Reconcile
+
+item_acquire_bef
+  action      SWLOR.Game.Server.Feature.PowerGlovePairLifecycle.BeforeAcquire
+  action      SWLOR.Game.Server.Feature.TwinPistolPairLifecycle.BeforeAcquire
+
+item_dec_bef
+  action      SWLOR.Game.Server.Feature.StackDecrementPrevention.PreventStackDecrement
+
+item_drop_bef
+  action      SWLOR.Game.Server.Feature.TrashCan.PreventItemDrops
+
+item_eqp_bef
+  action      SWLOR.Game.Server.Service.Droid.OnEquipItem
+  action      SWLOR.Game.Server.Service.NamedAnimation.OnEquipmentChanging
+  action      SWLOR.Game.Server.Feature.EquipmentRestrictions.ApplyEquipTriggers
+  action      SWLOR.Game.Server.Feature.EquipmentStats.ApplyStats
+  action      SWLOR.Game.Server.Feature.PlayerStatusWindow.PlayerEquipItem
+  action      SWLOR.Game.Server.Feature.UsePerkFeat.ClearTemporaryQueuedVariablesOnEquip
+  action      SWLOR.Game.Server.Feature.AppearanceDefinition.ItemAppearance.PowerGloveFit.OnEquipBefore
+
+item_eqpval_aft
+  action      SWLOR.Game.Server.Service.Droid.OnEquipmentChanged
+  action      SWLOR.Game.Server.Service.DroidEquipmentDiagnostics.OnEquipped
+  action      SWLOR.Game.Server.Feature.EquipmentStats.RefreshCombatReadinessAfterEquipmentChange
+  action      SWLOR.Game.Server.Feature.EquipmentStats.RefreshMaxHPAfterEquipmentChange
+  action      SWLOR.Game.Server.Feature.EquipmentStats.RefreshEquipmentRecordsAfterEquipmentChange
+  action      SWLOR.Game.Server.Feature.PistolAnimationRemap.OnItemEquip
+  action      SWLOR.Game.Server.Feature.PistolBaseItemCompatibility.OnItemEquip
+  action      SWLOR.Game.Server.Feature.PowerGlovePairLifecycle.AfterEquip
+  action      SWLOR.Game.Server.Feature.TwinPistolEquipmentValidation.OnEquipmentChanged
+  action      SWLOR.Game.Server.Feature.TwinPistolPairLifecycle.AfterEquip
+  action      SWLOR.Game.Server.Feature.AppearanceDefinition.TintMap.TintMapService.OnAppearanceEquipmentChanged
+  action      SWLOR.Game.Server.Feature.AppearanceDefinition.ItemAppearance.PowerGloveFit.OnEquipmentChanged
+
+item_eqpval_bef
+  action      SWLOR.Game.Server.Feature.EquipmentRestrictions.ValidateItemEquip
+
+item_on_hit
+  action      SWLOR.Game.Server.Service.Ability.AddLeadershipCombatPoint
+  action      SWLOR.Game.Server.Service.CombatPoint.OnHitCastSpell
+  action      SWLOR.Game.Server.Service.Loot.MarkCreditfinderAndTreasureHunterOnTarget
+  action      SWLOR.Game.Server.Feature.UsePerkFeat.ProcessQueuedWeaponAbility
+
+item_uneqp_aft
+  action      SWLOR.Game.Server.Service.Droid.OnEquipmentChanged
+  action      SWLOR.Game.Server.Service.DroidEquipmentDiagnostics.OnUnequipped
+  action      SWLOR.Game.Server.Feature.EquipmentStats.RefreshCombatReadinessAfterEquipmentChange
+  action      SWLOR.Game.Server.Feature.EquipmentStats.RefreshMaxHPAfterEquipmentChange
+  action      SWLOR.Game.Server.Feature.EquipmentStats.RefreshEquipmentRecordsAfterEquipmentChange
+  action      SWLOR.Game.Server.Feature.PistolAnimationRemap.OnItemUnequip
+  action      SWLOR.Game.Server.Feature.PistolBaseItemCompatibility.OnItemUnequip
+  action      SWLOR.Game.Server.Feature.PowerGlovePairLifecycle.AfterUnequip
+  action      SWLOR.Game.Server.Feature.TwinPistolEquipmentValidation.OnEquipmentChanged
+  action      SWLOR.Game.Server.Feature.TwinPistolPairLifecycle.AfterUnequip
+  action      SWLOR.Game.Server.Feature.AppearanceDefinition.TintMap.TintMapService.OnAppearanceItemUnequipped
+  action      SWLOR.Game.Server.Feature.AppearanceDefinition.TintMap.TintMapService.OnAppearanceEquipmentChanged
+  action      SWLOR.Game.Server.Feature.AppearanceDefinition.ItemAppearance.PowerGloveFit.OnEquipmentChanged
+
+item_uneqp_bef
+  action      SWLOR.Game.Server.Service.Droid.OnUnequipItem
+  action      SWLOR.Game.Server.Service.NamedAnimation.OnEquipmentChanging
+  action      SWLOR.Game.Server.Feature.EquipmentRestrictions.ApplyUnequipTriggers
+  action      SWLOR.Game.Server.Feature.EquipmentStats.RemoveStats
+  action      SWLOR.Game.Server.Feature.PlayerStatusWindow.PlayerUnequipItem
+  action      SWLOR.Game.Server.Feature.UsePerkFeat.ClearTemporaryQueuedVariablesOnEquip
+  action      SWLOR.Game.Server.Feature.AppearanceDefinition.ItemAppearance.PowerGloveFit.OnUnequipBefore
+
+item_use_bef
+  action      SWLOR.Game.Server.Service.Item.UseItem
+  action      SWLOR.Game.Server.Service.Property.PlaceStructure
+  action      SWLOR.Game.Server.Feature.InstantItemUse.OnUseItem
+
+jukebox_used
+  action      SWLOR.Game.Server.Feature.Jukebox.UseJukebox
+
+lsaber_bench
+  action      SWLOR.Game.Server.Service.LightsaberWorkbench.UseLightsaberWorkbench
+
+mappin_add_bef
+  action      SWLOR.Game.Server.Feature.PersistentMapPin.AddMapPin
+
+mappin_chg_bef
+  action      SWLOR.Game.Server.Feature.PersistentMapPin.ChangeMapPin
+
+mappin_rem_bef
+  action      SWLOR.Game.Server.Feature.PersistentMapPin.DeleteMapPin
+
+mod_acquire
+  action      SWLOR.Game.Server.Service.BeastMastery.OnAcquireItem
+  action      SWLOR.Game.Server.Service.Droid.OnAcquireItem
+  action      SWLOR.Game.Server.Service.Item.EnsureAcquiredItemActivation
+  action      SWLOR.Game.Server.Feature.BasicVibrobladeCompatibility.OnAcquire
+  action      SWLOR.Game.Server.Feature.EquipmentRequirementCompatibility.OnAcquire
+  action      SWLOR.Game.Server.Feature.PistolBaseItemCompatibility.OnAcquire
+  action      SWLOR.Game.Server.Feature.PowerGlovePairLifecycle.OnAcquire
+  action      SWLOR.Game.Server.Feature.SaberRecalibrationCompatibility.OnAcquire
+  action      SWLOR.Game.Server.Feature.StoreManagement.AcquireItem
+  action      SWLOR.Game.Server.Feature.TwinPistolEquipmentValidation.OnAcquire
+  action      SWLOR.Game.Server.Feature.MigrationDefinition.DungeonSaberMigration.OnAcquire
+  action      SWLOR.Game.Server.Feature.MigrationDefinition.LootStatRevisionMigration.OnAcquire
+  action      SWLOR.Game.Server.Feature.MigrationDefinition.WeaponStatOverrideMigration.OnAcquire
+  action      SWLOR.Game.Server.Feature.AppearanceDefinition.ItemAppearance.PowerGloveFit.OnAcquire
+
+mod_chat
+  action      SWLOR.Game.Server.Service.Communication.ProcessNativeChatMessage
+  action      SWLOR.Game.Server.Service.HoloCom.OnModuleChat
+
+mod_death
+  action      SWLOR.Game.Server.Service.Ability.ClearAurasOnDeath
+  action      SWLOR.Game.Server.Service.Activity.WipeStatusOnDeath
+  action      SWLOR.Game.Server.Service.CombatRecorder.RecordPlayerDeath
+  action      SWLOR.Game.Server.Service.Death.OnPlayerDeath
+  action      SWLOR.Game.Server.Service.Enmity.PlayerDeath
+  action      SWLOR.Game.Server.Service.EspionageInfiltration.OnPlayerDeath
+  action      SWLOR.Game.Server.Service.HoloCom.OnModuleDeath
+  action      SWLOR.Game.Server.Service.MeleeTechnique.OnPlayerDeath
+  action      SWLOR.Game.Server.Service.PvpCombat.EndOnDeath
+  action      SWLOR.Game.Server.Service.Space.ApplyDeath
+  action      SWLOR.Game.Server.Service.SlicingService.SlicingSession.OnPlayerDeath
+  action      SWLOR.Game.Server.Native.PairedRangedPresentation.OnPlayerDeath
+  action      SWLOR.Game.Server.Feature.OrdinaryAttackCombatLifecycle.OnDeath
+  action      SWLOR.Game.Server.Feature.PowerGlovePairLifecycle.OnDeath
+  action      SWLOR.Game.Server.Feature.TwinPistolCombatLifecycle.OnDeath
+
+mod_dying
+  action      SWLOR.Game.Server.Service.Death.OnPlayerDying
+  action      SWLOR.Game.Server.Feature.OrdinaryAttackCombatLifecycle.OnDying
+  action      SWLOR.Game.Server.Feature.TwinPistolCombatLifecycle.OnDying
+
+mod_enter
+  action      SWLOR.Game.Server.Service.Ability.ApplyAuraAOE
+  action      SWLOR.Game.Server.Service.AbilityCooldownVisual.RestoreCooldownVisuals
+  action      SWLOR.Game.Server.Service.Activity.WipeStatusOnEntry
+  action      SWLOR.Game.Server.Service.ChatPortraitTells.RememberEnteringPlayer
+  action      SWLOR.Game.Server.Service.Combat.AddDamageTypeResistances
+  action      SWLOR.Game.Server.Service.Combat.RestoreIdleReadinessOnPlayerEnter
+  action      SWLOR.Game.Server.Service.Communication.ApplyCommsChannelName
+  action      SWLOR.Game.Server.Service.Communication.ApplyShoutChannelName
+  action      SWLOR.Game.Server.Service.Death.InitializeRespawnPoint
+  action      SWLOR.Game.Server.Service.Disguise.ApplyActiveDisguiseOnEnter
+  action      SWLOR.Game.Server.Service.Gui.CreatePlayerWindows
+  action      SWLOR.Game.Server.Service.HoloCom.OnModuleEnter
+  action      SWLOR.Game.Server.Service.Item.EnsureInventoryItemActivations
+  action      SWLOR.Game.Server.Service.Mimicry.OnPlayerLogin
+  action      SWLOR.Game.Server.Service.ObjectVisibility.LoadPlayerVisibilityObjects
+  action      SWLOR.Game.Server.Service.PlayerList.RefreshOnEnter
+  action      SWLOR.Game.Server.Service.PlayerMarket.CheckMarketTill
+  action      SWLOR.Game.Server.Service.PlayerName.ApplyNameOverridesOnEnter
+  action      SWLOR.Game.Server.Service.Quest.LoadPlayerQuests
+  action      SWLOR.Game.Server.Service.QuestContractBoard.NotifyPendingDeliveries
+  action      SWLOR.Game.Server.Service.QuickCast.ApplyOnEnter
+  action      SWLOR.Game.Server.Service.Race.ApplyWookieeScaling
+  action      SWLOR.Game.Server.Service.Shuttle.EnterServer
+  action      SWLOR.Game.Server.Service.Skill.AddMissingSkills
+  action      SWLOR.Game.Server.Service.Space.EnterServer
+  action      SWLOR.Game.Server.Service.Stat.ApplyPlayerStats
+  action      SWLOR.Game.Server.Service.StatusEffect.OnPlayerEnter
+  action      SWLOR.Game.Server.Service.QuestService.QuestEncounter.OnModuleEnter
+  action      SWLOR.Game.Server.Service.CompanionControlService.CompanionControl.RenameToggleAbilitiesCommand
+  action      SWLOR.Game.Server.Feature.AchievementProgression.LogIn
+  action      SWLOR.Game.Server.Feature.Auditing.AuditClientConnection
+  action      SWLOR.Game.Server.Feature.BasicVibrobladeCompatibility.OnEnter
+  action      SWLOR.Game.Server.Feature.DisableDefaultGameWindows.DisableWindows
+  action      SWLOR.Game.Server.Feature.DMAuthorization.VerifyDM
+  action      SWLOR.Game.Server.Feature.DMToolbarWindow.OpenToolbar
+  action      SWLOR.Game.Server.Feature.EquipmentRequirementCompatibility.OnEnter
+  action      SWLOR.Game.Server.Feature.EventRegistration.EnterServer
+  action      SWLOR.Game.Server.Feature.PersistentHitPoints.LoadHP
+  action      SWLOR.Game.Server.Feature.PersistentMapPin.LoadMapPins
+  action      SWLOR.Game.Server.Feature.PistolBaseItemCompatibility.OnClientEnter
+  action      SWLOR.Game.Server.Feature.PlayerInitialization.InitializePlayer
+  action      SWLOR.Game.Server.Feature.PlayerStatusWindow.LoadPlayerStatusWindow
+  action      SWLOR.Game.Server.Feature.PlayerTemporaryEffects.ApplyTemporaryEffects
+  action      SWLOR.Game.Server.Feature.PowerGlovePairLifecycle.OnEnter
+  action      SWLOR.Game.Server.Feature.SaberRecalibrationCompatibility.OnEnter
+  action      SWLOR.Game.Server.Feature.SavedAnimationMappings.OnClientEnter
+  action      SWLOR.Game.Server.Feature.ServerTasks.WelcomeMessage
+  action      SWLOR.Game.Server.Feature.TwinPistolCombatLifecycle.TrackEnteredPlayer
+  action      SWLOR.Game.Server.Feature.TwinPistolEquipmentValidation.OnEnter
+  action      SWLOR.Game.Server.Feature.TwinPistolPairLifecycle.OnEnter
+  action      SWLOR.Game.Server.Feature.UsePerkFeat.ClearTemporaryQueuedVariables
+  action      SWLOR.Game.Server.Feature.StatusEffectDefinition.RestStatusEffect.RemoveRestOnLogin
+  action      SWLOR.Game.Server.Feature.AppearanceDefinition.TintMap.TintMapService.OnModuleEnter
+  action      SWLOR.Game.Server.Feature.AppearanceDefinition.ItemAppearance.PowerGloveFit.OnModuleEnter
+  action      SWLOR.Game.Server.Feature.AbilityDefinition.AbilityTargeting.RefreshClientTargetingOnEnter
+
+mod_equip
+  action      SWLOR.Game.Server.Service.Gui.RefreshOnEquip
+  action      SWLOR.Game.Server.Service.MeleeTechnique.OnEquip
+  action      SWLOR.Game.Server.Service.WeaponDelay.ApplyWeaponDelayFallback
+  action      SWLOR.Game.Server.Feature.ArmorDisplay.EquipHelmet
+  action      SWLOR.Game.Server.Feature.KatarAnimationRemap.OnEquip
+  action      SWLOR.Game.Server.Feature.LightsaberAudio.EquipLightsaber
+  action      SWLOR.Game.Server.Feature.StandardItemConfigurations.AddOnHitProperty
+  action      SWLOR.Game.Server.Feature.TwinPistolCombatLifecycle.OnEquip
+  action      SWLOR.Game.Server.Feature.AppearanceDefinition.TintMap.TintMapService.OnModuleEquip
+  action      SWLOR.Game.Server.Feature.AppearanceDefinition.ItemAppearance.PowerGloveFit.OnModuleEquip
+
+mod_exit
+  action      SWLOR.Game.Server.Service.Ability.ClearAurasOnExit
+  action      SWLOR.Game.Server.Service.AbilityCooldownVisual.ClearCooldownVisualsOnExit
+  action      SWLOR.Game.Server.Service.ChatPortraitTells.ForgetExitingPlayer
+  action      SWLOR.Game.Server.Service.Combat.ClearStatTriggerState
+  action      SWLOR.Game.Server.Service.CombatPoint.ClearPendingWeaponAttackPoints
+  action      SWLOR.Game.Server.Service.CombatPoint.OnPlayerExit
+  action      SWLOR.Game.Server.Service.Droid.OnPlayerExit
+  action      SWLOR.Game.Server.Service.Enmity.PlayerExit
+  action      SWLOR.Game.Server.Service.EspionageInfiltration.OnPlayerExit
+  action      SWLOR.Game.Server.Service.Gui.SavePlayerWindowGeometry
+  action      SWLOR.Game.Server.Service.HoloCom.OnModuleLeave
+  action      SWLOR.Game.Server.Service.MeleeTechnique.OnExit
+  action      SWLOR.Game.Server.Service.Mimicry.ClearAnalysisOnPlayerExit
+  action      SWLOR.Game.Server.Service.Music.ForgetBattleThemeCombat
+  action      SWLOR.Game.Server.Service.Party.LeaveServer
+  action      SWLOR.Game.Server.Service.PlayerIntroduction.ClearOnExit
+  action      SWLOR.Game.Server.Service.PlayerList.RefreshOnExit
+  action      SWLOR.Game.Server.Service.PlayerName.ReleaseKnownNamesOnExit
+  action      SWLOR.Game.Server.Service.PlayerName.ClearAfkOnExit
+  action      SWLOR.Game.Server.Service.PvpCombat.ForgetExitingPlayer
+  action      SWLOR.Game.Server.Service.Shuttle.ExitServer
+  action      SWLOR.Game.Server.Service.Space.ExitServer
+  action      SWLOR.Game.Server.Service.StatusEffect.OnPlayerExit
+  action      SWLOR.Game.Server.Service.Telegraph.ForgetShaderStateOnExit
+  action      SWLOR.Game.Server.Service.SlicingService.SlicingSession.OnPlayerExit
+  action      SWLOR.Game.Server.Service.CombatService.TemporaryStatModifier.ClearExitingObject
+  action      SWLOR.Game.Server.Service.CombatService.WeaponRepositioning.OnExit
+  action      SWLOR.Game.Server.Native.PairedRangedPresentation.OnExit
+  action      SWLOR.Game.Server.Feature.Auditing.AuditClientDisconnection
+  action      SWLOR.Game.Server.Feature.OrdinaryAttackCombatLifecycle.OnExit
+  action      SWLOR.Game.Server.Feature.PersistentHitPoints.SaveHP
+  action      SWLOR.Game.Server.Feature.PersistentMapProgression.SaveMapProgression
+  action      SWLOR.Game.Server.Feature.PowerGlovePairLifecycle.OnExit
+  action      SWLOR.Game.Server.Feature.TwinPistolCombatLifecycle.OnExit
+  action      SWLOR.Game.Server.Feature.TwinPistolEquipmentValidation.OnExit
+  action      SWLOR.Game.Server.Feature.TwinPistolPairLifecycle.OnExit
+
+mod_gui_event
+  action      SWLOR.Game.Server.Service.ChatPortraitTells.CheckPortraitClick
+  action      SWLOR.Game.Server.Service.Communication.TypingIndicator
+  action      SWLOR.Game.Server.Service.Gui.ReplaceNWNGuis
+  action      SWLOR.Game.Server.Feature.BuffTimer.DisplayBuffInfo
+  action      SWLOR.Game.Server.Feature.MiniMaps.MiniMapGui
+  action      SWLOR.Game.Server.Feature.GuiDefinition.ViewModel.DMPlayerExamineViewModel.ExamineDisabledPlayerPanel
+
+mod_heartbeat
+  action      SWLOR.Game.Server.Service.Combat.PurgeInvalidOffensiveActivity
+  action      SWLOR.Game.Server.Service.MeleeTechnique.RefreshAll
+  action      SWLOR.Game.Server.Service.CombatService.TemporaryStatModifier.PurgeAllExpired
+  action      SWLOR.Game.Server.Native.PairedRangedPresentation.RemoveAbandonedAnchors
+  action      SWLOR.Game.Server.Native.WeaponAttackAnimation.ClearInactive
+
+mod_nui_event
+  action      SWLOR.Game.Server.Service.Gui.HandleNuiEvents
+  action      SWLOR.Game.Server.Service.Gui.HandleNuiWatchEvent
+
+mod_p_target
+  action      SWLOR.Game.Server.Service.Targeting.RunTargetedItemAction
+
+mod_respawn
+  action      SWLOR.Game.Server.Service.Ability.ReapplyAuraOnRespawn
+  action      SWLOR.Game.Server.Service.Death.OnPlayerRespawn
+  action      SWLOR.Game.Server.Feature.PistolAnimationRemap.OnPlayerRespawn
+  action      SWLOR.Game.Server.Feature.PowerGlovePairLifecycle.OnRespawn
+  action      SWLOR.Game.Server.Feature.TwinPistolEquipmentValidation.OnRespawn
+
+mod_rest
+  action      SWLOR.Game.Server.Feature.PersistentLocation.SaveLocationOnRest
+  action      SWLOR.Game.Server.Feature.PlayerRest.HandleRest
+
+mod_unacquire
+  action      SWLOR.Game.Server.Service.Droid.OnLostItem
+  action      SWLOR.Game.Server.Feature.PowerGlovePairLifecycle.OnLostItem
+  action      SWLOR.Game.Server.Feature.TwinPistolEquipmentValidation.OnUnacquire
+  action      SWLOR.Game.Server.Feature.TwinPistolPairLifecycle.OnLostItem
+  action      SWLOR.Game.Server.Feature.AppearanceDefinition.TintMap.TintMapService.OnModuleUnacquire
+  action      SWLOR.Game.Server.Feature.AppearanceDefinition.ItemAppearance.PowerGloveFit.OnUnacquire
+
+mod_unequip
+  action      SWLOR.Game.Server.Service.Gui.RefreshOnUnequip
+  action      SWLOR.Game.Server.Service.MeleeTechnique.OnUnequip
+  action      SWLOR.Game.Server.Feature.KatarAnimationRemap.OnUnequip
+  action      SWLOR.Game.Server.Feature.LightsaberAudio.UnequipLightsaber
+  action      SWLOR.Game.Server.Feature.TwinPistolCombatLifecycle.OnUnequip
+  action      SWLOR.Game.Server.Feature.AppearanceDefinition.TintMap.TintMapService.OnModuleUnequip
+  action      SWLOR.Game.Server.Feature.AppearanceDefinition.ItemAppearance.PowerGloveFit.OnModuleUnequip
+
+object_destroyed
+  action      SWLOR.Game.Server.Service.AI.RemoveFromAlliesCache
+  action      SWLOR.Game.Server.Service.DroidEquipmentDiagnostics.Forget
+  action      SWLOR.Game.Server.Service.Enmity.CreatureDestroyed
+  action      SWLOR.Game.Server.Service.EspionageInfiltration.OnNpcRemoved
+  action      SWLOR.Game.Server.Service.QuestService.QuestEncounter.ObjectDestroyed
+  action      SWLOR.Game.Server.Service.CombatService.WeaponRepositioning.OnDestroyed
+  action      SWLOR.Game.Server.Feature.OrdinaryAttackCombatLifecycle.OnDestroyed
+  action      SWLOR.Game.Server.Feature.PowerGlovePairLifecycle.OnDestroyed
+  action      SWLOR.Game.Server.Feature.TwinPistolCombatLifecycle.OnDestroyed
+  action      SWLOR.Game.Server.Feature.TwinPistolEquipmentValidation.OnDestroyed
+  action      SWLOR.Game.Server.Feature.TwinPistolPairLifecycle.OnDestroyed
+  action      SWLOR.Game.Server.Feature.UsePerkFeat.ForgetDestroyedQueuedWeaponAbility
+
+on_nwnx_chat
+  action      SWLOR.Game.Server.Service.ChatCommand.HandleChatMessage
+  action      SWLOR.Game.Server.Service.Communication.ProcessChatMessage
+  action      SWLOR.Game.Server.Service.PlayerName.PreventAmbiguousTellTargets
+  action      SWLOR.Game.Server.Feature.Auditing.AuditChatMessages
+  action      SWLOR.Game.Server.Feature.RoleplayXP.ProcessRPMessage
+
+open_bank
+  action      SWLOR.Game.Server.Feature.GuiDefinition.ViewModel.BankViewModel.ShowBank
+
+open_citizenship
+  action      SWLOR.Game.Server.Service.Property.OpenCitizenshipMenu
+
+open_city_manage
+  action      SWLOR.Game.Server.Service.Property.OpenCityManagementMenu
+
+open_holonet
+  action      SWLOR.Game.Server.Feature.HolonetTerminal.OpenHolonetUI
+
+open_prop_bank
+  action      SWLOR.Game.Server.Feature.PropertyLayoutDefinition.BankLayoutDefinition.OpenPropertyBank
+
+open_train_store
+  action      SWLOR.Game.Server.Feature.GuiDefinition.ViewModel.TrainingStoreViewModel.OpenTrainingStore
+
+pc_attacked
+  action      SWLOR.Game.Server.Service.Music.StartBattleThemeOnAttack
+  action      SWLOR.Game.Server.Service.CompanionControlService.CompanionControl.OnOwnerAttacked
+
+pc_cap_adjusted
+  action      SWLOR.Game.Server.Feature.PlayerStatusWindow.PlayerCapacitorAdjusted
+
+pc_damaged
+  action      SWLOR.Game.Server.Service.MeleeTechnique.OnDirectDamageApplied
+  action      SWLOR.Game.Server.Service.Music.StartBattleThemeOnDamage
+  action      SWLOR.Game.Server.Service.CompanionControlService.CompanionControl.OnOwnerDamaged
+  action      SWLOR.Game.Server.Feature.PlayerStatusWindow.PlayerDamaged
+  action      SWLOR.Game.Server.Feature.StatusEffectDefinition.RestStatusEffect.RemoveRestOnDamage
+
+pc_fp_adjusted
+  action      SWLOR.Game.Server.Feature.PlayerStatusWindow.PlayerFPAdjusted
+
+pc_heartbeat
+  action      SWLOR.Game.Server.Service.Stealth.EnsureStealthStatusWhileHidden
+  action      SWLOR.Game.Server.Feature.NaturalRegeneration.ProcessRegeneration
+  action      SWLOR.Game.Server.Feature.RoleplayXP.DistributeRoleplayXP
+  action      SWLOR.Game.Server.Feature.SaveCharacters.HandleSaveCharacters
+
+pc_hull_adjusted
+  action      SWLOR.Game.Server.Feature.PlayerStatusWindow.PlayerHullAdjusted
+
+pc_roundend
+  action      SWLOR.Game.Server.Service.CompanionControlService.CompanionControl.OnOwnerCombatRound
+
+pc_shld_adjusted
+  action      SWLOR.Game.Server.Feature.PlayerStatusWindow.PlayerShieldAdjusted
+
+pc_spawn
+  action      SWLOR.Game.Server.Feature.PowerGlovePairLifecycle.OnSpawn
+  action      SWLOR.Game.Server.Feature.AppearanceDefinition.TintMap.TintMapService.OnPlayerSpawn
+  action      SWLOR.Game.Server.Feature.AppearanceDefinition.ItemAppearance.PowerGloveFit.OnSpawn
+
+pc_spellcastat
+  action      SWLOR.Game.Server.Service.CompanionControlService.CompanionControl.OnHostileSpellCastAtOwner
+
+pc_stm_adjusted
+  action      SWLOR.Game.Server.Feature.PlayerStatusWindow.PlayerSTMAdjusted
+
+pc_target_upd
+  action      SWLOR.Game.Server.Feature.PlayerStatusWindow.PlayerSpaceTargetAdjusted
+
+permanent_vfx
+  action      SWLOR.Game.Server.Feature.PlaceableScripts.ApplyPermanentVisualEffect
+
+pitfalltrap
+  action      SWLOR.Game.Server.Feature.TrapDefinition.PitfallTrap.TriggeringTrap
+
+plc_death
+  action      SWLOR.Game.Server.Service.Spawn.QueueRespawn
+
+proc_loot_open
+  action      SWLOR.Game.Server.Feature.ProceduralTreasure.OnOpened
+
+prop_star_term
+  action      SWLOR.Game.Server.Feature.PropertyLayoutDefinition.StarportLayoutDefinition.UsePropertyStarportTerminal
+
+pty_accept_aft
+  action      SWLOR.Game.Server.Service.Party.JoinParty
+  action      SWLOR.Game.Server.Service.PlayerList.RefreshOnPartyChange
+
+pty_chgldr_aft
+  action      SWLOR.Game.Server.Service.PlayerList.RefreshOnPartyChange
+
+pty_chgldr_bef
+  action      SWLOR.Game.Server.Service.Party.TransferLeadership
+
+pty_kick_aft
+  action      SWLOR.Game.Server.Service.Party.KickFromParty
+  action      SWLOR.Game.Server.Service.PlayerList.RefreshOnPartyChange
+
+pty_leave_aft
+  action      SWLOR.Game.Server.Service.PlayerList.RefreshOnPartyChange
+
+pty_leave_bef
+  action      SWLOR.Game.Server.Service.Party.LeaveParty
+
+qb_set_aft
+  action      SWLOR.Game.Server.Service.QuickCast.ApplyOnQuickbarEdit
+
+qcontract_board
+  action      SWLOR.Game.Server.Feature.PlaceableScripts.UseQuestContractBoard
+
+qst_collect_clsd
+  action      SWLOR.Game.Server.Service.Quest.CloseItemCollector
+
+qst_collect_dist
+  action      SWLOR.Game.Server.Service.Quest.DisturbItemCollector
+
+qst_collect_open
+  action      SWLOR.Game.Server.Service.Quest.OpenItemCollector
+
+qsts_registered
+  action      SWLOR.Game.Server.Service.Guild.RefreshGuildTasks
+  action      SWLOR.Game.Server.Service.QuestContractBoard.RegisterContracts
+
+quest_enc
+  action      SWLOR.Game.Server.Service.QuestService.QuestEncounter.UseActivator
+
+quest_placeable
+  action      SWLOR.Game.Server.Service.Quest.UseQuestPlaceable
+
+quest_trigger
+  action      SWLOR.Game.Server.Service.Quest.EnterQuestTrigger
+
+refinery_used
+  action      SWLOR.Game.Server.Service.Craft.UseRefinery
+
+res_heartbeat
+  action      SWLOR.Game.Server.Feature.Resource.OnHeartbeat
+
+res_used
+  action      SWLOR.Game.Server.Feature.Resource.OnUsed
+
+research_term
+  action      SWLOR.Game.Server.Service.Craft.UseResearchTerminal
+
+rest_started
+  action      SWLOR.Game.Server.Feature.UsePerkFeat.ClearTemporaryQueuedVariablesOnRest
+
+rest_trg_enter
+  action      SWLOR.Game.Server.Feature.PlayerRest.EnterRestTrigger
+
+rest_trg_exit
+  action      SWLOR.Game.Server.Feature.PlayerRest.ExitRestTrigger
+
+safe_proj_bef
+  action      SWLOR.Game.Server.Feature.PistolAnimationRemap.OnWeaponProjectileCreated
+
+scav_closed
+  action      SWLOR.Game.Server.Feature.ScavengePoint.OnClosed
+
+scav_disturbed
+  action      SWLOR.Game.Server.Feature.ScavengePoint.OnDisturbed
+
+scav_opened
+  action      SWLOR.Game.Server.Feature.ScavengePoint.OnOpened
+
+ship_computer
+  action      SWLOR.Game.Server.Service.Space.UseShipComputer
+
+sit
+  action      SWLOR.Game.Server.Feature.PlaceableScripts.Sit
+
+slice_terminal
+  action      SWLOR.Game.Server.Feature.SlicingTerminal.UseTerminal
+
+space_enter
+  action      SWLOR.Game.Server.Service.Ability.ClearAurasOnSpaceEntry
+  action      SWLOR.Game.Server.Service.BeastMastery.RemoveAssociate
+  action      SWLOR.Game.Server.Service.Droid.RemoveAssociate
+  action      SWLOR.Game.Server.Feature.PlayerStatusWindow.RefreshStatusDisplayOnSpaceTransition
+
+space_exit
+  action      SWLOR.Game.Server.Feature.PlayerStatusWindow.RefreshStatusDisplayOnSpaceTransition
+  action      SWLOR.Game.Server.Feature.PlayerTemporaryEffects.RestoreGhostOnSpaceExit
+
+spawn_despawn
+  action      SWLOR.Game.Server.Feature.ItemDefinition.HarvesterItemDefinition.CleanupResourcePropPlaceables
+
+spc_target
+  action      SWLOR.Game.Server.Service.Space.TargetSpaceObject
+
+start_convo
+  action      SWLOR.Game.Server.Service.ConversationMenu.StartFromLocalConversation
+
+status_apply
+  action      SWLOR.Game.Server.Service.StatusEffect.OnApplyStatusEffect
+
+status_interval
+  action      SWLOR.Game.Server.Service.StatusEffect.OnStatusEffectInterval
+
+status_remove
+  action      SWLOR.Game.Server.Service.StatusEffect.OnRemoveStatusEffect
+
+stlent_add_aft
+  action      SWLOR.Game.Server.Service.Stealth.OnStealthEntered
+
+stlent_add_bef
+  action      SWLOR.Game.Server.Service.Space.PreventSpaceStealth
+  action      SWLOR.Game.Server.Service.Stealth.GateStealthEntry
+
+stlex_add_aft
+  action      SWLOR.Game.Server.Service.Stealth.OnStealthExited
+
+store_sell_aft
+  action      SWLOR.Game.Server.Feature.StoreManagement.DestroySoldItem
+
+store_sell_bef
+  action      SWLOR.Game.Server.Feature.StoreManagement.PreventSalesFromHenchmenInventory
+
+swlor_buy_perk
+  action      SWLOR.Game.Server.Feature.AchievementProgression.BuyPerk
+
+swlor_comp_qst
+  action      SWLOR.Game.Server.Feature.AchievementProgression.CompleteQuests
+
+swlor_damage
+  action      SWLOR.Game.Server.Service.Poisons.ConsumePoisonCoating
+  action      SWLOR.Game.Server.Service.StatusEffect.OnDealtDamage
+  action      SWLOR.Game.Server.Service.Stealth.BreakStealthOnDamageDealt
+
+swlor_del_prop
+  action      SWLOR.Game.Server.Service.BeastMastery.OnRemoveProperty
+  action      SWLOR.Game.Server.Service.Craft.OnRemoveProperty
+
+swlor_gain_skill
+  action      SWLOR.Game.Server.Feature.AchievementProgression.GainSkillPoint
+
+swlor_heartbeat
+  action      SWLOR.Game.Server.Service.Spawn.ProcessSpawnSystem
+  action      SWLOR.Game.Server.Service.Weather.OnModuleHeartbeat
+  action      SWLOR.Game.Server.Feature.EventRegistration.ExecuteHeartbeatEvent
+  action      SWLOR.Game.Server.Feature.ServerTasks.ProcessAutoRestart
+
+swlor_lose_skill
+  action      SWLOR.Game.Server.Service.Mimicry.OnMimicrySkillDecay
+  action      SWLOR.Game.Server.Service.Perk.RemovePerkLevelOnSkillDecay
+
+swlor_skl_cache
+  action      SWLOR.Game.Server.Service.Craft.CacheData
+
+telegraph_effect
+  action      SWLOR.Game.Server.Service.Telegraph.OnTelegraphEffect
+
+teleport
+  action      SWLOR.Game.Server.Feature.PlaceableScripts.UseTeleportDevice
+
+trash_closed
+  action      SWLOR.Game.Server.Feature.TrashCan.CleanUp
+
+trash_disturbed
+  action      SWLOR.Game.Server.Feature.TrashCan.DestroyItem
+
+trash_opened
+  action      SWLOR.Game.Server.Feature.TrashCan.AlertPlayer

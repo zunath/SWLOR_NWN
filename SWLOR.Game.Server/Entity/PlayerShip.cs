@@ -1,5 +1,6 @@
 using System.Collections.Generic;
 using SWLOR.Game.Server.Service.SpaceService;
+using SWLOR.Game.Server.Service.TradeService;
 
 namespace SWLOR.Game.Server.Entity
 {
@@ -11,6 +12,7 @@ namespace SWLOR.Game.Server.Entity
             DroidCrew = new List<ShipDroidCrew>();
             DockedToShipId = string.Empty;
             DockedCrewPlayerIds = new List<string>();
+            Cargo = new Dictionary<CommodityType, CargoLot>();
         }
 
         [Indexed]
@@ -36,5 +38,11 @@ namespace SWLOR.Game.Server.Entity
         /// host is destroyed. Older records load with none.
         /// </summary>
         public List<string> DockedCrewPlayerIds { get; set; }
+
+        /// <summary>
+        /// Commodity units in the ship's cargo bay (plan section 13), never items: they cannot enter an inventory, the
+        /// bank, the market or contracts. Older records load empty.
+        /// </summary>
+        public Dictionary<CommodityType, CargoLot> Cargo { get; set; }
     }
 }

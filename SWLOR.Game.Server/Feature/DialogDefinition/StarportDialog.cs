@@ -6,6 +6,8 @@ using SWLOR.Game.Server.Service.ConversationService;
 using SWLOR.Game.Server.Service.GuiService;
 using SWLOR.Game.Server.Service.KeyItemService;
 using SWLOR.Game.Server.Service.LogService;
+using SWLOR.Game.Server.Service.PropertyService;
+using SWLOR.Game.Server.Service.TradeService;
 
 namespace SWLOR.Game.Server.Feature.DialogDefinition
 {
@@ -79,6 +81,7 @@ namespace SWLOR.Game.Server.Feature.DialogDefinition
                     Gui.TogglePlayerWindow(player, GuiWindowType.ShipManagement, payload, Owner);
                 });
 
+                AddTradeExchangeResponse(page, player, landingWaypointTag);
             }
 
             page.AddResponse("View Shop", () =>
@@ -86,6 +89,37 @@ namespace SWLOR.Game.Server.Feature.DialogDefinition
                 var store = GetNearestObjectByTag("dockhand_store", Owner);
                 OpenStore(store, player);
                 Close();
+            });
+        }
+
+        /// <summary>
+        /// The dock's Trade Exchange (plan section 13), at NPC starports only: player-city starports get theirs with
+        /// city tariffs. Ship-only locations such as the Abandoned Station have none.
+        /// </summary>
+        private void AddTradeExchangeResponse(ConversationMenuPage page, uint player, string landingWaypointTag)
+        {
+            var area = GetArea(Owner);
+            if (!string.IsNullOrWhiteSpace(Property.GetPropertyId(area)))
+                return;
+
+            var exchange = TradeLookup.GetExchangeForPlanet(Planet.GetPlanetType(area));
+            var landingLocation = string.IsNullOrWhiteSpace(landingWaypointTag)
+                ? GetLocalLocation(Owner, "STARPORT_LANDING_WAYPOINT")
+                : GetLocation(GetWaypointByTag(landingWaypointTag));
+            var landingArea = GetAreaFromLocation(landingLocation);
+            if (exchange == TradeExchangeType.Invalid ||
+                !GetIsObjectValid(landingArea) ||
+                GetLocalBool(landingArea, StarshipDockReturn.ShipOnlyLocationVariable))
+            {
+                return;
+            }
+
+            var landingAreaResref = GetResRef(landingArea);
+            page.AddResponse("Trade Exchange", () =>
+            {
+                Close();
+                var payload = new TradeExchangePayload(exchange, landingAreaResref);
+                Gui.TogglePlayerWindow(player, GuiWindowType.TradeExchange, payload, Owner);
             });
         }
     }

@@ -1665,6 +1665,12 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
                         return;
                     }
 
+                    if (dbShip.Cargo.Count > 0)
+                    {
+                        FloatingTextStringOnCreature("Please sell the cargo in the cargo bay before unregistering your ship.", Player, false);
+                        return;
+                    }
+
                     if (dbShip.Status.Hull < dbShip.Status.MaxHull ||
                         dbShip.Status.Shield < dbShip.Status.MaxShield)
                     {

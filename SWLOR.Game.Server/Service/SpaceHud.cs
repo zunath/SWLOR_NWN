@@ -5,6 +5,7 @@ using SWLOR.Game.Server.Core.NWNX.Enum;
 using SWLOR.Game.Server.Feature.GuiDefinition.RefreshEvent;
 using SWLOR.Game.Server.Service.GuiService;
 using SWLOR.Game.Server.Service.SpaceService;
+using SWLOR.Game.Server.Service.TradeService;
 using SWLOR.NWN.API.NWNX;
 using SWLOR.NWN.API.NWScript.Enum;
 
@@ -159,6 +160,13 @@ namespace SWLOR.Game.Server.Service
                 stats.MidSlots = ship.MidPowerNodes;
                 stats.LowSlots = ship.LowPowerNodes;
                 stats.Cargo = ship.Hull?.Cargo;
+            }
+
+            var dbShip = Trade.GetActiveShip(player);
+            if (dbShip != null)
+            {
+                stats.CargoUsed = CargoHoldRules.GetUsedVolume(dbShip.Cargo);
+                stats.CargoLines = CargoHoldRules.GetLines(dbShip.Cargo);
             }
 
             return stats;

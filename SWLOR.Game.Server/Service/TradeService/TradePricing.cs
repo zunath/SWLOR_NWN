@@ -1,0 +1,100 @@
+using System;
+
+namespace SWLOR.Game.Server.Service.TradeService
+{
+    /// <summary>
+    /// Exchange price math (plan section 13), mirrored by tools/SpaceRevampBalance/trade.py. A unit's mid price is
+    /// base x the market's factor x exp(-pressure / depth), inside the flood limits. The exchange sells above mid and
+    /// buys below it by the spread, and the trader's Social narrows both slightly. Each unit of an order is priced at
+    /// the pressure halfway through it, so splitting an order never changes its total.
+    /// </summary>
+    public static class TradePricing
+    {
+        /// <summary>The price multiplier from flooding: below 1 when players have sold here, above 1 when they bought.</summary>
+        public static double GetPressureMultiplier(double pressure, int depth)
+        {
+            var multiplier = Math.Exp(-pressure / Math.Max(1, depth));
+            return Math.Clamp(multiplier, TradeTuning.FloodMinimum, TradeTuning.FloodMaximum);
+        }
+
+        /// <summary>The fraction Social improves prices by: 0.1% per point over 10, at most 1.5%.</summary>
+        public static double GetSocialBonus(int social)
+        {
+            return Math.Min(TradeTuning.SocialMaximum, Math.Max(0, social - TradeTuning.SocialBase) * TradeTuning.SocialPerPoint);
+        }
+
+        public static double GetUnitBuyPrice(int basePrice, TradeMarketDetail market, double pressure, int social)
+        {
+            return GetMid(basePrice, market, pressure) * (1 + TradeTuning.Spread) * (1 - GetSocialBonus(social));
+        }
+
+        public static double GetUnitSellPrice(int basePrice, TradeMarketDetail market, double pressure, int social)
+        {
+            return GetMid(basePrice, market, pressure) * (1 - TradeTuning.Spread) * (1 + GetSocialBonus(social));
+        }
+
+        /// <summary>The credits units cost. Buying removes pressure, so each unit costs a little more than the last.</summary>
+        public static int GetBuyCost(int basePrice, TradeMarketDetail market, double pressure, int units, int social)
+        {
+            var total = 0.0;
+            for (var unit = 0; unit < units; unit++)
+            {
+                total += GetUnitBuyPrice(basePrice, market, pressure - unit - 0.5, social);
+            }
+
+            return (int)Math.Min(int.MaxValue, Math.Ceiling(total));
+        }
+
+        /// <summary>The credits units fetch. Selling adds pressure, so each unit fetches a little less than the last.</summary>
+        public static int GetSellRevenue(int basePrice, TradeMarketDetail market, double pressure, int units, int social)
+        {
+            var total = 0.0;
+            for (var unit = 0; unit < units; unit++)
+            {
+                total += GetUnitSellPrice(basePrice, market, pressure + unit + 0.5, social);
+            }
+
+            return (int)Math.Min(int.MaxValue, Math.Floor(total));
+        }
+
+        /// <summary>The price the exchange shows for buying one unit now.</summary>
+        public static int GetQuotedBuyPrice(int basePrice, TradeMarketDetail market, double pressure, int social)
+        {
+            return GetBuyCost(basePrice, market, pressure, 1, social);
+        }
+
+        /// <summary>The price the exchange shows for selling one unit now.</summary>
+        public static int GetQuotedSellPrice(int basePrice, TradeMarketDetail market, double pressure, int social)
+        {
+            return GetSellRevenue(basePrice, market, pressure, 1, social);
+        }
+
+        /// <summary>Pressure after it has decayed toward 0 for a while (half-life RecoveryHalfLifeHours).</summary>
+        public static double Recover(double pressure, TimeSpan elapsed)
+        {
+            if (elapsed <= TimeSpan.Zero)
+                return pressure;
+
+            var recovered = pressure * Math.Pow(0.5, elapsed.TotalHours / TradeTuning.RecoveryHalfLifeHours);
+            return Math.Abs(recovered) < 0.01 ? 0 : recovered;
+        }
+
+        /// <summary>Brings a market's pressure up to now.</summary>
+        public static void Advance(TradeMarketState state, DateTime now)
+        {
+            if (state.UpdatedAt == default)
+            {
+                state.UpdatedAt = now;
+                return;
+            }
+
+            state.Pressure = Recover(state.Pressure, now - state.UpdatedAt);
+            state.UpdatedAt = now;
+        }
+
+        private static double GetMid(int basePrice, TradeMarketDetail market, double pressure)
+        {
+            return basePrice * market.PriceFactor * GetPressureMultiplier(pressure, market.Depth);
+        }
+    }
+}

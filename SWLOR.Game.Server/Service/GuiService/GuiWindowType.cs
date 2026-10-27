@@ -81,6 +81,7 @@ namespace SWLOR.Game.Server.Service.GuiService
         PlayerList = 76,
         DMBattleGrid = 77,
         ShipHud = 78,
+        TradeExchange = 79,
 
         DebugEnmity = 900,
         DebugNuiGallery = 901,

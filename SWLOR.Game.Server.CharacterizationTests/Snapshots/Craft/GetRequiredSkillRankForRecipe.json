@@ -1,0 +1,23 @@
+{
+  "function": "Craft.GetRequiredSkillRankForRecipe(RecipeDetail)",
+  "description": "The skill rank needed to craft a recipe: its level minus 3, never below 0.",
+  "seed": null,
+  "inputs": "Recipe levels {-5,0,1,2,3,4,5,10,25,50,53,80,1000}.",
+  "rowCount": 13,
+  "columns": ["recipeLevel", "=> requiredSkillRank"],
+  "rows": [
+    [-5, 0],
+    [0, 0],
+    [1, 0],
+    [2, 0],
+    [3, 0],
+    [4, 1],
+    [5, 2],
+    [10, 7],
+    [25, 22],
+    [50, 47],
+    [53, 50],
+    [80, 77],
+    [1000, 997]
+  ]
+}

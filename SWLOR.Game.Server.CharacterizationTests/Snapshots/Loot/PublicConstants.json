@@ -1,0 +1,12 @@
+{
+  "function": "LootTable and Loot (public const fields)",
+  "description": "The rare find bonus a full Treasure Hunter perk grants, and the variable name the corpse placeable uses.",
+  "seed": null,
+  "inputs": "All public const fields of LootTable and Loot, sorted by class then name.",
+  "rowCount": 2,
+  "columns": ["class", "constant", "=> type", "=> value"],
+  "rows": [
+    ["Loot", "CorpseBodyVariable", "String", "CORPSE_BODY"],
+    ["LootTable", "FullRareChanceBonus", "Int32", 30]
+  ]
+}

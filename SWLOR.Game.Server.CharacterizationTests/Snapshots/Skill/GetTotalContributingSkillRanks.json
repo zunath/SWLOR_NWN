@@ -1,0 +1,16 @@
+{
+  "function": "Skill.GetTotalContributingSkillRanks(Player)",
+  "description": "The sum of the ranks of the skills that count toward the skill cap; languages do not count and a negative rank counts as zero.",
+  "seed": null,
+  "inputs": "Hand-built player records.",
+  "rowCount": 6,
+  "columns": ["case", "=> totalRanks"],
+  "rows": [
+    ["no skills", 0],
+    ["one contributing skill", 12],
+    ["two contributing skills", 42],
+    ["languages are ignored", 12],
+    ["negative rank counts as zero", 12],
+    ["all contributing skills at 50", 1400]
+  ]
+}

@@ -3,6 +3,7 @@ using SWLOR.Game.Server.Domain.Character;
 using SWLOR.Game.Server.Domain.Core;
 using SWLOR.Game.Server.Domain.Economy;
 using SWLOR.Game.Server.Domain.Quests;
+using SWLOR.Game.Server.Domain.Social;
 using SWLOR.Game.Server.Domain.World;
 
 namespace SWLOR.Game.Server.Composition
@@ -30,6 +31,12 @@ namespace SWLOR.Game.Server.Composition
 
             // Quests
             services.AddSingleton<IFactionService, FactionService>();
+
+            // Social
+            services.AddSingleton<IChatCommandService, ChatCommandService>();
+            services.AddSingleton<IChatPortraitTellsService, ChatPortraitTellsService>();
+            services.AddSingleton<IPartyService, PartyService>();
+            services.AddSingleton<IPlayerListService, PlayerListService>();
 
             // World
             services.AddSingleton<ITaxiService, TaxiService>();

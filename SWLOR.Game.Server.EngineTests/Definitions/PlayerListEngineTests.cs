@@ -202,8 +202,7 @@ namespace SWLOR.Game.Server.EngineTests.Definitions
                     $"cycle {cycle}: the member to join the leader's party");
                 // Accepting an invitation fills the Party caches; a script-driven join skips that handler.
                 await ctx.ExecuteInCreatureContextAsync(member.Creature, () =>
-                    typeof(Party).GetMethod("AddToParty", BindingFlags.NonPublic | BindingFlags.Static)
-                        .Invoke(null, new object[] { leader.Creature, member.Creature }));
+                    PartyCaches.Invoke("AddToParty", leader.Creature, member.Creature));
                 ctx.Assert(Party.IsInParty(leader.Creature, member.Creature), $"cycle {cycle}: the Party service groups them");
 
                 var asLeader = PlayerList.GetRelation(leader.Creature, member.Creature);

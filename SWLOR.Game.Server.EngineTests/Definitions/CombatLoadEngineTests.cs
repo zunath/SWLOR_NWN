@@ -1,6 +1,5 @@
 using System.Collections.Generic;
 using System.Linq;
-using System.Reflection;
 using System.Threading.Tasks;
 using Newtonsoft.Json;
 using SWLOR.Game.Server.EngineTests.Framework;
@@ -330,12 +329,11 @@ namespace SWLOR.Game.Server.EngineTests.Definitions
         // the Party service membership.
         private static void FormPlayerParties(List<uint> players)
         {
-            var addToParty = typeof(Party).GetMethod("AddToParty", BindingFlags.NonPublic | BindingFlags.Static);
             foreach (var party in players.Chunk(PartySize))
             {
                 var leader = party[0];
                 foreach (var member in party.Skip(1))
-                    AssignCommand(member, () => addToParty.Invoke(null, new object[] { leader, member }));
+                    AssignCommand(member, () => PartyCaches.Invoke("AddToParty", leader, member));
             }
         }
 

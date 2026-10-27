@@ -275,6 +275,7 @@ TARGET_HAKS = [
     "sw_2da",
     "sw_ability",
     "sw_ui",
+    "sw_part_previews",
     "sw_shader",
     "sw_palette",
     "sw_music",
@@ -750,6 +751,8 @@ def initial_owner(record: dict, exact: dict[str, str], sorted_prefixes: list[str
         return "sw_shader"
     if ext == "uti":
         return "sw_item"
+    if source_hak == "sw_part_previews":
+        return "sw_part_previews"
     if source_hak == "sw_portrait":
         return "sw_portrait"
     if source_hak == "sw_music":

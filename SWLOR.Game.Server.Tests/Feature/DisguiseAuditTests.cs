@@ -35,8 +35,8 @@ public class DisguiseAuditTests
         var descriptorMethods = descriptorSource.DescendantNodes().OfType<MethodDeclarationSyntax>()
             .Where(method => method.Identifier.ValueText is "SetUnknownDisplayName" or "EnsureUnknownDisplayName")
             .Select(method => method.WithAttributeLists(default).ToFullString());
-        var getDm = ReadSource("Service/DMPresence.cs").DescendantNodes().OfType<MethodDeclarationSyntax>()
-            .Single(method => method.Identifier.ValueText == "GetDM");
+        var getDm = SWLOR.Game.Server.Tests.Service.DMPossessionHarness.InstanceMethod(
+            "Domain/Administration/DMPresenceService.cs", "GetDM");
         var source = $$"""
             using System;
             using System.Collections.Generic;

@@ -29,8 +29,8 @@ public class DMPossessionBroadcastTests
         _harness = Compile($$"""
             public static class DMPresence
             {
-                {{Method("Service/DMPresence.cs", "GetControlledCreature")}}
-                {{Method("Service/DMPresence.cs", "GetDM")}}
+                {{InstanceMethod("Domain/Administration/DMPresenceService.cs", "GetControlledCreature")}}
+                {{InstanceMethod("Domain/Administration/DMPresenceService.cs", "GetDM")}}
             }
 
             public static class Party

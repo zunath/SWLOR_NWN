@@ -1,4 +1,5 @@
 using Microsoft.Extensions.DependencyInjection;
+using SWLOR.Game.Server.Domain.Administration;
 using SWLOR.Game.Server.Domain.Character;
 using SWLOR.Game.Server.Domain.Core;
 using SWLOR.Game.Server.Domain.Economy;
@@ -18,6 +19,16 @@ namespace SWLOR.Game.Server.Composition
         {
             // Core
             services.AddSingleton<IDBService, StaticDBAdapter>(); // temporary: the static DB class, until DB is converted
+
+            // Administration
+            services.AddSingleton<IDMBlueprintCatalogService, DMBlueprintCatalogService>();
+            services.AddSingleton<IDMCreatorFavoriteService, DMCreatorFavoriteService>();
+            services.AddSingleton<IDMCreatureManagerFavoriteService, DMCreatureManagerFavoriteService>();
+            services.AddSingleton<IDMObjectDetailsService, DMObjectDetailsService>();
+            services.AddSingleton<IDMObjectSearchService, DMObjectSearchService>();
+            services.AddSingleton<IDMPlayerDirectoryService, DMPlayerDirectoryService>();
+            services.AddSingleton<IDMPreferenceService, DMPreferenceService>();
+            services.AddSingleton<IDMPresenceService, DMPresenceService>();
 
             // Character
             services.AddSingleton<IAchievementService, AchievementService>();

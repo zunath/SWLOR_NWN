@@ -44,8 +44,8 @@ public class DMSettingsWindowTests
 
             public static class DMPresence
             {
-                {{Method("Service/DMPresence.cs", "GetControlledCreature")}}
-                {{Method("Service/DMPresence.cs", "GetDM")}}
+                {{InstanceMethod("Domain/Administration/DMPresenceService.cs", "GetControlledCreature")}}
+                {{InstanceMethod("Domain/Administration/DMPresenceService.cs", "GetDM")}}
                 public static readonly List<(uint Actor, string Message)> Sent = new();
                 public static void SendMessage(uint actor, string message) => Sent.Add((actor, message));
             }
@@ -53,14 +53,26 @@ public class DMSettingsWindowTests
             public static class DMPreference
             {
                 private const string IdPrefix = "DM:";
+                // The service's injected database and presence, as this harness models them.
+                private static readonly Database _db = new();
+                private static readonly Presence _presence = new();
+                private sealed class Database
+                {
+                    public T Get<T>(string id) where T : class => DB.Get<T>(id);
+                    public void Set(DMPreferences preferences) => DB.Set(preferences);
+                }
+                private sealed class Presence
+                {
+                    public uint GetControlledCreature(uint actor) => DMPresence.GetControlledCreature(actor);
+                }
                 private static string GetPCPublicCDKey(uint obj)
                 {
                     var player = ReceivingPlayer(obj);
                     return player == OBJECT_INVALID ? string.Empty : "KEY" + player;
                 }
-                {{Method("Service/DMPreference.cs", "Get")}}
-                {{Method("Service/DMPreference.cs", "Update")}}
-                {{Method("Service/DMPreference.cs", "GetId")}}
+                {{InstanceMethod("Domain/Administration/DMPreferenceService.cs", "Get")}}
+                {{InstanceMethod("Domain/Administration/DMPreferenceService.cs", "Update")}}
+                {{InstanceMethod("Domain/Administration/DMPreferenceService.cs", "GetId")}}
             }
 
             public static class Communication

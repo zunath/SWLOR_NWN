@@ -1,5 +1,12 @@
 [
   {
+    "File": "SWLOR.Game.Server/Domain/Administration/DMPresenceService.cs",
+    "Line": 204,
+    "Member": "SendMessage",
+    "Delivery": "Retained",
+    "Call": "SendMessageToPC(GetControlledCreature(actor), message)"
+  },
+  {
     "File": "SWLOR.Game.Server/Domain/Character/AchievementService.cs",
     "Line": 79,
     "Member": "DisplayAchievementNotificationWindow",
@@ -4366,13 +4373,6 @@
     "Member": "ApplyPenalties",
     "Delivery": "Retained",
     "Call": "SendMessageToPC(player, $\"{newDebt} XP added to your debt. (Total: {dbPlayer.XPDebt} XP)\")"
-  },
-  {
-    "File": "SWLOR.Game.Server/Service/DMPresence.cs",
-    "Line": 284,
-    "Member": "SendMessage",
-    "Delivery": "Retained",
-    "Call": "SendMessageToPC(GetControlledCreature(actor), message)"
   },
   {
     "File": "SWLOR.Game.Server/Service/Droid.cs",

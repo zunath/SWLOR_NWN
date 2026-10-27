@@ -56,14 +56,26 @@ public class DMChatRoutingTests
 
             public static class DMPresence
             {
-                {{Method("Service/DMPresence.cs", "GetControlledCreature")}}
-                {{Method("Service/DMPresence.cs", "IsControlledByDM")}}
-                {{Method("Service/DMPresence.cs", "GetDM")}}
+                {{InstanceMethod("Domain/Administration/DMPresenceService.cs", "GetControlledCreature")}}
+                {{InstanceMethod("Domain/Administration/DMPresenceService.cs", "IsControlledByDM")}}
+                {{InstanceMethod("Domain/Administration/DMPresenceService.cs", "GetDM")}}
             }
 
             public static class DMPreference
             {
                 private const string IdPrefix = "DM:";
+                // The service's injected database and presence, as this harness models them.
+                private static readonly Database _db = new();
+                private static readonly Presence _presence = new();
+                private sealed class Database
+                {
+                    public T Get<T>(string id) where T : class => DB.Get<T>(id);
+                    public void Set(DMPreferences preferences) => DB.Set(preferences);
+                }
+                private sealed class Presence
+                {
+                    public uint GetControlledCreature(uint actor) => DMPresence.GetControlledCreature(actor);
+                }
                 // The engine resolves a CD key from the object a player controls, like every other client lookup.
                 private static string GetPCPublicCDKey(uint obj)
                 {
@@ -72,9 +84,9 @@ public class DMChatRoutingTests
                 }
                 public static bool SetCommsFilter(uint actor, int filter) =>
                     Update(actor, preferences => preferences.CommsFilter = (DMCommsFilter)filter);
-                {{Method("Service/DMPreference.cs", "Get")}}
-                {{Method("Service/DMPreference.cs", "Update")}}
-                {{Method("Service/DMPreference.cs", "GetId")}}
+                {{InstanceMethod("Domain/Administration/DMPreferenceService.cs", "Get")}}
+                {{InstanceMethod("Domain/Administration/DMPreferenceService.cs", "Update")}}
+                {{InstanceMethod("Domain/Administration/DMPreferenceService.cs", "GetId")}}
             }
 
             public static class Party

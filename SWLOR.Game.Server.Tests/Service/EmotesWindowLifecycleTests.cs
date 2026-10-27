@@ -94,13 +94,13 @@ public class EmotesWindowLifecycleTests
             }
             public static class DMPresence
             {
-                {{Field("Service/DMPresence.cs", "_windowTargets")}}
-                {{Method("Service/DMPresence.cs", "GetDM")}}
-                {{Method("Service/DMPresence.cs", "GetControlledCreature")}}
-                {{Method("Service/DMPresence.cs", "IsControlledByDM")}}
-                {{Method("Service/DMPresence.cs", "ToggleWindow")}}
-                {{Method("Service/DMPresence.cs", "GetWindowTargets")}}
-                {{Method("Service/DMPresence.cs", "GetShownOn")}}
+                {{InstanceField("Domain/Administration/DMPresenceService.cs", "_windowTargets")}}
+                {{InstanceMethod("Domain/Administration/DMPresenceService.cs", "GetDM")}}
+                {{InstanceMethod("Domain/Administration/DMPresenceService.cs", "GetControlledCreature")}}
+                {{InstanceMethod("Domain/Administration/DMPresenceService.cs", "IsControlledByDM")}}
+                {{InstanceMethod("Domain/Administration/DMPresenceService.cs", "ToggleWindow")}}
+                {{InstanceMethod("Domain/Administration/DMPresenceService.cs", "GetWindowTargets")}}
+                {{InstanceMethod("Domain/Administration/DMPresenceService.cs", "GetShownOn")}}
                 public static void Reset() => _windowTargets.Clear();
             }
             public class CommandBuilder

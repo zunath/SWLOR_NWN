@@ -15,7 +15,7 @@ namespace SWLOR.NWN.API.NWScript
     public static class NWScriptRuntime
     {
         private static readonly NwnCoreNWScript Default = new();
-        private static readonly AsyncLocal<INWScript?> Overridden = new();
+        private static readonly AsyncLocal<OverrideScope?> Overridden = new();
         private static int _activeOverrides;
 
         /// <summary>
@@ -32,29 +32,49 @@ namespace SWLOR.NWN.API.NWScript
                     return Default;
                 }
 
-                return Overridden.Value ?? Default;
+                return FindOverride() ?? Default;
             }
         }
 
         /// <summary>
         /// Test-only. Makes <paramref name="engine"/> the implementation for the current async flow until the
         /// returned scope is disposed, then restores the previous one. The override lives in an
-        /// <see cref="AsyncLocal{T}"/>, so tests running in parallel do not see each other's fakes. Dispose
-        /// scopes in reverse order of creation (a `using` does), in the flow that created them.
+        /// <see cref="AsyncLocal{T}"/>, so tests running in parallel do not see each other's fakes. A disposed
+        /// scope stops applying everywhere, including in tasks that captured it, which then see the next live
+        /// scope of their own flow or the default.
         /// </summary>
         public static IDisposable Override(INWScript engine)
         {
             ArgumentNullException.ThrowIfNull(engine);
 
-            var scope = new OverrideScope(Overridden.Value);
-            Overridden.Value = engine;
+            var scope = new OverrideScope(engine, Overridden.Value);
+            Overridden.Value = scope;
             Interlocked.Increment(ref _activeOverrides);
             return scope;
         }
 
-        private sealed class OverrideScope(INWScript? previous) : IDisposable
+        private static INWScript? FindOverride()
+        {
+            for (var scope = Overridden.Value; scope != null; scope = scope.Previous)
+            {
+                if (scope.IsActive)
+                {
+                    return scope.Engine;
+                }
+            }
+
+            return null;
+        }
+
+        private sealed class OverrideScope(INWScript engine, OverrideScope? previous) : IDisposable
         {
             private int _disposed;
+
+            public INWScript Engine { get; } = engine;
+
+            public OverrideScope? Previous { get; } = previous;
+
+            public bool IsActive => Volatile.Read(ref _disposed) == 0;
 
             public void Dispose()
             {
@@ -63,7 +83,13 @@ namespace SWLOR.NWN.API.NWScript
                     return;
                 }
 
-                Overridden.Value = previous;
+                // Only the flow that is still inside this scope steps back; a flow that merely inherited it, or
+                // that has since installed a scope of its own, keeps what it has (a disposed scope is skipped).
+                if (ReferenceEquals(Overridden.Value, this))
+                {
+                    Overridden.Value = Previous;
+                }
+
                 Interlocked.Decrement(ref _activeOverrides);
             }
         }

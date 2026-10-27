@@ -57,7 +57,8 @@ Status: `open`, `in progress`, `review` (pull request open), `done`, `blocked`.
 | P0-4a | Output-locking Tier A: combat calculations (spec in MaintainabilityRefactorSpecs.md) | P0-3 | Sonnet | done | [#2900](https://github.com/zunath/SWLOR_NWN/pull/2900) | New `SWLOR.Game.Server.CharacterizationTests` project and snapshot helper (`Support/`: `Snapshot.Verify`, `SnapshotTable`, `SeededRandom`, `Grid`; `SWLOR_SNAPSHOT_DIRECTORY` redirects output for the parity script). 41 combat functions plus 26 constants, 39 snapshots, 4,673 rows. Engine-bound combat paths listed in the PR as Tier B candidates. |
 | P0-4b | Output-locking Tier A: stats, abilities, perks | P0-4a | Sonnet | done | [#2907](https://github.com/zunath/SWLOR_NWN/pull/2907) | Stat formulas (18 snapshots), all 1,091 stat types, player-record bookkeeping, 738 abilities (definitions + presentation), 504 perks / 986 levels / 62 categories. Perks are collected through each definition's per-perk methods by reflection (proven equal to `BuildPerks()`), because `BuildPerks()` reads icons through NWScript. Guard tests fail if `AbilityDetail` or perk types gain unclassified properties. |
 | P0-4c | Output-locking Tier A: XP, crafting, loot | P0-4a | Sonnet | in progress | | Worktree `.claude/worktrees/mr-p0-4c` |
-| P0-4d | Output-locking Tier B: engine scenarios with a behaviour-neutral clock seam (spec to write) | P0-4a | Opus spec, Sonnet build | open | | Needs a clock seam for about 70 direct `DateTime.UtcNow` reads |
+| P0-4d1 | Clock seam applied by a re-runnable script (spec in MaintainabilityRefactorSpecs.md) | P0-4a | Sonnet | open | | Behaviour-neutral; the sync re-runs the script |
+| P0-4d2 | Engine characterization scenarios (seeded `Random`, frozen `Clock`) | P0-4d1 | Sonnet | open | | Needs engine-test runs on this machine |
 | P0-5 | Boot-order and script-handler-order record test | - | Sonnet | done | [#2899](https://github.com/zunath/SWLOR_NWN/pull/2899) | Snapshot of 230 scripts / 662 handlers. Finding: handler order is not declared anywhere; it follows Roslyn's type emission order (namespace depth-first, then sorted file paths), so adding an unrelated file or moving a namespace can reorder handlers. `DB.Load` runs before `EventRegistration.OnModulePreload` only because `Service` is visited before `Feature`. A snapshot diff after a `master` sync that no handler edit explains is real drift. Seam: `ScriptRegistry.LoadHandlersFromAssemblies` (behaviour-neutral, proven against the old discovery code). |
 | P0-10 | Make handler order explicit before any file or namespace moves (declared order equal to today's snapshot; behaviour-neutral) | P0-5 | Opus spec, Sonnet build | open | | Blocks every namespace move in Phase 2 and the P0-8 domain map moves |
 | P0-6 | Scripted live smoke run with `tools/NwnLiveClient.py`; baseline recorded (spec in MaintainabilityRefactorSpecs.md) | - | Sonnet | in progress | | Worktree `.claude/worktrees/mr-p0-6` |
@@ -82,7 +83,7 @@ branches above, review any open pull request, and restart an item from its row i
 
 1. Review and merge P0-2 (it was asked to add the CharacterizationTests project to CI); record the coverage
    baseline here.
-2. Then P0-10 (spec ready), P0-8 (domain map first), P0-2b, P0-7, and the P0-4d spec.
+2. Then, as agent slots free up: P0-8 (spec ready), P0-10 (spec ready), P0-4d1, P0-2b, P0-4d2, P0-7.
 3. P0-7 note: the boot-order test uses the `LoadHandlersFromAssemblies` seam, which `master` lacks; the parity
    script must apply the seam commits to its throwaway `master` copy before running the tests there.
 

@@ -177,3 +177,41 @@ domain `Platform`; record their edges too but do not fail on edges into `Platfor
 
 **Done:** guard passes on the branch; a deliberately added cross-domain call fails it with a clear message; the
 baseline and map are reviewed for sense; Codex loop clean.
+
+## P0-4d - Output locking Tier B: clock seam and engine scenarios
+
+Two pull requests, in order.
+
+### P0-4d1 - Clock seam (behaviour-neutral)
+
+- Add `SWLOR.Game.Server.Core.Clock`: `UtcNow` (returns `DateTime.UtcNow` by default) and `TickCount64`
+  (returns `Environment.TickCount64` by default), plus a test-only override that returns an `IDisposable` restoring
+  the default. No other behaviour.
+- A committed, re-runnable script under `tools/Refactor/` (PowerShell or Python, no new dependencies) rewrites
+  `DateTime.UtcNow` -> `Clock.UtcNow` and `Environment.TickCount64` -> `Clock.TickCount64` in exactly the files of the
+  locked systems and their direct helpers: `Service/Combat.cs`, `Service/CombatService/**`, `Service/CombatPoint.cs`,
+  `Service/OrdinaryAttackTraits.cs`, `Service/PairedRangedTraits.cs`, `Service/StatusEffect.cs`,
+  `Service/StatusEffectService/**`, `Service/Stat.cs`, `Service/Perk.cs`, `Service/AbilityService/**`,
+  `Service/Craft.cs`, `Native/PairedRangedPresentation.cs`, `Native/OnAIActionAttackObject.cs`. It adds the `using`
+  only where needed, is idempotent, and prints what it changed. The daily sync and the parity script re-run it.
+- Tests: the default `Clock` equals the system clock (tolerance), the override restores itself, and a source guard
+  fails if any listed file reads `DateTime.UtcNow`/`Environment.TickCount64` directly (so new `master` code is caught
+  at sync time). Running the script twice changes nothing.
+- No other edits to those files; the diff must be the mechanical rewrite only.
+
+### P0-4d2 - Engine scenarios
+
+- In `SWLOR.Game.Server.EngineTests`, a `Characterization/` folder with scenario tests that seed `Random`
+  (`EngineTestContext.SeedRandom`) and freeze `Clock` to a fixed instant (advancing it explicitly where a scenario
+  needs time to pass). Read `Readmes/EngineTesting.md` first (attribute contract, determinism, fixtures, timing).
+- Scenarios (fixed creatures, stats and gear from existing fixtures): weapon attacks of each weapon class against a
+  target (hit, crit, damage, procs); a representative set of abilities per skill (outcome, damage, status effects
+  with durations, resource changes); status effect application and ticking over frozen-then-advanced time; XP awarded
+  for a kill; loot spawned from a table; one crafting attempt.
+- Each scenario records its outcomes into a snapshot (same JSON format as the CharacterizationTests helper; reuse
+  the format, not the assembly) and compares it; regenerate with `SWLOR_UPDATE_SNAPSHOTS=1` through the existing
+  engine-test runner environment.
+- Run with `scripts/run-engine-tests.ps1 -Filter Characterization`; check that no other `swlor-engine-tests` compose
+  project is running first (AgentEnvironment.md). Run twice; results must be identical.
+
+**Done:** both pull requests merged; the scenarios pass twice in a row; a deliberate formula change fails them.

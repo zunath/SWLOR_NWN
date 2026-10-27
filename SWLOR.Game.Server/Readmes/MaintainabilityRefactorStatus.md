@@ -97,6 +97,10 @@ branches above, review any open pull request, and restart an item from its row i
 
 ## Next actions
 
+0. **Coordinator handoff (2026-10-27):** the first coordinating session finishes P2-A3, P2-A4 and P0-2b, then hands
+   coordination to a fresh session that starts from this file (owner's request, to keep per-check-in cost down). The
+   new coordinator starts no duplicate of an item listed under "In flight".
+
 1. Review and merge P0-2 (it was asked to add the CharacterizationTests project to CI); record the coverage
    baseline here.
 2. Daily: run the sync (branch rule above) and record it. Phase 2 Wave A: start P2-A1, P2-A2, P2-A3 as agent slots free up (at most three agents), then A4-A9. The rest of Phase 1 (replacing Roslyn-recompile and reflection-reset harnesses) happens inside each service's Phase 2 conversion. P0-2 must add CharacterizationTests and Architecture.Tests to CI.

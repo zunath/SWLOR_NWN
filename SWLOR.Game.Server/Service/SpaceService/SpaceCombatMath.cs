@@ -200,5 +200,15 @@ namespace SWLOR.Game.Server.Service.SpaceService
             var threshold = maxHull * (thresholdPercent / 100f);
             return hullBefore >= threshold && hullAfter < threshold;
         }
+
+        /// <summary>
+        /// The ground's Critical Ward cooldown: 16 s, reduced by 0.5 s per Might, to a minimum of 12 s.
+        /// </summary>
+        public static int CriticalWardCooldownMilliseconds(int might) =>
+            Math.Max(12000, 16000 - Math.Max(0, might) * 500);
+
+        /// <summary>The ground's Shield Bash bonus damage: a percent of Defense, rounded up.</summary>
+        public static int PercentOfDefense(int defense, int percent) =>
+            Math.Max(0, (int)Math.Ceiling(defense * (percent / 100f)));
     }
 }

@@ -1103,6 +1103,7 @@ namespace SWLOR.Game.Server.Service
             SpaceHostileAbilityRewards.Clear(player);
             SpaceSustainedFire.Clear(player);
             SpaceOrdnance.Clear(player);
+            SpaceBulwark.Clear(player);
             StatusEffect.RemoveAllStatusEffects(player);
             dbShip.Status.PendingRiders?.Clear();
 
@@ -1944,7 +1945,8 @@ namespace SWLOR.Game.Server.Service
             return SpaceCombatMath.AdjustRating(
                 defense,
                 Stat.GetStatAdjustment(defender, StatType.Defense),
-                Stat.GetStatAdjustment(defender, StatType.DefensePercentAdjustment));
+                Stat.GetStatAdjustment(defender, StatType.DefensePercentAdjustment) +
+                Stat.GetStatAdjustment(defender, StatType.SpaceDefensePercentAdjustment));
         }
 
         /// <summary>
@@ -2027,12 +2029,20 @@ namespace SWLOR.Game.Server.Service
                 criticalRate += Stat.GetStatAdjustment(activator, StatType.WeaponCriticalRatePercentAdjustment);
             result.IsCritical = Random.D100(1) <= SpaceCombatMath.CriticalRate(per, targetVit, shot.Rank, criticalRate);
 
+            // A warded ship takes a critical hit as a normal hit that rolls minimum damage.
+            var criticalWarded = result.IsCritical && SpaceBulwark.TryWardCriticalHit(target);
+            if (criticalWarded)
+            {
+                result.IsCritical = false;
+                Combat.SendIncomingCriticalHitDowngradeFeedback(activator, target);
+            }
+
             // Consecutive energy weapon hits against one target add their stacks' DMG to this same shot.
             var shotDmg = shot.Dmg + SpaceSustainedFire.RegisterHit(activator, target, shot.Family);
 
             var (minimum, maximum) = SpaceCombatMath.DamageRange(
                 attack, shotDmg, damageAttribute, defense, targetVit, result.IsCritical, shot.Rank);
-            var rolled = (int)Random.NextFloat(minimum, maximum);
+            var rolled = criticalWarded ? minimum : (int)Random.NextFloat(minimum, maximum);
 
             if (result.IsCritical)
             {
@@ -2090,7 +2100,8 @@ namespace SWLOR.Game.Server.Service
             if (result.Damage < 1 && damage > 0)
                 result.Damage = 1;
 
-            var takenPercent = Stat.GetStatAdjustment(target, StatType.DamageTakenPercentAdjustment);
+            var takenPercent = Stat.GetStatAdjustment(target, StatType.DamageTakenPercentAdjustment) +
+                               Stat.GetStatAdjustment(target, StatType.SpaceDamageTakenPercentAdjustment);
             if (takenPercent != 0)
                 result.Damage = SpaceCombatMath.ApplyDamageTaken(result.Damage, takenPercent);
 

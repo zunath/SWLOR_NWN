@@ -959,6 +959,21 @@ namespace SWLOR.Game.Server.Service.AbilityService
         [RecastGroup("Ordnance Stance", "Ord. Stance", true)]
         OrdnanceShipStance = 592,
 
+        [RecastGroup("Bulwark Shield Ram", "Shield Ram", true)]
+        BulwarkShieldRam = 593,
+
+        [RecastGroup("Bulwark Defiance", "Defiance", true)]
+        BulwarkDefiance = 594,
+
+        [RecastGroup("Bulwark Hail", "Hail", true)]
+        BulwarkHail = 595,
+
+        [RecastGroup("Bulwark Hail II", "Hail II", true)]
+        BulwarkHail2 = 596,
+
+        [RecastGroup("Bulwark Stance", "Bulwark Stance", true)]
+        BulwarkShipStance = 597,
+
     }
 
     public class RecastGroupAttribute : Attribute

@@ -802,6 +802,17 @@ namespace SWLOR.Game.Server.Service.PerkService
         OrdnanceBombardiersRhythm = 862,
         OrdnanceSaturationStrike = 863,
 
-        // IDs 650 and 864+ are free.
+        BulwarkShieldRam = 864,
+        BulwarkAngerStrike = 865,
+        BulwarkBulwark = 866,
+        BulwarkDefiance = 867,
+        BulwarkFortification = 868,
+        BulwarkHail = 869,
+        BulwarkShipStance = 870,
+        BulwarkCriticalWard = 871,
+        BulwarkUnbreakable = 872,
+        BulwarkInvincible = 873,
+
+        // IDs 650 and 874+ are free.
     }
 }

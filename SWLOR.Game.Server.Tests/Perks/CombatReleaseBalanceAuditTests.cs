@@ -604,6 +604,7 @@ public class CombatReleaseBalanceAuditTests
             (PerkType.ConduitTraining, StatType.AutoAttackFPRestore) => 3,
             (PerkType.ConduitTraining, StatType.AutoAttackFPRestoreCooldownSeconds) => 4,
             (PerkType.CriticalWard, StatType.IncomingCriticalHitDowngradeCooldownMilliseconds) => 12000,
+            (PerkType.BulwarkCriticalWard, StatType.SpaceIncomingCriticalHitDowngradeCooldownMilliseconds) => 12000,
             (PerkType.UnbreakableWill, StatType.MeleeDeflection) => 8,
             (PerkType.VampiricFury, StatType.CriticalHPPercentOfDamageRestore) => 25,
             (PerkType.BodyguardsResolve, StatType.DamageTakenPercentAdjustment) => -10,

@@ -2922,6 +2922,7 @@ public class CombatUpgradeBibleSyncTests
             ("Piloting", "Shipwright") => PerkCategoryType.Piloting,
             ("Piloting (Revamp)", "Ace") => PerkCategoryType.PilotingAce,
             ("Piloting (Revamp)", "Ordnance") => PerkCategoryType.PilotingOrdnance,
+            ("Piloting (Revamp)", "Bulwark") => PerkCategoryType.PilotingBulwark,
             ("Pistol", "Gambler") => PerkCategoryType.PistolGunslinger,
             ("Pistol", "Skirmisher") => PerkCategoryType.PistolSkirmisher,
             ("Twin Pistol", "Barrage") => PerkCategoryType.TwinPistolBarrage,

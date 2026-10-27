@@ -29,7 +29,7 @@ public class CombatUpgradeMigrationCoverageTests
             "StatusEffect.cs"));
 
         statusEffectService.Should().Contain("private static readonly Dictionary<string, LoggedOutStatusEffects> _loggedOutPlayerEffects = new();");
-        statusEffectService.Should().Contain("_loggedOutPlayerEffects[playerId] = new LoggedOutStatusEffects(player, effects, DateTime.UtcNow);");
+        statusEffectService.Should().Contain("_loggedOutPlayerEffects[playerId] = new LoggedOutStatusEffects(player, effects, Clock.UtcNow);");
         statusEffectService.Should().NotContain("ClearLoggedOutPlayerEffects");
     }
 

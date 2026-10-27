@@ -483,7 +483,7 @@ models and textures, because the server never reads them - so the HAKs take abou
 of 11 GB. Never deploy them. It packs with the native tools that `Setup.sh` prepares, about
 4 minutes in all, and later runs skip steps whose inputs are unchanged (`--force` redoes them).
 A full sweep took about 75 minutes in a 4-core cloud session when the suite had a few hundred tests; with 910 it takes about
-3 hours (the `CI` section has the details), so pass `--timeout-minutes 300`. The `CI` section below runs this flow on a hosted
+3 hours (the `CI` section has the details), so pass `--timeout-minutes 270`. The `CI` section below runs this flow on a hosted
 runner, with a 300 MB sparse `SWLOR_Haks` fetch in place of the full checkout.
 
 Usage:
@@ -527,7 +527,7 @@ ranges and killed the run (Redis exit 139, server exit 137, no report). The comm
 image's default module list; keep it in sync if the image changes.
 
 **Hard wall clock**: both runner scripts enforce a timeout on the containerized run
-(`-TimeoutMinutes` / `--timeout-minutes`, default 90, which a full sweep of 910 tests now exceeds: pass 300). On expiry
+(`-TimeoutMinutes` / `--timeout-minutes`, default 90, which a full sweep of 910 tests now exceeds: pass 270). On expiry
 the stack is torn down and the run is reported as failed. This exists because
 `docker compose up --abort-on-container-exit` blocks until a container exits, and a server that
 boots healthy but schedules no tests - a missing harness assembly, a filter matching nothing -
@@ -701,7 +701,8 @@ match the branch at any time (`-CheckOnly`), for example after a `SWLOR_Haks` po
   `engine-tests-characterization` runs only the Characterization scenarios (`-Filter Characterization`), which are the
   refactor's output lock and take about 40 minutes with setup. With both labels the whole suite runs. A run starts when the
   label is added and again on every push while it is on; adding some other label does not restart it.
-- `workflow_dispatch` with an optional `filter` (the same text `--filter` takes) and a `ref` (default
+- `workflow_dispatch` with an optional `filter` (the same text `--filter` takes; a short one such as `a` matches nearly every
+  test), a `timeout_minutes` wall clock (10 to 270, default 270; a narrow filter can ask for less) and a `ref` (default
   `feature/maintainability-refactor`).
 
 GitHub fires `schedule` and lists `workflow_dispatch` only for workflow files on the default branch (`master`), and the refactor
@@ -728,7 +729,7 @@ What a run does, all through the scripts a cloud session or dev machine uses (ru
    come from the index, so the HAKs equal those built from a full checkout), packs `Module/` with `SWLOR.CLI --pack`
    (the Characterization snapshots need the module and the 2DA/TLK data of the branch itself), and pulls the Docker images.
 5. `scripts/run-engine-tests.sh` builds the test project and runs the suite in the pinned server image, with a wall clock of
-   300 minutes (120 for a filtered run). Its exit code is the job's result.
+   270 minutes (120 for the quick label; a manual run can ask for less). Its exit code is the job's result.
 6. `tools/EngineTestSummary.py` writes the job summary (verdict, failed tests, per-category table, slowest tests) and
    annotations, and the job uploads the `engine-test-results` artifact (14 days): `engine-test-results.json`, the runner output
    `engine-tests.log`, and the server's `logs/` and `app_logs/`.
@@ -742,8 +743,8 @@ be close to the local figure.
 The job fails when any engine test fails, when no test ran, when the server container exits non-zero (even after a green
 report), and when the server dies without writing a report. A run that hits its wall clock fails too, and says so: the log
 carries `TIMED OUT after N minute(s)`, and the summary and an error annotation call it a timeout, not a failed test. The job's
-own limit (355 minutes: setup, a restart wait of at most 15, the wall clock, the upload) is above that on purpose, so GitHub
-never kills the job before the script has reported.
+own limit (355 minutes: setup 30, a restart wait of at most 15, the build 5, the wall clock, teardown 5, the upload 10) is
+above that on purpose, so GitHub never kills the job before the script has reported.
 
 ### The daily server restart
 
@@ -753,8 +754,9 @@ crashed", with `Server shutting down for automated restart.` in the log); it hap
 workflow, 26 minutes in. Do not start a long engine run in the hours before 10:00 UTC. The workflow handles it three ways: the
 nightly starts at 01:00 UTC, `tools/WaitOutServerRestart.py` waits up to 15 minutes when a run would cross the restart and
 otherwise fails the job at its first step with an error saying to run it again after 10:01 UTC (a job has six hours in all, so
-a long wait leaves no room for a 3 hour run). It plans for the worst case, setup plus the whole wall clock: 330 minutes for a full
-run, so a full run started between about 04:30 and 09:45 UTC fails at once, and 150 minutes for a filtered one. And
+a long wait leaves no room for a 3 hour run). It plans for the worst case, setup and build (35 minutes) plus the whole wall clock: 305
+minutes for a full run, so a full run started between about 05:00 and 09:45 UTC fails at once, and 155 minutes for the quick
+label. And
 `EngineTestSummary.py` names the restart when it cuts a run off anyway. The
 real fix is a guard in `ProcessAutoRestart` for `ApplicationSettings.EngineTestsEnabled`; after it lands, delete the check and
 this section.

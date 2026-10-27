@@ -5,7 +5,7 @@ SWLOR.Game.Server/Feature/ServerTasks.cs shuts the server down for the whole 30 
 running or not (the module heartbeat checks every six seconds). An engine-test run that crosses that moment is killed
 without a report. .github/workflows/engine-tests.yml calls this first thing in the job:
 
-    python tools/WaitOutServerRestart.py --run-minutes 330 --max-wait-minutes 15
+    python tools/WaitOutServerRestart.py --run-minutes 305 --max-wait-minutes 15
 
 --run-minutes is how long the whole job is expected to need (setup plus the run). When it fits before the next restart, or
 starts after the last one, nothing happens. When it would cross the restart, the tool sleeps until 10:01:30 UTC if that is

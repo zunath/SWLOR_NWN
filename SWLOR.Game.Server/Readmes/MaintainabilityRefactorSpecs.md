@@ -128,3 +128,120 @@ so the order must stop depending on file layout first.
   discovery order so parity holds (record this in the P0-7 scripts).
 
 **Done:** manifest in place, order tests and seam proof pass, CoreSystems.md updated, Codex loop clean.
+
+## P0-8 - Cross-domain dependency guard
+
+**Goal (owner decision 9):** record which domains call which today and fail any new cross-domain dependency, so
+the code stops tangling further while the refactor runs. Later phases move each domain into its own namespace;
+this guard works before and after those moves because it maps types to domains, not files.
+
+**Domain map (coordinator's first cut, 2026-10-26; refine as conversions happen).** A "service" is the static
+class `SWLOR.Game.Server.Service.<Name>` plus every type in `SWLOR.Game.Server.Service.<Name>Service.*`.
+
+| Domain | Services | Feature folders |
+|---|---|---|
+| Core | DB, Log, Cache, Random, Time, GameMath, ColorToken, Messaging, Communication, BackgroundJob, FrameProfiler, Migration, Authorization, Menu, Conversation, ConversationMenu, Snippet, PlayerFeedback, ObjectVisibility, Walkmesh, TileMagic, AnimationPlayer, NamedAnimation, NamedAnimationPlayback, Animation (folder), Attribute (folder) | MigrationDefinition, SnippetDefinition, DialogDefinition |
+| UI | Gui | GuiDefinition |
+| Combat | Combat, CombatPoint, CombatRecorder, Enmity, PvpCombat, Resistance, Recast, RecastTimestamp, Telegraph, Targeting, QueuedAttackAnimation, WeaponAttackEligibility, WeaponAttackPhase, WeaponDelay, OrdinaryAttackTraits, PairedRangedTraits, MeleeTechnique, TwinPistolAbility, TwinPistolEquipment, TwinPistolMastery, PowerGloveEquipment, Stealth, Death, Poisons, BattleGrid | - |
+| Abilities | Ability, AbilityCooldownVisual, QuickCast, Mimicry, MimicryLoadouts | AbilityDefinition |
+| Character | Stat, Skill, Perk, StatusEffect, Race, Achievement, Activity, PlayerActivityEffectTag, PlayerDescriptor, PlayerName, PlayerIntroduction, Disguise, EspionageInfiltration, Language, RoleplayXP (folder) | PerkDefinition, StatusEffectDefinition, AppearanceDefinition |
+| Items | Item, ItemTrash, EquipmentUnequip, KeyItem, Loot, LightsaberWorkbench, OverflowStorage | ItemDefinition, LootTableDefinition |
+| Crafting | Craft, Slicing (folder) | RecipeDefinition |
+| Economy | Bank, Currency, PlayerMarket, Guild | - |
+| Quests | Quest, QuestContractBoard, QuestContract (folder), Faction | QuestDefinition |
+| World | Area, Planet, Weather, Music, Shuttle, Taxi, Property, Fishing, HoloCom, Traps, Notes | FishingLocationDefinition, PropertyLayoutDefinition, TrapDefinition |
+| Space | Space, SpaceModuleRecast | ShipDefinition, ShipModuleDefinition, SpaceObjectDefinition |
+| Creatures | AI, Spawn, NPCGroup, NPC (folder), CompanionControl (folder) | AIDefinition, SpawnDefinition |
+| Companions | BeastMastery, IncubationFieldNote, Droid, DroidEquipmentDiagnostics | BeastDefinition |
+| Social | ChatCommand, ChatPortraitTells, Party, PlayerList | ChatCommandDefinition |
+| Administration | DMBlueprintCatalog, DMCreatorFavorite, DMCreatureManagerFavorite, DMObjectDetails, DMObjectSearch, DMPlayerDirectory, DMPreference, DMPresence, DMTool (folder) | - |
+| Gameplay | (catch-all) | every top-level `Feature/*.cs` file and any `Feature` folder not listed above |
+
+Types outside `Service` and `Feature` (`Core/`, `Native/`, `Entity/`, `Enumeration/`, `Extension/`) belong to
+domain `Platform`; record their edges too but do not fail on edges into `Platform` or `Core`.
+
+**Design:**
+- New NUnit project `SWLOR.Architecture.Tests` (same test packages as the other test projects), added to the
+  solution and, if it exists on the base, to `.github/workflows/maintainability-ci.yml`.
+- Read dependencies from the compiled `SWLOR.Game.Server.dll` IL (System.Reflection.Metadata or Mono.Cecil): for
+  every method body (including compiler-generated closures and lambdas, attributed to their declaring user type)
+  record references to methods, fields, properties and types of other services. This is exact and ignores
+  comments and strings.
+- The domain map lives in a checked-in JSON file in the test project. A service or `Feature` folder that is in
+  no domain fails the test with "add it to the domain map" (new services from `master` get mapped during the sync).
+- Baseline: a checked-in, sorted list of today's cross-domain edges at service level (`Combat -> Stat`), with the
+  count of distinct referencing members as information only. The test fails when (a) a new cross-domain service
+  edge appears, or (b) a baseline edge no longer exists (keep the baseline tight). Edges into `Core` and
+  `Platform` are recorded but never fail. Regenerate with `SWLOR_UPDATE_SNAPSHOTS=1` (reviewed like any snapshot).
+- Report totals in the test output: edges per domain pair.
+
+**Done:** guard passes on the branch; a deliberately added cross-domain call fails it with a clear message; the
+baseline and map are reviewed for sense; Codex loop clean.
+
+## P0-4d - Output locking Tier B: clock seam and engine scenarios
+
+Two pull requests, in order.
+
+### P0-4d1 - Clock seam (behaviour-neutral)
+
+- Add `SWLOR.Game.Server.Core.Clock`: `UtcNow` (returns `DateTime.UtcNow` by default) and `TickCount64`
+  (returns `Environment.TickCount64` by default), plus a test-only override that returns an `IDisposable` restoring
+  the default. No other behaviour.
+- A committed, re-runnable script under `tools/Refactor/` (PowerShell or Python, no new dependencies) rewrites
+  `DateTime.UtcNow` -> `Clock.UtcNow` and `Environment.TickCount64` -> `Clock.TickCount64` in exactly the files of the
+  locked systems and their direct helpers: `Service/Combat.cs`, `Service/CombatService/**`, `Service/CombatPoint.cs`,
+  `Service/OrdinaryAttackTraits.cs`, `Service/PairedRangedTraits.cs`, `Service/StatusEffect.cs`,
+  `Service/StatusEffectService/**`, `Service/Stat.cs`, `Service/Perk.cs`, `Service/AbilityService/**`,
+  `Service/Craft.cs`, `Native/PairedRangedPresentation.cs`, `Native/OnAIActionAttackObject.cs`. It adds the `using`
+  only where needed, is idempotent, and prints what it changed. The daily sync and the parity script re-run it.
+- Tests: the default `Clock` equals the system clock (tolerance), the override restores itself, and a source guard
+  fails if any listed file reads `DateTime.UtcNow`/`Environment.TickCount64` directly (so new `master` code is caught
+  at sync time). Running the script twice changes nothing.
+- No other edits to those files; the diff must be the mechanical rewrite only.
+
+### P0-4d2 - Engine scenarios
+
+- In `SWLOR.Game.Server.EngineTests`, a `Characterization/` folder with scenario tests that seed `Random`
+  (`EngineTestContext.SeedRandom`) and freeze `Clock` to a fixed instant (advancing it explicitly where a scenario
+  needs time to pass). Read `Readmes/EngineTesting.md` first (attribute contract, determinism, fixtures, timing).
+- Scenarios (fixed creatures, stats and gear from existing fixtures): weapon attacks of each weapon class against a
+  target (hit, crit, damage, procs); a representative set of abilities per skill (outcome, damage, status effects
+  with durations, resource changes); status effect application and ticking over frozen-then-advanced time; XP awarded
+  for a kill; loot spawned from a table; one crafting attempt.
+- Each scenario records its outcomes into a snapshot (same JSON format as the CharacterizationTests helper; reuse
+  the format, not the assembly) and compares it; regenerate with `SWLOR_UPDATE_SNAPSHOTS=1` through the existing
+  engine-test runner environment.
+- Run with `scripts/run-engine-tests.ps1 -Filter Characterization`; check that no other `swlor-engine-tests` compose
+  project is running first (AgentEnvironment.md). Run twice; results must be identical.
+
+**Done:** both pull requests merged; the scenarios pass twice in a row; a deliberate formula change fails them.
+
+## P0-7 - Daily sync and parity scripts
+
+Two PowerShell scripts under `tools/Refactor/` (they also run under PowerShell 7 on Linux), each printing a short
+summary and exiting non-zero on failure. Neither pushes; the agent running them pushes after reviewing.
+
+### `Sync-MaintainabilityBranch.ps1`
+
+1. Requires a clean worktree on `feature/maintainability-refactor` (or a branch from it); fetches `origin/master`
+   (`-c http.sslBackend=schannel`) and merges it (merge commit, never rebase).
+2. On conflicts: for each conflicted file that a mechanical script owns (listed in a small manifest the script
+   reads, starting with the P0-4d1 clock seam files), take `master`'s version and re-run that script; leave every
+   other conflict for the agent, listing the files and the `master` commits that touched them (for the port log).
+3. Re-runs every mechanical script (clock seam, and later ones as they are added to the manifest), then builds and
+   runs the unit, characterization and architecture tests with the standard filters.
+4. Prints what to record in the status file's sync log: date, `master` commit merged, conflicts, test results.
+
+### `Test-MaintainabilityParity.ps1`
+
+1. Creates a throwaway worktree of `origin/master` (detached, outside the repository's tracked paths; sparse haks as
+   AgentEnvironment.md describes), never committed and always removed at the end, even on failure.
+2. Applies the branch's behaviour-neutral seams there: re-runs the mechanical scripts, and cherry-picks the seam
+   commits listed in the manifest (P0-5's `LoadHandlersFromAssemblies`; later seams as added).
+3. Copies `SWLOR.Game.Server.CharacterizationTests` and the boot-order tests from the branch into it, runs them with
+   `SWLOR_SNAPSHOT_DIRECTORY` (and `SWLOR_UPDATE_SNAPSHOTS=1`) pointed at a temporary folder, then compares that
+   reference output with the branch's snapshots file by file.
+4. Exit 0 only when they are identical; otherwise prints each differing snapshot and row.
+
+**Done:** both scripts run on this machine; one real sync and one parity run are recorded in the status file;
+documented briefly at the top of each script.

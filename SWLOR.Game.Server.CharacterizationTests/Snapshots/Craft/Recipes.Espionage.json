@@ -1,0 +1,25 @@
+{
+  "function": "Recipe definitions: Espionage (every IRecipeListDefinition recipe in this group)",
+  "description": "The built data of every recipe in the group: skill, category, level, practice rank limit, quantity, crafted item, active flag, enhancement type and slots, research cost modifier, components in the order the definition adds them (resref x quantity), requirements (class and field values in declaration order) and the effect lines (count and fingerprint).",
+  "seed": null,
+  "inputs": "15 of the 3354 recipes, sorted by recipe id. Groups: Smithery by armor/accessory or weapon categories, Fabrication, Agriculture, Espionage and Engineering by gear, enhancements, starship, droid parts, droid software and music. effectFingerprint is the first 12 hex digits of the SHA-256 of the lines joined with a line feed.",
+  "rowCount": 15,
+  "columns": ["recipe", "recipeName", "=> skill", "=> category", "=> level", "=> practiceRankLimit", "=> quantity", "=> resref", "=> isActive", "=> enhancementType", "=> enhancementSlots", "=> researchCostModifier", "=> components", "=> requirements", "=> effectLineCount", "=> effectFingerprint"],
+  "rows": [
+    [6001, "VenomCoating1", "Espionage", "Poison", 3, 15, 5, "poison_vial_1", true, "None", 0, 0, ["kath_blood x3", "herb_v x2"], ["RecipePerkRequirement(Poisoncraft, 1, Poisoncraft)"], 3, "3c465abb4241"],
+    [6002, "VenomCoating2", "Espionage", "Poison", 16, 28, 5, "poison_vial_2", true, "None", 0, 0, ["raivor_blood x3", "herb_m x2"], ["RecipePerkRequirement(Poisoncraft, 2, Poisoncraft)"], 3, "48a9ba8e7553"],
+    [6003, "VenomCoating3", "Espionage", "Poison", 26, 40, 5, "poison_vial_3", true, "None", 0, 0, ["byysk_meat x3", "herb_c x2"], ["RecipePerkRequirement(Poisoncraft, 3, Poisoncraft)"], 3, "12f4b2db6694"],
+    [6004, "VenomCoating4", "Espionage", "Poison", 36, 48, 5, "poison_vial_4", true, "None", 0, 0, ["sanddemon_meat x3", "herb_t x2"], ["RecipePerkRequirement(Poisoncraft, 4, Poisoncraft)"], 3, "79918179022c"],
+    [6005, "VenomCoating5", "Espionage", "Poison", 46, 50, 5, "poison_vial_5", true, "None", 0, 0, ["wild_innards x3", "herb_x x2"], ["RecipePerkRequirement(Poisoncraft, 5, Poisoncraft)"], 3, "46fadbc2a635"],
+    [6006, "TrapKit1", "Espionage", "Tool", 3, 18, 5, "trap_kit_1", true, "None", 0, 0, ["elec_ruined x3", "ref_veldite x2"], ["RecipePerkRequirement(Trapcraft, 1, Trapcraft)"], 0, null],
+    [6007, "TrapKit2", "Espionage", "Tool", 18, 30, 5, "trap_kit_2", true, "None", 0, 0, ["elec_flawed x3", "ref_scordspar x2"], ["RecipePerkRequirement(Trapcraft, 2, Trapcraft)"], 0, null],
+    [6008, "TrapKit3", "Espionage", "Tool", 30, 45, 5, "trap_kit_3", true, "None", 0, 0, ["elec_good x3", "ref_plagionite x2"], ["RecipePerkRequirement(Trapcraft, 3, Trapcraft)"], 0, null],
+    [6009, "TrapKit4", "Espionage", "Tool", 45, 50, 5, "trap_kit_4", true, "None", 0, 0, ["elec_imperfect x3", "ref_keromber x2"], ["RecipePerkRequirement(Trapcraft, 4, Trapcraft)"], 0, null],
+    [6010, "TrapKit5", "Espionage", "Tool", 50, 50, 5, "trap_kit_5", true, "None", 0, 0, ["elec_high x3", "ref_jasioclase x2"], ["RecipePerkRequirement(MasterSaboteur, 1, Master Saboteur)"], 0, null],
+    [6011, "WhisperthornConcentrate", "Espionage", "Poison", 6, 15, 1, "conc_poison_1", true, "None", 0, 0, ["kath_blood x1", "herb_v x2"], ["RecipeUnlockRequirement(WhisperthornConcentrate)", "RecipePerkRequirement(Poisoncraft, 1, Poisoncraft)"], 4, "daec4be3284a"],
+    [6012, "GlassfangConcentrate", "Espionage", "Poison", 16, 28, 1, "conc_poison_2", true, "None", 0, 0, ["raivor_blood x1", "herb_m x2"], ["RecipeUnlockRequirement(GlassfangConcentrate)", "RecipePerkRequirement(Poisoncraft, 2, Poisoncraft)"], 4, "cf23bab3c6c9"],
+    [6013, "TombsporeConcentrate", "Espionage", "Poison", 26, 40, 1, "conc_poison_3", true, "None", 0, 0, ["byysk_meat x1", "herb_c x2"], ["RecipeUnlockRequirement(TombsporeConcentrate)", "RecipePerkRequirement(Poisoncraft, 3, Poisoncraft)"], 4, "3410f143e9a3"],
+    [6014, "RimevenomConcentrate", "Espionage", "Poison", 36, 48, 1, "conc_poison_4", true, "None", 0, 0, ["sanddemon_meat x1", "herb_t x2"], ["RecipeUnlockRequirement(RimevenomConcentrate)", "RecipePerkRequirement(Poisoncraft, 4, Poisoncraft)"], 4, "b94f17696228"],
+    [6015, "NightrootConcentrate", "Espionage", "Poison", 46, 50, 1, "conc_poison_5", true, "None", 0, 0, ["wild_innards x1", "herb_x x2"], ["RecipeUnlockRequirement(NightrootConcentrate)", "RecipePerkRequirement(Poisoncraft, 5, Poisoncraft)"], 4, "245dd17e50b1"]
+  ]
+}

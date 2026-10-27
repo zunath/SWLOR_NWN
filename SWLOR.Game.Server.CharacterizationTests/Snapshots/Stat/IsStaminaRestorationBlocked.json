@@ -1,0 +1,14 @@
+{
+  "function": "Stat.IsStaminaRestorationBlocked(bool isPlayer, bool inStealth)",
+  "description": "A stealthed player gains no stamina from any source; NPCs are never blocked.",
+  "seed": null,
+  "inputs": "Both booleans, all four combinations.",
+  "rowCount": 4,
+  "columns": ["isPlayer", "inStealth", "=> blocked"],
+  "rows": [
+    [false, false, false],
+    [false, true, false],
+    [true, false, false],
+    [true, true, true]
+  ]
+}

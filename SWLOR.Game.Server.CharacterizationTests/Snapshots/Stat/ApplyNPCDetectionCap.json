@@ -1,0 +1,24 @@
+{
+  "function": "Stat.ApplyNPCDetectionCap(int detection, bool isNPC)",
+  "description": "Detection is never negative, and an NPC's is capped at Stat.MaximumNPCDetection.",
+  "seed": null,
+  "inputs": "detection {-5,0,1,49,50,51,200} x isNPC {false,true}.",
+  "rowCount": 14,
+  "columns": ["detection", "isNPC", "=> detection"],
+  "rows": [
+    [-5, false, 0],
+    [-5, true, 0],
+    [0, false, 0],
+    [0, true, 0],
+    [1, false, 1],
+    [1, true, 1],
+    [49, false, 49],
+    [49, true, 49],
+    [50, false, 50],
+    [50, true, 50],
+    [51, false, 51],
+    [51, true, 50],
+    [200, false, 200],
+    [200, true, 50]
+  ]
+}

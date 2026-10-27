@@ -1,0 +1,20 @@
+{
+  "function": "SkillXPMessageQueue.Add(player, source, skill, xp)",
+  "description": "Combines the XP feedback for the same player, source and skill into one message sent when the scheduled callback runs; amounts of zero or less are ignored. Each combination schedules one callback, and an add after the callback has run starts a new message.",
+  "seed": null,
+  "inputs": "Scripted add calls (player/source/skill/xp), each script followed by running the scheduled callbacks in order. A | in the script runs the callbacks scheduled so far before the next add.",
+  "rowCount": 10,
+  "columns": ["case", "script", "=> scheduledCallbacks", "=> messagesSent"],
+  "rows": [
+    ["single add", "1/0/Armor/5", 1, ["1/Armor/5"]],
+    ["zero ignored", "1/0/Armor/0", 0, []],
+    ["negative ignored", "1/0/Armor/-3", 0, []],
+    ["same key combines", "1/0/Armor/5 1/0/Armor/7 1/0/Armor/1", 1, ["1/Armor/13"]],
+    ["different skill", "1/0/Armor/5 1/0/Piloting/7", 2, ["1/Armor/5", "1/Piloting/7"]],
+    ["different source", "1/0/Armor/5 1/9/Armor/7", 2, ["1/Armor/5", "1/Armor/7"]],
+    ["different player", "1/0/Armor/5 2/0/Armor/7", 2, ["1/Armor/5", "2/Armor/7"]],
+    ["add after the callback ran", "1/0/Armor/5 | 1/0/Armor/7", 2, ["1/Armor/5", "1/Armor/7"]],
+    ["ignored add between combined adds", "1/0/Armor/5 1/0/Armor/0 1/0/Armor/2", 1, ["1/Armor/7"]],
+    ["interleaved keys keep scheduling order", "1/0/Armor/1 2/0/Armor/2 1/0/Armor/3 2/0/Armor/4", 2, ["1/Armor/4", "2/Armor/6"]]
+  ]
+}

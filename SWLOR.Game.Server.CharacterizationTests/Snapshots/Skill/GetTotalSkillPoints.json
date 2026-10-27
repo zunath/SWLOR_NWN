@@ -1,0 +1,23 @@
+{
+  "function": "Skill.GetTotalSkillPoints(Player)",
+  "description": "The skill points a player can spend: the starting points plus the earned points, with the earned points limited to 0..400.",
+  "seed": null,
+  "inputs": "TotalSPAcquired {-1000,-1,0,1,9,10,11,100,399,400,401,1000,int.MaxValue}.",
+  "rowCount": 13,
+  "columns": ["totalSPAcquired", "=> totalSkillPoints"],
+  "rows": [
+    [-1000, 10],
+    [-1, 10],
+    [0, 10],
+    [1, 11],
+    [9, 19],
+    [10, 20],
+    [11, 21],
+    [100, 110],
+    [399, 409],
+    [400, 410],
+    [401, 410],
+    [1000, 410],
+    [2147483647, 410]
+  ]
+}

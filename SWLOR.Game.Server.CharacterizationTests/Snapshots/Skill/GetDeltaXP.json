@@ -1,0 +1,33 @@
+{
+  "function": "Skill.GetDeltaXP(int delta)",
+  "description": "The XP an activity grants for its level minus the skill rank. Differences above the table's highest entry count as that entry; differences below the lowest entry grant nothing.",
+  "seed": null,
+  "inputs": "Every difference -10..10 plus int.MinValue and int.MaxValue.",
+  "rowCount": 23,
+  "columns": ["delta", "=> xp"],
+  "rows": [
+    [-2147483648, 0],
+    [-10, 0],
+    [-9, 0],
+    [-8, 0],
+    [-7, 0],
+    [-6, 0],
+    [-5, 0],
+    [-4, 76],
+    [-3, 150],
+    [-2, 300],
+    [-1, 450],
+    [0, 600],
+    [1, 676],
+    [2, 750],
+    [3, 900],
+    [4, 976],
+    [5, 1050],
+    [6, 1200],
+    [7, 1200],
+    [8, 1200],
+    [9, 1200],
+    [10, 1200],
+    [2147483647, 1200]
+  ]
+}

@@ -20,6 +20,15 @@
   </PropertyGroup>
 
   <ItemGroup>
+    <!--
+      Expected outputs of the characterization scenarios. The server runs in a container that cannot see the source
+      tree, so the snapshots travel inside the assembly (see Characterization/Support/ScenarioSnapshot.cs).
+    -->
+    <EmbeddedResource Include="Characterization\Snapshots\**\*.json"
+                      LogicalName="Characterization/Snapshots/%(RecursiveDir)%(Filename)%(Extension)" />
+  </ItemGroup>
+
+  <ItemGroup>
     <ProjectReference Include="..\SWLOR.Game.Server\SWLOR.Game.Server.csproj" />
   </ItemGroup>
 

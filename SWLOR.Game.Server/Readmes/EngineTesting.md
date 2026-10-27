@@ -8,6 +8,7 @@ Read only the sections the task needs:
 - Writing a test: "How to Write a New Engine Test" (attribute contract, `EngineTestContext` API, player fixture, timing, worked example).
 - Migration or persistence change: "Persistence and migration coverage".
 - Ability or perk coverage: "The ability behavior coverage program" and "The perk coverage program".
+- Output locking for the maintainability refactor: "Characterization scenarios (output locking)".
 - Running tests: "How to Run Locally". Concurrent runs collide on one compose project; see `AgentEnvironment.md`.
 - Changing the runner itself: "Project Layout and Isolation", "Architecture Overview", "Environment Variable Reference".
 
@@ -578,6 +579,68 @@ Read the numbers with these limits in mind:
   small difference.
 - The driver waits on wall-clock time, so when frames run long it issues fewer casts. Compare casts
   completed alongside frame times; a saturated server reports close to 1000 managed ms per second.
+
+### Characterization scenarios (output locking)
+
+`SWLOR.Game.Server.EngineTests/Characterization/` locks today's engine-side outputs for the maintainability refactor
+(`MaintainabilityRefactorSpecs.md`, P0-4d2). Each scenario drives the real systems through fixed creatures, records what
+a refactor could change into a snapshot, and compares it with the checked-in file. They all use `Category =
+"Characterization"`:
+
+```powershell
+scripts/run-engine-tests.ps1 -Filter Characterization
+```
+
+What they record (snapshot area in brackets):
+
+| Scenario | Records |
+|---|---|
+| Weapon attacks, one per weapon class (14) [`Combat/WeaponAttacks.*`] | 30 swings through the native `ResolveAttackRoll` and `GetDamageRoll` hooks: hit, critical, miss, physical damage |
+| Weapon procs, melee and ranged (2) [`Combat/WeaponProcs.*`] | The same swings with damage, bleed, poison and stamina-restore riders: damage, stamina, status effects on the target |
+| Abilities, one per skill (20) [`Ability/*`] | Representative abilities through `UsePerkFeat.TryUseAbility`: accepted or denied, impact summary, FP and stamina spent, HP change, status effects with remaining seconds, queued state |
+| Status effects (1) [`StatusEffect/TickingAndExpiry`] | Bleed, poison, burn, regeneration, stat buffs, stun, extend and refresh, stepped a second at a time over a frozen clock |
+| Kill (1) [`Skill/KillXP`, `Loot/KillCorpse`] | Skill XP a headless player earns from combat points when a real module creature dies, and the corpse loot |
+| Loot tables (1) [`Loot/TableDraws`] | `Loot.SpawnLoot` draws from eight table setups: items, stack sizes, item properties, gold |
+| Crafting (2) [`Craft/*`] | Two attempts at different recipe tiers through the crafting window: status, progress, quality, durability, item made, XP |
+
+How they stay deterministic:
+
+- **Clock.** Every scenario creates a `FrozenClock` (`Characterization/Support`), which holds `Clock` at 2026-01-15 12:00 UTC
+  and moves it only when the scenario calls `Advance`. Status effect durations, tick anchors and temporary modifier
+  expiry are then functions of the scenario's own steps. Status effects tick by advancing one second and running
+  `StatusEffect.OnNWNStatusEffectInterval`, which is what the server does every second.
+- **Random.** `ctx.SeedRandom(seed)` runs inside the same synchronous step as the calls that roll, and is repeated
+  before each independent step, so a draw by another system between frames cannot shift a sequence. Weapon swings are
+  resolved in a loop with no `await`, so no frame, timer or animation can change how many happen.
+- **Quiet fixtures.** `ScenarioArena` instances a flat corridor and clears its spawn tables; `ScenarioActors` spawns
+  stock humanoids with AI, heartbeat and perception scripts removed, regeneration suppressed and 2000 HP. Nothing but the
+  scenario acts.
+- **Recorded values.** Only values that do not depend on object ids, wall-clock time or frame timing: no recast
+  timestamps, no ids. Each snapshot's `inputs` line states the fixtures and the seeds.
+
+Snapshots use the JSON format of `SWLOR.Game.Server.CharacterizationTests` (`Characterization/Support/SnapshotTable.cs` and
+`SnapshotJson.cs` are copies; the engine-test assembly does not reference that project). The server runs in a
+container that cannot see the source tree, so `Characterization/Snapshots/**/*.json` are embedded in the assembly at
+build time and the scenario compares against the embedded file.
+
+The snapshots depend on the module and the 2DA and TLK data, as well as on the code. Pack the module from the checkout
+you are testing (`Module\PackModule.cmd`) and use `sw_2da`, `sw_ability` and `sw_tlk` built from the pinned
+`SWLOR_Haks` commit before judging a mismatch; a stale server home produces diffs that no code change explains.
+
+To regenerate after an intended, approved behaviour change:
+
+```powershell
+$env:SWLOR_UPDATE_SNAPSHOTS = "1"
+scripts/run-engine-tests.ps1 -Filter Characterization
+```
+
+The compose file passes the variable through, the scenarios write each snapshot that differs to
+`<results directory>/characterization/`, and the runner scripts copy those files into the project's `Snapshots` folder.
+Review the diff of the snapshot files, then run again without the variable (the run builds again, which embeds the new
+files). Never regenerate to make a failing scenario pass.
+
+To add a scenario: create a `FrozenClock` and a `ScenarioArena`, spawn fixtures with `ScenarioActors`, seed `Random` inside the
+step that rolls, build a `SnapshotTable` of the outcomes and call `ScenarioSnapshot.Verify(area, name, table)`.
 
 ## CI
 

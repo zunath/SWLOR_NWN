@@ -30,15 +30,14 @@ env:
 
 jobs:
   build-and-test:
-    name: Build and unit tests (${{ matrix.os }})
-    runs-on: ${{ matrix.os }}
+    name: Build and unit tests
+    # Windows, because the suite passes there as it stands: PowerShell 5.1 (powershell.exe) and the bundled
+    # nwn_erf.exe are present. The same projects run in an ubuntu container (no Wine, no powershell.exe, no native NWN
+    # tools) pass except 7 tests: 3 in SWLOR.Game.Server.Tests spawn powershell.exe and 4 in
+    # SWLOR.CLI.Tests spawn nwn_erf/nwn_gff. Linux needs the setup the cloud-session hooks do
+    # (.claude/hooks/session-start.sh) or 7 more exclusions.
+    runs-on: windows-2025
     timeout-minutes: 120
-    strategy:
-      fail-fast: false
-      matrix:
-        os:
-          - ubuntu-24.04
-          - windows-2025
     defaults:
       run:
         shell: bash
@@ -101,7 +100,7 @@ jobs:
             "-assemblyfilters:+SWLOR.*" \
             -verbosity:Warning
           {
-            echo "## Coverage (${{ matrix.os }})"
+            echo "## Coverage"
             echo
             echo "Generated and test code is excluded (coverlet.runsettings). Report only; no threshold yet."
             echo
@@ -118,7 +117,7 @@ jobs:
         if: ${{ !cancelled() }}
         uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02 # v4
         with:
-          name: unit-tests-and-coverage-${{ matrix.os }}
+          name: unit-tests-and-coverage
           path: |
             ${{ runner.temp }}/maintainability-ci/report/**
             ${{ runner.temp }}/maintainability-ci/results/**/*.trx

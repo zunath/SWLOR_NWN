@@ -24,5 +24,7 @@ namespace SWLOR.Game.Server.Service.SpaceService
         CapitalEwar = 19,
         CapitalPowerDiverter = 20,
         ShieldHardener = 21,
+        Salvager = 22,
+        GasHarvester = 23,
     }
 }

@@ -24,7 +24,8 @@ namespace SWLOR.Game.Server.Feature.ShipModuleDefinition
         public const string ConcussionMissileResref = "acm_ammo";
         public const string FuelCapsuleResref = "ship_fuelcapsule";
 
-        private const string Mined = "BEING_MINED";
+        /// <summary>The ship running an extraction cycle on an asteroid, gas cloud or wreck.</summary>
+        private const string Mined = "BEING_MINED_BY";
 
         // Ammo
 
@@ -372,8 +373,31 @@ namespace SWLOR.Game.Server.Feature.ShipModuleDefinition
 
         // Mining
 
+        /// <summary>
+        /// Whether a ship other than <paramref name="activator"/> is running an extraction cycle (mining, gas or salvage)
+        /// on the target. A ship's own toggle may start its next cycle while the last one is finishing.
+        /// </summary>
+        public static bool IsExtractedByAnotherShip(uint target, uint activator)
+        {
+            var holder = GetLocalObject(target, Mined);
+            return GetIsObjectValid(holder) && holder != activator;
+        }
+
+        /// <summary>Holds the target for the ship's extraction cycle until <see cref="ReleaseExtraction"/>.</summary>
+        public static void HoldExtraction(uint target, uint activator)
+        {
+            SetLocalObject(target, Mined, activator);
+        }
+
+        /// <summary>Ends the ship's hold on the target, unless another ship holds it now.</summary>
+        public static void ReleaseExtraction(uint target, uint activator)
+        {
+            if (GetIsObjectValid(target) && GetLocalObject(target, Mined) == activator)
+                DeleteLocalObject(target, Mined);
+        }
+
         /// <summary>An error message when the target is not an asteroid this mining laser can mine.</summary>
-        public static string MiningLaserError(uint target, int tier)
+        public static string MiningLaserError(uint activator, uint target, int tier)
         {
             // Ensure an asteroid ore type has been specified by the builder.
             var lootTableId = GetLocalString(target, "ASTEROID_LOOT_TABLE_ID");
@@ -389,7 +413,7 @@ namespace SWLOR.Game.Server.Feature.ShipModuleDefinition
                 return "This mining laser is not powerful enough to harvest that asteroid.";
             }
 
-            if (GetLocalBool(target, Mined))
+            if (IsExtractedByAnotherShip(target, activator))
             {
                 return "This asteroid is already being mined.";
             }
@@ -397,11 +421,8 @@ namespace SWLOR.Game.Server.Feature.ShipModuleDefinition
             return string.Empty;
         }
 
-        /// <summary>
-        /// An error message when the target is not an asteroid this strip miner can strip.
-        /// A null tier skips the tier check.
-        /// </summary>
-        public static string StripMinerError(uint target, int? tier)
+        /// <summary>An error message when the target is not an asteroid this strip miner can strip.</summary>
+        public static string StripMinerError(uint activator, uint target, int tier)
         {
             var lootTableId = GetLocalString(target, "STRIPMINE_LOOT_TABLE_ID");
             if (string.IsNullOrWhiteSpace(lootTableId))
@@ -409,12 +430,12 @@ namespace SWLOR.Game.Server.Feature.ShipModuleDefinition
                 return "Only asteroids may be targeted with this module.";
             }
 
-            if (tier.HasValue && tier.Value < GetLocalInt(target, "ASTEROID_TIER"))
+            if (tier < GetLocalInt(target, "ASTEROID_TIER"))
             {
                 return "This strip miner is not powerful enough to harvest that asteroid.";
             }
 
-            if (GetLocalBool(target, Mined))
+            if (IsExtractedByAnotherShip(target, activator))
             {
                 return "This asteroid is already being mined.";
             }
@@ -422,7 +443,7 @@ namespace SWLOR.Game.Server.Feature.ShipModuleDefinition
             return string.Empty;
         }
 
-        /// <summary>A mining laser or strip miner cycle after the pilot's Rapid Extraction (Gathering).</summary>
+        /// <summary>A mining, gas or salvage cycle after the pilot's Rapid Extraction (Gathering).</summary>
         public static float MiningCycleSeconds(uint pilot, float baseSeconds)
         {
             return SpaceCombatMath.MiningCycleSeconds(
@@ -445,18 +466,19 @@ namespace SWLOR.Game.Server.Feature.ShipModuleDefinition
             return lootTable.GetRandomItemWithRareChance(Stat.GetStatAdjustment(pilot, StatType.SpaceRareMetalChance));
         }
 
+        /// <summary>The asteroid's remaining units, rolled (3-6) the first time anyone mines it.</summary>
+        private static void RollAsteroidUnits(uint target)
+        {
+            if (GetLocalInt(target, "ASTEROID_REMAINING_UNITS") <= 0)
+                SetLocalInt(target, "ASTEROID_REMAINING_UNITS", Random.D4(1) + 2);
+        }
+
         /// <summary>Mines one cycle of an asteroid and delivers the ore when the cycle ends.</summary>
         public static void MineAsteroid(uint activator, uint target, float cycleSeconds, int moduleBonus)
         {
             cycleSeconds = MiningCycleSeconds(activator, cycleSeconds);
-            SetLocalBool(target, Mined, true);
-            // Remaining units aren't set - pick a random number to assign.
-            var remainingUnits = GetLocalInt(target, "ASTEROID_REMAINING_UNITS");
-            if (remainingUnits <= 0)
-            {
-                remainingUnits = Random.D4(1) + 2;
-                SetLocalInt(target, "ASTEROID_REMAINING_UNITS", remainingUnits);
-            }
+            HoldExtraction(target, activator);
+            RollAsteroidUnits(target);
 
             AssignCommand(activator, () =>
             {
@@ -464,23 +486,24 @@ namespace SWLOR.Game.Server.Feature.ShipModuleDefinition
                 ApplyEffectToObject(DurationType.Temporary, beam, target, cycleSeconds + 0.1f);
             });
 
-            // At the end of the process, spawn the ore on the activator and reduce remaining units.
+            // At the end of the process, deliver the ore to the ship and reduce remaining units. The asteroid stays held
+            // until then (plan section 16, bug 1: the hold was cleared as soon as the cycle was scheduled).
             DelayCommand(cycleSeconds + 0.1f, () =>
             {
+                ReleaseExtraction(target, activator);
+
                 // The pilot may have left their ship before mining completes.
                 var shipStatus = Space.GetShipStatus(activator);
                 if (shipStatus == null)
                     return;
 
                 // Perk & module bonuses. These increase the overall yield of each asteroid.
-                var industrialBonus = shipStatus.Industrial;
-
                 var amountToMine = SpaceCombatMath.MiningYield(
-                    1 + Perk.GetPerkLevel(activator, PerkType.StarshipMining) + (int)(industrialBonus / 4) + (int)(moduleBonus) / 6f,
+                    SpaceCombatMath.ExtractionBaseAmount(Perk.GetPerkLevel(activator, PerkType.StarshipMining), shipStatus.Industrial, moduleBonus),
                     GetProspectorBonus(activator));
 
                 // Refresh remaining units (could have changed since the start)
-                remainingUnits = GetLocalInt(target, "ASTEROID_REMAINING_UNITS");
+                var remainingUnits = GetLocalInt(target, "ASTEROID_REMAINING_UNITS");
 
                 // Safety check - if another player pulls all of the ore from the asteroid, give an error message.
                 if (!GetIsObjectValid(target) || remainingUnits <= 0)
@@ -489,7 +512,7 @@ namespace SWLOR.Game.Server.Feature.ShipModuleDefinition
                     return;
                 }
 
-                remainingUnits -= 1 + (int)amountToMine / 2;
+                remainingUnits -= SpaceCombatMath.MiningUnitsPerCycle(amountToMine);
 
                 // Fully deplete the rock - destroy it.
                 if (remainingUnits <= 0)
@@ -512,23 +535,24 @@ namespace SWLOR.Game.Server.Feature.ShipModuleDefinition
                 var lootTableId = GetLocalString(target, "ASTEROID_LOOT_TABLE_ID");
                 var lootTable = Loot.GetLootTableByName(lootTableId);
 
-                // Spawn the units.
+                // Deliver the units to the ship's hold, or the pilot when it is full.
+                var ore = new List<string>();
                 for (var count = 1; count <= amountToMine; count++)
                 {
-                    var item = GetAsteroidOre(activator, lootTable);
-                    CreateItemOnObject(item.Resref, activator);
+                    ore.Add(GetAsteroidOre(activator, lootTable).Resref);
                 }
 
+                ShipHold.DeliverYield(activator, ore);
                 GiveMiningExperience(activator, target);
             });
-            SetLocalBool(target, Mined, false);
         }
 
         /// <summary>Strips a whole asteroid over <paramref name="seconds"/> while the ship is rooted.</summary>
         public static void StripAsteroid(uint activator, uint target, float seconds, int moduleBonus)
         {
             seconds = MiningCycleSeconds(activator, seconds);
-            SetLocalBool(target, Mined, true);
+            HoldExtraction(target, activator);
+            RollAsteroidUnits(target);
 
             ApplyEffectToObject(DurationType.Temporary, EffectEntangle(), activator, seconds);
 
@@ -540,12 +564,23 @@ namespace SWLOR.Game.Server.Feature.ShipModuleDefinition
 
             DelayCommand(seconds, () =>
             {
-                var industrialBonus = Space.GetShipStatus(activator).Industrial;
+                ReleaseExtraction(target, activator);
 
-                var amountToMine = (int)SpaceCombatMath.MiningYield(
-                    1 + Perk.GetPerkLevel(activator, PerkType.StarshipMining) + (int)(industrialBonus / 6) + (moduleBonus / 6),
-                    GetProspectorBonus(activator));
+                // The pilot may have left their ship, or another ship may have finished the asteroid, meanwhile
+                // (plan section 16, bug 2: there was no ship status check after the delay).
+                var shipStatus = Space.GetShipStatus(activator);
+                var remainingUnits = GetLocalInt(target, "ASTEROID_REMAINING_UNITS");
+                if (shipStatus == null || !GetIsObjectValid(target) || remainingUnits <= 0)
+                    return;
 
+                // The same per-cycle ore as a mining laser, over every cycle the asteroid has left.
+                var amountToMine = SpaceCombatMath.StripMinerYield(
+                    SpaceCombatMath.MiningYield(
+                        SpaceCombatMath.ExtractionBaseAmount(Perk.GetPerkLevel(activator, PerkType.StarshipMining), shipStatus.Industrial, moduleBonus),
+                        GetProspectorBonus(activator)),
+                    remainingUnits);
+
+                SetLocalInt(target, "ASTEROID_REMAINING_UNITS", 0);
                 SetPlotFlag(target, false);
                 ApplyEffectToObject(DurationType.Instant, EffectDeath(), target);
 
@@ -556,15 +591,15 @@ namespace SWLOR.Game.Server.Feature.ShipModuleDefinition
                 var lootTableId = GetLocalString(target, "STRIPMINE_LOOT_TABLE_ID");
                 var lootTable = Loot.GetLootTableByName(lootTableId);
 
+                var ore = new List<string>();
                 for (var count = 1; count <= amountToMine; count++)
                 {
-                    var item = GetAsteroidOre(activator, lootTable);
-                    CreateItemOnObject(item.Resref, activator);
+                    ore.Add(GetAsteroidOre(activator, lootTable).Resref);
                 }
 
+                ShipHold.DeliverYield(activator, ore);
                 GiveMiningExperience(activator, target);
             });
-            SetLocalBool(target, Mined, false);
         }
 
         private static void GiveMiningExperience(uint activator, uint target)

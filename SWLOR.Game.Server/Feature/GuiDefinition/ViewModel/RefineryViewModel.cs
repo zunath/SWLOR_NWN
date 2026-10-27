@@ -48,6 +48,13 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
             {"raw_arkoxit", new OreDetail(5, "ref_arkoxit", 150)},
             {"ore_arda", new OreDetail(5, "ref_arda", 150)},
 
+            // Ship Scrap from wrecks (plan section 12): each tier refines into that tier's electronics.
+            {"ship_scrap_1", new OreDetail(1, "elec_ruined", 25)},
+            {"ship_scrap_2", new OreDetail(2, "elec_flawed", 50)},
+            {"ship_scrap_3", new OreDetail(3, "elec_good", 75)},
+            {"ship_scrap_4", new OreDetail(4, "elec_imperfect", 100)},
+            {"ship_scrap_5", new OreDetail(5, "elec_high", 125)},
+
             // Options below are for further expansion down the road.
             {"raw_ochne", new OreDetail(99, "ref_ochne", 175)},
             {"raw_croknor", new OreDetail(99, "ref_croknor", 200)},

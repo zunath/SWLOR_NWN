@@ -16,6 +16,7 @@ namespace SWLOR.Game.Server.Feature.SpawnDefinition
             KorribanOrbit();
             DathomirOrbit();
             DantooineOrbit();
+            MidRimNebula();
 
             return _builder.Build();
         }
@@ -82,6 +83,27 @@ namespace SWLOR.Game.Server.Feature.SpawnDefinition
 
                 .AddSpawn(ObjectType.Placeable, "asteroid_arda")
                 .WithFrequency(1);
+        }
+
+        /// <summary>
+        /// The Mid Rim nebula on the Viscara starlane (space_midrim1): Korriban's asteroids plus Tibanna Gas clouds of
+        /// tiers 3 and 4, until the W6b Mid Rim Nebula zone.
+        /// </summary>
+        private void MidRimNebula()
+        {
+            _builder.Create("SPACE_RESOURCES_MIDRIM_NEBULA", "Space Resources - Mid Rim Nebula")
+                .ResourceDespawnDelay(60) // 1 hour, as Korriban Orbit
+                .AddSpawn(ObjectType.Placeable, "asteroid_gostian")
+                .WithFrequency(25)
+
+                .AddSpawn(ObjectType.Placeable, "asteroid_arda")
+                .WithFrequency(1)
+
+                .AddSpawn(ObjectType.Placeable, "spc_gascloud_t3")
+                .WithFrequency(10)
+
+                .AddSpawn(ObjectType.Placeable, "spc_gascloud_t4")
+                .WithFrequency(10);
         }
 
         private void DathomirOrbit()

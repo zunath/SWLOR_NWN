@@ -336,6 +336,7 @@ namespace SWLOR.Game.Server.Service
                     // Launched fighters drop no loot, so a carrier cannot be farmed for its waves.
                     for (var table = 1; table <= 9; table++)
                         DeleteLocalString(fighter, "LOOT_TABLE_" + table);
+                    SetLocalBool(fighter, NoWreckVariable, true);
 
                     state.Fighters.Add(fighter);
                     if (IsRoleTarget(creature, target))

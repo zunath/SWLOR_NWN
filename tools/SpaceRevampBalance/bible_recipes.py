@@ -37,8 +37,7 @@ def col_after(letter):
 
 
 def recipe_rows():
-    steps = c.module_steps()
-    hulls = c.ships(c.RECIPE_TYPE_START + len(steps))
+    steps, hulls = c.catalog()
     rows = []
     for s in steps:
         rows.append(dict(enum=s["RecipeName"], category="ShipModule", name=s["Name"], level=s["RecipeLevel"],

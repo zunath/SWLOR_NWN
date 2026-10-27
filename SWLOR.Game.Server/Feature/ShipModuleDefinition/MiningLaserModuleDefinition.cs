@@ -40,7 +40,7 @@ namespace SWLOR.Game.Server.Feature.ShipModuleDefinition
                 .Capacitor(capacitor)
                 .Toggle(recast)
                 .Recast((activator, _, _) => ShipModuleActions.MiningCycleSeconds(activator, recast))
-                .ValidationAction((_, _, target, _, _) => ShipModuleActions.MiningLaserError(target, requiredLevel))
+                .ValidationAction((activator, _, target, _, _) => ShipModuleActions.MiningLaserError(activator, target, requiredLevel))
                 .ActivatedAction((activator, _, target, _, moduleBonus) =>
                 {
                     ShipModuleActions.MineAsteroid(activator, target, recast, moduleBonus);

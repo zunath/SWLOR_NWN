@@ -77,7 +77,7 @@ def collect():
     literal_registries = (
         "FishType.cs", "FishingRodType.cs", "FishingBaitType.cs",
         "SlicingCacheSmitheryRecipes.cs", "SlicingCacheCookingRecipes.cs", "TraceFuseRecipes.cs",
-        "SlicingTerminalFurnitureRecipes.cs", "ConcentratedVenomRecipes.cs",
+        "SlicingTerminalFurnitureRecipes.cs", "ConcentratedVenomRecipes.cs", "ShipSalvageItems.cs",
     )
     # Space revamp catalogs: each hull and module Tag is the output resref of a RevampStarshipRecipes recipe.
     revamp_catalogs = ("RevampModuleCatalog.cs", "RevampShipCatalog.cs")

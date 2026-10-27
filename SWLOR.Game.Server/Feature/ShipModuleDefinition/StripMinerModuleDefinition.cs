@@ -36,7 +36,8 @@ namespace SWLOR.Game.Server.Feature.ShipModuleDefinition
                 .Toggle(18)
                 .Recast((activator, _, _) => ShipModuleActions.MiningCycleSeconds(activator, 18f))
                 .CapitalClassModule()
-                .ValidationAction((_, _, target, _, _) => ShipModuleActions.StripMinerError(target, null))
+                // The legacy strip miner reaches every asteroid tier (5), as its description says.
+                .ValidationAction((activator, _, target, _, _) => ShipModuleActions.StripMinerError(activator, target, 5))
                 .ActivatedAction((activator, _, target, _, moduleBonus) =>
                 {
                     ShipModuleActions.StripAsteroid(activator, target, 18f, moduleBonus);

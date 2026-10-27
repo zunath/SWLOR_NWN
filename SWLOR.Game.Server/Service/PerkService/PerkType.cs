@@ -827,7 +827,9 @@ namespace SWLOR.Game.Server.Service.PerkService
         Prospector = 883,
         DeepCore = 884,
         RapidExtraction = 885,
+        GasSiphoning = 886,
+        SalvageExpert = 887,
 
-        // IDs 650 and 886+ are free.
+        // IDs 650 and 888+ are free.
     }
 }

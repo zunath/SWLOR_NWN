@@ -222,15 +222,41 @@ namespace SWLOR.Game.Server.Service.SpaceService
         /// <summary>The longest mining cycle reduction (Rapid Extraction); a cycle never drops below a second.</summary>
         public const int MaximumMiningCycleSpeedPercent = 90;
 
-        /// <summary>A mining laser or strip miner cycle after Rapid Extraction: shorter by the percent, never under a second.</summary>
+        /// <summary>
+        /// A mining, gas or salvage cycle after Rapid Extraction: shorter by the percent, never under a second.
+        /// </summary>
         public static float MiningCycleSeconds(float baseSeconds, int speedPercent)
         {
             var percent = Math.Clamp(speedPercent, 0, MaximumMiningCycleSpeedPercent);
             return Math.Min(baseSeconds, Math.Max(1f, baseSeconds * (100 - percent) / 100f));
         }
 
-        /// <summary>The ore one mining cycle yields: the base amount plus the legacy Starship Mining ranks and Prospector.</summary>
-        public static float MiningYield(float baseAmount, int prospectorBonus) =>
-            baseAmount + Math.Max(0, prospectorBonus);
+        /// <summary>
+        /// The base amount of one extraction cycle (mining laser, gas harvester, salvager): 1, plus a legacy perk's
+        /// ranks, plus a quarter of the ship's Industrial bonus, plus a sixth of the module bonus. Whole numbers
+        /// throughout (plan section 16, bug 3: the module bonus was divided as a float).
+        /// </summary>
+        public static int ExtractionBaseAmount(int legacyPerkRanks, int industrialBonus, int moduleBonus) =>
+            1 + Math.Max(0, legacyPerkRanks) + Math.Max(0, industrialBonus) / 4 + Math.Max(0, moduleBonus) / 6;
+
+        /// <summary>The ore one mining cycle yields: the base amount plus Prospector (or a cycle's perk bonus).</summary>
+        public static int MiningYield(int baseAmount, int prospectorBonus) =>
+            Math.Max(1, baseAmount) + Math.Max(0, prospectorBonus);
+
+        /// <summary>The asteroid units one mining laser cycle of <paramref name="amount"/> ore uses up.</summary>
+        public static int MiningUnitsPerCycle(int amount) => 1 + Math.Max(0, amount) / 2;
+
+        /// <summary>
+        /// A strip miner's ore: what a mining laser with the same per-cycle <paramref name="amount"/> would pull from
+        /// the asteroid's remaining units over all its cycles, in one cycle (plan section 16, bug 2: it gave a single
+        /// laser cycle's ore for the whole asteroid).
+        /// </summary>
+        public static int StripMinerYield(int amount, int remainingUnits)
+        {
+            var perCycle = Math.Max(1, amount);
+            var units = Math.Max(1, remainingUnits);
+            var cycles = (units + MiningUnitsPerCycle(perCycle) - 1) / MiningUnitsPerCycle(perCycle);
+            return perCycle * cycles;
+        }
     }
 }

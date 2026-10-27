@@ -233,8 +233,8 @@
   },
   {
     "Id": "PistolRushTravel",
-    "Description": "Run replacement while rushing: low forward lean with both pistols pushed ahead",
-    "Duration": 1.6,
+    "Description": "Run replacement while rushing: a real sprint with both pistols levelled ahead, firing right then left on each stride",
+    "Duration": 1.9,
     "Beats": [
       {
         "Time": 0,
@@ -243,83 +243,403 @@
         "SourceTime": 0
       },
       {
-        "Time": 0.16,
-        "Label": "Lunge forward",
-        "SourceAnimation": "bowshot",
+        "Time": 0.12,
+        "Label": "Stride 1, both pistols on line",
+        "SourceAnimation": "run",
         "SourceTime": 0,
-        "SourceModel": "a_ba_med_weap",
         "LeftHand": [
-          -0.2,
+          -0.17,
           0.6,
-          1.18
+          1.32
         ],
         "RightHand": [
-          0.2,
+          0.17,
           0.6,
-          1.18
+          1.32
         ],
         "TorsoDegrees": [
-          20,
+          14,
           0,
           0
         ],
         "RootOffset": [
           0,
-          0.1,
-          -0.07
-        ]
+          0.03,
+          -0.04
+        ],
+        "GripAnimation": "bowshot",
+        "GripModel": "a_ba_med_weap"
       },
       {
-        "Time": 1.25,
-        "Label": "Hold rush lean",
-        "SourceAnimation": "bowshot",
-        "SourceTime": 0,
-        "SourceModel": "a_ba_med_weap",
+        "Time": 0.2,
+        "Label": "Stride 1, right pistol fires",
+        "SourceAnimation": "run",
+        "SourceTime": 0.1,
         "LeftHand": [
-          -0.2,
-          0.62,
-          1.2
+          -0.17,
+          0.6,
+          1.32
         ],
         "RightHand": [
-          0.2,
-          0.62,
-          1.2
+          0.17,
+          0.53,
+          1.37
         ],
         "TorsoDegrees": [
-          20,
+          12,
+          -4,
+          0
+        ],
+        "RootOffset": [
+          0,
+          0.03,
+          -0.04
+        ],
+        "GripAnimation": "bowshot",
+        "GripModel": "a_ba_med_weap",
+        "GripTime": 0.53
+      },
+      {
+        "Time": 0.36,
+        "Label": "Stride 1, right recovers",
+        "SourceAnimation": "run",
+        "SourceTime": 0.3,
+        "LeftHand": [
+          -0.17,
+          0.6,
+          1.32
+        ],
+        "RightHand": [
+          0.17,
+          0.6,
+          1.32
+        ],
+        "TorsoDegrees": [
+          14,
           0,
           0
         ],
         "RootOffset": [
           0,
-          0.1,
-          -0.07
-        ]
+          0.03,
+          -0.04
+        ],
+        "GripAnimation": "bowshot",
+        "GripModel": "a_ba_med_weap"
       },
       {
-        "Time": 1.45,
-        "Label": "Straighten",
-        "SourceAnimation": "bowshot",
-        "SourceTime": 0,
-        "SourceModel": "a_ba_med_weap",
+        "Time": 0.52,
+        "Label": "Stride 1, next footfall",
+        "SourceAnimation": "run",
+        "SourceTime": 0.5,
         "LeftHand": [
-          -0.3,
-          0.3,
-          1.05
+          -0.17,
+          0.6,
+          1.32
         ],
         "RightHand": [
-          0.3,
-          0.3,
-          1.05
+          0.17,
+          0.6,
+          1.32
+        ],
+        "TorsoDegrees": [
+          14,
+          0,
+          0
         ],
         "RootOffset": [
           0,
-          0.02,
-          -0.02
-        ]
+          0.03,
+          -0.04
+        ],
+        "GripAnimation": "bowshot",
+        "GripModel": "a_ba_med_weap"
       },
       {
-        "Time": 1.6,
+        "Time": 0.6,
+        "Label": "Stride 1, left pistol fires",
+        "SourceAnimation": "run",
+        "SourceTime": 0.6,
+        "LeftHand": [
+          -0.17,
+          0.53,
+          1.37
+        ],
+        "RightHand": [
+          0.17,
+          0.6,
+          1.32
+        ],
+        "TorsoDegrees": [
+          12,
+          4,
+          0
+        ],
+        "RootOffset": [
+          0,
+          0.03,
+          -0.04
+        ],
+        "GripAnimation": "bowshot",
+        "GripModel": "a_ba_med_weap",
+        "GripTime": 0.53
+      },
+      {
+        "Time": 0.76,
+        "Label": "Stride 1, left recovers",
+        "SourceAnimation": "run",
+        "SourceTime": 0.8,
+        "LeftHand": [
+          -0.17,
+          0.6,
+          1.32
+        ],
+        "RightHand": [
+          0.17,
+          0.6,
+          1.32
+        ],
+        "TorsoDegrees": [
+          14,
+          0,
+          0
+        ],
+        "RootOffset": [
+          0,
+          0.03,
+          -0.04
+        ],
+        "GripAnimation": "bowshot",
+        "GripModel": "a_ba_med_weap"
+      },
+      {
+        "Time": 0.92,
+        "Label": "Stride 1 complete",
+        "SourceAnimation": "run",
+        "SourceTime": 1,
+        "LeftHand": [
+          -0.17,
+          0.6,
+          1.32
+        ],
+        "RightHand": [
+          0.17,
+          0.6,
+          1.32
+        ],
+        "TorsoDegrees": [
+          14,
+          0,
+          0
+        ],
+        "RootOffset": [
+          0,
+          0.03,
+          -0.04
+        ],
+        "GripAnimation": "bowshot",
+        "GripModel": "a_ba_med_weap"
+      },
+      {
+        "Time": 0.94,
+        "Label": "Stride 2, both pistols on line",
+        "SourceAnimation": "run",
+        "SourceTime": 0,
+        "LeftHand": [
+          -0.17,
+          0.6,
+          1.32
+        ],
+        "RightHand": [
+          0.17,
+          0.6,
+          1.32
+        ],
+        "TorsoDegrees": [
+          14,
+          0,
+          0
+        ],
+        "RootOffset": [
+          0,
+          0.03,
+          -0.04
+        ],
+        "GripAnimation": "bowshot",
+        "GripModel": "a_ba_med_weap"
+      },
+      {
+        "Time": 1.02,
+        "Label": "Stride 2, right pistol fires",
+        "SourceAnimation": "run",
+        "SourceTime": 0.1,
+        "LeftHand": [
+          -0.17,
+          0.6,
+          1.32
+        ],
+        "RightHand": [
+          0.17,
+          0.53,
+          1.37
+        ],
+        "TorsoDegrees": [
+          12,
+          -4,
+          0
+        ],
+        "RootOffset": [
+          0,
+          0.03,
+          -0.04
+        ],
+        "GripAnimation": "bowshot",
+        "GripModel": "a_ba_med_weap",
+        "GripTime": 0.53
+      },
+      {
+        "Time": 1.18,
+        "Label": "Stride 2, right recovers",
+        "SourceAnimation": "run",
+        "SourceTime": 0.3,
+        "LeftHand": [
+          -0.17,
+          0.6,
+          1.32
+        ],
+        "RightHand": [
+          0.17,
+          0.6,
+          1.32
+        ],
+        "TorsoDegrees": [
+          14,
+          0,
+          0
+        ],
+        "RootOffset": [
+          0,
+          0.03,
+          -0.04
+        ],
+        "GripAnimation": "bowshot",
+        "GripModel": "a_ba_med_weap"
+      },
+      {
+        "Time": 1.34,
+        "Label": "Stride 2, next footfall",
+        "SourceAnimation": "run",
+        "SourceTime": 0.5,
+        "LeftHand": [
+          -0.17,
+          0.6,
+          1.32
+        ],
+        "RightHand": [
+          0.17,
+          0.6,
+          1.32
+        ],
+        "TorsoDegrees": [
+          14,
+          0,
+          0
+        ],
+        "RootOffset": [
+          0,
+          0.03,
+          -0.04
+        ],
+        "GripAnimation": "bowshot",
+        "GripModel": "a_ba_med_weap"
+      },
+      {
+        "Time": 1.42,
+        "Label": "Stride 2, left pistol fires",
+        "SourceAnimation": "run",
+        "SourceTime": 0.6,
+        "LeftHand": [
+          -0.17,
+          0.53,
+          1.37
+        ],
+        "RightHand": [
+          0.17,
+          0.6,
+          1.32
+        ],
+        "TorsoDegrees": [
+          12,
+          4,
+          0
+        ],
+        "RootOffset": [
+          0,
+          0.03,
+          -0.04
+        ],
+        "GripAnimation": "bowshot",
+        "GripModel": "a_ba_med_weap",
+        "GripTime": 0.53
+      },
+      {
+        "Time": 1.58,
+        "Label": "Stride 2, left recovers",
+        "SourceAnimation": "run",
+        "SourceTime": 0.8,
+        "LeftHand": [
+          -0.17,
+          0.6,
+          1.32
+        ],
+        "RightHand": [
+          0.17,
+          0.6,
+          1.32
+        ],
+        "TorsoDegrees": [
+          14,
+          0,
+          0
+        ],
+        "RootOffset": [
+          0,
+          0.03,
+          -0.04
+        ],
+        "GripAnimation": "bowshot",
+        "GripModel": "a_ba_med_weap"
+      },
+      {
+        "Time": 1.74,
+        "Label": "Stride 2 complete",
+        "SourceAnimation": "run",
+        "SourceTime": 1,
+        "LeftHand": [
+          -0.17,
+          0.6,
+          1.32
+        ],
+        "RightHand": [
+          0.17,
+          0.6,
+          1.32
+        ],
+        "TorsoDegrees": [
+          14,
+          0,
+          0
+        ],
+        "RootOffset": [
+          0,
+          0.03,
+          -0.04
+        ],
+        "GripAnimation": "bowshot",
+        "GripModel": "a_ba_med_weap"
+      },
+      {
+        "Time": 1.9,
         "Label": "Neutral recovery",
         "SourceAnimation": "pause1",
         "SourceTime": 0

@@ -191,7 +191,7 @@ public static class AuthoredAnimation
     public static readonly global::SWLOR.Game.Server.Service.AnimationService.AnimationClip PiercingToss = new("sw_pier_toss", 1.29999995f);
     public static readonly global::SWLOR.Game.Server.Service.AnimationService.AnimationClip PinningToss = new("sw_pinn_toss", 1.39999998f);
     public static readonly global::SWLOR.Game.Server.Service.AnimationService.AnimationClip PistolRush = new("sw_pistrush", 1.04999995f);
-    public static readonly global::SWLOR.Game.Server.Service.AnimationService.AnimationClip PistolRushTravel = new("sw_pistolrus", 1.60000002f);
+    public static readonly global::SWLOR.Game.Server.Service.AnimationService.AnimationClip PistolRushTravel = new("sw_pistolrus", 1.89999998f);
     public static readonly global::SWLOR.Game.Server.Service.AnimationService.AnimationClip PointBlankBurst = new("sw_ptblkbst", 1.54999995f);
     public static readonly global::SWLOR.Game.Server.Service.AnimationService.AnimationClip PouncingStrikeTechnique = new("sw_poun_stri", 2.04999995f);
     public static readonly global::SWLOR.Game.Server.Service.AnimationService.AnimationClip PowerCell = new("sw_powercell", 1.75f);

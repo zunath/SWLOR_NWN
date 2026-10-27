@@ -319,9 +319,13 @@ public class SpaceCrewStationTests
         space.Should().Contain("var source = SpaceCrew.GetStatSource(activator);");
         space.Should().Contain("ActivateShipModuleCore(ship, feat, false, activator, seat);");
         space.Should().Contain("ReleaseShipCrew(player, ");
-        space.Should().Contain("DestroyShipCrew(creature, returnedToDockedShips);");
         space.Should().Contain("RestoreCrewMemberAfterLogin(player);");
         space.Should().Contain("CrewMemberDisconnected(player);");
+
+        // A destroyed ship ejects everyone at its stations and viewports in escape pods (W2d).
+        var death = ReadServerSource("Service", "SpaceDeath.cs");
+        death.Should().Contain("LeaveCrewStation(crewMember, returnToConsole: false);");
+        death.Should().Contain("EscapePodRules.BuildManifest(creature, stationCrew");
 
         var toggles = ReadServerSource("Service", "SpaceToggles.cs");
         toggles.Should().Contain("? BuildDroidFireContext(creature, droid)");

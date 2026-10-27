@@ -226,20 +226,18 @@ public class ShipDockingRulesTests
     public void TheShipDestructionDetachesDockedShipsBeforeHandlingTheHostsOccupants()
     {
         var space = ReadServerSource("Service", "Space.cs");
-        var detach = space.IndexOf("var returnedToDockedShips = DetachDockedShips(creature);", StringComparison.Ordinal);
-        var crew = space.IndexOf("DestroyShipCrew(creature, returnedToDockedShips);", StringComparison.Ordinal);
-        var interior = space.IndexOf("if (returnedToDockedShips.Contains(player))", StringComparison.Ordinal);
+        var death = ReadServerSource("Service", "SpaceDeath.cs");
+        var detach = death.IndexOf("var returnedToDockedShips = DetachDockedShips(creature);", StringComparison.Ordinal);
+        var crew = death.IndexOf("!returnedToDockedShips.Contains(x.Key)", StringComparison.Ordinal);
+        var interior = death.IndexOf("!returnedToDockedShips.Contains(x)", StringComparison.Ordinal);
 
         detach.Should().BePositive();
         crew.Should().BeGreaterThan(detach);
-        interior.Should().BeGreaterThan(crew, "players sent back to a docked ship are not killed with the host's passengers");
+        interior.Should().BeGreaterThan(crew, "players sent back to a docked ship are not ejected with the host's passengers");
 
         space.Should().Contain("CompleteUndockLaunch(player, launch);");
         space.Should().Contain("MarkShipCombat(attacker, target);");
         space.Should().Contain("IsDockedAboardHost(dbShip, out var hostName)");
-
-        var stations = ReadServerSource("Service", "SpaceCrewStations.cs");
-        stations.Should().Contain("if (spared.Contains(crewMember))");
 
         var management = ReadServerSource("Feature", "GuiDefinition", "ViewModel", "ShipManagementViewModel.cs");
         management.Should().Contain("Space.UndockAllToStarport(dbShip, \"was unregistered\");");

@@ -12,5 +12,6 @@ namespace SWLOR.Game.Server.Service.SpaceService
         OutOfRange = 4,
         ValidationFailed = 5,
         NoCapacitor = 6,
+        PvpForbidden = 7,
     }
 }

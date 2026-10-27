@@ -356,7 +356,7 @@ namespace SWLOR.Game.Server.Feature.ShipModuleDefinition
                 if (count >= extraTargets)
                     break;
 
-                if (!GetIsObjectValid(nearby) || nearby == target || nearby == activator || !GetIsEnemy(nearby, activator))
+                if (!GetIsObjectValid(nearby) || nearby == target || nearby == activator || !Space.IsShipEnemy(activator, nearby))
                     continue;
 
                 var nearbyStatus = Space.GetShipStatus(nearby);
@@ -647,7 +647,7 @@ namespace SWLOR.Game.Server.Feature.ShipModuleDefinition
             System.Action beforeEffect,
             System.Func<ShipStatus, int> pool = null)
         {
-            if (!GetIsObjectValid(target) || GetIsEnemy(target, activator))
+            if (!GetIsObjectValid(target) || Space.IsShipHostile(activator, target))
             {
                 target = activator;
                 targetStatus = activatorStatus;
@@ -702,7 +702,8 @@ namespace SWLOR.Game.Server.Feature.ShipModuleDefinition
                 if (!GetIsObjectValid(nearby) || nearby == activator)
                     continue;
 
-                if (GetIsEnemy(nearby, activator) == allies)
+                // Allies exclude enemies and hostile players; enemies are the ships the activator may attack.
+                if (allies ? Space.IsShipHostile(activator, nearby) : !Space.IsShipEnemy(activator, nearby))
                     continue;
 
                 if (Space.GetShipStatus(nearby) == null)

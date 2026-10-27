@@ -380,6 +380,8 @@ namespace SWLOR.Game.Server.Service
                     TargetValid = targetValid,
                     TargetDead = targetValid && GetIsDead(target),
                     TargetTypeAllowed = !needsTarget || IsToggleTargetAllowed(detail, target, targetStatus),
+                    PvpForbidden = needsTarget && targetValid && target != creature &&
+                                   IsOffensiveShipModule(detail.Type) && !CanShipAttack(creature, target),
                     CheckRange = needsTarget && targetValid && target != creature,
                     Distance = targetValid ? GetDistanceBetween(creature, target) : 0f,
                     MaxDistance = GetShipModuleMaxDistance(creature, status, target, targetStatus, module),

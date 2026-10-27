@@ -157,6 +157,11 @@ namespace SWLOR.Game.Server.Service
             if (targetStatus == null)
                 return "That is not a ship.";
 
+            // Player ships attack each other only where the ground rules allow it (plan section 9, PvP).
+            var pvpRefusal = Space.GetPvpRefusal(ship, target);
+            if (!string.IsNullOrEmpty(pvpRefusal))
+                return pvpRefusal;
+
             return PickWeapon(ship, status, target, targetStatus, filter, out _);
         }
 
@@ -250,7 +255,7 @@ namespace SWLOR.Game.Server.Service
 
             var targets = new List<uint>();
             if (GetIsObjectValid(primaryTarget) && primaryTarget != activator && !GetIsDead(primaryTarget) &&
-                GetIsEnemy(primaryTarget, activator) && Space.IsShipInSpace(primaryTarget))
+                Space.IsShipEnemy(activator, primaryTarget) && Space.IsShipInSpace(primaryTarget))
             {
                 targets.Add(primaryTarget);
             }

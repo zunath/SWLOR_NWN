@@ -147,6 +147,9 @@ namespace SWLOR.Game.Server.Service.SpaceService
                 if (!check.TargetTypeAllowed)
                     return ShipToggleAutoOffReason.InvalidTarget;
 
+                if (check.PvpForbidden)
+                    return ShipToggleAutoOffReason.PvpForbidden;
+
                 if (check.CheckRange && check.Distance > check.MaxDistance)
                     return ShipToggleAutoOffReason.OutOfRange;
             }
@@ -173,6 +176,8 @@ namespace SWLOR.Game.Server.Service.SpaceService
                     return $"{moduleName} switched off: invalid target.";
                 case ShipToggleAutoOffReason.OutOfRange:
                     return $"{moduleName} switched off: its target is out of range.";
+                case ShipToggleAutoOffReason.PvpForbidden:
+                    return $"{moduleName} switched off: you can no longer attack that player.";
                 case ShipToggleAutoOffReason.ValidationFailed:
                     return $"{moduleName} switched off: {validationError}";
                 case ShipToggleAutoOffReason.NoCapacitor:

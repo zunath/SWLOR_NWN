@@ -184,7 +184,7 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.Piloting
         /// <summary>Why a goad cannot be cast at the target, or an empty string when it can.</summary>
         public static string GetGoadError(uint activator, uint target)
         {
-            return GetIsObjectValid(target) && target != activator && Space.IsShipInSpace(target) && GetIsEnemy(target, activator)
+            return GetIsObjectValid(target) && target != activator && Space.IsShipInSpace(target) && Space.IsShipEnemy(activator, target)
                 ? string.Empty
                 : "Your target must be an enemy ship.";
         }

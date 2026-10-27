@@ -40,7 +40,7 @@ namespace SWLOR.Game.Server.Service
         /// </summary>
         public static bool Goad(uint source, uint target, int bonus)
         {
-            if (!IsShipInSpace(source) || !IsShipInSpace(target) || !GetIsEnemy(target, source))
+            if (!IsShipInSpace(source) || !IsShipInSpace(target) || !IsShipEnemy(source, target))
                 return false;
 
             return Enmity.TryTaunt(source, target, bonus);
@@ -80,7 +80,7 @@ namespace SWLOR.Game.Server.Service
             foreach (var nearby in ObjectSnapshot.InShape(Shape.Sphere, radius, center, true, ObjectType.Creature))
             {
                 if (!GetIsObjectValid(nearby) || nearby == source || GetIsDead(nearby) ||
-                    !GetIsEnemy(nearby, source) || !IsShipInSpace(nearby))
+                    !IsShipEnemy(source, nearby) || !IsShipInSpace(nearby))
                 {
                     continue;
                 }

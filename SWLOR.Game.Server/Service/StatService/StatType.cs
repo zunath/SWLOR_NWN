@@ -6394,6 +6394,42 @@ namespace SWLOR.Game.Server.Service.StatService
         [StatType(StatTypeCategory.BeneficialWhenPositive)]
         DualWieldAttackDelayReductionPercent = 1167,
 
+        /// <summary>
+        /// Evasion percent a ship gains after its pilot uses a hostile space ability. Only space abilities
+        /// grant it; hostile ground abilities never do.
+        /// </summary>
+        [StatType(StatTypeCategory.BeneficialWhenPositive)]
+        SpaceHostileAbilityUsedEvasionPercentAdjustment = 1168,
+
+        /// <summary>Seconds SpaceHostileAbilityUsedEvasionPercentAdjustment lasts.</summary>
+        [StatType(StatTypeCategory.NonBeneficial, StatTypeAggregation.Maximum)]
+        SpaceHostileAbilityUsedEvasionDurationSeconds = 1169,
+
+        /// <summary>
+        /// Movement speed percent a ship gains after its pilot uses a hostile space ability.
+        /// </summary>
+        [StatType(StatTypeCategory.BeneficialWhenPositive)]
+        SpaceHostileAbilityUsedMovementSpeedPercentAdjustment = 1170,
+
+        /// <summary>Seconds SpaceHostileAbilityUsedMovementSpeedPercentAdjustment lasts.</summary>
+        [StatType(StatTypeCategory.NonBeneficial, StatTypeAggregation.Maximum)]
+        SpaceHostileAbilityUsedMovementSpeedDurationSeconds = 1171,
+
+        /// <summary>
+        /// Flat DMG a ship's energy weapon shots gain per consecutive hit against the same target. Ground
+        /// weapons never read it.
+        /// </summary>
+        [StatType(StatTypeCategory.BeneficialWhenPositive)]
+        SpaceEnergyRepeatedTargetDamageBonusPerHit = 1172,
+
+        /// <summary>Maximum flat DMG from consecutive energy weapon hits against the same target in space.</summary>
+        [StatType(StatTypeCategory.BeneficialWhenPositive)]
+        SpaceEnergyRepeatedTargetDamageBonusMax = 1173,
+
+        /// <summary>Seconds without an energy weapon hit before the space consecutive-hit stacks expire.</summary>
+        [StatType(StatTypeCategory.NonBeneficial, StatTypeAggregation.Maximum)]
+        SpaceEnergyRepeatedTargetDamageDurationSeconds = 1174,
+
 
     }
 

@@ -19,6 +19,7 @@ using SWLOR.Game.Server.Service.CraftService;
 using SWLOR.Game.Server.Service.DroidService;
 using SWLOR.Game.Server.Service.PerkService;
 using SWLOR.Game.Server.Service.SkillService;
+using SWLOR.Game.Server.Service.SpaceService;
 using SWLOR.Game.Server.Service.StatService;
 using SWLOR.NWN.API.NWScript.Enum;
 using SWLOR.NWN.Formats.Tlk;
@@ -255,6 +256,7 @@ public class CombatUpgradeBibleSyncTests
         ["Lightsaber"] = SkillType.Lightsaber,
         ["Mimicry"] = SkillType.Mimicry,
         ["Piloting"] = SkillType.Piloting,
+        ["Piloting (Revamp)"] = SkillType.Piloting,
         ["Pistol"] = SkillType.Pistol,
         ["Twin Pistol"] = SkillType.TwinPistol,
         ["Rifle"] = SkillType.Rifle,
@@ -2023,6 +2025,20 @@ public class CombatUpgradeBibleSyncTests
         }
 
         var description = row.Description.ToLowerInvariant();
+
+        // A space ability names its radius by the shared space phrase ("near your ship"), whose size is a
+        // SpaceRadii constant rather than a number in the text.
+        if (detail.CanBeUsedInSpace && targeting.Shape == AbilityTargetingShapeType.Sphere)
+        {
+            var spaceRadius = description.Contains("near your ship")
+                ? SpaceRadii.NearShip
+                : description.Contains("near the target")
+                    ? SpaceRadii.NearTarget
+                    : (float?)null;
+            if (spaceRadius != null && Math.Abs(targeting.SizeX - spaceRadius.Value) < 0.001f)
+                return;
+        }
+
         var sizeX = Number(targeting.SizeX);
         var sizeY = Number(targeting.SizeY);
         var escapedX = Regex.Escape(sizeX);
@@ -2904,6 +2920,7 @@ public class CombatUpgradeBibleSyncTests
             ("Lightsaber", "Ward") => PerkCategoryType.LightsaberOffense,
             ("Mimicry", "Mimicry") => PerkCategoryType.Mimicry,
             ("Piloting", "Shipwright") => PerkCategoryType.Piloting,
+            ("Piloting (Revamp)", "Ace") => PerkCategoryType.PilotingAce,
             ("Pistol", "Gambler") => PerkCategoryType.PistolGunslinger,
             ("Pistol", "Skirmisher") => PerkCategoryType.PistolSkirmisher,
             ("Twin Pistol", "Barrage") => PerkCategoryType.TwinPistolBarrage,

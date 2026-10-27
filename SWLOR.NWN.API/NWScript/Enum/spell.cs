@@ -1701,5 +1701,16 @@ namespace SWLOR.NWN.API.NWScript.Enum
         CrossfireStance = 1767,
         FinalSalvo = 1768,
 
+        AceDisablingShot1 = 1769,
+        AceDisablingShot2 = 1770,
+        AceDisablingShot3 = 1771,
+        AceDisablingShot4 = 1772,
+        AceDoubleShot1 = 1773,
+        AceDoubleShot2 = 1774,
+        AceDoubleShot3 = 1775,
+        AcePointBlankBurst1 = 1776,
+        AcePointBlankBurst2 = 1777,
+        AceStance = 1778,
+        AceInTheHole = 1779,
     }
 }

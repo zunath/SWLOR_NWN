@@ -240,7 +240,7 @@ Communication -> Platform/Enumeration | 9
 Conversation -> Platform/Core | 4
 ConversationMenu -> Platform/Core | 3
 DB -> Platform/Core | 1
-DB -> Platform/Entity | 23
+DB -> Platform/Entity | 26
 DB -> Platform/Extension | 4
 DB -> Platform/Root | 2
 Feature/DialogDefinition -> Platform/Core | 1
@@ -314,17 +314,17 @@ NPCGroup -> Platform/Extension | 1
 Spawn -> Platform/Core | 6
 
 # Economy -> Core (7 edges)
-Bank -> DB | 6
+Bank -> DB | 8
 Bank -> Log | 2
-Currency -> DB | 3
+Currency -> DB | 5
 Guild -> ColorToken | 1
-Guild -> DB | 2
+Guild -> DB | 4
 Guild -> Random | 1
-PlayerMarket -> DB | 2
+PlayerMarket -> DB | 4
 
 # Economy -> Platform (15 edges)
 Bank -> Platform/Composition | 1
-Bank -> Platform/Entity | 7
+Bank -> Platform/Entity | 13
 Currency -> Platform/Composition | 1
 Currency -> Platform/Core | 1
 Currency -> Platform/Entity | 3
@@ -332,7 +332,7 @@ Currency -> Platform/Extension | 1
 Guild -> Platform/Composition | 1
 Guild -> Platform/Core | 2
 Guild -> Platform/Entity | 2
-Guild -> Platform/Enumeration | 11
+Guild -> Platform/Enumeration | 21
 Guild -> Platform/Extension | 1
 PlayerMarket -> Platform/Composition | 1
 PlayerMarket -> Platform/Core | 3
@@ -591,19 +591,23 @@ Feature/ChatCommandDefinition -> ColorToken | 14
 Feature/ChatCommandDefinition -> Communication | 1
 Feature/ChatCommandDefinition -> DB | 14
 Feature/ChatCommandDefinition -> Log | 7
-PlayerList -> DB | 3
+PlayerList -> DB | 5
 PlayerList -> Log | 1
 
-# Social -> Platform (12 edges)
+# Social -> Platform (16 edges)
+ChatCommand -> Platform/Composition | 1
 ChatCommand -> Platform/Core | 2
 ChatCommand -> Platform/Enumeration | 7
-ChatCommand -> Platform/Root | 4
+ChatCommand -> Platform/Root | 3
+ChatPortraitTells -> Platform/Composition | 1
 ChatPortraitTells -> Platform/Core | 3
 Feature/ChatCommandDefinition -> Platform/Core | 2
 Feature/ChatCommandDefinition -> Platform/Entity | 15
 Feature/ChatCommandDefinition -> Platform/Enumeration | 90
 Feature/ChatCommandDefinition -> Platform/Root | 5
+Party -> Platform/Composition | 1
 Party -> Platform/Core | 7
+PlayerList -> Platform/Composition | 1
 PlayerList -> Platform/Core | 5
 PlayerList -> Platform/Entity | 3
 PlayerList -> Platform/Extension | 1
@@ -645,7 +649,7 @@ Gui -> FrameProfiler | 2
 Gui -> Log | 1
 
 # UI -> Platform (10 edges)
-Feature/GuiDefinition -> Platform/Core | 143
+Feature/GuiDefinition -> Platform/Core | 150
 Feature/GuiDefinition -> Platform/Entity | 336
 Feature/GuiDefinition -> Platform/Enumeration | 21
 Feature/GuiDefinition -> Platform/Extension | 3
@@ -658,7 +662,7 @@ Gui -> Platform/Root | 1
 
 # World -> Core (29 edges)
 Area -> ColorToken | 1
-Area -> DB | 1
+Area -> DB | 3
 Feature/FishingLocationDefinition -> Random | 1
 Feature/PropertyLayoutDefinition -> DB | 3
 Feature/TrapDefinition -> Messaging | 1
@@ -671,7 +675,7 @@ Fishing -> NamedAnimation | 2
 Fishing -> Random | 4
 HoloCom -> ColorToken | 2
 Music -> DB | 9
-Notes -> DB | 3
+Notes -> DB | 5
 Property -> BackgroundJob | 1
 Property -> ColorToken | 2
 Property -> ConversationMenu | 1
@@ -683,11 +687,12 @@ Shuttle -> Log | 7
 Shuttle -> Time | 6
 Taxi -> DB | 3
 Traps -> ColorToken | 3
-Traps -> DB | 2
+Traps -> DB | 4
 Weather -> DB | 1
 Weather -> Log | 1
 
-# World -> Platform (35 edges)
+# World -> Platform (40 edges)
+Area -> Platform/Composition | 1
 Area -> Platform/Core | 4
 Area -> Platform/Entity | 1
 Feature/PropertyLayoutDefinition -> Platform/Core | 2
@@ -697,13 +702,16 @@ Feature/TrapDefinition -> Platform/Core | 3
 Fishing -> Platform/Core | 2
 Fishing -> Platform/Entity | 1
 Fishing -> Platform/Extension | 3
+HoloCom -> Platform/Composition | 1
 HoloCom -> Platform/Core | 5
 Music -> Platform/Core | 6
 Music -> Platform/Entity | 10
 Music -> Platform/Extension | 1
-Notes -> Platform/Entity | 4
+Notes -> Platform/Composition | 1
+Notes -> Platform/Entity | 8
+Planet -> Platform/Composition | 1
 Planet -> Platform/Core | 1
-Planet -> Platform/Enumeration | 14
+Planet -> Platform/Enumeration | 22
 Planet -> Platform/Extension | 1
 Property -> Platform/Core | 11
 Property -> Platform/Entity | 75
@@ -718,6 +726,7 @@ Taxi -> Platform/Composition | 1
 Taxi -> Platform/Core | 1
 Taxi -> Platform/Entity | 1
 Taxi -> Platform/Extension | 1
+Traps -> Platform/Composition | 1
 Traps -> Platform/Core | 1
 Traps -> Platform/Entity | 2
 Weather -> Platform/Core | 5

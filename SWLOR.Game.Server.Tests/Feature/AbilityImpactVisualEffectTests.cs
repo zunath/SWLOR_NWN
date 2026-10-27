@@ -104,7 +104,13 @@ public class AbilityImpactVisualEffectTests
                 ability.SuccessfulImpactVisualEffect.Should().Be(usesNativeImpact ? VisualEffect.None : expected,
                     $"{id}/{feat} must use its intended impact path");
                 ability.DamageImpactVisualEffect.Should().Be(
-                    nativeContact ?? (id is "ForceJudgment" or "RadiantLance" ? VisualEffect.Vfx_Imp_Sunstrike : VisualEffect.None),
+                    nativeContact ?? id switch
+                    {
+                        "ForceJudgment" or "RadiantLance" => VisualEffect.Vfx_Imp_Sunstrike,
+                        // Its authored burst is silent; the stock lightning carries the sound.
+                        "InnerCircleSurgeTechnique" => VisualEffect.Vfx_Imp_Lightning_M,
+                        _ => VisualEffect.None
+                    },
                     $"{id}/{feat} must bind the intended positive-damage visual");
                 if (usesNativeImpact)
                     ability.ImpactAction.Should().NotBeNull($"{id}/{feat} still needs its native impact action");
@@ -220,6 +226,24 @@ public class AbilityImpactVisualEffectTests
                 .Should().Contain(value => value != "****", $"{effect} needs a model");
             row[Array.IndexOf(header, "SoundImpact")].Should().NotBe("****", $"{effect} needs a sound");
         }
+    }
+
+    [Test]
+    public void InnerCircleSurge_PlaysAnAudibleStockLightningWithItsSilentAuthoredBurst()
+    {
+        var root = FindRepositoryRoot();
+        var ability = new SWLOR.Game.Server.Feature.AbilityDefinition.Mimicry.InnerCircleSurgeTechniqueAbilityDefinition()
+            .BuildAbilities()[FeatType.InnerCircleSurgeTechnique];
+        ability.SuccessfulImpactVisualEffect.Should().Be(VisualEffect.Vfx_Ability_InnerCircleSurgeTechnique);
+        ability.DamageImpactVisualEffect.Should().Be(VisualEffect.Vfx_Imp_Lightning_M);
+
+        var table = File.ReadAllLines(Path.Combine(root, "SWLOR_Haks", "sw_2da", "visualeffects.2da"));
+        var header = Regex.Split(table.First(line => line.TrimStart().StartsWith("Label ")).Trim(), @"\s+");
+        var rows = table.Where(line => Regex.IsMatch(line, @"^\s*\d+\s"))
+            .Select(line => Regex.Split(line.Trim(), @"\s+"))
+            .ToDictionary(parts => int.Parse(parts[0]), parts => parts.Skip(1).ToArray());
+        rows[(int)VisualEffect.Vfx_Imp_Lightning_M][Array.IndexOf(header, "SoundImpact")]
+            .Should().NotBe("****", "the stock lightning supplies the cast's impact sound");
     }
 
     private static string FindRepositoryRoot()

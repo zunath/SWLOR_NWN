@@ -289,6 +289,14 @@ namespace SWLOR.Game.Server.Service
             var item = StringToObject(EventsPlugin.GetEventData("ITEM_OBJECT_ID"));
             var itemTag = GetTag(item);
 
+            // A character at a crew station or viewport is hidden beside the ship and cannot use items.
+            if (Space.IsAtCrewStation(user))
+            {
+                SendMessageToPC(user, "You cannot use items while at a crew station.");
+                EventsPlugin.SkipEvent();
+                return;
+            }
+
             // Not in the cache. Skip.
             if (!_items.ContainsKey(itemTag))
                 return;

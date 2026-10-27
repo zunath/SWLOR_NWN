@@ -68,6 +68,10 @@ namespace SWLOR.Game.Server.Service.PropertyService
         // Labs
         [PropertyPermission("Manage Incubators", "Can manage incubators.", true)]
         ManageIncubators = 16,
+
+        // Starships
+        [PropertyPermission("Crew Stations", "Can take a crew station (Gunner, Engineer or Sensors) aboard the starship while its captain's party flies it.", true)]
+        CrewStation = 17,
     }
 
     public class PropertyPermissionAttribute : Attribute

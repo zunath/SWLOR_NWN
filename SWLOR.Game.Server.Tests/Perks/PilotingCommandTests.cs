@@ -300,14 +300,15 @@ public class PilotingCommandTests
     }
 
     [Test]
-    public void CrewMorale_RaisesTheCrewEffectivenessMultiplier_AndLeadershipHasAHookThatAddsNothingYet()
+    public void CrewMorale_RaisesTheCrewEffectivenessMultiplier_AndLeadershipRankAddsToIt()
     {
         SpaceCrew.EffectivenessMultiplier(0, 0).Should().Be(1.0);
         SpaceCrew.EffectivenessMultiplier(10, 0).Should().BeApproximately(1.10, 1e-9);
         SpaceCrew.EffectivenessMultiplier(10, 5).Should().BeApproximately(1.15, 1e-9);
         SpaceCrew.EffectivenessMultiplier(-5, -5).Should().Be(1.0, "a penalty never lowers it below normal");
 
-        SpaceCommand.GetLeadershipBonusPercent(0u).Should().Be(0, "the crew update fills in Leadership's scaling");
+        SpaceCommand.LeadershipBonusPercent(0).Should().Be(0);
+        SpaceCommand.LeadershipBonusPercent(50).Should().Be(25);
         SpaceCombatMath.ScaleByPercent(8, 0).Should().Be(8);
         SpaceCombatMath.ScaleByPercent(10, 50).Should().Be(15);
     }
@@ -361,7 +362,7 @@ public class PilotingCommandTests
 
         var crew = ReadServerSource("Service", "SpaceService", "SpaceCrew.cs");
         crew.Should().Contain("StatType.SpaceCrewEffectivenessPercentAdjustment");
-        crew.Should().Contain("SpaceCommand.GetLeadershipBonusPercent(ship)");
+        crew.Should().Contain("SpaceCommand.GetLeadershipCrewBonusPercent(ship)");
 
         var formation = ReadServerSource("Feature", "AbilityDefinition", "Piloting", "FormationAbilityDefinition.cs");
         formation.Should().Contain("SpaceAuras.ApplyAura(activator, aura)");

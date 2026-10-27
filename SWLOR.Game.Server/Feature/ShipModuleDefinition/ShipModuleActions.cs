@@ -554,12 +554,34 @@ namespace SWLOR.Game.Server.Feature.ShipModuleDefinition
 
         // Support
 
-        /// <summary>A repair's amount after the repairer's Repair Efficiency (Command), which every module and ability repair uses.</summary>
+        /// <summary>
+        /// A repair's amount after the repairer's Repair Efficiency (Command), which every module and ability repair
+        /// uses. A crew member's station repair works at the station's effectiveness and takes the crew member's own
+        /// Repair Efficiency (plan section 10).
+        /// </summary>
         public static int ApplyRepairEfficiency(uint repairer, int amount)
         {
             return SpaceCombatMath.ApplyRepairEfficiency(
-                amount,
-                Stat.GetStatAdjustment(repairer, StatType.SpaceRepairEfficiencyPercentAdjustment));
+                ShipCrewSeats.ScaleByEffectiveness(amount, SpaceCrew.GetFireEffectiveness(repairer)),
+                Stat.GetStatAdjustment(SpaceCrew.GetStatSource(repairer), StatType.SpaceRepairEfficiencyPercentAdjustment));
+        }
+
+        /// <summary>
+        /// Gives the support combat point for what the ship just did to the player who did it: the crew member at a
+        /// station, in their seat's skill, or the pilot in Piloting.
+        /// </summary>
+        public static void AddSupportCombatPoint(uint activator, IEnumerable<uint> supported)
+        {
+            CombatPoint.AddSupportCombatPoint(
+                SpaceCrew.GetCreditedPlayer(activator),
+                supported,
+                SpaceCrew.GetCreditedSkill(activator, SkillType.Piloting));
+        }
+
+        /// <inheritdoc cref="AddSupportCombatPoint(uint, IEnumerable{uint})"/>
+        public static void AddSupportCombatPoint(uint activator, uint supported)
+        {
+            AddSupportCombatPoint(activator, new[] { supported });
         }
 
         /// <summary>Restores shield to the target ship, or to the activator's own when the target is not a friendly ship.</summary>
@@ -612,9 +634,12 @@ namespace SWLOR.Game.Server.Feature.ShipModuleDefinition
 
             beforeEffect?.Invoke();
 
-            // A shield or hull repair (not a capacitor injection) is stronger with Repair Efficiency.
+            // A shield or hull repair (not a capacitor injection) is stronger with Repair Efficiency. Either works at
+            // a crew station's effectiveness.
             if (pool != null)
                 amount = ApplyRepairEfficiency(activator, amount);
+            else
+                amount = ShipCrewSeats.ScaleByEffectiveness(amount, SpaceCrew.GetFireEffectiveness(activator));
 
             ApplyEffectToObject(DurationType.Instant, EffectVisualEffect(effect), target);
 
@@ -626,7 +651,7 @@ namespace SWLOR.Game.Server.Feature.ShipModuleDefinition
             Messaging.SendMessageNearbyToPlayers(
                 activator,
                 receiver => $"{PlayerName.GetDisplayName(receiver, activator)} restores {amount} {noun} to {PlayerName.GetDisplayName(receiver, target)}'s ship.");
-            CombatPoint.AddSupportCombatPoint(activator, target, SkillType.Piloting);
+            AddSupportCombatPoint(activator, target);
         }
 
         /// <summary>

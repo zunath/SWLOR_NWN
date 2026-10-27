@@ -36,12 +36,13 @@ public class SupportCombatPointTests
 
         // The repairers and the injector share ShipModuleActions, which holds their combat point credit.
         var sharedSupport = shipModules.Single(module => module.Name == "ShipModuleActions.cs").Source;
-        sharedSupport.Should().Contain("CombatPoint.AddSupportCombatPoint(activator,");
+        sharedSupport.Should().Contain("AddSupportCombatPoint(activator,");
+        sharedSupport.Should().Contain("SpaceCrew.GetCreditedPlayer(activator)", "a crew member earns the credit for their station's support");
 
         foreach (var (name, source) in supportModules)
         {
-            var credits = source.Contains("CombatPoint.AddSupportCombatPoint(activator,") ||
-                          (source.Contains("ShipModuleActions.") && sharedSupport.Contains("CombatPoint.AddSupportCombatPoint(activator,"));
+            var credits = source.Contains("AddSupportCombatPoint(activator,") ||
+                          (source.Contains("ShipModuleActions.") && sharedSupport.Contains("AddSupportCombatPoint(activator,"));
             credits.Should().BeTrue(
                 $"{name} supports ships in a fight, so the enemies in that fight must award the pilot Piloting XP");
         }

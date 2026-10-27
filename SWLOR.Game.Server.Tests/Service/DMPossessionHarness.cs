@@ -175,6 +175,32 @@ internal sealed class DMPossessionHarness
             .ToFullString();
 
     /// <summary>
+    /// Returns the source of a method of a converted service's instance class (<c>Domain/&lt;Domain&gt;/&lt;Name&gt;Service.cs</c>)
+    /// as a static method. A harness for code that is not converted yet compiles the service's logic into its own
+    /// static stand-in class; the service's injected dependencies (<c>_db</c>, <c>_presence</c>) become static fields of
+    /// the stand-in. Attributes are dropped.
+    /// </summary>
+    public static string InstanceMethod(string relativePath, string name) =>
+        MakeStatic(ParseServerFile(relativePath).DescendantNodes().OfType<MethodDeclarationSyntax>()
+                .Single(method => method.Identifier.ValueText == name)
+                .WithAttributeLists(default))
+            .ToFullString();
+
+    /// <summary>
+    /// Returns the source of a field declaration of a converted service's instance class as a static field.
+    /// </summary>
+    public static string InstanceField(string relativePath, string name) =>
+        MakeStatic(ParseServerFile(relativePath).DescendantNodes().OfType<FieldDeclarationSyntax>()
+                .Single(field => field.Declaration.Variables.Any(variable => variable.Identifier.ValueText == name)))
+            .ToFullString();
+
+    private static T MakeStatic<T>(T member)
+        where T : MemberDeclarationSyntax =>
+        member.Modifiers.Any(SyntaxKind.StaticKeyword)
+            ? member
+            : (T)member.AddModifiers(SyntaxFactory.Token(SyntaxKind.StaticKeyword).WithTrailingTrivia(SyntaxFactory.Space));
+
+    /// <summary>
     /// Returns the source of a production field declaration, by the name of the field it declares.
     /// </summary>
     public static string Field(string relativePath, string name) =>

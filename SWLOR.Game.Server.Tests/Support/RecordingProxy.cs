@@ -1,5 +1,6 @@
 using System.Reflection;
 using System.Runtime.CompilerServices;
+using SWLOR.NWN.API.Engine;
 
 namespace SWLOR.Game.Server.Tests.Support;
 
@@ -37,6 +38,15 @@ public class RecordingProxy : DispatchProxy
 
     protected override object? Invoke(MethodInfo? targetMethod, object?[]? args)
     {
+        // An out parameter of a value type must leave the call holding a value, or the proxy cannot write it back.
+        var parameters = targetMethod!.GetParameters();
+        for (var index = 0; args != null && index < parameters.Length; index++)
+        {
+            var parameterType = parameters[index].ParameterType;
+            if (parameterType.IsByRef && args[index] == null && parameterType.GetElementType()!.IsValueType)
+                args[index] = Activator.CreateInstance(parameterType.GetElementType()!);
+        }
+
         _calls.Add(new RecordedInvocation(targetMethod!, args ?? Array.Empty<object?>()));
         if (!_returns.TryGetValue(targetMethod!, out var value))
         {
@@ -73,6 +83,12 @@ public class RecordingProxy : DispatchProxy
         if (returnType.IsAbstract || returnType.IsInterface)
             return null;
 
-        return RuntimeHelpers.GetUninitializedObject(returnType);
+        var uninitialized = RuntimeHelpers.GetUninitializedObject(returnType);
+        // An engine structure frees its native handle when the garbage collector finalizes it, which crashes a process
+        // that has no engine.
+        if (uninitialized is EngineStructureBase)
+            GC.SuppressFinalize(uninitialized);
+
+        return uninitialized;
     }
 }

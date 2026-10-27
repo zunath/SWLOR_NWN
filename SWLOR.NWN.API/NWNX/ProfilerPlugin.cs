@@ -40,27 +40,7 @@ namespace SWLOR.NWN.API.NWNX
             string tag2_tag = "",
             string tag2_value = "")
         {
-            // The core plugin only supports one tag pair, so we'll use the first non-empty tag pair
-            string primaryTag = "";
-            string primaryValue = "";
-
-            if (!string.IsNullOrWhiteSpace(tag0_value) && !string.IsNullOrWhiteSpace(tag0_tag))
-            {
-                primaryTag = tag0_tag;
-                primaryValue = tag0_value;
-            }
-            else if (!string.IsNullOrWhiteSpace(tag1_value) && !string.IsNullOrWhiteSpace(tag1_tag))
-            {
-                primaryTag = tag1_tag;
-                primaryValue = tag1_value;
-            }
-            else if (!string.IsNullOrWhiteSpace(tag2_value) && !string.IsNullOrWhiteSpace(tag2_tag))
-            {
-                primaryTag = tag2_tag;
-                primaryValue = tag2_value;
-            }
-
-            global::NWN.Core.NWNX.ProfilerPlugin.PushPerfScope(name, primaryTag, primaryValue);
+            ProfilerPluginRuntime.Current.PushPerfScope(name, tag0_tag, tag0_value, tag1_tag, tag1_value, tag2_tag, tag2_value);
         }
 
         /// <summary>
@@ -70,28 +50,7 @@ namespace SWLOR.NWN.API.NWNX
         /// <param name="scriptName">The name of the script</param>
         public static void PushPerfScope(uint target, string scriptName)
         {
-            var internalObjectType = GetIsObjectValid(target) == 1
-                ? ObjectPlugin.GetInternalObjectType(target)
-                : InternalObjectType.Invalid;
-            var objectTypeName = internalObjectType == InternalObjectType.Invalid
-                ? "(unknown)"
-                : internalObjectType.ToString();
-            string areaResref;
-
-            if (internalObjectType == InternalObjectType.Module)
-                areaResref = "--MODULE--";
-            else if (internalObjectType == InternalObjectType.Invalid)
-                areaResref = "(unknown)";
-            else
-                areaResref = GetResRef(GetArea(target));
-
-            if (string.IsNullOrWhiteSpace(areaResref))
-                areaResref = "(unknown)";
-
-            PushPerfScope("RunScript",
-                "Script", scriptName,
-                "Area", areaResref,
-                "ObjectType", objectTypeName);
+            ProfilerPluginRuntime.Current.PushPerfScope(target, scriptName);
         }
 
         /// <summary>
@@ -100,7 +59,7 @@ namespace SWLOR.NWN.API.NWNX
         /// <remarks>A metric must already be pushed.</remarks>
         public static void PopPerfScope()
         {
-            global::NWN.Core.NWNX.ProfilerPlugin.PopPerfScope();
+            ProfilerPluginRuntime.Current.PopPerfScope();
         }
     }
 }

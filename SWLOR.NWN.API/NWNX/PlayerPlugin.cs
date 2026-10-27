@@ -27,7 +27,7 @@ namespace SWLOR.NWN.API.NWNX
         /// </remarks>
         public static void ForcePlaceableExamineWindow(uint player, uint placeable)
         {
-            global::NWN.Core.NWNX.PlayerPlugin.ForcePlaceableExamineWindow(player, placeable);
+            PlayerPluginRuntime.Current.ForcePlaceableExamineWindow(player, placeable);
         }
 
         /// <summary>
@@ -47,7 +47,7 @@ namespace SWLOR.NWN.API.NWNX
         /// </remarks>
         public static void ForcePlaceableInventoryWindow(uint player, uint placeable)
         {
-            global::NWN.Core.NWNX.PlayerPlugin.ForcePlaceableInventoryWindow(player, placeable);
+            PlayerPluginRuntime.Current.ForcePlaceableInventoryWindow(player, placeable);
         }
 
         /// <summary>
@@ -66,7 +66,7 @@ namespace SWLOR.NWN.API.NWNX
         /// </remarks>
         public static void StartGuiTimingBar(uint player, float seconds, string script = "", TimingBarType type = TimingBarType.Custom)
         {
-            global::NWN.Core.NWNX.PlayerPlugin.StartGuiTimingBar(player, seconds, script, (int)type);
+            PlayerPluginRuntime.Current.StartGuiTimingBar(player, seconds, script, type);
         }
 
         /// <summary>
@@ -77,7 +77,7 @@ namespace SWLOR.NWN.API.NWNX
         /// <remarks>Runs a script if specified.</remarks>
         public static void StopGuiTimingBar(uint player, string script = "")
         {
-            global::NWN.Core.NWNX.PlayerPlugin.StopGuiTimingBar(player, script);
+            PlayerPluginRuntime.Current.StopGuiTimingBar(player, script);
         }
 
         /// <summary>
@@ -88,7 +88,7 @@ namespace SWLOR.NWN.API.NWNX
         /// <remarks>If true, clicking on the ground or using WASD will trigger walking instead of running.</remarks>
         public static void SetAlwaysWalk(uint player, bool walk)
         {
-            global::NWN.Core.NWNX.PlayerPlugin.SetAlwaysWalk(player, walk ? 1 : 0);
+            PlayerPluginRuntime.Current.SetAlwaysWalk(player, walk);
         }
 
         /// <summary>
@@ -99,23 +99,7 @@ namespace SWLOR.NWN.API.NWNX
         /// <returns>An QuickBarSlot struct.</returns>
         public static QuickBarSlot GetQuickBarSlot(uint player, int slot)
         {
-            var coreResult = global::NWN.Core.NWNX.PlayerPlugin.GetQuickBarSlot(player, slot);
-            return new QuickBarSlot
-            {
-                Associate = coreResult.oAssociate,
-                AssociateType = coreResult.nAssociateType,
-                DomainLevel = coreResult.nDomainLevel,
-                MetaType = coreResult.nMetaType,
-                INTParam1 = coreResult.nINTParam1,
-                ToolTip = coreResult.sToolTip,
-                CommandLine = coreResult.sCommandLine,
-                CommandLabel = coreResult.sCommandLabel,
-                Resref = coreResult.sResRef,
-                MultiClass = coreResult.nMultiClass,
-                ObjectType = (QuickBarSlotType)coreResult.nObjectType,
-                SecondaryItem = coreResult.oSecondaryItem,
-                Item = coreResult.oItem
-            };
+            return PlayerPluginRuntime.Current.GetQuickBarSlot(player, slot);
         }
 
         /// <summary>
@@ -126,23 +110,7 @@ namespace SWLOR.NWN.API.NWNX
         /// <param name="qbs">An QuickBarSlot struct.</param>
         public static void SetQuickBarSlot(uint player, int slot, QuickBarSlot qbs)
         {
-            var coreQbs = new global::NWN.Core.NWNX.QuickBarSlot
-            {
-                oItem = qbs.Item ?? OBJECT_INVALID,
-                oSecondaryItem = qbs.SecondaryItem ?? OBJECT_INVALID,
-                nObjectType = (int)qbs.ObjectType,
-                nMultiClass = qbs.MultiClass,
-                sResRef = qbs.Resref ?? "",
-                sCommandLabel = qbs.CommandLabel ?? "",
-                sCommandLine = qbs.CommandLine ?? "",
-                sToolTip = qbs.ToolTip ?? "",
-                nINTParam1 = qbs.INTParam1,
-                nMetaType = qbs.MetaType,
-                nDomainLevel = qbs.DomainLevel,
-                nAssociateType = qbs.AssociateType,
-                oAssociate = qbs.Associate ?? OBJECT_INVALID
-            };
-            global::NWN.Core.NWNX.PlayerPlugin.SetQuickBarSlot(player, slot, coreQbs);
+            PlayerPluginRuntime.Current.SetQuickBarSlot(player, slot, qbs);
         }
 
 
@@ -153,7 +121,7 @@ namespace SWLOR.NWN.API.NWNX
         /// <returns>The filename for this player's bic. (Not including the ".bic").</returns>
         public static string GetBicFileName(uint player)
         {
-            return global::NWN.Core.NWNX.PlayerPlugin.GetBicFileName(player);
+            return PlayerPluginRuntime.Current.GetBicFileName(player);
         }
 
         /// <summary>
@@ -167,7 +135,7 @@ namespace SWLOR.NWN.API.NWNX
         /// <param name="rotate">A rotation vector to rotate the effect.</param>
         public static void ShowVisualEffect(uint player, int effectId, float scale, Vector3 position, Vector3 translate, Vector3 rotate)
         {
-            global::NWN.Core.NWNX.PlayerPlugin.ShowVisualEffect(player, effectId, position, scale, translate, rotate);
+            PlayerPluginRuntime.Current.ShowVisualEffect(player, effectId, scale, position, translate, rotate);
         }
 
         /// <summary>
@@ -178,10 +146,7 @@ namespace SWLOR.NWN.API.NWNX
         /// <param name="night">True for night, false for day.</param>
         public static void MusicBackgroundChangeTimeToggle(uint player, int track, bool night)
         {
-            if (night)
-                global::NWN.Core.NWNX.PlayerPlugin.MusicBackgroundChangeNight(player, track);
-            else
-                global::NWN.Core.NWNX.PlayerPlugin.MusicBackgroundChangeDay(player, track);
+            PlayerPluginRuntime.Current.MusicBackgroundChangeTimeToggle(player, track, night);
         }
 
         /// <summary>
@@ -191,10 +156,7 @@ namespace SWLOR.NWN.API.NWNX
         /// <param name="on">True to start, false to stop.</param>
         public static void MusicBackgroundToggle(uint player, bool on)
         {
-            if (on)
-                global::NWN.Core.NWNX.PlayerPlugin.MusicBackgroundStart(player);
-            else
-                global::NWN.Core.NWNX.PlayerPlugin.MusicBackgroundStop(player);
+            PlayerPluginRuntime.Current.MusicBackgroundToggle(player, on);
         }
 
         /// <summary>
@@ -204,7 +166,7 @@ namespace SWLOR.NWN.API.NWNX
         /// <param name="track">The track id to play.</param>
         public static void MusicBattleChange(uint player, int track)
         {
-            global::NWN.Core.NWNX.PlayerPlugin.MusicBattleChange(player, track);
+            PlayerPluginRuntime.Current.MusicBattleChange(player, track);
         }
 
         /// <summary>
@@ -214,10 +176,7 @@ namespace SWLOR.NWN.API.NWNX
         /// <param name="on">True to start, false to stop.</param>
         public static void MusicBattleToggle(uint player, bool on)
         {
-            if (on)
-                global::NWN.Core.NWNX.PlayerPlugin.MusicBattleStart(player);
-            else
-                global::NWN.Core.NWNX.PlayerPlugin.MusicBattleStop(player);
+            PlayerPluginRuntime.Current.MusicBattleToggle(player, on);
         }
 
         /// <summary>
@@ -228,7 +187,7 @@ namespace SWLOR.NWN.API.NWNX
         /// <param name="target">The target object for the sound to originate. If target OBJECT_INVALID the sound will play at the location of the player.</param>
         public static void PlaySound(uint player, string sound, uint target)
         {
-            global::NWN.Core.NWNX.PlayerPlugin.PlaySound(player, sound, target);
+            PlayerPluginRuntime.Current.PlaySound(player, sound, target);
         }
 
         /// <summary>
@@ -239,7 +198,7 @@ namespace SWLOR.NWN.API.NWNX
         /// <param name="usable">True for usable.</param>
         public static void SetPlaceableUseable(uint player, uint placeable, bool usable)
         {
-            global::NWN.Core.NWNX.PlayerPlugin.SetPlaceableUsable(player, placeable, usable ? 1 : 0);
+            PlayerPluginRuntime.Current.SetPlaceableUseable(player, placeable, usable);
         }
 
         /// <summary>
@@ -249,7 +208,7 @@ namespace SWLOR.NWN.API.NWNX
         /// <param name="duration">The duration of rest in milliseconds, 1000 = 1 second. Minimum duration of 10ms. -1 clears the override.</param>
         public static void SetRestDuration(uint player, int duration)
         {
-            global::NWN.Core.NWNX.PlayerPlugin.SetRestDuration(player, duration);
+            PlayerPluginRuntime.Current.SetRestDuration(player, duration);
         }
 
         /// <summary>
@@ -261,7 +220,7 @@ namespace SWLOR.NWN.API.NWNX
         /// <remarks>Only works with instant effects: VFX_COM_*, VFX_FNF_*, VFX_IMP_*</remarks>
         public static void ApplyInstantVisualEffectToObject(uint player, uint target, VisualEffect visualEffect)
         {
-            global::NWN.Core.NWNX.PlayerPlugin.ApplyInstantVisualEffectToObject(player, target, (int)visualEffect);
+            PlayerPluginRuntime.Current.ApplyInstantVisualEffectToObject(player, target, visualEffect);
         }
 
         /// <summary>
@@ -271,7 +230,7 @@ namespace SWLOR.NWN.API.NWNX
         /// <remarks>You may need to use DelayCommand if you're manipulating values through nwnx and forcing a UI refresh, 0.5s seemed to be fine.</remarks>
         public static void UpdateCharacterSheet(uint player)
         {
-            global::NWN.Core.NWNX.PlayerPlugin.UpdateCharacterSheet(player);
+            PlayerPluginRuntime.Current.UpdateCharacterSheet(player);
         }
 
         /// <summary>
@@ -283,7 +242,7 @@ namespace SWLOR.NWN.API.NWNX
         /// <remarks>Only works if player and target are in the same area.</remarks>
         public static void OpenInventory(uint player, uint target, bool open = true)
         {
-            global::NWN.Core.NWNX.PlayerPlugin.OpenInventory(player, target, open ? 1 : 0);
+            PlayerPluginRuntime.Current.OpenInventory(player, target, open);
         }
 
         /// <summary>
@@ -294,7 +253,7 @@ namespace SWLOR.NWN.API.NWNX
         /// <returns>A string representation of the tiles explored for that area.</returns>
         public static string GetAreaExplorationState(uint player, uint area)
         {
-            return global::NWN.Core.NWNX.PlayerPlugin.GetAreaExplorationState(player, area);
+            return PlayerPluginRuntime.Current.GetAreaExplorationState(player, area);
         }
 
         /// <summary>
@@ -305,7 +264,7 @@ namespace SWLOR.NWN.API.NWNX
         /// <param name="encodedString">An encoded string obtained with GetAreaExplorationState().</param>
         public static void SetAreaExplorationState(uint player, uint area, string encodedString)
         {
-            global::NWN.Core.NWNX.PlayerPlugin.SetAreaExplorationState(player, area, encodedString);
+            PlayerPluginRuntime.Current.SetAreaExplorationState(player, area, encodedString);
         }
 
         /// <summary>
@@ -315,7 +274,7 @@ namespace SWLOR.NWN.API.NWNX
         /// <param name="animation">The NWNX animation id. This does not take ANIMATION_LOOPING_* or ANIMATION_FIREFORGET_* constants. Instead use NWNX_Consts_TranslateNWScriptAnimation() to get the NWNX equivalent. -1 to clear the override.</param>
         public static void SetRestAnimation(uint player, int animation)
         {
-            global::NWN.Core.NWNX.PlayerPlugin.SetRestAnimation(player, animation);
+            PlayerPluginRuntime.Current.SetRestAnimation(player, animation);
         }
 
         /// <summary>
@@ -328,7 +287,7 @@ namespace SWLOR.NWN.API.NWNX
         public static void SetObjectVisualTransformOverride(uint player, uint target, int transform,
             float valueToApply)
         {
-            global::NWN.Core.NWNX.PlayerPlugin.SetObjectVisualTransformOverride(player, target, transform, valueToApply);
+            PlayerPluginRuntime.Current.SetObjectVisualTransformOverride(player, target, transform, valueToApply);
         }
 
         /// <summary>
@@ -340,7 +299,7 @@ namespace SWLOR.NWN.API.NWNX
         /// <remarks>Only really works with looping effects: VFX_DUR_*. Other types *kind* of work, they'll play when reentering the area and the object is in view or when they come back in view range.</remarks>
         public static void ApplyLoopingVisualEffectToObject(uint player, uint target, VisualEffect visualEffect)
         {
-            global::NWN.Core.NWNX.PlayerPlugin.ApplyLoopingVisualEffectToObject(player, target, (int)visualEffect);
+            PlayerPluginRuntime.Current.ApplyLoopingVisualEffectToObject(player, target, visualEffect);
         }
 
         /// <summary>
@@ -351,7 +310,7 @@ namespace SWLOR.NWN.API.NWNX
         /// <param name="name">The name for the placeable for this player, "" to clear the override.</param>
         public static void SetPlaceableNameOverride(uint player, uint placeable, string name)
         {
-            global::NWN.Core.NWNX.PlayerPlugin.SetPlaceableNameOverride(player, placeable, name);
+            PlayerPluginRuntime.Current.SetPlaceableNameOverride(player, placeable, name);
         }
 
         /// <summary>
@@ -362,7 +321,7 @@ namespace SWLOR.NWN.API.NWNX
         /// <returns>True if the quest has been completed. -1 if the player does not have the journal entry.</returns>
         public static int GetQuestCompleted(uint player, string questName)
         {
-            return global::NWN.Core.NWNX.PlayerPlugin.GetQuestCompleted(player, questName);
+            return PlayerPluginRuntime.Current.GetQuestCompleted(player, questName);
         }
 
         /// <summary>
@@ -376,7 +335,7 @@ namespace SWLOR.NWN.API.NWNX
         public static void SetPersistentLocation(string cdKeyOrCommunityName, string bicFileName, uint wayPoint,
             bool firstConnect = true)
         {
-            global::NWN.Core.NWNX.PlayerPlugin.SetPersistentLocation(cdKeyOrCommunityName, bicFileName, wayPoint, firstConnect ? 1 : 0);
+            PlayerPluginRuntime.Current.SetPersistentLocation(cdKeyOrCommunityName, bicFileName, wayPoint, firstConnect);
         }
 
         /// <summary>
@@ -387,7 +346,7 @@ namespace SWLOR.NWN.API.NWNX
         /// <remarks>This is a workaround for bug that occurs when updating item names in open containers.</remarks>
         public static void UpdateItemName(uint player, uint item)
         {
-            global::NWN.Core.NWNX.PlayerPlugin.UpdateItemName(player, item);
+            PlayerPluginRuntime.Current.UpdateItemName(player, item);
         }
 
         /// <summary>
@@ -402,7 +361,7 @@ namespace SWLOR.NWN.API.NWNX
         public static bool PossessCreature(uint possessor, uint possessed, bool mindImmune = true,
             bool createDefaultQB = false)
         {
-            return global::NWN.Core.NWNX.PlayerPlugin.PossessCreature(possessor, possessed, mindImmune ? 1 : 0, createDefaultQB ? 1 : 0) != 0;
+            return PlayerPluginRuntime.Current.PossessCreature(possessor, possessed, mindImmune, createDefaultQB);
         }
 
         /// <summary>
@@ -411,7 +370,7 @@ namespace SWLOR.NWN.API.NWNX
         /// <param name="oPlayer">The player object.</param>
         public static int GetPlatformId(uint oPlayer)
         {
-            return global::NWN.Core.NWNX.PlayerPlugin.GetPlatformId(oPlayer);
+            return PlayerPluginRuntime.Current.GetPlatformId(oPlayer);
         }
 
         /// <summary>
@@ -421,7 +380,7 @@ namespace SWLOR.NWN.API.NWNX
         /// <remarks>This function returns the ID of the game language displayed to the player. Uses the same constants as nwnx_dialog.</remarks>
         public static int GetLanguage(uint oPlayer)
         {
-            return global::NWN.Core.NWNX.PlayerPlugin.GetLanguage(oPlayer);
+            return PlayerPluginRuntime.Current.GetLanguage(oPlayer);
         }
 
         /// <summary>
@@ -434,7 +393,7 @@ namespace SWLOR.NWN.API.NWNX
         /// <remarks>If sNewResName does not exist on oPlayer's client it will crash their game.</remarks>
         public static void SetResManOverride(uint oPlayer, int nResType, string sOldResName, string sNewResName)
         {
-            global::NWN.Core.NWNX.PlayerPlugin.SetResManOverride(oPlayer, nResType, sOldResName, sNewResName);
+            PlayerPluginRuntime.Current.SetResManOverride(oPlayer, nResType, sOldResName, sNewResName);
         }
 
         // @brief Toggle oPlayer's PlayerDM status.
@@ -446,7 +405,7 @@ namespace SWLOR.NWN.API.NWNX
         /// <remarks>This function does nothing for actual DMClient DMs or players with a client version < 8193.14.</remarks>
         public static void ToggleDM(uint oPlayer, bool bIsDM)
         {
-            global::NWN.Core.NWNX.PlayerPlugin.ToggleDM(oPlayer, bIsDM ? 1 : 0);
+            PlayerPluginRuntime.Current.ToggleDM(oPlayer, bIsDM);
         }
 
         /// <summary>
@@ -456,7 +415,7 @@ namespace SWLOR.NWN.API.NWNX
         /// <returns>The controlled game object, or OBJECT_INVALID on error.</returns>
         public static uint GetGameObject(uint oPlayer)
         {
-            return global::NWN.Core.NWNX.PlayerPlugin.GetGameObject(oPlayer);
+            return PlayerPluginRuntime.Current.GetGameObject(oPlayer);
         }
 
 
@@ -468,7 +427,7 @@ namespace SWLOR.NWN.API.NWNX
         /// <param name="nCursor">The cursor, one of MOUSECURSOR_*. -1 to clear the override.</param>
         public static void SetObjectMouseCursorOverride(uint oPlayer, uint oObject, MouseCursor nCursor)
         {
-            global::NWN.Core.NWNX.PlayerPlugin.SetObjectMouseCursorOverride(oPlayer, oObject, (int)nCursor);
+            PlayerPluginRuntime.Current.SetObjectMouseCursorOverride(oPlayer, oObject, nCursor);
         }
 
         /// <summary>
@@ -479,7 +438,7 @@ namespace SWLOR.NWN.API.NWNX
         /// <param name="nColor">The color in 0xRRGGBB format, -1 to clear the override.</param>
         public static void SetObjectHiliteColorOverride(uint oPlayer, uint oObject, int nColor)
         {
-            global::NWN.Core.NWNX.PlayerPlugin.SetObjectHiliteColorOverride(oPlayer, oObject, nColor);
+            PlayerPluginRuntime.Current.SetObjectHiliteColorOverride(oPlayer, oObject, nColor);
         }
 
         /// <summary>
@@ -490,7 +449,7 @@ namespace SWLOR.NWN.API.NWNX
         /// <remarks>This function should be called in the NWNX_ON_CLIENT_DISCONNECT_AFTER event, OnClientLeave is too early for the TURD to exist.</remarks>
         public static void RemoveEffectFromTURD(uint oPlayer, string sEffectTag)
         {
-            global::NWN.Core.NWNX.PlayerPlugin.RemoveEffectFromTURD(oPlayer, sEffectTag);
+            PlayerPluginRuntime.Current.RemoveEffectFromTURD(oPlayer, sEffectTag);
         }
 
         /// <summary>
@@ -501,9 +460,7 @@ namespace SWLOR.NWN.API.NWNX
         /// <remarks>This function is best called in the NWNX_ON_ELC_VALIDATE_CHARACTER_BEFORE event, OnClientEnter will be too late.</remarks>
         public static void SetSpawnLocation(uint oPlayer, Location locSpawn)
         {
-            var vPosition = GetPositionFromLocation(locSpawn);
-            var locationPtr = Location(GetAreaFromLocation(locSpawn), vPosition, GetFacingFromLocation(locSpawn));
-            global::NWN.Core.NWNX.PlayerPlugin.SetSpawnLocation(oPlayer, locationPtr);
+            PlayerPluginRuntime.Current.SetSpawnLocation(oPlayer, locSpawn);
         }
 
         /// <summary>
@@ -515,7 +472,7 @@ namespace SWLOR.NWN.API.NWNX
         /// <remarks>The basegame SetCustomToken() will override any personal tokens.</remarks>
         public static void SetCustomToken(uint oPlayer, int nCustomTokenNumber, string sTokenValue)
         {
-            global::NWN.Core.NWNX.PlayerPlugin.SetCustomToken(oPlayer, nCustomTokenNumber, sTokenValue);
+            PlayerPluginRuntime.Current.SetCustomToken(oPlayer, nCustomTokenNumber, sTokenValue);
         }
 
         /// <summary>
@@ -526,7 +483,7 @@ namespace SWLOR.NWN.API.NWNX
         /// <param name="sName">The name for the creature for this player, "" to clear the override.</param>
         public static void SetCreatureNameOverride(uint oPlayer, uint oCreature, string sName)
         {
-            global::NWN.Core.NWNX.PlayerPlugin.SetCreatureNameOverride(oPlayer, oCreature, sName);
+            PlayerPluginRuntime.Current.SetCreatureNameOverride(oPlayer, oCreature, sName);
         }
 
         /// <summary>
@@ -539,7 +496,7 @@ namespace SWLOR.NWN.API.NWNX
         /// <remarks>This will also display the floaty text above creatures that are not part of oPlayer's faction.</remarks>
         public static void FloatingTextStringOnCreature(uint oPlayer, uint oCreature, string sText, bool bChatWindow = true)
         {
-            global::NWN.Core.NWNX.PlayerPlugin.FloatingTextStringOnCreature(oPlayer, oCreature, sText, bChatWindow ? 1 : 0);
+            PlayerPluginRuntime.Current.FloatingTextStringOnCreature(oPlayer, oCreature, sText, bChatWindow);
         }
         /// <summary>
         /// Give a custom journal entry to oPlayer.
@@ -551,20 +508,7 @@ namespace SWLOR.NWN.API.NWNX
         /// <remarks>Custom entries are wiped on client enter - they must be reapplied. In contrast to conventional nwn journal entries - this method will overwrite entries with the same tag, so the index / count of entries will only increase if you add new entries with unique tags.</remarks>
         public static int AddCustomJournalEntry(uint player, JournalEntry journalEntry, bool isSilentUpdate = false)
         {
-            var coreEntry = new global::NWN.Core.NWNX.JournalEntry
-            {
-                sName = journalEntry.Name,
-                sText = journalEntry.Text,
-                sTag = journalEntry.Tag,
-                nState = journalEntry.State,
-                nPriority = journalEntry.Priority,
-                nQuestCompleted = journalEntry.IsQuestCompleted ? 1 : 0,
-                nQuestDisplayed = journalEntry.IsQuestDisplayed ? 1 : 0,
-                nUpdated = journalEntry.Updated,
-                nCalendarDay = journalEntry.CalendarDay,
-                nTimeOfDay = journalEntry.TimeOfDay
-            };
-            return global::NWN.Core.NWNX.PlayerPlugin.AddCustomJournalEntry(player, coreEntry, isSilentUpdate ? 1 : 0);
+            return PlayerPluginRuntime.Current.AddCustomJournalEntry(player, journalEntry, isSilentUpdate);
         }
 
 
@@ -577,20 +521,7 @@ namespace SWLOR.NWN.API.NWNX
         /// <remarks>This method will return -1 for the Updated field in the event that no matching journal entry was found, only the last matching quest tag will be returned. Eg: If you add 3 journal updates to a player, only the 3rd one will be returned as that is the active one that the player currently sees.</remarks>
         public static JournalEntry GetJournalEntry(uint player, string questTag)
         {
-            var coreResult = global::NWN.Core.NWNX.PlayerPlugin.GetJournalEntry(player, questTag);
-            return new JournalEntry
-            {
-                Name = coreResult.sName,
-                Text = coreResult.sText,
-                Tag = coreResult.sTag,
-                State = coreResult.nState,
-                Priority = coreResult.nPriority,
-                IsQuestCompleted = coreResult.nQuestCompleted != 0,
-                IsQuestDisplayed = coreResult.nQuestDisplayed != 0,
-                Updated = coreResult.nUpdated,
-                CalendarDay = coreResult.nCalendarDay,
-                TimeOfDay = coreResult.nTimeOfDay
-            };
+            return PlayerPluginRuntime.Current.GetJournalEntry(player, questTag);
         }
 
         /// <summary>
@@ -599,7 +530,7 @@ namespace SWLOR.NWN.API.NWNX
         /// <param name="oPlayer">The player object.</param>
         public static void CloseStore(uint oPlayer)
         {
-            global::NWN.Core.NWNX.PlayerPlugin.CloseStore(oPlayer);
+            PlayerPluginRuntime.Current.CloseStore(oPlayer);
         }
 
         /// <summary>
@@ -612,7 +543,7 @@ namespace SWLOR.NWN.API.NWNX
         /// <remarks>Overrides will not persist through relogging.</remarks>
         public static void SetTlkOverride(uint oPlayer, int nStrRef, string sOverride, bool bRestoreGlobal = true)
         {
-            global::NWN.Core.NWNX.PlayerPlugin.SetTlkOverride(oPlayer, nStrRef, sOverride, bRestoreGlobal ? 1 : 0);
+            PlayerPluginRuntime.Current.SetTlkOverride(oPlayer, nStrRef, sOverride, bRestoreGlobal);
         }
 
         /// <summary>
@@ -622,7 +553,7 @@ namespace SWLOR.NWN.API.NWNX
         /// <returns>The open store or OBJECT_INVALID if no store is open.</returns>
         public static uint GetOpenStore(uint player)
         {
-            return global::NWN.Core.NWNX.PlayerPlugin.GetOpenStore(player);
+            return PlayerPluginRuntime.Current.GetOpenStore(player);
         }
 
         /// <summary>
@@ -634,7 +565,7 @@ namespace SWLOR.NWN.API.NWNX
         /// <param name="hideDialog">If true, the invited player's client does not show the invitation popup.</param>
         public static void SendPartyInvite(uint player, uint inviter, bool forceInvite = false, bool hideDialog = false)
         {
-            global::NWN.Core.NWNX.PlayerPlugin.SendPartyInvite(player, inviter, forceInvite ? 1 : 0, hideDialog ? 1 : 0);
+            PlayerPluginRuntime.Current.SendPartyInvite(player, inviter, forceInvite, hideDialog);
         }
     }
 }

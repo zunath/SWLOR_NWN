@@ -3179,28 +3179,28 @@
   },
   {
     "File": "SWLOR.Game.Server/Feature/ShipModuleDefinition/ShipModuleActions.cs",
-    "Line": 461,
+    "Line": 488,
     "Member": "MineAsteroid",
     "Delivery": "Retained",
     "Call": "SendMessageToPC(activator, \"Your target has been fully mined.\")"
   },
   {
     "File": "SWLOR.Game.Server/Feature/ShipModuleDefinition/ShipModuleActions.cs",
-    "Line": 475,
+    "Line": 502,
     "Member": "MineAsteroid",
     "Delivery": "Retained",
     "Call": "SendMessageToPC(activator, $\"{GetName(target)} has been fully mined.\")"
   },
   {
     "File": "SWLOR.Game.Server/Feature/ShipModuleDefinition/ShipModuleActions.cs",
-    "Line": 522,
+    "Line": 552,
     "Member": "StripAsteroid",
     "Delivery": "Retained",
     "Call": "SendMessageToPC(activator, $\"{GetName(target)} has been depleted by your strip miner.\")"
   },
   {
     "File": "SWLOR.Game.Server/Feature/ShipModuleDefinition/ShipModuleActions.cs",
-    "Line": 651,
+    "Line": 681,
     "Member": "ApplySupport",
     "Delivery": "Retained",
     "Call": "Messaging.SendMessageNearbyToPlayers(\n                activator,\n                receiver => $\"{PlayerName.GetDisplayName(receiver, activator)} restores {amount} {noun} to {PlayerName.GetDisplayName(receiver, target)}'s ship.\")"
@@ -5702,95 +5702,95 @@
     "Line": 1495,
     "Member": "ActivateShipModuleCore",
     "Delivery": "Retained",
-    "Call": "SendMessageToPC(activator, $\"This slot needs a crew member at the {ShipCrewSeats.GetSeatName(slotSeat)} station.\")"
+    "Call": "SendMessageToPC(activator, SpaceCrew.IsSeatCrewed(activator, activatorShipStatus, slotNumber)\n                    ? $\"This module belongs to the {ShipCrewSeats.GetSeatName(slotSeat)} station.\"\n                    : $\"This slot needs a crew member at the {ShipCrewSeats.GetSeatName(slotSeat)} station.\")"
   },
   {
     "File": "SWLOR.Game.Server/Service/Space.cs",
-    "Line": 1514,
+    "Line": 1516,
     "Member": "ActivateShipModuleCore",
     "Delivery": "Retained",
     "Call": "SendMessageToPC(user, \"You cannot use modules while incapacitated.\")"
   },
   {
     "File": "SWLOR.Game.Server/Service/Space.cs",
-    "Line": 1523,
+    "Line": 1525,
     "Member": "ActivateShipModuleCore",
     "Delivery": "Retained",
     "Call": "SendMessageToPC(user, $\"Your ship does not have enough capacitor to use that module. (Required: {requiredCapacitor})\")"
   },
   {
     "File": "SWLOR.Game.Server/Service/Space.cs",
-    "Line": 1531,
+    "Line": 1533,
     "Member": "ActivateShipModuleCore",
     "Delivery": "Retained",
     "Call": "SendMessageToPC(user, \"That module is not ready.\")"
   },
   {
     "File": "SWLOR.Game.Server/Service/Space.cs",
-    "Line": 1556,
+    "Line": 1558,
     "Member": "ActivateShipModuleCore",
     "Delivery": "Retained",
     "Call": "SendMessageToPC(user, \"This module cannot be used on that target type.\")"
   },
   {
     "File": "SWLOR.Game.Server/Service/Space.cs",
-    "Line": 1563,
+    "Line": 1565,
     "Member": "ActivateShipModuleCore",
     "Delivery": "Retained",
     "Call": "SendMessageToPC(user, \"Invalid target.\")"
   },
   {
     "File": "SWLOR.Game.Server/Service/Space.cs",
-    "Line": 1571,
+    "Line": 1573,
     "Member": "ActivateShipModuleCore",
     "Delivery": "Retained",
     "Call": "SendMessageToPC(user, \"Invalid target.\")"
   },
   {
     "File": "SWLOR.Game.Server/Service/Space.cs",
-    "Line": 1579,
+    "Line": 1581,
     "Member": "ActivateShipModuleCore",
     "Delivery": "Retained",
     "Call": "SendMessageToPC(user, $\"Target is too far away. Maximum distance: {maxDistance} meters.\")"
   },
   {
     "File": "SWLOR.Game.Server/Service/Space.cs",
-    "Line": 1597,
+    "Line": 1599,
     "Member": "ActivateShipModuleCore",
     "Delivery": "Retained",
     "Call": "SendMessageToPC(user, result)"
   },
   {
     "File": "SWLOR.Game.Server/Service/Space.cs",
-    "Line": 2240,
+    "Line": 2242,
     "Member": "CompleteWeaponShot",
     "Delivery": "Retained",
     "Call": "Messaging.SendMessageNearbyToPlayers(\n                target,\n                receiver => Combat.BuildCombatLogMessage(receiver, activator, target, attackId, result.ChanceToHit),\n                60f)"
   },
   {
     "File": "SWLOR.Game.Server/Service/Space.cs",
-    "Line": 2744,
+    "Line": 2746,
     "Member": "ApplyDeath",
     "Delivery": "Retained",
     "Call": "FloatingTextStringOnCreature(ColorToken.Red(\"The ship has exploded!\"), player, false)"
   },
   {
     "File": "SWLOR.Game.Server/Service/Space.cs",
-    "Line": 2910,
+    "Line": 2912,
     "Member": "NotifyShipDamage",
     "Delivery": "Retained",
     "Call": "Messaging.SendMessageNearbyToPlayers(attacker, buildMessage, ShipDamageMessageRange)"
   },
   {
     "File": "SWLOR.Game.Server/Service/Space.cs",
-    "Line": 2916,
+    "Line": 2918,
     "Member": "NotifyShipDamage",
     "Delivery": "Retained",
     "Call": "SendMessageToPC(target, buildMessage(target))"
   },
   {
     "File": "SWLOR.Game.Server/Service/Space.cs",
-    "Line": 3120,
+    "Line": 3122,
     "Member": "PreventSpaceStealth",
     "Delivery": "Retained",
     "Call": "SendMessageToPC(creature, ColorToken.Red($\"You cannot enter stealth mode in space.\"))"

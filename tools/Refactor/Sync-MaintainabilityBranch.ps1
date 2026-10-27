@@ -248,7 +248,9 @@ function Invoke-Sync {
     foreach ($script in $mechanical) {
         $apply = Invoke-MechanicalScript -Script $script -TargetRoot $root -Mode Apply
         if ($apply.ExitCode -ne 0) {
-            throw (New-Failure "$($script.RelativePath) failed (exit $($apply.ExitCode)): $($apply.Error.Trim()) $($apply.Output.Trim())" 4)
+            $hint = ' If it names a file in its manifest that master deleted or renamed (the clock seam''s manifest is tools/Refactor/ClockSeamFiles.txt), edit the manifest to the new path or drop the line; a manifest entry is never skipped silently, because the file would then lose its rewrite.'
+            if ($merging) { $hint += ' The merge is still open: fix it, then run this script again with -Continue.' }
+            throw (New-Failure "$($script.RelativePath) failed (exit $($apply.ExitCode)): $($apply.Error.Trim()) $($apply.Output.Trim())$hint" 4)
         }
         $line = $apply.Lines | Select-Object -Last 1
         Write-Host "$($script.Name): $line"

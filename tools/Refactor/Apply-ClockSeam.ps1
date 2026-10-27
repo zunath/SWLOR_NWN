@@ -23,7 +23,8 @@
 
 .PARAMETER ListOwnedFiles
     Change nothing and print only the repository-relative paths (forward slashes, one per line) of the files this
-    script owns, which are the files listed in ClockSeamFiles.txt. The daily sync uses it to decide which merge
+    script owns, which are the entries of ClockSeamFiles.txt (a trailing /** stays: every file under that folder),
+    whether or not they exist. The daily sync uses it to decide which merge
     conflicts it may settle by taking master's version and running this script again
     (tools/Refactor/MechanicalScripts.txt).
 
@@ -367,16 +368,19 @@ function Add-CoreUsing([string]$text, [string]$eol) {
     return -join $result
 }
 
-$files = [string[]]@(Get-ManifestFiles)
-
 if ($ListOwnedFiles) {
-    foreach ($path in $files) {
-        Write-Output $path.Substring($RepositoryRoot.Length).TrimStart('\', '/').Replace('\', '/')
+    # The manifest entries as they are, without checking that the files exist: a file master deleted or renamed is
+    # still owned, so the sync can settle a conflict in it.
+    foreach ($raw in [System.IO.File]::ReadAllLines($manifestPath)) {
+        $entry = $raw.Trim()
+        if ($entry.Length -eq 0 -or $entry.StartsWith('#')) { continue }
+        Write-Output ('SWLOR.Game.Server/' + $entry.Replace('\', '/'))
     }
     exit 0
 }
 
-$total =@{ 'DateTime.UtcNow' = 0; 'Environment.TickCount64' = 0 }
+$files = [string[]]@(Get-ManifestFiles)
+$total = @{ 'DateTime.UtcNow' = 0; 'Environment.TickCount64' = 0 }
 $changedFiles = 0
 $usingsAdded = 0
 

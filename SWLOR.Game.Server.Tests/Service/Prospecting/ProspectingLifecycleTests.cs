@@ -325,6 +325,18 @@ public class ProspectingLifecycleTests
     }
 
     [Test]
+    public void AStrikeSavesTheNodeBeforeItPaysTheXp_SoARestartCannotLeavePaidUnitsOnTheNode()
+    {
+        var lifecycle = Lifecycle(StrikeTwoUnits);
+        var session = Open(lifecycle, Node(4, "r"), rank: 25, tier: 3);
+        _world.Order.Clear();
+
+        Do(lifecycle, session, ProspectingActionIds.Strike);
+
+        _world.Order.Should().Equal("node", "xp");
+    }
+
+    [Test]
     public void ASurveyHandsOverNothing_ButRevealsSeamsAndIsStored()
     {
         var lifecycle = Lifecycle();

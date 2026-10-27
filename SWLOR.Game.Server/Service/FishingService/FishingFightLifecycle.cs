@@ -24,6 +24,12 @@ namespace SWLOR.Game.Server.Service.FishingService
         /// <summary>How often a fight in progress checks that the angler is still there and still.</summary>
         public const float CheckSeconds = 1.0f;
 
+        /// <summary>
+        /// How long, in seconds, an angler may keep the Line window open without acting before the fight ends and their fishing busy state
+        /// is released. It is the idle limit of <c>ProspectingLifecycle.IdleSeconds</c>.
+        /// </summary>
+        public const double IdleSeconds = 120.0;
+
         private readonly IFishingFightWorld _world;
         private readonly IMinigameRandom _random;
         private readonly Dictionary<uint, FishingFight> _active = new();
@@ -85,7 +91,8 @@ namespace SWLOR.Game.Server.Service.FishingService
             var fight = new FishingFight(Guid.NewGuid().ToString(), bite, new LineEngine(_random, setup))
             {
                 XpOnFinish = fightXp - xp,
-                StartedAt = _world.UtcNow
+                StartedAt = _world.UtcNow,
+                LastActivityAt = _world.UtcNow
             };
             _active[bite.Player] = fight;
             _world.BeginFight(bite.Player);
@@ -260,6 +267,8 @@ namespace SWLOR.Game.Server.Service.FishingService
                 end = FishingFightEnd.Moved;
             else if (!state.HasWindowOpen)
                 end = FishingFightEnd.WindowClosed;
+            else if ((_world.UtcNow - fight.LastActivityAt).TotalSeconds > IdleSeconds)
+                end = FishingFightEnd.Idle;
 
             if (!end.HasValue)
                 return true;
@@ -302,6 +311,7 @@ namespace SWLOR.Game.Server.Service.FishingService
                 throw new ArgumentNullException(nameof(fight));
 
             fight.NextTurnAt = _world.UtcNow.AddSeconds(LineRules.TurnSeconds);
+            fight.LastActivityAt = _world.UtcNow;
         }
 
         /// <summary>One check of a fight in progress, repeated every <see cref="CheckSeconds"/> until the fight is over.</summary>
@@ -318,6 +328,7 @@ namespace SWLOR.Game.Server.Service.FishingService
             FishingFightEnd.Combat => "The fight drew you away and the fish got away. " + LostMessage,
             FishingFightEnd.RodUnequipped => "You put the rod away and the fish got away. " + LostMessage,
             FishingFightEnd.Interrupted => "You stopped fishing and the fish got away. " + LostMessage,
+            FishingFightEnd.Idle => "You stood idle and the fish got away. " + LostMessage,
             FishingFightEnd.Died => null,
             FishingFightEnd.Replaced => null,
             _ => EscapedMessage

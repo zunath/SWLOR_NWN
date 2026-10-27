@@ -331,13 +331,7 @@ namespace SWLOR.Game.Server.Service.ProspectingService
             if (!delivery.IsEmpty)
                 _world.GiveHarvest(session.Player, session.Node, session.Request.LootTable, delivery);
 
-            var xp = delivery.Items * XpPerItem(session);
-            if (xp > 0)
-            {
-                _world.GiveGatheringXp(session.Player, xp);
-                session.XpPaid += xp;
-            }
-
+            // The node's depletion is saved before the XP is given, so a restart in between cannot leave paid units on the node.
             var ending = engine.Ending;
             switch (ending)
             {
@@ -348,6 +342,13 @@ namespace SWLOR.Game.Server.Service.ProspectingService
                 default:
                     _world.SaveNode(session.Node, engine.ToNode().Serialize());
                     break;
+            }
+
+            var xp = delivery.Items * XpPerItem(session);
+            if (xp > 0)
+            {
+                _world.GiveGatheringXp(session.Player, xp);
+                session.XpPaid += xp;
             }
 
             string message = null;
@@ -375,12 +376,6 @@ namespace SWLOR.Game.Server.Service.ProspectingService
 
                 var xp = ProspectingQuickHarvest.XpPerUnit(session.Request.NodeTier, _world.GetGatheringRank(session.Player));
                 _world.GiveHarvest(session.Player, session.Node, session.Request.LootTable, new HarvestDelivery(1, 0, 0));
-                if (xp > 0)
-                {
-                    _world.GiveGatheringXp(session.Player, xp);
-                    session.XpPaid += xp;
-                }
-
                 session.QuickHarvested++;
                 node = node.Take(1);
                 var charges = session.HarvesterCharges - ProspectingQuickHarvest.Charges(1);
@@ -401,6 +396,13 @@ namespace SWLOR.Game.Server.Service.ProspectingService
                         message = OutOfChargesMessage;
                         finished = true;
                     }
+                }
+
+                // As with a board action, the node is saved before the unit's XP is given.
+                if (xp > 0)
+                {
+                    _world.GiveGatheringXp(session.Player, xp);
+                    session.XpPaid += xp;
                 }
 
                 if (finished)

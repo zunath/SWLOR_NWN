@@ -25,6 +25,9 @@ namespace SWLOR.Game.Server.Service.FishingService
         RodUnequipped = 7,
 
         /// <summary>Another activity, such as resting, replaced the angler's fishing busy state.</summary>
-        Interrupted = 8
+        Interrupted = 8,
+
+        /// <summary>The angler kept the window open without acting for <see cref="FishingFightLifecycle.IdleSeconds"/>.</summary>
+        Idle = 9
     }
 }

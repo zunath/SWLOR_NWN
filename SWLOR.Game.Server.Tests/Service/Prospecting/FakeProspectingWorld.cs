@@ -43,8 +43,12 @@ internal sealed class FakeProspectingWorld : IProspectingWorld
 
     public string LoadNode(uint node) => Nodes.TryGetValue(node, out var content) ? content : null;
 
+    /// <summary>The node saves ("node") and XP awards ("xp"), in order.</summary>
+    public List<string> Order { get; } = new();
+
     public void SaveNode(uint node, string content)
     {
+        Order.Add("node");
         Nodes[node] = content;
         LiveNodes.Add(node);
     }
@@ -55,6 +59,7 @@ internal sealed class FakeProspectingWorld : IProspectingWorld
 
     public void DestroyNode(uint node)
     {
+        Order.Add("node");
         DestroyedNodes.Add(node);
         LiveNodes.Remove(node);
         Nodes.Remove(node);
@@ -75,7 +80,11 @@ internal sealed class FakeProspectingWorld : IProspectingWorld
 
     public int GetGatheringRank(uint player) => GatheringRank;
 
-    public void GiveGatheringXp(uint player, int xp) => Xp.Add(xp);
+    public void GiveGatheringXp(uint player, int xp)
+    {
+        Order.Add("xp");
+        Xp.Add(xp);
+    }
 
     public void Message(uint player, string text) => Messages.Add(text);
 

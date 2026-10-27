@@ -498,6 +498,35 @@ public class FishingFightLifecycleTests
     }
 
     [Test]
+    public void AFightLeftIdle_EndsAndReleasesTheFishingBusyState()
+    {
+        var lifecycle = Lifecycle();
+        var fight = lifecycle.Bite(EasyFish());
+
+        _world.UtcNow = _world.UtcNow.AddSeconds(FishingFightLifecycle.IdleSeconds - 1);
+        lifecycle.Revalidate(fight).Should().BeTrue();
+
+        _world.UtcNow = _world.UtcNow.AddSeconds(2);
+        lifecycle.Revalidate(fight).Should().BeFalse();
+
+        _world.OwnsActivity.Should().BeFalse();
+        _world.Messages.Should().Contain(m => m.Contains("You stood idle and the fish got away. " + FishingFightLifecycle.LostMessage));
+    }
+
+    [Test]
+    public void ATurnTaken_RestartsTheIdleLimit()
+    {
+        var lifecycle = Lifecycle();
+        var fight = lifecycle.Bite(EasyFish());
+
+        _world.UtcNow = _world.UtcNow.AddSeconds(FishingFightLifecycle.IdleSeconds - 1);
+        lifecycle.TurnTaken(fight);
+        _world.UtcNow = _world.UtcNow.AddSeconds(FishingFightLifecycle.IdleSeconds - 1);
+
+        lifecycle.Revalidate(fight).Should().BeTrue();
+    }
+
+    [Test]
     public void AFightSettledByItsEngine_KeepsItsResult_SoAClickQueuedBehindTheLastActionCanTellTheResultIsShown()
     {
         var lifecycle = Lifecycle();

@@ -3,11 +3,28 @@ using FluentAssertions;
 using NUnit.Framework;
 using SWLOR.Game.Server.Feature.GuiDefinition.ViewModel;
 using SWLOR.Game.Server.Service;
+using SWLOR.Game.Server.Tests.Support;
 
 namespace SWLOR.Game.Server.Tests.Feature;
 
 public class NotesWindowTests
 {
+    // The usage figures come from the Notes facade, which resolves from the container the fixture installs.
+    private FacadeContainer _facades = null!;
+    private IDisposable _facadeScope = null!;
+
+    [OneTimeSetUp]
+    public void BuildFacades() => _facades = new FacadeContainer();
+
+    [OneTimeTearDown]
+    public void DisposeFacades() => _facades.Dispose();
+
+    [SetUp]
+    public void InstallFacades() => _facadeScope = _facades.Install();
+
+    [TearDown]
+    public void RemoveFacades() => _facadeScope.Dispose();
+
     [Test]
     public void NoteUsage_TracksAgainstTheHundredNoteCap()
     {
@@ -211,7 +228,7 @@ public class NotesWindowTests
         // An unpaged DBQuery falls back to a 50 record limit, which is below the note cap. Every
         // query that loads a whole collection must state its own paging or it truncates silently.
         var viewModel = ReadSource("SWLOR.Game.Server", "Feature", "GuiDefinition", "ViewModel", "NotesViewModel.cs");
-        var service = ReadSource("SWLOR.Game.Server", "Service", "Notes.cs");
+        var service = ReadSource("SWLOR.Game.Server", "Domain", "World", "NotesService.cs");
 
         viewModel.Should().Contain("AddPaging(Notes.MaxNumberOfNotes, 0)");
         service.Should().Contain("AddPaging(MaxNumberOfCategories, 0)");

@@ -140,6 +140,160 @@
     "Call": "ChatPlugin.SendMessage(channel, message, speaker, DMPresence.GetControlledCreature(target))"
   },
   {
+    "File": "SWLOR.Game.Server/Domain/World/AreaService.cs",
+    "Line": 129,
+    "Member": "EnterArea",
+    "Delivery": "Retained",
+    "Call": "SendMessageToPC(player, ColorToken.Purple(prefix + message))"
+  },
+  {
+    "File": "SWLOR.Game.Server/Domain/World/HoloComService.cs",
+    "Line": 103,
+    "Member": "OnModuleChat",
+    "Delivery": "Retained",
+    "Call": "ActionSpeakString(text, talkVolume)"
+  },
+  {
+    "File": "SWLOR.Game.Server/Domain/World/HoloComService.cs",
+    "Line": 164,
+    "Member": "AnswerCall",
+    "Delivery": "Retained",
+    "Call": "SendMessageToPC(player, ColorToken.Red(\"HoloCom cannot be used in space.\"))"
+  },
+  {
+    "File": "SWLOR.Game.Server/Domain/World/HoloComService.cs",
+    "Line": 171,
+    "Member": "AnswerCall",
+    "Delivery": "Retained",
+    "Call": "SendMessageToPC(callSender, \"Your HoloCom call went unanswered.\")"
+  },
+  {
+    "File": "SWLOR.Game.Server/Domain/World/HoloComService.cs",
+    "Line": 173,
+    "Member": "AnswerCall",
+    "Delivery": "Retained",
+    "Call": "SendMessageToPC(player, \"Your HoloCom stops buzzing.\")"
+  },
+  {
+    "File": "SWLOR.Game.Server/Domain/World/HoloComService.cs",
+    "Line": 190,
+    "Member": "DeclineCall",
+    "Delivery": "Retained",
+    "Call": "SendMessageToPC(callSender, \"Your HoloCom call was declined.\")"
+  },
+  {
+    "File": "SWLOR.Game.Server/Domain/World/HoloComService.cs",
+    "Line": 203,
+    "Member": "EndCall",
+    "Delivery": "Retained",
+    "Call": "SendMessageToPC(player, \"You end your HoloCom call.\")"
+  },
+  {
+    "File": "SWLOR.Game.Server/Domain/World/HoloComService.cs",
+    "Line": 211,
+    "Member": "EndCall",
+    "Delivery": "Retained",
+    "Call": "SendMessageToPC(callReceiver, \"Your HoloCom stops buzzing.\")"
+  },
+  {
+    "File": "SWLOR.Game.Server/Domain/World/HoloComService.cs",
+    "Line": 214,
+    "Member": "EndCall",
+    "Delivery": "Retained",
+    "Call": "SendMessageToPC(player, \"You cancel your HoloCom call.\")"
+  },
+  {
+    "File": "SWLOR.Game.Server/Domain/World/HoloComService.cs",
+    "Line": 230,
+    "Member": "CallPlayer",
+    "Delivery": "Retained",
+    "Call": "SendMessageToPC(sender, \"Your HoloCom call went unanswered.\")"
+  },
+  {
+    "File": "SWLOR.Game.Server/Domain/World/HoloComService.cs",
+    "Line": 245,
+    "Member": "CallPlayer",
+    "Delivery": "Retained",
+    "Call": "SendMessageToPC(sender, ColorToken.Red(\"HoloCom cannot be used in space.\"))"
+  },
+  {
+    "File": "SWLOR.Game.Server/Domain/World/HoloComService.cs",
+    "Line": 255,
+    "Member": "CallPlayer",
+    "Delivery": "Retained",
+    "Call": "SendMessageToPC(sender, \"Their HoloCom line is busy.\")"
+  },
+  {
+    "File": "SWLOR.Game.Server/Domain/World/HoloComService.cs",
+    "Line": 260,
+    "Member": "CallPlayer",
+    "Delivery": "Retained",
+    "Call": "SendMessageToPC(sender, \"You wait for \" + receiverName + \" to answer their HoloCom.\")"
+  },
+  {
+    "File": "SWLOR.Game.Server/Domain/World/HoloComService.cs",
+    "Line": 277,
+    "Member": "CallPlayer",
+    "Delivery": "Retained",
+    "Call": "SendMessageToPC(receiver, message)"
+  },
+  {
+    "File": "SWLOR.Game.Server/Domain/World/HoloComService.cs",
+    "Line": 280,
+    "Member": "CallPlayer",
+    "Delivery": "Retained",
+    "Call": "FloatingTextStringOnCreature(message, receiver)"
+  },
+  {
+    "File": "SWLOR.Game.Server/Domain/World/HoloComService.cs",
+    "Line": 290,
+    "Member": "CallPlayer",
+    "Delivery": "Retained",
+    "Call": "SendMessageToPC(sender, \"Your HoloCom call went unanswered.\")"
+  },
+  {
+    "File": "SWLOR.Game.Server/Domain/World/HoloComService.cs",
+    "Line": 291,
+    "Member": "CallPlayer",
+    "Delivery": "Retained",
+    "Call": "SendMessageToPC(receiver, \"Your HoloCom stops buzzing.\")"
+  },
+  {
+    "File": "SWLOR.Game.Server/Domain/World/HoloComService.cs",
+    "Line": 314,
+    "Member": "SetIsInCall",
+    "Delivery": "Retained",
+    "Call": "SendMessageToPC(sender, message)"
+  },
+  {
+    "File": "SWLOR.Game.Server/Domain/World/HoloComService.cs",
+    "Line": 315,
+    "Member": "SetIsInCall",
+    "Delivery": "Retained",
+    "Call": "SendMessageToPC(receiver, message)"
+  },
+  {
+    "File": "SWLOR.Game.Server/Domain/World/HoloComService.cs",
+    "Line": 492,
+    "Member": "EndAttempt",
+    "Delivery": "Retained",
+    "Call": "SendMessageToPC(receiver, \"Your HoloCom stops buzzing.\")"
+  },
+  {
+    "File": "SWLOR.Game.Server/Domain/World/HoloComService.cs",
+    "Line": 538,
+    "Member": "CleanupAllHoloComState",
+    "Delivery": "Retained",
+    "Call": "SendMessageToPC(receiver, \"Your HoloCom stops buzzing.\")"
+  },
+  {
+    "File": "SWLOR.Game.Server/Domain/World/HoloComService.cs",
+    "Line": 561,
+    "Member": "CleanupAllHoloComState",
+    "Delivery": "Retained",
+    "Call": "SendMessageToPC(sender, \"Your HoloCom call went unanswered.\")"
+  },
+  {
     "File": "SWLOR.Game.Server/Domain/World/TaxiService.cs",
     "Line": 44,
     "Member": "RegisterTaxiDestination",
@@ -159,6 +313,69 @@
     "Member": "RegisterTaxiDestination",
     "Delivery": "Retained",
     "Call": "SendMessageToPC(player, $\"'{detail.Name}' registered into taxi destinations!\")"
+  },
+  {
+    "File": "SWLOR.Game.Server/Domain/World/TrapsService.cs",
+    "Line": 124,
+    "Member": "TryPlaceTrap",
+    "Delivery": "Retained",
+    "Call": "SendMessageToPC(owner, \"The trap could not be placed.\")"
+  },
+  {
+    "File": "SWLOR.Game.Server/Domain/World/TrapsService.cs",
+    "Line": 165,
+    "Member": "TryPlaceKitTrap",
+    "Delivery": "Retained",
+    "Call": "SendMessageToPC(owner, \"The trap could not be placed. Your kit has not been consumed.\")"
+  },
+  {
+    "File": "SWLOR.Game.Server/Domain/World/TrapsService.cs",
+    "Line": 197,
+    "Member": "TryPrepareTrapPlacement",
+    "Delivery": "Retained",
+    "Call": "SendMessageToPC(owner, ColorToken.Red(\"Another trap is placed too close to that spot.\"))"
+  },
+  {
+    "File": "SWLOR.Game.Server/Domain/World/TrapsService.cs",
+    "Line": 220,
+    "Member": "RegisterTrap",
+    "Delivery": "Retained",
+    "Call": "SendMessageToPC(record.Owner, \"Your oldest trap deactivates as you place a new one.\")"
+  },
+  {
+    "File": "SWLOR.Game.Server/Domain/World/TrapsService.cs",
+    "Line": 378,
+    "Member": "RevealTo",
+    "Delivery": "Retained",
+    "Call": "SendMessageToPC(player, ColorToken.Combat(\"You spot a concealed trap nearby.\"))"
+  },
+  {
+    "File": "SWLOR.Game.Server/Domain/World/TrapsService.cs",
+    "Line": 402,
+    "Member": "DisarmTrap",
+    "Delivery": "Retained",
+    "Call": "SendMessageToPC(user, \"You dismantle your own trap. The kit is not recovered.\")"
+  },
+  {
+    "File": "SWLOR.Game.Server/Domain/World/TrapsService.cs",
+    "Line": 408,
+    "Member": "DisarmTrap",
+    "Delivery": "Retained",
+    "Call": "SendMessageToPC(user, ColorToken.Red(\"You lack the Trapcraft expertise to disarm this trap.\"))"
+  },
+  {
+    "File": "SWLOR.Game.Server/Domain/World/TrapsService.cs",
+    "Line": 417,
+    "Member": "DisarmTrap",
+    "Delivery": "Retained",
+    "Call": "SendMessageToPC(user, \"You disarm the trap.\")"
+  },
+  {
+    "File": "SWLOR.Game.Server/Domain/World/TrapsService.cs",
+    "Line": 421,
+    "Member": "DisarmTrap",
+    "Delivery": "Retained",
+    "Call": "SendMessageToPC(user, ColorToken.Red(\"You set the trap off while trying to disarm it.\"))"
   },
   {
     "File": "SWLOR.Game.Server/Feature/AbilityDefinition/Beastmaster/TameAbilityDefinition.cs",
@@ -3941,13 +4158,6 @@
     "Call": "SpeakString(action.Text)"
   },
   {
-    "File": "SWLOR.Game.Server/Service/Area.cs",
-    "Line": 147,
-    "Member": "EnterArea",
-    "Delivery": "Retained",
-    "Call": "SendMessageToPC(player, ColorToken.Purple(prefix + message))"
-  },
-  {
     "File": "SWLOR.Game.Server/Service/BeastMastery.cs",
     "Line": 196,
     "Member": "GiveBeastXP",
@@ -4597,153 +4807,6 @@
     "Member": "Draw",
     "Delivery": "Shared transport; policy at caller",
     "Call": "PostString(player, message, x, y, anchor, lifeTime, ColorWhite, ColorWhite, id, GuiFontName)"
-  },
-  {
-    "File": "SWLOR.Game.Server/Service/HoloCom.cs",
-    "Line": 93,
-    "Member": "OnModuleChat",
-    "Delivery": "Retained",
-    "Call": "ActionSpeakString(text, talkVolume)"
-  },
-  {
-    "File": "SWLOR.Game.Server/Service/HoloCom.cs",
-    "Line": 146,
-    "Member": "AnswerCall",
-    "Delivery": "Retained",
-    "Call": "SendMessageToPC(player, ColorToken.Red(\"HoloCom cannot be used in space.\"))"
-  },
-  {
-    "File": "SWLOR.Game.Server/Service/HoloCom.cs",
-    "Line": 153,
-    "Member": "AnswerCall",
-    "Delivery": "Retained",
-    "Call": "SendMessageToPC(callSender, \"Your HoloCom call went unanswered.\")"
-  },
-  {
-    "File": "SWLOR.Game.Server/Service/HoloCom.cs",
-    "Line": 155,
-    "Member": "AnswerCall",
-    "Delivery": "Retained",
-    "Call": "SendMessageToPC(player, \"Your HoloCom stops buzzing.\")"
-  },
-  {
-    "File": "SWLOR.Game.Server/Service/HoloCom.cs",
-    "Line": 172,
-    "Member": "DeclineCall",
-    "Delivery": "Retained",
-    "Call": "SendMessageToPC(callSender, \"Your HoloCom call was declined.\")"
-  },
-  {
-    "File": "SWLOR.Game.Server/Service/HoloCom.cs",
-    "Line": 185,
-    "Member": "EndCall",
-    "Delivery": "Retained",
-    "Call": "SendMessageToPC(player, \"You end your HoloCom call.\")"
-  },
-  {
-    "File": "SWLOR.Game.Server/Service/HoloCom.cs",
-    "Line": 193,
-    "Member": "EndCall",
-    "Delivery": "Retained",
-    "Call": "SendMessageToPC(callReceiver, \"Your HoloCom stops buzzing.\")"
-  },
-  {
-    "File": "SWLOR.Game.Server/Service/HoloCom.cs",
-    "Line": 196,
-    "Member": "EndCall",
-    "Delivery": "Retained",
-    "Call": "SendMessageToPC(player, \"You cancel your HoloCom call.\")"
-  },
-  {
-    "File": "SWLOR.Game.Server/Service/HoloCom.cs",
-    "Line": 212,
-    "Member": "CallPlayer",
-    "Delivery": "Retained",
-    "Call": "SendMessageToPC(sender, \"Your HoloCom call went unanswered.\")"
-  },
-  {
-    "File": "SWLOR.Game.Server/Service/HoloCom.cs",
-    "Line": 221,
-    "Member": "CallPlayer",
-    "Delivery": "Retained",
-    "Call": "SendMessageToPC(sender, ColorToken.Red(\"HoloCom cannot be used in space.\"))"
-  },
-  {
-    "File": "SWLOR.Game.Server/Service/HoloCom.cs",
-    "Line": 231,
-    "Member": "CallPlayer",
-    "Delivery": "Retained",
-    "Call": "SendMessageToPC(sender, \"Their HoloCom line is busy.\")"
-  },
-  {
-    "File": "SWLOR.Game.Server/Service/HoloCom.cs",
-    "Line": 236,
-    "Member": "CallPlayer",
-    "Delivery": "Retained",
-    "Call": "SendMessageToPC(sender, \"You wait for \" + receiverName + \" to answer their HoloCom.\")"
-  },
-  {
-    "File": "SWLOR.Game.Server/Service/HoloCom.cs",
-    "Line": 253,
-    "Member": "CallPlayer",
-    "Delivery": "Retained",
-    "Call": "SendMessageToPC(receiver, message)"
-  },
-  {
-    "File": "SWLOR.Game.Server/Service/HoloCom.cs",
-    "Line": 256,
-    "Member": "CallPlayer",
-    "Delivery": "Retained",
-    "Call": "FloatingTextStringOnCreature(message, receiver)"
-  },
-  {
-    "File": "SWLOR.Game.Server/Service/HoloCom.cs",
-    "Line": 266,
-    "Member": "CallPlayer",
-    "Delivery": "Retained",
-    "Call": "SendMessageToPC(sender, \"Your HoloCom call went unanswered.\")"
-  },
-  {
-    "File": "SWLOR.Game.Server/Service/HoloCom.cs",
-    "Line": 267,
-    "Member": "CallPlayer",
-    "Delivery": "Retained",
-    "Call": "SendMessageToPC(receiver, \"Your HoloCom stops buzzing.\")"
-  },
-  {
-    "File": "SWLOR.Game.Server/Service/HoloCom.cs",
-    "Line": 290,
-    "Member": "SetIsInCall",
-    "Delivery": "Retained",
-    "Call": "SendMessageToPC(sender, message)"
-  },
-  {
-    "File": "SWLOR.Game.Server/Service/HoloCom.cs",
-    "Line": 291,
-    "Member": "SetIsInCall",
-    "Delivery": "Retained",
-    "Call": "SendMessageToPC(receiver, message)"
-  },
-  {
-    "File": "SWLOR.Game.Server/Service/HoloCom.cs",
-    "Line": 468,
-    "Member": "EndAttempt",
-    "Delivery": "Retained",
-    "Call": "SendMessageToPC(receiver, \"Your HoloCom stops buzzing.\")"
-  },
-  {
-    "File": "SWLOR.Game.Server/Service/HoloCom.cs",
-    "Line": 514,
-    "Member": "CleanupAllHoloComState",
-    "Delivery": "Retained",
-    "Call": "SendMessageToPC(receiver, \"Your HoloCom stops buzzing.\")"
-  },
-  {
-    "File": "SWLOR.Game.Server/Service/HoloCom.cs",
-    "Line": 537,
-    "Member": "CleanupAllHoloComState",
-    "Delivery": "Retained",
-    "Call": "SendMessageToPC(sender, \"Your HoloCom call went unanswered.\")"
   },
   {
     "File": "SWLOR.Game.Server/Service/Item.cs",
@@ -5948,69 +6011,6 @@
     "Member": "EnterTargetingMode",
     "Delivery": "Retained",
     "Call": "SendMessageToPC(player, message)"
-  },
-  {
-    "File": "SWLOR.Game.Server/Service/Traps.cs",
-    "Line": 115,
-    "Member": "TryPlaceTrap",
-    "Delivery": "Retained",
-    "Call": "SendMessageToPC(owner, \"The trap could not be placed.\")"
-  },
-  {
-    "File": "SWLOR.Game.Server/Service/Traps.cs",
-    "Line": 156,
-    "Member": "TryPlaceKitTrap",
-    "Delivery": "Retained",
-    "Call": "SendMessageToPC(owner, \"The trap could not be placed. Your kit has not been consumed.\")"
-  },
-  {
-    "File": "SWLOR.Game.Server/Service/Traps.cs",
-    "Line": 188,
-    "Member": "TryPrepareTrapPlacement",
-    "Delivery": "Retained",
-    "Call": "SendMessageToPC(owner, ColorToken.Red(\"Another trap is placed too close to that spot.\"))"
-  },
-  {
-    "File": "SWLOR.Game.Server/Service/Traps.cs",
-    "Line": 211,
-    "Member": "RegisterTrap",
-    "Delivery": "Retained",
-    "Call": "SendMessageToPC(record.Owner, \"Your oldest trap deactivates as you place a new one.\")"
-  },
-  {
-    "File": "SWLOR.Game.Server/Service/Traps.cs",
-    "Line": 369,
-    "Member": "RevealTo",
-    "Delivery": "Retained",
-    "Call": "SendMessageToPC(player, ColorToken.Combat(\"You spot a concealed trap nearby.\"))"
-  },
-  {
-    "File": "SWLOR.Game.Server/Service/Traps.cs",
-    "Line": 394,
-    "Member": "DisarmTrap",
-    "Delivery": "Retained",
-    "Call": "SendMessageToPC(user, \"You dismantle your own trap. The kit is not recovered.\")"
-  },
-  {
-    "File": "SWLOR.Game.Server/Service/Traps.cs",
-    "Line": 400,
-    "Member": "DisarmTrap",
-    "Delivery": "Retained",
-    "Call": "SendMessageToPC(user, ColorToken.Red(\"You lack the Trapcraft expertise to disarm this trap.\"))"
-  },
-  {
-    "File": "SWLOR.Game.Server/Service/Traps.cs",
-    "Line": 409,
-    "Member": "DisarmTrap",
-    "Delivery": "Retained",
-    "Call": "SendMessageToPC(user, \"You disarm the trap.\")"
-  },
-  {
-    "File": "SWLOR.Game.Server/Service/Traps.cs",
-    "Line": 413,
-    "Member": "DisarmTrap",
-    "Delivery": "Retained",
-    "Call": "SendMessageToPC(user, ColorToken.Red(\"You set the trap off while trying to disarm it.\"))"
   },
   {
     "File": "SWLOR.Game.Server/Service/TwinPistolEquipment.cs",

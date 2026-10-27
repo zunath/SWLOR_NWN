@@ -2,15 +2,20 @@
   "description": "Services converted to the dependency-injection pattern (SWLOR.Game.Server/Readmes/DependencyInjection.md). Each is a static facade Service.<name> that forwards to the instance class <name>Service behind the interface I<name>Service, both in Domain.<domain>. SWLOR.Architecture.Tests apply their rules to exactly these services: the pieces must exist, hold no static mutable state, keep the [NWNEventHandler] methods on the facade, and not be reached for by service location. The domain must match DomainMap.json. Add a service here, sorted by name, in the pull request that converts it.",
   "services": [
     { "name": "Achievement", "domain": "Character" },
+    { "name": "Area", "domain": "World" },
     { "name": "Bank", "domain": "Economy" },
     { "name": "ChatCommand", "domain": "Social" },
     { "name": "ChatPortraitTells", "domain": "Social" },
     { "name": "Currency", "domain": "Economy" },
     { "name": "Faction", "domain": "Quests" },
     { "name": "Guild", "domain": "Economy" },
+    { "name": "HoloCom", "domain": "World" },
+    { "name": "Notes", "domain": "World" },
     { "name": "Party", "domain": "Social" },
+    { "name": "Planet", "domain": "World" },
     { "name": "PlayerList", "domain": "Social" },
     { "name": "PlayerMarket", "domain": "Economy" },
-    { "name": "Taxi", "domain": "World" }
+    { "name": "Taxi", "domain": "World" },
+    { "name": "Traps", "domain": "World" }
   ]
 }

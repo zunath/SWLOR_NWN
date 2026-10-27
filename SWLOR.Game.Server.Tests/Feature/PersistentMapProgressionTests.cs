@@ -5,6 +5,7 @@ using Microsoft.CodeAnalysis.CSharp.Syntax;
 using NUnit.Framework;
 using SWLOR.Game.Server.Feature;
 using SWLOR.Game.Server.Service;
+using SWLOR.Game.Server.Tests.Support;
 using static SWLOR.NWN.API.NWScript.NWScript;
 
 namespace SWLOR.Game.Server.Tests.Feature;
@@ -12,22 +13,24 @@ namespace SWLOR.Game.Server.Tests.Feature;
 [NonParallelizable]
 public class PersistentMapProgressionTests
 {
-    private Dictionary<string, uint> _originalAreas;
+    // Each test gets its own container, so the area cache the persistence check reads through the Area facade is the
+    // one this fixture fills and nothing else sees it.
+    private FacadeContainer _facades;
+    private IDisposable _facadeScope;
 
     [SetUp]
     public void SetUp()
     {
-        _originalAreas = new Dictionary<string, uint>(Area.GetAreas());
-        Area.GetAreas().Clear();
+        _facades = new FacadeContainer();
+        _facadeScope = _facades.Install();
         Area.GetAreas().Add("permanent_area", 10);
     }
 
     [TearDown]
     public void TearDown()
     {
-        Area.GetAreas().Clear();
-        foreach (var (resref, area) in _originalAreas)
-            Area.GetAreas().Add(resref, area);
+        _facadeScope.Dispose();
+        _facades.Dispose();
     }
 
     [TestCase(10u, "permanent_area", true)]

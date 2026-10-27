@@ -4,6 +4,8 @@ using System.Linq;
 using System.Reflection;
 using System.Text.Json;
 using System.Threading.Tasks;
+using SWLOR.Game.Server.Composition;
+using SWLOR.Game.Server.Domain.World;
 using SWLOR.Game.Server.EngineTests.Framework;
 using SWLOR.Game.Server.Feature;
 using SWLOR.Game.Server.Service.CombatRecorderService;
@@ -233,12 +235,13 @@ namespace SWLOR.Game.Server.EngineTests.Definitions
                 ctx.Assert(!PvpCombat.IsInPvpCombat(owner.Creature), "the trap's owner is not in PvP combat yet");
 
                 // A tier 1 kit trap whose disarm fails, as Traps does when the roll misses.
-                var recordType = typeof(Traps).GetNestedType("TrapRecord", BindingFlags.NonPublic);
+                var traps = CompositionRoot.ServerHost.Provider.GetService(typeof(ITrapsService));
+                var recordType = traps.GetType().GetNestedType("TrapRecord", BindingFlags.NonPublic);
                 var record = Activator.CreateInstance(recordType, nonPublic: true);
                 recordType.GetProperty("Owner").SetValue(record, owner.Creature);
                 recordType.GetProperty("Tier").SetValue(record, 1);
-                typeof(Traps).GetMethod("TriggerOnDisarmFailure", BindingFlags.Static | BindingFlags.NonPublic)
-                    .Invoke(null, new[] { record, victim.Creature });
+                traps.GetType().GetMethod("TriggerOnDisarmFailure", BindingFlags.Instance | BindingFlags.NonPublic)
+                    .Invoke(traps, new[] { record, victim.Creature });
 
                 await ctx.WaitUntilAsync(() => GetCurrentHitPoints(victim.Creature) < maximum, 5f, "the trap's hit to land");
                 ctx.AssertEqual(maximum - 40, GetCurrentHitPoints(victim.Creature), "the tier 1 trap's 20 damage is doubled at 5:00");

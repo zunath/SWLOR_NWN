@@ -21,6 +21,14 @@ public class QuickCraftTests
         public List<string> Messages { get; } = new();
         public int Created { get; private set; }
 
+        /// <summary>When true, the inventory has no room for the made item.</summary>
+        public bool InventoryFull { get; set; }
+
+        /// <summary>When true, even the returned components do not fit and are held.</summary>
+        public bool RestoreHolds { get; set; }
+
+        public List<string> Held { get; } = new();
+
         public bool IsPlayerAvailable(uint player) => PlayerAvailable;
 
         public void BeginBatch(uint player) => Events.Add("begin");
@@ -31,23 +39,55 @@ public class QuickCraftTests
 
         public void PlayItemAnimation(uint player, float seconds) => Events.Add($"animate:{seconds}");
 
-        public bool TryConsumeComponents(uint player, RecipeDetail recipe)
+        public bool TryConsumeComponents(uint player, RecipeDetail recipe, List<string> taken)
         {
             if (recipe.Components.Any(c => !Inventory.TryGetValue(c.Key, out var have) || have < c.Value))
                 return false;
 
             foreach (var (resref, quantity) in recipe.Components)
+            {
                 Inventory[resref] -= quantity;
+                taken.Add($"{resref}:{quantity}");
+            }
 
             Events.Add("consume");
             return true;
         }
 
-        public void CreateItem(uint player, RecipeDetail recipe)
+        public bool CreateItem(uint player, RecipeDetail recipe)
         {
+            if (InventoryFull)
+            {
+                Events.Add("create-failed");
+                return false;
+            }
+
             Created++;
             Events.Add($"create:{recipe.Resref}");
+            return true;
         }
+
+        public bool RestoreComponents(uint player, List<string> taken)
+        {
+            Events.Add("restore");
+            foreach (var entry in taken)
+            {
+                if (RestoreHolds)
+                {
+                    Held.Add(entry);
+                    continue;
+                }
+
+                var parts = entry.Split(':');
+                Inventory[parts[0]] += int.Parse(parts[1]);
+            }
+
+            return !RestoreHolds;
+        }
+
+        public List<string> Logged { get; } = new();
+
+        public void LogCraft(uint player, string text) => Logged.Add(text);
 
         public void Schedule(float seconds, Action action) => Scheduled.Enqueue(action);
 
@@ -245,6 +285,65 @@ public class QuickCraftTests
         batch.Completed.Should().Be(2);
         batch.Ended.Should().Be(QuickCraftEnd.OutOfMaterials);
         world.Messages.Should().ContainSingle().Which.Should().Contain("ran out of materials");
+    }
+
+    [Test]
+    public void Batch_WhenTheItemDoesNotFit_GivesTheComponentsBack_DoesNotCountIt_AndStopsWithAMessage()
+    {
+        var world = WorldWith(10, 10);
+        var batch = new QuickCraftBatch(world, Player, Recipe(), 3);
+        batch.Start();
+        world.FinishAnimation();
+        world.InventoryFull = true;
+
+        world.FinishAnimation();
+
+        batch.Completed.Should().Be(1, "the item that could not be made is not counted");
+        batch.Ended.Should().Be(QuickCraftEnd.InventoryFull);
+        batch.IsRunning.Should().BeFalse();
+        world.Created.Should().Be(1);
+        world.Inventory["ore"].Should().Be(8, "only the first item's components are spent");
+        world.Inventory["wire"].Should().Be(9);
+        world.Events.Should().ContainInOrder("consume", "create-failed", "restore", "end");
+        world.Scheduled.Should().BeEmpty("no further item is started");
+        world.Messages.Should().ContainSingle().Which
+            .Should().Be("Quick craft stopped: your inventory is full after 1 item. Your materials were not used; make room and try again.");
+        world.Logged.Should().ContainSingle().Which.Should().Contain("could not fit").And.Contain("gadget");
+    }
+
+    [Test]
+    public void Batch_WhenTheFirstItemDoesNotFit_MakesNothingAndKeepsEveryMaterial()
+    {
+        var world = WorldWith(10, 10);
+        world.InventoryFull = true;
+        var batch = new QuickCraftBatch(world, Player, Recipe(), 3);
+        batch.Start();
+
+        world.FinishAnimation();
+
+        batch.Completed.Should().Be(0);
+        batch.Ended.Should().Be(QuickCraftEnd.InventoryFull);
+        world.Inventory["ore"].Should().Be(10);
+        world.Inventory["wire"].Should().Be(10);
+        world.Messages.Should().ContainSingle().Which.Should().Contain("inventory is full after 0 items");
+    }
+
+    [Test]
+    public void Batch_WhenTheComponentsDoNotFitBackEither_HoldsThemAndSaysSo()
+    {
+        var world = WorldWith(10, 10);
+        world.InventoryFull = true;
+        world.RestoreHolds = true;
+        var batch = new QuickCraftBatch(world, Player, Recipe(), 2);
+        batch.Start();
+
+        world.FinishAnimation();
+
+        batch.Completed.Should().Be(0);
+        batch.Ended.Should().Be(QuickCraftEnd.InventoryFull);
+        world.Held.Should().BeEquivalentTo(new[] { "ore:2", "wire:1" }, "the consumed components wait on the character");
+        world.Messages.Should().ContainSingle().Which.Should().Contain("Some materials did not fit and wait for you");
+        world.Logged.Should().ContainSingle().Which.Should().Contain("held on the character");
     }
 
     [Test]

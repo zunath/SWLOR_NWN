@@ -28,6 +28,9 @@ namespace SWLOR.Game.Server.Service.ScavengeService
         Replaced = 7,
 
         /// <summary>The site was removed from the world while the board was open.</summary>
-        SiteGone = 8
+        SiteGone = 8,
+
+        /// <summary>The scavenger stayed at the open board without acting for too long, so the site is released for others.</summary>
+        Idle = 9
     }
 }

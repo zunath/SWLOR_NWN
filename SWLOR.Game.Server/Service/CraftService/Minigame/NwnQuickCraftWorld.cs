@@ -1,4 +1,6 @@
 using System.Collections.Generic;
+using SWLOR.Game.Server.Entity;
+using SWLOR.Game.Server.Service.LogService;
 using SWLOR.NWN.API.NWNX;
 using SWLOR.Game.Server.Service.SkillService;
 using SWLOR.NWN.API.NWScript.Enum;
@@ -48,11 +50,79 @@ public sealed class NwnQuickCraftWorld : IQuickCraftWorld
         PlayerPlugin.StartGuiTimingBar(player, seconds);
     }
 
-    public bool TryConsumeComponents(uint player, RecipeDetail recipe) =>
-        NwnCraftSessionWorld.Instance.TryTakeComponents(player, recipe, new List<string>());
+    public bool TryConsumeComponents(uint player, RecipeDetail recipe, List<string> taken) =>
+        NwnCraftSessionWorld.Instance.TryTakeComponents(player, recipe, taken);
 
-    public void CreateItem(uint player, RecipeDetail recipe) =>
-        NwnCraftSessionWorld.Instance.CreateCraftedItem(player, recipe);
+    public bool CreateItem(uint player, RecipeDetail recipe)
+    {
+        var before = CountComponent(player, recipe.Resref);
+        var item = NwnCraftSessionWorld.Instance.CreateCraftedItem(player, recipe);
+        if (GetIsObjectValid(item) && GetItemPossessor(item) == player)
+            return true;
+
+        // Created outside the inventory (on the ground, for a full inventory): it is not a made item, so it is removed.
+        if (GetIsObjectValid(item))
+            DestroyObject(item);
+
+        // An item the engine merged into an existing stack may not be returned as a valid object; the count tells.
+        var gained = CountComponent(player, recipe.Resref) - before;
+        if (gained >= recipe.Quantity)
+            return true;
+
+        // Only part of the output fit: take that part back too, so a refunded craft leaves no output behind.
+        if (gained > 0)
+            RemoveUnits(player, recipe.Resref, gained);
+        return false;
+    }
+
+    private static void RemoveUnits(uint player, string resref, int units)
+    {
+        for (var item = GetFirstItemInInventory(player); GetIsObjectValid(item) && units > 0; item = GetNextItemInInventory(player))
+        {
+            if (GetResRef(item) != resref)
+                continue;
+
+            var size = GetItemStackSize(item);
+            if (size <= units)
+            {
+                units -= size;
+                DestroyObject(item);
+            }
+            else
+            {
+                SetItemStackSize(item, size - units);
+                units = 0;
+            }
+        }
+    }
+
+    public bool RestoreComponents(uint player, List<string> taken)
+    {
+        var held = new List<string>();
+        foreach (var serialized in taken)
+        {
+            if (!NwnCraftSessionWorld.Instance.TryReturnItem(player, serialized))
+                held.Add(serialized);
+        }
+
+        if (held.Count == 0)
+            return true;
+
+        // Nothing fits, so the items wait on the player's record; ReturnHeldItems gives them back when a crafting window opens or the player logs in.
+        var dbPlayer = DB.Get<Player>(GetObjectUUID(player));
+        if (dbPlayer == null)
+        {
+            Log.Write(LogGroup.Error, $"{held.Count} quick craft component(s) for {GetObjectUUID(player)} could not be returned or held.", true);
+            return false;
+        }
+
+        dbPlayer.HeldCraftItems ??= new List<string>();
+        dbPlayer.HeldCraftItems.AddRange(held);
+        DB.Set(dbPlayer);
+        return false;
+    }
+
+    public void LogCraft(uint player, string text) => NwnCraftSessionWorld.Instance.LogCraft(player, text);
 
     public void Schedule(float seconds, Action action) => DelayCommand(seconds, action);
 

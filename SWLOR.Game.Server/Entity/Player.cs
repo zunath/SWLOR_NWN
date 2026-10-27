@@ -90,7 +90,9 @@ namespace SWLOR.Game.Server.Entity
             HeldCraftItems = new List<string>();
             PendingCraftReturns = new List<PendingCraftReturn>();
             PendingCraftXp = new Dictionary<SkillType, int>();
+            PaidExperimentJobs = new HashSet<string>();
             PendingScavengeFinds = new Dictionary<string, int>();
+            ScavengeFindsAwaitingRoom = new Dictionary<string, int>();
             LearnedTechniques = new Dictionary<FeatType, DateTime>();
             EquippedTechniques = new List<FeatType>();
             MimicryLoadouts = new List<MimicryLoadout>();
@@ -240,12 +242,20 @@ namespace SWLOR.Game.Server.Entity
         // Skill XP a settled craft earned while its player was dead, by skill. It is given once the player is alive again, at a
         // respawn, a login or the next crafting window.
         public Dictionary<SkillType, int> PendingCraftXp { get; set; }
+        // The ids of research jobs whose experiment XP has been added to PendingCraftXp, saved in the same write as the XP. This is the
+        // record that the XP is paid; the job's own XpGranted flag only follows it. An id leaves the set when its job is deleted.
+        // See ResearchExperimentPayout.
+        public HashSet<string> PaidExperimentJobs { get; set; }
         // What a Search board found, by item resref and quantity, while its visit has not ended. A server restart loses the board and its
         // site, so the next login gives these to the player. Empty when no board is in progress.
         public Dictionary<string, int> PendingScavengeFinds { get; set; }
         // The craft file sequence of the return that gave PendingScavengeFinds to the player, kept until a character file holds it; 0 when
         // the finds have not been given yet.
         public int PendingScavengeReturnSequence { get; set; }
+        // Search finds that could not be given to the player because their inventory had no room, by item resref and quantity. They are
+        // kept apart from PendingScavengeFinds (which a board in progress overwrites and which carries the return stamp) and are tried
+        // again at a respawn, a login and the start of the next visit. Records saved before this existed hold null, which means none.
+        public Dictionary<string, int> ScavengeFindsAwaitingRoom { get; set; }
         // When the player first opened each crafting minigame, which is when its help page opened by itself.
         public Dictionary<CraftMinigameType, DateTime> CraftMinigameHelpSeen { get; set; }
         // The crafting style the crafter selected for each crafting skill, named by the style's perk. The style's status effect is

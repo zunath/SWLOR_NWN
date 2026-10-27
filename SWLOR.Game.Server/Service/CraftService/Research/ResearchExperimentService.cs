@@ -39,24 +39,40 @@ public static class ResearchExperimentService
     }
 
     /// <summary>
-    /// Gives the player the Fabrication XP the job's experiment earned, once. Returns the XP given, or 0 when none is owed.
-    /// The caller saves the job.
+    /// Pays the player the Fabrication XP the job's experiment earned, once, and survives a stop between the writes
+    /// (see <see cref="ResearchExperimentPayout"/>). The XP is recorded on the player first, then the job is marked and saved, then the
+    /// XP is given. Returns the XP newly recorded as paid, or 0 when none was owed. The job is saved here when it is marked.
     /// </summary>
     public static int GrantExperimentXp(uint player, ResearchJob job)
     {
-        if (job?.Experiment == null || job.Experiment.Status != ResearchExperimentStatus.Settled || job.Experiment.XpGranted)
+        if (job?.Experiment == null || job.Experiment.Status != ResearchExperimentStatus.Settled)
             return 0;
 
-        // A dead player cannot be given XP, and the job stays unmarked so the next open or completion gives it.
-        if (GetIsDead(player) || GetCurrentHitPoints(player) <= 0)
-            return 0;
+        var dbPlayer = DB.Get<Player>(GetObjectUUID(player));
+        return dbPlayer == null ? 0 : new ResearchExperimentPayout(new NwnPayoutWorld(player)).Pay(dbPlayer, job);
+    }
 
-        var xp = ResearchExperimentLifecycle.PendingExperimentXp(job, BaseXp(player, job));
-        ResearchExperimentLifecycle.MarkExperimentXpGranted(job);
-        if (xp > 0)
-            Skill.GiveSkillXP(player, SkillType.Fabrication, xp);
+    /// <summary>True when the job's experiment XP is still owed to the player: settled, not marked on the job and not recorded as paid.</summary>
+    public static bool IsExperimentXpOwed(uint player, ResearchJob job) =>
+        ResearchExperimentLifecycle.IsExperimentXpOwed(job) && !ResearchExperimentPayout.IsPaid(DB.Get<Player>(GetObjectUUID(player)), job);
 
-        return xp;
+    /// <summary>
+    /// Deletes the job and takes its id off its player's paid-experiment set, so the set stays small. The job goes first: a stop in
+    /// between leaves one unused id, never an unpaid job.
+    /// </summary>
+    public static void DeleteJob(ResearchJob job)
+    {
+        if (job == null)
+            return;
+
+        DB.Delete<ResearchJob>(job.Id);
+
+        if (string.IsNullOrEmpty(job.PlayerId))
+            return;
+
+        var dbPlayer = DB.Get<Player>(job.PlayerId);
+        if (ResearchExperimentPayout.Forget(dbPlayer, job.Id))
+            DB.Set(dbPlayer);
     }
 
     /// <summary>Gives the player the Fabrication XP for completing a job that brought a blueprint to <paramref name="level"/>.</summary>
@@ -72,4 +88,24 @@ public static class ResearchExperimentService
     /// <summary>The chart XP for the job's recipe level against the player's Fabrication rank.</summary>
     public static int BaseXp(uint player, ResearchJob job) =>
         ResearchXpRules.BaseXp(Craft.GetRecipe(job.Recipe).Level, Skill.GetCreatureSkillRank(player, SkillType.Fabrication));
+
+    private sealed class NwnPayoutWorld : IResearchPayoutWorld
+    {
+        private readonly uint _player;
+
+        public NwnPayoutWorld(uint player)
+        {
+            _player = player;
+        }
+
+        public bool CanReceiveXp() => !GetIsDead(_player) && GetCurrentHitPoints(_player) > 0;
+
+        public int BaseXp(ResearchJob job) => ResearchExperimentService.BaseXp(_player, job);
+
+        public void SavePlayer(Player dbPlayer) => DB.Set(dbPlayer);
+
+        public void SaveJob(ResearchJob job) => DB.Set(job);
+
+        public void GrantPendingXp() => CraftSessionService.GrantPendingXp(_player);
+    }
 }

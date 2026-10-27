@@ -71,61 +71,134 @@ namespace SWLOR.Game.Server.Service.ScavengeService
         }
 
         /// <summary>
-        /// Gives a player the finds of a board whose visit never put them in a site (a restart, a death, a logout or a missing site), and
-        /// clears them.
+        /// Gives a player the finds of a board whose visit never put them in a site (a restart, a death, a logout or a missing site), plus
+        /// any finds an earlier return could not fit, and keeps whatever still has no room.
         /// </summary>
         /// <remarks>
-        /// The record keeps the finds, stamped with the craft file sequence of the return, until a character file holds them: a crash
-        /// before the export leaves the stamp above the file's sequence, so the next login gives them again, and a crash after it leaves
-        /// the stamp covered, so the login only clears them. At login the check reads the sequence the file loaded with; later it reads
-        /// the last export.
+        /// Three pieces of the player's record take part. <c>PendingScavengeFinds</c> holds the finds of a board in progress, or, between the
+        /// save and the clear of a return, the portion that return delivered. <c>PendingScavengeReturnSequence</c> stamps that delivered
+        /// portion with the craft file sequence of its export. <c>ScavengeFindsAwaitingRoom</c> holds what had no room.
+        /// Invariants:
+        /// <list type="bullet">
+        /// <item>An item is delivered only if the inventory really gained it. An item the engine put anywhere else (on the ground) is
+        /// destroyed and its quantity stays waiting, so nothing is looted twice or lost.</item>
+        /// <item>Only the delivered portion is ever stamped and cleared. The remainder is written in the same save as the stamp, as plain
+        /// unstamped waiting finds, so no login can read the stamp as covering it and clear it.</item>
+        /// <item>Before the stamp is saved the record still holds everything to be tried, and after it the record holds the delivered
+        /// portion (stamped) and the remainder, together exactly what was wanted. A crash before the export leaves the stamp above the
+        /// file's sequence, so the next login tries both again; a crash after it leaves the stamp covered, so that login only clears
+        /// the delivered portion and then tries the remainder. At login the check reads the sequence the file loaded with; later it
+        /// reads the last export.</item>
+        /// <item>The waiting finds are not <c>PendingScavengeFinds</c>, which a new board overwrites, so a board started while some are
+        /// waiting cannot merge with, replace or duplicate them. Every visit start first tries to deliver them.</item>
+        /// </list>
         /// </remarks>
         public void ReturnPendingFinds(uint player, bool atLogin = false)
         {
             var dbPlayer = DB.Get<Player>(GetObjectUUID(player));
-            if (dbPlayer?.PendingScavengeFinds == null || dbPlayer.PendingScavengeFinds.Count == 0)
+            if (dbPlayer == null)
                 return;
 
+            dbPlayer.PendingScavengeFinds ??= new Dictionary<string, int>();
+            dbPlayer.ScavengeFindsAwaitingRoom ??= new Dictionary<string, int>();
+
             var returned = dbPlayer.PendingScavengeReturnSequence;
-            if (returned > 0)
+            if (returned > 0 && dbPlayer.PendingScavengeFinds.Count > 0)
             {
                 var inFile = GetLocalInt(player, atLogin ? CraftSessionFileSequence.LoadedVariable : CraftSessionFileSequence.ExportedVariable);
-                if (inFile >= returned || !atLogin)
+                if (inFile >= returned)
                 {
-                    // Either a file already holds the returned finds, or they are in this session's inventory waiting for its export.
-                    if (inFile >= returned)
-                        ClearReturnedFinds(dbPlayer);
+                    // A file already holds the delivered finds: only the stamp and the delivered portion go. Waiting finds are not covered.
+                    ClearDeliveredFinds(dbPlayer);
+                }
+                else if (!atLogin)
+                {
+                    // They are in this session's inventory waiting for its export.
                     return;
                 }
             }
-
-            var names = new List<string>();
-            foreach (var (resref, quantity) in dbPlayer.PendingScavengeFinds)
+            else if (returned > 0)
             {
-                var item = CreateItemOnObject(resref, player, quantity);
-                names.Add($"{quantity}x {(GetIsObjectValid(item) ? GetName(item) : resref)}");
+                dbPlayer.PendingScavengeReturnSequence = 0;
+                DB.Set(dbPlayer);
             }
 
+            var wanted = ScavengeReturn.Merge(dbPlayer.PendingScavengeFinds, dbPlayer.ScavengeFindsAwaitingRoom);
+            if (wanted.Count == 0)
+                return;
+
+            var names = new Dictionary<string, string>();
+            var split = ScavengeReturn.Divide(wanted, (resref, quantity) => Deliver(player, resref, quantity, names));
+
+            // The remainder is saved with the stamp (or alone when nothing was delivered) as plain waiting finds.
+            dbPlayer.ScavengeFindsAwaitingRoom = split.Remainder.ToDictionary(find => find.Key, find => find.Value);
+
             var exportable = GetIsPC(player) && !GetIsDM(player) && !GetIsDMPossessed(player);
-            if (exportable)
+            if (split.Delivered.Count > 0 && exportable)
             {
                 var sequence = GetLocalInt(player, CraftSessionFileSequence.Variable) + 1;
                 SetLocalInt(player, CraftSessionFileSequence.Variable, sequence);
+                dbPlayer.PendingScavengeFinds = split.Delivered.ToDictionary(find => find.Key, find => find.Value);
                 dbPlayer.PendingScavengeReturnSequence = sequence;
                 DB.Set(dbPlayer);
                 ExportSingleCharacter(player);
                 SetLocalInt(player, CraftSessionFileSequence.ExportedVariable, sequence);
             }
 
-            ClearReturnedFinds(dbPlayer);
-            SendMessageToPC(player, $"Your last search ended before you could collect it. What it found is in your inventory: {string.Join(", ", names)}.");
+            ClearDeliveredFinds(dbPlayer);
+            SendMessageToPC(player, ReturnMessage(split, names));
         }
 
-        private static void ClearReturnedFinds(Player dbPlayer)
+        private static void ClearDeliveredFinds(Player dbPlayer)
         {
-            dbPlayer.PendingScavengeFinds.Clear();
+            dbPlayer.PendingScavengeFinds = new Dictionary<string, int>();
             dbPlayer.PendingScavengeReturnSequence = 0;
             DB.Set(dbPlayer);
+        }
+
+        /// <summary>
+        /// Creates the item in the player's inventory and returns how many the inventory gained. A created item that is not in the
+        /// player's inventory (a full inventory leaves it on the ground) is destroyed, so it cannot be looted while its quantity stays
+        /// waiting.
+        /// </summary>
+        private static int Deliver(uint player, string resref, int quantity, Dictionary<string, string> names)
+        {
+            var before = CountInInventory(player, resref);
+            var item = CreateItemOnObject(resref, player, quantity);
+            if (GetIsObjectValid(item))
+            {
+                names[resref] = GetName(item);
+                if (GetItemPossessor(item) != player)
+                    DestroyObject(item);
+            }
+
+            return CountInInventory(player, resref) - before;
+        }
+
+        private static int CountInInventory(uint player, string resref)
+        {
+            var count = 0;
+            for (var item = GetFirstItemInInventory(player); GetIsObjectValid(item); item = GetNextItemInInventory(player))
+            {
+                if (GetResRef(item) == resref)
+                    count += GetItemStackSize(item);
+            }
+
+            return count;
+        }
+
+        private static string ReturnMessage(ScavengeReturnSplit split, IReadOnlyDictionary<string, string> names)
+        {
+            var waiting = split.Remainder.Count == 0
+                ? string.Empty
+                : $"There is no room in your inventory for {ScavengeReturn.Describe(split.Remainder, names)}. " +
+                  "It stays waiting for you and comes to you when you free up space and open a search site, respawn, or log in.";
+
+            if (split.Delivered.Count == 0)
+                return $"Your last search ended before you could collect it. {waiting}";
+
+            var delivered = $"Your last search ended before you could collect it. What it found is in your inventory: {ScavengeReturn.Describe(split.Delivered, names)}.";
+            return waiting.Length == 0 ? delivered : $"{delivered} {waiting}";
         }
 
         public void SpawnBonusLoot(uint site, uint player)

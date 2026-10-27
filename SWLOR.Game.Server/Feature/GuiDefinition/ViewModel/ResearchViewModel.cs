@@ -210,7 +210,8 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
             }
 
             // A settled experiment whose XP was never given (the player logged out or was dead when it settled) pays it now, once.
-            // The job is marked only when the XP was given, so a dead player is paid the next time the window opens.
+            // The payout records the XP on the player before it marks the job, so a stop in between never pays it twice; a dead
+            // player is paid the next time the window opens.
             if (ResearchExperimentLifecycle.IsExperimentXpOwed(dbJob))
             {
                 ResearchExperimentService.GrantExperimentXp(Player, dbJob);
@@ -418,7 +419,7 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
                         return;
                     }
 
-                    DB.Delete<ResearchJob>(dbJob.Id);
+                    ResearchExperimentService.DeleteJob(dbJob);
                     Gui.TogglePlayerWindow(Player, GuiWindowType.Research);
                     FloatingTextStringOnCreature("Research job cancelled!", Player, false);
                 },
@@ -524,7 +525,7 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
 
             var experimentXp = ResearchExperimentService.GrantExperimentXp(Player, dbJob);
             var completionXp = ResearchExperimentService.GrantCompletionXp(Player, dbJob, completion.Level);
-            DB.Delete<ResearchJob>(dbJob.Id);
+            ResearchExperimentService.DeleteJob(dbJob);
 
             SendMessageToPC(Player, DescribeCompletion(completion, experimentXp + completionXp));
         };

@@ -20,7 +20,7 @@ namespace SWLOR.Game.Server.Service.ScavengeService
     /// Search board, or chooses Quick Search, which resolves the site by the rules scavenging had before the board. The site is marked
     /// searched (<c>FULLY_HARVESTED</c>) when the visit begins, so a site is searched once however the visit ends. Gathering XP is paid
     /// for every Search and Dig Deeper as it happens; what the site gave is put in its inventory when the visit ends, and a visit left
-    /// unfinished (window closed, moving away, combat, death, logout) keeps the finds so far and loses the searches not yet spent. A
+    /// unfinished (window closed, moving away, combat, death, logout, or standing idle at the board) keeps the finds so far and loses the searches not yet spent. A
     /// scavenger who dies or logs out keeps the finds on their record instead of in the site, and gets them back later.
     /// </summary>
     public sealed class ScavengeLifecycle
@@ -35,6 +35,12 @@ namespace SWLOR.Game.Server.Service.ScavengeService
 
         /// <summary>How far, in metres, the scavenger may stray from the site before they stop searching.</summary>
         public const float MaxDistance = 6.0f;
+
+        /// <summary>
+        /// How long, in seconds, a scavenger may keep the board open without acting before the visit ends and the site is released for others.
+        /// It is the idle limit of <c>ProspectingLifecycle.IdleSeconds</c>.
+        /// </summary>
+        public const double IdleSeconds = 120.0;
 
         private readonly IScavengeWorld _world;
         private readonly IMinigameRandom _random;
@@ -92,7 +98,8 @@ namespace SWLOR.Game.Server.Service.ScavengeService
             var setup = SearchSetup.ForRank(request.GatheringRank, request.SiteLevel, request.Effects);
             var session = new ScavengeSession(Guid.NewGuid().ToString(), request, new SearchEngine(_random, setup))
             {
-                StartedAt = _world.UtcNow
+                StartedAt = _world.UtcNow,
+                LastActivityAt = _world.UtcNow
             };
             _byPlayer[request.Player] = session;
             _bySite[request.Site] = session;
@@ -152,6 +159,7 @@ namespace SWLOR.Game.Server.Service.ScavengeService
             var request = session.Request with { Effects = effects };
             var setup = SearchSetup.ForRank(request.GatheringRank, request.SiteLevel, effects);
             session.Reconfigure(request, new SearchEngine(_random, setup, session.Engine.Board.Promising));
+            session.LastActivityAt = _world.UtcNow;
             return true;
         }
 
@@ -183,6 +191,7 @@ namespace SWLOR.Game.Server.Service.ScavengeService
                 return ScavengeStep.Refused(result.RejectedReason);
 
             session.NextActionAt = _world.UtcNow.AddSeconds(SearchRules.ActionSeconds);
+            session.LastActivityAt = _world.UtcNow;
 
             var last = engine.Last;
             if (last.PaysXp)
@@ -274,6 +283,8 @@ namespace SWLOR.Game.Server.Service.ScavengeService
                 end = ScavengeEnd.Moved;
             else if (!state.HasWindowOpen)
                 end = ScavengeEnd.WindowClosed;
+            else if ((_world.UtcNow - session.LastActivityAt).TotalSeconds > IdleSeconds)
+                end = ScavengeEnd.Idle;
 
             if (!end.HasValue)
                 return true;
@@ -375,10 +386,10 @@ namespace SWLOR.Game.Server.Service.ScavengeService
                 // Nothing is left in the site for anyone: it gave nothing, or what it gave went to the scavenger's record.
                 _world.DestroySite(session.Player, request.Site, animationSeconds);
             }
-            else if (reason is ScavengeEnd.Moved or ScavengeEnd.Combat or ScavengeEnd.Replaced)
+            else if (reason is ScavengeEnd.Moved or ScavengeEnd.Combat or ScavengeEnd.Replaced or ScavengeEnd.Idle)
             {
-                // The scavenger is away from the site, in a fight or at another site, so it is not opened for them: what it gave waits in
-                // the site, held for them for a short while.
+                // The scavenger is away from the site, in a fight, at another site or not paying attention, so it is not opened for them: what
+                // it gave waits in the site, held for them for a short while.
                 _world.HoldSite(session.Player, request.Site, animationSeconds);
             }
             else
@@ -415,6 +426,7 @@ namespace SWLOR.Game.Server.Service.ScavengeService
                 ScavengeEnd.Moved => "You moved away and stopped searching. " + found + waiting,
                 ScavengeEnd.Combat => "The fight drew you away from the site. " + found + waiting,
                 ScavengeEnd.Replaced => "You stopped searching here. " + found + waiting,
+                ScavengeEnd.Idle => "You stopped searching after standing idle. " + found + waiting,
                 _ => string.Empty
             };
         }

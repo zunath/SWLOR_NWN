@@ -528,6 +528,74 @@ public class ScavengeLifecycleTests
     }
 
     [Test]
+    public void ABoardLeftIdle_StaysOpenUntilTheLimit()
+    {
+        var lifecycle = Lifecycle();
+        var session = lifecycle.Start(Request());
+
+        _world.UtcNow = _world.UtcNow.AddSeconds(ScavengeLifecycle.IdleSeconds);
+        _world.RunNextScheduled();
+
+        session.Settled.Should().BeFalse("the limit itself is still allowed");
+        lifecycle.IsInUse(Site).Should().BeTrue();
+        _world.ScheduledCount.Should().Be(1, "an open board keeps checking");
+    }
+
+    [Test]
+    public void ABoardLeftIdlePastTheLimit_ReleasesTheSite_HoldsTheFinds_AndTellsTheScavenger()
+    {
+        var lifecycle = Lifecycle(1, 0, 3);
+        var session = lifecycle.Start(Request());
+        lifecycle.Act(session, SearchAt(0));
+        _world.UtcNow = _world.UtcNow.AddSeconds(ScavengeLifecycle.IdleSeconds + 1);
+
+        _world.RunNextScheduled();
+
+        session.Settled.Should().BeTrue();
+        session.Result.End.Should().Be(ScavengeEnd.Idle);
+        lifecycle.IsInUse(Site).Should().BeFalse("another scavenger may now open the site");
+        _world.Created.Should().Equal((Site, "fiberp_ruined", 3));
+        _world.Held.Should().Equal(new[] { (Site, 0d) });
+        _world.Opened.Should().BeEmpty("an idle scavenger is not pulled back to the site");
+        _world.Destroyed.Should().BeEmpty();
+        _world.WindowOpen.Should().BeFalse("the window closes");
+        _world.Messages.Should().ContainSingle().Which.Should().Contain("standing idle").And.Contain("go back to it to collect");
+        _world.ScheduledCount.Should().Be(0, "an ended visit stops checking");
+    }
+
+    [Test]
+    public void AnActionResetsTheIdleClock()
+    {
+        var lifecycle = Lifecycle(1, 0, 3, 100);
+        var session = lifecycle.Start(Request());
+        lifecycle.Act(session, SearchAt(0));
+        _world.UtcNow = _world.UtcNow.AddSeconds(ScavengeLifecycle.IdleSeconds - 20);
+        lifecycle.Act(session, SearchAt(Right)).Performed.Should().BeTrue();
+
+        _world.UtcNow = _world.UtcNow.AddSeconds(ScavengeLifecycle.IdleSeconds - 20);
+        _world.RunNextScheduled();
+        session.Settled.Should().BeFalse("only 100 seconds have passed since the last action, though more than the limit since the first");
+
+        _world.UtcNow = _world.UtcNow.AddSeconds(21);
+        _world.RunNextScheduled();
+        session.Result.End.Should().Be(ScavengeEnd.Idle);
+    }
+
+    [Test]
+    public void ARefusedActionDoesNotResetTheIdleClock()
+    {
+        var lifecycle = Lifecycle();
+        var session = lifecycle.Start(Request());
+        _world.UtcNow = _world.UtcNow.AddSeconds(ScavengeLifecycle.IdleSeconds - 1);
+        lifecycle.Act(session, Dig(Center)).Performed.Should().BeFalse("a spot cannot be dug before it is searched");
+
+        _world.UtcNow = _world.UtcNow.AddSeconds(2);
+        _world.RunNextScheduled();
+
+        session.Result.End.Should().Be(ScavengeEnd.Idle);
+    }
+
+    [Test]
     public void AScavengerWhoStartsAnotherVisit_LeavesTheFirstSitesFindsHeld_AndDoesNotOpenIt()
     {
         var lifecycle = Lifecycle(1, 0, 3, 0, 1);

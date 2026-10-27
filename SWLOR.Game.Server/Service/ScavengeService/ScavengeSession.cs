@@ -49,6 +49,9 @@ namespace SWLOR.Game.Server.Service.ScavengeService
         /// <summary>When the session began.</summary>
         public DateTime StartedAt { get; internal set; }
 
+        /// <summary>When the scavenger last acted on the board (or began the visit). A board left idle for too long releases its site.</summary>
+        public DateTime LastActivityAt { get; internal set; }
+
         /// <summary>The earliest time the scavenger's next action may resolve; null until they have taken the first, which is free.</summary>
         public DateTime? NextActionAt { get; internal set; }
 

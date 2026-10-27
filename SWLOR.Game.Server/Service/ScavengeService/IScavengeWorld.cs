@@ -40,8 +40,9 @@ namespace SWLOR.Game.Server.Service.ScavengeService
         void SavePendingFinds(uint player, IReadOnlyList<ScavengeFind> finds);
 
         /// <summary>
-        /// Gives the scavenger whatever is on their record from a visit that never put it in a site, and clears the record in the same
-        /// step so it cannot be given twice. Does nothing when the record is empty.
+        /// Gives the scavenger whatever is on their record from a visit that never put it in a site, and clears what was delivered in the
+        /// same step so it cannot be given twice. Finds the inventory has no room for stay on the record, apart from any board in
+        /// progress, and are tried again at the next return; the scavenger is told. Does nothing when the record is empty.
         /// </summary>
         void ReturnPendingFinds(uint player, bool atLogin = false);
 

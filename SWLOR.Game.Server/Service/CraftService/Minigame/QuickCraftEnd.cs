@@ -13,5 +13,8 @@ public enum QuickCraftEnd
     OutOfMaterials = 3,
 
     /// <summary>The player died, logged out or otherwise could not keep crafting.</summary>
-    Interrupted = 4
+    Interrupted = 4,
+
+    /// <summary>The inventory had no room for the item; its components were given back and the batch stopped.</summary>
+    InventoryFull = 5
 }

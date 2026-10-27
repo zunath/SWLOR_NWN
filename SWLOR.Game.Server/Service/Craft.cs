@@ -1205,7 +1205,7 @@ namespace SWLOR.Game.Server.Service
 
             foreach (var dbJob in dbJobs)
             {
-                DB.Delete<ResearchJob>(dbJob.Id);
+                CraftService.Research.ResearchExperimentService.DeleteJob(dbJob);
             }
         }
     }

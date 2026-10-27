@@ -26,6 +26,9 @@
          the characterization snapshots; review `git diff` before committing them, because an unexplained snapshot
          diff is drift.
       6. Prints the line for the status file's sync log. Run Test-MaintainabilityParity.ps1 next (or pass -RunParity).
+         Then run Update-EngineCharacterization.ps1: the engine snapshots (EngineTests/Characterization) depend on module and
+         hak content that master changes, and are not covered by this script (it needs Docker and takes about 30 minutes;
+         Readmes/EngineTesting.md, "Refreshing the snapshots after a master sync").
 
     Exit code: 0 all good; 1 build or test failure; 2 conflicts left for you; 3 the handler manifest needs a manual
     edit; 4 the script could not do its job (not a refactor branch, dirty worktree, git failure, ...).
@@ -469,6 +472,8 @@ function Invoke-Sync {
     Write-Host ''
     Write-Host 'Sync log line for MaintainabilityRefactorStatus.md:'
     Write-Host ('| {0} | `{1}` | {2} | {3}; tests: {4} | {5} |' -f (Get-Date -Format 'yyyy-MM-dd'), $masterShort, $conflictLog, $parityNote, $testNote, $By)
+    Write-Host ''
+    Write-Host 'Next: tools/Refactor/Update-EngineCharacterization.ps1 refreshes the engine snapshots (Docker, about 30 minutes; Readmes/EngineTesting.md).'
 
     if (-not $testsOk) { return 1 }
     if ($manualEdit) { return 3 }

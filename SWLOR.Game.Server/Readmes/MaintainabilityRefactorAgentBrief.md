@@ -33,6 +33,11 @@ task, reviews the result and merges it into `feature/maintainability-refactor`.
 - Do NOT edit `MaintainabilityRefactorStatus.md`; the coordinator keeps it current.
 - Stage explicit paths; keep the tree to your task's changes.
 
+- **CD keys (owner, 2026-10-27):** the 8-character public CD key is public and safe to read and use (for example
+  from a server log "Joined as Player" line, or `SWLOR_LIVE_PUBLIC_CDKEY` if set). The private key in `cdkey.ini` must
+  never be read, printed or committed: live-client runs only copy that file, through the procedure in
+  `Readmes/InEngineVisualVerification.md` (throwaway client profile, deleted at teardown, master server blocked).
+
 ## Pull request
 
 - Push your branch (`git -c http.sslBackend=schannel push -u origin <branch>`) and open a pull request

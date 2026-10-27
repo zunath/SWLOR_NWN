@@ -46,7 +46,7 @@ internal sealed class DomainDependencies
         {
             if (!unitOfType.TryGetValue(type, out var unit))
             {
-                unit = UnitClassifier.Classify(type);
+                unit = UnitClassifier.Classify(type, map);
                 unitOfType[type] = unit;
             }
 
@@ -67,6 +67,8 @@ internal sealed class DomainDependencies
             if (UnitOf(source) is not { } from || UnitOf(target) is not { } to || from == to)
                 continue;
             if (map.DomainOf(from) is null || map.DomainOf(to) is null)
+                continue;
+            if (map.IsWiringSource(from))
                 continue;
 
             if (!members.TryGetValue((from, to), out var set))

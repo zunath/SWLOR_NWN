@@ -1,5 +1,166 @@
 [
   {
+    "File": "SWLOR.Game.Server/Domain/Character/AchievementService.cs",
+    "Line": 79,
+    "Member": "DisplayAchievementNotificationWindow",
+    "Delivery": "Retained",
+    "Call": "PostString(player, \"Achievement Unlocked\", centerWindowX + 2, WindowY+1, ScreenAnchor.TopRight, 10.0f, Gui.ColorWhite, Gui.ColorYellow, _idReservation.StartId,Gui.TextName)"
+  },
+  {
+    "File": "SWLOR.Game.Server/Domain/Character/AchievementService.cs",
+    "Line": 80,
+    "Member": "DisplayAchievementNotificationWindow",
+    "Delivery": "Retained",
+    "Call": "PostString(player, \" \" + name, centerWindowX + 4, WindowY+3, ScreenAnchor.TopRight, 10.0f, Gui.ColorWhite, Gui.ColorYellow, _idReservation.StartId + 1, Gui.TextName)"
+  },
+  {
+    "File": "SWLOR.Game.Server/Domain/Economy/GuildService.cs",
+    "Line": 109,
+    "Member": "GiveGuildPoints",
+    "Delivery": "Retained",
+    "Call": "SendMessageToPC(player, $\"You earned {amount} {detail.Name} guild points\")"
+  },
+  {
+    "File": "SWLOR.Game.Server/Domain/Economy/GuildService.cs",
+    "Line": 120,
+    "Member": "GiveGuildPoints",
+    "Delivery": "Retained",
+    "Call": "SendMessageToPC(player, ColorToken.Green(\"You've reached rank \" + dbGuild.Rank + \" in the \" + detail.Name + \"!\"))"
+  },
+  {
+    "File": "SWLOR.Game.Server/Domain/Economy/PlayerMarketService.cs",
+    "Line": 69,
+    "Member": "CheckMarketTill",
+    "Delivery": "Retained",
+    "Call": "SendMessageToPC(player, $\"1 credit is in your market till.\")"
+  },
+  {
+    "File": "SWLOR.Game.Server/Domain/Economy/PlayerMarketService.cs",
+    "Line": 73,
+    "Member": "CheckMarketTill",
+    "Delivery": "Retained",
+    "Call": "SendMessageToPC(player, $\"{dbPlayer.MarketTill} credits are in your market till.\")"
+  },
+  {
+    "File": "SWLOR.Game.Server/Domain/Quests/FactionService.cs",
+    "Line": 87,
+    "Member": "AdjustPlayerFactionStanding",
+    "Delivery": "Retained",
+    "Call": "SendMessageToPC(player, $\"Your standing with {factionDetail.Name} cannot possibly go higher!\")"
+  },
+  {
+    "File": "SWLOR.Game.Server/Domain/Quests/FactionService.cs",
+    "Line": 91,
+    "Member": "AdjustPlayerFactionStanding",
+    "Delivery": "Retained",
+    "Call": "SendMessageToPC(player, $\"Your standing with {factionDetail.Name} improves.\")"
+  },
+  {
+    "File": "SWLOR.Game.Server/Domain/Quests/FactionService.cs",
+    "Line": 99,
+    "Member": "AdjustPlayerFactionStanding",
+    "Delivery": "Retained",
+    "Call": "SendMessageToPC(player, $\"Your standing with {factionDetail.Name} cannot possibly go lower!\")"
+  },
+  {
+    "File": "SWLOR.Game.Server/Domain/Quests/FactionService.cs",
+    "Line": 103,
+    "Member": "AdjustPlayerFactionStanding",
+    "Delivery": "Retained",
+    "Call": "SendMessageToPC(player, $\"Your standing with {factionDetail.Name} decreases.\")"
+  },
+  {
+    "File": "SWLOR.Game.Server/Domain/Quests/FactionService.cs",
+    "Line": 132,
+    "Member": "AdjustPlayerFactionPoints",
+    "Delivery": "Retained",
+    "Call": "SendMessageToPC(player, $\"You gained {adjustBy} points with the {factionDetail.Name} faction.\")"
+  },
+  {
+    "File": "SWLOR.Game.Server/Domain/Quests/FactionService.cs",
+    "Line": 136,
+    "Member": "AdjustPlayerFactionPoints",
+    "Delivery": "Retained",
+    "Call": "SendMessageToPC(player, $\"You lost {Math.Abs(adjustBy)} points with the {factionDetail.Name} faction.\")"
+  },
+  {
+    "File": "SWLOR.Game.Server/Domain/Social/ChatCommandService.cs",
+    "Line": 68,
+    "Member": "HandleChatMessage",
+    "Delivery": "Retained",
+    "Call": "SendMessageToPC(sender, ColorToken.Red(\"Invalid chat command. Use '/help' to get a list of available commands.\"))"
+  },
+  {
+    "File": "SWLOR.Game.Server/Domain/Social/ChatCommandService.cs",
+    "Line": 85,
+    "Member": "HandleChatMessage",
+    "Delivery": "Retained",
+    "Call": "SendMessageToPC(sender, error)"
+  },
+  {
+    "File": "SWLOR.Game.Server/Domain/Social/ChatCommandService.cs",
+    "Line": 109,
+    "Member": "HandleChatMessage",
+    "Delivery": "Retained",
+    "Call": "SendMessageToPC(sender, ColorToken.Red(InvalidChatCommandMessage))"
+  },
+  {
+    "File": "SWLOR.Game.Server/Domain/Social/ChatCommandService.cs",
+    "Line": 155,
+    "Member": "ProcessChatCommand",
+    "Delivery": "Retained",
+    "Call": "SendMessageToPC(sender, error)"
+  },
+  {
+    "File": "SWLOR.Game.Server/Domain/Social/ChatCommandService.cs",
+    "Line": 164,
+    "Member": "ProcessChatCommand",
+    "Delivery": "Retained",
+    "Call": "SendMessageToPC(sender, ColorToken.Red(InvalidChatCommandMessage))"
+  },
+  {
+    "File": "SWLOR.Game.Server/Domain/Social/ChatPortraitTellsService.cs",
+    "Line": 74,
+    "Member": "CheckPortraitClick",
+    "Delivery": "Retained",
+    "Call": "SendMessageToPC(player, ColorToken.Red(\"That chat portrait may belong to a player who has logged out, so it could now point to someone else. \" +\n                    \"A tell started from it will not be sent. Use Send Tell in the Player List instead.\"))"
+  },
+  {
+    "File": "SWLOR.Game.Server/Domain/Social/ChatPortraitTellsService.cs",
+    "Line": 106,
+    "Member": "RefuseStalePortraitTell",
+    "Delivery": "Retained",
+    "Call": "SendMessageToPC(sender, ColorToken.Red(\"Tell not sent: the chat portrait you clicked may belong to a player who has logged out. \" +\n                \"Use Send Tell in the Player List instead.\"))"
+  },
+  {
+    "File": "SWLOR.Game.Server/Domain/Social/PlayerListService.cs",
+    "Line": 221,
+    "Member": "SendTell",
+    "Delivery": "Retained",
+    "Call": "ChatPlugin.SendMessage(channel, message, speaker, DMPresence.GetControlledCreature(target))"
+  },
+  {
+    "File": "SWLOR.Game.Server/Domain/World/TaxiService.cs",
+    "Line": 44,
+    "Member": "RegisterTaxiDestination",
+    "Delivery": "Retained",
+    "Call": "SendMessageToPC(player, \"Only players may register taxi destinations.\")"
+  },
+  {
+    "File": "SWLOR.Game.Server/Domain/World/TaxiService.cs",
+    "Line": 57,
+    "Member": "RegisterTaxiDestination",
+    "Delivery": "Retained",
+    "Call": "SendMessageToPC(player, \"You have already registered this location.\")"
+  },
+  {
+    "File": "SWLOR.Game.Server/Domain/World/TaxiService.cs",
+    "Line": 62,
+    "Member": "RegisterTaxiDestination",
+    "Delivery": "Retained",
+    "Call": "SendMessageToPC(player, $\"'{detail.Name}' registered into taxi destinations!\")"
+  },
+  {
     "File": "SWLOR.Game.Server/Feature/AbilityDefinition/Beastmaster/TameAbilityDefinition.cs",
     "Line": 115,
     "Member": "Tame",
@@ -3773,20 +3934,6 @@
     "Call": "Messaging.SendMessageNearbyToPlayers(\n                activator,\n                receiver => Combat.BuildAbilityNoTargetCombatLogMessage(\n                    receiver,\n                    activator,\n                    ability.Name),\n                60f)"
   },
   {
-    "File": "SWLOR.Game.Server/Service/Achievement.cs",
-    "Line": 79,
-    "Member": "DisplayAchievementNotificationWindow",
-    "Delivery": "Retained",
-    "Call": "PostString(player, \"Achievement Unlocked\", centerWindowX + 2, WindowY+1, ScreenAnchor.TopRight, 10.0f, Gui.ColorWhite, Gui.ColorYellow, _idReservation.StartId,Gui.TextName)"
-  },
-  {
-    "File": "SWLOR.Game.Server/Service/Achievement.cs",
-    "Line": 80,
-    "Member": "DisplayAchievementNotificationWindow",
-    "Delivery": "Retained",
-    "Call": "PostString(player, \" \" + name, centerWindowX + 4, WindowY+3, ScreenAnchor.TopRight, 10.0f, Gui.ColorWhite, Gui.ColorYellow, _idReservation.StartId + 1, Gui.TextName)"
-  },
-  {
     "File": "SWLOR.Game.Server/Service/AIService/NPCAI.cs",
     "Line": 551,
     "Member": "ExecuteAction",
@@ -3876,55 +4023,6 @@
     "Member": "UseExtractDNAObject",
     "Delivery": "Retained",
     "Call": "SendMessageToPC(player, ColorToken.Red(\"Use a DNA Extractor on this corpse to retrieve its DNA.\"))"
-  },
-  {
-    "File": "SWLOR.Game.Server/Service/ChatCommand.cs",
-    "Line": 70,
-    "Member": "HandleChatMessage",
-    "Delivery": "Retained",
-    "Call": "SendMessageToPC(sender, ColorToken.Red(\"Invalid chat command. Use '/help' to get a list of available commands.\"))"
-  },
-  {
-    "File": "SWLOR.Game.Server/Service/ChatCommand.cs",
-    "Line": 87,
-    "Member": "HandleChatMessage",
-    "Delivery": "Retained",
-    "Call": "SendMessageToPC(sender, error)"
-  },
-  {
-    "File": "SWLOR.Game.Server/Service/ChatCommand.cs",
-    "Line": 111,
-    "Member": "HandleChatMessage",
-    "Delivery": "Retained",
-    "Call": "SendMessageToPC(sender, ColorToken.Red(InvalidChatCommandMessage))"
-  },
-  {
-    "File": "SWLOR.Game.Server/Service/ChatCommand.cs",
-    "Line": 157,
-    "Member": "ProcessChatCommand",
-    "Delivery": "Retained",
-    "Call": "SendMessageToPC(sender, error)"
-  },
-  {
-    "File": "SWLOR.Game.Server/Service/ChatCommand.cs",
-    "Line": 166,
-    "Member": "ProcessChatCommand",
-    "Delivery": "Retained",
-    "Call": "SendMessageToPC(sender, ColorToken.Red(InvalidChatCommandMessage))"
-  },
-  {
-    "File": "SWLOR.Game.Server/Service/ChatPortraitTells.cs",
-    "Line": 79,
-    "Member": "CheckPortraitClick",
-    "Delivery": "Retained",
-    "Call": "SendMessageToPC(player, ColorToken.Red(\"That chat portrait may belong to a player who has logged out, so it could now point to someone else. \" +\n                    \"A tell started from it will not be sent. Use Send Tell in the Player List instead.\"))"
-  },
-  {
-    "File": "SWLOR.Game.Server/Service/ChatPortraitTells.cs",
-    "Line": 120,
-    "Member": "RefuseStalePortraitTell",
-    "Delivery": "Retained",
-    "Call": "SendMessageToPC(sender, ColorToken.Red(\"Tell not sent: the chat portrait you clicked may belong to a player who has logged out. \" +\n                \"Use Send Tell in the Player List instead.\"))"
   },
   {
     "File": "SWLOR.Game.Server/Service/Combat.cs",
@@ -4340,48 +4438,6 @@
     "Call": "SpeakString(personality.DeathPhrase())"
   },
   {
-    "File": "SWLOR.Game.Server/Service/Faction.cs",
-    "Line": 93,
-    "Member": "AdjustPlayerFactionStanding",
-    "Delivery": "Retained",
-    "Call": "SendMessageToPC(player, $\"Your standing with {factionDetail.Name} cannot possibly go higher!\")"
-  },
-  {
-    "File": "SWLOR.Game.Server/Service/Faction.cs",
-    "Line": 97,
-    "Member": "AdjustPlayerFactionStanding",
-    "Delivery": "Retained",
-    "Call": "SendMessageToPC(player, $\"Your standing with {factionDetail.Name} improves.\")"
-  },
-  {
-    "File": "SWLOR.Game.Server/Service/Faction.cs",
-    "Line": 105,
-    "Member": "AdjustPlayerFactionStanding",
-    "Delivery": "Retained",
-    "Call": "SendMessageToPC(player, $\"Your standing with {factionDetail.Name} cannot possibly go lower!\")"
-  },
-  {
-    "File": "SWLOR.Game.Server/Service/Faction.cs",
-    "Line": 109,
-    "Member": "AdjustPlayerFactionStanding",
-    "Delivery": "Retained",
-    "Call": "SendMessageToPC(player, $\"Your standing with {factionDetail.Name} decreases.\")"
-  },
-  {
-    "File": "SWLOR.Game.Server/Service/Faction.cs",
-    "Line": 145,
-    "Member": "AdjustPlayerFactionPoints",
-    "Delivery": "Retained",
-    "Call": "SendMessageToPC(player, $\"You gained {adjustBy} points with the {factionDetail.Name} faction.\")"
-  },
-  {
-    "File": "SWLOR.Game.Server/Service/Faction.cs",
-    "Line": 149,
-    "Member": "AdjustPlayerFactionPoints",
-    "Delivery": "Retained",
-    "Call": "SendMessageToPC(player, $\"You lost {Math.Abs(adjustBy)} points with the {factionDetail.Name} faction.\")"
-  },
-  {
     "File": "SWLOR.Game.Server/Service/Fishing.cs",
     "Line": 248,
     "Member": "ClickFishingPoint",
@@ -4541,20 +4597,6 @@
     "Member": "Draw",
     "Delivery": "Shared transport; policy at caller",
     "Call": "PostString(player, message, x, y, anchor, lifeTime, ColorWhite, ColorWhite, id, GuiFontName)"
-  },
-  {
-    "File": "SWLOR.Game.Server/Service/Guild.cs",
-    "Line": 105,
-    "Member": "GiveGuildPoints",
-    "Delivery": "Retained",
-    "Call": "SendMessageToPC(player, $\"You earned {amount} {detail.Name} guild points\")"
-  },
-  {
-    "File": "SWLOR.Game.Server/Service/Guild.cs",
-    "Line": 116,
-    "Member": "GiveGuildPoints",
-    "Delivery": "Retained",
-    "Call": "SendMessageToPC(player, ColorToken.Green(\"You've reached rank \" + dbGuild.Rank + \" in the \" + detail.Name + \"!\"))"
   },
   {
     "File": "SWLOR.Game.Server/Service/HoloCom.cs",
@@ -4982,27 +5024,6 @@
     "Member": "Introduce",
     "Delivery": "Retained",
     "Call": "SendMessageToPC(presenter, ColorToken.Green(\n                $\"You introduced yourself as '{name}' to nearby players. They choose whether to remember this name.\"))"
-  },
-  {
-    "File": "SWLOR.Game.Server/Service/PlayerList.cs",
-    "Line": 235,
-    "Member": "SendTell",
-    "Delivery": "Retained",
-    "Call": "ChatPlugin.SendMessage(channel, message, speaker, DMPresence.GetControlledCreature(target))"
-  },
-  {
-    "File": "SWLOR.Game.Server/Service/PlayerMarket.cs",
-    "Line": 71,
-    "Member": "CheckMarketTill",
-    "Delivery": "Retained",
-    "Call": "SendMessageToPC(player, $\"1 credit is in your market till.\")"
-  },
-  {
-    "File": "SWLOR.Game.Server/Service/PlayerMarket.cs",
-    "Line": 75,
-    "Member": "CheckMarketTill",
-    "Delivery": "Retained",
-    "Call": "SendMessageToPC(player, $\"{dbPlayer.MarketTill} credits are in your market till.\")"
   },
   {
     "File": "SWLOR.Game.Server/Service/PlayerName.cs",
@@ -5927,27 +5948,6 @@
     "Member": "EnterTargetingMode",
     "Delivery": "Retained",
     "Call": "SendMessageToPC(player, message)"
-  },
-  {
-    "File": "SWLOR.Game.Server/Service/Taxi.cs",
-    "Line": 44,
-    "Member": "RegisterTaxiDestination",
-    "Delivery": "Retained",
-    "Call": "SendMessageToPC(player, \"Only players may register taxi destinations.\")"
-  },
-  {
-    "File": "SWLOR.Game.Server/Service/Taxi.cs",
-    "Line": 57,
-    "Member": "RegisterTaxiDestination",
-    "Delivery": "Retained",
-    "Call": "SendMessageToPC(player, \"You have already registered this location.\")"
-  },
-  {
-    "File": "SWLOR.Game.Server/Service/Taxi.cs",
-    "Line": 62,
-    "Member": "RegisterTaxiDestination",
-    "Delivery": "Retained",
-    "Call": "SendMessageToPC(player, $\"'{detail.Name}' registered into taxi destinations!\")"
   },
   {
     "File": "SWLOR.Game.Server/Service/Traps.cs",

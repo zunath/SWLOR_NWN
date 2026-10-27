@@ -49,7 +49,7 @@ public class PlayerMessageAuditTests
     {
         var root = FindRepositoryRoot();
         var files = new[] { "Service/Space.cs", "Service/Ability.cs", "Service/StatusEffect.cs",
-            "Service/Faction.cs", "Service/Guild.cs", "Service/Skill.cs", "Service/BeastMastery.cs",
+            "Domain/Quests/FactionService.cs", "Domain/Economy/GuildService.cs", "Service/Skill.cs", "Service/BeastMastery.cs",
             "Service/QuestService/QuestObjectives.cs", "Feature/RoleplayXP.cs", "Service/Mimicry.cs",
             "Service/Fishing.cs", "Service/Weather.cs", "Feature/ScavengePoint.cs",
             "Feature/StatusEffectDefinition/GuardedStatusEffect.cs" }

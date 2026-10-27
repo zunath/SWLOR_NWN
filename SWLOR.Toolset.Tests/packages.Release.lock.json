@@ -643,6 +643,7 @@
       "swlor.game.server": {
         "type": "Project",
         "dependencies": {
+          "Microsoft.Extensions.DependencyInjection": "[9.0.9, )",
           "NReJSON": "[4.0.0, )",
           "NRediSearch": "[2.2.79, )",
           "NWN.Core": "[8193.37.4, )",

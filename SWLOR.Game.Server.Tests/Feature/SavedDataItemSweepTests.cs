@@ -11,6 +11,7 @@ using SWLOR.Game.Server.Service.CombatService;
 using SWLOR.Game.Server.Service.DroidService;
 using SWLOR.Game.Server.Service.PlayerMarketService;
 using SWLOR.Game.Server.Service.SkillService;
+using SWLOR.Game.Server.Tests.Support;
 using SWLOR.NWN.API.NWScript.Enum.Item;
 using SWLOR.NWN.API.NWScript.Enum.Item.Property;
 using SWLOR.NWN.Formats.Gff;
@@ -28,6 +29,23 @@ public class SavedDataItemSweepTests
     private static readonly Type Document = ServerAssembly.GetType("SWLOR.Game.Server.Feature.MigrationDefinition.StoredObjectData")!;
     private static readonly Type NodeType = Document.GetNestedType("Node", BindingFlags.NonPublic)!;
     private static readonly Type ListingType = ServerAssembly.GetType("SWLOR.Game.Server.Feature.MigrationDefinition.RootListing")!;
+
+    // The sweep names the market category of a converted item through the static PlayerMarket class, which forwards to
+    // the container's player market service; the server's boot builds that container, so these tests install one.
+    private FacadeContainer _facades = null!;
+    private IDisposable _facadeScope = null!;
+
+    [OneTimeSetUp]
+    public void BuildFacades() => _facades = new FacadeContainer();
+
+    [SetUp]
+    public void InstallFacades() => _facadeScope = _facades.Install();
+
+    [TearDown]
+    public void RemoveFacades() => _facadeScope.Dispose();
+
+    [OneTimeTearDown]
+    public void DisposeFacades() => _facades.Dispose();
 
     [Test]
     public void LootRevision_ShiftsEachCatalogStatAndSavesPropertiesTheWayTheEngineDoes()

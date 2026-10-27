@@ -155,8 +155,9 @@ Project folders stay at the repository root (moving them would break hundreds of
 
 - `SWLOR.Game.Host/` (new): NWNX entry point, native hook registration, Redis connection, reload options.
 - `SWLOR.Game.Contracts/` (new): types that cross the host/game boundary.
-- `SWLOR.Game.Server/`: the reloadable game build. New `Composition/` (container, script dispatch) and
-  `NativeSinks/` (game side of the hooks); `Service/` reorganised by domain, interface + class per service;
+- `SWLOR.Game.Server/`: the reloadable game build. New `Composition/` (container, script dispatch),
+  `Domain/<Domain>/` (interface + instance class per service) and `NativeSinks/` (game side of the hooks); `Service/`
+  keeps the static facades until facade removal;
   `Native/` and the old `Core/` closure, scheduler and registry types removed.
 - `SWLOR.NWN.API/`: generated `INWScript` seam; `SWLOR.NWN.API.Testing/` (new) with fakes.
 - Tests: `SWLOR.Game.Server.Tests` (unit), `SWLOR.Game.Server.CharacterizationTests` (new, output locking),

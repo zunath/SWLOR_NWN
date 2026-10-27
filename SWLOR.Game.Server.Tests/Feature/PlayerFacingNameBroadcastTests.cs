@@ -251,8 +251,9 @@ public class PlayerFacingNameBroadcastTests
         var chatCommandSource = File.ReadAllText(Path.Combine(
             root.FullName,
             "SWLOR.Game.Server",
-            "Service",
-            "ChatCommand.cs"));
+            "Domain",
+            "Social",
+            "ChatCommandService.cs"));
         chatCommandSource.Should().NotContain("ChatPlugin.GetChannel() == ChatChannel.PlayerShout");
 
         var eventAreaDirectory = Path.Combine(root.FullName, "Module", "are");

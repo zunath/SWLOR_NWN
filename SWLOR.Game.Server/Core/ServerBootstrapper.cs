@@ -1,6 +1,7 @@
 using System.Collections.Generic;
 using System.IO;
 using System.Runtime.Loader;
+using SWLOR.Game.Server.Composition;
 using SWLOR.Game.Server.Extension;
 using SWLOR.Game.Server.Service;
 using SWLOR.Game.Server.Service.LogService;
@@ -11,26 +12,46 @@ namespace SWLOR.Game.Server.Core
     public class ServerBootstrapper
     {
         private readonly ClosureManager _closureManager;
+        private readonly ContainerHost _container;
 
         public ServerBootstrapper()
+            : this(CompositionRoot.ServerHost)
+        {
+        }
+
+        /// <param name="container">
+        /// The container the <c>BuildServiceContainer</c> step builds. The server always uses
+        /// <see cref="CompositionRoot.ServerHost"/>; tests pass their own.
+        /// </param>
+        public ServerBootstrapper(ContainerHost container)
         {
             _closureManager = new ClosureManager();
+            _container = container ?? throw new ArgumentNullException(nameof(container));
+            Steps = CreateSteps();
         }
 
         public ClosureManager ClosureManager => _closureManager;
 
+        /// <summary>
+        /// The boot steps in the order <see cref="Bootstrap"/> runs them. One list drives the run and the tests that
+        /// pin the order, so the order they check is the order that runs.
+        /// </summary>
+        public IReadOnlyList<BootstrapStep> Steps { get; }
+
         public void Bootstrap()
+        {
+            Run(Steps);
+        }
+
+        /// <summary>Runs the steps in order. A step that throws stops the boot; the exception is logged and rethrown.</summary>
+        public static void Run(IEnumerable<BootstrapStep> steps)
         {
             try
             {
                 Console.WriteLine("SWLOR Server starting with new bootstrap method...");
 
-                InitializeNWNCore();
-                RegisterNativeHandlers();
-                InitializeSWLORSystems();
-                RegisterEventHandlers();
-                LoadEngineTestAssembly();
-                LoadScripts();
+                foreach (var step in steps)
+                    step.Run();
 
                 Console.WriteLine("SWLOR Server bootstrap complete.");
             }
@@ -39,6 +60,27 @@ namespace SWLOR.Game.Server.Core
                 Console.WriteLine($"Bootstrap failed: {e}");
                 throw;
             }
+        }
+
+        /// <summary>
+        /// The order matters. The service container is built after the internal systems (logging, the script execution
+        /// provider) are up and before anything that can run a handler: handlers only exist once <see cref="LoadScripts"/>
+        /// has registered them, and the engine cannot call back into the server before this method returns. A converted
+        /// service's static facade resolves its instance from the container, so every handler, including those of
+        /// <c>mod_preload</c>, finds it built.
+        /// </summary>
+        private BootstrapStep[] CreateSteps()
+        {
+            return new[]
+            {
+                new BootstrapStep(nameof(InitializeNWNCore), InitializeNWNCore),
+                new BootstrapStep(nameof(RegisterNativeHandlers), RegisterNativeHandlers),
+                new BootstrapStep(nameof(InitializeSWLORSystems), InitializeSWLORSystems),
+                new BootstrapStep(nameof(BuildServiceContainer), BuildServiceContainer),
+                new BootstrapStep(nameof(RegisterEventHandlers), RegisterEventHandlers),
+                new BootstrapStep(nameof(LoadEngineTestAssembly), LoadEngineTestAssembly),
+                new BootstrapStep(nameof(LoadScripts), LoadScripts)
+            };
         }
 
         private void InitializeNWNCore()
@@ -64,6 +106,13 @@ namespace SWLOR.Game.Server.Core
             Console.WriteLine("Registering script execution provider...");
             ScriptExecutionProvider.SetProvider(new ScriptExecutionProviderImpl());
             Console.WriteLine("Script execution provider registered successfully.");
+        }
+
+        private void BuildServiceContainer()
+        {
+            Console.WriteLine("Building the service container...");
+            var registrations = CompositionRoot.Build(_container);
+            Console.WriteLine($"Service container built ({registrations} registrations).");
         }
 
         private void RegisterEventHandlers()
@@ -137,6 +186,10 @@ namespace SWLOR.Game.Server.Core
 
         private void LoadScripts()
         {
+            // Every handler forwards to a service from the container, so none may be registered without it.
+            if (!_container.IsBuilt)
+                throw new ContainerNotBuiltException("The service container must be built before the script handlers are registered.");
+
             Console.WriteLine("Registering scripts...");
             ServerManager.Scripts.LoadHandlersFromAssembly();
             Console.WriteLine("Scripts registered successfully.");

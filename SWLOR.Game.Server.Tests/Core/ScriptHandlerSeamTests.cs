@@ -8,7 +8,8 @@ namespace SWLOR.Game.Server.Tests.Core;
 /// <summary>
 /// Proves the seams added to <see cref="ScriptRegistry"/> for <see cref="ScriptHandlerOrderTests"/> change nothing the
 /// server does: <c>LoadHandlersFromAssembly</c> (what <c>ServerBootstrapper</c> calls) still scans every assembly loaded
-/// in the AppDomain, and the registry holds exactly what the discovery code it replaced produced.
+/// in the AppDomain, and the registry holds exactly the handlers the discovery code it replaced produced. The order
+/// they run in is the manifest's (<see cref="ScriptHandlerManifestOrderTests"/>).
 /// </summary>
 [TestFixture]
 public class ScriptHandlerSeamTests
@@ -61,20 +62,20 @@ public class ScriptHandlerSeamTests
             var registry = new ScriptRegistry();
             registry.LoadHandlersFromAssemblies(assemblies);
 
-            // Same scripts, in the same first-seen order, for each kind.
-            registry.GetActionScriptNames().Should().Equal(
+            // Same scripts for each kind and the same handlers inside each script. Only the order is the manifest's
+            // to decide now, and ScriptHandlerManifestBaselineTests compares that with this discovery.
+            registry.GetActionScriptNames().Should().BeEquivalentTo(
                 legacy.Where(h => !h.Conditional).Select(h => h.Script).Distinct());
-            registry.GetConditionalScriptNames().Should().Equal(
+            registry.GetConditionalScriptNames().Should().BeEquivalentTo(
                 legacy.Where(h => h.Conditional).Select(h => h.Script).Distinct());
 
-            // Same handlers, in the same order, inside each script.
             foreach (var script in legacy.Select(h => h.Script).Distinct())
             {
                 registry.GetActionScripts(script).Select(h => ScriptHandlerOrderSnapshot.FullName(h.Action.Method))
-                    .Should().Equal(legacy.Where(h => h.Script == script && !h.Conditional)
+                    .Should().BeEquivalentTo(legacy.Where(h => h.Script == script && !h.Conditional)
                         .Select(h => ScriptHandlerOrderSnapshot.FullName(h.Method)));
                 registry.GetConditionalScripts(script).Select(h => ScriptHandlerOrderSnapshot.FullName(h.Action.Method))
-                    .Should().Equal(legacy.Where(h => h.Script == script && h.Conditional)
+                    .Should().BeEquivalentTo(legacy.Where(h => h.Script == script && h.Conditional)
                         .Select(h => ScriptHandlerOrderSnapshot.FullName(h.Method)));
             }
 

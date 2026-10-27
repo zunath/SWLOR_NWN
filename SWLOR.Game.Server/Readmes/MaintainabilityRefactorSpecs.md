@@ -245,3 +245,48 @@ summary and exiting non-zero on failure. Neither pushes; the agent running them 
 
 **Done:** both scripts run on this machine; one real sync and one parity run are recorded in the status file;
 documented briefly at the top of each script.
+
+## P1-1 - Engine seam for NWScript (Phase 1)
+
+**Goal:** unit tests can run game code that calls the engine, by swapping the engine for a fake, without changing
+any of the thousands of call sites (`GlobalUsings.cs` imports `SWLOR.NWN.API.NWScript.NWScript` statically).
+
+**Today:** `SWLOR.NWN.API/NWScript/*.cs` (54 files, about 1,127 public static members) are hand-written wrappers;
+most forward to `global::NWN.Core.NWScript`, some contain extra logic (and see `NWScriptCustom/`).
+
+**Design (coordinator, 2026-10-26):**
+- A committed generator tool (a small console project under `tools/Refactor/`, Roslyn syntax only, deterministic,
+  re-runnable; never hand-edit its output) reads the wrapper sources and writes, into `SWLOR.NWN.API/Generated/`:
+  - `INWScript` - one interface member per public static wrapper member, same name, parameters, defaults and
+    return type;
+  - `NwnCoreNWScript : INWScript` - the original method bodies moved verbatim (instance methods);
+  - `NWScriptRuntime` - holds the current `INWScript` (default `NwnCoreNWScript`) with a test-only override scope
+    (`IDisposable`; `AsyncLocal` so parallel tests do not leak into each other);
+  - and rewrites each static wrapper body to forward to `NWScriptRuntime.Current`.
+  The rewrite keeps every static signature byte-for-byte, so no call site changes.
+- A second output, in a new project `SWLOR.NWN.API.Testing`: `FakeNWScript : INWScript` that records every call
+  (name and arguments) and returns configurable values (per member, with defaults: zero, empty string,
+  `OBJECT_INVALID` for object ids). Tests can assert on the recorded calls - this is also how later output-locking
+  tests record what game code asked the engine to do.
+- Members that cannot be expressed on an interface (for example generic or `ref` oddities) stay static; list them.
+
+**Behaviour-neutral proof:**
+- A test reflects over the static `NWScript` class and `INWScript`: every static member has a matching interface
+  member and forwards to it (call each through a recording fake and assert exactly one matching call with the same
+  arguments).
+- A test that the default runtime is `NwnCoreNWScript` and that the override scope restores it.
+- The generator's output is checked in; a test (or CI step) re-runs the generator and fails if the checked-in output
+  differs. The moved bodies must be textually identical to the originals (the generator verifies this while running).
+- CharacterizationTests snapshots stay byte-identical; the architecture tests keep passing.
+
+**Sync:** add the generator to the mechanical-script manifest for P0-7 (on a conflict in `SWLOR.NWN.API/NWScript`,
+take `master`'s files and re-run the generator).
+
+**Done:** generator and outputs merged; proofs pass; an example unit test runs a small engine-calling game function
+against `FakeNWScript`; Codex loop clean.
+
+## P1-2 - Engine seam for NWNX plugins
+
+Same approach and proofs as P1-1 for the static plugin wrappers in `SWLOR.NWN.API/NWNX/*Plugin.cs`: one interface per
+plugin (`IChatPlugin`, ...), a pass-through implementation holding the moved bodies, a runtime with an override
+scope, forwarding statics, and generated fakes in `SWLOR.NWN.API.Testing`. Reuse the P1-1 generator.

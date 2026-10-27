@@ -36,8 +36,9 @@ internal sealed class GitFileSystem(string root, string revision) : IGeneratorFi
         foreach (var argument in arguments) info.ArgumentList.Add(argument);
 
         using var process = Process.Start(info) ?? throw new GeneratorException("git could not be started.");
+        var errorTask = process.StandardError.ReadToEndAsync();
         var output = process.StandardOutput.ReadToEnd();
-        var error = process.StandardError.ReadToEnd();
+        var error = errorTask.GetAwaiter().GetResult();
         process.WaitForExit();
         if (process.ExitCode == 0) return output;
         if (error.Contains("does not exist") || error.Contains("exists on disk, but not in")) return null;

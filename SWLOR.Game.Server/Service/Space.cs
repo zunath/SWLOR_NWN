@@ -6,6 +6,7 @@ using SWLOR.Game.Server.Core.NWNX.Enum;
 using SWLOR.Game.Server.Entity;
 using SWLOR.Game.Server.Enumeration;
 using SWLOR.Game.Server.Feature.AppearanceDefinition.TintMap;
+using SWLOR.Game.Server.Service.CombatService;
 using SWLOR.Game.Server.Service.DBService;
 using SWLOR.Game.Server.Service.GuiService;
 using SWLOR.Game.Server.Service.LogService;
@@ -1398,10 +1399,6 @@ namespace SWLOR.Game.Server.Service
             // Check capacitor requirements
             var requiredCapacitor = shipModuleDetails.CalculateCapacitorAction?.Invoke(activator, activatorShipStatus, shipModule.ModuleBonus) ?? 0;
 
-            // Perk bonuses
-            var capacitorReduction = 1.0f - Perk.GetPerkLevel(activator, PerkType.EnergyManagement) * 0.2f;
-            requiredCapacitor = (int)(requiredCapacitor * capacitorReduction);
-
             if (activatorShipStatus.Capacitor < requiredCapacitor)
             {
                 SendMessageToPC(activator, $"Your ship does not have enough capacitor to use that module. (Required: {requiredCapacitor})");
@@ -1510,22 +1507,51 @@ namespace SWLOR.Game.Server.Service
             }
         }
 
+        /// <summary>
+        /// Regenerates a ship's shield and capacitor for one second (plan section 5). Both rates are fractional;
+        /// the remainder carries to the next tick in the ship status. ShieldRechargeRate no longer applies.
+        /// </summary>
         private static void ApplyAutoShipRecovery(uint player, ShipStatus shipStatus)
         {
-            // Shield recovery
-            shipStatus.ShieldCycle++;
-            var rechargeRate = shipStatus.ShieldRechargeRate;
-            if (rechargeRate <= 0)
-                rechargeRate = 1;
+            var wil = GetAbilityScore(player, AbilityType.Willpower);
 
-            if (shipStatus.ShieldCycle >= rechargeRate)
+            // Shield recovery
+            if (shipStatus.Shield >= shipStatus.MaxShield)
             {
-                RestoreShield(player, shipStatus, 1);
-                shipStatus.ShieldCycle = 0;
+                shipStatus.ShieldRegenRemainder = 0;
+            }
+            else
+            {
+                shipStatus.ShieldRegenRemainder += SpaceCombatMath.ShieldRegenPerSecond(
+                    shipStatus.MaxShield,
+                    NormalizeShipSize(shipStatus.Size),
+                    wil,
+                    shipStatus.ShieldRegenBonusPercent);
+
+                var wholeShield = (int)shipStatus.ShieldRegenRemainder;
+                if (wholeShield > 0)
+                {
+                    shipStatus.ShieldRegenRemainder -= wholeShield;
+                    RestoreShield(player, shipStatus, wholeShield);
+                }
             }
 
             // Capacitor recovery
-            RestoreCapacitor(player, shipStatus, 1);
+            if (shipStatus.Capacitor >= shipStatus.MaxCapacitor)
+            {
+                shipStatus.CapacitorRegenRemainder = 0;
+            }
+            else
+            {
+                shipStatus.CapacitorRegenRemainder += SpaceCombatMath.CapacitorRegenPerSecond(shipStatus.CapacitorRegenPerSecond, wil);
+
+                var wholeCapacitor = (int)shipStatus.CapacitorRegenRemainder;
+                if (wholeCapacitor > 0)
+                {
+                    shipStatus.CapacitorRegenRemainder -= wholeCapacitor;
+                    RestoreCapacitor(player, shipStatus, wholeCapacitor);
+                }
+            }
 
             if(GetIsPC(player))
                 ExecuteScript("pc_target_upd", player);
@@ -1642,7 +1668,8 @@ namespace SWLOR.Game.Server.Service
                 Accuracy = shipDetail.Accuracy,
                 Evasion = shipDetail.Evasion,
                 ShieldRechargeRate = shipDetail.ShieldRechargeRate,
-                CapitalShip = shipDetail.CapitalShip
+                CapitalShip = shipDetail.CapitalShip,
+                Size = shipDetail.Size == ShipSize.Invalid ? ShipSize.Small : shipDetail.Size
             };
 
             // Attach the modules to the ship status.
@@ -1762,154 +1789,230 @@ namespace SWLOR.Game.Server.Service
         }
 
         /// <summary>
-        /// Calculates attacker's chance to hit target.
+        /// True for a real player's ship. Their ship values come from the hull, modules and attributes alone;
+        /// NPCs also add a level term (plan section 9) until the space enemy presets replace it.
         /// </summary>
-        /// <param name="attacker">The creature attacking.</param>
-        /// <param name="defender">The creature being targeted.</param>
-        public static int CalculateChanceToHit(uint attacker, uint defender)
+        private static bool IsPlayerPilot(uint creature)
         {
-            var attackerShipStatus = GetShipStatus(attacker);
-            var defenderShipStatus = GetShipStatus(defender);
+            return GetIsPC(creature) && !GetIsDM(creature);
+        }
 
-            if (attackerShipStatus == null || defenderShipStatus == null)
-                return 0;
+        private static int GetNpcLevel(uint creature)
+        {
+            return Stat.GetNPCStats(creature).Level;
+        }
 
-            var attackerAccuracy = GetShipAccuracy(attacker);
-            var defenderEvasion = GetShipEvasion(defender);
-
-            return Combat.CalculateHitRate(attackerAccuracy, defenderEvasion, 0);
+        private static ShipSize NormalizeShipSize(ShipSize size)
+        {
+            return size == ShipSize.Invalid ? ShipSize.Small : size;
         }
 
         /// <summary>
-        /// Calculates the accuracy of a ship.
-        /// Does not take into account any equipped gear on the player, only modules attached to the ship.
+        /// Calculates the accuracy of a ship firing the given shot: ship and module Accuracy plus the pilot's
+        /// AGI (energy) or PER (launcher) x 3. NPCs add their level.
         /// </summary>
-        /// <param name="attacker">The attacker to check</param>
-        /// <returns>The accuracy of the ship</returns>
-        private static int GetShipAccuracy(uint attacker)
+        public static int GetShipAccuracy(uint attacker, ShipStatus attackerStatus, SpaceWeaponShot shot)
         {
-            var attackerShipStatus = GetShipStatus(attacker);
-            var bonus = attackerShipStatus.Accuracy;
-            var stat = GetAbilityScore(attacker, AbilityType.Agility);
-            int level;
+            var accuracy = SpaceCombatMath.Accuracy(
+                attackerStatus.Accuracy,
+                shot.Accuracy,
+                GetAbilityScore(attacker, AbilityType.Agility),
+                GetAbilityScore(attacker, AbilityType.Perception),
+                shot.Family);
 
-            if (GetIsPC(attacker) && !GetIsDM(attacker))
+            return IsPlayerPilot(attacker) ? accuracy : accuracy + GetNpcLevel(attacker);
+        }
+
+        /// <summary>
+        /// Calculates the evasion of a ship: ship Evasion plus the pilot's AGI x 3. NPCs add their level.
+        /// </summary>
+        public static int GetShipEvasion(uint defender, ShipStatus defenderStatus)
+        {
+            var evasion = SpaceCombatMath.Evasion(
+                defenderStatus.Evasion,
+                GetAbilityScore(defender, AbilityType.Agility));
+
+            return IsPlayerPilot(defender) ? evasion : evasion + GetNpcLevel(defender);
+        }
+
+        /// <summary>
+        /// Calculates the attack of a ship firing the given shot: ship and module Attack plus the pilot's damage
+        /// attribute (PER for energy, MGT for launchers). NPCs add 8 + 2 x level.
+        /// </summary>
+        public static int GetShipAttack(uint attacker, ShipStatus attackerStatus, SpaceWeaponShot shot)
+        {
+            var damageAttribute = GetDamageAttribute(attacker, shot.Family);
+            var attack = SpaceCombatMath.Attack(attackerStatus.Attack, shot.Attack, damageAttribute);
+
+            return IsPlayerPilot(attacker) ? attack : attack + 8 + 2 * GetNpcLevel(attacker);
+        }
+
+        /// <summary>
+        /// Calculates the defense of a ship: ship Defense plus the pilot's VIT. NPCs add 8 + 1.2 x level.
+        /// </summary>
+        public static int GetShipDefense(uint defender, ShipStatus defenderStatus)
+        {
+            var defense = SpaceCombatMath.Defense(
+                defenderStatus.Defense,
+                GetAbilityScore(defender, AbilityType.Vitality));
+
+            return IsPlayerPilot(defender) ? defense : defense + 8 + (int)(1.2f * GetNpcLevel(defender));
+        }
+
+        /// <summary>
+        /// Gets the ability score a weapon family's damage scales with: PER for energy weapons, MGT for launchers.
+        /// </summary>
+        public static int GetDamageAttribute(uint attacker, SpaceWeaponFamily family)
+        {
+            return SpaceCombatMath.DamageAttribute(
+                family,
+                GetAbilityScore(attacker, AbilityType.Perception),
+                GetAbilityScore(attacker, AbilityType.Might));
+        }
+
+        private static ResistanceType GetShipResistanceType(CombatDamageType damageType)
+        {
+            return damageType switch
             {
-                var playerId = GetObjectUUID(attacker);
-                var dbPlayer = DB.Get<Player>(playerId);
-                level = dbPlayer.Skills[SkillType.Piloting].Rank;
+                CombatDamageType.Thermal => ResistanceType.Thermal,
+                CombatDamageType.EM => ResistanceType.EM,
+                CombatDamageType.Explosive => ResistanceType.Explosive,
+                _ => ResistanceType.Invalid
+            };
+        }
+
+        /// <summary>
+        /// Rolls one weapon shot without applying it: hit, critical, then damage with the size penalty, the
+        /// attacker's damage bonus and the target's resistance. A miss draws only the hit roll.
+        /// </summary>
+        public static ShipShotResult RollWeaponShot(
+            uint activator,
+            ShipStatus activatorStatus,
+            uint target,
+            ShipStatus targetStatus,
+            SpaceWeaponShot shot)
+        {
+            var weaponSize = shot.Size ?? NormalizeShipSize(activatorStatus.Size);
+            var targetSize = NormalizeShipSize(targetStatus.Size);
+
+            var chanceToHit = SpaceCombatMath.HitChance(
+                GetShipAccuracy(activator, activatorStatus, shot),
+                GetShipEvasion(target, targetStatus),
+                weaponSize,
+                targetSize,
+                shot.IgnoreSizePenalty);
+            var result = new ShipShotResult { ChanceToHit = chanceToHit };
+
+            var per = GetAbilityScore(activator, AbilityType.Perception);
+            var targetVit = GetAbilityScore(target, AbilityType.Vitality);
+            var attack = GetShipAttack(activator, activatorStatus, shot);
+            var defense = GetShipDefense(target, targetStatus);
+            var damageAttribute = GetDamageAttribute(activator, shot.Family);
+
+            if (Random.D100(1) > chanceToHit)
+            {
+                // A miss still draws the target's attention, as it always has. It does not roll any damage.
+                var (_, missMaximum) = SpaceCombatMath.DamageRange(attack, shot.Dmg, damageAttribute, defense, targetVit, false, shot.Rank);
+                result.Enmity = missMaximum;
+                return result;
             }
+
+            result.IsHit = true;
+            result.IsCritical = Random.D100(1) <= SpaceCombatMath.CriticalRate(per, targetVit, shot.Rank, 0);
+
+            var (minimum, maximum) = SpaceCombatMath.DamageRange(
+                attack, shot.Dmg, damageAttribute, defense, targetVit, result.IsCritical, shot.Rank);
+            var rolled = (int)Random.NextFloat(minimum, maximum);
+
+            var bonusPercent = 0;
+            activatorStatus.DamageBonusPercent?.TryGetValue(shot.DamageType, out bonusPercent);
+
+            var resistance = 0;
+            targetStatus.Resistances?.TryGetValue(GetShipResistanceType(shot.DamageType), out resistance);
+
+            var damage = rolled
+                         * SpaceCombatMath.SizeDamageMultiplier(weaponSize, targetSize, shot.IgnoreSizePenalty)
+                         * (1.0 + bonusPercent / 100.0)
+                         * SpaceCombatMath.ResistanceMultiplier(resistance);
+
+            result.Damage = (int)Math.Round(damage, MidpointRounding.AwayFromZero);
+            // A shot that isn't fully resisted always does something.
+            if (result.Damage < 1 && damage > 0)
+                result.Damage = 1;
+            result.Enmity = result.Damage;
+
+            return result;
+        }
+
+        /// <summary>
+        /// Finishes a rolled shot: the combat log, enmity and combat point happen now, and the damage is applied
+        /// after <paramref name="damageDelay"/> seconds. <paramref name="afterDamage"/> runs once the damage has
+        /// landed, with the shield and hull points it removed.
+        /// </summary>
+        public static void CompleteWeaponShot(
+            uint activator,
+            uint target,
+            SpaceWeaponShot shot,
+            ShipShotResult result,
+            float damageDelay = 0f,
+            Action<ShipShotResult> afterDamage = null)
+        {
+            if (!GetIsObjectValid(target))
+                return;
+
+            var attackId = result.IsHit ? (result.IsCritical ? 3 : 1) : 4;
+            Messaging.SendMessageNearbyToPlayers(
+                target,
+                receiver => Combat.BuildCombatLogMessage(receiver, activator, target, attackId, result.ChanceToHit),
+                60f);
+
+            Enmity.ModifyEnmity(activator, target, result.Enmity);
+            CombatPoint.AddCombatPoint(activator, target, SkillType.Piloting);
+
+            if (!result.IsHit)
+                return;
+
+            void Apply()
+            {
+                if (!GetIsObjectValid(target))
+                    return;
+
+                AssignCommand(activator, () =>
+                {
+                    var (shieldDamage, hullDamage) = ApplyShipDamage(
+                        activator,
+                        target,
+                        result.Damage,
+                        shot.ShieldBypass,
+                        shot.ShieldDamageMultiplier);
+                    result.ShieldDamage = shieldDamage;
+                    result.HullDamage = hullDamage;
+                    afterDamage?.Invoke(result);
+                });
+            }
+
+            if (damageDelay > 0f)
+                DelayCommand(damageDelay, Apply);
             else
-            {
-                var npcStats = Stat.GetNPCStats(attacker);
-                level = npcStats.Level;
-            }
-
-            return stat * 3 + level + bonus;
+                Apply();
         }
 
         /// <summary>
-        /// Calculates the evasion of a ship.
-        /// Does not take into account any equipped gear on the player, only modules attached to the ship.
+        /// Rolls a weapon shot and finishes it at once (see <see cref="RollWeaponShot"/> and
+        /// <see cref="CompleteWeaponShot"/>).
         /// </summary>
-        /// <param name="defender">The defender to check</param>
-        /// <returns>The evasion of the ship</returns>
-        private static int GetShipEvasion(uint defender)
+        public static ShipShotResult ResolveWeaponShot(
+            uint activator,
+            ShipStatus activatorStatus,
+            uint target,
+            ShipStatus targetStatus,
+            SpaceWeaponShot shot,
+            float damageDelay = 0f,
+            Action<ShipShotResult> afterDamage = null)
         {
-            var defenderShipStatus = GetShipStatus(defender);
-            var bonus = defenderShipStatus.Evasion;
-            var stat = GetAbilityScore(defender, AbilityType.Agility);
-            int level;
-
-            if (GetIsPC(defender) && !GetIsDM(defender))
-            {
-                var playerId = GetObjectUUID(defender);
-                var dbPlayer = DB.Get<Player>(playerId);
-                level = dbPlayer.Skills[SkillType.Piloting].Rank;
-            }
-            else
-            {
-                var npcStats = Stat.GetNPCStats(defender);
-                level = npcStats.Level;
-            }
-
-            return stat * 3 + level + bonus;
-        }
-
-        /// <summary>
-        /// Calculates the attack of a ship.
-        /// Does not take into account any equipped gear on the player, only modules attached to the ship.
-        /// </summary>
-        /// <param name="attacker">The attacker to check</param>
-        /// <param name="attackBonus">The attack bonus to apply</param>
-        /// <returns>The attack of the ship</returns>
-        public static int GetShipAttack(uint attacker, int attackBonus)
-        {
-            var stat = GetAttackStat(attacker);
-            int level;
-
-            if (GetIsPC(attacker) && !GetIsDM(attacker))
-            {
-                var playerId = GetObjectUUID(attacker);
-                var dbPlayer = DB.Get<Player>(playerId);
-
-                level = dbPlayer.Skills[SkillType.Piloting].Rank;
-            }
-            else
-            {
-                var npcStats = Stat.GetNPCStats(attacker);
-                level = npcStats.Level;
-            }
-
-            return 8 + (2 * level) + stat + attackBonus;
-        }
-
-        /// <summary>
-        /// Calculates the defense of a ship.
-        /// Does not take into account any equipped gear on the player, only modules attached to the ship.
-        /// </summary>
-        /// <param name="defender">The defender to check</param>
-        /// <param name="defenseBonus">The defense bonus to apply</param>
-        /// <returns>The defense of the ship</returns>
-        public static int GetShipDefense(uint defender, int defenseBonus)
-        {
-            var stat = GetAbilityScore(defender, AbilityType.Vitality);
-            int level;
-
-            if (GetIsPC(defender) && !GetIsDM(defender))
-            {
-                var playerId = GetObjectUUID(defender);
-                var dbPlayer = DB.Get<Player>(playerId);
-
-                level = dbPlayer.Skills[SkillType.Piloting].Rank;
-            }
-            else
-            {
-                var npcStats = Stat.GetNPCStats(defender);
-                level = npcStats.Level;
-            }
-
-            return (int)(8 + (stat * 1.5f) + level + defenseBonus);
-        }
-
-        /// <summary>
-        /// Gets the ability score stat used by the attacking ship.
-        /// If attacker can use Willpower for module effectiveness and WIL > PER, then WIL is returned.
-        /// Otherwise returns PER
-        /// </summary>
-        /// <param name="attacker">The attacker to check</param>
-        /// <returns>The raw stat value of the attacker. This will be either WIL or PER depending on available stat adjustments.</returns>
-        public static int GetAttackStat(uint attacker)
-        {
-            var wil = GetAbilityScore(attacker, AbilityType.Willpower);
-            var per = GetAbilityScore(attacker, AbilityType.Perception);
-
-            if (Stat.GetStatAdjustment(attacker, StatType.UseWillpowerForPilotingModuleEffectiveness) > 0 && wil > per)
-            {
-                return wil;
-            }
-
-            return per;
+            var result = RollWeaponShot(activator, activatorStatus, target, targetStatus, shot);
+            CompleteWeaponShot(activator, target, shot, result, damageDelay, afterDamage);
+            return result;
         }
 
         /// <summary>
@@ -1922,37 +2025,45 @@ namespace SWLOR.Game.Server.Service
         /// <param name="amount">The amount of damage to apply to the target.</param>
         public static void ApplyShipDamage(uint attacker, uint target, int amount)
         {
-            if (amount < 0) return;
+            ApplyShipDamage(attacker, target, amount, false, 1.0);
+        }
+
+        /// <summary>
+        /// Applies damage to a ship target through <see cref="SpaceCombatMath.ApplyToPools"/>.
+        /// When hull reaches zero, the ship will explode.
+        /// </summary>
+        /// <param name="attacker">The attacking ship</param>
+        /// <param name="target">The defending, targeted ship</param>
+        /// <param name="amount">The amount of damage to apply to the target.</param>
+        /// <param name="shieldBypass">When true, all of the damage goes to the hull.</param>
+        /// <param name="shieldDamageMultiplier">The shield loses this many points per point of damage it absorbs.</param>
+        /// <returns>The shield and hull points removed.</returns>
+        public static (int ShieldDamage, int HullDamage) ApplyShipDamage(
+            uint attacker,
+            uint target,
+            int amount,
+            bool shieldBypass,
+            double shieldDamageMultiplier)
+        {
+            if (amount < 0) return (0, 0);
 
             var targetShipStatus = GetShipStatus(target);
 
             // Leashed ships neither take nor deal damage while they return home, like plot-flagged ground enemies.
             if (targetShipStatus == null || AI.IsLeashEvading(target) || AI.IsLeashEvading(attacker))
-                return;
+                return (0, 0);
 
-            var remainingDamage = amount;
-            // First deal damage to target's shields.
-            if (remainingDamage <= targetShipStatus.Shield)
-            {
-                // Shields have enough to cover the attack.
-                targetShipStatus.Shield -= remainingDamage;
-                remainingDamage = 0;
-                ApplyEffectToObject(DurationType.Temporary, EffectVisualEffect(VisualEffect.Vfx_Dur_Aura_Pulse_Cyan_Blue), target, 1.0f);
-                ApplyEffectToObject(DurationType.Instant, EffectVisualEffect(VisualEffect.Vfx_Ship_Deflect), target);
-            }
-            else
-            {
-                remainingDamage -= targetShipStatus.Shield;
-                targetShipStatus.Shield = 0;
-            }
+            var shieldBefore = targetShipStatus.Shield;
+            var hullBefore = targetShipStatus.Hull;
 
+            double shield = shieldBefore;
+            double hull = hullBefore;
+            SpaceCombatMath.ApplyToPools(ref shield, ref hull, amount, shieldBypass, shieldDamageMultiplier);
 
-            // If damage is remaining, deal it to the hull.
-            if (remainingDamage > 0)
-            {
-                targetShipStatus.Hull -= remainingDamage;
-                ApplyEffectToObject(DurationType.Instant, EffectVisualEffect(VisualEffect.Vfx_Ship_Explosion), target);
-            }
+            // The pools are whole numbers. The shield rounds to the nearest point; the hull rounds down, so damage
+            // that spills over a shield always costs at least a point of hull.
+            targetShipStatus.Shield = (int)Math.Round(shield, MidpointRounding.AwayFromZero);
+            targetShipStatus.Hull = (int)Math.Floor(hull);
 
             // Safety clamping
             if (targetShipStatus.Shield < 0)
@@ -1960,9 +2071,25 @@ namespace SWLOR.Game.Server.Service
             if (targetShipStatus.Hull < 0)
                 targetShipStatus.Hull = 0;
 
-            // Apply death if shield and hull have reached zero.
-            if (targetShipStatus.Shield <= 0 && targetShipStatus.Hull <= 0)
+            var shieldDamage = shieldBefore - targetShipStatus.Shield;
+            var hullDamage = hullBefore - targetShipStatus.Hull;
+
+            if (hullDamage > 0)
             {
+                ApplyEffectToObject(DurationType.Instant, EffectVisualEffect(VisualEffect.Vfx_Ship_Explosion), target);
+            }
+            else if (shieldDamage > 0)
+            {
+                // Shields absorbed the whole hit.
+                ApplyEffectToObject(DurationType.Temporary, EffectVisualEffect(VisualEffect.Vfx_Dur_Aura_Pulse_Cyan_Blue), target, 1.0f);
+                ApplyEffectToObject(DurationType.Instant, EffectVisualEffect(VisualEffect.Vfx_Ship_Deflect), target);
+            }
+
+            // Apply death once the hull has reached zero. A shield-bypassing hit can leave shield behind; it goes too.
+            if (targetShipStatus.Hull <= 0)
+            {
+                targetShipStatus.Shield = 0;
+
                 // Lexicon Note regarding GetFirstObjectInShape/GetNextObjectInShape
                 // Do not apply EffectDamage without a DelayCommand (do DelayCommand(0.0, Apply...) at minimum).
                 // If you do fire it the OnDamaged or OnDeath OnPlayerDeath script may fire, causing this loop to reset
@@ -2012,6 +2139,7 @@ namespace SWLOR.Game.Server.Service
             if(GetIsPC(attacker))
                 ExecuteScript("pc_target_upd", attacker);
 
+            return (shieldDamage, hullDamage);
         }
 
         /// <summary>

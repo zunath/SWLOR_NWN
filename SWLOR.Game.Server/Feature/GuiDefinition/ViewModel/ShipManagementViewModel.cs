@@ -1440,7 +1440,8 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
                         Accuracy = shipDetail.Accuracy + bonuses.Accuracy,
                         Evasion = shipDetail.Evasion + bonuses.Evasion,
                         ShieldRechargeRate = shipDetail.ShieldRechargeRate - bonuses.ShieldRechargeRate,
-                        CapitalShip = shipDetail.CapitalShip
+                        CapitalShip = shipDetail.CapitalShip,
+                        Size = shipDetail.Size == ShipSize.Invalid ? ShipSize.Small : shipDetail.Size
                     }
                 };
                 DB.Set(ship);

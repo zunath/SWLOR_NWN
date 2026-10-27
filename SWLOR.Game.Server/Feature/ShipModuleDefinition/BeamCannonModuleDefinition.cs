@@ -1,11 +1,11 @@
 using System.Collections.Generic;
 using SWLOR.Game.Server.Service;
+using SWLOR.Game.Server.Service.CombatService;
 using SWLOR.Game.Server.Service.PerkService;
 using SWLOR.Game.Server.Service.SkillService;
 using SWLOR.Game.Server.Service.SpaceService;
 using SWLOR.NWN.API.NWScript.Enum;
 using SWLOR.NWN.API.NWScript.Enum.VisualEffect;
-using Random = SWLOR.Game.Server.Service.Random;
 
 namespace SWLOR.Game.Server.Feature.ShipModuleDefinition
 {
@@ -47,13 +47,16 @@ namespace SWLOR.Game.Server.Feature.ShipModuleDefinition
                 .Capacitor(capacitor)
                 .ActivatedAction((activator, activatorShipStatus, target, targetShipStatus, moduleBonus) =>
                 {
-                    var attackBonus = activatorShipStatus.ThermalDamage;
-                    var attackerStat = Space.GetAttackStat(activator);
-                    var attack = Space.GetShipAttack(activator, attackBonus);
-                    var moduleDamage = dmg + moduleBonus / 3;
-                    var defenseBonus = targetShipStatus.ThermalDefense * 2;
-                    var defense = Space.GetShipDefense(target, defenseBonus);
-                    var defenderStat = GetAbilityScore(target, AbilityType.Vitality);
+                    var rank = (requiredLevel - 1) * 10;
+                    var shot = new SpaceWeaponShot
+                    {
+                        Family = SpaceWeaponFamily.Energy,
+                        DamageType = CombatDamageType.Thermal,
+                        Dmg = dmg + moduleBonus / 3,
+                        Rank = rank,
+                        Attack = rank * 2,
+                        Accuracy = rank * 2
+                    };
 
                     var beam = EffectBeam(VisualEffect.Vfx_Beam_Holy, activator, BodyNode.Chest);
 
@@ -62,43 +65,15 @@ namespace SWLOR.Game.Server.Feature.ShipModuleDefinition
                         var delay = i * 0.33f;
                         DelayCommand(delay, () =>
                         {
-                            var chanceToHit = Space.CalculateChanceToHit(activator, target);
-                            var roll = Random.D100(1);
-                            var isHit = roll <= chanceToHit;
-                            var damage = Combat.CalculateDamage(
-                                attack,
-                                moduleDamage,
-                                attackerStat,
-                                defense,
-                                defenderStat,
-                                0);
-                            if (Space.CanShipFire(activator))
+                            if (!Space.CanShipFire(activator))
+                                return;
+
+                            AssignCommand(activator, () =>
                             {
-                                if (isHit)
-                                {
-                                    AssignCommand(activator, () =>
-                                    {
-                                        ApplyEffectToObject(DurationType.Temporary, beam, target, 0.2f);
-                                        Space.ApplyShipDamage(activator, target, damage);
-                                    });
-                                }
-                                else
-                                {
-                                    AssignCommand(activator, () =>
-                                    {
-                                        ApplyEffectToObject(DurationType.Temporary, beam, target, 0.2f);
-                                    });
-                                }
+                                ApplyEffectToObject(DurationType.Temporary, beam, target, 0.2f);
+                            });
 
-                                var attackId = isHit ? 1 : 4;
-                                Messaging.SendMessageNearbyToPlayers(
-                                    target,
-                                    receiver => Combat.BuildCombatLogMessage(receiver, activator, target, attackId, chanceToHit),
-                                    60f);
-
-                                Enmity.ModifyEnmity(activator, target, damage);
-                                CombatPoint.AddCombatPoint(activator, target, SkillType.Piloting);
-                            }
+                            Space.ResolveWeaponShot(activator, activatorShipStatus, target, targetShipStatus, shot);
                         });
                     }
                 });

@@ -1,11 +1,11 @@
 using System.Collections.Generic;
 using SWLOR.Game.Server.Service;
+using SWLOR.Game.Server.Service.CombatService;
 using SWLOR.Game.Server.Service.PerkService;
 using SWLOR.Game.Server.Service.SkillService;
 using SWLOR.Game.Server.Service.SpaceService;
 using SWLOR.NWN.API.NWScript.Enum;
 using SWLOR.NWN.API.NWScript.Enum.VisualEffect;
-using Random = SWLOR.Game.Server.Service.Random;
 
 namespace SWLOR.Game.Server.Feature.ShipModuleDefinition
 {
@@ -47,27 +47,20 @@ namespace SWLOR.Game.Server.Feature.ShipModuleDefinition
                 .Capacitor(capacitor)
                 .ActivatedAction((activator, activatorShipStatus, target, targetShipStatus, moduleBonus) =>
                 {
-                    var attackBonus = activatorShipStatus.EMDamage;
-                    var attackerStat = Space.GetAttackStat(activator);
-                    var attack = Space.GetShipAttack(activator, attackBonus);
-                    var moduleDamage = dmg + moduleBonus / 2;
+                    var rank = (requiredLevel - 1) * 10;
+                    var shot = new SpaceWeaponShot
+                    {
+                        Family = SpaceWeaponFamily.Energy,
+                        DamageType = CombatDamageType.EM,
+                        Dmg = dmg + moduleBonus / 2,
+                        Rank = rank,
+                        Attack = rank * 2,
+                        Accuracy = rank * 2,
+                        ShieldDamageMultiplier = 1.5
+                    };
+                    var result = Space.RollWeaponShot(activator, activatorShipStatus, target, targetShipStatus, shot);
 
-                    var defenseBonus = targetShipStatus.EMDefense * 2;
-                    var defense = Space.GetShipDefense(target, defenseBonus);
-                    var defenderStat = GetAbilityScore(target, AbilityType.Vitality);
-                    var damage = Combat.CalculateDamage(
-                        attack,
-                        moduleDamage,
-                        attackerStat,
-                        defense,
-                        defenderStat,
-                        0);
-
-                    var chanceToHit = Space.CalculateChanceToHit(activator, target);
-                    var roll = Random.D100(1);
-                    var isHit = roll <= chanceToHit;
-
-                    if (isHit)
+                    if (result.IsHit)
                     {
                         AssignCommand(activator, () =>
                         {
@@ -80,21 +73,8 @@ namespace SWLOR.Game.Server.Feature.ShipModuleDefinition
                         {
                             AssignCommand(activator, () =>
                             {
-                                var shieldDamage = int.Min(damage, targetShipStatus.Shield);
-                                var armorDamage = (damage-shieldDamage)/2;
-                                if (armorDamage < 0)
-                                {
-                                    armorDamage = 0;
-                                }
                                 var effect = EffectVisualEffect(VisualEffect.Vfx_Imp_Dispel, false, 0.5f);
                                 ApplyEffectToObject(DurationType.Instant, effect, target);
-                                Space.ApplyShipDamage(activator, target, shieldDamage);
-                                Space.ApplyShipDamage(activator, target, armorDamage);
-                                if (armorDamage > 0)
-                                {
-                                    ApplyEffectToObject(DurationType.Temporary, EffectMovementSpeedDecrease(50), target, 6f);
-                                    ApplyEffectToObject(DurationType.Temporary, EffectAbilityDecrease(AbilityType.Agility, 2), target, 12f);
-                                }
                             });
                         });
                     }
@@ -116,14 +96,15 @@ namespace SWLOR.Game.Server.Feature.ShipModuleDefinition
                         });
                     }
 
-                    var attackId = isHit ? 1 : 4;
-                    Messaging.SendMessageNearbyToPlayers(
-                        target,
-                        receiver => Combat.BuildCombatLogMessage(receiver, activator, target, attackId, chanceToHit),
-                        60f);
-
-                    Enmity.ModifyEnmity(activator, target, damage);
-                    CombatPoint.AddCombatPoint(activator, target, SkillType.Piloting);
+                    // Damage that gets past the shield slows the target.
+                    Space.CompleteWeaponShot(activator, target, shot, result, 0.1f, landed =>
+                    {
+                        if (landed.HullDamage > 0)
+                        {
+                            ApplyEffectToObject(DurationType.Temporary, EffectMovementSpeedDecrease(50), target, 6f);
+                            ApplyEffectToObject(DurationType.Temporary, EffectAbilityDecrease(AbilityType.Agility, 2), target, 12f);
+                        }
+                    });
                 });
         }
     }

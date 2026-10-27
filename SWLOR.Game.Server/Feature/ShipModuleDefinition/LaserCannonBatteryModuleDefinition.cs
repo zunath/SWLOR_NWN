@@ -1,6 +1,7 @@
 using SWLOR.Game.Server.Core;
  using System.Collections.Generic;
  using SWLOR.Game.Server.Service;
+using SWLOR.Game.Server.Service.CombatService;
  using SWLOR.Game.Server.Service.PerkService;
 using SWLOR.Game.Server.Service.SkillService;
 using SWLOR.Game.Server.Service.SpaceService;
@@ -57,11 +58,19 @@ namespace SWLOR.Game.Server.Feature.ShipModuleDefinition
             .CanTargetSelf()
             .ActivatedAction((activator, activatorShipStatus, target, _, moduleBonus) =>
             {
-                var attackBonus = activatorShipStatus.ThermalDamage;
-                var attackerStat = Space.GetAttackStat(activator);
-                var attack = Space.GetShipAttack(activator, attackBonus);
-
-                var moduleDMG = dmg + moduleBonus;
+                // The player battery is capital-class (rank 40). NPC variants stay at rank 0 so they keep the
+                // level-scaled preset until the space enemy presets replace it.
+                var rank = itemTag.StartsWith("npc") ? 0 : 40;
+                var shot = new SpaceWeaponShot
+                {
+                    Family = SpaceWeaponFamily.Energy,
+                    DamageType = CombatDamageType.Thermal,
+                    Dmg = dmg + moduleBonus,
+                    Rank = rank,
+                    Attack = rank * 2,
+                    Accuracy = rank * 2,
+                    Size = ShipSize.Capital
+                };
                 var missile = EffectVisualEffect(VisualEffect.Mirv_StarWars_Bolt2);
 
                 for (var i = 0; i < 9; i++)
@@ -82,33 +91,8 @@ namespace SWLOR.Game.Server.Feature.ShipModuleDefinition
                                     Space.GetShipStatus(nearbyTarget) != null)
                                 {
                                     var nearbyShipStatus = Space.GetShipStatus(nearbyTarget);
-                                    var nearbyDefenseBonus = nearbyShipStatus.ThermalDefense * 2;
-                                    var nearbyDefense = Space.GetShipDefense(nearbyTarget, nearbyDefenseBonus);
-                                    var nearbyDefenderStat = GetAbilityScore(nearbyTarget, AbilityType.Vitality);
-                                    var damage = Combat.CalculateDamage(
-                                        attack,
-                                        moduleDMG,
-                                        attackerStat,
-                                        nearbyDefense,
-                                        nearbyDefenderStat,
-                                        0);
-                                    var chanceToHit = Space.CalculateChanceToHit(activator, nearbyTarget);
-                                    var roll = Random.D100(1);
-                                    var isHit = roll <= chanceToHit;
                                     ApplyEffectToObject(DurationType.Instant, missile, nearbyTarget);
-                                    if (isHit)
-                                    {
-                                        Space.ApplyShipDamage(activator, nearbyTarget, damage);
-                                    }
-
-                                    var attackId = isHit ? 1 : 4;
-                                    Messaging.SendMessageNearbyToPlayers(
-                                        nearbyTarget,
-                                        receiver => Combat.BuildCombatLogMessage(receiver, activator, nearbyTarget, attackId, chanceToHit),
-                                        60f);
-
-                                    Enmity.ModifyEnmity(activator, nearbyTarget, damage);
-                                    CombatPoint.AddCombatPoint(activator, nearbyTarget, SkillType.Piloting);
+                                    Space.ResolveWeaponShot(activator, activatorShipStatus, nearbyTarget, nearbyShipStatus, shot);
                                 }
                             }
                         }

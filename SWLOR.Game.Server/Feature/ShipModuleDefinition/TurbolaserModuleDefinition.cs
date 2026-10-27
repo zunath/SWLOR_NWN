@@ -1,11 +1,11 @@
 using System.Collections.Generic;
 using SWLOR.Game.Server.Service;
+using SWLOR.Game.Server.Service.CombatService;
 using SWLOR.Game.Server.Service.PerkService;
 using SWLOR.Game.Server.Service.SkillService;
 using SWLOR.Game.Server.Service.SpaceService;
 using SWLOR.NWN.API.NWScript.Enum;
 using SWLOR.NWN.API.NWScript.Enum.VisualEffect;
-using Random = SWLOR.Game.Server.Service.Random;
 
 namespace SWLOR.Game.Server.Feature.ShipModuleDefinition
 {
@@ -47,26 +47,20 @@ namespace SWLOR.Game.Server.Feature.ShipModuleDefinition
                 .CanTargetSelf()
                 .ActivatedAction((activator, activatorShipStatus, target, targetShipStatus, moduleBonus) =>
                 {
-                    var attackBonus = activatorShipStatus.ThermalDamage;
-                    var attackerStat = Space.GetAttackStat(activator);
-                    var attack = Space.GetShipAttack(activator, attackBonus);
-
-                    var moduleDamage = dmg + moduleBonus * 3;
-                    var defenseBonus = targetShipStatus.ThermalDefense * 2;
-                    var defense = Space.GetShipDefense(target, defenseBonus);
-                    var defenderStat = GetAbilityScore(target, AbilityType.Vitality);
-
-                    var chanceToHit = Space.CalculateChanceToHit(activator, target);
-
-                    // Subcapital ships are harder to hit. Even with very high accuracy, the starting chance to hit is 50% and it caps out at 70% instead of 95%.
-                    if (!targetShipStatus.CapitalShip)
+                    // Capital weapons fire as Capital, so the size steps replace the old flat -25% hit chance
+                    // against subcapital ships.
+                    const int rank = 40;
+                    var shot = new SpaceWeaponShot
                     {
-                        chanceToHit -= 25;
-                        if (chanceToHit < 20)
-                        {
-                            chanceToHit = 20;
-                        }
-                    }
+                        Family = SpaceWeaponFamily.Energy,
+                        DamageType = CombatDamageType.Thermal,
+                        Dmg = dmg + moduleBonus * 3,
+                        Rank = rank,
+                        Attack = rank * 2,
+                        Accuracy = rank * 2,
+                        Size = ShipSize.Capital
+                    };
+
                     var sound = EffectVisualEffect(VisualEffect.Vfx_Ship_Blast);
                     var missile = EffectVisualEffect(VisualEffect.Mirv_StarWars_Bolt2);
                     for (var i = 0; i < attacks; i++)
@@ -76,46 +70,18 @@ namespace SWLOR.Game.Server.Feature.ShipModuleDefinition
                         {
                             if (Space.CanShipFire(activator) && !GetIsDead(target))
                             {
-                                var roll = Random.D100(1);
-                                var isHit = roll <= chanceToHit;
-                                var damage = Combat.CalculateDamage(
-                                    attack,
-                                    moduleDamage,
-                                    attackerStat,
-                                    defense,
-                                    defenderStat,
-                                    0);
-                                if (isHit)
+                                var result = Space.RollWeaponShot(activator, activatorShipStatus, target, targetShipStatus, shot);
+                                AssignCommand(activator, () =>
                                 {
-                                    AssignCommand(activator, () =>
+                                    ApplyEffectToObject(DurationType.Instant, sound, target);
+                                    ApplyEffectToObject(DurationType.Instant, missile, target);
+                                    if (result.IsHit)
                                     {
-                                        ApplyEffectToObject(DurationType.Instant, sound, target);
-                                        ApplyEffectToObject(DurationType.Instant, missile, target);
                                         ApplyEffectToObject(DurationType.Instant, EffectVisualEffect(VisualEffect.Vfx_Fnf_Gas_Explosion_Fire), target);
+                                    }
+                                });
 
-                                        DelayCommand(0.3f, () =>
-                                        {
-                                            Space.ApplyShipDamage(activator, target, damage);
-                                        });
-                                    });
-                                }
-                                else
-                                {
-                                    AssignCommand(activator, () =>
-                                    {
-                                        ApplyEffectToObject(DurationType.Instant, sound, target);
-                                        ApplyEffectToObject(DurationType.Instant, missile, target);
-                                    });
-                                }
-
-                                var attackId = isHit ? 1 : 4;
-                                Messaging.SendMessageNearbyToPlayers(
-                                    target,
-                                    receiver => Combat.BuildCombatLogMessage(receiver, activator, target, attackId, chanceToHit),
-                                    60f);
-
-                                Enmity.ModifyEnmity(activator, target, damage);
-                                CombatPoint.AddCombatPoint(activator, target, SkillType.Piloting);
+                                Space.CompleteWeaponShot(activator, target, shot, result, 0.3f);
                             }
                         });
                     }

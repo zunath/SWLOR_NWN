@@ -1,11 +1,11 @@
 using System.Collections.Generic;
 using SWLOR.Game.Server.Service;
+using SWLOR.Game.Server.Service.CombatService;
 using SWLOR.Game.Server.Service.PerkService;
 using SWLOR.Game.Server.Service.SkillService;
 using SWLOR.Game.Server.Service.SpaceService;
 using SWLOR.NWN.API.NWScript.Enum;
 using SWLOR.NWN.API.NWScript.Enum.VisualEffect;
-using Random = SWLOR.Game.Server.Service.Random;
 
 namespace SWLOR.Game.Server.Feature.ShipModuleDefinition
 {
@@ -25,44 +25,6 @@ namespace SWLOR.Game.Server.Feature.ShipModuleDefinition
         }
 
         private const string MissileItemResref = "ship_missile";
-
-        private void PerformAttack(uint activator, uint target, int dmg, int attackBonus, bool? hitOverride)
-        {
-            var targetShipStatus = Space.GetShipStatus(target);
-            if (targetShipStatus == null)
-                return;
-
-            var chanceToHit = Space.CalculateChanceToHit(activator, target);
-            var roll = Random.D100(1);
-            var isHit = hitOverride ?? roll <= chanceToHit;
-
-            var attackerStat = Space.GetAttackStat(activator);
-            var attack = Space.GetShipAttack(activator, attackBonus);
-
-            if (isHit)
-            {
-                var defenseBonus = targetShipStatus.ExplosiveDefense * 2;
-                var defense = Space.GetShipDefense(target, defenseBonus);
-                var defenderStat = GetAbilityScore(target, AbilityType.Vitality);
-                var damage = Combat.CalculateDamage(
-                    attack,
-                    dmg,
-                    attackerStat,
-                    defense,
-                    defenderStat,
-                    0);
-
-                Space.ApplyShipDamage(activator, target, damage);
-                Enmity.ModifyEnmity(activator, target, damage);
-            }
-
-            var attackId = isHit ? 1 : 4;
-            Messaging.SendMessageNearbyToPlayers(
-                target,
-                receiver => Combat.BuildCombatLogMessage(receiver, activator, target, attackId, chanceToHit),
-                60f);
-            CombatPoint.AddCombatPoint(activator, target, SkillType.Piloting);
-        }
 
         private void MissileLauncher(
             string itemTag,
@@ -116,11 +78,18 @@ namespace SWLOR.Game.Server.Feature.ShipModuleDefinition
                     var targetDistance = GetDistanceBetween(activator, target);
                     var delay = (float)(targetDistance / (3.0 * log(targetDistance) + 2.0));
 
-                    var chanceToHit = Space.CalculateChanceToHit(activator, target);
-                    var roll = Random.D100(1);
-                    var isHit = roll <= chanceToHit;
-
-                    var attackBonus = moduleBonus * 2 + activatorShipStatus.ExplosiveDamage;
+                    var rank = (requiredLevel - 1) * 10;
+                    var shot = new SpaceWeaponShot
+                    {
+                        Family = SpaceWeaponFamily.Launcher,
+                        DamageType = CombatDamageType.Explosive,
+                        Dmg = moduleDamage,
+                        Rank = rank,
+                        Attack = rank * 2 + moduleBonus * 2,
+                        Accuracy = rank * 2
+                    };
+                    var result = Space.RollWeaponShot(activator, activatorShipStatus, target, targetShipStatus, shot);
+                    var isHit = result.IsHit;
 
                     // Shoot some missiles out to the target.
                     AssignCommand(activator, () =>
@@ -134,7 +103,7 @@ namespace SWLOR.Game.Server.Feature.ShipModuleDefinition
                     DelayCommand(delay, () =>
                     {
                         ApplyEffectToObject(DurationType.Instant, EffectVisualEffect(VisualEffect.Fnf_Fireball, !isHit, 0.5f), target);
-                        PerformAttack(activator, target, moduleDamage, attackBonus, isHit);
+                        Space.CompleteWeaponShot(activator, target, shot, result);
                     });
                 });
         }

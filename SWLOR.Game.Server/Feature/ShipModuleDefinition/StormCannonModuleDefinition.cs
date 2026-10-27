@@ -1,11 +1,11 @@
 using System.Collections.Generic;
 using SWLOR.Game.Server.Service;
+using SWLOR.Game.Server.Service.CombatService;
 using SWLOR.Game.Server.Service.PerkService;
 using SWLOR.Game.Server.Service.SkillService;
 using SWLOR.Game.Server.Service.SpaceService;
 using SWLOR.NWN.API.NWScript.Enum;
 using SWLOR.NWN.API.NWScript.Enum.VisualEffect;
-using Random = SWLOR.Game.Server.Service.Random;
 
 namespace SWLOR.Game.Server.Feature.ShipModuleDefinition
 {
@@ -42,21 +42,18 @@ namespace SWLOR.Game.Server.Feature.ShipModuleDefinition
                 .CapitalClassModule()
                 .ActivatedAction((activator, activatorShipStatus, target, targetShipStatus, moduleBonus) =>
                 {
-                    var attackBonus = activatorShipStatus.EMDamage;
-                    var attackerStat = Space.GetAttackStat(activator);
-                    var attack = Space.GetShipAttack(activator, attackBonus);
-
-                    var moduleDamage = dmg + moduleBonus;
-                    var defenseBonus = targetShipStatus.EMDefense * 2;
-                    var defense = Space.GetShipDefense(target, defenseBonus);
-                    var defenderStat = GetAbilityScore(target, AbilityType.Vitality);
-                    var damage = Combat.CalculateDamage(
-                        attack,
-                        moduleDamage,
-                        attackerStat,
-                        defense,
-                        defenderStat,
-                        0);
+                    const int rank = 40;
+                    var shot = new SpaceWeaponShot
+                    {
+                        Family = SpaceWeaponFamily.Energy,
+                        DamageType = CombatDamageType.EM,
+                        Dmg = dmg + moduleBonus,
+                        Rank = rank,
+                        Attack = rank * 2,
+                        Accuracy = rank * 2,
+                        Size = ShipSize.Capital,
+                        ShieldDamageMultiplier = 1.5
+                    };
 
                     var effectBeam = EffectBeam(VisualEffect.Vfx_Beam_Mind, activator, BodyNode.Chest);
                     var effectLightning = EffectBeam(VisualEffect.Vfx_Beam_Silent_Lightning, activator, BodyNode.Chest);
@@ -66,70 +63,41 @@ namespace SWLOR.Game.Server.Feature.ShipModuleDefinition
                         var delay = i * 0.33f;
                         DelayCommand(delay, () =>
                         {
-                            var chanceToHit = Space.CalculateChanceToHit(activator, target);
-                            var roll = Random.D100(1);
-                            var isHit = roll <= chanceToHit;
-
                             if (Space.CanShipFire(activator) && !GetIsDead(target))
                             {
-                                if (isHit)
-                                {
-                                    AssignCommand(activator, () =>
-                                    {
-                                        ApplyEffectToObject(DurationType.Temporary, effectBeam, target, 1.0f);
-                                        ApplyEffectToObject(DurationType.Temporary, effectLightning, target, 1.0f);
-                                        ApplyEffectToObject(DurationType.Instant, EffectVisualEffect(VisualEffect.Vfx_Ion_Shot), activator);
-                                    });
+                                var result = Space.RollWeaponShot(activator, activatorShipStatus, target, targetShipStatus, shot);
 
+                                AssignCommand(activator, () =>
+                                {
+                                    ApplyEffectToObject(DurationType.Temporary, effectBeam, target, 1.0f);
+                                    ApplyEffectToObject(DurationType.Temporary, effectLightning, target, 1.0f);
+                                    if (result.IsHit)
+                                    {
+                                        ApplyEffectToObject(DurationType.Instant, EffectVisualEffect(VisualEffect.Vfx_Ion_Shot), activator);
+                                    }
+                                });
+
+                                if (result.IsHit)
+                                {
                                     DelayCommand(0.1f, () =>
                                     {
                                         AssignCommand(activator, () =>
                                         {
-                                            var shieldDamage = int.Min(damage, targetShipStatus.Shield);
-                                            var armorDamage = (damage - shieldDamage) / 4;
-                                            if (armorDamage < 0)
-                                            {
-                                                armorDamage = 0;
-                                            }
                                             var effect = EffectVisualEffect(VisualEffect.Vfx_Imp_Dispel, false);
                                             ApplyEffectToObject(DurationType.Instant, effect, target);
-                                            Space.ApplyShipDamage(activator, target, shieldDamage);
-                                            Space.ApplyShipDamage(activator, target, armorDamage);
-                                            if (armorDamage > 0)
-                                            {
-                                                ApplyEffectToObject(DurationType.Temporary, EffectMovementSpeedDecrease(75), target, 6f);
-                                                ApplyEffectToObject(DurationType.Temporary, EffectAbilityDecrease(AbilityType.Agility, 4), target, 12f);
-                                            }
                                         });
                                     });
                                 }
-                                else
+
+                                // Damage that gets past the shield slows the target.
+                                Space.CompleteWeaponShot(activator, target, shot, result, 0.1f, landed =>
                                 {
-                                    AssignCommand(activator, () =>
+                                    if (landed.HullDamage > 0)
                                     {
-                                        ApplyEffectToObject(DurationType.Temporary, effectBeam, target, 1.0f);
-                                        ApplyEffectToObject(DurationType.Temporary, effectLightning, target, 1.0f);
-                                    });
-
-                                    DelayCommand(0.1f, () =>
-                                    {
-                                        AssignCommand(activator, () =>
-                                        {
-                                            var effect = EffectVisualEffect(VisualEffect.Vfx_Fnf_Electric_Explosion, true);
-                                            ApplyEffectToObject(DurationType.Temporary, effectBeam, target, 1.0f);
-                                            ApplyEffectToObject(DurationType.Temporary, effectLightning, target, 1.0f);
-                                        });
-                                    });
-                                }
-
-                                var attackId = isHit ? 1 : 4;
-                                Messaging.SendMessageNearbyToPlayers(
-                                    target,
-                                    receiver => Combat.BuildCombatLogMessage(receiver, activator, target, attackId, chanceToHit),
-                                    60f);
-
-                                Enmity.ModifyEnmity(activator, target, damage);
-                                CombatPoint.AddCombatPoint(activator, target, SkillType.Piloting);
+                                        ApplyEffectToObject(DurationType.Temporary, EffectMovementSpeedDecrease(75), target, 6f);
+                                        ApplyEffectToObject(DurationType.Temporary, EffectAbilityDecrease(AbilityType.Agility, 4), target, 12f);
+                                    }
+                                });
                             }
                         });
                     }

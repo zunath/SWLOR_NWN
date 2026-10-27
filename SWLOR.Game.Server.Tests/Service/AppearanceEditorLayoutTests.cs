@@ -546,6 +546,8 @@ public class AppearanceEditorLayoutTests
         views.Select(view => ReadProperty<string>(view, "IsToggledBindName")).Should().Equal(
             nameof(AppearanceEditorViewModel.IsFrontViewSelected), nameof(AppearanceEditorViewModel.IsBackViewSelected),
             nameof(AppearanceEditorViewModel.IsAngleViewSelected));
+        views.Should().OnlyContain(view => ReadProperty<string>(view, "IsVisibleBindName") ==
+            nameof(AppearanceEditorViewModel.IsPreviewViewChoiceVisible), "weapon pages have only front pictures");
         for (var index = 0; index < views.Length; index++)
             AssertSingleHandler(views[index], "click", nameof(AppearanceEditorViewModel.OnClickPreviewView),
                 (typeof(AppearancePreviewView), (AppearancePreviewView)index));

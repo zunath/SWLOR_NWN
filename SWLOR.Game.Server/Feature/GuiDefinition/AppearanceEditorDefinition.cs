@@ -687,6 +687,7 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition
                         .SetId($"ae_view_{view.View}")
                         .SetText(view.Text)
                         .BindIsToggled(Bind<bool>(view.Bind))
+                        .BindIsVisible(model => model.IsPreviewViewChoiceVisible)
                         .SetWidth(width)
                         .SetHeight(28f)
                         .BindOnClicked(model => model.OnClickPreviewView(view.View));

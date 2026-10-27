@@ -6,7 +6,8 @@ Reads the parts the editor offers (armor for every body type, every species' hea
 cloaks, weapon and shield parts), extracts each model and its tint material from the packed HAKs
 (base game weapon models and textures from the NWN:EE install, --nwn-root), renders front, back
 and 3/4 views in Blender, and writes 96x96 DXT1 DDS files named a<key><f|b|a>. A weapon part's
-key is its model resref (wswls_t_011); its pictures are laid out diagonally to fill the tile.
+key is its model resref (wswls_t_011); it is laid out diagonally to fill the tile, and only its
+front picture ships, since a lone part looks the same from every side.
 
 The packed HAKs must match the hak sources: a stale sw_weapon.hak misses newer weapon models.
 
@@ -255,14 +256,20 @@ def save_dds(image: Image.Image, path: Path):
     image.transpose(Image.FLIP_TOP_BOTTOM).save(path, "DDS", pixel_format="DXT1")
 
 
-def write_pictures(keys, renders: Path, output: Path, size: int):
+def picture_views(key: str, front_only=frozenset()):
+    """Views published for a part. A lone weapon or shield part looks the same from every side,
+    so only its front picture ships; the editor hides the view buttons for weapons."""
+    return ("f",) if key in front_only else VIEWS
+
+
+def write_pictures(keys, renders: Path, output: Path, size: int, front_only=frozenset()):
     """Write every picture, skipping non-human pictures that duplicate the human one."""
     kept = skipped = 0
     save_dds(Image.new("RGB", (size, size), BACKGROUND), output / f"{EMPTY_PICTURE}.dds")
     wanted = {f"{EMPTY_PICTURE}.dds"}
     for key in keys:
         twin = human_twin(key)
-        for view in VIEWS:
+        for view in picture_views(key, front_only):
             png = renders / f"{key}_{view}.png"
             if not png.exists():
                 continue
@@ -315,15 +322,17 @@ def main(argv=None):
     args.output.mkdir(parents=True, exist_ok=True)
     renders = args.work / "renders"
     all_keys = [j.key for j in jobs]
+    front_only = frozenset(j.key for j in jobs if j.weapon)
     cache = RenderCache(args.work, index, args.render_size)
     jobs = [j for j in jobs if not cache.is_fresh(j.key, renders)]
     print(f"{len(jobs)} parts to render")
     problems = render(args, index, jobs, renders, cache) if jobs else []
     cache.save()
 
-    kept, skipped, wanted = write_pictures(all_keys, renders, args.output, args.size)
+    kept, skipped, wanted = write_pictures(all_keys, renders, args.output, args.size, front_only)
     # A part that failed to render keeps whatever picture was published before.
-    wanted |= {f"{preview_resref(key, view)}.dds" for key in failed_keys(problems) for view in VIEWS}
+    wanted |= {f"{preview_resref(key, view)}.dds" for key in failed_keys(problems)
+               for view in picture_views(key, front_only)}
     if not args.only:
         for stale in args.output.glob("*.dds"):
             if stale.name not in wanted:

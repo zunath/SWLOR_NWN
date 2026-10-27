@@ -340,6 +340,23 @@ class DuplicateTests(unittest.TestCase):
             self.assertFalse(old.exists(), "the human picture must show instead")
             self.assertTrue(unrelated.exists())
 
+    def test_weapon_parts_publish_only_their_front_picture(self):
+        from appearance_previews.__main__ import write_pictures
+        with tempfile.TemporaryDirectory() as folder:
+            renders, output = Path(folder, "renders"), Path(folder, "out")
+            renders.mkdir()
+            output.mkdir()
+            for key in ("wswls_t_011", "pmh0_chest001"):
+                for view in VIEWS:
+                    Image.new("RGBA", (64, 64), (200, 0, 0, 255)).save(renders / f"{key}_{view}.png")
+            kept, _, wanted = write_pictures(["wswls_t_011", "pmh0_chest001"], renders, output, 96,
+                                             frozenset({"wswls_t_011"}))
+            self.assertEqual(kept, 4)
+            self.assertIn("awswls_t_011f.dds", wanted)
+            self.assertNotIn("awswls_t_011b.dds", wanted)
+            self.assertNotIn("awswls_t_011a.dds", wanted)
+            self.assertIn("apmh0_chest001b.dds", wanted)
+
 
 class WeaponJobTests(unittest.TestCase):
     def test_composite_part_ids_name_the_engine_models(self):

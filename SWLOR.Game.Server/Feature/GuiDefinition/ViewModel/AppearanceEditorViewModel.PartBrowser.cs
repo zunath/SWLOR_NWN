@@ -56,6 +56,7 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
         private Func<int, string> _browserKey = _ => string.Empty;
         private Func<int, string> _browserLabel = id => id.ToString();
         private Action<int> _browserApply;
+        private bool _browserFrontOnly;
         private float[] _paletteOutline = Array.Empty<float>();
         private int _resizeGeneration;
         private bool _compactPageLabels;
@@ -77,6 +78,9 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
                 PublishBrowser();
             }
         }
+
+        /// <summary>Weapon and shield parts ship only a front picture, so their pages hide the view buttons.</summary>
+        public bool IsPreviewViewChoiceVisible { get => Get<bool>(); set => Set(value); }
 
         public bool IsFrontViewSelected { get => Get<bool>(); set => Set(value); }
         public bool IsBackViewSelected { get => Get<bool>(); set => Set(value); }
@@ -382,6 +386,7 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
         private void InitializePartBrowser()
         {
             // Every bound value needs an entry before it is watched or re-sent.
+            IsPreviewViewChoiceVisible = true;
             IsFrontViewSelected = true;
             IsBackViewSelected = false;
             IsAngleViewSelected = false;
@@ -437,8 +442,10 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
             Get2DAString("appearance", "RACE", (int)GetAppearanceType(_target)));
 
         private void SetBrowserSource(IEnumerable<int> ids, int current, Func<int, string> key,
-            Func<int, string> label, Action<int> apply)
+            Func<int, string> label, Action<int> apply, bool frontOnly = false)
         {
+            _browserFrontOnly = frontOnly;
+            SetIfChanged(nameof(IsPreviewViewChoiceVisible), !frontOnly);
             _browserIds = ids.ToList();
             _browserCurrent = current;
             _browserKey = key;
@@ -457,7 +464,7 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
             if (_browserIds == null)
                 return;
             _browserPage = Math.Clamp(_browserPage, 0, BrowserPageCount - 1);
-            var view = PreviewView;
+            var view = _browserFrontOnly ? AppearancePreviewView.Front : PreviewView;
             for (var tile = 0; tile < BrowserTileCount; tile++)
             {
                 var position = _browserPage * BrowserPageSize + tile;
@@ -542,7 +549,7 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
                 var ids = _partIds;
                 SetBrowserSource(ids, CurrentPartId(), WeaponPictureKey(),
                     id => _partIdToIndex.TryGetValue(id, out var index) && names != null && index < names.Count ? names[index] : id.ToString(),
-                    SelectPartFromBrowser);
+                    SelectPartFromBrowser, frontOnly: true);
             }
             RefreshBodyMap();
         }

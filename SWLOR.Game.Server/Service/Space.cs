@@ -1353,7 +1353,7 @@ namespace SWLOR.Game.Server.Service
             {
                 shipModule = activatorShipStatus.LowPowerModules[slotNumber-10];
             }
-            // Slot Numbers between 20-30 are mid powered slots.
+            // Slot numbers 21-30 are mid powered slots.
             else if (slotNumber <= 30)
             {
                 shipModule = activatorShipStatus.MidPowerModules[slotNumber-20];

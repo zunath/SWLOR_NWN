@@ -678,7 +678,6 @@ namespace SWLOR.Game.Server.Feature.MigrationDefinition.ServerMigration
                 progress.RecordProcessed(result.Changed);
 
                 migrated |= MigrateShipStatusModuleDictionary(ship.Status?.HighPowerModules, progress, ref removedItems, ref droidPerksMigrated, disposal);
-                migrated |= MigrateShipStatusModuleDictionary(ship.Status?.MidPowerModules, progress, ref removedItems, ref droidPerksMigrated, disposal);
                 migrated |= MigrateShipStatusModuleDictionary(ship.Status?.LowPowerModules, progress, ref removedItems, ref droidPerksMigrated, disposal);
                 migrated |= MigrateShipStatusModuleDictionary(ship.Status?.ConfigurationModules, progress, ref removedItems, ref droidPerksMigrated, disposal);
 
@@ -728,7 +727,6 @@ namespace SWLOR.Game.Server.Feature.MigrationDefinition.ServerMigration
         private static int CountShipModules(PlayerShip ship)
         {
             return CountShipModules(ship.Status?.HighPowerModules) +
-                   CountShipModules(ship.Status?.MidPowerModules) +
                    CountShipModules(ship.Status?.LowPowerModules) +
                    CountShipModules(ship.Status?.ConfigurationModules);
         }

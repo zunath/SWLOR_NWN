@@ -8,7 +8,7 @@
 
       1. Fetches master (git -c http.sslBackend=schannel fetch) and merges it with a merge commit.
       2. On conflicts: a conflicted file that a mechanical script owns (tools/Refactor/MechanicalScripts.txt; today the
-         clock seam files) takes master's version, and the script runs again below. Every other conflict is left
+         clock seam files and the NWScript engine seam wrappers and generated files) takes master's version, and the script runs again below. Every other conflict is left
          for you: the script lists the files and the master commits that touched them (for the port log in
          MaintainabilityRefactorStatus.md), leaves the merge open and exits 2. Resolve, `git add`, run again with
          -Continue.

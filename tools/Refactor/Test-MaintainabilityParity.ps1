@@ -11,7 +11,7 @@
          always removed at the end, also when something fails.
       2. Applies the branch's behaviour-neutral seams to it: the seams in tools/Refactor/ParitySeams.txt (the P0-5
          commit that adds ScriptRegistry.LoadHandlersFromAssemblies and the boot-order tests, and Clock.cs), then every
-         mechanical script in tools/Refactor/MechanicalScripts.txt (the clock seam rewrite). If a seam no longer
+         mechanical script in tools/Refactor/MechanicalScripts.txt (the clock seam rewrite and the NWScript engine seam generator). If a seam no longer
          applies to master the run stops (exit 3) and names the file.
       3. Copies SWLOR.Game.Server.CharacterizationTests (without its snapshots) into the copy and runs it with
          SWLOR_UPDATE_SNAPSHOTS=1 and SWLOR_SNAPSHOT_DIRECTORY pointing at a temporary folder, so the folder receives

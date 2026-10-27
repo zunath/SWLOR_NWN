@@ -371,14 +371,17 @@ function Compare-HandlerOrders {
             if ($identical) { continue }
             $onlyMaster = @(Get-MissingLines -Source $r -Other $b)
             $onlyBranch = @(Get-MissingLines -Source $b -Other $r)
-            if ($onlyMaster.Count -eq 0 -and $onlyBranch.Count -eq 0) {
-                $first = 0
-                while ($first -lt $b.Count -and $b[$first] -ceq $r[$first]) { $first++ }
-                $lines.Add("${name} ${kind}: same handlers, different order; position $($first + 1) is '$($b[$first])' on the branch and '$($r[$first])' on master")
-                continue
-            }
             foreach ($row in $onlyMaster) { $lines.Add("${name} ${kind}: on master, not in the branch's manifest: $($row.Text) (master position $($row.Line))") }
             foreach ($row in $onlyBranch) { $lines.Add("${name} ${kind}: in the branch's manifest, not on master: $($row.Text)") }
+
+            # The handlers both sides have must also run in the same order, whatever else differs.
+            $commonBranch = @($b | Where-Object { $r -ccontains $_ })
+            $commonMaster = @($r | Where-Object { $b -ccontains $_ })
+            $first = 0
+            while ($first -lt $commonBranch.Count -and $first -lt $commonMaster.Count -and $commonBranch[$first] -ceq $commonMaster[$first]) { $first++ }
+            if ($first -lt $commonBranch.Count -and $first -lt $commonMaster.Count) {
+                $lines.Add("${name} ${kind}: different order; of the handlers both have, position $($first + 1) is '$($commonBranch[$first])' on the branch and '$($commonMaster[$first])' on master")
+            }
         }
     }
     if ($lines.Count -gt $Maximum) {

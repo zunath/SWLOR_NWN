@@ -23,50 +23,54 @@ namespace SWLOR.Game.Server.Service.TradeService
             return Math.Min(TradeTuning.SocialMaximum, Math.Max(0, social - TradeTuning.SocialBase) * TradeTuning.SocialPerPoint);
         }
 
-        public static double GetUnitBuyPrice(int basePrice, TradeMarketDetail market, double pressure, int social)
+        /// <summary>
+        /// The price of the next unit bought. <paramref name="standingBonus"/> is the fraction faction standing adds to
+        /// Social's (see <see cref="TradeStandingRules.GetPriceBonus"/>).
+        /// </summary>
+        public static double GetUnitBuyPrice(int basePrice, TradeMarketDetail market, double pressure, int social, double standingBonus = 0)
         {
-            return GetMid(basePrice, market, pressure) * (1 + TradeTuning.Spread) * (1 - GetSocialBonus(social));
+            return GetMid(basePrice, market, pressure) * (1 + TradeTuning.Spread) * (1 - (GetSocialBonus(social) + standingBonus));
         }
 
-        public static double GetUnitSellPrice(int basePrice, TradeMarketDetail market, double pressure, int social)
+        public static double GetUnitSellPrice(int basePrice, TradeMarketDetail market, double pressure, int social, double standingBonus = 0)
         {
-            return GetMid(basePrice, market, pressure) * (1 - TradeTuning.Spread) * (1 + GetSocialBonus(social));
+            return GetMid(basePrice, market, pressure) * (1 - TradeTuning.Spread) * (1 + GetSocialBonus(social) + standingBonus);
         }
 
         /// <summary>The credits units cost. Buying removes pressure, so each unit costs a little more than the last.</summary>
-        public static int GetBuyCost(int basePrice, TradeMarketDetail market, double pressure, int units, int social)
+        public static int GetBuyCost(int basePrice, TradeMarketDetail market, double pressure, int units, int social, double standingBonus = 0)
         {
             var total = 0.0;
             for (var unit = 0; unit < units; unit++)
             {
-                total += GetUnitBuyPrice(basePrice, market, pressure - unit - 0.5, social);
+                total += GetUnitBuyPrice(basePrice, market, pressure - unit - 0.5, social, standingBonus);
             }
 
             return (int)Math.Min(int.MaxValue, Math.Ceiling(total));
         }
 
         /// <summary>The credits units fetch. Selling adds pressure, so each unit fetches a little less than the last.</summary>
-        public static int GetSellRevenue(int basePrice, TradeMarketDetail market, double pressure, int units, int social)
+        public static int GetSellRevenue(int basePrice, TradeMarketDetail market, double pressure, int units, int social, double standingBonus = 0)
         {
             var total = 0.0;
             for (var unit = 0; unit < units; unit++)
             {
-                total += GetUnitSellPrice(basePrice, market, pressure + unit + 0.5, social);
+                total += GetUnitSellPrice(basePrice, market, pressure + unit + 0.5, social, standingBonus);
             }
 
             return (int)Math.Min(int.MaxValue, Math.Floor(total));
         }
 
         /// <summary>The price the exchange shows for buying one unit now.</summary>
-        public static int GetQuotedBuyPrice(int basePrice, TradeMarketDetail market, double pressure, int social)
+        public static int GetQuotedBuyPrice(int basePrice, TradeMarketDetail market, double pressure, int social, double standingBonus = 0)
         {
-            return GetBuyCost(basePrice, market, pressure, 1, social);
+            return GetBuyCost(basePrice, market, pressure, 1, social, standingBonus);
         }
 
         /// <summary>The price the exchange shows for selling one unit now.</summary>
-        public static int GetQuotedSellPrice(int basePrice, TradeMarketDetail market, double pressure, int social)
+        public static int GetQuotedSellPrice(int basePrice, TradeMarketDetail market, double pressure, int social, double standingBonus = 0)
         {
-            return GetSellRevenue(basePrice, market, pressure, 1, social);
+            return GetSellRevenue(basePrice, market, pressure, 1, social, standingBonus);
         }
 
         /// <summary>Pressure after it has decayed toward 0 for a while (half-life RecoveryHalfLifeHours).</summary>

@@ -2,6 +2,7 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using SWLOR.Game.Server.Feature.TradeDefinition;
+using SWLOR.Game.Server.Service.FactionService;
 
 namespace SWLOR.Game.Server.Service.TradeService
 {
@@ -63,6 +64,7 @@ namespace SWLOR.Game.Server.Service.TradeService
                 var volume = TradeTuning.FreightOfferVolumes[slot % TradeTuning.FreightOfferVolumes.Length];
                 var hops = TradeLookup.GetHops(origin, destination);
                 var fee = GetFee(volume, hops);
+                var gated = TradeLookup.GetExchange(origin).StandingFaction != FactionType.Invalid;
                 offers.Add(new FreightContractOffer
                 {
                     Id = $"{origin}-{window}-{slot}",
@@ -73,23 +75,30 @@ namespace SWLOR.Game.Server.Service.TradeService
                     Fee = fee,
                     Deposit = GetDeposit(fee),
                     DeadlineMinutes = GetDeadlineMinutes(hops),
+                    MinimumStanding = gated ? TradeStandingRules.GetFreightMinimumStanding(volume) : 0,
                 });
             }
 
             return offers;
         }
 
-        /// <summary>Whether the player may accept the offer into a ship with this much free volume.</summary>
+        /// <summary>
+        /// Whether the player may accept the offer into a ship with this much free volume. <paramref name="standing"/> is
+        /// their standing with the offering exchange's faction; leave it out for no gate.
+        /// </summary>
         public static FreightRefusal CanAccept(
             FreightContractOffer offer,
             IReadOnlyCollection<FreightContract> active,
             IReadOnlyCollection<string> taken,
             int capacity,
             int freeVolume,
-            int credits)
+            int credits,
+            int standing = int.MaxValue)
         {
             if (offer == null)
                 return FreightRefusal.OfferGone;
+            if (offer.MinimumStanding > 0 && standing < offer.MinimumStanding)
+                return FreightRefusal.StandingTooLow;
             if ((taken?.Contains(offer.Id) ?? false) || (active?.Any(x => x.Id == offer.Id) ?? false))
                 return FreightRefusal.AlreadyTaken;
             if ((active?.Count ?? 0) >= TradeTuning.FreightMaximumActive)
@@ -184,6 +193,7 @@ namespace SWLOR.Game.Server.Service.TradeService
                 FreightRefusal.WrongExchange => "That load is not bound for this exchange.",
                 FreightRefusal.LoadNotAboard => "The sealed load is not aboard this ship.",
                 FreightRefusal.ShipNotDocked => "That ship is not docked here.",
+                FreightRefusal.StandingTooLow => "You need better standing with this exchange's faction to take a load that large.",
                 _ => string.Empty,
             };
         }

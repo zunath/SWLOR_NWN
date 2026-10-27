@@ -5,6 +5,7 @@ using SWLOR.Game.Server.Entity;
 using SWLOR.Game.Server.Feature.GuiDefinition.Payload;
 using SWLOR.Game.Server.Service;
 using SWLOR.Game.Server.Service.GuiService;
+using SWLOR.Game.Server.Service.FactionService;
 using SWLOR.Game.Server.Service.GuiService.Component;
 using SWLOR.Game.Server.Service.TradeService;
 using SWLOR.NWN.API.NWScript.Enum;
@@ -29,7 +30,8 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
         private static readonly GuiToggleGroupSync TabToggles = new(MarketTabId, FreightTabId);
 
         private TradeExchangeType _exchange;
-        private string _landingAreaResref = string.Empty;
+        private string _dockId = string.Empty;
+        private TradeDock _dock = TradeDock.Npc(string.Empty, TradeExchangeType.Invalid);
         private List<string> _shipIds = new();
         private List<CommodityType> _rows = new();
         private List<string> _offerIds = new();
@@ -49,6 +51,10 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
         }
 
         public string ExchangeName { get => Get<string>(); set => Set(value); }
+        public string StandingText { get => Get<string>(); set => Set(value); }
+        public bool StandingVisible { get => Get<bool>(); set => Set(value); }
+        public string TariffText { get => Get<string>(); set => Set(value); }
+        public bool TariffVisible { get => Get<bool>(); set => Set(value); }
         public GuiBindingList<GuiComboEntry> ShipOptions { get => Get<GuiBindingList<GuiComboEntry>>(); set => Set(value); }
 
         public int SelectedShipIndex
@@ -99,10 +105,15 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
         {
             _loading = true;
             _exchange = initialPayload.Exchange;
-            _landingAreaResref = initialPayload.LandingAreaResref ?? string.Empty;
+            _dockId = initialPayload.DockId ?? string.Empty;
+            _dock = Trade.GetDock(_dockId, _exchange);
 
             var exchange = TradeLookup.GetExchange(_exchange);
-            ExchangeName = exchange == null ? "Trade Exchange" : $"{exchange.Name} Trade Exchange";
+            ExchangeName = exchange == null
+                ? "Trade Exchange"
+                : _dock.IsCity
+                    ? $"{_dock.CityName} Trade Exchange ({exchange.Name} market)"
+                    : $"{exchange.Name} Trade Exchange";
             _rows = exchange == null
                 ? new List<CommodityType>()
                 : exchange.Markets
@@ -111,6 +122,10 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
                     .Select(x => x.Commodity)
                     .ToList();
 
+            StandingText = string.Empty;
+            StandingVisible = false;
+            TariffText = string.Empty;
+            TariffVisible = false;
             TabToggleValue = MarketTabId;
             SelectedTabId = MarketTabId;
             ShipOptions = new GuiBindingList<GuiComboEntry>();
@@ -168,7 +183,7 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
 
         private void LoadShips()
         {
-            var ships = Trade.GetShipsDockedAt(Player, _landingAreaResref);
+            var ships = Trade.GetShipsDockedAt(Player, _dockId);
             _shipIds = ships.Select(x => x.Id).ToList();
 
             var options = new GuiBindingList<GuiComboEntry>();
@@ -196,9 +211,10 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
         private void Refresh()
         {
             var ship = GetSelectedShip();
-            var hasShip = ship != null && Trade.IsDockedAt(ship, _landingAreaResref);
+            var hasShip = ship != null && Trade.IsDockedAt(ship, _dockId);
             HasShip = _shipIds.Count > 0;
             NoShipVisible = !hasShip;
+            RefreshStandingAndTariff();
 
             var cargo = hasShip ? ship.Cargo : new Dictionary<CommodityType, CargoLot>();
             var capacity = hasShip ? Trade.GetCargoCapacity(ship) : 0;
@@ -209,11 +225,43 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
             RefreshFreight(hasShip ? ship : null);
         }
 
+        /// <summary>The standing line (what the player's standing with this exchange's faction earns) and the city tariff line.</summary>
+        private void RefreshStandingAndTariff()
+        {
+            var faction = TradeLookup.GetExchange(_exchange)?.StandingFaction ?? FactionType.Invalid;
+            if (faction == FactionType.Invalid)
+            {
+                StandingText = string.Empty;
+                StandingVisible = false;
+            }
+            else
+            {
+                var tier = Trade.GetStandingTier(Player, faction);
+                StandingText = $"Standing with {Service.Faction.GetFactionDetail(faction).Name}: {DescribeTier(tier)}";
+                StandingVisible = true;
+            }
+
+            TariffText = _dock.IsCity ? TradeTariffRules.Describe(_dock.TariffPercent, _dock.CityName) : string.Empty;
+            TariffVisible = _dock.IsCity;
+        }
+
+        private static string DescribeTier(TradeStandingTier tier)
+        {
+            if (tier == TradeStandingTier.Hostile)
+                return "Hostile. Its customs patrols attack you on sight.";
+            if (tier == TradeStandingTier.Neutral)
+                return "Neutral.";
+
+            return $"{TradeStandingRules.GetTierName(tier)}. Prices {TradeStandingRules.GetPriceBonus(tier) * 100:0.##}% better, " +
+                   $"customs scans {TradeStandingRules.GetScanCutPercent(tier)}% less likely.";
+        }
+
         private void RefreshMarket(bool hasShip, Dictionary<CommodityType, CargoLot> cargo, int capacity)
         {
             var exchange = TradeLookup.GetExchange(_exchange);
             var state = Trade.GetExchangeState(_exchange, DateTime.UtcNow);
             var social = GetAbilityScore(Player, AbilityType.Social);
+            var standingBonus = Trade.GetPriceBonus(Player, _exchange);
 
             var names = new GuiBindingList<string>();
             var tooltips = new GuiBindingList<string>();
@@ -236,8 +284,8 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
                 names.Add(commodity.Name);
                 tooltips.Add($"{commodity.Description} Volume {commodity.Volume} per unit.");
                 roles.Add(GetRoleText(market.Role, commodity.Legality, exchange.IsBlackMarket));
-                buyPrices.Add(TradePricing.GetQuotedBuyPrice(commodity.BasePrice, market, pressure, social).ToString());
-                sellPrices.Add(TradePricing.GetQuotedSellPrice(commodity.BasePrice, market, pressure, social).ToString());
+                buyPrices.Add(TradeRules.GetQuotedBuyPrice(commodity, market, pressure, social, standingBonus, _dock.TariffPercent).ToString());
+                sellPrices.Add(TradeRules.GetQuotedSellPrice(commodity, market, pressure, social, standingBonus, _dock.TariffPercent).ToString());
                 aboard.Add(units.ToString());
                 canBuy.Add(hasShip && capacity > 0);
                 canSell.Add(hasShip && units > 0);
@@ -269,6 +317,10 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
             var freeVolume = ship == null ? 0 : Trade.GetFreeVolume(ship);
             var capacity = ship == null ? 0 : Trade.GetCargoCapacity(ship);
             var credits = GetGold(Player);
+            var standing = Trade.GetFreightStanding(Player, _exchange);
+            var factionName = TradeLookup.GetExchange(_exchange)?.StandingFaction is { } faction && faction != FactionType.Invalid
+                ? Service.Faction.GetFactionDetail(faction).Name
+                : "this exchange's faction";
 
             OffersTitle = $"Freight offered here (new offers at {FreightContractRules.GetNextOfferChange(now):HH:mm} UTC)";
             _offerIds = offers.Select(x => x.Id).ToList();
@@ -281,11 +333,15 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
             var canAccept = new GuiBindingList<bool>();
             foreach (var offer in offers)
             {
-                var refusal = FreightContractRules.CanAccept(offer, contracts, taken, capacity, freeVolume, credits);
+                var refusal = FreightContractRules.CanAccept(offer, contracts, taken, capacity, freeVolume, credits, standing);
                 routes.Add($"{TradeLookup.GetExchange(offer.Destination)?.Name} ({offer.Hops} jumps)");
-                tooltips.Add(refusal == FreightRefusal.None
-                    ? "The load is sealed: it fills cargo volume, cannot be sold and is not scanned. Deliver late and the deposit is forfeit."
-                    : FreightContractRules.GetRefusalMessage(refusal));
+                tooltips.Add(refusal switch
+                {
+                    FreightRefusal.None => "The load is sealed: it fills cargo volume, cannot be sold and is not scanned. Deliver late and the deposit is forfeit.",
+                    FreightRefusal.StandingTooLow =>
+                        $"Needs {TradeStandingRules.GetTierName(TradeStandingRules.GetTier(offer.MinimumStanding))} standing with {factionName} ({offer.MinimumStanding}).",
+                    _ => FreightContractRules.GetRefusalMessage(refusal),
+                });
                 volumes.Add(offer.Volume.ToString());
                 fees.Add(offer.Fee.ToString());
                 deposits.Add(offer.Deposit.ToString());
@@ -361,9 +417,9 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
                 return;
 
             if (buying)
-                Trade.Buy(Player, shipId, _exchange, _landingAreaResref, _rows[index], GetOrderUnits());
+                Trade.Buy(Player, shipId, _exchange, _dockId, _rows[index], GetOrderUnits());
             else
-                Trade.Sell(Player, shipId, _exchange, _landingAreaResref, _rows[index], GetOrderUnits());
+                Trade.Sell(Player, shipId, _exchange, _dockId, _rows[index], GetOrderUnits());
 
             Refresh();
         }
@@ -379,7 +435,7 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
             if (index < 0 || index >= _offerIds.Count || shipId == null)
                 return;
 
-            Trade.AcceptFreight(Player, shipId, _exchange, _landingAreaResref, _offerIds[index]);
+            Trade.AcceptFreight(Player, shipId, _exchange, _dockId, _offerIds[index]);
             Refresh();
         };
 
@@ -390,7 +446,7 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
             if (index < 0 || index >= _contractIds.Count || shipId == null)
                 return;
 
-            Trade.DeliverFreight(Player, shipId, _exchange, _landingAreaResref, _contractIds[index]);
+            Trade.DeliverFreight(Player, shipId, _exchange, _dockId, _contractIds[index]);
             Refresh();
         };
 

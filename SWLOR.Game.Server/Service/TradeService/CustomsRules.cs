@@ -30,14 +30,17 @@ namespace SWLOR.Game.Server.Service.TradeService
             return TradeLookup.GetCommodity(commodity)?.BannedBy.Contains(authority) ?? false;
         }
 
-        /// <summary>The chance (0-1) that one patrol scan finds goods of this banned value, after a compartment's cut.</summary>
-        public static double GetScanChance(int bannedValue, double compartmentPercent)
+        /// <summary>
+        /// The chance (0-1) that one patrol scan finds goods of this banned value, after a compartment's cut and the cut
+        /// the pilot's standing with the patrol's authority earns (the two multiply).
+        /// </summary>
+        public static double GetScanChance(int bannedValue, double compartmentPercent, double standingPercent = 0)
         {
             if (bannedValue <= 0)
                 return 0;
 
             var chance = Math.Min(TradeTuning.ScanMaximum, TradeTuning.ScanBase + TradeTuning.ScanPerThousandCredits * bannedValue / 1000.0);
-            return chance * (1 - Math.Clamp(compartmentPercent, 0, 100) / 100.0);
+            return chance * (1 - Math.Clamp(compartmentPercent, 0, 100) / 100.0) * (1 - Math.Clamp(standingPercent, 0, 100) / 100.0);
         }
 
         /// <summary>The fine for banned goods of this value; the goods are confiscated as well.</summary>

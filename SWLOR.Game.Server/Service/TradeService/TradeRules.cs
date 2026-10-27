@@ -19,7 +19,9 @@ namespace SWLOR.Game.Server.Service.TradeService
             int requestedUnits,
             int capacity,
             int freeVolume,
-            int credits)
+            int credits,
+            double standingBonus = 0,
+            int tariffPercent = 0)
         {
             if (requestedUnits <= 0 || requestedUnits > MaximumOrderUnits)
                 return TradeOrder.Refused(TradeRefusal.InvalidAmount);
@@ -32,17 +34,18 @@ namespace SWLOR.Game.Server.Service.TradeService
             if (units <= 0)
                 return TradeOrder.Refused(TradeRefusal.CargoBayFull);
 
-            var cost = TradePricing.GetBuyCost(commodity.BasePrice, market, pressure, units, social);
-            if (cost > credits)
+            var cost = TradePricing.GetBuyCost(commodity.BasePrice, market, pressure, units, social, standingBonus);
+            if (cost + TradeTariffRules.GetTariff(cost, tariffPercent) > credits)
             {
-                units = GetAffordableUnits(commodity, market, pressure, social, units, credits);
+                units = GetAffordableUnits(commodity, market, pressure, social, standingBonus, tariffPercent, units, credits);
                 if (units <= 0)
                     return TradeOrder.Refused(TradeRefusal.NotEnoughCredits);
 
-                cost = TradePricing.GetBuyCost(commodity.BasePrice, market, pressure, units, social);
+                cost = TradePricing.GetBuyCost(commodity.BasePrice, market, pressure, units, social, standingBonus);
             }
 
-            return new TradeOrder { Units = units, Credits = cost, WasReduced = units < requestedUnits };
+            var tariff = TradeTariffRules.GetTariff(cost, tariffPercent);
+            return new TradeOrder { Units = units, Credits = cost + tariff, Tariff = tariff, WasReduced = units < requestedUnits };
         }
 
         public static TradeOrder PlanSell(
@@ -51,7 +54,9 @@ namespace SWLOR.Game.Server.Service.TradeService
             double pressure,
             int social,
             int requestedUnits,
-            int unitsAboard)
+            int unitsAboard,
+            double standingBonus = 0,
+            int tariffPercent = 0)
         {
             if (requestedUnits <= 0 || requestedUnits > MaximumOrderUnits)
                 return TradeOrder.Refused(TradeRefusal.InvalidAmount);
@@ -61,8 +66,23 @@ namespace SWLOR.Game.Server.Service.TradeService
                 return TradeOrder.Refused(TradeRefusal.NoneAboard);
 
             var units = Math.Min(requestedUnits, unitsAboard);
-            var revenue = TradePricing.GetSellRevenue(commodity.BasePrice, market, pressure, units, social);
-            return new TradeOrder { Units = units, Credits = revenue, WasReduced = units < requestedUnits };
+            var revenue = TradePricing.GetSellRevenue(commodity.BasePrice, market, pressure, units, social, standingBonus);
+            var tariff = TradeTariffRules.GetTariff(revenue, tariffPercent);
+            return new TradeOrder { Units = units, Credits = revenue - tariff, Tariff = tariff, WasReduced = units < requestedUnits };
+        }
+
+        /// <summary>What buying one unit costs the player now, tariff included (the price the exchange window shows).</summary>
+        public static int GetQuotedBuyPrice(CommodityDetail commodity, TradeMarketDetail market, double pressure, int social, double standingBonus, int tariffPercent)
+        {
+            var price = TradePricing.GetQuotedBuyPrice(commodity.BasePrice, market, pressure, social, standingBonus);
+            return price + TradeTariffRules.GetTariff(price, tariffPercent);
+        }
+
+        /// <summary>What selling one unit pays the player now, tariff taken (the price the exchange window shows).</summary>
+        public static int GetQuotedSellPrice(CommodityDetail commodity, TradeMarketDetail market, double pressure, int social, double standingBonus, int tariffPercent)
+        {
+            var price = TradePricing.GetQuotedSellPrice(commodity.BasePrice, market, pressure, social, standingBonus);
+            return price - TradeTariffRules.GetTariff(price, tariffPercent);
         }
 
         /// <summary>Piloting XP for a sale: 1 per credit of profit over what the units cost, at most two kills' worth.</summary>
@@ -86,17 +106,27 @@ namespace SWLOR.Game.Server.Service.TradeService
                 TradeRefusal.NotEnoughCredits => "You do not have enough credits.",
                 TradeRefusal.NoneAboard => "The ship carries none of that commodity.",
                 TradeRefusal.ShipNotDocked => "That ship is not docked here.",
+                TradeRefusal.NoExchangeHere => "This starport has no Trade Exchange.",
                 _ => string.Empty,
             };
         }
 
-        private static int GetAffordableUnits(CommodityDetail commodity, TradeMarketDetail market, double pressure, int social, int maximum, int credits)
+        private static int GetAffordableUnits(
+            CommodityDetail commodity,
+            TradeMarketDetail market,
+            double pressure,
+            int social,
+            double standingBonus,
+            int tariffPercent,
+            int maximum,
+            int credits)
         {
             int low = 0, high = maximum;
             while (low < high)
             {
                 var middle = (low + high + 1) / 2;
-                if (TradePricing.GetBuyCost(commodity.BasePrice, market, pressure, middle, social) <= credits)
+                var cost = TradePricing.GetBuyCost(commodity.BasePrice, market, pressure, middle, social, standingBonus);
+                if (cost + TradeTariffRules.GetTariff(cost, tariffPercent) <= credits)
                     low = middle;
                 else
                     high = middle - 1;

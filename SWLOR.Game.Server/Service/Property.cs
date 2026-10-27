@@ -2574,6 +2574,7 @@ namespace SWLOR.Game.Server.Service
                 // Initialize taxes at zero.
                 property.Taxes[PropertyTaxType.Citizenship] = 0;
                 property.Taxes[PropertyTaxType.Transportation] = 0;
+                property.Taxes[PropertyTaxType.Exchange] = 0;
 
                 // Upgrades
                 property.Upgrades[PropertyUpgradeType.CityLevel] = 1;

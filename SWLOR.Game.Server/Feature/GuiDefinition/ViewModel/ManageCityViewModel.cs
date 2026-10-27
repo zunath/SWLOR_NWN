@@ -8,6 +8,7 @@ using SWLOR.Game.Server.Service.GuiService.Component;
 using SWLOR.Game.Server.Service.LogService;
 using SWLOR.Game.Server.Service.PerkService;
 using SWLOR.Game.Server.Service.PropertyService;
+using SWLOR.Game.Server.Service.TradeService;
 
 namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
 {
@@ -83,6 +84,12 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
         }
 
         public string TransportationTax
+        {
+            get => Get<string>();
+            set => Set(value);
+        }
+
+        public string ExchangeTariff
         {
             get => Get<string>();
             set => Set(value);
@@ -184,6 +191,7 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
             WatchOnClient(model => model.CityName);
             WatchOnClient(model => model.TransportationTax);
             WatchOnClient(model => model.CitizenshipTax);
+            WatchOnClient(model => model.ExchangeTariff);
         }
 
         private void RefreshPermissions()
@@ -270,6 +278,13 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
 
             CitizenshipTax = $"{dbCity.Taxes[PropertyTaxType.Citizenship]}";
             TransportationTax = $"{dbCity.Taxes[PropertyTaxType.Transportation]}";
+            ExchangeTariff = $"{GetStoredExchangeTariff(dbCity)}";
+        }
+
+        /// <summary>The city's Trade Exchange tariff percent. Cities that never set one have none.</summary>
+        private static int GetStoredExchangeTariff(WorldProperty dbCity)
+        {
+            return dbCity.Taxes.TryGetValue(PropertyTaxType.Exchange, out var tariff) ? TradeTariffRules.ClampPercent(tariff) : 0;
         }
 
         private string GetMedicalCenterUpgrade(int level)
@@ -536,13 +551,29 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
             dbCity.Taxes[PropertyTaxType.Citizenship] = citizenshipTax;
             dbCity.Taxes[PropertyTaxType.Transportation] = transportationTax;
 
+            // The Trade Exchange tariff (0 to the cap) is the city leadership's to set: it needs the Edit Taxes permission.
+            RefreshPermissions();
+            var tariffRefused = false;
+            if (!int.TryParse(ExchangeTariff, out var exchangeTariff))
+                exchangeTariff = GetStoredExchangeTariff(dbCity);
+            exchangeTariff = TradeTariffRules.ClampPercent(exchangeTariff);
+            if (exchangeTariff != GetStoredExchangeTariff(dbCity))
+            {
+                if (CanEditTaxes)
+                    dbCity.Taxes[PropertyTaxType.Exchange] = exchangeTariff;
+                else
+                    tariffRefused = true;
+            }
+
             DB.Set(dbCity);
 
             RefreshPropertyDetails();
             RefreshTaxesAndFees();
 
-            Instructions = "City details saved successfully.";
-            InstructionsColor = GuiColor.Green;
+            Instructions = tariffRefused
+                ? "City details saved. You need the Edit Taxes permission to change the exchange tariff."
+                : "City details saved successfully.";
+            InstructionsColor = tariffRefused ? GuiColor.Red : GuiColor.Green;
 
         };
 

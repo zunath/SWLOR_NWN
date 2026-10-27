@@ -21,10 +21,10 @@ namespace SWLOR.Game.Server.Service
         }
 
         /// <summary>Accepts an offer of this exchange into the player's ship docked here: the deposit is held and the load sealed aboard.</summary>
-        public static void AcceptFreight(uint player, string shipId, TradeExchangeType exchange, string landingAreaResref, string offerId)
+        public static void AcceptFreight(uint player, string shipId, TradeExchangeType exchange, string dockId, string offerId)
         {
             var now = DateTime.UtcNow;
-            var ship = GetOwnShipDockedHere(player, shipId, landingAreaResref);
+            var ship = GetOwnShipDockedHere(player, shipId, exchange, dockId);
             var dbPlayer = DB.Get<Player>(GetObjectUUID(player));
             if (ship == null || dbPlayer == null)
             {
@@ -35,7 +35,8 @@ namespace SWLOR.Game.Server.Service
             FreightContractRules.PruneTaken(dbPlayer.FreightOffersTaken, now);
             var offer = FreightContractRules.GetOffers(exchange, now).FirstOrDefault(x => x.Id == offerId);
             var refusal = FreightContractRules.CanAccept(
-                offer, dbPlayer.FreightContracts, dbPlayer.FreightOffersTaken, GetCargoCapacity(ship), GetFreeVolume(ship), GetGold(player));
+                offer, dbPlayer.FreightContracts, dbPlayer.FreightOffersTaken, GetCargoCapacity(ship), GetFreeVolume(ship), GetGold(player),
+                GetFreightStanding(player, exchange));
             if (refusal != FreightRefusal.None)
             {
                 SendMessageToPC(player, ColorToken.Red(FreightContractRules.GetRefusalMessage(refusal)));
@@ -58,9 +59,9 @@ namespace SWLOR.Game.Server.Service
         }
 
         /// <summary>Delivers a contract's sealed load from the player's ship docked at its destination.</summary>
-        public static void DeliverFreight(uint player, string shipId, TradeExchangeType exchange, string landingAreaResref, string contractId)
+        public static void DeliverFreight(uint player, string shipId, TradeExchangeType exchange, string dockId, string contractId)
         {
-            var ship = GetOwnShipDockedHere(player, shipId, landingAreaResref);
+            var ship = GetOwnShipDockedHere(player, shipId, exchange, dockId);
             var dbPlayer = DB.Get<Player>(GetObjectUUID(player));
             if (ship == null || dbPlayer == null)
             {
@@ -135,10 +136,15 @@ namespace SWLOR.Game.Server.Service
             }
         }
 
-        private static PlayerShip GetOwnShipDockedHere(uint player, string shipId, string landingAreaResref)
+        private static PlayerShip GetOwnShipDockedHere(uint player, string shipId, TradeExchangeType exchange, string dockId)
         {
             var ship = string.IsNullOrWhiteSpace(shipId) ? null : DB.Get<PlayerShip>(shipId);
-            return ship != null && ship.OwnerPlayerId == GetObjectUUID(player) && IsDockedAt(ship, landingAreaResref) ? ship : null;
+            if (ship == null || ship.OwnerPlayerId != GetObjectUUID(player) || !IsDockedAt(ship, dockId))
+                return null;
+
+            // A city starport only trades and offers freight once its starport is upgraded enough.
+            var dock = GetDock(dockId, exchange);
+            return dock.HasExchange && dock.Exchange == exchange ? ship : null;
         }
 
         private static uint FindOnlinePlayer(string playerId)

@@ -13,5 +13,6 @@ namespace SWLOR.Game.Server.Service.TradeService
         WrongExchange = 7,
         LoadNotAboard = 8,
         ShipNotDocked = 9,
+        StandingTooLow = 10,
     }
 }

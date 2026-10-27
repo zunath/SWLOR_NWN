@@ -41,7 +41,16 @@ namespace SWLOR.Game.Server.Service
             if (ship == null || bannedValue <= 0)
                 return;
 
-            var chance = CustomsRules.GetScanChance(bannedValue, CustomsRules.GetCompartmentPercent(GetFittedModuleTags(ship)));
+            // A pilot the authority is hostile to has already been met by its patrol (RollHostilePatrols); standing with it
+            // otherwise cuts the chance of a scan.
+            var tier = GetStandingTier(player, TradeStandingRules.GetFaction(authority));
+            if (tier == TradeStandingTier.Hostile)
+                return;
+
+            var chance = CustomsRules.GetScanChance(
+                bannedValue,
+                CustomsRules.GetCompartmentPercent(GetFittedModuleTags(ship)),
+                TradeStandingRules.GetScanCutPercent(tier));
             if (Random.NextFloat() >= chance)
                 return;
 

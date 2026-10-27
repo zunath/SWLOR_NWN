@@ -11,5 +11,6 @@ namespace SWLOR.Game.Server.Service.TradeService
         NotEnoughCredits = 5,
         NoneAboard = 6,
         ShipNotDocked = 7,
+        NoExchangeHere = 8,
     }
 }

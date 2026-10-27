@@ -67,5 +67,37 @@ on the base when you start, add the project to it.
    `BlueprintBonuses.PickBonus` (seeded); loot tables (`LootTable.GetRandomItemWithRareBonus` seeded over many
    draws, quantity rolls) and loot table definition data.
 
-**Done:** the slice's tests pass; the snapshots are reviewed for plausibility (no obviously broken values, such
+**Done (P0-4):** the slice's tests pass; the snapshots are reviewed for plausibility (no obviously broken values, such
 as every result zero, which would mean the function did not really run); the Codex loop is clean.
+
+## P0-6 - Scripted live smoke run
+
+**Goal:** one repeatable command that boots the branch's server locally, logs a client in and walks the core
+player loop, so every phase can end with the same smoke run (owner decision 4 replaces per-PR client evidence
+with it).
+
+**Use what exists:** `tools/NwnLiveClient.py` and the live-server procedure in
+`Readmes/InEngineVisualVerification.md` (unique ports and compose project names; never take the owner's login;
+the client's CD key handling stays exactly as that guide says). Read that guide fully before starting.
+
+**Scenario (each step records a pass/fail line and a screenshot):**
+1. Server boots from this branch's build; the client reaches the module.
+2. Log in an existing test character (or create one through the normal flow if the guide's procedure does).
+3. Melee and ranged attacks against a spawned training target; damage numbers appear.
+4. Use one active ability with a cooldown.
+5. Open the bank (or another storage container) and move an item in and out.
+6. Craft one item at a crafting station.
+7. Advance one quest step (accept a simple quest).
+8. Transfer to another area and back.
+9. Log out cleanly.
+
+Where a step needs content placement (target, station, quest giver), prefer DM/console commands the guide
+already uses; do not change module content. A step that cannot be automated reliably is recorded as manual with
+the reason.
+
+**Deliverables:** the script under `tools/` (for example `tools/RunSmokeTest.ps1` driving `NwnLiveClient.py`),
+a short section in `Readmes/InEngineVisualVerification.md` describing the smoke run and its output, and a
+baseline run on this branch: results file plus screenshots kept outside the repository (path in the report).
+Clean up every container, client profile and server you start.
+
+**Done:** the script runs end to end twice in a row with the same results; the baseline is recorded.

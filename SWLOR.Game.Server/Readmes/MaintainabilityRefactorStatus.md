@@ -60,7 +60,7 @@ Status: `open`, `in progress`, `review` (pull request open), `done`, `blocked`.
 | P0-4d | Output-locking Tier B: engine scenarios with a behaviour-neutral clock seam (spec to write) | P0-4a | Opus spec, Sonnet build | open | | Needs a clock seam for about 70 direct `DateTime.UtcNow` reads |
 | P0-5 | Boot-order and script-handler-order record test | - | Sonnet | done | [#2899](https://github.com/zunath/SWLOR_NWN/pull/2899) | Snapshot of 230 scripts / 662 handlers. Finding: handler order is not declared anywhere; it follows Roslyn's type emission order (namespace depth-first, then sorted file paths), so adding an unrelated file or moving a namespace can reorder handlers. `DB.Load` runs before `EventRegistration.OnModulePreload` only because `Service` is visited before `Feature`. A snapshot diff after a `master` sync that no handler edit explains is real drift. Seam: `ScriptRegistry.LoadHandlersFromAssemblies` (behaviour-neutral, proven against the old discovery code). |
 | P0-10 | Make handler order explicit before any file or namespace moves (declared order equal to today's snapshot; behaviour-neutral) | P0-5 | Opus spec, Sonnet build | open | | Blocks every namespace move in Phase 2 and the P0-8 domain map moves |
-| P0-6 | Scripted live smoke run with `tools/NwnLiveClient.py`; baseline recorded | - | Sonnet | open | | Needs a local server and client |
+| P0-6 | Scripted live smoke run with `tools/NwnLiveClient.py`; baseline recorded (spec in MaintainabilityRefactorSpecs.md) | - | Sonnet | in progress | | Worktree `.claude/worktrees/mr-p0-6` |
 | P0-7 | Daily sync script and parity script (characterization tests against a throwaway `master` worktree) | P0-4 | Sonnet | open | | |
 | P0-8 | Cross-domain dependency guard recording today's calls (domain map first) | - | Opus map, Sonnet build | open | | Decision 9 |
 | P0-9 | Feasibility check: do app-created worktrees inherit sparse checkout? | - | Opus (trivial) | done | - | Git 2.46 copies the sparse settings of the worktree `git worktree add` runs from (tested in a scratch repo). So after the haks cutover the main checkout itself must be sparse (code + `sw_2da`, `sw_tlk`, `sw_ability`), with full hak folders only in a dedicated worktree used for hak builds and local deploys. Confirm at cutover that the desktop app's worktree creation inherits it. |
@@ -73,6 +73,7 @@ Started 2026-10-26 by the coordinating session, each as a subagent with the agen
 
 - P0-2 (Sonnet): branch `claude/mr-p0-2`, worktree `C:\Projects\SWLOR_NWN\.claude\worktrees\mr-p0-2`.
 - P0-4a (Sonnet): branch `claude/mr-p0-4a`, worktree `C:\Projects\SWLOR_NWN\.claude\worktrees\mr-p0-4a`.
+- P0-6 (Sonnet): branch `claude/mr-p0-6`, worktree `C:\Projects\SWLOR_NWN\.claude\worktrees\mr-p0-6`.
 
 If this session ends before they report: check `gh pr list --base feature/maintainability-refactor` and the
 branches above, review any open pull request, and restart an item from its row if nothing was pushed.

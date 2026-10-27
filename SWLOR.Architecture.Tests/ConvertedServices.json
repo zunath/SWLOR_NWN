@@ -3,6 +3,7 @@
   "services": [
     { "name": "Achievement", "domain": "Character" },
     { "name": "Bank", "domain": "Economy" },
+    { "name": "Currency", "domain": "Economy" },
     { "name": "Faction", "domain": "Quests" },
     { "name": "Taxi", "domain": "World" }
   ]

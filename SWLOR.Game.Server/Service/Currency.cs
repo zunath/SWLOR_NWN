@@ -1,16 +1,18 @@
-using SWLOR.Game.Server.Feature.GuiDefinition.RefreshEvent;
-using System.Collections.Generic;
-using System.Linq;
+using SWLOR.Game.Server.Composition;
 using SWLOR.Game.Server.Core;
-using SWLOR.Game.Server.Entity;
-using SWLOR.Game.Server.Extension;
+using SWLOR.Game.Server.Domain.Economy;
 using SWLOR.Game.Server.Service.CurrencyService;
 
 namespace SWLOR.Game.Server.Service
 {
+    /// <summary>
+    /// The static API of the currencies. The logic and state live in <see cref="ICurrencyService"/>; every member here
+    /// forwards to the container's instance, and the event handler stays here so its name in the handler order manifest
+    /// does not change.
+    /// </summary>
     public static class Currency
     {
-        private static readonly Dictionary<CurrencyType, CurrencyAttribute> _currencies = new();
+        private static ICurrencyService Instance => FacadeAccessor.Resolve<ICurrencyService>();
 
         /// <summary>
         /// When the module caches, cache all currency details into memory.
@@ -18,16 +20,7 @@ namespace SWLOR.Game.Server.Service
         [NWNEventHandler(ScriptName.OnModuleCacheBefore)]
         public static void CacheCurrencies()
         {
-            var currencyTypes = Enum.GetValues(typeof(CurrencyType)).Cast<CurrencyType>();
-            foreach (var currencyType in currencyTypes)
-            {
-                // Skip over the invalid currencies.
-                if (currencyType == CurrencyType.Invalid)
-                    continue;
-
-                var detail = currencyType.GetAttribute<CurrencyType, CurrencyAttribute>();
-                _currencies[currencyType] = detail;
-            }
+            Instance.CacheCurrencies();
         }
 
         /// <summary>
@@ -37,7 +30,7 @@ namespace SWLOR.Game.Server.Service
         /// <returns>The details about a currency.</returns>
         public static CurrencyAttribute GetCurrencyDetail(CurrencyType currencyType)
         {
-            return _currencies[currencyType];
+            return Instance.GetCurrencyDetail(currencyType);
         }
 
         /// <summary>
@@ -48,16 +41,7 @@ namespace SWLOR.Game.Server.Service
         /// <returns>The amount of the currency held.</returns>
         public static int GetCurrency(uint player, CurrencyType type)
         {
-            var playerId = GetObjectUUID(player);
-            var dbPlayer = DB.Get<Player>(playerId);
-
-            if (dbPlayer == null)
-                return 0;
-
-            if (!dbPlayer.Currencies.ContainsKey(type))
-                return 0;
-
-            return dbPlayer.Currencies[type];
+            return Instance.GetCurrency(player, type);
         }
 
         /// <summary>
@@ -68,21 +52,7 @@ namespace SWLOR.Game.Server.Service
         /// <param name="amount">The amount of currency to give</param>
         public static void GiveCurrency(uint player, CurrencyType type, int amount)
         {
-            amount = Math.Abs(amount);
-
-            var playerId = GetObjectUUID(player);
-            var dbPlayer = DB.Get<Player>(playerId);
-
-            if (dbPlayer == null)
-                return;
-
-            if (!dbPlayer.Currencies.ContainsKey(type))
-                dbPlayer.Currencies[type] = 0;
-
-            dbPlayer.Currencies[type] += amount;
-
-            DB.Set(dbPlayer);
-            Gui.PublishRefreshEvent(player, new CurrencyRefreshEvent());
+            Instance.GiveCurrency(player, type, amount);
         }
 
         /// <summary>
@@ -94,26 +64,7 @@ namespace SWLOR.Game.Server.Service
         /// <param name="amount">The amount of currency to take</param>
         public static void TakeCurrency(uint player, CurrencyType type, int amount)
         {
-            amount = Math.Abs(amount);
-
-            var playerId = GetObjectUUID(player);
-            var dbPlayer = DB.Get<Player>(playerId);
-
-            if (dbPlayer == null)
-                return;
-
-            if (!dbPlayer.Currencies.ContainsKey(type))
-                dbPlayer.Currencies[type] = 0;
-
-            var balance = dbPlayer.Currencies[type];
-            var newBalance = Math.Max(0, balance - amount);
-            if (newBalance == balance)
-                return;
-
-            dbPlayer.Currencies[type] = newBalance;
-
-            DB.Set(dbPlayer);
-            Gui.PublishRefreshEvent(player, new CurrencyRefreshEvent());
+            Instance.TakeCurrency(player, type, amount);
         }
     }
 }

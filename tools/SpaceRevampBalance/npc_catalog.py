@@ -16,7 +16,16 @@ HULLS = {
     "cargo": ("Logistics", "Normal", "Medium"),
     "platform": ("Gunship", "Elite", "Large"),
     "capital": ("Gunship", "Boss", "Capital"),
+    "ewar": ("Electronic Warfare", "Normal", "Small"),
+    "sniper": ("Sniper", "Normal", "Small"),
+    "logistics": ("Logistics", "Normal", "Medium"),
+    "carrier": ("Carrier", "Boss", "Large"),
+    "minelayer": ("Minelayer", "Normal", "Small"),
 }
+# Support modules a hull type fits beside its weapons (module family tag prefix), at the step of the ship's level. A
+# Gunship hardens below half hull; a Logistics ship repairs allies. Cargo haulers keep the Logistics row unarmed.
+SUPPORT = {"gunship": ("sm_hard",), "logistics": ("sm_hrep", "sm_shrep")}
+HARDENER_RESIST = {"sm_hard": lambda step: 10 + step // 5}  # the Shield Hardener family (catalog.py FAMILIES)
 MODULE_FOR = {
     "Laser Cannon": "sm_laser_00", "Ion Cannon": "sm_ion_00", "Beam Cannon": "sm_beam_00",
     "Missile Launcher": "sm_missl_00", "Torpedo": "sm_torp_00", "Turbolaser": "sm_turbo_40",
@@ -55,12 +64,18 @@ def hull_type(tag):
     return re.match(r"t\d(\w+)$", tag).group(1)
 
 
+def support_tags(hull, level):
+    step = min(45, level // 5 * 5)
+    return [f"{prefix}_{step:02d}" for prefix in SUPPORT.get(hull, ())]
+
+
 def entries(root, tags):
     levels = {t: creature_level(root, t) for t in tags}
     extend_presets(max(levels.values()))
     out = []
     for tag in tags:
-        role, diff, size = HULLS[hull_type(tag)]
+        hull = hull_type(tag)
+        role, diff, size = HULLS[hull]
         level = levels[tag]
         scale = FACTION_CAPITAL_SCALE.get(tag, 1.0)
         dmg_scale = min(2.0, scale ** 0.3)
@@ -75,14 +90,25 @@ def entries(root, tags):
             attribute = n["pilot"]["per"] if w["family"] == "Energy" else n["pilot"]["mgt"]
             weapons.append((module, max(1, round(per_cycle)), w["attack"] - attribute, w["accuracy"], w["rank"]))
         p = n["pilot"]
+        support = support_tags(hull, level)
+        resist = n["resistances"]["em"]
+        for tag_ in support:
+            family = tag_.rsplit("_", 1)[0]
+            if family in HARDENER_RESIST:
+                resist -= round(HARDENER_RESIST[family](int(tag_.rsplit("_", 1)[1])) * m.HARDENER_SHARE)
+        # A minelayer's mine hits as the Bomber torpedo of its level and difficulty (Space Enemies, Roles).
+        mine = 0
+        if role == "Minelayer":
+            bomber = m.npc_ship("Bomber", level, diff, size="Small", vs_size="Large", hp_scale=scale)
+            mine = next(round(w["dmg"] * dmg_scale) for w in bomber["weapons"] if w["name"] == "NPC Torpedo")
         out.append(dict(
             CreatureTag=tag, Level=level, Difficulty=diff, Role=role, Size=size,
             Hull=n["maxHull"], Shield=n["maxShield"], ShieldRegenPerSecond=n["shieldRegenPerSecond"],
             # The game adds the pilot's VIT to Defense and AGI x 3 to Evasion when a shot resolves; the model's Defense
             # already holds VIT, so it comes out here.
             Attack=n["attack"], Accuracy=n["accuracy"], Defense=n["defense"] - n["pilot"]["vit"], Evasion=n["evasion"],
-            ResistAll=n["resistances"]["em"], Agility=p["agi"], Perception=p["per"], Vitality=p["vit"],
-            Willpower=p["wil"], Might=p["mgt"], Weapons=weapons))
+            ResistAll=resist, Agility=p["agi"], Perception=p["per"], Vitality=p["vit"],
+            Willpower=p["wil"], Might=p["mgt"], MineDmg=mine, Weapons=weapons, Support=support))
     return out
 
 
@@ -93,8 +119,9 @@ def catalog_cs(header, rows):
                             for t, d, a, acc, rk in r["Weapons"])
         fields = ", ".join(
             f"{k} = ShipSize.{v}" if k == "Size" else f'{k} = "{v}"' if isinstance(v, str) else f"{k} = {v}"
-            for k, v in r.items() if k != "Weapons")
-        lines.append(f"            new ShipNpcEntry {{ {fields}, Weapons = new[] {{ {weapons} }} }},")
+            for k, v in r.items() if k not in ("Weapons", "Support") and not (k == "MineDmg" and v == 0))
+        support = (", Support = new[] { " + ", ".join(f'"{t}"' for t in r["Support"]) + " }") if r["Support"] else ""
+        lines.append(f"            new ShipNpcEntry {{ {fields}, Weapons = new[] {{ {weapons} }}{support} }},")
     return (header + "using System.Collections.Generic;\nusing SWLOR.Game.Server.Service.SpaceService;\n\n"
             "namespace SWLOR.Game.Server.Feature.SpaceObjectDefinition\n{\n"
             "    public static class RevampNpcShipCatalog\n    {\n"

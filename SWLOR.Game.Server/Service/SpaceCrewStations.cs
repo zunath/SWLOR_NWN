@@ -501,7 +501,8 @@ namespace SWLOR.Game.Server.Service
                 LeaveCrewStation(player, "You left the ship, so you leave your station.");
         }
 
-        private static bool IsSpaceArea(uint area)
+        /// <summary>Whether an area is a space area (flagged SPACE, or named "Space - ...").</summary>
+        public static bool IsSpaceArea(uint area)
         {
             return GetIsObjectValid(area) && (GetLocalBool(area, "SPACE") || GetName(area).StartsWith("Space -"));
         }

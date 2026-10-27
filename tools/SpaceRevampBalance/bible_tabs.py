@@ -326,9 +326,12 @@ def enemies():
     ])
     s.title("Roles")
     s.table(["Role", "Size", "Ground role", "Weapon", "HP x", "Defense +", "Evasion +", "Resist", "Damage x", *[""] * 7, "Behavior"],
-            [[k, v["size"], v["ground"], v["weapon"], v["hp"], v["df"], v["ev"], v["res"], v["dmg"], *[""] * 7, v["ai"]] for k, v in m.NPC_ROLES.items()]
-            + [["Carrier", "Large", "Ranged", "Laser Cannon", 1.0, 3, 0, 10, 0.8, *[""] * 7, "Elite or Boss only. Launches a wave of 2 Normal Fighters every 30 s (4 waves)."],
-               ["Minelayer", "Small", "Melee", "Missile Launcher", 0.9, 0, 0, 0, 0.8, *[""] * 7, "Drops a mine every 20 s (Mine 10110): Bomber torpedo DMG to the first ship within 5 m."]])
+            [[k, v["size"], v["ground"], v["weapon"], v["hp"], v["df"], v["ev"], v["res"], v["dmg"], *[""] * 7, v["ai"]] for k, v in m.NPC_ROLES.items()])
+    s.note("Role behaviors run on the one second ship AI tick (ShipNpcRoleTuning holds the numbers). A Gunship's preset resist "
+           f"gives up {m.HARDENER_SHARE:.0%} of its Shield Hardener's (the hardener runs over the last quarter of hull + shield), "
+           "so its fight averages the role resist. Players cannot be goaded, so the tank holds threat by targeting. Every "
+           "faction tier has every role: tN + fighter, interceptor, bomber, sniper, ewar, gunship, logistics, minelayer, "
+           "carrier (cargo haulers use the Logistics row with no repairers).")
     s.title("Difficulty factors by level (on top of the Normal conversion)")
     lv = [5, 15, 25, 35, 45]
     s.table(["Difficulty", "Size", "Damage x", "", *[f"L{L} HP x" for L in lv], *[f"L{L} DMG x" for L in lv][:5], "", "", "Notes"][:17],
@@ -341,7 +344,7 @@ def enemies():
     s.title("Preset table")
     rows = []
     for L in [1, 5, 10, 15, 20, 25, 30, 35, 40, 45, 50]:
-        for diff, roles in (("Normal", list(m.NPC_ROLES)), ("Elite", ["Fighter", "Gunship"]), ("Boss", ["Fighter", "Gunship"])):
+        for diff, roles in (("Normal", m.NORMAL_ROLES), ("Elite", ["Fighter", "Gunship"]), ("Boss", ["Fighter", "Gunship", "Carrier"])):
             for role in roles:
                 if (L, diff, m.NPC_ROLES[role]["ground"]) not in m.PRESETS:
                     continue

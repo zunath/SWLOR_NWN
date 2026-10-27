@@ -1,3 +1,5 @@
+using System.Linq;
+using SWLOR.Game.Server.Feature.ShipModuleDefinition;
 using SWLOR.Game.Server.Service.CombatService;
 using SWLOR.NWN.API.NWScript.Enum;
 
@@ -19,7 +21,7 @@ namespace SWLOR.Game.Server.Service.SpaceService
 
         /// <summary>
         /// Builds the ship status of a preset NPC. Weapons go into the High slots in order, each fitted as its
-        /// module with the preset's numbers attached.
+        /// module with the preset's numbers attached; support modules go into the Mid and Low slots of their row.
         /// </summary>
         public static ShipStatus BuildStatus(ShipNpcEntry entry, string itemTag, bool capitalShip, DateTime now)
         {
@@ -70,6 +72,21 @@ namespace SWLOR.Game.Server.Service.SpaceService
                         Rank = weapon.Rank,
                     },
                 };
+            }
+
+            var mid = 1;
+            var low = 1;
+            foreach (var tag in entry.Support ?? new string[0])
+            {
+                var step = RevampModuleCatalog.Steps.FirstOrDefault(x => x.Tag == tag);
+                if (step == null)
+                    continue;
+
+                var module = new ShipStatus.ShipStatusModule { ItemTag = tag, RecastTime = now };
+                if (step.Row == ShipModulePowerType.Low)
+                    status.LowPowerModules[low++] = module;
+                else if (step.Row == ShipModulePowerType.Mid)
+                    status.MidPowerModules[mid++] = module;
             }
 
             return status;

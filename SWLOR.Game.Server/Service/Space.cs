@@ -70,6 +70,7 @@ namespace SWLOR.Game.Server.Service
             Scheduler.ScheduleRepeating(ProcessSpaceNPCAI, TimeSpan.FromSeconds(1));
             Scheduler.ScheduleRepeating(PlayerShipRecovery, TimeSpan.FromSeconds(1), TimeSpan.FromMilliseconds(100d));
             ScheduleShipToggleLoop();
+            ScheduleSpaceMines();
             SpaceAuras.ScheduleRefresh();
         }
 
@@ -2796,6 +2797,7 @@ namespace SWLOR.Game.Server.Service
             {
                 _toggleWake.Remove(creature);
                 _shipNPCs.Remove(creature);
+                ClearNpcRole(creature);
             }
 
             foreach (var (creature, shipStatus) in _shipNPCs)
@@ -2805,8 +2807,10 @@ namespace SWLOR.Game.Server.Service
 
                 ApplyAutoShipRecovery(creature, shipStatus);
 
-                // Repairers switch off once the ship is whole again, in or out of a fight.
+                // Repairers switch off once their target is whole again, in or out of a fight.
+                var role = GetNpcRole(creature);
                 UpdateNpcRepairToggles(creature, shipStatus, false);
+                RunNpcRoleUpkeep(creature, shipStatus, role);
 
                 // Determine target
                 var target = Enmity.GetHighestEnmityTarget(creature);
@@ -2815,6 +2819,12 @@ namespace SWLOR.Game.Server.Service
                 // Ships follow the same combat leash as ground enemies.
                 if (AI.TryStartCombatLeashEvade(creature, target))
                     continue;
+
+                // The role may fight another target than the threat leader (plan section 11).
+                var threatTarget = target;
+                target = RunNpcRole(creature, shipStatus, role, threatTarget, now, out var roleHoldDistance);
+                if (!GetIsObjectValid(target))
+                    target = threatTarget;
 
                 var targetShipStatus = GetShipStatus(target);
                 var distance = GetDistanceBetween(creature, target);
@@ -2827,14 +2837,18 @@ namespace SWLOR.Game.Server.Service
                     .Select(x => GetShipModuleMaxDistance(creature, shipStatus, target, targetShipStatus, x))
                     .DefaultIfEmpty(0f)
                     .Min();
-                var holdDistance = engagementDistance > 0f
-                    ? Math.Min(NPCShipKeepDistance, engagementDistance * 0.75f)
-                    : NPCShipKeepDistance;
+                var holdDistance = roleHoldDistance > 0f
+                    ? roleHoldDistance
+                    : engagementDistance > 0f
+                        ? Math.Min(NPCShipKeepDistance, engagementDistance * 0.75f)
+                        : NPCShipKeepDistance;
 
                 // Toggled modules switch on against the highest enmity target and then run themselves;
                 // the auto-fire loop keeps offensive ones on whichever target the ship currently has.
                 SetCurrentTarget(creature, target);
-                UpdateNpcRepairToggles(creature, shipStatus, true);
+
+                // A Logistics ship's repairers lock onto allies (RunNpcRole), not only itself.
+                UpdateNpcRepairToggles(creature, shipStatus, role != ShipNpcRole.Logistics);
                 TurnOnNpcWeaponToggles(creature, shipStatus, target, targetShipStatus, distance);
 
                 // One-press modules are still used from the AI tick.
@@ -2906,6 +2920,9 @@ namespace SWLOR.Game.Server.Service
 
             shipStatus.Shield = shipStatus.MaxShield;
             shipStatus.Hull = shipStatus.MaxHull;
+
+            // A reset carrier recalls its fighters and a minelayer's mines go; both start over.
+            ClearNpcRole(OBJECT_SELF);
         }
 
         private static bool HasEnemyShipWithin(uint creature, float distance)

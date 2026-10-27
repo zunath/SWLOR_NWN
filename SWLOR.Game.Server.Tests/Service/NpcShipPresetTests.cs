@@ -249,6 +249,7 @@ public class NpcShipPresetTests
     [TestCase(ShipModuleType.IonCannon)]
     [TestCase(ShipModuleType.Missile)]
     [TestCase(ShipModuleType.ProtonBomb)]
+    [TestCase(ShipModuleType.BeamLaser)]
     public void NpcWeaponModuleTypes_AreOffensive(ShipModuleType type)
     {
         ShipToggleRules.IsOffensive(type).Should().BeTrue();
@@ -266,6 +267,7 @@ public class NpcShipPresetTests
         {
             ShipModuleFamily.LaserCannon,
             ShipModuleFamily.IonCannon,
+            ShipModuleFamily.BeamCannon,
             ShipModuleFamily.MissileLauncher,
             ShipModuleFamily.PointDefenseTurret,
             ShipModuleFamily.TorpedoLauncher,

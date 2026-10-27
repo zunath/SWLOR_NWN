@@ -53,6 +53,31 @@ namespace SWLOR.Game.Server.Feature.SpawnDefinition
                 .RandomlyWalks()
                 .ReturnsHome()
 
+                .AddSpawn(ObjectType.Creature, "t1ewar")
+                .WithFrequency(1920)
+                .RandomlyWalks()
+                .ReturnsHome()
+
+                .AddSpawn(ObjectType.Creature, "t1sniper")
+                .WithFrequency(1920)
+                .RandomlyWalks()
+                .ReturnsHome()
+
+                .AddSpawn(ObjectType.Creature, "t1minelayer")
+                .WithFrequency(1920)
+                .RandomlyWalks()
+                .ReturnsHome()
+
+                .AddSpawn(ObjectType.Creature, "t1logistics")
+                .WithFrequency(1440)
+                .RandomlyWalks()
+                .ReturnsHome()
+
+                .AddSpawn(ObjectType.Creature, "t1carrier")
+                .WithFrequency(480)
+                .RandomlyWalks()
+                .ReturnsHome()
+
                 .AddSpawn(ObjectType.Creature, "t1capital")
                 .WithFrequency(960)
                 .RandomlyWalks()
@@ -139,6 +164,31 @@ namespace SWLOR.Game.Server.Feature.SpawnDefinition
 
                 .AddSpawn(ObjectType.Creature, "t2interceptor")
                 .WithFrequency(19200)
+                .RandomlyWalks()
+                .ReturnsHome()
+
+                .AddSpawn(ObjectType.Creature, "t2ewar")
+                .WithFrequency(1920)
+                .RandomlyWalks()
+                .ReturnsHome()
+
+                .AddSpawn(ObjectType.Creature, "t2sniper")
+                .WithFrequency(1920)
+                .RandomlyWalks()
+                .ReturnsHome()
+
+                .AddSpawn(ObjectType.Creature, "t2minelayer")
+                .WithFrequency(1920)
+                .RandomlyWalks()
+                .ReturnsHome()
+
+                .AddSpawn(ObjectType.Creature, "t2logistics")
+                .WithFrequency(1440)
+                .RandomlyWalks()
+                .ReturnsHome()
+
+                .AddSpawn(ObjectType.Creature, "t2carrier")
+                .WithFrequency(480)
                 .RandomlyWalks()
                 .ReturnsHome()
 
@@ -231,6 +281,31 @@ namespace SWLOR.Game.Server.Feature.SpawnDefinition
                 .RandomlyWalks()
                 .ReturnsHome()
 
+                .AddSpawn(ObjectType.Creature, "t3ewar")
+                .WithFrequency(1920)
+                .RandomlyWalks()
+                .ReturnsHome()
+
+                .AddSpawn(ObjectType.Creature, "t3sniper")
+                .WithFrequency(1920)
+                .RandomlyWalks()
+                .ReturnsHome()
+
+                .AddSpawn(ObjectType.Creature, "t3minelayer")
+                .WithFrequency(1920)
+                .RandomlyWalks()
+                .ReturnsHome()
+
+                .AddSpawn(ObjectType.Creature, "t3logistics")
+                .WithFrequency(1440)
+                .RandomlyWalks()
+                .ReturnsHome()
+
+                .AddSpawn(ObjectType.Creature, "t3carrier")
+                .WithFrequency(480)
+                .RandomlyWalks()
+                .ReturnsHome()
+
                 .AddSpawn(ObjectType.Creature, "t3capital")
                 .WithFrequency(960)
                 .RandomlyWalks()
@@ -317,6 +392,31 @@ namespace SWLOR.Game.Server.Feature.SpawnDefinition
 
                 .AddSpawn(ObjectType.Creature, "t4interceptor")
                 .WithFrequency(19200)
+                .RandomlyWalks()
+                .ReturnsHome()
+
+                .AddSpawn(ObjectType.Creature, "t4ewar")
+                .WithFrequency(1920)
+                .RandomlyWalks()
+                .ReturnsHome()
+
+                .AddSpawn(ObjectType.Creature, "t4sniper")
+                .WithFrequency(1920)
+                .RandomlyWalks()
+                .ReturnsHome()
+
+                .AddSpawn(ObjectType.Creature, "t4minelayer")
+                .WithFrequency(1920)
+                .RandomlyWalks()
+                .ReturnsHome()
+
+                .AddSpawn(ObjectType.Creature, "t4logistics")
+                .WithFrequency(1440)
+                .RandomlyWalks()
+                .ReturnsHome()
+
+                .AddSpawn(ObjectType.Creature, "t4carrier")
+                .WithFrequency(480)
                 .RandomlyWalks()
                 .ReturnsHome()
 
@@ -409,6 +509,31 @@ namespace SWLOR.Game.Server.Feature.SpawnDefinition
                 .RandomlyWalks()
                 .ReturnsHome()
 
+                .AddSpawn(ObjectType.Creature, "t6ewar")
+                .WithFrequency(1920)
+                .RandomlyWalks()
+                .ReturnsHome()
+
+                .AddSpawn(ObjectType.Creature, "t6sniper")
+                .WithFrequency(1920)
+                .RandomlyWalks()
+                .ReturnsHome()
+
+                .AddSpawn(ObjectType.Creature, "t6minelayer")
+                .WithFrequency(1920)
+                .RandomlyWalks()
+                .ReturnsHome()
+
+                .AddSpawn(ObjectType.Creature, "t6logistics")
+                .WithFrequency(1440)
+                .RandomlyWalks()
+                .ReturnsHome()
+
+                .AddSpawn(ObjectType.Creature, "t6carrier")
+                .WithFrequency(480)
+                .RandomlyWalks()
+                .ReturnsHome()
+
                 .AddSpawn(ObjectType.Creature, "sithcap1")
                 .WithFrequency(300)
                 .RandomlyWalks()
@@ -490,6 +615,31 @@ namespace SWLOR.Game.Server.Feature.SpawnDefinition
 
                 .AddSpawn(ObjectType.Creature, "t5interceptor")
                 .WithFrequency(19200)
+                .RandomlyWalks()
+                .ReturnsHome()
+
+                .AddSpawn(ObjectType.Creature, "t5ewar")
+                .WithFrequency(1920)
+                .RandomlyWalks()
+                .ReturnsHome()
+
+                .AddSpawn(ObjectType.Creature, "t5sniper")
+                .WithFrequency(1920)
+                .RandomlyWalks()
+                .ReturnsHome()
+
+                .AddSpawn(ObjectType.Creature, "t5minelayer")
+                .WithFrequency(1920)
+                .RandomlyWalks()
+                .ReturnsHome()
+
+                .AddSpawn(ObjectType.Creature, "t5logistics")
+                .WithFrequency(1440)
+                .RandomlyWalks()
+                .ReturnsHome()
+
+                .AddSpawn(ObjectType.Creature, "t5carrier")
+                .WithFrequency(480)
                 .RandomlyWalks()
                 .ReturnsHome()
 
@@ -579,6 +729,31 @@ namespace SWLOR.Game.Server.Feature.SpawnDefinition
 
                 .AddSpawn(ObjectType.Creature, "t5interceptor")
                 .WithFrequency(19200)
+                .RandomlyWalks()
+                .ReturnsHome()
+
+                .AddSpawn(ObjectType.Creature, "t5ewar")
+                .WithFrequency(1920)
+                .RandomlyWalks()
+                .ReturnsHome()
+
+                .AddSpawn(ObjectType.Creature, "t5sniper")
+                .WithFrequency(1920)
+                .RandomlyWalks()
+                .ReturnsHome()
+
+                .AddSpawn(ObjectType.Creature, "t5minelayer")
+                .WithFrequency(1920)
+                .RandomlyWalks()
+                .ReturnsHome()
+
+                .AddSpawn(ObjectType.Creature, "t5logistics")
+                .WithFrequency(1440)
+                .RandomlyWalks()
+                .ReturnsHome()
+
+                .AddSpawn(ObjectType.Creature, "t5carrier")
+                .WithFrequency(480)
                 .RandomlyWalks()
                 .ReturnsHome()
 

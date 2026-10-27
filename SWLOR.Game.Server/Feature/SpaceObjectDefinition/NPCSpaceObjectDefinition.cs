@@ -14,6 +14,7 @@ namespace SWLOR.Game.Server.Feature.SpaceObjectDefinition
             Tier3();
             Tier4();
             Tier5();
+            RoleShips();
 
             return _builder.Build();
         }
@@ -464,6 +465,103 @@ namespace SWLOR.Game.Server.Feature.SpaceObjectDefinition
                 .ShipModule("turbolas3")
                 .ShipModule("acm_launch_1")
                 .ShipModule("storm_cann");
+        }
+
+        /// <summary>
+        /// The role ships of every faction tier (electronic warfare, sniper, minelayer, logistics and carrier). Their
+        /// hull, weapons and support modules come from RevampNpcShipCatalog, so they list no legacy modules.
+        /// </summary>
+        private void RoleShips()
+        {
+            _builder.Create("t1ewar")
+                .ItemTag("NPC_Interceptor1");
+
+            _builder.Create("t1sniper")
+                .ItemTag("NPC_Fighter1");
+
+            _builder.Create("t1minelayer")
+                .ItemTag("NPC_Bomber1");
+
+            _builder.Create("t1logistics")
+                .ItemTag("NPC_Gunship1");
+
+            _builder.Create("t1carrier")
+                .ItemTag("NPC_Gunship1");
+
+            _builder.Create("t2ewar")
+                .ItemTag("NPC_Interceptor2");
+
+            _builder.Create("t2sniper")
+                .ItemTag("NPC_Fighter2");
+
+            _builder.Create("t2minelayer")
+                .ItemTag("NPC_Bomber2");
+
+            _builder.Create("t2logistics")
+                .ItemTag("NPC_Gunship2");
+
+            _builder.Create("t2carrier")
+                .ItemTag("NPC_Gunship2");
+
+            _builder.Create("t3ewar")
+                .ItemTag("NPC_Interceptor3");
+
+            _builder.Create("t3sniper")
+                .ItemTag("NPC_Fighter3");
+
+            _builder.Create("t3minelayer")
+                .ItemTag("NPC_Bomber3");
+
+            _builder.Create("t3logistics")
+                .ItemTag("NPC_Gunship3");
+
+            _builder.Create("t3carrier")
+                .ItemTag("NPC_Gunship3");
+
+            _builder.Create("t4ewar")
+                .ItemTag("NPC_Interceptor4");
+
+            _builder.Create("t4sniper")
+                .ItemTag("NPC_Fighter4");
+
+            _builder.Create("t4minelayer")
+                .ItemTag("NPC_Bomber4");
+
+            _builder.Create("t4logistics")
+                .ItemTag("NPC_Gunship4");
+
+            _builder.Create("t4carrier")
+                .ItemTag("NPC_Gunship4");
+
+            _builder.Create("t5ewar")
+                .ItemTag("NPC_Interceptor5");
+
+            _builder.Create("t5sniper")
+                .ItemTag("NPC_Fighter5");
+
+            _builder.Create("t5minelayer")
+                .ItemTag("NPC_Bomber5");
+
+            _builder.Create("t5logistics")
+                .ItemTag("NPC_Gunship5");
+
+            _builder.Create("t5carrier")
+                .ItemTag("NPC_Gunship5");
+
+            _builder.Create("t6ewar")
+                .ItemTag("NPC_Interceptor6");
+
+            _builder.Create("t6sniper")
+                .ItemTag("NPC_Fighter6");
+
+            _builder.Create("t6minelayer")
+                .ItemTag("NPC_Bomber6");
+
+            _builder.Create("t6logistics")
+                .ItemTag("NPC_Gunship6");
+
+            _builder.Create("t6carrier")
+                .ItemTag("NPC_Gunship6");
         }
     }
 }

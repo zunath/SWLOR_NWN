@@ -70,6 +70,22 @@ var firstObject = GetFirstObjectInArea(area);
 var nextObject = GetNextObjectInArea(area);
 ```
 
+**Engine seam.** Every static wrapper in `SWLOR.NWN.API/NWScript` and `NWScriptCustom` forwards to `NWScriptRuntime.Current`, an `INWScript`. By default that is `NwnCoreNWScript`, which holds the original wrapper bodies and calls the engine, so game code and call sites are unchanged. A unit test swaps the engine for `FakeNWScript` (project `SWLOR.NWN.API.Testing`), which records every call and returns configured or default values (zero, empty string, `OBJECT_INVALID` for every `uint` return, empty engine structures):
+
+```csharp
+var engine = new FakeNWScript();
+engine.SetReturn("GetEnteringObject", player);          // also SetReturnSequence and SetReturnHandler
+using var scope = NWScriptRuntime.Override(engine);     // per async flow; parallel tests do not see each other
+
+Activity.WipeStatusOnEntry();
+
+engine.Calls.Select(call => call.ToString()).Should().Contain("DeleteLocalBool(1001, \"IS_BUSY\")");
+```
+
+- Wrappers that contain logic (for example `GetLocalBool`, `ClearAllActions` resolving `OBJECT_SELF`, `RemoveEffectByTag`) are faked at their own level: the fake records the call and does not run the wrapper's body, so configure the wrapper's own return value.
+- Write a new or changed wrapper as before (a static method whose body calls `global::NWN.Core.NWScript`), then run `tools/Refactor/Apply-EngineSeam.ps1`. It moves the body into `NwnCoreNWScript`, extends `INWScript` and `FakeNWScript`, and rewrites the wrapper to forward. Never edit `SWLOR.NWN.API/Generated/` or `SWLOR.NWN.API.Testing/Generated/` by hand. `-Check` writes nothing and fails when the checked-in output is out of date; `SWLOR.NWN.API.Tests` runs the same check.
+- Public constants stay static (an interface cannot hold them). The generator rejects any other member shape (generics, `ref`/`out` parameters, attributes, fields, nested types), so nothing slips past the seam.
+
 ### 2. NWNX Plugin System
 
 **Purpose**: Provides access to NWNX plugin functionality.

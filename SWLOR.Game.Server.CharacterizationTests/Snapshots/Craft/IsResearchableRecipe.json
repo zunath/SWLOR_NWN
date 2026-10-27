@@ -1,0 +1,18 @@
+{
+  "function": "Craft.IsResearchableRecipe(RecipeDetail) (private, read by reflection)",
+  "description": "Which kinds of recipe can be researched into blueprints: weapon, armor and food enhancement recipes.",
+  "seed": null,
+  "inputs": "Every RecipeEnhancementType member.",
+  "rowCount": 8,
+  "columns": ["enhancementType", "=> isResearchable"],
+  "rows": [
+    ["None", false],
+    ["Weapon", true],
+    ["Armor", true],
+    ["Structure", false],
+    ["Food", true],
+    ["Starship", false],
+    ["Module", false],
+    ["Droid", false]
+  ]
+}

@@ -1,0 +1,12 @@
+{
+  "function": "Craft (public const fields)",
+  "description": "The highest blueprint research level and the offset between a recipe's level and the skill rank needed to craft it.",
+  "seed": null,
+  "inputs": "All public const fields of Craft, sorted by name.",
+  "rowCount": 2,
+  "columns": ["constant", "=> type", "=> value"],
+  "rows": [
+    ["MaxResearchLevel", "Int32", 10],
+    ["RecipeSkillUnlockOffset", "Int32", 3]
+  ]
+}

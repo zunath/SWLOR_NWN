@@ -488,7 +488,7 @@ namespace SWLOR.Game.Server.Service
             var spawnId = GetLocalString(spawnObject, "SPAWN_ID");
             if (!Guid.TryParse(spawnId, out var spawnGuid) || !_spawns.TryGetValue(spawnGuid, out var detail))
             {
-                DestroyObject(spawnObject);
+                DestroySpawnObject(spawnObject);
                 return false;
             }
 
@@ -498,8 +498,27 @@ namespace SWLOR.Game.Server.Service
             CreateQueuedSpawn(spawnGuid, GetRespawnTime(detail));
             RemoveActiveSpawn(detail, spawnObject);
             SetLocalInt(spawnObject, "RESPAWN_QUEUED", 1);
-            DestroyObject(spawnObject);
+            DestroySpawnObject(spawnObject);
             return true;
+        }
+
+        /// <summary>
+        /// Destroys a spawned object without leaving anything behind. The engine drops the
+        /// inventory of a destroyed placeable into a "Remains" bag, so a resource node that
+        /// still holds items has its items destroyed first.
+        /// </summary>
+        /// <param name="spawnObject">The spawned object to destroy.</param>
+        private static void DestroySpawnObject(uint spawnObject)
+        {
+            if (GetObjectType(spawnObject) == ObjectType.Placeable && GetHasInventory(spawnObject))
+            {
+                for (var item = GetFirstItemInInventory(spawnObject); GetIsObjectValid(item); item = GetNextItemInInventory(spawnObject))
+                {
+                    DestroyObject(item);
+                }
+            }
+
+            DestroyObject(spawnObject);
         }
 
         private static DateTime GetRespawnTime(SpawnDetail detail)
@@ -608,7 +627,7 @@ namespace SWLOR.Game.Server.Service
                         foreach (var activeSpawn in _activeSpawnsByArea[area])
                         {
                             ExecuteScript("spawn_despawn", activeSpawn.SpawnObject);
-                            DestroyObject(activeSpawn.SpawnObject);
+                            DestroySpawnObject(activeSpawn.SpawnObject);
                         }
                     }
 
@@ -682,7 +701,7 @@ namespace SWLOR.Game.Server.Service
 
                     // Destroy the resource directly (avoids triggering death events which would queue duplicate respawns)
                     SetLocalInt(resourceDespawn.ResourceObject, "RESPAWN_QUEUED", 1);
-                    DestroyObject(resourceDespawn.ResourceObject);
+                    DestroySpawnObject(resourceDespawn.ResourceObject);
 
                     // Queue for respawn
                     var respawnTime = GetRespawnTime(spawnDetail);
@@ -791,6 +810,24 @@ namespace SWLOR.Game.Server.Service
             activeSpawns.RemoveAll(x => x.SpawnObject == spawnObject);
         }
 
+        private static List<Vector3> GetActivePlaceableSpawnPositions(uint area)
+        {
+            var positions = new List<Vector3>();
+            if (!_activeSpawnsByArea.TryGetValue(area, out var activeSpawns))
+                return positions;
+
+            foreach (var activeSpawn in activeSpawns)
+            {
+                if (!GetIsObjectValid(activeSpawn.SpawnObject) ||
+                    GetObjectType(activeSpawn.SpawnObject) != ObjectType.Placeable)
+                    continue;
+
+                positions.Add(GetPosition(activeSpawn.SpawnObject));
+            }
+
+            return positions;
+        }
+
         private static bool HasActiveRareSpawn(uint area, string spawnTableId)
         {
             if (string.IsNullOrWhiteSpace(spawnTableId) ||
@@ -882,9 +919,23 @@ namespace SWLOR.Game.Server.Service
                     return new SpawnResult { SpawnObject = OBJECT_INVALID };
                 }
 
-                var position = detail.UseRandomSpawnLocation ?
-                    GetPositionFromLocation(Walkmesh.GetRandomLocation(detail.Area)) :
-                    new Vector3(detail.X, detail.Y, detail.Z);
+                Vector3 position;
+                if (!detail.UseRandomSpawnLocation)
+                {
+                    position = new Vector3(detail.X, detail.Y, detail.Z);
+                }
+                // Randomly placed placeables (resource nodes, terminals) keep their distance from each other
+                // so that several of them cannot block a narrow path together.
+                else if (spawnObject.Type == ObjectType.Placeable)
+                {
+                    position = SpawnSpacing.PickSpacedPosition(
+                        () => GetPositionFromLocation(Walkmesh.GetRandomLocation(detail.Area)),
+                        GetActivePlaceableSpawnPositions(detail.Area));
+                }
+                else
+                {
+                    position = GetPositionFromLocation(Walkmesh.GetRandomLocation(detail.Area));
+                }
 
                 var facing = detail.UseRandomSpawnLocation ? Random.Next(360) : detail.Facing;
                 var location = Location(detail.Area, position, facing);

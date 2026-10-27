@@ -103,17 +103,19 @@ public static partial class MigrationEngineTests
             });
         }
 
-        // Shipped bracers: retired Poison Defense, and Poison Defense the combat replacement already converted
-        // into Resistance beside five crafted points.
+        // Every shipped item with a retired elemental Defense: the Defense itself, and the Defense the combat
+        // replacement already converted into Resistance, here above the retired amount (capped at 100).
+        foreach (var resref in RetiredDefenseStatRevisionCatalog.Changes.Keys)
         foreach (var converted in new[] { false, true })
         {
-            var bracer = await CreateItemAsync(ctx, owner, "cara_bracer", owner);
+            var retired = RetiredDefenseStatRevisionCatalog.RetiredDefense(resref);
+            var item = await CreateItemAsync(ctx, owner, resref, owner);
             await ctx.ExecuteInCreatureContextAsync(owner, () =>
             {
-                StampLegacyCarapaceBracer(bracer, converted);
-                fixtures.Add(($"legacy Carapace Bracer ({(converted ? "converted Poison Resistance" : "Poison Defense")})",
-                    ObjectPlugin.Serialize(bracer), true));
-                DestroyObject(bracer);
+                StampLegacyRetiredDefense(item, (CombatDamageType)retired.Subtype, retired.Previous, converted);
+                fixtures.Add(($"legacy {resref} ({(converted ? "converted" : "retired")} {(CombatDamageType)retired.Subtype} {retired.Previous})",
+                    ObjectPlugin.Serialize(item), true));
+                DestroyObject(item);
             });
         }
 
@@ -212,17 +214,20 @@ public static partial class MigrationEngineTests
         ctx.Assert(failures.Count == 0, $"{failures.Count} of {fixtures.Count} fixtures differ:\n" + string.Join("\n", failures));
     }
 
-    private static void StampLegacyCarapaceBracer(uint item, bool converted)
+    private static void StampLegacyRetiredDefense(uint item, CombatDamageType damageType, int amount, bool converted)
     {
         RemoveMatching(item, ItemPropertyType.Defense, (int)CombatDamageType.Physical);
         AddItemProperty(DurationType.Permanent, ItemPropertyCustom(ItemPropertyType.Defense, (int)CombatDamageType.Physical, 23), item);
         if (converted)
-            AddItemProperty(DurationType.Permanent, ItemPropertyCustom(ItemPropertyType.Resistance, (int)ResistanceType.Poison,
-                Resistance.EncodeItemPropertyCostTableValue(35)), item);
+        {
+            damageType.TryGetElementalResistanceType(out var resistance);
+            AddItemProperty(DurationType.Permanent, ItemPropertyCustom(ItemPropertyType.Resistance, (int)resistance,
+                Resistance.EncodeItemPropertyCostTableValue(Math.Min(amount + 5, Resistance.MaximumResistance))), item);
+        }
         else
-            // Current constructors reject the retired Poison Defense subtype, so it is written natively.
-            AddLegacyProperty(item, ItemPropertyType.Defense, (int)CombatDamageType.Poison, 35, 30);
-        DeleteLocalInt(item, CarapaceBracerStatRevisionCatalog.RevisionVariable);
+            // Current constructors reject the retired elemental Defense subtypes, so they are written natively.
+            AddLegacyProperty(item, ItemPropertyType.Defense, (int)damageType, 35, amount);
+        DeleteLocalInt(item, RetiredDefenseStatRevisionCatalog.RevisionVariable);
     }
 
     private static (bool Changed, string Migrated, string Listing) ConvertStoredItem(string converterName, string data, bool repairHeadgear)

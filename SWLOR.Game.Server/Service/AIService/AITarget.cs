@@ -6,7 +6,8 @@ namespace SWLOR.Game.Server.Service.AIService
 {
     public static class AITarget
     {
-        private const int DefaultAreaAbilityMinimumTargets = 2;
+        // NPC area abilities are part of their kit against a lone player too, not only against groups.
+        private const int DefaultAreaAbilityMinimumTargets = 1;
         private static readonly Dictionary<FeatType, AITargetSelector> _defaultOverrides = new();
 
         public static void RegisterDefault(FeatType feat, AITargetSelector selector)
@@ -66,7 +67,8 @@ namespace SWLOR.Game.Server.Service.AIService
             return context =>
             {
                 var target = context.CurrentEnmityTarget;
-                if (target == OBJECT_INVALID || !GetIsObjectValid(target))
+                // The area centers on this target, so a visible bystander must not draw it onto a hidden one.
+                if (target == OBJECT_INVALID || !GetIsObjectValid(target) || Stealth.IsHiddenFrom(context.Self, target))
                     return OBJECT_INVALID;
 
                 context.SetEvaluatedTarget(target);

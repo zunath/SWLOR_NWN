@@ -31,7 +31,7 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.NPC
                 CombatDamageType.Electrical,
                 ResistanceType.Electrical,
                 VisualEffect.Vfx_Imp_Lightning_S,
-                VisualEffect.Vfx_Fnf_Storm,
+                VisualEffect.Vfx_Fnf_Mystical_Explosion,
                 maxRange: 8f);
 
             return _builder.Build();

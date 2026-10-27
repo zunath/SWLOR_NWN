@@ -33,7 +33,7 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.Mimicry
                 CombatDamageType.Electrical,
                 ResistanceType.Electrical,
                 VisualEffect.Vfx_Imp_Magical_Vision,
-                VisualEffect.Vfx_Fnf_Storm,
+                VisualEffect.Vfx_Fnf_Word,
                 centerOnActivator: true,
                 enmityBonus: 75)
                 .DisplaysVisualEffectOnSuccessfulImpact(VisualEffect.Vfx_Ability_WardenMarkTechnique)

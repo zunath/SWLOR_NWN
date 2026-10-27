@@ -851,6 +851,7 @@ namespace SWLOR.Game.Server.Service
                 }
 
                 if (ability.HasExplicitMaxRange &&
+                    !ability.ClampsLocationTargetToMaxRange &&
                     GetDistanceBetweenLocations(GetLocation(activator), targetLocation) > ability.MaxRange)
                 {
                     return Deny("You are out of range.  This ability has a range of " + ability.MaxRange + " meters.");

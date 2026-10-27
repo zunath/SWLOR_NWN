@@ -175,6 +175,53 @@ public class AbilityImpactVisualEffectTests
         service.Should().Contain("EffectVisualEffect(impactAbility.DamageImpactVisualEffect)");
     }
 
+    [Test]
+    public void ElectricalTechniqueAreaBursts_AreUniquePerAbilityAndRenderWithASound()
+    {
+        var root = FindRepositoryRoot();
+        var abilityRoot = Path.Combine(root, "SWLOR.Game.Server", "Feature", "AbilityDefinition");
+
+        // Row 151 (Vfx_Fnf_Storm) is a blank placeholder that renders nothing.
+        foreach (var file in Directory.GetFiles(abilityRoot, "*.cs", SearchOption.AllDirectories))
+        {
+            File.ReadAllText(file).Should().NotContain("VisualEffect.Vfx_Fnf_Storm",
+                $"{Path.GetFileName(file)} must not use the blank Vfx_Fnf_Storm row");
+        }
+
+        // Each ability has its own area burst; the player technique and its NPC twin share it.
+        var expected = new Dictionary<string, VisualEffect>
+        {
+            ["StaticBurst"] = VisualEffect.Vfx_Fnf_Electric_Explosion,
+            ["ArcPulse"] = VisualEffect.Fnf_Dispel,
+            ["IonBurst"] = VisualEffect.Vfx_Fnf_Mystical_Explosion,
+            ["FinalSuppression"] = VisualEffect.Vfx_Fnf_Pwstun,
+            ["WardenMark"] = VisualEffect.Vfx_Fnf_Word,
+        };
+        expected.Values.Distinct().Should().HaveCount(expected.Count, "each ability needs its own area burst");
+        foreach (var (name, effect) in expected)
+        {
+            foreach (var path in new[] { $"Mimicry/{name}TechniqueAbilityDefinition.cs", $"NPC/{name}AbilityDefinition.cs" })
+            {
+                File.ReadAllText(Path.Combine(abilityRoot, path)).Should().Contain($"VisualEffect.{effect}",
+                    $"{path} must use its ability's own area burst");
+            }
+        }
+
+        var table = File.ReadAllLines(Path.Combine(root, "SWLOR_Haks", "sw_2da", "visualeffects.2da"));
+        var header = Regex.Split(table.First(line => line.TrimStart().StartsWith("Label ")).Trim(), @"\s+");
+        var rows = table.Where(line => Regex.IsMatch(line, @"^\s*\d+\s"))
+            .Select(line => Regex.Split(line.Trim(), @"\s+"))
+            .ToDictionary(parts => int.Parse(parts[0]), parts => parts.Skip(1).ToArray());
+        foreach (var effect in expected.Values)
+        {
+            var row = rows[(int)effect];
+            header.Where(name => name.StartsWith("Imp_") && name.EndsWith("_Node"))
+                .Select(name => row[Array.IndexOf(header, name)])
+                .Should().Contain(value => value != "****", $"{effect} needs a model");
+            row[Array.IndexOf(header, "SoundImpact")].Should().NotBe("****", $"{effect} needs a sound");
+        }
+    }
+
     private static string FindRepositoryRoot()
     {
         for (var directory = new DirectoryInfo(TestContext.CurrentContext.TestDirectory); directory != null; directory = directory.Parent)

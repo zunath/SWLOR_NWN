@@ -460,6 +460,8 @@ namespace SWLOR.Game.Server.Service
                 ViewerIsDM = viewerIsDM,
                 ViewerIsInParty = viewerIsInParty,
                 ViewerIsPartyLeader = viewerIsInParty && viewerSubject.PartyLeader == viewer,
+                ViewerIsInSpace = Space.IsPlayerInSpaceMode(viewer),
+                ViewerCallState = viewerIsDM ? PlayerListCallState.None : HoloCom.GetCallState(viewer),
                 HasTarget = true,
                 TargetIsSelf = isSelf,
                 TargetIsDM = subject.IsDM,
@@ -467,6 +469,8 @@ namespace SWLOR.Game.Server.Service
                 TargetIsInOtherParty = !isSelf && !isInViewerParty && !subject.IsDM && subject.PartyPlayerCount >= 2,
                 TargetIsPartyLeader = !subject.IsDM && subject.PartyPlayerCount >= 2 && subject.PartyLeader == subject.Player,
                 ViewerDislikesTarget = !isSelf && !viewerIsDM && !subject.IsDM && IsHostileTo(viewer, subject.Player),
+                TargetIsInSpace = !subject.IsDM && Space.IsPlayerInSpaceMode(subject.Player),
+                TargetIsInCall = !subject.IsDM && HoloCom.GetCallState(subject.Player) != PlayerListCallState.None,
             };
         }
 

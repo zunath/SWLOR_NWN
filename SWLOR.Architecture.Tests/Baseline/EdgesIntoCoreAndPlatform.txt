@@ -126,7 +126,7 @@ RoleplayXP -> Platform/Entity | 1
 RoleplayXP -> Platform/Enumeration | 3
 Skill -> Platform/Core | 5
 Skill -> Platform/Entity | 13
-Skill -> Platform/Enumeration | 5
+Skill -> Platform/Enumeration | 54
 Skill -> Platform/Extension | 2
 Stat -> Platform/Core | 4
 Stat -> Platform/Entity | 51
@@ -242,7 +242,7 @@ Feature/SnippetDefinition -> Platform/Entity | 8
 FrameProfiler -> Platform/Core | 1
 FrameProfiler -> Platform/Root | 1
 Log -> Platform/Core | 1
-Log -> Platform/Enumeration | 6
+Log -> Platform/Enumeration | 34
 Log -> Platform/Extension | 1
 Log -> Platform/Root | 3
 Migration -> Platform/Core | 4
@@ -520,9 +520,10 @@ LightsaberWorkbench -> Platform/Entity | 1
 Loot -> Platform/Core | 7
 OverflowStorage -> Platform/Entity | 4
 
-# Platform -> Core (8 edges)
+# Platform -> Core (9 edges)
 Platform/Core -> FrameProfiler | 5
 Platform/Core -> Log | 12
+Platform/Entity -> Feature/MigrationDefinition | 2
 Platform/Native -> ColorToken | 2
 Platform/Native -> DB | 2
 Platform/Native -> Feature/MigrationDefinition | 1

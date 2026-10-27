@@ -5,7 +5,7 @@ namespace SWLOR.Architecture.Tests.Domains;
 /// Its text form is what the baseline files and failure messages show:
 /// <c>Combat</c>, <c>Feature/PerkDefinition</c>, <c>Feature.Auditing</c>, <c>Platform/Native</c>.
 /// </summary>
-internal readonly record struct DependencyUnit(UnitKind Kind, string Name) : IComparable<DependencyUnit>
+internal readonly record struct DependencyUnit(UnitKind Kind, string Name)
 {
     public override string ToString() => Kind switch
     {
@@ -15,8 +15,6 @@ internal readonly record struct DependencyUnit(UnitKind Kind, string Name) : ICo
         UnitKind.Platform => "Platform/" + Name,
         _ => throw new ArgumentOutOfRangeException(nameof(Kind))
     };
-
-    public int CompareTo(DependencyUnit other) => string.CompareOrdinal(ToString(), other.ToString());
 
     /// <summary>Reads the text form back; returns false for anything else.</summary>
     public static bool TryParse(string text, out DependencyUnit unit)

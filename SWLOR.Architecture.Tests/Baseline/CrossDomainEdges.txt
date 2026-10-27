@@ -146,7 +146,7 @@ Perk -> PowerGloveEquipment | 2
 Perk -> TwinPistolEquipment | 1
 PlayerIntroduction -> Recast | 2
 Skill -> TwinPistolEquipment | 1
-Stat -> Combat | 40
+Stat -> Combat | 1131
 Stat -> CombatRecorder | 8
 Stat -> Enmity | 1
 Stat -> PvpCombat | 1

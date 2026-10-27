@@ -1,3 +1,4 @@
+using System.Collections.Immutable;
 using System.Reflection.Emit;
 using System.Reflection.Metadata;
 using System.Reflection.Metadata.Ecma335;
@@ -7,13 +8,15 @@ namespace SWLOR.Architecture.Tests.Scanning;
 
 /// <summary>
 /// Reads a compiled assembly's IL and records every reference one top-level type makes to another top-level type
-/// of the same assembly. Nothing is loaded or executed, and comments and strings cannot cause a reference.
+/// of the same assembly. The assembly is never loaded or run (only an enum of another assembly is loaded, to learn
+/// its underlying type), and comments and strings cannot cause a reference.
 /// </summary>
 /// <remarks>
 /// <para>A reference is any of: a method, field, property accessor or type token in a method body (calls, field
 /// access, <c>newobj</c>, casts, <c>typeof</c>, boxing, <c>ldftn</c>, <c>calli</c> signatures), a catch type, a type
 /// in a local variable, a type in a method or field signature (return value, parameter, field type, generic
-/// arguments, arrays), a base type or interface, a generic constraint, or a custom attribute.</para>
+/// arguments, arrays), a base type or interface, a generic constraint, or a custom attribute (its type, plus the types
+/// named by <c>typeof</c> arguments and the enum types of enum arguments).</para>
 /// <para>Nested and compiler-generated types (closures, lambdas, async state machines, local functions) are
 /// attributed to the top-level type that declares them.</para>
 /// <para><b>Limit.</b> The C# compiler inlines constants (enum members, <c>const</c> fields), so a dependency made
@@ -36,6 +39,7 @@ internal static class AssemblyScanner
         private readonly PEReader _pe;
         private readonly MetadataReader _metadata;
         private readonly DefinedTypeCollector _signatures = new();
+        private readonly AttributeArgumentCollector _attributeArguments;
         private readonly Dictionary<TypeDefinitionHandle, TypeDefinitionHandle> _topLevel = new();
         private readonly Dictionary<(TypeKey Source, TypeKey Target), HashSet<string>> _references = new();
         private readonly Dictionary<TypeDefinitionHandle, TypeKey> _keys = new();
@@ -48,6 +52,7 @@ internal static class AssemblyScanner
         {
             _pe = pe;
             _metadata = pe.GetMetadataReader();
+            _attributeArguments = new AttributeArgumentCollector(_metadata, TypesByName());
         }
 
         public TypeReferenceGraph Run()
@@ -194,7 +199,32 @@ internal static class AssemblyScanner
         private void AddAttributes(CustomAttributeHandleCollection attributes)
         {
             foreach (var attributeHandle in attributes)
-                AddEntity(_metadata.GetCustomAttribute(attributeHandle).Constructor);
+            {
+                var attribute = _metadata.GetCustomAttribute(attributeHandle);
+                AddEntity(attribute.Constructor);
+
+                // typeof(X) and enum values sit in the attribute blob, not behind a metadata token.
+                var value = attribute.DecodeValue(_attributeArguments);
+                foreach (var argument in value.FixedArguments)
+                    AddAttributeArgument(argument.Type, argument.Value);
+                foreach (var argument in value.NamedArguments)
+                    AddAttributeArgument(argument.Type, argument.Value);
+            }
+        }
+
+        private void AddAttributeArgument(AttributeArgumentType type, object? value)
+        {
+            AddAll(type.Defined);
+            switch (value)
+            {
+                case AttributeArgumentType named:
+                    AddAll(named.Defined);
+                    break;
+                case ImmutableArray<CustomAttributeTypedArgument<AttributeArgumentType>> elements:
+                    foreach (var element in elements)
+                        AddAttributeArgument(element.Type, element.Value);
+                    break;
+            }
         }
 
         private void AddAll(IEnumerable<TypeDefinitionHandle> targets)
@@ -262,6 +292,27 @@ internal static class AssemblyScanner
             }
 
             members.Add(_member);
+        }
+
+        private Dictionary<string, TypeDefinitionHandle> TypesByName()
+        {
+            var names = new Dictionary<string, TypeDefinitionHandle>(StringComparer.Ordinal);
+            foreach (var handle in _metadata.TypeDefinitions)
+                names[MetadataName(handle)] = handle;
+            return names;
+        }
+
+        // The name a serialized typeof(...) uses: Namespace.Outer+Nested`1.
+        private string MetadataName(TypeDefinitionHandle handle)
+        {
+            var definition = _metadata.GetTypeDefinition(handle);
+            var name = _metadata.GetString(definition.Name);
+            var declaring = definition.GetDeclaringType();
+            if (!declaring.IsNil)
+                return MetadataName(declaring) + "+" + name;
+
+            var @namespace = _metadata.GetString(definition.Namespace);
+            return @namespace.Length == 0 ? name : @namespace + "." + name;
         }
 
         private TypeDefinitionHandle TopLevelOf(TypeDefinitionHandle handle)

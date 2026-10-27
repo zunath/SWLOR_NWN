@@ -66,12 +66,23 @@ public class AssemblyScannerTests
         MembersReferencing(typeof(FieldHolder), typeof(FieldTypeTarget)).Should().Contain("FieldHolder::Held");
     }
 
+    [TestCase(typeof(AttributeTypeofTarget), TestName = "typeof argument of a custom attribute")]
+    [TestCase(typeof(AttributeNamedTypeTarget), TestName = "typeof in a named argument of a custom attribute")]
+    [TestCase(typeof(AttributeArrayTypeTarget), TestName = "typeof in an array argument of a custom attribute")]
+    [TestCase(typeof(AttributeGenericTypeTarget), TestName = "Generic argument of a typeof argument")]
+    [TestCase(typeof(AttributeEnumTarget), TestName = "Enum type of an enum argument of a custom attribute")]
+    public void Records_the_types_named_by_custom_attribute_arguments(Type target)
+    {
+        MembersReferencing(typeof(TypeArgumentSource), target).Should().Contain("TypeArgumentSource::(type)");
+    }
+
     [TestCase(typeof(ConstantTarget), TestName = "An inlined enum constant leaves no reference")]
     [TestCase(typeof(NamedOnlyTarget), TestName = "A type named only in a string or nameof leaves no reference")]
     [TestCase(typeof(UnrelatedTarget), TestName = "A type nothing uses leaves no reference")]
     public void Records_no_reference_without_a_use_in_the_code(Type target)
     {
-        Graph.References.Keys.Should().NotContain(key => key.Target.Equals(KeyOf(target)));
+        // Only Source is checked: this test class names the targets in its own [TestCase] attributes.
+        Graph.References.Keys.Should().NotContain(key => key.Source.Equals(KeyOf(typeof(Source))) && key.Target.Equals(KeyOf(target)));
     }
 
     [Test]

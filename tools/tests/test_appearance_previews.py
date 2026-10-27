@@ -345,12 +345,33 @@ class RenderCacheTests(unittest.TestCase):
         self.touch(self.other_hak)
         self.assertFalse(self.cache().is_fresh("pfh0_chest001", self.renders))
 
+    def test_changing_the_preview_dyes_redoes_every_render(self):
+        from appearance_previews import __main__ as generator
+        cache = self.cache()
+        cache.record("pfh0_chest001", ["pfh0_chest001.mdl"], complete=True)
+        cache.save()
+        original = generator.PREVIEW_DYES
+        try:
+            generator.PREVIEW_DYES = tuple(reversed(original))
+            self.assertFalse(self.cache().is_fresh("pfh0_chest001", self.renders))
+        finally:
+            generator.PREVIEW_DYES = original
+
     def test_shared_intermediates_are_cleared_when_any_hak_changes(self):
         self.cache().save()
         (self.work / "textures").mkdir()
         self.touch(self.other_hak)
         self.cache()
         self.assertFalse((self.work / "textures").exists())
+
+
+class ClassificationTests(unittest.TestCase):
+    def test_unsupported_classifications_become_character(self):
+        from appearance_previews.__main__ import importable_classification
+        model = chr(10).join(["newmodel x", "  classification OTHER", ""])
+        self.assertIn("classification character", importable_classification(model))
+        item = "  classification ITEM" + chr(10)
+        self.assertEqual(importable_classification(item), item)
 
 
 if __name__ == "__main__":

@@ -12,8 +12,10 @@ import numpy as np
 from PIL import Image
 
 LAYER_BASE = (0, 176, 352, 528, 704, 704, 880, 880, 1056, 1056)  # skin hair m1 m2 c1 c2 l1 l2 t1 t2
-# Fixed preview dyes (palette ids), chosen so every picture shows its shading and trims.
-PREVIEW_DYES = (2, 3, 9, 2, 26, 25, 8, 9, 0, 0)
+# Fixed preview dyes (palette ids), chosen so every channel reads distinctly in the pictures:
+# off-white Cloth 1 (B1), deep red Cloth 2 (H7), tan Leather 1 (P6), near-black Leather 2 (H11),
+# steel Metal 1 (B1) and gold Metal 2 (O6).
+PREVIEW_DYES = (2, 3, 1, 94, 1, 103, 95, 167, 0, 0)
 
 
 def read_plt(path: Path):

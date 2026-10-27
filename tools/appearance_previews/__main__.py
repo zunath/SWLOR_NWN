@@ -26,7 +26,7 @@ from PIL import Image
 from . import VIEWS, preview_resref
 from .jobs import CLOAK_ATLAS_PREFIX, REPO, build
 from .resources import HakIndex
-from .tint import bake, cloak_tile, plain_texture, read_tint_map, save_for_blender
+from .tint import PREVIEW_DYES, bake, cloak_tile, plain_texture, read_tint_map, save_for_blender
 
 BACKGROUND = (60, 58, 55)
 DEFAULT_BLENDER = r"C:\Program Files\Blender Foundation\Blender 4.0\blender.exe"
@@ -67,6 +67,17 @@ def decompile(models: Path, ascii_dir: Path):
         result = subprocess.run([str(cleanmodels()), "decompile", "--json", "--overwrite", str(binary_dir), str(ascii_dir)],
                                 capture_output=True, text=True, encoding="utf8", errors="replace")
         (models.parent / "decompile.log").write_text(result.stdout + result.stderr, encoding="utf8")
+
+
+# Classifications the Neverblender importer accepts; anything else (e.g. OTHER) aborts the import.
+IMPORTABLE_CLASSIFICATIONS = {"unknown", "tile", "character", "door", "effect", "gui", "item"}
+CLASSIFICATION = re.compile(r"(?im)^(\s*classification\s+)(\S+)")
+
+
+def importable_classification(text: str) -> str:
+    """The model text with an unsupported classification replaced; it only labels the model."""
+    return CLASSIFICATION.sub(
+        lambda m: m[0] if m[2].lower() in IMPORTABLE_CLASSIFICATIONS else m[1] + "character", text)
 
 
 def mesh_materials(ascii_path: Path, bitmap_fallbacks=None) -> dict:
@@ -214,6 +225,8 @@ def main(argv=None):
     parser.add_argument("--parallel", type=int, default=2)
     parser.add_argument("--batch", type=int, default=200)
     args = parser.parse_args(argv)
+    # Blender resolves texture paths against its own folder; hand it absolute paths only.
+    args.hak_dir, args.output, args.work = (path.resolve() for path in (args.hak_dir, args.output, args.work))
 
     index = HakIndex(args.hak_dir, module_haks())
     jobs = build(args.two_da, index.exists)
@@ -254,8 +267,9 @@ class RenderCache:
     """Remembers which HAKs each cached render came from.
 
     A render is reused only while every HAK it was made from is unchanged (size and
-    modification time). Extracted models and baked textures are cleared whenever any HAK
-    changes, since they are cheap to rebuild and are shared between parts.
+    modification time) and the preview dyes are the same. Extracted models and baked textures
+    are cleared whenever any HAK or the dyes change, since they are cheap to rebuild and are
+    shared between parts.
     """
 
     FILE = "render_cache.json"
@@ -270,9 +284,10 @@ class RenderCache:
             state = json.loads(self.path.read_text())
         except (OSError, ValueError):
             state = {}
+        self.dyes = list(PREVIEW_DYES)
         self.previous = state.get("haks", {})
-        self.dependencies = state.get("renders", {})
-        if self.previous != self.current:
+        self.dependencies = state.get("renders", {}) if state.get("dyes") == self.dyes else {}
+        if self.previous != self.current or state.get("dyes") != self.dyes:
             for folder in ("models", "binary", "ascii", "raw", "textures"):
                 shutil.rmtree(work / folder, ignore_errors=True)
 
@@ -295,7 +310,7 @@ class RenderCache:
 
     def save(self):
         self.path.parent.mkdir(parents=True, exist_ok=True)
-        self.path.write_text(json.dumps({"haks": self.current, "renders": self.dependencies}, indent=0))
+        self.path.write_text(json.dumps({"haks": self.current, "dyes": self.dyes, "renders": self.dependencies}, indent=0))
 
 
 def render(args, index, jobs, renders, cache):
@@ -314,6 +329,10 @@ def render(args, index, jobs, renders, cache):
             # Extraction or CleanModels decompile failed; see decompile.log in the work folder.
             problems.append(f"PREVIEW_NO_MODEL {job.key}")
             continue
+        text = ascii_path.read_text(errors="ignore")
+        fixed = importable_classification(text)
+        if fixed != text:
+            ascii_path.write_text(fixed)
         bitmaps = {}
         nodes = mesh_materials(ascii_path, bitmaps)
         if "*" in job.materials:

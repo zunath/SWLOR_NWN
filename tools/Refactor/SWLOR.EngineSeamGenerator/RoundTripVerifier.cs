@@ -97,9 +97,10 @@ internal static class RoundTripVerifier
             return;
         }
 
-        if (!rewritten.Constants.SequenceEqual(source.Constants) || !rewritten.Usings.SequenceEqual(source.Usings))
+        if (!rewritten.Constants.SequenceEqual(source.Constants) || !rewritten.Usings.SequenceEqual(source.Usings) ||
+            !rewritten.NestedTypes.SequenceEqual(source.NestedTypes))
         {
-            errors.Add($"{source.Path}: the rewrite changed the constants or using directives.");
+            errors.Add($"{source.Path}: the rewrite changed the constants, nested types or using directives.");
         }
 
         foreach (var (before, after) in source.Members.Zip(rewritten.Members))

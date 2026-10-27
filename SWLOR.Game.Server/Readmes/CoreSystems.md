@@ -96,6 +96,22 @@ engine.Calls.Select(call => call.ToString()).Should().Contain("DeleteLocalBool(1
 - `ChatPlugin.cs` - Chat system
 - Various plugin interfaces
 
+**Engine seam.** Every static wrapper in `SWLOR.NWN.API/NWNX/*Plugin.cs` forwards to its plugin's runtime, the same way the NWScript wrappers do: `ChatPlugin.SendMessage` calls `ChatPluginRuntime.Current`, an `IChatPlugin`. By default that is `NwnCoreChatPlugin`, which holds the original wrapper bodies and calls NWNX, so game code and call sites are unchanged. Each plugin has its own interface (`IChatPlugin`), pass-through (`NwnCoreChatPlugin`), runtime (`ChatPluginRuntime`) and fake (`FakeChatPlugin`, project `SWLOR.NWN.API.Testing`). A test replaces one plugin without touching the others:
+
+```csharp
+var plugin = new FakeCreaturePlugin();
+plugin.SetReturn("GetKnowsFeat", true);                      // also SetReturnSequence and SetReturnHandler
+using var scope = CreaturePluginRuntime.Override(plugin);    // per async flow; parallel tests do not see each other
+
+QuickCast.KnowsFeat(player, feat).Should().BeTrue();
+
+plugin.Calls.Select(call => call.ToString()).Should().Equal("GetKnowsFeat(1001, Alertness)");
+```
+
+- The same rules as the NWScript seam apply: wrappers with logic (an enum cast, a `bool` to `int` conversion, a result struct) are faked at their own level, and a new or changed wrapper is written as before and then moved by `tools/Refactor/Apply-EngineSeam.ps1`, which regenerates the NWScript and plugin seams together. A plugin file added to `SWLOR.NWN.API/NWNX` as `<Name>Plugin.cs` gets its own seam on the next run.
+- A plugin's data-only nested types (`ObjectPlugin.LocalVariable`, `UtilPlugin.WorldTime`, `UtilPlugin.HighResTimestamp`, `WeaponPlugin.DevastatingCriticalData`) stay in the static class and are used by the interface and fake through `using static`. The generator rejects a nested type that holds code.
+- A fake returns a new empty instance for a plain data class with a public parameterless constructor (`JournalEntry`, `QuickBarSlot`, `ItemPropertyUnpacked`), so game code that reads a field of the result does not fail on a null.
+
 **Usage**:
 ```csharp
 // Send chat message

@@ -13,7 +13,7 @@ namespace SWLOR.NWN.API.NWNX
         /// <param name="feat">The feat to set.</param>
         public static void SetWeaponFocusFeat(BaseItem baseItem, FeatType feat)
         {
-            global::NWN.Core.NWNX.WeaponPlugin.SetWeaponFocusFeat((int)baseItem, (int)feat);
+            WeaponPluginRuntime.Current.SetWeaponFocusFeat(baseItem, feat);
         }
 
         /// <summary>
@@ -23,7 +23,7 @@ namespace SWLOR.NWN.API.NWNX
         /// <param name="feat">The feat to set.</param>
         public static void SetEpicWeaponFocusFeat(BaseItem baseItem, FeatType feat)
         {
-            global::NWN.Core.NWNX.WeaponPlugin.SetEpicWeaponFocusFeat((int)baseItem, (int)feat);
+            WeaponPluginRuntime.Current.SetEpicWeaponFocusFeat(baseItem, feat);
         }
 
         /// <summary>
@@ -33,7 +33,7 @@ namespace SWLOR.NWN.API.NWNX
         /// <param name="feat">The feat to set.</param>
         public static void SetGreaterWeaponFocusFeat(BaseItem baseItem, FeatType feat)
         {
-            global::NWN.Core.NWNX.WeaponPlugin.SetGreaterWeaponFocusFeat((int)baseItem, (int)feat);
+            WeaponPluginRuntime.Current.SetGreaterWeaponFocusFeat(baseItem, feat);
         }
 
         /// <summary>
@@ -43,7 +43,7 @@ namespace SWLOR.NWN.API.NWNX
         /// <param name="nCreatureSize">The creature size minimum to consider this weapon finessable.</param>
         public static void SetWeaponFinesseSize(BaseItem baseItem, CreatureSize nCreatureSize)
         {
-            global::NWN.Core.NWNX.WeaponPlugin.SetWeaponFinesseSize((int)baseItem, (int)nCreatureSize);
+            WeaponPluginRuntime.Current.SetWeaponFinesseSize(baseItem, nCreatureSize);
         }
 
         /// <summary>
@@ -52,7 +52,7 @@ namespace SWLOR.NWN.API.NWNX
         /// <param name="baseItem">The base item id.</param>
         public static void SetWeaponUnarmed(BaseItem baseItem)
         {
-            global::NWN.Core.NWNX.WeaponPlugin.SetWeaponUnarmed((int)baseItem);
+            WeaponPluginRuntime.Current.SetWeaponUnarmed(baseItem);
         }
 
         /// <summary>
@@ -62,7 +62,7 @@ namespace SWLOR.NWN.API.NWNX
         /// <remarks>This method is deprecated. Use baseitems.2da instead.</remarks>
         public static void SetWeaponIsMonkWeapon(BaseItem baseItem)
         {
-            global::NWN.Core.NWNX.WeaponPlugin.SetWeaponIsMonkWeapon((int)baseItem);
+            WeaponPluginRuntime.Current.SetWeaponIsMonkWeapon(baseItem);
         }
 
         /// <summary>
@@ -72,7 +72,7 @@ namespace SWLOR.NWN.API.NWNX
         /// <param name="feat">The feat to set.</param>
         public static void SetWeaponImprovedCriticalFeat(BaseItem baseItem, FeatType feat)
         {
-            global::NWN.Core.NWNX.WeaponPlugin.SetWeaponImprovedCriticalFeat((int)baseItem, (int)feat);
+            WeaponPluginRuntime.Current.SetWeaponImprovedCriticalFeat(baseItem, feat);
         }
 
         /// <summary>
@@ -82,7 +82,7 @@ namespace SWLOR.NWN.API.NWNX
         /// <param name="feat">The feat to set.</param>
         public static void SetWeaponSpecializationFeat(BaseItem baseItem, FeatType feat)
         {
-            global::NWN.Core.NWNX.WeaponPlugin.SetWeaponSpecializationFeat((int)baseItem, (int)feat);
+            WeaponPluginRuntime.Current.SetWeaponSpecializationFeat(baseItem, feat);
         }
 
         /// <summary>
@@ -92,7 +92,7 @@ namespace SWLOR.NWN.API.NWNX
         /// <param name="feat">The feat to set.</param>
         public static void SetGreaterWeaponSpecializationFeat(BaseItem baseItem, FeatType feat)
         {
-            global::NWN.Core.NWNX.WeaponPlugin.SetGreaterWeaponSpecializationFeat((int)baseItem, (int)feat);
+            WeaponPluginRuntime.Current.SetGreaterWeaponSpecializationFeat(baseItem, feat);
         }
 
         /// <summary>
@@ -102,7 +102,7 @@ namespace SWLOR.NWN.API.NWNX
         /// <param name="feat">The feat to set.</param>
         public static void SetEpicWeaponSpecializationFeat(BaseItem baseItem, FeatType feat)
         {
-            global::NWN.Core.NWNX.WeaponPlugin.SetEpicWeaponSpecializationFeat((int)baseItem, (int)feat);
+            WeaponPluginRuntime.Current.SetEpicWeaponSpecializationFeat(baseItem, feat);
         }
 
         /// <summary>
@@ -112,7 +112,7 @@ namespace SWLOR.NWN.API.NWNX
         /// <param name="feat">The feat to set.</param>
         public static void SetEpicWeaponOverwhelmingCriticalFeat(BaseItem baseItem, FeatType feat)
         {
-            global::NWN.Core.NWNX.WeaponPlugin.SetEpicWeaponOverwhelmingCriticalFeat((int)baseItem, (int)feat);
+            WeaponPluginRuntime.Current.SetEpicWeaponOverwhelmingCriticalFeat(baseItem, feat);
         }
 
         /// <summary>
@@ -122,7 +122,7 @@ namespace SWLOR.NWN.API.NWNX
         /// <param name="feat">The feat to set.</param>
         public static void SetEpicWeaponDevastatingCriticalFeat(BaseItem baseItem, FeatType feat)
         {
-            global::NWN.Core.NWNX.WeaponPlugin.SetEpicWeaponDevastatingCriticalFeat((int)baseItem, (int)feat);
+            WeaponPluginRuntime.Current.SetEpicWeaponDevastatingCriticalFeat(baseItem, feat);
         }
 
         /// <summary>
@@ -132,7 +132,7 @@ namespace SWLOR.NWN.API.NWNX
         /// <param name="feat">The feat to set.</param>
         public static void SetWeaponOfChoiceFeat(BaseItem baseItem, FeatType feat)
         {
-            global::NWN.Core.NWNX.WeaponPlugin.SetWeaponOfChoiceFeat((int)baseItem, (int)feat);
+            WeaponPluginRuntime.Current.SetWeaponOfChoiceFeat(baseItem, feat);
         }
 
         /// <summary>
@@ -142,7 +142,7 @@ namespace SWLOR.NWN.API.NWNX
         /// <param name="nVal">The new value of the option.</param>
         public static void SetOption(int nOption, int nVal)
         {
-            global::NWN.Core.NWNX.WeaponPlugin.SetOption(nOption, nVal);
+            WeaponPluginRuntime.Current.SetOption(nOption, nVal);
         }
 
         /// <summary>
@@ -151,7 +151,7 @@ namespace SWLOR.NWN.API.NWNX
         /// <param name="sScript">The script to call when a Devastating Critical occurs.</param>
         public static void SetDevastatingCriticalEventScript(string sScript)
         {
-            global::NWN.Core.NWNX.WeaponPlugin.SetDevastatingCriticalEventScript(sScript);
+            WeaponPluginRuntime.Current.SetDevastatingCriticalEventScript(sScript);
         }
 
         /// <summary>
@@ -160,7 +160,7 @@ namespace SWLOR.NWN.API.NWNX
         /// <remarks>This is only for use with the Devastating Critical Event Script.</remarks>
         public static void BypassDevastatingCritical()
         {
-            global::NWN.Core.NWNX.WeaponPlugin.BypassDevastatingCritical();
+            WeaponPluginRuntime.Current.BypassDevastatingCritical();
         }
 
         /// <summary>
@@ -170,13 +170,7 @@ namespace SWLOR.NWN.API.NWNX
         /// <returns>A DevastatingCriticalData struct.</returns>
         public static DevastatingCriticalData GetDevastatingCriticalEventData()
         {
-            var coreResult = global::NWN.Core.NWNX.WeaponPlugin.GetDevastatingCriticalEventData();
-            return new DevastatingCriticalData
-            {
-                Weapon = coreResult.oWeapon,
-                Target = coreResult.oTarget,
-                Damage = coreResult.nDamage
-            };
+            return WeaponPluginRuntime.Current.GetDevastatingCriticalEventData();
         }
 
 
@@ -188,7 +182,7 @@ namespace SWLOR.NWN.API.NWNX
         /// <param name="bPersist">whether the two hand state should persist to the gff file.</param>
         public static void SetOneHalfStrength(uint oWeapon, bool nEnable, bool bPersist = false)
         {
-            global::NWN.Core.NWNX.WeaponPlugin.SetOneHalfStrength(oWeapon, nEnable ? 1 : 0, bPersist ? 1 : 0);
+            WeaponPluginRuntime.Current.SetOneHalfStrength(oWeapon, nEnable, bPersist);
         }
 
         /// <summary>
@@ -198,7 +192,7 @@ namespace SWLOR.NWN.API.NWNX
         /// <returns>FALSE/0 if weapon is not receiving the bonus. TRUE/1 if it does.</returns>
         public static int GetOneHalfStrength(uint oWeapon)
         {
-            return global::NWN.Core.NWNX.WeaponPlugin.GetOneHalfStrength(oWeapon);
+            return WeaponPluginRuntime.Current.GetOneHalfStrength(oWeapon);
         }
 
         /// <summary>
@@ -211,7 +205,7 @@ namespace SWLOR.NWN.API.NWNX
         /// <remarks>fMaxPassive should probably be lower than fMax, half of fMax seems to be a good start. fPreferred should be at least ~0.5f lower than fMax.</remarks>
         public static void SetMaxRangedAttackDistanceOverride(BaseItem nBaseItem, float fMax, float fMaxPassive, float fPreferred)
         {
-            global::NWN.Core.NWNX.WeaponPlugin.SetMaxRangedAttackDistanceOverride((int)nBaseItem, fMax, fMaxPassive, fPreferred);
+            WeaponPluginRuntime.Current.SetMaxRangedAttackDistanceOverride(nBaseItem, fMax, fMaxPassive, fPreferred);
         }
 
         /// <summary>

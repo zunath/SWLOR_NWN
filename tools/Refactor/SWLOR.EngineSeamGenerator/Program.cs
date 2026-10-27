@@ -3,12 +3,16 @@ using SWLOR.EngineSeamGenerator;
 /*
  * Engine seam generator.
  *
- * Reads the hand-written static wrappers in SWLOR.NWN.API/NWScript and NWScriptCustom and writes the engine seam:
+ * Reads the hand-written static wrappers and writes the engine seams, one set of files per seam:
+ *   - the NWScript seam, from SWLOR.NWN.API/NWScript and NWScriptCustom (many files, one partial class);
+ *   - one seam per NWNX plugin, from each SWLOR.NWN.API/NWNX/<Name>Plugin.cs (one file, one static class).
+ * For the NWScript seam (the plugin seams use the same names with their plugin's name in place of NWScript):
  *   - INWScript: one interface member per wrapper member, with the wrapper's name, parameters, defaults and return type;
  *   - NwnCoreNWScript: the original wrapper bodies, moved verbatim into instance methods;
  *   - NWScriptRuntime: the current INWScript (NwnCoreNWScript by default) with a test-only override scope;
- *   - FakeNWScript (SWLOR.NWN.API.Testing): records every call and returns configurable values;
+ *   - FakeNWScript (SWLOR.NWN.API.Testing): records every call and returns configured or default values;
  *   - and each static wrapper body, rewritten to forward to NWScriptRuntime.Current. Signatures are untouched.
+ * A plugin's public data-only nested types (result structs) stay in its static class.
  *
  * Usage (from the repository root, or use tools/Refactor/Apply-EngineSeam.ps1):
  *   dotnet run --project tools/Refactor/SWLOR.EngineSeamGenerator -- [--repo <root>]

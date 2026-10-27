@@ -17,7 +17,7 @@ internal static class GeneratorRunner
 
     public static int Run(string root, GeneratorMode mode, string? revision, TextWriter log)
     {
-        var definition = SeamDefinition.NWScript;
+        // Every seam is generated and checked together: NWScript, and one per NWNX plugin.
         var disk = new DiskFileSystem(root);
 
         try
@@ -26,17 +26,17 @@ internal static class GeneratorRunner
             if (mode == GeneratorMode.VerifyOrigin)
             {
                 // The wrapper files as committed at the revision, with no previous output: the pristine hand-written code.
-                output = SeamGenerator.Generate(new GitFileSystem(root, revision ?? throw new GeneratorException("A git revision is required.")),
-                    new MemoryFileSystem(), definition);
+                output = SeamGenerator.GenerateAll(new GitFileSystem(root, revision ?? throw new GeneratorException("A git revision is required.")),
+                    new MemoryFileSystem());
             }
             else
             {
-                output = SeamGenerator.Generate(disk, disk, definition);
+                output = SeamGenerator.GenerateAll(disk, disk);
             }
 
             if (output.Errors.Count == 0)
             {
-                output.Errors.AddRange(CheckFixedPoint(output, definition));
+                output.Errors.AddRange(CheckFixedPoint(output));
             }
 
             if (output.Errors.Count > 0)
@@ -82,10 +82,10 @@ internal static class GeneratorRunner
     /// Applies the output to an in-memory copy and runs the generator again on it. A correct run is a fixed point: the second
     /// run must reproduce the same files, otherwise a later run on the real tree would change it again.
     /// </summary>
-    private static IEnumerable<string> CheckFixedPoint(GeneratorOutput output, SeamDefinition definition)
+    private static IEnumerable<string> CheckFixedPoint(GeneratorOutput output)
     {
         var memory = new MemoryFileSystem(output.Files);
-        var second = SeamGenerator.Generate(memory, memory, definition);
+        var second = SeamGenerator.GenerateAll(memory, memory);
         if (second.Errors.Count > 0)
         {
             return second.Errors.Select(e => "second pass: " + e);

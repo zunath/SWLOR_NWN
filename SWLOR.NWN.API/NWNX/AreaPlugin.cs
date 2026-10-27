@@ -23,7 +23,7 @@ namespace SWLOR.NWN.API.NWNX
         /// </remarks>
         public static int GetNumberOfPlayersInArea(uint area)
         {
-            return global::NWN.Core.NWNX.AreaPlugin.GetNumberOfPlayersInArea(area);
+            return AreaPluginRuntime.Current.GetNumberOfPlayersInArea(area);
         }
 
         /// <summary>
@@ -38,7 +38,7 @@ namespace SWLOR.NWN.API.NWNX
         /// </remarks>
         public static uint GetLastEntered(uint area)
         {
-            return global::NWN.Core.NWNX.AreaPlugin.GetLastEntered(area);
+            return AreaPluginRuntime.Current.GetLastEntered(area);
         }
 
         /// <summary>
@@ -53,7 +53,7 @@ namespace SWLOR.NWN.API.NWNX
         /// </remarks>
         public static uint GetLastLeft(uint area)
         {
-            return global::NWN.Core.NWNX.AreaPlugin.GetLastLeft(area);
+            return AreaPluginRuntime.Current.GetLastLeft(area);
         }
 
         /// <summary>
@@ -68,8 +68,7 @@ namespace SWLOR.NWN.API.NWNX
         /// </remarks>
         public static PvPSetting GetPVPSetting(uint area)
         {
-            int result = global::NWN.Core.NWNX.AreaPlugin.GetPVPSetting(area);
-            return (PvPSetting)result;
+            return AreaPluginRuntime.Current.GetPVPSetting(area);
         }
 
         /// <summary>
@@ -84,7 +83,7 @@ namespace SWLOR.NWN.API.NWNX
         /// </remarks>
         public static void SetPVPSetting(uint area, PvPSetting pvpSetting)
         {
-            global::NWN.Core.NWNX.AreaPlugin.SetPVPSetting(area, (int)pvpSetting);
+            AreaPluginRuntime.Current.SetPVPSetting(area, pvpSetting);
         }
 
         /// <summary>
@@ -99,7 +98,7 @@ namespace SWLOR.NWN.API.NWNX
         /// </remarks>
         public static int GetAreaSpotModifier(uint area)
         {
-            return global::NWN.Core.NWNX.AreaPlugin.GetAreaSpotModifier(area);
+            return AreaPluginRuntime.Current.GetAreaSpotModifier(area);
         }
 
         /// <summary>
@@ -114,7 +113,7 @@ namespace SWLOR.NWN.API.NWNX
         /// </remarks>
         public static void SetAreaSpotModifier(uint area, int spotModifier)
         {
-            global::NWN.Core.NWNX.AreaPlugin.SetAreaSpotModifier(area, spotModifier);
+            AreaPluginRuntime.Current.SetAreaSpotModifier(area, spotModifier);
         }
 
         /// <summary>
@@ -129,7 +128,7 @@ namespace SWLOR.NWN.API.NWNX
         /// </remarks>
         public static int GetAreaListenModifier(uint area)
         {
-            return global::NWN.Core.NWNX.AreaPlugin.GetAreaListenModifier(area);
+            return AreaPluginRuntime.Current.GetAreaListenModifier(area);
         }
 
         /// <summary>
@@ -144,7 +143,7 @@ namespace SWLOR.NWN.API.NWNX
         /// </remarks>
         public static void SetAreaListenModifier(uint area, int listenModifier)
         {
-            global::NWN.Core.NWNX.AreaPlugin.SetAreaListenModifier(area, listenModifier);
+            AreaPluginRuntime.Current.SetAreaListenModifier(area, listenModifier);
         }
 
         /// <summary>
@@ -159,8 +158,7 @@ namespace SWLOR.NWN.API.NWNX
         /// </remarks>
         public static bool GetNoRestingAllowed(uint area)
         {
-            int result = global::NWN.Core.NWNX.AreaPlugin.GetNoRestingAllowed(area);
-            return result != 0;
+            return AreaPluginRuntime.Current.GetNoRestingAllowed(area);
         }
 
         /// <summary>
@@ -175,7 +173,7 @@ namespace SWLOR.NWN.API.NWNX
         /// </remarks>
         public static void SetNoRestingAllowed(uint area, bool bNoRestingAllowed)
         {
-            global::NWN.Core.NWNX.AreaPlugin.SetNoRestingAllowed(area, bNoRestingAllowed ? 1 : 0);
+            AreaPluginRuntime.Current.SetNoRestingAllowed(area, bNoRestingAllowed);
         }
 
         /// <summary>
@@ -190,7 +188,7 @@ namespace SWLOR.NWN.API.NWNX
         /// </remarks>
         public static int GetWindPower(uint area)
         {
-            return global::NWN.Core.NWNX.AreaPlugin.GetWindPower(area);
+            return AreaPluginRuntime.Current.GetWindPower(area);
         }
 
         /// <summary>
@@ -205,7 +203,7 @@ namespace SWLOR.NWN.API.NWNX
         /// </remarks>
         public static void SetWindPower(uint area, int windPower)
         {
-            global::NWN.Core.NWNX.AreaPlugin.SetWindPower(area, windPower);
+            AreaPluginRuntime.Current.SetWindPower(area, windPower);
         }
 
         /// <summary>
@@ -221,7 +219,7 @@ namespace SWLOR.NWN.API.NWNX
         /// </remarks>
         public static int GetWeatherChance(uint area, WeatherEffectType type)
         {
-            return global::NWN.Core.NWNX.AreaPlugin.GetWeatherChance(area, (int)type);
+            return AreaPluginRuntime.Current.GetWeatherChance(area, type);
         }
 
         /// <summary>
@@ -237,7 +235,7 @@ namespace SWLOR.NWN.API.NWNX
         /// </remarks>
         public static void SetWeatherChance(uint area, WeatherEffectType type, int chance)
         {
-            global::NWN.Core.NWNX.AreaPlugin.SetWeatherChance(area, (int)type, chance);
+            AreaPluginRuntime.Current.SetWeatherChance(area, type, chance);
         }
 
         /// <summary>
@@ -252,7 +250,7 @@ namespace SWLOR.NWN.API.NWNX
         /// </remarks>
         public static float GetFogClipDistance(uint area)
         {
-            return global::NWN.Core.NWNX.AreaPlugin.GetFogClipDistance(area);
+            return AreaPluginRuntime.Current.GetFogClipDistance(area);
         }
 
         /// <summary>
@@ -267,7 +265,7 @@ namespace SWLOR.NWN.API.NWNX
         /// </remarks>
         public static void SetFogClipDistance(uint area, float distance)
         {
-            global::NWN.Core.NWNX.AreaPlugin.SetFogClipDistance(area, distance);
+            AreaPluginRuntime.Current.SetFogClipDistance(area, distance);
         }
 
         /// <summary>
@@ -282,7 +280,7 @@ namespace SWLOR.NWN.API.NWNX
         /// </remarks>
         public static int GetShadowOpacity(uint area)
         {
-            return global::NWN.Core.NWNX.AreaPlugin.GetShadowOpacity(area);
+            return AreaPluginRuntime.Current.GetShadowOpacity(area);
         }
 
         /// <summary>
@@ -297,7 +295,7 @@ namespace SWLOR.NWN.API.NWNX
         /// </remarks>
         public static void SetShadowOpacity(uint area, int shadowOpacity)
         {
-            global::NWN.Core.NWNX.AreaPlugin.SetShadowOpacity(area, shadowOpacity);
+            AreaPluginRuntime.Current.SetShadowOpacity(area, shadowOpacity);
         }
 
         /// <summary>
@@ -312,8 +310,7 @@ namespace SWLOR.NWN.API.NWNX
         /// </remarks>
         public static DayNightCycle GetDayNightCycle(uint area)
         {
-            int result = global::NWN.Core.NWNX.AreaPlugin.GetDayNightCycle(area);
-            return (DayNightCycle)result;
+            return AreaPluginRuntime.Current.GetDayNightCycle(area);
         }
 
         /// <summary>
@@ -328,7 +325,7 @@ namespace SWLOR.NWN.API.NWNX
         /// </remarks>
         public static void SetDayNightCycle(uint area, DayNightCycle type)
         {
-            global::NWN.Core.NWNX.AreaPlugin.SetDayNightCycle(area, (int)type);
+            AreaPluginRuntime.Current.SetDayNightCycle(area, type);
         }
 
         /// <summary>
@@ -344,7 +341,7 @@ namespace SWLOR.NWN.API.NWNX
         /// </remarks>
         public static int GetSunMoonColors(uint area, AreaLightColorType type)
         {
-            return global::NWN.Core.NWNX.AreaPlugin.GetSunMoonColors(area, (int)type);
+            return AreaPluginRuntime.Current.GetSunMoonColors(area, type);
         }
 
         /// <summary>
@@ -361,7 +358,7 @@ namespace SWLOR.NWN.API.NWNX
         /// </remarks>
         public static void SetSunMoonColors(uint area, AreaLightColorType type, int color)
         {
-            global::NWN.Core.NWNX.AreaPlugin.SetSunMoonColors(area, (int)type, color);
+            AreaPluginRuntime.Current.SetSunMoonColors(area, type, color);
         }
 
         /// <summary>
@@ -383,7 +380,7 @@ namespace SWLOR.NWN.API.NWNX
         public static uint CreateTransition(uint area, uint target, float x, float y, float z, float size = 2.0f,
             string tag = "")
         {
-            return global::NWN.Core.NWNX.AreaPlugin.CreateTransition(area, target, x, y, z, size, tag);
+            return AreaPluginRuntime.Current.CreateTransition(area, target, x, y, z, size, tag);
         }
 
         /// <summary>
@@ -401,8 +398,7 @@ namespace SWLOR.NWN.API.NWNX
         /// </remarks>
         public static bool GetTileAnimationLoop(uint area, float tileX, float tileY, int animLoop)
         {
-            int result = global::NWN.Core.NWNX.AreaPlugin.GetTileAnimationLoop(area, tileX, tileY, animLoop);
-            return result != 0;
+            return AreaPluginRuntime.Current.GetTileAnimationLoop(area, tileX, tileY, animLoop);
         }
 
         /// <summary>
@@ -421,7 +417,7 @@ namespace SWLOR.NWN.API.NWNX
         /// </remarks>
         public static void SetTileAnimationLoop(uint area, float tileX, float tileY, int animLoop, bool enabled)
         {
-            global::NWN.Core.NWNX.AreaPlugin.SetTileAnimationLoop(area, tileX, tileY, animLoop, enabled ? 1 : 0);
+            AreaPluginRuntime.Current.SetTileAnimationLoop(area, tileX, tileY, animLoop, enabled);
         }
 
         /// <summary>
@@ -442,7 +438,7 @@ namespace SWLOR.NWN.API.NWNX
         public static uint CreateGenericTrigger(uint area, float x, float y, float z, string tag = "",
             float size = 1.0f)
         {
-            return global::NWN.Core.NWNX.AreaPlugin.CreateGenericTrigger(area, x, y, z, tag, size);
+            return AreaPluginRuntime.Current.CreateGenericTrigger(area, x, y, z, tag, size);
         }
 
 
@@ -457,7 +453,7 @@ namespace SWLOR.NWN.API.NWNX
         /// </remarks>
         public static void AddObjectToExclusionList(uint oObject)
         {
-            global::NWN.Core.NWNX.AreaPlugin.AddObjectToExclusionList(oObject);
+            AreaPluginRuntime.Current.AddObjectToExclusionList(oObject);
         }
 
         /// <summary>
@@ -471,7 +467,7 @@ namespace SWLOR.NWN.API.NWNX
         /// </remarks>
         public static void RemoveObjectFromExclusionList(uint oObject)
         {
-            global::NWN.Core.NWNX.AreaPlugin.RemoveObjectFromExclusionList(oObject);
+            AreaPluginRuntime.Current.RemoveObjectFromExclusionList(oObject);
         }
 
         /// <summary>
@@ -492,8 +488,7 @@ namespace SWLOR.NWN.API.NWNX
         /// </remarks>
         public static bool ExportGIT(uint oArea, string sFileName = "", bool bExportVarTable = true, bool bExportUUID = true, int nObjectFilter = 0, string sAlias = "NWNX")
         {
-            int result = global::NWN.Core.NWNX.AreaPlugin.ExportGIT(oArea, sFileName, bExportVarTable ? 1 : 0, bExportUUID ? 1 : 0, nObjectFilter, sAlias);
-            return result != 0;
+            return AreaPluginRuntime.Current.ExportGIT(oArea, sFileName, bExportVarTable, bExportUUID, nObjectFilter, sAlias);
         }
 
 
@@ -511,7 +506,7 @@ namespace SWLOR.NWN.API.NWNX
         /// </remarks>
         public static TileInfo GetTileInfo(uint oArea, float fTileX, float fTileY)
         {
-            return global::NWN.Core.NWNX.AreaPlugin.GetTileInfo(oArea, fTileX, fTileY);
+            return AreaPluginRuntime.Current.GetTileInfo(oArea, fTileX, fTileY);
         }
 
         /// <summary>
@@ -530,8 +525,7 @@ namespace SWLOR.NWN.API.NWNX
         /// </remarks>
         public static bool ExportARE(uint oArea, string sFileName, string sNewName = "", string sNewTag = "", string sAlias = "NWNX")
         {
-            int result = global::NWN.Core.NWNX.AreaPlugin.ExportARE(oArea, sFileName, sNewName, sNewTag, sAlias);
-            return result != 0;
+            return AreaPluginRuntime.Current.ExportARE(oArea, sFileName, sNewName, sNewTag, sAlias);
         }
 
         /// <summary>
@@ -546,7 +540,7 @@ namespace SWLOR.NWN.API.NWNX
         /// </remarks>
         public static int GetAmbientSoundDay(uint oArea)
         {
-            return global::NWN.Core.NWNX.AreaPlugin.GetAmbientSoundDay(oArea);
+            return AreaPluginRuntime.Current.GetAmbientSoundDay(oArea);
         }
 
         /// <summary>
@@ -561,7 +555,7 @@ namespace SWLOR.NWN.API.NWNX
         /// </remarks>
         public static int GetAmbientSoundNight(uint oArea)
         {
-            return global::NWN.Core.NWNX.AreaPlugin.GetAmbientSoundNight(oArea);
+            return AreaPluginRuntime.Current.GetAmbientSoundNight(oArea);
         }
 
         /// <summary>
@@ -576,7 +570,7 @@ namespace SWLOR.NWN.API.NWNX
         /// </remarks>
         public static int GetAmbientSoundDayVolume(uint oArea)
         {
-            return global::NWN.Core.NWNX.AreaPlugin.GetAmbientSoundDayVolume(oArea);
+            return AreaPluginRuntime.Current.GetAmbientSoundDayVolume(oArea);
         }
 
         /// <summary>
@@ -591,7 +585,7 @@ namespace SWLOR.NWN.API.NWNX
         /// </remarks>
         public static int GetAmbientSoundNightVolume(uint oArea)
         {
-            return global::NWN.Core.NWNX.AreaPlugin.GetAmbientSoundNightVolume(oArea);
+            return AreaPluginRuntime.Current.GetAmbientSoundNightVolume(oArea);
         }
 
         /// <summary>
@@ -609,7 +603,7 @@ namespace SWLOR.NWN.API.NWNX
         /// </remarks>
         public static uint CreateSoundObject(uint oArea, Vector3 vPosition, string sResRef)
         {
-            return global::NWN.Core.NWNX.AreaPlugin.CreateSoundObject(oArea, vPosition, sResRef);
+            return AreaPluginRuntime.Current.CreateSoundObject(oArea, vPosition, sResRef);
         }
 
 
@@ -625,7 +619,7 @@ namespace SWLOR.NWN.API.NWNX
         /// </remarks>
         public static void RotateArea(uint oArea, int nRotation)
         {
-            global::NWN.Core.NWNX.AreaPlugin.RotateArea(oArea, nRotation);
+            AreaPluginRuntime.Current.RotateArea(oArea, nRotation);
         }
 
         /// <summary>
@@ -641,7 +635,7 @@ namespace SWLOR.NWN.API.NWNX
         /// </remarks>
         public static TileInfo GetTileInfoByTileIndex(uint oArea, int nTileIndex)
         {
-            return global::NWN.Core.NWNX.AreaPlugin.GetTileInfoByTileIndex(oArea, nTileIndex);
+            return AreaPluginRuntime.Current.GetTileInfoByTileIndex(oArea, nTileIndex);
         }
 
         /// <summary>
@@ -659,8 +653,7 @@ namespace SWLOR.NWN.API.NWNX
         /// </remarks>
         public static bool GetPathExists(uint oArea, Vector3 vStart, Vector3 vEnd, int nMaxDepth)
         {
-            int result = global::NWN.Core.NWNX.AreaPlugin.GetPathExists(oArea, vStart, vEnd, nMaxDepth);
-            return result != 0;
+            return AreaPluginRuntime.Current.GetPathExists(oArea, vStart, vEnd, nMaxDepth);
         }
 
         /// <summary>
@@ -675,7 +668,7 @@ namespace SWLOR.NWN.API.NWNX
         /// </remarks>
         public static int GetAreaFlags(uint oArea)
         {
-            return global::NWN.Core.NWNX.AreaPlugin.GetAreaFlags(oArea);
+            return AreaPluginRuntime.Current.GetAreaFlags(oArea);
         }
 
         /// <summary>
@@ -691,7 +684,7 @@ namespace SWLOR.NWN.API.NWNX
         /// </remarks>
         public static void SetAreaFlags(uint oArea, int nFlags)
         {
-            global::NWN.Core.NWNX.AreaPlugin.SetAreaFlags(oArea, nFlags);
+            AreaPluginRuntime.Current.SetAreaFlags(oArea, nFlags);
         }
 
         /// <summary>
@@ -706,7 +699,7 @@ namespace SWLOR.NWN.API.NWNX
         /// </remarks>
         public static AreaWind GetAreaWind(uint oArea)
         {
-            return global::NWN.Core.NWNX.AreaPlugin.GetAreaWind(oArea);
+            return AreaPluginRuntime.Current.GetAreaWind(oArea);
         }
 
         /// <summary>
@@ -724,7 +717,7 @@ namespace SWLOR.NWN.API.NWNX
         /// </remarks>
         public static void SetDefaultObjectUiDiscoveryMask(uint oArea, int nObjectTypes, int nMask, bool bForceUpdate = false)
         {
-            global::NWN.Core.NWNX.AreaPlugin.SetDefaultObjectUiDiscoveryMask(oArea, nObjectTypes, nMask, bForceUpdate ? 1 : 0);
+            AreaPluginRuntime.Current.SetDefaultObjectUiDiscoveryMask(oArea, nObjectTypes, nMask, bForceUpdate);
         }
     }
 }

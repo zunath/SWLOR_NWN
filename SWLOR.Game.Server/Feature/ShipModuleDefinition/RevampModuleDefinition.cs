@@ -269,7 +269,7 @@ namespace SWLOR.Game.Server.Feature.ShipModuleDefinition
 
                         var allyStatus = Space.GetShipStatus(ally);
                         var shieldBefore = allyStatus.Shield;
-                        Space.RestoreAllyShield(ally, allyStatus, step.Repair);
+                        Space.RestoreAllyShield(ally, allyStatus, ShipModuleActions.ApplyRepairEfficiency(activator, step.Repair));
                         Space.ApplyRepairEnmity(activator, ally, allyStatus.Shield - shieldBefore);
                         supported.Add(ally);
                     }

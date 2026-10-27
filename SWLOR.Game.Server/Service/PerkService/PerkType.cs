@@ -813,6 +813,16 @@ namespace SWLOR.Game.Server.Service.PerkService
         BulwarkUnbreakable = 872,
         BulwarkInvincible = 873,
 
-        // IDs 650 and 874+ are free.
+        CommandEmergencyRepair = 874,
+        CommandMarkTarget = 875,
+        CommandRepairEfficiency = 876,
+        CommandFocusFire = 877,
+        CommandCrewMorale = 878,
+        CommandBreakFormation = 879,
+        CommandFormation = 880,
+        CommandPresence = 881,
+        CommandFleetAction = 882,
+
+        // IDs 650 and 883+ are free.
     }
 }

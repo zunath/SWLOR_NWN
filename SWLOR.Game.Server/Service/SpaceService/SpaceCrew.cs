@@ -1,3 +1,5 @@
+using SWLOR.Game.Server.Service.StatService;
+
 namespace SWLOR.Game.Server.Service.SpaceService
 {
     /// <summary>
@@ -8,9 +10,16 @@ namespace SWLOR.Game.Server.Service.SpaceService
     {
         /// <summary>
         /// The effectiveness of the crew working a ship's stations, as a multiplier (1.0 is normal). Command's
-        /// Crew Morale and Leadership rank scaling will raise it.
+        /// Crew Morale raises it, and so will the captain's Leadership rank (<see cref="SpaceCommand.GetLeadershipBonusPercent"/>).
         /// </summary>
-        public static double GetCrewEffectiveness(uint ship) => 1.0;
+        public static double GetCrewEffectiveness(uint ship) =>
+            EffectivenessMultiplier(
+                Stat.GetStatAdjustment(ship, StatType.SpaceCrewEffectivenessPercentAdjustment),
+                SpaceCommand.GetLeadershipBonusPercent(ship));
+
+        /// <summary>The crew effectiveness multiplier for a Crew Morale percent and a Leadership percent.</summary>
+        public static double EffectivenessMultiplier(int crewMoralePercent, int leadershipPercent) =>
+            1.0 + (Math.Max(0, crewMoralePercent) + Math.Max(0, leadershipPercent)) / 100.0;
 
         /// <summary>Whether someone is working the crew-station seat that owns a hotbar slot (1-30).</summary>
         public static bool IsSeatCrewed(ShipStatus status, int slotNumber) => false;

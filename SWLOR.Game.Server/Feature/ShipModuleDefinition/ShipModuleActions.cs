@@ -6,6 +6,7 @@ using SWLOR.Game.Server.Service;
 using SWLOR.Game.Server.Service.PerkService;
 using SWLOR.Game.Server.Service.SkillService;
 using SWLOR.Game.Server.Service.SpaceService;
+using SWLOR.Game.Server.Service.StatService;
 using SWLOR.NWN.API.NWScript.Enum;
 using SWLOR.NWN.API.NWScript.Enum.VisualEffect;
 using Random = SWLOR.Game.Server.Service.Random;
@@ -553,6 +554,14 @@ namespace SWLOR.Game.Server.Feature.ShipModuleDefinition
 
         // Support
 
+        /// <summary>A repair's amount after the repairer's Repair Efficiency (Command), which every module and ability repair uses.</summary>
+        public static int ApplyRepairEfficiency(uint repairer, int amount)
+        {
+            return SpaceCombatMath.ApplyRepairEfficiency(
+                amount,
+                Stat.GetStatAdjustment(repairer, StatType.SpaceRepairEfficiencyPercentAdjustment));
+        }
+
         /// <summary>Restores shield to the target ship, or to the activator's own when the target is not a friendly ship.</summary>
         public static void RepairShield(uint activator, ShipStatus activatorStatus, uint target, ShipStatus targetStatus, int amount)
         {
@@ -602,6 +611,10 @@ namespace SWLOR.Game.Server.Feature.ShipModuleDefinition
             }
 
             beforeEffect?.Invoke();
+
+            // A shield or hull repair (not a capacitor injection) is stronger with Repair Efficiency.
+            if (pool != null)
+                amount = ApplyRepairEfficiency(activator, amount);
 
             ApplyEffectToObject(DurationType.Instant, EffectVisualEffect(effect), target);
 

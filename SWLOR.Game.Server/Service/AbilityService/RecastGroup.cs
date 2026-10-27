@@ -974,6 +974,18 @@ namespace SWLOR.Game.Server.Service.AbilityService
         [RecastGroup("Bulwark Stance", "Bulwark Stance", true)]
         BulwarkShipStance = 597,
 
+        [RecastGroup("Command Emergency Repair", "Emerg. Repair", true)]
+        CommandEmergencyRepair = 598,
+
+        [RecastGroup("Command Focus Fire", "Focus Fire", true)]
+        CommandFocusFire = 599,
+
+        [RecastGroup("Command Break Formation", "Brk. Formation", true)]
+        CommandBreakFormation = 600,
+
+        [RecastGroup("Command Formation", "Formation", true)]
+        CommandFormation = 601,
+
     }
 
     public class RecastGroupAttribute : Attribute

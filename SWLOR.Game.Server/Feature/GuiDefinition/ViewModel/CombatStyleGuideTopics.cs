@@ -104,9 +104,10 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
                     {
                         Style("Piloting - Ace", "Ace fires your ship's energy weapons for disabling shots, double shots, and a burst around your ship, and rewards evasion, movement, and critical hits."),
                         Style("Piloting - Ordnance", "Ordnance fires your ship's launchers as area ordnance: burning volleys, blinding flares, concussion bursts, fragmentation, and saturation fire."),
-                        Style("Piloting - Bulwark", "Bulwark holds enemy attention for your fleet with goads and next-hit strikes that generate threat, and adds defense, a threat stance, and protection from critical hits and low hull.")
+                        Style("Piloting - Bulwark", "Bulwark holds enemy attention for your fleet with goads and next-hit strikes that generate threat, and adds defense, a threat stance, and protection from critical hits and low hull."),
+                        Style("Piloting - Command", "Command repairs allied ships and gives your party ships damage orders, an enemy accuracy penalty, and a damage-reduction aura, and makes your repairs, orders, and crew stronger.")
                     },
-                    "Perks", "Combat Basics", "Pistol Combat Styles", "Rifle Combat Styles", "Throwing Combat Styles", "Vibroblade Combat Styles", "Heavy Vibroblade Combat Styles"),
+                    "Perks", "Combat Basics", "Pistol Combat Styles", "Rifle Combat Styles", "Throwing Combat Styles", "Vibroblade Combat Styles", "Heavy Vibroblade Combat Styles", "Leadership Combat Styles", "First Aid Combat Styles"),
 
                 Topic("Pistol", "Choose Pistol for shots that reward changing targets or disrupt opponents.",
                     new[]

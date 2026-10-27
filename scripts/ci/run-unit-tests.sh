@@ -75,9 +75,6 @@ exclusions_for() {
         # The EspionageWorkbench recipe is not in the repository's Design Bible workbook (the owner uploads Bible
         # changes).
         echo "CombatUpgradeBibleRecipeParityTests.LiveRecipes_AreDocumentedInBible"
-        # Counts the assemblies loaded in the AppDomain around the registry scans. Passes in a Debug build; in Release
-        # (what this CI builds) it finds 106 loaded assemblies where it expects 105. Belongs to P0-5; fix the test.
-        echo "ScriptHandlerSeamTests.LoadHandlersFromAssemblyScansEveryAssemblyLoadedInTheAppDomain"
 
         # ---- Hak content tests that read SWLOR_Haks folders other than sw_2da, sw_tlk and sw_ability. The job
         # ---- fetches only those three (a full checkout is 11 GB and 160,000 files). These check models, textures,

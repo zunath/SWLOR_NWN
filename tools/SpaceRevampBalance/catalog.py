@@ -49,8 +49,8 @@ W = m.WEAPONS
 CM = m.T["capital_weapon_mult"]
 
 
-def weapon_stats(name, dmg_mult=1.0):
-    w = W[name]
+def weapon_stats(name, dmg_mult=1.0, **override):
+    w = {**W[name], **override}
     def f(r):
         mult = w["dmg"] * (CM if w.get("capital") else 1.0) * dmg_mult
         return dict(WeaponFamily=w["family"], DamageType=w["type"], Dmg=max(1, round(m.GROUND_DMG[r] * mult)),
@@ -88,7 +88,7 @@ FAMILIES = [
     ("LaserBattery", "Laser Battery", "Battery", "sm_lbatt", "High", "Piloting", "OnePress", 24.0, 20, 40, "laser_battery", True,
      weapon_stats("Turbolaser", 2.0), lambda r, s: f"Capital volley: {s['Dmg']} thermal DMG to your target and up to 4 other enemies within 15 m. 24 second recast."),
     ("AssaultConcussionMissile", "Assault Concussion Missile", "ACM", "sm_acm", "High", "Piloting", "OnePress", 30.0, 15, 50, "concussion_launcher", True,
-     weapon_stats("Turbolaser", 6.0), lambda r, s: f"Capital missile: {s['Dmg']} explosive DMG that bypasses shields. Uses a concussion missile; 30 second recast."),
+     weapon_stats("Turbolaser", 6.0, family="Launcher", type="Explosive", bypass=True), lambda r, s: f"Capital missile: {s['Dmg']} explosive DMG that bypasses shields. Uses a concussion missile; 30 second recast."),
     ("MiningLaser", "Mining Laser", "Mining", "sm_mine", "High", "Gathering", "Toggle", 6.0, 3, 15, "mining_laser", False,
      p(MiningTier=lambda r: r // 10 + 1), lambda r, s: f"Mines asteroids up to tier {s['MiningTier']} every 6 seconds while on."),
     ("StripMiner", "Strip Miner", "Strip", "sm_strip", "High", "Gathering", "Toggle", 10.0, 8, 15, "strip_miner", False,

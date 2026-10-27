@@ -45,30 +45,8 @@ namespace SWLOR.Game.Server.Feature.ShipModuleDefinition
                 .Capacitor(capacitor)
                 .ActivatedAction((activator, activatorShipStatus, target, targetShipStatus, moduleBonus) =>
                 {
-                    if (!GetIsObjectValid(target) || GetIsEnemy(target, activator))
-                    {
-                        target = activator;
-                        targetShipStatus = activatorShipStatus;
-                    }
-
-                    if (activator != target)
-                    {
-                        AssignCommand(activator, () =>
-                        {
-                            var beam = EffectBeam(VisualEffect.Vfx_Beam_Mind, activator, BodyNode.Chest);
-                            ApplyEffectToObject(DurationType.Temporary, beam, target, 1.0f);
-                        });
-                    }
-
-                    ApplyEffectToObject(DurationType.Instant, EffectVisualEffect(VisualEffect.Vfx_Imp_Ac_Bonus), target);
-
                     var recovery = baseRecovery + (moduleBonus + activatorShipStatus.Industrial) * 2;
-                    Space.RestoreShield(target, targetShipStatus, recovery);
-
-                    Messaging.SendMessageNearbyToPlayers(
-                        activator,
-                        receiver => $"{PlayerName.GetDisplayName(receiver, activator)} restores {recovery} shield HP to {PlayerName.GetDisplayName(receiver, target)}'s ship.");
-                    CombatPoint.AddSupportCombatPoint(activator, target, SkillType.Piloting);
+                    ShipModuleActions.RepairShield(activator, activatorShipStatus, target, targetShipStatus, recovery);
                 });
         }
     }

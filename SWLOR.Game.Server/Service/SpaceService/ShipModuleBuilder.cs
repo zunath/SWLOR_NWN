@@ -305,6 +305,18 @@ namespace SWLOR.Game.Server.Service.SpaceService
         }
 
         /// <summary>
+        /// Attaches the revamp module step this module is built from.
+        /// </summary>
+        /// <param name="step">The module step.</param>
+        /// <returns>A ship module builder with the configured options.</returns>
+        public ShipModuleBuilder Step(ShipModuleStep step)
+        {
+            _activeShipModule.Step = step;
+
+            return this;
+        }
+
+        /// <summary>
         /// Builds a dictionary of ship module details.
         /// </summary>
         /// <returns>A dictionary of ship module details.</returns>

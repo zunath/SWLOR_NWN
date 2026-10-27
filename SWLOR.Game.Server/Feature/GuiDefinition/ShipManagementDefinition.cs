@@ -255,6 +255,82 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition
                     col.AddRow(row =>
                     {
                         row.AddLabel()
+                            .SetText("Mid-Powered Slots")
+                            .BindIsVisible(model => model.IsMidPowerVisible)
+                            .SetHeight(20f);
+                    });
+
+                    col.AddRow(row =>
+                    {
+                        row.AddButtonImage()
+                            .BindImageResref(model => model.MidPower1Resref)
+                            .BindIsVisible(model => model.MidPower1Visible)
+                            .BindIsEnabled(model => model.IsRefitEnabled)
+                            .BindOnClicked(model => model.OnClickMidPower1())
+                            .BindTooltip(model => model.MidPower1Tooltip)
+                            .SetHeight(32f)
+                            .SetWidth(32f);
+                        row.AddButtonImage()
+                            .BindImageResref(model => model.MidPower2Resref)
+                            .BindIsVisible(model => model.MidPower2Visible)
+                            .BindIsEnabled(model => model.IsRefitEnabled)
+                            .BindOnClicked(model => model.OnClickMidPower2())
+                            .BindTooltip(model => model.MidPower2Tooltip)
+                            .SetHeight(32f)
+                            .SetWidth(32f);
+                        row.AddButtonImage()
+                            .BindImageResref(model => model.MidPower3Resref)
+                            .BindIsVisible(model => model.MidPower3Visible)
+                            .BindIsEnabled(model => model.IsRefitEnabled)
+                            .BindOnClicked(model => model.OnClickMidPower3())
+                            .BindTooltip(model => model.MidPower3Tooltip)
+                            .SetHeight(32f)
+                            .SetWidth(32f);
+                        row.AddButtonImage()
+                            .BindImageResref(model => model.MidPower4Resref)
+                            .BindIsVisible(model => model.MidPower4Visible)
+                            .BindIsEnabled(model => model.IsRefitEnabled)
+                            .BindOnClicked(model => model.OnClickMidPower4())
+                            .BindTooltip(model => model.MidPower4Tooltip)
+                            .SetHeight(32f)
+                            .SetWidth(32f);
+                        row.AddButtonImage()
+                            .BindImageResref(model => model.MidPower5Resref)
+                            .BindIsVisible(model => model.MidPower5Visible)
+                            .BindIsEnabled(model => model.IsRefitEnabled)
+                            .BindOnClicked(model => model.OnClickMidPower5())
+                            .BindTooltip(model => model.MidPower5Tooltip)
+                            .SetHeight(32f)
+                            .SetWidth(32f);
+                        row.AddButtonImage()
+                            .BindImageResref(model => model.MidPower6Resref)
+                            .BindIsVisible(model => model.MidPower6Visible)
+                            .BindIsEnabled(model => model.IsRefitEnabled)
+                            .BindOnClicked(model => model.OnClickMidPower6())
+                            .BindTooltip(model => model.MidPower6Tooltip)
+                            .SetHeight(32f)
+                            .SetWidth(32f);
+                        row.AddButtonImage()
+                            .BindImageResref(model => model.MidPower7Resref)
+                            .BindIsVisible(model => model.MidPower7Visible)
+                            .BindIsEnabled(model => model.IsRefitEnabled)
+                            .BindOnClicked(model => model.OnClickMidPower7())
+                            .BindTooltip(model => model.MidPower7Tooltip)
+                            .SetHeight(32f)
+                            .SetWidth(32f);
+                        row.AddButtonImage()
+                            .BindImageResref(model => model.MidPower8Resref)
+                            .BindIsVisible(model => model.MidPower8Visible)
+                            .BindIsEnabled(model => model.IsRefitEnabled)
+                            .BindOnClicked(model => model.OnClickMidPower8())
+                            .BindTooltip(model => model.MidPower8Tooltip)
+                            .SetHeight(32f)
+                            .SetWidth(32f);
+                    });
+
+                    col.AddRow(row =>
+                    {
+                        row.AddLabel()
                             .SetText("Low-Powered Slots")
                             .SetHeight(20f);
                     });
@@ -331,6 +407,7 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition
                     {
                         row.AddLabel()
                             .SetText("Configuration Slot")
+                            .BindIsVisible(model => model.IsConfigurationVisible)
                             .SetHeight(20f);
                     });
 

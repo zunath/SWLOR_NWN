@@ -27,6 +27,9 @@ namespace SWLOR.Game.Server.Service.SpaceService
         public ShipModuleActivation Activation { get; set; }
         public ShipModulePowerType PowerType { get; set; }
         public Dictionary<PerkType, int> RequiredPerks { get; set; }
+
+        /// <summary>The revamp module step this module comes from. Null for legacy modules.</summary>
+        public ShipModuleStep Step { get; set; }
         public HashSet<ObjectType> ValidTargetTypes { get; set; }
         public ShipModuleCalculateCapacitorDelegate CalculateCapacitorAction { get; set; }
         public ShipModuleCalculateRecastDelegate CalculateRecastAction { get; set; }

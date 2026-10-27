@@ -61,8 +61,6 @@ namespace SWLOR.Game.Server.Feature.ShipModuleDefinition
                         Size = ShipSize.Capital
                     };
 
-                    var sound = EffectVisualEffect(VisualEffect.Vfx_Ship_Blast);
-                    var missile = EffectVisualEffect(VisualEffect.Mirv_StarWars_Bolt2);
                     for (var i = 0; i < attacks; i++)
                     {
                         var delay = i * 3f;
@@ -70,18 +68,7 @@ namespace SWLOR.Game.Server.Feature.ShipModuleDefinition
                         {
                             if (Space.CanShipFire(activator) && !GetIsDead(target))
                             {
-                                var result = Space.RollWeaponShot(activator, activatorShipStatus, target, targetShipStatus, shot);
-                                AssignCommand(activator, () =>
-                                {
-                                    ApplyEffectToObject(DurationType.Instant, sound, target);
-                                    ApplyEffectToObject(DurationType.Instant, missile, target);
-                                    if (result.IsHit)
-                                    {
-                                        ApplyEffectToObject(DurationType.Instant, EffectVisualEffect(VisualEffect.Vfx_Fnf_Gas_Explosion_Fire), target);
-                                    }
-                                });
-
-                                Space.CompleteWeaponShot(activator, target, shot, result, 0.3f);
+                                ShipModuleActions.FireBolt(activator, activatorShipStatus, target, targetShipStatus, shot, true);
                             }
                         });
                     }

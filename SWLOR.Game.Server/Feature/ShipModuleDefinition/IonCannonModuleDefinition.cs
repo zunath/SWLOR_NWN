@@ -58,53 +58,7 @@ namespace SWLOR.Game.Server.Feature.ShipModuleDefinition
                         Accuracy = rank * 2,
                         ShieldDamageMultiplier = 1.5
                     };
-                    var result = Space.RollWeaponShot(activator, activatorShipStatus, target, targetShipStatus, shot);
-
-                    if (result.IsHit)
-                    {
-                        AssignCommand(activator, () =>
-                        {
-                            var effect = EffectBeam(VisualEffect.Vfx_Beam_Mind, activator, BodyNode.Chest);
-                            ApplyEffectToObject(DurationType.Temporary, effect, target, 1.0f);
-                            ApplyEffectToObject(DurationType.Instant, EffectVisualEffect(VisualEffect.Vfx_Ion_Shot), activator);
-                        });
-
-                        DelayCommand(0.1f, () =>
-                        {
-                            AssignCommand(activator, () =>
-                            {
-                                var effect = EffectVisualEffect(VisualEffect.Vfx_Imp_Dispel, false, 0.5f);
-                                ApplyEffectToObject(DurationType.Instant, effect, target);
-                            });
-                        });
-                    }
-                    else
-                    {
-                        AssignCommand(activator, () =>
-                        {
-                            var effect = EffectBeam(VisualEffect.Vfx_Beam_Cold, activator, BodyNode.Chest, true);
-                            ApplyEffectToObject(DurationType.Temporary, effect, target, 1.0f);
-                        });
-
-                        DelayCommand(0.1f, () =>
-                        {
-                            AssignCommand(activator, () =>
-                            {
-                                var effect = EffectVisualEffect(VisualEffect.Vfx_Fnf_Electric_Explosion, true);
-                                ApplyEffectToObject(DurationType.Instant, effect, target);
-                            });
-                        });
-                    }
-
-                    // Damage that gets past the shield slows the target.
-                    Space.CompleteWeaponShot(activator, target, shot, result, 0.1f, landed =>
-                    {
-                        if (landed.HullDamage > 0)
-                        {
-                            ApplyEffectToObject(DurationType.Temporary, EffectMovementSpeedDecrease(50), target, 6f);
-                            ApplyEffectToObject(DurationType.Temporary, EffectAbilityDecrease(AbilityType.Agility, 2), target, 12f);
-                        }
-                    });
+                    ShipModuleActions.FireIon(activator, activatorShipStatus, target, targetShipStatus, shot, 50, 2);
                 });
         }
     }

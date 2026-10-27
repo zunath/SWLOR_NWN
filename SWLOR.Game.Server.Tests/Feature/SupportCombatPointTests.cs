@@ -18,6 +18,9 @@ public class SupportCombatPointTests
             .Where(module => module.Source.Contains("Space.RestoreHull(") ||
                              module.Source.Contains("Space.RestoreShield(") ||
                              module.Source.Contains("Space.RestoreCapacitor(") ||
+                             module.Source.Contains("ShipModuleActions.RepairHull(") ||
+                             module.Source.Contains("ShipModuleActions.RepairShield(") ||
+                             module.Source.Contains("ShipModuleActions.InjectCapacitor(") ||
                              module.Name == "CapitalEwarModuleDefinition.cs")
             .ToList();
 
@@ -31,10 +34,15 @@ public class SupportCombatPointTests
             "CapitalEwarModuleDefinition.cs",
         });
 
+        // The repairers and the injector share ShipModuleActions, which holds their combat point credit.
+        var sharedSupport = shipModules.Single(module => module.Name == "ShipModuleActions.cs").Source;
+        sharedSupport.Should().Contain("CombatPoint.AddSupportCombatPoint(activator,");
+
         foreach (var (name, source) in supportModules)
         {
-            source.Should().Contain(
-                "CombatPoint.AddSupportCombatPoint(activator,",
+            var credits = source.Contains("CombatPoint.AddSupportCombatPoint(activator,") ||
+                          (source.Contains("ShipModuleActions.") && sharedSupport.Contains("CombatPoint.AddSupportCombatPoint(activator,"));
+            credits.Should().BeTrue(
                 $"{name} supports ships in a fight, so the enemies in that fight must award the pilot Piloting XP");
         }
     }

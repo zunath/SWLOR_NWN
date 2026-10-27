@@ -829,6 +829,8 @@ namespace SWLOR.Game.Server.Service
             var dbPlayerShip = DB.Get<PlayerShip>(shipId);
             var shipDetail = _shipTypes[dbPlayerShip.Status.ItemTag];
             ClearShipToggleState(player, dbPlayerShip.Status);
+            RecalculateShipStats(dbPlayerShip.Status, GetAbilityScore(player, AbilityType.Willpower));
+            SetLocalFloat(player, Stat.ShipMovementSpeedVariable, (float)dbPlayerShip.Status.SpeedMultiplier);
 
             // Snapshot the character's appearance at the moment it gets overwritten so exiting
             // space restores exactly what they looked like, even if the value captured at
@@ -1094,6 +1096,7 @@ namespace SWLOR.Game.Server.Service
 
             ClearCurrentTarget(player);
             RestoreCharacterAppearance(player, dbPlayer);
+            DeleteLocalFloat(player, Stat.ShipMovementSpeedVariable);
             Stat.ApplyCreatureMovementRate(player);
             Enmity.RemoveCreatureEnmity(player);
 
@@ -1398,6 +1401,15 @@ namespace SWLOR.Game.Server.Service
             // Slots 1-10 are high powered, 11-20 low powered and 21-30 mid powered.
             if (!TryGetFittedModule(activatorShipStatus, slotNumber, out var shipModule)) return;
 
+            // A module in a crew-station slot works only while its seat is crewed. Crew arrives in a later update.
+            if (activatorShipStatus.SlotTags != null &&
+                activatorShipStatus.SlotTags.TryGetValue(slotNumber, out var slotTag) &&
+                ShipStatCalculator.IsStation(slotTag))
+            {
+                SendMessageToPC(activator, $"This slot needs a crew member at the {ShipStatCalculator.GetSeatName(slotTag)} station.");
+                return;
+            }
+
             // Found the ship module. Run validation checks.
             var shipModuleDetails = _shipModules[shipModule.ItemTag];
             var isToggle = shipModuleDetails.Activation == ShipModuleActivation.Toggle;
@@ -1537,15 +1549,20 @@ namespace SWLOR.Game.Server.Service
         {
             var wil = GetAbilityScore(player, AbilityType.Willpower);
 
+            // A Bulwark Shield Generator raises the cap while it runs; shield above the cap is lost when it lapses.
+            var maxShield = shipStatus.GetEffectiveMaxShield(DateTime.UtcNow);
+            if (shipStatus.Shield > maxShield)
+                shipStatus.Shield = maxShield;
+
             // Shield recovery
-            if (shipStatus.Shield >= shipStatus.MaxShield)
+            if (shipStatus.Shield >= maxShield)
             {
                 shipStatus.ShieldRegenRemainder = 0;
             }
             else
             {
                 shipStatus.ShieldRegenRemainder += SpaceCombatMath.ShieldRegenPerSecond(
-                    shipStatus.MaxShield,
+                    maxShield,
                     NormalizeShipSize(shipStatus.Size),
                     wil,
                     shipStatus.ShieldRegenBonusPercent);
@@ -1603,9 +1620,10 @@ namespace SWLOR.Game.Server.Service
 
         public static void RestoreShield(uint creature, ShipStatus shipStatus, int amount)
         {
+            var maxShield = shipStatus.GetEffectiveMaxShield(DateTime.UtcNow);
             shipStatus.Shield += amount;
-            if (shipStatus.Shield > shipStatus.MaxShield)
-                shipStatus.Shield = shipStatus.MaxShield;
+            if (shipStatus.Shield > maxShield)
+                shipStatus.Shield = maxShield;
 
             ExecuteScript("pc_shld_adjusted", creature);
         }
@@ -1822,7 +1840,7 @@ namespace SWLOR.Game.Server.Service
         public static int GetShipAccuracy(uint attacker, ShipStatus attackerStatus, SpaceWeaponShot shot)
         {
             var accuracy = SpaceCombatMath.Accuracy(
-                attackerStatus.Accuracy,
+                attackerStatus.Accuracy + attackerStatus.GetAccuracyPenalty(DateTime.UtcNow),
                 shot.Accuracy,
                 GetAbilityScore(attacker, AbilityType.Agility),
                 GetAbilityScore(attacker, AbilityType.Perception),
@@ -1937,6 +1955,7 @@ namespace SWLOR.Game.Server.Service
 
             var resistance = 0;
             targetStatus.Resistances?.TryGetValue(GetShipResistanceType(shot.DamageType), out resistance);
+            resistance = SpaceCombatMath.HardenedResistance(resistance, targetStatus.HardenedAmount, targetStatus.HardenedUntil, DateTime.UtcNow);
 
             var damage = rolled
                          * SpaceCombatMath.SizeDamageMultiplier(weaponSize, targetSize, shot.IgnoreSizePenalty)
@@ -2309,9 +2328,13 @@ namespace SWLOR.Game.Server.Service
                 dbPlayerShip.Status.Hull = 1;
                 dbPlayerShip.Status.Shield = 0;
 
+                // A revamp ship falls back to its bare hull stats now that it has no modules.
+                RecalculateShipStats(dbPlayerShip.Status, GetAbilityScore(creature, AbilityType.Willpower));
+
                 // Exit space mode
                 ClearCurrentTarget(creature);
                 RestoreCharacterAppearance(creature, dbPlayer);
+                DeleteLocalFloat(creature, Stat.ShipMovementSpeedVariable);
                 Stat.ApplyCreatureMovementRate(creature);
                 Enmity.RemoveCreatureEnmity(creature);
 

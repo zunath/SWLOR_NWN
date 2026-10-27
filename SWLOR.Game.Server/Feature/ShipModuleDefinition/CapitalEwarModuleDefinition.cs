@@ -44,32 +44,11 @@ namespace SWLOR.Game.Server.Feature.ShipModuleDefinition
                     ApplyEffectToObject(DurationType.Temporary, EffectVisualEffect(VisualEffect.Vfx_Dur_Aura_Pulse_Blue_White), activator, 12.0f);
                     ApplyEffectToObject(DurationType.Temporary, EffectAbilityIncrease(AbilityType.Vitality, 4),activator, 12.0f);
 
-                    const float Distance = 20f;
-                    var count = 1;
-
-                    foreach (var nearby in ObjectSnapshot.InShape(Shape.Sphere, Distance, GetLocation(activator), true, ObjectType.Creature))
+                    foreach (var nearby in ShipModuleActions.GetNearbyShips(activator, 20f, 10, false))
                     {
-                        if (count > 10)
-                            break;
-
-                        if (!GetIsObjectValid(nearby))
-                            continue;
-
-                        if (GetIsEnemy(nearby, activator) &&
-                            !GetIsDead(activator) &&
-                            Space.GetShipStatus(nearby) != null &&
-                            nearby != activator)
-                        {
-                            var nearbyStatus = Space.GetShipStatus(nearby);
-
-                            ApplyEffectToObject(DurationType.Temporary, EffectBeam(VisualEffect.Vfx_Beam_Cold, activator, BodyNode.Chest), nearby, 2.0f);
-                            ApplyEffectToObject(DurationType.Temporary, EffectVisualEffect(VisualEffect.Vfx_Dur_Aura_Pulse_Blue_White), nearby, 2.0f);
-                            Enmity.ModifyEnmity(activator, nearby, enmityAmount);
-
-                            count++;
-                        }
-
-
+                        ApplyEffectToObject(DurationType.Temporary, EffectBeam(VisualEffect.Vfx_Beam_Cold, activator, BodyNode.Chest), nearby, 2.0f);
+                        ApplyEffectToObject(DurationType.Temporary, EffectVisualEffect(VisualEffect.Vfx_Dur_Aura_Pulse_Blue_White), nearby, 2.0f);
+                        Enmity.ModifyEnmity(activator, nearby, enmityAmount);
                     }
 
                     // The taunt puts each affected enemy on the E-War ship's enmity table, so supporting it credits them.

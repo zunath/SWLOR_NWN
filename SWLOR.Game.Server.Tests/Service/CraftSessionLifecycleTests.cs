@@ -1,3 +1,4 @@
+using System.Linq;
 using FluentAssertions;
 using Newtonsoft.Json;
 using NUnit.Framework;
@@ -214,6 +215,34 @@ public class CraftSessionLifecycleTests
         _player.ActiveCraftSession.Should().BeNull();
         _player.CraftedRecipes.Should().ContainKey(TestRecipe);
         _world.Messages.Should().HaveCount(2);
+    }
+
+    [Test]
+    public void Succeed_ANonStackingRecipeOfTwo_DeliversTwoItemsAndRecordsBoth()
+    {
+        _recipe.Quantity = 2;
+        _world.NonStackingResrefs.Add(_recipe.Resref);
+        var lifecycle = Lifecycle();
+        var session = StartSession(lifecycle);
+
+        lifecycle.SucceedAtPace(_world, FakeCraftSessionWorld.PlayerHandle, _player, session, new MinigameMeter(60, 100));
+
+        _world.Crafted.Should().HaveCount(2);
+        _world.Events.Should().ContainInOrder("create:test_item", "copy:test_item", "save");
+        _player.PendingCraftReturns.SelectMany(entry => entry.Items).Should().BeEquivalentTo(_world.Crafted);
+    }
+
+    [Test]
+    public void Succeed_AStackingRecipeOfTwo_MakesNoCopies()
+    {
+        _recipe.Quantity = 2;
+        var lifecycle = Lifecycle();
+        var session = StartSession(lifecycle);
+
+        lifecycle.SucceedAtPace(_world, FakeCraftSessionWorld.PlayerHandle, _player, session, new MinigameMeter(60, 100));
+
+        _world.Crafted.Should().ContainSingle();
+        _world.Events.Should().NotContain(e => e.StartsWith("copy:"));
     }
 
     [Test]

@@ -182,6 +182,24 @@ public sealed class NwnCraftSessionWorld : ICraftSessionWorld
         return item;
     }
 
+    public List<uint> CopyCraftedUnits(uint player, uint item, RecipeDetail recipe)
+    {
+        var copies = new List<uint>();
+        if (recipe.Quantity <= 1 || !GetIsObjectValid(item))
+            return copies;
+        if (StringToInt(Get2DAString("baseitems", "Stacking", (int)GetBaseItemType(item))) > 1)
+            return copies;
+
+        for (var unit = 1; unit < recipe.Quantity; unit++)
+        {
+            var copy = CopyItem(item, player, true);
+            if (GetIsObjectValid(copy))
+                copies.Add(copy);
+        }
+
+        return copies;
+    }
+
     public void ApplyVendorValue(uint item, int addGoldPiece) => ItemPlugin.SetAddGoldPieceValue(item, addGoldPiece);
 
     public void ApplyEnhancement(uint item, string serializedEnhancement, RecipeDetail recipe)

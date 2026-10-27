@@ -177,9 +177,13 @@ public sealed class CraftSessionLifecycle
         if (firstTime)
             dbPlayer.CraftedRecipes[record.Recipe] = DateTime.UtcNow;
 
-        // The finished item is in the inventory only in memory: the record that ends the session carries it until a file holds it.
+        // A template that does not stack made one item: the rest of the quantity are copies of it, bonuses included.
+        var units = new List<uint> { item };
+        units.AddRange(_world.CopyCraftedUnits(player, item, recipe));
+
+        // The finished items are in the inventory only in memory: the record that ends the session carries them until a file holds them.
         // The XP the craft earned is entitled in the same save, so a stop between this save and the award loses neither.
-        RecordReturn(player, dbPlayer, new List<string> { _world.SerializeItem(item) });
+        RecordReturn(player, dbPlayer, units.Select(_world.SerializeItem).ToList());
         dbPlayer.ActiveCraftSession = null;
         if (outcome.Xp > 0)
             AddPendingXp(dbPlayer, recipe.Skill, outcome.Xp);

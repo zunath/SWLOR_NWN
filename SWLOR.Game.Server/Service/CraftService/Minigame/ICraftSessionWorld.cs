@@ -50,6 +50,13 @@ public interface ICraftSessionWorld
 
     uint CreateCraftedItem(uint player, RecipeDetail recipe);
 
+    /// <summary>
+    /// Makes the rest of a multi-unit recipe's output as copies of the finished <paramref name="item"/>, with its bonuses, when the
+    /// template does not stack (one <see cref="CreateCraftedItem"/> call then makes a single item). Returns the copies; none for a
+    /// template that stacks, since its stack already holds the full quantity.
+    /// </summary>
+    List<uint> CopyCraftedUnits(uint player, uint item, RecipeDetail recipe);
+
     void ApplyVendorValue(uint item, int addGoldPiece);
 
     /// <summary>Moves the properties of a serialized enhancement onto the crafted item.</summary>

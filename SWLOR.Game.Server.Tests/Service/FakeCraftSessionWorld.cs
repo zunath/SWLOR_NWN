@@ -122,6 +122,27 @@ internal sealed class FakeCraftSessionWorld : ICraftSessionWorld
 
     private readonly Dictionary<uint, string> _craftedNames = new();
 
+    /// <summary>Resrefs whose template does not stack, so a multi-unit recipe's extra units are made as copies.</summary>
+    public HashSet<string> NonStackingResrefs { get; } = new();
+
+    public List<uint> CopyCraftedUnits(uint player, uint item, RecipeDetail recipe)
+    {
+        var copies = new List<uint>();
+        if (recipe.Quantity <= 1 || !NonStackingResrefs.Contains(recipe.Resref))
+            return copies;
+
+        for (var unit = 1; unit < recipe.Quantity; unit++)
+        {
+            Events.Add($"copy:{recipe.Resref}");
+            var copy = _nextItem++;
+            _craftedNames[copy] = $"{_craftedNames[item]} copy {unit}";
+            Crafted.Add(_craftedNames[copy]);
+            copies.Add(copy);
+        }
+
+        return copies;
+    }
+
     public void ApplyVendorValue(uint item, int addGoldPiece) => VendorValues.Add(addGoldPiece);
 
     public void ApplyEnhancement(uint item, string serializedEnhancement, RecipeDetail recipe) =>

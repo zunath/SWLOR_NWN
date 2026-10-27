@@ -214,7 +214,7 @@ namespace SWLOR.Game.Server.Service.SpaceService
         /// <summary>The stat lines of the Stats tab, in the order they are shown.</summary>
         public static List<ShipHudStatRow> BuildStatRows(ShipHudStats stats)
         {
-            return new List<ShipHudStatRow>
+            var rows = new List<ShipHudStatRow>
             {
                 new("VITALS"),
                 new("Hull", $"{stats.Hull} / {stats.MaxHull}"),
@@ -240,11 +240,16 @@ namespace SWLOR.Game.Server.Service.SpaceService
                 new("SHIP"),
                 new("Speed", $"{Math.Round(stats.SpeedMultiplier * 100)}%"),
                 new("Power Routing", PowerRoutingRules.GetName(stats.PowerRouting)),
-                new("Cargo", stats.Cargo?.ToString() ?? "-"),
                 new("High Slots", $"{stats.HighFitted} / {stats.HighSlots}"),
                 new("Mid Slots", $"{stats.MidFitted} / {stats.MidSlots}"),
                 new("Low Slots", $"{stats.LowFitted} / {stats.LowSlots}"),
+                new("CARGO"),
+                new("Cargo", stats.Cargo == null ? "-" : $"{stats.CargoUsed} / {stats.Cargo}"),
             };
+
+            rows.AddRange((stats.CargoLines ?? new List<(string Name, int Units)>())
+                .Select(line => new ShipHudStatRow(line.Name, line.Units.ToString())));
+            return rows;
         }
 
         private static string FormatPercent(int percent)

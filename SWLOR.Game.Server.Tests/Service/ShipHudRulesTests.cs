@@ -385,7 +385,7 @@ public class ShipHudRulesTests
         Value("EM Damage").Should().Be("0%");
         Value("Explosive Damage").Should().Be("-10%");
         Value("Speed").Should().Be("110%");
-        Value("Cargo").Should().Be("20");
+        Value("Cargo").Should().Be("0 / 20");
         Value("High Slots").Should().Be("2 / 3");
         Value("Mid Slots").Should().Be("1 / 2");
         Value("Low Slots").Should().Be("0 / 2");
@@ -411,6 +411,25 @@ public class ShipHudRulesTests
     public void BuildStatRows_NoCargoShowsADash()
     {
         ShipHudRules.BuildStatRows(new ShipHudStats()).Single(x => x.Label == "Cargo").Value.Should().Be("-");
+    }
+
+    /// <summary>Checks the Stats tab shows the cargo bay filled against the hull's Cargo, then each commodity aboard.</summary>
+    [Test]
+    public void BuildStatRows_ShowCargoUsedAndTheCommoditiesAboard()
+    {
+        var rows = ShipHudRules.BuildStatRows(new ShipHudStats
+        {
+            Cargo = 480,
+            CargoUsed = 130,
+            CargoLines = new List<(string Name, int Units)> { ("Grain", 40), ("Kinrath Silk", 50) },
+        });
+
+        rows.Single(x => x.Label == "Cargo").Value.Should().Be("130 / 480");
+        var cargo = rows.FindIndex(x => x.Label == "Cargo");
+        rows[cargo + 1].Label.Should().Be("Grain");
+        rows[cargo + 1].Value.Should().Be("40");
+        rows[cargo + 2].Label.Should().Be("Kinrath Silk");
+        rows.Should().HaveCount(cargo + 3);
     }
 
     /// <summary>Checks the All Weapons feat, its window id and its hak data are consistent.</summary>

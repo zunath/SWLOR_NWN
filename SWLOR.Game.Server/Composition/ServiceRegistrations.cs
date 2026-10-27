@@ -42,6 +42,7 @@ namespace SWLOR.Game.Server.Composition
 
             // Quests
             services.AddSingleton<IFactionService, FactionService>();
+            services.AddSingleton<IQuestContractBoardService, QuestContractBoardService>();
 
             // Social
             services.AddSingleton<IChatCommandService, ChatCommandService>();

@@ -40,6 +40,9 @@ task, reviews the result and merges it into `feature/maintainability-refactor`.
 - The description holds what changed, why, and validation (exact build and test commands and results).
   End it with: `🤖 Generated with [Claude Code](https://claude.com/claude-code)`. Commit messages end with a
   `Co-Authored-By:` line naming the Claude model you run on (for example `Claude Sonnet 5.5 <noreply@anthropic.com>`).
+- GitHub Actions cannot run (account billing lock). If your pull request changes production code, run
+  `bash scripts/ci/run-unit-tests.sh --out <folder outside the repo>` on the final head and put the per-project results
+  in the description; otherwise run the targeted test filters for your change.
 - Run the Codex review loop from PullRequests.md (`tools/RequestCodexReview.ps1 -PullRequest <pr>`) until a
   review of the current head is clean; fix or answer every finding and resolve every thread; check
   mergeability. Do NOT merge the pull request.

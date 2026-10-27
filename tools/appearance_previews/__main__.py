@@ -218,11 +218,13 @@ def write_pictures(keys, renders: Path, output: Path, size: int):
             if not png.exists():
                 continue
             image = picture(png, size)
+            name = f"{preview_resref(key, view)}.dds"
             twin_png = renders / f"{twin}_{view}.png" if twin else None
             if twin_png is not None and twin_png.exists() and is_duplicate(image, picture(twin_png, size)):
+                # An older picture of its own would hide the human fallback, even on --only runs.
+                (output / name).unlink(missing_ok=True)
                 skipped += 1
                 continue
-            name = f"{preview_resref(key, view)}.dds"
             save_dds(image, output / name)
             wanted.add(name)
             kept += 1

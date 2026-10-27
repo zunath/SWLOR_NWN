@@ -307,6 +307,22 @@ class DuplicateTests(unittest.TestCase):
             self.assertNotIn("apme0_chest001f.dds", wanted)
             self.assertIn("apme0_chest002f.dds", wanted)
 
+    def test_a_part_that_became_a_duplicate_loses_its_old_picture_on_a_partial_run(self):
+        from appearance_previews.__main__ import write_pictures
+        with tempfile.TemporaryDirectory() as folder:
+            renders, output = Path(folder, "renders"), Path(folder, "out")
+            renders.mkdir()
+            output.mkdir()
+            for key in ("pmh0_chest001", "pme0_chest001"):
+                for view in VIEWS:
+                    Image.new("RGBA", (64, 64), (200, 0, 0, 255)).save(renders / f"{key}_{view}.png")
+            old, unrelated = output / "apme0_chest001f.dds", output / "apme0_chest002f.dds"
+            old.write_bytes(b"old")
+            unrelated.write_bytes(b"other")
+            write_pictures(["pme0_chest001"], renders, output, 96)
+            self.assertFalse(old.exists(), "the human picture must show instead")
+            self.assertTrue(unrelated.exists())
+
 
 class BatchProblemTests(unittest.TestCase):
     def test_a_crashed_batch_reports_its_exit_code_and_every_missing_render(self):

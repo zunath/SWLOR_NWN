@@ -91,11 +91,15 @@ case "$action" in
         xdotool mousemove --window "$w" "$1" "$2"
         sleep 0.5
         xdotool mousedown 1
+        # A short wiggle first: the client starts a drag only after the pointer has left the source.
+        xdotool mousemove --window "$w" $(( $1 + 4 )) $(( $2 + 4 ))
+        sleep 0.3
         for step in 1 2 3 4 5 6 7 8; do
             xdotool mousemove --window "$w" $(( $1 + ($3 - $1) * step / 8 )) $(( $2 + ($4 - $2) * step / 8 ))
-            sleep 0.2
+            sleep 0.25
         done
-        sleep 0.4
+        # Rest over the target before letting go, so it registers as the drop point.
+        sleep 0.7
         xdotool mouseup 1
         sleep 1
         ;;
@@ -110,7 +114,7 @@ case "$action" in
             x=$1; y=$2; shift 2
             point "$x" "$y"
             xdotool mousemove --window "$w" "$x" "$y"
-            sleep 0.8
+            sleep 0.6
             left=$(( x > 70 ? x - 70 : 0 )); top=$(( y > 45 ? y - 45 : 0 ))
             red=$(import -window "$w" -crop "140x50+$left+$top" -depth 8 txt:- | tr -d ' ' \
                 | sed -n 's/^[0-9]*,[0-9]*:(\([0-9]*\),\([0-9]*\),\([0-9]*\).*/\1 \2 \3/p' \

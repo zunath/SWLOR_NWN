@@ -122,13 +122,15 @@ class ClientActionTests(unittest.TestCase):
             return ui_answer
         return GameClient(SimpleNamespace(ui=ui, profile=Path(tempfile.gettempdir()))), calls
 
-    def test_scan_points_start_at_the_character_and_stay_on_screen(self):
-        points = smoke_client.scan_points()
-        self.assertEqual((640, 385), points[0])
-        self.assertEqual(len(points), len(set(points)))
+    def test_the_scan_passes_start_at_the_character_and_stay_on_screen_and_do_not_overlap(self):
+        near, wide = smoke_client.NEAR_SCAN, smoke_client.WIDE_SCAN
+        self.assertEqual(smoke_client.CHARACTER_POINT, near[0])
+        self.assertEqual(35, len(near))
+        self.assertFalse(set(near) & set(wide))
         width, height = smoke_client.SCREEN
-        self.assertTrue(all(0 <= x < width and 0 <= y < height for x, y in points))
-        distances = [(x - 640) ** 2 + ((y - 385) * 1.5) ** 2 for x, y in points]
+        self.assertTrue(all(0 <= x < width and 0 <= y < height for x, y in near + wide))
+        centre = smoke_client.CHARACTER_POINT
+        distances = [(x - centre[0]) ** 2 + ((y - centre[1]) * 1.5) ** 2 for x, y in near]
         self.assertEqual(sorted(distances), distances)
 
     def test_find_hostile_asks_the_container_to_scan_and_reads_the_answer(self):
@@ -210,14 +212,24 @@ class ClientActionTests(unittest.TestCase):
         self.assertFalse(smoke_client.region_changed(before, after, (600, 600)))
 
     @unittest.skipIf(Image is None, 'Pillow is not installed')
-    def test_a_dropped_drag_is_repeated_until_the_icon_has_moved(self):
+    def test_a_dropped_drag_is_repeated_until_the_icon_left_its_cell_and_arrived(self):
         client, calls = self.client()
-        icon, empty = blank(), blank()
-        ImageDraw.Draw(icon).rectangle((120, 340, 150, 380), fill=(200, 200, 200))
-        screens = iter([icon, icon, icon, empty])
+        before_icon, after_icon = blank(), blank()
+        ImageDraw.Draw(before_icon).rectangle((120, 340, 150, 380), fill=(200, 200, 200))
+        ImageDraw.Draw(after_icon).rectangle((16, 106, 44, 134), fill=(200, 200, 200))
+        # Attempt 1: nothing happened (same screen twice). Attempt 2: the icon moved.
+        screens = iter([before_icon, before_icon, before_icon, after_icon])
         with patch.object(client, 'snapshot', side_effect=lambda: next(screens)),                 patch.object(smoke_client.time, 'sleep'):
             self.assertTrue(client.move_item((136, 350), (30, 120)))
         self.assertEqual(2, len([call for call in calls if call[0] == 'drag-slow']))
+
+    @unittest.skipIf(Image is None, 'Pillow is not installed')
+    def test_an_icon_that_left_its_cell_but_did_not_arrive_is_not_a_success(self):
+        client, calls = self.client()
+        before_icon, vanished = blank(), blank()
+        ImageDraw.Draw(before_icon).rectangle((120, 340, 150, 380), fill=(200, 200, 200))
+        with patch.object(client, 'snapshot', side_effect=[before_icon, vanished] * 2),                 patch.object(smoke_client.time, 'sleep'):
+            self.assertFalse(client.move_item((136, 350), (30, 120), attempts=2))
 
     @unittest.skipIf(Image is None, 'Pillow is not installed')
     def test_a_drag_that_never_lands_is_reported(self):
@@ -338,7 +350,7 @@ class StepHelperTests(unittest.TestCase):
 
     def test_every_screen_point_lies_on_the_screen(self):
         width, height = smoke_client.SCREEN
-        points = (smoke_client.HOSTILE_SCAN + [smoke_client.RESPAWN_BUTTON] + smoke_steps.BANK_TERMINAL_POINTS
+        points = (smoke_client.NEAR_SCAN + smoke_client.WIDE_SCAN + [smoke_client.RESPAWN_BUTTON] + smoke_steps.BANK_TERMINAL_POINTS
                   + smoke_steps.COOKPOT_POINTS + smoke_steps.SELAN_POINTS
                   + [smoke_client.NEUTRAL_POINT, smoke_client.SELF_POINT, smoke_client.MAIN_HAND_SLOT,
                      smoke_client.EMPTY_GRID_CELL, smoke_steps.PERKS_FIRST_ROW, smoke_steps.PERKS_BUY,

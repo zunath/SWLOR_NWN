@@ -35,23 +35,22 @@ DEATH_TITLE = (500, 143, 780, 166)
 RESPAWN_BUTTON = (641, 390)
 
 
-def scan_points(center: tuple[int, int] = (640, 385)) -> list[tuple[int, int]]:
-    """Screen points around the character, nearest first: where a creature fighting it can stand.
-
-    A mynock is small, so the points next to the character are 20 pixels apart; farther out they
-    are 40 and 35 apart. The scan stops at the first hostile, which is usually among the first few.
-    """
-    def grid(reach_x: int, reach_y: int, step_x: int, step_y: int) -> list[tuple[int, int]]:
-        return [(center[0] + dx, center[1] + dy)
-                for dx in range(-reach_x, reach_x + 1, step_x) for dy in range(-reach_y, reach_y + 1, step_y)]
-    points = list(dict.fromkeys(grid(80, 60, 20, 20) + grid(160, 105, 40, 35)))
+def grid_points(center: tuple[int, int], reach_x: int, reach_y: int, step_x: int,
+                step_y: int) -> list[tuple[int, int]]:
+    """Screen points of a grid around a centre, on screen, nearest the centre first."""
+    points = [(center[0] + dx, center[1] + dy)
+              for dx in range(-reach_x, reach_x + 1, step_x) for dy in range(-reach_y, reach_y + 1, step_y)]
     points = [(x, y) for x, y in points if 0 <= x < SCREEN[0] and 0 <= y < SCREEN[1]]
     return sorted(points, key=lambda point: ((point[0] - center[0]) ** 2 + ((point[1] - center[1]) * 1.5) ** 2,
                                              point))
 
 
-# A hostile that is fighting the character, nearest first.
-HOSTILE_SCAN = scan_points()
+CHARACTER_POINT = (640, 385)
+# A creature fighting the character stands next to it. A mynock is small and moves about, so the
+# search is a quick pass over the 20-pixel grid beside the character, repeated, with a wide pass
+# over the rest of the surroundings as a fallback.
+NEAR_SCAN = grid_points(CHARACTER_POINT, 60, 40, 20, 20)
+WIDE_SCAN = [point for point in grid_points(CHARACTER_POINT, 160, 105, 40, 35) if point not in NEAR_SCAN]
 
 CHAT_PREFIX = re.compile(r'^\[CHAT WINDOW TEXT\] \[[^\]]*\] ?')
 
@@ -338,14 +337,18 @@ class GameClient:
         """Drag an inventory or equipment icon to another place until the source shows the change.
 
         The server does not tell a dropped drag from a done one, so the screen is compared: an icon
-        that moved leaves its source cell different. Use it only in a quiet scene, where nothing else
-        changes behind the inventory panel.
+        that moved makes both its source and its target look different. Use it only in a quiet scene,
+        where nothing else changes behind the inventory panel.
         """
         for _ in range(attempts):
             before = self.snapshot()
             self.drag(*source, *target)
-            time.sleep(3)
-            if region_changed(before, self.snapshot(), source):
+            # Park the pointer away so no tooltip is left over either end, then compare both ends.
+            self.move(*NEUTRAL_POINT)
+            time.sleep(2)
+            after = self.snapshot()
+            if (region_changed(before, after, source, threshold=25, minimum=40)
+                    and region_changed(before, after, target, threshold=25, minimum=40)):
                 return True
         return False
 
@@ -369,7 +372,7 @@ class GameClient:
         time.sleep(15)
         return True
 
-    def find_hostile(self, points=HOSTILE_SCAN) -> tuple[int, int] | None:
+    def find_hostile(self, points=NEAR_SCAN) -> tuple[int, int] | None:
         """The first point (nearest the character first) where hovering shows a hostile's label.
 
         The scan runs inside the client container (ui.sh hostile-scan), one call for the lot.

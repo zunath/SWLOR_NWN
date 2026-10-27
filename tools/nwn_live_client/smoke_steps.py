@@ -16,8 +16,8 @@ import json
 import re
 import time
 
-from .smoke_client import (EMPTY_GRID_CELL, MAIN_HAND_SLOT, SELF_POINT, GameClient, bright_pixels, green_text_present,
-                           new_hotbar_slot, window_left)
+from .smoke_client import (EMPTY_GRID_CELL, MAIN_HAND_SLOT, NEAR_SCAN, SELF_POINT, WIDE_SCAN, GameClient, bright_pixels,
+                           green_text_present, new_hotbar_slot, window_left)
 from .stack import LiveStackError
 
 BANK_TERMINAL_POINTS = [(600, 395), (598, 360)]
@@ -36,11 +36,12 @@ BANK_FIRST_WITHDRAW = (395, 140)
 BANK_CLOSE = (456, 17)
 RECIPE_FIRST = (153, 202)
 RECIPE_CRAFT = (456, 560)
-RECIPE_CLOSE = (603, 17)
 CRAFT_WINDOW_CORNER = ((538, 287), (1100, 640))
 CRAFT_START = (317, 530)
 CRAFT_BASIC_SYNTHESIS = (706, 362)
-CRAFT_CLOSE = (1090, 17)
+# The recipe's detail line and the item window's title bar, where bright text shows once they are up.
+RECIPE_DETAIL_BOX = (316, 182, 540, 204)
+CRAFT_TITLE_BOX = (4, 8, 120, 26)
 CONVERSATION_FIRST_REPLY = (316, 357)
 
 # The three areas of the start of the game, as the server's chat log names them.
@@ -123,19 +124,23 @@ def spawn(client: GameClient, resref: str, quantity: int, item_name: str) -> str
     return client.wait_for(rf'Acquired Item: {re.escape(item_name)}', mark, 20)
 
 
-def attack_target(client: GameClient, name: str, victim: str, attempts: int = 3) -> tuple[int, int] | None:
-    """Find a hostile near the character, click it and wait until the character attacks it.
+def attack_target(client: GameClient, name: str, victim: str, attempts: int = 6) -> tuple[int, int] | None:
+    """Find a hostile next to the character, click it and wait until the character attacks it.
 
-    name is the character's name and victim a regular expression for the target's name.
+    name is the character's name and victim a regular expression for the target's name. Each
+    attempt is a quick pass over the points beside the character; every third one also covers the
+    wider surroundings.
     """
-    for _ in range(attempts):
+    for attempt in range(attempts):
         client.ensure_alive()
-        point = client.find_hostile()
+        point = client.find_hostile(NEAR_SCAN)
+        if point is None and attempt % 3 == 2:
+            point = client.find_hostile(WIDE_SCAN)
         if point is None:
             continue
         mark = client.mark()
         client.click_object(*point)
-        if client.wait_for(rf'{re.escape(name)} attacks {victim}', mark, 14, 1.5):
+        if client.wait_for(rf'{re.escape(name)} attacks {victim}', mark, 12, 1.5):
             return point
     return None
 
@@ -167,7 +172,8 @@ def fight(run, step, label: str, weapon: str, attack_type: int) -> None:
     # The mark comes first: a mynock can strike while the area is still settling after the jump.
     mark = client.mark()
     step.check(f'{label}: teleport to the mynock spawn point', teleport(client, 'CZ220_MYNOCKS'))
-    expect(step, f'{label}: a mynock engages', client.wait_for(rf'{MYNOCK} (attacks|uses|readies)', mark, 90, 3))
+    # The spawn timer can take a few minutes after the area gets its first visitor.
+    expect(step, f'{label}: a mynock engages', client.wait_for(rf'{MYNOCK} (attacks|uses|readies)', mark, 300, 3))
     clicked = attack_target(client, name, MYNOCK)
     detail = f'clicked {clicked}' if clicked else 'no hostile label found'
     expect(step, f'{label}: the character attacks the mynock',
@@ -252,12 +258,16 @@ def ability(run, step) -> None:
     expect(step, 'the effect lands', client.wait_for(rf'{re.escape(name)} receives the effect of Adrenal Stim', mark, 10))
     run.capture(step, 'used')
 
-    mark = client.mark()
-    client.nui_click(*slot)
-    time.sleep(2)
-    client.click(*SELF_POINT)
-    expect(step, 'a second use is refused while on cooldown',
-           client.wait_for(r'This ability can be used in \d+ seconds?\.', mark, 15))
+    refusal = None
+    for _ in range(3):
+        mark = client.mark()
+        client.nui_click(*slot)
+        time.sleep(2)
+        client.click(*SELF_POINT)
+        refusal = client.wait_for(r'This ability can be used in \d+ seconds?\.', mark, 8)
+        if refusal:
+            break
+    expect(step, 'a second use is refused while on cooldown', refusal)
     run.capture(step, 'cooldown')
     step.detail = 'Adrenal Stim was bought, used once and refused with a cooldown message on the second use.'
 
@@ -336,15 +346,31 @@ def craft(run, step) -> None:
     step.check('the crafting window opens', opened is not None, str(opened))
     if opened is None:
         return
-    client.nui_click(*RECIPE_FIRST)
-    time.sleep(3)
-    mark = client.mark()
-    client.nui_click(*RECIPE_CRAFT)
-    time.sleep(6)
+    selected = False
+    for _ in range(4):
+        client.nui_click(*RECIPE_FIRST)
+        time.sleep(3)
+        if bright_pixels(client.snapshot(), RECIPE_DETAIL_BOX) >= 60:
+            selected = True
+            break
+    step.check('the first recipe is selected and its details show', selected)
+    if not selected:
+        return
+    started = False
+    for _ in range(4):
+        client.nui_click(*RECIPE_CRAFT)
+        time.sleep(5)
+        if bright_pixels(client.snapshot(), CRAFT_TITLE_BOX) >= 40:
+            started = True
+            break
+    step.check('the item window opens', started)
+    if not started:
+        return
     client.drag(*CRAFT_WINDOW_CORNER[0], *CRAFT_WINDOW_CORNER[1])
     time.sleep(2)
-    client.nui_click(*CRAFT_START)
-    expect(step, 'the components are consumed', client.wait_for(r'Lost Item: Distilled Water', mark, 20))
+    expect(step, 'the components are consumed',
+           click_expect(client, *CRAFT_START, r'Lost Item: Distilled Water', attempts=3, wait=10))
+    mark = client.mark()
     made = None
     for _ in range(6):
         client.nui_click(*CRAFT_BASIC_SYNTHESIS)
@@ -354,16 +380,14 @@ def craft(run, step) -> None:
     expect(step, 'the item is crafted', made)
     expect(step, 'crafting skill experience is awarded', client.wait_for(r'You earned Agriculture skill experience', mark, 10))
     run.capture(step, 'crafted')
-    client.nui_click(*CRAFT_CLOSE)
-    time.sleep(2)
-    client.nui_click(*RECIPE_CLOSE)
-    time.sleep(2)
+    reset_windows(client)
     step.detail = 'A Mynock Meat Ball was crafted at a cookpot.'
 
 
 def quest(run, step) -> None:
     """Accept Selan's Request from the reception desk."""
     client: GameClient = run.client
+    reset_windows(client)
     step.check('teleport to the reception desk', teleport(client, 'Reception'))
     accepted = None
     mark = client.mark()
@@ -388,6 +412,7 @@ def transfer(run, step) -> None:
     """Go to the hangar and back to the offices, proving each area from the server's chat log."""
     client: GameClient = run.client
     name = character_name(run)
+    reset_windows(client)
     # Start in the offices whatever the earlier steps left, so each command below is sent from a known area.
     step.check('teleport to the offices to start', teleport(client, 'Reception'))
     step.check('teleport to the hangar', teleport(client, 'ENTRY_STARTING_WP'))

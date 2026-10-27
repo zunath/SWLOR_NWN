@@ -142,6 +142,9 @@ namespace SWLOR.Game.Server.Service.SpaceService
         public double ShieldRegenRemainder { get; set; }
         public double CapacitorRegenRemainder { get; set; }
 
+        /// <summary>"On your next weapon hit" effects waiting for a landed weapon shot.</summary>
+        public List<SpaceShotRider> PendingRiders { get; set; } = new();
+
         public int Industrial { get; set; }
         public bool CapitalShip { get; set; }
         public DateTime GlobalRecast { get; set; }

@@ -15,6 +15,7 @@ using SWLOR.Game.Server.Service.CombatService;
 using SWLOR.Game.Server.Service.LogService;
 using SWLOR.Game.Server.Service.PerkService;
 using SWLOR.Game.Server.Service.SkillService;
+using SWLOR.Game.Server.Service.SpaceService;
 using SWLOR.Game.Server.Service.StatService;
 using SWLOR.Game.Server.Service.TelegraphService;
 using SWLOR.NWN.API.Engine;
@@ -106,6 +107,20 @@ namespace SWLOR.Game.Server.Feature
             Location targetLocation,
             AbilityDetail ability)
         {
+            // A ship's target is the one it has selected in space, not a ground attack target.
+            if (ability.CanBeUsedInSpace && Space.IsShipInSpace(activator))
+            {
+                var usesSelectedTarget = ability.UsesActiveAttackTarget ||
+                                         ability.IsHostileAbility && ability.RequiresTarget && !GetIsObjectValid(target);
+                if (!usesSelectedTarget)
+                    return (target, targetLocation);
+
+                var selected = SpaceAbilities.GetSelectedTarget(activator);
+                return GetIsObjectValid(selected)
+                    ? (selected, GetLocation(selected))
+                    : (OBJECT_INVALID, targetLocation);
+            }
+
             if (!ability.UsesActiveAttackTarget)
                 return (target, targetLocation);
 
@@ -123,6 +138,10 @@ namespace SWLOR.Game.Server.Feature
             {
                 return;
             }
+
+            // A ship fires through its modules; its pilot never swings.
+            if (GetIsPC(activator) && Space.IsShipInSpace(activator))
+                return;
 
             if (CompanionControl.TryProcessPendingDefensiveReaction(activator))
                 return;
@@ -273,9 +292,11 @@ namespace SWLOR.Game.Server.Feature
                 if (!GetIsObjectValid(target) ||
                     GetCurrentHitPoints(target) <= 0 ||
                     GetArea(activator) != GetArea(target) ||
-                    GetDistanceBetween(activator, target) > ability.MaxRange ||
-                    !LineOfSightObject(activator, target) ||
-                    !LineOfSightVector(GetPosition(activator), GetPosition(target)))
+                    GetDistanceBetween(activator, target) > Ability.GetAbilityMaxRange(
+                        activator, ability, ability.CanBeUsedInSpace && Space.IsShipInSpace(activator)) ||
+                    !Space.IsShipInSpace(activator) &&
+                    (!LineOfSightObject(activator, target) ||
+                     !LineOfSightVector(GetPosition(activator), GetPosition(target))))
                 {
                     return false;
                 }
@@ -595,6 +616,17 @@ namespace SWLOR.Game.Server.Feature
                 Combat.ApplyAbilityActivatedEffects(activator, target, feat, ability, summary);
                 Combat.ApplyAbilityImpactEffects(activator, summary);
 
+                if (ability.CanBeUsedInSpace && ability.IsHostileAbility)
+                {
+                    SpaceCombatEvents.RaiseHostileAbilityUsed(new SpaceAbilityEvent
+                    {
+                        Activator = activator,
+                        Target = target,
+                        Ability = ability,
+                        Impact = summary
+                    });
+                }
+
                 if (!GetIsPC(activator))
                 {
                     Mimicry.OnCreatureAbilityUsed(activator, feat);
@@ -631,8 +663,13 @@ namespace SWLOR.Game.Server.Feature
             Location targetLocation)
         {
             WeaponAbilityTraitActivation weaponTraits = null;
+            // A space ability has no activation delay: movement cancels a cast, and a ship is always moving.
+            var isSpaceAbility = ability.CanBeUsedInSpace && Space.IsShipInSpace(activator);
             float CalculateActivationDelay()
             {
+                if (isSpaceAbility)
+                    return 0f;
+
                 if (ability.HasFixedActivationDelay)
                     return ability.ActivationDelay(activator, target, ability.AbilityLevel);
                 var delayReductionPercent = Combat.ConsumeNextAbilityDelayReductionPercent(activator, ability);
@@ -731,21 +768,25 @@ namespace SWLOR.Game.Server.Feature
                     GetActionMode(activator, ActionMode.Stealth))
                     SetActionMode(activator, ActionMode.Stealth, false);
 
-                AssignCommand(activator, () =>
+                // A ship keeps its course and its queued moves when it uses an ability.
+                if (!isSpaceAbility)
                 {
-                    if (GetIsPC(activator))
-                        ClearAllActions();
-                    else
-                        ClearAllActions(true);
-                });
+                    AssignCommand(activator, () =>
+                    {
+                        if (GetIsPC(activator))
+                            ClearAllActions();
+                        else
+                            ClearAllActions(true);
+                    });
 
-                if (GetIsObjectValid(target) && target != activator)
-                {
-                    BiowarePosition.TurnToFaceObject(target, activator);
-                }
-                else if (GetIsObjectValid(GetAreaFromLocation(targetLocation)))
-                {
-                    BiowarePosition.TurnToFaceLocation(targetLocation, activator);
+                    if (GetIsObjectValid(target) && target != activator)
+                    {
+                        BiowarePosition.TurnToFaceObject(target, activator);
+                    }
+                    else if (GetIsObjectValid(GetAreaFromLocation(targetLocation)))
+                    {
+                        BiowarePosition.TurnToFaceLocation(targetLocation, activator);
+                    }
                 }
 
                 PlayAbilitySound(activator, ability.ActivationSound);

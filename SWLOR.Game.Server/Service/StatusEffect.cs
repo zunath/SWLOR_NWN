@@ -2300,6 +2300,18 @@ namespace SWLOR.Game.Server.Service
             RemoveCreature(creature, removeNativeEffect);
         }
 
+        /// <summary>
+        /// Deals one tick of a damage-over-time status. A ship in space takes it from its shield and hull; every
+        /// other creature takes it as hit points under the source's name, so it shows in the combat log.
+        /// </summary>
+        public static void ApplyDamageOverTime(uint source, uint creature, int amount, DamageType damageType)
+        {
+            if (Space.TryApplyStatusDamage(source, creature, amount))
+                return;
+
+            AssignCommand(source, () => ApplyEffectToObject(DurationType.Instant, EffectDamage(amount, damageType), creature));
+        }
+
         [NWNEventHandler(ScriptName.OnSWLORDamage)]
         public static void OnDealtDamage()
         {

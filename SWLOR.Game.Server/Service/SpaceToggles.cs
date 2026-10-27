@@ -65,7 +65,7 @@ namespace SWLOR.Game.Server.Service
         }
 
         /// <summary>Saves a player's ship status. NPC statuses live in the cache and need no save.</summary>
-        private static void SaveShipStatus(uint creature, ShipStatus status)
+        public static void SaveShipStatus(uint creature, ShipStatus status)
         {
             if (!GetIsPC(creature)) return;
 
@@ -333,6 +333,11 @@ namespace SWLOR.Game.Server.Service
                     TurnOffToggle(creature, status, slot);
                     return;
                 }
+
+                // A dazed ship holds its fire. The toggle stays on and no capacitor is spent; its overdue cycle
+                // fires when the daze ends, without a burst to catch up (see ShipToggleRules.NextCycleTime).
+                if (IsShipIncapacitated(creature))
+                    return;
 
                 var mode = ShipToggleRules.GetTargetMode(detail.Type);
                 var currentTarget = GetLocalObject(creature, "SPACE_TARGET");

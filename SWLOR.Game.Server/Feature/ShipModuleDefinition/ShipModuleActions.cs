@@ -55,8 +55,85 @@ namespace SWLOR.Game.Server.Feature.ShipModuleDefinition
 
         // Weapons
 
+        /// <summary>The Ion Cannon's slow on hull damage, in percent, and its Agility penalty.</summary>
+        private const int IonSlowPercent = 50;
+        private const int IonAgilityPenalty = 2;
+
+        /// <summary>The Storm Cannon's slow on hull damage, in percent, and its Agility penalty.</summary>
+        private const int StormSlowPercent = 75;
+        private const int StormAgilityPenalty = 4;
+
+        /// <summary>A Laser Battery's volley reaches this far from the target and hits this many other ships.</summary>
+        private const float BatteryVolleyRadius = 15f;
+        private const int BatteryVolleyExtraTargets = 4;
+
+        private const float BeamSeconds = 1.0f;
+
+        /// <summary>The module families that fire a weapon shot at a ship.</summary>
+        public static bool IsShipWeapon(ShipModuleFamily family)
+        {
+            return family is ShipModuleFamily.LaserCannon or ShipModuleFamily.PointDefenseTurret or
+                ShipModuleFamily.Turbolaser or ShipModuleFamily.QuadLaser or ShipModuleFamily.IonCannon or
+                ShipModuleFamily.StormCannon or ShipModuleFamily.BeamCannon or ShipModuleFamily.LaserBattery or
+                ShipModuleFamily.MissileLauncher or ShipModuleFamily.TorpedoLauncher or
+                ShipModuleFamily.AssaultConcussionMissile;
+        }
+
+        /// <summary>The ammo item a launcher family spends per shot, or null for weapons that need none.</summary>
+        public static string GetAmmoResref(ShipModuleFamily family)
+        {
+            return family switch
+            {
+                ShipModuleFamily.MissileLauncher => MissileResref,
+                ShipModuleFamily.TorpedoLauncher => ProtonBombResref,
+                ShipModuleFamily.AssaultConcussionMissile => ConcussionMissileResref,
+                _ => null,
+            };
+        }
+
+        /// <summary>
+        /// Fires one shot of a weapon module family with that family's effects and returns its roll (null if the
+        /// ship cannot fire). Launcher ammo is the caller's to spend. With <paramref name="singleImpact"/> a Laser
+        /// Battery fires its one bolt instead of its volley, for abilities that must not scale with weapon count.
+        /// </summary>
+        public static ShipShotResult FireStep(
+            ShipModuleStep step,
+            uint activator,
+            ShipStatus status,
+            uint target,
+            ShipStatus targetStatus,
+            SpaceWeaponShot shot,
+            bool singleImpact)
+        {
+            switch (step.Family)
+            {
+                case ShipModuleFamily.LaserCannon:
+                case ShipModuleFamily.PointDefenseTurret:
+                case ShipModuleFamily.Turbolaser:
+                case ShipModuleFamily.QuadLaser:
+                    return FireBolt(activator, status, target, targetStatus, shot, step.Family == ShipModuleFamily.Turbolaser);
+                case ShipModuleFamily.IonCannon:
+                    return FireIon(activator, status, target, targetStatus, shot, IonSlowPercent, IonAgilityPenalty);
+                case ShipModuleFamily.StormCannon:
+                    return FireStormPulse(activator, status, target, targetStatus, shot, StormSlowPercent, StormAgilityPenalty);
+                case ShipModuleFamily.BeamCannon:
+                    return FireBeamPulse(activator, status, target, targetStatus, shot, BeamSeconds);
+                case ShipModuleFamily.LaserBattery:
+                    return singleImpact
+                        ? FireBolt(activator, status, target, targetStatus, shot)
+                        : FireVolley(activator, status, target, targetStatus, shot, BatteryVolleyRadius, BatteryVolleyExtraTargets);
+                case ShipModuleFamily.MissileLauncher:
+                    return FireMissile(activator, status, target, targetStatus, shot, false);
+                case ShipModuleFamily.TorpedoLauncher:
+                case ShipModuleFamily.AssaultConcussionMissile:
+                    return FireMissile(activator, status, target, targetStatus, shot, true);
+                default:
+                    return null;
+            }
+        }
+
         /// <summary>Fires one bolt shot: the sound and bolt effects and a damage hit 0.3 seconds later.</summary>
-        public static void FireBolt(
+        public static ShipShotResult FireBolt(
             uint activator,
             ShipStatus activatorStatus,
             uint target,
@@ -79,10 +156,11 @@ namespace SWLOR.Game.Server.Feature.ShipModuleDefinition
             });
 
             Space.CompleteWeaponShot(activator, target, shot, result, 0.3f);
+            return result;
         }
 
         /// <summary>Fires one ion shot. Damage that gets past the shield slows the target and lowers its Agility.</summary>
-        public static void FireIon(
+        public static ShipShotResult FireIon(
             uint activator,
             ShipStatus activatorStatus,
             uint target,
@@ -137,10 +215,11 @@ namespace SWLOR.Game.Server.Feature.ShipModuleDefinition
                     ApplyEffectToObject(DurationType.Temporary, EffectAbilityDecrease(AbilityType.Agility, agilityPenalty), target, 12f);
                 }
             });
+            return result;
         }
 
         /// <summary>Fires one Storm Cannon pulse, with the same slow on hull damage as an ion hit.</summary>
-        public static void FireStormPulse(
+        public static ShipShotResult FireStormPulse(
             uint activator,
             ShipStatus activatorStatus,
             uint target,
@@ -185,10 +264,11 @@ namespace SWLOR.Game.Server.Feature.ShipModuleDefinition
                     ApplyEffectToObject(DurationType.Temporary, EffectAbilityDecrease(AbilityType.Agility, agilityPenalty), target, 12f);
                 }
             });
+            return result;
         }
 
         /// <summary>Fires one beam tick: a short beam on the target and an immediate shot.</summary>
-        public static void FireBeamPulse(
+        public static ShipShotResult FireBeamPulse(
             uint activator,
             ShipStatus activatorStatus,
             uint target,
@@ -197,7 +277,7 @@ namespace SWLOR.Game.Server.Feature.ShipModuleDefinition
             float beamSeconds)
         {
             if (!Space.CanShipFire(activator))
-                return;
+                return null;
 
             var beam = EffectBeam(VisualEffect.Vfx_Beam_Holy, activator, BodyNode.Chest);
             AssignCommand(activator, () =>
@@ -205,14 +285,14 @@ namespace SWLOR.Game.Server.Feature.ShipModuleDefinition
                 ApplyEffectToObject(DurationType.Temporary, beam, target, beamSeconds);
             });
 
-            Space.ResolveWeaponShot(activator, activatorStatus, target, targetStatus, shot);
+            return Space.ResolveWeaponShot(activator, activatorStatus, target, targetStatus, shot);
         }
 
         /// <summary>
         /// Launches a missile that explodes on the target after its travel time. A heavy missile (a torpedo or
         /// concussion missile) shakes the screen and shows a bigger blast.
         /// </summary>
-        public static void FireMissile(
+        public static ShipShotResult FireMissile(
             uint activator,
             ShipStatus activatorStatus,
             uint target,
@@ -249,13 +329,15 @@ namespace SWLOR.Game.Server.Feature.ShipModuleDefinition
 
                 Space.CompleteWeaponShot(activator, target, shot, result);
             });
+
+            return result;
         }
 
         /// <summary>
         /// Fires a volley: a bolt at the target and at up to <paramref name="extraTargets"/> other enemy ships
         /// within <paramref name="radius"/> meters of it.
         /// </summary>
-        public static void FireVolley(
+        public static ShipShotResult FireVolley(
             uint activator,
             ShipStatus activatorStatus,
             uint target,
@@ -264,7 +346,7 @@ namespace SWLOR.Game.Server.Feature.ShipModuleDefinition
             float radius,
             int extraTargets)
         {
-            FireBolt(activator, activatorStatus, target, targetStatus, shot);
+            var primary = FireBolt(activator, activatorStatus, target, targetStatus, shot);
 
             var count = 0;
             foreach (var nearby in ObjectSnapshot.InShape(Shape.Sphere, radius, GetLocation(target), true, ObjectType.Creature))
@@ -282,6 +364,8 @@ namespace SWLOR.Game.Server.Feature.ShipModuleDefinition
                 FireBolt(activator, activatorStatus, nearby, nearbyStatus, shot);
                 count++;
             }
+
+            return primary;
         }
 
         // Mining
@@ -473,14 +557,14 @@ namespace SWLOR.Game.Server.Feature.ShipModuleDefinition
         public static void RepairShield(uint activator, ShipStatus activatorStatus, uint target, ShipStatus targetStatus, int amount)
         {
             ApplySupport(activator, activatorStatus, target, targetStatus, amount, VisualEffect.Vfx_Imp_Ac_Bonus,
-                "shield HP", Space.RestoreShield, null);
+                "shield HP", Space.RestoreShield, null, status => status.Shield);
         }
 
         /// <summary>Restores hull to the target ship, or to the activator's own when the target is not a friendly ship.</summary>
         public static void RepairHull(uint activator, ShipStatus activatorStatus, uint target, ShipStatus targetStatus, int amount)
         {
             ApplySupport(activator, activatorStatus, target, targetStatus, amount, VisualEffect.Vfx_Imp_Breach,
-                "hull HP", Space.RestoreHull, null);
+                "hull HP", Space.RestoreHull, null, status => status.Hull);
         }
 
         /// <summary>Spends a fuel capsule to restore capacitor to the target ship, or to the activator's own.</summary>
@@ -499,7 +583,8 @@ namespace SWLOR.Game.Server.Feature.ShipModuleDefinition
             VisualEffect effect,
             string noun,
             System.Action<uint, ShipStatus, int> restore,
-            System.Action beforeEffect)
+            System.Action beforeEffect,
+            System.Func<ShipStatus, int> pool = null)
         {
             if (!GetIsObjectValid(target) || GetIsEnemy(target, activator))
             {
@@ -520,7 +605,10 @@ namespace SWLOR.Game.Server.Feature.ShipModuleDefinition
 
             ApplyEffectToObject(DurationType.Instant, EffectVisualEffect(effect), target);
 
+            var before = pool?.Invoke(targetStatus) ?? 0;
             restore(target, targetStatus, amount);
+            if (pool != null)
+                Space.ApplyRepairEnmity(activator, target, pool(targetStatus) - before);
 
             Messaging.SendMessageNearbyToPlayers(
                 activator,

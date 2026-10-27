@@ -1,3 +1,4 @@
+using System.Collections.Generic;
 namespace SWLOR.Game.Server.Service.SpaceService
 {
     /// <summary>
@@ -8,6 +9,9 @@ namespace SWLOR.Game.Server.Service.SpaceService
     {
         public bool IsHit { get; set; }
         public bool IsCritical { get; set; }
+
+        /// <summary>The shot missed on the target's evasion. A blinded attacker's miss is not an evaded attack.</summary>
+        public bool Evaded { get; set; }
 
         /// <summary>The hit chance the roll was made against.</summary>
         public int ChanceToHit { get; set; }
@@ -23,5 +27,8 @@ namespace SWLOR.Game.Server.Service.SpaceService
 
         /// <summary>Damage actually removed from the hull once applied.</summary>
         public int HullDamage { get; set; }
+
+        /// <summary>Riders this landed shot consumed. Their extra damage and handlers run once the damage lands.</summary>
+        public List<SpaceShotRider> ConsumedRiders { get; } = new();
     }
 }

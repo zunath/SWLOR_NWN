@@ -791,6 +791,17 @@ namespace SWLOR.Game.Server.Service.PerkService
         AceHighNoon = 852,
         AceEvasiveReload = 853,
 
-        // IDs 650 and 854+ are free.
+        OrdnanceVolley = 854,
+        OrdnanceProximityWarheads = 855,
+        OrdnanceShrapnelWarheads = 856,
+        OrdnanceFlareMissile = 857,
+        OrdnanceClusterWarheads = 858,
+        OrdnanceConcussionBarrage = 859,
+        OrdnanceShipStance = 860,
+        OrdnanceSaturationFire = 861,
+        OrdnanceBombardiersRhythm = 862,
+        OrdnanceSaturationStrike = 863,
+
+        // IDs 650 and 864+ are free.
     }
 }

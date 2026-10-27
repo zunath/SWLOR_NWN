@@ -29,7 +29,12 @@ namespace SWLOR.Game.Server.EngineTests.Definitions.AbilityBehaviors
                 FeatType.AceDisablingShot1, FeatType.AceDisablingShot2, FeatType.AceDisablingShot3,
                 FeatType.AceDisablingShot4, FeatType.AceDoubleShot1, FeatType.AceDoubleShot2,
                 FeatType.AceDoubleShot3, FeatType.AcePointBlankBurst1, FeatType.AcePointBlankBurst2,
-                FeatType.AceStance, FeatType.AceInTheHole
+                FeatType.AceStance, FeatType.AceInTheHole,
+                FeatType.OrdnanceVolley1, FeatType.OrdnanceVolley2, FeatType.OrdnanceVolley3,
+                FeatType.OrdnanceVolley4, FeatType.OrdnanceFlareMissile1, FeatType.OrdnanceFlareMissile2,
+                FeatType.OrdnanceFlareMissile3, FeatType.OrdnanceConcussionBarrage1,
+                FeatType.OrdnanceConcussionBarrage2, FeatType.OrdnanceShipStance,
+                FeatType.OrdnanceSaturationStrike
             }
             .Select(feat => new AbilityBehaviorCase { Feat = feat, SkipReason = SpaceReason })
             .ToList();

@@ -6430,6 +6430,65 @@ namespace SWLOR.Game.Server.Service.StatService
         [StatType(StatTypeCategory.NonBeneficial, StatTypeAggregation.Maximum)]
         SpaceEnergyRepeatedTargetDamageDurationSeconds = 1174,
 
+        /// <summary>
+        /// Percent a ship's launcher damage changes when the shot is the weapon's own cycle or a single-target
+        /// ability (the Ordnance Stance's penalty). Ground weapons never read it.
+        /// </summary>
+        [StatType(StatTypeCategory.BeneficialWhenPositive)]
+        SpaceLauncherSingleTargetDamagePercentAdjustment = 1175,
+
+        /// <summary>Percent a ship's launcher damage changes when the shot belongs to an area ability.</summary>
+        [StatType(StatTypeCategory.BeneficialWhenPositive)]
+        SpaceLauncherAreaAbilityDamagePercentAdjustment = 1176,
+
+        /// <summary>Chance, in percent, that a landed launcher weapon cycle splashes nearby ships (Proximity Warheads).</summary>
+        [StatType(StatTypeCategory.BeneficialWhenPositive, StatTypeAggregation.Maximum)]
+        SpaceLauncherSplashChance = 1177,
+
+        /// <summary>Damage the launcher splash deals to the target and the ships near it.</summary>
+        [StatType(StatTypeCategory.BeneficialWhenPositive)]
+        SpaceLauncherSplashDamage = 1178,
+
+        /// <summary>Damage per pulse of the fragmentation an area launcher ability leaves on every ship it hits.</summary>
+        [StatType(StatTypeCategory.BeneficialWhenPositive)]
+        SpaceLauncherAreaFragmentationDamage = 1179,
+
+        /// <summary>Seconds between fragmentation pulses.</summary>
+        [StatType(StatTypeCategory.NonBeneficial)]
+        SpaceLauncherAreaFragmentationPulseSeconds = 1180,
+
+        /// <summary>Seconds the fragmentation lasts.</summary>
+        [StatType(StatTypeCategory.NonBeneficial)]
+        SpaceLauncherAreaFragmentationDurationSeconds = 1181,
+
+        /// <summary>Damage an area launcher ability deals to one additional ship near its target (Cluster Warheads).</summary>
+        [StatType(StatTypeCategory.BeneficialWhenPositive)]
+        SpaceLauncherAreaClusterDamageBonus = 1182,
+
+        /// <summary>How many additional ships the cluster damage reaches.</summary>
+        [StatType(StatTypeCategory.NonBeneficial)]
+        SpaceLauncherAreaClusterMaximumTargets = 1183,
+
+        /// <summary>Area launcher abilities that must hit a ship within the window to leave it Exposed (Saturation Fire).</summary>
+        [StatType(StatTypeCategory.NonBeneficial)]
+        SpaceLauncherAreaHitSequenceCountRequired = 1184,
+
+        /// <summary>Seconds the area launcher hits count together.</summary>
+        [StatType(StatTypeCategory.NonBeneficial, StatTypeAggregation.Maximum)]
+        SpaceLauncherAreaHitSequenceWindowSeconds = 1185,
+
+        /// <summary>Seconds the Exposed status lasts.</summary>
+        [StatType(StatTypeCategory.BeneficialWhenPositive, StatTypeAggregation.Maximum)]
+        SpaceLauncherAreaHitSequenceExposedDurationSeconds = 1186,
+
+        /// <summary>Enemies an area launcher ability must hit to restore Stamina (Bombardier's Rhythm).</summary>
+        [StatType(StatTypeCategory.NonBeneficial)]
+        SpaceLauncherAreaMinTargetsStaminaRestoreThreshold = 1187,
+
+        /// <summary>Stamina restored when an area launcher ability hits enough enemies.</summary>
+        [StatType(StatTypeCategory.BeneficialWhenPositive)]
+        SpaceLauncherAreaMinTargetsStaminaRestore = 1188,
+
 
     }
 

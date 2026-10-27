@@ -1102,6 +1102,7 @@ namespace SWLOR.Game.Server.Service
             SpaceAuras.RemoveAuras(player);
             SpaceHostileAbilityRewards.Clear(player);
             SpaceSustainedFire.Clear(player);
+            SpaceOrdnance.Clear(player);
             StatusEffect.RemoveAllStatusEffects(player);
             dbShip.Status.PendingRiders?.Clear();
 
@@ -2044,14 +2045,26 @@ namespace SWLOR.Game.Server.Service
                 rolled = SpaceCombatMath.CriticalDamage(rolled, true, criticalPercent);
             }
 
+            var shapePercent = SpaceCombatMath.ShapeDamagePercent(
+                shot.IsAbility,
+                shot.IsArea,
+                Stat.GetStatAdjustment(activator, StatType.SingleTargetDamagePercentAdjustment),
+                Stat.GetStatAdjustment(activator, StatType.AreaAbilityDamagePercentAdjustment));
+
+            // A launcher's shot also takes the launcher shape stats (the Ordnance Stance).
+            if (shot.Family == SpaceWeaponFamily.Launcher)
+            {
+                shapePercent += SpaceCombatMath.ShapeDamagePercent(
+                    shot.IsAbility,
+                    shot.IsArea,
+                    Stat.GetStatAdjustment(activator, StatType.SpaceLauncherSingleTargetDamagePercentAdjustment),
+                    Stat.GetStatAdjustment(activator, StatType.SpaceLauncherAreaAbilityDamagePercentAdjustment));
+            }
+
             rolled = SpaceCombatMath.ApplyDamageDealt(
                 rolled,
                 Stat.GetStatAdjustment(activator, StatType.DamageDealtPercentAdjustment),
-                SpaceCombatMath.ShapeDamagePercent(
-                    shot.IsAbility,
-                    shot.IsArea,
-                    Stat.GetStatAdjustment(activator, StatType.SingleTargetDamagePercentAdjustment),
-                    Stat.GetStatAdjustment(activator, StatType.AreaAbilityDamagePercentAdjustment)));
+                shapePercent);
 
             var bonusPercent = 0;
             activatorStatus.DamageBonusPercent?.TryGetValue(shot.DamageType, out bonusPercent);

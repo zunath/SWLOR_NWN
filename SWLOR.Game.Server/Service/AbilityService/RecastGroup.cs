@@ -947,6 +947,18 @@ namespace SWLOR.Game.Server.Service.AbilityService
         [RecastGroup("Ace Stance", "Ace Stance", true)]
         AceStance = 588,
 
+        [RecastGroup("Ordnance Volley", "Volley", true)]
+        OrdnanceVolley = 589,
+
+        [RecastGroup("Ordnance Flare Missile", "Flare Missile", true)]
+        OrdnanceFlareMissile = 590,
+
+        [RecastGroup("Ordnance Concussion Barrage", "Concussion", true)]
+        OrdnanceConcussionBarrage = 591,
+
+        [RecastGroup("Ordnance Stance", "Ord. Stance", true)]
+        OrdnanceShipStance = 592,
+
     }
 
     public class RecastGroupAttribute : Attribute

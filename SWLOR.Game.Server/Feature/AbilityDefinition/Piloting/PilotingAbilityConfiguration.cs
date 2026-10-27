@@ -17,6 +17,13 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.Piloting
     public static class PilotingAbilityConfiguration
     {
         /// <summary>
+        /// The longest reach of any launcher module (the Missile Launchers' 50 m). An area ability aimed at a ship
+        /// states it as its range, because an area aimed at an object must declare one; the launcher that fires
+        /// still limits what the blast can reach.
+        /// </summary>
+        public const float LauncherRange = 50f;
+
+        /// <summary>
         /// Sets up an ability that fires at one target: a hostile single-target cast whose validation turns the
         /// ship away before the STM is paid when no weapon of the family can fire at the target. The caller names
         /// the ability, sets its level and recast, and passes the impact.
@@ -67,6 +74,36 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.Piloting
                     radius,
                     AbilityTargetingFlags.HarmsEnemies | AbilityTargetingFlags.OriginOnSelf)
                 .HasCustomValidation((activator, _, _, _) => GetBurstError(activator, radius, filter))
+                .HasImpactAction(impact);
+        }
+
+        /// <summary>
+        /// Sets up an area ability that bursts around the target ship: a hostile area cast whose cursor picks the
+        /// enemy ship and whose blast reaches the ships within <paramref name="radius"/> of it. Its range is
+        /// <paramref name="maxRange"/>; the weapon the ship fires still decides what it can reach.
+        /// </summary>
+        public static AbilityBuilder ConfigureTargetedBurst(
+            AbilityBuilder ability,
+            int stamina,
+            Spell targetingSpell,
+            float radius,
+            float maxRange,
+            SpaceWeaponFilter filter,
+            AbilityImpactAction impact)
+        {
+            return ability
+                .SkillType(SkillType.Piloting)
+                .CanBeUsedInSpace()
+                .IsCastedAbility()
+                .IsHostileAbility()
+                .IsAreaAbility()
+                .RequiresTarget()
+                .HasMaxRange(maxRange)
+                .HasActivationDelay(0f)
+                .RequirementStamina(stamina)
+                .BreaksStealth()
+                .HasTargetingSphere(targetingSpell, radius, AbilityTargetingFlags.HarmsEnemies)
+                .HasCustomValidation((activator, target, _, _) => SpaceAbilities.GetFireError(activator, target, filter))
                 .HasImpactAction(impact);
         }
 

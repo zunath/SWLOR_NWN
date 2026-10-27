@@ -276,6 +276,10 @@ Piloting has four styles of 60 SP each, the way Devices does. `SkillPerkStandard
     - `SpaceSustainedFire` and `SpaceRepeatedHits` count consecutive energy weapon hits against one target and add their DMG to the same shot's roll (`SpaceEnergyRepeatedTarget*` stats).
     - `ILimitedWeaponCycleStatusEffect` and `SpaceWeaponCycles` give "your next N weapon cycles" effects: while one has cycles left, a weapon toggle's next cycle runs after 0.25 s, and the weapon critical rate stat applies to the weapon's own cycles but not to ability shots.
     - Evasive Reload and High Noon reuse the ground stats (`AvoidedAttackNextSkillAbility*` with the skill set to Piloting, and the High HP critical damage pair, which space reads against hull).
+  - **Added by the Ordnance style** (shared with the other styles):
+    - `PilotingAbilityConfiguration.ConfigureTargetedBurst` sets up an area ability aimed at a ship (a cursor on the enemy ship, a blast of `SpaceRadii.NearTarget` around it, `LauncherRange` as its declared range). Volley uses it.
+    - `SpaceOrdnance` (`Service`) holds what the launcher traits add: the Proximity Warheads splash on the launcher's own cycles (`ShotLanded`), and, for an area launcher ability that calls `OnAreaAbilityResolved` with its shots, fragmentation, the Saturation Fire Exposed count (`SpaceHitSequences`), the Cluster Warheads hit and Bombardier's Rhythm. Saturation Strike's zones are temporary `SpaceLauncherAreaFragmentation*` stats that add to Shrapnel Warheads', as the ground's Rain of Steel adds to Shrapnel Casing.
+    - The traits use space-only stats (`SpaceLauncher*`), because the ground Throwing stats pick their skill through selector stats (or add up) and would mix with a pilot's ground perks. `Space.RollWeaponShot` adds the launcher shape stats (`SpaceLauncherSingleTarget/AreaAbilityDamagePercentAdjustment`) to the shot-shape percent for launcher shots; the Ordnance Stance sets them.
 
 ## 7. Hulls
 

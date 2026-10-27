@@ -2,6 +2,7 @@ using System.Collections.Generic;
 using System.Linq;
 using SWLOR.Game.Server.Entity;
 using SWLOR.Game.Server.Service.DBService;
+using SWLOR.Game.Server.Service.GuiService;
 using SWLOR.Game.Server.Service.LogService;
 using SWLOR.NWN.API.NWNX;
 
@@ -11,6 +12,7 @@ namespace SWLOR.Game.Server.Service
     {
         private const string StorageId = "GLOBAL_BANK";
         private const int MaxItems = 120;
+        private const int ItemsPerPage = 20;
         private const string CityIdLocalName = "CITY_ID";
 
         public static long GetItemCount(string playerId)
@@ -36,19 +38,21 @@ namespace SWLOR.Game.Server.Service
         }
 
         /// <summary>
-        /// Returns every banked item that matches the search. The page is sized to the match count because an
-        /// unpaged search stops at 50 rows, which hid the newest deposits in a bank holding more than 50 items.
+        /// Returns one page of the banked items that match the search. A page index past the last page is
+        /// clamped to the last page, so callers can ask for <see cref="int.MaxValue"/> to reach the newest deposits.
         /// </summary>
-        public static List<InventoryItem> SearchItems(string playerId, string searchText)
+        public static BankItemPage SearchItems(string playerId, string searchText, int pageIndex)
         {
             var matchCount = DB.SearchCount(BuildSearchQuery(playerId, searchText));
-            if (matchCount <= 0)
-                return new List<InventoryItem>();
+            var pagination = GuiPaginationState.Create(matchCount, ItemsPerPage, pageIndex);
+            var items = matchCount <= 0
+                ? new List<InventoryItem>()
+                : DB.Search(BuildSearchQuery(playerId, searchText)
+                        .AddPaging(ItemsPerPage, ItemsPerPage * pagination.SelectedPageIndex))
+                    .Where(item => item != null)
+                    .ToList();
 
-            var query = BuildSearchQuery(playerId, searchText).AddPaging((int)matchCount, 0);
-            return DB.Search(query)
-                .Where(item => item != null)
-                .ToList();
+            return new BankItemPage(items, matchCount, pagination.PageNumbers, pagination.SelectedPageIndex);
         }
 
         private static DBQuery<InventoryItem> BuildSearchQuery(string playerId, string searchText)

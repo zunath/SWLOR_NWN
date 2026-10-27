@@ -9,7 +9,7 @@ using static SWLOR.Game.Server.EngineTests.Framework.FullInventoryFixture;
 namespace SWLOR.Game.Server.EngineTests.Definitions
 {
     /// <summary>
-    /// The bank window lists every stored item. An unpaged search stops at 50 rows, so a bank holding more than
+    /// The bank window pages through every stored item. An unpaged search stopped at 50 rows, so a bank holding more than
     /// 50 items hid its newest deposits and players read them as deleted.
     /// </summary>
     public static class BankListingEngineTests
@@ -17,7 +17,7 @@ namespace SWLOR.Game.Server.EngineTests.Definitions
         private const int StoredItemCount = 60;
         private const string WoodResref = "wood";
 
-        [EngineTest("The bank lists a new Wood deposit when it already holds more than 50 items", Category = "BankListing")]
+        [EngineTest("The bank pages past 50 items and shows a new Wood deposit on the last page and in search", Category = "BankListing", TimeoutSeconds = 120f)]
         public static async Task BankListsEveryItemPastFiftyRows(EngineTestContext ctx)
         {
             using var fixture = await PlayerAbilityFixture.CreateAsync(ctx);
@@ -38,14 +38,38 @@ namespace SWLOR.Game.Server.EngineTests.Definitions
 
                     ctx.AssertEqual((long)StoredItemCount + 1, Bank.GetItemCount(playerId), "Stored bank records");
 
-                    var listed = Bank.SearchItems(playerId, string.Empty);
-                    ctx.AssertEqual(StoredItemCount + 1, listed.Count, "Items the bank window lists");
-                    ctx.Assert(listed.Any(item => item.Id == wood.Id), "The bank window lists the newest Wood deposit");
-                    ctx.AssertEqual(recordIds.Count, listed.Select(item => item.Id).Distinct().Count(), "Each listed item is a distinct record");
+                    var seen = new HashSet<string>();
+                    var firstPage = Bank.SearchItems(playerId, string.Empty, 0);
+                    ctx.AssertEqual(4, firstPage.PageNumbers.Count, "Pages for 61 items at 20 per page");
+                    for (var pageIndex = 0; pageIndex < firstPage.PageNumbers.Count; pageIndex++)
+                    {
+                        var page = Bank.SearchItems(playerId, string.Empty, pageIndex);
+                        ctx.AssertEqual(pageIndex, page.PageIndex, $"Page {pageIndex + 1} index");
+                        ctx.AssertEqual(StoredItemCount + 1L, page.MatchCount, $"Page {pageIndex + 1} match count");
+                        foreach (var item in page.Items)
+                        {
+                            ctx.Assert(seen.Add(item.Id), $"Item '{item.Id}' appears on only one page");
+                        }
+                    }
 
-                    var woodOnly = Bank.SearchItems(playerId, "Wood");
-                    ctx.AssertEqual(1, woodOnly.Count, "A Wood search lists only the Wood deposit");
-                    ctx.AssertEqual(8, woodOnly[0].Quantity, "The Wood deposit keeps its stack size");
+                    ctx.AssertEqual(StoredItemCount + 1, seen.Count, "Items reachable across all pages");
+                    ctx.Assert(firstPage.Items.TrueForAll(item => item.Id != wood.Id), "Page 1 holds the older deposits");
+
+                    var lastPage = Bank.SearchItems(playerId, string.Empty, int.MaxValue);
+                    ctx.AssertEqual(3, lastPage.PageIndex, "A page past the end clamps to the last page");
+                    ctx.AssertEqual(1, lastPage.Items.Count, "The last page holds the one item past 60");
+                    ctx.AssertEqual(wood.Id, lastPage.Items[0].Id, "The newest Wood deposit is on the last page");
+
+                    var woodOnly = Bank.SearchItems(playerId, "Wood", 0);
+                    ctx.AssertEqual(1L, woodOnly.MatchCount, "A Wood search matches only the Wood deposit");
+                    ctx.AssertEqual(1, woodOnly.PageNumbers.Count, "A Wood search fits on one page");
+                    ctx.AssertEqual(wood.Id, woodOnly.Items[0].Id, "A Wood search lists the Wood deposit");
+                    ctx.AssertEqual(8, woodOnly.Items[0].Quantity, "The Wood deposit keeps its stack size");
+
+                    ctx.AssertEqual(string.Empty, Bank.WithdrawItem(player, wood.Id), "The Wood withdraws");
+                    var afterWithdraw = Bank.SearchItems(playerId, string.Empty, 3);
+                    ctx.AssertEqual(2, afterWithdraw.PageIndex, "Emptying the last page moves back a page");
+                    ctx.AssertEqual(20, afterWithdraw.Items.Count, "The previous page is full");
                 });
             }
             finally

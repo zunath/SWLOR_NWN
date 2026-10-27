@@ -1,0 +1,140 @@
+{
+  "description": "Domain map for the cross-domain dependency guard (SWLOR.Architecture.Tests). A service is the static class Service.<Name> plus every type in Service.<Name>Service.*; a Feature folder is the first folder below Feature. Every service and Feature folder of SWLOR.Game.Server must be listed in exactly one domain. Types directly in Feature belong to featureTypeDomain; code outside Service and Feature belongs to platformDomain. Edges into an unrestrictedTargetDomains domain are recorded but never fail.",
+  "platformDomain": "Platform",
+  "featureTypeDomain": "Gameplay",
+  "unrestrictedTargetDomains": ["Core", "Platform"],
+  "domains": {
+    "Core": {
+      "services": [
+        "DB", "Log", "Cache", "Random", "Time", "GameMath", "ColorToken", "Messaging",
+        "Communication", "BackgroundJob", "FrameProfiler", "Migration", "Authorization", "Menu",
+        "Conversation", "ConversationMenu", "Snippet", "PlayerFeedback", "ObjectVisibility",
+        "Walkmesh", "TileMagic", "AnimationPlayer", "NamedAnimation", "NamedAnimationPlayback",
+        "Animation", "Attribute", "INamedAnimationRuntime"
+      ],
+      "featureFolders": [
+        "MigrationDefinition", "SnippetDefinition", "DialogDefinition"
+      ]
+    },
+    "UI": {
+      "services": [
+        "Gui"
+      ],
+      "featureFolders": [
+        "GuiDefinition"
+      ]
+    },
+    "Combat": {
+      "services": [
+        "Combat", "CombatPoint", "CombatRecorder", "Enmity", "PvpCombat", "Resistance", "Recast",
+        "RecastTimestamp", "Telegraph", "Targeting", "QueuedAttackAnimation",
+        "WeaponAttackEligibility", "WeaponAttackPhase", "WeaponDelay", "OrdinaryAttackTraits",
+        "PairedRangedTraits", "MeleeTechnique", "TwinPistolAbility", "TwinPistolEquipment",
+        "TwinPistolMastery", "PowerGloveEquipment", "Stealth", "Death", "Poisons", "BattleGrid",
+        "BattleGridSettings", "QueuedAttackAnimationPlayback"
+      ],
+      "featureFolders": []
+    },
+    "Abilities": {
+      "services": [
+        "Ability", "AbilityCooldownVisual", "QuickCast", "Mimicry", "MimicryLoadouts"
+      ],
+      "featureFolders": [
+        "AbilityDefinition"
+      ]
+    },
+    "Character": {
+      "services": [
+        "Stat", "Skill", "Perk", "StatusEffect", "Race", "Achievement", "Activity",
+        "PlayerActivityEffectTag", "PlayerDescriptor", "PlayerName", "PlayerIntroduction", "Disguise",
+        "EspionageInfiltration", "Language", "RoleplayXP"
+      ],
+      "featureFolders": [
+        "PerkDefinition", "StatusEffectDefinition", "AppearanceDefinition"
+      ]
+    },
+    "Items": {
+      "services": [
+        "Item", "ItemTrash", "EquipmentUnequip", "KeyItem", "Loot", "LightsaberWorkbench",
+        "OverflowStorage"
+      ],
+      "featureFolders": [
+        "ItemDefinition", "LootTableDefinition"
+      ]
+    },
+    "Crafting": {
+      "services": [
+        "Craft", "Slicing"
+      ],
+      "featureFolders": [
+        "RecipeDefinition"
+      ]
+    },
+    "Economy": {
+      "services": [
+        "Bank", "Currency", "PlayerMarket", "Guild"
+      ],
+      "featureFolders": []
+    },
+    "Quests": {
+      "services": [
+        "Quest", "QuestContractBoard", "QuestContract", "Faction"
+      ],
+      "featureFolders": [
+        "QuestDefinition"
+      ]
+    },
+    "World": {
+      "services": [
+        "Area", "Planet", "Weather", "Music", "Shuttle", "Taxi", "Property", "Fishing", "HoloCom",
+        "Traps", "Notes"
+      ],
+      "featureFolders": [
+        "FishingLocationDefinition", "PropertyLayoutDefinition", "TrapDefinition"
+      ]
+    },
+    "Space": {
+      "services": [
+        "Space"
+      ],
+      "featureFolders": [
+        "ShipDefinition", "ShipModuleDefinition", "SpaceObjectDefinition"
+      ]
+    },
+    "Creatures": {
+      "services": [
+        "AI", "Spawn", "NPCGroup", "NPC", "CompanionControl"
+      ],
+      "featureFolders": [
+        "AIDefinition", "SpawnDefinition"
+      ]
+    },
+    "Companions": {
+      "services": [
+        "BeastMastery", "IncubationFieldNote", "Droid", "DroidEquipmentDiagnostics"
+      ],
+      "featureFolders": [
+        "BeastDefinition"
+      ]
+    },
+    "Social": {
+      "services": [
+        "ChatCommand", "ChatPortraitTells", "Party", "PlayerList", "ChatPortraitTell"
+      ],
+      "featureFolders": [
+        "ChatCommandDefinition"
+      ]
+    },
+    "Administration": {
+      "services": [
+        "DMBlueprintCatalog", "DMCreatorFavorite", "DMCreatureManagerFavorite", "DMObjectDetails",
+        "DMObjectSearch", "DMPlayerDirectory", "DMPreference", "DMPresence", "DMTool"
+      ],
+      "featureFolders": []
+    },
+    "Gameplay": {
+      "services": [],
+      "featureFolders": []
+    }
+  }
+}

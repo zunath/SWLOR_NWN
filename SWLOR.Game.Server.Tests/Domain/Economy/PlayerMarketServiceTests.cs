@@ -23,13 +23,24 @@ public class PlayerMarketServiceTests
     private const uint PlayerObject = 1001;
     private const uint ItemObject = 2002;
 
+    // The item checks ask the Fishing facade whether an item is a rod or bait; the facade resolves from a container.
+    private FacadeContainer _facades = null!;
+    private IDisposable _facadeScope = null!;
+
     private PlayerEngine _engine = null!;
     private InMemoryDBService _db = null!;
     private PlayerMarketService _service = null!;
 
+    [OneTimeSetUp]
+    public void BuildFacades() => _facades = new FacadeContainer();
+
+    [OneTimeTearDown]
+    public void DisposeFacades() => _facades.Dispose();
+
     [SetUp]
     public void SetUp()
     {
+        _facadeScope = _facades.Install();
         _engine = new PlayerEngine();
         _db = new InMemoryDBService();
         _service = new PlayerMarketService(_db);
@@ -39,6 +50,7 @@ public class PlayerMarketServiceTests
     public void TearDown()
     {
         _engine.Dispose();
+        _facadeScope.Dispose();
     }
 
     // ---- the cache

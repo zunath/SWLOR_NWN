@@ -187,6 +187,9 @@ namespace SWLOR.Game.Server.Service.PerkService
 
         [PerkCategory("Twin Pistol - Crossfire", true)]
         TwinPistolCrossfire = 64,
+
+        [PerkCategory("Piloting - Ace", true)]
+        PilotingAce = 65,
     }
 
     public class PerkCategoryAttribute : Attribute

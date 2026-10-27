@@ -382,12 +382,19 @@ namespace SWLOR.Game.Server.Service
                 var cycle = detail.CalculateRecastAction?.Invoke(creature, status, module.ModuleBonus) ?? 0f;
                 if (cycle <= 0f) cycle = (float)ShipToggleRules.LoopSeconds;
 
+                // "No extra delay" cycles (a limited weapon cycle effect) run back to back.
+                var noDelayCycle = SpaceWeaponCycles.HasNoDelayCycle(creature, detail.Type);
+                if (noDelayCycle) cycle = (float)ShipToggleRules.LoopSeconds;
+
                 // The next cycle is anchored to the schedule, not to when this loop happened to run.
                 var next = ShipToggleRules.NextCycleTime(active.NextCycleTime, now, cycle);
                 active.NextCycleTime = next;
 
                 FireShipModule(creature, status, slot, module, detail, target, targetStatus, required,
                     true, next.AddSeconds(-cycle), next, false);
+
+                if (noDelayCycle)
+                    SpaceWeaponCycles.ConsumeCycle(creature, detail.Type);
             }
             catch (Exception ex)
             {

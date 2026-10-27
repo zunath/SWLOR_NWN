@@ -10,7 +10,8 @@ namespace SWLOR.Game.Server.Feature.StatusEffectDefinition
 {
     public sealed class DeadMansHandStatusEffect : StatusEffectBase,
         IAttackAttemptStatusEffect,
-        ILimitedAttackNoDelayStatusEffect
+        ILimitedAttackNoDelayStatusEffect,
+        ILimitedWeaponCycleStatusEffect
     {
         private const int CriticalRatePercent = 20;
         private readonly LimitedAttackCounter _attackCounter;
@@ -20,6 +21,7 @@ namespace SWLOR.Game.Server.Feature.StatusEffectDefinition
         public override StatusEffectCategory Categories => StatusEffectCategory.Buff;
         public override bool PersistsOnLogout => false;
         public int RemainingAttacks => _attackCounter.RemainingAttacks;
+        public int RemainingCycles => _attackCounter.RemainingAttacks;
 
         public DeadMansHandStatusEffect()
             : this(new LimitedAttackCounter(3))
@@ -58,6 +60,15 @@ namespace SWLOR.Game.Server.Feature.StatusEffectDefinition
             {
                 IsFlaggedForRemoval = true;
             }
+        }
+
+        public void ConsumeWeaponCycle()
+        {
+            if (!_attackCounter.TryConsume(null))
+                return;
+
+            if (_attackCounter.RemainingAttacks <= 0)
+                IsFlaggedForRemoval = true;
         }
 
         public override IStatusEffect Clone()

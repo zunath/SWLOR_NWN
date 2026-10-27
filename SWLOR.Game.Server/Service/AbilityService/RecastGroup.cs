@@ -935,6 +935,18 @@ namespace SWLOR.Game.Server.Service.AbilityService
         [RecastGroup("Crossfire Stance", "Crossfire St.", true)]
         CrossfireStance = 578,
 
+        [RecastGroup("Ace Disabling Shot", "Disabling Shot", true)]
+        AceDisablingShot = 585,
+
+        [RecastGroup("Ace Double Shot", "Ace Dbl. Shot", true)]
+        AceDoubleShot = 586,
+
+        [RecastGroup("Ace Point Blank Burst", "Ace Burst", true)]
+        AcePointBlankBurst = 587,
+
+        [RecastGroup("Ace Stance", "Ace Stance", true)]
+        AceStance = 588,
+
     }
 
     public class RecastGroupAttribute : Attribute

@@ -1100,6 +1100,8 @@ namespace SWLOR.Game.Server.Service
             // Space auras end with the flight, and so do the statuses the ship picked up (a burn or a daze must not
             // follow the pilot onto the ground, as ground effects do not follow them into space).
             SpaceAuras.RemoveAuras(player);
+            SpaceHostileAbilityRewards.Clear(player);
+            SpaceSustainedFire.Clear(player);
             StatusEffect.RemoveAllStatusEffects(player);
             dbShip.Status.PendingRiders?.Clear();
 
@@ -2016,11 +2018,19 @@ namespace SWLOR.Game.Server.Service
             }
 
             result.IsHit = true;
-            result.IsCritical = Random.D100(1) <= SpaceCombatMath.CriticalRate(
-                per, targetVit, shot.Rank, Stat.GetStatAdjustment(activator, StatType.CriticalRatePercentAdjustment));
+
+            // The weapon critical rate stat belongs to the weapon's own cycles, as "weapon cycles have +N% Critical
+            // Rate" reads; an ability shot takes only the general critical rate stat.
+            var criticalRate = Stat.GetStatAdjustment(activator, StatType.CriticalRatePercentAdjustment);
+            if (!shot.IsAbility)
+                criticalRate += Stat.GetStatAdjustment(activator, StatType.WeaponCriticalRatePercentAdjustment);
+            result.IsCritical = Random.D100(1) <= SpaceCombatMath.CriticalRate(per, targetVit, shot.Rank, criticalRate);
+
+            // Consecutive energy weapon hits against one target add their stacks' DMG to this same shot.
+            var shotDmg = shot.Dmg + SpaceSustainedFire.RegisterHit(activator, target, shot.Family);
 
             var (minimum, maximum) = SpaceCombatMath.DamageRange(
-                attack, shot.Dmg, damageAttribute, defense, targetVit, result.IsCritical, shot.Rank);
+                attack, shotDmg, damageAttribute, defense, targetVit, result.IsCritical, shot.Rank);
             var rolled = (int)Random.NextFloat(minimum, maximum);
 
             if (result.IsCritical)

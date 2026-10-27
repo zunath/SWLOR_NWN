@@ -780,6 +780,17 @@ namespace SWLOR.Game.Server.Service.PerkService
         TwinPistolSecondWind = 842,
         FinalSalvo = 843,
 
-        // IDs 650 and 844+ are free.
+        AceDisablingShot = 844,
+        AceDoubleShot = 845,
+        AcePointBlankBurst = 846,
+        AceStance = 847,
+        AceInTheHole = 848,
+        AceMobileFootwork = 849,
+        AceSustainedFire = 850,
+        AceKitingInstinct = 851,
+        AceHighNoon = 852,
+        AceEvasiveReload = 853,
+
+        // IDs 650 and 854+ are free.
     }
 }

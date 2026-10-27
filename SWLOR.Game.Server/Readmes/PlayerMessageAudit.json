@@ -42,6 +42,20 @@
     "Call": "SendMessageToPC(activator, error)"
   },
   {
+    "File": "SWLOR.Game.Server/Feature/AbilityDefinition/Piloting/DoubleShotAbilityDefinition.cs",
+    "Line": 52,
+    "Member": "Rank",
+    "Delivery": "Testing only",
+    "Call": "PlayerFeedback.ShowDiagnosticFloatingText(\n                            ColorToken.Combat($\"Double Shot restored {restored} STM\"),\n                            activator,\n                            false)"
+  },
+  {
+    "File": "SWLOR.Game.Server/Feature/AbilityDefinition/Piloting/PilotingAbilityConfiguration.cs",
+    "Line": 103,
+    "Member": "ReportFailure",
+    "Delivery": "Retained",
+    "Call": "SendMessageToPC(activator, failure.Error)"
+  },
+  {
     "File": "SWLOR.Game.Server/Feature/AbilityDefinition/Spear/SpearActiveAbilityDefinitionBase.cs",
     "Line": 47,
     "Member": "ConfigureCurrentAttackTargetInterrupt",
@@ -5752,6 +5766,13 @@
     "Member": "PreventSpaceStealth",
     "Delivery": "Retained",
     "Call": "SendMessageToPC(creature, ColorToken.Red($\"You cannot enter stealth mode in space.\"))"
+  },
+  {
+    "File": "SWLOR.Game.Server/Service/SpaceSustainedFire.cs",
+    "Line": 60,
+    "Member": "RegisterHit",
+    "Delivery": "Testing only",
+    "Call": "PlayerFeedback.ShowDiagnosticFloatingText(\n                    ColorToken.Combat($\"Sustained Fire {state.Stacks}/{maximumStacks} (+{bonus} DMG)\"),\n                    attacker,\n                    false)"
   },
   {
     "File": "SWLOR.Game.Server/Service/SpaceToggles.cs",

@@ -99,6 +99,13 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
                     },
                     "Perks", "Combat Basics", "Beasts & Stables", "Abilities", "Mimicry & Techniques"),
 
+                Topic("Piloting", "Choose Piloting perks for abilities that fire your ship's weapons and for evasion while you fly.",
+                    new[]
+                    {
+                        Style("Piloting - Ace", "Ace fires your ship's energy weapons for disabling shots, double shots, and a burst around your ship, and rewards evasion, movement, and critical hits.")
+                    },
+                    "Perks", "Combat Basics", "Pistol Combat Styles", "Rifle Combat Styles"),
+
                 Topic("Pistol", "Choose Pistol for shots that reward changing targets or disrupt opponents.",
                     new[]
                     {

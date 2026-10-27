@@ -1,0 +1,67 @@
+using System.Linq;
+using System.Threading.Tasks;
+using SWLOR.Game.Server.Composition;
+using SWLOR.Game.Server.EngineTests.Framework;
+using SWLOR.Game.Server.Entity;
+using SWLOR.Game.Server.Extension;
+using SWLOR.Game.Server.Service.AchievementService;
+using SWLOR.Game.Server.Service.FactionService;
+using SWLOR.Game.Server.Service.TaxiService;
+
+namespace SWLOR.Game.Server.EngineTests.Definitions
+{
+    /// <summary>
+    /// Proves, on a booted server, that the service container was built before the handlers ran and that the converted
+    /// services (Achievement, Faction, Taxi) work through their static facades against the real database.
+    /// </summary>
+    public static class ServiceContainerEngineTests
+    {
+        /// <summary>
+        /// The module-load and module-cache handlers of the converted facades forward to the container, so if any of
+        /// them ran before the container existed it would have thrown and left its cache empty.
+        /// </summary>
+        [EngineTest("Service container exists and the converted services' boot handlers filled their caches", Category = "Composition")]
+        public static async Task ContainerExistsAndBootHandlersRan(EngineTestContext ctx)
+        {
+            await ctx.WaitFrameAsync();
+
+            ctx.Assert(CompositionRoot.IsBuilt, "The server's service container should be built.");
+
+            var reservation = Gui.GetSystemReservation("Achievement");
+            ctx.AssertEqual(6, reservation.Count, "Achievement GUI ids reserved by the module-load handler");
+
+            var expectedAchievements = Enum.GetValues(typeof(AchievementType)).Cast<AchievementType>()
+                .Count(type => type.GetAttribute<AchievementType, AchievementAttribute>().IsActive);
+            ctx.AssertEqual(expectedAchievements, Achievement.GetActiveAchievements().Count, "Active achievements cached by the module-cache handler");
+
+            var expectedFactions = Enum.GetValues(typeof(FactionType)).Length - 1;
+            ctx.AssertEqual(expectedFactions, Faction.GetAllFactions().Count, "Factions cached by the module-cache handler");
+
+            ctx.Assert(Taxi.GetDestinationsByRegionId(1).ContainsKey(TaxiDestinationType.VelesEntrance),
+                "Taxi destinations cached by the module-cache handler should include Veles Entrance.");
+        }
+
+        /// <summary>
+        /// A player's faction standing, faction points and registered taxi destination are written through the facades,
+        /// the container's instances and the database adapter, and read back from Redis on a later frame.
+        /// </summary>
+        [EngineTest("Converted facades persist through the container to the database", Category = "Composition", TimeoutSeconds = 45f)]
+        public static async Task FacadesPersistThroughTheContainer(EngineTestContext ctx)
+        {
+            using var player = await PlayerAbilityFixture.CreateAsync(ctx);
+
+            Faction.AdjustPlayerFactionStanding(player.Creature, FactionType.Jedi, 120);
+            Faction.AdjustPlayerFactionPoints(player.Creature, FactionType.Jedi, 30);
+            Taxi.RegisterTaxiDestination(player.Creature, TaxiDestinationType.VelesEntrance);
+
+            // The database serves a stored copy again on the next frame.
+            await ctx.WaitFrameAsync();
+            var stored = DB.Get<Player>(player.Id);
+
+            ctx.AssertEqual(120, stored.Factions[FactionType.Jedi].Standing, "Stored Jedi standing");
+            ctx.AssertEqual(30, stored.Factions[FactionType.Jedi].Points, "Stored Jedi points");
+            ctx.Assert(stored.TaxiDestinations[1].Contains(TaxiDestinationType.VelesEntrance),
+                "Veles Entrance should be registered in the stored taxi destinations.");
+        }
+    }
+}

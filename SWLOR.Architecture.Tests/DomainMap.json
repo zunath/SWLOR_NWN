@@ -1,8 +1,9 @@
 {
-  "description": "Domain map for the cross-domain dependency guard (SWLOR.Architecture.Tests). A service is the static class Service.<Name> plus every type in Service.<Name>Service.*; a Feature folder is the first folder below Feature. Every service and Feature folder of SWLOR.Game.Server must be listed in exactly one domain. Types directly in Feature belong to featureTypeDomain; code outside Service and Feature belongs to platformDomain. Edges into an unrestrictedTargetDomains domain are recorded but never fail.",
+  "description": "Domain map for the cross-domain dependency guard (SWLOR.Architecture.Tests). A service is the static class Service.<Name> plus every type in Service.<Name>Service.*; a Feature folder is the first folder below Feature. Every service and Feature folder of SWLOR.Game.Server must be listed in exactly one domain. Types directly in Feature belong to featureTypeDomain; code outside Service and Feature belongs to platformDomain. Edges into an unrestrictedTargetDomains domain are recorded but never fail. Edges out of a wiringPlatformAreas area (the composition root, which has to name every service it registers) are not dependencies and are left out.",
   "platformDomain": "Platform",
   "featureTypeDomain": "Gameplay",
   "unrestrictedTargetDomains": ["Core", "Platform"],
+  "wiringPlatformAreas": ["Composition"],
   "domains": {
     "Core": {
       "services": [

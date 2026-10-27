@@ -128,6 +128,25 @@ public class DomainDependenciesTests
     }
 
     [Test]
+    public void Edges_out_of_a_wiring_area_are_left_out_and_edges_into_it_are_not()
+    {
+        var json = MapJson.Replace("\"unrestrictedTargetDomains\"", "\"wiringPlatformAreas\": [\"Composition\"], \"unrestrictedTargetDomains\"");
+        var root = new TypeKey("SWLOR.Game.Server.Composition", "ServiceRegistrations");
+        var graph = GraphOf(
+            [Service("Combat"), Service("Stat"), root],
+            (root, Service("Combat"), ["ServiceRegistrations::Register"]),
+            (root, Service("Stat"), ["ServiceRegistrations::Register"]),
+            (Service("Combat"), root, ["Combat::A"]));
+
+        var wired = DomainDependencies.Build(graph, DomainMap.Parse(json));
+        var unwired = DomainDependencies.Build(graph, DomainMap.Parse(MapJson));
+
+        wired.Edges.Select(edge => edge.Key).Should().Equal("Combat -> Platform/Composition");
+        unwired.Edges.Select(edge => edge.Key).Should().BeEquivalentTo(
+            "Combat -> Platform/Composition", "Platform/Composition -> Combat", "Platform/Composition -> Stat");
+    }
+
+    [Test]
     public void An_unlisted_service_or_folder_is_reported_and_its_edges_are_left_out()
     {
         var graph = GraphOf(

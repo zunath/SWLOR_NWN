@@ -61,7 +61,7 @@ DMPreference -> Platform/Entity | 2
 DMTool -> Platform/Entity | 1
 
 # Character -> Core (35 edges)
-Achievement -> DB | 1
+Achievement -> DB | 3
 Disguise -> Cache | 6
 Disguise -> DB | 15
 Disguise -> Log | 9
@@ -97,7 +97,8 @@ Stat -> Random | 1
 StatusEffect -> FrameProfiler | 2
 StatusEffect -> Messaging | 2
 
-# Character -> Platform (35 edges)
+# Character -> Platform (36 edges)
+Achievement -> Platform/Composition | 1
 Achievement -> Platform/Core | 2
 Achievement -> Platform/Entity | 1
 Achievement -> Platform/Extension | 1
@@ -231,7 +232,7 @@ Communication -> Platform/Enumeration | 9
 Conversation -> Platform/Core | 4
 ConversationMenu -> Platform/Core | 3
 DB -> Platform/Core | 1
-DB -> Platform/Entity | 21
+DB -> Platform/Entity | 23
 DB -> Platform/Extension | 4
 DB -> Platform/Root | 2
 Feature/DialogDefinition -> Platform/Core | 1
@@ -534,7 +535,7 @@ Platform/Native -> Log | 28
 Platform/Native -> Random | 2
 
 # Quests -> Core (18 edges)
-Faction -> DB | 2
+Faction -> DB | 4
 Feature/QuestDefinition -> Cache | 19
 Feature/QuestDefinition -> DB | 19
 Feature/QuestDefinition -> ObjectVisibility | 5
@@ -553,7 +554,8 @@ QuestContractBoard -> ColorToken | 3
 QuestContractBoard -> DB | 23
 QuestContractBoard -> Log | 10
 
-# Quests -> Platform (11 edges)
+# Quests -> Platform (12 edges)
+Faction -> Platform/Composition | 1
 Faction -> Platform/Core | 1
 Faction -> Platform/Entity | 2
 Faction -> Platform/Extension | 1
@@ -667,13 +669,13 @@ Shuttle -> ColorToken | 4
 Shuttle -> DB | 11
 Shuttle -> Log | 7
 Shuttle -> Time | 6
-Taxi -> DB | 1
+Taxi -> DB | 3
 Traps -> ColorToken | 3
 Traps -> DB | 2
 Weather -> DB | 1
 Weather -> Log | 1
 
-# World -> Platform (34 edges)
+# World -> Platform (35 edges)
 Area -> Platform/Core | 4
 Area -> Platform/Entity | 1
 Feature/PropertyLayoutDefinition -> Platform/Core | 2
@@ -700,6 +702,7 @@ Shuttle -> Platform/Core | 6
 Shuttle -> Platform/Entity | 15
 Shuttle -> Platform/Enumeration | 42
 Shuttle -> Platform/Extension | 1
+Taxi -> Platform/Composition | 1
 Taxi -> Platform/Core | 1
 Taxi -> Platform/Entity | 1
 Taxi -> Platform/Extension | 1

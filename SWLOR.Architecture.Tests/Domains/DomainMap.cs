@@ -14,6 +14,7 @@ internal sealed class DomainMap
     private readonly List<string> _problems = new();
     private readonly List<string> _domains = new();
     private readonly HashSet<string> _unrestrictedTargets = new(StringComparer.Ordinal);
+    private readonly HashSet<string> _wiringUnits = new(StringComparer.Ordinal);
 
     private DomainMap(string platformDomain, string featureTypeDomain)
     {
@@ -39,6 +40,12 @@ internal sealed class DomainMap
     /// <summary>The names of the services the map puts in <paramref name="domain"/>, in file order; empty for an unknown domain.</summary>
     public IReadOnlyList<string> ServicesOf(string domain) =>
         _servicesByDomain.TryGetValue(domain, out var services) ? services : Array.Empty<string>();
+
+    /// <summary>
+    /// True for a Platform area whose outgoing edges are wiring, not dependencies: the composition root has to name every
+    /// service it registers, so its edges are left out of the guard.
+    /// </summary>
+    public bool IsWiringSource(DependencyUnit unit) => unit.Kind == UnitKind.Platform && _wiringUnits.Contains(unit.Name);
 
     /// <summary>True when edges into the domain are recorded but never fail the guard.</summary>
     public bool IsUnrestrictedTarget(string domain) => _unrestrictedTargets.Contains(domain);
@@ -67,6 +74,12 @@ internal sealed class DomainMap
         var map = new DomainMap(root.GetProperty("platformDomain").GetString()!, root.GetProperty("featureTypeDomain").GetString()!);
         foreach (var domain in root.GetProperty("unrestrictedTargetDomains").EnumerateArray())
             map._unrestrictedTargets.Add(domain.GetString()!);
+
+        if (root.TryGetProperty("wiringPlatformAreas", out var wiring))
+        {
+            foreach (var area in wiring.EnumerateArray())
+                map._wiringUnits.Add(area.GetString()!);
+        }
 
         foreach (var domain in root.GetProperty("domains").EnumerateObject())
         {

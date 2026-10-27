@@ -68,6 +68,8 @@ internal sealed class DomainDependencies
                 continue;
             if (map.DomainOf(from) is null || map.DomainOf(to) is null)
                 continue;
+            if (map.IsWiringSource(from))
+                continue;
 
             if (!members.TryGetValue((from, to), out var set))
             {

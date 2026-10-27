@@ -151,6 +151,8 @@ public class EconomyObtainabilityCoverageTests
             "SlicingTerminalFurnitureRecipes.cs", "ConcentratedVenomRecipes.cs",
         };
         var serverDir = Path.Combine(root, "SWLOR.Game.Server");
+        // Space revamp catalogs: each hull and module Tag is the output resref of a RevampStarshipRecipes recipe.
+        var revampCatalogs = new[] { "RevampModuleCatalog.cs", "RevampShipCatalog.cs" };
         foreach (var file in Directory.EnumerateFiles(serverDir, "*.cs", SearchOption.AllDirectories))
         {
             // Skip nested worktree copies, but compare relative to the repository root so this
@@ -164,6 +166,10 @@ public class EconomyObtainabilityCoverageTests
 
             if (literalRegistries.Any(reg => file.EndsWith(reg)))
                 foreach (Match m in Regex.Matches(text, @"""([a-z0-9_]{2,16})"""))
+                    Add(m.Groups[1].Value);
+
+            if (revampCatalogs.Any(catalog => file.EndsWith(catalog)))
+                foreach (Match m in Regex.Matches(text, @"\bTag\s*=\s*""([^""]+)"""))
                     Add(m.Groups[1].Value);
         }
 

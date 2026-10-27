@@ -37,7 +37,7 @@ namespace SWLOR.Game.Server.Service
             var item = GetSpellCastItem();
             var target = GetSpellTargetObject();
             if (GetIsPC(target) || GetIsDM(target)) return;
-            if (_weaponAttackPoints.Consume(player, target, item, DateTime.UtcNow)) return;
+            if (_weaponAttackPoints.Consume(player, target, item, Clock.UtcNow)) return;
 
             RecordWeaponAttackPoint(player, target, item, Skill.GetWeaponSkill(player, item));
         }
@@ -66,7 +66,7 @@ namespace SWLOR.Game.Server.Service
             if (!GetIsObjectValid(actor) || !GetIsPC(actor) || GetIsDM(actor) ||
                 !GetIsObjectValid(target) || GetIsPC(target) || GetIsDM(target) ||
                 capturedSkill == SkillType.Invalid) return;
-            if (!_weaponAttackPoints.Capture(actor, target, weapon, ammunition, rollId, DateTime.UtcNow)) return;
+            if (!_weaponAttackPoints.Capture(actor, target, weapon, ammunition, rollId, Clock.UtcNow)) return;
             // A queued ability owns the replaced roll's contribution under its captured ability skill.
             if (awardPoint) RecordWeaponAttackPoint(actor, target, weapon, capturedSkill);
         }
@@ -288,7 +288,7 @@ namespace SWLOR.Game.Server.Service
         /// <param name="level">The new level to assign.</param>
         private static void UpdateLastCreatureLevel(uint player, int level)
         {
-            var expiration = DateTime.UtcNow.AddMinutes(2);
+            var expiration = Clock.UtcNow.AddMinutes(2);
             SetLocalInt(player, "COMBAT_POINT_LAST_NPC_LEVEL", level);
             SetLocalString(player, "COMBAT_POINT_LAST_NPC_EXPIRATION", expiration.ToString("yyyy-MM-dd HH:mm:ss"));
         }
@@ -302,7 +302,7 @@ namespace SWLOR.Game.Server.Service
         /// <returns>The level of the last enemy a player was involved in combat with or zero if expired/unavailable.</returns>
         public static int GetRecentEnemyLevel(uint player)
         {
-            var now = DateTime.UtcNow;
+            var now = Clock.UtcNow;
             var expirationString = GetLocalString(player, "COMBAT_POINT_LAST_NPC_EXPIRATION");
             if (string.IsNullOrWhiteSpace(expirationString))
                 return -1;

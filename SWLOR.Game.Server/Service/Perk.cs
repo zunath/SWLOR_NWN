@@ -1346,7 +1346,7 @@ namespace SWLOR.Game.Server.Service
             var dbPlayer = DB.Get<Player>(playerId);
             if (dbPlayer.UnlockedPerks.ContainsKey(perkType)) return;
 
-            dbPlayer.UnlockedPerks[perkType] = DateTime.UtcNow;
+            dbPlayer.UnlockedPerks[perkType] = Clock.UtcNow;
             DB.Set(dbPlayer);
         }
 
@@ -1394,7 +1394,7 @@ namespace SWLOR.Game.Server.Service
                         QuickCast.RemoveFeat(player, feat);
                     }
 
-                    Log.Write(LogGroup.PerkRefund, $"AUTOMATIC DECAY REFUND - {playerId} - Refunded Date {DateTime.UtcNow} - Level {perkLevel} - PerkID {perkType}");
+                    Log.Write(LogGroup.PerkRefund, $"AUTOMATIC DECAY REFUND - {playerId} - Refunded Date {Clock.UtcNow} - Level {perkLevel} - PerkID {perkType}");
                     FloatingTextStringOnCreature($"Perk '{perkDetail.Name}' level {level} was refunded because your skill fell under the minimum requirements. You reclaimed {perkLevel.Price} SP.", player, false);
                 }
 

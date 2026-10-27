@@ -1,4 +1,5 @@
 using System.Collections.Generic;
+using SWLOR.Game.Server.Core;
 using SWLOR.Game.Server.Service.CombatService;
 using SWLOR.Game.Server.Service.AbilityService;
 using SWLOR.NWN.API.Engine;
@@ -77,7 +78,7 @@ namespace SWLOR.Game.Server.Service.StatusEffectService
             RestartDuration(durationTicks, durationSeconds, tickAnchor);
             Source = source;
             if (CombatRecorder.IsRecording)
-                CombatRecorder.RecordStatusApplied(source, creature, this, GetRemainingDurationSeconds(DateTime.UtcNow), _isPermanent, false);
+                CombatRecorder.RecordStatusApplied(source, creature, this, GetRemainingDurationSeconds(Clock.UtcNow), _isPermanent, false);
 
             using var recorderAttribution = CombatRecorder.BeginStatusEffectAttribution(source, creature, this);
             Apply(creature, durationTicks);
@@ -91,7 +92,7 @@ namespace SWLOR.Game.Server.Service.StatusEffectService
         {
             _isPermanent = durationTicks < 0;
 
-            _lastRun = tickAnchor ?? DateTime.UtcNow;
+            _lastRun = tickAnchor ?? Clock.UtcNow;
             _durationTicks = durationTicks;
             _durationAdjustmentSeconds = 0f;
             if (!_isPermanent && durationSeconds > 0f)
@@ -142,9 +143,9 @@ namespace SWLOR.Game.Server.Service.StatusEffectService
                 return;
 
             if ((Categories & StatusEffectCategory.HardCrowdControl) != 0)
-                seconds = Math.Min(seconds, GetRemainingDurationSeconds(DateTime.UtcNow));
+                seconds = Math.Min(seconds, GetRemainingDurationSeconds(Clock.UtcNow));
 
-            var durationFromTickAnchor = seconds + (float)Math.Max(0d, (DateTime.UtcNow - _lastRun).TotalSeconds);
+            var durationFromTickAnchor = seconds + (float)Math.Max(0d, (Clock.UtcNow - _lastRun).TotalSeconds);
             var frequency = Math.Max(1f, Frequency);
             _durationTicks = Math.Max(1, (int)Math.Ceiling(durationFromTickAnchor / frequency));
             _durationAdjustmentSeconds = durationFromTickAnchor - _durationTicks * frequency;
@@ -186,7 +187,7 @@ namespace SWLOR.Game.Server.Service.StatusEffectService
         protected virtual void Tick(uint creature) { }
         public void TickEffect(uint creature)
         {
-            var currentTime = DateTime.UtcNow;
+            var currentTime = Clock.UtcNow;
             var frequency = Math.Max(1f, Frequency);
             var elapsedSeconds = (currentTime - _lastRun).TotalSeconds;
             var secondsUntilExpiration = _durationTicks * frequency + _durationAdjustmentSeconds;
@@ -316,7 +317,7 @@ namespace SWLOR.Game.Server.Service.StatusEffectService
         {
             return durationTicks < 0
                 ? 0f
-                : Math.Max(0.1f, GetRemainingDurationSeconds(DateTime.UtcNow));
+                : Math.Max(0.1f, GetRemainingDurationSeconds(Clock.UtcNow));
         }
 
         protected Effect TagNativeEffect(Effect effect, string tagSuffix = null)

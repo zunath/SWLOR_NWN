@@ -283,7 +283,7 @@ namespace SWLOR.Game.Server.Service
 
                 if (effects.GetAllEffects().Count > 0)
                 {
-                    _loggedOutPlayerEffects[playerId] = new LoggedOutStatusEffects(player, effects, DateTime.UtcNow);
+                    _loggedOutPlayerEffects[playerId] = new LoggedOutStatusEffects(player, effects, Clock.UtcNow);
                     RemoveTrackedNWNEffects(player, effects);
                 }
                 else
@@ -618,7 +618,7 @@ namespace SWLOR.Game.Server.Service
 
             if (!isPermanent && (statusEffect.Categories & StatusEffectCategory.HardCrowdControl) != 0)
             {
-                var now = DateTime.UtcNow;
+                var now = Clock.UtcNow;
                 foreach (var replaced in replacedEffects.Where(effect =>
                              (effect.Categories & StatusEffectCategory.HardCrowdControl) != 0))
                 {
@@ -895,7 +895,7 @@ namespace SWLOR.Game.Server.Service
             active.RestartDuration(durationTicks, durationSeconds, tickAnchor);
             ReplaceNativeStatusEffect(creature, active, active.DurationTicks, false);
             if (CombatRecorder.IsRecording)
-                CombatRecorder.RecordStatusApplied(source, creature, active, active.GetRemainingDurationSeconds(DateTime.UtcNow), false, true);
+                CombatRecorder.RecordStatusApplied(source, creature, active, active.GetRemainingDurationSeconds(Clock.UtcNow), false, true);
 
             Combat.ApplyStatusAppliedTargetStaminaDrain(source, creature, active.Categories);
             if ((active.Categories & StatusEffectCategory.Debuff) != 0 &&
@@ -1116,7 +1116,7 @@ namespace SWLOR.Game.Server.Service
 
         private static void ReconcileLoggedOutEffects(uint creature, LoggedOutStatusEffects loggedOutEffects)
         {
-            var currentTime = DateTime.UtcNow;
+            var currentTime = Clock.UtcNow;
             if (currentTime < loggedOutEffects.LoggedOutAt)
             {
                 currentTime = loggedOutEffects.LoggedOutAt;
@@ -1320,7 +1320,7 @@ namespace SWLOR.Game.Server.Service
         private static float GetStatusEffectDurationSeconds(IStatusEffect statusEffect, int durationTicks)
         {
             var logicalDurationSeconds = statusEffect.DurationTicks > 0
-                ? statusEffect.GetRemainingDurationSeconds(DateTime.UtcNow)
+                ? statusEffect.GetRemainingDurationSeconds(Clock.UtcNow)
                 : durationTicks * Math.Max(1f, statusEffect.Frequency);
 
             // NWN may remove an effect before delivering an interval callback scheduled for the
@@ -1412,11 +1412,11 @@ namespace SWLOR.Game.Server.Service
                 if (source != OBJECT_INVALID && statusEffect.Source != source)
                     continue;
 
-                statusEffect.SetDurationSeconds(statusEffect.GetRemainingDurationSeconds(DateTime.UtcNow) + durationSeconds);
+                statusEffect.SetDurationSeconds(statusEffect.GetRemainingDurationSeconds(Clock.UtcNow) + durationSeconds);
                 ReplaceNativeStatusEffect(creature, statusEffect, statusEffect.DurationTicks, statusEffect.DurationTicks < 0);
                 extended = true;
                 if (CombatRecorder.IsRecording)
-                    CombatRecorder.RecordStatusApplied(source, creature, statusEffect, statusEffect.GetRemainingDurationSeconds(DateTime.UtcNow), false, true);
+                    CombatRecorder.RecordStatusApplied(source, creature, statusEffect, statusEffect.GetRemainingDurationSeconds(Clock.UtcNow), false, true);
             }
 
             return extended;
@@ -1473,11 +1473,11 @@ namespace SWLOR.Game.Server.Service
 
                 adjustedSeconds = Math.Min(adjustedSeconds + Math.Max(0, ticks - originalTicks) * Math.Max(1f, statusEffect.Frequency),
                     ticks * Math.Max(1f, statusEffect.Frequency));
-                statusEffect.SetDurationSeconds(Math.Max(statusEffect.GetRemainingDurationSeconds(DateTime.UtcNow), adjustedSeconds));
+                statusEffect.SetDurationSeconds(Math.Max(statusEffect.GetRemainingDurationSeconds(Clock.UtcNow), adjustedSeconds));
                 ReplaceNativeStatusEffect(creature, statusEffect, statusEffect.DurationTicks, statusEffect.DurationTicks < 0);
                 refreshed = true;
                 if (CombatRecorder.IsRecording)
-                    CombatRecorder.RecordStatusApplied(source, creature, statusEffect, statusEffect.GetRemainingDurationSeconds(DateTime.UtcNow), false, true);
+                    CombatRecorder.RecordStatusApplied(source, creature, statusEffect, statusEffect.GetRemainingDurationSeconds(Clock.UtcNow), false, true);
             }
 
             return refreshed;

@@ -1,4 +1,5 @@
 using System.Collections.Generic;
+using SWLOR.Game.Server.Core;
 using SWLOR.Game.Server.Feature.StatusEffectDefinition;
 using SWLOR.Game.Server.Service.CombatService;
 using SWLOR.Game.Server.Service.StatService;
@@ -24,7 +25,7 @@ public static class OrdinaryAttackTraits
         var configuration = GetConfiguration(actor);
         if (configuration.MaximumStacks <= 0) return;
         if (!States.TryGetValue(actor, out var state)) States[actor] = state = new OrdinaryAttackHasteState();
-        var refresh = state.RecordHit(DateTime.UtcNow, configuration, target, rollId);
+        var refresh = state.RecordHit(Clock.UtcNow, configuration, target, rollId);
         Sync(actor, state, refresh);
     }
 
@@ -33,7 +34,7 @@ public static class OrdinaryAttackTraits
         if (!States.TryGetValue(actor, out var state)) return;
         if (!GetIsObjectValid(actor)) { Clear(actor); return; }
         if (GetIsDead(actor) || GetCurrentHitPoints(actor) <= 0) { ClearOnDeath(actor); return; }
-        state.Reconcile(DateTime.UtcNow, GetConfiguration(actor));
+        state.Reconcile(Clock.UtcNow, GetConfiguration(actor));
         Sync(actor, state);
     }
 
@@ -67,7 +68,7 @@ public static class OrdinaryAttackTraits
     private static void Sync(uint actor, OrdinaryAttackHasteState state, bool refreshTimer = false)
     {
         if (!GetIsObjectValid(actor)) return;
-        var remaining = (float)Math.Max(0d, (state.Expires - DateTime.UtcNow).TotalSeconds);
+        var remaining = (float)Math.Max(0d, (state.Expires - Clock.UtcNow).TotalSeconds);
         var existing = StatusEffect.GetStatusEffect<OrdinaryAttackHasteStatusEffect>(actor);
         if (state.Stacks <= 0 || remaining <= 0)
         {

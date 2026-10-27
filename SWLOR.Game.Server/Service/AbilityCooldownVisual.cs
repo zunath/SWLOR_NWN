@@ -47,7 +47,7 @@ namespace SWLOR.Game.Server.Service
                 return;
             }
 
-            var now = DateTime.UtcNow;
+            var now = Clock.UtcNow;
 
             foreach (var (group, endsAt) in dbPlayer.RecastTimes.ToList())
             {
@@ -104,7 +104,7 @@ namespace SWLOR.Game.Server.Service
         {
             if (!CanShowCooldownVisuals(player) ||
                 group == RecastGroup.Invalid ||
-                endsAt <= DateTime.UtcNow)
+                endsAt <= Clock.UtcNow)
             {
                 return;
             }
@@ -157,13 +157,13 @@ namespace SWLOR.Game.Server.Service
                 return;
             }
 
-            if (endsAt <= DateTime.UtcNow)
+            if (endsAt <= Clock.UtcNow)
             {
                 ClearRecastDelay(player, group);
                 return;
             }
 
-            var startedAt = DateTime.UtcNow;
+            var startedAt = Clock.UtcNow;
             string sourceTexture = null;
             string iconTexture = null;
             var playerId = GetObjectUUID(player);
@@ -177,7 +177,7 @@ namespace SWLOR.Game.Server.Service
             }
             else
             {
-                var remainingSeconds = Math.Max(0.1, (endsAt - DateTime.UtcNow).TotalSeconds);
+                var remainingSeconds = Math.Max(0.1, (endsAt - Clock.UtcNow).TotalSeconds);
                 var totalSeconds = GetEstimatedTotalDelaySeconds(player, group, remainingSeconds);
                 startedAt = endsAt.AddSeconds(-totalSeconds);
             }
@@ -325,7 +325,7 @@ namespace SWLOR.Game.Server.Service
             if (!IsActiveState(state))
                 return;
 
-            var now = DateTime.UtcNow;
+            var now = Clock.UtcNow;
             var stage = CalculateCooldownStage(now, state.StartedAt, state.EndsAt);
             if (stage < 0)
             {

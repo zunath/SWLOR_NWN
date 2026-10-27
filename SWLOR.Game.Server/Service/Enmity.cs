@@ -844,7 +844,7 @@ namespace SWLOR.Game.Server.Service
                     currentAction,
                     isBusy,
                     shouldRecoverStaleAttack,
-                    DateTime.UtcNow,
+                    Clock.UtcNow,
                     commandIssuedAt,
                     recoverySeconds,
                     pendingTarget))
@@ -873,7 +873,7 @@ namespace SWLOR.Game.Server.Service
             if (AI.TryStartCombatLeashEvade(creature, target))
                 return;
 
-            _attackCommandTimes[creature] = DateTime.UtcNow;
+            _attackCommandTimes[creature] = Clock.UtcNow;
             _attackCommandTargets[creature] = target;
             AssignCommand(creature, () =>
             {
@@ -1007,7 +1007,7 @@ namespace SWLOR.Game.Server.Service
                 attackTarget,
                 desiredTarget,
                 currentAction,
-                DateTime.UtcNow,
+                Clock.UtcNow,
                 commandIssuedAt,
                 Combat.HasRecentAttackActivity(creature, recoverySeconds),
                 recoverySeconds);

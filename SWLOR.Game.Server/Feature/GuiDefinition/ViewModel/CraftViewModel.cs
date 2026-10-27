@@ -1,6 +1,7 @@
 using System.Collections.Generic;
 using System.Linq;
 using SWLOR.Game.Server.Core.Bioware;
+using SWLOR.Game.Server.Core;
 using SWLOR.Game.Server.Entity;
 using SWLOR.Game.Server.Feature.GuiDefinition.Payload;
 using SWLOR.Game.Server.Feature.GuiDefinition.RefreshEvent;
@@ -1487,7 +1488,7 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
             // Add the recipe to the completed list (unlocks auto-crafting)
             if (firstTime)
             {
-                dbPlayer.CraftedRecipes[_recipe] = DateTime.UtcNow;
+                dbPlayer.CraftedRecipes[_recipe] = Clock.UtcNow;
                 DB.Set(dbPlayer);
             }
 

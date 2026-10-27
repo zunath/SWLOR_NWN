@@ -15,3 +15,15 @@ Service/AbilityService/**
 Service/Craft.cs
 Native/PairedRangedPresentation.cs
 Native/OnAIActionAttackObject.cs
+# Added by P0-4d3: other readers the engine characterization scenarios reach (recast timestamps, AI and attack delays,
+# melee techniques, the crafting window, entity creation times). Ambient server loops (Spawn, Space, Shuttle, Weather,
+# ServerTasks) are not listed: they are not part of a scenario and must keep reading the system clock.
+Service/Recast.cs
+Service/RecastTimestamp.cs
+Service/AbilityCooldownVisual.cs
+Service/Enmity.cs
+Service/MeleeTechnique.cs
+Service/AIService/**
+Native/WeaponAttackAnimation.cs
+Feature/GuiDefinition/ViewModel/CraftViewModel.cs
+Entity/EntityBase.cs

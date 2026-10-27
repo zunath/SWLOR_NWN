@@ -1,4 +1,5 @@
 using Newtonsoft.Json;
+using SWLOR.Game.Server.Core;
 
 namespace SWLOR.Game.Server.Entity
 {
@@ -16,7 +17,7 @@ namespace SWLOR.Game.Server.Entity
         protected EntityBase()
         {
             Id = Guid.NewGuid().ToString();
-            DateCreated = DateTime.UtcNow;
+            DateCreated = Clock.UtcNow;
             EntityType = GetType().Name;
         }
     }

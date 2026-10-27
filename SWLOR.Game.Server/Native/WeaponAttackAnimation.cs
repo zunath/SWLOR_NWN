@@ -128,7 +128,7 @@ public static unsafe class WeaponAttackAnimation
         var swingLength = CalculateSwingDuration(cycleDuration, visualRolls.Length);
         var playback = new Playback
         {
-            Started = Environment.TickCount64,
+            Started = Clock.TickCount64,
             Duration = visualRolls.Length * (swingLength + TransitionDuration),
             SwingLength = swingLength,
             EndAttack = round.m_nCurrentAttack,
@@ -158,7 +158,7 @@ public static unsafe class WeaponAttackAnimation
 
     public static bool IsPlaying(CNWSObject obj) =>
         TryGetPlayback(obj, out var playback) &&
-        (Environment.TickCount64 - playback.Started < playback.Duration ||
+        (Clock.TickCount64 - playback.Started < playback.Duration ||
          playback.SentStages.Any(sent => sent.Value < playback.Rolls.Length * 2 - 1));
 
     private static bool TryGetPlayback(CNWSObject obj, out Playback playback)
@@ -205,7 +205,7 @@ public static unsafe class WeaponAttackAnimation
 
     private static int ObserverStage(Playback playback, uint playerId)
     {
-        var now = Environment.TickCount64;
+        var now = Clock.TickCount64;
         if (!playback.SentStages.TryGetValue(playerId, out var sent))
             return now - playback.Started < playback.Duration ? 0 : playback.Rolls.Length * 2 - 1;
         var next = AdvanceStage(sent, now - playback.SentAt[playerId], playback.SwingLength, playback.Rolls.Length);
@@ -325,7 +325,7 @@ public static unsafe class WeaponAttackAnimation
             });
             if ((updates & AnimationUpdate) != 0)
             {
-                playback.SentAt[playerId] = Environment.TickCount64;
+                playback.SentAt[playerId] = Clock.TickCount64;
                 playback.SentStages[playerId] = stage;
             }
             if (roll == null) playback.RemappedObservers.Remove(playerId);
@@ -426,7 +426,7 @@ public static unsafe class WeaponAttackAnimation
     public static void ClearInactive()
     {
         foreach (var pair in _playbacks.ToArray())
-            if (Environment.TickCount64 - pair.Value.Started > 30000 || !GetIsObjectValid(pair.Key))
+            if (Clock.TickCount64 - pair.Value.Started > 30000 || !GetIsObjectValid(pair.Key))
                 _playbacks.Remove(pair.Key);
     }
 }

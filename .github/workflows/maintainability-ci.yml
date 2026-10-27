@@ -86,7 +86,7 @@ jobs:
 
       - name: Unit tests with coverage
         id: tests
-        run: scripts/ci/run-unit-tests.sh --out "$CI_OUT/results"
+        run: bash scripts/ci/run-unit-tests.sh --out "$CI_OUT/results"
 
       - name: Coverage report
         if: ${{ !cancelled() && steps.tests.conclusion != 'skipped' }}

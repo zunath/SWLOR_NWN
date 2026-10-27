@@ -14,6 +14,7 @@ import argparse
 import json
 import os
 import re
+import shutil
 import subprocess
 import sys
 from concurrent.futures import ThreadPoolExecutor
@@ -110,7 +111,7 @@ def prepare_textures(index: HakIndex, materials, work: Path, palette: Path) -> d
             color, metal = baked / f"cloaktint_{tile}_c.png", baked / f"cloaktint_{tile}_m.png"
             if not color.exists():
                 save_for_blender(*bake(*cloak_tile(atlases, tile), palette), color, metal)
-            result[material] = {"color": str(color), "metal": str(metal)}
+            result[material] = {"color": str(color), "metal": str(metal), "sources": atlas_names + [palette.name]}
     materials = [m for m in materials if not m.startswith(CLOAK_ATLAS_PREFIX)]
     index.extract([m + ".mtr" for m in materials], raw)
     sources = {}
@@ -125,20 +126,21 @@ def prepare_textures(index: HakIndex, materials, work: Path, palette: Path) -> d
     index.extract([name for names in sources.values() for name in names], raw)
     for material, names in sources.items():
         color, metal = baked / f"{material}_c.png", baked / f"{material}_m.png"
-        if color.exists():
-            result[material] = {"color": str(color), "metal": str(metal) if metal.exists() else None}
-            continue
         source = next((raw / n for n in names if (raw / n).exists()), None)
         if source is None:
+            continue
+        used = [f"{material}.mtr", source.name, palette.name]
+        if color.exists():
+            result[material] = {"color": str(color), "metal": str(metal) if metal.exists() else None, "sources": used}
             continue
         try:
             if source.name.startswith("tm_") or source.suffix == ".plt":
                 rgb, env = bake(*read_tint_map(source), palette)
                 save_for_blender(rgb, env, color, metal)
-                result[material] = {"color": str(color), "metal": str(metal)}
+                result[material] = {"color": str(color), "metal": str(metal), "sources": used}
             else:
                 plain_texture(source, color)
-                result[material] = {"color": str(color), "metal": None}
+                result[material] = {"color": str(color), "metal": None, "sources": used}
         except (OSError, ValueError) as error:
             # Bioware-format DDS and other legacy textures Pillow cannot read render untextured.
             print("PREVIEW_UNREADABLE_TEXTURE", source.name, error)
@@ -220,9 +222,11 @@ def main(argv=None):
     args.output.mkdir(parents=True, exist_ok=True)
     renders = args.work / "renders"
     all_keys = [j.key for j in jobs]
-    jobs = [j for j in jobs if not all((renders / f"{j.key}_{v}.png").exists() for v in VIEWS)]
+    cache = RenderCache(args.work, index)
+    jobs = [j for j in jobs if not cache.is_fresh(j.key, renders)]
     print(f"{len(jobs)} parts to render")
-    problems = render(args, index, jobs, renders) if jobs else []
+    problems = render(args, index, jobs, renders, cache) if jobs else []
+    cache.save()
 
     kept, skipped, wanted = write_pictures(all_keys, renders, args.output, args.size)
     if not args.only:
@@ -246,7 +250,55 @@ def batch_problems(returncode, stdout, stderr, batch, renders):
     return problems
 
 
-def render(args, index, jobs, renders):
+class RenderCache:
+    """Remembers which HAKs each cached render came from.
+
+    A render is reused only while every HAK it was made from is unchanged (size and
+    modification time). Extracted models and baked textures are cleared whenever any HAK
+    changes, since they are cheap to rebuild and are shared between parts.
+    """
+
+    FILE = "render_cache.json"
+    ANY = "*"  # the render depends on a resource that was missing; any HAK change may add it
+
+    def __init__(self, work: Path, index: HakIndex):
+        self.path = work / self.FILE
+        self.index = index
+        self.current = {hak.name: f"{hak.stat().st_size}:{hak.stat().st_mtime_ns}"
+                        for hak in sorted(set(index.where.values()), key=lambda h: h.name)}
+        try:
+            state = json.loads(self.path.read_text())
+        except (OSError, ValueError):
+            state = {}
+        self.previous = state.get("haks", {})
+        self.dependencies = state.get("renders", {})
+        if self.previous != self.current:
+            for folder in ("models", "binary", "ascii", "raw", "textures"):
+                shutil.rmtree(work / folder, ignore_errors=True)
+
+    def is_fresh(self, key: str, renders: Path) -> bool:
+        haks = self.dependencies.get(key)
+        if not haks or not all((renders / f"{key}_{view}.png").exists() for view in VIEWS):
+            return False
+        if self.ANY in haks:
+            return self.previous == self.current
+        return all(self.previous.get(hak) is not None and self.previous.get(hak) == self.current.get(hak) for hak in haks)
+
+    def record(self, key: str, resources, complete: bool):
+        haks = {self.index.where[name].name for name in resources if name in self.index.where}
+        if not complete:
+            haks.add(self.ANY)
+        self.dependencies[key] = sorted(haks)
+
+    def forget(self, key: str):
+        self.dependencies.pop(key, None)
+
+    def save(self):
+        self.path.parent.mkdir(parents=True, exist_ok=True)
+        self.path.write_text(json.dumps({"haks": self.current, "renders": self.dependencies}, indent=0))
+
+
+def render(args, index, jobs, renders, cache):
 
     models = args.work / "models"
     index.extract([j.model + ".mdl" for j in jobs], models)
@@ -254,11 +306,13 @@ def render(args, index, jobs, renders):
     palette = args.work / "raw" / "plt_palette.tga"
     index.extract(["plt_palette.tga"], palette.parent)
 
-    batch_jobs, materials = [], set()
+    batch_jobs, materials, problems = [], set(), []
     for job in jobs:
+        cache.forget(job.key)
         ascii_path = args.work / "ascii" / f"{job.model}.mdl"
         if not ascii_path.exists():
-            print("PREVIEW_NO_MODEL", job.key)
+            # Extraction or CleanModels decompile failed; see decompile.log in the work folder.
+            problems.append(f"PREVIEW_NO_MODEL {job.key}")
             continue
         bitmaps = {}
         nodes = mesh_materials(ascii_path, bitmaps)
@@ -267,7 +321,8 @@ def render(args, index, jobs, renders):
             bitmaps = {}
         materials.update(nodes.values())
         materials.update(bitmaps.values())
-        batch_jobs.append({"key": job.key, "ascii": str(ascii_path), "nodes": nodes, "bitmaps": bitmaps})
+        batch_jobs.append({"key": job.key, "ascii": str(ascii_path), "nodes": nodes, "bitmaps": bitmaps,
+                           "model": f"{job.model}.mdl"})
     textures = prepare_textures(index, materials, args.work, palette)
     for job in batch_jobs:
         # A material without resources falls back to the node's own bitmap texture.
@@ -276,7 +331,9 @@ def render(args, index, jobs, renders):
             if material not in textures and fallback in textures:
                 job["nodes"][node] = fallback
         job.pop("bitmaps", None)
-        job["textures"] = {m: textures[m] for m in set(job["nodes"].values()) if m in textures}
+        job["textures"] = {m: dict(textures[m]) for m in set(job["nodes"].values()) if m in textures}
+        job["sources"] = [job.pop("model")] + [name for m in job["textures"].values() for name in m.pop("sources", [])]
+        job["complete"] = all(m in job["textures"] for m in set(job["nodes"].values()))
 
     script = Path(__file__).with_name("blender_render.py")
     batches = [batch_jobs[i:i + args.batch] for i in range(0, len(batch_jobs), args.batch)]
@@ -289,11 +346,14 @@ def render(args, index, jobs, renders):
                                  str(batch_file), str(renders), str(args.render_size)],
                                 capture_output=True, text=True, encoding="utf8", errors="replace")
         problems = batch_problems(result.returncode, result.stdout, result.stderr, batch, renders)
+        for job in batch:
+            if all((renders / f"{job['key']}_{view}.png").exists() for view in VIEWS):
+                cache.record(job["key"], job["sources"], job["complete"])
         print(f"batch {number + 1}/{len(batches)} done", *problems, sep="\n  ", flush=True)
         return problems
 
     with ThreadPoolExecutor(max_workers=args.parallel) as pool:
-        return [p for result in pool.map(run, enumerate(batches)) for p in result]
+        return problems + [p for result in pool.map(run, enumerate(batches)) for p in result]
 
 
 if __name__ == "__main__":

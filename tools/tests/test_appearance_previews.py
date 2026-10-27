@@ -298,5 +298,60 @@ class BatchProblemTests(unittest.TestCase):
             self.assertEqual(batch_problems(0, "PREVIEW_RENDERED done" + chr(10), "", [{"key": "done"}], renders), [])
 
 
+class RenderCacheTests(unittest.TestCase):
+    def setUp(self):
+        self.folder = tempfile.TemporaryDirectory()
+        root = Path(self.folder.name)
+        self.work, self.renders, haks = root / "work", root / "work" / "renders", root / "haks"
+        self.renders.mkdir(parents=True)
+        haks.mkdir()
+        self.model_hak, self.tint_hak, self.other_hak = haks / "sw_pt_chest.hak", haks / "sw_tint0.hak", haks / "sw_ui.hak"
+        for hak in (self.model_hak, self.tint_hak, self.other_hak):
+            hak.write_bytes(b"x")
+
+        class Index:
+            where = {"pfh0_chest001.mdl": self.model_hak, "tm_a.dds": self.tint_hak, "gui.tga": self.other_hak}
+        self.index = Index()
+        for view in VIEWS:
+            Image.new("RGBA", (4, 4)).save(self.renders / f"pfh0_chest001_{view}.png")
+
+    def tearDown(self):
+        self.folder.cleanup()
+
+    def cache(self):
+        from appearance_previews.__main__ import RenderCache
+        return RenderCache(self.work, self.index)
+
+    def touch(self, hak):
+        hak.write_bytes(b"changed")
+
+    def test_a_render_is_reused_until_one_of_its_haks_changes(self):
+        cache = self.cache()
+        self.assertFalse(cache.is_fresh("pfh0_chest001", self.renders), "nothing recorded yet")
+        cache.record("pfh0_chest001", ["pfh0_chest001.mdl", "tm_a.dds"], complete=True)
+        cache.save()
+        self.assertTrue(self.cache().is_fresh("pfh0_chest001", self.renders))
+        self.touch(self.other_hak)
+        self.assertTrue(self.cache().is_fresh("pfh0_chest001", self.renders), "an unrelated HAK changed")
+        self.cache().save()
+        self.touch(self.tint_hak)
+        self.assertFalse(self.cache().is_fresh("pfh0_chest001", self.renders), "its tint map HAK changed")
+
+    def test_a_render_with_a_missing_texture_is_redone_after_any_hak_change(self):
+        cache = self.cache()
+        cache.record("pfh0_chest001", ["pfh0_chest001.mdl"], complete=False)
+        cache.save()
+        self.assertTrue(self.cache().is_fresh("pfh0_chest001", self.renders))
+        self.touch(self.other_hak)
+        self.assertFalse(self.cache().is_fresh("pfh0_chest001", self.renders))
+
+    def test_shared_intermediates_are_cleared_when_any_hak_changes(self):
+        self.cache().save()
+        (self.work / "textures").mkdir()
+        self.touch(self.other_hak)
+        self.cache()
+        self.assertFalse((self.work / "textures").exists())
+
+
 if __name__ == "__main__":
     unittest.main()

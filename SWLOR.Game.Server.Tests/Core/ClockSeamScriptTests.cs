@@ -64,7 +64,7 @@ public class ClockSeamScriptTests
         var first = RunScript();
 
         first.ExitCode.Should().Be(0, first.Output);
-        first.Output.Should().Contain("Changed 4 of 5 files: 5 DateTime.UtcNow and 5 Environment.TickCount64 rewritten, 2 using lines added.");
+        first.Output.Should().Contain("Changed 4 of 5 files: 6 DateTime.UtcNow and 5 Environment.TickCount64 rewritten, 2 using lines added.");
         File.ReadAllBytes(withUsings).Should().Equal(Utf8WithoutBom.GetBytes(Sample("\r\n", rewritten: true, coreUsing: true)));
         File.ReadAllBytes(withoutUsings).Should().Equal(Utf8WithBom.GetPreamble().Concat(Utf8WithoutBom.GetBytes(
             "using SWLOR.Game.Server.Core;\n\nnamespace SWLOR.Game.Server.Service.Folder;\n\npublic static class B { public static long Read() => Clock.TickCount64 + \"caf" + EAcute + "\".Length; }\n")).ToArray());
@@ -113,6 +113,7 @@ public class ClockSeamScriptTests
                 public static string Text = "DateTime.UtcNow and Environment.TickCount64 stay in strings"; // DateTime.UtcNow
                 public static string Verbatim = @"DateTime.UtcNow ""quoted"" Environment.TickCount64";
                 public static string Interpolated(int n) => $"DateTime.UtcNow {{Environment.TickCount64}} {Environment.TickCount64} {n}";
+                public static string Formatted() => $"{DateTime.UtcNow:yyyy 'DateTime.UtcNow'}";
                 public static char Quote = '"'; public static object AfterQuote = DateTime.UtcNow;
                 public static object Qualified = new object[] { global::System.DateTime.UtcNow, global::System.Environment.TickCount64 };
             }
@@ -129,6 +130,7 @@ public class ClockSeamScriptTests
                 public static string Text = "DateTime.UtcNow and Environment.TickCount64 stay in strings"; // DateTime.UtcNow
                 public static string Verbatim = @"DateTime.UtcNow ""quoted"" Environment.TickCount64";
                 public static string Interpolated(int n) => $"DateTime.UtcNow {{Environment.TickCount64}} {Clock.TickCount64} {n}";
+                public static string Formatted() => $"{Clock.UtcNow:yyyy 'DateTime.UtcNow'}";
                 public static char Quote = '"'; public static object AfterQuote = Clock.UtcNow;
                 public static object Qualified = new object[] { Clock.UtcNow, Clock.TickCount64 };
             }

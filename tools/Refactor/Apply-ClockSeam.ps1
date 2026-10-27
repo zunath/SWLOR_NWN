@@ -82,10 +82,28 @@ $readEvaluator = [System.Text.RegularExpressions.MatchEvaluator]{
     return $m.Value
 }
 
+# Index of the ':' that starts the format clause of an interpolation hole such as {value:yyyy}, or the index of the closing
+# brace when there is none. A ':' inside parentheses or brackets, or part of '::', belongs to the expression.
+function Get-FormatClauseIndex([string]$hole) {
+    $depth = 0
+    for ($i = 1; $i -lt $hole.Length - 1; $i++) {
+        $c = $hole[$i]
+        if ($c -eq '(' -or $c -eq '[') { $depth++ }
+        elseif ($c -eq ')' -or $c -eq ']') { $depth-- }
+        elseif ($c -eq ':' -and $depth -eq 0) {
+            if ($hole[$i + 1] -eq ':') { $i++; continue }
+            return $i
+        }
+    }
+    return $hole.Length - 1
+}
+
 $holeEvaluator = [System.Text.RegularExpressions.MatchEvaluator]{
     param($m)
     if (-not $m.Groups['hole'].Success) { return $m.Value }
-    return [regex]::Replace($m.Value, $readPattern, $readEvaluator)
+    $formatAt = Get-FormatClauseIndex $m.Value
+    $expression = [regex]::Replace($m.Value.Substring(0, $formatAt), $readPattern, $readEvaluator)
+    return $expression + $m.Value.Substring($formatAt)
 }
 
 $codeEvaluator = [System.Text.RegularExpressions.MatchEvaluator]{

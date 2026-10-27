@@ -100,6 +100,29 @@ public class ClockSeamSourceGuardTests
         reads.Select(read => read.Line).Should().Equal(8, 9, 10, 11, 12, 13);
     }
 
+    [Test]
+    public void DirectReadsThroughAnAliasOrUsingStaticAreFound()
+    {
+        const string source = """
+            using UtcClock = System.DateTime;
+            using static System.Environment;
+            class Sample
+            {
+                void Run()
+                {
+                    var a = UtcClock.UtcNow;
+                    var b = TickCount64;
+                    var c = Clock.UtcNow;
+                    var d = other.TickCount64;
+                }
+            }
+            """;
+
+        var reads = ClockSeamSources.FindDirectReads(source);
+
+        reads.Select(read => read.Line).Should().Equal(7, 8);
+    }
+
     private static bool IsBuildOutput(string serverRoot, string file)
     {
         var relative = Path.GetRelativePath(serverRoot, file).Replace('\\', '/');

@@ -83,3 +83,5 @@ exclude TintMapReviewTests.TintShadersRebuildSpecularityFromFinalPaletteInputs
 project SWLOR.Game.Server.CharacterizationTests
 
 project SWLOR.Architecture.Tests
+
+project SWLOR.NWN.API.Tests

@@ -255,7 +255,10 @@ function Invoke-Sync {
         $mechanicalNotes.Add("$($script.Name): $line")
         $patterns += @(Get-OwnedFilePatterns -Script $script -Root $root)
     }
-    $changed = @((Invoke-Git -Repository $root -Arguments @('diff', '--name-only')).Lines | Where-Object { Test-OwnedPath -Path $_ -Patterns $patterns })
+    # Files a script changed or removed, and files it created (a generator writes new files for a new wrapper).
+    $touched = @((Invoke-Git -Repository $root -Arguments @('diff', '--name-only')).Lines) +
+        @((Invoke-Git -Repository $root -Arguments @('ls-files', '--others', '--exclude-standard')).Lines)
+    $changed = @($touched | Where-Object { Test-OwnedPath -Path $_ -Patterns $patterns })
     foreach ($file in $changed) { Invoke-Git -Repository $root -Arguments @('add', '--', $file) | Out-Null }
     foreach ($script in $mechanical) {
         $check = Invoke-MechanicalScript -Script $script -TargetRoot $root -Mode Check

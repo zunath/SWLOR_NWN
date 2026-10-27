@@ -16,3 +16,4 @@
 # "Owns" means the branch's only change to the file is the script's rewrite, so on a merge conflict in an owned file
 # the sync takes master's version and runs the script again instead of merging by hand.
 tools/Refactor/Apply-ClockSeam.ps1
+tools/Refactor/Apply-EngineSeam.ps1

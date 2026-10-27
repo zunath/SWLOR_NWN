@@ -21,6 +21,12 @@
     Write nothing. Build the output from the wrapper files as committed at this git revision (the pristine hand-written
     code) and exit 1 when the working tree differs from it.
 
+.PARAMETER ListOwnedFiles
+    Write nothing and build nothing; print only the repository-relative folders (forward slashes, each ending in /**)
+    whose files this script owns: the wrapper sources it rewrites and everything it generates. The daily sync uses it to
+    decide which merge conflicts it settles by taking master's version and running this script again
+    (tools/Refactor/MechanicalScripts.txt). Keep the list equal to SeamDefinition.NWScript in the generator.
+
 .PARAMETER RepositoryRoot
     Repository root. Defaults to two folders above this script.
 
@@ -32,6 +38,7 @@
 [CmdletBinding()]
 param(
     [switch]$Check,
+    [switch]$ListOwnedFiles,
     [string]$VerifyOrigin,
     [string]$RepositoryRoot
 )
@@ -43,6 +50,15 @@ if (-not $RepositoryRoot) {
     $RepositoryRoot = Split-Path -Parent (Split-Path -Parent $PSScriptRoot)
 }
 $RepositoryRoot = [System.IO.Path]::GetFullPath($RepositoryRoot)
+
+if ($ListOwnedFiles) {
+    Write-Output 'SWLOR.NWN.API/NWScript/**'
+    Write-Output 'SWLOR.NWN.API/NWScriptCustom/**'
+    Write-Output 'SWLOR.NWN.API/Generated/**'
+    Write-Output 'SWLOR.NWN.API.Testing/Generated/**'
+    exit 0
+}
+
 $project = Join-Path $PSScriptRoot 'SWLOR.EngineSeamGenerator'
 
 & dotnet build $project '-p:RunPostBuildEvent=Never' -v q '-clp:ErrorsOnly'

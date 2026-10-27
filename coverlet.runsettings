@@ -17,10 +17,10 @@
         <Configuration>
           <Format>cobertura</Format>
 
-          <!-- Every SWLOR.* production assembly a test run loads; the test and engine-test assemblies are not code
-               under test. -->
+          <!-- Every SWLOR.* production assembly a test run loads; the test, engine-test and test-support (*.Testing)
+               assemblies are not code under test. -->
           <Include>[SWLOR.*]*</Include>
-          <Exclude>[*.Tests]*,[*.Corpus.Tests]*,[SWLOR.Game.Server.EngineTests]*</Exclude>
+          <Exclude>[*.Tests]*,[*.Corpus.Tests]*,[SWLOR.Game.Server.EngineTests]*,[*.Testing]*</Exclude>
 
           <!-- Generated code, matched against the source file path:
                - Feature/BeastDefinition: the generated beast definitions (hundreds of thousands of lines of data).

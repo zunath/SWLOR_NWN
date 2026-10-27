@@ -40,7 +40,7 @@ if [ -z "$OUT" ]; then
 fi
 if [ ${#PROJECTS[@]} -eq 0 ]; then
     PROJECTS=(SWLOR.Game.Server.Tests SWLOR.Game.Server.CharacterizationTests SWLOR.Architecture.Tests
-              SWLOR.CombatSim.Tests SWLOR.CLI.Tests SWLOR.NWN.Formats.Tests)
+              SWLOR.NWN.API.Tests SWLOR.CombatSim.Tests SWLOR.CLI.Tests SWLOR.NWN.Formats.Tests)
 fi
 
 cd "$(dirname "${BASH_SOURCE[0]}")/../.."

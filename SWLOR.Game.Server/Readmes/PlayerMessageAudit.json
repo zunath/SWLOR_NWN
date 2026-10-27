@@ -14,6 +14,34 @@
     "Call": "PostString(player, \" \" + name, centerWindowX + 4, WindowY+3, ScreenAnchor.TopRight, 10.0f, Gui.ColorWhite, Gui.ColorYellow, _idReservation.StartId + 1, Gui.TextName)"
   },
   {
+    "File": "SWLOR.Game.Server/Domain/Economy/GuildService.cs",
+    "Line": 109,
+    "Member": "GiveGuildPoints",
+    "Delivery": "Retained",
+    "Call": "SendMessageToPC(player, $\"You earned {amount} {detail.Name} guild points\")"
+  },
+  {
+    "File": "SWLOR.Game.Server/Domain/Economy/GuildService.cs",
+    "Line": 120,
+    "Member": "GiveGuildPoints",
+    "Delivery": "Retained",
+    "Call": "SendMessageToPC(player, ColorToken.Green(\"You've reached rank \" + dbGuild.Rank + \" in the \" + detail.Name + \"!\"))"
+  },
+  {
+    "File": "SWLOR.Game.Server/Domain/Economy/PlayerMarketService.cs",
+    "Line": 69,
+    "Member": "CheckMarketTill",
+    "Delivery": "Retained",
+    "Call": "SendMessageToPC(player, $\"1 credit is in your market till.\")"
+  },
+  {
+    "File": "SWLOR.Game.Server/Domain/Economy/PlayerMarketService.cs",
+    "Line": 73,
+    "Member": "CheckMarketTill",
+    "Delivery": "Retained",
+    "Call": "SendMessageToPC(player, $\"{dbPlayer.MarketTill} credits are in your market till.\")"
+  },
+  {
     "File": "SWLOR.Game.Server/Domain/Quests/FactionService.cs",
     "Line": 87,
     "Member": "AdjustPlayerFactionStanding",
@@ -4564,20 +4592,6 @@
     "Call": "PostString(player, message, x, y, anchor, lifeTime, ColorWhite, ColorWhite, id, GuiFontName)"
   },
   {
-    "File": "SWLOR.Game.Server/Service/Guild.cs",
-    "Line": 105,
-    "Member": "GiveGuildPoints",
-    "Delivery": "Retained",
-    "Call": "SendMessageToPC(player, $\"You earned {amount} {detail.Name} guild points\")"
-  },
-  {
-    "File": "SWLOR.Game.Server/Service/Guild.cs",
-    "Line": 116,
-    "Member": "GiveGuildPoints",
-    "Delivery": "Retained",
-    "Call": "SendMessageToPC(player, ColorToken.Green(\"You've reached rank \" + dbGuild.Rank + \" in the \" + detail.Name + \"!\"))"
-  },
-  {
     "File": "SWLOR.Game.Server/Service/HoloCom.cs",
     "Line": 93,
     "Member": "OnModuleChat",
@@ -5010,20 +5024,6 @@
     "Member": "SendTell",
     "Delivery": "Retained",
     "Call": "ChatPlugin.SendMessage(channel, message, speaker, DMPresence.GetControlledCreature(target))"
-  },
-  {
-    "File": "SWLOR.Game.Server/Service/PlayerMarket.cs",
-    "Line": 71,
-    "Member": "CheckMarketTill",
-    "Delivery": "Retained",
-    "Call": "SendMessageToPC(player, $\"1 credit is in your market till.\")"
-  },
-  {
-    "File": "SWLOR.Game.Server/Service/PlayerMarket.cs",
-    "Line": 75,
-    "Member": "CheckMarketTill",
-    "Delivery": "Retained",
-    "Call": "SendMessageToPC(player, $\"{dbPlayer.MarketTill} credits are in your market till.\")"
   },
   {
     "File": "SWLOR.Game.Server/Service/PlayerName.cs",

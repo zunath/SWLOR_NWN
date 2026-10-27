@@ -2,6 +2,7 @@ using System.Reflection;
 using System.Text.Json;
 using FluentAssertions;
 using NUnit.Framework;
+using SWLOR.Game.Server.Tests.Support;
 using SWLOR.Game.Server.Enumeration;
 using SWLOR.Game.Server.Feature.GuiDefinition.ViewModel;
 using SWLOR.Game.Server.Feature.LootTableDefinition;
@@ -52,10 +53,26 @@ public class AbandonedStationTests
         }
     }
 
+    // The guild service is an instance behind the static Guild class: the fixture loads it once into a container of its
+    // own and installs that container for every test, as the server's boot does for the facades.
+    private FacadeContainer _facades = null!;
+    private IDisposable _facadeScope = null!;
+
+    [SetUp]
+    public void InstallFacades() => _facadeScope = _facades.Install();
+
+    [TearDown]
+    public void RemoveFacades() => _facadeScope.Dispose();
+
     [OneTimeSetUp]
     public void LoadItemNamesForGuildTaskTitles()
     {
-        Guild.LoadData();
+        _facades = new FacadeContainer();
+        using (_facades.Install())
+        {
+            Guild.LoadData();
+        }
+
         NPCGroup.CacheData();
         var names = Directory.EnumerateFiles(Path.Combine(Root, "Module", "uti"), "*.uti.json")
             .ToDictionary(path => Path.GetFileName(path)[..^".uti.json".Length], path =>
@@ -69,7 +86,11 @@ public class AbandonedStationTests
     }
 
     [OneTimeTearDown]
-    public void RestoreItemNames() => ItemNameCache.SetValue(null, _originalItemNames);
+    public void RestoreItemNames()
+    {
+        ItemNameCache.SetValue(null, _originalItemNames);
+        _facades.Dispose();
+    }
 
     private static JsonElement Load(string type, string name)
     {

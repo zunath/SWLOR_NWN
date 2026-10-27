@@ -669,6 +669,10 @@ namespace SWLOR.Game.Server.Service
                 return;
             }
 
+            // A launch from a dock inside a Small/Medium-only area needs a hull that fits.
+            if (!CanShipEnterArea(player, dbShip, spaceArea))
+                return;
+
             var spacePosition = Vector3(propertyLocation.X, propertyLocation.Y, propertyLocation.Z);
             var location = Location(spaceArea, spacePosition, propertyLocation.Orientation);
 

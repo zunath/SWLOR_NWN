@@ -117,6 +117,19 @@ namespace SWLOR.Game.Server.Feature.DialogDefinition
                         return;
                     }
 
+                    // Capital hulls dock only at the major ports and level 2 player starports, and a ship-only
+                    // location such as the Abandoned Station admits only the hulls its area allows.
+                    var activeShip = DB.Get<PlayerShip>(DB.Get<Player>(playerId).ActiveShipId);
+                    var landingAreaForSize = GetAreaFromLocation(dockPoint.Location);
+                    if (activeShip != null &&
+                        Space.TryRefuseStarport(
+                            player,
+                            Space.GetStarportRefusal(activeShip, landingAreaForSize, dockPoint.IsNPC ? string.Empty : dockPoint.PropertyId),
+                            landingAreaForSize))
+                    {
+                        return;
+                    }
+
                     // There's a chance the starport has been picked up since the menu was loaded.
                     // If we can't locate the starport anymore, give an error message to the player.
                     var dbStarport = DB.Get<WorldProperty>(dockPoint.PropertyId);

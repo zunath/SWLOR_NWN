@@ -56,12 +56,6 @@ namespace SWLOR.Game.Server.Service
 
         // Queries
 
-        private static ShipSize GetShipSize(PlayerShip ship)
-        {
-            var detail = GetShipDetailByItemTag(ship.Status.ItemTag);
-            return ShipDockingRules.ResolveSize(detail?.Size ?? ship.Status.Size, detail?.CapitalShip ?? ship.Status.CapitalShip);
-        }
-
         private static bool HasShipPermission(uint player, string propertyId, PropertyPermissionType type)
         {
             if (GetIsDM(player) || GetIsDMPossessed(player))
@@ -390,13 +384,16 @@ namespace SWLOR.Game.Server.Service
             var hostInSpace = TryGetShipSpaceLocation(host, hostProperty, out var hostLocation);
             var hostHasDock = hostProperty != null && hostProperty.Positions.ContainsKey(PropertyLocationType.DockPosition);
 
-            switch (ShipDockingRules.ChooseUndockPlacement(hostInSpace, hostHasDock, GetShipSize(visitor)))
+            var dockRefusal = !hostInSpace && hostHasDock
+                ? GetStarportRefusal(visitor, hostProperty.Positions[PropertyLocationType.DockPosition])
+                : StarportDockRefusal.None;
+            switch (ShipDockingRules.ChooseUndockPlacement(hostInSpace, hostHasDock, dockRefusal))
             {
                 case ShipUndockPlacement.NoDock:
                     SendMessageToPC(player, ColorToken.Red($"{hostName} is not in space or at a dock, so {visitorName} cannot undock. Notify an admin."));
                     return false;
                 case ShipUndockPlacement.StarportTooSmall:
-                    SendMessageToPC(player, ColorToken.Red($"This starport cannot take {visitorName}. Undock once {hostName} is in space or at a larger starport."));
+                    SendMessageToPC(player, ColorToken.Red($"{ShipAccessRules.DescribeStarportRefusal(dockRefusal, ShipSize.Invalid)} {visitorName} stays aboard until {hostName} is in space or at a dock that takes it."));
                     return false;
                 case ShipUndockPlacement.Starport:
                     DockAtHostStarport(visitor, hostProperty);
@@ -411,6 +408,9 @@ namespace SWLOR.Game.Server.Service
                 SendMessageToPC(player, ColorToken.Red($"{hostName} is between systems. Please try again shortly."));
                 return false;
             }
+
+            if (!CanShipEnterArea(player, visitor, GetAreaFromLocation(hostLocation)))
+                return false;
 
             if (!CanPlayerUseShip(player, visitor.Status))
             {
@@ -566,8 +566,8 @@ namespace SWLOR.Game.Server.Service
             {
                 var visitorName = GetShipName(visitor);
                 if (hostProperty != null &&
-                    hostProperty.Positions.ContainsKey(PropertyLocationType.DockPosition) &&
-                    ShipDockingRules.FitsStarport(GetShipSize(visitor)))
+                    hostProperty.Positions.TryGetValue(PropertyLocationType.DockPosition, out var hostDock) &&
+                    GetStarportRefusal(visitor, hostDock) == StarportDockRefusal.None)
                 {
                     DockAtHostStarport(visitor, hostProperty);
                 }

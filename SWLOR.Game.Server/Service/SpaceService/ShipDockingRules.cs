@@ -94,23 +94,18 @@ namespace SWLOR.Game.Server.Service.SpaceService
         };
 
         /// <summary>
-        /// A starport takes the ship: every NPC dock and every player starport takes Large hulls and smaller (plan
-        /// section 7, "Docking limits by size"). Docked ships are Small or Medium, so this refuses only bad data.
-        /// </summary>
-        public static bool FitsStarport(ShipSize size) => size is ShipSize.Small or ShipSize.Medium or ShipSize.Large;
-
-        /// <summary>
         /// Where an undocking ship goes: beside the host when it is in space, otherwise into the starport where the
-        /// host is docked when that dock takes the visitor's size.
+        /// host is docked when that dock takes the visitor (<see cref="ShipAccessRules.GetStarportRefusal"/>, judged
+        /// by the caller once the host has a dock; pass <see cref="StarportDockRefusal.None"/> otherwise).
         /// </summary>
-        public static ShipUndockPlacement ChooseUndockPlacement(bool hostInSpace, bool hostHasDock, ShipSize visitorSize)
+        public static ShipUndockPlacement ChooseUndockPlacement(bool hostInSpace, bool hostHasDock, StarportDockRefusal dockRefusal)
         {
             if (hostInSpace)
                 return ShipUndockPlacement.Space;
             if (!hostHasDock)
                 return ShipUndockPlacement.NoDock;
 
-            return FitsStarport(visitorSize) ? ShipUndockPlacement.Starport : ShipUndockPlacement.StarportTooSmall;
+            return dockRefusal == StarportDockRefusal.None ? ShipUndockPlacement.Starport : ShipUndockPlacement.StarportTooSmall;
         }
 
         /// <summary>

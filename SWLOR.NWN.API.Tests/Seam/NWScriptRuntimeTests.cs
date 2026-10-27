@@ -105,6 +105,71 @@ public class NWScriptRuntimeTests
     }
 
     [Test]
+    public async Task ChildThatOutlivesItsScope_NeverSeesAnotherFlowsOverride()
+    {
+        using var childStarted = new ManualResetEventSlim();
+        using var otherInstalled = new ManualResetEventSlim();
+        var scopeA = NWScriptRuntime.Override(new FakeNWScript());
+
+        // The child inherits scope A, outlives it, and reads the engine while an unrelated flow holds scope B.
+        var child = Task.Run(() =>
+        {
+            childStarted.Set();
+            otherInstalled.Wait(TimeSpan.FromSeconds(10)).Should().BeTrue();
+            return NWScriptRuntime.Current;
+        });
+        childStarted.Wait(TimeSpan.FromSeconds(10)).Should().BeTrue();
+        scopeA.Dispose();
+
+        var other = Task.Run(() =>
+        {
+            using var scopeB = NWScriptRuntime.Override(new FakeNWScript());
+            otherInstalled.Set();
+            return child.GetAwaiter().GetResult();
+        });
+
+        (await other).Should().BeOfType<NwnCoreNWScript>("a disposed scope no longer applies, and scope B belongs to another flow");
+    }
+
+    [Test]
+    public void ScopesDisposedOutOfOrder_StillResolveToTheLiveOne()
+    {
+        var a = new FakeNWScript();
+        var b = new FakeNWScript();
+
+        var scopeA = NWScriptRuntime.Override(a);
+        var scopeB = NWScriptRuntime.Override(b);
+        scopeA.Dispose();
+        NWScriptRuntime.Current.Should().BeSameAs(b);
+        scopeB.Dispose();
+        NWScriptRuntime.Current.Should().BeOfType<NwnCoreNWScript>();
+
+        scopeA = NWScriptRuntime.Override(a);
+        scopeB = NWScriptRuntime.Override(b);
+        scopeB.Dispose();
+        NWScriptRuntime.Current.Should().BeSameAs(a);
+        scopeA.Dispose();
+        NWScriptRuntime.Current.Should().BeOfType<NwnCoreNWScript>();
+    }
+
+    [Test]
+    public async Task ScopeDisposedInAnotherFlow_DoesNotEraseThatFlowsOwnOverride()
+    {
+        var b = new FakeNWScript();
+        var scopeA = NWScriptRuntime.Override(new FakeNWScript());
+
+        var seen = await Task.Run(() =>
+        {
+            using var scopeB = NWScriptRuntime.Override(b);
+            scopeA.Dispose();
+            return NWScriptRuntime.Current;
+        });
+
+        seen.Should().BeSameAs(b);
+        NWScriptRuntime.Current.Should().BeOfType<NwnCoreNWScript>("scope A is disposed, so the flow that created it falls back to the default");
+    }
+
+    [Test]
     public async Task Override_FlowsIntoWorkStartedInsideTheScope()
     {
         var fake = new FakeNWScript();

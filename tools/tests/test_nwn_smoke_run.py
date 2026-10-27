@@ -118,6 +118,27 @@ class ResultsTests(unittest.TestCase):
         self.assertFalse(smoke.RunResults('smoke', 'full', 'now', passing, teardown={'clean': False}).complete)
 
 
+class AttachTests(unittest.TestCase):
+    def test_steps_are_listed_in_the_order_given_and_blanks_are_ignored(self):
+        self.assertEqual(['combat', 'ability'], smoke.attach_steps('combat, ability,,'))
+
+    def test_an_empty_selection_is_refused_so_nothing_can_pass_by_running_nothing(self):
+        for selection in ('', ' , ,', ','):
+            with self.assertRaises(LiveStackError, msg=repr(selection)):
+                smoke.attach_steps(selection)
+
+    def test_boot_cannot_be_attached_because_it_starts_the_stack(self):
+        with self.assertRaises(LiveStackError) as caught:
+            smoke.attach_steps('login,boot')
+        self.assertIn('starts the stack', str(caught.exception))
+
+    def test_an_unknown_step_is_refused_before_anything_runs(self):
+        run = smoke.SmokeRun(options(server_only=False), 'smoke-test', Path(tempfile.gettempdir()))
+        stack = SimpleNamespace(state={'inputs': {}})
+        with self.assertRaises(LiveStackError):
+            run.attach(stack, ['nonsense'])
+
+
 class ErrorLogTests(unittest.TestCase):
     def test_error_logs_are_listed_by_name_and_absence_means_none(self):
         with tempfile.TemporaryDirectory() as folder:

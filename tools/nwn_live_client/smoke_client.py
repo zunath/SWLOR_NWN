@@ -29,7 +29,7 @@ MAIN_HAND_SLOT = (30, 120)
 EMPTY_GRID_CELL = (100, 240)
 # Hotbar buttons F1 to F12 run along the bottom edge; a bought active ability takes the next free one.
 HOTBAR_Y = 703
-HOTBAR_X = {1: 275, 2: 340, 3: 406, 4: 473}
+HOTBAR_SLOT_X = [round(275 + 66.5 * index) for index in range(12)]
 # The "You Are Dead" dialog: its title bar and the Respawn button.
 DEATH_TITLE = (500, 143, 780, 166)
 RESPAWN_BUTTON = (641, 390)
@@ -100,13 +100,29 @@ def bright_pixels(image, box: tuple[int, int, int, int]) -> int:
     return sum(1 for r, g, b in pixels(image, box) if min(r, g, b) > 200)
 
 
-def region_changed(before, after, center: tuple[int, int], half: int = 14, threshold: int = 40,
-                   minimum: int = 25) -> bool:
-    """True when enough pixels around a point differ between two screenshots (an icon came or went)."""
+def changed_pixels(before, after, center: tuple[int, int], half: int = 14, threshold: int = 40) -> int:
+    """How many pixels around a point differ between two screenshots."""
     from PIL import ImageChops
     box = (max(0, center[0] - half), max(0, center[1] - half), center[0] + half, center[1] + half)
     difference = ImageChops.difference(before.convert('L').crop(box), after.convert('L').crop(box))
-    return sum(1 for value in pixels_gray(difference) if value > threshold) >= minimum
+    return sum(1 for value in pixels_gray(difference) if value > threshold)
+
+
+def region_changed(before, after, center: tuple[int, int], half: int = 14, threshold: int = 40,
+                   minimum: int = 25) -> bool:
+    """True when enough pixels around a point differ between two screenshots (an icon came or went)."""
+    return changed_pixels(before, after, center, half, threshold) >= minimum
+
+
+def new_hotbar_slot(before, after, minimum: int = 40) -> tuple[int, int] | None:
+    """The hotbar button whose picture changed between two screenshots, or None.
+
+    A bought ability is put in the first free hotbar slot, which depends on what the character
+    already has there, so the slot is found by what changed rather than by its number.
+    """
+    counts = [(changed_pixels(before, after, (x, HOTBAR_Y), 22), x) for x in HOTBAR_SLOT_X]
+    best, x = max(counts)
+    return (x, HOTBAR_Y) if best >= minimum else None
 
 
 def pixels_gray(image) -> list[int]:

@@ -189,6 +189,19 @@ class ClientActionTests(unittest.TestCase):
         self.assertEqual(2, len([call for call in calls if call[0] == 'click']))
 
     @unittest.skipIf(Image is None, 'Pillow is not installed')
+    def test_the_hotbar_slot_that_gained_a_picture_is_found_by_what_changed(self):
+        before, after = blank(), blank()
+        for x in smoke_client.HOTBAR_SLOT_X[:2]:
+            ImageDraw.Draw(before).rectangle((x - 18, 690, x + 18, 718), fill=(150, 150, 150))
+            ImageDraw.Draw(after).rectangle((x - 18, 690, x + 18, 718), fill=(150, 150, 150))
+        ImageDraw.Draw(after).rectangle((smoke_client.HOTBAR_SLOT_X[2] - 18, 690, smoke_client.HOTBAR_SLOT_X[2] + 18, 718),
+                                        fill=(30, 220, 90))
+        self.assertEqual((smoke_client.HOTBAR_SLOT_X[2], smoke_client.HOTBAR_Y), smoke_client.new_hotbar_slot(before, after))
+        self.assertIsNone(smoke_client.new_hotbar_slot(before, before.copy()))
+        self.assertEqual(12, len(smoke_client.HOTBAR_SLOT_X))
+        self.assertEqual(275, smoke_client.HOTBAR_SLOT_X[0])
+
+    @unittest.skipIf(Image is None, 'Pillow is not installed')
     def test_an_icon_that_left_its_cell_is_a_change_and_an_untouched_cell_is_not(self):
         before, after = blank(), blank()
         ImageDraw.Draw(before).rectangle((120, 340, 150, 380), fill=(200, 200, 200))
@@ -330,8 +343,8 @@ class StepHelperTests(unittest.TestCase):
                   + [smoke_client.NEUTRAL_POINT, smoke_client.SELF_POINT, smoke_client.MAIN_HAND_SLOT,
                      smoke_client.EMPTY_GRID_CELL, smoke_steps.PERKS_FIRST_ROW, smoke_steps.PERKS_BUY,
                      smoke_steps.CRAFT_START,
-                     smoke_steps.CRAFT_BASIC_SYNTHESIS, smoke_steps.CONVERSATION_FIRST_REPLY,
-                     (smoke_client.HOTBAR_X[3], smoke_client.HOTBAR_Y)]
+                     smoke_steps.CRAFT_BASIC_SYNTHESIS, smoke_steps.CONVERSATION_FIRST_REPLY]
+                  + [(x, smoke_client.HOTBAR_Y) for x in smoke_client.HOTBAR_SLOT_X]
                   + list(smoke_steps.CRAFT_WINDOW_CORNER))
         for x, y in points:
             self.assertTrue(0 <= x < width and 0 <= y < height, (x, y))

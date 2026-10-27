@@ -684,14 +684,27 @@ def run_command(options: argparse.Namespace) -> int:
     return exit_code
 
 
+def attach_steps(selection: str) -> list[str]:
+    """The step ids named by --only; empty, unknown and boot (which starts the stack) are refused."""
+    names = [name.strip() for name in selection.split(',') if name.strip()]
+    if not names:
+        raise LiveStackError('--only names no step. Steps: ' + ', '.join(
+            definition.id for definition in SCENARIO if definition.id != 'boot') + '.')
+    if 'boot' in names:
+        raise LiveStackError('The boot step starts the stack, so it cannot run against one that is already up; '
+                             'use NwnLiveClient.py up to start it.')
+    return names
+
+
 def attach_command(options: argparse.Namespace) -> int:
+    names = attach_steps(options.only)
     require_pillow()
     stack = Stack(options.run_dir)
     stack.ensure_owner()
     values = dict(server_only=False, settle=45.0, character=None)
     results_dir = options.results_dir or stack.run_dir / 'attach'
     run = SmokeRun(argparse.Namespace(**values), f'{stack.project}-attach', results_dir)
-    results = run.attach(stack, [name for name in options.only.split(',') if name])
+    results = run.attach(stack, names)
     for step in results.steps:
         live.log(f'{step.id}: {step.status} {step.detail}')
         for check in step.checks:

@@ -16,8 +16,8 @@ import json
 import re
 import time
 
-from .smoke_client import (EMPTY_GRID_CELL, HOTBAR_X, HOTBAR_Y, MAIN_HAND_SLOT, SELF_POINT, GameClient,
-                           bright_pixels, green_text_present, window_left)
+from .smoke_client import (EMPTY_GRID_CELL, MAIN_HAND_SLOT, SELF_POINT, GameClient, bright_pixels, green_text_present,
+                           new_hotbar_slot, window_left)
 from .stack import LiveStackError
 
 BANK_TERMINAL_POINTS = [(600, 395), (598, 360)]
@@ -224,6 +224,7 @@ def ability(run, step) -> None:
     step.check('the inventory panel is closed', client.ensure_inventory_closed())
     step.check('teleport to the hangar', teleport(client, 'ENTRY_STARTING_WP'))
     mark = client.mark()
+    hotbar_before = client.snapshot()
     client.say('/perks')
     time.sleep(5)
     client.nui_click(*PERKS_FIRST_ROW)
@@ -236,9 +237,12 @@ def ability(run, step) -> None:
     step.check('the purchase is saved on the player record', perks.get('AdrenalStim') == 1, json.dumps(perks))
     run.capture(step, 'perk-bought')
     step.check('the perks window closes', client.close_window(*PERKS_CLOSE, PERKS_TITLE))
+    slot = new_hotbar_slot(hotbar_before, client.snapshot())
+    step.check('the ability appears on the hotbar', slot is not None, str(slot))
+    if slot is None:
+        return
 
     expect(step, 'stim packs are created', spawn(client, 'stim_pack', 3, 'Stim Pack'))
-    slot = (HOTBAR_X[3], HOTBAR_Y)
     mark = client.mark()
     client.nui_click(*slot)
     time.sleep(2)
@@ -384,6 +388,8 @@ def transfer(run, step) -> None:
     """Go to the hangar and back to the offices, proving each area from the server's chat log."""
     client: GameClient = run.client
     name = character_name(run)
+    # Start in the offices whatever the earlier steps left, so each command below is sent from a known area.
+    step.check('teleport to the offices to start', teleport(client, 'Reception'))
     step.check('teleport to the hangar', teleport(client, 'ENTRY_STARTING_WP'))
     run.capture(step, 'hangar')
     step.check('teleport back to the offices', teleport(client, 'Reception'))

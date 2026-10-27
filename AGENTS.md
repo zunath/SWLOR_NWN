@@ -53,6 +53,7 @@ Read the guide before working in its area. `Readmes/README.md` lists every guide
 - NUI windows: `Readmes/NuiLayoutRules.md`, `Readmes/GuiWindowAuthoring.md`
 - Design Bible workbooks (never edit with `openpyxl`): `Readmes/DesignBibleWorkbookRules.md`
 - Module editor: `SWLOR.Toolset/README.md`
+- Maintainability refactor (branch `feature/maintainability-refactor` only; its owner decisions override rules here where they say so): `Readmes/MaintainabilityRefactorStatus.md`, then `Readmes/MaintainabilityRefactorPlan.md`
 
 ## Skills
 

@@ -56,6 +56,11 @@ namespace SWLOR.Game.Server.Service
             if (!IsPlayerInSpaceMode(creature))
                 return false;
 
+            // Ships docked aboard detach where this one died and take back the players who belong to them. Those
+            // players are not part of the escape pods: no XP debt and no jump to the dock.
+            var returnedToDockedShips = DetachDockedShips(creature);
+            _shipCombatAt.Remove(creature);
+
             var playerId = GetObjectUUID(creature);
             var dbPlayer = DB.Get<Player>(playerId);
             var dbPlayerShip = DB.Get<PlayerShip>(dbPlayer.ActiveShipId);
@@ -69,7 +74,10 @@ namespace SWLOR.Game.Server.Service
             var hasDestination = TryResolveEscapePodDestination(dbProperty, out var podLocation, out var podType);
 
             // Everyone at the stations and viewports of the ship leaves the station where the ship died.
-            var stationCrew = _crewAssignments.Where(x => x.Value.Pilot == creature).Select(x => x.Key).ToList();
+            var stationCrew = _crewAssignments
+                .Where(x => x.Value.Pilot == creature && !returnedToDockedShips.Contains(x.Key))
+                .Select(x => x.Key)
+                .ToList();
             foreach (var crewMember in stationCrew)
             {
                 LeaveCrewStation(crewMember, returnToConsole: false);
@@ -161,11 +169,13 @@ namespace SWLOR.Game.Server.Service
             _playersInSpace.Remove(creature);
             ExecuteScript("space_exit", creature);
 
-            // Everyone inside the ship instance rides the pods too.
+            // Everyone inside the ship instance rides the pods too, found by area because the instance player list
+            // is not reliable.
             var passengers = new List<uint>();
             if (Property.TryGetLoadedInstance(dbPlayerShip.PropertyId, out var instance))
             {
-                passengers.AddRange(instance.Players.Where(GetIsObjectValid));
+                passengers.AddRange(GetPlayersInArea(instance.Area)
+                    .Where(x => GetIsObjectValid(x) && !returnedToDockedShips.Contains(x)));
             }
 
             DestroyPilotClone(creature);

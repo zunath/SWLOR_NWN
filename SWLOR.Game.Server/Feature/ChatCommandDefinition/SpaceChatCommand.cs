@@ -12,6 +12,8 @@ namespace SWLOR.Game.Server.Feature.ChatCommandDefinition
         public Dictionary<string, ChatCommandDetail> BuildChatCommands()
         {
             ExitSpaceCommand();
+            DockCommand();
+            UndockCommand();
             ShipHudCommand();
 
             return _builder.Build();
@@ -20,10 +22,17 @@ namespace SWLOR.Game.Server.Feature.ChatCommandDefinition
         private void ExitSpaceCommand()
         {
             _builder.Create("exit")
-                .Description("Exits the pilot seat when controlling a starship.")
+                .Description("Exits the pilot seat when controlling a starship, or leaves a crew station or viewport.")
                 .Permissions(AuthorizationLevel.All)
                 .Action((user, target, location, args) =>
                 {
+                    // Crew can leave their station at any time, even in a fight; the ship flies on without them.
+                    if (Space.IsAtCrewStation(user))
+                    {
+                        Space.LeaveCrewStation(user, "You leave your station and return to the console.");
+                        return;
+                    }
+
                     if (!Space.IsPlayerInSpaceMode(user))
                     {
                         SendMessageToPC(user, "This command can only be used while piloting a starship.");
@@ -38,6 +47,22 @@ namespace SWLOR.Game.Server.Feature.ChatCommandDefinition
 
                     Space.WarpPlayerInsideShip(user);
                 });
+        }
+
+        private void DockCommand()
+        {
+            _builder.Create("dock")
+                .Description("Docks your Small or Medium starship aboard the player's Large or Capital ship you target in space.")
+                .Permissions(AuthorizationLevel.All)
+                .Action((user, target, location, args) => Space.DockWithTarget(user));
+        }
+
+        private void UndockCommand()
+        {
+            _builder.Create("undock")
+                .Description("Undocks your starship from the ship you stand aboard.")
+                .Permissions(AuthorizationLevel.All)
+                .Action((user, target, location, args) => Space.UndockFromInterior(user));
         }
 
         private void ShipHudCommand()

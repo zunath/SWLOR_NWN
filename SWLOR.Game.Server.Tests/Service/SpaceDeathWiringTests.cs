@@ -61,6 +61,32 @@ public class SpaceDeathWiringTests
     }
 
     [Test]
+    public void EscapePods_LeaveOutThePlayersReturnedToDockedShipsAndFindPassengersByArea()
+    {
+        var death = ReadServerSource("Service", "SpaceDeath.cs");
+
+        death.IndexOf("DetachDockedShips(creature)", StringComparison.Ordinal)
+            .Should().BeGreaterThan(0)
+            .And.BeLessThan(death.IndexOf("TakeShipKiller(creature)", StringComparison.Ordinal));
+        death.Should().Contain("!returnedToDockedShips.Contains(x.Key)");
+        death.Should().Contain("GetPlayersInArea(instance.Area)");
+        death.Should().Contain("!returnedToDockedShips.Contains(x)");
+        death.Should().Contain("ReturnDroidCrew(dbPlayerShip, \"was destroyed\")");
+    }
+
+    [Test]
+    public void PropertyInstancePlayers_AreAddedOnTheEnteringPlayer()
+    {
+        var property = ReadServerSource("Service", "Property.cs");
+        var start = property.IndexOf("public static void EnterPropertyInstance()", StringComparison.Ordinal);
+        var end = property.IndexOf("public static void ExitPropertyInstance()", StringComparison.Ordinal);
+        var body = property.Substring(start, end - start);
+
+        body.Should().Contain("GetEnteringObject()");
+        body.Should().NotContain("GetExitingObject()");
+    }
+
+    [Test]
     public void RepairBill_UsesTheHullMultiplier()
     {
         var view = ReadServerSource("Feature", "GuiDefinition", "ViewModel", "ShipManagementViewModel.cs");

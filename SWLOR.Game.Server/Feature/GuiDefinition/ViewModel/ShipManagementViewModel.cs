@@ -837,9 +837,11 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
             return DB.Search(permissionQuery).FirstOrDefault();
         }
 
+        /// <summary>Entering needs Enter Property, or a ship docked aboard that the player may pilot.</summary>
         private bool CanBoardShip(string propertyId)
         {
-            return Property.HasPropertyPermission(Player, propertyId, PropertyPermissionType.EnterProperty);
+            return Property.HasPropertyPermission(Player, propertyId, PropertyPermissionType.EnterProperty) ||
+                   Space.HasShipDockedAboard(Player, propertyId);
         }
 
         private int CalculateRepairBill(PlayerShip ship)
@@ -1031,7 +1033,8 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
 
                 var permission = GetShipPermission(ship.PropertyId);
                 var hasAccess = permission != null;
-                var currentLocation = GetShipLocation(property, out var isDockInstanceLoading);
+                var isDockedAboard = Space.IsDockedAboardHost(ship, out var hostName);
+                var currentLocation = GetShipLocation(ship, property, out var isDockInstanceLoading);
                 var isAtCurrentLocation = currentLocation == GetArea(Player);
                 var isInSpace = property.Positions.ContainsKey(PropertyLocationType.CurrentPosition);
                 var gold = GetGold(Player);
@@ -1453,11 +1456,13 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
                 IsNameEnabled = hasAccess && permission.Permissions.GetValueOrDefault(PropertyPermissionType.RenameProperty) && isAtCurrentLocation;
                 IsRefitEnabled = hasAccess && permission.Permissions.GetValueOrDefault(PropertyPermissionType.RefitShip) && isAtCurrentLocation;
                 IsPermissionsEnabled = hasAccess && permission.GrantPermissions.Any(x => x.Value) && isAtCurrentLocation;
-                ShipLocation = isInSpace
-                    ? "In Space"
-                    : isDockInstanceLoading
-                        ? "Docked (loading...)"
-                        : GetName(currentLocation);
+                ShipLocation = isDockedAboard
+                    ? $"Docked aboard {hostName}"
+                    : isInSpace
+                        ? "In Space"
+                        : isDockInstanceLoading
+                            ? "Docked (loading...)"
+                            : GetName(currentLocation);
                 IsRepairEnabled = (ship.Status.Shield < ship.Status.MaxShield ||
                                   ship.Status.Hull < ship.Status.MaxHull) &&
                                   gold >= repairPrice &&
@@ -1483,11 +1488,13 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
             }
         }
 
-        private uint GetShipLocation(WorldProperty property, out bool isDockInstanceLoading)
+        private uint GetShipLocation(PlayerShip ship, WorldProperty property, out bool isDockInstanceLoading)
         {
             isDockInstanceLoading = false;
 
-            if (property.Positions.ContainsKey(PropertyLocationType.CurrentPosition))
+            // A ship docked aboard another travels with it and is reached through that ship.
+            if (property.Positions.ContainsKey(PropertyLocationType.CurrentPosition) ||
+                Space.IsDockedAboardHost(ship, out _))
             {
                 return OBJECT_INVALID;
             }
@@ -1524,7 +1531,7 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
                 var shipId = _shipIds[SelectedShipIndex];
                 var dbShip = DB.Get<PlayerShip>(shipId);
                 var dbProperty = DB.Get<WorldProperty>(dbShip.PropertyId);
-                var shipLocation = GetShipLocation(dbProperty, out _);
+                var shipLocation = GetShipLocation(dbShip, dbProperty, out _);
                 IsUnregisterEnabled = shipLocation == GetArea(Player) && playerId == dbProperty.OwnerPlayerId;
                 IsRemoveAccessEnabled = IsOtherShipsToggled && playerId != dbShip.OwnerPlayerId;
             }
@@ -1674,6 +1681,7 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
                     if (dbPlayer.ActiveShipId == shipId)
                         dbPlayer.ActiveShipId = Guid.Empty.ToString();
 
+                    Space.UndockAllToStarport(dbShip, "was unregistered");
                     dbProperty.IsQueuedForDeletion = true;
 
                     DB.Delete<PlayerShip>(shipId);

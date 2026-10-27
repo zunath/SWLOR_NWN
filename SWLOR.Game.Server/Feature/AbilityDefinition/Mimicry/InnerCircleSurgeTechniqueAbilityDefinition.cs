@@ -34,6 +34,9 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.Mimicry
                 damagePercentAdjustment: InnateAbility.ComboBonus(50, typeof(ShockStatusEffect)),
                 afterSuccessfulHit: InnateAbility.ChainOnHit(InnateAbilityProfile.Mimicry, 3, 6f, 16, typeof(ShockStatusEffect), 30, CombatDamageType.Electrical))
                 .DisplaysVisualEffectOnSuccessfulImpact(VisualEffect.Vfx_Ability_InnerCircleSurgeTechnique)
+                // The authored burst has no sound and replaces the stock lightning, so play the
+                // lightning (with its thunder crack) on every damaged target as well.
+                .DisplaysVisualEffectOnDamage(VisualEffect.Vfx_Imp_Lightning_M)
                 .SkillType(SkillType.Mimicry)
                 .Level(1)
                 .CombatImpactDamageAbility(AbilityType.Social)

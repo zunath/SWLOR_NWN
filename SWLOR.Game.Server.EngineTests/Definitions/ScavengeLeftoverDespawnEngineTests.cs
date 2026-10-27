@@ -1,6 +1,8 @@
+using System.Collections.Generic;
 using System.Threading.Tasks;
 using SWLOR.Game.Server.Core.Async;
 using SWLOR.Game.Server.EngineTests.Framework;
+using SWLOR.NWN.API.Engine;
 using SWLOR.NWN.API.NWScript.Enum;
 
 namespace SWLOR.Game.Server.EngineTests.Definitions
@@ -26,7 +28,8 @@ namespace SWLOR.Game.Server.EngineTests.Definitions
                 ctx.Assert(naturalDespawn.HasValue && naturalDespawn.Value > DateTime.UtcNow.AddMinutes(60),
                     $"The node should start with its table's natural despawn (90-150 minutes), but it was {naturalDespawn}.");
 
-                await AddLeftoverItem(ctx, node);
+                var leftoverItem = await AddLeftoverItem(ctx, node);
+                var nodeLocation = GetLocation(node);
 
                 // Closing an unsearched node leaves its natural despawn alone.
                 await Close(ctx, node);
@@ -55,6 +58,7 @@ namespace SWLOR.Game.Server.EngineTests.Definitions
                 await ctx.WaitUntilAsync(() => !GetIsObjectValid(node), 5f, "the leftover node to be destroyed");
                 ctx.Assert(!Spawn.IsSpawnActiveForTesting(spawnId), "The despawned node should free its spawn slot.");
                 ctx.AssertEqual(1, Spawn.GetQueuedSpawnCountForTesting(spawnId), "Queued respawns after the leftover node despawns");
+                await AssertNoRemainsLeft(ctx, leftoverItem, nodeLocation);
 
                 await ctx.ExecuteInCreatureContextAsync(GetModule(), () => Spawn.ProcessResourceDespawnsForTesting(closedAt.AddMinutes(Spawn.LeftoverResourceDespawnMinutes + 2)));
                 ctx.AssertEqual(1, Spawn.GetQueuedSpawnCountForTesting(spawnId), "Queued respawns after another despawn pass");
@@ -116,6 +120,29 @@ namespace SWLOR.Game.Server.EngineTests.Definitions
             }
         }
 
+        [EngineTest("A spawned node despawned with items through DespawnAndQueueRespawn leaves no remains bag", Category = "ScavengeLeftoverDespawn", TimeoutSeconds = 30f)]
+        public static async Task DespawnAndQueueRespawnLeavesNoRemains(EngineTestContext ctx)
+        {
+            var node = CreateNode(ctx);
+            var spawnId = Spawn.RegisterResourceSpawnForTesting(node, SpawnTableId);
+            try
+            {
+                var leftoverItem = await AddLeftoverItem(ctx, node);
+                var nodeLocation = GetLocation(node);
+
+                var despawned = false;
+                await ctx.ExecuteInCreatureContextAsync(GetModule(), () => despawned = Spawn.DespawnAndQueueRespawn(node));
+                ctx.Assert(despawned, "DespawnAndQueueRespawn should despawn a spawned node.");
+                await ctx.WaitUntilAsync(() => !GetIsObjectValid(node), 5f, "the node to be destroyed");
+                ctx.AssertEqual(1, Spawn.GetQueuedSpawnCountForTesting(spawnId), "Queued respawns after the node despawns");
+                await AssertNoRemainsLeft(ctx, leftoverItem, nodeLocation);
+            }
+            finally
+            {
+                Spawn.RemoveSpawnForTesting(spawnId);
+            }
+        }
+
         [EngineTest("A hand-placed scavenge point left with items is not despawned", Category = "ScavengeLeftoverDespawn", TimeoutSeconds = 30f)]
         public static async Task HandPlacedNodeIsLeftAlone(EngineTestContext ctx)
         {
@@ -135,6 +162,34 @@ namespace SWLOR.Game.Server.EngineTests.Definitions
             await ctx.ExecuteInCreatureContextAsync(GetModule(), () => item = CreateItemOnObject(LeftoverItemResref, node));
             ctx.Assert(GetIsObjectValid(item), $"Item '{LeftoverItemResref}' should be created in the node.");
             return item;
+        }
+
+        /// <summary>
+        /// The engine drops a destroyed placeable's inventory into a "Remains" bag. A despawned node must
+        /// take its items with it instead.
+        /// </summary>
+        private static async Task AssertNoRemainsLeft(EngineTestContext ctx, uint leftoverItem, Location nodeLocation)
+        {
+            // Give the engine a few frames to create any bag.
+            for (var frame = 0; frame < 5; frame++)
+            {
+                await NwTask.NextFrame();
+            }
+
+            ctx.Assert(!GetIsObjectValid(leftoverItem), "The despawned node's leftover item should be destroyed, not dropped.");
+
+            var remains = new List<string>();
+            for (var nth = 1; ; nth++)
+            {
+                var placeable = GetNearestObjectToLocation(nodeLocation, ObjectType.Placeable, nth);
+                if (!GetIsObjectValid(placeable) || GetDistanceBetweenLocations(nodeLocation, GetLocation(placeable)) > 3f)
+                    break;
+
+                if (GetHasInventory(placeable) && GetIsObjectValid(GetFirstItemInInventory(placeable)))
+                    remains.Add($"{GetName(placeable)} ({GetResRef(placeable)})");
+            }
+
+            ctx.Assert(remains.Count == 0, $"No container holding items should be left where the node despawned, but found: {string.Join(", ", remains)}.");
         }
 
         private static Task Close(EngineTestContext ctx, uint node)

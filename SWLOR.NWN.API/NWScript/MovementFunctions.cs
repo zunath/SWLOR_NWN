@@ -14,9 +14,7 @@ namespace SWLOR.NWN.API.NWScript
         /// <param name="oObject">The target object (defaults to OBJECT_SELF)</param>
         public static void SetFacing(float fDirection, uint oObject = OBJECT_INVALID)
         {
-            if (oObject == OBJECT_INVALID)
-                oObject = OBJECT_SELF;
-            global::NWN.Core.NWScript.SetFacing(fDirection, oObject);
+            NWScriptRuntime.Current.SetFacing(fDirection, oObject);
         }
 
         /// <summary>
@@ -27,7 +25,7 @@ namespace SWLOR.NWN.API.NWScript
         /// <returns>The facing direction, or -1.0f on error</returns>
         public static float GetFacing(uint oTarget)
         {
-            return global::NWN.Core.NWScript.GetFacing(oTarget);
+            return NWScriptRuntime.Current.GetFacing(oTarget);
         }
 
         /// <summary>
@@ -39,7 +37,7 @@ namespace SWLOR.NWN.API.NWScript
         public static void ActionMoveAwayFromLocation(Location lMoveAwayFrom, bool bRun = false,
             float fMoveAwayRange = 40.0f)
         {
-            global::NWN.Core.NWScript.ActionMoveAwayFromLocation(lMoveAwayFrom, bRun ? 1 : 0, fMoveAwayRange);
+            NWScriptRuntime.Current.ActionMoveAwayFromLocation(lMoveAwayFrom, bRun, fMoveAwayRange);
         }
 
         /// <summary>
@@ -49,7 +47,7 @@ namespace SWLOR.NWN.API.NWScript
         /// <param name="nWalkStraightLineToPoint">Whether to walk in a straight line to the point (defaults to true)</param>
         public static void JumpToObject(uint oToJumpTo, bool nWalkStraightLineToPoint = true)
         {
-            global::NWN.Core.NWScript.JumpToObject(oToJumpTo, nWalkStraightLineToPoint ? 1 : 0);
+            NWScriptRuntime.Current.JumpToObject(oToJumpTo, nWalkStraightLineToPoint);
         }
     }
 }

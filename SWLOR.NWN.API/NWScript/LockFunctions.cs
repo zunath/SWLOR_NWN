@@ -9,7 +9,7 @@ namespace SWLOR.NWN.API.NWScript
         /// <returns>TRUE if a key is required</returns>
         public static bool GetLockKeyRequired(uint oObject)
         {
-            return global::NWN.Core.NWScript.GetLockKeyRequired(oObject) != 0;
+            return NWScriptRuntime.Current.GetLockKeyRequired(oObject);
         }
 
         /// <summary>
@@ -19,7 +19,7 @@ namespace SWLOR.NWN.API.NWScript
         /// <returns>The key tag</returns>
         public static string GetLockKeyTag(uint oObject)
         {
-            return global::NWN.Core.NWScript.GetLockKeyTag(oObject);
+            return NWScriptRuntime.Current.GetLockKeyTag(oObject);
         }
 
         /// <summary>
@@ -29,7 +29,7 @@ namespace SWLOR.NWN.API.NWScript
         /// <returns>TRUE if the lock is lockable</returns>
         public static bool GetLockLockable(uint oObject)
         {
-            return global::NWN.Core.NWScript.GetLockLockable(oObject) != 0;
+            return NWScriptRuntime.Current.GetLockLockable(oObject);
         }
 
         /// <summary>
@@ -39,7 +39,7 @@ namespace SWLOR.NWN.API.NWScript
         /// <returns>The unlock DC</returns>
         public static int GetLockUnlockDC(uint oObject)
         {
-            return global::NWN.Core.NWScript.GetLockUnlockDC(oObject);
+            return NWScriptRuntime.Current.GetLockUnlockDC(oObject);
         }
 
         /// <summary>
@@ -49,7 +49,7 @@ namespace SWLOR.NWN.API.NWScript
         /// <returns>The lock DC</returns>
         public static int GetLockLockDC(uint oObject)
         {
-            return global::NWN.Core.NWScript.GetLockLockDC(oObject);
+            return NWScriptRuntime.Current.GetLockLockDC(oObject);
         }
     }
 }

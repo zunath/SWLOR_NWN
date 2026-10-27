@@ -12,7 +12,7 @@ namespace SWLOR.NWN.API.NWScript
         /// <param name="fSeconds">The duration of the animation in seconds (default: 0.0)</param>
         public static void PlayAnimation(Animation nAnimation, float fSpeed = 1.0f, float fSeconds = 0.0f)
         {
-            global::NWN.Core.NWScript.PlayAnimation((int)nAnimation, fSpeed, fSeconds);
+            NWScriptRuntime.Current.PlayAnimation(nAnimation, fSpeed, fSeconds);
         }
     }
 }

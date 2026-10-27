@@ -319,7 +319,7 @@ public class SpaceCrewStationTests
         space.Should().Contain("var source = SpaceCrew.GetStatSource(activator);");
         space.Should().Contain("ActivateShipModuleCore(ship, feat, false, activator, seat);");
         space.Should().Contain("ReleaseShipCrew(player, ");
-        space.Should().Contain("DestroyShipCrew(creature);");
+        space.Should().Contain("DestroyShipCrew(creature, returnedToDockedShips);");
         space.Should().Contain("RestoreCrewMemberAfterLogin(player);");
         space.Should().Contain("CrewMemberDisconnected(player);");
 

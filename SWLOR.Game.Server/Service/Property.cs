@@ -282,6 +282,7 @@ namespace SWLOR.Game.Server.Service
                 PropertyPermissionType.EditCategories,
                 PropertyPermissionType.PilotShip,
                 PropertyPermissionType.CrewStation,
+                PropertyPermissionType.Dock,
                 PropertyPermissionType.RefitShip
             };
 
@@ -814,6 +815,17 @@ namespace SWLOR.Game.Server.Service
 
             SendPropertyLoadingMessage(player);
             return false;
+        }
+
+        /// <summary>
+        /// Queues an unloaded instanced property to load with no player waiting on it, such as the interior of a ship
+        /// docked aboard another that may need it later.
+        /// </summary>
+        /// <param name="propertyId">The property Id to load.</param>
+        public static void RequestInstanceLoad(string propertyId)
+        {
+            if (GetPropertyLoadState(propertyId) == PropertyLoadState.Unloaded)
+                QueuePropertyLoad(propertyId, PropertyLoadPriority.PlayerRequest);
         }
 
         private static bool QueuePropertyLoad(string propertyId, PropertyLoadPriority priority)

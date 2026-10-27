@@ -3525,6 +3525,7 @@ namespace SWLOR.Game.Server.Service.CraftService
         AscendantPowerGlove = 6285,
         OphidianPowerGlove = 6286,
         ChiroPowerGlove = 6287,
+        SithPowerGlove = 6288,
         BasicTwinPistol = 6289,
         FieldTwinPistol = 6290,
         TitanTwinPistol = 6291,

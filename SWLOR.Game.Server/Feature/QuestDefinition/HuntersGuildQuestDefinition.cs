@@ -117,6 +117,8 @@ namespace SWLOR.Game.Server.Feature.QuestDefinition
             BuildItemTask("hun_tsk_428", "tiger_blood", 6, 2);
             BuildItemTask("hun_tsk_429", "tiger_meat", 6, 2);
             BuildItemTask("hun_tsk_430", "q_tiger_paw", 3, 2);
+            BuildItemTask("hun_tsk_431", "byysk_pglove", 3, 2);
+            BuildItemTask("hun_tsk_432", "byysk_twinpistol", 3, 2);
 
             // Tier 4 (Rank 3)
             BuildKillTask("hun_tsk_600", NPCGroupType.Tatooine_Womprat, 10, 3);
@@ -155,6 +157,8 @@ namespace SWLOR.Game.Server.Feature.QuestDefinition
             BuildItemTask("hun_tsk_633", "tusken_meat", 6, 3);
             BuildItemTask("hun_tsk_634", "tusken_bones", 6, 3);
             BuildItemTask("hun_tsk_635", "tusken_blood", 6, 3);
+            BuildItemTask("hun_tsk_636", "raider_pglove", 3, 3);
+            BuildItemTask("hun_tsk_637", "raider_twinpistol", 3, 3);
 
             // Tier 5 (Rank 4)
             BuildItemTask("hun_tsk_800", "diamond", 3, 4);

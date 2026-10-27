@@ -69,6 +69,8 @@ namespace SWLOR.Game.Server.Feature.QuestDefinition
 			BuildItemTask(builder, "smth_tsk_033", "com_cap", 1, 0);
 			BuildItemTask(builder, "smth_tsk_034", "com_gloves", 1, 0);
 			BuildItemTask(builder, "smth_tsk_035", "com_boots", 1, 0);
+			BuildItemTask(builder, "smth_tsk_036", "b_pglove", 1, 0);
+			BuildItemTask(builder, "smth_tsk_037", "b_twinpistol", 1, 0);
 
             // Tier 2 (Rank 1)
             BuildItemTask(builder, "smth_tsk_200", "tit_greatsword", 1, 1);
@@ -106,6 +108,8 @@ namespace SWLOR.Game.Server.Feature.QuestDefinition
             BuildItemTask(builder, "smth_tsk_232", "val_cap", 1, 1);
             BuildItemTask(builder, "smth_tsk_233", "val_gloves", 1, 1);
             BuildItemTask(builder, "smth_tsk_234", "val_boots", 1, 1);
+            BuildItemTask(builder, "smth_tsk_235", "tit_pglove", 1, 1);
+            BuildItemTask(builder, "smth_tsk_236", "tit_twinpistol", 1, 1);
 
             // Tier 3 (Rank 2)
             BuildItemTask(builder, "smth_tsk_400", "del_greatsword", 1, 2);
@@ -143,6 +147,8 @@ namespace SWLOR.Game.Server.Feature.QuestDefinition
             BuildItemTask(builder, "smth_tsk_432", "for_cap", 1, 2);
             BuildItemTask(builder, "smth_tsk_433", "for_gloves", 1, 2);
             BuildItemTask(builder, "smth_tsk_434", "for_boots", 1, 2);
+            BuildItemTask(builder, "smth_tsk_435", "del_pglove", 1, 2);
+            BuildItemTask(builder, "smth_tsk_436", "del_twinpistol", 1, 2);
 
             // Tier 4 (Rank 3)
             BuildItemTask(builder, "smth_tsk_600", "proto_greatsword", 1, 3);
@@ -180,6 +186,8 @@ namespace SWLOR.Game.Server.Feature.QuestDefinition
             BuildItemTask(builder, "smth_tsk_632", "sur_cap", 1, 3);
             BuildItemTask(builder, "smth_tsk_633", "sur_gloves", 1, 3);
             BuildItemTask(builder, "smth_tsk_634", "sur_boots", 1, 3);
+            BuildItemTask(builder, "smth_tsk_635", "proto_pglove", 1, 3);
+            BuildItemTask(builder, "smth_tsk_636", "proto_twinpistol", 1, 3);
 
             // Tier 5 (Rank 4)
             BuildItemTask(builder, "smth_tsk_800", "oph_greatsword", 1, 4);
@@ -217,6 +225,8 @@ namespace SWLOR.Game.Server.Feature.QuestDefinition
             BuildItemTask(builder, "smth_tsk_832", "sup_cap", 1, 4);
             BuildItemTask(builder, "smth_tsk_833", "sup_gloves", 1, 4);
             BuildItemTask(builder, "smth_tsk_834", "sup_boots", 1, 4);
+            BuildItemTask(builder, "smth_tsk_835", "oph_pglove", 1, 4);
+            BuildItemTask(builder, "smth_tsk_836", "oph_twinpistol", 1, 4);
 
             return builder.Build();
         }

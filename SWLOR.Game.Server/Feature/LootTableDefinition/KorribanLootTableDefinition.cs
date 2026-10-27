@@ -226,6 +226,7 @@ namespace SWLOR.Game.Server.Feature.LootTableDefinition
                 .AddItem("sith_gswd", 5)
                 .AddItem("sith_spear", 5)
                 .AddItem("sith_katar", 5)
+                .AddItem("sith_pglove", 5)
                 .AddItem("sith_staff", 5)
                 .AddItem("sith_pistol", 5)
                 .AddItem("sith_twinpistol", 5)
@@ -369,11 +370,13 @@ namespace SWLOR.Game.Server.Feature.LootTableDefinition
                 .AddItem("electroblade_s", 1)
                 .AddItem("sc_longsword", 1)
                 .AddItem("sc_katar", 1)
+                .AddItem("sc_pglove", 1)
                 .AddItem("sc_staff", 1)
                 .AddItem("sc_twinblade", 1)
                 .AddItem("sc_spear", 1)
                 .AddItem("sc_rifle", 1)
                 .AddItem("sc_pistol", 1)
+                .AddItem("sc_twinpistol", 1)
                 .AddItem("sc_shuriken", 1);
 
             _builder.Create("KORRIBAN_MASTER_RESOURCE")

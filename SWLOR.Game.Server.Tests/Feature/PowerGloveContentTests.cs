@@ -52,7 +52,7 @@ public class PowerGloveContentTests
     {
         var references = new WeaponRecipes().BuildRecipes();
         var recipes = new PowerGloveRecipes().BuildRecipes();
-        recipes.Should().HaveCount(10);
+        recipes.Should().HaveCount(11);
         foreach (var (type, recipe) in recipes)
         {
             var referenceType = Enum.Parse<RecipeType>(type.ToString().Replace("PowerGlove", "Katar"));

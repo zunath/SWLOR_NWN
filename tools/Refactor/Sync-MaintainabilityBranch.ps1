@@ -183,7 +183,7 @@ function Invoke-Sync {
         else {
             Write-Host "Merging $masterShort ($commitCount master commit(s) since $($mergeBase.Substring(0, 9))) ..."
             $merge = Invoke-Git -Repository $root -Arguments @('merge', '--no-ff', '--no-commit', $masterSha) -AllowFailure
-            $unmerged = Get-UnmergedFiles $root
+            $unmerged = @(Get-UnmergedFiles $root)
             if ($merge.ExitCode -ne 0 -and $unmerged.Count -eq 0) {
                 Invoke-Git -Repository $root -Arguments @('merge', '--abort') -AllowFailure | Out-Null
                 throw (New-Failure "git merge failed without conflicts: $($merge.Error.Trim()) $($merge.Output.Trim())" 4)
@@ -236,7 +236,7 @@ function Invoke-Sync {
         }
     }
     else {
-        $left = Get-UnmergedFiles $root
+        $left = @(Get-UnmergedFiles $root)
         if ($left.Count -gt 0) { throw (New-Failure ("Unresolved files remain; resolve and `git add` them first:`n  " + ($left -join "`n  ")) 4) }
         Write-Host "Resuming the merge of $masterShort."
     }

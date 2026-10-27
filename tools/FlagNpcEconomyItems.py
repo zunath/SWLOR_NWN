@@ -79,6 +79,8 @@ def collect():
         "SlicingCacheSmitheryRecipes.cs", "SlicingCacheCookingRecipes.cs", "TraceFuseRecipes.cs",
         "SlicingTerminalFurnitureRecipes.cs", "ConcentratedVenomRecipes.cs",
     )
+    # Space revamp catalogs: each hull and module Tag is the output resref of a RevampStarshipRecipes recipe.
+    revamp_catalogs = ("RevampModuleCatalog.cs", "RevampShipCatalog.cs")
     for f in glob.glob(os.path.join(ROOT, "SWLOR.Game.Server", "**", "*.cs"), recursive=True):
         # Relative to ROOT so running from inside a worktree does not skip every file.
         if os.path.join(".claude", "worktrees") in os.path.relpath(f, ROOT):
@@ -92,6 +94,9 @@ def collect():
                 add(obtainable, m)
         if f.endswith(literal_registries):
             for m in re.findall(r'"([a-z0-9_]{2,16})"', s):
+                add(obtainable, m)
+        if f.endswith(revamp_catalogs):
+            for m in re.findall(r'\bTag = "([^"]+)"', s):
                 add(obtainable, m)
 
     for r in ("beast_dna", "beast_egg", "blueprint", "survival_knife",

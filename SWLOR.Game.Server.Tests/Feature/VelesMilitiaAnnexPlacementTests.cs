@@ -164,4 +164,23 @@ public class VelesMilitiaAnnexPlacementTests
         var droidSoundsets = new[] { 903, 910, 924, 935, 944 };
         droidSoundsets.Should().NotContain(Value(Load("utc", blueprint), "SoundSetFile").GetInt32());
     }
+
+    [Test]
+    public void CapstoneHumanoids_DoNotUseDroidSoundsets()
+    {
+        // Races 150 (Robot) and 167 (Droid) are real droids and keep the droid voice.
+        var droidRaces = new[] { 150, 167 };
+        var droidSoundsets = new[] { 903, 910, 924, 935, 944 };
+        var offenders = Directory.GetFiles(Path.Combine(Root, "Module", "utc"), "cp_*.utc.json")
+            .Select(f => Path.GetFileName(f).Replace(".utc.json", string.Empty))
+            .Where(name =>
+            {
+                var utc = Load("utc", name);
+                return !droidRaces.Contains(Value(utc, "Race").GetInt32())
+                    && droidSoundsets.Contains(Value(utc, "SoundSetFile").GetInt32());
+            })
+            .ToList();
+
+        offenders.Should().BeEmpty();
+    }
 }

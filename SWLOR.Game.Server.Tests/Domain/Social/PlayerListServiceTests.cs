@@ -40,6 +40,8 @@ public class PlayerListServiceTests
     private IDisposable _engineScope = null!;
     private IDisposable _chatScope = null!;
     private IDisposable _playerScope = null!;
+    private FacadeContainer _container = null!;
+    private IDisposable _containerScope = null!;
 
     private readonly List<uint> _online = new();
     private int _cursor;
@@ -86,6 +88,9 @@ public class PlayerListServiceTests
         _engineScope = NWScriptRuntime.Override(_engine);
         _chatScope = ChatPluginRuntime.Override(_chat);
         _playerScope = PlayerPluginRuntime.Override(_playerPlugin);
+        // The service calls the DMPresence facade, which resolves its instance from a container.
+        _container = new FacadeContainer();
+        _containerScope = _container.Install();
     }
 
     [TearDown]
@@ -94,6 +99,8 @@ public class PlayerListServiceTests
         // A refresh the test queued sits in the shared scheduler; run it here, with the fake engine, so it never
         // reaches another test.
         Scheduler.Process();
+        _containerScope.Dispose();
+        _container.Dispose();
         _playerScope.Dispose();
         _chatScope.Dispose();
         _engineScope.Dispose();

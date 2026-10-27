@@ -227,6 +227,22 @@ class StepHelperTests(unittest.TestCase):
         with patch.object(smoke_steps.time, 'sleep'):
             self.assertFalse(smoke_steps.teleport(client, 'NO_SUCH_TAG'))
 
+    def test_a_dropped_click_is_repeated_until_its_effect_shows_in_the_chat_log(self):
+        answers = iter([None, None, 'Acquired Item: Basic Pistol'])
+        clicks = []
+        client = SimpleNamespace(mark=lambda: 0, nui_click=lambda x, y: clicks.append((x, y)),
+                                 wait_for=lambda pattern, mark, timeout=20, poll=2: next(answers))
+        self.assertEqual('Acquired Item: Basic Pistol',
+                         smoke_steps.click_expect(client, 10, 20, 'Acquired Item', attempts=3))
+        self.assertEqual([(10, 20)] * 3, clicks)
+
+    def test_a_click_that_never_takes_effect_gives_up_after_its_attempts(self):
+        clicks = []
+        client = SimpleNamespace(mark=lambda: 0, nui_click=lambda x, y: clicks.append((x, y)),
+                                 wait_for=lambda pattern, mark, timeout=20, poll=2: None)
+        self.assertIsNone(smoke_steps.click_expect(client, 1, 2, 'x', attempts=2))
+        self.assertEqual(2, len(clicks))
+
     def test_the_attack_log_names_the_weapon_and_attack_type(self):
         lines = ['x', '2026-10-27 17:20:28 +00:00 [INF] DAMAGE: Attacker: Agan, PC?: 1, Defender Malfunctioning Patrol '
                  'Droid, object type 5, Attack type: 2, weapon Basic Rifle',

@@ -64,13 +64,29 @@ def teleport(client: GameClient, tag: str) -> bool:
     tips = client.loading_screens()
     mark = client.mark()
     client.say(f'/tpwp {tag}')
-    if client.wait_for('Invalid waypoint tag', mark, 4, 1):
+    if client.wait_for('Invalid waypoint tag', mark, 3, 1):
         return False
     if client.wait_area_change(tips, timeout=14):
         client.wait_loaded()
     else:
         time.sleep(4)
     return True
+
+
+def click_expect(client: GameClient, x: int, y: int, pattern: str, attempts: int = 3, wait: float = 8) -> str | None:
+    """Click a window control until the chat log shows its effect; the matching line, or None.
+
+    The client drops a click on a control now and then (a tooltip is up, the window is busy), and
+    the server cannot tell it was missed, so only a repeated click that is harmless when the first
+    one landed may be used here.
+    """
+    for _ in range(attempts):
+        mark = client.mark()
+        client.nui_click(x, y)
+        found = client.wait_for(pattern, mark, wait, 1.5)
+        if found:
+            return found
+    return None
 
 
 def reset_windows(client: GameClient) -> None:
@@ -104,16 +120,6 @@ def attack_target(client: GameClient, victim: str, attempts: int = 3) -> tuple[i
     return None
 
 
-def equip_weapon(client: GameClient, resref: str, name: str) -> bool:
-    """Create a weapon, find its icon in the inventory grid and drag it onto the main-hand slot."""
-    center = client.locate_new_item(lambda: client.say(f'/spawnitem {resref} 1'))
-    if center is None:
-        return False
-    client.drag(center[0], center[1], *MAIN_HAND_SLOT)
-    time.sleep(3)
-    return True
-
-
 def player_record(run) -> dict:
     uuid = run.stack.state['character']['uuid']
     return json.loads(run.redis('JSON.GET', f'Player:{uuid}', '.'))
@@ -130,15 +136,27 @@ def attack_log_has(client: GameClient, mark: int, attack_type: int, weapon: str)
 # ---------------------------------------------------------------- steps
 
 def combat(run, step) -> None:
-    """A rifle (ranged) attack, then a knife (melee) attack, on mynocks that come to the character."""
+    """A rifle (ranged) attack, then a knife (melee) attack, on mynocks that come to the character.
+
+    Both weapons are created and located in the quiet hangar first: an inventory icon is found by
+    comparing two screenshots, which only works while the scene behind the panel holds still.
+    """
     client: GameClient = run.client
     client.ensure_alive()
+    step.check('teleport to the hangar', teleport(client, 'ENTRY_STARTING_WP'))
     step.check('inventory panel opens', client.ensure_inventory_open())
+    unequip_main_hand(client)
+    rifle = client.locate_new_item(lambda: client.say('/spawnitem b_rifle 1'))
+    knife = client.locate_new_item(lambda: client.say('/spawnitem b_knife 1'))
+    step.check('the rifle appears in the inventory', rifle is not None, str(rifle))
+    step.check('the knife appears in the inventory', knife is not None, str(knife))
+    if rifle is None or knife is None:
+        return
     attack_mark = len(client.attack_lines())
 
-    # Ranged. Emptying the main hand first makes the step independent of what the character held.
-    unequip_main_hand(client)
-    step.check('a rifle is created and equipped', equip_weapon(client, 'b_rifle', 'Basic Rifle'))
+    # Ranged.
+    client.drag(*rifle, *MAIN_HAND_SLOT)
+    time.sleep(3)
     step.check('teleport to the mynock spawn point', teleport(client, 'CZ220_MYNOCKS'))
     mark = client.mark()
     expect(step, 'the target appears and engages', client.wait_for(r'Mynock (attacks|uses|readies)', mark, 70, 3))
@@ -152,11 +170,13 @@ def combat(run, step) -> None:
     run.capture(step, 'ranged')
     attack_mark = len(client.attack_lines())
 
-    # Melee: swap the rifle for a knife, then fight the next mynock that comes. The rifle may have
-    # killed the first one, so the character goes back to the spawn point for another.
+    # Melee: put the rifle back where it was, equip the knife, and fight the next mynock that comes.
+    # The rifle may have killed the first one, so the character goes back to the spawn point for another.
     client.ensure_alive()
-    step.check('the rifle is unequipped', unequip_main_hand(client))
-    step.check('a knife is created and equipped', equip_weapon(client, 'b_knife', 'Basic Knife'))
+    client.drag(*MAIN_HAND_SLOT, *rifle)
+    time.sleep(3)
+    client.drag(*knife, *MAIN_HAND_SLOT)
+    time.sleep(3)
     mark = client.mark()
     if not client.wait_for(r'Mynock (attacks|uses|readies)', mark, 25, 3):
         teleport(client, 'ENTRY_STARTING_WP')
@@ -176,11 +196,10 @@ def combat(run, step) -> None:
     step.detail = 'Ranged rifle and melee knife attacks landed and their damage was logged.'
 
 
-def unequip_main_hand(client: GameClient) -> bool:
-    """Drag the main-hand weapon back into the inventory grid; True when the slot looks empty again."""
+def unequip_main_hand(client: GameClient) -> None:
+    """Drag whatever is in the main hand into the inventory grid."""
     client.drag(*MAIN_HAND_SLOT, *EMPTY_GRID_CELL)
     time.sleep(3)
-    return True
 
 
 def ability(run, step) -> None:
@@ -256,17 +275,16 @@ def storage(run, step) -> None:
         time.sleep(2)
         left = window_left(client.snapshot()) or left
     mark = client.mark()
-    client.nui_click(left + BANK_DEPOSIT[0], BANK_DEPOSIT[1])
-    expect(step, 'the deposit asks for an item', client.wait_for(r'Please click on an item within your inventory\.', mark, 15))
+    expect(step, 'the deposit asks for an item',
+           click_expect(client, left + BANK_DEPOSIT[0], BANK_DEPOSIT[1], r'Please click on an item within your inventory\.'))
     client.click(*center)
     expect(step, 'the item leaves the inventory', client.wait_for(r'Lost Item: Basic Pistol', mark, 15))
     after = len(run.redis('KEYS', 'InventoryItem:*').split())
     step.check('the bank record exists', after == before + 1, f'{before} -> {after}')
     run.capture(step, 'deposited')
 
-    mark = client.mark()
-    client.nui_click(left + BANK_FIRST_WITHDRAW[0], BANK_FIRST_WITHDRAW[1])
-    expect(step, 'the item returns to the inventory', client.wait_for(r'Acquired Item: Basic Pistol', mark, 15))
+    expect(step, 'the item returns to the inventory',
+           click_expect(client, left + BANK_FIRST_WITHDRAW[0], BANK_FIRST_WITHDRAW[1], r'Acquired Item: Basic Pistol'))
     final = len(run.redis('KEYS', 'InventoryItem:*').split())
     step.check('the bank record is gone', final == before, f'{after} -> {final}')
     run.capture(step, 'withdrawn')

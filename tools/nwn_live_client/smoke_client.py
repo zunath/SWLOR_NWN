@@ -110,7 +110,7 @@ def window_left(image, y: int = 300) -> int | None:
 
 
 def new_item_center(before, after, region: tuple[int, int, int, int] = INVENTORY_GRID, cell: int = 8,
-                    threshold: int = 20, cell_minimum: int = 12) -> tuple[int, int] | None:
+                    threshold: int = 20, cell_minimum: int = 6) -> tuple[int, int] | None:
     """The centre of the biggest area of a region that changed between two screenshots.
 
     A freshly created item appears as a new icon in the inventory grid; the changed area is
@@ -145,7 +145,7 @@ def new_item_center(before, after, region: tuple[int, int, int, int] = INVENTORY
                         queue.append(neighbour)
         if len(group) > len(best):
             best = group
-    if len(best) < 3:
+    if len(best) < 2:
         return None
     left = min(column for column, _ in best) * cell
     right = (max(column for column, _ in best) + 1) * cell

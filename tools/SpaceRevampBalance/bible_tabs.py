@@ -131,6 +131,17 @@ def starships():
          "the module's rank 100%; droid crew by tier (best droid 50% at a Gunner seat, 75% at Engineer and Sensors; tier-1 "
          "combat droid 25%). A solo pilot runs only Helm slots. Crew Morale (+10%) and the captain's Leadership (+1% per 10 "
          "ranks, up to +5%) raise crew effectiveness, capped at 105%."],
+        ["Droid crew", "Effectiveness 25% + (best - 25%) x (tier - 1) / 4", *[""] * 19, "Best is 75% at the Engineer and Sensors seats and 50% at Gunner seats: Gunner tiers 1-5 work at 25 / 31.25 / 37.5 / 43.75 / 50%, "
+         "Engineer and Sensors at 25 / 37.5 / 50 / 62.5 / 75%. Crew Morale and the captain's Leadership then apply, capped at 105%. A droid of tier N works modules up to rank N x 10 - 5 "
+         "(5, 15, 25, 35, 45). Droid attributes are 16 + 0.2 x level. A player who takes a droid's seat bumps the droid back to its owner."],
+        ["Power routing", "Engineer seat, player only; the mode can change once per 6 s", *[""] * 19, "Weapons: -25% weapon capacitor use, -10% shield regen, -10% speed. "
+         "Shields: +15% shield regen, -5% weapon damage, -10% speed. Engines: +20% speed, -5% weapon damage, -10% shield regen. Balanced: no change. "
+         "No mode raises weapon damage, so none kills faster than Balanced."],
+        ["PvP", "Ground rules", *[""] * 19, "A player's ship attacks another player's ship only when the attacker has the target marked hostile (player list) and the area's PvP setting allows it "
+         "(No PvP refuses; Party PvP spares the attacker's party). Remote repair, capacitor transfer and Command orders skip a hostile player. The PvP damage ramp and the halved hard crowd control apply."],
+        ["Ship destruction", "Escape pods", *[""] * 19, "Everyone aboard (pilot, station crew, viewport watchers, passengers) is ejected alive to the dock the ship is towed to and takes the normal ground XP debt. "
+         "Modules drop (65% each) only when another player destroys the ship in Wild Space; everywhere else they stay installed. The wreck is left at 1 hull. Droids return to their owners."],
+        ["Repair bill", "50 per missing shield point + 100 per missing hull point, then x the Repair x column", *[""] * 19, "Small x1.0, Medium x1.5, Large x2.5, Capital x4.0, after the starport (5% per level) and Social (2% per point over 10, up to 20%) discounts; 90% off at most."],
     ])
     s.title("Size rules")
     s.table(["Size", "Gate", "Advanced", "Weapon output", "", "", "", "Module output", "Shield regen", "", "", "", "", "", "", "", "", "", "", "", "", "Notes"], [

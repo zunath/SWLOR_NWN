@@ -3879,6 +3879,17 @@ namespace SWLOR.Game.Server.Service
             return remaining;
         }
 
+        /// <summary>
+        /// Ends a temporary immunity the creature holds, with the shared hard crowd-control immunity when the
+        /// type is one of the hard crowd-control types.
+        /// </summary>
+        public static void RemoveTemporaryImmunity(uint target, ImmunityType immunity)
+        {
+            RemoveEffectByTag(target, GetTemporaryImmunityEffectTag(immunity));
+            if (HardCrowdControlImmunityTypes.Contains(immunity))
+                RemoveEffectByTag(target, GetTemporaryImmunityEffectTag(ImmunityType.HardCrowdControl));
+        }
+
         public static bool HasTemporaryImmunity(uint target, ImmunityType immunity)
         {
             return HasEffectByTag(target, GetTemporaryImmunityEffectTag(immunity));

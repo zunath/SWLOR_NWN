@@ -6489,6 +6489,58 @@ namespace SWLOR.Game.Server.Service.StatService
         [StatType(StatTypeCategory.BeneficialWhenPositive)]
         SpaceLauncherAreaMinTargetsStaminaRestore = 1188,
 
+        /// <summary>
+        /// Percent adjustment to a ship's Defense, read only by ship combat. The ground Defense statuses are typed
+        /// Physical, which a ship does not read, so the statuses a space ability applies set this as well.
+        /// </summary>
+        [StatType(StatTypeCategory.BeneficialWhenPositive)]
+        SpaceDefensePercentAdjustment = 1189,
+
+        /// <summary>
+        /// Percent adjustment to the damage a ship takes, read only by ship combat. Positive values increase damage
+        /// taken; negative values reduce it.
+        /// </summary>
+        [StatType(StatTypeCategory.BeneficialWhenNegative)]
+        SpaceDamageTakenPercentAdjustment = 1190,
+
+        /// <summary>Extra threat a Defiance hit generates (Anger Strike).</summary>
+        [StatType(StatTypeCategory.BeneficialWhenPositive)]
+        SpaceDefianceEnmityBonus = 1191,
+
+        /// <summary>DMG the next weapon hit after a Defiance hit deals (Anger Strike).</summary>
+        [StatType(StatTypeCategory.BeneficialWhenPositive)]
+        SpaceDefianceNextAttackDamageBonus = 1192,
+
+        /// <summary>Seconds after using Defiance that the next-hit bonus can be used.</summary>
+        [StatType(StatTypeCategory.BeneficialWhenPositive, StatTypeAggregation.Maximum)]
+        SpaceDefianceNextAttackDamageDurationSeconds = 1193,
+
+        /// <summary>
+        /// Non-zero turns an incoming critical hit on a ship into a normal hit that rolls minimum damage (Critical Ward).
+        /// </summary>
+        [StatType(StatTypeCategory.BeneficialWhenPositive, StatTypeAggregation.Maximum)]
+        SpaceIncomingCriticalHitDowngradeToMinimumDamage = 1194,
+
+        /// <summary>Cooldown in milliseconds for SpaceIncomingCriticalHitDowngradeToMinimumDamage.</summary>
+        [StatType(StatTypeCategory.NonBeneficial)]
+        SpaceIncomingCriticalHitDowngradeCooldownMilliseconds = 1195,
+
+        /// <summary>Hull percent a ship must be reduced below to gain its low hull Defense (Unbreakable).</summary>
+        [StatType(StatTypeCategory.NonBeneficial, StatTypeAggregation.Maximum)]
+        SpaceLowHullDefenseThresholdPercent = 1196,
+
+        /// <summary>Percent Defense gained when the hull drops below the threshold.</summary>
+        [StatType(StatTypeCategory.BeneficialWhenPositive)]
+        SpaceLowHullDefensePercentAdjustment = 1197,
+
+        /// <summary>Seconds the low hull Defense lasts.</summary>
+        [StatType(StatTypeCategory.NonBeneficial)]
+        SpaceLowHullDefenseDurationSeconds = 1198,
+
+        /// <summary>Seconds before the low hull Defense can trigger again.</summary>
+        [StatType(StatTypeCategory.NonBeneficial)]
+        SpaceLowHullDefenseCooldownSeconds = 1199,
+
 
     }
 

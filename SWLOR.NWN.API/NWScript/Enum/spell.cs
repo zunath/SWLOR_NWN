@@ -1724,5 +1724,17 @@ namespace SWLOR.NWN.API.NWScript.Enum
         OrdnanceConcussionBarrage2 = 1788,
         OrdnanceShipStance = 1789,
         OrdnanceSaturationStrike = 1790,
+
+        BulwarkShieldRam1 = 1791,
+        BulwarkShieldRam2 = 1792,
+        BulwarkShieldRam3 = 1793,
+        BulwarkShieldRam4 = 1794,
+        BulwarkDefiance1 = 1795,
+        BulwarkDefiance2 = 1796,
+        BulwarkDefiance3 = 1797,
+        BulwarkHail1 = 1798,
+        BulwarkHail2 = 1799,
+        BulwarkShipStance = 1800,
+        BulwarkInvincible = 1801,
     }
 }

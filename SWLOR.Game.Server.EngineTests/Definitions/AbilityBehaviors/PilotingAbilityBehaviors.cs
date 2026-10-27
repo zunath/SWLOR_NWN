@@ -13,7 +13,7 @@ namespace SWLOR.Game.Server.EngineTests.Definitions.AbilityBehaviors
     public class PilotingAbilityBehaviors : IAbilityBehaviorSource
     {
         private const string SpaceReason =
-            "A space ability fires the pilot's ship weapons at an enemy ship, which the ability fixtures do not " +
+            "A space ability acts from the pilot's ship against an enemy ship, which the ability fixtures do not " +
             "provide (no ship, weapon module or hostile ship in space). The numbers are unit tested.";
 
         [EngineTest("Piloting ability behaviors", Category = "AbilityBehavior", TimeoutSeconds = 1800f)]
@@ -34,7 +34,11 @@ namespace SWLOR.Game.Server.EngineTests.Definitions.AbilityBehaviors
                 FeatType.OrdnanceVolley4, FeatType.OrdnanceFlareMissile1, FeatType.OrdnanceFlareMissile2,
                 FeatType.OrdnanceFlareMissile3, FeatType.OrdnanceConcussionBarrage1,
                 FeatType.OrdnanceConcussionBarrage2, FeatType.OrdnanceShipStance,
-                FeatType.OrdnanceSaturationStrike
+                FeatType.OrdnanceSaturationStrike,
+                FeatType.BulwarkShieldRam1, FeatType.BulwarkShieldRam2, FeatType.BulwarkShieldRam3,
+                FeatType.BulwarkShieldRam4, FeatType.BulwarkDefiance1, FeatType.BulwarkDefiance2,
+                FeatType.BulwarkDefiance3, FeatType.BulwarkHail1, FeatType.BulwarkHail2,
+                FeatType.BulwarkShipStance, FeatType.BulwarkInvincible
             }
             .Select(feat => new AbilityBehaviorCase { Feat = feat, SkipReason = SpaceReason })
             .ToList();

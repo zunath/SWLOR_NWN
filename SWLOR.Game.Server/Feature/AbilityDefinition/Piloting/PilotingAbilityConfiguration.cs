@@ -24,6 +24,12 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.Piloting
         public const float LauncherRange = 50f;
 
         /// <summary>
+        /// How far a goad reaches: the Armor Provoke's 15 m scaled to space. A goad fires no weapon, so it states
+        /// its own range.
+        /// </summary>
+        public static readonly float GoadRange = SpaceRadii.FromGround(15f);
+
+        /// <summary>
         /// Sets up an ability that fires at one target: a hostile single-target cast whose validation turns the
         /// ship away before the STM is paid when no weapon of the family can fire at the target. The caller names
         /// the ability, sets its level and recast, and passes the impact.
@@ -105,6 +111,82 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.Piloting
                 .HasTargetingSphere(targetingSpell, radius, AbilityTargetingFlags.HarmsEnemies)
                 .HasCustomValidation((activator, target, _, _) => SpaceAbilities.GetFireError(activator, target, filter))
                 .HasImpactAction(impact);
+        }
+
+        /// <summary>
+        /// Sets up an ability that arms a rider: the ship's next landed weapon hit carries its effect. It has no
+        /// target and no cursor, and its validation turns a ship with no weapon away before the STM is paid.
+        /// </summary>
+        public static AbilityBuilder ConfigureRider(AbilityBuilder ability, int stamina, AbilityImpactAction impact)
+        {
+            return ability
+                .SkillType(SkillType.Piloting)
+                .CanBeUsedInSpace()
+                .IsCastedAbility()
+                .HasActivationDelay(0f)
+                .RequirementStamina(stamina)
+                .HasCustomValidation((activator, _, _, _) => GetRiderError(activator))
+                .HasImpactAction(impact);
+        }
+
+        /// <summary>
+        /// Sets up a goad at one enemy ship: a hostile single-target cast that fires no weapon and costs no STM.
+        /// </summary>
+        public static AbilityBuilder ConfigureGoad(AbilityBuilder ability, AbilityImpactAction impact)
+        {
+            return ability
+                .SkillType(SkillType.Piloting)
+                .CanBeUsedInSpace()
+                .IsCastedAbility()
+                .IsHostileAbility()
+                .IsSingleTargetAbility()
+                .RequiresTarget()
+                .HasMaxRange(GoadRange)
+                .HasActivationDelay(0f)
+                .BreaksStealth()
+                .HasCustomValidation((activator, target, _, _) => GetGoadError(activator, target))
+                .HasImpactAction(impact);
+        }
+
+        /// <summary>
+        /// Sets up a goad at an enemy ship and the enemy ships near it: a hostile area cast whose cursor picks the
+        /// ship, fires no weapon and costs no STM.
+        /// </summary>
+        public static AbilityBuilder ConfigureAreaGoad(
+            AbilityBuilder ability,
+            Spell targetingSpell,
+            float radius,
+            AbilityImpactAction impact)
+        {
+            return ability
+                .SkillType(SkillType.Piloting)
+                .CanBeUsedInSpace()
+                .IsCastedAbility()
+                .IsHostileAbility()
+                .IsAreaAbility()
+                .RequiresTarget()
+                .HasMaxRange(GoadRange)
+                .HasActivationDelay(0f)
+                .BreaksStealth()
+                .HasTargetingSphere(targetingSpell, radius, AbilityTargetingFlags.HarmsEnemies)
+                .HasCustomValidation((activator, target, _, _) => GetGoadError(activator, target))
+                .HasImpactAction(impact);
+        }
+
+        /// <summary>Why a rider cannot be armed, or an empty string when it can: the ship needs a weapon to hit with.</summary>
+        public static string GetRiderError(uint activator)
+        {
+            return SpaceAbilities.GetLongestWeaponRange(activator) > 0f
+                ? string.Empty
+                : "Your ship has no weapon to hit with.";
+        }
+
+        /// <summary>Why a goad cannot be cast at the target, or an empty string when it can.</summary>
+        public static string GetGoadError(uint activator, uint target)
+        {
+            return GetIsObjectValid(target) && target != activator && Space.IsShipInSpace(target) && GetIsEnemy(target, activator)
+                ? string.Empty
+                : "Your target must be an enemy ship.";
         }
 
         /// <summary>Why a burst around the pilot's ship cannot fire, or an empty string when it can.</summary>

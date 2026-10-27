@@ -190,6 +190,9 @@ namespace SWLOR.Game.Server.Service.PerkService
 
         [PerkCategory("Piloting - Ace", true)]
         PilotingAce = 65,
+
+        [PerkCategory("Piloting - Ordnance", true)]
+        PilotingOrdnance = 66,
     }
 
     public class PerkCategoryAttribute : Attribute

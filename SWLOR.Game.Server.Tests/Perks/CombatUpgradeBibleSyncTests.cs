@@ -2032,7 +2032,7 @@ public class CombatUpgradeBibleSyncTests
         {
             var spaceRadius = description.Contains("near your ship")
                 ? SpaceRadii.NearShip
-                : description.Contains("near the target")
+                : description.Contains("near the target") || description.Contains("enemies near it")
                     ? SpaceRadii.NearTarget
                     : (float?)null;
             if (spaceRadius != null && Math.Abs(targeting.SizeX - spaceRadius.Value) < 0.001f)
@@ -2921,6 +2921,7 @@ public class CombatUpgradeBibleSyncTests
             ("Mimicry", "Mimicry") => PerkCategoryType.Mimicry,
             ("Piloting", "Shipwright") => PerkCategoryType.Piloting,
             ("Piloting (Revamp)", "Ace") => PerkCategoryType.PilotingAce,
+            ("Piloting (Revamp)", "Ordnance") => PerkCategoryType.PilotingOrdnance,
             ("Pistol", "Gambler") => PerkCategoryType.PistolGunslinger,
             ("Pistol", "Skirmisher") => PerkCategoryType.PistolSkirmisher,
             ("Twin Pistol", "Barrage") => PerkCategoryType.TwinPistolBarrage,

@@ -1712,5 +1712,17 @@ namespace SWLOR.NWN.API.NWScript.Enum
         AcePointBlankBurst2 = 1777,
         AceStance = 1778,
         AceInTheHole = 1779,
+
+        OrdnanceVolley1 = 1780,
+        OrdnanceVolley2 = 1781,
+        OrdnanceVolley3 = 1782,
+        OrdnanceVolley4 = 1783,
+        OrdnanceFlareMissile1 = 1784,
+        OrdnanceFlareMissile2 = 1785,
+        OrdnanceFlareMissile3 = 1786,
+        OrdnanceConcussionBarrage1 = 1787,
+        OrdnanceConcussionBarrage2 = 1788,
+        OrdnanceShipStance = 1789,
+        OrdnanceSaturationStrike = 1790,
     }
 }

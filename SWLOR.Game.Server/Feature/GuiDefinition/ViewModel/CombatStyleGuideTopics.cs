@@ -102,9 +102,10 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
                 Topic("Piloting", "Choose Piloting perks for abilities that fire your ship's weapons and for evasion while you fly.",
                     new[]
                     {
-                        Style("Piloting - Ace", "Ace fires your ship's energy weapons for disabling shots, double shots, and a burst around your ship, and rewards evasion, movement, and critical hits.")
+                        Style("Piloting - Ace", "Ace fires your ship's energy weapons for disabling shots, double shots, and a burst around your ship, and rewards evasion, movement, and critical hits."),
+                        Style("Piloting - Ordnance", "Ordnance fires your ship's launchers as area ordnance: burning volleys, blinding flares, concussion bursts, fragmentation, and saturation fire.")
                     },
-                    "Perks", "Combat Basics", "Pistol Combat Styles", "Rifle Combat Styles"),
+                    "Perks", "Combat Basics", "Pistol Combat Styles", "Rifle Combat Styles", "Throwing Combat Styles"),
 
                 Topic("Pistol", "Choose Pistol for shots that reward changing targets or disrupt opponents.",
                     new[]

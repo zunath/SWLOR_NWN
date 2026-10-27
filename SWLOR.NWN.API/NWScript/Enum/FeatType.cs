@@ -2879,5 +2879,6 @@ namespace SWLOR.NWN.API.NWScript.Enum
         ProspectorTrait = 3347,
         DeepCoreTrait = 3348,
         RapidExtractionTrait = 3349,
+        ShipAllWeapons = 3350,
 }
 }

@@ -58,17 +58,40 @@ function Get-HostExecutable {
     return (Get-Process -Id $PID).Path
 }
 
-# Starts a process. Without -Stream stdout and stderr are captured; with it the child writes to this console.
-# Environment values of $null remove the variable from the child's environment.
-function Invoke-Process {
+if (-not ('SwlorRefactor.LineCollector' -as [type])) {
+    # Collects output lines from a child process on the threads .NET raises the events on (a PowerShell script block
+    # cannot handle them there). Plain C# 5 so Windows PowerShell 5.1 can compile it.
+    Add-Type -Language CSharp -TypeDefinition @'
+using System.Collections.Concurrent;
+using System.Diagnostics;
+namespace SwlorRefactor
+{
+    public sealed class LineCollector
+    {
+        public readonly ConcurrentQueue<string> Lines = new ConcurrentQueue<string>();
+
+        public DataReceivedEventHandler Handler
+        {
+            get { return OnData; }
+        }
+
+        private void OnData(object sender, DataReceivedEventArgs e)
+        {
+            if (e.Data != null) Lines.Enqueue(e.Data);
+        }
+    }
+}
+'@
+}
+
+function New-ProcessStartInfo {
     param(
-        [Parameter(Mandatory)][string]$FilePath,
-        [string[]]$Arguments = @(),
+        [string]$FilePath,
+        [string[]]$Arguments,
         [string]$WorkingDirectory,
         [hashtable]$Environment,
-        [switch]$Stream
+        [switch]$Redirect
     )
-
     $info = New-Object System.Diagnostics.ProcessStartInfo
     $info.FileName = $FilePath
     $info.Arguments = ConvertTo-ArgumentString $Arguments
@@ -84,13 +107,27 @@ function Invoke-Process {
             }
         }
     }
-    if (-not $Stream) {
+    if ($Redirect) {
         $info.RedirectStandardOutput = $true
         $info.RedirectStandardError = $true
         $info.StandardOutputEncoding = $script:Utf8
         $info.StandardErrorEncoding = $script:Utf8
     }
+    return $info
+}
 
+# Starts a process. Without -Stream stdout and stderr are captured; with it the child writes to this console.
+# Environment values of $null remove the variable from the child's environment.
+function Invoke-Process {
+    param(
+        [Parameter(Mandatory)][string]$FilePath,
+        [string[]]$Arguments = @(),
+        [string]$WorkingDirectory,
+        [hashtable]$Environment,
+        [switch]$Stream
+    )
+
+    $info = New-ProcessStartInfo -FilePath $FilePath -Arguments $Arguments -WorkingDirectory $WorkingDirectory -Environment $Environment -Redirect:(-not $Stream)
     $process = [System.Diagnostics.Process]::Start($info)
     $outputTask = $null
     $errorTask = $null
@@ -114,6 +151,47 @@ function Invoke-Process {
         $lines = @($output -split "`r?`n" | Where-Object { $_ -ne '' })
     }
     return [pscustomobject]@{ ExitCode = $exitCode; Output = $output; Error = $errorText; Lines = $lines }
+}
+
+function Write-CollectedLines {
+    param($Collectors, $Into)
+    foreach ($collector in $Collectors) {
+        $line = $null
+        while ($collector.Lines.TryDequeue([ref]$line)) {
+            Write-Host $line
+            $Into.Add($line)
+        }
+    }
+}
+
+# Runs a process, prints its output (stdout and stderr) as it arrives and also returns it as Lines.
+function Invoke-ProcessTee {
+    param(
+        [Parameter(Mandatory)][string]$FilePath,
+        [string[]]$Arguments = @(),
+        [string]$WorkingDirectory,
+        [hashtable]$Environment
+    )
+    $info = New-ProcessStartInfo -FilePath $FilePath -Arguments $Arguments -WorkingDirectory $WorkingDirectory -Environment $Environment -Redirect
+    $out = New-Object SwlorRefactor.LineCollector
+    $err = New-Object SwlorRefactor.LineCollector
+    $all = New-Object 'System.Collections.Generic.List[string]'
+    $process = New-Object System.Diagnostics.Process
+    $process.StartInfo = $info
+    $process.add_OutputDataReceived($out.Handler)
+    $process.add_ErrorDataReceived($err.Handler)
+    [void]$process.Start()
+    $process.BeginOutputReadLine()
+    $process.BeginErrorReadLine()
+    while (-not $process.HasExited) {
+        Write-CollectedLines -Collectors @($out, $err) -Into $all
+        Start-Sleep -Milliseconds 200
+    }
+    $process.WaitForExit()
+    Write-CollectedLines -Collectors @($out, $err) -Into $all
+    $exitCode = $process.ExitCode
+    $process.Dispose()
+    return [pscustomobject]@{ ExitCode = $exitCode; Lines = $all.ToArray() }
 }
 
 function Invoke-Git {
@@ -295,14 +373,18 @@ function Read-TrxSummary {
     }
 }
 
-# Runs `dotnet test --no-build` for one project. Returns the project's name, the filter, counts and failed tests.
-# A run that produced no result file, or exited non-zero with no failed test, counts as failed.
+# Runs `dotnet test --no-build` for one project and returns its counts and failed tests. The run is ok when the result
+# file shows no failed test and dotnet exited 0. NUnit still runs the OneTimeSetUp of a fixture whose tests were all
+# excluded, and dotnet then exits 1 although every test that ran passed (the excluded Roslyn-harness fixtures); that exit
+# code is accepted only when every fixture that failed its setup is one of -ExcludedClasses (the same rule the
+# maintainability CI uses). A run without a result file is never ok.
 function Invoke-DotnetTest {
     param(
         [Parameter(Mandatory)][string]$Project,
         [Parameter(Mandatory)][string]$ResultsDirectory,
         [string]$Configuration = 'Debug',
         [string]$Filter,
+        [string[]]$ExcludedClasses = @(),
         [hashtable]$Environment
     )
     $name = [System.IO.Path]::GetFileNameWithoutExtension($Project)
@@ -318,30 +400,45 @@ function Invoke-DotnetTest {
     if ($Environment) { foreach ($key in $Environment.Keys) { $merged[$key] = $Environment[$key] } }
 
     $started = Get-Date
-    $run = Invoke-Process -FilePath (Resolve-Executable 'dotnet') -Arguments $arguments -Environment $merged -Stream
+    $run = Invoke-ProcessTee -FilePath (Resolve-Executable 'dotnet') -Arguments $arguments -Environment $merged
     $seconds = [int]((Get-Date) - $started).TotalSeconds
 
+    $setupFailed = @($run.Lines | ForEach-Object { if ($_ -match '^Setup failed for test fixture (\S+)') { $Matches[1] } })
+    $unexpected = @($setupFailed | Where-Object { $ExcludedClasses -notcontains ($_ -split '\.')[-1] })
+
     $summary = Read-TrxSummary $trx
-    $ok = ($run.ExitCode -eq 0)
-    if ($null -eq $summary) {
-        $summary = [pscustomobject]@{ Total = 0; Passed = 0; Failed = 0; NotExecuted = 0; FailedTests = @() }
-        $ok = $false
+    $hasResults = ($null -ne $summary)
+    $ok = $false
+    $note = ''
+    if ($hasResults) {
+        if ($summary.Failed -eq 0 -and $run.ExitCode -eq 0) {
+            $ok = $true
+        }
+        elseif ($summary.Failed -eq 0 -and $setupFailed.Count -gt 0 -and $unexpected.Count -eq 0) {
+            $ok = $true
+            $note = "dotnet exited $($run.ExitCode) only because excluded fixtures failed their setup ($($setupFailed.Count)); counted as passed"
+        }
+        elseif ($summary.Failed -eq 0) {
+            $note = "dotnet exited $($run.ExitCode) with no failed test"
+            if ($unexpected.Count -gt 0) { $note += "; fixture setup failed: $($unexpected -join ', ')" } else { $note += '; see the output above' }
+        }
     }
-    elseif ($summary.Failed -gt 0) {
-        $ok = $false
+    else {
+        $summary = [pscustomobject]@{ Total = 0; Passed = 0; Failed = 0; NotExecuted = 0; FailedTests = @() }
     }
     return [pscustomobject]@{
         Project     = $name
         Filter      = $Filter
         ExitCode    = $run.ExitCode
         Ok          = $ok
+        Note        = $note
         Seconds     = $seconds
         Total       = $summary.Total
         Passed      = $summary.Passed
         Failed      = $summary.Failed
         Skipped     = $summary.NotExecuted
         FailedTests = $summary.FailedTests
-        HasResults  = (Test-Path -LiteralPath $trx)
+        HasResults  = $hasResults
     }
 }
 

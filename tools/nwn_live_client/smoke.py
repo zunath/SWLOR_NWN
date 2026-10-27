@@ -40,9 +40,11 @@ SKIPPED = 'skipped'
 BLOCKED = 'blocked'
 STATUSES = (PASS, FAIL, MANUAL, SKIPPED, BLOCKED)
 
-# A server-only run never reads a CD key: it passes the stack these obvious placeholders.
+# A server-only run never reads a CD key and needs no client install: it passes the stack these
+# obvious placeholders, which satisfy its prerequisite checks and are never used.
 PLACEHOLDER_PUBLIC_CDKEY = '00000000'
 PLACEHOLDER_CDKEY_TEXT = 'Placeholder for a server-only smoke run; this is not a CD key.\n'
+PLACEHOLDER_CLIENT_FOLDER = 'placeholder-client-install'
 
 DEFAULT_RESULTS_FOLDER = 'swlor-smoke'
 
@@ -340,6 +342,12 @@ class SmokeRun:
             placeholder.write_text(PLACEHOLDER_CDKEY_TEXT, 'utf-8')
             up.cdkey = str(placeholder)
             up.public_cdkey = up.public_cdkey or PLACEHOLDER_PUBLIC_CDKEY
+            if not up.client_install:
+                # The tool checks for the Linux client binary even though no client container starts.
+                binary = self.results_dir / PLACEHOLDER_CLIENT_FOLDER / 'bin' / 'linux-x86' / 'nwmain-linux'
+                binary.parent.mkdir(parents=True, exist_ok=True)
+                binary.write_text('placeholder for a server-only smoke run\n', 'utf-8')
+                up.client_install = str(binary.parents[2])
         stack = live.create(up)
         self.stack = stack
         state = stack.state
@@ -430,6 +438,8 @@ class SmokeRun:
     def step_logout(self, step: StepResult) -> None:
         stack = self.stack
         assert stack is not None
+        # boot_players treats "nobody joined" as success, so require a player first.
+        step.check('a player is joined before logout', stack.joined_players() > 0)
         # The client exits when it is kicked, so this is the last frame the run can take.
         self.capture(step, 'before-logout')
         step.check('player booted through the server console', live.boot_players(stack))

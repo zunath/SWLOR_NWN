@@ -232,13 +232,30 @@ class ClientStepTests(unittest.TestCase):
     def test_logout_captures_before_the_player_is_booted_because_the_client_exits_afterwards(self):
         with tempfile.TemporaryDirectory() as folder:
             run = smoke.SmokeRun(options(server_only=False), 'smoke-test', Path(folder))
-            run.stack = SimpleNamespace(joined_players=lambda: 0)
+            joined = [1]
+            run.stack = SimpleNamespace(joined_players=lambda: joined[0])
             order = []
             run.capture = lambda step, name: order.append('capture')
             step = smoke.StepResult('logout', 'Log out cleanly')
-            with patch.object(smoke.live, 'boot_players', side_effect=lambda stack: order.append('boot') or True):
+
+            def boot(stack):
+                order.append('boot')
+                joined[0] = 0
+                return True
+            with patch.object(smoke.live, 'boot_players', side_effect=boot):
                 run.step_logout(step)
         self.assertEqual(['capture', 'boot'], order)
+        self.assertTrue(step.checks_passed)
+
+    def test_logout_fails_when_no_player_was_joined_even_though_boot_players_reports_success(self):
+        with tempfile.TemporaryDirectory() as folder:
+            run = smoke.SmokeRun(options(server_only=False), 'smoke-test', Path(folder))
+            run.stack = SimpleNamespace(joined_players=lambda: 0)
+            run.capture = lambda step, name: None
+            step = smoke.StepResult('logout', 'Log out cleanly')
+            with patch.object(smoke.live, 'boot_players', return_value=True):
+                run.step_logout(step)
+        self.assertEqual(['a player is joined before logout'], [c.name for c in step.checks if not c.passed])
 
 
 class RunStepTests(unittest.TestCase):
@@ -300,6 +317,16 @@ class RunTests(unittest.TestCase):
             self.assertEqual(smoke.PLACEHOLDER_PUBLIC_CDKEY, up.public_cdkey)
             self.assertEqual(smoke.PLACEHOLDER_CDKEY_TEXT, Path(up.cdkey).read_text('utf-8'))
         self.assertNotRegex(smoke.PLACEHOLDER_CDKEY_TEXT, r'[A-Z0-9]{20}')
+
+    def test_a_server_only_run_needs_no_client_install_but_keeps_a_given_one(self):
+        with tempfile.TemporaryDirectory() as folder, patch.object(smoke.live, 'create') as create:
+            create.return_value.state = {'inputs': {}}
+            smoke.SmokeRun(options(), 'smoke-test', Path(folder)).create_stack()
+            install = Path(create.call_args.args[0].client_install)
+            self.assertTrue((install / 'bin' / 'linux-x86' / 'nwmain-linux').is_file())
+            self.assertTrue(smoke.live.is_within(install, Path(folder)))
+            smoke.SmokeRun(options(client_install='C:/games/nwn'), 'smoke-test', Path(folder)).create_stack()
+            self.assertEqual(str(Path('C:/games/nwn')), str(Path(create.call_args.args[0].client_install)))
 
     def test_a_failed_step_skips_the_automated_steps_after_it_but_keeps_manual_ones(self):
         with tempfile.TemporaryDirectory() as folder:

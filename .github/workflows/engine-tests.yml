@@ -80,8 +80,8 @@ jobs:
             echo
           } >> "$GITHUB_STEP_SUMMARY"
           df -h / /mnt | sed 's/^/disk: /'
-          # The runner image ships about 20 GB of toolchains this job never uses; the Docker images, the build and
-          # the server home need about 12 GB.
+          # Toolchains this job never uses. The run itself needs about 10 GB (the two Docker images, the checkout, the
+          # builds and the 400 MB server home), but the free space on the runner image varies.
           sudo rm -rf /usr/local/lib/android /opt/ghc /opt/hostedtoolcache/CodeQL /usr/share/swift || true
           df -h / | sed 's/^/disk after cleanup: /'
 
@@ -95,6 +95,15 @@ jobs:
       - uses: actions/setup-dotnet@67a3573c9a986a3f9c594539f4ab511d57bb3ce9 # v4
         with:
           global-json-file: global.json
+
+      - name: Check the server image pin
+        # The test compose file names the image itself; the production pin is scripts/deployment/server-image.txt.
+        run: |
+          image="$(head -n 1 scripts/deployment/server-image.txt | tr -d '\r')"
+          echo "- Server image: \`$image\`" >> "$GITHUB_STEP_SUMMARY"
+          if ! grep -qF "image: $image" SWLOR.Game.Server/Docker/docker-compose.enginetests.yml; then
+            echo "::warning title=Engine tests use another server image::docker-compose.enginetests.yml does not name $image, the image pinned for production."
+          fi
 
       - name: Test the summary tool and the HAK staging
         # Seconds, and they catch a broken sparse-HAK path before the long steps start.

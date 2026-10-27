@@ -451,8 +451,8 @@ as `/nwn/home`, holding `modules/`, `hak/`, `tlk/`, `swlor.env` and receiving `d
 `SWLOR_ENGINE_TEST_SERVER_HOME` env var, the repo's `enginetests-home/` directory when it holds
 `swlor.env`, the repo's `debugserver/` directory when it exists (the dev-machine convention used by
 the normal `SWLOR.Runner` flow), and finally
-`SWLOR.Game.Server/Docker/` (the layout the CI workflow stages - that folder is tracked compose
-*configuration*, not inherently a runtime home). Both scripts:
+`SWLOR.Game.Server/Docker/` (a last resort: that folder is tracked compose
+*configuration*, not a runtime home; the CI workflow passes its own `--server-home`). Both scripts:
 
 1. Build `SWLOR.Game.Server` in `Release` (unless skipped) with `-p:RunPostBuildEvent=Never` (so
    the normal Windows-only CLI post-build deploy step doesn't run), then copy the build output from
@@ -480,7 +480,8 @@ which become zero-byte files - Beamdog's dedicated-server data does the same wit
 models and textures, because the server never reads them - so the HAKs take about 0.4 GB instead
 of 11 GB. Never deploy them. It packs with the native tools that `Setup.sh` prepares, about
 4 minutes in all, and later runs skip steps whose inputs are unchanged (`--force` redoes them).
-A full sweep took about 75 minutes in a 4-core cloud session, so pass `--timeout-minutes 120`.
+A full sweep took about 75 minutes in a 4-core cloud session, so pass `--timeout-minutes 120`. The `CI` section
+below runs this flow on a hosted runner, with a 300 MB sparse `SWLOR_Haks` fetch in place of the full checkout.
 
 Usage:
 
@@ -644,36 +645,55 @@ step that rolls, build a `SnapshotTable` of the outcomes and call `ScenarioSnaps
 
 ## CI
 
-`.github/workflows/engine-tests.yml` runs on `ubuntu-latest` with a 60-minute timeout, triggered by:
+`.github/workflows/engine-tests.yml` runs the suite for the maintainability refactor (`MaintainabilityRefactorPlan.md`) on
+`ubuntu-24.04` (the server image is Linux, and Docker on Windows runners cannot run Linux containers). Triggers:
 
-- `workflow_dispatch`, with an optional `filter` input (`SWLOR_ENGINE_TEST_FILTER`).
-- `schedule` - nightly at `0 9 * * *`, outside normal contributor hours.
-- `pull_request` into `feature/combat-upgrade`, path-filtered to
-  `SWLOR.Game.Server/**`, `SWLOR.NWN.API/**`, `SWLOR.CLI/**`, `Module/**`,
-  `SWLOR.Game.Server.sln`, and the workflow file itself.
+- `schedule`: nightly at 09:00 UTC.
+- `pull_request` into `feature/maintainability-refactor` that carries the `engine-tests` label. It runs when the label is added
+  and again on every push while the label is on; adding some other label does not restart it.
+- `workflow_dispatch` with an optional `filter` (the same text `--filter` takes, for example `Characterization`) and a `ref`
+  (default `feature/maintainability-refactor`).
 
-It checks out with `submodules: recursive` and `fetch-depth: 1`, builds `SWLOR.CLI` (which pulls in
-`SWLOR.Game.Server`/`SWLOR.NWN.API`), downloads the `neverwinter.nim` Linux release tools
-(`nwn_erf`/`nwn_gff`/`nwn_tlk`) and renames them to `*.exe` next to `SWLOR.CLI.dll` so `HakBuilder`/
-`ModulePacker`'s hardcoded process names resolve, builds the hak files via `SWLOR.CLI --hak`
-(retargeting `Build/hakbuilder.json`'s `OutputPath` to `SWLOR.Game.Server/Docker/`), packs the
-module via `SWLOR.CLI --pack` into `SWLOR.Game.Server/Docker/modules/`, stages the
-already-built server assembly (a transitive output of the CLI build) into
-`SWLOR.Game.Server/Docker/dotnet/`, then runs `scripts/run-engine-tests.sh --skip-build --filter`
-so the server is not compiled a second time. Engine test results and server logs are uploaded as
-artifacts on every run (`if: always()`), each with 14-day retention.
+GitHub fires `schedule` and lists `workflow_dispatch` only for workflow files on the default branch (`master`), and the refactor
+branch does not merge there until the end. The workflow therefore checks out the refactor branch itself for those two triggers,
+so an identical copy of the file on `master` is all the nightly needs. Until a copy exists there, only the labelled pull
+requests run it.
 
-**This workflow has not yet had a successful (or attempted) run on GitHub-hosted runners**, per its
-own header comment - treat early runs as a debugging exercise, not a working pipeline. The biggest
-risk is `SWLOR_Haks`: it's a roughly 13GB git submodule, and even with `fetch-depth: 1` the checked
-out working tree is still that large, which may exceed a hosted runner's disk space and/or the job
-time budget. The header also flags, in rough order of likelihood after that: the Linux
-`neverwinter.nim` binaries haven't been confirmed to produce byte-identical or even game-compatible
-output versus the pinned Windows tools in `SWLOR_Haks/`, nor has their CLI argument compatibility
-with `HakBuilder.cs`/`ModulePacker.cs` been verified; renaming the extension-less Linux binaries to
-`*.exe` is a workaround, not an upstream-supported flow; and NWN server boot inside the container
-(NWNX/NWSync/licensing, engine startup timing) has only been exercised via the normal
-`docker-compose.yml` dev flow, not in a CI sandbox network context.
+What a run does, all through the scripts a cloud session or dev machine uses (run them in this order to reproduce a CI run):
+
+1. Frees runner disk space, checks out the branch (a pull request's merge result), installs the pinned .NET SDK, runs the
+   unit tests of the summary tool and of the HAK staging.
+2. Installs `libpcre3` and downloads the pinned native NWN tools (`tools/native-tools.json`, checksum verified) for `nwn_erf`
+   and `nwn_gff`.
+3. `scripts/ci/fetch-engine-test-haks.sh` fetches the part of the pinned `SWLOR_Haks` commit the server needs. The module lists
+   all 119 HAKs, but the dedicated server never reads models, textures or sounds (`prepare-engine-test-home.sh` makes those
+   zero-byte files), and they are 147,000 of the 207,000 files. The script does a blobless depth-1 fetch (4 MB of trees) and a
+   sparse non-cone checkout of the HAK folders and `sw_tlk` without those file types: about 59,000 files, 300 MB, 50 MB over
+   the wire. The full history is never cloned. Do not run `git checkout`, `git diff` against edited files or anything else that
+   needs the missing content in that checkout: git would download the 11 GB of blobs.
+4. `scripts/prepare-engine-test-home.sh` builds the server-only HAKs and the TLK from it (the names of the left-out files
+   come from the index, so the HAKs equal those built from a full checkout), packs `Module/` with `SWLOR.CLI --pack`
+   (the Characterization snapshots need the module and the 2DA/TLK data of the branch itself), and pulls the Docker images.
+5. `scripts/run-engine-tests.sh --timeout-minutes 150` builds the test project and runs the suite in the pinned server image.
+   Its exit code is the job's result.
+6. `tools/EngineTestSummary.py` writes the job summary (verdict, failed tests, per-category table, slowest tests) and
+   annotations, and uploads the `engine-test-results` artifact (14 days): `engine-test-results.json`, the runner output
+   `engine-tests.log`, and the server's `logs/` and `app_logs/`.
+
+The job fails when any engine test fails, when no test ran, when the server container exits non-zero (even after a green
+report), and when the server dies without writing a report. A run that hits the 150-minute wall clock fails too, and says so:
+the log carries `TIMED OUT after 150 minute(s)`, and the summary and an error annotation call it a timeout, not a failed test.
+The job's own limit (210 minutes) is above that on purpose, so GitHub never kills the job before the script has reported.
+
+Running the same steps on your machine: `scripts/ci/fetch-engine-test-haks.sh` (needs `SWLOR_Haks` empty or absent: it replaces
+it), then `scripts/prepare-engine-test-home.sh --server-home <dir>`, then `scripts/run-engine-tests.sh --server-home <dir>`.
+On a Windows checkout these `.sh` files carry CRLF line endings; convert them first, or use `run-engine-tests.ps1` with a home
+from the normal deploy flow.
+
+**This workflow has not yet run on GitHub-hosted runners**: Actions has been locked for the account by a billing issue since it
+was written. Its steps were verified one by one on a dev machine (see the pull request that added it); what only a hosted
+runner can show is the apt and native-tool step, free disk space, Docker Hub pulls, and the job's total time. Treat the first
+runs as a shake-out.
 
 ## Known Gaps and Non-Goals
 

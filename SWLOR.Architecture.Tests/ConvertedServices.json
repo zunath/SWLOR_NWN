@@ -5,6 +5,7 @@
     { "name": "Bank", "domain": "Economy" },
     { "name": "Currency", "domain": "Economy" },
     { "name": "Faction", "domain": "Quests" },
+    { "name": "Guild", "domain": "Economy" },
     { "name": "Taxi", "domain": "World" }
   ]
 }

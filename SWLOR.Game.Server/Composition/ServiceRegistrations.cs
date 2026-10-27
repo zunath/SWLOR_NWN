@@ -25,6 +25,7 @@ namespace SWLOR.Game.Server.Composition
             // Economy
             services.AddSingleton<IBankService, BankService>();
             services.AddSingleton<ICurrencyService, CurrencyService>();
+            services.AddSingleton<IGuildService, GuildService>();
 
             // Quests
             services.AddSingleton<IFactionService, FactionService>();

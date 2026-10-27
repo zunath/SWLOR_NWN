@@ -11553,7 +11553,8 @@ namespace SWLOR.Game.Server.Service
 
         private static ResistanceType GetResistanceTypeFromStat(int value)
         {
-            return value > 0 && Enum.IsDefined(typeof(ResistanceType), value)
+            return value > 0 && Enum.IsDefined(typeof(ResistanceType), value) &&
+                   Resistance.IsValidResistanceType((ResistanceType)value)
                 ? (ResistanceType)value
                 : ResistanceType.Invalid;
         }

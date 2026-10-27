@@ -1,4 +1,5 @@
 using System.Collections.Generic;
+using SWLOR.Game.Server.Service.CombatService;
 
 namespace SWLOR.Game.Server.Service.SpaceService
 {
@@ -46,6 +47,11 @@ namespace SWLOR.Game.Server.Service.SpaceService
         public Dictionary<int, ShipStatusModule> LowPowerModules { get; set; }
 
         /// <summary>
+        /// Equipped mid-powered modules
+        /// </summary>
+        public Dictionary<int, ShipStatusModule> MidPowerModules { get; set; }
+
+        /// <summary>
         /// Equipped configuration module
         /// </summary>
         public Dictionary<int, ShipStatusModule> ConfigurationModules { get; set; }
@@ -56,12 +62,25 @@ namespace SWLOR.Game.Server.Service.SpaceService
         /// </summary>
         public HashSet<int> ActiveModules { get; set; }
 
+        /// <summary>
+        /// Resistance percentages by damage type.
+        /// </summary>
+        public Dictionary<ResistanceType, int> Resistances { get; set; }
+
+        /// <summary>
+        /// Crew station tags keyed by hotbar feat slot number (1-30). Used for crew stations (plan section 10).
+        /// </summary>
+        public Dictionary<int, ShipSlotTag> SlotTags { get; set; }
+
         public ShipStatus()
         {
             HighPowerModules = new Dictionary<int, ShipStatusModule>();
             LowPowerModules = new Dictionary<int, ShipStatusModule>();
+            MidPowerModules = new Dictionary<int, ShipStatusModule>();
             ConfigurationModules = new Dictionary<int, ShipStatusModule>();
             ActiveModules = new HashSet<int>();
+            Resistances = new Dictionary<ResistanceType, int>();
+            SlotTags = new Dictionary<int, ShipSlotTag>();
         }
     }
 }

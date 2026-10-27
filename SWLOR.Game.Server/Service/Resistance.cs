@@ -18,6 +18,14 @@ namespace SWLOR.Game.Server.Service
         private static readonly List<ResistanceType> _allResistanceTypes = new();
         private static readonly HashSet<ResistanceType> _validResistanceTypes = new();
 
+        // Ship-only types. Ground creatures, beasts, droids and items never carry them.
+        private static readonly HashSet<ResistanceType> _spaceResistanceTypes = new()
+        {
+            ResistanceType.Thermal,
+            ResistanceType.Explosive,
+            ResistanceType.EM
+        };
+
         [NWNEventHandler(ScriptName.OnModuleLoad)]
         public static void LoadResistanceTypes()
         {
@@ -26,7 +34,7 @@ namespace SWLOR.Game.Server.Service
 
             foreach (var type in Enum.GetValues(typeof(ResistanceType)).Cast<ResistanceType>())
             {
-                if (type == ResistanceType.Invalid)
+                if (type == ResistanceType.Invalid || _spaceResistanceTypes.Contains(type))
                     continue;
 
                 _allResistanceTypes.Add(type);

@@ -9,6 +9,9 @@ namespace SWLOR.Game.Server.Service.CombatService
         Poison = 2,
         Electrical = 3,
         Ice = 4,
+        Thermal = 5,
+        Explosive = 6,
+        EM = 7,
 
         // Status effect families: 100-199.
         Mind = 100,

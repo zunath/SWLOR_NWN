@@ -16,6 +16,7 @@ namespace SWLOR.Game.Server.Service.SpaceService
         public int MaxCapacitor { get; set; }
         public int ShieldRechargeRate { get; set; }
         public int HighPowerNodes { get; set; }
+        public int MidPowerNodes { get; set; }
         public int LowPowerNodes { get; set; }
         public int ConfigurationNodes { get; set; }
         public int Accuracy { get; set; }
@@ -26,6 +27,9 @@ namespace SWLOR.Game.Server.Service.SpaceService
         public int IndustryBonus { get; set; }
         public bool HasDroidBay { get; set; }
         public bool CapitalShip { get; set; }
+        public ShipSize Size { get; set; }
+        public ShipRole Role { get; set; }
+        public ShipManufacturer Manufacturer { get; set; }
 
         public Dictionary<PerkType, int> RequiredPerks { get; set; }
 

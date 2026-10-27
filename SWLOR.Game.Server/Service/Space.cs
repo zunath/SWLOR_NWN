@@ -704,6 +704,19 @@ namespace SWLOR.Game.Server.Service
         }
 
         /// <summary>
+        /// Retrieves the associated feat given a mid slot number.
+        /// Must be in the range of 1-10
+        /// </summary>
+        /// <param name="slot">The slot number. Range is 1-10</param>
+        /// <returns>The feat associated with the mid slot number.</returns>
+        public static FeatType MidSlotToFeat(int slot)
+        {
+            slot += 20; // Offset by 20 for mid modules.
+            var featId = (int)(FeatType.ShipModule1) - 1 + slot;
+            return (FeatType)featId;
+        }
+
+        /// <summary>
         /// Converts a high slot feat to its slot number.
         /// </summary>
         /// <param name="feat">The feat to convert</param>
@@ -731,6 +744,20 @@ namespace SWLOR.Game.Server.Service
         }
 
         /// <summary>
+        /// Converts a mid slot feat to its slot number.
+        /// </summary>
+        /// <param name="feat">The feat to convert</param>
+        /// <returns>The slot number associated with the feat.</returns>
+        public static int MidFeatToSlot(FeatType feat)
+        {
+            var offset = (int)FeatType.ShipModule1 - 1;
+            var slot = (int)feat - offset;
+            slot -= 20; // Offset by 20 for mid modules.
+
+            return slot;
+        }
+
+        /// <summary>
         /// When a player enters the game, reapply any custom TLK strings related to ship module feats.
         /// </summary>
         private static void ReloadPlayerTlkStrings()
@@ -751,6 +778,8 @@ namespace SWLOR.Game.Server.Service
             }
             foreach (var (slot, shipModule) in dbPlayerShip.Status.LowPowerModules)
                 ApplyShipModuleFeat(player, _shipModules[shipModule.ItemTag], LowSlotToFeat(slot));
+            foreach (var (slot, shipModule) in dbPlayerShip.Status.MidPowerModules)
+                ApplyShipModuleFeat(player, _shipModules[shipModule.ItemTag], MidSlotToFeat(slot));
             RestoreShipModuleRecasts(player);
         }
 
@@ -839,6 +868,21 @@ namespace SWLOR.Game.Server.Service
                 ApplyShipModuleFeat(player, shipModuleDetail, feat);
             }
 
+            foreach (var (slot, shipModule) in dbPlayerShip.Status.MidPowerModules)
+            {
+                var feat = MidSlotToFeat(slot);
+                var shipModuleDetail = _shipModules[shipModule.ItemTag];
+
+                // Passive modules shouldn't be converted to feats.
+                if (shipModuleDetail.Type == ShipModuleType.Passive) continue;
+
+                // Convert current ship module to feat.
+                CreaturePlugin.AddFeat(player, feat);
+
+                // Rename the feat to match the configured name on the ship module.
+                ApplyShipModuleFeat(player, shipModuleDetail, feat);
+            }
+
             // Load the player's ship hot bar.
             if (!dbPlayerShip.PlayerHotBars.ContainsKey(playerId) ||
                 !CreaturePlugin.DeserializeQuickbar(player, dbPlayerShip.PlayerHotBars[playerId]))
@@ -866,6 +910,17 @@ namespace SWLOR.Game.Server.Service
                 foreach (var (slot, shipModule) in dbPlayerShip.Status.LowPowerModules)
                 {
                     var feat = LowSlotToFeat(slot);
+                    var shipModuleDetail = _shipModules[shipModule.ItemTag];
+                    if (shipModuleDetail.Type != ShipModuleType.Passive)
+                    {
+                        PlayerPlugin.SetQuickBarSlot(player, currentSlot, PlayerQuickBarSlot.UseFeat(feat));
+
+                        currentSlot++;
+                    }
+                }
+                foreach (var (slot, shipModule) in dbPlayerShip.Status.MidPowerModules)
+                {
+                    var feat = MidSlotToFeat(slot);
                     var shipModuleDetail = _shipModules[shipModule.ItemTag];
                     if (shipModuleDetail.Type != ShipModuleType.Passive)
                     {
@@ -1153,6 +1208,11 @@ namespace SWLOR.Game.Server.Service
                 if (!CanPlayerUseShipModule(player, shipModule.ItemTag)) return false;
             }
 
+            foreach (var (_, shipModule) in playerShip.MidPowerModules)
+            {
+                if (!CanPlayerUseShipModule(player, shipModule.ItemTag)) return false;
+            }
+
             return true;
         }
 
@@ -1292,6 +1352,11 @@ namespace SWLOR.Game.Server.Service
             else if (slotNumber <= 20)
             {
                 shipModule = activatorShipStatus.LowPowerModules[slotNumber-10];
+            }
+            // Slot numbers 21-30 are mid powered slots.
+            else if (slotNumber <= 30)
+            {
+                shipModule = activatorShipStatus.MidPowerModules[slotNumber-20];
             }
             else
             {
@@ -1581,6 +1646,26 @@ namespace SWLOR.Game.Server.Service
                 var slot = LowFeatToSlot(feat);
                 var shipModule = _shipModules[itemTag];
                 shipStatus.LowPowerModules.Add(slot, new ShipStatus.ShipStatusModule
+                {
+                    ItemTag = itemTag,
+                    RecastTime = DateTime.UtcNow
+                });
+
+                if (shipModule.Type != ShipModuleType.Passive)
+                {
+                    shipStatus.ActiveModules.Add(slot);
+                }
+
+                shipModule.ModuleEquippedAction?.Invoke(shipStatus, 0);
+
+                featCount++;
+            }
+            foreach (var itemTag in registeredEnemyType.MidPowerModules)
+            {
+                var feat = ShipModuleFeats.ElementAt(featCount).Key;
+                var slot = MidFeatToSlot(feat);
+                var shipModule = _shipModules[itemTag];
+                shipStatus.MidPowerModules.Add(slot, new ShipStatus.ShipStatusModule
                 {
                     ItemTag = itemTag,
                     RecastTime = DateTime.UtcNow
@@ -2039,9 +2124,23 @@ namespace SWLOR.Game.Server.Service
                     moduleDetails.ModuleUnequippedAction?.Invoke(dbPlayerShip.Status, shipModule.ModuleBonus);
                 }
 
+                foreach (var (_, shipModule) in dbPlayerShip.Status.MidPowerModules)
+                {
+                    if (Random.D100(1) <= ChanceToDropModule)
+                    {
+                        var deserialized = ObjectPlugin.Deserialize(shipModule.SerializedItem);
+                        CopyObject(deserialized, deathLocation);
+                        DestroyObject(deserialized);
+                    }
+
+                    var moduleDetails = GetShipModuleDetailByItemTag(shipModule.ItemTag);
+                    moduleDetails.ModuleUnequippedAction?.Invoke(dbPlayerShip.Status, shipModule.ModuleBonus);
+                }
+
                 // Player always loses all modules regardless if they actually dropped.
                 dbPlayerShip.Status.HighPowerModules.Clear();
                 dbPlayerShip.Status.LowPowerModules.Clear();
+                dbPlayerShip.Status.MidPowerModules.Clear();
                 dbPlayerShip.PlayerHotBars.Clear();
                 dbPlayerShip.Status.Hull = 1;
                 dbPlayerShip.Status.Shield = 0;
@@ -2160,13 +2259,25 @@ namespace SWLOR.Game.Server.Service
                 })
                     .Select(s => new Tuple<FeatType, ShipStatus.ShipStatusModule>(LowSlotToFeat(s.Key), s.Value));
 
-                var availableModules = highModules.Concat(lowModules).ToList();
+                var midModules = shipStatus.MidPowerModules.Where(x =>
+                {
+                    var shipModuleDetail = _shipModules[x.Value.ItemTag];
+                    var requiredCapacitor = shipModuleDetail.CalculateCapacitorAction?.Invoke(creature, shipStatus, 0) ?? 0;
+
+                    return x.Value.RecastTime <= now &&
+                           shipStatus.Capacitor >= requiredCapacitor &&
+                           shipStatus.GlobalRecast <= now;
+                })
+                    .Select(s => new Tuple<FeatType, ShipStatus.ShipStatusModule>(MidSlotToFeat(s.Key), s.Value));
+
+                var availableModules = highModules.Concat(midModules).Concat(lowModules).ToList();
                 var targetShipStatus = GetShipStatus(target);
                 var distance = GetDistanceBetween(creature, target);
 
                 // Engage at the range of the shortest weapon that can hit this target so every such weapon gets used.
                 var engagementDistance = shipStatus.HighPowerModules.Values
                     .Concat(shipStatus.LowPowerModules.Values)
+                    .Concat(shipStatus.MidPowerModules.Values)
                     .Where(x => CanNPCFireShipModule(creature, shipStatus, target, targetShipStatus, x))
                     .Select(x => GetShipModuleMaxDistance(creature, shipStatus, target, targetShipStatus, x))
                     .DefaultIfEmpty(0f)

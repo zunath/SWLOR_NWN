@@ -96,6 +96,12 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition
                             .BindRowCount(model => model.ItemNames);
                     });
 
+                    col.AddPagination(
+                        model => model.PageNumbers,
+                        model => model.SelectedPageIndex,
+                        model => model.OnClickPreviousPage(),
+                        model => model.OnClickNextPage());
+
                     col.AddRow(row =>
                     {
                         row.AddSpacer();

@@ -823,6 +823,11 @@ namespace SWLOR.Game.Server.Service.PerkService
         CommandPresence = 881,
         CommandFleetAction = 882,
 
-        // IDs 650 and 883+ are free.
+        // Gathering: the Space Industry group.
+        Prospector = 883,
+        DeepCore = 884,
+        RapidExtraction = 885,
+
+        // IDs 650 and 886+ are free.
     }
 }

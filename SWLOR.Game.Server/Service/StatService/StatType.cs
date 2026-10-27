@@ -6608,6 +6608,18 @@ namespace SWLOR.Game.Server.Service.StatService
         [StatType(StatTypeCategory.NonBeneficial, StatTypeAggregation.Maximum)]
         SpaceMarkTargetIcon = 1214,
 
+        /// <summary>Ore added to every cycle of a mining laser or strip miner on an asteroid (Prospector).</summary>
+        [StatType(StatTypeCategory.BeneficialWhenPositive)]
+        SpaceMiningYieldBonus = 1215,
+
+        /// <summary>Weight added to the rare metals in an asteroid's ore table (Deep Core), as Treasure Hunter does on the ground.</summary>
+        [StatType(StatTypeCategory.BeneficialWhenPositive)]
+        SpaceRareMetalChance = 1216,
+
+        /// <summary>Percent by which a mining laser or strip miner cycle is shorter (Rapid Extraction).</summary>
+        [StatType(StatTypeCategory.BeneficialWhenPositive)]
+        SpaceMiningCycleSpeedPercent = 1217,
+
 
     }
 

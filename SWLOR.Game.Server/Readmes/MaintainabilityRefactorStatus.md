@@ -53,10 +53,14 @@ Status: `open`, `in progress`, `review` (pull request open), `done`, `blocked`.
 | P0-1 | Plan and status docs on the branch | - | Opus | done | - | First commit of the branch |
 | P0-2 | CI workflow: build + unit tests for the refactor branch; coverage collection with generated code excluded; baseline report | - | Sonnet | in progress | | Worktree `.claude/worktrees/mr-p0-2` |
 | P0-2b | Nightly and on-label engine-test workflow (feasibility first: Docker, module, haks in Actions) | P0-2 | Sonnet | open | | |
-| P0-3 | Inventory of randomness and time sources in combat, stats, perks, abilities, XP, crafting, loot | - | Haiku | in progress | | Read-only; input for P0-4 |
-| P0-4 | Behaviour-neutral seams + output-locking test project (`SWLOR.Game.Server.CharacterizationTests`), combat first | P0-3 | Opus spec, Sonnet build | open | | Each seam has a default-equals-today test |
-| P0-5 | Boot-order and script-handler-order record test | - | Sonnet | in progress | | Worktree `.claude/worktrees/mr-p0-5` |
-| P0-6 | Scripted live smoke run with `tools/NwnLiveClient.py`; baseline recorded | - | Sonnet | open | | Needs a local server and client |
+| P0-3 | Inventory of randomness and time sources in combat, stats, perks, abilities, XP, crafting, loot | - | Haiku | done | - | Findings summarized in [MaintainabilityRefactorSpecs.md](MaintainabilityRefactorSpecs.md) |
+| P0-4a | Output-locking Tier A: combat calculations (spec in MaintainabilityRefactorSpecs.md) | P0-3 | Sonnet | done | [#2900](https://github.com/zunath/SWLOR_NWN/pull/2900) | New `SWLOR.Game.Server.CharacterizationTests` project and snapshot helper (`Support/`: `Snapshot.Verify`, `SnapshotTable`, `SeededRandom`, `Grid`; `SWLOR_SNAPSHOT_DIRECTORY` redirects output for the parity script). 41 combat functions plus 26 constants, 39 snapshots, 4,673 rows. Engine-bound combat paths listed in the PR as Tier B candidates. |
+| P0-4b | Output-locking Tier A: stats, abilities, perks | P0-4a | Sonnet | in progress | | Worktree `.claude/worktrees/mr-p0-4b` |
+| P0-4c | Output-locking Tier A: XP, crafting, loot | P0-4a | Sonnet | open | | |
+| P0-4d | Output-locking Tier B: engine scenarios with a behaviour-neutral clock seam (spec to write) | P0-4a | Opus spec, Sonnet build | open | | Needs a clock seam for about 70 direct `DateTime.UtcNow` reads |
+| P0-5 | Boot-order and script-handler-order record test | - | Sonnet | done | [#2899](https://github.com/zunath/SWLOR_NWN/pull/2899) | Snapshot of 230 scripts / 662 handlers. Finding: handler order is not declared anywhere; it follows Roslyn's type emission order (namespace depth-first, then sorted file paths), so adding an unrelated file or moving a namespace can reorder handlers. `DB.Load` runs before `EventRegistration.OnModulePreload` only because `Service` is visited before `Feature`. A snapshot diff after a `master` sync that no handler edit explains is real drift. Seam: `ScriptRegistry.LoadHandlersFromAssemblies` (behaviour-neutral, proven against the old discovery code). |
+| P0-10 | Make handler order explicit before any file or namespace moves (declared order equal to today's snapshot; behaviour-neutral) | P0-5 | Opus spec, Sonnet build | open | | Blocks every namespace move in Phase 2 and the P0-8 domain map moves |
+| P0-6 | Scripted live smoke run with `tools/NwnLiveClient.py`; baseline recorded (spec in MaintainabilityRefactorSpecs.md) | - | Sonnet | in progress | | Worktree `.claude/worktrees/mr-p0-6` |
 | P0-7 | Daily sync script and parity script (characterization tests against a throwaway `master` worktree) | P0-4 | Sonnet | open | | |
 | P0-8 | Cross-domain dependency guard recording today's calls (domain map first) | - | Opus map, Sonnet build | open | | Decision 9 |
 | P0-9 | Feasibility check: do app-created worktrees inherit sparse checkout? | - | Opus (trivial) | done | - | Git 2.46 copies the sparse settings of the worktree `git worktree add` runs from (tested in a scratch repo). So after the haks cutover the main checkout itself must be sparse (code + `sw_2da`, `sw_tlk`, `sw_ability`), with full hak folders only in a dedicated worktree used for hak builds and local deploys. Confirm at cutover that the desktop app's worktree creation inherits it. |
@@ -68,17 +72,19 @@ Phases 1-4 and the final cutover get their own items when Phase 0 is done.
 Started 2026-10-26 by the coordinating session, each as a subagent with the agent brief:
 
 - P0-2 (Sonnet): branch `claude/mr-p0-2`, worktree `C:\Projects\SWLOR_NWN\.claude\worktrees\mr-p0-2`.
-- P0-3 (Haiku): read-only; result goes into the P0-4 task, not into a pull request.
-- P0-5 (Sonnet): branch `claude/mr-p0-5`, worktree `C:\Projects\SWLOR_NWN\.claude\worktrees\mr-p0-5`.
+- P0-4b (Sonnet): branch `claude/mr-p0-4b`, worktree `C:\Projects\SWLOR_NWN\.claude\worktrees\mr-p0-4b`.
+- P0-6 (Sonnet): branch `claude/mr-p0-6`, worktree `C:\Projects\SWLOR_NWN\.claude\worktrees\mr-p0-6`.
 
 If this session ends before they report: check `gh pr list --base feature/maintainability-refactor` and the
 branches above, review any open pull request, and restart an item from its row if nothing was pushed.
 
 ## Next actions
 
-1. Review and merge the P0-2 and P0-5 pull requests; record the coverage baseline here.
-2. Write the P0-4 spec from the P0-3 inventory.
-3. Then P0-8 (domain map first), P0-9, P0-6, P0-2b, P0-7.
+1. Review and merge P0-2 (it was asked to add the CharacterizationTests project to CI); record the coverage
+   baseline here.
+2. Then P0-4c, P0-10 (spec ready), P0-8 (domain map first), P0-2b, P0-7, and the P0-4d spec.
+3. P0-7 note: the boot-order test uses the `LoadHandlersFromAssemblies` seam, which `master` lacks; the parity
+   script must apply the seam commits to its throwaway `master` copy before running the tests there.
 
 ## Sync log
 

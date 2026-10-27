@@ -91,6 +91,9 @@ Each phase has a done check. A phase is finished only when its check passes on t
 
 ### Phase 2 - Dependency injection
 
+- Before any file or namespace moves, handler order is made explicit (P0-10): today it follows the compiler's
+  type order, so moving a file can reorder boot handlers (for example `DB.Load` must stay ahead of the module
+  preload handler).
 - A composition root builds the container at boot; `ScriptRegistry` resolves handler classes from it in
   exactly today's order (the boot-order record guards this).
 - Convert services one domain at a time, leaves first: static class -> interface + class with

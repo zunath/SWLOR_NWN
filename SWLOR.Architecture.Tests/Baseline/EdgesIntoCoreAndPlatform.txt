@@ -314,7 +314,8 @@ Guild -> DB | 2
 Guild -> Random | 1
 PlayerMarket -> DB | 2
 
-# Economy -> Platform (11 edges)
+# Economy -> Platform (12 edges)
+Bank -> Platform/Composition | 1
 Bank -> Platform/Entity | 7
 Currency -> Platform/Core | 1
 Currency -> Platform/Entity | 3

@@ -1,6 +1,7 @@
 using Microsoft.Extensions.DependencyInjection;
 using SWLOR.Game.Server.Domain.Character;
 using SWLOR.Game.Server.Domain.Core;
+using SWLOR.Game.Server.Domain.Economy;
 using SWLOR.Game.Server.Domain.Quests;
 using SWLOR.Game.Server.Domain.World;
 
@@ -20,6 +21,9 @@ namespace SWLOR.Game.Server.Composition
 
             // Character
             services.AddSingleton<IAchievementService, AchievementService>();
+
+            // Economy
+            services.AddSingleton<IBankService, BankService>();
 
             // Quests
             services.AddSingleton<IFactionService, FactionService>();

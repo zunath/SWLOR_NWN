@@ -39,13 +39,17 @@ if [ -z "$OUT" ]; then
     exit 2
 fi
 if [ ${#PROJECTS[@]} -eq 0 ]; then
-    PROJECTS=(SWLOR.Game.Server.Tests SWLOR.CombatSim.Tests SWLOR.CLI.Tests SWLOR.NWN.Formats.Tests)
+    PROJECTS=(SWLOR.Game.Server.Tests SWLOR.Game.Server.CharacterizationTests SWLOR.CombatSim.Tests SWLOR.CLI.Tests
+              SWLOR.NWN.Formats.Tests)
 fi
 
 cd "$(dirname "${BASH_SOURCE[0]}")/../.."
 mkdir -p "$OUT"
 OUT="$(cd "$OUT" && pwd)"
 
+# Each project is its own dotnet test process, one after the other. The characterization tests seed the global
+# game Random, so they must never share a process (or run in parallel) with other projects that use it.
+#
 # Projects deliberately not run:
 #   SWLOR.Game.Server.EngineTests   runs inside a real nwserver in Docker (Readmes/EngineTesting.md).
 #   SWLOR.NWN.Formats.Corpus.Tests  reads the licensed NWN base-game corpus (NWN_INSTALL_ROOT), which hosted runners

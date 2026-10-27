@@ -2,12 +2,12 @@
   "function": "UsePerkFeat.TryUseAbility",
   "description": "Activates representative Lightsaber abilities through the real activation pipeline and records the outcome of each.",
   "seed": 20261031,
-  "inputs": "Each ability is used by a fresh nw_bandit001 (2000 HP, 9999 FP and stamina, no regeneration) on the target its behavior case names: itself, a hostile training dummy or a friendly creature one and a half metres away. The clock is frozen at 2026-01-15 12:00:00 UTC, so effect durations are the full applied durations. Random is seeded with 20261031 plus the ability's position immediately before the activation. HP columns are the change from before the activation; effects are written 'name:remainingSeconds'.",
+  "inputs": "Each ability is used by a fresh nw_bandit001 (2000 HP, 9999 FP and stamina, no regeneration) on the target its behavior case names: itself, a hostile training dummy or a friendly creature one and a half metres away. The clock is frozen at 2026-01-15 12:00:00 UTC, so effect durations are the full applied durations. Random is seeded with 20261031 plus the ability's position immediately before the activation. HP columns are the change from before the activation; effects are written 'name:remainingSeconds'. The recast column is the time from the frozen clock until the cooldown the activation started ends, or 'none'.",
   "rowCount": 3,
-  "columns": ["ability", "feat", "activation", "target", "recastGroup", "=> accepted", "=> denial", "=> impact", "=> fpSpent", "=> staminaSpent", "=> casterHP", "=> targetHP", "=> targetEnmity", "=> casterEffects", "=> targetEffects", "=> queued"],
+  "columns": ["ability", "feat", "activation", "target", "recastGroup", "=> accepted", "=> denial", "=> impact", "=> fpSpent", "=> staminaSpent", "=> casterHP", "=> targetHP", "=> targetEnmity", "=> casterEffects", "=> targetEffects", "=> queued", "=> recast"],
   "rows": [
-    ["ShatteringStrike1", 2774, "Casted", "HostileCreature", "ShatteringStrike", true, "", "targets 1, critical hits 0, damage 25, skill Lightsaber", 6, 4, 0, -25, 125, [], ["Sunder:30"], false],
-    ["ImbuementStance1", 2777, "Casted", "Self", "ImbuementStance", true, "", "targets 0, critical hits 0, damage 0, skill Lightsaber", 0, 0, 0, 0, 0, ["Imbuement Stance:-1"], [], false],
-    ["SunderingSweep1", 2792, "Casted", "HostileCreature", "SunderingSweep", true, "", "targets 1, critical hits 0, damage 19, skill Lightsaber", 6, 4, 0, 0, 0, [], [], false]
+    ["ShatteringStrike1", 2774, "Casted", "HostileCreature", "ShatteringStrike", true, "", "targets 1, critical hits 0, damage 25, skill Lightsaber", 6, 4, 0, -25, 125, [], ["Sunder:30"], false, "24s"],
+    ["ImbuementStance1", 2777, "Casted", "Self", "ImbuementStance", true, "", "targets 0, critical hits 0, damage 0, skill Lightsaber", 0, 0, 0, 0, 0, ["Imbuement Stance:-1"], [], false, "30s"],
+    ["SunderingSweep1", 2792, "Casted", "HostileCreature", "SunderingSweep", true, "", "targets 1, critical hits 0, damage 19, skill Lightsaber", 6, 4, 0, 0, 0, [], [], false, "24s"]
   ]
 }

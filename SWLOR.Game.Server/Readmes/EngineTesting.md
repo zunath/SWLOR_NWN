@@ -597,7 +597,7 @@ What they record (snapshot area in brackets):
 |---|---|
 | Weapon attacks, one per weapon class (14) [`Combat/WeaponAttacks.*`] | 30 swings through the native `ResolveAttackRoll` and `GetDamageRoll` hooks: hit, critical, miss, physical damage |
 | Weapon procs, melee and ranged (2) [`Combat/WeaponProcs.*`] | The same swings with damage, bleed, poison and stamina-restore riders: damage, stamina, status effects on the target |
-| Abilities, one per skill (20) [`Ability/*`] | Representative abilities through `UsePerkFeat.TryUseAbility`: accepted or denied, impact summary, FP and stamina spent, HP change, status effects with remaining seconds, queued state |
+| Abilities, one per skill (20) [`Ability/*`] | Representative abilities through `UsePerkFeat.TryUseAbility`: accepted or denied, impact summary, FP and stamina spent, HP change, status effects with remaining seconds, queued state, recast (seconds from the frozen clock until the cooldown the activation started ends) |
 | Status effects (1) [`StatusEffect/TickingAndExpiry`] | Bleed, poison, burn, regeneration, stat buffs, stun, extend and refresh, stepped a second at a time over a frozen clock |
 | Kill (1) [`Skill/KillXP`, `Loot/KillCorpse`] | Skill XP a headless player earns from combat points when a real module creature dies, and the corpse loot |
 | Loot tables (1) [`Loot/TableDraws`] | `Loot.SpawnLoot` draws from eight table setups: items, stack sizes, item properties, gold |
@@ -607,7 +607,7 @@ How they stay deterministic:
 
 - **Clock.** Every scenario creates a `FrozenClock` (`Characterization/Support`), which holds `Clock` at 2026-01-15 12:00 UTC
   and moves it only when the scenario calls `Advance`. Status effect durations, tick anchors and temporary modifier
-  expiry are then functions of the scenario's own steps. Status effects tick by advancing one second and running
+  expiry are then functions of the scenario's own steps. Only the files listed in `tools/Refactor/ClockSeamFiles.txt` read time through `Clock` (it includes `Recast`, `AbilityCooldownVisual`, `Enmity`, `MeleeTechnique`, `AIService` and the crafting window); a reader outside the list still sees the system clock, so add its file there and re-run `tools/Refactor/Apply-ClockSeam.ps1` before recording what it produces. Status effects tick by advancing one second and running
   `StatusEffect.OnNWNStatusEffectInterval`, which is what the server does every second.
 - **Random.** `ctx.SeedRandom(seed)` runs inside the same synchronous step as the calls that roll, and is repeated
   before each independent step, so a draw by another system between frames cannot shift a sequence. Weapon swings are
@@ -615,8 +615,8 @@ How they stay deterministic:
 - **Quiet fixtures.** `ScenarioArena` instances a flat corridor and clears its spawn tables; `ScenarioActors` spawns
   stock humanoids with AI, heartbeat and perception scripts removed, regeneration suppressed and 2000 HP. Nothing but the
   scenario acts.
-- **Recorded values.** Only values that do not depend on object ids, wall-clock time or frame timing: no recast
-  timestamps, no ids. Each snapshot's `inputs` line states the fixtures and the seeds.
+- **Recorded values.** Only values that do not depend on object ids, wall-clock time or frame timing: recast cooldowns are
+  recorded as seconds from the frozen clock, never as absolute times, and there are no ids. Each snapshot's `inputs` line states the fixtures and the seeds.
 
 Snapshots use the JSON format of `SWLOR.Game.Server.CharacterizationTests` (`Characterization/Support/SnapshotTable.cs` and
 `SnapshotJson.cs` are copies; the engine-test assembly does not reference that project). The server runs in a

@@ -1,4 +1,5 @@
 using System.Collections.Generic;
+using System.Globalization;
 using System.Linq;
 using System.Threading.Tasks;
 using SWLOR.Game.Server.Core;
@@ -26,12 +27,14 @@ public static class AbilityRun
     private const float DamageWaitSeconds = 6f;
     private const int FramesToSettle = 4;
     private const string QueuedFallbackWeapon = "nw_wswss001";
+    private const string NpcRecastLocalPrefix = "ABILITY_RECAST_ID_";
 
     public static readonly string[] InputColumns = { "ability", "feat", "activation", "target", "recastGroup" };
 
     public static readonly string[] OutputColumns =
     {
-        "accepted", "denial", "impact", "fpSpent", "staminaSpent", "casterHP", "targetHP", "targetEnmity", "casterEffects", "targetEffects", "queued"
+        "accepted", "denial", "impact", "fpSpent", "staminaSpent", "casterHP", "targetHP", "targetEnmity", "casterEffects", "targetEffects", "queued",
+        "recast"
     };
 
     /// <summary>Runs the case and returns the snapshot row: the input cells followed by the output cells.</summary>
@@ -145,7 +148,8 @@ public static class AbilityRun
                 target == caster ? 0 : Enmity.GetEnmityTable(target).GetValueOrDefault(caster),
                 DescribeEffects(caster),
                 target == caster ? new List<string>() : DescribeEffects(target),
-                queued
+                queued,
+                DescribeRecast(caster, ability.RecastGroup)
             };
 
             if (queued)
@@ -158,6 +162,22 @@ public static class AbilityRun
             if (target != caster)
                 StatusEffect.RemoveAllStatusEffects(target);
         }
+    }
+
+    /// <summary>
+    /// The recast the activation started on the caster, as seconds from the frozen clock until it ends, or "none".
+    /// <c>Recast</c> keeps a non-player creature's cooldown as a local string holding the end time, which is read back here.
+    /// </summary>
+    private static string DescribeRecast(uint creature, RecastGroup group)
+    {
+        if (group == RecastGroup.Invalid)
+            return "none";
+
+        if (!RecastTimestamp.TryParse(GetLocalString(creature, NpcRecastLocalPrefix + (int)group), out var endsAt))
+            return "none";
+
+        var seconds = Math.Round((endsAt - Clock.UtcNow).TotalSeconds, 3);
+        return seconds.ToString("0.###", CultureInfo.InvariantCulture) + "s";
     }
 
     private static List<string> DescribeEffects(uint creature)

@@ -40,7 +40,7 @@ Starting prompt for a new session:
 ## Branch
 
 - Integration branch: `feature/maintainability-refactor` (cut from `master` at `468f6d706`).
-- Last sync with `master`: 2026-10-27, `6d49650f7` (see Sync log).
+- Last sync with `master`: 2026-10-27, `df3034336` (see Sync log).
 - **Branch rule:** the repository allows only squash merges on GitHub. Anything that contains a merge of `master` (every sync) must reach this branch as a real merge commit, or later syncs re-apply `master`'s commits. Run `tools/Refactor/Sync-MaintainabilityBranch.ps1` in a worktree checked out on `feature/maintainability-refactor` itself and push the merge commit after the script passes; when a sync needs hand-ported conflict resolutions, do them on a work branch, get the Codex review, then merge that branch locally with `git merge --no-ff` and push (GitHub marks the pull request merged). Ordinary work-item pull requests are squash-merged as usual.
 - Shared packages: `Nwn.Hosting`, `Nwn.Hosting.Contracts`, `Nwn.Hosting.Testing` `0.1.0-preview.1` on
   nuget.org, source at https://github.com/zunath/NWN.Hosting (used from Phase 4).
@@ -71,9 +71,9 @@ Status: `open`, `in progress`, `review` (pull request open), `done`, `blocked`.
 | P2-A2 | Wave A, Social: `ChatPortraitTells`, `Party`, `ChatCommand`, `PlayerList` (about 2,000 lines) | P2-0 | Sonnet | done | [#2934](https://github.com/zunath/SWLOR_NWN/pull/2934) | Coverage 0% -> 93-98% each. Native reads (`g_pAppManager`) sit behind `protected virtual` methods whose default is the original code; engine structures with native finalizers likewise (DependencyInjection.md). Engine tests reach party caches through `EngineTests/Framework/PartyCaches.cs`. |
 | P2-A3 | Wave A, Administration: the eight `DM*` services (about 1,970 lines) | P2-0 | Sonnet | done | [#2937](https://github.com/zunath/SWLOR_NWN/pull/2937) | Coverage 0% -> 97-100% (DMPresence 80%; the rest needs the native engine or static DB/window table). Roslyn harnesses of unconverted code now take instance members through `DMPossessionHarness.InstanceMethod`/`InstanceField`; `RecordingProxy` fixed for `out` value-type parameters and engine-structure finalizers; `FakeJsonEngine` added. Tests that reach a converted facade need a `FacadeContainer` (merging the base can expose missing ones). |
 | P2-A4 | Wave A, World I: `Notes`, `Area`, `Planet`, `Traps`, `HoloCom` (about 1,600 lines) | P2-0 | Sonnet | done | [#2942](https://github.com/zunath/SWLOR_NWN/pull/2942) | Coverage: Notes 43% -> 100%, Area 15% -> 97%, Planet 74% -> 100%, Traps 1% -> 97%, HoloCom 4% -> 98%. Calls into unconverted services that cannot run in unit tests sit behind `protected virtual` wrappers (Traps). Replaced the Roslyn recompile of `Traps.RunDetectionSweep` and reflection into Area/Planet internals. New helpers `Support/LocalVariables`, `Support/LoadedPlanets`. Engine tests compiled, not run. |
-| P2-A5 | Wave A, World II: `Weather`, `Music` (about 1,860 lines) | P2-0 | Sonnet | open | | |
-| P2-A6 | Wave A, World III: `Fishing`, `Shuttle` (about 2,300 lines) | P2-0 | Sonnet | open | | |
-| P2-A7 | Wave A, Quests: `QuestContractBoard`, then `Quest` (about 3,800 lines; split if needed) | P2-0 | Sonnet | open | | |
+| P2-A5 | Wave A, World II: `Weather`, `Music` (about 1,860 lines) | P2-0 | Sonnet | in progress | | Branch `claude/mr-p2-a5`, worktree `.claude/worktrees/mr-p2-a5` |
+| P2-A6 | Wave A, World III: `Fishing`, `Shuttle` (about 2,300 lines) | P2-0 | Sonnet | in progress | | Branch `claude/mr-p2-a6`, worktree `.claude/worktrees/mr-p2-a6` |
+| P2-A7 | Wave A, Quests: `QuestContractBoard`, then `Quest` (about 3,800 lines; split if needed) | P2-0 | Sonnet | in progress | | Branch `claude/mr-p2-a7`, worktree `.claude/worktrees/mr-p2-a7`; may stop after `QuestContractBoard` if one PR gets too big |
 | P2-A8 | Wave A: `Property` alone (about 7,700 lines; split by responsibility) | P2-0 | Sonnet build, Opus review | open | | |
 | P2-A9 | Wave A: `Space` alone (about 3,600 lines) | P2-0 | Sonnet build, Opus review | open | | |
 | P0-6 | Scripted live smoke run framework (spec in MaintainabilityRefactorSpecs.md) | - | Sonnet | done | [#2906](https://github.com/zunath/SWLOR_NWN/pull/2906) | `tools/RunSmokeTest.ps1` / `tools/SmokeTest.py` (`-Repeat`, `-ServerOnly`, `-SkipBuild`, `-PublicCdKey`), 69 tool tests, InEngineVisualVerification.md "Smoke run" section. Server boot checks pass (two identical server-only runs). Results of runs so far: `C:\Temp\mr-p0-6` (local). |
@@ -86,17 +86,23 @@ Phases 1-4 and the final cutover get their own items when Phase 0 is done.
 
 ## In flight
 
-- P0-6b (Sonnet): branch `claude/mr-p0-6b`, worktree `C:\Projects\SWLOR_NWN\.claude\worktrees\mr-p0-6`; started by the first coordinating session after the owner supplied the public key. A new coordinator reviews and merges its pull request when it reports (check `gh pr list --base feature/maintainability-refactor`).
+Coordinator since 2026-10-27 afternoon: the session "SWLOR maintainability refactor coordination" (worktree
+`.claude/worktrees/mynock-sonic-shriek-b33206`, checked out on `feature/maintainability-refactor`). The first coordinator
+("Codebase refactoring plan") starts nothing new and leaves P0-6b's merge to this coordinator.
+
+- P0-6b (Sonnet, run by the first coordinator's session): branch `claude/mr-p0-6b`, worktree `C:\Projects\SWLOR_NWN\.claude\worktrees\mr-p0-6`; live stacks `swlor-live-*p06*`. When it reports, review and merge its pull request and check no live stack is left.
+- P2-A5, P2-A6, P2-A7 (Sonnet subagents of the current coordinator; see Work queue). If this coordinator stops, check `gh pr list --base feature/maintainability-refactor` and each worktree before restarting an item.
+- Engine snapshot refresh after the `df3034336` sync (`Update-EngineCharacterization.ps1`, in the coordinator worktree).
 
 ## Next actions
 
-1. **Daily sync, overdue** (last: 2026-10-27 `6d49650f7`): run `tools/Refactor/Sync-MaintainabilityBranch.ps1` in a worktree
-   checked out on `feature/maintainability-refactor` (branch rule above), push the merge commit, record it in the sync log;
-   if master changed content, run `tools/Refactor/Update-EngineCharacterization.ps1` and explain every changed row.
-2. Phase 2 Wave A: P2-A5, P2-A6, P2-A7 (then A8 `Property`, A9 `Space`, both Opus-reviewed). At most three agents.
+1. Finish the engine snapshot refresh for the `df3034336` sync; explain every changed row by a master commit and record it in the sync log.
+2. Review and merge P2-A5, P2-A6, P2-A7 as they report (squash; merge the base into the later ones for list conflicts in
+   `ServiceRegistrations.cs` / `ConvertedServices.json`). Then A8 `Property` and A9 `Space` (Opus review). At most three agents.
 3. Then Waves B-D per the specs' Phase 2 section (the `FacadeAccessor` cache must land before Wave D).
-4. P0-6b is running (see In flight).
-5. GitHub Actions is billing-locked; the owner said not to wait. The gate is a local `scripts/ci/run-unit-tests.sh` run.
+4. Merge P0-6b when it reports (see In flight).
+5. Next daily sync due 2026-10-28.
+6. GitHub Actions is billing-locked; the owner said not to wait. The gate is a local `scripts/ci/run-unit-tests.sh` run.
 
 ## Coverage baseline (P0-2, 2026-10-27, branch at the P1-1 merge)
 
@@ -131,6 +137,7 @@ Existing bugs found while locking outputs. They are recorded for the owner and s
 | Date | `master` commit merged | Conflicts | Parity | By |
 |---|---|---|---|---|
 | 2026-10-27 | 6d49650f7 | none | identical to master 6d49650f7 (132 characterization snapshot files, 662 handlers, 39 engine-test handlers); tests: 6443 passed, 0 failed. Snapshots regenerated for master's #2898 (recipe 6288 `SithPowerGlove`, 15 loot tables). | Claude Sonnet 5.5 (P0-7) |
+| 2026-10-27 | df3034336 (9 commits) | none | identical to master df3034336 (132 characterization snapshot files, 662 handlers, 39 engine-test handlers) after regenerating one row: `Ability/AbilityPresentation.json` Inner Circle Surge gains `DamageImpactVisualEffect=Vfx_Imp_Lightning_M` (master #2938). Tests: Game.Server.Tests 7205 passed, Characterization 148, Architecture 141 (+1 skipped), NWN.API 341. Merge `9f31c2b05`, refresh `2800030d9`. Engine snapshot refresh: running. | Claude Opus 5.5 (coordinator) |
 
 ## Port log
 

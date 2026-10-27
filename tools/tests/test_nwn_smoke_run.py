@@ -39,10 +39,10 @@ class ScenarioTests(unittest.TestCase):
                          [definition.id for definition in smoke.SCENARIO])
         self.assertEqual(len(smoke.SCENARIO), len({definition.id for definition in smoke.SCENARIO}))
 
-    def test_unautomated_steps_carry_a_reason_and_automated_ones_do_not(self):
-        automated = {'boot', 'login', 'logout'}
+    def test_every_step_is_automated_and_only_the_boot_works_without_a_client(self):
         for definition in smoke.SCENARIO:
-            self.assertEqual(definition.id not in automated, definition.manual_reason is not None, definition.id)
+            self.assertIsNone(definition.manual_reason, definition.id)
+            self.assertEqual(definition.id != 'boot', definition.needs_client, definition.id)
 
     def test_screenshot_labels_sort_in_scenario_order_and_are_valid_capture_labels(self):
         labels = [smoke.screenshot_label(definition.id, 'shot') for definition in smoke.SCENARIO]
@@ -259,9 +259,9 @@ class ClientStepTests(unittest.TestCase):
 
 
 class RunStepTests(unittest.TestCase):
-    def run_one(self, step_id, action, server_only=False):
+    def run_one(self, step_id, action, server_only=False, definition=None):
         run = smoke.SmokeRun(options(server_only=server_only), 'smoke-test', Path(tempfile.gettempdir()))
-        definition = next(d for d in smoke.SCENARIO if d.id == step_id)
+        definition = definition or next(d for d in smoke.SCENARIO if d.id == step_id)
         return run.run_step(definition, action)
 
     def test_checks_decide_the_status_of_an_automated_step(self):
@@ -277,9 +277,16 @@ class RunStepTests(unittest.TestCase):
         self.assertEqual((smoke.FAIL, 'the container stopped'), (step.status, step.detail))
 
     def test_a_step_without_automation_is_manual_with_its_reason_and_never_runs(self):
-        step = self.run_one('combat', lambda step: self.fail('a manual step must not run'))
-        self.assertEqual(smoke.MANUAL, step.status)
-        self.assertTrue(step.detail)
+        manual = smoke.StepDefinition('combat', 'Needs a person', 'A person has to click the target.')
+        step = self.run_one('combat', lambda step: self.fail('a manual step must not run'), definition=manual)
+        self.assertEqual((smoke.MANUAL, 'A person has to click the target.'), (step.status, step.detail))
+
+    def test_any_exception_in_a_step_is_that_steps_failure_not_the_runs(self):
+        def action(step):
+            raise KeyError('Quests')
+        step = self.run_one('quest', action)
+        self.assertEqual(smoke.FAIL, step.status)
+        self.assertIn('KeyError', step.detail)
 
     def test_client_steps_are_blocked_in_a_server_only_run(self):
         step = self.run_one('login', lambda step: self.fail('no client is attached'), server_only=True)
@@ -336,11 +343,15 @@ class RunTests(unittest.TestCase):
                 raise LiveStackError('no server')
             run.create_stack = lambda: None
             run.step_boot, run.step_login, run.step_logout = boot_fails, boot_fails, boot_fails
-            results = run.execute()
+            manual = tuple(smoke.StepDefinition(d.id, d.title, 'by hand') if d.id == 'combat' else d
+                           for d in smoke.SCENARIO)
+            with patch.object(smoke, 'SCENARIO', manual):
+                results = run.execute()
             statuses = {step.id: step.status for step in results.steps}
             self.assertEqual(smoke.FAIL, statuses['boot'])
             self.assertEqual(smoke.SKIPPED, statuses['login'])
             self.assertEqual(smoke.SKIPPED, statuses['logout'])
+            self.assertEqual(smoke.SKIPPED, statuses['quest'])
             self.assertEqual(smoke.MANUAL, statuses['combat'])
             written = json.loads((Path(folder) / 'results.json').read_text('utf-8'))
             self.assertEqual(9, len(written['steps']))

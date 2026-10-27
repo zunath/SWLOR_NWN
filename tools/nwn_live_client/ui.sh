@@ -82,6 +82,45 @@ case "$action" in
         xdotool mouseup 1
         sleep 1
         ;;
+    drag-slow)
+        # Like drag, but with eight intermediate pointer moves: NUI windows and some inventory
+        # drops ignore a drag that jumps straight to its end point.
+        [ $# -eq 4 ] || die "Usage: drag-slow X1 Y1 X2 Y2"
+        point "$1" "$2"; point "$3" "$4"; w=$(window)
+        xdotool windowfocus --sync "$w"
+        xdotool mousemove --window "$w" "$1" "$2"
+        sleep 0.5
+        xdotool mousedown 1
+        for step in 1 2 3 4 5 6 7 8; do
+            xdotool mousemove --window "$w" $(( $1 + ($3 - $1) * step / 8 )) $(( $2 + ($4 - $2) * step / 8 ))
+            sleep 0.2
+        done
+        sleep 0.4
+        xdotool mouseup 1
+        sleep 1
+        ;;
+    hostile-scan)
+        # Hovers each point in turn and prints the first one whose name label (just above the
+        # pointer) is hostile red; prints nothing when none is. One call instead of a move and a
+        # capture per point, which is what makes a wide search practical.
+        [ $# -ge 2 ] && [ $(($# % 2)) -eq 0 ] || die "Usage: hostile-scan X Y [X Y ...]"
+        w=$(window)
+        xdotool windowfocus --sync "$w"
+        while [ $# -ge 2 ]; do
+            x=$1; y=$2; shift 2
+            point "$x" "$y"
+            xdotool mousemove --window "$w" "$x" "$y"
+            sleep 0.8
+            left=$(( x > 70 ? x - 70 : 0 )); top=$(( y > 45 ? y - 45 : 0 ))
+            red=$(import -window "$w" -crop "140x50+$left+$top" -depth 8 txt:- | tr -d ' ' \
+                | sed -n 's/^[0-9]*,[0-9]*:(\([0-9]*\),\([0-9]*\),\([0-9]*\).*/\1 \2 \3/p' \
+                | awk '$1 > 190 && $2 < 120 && $3 < 120 { n++ } END { print n + 0 }')
+            if [ "$red" -ge 40 ]; then
+                echo "$x $y"
+                break
+            fi
+        done
+        ;;
     key)
         [ $# -eq 1 ] || die "Usage: key KEYSYM (for example Return, Escape, ctrl+a)"
         w=$(window)

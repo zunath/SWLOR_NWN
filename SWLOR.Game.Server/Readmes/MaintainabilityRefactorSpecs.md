@@ -290,3 +290,51 @@ against `FakeNWScript`; Codex loop clean.
 Same approach and proofs as P1-1 for the static plugin wrappers in `SWLOR.NWN.API/NWNX/*Plugin.cs`: one interface per
 plugin (`IChatPlugin`, ...), a pass-through implementation holding the moved bodies, a runtime with an override
 scope, forwarding statics, and generated fakes in `SWLOR.NWN.API.Testing`. Reuse the P1-1 generator.
+
+## Phase 2 - Dependency injection (conversion recipe and order)
+
+**Decisions (coordinator, 2026-10-27):**
+- Container: `Microsoft.Extensions.DependencyInjection` in `SWLOR.Game.Server`, built once at boot in a new
+  `Composition/` folder, with `ValidateOnBuild` and `ValidateScopes`. Every game service is a singleton (process
+  lifetime; per reload generation in Phase 4). No scoped lifetimes in this phase.
+- **Facades stay until the end.** A converted service keeps its static class (`Service/<Name>.cs`) with the same public
+  members, each forwarding to the container's instance. Content code, definitions and handlers keep calling the static
+  API, so nothing outside the service changes. Only facades may resolve from the container (through one internal
+  accessor in `Composition/`); an architecture test forbids service location anywhere else.
+- **Handlers stay on the facades.** `[NWNEventHandler]` methods remain static methods of the facade type and forward
+  to the instance, so the handler-order manifest (P0-10) keeps its names. Moving handlers off the facades is part of
+  facade removal at the end of the phase.
+- **Engine calls stay bare.** Converted code keeps calling NWScript and NWNX through the global static imports; tests
+  swap the engine with `NWScriptRuntime.Override` and the P1-2 plugin runtimes. Do not inject `INWScript`.
+- Instance class: `<Name>Service` (or the existing folder name's convention) implementing `I<Name>Service`, in the
+  service's domain namespace (the P0-8 domain map). Static mutable state becomes instance fields. Dependencies on other
+  converted services are constructor-injected interfaces; calls to not-yet-converted services keep using their static
+  facades (they convert later).
+- Each conversion pull request also replaces that service's Roslyn-recompile or reflection-reset test harnesses (the
+  rest of Phase 1) with ordinary tests using the seams, and brings the service's own lines to at least 70% coverage.
+
+**Recipe for one service (one pull request; Sonnet builds, Opus reviews behaviour-sensitive ones):**
+1. Read the service, its folder, its callers (P0-8 baseline edges), its handlers (manifest) and its tests.
+2. Create the interface and instance class; move logic and state verbatim into instance members; the facade forwards.
+3. Register it in `Composition/` (one line); add it to the converted-services list that the architecture test uses to
+   forbid static mutable fields in converted services.
+4. Move files into the domain namespace if the map says so. File moves change reflection order: the manifest keeps the
+   handler order; if `ScriptHandlerManifestBaselineTests` fails for that reason, delete it in this pull request as its
+   comment says (the layout-independence tests remain).
+5. Tests: unit tests against the instance with fakes (engine runtimes, fake dependencies); coverage of the service's
+   lines at least 70%; CharacterizationTests unchanged; Architecture.Tests unchanged except the converted-services list;
+   handler-order tests unchanged.
+6. Record in the status file: service, pull request, coverage before and after.
+
+**Order (waves; within a wave, up to three services in parallel when their files do not overlap):**
+- **P2-0 pilot:** the composition root, the facade accessor, the architecture rules, `Readmes/DependencyInjection.md`,
+  and three small services with handlers: `Achievement` (Character), `Faction` (Quests), `Taxi` (World). The pilot
+  settles the pattern; later items follow it.
+- **Wave A, peripheral domains:** World, Economy, Social, Administration, Quests, Space (services with few callers first).
+- **Wave B:** Items, Crafting, Companions, Creatures.
+- **Wave C, shared infrastructure:** Core services other than `DB` (Log, Cache, Messaging, ...), then `DB` alone with
+  extra review (persistence; data format must not change).
+- **Wave D, the hot core (last, short freeze each):** Character (`StatusEffect`, `Skill`, `Perk`, then `Stat`),
+  Abilities (`Ability`), Combat (`Combat`, split by responsibility as it converts).
+- **P2-Z facade removal:** move handlers to instance classes (update manifest names in place), replace static calls in
+  content code with injection where the caller is itself converted, delete facades area by area.

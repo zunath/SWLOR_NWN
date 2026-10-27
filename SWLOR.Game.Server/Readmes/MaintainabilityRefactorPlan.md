@@ -87,7 +87,8 @@ Each phase has a done check. A phase is finished only when its check passes on t
   forwards to a swappable instance, so no call site changes.
 - Replace the Roslyn-recompile and reflection-reset test harnesses where the seam makes them unnecessary.
 
-**Done:** every unit test that faked the engine indirectly uses the seam; output-locking parity holds.
+**Done:** the NWScript and NWNX seams are in with their proofs; output-locking parity holds. Tests that fake the engine
+indirectly (Roslyn recompiles, reflection resets) move to the seams service by service inside Phase 2.
 
 ### Phase 2 - Dependency injection
 

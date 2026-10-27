@@ -1,5 +1,4 @@
 using System.Linq;
-using System.Reflection;
 using System.Threading.Tasks;
 using SWLOR.Game.Server.Core;
 using SWLOR.Game.Server.EngineTests.Framework;
@@ -215,8 +214,7 @@ namespace SWLOR.Game.Server.EngineTests.Definitions
 
         private static void InvokeParty(string methodName, params object[] arguments)
         {
-            typeof(Party).GetMethod(methodName, BindingFlags.NonPublic | BindingFlags.Static)
-                .Invoke(null, arguments);
+            PartyCaches.Invoke(methodName, arguments);
         }
 
         private static async Task<uint> SpawnHeldCreatureAsync(EngineTestContext ctx, float xOffset, float yOffset)

@@ -18,8 +18,12 @@ public class FacadeForwardingTests
 {
     private static IEnumerable<TestCaseData> Services() => ConvertedServiceFixtures.AsTestCases();
 
+    // The facade's API is its public static methods and property getters, plus the internal static methods that code
+    // inside the server (a native hook, say) calls. Private members are the facade's own plumbing.
     private static IEnumerable<MethodInfo> FacadeMethods(Type facade) =>
-        facade.GetMethods(BindingFlags.Public | BindingFlags.Static | BindingFlags.DeclaredOnly).Where(method => !method.IsSpecialName);
+        facade.GetMethods(BindingFlags.Public | BindingFlags.NonPublic | BindingFlags.Static | BindingFlags.DeclaredOnly)
+            .Where(method => method.IsPublic || method.IsAssembly)
+            .Where(method => !method.IsSpecialName || method.Name.StartsWith("get_", StringComparison.Ordinal));
 
     private static MethodInfo Signature(Type contract, MethodInfo facadeMethod) =>
         contract.GetMethod(facadeMethod.Name, facadeMethod.GetParameters().Select(parameter => parameter.ParameterType).ToArray())
@@ -56,7 +60,9 @@ public class FacadeForwardingTests
             var call = proxy.Calls.Should().ContainSingle($"{service.Facade.Name}.{method.Name} makes exactly one call").Subject;
             call.Method.Name.Should().Be(method.Name);
             call.Arguments.Should().Equal(arguments, $"{service.Facade.Name}.{method.Name} passes its arguments through");
-            if (method.ReturnType != typeof(void))
+            if (method.ReturnType.IsValueType && method.ReturnType != typeof(void))
+                result.Should().Be(proxy.ReturnedBy(call.Method), $"{service.Facade.Name}.{method.Name} returns what the instance returned");
+            else if (method.ReturnType != typeof(void))
                 result.Should().BeSameAs(proxy.ReturnedBy(call.Method), $"{service.Facade.Name}.{method.Name} returns what the instance returned");
             provider.Dispose();
         }

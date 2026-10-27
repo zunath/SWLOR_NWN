@@ -56,6 +56,62 @@
     "Call": "SendMessageToPC(player, $\"You lost {Math.Abs(adjustBy)} points with the {factionDetail.Name} faction.\")"
   },
   {
+    "File": "SWLOR.Game.Server/Domain/Social/ChatCommandService.cs",
+    "Line": 68,
+    "Member": "HandleChatMessage",
+    "Delivery": "Retained",
+    "Call": "SendMessageToPC(sender, ColorToken.Red(\"Invalid chat command. Use '/help' to get a list of available commands.\"))"
+  },
+  {
+    "File": "SWLOR.Game.Server/Domain/Social/ChatCommandService.cs",
+    "Line": 85,
+    "Member": "HandleChatMessage",
+    "Delivery": "Retained",
+    "Call": "SendMessageToPC(sender, error)"
+  },
+  {
+    "File": "SWLOR.Game.Server/Domain/Social/ChatCommandService.cs",
+    "Line": 109,
+    "Member": "HandleChatMessage",
+    "Delivery": "Retained",
+    "Call": "SendMessageToPC(sender, ColorToken.Red(InvalidChatCommandMessage))"
+  },
+  {
+    "File": "SWLOR.Game.Server/Domain/Social/ChatCommandService.cs",
+    "Line": 155,
+    "Member": "ProcessChatCommand",
+    "Delivery": "Retained",
+    "Call": "SendMessageToPC(sender, error)"
+  },
+  {
+    "File": "SWLOR.Game.Server/Domain/Social/ChatCommandService.cs",
+    "Line": 164,
+    "Member": "ProcessChatCommand",
+    "Delivery": "Retained",
+    "Call": "SendMessageToPC(sender, ColorToken.Red(InvalidChatCommandMessage))"
+  },
+  {
+    "File": "SWLOR.Game.Server/Domain/Social/ChatPortraitTellsService.cs",
+    "Line": 74,
+    "Member": "CheckPortraitClick",
+    "Delivery": "Retained",
+    "Call": "SendMessageToPC(player, ColorToken.Red(\"That chat portrait may belong to a player who has logged out, so it could now point to someone else. \" +\n                    \"A tell started from it will not be sent. Use Send Tell in the Player List instead.\"))"
+  },
+  {
+    "File": "SWLOR.Game.Server/Domain/Social/ChatPortraitTellsService.cs",
+    "Line": 106,
+    "Member": "RefuseStalePortraitTell",
+    "Delivery": "Retained",
+    "Call": "SendMessageToPC(sender, ColorToken.Red(\"Tell not sent: the chat portrait you clicked may belong to a player who has logged out. \" +\n                \"Use Send Tell in the Player List instead.\"))"
+  },
+  {
+    "File": "SWLOR.Game.Server/Domain/Social/PlayerListService.cs",
+    "Line": 221,
+    "Member": "SendTell",
+    "Delivery": "Retained",
+    "Call": "ChatPlugin.SendMessage(channel, message, speaker, DMPresence.GetControlledCreature(target))"
+  },
+  {
     "File": "SWLOR.Game.Server/Domain/World/TaxiService.cs",
     "Line": 44,
     "Member": "RegisterTaxiDestination",
@@ -3941,55 +3997,6 @@
     "Call": "SendMessageToPC(player, ColorToken.Red(\"Use a DNA Extractor on this corpse to retrieve its DNA.\"))"
   },
   {
-    "File": "SWLOR.Game.Server/Service/ChatCommand.cs",
-    "Line": 70,
-    "Member": "HandleChatMessage",
-    "Delivery": "Retained",
-    "Call": "SendMessageToPC(sender, ColorToken.Red(\"Invalid chat command. Use '/help' to get a list of available commands.\"))"
-  },
-  {
-    "File": "SWLOR.Game.Server/Service/ChatCommand.cs",
-    "Line": 87,
-    "Member": "HandleChatMessage",
-    "Delivery": "Retained",
-    "Call": "SendMessageToPC(sender, error)"
-  },
-  {
-    "File": "SWLOR.Game.Server/Service/ChatCommand.cs",
-    "Line": 111,
-    "Member": "HandleChatMessage",
-    "Delivery": "Retained",
-    "Call": "SendMessageToPC(sender, ColorToken.Red(InvalidChatCommandMessage))"
-  },
-  {
-    "File": "SWLOR.Game.Server/Service/ChatCommand.cs",
-    "Line": 157,
-    "Member": "ProcessChatCommand",
-    "Delivery": "Retained",
-    "Call": "SendMessageToPC(sender, error)"
-  },
-  {
-    "File": "SWLOR.Game.Server/Service/ChatCommand.cs",
-    "Line": 166,
-    "Member": "ProcessChatCommand",
-    "Delivery": "Retained",
-    "Call": "SendMessageToPC(sender, ColorToken.Red(InvalidChatCommandMessage))"
-  },
-  {
-    "File": "SWLOR.Game.Server/Service/ChatPortraitTells.cs",
-    "Line": 79,
-    "Member": "CheckPortraitClick",
-    "Delivery": "Retained",
-    "Call": "SendMessageToPC(player, ColorToken.Red(\"That chat portrait may belong to a player who has logged out, so it could now point to someone else. \" +\n                    \"A tell started from it will not be sent. Use Send Tell in the Player List instead.\"))"
-  },
-  {
-    "File": "SWLOR.Game.Server/Service/ChatPortraitTells.cs",
-    "Line": 120,
-    "Member": "RefuseStalePortraitTell",
-    "Delivery": "Retained",
-    "Call": "SendMessageToPC(sender, ColorToken.Red(\"Tell not sent: the chat portrait you clicked may belong to a player who has logged out. \" +\n                \"Use Send Tell in the Player List instead.\"))"
-  },
-  {
     "File": "SWLOR.Game.Server/Service/Combat.cs",
     "Line": 536,
     "Member": "GetHighHPTargetCriticalDamageAdjustment",
@@ -5003,13 +5010,6 @@
     "Member": "Introduce",
     "Delivery": "Retained",
     "Call": "SendMessageToPC(presenter, ColorToken.Green(\n                $\"You introduced yourself as '{name}' to nearby players. They choose whether to remember this name.\"))"
-  },
-  {
-    "File": "SWLOR.Game.Server/Service/PlayerList.cs",
-    "Line": 235,
-    "Member": "SendTell",
-    "Delivery": "Retained",
-    "Call": "ChatPlugin.SendMessage(channel, message, speaker, DMPresence.GetControlledCreature(target))"
   },
   {
     "File": "SWLOR.Game.Server/Service/PlayerMarket.cs",

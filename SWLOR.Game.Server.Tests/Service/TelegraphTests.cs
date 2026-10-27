@@ -76,10 +76,11 @@ public class TelegraphTests
     {
         var source = File.ReadAllText(ResolveRepositoryPath(
             "SWLOR.Game.Server",
-            "Service",
-            "Party.cs"));
-        var addPartyStart = source.IndexOf("private static void AddToParty", StringComparison.Ordinal);
-        var removePartyStart = source.IndexOf("private static void RemoveCreatureFromParty", StringComparison.Ordinal);
+            "Domain",
+            "Social",
+            "PartyService.cs"));
+        var addPartyStart = source.IndexOf("private void AddToParty", StringComparison.Ordinal);
+        var removePartyStart = source.IndexOf("private void RemoveCreatureFromParty", StringComparison.Ordinal);
 
         addPartyStart.Should().BeGreaterThan(-1);
         removePartyStart.Should().BeGreaterThan(-1);

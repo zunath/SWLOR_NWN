@@ -1,16 +1,18 @@
 using System.Collections.Generic;
-using System.Linq;
+using SWLOR.Game.Server.Composition;
 using SWLOR.Game.Server.Core;
-using SWLOR.NWN.API.NWNX;
-using NWNXLib = NWN.Native.API.NWNXLib;
+using SWLOR.Game.Server.Domain.Social;
 
 namespace SWLOR.Game.Server.Service
 {
+    /// <summary>
+    /// The static API of the party caches. The logic and state live in <see cref="IPartyService"/>; every member here
+    /// forwards to the container's instance, and the event handlers stay here so their names in the handler order
+    /// manifest do not change.
+    /// </summary>
     public static class Party
     {
-        private static readonly Dictionary<Guid, List<uint>> _parties = new();
-        private static readonly Dictionary<uint, Guid> _creatureToParty = new();
-        private static readonly Dictionary<Guid, uint> _partyLeaders = new();
+        private static IPartyService Instance => FacadeAccessor.Resolve<IPartyService>();
 
         /// <summary>
         /// When a player accepts an invitation and the engine puts them in the inviter's party, add them to the caches.
@@ -19,47 +21,7 @@ namespace SWLOR.Game.Server.Service
         [NWNEventHandler(ScriptName.OnPartyAcceptInvitationAfter)]
         public static void JoinParty()
         {
-            var creature = OBJECT_SELF;
-            var requester = StringToObject(EventsPlugin.GetEventData("INVITED_BY"));
-
-            if (!GetFactionEqual(creature, requester) || IsInParty(requester, creature))
-                return;
-
-            // Accepting moves the player out of any party they were already in.
-            RemoveCreatureFromParty(creature);
-            AddToParty(requester, creature);
-        }
-
-        private static void AddToParty(uint requester, uint creature)
-        {
-            // This is a brand new party.
-            // Add both the requester and the creature to the cache.
-            // Mark the requester as the party leader.
-            if (!_creatureToParty.ContainsKey(requester))
-            {
-                var partyId = Guid.NewGuid();
-                _parties[partyId] = new List<uint>
-                {
-                    requester,
-                    creature
-                };
-                _partyLeaders[partyId] = requester;
-                _creatureToParty[creature] = partyId;
-                _creatureToParty[requester] = partyId;
-            }
-            // This is an existing party.
-            // Add the creature to the party cache.
-            else
-            {
-                var partyId = _creatureToParty[requester];
-                _parties[partyId].Add(creature);
-                _creatureToParty[creature] = partyId;
-            }
-
-            // Party members already standing in each other's auras never re-fire the aura enter event.
-            Ability.EnrollPartyMemberInAuraRanges(creature);
-
-            Telegraph.UpdateShadersForPlayers(GetAllPartyMembers(requester));
+            Instance.JoinParty();
         }
 
         /// <summary>
@@ -68,10 +30,7 @@ namespace SWLOR.Game.Server.Service
         [NWNEventHandler(ScriptName.OnAssociateAddBefore)]
         public static void AssociateJoinParty()
         {
-            var owner = OBJECT_SELF;
-            var associate = StringToObject(EventsPlugin.GetEventData("ASSOCIATE_OBJECT_ID"));
-
-            AddToParty(owner, associate);
+            Instance.AssociateJoinParty();
         }
 
         /// <summary>
@@ -80,8 +39,7 @@ namespace SWLOR.Game.Server.Service
         [NWNEventHandler(ScriptName.OnAssociateRemoveBefore)]
         public static void AssociateLeaveParty()
         {
-            var associate = StringToObject(EventsPlugin.GetEventData("ASSOCIATE_OBJECT_ID"));
-            RemoveCreatureFromParty(associate);
+            Instance.AssociateLeaveParty();
         }
 
         /// <summary>
@@ -90,8 +48,7 @@ namespace SWLOR.Game.Server.Service
         [NWNEventHandler(ScriptName.OnPartyLeaveBefore)]
         public static void LeaveParty()
         {
-            var creature = StringToObject(EventsPlugin.GetEventData("LEAVING"));
-            RemoveCreatureFromParty(creature);
+            Instance.LeaveParty();
         }
 
         /// <summary>
@@ -101,14 +58,7 @@ namespace SWLOR.Game.Server.Service
         [NWNEventHandler(ScriptName.OnPartyKickAfter)]
         public static void KickFromParty()
         {
-            var kicker = OBJECT_SELF;
-            var kicked = StringToObject(EventsPlugin.GetEventData("KICKED"));
-
-            // The engine refuses kicks from anyone but the leader.
-            if (!IsInParty(kicker, kicked) || GetFactionEqual(kicker, kicked))
-                return;
-
-            RemoveCreatureFromParty(kicked);
+            Instance.KickFromParty();
         }
 
         /// <summary>
@@ -117,9 +67,7 @@ namespace SWLOR.Game.Server.Service
         [NWNEventHandler(ScriptName.OnPartyTransferLeadershipBefore)]
         public static void TransferLeadership()
         {
-            var creature = StringToObject(EventsPlugin.GetEventData("NEW_LEADER"));
-            var partyId = _creatureToParty[creature];
-            _partyLeaders[partyId] = creature;
+            Instance.TransferLeadership();
         }
 
         /// <summary>
@@ -128,8 +76,7 @@ namespace SWLOR.Game.Server.Service
         [NWNEventHandler(ScriptName.OnModuleExit)]
         public static void LeaveServer()
         {
-            var creature = GetExitingObject();
-            RemoveCreatureFromParty(creature);
+            Instance.LeaveServer();
         }
 
         /// <summary>
@@ -139,8 +86,7 @@ namespace SWLOR.Game.Server.Service
         /// <param name="player">The player leaving or being removed.</param>
         public static void RemoveFromCurrentParty(uint player)
         {
-            RemoveFromParty(player);
-            RemoveCreatureFromParty(player);
+            Instance.RemoveFromCurrentParty(player);
         }
 
         /// <summary>
@@ -151,68 +97,7 @@ namespace SWLOR.Game.Server.Service
         /// <returns>true if the engine accepted the transfer.</returns>
         public static bool TransferLeadership(uint currentLeader, uint newLeader)
         {
-            var creature = NWNXLib.g_pAppManager.m_pServerExoApp.GetCreatureByGameObjectID(currentLeader);
-            var faction = creature?.GetFaction();
-            if (faction == null || faction.TransferLeadership(newLeader, currentLeader) == 0)
-                return false;
-
-            // The faction only reorders its members. Send the new order so every member's party bar moves the crown.
-            faction.SendFactionUpdateList();
-
-            if (_creatureToParty.TryGetValue(newLeader, out var partyId))
-                _partyLeaders[partyId] = newLeader;
-
-            return true;
-        }
-
-        /// <summary>
-        /// Removes a creature from a party.
-        /// If this would lead to an empty party, or a party with one member, the party gets disbanded.
-        /// Otherwise if the leader leaves, a new one is assigned.
-        /// </summary>
-        /// <param name="creature">The creature being removed from the party.</param>
-        private static void RemoveCreatureFromParty(uint creature)
-        {
-            if (!_creatureToParty.ContainsKey(creature)) return;
-
-            var partyId = _creatureToParty[creature];
-            var affectedPartyMembers = _parties[partyId].ToList();
-            var wasLeader = _partyLeaders[partyId] == creature;
-
-            // Remove this creature from the caches.
-            _parties[partyId].Remove(creature);
-            _creatureToParty.Remove(creature);
-
-            // Ensure any active aura effects that this creature was receiving from former party members are removed.
-            Ability.RefreshPartyAuraEligibility(creature);
-
-            // Party composition changed. Refresh aura recipients for remaining members too,
-            // so effects from the departing member are not retained.
-            foreach (var member in _parties[partyId])
-            {
-                Ability.RefreshPartyAuraEligibility(member);
-            }
-
-            // If there is now only one party member (or fewer)
-            // Party needs to be disbanded and caches updated.
-            if (_parties[partyId].Count <= 1)
-            {
-                foreach (var member in _parties[partyId])
-                {
-                    _creatureToParty.Remove(member);
-                }
-
-                _parties.Remove(partyId);
-                _partyLeaders.Remove(partyId);
-            }
-            // The party is still valid but the creature who left was its leader.
-            // Swap leadership to the next person in the party list.
-            else if (wasLeader)
-            {
-                _partyLeaders[partyId] = _parties[partyId].First();
-            }
-
-            Telegraph.UpdateShadersForPlayers(affectedPartyMembers);
+            return Instance.TransferLeadership(currentLeader, newLeader);
         }
 
         /// <summary>
@@ -222,18 +107,7 @@ namespace SWLOR.Game.Server.Service
         /// <returns>A list of party members.</returns>
         public static List<uint> GetAllPartyMembers(uint creature)
         {
-            // Creature isn't in a party. Simply return them in a list.
-            if(!_creatureToParty.ContainsKey(creature))
-            {
-                return new List<uint>
-                {
-                    creature
-                };
-            }
-
-            var partyId = _creatureToParty[creature];
-            var members = _parties[partyId];
-            return members.ToList();
+            return Instance.GetAllPartyMembers(creature);
         }
 
         /// <summary>
@@ -244,29 +118,7 @@ namespace SWLOR.Game.Server.Service
         /// <returns>A list of party members within the specified distance.</returns>
         public static List<uint> GetAllPartyMembersWithinRange(uint creature, float distance)
         {
-            if (distance <= 0.0f) distance = 0.0f;
-            var members = GetAllPartyMembers(creature);
-
-            var result = new List<uint>();
-            foreach (var member in members)
-            {
-                // Not in the same area
-                if (GetArea(member) != GetArea(creature)) continue;
-
-                // This is the creature we're checking. They should be included.
-                if (member == creature)
-                {
-                    result.Add(member);
-                    continue;
-                }
-
-                // Distance is too great.
-                if (GetDistanceBetween(member, creature) > distance) continue;
-
-                result.Add(member);
-            }
-
-            return result;
+            return Instance.GetAllPartyMembersWithinRange(creature, distance);
         }
 
         /// <summary>
@@ -277,8 +129,7 @@ namespace SWLOR.Game.Server.Service
         /// <returns>true if in party, false otherwise</returns>
         public static bool IsInParty(uint creature, uint toCheck)
         {
-            var members = GetAllPartyMembers(creature);
-            return members.Contains(toCheck);
+            return Instance.IsInParty(creature, toCheck);
         }
     }
 }

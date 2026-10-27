@@ -35,7 +35,23 @@ namespace SWLOR.Game.Server.Service
             return itemCount >= MaxItems;
         }
 
+        /// <summary>
+        /// Returns every banked item that matches the search. The page is sized to the match count because an
+        /// unpaged search stops at 50 rows, which hid the newest deposits in a bank holding more than 50 items.
+        /// </summary>
         public static List<InventoryItem> SearchItems(string playerId, string searchText)
+        {
+            var matchCount = DB.SearchCount(BuildSearchQuery(playerId, searchText));
+            if (matchCount <= 0)
+                return new List<InventoryItem>();
+
+            var query = BuildSearchQuery(playerId, searchText).AddPaging((int)matchCount, 0);
+            return DB.Search(query)
+                .Where(item => item != null)
+                .ToList();
+        }
+
+        private static DBQuery<InventoryItem> BuildSearchQuery(string playerId, string searchText)
         {
             var query = BuildPlayerItemQuery(playerId);
 
@@ -44,7 +60,7 @@ namespace SWLOR.Game.Server.Service
                 query.AddFieldSearch(nameof(InventoryItem.Name), searchText, true);
             }
 
-            return DB.Search(query).ToList();
+            return query;
         }
 
         public static string GetDepositFailure(uint player, uint item)

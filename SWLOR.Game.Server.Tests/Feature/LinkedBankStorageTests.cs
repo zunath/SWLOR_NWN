@@ -84,6 +84,36 @@ public class LinkedBankStorageTests
     }
 
     [Test]
+    public void BankService_SearchQueryFiltersByNameOnlyWhenSearchTextIsGiven()
+    {
+        var method = GetPrivateBankMethod("BuildSearchQuery", typeof(string), typeof(string));
+
+        var all = ((DBQuery<InventoryItem>)method.Invoke(null, new object[] { "player-id", string.Empty })!)
+            .BuildQuery().QueryString;
+        var filtered = ((DBQuery<InventoryItem>)method.Invoke(null, new object[] { "player-id", "Wood" })!)
+            .BuildQuery().QueryString;
+
+        all.Should().Contain("@StorageId:GLOBAL_BANK").And.NotContain("@Name:");
+        filtered.Should().Contain("@StorageId:GLOBAL_BANK").And.Contain("@Name:");
+    }
+
+    [Test]
+    public void BankService_SearchItemsPagesToTheFullMatchCount()
+    {
+        // An unpaged DB search stops at 50 rows, which hid the newest deposits in banks holding more than 50 items.
+        var root = FindRepositoryRoot();
+        var source = File.ReadAllText(Path.Combine(root.FullName, "SWLOR.Game.Server", "Service", "Bank.cs"));
+        var start = source.IndexOf("public static List<InventoryItem> SearchItems", StringComparison.Ordinal);
+        var end = source.IndexOf("private static DBQuery<InventoryItem> BuildSearchQuery", StringComparison.Ordinal);
+
+        start.Should().BeGreaterThan(0);
+        end.Should().BeGreaterThan(start);
+        var body = source.Substring(start, end - start);
+        body.Should().Contain("DB.SearchCount(BuildSearchQuery(playerId, searchText))");
+        body.Should().Contain(".AddPaging((int)matchCount, 0)");
+    }
+
+    [Test]
     public void BankViewModel_DelegatesBankOperationsToBankService()
     {
         var root = FindRepositoryRoot();

@@ -10,6 +10,7 @@ namespace SWLOR.Architecture.Tests.Domains;
 internal sealed class DomainMap
 {
     private readonly Dictionary<DependencyUnit, string> _domainByUnit = new();
+    private readonly Dictionary<string, List<string>> _servicesByDomain = new(StringComparer.Ordinal);
     private readonly List<string> _problems = new();
     private readonly List<string> _domains = new();
     private readonly HashSet<string> _unrestrictedTargets = new(StringComparer.Ordinal);
@@ -34,6 +35,10 @@ internal sealed class DomainMap
 
     /// <summary>Every service and Feature folder the file lists.</summary>
     public IEnumerable<DependencyUnit> ListedUnits => _domainByUnit.Keys;
+
+    /// <summary>The names of the services the map puts in <paramref name="domain"/>, in file order; empty for an unknown domain.</summary>
+    public IReadOnlyList<string> ServicesOf(string domain) =>
+        _servicesByDomain.TryGetValue(domain, out var services) ? services : Array.Empty<string>();
 
     /// <summary>True when edges into the domain are recorded but never fail the guard.</summary>
     public bool IsUnrestrictedTarget(string domain) => _unrestrictedTargets.Contains(domain);
@@ -97,7 +102,19 @@ internal sealed class DomainMap
             if (_domainByUnit.TryGetValue(unit, out var existing))
                 _problems.Add($"{unit} is listed in both {existing} and {domain}.");
             else
+            {
                 _domainByUnit[unit] = domain;
+                if (kind == UnitKind.Service)
+                {
+                    if (!_servicesByDomain.TryGetValue(domain, out var services))
+                    {
+                        services = new List<string>();
+                        _servicesByDomain[domain] = services;
+                    }
+
+                    services.Add(name);
+                }
+            }
         }
     }
 }

@@ -12,7 +12,9 @@ internal static class ArchitectureProject
     private const string ProjectFileName = "SWLOR.Architecture.Tests.csproj";
     private const string ServerAssemblyFileName = "SWLOR.Game.Server.dll";
 
-    private static readonly Lazy<DomainDependencies> ServerDependencies = new(ScanServer);
+    private static readonly Lazy<TypeReferenceGraph> ServerGraph = new(ScanServerGraph);
+    private static readonly Lazy<DomainDependencies> ServerDependencies = new(() => DomainDependencies.Build(ServerGraph.Value, DomainMap.Load(DomainMapPath)));
+    private static readonly Lazy<AssemblyFacts> ServerAssemblyFacts = new(() => AssemblyFactScanner.Scan(ServerAssemblyPath));
 
     public static bool IsUpdating => Environment.GetEnvironmentVariable(UpdateVariable) == "1";
 
@@ -33,6 +35,8 @@ internal static class ArchitectureProject
 
     public static string DomainMapPath => Path.Combine(Directory, "DomainMap.json");
 
+    public static string ConvertedServicesPath => Path.Combine(Directory, "ConvertedServices.json");
+
     public static string EnforcedBaselinePath => Path.Combine(Directory, "Baseline", "CrossDomainEdges.txt");
 
     public static string UnrestrictedBaselinePath => Path.Combine(Directory, "Baseline", "EdgesIntoCoreAndPlatform.txt");
@@ -40,10 +44,16 @@ internal static class ArchitectureProject
     /// <summary>The edges between the server's domains as they are in the compiled assembly right now.</summary>
     public static DomainDependencies Server => ServerDependencies.Value;
 
-    private static DomainDependencies ScanServer()
-    {
-        var assemblyPath = Path.Combine(AppContext.BaseDirectory, ServerAssemblyFileName);
-        var graph = AssemblyScanner.Scan(assemblyPath);
-        return DomainDependencies.Build(graph, DomainMap.Load(DomainMapPath));
-    }
+    /// <summary>Which type of the compiled server assembly references which other type.</summary>
+    public static TypeReferenceGraph Graph => ServerGraph.Value;
+
+    /// <summary>The types, static fields, event handlers and uses of other assemblies' types of the compiled server assembly.</summary>
+    public static AssemblyFacts Facts => ServerAssemblyFacts.Value;
+
+    /// <summary>The services converted to the dependency-injection pattern, from <c>ConvertedServices.json</c>.</summary>
+    public static ConvertedServiceList ConvertedServices => ConvertedServiceList.Load(ConvertedServicesPath);
+
+    private static string ServerAssemblyPath => Path.Combine(AppContext.BaseDirectory, ServerAssemblyFileName);
+
+    private static TypeReferenceGraph ScanServerGraph() => AssemblyScanner.Scan(ServerAssemblyPath);
 }

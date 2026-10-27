@@ -46,7 +46,7 @@ internal sealed class DomainDependencies
         {
             if (!unitOfType.TryGetValue(type, out var unit))
             {
-                unit = UnitClassifier.Classify(type);
+                unit = UnitClassifier.Classify(type, map);
                 unitOfType[type] = unit;
             }
 

@@ -20,6 +20,8 @@ task, reviews the result and merges it into `feature/maintainability-refactor`.
   data (most unit tests need `sw_2da`, `sw_tlk`, `sw_ability`).
 - Never touch `C:\Projects\SWLOR_NWN` itself or any other worktree. Never stash, reset or check out in a
   shared checkout. Stop only processes you started, by PID. Scope every search to the repository.
+- If your file-editing tool refuses paths outside the session's worktree, switch into your own worktree with
+  the EnterWorktree tool (path=...) after creating it.
 - Builds: `-p:RunPostBuildEvent=Never -v q -clp:ErrorsOnly`. If a build fails in seconds with
   "0 Warning(s) 0 Error(s)", set `MSBUILDUSESERVER=0`.
 
@@ -36,8 +38,8 @@ task, reviews the result and merges it into `feature/maintainability-refactor`.
 - Push your branch (`git -c http.sslBackend=schannel push -u origin <branch>`) and open a pull request
   with base `feature/maintainability-refactor` (never `master`) using `gh pr create --base feature/maintainability-refactor`.
 - The description holds what changed, why, and validation (exact build and test commands and results).
-  End it with: `🤖 Generated with [Claude Code](https://claude.com/claude-code)`. Commit messages end with
-  `Co-Authored-By: Claude Opus 5.5 <noreply@anthropic.com>`.
+  End it with: `🤖 Generated with [Claude Code](https://claude.com/claude-code)`. Commit messages end with a
+  `Co-Authored-By:` line naming the Claude model you run on (for example `Claude Sonnet 5.5 <noreply@anthropic.com>`).
 - Run the Codex review loop from PullRequests.md (`tools/RequestCodexReview.ps1 -PullRequest <pr>`) until a
   review of the current head is clean; fix or answer every finding and resolve every thread; check
   mergeability. Do NOT merge the pull request.

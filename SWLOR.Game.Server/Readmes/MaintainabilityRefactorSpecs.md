@@ -101,3 +101,30 @@ baseline run on this branch: results file plus screenshots kept outside the repo
 Clean up every container, client profile and server you start.
 
 **Done:** the script runs end to end twice in a row with the same results; the baseline is recorded.
+
+## P0-10 - Explicit handler order
+
+**Problem (from P0-5):** `ScriptRegistry` runs each script's handlers in the order reflection returns them,
+which follows the compiler's type emission order (namespace depth-first, then sorted file paths). Moving a file
+or namespace, or adding an unrelated file, can reorder handlers. Some order is load-bearing (`DB.Load` must run
+before `EventRegistration.OnModulePreload` in `mod_preload`). The dependency-injection phase moves many files,
+so the order must stop depending on file layout first.
+
+**Design (decided by the coordinator, 2026-10-26):** an ordering manifest.
+- A production resource lists, per script, the handlers in today's order (`Namespace.Type.Method`, kind). Generate
+  it from today's discovery order; it is the same content as the P0-5 snapshot body, so keep one format and one
+  generator (the snapshot test then compares the registry's order to the manifest plus discovery of unknown
+  handlers, and the manifest becomes the single source of order).
+- `ScriptRegistry.LoadHandlersFromAssemblies` orders each script's handlers by their manifest position. Handlers
+  missing from the manifest (new ones) run after the listed ones, in discovery order, and are logged once at boot
+  as unlisted so they get added. Manifest entries whose method no longer exists are ignored and logged.
+- Behaviour-neutral proof: with the generated manifest, the registry's order equals today's discovery order for
+  every script (test against `LegacyHandlerDiscovery` from P0-5), and it stays equal after a test that reorders
+  discovery (for example by passing types in reverse) - proving file layout no longer matters.
+- After the final merge this changes how content authors add handlers on `master`: a new handler runs after the
+  existing ones for its script until it is placed in the manifest. Document this in `Readmes/CoreSystems.md` in the
+  same pull request.
+- Daily sync: `master` may add handlers; the sync regenerates the manifest entries for new handlers from `master`'s
+  discovery order so parity holds (record this in the P0-7 scripts).
+
+**Done:** manifest in place, order tests and seam proof pass, CoreSystems.md updated, Codex loop clean.

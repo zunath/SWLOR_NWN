@@ -136,6 +136,39 @@ def synthetic_cloak_atlas(path: Path, offset: int):
     Image.fromarray(pixels, "RGB").save(path)
 
 
+class PlainTextureTests(unittest.TestCase):
+    def write(self, folder):
+        source = Path(folder) / "fringe.tga"
+        pixels = np.zeros((2, 2, 4), np.uint8)
+        pixels[..., 0] = 200
+        pixels[0, 0, 3] = 255
+        Image.fromarray(pixels, "RGBA").save(source)
+        return source
+
+    def test_a_see_through_material_keeps_its_cutouts(self):
+        from appearance_previews.tint import plain_texture
+        with tempfile.TemporaryDirectory() as folder:
+            out = Path(folder) / "fringe_a.png"
+            plain_texture(self.write(folder), out, keep_alpha=True)
+            saved = Image.open(out)
+            self.assertEqual(saved.mode, "RGBA")
+            self.assertEqual(sorted(a for *_, a in saved.getdata()), [0, 0, 0, 255])
+
+    def test_other_alpha_is_a_shine_mask_and_stays_solid(self):
+        from appearance_previews.tint import plain_texture
+        with tempfile.TemporaryDirectory() as folder:
+            out = Path(folder) / "fringe_c.png"
+            plain_texture(self.write(folder), out)
+            self.assertEqual(Image.open(out).mode, "RGB")
+
+    def test_materials_mark_cutouts_with_transparency_or_punchthrough(self):
+        from appearance_previews.__main__ import is_see_through
+        self.assertTrue(is_see_through("texture0 loki-head\ntransparency 1\n"))
+        self.assertTrue(is_see_through("blending punchthrough\n"))
+        self.assertFalse(is_see_through("texture0 n_sithsoldier03\nrenderhint NormalTangents\n"))
+        self.assertFalse(is_see_through("transparency 0\n"))
+
+
 class CloakTileTests(unittest.TestCase):
     @classmethod
     def setUpClass(cls):
@@ -320,10 +353,18 @@ class RenderCacheTests(unittest.TestCase):
 
     def cache(self):
         from appearance_previews.__main__ import RenderCache
-        return RenderCache(self.work, self.index)
+        return RenderCache(self.work, self.index, 256)
 
     def touch(self, hak):
         hak.write_bytes(b"changed")
+
+    def test_a_new_render_size_renders_everything_again(self):
+        cache = self.cache()
+        cache.record("pfh0_chest001", ["pfh0_chest001.mdl"], complete=True)
+        cache.save()
+        from appearance_previews.__main__ import RenderCache
+        self.assertTrue(RenderCache(self.work, self.index, 256).is_fresh("pfh0_chest001", self.renders))
+        self.assertFalse(RenderCache(self.work, self.index, 512).is_fresh("pfh0_chest001", self.renders))
 
     def test_a_render_is_reused_until_one_of_its_haks_changes(self):
         cache = self.cache()

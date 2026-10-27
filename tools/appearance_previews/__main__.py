@@ -125,38 +125,54 @@ def prepare_textures(index: HakIndex, materials, work: Path, palette: Path) -> d
                 save_for_blender(*bake(*cloak_tile(atlases, tile), palette), color, metal)
             result[material] = {"color": str(color), "metal": str(metal), "sources": atlas_names + [palette.name]}
     materials = [m for m in materials if not m.startswith(CLOAK_ATLAS_PREFIX)]
-    index.extract([m + ".mtr" for m in materials], raw)
-    sources = {}
+    index.extract([m + ".mtr" for m in materials] + [m + ".txi" for m in materials], raw)
+    sources, cutouts = {}, set()
     for material in materials:
         mtr = raw / f"{material}.mtr"
         tint = None
         if mtr.exists():
-            found = re.search(r"^\s*texture7\s+(\S+)", mtr.read_text(errors="ignore"), re.M)
+            text = mtr.read_text(errors="ignore")
+            found = re.search(r"^\s*texture7\s+(\S+)", text, re.M)
             tint = found[1].lower() if found else None
+            if is_see_through(text):
+                cutouts.add(material)
+        txi = raw / f"{material}.txi"
+        if txi.exists() and is_see_through(txi.read_text(errors="ignore")):
+            cutouts.add(material)
         sources[material] = [f"{tint}.dds", f"{tint}.tga"] if tint else []
         sources[material] += [f"{material}.plt", f"{material}.dds", f"{material}.tga"]
     index.extract([name for names in sources.values() for name in names], raw)
     for material, names in sources.items():
-        color, metal = baked / f"{material}_c.png", baked / f"{material}_m.png"
         source = next((raw / n for n in names if (raw / n).exists()), None)
         if source is None:
             continue
-        used = [f"{material}.mtr", source.name, palette.name]
+        tinted = source.name.startswith("tm_") or source.suffix == ".plt"
+        cutout = material in cutouts and not tinted
+        color = baked / f"{material}_{'a' if cutout else 'c'}.png"
+        metal = baked / f"{material}_m.png"
+        used = [f"{material}.mtr", f"{material}.txi", source.name, palette.name]
+        entry = {"color": str(color), "metal": str(metal) if tinted else None, "cutout": cutout, "sources": used}
         if color.exists():
-            result[material] = {"color": str(color), "metal": str(metal) if metal.exists() else None, "sources": used}
+            result[material] = entry
             continue
         try:
-            if source.name.startswith("tm_") or source.suffix == ".plt":
-                rgb, env = bake(*read_tint_map(source), palette)
-                save_for_blender(rgb, env, color, metal)
-                result[material] = {"color": str(color), "metal": str(metal), "sources": used}
+            if tinted:
+                save_for_blender(*bake(*read_tint_map(source), palette), color, metal)
             else:
-                plain_texture(source, color)
-                result[material] = {"color": str(color), "metal": None, "sources": used}
+                plain_texture(source, color, keep_alpha=cutout)
+            result[material] = entry
         except (OSError, ValueError) as error:
             # Bioware-format DDS and other legacy textures Pillow cannot read render untextured.
             print("PREVIEW_UNREADABLE_TEXTURE", source.name, error)
     return result
+
+
+def is_see_through(text: str) -> bool:
+    """True when a .mtr or .txi makes its texture's alpha see-through in game.
+
+    Without this, texture alpha on part models is a shine mask, not a cutout.
+    """
+    return bool(re.search(r"^\s*(transparency\s+1|blending\s+punchthrough)\b", text, re.M | re.I))
 
 
 # A picture whose mean channel difference from the human twin is below this is a duplicate.
@@ -242,7 +258,7 @@ def main(argv=None):
     args.output.mkdir(parents=True, exist_ok=True)
     renders = args.work / "renders"
     all_keys = [j.key for j in jobs]
-    cache = RenderCache(args.work, index)
+    cache = RenderCache(args.work, index, args.render_size)
     jobs = [j for j in jobs if not cache.is_fresh(j.key, renders)]
     print(f"{len(jobs)} parts to render")
     problems = render(args, index, jobs, renders, cache) if jobs else []
@@ -286,15 +302,15 @@ class RenderCache:
     """Remembers which HAKs each cached render came from.
 
     A render is reused only while every HAK it was made from is unchanged (size and
-    modification time) and the preview dyes are the same. Extracted models and baked textures
-    are cleared whenever any HAK or the dyes change, since they are cheap to rebuild and are
-    shared between parts.
+    modification time) and the preview dyes and render size are the same. Extracted models and
+    baked textures are cleared whenever any HAK or the dyes change, since they are cheap to
+    rebuild and are shared between parts.
     """
 
     FILE = "render_cache.json"
     ANY = "*"  # the render depends on a resource that was missing; any HAK change may add it
 
-    def __init__(self, work: Path, index: HakIndex):
+    def __init__(self, work: Path, index: HakIndex, render_size: int):
         self.path = work / self.FILE
         self.index = index
         self.current = {hak.name: f"{hak.stat().st_size}:{hak.stat().st_mtime_ns}"
@@ -304,8 +320,10 @@ class RenderCache:
         except (OSError, ValueError):
             state = {}
         self.dyes = list(PREVIEW_DYES)
+        self.render_size = render_size
         self.previous = state.get("haks", {})
-        self.dependencies = state.get("renders", {}) if state.get("dyes") == self.dyes else {}
+        same_look = state.get("dyes") == self.dyes and state.get("render_size") == render_size
+        self.dependencies = state.get("renders", {}) if same_look else {}
         if self.previous != self.current or state.get("dyes") != self.dyes:
             for folder in ("models", "binary", "ascii", "raw", "textures"):
                 shutil.rmtree(work / folder, ignore_errors=True)
@@ -329,7 +347,8 @@ class RenderCache:
 
     def save(self):
         self.path.parent.mkdir(parents=True, exist_ok=True)
-        self.path.write_text(json.dumps({"haks": self.current, "dyes": self.dyes, "renders": self.dependencies}, indent=0))
+        self.path.write_text(json.dumps({"haks": self.current, "dyes": self.dyes, "render_size": self.render_size,
+                                               "renders": self.dependencies}, indent=0))
 
 
 def render(args, index, jobs, renders, cache):

@@ -62,8 +62,9 @@ def save_for_blender(rgb, metal, color_path: Path, metal_path: Path):
     Image.fromarray(metal).transpose(Image.FLIP_TOP_BOTTOM).save(metal_path)
 
 
-def plain_texture(path: Path, color_path: Path):
-    image = Image.open(path).convert("RGB")
+def plain_texture(path: Path, color_path: Path, keep_alpha=False):
+    """keep_alpha: the material draws this texture's alpha as see-through (cutouts)."""
+    image = Image.open(path).convert("RGBA" if keep_alpha else "RGB")
     if path.suffix.lower() == ".dds":
         image = image.transpose(Image.FLIP_TOP_BOTTOM)
     image.save(color_path)

@@ -48,6 +48,10 @@ def make_material(name, textures):
     color.image = bpy.data.images.load(textures["color"])
     color.interpolation = "Closest"  # dye layers are not blended in game
     tree.links.new(color.outputs["Color"], bsdf.inputs["Base Color"])
+    if textures.get("cutout"):
+        tree.links.new(color.outputs["Alpha"], bsdf.inputs["Alpha"])
+        material.blend_method = "CLIP"
+        material.shadow_method = "CLIP"
     if textures.get("metal"):
         metal = tree.nodes.new("ShaderNodeTexImage")
         metal.image = bpy.data.images.load(textures["metal"])

@@ -32,8 +32,11 @@ namespace SWLOR.Game.Server.Service.SpaceService
         public int EmDamagePercent { get; set; }
         public int ExplosiveDamagePercent { get; set; }
 
-        /// <summary>The movement multiplier (1.0 is normal speed).</summary>
+        /// <summary>The movement multiplier (1.0 is normal speed), after the power routing.</summary>
         public double SpeedMultiplier { get; set; } = 1.0;
+
+        /// <summary>Where the Engineer routes power.</summary>
+        public ShipPowerRouting PowerRouting { get; set; }
 
         /// <summary>The cargo hold size, or null when the hull has none listed.</summary>
         public int? Cargo { get; set; }
@@ -61,7 +64,8 @@ namespace SWLOR.Game.Server.Service.SpaceService
                 MaxCapacitor = status.MaxCapacitor,
                 Defense = status.Defense,
                 Evasion = status.Evasion,
-                SpeedMultiplier = status.SpeedMultiplier,
+                SpeedMultiplier = PowerRoutingRules.ApplySpeed(status.SpeedMultiplier, status.PowerRouting),
+                PowerRouting = status.PowerRouting,
                 HighFitted = status.HighPowerModules?.Count ?? 0,
                 MidFitted = status.MidPowerModules?.Count ?? 0,
                 LowFitted = status.LowPowerModules?.Count ?? 0,

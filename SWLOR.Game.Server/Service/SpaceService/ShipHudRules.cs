@@ -239,6 +239,7 @@ namespace SWLOR.Game.Server.Service.SpaceService
                 new("Explosive Resistance", $"{stats.ExplosiveResistance}%"),
                 new("SHIP"),
                 new("Speed", $"{Math.Round(stats.SpeedMultiplier * 100)}%"),
+                new("Power Routing", PowerRoutingRules.GetName(stats.PowerRouting)),
                 new("Cargo", stats.Cargo?.ToString() ?? "-"),
                 new("High Slots", $"{stats.HighFitted} / {stats.HighSlots}"),
                 new("Mid Slots", $"{stats.MidFitted} / {stats.MidSlots}"),

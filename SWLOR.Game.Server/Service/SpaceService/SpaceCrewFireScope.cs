@@ -5,12 +5,14 @@ namespace SWLOR.Game.Server.Service.SpaceService
     {
         private readonly uint _ship;
         private readonly SpaceCrewFireContext _previous;
+        private readonly bool _droidFire;
         private bool _disposed;
 
-        internal SpaceCrewFireScope(uint ship, SpaceCrewFireContext previous)
+        internal SpaceCrewFireScope(uint ship, SpaceCrewFireContext previous, bool droidFire = false)
         {
             _ship = ship;
             _previous = previous;
+            _droidFire = droidFire;
         }
 
         public void Dispose()
@@ -19,7 +21,7 @@ namespace SWLOR.Game.Server.Service.SpaceService
                 return;
 
             _disposed = true;
-            SpaceCrew.RestoreFireContext(_ship, _previous);
+            SpaceCrew.RestoreFireContext(_ship, _previous, _droidFire);
         }
     }
 }

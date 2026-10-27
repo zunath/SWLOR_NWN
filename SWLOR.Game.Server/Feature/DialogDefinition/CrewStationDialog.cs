@@ -1,41 +1,64 @@
 using System.Linq;
-using SWLOR.Game.Server.Entity;
 using SWLOR.Game.Server.Service;
 using SWLOR.Game.Server.Service.ConversationService;
-using SWLOR.Game.Server.Service.DBService;
 using SWLOR.Game.Server.Service.SpaceService;
 
 namespace SWLOR.Game.Server.Feature.DialogDefinition
 {
     /// <summary>
-    /// The crew console of a ship in flight (plan section 10): take an open Gunner, Engineer or Sensors station, or
-    /// watch from a viewport. A crew console placeable opens it, and so does the ship's computer while someone else
-    /// flies the ship.
+    /// The crew console of a ship (plan section 10). In flight: take an open Gunner, Engineer or Sensors station, or
+    /// watch from a viewport. In flight or docked: post droids at the stations and recall them (the captain only).
+    /// A crew console placeable opens it, and so does the ship's computer while someone else flies the ship, or
+    /// while it is docked for a captain with droids (its first choice then takes the controls).
     /// </summary>
     public class CrewStationDialog : ConversationMenuDefinition
     {
         private const string MainPageId = "MAIN_PAGE";
+        private const string DroidPageId = "DROID_PAGE";
+        private const string DroidPickPageId = "DROID_PICK_PAGE";
+
+        private class Model
+        {
+            public ShipCrewSeat Seat { get; set; }
+            public string Result { get; set; } = string.Empty;
+        }
 
         public override ConversationMenuSpec Build()
         {
             return new ConversationMenuBuilder()
+                .WithDataModel(new Model())
                 .AddPage(MainPageId, MainPageInit)
+                .AddPage(DroidPageId, DroidPageInit)
+                .AddPage(DroidPickPageId, DroidPickPageInit)
                 .Build();
         }
 
         private void MainPageInit(ConversationMenuPage page)
         {
             var player = Player;
-            var propertyId = Property.GetPropertyId(GetArea(player));
-            var dbShip = string.IsNullOrWhiteSpace(propertyId)
-                ? null
-                : DB.Search(new DBQuery<PlayerShip>()
-                    .AddFieldSearch(nameof(PlayerShip.PropertyId), propertyId, false)).FirstOrDefault();
+            var dbShip = Space.GetInteriorShipRecord(player);
             var pilot = dbShip == null ? OBJECT_INVALID : Space.GetShipPilot(dbShip.Id);
+            var canManageDroids = Space.CanManageDroidCrew(player);
 
             if (!GetIsObjectValid(pilot))
             {
                 page.Header = "Crew stations work only while the ship is in flight with a pilot at the controls.";
+                if (dbShip != null && Space.IsShipComputer(Owner))
+                {
+                    var computer = Owner;
+                    page.AddResponse("Take the controls", () =>
+                    {
+                        Close();
+                        Space.TakeShipControls(player, computer);
+                    });
+                }
+
+                if (canManageDroids)
+                {
+                    page.Header += "\nDroids can be posted at the stations now; they work them once the ship flies.";
+                    page.AddResponse("Droid crew", () => GoToPage(DroidPageId));
+                }
+
                 return;
             }
 
@@ -52,15 +75,11 @@ namespace SWLOR.Game.Server.Feature.DialogDefinition
                 header += "\nCrew stations (the captain's party only):";
                 foreach (var seat in stations)
                 {
-                    var occupant = SpaceCrew.GetSeatOccupant(pilot, seat);
-                    var who = occupant == OBJECT_INVALID || !GetIsObjectValid(occupant)
-                        ? ColorToken.Green("open")
-                        : PlayerName.GetDisplayName(player, occupant);
                     var skill = Skill.GetSkillDetails(ShipCrewSeats.GetSeatSkill(seat)).Name;
-                    header += $"\n{ShipCrewSeats.GetSeatName(seat)} ({skill}): {who}";
+                    header += $"\n{ShipCrewSeats.GetSeatName(seat)} ({skill}): {DescribeOccupant(player, pilot, seat)}";
                 }
 
-                header += "\nYour rank in the station's skill decides which of its modules you can switch on.";
+                header += "\nYour rank in the station's skill decides which of its modules you can switch on. A player who takes a droid's station sends the droid back to its owner.";
             }
 
             page.Header = header;
@@ -71,7 +90,11 @@ namespace SWLOR.Game.Server.Feature.DialogDefinition
                     continue;
 
                 var chosen = seat;
-                page.AddResponse($"Take the {ShipCrewSeats.GetSeatName(seat)} station", () =>
+                var droid = SpaceCrew.GetSeatDroid(pilot, seat);
+                var text = droid == null
+                    ? $"Take the {ShipCrewSeats.GetSeatName(seat)} station"
+                    : $"Take the {ShipCrewSeats.GetSeatName(seat)} station from {droid.Name}";
+                page.AddResponse(text, () =>
                 {
                     Close();
                     Space.BoardCrewStation(player, chosen);
@@ -83,6 +106,107 @@ namespace SWLOR.Game.Server.Feature.DialogDefinition
                 Close();
                 Space.BoardCrewStation(player, ShipCrewSeat.Invalid);
             });
+
+            if (canManageDroids)
+                page.AddResponse("Droid crew", () => GoToPage(DroidPageId));
+        }
+
+        private static string DescribeOccupant(uint player, uint pilot, ShipCrewSeat seat)
+        {
+            var occupant = SpaceCrew.GetSeatOccupant(pilot, seat);
+            if (occupant != OBJECT_INVALID && GetIsObjectValid(occupant))
+                return PlayerName.GetDisplayName(player, occupant);
+
+            var droid = SpaceCrew.GetSeatDroid(pilot, seat);
+            return droid == null
+                ? ColorToken.Green("open")
+                : $"{droid.Name} (droid, {SpaceCrew.GetDroidEffectiveness(pilot, droid):P0})";
+        }
+
+        private void DroidPageInit(ConversationMenuPage page)
+        {
+            var player = Player;
+            var dbShip = Space.GetInteriorShipRecord(player);
+            if (dbShip?.Status == null || !Space.CanManageDroidCrew(player))
+            {
+                page.Header = "Only the captain can post droids at this ship's stations.";
+                return;
+            }
+
+            var pilot = Space.GetShipPilot(dbShip.Id);
+            var posted = Space.GetPostedDroids(dbShip);
+            var header = "Droid crew. A droid posted at a station stays at its post and does not follow you. It works " +
+                         "the station while someone flies the ship: weapons at the pilot's target, repairers and shields " +
+                         "when they run low. Its tier sets how well it works and the module ranks it can switch on.\n";
+
+            foreach (var seat in ShipCrewSeats.GetStationSeats(dbShip.Status.Size))
+            {
+                var droid = posted.FirstOrDefault(x => x.Seat == seat);
+                var crewMember = GetIsObjectValid(pilot) ? SpaceCrew.GetSeatOccupant(pilot, seat) : OBJECT_INVALID;
+                var who = droid != null
+                    ? $"{droid.Name} (tier {droid.Tier}, {DroidCrewRules.BaseEffectiveness(seat, droid.Tier):P0})"
+                    : crewMember != OBJECT_INVALID && GetIsObjectValid(crewMember)
+                        ? PlayerName.GetDisplayName(player, crewMember)
+                        : ColorToken.Green("open");
+                header += $"\n{ShipCrewSeats.GetSeatName(seat)}: {who}";
+
+                var chosen = seat;
+                if (droid != null)
+                {
+                    page.AddResponse($"Recall {droid.Name} from the {ShipCrewSeats.GetSeatName(seat)} station",
+                        () => Space.RecallDroid(player, chosen));
+                }
+                else if (crewMember == OBJECT_INVALID || !GetIsObjectValid(crewMember))
+                {
+                    page.AddResponse($"Post a droid at the {ShipCrewSeats.GetSeatName(seat)} station", () =>
+                    {
+                        var model = Data<Model>();
+                        model.Seat = chosen;
+                        model.Result = string.Empty;
+                        GoToPage(DroidPickPageId);
+                    });
+                }
+            }
+
+            page.Header = header;
+        }
+
+        private void DroidPickPageInit(ConversationMenuPage page)
+        {
+            var player = Player;
+            var model = Data<Model>();
+            var seatName = ShipCrewSeats.GetSeatName(model.Seat);
+
+            if (!string.IsNullOrEmpty(model.Result))
+            {
+                page.Header = model.Result;
+                return;
+            }
+
+            var controllers = Space.GetPostableDroids(player);
+            if (controllers.Count == 0)
+            {
+                page.Header = "You carry no droid you can post. A droid that follows you must be dismissed first.";
+                return;
+            }
+
+            page.Header = $"Choose a droid for the {seatName} station. The percent is how well it works the station " +
+                          "before Crew Morale and Leadership.";
+
+            foreach (var controller in controllers)
+            {
+                var tier = DroidCrewRules.ClampTier(Droid.LoadDroidItemPropertyDetails(controller).Tier);
+                var name = Droid.GetDroidName(controller);
+                var effectiveness = DroidCrewRules.BaseEffectiveness(model.Seat, tier);
+                var chosen = controller;
+                page.AddResponse(
+                    $"{name} (tier {tier}): {effectiveness:P0}, modules up to rank {DroidCrewRules.MaximumModuleRank(tier)}",
+                    () =>
+                    {
+                        if (Space.PostDroid(player, model.Seat, chosen))
+                            model.Result = $"{name} now works the {seatName} station.";
+                    });
+            }
         }
     }
 }

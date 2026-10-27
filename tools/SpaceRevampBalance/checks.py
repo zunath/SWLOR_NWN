@@ -295,5 +295,43 @@ out.append("Upper bounds: the Logistics repairs, the jam, the paint and every mi
            "spawning rarer than capitals) and launches 1 Fighter every 40 s (4 waves, 2 alive at most); the wing fighter is out "
            "for the whole fight here, an upper bound.\n")
 
+# L. Power routing: a sidegrade, and a crewed ship stays at or below N separate ships in every mode
+out.append("## L. Engineer power routing (T5, crewed ships)\n")
+
+
+def job(r):
+    return (1 / r["mean"]) * (0.5 + r["left"]) * r["win"]
+
+
+rows, worst_time, worst_score = [], 0.0, 0.0
+fi = m.player_ship("Fighter", 45, m.FIT["Fighter"])
+cases = [
+    ("Cruiser", lambda: m.npc_ship("Gunship", 45, "Boss", size="Capital", hp_scale=1.0),
+     [dict(fi, count=5)], m.npc_ship("Gunship", 45, "Boss", size="Capital"), "Boss capital", "5 Fighters"),
+    ("Frigate", lambda: m.npc_ship("Fighter", 45, "Boss"), [dict(fi, count=3)], m.npc_ship("Fighter", 45, "Boss"),
+     "Boss (Large)", "3 Fighters"),
+    ("Frigate", lambda: m.npc_ship("Fighter", 45, "Elite", count=3), [dict(fi, count=3)],
+     m.npc_ship("Fighter", 45, "Elite", count=3), "3 Elites", "3 Fighters"),
+]
+for role, enemy, separate, separate_enemy, label, separate_label in cases:
+    sep = fight(separate, [separate_enemy])
+    for crew in (1.0, m.CREW_CAP):
+        base = m.player_ship(role, 45, m.FIT[role], crew=crew)
+        balanced = fight([m.routed(base, "Balanced")], [enemy()])
+        for mode in m.POWER_ROUTING:
+            r = balanced if mode == "Balanced" else fight([m.routed(base, mode)], [enemy()])
+            worst_time = max(worst_time, balanced["mean"] / r["mean"])
+            if mode != "Balanced":
+                worst_score = max(worst_score, job(r) / job(balanced))
+            rows.append([role, f"{crew:.0%}", label, mode, cell(r), f"{job(r) / job(balanced):.0%}",
+                         f"{separate_label}: {sep['mean']:.0f}s", "yes" if r["mean"] >= balanced["mean"] - 0.5 else "NO"])
+table(["Ship", "Crew", "Enemy", "Routing", "Result", "Job score vs Balanced", "Separate ships", "Kill no faster than Balanced"], rows)
+out.append(f"Weapons: weapons use {-m.POWER_ROUTING['Weapons']['cap']}% less capacitor, shield regen and speed -10%. Shields: shield regen "
+           f"+{m.POWER_ROUTING['Shields']['regen']}%, weapon damage -5%, speed -10%. Engines: speed +{m.POWER_ROUTING['Engines']['speed']}%, "
+           "weapon damage -5%, shield regen -10%. No mode kills faster than Balanced (worst Balanced / mode kill-time ratio "
+           f"{worst_time:.2f}), so a crewed ship stays at or below N separate ships in every mode; the best mode's job score is "
+           f"{worst_score:.0%} of Balanced (Shields gains in long fights and pays in kill time). Capacitor and speed, the other "
+           "modes' gains, are not measured by these fights.\n")
+
 Path(m.HERE / "checks.md").write_text("\n".join(out))
 print("\n".join(out))

@@ -114,7 +114,7 @@ public sealed class DMPossessionEngine : IDisposable
             .ToList();
 
     /// <summary>Adds a player who controls their own character.</summary>
-    public void AddPlayer(uint character, bool isDM = false, uint area = Invalid, string? name = null)
+    public void AddPlayer(uint character, bool isDM = false, uint area = Invalid, string name = null)
     {
         _players.Add((character, character, isDM));
         Place(character, area);

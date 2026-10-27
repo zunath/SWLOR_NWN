@@ -13,7 +13,7 @@ namespace SWLOR.Game.Server.Tests.Support;
 /// </summary>
 public sealed class FakeJsonEngine
 {
-    private readonly Dictionary<nint, JsonNode?> _values = new();
+    private readonly Dictionary<nint, JsonNode> _values = new();
     private readonly Dictionary<(string Resref, ResType Type), nint> _templates = new();
     private nint _nextHandle = 1;
 
@@ -78,7 +78,7 @@ public sealed class FakeJsonEngine
     }
 
     /// <summary>Wraps a value, as the engine hands it to game code.</summary>
-    public Json Wrap(JsonNode? node)
+    public Json Wrap(JsonNode node)
     {
         if (node == null)
             return Null();
@@ -92,9 +92,9 @@ public sealed class FakeJsonEngine
 
     private static Json Create(nint handle) => EngineStructures.Create<Json>(handle);
 
-    private JsonNode? Node(Json json) => json.Handle != 0 && _values.TryGetValue(json.Handle, out var node) ? node : null;
+    private JsonNode Node(Json json) => json.Handle != 0 && _values.TryGetValue(json.Handle, out var node) ? node : null;
 
-    private static JsonType TypeOf(JsonNode? node)
+    private static JsonType TypeOf(JsonNode node)
     {
         switch (node)
         {

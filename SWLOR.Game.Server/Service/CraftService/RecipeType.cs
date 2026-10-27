@@ -3888,6 +3888,16 @@ namespace SWLOR.Game.Server.Service.CraftService
         ShipGasHarvester35 = 7345,
         ShipGasHarvester40 = 7346,
         ShipGasHarvester45 = 7347,
+        ShipSmugglingCompartment00 = 7348,
+        ShipSmugglingCompartment05 = 7349,
+        ShipSmugglingCompartment10 = 7350,
+        ShipSmugglingCompartment15 = 7351,
+        ShipSmugglingCompartment20 = 7352,
+        ShipSmugglingCompartment25 = 7353,
+        ShipSmugglingCompartment30 = 7354,
+        ShipSmugglingCompartment35 = 7355,
+        ShipSmugglingCompartment40 = 7356,
+        ShipSmugglingCompartment45 = 7357,
         // END space revamp catalog
     }
 }

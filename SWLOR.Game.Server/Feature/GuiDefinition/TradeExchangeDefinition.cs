@@ -6,12 +6,15 @@ using SWLOR.Game.Server.Service.GuiService.Component;
 namespace SWLOR.Game.Server.Feature.GuiDefinition
 {
     /// <summary>
-    /// A dock's Trade Exchange (plan section 13): local buy and sell prices and the cargo of a ship docked here.
+    /// A dock's Trade Exchange (plan section 13): the Market tab trades commodities with a ship docked here at local
+    /// prices; the Freight tab offers this exchange's freight contracts and delivers the player's.
     /// </summary>
     public class TradeExchangeDefinition : IGuiWindowDefinition
     {
         private readonly GuiWindowBuilder<TradeExchangeViewModel> _builder = new();
 
+        private const float TabRowHeight = 28f;
+        private const float TabPanelHeight = 48f;
         private const float ContentPanelWidth = 560f;
         private const float LabelHeight = 20f;
         private const float ButtonHeight = 32f;
@@ -19,39 +22,68 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition
         private const float PriceWidth = 56f;
         private const float AboardWidth = 56f;
         private const float ButtonWidth = 56f;
+        private const float WideButtonWidth = 76f;
+        private const float RouteWidth = 150f;
+        private const float NumberWidth = 54f;
 
         public GuiConstructedWindow BuildWindow()
         {
             var window = _builder.CreateWindow(GuiWindowType.TradeExchange)
-                .SetInitialGeometry(0, 0, 610f, 640f)
+                .SetInitialGeometry(0, 0, 610f, 680f)
                 .SetTitle("Trade Exchange")
                 .SetIsResizable(true)
                 .SetIsCollapsible(true)
-                .DefinePartialView(TradeExchangeViewModel.MainContentPartial, AddMainContent);
+                .DefinePartialView(TradeExchangeViewModel.MarketTabPartial, AddMarketTab)
+                .DefinePartialView(TradeExchangeViewModel.FreightTabPartial, AddFreightTab);
 
-            window.AddStandardLayout(layout => layout.SetContentPartialElement(TradeExchangeViewModel.MainContentElement));
+            window.AddStandardLayout(layout =>
+            {
+                layout.SetTabPanelHeight(TabPanelHeight);
+                layout.AddTabRow(row =>
+                {
+                    row.SetHeight(TabRowHeight);
+                    row.AddToggles()
+                        .AddOption("Market")
+                        .AddOption("Freight")
+                        .BindSelectedValue(model => model.TabToggleValue)
+                        .SetWidth(232f)
+                        .SetHeight(TabRowHeight);
+                });
+                layout.SetContentPartialElement(TradeExchangeViewModel.TabContentElement);
+            });
 
             return _builder.Build();
         }
 
-        private static void AddMainContent(GuiGroup<TradeExchangeViewModel> host)
+        private static void AddPanel(GuiGroup<TradeExchangeViewModel> host, System.Action<GuiColumn<TradeExchangeViewModel>> content)
         {
-            host.AddColumn(col =>
+            host.AddColumn(col => col.AddRow(row => row.AddGroup(panel =>
             {
-                col.AddRow(row =>
-                {
-                    row.AddGroup(panel =>
-                    {
-                        panel.SetShowBorder(false);
-                        panel.SetScrollbars(NuiScrollbars.None);
-                        panel.AddColumn(content =>
-                        {
-                            AddShipRows(content);
-                            AddMarketList(content);
-                        });
-                    })
-                        .SetWidth(ContentPanelWidth);
-                });
+                panel.SetShowBorder(false);
+                panel.SetScrollbars(NuiScrollbars.None);
+                panel.AddColumn(content);
+            }).SetWidth(ContentPanelWidth)));
+        }
+
+        private static void AddMarketTab(GuiGroup<TradeExchangeViewModel> host)
+        {
+            AddPanel(host, content =>
+            {
+                AddShipRows(content);
+                AddUnitsRow(content);
+                AddMarketList(content);
+                AddHoloNetRow(content);
+            });
+        }
+
+        private static void AddFreightTab(GuiGroup<TradeExchangeViewModel> host)
+        {
+            AddPanel(host, content =>
+            {
+                AddShipRows(content);
+                AddOfferList(content);
+                AddContractList(content);
+                AddHoloNetRow(content);
             });
         }
 
@@ -98,6 +130,19 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition
             content.AddRow(row =>
             {
                 row.AddLabel()
+                    .SetText("No ship of yours is docked here. Dock at this starport to trade.")
+                    .BindIsVisible(model => model.NoShipVisible)
+                    .SetColor(GuiColor.Red)
+                    .SetHeight(LabelHeight)
+                    .SetHorizontalAlign(NuiHorizontalAlign.Left);
+            });
+        }
+
+        private static void AddUnitsRow(GuiColumn<TradeExchangeViewModel> content)
+        {
+            content.AddRow(row =>
+            {
+                row.AddLabel()
                     .SetText("Units per order")
                     .SetWidth(120f)
                     .SetHorizontalAlign(NuiHorizontalAlign.Left);
@@ -109,16 +154,6 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition
                     .SetHeight(ButtonHeight);
                 row.AddLabel()
                     .SetText("Buy takes what fits and what you can afford.")
-                    .SetHorizontalAlign(NuiHorizontalAlign.Left);
-            });
-
-            content.AddRow(row =>
-            {
-                row.AddLabel()
-                    .SetText("No ship of yours is docked here. Dock at this starport to trade.")
-                    .BindIsVisible(model => model.NoShipVisible)
-                    .SetColor(GuiColor.Red)
-                    .SetHeight(LabelHeight)
                     .SetHorizontalAlign(NuiHorizontalAlign.Left);
             });
         }
@@ -210,6 +245,158 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition
                     .BindIsVisible(model => model.OtherCargoVisible)
                     .SetHeight(LabelHeight)
                     .SetHorizontalAlign(NuiHorizontalAlign.Left);
+            });
+        }
+
+        private static void AddOfferList(GuiColumn<TradeExchangeViewModel> content)
+        {
+            content.AddRow(row =>
+            {
+                row.AddLabel()
+                    .BindText(model => model.OffersTitle)
+                    .SetColor(GuiColor.Cyan)
+                    .SetHeight(LabelHeight)
+                    .SetHorizontalAlign(NuiHorizontalAlign.Left);
+            });
+
+            content.AddRow(row =>
+            {
+                row.AddLabel().SetText("Sealed load to").SetHeight(LabelHeight).SetHorizontalAlign(NuiHorizontalAlign.Left).SetColor(GuiColor.Cyan);
+                row.AddLabel().SetText("Volume").SetWidth(NumberWidth).SetHeight(LabelHeight).SetHorizontalAlign(NuiHorizontalAlign.Right).SetColor(GuiColor.Cyan);
+                row.AddLabel().SetText("Fee").SetWidth(NumberWidth).SetHeight(LabelHeight).SetHorizontalAlign(NuiHorizontalAlign.Right).SetColor(GuiColor.Cyan);
+                row.AddLabel().SetText("Deposit").SetWidth(NumberWidth).SetHeight(LabelHeight).SetHorizontalAlign(NuiHorizontalAlign.Right).SetColor(GuiColor.Cyan);
+                row.AddLabel().SetText("Minutes").SetWidth(NumberWidth).SetHeight(LabelHeight).SetHorizontalAlign(NuiHorizontalAlign.Right).SetColor(GuiColor.Cyan);
+                row.AddSpacer().SetWidth(WideButtonWidth + 8f);
+            });
+
+            content.AddRow(row =>
+            {
+                row.AddList(template =>
+                {
+                    template.AddCell(cell =>
+                    {
+                        cell.AddLabel()
+                            .BindText(model => model.OfferRoutes)
+                            .BindTooltip(model => model.OfferTooltips)
+                            .SetHorizontalAlign(NuiHorizontalAlign.Left);
+                    });
+                    template.AddCell(cell =>
+                    {
+                        cell.SetIsVariable(false);
+                        cell.SetWidth(NumberWidth);
+                        cell.AddLabel()
+                            .BindText(model => model.OfferVolumes)
+                            .SetHorizontalAlign(NuiHorizontalAlign.Right);
+                    });
+                    template.AddCell(cell =>
+                    {
+                        cell.SetIsVariable(false);
+                        cell.SetWidth(NumberWidth);
+                        cell.AddLabel()
+                            .BindText(model => model.OfferFees)
+                            .SetHorizontalAlign(NuiHorizontalAlign.Right);
+                    });
+                    template.AddCell(cell =>
+                    {
+                        cell.SetIsVariable(false);
+                        cell.SetWidth(NumberWidth);
+                        cell.AddLabel()
+                            .BindText(model => model.OfferDeposits)
+                            .SetHorizontalAlign(NuiHorizontalAlign.Right);
+                    });
+                    template.AddCell(cell =>
+                    {
+                        cell.SetIsVariable(false);
+                        cell.SetWidth(NumberWidth);
+                        cell.AddLabel()
+                            .BindText(model => model.OfferMinutes)
+                            .SetHorizontalAlign(NuiHorizontalAlign.Right);
+                    });
+                    template.AddCell(cell =>
+                    {
+                        cell.SetIsVariable(false);
+                        cell.SetWidth(WideButtonWidth);
+                        cell.AddButton()
+                            .SetText("Accept")
+                            .BindIsEnabled(model => model.OfferCanAccept)
+                            .SetTooltip("Pay the deposit and load the sealed freight into the ship you picked.")
+                            .BindOnClicked(model => model.OnClickAcceptOffer());
+                    });
+                })
+                    .BindRowCount(model => model.OfferRoutes)
+                    .SetRowHeight(32f);
+                row.SetHeight(150f);
+            });
+
+            content.AddRow(row =>
+            {
+                row.AddLabel()
+                    .BindText(model => model.ContractsTitle)
+                    .SetColor(GuiColor.Cyan)
+                    .SetHeight(LabelHeight)
+                    .SetHorizontalAlign(NuiHorizontalAlign.Left);
+            });
+        }
+
+        private static void AddContractList(GuiColumn<TradeExchangeViewModel> content)
+        {
+            content.AddRow(row =>
+            {
+                row.AddList(template =>
+                {
+                    template.AddCell(cell =>
+                    {
+                        cell.AddLabel()
+                            .BindText(model => model.ContractRoutes)
+                            .BindTooltip(model => model.ContractTooltips)
+                            .SetHorizontalAlign(NuiHorizontalAlign.Left);
+                    });
+                    template.AddCell(cell =>
+                    {
+                        cell.SetIsVariable(false);
+                        cell.SetWidth(RouteWidth);
+                        cell.AddLabel()
+                            .BindText(model => model.ContractDue)
+                            .BindColor(model => model.ContractDueColors)
+                            .SetHorizontalAlign(NuiHorizontalAlign.Left);
+                    });
+                    template.AddCell(cell =>
+                    {
+                        cell.SetIsVariable(false);
+                        cell.SetWidth(WideButtonWidth);
+                        cell.AddButton()
+                            .SetText("Deliver")
+                            .BindIsEnabled(model => model.ContractCanDeliver)
+                            .SetTooltip("Hand over the sealed load from the ship you picked for the fee, and the deposit when on time.")
+                            .BindOnClicked(model => model.OnClickDeliver());
+                    });
+                    template.AddCell(cell =>
+                    {
+                        cell.SetIsVariable(false);
+                        cell.SetWidth(WideButtonWidth);
+                        cell.AddButton()
+                            .SetText("Abandon")
+                            .SetTooltip("Give up the contract. The sealed load is unloaded and the deposit is forfeit.")
+                            .BindOnClicked(model => model.OnClickAbandon());
+                    });
+                })
+                    .BindRowCount(model => model.ContractRoutes)
+                    .SetRowHeight(32f);
+                row.SetHeight(120f);
+            });
+        }
+
+        private static void AddHoloNetRow(GuiColumn<TradeExchangeViewModel> content)
+        {
+            content.AddRow(row =>
+            {
+                row.AddButton()
+                    .SetText("HoloNet Prices")
+                    .SetTooltip("Best buy and sell prices across the exchanges, up to an hour old.")
+                    .BindOnClicked(model => model.OnClickHoloNet())
+                    .SetWidth(150f)
+                    .SetHeight(ButtonHeight);
+                row.AddSpacer();
             });
         }
     }

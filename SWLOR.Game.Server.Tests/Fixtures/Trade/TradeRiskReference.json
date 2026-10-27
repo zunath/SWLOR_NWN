@@ -1,0 +1,88 @@
+{
+  "Cases": [
+    {
+      "Authority": "Republic",
+      "Cargo": {
+        "EncryptedDataChips": 100
+      },
+      "CompartmentRank": -1,
+      "Tier": 1,
+      "BannedValue": 15100,
+      "ScanChance": 0.0602,
+      "Fine": 7550,
+      "CargoValue": 15100,
+      "AmbushChance": 0.0,
+      "SquadSize": 2
+    },
+    {
+      "Authority": "Republic",
+      "Cargo": {
+        "EncryptedDataChips": 300,
+        "SithRelics": 20
+      },
+      "CompartmentRank": -1,
+      "Tier": 2,
+      "BannedValue": 60940,
+      "ScanChance": 0.15188,
+      "Fine": 30470,
+      "CargoValue": 60940,
+      "AmbushChance": 0.024376,
+      "SquadSize": 3
+    },
+    {
+      "Authority": "Czerka",
+      "Cargo": {
+        "EncryptedDataChips": 300,
+        "SithRelics": 20
+      },
+      "CompartmentRank": 20,
+      "Tier": 1,
+      "BannedValue": 45300,
+      "ScanChance": 0.095274,
+      "Fine": 22650,
+      "CargoValue": 60940,
+      "AmbushChance": 0.021938,
+      "SquadSize": 3
+    },
+    {
+      "Authority": "Sith",
+      "Cargo": {
+        "Moonspice": 60,
+        "Grain": 100
+      },
+      "CompartmentRank": 45,
+      "Tier": 6,
+      "BannedValue": 15000,
+      "ScanChance": 0.042,
+      "Fine": 7500,
+      "CargoValue": 21000,
+      "AmbushChance": 0.0,
+      "SquadSize": 3
+    },
+    {
+      "Authority": "Republic",
+      "Cargo": {
+        "Grain": 400
+      },
+      "CompartmentRank": 0,
+      "Tier": 5,
+      "BannedValue": 0,
+      "ScanChance": 0.0,
+      "Fine": 0,
+      "CargoValue": 24000,
+      "AmbushChance": 0.0,
+      "SquadSize": 3
+    }
+  ],
+  "Outcome": {
+    "T3Combat": 8500,
+    "ContrabandPerHour": 13171,
+    "ContrabandPercent": 155,
+    "CompartmentPerHour": 13708,
+    "CompartmentPercent": 161,
+    "LegalPerHour": 8756,
+    "LegalPercent": 103,
+    "FreightPerHour": 6300,
+    "FreightPercent": 74
+  }
+}

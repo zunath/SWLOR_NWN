@@ -22,15 +22,35 @@ namespace SWLOR.Game.Server.Service
         private const string PodUnitsVariablePrefix = "CARGO_POD_UNITS_";
         private const float PodSpacing = 4f;
 
-        /// <summary>Spills the ship's whole cargo at the wreck and empties its bay. Called by Space.ApplyDeath.</summary>
+        /// <summary>
+        /// Spills the ship's whole cargo at the wreck and empties its bay; sealed freight is lost with the ship and its
+        /// contracts fail. Called by Space.ApplyDeath.
+        /// </summary>
         public static void SpillCargo(PlayerShip ship, Location location)
         {
-            if (ship?.Cargo == null || ship.Cargo.Count == 0)
+            if (ship == null)
                 return;
 
-            var pods = CargoSpillRules.Split(ship.Cargo, TradeTuning.SpillMaximumContainers);
-            ship.Cargo.Clear();
+            FailSealedFreight(ship);
+            if (ship.Cargo == null || ship.Cargo.Count == 0)
+                return;
 
+            var lots = ship.Cargo.ToDictionary(x => x.Key, x => x.Value.Units);
+            ship.Cargo.Clear();
+            var spilled = SpillUnits(lots, location);
+            Log.Write(LogGroup.Space, $"CARGO SPILL - ship {ship.Id} spilled {spilled} units.");
+        }
+
+        /// <summary>Spills commodity units into cargo pods around a location and returns the units spilled.</summary>
+        public static int SpillUnits(IReadOnlyDictionary<CommodityType, int> units, Location location)
+        {
+            var cargo = units
+                .Where(x => x.Value > 0)
+                .ToDictionary(x => x.Key, x => new CargoLot { Units = x.Value });
+            if (cargo.Count == 0)
+                return 0;
+
+            var pods = CargoSpillRules.Split(cargo, TradeTuning.SpillMaximumContainers);
             var area = GetAreaFromLocation(location);
             var center = GetPositionFromLocation(location);
             for (var index = 0; index < pods.Count; index++)
@@ -49,7 +69,7 @@ namespace SWLOR.Game.Server.Service
                 AssignCommand(pod, () => DelayCommand(TradeTuning.SpillSeconds, () => DestroyObject(pod)));
             }
 
-            Log.Write(LogGroup.Space, $"CARGO SPILL - ship {ship.Id} spilled {pods.Sum(x => x.Units.Values.Sum())} units into {pods.Count} pods.");
+            return pods.Sum(x => x.Units.Values.Sum());
         }
 
         /// <summary>A pilot uses a cargo pod.</summary>
@@ -83,7 +103,7 @@ namespace SWLOR.Game.Server.Service
             }
 
             var contents = ReadPod(pod);
-            var taken = CargoSpillRules.Scoop(contents, CargoHoldRules.GetFreeVolume(capacity, ship.Cargo));
+            var taken = CargoSpillRules.Scoop(contents, GetFreeVolume(ship));
             if (taken.Count == 0)
             {
                 SendMessageToPC(user, ColorToken.Red(TradeRules.GetRefusalMessage(TradeRefusal.CargoBayFull)));
@@ -113,23 +133,30 @@ namespace SWLOR.Game.Server.Service
 
         private static void WritePod(uint pod, IReadOnlyDictionary<CommodityType, int> units)
         {
-            foreach (var commodity in Enum.GetValues<CommodityType>())
-            {
-                if (units.TryGetValue(commodity, out var count) && count > 0)
-                    SetLocalInt(pod, PodUnitsVariablePrefix + commodity, count);
-                else
-                    DeleteLocalInt(pod, PodUnitsVariablePrefix + commodity);
-            }
-
+            WriteUnits(pod, units);
             SetName(pod, CargoSpillRules.GetPodName(units));
         }
 
-        private static Dictionary<CommodityType, int> ReadPod(uint pod)
+        private static Dictionary<CommodityType, int> ReadPod(uint pod) => ReadUnits(pod);
+
+        /// <summary>Stores commodity units on an object's locals (a cargo pod or a convoy hauler).</summary>
+        private static void WriteUnits(uint holder, IReadOnlyDictionary<CommodityType, int> units)
+        {
+            foreach (var commodity in Enum.GetValues<CommodityType>())
+            {
+                if (units.TryGetValue(commodity, out var count) && count > 0)
+                    SetLocalInt(holder, PodUnitsVariablePrefix + commodity, count);
+                else
+                    DeleteLocalInt(holder, PodUnitsVariablePrefix + commodity);
+            }
+        }
+
+        private static Dictionary<CommodityType, int> ReadUnits(uint holder)
         {
             var units = new Dictionary<CommodityType, int>();
             foreach (var commodity in Enum.GetValues<CommodityType>())
             {
-                var count = GetLocalInt(pod, PodUnitsVariablePrefix + commodity);
+                var count = GetLocalInt(holder, PodUnitsVariablePrefix + commodity);
                 if (count > 0)
                     units[commodity] = count;
             }

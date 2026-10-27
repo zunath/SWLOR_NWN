@@ -87,7 +87,7 @@ public static class PairedRangedPresentation
             return;
         }
         Anchors[actor] = (sources, targets, new long[SourceAnchorCount],
-            Environment.TickCount64 + ReplicationWarmupMilliseconds, area);
+            Clock.TickCount64 + ReplicationWarmupMilliseconds, area);
     }
 
     public static void Release(uint actor)
@@ -125,7 +125,7 @@ public static class PairedRangedPresentation
         var muzzle = ResolveMuzzle(GetPosition(actor), GetFacing(actor), companion, scale);
         var destination = hit ? GetPosition(target) + NumericsVector3.UnitZ
             : ResolveMissDestination(muzzle, GetPosition(target));
-        var remaining = pool.ReadyAt - Environment.TickCount64;
+        var remaining = pool.ReadyAt - Clock.TickCount64;
         if (remaining > 0)
         {
             // Newly created invisible objects must reach the client before a MIRV can
@@ -151,7 +151,7 @@ public static class PairedRangedPresentation
             GetItemInSlot(InventorySlot.LeftHand, actor) != companion) return;
         // Lease sources for hits too. Moving a shared source in the same frame can retarget
         // the other hand's MIRV or a previous target in Pistol Rush before clients see it.
-        var slot = LeaseProjectileAnchor(pool.BusyUntil, Environment.TickCount64,
+        var slot = LeaseProjectileAnchor(pool.BusyUntil, Clock.TickCount64,
             NumericsVector3.Distance(muzzle, destination));
         if (slot < 0) return;
         var source = pool.Sources[slot];

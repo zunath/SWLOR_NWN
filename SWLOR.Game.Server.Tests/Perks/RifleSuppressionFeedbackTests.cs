@@ -68,7 +68,7 @@ public sealed class RifleSuppressionFeedbackTests
         combat.Should().Contain("private static void RefreshOverwatchMarker(uint attacker, DateTime now)");
         combat.Should().Contain("if (pending.Expiration > latestExpiration)");
         combat.Should().Contain("RefreshOverwatchMarker(sourceEffects.Key, usedAt);");
-        combat.Should().Contain("RefreshOverwatchMarker(source, DateTime.UtcNow);");
+        combat.Should().Contain("RefreshOverwatchMarker(source, Clock.UtcNow);");
         combat.Should().Contain("RefreshOverwatchMarker(attacker, now);");
         combat.Should().Contain("public static void ReconcileOverwatchStatus(uint source)");
         combat.Should().Contain("ReconcileOverwatchStatus(creature);");
@@ -108,7 +108,7 @@ public sealed class RifleSuppressionFeedbackTests
         statusEffectService.Should().NotContain("typeof(IRangedHitSuppressionSource)");
         statusEffectService.Should().NotContain("typeof(SuppressionStatusEffect)");
         combat.Should().Contain("var suppressionSourcesToRefresh = _pendingSuppressionAbilityUses.Keys");
-        combat.Should().Contain("RefreshOverwatchMarker(source, DateTime.UtcNow);");
+        combat.Should().Contain("RefreshOverwatchMarker(source, Clock.UtcNow);");
         suppressionStatus.Should().Contain("IStatusEffectRemovedHandler");
         suppressionStatus.Should().Contain("IStatusEffectRestoredHandler");
         suppressionStatus.Should().Contain("IRemoveWhenSourceExits");

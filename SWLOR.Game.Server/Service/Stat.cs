@@ -541,7 +541,7 @@ namespace SWLOR.Game.Server.Service
 
                 if (stamina < currentStamina && BeastMastery.IsPlayerBeast(creature))
                 {
-                    var availableAt = DateTime.UtcNow.AddSeconds(BeastNaturalStaminaRegenDelaySeconds);
+                    var availableAt = Clock.UtcNow.AddSeconds(BeastNaturalStaminaRegenDelaySeconds);
                     SetLocalString(
                         creature,
                         BeastNaturalStaminaRegenAvailableAtVariable,
@@ -3122,7 +3122,7 @@ namespace SWLOR.Game.Server.Service
                 return true;
             }
 
-            if (!IsNaturalStaminaRegenerationAvailable(availableAtTicks, DateTime.UtcNow.Ticks))
+            if (!IsNaturalStaminaRegenerationAvailable(availableAtTicks, Clock.UtcNow.Ticks))
                 return false;
 
             DeleteLocalString(beast, BeastNaturalStaminaRegenAvailableAtVariable);

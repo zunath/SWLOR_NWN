@@ -344,6 +344,15 @@ scope, forwarding statics, and generated fakes in `SWLOR.NWN.API.Testing`. Reuse
   nanoseconds; `Combat`, `Stat` and `Ability` facades are called many times per attack.
 - Follow `Readmes/DependencyInjection.md` (written by the pilot) for the step-by-step conversion.
 
+**Decision (coordinator, 2026-10-27, from P2-A7): extra facade types.** A service whose namespace holds other static
+classes with state or `[NWNEventHandler]` methods (first case: `Service/QuestService/QuestEncounter.cs` under `Quest`)
+keeps those classes as additional static facades, so handler names in the manifest never change. `ConvertedServices.json`
+lists them on the service's entry (`"facades": ["QuestService.QuestEncounter"]`, relative to `SWLOR.Game.Server.Service`);
+each forwards to its own instance class `<Type>Service` behind `I<Type>Service` in the service's domain namespace, registered
+like any other. The architecture rules (no static mutable state, handlers stay on a facade, no service location) apply to
+every listed facade. Small static helpers without handlers may still become instances owned by the service instead (as
+`MusicSongCatalog` did in P2-A5). Renaming handlers to move them is not an option before facade removal (P2-Z).
+
 **Order (waves; within a wave, up to three services in parallel when their files do not overlap):**
 - **P2-0 pilot:** the composition root, the facade accessor, the architecture rules, `Readmes/DependencyInjection.md`,
   and three small services with handlers: `Achievement` (Character), `Faction` (Quests), `Taxi` (World). The pilot

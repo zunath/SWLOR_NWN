@@ -73,7 +73,8 @@ Status: `open`, `in progress`, `review` (pull request open), `done`, `blocked`.
 | P2-A4 | Wave A, World I: `Notes`, `Area`, `Planet`, `Traps`, `HoloCom` (about 1,600 lines) | P2-0 | Sonnet | done | [#2942](https://github.com/zunath/SWLOR_NWN/pull/2942) | Coverage: Notes 43% -> 100%, Area 15% -> 97%, Planet 74% -> 100%, Traps 1% -> 97%, HoloCom 4% -> 98%. Calls into unconverted services that cannot run in unit tests sit behind `protected virtual` wrappers (Traps). Replaced the Roslyn recompile of `Traps.RunDetectionSweep` and reflection into Area/Planet internals. New helpers `Support/LocalVariables`, `Support/LoadedPlanets`. Engine tests compiled, not run. |
 | P2-A5 | Wave A, World II: `Weather`, `Music` (about 880 lines) | P2-0 | Sonnet | done | [#2954](https://github.com/zunath/SWLOR_NWN/pull/2954) | Coverage: Weather 0% -> 96%, Music 11% -> 99%. `Music.Song` moved to `Service/MusicService/Song.cs`; `MusicSongCatalog` is an instance built by `MusicService`, so `KeyItemIcon` asks the `Music` facade (tests reaching it need a `FacadeContainer`). Knockdown and protected-damage reads of unconverted services sit behind `protected virtual` wrappers. Replaced the Roslyn harness of `WeatherSettlementTests`, source-text tests in `WeatherTests`, reflection in `JukeboxTests`. Engine tests compiled, not run. |
 | P2-A6 | Wave A, World III: `Fishing`, `Shuttle` (about 2,300 lines) | P2-0 | Sonnet | in progress | | Branch `claude/mr-p2-a6`, worktree `.claude/worktrees/mr-p2-a6` |
-| P2-A7 | Wave A, Quests: `QuestContractBoard`, then `Quest` (about 3,800 lines; split if needed) | P2-0 | Sonnet | in progress | | Branch `claude/mr-p2-a7`, worktree `.claude/worktrees/mr-p2-a7`; may stop after `QuestContractBoard` if one PR gets too big |
+| P2-A7 | Wave A, Quests: `QuestContractBoard` | P2-0 | Sonnet | done | [#2963](https://github.com/zunath/SWLOR_NWN/pull/2963) | Coverage 12.9% -> 98.8%. `IDBService.Exists`; test helper `QueryableDBService` (answers searches by indexed properties). Native reads (`Item.FitsInInventory`, `Authorization.GetAuthorizationLevel`, the claim checkpoint) behind `protected virtual` wrappers. Engine tests reach internals through `EngineTests/Framework/QuestContractBoardInternals`. `Quest` split off as P2-A7b (see the specs' "extra facade types" decision). |
+| P2-A7b | Wave A, Quests: `Quest` and `QuestService/QuestEncounter` (about 1,230 lines), plus architecture-test support for extra facade types | P2-A7 | Sonnet | in progress | | Branch `claude/mr-p2-a7b`, worktree `.claude/worktrees/mr-p2-a7b`. `QuestContractBoardService` should inject `IQuestService`. |
 | P2-A8 | Wave A: `Property` alone (about 3,600 lines; split by responsibility) | P2-0 | Sonnet build, Opus review | in progress | | Branch `claude/mr-p2-a8`, worktree `.claude/worktrees/mr-p2-a8`. Suggested split: definitions catalog, instance loading, city governance, `PropertyService` (create/delete, permissions, enter, placement, menus); may stop after catalog + loading if too big. |
 | P2-A9 | Wave A: `Space` alone (about 3,600 lines) | P2-0 | Sonnet build, Opus review | open | | |
 | P0-6 | Scripted live smoke run framework (spec in MaintainabilityRefactorSpecs.md) | - | Sonnet | done | [#2906](https://github.com/zunath/SWLOR_NWN/pull/2906) | `tools/RunSmokeTest.ps1` / `tools/SmokeTest.py` (`-Repeat`, `-ServerOnly`, `-SkipBuild`, `-PublicCdKey`), 69 tool tests, InEngineVisualVerification.md "Smoke run" section. Server boot checks pass (two identical server-only runs). Results of runs so far: `C:\Temp\mr-p0-6` (local). |
@@ -91,14 +92,15 @@ Coordinator since 2026-10-27 afternoon: the session "SWLOR maintainability refac
 ("Codebase refactoring plan") starts nothing new and leaves P0-6b's merge to this coordinator.
 
 - P0-6b (Sonnet, run by the first coordinator's session): branch `claude/mr-p0-6b`, worktree `C:\Projects\SWLOR_NWN\.claude\worktrees\mr-p0-6`; live stacks `swlor-live-*p06*`. When it reports, review and merge its pull request and check no live stack is left.
-- P2-A6, P2-A7, P2-A8 (Sonnet subagents of the current coordinator; see Work queue). If this coordinator stops, check `gh pr list --base feature/maintainability-refactor` and each worktree before restarting an item.
+- P2-A6, P2-A7b, P2-A8 (Sonnet subagents of the current coordinator; see Work queue). If this coordinator stops, check `gh pr list --base feature/maintainability-refactor` and each worktree before restarting an item.
 ## Next actions
 
-1. Review and merge P2-A6, P2-A7, P2-A8 as they report (squash; merge the base into the later ones for list conflicts in
+1. Review and merge P2-A6, P2-A7b, P2-A8 as they report (squash; merge the base into the later ones for list conflicts in
    `ServiceRegistrations.cs` / `ConvertedServices.json`). Then A9 `Space` (Opus review; after A8, it leans on `Property`). At most three agents.
 2. Then Waves B-D per the specs' Phase 2 section (the `FacadeAccessor` cache must land before Wave D).
 3. Merge P0-6b when it reports (see In flight).
-4. Next daily sync due 2026-10-28. Until master lists `sw_part_previews` in `Build/hakbuilder.json`, the engine refresh needs the workaround in Environment notes.
+4. Next daily sync due 2026-10-28. It brings master #2956 (`sw_part_previews` in `Build/hakbuilder.json`); after it the
+   engine-refresh workaround in Environment notes is no longer needed (delete that note and the defect row).
 5. GitHub Actions is billing-locked; the owner said not to wait. The gate is a local `scripts/ci/run-unit-tests.sh` run.
 
 ## Coverage baseline (P0-2, 2026-10-27, branch at the P1-1 merge)

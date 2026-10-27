@@ -29,8 +29,8 @@ Mimicry -> Random | 1
 QuickCast -> DB | 1
 
 # Abilities -> Platform (12 edges)
-Ability -> Platform/Core | 11
-AbilityCooldownVisual -> Platform/Core | 3
+Ability -> Platform/Core | 13
+AbilityCooldownVisual -> Platform/Core | 6
 AbilityCooldownVisual -> Platform/Entity | 1
 Feature/AbilityDefinition -> Platform/Core | 16
 Feature/AbilityDefinition -> Platform/Entity | 6
@@ -113,7 +113,7 @@ Feature/StatusEffectDefinition -> Platform/Core | 3
 Feature/StatusEffectDefinition -> Platform/Entity | 3
 Language -> Platform/Core | 1
 Language -> Platform/Entity | 1
-Perk -> Platform/Core | 3
+Perk -> Platform/Core | 4
 Perk -> Platform/Entity | 15
 Perk -> Platform/Enumeration | 9
 Perk -> Platform/Extension | 2
@@ -128,10 +128,10 @@ Skill -> Platform/Core | 5
 Skill -> Platform/Entity | 13
 Skill -> Platform/Enumeration | 54
 Skill -> Platform/Extension | 2
-Stat -> Platform/Core | 4
+Stat -> Platform/Core | 6
 Stat -> Platform/Entity | 51
 Stat -> Platform/Extension | 1
-StatusEffect -> Platform/Core | 7
+StatusEffect -> Platform/Core | 18
 StatusEffect -> Platform/Native | 2
 
 # Combat -> Core (33 edges)
@@ -169,11 +169,11 @@ TwinPistolEquipment -> ColorToken | 2
 TwinPistolEquipment -> Feature/MigrationDefinition | 1
 TwinPistolMastery -> DB | 1
 
-# Combat -> Platform (27 edges)
-Combat -> Platform/Core | 15
+# Combat -> Platform (29 edges)
+Combat -> Platform/Core | 63
 Combat -> Platform/Entity | 2
 Combat -> Platform/Extension | 3
-CombatPoint -> Platform/Core | 4
+CombatPoint -> Platform/Core | 7
 CombatPoint -> Platform/Entity | 2
 CombatRecorder -> Platform/Core | 13
 CombatRecorder -> Platform/Entity | 1
@@ -181,11 +181,13 @@ CombatRecorder -> Platform/Native | 3
 CombatRecorder -> Platform/Root | 1
 Death -> Platform/Core | 4
 Death -> Platform/Entity | 6
-Enmity -> Platform/Core | 9
-MeleeTechnique -> Platform/Core | 8
+Enmity -> Platform/Core | 12
+MeleeTechnique -> Platform/Core | 20
+OrdinaryAttackTraits -> Platform/Core | 3
+PairedRangedTraits -> Platform/Core | 17
 Poisons -> Platform/Core | 1
 PvpCombat -> Platform/Core | 4
-Recast -> Platform/Core | 1
+Recast -> Platform/Core | 4
 Recast -> Platform/Entity | 3
 Recast -> Platform/Extension | 1
 Resistance -> Platform/Core | 1
@@ -295,7 +297,7 @@ Spawn -> Random | 4
 Spawn -> Walkmesh | 1
 
 # Creatures -> Platform (6 edges)
-AI -> Platform/Core | 19
+AI -> Platform/Core | 24
 AI -> Platform/Native | 1
 CompanionControl -> Platform/Core | 6
 NPCGroup -> Platform/Core | 1
@@ -522,7 +524,7 @@ OverflowStorage -> Platform/Entity | 4
 
 # Platform -> Core (9 edges)
 Platform/Core -> FrameProfiler | 5
-Platform/Core -> Log | 12
+Platform/Core -> Log | 14
 Platform/Entity -> Feature/MigrationDefinition | 2
 Platform/Native -> ColorToken | 2
 Platform/Native -> DB | 2

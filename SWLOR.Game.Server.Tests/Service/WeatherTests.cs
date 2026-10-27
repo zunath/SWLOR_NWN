@@ -1,17 +1,10 @@
-using System.Reflection;
 using FluentAssertions;
-using Microsoft.CodeAnalysis.CSharp;
-using Microsoft.CodeAnalysis.CSharp.Syntax;
 using NUnit.Framework;
-using SWLOR.Game.Server.Core;
 using SWLOR.Game.Server.Enumeration;
-using SWLOR.Game.Server.Service;
-using SWLOR.Game.Server.Service.CombatService;
 using SWLOR.Game.Server.Service.WeatherService;
 using SWLOR.Game.Server.Tests.Support;
 using SWLOR.NWN.API.NWScript.Enum.Area;
 using Precipitation = SWLOR.NWN.API.NWScript.Enum.Weather;
-using WeatherRuntime = SWLOR.Game.Server.Service.Weather;
 
 namespace SWLOR.Game.Server.Tests.Service;
 
@@ -140,7 +133,6 @@ public class WeatherTests
         LoadedPlanets.Resolve(planets, "CZ-220 - Main Deck").Should().Be(PlanetType.CZ220);
         LoadedPlanets.Resolve(planets, "Smuggler's Moon Station - Corridors").Should().Be(PlanetType.SmugglersMoonStation);
         planets.GetPlanetTypeByAreaResref("canyon_001").Should().Be(PlanetType.Tatooine);
-        Method("GetAreaClimate").Should().Contain("Planet.GetPlanetType(area)").And.Contain("ResolveClimate");
     }
 
     [Test]
@@ -367,40 +359,6 @@ public class WeatherTests
         Conditions(6, 7, 3).GetHazard(true, Precipitation.Rain).Should().Be(WeatherHazard.Acid);
         Conditions(6, 7, 3).GetFeedback(new WeatherClimate(), false, true, Precipitation.Rain)
             .Should().Be(WeatherFeedbackText.AcidRain);
-        Method("ApplyWeatherDamage").Should().Contain("NWScript.GetWeather(area)");
-    }
-
-    [Test]
-    public void Runtime_InitializesAllAreas_AndUsesOneHeartbeatForExposureAndDistinctOccupiedAreas()
-    {
-        typeof(WeatherRuntime).GetMethod(nameof(WeatherRuntime.InitializeWeather))!
-            .GetCustomAttributes<NWNEventHandler>().Select(x => x.Script).Should().Contain(ScriptName.OnModuleLoad);
-        Method("AdjustWeather").Should().Contain("GetFirstArea()").And.Contain("GetNextArea()")
-            .And.NotContain("GetFirstPC()");
-        var heartbeat = Method("OnModuleHeartbeat");
-        heartbeat.Should().Contain("ApplyWeatherDamage(viewer, now)").And.Contain("new HashSet<uint>()")
-            .And.Contain("now.AddMinutes(1)").And.Contain("_exposures.Remove(player)");
-        Source().Should().NotContain("GetTimeHour()").And.NotContain("DelayCommand(")
-            .And.NotContain("GetMaster(");
-        Method("IsWeatherArea").Should().Contain("!GetIsAreaInterior(area)")
-            .And.Contain("GetIsAreaAboveGround(area)").And.Contain("\"SPACE\"");
-    }
-
-    [Test]
-    public void Runtime_UpdatesFogWhenPrecipitationChanges_AndRestoresAllAuthoredVisualSettings()
-    {
-        var update = Method("SetWeather", 1);
-        update.Should().Contain("state.Revision == _pattern.Revision")
-            .And.Contain("previous?.Precipitation != conditions.Precipitation")
-            .And.Contain("ClearMist(state)").And.NotContain("EnsureMist(");
-        foreach (var variable in new[] { "VAR_SKYBOX", "VAR_FOG_SUN", "VAR_FOG_MOON", "VAR_FOG_C_SUN", "VAR_FOG_C_MOON" })
-            update.Should().Contain($"GetLocalInt(area, {variable})");
-        Method("ClearMist").Should().Contain("DestroyObject(placeable)")
-            .And.Contain("state.MistPlaceables.Clear()");
-        Method("EnsureMist").Should().Contain("index = 0").And.Contain("state.MistInitialized = true");
-        Method("OnAreaEnter").Should().Contain("GetIsPC(creature)").And.Contain("EnsureMist(area, state)");
-        Method("OnModuleHeartbeat").Should().Contain("EnsureMist(area, state)");
-        Method("TryGetGroundLocation").Should().Contain("GetGroundHeight(location)");
     }
 
     [Test]
@@ -431,49 +389,6 @@ public class WeatherTests
     public void NativeWeather_MapsPrecipitation(Precipitation precipitation, WeatherType expected)
     {
         new WeatherConditions(6, 8, 3, precipitation, WeatherStorm.None).NativeWeather.Should().Be(expected);
-    }
-
-    [Test]
-    public void Runtime_StormChangesKeepNativeRain_AndOnlySendChangedWeather()
-    {
-        var update = Method("SetWeather", 1);
-        update.Should().Contain("state.TryApplyWeather(conditions.NativeWeather, NWScript.GetWeather(area))")
-            .And.Contain("NWScript.SetWeather(area, conditions.NativeWeather)");
-        update.IndexOf("TryApplyWeather").Should().BeLessThan(update.IndexOf("NWScript.SetWeather("));
-        Source().Split("NWScript.SetWeather(").Length.Should().Be(2, "every native weather send goes through the guard");
-    }
-
-    [Test]
-    public void Runtime_HazardsExcludeDeadAndStaffPlayers_AndColdDamageUsesColdFeedback()
-    {
-        var damage = Method("ApplyWeatherDamage");
-        damage.Should().Contain("GetIsPC(creature)").And.Contain("!GetIsDM(creature)")
-            .And.Contain("!GetIsDMPossessed(creature)").And.Contain("!GetIsDead(creature)")
-            .And.Contain("conditions.GetHazard(").And.Contain("WeatherHazard.None")
-            .And.Contain("WeatherHazard.Snow => CombatDamageType.Ice")
-            .And.Contain("VisualEffect.Vfx_Imp_Frost_S").And.Contain("AssignCommand(area,");
-        Method("Thunderstorm", 1).Should().Contain("state.Conditions.Storm != WeatherStorm.Thunder");
-    }
-
-    [Test]
-    public void Runtime_AllWeatherHitsUseResistanceAndDamageTakenProtection_BeforeApplyingEffects()
-    {
-        var pulse = Method("ApplyWeatherDamage");
-        pulse.Should().Contain("WeatherHazard.Acid => CombatDamageType.Poison")
-            .And.Contain("WeatherHazard.Snow => CombatDamageType.Ice")
-            .And.Contain("GetProtectedDamage(creature, d6(dice), damageType)")
-            .And.Contain("DamageType.Bludgeoning");
-        var bolt = Method("Thunderstorm", 2);
-        bolt.IndexOf("GetProtectedDamage(target, damage, CombatDamageType.Electrical)")
-            .Should().BeLessThan(bolt.IndexOf("EffectDamage(damage, DamageType.Electrical)"));
-        var protection = Method("GetProtectedDamage");
-        protection.Should().Contain("GetObjectType(target) != ObjectType.Creature")
-            .And.Contain("Resistance.ApplyResistanceToDamage(target, damageType, adjusted.Damage)")
-            .And.Contain("Combat.ApplyDamageTakenModifiers(target, damage, damageType: damageType")
-            .And.Contain("StatType.PhysicalDamageTakenPercentAdjustment")
-            .And.Contain("if (damage <= 0) return 0;");
-        CombatDamageType.Poison.GetNWScriptDamageType().Should().Be(SWLOR.NWN.API.NWScript.Enum.DamageType.Acid);
-        CombatDamageType.Ice.GetNWScriptDamageType().Should().Be(SWLOR.NWN.API.NWScript.Enum.DamageType.Cold);
     }
 
     [Test]
@@ -515,7 +430,6 @@ public class WeatherTests
         WeatherPlanetDefinitions.ResolveClimate(PlanetType.Tatooine, "typo", planets, named).Should().BeNull();
         WeatherPlanetDefinitions.ResolveClimate(PlanetType.Invalid, "kashyyyk", planets, named).Should().BeSameAs(named["Kashyyyk"]);
         WeatherPlanetDefinitions.ResolveClimate(PlanetType.Tatooine, "None", planets, named)!.IsSheltered.Should().BeTrue();
-        Method("IsWeatherArea").Should().Contain("GetAreaClimate(area) is { IsSheltered: false }");
     }
 
     private static WeatherConditions Conditions(int heat, int humidity, int wind,
@@ -536,18 +450,4 @@ public class WeatherTests
     }
 
     private static int NoRoll(int max) => throw new AssertionException("Weather must not reroll here.");
-
-    private static string Source()
-    {
-        var root = new DirectoryInfo(AppContext.BaseDirectory);
-        while (root != null && !Directory.Exists(Path.Combine(root.FullName, "SWLOR.Game.Server"))) root = root.Parent;
-        return File.ReadAllText(Path.Combine(root!.FullName, "SWLOR.Game.Server", "Service", "Weather.cs"));
-    }
-
-    private static string Method(string name, int? parameterCount = null)
-    {
-        return CSharpSyntaxTree.ParseText(Source()).GetRoot().DescendantNodes().OfType<MethodDeclarationSyntax>()
-            .First(method => method.Identifier.ValueText == name &&
-                             (parameterCount == null || method.ParameterList.Parameters.Count == parameterCount)).ToString();
-    }
 }

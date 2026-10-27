@@ -1,6 +1,8 @@
 using System.Collections.Generic;
 using System.Reflection;
 using System.Threading.Tasks;
+using SWLOR.Game.Server.Composition;
+using SWLOR.Game.Server.Domain.World;
 using SWLOR.Game.Server.EngineTests.Framework;
 using SWLOR.Game.Server.Enumeration;
 using SWLOR.Game.Server.Service.WeatherService;
@@ -16,21 +18,22 @@ namespace SWLOR.Game.Server.EngineTests.Definitions
         [EngineTest("Settlement maps and copied city areas retain weather hazard protection", Category = "Weather")]
         public static async Task SettlementWeatherProtection(EngineTestContext ctx)
         {
-            var predicate = typeof(WeatherRuntime).GetMethod("IsHazardousWeatherArea",
-                BindingFlags.Static | BindingFlags.NonPublic)!;
+            var weather = CompositionRoot.ServerHost.Provider.GetService(typeof(IWeatherService))!;
+            var predicate = weather.GetType().GetMethod("IsHazardousWeatherArea",
+                BindingFlags.Instance | BindingFlags.NonPublic)!;
             var protectedAreas = 0;
             var wildernessAreas = 0;
             for (var area = GetFirstArea(); GetIsObjectValid(area); area = GetNextArea())
             {
                 if (GetLocalBool(area, "WEATHER_HAZARD_SAFE"))
                 {
-                    ctx.Assert(!(bool)predicate.Invoke(null, new object[] { area })!,
+                    ctx.Assert(!(bool)predicate.Invoke(weather, new object[] { area })!,
                         $"Authored settlement {GetResRef(area)} is safe from weather hazards");
                     protectedAreas++;
                 }
                 else if (GetResRef(area) == "viscarawildlands" || GetResRef(area) == "hutlar_qion")
                 {
-                    ctx.Assert((bool)predicate.Invoke(null, new object[] { area })!,
+                    ctx.Assert((bool)predicate.Invoke(weather, new object[] { area })!,
                         $"Wilderness {GetResRef(area)} retains weather hazards");
                     wildernessAreas++;
                 }
@@ -42,7 +45,7 @@ namespace SWLOR.Game.Server.EngineTests.Definitions
             ctx.Assert(GetLocalBool(city, "WEATHER_HAZARD_SAFE"), "City instances inherit the authored marker");
             WeatherRuntime.SetWeather(city);
             ctx.Assert(WeatherRuntime.GetWeather(city) != Precipitation.Invalid, "The protected city retains weather visuals");
-            ctx.Assert(!(bool)predicate.Invoke(null, new object[] { city })!, "The new city instance is hazard safe");
+            ctx.Assert(!(bool)predicate.Invoke(weather, new object[] { city })!, "The new city instance is hazard safe");
 
             var target = ctx.SpawnCreature("nw_bandit001");
             ObjectPlugin.AddToArea(target, city, GetPositionFromLocation(ctx.GetArenaLocation()));
@@ -51,9 +54,9 @@ namespace SWLOR.Game.Server.EngineTests.Definitions
             Stat.SetNPCMaxHitPoints(target, 200, true);
             var hp = GetCurrentHitPoints(target);
             var knockdowns = CountKnockdowns(target);
-            var bolt = typeof(WeatherRuntime).GetMethod("Thunderstorm", BindingFlags.Static | BindingFlags.NonPublic)!;
+            var bolt = weather.GetType().GetMethod("Thunderstorm", BindingFlags.Instance | BindingFlags.NonPublic)!;
             await ctx.ExecuteInCreatureContextAsync(city,
-                () => bolt.Invoke(null, new object[] { GetLocation(target), 40 }));
+                () => bolt.Invoke(weather, new object[] { GetLocation(target), 40 }));
             await ctx.WaitFrameAsync();
             ctx.AssertEqual(hp, GetCurrentHitPoints(target), "Settlement lightning causes no damage");
             ctx.AssertEqual(knockdowns, CountKnockdowns(target), "Settlement lightning causes no knockdown");
@@ -61,7 +64,7 @@ namespace SWLOR.Game.Server.EngineTests.Definitions
             // Only this private copy is changed; the authored world remains safe.
             DeleteLocalInt(city, "WEATHER_HAZARD_SAFE");
             await ctx.ExecuteInCreatureContextAsync(city,
-                () => bolt.Invoke(null, new object[] { GetLocation(target), 40 }));
+                () => bolt.Invoke(weather, new object[] { GetLocation(target), 40 }));
             await ctx.WaitUntilAsync(() => GetCurrentHitPoints(target) < hp, 3f,
                 "the unprotected lightning control to deal damage");
             ctx.SetResultDetail($"Verified {protectedAreas} packed settlement markers, two harmful wilderness controls, copied city weather visuals, and actual lightning immunity. Removing protection in the private instance restored lightning damage.");
@@ -84,8 +87,9 @@ namespace SWLOR.Game.Server.EngineTests.Definitions
             WeatherRuntime.LoadData();
             try
             {
-                var pattern = (WeatherPattern)typeof(WeatherRuntime)
-                    .GetField("_pattern", BindingFlags.Static | BindingFlags.NonPublic)!.GetValue(null);
+                var weather = CompositionRoot.ServerHost.Provider.GetService(typeof(IWeatherService))!;
+                var pattern = (WeatherPattern)weather.GetType()
+                    .GetField("_pattern", BindingFlags.Instance | BindingFlags.NonPublic)!.GetValue(weather);
                 pattern.TryAdvance(DateTime.UtcNow, 6, false, max => max - 1);
                 var areas = new List<uint>();
                 for (var area = GetFirstArea(); GetIsObjectValid(area); area = GetNextArea())

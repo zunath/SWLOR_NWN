@@ -15,7 +15,7 @@ namespace SWLOR.Game.Server.Tests.Feature;
 public class MusicCollectionTests
 {
     private const int SongKeyItemBase = 3000;
-    private static IReadOnlyList<MusicSong> Songs => MusicSongCatalog.Songs;
+    private static readonly IReadOnlyList<MusicSong> Songs = new MusicSongCatalog().Songs;
 
     [Test]
     public void Catalog_TracksEverySongAsAMusicKeyItem()

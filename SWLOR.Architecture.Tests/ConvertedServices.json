@@ -19,6 +19,7 @@
     { "name": "Fishing", "domain": "World" },
     { "name": "Guild", "domain": "Economy" },
     { "name": "HoloCom", "domain": "World" },
+    { "name": "Music", "domain": "World" },
     { "name": "Notes", "domain": "World" },
     { "name": "Party", "domain": "Social" },
     { "name": "Planet", "domain": "World" },
@@ -26,6 +27,7 @@
     { "name": "PlayerMarket", "domain": "Economy" },
     { "name": "Shuttle", "domain": "World" },
     { "name": "Taxi", "domain": "World" },
-    { "name": "Traps", "domain": "World" }
+    { "name": "Traps", "domain": "World" },
+    { "name": "Weather", "domain": "World" }
   ]
 }

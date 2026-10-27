@@ -31,7 +31,7 @@ namespace SWLOR.Game.Server.Service.KeyItemService
         public const string LocationMusic = "iki_mus_place";
         public const string AmbientMusic = "iki_mus_ambi";
 
-        public static IReadOnlyCollection<string> FieldNoteIconResrefs { get; } = new[]
+        public static IReadOnlyCollection<string> FieldNoteIconResrefs => new[]
         {
             PublishedFieldGuide,
             LicensedResearchDatapad,
@@ -41,7 +41,7 @@ namespace SWLOR.Game.Server.Service.KeyItemService
             EncryptedRestrictedReport,
         };
 
-        public static IReadOnlyCollection<string> MapIconResrefs { get; } = new[]
+        public static IReadOnlyCollection<string> MapIconResrefs => new[]
         {
             OrbitMap,
             WildernessMap,
@@ -51,7 +51,7 @@ namespace SWLOR.Game.Server.Service.KeyItemService
             RuinsMap,
         };
 
-        public static IReadOnlyCollection<string> MusicIconResrefs { get; } = new[]
+        public static IReadOnlyCollection<string> MusicIconResrefs => new[]
         {
             CantinaMusic,
             BattleMusic,

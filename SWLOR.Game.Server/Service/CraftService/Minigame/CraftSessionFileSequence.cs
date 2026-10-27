@@ -11,4 +11,8 @@ public static class CraftSessionFileSequence
 
     /// <summary>The highest sequence known to be in the character file. It follows <see cref="Variable"/> each time this process writes the file.</summary>
     public const string ExportedVariable = "CRAFT_FILE_EXPORTED";
+
+    /// <summary>The sequence the character file carried when it loaded. It never changes until the next load, so every login check compares
+    /// against the same value whatever ran first.</summary>
+    public const string LoadedVariable = "CRAFT_FILE_LOADED";
 }

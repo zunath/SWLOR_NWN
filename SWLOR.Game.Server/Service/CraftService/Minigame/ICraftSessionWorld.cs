@@ -82,6 +82,9 @@ public interface ICraftSessionWorld
     /// </summary>
     int FileSequence(uint player);
 
+    /// <summary>The craft file sequence the character file carried when it loaded; it does not move until the next load.</summary>
+    int LoadedSequence(uint player);
+
     /// <summary>Raises the craft file sequence by one and returns the new value. Call it once the inventory changes of a transfer are made.</summary>
     int AdvanceFileSequence(uint player);
 

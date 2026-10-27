@@ -1,6 +1,7 @@
 using System.Collections.Generic;
 using System.Linq;
 using SWLOR.Game.Server.Entity;
+using SWLOR.Game.Server.Service.CraftService.Minigame;
 using SWLOR.Game.Server.Feature.GuiDefinition.Payload;
 using SWLOR.Game.Server.Service.GuiService;
 using SWLOR.Game.Server.Service.SkillService;
@@ -73,11 +74,30 @@ namespace SWLOR.Game.Server.Service.ScavengeService
         /// Gives a player the finds of a board whose visit never put them in a site (a restart, a death, a logout or a missing site), and
         /// clears them.
         /// </summary>
-        public void ReturnPendingFinds(uint player)
+        /// <remarks>
+        /// The record keeps the finds, stamped with the craft file sequence of the return, until a character file holds them: a crash
+        /// before the export leaves the stamp above the file's sequence, so the next login gives them again, and a crash after it leaves
+        /// the stamp covered, so the login only clears them. At login the check reads the sequence the file loaded with; later it reads
+        /// the last export.
+        /// </remarks>
+        public void ReturnPendingFinds(uint player, bool atLogin = false)
         {
             var dbPlayer = DB.Get<Player>(GetObjectUUID(player));
             if (dbPlayer?.PendingScavengeFinds == null || dbPlayer.PendingScavengeFinds.Count == 0)
                 return;
+
+            var returned = dbPlayer.PendingScavengeReturnSequence;
+            if (returned > 0)
+            {
+                var inFile = GetLocalInt(player, atLogin ? CraftSessionFileSequence.LoadedVariable : CraftSessionFileSequence.ExportedVariable);
+                if (inFile >= returned || !atLogin)
+                {
+                    // Either a file already holds the returned finds, or they are in this session's inventory waiting for its export.
+                    if (inFile >= returned)
+                        ClearReturnedFinds(dbPlayer);
+                    return;
+                }
+            }
 
             var names = new List<string>();
             foreach (var (resref, quantity) in dbPlayer.PendingScavengeFinds)
@@ -86,12 +106,26 @@ namespace SWLOR.Game.Server.Service.ScavengeService
                 names.Add($"{quantity}x {(GetIsObjectValid(item) ? GetName(item) : resref)}");
             }
 
-            dbPlayer.PendingScavengeFinds.Clear();
-            DB.Set(dbPlayer);
-            // Save the character file with the record, so a crash cannot leave the finds cleared from the record but missing from the file.
-            if (GetIsPC(player) && !GetIsDM(player) && !GetIsDMPossessed(player))
+            var exportable = GetIsPC(player) && !GetIsDM(player) && !GetIsDMPossessed(player);
+            if (exportable)
+            {
+                var sequence = GetLocalInt(player, CraftSessionFileSequence.Variable) + 1;
+                SetLocalInt(player, CraftSessionFileSequence.Variable, sequence);
+                dbPlayer.PendingScavengeReturnSequence = sequence;
+                DB.Set(dbPlayer);
                 ExportSingleCharacter(player);
+                SetLocalInt(player, CraftSessionFileSequence.ExportedVariable, sequence);
+            }
+
+            ClearReturnedFinds(dbPlayer);
             SendMessageToPC(player, $"Your last search ended before you could collect it. What it found is in your inventory: {string.Join(", ", names)}.");
+        }
+
+        private static void ClearReturnedFinds(Player dbPlayer)
+        {
+            dbPlayer.PendingScavengeFinds.Clear();
+            dbPlayer.PendingScavengeReturnSequence = 0;
+            DB.Set(dbPlayer);
         }
 
         public void SpawnBonusLoot(uint site, uint player)

@@ -260,6 +260,8 @@ public sealed class NwnCraftSessionWorld : ICraftSessionWorld
         return next;
     }
 
+    public int LoadedSequence(uint player) => GetLocalInt(player, CraftSessionFileSequence.LoadedVariable);
+
     public int ExportedSequence(uint player) => GetLocalInt(player, CraftSessionFileSequence.ExportedVariable);
 
     public void FlushCharacter(uint player)

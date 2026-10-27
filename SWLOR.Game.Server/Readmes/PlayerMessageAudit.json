@@ -4320,7 +4320,7 @@
   },
   {
     "File": "SWLOR.Game.Server/Service/CraftService/Minigame/NwnCraftSessionWorld.cs",
-    "Line": 301,
+    "Line": 303,
     "Member": "Message",
     "Delivery": "Retained",
     "Call": "SendMessageToPC(player, text)"
@@ -5594,21 +5594,21 @@
   },
   {
     "File": "SWLOR.Game.Server/Service/ScavengeService/NwnScavengeWorld.cs",
-    "Line": 41,
+    "Line": 42,
     "Member": "Message",
     "Delivery": "Retained",
     "Call": "SendMessageToPC(player, text)"
   },
   {
     "File": "SWLOR.Game.Server/Service/ScavengeService/NwnScavengeWorld.cs",
-    "Line": 46,
+    "Line": 47,
     "Member": "SkillCheckMessage",
     "Delivery": "Retained",
     "Call": "FloatingTextStringOnCreature(ColorToken.SkillCheck(text), player, false)"
   },
   {
     "File": "SWLOR.Game.Server/Service/ScavengeService/NwnScavengeWorld.cs",
-    "Line": 94,
+    "Line": 121,
     "Member": "ReturnPendingFinds",
     "Delivery": "Retained",
     "Call": "SendMessageToPC(player, $\"Your last search ended before you could collect it. What it found is in your inventory: {string.Join(\", \", names)}.\")"

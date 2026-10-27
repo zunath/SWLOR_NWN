@@ -43,7 +43,7 @@ namespace SWLOR.Game.Server.Service.ScavengeService
         /// Gives the scavenger whatever is on their record from a visit that never put it in a site, and clears the record in the same
         /// step so it cannot be given twice. Does nothing when the record is empty.
         /// </summary>
-        void ReturnPendingFinds(uint player);
+        void ReturnPendingFinds(uint player, bool atLogin = false);
 
         /// <summary>Spawns the site's extra loot tables (<c>LOOT_TABLE_n</c>) for the scavenger, as every successful search always did.</summary>
         void SpawnBonusLoot(uint site, uint player);

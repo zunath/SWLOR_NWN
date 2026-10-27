@@ -243,6 +243,9 @@ namespace SWLOR.Game.Server.Entity
         // What a Search board found, by item resref and quantity, while its visit has not ended. A server restart loses the board and its
         // site, so the next login gives these to the player. Empty when no board is in progress.
         public Dictionary<string, int> PendingScavengeFinds { get; set; }
+        // The craft file sequence of the return that gave PendingScavengeFinds to the player, kept until a character file holds it; 0 when
+        // the finds have not been given yet.
+        public int PendingScavengeReturnSequence { get; set; }
         // When the player first opened each crafting minigame, which is when its help page opened by itself.
         public Dictionary<CraftMinigameType, DateTime> CraftMinigameHelpSeen { get; set; }
         // The crafting style the crafter selected for each crafting skill, named by the style's perk. The style's status effect is

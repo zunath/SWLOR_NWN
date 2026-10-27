@@ -164,6 +164,10 @@ internal sealed class FakeCraftSessionWorld : ICraftSessionWorld
 
     public int ExportedSequence(uint player) => _exported;
 
+    // Before any simulated reload the login sees the sequence held in memory, as a login straight after a clean export would.
+    private int? _loaded;
+    public int LoadedSequence(uint player) => _loaded ?? Sequence;
+
     /// <summary>True from a persist request until the delayed export runs (<see cref="RunQueuedExport"/>) or a flush writes the file.</summary>
     public bool ExportQueued { get; private set; }
 
@@ -212,6 +216,7 @@ internal sealed class FakeCraftSessionWorld : ICraftSessionWorld
         Crafted.AddRange(_fileCrafted);
         Sequence = FileSequenceOnDisk;
         _exported = FileSequenceOnDisk;
+        _loaded = FileSequenceOnDisk;
     }
 
     /// <summary>Writes the character file as it stands, as a logout or an unrelated export does.</summary>

@@ -96,7 +96,7 @@ public class ScavengePointSourceTests
         var login = Method(source, "public static void ReturnPendingSearchFinds()");
         var respawn = Method(source, "public static void ReturnPendingSearchFindsOnRespawn()");
 
-        login.Should().Contain("NwnScavengeWorld.Instance.ReturnPendingFinds(player)");
+        login.Should().Contain("NwnScavengeWorld.Instance.ReturnPendingFinds(player, atLogin: true)");
         respawn.Should().Contain("NwnScavengeWorld.Instance.ReturnPendingFinds(player)");
         source.Should().Contain("[NWNEventHandler(ScriptName.OnModuleRespawn)]");
     }

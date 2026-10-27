@@ -20,7 +20,7 @@ namespace SWLOR.Game.Server.Feature
             if (!GetIsPC(player) || GetIsDM(player) || GetIsDMPossessed(player))
                 return;
 
-            NwnScavengeWorld.Instance.ReturnPendingFinds(player);
+            NwnScavengeWorld.Instance.ReturnPendingFinds(player, atLogin: true);
         }
 
         /// <summary>Gives a player who died mid-search the finds the board kept for them, once they respawn.</summary>

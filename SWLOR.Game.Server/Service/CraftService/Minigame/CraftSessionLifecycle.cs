@@ -260,7 +260,7 @@ public sealed class CraftSessionLifecycle
     /// </summary>
     public CraftSettlement RecoverAtLogin(uint player, Player dbPlayer, CraftSessionEndReason reason)
     {
-        var file = _world.FileSequence(player);
+        var file = _world.LoadedSequence(player);
         var changed = false;
         var placed = new List<string>();
 

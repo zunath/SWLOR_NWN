@@ -647,6 +647,23 @@ public class CraftSessionLifecycleTests
     }
 
     [Test]
+    public void RecoverAtLogin_ComparesAgainstTheLoadedFile_EvenWhenAnotherLoginStepAdvancedTheSequenceFirst()
+    {
+        _world.ExportNow();
+        StartSession(Lifecycle(), FakeCraftSessionWorld.Blueprint, FakeCraftSessionWorld.FirstEnhancement);
+
+        var saved = CrashAndLogIn();
+        // Another login handler (the Search finds return) stamps a transfer before the craft recovery runs.
+        _world.AdvanceFileSequence(FakeCraftSessionWorld.PlayerHandle);
+        _world.AdvanceFileSequence(FakeCraftSessionWorld.PlayerHandle);
+        LogIn(saved, 100, 100, 100);
+
+        saved.ActiveCraftSession.Should().BeNull();
+        _world.Returned.Should().BeEmpty("the loaded file still has the components, whatever ran before the recovery");
+        _world.Inventory["ore"].Should().Be(5);
+    }
+
+    [Test]
     public void RecoverAtLogin_AfterTheDebitWasExported_RefundsOnce()
     {
         _world.ExportNow();

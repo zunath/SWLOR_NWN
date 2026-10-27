@@ -67,7 +67,7 @@ internal sealed class FakeScavengeWorld : IScavengeWorld
     /// <summary>What is on the scavenger's record now: the last list saved, until it is returned.</summary>
     public IReadOnlyList<ScavengeFind> Pending { get; private set; } = Array.Empty<ScavengeFind>();
 
-    public void ReturnPendingFinds(uint player)
+    public void ReturnPendingFinds(uint player, bool atLogin = false)
     {
         Log.Add("return");
         Returned.AddRange(Pending);

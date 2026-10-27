@@ -151,6 +151,8 @@ namespace SWLOR.Game.Server.Native
                 creature.m_ScriptVars.SetInt(sequenceName, craftSequence);
                 using var exportedName = new CExoString(CraftSessionFileSequence.ExportedVariable);
                 creature.m_ScriptVars.SetInt(exportedName, craftSequence);
+                using var loadedName = new CExoString(CraftSessionFileSequence.LoadedVariable);
+                creature.m_ScriptVars.SetInt(loadedName, craftSequence);
             }
         }
     }

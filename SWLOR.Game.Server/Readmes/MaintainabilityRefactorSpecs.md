@@ -215,3 +215,33 @@ Two pull requests, in order.
   project is running first (AgentEnvironment.md). Run twice; results must be identical.
 
 **Done:** both pull requests merged; the scenarios pass twice in a row; a deliberate formula change fails them.
+
+## P0-7 - Daily sync and parity scripts
+
+Two PowerShell scripts under `tools/Refactor/` (they also run under PowerShell 7 on Linux), each printing a short
+summary and exiting non-zero on failure. Neither pushes; the agent running them pushes after reviewing.
+
+### `Sync-MaintainabilityBranch.ps1`
+
+1. Requires a clean worktree on `feature/maintainability-refactor` (or a branch from it); fetches `origin/master`
+   (`-c http.sslBackend=schannel`) and merges it (merge commit, never rebase).
+2. On conflicts: for each conflicted file that a mechanical script owns (listed in a small manifest the script
+   reads, starting with the P0-4d1 clock seam files), take `master`'s version and re-run that script; leave every
+   other conflict for the agent, listing the files and the `master` commits that touched them (for the port log).
+3. Re-runs every mechanical script (clock seam, and later ones as they are added to the manifest), then builds and
+   runs the unit, characterization and architecture tests with the standard filters.
+4. Prints what to record in the status file's sync log: date, `master` commit merged, conflicts, test results.
+
+### `Test-MaintainabilityParity.ps1`
+
+1. Creates a throwaway worktree of `origin/master` (detached, outside the repository's tracked paths; sparse haks as
+   AgentEnvironment.md describes), never committed and always removed at the end, even on failure.
+2. Applies the branch's behaviour-neutral seams there: re-runs the mechanical scripts, and cherry-picks the seam
+   commits listed in the manifest (P0-5's `LoadHandlersFromAssemblies`; later seams as added).
+3. Copies `SWLOR.Game.Server.CharacterizationTests` and the boot-order tests from the branch into it, runs them with
+   `SWLOR_SNAPSHOT_DIRECTORY` (and `SWLOR_UPDATE_SNAPSHOTS=1`) pointed at a temporary folder, then compares that
+   reference output with the branch's snapshots file by file.
+4. Exit 0 only when they are identical; otherwise prints each differing snapshot and row.
+
+**Done:** both scripts run on this machine; one real sync and one parity run are recorded in the status file;
+documented briefly at the top of each script.

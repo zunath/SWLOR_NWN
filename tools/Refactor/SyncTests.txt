@@ -1,0 +1,85 @@
+# The test projects the daily sync builds and runs, and the tests it leaves out. Read by
+# Sync-MaintainabilityBranch.ps1. `project <name>` starts a project; each `exclude <term>` that follows is a VSTest
+# filter term (FullyQualifiedName!~<term>): a whole class, or Class.Method for every case of a method.
+#
+# The exclusions are the ones the maintainability CI uses (scripts/ci/run-unit-tests.sh, item P0-2) for the tests that
+# fail at the base commit or need SWLOR_Haks folders other than sw_2da, sw_tlk and sw_ability, which the sync's sparse
+# checkout does not have. Keep the two lists in step; add a term only with the reason next to it and remove it when the
+# cause is fixed. SWLOR.Game.Server.EngineTests runs inside a real server (Readmes/EngineTesting.md) and is not part of
+# the sync.
+
+project SWLOR.Game.Server.Tests
+# ---- Failing at the base commit on a full Windows checkout too, so not a runner problem. The
+# ---- tests and the code drifted apart; fix them separately and delete the lines.
+# Roslyn harness compiles Stat.RestoreStamina out of Stat.cs; the method now calls
+# IsStaminaRestorationBlocked and GetActionMode, which the harness does not define (CS0103).
+exclude ResourceRestorationTests
+# Same harness style; it does not define DeleteLocalInt (CS0103).
+exclude StealthRestTests
+# Asserts the text of AbilityRequirementItem.cs, which no longer matches.
+exclude FirstAidCombatUpgradeTests.FirstAidSupplyRequirements_MatchMerchantStackTemplates
+# PlayerMessageAudit.json is stale (refresh it with tools/ExportPlayerMessageAudit.ps1).
+exclude PlayerMessageAuditTests.MessageInventory_CoversEveryRuntimeCallSite
+# The EspionageWorkbench recipe is not in the repository's Design Bible workbook (the owner uploads Bible
+# changes).
+exclude CombatUpgradeBibleRecipeParityTests.LiveRecipes_AreDocumentedInBible
+
+# ---- Hak content tests that read SWLOR_Haks folders other than sw_2da, sw_tlk and sw_ability. The job
+# ---- fetches only those three (a full checkout is 11 GB and 160,000 files). These check models, textures,
+# ---- shaders, tilesets, walkmeshes, icons and sounds, which a code refactor cannot change. Folders they
+# ---- need: sw_shader, sw_ui, sw_item, sw_item_source, sw_sound, sw_vfx, sw_tint*, sw_weapon,
+# ---- sw_cr_creature, sw_plc*, sw_pt_*, sw_t_*. Add folders to HAKS_FOLDERS in the workflow and drop the
+# ---- matching lines to run them.
+exclude AbilityImpactVisualEffectTests.EveryActiveAbilityRank_BindsItsDeclaredImpactEffect
+exclude ArmorPartCoverageTests.EveryCatalogArmorPartHasAModelOnEveryPlayableBody
+exclude CustomShaderMobileCompatibilityTests.CustomShaders_KeepBitwiseOperatorsOutOfMobileCode
+exclude CustomShaderMobileCompatibilityTests.PostProcessShader_RunsTheStockPassOnMobile
+exclude DevicesFieldEngineerTests.BeaconShotSounds_ExistInDeployedSoundResources
+exclude DungeonEncounterWalkmeshTests
+exclude HelmetTintTests.EveryTintableHelmetShipsRenderHeadsForEveryPlayableSpecies
+exclude HutlarDroidFoundryAnimationTests
+exclude ItemIconTests.EveryEssenceBlueprint_UsesReviewedOriginalArtwork
+exclude ItemIconTests.OriginalItemArtwork_IsCompleteUniqueAndUsesGameTgaLayout
+exclude KeyItemIconTests.ActiveKeyItemIcons_ExistAndHaveExpectedTgaFormat
+exclude KeyItemIconTests.DefaultIcon_HasValidResrefAndExpectedTgaFormat
+exclude LightsaberWorkbenchTests.PartCatalog_PreviewTexturesExistAndTopValuesMatchHakModels
+exclude PartSkinAppearanceTests.ShippedTablesCoverTheReportedPartsOnEveryRobeFamilyBody
+exclude PlaceableWalkmeshUseNodeTests
+exclude PlayerListRulesTests.Flags_ShipTheirIconsInTheUIHak
+exclude PowerGloveContentTests.EveryAppearanceHasACompiledModelAndNativeCompositeInventoryIcon
+exclude PowerGloveContentTests.LeftHandModelsMirrorTheRightHandModelsAcrossTheHookXAxis
+exclude PowerGloveContentTests.ReportedDesignsAreSeatedInTheFistAndTheRestKeepTheirAuthoredPlacement
+exclude ShipItemIconTests.ActionArtwork_CoversAllModuleDefinitionsAndAgreesWithInventoryRoles
+exclude ShipItemIconTests.NativeAppearances_MatchBlueprintsAndOnlyNormalizeOriginalModels
+exclude ShoulderAppearanceTests.ShippedTableCoversAllExternalStylesOnBothSidesForEveryMaleHumanRobe
+exclude SittablePlaceableWalkmeshTests.Bench_IsApproachedFromItsFront
+exclude SittablePlaceableWalkmeshTests.ChancellorChair_SeatsSittersFacingTheSeatFront
+exclude SittablePlaceableWalkmeshTests.CurvedWardrobe_BlocksWalkingThroughIt
+exclude SittablePlaceableWalkmeshTests.DiningChair_KeepsItsUsePointInsideTheSeat
+exclude SittablePlaceableWalkmeshTests.PlacedSeats_SeatSittersFacingTheSeatFront
+exclude SittablePlaceableWalkmeshTests.SeatsOpeningTowardModelPlusY_SeatSittersFacingTheSeatFront
+exclude SittablePlaceableWalkmeshTests.SmallWoodBench2_SeatsSittersAcrossTheBench
+exclude SlicingContentTests.Lockboxes_AreUsableMiscellaneousItemsRatherThanContainers
+exclude SlicingContentTests.SlicingNuiArt_HasEveryThemeTypeOrientationAndState
+exclude SpeederTailRemovalTests.LargeBodyRobeModelsRemainAvailable
+exclude SpeederTailRemovalTests.PlaceableSpeedersKeepTheirAppearanceModelsAndSharedTextures
+exclude TelegraphTests.ShaderPalette_MatchesTheServerColorProtocol
+exclude TintMapReviewTests.ApplyingAColorUsesOneAtomicPaletteOrRgbScalar
+exclude TintMapReviewTests.DefaultMaleHumanHandsRetainDetailedGeometryAndTintBindings
+exclude TintMapReviewTests.EveryGeneratedTintMaterialUsesAShaderWithPaletteDerivedSpecularity
+exclude TintMapReviewTests.EveryPackedTintMaskDeclaresItsSingleAti2MipLevel
+exclude TintMapReviewTests.EveryTintMaterialDeclaresScalarRowsMatchingItsShader
+exclude TintMapReviewTests.FemaleThighSixteenVariantsExposeTheirOwnMetalAndLeatherChannels
+exclude TintMapReviewTests.HumanHand246ModelsUseTheirAuthoredSkinTintMasks
+exclude TintMapReviewTests.MaleMusicianOutfitKeepsItsAuthoredDyesAndConvertedThighMaterials
+exclude TintMapReviewTests.PlainPltBodyPartsRetainLegacyTangentsWhileMappedMaterialsRetainTheirMaps
+exclude TintMapReviewTests.PresetPickerColorsMatchThePaletteAtlasMiddletone
+exclude TintMapReviewTests.ReportedNpcSkinHairHatDressAndPantsUseTheRepairedTintShader
+exclude TintMapReviewTests.RodianBountyHunterPartsBindTheConvertedHumanFallbackMaterials
+exclude TintMapReviewTests.RodianMusicianPartsBindTheConvertedHumanFallbackMaterials
+exclude TintMapReviewTests.TintAlphaSamplerIsDeclaredEvenWithoutNormalMapping
+exclude TintMapReviewTests.TintShadersRebuildSpecularityFromFinalPaletteInputs
+
+project SWLOR.Game.Server.CharacterizationTests
+
+project SWLOR.Architecture.Tests

@@ -1,0 +1,18 @@
+# Mechanical scripts of the maintainability refactor: re-runnable rewrites that turn master's code into the refactor
+# branch's shape (the clock seam; later the NWScript generator, P1-1). One repository-relative script path per line,
+# run in this order. Read by Sync-MaintainabilityBranch.ps1 (which re-runs every script after merging master and takes
+# master's version of a conflicted file a script owns) and by Test-MaintainabilityParity.ps1 (which runs every script
+# on its throwaway copy of master). A new mechanical script is added with one line here.
+#
+# Contract for a script (Apply-ClockSeam.ps1 is the reference):
+#   -File <script> [-RepositoryRoot <root>]            apply the rewrite; idempotent (a second run changes nothing)
+#   -File <script> [-RepositoryRoot <root>] -Check     change nothing; exit 1 when a run would change something
+#   -File <script> [-RepositoryRoot <root>] -ListOwnedFiles
+#                                                      print, one per line, the repository-relative paths (forward
+#                                                      slashes) of the files the script owns; a trailing /** means
+#                                                      every file under that folder. Prints nothing else, exits 0.
+# Exit code 0 is success. The scripts must run under Windows PowerShell 5.1 and PowerShell 7.
+#
+# "Owns" means the branch's only change to the file is the script's rewrite, so on a merge conflict in an owned file
+# the sync takes master's version and runs the script again instead of merging by hand.
+tools/Refactor/Apply-ClockSeam.ps1

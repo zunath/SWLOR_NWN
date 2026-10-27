@@ -21,16 +21,24 @@
 .PARAMETER Check
     Change nothing. Print what would change and exit 1 if anything would, 0 if every file is already rewritten.
 
+.PARAMETER ListOwnedFiles
+    Change nothing and print only the repository-relative paths (forward slashes, one per line) of the files this
+    script owns, which are the files listed in ClockSeamFiles.txt. The daily sync uses it to decide which merge
+    conflicts it may settle by taking master's version and running this script again
+    (tools/Refactor/MechanicalScripts.txt).
+
 .PARAMETER RepositoryRoot
     Repository root. Defaults to two folders above this script.
 
 .EXAMPLE
     pwsh -NoProfile -File tools/Refactor/Apply-ClockSeam.ps1
     pwsh -NoProfile -File tools/Refactor/Apply-ClockSeam.ps1 -Check
+    pwsh -NoProfile -File tools/Refactor/Apply-ClockSeam.ps1 -ListOwnedFiles
 #>
 [CmdletBinding()]
 param(
     [switch]$Check,
+    [switch]$ListOwnedFiles,
     [string]$RepositoryRoot
 )
 
@@ -360,7 +368,15 @@ function Add-CoreUsing([string]$text, [string]$eol) {
 }
 
 $files = [string[]]@(Get-ManifestFiles)
-$total = @{ 'DateTime.UtcNow' = 0; 'Environment.TickCount64' = 0 }
+
+if ($ListOwnedFiles) {
+    foreach ($path in $files) {
+        Write-Output $path.Substring($RepositoryRoot.Length).TrimStart('\', '/').Replace('\', '/')
+    }
+    exit 0
+}
+
+$total =@{ 'DateTime.UtcNow' = 0; 'Environment.TickCount64' = 0 }
 $changedFiles = 0
 $usingsAdded = 0
 

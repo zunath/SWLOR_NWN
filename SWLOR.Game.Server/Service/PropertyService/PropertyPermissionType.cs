@@ -72,6 +72,10 @@ namespace SWLOR.Game.Server.Service.PropertyService
         // Starships
         [PropertyPermission("Crew Stations", "Can take a crew station (Gunner, Engineer or Sensors) aboard the starship while its captain's party flies it.", true)]
         CrewStation = 17,
+
+        // Starships
+        [PropertyPermission("Dock Ship", "Can dock a Small or Medium starship with this Large or Capital starship in space.", true)]
+        Dock = 18,
     }
 
     public class PropertyPermissionAttribute : Attribute

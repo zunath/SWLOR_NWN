@@ -81,6 +81,7 @@ namespace SWLOR.Game.Server.Service
             ReloadPlayerTlkStrings();
             RestoreCrewMemberAfterLogin(player);
             WarpPlayerInsideShip(player);
+            RestoreDockedPassengerAfterLogin(player);
         }
 
         [NWNEventHandler(ScriptName.OnModuleExit)]
@@ -88,6 +89,7 @@ namespace SWLOR.Game.Server.Service
         {
             var player = GetExitingObject();
             _pendingShipLaunches.Remove(player);
+            _shipCombatAt.Remove(player);
             CrewMemberDisconnected(player);
             if (!IsPlayerInSpaceMode(player))
                 return;
@@ -522,7 +524,7 @@ namespace SWLOR.Game.Server.Service
             if (GetIsDM(player)) return;
 
             if (_pendingShipLaunches.TryGetValue(player, out var launch) &&
-                OBJECT_SELF == GetAreaFromLocation(launch.PilotLocation))
+                OBJECT_SELF == launch.DepartureArea)
                 launch.HasDeparted = true;
 
             // Leaving a space area (a starlane jump) switches every toggle off.
@@ -564,8 +566,10 @@ namespace SWLOR.Game.Server.Service
             }
 
             // A docked ship with crew stations offers its droid crew first to a captain who has droids to post or
-            // recall; the menu's first choice takes the controls.
-            if (dbShip != null && ShouldOfferDroidCrewMenu(player, dbShip, propertyId) &&
+            // recall, and a ship carrying docked ships offers undocking to their pilots; the menu's first choice
+            // takes the controls.
+            if (dbShip != null &&
+                (ShouldOfferDroidCrewMenu(player, dbShip, propertyId) || GetUndockableShips(player, dbShip).Count > 0) &&
                 ConversationMenu.TryStart(player, computer, "CrewStationDialog"))
             {
                 return;
@@ -591,7 +595,7 @@ namespace SWLOR.Game.Server.Service
             // area transition starts, keep the original request and return location.
             if (_pendingShipLaunches.TryGetValue(player, out var previousLaunch))
             {
-                if (previousLaunch.HasDeparted || GetArea(player) != GetAreaFromLocation(previousLaunch.PilotLocation))
+                if (previousLaunch.HasDeparted || GetArea(player) != previousLaunch.DepartureArea)
                     return;
                 _pendingShipLaunches.Remove(player);
             }
@@ -617,6 +621,12 @@ namespace SWLOR.Game.Server.Service
             if (dbShip == null)
             {
                 SendMessageToPC(player, ColorToken.Red("ERROR: Could not locate ship. Notify an admin."));
+                return;
+            }
+
+            if (IsDockedAboardHost(dbShip, out var hostName))
+            {
+                SendMessageToPC(player, ColorToken.Red($"This ship is docked aboard {hostName}. Undock it from that ship's computer or with /undock."));
                 return;
             }
 
@@ -662,12 +672,24 @@ namespace SWLOR.Game.Server.Service
             var spacePosition = Vector3(propertyLocation.X, propertyLocation.Y, propertyLocation.Z);
             var location = Location(spaceArea, spacePosition, propertyLocation.Orientation);
 
+            BeginShipLaunch(player, dbShip.Id, location, GetLocation(player));
+        }
+
+        /// <summary>
+        /// Reserves the ship and sends the player to its space location. The launch completes when they arrive
+        /// (<see cref="TryCompleteShipLaunch"/>); <paramref name="pilotLocation"/> is where their copy sits in the
+        /// ship's interior, and <paramref name="undockFromShipId"/> names a host the ship leaves on arrival.
+        /// </summary>
+        private static void BeginShipLaunch(uint player, string shipId, Location location, Location pilotLocation, string undockFromShipId = "")
+        {
             var launch = new PendingShipLaunch
             {
-                PlayerId = playerId,
-                ShipId = dbShip.Id,
-                SpaceArea = spaceArea,
-                PilotLocation = GetLocation(player),
+                PlayerId = GetObjectUUID(player),
+                ShipId = shipId,
+                SpaceArea = GetAreaFromLocation(location),
+                PilotLocation = pilotLocation,
+                DepartureArea = GetArea(player),
+                UndockFromShipId = undockFromShipId ?? string.Empty,
                 ExpiresAt = DateTime.UtcNow.AddSeconds(30)
             };
             _pendingShipLaunches[player] = launch;
@@ -691,6 +713,9 @@ namespace SWLOR.Game.Server.Service
             _pendingShipLaunches.Remove(player);
             if (GetObjectUUID(player) != launch.PlayerId || IsPlayerInSpaceMode(player) || GetIsDead(player))
                 return false;
+
+            if (!string.IsNullOrEmpty(launch.UndockFromShipId))
+                CompleteUndockLaunch(player, launch);
 
             SetLocalLocation(player, "SPACE_INSTANCE_LOCATION", launch.PilotLocation);
             SetLocalBool(player, "SPACE_INSTANCE_LOCATION_SET", true);
@@ -719,7 +744,7 @@ namespace SWLOR.Game.Server.Service
             }
 
             var area = GetArea(player);
-            var interior = GetAreaFromLocation(launch.PilotLocation);
+            var interior = launch.DepartureArea;
             if (GetIsObjectValid(area) && area != interior && area != launch.SpaceArea)
             {
                 _pendingShipLaunches.Remove(player);
@@ -1036,6 +1061,7 @@ namespace SWLOR.Game.Server.Service
 
             RegisterShipPilot(shipId, player);
             AnnounceDroidCrew(player, dbPlayerShip, droidCrew);
+            LoadDockedShipInteriors(shipId);
             RestoreShipModuleRecasts(player);
             ExecuteScript("space_enter", player);
         }
@@ -1954,6 +1980,7 @@ namespace SWLOR.Game.Server.Service
             var creature = OBJECT_SELF;
 
             _toggleWake.Remove(creature);
+            _shipCombatAt.Remove(creature);
             if (_shipNPCs.ContainsKey(creature))
             {
                 _shipNPCs.Remove(creature);
@@ -2541,6 +2568,8 @@ namespace SWLOR.Game.Server.Service
 
             var shieldDamage = shieldBefore - targetShipStatus.Shield;
             var hullDamage = hullBefore - targetShipStatus.Hull;
+            if (shieldDamage > 0 || hullDamage > 0)
+                MarkShipCombat(attacker, target);
 
             if (hullDamage > 0)
             {
@@ -2696,6 +2725,7 @@ namespace SWLOR.Game.Server.Service
 
             if (targetShipStatus.Hull < hullBefore)
             {
+                MarkShipCombat(attacker, target);
                 SpaceCombatEvents.RaiseHullDamaged(new SpaceHullEvent
                 {
                     Ship = target,
@@ -2736,9 +2766,12 @@ namespace SWLOR.Game.Server.Service
             if (!IsPlayerInSpaceMode(creature))
                 return;
 
-            // Everyone at the ship's stations and viewports goes down with it until escape pods arrive (W2d). Its
-            // droids go back to their owners.
-            DestroyShipCrew(creature);
+            // Ships docked aboard detach where it was and take back the players who belong to them, before anyone
+            // else aboard is handled. Everyone else at the ship's stations and viewports goes down with it until
+            // escape pods arrive (W2d). Its droids go back to their owners.
+            var returnedToDockedShips = DetachDockedShips(creature);
+            _shipCombatAt.Remove(creature);
+            DestroyShipCrew(creature, returnedToDockedShips);
             UnloadDroidCrew(creature);
             UnregisterShipPilot(creature);
 
@@ -2857,8 +2890,11 @@ namespace SWLOR.Game.Server.Service
                 // Murder everyone inside the ship's instance.
                 if (Property.TryGetLoadedInstance(dbPlayerShip.PropertyId, out var instance))
                 {
-                    foreach (var player in instance.Players)
+                    foreach (var player in instance.Players.ToList())
                     {
+                        if (returnedToDockedShips.Contains(player))
+                            continue;
+
                         ApplyEffectToObject(DurationType.Instant, EffectVisualEffect(VisualEffect.Fnf_Fireball), player);
                         ApplyEffectToObject(DurationType.Instant, EffectDeath(), player);
 

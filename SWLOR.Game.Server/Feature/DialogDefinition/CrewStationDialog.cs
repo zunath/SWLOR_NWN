@@ -1,4 +1,5 @@
 using System.Linq;
+using SWLOR.Game.Server.Entity;
 using SWLOR.Game.Server.Service;
 using SWLOR.Game.Server.Service.ConversationService;
 using SWLOR.Game.Server.Service.SpaceService;
@@ -7,9 +8,10 @@ namespace SWLOR.Game.Server.Feature.DialogDefinition
 {
     /// <summary>
     /// The crew console of a ship (plan section 10). In flight: take an open Gunner, Engineer or Sensors station, or
-    /// watch from a viewport. In flight or docked: post droids at the stations and recall them (the captain only).
-    /// A crew console placeable opens it, and so does the ship's computer while someone else flies the ship, or
-    /// while it is docked for a captain with droids (its first choice then takes the controls).
+    /// watch from a viewport. In flight or docked: post droids at the stations and recall them (the captain only),
+    /// and undock a ship docked aboard (its pilots). A crew console placeable opens it, and so does the ship's
+    /// computer while someone else flies the ship, or while it is docked for a captain with droids or a pilot with
+    /// a ship docked aboard (its first choice then takes the controls).
     /// </summary>
     public class CrewStationDialog : ConversationMenuDefinition
     {
@@ -59,6 +61,7 @@ namespace SWLOR.Game.Server.Feature.DialogDefinition
                     page.AddResponse("Droid crew", () => GoToPage(DroidPageId));
                 }
 
+                AddUndockResponses(page, player, dbShip);
                 return;
             }
 
@@ -109,6 +112,23 @@ namespace SWLOR.Game.Server.Feature.DialogDefinition
 
             if (canManageDroids)
                 page.AddResponse("Droid crew", () => GoToPage(DroidPageId));
+
+            AddUndockResponses(page, player, dbShip);
+        }
+
+        /// <summary>One response per ship docked aboard that the player may pilot (plan section 10, "Ship-to-ship docking").</summary>
+        private void AddUndockResponses(ConversationMenuPage page, uint player, PlayerShip host)
+        {
+            foreach (var docked in Space.GetUndockableShips(player, host))
+            {
+                var shipId = docked.Id;
+                var name = DB.Get<WorldProperty>(docked.PropertyId)?.CustomName ?? "your ship";
+                page.AddResponse($"Undock {name}", () =>
+                {
+                    Close();
+                    Space.UndockShip(player, shipId);
+                });
+            }
         }
 
         private static string DescribeOccupant(uint player, uint pilot, ShipCrewSeat seat)

@@ -684,12 +684,16 @@ namespace SWLOR.Game.Server.Service
         /// <summary>
         /// The ship was destroyed. Escape pods (W2d) are not built yet, so everyone at a station or viewport shares
         /// the pilot's fate, as the passengers in the interior do: they leave the station where the ship died and
-        /// are killed, and the normal death and respawn flow takes them.
+        /// are killed, and the normal death and respawn flow takes them. Players returned to a docked ship
+        /// (<see cref="DetachDockedShips"/>) are spared.
         /// </summary>
-        private static void DestroyShipCrew(uint pilot)
+        private static void DestroyShipCrew(uint pilot, IReadOnlySet<uint> spared)
         {
             foreach (var crewMember in _crewAssignments.Where(x => x.Value.Pilot == pilot).Select(x => x.Key).ToList())
             {
+                if (spared.Contains(crewMember))
+                    continue;
+
                 LeaveCrewStation(crewMember, ColorToken.Red("The ship has exploded!"), false);
                 ApplyEffectToObject(DurationType.Instant, EffectVisualEffect(VisualEffect.Fnf_Fireball), crewMember);
                 ApplyEffectToObject(DurationType.Instant, EffectDeath(), crewMember);

@@ -33,9 +33,9 @@ jobs:
     name: Build and unit tests
     # Windows, because the suite passes there as it stands: PowerShell 5.1 (powershell.exe) and the bundled
     # nwn_erf.exe are present. The same projects run in an ubuntu container (no Wine, no powershell.exe, no native NWN
-    # tools) pass except 7 tests: 3 in SWLOR.Game.Server.Tests spawn powershell.exe and 4 in
-    # SWLOR.CLI.Tests spawn nwn_erf/nwn_gff. Linux needs the setup the cloud-session hooks do
-    # (.claude/hooks/session-start.sh) or 7 more exclusions.
+    # tools) fail 7 tests and skip 7 more: 3 in SWLOR.Game.Server.Tests spawn powershell.exe, 4 in SWLOR.CLI.Tests
+    # spawn nwn_erf/nwn_gff, and 7 DeployBuildTests in SWLOR.CLI.Tests are Windows-only. Linux needs the setup the
+    # cloud-session hooks do (.claude/hooks/session-start.sh) or 7 more exclusions, and still skips those 7.
     runs-on: windows-2025
     timeout-minutes: 120
     defaults:

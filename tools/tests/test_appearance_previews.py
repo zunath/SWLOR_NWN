@@ -275,5 +275,28 @@ class DuplicateTests(unittest.TestCase):
             self.assertIn("apme0_chest002f.dds", wanted)
 
 
+class BatchProblemTests(unittest.TestCase):
+    def test_a_crashed_batch_reports_its_exit_code_and_every_missing_render(self):
+        from appearance_previews.__main__ import batch_problems
+        with tempfile.TemporaryDirectory() as folder:
+            renders = Path(folder)
+            for view in VIEWS:
+                Image.new("RGBA", (4, 4)).save(renders / f"done_{view}.png")
+            batch = [{"key": "done"}, {"key": "lost"}, {"key": "nomesh"}]
+            problems = batch_problems(3, "PREVIEW_NO_MESH nomesh" + chr(10), "add-on failed" + chr(10), batch, renders)
+            self.assertIn("PREVIEW_NO_MESH nomesh", problems)
+            self.assertIn("PREVIEW_BATCH_FAILED exit 3: add-on failed", problems)
+            self.assertIn("PREVIEW_MISSING_RENDER lost", problems)
+            self.assertFalse(any("done" in line for line in problems))
+
+    def test_a_clean_batch_has_no_problems(self):
+        from appearance_previews.__main__ import batch_problems
+        with tempfile.TemporaryDirectory() as folder:
+            renders = Path(folder)
+            for view in VIEWS:
+                Image.new("RGBA", (4, 4)).save(renders / f"done_{view}.png")
+            self.assertEqual(batch_problems(0, "PREVIEW_RENDERED done" + chr(10), "", [{"key": "done"}], renders), [])
+
+
 if __name__ == "__main__":
     unittest.main()

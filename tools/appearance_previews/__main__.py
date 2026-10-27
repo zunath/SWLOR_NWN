@@ -233,6 +233,19 @@ def main(argv=None):
     return 1 if problems else 0
 
 
+def batch_problems(returncode, stdout, stderr, batch, renders):
+    """Every reason a Blender batch did not produce all of its renders."""
+    problems = [line for line in stdout.splitlines() if line.startswith(("PREVIEW_FAILED", "PREVIEW_NO_MESH"))]
+    if returncode:
+        tail = (stderr or stdout).strip().splitlines()[-1:] or [""]
+        problems.append(f"PREVIEW_BATCH_FAILED exit {returncode}: {tail[0]}")
+    reported = {line.split()[1] for line in problems if line.startswith(("PREVIEW_FAILED", "PREVIEW_NO_MESH"))}
+    for job in batch:
+        if job["key"] not in reported and not all((renders / f"{job['key']}_{view}.png").exists() for view in VIEWS):
+            problems.append(f"PREVIEW_MISSING_RENDER {job['key']}")
+    return problems
+
+
 def render(args, index, jobs, renders):
 
     models = args.work / "models"
@@ -272,9 +285,10 @@ def render(args, index, jobs, renders):
         number, batch = numbered
         batch_file = args.work / f"batch_{number:04d}.json"
         batch_file.write_text(json.dumps(batch))
-        result = subprocess.run([args.blender, "-b", "--python", str(script), "--", str(batch_file), str(renders),
-                                 str(args.render_size)], capture_output=True, text=True, encoding="utf8", errors="replace")
-        problems = [line for line in result.stdout.splitlines() if line.startswith(("PREVIEW_FAILED", "PREVIEW_NO_MESH"))]
+        result = subprocess.run([args.blender, "-b", "--python-exit-code", "1", "--python", str(script), "--",
+                                 str(batch_file), str(renders), str(args.render_size)],
+                                capture_output=True, text=True, encoding="utf8", errors="replace")
+        problems = batch_problems(result.returncode, result.stdout, result.stderr, batch, renders)
         print(f"batch {number + 1}/{len(batches)} done", *problems, sep="\n  ", flush=True)
         return problems
 

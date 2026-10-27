@@ -1,17 +1,18 @@
 using System.Collections.Generic;
-using System.Linq;
+using SWLOR.Game.Server.Composition;
 using SWLOR.Game.Server.Core;
-using SWLOR.Game.Server.Service.PropertyService;
-using SWLOR.Game.Server.Entity;
-using SWLOR.Game.Server.Service.DBService;
-using SWLOR.NWN.API.NWScript.Enum;
+using SWLOR.Game.Server.Domain.World;
 
 namespace SWLOR.Game.Server.Service
 {
-    public class Area
+    /// <summary>
+    /// The static API of the area cache. The logic and state live in <see cref="IAreaService"/>; every member here
+    /// forwards to the container's instance, and the event handlers stay here so their names in the handler order
+    /// manifest do not change.
+    /// </summary>
+    public static class Area
     {
-        private static Dictionary<string, uint> AreasByResref { get; } = new();
-        private static Dictionary<uint, List<uint>> PlayersByArea { get; } = new();
+        private static IAreaService Instance => FacadeAccessor.Resolve<IAreaService>();
 
         /// <summary>
         /// Creates an area instance with the same event handlers as the startup areas.
@@ -19,39 +20,18 @@ namespace SWLOR.Game.Server.Service
         /// </summary>
         public static uint CreateInstance(string sourceResref, string newTag = "", string newName = "")
         {
-            var area = CreateArea(sourceResref, newTag, newName);
-            if (GetIsObjectValid(area))
-                RegisterEvents(area);
-
-            return area;
+            return Instance.CreateInstance(sourceResref, newTag, newName);
         }
 
         public static void RegisterEvents(uint area)
         {
-            SetEventScript(area, EventScript.Area_OnEnter, ScriptName.OnAreaEnter);
-            SetEventScript(area, EventScript.Area_OnExit, ScriptName.OnAreaExit);
-            SetEventScript(area, EventScript.Area_OnHeartbeat, string.Empty); // Disabled for performance reasons
-            SetEventScript(area, EventScript.Area_OnUserDefined, ScriptName.OnAreaUserDefined);
+            Instance.RegisterEvents(area);
         }
 
         [NWNEventHandler(ScriptName.OnModuleCacheBefore)]
         public static void CacheData()
         {
-            CacheAreasByResref();
-
-            Console.WriteLine($"Loaded {AreasByResref.Count} areas by resref.");
-        }
-
-        /// <summary>
-        /// Caches all areas by their resref.
-        /// </summary>
-        private static void CacheAreasByResref()
-        {
-            for (var area = GetFirstArea(); GetIsObjectValid(area); area = GetNextArea())
-            {
-                var resref = GetResRef(area);
-                AreasByResref[resref] = area;
-            }
+            Instance.CacheData();
         }
 
         /// <summary>
@@ -61,15 +41,7 @@ namespace SWLOR.Game.Server.Service
         [NWNEventHandler(ScriptName.OnModuleLoad)]
         public static void RemoveInstancesFromCache()
         {
-            // Scheduled flights clone this template without a property layout definition.
-            // Keep flight coordinates out of persistent player locations.
-            AreasByResref.Remove(Shuttle.ShuttleInteriorResref);
-
-            foreach (var areaResref in Property.GetAllInstanceAreaResrefs())
-            {
-                if (AreasByResref.ContainsKey(areaResref))
-                    AreasByResref.Remove(areaResref);
-            }
+            Instance.RemoveInstancesFromCache();
         }
 
         /// <summary>
@@ -79,20 +51,16 @@ namespace SWLOR.Game.Server.Service
         /// <returns>The area ID or OBJECT_INVALID if area does not exist.</returns>
         public static uint GetAreaByResref(string resref)
         {
-            if (!AreasByResref.ContainsKey(resref))
-                return OBJECT_INVALID;
-
-            return AreasByResref[resref];
+            return Instance.GetAreaByResref(resref);
         }
 
         /// <summary>
         /// Retrieves list of all areas.
         /// </summary>
-        /// <param> </param>
         /// <returns>AreasByResref cache.</returns>
         public static Dictionary<string, uint> GetAreas()
         {
-            return AreasByResref;
+            return Instance.GetAreas();
         }
 
         /// <summary>
@@ -103,10 +71,7 @@ namespace SWLOR.Game.Server.Service
         /// <returns>A list of player objects</returns>
         public static List<uint> GetPlayersInArea(uint area)
         {
-            if (!PlayersByArea.ContainsKey(area))
-                return new List<uint>();
-
-            return PlayersByArea[area].ToList();
+            return Instance.GetPlayersInArea(area);
         }
 
         /// <summary>
@@ -115,38 +80,7 @@ namespace SWLOR.Game.Server.Service
         [NWNEventHandler(ScriptName.OnAreaEnter)]
         public static void EnterArea()
         {
-            var player = GetEnteringObject();
-            if (!GetIsPC(player))
-                return;
-
-            var area = OBJECT_SELF;
-            if (!PlayersByArea.ContainsKey(area))
-                PlayersByArea[area] = new List<uint>();
-
-            if(!PlayersByArea[area].Contains(player))
-                PlayersByArea[area].Add(player);
-
-            // Handle DM created Area Notes
-            var query = new DBQuery<AreaNote>()
-                .AddFieldSearch(nameof(AreaNote.AreaResref), GetResRef(area), false)
-                .OrderBy(nameof(AreaNote.AreaResref));
-            var notes = DB.Search(query)
-                .ToList();
-
-            if (notes.Count > 0)
-            {
-                var prefix = GetName(area) + ": ";
-                var message = string.Empty;
-                foreach (var note in notes)
-                {
-                    message += note.PublicText;
-                }
-
-                if (!string.IsNullOrWhiteSpace(message.Trim()))
-                {
-                    SendMessageToPC(player, ColorToken.Purple(prefix + message));
-                }
-            }
+            Instance.EnterArea();
         }
 
         /// <summary>
@@ -155,17 +89,7 @@ namespace SWLOR.Game.Server.Service
         [NWNEventHandler(ScriptName.OnAreaExit)]
         public static void ExitArea()
         {
-            var player = GetExitingObject();
-            if (!GetIsPC(player))
-                return;
-
-            var area = OBJECT_SELF;
-            if (!PlayersByArea.ContainsKey(area))
-                PlayersByArea[area] = new List<uint>();
-
-            if (PlayersByArea[area].Contains(player))
-                PlayersByArea[area].Remove(player);
+            Instance.ExitArea();
         }
-
     }
 }

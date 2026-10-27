@@ -2,8 +2,12 @@ using System.Reflection;
 using FluentAssertions;
 using Newtonsoft.Json.Linq;
 using NUnit.Framework;
+using SWLOR.Game.Server.Domain.World;
 using SWLOR.Game.Server.Service;
+using SWLOR.Game.Server.Tests.Support;
+using SWLOR.NWN.API.NWScript;
 using SWLOR.NWN.API.NWScript.Enum;
+using SWLOR.NWN.API.Testing;
 
 namespace SWLOR.Game.Server.Tests.Service;
 
@@ -90,26 +94,25 @@ public sealed class PassengerShuttleInteriorTests
     [Test]
     public void FlightTemplateIsExcludedFromPersistentLocationAreaCache()
     {
-        var cache = (Dictionary<string, uint>)typeof(Area)
-            .GetProperty("AreasByResref", BindingFlags.NonPublic | BindingFlags.Static)!
-            .GetValue(null)!;
-        var original = new Dictionary<string, uint>(cache);
-        try
-        {
-            cache["shuttle"] = 123;
-            cache["shuttle_test_landing"] = 456;
+        const uint shuttleArea = 123;
+        const uint landingArea = 456;
+        var engine = new FakeNWScript();
+        engine.SetReturnSequence("GetFirstArea", shuttleArea);
+        engine.SetReturnSequence("GetNextArea", landingArea);
+        engine.SetReturnHandler("GetIsObjectValid", arguments => (uint)arguments[0]! is shuttleArea or landingArea);
+        engine.SetReturnHandler("GetResRef", arguments => (uint)arguments[0]! == shuttleArea ? "shuttle" : "shuttle_test_landing");
+        var areas = new AreaService(new InMemoryDBService());
 
-            Area.RemoveInstancesFromCache();
-
-            cache.Should().NotContainKey("shuttle");
-            cache["shuttle_test_landing"].Should().Be(456);
-        }
-        finally
+        using (NWScriptRuntime.Override(engine))
         {
-            cache.Clear();
-            foreach (var entry in original)
-                cache.Add(entry.Key, entry.Value);
+            areas.CacheData();
+            areas.GetAreas().Should().ContainKey("shuttle");
+
+            areas.RemoveInstancesFromCache();
         }
+
+        areas.GetAreas().Should().NotContainKey("shuttle");
+        areas.GetAreas()["shuttle_test_landing"].Should().Be(landingArea);
     }
 
     private static IEnumerable<JObject> Objects(JObject resource, string list) =>

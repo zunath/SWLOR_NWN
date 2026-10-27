@@ -8,6 +8,7 @@ using SWLOR.Game.Server.Enumeration;
 using SWLOR.Game.Server.Service;
 using SWLOR.Game.Server.Service.CombatService;
 using SWLOR.Game.Server.Service.WeatherService;
+using SWLOR.Game.Server.Tests.Support;
 using SWLOR.NWN.API.NWScript.Enum.Area;
 using Precipitation = SWLOR.NWN.API.NWScript.Enum.Weather;
 using WeatherRuntime = SWLOR.Game.Server.Service.Weather;
@@ -134,13 +135,11 @@ public class WeatherTests
     [Test]
     public void ClimateLookup_UsesTheSharedPlanetService_ForSpacedAndHyphenatedNames()
     {
-        var flags = BindingFlags.NonPublic | BindingFlags.Static;
-        typeof(Planet).GetMethod("CachePlanets", flags)!.Invoke(null, null);
-        var resolve = typeof(Planet).GetMethod("ResolvePlanetTypeByAreaName", flags)!;
-        resolve.Invoke(null, new object[] { "Mon Cala - Coral Isles - Inner" }).Should().Be(PlanetType.MonCala);
-        resolve.Invoke(null, new object[] { "CZ-220 - Main Deck" }).Should().Be(PlanetType.CZ220);
-        resolve.Invoke(null, new object[] { "Smuggler's Moon Station - Corridors" }).Should().Be(PlanetType.SmugglersMoonStation);
-        Planet.GetPlanetTypeByAreaResref("canyon_001").Should().Be(PlanetType.Tatooine);
+        var planets = LoadedPlanets.Create();
+        LoadedPlanets.Resolve(planets, "Mon Cala - Coral Isles - Inner").Should().Be(PlanetType.MonCala);
+        LoadedPlanets.Resolve(planets, "CZ-220 - Main Deck").Should().Be(PlanetType.CZ220);
+        LoadedPlanets.Resolve(planets, "Smuggler's Moon Station - Corridors").Should().Be(PlanetType.SmugglersMoonStation);
+        planets.GetPlanetTypeByAreaResref("canyon_001").Should().Be(PlanetType.Tatooine);
         Method("GetAreaClimate").Should().Contain("Planet.GetPlanetType(area)").And.Contain("ResolveClimate");
     }
 

@@ -31,6 +31,10 @@ public class PlayerListServiceTests
     private const uint OtherDm = 3002;
     private const uint PossessedCreature = 4001;
 
+    // The call state of a player comes from the HoloCom facade, which resolves from the container the fixture installs.
+    private FacadeContainer _facades = null!;
+    private IDisposable _facadeScope = null!;
+
     private FakeNWScript _engine = null!;
     private FakeChatPlugin _chat = null!;
     private FakePlayerPlugin _playerPlugin = null!;
@@ -51,9 +55,16 @@ public class PlayerListServiceTests
     private readonly Dictionary<uint, uint> _factionLeaders = new();
     private readonly HashSet<uint> _inCall = new();
 
+    [OneTimeSetUp]
+    public void BuildFacades() => _facades = new FacadeContainer();
+
+    [OneTimeTearDown]
+    public void DisposeFacades() => _facades.Dispose();
+
     [SetUp]
     public void SetUp()
     {
+        _facadeScope = _facades.Install();
         _online.Clear();
         _dms.Clear();
         _possessed.Clear();
@@ -104,6 +115,7 @@ public class PlayerListServiceTests
         _playerScope.Dispose();
         _chatScope.Dispose();
         _engineScope.Dispose();
+        _facadeScope.Dispose();
     }
 
     private void Online(params uint[] players)

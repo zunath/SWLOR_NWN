@@ -50,6 +50,12 @@ namespace SWLOR.Game.Server.EngineTests.Definitions
             ctx.Assert(Guild.DateTasksLoaded != null, "Guild tasks refreshed by the quests-registered handler");
             ctx.AssertEqual("MARKET_GLOBAL", PlayerMarket.GetMarketRegion(MarketRegionType.Global).MarketId, "Market regions cached by the module-cache handler");
             ctx.Assert(PlayerMarket.GetActiveCategories().Count > 0, "Market categories cached by the module-cache handler");
+
+            ctx.Assert(Area.GetAreas().Count > 0, "Areas cached by the module-cache handler");
+            ctx.Assert(Area.GetAreaByResref(Area.GetAreas().Keys.First()) != OBJECT_INVALID, "Areas answer by resref from the cache");
+            ctx.Assert(Planet.GetAllPlanets().ContainsKey(PlanetType.Viscara), "Planets cached by the module-cache handler should include Viscara.");
+            ctx.AssertEqual("3 / 25 Categories", Notes.GetCategoryUsageText(3), "Notes answer through the container");
+            ctx.Assert(!HoloCom.IsHologram(OBJECT_INVALID), "HoloCom answers through the container");
         }
 
         /// <summary>

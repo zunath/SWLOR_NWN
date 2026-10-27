@@ -1,0 +1,500 @@
+using System;
+using System.Collections.Generic;
+using System.Linq;
+using SWLOR.Game.Server.Core;
+using SWLOR.Game.Server.Core.NWNX.Enum;
+using SWLOR.Game.Server.Domain.Core;
+using SWLOR.Game.Server.Entity;
+using SWLOR.Game.Server.Feature.AbilityDefinition;
+using SWLOR.Game.Server.Feature.StatusEffectDefinition;
+using SWLOR.Game.Server.Service;
+using SWLOR.Game.Server.Service.CombatRecorderService;
+using SWLOR.Game.Server.Service.CombatService;
+using SWLOR.Game.Server.Service.DBService;
+using SWLOR.Game.Server.Service.PerkService;
+using SWLOR.Game.Server.Service.SkillService;
+using SWLOR.Game.Server.Service.StatService;
+using SWLOR.NWN.API.Engine;
+using SWLOR.NWN.API.NWNX;
+using SWLOR.NWN.API.NWScript;
+using SWLOR.NWN.API.NWScript.Enum;
+using SWLOR.NWN.API.NWScript.Enum.VisualEffect;
+
+namespace SWLOR.Game.Server.Domain.World
+{
+    /// <summary>
+    /// Tracks player-placed traps: per-owner capacity, minimum spacing between any two live traps,
+    /// an arming delay, a proximity trigger, and a lifetime cap. Trap strength is snapshotted from
+    /// the owner's Trap Bonus at placement time; active traps retain their originating cast context.
+    /// </summary>
+    public class TrapsService : ITrapsService
+    {
+        private const int BaseTrapCapacity = 1;
+        private const float MinimumSpacingMeters = 3f;
+        private const float ArmingDelaySeconds = 3f;
+        private const float TriggerRadiusMeters = 2f;
+        private const float BlastRadiusMeters = 3f;
+        private const float LifetimeSeconds = 300f;
+        private const float ProximityCheckIntervalSeconds = 1f;
+        private const int TrapTriggerXP = 150;
+        private const string TrapMarkerResref = "trap_marker";
+
+        // Concealed kit traps. Placement is hidden from everyone but the owner until an observer
+        // with the matching Trapcraft training gets close enough to spot it.
+        private const string ConcealedTrapResref = "espn_trap";
+        private const string ConcealedTrapMarkerVariable = "ESPIONAGE_TRAP_ID";
+        private const float BaseDetectionRangeMeters = 6f;
+        private const int BaseDisarmChance = 50;
+        private const int DisarmStatMultiplier = 2;
+        private const int DisarmTierPenalty = 10;
+        private const int MinDisarmChance = 5;
+        private const int MaxDisarmChance = 95;
+
+        // Damage and Bleed duration a kit trap deals by tier, before the placer's Trap Bonus.
+        private readonly int[] KitTrapDamageByTier = { 20, 30, 40, 52, 66 };
+        private const int KitTrapStatusDurationSeconds = 30;
+
+        private class TrapRecord
+        {
+            public Guid Id { get; } = Guid.NewGuid();
+            public uint Owner { get; init; }
+            public Location Location { get; init; }
+            public uint Marker { get; set; } = OBJECT_INVALID;
+            public bool IsLive { get; set; } = true;
+            public int Tier { get; init; }
+            public bool IsConcealed { get; init; }
+            public VisualEffect SuccessfulImpactVisualEffect { get; init; }
+            public HashSet<uint> DetectedBy { get; } = new();
+            public CombatRecordAttribution PlacedBy { get; init; }
+        }
+
+        private readonly Dictionary<uint, List<TrapRecord>> _trapsByOwner = new();
+
+        private readonly IDBService _db;
+
+        public TrapsService(IDBService db)
+        {
+            _db = db;
+        }
+
+        public int GetTrapCapacity(uint owner)
+        {
+            return Math.Max(
+                BaseTrapCapacity,
+                BaseTrapCapacity + Stat.GetStatAdjustment(owner, StatType.AdditionalTrapCapacity));
+        }
+
+        /// <summary>
+        /// Places a trap at the target location. Placement fails when another live trap - anyone's -
+        /// sits within the minimum spacing. Exceeding the owner's capacity despawns their oldest trap.
+        /// </summary>
+        public bool TryPlaceTrap(
+            uint owner,
+            Location location,
+            int baseDamage,
+            CombatDamageType damageType,
+            Type statusEffect,
+            int statusDurationSeconds,
+            VisualEffect triggerVisualEffect,
+            VisualEffect markerVisualEffect)
+        {
+            if (!TryPrepareTrapPlacement(owner, location, out var ownerTraps))
+                return false;
+
+            // Trap strength is snapshotted now so later gear or stance swaps do not retune a
+            // trap that is already on the ground.
+            var trapBonus = Stat.GetStatAdjustment(owner, StatType.TrapBonus);
+            var snapshotDamage = baseDamage + (int)Math.Ceiling(baseDamage * (trapBonus / 100f));
+
+            var record = new TrapRecord
+            {
+                Owner = owner,
+                Location = location,
+                SuccessfulImpactVisualEffect = Ability.GetSuccessfulImpactVisualEffect(owner),
+                PlacedBy = CombatRecorder.CaptureScope()
+            };
+            record.Marker = DeviceAbilityEffects.CreateTemporaryFieldEngineerMarker(
+                location,
+                markerVisualEffect,
+                1.5f,
+                LifetimeSeconds,
+                TrapMarkerResref);
+            if (!GetIsObjectValid(record.Marker))
+            {
+                SendMessageToPC(owner, "The trap could not be placed.");
+                return false;
+            }
+
+            RegisterTrap(record, ownerTraps);
+            var trigger = Ability.CaptureRepeatedAbilityImpact(owner, () => ApplyTrapImpact(
+                record, snapshotDamage, damageType, statusEffect, statusDurationSeconds, triggerVisualEffect),
+                snapshotDamage, requiresLivingActivator: false);
+            ScheduleArming(record, trigger);
+
+            return true;
+        }
+
+        /// <summary>
+        /// Deploys a concealed trap from a crafted kit. Unlike the perk-active traps, the placement
+        /// is hidden from everyone but the owner until an observer with the matching Trapcraft
+        /// training spots it, at which point they may attempt to disarm it.
+        /// </summary>
+        public bool TryPlaceKitTrap(uint owner, Location location, int tier)
+        {
+            if (tier < 1 || tier > KitTrapDamageByTier.Length)
+                return false;
+
+            if (!TryPrepareTrapPlacement(owner, location, out var ownerTraps))
+                return false;
+
+            var baseDamage = KitTrapDamageByTier[tier - 1];
+            var trapBonus = Stat.GetStatAdjustment(owner, StatType.TrapBonus);
+            var snapshotDamage = baseDamage + (int)Math.Ceiling(baseDamage * (trapBonus / 100f));
+
+            var record = new TrapRecord
+            {
+                Owner = owner,
+                Location = location,
+                Tier = tier,
+                IsConcealed = true,
+                PlacedBy = CombatRecorder.CaptureScope()
+            };
+            record.Marker = CreateObject(ObjectType.Placeable, ConcealedTrapResref, location, false, ConcealedTrapResref);
+            if (!GetIsObjectValid(record.Marker))
+            {
+                SendMessageToPC(owner, "The trap could not be placed. Your kit has not been consumed.");
+                return false;
+            }
+
+            RegisterTrap(record, ownerTraps);
+            SetLocalString(record.Marker, ConcealedTrapMarkerVariable, record.Id.ToString());
+            DestroyObject(record.Marker, LifetimeSeconds);
+
+            // Hidden from the world, then revealed per-observer as detection succeeds. The
+            // owner always sees their own placement.
+            VisibilityPlugin.SetVisibilityOverride(OBJECT_INVALID, record.Marker, VisibilityType.Hidden);
+            RevealTo(record, owner, sendMessage: false);
+
+            ScheduleArming(
+                record,
+                () => ApplyTrapImpact(record, snapshotDamage,
+                CombatDamageType.Physical,
+                typeof(BleedStatusEffect),
+                KitTrapStatusDurationSeconds,
+                VisualEffect.Vfx_Com_Blood_Spark_Medium));
+
+            return true;
+        }
+
+        // Validate spacing without evicting an existing trap before placement can succeed.
+        private bool TryPrepareTrapPlacement(uint owner, Location location, out List<TrapRecord> ownerTraps)
+        {
+            foreach (var liveTrap in AllLiveTraps())
+            {
+                if (GetAreaFromLocation(liveTrap.Location) == GetAreaFromLocation(location) &&
+                    GetDistanceBetweenLocations(liveTrap.Location, location) <= MinimumSpacingMeters)
+                {
+                    SendMessageToPC(owner, ColorToken.Red("Another trap is placed too close to that spot."));
+                    ownerTraps = null;
+                    return false;
+                }
+            }
+
+            if (!_trapsByOwner.TryGetValue(owner, out ownerTraps))
+            {
+                ownerTraps = new List<TrapRecord>();
+                _trapsByOwner[owner] = ownerTraps;
+            }
+
+            ownerTraps.RemoveAll(record => !record.IsLive);
+            return true;
+        }
+
+        private void RegisterTrap(TrapRecord record, List<TrapRecord> ownerTraps)
+        {
+            while (ownerTraps.Count >= GetTrapCapacity(record.Owner))
+            {
+                var oldest = ownerTraps[0];
+                Deactivate(oldest);
+                ownerTraps.RemoveAt(0);
+                SendMessageToPC(record.Owner, "Your oldest trap deactivates as you place a new one.");
+            }
+
+            ownerTraps.Add(record);
+        }
+
+        // Trapcraft III/IV shorten the time before a placed trap goes live.
+        private void ScheduleArming(
+            TrapRecord record,
+            Action trigger)
+        {
+            var placementSpeed = Math.Clamp(Stat.GetStatAdjustment(record.Owner, StatType.TrapPlacementSpeedPercent), 0, 90);
+            var armingDelay = ArmingDelaySeconds * (100 - placementSpeed) / 100f;
+
+            DelayCommand(armingDelay, () => RunProximityChecks(
+                record,
+                trigger,
+                LifetimeSeconds - armingDelay));
+        }
+
+        public void ClearTraps(uint owner)
+        {
+            if (!_trapsByOwner.TryGetValue(owner, out var ownerTraps))
+                return;
+
+            foreach (var record in ownerTraps)
+            {
+                Deactivate(record);
+            }
+
+            _trapsByOwner.Remove(owner);
+        }
+
+        // Single deactivation path so every route - eviction, clearing, triggering, expiry - both
+        // marks the trap dead and removes its visible marker instead of leaving inert props behind.
+        private void Deactivate(TrapRecord record)
+        {
+            record.IsLive = false;
+            if (GetIsObjectValid(record.Marker))
+            {
+                DestroyObject(record.Marker);
+                record.Marker = OBJECT_INVALID;
+            }
+        }
+
+        private IEnumerable<TrapRecord> AllLiveTraps()
+        {
+            return _trapsByOwner.Values.SelectMany(records => records).Where(record => record.IsLive);
+        }
+
+        private void RunProximityChecks(
+            TrapRecord record,
+            Action trigger,
+            float remainingSeconds)
+        {
+            if (!record.IsLive)
+                return;
+
+            if (remainingSeconds <= 0f || !GetIsObjectValid(record.Owner))
+            {
+                Expire(record);
+                return;
+            }
+
+            if (record.IsConcealed)
+            {
+                RunDetectionSweep(record);
+            }
+
+            var hostileCreatures = CombatAreaPulses
+                .GetHostileCreatures(record.Owner, record.Location, TriggerRadiusMeters)
+                .ToList();
+            var triggeredByNonPlayerCharacter = hostileCreatures.Any(creature => !GetIsPC(creature));
+
+            if (hostileCreatures.Count > 0)
+            {
+                Expire(record);
+                if (triggeredByNonPlayerCharacter && GetIsPC(record.Owner) && !GetIsDM(record.Owner))
+                {
+                    var rank = _db.Get<Player>(GetObjectUUID(record.Owner)).Skills[SkillType.Espionage].Rank;
+                    var xp = record.IsConcealed
+                        ? Math.Min(TrapTriggerXP, Skill.CalculateEspionageXP(PerkType.Trapcraft, record.Tier, rank))
+                        : TrapTriggerXP;
+                    Skill.GiveSkillXP(record.Owner, SkillType.Espionage, xp, false, false);
+                }
+                trigger();
+                return;
+            }
+
+            DelayCommand(ProximityCheckIntervalSeconds, () => RunProximityChecks(
+                record,
+                trigger,
+                remainingSeconds - ProximityCheckIntervalSeconds));
+        }
+
+        private void ApplyTrapImpact(
+            TrapRecord record,
+            int damage,
+            CombatDamageType damageType,
+            Type statusEffect,
+            int statusDurationSeconds,
+            VisualEffect triggerVisualEffect)
+        {
+            using var recorderAttribution = CombatRecorder.BeginTrapAttribution(record.Owner, record.PlacedBy);
+            CombatAreaPulses.ApplyCombatPulse(
+                record.Owner,
+                record.Location,
+                SkillType.Espionage,
+                damage,
+                BlastRadiusMeters,
+                statusEffect,
+                statusDurationSeconds,
+                damageType,
+                targetVisualEffect: record.SuccessfulImpactVisualEffect != VisualEffect.None
+                    ? record.SuccessfulImpactVisualEffect
+                    : triggerVisualEffect,
+                areaVisualEffect: VisualEffect.Vfx_Fnf_Smoke_Puff,
+                combatImpactDamageAbility: AbilityType.Perception);
+        }
+
+        /// <summary>
+        /// Reveals a concealed trap to nearby players trained to spot it. Trapcraft rank must meet
+        /// the trap's tier, and Trap Management II widens the range at which it is noticed.
+        /// </summary>
+        private void RunDetectionSweep(TrapRecord record)
+        {
+            if (!GetIsObjectValid(record.Marker))
+                return;
+
+            for (var player = GetFirstPC(); GetIsObjectValid(player); player = GetNextPC())
+            {
+                if (record.DetectedBy.Contains(player) ||
+                    GetArea(player) != GetAreaFromLocation(record.Location) ||
+                    DMPresence.IsControlledByDM(player))
+                {
+                    continue;
+                }
+
+                if (!CanUseTrapTier(player, record.Tier))
+                    continue;
+
+                var range = BaseDetectionRangeMeters + Stat.GetStatAdjustment(player, StatType.TrapDetectionRangeBonus);
+                if (GetDistanceBetweenLocations(GetLocation(player), record.Location) > range)
+                    continue;
+
+                RevealTo(record, player, sendMessage: true);
+            }
+        }
+
+        private void RevealTo(TrapRecord record, uint player, bool sendMessage)
+        {
+            if (!GetIsObjectValid(record.Marker) || !record.DetectedBy.Add(player))
+                return;
+
+            VisibilityPlugin.SetVisibilityOverride(player, record.Marker, VisibilityType.Visible);
+
+            if (sendMessage)
+            {
+                SendMessageToPC(player, ColorToken.Combat("You spot a concealed trap nearby."));
+            }
+        }
+
+        /// <summary>
+        /// Disarm attempt, fired when a player uses a revealed concealed trap. Success clears the
+        /// trap and awards Espionage XP; failure sets it off on the would-be disarmer.
+        /// </summary>
+        public void DisarmTrap()
+        {
+            var marker = OBJECT_SELF;
+            var user = GetLastUsedBy();
+
+            if (!GetIsPC(user) || GetIsDM(user))
+                return;
+
+            var trapId = GetLocalString(marker, ConcealedTrapMarkerVariable);
+            var record = AllLiveTraps().FirstOrDefault(x => x.Id.ToString() == trapId);
+            if (record == null)
+                return;
+
+            if (record.Owner == user)
+            {
+                Deactivate(record);
+                SendMessageToPC(user, "You dismantle your own trap. The kit is not recovered.");
+                return;
+            }
+
+            if (!CanUseTrapTier(user, record.Tier))
+            {
+                SendMessageToPC(user, ColorToken.Red("You lack the Trapcraft expertise to disarm this trap."));
+                return;
+            }
+
+            if (d100() <= CalculateDisarmChance(user, record.Tier))
+            {
+                Deactivate(record);
+                if (!GetIsPC(record.Owner) && GetIsEnemy(record.Owner, user))
+                    GrantDisarmXP(user, record.Tier);
+                SendMessageToPC(user, "You disarm the trap.");
+                return;
+            }
+
+            SendMessageToPC(user, ColorToken.Red("You set the trap off while trying to disarm it."));
+            TriggerOnDisarmFailure(record, user);
+        }
+
+        /// <summary>
+        /// Disarm success chance from the Disarm stat and Perception, penalized by trap tier and
+        /// clamped to a sane range. Kept in one method per the single-formula rule.
+        /// </summary>
+        private int CalculateDisarmChance(uint user, int tier)
+        {
+            var disarm = Stat.GetStatAdjustment(user, StatType.TrapDisarm);
+            var perceptionModifier = GetAbilityModifier(AbilityType.Perception, user);
+            var chance = BaseDisarmChance + (disarm + perceptionModifier) * DisarmStatMultiplier - tier * DisarmTierPenalty;
+
+            return Math.Clamp(chance, MinDisarmChance, MaxDisarmChance);
+        }
+
+        public bool CanUseTrapTier(int trapcraftRank, bool hasMasterSaboteur, int tier)
+        {
+            return tier is >= 1 and <= 4
+                ? trapcraftRank >= tier
+                : tier == 5 && hasMasterSaboteur;
+        }
+
+        // The perk levels come from the static Perk service, which reads the stored player and so cannot run in a
+        // unit test; a test subclass answers this instead.
+        protected virtual bool CanUseTrapTier(uint player, int tier) => CanUseTrapTier(
+            Perk.GetPerkLevel(player, PerkType.Trapcraft),
+            Perk.GetPerkLevel(player, PerkType.MasterSaboteur) >= 1,
+            tier);
+
+        private void GrantDisarmXP(uint user, int tier)
+        {
+            var playerId = GetObjectUUID(user);
+            var dbPlayer = _db.Get<Player>(playerId);
+            var xp = Skill.CalculateEspionageXP(PerkType.Trapcraft, tier, dbPlayer.Skills[SkillType.Espionage].Rank);
+            if (xp > 0)
+            {
+                Skill.GiveSkillXP(user, SkillType.Espionage, xp, false, false);
+            }
+        }
+
+        private void TriggerOnDisarmFailure(TrapRecord record, uint victim)
+        {
+            // This hit skips the damage modifiers, so a player's trap applies the PvP ramp and PvP combat here.
+            var damage = PvpCombat.ApplyDamageIncrease(victim, record.Owner, KitTrapDamageByTier[record.Tier - 1], true);
+            Deactivate(record);
+
+            AssignCommand(record.Owner, () =>
+            {
+                using var recorderAttribution = CombatRecorder.BeginTrapAttribution(record.Owner, record.PlacedBy);
+                ApplyEffectToObject(
+                    DurationType.Instant,
+                    EffectDamage(damage, DamageType.Piercing),
+                    victim);
+            });
+            ApplyBleed(record.Owner, victim);
+            ApplyEffectToObject(
+                DurationType.Instant,
+                EffectVisualEffect(VisualEffect.Vfx_Com_Blood_Spark_Medium),
+                victim);
+        }
+
+        // Applying a status effect reads the native effect list of the creature, which no unit test can reach; a test
+        // subclass answers this instead.
+        protected virtual void ApplyBleed(uint owner, uint victim)
+        {
+            StatusEffect.ApplyStatusEffect<BleedStatusEffect>(owner, victim, KitTrapStatusDurationSeconds);
+        }
+
+        private void Expire(TrapRecord record)
+        {
+            Deactivate(record);
+            if (_trapsByOwner.TryGetValue(record.Owner, out var ownerTraps))
+            {
+                ownerTraps.Remove(record);
+            }
+        }
+    }
+}

@@ -1,0 +1,224 @@
+name: Engine tests
+
+# Runs the in-engine tests (SWLOR.Game.Server.EngineTests, Readmes/EngineTesting.md) for the maintainability refactor
+# (Readmes/MaintainabilityRefactorPlan.md): nightly on the refactor branch, on pull requests into it that carry a label,
+# and on demand.
+#
+#   engine-tests label                   the whole suite (910 tests); about 3.5 hours with setup, so it is opt-in
+#   engine-tests-characterization label  only the Characterization scenarios that lock today's outputs; about 40 minutes
+#   workflow_dispatch                    the whole suite, or the tests whose name or category contains `filter`
+#
+# The tests need a real nwserver, so the job runs the same scripts as a cloud session or a dev machine:
+#   scripts/ci/fetch-engine-test-haks.sh        the SWLOR_Haks content the server-only HAKs are built from (50 MB)
+#   scripts/prepare-engine-test-home.sh         server-only HAKs, packed module, Docker images
+#   scripts/run-engine-tests.sh                 builds the test project, runs it in the pinned server image
+#   tools/EngineTestSummary.py                  job summary and annotations
+# The job fails when any engine test fails, when none ran, when the server dies without a report, and when the run
+# hits its wall clock; the summary and an annotation say which of those happened.
+#
+# The game server restarts itself at 10:00 UTC every day, tests running or not (ServerTasks.ProcessAutoRestart), and a
+# run that crosses that moment is killed without a report. The nightly starts at 01:00 UTC to stay clear of it, and a
+# labelled pull request or manual run that could not finish before 10:00 UTC fails at once with that explanation
+# (tools/WaitOutServerRestart.py) instead of dying hours in. Run it again after 10:01 UTC.
+#
+# GitHub only fires `schedule` (and lists `workflow_dispatch`) for workflow files on the default branch, which is
+# master, and nothing is merged to master until the refactor is done. This file checks out the refactor branch itself
+# for those two triggers, so an identical copy on master is all the nightly needs; until one exists, only the labelled
+# pull requests run it. See the pull request that added this file.
+on:
+  schedule:
+    # 21:00 US Eastern: even a slow run is over long before the server's own 10:00 UTC restart.
+    - cron: '0 1 * * *'
+  pull_request:
+    branches:
+      - feature/maintainability-refactor
+    types: [opened, reopened, synchronize, labeled]
+  workflow_dispatch:
+    inputs:
+      filter:
+        description: 'Run only the tests whose name or category contains this text (for example Characterization). Empty runs all.'
+        required: false
+        default: ''
+      timeout_minutes:
+        description: 'Wall clock for the test run, 10 to 270. The whole suite needs about 180; a narrow filter can use less, which also keeps the run clear of the daily server restart.'
+        required: false
+        default: '270'
+      ref:
+        description: 'Branch, tag or commit to test'
+        required: false
+        default: feature/maintainability-refactor
+
+permissions:
+  contents: read
+
+env:
+  DOTNET_CLI_TELEMETRY_OPTOUT: '1'
+  DOTNET_NOLOGO: '1'
+
+jobs:
+  engine-tests:
+    name: Engine tests
+    # A pull request runs only with one of the two labels, and adding some other label to it must not restart a run.
+    if: >-
+      (github.event_name != 'schedule' || github.repository == 'zunath/SWLOR_NWN') &&
+      (github.event_name != 'pull_request' ||
+       ((contains(github.event.pull_request.labels.*.name, 'engine-tests') ||
+         contains(github.event.pull_request.labels.*.name, 'engine-tests-characterization')) &&
+        (github.event.action != 'labeled' ||
+         github.event.label.name == 'engine-tests' ||
+         (github.event.label.name == 'engine-tests-characterization' &&
+          !contains(github.event.pull_request.labels.*.name, 'engine-tests')))))
+    # Ubuntu, because the server image is Linux and Docker on Windows runners cannot run Linux containers.
+    runs-on: ubuntu-24.04
+    # Setup 30 + a restart wait of at most 15 + the build inside the run step 5 + the run's own wall clock 270 + its
+    # teardown and report 5 + the summary and upload 10 = 335, with 20 to spare; GitHub's own limit is 360. The wall clock
+    # is enforced by scripts/run-engine-tests.sh, which says "TIMED OUT", so GitHub never cuts the job before the script
+    # has reported.
+    timeout-minutes: 355
+    concurrency:
+      group: engine-tests-${{ github.event.pull_request.number || github.event_name }}
+      cancel-in-progress: ${{ github.event_name == 'pull_request' }}
+    defaults:
+      run:
+        shell: bash
+    steps:
+      - name: Prepare
+        env:
+          INPUT_FILTER: ${{ inputs.filter }}
+          INPUT_TIMEOUT: ${{ inputs.timeout_minutes }}
+          LABELS: ${{ toJSON(github.event.pull_request.labels.*.name) }}
+        run: |
+          set -euo pipefail
+          filter="$INPUT_FILTER"
+          # A full sweep took about 180 minutes locally (the five WeaponRotationBalance tests alone take 34); a filter
+          # can match nearly everything, so it keeps the same limit unless a manual run asks for less.
+          timeout=270
+          if [ "$GITHUB_EVENT_NAME" = pull_request ] && ! grep -qF '"engine-tests"' <<< "$LABELS"; then
+            filter=Characterization   # only the quick label is on: 11 minutes of tests locally
+            timeout=120
+          fi
+          if [ -n "$INPUT_TIMEOUT" ]; then
+            if ! [[ "$INPUT_TIMEOUT" =~ ^[0-9]+$ ]] || [ "$INPUT_TIMEOUT" -lt 10 ] || [ "$INPUT_TIMEOUT" -gt 270 ]; then
+              echo "::error::timeout_minutes must be a whole number from 10 to 270, not '$INPUT_TIMEOUT'."
+              exit 1
+            fi
+            timeout="$INPUT_TIMEOUT"
+          fi
+          # The restart check plans for the worst case: setup (30) and the build (5) plus the run's whole wall clock.
+          projection=$((35 + timeout))
+          {
+            echo "ENGINE_HOME=$RUNNER_TEMP/engine-tests-home"
+            echo "CI_OUT=$RUNNER_TEMP/engine-tests-out"
+            echo "ENGINE_TEST_FILTER=$filter"
+            echo "ENGINE_TEST_TIMEOUT_MINUTES=$timeout"
+            echo "ENGINE_TEST_PROJECTION_MINUTES=$projection"
+          } >> "$GITHUB_ENV"
+          mkdir -p "$RUNNER_TEMP/engine-tests-out"
+          {
+            echo "### Engine test run"
+            echo
+            echo "- Event: \`$GITHUB_EVENT_NAME\`"
+            echo "- Filter: \`${filter:-(all tests)}\`"
+            echo "- Wall clock for the test run: $timeout minutes"
+            echo
+          } >> "$GITHUB_STEP_SUMMARY"
+          df -h / /mnt | sed 's/^/disk: /'
+          # Toolchains this job never uses. The run itself needs about 10 GB (the two Docker images, the checkout, the
+          # builds and the 400 MB server home), but the free space on the runner image varies.
+          sudo rm -rf /usr/local/lib/android /opt/ghc /opt/hostedtoolcache/CodeQL /usr/share/swift || true
+          df -h / | sed 's/^/disk after cleanup: /'
+
+      - uses: actions/checkout@11d5960a326750d5838078e36cf38b85af677262 # v4
+        with:
+          # A pull request tests its merge result. The schedule and manual runs name the branch themselves: for the
+          # schedule, GitHub's own ref is the default branch.
+          ref: ${{ github.event_name == 'pull_request' && github.ref || inputs.ref || 'feature/maintainability-refactor' }}
+          persist-credentials: false
+          submodules: false
+
+      - name: Stay clear of the server's daily restart
+        # Passes at once when the job fits before 10:00 UTC or starts after it, waits when the restart is minutes away,
+        # and otherwise fails now rather than after hours of setup. Delete this step when
+        # ServerTasks.ProcessAutoRestart skips engine-test runs.
+        run: python3 tools/WaitOutServerRestart.py --run-minutes "$ENGINE_TEST_PROJECTION_MINUTES" --max-wait-minutes 15
+
+      - uses: actions/setup-dotnet@67a3573c9a986a3f9c594539f4ab511d57bb3ce9 # v4
+        with:
+          global-json-file: global.json
+
+      - name: Check the server image pin
+        # The test compose file names the image itself; the production pin is scripts/deployment/server-image.txt.
+        run: |
+          image="$(head -n 1 scripts/deployment/server-image.txt | tr -d '\r')"
+          echo "- Server image: \`$image\`" >> "$GITHUB_STEP_SUMMARY"
+          if ! grep -qF "image: $image" SWLOR.Game.Server/Docker/docker-compose.enginetests.yml; then
+            echo "::warning title=Engine tests use another server image::docker-compose.enginetests.yml does not name $image, the image pinned for production."
+          fi
+
+      - name: Test the summary tool and the HAK staging
+        # Seconds, and they catch a broken sparse-HAK path before the long steps start.
+        run: >-
+          python3 -B -m unittest -v
+          tools.tests.test_engine_test_summary tools.tests.test_wait_out_server_restart
+          tools.tests.test_prepare_engine_test_home tools.tests.test_fetch_engine_test_haks
+
+      - name: Native NWN tools
+        # nwn_erf and nwn_gff pack the HAKs and the module. SWLOR.CLI finds them in the cache this fills, the same
+        # one .claude/hooks/session-start.sh and Setup.sh use (pinned release, checksum verified).
+        run: |
+          set -euo pipefail
+          sudo apt-get update -qq
+          sudo apt-get install -y -qq --no-install-recommends libpcre3 libsqlite3-0
+          python3 -I -c 'import sys; sys.path.insert(0, sys.argv[1]); import toolset_common; toolset_common.prepare_native_tools()' tools
+
+      - name: Fetch the SWLOR_Haks content the server needs
+        run: bash scripts/ci/fetch-engine-test-haks.sh
+
+      - name: Prepare the server home (HAKs, module, Docker images)
+        env:
+          # The packer keeps two cores free by default; nothing else runs here.
+          SWLOR_RESOURCE_CONVERSION_WORKERS: '4'
+        run: bash scripts/prepare-engine-test-home.sh --server-home "$ENGINE_HOME"
+
+      - name: Run the engine tests
+        id: tests
+        run: |
+          set -uo pipefail
+          args=(--server-home "$ENGINE_HOME" --timeout-minutes "$ENGINE_TEST_TIMEOUT_MINUTES")
+          if [ -n "$ENGINE_TEST_FILTER" ]; then args+=(--filter "$ENGINE_TEST_FILTER"); fi
+          # The exit code of run-engine-tests.sh is the job's result: 0 only when the server exited cleanly, at least
+          # one test ran and none failed.
+          bash scripts/run-engine-tests.sh "${args[@]}" 2>&1 | tee "$CI_OUT/engine-tests.log"
+          exit "${PIPESTATUS[0]}"
+
+      - name: Summary
+        if: ${{ !cancelled() && steps.tests.conclusion != 'skipped' }}
+        env:
+          RUNNER_OUTCOME: ${{ steps.tests.outcome }}
+        run: |
+          python3 tools/EngineTestSummary.py \
+            --report "$ENGINE_HOME/app_logs/engine_tests/engine-test-results.json" \
+            --log "$CI_OUT/engine-tests.log" \
+            --timeout-minutes "$ENGINE_TEST_TIMEOUT_MINUTES" \
+            --runner-outcome "$RUNNER_OUTCOME" \
+            --annotations --markdown-out "$GITHUB_STEP_SUMMARY"
+
+      - name: Collect the results and server logs
+        if: ${{ !cancelled() }}
+        run: |
+          mkdir -p "$CI_OUT/server"
+          cp -f "$ENGINE_HOME/app_logs/engine_tests/engine-test-results.json" "$CI_OUT/" || true
+          # Server logs: the NWN logs (mounted as logs/) and the application logs. The characterization scenarios'
+          # own output, if any, is under app_logs/engine_tests/characterization.
+          cp -r "$ENGINE_HOME/logs" "$CI_OUT/server/logs" || true
+          cp -r "$ENGINE_HOME/app_logs" "$CI_OUT/server/app_logs" || true
+          du -sh "$CI_OUT"/* || true
+
+      - name: Upload the results and logs
+        if: ${{ !cancelled() }}
+        uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02 # v4
+        with:
+          name: engine-test-results
+          path: ${{ env.CI_OUT }}
+          if-no-files-found: warn
+          retention-days: 14

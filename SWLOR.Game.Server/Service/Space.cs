@@ -70,6 +70,7 @@ namespace SWLOR.Game.Server.Service
             Scheduler.ScheduleRepeating(ProcessSpaceNPCAI, TimeSpan.FromSeconds(1));
             Scheduler.ScheduleRepeating(PlayerShipRecovery, TimeSpan.FromSeconds(1), TimeSpan.FromMilliseconds(100d));
             ScheduleShipToggleLoop();
+            SpaceAuras.ScheduleRefresh();
         }
 
         [NWNEventHandler(ScriptName.OnModuleEnter)]
@@ -1096,6 +1097,12 @@ namespace SWLOR.Game.Server.Service
             var dbShip = DB.Get<PlayerShip>(shipId);
             ClearShipToggleState(player, dbShip.Status);
 
+            // Space auras end with the flight, and so do the statuses the ship picked up (a burn or a daze must not
+            // follow the pilot onto the ground, as ground effects do not follow them into space).
+            SpaceAuras.RemoveAuras(player);
+            StatusEffect.RemoveAllStatusEffects(player);
+            dbShip.Status.PendingRiders?.Clear();
+
             ClearCurrentTarget(player);
             RestoreCharacterAppearance(player, dbPlayer);
             DeleteLocalFloat(player, Stat.ShipMovementSpeedVariable);
@@ -1421,6 +1428,13 @@ namespace SWLOR.Game.Server.Service
             {
                 if (!onlyTurnOn)
                     TurnOffToggle(activator, activatorShipStatus, slotNumber);
+                return;
+            }
+
+            // A dazed ship cannot switch a module on or fire one (a toggle that is on can still be switched off above).
+            if (IsShipIncapacitated(activator))
+            {
+                SendMessageToPC(activator, "You cannot use modules while incapacitated.");
                 return;
             }
 
@@ -1867,11 +1881,18 @@ namespace SWLOR.Game.Server.Service
                 GetPilotScore(attacker, attackerStatus, AbilityType.Perception),
                 shot.Family);
 
-            return accuracy + GetNpcLevelBonus(attacker, attackerStatus, level => 8 + 2 * level);
+            accuracy += GetNpcLevelBonus(attacker, attackerStatus, level => 8 + 2 * level);
+
+            // The pilot's Accuracy and Accuracy % stats apply as they do on the ground.
+            return SpaceCombatMath.AdjustRating(
+                accuracy,
+                Stat.GetStatAdjustment(attacker, StatType.Accuracy),
+                Stat.GetStatAdjustment(attacker, StatType.AccuracyPercentAdjustment));
         }
 
         /// <summary>
         /// Calculates the evasion of a ship: ship Evasion plus the pilot's AGI x 3. A legacy NPC adds 8 + 2 x level.
+        /// The pilot's Evasion, Evasion % and Ranged Evasion % stats apply (every space weapon is ranged).
         /// </summary>
         public static int GetShipEvasion(uint defender, ShipStatus defenderStatus)
         {
@@ -1879,7 +1900,13 @@ namespace SWLOR.Game.Server.Service
                 defenderStatus.Evasion,
                 GetPilotScore(defender, defenderStatus, AbilityType.Agility));
 
-            return evasion + GetNpcLevelBonus(defender, defenderStatus, level => 8 + 2 * level);
+            evasion += GetNpcLevelBonus(defender, defenderStatus, level => 8 + 2 * level);
+
+            return SpaceCombatMath.AdjustRating(
+                evasion,
+                Stat.GetStatAdjustment(defender, StatType.Evasion),
+                Stat.GetStatAdjustment(defender, StatType.EvasionPercentAdjustment) +
+                Stat.GetStatAdjustment(defender, StatType.RangedEvasionPercentAdjustment));
         }
 
         /// <summary>
@@ -1891,11 +1918,17 @@ namespace SWLOR.Game.Server.Service
             var damageAttribute = GetDamageAttribute(attacker, attackerStatus, shot.Family);
             var attack = SpaceCombatMath.Attack(attackerStatus.Attack, shot.Attack, damageAttribute);
 
-            return attack + GetNpcLevelBonus(attacker, attackerStatus, level => 8 + 2 * level);
+            attack += GetNpcLevelBonus(attacker, attackerStatus, level => 8 + 2 * level);
+
+            return SpaceCombatMath.AdjustRating(
+                attack,
+                Stat.GetStatAdjustment(attacker, StatType.Attack),
+                Stat.GetStatAdjustment(attacker, StatType.AttackPercentAdjustment));
         }
 
         /// <summary>
         /// Calculates the defense of a ship: ship Defense plus the pilot's VIT. A legacy NPC adds 8 + 1.2 x level.
+        /// The pilot's Defense and Defense % stats apply; the damage-type stats (Physical, Force) do not.
         /// </summary>
         public static int GetShipDefense(uint defender, ShipStatus defenderStatus)
         {
@@ -1903,7 +1936,12 @@ namespace SWLOR.Game.Server.Service
                 defenderStatus.Defense,
                 GetPilotScore(defender, defenderStatus, AbilityType.Vitality));
 
-            return defense + GetNpcLevelBonus(defender, defenderStatus, level => 8 + (int)(1.2f * level));
+            defense += GetNpcLevelBonus(defender, defenderStatus, level => 8 + (int)(1.2f * level));
+
+            return SpaceCombatMath.AdjustRating(
+                defense,
+                Stat.GetStatAdjustment(defender, StatType.Defense),
+                Stat.GetStatAdjustment(defender, StatType.DefensePercentAdjustment));
         }
 
         /// <summary>
@@ -1929,8 +1967,11 @@ namespace SWLOR.Game.Server.Service
         }
 
         /// <summary>
-        /// Rolls one weapon shot without applying it: hit, critical, then damage with the size penalty, the
-        /// attacker's damage bonus and the target's resistance. A miss draws only the hit roll.
+        /// Rolls one weapon shot without applying it: hit, critical, then damage with the pilot's damage stats,
+        /// the size penalty, the attacker's damage bonus, the target's resistance and its damage-taken stat. A miss
+        /// draws only the hit roll; a blinded attacker's hit also has to pass the blindness miss roll.
+        /// A landed shot that consumes riders takes their bonus DMG, removes them from the ship status and lists
+        /// them on the result; a miss leaves them waiting.
         /// </summary>
         public static ShipShotResult RollWeaponShot(
             uint activator,
@@ -1939,6 +1980,12 @@ namespace SWLOR.Game.Server.Service
             ShipStatus targetStatus,
             SpaceWeaponShot shot)
         {
+            var riders = shot.ConsumesRiders
+                ? FindPendingRiders(activatorStatus, shot.Family, DateTime.UtcNow)
+                : new List<SpaceShotRider>();
+            if (riders.Count > 0)
+                shot = shot.WithBonusDmg(riders.Sum(x => x.BonusDmg));
+
             var weaponSize = shot.Size ?? NormalizeShipSize(activatorStatus.Size);
             var targetSize = NormalizeShipSize(targetStatus.Size);
 
@@ -1956,20 +2003,45 @@ namespace SWLOR.Game.Server.Service
             var defense = GetShipDefense(target, targetStatus);
             var damageAttribute = GetDamageAttribute(activator, activatorStatus, shot.Family);
 
-            if (Random.D100(1) > chanceToHit)
+            var hitRolled = Random.D100(1) <= chanceToHit;
+            var blindMiss = hitRolled && IsBlinded(activator) && Random.D100(1) <= SpaceCombatMath.BlindMissChance;
+            if (!hitRolled || blindMiss)
             {
                 // A miss still draws the target's attention, as it always has. It does not roll any damage.
+                // Only a miss on the target's evasion counts as an evaded attack.
+                result.Evaded = !hitRolled;
                 var (_, missMaximum) = SpaceCombatMath.DamageRange(attack, shot.Dmg, damageAttribute, defense, targetVit, false, shot.Rank);
                 result.Enmity = missMaximum;
                 return result;
             }
 
             result.IsHit = true;
-            result.IsCritical = Random.D100(1) <= SpaceCombatMath.CriticalRate(per, targetVit, shot.Rank, 0);
+            result.IsCritical = Random.D100(1) <= SpaceCombatMath.CriticalRate(
+                per, targetVit, shot.Rank, Stat.GetStatAdjustment(activator, StatType.CriticalRatePercentAdjustment));
 
             var (minimum, maximum) = SpaceCombatMath.DamageRange(
                 attack, shot.Dmg, damageAttribute, defense, targetVit, result.IsCritical, shot.Rank);
             var rolled = (int)Random.NextFloat(minimum, maximum);
+
+            if (result.IsCritical)
+            {
+                var criticalPercent = Stat.GetStatAdjustment(activator, StatType.CriticalDamagePercentAdjustment) +
+                                      SpaceCombatMath.HighHullCriticalDamageAdjustment(
+                                          targetStatus.Hull,
+                                          targetStatus.MaxHull,
+                                          Stat.GetStatAdjustment(activator, StatType.CriticalDamageHighHPTargetThresholdPercent),
+                                          Stat.GetStatAdjustment(activator, StatType.CriticalDamageHighHPTargetPercentAdjustment));
+                rolled = SpaceCombatMath.CriticalDamage(rolled, true, criticalPercent);
+            }
+
+            rolled = SpaceCombatMath.ApplyDamageDealt(
+                rolled,
+                Stat.GetStatAdjustment(activator, StatType.DamageDealtPercentAdjustment),
+                SpaceCombatMath.ShapeDamagePercent(
+                    shot.IsAbility,
+                    shot.IsArea,
+                    Stat.GetStatAdjustment(activator, StatType.SingleTargetDamagePercentAdjustment),
+                    Stat.GetStatAdjustment(activator, StatType.AreaAbilityDamagePercentAdjustment)));
 
             var bonusPercent = 0;
             activatorStatus.DamageBonusPercent?.TryGetValue(shot.DamageType, out bonusPercent);
@@ -1980,14 +2052,32 @@ namespace SWLOR.Game.Server.Service
 
             var damage = rolled
                          * SpaceCombatMath.SizeDamageMultiplier(weaponSize, targetSize, shot.IgnoreSizePenalty)
-                         * (1.0 + bonusPercent / 100.0)
-                         * SpaceCombatMath.ResistanceMultiplier(resistance);
+                         * (1.0 + bonusPercent / 100.0);
+
+            // Ship damage is the ground's "other" damage, so the target's typed Leadership reduction applies
+            // before resistance, then its damage-taken stat after it, in the ground's order.
+            var leadershipPercent = Stat.GetStatAdjustment(target, StatType.LeadershipOtherDamageTakenPercentAdjustment);
+            if (leadershipPercent != 0)
+                damage = SpaceCombatMath.ApplyLeadershipReduction((int)Math.Round(damage, MidpointRounding.AwayFromZero), leadershipPercent);
+
+            damage *= SpaceCombatMath.ResistanceMultiplier(resistance);
 
             result.Damage = (int)Math.Round(damage, MidpointRounding.AwayFromZero);
             // A shot that isn't fully resisted always does something.
             if (result.Damage < 1 && damage > 0)
                 result.Damage = 1;
+
+            var takenPercent = Stat.GetStatAdjustment(target, StatType.DamageTakenPercentAdjustment);
+            if (takenPercent != 0)
+                result.Damage = SpaceCombatMath.ApplyDamageTaken(result.Damage, takenPercent);
+
             result.Enmity = result.Damage;
+
+            foreach (var rider in riders)
+            {
+                activatorStatus.PendingRiders.Remove(rider);
+                result.ConsumedRiders.Add(rider);
+            }
 
             return result;
         }
@@ -1996,6 +2086,11 @@ namespace SWLOR.Game.Server.Service
         /// Finishes a rolled shot: the combat log, enmity and combat point happen now, and the damage is applied
         /// after <paramref name="damageDelay"/> seconds. <paramref name="afterDamage"/> runs once the damage has
         /// landed, with the shield and hull points it removed.
+        ///
+        /// Ground hooks run as they do for a weapon attack: an attempt is attack activity, an evaded shot calls
+        /// <c>Combat.TrackAvoidedAttack</c> for the target, and a landed critical calls
+        /// <c>Combat.ApplyCriticalHitEffects</c> for the attacker. <see cref="SpaceCombatEvents"/> carries the
+        /// space-only events. Threat for the shot's damage includes the attacker's damage enmity stat.
         /// </summary>
         public static void CompleteWeaponShot(
             uint activator,
@@ -2014,11 +2109,24 @@ namespace SWLOR.Game.Server.Service
                 receiver => Combat.BuildCombatLogMessage(receiver, activator, target, attackId, result.ChanceToHit),
                 60f);
 
-            Enmity.ModifyEnmity(activator, target, result.Enmity);
+            Enmity.ModifyEnmity(activator, target, Enmity.CalculateDamageEnmity(
+                result.Enmity,
+                Stat.GetStatAdjustment(activator, StatType.DamageEnmityPercentAdjustment)));
             CombatPoint.AddCombatPoint(activator, target, SkillType.Piloting);
+            Combat.TrackAttackActivity(activator);
+
+            var shotEvent = new SpaceShotEvent { Attacker = activator, Target = target, Shot = shot, Result = result };
 
             if (!result.IsHit)
+            {
+                if (result.Evaded)
+                {
+                    Combat.TrackAvoidedAttack(target, activator);
+                    SpaceCombatEvents.RaiseShotEvaded(shotEvent);
+                }
+
                 return;
+            }
 
             void Apply()
             {
@@ -2035,7 +2143,22 @@ namespace SWLOR.Game.Server.Service
                         shot.ShieldDamageMultiplier);
                     result.ShieldDamage = shieldDamage;
                     result.HullDamage = hullDamage;
+
+                    ApplyConsumedRiders(activator, target, shot, result);
                     afterDamage?.Invoke(result);
+
+                    if (result.IsCritical)
+                    {
+                        Combat.ApplyCriticalHitEffects(
+                            activator,
+                            target,
+                            result.Damage,
+                            Combat.StandardCriticalRating,
+                            shot.IsAbility && !shot.IsArea,
+                            SkillType.Piloting);
+                    }
+
+                    SpaceCombatEvents.RaiseShotLanded(shotEvent);
                 });
             }
 
@@ -2043,6 +2166,46 @@ namespace SWLOR.Game.Server.Service
                 DelayCommand(damageDelay, Apply);
             else
                 Apply();
+        }
+
+        /// <summary>
+        /// Runs what the riders a landed shot consumed add: their extra damage instance, their extra threat and
+        /// the handler registered under their key.
+        /// </summary>
+        private static void ApplyConsumedRiders(uint activator, uint target, SpaceWeaponShot shot, ShipShotResult result)
+        {
+            foreach (var rider in result.ConsumedRiders)
+            {
+                if (rider.ExtraDamage > 0)
+                {
+                    var (shieldDamage, hullDamage) = ApplyShipDamage(
+                        activator, target, rider.ExtraDamage, shot.ShieldBypass, shot.ShieldDamageMultiplier);
+                    result.ShieldDamage += shieldDamage;
+                    result.HullDamage += hullDamage;
+                }
+
+                if (rider.ExtraEnmity > 0)
+                    Enmity.ModifyEnmity(activator, target, rider.ExtraEnmity);
+
+                SpaceAbilities.RunRiderHandler(new SpaceRiderContext
+                {
+                    Attacker = activator,
+                    Target = target,
+                    Shot = shot,
+                    Result = result,
+                    Rider = rider
+                });
+            }
+        }
+
+        /// <summary>The riders on a ship that a shot of this family can consume now, oldest first.</summary>
+        private static List<SpaceShotRider> FindPendingRiders(ShipStatus status, SpaceWeaponFamily family, DateTime now)
+        {
+            if (status?.PendingRiders == null || status.PendingRiders.Count == 0)
+                return new List<SpaceShotRider>();
+
+            status.PendingRiders.RemoveAll(x => now >= x.ExpiresAt);
+            return status.PendingRiders.Where(x => x.Matches(family, now)).ToList();
         }
 
         /// <summary>
@@ -2187,6 +2350,18 @@ namespace SWLOR.Game.Server.Service
             if(GetIsPC(attacker))
                 ExecuteScript("pc_target_upd", attacker);
 
+            if (hullDamage > 0)
+            {
+                SpaceCombatEvents.RaiseHullDamaged(new SpaceHullEvent
+                {
+                    Ship = target,
+                    Attacker = attacker,
+                    HullBefore = hullBefore,
+                    HullAfter = targetShipStatus.Hull,
+                    MaxHull = targetShipStatus.MaxHull
+                });
+            }
+
             return (shieldDamage, hullDamage);
         }
 
@@ -2207,6 +2382,7 @@ namespace SWLOR.Game.Server.Service
             if (targetShipStatus == null || AI.IsLeashEvading(target) || AI.IsLeashEvading(attacker))
                 return;
 
+            var hullBefore = targetShipStatus.Hull;
             if (targetShipStatus.Hull > 0)
             {
                 targetShipStatus.Hull -= amount;
@@ -2261,6 +2437,17 @@ namespace SWLOR.Game.Server.Service
             if (GetIsPC(attacker))
                 ExecuteScript("pc_target_upd", attacker);
 
+            if (targetShipStatus.Hull < hullBefore)
+            {
+                SpaceCombatEvents.RaiseHullDamaged(new SpaceHullEvent
+                {
+                    Ship = target,
+                    Attacker = attacker,
+                    HullBefore = hullBefore,
+                    HullAfter = targetShipStatus.Hull,
+                    MaxHull = targetShipStatus.MaxHull
+                });
+            }
         }
 
 

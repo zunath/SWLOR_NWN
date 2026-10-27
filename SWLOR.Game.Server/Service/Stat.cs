@@ -2651,7 +2651,7 @@ namespace SWLOR.Game.Server.Service
             return Math.Max(0, ApplyPercentAdjustment(amount, adjustment));
         }
 
-        private static int ApplyPercentAdjustment(int value, int percentAdjustment)
+        public static int ApplyPercentAdjustment(int value, int percentAdjustment)
         {
             if (percentAdjustment == 0)
                 return value;

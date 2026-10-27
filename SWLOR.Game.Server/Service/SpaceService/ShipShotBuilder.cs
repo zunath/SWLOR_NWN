@@ -48,6 +48,17 @@ namespace SWLOR.Game.Server.Service.SpaceService
             };
         }
 
+        /// <summary>
+        /// Builds the shot a ship fires with a weapon step at a target ship: the hull sizes, the target's shield and a
+        /// preset NPC ship's own numbers are read from the two statuses.
+        /// </summary>
+        public static SpaceWeaponShot BuildFor(ShipModuleStep step, ShipStatus status, ShipStatus targetStatus)
+        {
+            var firingSize = status.Size == ShipSize.Invalid ? ShipSize.Small : status.Size;
+            var targetSize = targetStatus?.Size ?? ShipSize.Small;
+            return Build(step, firingSize, targetSize, targetStatus?.Shield ?? 0, status.FindNpcShot(step.Tag));
+        }
+
         /// <summary>The restored amount of a repairer, injector or aura step on a ship of this size.</summary>
         public static int ScaleSupport(int amount, ShipSize size)
         {

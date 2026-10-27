@@ -61,33 +61,20 @@ namespace SWLOR.Game.Server.Feature.ShipModuleDefinition
                 case ShipModuleFamily.PointDefenseTurret:
                 case ShipModuleFamily.Turbolaser:
                 case ShipModuleFamily.QuadLaser:
-                    Weapon(step, (activator, status, target, targetStatus, shot) =>
-                        ShipModuleActions.FireBolt(activator, status, target, targetStatus, shot, step.Family == ShipModuleFamily.Turbolaser));
-                    break;
                 case ShipModuleFamily.IonCannon:
-                    Weapon(step, (activator, status, target, targetStatus, shot) =>
-                        ShipModuleActions.FireIon(activator, status, target, targetStatus, shot, 50, 2));
-                    break;
                 case ShipModuleFamily.StormCannon:
-                    Weapon(step, (activator, status, target, targetStatus, shot) =>
-                        ShipModuleActions.FireStormPulse(activator, status, target, targetStatus, shot, 75, 4));
-                    break;
                 case ShipModuleFamily.BeamCannon:
-                    Weapon(step, (activator, status, target, targetStatus, shot) =>
-                        ShipModuleActions.FireBeamPulse(activator, status, target, targetStatus, shot, 1.0f));
-                    break;
                 case ShipModuleFamily.LaserBattery:
-                    Weapon(step, (activator, status, target, targetStatus, shot) =>
-                        ShipModuleActions.FireVolley(activator, status, target, targetStatus, shot, 15f, 4));
+                    Weapon(step);
                     break;
                 case ShipModuleFamily.MissileLauncher:
-                    AmmoWeapon(step, ShipModuleActions.MissileResref, "You need a missile to fire this weapon.", false);
+                    AmmoWeapon(step, "You need a missile to fire this weapon.");
                     break;
                 case ShipModuleFamily.TorpedoLauncher:
-                    AmmoWeapon(step, ShipModuleActions.ProtonBombResref, "You need a proton bomb to fire this weapon.", true);
+                    AmmoWeapon(step, "You need a proton bomb to fire this weapon.");
                     break;
                 case ShipModuleFamily.AssaultConcussionMissile:
-                    AmmoWeapon(step, ShipModuleActions.ConcussionMissileResref, "You need an assault concussion missile to fire this weapon.", true);
+                    AmmoWeapon(step, "You need an assault concussion missile to fire this weapon.");
                     break;
                 case ShipModuleFamily.MiningLaser:
                     MiningLaser(step);
@@ -147,27 +134,22 @@ namespace SWLOR.Game.Server.Feature.ShipModuleDefinition
             };
         }
 
-        private delegate void WeaponFire(
-            uint activator, ShipStatus status, uint target, ShipStatus targetStatus, SpaceWeaponShot shot);
+        private static SpaceWeaponShot BuildShot(ShipModuleStep step, ShipStatus status, ShipStatus targetStatus) =>
+            ShipShotBuilder.BuildFor(step, status, targetStatus);
 
-        private static SpaceWeaponShot BuildShot(ShipModuleStep step, ShipStatus status, ShipStatus targetStatus)
-        {
-            var firingSize = status.Size == ShipSize.Invalid ? ShipSize.Small : status.Size;
-            var targetSize = targetStatus?.Size ?? ShipSize.Small;
-            return ShipShotBuilder.Build(step, firingSize, targetSize, targetStatus?.Shield ?? 0, status.FindNpcShot(step.Tag));
-        }
-
-        private void Weapon(ShipModuleStep step, WeaponFire fire)
+        private void Weapon(ShipModuleStep step)
         {
             _builder
                 .MaxDistance(step.Range)
                 .ValidTargetType(ObjectType.Creature)
                 .ActivatedAction((activator, status, target, targetStatus, _) =>
-                    fire(activator, status, target, targetStatus, BuildShot(step, status, targetStatus)));
+                    ShipModuleActions.FireStep(
+                        step, activator, status, target, targetStatus, BuildShot(step, status, targetStatus), false));
         }
 
-        private void AmmoWeapon(ShipModuleStep step, string ammoResref, string missingAmmoMessage, bool heavy)
+        private void AmmoWeapon(ShipModuleStep step, string missingAmmoMessage)
         {
+            var ammoResref = ShipModuleActions.GetAmmoResref(step.Family);
             _builder
                 .MaxDistance(step.Range)
                 .ValidTargetType(ObjectType.Creature)
@@ -182,7 +164,7 @@ namespace SWLOR.Game.Server.Feature.ShipModuleDefinition
                 {
                     var shot = BuildShot(step, status, targetStatus);
                     ShipModuleActions.ConsumeAmmo(activator, ammoResref);
-                    ShipModuleActions.FireMissile(activator, status, target, targetStatus, shot, heavy);
+                    ShipModuleActions.FireStep(step, activator, status, target, targetStatus, shot, false);
                 });
         }
 
@@ -285,7 +267,10 @@ namespace SWLOR.Game.Server.Feature.ShipModuleDefinition
                     {
                         ApplyEffectToObject(DurationType.Temporary, EffectBeam(VisualEffect.Vfx_Beam_Disintegrate, activator, BodyNode.Chest), ally, 1.0f);
 
-                        Space.RestoreAllyShield(ally, Space.GetShipStatus(ally), step.Repair);
+                        var allyStatus = Space.GetShipStatus(ally);
+                        var shieldBefore = allyStatus.Shield;
+                        Space.RestoreAllyShield(ally, allyStatus, step.Repair);
+                        Space.ApplyRepairEnmity(activator, ally, allyStatus.Shield - shieldBefore);
                         supported.Add(ally);
                     }
 

@@ -5664,6 +5664,13 @@
   },
   {
     "File": "SWLOR.Game.Server/Service/Space.cs",
+    "Line": 1437,
+    "Member": "ActivateShipModuleCore",
+    "Delivery": "Retained",
+    "Call": "SendMessageToPC(activator, \"You cannot use modules while incapacitated.\")"
+  },
+  {
+    "File": "SWLOR.Game.Server/Service/Space.cs",
     "Line": 1430,
     "Member": "ActivateShipModuleCore",
     "Delivery": "Retained",

@@ -129,5 +129,76 @@ namespace SWLOR.Game.Server.Service.SpaceService
 
         /// <summary>Capacitor regained per second: the hull's regen plus 0.05 per point of WIL.</summary>
         public static double CapacitorRegenPerSecond(double hullRegen, int wil) => hullRegen + 0.05 * wil;
+
+        // Pilot stats. The percent and flat stats below are the ground's (Stat.GetAccuracy and its siblings): the
+        // flat stat joins the rating, then the percent stat scales the total, and a rating never falls below 1.
+
+        /// <summary>The share of a blinded attacker's shots that miss, as the engine's blindness does on the ground.</summary>
+        public const int BlindMissChance = 50;
+
+        /// <summary>
+        /// Accuracy, Evasion, Attack or Defense after the pilot's flat stat and percent stat. For Evasion the
+        /// ranged Evasion percent is added to <paramref name="percent"/> because every space weapon is ranged.
+        /// </summary>
+        public static int AdjustRating(int rating, int flat, int percent) =>
+            Math.Max(1, Stat.ApplyPercentAdjustment(rating + flat, percent));
+
+        /// <summary>Damage after a critical hit: the pilot's critical damage percent, limited like the ground.</summary>
+        public static int CriticalDamage(int damage, bool critical, int percent)
+        {
+            if (!critical || damage <= 0)
+                return damage;
+
+            percent = Combat.ClampCriticalDamagePercentAdjustment(percent);
+            return percent == 0 ? damage : damage + damage * percent / 100;
+        }
+
+        /// <summary>
+        /// The ground's "High Noon" rule on hull: a critical hit against a target whose hull is at or above the
+        /// threshold percent earns the adjustment. Zero when the stats are not set.
+        /// </summary>
+        public static int HighHullCriticalDamageAdjustment(int hull, int maxHull, int thresholdPercent, int adjustment)
+        {
+            if (thresholdPercent <= 0 || adjustment == 0 || maxHull <= 0)
+                return 0;
+
+            return hull < maxHull * (thresholdPercent / 100f) ? 0 : adjustment;
+        }
+
+        /// <summary>
+        /// The damage percent stat that applies to a shot: single-target damage for the weapon's own cycle and for
+        /// single-target abilities, area damage for area abilities.
+        /// </summary>
+        public static int ShapeDamagePercent(bool isAbility, bool isArea, int singleTargetPercent, int areaPercent) =>
+            isAbility && isArea ? areaPercent : singleTargetPercent;
+
+        /// <summary>Damage after the attacker's damage-dealt percent and its shot-shape percent.</summary>
+        public static int ApplyDamageDealt(int damage, int dealtPercent, int shapePercent) =>
+            Combat.ApplyPercentDamageAdjustment(Combat.ApplyPercentDamageAdjustment(damage, dealtPercent), shapePercent);
+
+        /// <summary>The typed Leadership reduction for ship damage (the ground's "other" damage). Applied before resistance.</summary>
+        public static int ApplyLeadershipReduction(int damage, int leadershipPercent) =>
+            Combat.ApplyPercentDamageAdjustment(damage, leadershipPercent);
+
+        /// <summary>The target's damage-taken percent, after resistance, with the ground's reduction limits.</summary>
+        public static int ApplyDamageTaken(int damage, int takenPercent) =>
+            Combat.ApplyCombinedDamageTakenAdjustment(damage, 0, takenPercent);
+
+        /// <summary>The threat a repair generates: half of what was restored, as the ground's heal threat is.</summary>
+        public static int RepairEnmity(int restored) =>
+            restored <= 0 ? 0 : Enmity.CalculateHealingEnmity(restored, 1, 1 + restored);
+
+        /// <summary>
+        /// Whether damage took the hull from at or above a percent of its maximum to below it (the ground's
+        /// "reduced below N% HP" rule applied to hull).
+        /// </summary>
+        public static bool CrossedHullThreshold(int hullBefore, int hullAfter, int maxHull, int thresholdPercent)
+        {
+            if (maxHull <= 0 || thresholdPercent <= 0 || hullAfter <= 0)
+                return false;
+
+            var threshold = maxHull * (thresholdPercent / 100f);
+            return hullBefore >= threshold && hullAfter < threshold;
+        }
     }
 }

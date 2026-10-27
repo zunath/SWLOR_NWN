@@ -12,6 +12,7 @@ Sections: Code · Renames · Module JSON · Stat-driven gameplay · Haks, TLK, a
 - Each distinct ability gets its own `*AbilityDefinition.cs` and matching `IAbilityListDefinition` class named for it. Ranks of one ability share its file; unrelated abilities never share one.
 - Match the surrounding comment density: at most a one-line comment, only for a non-obvious constraint. No dates, incident history, investigation notes, or "verified in the client" claims in code; those go in the pull request or the topic guide.
 - `[NWNEventHandler]` and `ExecuteScript` script names are constants in `SWLOR.Game.Server/Core/ScriptName.cs`, never string literals.
+- A script runs its handlers in the order `SWLOR.Game.Server/Core/ScriptHandlerOrder.txt` lists them. List every new or renamed `[NWNEventHandler]` method there (`CoreSystems.md`, "Script Handler Order").
 - `DB.Search` returns at most 50 rows when the query has no `AddPaging`. A query that must load a complete set calls `AddPaging(<cap>, 0)`.
 - No internal initiative, milestone, or phase labels (such as `CombatUpgrade`) in new identifiers, filenames, namespaces, or comments. Use gameplay terms.
 - When an ability applies `EffectDamage` with `ApplyEffectToObject`, wrap it in `AssignCommand(source, () => ApplyEffectToObject(...))` so the damage appears in the player's combat log.

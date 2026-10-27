@@ -1,8 +1,9 @@
-# SWLOR script handler order: SWLOR.Game.Server only (a production server; engine tests disabled)
+# SWLOR script handler order manifest: SWLOR.Game.Server only (the order a production server runs handlers in; engine tests disabled)
 # One line per handler, in the order the registry runs them: kind, then Namespace.Type.Method.
 # Kinds: action = void handler, run in this order; conditional = bool handler, every one runs and the results are ANDed.
-# The order is whatever reflection returns for the compiled assembly (see ScriptHandlerOrderTests for what drives it).
-# Regenerate: SWLOR_UPDATE_SNAPSHOTS=1 dotnet test SWLOR.Game.Server.Tests --no-build --filter "FullyQualifiedName~ScriptHandlerOrderTests"
+# The order is the one the script handler manifest (SWLOR.Game.Server/Core/ScriptHandlerOrder.txt) declares, not reflection order.
+# A handler the manifest does not list runs after the listed ones until it is added; a listed handler that no longer exists is ignored.
+# Regenerate (build first so the handlers are current, and build again after, because the server embeds the manifest): SWLOR_UPDATE_SNAPSHOTS=1 dotnet test SWLOR.Game.Server.Tests --no-build --filter "FullyQualifiedName~ScriptHandlerOrderTests"
 
 == BOOT BUCKETS (in the order the server reaches them) ==
 

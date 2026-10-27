@@ -7,49 +7,37 @@ using SWLOR.Game.Server.Core;
 namespace SWLOR.Game.Server.Tests.Core;
 
 /// <summary>
-/// Records the order the server runs its boot handlers and script handlers in today, and fails when it changes.
+/// Records the order the server runs its boot handlers and script handlers in, and fails when it changes.
 ///
-/// <para><b>How the order is produced.</b> At boot <c>ScriptRegistry.LoadHandlersFromAssembly</c> walks every loaded
-/// assembly, every type (<c>GetTypes</c>), every public method (<c>GetMethods</c>) and every <c>[NWNEventHandler]</c>
-/// attribute on it, and appends the method to the list of its script name. Nothing sorts. Each script runs its list
-/// front to back (one failing action handler is logged and the rest still run; every conditional handler runs and the
-/// results are ANDed). The boot buckets are ordinary scripts: <c>mod_preload</c> and <c>mod_load</c> are run by the
-/// engine, and <c>EventRegistration.OnModulePreload</c> runs <c>mod_content_chg</c> (only when the module file changed),
+/// <para><b>How the order is produced.</b> Each script runs its handlers front to back (one failing action handler is
+/// logged and the rest still run; every conditional handler runs and the results are ANDed). The order is declared by
+/// the script handler manifest, <c>SWLOR.Game.Server/Core/ScriptHandlerOrder.txt</c>, which the server embeds and
+/// <c>ScriptRegistry</c> reads at boot (see <see cref="ScriptHandlerManifest"/>). A handler the manifest does not list
+/// runs after the listed ones, in discovery order, and a listed handler that no longer exists is ignored. The boot
+/// buckets are ordinary scripts: <c>mod_preload</c> and <c>mod_load</c> are run by the engine, and
+/// <c>EventRegistration.OnModulePreload</c> runs <c>mod_content_chg</c> (only when the module file changed),
 /// <c>mod_cache_bef</c> and <c>mod_cache_aft</c> in that order.</para>
 ///
-/// <para><b>Is the order deterministic?</b> For one set of source files, yes: rebuilding gives the same order every
-/// time, because reflection returns metadata order and the compiler emits metadata deterministically. It is not stable
-/// when files change, and nothing in the code declares it. Measured on this repository:</para>
-/// <list type="bullet">
-/// <item>Types come out in compile order. The compiler visits namespaces depth first, a namespace's own types (in file
-/// order) before its child namespaces, and siblings last-declared-first: the namespace whose first file is latest in the
-/// compile order is visited first. The compile order is MSBuild's wildcard order: the project's .cs files sorted by
-/// full path, ordinal and ignoring case (checked against the real item lists on Windows and Linux). Methods inside a
-/// type follow declaration order (a partial type follows the file order of its parts).</item>
-/// <item>The order therefore depends on namespace names and file paths, not only on handler code. Adding a file that has
-/// no handler at all can reorder every handler: a throwaway <c>Core/AAA_Unrelated.cs</c> that only declared
-/// <c>namespace SWLOR.Game.Server.Service</c> moved <c>Service.DB.Load</c> after
-/// <c>Feature.EventRegistration.OnModulePreload</c> in <c>mod_preload</c> and moved all of <c>Feature</c>'s
-/// <c>mod_cache_bef</c> handlers ahead of <c>Service</c>'s. Today <c>DB.Load</c> (which connects Redis) runs before
-/// <c>OnModulePreload</c> (which reads it) only because the <c>Service</c> namespace is visited before <c>Feature</c>.</item>
-/// <item>The same applies to moving a handler class to another folder or namespace, renaming a folder, adding a
-/// namespace, and splitting or merging partial parts. Adding a handler method to an existing type, or editing a handler's
-/// body, does not move any other handler.</item>
-/// <item>Windows and Linux give the same order. The snapshot was generated on Windows and these tests pass unchanged on
-/// Linux (SDK 10.0.402 container, copy of the tree). The compile order differs between the two for one path pattern: a
-/// file whose name starts with a sibling folder's name (<c>Leadership/</c> beside <c>LeadershipAbilityEffects.cs</c>)
-/// sorts on either side of the folder because the sort sees <c>\</c> after letters and <c>/</c> before them. That has
-/// no effect on handler order today (the two such pairs in the repository hold no handlers).</item>
-/// <item>Which assemblies are scanned, and in what order, is load order. On a production server only
-/// <c>SWLOR.Game.Server</c> holds handlers. When engine tests are enabled <c>SWLOR.Game.Server.EngineTests</c> is
-/// loaded before the scan and is expected to be listed after the game assembly, so its handlers run after the game's for
-/// the same script; <see cref="EngineTestHandlersRunAfterEveryGameHandlerOfTheSameScript"/> and its own snapshot record that.</item>
-/// </list>
+/// <para><b>Why the manifest exists.</b> Before it, the order was whatever reflection returned
+/// (<c>GetTypes</c>, then <c>GetMethods</c>, then the attributes), which follows the compiler's type emission order:
+/// namespaces depth first, a namespace's own types before its child namespaces, siblings last-declared-first, the
+/// project's .cs files sorted by full path. Adding a file that had no handler at all could reorder every handler: a
+/// throwaway <c>Core/AAA_Unrelated.cs</c> that only declared <c>namespace SWLOR.Game.Server.Service</c> moved
+/// <c>Service.DB.Load</c> after <c>Feature.EventRegistration.OnModulePreload</c> in <c>mod_preload</c>, although
+/// <c>DB.Load</c> (which connects Redis) must run before <c>OnModulePreload</c> (which reads it). Moving a handler class
+/// to another folder or namespace, renaming a folder, and splitting or merging partial parts had the same effect.
+/// <see cref="ScriptHandlerManifestOrderTests"/> proves the manifest ends that dependence.</para>
 ///
-/// <para><b>What a snapshot change means.</b> A change here does not mean the code is wrong. It means a handler
-/// moved, was added or removed. A change that no handler edit explains (a moved or new file, a namespace change) is
-/// the unrelated drift described above; the reviewer must check that the new order still satisfies the real
-/// dependencies (for example Redis before everything that reads it) before regenerating.</para>
+/// <para><b>What a failure here means.</b> The manifest and the registry disagree: a handler was added, renamed, moved
+/// to another type or removed without the manifest following. The fix is to regenerate the manifest (the command is in
+/// the failure message; build before and after it) and review the diff; a new handler is appended to the end of its script, so move
+/// its line if it must run earlier. This test never judges whether the order is right, only that the manifest is complete.</para>
+///
+/// <para>Which assemblies are scanned, and in what order, is load order. On a production server only
+/// <c>SWLOR.Game.Server</c> holds handlers. When engine tests are enabled <c>SWLOR.Game.Server.EngineTests</c> is
+/// loaded before the scan; its handlers are not in the game's manifest, so they run after the game's for the same
+/// script whatever the assembly order is (<see cref="EngineTestHandlersRunAfterEveryGameHandlerOfTheSameScript"/>), and
+/// their own snapshot records their order.</para>
 ///
 /// <para>The tests scan <c>SWLOR.Game.Server</c> alone, not the test host's assemblies, through
 /// <c>ScriptRegistry.LoadHandlersFromAssemblies</c>; <see cref="ScriptHandlerSeamTests"/> shows that the entry point
@@ -58,27 +46,40 @@ namespace SWLOR.Game.Server.Tests.Core;
 [TestFixture]
 public class ScriptHandlerOrderTests
 {
-    private const string ProductionSnapshot = "SWLOR.Game.Server.Tests/Core/Snapshots/ScriptHandlerOrder.txt";
+    private const string Manifest = "SWLOR.Game.Server/Core/ScriptHandlerOrder.txt";
     private const string EngineTestSnapshot = "SWLOR.Game.Server.Tests/Core/Snapshots/ScriptHandlerOrder.EngineTests.txt";
     private const string RegenerateCommand =
         "SWLOR_UPDATE_SNAPSHOTS=1 dotnet test SWLOR.Game.Server.Tests --no-build --filter \"FullyQualifiedName~ScriptHandlerOrderTests\"" +
-        "   (PowerShell: $env:SWLOR_UPDATE_SNAPSHOTS='1'; dotnet test ...; Remove-Item Env:SWLOR_UPDATE_SNAPSHOTS)";
+        "   (PowerShell: $env:SWLOR_UPDATE_SNAPSHOTS='1'; dotnet test ...; Remove-Item Env:SWLOR_UPDATE_SNAPSHOTS)" +
+        "   (build SWLOR.Game.Server.Tests first so the generator sees your handler, and again afterwards so the server assembly embeds the new manifest)";
 
     private static Assembly GameAssembly => typeof(ScriptRegistry).Assembly;
 
     private static Assembly EngineTestAssembly => Assembly.Load(new AssemblyName("SWLOR.Game.Server.EngineTests"));
 
     [Test]
-    public void ProductionHandlerOrderMatchesTheSnapshot()
+    public void ProductionHandlerOrderMatchesTheManifest()
     {
         var registry = new ScriptRegistry();
         registry.LoadHandlersFromAssemblies(new[] { GameAssembly });
 
-        var snapshot = ScriptHandlerOrderSnapshot.Render(
-            "SWLOR script handler order: SWLOR.Game.Server only (a production server; engine tests disabled)",
+        var text = ScriptHandlerOrderSnapshot.Render(
+            "SWLOR script handler order manifest: SWLOR.Game.Server only (the order a production server runs handlers in; engine tests disabled)",
             registry);
 
-        SnapshotComparison.AssertMatches(ProductionSnapshot, snapshot, RegenerateCommand);
+        SnapshotComparison.AssertMatches(Manifest, text, RegenerateCommand);
+    }
+
+    [Test]
+    public void ManifestListsEveryGameHandlerAndNothingElse()
+    {
+        var registry = new ScriptRegistry();
+        registry.LoadHandlersFromAssemblies(new[] { GameAssembly });
+
+        registry.UnlistedHandlers.Should().BeEmpty(
+            "every [NWNEventHandler] method must be listed in SWLOR.Game.Server/Core/ScriptHandlerOrder.txt; regenerate it: " + RegenerateCommand);
+        registry.StaleManifestEntries.Should().BeEmpty(
+            "every line of SWLOR.Game.Server/Core/ScriptHandlerOrder.txt must name an existing handler; regenerate it: " + RegenerateCommand);
     }
 
     [Test]
@@ -103,20 +104,25 @@ public class ScriptHandlerOrderTests
         var gameOnly = new ScriptRegistry();
         gameOnly.LoadHandlersFromAssemblies(new[] { GameAssembly });
         var engineTests = EngineTestAssembly;
-        var both = new ScriptRegistry();
-        both.LoadHandlersFromAssemblies(new[] { GameAssembly, engineTests });
 
-        foreach (var script in ScriptHandlerOrderSnapshot.AllScriptNames(both))
+        // Both assembly orders: the manifest, not the order the assemblies are scanned in, keeps the game first.
+        foreach (var assemblies in new[] { new[] { GameAssembly, engineTests }, new[] { engineTests, GameAssembly } })
         {
-            foreach (var kind in new[] { "action", "conditional" })
-            {
-                var game = ScriptHandlerOrderSnapshot.HandlerLines(gameOnly, script)
-                    .Where(line => line.StartsWith(kind, StringComparison.Ordinal)).ToArray();
-                var all = ScriptHandlerOrderSnapshot.HandlerLines(both, script)
-                    .Where(line => line.StartsWith(kind, StringComparison.Ordinal)).ToArray();
+            var both = new ScriptRegistry();
+            both.LoadHandlersFromAssemblies(assemblies);
 
-                all.Take(game.Length).Should().Equal(game,
-                    $"engine-test handlers of '{script}' must be listed after the game's {kind} handlers");
+            foreach (var script in ScriptHandlerOrderSnapshot.AllScriptNames(both))
+            {
+                foreach (var kind in new[] { "action", "conditional" })
+                {
+                    var game = ScriptHandlerOrderSnapshot.HandlerLines(gameOnly, script)
+                        .Where(line => line.StartsWith(kind, StringComparison.Ordinal)).ToArray();
+                    var all = ScriptHandlerOrderSnapshot.HandlerLines(both, script)
+                        .Where(line => line.StartsWith(kind, StringComparison.Ordinal)).ToArray();
+
+                    all.Take(game.Length).Should().Equal(game,
+                        $"engine-test handlers of '{script}' must be listed after the game's {kind} handlers");
+                }
             }
         }
     }
@@ -143,7 +149,7 @@ public class ScriptHandlerOrderTests
         executed.Should().Equal(
             new[] { recorded[1], recorded[2], recorded[3] },
             "OnModulePreload must run mod_content_chg, mod_cache_bef and mod_cache_aft in this order; " +
-            "update ScriptHandlerOrderSnapshot.BootBuckets and regenerate the snapshot if that is intended");
+            "update ScriptHandlerOrderSnapshot.BootBuckets and regenerate the manifest if that is intended");
 
         body.IndexOf("HookModuleEvents();", StringComparison.Ordinal)
             .Should().BeLessThan(body.IndexOf("ExecuteScript(", StringComparison.Ordinal),

@@ -384,6 +384,34 @@ public static void OnPlayerDamaged(uint player, uint attacker, int damage)
 }
 ```
 
+### 4. Script Handler Order
+
+At boot `ScriptRegistry.LoadHandlersFromAssembly` finds every `[NWNEventHandler(ScriptName.X)]` method by reflection and registers it under its script name. A script runs its handlers front to back (a failing action handler is logged and the rest still run; every conditional handler runs and the results are ANDed). **The order is declared in `SWLOR.Game.Server/Core/ScriptHandlerOrder.txt`, the script handler manifest, and nowhere else.** Reflection order follows namespaces and file paths, so it is never consulted for a handler the manifest lists: moving a file, renaming a namespace or adding an unrelated file cannot reorder handlers. Some order is load-bearing: `Service.DB.Load` must stay ahead of `Feature.EventRegistration.OnModulePreload` in `mod_preload`, because the first connects Redis and the second reads it.
+
+**Format.** One block per script. The script name starts in column 0 (an optional `  # comment` may follow it), then one indented line per handler in run order: `action` (a `void` handler) or `conditional` (a `bool` handler), then `Namespace.Type.Method`. Blank lines, `#` comment lines and `== section ==` headings are ignored. Anything else is an error.
+
+```text
+mod_preload  # run by the engine before the module loads
+  action      SWLOR.Game.Server.Service.DB.Load
+  action      SWLOR.Game.Server.Feature.EventRegistration.OnModulePreload
+```
+
+**Adding a handler.**
+
+1. Write the `[NWNEventHandler]` method.
+2. Build, so the generator sees the new handler: `dotnet build SWLOR.Game.Server.Tests -p:RunPostBuildEvent=Never -v q -clp:ErrorsOnly`.
+3. Run the manifest generator: `SWLOR_UPDATE_SNAPSHOTS=1 dotnet test SWLOR.Game.Server.Tests --no-build --filter "FullyQualifiedName~ScriptHandlerOrderTests"`
+   (PowerShell: `$env:SWLOR_UPDATE_SNAPSHOTS='1'; dotnet test ...; Remove-Item Env:SWLOR_UPDATE_SNAPSHOTS`). It rewrites the manifest from what the server would load, so existing handlers keep their order and a new handler is **appended to the end of its script's block**.
+4. If the new handler must run before others, move its line in the manifest. The generator never reorders lines it already has.
+5. Build again (same command as step 2) and run `dotnet test SWLOR.Game.Server.Tests --no-build --filter "FullyQualifiedName~ScriptHandler"`. The server embeds the manifest, so the assembly carries the new one only after a rebuild.
+6. Commit the manifest with the handler. `ScriptHandlerOrderTests` fails while the manifest is not complete or names a handler that no longer exists.
+
+**Renaming or moving a handler method or class.** Edit its manifest line in place. Regenerating instead would drop the old line and append the new name at the end of the script, changing when it runs.
+
+**Until a handler is listed** it still runs, after every listed handler of its script and in discovery order, and the server logs it once at boot under the `Server` log group ("Script handler order: N handler(s) are not listed"). A listed handler whose method no longer exists is ignored and logged the same way ("match no handler"). Handlers in the engine test assembly are never listed; they run after the game's and are summarised in one line.
+
+**Deployment.** The manifest is an embedded resource of `SWLOR.Game.Server.dll` (`ScriptHandlerOrder.txt`), so every way of deploying the server ships it with the code it orders: `SWLOR.CLI` `DeployBuild` and the production deploy copy the whole build output into the `dotnet/` folder that the Docker compose files mount. A missing, unreadable, malformed or empty manifest stops the boot with an exception that names the problem; the server never falls back to reflection order. The embedded copy is what runs, so rebuild after editing the file.
+
 ## Core Best Practices
 
 ### 1. Error Handling

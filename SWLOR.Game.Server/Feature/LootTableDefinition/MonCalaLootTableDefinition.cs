@@ -87,8 +87,6 @@ namespace SWLOR.Game.Server.Feature.LootTableDefinition
                 .AddItem("poach_twinblade", 5)
                 .AddItem("poach_rifle", 5)
                 .AddItem("poach_shuriken", 5)
-                .AddItem("poach_katar", 5)
-                .AddItem("poach_pglove", 5)
                 .AddItem("c_butter", 1)
                 .AddGold(40, 20);
 

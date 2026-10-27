@@ -2,8 +2,8 @@
   "function": "Recipe definitions: Smithery.Weapons (every IRecipeListDefinition recipe in this group)",
   "description": "The built data of every recipe in the group: skill, category, level, practice rank limit, quantity, crafted item, active flag, enhancement type and slots, research cost modifier, components in the order the definition adds them (resref x quantity), requirements (class and field values in declaration order) and the effect lines (count and fingerprint).",
   "seed": null,
-  "inputs": "174 of the 3354 recipes, sorted by recipe id. Groups: Smithery by armor/accessory or weapon categories, Fabrication, Agriculture, Espionage and Engineering by gear, enhancements, starship, droid parts, droid software and music. effectFingerprint is the first 12 hex digits of the SHA-256 of the lines joined with a line feed.",
-  "rowCount": 174,
+  "inputs": "175 of the 3355 recipes, sorted by recipe id. Groups: Smithery by armor/accessory or weapon categories, Fabrication, Agriculture, Espionage and Engineering by gear, enhancements, starship, droid parts, droid software and music. effectFingerprint is the first 12 hex digits of the SHA-256 of the lines joined with a line feed.",
+  "rowCount": 175,
   "columns": ["recipe", "recipeName", "=> skill", "=> category", "=> level", "=> practiceRankLimit", "=> quantity", "=> resref", "=> isActive", "=> enhancementType", "=> enhancementSlots", "=> researchCostModifier", "=> components", "=> requirements", "=> effectLineCount", "=> effectFingerprint"],
   "rows": [
     [1, "BasicGreatSword", "Smithery", "GreatSword", 8, null, 1, "b_greatsword", true, "Weapon", 1, 0, ["ref_veldite x5", "wood x3"], [], 0, null],
@@ -166,6 +166,7 @@
     [6285, "AscendantPowerGlove", "Smithery", "PowerGlove", 38, null, 1, "asc_pglove", true, "Weapon", 2, 0, ["ref_keromber x3", "aracia_wood x2", "lth_imperfect x1"], [], 0, null],
     [6286, "OphidianPowerGlove", "Smithery", "PowerGlove", 43, null, 1, "oph_pglove", true, "Weapon", 2, 0, ["ref_jasioclase x2", "hyphae_wood x1"], [], 0, null],
     [6287, "ChiroPowerGlove", "Smithery", "PowerGlove", 52, null, 1, "chi_pglove", true, "Weapon", 2, 0.2, ["ref_arkoxit x2", "ref_jasioclase x10", "hyphae_wood x20", "chiro_shard x2", "ref_veldite x5", "ref_scordspar x5", "ref_plagionite x5", "ref_keromber x5"], ["RecipeUnlockRequirement(ChiroPowerGlove)"], 0, null],
+    [6288, "SithPowerGlove", "Smithery", "PowerGlove", 18, null, 1, "sith_pglove", true, "Weapon", 1, 0, ["ref_scordspar x3", "fine_wood x2"], [], 0, null],
     [6289, "BasicTwinPistol", "Smithery", "TwinPistol", 6, null, 1, "b_twinpistol", true, "Weapon", 1, 0, ["ref_veldite x8", "elec_ruined x4"], [], 2, "b178996cb307"],
     [6290, "FieldTwinPistol", "Smithery", "TwinPistol", 11, null, 1, "fld_twinpistol", true, "Weapon", 1, 0, ["ref_veldite x12", "elec_ruined x6", "jade x2"], [], 2, "b178996cb307"],
     [6291, "TitanTwinPistol", "Smithery", "TwinPistol", 16, null, 1, "tit_twinpistol", true, "Weapon", 2, 0, ["ref_scordspar x8", "elec_flawed x4"], [], 2, "b178996cb307"],

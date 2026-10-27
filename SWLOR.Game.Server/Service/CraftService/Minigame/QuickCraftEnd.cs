@@ -15,6 +15,6 @@ public enum QuickCraftEnd
     /// <summary>The player died, logged out or otherwise could not keep crafting.</summary>
     Interrupted = 4,
 
-    /// <summary>The inventory had no room for the item; its components were given back and the batch stopped.</summary>
+    /// <summary>The inventory had no room for the item; no components were taken and the batch stopped.</summary>
     InventoryFull = 5
 }

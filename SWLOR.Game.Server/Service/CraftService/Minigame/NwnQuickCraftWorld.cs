@@ -1,6 +1,4 @@
 using System.Collections.Generic;
-using SWLOR.Game.Server.Entity;
-using SWLOR.Game.Server.Service.LogService;
 using SWLOR.NWN.API.NWNX;
 using SWLOR.Game.Server.Service.SkillService;
 using SWLOR.NWN.API.NWScript.Enum;
@@ -50,8 +48,17 @@ public sealed class NwnQuickCraftWorld : IQuickCraftWorld
         PlayerPlugin.StartGuiTimingBar(player, seconds);
     }
 
-    public bool TryConsumeComponents(uint player, RecipeDetail recipe, List<string> taken) =>
-        NwnCraftSessionWorld.Instance.TryTakeComponents(player, recipe, taken);
+    public bool HasComponents(uint player, RecipeDetail recipe)
+    {
+        // The same test TryTakeComponents applies: the stacks of each component add up to the amount one craft needs.
+        foreach (var (resref, quantity) in recipe.Components)
+        {
+            if (CountComponent(player, resref) < quantity)
+                return false;
+        }
+
+        return true;
+    }
 
     public bool CreateItem(uint player, RecipeDetail recipe)
     {
@@ -96,31 +103,10 @@ public sealed class NwnQuickCraftWorld : IQuickCraftWorld
         }
     }
 
-    public bool RestoreComponents(uint player, List<string> taken)
-    {
-        var held = new List<string>();
-        foreach (var serialized in taken)
-        {
-            if (!NwnCraftSessionWorld.Instance.TryReturnItem(player, serialized))
-                held.Add(serialized);
-        }
+    public bool TryConsumeComponents(uint player, RecipeDetail recipe) =>
+        NwnCraftSessionWorld.Instance.TryTakeComponents(player, recipe, new List<string>());
 
-        if (held.Count == 0)
-            return true;
-
-        // Nothing fits, so the items wait on the player's record; ReturnHeldItems gives them back when a crafting window opens or the player logs in.
-        var dbPlayer = DB.Get<Player>(GetObjectUUID(player));
-        if (dbPlayer == null)
-        {
-            Log.Write(LogGroup.Error, $"{held.Count} quick craft component(s) for {GetObjectUUID(player)} could not be returned or held.", true);
-            return false;
-        }
-
-        dbPlayer.HeldCraftItems ??= new List<string>();
-        dbPlayer.HeldCraftItems.AddRange(held);
-        DB.Set(dbPlayer);
-        return false;
-    }
+    public void RemoveCreatedItem(uint player, RecipeDetail recipe) => RemoveUnits(player, recipe.Resref, recipe.Quantity);
 
     public void LogCraft(uint player, string text) => NwnCraftSessionWorld.Instance.LogCraft(player, text);
 

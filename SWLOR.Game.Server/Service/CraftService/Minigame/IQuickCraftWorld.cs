@@ -23,23 +23,20 @@ public interface IQuickCraftWorld
     /// </summary>
     void PlayItemAnimation(uint player, float seconds);
 
-    /// <summary>
-    /// Takes exactly one craft's components and lists what was taken in <paramref name="taken"/>, each as a serialized item, so
-    /// <see cref="RestoreComponents"/> can give them back. Returns false, taking nothing, when any are missing.
-    /// </summary>
-    bool TryConsumeComponents(uint player, RecipeDetail recipe, List<string> taken);
+    /// <summary>True when the player holds every component for one craft. Takes nothing.</summary>
+    bool HasComponents(uint player, RecipeDetail recipe);
 
     /// <summary>
-    /// Creates the recipe's base item in the player's inventory. Returns false, leaving no item anywhere, when it did not end up in the
-    /// inventory because there was no room.
+    /// Creates the recipe's base item in the player's inventory. Returns false, leaving no item anywhere and taking nothing, when it did
+    /// not end up in the inventory because there was no room.
     /// </summary>
     bool CreateItem(uint player, RecipeDetail recipe);
 
-    /// <summary>
-    /// Gives back the components <see cref="TryConsumeComponents"/> took. What does not fit the inventory is held on the player's record
-    /// until there is room (the same holding a craft session uses). Returns true when everything went back into the inventory.
-    /// </summary>
-    bool RestoreComponents(uint player, List<string> taken);
+    /// <summary>Takes exactly one craft's components. Returns false, taking nothing, when any are missing.</summary>
+    bool TryConsumeComponents(uint player, RecipeDetail recipe);
+
+    /// <summary>Removes the base item <see cref="CreateItem"/> just made, when the components could not be taken after all.</summary>
+    void RemoveCreatedItem(uint player, RecipeDetail recipe);
 
     /// <summary>Writes a line to the crafting log.</summary>
     void LogCraft(uint player, string text);

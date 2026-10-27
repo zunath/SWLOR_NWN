@@ -1,11 +1,10 @@
-using System.Collections.Generic;
 namespace SWLOR.Game.Server.Service.CraftService.Minigame;
 
 /// <summary>
-/// One quick craft batch: a short crafting animation per item, then the components are taken and the base item created.
-/// Cancelling stops after the items already made; the item in progress takes nothing, so unused materials stay in the inventory.
-/// Quick crafted items carry no enhancements, no blueprint bonuses and no XP. An item that does not fit the inventory is not made: its
-/// components are given back and the batch stops.
+/// One quick craft batch: a short crafting animation per item, then the base item is created and, once it is safely in the inventory,
+/// the components are taken. Cancelling stops after the items already made; the item in progress takes nothing, so unused materials
+/// stay in the inventory. Quick crafted items carry no enhancements, no blueprint bonuses and no XP. An item that does not fit the
+/// inventory is not made and nothing is taken, so there is never a refund to give back; the batch stops.
 /// </summary>
 public sealed class QuickCraftBatch
 {
@@ -16,7 +15,6 @@ public sealed class QuickCraftBatch
     private readonly uint _player;
     private readonly RecipeDetail _recipe;
     private int _generation;
-    private bool _componentsHeld;
 
     public QuickCraftBatch(IQuickCraftWorld world, uint player, RecipeDetail recipe, int quantity)
     {
@@ -90,22 +88,27 @@ public sealed class QuickCraftBatch
             return;
         }
 
-        var taken = new List<string>();
-        if (!_world.TryConsumeComponents(_player, _recipe, taken))
+        if (!_world.HasComponents(_player, _recipe))
         {
             End(QuickCraftEnd.OutOfMaterials);
             return;
         }
 
-        // The item may not fit even after the components left: a partly used stack frees no slot. Nothing is made then, so the
-        // components go back, the item is not counted and the batch stops instead of eating the materials.
+        // The item is created first and the components are taken only once it is in the inventory, so a full inventory costs nothing
+        // and no refund (which could be lost to a crash or duplicated) is ever needed.
         if (!_world.CreateItem(_player, _recipe))
         {
-            _componentsHeld = !_world.RestoreComponents(_player, taken);
-            _world.LogCraft(_player,
-                $"could not fit the quick crafted '{_recipe.Resref}' in the inventory; the components were " +
-                (_componentsHeld ? "returned, with those that did not fit held on the character." : "returned."));
+            _world.LogCraft(_player, $"could not fit the quick crafted '{_recipe.Resref}' in the inventory; no components were taken.");
             End(QuickCraftEnd.InventoryFull);
+            return;
+        }
+
+        if (!_world.TryConsumeComponents(_player, _recipe))
+        {
+            // The components were present a moment ago in the same script, so this should not happen; no item is made for free.
+            _world.RemoveCreatedItem(_player, _recipe);
+            _world.LogCraft(_player, $"the components for the quick crafted '{_recipe.Resref}' could not be taken after it was created; the item was removed.");
+            End(QuickCraftEnd.OutOfMaterials);
             return;
         }
 
@@ -141,9 +144,7 @@ public sealed class QuickCraftBatch
             QuickCraftEnd.Completed => $"Quick craft finished: {made} made.",
             QuickCraftEnd.Cancelled => $"Quick craft cancelled: {made} made. Unused materials stay in your inventory.",
             QuickCraftEnd.OutOfMaterials => $"Quick craft stopped: you ran out of materials after {made}.",
-            QuickCraftEnd.InventoryFull => _componentsHeld
-                ? $"Quick craft stopped: your inventory is full after {made}. Some materials did not fit and wait for you; make room, then open a crafting station."
-                : $"Quick craft stopped: your inventory is full after {made}. Your materials were not used; make room and try again.",
+            QuickCraftEnd.InventoryFull => $"Quick craft stopped: your inventory is full after {made}. Your materials were not used; make room and try again.",
             _ => $"Quick craft interrupted: {made} made."
         };
     }

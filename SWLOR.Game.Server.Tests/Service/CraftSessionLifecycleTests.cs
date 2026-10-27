@@ -423,6 +423,95 @@ public class CraftSessionLifecycleTests
     }
 
     [Test]
+    public void Succeed_SavesTheXpEntitlementWithTheSettlement_ThenGrantsItFromThere()
+    {
+        var lifecycle = Lifecycle();
+        var session = StartSession(lifecycle);
+        _world.SavedRecords.Clear();
+
+        var success = lifecycle.SucceedAtPace(_world, FakeCraftSessionWorld.PlayerHandle, _player, session, new MinigameMeter(60, 100));
+
+        success.Outcome.Xp.Should().BePositive();
+        var entitled = new Dictionary<SkillType, int> { [SkillType.Smithery] = success.Outcome.Xp };
+        _world.SavedRecords.Should().HaveCount(2);
+        _world.SavedRecords[0].SessionActive.Should().BeFalse("the settlement save ends the craft");
+        _world.SavedRecords[0].PendingXp.Should().Equal(entitled, "the same save that ends the craft carries the XP it earned");
+        _world.SavedRecords[1].PendingXp.Should().BeEmpty("the entitlement is cleared and saved before it is given");
+        _world.SavedPendingAtXp.Should().ContainSingle().Which.Should().BeEmpty();
+        _world.XpGiven.Should().Equal((SkillType.Smithery, success.Outcome.Xp));
+        _player.PendingCraftXp.Should().BeEmpty();
+    }
+
+    [Test]
+    public void Fail_ForALivingPlayer_SavesTheXpEntitlementWithTheSettlement_ThenGrantsItFromThere()
+    {
+        var lifecycle = Lifecycle(100, 100);
+        StartSession(lifecycle);
+        _world.SavedRecords.Clear();
+
+        var settlement = lifecycle.Fail(FakeCraftSessionWorld.PlayerHandle, _player, CraftSessionEndReason.WindowClosed);
+
+        settlement.Xp.Should().BePositive();
+        _world.SavedRecords[0].SessionActive.Should().BeFalse();
+        _world.SavedRecords[0].PendingXp.Should().Equal(new Dictionary<SkillType, int> { [SkillType.Smithery] = settlement.Xp });
+        _world.SavedRecords.Last().PendingXp.Should().BeEmpty();
+        _world.SavedPendingAtXp.Should().ContainSingle().Which.Should().BeEmpty();
+        _world.XpGiven.Should().Equal((SkillType.Smithery, settlement.Xp));
+    }
+
+    [Test]
+    public void Succeed_WhenTheServerStopsAfterTheSettlementSaveAndBeforeTheAward_GivesTheXpExactlyOnceLater()
+    {
+        var lifecycle = Lifecycle();
+        var session = StartSession(lifecycle);
+        _world.StopBeforeXpGrant = true;
+
+        var stop = () => lifecycle.SucceedAtPace(_world, FakeCraftSessionWorld.PlayerHandle, _player, session, new MinigameMeter(60, 100));
+
+        stop.Should().Throw<ServerStoppedException>();
+        _world.XpGiven.Should().BeEmpty("the award never ran");
+        var restored = JsonConvert.DeserializeObject<Player>(JsonConvert.SerializeObject(_player));
+        restored.ActiveCraftSession.Should().BeNull("the item is recoverable");
+        restored.PendingCraftXp.Should().ContainKey(SkillType.Smithery, "the XP survived the stop");
+        var owed = restored.PendingCraftXp[SkillType.Smithery];
+        owed.Should().BePositive();
+
+        _world.StopBeforeXpGrant = false;
+        var afterRestart = Lifecycle();
+        afterRestart.GrantPendingXp(FakeCraftSessionWorld.PlayerHandle, restored).Should().BeTrue();
+        afterRestart.GrantPendingXp(FakeCraftSessionWorld.PlayerHandle, restored).Should().BeFalse("it is given exactly once");
+        afterRestart.SettleLeftover(FakeCraftSessionWorld.PlayerHandle, restored, CraftSessionEndReason.Interrupted);
+
+        _world.XpGiven.Should().Equal((SkillType.Smithery, owed));
+        restored.PendingCraftXp.Should().BeEmpty();
+    }
+
+    [Test]
+    public void Fail_WhenTheServerStopsAfterTheSettlementSaveAndBeforeTheAward_GivesTheXpExactlyOnceLater()
+    {
+        var lifecycle = Lifecycle(100, 100);
+        StartSession(lifecycle);
+        _world.StopBeforeXpGrant = true;
+
+        var stop = () => lifecycle.Fail(FakeCraftSessionWorld.PlayerHandle, _player, CraftSessionEndReason.WindowClosed);
+
+        stop.Should().Throw<ServerStoppedException>();
+        _world.XpGiven.Should().BeEmpty();
+        var restored = JsonConvert.DeserializeObject<Player>(JsonConvert.SerializeObject(_player));
+        restored.ActiveCraftSession.Should().BeNull();
+        restored.PendingCraftXp.Should().ContainKey(SkillType.Smithery);
+        var owed = restored.PendingCraftXp[SkillType.Smithery];
+        owed.Should().BePositive();
+
+        _world.StopBeforeXpGrant = false;
+        var afterRestart = Lifecycle();
+        afterRestart.SettleLeftover(FakeCraftSessionWorld.PlayerHandle, restored, CraftSessionEndReason.Interrupted);
+        afterRestart.GrantPendingXp(FakeCraftSessionWorld.PlayerHandle, restored).Should().BeFalse();
+
+        _world.XpGiven.Should().Equal((SkillType.Smithery, owed));
+    }
+
+    [Test]
     public void GrantPendingXp_GivesTheWaitingXpOnceThePlayerIsAlive_AndNeverTwice()
     {
         var lifecycle = Lifecycle(100, 100);
@@ -615,7 +704,7 @@ public class CraftSessionLifecycleTests
 
         _world.Returned.Should().NotBeEmpty();
         _world.PersistedAtSave.Should().NotBeEmpty("the returned items are in the inventory, so the file must have them");
-        _world.PersistedAtSave.Last().Should().Be(_world.SaveCount, "after the record that cleared the session and the held items");
+        _world.PersistedAtSave.Last().Should().Be(_world.SaveCount - 1, "after the record that cleared the session and the held items, before only the save that clears the XP entitlement");
 
         var lost = Lifecycle(0, 0);
         _world.Inventory["ore"] = 5;
@@ -638,7 +727,7 @@ public class CraftSessionLifecycleTests
         Lifecycle(100, 100).SettleLeftover(FakeCraftSessionWorld.PlayerHandle, restored, CraftSessionEndReason.Interrupted);
 
         _world.PersistedAtSave.Should().NotBeEmpty();
-        _world.PersistedAtSave.Last().Should().Be(_world.SaveCount);
+        _world.PersistedAtSave.Last().Should().Be(_world.SaveCount - 1, "only the save that clears the XP entitlement follows the export");
     }
 
     [Test]

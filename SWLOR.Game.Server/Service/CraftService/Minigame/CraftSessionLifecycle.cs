@@ -178,14 +178,17 @@ public sealed class CraftSessionLifecycle
             dbPlayer.CraftedRecipes[record.Recipe] = DateTime.UtcNow;
 
         // The finished item is in the inventory only in memory: the record that ends the session carries it until a file holds it.
+        // The XP the craft earned is entitled in the same save, so a stop between this save and the award loses neither.
         RecordReturn(player, dbPlayer, new List<string> { _world.SerializeItem(item) });
         dbPlayer.ActiveCraftSession = null;
+        if (outcome.Xp > 0)
+            AddPendingXp(dbPlayer, recipe.Skill, outcome.Xp);
         _world.SaveRecord(dbPlayer);
         _world.PersistCharacter(player);
         _world.EndStationWork(player);
 
-        // XP last: it saves the player record itself.
-        _world.GiveXp(player, recipe.Skill, outcome.Xp);
+        // XP last, from the entitlement the settlement saved: it is cleared and saved before it is given.
+        GrantPendingXp(player, dbPlayer);
         _world.LogCraft(player, $"successfully crafted '{recipe.Resref}'.");
 
         return new CraftSessionSuccess(item, outcome);
@@ -238,9 +241,9 @@ public sealed class CraftSessionLifecycle
         dbPlayer.HeldCraftItems.AddRange(kept);
         dbPlayer.ActiveCraftSession = null;
 
-        // A dead player cannot be given XP, so the failure's XP waits on the record, saved with the settlement it belongs to.
-        var xpWaits = failure.Xp > 0 && !_world.CanReceiveXp(player);
-        if (xpWaits)
+        // The failure's XP is entitled on the record, saved with the settlement it belongs to. It is given after the save (at once for a
+        // living player), and stays there while the player is dead or when the server stops before it is given.
+        if (failure.Xp > 0)
             AddPendingXp(dbPlayer, recipe.Skill, failure.Xp);
 
         _world.SaveRecord(dbPlayer);
@@ -256,9 +259,8 @@ public sealed class CraftSessionLifecycle
                 $"Your unfinished craft failed. {total - kept.Count} of {total} items were lost."));
         }
 
-        // XP last: it saves the player record itself.
-        if (!xpWaits)
-            _world.GiveXp(player, recipe.Skill, failure.Xp);
+        // XP last, from the entitlement the settlement saved.
+        GrantPendingXp(player, dbPlayer);
         _world.LogCraft(player, $"failed to craft '{record.Recipe}' ({reason}).");
 
         return new CraftSettlement(true, total - kept.Count, kept.Count, failure.Xp);
@@ -335,9 +337,17 @@ public sealed class CraftSessionLifecycle
     }
 
     /// <summary>
-    /// Gives the player the XP a craft earned while they were dead, once. The record is cleared and saved before the XP is given, so
-    /// a second call, a relog or a crash cannot give it twice. Does nothing while the player is still dead. Returns whether any
+    /// Gives the player the XP a craft settlement entitled them to (<see cref="Player.PendingCraftXp"/>), once. Every settlement saves its XP
+    /// there in the same record save that ends the craft, and then calls this, so the XP survives a stop between the settlement and the
+    /// award, and a dead player's XP waits for a respawn or login. Does nothing while the player cannot receive XP. Returns whether any
     /// XP was given.
+    /// <para>
+    /// The entitlement is cleared and saved before the XP is given, so a second call, a relog or a crash can never give it twice. A stop in
+    /// the window between that save and the award can lose the XP; it cannot duplicate it. The two writes are not merged into one save
+    /// because <c>Skill.GiveSkillXP</c> loads and saves the player by id on its own: <c>DB.Get</c> returns the instance cached for the
+    /// current frame, which is not necessarily the one passed here, and <c>GiveSkillXP</c> returns without saving in several cases (a dead
+    /// player, a skill at the cap with no XP debt), so a removal left to its save could be lost and the XP given again.
+    /// </para>
     /// </summary>
     public bool GrantPendingXp(uint player, Player dbPlayer)
     {
@@ -349,7 +359,7 @@ public sealed class CraftSessionLifecycle
         pending.Clear();
         _world.SaveRecord(dbPlayer);
 
-        // XP last: it saves the player record itself.
+        // XP last: GiveXp saves the player record itself.
         foreach (var (skill, xp) in owed)
             _world.GiveXp(player, skill, xp);
 

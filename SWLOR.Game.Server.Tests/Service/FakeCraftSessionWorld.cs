@@ -136,18 +136,35 @@ internal sealed class FakeCraftSessionWorld : ICraftSessionWorld
     /// <summary>False while the player is dead: no skill XP can be given.</summary>
     public bool PlayerAlive { get; set; } = true;
 
-    public bool CanReceiveXp(uint player) => PlayerAlive;
+    /// <summary>True stops the server at the moment the lifecycle asks whether XP can be given: the record is saved, the award never runs.</summary>
+    public bool StopBeforeXpGrant { get; set; }
+
+    public bool CanReceiveXp(uint player)
+    {
+        if (StopBeforeXpGrant)
+            throw new ServerStoppedException();
+
+        return PlayerAlive;
+    }
+
+    /// <summary>What the saved record held at each save: whether a craft was still active and the XP entitlement it carried.</summary>
+    public List<(bool SessionActive, Dictionary<SkillType, int> PendingXp)> SavedRecords { get; } = new();
+
+    /// <summary>For each XP award, the entitlement the last saved record still held when the award ran.</summary>
+    public List<Dictionary<SkillType, int>> SavedPendingAtXp { get; } = new();
 
     public void GiveXp(uint player, SkillType skill, int xp)
     {
         Events.Add("xp");
         XpGiven.Add((skill, xp));
+        SavedPendingAtXp.Add(SavedRecords.Count > 0 ? SavedRecords[^1].PendingXp : new Dictionary<SkillType, int>());
     }
 
     public void SaveRecord(Player dbPlayer)
     {
         SaveCount++;
         Events.Add("save");
+        SavedRecords.Add((dbPlayer.ActiveCraftSession != null, new Dictionary<SkillType, int>(dbPlayer.PendingCraftXp ?? new Dictionary<SkillType, int>())));
     }
 
     public void PersistCharacter(uint player)

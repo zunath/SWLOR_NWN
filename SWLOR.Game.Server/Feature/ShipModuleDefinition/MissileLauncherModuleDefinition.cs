@@ -44,7 +44,7 @@ namespace SWLOR.Game.Server.Feature.ShipModuleDefinition
                 .ValidTargetType(ObjectType.Creature)
                 .PowerType(ShipModulePowerType.High)
                 .RequirePerk(PerkType.OffensiveModules, requiredLevel)
-                .Recast(12f)
+                .Toggle(12f)
                 .ValidationAction((activator, _, _, _, _) =>
                 {
                     var item = GetItemPossessedBy(activator, MissileItemResref);

@@ -74,6 +74,8 @@ namespace SWLOR.Game.Server.EngineTests.Definitions
                     var shieldBefore = before.Shield;
                     var capacitorBefore = before.Capacitor;
                     await ctx.ExecuteInCreatureContextAsync(repairer.Creature, () => Space.ActivateShipModule(repairer.Creature, feat));
+                    // Repairers are toggles; keep each one to its first cycle.
+                    Space.TurnOffShipToggles(repairer.Creature);
                     var after = DB.Get<PlayerShip>(allyShipId).Status;
                     ctx.Assert(after.Hull > hullBefore || after.Shield > shieldBefore || after.Capacitor > capacitorBefore,
                         $"{name} restores the ally's ship");
@@ -133,6 +135,7 @@ namespace SWLOR.Game.Server.EngineTests.Definitions
                 var bystander = ctx.SpawnCreature(EnemyResref, 6f);
                 await ctx.WaitFrameAsync();
                 await ctx.ExecuteInCreatureContextAsync(repairer.Creature, () => Space.ActivateShipModule(repairer.Creature, FeatType.ShipModule1));
+                Space.TurnOffShipToggles(repairer.Creature);
 
                 ctx.Assert(DB.Get<PlayerShip>(allyShipId).Status.Hull > 10, "the hull repair lands on the ally");
                 ctx.Assert(!CombatPoint.HasCombatPoints(repairer.Creature, bystander), "a repair outside combat credits no nearby creature");
@@ -181,6 +184,7 @@ namespace SWLOR.Game.Server.EngineTests.Definitions
             try
             {
                 await ctx.ExecuteInCreatureContextAsync(pilot.Creature, () => Space.ActivateShipModule(pilot.Creature, FeatType.ShipModule1));
+                Space.TurnOffShipToggles(pilot.Creature);
 
                 ctx.Assert(CombatPoint.HasCombatPoints(pilot.Creature, hostileShip), "E-War credits the enemy ship it taunts");
                 ctx.Assert(!CombatPoint.HasCombatPoints(pilot.Creature, hostileNonShip), "E-War does not credit a hostile creature it cannot taunt");

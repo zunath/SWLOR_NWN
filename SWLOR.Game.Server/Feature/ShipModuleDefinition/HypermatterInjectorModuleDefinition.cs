@@ -38,6 +38,7 @@ namespace SWLOR.Game.Server.Feature.ShipModuleDefinition
                 .Texture("iit_smhminject")
                 .RequirePerk(PerkType.DefensiveModules, requiredLevel)
                 .Recast(60f)
+                .OnePress()
                 .ValidationAction((activator, _, _, _, _) =>
                 {
                     var item = GetItemPossessedBy(activator, FuelCapsuleItemResref);

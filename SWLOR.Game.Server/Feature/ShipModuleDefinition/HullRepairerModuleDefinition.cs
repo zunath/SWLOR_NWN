@@ -41,7 +41,7 @@ namespace SWLOR.Game.Server.Feature.ShipModuleDefinition
                 .Description(description)
                 .PowerType(ShipModulePowerType.High)
                 .RequirePerk(PerkType.DefensiveModules, requiredLevel)
-                .Recast(12f)
+                .Toggle(12f)
                 .Capacitor(capacitor)
                 .ActivatedAction((activator, activatorShipStatus, target, targetShipStatus, moduleBonus) =>
                 {

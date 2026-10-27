@@ -40,7 +40,7 @@ namespace SWLOR.Game.Server.Feature.ShipModuleDefinition
                 .PowerType(ShipModulePowerType.High)
                 .RequirePerk(PerkType.MiningModules, requiredLevel)
                 .Capacitor(capacitor)
-                .Recast(recast)
+                .Toggle(recast)
                 .ValidationAction((_, _, target, _, _) =>
                 {
                     // Ensure an asteroid ore type has been specified by the builder.

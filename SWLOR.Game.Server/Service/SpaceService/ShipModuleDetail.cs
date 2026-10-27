@@ -22,6 +22,9 @@ namespace SWLOR.Game.Server.Service.SpaceService
         public string Description { get; set; }
         public bool CanTargetSelf { get; set; }
         public bool CapitalClassModule { get; set; }
+
+        /// <summary>Toggle or one press. Passive modules stay Invalid.</summary>
+        public ShipModuleActivation Activation { get; set; }
         public ShipModulePowerType PowerType { get; set; }
         public Dictionary<PerkType, int> RequiredPerks { get; set; }
         public HashSet<ObjectType> ValidTargetTypes { get; set; }

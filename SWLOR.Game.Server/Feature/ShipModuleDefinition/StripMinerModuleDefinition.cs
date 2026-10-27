@@ -35,7 +35,7 @@ namespace SWLOR.Game.Server.Feature.ShipModuleDefinition
                 .PowerType(ShipModulePowerType.High)
                 .RequirePerk(PerkType.MiningModules, 5)
                 .Capacitor(30)
-                .Recast(18)
+                .Toggle(18)
                 .CapitalClassModule()
                 .ValidationAction((_, _, target, _, _) =>
                 {

@@ -51,7 +51,8 @@ OUT="$(cd "$OUT" && pwd)"
 # game Random, so they must never share a process (or run in parallel) with other projects that use it.
 #
 # Projects deliberately not run:
-#   SWLOR.Game.Server.EngineTests   runs inside a real nwserver in Docker (Readmes/EngineTesting.md).
+#   SWLOR.Game.Server.EngineTests   runs inside a real nwserver in Docker (Readmes/EngineTesting.md); the
+#                                   engine-tests.yml workflow runs it nightly and on labelled pull requests.
 #   SWLOR.NWN.Formats.Corpus.Tests  reads the licensed NWN base-game corpus (NWN_INSTALL_ROOT), which hosted runners
 #                                   do not have.
 #   SWLOR.Toolset.Tests             drives the Avalonia GUI and Wine-only tools; release-toolset.yml covers the parts

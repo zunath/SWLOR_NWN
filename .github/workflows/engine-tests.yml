@@ -1,0 +1,161 @@
+name: Engine tests
+
+# Runs the in-engine tests (SWLOR.Game.Server.EngineTests, Readmes/EngineTesting.md) for the maintainability refactor
+# (Readmes/MaintainabilityRefactorPlan.md): nightly on the refactor branch, on pull requests into it that carry the
+# `engine-tests` label, and on demand. A full run takes about 1.5 to 2 hours, so it is opt-in per pull request.
+#
+# The tests need a real nwserver, so the job runs the same scripts as a cloud session or a dev machine:
+#   scripts/ci/fetch-engine-test-haks.sh        the SWLOR_Haks content the server-only HAKs are built from (50 MB)
+#   scripts/prepare-engine-test-home.sh         server-only HAKs, packed module, Docker images
+#   scripts/run-engine-tests.sh                 builds the test project, runs it in the pinned server image
+#   tools/EngineTestSummary.py                  job summary and annotations
+# The job fails when any engine test fails, when none ran, when the server dies without a report, and when the run
+# hits its wall clock; the summary and an annotation say which of those happened.
+#
+# GitHub only fires `schedule` (and lists `workflow_dispatch`) for workflow files on the default branch, which is
+# master, and nothing is merged to master until the refactor is done. This file checks out the refactor branch itself
+# for those two triggers, so an identical copy on master is all the nightly needs; until one exists, only the labelled
+# pull requests run it. See the pull request that added this file.
+on:
+  schedule:
+    - cron: '0 9 * * *'
+  pull_request:
+    branches:
+      - feature/maintainability-refactor
+    types: [opened, reopened, synchronize, labeled]
+  workflow_dispatch:
+    inputs:
+      filter:
+        description: 'Run only the tests whose name or category contains this text (for example Characterization). Empty runs all.'
+        required: false
+        default: ''
+      ref:
+        description: 'Branch, tag or commit to test'
+        required: false
+        default: feature/maintainability-refactor
+
+permissions:
+  contents: read
+
+env:
+  DOTNET_CLI_TELEMETRY_OPTOUT: '1'
+  DOTNET_NOLOGO: '1'
+  # Wall clock for the test run itself, enforced by scripts/run-engine-tests.sh (it kills the containers and says
+  # "TIMED OUT"). A full sweep took 75 minutes in a 4-core cloud session; the rest is headroom. Keep it below the
+  # job's timeout-minutes minus the 30 minutes setup may take, so the script reports the timeout and not GitHub.
+  ENGINE_TEST_TIMEOUT_MINUTES: '150'
+
+jobs:
+  engine-tests:
+    name: Engine tests
+    # A pull request runs only with the label, and adding some other label to it must not restart a run.
+    if: >-
+      (github.event_name != 'schedule' || github.repository == 'zunath/SWLOR_NWN') &&
+      (github.event_name != 'pull_request' ||
+       (contains(github.event.pull_request.labels.*.name, 'engine-tests') &&
+        (github.event.action != 'labeled' || github.event.label.name == 'engine-tests')))
+    # Ubuntu, because the server image is Linux and Docker on Windows runners cannot run Linux containers.
+    runs-on: ubuntu-24.04
+    timeout-minutes: 210
+    concurrency:
+      group: engine-tests-${{ github.event.pull_request.number || github.event_name }}
+      cancel-in-progress: ${{ github.event_name == 'pull_request' }}
+    defaults:
+      run:
+        shell: bash
+    steps:
+      - name: Prepare
+        env:
+          FILTER: ${{ inputs.filter }}
+        run: |
+          echo "ENGINE_HOME=$RUNNER_TEMP/engine-tests-home" >> "$GITHUB_ENV"
+          echo "CI_OUT=$RUNNER_TEMP/engine-tests-out" >> "$GITHUB_ENV"
+          mkdir -p "$RUNNER_TEMP/engine-tests-out"
+          {
+            echo "### Engine test run"
+            echo
+            echo "- Event: \`$GITHUB_EVENT_NAME\`"
+            echo "- Filter: \`${FILTER:-(all tests)}\`"
+            echo "- Wall clock for the test run: $ENGINE_TEST_TIMEOUT_MINUTES minutes"
+            echo
+          } >> "$GITHUB_STEP_SUMMARY"
+          df -h / /mnt | sed 's/^/disk: /'
+          # The runner image ships about 20 GB of toolchains this job never uses; the Docker images, the build and
+          # the server home need about 12 GB.
+          sudo rm -rf /usr/local/lib/android /opt/ghc /opt/hostedtoolcache/CodeQL /usr/share/swift || true
+          df -h / | sed 's/^/disk after cleanup: /'
+
+      - uses: actions/checkout@11d5960a326750d5838078e36cf38b85af677262 # v4
+        with:
+          # A pull request tests its merge result. The schedule and manual runs name the branch themselves: for the
+          # schedule, GitHub's own ref is the default branch.
+          ref: ${{ github.event_name == 'pull_request' && github.ref || inputs.ref || 'feature/maintainability-refactor' }}
+          persist-credentials: false
+          submodules: false
+      - uses: actions/setup-dotnet@67a3573c9a986a3f9c594539f4ab511d57bb3ce9 # v4
+        with:
+          global-json-file: global.json
+
+      - name: Test the summary tool and the HAK staging
+        # Seconds, and they catch a broken sparse-HAK path before the long steps start.
+        run: python3 -B -m unittest tools.tests.test_engine_test_summary tools.tests.test_prepare_engine_test_home -v
+
+      - name: Native NWN tools
+        # nwn_erf and nwn_gff pack the HAKs and the module. SWLOR.CLI finds them in the cache this fills, the same
+        # one .claude/hooks/session-start.sh and Setup.sh use (pinned release, checksum verified).
+        run: |
+          set -euo pipefail
+          sudo apt-get update -qq
+          sudo apt-get install -y -qq --no-install-recommends libpcre3 libsqlite3-0
+          python3 -I -c 'import sys; sys.path.insert(0, sys.argv[1]); import toolset_common; toolset_common.prepare_native_tools()' tools
+
+      - name: Fetch the SWLOR_Haks content the server needs
+        run: bash scripts/ci/fetch-engine-test-haks.sh
+
+      - name: Prepare the server home (HAKs, module, Docker images)
+        env:
+          # The packer keeps two cores free by default; nothing else runs here.
+          SWLOR_RESOURCE_CONVERSION_WORKERS: '4'
+        run: bash scripts/prepare-engine-test-home.sh --server-home "$ENGINE_HOME"
+
+      - name: Run the engine tests
+        id: tests
+        env:
+          FILTER: ${{ inputs.filter }}
+        run: |
+          set -uo pipefail
+          args=(--server-home "$ENGINE_HOME" --timeout-minutes "$ENGINE_TEST_TIMEOUT_MINUTES")
+          if [ -n "$FILTER" ]; then args+=(--filter "$FILTER"); fi
+          # The exit code of run-engine-tests.sh is the job's result: 0 only when the server exited cleanly, at least
+          # one test ran and none failed.
+          bash scripts/run-engine-tests.sh "${args[@]}" 2>&1 | tee "$CI_OUT/engine-tests.log"
+          exit "${PIPESTATUS[0]}"
+
+      - name: Summary
+        if: ${{ !cancelled() && steps.tests.conclusion != 'skipped' }}
+        run: |
+          python3 tools/EngineTestSummary.py \
+            --report "$ENGINE_HOME/app_logs/engine_tests/engine-test-results.json" \
+            --log "$CI_OUT/engine-tests.log" \
+            --timeout-minutes "$ENGINE_TEST_TIMEOUT_MINUTES" \
+            --annotations --markdown-out "$GITHUB_STEP_SUMMARY"
+
+      - name: Collect the results and server logs
+        if: ${{ !cancelled() }}
+        run: |
+          mkdir -p "$CI_OUT/server"
+          cp -f "$ENGINE_HOME/app_logs/engine_tests/engine-test-results.json" "$CI_OUT/" || true
+          # Server logs: the NWN logs (mounted as logs/) and the application logs. The characterization scenarios'
+          # own output, if any, is under app_logs/engine_tests/characterization.
+          cp -r "$ENGINE_HOME/logs" "$CI_OUT/server/logs" || true
+          cp -r "$ENGINE_HOME/app_logs" "$CI_OUT/server/app_logs" || true
+          du -sh "$CI_OUT"/* || true
+
+      - name: Upload the results and logs
+        if: ${{ !cancelled() }}
+        uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02 # v4
+        with:
+          name: engine-test-results
+          path: ${{ env.CI_OUT }}
+          if-no-files-found: warn
+          retention-days: 14

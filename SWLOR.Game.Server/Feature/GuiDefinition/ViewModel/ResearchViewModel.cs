@@ -383,10 +383,11 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
                         Experiment = ResearchExperimentLifecycle.Open(
                             targetLevel, trials, researchJob.TimeCost, extraBonus, licensedRunsGrant)
                     };
-                    DB.Set(dbResearchJob);
+                    ResearchExperimentService.StampStart(Player, dbResearchJob);
 
                     AssignCommand(Player, () => TakeGoldFromCreature(researchJob.CreditCost, Player, true));
                     DestroyObject(_blueprintItem);
+                    NwnCraftSessionWorld.Instance.PersistCharacter(Player);
                     Gui.TogglePlayerWindow(Player, GuiWindowType.Research);
                     Gui.TogglePlayerWindow(
                         Player,
@@ -419,7 +420,7 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
                         return;
                     }
 
-                    ResearchExperimentService.DeleteJob(dbJob);
+                    ResearchExperimentService.FinishDelivery(Player, dbJob);
                     Gui.TogglePlayerWindow(Player, GuiWindowType.Research);
                     FloatingTextStringOnCreature("Research job cancelled!", Player, false);
                 },
@@ -525,7 +526,7 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
 
             var experimentXp = ResearchExperimentService.GrantExperimentXp(Player, dbJob);
             var completionXp = ResearchExperimentService.GrantCompletionXp(Player, dbJob, completion.Level);
-            ResearchExperimentService.DeleteJob(dbJob);
+            ResearchExperimentService.FinishDelivery(Player, dbJob);
 
             SendMessageToPC(Player, DescribeCompletion(completion, experimentXp + completionXp));
         };

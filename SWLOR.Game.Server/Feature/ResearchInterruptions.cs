@@ -5,7 +5,8 @@ namespace SWLOR.Game.Server.Feature
 {
     /// <summary>
     /// Ends research experiments that cannot continue. A player who logs out, or logs in with an experiment still open after a crash
-    /// or restart, leaves it with the evidence saved so far, exactly as closing the window does.
+    /// or restart, leaves it with the evidence saved so far, exactly as closing the window does. At login, jobs are first checked
+    /// against the character file, in case a crash lost a start or a blueprint hand-back.
     /// </summary>
     public class ResearchInterruptions
     {
@@ -26,6 +27,7 @@ namespace SWLOR.Game.Server.Feature
             if (!GetIsPC(player) || GetIsDM(player) || GetIsDMPossessed(player))
                 return;
 
+            ResearchExperimentService.RecoverAtLogin(player);
             ResearchExperimentService.SettleOpenExperiments(GetObjectUUID(player));
         }
     }

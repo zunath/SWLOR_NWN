@@ -3,6 +3,7 @@ using System.Linq;
 using SWLOR.Game.Server.Entity;
 using SWLOR.Game.Server.Service.CraftService.Minigame;
 using SWLOR.Game.Server.Service.DBService;
+using SWLOR.Game.Server.Service.LogService;
 using SWLOR.Game.Server.Service.SkillService;
 
 namespace SWLOR.Game.Server.Service.CraftService.Research;
@@ -37,6 +38,63 @@ public static class ResearchExperimentService
         }
 
         return settled;
+    }
+
+    /// <summary>
+    /// Settles the player's research jobs against the character file just loaded (see <see cref="ResearchJobFileRules"/>): a job whose
+    /// start the file predates is discarded, since the file still holds its blueprint and credits; a job whose hand-back the file holds
+    /// is deleted; a job whose hand-back the file lacks keeps its blueprint copy to be completed again. Call it once at login.
+    /// </summary>
+    public static void RecoverAtLogin(uint player)
+    {
+        var playerId = GetObjectUUID(player);
+        if (string.IsNullOrWhiteSpace(playerId))
+            return;
+
+        var loaded = GetLocalInt(player, CraftSessionFileSequence.LoadedVariable);
+        var query = new DBQuery<ResearchJob>()
+            .AddFieldSearch(nameof(ResearchJob.PlayerId), playerId, false);
+
+        foreach (var job in DB.Search(query).ToList())
+        {
+            switch (ResearchJobFileRules.AtLogin(job, loaded))
+            {
+                case ResearchJobFileState.StartNotInFile:
+                    Log.Write(LogGroup.Crafting, $"{GetName(player)} ({playerId}) had research job {job.Id} discarded: the character file (sequence {loaded}) predates its start (sequence {job.StartSequence}).");
+                    DeleteJob(job);
+                    break;
+                case ResearchJobFileState.DeliveredInFile:
+                    DeleteJob(job);
+                    break;
+                case ResearchJobFileState.DeliveryNotInFile:
+                    Log.Write(LogGroup.Crafting, $"{GetName(player)} ({playerId}) had research job {job.Id} restored: the character file (sequence {loaded}) predates its blueprint hand-back (sequence {job.DeliverySequence}).");
+                    job.DeliverySequence = 0;
+                    DB.Set(job);
+                    break;
+            }
+        }
+    }
+
+    /// <summary>
+    /// Stamps the job's blueprint and credit removal with the next character file sequence and saves the job. Call it before taking
+    /// them, then <see cref="NwnCraftSessionWorld.PersistCharacter"/> once they are taken.
+    /// </summary>
+    public static void StampStart(uint player, ResearchJob job)
+    {
+        job.StartSequence = NwnCraftSessionWorld.Instance.AdvanceFileSequence(player);
+        DB.Set(job);
+    }
+
+    /// <summary>
+    /// Ends a job whose blueprint is now in the player's inventory: stamps the hand-back, saves the job, writes the character file and
+    /// only then deletes the job. A stop before the file is written leaves the job and its blueprint copy for the next login to restore.
+    /// </summary>
+    public static void FinishDelivery(uint player, ResearchJob job)
+    {
+        job.DeliverySequence = NwnCraftSessionWorld.Instance.AdvanceFileSequence(player);
+        DB.Set(job);
+        NwnCraftSessionWorld.Instance.FlushCharacter(player);
+        DeleteJob(job);
     }
 
     /// <summary>

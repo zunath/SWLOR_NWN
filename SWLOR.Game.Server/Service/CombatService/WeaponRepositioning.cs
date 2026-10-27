@@ -41,7 +41,7 @@ public static unsafe class WeaponRepositioning
         if (!GetIsObjectValid(actor) || GetIsDead(actor) || GetCurrentHitPoints(actor) <= 0)
             return "You cannot reposition now.";
         if (IsMovementBlocked(actor)) return "You cannot reposition while rooted or incapacitated.";
-        if (IsMoving(actor) || _lockouts.TryGetValue(actor, out var until) && Environment.TickCount64 < until)
+        if (IsMoving(actor) || _lockouts.TryGetValue(actor, out var until) && Clock.TickCount64 < until)
             return "Wait two seconds between movement abilities.";
 
         var area = GetArea(actor);
@@ -158,7 +158,7 @@ public static unsafe class WeaponRepositioning
         {
             Actor = actor, Area = GetArea(actor), Origin = GetPosition(actor), Destination = GetPositionFromLocation(destination),
             MainHand = GetItemInSlot(InventorySlot.RightHand, actor), OffHand = GetItemInSlot(InventorySlot.LeftHand, actor),
-            Started = Environment.TickCount64, OnArrival = onArrival, LastPosition = GetPosition(actor),
+            Started = Clock.TickCount64, OnArrival = onArrival, LastPosition = GetPosition(actor),
             TravelAnimation = travelAnimation, PassesThroughCreatures = passThroughCreatures,
         };
         _moving[actor] = operation;
@@ -208,7 +208,7 @@ public static unsafe class WeaponRepositioning
         if (!_moving.TryGetValue(operation.Actor, out var current) || current.Id != operation.Id) return;
         if (!IsCurrentAndValid(operation)) { Finish(operation, false, true); return; }
         if (!IsInsideCapturedCorridor(operation)) { Finish(operation, false, true); return; }
-        var elapsed = Environment.TickCount64 - operation.Started;
+        var elapsed = Clock.TickCount64 - operation.Started;
         if (elapsed >= ArrivalTimeoutMilliseconds) { Finish(operation, false, true); return; }
         var action = GetCurrentAction(operation.Actor);
         var group = GetActionGroup(operation.Actor);

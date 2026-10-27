@@ -63,7 +63,7 @@ namespace SWLOR.Game.Server.Service.CombatService
             _modifiers[creature].Add(new TemporaryModifier(
                 statType,
                 amount,
-                DateTime.UtcNow.AddSeconds(durationSeconds),
+                Clock.UtcNow.AddSeconds(durationSeconds),
                 group ?? DefaultGroup));
 
             if (publishRefresh)
@@ -287,7 +287,7 @@ namespace SWLOR.Game.Server.Service.CombatService
             if (!_modifiers.TryGetValue(creature, out var modifiers))
                 return;
 
-            var expiration = DateTime.UtcNow.AddSeconds(durationSeconds);
+            var expiration = Clock.UtcNow.AddSeconds(durationSeconds);
             foreach (var modifier in modifiers.Where(x => x.StatType == statType && MatchesGroup(x, group)))
             {
                 modifier.Refresh(expiration);
@@ -322,7 +322,7 @@ namespace SWLOR.Game.Server.Service.CombatService
             if (!_modifiers.TryGetValue(creature, out var modifiers))
                 return false;
 
-            var now = DateTime.UtcNow;
+            var now = Clock.UtcNow;
             var retained = 0;
             for (var index = 0; index < modifiers.Count; index++)
             {

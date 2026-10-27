@@ -1,4 +1,5 @@
 using System.Collections.Generic;
+using SWLOR.Game.Server.Core;
 using SWLOR.Game.Server.Feature.StatusEffectDefinition;
 using SWLOR.Game.Server.Service.CombatService;
 using SWLOR.Game.Server.Service.PerkService;
@@ -34,7 +35,7 @@ namespace SWLOR.Game.Server.Service
         }
 
         private static void ObserveMovement(uint actor, WeaponMovementWindow window) =>
-            window.Observe(DateTime.UtcNow, GetArea(actor), GetPosition(actor));
+            window.Observe(Clock.UtcNow, GetArea(actor), GetPosition(actor));
 
         public static void RecordLandedWeaponHit(uint actor, uint target)
         {
@@ -45,7 +46,7 @@ namespace SWLOR.Game.Server.Service
             ObserveMovement(actor, window);
             if (!window.TryConsumeForHit(GetArea(actor), GetPosition(actor))) return;
             var state = GetState(actor);
-            state.RecordMovementHit(DateTime.UtcNow, GetConfiguration(actor));
+            state.RecordMovementHit(Clock.UtcNow, GetConfiguration(actor));
             Sync(actor, state);
         }
 
@@ -85,7 +86,7 @@ namespace SWLOR.Game.Server.Service
             if (bonusAttempts > 0 && bonusSeconds > 0)
             {
                 var state = GetState(actor);
-                state.GrantOrdinaryBonus(DateTime.UtcNow, bonusAttempts, bonusDamagePercent, bonusSeconds);
+                state.GrantOrdinaryBonus(Clock.UtcNow, bonusAttempts, bonusDamagePercent, bonusSeconds);
                 Sync(actor, state);
             }
             if (anyHit && restoreStamina > 0)
@@ -107,7 +108,7 @@ namespace SWLOR.Game.Server.Service
                     return UntrackedSnapshot(ordinary);
                 state = GetState(actor);
             }
-            var snapshot = state.RecordOrdinaryAttempt(DateTime.UtcNow, GetConfiguration(actor), target, rollId);
+            var snapshot = state.RecordOrdinaryAttempt(Clock.UtcNow, GetConfiguration(actor), target, rollId);
             Sync(actor, state);
             return snapshot;
         }
@@ -121,7 +122,7 @@ namespace SWLOR.Game.Server.Service
             if (MovementWindows.TryGetValue(actor, out var movement) && !movement.TryRememberOrdinaryHit(rollId)) return;
             RecordLandedWeaponHit(actor, target);
             if (!States.TryGetValue(actor, out var state)) return;
-            var stamina = state.RecordOrdinaryHit(DateTime.UtcNow, GetConfiguration(actor), target, rollId);
+            var stamina = state.RecordOrdinaryHit(Clock.UtcNow, GetConfiguration(actor), target, rollId);
             if (stamina > 0)
                 Stat.RestoreStamina(actor, stamina);
             Sync(actor, state);
@@ -154,7 +155,7 @@ namespace SWLOR.Game.Server.Service
             var configuration = GetConfiguration(actor);
             if (configuration.DirectDamageNextAbilityStaminaReduction <= 0) return;
             var state = GetState(actor);
-            state.RecordDirectHostileDamage(DateTime.UtcNow, configuration);
+            state.RecordDirectHostileDamage(Clock.UtcNow, configuration);
             Sync(actor, state);
         }
 
@@ -166,7 +167,7 @@ namespace SWLOR.Game.Server.Service
             var configuration = GetConfiguration(actor);
             if (configuration.MomentumMaximum <= 0 || configuration.EvasionMomentumCooldownSeconds <= 0) return;
             var state = GetState(actor);
-            state.RecordAccuracyEvasionMiss(DateTime.UtcNow, configuration);
+            state.RecordAccuracyEvasionMiss(Clock.UtcNow, configuration);
             Sync(actor, state);
         }
 
@@ -174,14 +175,14 @@ namespace SWLOR.Game.Server.Service
         {
             if (!CanReceiveTraitEvents(actor) || !States.TryGetValue(actor, out var state))
                 return 0;
-            return state.GetAbilityStaminaCostAdjustment(DateTime.UtcNow, GetConfiguration(actor));
+            return state.GetAbilityStaminaCostAdjustment(Clock.UtcNow, GetConfiguration(actor));
         }
 
         public static int ConsumeAbilityStaminaDiscount(uint actor)
         {
             if (!CanReceiveTraitEvents(actor) || !States.TryGetValue(actor, out var state))
                 return 0;
-            var adjustment = state.ConsumeAbilityStaminaDiscount(DateTime.UtcNow, GetConfiguration(actor));
+            var adjustment = state.ConsumeAbilityStaminaDiscount(Clock.UtcNow, GetConfiguration(actor));
             Sync(actor, state);
             return adjustment;
         }
@@ -199,7 +200,7 @@ namespace SWLOR.Game.Server.Service
                 return new PairedRangedAbilityTraitsSnapshot(Guid.NewGuid(), crossfire, spendsMomentum, 0, 0)
                     { StateGeneration = -1 };
             var state = GetState(actor);
-            var snapshot = state.CaptureAbility(DateTime.UtcNow, GetConfiguration(actor), crossfire, spendsMomentum);
+            var snapshot = state.CaptureAbility(Clock.UtcNow, GetConfiguration(actor), crossfire, spendsMomentum);
             Sync(actor, state);
             return snapshot;
         }
@@ -208,7 +209,7 @@ namespace SWLOR.Game.Server.Service
         {
             if (!CanReceiveTraitEvents(actor) || !States.TryGetValue(actor, out var state))
                 return false;
-            var committed = state.CommitAbility(DateTime.UtcNow, GetConfiguration(actor), snapshot);
+            var committed = state.CommitAbility(Clock.UtcNow, GetConfiguration(actor), snapshot);
             Sync(actor, state);
             return committed;
         }
@@ -222,7 +223,7 @@ namespace SWLOR.Game.Server.Service
                 return;
             var state = GetState(actor);
             var restore = state.CompleteAbility(
-                DateTime.UtcNow, GetConfiguration(actor), snapshot, anyHit, distanceTravelled, generatesMomentum,
+                Clock.UtcNow, GetConfiguration(actor), snapshot, anyHit, distanceTravelled, generatesMomentum,
                 paidStamina, restoreStaminaOnHit, ordinaryBonusAttempts, ordinaryBonusDamagePercent, ordinaryBonusSeconds);
             if (restore > 0)
                 Combat.RestoreAbilityHitStamina(actor, Ability.GetActiveAbilityImpactSummary(actor)?.Ability, restore);
@@ -234,7 +235,7 @@ namespace SWLOR.Game.Server.Service
             ReconcileMovementTracking(actor);
             if (!States.TryGetValue(actor, out var state))
                 return;
-            state.Reconcile(DateTime.UtcNow, GetConfiguration(actor));
+            state.Reconcile(Clock.UtcNow, GetConfiguration(actor));
             Sync(actor, state);
         }
 
@@ -255,7 +256,7 @@ namespace SWLOR.Game.Server.Service
             if (!States.TryGetValue(actor, out var state))
                 return;
             var duration = Read(actor, StatType.PairedRangedMomentumDurationSeconds);
-            state.ClampMomentumDuration(DateTime.UtcNow, duration);
+            state.ClampMomentumDuration(Clock.UtcNow, duration);
             Sync(actor, state);
         }
 
@@ -295,7 +296,7 @@ namespace SWLOR.Game.Server.Service
             if (!CanReceiveTraitEvents(actor))
                 return new PairedRangedOrdinarySnapshot(0, 0);
             return States.TryGetValue(actor, out var state)
-                ? state.GetOrdinarySnapshot(DateTime.UtcNow, GetConfiguration(actor), target)
+                ? state.GetOrdinarySnapshot(Clock.UtcNow, GetConfiguration(actor), target)
                 : new PairedRangedOrdinarySnapshot(ReadDualWield(actor, StatType.PairedRangedOrdinaryDamagePercentAdjustment), 0);
         }
 
@@ -367,7 +368,7 @@ namespace SWLOR.Game.Server.Service
         {
             if (!GetIsObjectValid(actor))
                 return;
-            var now = DateTime.UtcNow;
+            var now = Clock.UtcNow;
             var configuration = GetConfiguration(actor);
             Refresh(actor, new MomentumStatusEffect(state.Momentum), Remaining(state.MomentumExpires, now), state.Momentum > 0);
             Refresh(actor, new ConvergingFireStatusEffect(), Remaining(state.RepeatedTargetExpires, now),
@@ -393,7 +394,7 @@ namespace SWLOR.Game.Server.Service
             }
             if (existing != null && existing.Name == desired.Name && existing.Icon == desired.Icon)
             {
-                if (Math.Abs(existing.GetRemainingDurationSeconds(DateTime.UtcNow) - seconds) > .01f)
+                if (Math.Abs(existing.GetRemainingDurationSeconds(Clock.UtcNow) - seconds) > .01f)
                 {
                     existing.SetDurationSeconds(seconds);
                     StatusEffect.RefreshStatusEffectDuration(actor, typeof(T), actor, seconds);

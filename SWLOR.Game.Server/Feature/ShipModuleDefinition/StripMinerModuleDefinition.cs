@@ -34,6 +34,7 @@ namespace SWLOR.Game.Server.Feature.ShipModuleDefinition
                 .RequirePerk(PerkType.MiningModules, 5)
                 .Capacitor(30)
                 .Toggle(18)
+                .Recast((activator, _, _) => ShipModuleActions.MiningCycleSeconds(activator, 18f))
                 .CapitalClassModule()
                 .ValidationAction((_, _, target, _, _) => ShipModuleActions.StripMinerError(target, null))
                 .ActivatedAction((activator, _, target, _, moduleBonus) =>

@@ -169,31 +169,31 @@ namespace SWLOR.Game.Server.Feature.LootTableDefinition
             _builder.Create("ASTEROID_TILARIUM")
                 .AddItem("ore_tilarium", 30)
                 .AddItem("aluminum", 2)
-                .AddItem("quadrenium", 1);
+                .AddItem("quadrenium", 1, isRare: true);
 
             _builder.Create("ASTEROID_CURRIAN")
                 .AddItem("ore_currian", 30)
                 .AddItem("steel", 2)
-                .AddItem("vintrium", 1);
+                .AddItem("vintrium", 1, isRare: true);
 
             _builder.Create("ASTEROID_IDAILIA")
                 .AddItem("ore_idailia", 30)
                 .AddItem("obsidian", 2)
-                .AddItem("ionite", 1);
+                .AddItem("ionite", 1, isRare: true);
 
             _builder.Create("ASTEROID_BARINIUM")
                 .AddItem("ore_barinium", 30)
                 .AddItem("crystal", 2)
-                .AddItem("katrium", 1);
+                .AddItem("katrium", 1, isRare: true);
 
             _builder.Create("ASTEROID_GOSTIAN")
                 .AddItem("ore_gostian", 30)
                 .AddItem("diamond", 2)
-                .AddItem("zinsiam", 1);
+                .AddItem("zinsiam", 1, isRare: true);
 
             _builder.Create("ASTEROID_ARDANIUM")
                 .AddItem("ore_arda", 9)
-                .AddItem("zinsiam", 1);
+                .AddItem("zinsiam", 1, isRare: true);
         }
 
         private void StripMining()
@@ -201,31 +201,31 @@ namespace SWLOR.Game.Server.Feature.LootTableDefinition
             _builder.Create("ASTEROID_TILARIUM_STRIP")
                 .AddItem("ore_tilarium", 30)
                 .AddItem("aluminum", 10)
-                .AddItem("quadrenium", 5);
+                .AddItem("quadrenium", 5, isRare: true);
 
             _builder.Create("ASTEROID_CURRIAN_STRIP")
                 .AddItem("ore_currian", 30)
                 .AddItem("steel", 10)
-                .AddItem("vintrium", 5);
+                .AddItem("vintrium", 5, isRare: true);
 
             _builder.Create("ASTEROID_IDAILIA_STRIP")
                 .AddItem("ore_idailia", 30)
                 .AddItem("obsidian", 10)
-                .AddItem("ionite", 5);
+                .AddItem("ionite", 5, isRare: true);
 
             _builder.Create("ASTEROID_BARINIUM_STRIP")
                 .AddItem("ore_barinium", 30)
                 .AddItem("crystal", 10)
-                .AddItem("katrium", 5);
+                .AddItem("katrium", 5, isRare: true);
 
             _builder.Create("ASTEROID_GOSTIAN_STRIP")
                 .AddItem("ore_gostian", 30)
                 .AddItem("diamond", 10)
-                .AddItem("zinsiam", 5);
+                .AddItem("zinsiam", 5, isRare: true);
 
             _builder.Create("ASTEROID_ARDANIUM_STRIP")
                 .AddItem("ore_arda", 30)
-                .AddItem("zinsiam", 5);
+                .AddItem("zinsiam", 5, isRare: true);
         }
     }
 }

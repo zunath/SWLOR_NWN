@@ -218,5 +218,19 @@ namespace SWLOR.Game.Server.Service.SpaceService
         /// <summary>A repair after the repairer's Repair Efficiency: the ground's outgoing healing rule, rounded up.</summary>
         public static int ApplyRepairEfficiency(int amount, int efficiencyPercent) =>
             Stat.CalculateOutgoingAbilityHealingAmount(amount, efficiencyPercent);
+
+        /// <summary>The longest mining cycle reduction (Rapid Extraction); a cycle never drops below a second.</summary>
+        public const int MaximumMiningCycleSpeedPercent = 90;
+
+        /// <summary>A mining laser or strip miner cycle after Rapid Extraction: shorter by the percent, never under a second.</summary>
+        public static float MiningCycleSeconds(float baseSeconds, int speedPercent)
+        {
+            var percent = Math.Clamp(speedPercent, 0, MaximumMiningCycleSpeedPercent);
+            return Math.Min(baseSeconds, Math.Max(1f, baseSeconds * (100 - percent) / 100f));
+        }
+
+        /// <summary>The ore one mining cycle yields: the base amount plus the legacy Starship Mining ranks and Prospector.</summary>
+        public static float MiningYield(float baseAmount, int prospectorBonus) =>
+            baseAmount + Math.Max(0, prospectorBonus);
     }
 }

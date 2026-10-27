@@ -1,5 +1,6 @@
 using SWLOR.Game.Server.Service.PerkService;
 using SWLOR.Game.Server.Service.SkillService;
+using SWLOR.Game.Server.Service.StatService;
 using SWLOR.NWN.API.NWScript.Enum;
 using System.Collections.Generic;
 
@@ -18,6 +19,9 @@ namespace SWLOR.Game.Server.Feature.PerkDefinition
             RefineryManagement();
             Scavenging();
             HardLook();
+            Prospector();
+            DeepCore();
+            RapidExtraction();
 
             return _builder.Build();
         }
@@ -252,6 +256,72 @@ namespace SWLOR.Game.Server.Feature.PerkDefinition
                 .Price(3)
                 .RequirementSkill(SkillType.Gathering, 40)
                 .GrantsFeat(FeatType.HardLook5);
+        }
+
+
+        private void Prospector()
+        {
+            _builder.Create(PerkCategoryType.Gathering, PerkType.Prospector)
+                .Name("Prospector")
+
+                .AddPerkLevel()
+                .GrantsFeat(FeatType.ProspectorTrait)
+                .Description("+1 ore per asteroid cycle.")
+                .IncreasesStat(StatType.SpaceMiningYieldBonus, 1)
+                .Price(2)
+                .RequirementSkill(SkillType.Gathering, 10)
+
+                .AddPerkLevel()
+                .Description("+2 ore per asteroid cycle.")
+                .IncreasesStat(StatType.SpaceMiningYieldBonus, 2)
+                .Price(3)
+                .RequirementSkill(SkillType.Gathering, 25)
+
+                .AddPerkLevel()
+                .Description("+3 ore per asteroid cycle.")
+                .IncreasesStat(StatType.SpaceMiningYieldBonus, 3)
+                .Price(4)
+                .RequirementSkill(SkillType.Gathering, 40);
+        }
+
+
+        private void DeepCore()
+        {
+            _builder.Create(PerkCategoryType.Gathering, PerkType.DeepCore)
+                .Name("Deep Core")
+
+                .AddPerkLevel()
+                .GrantsFeat(FeatType.DeepCoreTrait)
+                .Description("+10 to the rare-metal chance from asteroids.")
+                .IncreasesStat(StatType.SpaceRareMetalChance, 10)
+                .Price(3)
+                .RequirementSkill(SkillType.Gathering, 20)
+
+                .AddPerkLevel()
+                .Description("+20 to the rare-metal chance from asteroids.")
+                .IncreasesStat(StatType.SpaceRareMetalChance, 20)
+                .Price(4)
+                .RequirementSkill(SkillType.Gathering, 40);
+        }
+
+
+        private void RapidExtraction()
+        {
+            _builder.Create(PerkCategoryType.Gathering, PerkType.RapidExtraction)
+                .Name("Rapid Extraction")
+
+                .AddPerkLevel()
+                .GrantsFeat(FeatType.RapidExtractionTrait)
+                .Description("Mining, gas and salvage cycles are 10% faster.")
+                .IncreasesStat(StatType.SpaceMiningCycleSpeedPercent, 10)
+                .Price(3)
+                .RequirementSkill(SkillType.Gathering, 30)
+
+                .AddPerkLevel()
+                .Description("Mining, gas and salvage cycles are 20% faster.")
+                .IncreasesStat(StatType.SpaceMiningCycleSpeedPercent, 20)
+                .Price(4)
+                .RequirementSkill(SkillType.Gathering, 45);
         }
     }
 }

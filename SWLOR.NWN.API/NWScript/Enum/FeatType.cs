@@ -2876,5 +2876,8 @@ namespace SWLOR.NWN.API.NWScript.Enum
         AutoCastCommandEmergencyRepair2 = 3344,
         AutoCastCommandEmergencyRepair3 = 3345,
         AutoCastCommandEmergencyRepair4 = 3346,
+        ProspectorTrait = 3347,
+        DeepCoreTrait = 3348,
+        RapidExtractionTrait = 3349,
 }
 }

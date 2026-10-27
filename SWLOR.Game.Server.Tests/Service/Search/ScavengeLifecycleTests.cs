@@ -1,3 +1,4 @@
+using System.Linq;
 using FluentAssertions;
 using NUnit.Framework;
 using SWLOR.Game.Server.Service.CraftService.Minigame;
@@ -706,6 +707,18 @@ public class ScavengeLifecycleTests
         _world.BonusLoot.Should().HaveCount(1);
         _world.Opened.Should().Equal((Site, SearchRules.QuickSearchSeconds));
         _world.WindowOpen.Should().BeFalse();
+    }
+
+    [Test]
+    public void QuickSearch_SavesEachFindBeforeItsXpIsGiven()
+    {
+        var lifecycle = Lifecycle(50, 12, 2, 0, 2);
+        var session = lifecycle.Start(Request());
+
+        lifecycle.QuickSearch(session);
+
+        _world.PendingSaves.First().Should().Equal(new ScavengeFind("fiberp_ruined", 2, false));
+        _world.Log.IndexOf("pending").Should().BeLessThan(_world.Log.IndexOf("xp"));
     }
 
     [Test]

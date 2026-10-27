@@ -314,12 +314,17 @@ namespace SWLOR.Game.Server.Service.ScavengeService
                         ? $"Search *success*: ({attempt.Roll} vs. DC: {attempt.Dc})"
                         : $"Search *failure*: ({attempt.Roll} vs DC: {attempt.Dc})");
 
+                // As on the board, the find is saved before the attempt's XP is given.
+                if (attempt.Success)
+                {
+                    session.AddFind(ScavengeLoot.Roll(request.Table, request.TreasureHunterLevel, request.CreditFinderLevel, false, _random));
+                    _world.SavePendingFinds(session.Player, session.Finds);
+                }
+
                 if (attempt.Xp > 0)
                     _world.GiveGatheringXp(session.Player, attempt.Xp);
 
                 session.XpPaid += attempt.Xp;
-                if (attempt.Success)
-                    session.AddFind(ScavengeLoot.Roll(request.Table, request.TreasureHunterLevel, request.CreditFinderLevel, false, _random));
             }
 
             return End(session, ScavengeEnd.QuickSearch, quick.Seconds);

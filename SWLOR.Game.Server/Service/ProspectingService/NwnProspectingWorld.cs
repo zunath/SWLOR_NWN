@@ -5,6 +5,7 @@ using SWLOR.Game.Server.Feature.GuiDefinition.Payload;
 using SWLOR.Game.Server.Feature.ItemDefinition;
 using SWLOR.Game.Server.Service.ActivityService;
 using SWLOR.Game.Server.Service.AnimationService;
+using SWLOR.Game.Server.Service.CraftService.Minigame;
 using SWLOR.Game.Server.Service.CraftService.Minigame.Prospecting;
 using SWLOR.Game.Server.Service.GuiService;
 using SWLOR.Game.Server.Service.LootService;
@@ -69,10 +70,11 @@ namespace SWLOR.Game.Server.Service.ProspectingService
         public void GiveHarvest(uint player, uint node, string lootTable, HarvestDelivery delivery)
         {
             var table = Loot.GetLootTableByName(lootTable);
+            var dropped = false;
             for (var roll = 0; roll < delivery.Rolls; roll++)
             {
                 var loot = table.GetRandomItem();
-                CreateItemOnObject(loot.Resref, player);
+                dropped |= Deliver(player, loot.Resref);
 
                 // Additional loot tables - these adhere to standard loot table rules, and are rolled once for each unit as they always were.
                 Loot.SpawnLoot(node, player, "LOOT_TABLE_");
@@ -80,17 +82,40 @@ namespace SWLOR.Game.Server.Service.ProspectingService
 
             var ore = ProspectingGems.OreEntries(table);
             for (var roll = 0; roll < delivery.ExtraOreRolls; roll++)
-                CreateItemOnObject(Pick(ore.Count > 0 ? ore : table).Resref, player);
+                dropped |= Deliver(player, Pick(ore.Count > 0 ? ore : table).Resref);
 
             var gems = ProspectingGems.GemEntries(table);
             for (var gem = 0; gem < delivery.Gems && gems.Count > 0; gem++)
-                CreateItemOnObject(Pick(gems).Resref, player);
+                dropped |= Deliver(player, Pick(gems).Resref);
+
+            if (dropped)
+                SendMessageToPC(player, HarvestDroppedMessage);
 
             if (GetIsObjectValid(node))
                 ApplyEffectAtLocation(DurationType.Instant, EffectVisualEffect(VisualEffect.Vfx_Fnf_Summon_Monster_3), GetLocation(node));
 
             ExecuteScript(ScriptName.OnHarvesterUsed, player);
         }
+
+        /// <summary>
+        /// Puts one unit in the player's inventory. When it did not arrive there (no room), it is placed at the player's feet instead, so
+        /// a harvest the node has already paid out is never lost. The inventory count decides, since a unit that merged into a stack can
+        /// come back as an invalid handle. Returns true when the unit ended up outside the inventory.
+        /// </summary>
+        private static bool Deliver(uint player, string resref)
+        {
+            var before = NwnQuickCraftWorld.CountComponent(player, resref);
+            var item = CreateItemOnObject(resref, player);
+            if (NwnQuickCraftWorld.CountComponent(player, resref) > before)
+                return false;
+
+            // A valid item that did not reach the inventory is already on the ground.
+            if (!GetIsObjectValid(item))
+                CreateObject(ObjectType.Item, resref, GetLocation(player));
+            return true;
+        }
+
+        public const string HarvestDroppedMessage = "Your inventory is full, so some of the harvest was placed at your feet.";
 
         public int GetGatheringRank(uint player) => Skill.GetCreatureSkillRank(player, SkillType.Gathering);
 

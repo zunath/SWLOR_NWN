@@ -181,25 +181,54 @@ public sealed class NwnCraftSessionWorld : ICraftSessionWorld
         return item;
     }
 
-    public CraftedUnits FinishUnits(uint player, uint item, RecipeDetail recipe)
+    public int CountInInventory(uint player, string resref) => NwnQuickCraftWorld.CountComponent(player, resref);
+
+    public CraftedUnits FinishUnits(uint player, uint item, RecipeDetail recipe, int countBefore)
     {
-        var result = new CraftedUnits(new List<uint>(), new List<string>());
-        if (!GetIsObjectValid(item))
+        var result = new CraftedUnits(new List<string>(), new List<string>());
+        var quantity = Math.Max(1, recipe.Quantity);
+        var valid = GetIsObjectValid(item);
+        var inInventory = valid && GetItemPossessor(item) == player;
+
+        // An invalid handle can only be a stack merge or no room, so it is judged as a stack.
+        var stacks = !valid || StringToInt(Get2DAString("baseitems", "Stacking", (int)GetBaseItemType(item))) > 1;
+        if (stacks)
+        {
+            var gained = Math.Clamp(CountInInventory(player, recipe.Resref) - countBefore, 0, quantity);
+            if (inInventory && GetItemStackSize(item) == gained)
+                result.Delivered.Add(ObjectPlugin.Serialize(item));
+            else if (gained > 0)
+                result.Delivered.Add(SerializeStandIn(recipe.Resref, gained));
+
+            var missing = quantity - gained;
+            if (missing <= 0)
+                return result;
+
+            if (valid && !inInventory)
+            {
+                // It landed outside the inventory with its bonuses: hold that item itself.
+                SetItemStackSize(item, missing);
+                result.Held.Add(ObjectPlugin.Serialize(item));
+                DestroyObject(item);
+            }
+            else
+            {
+                result.Held.Add(SerializeStandIn(recipe.Resref, missing));
+            }
+
             return result;
+        }
 
         var serialized = ObjectPlugin.Serialize(item);
-        var stacks = StringToInt(Get2DAString("baseitems", "Stacking", (int)GetBaseItemType(item))) > 1;
-        var units = stacks ? 1 : Math.Max(1, recipe.Quantity);
-
         var made = new List<uint> { item };
-        for (var unit = 1; unit < units; unit++)
+        for (var unit = 1; unit < quantity; unit++)
             made.Add(CopyItem(item, player, true));
 
         foreach (var unit in made)
         {
             if (GetIsObjectValid(unit) && GetItemPossessor(unit) == player)
             {
-                result.Delivered.Add(unit);
+                result.Delivered.Add(ObjectPlugin.Serialize(unit));
                 continue;
             }
 
@@ -209,6 +238,16 @@ public sealed class NwnCraftSessionWorld : ICraftSessionWorld
         }
 
         return result;
+    }
+
+    /// <summary>A plain made item of the resref, serialized, for units the inventory holds only as part of a merged stack.</summary>
+    private static string SerializeStandIn(string resref, int quantity)
+    {
+        var standIn = CreateItemOnObject(resref, GetObjectByTag("TEMP_ITEM_STORAGE"), quantity);
+        SetLocalBool(standIn, Item.PlayerProducedItemVariable, true);
+        var serialized = ObjectPlugin.Serialize(standIn);
+        DestroyObject(standIn);
+        return serialized;
     }
 
     public void ApplyVendorValue(uint item, int addGoldPiece) => ItemPlugin.SetAddGoldPieceValue(item, addGoldPiece);

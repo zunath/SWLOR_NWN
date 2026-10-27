@@ -2409,56 +2409,56 @@
   },
   {
     "File": "SWLOR.Game.Server/Feature/GuiDefinition/ViewModel/RecipesViewModel.cs",
-    "Line": 562,
+    "Line": 549,
     "Member": "OnClickCraftOrResearch",
     "Delivery": "Retained",
     "Call": "SendMessageToPC(Player, \"Finish or cancel your quick craft first.\")"
   },
   {
     "File": "SWLOR.Game.Server/Feature/GuiDefinition/ViewModel/RecipesViewModel.cs",
-    "Line": 589,
+    "Line": 576,
     "Member": "OnClickCraftOrResearch",
     "Delivery": "Retained",
     "Call": "SendMessageToPC(Player, $\"Cannot research that recipe type.\")"
   },
   {
     "File": "SWLOR.Game.Server/Feature/GuiDefinition/ViewModel/RecipesViewModel.cs",
-    "Line": 667,
+    "Line": 654,
     "Member": "ValidateBlueprint",
     "Delivery": "Retained",
     "Call": "FloatingTextStringOnCreature(\"The blueprint must be in your inventory.\", Player, false)"
   },
   {
     "File": "SWLOR.Game.Server/Feature/GuiDefinition/ViewModel/RecipesViewModel.cs",
-    "Line": 674,
+    "Line": 661,
     "Member": "ValidateBlueprint",
     "Delivery": "Retained",
     "Call": "FloatingTextStringOnCreature(\"Only blueprints may be selected.\", Player, false)"
   },
   {
     "File": "SWLOR.Game.Server/Feature/GuiDefinition/ViewModel/RecipesViewModel.cs",
-    "Line": 680,
+    "Line": 667,
     "Member": "ValidateBlueprint",
     "Delivery": "Retained",
     "Call": "FloatingTextStringOnCreature(\"No licensed runs remaining on this blueprint.\", Player, false)"
   },
   {
     "File": "SWLOR.Game.Server/Feature/GuiDefinition/ViewModel/RecipesViewModel.cs",
-    "Line": 690,
+    "Line": 677,
     "Member": "ValidateBlueprint",
     "Delivery": "Retained",
     "Call": "FloatingTextStringOnCreature(\"Blueprint cannot be crafted with this device.\", Player, false)"
   },
   {
     "File": "SWLOR.Game.Server/Feature/GuiDefinition/ViewModel/RecipesViewModel.cs",
-    "Line": 703,
+    "Line": 690,
     "Member": "ValidateBlueprint",
     "Delivery": "Retained",
     "Call": "FloatingTextStringOnCreature($\"Fabrication rank {CraftRankMilestones.RequiredFabricationRankForResearchTier(requiredTier)} is required to research this recipe.\", Player, false)"
   },
   {
     "File": "SWLOR.Game.Server/Feature/GuiDefinition/ViewModel/RecipesViewModel.cs",
-    "Line": 709,
+    "Line": 696,
     "Member": "ValidateBlueprint",
     "Delivery": "Retained",
     "Call": "FloatingTextStringOnCreature($\"Blueprint cannot be researched any more.\", Player, false)"
@@ -2535,49 +2535,49 @@
   },
   {
     "File": "SWLOR.Game.Server/Feature/GuiDefinition/ViewModel/ResearchViewModel.cs",
-    "Line": 406,
+    "Line": 407,
     "Member": "ClickCancelJob",
     "Delivery": "Retained",
     "Call": "FloatingTextStringOnCreature(ResearchExperimentLifecycle.CannotCancelMessage, Player, false)"
   },
   {
     "File": "SWLOR.Game.Server/Feature/GuiDefinition/ViewModel/ResearchViewModel.cs",
-    "Line": 418,
+    "Line": 419,
     "Member": "ClickCancelJob",
     "Delivery": "Retained",
     "Call": "FloatingTextStringOnCreature(Item.InventoryFullMessage, Player, false)"
   },
   {
     "File": "SWLOR.Game.Server/Feature/GuiDefinition/ViewModel/ResearchViewModel.cs",
-    "Line": 424,
+    "Line": 425,
     "Member": "ClickCancelJob",
     "Delivery": "Retained",
     "Call": "FloatingTextStringOnCreature(\"Research job cancelled!\", Player, false)"
   },
   {
     "File": "SWLOR.Game.Server/Feature/GuiDefinition/ViewModel/ResearchViewModel.cs",
-    "Line": 444,
+    "Line": 445,
     "Member": "ClickCompleteJob",
     "Delivery": "Retained",
     "Call": "FloatingTextStringOnCreature(\"Finish your experiment first.\", Player, false)"
   },
   {
     "File": "SWLOR.Game.Server/Feature/GuiDefinition/ViewModel/ResearchViewModel.cs",
-    "Line": 460,
+    "Line": 461,
     "Member": "ClickCompleteJob",
     "Delivery": "Retained",
     "Call": "FloatingTextStringOnCreature(Item.InventoryFullMessage, Player, false)"
   },
   {
     "File": "SWLOR.Game.Server/Feature/GuiDefinition/ViewModel/ResearchViewModel.cs",
-    "Line": 473,
+    "Line": 474,
     "Member": "ClickCompleteJob",
     "Delivery": "Retained",
     "Call": "FloatingTextStringOnCreature(Item.InventoryFullMessage, Player, false)"
   },
   {
     "File": "SWLOR.Game.Server/Feature/GuiDefinition/ViewModel/ResearchViewModel.cs",
-    "Line": 530,
+    "Line": 531,
     "Member": "ClickCompleteJob",
     "Delivery": "Retained",
     "Call": "SendMessageToPC(Player, DescribeCompletion(completion, experimentXp + completionXp))"
@@ -4306,21 +4306,21 @@
   },
   {
     "File": "SWLOR.Game.Server/Service/CraftService/Minigame/NwnCraftSessionWorld.cs",
-    "Line": 60,
+    "Line": 61,
     "Member": "ChargeBlueprint",
     "Delivery": "Retained",
     "Call": "SendMessageToPC(player, $\"Remaining licensed runs: {details.LicensedRuns}\")"
   },
   {
     "File": "SWLOR.Game.Server/Service/CraftService/Minigame/NwnCraftSessionWorld.cs",
-    "Line": 237,
+    "Line": 305,
     "Member": "ApplyBlueprintBonuses",
     "Delivery": "Retained",
     "Call": "SendMessageToPC(player, ColorToken.Green($\"Blueprint Bonus applied: {bonusName} +{bonus.Amount}\"))"
   },
   {
     "File": "SWLOR.Game.Server/Service/CraftService/Minigame/NwnCraftSessionWorld.cs",
-    "Line": 305,
+    "Line": 373,
     "Member": "Message",
     "Delivery": "Retained",
     "Call": "SendMessageToPC(player, text)"
@@ -5244,7 +5244,14 @@
   },
   {
     "File": "SWLOR.Game.Server/Service/ProspectingService/NwnProspectingWorld.cs",
-    "Line": 105,
+    "Line": 92,
+    "Member": "GiveHarvest",
+    "Delivery": "Retained",
+    "Call": "SendMessageToPC(player, HarvestDroppedMessage)"
+  },
+  {
+    "File": "SWLOR.Game.Server/Service/ProspectingService/NwnProspectingWorld.cs",
+    "Line": 130,
     "Member": "Message",
     "Delivery": "Retained",
     "Call": "SendMessageToPC(player, text)"

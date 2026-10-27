@@ -252,6 +252,22 @@ public class CraftSessionLifecycleTests
     }
 
     [Test]
+    public void Succeed_AnOutputThatNeverReachedTheInventory_IsHeld_NotLost()
+    {
+        _recipe.Quantity = 2;
+        _world.OutputLost = true;
+        var lifecycle = Lifecycle();
+        var session = StartSession(lifecycle);
+
+        lifecycle.SucceedAtPace(_world, FakeCraftSessionWorld.PlayerHandle, _player, session, new MinigameMeter(60, 100));
+
+        _world.Crafted.Should().BeEmpty();
+        _player.HeldCraftItems.Should().ContainSingle();
+        _player.PendingCraftReturns.Should().BeNullOrEmpty();
+        _player.ActiveCraftSession.Should().BeNull();
+    }
+
+    [Test]
     public void Succeed_AStackingRecipeOfTwo_MakesNoCopies()
     {
         _recipe.Quantity = 2;

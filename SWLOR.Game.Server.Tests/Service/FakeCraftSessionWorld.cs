@@ -125,9 +125,14 @@ internal sealed class FakeCraftSessionWorld : ICraftSessionWorld
     /// <summary>How many of the finished units fit the inventory; the rest are held.</summary>
     public int OutputRoom { get; set; } = int.MaxValue;
 
-    public CraftedUnits FinishUnits(uint player, uint item, RecipeDetail recipe)
+    public int CountInInventory(uint player, string resref) => 0;
+
+    /// <summary>True to model an output that came back as an invalid handle without reaching the inventory.</summary>
+    public bool OutputLost { get; set; }
+
+    public CraftedUnits FinishUnits(uint player, uint item, RecipeDetail recipe, int countBefore)
     {
-        var result = new CraftedUnits(new List<uint>(), new List<string>());
+        var result = new CraftedUnits(new List<string>(), new List<string>());
         var units = NonStackingResrefs.Contains(recipe.Resref) ? System.Math.Max(1, recipe.Quantity) : 1;
         var original = _craftedNames[item];
         Crafted.Remove(original);
@@ -142,9 +147,9 @@ internal sealed class FakeCraftSessionWorld : ICraftSessionWorld
                 _craftedNames[made] = $"{original} copy {unit}";
             }
 
-            if (result.Delivered.Count < OutputRoom)
+            if (!OutputLost && result.Delivered.Count < OutputRoom)
             {
-                result.Delivered.Add(made);
+                result.Delivered.Add(_craftedNames[made]);
                 Crafted.Add(_craftedNames[made]);
             }
             else

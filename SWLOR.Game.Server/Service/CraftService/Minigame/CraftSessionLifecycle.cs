@@ -138,6 +138,7 @@ public sealed class CraftSessionLifecycle
             recipe.Category == RecipeCategoryType.Food,
             filledSlots);
 
+        var countBefore = _world.CountInInventory(player, recipe.Resref);
         var item = _world.CreateCraftedItem(player, recipe);
         _world.ApplyVendorValue(item, outcome.VendorValueBonus);
 
@@ -165,7 +166,7 @@ public sealed class CraftSessionLifecycle
             dbPlayer.CraftedRecipes[record.Recipe] = DateTime.UtcNow;
 
         // The full quantity is accounted for: units in the inventory are delivered, the rest are held until there is room.
-        var units = _world.FinishUnits(player, item, recipe);
+        var units = _world.FinishUnits(player, item, recipe, countBefore);
         if (units.Held.Count > 0)
         {
             dbPlayer.HeldCraftItems ??= new List<string>();
@@ -176,7 +177,7 @@ public sealed class CraftSessionLifecycle
         // The finished items are in the inventory only in memory: the record that ends the session carries them until a file holds them.
         // The XP the craft earned is entitled in the same save, so a stop between this save and the award loses neither.
         if (units.Delivered.Count > 0)
-            RecordReturn(player, dbPlayer, units.Delivered.Select(_world.SerializeItem).ToList());
+            RecordReturn(player, dbPlayer, units.Delivered);
         dbPlayer.ActiveCraftSession = null;
         if (outcome.Xp > 0)
             AddPendingXp(dbPlayer, recipe.Skill, outcome.Xp);

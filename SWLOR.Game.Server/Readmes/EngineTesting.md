@@ -482,8 +482,9 @@ which become zero-byte files - Beamdog's dedicated-server data does the same wit
 models and textures, because the server never reads them - so the HAKs take about 0.4 GB instead
 of 11 GB. Never deploy them. It packs with the native tools that `Setup.sh` prepares, about
 4 minutes in all, and later runs skip steps whose inputs are unchanged (`--force` redoes them).
-A full sweep took about 75 minutes in a 4-core cloud session, so pass `--timeout-minutes 120`. The `CI` section
-below runs this flow on a hosted runner, with a 300 MB sparse `SWLOR_Haks` fetch in place of the full checkout.
+A full sweep took about 75 minutes in a 4-core cloud session when the suite had a few hundred tests; with 910 it takes about 3.5
+hours (the `CI` section has the details), so pass `--timeout-minutes 300`. The `CI` section below runs this flow on a hosted
+runner, with a 300 MB sparse `SWLOR_Haks` fetch in place of the full checkout.
 
 Usage:
 
@@ -526,7 +527,7 @@ ranges and killed the run (Redis exit 139, server exit 137, no report). The comm
 image's default module list; keep it in sync if the image changes.
 
 **Hard wall clock**: both runner scripts enforce a timeout on the containerized run
-(`-TimeoutMinutes` / `--timeout-minutes`, default 90; a full sweep takes roughly 45). On expiry
+(`-TimeoutMinutes` / `--timeout-minutes`, default 90, which a full sweep of 910 tests now exceeds: pass 300). On expiry
 the stack is torn down and the run is reported as failed. This exists because
 `docker compose up --abort-on-container-exit` blocks until a container exits, and a server that
 boots healthy but schedules no tests - a missing harness assembly, a filter matching nothing -
@@ -650,11 +651,13 @@ step that rolls, build a `SnapshotTable` of the outcomes and call `ScenarioSnaps
 `.github/workflows/engine-tests.yml` runs the suite for the maintainability refactor (`MaintainabilityRefactorPlan.md`) on
 `ubuntu-24.04` (the server image is Linux, and Docker on Windows runners cannot run Linux containers). Triggers:
 
-- `schedule`: nightly at 04:00 UTC (midnight US Eastern), so the run is over before the server's own restart at 10:00 UTC.
-- `pull_request` into `feature/maintainability-refactor` that carries the `engine-tests` label. It runs when the label is added
-  and again on every push while the label is on; adding some other label does not restart it.
-- `workflow_dispatch` with an optional `filter` (the same text `--filter` takes, for example `Characterization`) and a `ref`
-  (default `feature/maintainability-refactor`).
+- `schedule`: nightly at 01:00 UTC (21:00 US Eastern), the whole suite.
+- `pull_request` into `feature/maintainability-refactor`, only with a label. `engine-tests` runs the whole suite;
+  `engine-tests-characterization` runs only the Characterization scenarios (`-Filter Characterization`), which are the
+  refactor's output lock and take about 40 minutes with setup. With both labels the whole suite runs. A run starts when the
+  label is added and again on every push while it is on; adding some other label does not restart it.
+- `workflow_dispatch` with an optional `filter` (the same text `--filter` takes) and a `ref` (default
+  `feature/maintainability-refactor`).
 
 GitHub fires `schedule` and lists `workflow_dispatch` only for workflow files on the default branch (`master`), and the refactor
 branch does not merge there until the end. The workflow therefore checks out the refactor branch itself for those two triggers,
@@ -663,43 +666,50 @@ requests run it.
 
 What a run does, all through the scripts a cloud session or dev machine uses (run them in this order to reproduce a CI run):
 
-1. Frees runner disk space, checks out the branch (a pull request's merge result), installs the pinned .NET SDK, runs the
-   unit tests of the summary tool and of the HAK staging.
-2. Installs `libpcre3` and downloads the pinned native NWN tools (`tools/native-tools.json`, checksum verified) for `nwn_erf`
-   and `nwn_gff`.
+1. Chooses the filter and the wall clock from the trigger, frees runner disk space, checks out the branch (a pull request's
+   merge result), and runs `tools/WaitOutServerRestart.py` (see "The daily server restart" below).
+2. Installs the pinned .NET SDK, runs the unit tests of the summary tool, the restart check, the HAK staging and the HAK fetch
+   (seconds), installs `libpcre3` and downloads the pinned native NWN tools (`tools/native-tools.json`, checksum verified)
+   for `nwn_erf` and `nwn_gff`.
 3. `scripts/ci/fetch-engine-test-haks.sh` fetches the part of the pinned `SWLOR_Haks` commit the server needs. The module lists
    all 119 HAKs, but the dedicated server never reads models, textures or sounds (`prepare-engine-test-home.sh` makes those
    zero-byte files), and they are 147,000 of the 207,000 files. The script does a blobless depth-1 fetch (4 MB of trees) and a
-   sparse non-cone checkout of the HAK folders and `sw_tlk` without those file types: about 59,000 files, 300 MB, 50 MB over
-   the wire. The full history is never cloned. The left-out files stay in the index as skip-worktree entries; do not write files
-   at those paths or run `git sparse-checkout disable` or anything else that needs their content in that checkout, or git
-   downloads the 11 GB of blobs. (`git diff HEAD`, `git ls-files` and `git ls-tree`, which `prepare-engine-test-home.sh` runs,
-   need no blob and no network there.)
+   sparse non-cone checkout of the HAK folders and `sw_tlk` without those file types (in any case): about 59,000 files, 300 MB,
+   50 MB over the wire. The full history is never cloned. The left-out files stay in the index as skip-worktree entries; do not
+   write files at those paths or run `git sparse-checkout disable` or anything else that needs their content in that checkout,
+   or git downloads the 11 GB of blobs. (`git diff HEAD`, `git ls-files` and `git ls-tree`, which `prepare-engine-test-home.sh`
+   runs, need no blob and no network there.)
 4. `scripts/prepare-engine-test-home.sh` builds the server-only HAKs and the TLK from it (the names of the left-out files
    come from the index, so the HAKs equal those built from a full checkout), packs `Module/` with `SWLOR.CLI --pack`
    (the Characterization snapshots need the module and the 2DA/TLK data of the branch itself), and pulls the Docker images.
-5. `tools/WaitOutServerRestart.py` returns at once when a run of up to 150 minutes fits before the next 10:00 UTC, and otherwise
-   sleeps until 10:01:30 UTC (see "The daily server restart" below).
-6. `scripts/run-engine-tests.sh --timeout-minutes 150` builds the test project and runs the suite in the pinned server image.
-   Its exit code is the job's result.
-7. `tools/EngineTestSummary.py` writes the job summary (verdict, failed tests, per-category table, slowest tests) and
+5. `scripts/run-engine-tests.sh` builds the test project and runs the suite in the pinned server image, with a wall clock of
+   300 minutes (120 for a filtered run). Its exit code is the job's result.
+6. `tools/EngineTestSummary.py` writes the job summary (verdict, failed tests, per-category table, slowest tests) and
    annotations, and the job uploads the `engine-test-results` artifact (14 days): `engine-test-results.json`, the runner output
    `engine-tests.log`, and the server's `logs/` and `app_logs/`.
 
+Time: setup is about 25 to 30 minutes (the module pack alone took 3.5 minutes on a 20-core machine; the hosted runner has four
+vCPUs). The whole suite (910 tests, 6 of them skipped by design) took about 3.3 to 3.5 hours of test time locally; the
+Characterization scenarios take 11 minutes. The suite has grown a lot since the 45 and 75 minute figures above: the five
+`WeaponRotationBalance` tests alone run about 7 minutes each.
+
 The job fails when any engine test fails, when no test ran, when the server container exits non-zero (even after a green
-report), and when the server dies without writing a report. A run that hits the 150-minute wall clock fails too, and says so:
-the log carries `TIMED OUT after 150 minute(s)`, and the summary and an error annotation call it a timeout, not a failed test.
-The job's own limit (350 minutes: setup, a wait for the restart, the run, the upload) is above that on purpose, so GitHub never
-kills the job before the script has reported.
+report), and when the server dies without writing a report. A run that hits its wall clock fails too, and says so: the log
+carries `TIMED OUT after N minute(s)`, and the summary and an error annotation call it a timeout, not a failed test. The job's
+own limit (355 minutes: setup, a restart wait of at most 15, the wall clock, the upload) is above that on purpose, so GitHub
+never kills the job before the script has reported.
 
 ### The daily server restart
 
 `ServerTasks.ProcessAutoRestart` shuts the game server down for the whole 30 seconds after 10:00:00 UTC every day, with no
 exception for engine-test runs. A run that crosses that moment ends without a report ("No report found ... the server likely
 crashed", with `Server shutting down for automated restart.` in the log); it happened to the first full local run of this
-workflow. Do not start a long engine run in the two or three hours before 10:00 UTC. The workflow handles it with a late
-nightly start and the wait step above, and `EngineTestSummary.py` names the cause when it happens anyway. The real fix is a
-guard in `ProcessAutoRestart` for `ApplicationSettings.EngineTestsEnabled`; after it lands, delete the wait step.
+workflow, 26 minutes in. Do not start a long engine run in the hours before 10:00 UTC. The workflow handles it three ways: the
+nightly starts at 01:00 UTC, `tools/WaitOutServerRestart.py` waits up to 15 minutes when a run would cross the restart and
+otherwise fails the job at its first step with an error saying to run it again after 10:01 UTC (a job has six hours in all, so
+a long wait leaves no room for a 3.5 hour run), and `EngineTestSummary.py` names the restart when it cuts a run off anyway. The
+real fix is a guard in `ProcessAutoRestart` for `ApplicationSettings.EngineTestsEnabled`; after it lands, delete the check and
+this section.
 
 Running the same steps on your machine: `scripts/ci/fetch-engine-test-haks.sh` (needs `SWLOR_Haks` empty or absent: it replaces
 it), then `scripts/prepare-engine-test-home.sh --server-home <dir>`, then `scripts/run-engine-tests.sh --server-home <dir>`.

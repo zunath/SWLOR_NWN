@@ -1,8 +1,12 @@
 name: Engine tests
 
 # Runs the in-engine tests (SWLOR.Game.Server.EngineTests, Readmes/EngineTesting.md) for the maintainability refactor
-# (Readmes/MaintainabilityRefactorPlan.md): nightly on the refactor branch, on pull requests into it that carry the
-# `engine-tests` label, and on demand. A full run takes about 1.5 to 2 hours, so it is opt-in per pull request.
+# (Readmes/MaintainabilityRefactorPlan.md): nightly on the refactor branch, on pull requests into it that carry a label,
+# and on demand.
+#
+#   engine-tests label                   the whole suite (910 tests); about 3.5 to 4 hours, so it is opt-in
+#   engine-tests-characterization label  only the Characterization scenarios that lock today's outputs; about 40 minutes
+#   workflow_dispatch                    the whole suite, or the tests whose name or category contains `filter`
 #
 # The tests need a real nwserver, so the job runs the same scripts as a cloud session or a dev machine:
 #   scripts/ci/fetch-engine-test-haks.sh        the SWLOR_Haks content the server-only HAKs are built from (50 MB)
@@ -13,8 +17,9 @@ name: Engine tests
 # hits its wall clock; the summary and an annotation say which of those happened.
 #
 # The game server restarts itself at 10:00 UTC every day, tests running or not (ServerTasks.ProcessAutoRestart), and a
-# run that crosses that moment is killed without a report. The nightly starts at 04:00 UTC to stay clear of it, and the
-# run waits (tools/WaitOutServerRestart.py) when a labelled pull request or a manual run would cross it.
+# run that crosses that moment is killed without a report. The nightly starts at 01:00 UTC to stay clear of it, and a
+# labelled pull request or manual run that could not finish before 10:00 UTC fails at once with that explanation
+# (tools/WaitOutServerRestart.py) instead of dying hours in. Run it again after 10:01 UTC.
 #
 # GitHub only fires `schedule` (and lists `workflow_dispatch`) for workflow files on the default branch, which is
 # master, and nothing is merged to master until the refactor is done. This file checks out the refactor branch itself
@@ -22,8 +27,8 @@ name: Engine tests
 # pull requests run it. See the pull request that added this file.
 on:
   schedule:
-    # Midnight US Eastern: the run is over long before the server's own 10:00 UTC restart.
-    - cron: '0 4 * * *'
+    # 21:00 US Eastern: even a slow run is over long before the server's own 10:00 UTC restart.
+    - cron: '0 1 * * *'
   pull_request:
     branches:
       - feature/maintainability-refactor
@@ -45,26 +50,26 @@ permissions:
 env:
   DOTNET_CLI_TELEMETRY_OPTOUT: '1'
   DOTNET_NOLOGO: '1'
-  # Wall clock for the test run itself, enforced by scripts/run-engine-tests.sh (it kills the containers and says
-  # "TIMED OUT"). A full sweep took 75 minutes in a 4-core cloud session; the rest is headroom. The job's
-  # timeout-minutes must cover setup (30), a wait for the server restart (up to this much) and the run itself, so the
-  # script reports a timeout and not GitHub.
-  ENGINE_TEST_TIMEOUT_MINUTES: '150'
 
 jobs:
   engine-tests:
     name: Engine tests
-    # A pull request runs only with the label, and adding some other label to it must not restart a run.
+    # A pull request runs only with one of the two labels, and adding some other label to it must not restart a run.
     if: >-
       (github.event_name != 'schedule' || github.repository == 'zunath/SWLOR_NWN') &&
       (github.event_name != 'pull_request' ||
-       (contains(github.event.pull_request.labels.*.name, 'engine-tests') &&
-        (github.event.action != 'labeled' || github.event.label.name == 'engine-tests')))
+       ((contains(github.event.pull_request.labels.*.name, 'engine-tests') ||
+         contains(github.event.pull_request.labels.*.name, 'engine-tests-characterization')) &&
+        (github.event.action != 'labeled' ||
+         github.event.label.name == 'engine-tests' ||
+         (github.event.label.name == 'engine-tests-characterization' &&
+          !contains(github.event.pull_request.labels.*.name, 'engine-tests')))))
     # Ubuntu, because the server image is Linux and Docker on Windows runners cannot run Linux containers.
     runs-on: ubuntu-24.04
-    # Setup 30 + waiting out the server restart at worst 152 + the run 150 + the summary and upload 10 = 342; GitHub's
-    # own limit is 360.
-    timeout-minutes: 350
+    # Setup 30 + the run's own wall clock 300 + a restart wait of at most 15 + the summary and upload 10; GitHub's own
+    # limit is 360. The wall clock is enforced by scripts/run-engine-tests.sh, which says "TIMED OUT", so GitHub never
+    # cuts the job before the script has reported.
+    timeout-minutes: 355
     concurrency:
       group: engine-tests-${{ github.event.pull_request.number || github.event_name }}
       cancel-in-progress: ${{ github.event_name == 'pull_request' }}
@@ -74,17 +79,36 @@ jobs:
     steps:
       - name: Prepare
         env:
-          FILTER: ${{ inputs.filter }}
+          INPUT_FILTER: ${{ inputs.filter }}
+          LABELS: ${{ toJSON(github.event.pull_request.labels.*.name) }}
         run: |
-          echo "ENGINE_HOME=$RUNNER_TEMP/engine-tests-home" >> "$GITHUB_ENV"
-          echo "CI_OUT=$RUNNER_TEMP/engine-tests-out" >> "$GITHUB_ENV"
+          set -euo pipefail
+          filter="$INPUT_FILTER"
+          if [ "$GITHUB_EVENT_NAME" = pull_request ] && ! grep -qF '"engine-tests"' <<< "$LABELS"; then
+            filter=Characterization   # only the quick label is on
+          fi
+          if [ -n "$filter" ]; then
+            # A filtered run is short; the Characterization scenarios took 11 minutes of tests locally.
+            timeout=120; projection=150
+          else
+            # A full sweep took 205 minutes locally (the last nine tests alone are about an hour); 300 is the limit and
+            # 270 (setup 30 + 240) is what the restart check plans for.
+            timeout=300; projection=270
+          fi
+          {
+            echo "ENGINE_HOME=$RUNNER_TEMP/engine-tests-home"
+            echo "CI_OUT=$RUNNER_TEMP/engine-tests-out"
+            echo "ENGINE_TEST_FILTER=$filter"
+            echo "ENGINE_TEST_TIMEOUT_MINUTES=$timeout"
+            echo "ENGINE_TEST_PROJECTION_MINUTES=$projection"
+          } >> "$GITHUB_ENV"
           mkdir -p "$RUNNER_TEMP/engine-tests-out"
           {
             echo "### Engine test run"
             echo
             echo "- Event: \`$GITHUB_EVENT_NAME\`"
-            echo "- Filter: \`${FILTER:-(all tests)}\`"
-            echo "- Wall clock for the test run: $ENGINE_TEST_TIMEOUT_MINUTES minutes"
+            echo "- Filter: \`${filter:-(all tests)}\`"
+            echo "- Wall clock for the test run: $timeout minutes"
             echo
           } >> "$GITHUB_STEP_SUMMARY"
           df -h / /mnt | sed 's/^/disk: /'
@@ -100,6 +124,13 @@ jobs:
           ref: ${{ github.event_name == 'pull_request' && github.ref || inputs.ref || 'feature/maintainability-refactor' }}
           persist-credentials: false
           submodules: false
+
+      - name: Stay clear of the server's daily restart
+        # Passes at once when the job fits before 10:00 UTC or starts after it, waits when the restart is minutes away,
+        # and otherwise fails now rather than after hours of setup. Delete this step when
+        # ServerTasks.ProcessAutoRestart skips engine-test runs.
+        run: python3 tools/WaitOutServerRestart.py --run-minutes "$ENGINE_TEST_PROJECTION_MINUTES" --max-wait-minutes 15
+
       - uses: actions/setup-dotnet@67a3573c9a986a3f9c594539f4ab511d57bb3ce9 # v4
         with:
           global-json-file: global.json
@@ -138,19 +169,12 @@ jobs:
           SWLOR_RESOURCE_CONVERSION_WORKERS: '4'
         run: bash scripts/prepare-engine-test-home.sh --server-home "$ENGINE_HOME"
 
-      - name: Stay clear of the server's daily restart
-        # Passes at once when the run fits; otherwise sleeps until just after 10:00 UTC. Delete this step when
-        # ServerTasks.ProcessAutoRestart skips engine-test runs.
-        run: python3 tools/WaitOutServerRestart.py --run-minutes "$ENGINE_TEST_TIMEOUT_MINUTES"
-
       - name: Run the engine tests
         id: tests
-        env:
-          FILTER: ${{ inputs.filter }}
         run: |
           set -uo pipefail
           args=(--server-home "$ENGINE_HOME" --timeout-minutes "$ENGINE_TEST_TIMEOUT_MINUTES")
-          if [ -n "$FILTER" ]; then args+=(--filter "$FILTER"); fi
+          if [ -n "$ENGINE_TEST_FILTER" ]; then args+=(--filter "$ENGINE_TEST_FILTER"); fi
           # The exit code of run-engine-tests.sh is the job's result: 0 only when the server exited cleanly, at least
           # one test ran and none failed.
           bash scripts/run-engine-tests.sh "${args[@]}" 2>&1 | tee "$CI_OUT/engine-tests.log"

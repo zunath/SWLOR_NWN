@@ -60,10 +60,24 @@ class CommandLineTests(unittest.TestCase):
         self.assertIn("does not touch the daily 10:00 UTC server restart", output)
 
     def test_dry_run_names_the_wait_and_does_not_sleep(self):
-        code, output = self.run_main("--run-minutes", "150", "--now", "2026-10-28T09:00:00Z", "--dry-run")
+        code, output = self.run_main("--run-minutes", "150", "--max-wait-minutes", "90", "--now",
+                                     "2026-10-28T09:00:00Z", "--dry-run")
         self.assertEqual(0, code)
         self.assertIn("::notice title=Waiting out the daily server restart::", output)
         self.assertIn("Waiting 61 minutes 30 seconds, until 10:01:30 UTC.", output)
+
+    def test_a_short_wait_is_taken_by_default(self):
+        code, output = self.run_main("--run-minutes", "270", "--now", "2026-10-28T09:50:00Z", "--dry-run")
+        self.assertEqual(0, code)
+        self.assertIn("Waiting 11 minutes 30 seconds, until 10:01:30 UTC.", output)
+
+    def test_a_wait_longer_than_the_cap_fails_the_job_with_an_explanation(self):
+        code, output = self.run_main("--run-minutes", "270", "--now", "2026-10-28T07:00:00Z", "--dry-run")
+        self.assertEqual(1, code)
+        self.assertIn("::error title=Too close to the daily server restart::", output)
+        self.assertIn("would take 181 minutes, more than the 15 this job can spare", output)
+        self.assertIn("run it again after 10:01 UTC", output)
+        self.assertIn("Nothing is wrong with the code", output)
 
     def test_a_run_of_a_day_is_refused(self):
         with contextlib.redirect_stderr(io.StringIO()), self.assertRaises(SystemExit):

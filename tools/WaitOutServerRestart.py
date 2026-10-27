@@ -1,14 +1,16 @@
 #!/usr/bin/env python3
-"""Waits until a run of a given length can finish before the game server's daily automated restart, or start after it.
+"""Keeps an engine-test run clear of the game server's daily automated restart: waits briefly, or refuses to start.
 
 SWLOR.Game.Server/Feature/ServerTasks.cs shuts the server down for the whole 30 seconds from 10:00:00 UTC every day, tests
 running or not (the module heartbeat checks every six seconds). An engine-test run that crosses that moment is killed
-without a report. .github/workflows/engine-tests.yml calls this before the run:
+without a report. .github/workflows/engine-tests.yml calls this first thing in the job:
 
-    python tools/WaitOutServerRestart.py --run-minutes 150
+    python tools/WaitOutServerRestart.py --run-minutes 270 --max-wait-minutes 15
 
-It prints how long it waits (nothing when the run fits) and sleeps that long. --dry-run only prints. --now takes an
-ISO 8601 UTC time for testing.
+--run-minutes is how long the whole job is expected to need (setup plus the run). When it fits before the next restart, or
+starts after the last one, nothing happens. When it would cross the restart, the tool sleeps until 10:01:30 UTC if that is
+at most --max-wait-minutes away, and otherwise exits 1 with an error annotation: a job has six hours in all, so a long wait
+leaves no room for the run. --dry-run only prints. --now takes an ISO 8601 UTC time for testing.
 
 This is a workaround for the server's own behaviour; once ProcessAutoRestart skips engine-test runs, delete the call.
 """
@@ -43,9 +45,11 @@ def seconds_to_wait(now, run_seconds):
 
 def main(argv=None):
     parser = argparse.ArgumentParser(description=__doc__.split("\n")[0])
-    parser.add_argument("--run-minutes", type=int, required=True, help="the longest the run may take")
+    parser.add_argument("--run-minutes", type=int, required=True, help="how long the job is expected to need")
+    parser.add_argument("--max-wait-minutes", type=int, default=15,
+                        help="the longest wait that is worth it; beyond that the tool exits 1 (default 15)")
     parser.add_argument("--now", help="pretend it is this ISO 8601 UTC time (tests)")
-    parser.add_argument("--dry-run", action="store_true", help="print the wait without sleeping")
+    parser.add_argument("--dry-run", action="store_true", help="print what would happen without sleeping")
     args = parser.parse_args(argv)
 
     if args.run_minutes * 60 >= 24 * 3600:
@@ -57,7 +61,16 @@ def main(argv=None):
         print(f"A run of up to {args.run_minutes} minutes from {now:%H:%M:%S} UTC does not touch the daily "
               f"{RESTART_AT:%H:%M} UTC server restart.")
         return 0
+
     resume = now + datetime.timedelta(seconds=wait)
+    if wait > args.max_wait_minutes * 60:
+        print(f"::error title=Too close to the daily server restart::The game server restarts itself at "
+              f"{RESTART_AT:%H:%M} UTC and a run of up to {args.run_minutes} minutes from {now:%H:%M:%S} UTC would be "
+              f"killed by it. Waiting until {resume:%H:%M:%S} UTC would take {wait // 60} minutes, more than the "
+              f"{args.max_wait_minutes} this job can spare. Nothing is wrong with the code: run it again after "
+              f"{resume:%H:%M} UTC, or earlier than about "
+              f"{(resume - datetime.timedelta(minutes=args.run_minutes + 2)):%H:%M} UTC.")
+        return 1
     print(f"::notice title=Waiting out the daily server restart::The game server restarts itself at "
           f"{RESTART_AT:%H:%M} UTC and a run of up to {args.run_minutes} minutes from {now:%H:%M:%S} UTC would be "
           f"killed by it. Waiting {wait // 60} minutes {wait % 60} seconds, until {resume:%H:%M:%S} UTC.")

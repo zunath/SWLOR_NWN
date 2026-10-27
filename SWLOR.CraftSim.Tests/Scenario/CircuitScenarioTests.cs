@@ -27,7 +27,7 @@ namespace SWLOR.CraftSim.Tests.Scenario
             scenario.Should().BeOfType<CircuitScenario>();
             scenario.Skill.Should().Be(SkillType.Engineering);
             scenario.Minigame.Should().Be(CraftMinigameType.Circuit);
-            scenario.SecondsPerAction.Should().Be(8.0, "the starting estimate for the new window until the client evidence measures it");
+            scenario.SecondsPerAction.Should().Be(CraftMinigameXp.ActionSeconds, "the gates model the pace the server holds a craft's XP to");
             ((ICraftScenario)scenario).XpMultiplierFor(5).Should().Be(CircuitRules.XpMultiplierFor(5), "the scenario plays the multiplier the game pays");
             scenario.LengthTarget.Should().Be(LengthTarget.ItemCraft);
             scenario.StylePairs.Should().HaveCount(2).And.OnlyContain(pair => pair.MinimumRank == CircuitRules.StyleRank);

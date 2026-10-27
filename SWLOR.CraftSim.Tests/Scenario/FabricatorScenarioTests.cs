@@ -30,7 +30,7 @@ namespace SWLOR.CraftSim.Tests.Scenario
             scenario.Should().BeOfType<FabricatorScenario>();
             scenario.Skill.Should().Be(SkillType.Fabrication);
             scenario.Minigame.Should().Be(CraftMinigameType.Fabricator);
-            scenario.SecondsPerAction.Should().Be(8.0, "the starting estimate until client timing replaces it");
+            scenario.SecondsPerAction.Should().Be(CraftMinigameXp.ActionSeconds, "the gates model the pace the server holds a craft's XP to");
             scenario.LengthTarget.Should().Be(LengthTarget.ItemCraft);
             scenario.StylePairs.Select(pair => pair.Name).Should().Equal(
                 "Production Run vs Fine Tolerance", "Production Run (full line) vs Fine Tolerance (full line)");

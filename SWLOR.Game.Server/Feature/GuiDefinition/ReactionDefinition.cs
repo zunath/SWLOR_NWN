@@ -45,6 +45,8 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition
             "FAILING\n" +
             "If Stability reaches 0, or you close this window, die or walk away from the bench, the piece is lost. Each stack of " +
             $"components then has a {CraftOutcomeRules.ChanceToLoseItemPercent}% chance to be lost, and you still earn {FailureXpPercent}% of the base XP.\n\n" +
+            "XP\n" +
+            "Rushing through the actions does not earn more XP than the normal pace.\n\n" +
             "YOUR RANK\n" +
             "Espionage rank sets how strong your actions are and how much CP you have. Poisoncraft, Trapcraft and Master Saboteur still " +
             "decide which recipes you can craft.";

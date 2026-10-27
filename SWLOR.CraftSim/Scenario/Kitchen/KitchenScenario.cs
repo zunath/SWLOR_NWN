@@ -25,9 +25,10 @@ namespace SWLOR.CraftSim.Scenario.Kitchen
 
         /// <summary>
         /// A starting estimate for a new minigame, until the client evidence measures it: the Kitchen asks for a choice among up to
-        /// fourteen actions, each with a range to read, so a little more than the old window's 6 s.
+        /// fourteen actions, each with a range to read, so a little more than the old window's 6 s. It is the pace the server holds a
+        /// craft's XP to (<see cref="CraftMinigameXp.ActionSeconds"/>).
         /// </summary>
-        public double SecondsPerAction => 8;
+        public double SecondsPerAction => CraftMinigameXp.ActionSeconds;
 
         /// <summary>The Kitchen's multiplier at the lowest level band, the largest; <see cref="XpMultiplierFor"/> gives each band's.</summary>
         public double XpMultiplier => CraftMinigameXp.MultiplierFor(Minigame);

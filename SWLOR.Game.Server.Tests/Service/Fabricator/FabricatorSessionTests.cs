@@ -68,7 +68,7 @@ public class FabricatorSessionTests
         Refine(engine);
         engine.Perform(FabricatorActionIds.Assemble).Performed.Should().BeTrue();
 
-        var success = lifecycle.Succeed(FakeCraftSessionWorld.PlayerHandle, _player, session, engine.Meters.Quality);
+        var success = lifecycle.SucceedAtPace(_world, FakeCraftSessionWorld.PlayerHandle, _player, session, engine.Meters.Quality);
 
         engine.Status.Should().Be(MinigameStatus.Succeeded);
         success.Should().NotBeNull();
@@ -92,7 +92,7 @@ public class FabricatorSessionTests
             engine.Perform(FabricatorActionIds.PrecisionPass);
         engine.Perform(FabricatorActionIds.Assemble);
 
-        var success = lifecycle.Succeed(FakeCraftSessionWorld.PlayerHandle, _player, session, engine.Meters.Quality);
+        var success = lifecycle.SucceedAtPace(_world, FakeCraftSessionWorld.PlayerHandle, _player, session, engine.Meters.Quality);
 
         engine.Status.Should().Be(MinigameStatus.Succeeded);
         success!.Outcome.QualityPercent.Should().Be(FabricatorRules.AssembleCapPoints);
@@ -109,8 +109,8 @@ public class FabricatorSessionTests
         var session = StartSession(lifecycle);
         var quality = new MinigameMeter(60, 100);
 
-        lifecycle.Succeed(FakeCraftSessionWorld.PlayerHandle, _player, session, quality).Should().NotBeNull();
-        var again = lifecycle.Succeed(FakeCraftSessionWorld.PlayerHandle, _player, session, quality);
+        lifecycle.SucceedAtPace(_world, FakeCraftSessionWorld.PlayerHandle, _player, session, quality).Should().NotBeNull();
+        var again = lifecycle.SucceedAtPace(_world, FakeCraftSessionWorld.PlayerHandle, _player, session, quality);
 
         again.Should().BeNull();
         _world.Events.Count(entry => entry == "create:test_fabricator").Should().Be(1);
@@ -167,7 +167,7 @@ public class FabricatorSessionTests
         CraftMinigameXp.BaseXp(recipe, 25).Should().Be(scaled, "the lifecycle reads the base XP through CraftMinigameXp, gate multiplier then pace");
         var session = StartSession(lifecycle);
 
-        var success = lifecycle.Succeed(FakeCraftSessionWorld.PlayerHandle, _player, session, new MinigameMeter(60, 100));
+        var success = lifecycle.SucceedAtPace(_world, FakeCraftSessionWorld.PlayerHandle, _player, session, new MinigameMeter(60, 100));
 
         success!.Outcome.Xp.Should().Be(CraftOutcomeRules.CalculateXp(scaled, 0, true, 0.6f));
 

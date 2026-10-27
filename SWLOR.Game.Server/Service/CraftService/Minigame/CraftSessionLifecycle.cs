@@ -107,7 +107,7 @@ public sealed class CraftSessionLifecycle
             Skill = recipe.Skill,
             HasBlueprint = blueprint != null,
             BlueprintLevel = blueprint?.Level ?? 0,
-            StartedUtc = DateTime.UtcNow,
+            StartedUtc = _world.UtcNow,
             Components = components,
             Enhancements = enhancements
         };
@@ -123,8 +123,13 @@ public sealed class CraftSessionLifecycle
     /// Finishes a craft: creates the item, applies the enhancements whose slot thresholds the quality meets, the food and
     /// blueprint bonuses and the vendor value, records the recipe as crafted and grants XP. Returns null when the session is no
     /// longer the player's saved craft, so a repeated request cannot create a second item.
+    /// <para>
+    /// The XP is held to the pace the minigame's XP multipliers assume (<see cref="CraftMinigameXp.PaceShare"/>): it is the full amount
+    /// when the <paramref name="actionsTaken"/> actions took at least <see cref="CraftMinigameXp.ActionSeconds"/> each since the craft began,
+    /// and less in proportion when they were resolved faster.
+    /// </para>
     /// </summary>
-    public CraftSessionSuccess Succeed(uint player, Player dbPlayer, CraftSession session, MinigameMeter quality)
+    public CraftSessionSuccess Succeed(uint player, Player dbPlayer, CraftSession session, MinigameMeter quality, int actionsTaken)
     {
         if (!IsActive(dbPlayer, session))
             return null;
@@ -140,7 +145,7 @@ public sealed class CraftSessionLifecycle
         var outcome = CraftOutcomeRules.CalculateSuccess(
             quality,
             recipe.Level,
-            CraftMinigameXp.BaseXp(recipe, GetRank(dbPlayer, recipe)),
+            PacedBaseXp(record, recipe, GetRank(dbPlayer, recipe), actionsTaken),
             firstTime,
             blueprintLevel,
             recipe.Category == RecipeCategoryType.Food,
@@ -190,8 +195,13 @@ public sealed class CraftSessionLifecycle
     /// Ends the saved craft as a failure: each committed component stack and enhancement comes back on a roll above the loss
     /// chance, and the attempt still grants 15% of the base XP. Items that do not fit the inventory are held on the player until
     /// there is room. Does nothing when no craft is saved.
+    /// <para>
+    /// A caller that played the craft passes the <paramref name="actionsTaken"/>, and the XP is held to the modeled pace as
+    /// <see cref="Succeed"/> holds it. A settlement with no window (a death, a login, a restart, a craft replaced by a new one) does not
+    /// know them and passes null: the XP is then not scaled, because nothing was resolved at a pace to measure.
+    /// </para>
     /// </summary>
-    public CraftSettlement Fail(uint player, Player dbPlayer, CraftSessionEndReason reason)
+    public CraftSettlement Fail(uint player, Player dbPlayer, CraftSessionEndReason reason, int? actionsTaken = null)
     {
         var record = dbPlayer.ActiveCraftSession;
         if (record == null)
@@ -205,7 +215,9 @@ public sealed class CraftSessionLifecycle
             _random,
             enhancements.Count,
             record.Components.Count,
-            CraftMinigameXp.BaseXp(recipe, GetRank(dbPlayer, recipe)),
+            actionsTaken.HasValue
+                ? PacedBaseXp(record, recipe, GetRank(dbPlayer, recipe), actionsTaken.Value)
+                : CraftMinigameXp.BaseXp(recipe, GetRank(dbPlayer, recipe)),
             record.BlueprintLevel);
 
         var kept = new List<string>();
@@ -411,6 +423,18 @@ public sealed class CraftSessionLifecycle
     {
         if (record.DebitSequence > _world.ExportedSequence(player))
             _world.FlushCharacter(player);
+    }
+
+    /// <summary>
+    /// The recipe's base XP held to the modeled pace: scaled by the share the craft's actions earned in the time since it began
+    /// (<see cref="CraftMinigameXp.PaceShare"/>), by the world's clock.
+    /// </summary>
+    private int PacedBaseXp(CraftSessionRecord record, RecipeDetail recipe, int rank, int actionsTaken)
+    {
+        var elapsedSeconds = (_world.UtcNow - record.StartedUtc).TotalSeconds;
+        return CraftMinigameXp.ScaleBaseXp(
+            CraftMinigameXp.BaseXp(recipe, rank),
+            CraftMinigameXp.PaceShare(elapsedSeconds, actionsTaken));
     }
 
     private void ReturnOrHold(uint player, Player dbPlayer, string serialized)

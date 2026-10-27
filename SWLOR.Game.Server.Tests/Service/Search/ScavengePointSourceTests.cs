@@ -93,10 +93,14 @@ public class ScavengePointSourceTests
     public void FindsKeptOnAScavengersRecord_AreReturnedAtLogin_AndWhenTheyRespawn()
     {
         var source = Source("Feature", "ScavengePoint.cs");
-        var login = Method(source, "public static void ReturnPendingSearchFinds()");
+        var login = Method(Source("Feature", "CraftingInterruptions.cs"), "public static void SettleOnLogin()");
         var respawn = Method(source, "public static void ReturnPendingSearchFindsOnRespawn()");
 
         login.Should().Contain("NwnScavengeWorld.Instance.ReturnPendingFinds(player, atLogin: true)");
+        login.IndexOf("CraftSessionService.RecoverAtLogin(player)", StringComparison.Ordinal)
+            .Should().BeLessThan(login.IndexOf("ReturnPendingFinds(player, atLogin: true)", StringComparison.Ordinal),
+                "the Search return exports the character, so the craft recovery must have put its items back first");
+        source.Should().NotContain("[NWNEventHandler(ScriptName.OnModuleEnter)]", "one login handler orders both recoveries");
         respawn.Should().Contain("NwnScavengeWorld.Instance.ReturnPendingFinds(player)");
         source.Should().Contain("[NWNEventHandler(ScriptName.OnModuleRespawn)]");
     }

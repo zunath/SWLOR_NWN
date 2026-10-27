@@ -88,6 +88,9 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
         public GuiBindingList<string> ActionTooltips { get => Get<GuiBindingList<string>>(); set => Set(value); }
         public GuiBindingList<string> ActionPreviews { get => Get<GuiBindingList<string>>(); set => Set(value); }
 
+        /// <summary>The actions the engine has resolved, which hold the XP of a craft the window ends to the modeled pace.</summary>
+        protected override int? CraftActionsTaken => _engine?.Turn;
+
         protected override void Initialize(CraftPayload initialPayload)
         {
             _recipe = initialPayload.Recipe;
@@ -300,7 +303,7 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
                     if (_engine == null)
                         return;
 
-                    CraftSessionService.Fail(Player, CraftSessionEndReason.WindowClosed);
+                    CraftSessionService.Fail(Player, CraftSessionEndReason.WindowClosed, _engine.Turn);
                     EndCraft("You stopped before the piece was finished.", GuiColor.Red);
                 },
                 confirmText: "Stop",
@@ -309,7 +312,7 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
 
         private void FinishCraft()
         {
-            var success = CraftSessionService.Succeed(Player, _session, _engine.Meters.Quality);
+            var success = CraftSessionService.Succeed(Player, _session, _engine.Meters.Quality, _engine.Turn);
             if (success == null)
             {
                 EndCraft("The craft ended.", GuiColor.Red);
@@ -323,7 +326,7 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
 
         private void BreakCraft()
         {
-            var settlement = CraftSessionService.Fail(Player, CraftSessionEndReason.Broken);
+            var settlement = CraftSessionService.Fail(Player, CraftSessionEndReason.Broken, _engine.Turn);
             var lost = settlement.Settled ? $" {settlement.ItemsLost} of {settlement.ItemsLost + settlement.ItemsKept} items were lost." : string.Empty;
             EndCraft($"The piece broke.{lost}", GuiColor.Red);
         }

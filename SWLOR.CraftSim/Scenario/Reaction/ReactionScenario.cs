@@ -21,8 +21,8 @@ namespace SWLOR.CraftSim.Scenario.Reaction
 
         public CraftMinigameType Minigame => CraftMinigameType.Reaction;
 
-        /// <summary>The starting estimate for a new minigame's window; the client evidence replaces it.</summary>
-        public double SecondsPerAction => 8.0;
+        /// <summary>The pace the server holds a craft's XP to (<see cref="CraftMinigameXp.ActionSeconds"/>), a starting estimate the client evidence replaces.</summary>
+        public double SecondsPerAction => CraftMinigameXp.ActionSeconds;
 
         /// <summary>The Reaction's multiplier at the lowest level band, the largest; <see cref="XpMultiplierFor"/> gives each band's.</summary>
         public double XpMultiplier => CraftMinigameXp.MultiplierFor(Minigame);

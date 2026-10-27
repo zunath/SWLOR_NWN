@@ -128,6 +128,7 @@ These rules apply to every item craft, in every minigame.
 - **Food.** Duration scales across the whole quality range, up to today's 100% bonus. This replaces the `(int)qualityPercent` branch that only paid at 100%.
 - **XP and sale value.** Both keep today's formulas (`CraftViewModel.cs:1393-1432`), which scale with quality.
   - XP: base XP from recipe level against rank (`Skill.XPChart.cs`; Espionage's practice XP through `Craft.GetBaseRecipeXP`), +20% on a recipe's first craft, +50% per blueprint level, then +quality%.
+  - Pace: the XP of a craft in the Forge, Circuit, Fabricator, Kitchen and Reaction windows, a failed one included, is scaled by `min(1, seconds since the craft began / (actions taken x CraftMinigameXp.ActionSeconds))` (8 s an action, the CraftSim scenarios' value), so resolving actions faster than the modeled pace earns proportionally less and never more XP per hour than the gates assume. A craft settled with no window to count its actions (a death, a login, a restart, a craft replaced by a new one) is not scaled.
   - Vendor value: `max(round(levelBonus × quality%), max(25, round(1.6 × level))) × 1.225`, with `levelBonus = 48 × (level / 10 + 1) + 9 × level`.
 - **Failure.** The piece breaks when the minigame's integrity meter reaches 0. Each component stack and each selected enhancement then has today's 65% loss chance, and the window shows this rule before the materials are committed. A failed craft still gives 15% of the base XP, as today.
 - **Blueprints.** Fees, licensed runs and blueprint bonuses behave as today.

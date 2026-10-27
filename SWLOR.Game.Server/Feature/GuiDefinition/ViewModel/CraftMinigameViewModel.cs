@@ -42,7 +42,14 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
         /// A craft still in progress when the window closes, including when the player walks away from the station, fails under
         /// the loss rule. A window that overrides this calls the base method.
         /// </summary>
-        public override Action OnWindowClosed() => () => CraftSessionService.Fail(Player, CraftSessionEndReason.WindowClosed);
+        public override Action OnWindowClosed() => () => CraftSessionService.Fail(Player, CraftSessionEndReason.WindowClosed, CraftActionsTaken);
+
+        /// <summary>
+        /// The actions the window's engine has resolved so far, which hold the XP of a craft that ends with the window to the modeled pace
+        /// (<see cref="CraftMinigameXp.PaceShare"/>). A window that resolves a craft's actions at once overrides this to return its engine's
+        /// <c>Turn</c>, or null while it has none; the others return null.
+        /// </summary>
+        protected virtual int? CraftActionsTaken => null;
 
         public Action OnHelp() => () => ChangeView(CraftMinigameHelp.PartialName);
 

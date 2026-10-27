@@ -103,6 +103,9 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
         public static string ActionColorProperty(int index) => $"ActionColor{index}";
         public static string ActionEnabledProperty(int index) => $"ActionEnabled{index}";
 
+        /// <summary>The actions the engine has resolved, which hold the XP of a craft the window ends to the modeled pace.</summary>
+        protected override int? CraftActionsTaken => _engine?.Turn;
+
         protected override void Initialize(CraftPayload initialPayload)
         {
             _recipe = initialPayload.Recipe;
@@ -158,7 +161,7 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
                 $"Stop the reaction? Each stack of components has a {CraftOutcomeRules.ChanceToLoseItemPercent}% chance to be lost, and the attempt earns {(int)(CraftOutcomeRules.FailureXpFraction * 100)}% of the base XP.",
                 () =>
                 {
-                    var settlement = CraftSessionService.Fail(Player, CraftSessionEndReason.WindowClosed);
+                    var settlement = CraftSessionService.Fail(Player, CraftSessionEndReason.WindowClosed, _engine?.Turn);
                     EndAttempt(DescribeFailure("You stopped the reaction.", settlement), GuiColor.Red);
                 },
                 null,
@@ -193,7 +196,7 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
                     CompleteSuccess();
                     break;
                 case MinigameStatus.Failed:
-                    var settlement = CraftSessionService.Fail(Player, CraftSessionEndReason.Broken);
+                    var settlement = CraftSessionService.Fail(Player, CraftSessionEndReason.Broken, _engine.Turn);
                     EndAttempt(DescribeFailure("The piece broke.", settlement), GuiColor.Red);
                     break;
                 default:
@@ -207,7 +210,7 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
 
         private void CompleteSuccess()
         {
-            var success = CraftSessionService.Succeed(Player, _session, _engine.Meters.Quality);
+            var success = CraftSessionService.Succeed(Player, _session, _engine.Meters.Quality, _engine.Turn);
             if (success == null)
             {
                 EndAttempt("Your craft was interrupted.", GuiColor.Red);

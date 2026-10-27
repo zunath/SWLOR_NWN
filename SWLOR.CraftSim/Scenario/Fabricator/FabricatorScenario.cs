@@ -22,10 +22,11 @@ namespace SWLOR.CraftSim.Scenario.Fabricator
         public CraftMinigameType Minigame => CraftMinigameType.Fabricator;
 
         /// <summary>
-        /// 8 seconds an action: the Fabricator window shows nine actions and the previews of a three-head game take longer to read than
-        /// the old window's eleven, which the legacy default sizes at 6 seconds. An estimate until client timing replaces it.
+        /// 8 seconds an action (<see cref="CraftMinigameXp.ActionSeconds"/>, the pace the server holds a craft's XP to): the Fabricator window
+        /// shows nine actions and the previews of a three-head game take longer to read than the old window's eleven, which the legacy
+        /// default sizes at 6 seconds. An estimate until client timing replaces it.
         /// </summary>
-        public double SecondsPerAction => 8.0;
+        public double SecondsPerAction => CraftMinigameXp.ActionSeconds;
 
         /// <summary>
         /// The default search with a heuristic that knows the item is made by Assemble and not by a full progress meter

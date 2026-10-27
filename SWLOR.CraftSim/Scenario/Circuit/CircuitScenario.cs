@@ -38,8 +38,8 @@ namespace SWLOR.CraftSim.Scenario.Circuit
 
         public CraftMinigameType Minigame => CraftMinigameType.Circuit;
 
-        /// <summary>An estimate: the window shows each action's result and risk, so a turn takes a little longer than the old window's 6 s. Client timing replaces it.</summary>
-        public double SecondsPerAction => 8.0;
+        /// <summary>An estimate (<see cref="CraftMinigameXp.ActionSeconds"/>, the pace the server holds a craft's XP to): the window shows each action's result and risk, so a turn takes a little longer than the old window's 6 s. Client timing replaces it.</summary>
+        public double SecondsPerAction => CraftMinigameXp.ActionSeconds;
 
         /// <summary>The Circuit's multiplier depends on the recipe's level band: see <see cref="XpMultiplierFor"/>.</summary>
         public double XpMultiplier => 1.0;

@@ -78,6 +78,9 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
         public GuiBindingList<string> ActionTooltips { get => Get<GuiBindingList<string>>(); set => Set(value); }
         public GuiBindingList<bool> ActionEnabled { get => Get<GuiBindingList<bool>>(); set => Set(value); }
 
+        /// <summary>The actions the engine has resolved, which hold the XP of a craft the window ends to the modeled pace.</summary>
+        protected override int? CraftActionsTaken => _engine?.Turn;
+
         protected override void Initialize(CraftPayload initialPayload)
         {
             _recipe = initialPayload.Recipe;
@@ -356,7 +359,7 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
         {
             _settling = true;
             var recipe = Craft.GetRecipe(_recipe);
-            var success = CraftSessionService.Succeed(Player, _session, _engine.Meters.Quality);
+            var success = CraftSessionService.Succeed(Player, _session, _engine.Meters.Quality, _engine.Turn);
             if (success == null)
             {
                 ReturnToSetup("Your craft had already ended.", GuiColor.Red);
@@ -372,7 +375,7 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
         private void FinishFailure()
         {
             _settling = true;
-            var settlement = CraftSessionService.Fail(Player, CraftSessionEndReason.Broken);
+            var settlement = CraftSessionService.Fail(Player, CraftSessionEndReason.Broken, _engine.Turn);
             var text = settlement.Settled
                 ? $"The piece broke. {settlement.ItemsLost} of {settlement.ItemsLost + settlement.ItemsKept} items were lost. +{settlement.Xp} XP."
                 : "The piece broke.";

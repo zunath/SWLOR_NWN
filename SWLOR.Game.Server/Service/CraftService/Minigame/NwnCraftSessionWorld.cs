@@ -25,6 +25,8 @@ public sealed class NwnCraftSessionWorld : ICraftSessionWorld
     private const string PersistPendingVariable = "CRAFT_PERSIST_PENDING";
     private const float PersistDelaySeconds = 0.1f;
 
+    public DateTime UtcNow => DateTime.UtcNow;
+
     public RecipeDetail GetRecipe(RecipeType recipe) => Craft.GetRecipe(recipe);
 
     public bool CanCraft(uint player, RecipeType recipe) => Craft.CanPlayerCraftRecipe(player, recipe);

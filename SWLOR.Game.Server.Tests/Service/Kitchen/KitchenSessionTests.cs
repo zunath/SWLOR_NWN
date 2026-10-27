@@ -74,7 +74,7 @@ public class KitchenSessionTests
 
         engine!.Status.Should().Be(MinigameStatus.Succeeded);
 
-        var success = lifecycle.Succeed(FakeCraftSessionWorld.PlayerHandle, _player, session, engine.Meters.Quality);
+        var success = lifecycle.SucceedAtPace(_world, FakeCraftSessionWorld.PlayerHandle, _player, session, engine.Meters.Quality);
 
         success.Should().NotBeNull();
         success.Outcome.QualityPercent.Should().Be(engine.Meters.QualityPercent);
@@ -92,7 +92,7 @@ public class KitchenSessionTests
         var lifecycle = Lifecycle();
         var session = Start(lifecycle);
 
-        lifecycle.Succeed(FakeCraftSessionWorld.PlayerHandle, _player, session, new MinigameMeter(100, KitchenTuning.QualityMax));
+        lifecycle.SucceedAtPace(_world, FakeCraftSessionWorld.PlayerHandle, _player, session, new MinigameMeter(100, KitchenTuning.QualityMax));
 
         _world.FoodBonuses.Single().Seconds.Should().Be(300);
     }
@@ -161,7 +161,7 @@ public class KitchenSessionTests
         var lifecycle = Lifecycle(66, 66, 66);
         var session = Start(lifecycle);
 
-        var success = lifecycle.Succeed(FakeCraftSessionWorld.PlayerHandle, _player, session, new MinigameMeter(60, KitchenTuning.QualityMax));
+        var success = lifecycle.SucceedAtPace(_world, FakeCraftSessionWorld.PlayerHandle, _player, session, new MinigameMeter(60, KitchenTuning.QualityMax));
 
         success.Outcome.Xp.Should().Be(CraftOutcomeRules.CalculateXp(scaled, 0, true, 0.6f));
 

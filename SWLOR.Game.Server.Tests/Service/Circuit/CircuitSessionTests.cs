@@ -66,7 +66,7 @@ public class CircuitSessionTests
         var engine = new CircuitEngine(new SeededMinigameRandom(3), setup);
 
         var (status, _, quality, _) = PlaySafely(engine, setup);
-        var success = lifecycle.Succeed(FakeCraftSessionWorld.PlayerHandle, _player, session, engine.Meters.Quality);
+        var success = lifecycle.SucceedAtPace(_world, FakeCraftSessionWorld.PlayerHandle, _player, session, engine.Meters.Quality);
 
         status.Should().Be(MinigameStatus.Succeeded);
         quality.Should().BeGreaterThanOrEqualTo(CraftOutcomeRules.SecondSlotQualityThresholdPercent);
@@ -90,7 +90,7 @@ public class CircuitSessionTests
         while (engine.Status == MinigameStatus.InProgress)
             engine.Perform(CircuitActionIds.Wire);
 
-        var success = lifecycle.Succeed(FakeCraftSessionWorld.PlayerHandle, _player, session, engine.Meters.Quality);
+        var success = lifecycle.SucceedAtPace(_world, FakeCraftSessionWorld.PlayerHandle, _player, session, engine.Meters.Quality);
 
         engine.Status.Should().Be(MinigameStatus.Succeeded);
         success!.Outcome.QualityPercent.Should().Be(0);
@@ -107,8 +107,8 @@ public class CircuitSessionTests
         var session = StartSession(lifecycle);
         var quality = new MinigameMeter(60, 100);
 
-        lifecycle.Succeed(FakeCraftSessionWorld.PlayerHandle, _player, session, quality).Should().NotBeNull();
-        var again = lifecycle.Succeed(FakeCraftSessionWorld.PlayerHandle, _player, session, quality);
+        lifecycle.SucceedAtPace(_world, FakeCraftSessionWorld.PlayerHandle, _player, session, quality).Should().NotBeNull();
+        var again = lifecycle.SucceedAtPace(_world, FakeCraftSessionWorld.PlayerHandle, _player, session, quality);
 
         again.Should().BeNull();
         _world.Events.Count(entry => entry == "create:test_circuit").Should().Be(1);

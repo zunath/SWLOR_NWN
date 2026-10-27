@@ -48,8 +48,8 @@ namespace SWLOR.CraftSim.Scenario.Forge
 
         public CraftMinigameType Minigame => CraftMinigameType.Forge;
 
-        /// <summary>An estimate for the new window until the client evidence measures it; the old window's is 6.</summary>
-        public double SecondsPerAction => 8.0;
+        /// <summary>The pace the server holds a craft's XP to (<see cref="CraftMinigameXp.ActionSeconds"/>), an estimate until the client evidence measures it; the old window's is 6.</summary>
+        public double SecondsPerAction => CraftMinigameXp.ActionSeconds;
 
         /// <summary>The Forge's multiplier at the lowest level band, the largest; <see cref="XpMultiplierFor"/> gives each band's.</summary>
         public double XpMultiplier => CraftMinigameXp.MultiplierFor(Minigame);

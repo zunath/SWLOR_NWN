@@ -85,7 +85,7 @@ public class ForgeSessionFlowTests
         var quality = engine.Meters.Quality;
         quality.Percent.Should().BeInRange(50, 84, "the first slot's threshold is met and the second slot's is not");
 
-        var success = lifecycle.Succeed(FakeCraftSessionWorld.PlayerHandle, _player, session, quality);
+        var success = lifecycle.SucceedAtPace(_world, FakeCraftSessionWorld.PlayerHandle, _player, session, quality);
 
         success.Should().NotBeNull();
         success!.Outcome.QualityPercent.Should().Be(quality.Percent);
@@ -106,7 +106,7 @@ public class ForgeSessionFlowTests
         while (engine.Status == MinigameStatus.InProgress)
             engine.Perform(ForgeActionIds.HydroPress);
 
-        var success = lifecycle.Succeed(FakeCraftSessionWorld.PlayerHandle, _player, session, engine.Meters.Quality);
+        var success = lifecycle.SucceedAtPace(_world, FakeCraftSessionWorld.PlayerHandle, _player, session, engine.Meters.Quality);
 
         success!.Outcome.QualityPercent.Should().Be(0);
         success.Outcome.Enhancements.Should().ContainSingle().Which.Transfers.Should().BeFalse();
@@ -154,7 +154,7 @@ public class ForgeSessionFlowTests
         stopped.Settled.Should().BeTrue();
         closed.Settled.Should().BeFalse();
         CraftSessionLifecycle.IsActive(_player, session).Should().BeFalse("a click that arrives after the craft ended must not be treated as live");
-        lifecycle.Succeed(FakeCraftSessionWorld.PlayerHandle, _player, session, engine.Meters.Quality).Should().BeNull();
+        lifecycle.SucceedAtPace(_world, FakeCraftSessionWorld.PlayerHandle, _player, session, engine.Meters.Quality).Should().BeNull();
     }
 
     [Test]

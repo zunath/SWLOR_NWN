@@ -200,7 +200,7 @@ public class ReactionRecipeTests
         ReactionPlanner.Play(engine, ReactionPlanner.FindPath(engine, minimumQuality: 90)!);
         engine.Status.Should().Be(MinigameStatus.Succeeded);
 
-        var success = lifecycle.Succeed(FakeCraftSessionWorld.PlayerHandle, player, start.Session, engine.Meters.Quality);
+        var success = lifecycle.SucceedAtPace(world, FakeCraftSessionWorld.PlayerHandle, player, start.Session, engine.Meters.Quality);
 
         success.Should().NotBeNull();
         success!.Outcome.QualityPercent.Should().Be(engine.Meters.Quality.Percent);

@@ -202,7 +202,7 @@ public class CraftSessionLifecycleTests
         var session = StartSession(lifecycle, NoItem, FakeCraftSessionWorld.FirstEnhancement, FakeCraftSessionWorld.SecondEnhancement);
         _world.Events.Clear();
 
-        var success = lifecycle.Succeed(FakeCraftSessionWorld.PlayerHandle, _player, session, new MinigameMeter(60, 100));
+        var success = lifecycle.SucceedAtPace(_world, FakeCraftSessionWorld.PlayerHandle, _player, session, new MinigameMeter(60, 100));
 
         success.Should().NotBeNull();
         success.Outcome.QualityPercent.Should().Be(60);
@@ -217,12 +217,96 @@ public class CraftSessionLifecycleTests
     }
 
     [Test]
+    public void Succeed_SlowerThanTheModeledPace_PaysTheFullXp()
+    {
+        var lifecycle = Lifecycle();
+        var session = StartSession(lifecycle);
+
+        // Three times the seconds the multipliers assume for 10 actions.
+        _world.Advance(3 * 10 * CraftMinigameXp.ActionSeconds);
+        lifecycle.Succeed(FakeCraftSessionWorld.PlayerHandle, _player, session, new MinigameMeter(60, 100), 10);
+
+        _world.XpGiven.Should().Equal((SkillType.Smithery, CraftOutcomeRules.CalculateXp(BaseXp, 0, true, 0.6f)));
+    }
+
+    [Test]
+    public void Succeed_InHalfTheModeledTime_PaysHalfTheBaseXp()
+    {
+        var lifecycle = Lifecycle();
+        var session = StartSession(lifecycle);
+
+        _world.Advance(10 * CraftMinigameXp.ActionSeconds / 2);
+        var success = lifecycle.Succeed(FakeCraftSessionWorld.PlayerHandle, _player, session, new MinigameMeter(60, 100), 10);
+
+        var halfBase = CraftMinigameXp.ScaleBaseXp(BaseXp, 0.5);
+        halfBase.Should().BeLessThan(BaseXp);
+        success.Outcome.Xp.Should().Be(CraftOutcomeRules.CalculateXp(halfBase, 0, true, 0.6f));
+        _world.XpGiven.Should().Equal((SkillType.Smithery, success.Outcome.Xp));
+    }
+
+    [Test]
+    public void Succeed_WithNoActionsOrNoTime_PaysNoXpAndDoesNotDivideByZero()
+    {
+        var noTime = Lifecycle();
+        var session = StartSession(noTime);
+
+        noTime.Succeed(FakeCraftSessionWorld.PlayerHandle, _player, session, new MinigameMeter(60, 100), 10)
+            .Outcome.Xp.Should().Be(0, "the clock did not move, so no time passed");
+
+        _world.Inventory["ore"] = 5;
+        _world.Inventory["wire"] = 2;
+        var noActions = Lifecycle();
+        var second = StartSession(noActions);
+        _world.Advance(120);
+
+        noActions.Succeed(FakeCraftSessionWorld.PlayerHandle, _player, second, new MinigameMeter(60, 100), 0)
+            .Outcome.Xp.Should().Be(0, "no actions were taken");
+    }
+
+    [Test]
+    public void Fail_AfterFewerSecondsThanTheModeledPace_PaysTheFailureXpInProportion()
+    {
+        var lifecycle = Lifecycle(100, 100);
+        StartSession(lifecycle, FakeCraftSessionWorld.Blueprint);
+
+        _world.Advance(6 * CraftMinigameXp.ActionSeconds / 2);
+        var settlement = lifecycle.Fail(FakeCraftSessionWorld.PlayerHandle, _player, CraftSessionEndReason.Broken, 6);
+
+        settlement.Xp.Should().Be(CraftOutcomeRules.CalculateFailureXp(CraftMinigameXp.ScaleBaseXp(BaseXp, 0.5), 2));
+        settlement.Xp.Should().BeLessThan(CraftOutcomeRules.CalculateFailureXp(BaseXp, 2));
+        _world.XpGiven.Should().Equal((SkillType.Smithery, settlement.Xp));
+    }
+
+    [Test]
+    public void Fail_AtTheModeledPace_PaysTheFullFailureXp()
+    {
+        var lifecycle = Lifecycle(100, 100);
+        StartSession(lifecycle, FakeCraftSessionWorld.Blueprint);
+
+        _world.AdvanceByActions(6);
+        var settlement = lifecycle.Fail(FakeCraftSessionWorld.PlayerHandle, _player, CraftSessionEndReason.Broken, 6);
+
+        settlement.Xp.Should().Be(CraftOutcomeRules.CalculateFailureXp(BaseXp, 2));
+    }
+
+    [Test]
+    public void Fail_WithNoWindowToCountTheActions_DoesNotScaleTheXp()
+    {
+        var lifecycle = Lifecycle(100, 100);
+        StartSession(lifecycle, FakeCraftSessionWorld.Blueprint);
+
+        var settlement = lifecycle.Fail(FakeCraftSessionWorld.PlayerHandle, _player, CraftSessionEndReason.Interrupted);
+
+        settlement.Xp.Should().Be(CraftOutcomeRules.CalculateFailureXp(BaseXp, 2));
+    }
+
+    [Test]
     public void Succeed_AtTheSecondThreshold_AppliesBothEnhancements()
     {
         var lifecycle = Lifecycle();
         var session = StartSession(lifecycle, NoItem, FakeCraftSessionWorld.FirstEnhancement, FakeCraftSessionWorld.SecondEnhancement);
 
-        lifecycle.Succeed(FakeCraftSessionWorld.PlayerHandle, _player, session, new MinigameMeter(85, 100));
+        lifecycle.SucceedAtPace(_world, FakeCraftSessionWorld.PlayerHandle, _player, session, new MinigameMeter(85, 100));
 
         _world.AppliedEnhancements.Should().Equal("enh-a", "enh-b");
     }
@@ -235,7 +319,7 @@ public class CraftSessionLifecycleTests
         var lifecycle = Lifecycle();
         var session = StartSession(lifecycle);
 
-        lifecycle.Succeed(FakeCraftSessionWorld.PlayerHandle, _player, session, new MinigameMeter(100, 100));
+        lifecycle.SucceedAtPace(_world, FakeCraftSessionWorld.PlayerHandle, _player, session, new MinigameMeter(100, 100));
 
         _world.XpGiven.Single().Xp.Should().Be(CraftOutcomeRules.CalculateXp(BaseXp, 0, false, 1f));
     }
@@ -246,8 +330,8 @@ public class CraftSessionLifecycleTests
         var lifecycle = Lifecycle();
         var session = StartSession(lifecycle);
 
-        lifecycle.Succeed(FakeCraftSessionWorld.PlayerHandle, _player, session, new MinigameMeter(100, 100)).Should().NotBeNull();
-        lifecycle.Succeed(FakeCraftSessionWorld.PlayerHandle, _player, session, new MinigameMeter(100, 100)).Should().BeNull();
+        lifecycle.SucceedAtPace(_world, FakeCraftSessionWorld.PlayerHandle, _player, session, new MinigameMeter(100, 100)).Should().NotBeNull();
+        lifecycle.SucceedAtPace(_world, FakeCraftSessionWorld.PlayerHandle, _player, session, new MinigameMeter(100, 100)).Should().BeNull();
 
         _world.Events.Count(e => e == "create:test_item").Should().Be(1);
         _world.XpGiven.Should().ContainSingle();
@@ -260,7 +344,7 @@ public class CraftSessionLifecycleTests
         var lifecycle = Lifecycle();
         var session = StartSession(lifecycle, FakeCraftSessionWorld.Blueprint);
 
-        lifecycle.Succeed(FakeCraftSessionWorld.PlayerHandle, _player, session, new MinigameMeter(100, 100));
+        lifecycle.SucceedAtPace(_world, FakeCraftSessionWorld.PlayerHandle, _player, session, new MinigameMeter(100, 100));
 
         _world.FoodBonuses.Should().Equal((300, 2));
         _world.BlueprintBonusCalls.Should().Be(1);
@@ -274,7 +358,7 @@ public class CraftSessionLifecycleTests
         var lifecycle = Lifecycle();
         var session = StartSession(lifecycle, FakeCraftSessionWorld.Blueprint);
 
-        lifecycle.Succeed(FakeCraftSessionWorld.PlayerHandle, _player, session, new MinigameMeter(25, 100));
+        lifecycle.SucceedAtPace(_world, FakeCraftSessionWorld.PlayerHandle, _player, session, new MinigameMeter(25, 100));
 
         _world.FoodBonuses.Should().Equal((75, 0));
     }
@@ -448,7 +532,7 @@ public class CraftSessionLifecycleTests
         again.Settled.Should().BeFalse();
         _world.XpGiven.Should().ContainSingle();
         CraftSessionLifecycle.IsActive(_player, session).Should().BeFalse();
-        lifecycle.Succeed(FakeCraftSessionWorld.PlayerHandle, _player, session, new MinigameMeter(100, 100))
+        lifecycle.SucceedAtPace(_world, FakeCraftSessionWorld.PlayerHandle, _player, session, new MinigameMeter(100, 100))
             .Should().BeNull("a craft settled by death cannot also succeed");
     }
 
@@ -513,7 +597,7 @@ public class CraftSessionLifecycleTests
         _world.PersistedAtSave.Clear();
         var savesBefore = _world.SaveCount;
 
-        lifecycle.Succeed(FakeCraftSessionWorld.PlayerHandle, _player, session, new MinigameMeter(60, 100));
+        lifecycle.SucceedAtPace(_world, FakeCraftSessionWorld.PlayerHandle, _player, session, new MinigameMeter(60, 100));
 
         _world.PersistedAtSave.Should().HaveCount(1);
         _world.PersistedAtSave.Single().Should().BeGreaterThan(savesBefore, "the export follows the record save that cleared the session");
@@ -721,7 +805,7 @@ public class CraftSessionLifecycleTests
         var lifecycle = Lifecycle();
         var session = StartSession(lifecycle);
         _world.RunQueuedExport();
-        lifecycle.Succeed(FakeCraftSessionWorld.PlayerHandle, _player, session, new MinigameMeter(100, 100)).Should().NotBeNull();
+        lifecycle.SucceedAtPace(_world, FakeCraftSessionWorld.PlayerHandle, _player, session, new MinigameMeter(100, 100)).Should().NotBeNull();
         _world.Crafted.Should().Equal("crafted test_item");
 
         var saved = CrashAndLogIn();
@@ -744,7 +828,7 @@ public class CraftSessionLifecycleTests
         var lifecycle = Lifecycle();
         var session = StartSession(lifecycle);
         _world.RunQueuedExport();
-        lifecycle.Succeed(FakeCraftSessionWorld.PlayerHandle, _player, session, new MinigameMeter(100, 100));
+        lifecycle.SucceedAtPace(_world, FakeCraftSessionWorld.PlayerHandle, _player, session, new MinigameMeter(100, 100));
         _world.RunQueuedExport();
 
         var saved = CrashAndLogIn();

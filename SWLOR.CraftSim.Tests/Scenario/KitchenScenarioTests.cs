@@ -31,7 +31,7 @@ namespace SWLOR.CraftSim.Tests.Scenario
             ScenarioRegistry.Discover().Scenarios.Select(scenario => scenario.Name).Should().Contain("kitchen");
             Scenario.Skill.Should().Be(SkillType.Agriculture);
             Scenario.Minigame.Should().Be(CraftMinigameType.Kitchen);
-            Scenario.SecondsPerAction.Should().Be(8);
+            Scenario.SecondsPerAction.Should().Be(CraftMinigameXp.ActionSeconds);
             Scenario.Enhancements.Should().Be(EnhancementSupport.Modeled);
             Scenario.LengthTarget.Should().Be(LengthTarget.ItemCraft);
         }

@@ -10,6 +10,9 @@ namespace SWLOR.Game.Server.Service.CraftService.Minigame;
 /// </summary>
 public interface ICraftSessionWorld
 {
+    /// <summary>The current time in UTC. A session's start and the time it took are read from this clock, so a test can move it.</summary>
+    DateTime UtcNow { get; }
+
     RecipeDetail GetRecipe(RecipeType recipe);
 
     /// <summary>True when the player meets the recipe's skill and other requirements. It does not check materials.</summary>

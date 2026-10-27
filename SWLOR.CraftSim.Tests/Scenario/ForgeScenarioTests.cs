@@ -30,7 +30,7 @@ namespace SWLOR.CraftSim.Tests.Scenario
             found.Should().BeOfType<ForgeScenario>();
             found.Skill.Should().Be(SkillType.Smithery);
             found.Minigame.Should().Be(CraftMinigameType.Forge);
-            found.SecondsPerAction.Should().Be(8.0, "the starting estimate for a window nobody has played");
+            found.SecondsPerAction.Should().Be(CraftMinigameXp.ActionSeconds, "the gates model the pace the server holds a craft's XP to");
             found.LengthTarget.Should().Be(LengthTarget.ItemCraft);
         }
 

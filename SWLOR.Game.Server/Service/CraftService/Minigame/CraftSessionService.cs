@@ -20,18 +20,24 @@ public static class CraftSessionService
             : Lifecycle.Start(player, dbPlayer, request);
     }
 
-    /// <summary>Creates the crafted item. Returns null when the session already ended, so a repeated request does nothing.</summary>
-    public static CraftSessionSuccess Succeed(uint player, CraftSession session, MinigameMeter quality)
+    /// <summary>
+    /// Creates the crafted item. Returns null when the session already ended, so a repeated request does nothing. The engine's
+    /// <paramref name="actionsTaken"/> (its <c>Turn</c>) and the time since the craft began hold the XP to the modeled pace.
+    /// </summary>
+    public static CraftSessionSuccess Succeed(uint player, CraftSession session, MinigameMeter quality, int actionsTaken)
     {
         var dbPlayer = DB.Get<Player>(GetObjectUUID(player));
-        return dbPlayer == null ? null : Lifecycle.Succeed(player, dbPlayer, session, quality);
+        return dbPlayer == null ? null : Lifecycle.Succeed(player, dbPlayer, session, quality, actionsTaken);
     }
 
-    /// <summary>Ends the player's saved craft as a failure. Does nothing when no craft is saved.</summary>
-    public static CraftSettlement Fail(uint player, CraftSessionEndReason reason)
+    /// <summary>
+    /// Ends the player's saved craft as a failure. Does nothing when no craft is saved. A window passes the engine's
+    /// <paramref name="actionsTaken"/> so the failure XP is held to the modeled pace; null (a settlement with no window) leaves it unscaled.
+    /// </summary>
+    public static CraftSettlement Fail(uint player, CraftSessionEndReason reason, int? actionsTaken = null)
     {
         var dbPlayer = DB.Get<Player>(GetObjectUUID(player));
-        return dbPlayer == null ? CraftSettlement.None : Lifecycle.Fail(player, dbPlayer, reason);
+        return dbPlayer == null ? CraftSettlement.None : Lifecycle.Fail(player, dbPlayer, reason, actionsTaken);
     }
 
     /// <summary>Settles a craft nothing is playing and returns held items that now fit. Call at login and when a crafting window opens.</summary>

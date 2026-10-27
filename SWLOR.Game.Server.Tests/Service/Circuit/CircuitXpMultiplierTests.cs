@@ -95,7 +95,7 @@ public class CircuitXpMultiplierTests
         var scaledBaseXp = CraftMinigameXp.BaseXp(recipe, 5);
 
         var session = lifecycle.Start(FakeCraftSessionWorld.PlayerHandle, player, request).Session;
-        var success = lifecycle.Succeed(FakeCraftSessionWorld.PlayerHandle, player, session, new MinigameMeter(50, 100));
+        var success = lifecycle.SucceedAtPace(world, FakeCraftSessionWorld.PlayerHandle, player, session, new MinigameMeter(50, 100));
         lifecycle.Start(FakeCraftSessionWorld.PlayerHandle, player, request);
         var failure = lifecycle.Fail(FakeCraftSessionWorld.PlayerHandle, player, CraftSessionEndReason.Broken);
 

@@ -12,17 +12,6 @@ namespace SWLOR.Game.Server.Feature
 {
     public static class ScavengePoint
     {
-        /// <summary>Gives a player the finds of a Search board a server restart or a logout cut short.</summary>
-        [NWNEventHandler(ScriptName.OnModuleEnter)]
-        public static void ReturnPendingSearchFinds()
-        {
-            var player = GetEnteringObject();
-            if (!GetIsPC(player) || GetIsDM(player) || GetIsDMPossessed(player))
-                return;
-
-            NwnScavengeWorld.Instance.ReturnPendingFinds(player, atLogin: true);
-        }
-
         /// <summary>Gives a player who died mid-search the finds the board kept for them, once they respawn.</summary>
         [NWNEventHandler(ScriptName.OnModuleRespawn)]
         public static void ReturnPendingSearchFindsOnRespawn()

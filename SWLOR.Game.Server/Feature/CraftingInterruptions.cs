@@ -1,5 +1,6 @@
 using SWLOR.Game.Server.Core;
 using SWLOR.Game.Server.Service.CraftService.Minigame;
+using SWLOR.Game.Server.Service.ScavengeService;
 
 namespace SWLOR.Game.Server.Feature
 {
@@ -9,6 +10,12 @@ namespace SWLOR.Game.Server.Feature
     /// </summary>
     public class CraftingInterruptions
     {
+        /// <summary>
+        /// Settles what a crash or logout left between the player record and the character file: the craft session first, then the
+        /// Search finds. Both run in this one handler, in this order, because each login step that exports writes the file's sequence:
+        /// the Search return's export must come after the craft recovery has put its items back, or a crash right after it would leave a
+        /// file whose sequence claims transfers it does not hold.
+        /// </summary>
         [NWNEventHandler(ScriptName.OnModuleEnter)]
         public static void SettleOnLogin()
         {
@@ -17,6 +24,7 @@ namespace SWLOR.Game.Server.Feature
                 return;
 
             CraftSessionService.RecoverAtLogin(player);
+            NwnScavengeWorld.Instance.ReturnPendingFinds(player, atLogin: true);
         }
 
         [NWNEventHandler(ScriptName.OnModuleDeath)]

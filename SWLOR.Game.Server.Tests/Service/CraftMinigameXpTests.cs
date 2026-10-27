@@ -157,6 +157,25 @@ public class CraftMinigameXpTests
     }
 
     [Test]
+    public void ThePaceShare_IsFullAtOrSlowerThanTheModeledPace_AndInProportionBelowIt()
+    {
+        CraftMinigameXp.PaceShare(10 * CraftMinigameXp.ActionSeconds, 10).Should().Be(1.0);
+        CraftMinigameXp.PaceShare(30 * CraftMinigameXp.ActionSeconds, 10).Should().Be(1.0, "a slower craft is never paid more");
+        CraftMinigameXp.PaceShare(10 * CraftMinigameXp.ActionSeconds / 2, 10).Should().Be(0.5);
+        CraftMinigameXp.PaceShare(10 * CraftMinigameXp.ActionSeconds / 4, 10).Should().Be(0.25);
+    }
+
+    [Test]
+    public void ThePaceShare_ForNoActionsOrNoTime_IsZeroWithoutDividingByZero()
+    {
+        CraftMinigameXp.PaceShare(100, 0).Should().Be(0);
+        CraftMinigameXp.PaceShare(100, -3).Should().Be(0);
+        CraftMinigameXp.PaceShare(0, 10).Should().Be(0);
+        CraftMinigameXp.PaceShare(-5, 10).Should().Be(0);
+        CraftMinigameXp.PaceShare(0, 0).Should().Be(0);
+    }
+
+    [Test]
     public void ThePaceMultiplierRoundsToTheNearestWholeXpAndNeverLowersAnXp()
     {
         foreach (var baseXp in new[] { 0, 76, 150, 300, 450, 600, 676, 750, 900, 976, 1050, 1200 })

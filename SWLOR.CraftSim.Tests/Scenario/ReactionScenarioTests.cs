@@ -112,7 +112,7 @@ namespace SWLOR.CraftSim.Tests.Scenario
 
             scenario.XpMultiplierFor(EspionageRecipes().First(recipe => recipe.Level <= 10).Level).Should().BeGreaterThan(1.0);
             scenario.XpMultiplierFor(EspionageRecipes().First(recipe => recipe.Level > 10).Level).Should().Be(1.0, "only the lowest band needs a multiplier");
-            scenario.SecondsPerAction.Should().Be(8.0);
+            scenario.SecondsPerAction.Should().Be(CraftMinigameXp.ActionSeconds);
         }
 
         [Test]

@@ -46,6 +46,14 @@ internal sealed class FakeCraftSessionWorld : ICraftSessionWorld
     /// <summary>How often the character file was asked to be written, and the saves the record had had by then.</summary>
     public List<int> PersistedAtSave { get; } = new();
 
+    /// <summary>The clock the lifecycle reads. It only moves when a test advances it.</summary>
+    public DateTime UtcNow { get; set; } = new(2026, 1, 1, 12, 0, 0, DateTimeKind.Utc);
+
+    public void Advance(double seconds) => UtcNow = UtcNow.AddSeconds(seconds);
+
+    /// <summary>Moves the clock as far as a craft of <paramref name="actions"/> actions takes at the modeled pace.</summary>
+    public void AdvanceByActions(int actions) => Advance(actions * CraftMinigameXp.ActionSeconds);
+
     public RecipeDetail GetRecipe(RecipeType recipe) => Recipes[recipe];
 
     public bool CanCraft(uint player, RecipeType recipe) => MeetsRequirements;

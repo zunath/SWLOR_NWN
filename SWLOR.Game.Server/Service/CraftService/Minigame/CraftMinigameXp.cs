@@ -55,6 +55,24 @@ public static class CraftMinigameXp
         (int)Math.Round(baseXp * multiplier, MidpointRounding.AwayFromZero);
 
     /// <summary>
+    /// The seconds a player takes per action in the Forge, Circuit, Fabricator, Kitchen and Reaction windows (reading the previews
+    /// included). It is the pace the XP multipliers and the CraftSim gates assume (the scenarios' <c>SecondsPerAction</c> read this value),
+    /// and <see cref="PaceShare"/> holds a craft's XP to it, so resolving actions faster than this cannot earn more XP per hour than the model.
+    /// Not used by the gathering minigames, which pace themselves, or by Quick Craft, which has a fixed duration.
+    /// </summary>
+    public const double ActionSeconds = 8.0;
+
+    /// <summary>
+    /// The share, from 0 to 1, of a craft's XP that a craft of <paramref name="actionsTaken"/> actions finished in
+    /// <paramref name="elapsedSeconds"/> has earned: all of it at or slower than <see cref="ActionSeconds"/> an action, and in
+    /// proportion to the time below that. No actions or no time earns none, so nothing divides by zero.
+    /// </summary>
+    public static double PaceShare(double elapsedSeconds, int actionsTaken) =>
+        actionsTaken <= 0 || elapsedSeconds <= 0
+            ? 0
+            : Math.Min(1.0, elapsedSeconds / (actionsTaken * ActionSeconds));
+
+    /// <summary>
     /// The XP a craft of the recipe is worth before bonuses: <c>Craft.GetBaseRecipeXP</c> times the multiplier of the minigame that
     /// crafts the recipe's skill, at the recipe's level, times the crafting pace multiplier of the recipe's skill.
     /// </summary>

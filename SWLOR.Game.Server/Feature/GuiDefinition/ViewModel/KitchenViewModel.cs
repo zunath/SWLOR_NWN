@@ -289,6 +289,9 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
 
         #endregion
 
+        /// <summary>The actions the engine has resolved, which hold the XP of a craft the window ends to the modeled pace.</summary>
+        protected override int? CraftActionsTaken => _engine?.Turn;
+
         protected override void Initialize(CraftPayload initialPayload)
         {
             _engine = null;
@@ -709,7 +712,7 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
         {
             var quality = _engine.Meters.Quality;
             var dishName = Cache.GetItemNameByResref(Craft.GetRecipe(_recipe).Resref);
-            var success = CraftSessionService.Succeed(Player, _session, quality);
+            var success = CraftSessionService.Succeed(Player, _session, quality, _engine.Turn);
             if (success == null)
             {
                 ReturnToSetup("Your cooking was interrupted, so the dish was lost.", GuiColor.Red);
@@ -723,7 +726,7 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
 
         private void RuinDish()
         {
-            var settlement = CraftSessionService.Fail(Player, CraftSessionEndReason.Broken);
+            var settlement = CraftSessionService.Fail(Player, CraftSessionEndReason.Broken, _engine.Turn);
             if (!settlement.Settled)
             {
                 ReturnToSetup("Your cooking was interrupted, so the dish was lost.", GuiColor.Red);

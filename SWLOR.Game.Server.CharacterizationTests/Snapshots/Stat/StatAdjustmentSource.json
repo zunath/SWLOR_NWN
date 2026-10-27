@@ -1,0 +1,28 @@
+{
+  "function": "StatAdjustmentSource (indexer and GetModifierGroup)",
+  "description": "A stat payload keeps its own key: the indexer returns the payload's amount for a stat (zero when the payload lacks it) and the modifier group is key:statId.",
+  "seed": null,
+  "inputs": "two sources (one with Attack 3 and DefensePercentAdjustment -2, one empty) x stats {Attack, DefensePercentAdjustment, Accuracy} x trigger {Attack, Invalid, 1167}.",
+  "rowCount": 18,
+  "columns": ["source", "stat", "trigger", "=> amount", "=> modifierGroup"],
+  "rows": [
+    ["with stats", "Attack", "Attack", 3, "perk-a:13"],
+    ["with stats", "Attack", "Invalid", 3, "perk-a:0"],
+    ["with stats", "Attack", "DualWieldAttackDelayReductionPercent", 3, "perk-a:1167"],
+    ["with stats", "DefensePercentAdjustment", "Attack", -2, "perk-a:13"],
+    ["with stats", "DefensePercentAdjustment", "Invalid", -2, "perk-a:0"],
+    ["with stats", "DefensePercentAdjustment", "DualWieldAttackDelayReductionPercent", -2, "perk-a:1167"],
+    ["with stats", "Accuracy", "Attack", 0, "perk-a:13"],
+    ["with stats", "Accuracy", "Invalid", 0, "perk-a:0"],
+    ["with stats", "Accuracy", "DualWieldAttackDelayReductionPercent", 0, "perk-a:1167"],
+    ["empty", "Attack", "Attack", 0, "effect-b:13"],
+    ["empty", "Attack", "Invalid", 0, "effect-b:0"],
+    ["empty", "Attack", "DualWieldAttackDelayReductionPercent", 0, "effect-b:1167"],
+    ["empty", "DefensePercentAdjustment", "Attack", 0, "effect-b:13"],
+    ["empty", "DefensePercentAdjustment", "Invalid", 0, "effect-b:0"],
+    ["empty", "DefensePercentAdjustment", "DualWieldAttackDelayReductionPercent", 0, "effect-b:1167"],
+    ["empty", "Accuracy", "Attack", 0, "effect-b:13"],
+    ["empty", "Accuracy", "Invalid", 0, "effect-b:0"],
+    ["empty", "Accuracy", "DualWieldAttackDelayReductionPercent", 0, "effect-b:1167"]
+  ]
+}

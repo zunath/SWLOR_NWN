@@ -363,7 +363,12 @@ function Compare-HandlerOrders {
         foreach ($kind in @('action', 'conditional')) {
             $b = @($Branch[$name][$kind])
             $r = @($Reference[$name][$kind])
-            if ($b.Count -eq $r.Count -and (-not (Compare-Object $b $r -SyncWindow 0 -CaseSensitive))) { continue }
+            if ($b.Count -eq 0 -and $r.Count -eq 0) { continue }
+            $identical = ($b.Count -eq $r.Count)
+            for ($i = 0; $identical -and $i -lt $b.Count; $i++) {
+                if ($b[$i] -cne $r[$i]) { $identical = $false }
+            }
+            if ($identical) { continue }
             $onlyMaster = @(Get-MissingLines -Source $r -Other $b)
             $onlyBranch = @(Get-MissingLines -Source $b -Other $r)
             if ($onlyMaster.Count -eq 0 -and $onlyBranch.Count -eq 0) {

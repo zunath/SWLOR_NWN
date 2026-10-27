@@ -27,7 +27,9 @@
     Write nothing and build nothing; print only the repository-relative folders (forward slashes, each ending in /**)
     whose files this script owns: the wrapper sources it rewrites and everything it generates. The daily sync uses it to
     decide which merge conflicts it settles by taking master's version and running this script again
-    (tools/Refactor/MechanicalScripts.txt). Keep the list equal to SeamDefinition.NWScript in the generator.
+    (tools/Refactor/MechanicalScripts.txt). Keep the list equal to the sources and outputs of every seam the generator
+    writes (NWScript and the NWNX plugins). NWNX/** also covers the plugin enums, which this branch never changes, so
+    taking master's version of them is always right.
 
 .PARAMETER RepositoryRoot
     Repository root. Defaults to two folders above this script.
@@ -56,6 +58,7 @@ $RepositoryRoot = [System.IO.Path]::GetFullPath($RepositoryRoot)
 if ($ListOwnedFiles) {
     Write-Output 'SWLOR.NWN.API/NWScript/**'
     Write-Output 'SWLOR.NWN.API/NWScriptCustom/**'
+    Write-Output 'SWLOR.NWN.API/NWNX/**'
     Write-Output 'SWLOR.NWN.API/Generated/**'
     Write-Output 'SWLOR.NWN.API.Testing/Generated/**'
     exit 0

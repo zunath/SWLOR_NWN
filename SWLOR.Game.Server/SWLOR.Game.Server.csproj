@@ -34,6 +34,8 @@
 
   <ItemGroup>
     <EmbeddedResource Include="ConversationData\**\*.conversation.json" />
+    <!-- The order script handlers run in (see Core/ScriptHandlerManifest.cs). Embedded so it is deployed inside the server assembly. -->
+    <EmbeddedResource Include="Core\ScriptHandlerOrder.txt" LogicalName="ScriptHandlerOrder.txt" />
   </ItemGroup>
 
   <Target Name="NWN" AfterTargets="Build">

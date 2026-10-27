@@ -5,9 +5,12 @@ using SWLOR.Game.Server.Core;
 namespace SWLOR.Game.Server.Tests.Core;
 
 /// <summary>
-/// Renders what a <see cref="ScriptRegistry"/> holds as the canonical text snapshot compared by
-/// <see cref="ScriptHandlerOrderTests"/>. It only reads the registry through the same lookups the server uses
-/// to run handlers (<see cref="ScriptRegistry.GetActionScripts"/> and <see cref="ScriptRegistry.GetConditionalScripts"/>);
+/// Renders what a <see cref="ScriptRegistry"/> holds as the canonical text compared by
+/// <see cref="ScriptHandlerOrderTests"/>. This is the one generator: its output for the game assembly is the script
+/// handler manifest the server ships (<c>SWLOR.Game.Server/Core/ScriptHandlerOrder.txt</c>, read back by
+/// <see cref="ScriptHandlerManifest"/>), and its output for the engine test assembly is the engine test snapshot.
+/// It only reads the registry through the same lookups the server uses to run handlers
+/// (<see cref="ScriptRegistry.GetActionScripts"/> and <see cref="ScriptRegistry.GetConditionalScripts"/>);
 /// it never decides an order itself.
 /// </summary>
 public static class ScriptHandlerOrderSnapshot
@@ -41,8 +44,9 @@ public static class ScriptHandlerOrderSnapshot
         text.Append("# ").Append(title).Append('\n');
         text.Append("# One line per handler, in the order the registry runs them: kind, then Namespace.Type.Method.\n");
         text.Append("# Kinds: action = void handler, run in this order; conditional = bool handler, every one runs and the results are ANDed.\n");
-        text.Append("# The order is whatever reflection returns for the compiled assembly (see ScriptHandlerOrderTests for what drives it).\n");
-        text.Append("# Regenerate: SWLOR_UPDATE_SNAPSHOTS=1 dotnet test SWLOR.Game.Server.Tests --no-build --filter \"FullyQualifiedName~ScriptHandlerOrderTests\"\n");
+        text.Append("# The order is the one the script handler manifest (SWLOR.Game.Server/Core/ScriptHandlerOrder.txt) declares, not reflection order.\n");
+        text.Append("# A handler the manifest does not list runs after the listed ones until it is added; a listed handler that no longer exists is ignored.\n");
+        text.Append("# Regenerate (build first so the handlers are current, and build again after, because the server embeds the manifest): SWLOR_UPDATE_SNAPSHOTS=1 dotnet test SWLOR.Game.Server.Tests --no-build --filter \"FullyQualifiedName~ScriptHandlerOrderTests\"\n");
         text.Append('\n');
 
         text.Append("== BOOT BUCKETS (in the order the server reaches them) ==\n");
@@ -96,9 +100,10 @@ public static class ScriptHandlerOrderSnapshot
             .ToArray();
     }
 
+    /// <summary>The name a snapshot or manifest line uses for a handler; the manifest reader and this generator share one definition.</summary>
     public static string FullName(MethodInfo method)
     {
-        return method.DeclaringType!.FullName + "." + method.Name;
+        return ScriptHandlerManifest.HandlerName(method);
     }
 
     private static void AppendScript(

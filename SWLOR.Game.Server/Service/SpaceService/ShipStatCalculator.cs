@@ -116,10 +116,10 @@ namespace SWLOR.Game.Server.Service.SpaceService
             var damageEm = hull.DamagePercent;
             var damageExplosive = hull.DamagePercent + hull.ExplosivePercent;
 
+            var traitEvasion = 0;
             foreach (var fitted in modules ?? Enumerable.Empty<ShipFittedModule>())
             {
-                var step = fitted?.Step;
-                if (step == null) continue;
+                if (fitted?.Step == null) continue;
 
                 var hotbarSlot = GetHotbarSlot(fitted.Row, fitted.Slot);
                 var effectiveness = 1.0;
@@ -129,6 +129,11 @@ namespace SWLOR.Game.Server.Service.SpaceService
                     if (effectiveness <= 0.0)
                         continue;
                 }
+
+                // Component traits change the module's own numbers, and their Evasion and Speed add to the ship.
+                var step = ShipTraitRules.Apply(fitted.Step, fitted.Traits);
+                traitEvasion += ShipTraitRules.Sum(fitted.Traits, ShipTraitStat.Evasion);
+                speedPercent += ShipTraitRules.Sum(fitted.Traits, ShipTraitStat.Speed);
 
                 var outputMultiplier = moduleMultiplier * effectiveness;
                 hullPoints += Round(step.Hull * outputMultiplier);
@@ -168,7 +173,7 @@ namespace SWLOR.Game.Server.Service.SpaceService
                 Attack = hull.Attack,
                 Accuracy = hull.Accuracy + bestAccuracy,
                 Defense = hull.Defense + bestDefense,
-                Evasion = hull.Evasion + bestEvasion + evasionPenalty,
+                Evasion = hull.Evasion + bestEvasion + evasionPenalty + traitEvasion,
                 ShieldRegenBonusPercent = hull.ShieldRegenPercent,
                 CriticalBonus = hull.CriticalBonus,
                 Speed = hull.Speed * (1 + speedPercent / 100.0),

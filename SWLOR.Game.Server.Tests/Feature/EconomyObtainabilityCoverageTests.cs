@@ -149,6 +149,7 @@ public class EconomyObtainabilityCoverageTests
             "FishType.cs", "FishingRodType.cs", "FishingBaitType.cs",
             "SlicingCacheSmitheryRecipes.cs", "SlicingCacheCookingRecipes.cs", "TraceFuseRecipes.cs",
             "SlicingTerminalFurnitureRecipes.cs", "ConcentratedVenomRecipes.cs", "ShipSalvageItems.cs",
+            "RevampComponentCatalog.cs",
         };
         var serverDir = Path.Combine(root, "SWLOR.Game.Server");
         // Space revamp catalogs: each hull and module Tag is the output resref of a RevampStarshipRecipes recipe.

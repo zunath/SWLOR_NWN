@@ -829,7 +829,8 @@ namespace SWLOR.Game.Server.Service.PerkService
         RapidExtraction = 885,
         GasSiphoning = 886,
         SalvageExpert = 887,
+        TraitHunter = 888,
 
-        // IDs 650 and 888+ are free.
+        // IDs 650 and 889+ are free.
     }
 }

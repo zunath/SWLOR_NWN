@@ -24,7 +24,7 @@ namespace SWLOR.Game.Server.Service.CraftService
                 return true;
 
             var text = searchText.Trim();
-            if (NameContains(getItemName(recipe.Resref), text))
+            if (NameContains(recipe.Name, text) || NameContains(getItemName(recipe.Resref), text))
                 return true;
 
             return includeComponents &&

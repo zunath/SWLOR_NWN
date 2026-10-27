@@ -66,5 +66,8 @@ namespace SWLOR.Game.Server.Service.SpaceService
         public int DamageAll { get; set; }
         public int AuraShieldPercent { get; set; }
         public int AuraAccuracy { get; set; }
+
+        /// <summary>A copy whose numbers can be changed (component traits) without touching the catalog row.</summary>
+        public ShipModuleStep Clone() => (ShipModuleStep)MemberwiseClone();
     }
 }

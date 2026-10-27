@@ -378,4 +378,48 @@ public class ShipStatCalculatorTests
     {
         ShipStatCalculator.GetHotbarSlot(row, slot).Should().Be(expected);
     }
+
+    // Component traits (plan section 14, W9a): the module's numbers change by percent, Evasion and speed add to the ship.
+
+    private static ShipFittedModule WithTraits(ShipFittedModule fitted, params ShipComponentTraitType[] traits)
+    {
+        fitted.Traits = traits;
+        return fitted;
+    }
+
+    [Test]
+    public void ReinforcedHullFrame_RaisesThePlatingsHullAndResistsAndSlowsTheShip()
+    {
+        var hull = Hull(change: h => { h.Hull = 0; });
+        var plain = Calculate(hull, 10, Fit(ShipModulePowerType.Low, 1, s => { s.Hull = 200; s.ResistThermal = 50; }));
+        var reinforced = Calculate(hull, 10, WithTraits(
+            Fit(ShipModulePowerType.Low, 1, s => { s.Hull = 200; s.ResistThermal = 50; }), ShipComponentTraitType.Reinforced));
+
+        plain.MaxHull.Should().Be(200);
+        reinforced.MaxHull.Should().Be(212, "+6% of 200");
+        reinforced.Resistances[ResistanceType.Thermal].Should().Be(53, "+6% of 50, rounded half away from zero");
+        reinforced.Speed.Should().BeApproximately(plain.Speed * 0.98, 1e-9, "-2 percent points of speed");
+    }
+
+    [Test]
+    public void LightweightAndNimble_AddFlatEvasionToTheShip()
+    {
+        var result = Calculate(Hull(), 10,
+            WithTraits(Fit(ShipModulePowerType.Low, 1, s => s.Hull = 100), ShipComponentTraitType.Lightweight),
+            WithTraits(Fit(ShipModulePowerType.Low, 2, s => s.ModuleEvasion = 10), ShipComponentTraitType.Nimble));
+
+        result.Evasion.Should().Be(12 + 10 + 3 + 2, "best Thrusters 10, Lightweight +3 and Nimble +2 on top");
+        result.MaxHull.Should().Be(100 + 95, "Lightweight's -5% hull");
+    }
+
+    [Test]
+    public void TraitsOnAnEmptyStationSlot_AddNothing()
+    {
+        var hull = Hull(change: h => { h.Low = 2; h.StationLow = 1; });
+        var result = Calculate(hull, 10,
+            WithTraits(Fit(ShipModulePowerType.Low, 2, s => s.Hull = 100), ShipComponentTraitType.Lightweight));
+
+        result.Evasion.Should().Be(12);
+        result.MaxHull.Should().Be(100);
+    }
 }

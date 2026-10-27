@@ -31,7 +31,7 @@ namespace SWLOR.Game.Server.Service
                 if (!_shipModules.TryGetValue(module.ItemTag, out var detail) || detail.Step == null)
                     continue;
 
-                fitted.Add(new ShipFittedModule { Row = row, Slot = slot, Step = detail.Step });
+                fitted.Add(new ShipFittedModule { Row = row, Slot = slot, Step = detail.Step, Traits = module.Traits });
             }
         }
 

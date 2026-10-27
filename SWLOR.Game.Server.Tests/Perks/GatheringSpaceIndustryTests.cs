@@ -13,19 +13,20 @@ namespace SWLOR.Game.Server.Tests.Perks;
 
 /// <summary>
 /// The Gathering "Space Industry" perks (plan section 6, Appendix A) that exist today: Prospector, Deep Core,
-/// Rapid Extraction, Gas Siphoning and Salvage Expert. Trait Hunter waits for the salvaged-component traits (W9).
+/// Rapid Extraction, Gas Siphoning, Salvage Expert and Trait Hunter (the salvaged-component traits, W9a).
 /// </summary>
 public class GatheringSpaceIndustryTests
 {
     private static readonly PerkType[] SpaceIndustryPerks =
     {
-        PerkType.Prospector, PerkType.DeepCore, PerkType.RapidExtraction, PerkType.GasSiphoning, PerkType.SalvageExpert
+        PerkType.Prospector, PerkType.DeepCore, PerkType.RapidExtraction, PerkType.GasSiphoning, PerkType.SalvageExpert,
+        PerkType.TraitHunter
     };
 
     private static Dictionary<PerkType, PerkDetail> BuildPerks()
     {
         var definition = new GatheringPerkDefinition();
-        foreach (var method in new[] { "Prospector", "DeepCore", "RapidExtraction", "GasSiphoning", "SalvageExpert" })
+        foreach (var method in new[] { "Prospector", "DeepCore", "RapidExtraction", "GasSiphoning", "SalvageExpert", "TraitHunter" })
         {
             typeof(GatheringPerkDefinition)
                 .GetMethod(method, BindingFlags.Instance | BindingFlags.NonPublic)!
@@ -68,11 +69,20 @@ public class GatheringSpaceIndustryTests
         ((int)FeatType.SalvageExpertTrait).Should().Be(3356);
     }
 
+    [Test]
+    public void TheTraitHunterIds_FollowTheSalvageUpdate()
+    {
+        ((int)PerkType.TraitHunter).Should().Be(888);
+        ((int)StatType.SpaceRareTraitChance).Should().Be(1220);
+        ((int)FeatType.TraitHunterTrait).Should().Be(3357);
+    }
+
     [TestCase(PerkType.Prospector, "Prospector", new[] { 2, 3, 4 }, new[] { 10, 25, 40 }, FeatType.ProspectorTrait)]
     [TestCase(PerkType.DeepCore, "Deep Core", new[] { 3, 4 }, new[] { 20, 40 }, FeatType.DeepCoreTrait)]
     [TestCase(PerkType.RapidExtraction, "Rapid Extraction", new[] { 3, 4 }, new[] { 30, 45 }, FeatType.RapidExtractionTrait)]
     [TestCase(PerkType.GasSiphoning, "Gas Siphoning", new[] { 2, 3 }, new[] { 15, 35 }, FeatType.GasSiphoningTrait)]
     [TestCase(PerkType.SalvageExpert, "Salvage Expert", new[] { 2, 3, 4 }, new[] { 10, 25, 40 }, FeatType.SalvageExpertTrait)]
+    [TestCase(PerkType.TraitHunter, "Trait Hunter", new[] { 3, 4 }, new[] { 20, 40 }, FeatType.TraitHunterTrait)]
     public void ThePerks_HaveTheBiblePricesAndGatheringRanks(
         PerkType perkType, string name, int[] prices, int[] ranks, FeatType feat)
     {
@@ -112,6 +122,8 @@ public class GatheringSpaceIndustryTests
         perks[PerkType.SalvageExpert].PerkLevels[1].Description.Should().Be("+1 item per salvage cycle.");
         perks[PerkType.SalvageExpert].PerkLevels[2].Description.Should().Be("+2 items per salvage cycle.");
         perks[PerkType.SalvageExpert].PerkLevels[3].Description.Should().Be("+3 items per salvage cycle.");
+        perks[PerkType.TraitHunter].PerkLevels[1].Description.Should().Be("+10 to the rare-trait chance of salvaged components.");
+        perks[PerkType.TraitHunter].PerkLevels[2].Description.Should().Be("+20 to the rare-trait chance of salvaged components.");
 
         perks.Values.SelectMany(perk => perk.PerkLevels.Values)
             .Select(level => level.Description)
@@ -134,6 +146,9 @@ public class GatheringSpaceIndustryTests
         Stat(PerkType.GasSiphoning, 2, StatType.SpaceGasYieldBonus).Should().Be(2);
         foreach (var (rank, items) in new[] { (1, 1), (2, 2), (3, 3) })
             Stat(PerkType.SalvageExpert, rank, StatType.SpaceSalvageYieldBonus).Should().Be(items);
+
+        Stat(PerkType.TraitHunter, 1, StatType.SpaceRareTraitChance).Should().Be(10);
+        Stat(PerkType.TraitHunter, 2, StatType.SpaceRareTraitChance).Should().Be(20);
     }
 
     [Test]
@@ -142,7 +157,7 @@ public class GatheringSpaceIndustryTests
         var spaceStats = new[]
         {
             StatType.SpaceMiningYieldBonus, StatType.SpaceRareMetalChance, StatType.SpaceMiningCycleSpeedPercent,
-            StatType.SpaceGasYieldBonus, StatType.SpaceSalvageYieldBonus
+            StatType.SpaceGasYieldBonus, StatType.SpaceSalvageYieldBonus, StatType.SpaceRareTraitChance
         };
 
         BuildPerks().Values.SelectMany(perk => perk.PerkLevels.Values)
@@ -153,11 +168,11 @@ public class GatheringSpaceIndustryTests
     }
 
     [Test]
-    public void TheImplementedRows_CostThirtySevenSkillPoints()
+    public void TheSpaceIndustryGroup_CostsFortyFourSkillPoints()
     {
         BuildPerks().Values.SelectMany(perk => perk.PerkLevels.Values).Sum(level => level.Price)
-            .Should().Be(37, "Prospector 9 + Deep Core 7 + Rapid Extraction 7 + Gas Siphoning 5 + Salvage Expert 9 of the " +
-                             "Bible's 44 SP group; Trait Hunter (7) waits for W9");
+            .Should().Be(44, "the Bible's group: Prospector 9 + Deep Core 7 + Rapid Extraction 7 + Gas Siphoning 5 + " +
+                             "Salvage Expert 9 + Trait Hunter 7");
         BuildPerks().Keys.Should().BeEquivalentTo(SpaceIndustryPerks);
     }
 
@@ -258,7 +273,7 @@ public class GatheringSpaceIndustryTests
 
         actions.Should().Contain("Stat.GetStatAdjustment(pilot, StatType.SpaceMiningCycleSpeedPercent)");
         actions.Should().Contain("Stat.GetStatAdjustment(pilot, StatType.SpaceMiningYieldBonus)");
-        actions.Should().Contain("lootTable.GetRandomItemWithRareChance(Stat.GetStatAdjustment(pilot, StatType.SpaceRareMetalChance))");
+        actions.Should().Contain("lootTable.GetRandomItemWithRareChance(Stat.GetStatAdjustment(pilot, StatType.SpaceRareMetalChance) + traitRareFind)");
         actions.Should().NotContain("PerkType.Prospector").And.NotContain("PerkType.DeepCore")
             .And.NotContain("PerkType.RapidExtraction", "space code reads stats, not perks");
 
@@ -266,7 +281,8 @@ public class GatheringSpaceIndustryTests
         {
             method.Should().Contain("MiningCycleSeconds(activator,");
             method.Should().Contain("GetProspectorBonus(activator)");
-            method.Should().Contain("GetAsteroidOre(activator, lootTable)");
+            method.Should().Contain("GetAsteroidOre(activator, lootTable, rareFind)");
+            method.Should().Contain("var rareFind = TraitRareFind();", "the Precision trait is read while the module fires");
             method.Should().Contain("PerkType.StarshipMining", "the legacy term is refunded and removed in W10");
             method.Should().NotContain("lootTable.GetRandomItem()");
         }

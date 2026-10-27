@@ -293,12 +293,28 @@ public class ShipSalvageTests
     }
 
     [Test]
-    public void TheSalvagedComponentHook_IsLeftForTheComponentLayer()
+    public void EverySalvageCycle_RollsASalvagedComponentWithTraitHunter()
     {
         var salvage = ReadSource("Feature", "ShipModuleDefinition", "ShipSalvageActions.cs");
 
-        ExtractMethod(salvage, "public static void SalvageWreck(").Should().Contain("RollSalvagedComponents(wreck)");
-        ExtractMethod(salvage, "private static IEnumerable<string> RollSalvagedComponents(").Should().Contain("Array.Empty<string>()");
+        var cycle = ExtractMethod(salvage, "public static void SalvageWreck(");
+        cycle.Should().Contain("var components = RollSalvagedComponents(activator, wreck);");
+        cycle.Should().Contain("ShipHold.DeliverYield(activator, yield, components);");
+        cycle.Should().Contain("ShipSalvageRules.RareFindPercent(wreck.Difficulty) > 0 &&",
+            "a Precision salvager never gives a normal wreck, which has no rare-find table, a rare find");
+        ExtractMethod(salvage, "private static List<(string Resref, ShipComponentTraitType Trait)> RollSalvagedComponents(")
+            .Should().Contain("Stat.GetStatAdjustment(activator, StatType.SpaceRareTraitChance)");
+    }
+
+    [Test]
+    public void TheHold_StoresEachSalvagedComponentWithItsTrait()
+    {
+        var hold = ReadSource("Service", "ShipHold.cs");
+        var store = ExtractMethod(hold, "private static string StoreComponent(");
+        store.Should().Contain("ShipComponents.SetTraits(item, new[] { component.Trait });");
+        store.Should().Contain("Quantity = 1");
+        ExtractMethod(hold, "public static void DeliverYield(").Should().Contain("ShipComponents.SetTraits(item, new[] { trait });",
+            "a component that does not fit the hold reaches the pilot with its trait");
     }
 
     [Test]

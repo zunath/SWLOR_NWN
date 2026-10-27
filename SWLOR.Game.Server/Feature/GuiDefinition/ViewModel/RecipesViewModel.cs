@@ -424,7 +424,7 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
                 var canCraft = _mode == RecipesUIMode.Research
                     ? Craft.CanPlayerResearchRecipe(Player, type)
                     : Craft.CanPlayerCraftRecipe(Player, type);
-                var name = $"{Cache.GetItemNameByResref(detail.Resref)} [Recipe {detail.Level}]";
+                var name = $"{Craft.GetRecipeName(detail)} [Recipe {detail.Level}]";
 
                 recipeNames.Add(name);
                 recipeColors.Add(canCraft ? GuiColor.Green : GuiColor.Red);
@@ -636,7 +636,7 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
         private void DisplayRecipeDetail(RecipeType recipe, BlueprintDetail blueprint)
         {
             var detail = Craft.GetRecipe(recipe);
-            var itemName = Cache.GetItemNameByResref(detail.Resref);
+            var itemName = Craft.GetRecipeName(detail);
             var enhancementSlotType = "N/A";
 
             if (detail.EnhancementType == RecipeEnhancementType.Weapon)

@@ -130,6 +130,9 @@ namespace SWLOR.Game.Server.Feature.ShipModuleDefinition
             cycleSeconds = ShipModuleActions.MiningCycleSeconds(activator, cycleSeconds);
             ShipModuleActions.HoldExtraction(target, activator);
 
+            // The salvager's RareFind traits (Precision) raise an elite or boss wreck's rare-find chance.
+            var traitRareFind = ShipTraitRules.Sum(ShipModuleTraitContext.Current, ShipTraitStat.RareFind);
+
             AssignCommand(activator, () =>
             {
                 var beam = EffectBeam(VisualEffect.Vfx_Beam_Fire, activator, BodyNode.Chest);
@@ -156,7 +159,8 @@ namespace SWLOR.Game.Server.Feature.ShipModuleDefinition
                     shipStatus.Industrial, moduleBonus, Stat.GetStatAdjustment(activator, StatType.SpaceSalvageYieldBonus));
                 var yield = ShipSalvageRules.ScrapYield(wreck.Tier, items);
 
-                if (ShipSalvageRules.RollsRareFind(wreck.Difficulty, Random.Next(100)))
+                if (ShipSalvageRules.RareFindPercent(wreck.Difficulty) > 0 &&
+                    ShipSalvageRules.RollsRareFind(wreck.Difficulty, Random.Next(100) - traitRareFind))
                 {
                     var rare = Loot.GetLootTableByName(ShipSalvageRules.RareFindTable(wreck.Tier, wreck.Difficulty)).GetRandomItem();
                     yield.Add(rare.Resref);
@@ -166,7 +170,7 @@ namespace SWLOR.Game.Server.Feature.ShipModuleDefinition
                 if (ShipSalvageRules.RollsAurodium(wreck.Tier, areaAurodium, Random.Next(100)))
                     yield.Add(ShipSalvageItems.Aurodium);
 
-                yield.AddRange(RollSalvagedComponents(wreck));
+                var components = RollSalvagedComponents(activator, wreck);
 
                 var tier = wreck.Tier;
                 wreck.RemainingCycles--;
@@ -176,19 +180,25 @@ namespace SWLOR.Game.Server.Feature.ShipModuleDefinition
                     Space.RemoveWreck(target);
                 }
 
-                ShipHold.DeliverYield(activator, yield);
+                ShipHold.DeliverYield(activator, yield, components);
                 GiveGatheringExperience(activator, tier);
             });
         }
 
         /// <summary>
-        /// Salvaged Components carrying a random trait (plan section 14). The component and trait layer is W9: it adds
-        /// the generic, manufacturer and rare-trait components a wreck yields here (Trait Hunter raises the rare-trait
-        /// chance). Data cores and space lockboxes need slicing (W12) and are not rolled here either.
+        /// The salvaged component a cycle yields, if any (plan sections 12 and 14): a generic component of the wreck's
+        /// tier carrying a random trait, rare more often from elite and boss wrecks and with Trait Hunter (Gathering).
+        /// Manufacturer components wait for W9b; data cores and space lockboxes need slicing (W12).
         /// </summary>
-        private static IEnumerable<string> RollSalvagedComponents(ShipWreck wreck)
+        private static List<(string Resref, ShipComponentTraitType Trait)> RollSalvagedComponents(uint activator, ShipWreck wreck)
         {
-            return Array.Empty<string>();
+            var components = new List<(string Resref, ShipComponentTraitType Trait)>();
+            var rolled = ShipTraitRules.RollSalvagedComponent(
+                wreck.Tier, wreck.Difficulty, Stat.GetStatAdjustment(activator, StatType.SpaceRareTraitChance), Random.Next);
+            if (rolled != null)
+                components.Add(rolled.Value);
+
+            return components;
         }
 
         /// <summary>Gathering XP for a gas or salvage cycle: the target's level (tier x 10) against the player's Gathering rank.</summary>

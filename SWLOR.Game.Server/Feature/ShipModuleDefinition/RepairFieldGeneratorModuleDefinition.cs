@@ -41,7 +41,7 @@ namespace SWLOR.Game.Server.Feature.ShipModuleDefinition
                 .ActivatedAction((activator, activatorShipStatus, _, _, moduleBonus) =>
                 {
                     var bonusRecovery = activatorShipStatus.Industrial * moduleBonus;
-                    var recovery = repairAmount + bonusRecovery;
+                    var recovery = ShipModuleActions.ApplyRepairEfficiency(activator, repairAmount + bonusRecovery);
 
                     ApplyEffectToObject(DurationType.Temporary, EffectVisualEffect(VisualEffect.Vfx_Dur_Aura_Pulse_Red_White), activator, 12.0f);
 

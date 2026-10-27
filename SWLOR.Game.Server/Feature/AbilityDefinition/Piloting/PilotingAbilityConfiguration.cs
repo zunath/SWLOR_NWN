@@ -205,5 +205,105 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.Piloting
             if (failure != null && !string.IsNullOrWhiteSpace(failure.Error))
                 SendMessageToPC(activator, failure.Error);
         }
+
+        /// <summary>
+        /// The longest command range any ship can reach (the base, Command Presence, a Command Ship's bonus and
+        /// Leadership). A cast aimed at a party ship states a range; its validation checks the real command range.
+        /// </summary>
+        public const float CommandRangeCeiling = 100f;
+
+        /// <summary>
+        /// Sets up a repair of one party ship within command range, the pilot's own included: a support cast with a
+        /// cursor whose validation checks the ship before the STM is paid.
+        /// </summary>
+        public static AbilityBuilder ConfigureAllyRepair(AbilityBuilder ability, int stamina, AbilityImpactAction impact)
+        {
+            return ability
+                .SkillType(SkillType.Piloting)
+                .CanBeUsedInSpace()
+                .IsCastedAbility()
+                .IsSingleTargetAbility()
+                .RequiresTarget()
+                .AllowsSelfQuickCast()
+                .HasMaxRange(CommandRangeCeiling)
+                .HasActivationDelay(0f)
+                .RequirementStamina(stamina)
+                .BreaksStealth()
+                .HasCustomValidation((activator, target, _, _) => GetAllyShipError(activator, target))
+                .HasImpactAction(impact);
+        }
+
+        /// <summary>
+        /// Sets up an order to the party ships within command range: a self-centered area with no cursor whose marker
+        /// is the pilot's command range. A zero STM cost sets none.
+        /// </summary>
+        public static AbilityBuilder ConfigureOrder(
+            AbilityBuilder ability,
+            int stamina,
+            Spell targetingSpell,
+            AbilityImpactAction impact)
+        {
+            ability
+                .SkillType(SkillType.Piloting)
+                .CanBeUsedInSpace()
+                .IsCastedAbility()
+                .IsAreaAbility()
+                .HasActivationDelay(0f)
+                .BreaksStealth()
+                .HasTargetingSphere(
+                    targetingSpell,
+                    SpaceRadii.CommandRange,
+                    AbilityTargetingFlags.HelpsAllies | AbilityTargetingFlags.OriginOnSelf,
+                    ResolveCommandRange)
+                .HasImpactAction(impact);
+
+            return stamina > 0 ? ability.RequirementStamina(stamina) : ability;
+        }
+
+        /// <summary>
+        /// Sets up a debuff on the enemy ships within command range: a hostile self-centered area with no cursor
+        /// that fires no weapon, turned away before the STM is paid when no enemy ship is in range.
+        /// </summary>
+        public static AbilityBuilder ConfigureCommandDebuff(
+            AbilityBuilder ability,
+            int stamina,
+            Spell targetingSpell,
+            AbilityImpactAction impact)
+        {
+            return ability
+                .SkillType(SkillType.Piloting)
+                .CanBeUsedInSpace()
+                .IsCastedAbility()
+                .IsHostileAbility()
+                .IsAreaAbility()
+                .HasActivationDelay(0f)
+                .RequirementStamina(stamina)
+                .BreaksStealth()
+                .HasTargetingSphere(
+                    targetingSpell,
+                    SpaceRadii.CommandRange,
+                    AbilityTargetingFlags.HarmsEnemies | AbilityTargetingFlags.OriginOnSelf,
+                    ResolveCommandRange)
+                .HasCustomValidation((activator, _, _, _) => GetCommandDebuffError(activator))
+                .HasImpactAction(impact);
+        }
+
+        private static float ResolveCommandRange(uint creature, float baseSize) => SpaceAuras.GetCommandRange(creature);
+
+        /// <summary>Why a repair cannot be cast at the target, or an empty string when it can.</summary>
+        public static string GetAllyShipError(uint activator, uint target)
+        {
+            return SpaceCommand.IsPartyShipInRange(activator, target)
+                ? string.Empty
+                : "Your target must be a party ship within command range.";
+        }
+
+        /// <summary>Why a command debuff cannot be cast, or an empty string when it can.</summary>
+        public static string GetCommandDebuffError(uint activator)
+        {
+            return SpaceCommand.GetEnemyShipsInRange(activator).Count == 0
+                ? "There are no enemy ships within command range."
+                : string.Empty;
+        }
     }
 }

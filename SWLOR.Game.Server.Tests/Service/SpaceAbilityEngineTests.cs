@@ -89,7 +89,7 @@ public class SpaceAbilityEngineTests
     [Test]
     public void CrewStubs_AreNeutralUntilTheCrewUpdateFillsThemIn()
     {
-        SpaceCrew.GetCrewEffectiveness(0u).Should().Be(1.0);
+        SpaceCrew.EffectivenessMultiplier(0, 0).Should().Be(1.0);
         SpaceCrew.IsSeatCrewed(new ShipStatus(), 1).Should().BeFalse();
     }
 

@@ -1104,6 +1104,7 @@ namespace SWLOR.Game.Server.Service
             SpaceSustainedFire.Clear(player);
             SpaceOrdnance.Clear(player);
             SpaceBulwark.Clear(player);
+            SpaceCommand.Clear(player);
             StatusEffect.RemoveAllStatusEffects(player);
             dbShip.Status.PendingRiders?.Clear();
 
@@ -1891,7 +1892,8 @@ namespace SWLOR.Game.Server.Service
             return SpaceCombatMath.AdjustRating(
                 accuracy,
                 Stat.GetStatAdjustment(attacker, StatType.Accuracy),
-                Stat.GetStatAdjustment(attacker, StatType.AccuracyPercentAdjustment));
+                Stat.GetStatAdjustment(attacker, StatType.AccuracyPercentAdjustment) +
+                Stat.GetStatAdjustment(attacker, StatType.SpaceAccuracyPercentAdjustment));
         }
 
         /// <summary>
@@ -2089,7 +2091,9 @@ namespace SWLOR.Game.Server.Service
 
             // Ship damage is the ground's "other" damage, so the target's typed Leadership reduction applies
             // before resistance, then its damage-taken stat after it, in the ground's order.
-            var leadershipPercent = Stat.GetStatAdjustment(target, StatType.LeadershipOtherDamageTakenPercentAdjustment);
+            var leadershipPercent = Math.Min(
+                Stat.GetStatAdjustment(target, StatType.LeadershipOtherDamageTakenPercentAdjustment),
+                Stat.GetStatAdjustment(target, StatType.SpaceLeadershipDamageTakenPercentAdjustment));
             if (leadershipPercent != 0)
                 damage = SpaceCombatMath.ApplyLeadershipReduction((int)Math.Round(damage, MidpointRounding.AwayFromZero), leadershipPercent);
 

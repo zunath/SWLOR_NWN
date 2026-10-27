@@ -1736,5 +1736,17 @@ namespace SWLOR.NWN.API.NWScript.Enum
         BulwarkHail2 = 1799,
         BulwarkShipStance = 1800,
         BulwarkInvincible = 1801,
+
+        CommandEmergencyRepair1 = 1802,
+        CommandEmergencyRepair2 = 1803,
+        CommandEmergencyRepair3 = 1804,
+        CommandEmergencyRepair4 = 1805,
+        CommandFocusFire1 = 1806,
+        CommandFocusFire2 = 1807,
+        CommandFocusFire3 = 1808,
+        CommandBreakFormation1 = 1809,
+        CommandBreakFormation2 = 1810,
+        CommandFormation = 1811,
+        CommandFleetAction = 1812,
     }
 }

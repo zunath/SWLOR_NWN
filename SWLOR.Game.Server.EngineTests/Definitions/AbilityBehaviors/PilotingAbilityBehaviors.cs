@@ -38,7 +38,11 @@ namespace SWLOR.Game.Server.EngineTests.Definitions.AbilityBehaviors
                 FeatType.BulwarkShieldRam1, FeatType.BulwarkShieldRam2, FeatType.BulwarkShieldRam3,
                 FeatType.BulwarkShieldRam4, FeatType.BulwarkDefiance1, FeatType.BulwarkDefiance2,
                 FeatType.BulwarkDefiance3, FeatType.BulwarkHail1, FeatType.BulwarkHail2,
-                FeatType.BulwarkShipStance, FeatType.BulwarkInvincible
+                FeatType.BulwarkShipStance, FeatType.BulwarkInvincible,
+                FeatType.CommandEmergencyRepair1, FeatType.CommandEmergencyRepair2, FeatType.CommandEmergencyRepair3,
+                FeatType.CommandEmergencyRepair4, FeatType.CommandFocusFire1, FeatType.CommandFocusFire2,
+                FeatType.CommandFocusFire3, FeatType.CommandBreakFormation1, FeatType.CommandBreakFormation2,
+                FeatType.CommandFormation, FeatType.CommandFleetAction
             }
             .Select(feat => new AbilityBehaviorCase { Feat = feat, SkipReason = SpaceReason })
             .ToList();

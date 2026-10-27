@@ -210,5 +210,13 @@ namespace SWLOR.Game.Server.Service.SpaceService
         /// <summary>The ground's Shield Bash bonus damage: a percent of Defense, rounded up.</summary>
         public static int PercentOfDefense(int defense, int percent) =>
             Math.Max(0, (int)Math.Ceiling(defense * (percent / 100f)));
+
+        /// <summary>A value raised by a percent and rounded; a zero percent leaves it alone.</summary>
+        public static int ScaleByPercent(int value, int percent) =>
+            percent == 0 ? value : (int)Math.Round(value * (1 + percent / 100.0), MidpointRounding.AwayFromZero);
+
+        /// <summary>A repair after the repairer's Repair Efficiency: the ground's outgoing healing rule, rounded up.</summary>
+        public static int ApplyRepairEfficiency(int amount, int efficiencyPercent) =>
+            Stat.CalculateOutgoingAbilityHealingAmount(amount, efficiencyPercent);
     }
 }

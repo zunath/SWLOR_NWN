@@ -196,6 +196,9 @@ namespace SWLOR.Game.Server.Service.PerkService
 
         [PerkCategory("Piloting - Bulwark", true)]
         PilotingBulwark = 67,
+
+        [PerkCategory("Piloting - Command", true)]
+        PilotingCommand = 68,
     }
 
     public class PerkCategoryAttribute : Attribute

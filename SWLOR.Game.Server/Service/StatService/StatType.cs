@@ -6541,6 +6541,73 @@ namespace SWLOR.Game.Server.Service.StatService
         [StatType(StatTypeCategory.NonBeneficial)]
         SpaceLowHullDefenseCooldownSeconds = 1199,
 
+        /// <summary>
+        /// Percent adjustment to a ship's Accuracy, read only by ship combat. The ground Accuracy statuses are typed
+        /// Physical and Force ability hit chance, which a ship never rolls, so the statuses a space ability applies
+        /// set this as well.
+        /// </summary>
+        [StatType(StatTypeCategory.BeneficialWhenPositive)]
+        SpaceAccuracyPercentAdjustment = 1200,
+
+        /// <summary>
+        /// Percent adjustment to the damage a ship takes from a Leadership reduction aura (Formation), read only by
+        /// ship combat. Negative values reduce it; the strongest of this and the typed Leadership reduction applies.
+        /// </summary>
+        [StatType(StatTypeCategory.BeneficialWhenNegative)]
+        SpaceLeadershipDamageTakenPercentAdjustment = 1201,
+
+        /// <summary>Percent by which the repairs a ship's modules and abilities make are stronger (Repair Efficiency).</summary>
+        [StatType(StatTypeCategory.BeneficialWhenPositive)]
+        SpaceRepairEfficiencyPercentAdjustment = 1202,
+
+        /// <summary>Percent by which the crew aboard a ship work their stations better (Crew Morale).</summary>
+        [StatType(StatTypeCategory.BeneficialWhenPositive)]
+        SpaceCrewEffectivenessPercentAdjustment = 1203,
+
+        /// <summary>Space meters added to a ship's command range (Command Presence).</summary>
+        [StatType(StatTypeCategory.BeneficialWhenPositive)]
+        SpaceCommandRangeBonusMeters = 1204,
+
+        /// <summary>Base seconds added to the duration of non-capstone orders (Command Presence).</summary>
+        [StatType(StatTypeCategory.BeneficialWhenPositive, StatTypeAggregation.Maximum)]
+        SpaceCommandDurationBonusBaseSeconds = 1205,
+
+        /// <summary>Seconds the order duration bonus reaches at full Social.</summary>
+        [StatType(StatTypeCategory.BeneficialWhenPositive, StatTypeAggregation.Maximum)]
+        SpaceCommandDurationBonusMaximumSeconds = 1206,
+
+        /// <summary>Party damage bonus a hostile space ability triggers (Mark Target).</summary>
+        [StatType(StatTypeCategory.BeneficialWhenPositive, StatTypeAggregation.Maximum)]
+        SpaceMarkTargetDamagePercent = 1207,
+
+        /// <summary>Maximum Mark Target damage bonus after Social scaling.</summary>
+        [StatType(StatTypeCategory.BeneficialWhenPositive, StatTypeAggregation.Maximum)]
+        SpaceMarkTargetMaximumDamagePercent = 1208,
+
+        /// <summary>Party Accuracy bonus a hostile space ability triggers (Mark Target).</summary>
+        [StatType(StatTypeCategory.BeneficialWhenPositive, StatTypeAggregation.Maximum)]
+        SpaceMarkTargetAccuracyPercent = 1209,
+
+        /// <summary>Maximum Mark Target Accuracy bonus after Social scaling.</summary>
+        [StatType(StatTypeCategory.BeneficialWhenPositive, StatTypeAggregation.Maximum)]
+        SpaceMarkTargetMaximumAccuracyPercent = 1210,
+
+        /// <summary>Base duration of the Mark Target buff, before the order duration bonus.</summary>
+        [StatType(StatTypeCategory.BeneficialWhenPositive, StatTypeAggregation.Maximum)]
+        SpaceMarkTargetDurationSeconds = 1211,
+
+        /// <summary>Seconds before Mark Target can trigger again.</summary>
+        [StatType(StatTypeCategory.NonBeneficial, StatTypeAggregation.Maximum)]
+        SpaceMarkTargetCooldownSeconds = 1212,
+
+        /// <summary>Displayed name of the Mark Target buff.</summary>
+        [StatType(StatTypeCategory.NonBeneficial, StatTypeAggregation.Maximum)]
+        SpaceMarkTargetNameStrRef = 1213,
+
+        /// <summary>Displayed effect icon of the Mark Target buff.</summary>
+        [StatType(StatTypeCategory.NonBeneficial, StatTypeAggregation.Maximum)]
+        SpaceMarkTargetIcon = 1214,
+
 
     }
 

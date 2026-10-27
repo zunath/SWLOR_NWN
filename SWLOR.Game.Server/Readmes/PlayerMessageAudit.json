@@ -1541,29 +1541,36 @@
   },
   {
     "File": "SWLOR.Game.Server/Feature/GuiDefinition/ViewModel/DistributeRPXPViewModel.cs",
-    "Line": 87,
+    "Line": 90,
     "Member": "OnClickConfirm",
     "Delivery": "Retained",
     "Call": "FloatingTextStringOnCreature(GetRefusalReason(DB.Get<Player>(playerId)), Player, false)"
   },
   {
     "File": "SWLOR.Game.Server/Feature/GuiDefinition/ViewModel/DistributeRPXPViewModel.cs",
-    "Line": 96,
+    "Line": 100,
     "Member": "OnClickConfirm",
     "Delivery": "Retained",
     "Call": "FloatingTextStringOnCreature($\"XP cannot be distributed in this area.\", Player, false)"
   },
   {
     "File": "SWLOR.Game.Server/Feature/GuiDefinition/ViewModel/DistributeRPXPViewModel.cs",
-    "Line": 102,
+    "Line": 106,
     "Member": "OnClickConfirm",
     "Delivery": "Retained",
     "Call": "FloatingTextStringOnCreature($\"XP cannot be distributed while dead.\", Player, false)"
   },
   {
     "File": "SWLOR.Game.Server/Feature/GuiDefinition/ViewModel/DistributeRPXPViewModel.cs",
-    "Line": 133,
+    "Line": 143,
     "Member": "OnClickConfirm",
+    "Delivery": "Retained",
+    "Call": "FloatingTextStringOnCreature(GetRefusalReason(dbPlayer), Player, false)"
+  },
+  {
+    "File": "SWLOR.Game.Server/Feature/GuiDefinition/ViewModel/DistributeRPXPViewModel.cs",
+    "Line": 181,
+    "Member": "DistributeToBeast",
     "Delivery": "Retained",
     "Call": "FloatingTextStringOnCreature(GetRefusalReason(dbPlayer), Player, false)"
   },
@@ -3844,77 +3851,77 @@
   },
   {
     "File": "SWLOR.Game.Server/Service/BeastMastery.cs",
-    "Line": 196,
-    "Member": "GiveBeastXP",
+    "Line": 268,
+    "Member": "AddXP",
     "Delivery": "Retained",
     "Call": "SendMessageToPC(player, $\"{dbBeast.Name} earned {xp} XP.\")"
   },
   {
     "File": "SWLOR.Game.Server/Service/BeastMastery.cs",
-    "Line": 217,
-    "Member": "GiveBeastXP",
+    "Line": 289,
+    "Member": "AddXP",
     "Delivery": "Retained",
     "Call": "SendMessageToPC(player, $\"{dbBeast.Name} reaches level {dbBeast.Level}!\")"
   },
   {
     "File": "SWLOR.Game.Server/Service/BeastMastery.cs",
-    "Line": 253,
+    "Line": 320,
     "Member": "SpawnBeast",
     "Delivery": "Retained",
     "Call": "SendMessageToPC(player, companionSlotError)"
   },
   {
     "File": "SWLOR.Game.Server/Service/BeastMastery.cs",
-    "Line": 261,
+    "Line": 328,
     "Member": "SpawnBeast",
     "Delivery": "Retained",
     "Call": "SendMessageToPC(player, \"Unable to locate beast in DB. Notify an admin.\")"
   },
   {
     "File": "SWLOR.Game.Server/Service/BeastMastery.cs",
-    "Line": 460,
+    "Line": 530,
     "Member": "OnAcquireItem",
     "Delivery": "Retained",
     "Call": "SendMessageToPC(master, \"Beasts cannot hold items.\")"
   },
   {
     "File": "SWLOR.Game.Server/Service/BeastMastery.cs",
-    "Line": 575,
+    "Line": 645,
     "Member": "OpenStablesMenu",
     "Delivery": "Retained",
     "Call": "SendMessageToPC(player, ColorToken.Red(\"Only players may use this terminal.\"))"
   },
   {
     "File": "SWLOR.Game.Server/Service/BeastMastery.cs",
-    "Line": 724,
+    "Line": 794,
     "Member": "UseIncubator",
     "Delivery": "Retained",
     "Call": "SendMessageToPC(player, $\"Perk 'DNA Manipulation I' is required to use incubators.\")"
   },
   {
     "File": "SWLOR.Game.Server/Service/BeastMastery.cs",
-    "Line": 732,
+    "Line": 802,
     "Member": "UseIncubator",
     "Delivery": "Retained",
     "Call": "SendMessageToPC(player, $\"This incubator cannot be used.\")"
   },
   {
     "File": "SWLOR.Game.Server/Service/BeastMastery.cs",
-    "Line": 747,
+    "Line": 817,
     "Member": "UseIncubator",
     "Delivery": "Retained",
     "Call": "SendMessageToPC(player, $\"Another player's incubation job is active. This job will complete in: {completionTime}.\")"
   },
   {
     "File": "SWLOR.Game.Server/Service/BeastMastery.cs",
-    "Line": 751,
+    "Line": 821,
     "Member": "UseIncubator",
     "Delivery": "Retained",
     "Call": "SendMessageToPC(player, $\"Another player's incubation job is active. This job has completed.\")"
   },
   {
     "File": "SWLOR.Game.Server/Service/BeastMastery.cs",
-    "Line": 942,
+    "Line": 1012,
     "Member": "UseExtractDNAObject",
     "Delivery": "Retained",
     "Call": "SendMessageToPC(player, ColorToken.Red(\"Use a DNA Extractor on this corpse to retrieve its DNA.\"))"
@@ -4313,7 +4320,7 @@
   },
   {
     "File": "SWLOR.Game.Server/Service/CraftService/Minigame/NwnCraftSessionWorld.cs",
-    "Line": 274,
+    "Line": 301,
     "Member": "Message",
     "Delivery": "Retained",
     "Call": "SendMessageToPC(player, text)"

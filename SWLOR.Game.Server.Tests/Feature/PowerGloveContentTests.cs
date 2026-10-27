@@ -280,6 +280,23 @@ public class PowerGloveContentTests
     private static (int Property, int Subtype, int Cost, int Table) PropertyBudget(JsonElement property) =>
         (Int(property, "PropertyName"), Int(property, "Subtype"), Int(property, "CostValue"), Int(property, "CostTable"));
 
+    [Test]
+    public void PowerGloveAndTwinPistolResrefsFitTheEngineLimit()
+    {
+        // NWN resrefs are at most 16 characters; a longer TemplateResRef cannot be created or looked up.
+        var items = Directory.EnumerateFiles(Path.Combine(Root(), "Module/uti"), "*.uti.json")
+            .Select(path => (Path.GetFileName(path)[..^".uti.json".Length], Item: ReadItem(Path.GetFileName(path)[..^".uti.json".Length])))
+            .Where(entry => Int(entry.Item, "BaseItem") == (int)BaseItem.PowerGlove ||
+                List(entry.Item, "VarTable").Any(local => Text(local, "Name") == "TWIN_PISTOL_PAIR"))
+            .ToArray();
+        items.Should().NotBeEmpty();
+        foreach (var (file, item) in items)
+        {
+            Text(item, "TemplateResRef").Should().Be(file, file);
+            file.Length.Should().BeLessThanOrEqualTo(16, file);
+        }
+    }
+
     private static JsonElement ReadItem(string resref)
     {
         using var document = JsonDocument.Parse(File.ReadAllText(Path.Combine(Root(), "Module/uti", resref + ".uti.json")));

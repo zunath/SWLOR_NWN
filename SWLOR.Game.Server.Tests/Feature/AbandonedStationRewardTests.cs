@@ -362,7 +362,7 @@ public class AbandonedStationRewardTests
         ("cnt_pglove", "prm_pglove", "raider_pglove", 25, 1),
         ("cnt_staff", "prm_staff", "raider_staff", 25, 1),
         ("cnt_pistol", "prm_pistol", "raider_pistol", 25, 1),
-        ("cnt_twinpistol", "prm_twinpistol", "raider_twinpistol", 25, 1),
+        ("cnt_twinpistol", "prm_twinpistol", "raider_twinpstl", 25, 1),
         ("cnt_rifle", "prm_rifle", "raider_rifle", 25, 1),
         ("cnt_shuriken", "prm_shuriken", "raider_shuriken", 25, 1),
     };

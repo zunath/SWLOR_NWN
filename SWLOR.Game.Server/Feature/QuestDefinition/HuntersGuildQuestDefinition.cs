@@ -242,7 +242,7 @@ namespace SWLOR.Game.Server.Feature.QuestDefinition
 
         private void RaiderTwinPistolsTask()
         {
-            var itemName = Cache.GetItemNameByResref("raider_twinpistol");
+            var itemName = Cache.GetItemNameByResref("raider_twinpstl");
             var rewardDetails = _rewardDetails[3];
 
             _builder.Create("hun_tsk_637", $"3x {itemName}")
@@ -251,7 +251,7 @@ namespace SWLOR.Game.Server.Feature.QuestDefinition
 
                 .AddState()
                 .SetStateJournalText($"Collect 3x {itemName} and return to the Hunter's Guildmaster")
-                .AddCollectItemObjective("raider_twinpistol", 3, CollectItemProducerRequirementType.None)
+                .AddCollectItemObjective("raider_twinpstl", 3, CollectItemProducerRequirementType.None)
 
                 .AddGoldReward(rewardDetails.Gold)
                 .AddGPReward(GuildType.HuntersGuild, rewardDetails.GP);

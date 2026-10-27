@@ -203,11 +203,11 @@
   },
   "Tag": {
     "type": "cexostring",
-    "value": "raider_twinpistol"
+    "value": "raider_twinpstl"
   },
   "TemplateResRef": {
     "type": "resref",
-    "value": "raider_twinpistol"
+    "value": "raider_twinpstl"
   },
   "xModelPart1": {
     "type": "word",

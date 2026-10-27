@@ -4,11 +4,13 @@ using SWLOR.Game.Server.Service.KeyItemService;
 namespace SWLOR.Game.Server.Service.MusicService
 {
     /// <summary>
-    /// Every collectible song, keyed to its Music key item and ambientmusic.2da row.
+    /// Every collectible song, keyed to its Music key item and ambientmusic.2da row. The music service builds the
+    /// catalog once and answers questions about it; a converted service holds no static state, so this is an
+    /// instance and not a static table.
     /// </summary>
-    public static class MusicSongCatalog
+    public sealed class MusicSongCatalog
     {
-        public static IReadOnlyList<MusicSong> Songs { get; } = new List<MusicSong>
+        public IReadOnlyList<MusicSong> Songs { get; } = new List<MusicSong>
         {
             new(KeyItemType.SongRuralDay1, 1, MusicCategoryType.Location, MusicAcquisitionType.Loot),
             new(KeyItemType.SongRuralDay2, 2, MusicCategoryType.Location, MusicAcquisitionType.Loot),

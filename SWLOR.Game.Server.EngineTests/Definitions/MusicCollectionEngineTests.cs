@@ -23,7 +23,7 @@ namespace SWLOR.Game.Server.EngineTests.Definitions
         public static async Task StarterSongsAreGranted(EngineTestContext ctx)
         {
             using var player = await PlayerAbilityFixture.CreateAsync(ctx, 4f);
-            var starters = MusicSongCatalog.Songs
+            var starters = Music.GetCollectibleSongs()
                 .Where(song => song.Acquisition == MusicAcquisitionType.Starter)
                 .Select(song => song.TrackId)
                 .ToHashSet();
@@ -40,7 +40,7 @@ namespace SWLOR.Game.Server.EngineTests.Definitions
         public static async Task SongDiscUnlocksSong(EngineTestContext ctx)
         {
             using var player = await PlayerAbilityFixture.CreateAsync(ctx, 4f);
-            var song = MusicSongCatalog.Songs.First(x => x.Acquisition == MusicAcquisitionType.Loot);
+            var song = Music.GetCollectibleSongs().First(x => x.Acquisition == MusicAcquisitionType.Loot);
             var disc = CreateObject(ObjectType.Item, $"song_{song.TrackId}", ctx.GetArenaLocation(1f, 1f));
             ctx.Track(disc);
             ctx.Assert(GetIsObjectValid(disc), $"song_{song.TrackId} blueprint creates an item");
@@ -95,7 +95,7 @@ namespace SWLOR.Game.Server.EngineTests.Definitions
             model.ShowUncollected = true;
             ctx.AssertEqual(collected.Count, model.SongNames.Count, "client toggle cannot expose locked songs");
 
-            var newSong = MusicSongCatalog.Songs.First(song => song.Category == MusicCategoryType.Theme);
+            var newSong = Music.GetCollectibleSongs().First(song => song.Category == MusicCategoryType.Theme);
             await ctx.ExecuteInCreatureContextAsync(player.Creature, () => KeyItem.GiveKeyItem(player.Creature, newSong.KeyItem));
             model.Refresh(new KeyItemReceivedRefreshEvent(newSong.KeyItem));
             ctx.AssertEqual(collected.Count + 1, model.SongNames.Count, "newly collected song appears while the jukebox is open");
@@ -173,8 +173,8 @@ namespace SWLOR.Game.Server.EngineTests.Definitions
         {
             using var player = await PlayerAbilityFixture.CreateAsync(ctx, 4f);
             await ctx.ExecuteInCreatureContextAsync(player.Creature, () => Music.GrantStarterSongs(player.Creature));
-            var collected = MusicSongCatalog.Songs.First(song => song.Acquisition == MusicAcquisitionType.Starter);
-            var uncollected = MusicSongCatalog.Songs.First(song => song.Acquisition == MusicAcquisitionType.BossDrop);
+            var collected = Music.GetCollectibleSongs().First(song => song.Acquisition == MusicAcquisitionType.Starter);
+            var uncollected = Music.GetCollectibleSongs().First(song => song.Acquisition == MusicAcquisitionType.BossDrop);
 
             var dbPlayer = DB.Get<Player>(player.Id);
             dbPlayer.Settings.PersonalMusicTrackId = collected.TrackId;
@@ -196,7 +196,7 @@ namespace SWLOR.Game.Server.EngineTests.Definitions
             SetEventScript(player.Creature, EventScript.Creature_OnMeleeAttacked, ScriptName.OnPlayerAttacked);
             SetEventScript(player.Creature, EventScript.Creature_OnDamaged, ScriptName.OnPlayerDamaged);
             await ctx.ExecuteInCreatureContextAsync(player.Creature, () => Music.GrantStarterSongs(player.Creature));
-            var theme = MusicSongCatalog.Songs.First(song => song.Acquisition == MusicAcquisitionType.Starter);
+            var theme = Music.GetCollectibleSongs().First(song => song.Acquisition == MusicAcquisitionType.Starter);
 
             var enemy = ctx.SpawnCreature("nw_bandit001", 2f);
             ctx.MakeHostile(enemy);
@@ -245,7 +245,7 @@ namespace SWLOR.Game.Server.EngineTests.Definitions
         {
             using var player = await PlayerAbilityFixture.CreateAsync(ctx, 0f);
             await ctx.ExecuteInCreatureContextAsync(player.Creature, () => Music.GrantStarterSongs(player.Creature));
-            var theme = MusicSongCatalog.Songs.First(song => song.Acquisition == MusicAcquisitionType.Starter);
+            var theme = Music.GetCollectibleSongs().First(song => song.Acquisition == MusicAcquisitionType.Starter);
             await ctx.ExecuteInCreatureContextAsync(player.Creature, () => Music.SetBattleTheme(player.Creature, theme.TrackId));
 
             var enemy = ctx.SpawnCreature("nw_bandit001", 2f);

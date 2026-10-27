@@ -441,6 +441,20 @@
     "Call": "SendMessageToPC(user, ColorToken.Red(\"You set the trap off while trying to disarm it.\"))"
   },
   {
+    "File": "SWLOR.Game.Server/Domain/World/WeatherService.cs",
+    "Line": 277,
+    "Member": "DoWeatherEffects",
+    "Delivery": "Retained",
+    "Call": "SendMessageToPC(creature, message)"
+  },
+  {
+    "File": "SWLOR.Game.Server/Domain/World/WeatherService.cs",
+    "Line": 360,
+    "Member": "Thunderstorm",
+    "Delivery": "Retained",
+    "Call": "SendMessageToPC(target, WeatherFeedbackText.Lightning)"
+  },
+  {
     "File": "SWLOR.Game.Server/Feature/AbilityDefinition/Beastmaster/TameAbilityDefinition.cs",
     "Line": 115,
     "Member": "Tame",
@@ -6025,19 +6039,5 @@
     "Member": "RemovePair",
     "Delivery": "Retained",
     "Call": "SendMessageToPC(MessageRecipient(creature), ColorToken.Red(\"Free inventory space or make room in a carried bag before unequipping Twin Pistols.\"))"
-  },
-  {
-    "File": "SWLOR.Game.Server/Service/Weather.cs",
-    "Line": 259,
-    "Member": "DoWeatherEffects",
-    "Delivery": "Retained",
-    "Call": "SendMessageToPC(creature, message)"
-  },
-  {
-    "File": "SWLOR.Game.Server/Service/Weather.cs",
-    "Line": 340,
-    "Member": "Thunderstorm",
-    "Delivery": "Retained",
-    "Call": "SendMessageToPC(target, WeatherFeedbackText.Lightning)"
   }
 ]

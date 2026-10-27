@@ -2,10 +2,12 @@ using System.Reflection;
 using FluentAssertions;
 using Newtonsoft.Json.Linq;
 using NUnit.Framework;
+using SWLOR.Game.Server.Domain.Economy;
 using SWLOR.Game.Server.Entity;
 using SWLOR.Game.Server.Service;
 using SWLOR.Game.Server.Service.DBService;
 using SWLOR.Game.Server.Service.PropertyService;
+using SWLOR.Game.Server.Tests.Support;
 
 namespace SWLOR.Game.Server.Tests.Feature;
 
@@ -14,12 +16,14 @@ public class LinkedBankStorageTests
     [Test]
     public void BankService_UsesCanonicalStorageIdAndCap()
     {
-        Bank.GetItemCountText(5).Should().Be("5 / 120 Items");
-        Bank.GetStoragePercentage(240).Should().Be(1f);
+        var bank = new BankService(new InMemoryDBService());
+        bank.GetItemCountText(5).Should().Be("5 / 120 Items");
+        bank.GetStoragePercentage(240).Should().Be(1f);
 
-        var bankType = typeof(Bank);
-        var storageId = bankType.GetField("StorageId", BindingFlags.NonPublic | BindingFlags.Static);
-        var maxItems = bankType.GetField("MaxItems", BindingFlags.NonPublic | BindingFlags.Static);
+        // The constants live on the instance; the static facade carries none.
+        var serviceType = typeof(BankService);
+        var storageId = serviceType.GetField("StorageId", BindingFlags.NonPublic | BindingFlags.Static);
+        var maxItems = serviceType.GetField("MaxItems", BindingFlags.NonPublic | BindingFlags.Static);
 
         storageId.Should().NotBeNull();
         storageId!.IsLiteral.Should().BeTrue();
@@ -27,7 +31,7 @@ public class LinkedBankStorageTests
         maxItems.Should().NotBeNull();
         maxItems!.IsLiteral.Should().BeTrue();
         maxItems.GetRawConstantValue().Should().Be(120);
-        bankType
+        typeof(Bank)
             .GetFields(BindingFlags.Public | BindingFlags.Static)
             .Where(field => field.IsLiteral)
             .Should()
@@ -74,13 +78,20 @@ public class LinkedBankStorageTests
     [Test]
     public void BankService_ConstrainsItemQueriesToGlobalBankStorage()
     {
-        var query = (DBQuery<InventoryItem>)GetPrivateBankMethod("BuildPlayerItemQuery", typeof(string))
-            .Invoke(null, new object[] { "player-id" })!;
+        var db = new InMemoryDBService();
+        var bank = new BankService(db);
 
-        var queryString = query.BuildQuery().QueryString;
+        bank.GetItemCount("player-id");
+        bank.SearchItems("player-id", string.Empty);
 
-        queryString.Should().Contain("@StorageId:GLOBAL_BANK");
-        queryString.Should().Contain("@PlayerId:player\\-id");
+        db.Queries.Should().HaveCount(2);
+        foreach (var query in db.Queries.Cast<DBQuery<InventoryItem>>())
+        {
+            var queryString = query.BuildQuery().QueryString;
+
+            queryString.Should().Contain("@StorageId:GLOBAL_BANK");
+            queryString.Should().Contain("@PlayerId:player\\-id");
+        }
     }
 
     [Test]
@@ -287,19 +298,6 @@ public class LinkedBankStorageTests
         var method = typeof(Bank).GetMethod(
             name,
             BindingFlags.Public | BindingFlags.Static,
-            null,
-            parameterTypes,
-            null);
-
-        method.Should().NotBeNull();
-        return method!;
-    }
-
-    private static MethodInfo GetPrivateBankMethod(string name, params Type[] parameterTypes)
-    {
-        var method = typeof(Bank).GetMethod(
-            name,
-            BindingFlags.NonPublic | BindingFlags.Static,
             null,
             parameterTypes,
             null);

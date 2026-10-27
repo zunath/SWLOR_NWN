@@ -18,8 +18,9 @@ public class FacadeForwardingTests
 {
     private static IEnumerable<TestCaseData> Services() => ConvertedServiceFixtures.AsTestCases();
 
-    // The facade's API is its public static methods and property getters, plus the internal static methods that code
-    // inside the server (a native hook, say) calls. Private members are the facade's own plumbing.
+    // The facade's methods and the getters of its static properties (the interface lists a property as its get_ method),
+    // plus the internal static methods that code inside the server (a native hook, say) calls. Private members are the
+    // facade's own plumbing.
     private static IEnumerable<MethodInfo> FacadeMethods(Type facade) =>
         facade.GetMethods(BindingFlags.Public | BindingFlags.NonPublic | BindingFlags.Static | BindingFlags.DeclaredOnly)
             .Where(method => method.IsPublic || method.IsAssembly)
@@ -60,10 +61,15 @@ public class FacadeForwardingTests
             var call = proxy.Calls.Should().ContainSingle($"{service.Facade.Name}.{method.Name} makes exactly one call").Subject;
             call.Method.Name.Should().Be(method.Name);
             call.Arguments.Should().Equal(arguments, $"{service.Facade.Name}.{method.Name} passes its arguments through");
-            if (method.ReturnType.IsValueType && method.ReturnType != typeof(void))
-                result.Should().Be(proxy.ReturnedBy(call.Method), $"{service.Facade.Name}.{method.Name} returns what the instance returned");
-            else if (method.ReturnType != typeof(void))
-                result.Should().BeSameAs(proxy.ReturnedBy(call.Method), $"{service.Facade.Name}.{method.Name} returns what the instance returned");
+            if (method.ReturnType != typeof(void))
+            {
+                var returned = proxy.ReturnedBy(call.Method);
+                var because = $"{service.Facade.Name}.{method.Name} returns what the instance returned";
+                if (method.ReturnType.IsValueType)
+                    result.Should().Be(returned, because);
+                else
+                    result.Should().BeSameAs(returned, because);
+            }
             provider.Dispose();
         }
     }
@@ -128,6 +134,8 @@ public class FacadeForwardingTests
             return 1001u;
         if (type == typeof(int))
             return 7;
+        if (type == typeof(long))
+            return 7L;
         if (type == typeof(string))
             return "sample";
         if (type == typeof(bool))

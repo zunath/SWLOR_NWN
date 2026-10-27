@@ -6,6 +6,7 @@ using Microsoft.CodeAnalysis.CSharp;
 using Newtonsoft.Json;
 using Newtonsoft.Json.Linq;
 using NUnit.Framework;
+using SWLOR.Game.Server.Tests.Support;
 using SWLOR.Game.Server.Service;
 using SWLOR.Game.Server.Service.ConversationService;
 using SWLOR.Game.Server.Service.KeyItemService;
@@ -20,10 +21,26 @@ public sealed partial class QuestConversationTests
     private static PropertyInfo ItemNameCache => typeof(Cache)
         .GetProperty("ItemNamesByResref", BindingFlags.NonPublic | BindingFlags.Static)!;
 
+    // The guild service is an instance behind the static Guild class: the fixture loads it once into a container of its
+    // own and installs that container for every test, as the server's boot does for the facades.
+    private FacadeContainer _facades = null!;
+    private IDisposable _facadeScope = null!;
+
+    [SetUp]
+    public void InstallFacades() => _facadeScope = _facades.Install();
+
+    [TearDown]
+    public void RemoveFacades() => _facadeScope.Dispose();
+
     [OneTimeSetUp]
     public void LoadItemNamesFromBlueprintsForGuildQuestDefinitions()
     {
-        Guild.LoadData();
+        _facades = new FacadeContainer();
+        using (_facades.Install())
+        {
+            Guild.LoadData();
+        }
+
         NPCGroup.CacheData();
         var directory = new DirectoryInfo(TestContext.CurrentContext.TestDirectory);
         while (directory != null && !Directory.Exists(Path.Combine(directory.FullName, "Module", "uti")))
@@ -37,7 +54,11 @@ public sealed partial class QuestConversationTests
     }
 
     [OneTimeTearDown]
-    public void RestoreItemNames() => ItemNameCache.SetValue(null, _originalItemNames);
+    public void RestoreItemNames()
+    {
+        ItemNameCache.SetValue(null, _originalItemNames);
+        _facades.Dispose();
+    }
 
     private static Dictionary<string, QuestDetail> BuildQuests() => typeof(IQuestListDefinition).Assembly
         .GetTypes()

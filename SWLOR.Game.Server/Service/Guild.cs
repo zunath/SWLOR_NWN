@@ -1,33 +1,24 @@
 using System.Collections.Generic;
-using System.Linq;
+using SWLOR.Game.Server.Composition;
 using SWLOR.Game.Server.Core;
-using SWLOR.Game.Server.Entity;
+using SWLOR.Game.Server.Domain.Economy;
 using SWLOR.Game.Server.Enumeration;
-using SWLOR.Game.Server.Extension;
-using SWLOR.Game.Server.Service.PerkService;
 using SWLOR.Game.Server.Service.QuestService;
-using SWLOR.NWN.API.NWScript.Enum;
 
 namespace SWLOR.Game.Server.Service
 {
+    /// <summary>
+    /// The static API of the guilds. The logic and state live in <see cref="IGuildService"/>; every member here forwards
+    /// to the container's instance, and the event handlers stay here so their names in the handler order manifest do not
+    /// change.
+    /// </summary>
     public static class Guild
     {
-        private static readonly Dictionary<GuildType, GuildAttribute> _activeGuilds = new();
-        private static readonly Dictionary<int, int> _rankProgression = new()
-        {
-            // Level, Points Needed
-            { 0, 1000 },
-            { 1, 5000 },
-            { 2, 15000 },
-            { 3, 30000 },
-            { 4, 45000 },
-            { 5, 60000 }
-        };
+        private static IGuildService Instance => FacadeAccessor.Resolve<IGuildService>();
 
-        public static int MaxRank { get; private set; }
-        public static DateTime? DateTasksLoaded { get; private set; }
-        private static readonly Dictionary<GuildType, Dictionary<int, List<QuestDetail>>> _activeGuildTasksByRank = new();
-        private static readonly Dictionary<GuildType, Dictionary<string, QuestDetail>> _activeGuildTasks = new();
+        public static int MaxRank => Instance.MaxRank;
+
+        public static DateTime? DateTasksLoaded => Instance.DateTasksLoaded;
 
         /// <summary>
         /// When the module caches, cache relevant data and load guild tasks.
@@ -35,18 +26,7 @@ namespace SWLOR.Game.Server.Service
         [NWNEventHandler(ScriptName.OnModuleCacheBefore)]
         public static void LoadData()
         {
-            var guildTypes = Enum.GetValues(typeof(GuildType)).Cast<GuildType>();
-            foreach (var guildType in guildTypes)
-            {
-                var detail = guildType.GetAttribute<GuildType, GuildAttribute>();
-
-                if (detail.IsActive)
-                {
-                    _activeGuilds[guildType] = detail;
-                }
-            }
-
-            MaxRank = _rankProgression.Keys.Max();
+            Instance.LoadData();
         }
 
         /// <summary>
@@ -56,69 +36,17 @@ namespace SWLOR.Game.Server.Service
         /// <returns>A guild detail.</returns>
         public static GuildAttribute GetGuild(GuildType guild)
         {
-            return _activeGuilds[guild];
+            return Instance.GetGuild(guild);
         }
 
         public static int CalculateGPReward(uint player, GuildType guild, int baseAmount)
         {
-            var playerId = GetObjectUUID(player);
-            var dbPlayer = DB.Get<Player>(playerId);
-
-            if(!dbPlayer.Guilds.ContainsKey(guild))
-                dbPlayer.Guilds[guild] = new PlayerGuild();
-
-            var dbGuild = dbPlayer.Guilds[guild];
-            var rankBonus = 0.25f * dbGuild.Rank;
-            var perkBonus = Perk.GetPerkLevel(player, PerkType.GuildRelations) * 0.05f;
-            var socialBonus = GetAbilityModifier(AbilityType.Social, player) * 0.05f;
-            var amount = baseAmount +
-                         (perkBonus * baseAmount) +
-                         (rankBonus * baseAmount) +
-                         (socialBonus * baseAmount);
-
-            return (int)amount;
+            return Instance.CalculateGPReward(player, guild, baseAmount);
         }
 
         public static void GiveGuildPoints(uint player, GuildType guild, int amount)
         {
-            if (amount <= 0) return;
-
-            // Clamp max GP baseAmount
-            if (amount > 1000)
-                amount = 1000;
-
-            var playerId = GetObjectUUID(player);
-            var dbPlayer = DB.Get<Player>(playerId);
-
-            if (!dbPlayer.Guilds.ContainsKey(guild))
-                dbPlayer.Guilds[guild] = new PlayerGuild();
-
-            var dbGuild = dbPlayer.Guilds[guild];
-            dbGuild.Points += amount;
-
-            // Clamp player GP to the highest rank.
-            var maxGP = _rankProgression[MaxRank];
-            if (dbGuild.Points >= maxGP)
-                dbGuild.Points = maxGP - 1;
-
-            var detail = _activeGuilds[guild];
-            SendMessageToPC(player, $"You earned {amount} {detail.Name} guild points");
-
-            // Are we able to rank up?
-            if (dbGuild.Rank < MaxRank)
-            {
-                // Is it time for a rank up?
-                var nextRank = _rankProgression[dbGuild.Rank];
-                if (dbGuild.Points >= nextRank)
-                {
-                    // Let's do a rank up.
-                    dbGuild.Rank++;
-                    SendMessageToPC(player, ColorToken.Green("You've reached rank " + dbGuild.Rank + " in the " + detail.Name + "!"));
-                }
-            }
-
-            dbPlayer.Guilds[guild] = dbGuild;
-            DB.Set(dbPlayer);
+            Instance.GiveGuildPoints(player, guild, amount);
         }
 
         /// <summary>
@@ -127,45 +55,7 @@ namespace SWLOR.Game.Server.Service
         [NWNEventHandler(ScriptName.OnQuestsRegistered)]
         public static void RefreshGuildTasks()
         {
-            if (DateTasksLoaded != null) return;
-
-            for (var rank = 0; rank < MaxRank; rank++)
-            {
-                foreach (var (type, _) in _activeGuilds)
-                {
-                    var potentialTasks = Quest.GetQuestsByGuild(type, rank);
-                    List<QuestDetail> tasks;
-
-                    // Need at least 11 tasks to randomize. We have ten or less. Simply enable all of these.
-                    if (potentialTasks.Count <= 10)
-                    {
-                        tasks = potentialTasks;
-                    }
-                    // Pick 10 tasks randomly out of the potential list.
-                    else
-                    {
-                        tasks = potentialTasks
-                            .OrderBy(o => Random.Next())
-                            .Take(10)
-                            .ToList();
-                    }
-
-                    if(!_activeGuildTasks.ContainsKey(type))
-                        _activeGuildTasks[type] = new Dictionary<string, QuestDetail>();
-
-                    if(!_activeGuildTasksByRank.ContainsKey(type))
-                        _activeGuildTasksByRank[type] = new Dictionary<int, List<QuestDetail>>();
-
-                    foreach (var task in tasks)
-                    {
-                        _activeGuildTasks[type][task.QuestId] = task;
-                    }
-
-                    _activeGuildTasksByRank[type][rank] = tasks;
-                }
-            }
-
-            DateTasksLoaded = DateTime.UtcNow;
+            Instance.RefreshGuildTasks();
         }
 
         /// <summary>
@@ -176,10 +66,7 @@ namespace SWLOR.Game.Server.Service
         /// <returns>A list of active guild tasks</returns>
         public static List<QuestDetail> GetActiveGuildTasksByRank(GuildType guild, int rank)
         {
-            if(!_activeGuildTasksByRank.ContainsKey(guild))
-                return new List<QuestDetail>();
-
-            return _activeGuildTasksByRank[guild][rank].ToList();
+            return Instance.GetActiveGuildTasksByRank(guild, rank);
         }
 
         /// <summary>
@@ -189,10 +76,7 @@ namespace SWLOR.Game.Server.Service
         /// <returns>A list of active guild tasks</returns>
         public static Dictionary<string, QuestDetail> GetAllActiveGuildTasks(GuildType guild)
         {
-            if(!_activeGuildTasks.ContainsKey(guild))
-                return new Dictionary<string, QuestDetail>();
-
-            return _activeGuildTasks[guild].ToDictionary(x => x.Key, y => y.Value);
+            return Instance.GetAllActiveGuildTasks(guild);
         }
 
         /// <summary>
@@ -202,7 +86,7 @@ namespace SWLOR.Game.Server.Service
         /// <returns>The amount of GP required to reach the next rank</returns>
         public static int GetGPRequiredForRank(int rank)
         {
-            return _rankProgression[rank];
+            return Instance.GetGPRequiredForRank(rank);
         }
     }
 }

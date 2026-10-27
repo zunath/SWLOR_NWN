@@ -129,10 +129,10 @@ public class LeadershipCivicPerkRegressionTests
     {
         CalculateGuildRelationsBonus(perkRank, baseAmount).Should().Be(expectedBonus);
 
-        var guild = ReadSource("Service", "Guild.cs");
+        var guild = ReadSource("Domain", "Economy", "GuildService.cs");
         var calculateGP = ExtractMethod(
             guild,
-            "public static int CalculateGPReward(uint player, GuildType guild, int baseAmount)");
+            "public int CalculateGPReward(uint player, GuildType guild, int baseAmount)");
         calculateGP.Should().Contain("Perk.GetPerkLevel(player, PerkType.GuildRelations) * 0.05f");
         calculateGP.Should().Contain("var rankBonus = 0.25f * dbGuild.Rank;");
         calculateGP.Should().Contain("GetAbilityModifier(AbilityType.Social, player) * 0.05f");

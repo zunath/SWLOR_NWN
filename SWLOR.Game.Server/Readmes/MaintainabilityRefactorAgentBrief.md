@@ -22,6 +22,8 @@ task, reviews the result and merges it into `feature/maintainability-refactor`.
   shared checkout. Stop only processes you started, by PID. Scope every search to the repository.
 - If your file-editing tool refuses paths outside the session's worktree, switch into your own worktree with
   the EnterWorktree tool (path=...) after creating it.
+- Scratch files (coverage reports, logs, probes) go in your own folder `C:\Temp\mr-<item id>\`, never in a shared
+  scratchpad; delete it at the end unless the report cites it.
 - Builds: `-p:RunPostBuildEvent=Never -v q -clp:ErrorsOnly`. If a build fails in seconds with
   "0 Warning(s) 0 Error(s)", set `MSBUILDUSESERVER=0`.
 

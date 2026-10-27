@@ -69,7 +69,7 @@ Status: `open`, `in progress`, `review` (pull request open), `done`, `blocked`.
 | P2-0 | DI pilot: composition root, facade accessor, architecture rules, DependencyInjection.md, and `Achievement`, `Faction`, `Taxi` | P1-1 | Sonnet build, Opus review | done | [#2928](https://github.com/zunath/SWLOR_NWN/pull/2928) | Container built in bootstrap step `BuildServiceContainer` (before handlers); facades forward via `FacadeAccessor`; instances in `Domain/<Domain>/`; `IDBService` + `StaticDBAdapter`; `ConvertedServices.json` drives the new architecture rules. Coverage: Achievement 52/52, Faction 65/65, Taxi 45/45 lines. Decisions recorded in the specs' Phase 2 section. |
 | P2-A1 | Wave A, Economy: `Bank`, `Currency`, `Guild`, `PlayerMarket` (about 930 lines) | P2-0 | Sonnet | done | [#2933](https://github.com/zunath/SWLOR_NWN/pull/2933) | Coverage: Bank 8% -> 82%, Currency 0% -> 100%, Guild 26% -> 95%, PlayerMarket 22% -> 97%. `IDBService` gained `Delete`, `Search`, `SearchCount`; test helpers `InMemoryDBService`, `FacadeContainer`; static properties become interface properties with field-less facade getters (DependencyInjection.md). |
 | P2-A2 | Wave A, Social: `ChatPortraitTells`, `Party`, `ChatCommand`, `PlayerList` (about 2,000 lines) | P2-0 | Sonnet | done | [#2934](https://github.com/zunath/SWLOR_NWN/pull/2934) | Coverage 0% -> 93-98% each. Native reads (`g_pAppManager`) sit behind `protected virtual` methods whose default is the original code; engine structures with native finalizers likewise (DependencyInjection.md). Engine tests reach party caches through `EngineTests/Framework/PartyCaches.cs`. |
-| P2-A3 | Wave A, Administration: the eight `DM*` services (about 1,970 lines) | P2-0 | Sonnet | in progress | | Worktree `.claude/worktrees/mr-p2-a3` |
+| P2-A3 | Wave A, Administration: the eight `DM*` services (about 1,970 lines) | P2-0 | Sonnet | done | [#2937](https://github.com/zunath/SWLOR_NWN/pull/2937) | Coverage 0% -> 97-100% (DMPresence 80%; the rest needs the native engine or static DB/window table). Roslyn harnesses of unconverted code now take instance members through `DMPossessionHarness.InstanceMethod`/`InstanceField`; `RecordingProxy` fixed for `out` value-type parameters and engine-structure finalizers; `FakeJsonEngine` added. Tests that reach a converted facade need a `FacadeContainer` (merging the base can expose missing ones). |
 | P2-A4 | Wave A, World I: `Notes`, `Area`, `Planet`, `Traps`, `HoloCom` (about 1,600 lines) | P2-0 | Sonnet | done | [#2942](https://github.com/zunath/SWLOR_NWN/pull/2942) | Coverage: Notes 43% -> 100%, Area 15% -> 97%, Planet 74% -> 100%, Traps 1% -> 97%, HoloCom 4% -> 98%. Calls into unconverted services that cannot run in unit tests sit behind `protected virtual` wrappers (Traps). Replaced the Roslyn recompile of `Traps.RunDetectionSweep` and reflection into Area/Planet internals. New helpers `Support/LocalVariables`, `Support/LoadedPlanets`. Engine tests compiled, not run. |
 | P2-A5 | Wave A, World II: `Weather`, `Music` (about 1,860 lines) | P2-0 | Sonnet | open | | |
 | P2-A6 | Wave A, World III: `Fishing`, `Shuttle` (about 2,300 lines) | P2-0 | Sonnet | open | | |
@@ -86,26 +86,17 @@ Phases 1-4 and the final cutover get their own items when Phase 0 is done.
 
 ## In flight
 
-Started 2026-10-26 by the coordinating session, each as a subagent with the agent brief:
-
-- P2-A3 (Sonnet): branch `claude/mr-p2-a3`, worktree `C:\Projects\SWLOR_NWN\.claude\worktrees\mr-p2-a3`.
-
-If this session ends before they report: check `gh pr list --base feature/maintainability-refactor` and the
-branches above, review any open pull request, and restart an item from its row if nothing was pushed.
+None (2026-10-27, end of the first coordinating session).
 
 ## Next actions
 
-0. **Coordinator handoff (2026-10-27):** the first coordinating session finishes P2-A3, P2-A4 and P0-2b, then hands
-   coordination to a fresh session that starts from this file (owner's request, to keep per-check-in cost down). The
-   new coordinator starts no duplicate of an item listed under "In flight".
-
-1. Review and merge P0-2 (it was asked to add the CharacterizationTests project to CI); record the coverage
-   baseline here.
-2. Daily: run the sync (branch rule above) and record it. Phase 2 Wave A: start P2-A1, P2-A2, P2-A3 as agent slots free up (at most three agents), then A4-A9. The rest of Phase 1 (replacing Roslyn-recompile and reflection-reset harnesses) happens inside each service's Phase 2 conversion. P0-2 must add CharacterizationTests and Architecture.Tests to CI.
-3. Owner item: the 8-character public CD key for P0-6b (paste it in chat or set the user environment variable `SWLOR_LIVE_PUBLIC_CDKEY`).
-4. **GitHub Actions is billing-locked; the owner said not to wait for it (2026-10-27).** Until it runs again, the gate for every pull request that changes production code is a local run of `scripts/ci/run-unit-tests.sh` (about 30 minutes) on the PR head, reported in the PR description; documentation-only and test-only pull requests may run their targeted filters instead.
-3. P0-7 note: the boot-order test uses the `LoadHandlersFromAssemblies` seam, which `master` lacks; the parity
-   script must apply the seam commits to its throwaway `master` copy before running the tests there.
+1. **Daily sync, overdue** (last: 2026-10-27 `6d49650f7`): run `tools/Refactor/Sync-MaintainabilityBranch.ps1` in a worktree
+   checked out on `feature/maintainability-refactor` (branch rule above), push the merge commit, record it in the sync log;
+   if master changed content, run `tools/Refactor/Update-EngineCharacterization.ps1` and explain every changed row.
+2. Phase 2 Wave A: P2-A5, P2-A6, P2-A7 (then A8 `Property`, A9 `Space`, both Opus-reviewed). At most three agents.
+3. Then Waves B-D per the specs' Phase 2 section (the `FacadeAccessor` cache must land before Wave D).
+4. Blocked on the owner: P0-6b needs the 8-character public CD key (public; agents may not read it from logs).
+5. GitHub Actions is billing-locked; the owner said not to wait. The gate is a local `scripts/ci/run-unit-tests.sh` run.
 
 ## Coverage baseline (P0-2, 2026-10-27, branch at the P1-1 merge)
 

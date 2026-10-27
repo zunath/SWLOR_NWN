@@ -101,7 +101,7 @@ try
         var bakeRecipe = ChoreographyAuthor.Read(await ReadText(args[2])).SingleOrDefault(r => r.Id == args[3])
             ?? throw new InvalidDataException("No choreography named " + args[3]);
         var sources = new Dictionary<string, MdlModel>();
-        foreach (var sourceName in bakeRecipe.Beats.Where(b => b.SourceModel != null).Select(b => b.SourceModel!).Distinct())
+        foreach (var sourceName in bakeRecipe.Beats.SelectMany(b => new[] { b.SourceModel, b.GripModel }).OfType<string>().Distinct())
             sources.Add(sourceName, new MdlReader().Parse(ReadBytes(Path.Combine(Path.GetDirectoryName(modelPath)!, sourceName + ".mdl"))));
         var baked = ChoreographyAuthor.Bake(new MdlReader().Parse(ReadBytes(modelPath)), bakeRecipe, sources);
         var bakedOutput = Path.GetFullPath(args[4]);

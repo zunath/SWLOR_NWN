@@ -7,7 +7,7 @@ Sections: Branches · Code review loop · Review threads · Public text · Hando
 ## Branches
 
 - Start each request on a new branch from up-to-date `origin/master` unless the user names a different base. Never commit to `master`, and never mix one request's work into another request's branch.
-- One branch and one pull request per request; follow-ups are new commits on the same branch. Open a second pull request only for a required submodule companion. Separate branches that edit the Design Bible `.xlsx` cannot be merged.
+- One branch and one pull request per request; follow-ups are new commits on the same branch. Open a second pull request only for a required submodule companion, and only one per submodule: a haks change that spans several asset groups (for example body animation banks and the robe bridges regenerated from them) stays in that one companion. Separate branches that edit the Design Bible `.xlsx` cannot be merged.
 - When a pull request moves a submodule pointer (usually `SWLOR_Haks`), commit and push the submodule branch, open its companion pull request against the branch matching the parent's base, and link the two pull requests in both descriptions. A pushed submodule branch alone is not a complete handoff.
 
 ## Code review loop

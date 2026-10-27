@@ -3022,7 +3022,7 @@
   {
     "Name": "PistolRushTravel",
     "AnimationName": "sw_pistolrus",
-    "Duration": 1.6,
+    "Duration": 1.9,
     "Targets": [
       "SWLOR_Haks/sw_cr_creature/a_ba.mdl",
       "SWLOR_Haks/sw_cr_creature/a_fa.mdl"

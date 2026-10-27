@@ -1,0 +1,14 @@
+{
+  "function": "UsePerkFeat.TryUseAbility",
+  "description": "Activates representative Devices abilities through the real activation pipeline and records the outcome of each.",
+  "seed": 20261031,
+  "inputs": "Each ability is used by a fresh nw_bandit001 (2000 HP, 9999 FP and stamina, no regeneration) on the target its behavior case names: itself, a hostile training dummy or a friendly creature one and a half metres away. The clock is frozen at 2026-01-15 12:00:00 UTC, so effect durations are the full applied durations. Random is seeded with 20261031 plus the ability's position immediately before the activation. HP columns are the change from before the activation; effects are written 'name:remainingSeconds'.",
+  "rowCount": 4,
+  "columns": ["ability", "feat", "activation", "target", "recastGroup", "=> accepted", "=> denial", "=> impact", "=> fpSpent", "=> staminaSpent", "=> casterHP", "=> targetHP", "=> targetEnmity", "=> casterEffects", "=> targetEffects", "=> queued"],
+  "rows": [
+    ["FragGrenade1", 2535, "Casted", "HostileCreature", "FragGrenade", true, "", "targets 1, critical hits 0, damage 13, skill Devices", 0, 2, 0, -13, 113, [], [], false],
+    ["ArcProjector1", 2561, "Casted", "HostileCreature", "ArcProjector", true, "", "targets 1, critical hits 0, damage 17, skill Devices", 0, 3, 0, -17, 117, [], [], false],
+    ["DeflectorShield1", 2434, "Casted", "Self", "DeflectorShield", true, "", "targets 0, critical hits 0, damage 0, skill Devices", 0, 3, 71, 0, 0, [], [], false],
+    ["Flamethrower1", 2486, "Casted", "HostileCreature", "Flamethrower", true, "", "targets 1, critical hits 0, damage 9, skill Devices", 0, 3, 0, -9, 109, [], [], false]
+  ]
+}

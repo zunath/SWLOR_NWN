@@ -51,6 +51,12 @@ public sealed class InMemoryDBService : IDBService
         Saved.Add(entity);
     }
 
+    public bool Exists<T>(string id)
+        where T : EntityBase
+    {
+        return _entities.ContainsKey(id);
+    }
+
     public void Delete<T>(string id)
         where T : EntityBase
     {

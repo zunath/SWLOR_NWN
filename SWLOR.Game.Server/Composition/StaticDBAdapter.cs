@@ -24,6 +24,12 @@ namespace SWLOR.Game.Server.Composition
             DB.Set(entity);
         }
 
+        public bool Exists<T>(string id)
+            where T : EntityBase
+        {
+            return DB.Exists<T>(id);
+        }
+
         public void Delete<T>(string id)
             where T : EntityBase
         {

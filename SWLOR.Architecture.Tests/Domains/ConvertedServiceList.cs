@@ -43,11 +43,47 @@ internal sealed class ConvertedServiceList
             if (previous is not null && string.CompareOrdinal(previous, name) > 0)
                 list._problems.Add($"{name} is out of order: keep the list sorted by name so pull requests that add services do not conflict.");
 
+            var parts = ReadParts(element, name, list._problems);
+
             previous = name;
-            list._services.Add(new ConvertedService(name, domain));
+            list._services.Add(new ConvertedService(name, domain, parts));
         }
 
         return list;
+    }
+
+    /// <summary>
+    /// The optional <c>parts</c> of a service: plain names, sorted, without duplicates, each starting with the service's
+    /// name followed by an upper-case letter (so <see cref="UnitClassifier"/> places the part in the service) and none
+    /// of them the service's own instance class.
+    /// </summary>
+    private static List<string> ReadParts(JsonElement element, string service, List<string> problems)
+    {
+        var parts = new List<string>();
+        if (!element.TryGetProperty("parts", out var array))
+            return parts;
+
+        string? previous = null;
+        foreach (var item in array.EnumerateArray())
+        {
+            var part = item.GetString() ?? string.Empty;
+            if (!IsPlainName(part))
+                problems.Add($"'{part}' is not a plain part name of {service}.");
+            else if (part == service + "Service" ||
+                     !part.StartsWith(service, StringComparison.Ordinal) ||
+                     part.Length == service.Length ||
+                     !char.IsUpper(part[service.Length]))
+                problems.Add($"The part '{part}' must start with the service name '{service}' followed by a capital letter (and not be {service}Service itself), or the cross-domain guard would not count it as {service}.");
+            if (parts.Contains(part))
+                problems.Add($"The part '{part}' of {service} is listed twice.");
+            if (previous is not null && string.CompareOrdinal(previous, part) > 0)
+                problems.Add($"The part '{part}' of {service} is out of order: keep the parts sorted by name.");
+
+            previous = part;
+            parts.Add(part);
+        }
+
+        return parts;
     }
 
     private static bool IsPlainName(string name) =>

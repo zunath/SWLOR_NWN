@@ -27,7 +27,8 @@ internal static class ConvertedServiceRules
 
     /// <summary>
     /// Each converted service has its three pieces: a static facade class, an interface, and a class that implements
-    /// the interface.
+    /// the interface. Each part of a split service (<see cref="ConvertedService.Parts"/>) has an interface and a class
+    /// that implements it.
     /// </summary>
     public static IReadOnlyList<string> MissingPieces(ConvertedServiceList list, AssemblyFacts facts)
     {
@@ -55,6 +56,24 @@ internal static class ConvertedServiceRules
                 problems.Add($"{service.Name}: {service.Instance} must be an instance class, not static or an interface.");
             else if (!instance.Interfaces.Contains(service.Interface.ToString()))
                 problems.Add($"{service.Name}: {service.Instance} must implement {service.Interface}.");
+
+            foreach (var part in service.PartNames)
+            {
+                var partInterface = service.PartInterface(part);
+                var partInstance = service.PartInstance(part);
+
+                if (!byKey.TryGetValue(partInterface, out var partContract))
+                    problems.Add($"{service.Name}: the interface {partInterface} of the part {part} does not exist.");
+                else if (!partContract.IsInterface)
+                    problems.Add($"{service.Name}: {partInterface} must be an interface.");
+
+                if (!byKey.TryGetValue(partInstance, out var partClass))
+                    problems.Add($"{service.Name}: the class {partInstance} of the part {part} does not exist.");
+                else if (partClass.IsInterface || partClass.IsStatic)
+                    problems.Add($"{service.Name}: {partInstance} must be an instance class, not static or an interface.");
+                else if (!partClass.Interfaces.Contains(partInterface.ToString()))
+                    problems.Add($"{service.Name}: {partInstance} must implement {partInterface}.");
+            }
         }
 
         return problems;

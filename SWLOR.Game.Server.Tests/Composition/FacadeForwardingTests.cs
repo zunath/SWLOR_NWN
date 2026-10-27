@@ -88,11 +88,28 @@ public class FacadeForwardingTests
     }
 
     [TestCaseSource(nameof(Services))]
+    public void The_container_holds_one_instance_of_each_part_of_the_service_and_it_is_the_part_class(ConvertedServiceTypes service)
+    {
+        var host = new ContainerHost();
+        CompositionRoot.Build(host);
+
+        foreach (var part in service.Parts)
+        {
+            var first = host.Provider.GetRequiredService(part.Contract);
+            var second = host.Provider.GetRequiredService(part.Contract);
+
+            first.Should().BeOfType(part.Instance, $"{part.Name} is registered behind {part.Contract.Name}");
+            second.Should().BeSameAs(first, $"{part.Name} is a singleton");
+        }
+    }
+
+    [TestCaseSource(nameof(Services))]
     public void The_instance_class_has_no_event_handlers_and_the_facade_keeps_the_ones_it_had(ConvertedServiceTypes service)
     {
         const string HandlerAttribute = "NWNEventHandler";
 
-        service.Instance.GetMethods().Where(method => method.GetCustomAttributes().Any(a => a.GetType().Name == HandlerAttribute))
+        service.Instance.GetMethods().Concat(service.Parts.SelectMany(part => part.Instance.GetMethods()))
+            .Where(method => method.GetCustomAttributes().Any(a => a.GetType().Name == HandlerAttribute))
             .Should().BeEmpty("the script registry binds handlers as static methods of the facade");
         FacadeMethods(service.Facade).Where(method => method.GetCustomAttributes().Any(a => a.GetType().Name == HandlerAttribute))
             .Should().OnlyContain(method => method.ReturnType == typeof(void) && method.GetParameters().Length == 0,
@@ -112,7 +129,9 @@ public class FacadeForwardingTests
             .Where(type => type.Namespace!.StartsWith("SWLOR.Game.Server.Domain.", StringComparison.Ordinal) && !notServices.Contains(type.Name))
             .Select(type => type.Name)
             .OrderBy(name => name, StringComparer.Ordinal);
-        var listed = ConvertedServiceFixtures.Load().Select(service => service.Contract.Name).OrderBy(name => name, StringComparer.Ordinal);
+        var listed = ConvertedServiceFixtures.Load()
+            .SelectMany(service => service.Parts.Select(part => part.Contract.Name).Prepend(service.Contract.Name))
+            .OrderBy(name => name, StringComparer.Ordinal);
 
         registered.Should().Equal(listed, "SWLOR.Architecture.Tests/ConvertedServices.json lists exactly the services Composition registers");
     }

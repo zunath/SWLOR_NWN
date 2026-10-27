@@ -21,6 +21,10 @@ namespace SWLOR.Game.Server.Domain.Core
         void Set<T>(T entity)
             where T : EntityBase;
 
+        /// <summary>Determines whether an entity with the Id is stored. Same as <c>DB.Exists&lt;T&gt;</c>.</summary>
+        bool Exists<T>(string id)
+            where T : EntityBase;
+
         /// <summary>Deletes an entity by its Id. Same as <c>DB.Delete&lt;T&gt;</c>.</summary>
         void Delete<T>(string id)
             where T : EntityBase;

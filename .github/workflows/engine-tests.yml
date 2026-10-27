@@ -4,7 +4,7 @@ name: Engine tests
 # (Readmes/MaintainabilityRefactorPlan.md): nightly on the refactor branch, on pull requests into it that carry a label,
 # and on demand.
 #
-#   engine-tests label                   the whole suite (910 tests); about 3.5 to 4 hours, so it is opt-in
+#   engine-tests label                   the whole suite (910 tests); about 3.5 hours with setup, so it is opt-in
 #   engine-tests-characterization label  only the Characterization scenarios that lock today's outputs; about 40 minutes
 #   workflow_dispatch                    the whole suite, or the tests whose name or category contains `filter`
 #
@@ -91,8 +91,8 @@ jobs:
             # A filtered run is short; the Characterization scenarios took 11 minutes of tests locally.
             timeout=120; projection=150
           else
-            # A full sweep took 205 minutes locally (the last nine tests alone are about an hour); 300 is the limit and
-            # 270 (setup 30 + 240) is what the restart check plans for.
+            # A full sweep took about 180 minutes locally (the five WeaponRotationBalance tests alone take 34); 300 is
+            # the limit and 270 (setup 30 + 240) is what the restart check plans for.
             timeout=300; projection=270
           fi
           {

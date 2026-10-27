@@ -482,8 +482,8 @@ which become zero-byte files - Beamdog's dedicated-server data does the same wit
 models and textures, because the server never reads them - so the HAKs take about 0.4 GB instead
 of 11 GB. Never deploy them. It packs with the native tools that `Setup.sh` prepares, about
 4 minutes in all, and later runs skip steps whose inputs are unchanged (`--force` redoes them).
-A full sweep took about 75 minutes in a 4-core cloud session when the suite had a few hundred tests; with 910 it takes about 3.5
-hours (the `CI` section has the details), so pass `--timeout-minutes 300`. The `CI` section below runs this flow on a hosted
+A full sweep took about 75 minutes in a 4-core cloud session when the suite had a few hundred tests; with 910 it takes about
+3 hours (the `CI` section has the details), so pass `--timeout-minutes 300`. The `CI` section below runs this flow on a hosted
 runner, with a 300 MB sparse `SWLOR_Haks` fetch in place of the full checkout.
 
 Usage:
@@ -688,10 +688,11 @@ What a run does, all through the scripts a cloud session or dev machine uses (ru
    annotations, and the job uploads the `engine-test-results` artifact (14 days): `engine-test-results.json`, the runner output
    `engine-tests.log`, and the server's `logs/` and `app_logs/`.
 
-Time: setup is about 25 to 30 minutes (the module pack alone took 3.5 minutes on a 20-core machine; the hosted runner has four
-vCPUs). The whole suite (910 tests, 6 of them skipped by design) took about 3.3 to 3.5 hours of test time locally; the
-Characterization scenarios take 11 minutes. The suite has grown a lot since the 45 and 75 minute figures above: the five
-`WeaponRotationBalance` tests alone run about 7 minutes each.
+Time: setup is expected to take 25 to 30 minutes (on a 20-core dev machine the module pack alone took 3.5 minutes and the HAKs
+about 3; the hosted runner has four vCPUs and has not been timed). The whole suite (910 tests, 6 of them skipped by design) took
+about 3 hours locally (142 minutes for the first 901 tests, then the long ones: the five `WeaponRotationBalance` tests run 6.8
+minutes each); the Characterization scenarios take 11 minutes. Test time is mostly in-game waiting, so a hosted runner should
+be close to the local figure.
 
 The job fails when any engine test fails, when no test ran, when the server container exits non-zero (even after a green
 report), and when the server dies without writing a report. A run that hits its wall clock fails too, and says so: the log
@@ -707,7 +708,7 @@ crashed", with `Server shutting down for automated restart.` in the log); it hap
 workflow, 26 minutes in. Do not start a long engine run in the hours before 10:00 UTC. The workflow handles it three ways: the
 nightly starts at 01:00 UTC, `tools/WaitOutServerRestart.py` waits up to 15 minutes when a run would cross the restart and
 otherwise fails the job at its first step with an error saying to run it again after 10:01 UTC (a job has six hours in all, so
-a long wait leaves no room for a 3.5 hour run), and `EngineTestSummary.py` names the restart when it cuts a run off anyway. The
+a long wait leaves no room for a 3 hour run), and `EngineTestSummary.py` names the restart when it cuts a run off anyway. The
 real fix is a guard in `ProcessAutoRestart` for `ApplicationSettings.EngineTestsEnabled`; after it lands, delete the check and
 this section.
 

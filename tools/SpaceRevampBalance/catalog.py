@@ -9,11 +9,13 @@ Outputs:
 """
 import copy
 import json
+import re
 import sys
 from pathlib import Path
 
 sys.path.insert(0, str(Path(__file__).resolve().parent))
 import model as m  # noqa: E402
+import npc_catalog  # noqa: E402
 
 ROOT = m.REPO
 ROMAN = ["I", "II", "III", "IV", "V", "VI", "VII", "VIII", "IX", "X"]
@@ -367,6 +369,10 @@ def writes():
         "SWLOR.Game.Server/Feature/ShipDefinition/RevampShipCatalog.cs": ship_catalog_cs(hulls),
     }
     files["SWLOR.Game.Server/Service/CraftService/RecipeType.cs"] = recipe_enum(steps, hulls)
+    npc_source = (ROOT / "SWLOR.Game.Server/Feature/SpaceObjectDefinition/NPCSpaceObjectDefinition.cs").read_text(encoding="utf-8")
+    npc_tags = re.findall(r'_builder\.Create\("([^"]+)"\)', npc_source)
+    files["SWLOR.Game.Server/Feature/SpaceObjectDefinition/RevampNpcShipCatalog.cs"] = npc_catalog.catalog_cs(
+        HEADER, npc_catalog.entries(ROOT, npc_tags))
     files.update(blueprints(steps, hulls))
     return files, steps, hulls
 

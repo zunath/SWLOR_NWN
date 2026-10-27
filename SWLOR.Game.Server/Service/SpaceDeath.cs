@@ -18,7 +18,8 @@ namespace SWLOR.Game.Server.Service
     /// <summary>
     /// A destroyed player ship (plan section 9, Death). Everyone aboard is ejected alive in escape pods to the dock
     /// the ship is towed to and takes the normal ground XP debt. Modules drop only when another player destroys the
-    /// ship in Wild Space; everywhere else they stay installed and the owner pays the repair bill.
+    /// ship in Wild Space; everywhere else they stay installed and the owner pays the repair bill. The cargo always
+    /// spills into cargo pods anyone can scoop.
     /// </summary>
     public static partial class Space
     {
@@ -40,6 +41,7 @@ namespace SWLOR.Game.Server.Service
         ///       alive in escape pods to the dock the ship is towed to and takes the normal XP debt.
         ///     - The modules drop (65% each, the rest are lost) only when another player destroyed the ship in Wild
         ///       Space. Otherwise they stay installed.
+        ///     - The cargo spills into cargo pods at the wreck on every death, PvE or PvP.
         ///     - The ship is left at 1 hull and no shield and returns to the dock; the owner pays the repair bill.
         /// NPCs aboard are unaffected. Called by Death.OnPlayerDeath for every player death.
         /// </summary>
@@ -97,6 +99,7 @@ namespace SWLOR.Game.Server.Service
             SpaceCommand.Clear(creature);
             StatusEffect.ClearStatusEffectsOnDeath(creature);
             dbPlayerShip.Status.PendingRiders?.Clear();
+            Trade.SpillCargo(dbPlayerShip, deathLocation);
 
             if (modulesDrop)
             {

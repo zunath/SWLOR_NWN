@@ -1,3 +1,4 @@
+using System.Collections.Generic;
 using SWLOR.Game.Server.Service.CombatService;
 
 namespace SWLOR.Game.Server.Service.SpaceService
@@ -40,6 +41,12 @@ namespace SWLOR.Game.Server.Service.SpaceService
 
         /// <summary>The cargo hold size, or null when the hull has none listed.</summary>
         public int? Cargo { get; set; }
+
+        /// <summary>The cargo bay volume the ship's commodities fill.</summary>
+        public int CargoUsed { get; set; }
+
+        /// <summary>The commodities aboard, largest first.</summary>
+        public List<(string Name, int Units)> CargoLines { get; set; } = new();
 
         public int HighFitted { get; set; }
         public int HighSlots { get; set; }

@@ -1002,7 +1002,7 @@
   },
   {
     "File": "SWLOR.Game.Server/Feature/DialogDefinition/StarportDialog.cs",
-    "Line": 68,
+    "Line": 70,
     "Member": "MainPageInit",
     "Delivery": "Retained",
     "Call": "SendMessageToPC(player, \"Unable to continue. The planet could not be determined. Notify an admin.\")"
@@ -2612,161 +2612,168 @@
   },
   {
     "File": "SWLOR.Game.Server/Feature/GuiDefinition/ViewModel/ShipManagementViewModel.cs",
-    "Line": 1671,
+    "Line": 1670,
     "Member": "OnClickUnregisterShip",
     "Delivery": "Retained",
-    "Call": "FloatingTextStringOnCreature(\"Please repair your ship fully before unregistering it.\", Player, false)"
+    "Call": "FloatingTextStringOnCreature(\"Please sell the cargo in the cargo bay before unregistering your ship.\", Player, false)"
   },
   {
     "File": "SWLOR.Game.Server/Feature/GuiDefinition/ViewModel/ShipManagementViewModel.cs",
     "Line": 1677,
     "Member": "OnClickUnregisterShip",
     "Delivery": "Retained",
+    "Call": "FloatingTextStringOnCreature(\"Please repair your ship fully before unregistering it.\", Player, false)"
+  },
+  {
+    "File": "SWLOR.Game.Server/Feature/GuiDefinition/ViewModel/ShipManagementViewModel.cs",
+    "Line": 1683,
+    "Member": "OnClickUnregisterShip",
+    "Delivery": "Retained",
     "Call": "FloatingTextStringOnCreature(Item.InventoryFullMessage, Player, false)"
   },
   {
     "File": "SWLOR.Game.Server/Feature/GuiDefinition/ViewModel/ShipManagementViewModel.cs",
-    "Line": 1700,
+    "Line": 1706,
     "Member": "OnClickUnregisterShip",
     "Delivery": "Retained",
     "Call": "FloatingTextStringOnCreature(\"Ship unregistered!\", Player, false)"
   },
   {
     "File": "SWLOR.Game.Server/Feature/GuiDefinition/ViewModel/ShipManagementViewModel.cs",
-    "Line": 1708,
+    "Line": 1714,
     "Member": "OnClickSaveShipName",
     "Delivery": "Retained",
     "Call": "FloatingTextStringOnCreature(\"A ship name is required.\", Player, false)"
   },
   {
     "File": "SWLOR.Game.Server/Feature/GuiDefinition/ViewModel/ShipManagementViewModel.cs",
-    "Line": 1734,
+    "Line": 1740,
     "Member": "ValidateModuleEquip",
     "Delivery": "Retained",
     "Call": "SendMessageToPC(Player, \"Only starship modules may be installed.\")"
   },
   {
     "File": "SWLOR.Game.Server/Feature/GuiDefinition/ViewModel/ShipManagementViewModel.cs",
-    "Line": 1740,
+    "Line": 1746,
     "Member": "ValidateModuleEquip",
     "Delivery": "Retained",
     "Call": "SendMessageToPC(Player, \"Item must be in your inventory.\")"
   },
   {
     "File": "SWLOR.Game.Server/Feature/GuiDefinition/ViewModel/ShipManagementViewModel.cs",
-    "Line": 1751,
+    "Line": 1757,
     "Member": "ValidateModuleEquip",
     "Delivery": "Retained",
     "Call": "SendMessageToPC(Player, fitError)"
   },
   {
     "File": "SWLOR.Game.Server/Feature/GuiDefinition/ViewModel/ShipManagementViewModel.cs",
-    "Line": 1759,
+    "Line": 1765,
     "Member": "ValidateModuleEquip",
     "Delivery": "Retained",
     "Call": "SendMessageToPC(Player, \"No high power nodes are available.\")"
   },
   {
     "File": "SWLOR.Game.Server/Feature/GuiDefinition/ViewModel/ShipManagementViewModel.cs",
-    "Line": 1767,
+    "Line": 1773,
     "Member": "ValidateModuleEquip",
     "Delivery": "Retained",
     "Call": "SendMessageToPC(Player, \"No mid power nodes are available.\")"
   },
   {
     "File": "SWLOR.Game.Server/Feature/GuiDefinition/ViewModel/ShipManagementViewModel.cs",
-    "Line": 1775,
+    "Line": 1781,
     "Member": "ValidateModuleEquip",
     "Delivery": "Retained",
     "Call": "SendMessageToPC(Player, \"No low power nodes are available.\")"
   },
   {
     "File": "SWLOR.Game.Server/Feature/GuiDefinition/ViewModel/ShipManagementViewModel.cs",
-    "Line": 1786,
+    "Line": 1792,
     "Member": "ValidateModuleEquip",
     "Delivery": "Retained",
     "Call": "SendMessageToPC(Player, \"You do not meet the perk requirements necessary to install this module.\")"
   },
   {
     "File": "SWLOR.Game.Server/Feature/GuiDefinition/ViewModel/ShipManagementViewModel.cs",
-    "Line": 1794,
+    "Line": 1800,
     "Member": "ValidateModuleEquip",
     "Delivery": "Retained",
     "Call": "SendMessageToPC(Player, skillError)"
   },
   {
     "File": "SWLOR.Game.Server/Feature/GuiDefinition/ViewModel/ShipManagementViewModel.cs",
-    "Line": 1849,
+    "Line": 1855,
     "Member": "ProcessPower",
     "Delivery": "Retained",
     "Call": "SendMessageToPC(Player, $\"Only {rowName}-powered ship modules may be installed to this slot.\")"
   },
   {
     "File": "SWLOR.Game.Server/Feature/GuiDefinition/ViewModel/ShipManagementViewModel.cs",
-    "Line": 1860,
+    "Line": 1866,
     "Member": "ProcessPower",
     "Delivery": "Retained",
     "Call": "SendMessageToPC(Player, $\"Only {rowName}-powered ship modules may be installed to this slot.\")"
   },
   {
     "File": "SWLOR.Game.Server/Feature/GuiDefinition/ViewModel/ShipManagementViewModel.cs",
-    "Line": 1894,
+    "Line": 1900,
     "Member": "ProcessPower",
     "Delivery": "Retained",
     "Call": "SendMessageToPC(Player, Item.InventoryFullMessage)"
   },
   {
     "File": "SWLOR.Game.Server/Feature/GuiDefinition/ViewModel/ShipManagementViewModel.cs",
-    "Line": 1926,
+    "Line": 1932,
     "Member": "ProcessConfiguration",
     "Delivery": "Retained",
     "Call": "SendMessageToPC(Player, \"Only ship configuration modules may be installed to this slot.\")"
   },
   {
     "File": "SWLOR.Game.Server/Feature/GuiDefinition/ViewModel/ShipManagementViewModel.cs",
-    "Line": 1938,
+    "Line": 1944,
     "Member": "ProcessConfiguration",
     "Delivery": "Retained",
     "Call": "SendMessageToPC(Player, \"Only ship configuration modules may be installed to this slot.\")"
   },
   {
     "File": "SWLOR.Game.Server/Feature/GuiDefinition/ViewModel/ShipManagementViewModel.cs",
-    "Line": 1970,
+    "Line": 1976,
     "Member": "ProcessConfiguration",
     "Delivery": "Retained",
     "Call": "SendMessageToPC(Player, Item.InventoryFullMessage)"
   },
   {
     "File": "SWLOR.Game.Server/Feature/GuiDefinition/ViewModel/ShipManagementViewModel.cs",
-    "Line": 2135,
+    "Line": 2141,
     "Member": "OnClickBoardShip",
     "Delivery": "Retained",
     "Call": "SendMessageToPC(Player, \"You are in combat.\")"
   },
   {
     "File": "SWLOR.Game.Server/Feature/GuiDefinition/ViewModel/ShipManagementViewModel.cs",
-    "Line": 2145,
+    "Line": 2151,
     "Member": "OnClickBoardShip",
     "Delivery": "Retained",
     "Call": "FloatingTextStringOnCreature(\"You do not have permission to access that property.\", Player, false)"
   },
   {
     "File": "SWLOR.Game.Server/Feature/GuiDefinition/ViewModel/ShipManagementViewModel.cs",
-    "Line": 2184,
+    "Line": 2190,
     "Member": "OnClickRemoveAccess",
     "Delivery": "Retained",
     "Call": "FloatingTextStringOnCreature(\"Ship access removed.\", Player, false)"
   },
   {
     "File": "SWLOR.Game.Server/Feature/GuiDefinition/ViewModel/ShipManagementViewModel.cs",
-    "Line": 2265,
+    "Line": 2271,
     "Member": "OnClickRepair",
     "Delivery": "Retained",
     "Call": "FloatingTextStringOnCreature(ColorToken.Red(\"Not enough credits!\"), Player, false)"
   },
   {
     "File": "SWLOR.Game.Server/Feature/GuiDefinition/ViewModel/ShipManagementViewModel.cs",
-    "Line": 2278,
+    "Line": 2284,
     "Member": "OnClickRepair",
     "Delivery": "Retained",
     "Call": "FloatingTextStringOnCreature(ColorToken.Green(\"Ship repaired!\"), Player, false)"
@@ -5832,14 +5839,14 @@
   },
   {
     "File": "SWLOR.Game.Server/Service/SpaceDeath.cs",
-    "Line": 192,
+    "Line": 195,
     "Member": "ApplyDeath",
     "Delivery": "Retained",
     "Call": "FloatingTextStringOnCreature(ColorToken.Red(\"The ship has exploded!\"), rider, false)"
   },
   {
     "File": "SWLOR.Game.Server/Service/SpaceDeath.cs",
-    "Line": 319,
+    "Line": 322,
     "Member": "EjectEscapePods",
     "Delivery": "Retained",
     "Call": "SendMessageToPC(rider, ColorToken.Red(message))"
@@ -6084,7 +6091,7 @@
   },
   {
     "File": "SWLOR.Game.Server/Service/SpaceHud.cs",
-    "Line": 81,
+    "Line": 82,
     "Member": "Toggle",
     "Delivery": "Retained",
     "Call": "SendMessageToPC(player, \"The Ship HUD can only be used while piloting a starship.\")"
@@ -6354,6 +6361,83 @@
     "Member": "RegisterTaxiDestination",
     "Delivery": "Retained",
     "Call": "SendMessageToPC(player, $\"'{detail.Name}' registered into taxi destinations!\")"
+  },
+  {
+    "File": "SWLOR.Game.Server/Service/Trade.cs",
+    "Line": 103,
+    "Member": "Buy",
+    "Delivery": "Retained",
+    "Call": "SendMessageToPC(player, ColorToken.Red(TradeRules.GetRefusalMessage(order.Refusal)))"
+  },
+  {
+    "File": "SWLOR.Game.Server/Service/Trade.cs",
+    "Line": 114,
+    "Member": "Buy",
+    "Delivery": "Retained",
+    "Call": "SendMessageToPC(player, ColorToken.Green($\"Bought {order.Units} {detail.Name} for {order.Credits} credits{reduced}.\"))"
+  },
+  {
+    "File": "SWLOR.Game.Server/Service/Trade.cs",
+    "Line": 136,
+    "Member": "Sell",
+    "Delivery": "Retained",
+    "Call": "SendMessageToPC(player, ColorToken.Red(TradeRules.GetRefusalMessage(order.Refusal)))"
+  },
+  {
+    "File": "SWLOR.Game.Server/Service/Trade.cs",
+    "Line": 148,
+    "Member": "Sell",
+    "Delivery": "Retained",
+    "Call": "SendMessageToPC(player, ColorToken.Green($\"Sold {order.Units} {detail.Name} for {order.Credits} credits, {profitText}.\"))"
+  },
+  {
+    "File": "SWLOR.Game.Server/Service/Trade.cs",
+    "Line": 184,
+    "Member": "TryGetTrade",
+    "Delivery": "Retained",
+    "Call": "SendMessageToPC(player, ColorToken.Red(TradeRules.GetRefusalMessage(TradeRefusal.ShipNotDocked)))"
+  },
+  {
+    "File": "SWLOR.Game.Server/Service/Trade.cs",
+    "Line": 190,
+    "Member": "TryGetTrade",
+    "Delivery": "Retained",
+    "Call": "SendMessageToPC(player, ColorToken.Red(TradeRules.GetRefusalMessage(TradeRefusal.NotTradedHere)))"
+  },
+  {
+    "File": "SWLOR.Game.Server/Service/TradeCargoSpill.cs",
+    "Line": 73,
+    "Member": "ScoopPod",
+    "Delivery": "Retained",
+    "Call": "SendMessageToPC(user, ColorToken.Red(\"Only a ship can scoop a cargo pod.\"))"
+  },
+  {
+    "File": "SWLOR.Game.Server/Service/TradeCargoSpill.cs",
+    "Line": 81,
+    "Member": "ScoopPod",
+    "Delivery": "Retained",
+    "Call": "SendMessageToPC(user, ColorToken.Red(TradeRules.GetRefusalMessage(TradeRefusal.NoCargoBay)))"
+  },
+  {
+    "File": "SWLOR.Game.Server/Service/TradeCargoSpill.cs",
+    "Line": 89,
+    "Member": "ScoopPod",
+    "Delivery": "Retained",
+    "Call": "SendMessageToPC(user, ColorToken.Red(TradeRules.GetRefusalMessage(TradeRefusal.CargoBayFull)))"
+  },
+  {
+    "File": "SWLOR.Game.Server/Service/TradeCargoSpill.cs",
+    "Line": 102,
+    "Member": "ScoopPod",
+    "Delivery": "Retained",
+    "Call": "SendMessageToPC(user, ColorToken.Green($\"Scooped into the cargo bay: {text}.\"))"
+  },
+  {
+    "File": "SWLOR.Game.Server/Service/TradeCargoSpill.cs",
+    "Line": 111,
+    "Member": "ScoopPod",
+    "Delivery": "Retained",
+    "Call": "SendMessageToPC(user, ColorToken.Red(\"The cargo bay is full. The rest stays in the pod.\"))"
   },
   {
     "File": "SWLOR.Game.Server/Service/Traps.cs",

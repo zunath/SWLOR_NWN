@@ -1,44 +1,24 @@
 using System.Collections.Generic;
-using System.Linq;
+using SWLOR.Game.Server.Composition;
 using SWLOR.Game.Server.Core;
+using SWLOR.Game.Server.Domain.World;
 using SWLOR.Game.Server.Entity;
-using SWLOR.Game.Server.Extension;
 using SWLOR.Game.Server.Service.KeyItemService;
 using SWLOR.Game.Server.Service.MusicService;
-using SWLOR.Game.Server.Service.PropertyService;
-using SWLOR.NWN.API.NWNX;
 using SWLOR.NWN.API.NWScript.Enum;
 
 namespace SWLOR.Game.Server.Service
 {
-    public class Music
+    /// <summary>
+    /// The static API of the module's music. The logic and state live in <see cref="IMusicService"/>; every member here
+    /// forwards to the container's instance, and the event handlers stay here so their names in the handler order
+    /// manifest do not change.
+    /// </summary>
+    public static class Music
     {
-        public const string MusicPlayerTag = "MUSIC_PLAYER";
-        private const string AreaMusicStoppedVariable = "MUSIC_BACKGROUND_STOPPED";
-        private const string BattleThemeSetVariable = "MUSIC_BATTLE_THEME_SET";
-        private const string BattleThemePlayingVariable = "MUSIC_BATTLE_THEME_PLAYING";
-        // Ability-only fights can leave the engine's combat state off, so combat also lasts this long
-        // after the player's last attack, damage, or hostile ability.
-        private const float BattleThemeCombatGraceSeconds = 12f;
-        private static readonly Dictionary<uint, DateTime> _lastBattleThemeCombat = new();
+        public const string MusicPlayerTag = Domain.World.MusicService.MusicPlayerTag;
 
-        private static readonly Dictionary<int, Song> _songs = new Dictionary<int,Song>();
-        private static readonly Dictionary<KeyItemType, MusicSong> _collectibleSongsByKeyItem = MusicSongCatalog.Songs
-            .ToDictionary(song => song.KeyItem);
-        private static readonly Dictionary<int, MusicSong> _collectibleSongsByTrackId = MusicSongCatalog.Songs
-            .ToDictionary(song => song.TrackId);
-
-        public class Song
-        {
-            public int ID { get; }
-            public string DisplayName { get; }
-
-            public Song(int id, string displayName)
-            {
-                ID = id;
-                DisplayName = displayName;
-            }
-        }
+        private static IMusicService Instance => FacadeAccessor.Resolve<IMusicService>();
 
         /// <summary>
         /// When the module loads, read the ambientmusic.2da file for all active songs.
@@ -47,24 +27,7 @@ namespace SWLOR.Game.Server.Service
         [NWNEventHandler(ScriptName.OnModuleCacheBefore)]
         public static void LoadSongList()
         {
-            const string File = "ambientmusic";
-            var rowCount = Get2DARowCount(File);
-
-            for (var row = 0; row < rowCount; row++)
-            {
-                var description = Get2DAString(File, "Description", row);
-                var displayName = Get2DAString(File, "DisplayName", row);
-
-                // Skip record if a name cannot be determined.
-                if (string.IsNullOrWhiteSpace(description) &&
-                    string.IsNullOrWhiteSpace(displayName)) continue;
-
-                string name = string.IsNullOrWhiteSpace(description) ?
-                    displayName :
-                    GetStringByStrRef(Convert.ToInt32(description));
-
-                _songs[row] = new Song(row, name);
-            }
+            Instance.LoadSongList();
         }
 
         /// <summary>
@@ -75,35 +38,7 @@ namespace SWLOR.Game.Server.Service
         [NWNEventHandler(ScriptName.OnAreaEnter)]
         public static void ApplyPlayerMusic()
         {
-            var player = GetEnteringObject();
-            if (!GetIsPC(player) || GetIsDM(player) || GetIsDMPossessed(player))
-                return;
-
-            var playerId = GetObjectUUID(player);
-            if (DB.Get<Player>(playerId) == null)
-                return;
-
-            GrantStarterSongs(player);
-            var dbPlayer = ClearUncollectedMusicSettings(playerId);
-
-            var area = OBJECT_SELF;
-            var personalTrackId = dbPlayer.Settings.PersonalMusicTrackId;
-            if (personalTrackId != null)
-            {
-                ApplyBackgroundTrackToPlayer(player, personalTrackId.Value, personalTrackId.Value);
-            }
-
-            if (GetLocalBool(player, BattleThemePlayingVariable))
-                StopBattleTheme(player);
-            SetLocalBool(player, BattleThemeSetVariable, dbPlayer.Settings.BattleThemeId != null);
-            if (dbPlayer.Settings.BattleThemeId != null)
-            {
-                PlayerPlugin.MusicBattleChange(player, dbPlayer.Settings.BattleThemeId.Value);
-            }
-            else if (personalTrackId != null)
-            {
-                PlayerPlugin.MusicBattleChange(player, MusicBackgroundGetBattleTrack(area));
-            }
+            Instance.ApplyPlayerMusic();
         }
 
         /// <summary>
@@ -115,8 +50,7 @@ namespace SWLOR.Game.Server.Service
         [NWNEventHandler(ScriptName.OnPlayerAttacked)]
         public static void StartBattleThemeOnAttack()
         {
-            var defender = OBJECT_SELF;
-            StartBattleTheme(defender, GetLastAttacker(defender));
+            Instance.StartBattleThemeOnAttack();
         }
 
         /// <summary>
@@ -126,8 +60,7 @@ namespace SWLOR.Game.Server.Service
         [NWNEventHandler(ScriptName.OnPlayerDamaged)]
         public static void StartBattleThemeOnDamage()
         {
-            var defender = OBJECT_SELF;
-            StartBattleTheme(defender, GetLastDamager(defender));
+            Instance.StartBattleThemeOnDamage();
         }
 
         /// <summary>
@@ -135,28 +68,7 @@ namespace SWLOR.Game.Server.Service
         /// </summary>
         public static void StartBattleTheme(uint defender, uint attacker)
         {
-            if (defender == attacker ||
-                GetObjectType(defender) != ObjectType.Creature ||
-                GetObjectType(attacker) != ObjectType.Creature ||
-                GetArea(defender) != GetArea(attacker))
-                return;
-
-            StartBattleTheme(defender);
-            StartBattleTheme(attacker);
-        }
-
-        private static void StartBattleTheme(uint player)
-        {
-            if (!GetLocalBool(player, BattleThemeSetVariable) ||
-                !GetIsPC(player) || GetIsDM(player) || GetIsDMPossessed(player))
-                return;
-
-            _lastBattleThemeCombat[player] = DateTime.UtcNow;
-            if (GetLocalBool(player, BattleThemePlayingVariable))
-                return;
-
-            SetLocalBool(player, BattleThemePlayingVariable, true);
-            PlayerPlugin.MusicBattleToggle(player, true);
+            Instance.StartBattleTheme(defender, attacker);
         }
 
         /// <summary>
@@ -165,18 +77,13 @@ namespace SWLOR.Game.Server.Service
         [NWNEventHandler(ScriptName.OnIntervalPC6Seconds)]
         public static void StopBattleThemeAfterCombat()
         {
-            var player = OBJECT_SELF;
-            if (GetLocalBool(player, BattleThemePlayingVariable) &&
-                !GetIsInCombat(player) &&
-                (!_lastBattleThemeCombat.TryGetValue(player, out var lastCombat) ||
-                 (DateTime.UtcNow - lastCombat).TotalSeconds > BattleThemeCombatGraceSeconds))
-                StopBattleTheme(player);
+            Instance.StopBattleThemeAfterCombat();
         }
 
         [NWNEventHandler(ScriptName.OnModuleExit)]
         public static void ForgetBattleThemeCombat()
         {
-            _lastBattleThemeCombat.Remove(GetExitingObject());
+            Instance.ForgetBattleThemeCombat();
         }
 
         /// <summary>
@@ -184,19 +91,7 @@ namespace SWLOR.Game.Server.Service
         /// </summary>
         public static bool IsBattleThemePlaying(uint player)
         {
-            return GetLocalBool(player, BattleThemePlayingVariable);
-        }
-
-        private static void StopBattleTheme(uint player)
-        {
-            DeleteLocalBool(player, BattleThemePlayingVariable);
-            _lastBattleThemeCombat.Remove(player);
-            PlayerPlugin.MusicBattleToggle(player, false);
-
-            // The client resumes background music when battle music stops. Keep stopped area music
-            // off unless the player has their own track playing.
-            if (IsAreaMusicStopped(GetArea(player)) && GetPersonalTrackId(player) == null)
-                PlayerPlugin.MusicBackgroundToggle(player, false);
+            return Instance.IsBattleThemePlaying(player);
         }
 
         /// <summary>
@@ -204,11 +99,7 @@ namespace SWLOR.Game.Server.Service
         /// </summary>
         public static void GrantStarterSongs(uint player)
         {
-            foreach (var song in MusicSongCatalog.Songs.Where(x => x.Acquisition == MusicAcquisitionType.Starter))
-            {
-                if (!KeyItem.HasKeyItem(player, song.KeyItem))
-                    KeyItem.GiveKeyItem(player, song.KeyItem);
-            }
+            Instance.GrantStarterSongs(player);
         }
 
         /// <summary>
@@ -219,24 +110,7 @@ namespace SWLOR.Game.Server.Service
         /// <returns>The updated player, or null if the player is not found.</returns>
         public static Player ClearUncollectedMusicSettings(string playerId)
         {
-            var dbPlayer = DB.Get<Player>(playerId);
-            if (dbPlayer == null)
-                return null;
-
-            var collected = GetCollectedTrackIds(playerId);
-            var isPersonalTrackCollected = dbPlayer.Settings.PersonalMusicTrackId == null ||
-                                           collected.Contains(dbPlayer.Settings.PersonalMusicTrackId.Value);
-            var isBattleThemeCollected = dbPlayer.Settings.BattleThemeId == null ||
-                                         collected.Contains(dbPlayer.Settings.BattleThemeId.Value);
-            if (isPersonalTrackCollected && isBattleThemeCollected)
-                return dbPlayer;
-
-            if (!isPersonalTrackCollected)
-                dbPlayer.Settings.PersonalMusicTrackId = null;
-            if (!isBattleThemeCollected)
-                dbPlayer.Settings.BattleThemeId = null;
-            DB.Set(dbPlayer);
-            return dbPlayer;
+            return Instance.ClearUncollectedMusicSettings(playerId);
         }
 
         /// <summary>
@@ -245,7 +119,7 @@ namespace SWLOR.Game.Server.Service
         /// <returns>A list of available songs.</returns>
         public static List<Song> GetAllSongs()
         {
-            return _songs.Values.ToList();
+            return Instance.GetAllSongs();
         }
 
         /// <summary>
@@ -253,7 +127,7 @@ namespace SWLOR.Game.Server.Service
         /// </summary>
         public static IReadOnlyList<MusicSong> GetCollectibleSongs()
         {
-            return MusicSongCatalog.Songs;
+            return Instance.GetCollectibleSongs();
         }
 
         /// <summary>
@@ -261,7 +135,7 @@ namespace SWLOR.Game.Server.Service
         /// </summary>
         public static bool TryGetCollectibleSong(KeyItemType keyItem, out MusicSong song)
         {
-            return _collectibleSongsByKeyItem.TryGetValue(keyItem, out song);
+            return Instance.TryGetCollectibleSong(keyItem, out song);
         }
 
         /// <summary>
@@ -269,7 +143,7 @@ namespace SWLOR.Game.Server.Service
         /// </summary>
         public static bool TryGetCollectibleSongByTrackId(int trackId, out MusicSong song)
         {
-            return _collectibleSongsByTrackId.TryGetValue(trackId, out song);
+            return Instance.TryGetCollectibleSongByTrackId(trackId, out song);
         }
 
         /// <summary>
@@ -277,12 +151,7 @@ namespace SWLOR.Game.Server.Service
         /// </summary>
         public static bool IsMusicItem(uint item)
         {
-            var tag = GetTag(item);
-            if (tag == MusicPlayerTag)
-                return true;
-
-            return tag == "KEY_ITEM" &&
-                   _collectibleSongsByKeyItem.ContainsKey((KeyItemType)GetLocalInt(item, "KEY_ITEM_ID"));
+            return Instance.IsMusicItem(item);
         }
 
         /// <summary>
@@ -290,7 +159,7 @@ namespace SWLOR.Game.Server.Service
         /// </summary>
         public static string GetSongName(MusicSong song)
         {
-            return KeyItem.GetKeyItem(song.KeyItem).Name;
+            return Instance.GetSongName(song);
         }
 
         /// <summary>
@@ -298,7 +167,7 @@ namespace SWLOR.Game.Server.Service
         /// </summary>
         public static string GetCategoryName(MusicCategoryType category)
         {
-            return category.GetAttribute<MusicCategoryType, MusicCategoryAttribute>().Name;
+            return Instance.GetCategoryName(category);
         }
 
         /// <summary>
@@ -308,14 +177,7 @@ namespace SWLOR.Game.Server.Service
         /// <returns>The collected track IDs, or an empty set if the player is not found.</returns>
         public static HashSet<int> GetCollectedTrackIds(string playerId)
         {
-            var dbPlayer = string.IsNullOrWhiteSpace(playerId) ? null : DB.Get<Player>(playerId);
-            if (dbPlayer == null)
-                return new HashSet<int>();
-
-            return dbPlayer.KeyItems.Keys
-                .Where(_collectibleSongsByKeyItem.ContainsKey)
-                .Select(keyItem => _collectibleSongsByKeyItem[keyItem].TrackId)
-                .ToHashSet();
+            return Instance.GetCollectedTrackIds(playerId);
         }
 
         /// <summary>
@@ -328,36 +190,7 @@ namespace SWLOR.Game.Server.Service
         /// <returns>The collection owner's player ID, or an empty string to use the selecting player's collection.</returns>
         public static string GetJukeboxOwnerId(uint jukebox)
         {
-            return ResolveJukeboxOwnerId(Property.GetPropertyId(jukebox), DB.Get<WorldProperty>);
-        }
-
-        private static string ResolveJukeboxOwnerId(string propertyId, Func<string, WorldProperty> getProperty)
-        {
-            if (string.IsNullOrWhiteSpace(propertyId))
-                return string.Empty;
-
-            var property = getProperty(propertyId);
-            WorldProperty containingProperty = null;
-            var visited = new HashSet<string>();
-            while (property != null && visited.Add(property.Id))
-            {
-                if (containingProperty == null && property.PropertyType != PropertyType.Structure)
-                    containingProperty = property;
-
-                if (property.PropertyType == PropertyType.City)
-                    return containingProperty == property ? property.OwnerPlayerId ?? string.Empty : string.Empty;
-
-                if (string.IsNullOrWhiteSpace(property.ParentPropertyId))
-                    break;
-
-                var parent = getProperty(property.ParentPropertyId);
-                if (parent == null)
-                    break;
-
-                property = parent;
-            }
-
-            return (containingProperty ?? property)?.OwnerPlayerId ?? string.Empty;
+            return Instance.GetJukeboxOwnerId(jukebox);
         }
 
         /// <summary>
@@ -365,14 +198,7 @@ namespace SWLOR.Game.Server.Service
         /// </summary>
         public static void PlayForPlayer(uint player, int trackId)
         {
-            var dbPlayer = DB.Get<Player>(GetObjectUUID(player));
-            if (dbPlayer == null)
-                return;
-
-            dbPlayer.Settings.PersonalMusicTrackId = trackId;
-            DB.Set(dbPlayer);
-
-            ApplyBackgroundTrackToPlayer(player, trackId, trackId);
+            Instance.PlayForPlayer(player, trackId);
         }
 
         /// <summary>
@@ -381,17 +207,7 @@ namespace SWLOR.Game.Server.Service
         /// </summary>
         public static void StopForPlayer(uint player)
         {
-            var dbPlayer = DB.Get<Player>(GetObjectUUID(player));
-            if (dbPlayer == null)
-                return;
-
-            dbPlayer.Settings.PersonalMusicTrackId = null;
-            DB.Set(dbPlayer);
-
-            var area = GetArea(player);
-            ApplyBackgroundTrackToPlayer(player, MusicBackgroundGetDayTrack(area), MusicBackgroundGetNightTrack(area));
-            if (IsAreaMusicStopped(area))
-                PlayerPlugin.MusicBackgroundToggle(player, false);
+            Instance.StopForPlayer(player);
         }
 
         /// <summary>
@@ -401,17 +217,7 @@ namespace SWLOR.Game.Server.Service
         /// <param name="trackId">The track to use, or null to use each area's own battle music.</param>
         public static void SetBattleTheme(uint player, int? trackId)
         {
-            var dbPlayer = DB.Get<Player>(GetObjectUUID(player));
-            if (dbPlayer == null)
-                return;
-
-            dbPlayer.Settings.BattleThemeId = trackId;
-            DB.Set(dbPlayer);
-
-            SetLocalBool(player, BattleThemeSetVariable, trackId != null);
-            if (trackId == null && GetLocalBool(player, BattleThemePlayingVariable))
-                StopBattleTheme(player);
-            PlayerPlugin.MusicBattleChange(player, trackId ?? MusicBackgroundGetBattleTrack(GetArea(player)));
+            Instance.SetBattleTheme(player, trackId);
         }
 
         /// <summary>
@@ -419,7 +225,7 @@ namespace SWLOR.Game.Server.Service
         /// </summary>
         public static int? GetPersonalTrackId(uint player)
         {
-            return DB.Get<Player>(GetObjectUUID(player))?.Settings.PersonalMusicTrackId;
+            return Instance.GetPersonalTrackId(player);
         }
 
         /// <summary>
@@ -427,7 +233,7 @@ namespace SWLOR.Game.Server.Service
         /// </summary>
         public static int? GetBattleThemeId(uint player)
         {
-            return DB.Get<Player>(GetObjectUUID(player))?.Settings.BattleThemeId;
+            return Instance.GetBattleThemeId(player);
         }
 
         /// <summary>
@@ -435,10 +241,7 @@ namespace SWLOR.Game.Server.Service
         /// </summary>
         public static void PlayInArea(uint area, int trackId)
         {
-            MusicBackgroundChangeDay(area, trackId);
-            MusicBackgroundChangeNight(area, trackId);
-            MusicBackgroundPlay(area);
-            DeleteLocalBool(area, AreaMusicStoppedVariable);
+            Instance.PlayInArea(area, trackId);
         }
 
         /// <summary>
@@ -446,8 +249,7 @@ namespace SWLOR.Game.Server.Service
         /// </summary>
         public static void StopInArea(uint area)
         {
-            MusicBackgroundStop(area);
-            SetLocalBool(area, AreaMusicStoppedVariable, true);
+            Instance.StopInArea(area);
         }
 
         /// <summary>
@@ -456,7 +258,7 @@ namespace SWLOR.Game.Server.Service
         /// </summary>
         public static bool IsAreaMusicStopped(uint area)
         {
-            return GetLocalBool(area, AreaMusicStoppedVariable);
+            return Instance.IsAreaMusicStopped(area);
         }
 
         /// <summary>
@@ -464,17 +266,7 @@ namespace SWLOR.Game.Server.Service
         /// </summary>
         public static string GetTrackName(int trackId)
         {
-            if (TryGetCollectibleSongByTrackId(trackId, out var song))
-                return GetSongName(song);
-
-            return _songs.TryGetValue(trackId, out var track) ? track.DisplayName : $"Track {trackId}";
-        }
-
-        private static void ApplyBackgroundTrackToPlayer(uint player, int dayTrackId, int nightTrackId)
-        {
-            PlayerPlugin.MusicBackgroundChangeTimeToggle(player, dayTrackId, false);
-            PlayerPlugin.MusicBackgroundChangeTimeToggle(player, nightTrackId, true);
-            PlayerPlugin.MusicBackgroundToggle(player, true);
+            return Instance.GetTrackName(trackId);
         }
     }
 }

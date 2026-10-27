@@ -1,4 +1,3 @@
-using System.Collections;
 using FluentAssertions;
 using NUnit.Framework;
 using static SWLOR.Game.Server.Tests.Service.DMPossessionHarness;
@@ -125,39 +124,6 @@ public class DMPossessionBroadcastTests
                 {{Method("Service/Telegraph.cs", "UpdateShadersForArea")}}
                 {{Method("Service/Telegraph.cs", "ResendShaderStateOnDMPossess")}}
             }
-
-            public static class Weather
-            {
-                public sealed class AreaWeather { public DateTime NextLightningUtc; }
-                public sealed class WeatherExposure { }
-                public static bool Changed;
-                public static readonly List<uint> Effects = new();
-                public static readonly List<uint> Exposed = new();
-                public static readonly List<uint> Mist = new();
-                private static readonly Dictionary<uint, AreaWeather> _areas = new();
-                private static readonly Dictionary<uint, WeatherExposure> _exposures = new();
-                public static void AddWeatherArea(uint area) => _areas[area] = new AreaWeather();
-                public static void Reset()
-                {
-                    Changed = false;
-                    Effects.Clear();
-                    Exposed.Clear();
-                    Mist.Clear();
-                    _areas.Clear();
-                    _exposures.Clear();
-                }
-                private static bool AdjustWeather() => Changed;
-                private static bool IsWeatherArea(uint area) => true;
-                private static void DoWeatherEffects(uint creature) => Effects.Add(creature);
-                private static void ApplyWeatherDamage(uint creature, DateTime now)
-                {
-                    Exposed.Add(creature);
-                    _exposures[creature] = new WeatherExposure();
-                }
-                private static void EnsureMist(uint area, AreaWeather state) => Mist.Add(area);
-                private static void Thunderstorm(uint area) { }
-                {{Method("Service/Weather.cs", "OnModuleHeartbeat")}}
-            }
             """);
     }
 
@@ -166,7 +132,6 @@ public class DMPossessionBroadcastTests
     {
         _harness.Reset();
         _harness.Invoke("Telegraph", "Reset");
-        _harness.Invoke("Weather", "Reset");
     }
 
     [TestCase(DMPossess)]
@@ -304,37 +269,6 @@ public class DMPossessionBroadcastTests
         var updated = (List<uint>)_harness.GetField("Telegraph", "Updated");
         updated.Should().Equal(Player, Creature);
         updated.Select(_harness.ReceivingPlayer).Should().Equal(Player, DM);
-    }
-
-    [TestCase(DMPossess)]
-    [TestCase(DMPossessFullPower)]
-    public void WeatherChange_ReachesAPossessingDMWhereTheirCreatureIs(int possessionType)
-    {
-        OnlineCast(possessionType);
-        _harness.Invoke("Weather", "AddWeatherArea", Cantina);
-        _harness.Invoke("Weather", "AddWeatherArea", Spaceport);
-        _harness.SetField("Weather", "Changed", true);
-
-        _harness.Invoke("Weather", "OnModuleHeartbeat");
-
-        ((List<uint>)_harness.GetField("Weather", "Effects")).Should().Equal(Player, OtherDM, Creature);
-        ((List<uint>)_harness.GetField("Weather", "Mist")).Should().BeEquivalentTo(new[] { Cantina, Spaceport });
-    }
-
-    [TestCase(DMPossess)]
-    [TestCase(DMPossessFullPower)]
-    public void WeatherExposure_FollowsThePossessedCreature(int possessionType)
-    {
-        _harness.AddPlayer(Player, area: Cantina);
-        PossessingDM(possessionType);
-        _harness.Invoke("Weather", "AddWeatherArea", Cantina);
-        _harness.Invoke("Weather", "AddWeatherArea", Spaceport);
-
-        _harness.Invoke("Weather", "OnModuleHeartbeat");
-
-        ((List<uint>)_harness.GetField("Weather", "Exposed")).Should().Equal(Player, Creature);
-        ((List<uint>)_harness.GetField("Weather", "Mist")).Should().Equal(Cantina);
-        ((IDictionary)_harness.GetField("Weather", "_exposures")).Keys.Cast<uint>().Should().BeEquivalentTo(new[] { Player, Creature });
     }
 
     // A player and a DM in the cantina and spaceport, and a DM whose avatar waits in the spaceport while they

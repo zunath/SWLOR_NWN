@@ -17,7 +17,7 @@ namespace SWLOR.NWN.API.NWScript
         /// <param name="oObject">Same as SqlPrepareQueryObject()</param>
         public static void SqlDestroyDatabase(uint oObject)
         {
-            global::NWN.Core.NWScript.SqlDestroyDatabase(oObject);
+            NWScriptRuntime.Current.SqlDestroyDatabase(oObject);
         }
 
         /// <summary>
@@ -28,7 +28,7 @@ namespace SWLOR.NWN.API.NWScript
         /// <returns>Empty string if successful, or error message if failed</returns>
         public static string SqlGetError(IntPtr sqlQuery)
         {
-            return global::NWN.Core.NWScript.SqlGetError(sqlQuery);
+            return NWScriptRuntime.Current.SqlGetError(sqlQuery);
         }
 
         /// <summary>
@@ -47,7 +47,7 @@ namespace SWLOR.NWN.API.NWScript
         /// <returns>The prepared SQL query</returns>
         public static IntPtr SqlPrepareQueryCampaign(string sDatabase, string sQuery)
         {
-            return global::NWN.Core.NWScript.SqlPrepareQueryCampaign(sDatabase, sQuery);
+            return NWScriptRuntime.Current.SqlPrepareQueryCampaign(sDatabase, sQuery);
         }
 
         /// <summary>
@@ -72,7 +72,7 @@ namespace SWLOR.NWN.API.NWScript
         /// <returns>The prepared SQL query</returns>
         public static IntPtr SqlPrepareQueryObject(uint oObject, string sQuery)
         {
-            return global::NWN.Core.NWScript.SqlPrepareQueryObject(oObject, sQuery);
+            return NWScriptRuntime.Current.SqlPrepareQueryObject(oObject, sQuery);
         }
 
         /// <summary>
@@ -87,7 +87,7 @@ namespace SWLOR.NWN.API.NWScript
         /// <param name="nValue">The integer value to bind</param>
         public static void SqlBindInt(IntPtr sqlQuery, string sParam, int nValue)
         {
-            global::NWN.Core.NWScript.SqlBindInt(sqlQuery, sParam, nValue);
+            NWScriptRuntime.Current.SqlBindInt(sqlQuery, sParam, nValue);
         }
 
         /// <summary>
@@ -98,7 +98,7 @@ namespace SWLOR.NWN.API.NWScript
         /// <param name="fFloat">The float value to bind</param>
         public static void SqlBindFloat(IntPtr sqlQuery, string sParam, float fFloat)
         {
-            global::NWN.Core.NWScript.SqlBindFloat(sqlQuery, sParam, fFloat);
+            NWScriptRuntime.Current.SqlBindFloat(sqlQuery, sParam, fFloat);
         }
 
         /// <summary>
@@ -109,7 +109,7 @@ namespace SWLOR.NWN.API.NWScript
         /// <param name="sString">The string value to bind</param>
         public static void SqlBindString(IntPtr sqlQuery, string sParam, string sString)
         {
-            global::NWN.Core.NWScript.SqlBindString(sqlQuery, sParam, sString);
+            NWScriptRuntime.Current.SqlBindString(sqlQuery, sParam, sString);
         }
 
         /// <summary>
@@ -120,7 +120,7 @@ namespace SWLOR.NWN.API.NWScript
         /// <param name="vVector">The vector value to bind</param>
         public static void SqlBindVector(IntPtr sqlQuery, string sParam, Vector3 vVector)
         {
-            global::NWN.Core.NWScript.SqlBindVector(sqlQuery, sParam, vVector);
+            NWScriptRuntime.Current.SqlBindVector(sqlQuery, sParam, vVector);
         }
 
         /// <summary>
@@ -136,7 +136,7 @@ namespace SWLOR.NWN.API.NWScript
         /// <param name="bSaveObjectState">Whether to save object state (local vars, effects, action queue, etc.)</param>
         public static void SqlBindObject(IntPtr sqlQuery, string sParam, uint oObject, bool bSaveObjectState = false)
         {
-            global::NWN.Core.NWScript.SqlBindObject(sqlQuery, sParam, oObject, bSaveObjectState ? 1 : 0);
+            NWScriptRuntime.Current.SqlBindObject(sqlQuery, sParam, oObject, bSaveObjectState);
         }
 
         /// <summary>
@@ -153,7 +153,7 @@ namespace SWLOR.NWN.API.NWScript
         /// <returns>True if row data was made available, false otherwise</returns>
         public static bool SqlStep(IntPtr sqlQuery)
         {
-            return global::NWN.Core.NWScript.SqlStep(sqlQuery) != 0;
+            return NWScriptRuntime.Current.SqlStep(sqlQuery);
         }
 
         /// <summary>
@@ -167,7 +167,7 @@ namespace SWLOR.NWN.API.NWScript
         /// <returns>The integer value, or 0 on error</returns>
         public static int SqlGetInt(IntPtr sqlQuery, int nIndex)
         {
-            return global::NWN.Core.NWScript.SqlGetInt(sqlQuery, nIndex);
+            return NWScriptRuntime.Current.SqlGetInt(sqlQuery, nIndex);
         }
 
         /// <summary>
@@ -181,7 +181,7 @@ namespace SWLOR.NWN.API.NWScript
         /// <returns>The float value, or 0.0f on error</returns>
         public static float SqlGetFloat(IntPtr sqlQuery, int nIndex)
         {
-            return global::NWN.Core.NWScript.SqlGetFloat(sqlQuery, nIndex);
+            return NWScriptRuntime.Current.SqlGetFloat(sqlQuery, nIndex);
         }
 
         /// <summary>
@@ -195,7 +195,7 @@ namespace SWLOR.NWN.API.NWScript
         /// <returns>The string value, or empty string on error</returns>
         public static string SqlGetString(IntPtr sqlQuery, int nIndex)
         {
-            return global::NWN.Core.NWScript.SqlGetString(sqlQuery, nIndex);
+            return NWScriptRuntime.Current.SqlGetString(sqlQuery, nIndex);
         }
 
         /// <summary>
@@ -209,7 +209,7 @@ namespace SWLOR.NWN.API.NWScript
         /// <returns>The vector value, or zero vector on error</returns>
         public static Vector3 SqlGetVector(IntPtr sqlQuery, int nIndex)
         {
-            return global::NWN.Core.NWScript.SqlGetVector(sqlQuery, nIndex);
+            return NWScriptRuntime.Current.SqlGetVector(sqlQuery, nIndex);
         }
 
         /// <summary>
@@ -230,9 +230,7 @@ namespace SWLOR.NWN.API.NWScript
         /// <returns>The object, or INVALID_OBJECT on error</returns>
         public static uint SqlGetObject(IntPtr sqlQuery, int nIndex, IntPtr lSpawnAt, uint oInventory = OBJECT_INVALID, bool bLoadObjectState = false)
         {
-            if (oInventory == OBJECT_INVALID)
-                oInventory = OBJECT_SELF;
-            return global::NWN.Core.NWScript.SqlGetObject(sqlQuery, nIndex, lSpawnAt, oInventory, bLoadObjectState ? 1 : 0);
+            return NWScriptRuntime.Current.SqlGetObject(sqlQuery, nIndex, lSpawnAt, oInventory, bLoadObjectState);
         }
 
         /// <summary>
@@ -248,7 +246,7 @@ namespace SWLOR.NWN.API.NWScript
         /// <param name="jValue">The JSON value to bind</param>
         public static void SqlBindJson(SQLQuery sqlQuery, string sParam, Json jValue)
         {
-            global::NWN.Core.NWScript.SqlBindJson(sqlQuery, sParam, jValue);
+            NWScriptRuntime.Current.SqlBindJson(sqlQuery, sParam, jValue);
         }
 
         /// <summary>
@@ -262,7 +260,7 @@ namespace SWLOR.NWN.API.NWScript
         /// <returns>The JSON value, or null on error</returns>
         public static Json SqlGetJson(SQLQuery sqlQuery, int nIndex)
         {
-            return global::NWN.Core.NWScript.SqlGetJson(sqlQuery, nIndex);
+            return NWScriptRuntime.Current.SqlGetJson(sqlQuery, nIndex);
         }
 
         /// <summary>
@@ -274,7 +272,7 @@ namespace SWLOR.NWN.API.NWScript
         /// <param name="bClearBinds">Whether to clear all existing parameter binds</param>
         public static void SqlResetQuery(SQLQuery sqlQuery, bool bClearBinds = false)
         {
-            global::NWN.Core.NWScript.SqlResetQuery(sqlQuery, bClearBinds ? 1 : 0);
+            NWScriptRuntime.Current.SqlResetQuery(sqlQuery, bClearBinds);
         }
 
         /// <summary>
@@ -288,7 +286,7 @@ namespace SWLOR.NWN.API.NWScript
         /// <returns>The number of columns in the query result</returns>
         public static int SqlGetColumnCount(IntPtr sqlQuery)
         {
-            return global::NWN.Core.NWScript.SqlGetColumnCount(sqlQuery);
+            return NWScriptRuntime.Current.SqlGetColumnCount(sqlQuery);
         }
 
         /// <summary>
@@ -305,7 +303,7 @@ namespace SWLOR.NWN.API.NWScript
         /// <returns>The column name, or empty string on error</returns>
         public static string SqlGetColumnName(IntPtr sqlQuery, int nNth)
         {
-            return global::NWN.Core.NWScript.SqlGetColumnName(sqlQuery, nNth);
+            return NWScriptRuntime.Current.SqlGetColumnName(sqlQuery, nNth);
         }
     }
 }

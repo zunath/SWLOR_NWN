@@ -19,7 +19,7 @@ namespace SWLOR.NWN.API.NWScript
         /// <param name="nDay">Day should be from 1 to 28 inclusive</param>
         public static void SetCalendar(int nYear, int nMonth, int nDay)
         {
-            global::NWN.Core.NWScript.SetCalendar(nYear, nMonth, nDay);
+            NWScriptRuntime.Current.SetCalendar(nYear, nMonth, nDay);
         }
 
         /// <summary>
@@ -40,7 +40,7 @@ namespace SWLOR.NWN.API.NWScript
         /// <param name="nMillisecond">Millisecond should be from 0 to 999 inclusive</param>
         public static void SetTime(int nHour, int nMinute, int nSecond, int nMillisecond)
         {
-            global::NWN.Core.NWScript.SetTime(nHour, nMinute, nSecond, nMillisecond);
+            NWScriptRuntime.Current.SetTime(nHour, nMinute, nSecond, nMillisecond);
         }
 
         /// <summary>
@@ -49,7 +49,7 @@ namespace SWLOR.NWN.API.NWScript
         /// <returns>The current calendar year</returns>
         public static int GetCalendarYear()
         {
-            return global::NWN.Core.NWScript.GetCalendarYear();
+            return NWScriptRuntime.Current.GetCalendarYear();
         }
 
         /// <summary>
@@ -58,7 +58,7 @@ namespace SWLOR.NWN.API.NWScript
         /// <returns>The current calendar month</returns>
         public static int GetCalendarMonth()
         {
-            return global::NWN.Core.NWScript.GetCalendarMonth();
+            return NWScriptRuntime.Current.GetCalendarMonth();
         }
 
         /// <summary>
@@ -67,7 +67,7 @@ namespace SWLOR.NWN.API.NWScript
         /// <returns>The current calendar day</returns>
         public static int GetCalendarDay()
         {
-            return global::NWN.Core.NWScript.GetCalendarDay();
+            return NWScriptRuntime.Current.GetCalendarDay();
         }
 
         /// <summary>
@@ -79,7 +79,7 @@ namespace SWLOR.NWN.API.NWScript
         /// <returns>1 if successful, 0 otherwise</returns>
         public static int SetTrapDetectedBy(uint oTrap, uint oDetector, bool bDetected = true)
         {
-            return global::NWN.Core.NWScript.SetTrapDetectedBy(oTrap, oDetector, bDetected ? 1 : 0);
+            return NWScriptRuntime.Current.SetTrapDetectedBy(oTrap, oDetector, bDetected);
         }
 
         /// <summary>
@@ -90,7 +90,7 @@ namespace SWLOR.NWN.API.NWScript
         /// <returns>TRUE if the object is trapped</returns>
         public static bool GetIsTrapped(uint oObject)
         {
-            return global::NWN.Core.NWScript.GetIsTrapped(oObject) != 0;
+            return NWScriptRuntime.Current.GetIsTrapped(oObject);
         }
 
         /// <summary>
@@ -100,7 +100,7 @@ namespace SWLOR.NWN.API.NWScript
         /// <returns>TRUE if the trap object is disarmable</returns>
         public static bool GetTrapDisarmable(uint oTrapObject)
         {
-            return global::NWN.Core.NWScript.GetTrapDisarmable(oTrapObject) != 0;
+            return NWScriptRuntime.Current.GetTrapDisarmable(oTrapObject);
         }
 
         /// <summary>
@@ -110,7 +110,7 @@ namespace SWLOR.NWN.API.NWScript
         /// <returns>TRUE if the trap object is detectable</returns>
         public static bool GetTrapDetectable(uint oTrapObject)
         {
-            return global::NWN.Core.NWScript.GetTrapDetectable(oTrapObject) != 0;
+            return NWScriptRuntime.Current.GetTrapDetectable(oTrapObject);
         }
 
         /// <summary>
@@ -121,7 +121,7 @@ namespace SWLOR.NWN.API.NWScript
         /// <returns>TRUE if the creature has detected the trap object</returns>
         public static bool GetTrapDetectedBy(uint oTrapObject, uint oCreature)
         {
-            return global::NWN.Core.NWScript.GetTrapDetectedBy(oTrapObject, oCreature) != 0;
+            return NWScriptRuntime.Current.GetTrapDetectedBy(oTrapObject, oCreature);
         }
 
         /// <summary>
@@ -131,7 +131,7 @@ namespace SWLOR.NWN.API.NWScript
         /// <returns>TRUE if the trap object has been flagged as visible to all creatures</returns>
         public static bool GetTrapFlagged(uint oTrapObject)
         {
-            return global::NWN.Core.NWScript.GetTrapFlagged(oTrapObject) != 0;
+            return NWScriptRuntime.Current.GetTrapFlagged(oTrapObject);
         }
 
         /// <summary>
@@ -141,7 +141,7 @@ namespace SWLOR.NWN.API.NWScript
         /// <returns>The trap base type (TRAP_BASE_TYPE_*)</returns>
         public static TrapBaseType GetTrapBaseType(uint oTrapObject)
         {
-            return (TrapBaseType)global::NWN.Core.NWScript.GetTrapBaseType(oTrapObject);
+            return NWScriptRuntime.Current.GetTrapBaseType(oTrapObject);
         }
 
         /// <summary>
@@ -151,7 +151,7 @@ namespace SWLOR.NWN.API.NWScript
         /// <returns>TRUE if the trap object is one-shot</returns>
         public static bool GetTrapOneShot(uint oTrapObject)
         {
-            return global::NWN.Core.NWScript.GetTrapOneShot(oTrapObject) != 0;
+            return NWScriptRuntime.Current.GetTrapOneShot(oTrapObject);
         }
 
         /// <summary>
@@ -161,7 +161,7 @@ namespace SWLOR.NWN.API.NWScript
         /// <returns>The creator of the trap, or OBJECT_INVALID if the trap was created in the toolset</returns>
         public static uint GetTrapCreator(uint oTrapObject)
         {
-            return global::NWN.Core.NWScript.GetTrapCreator(oTrapObject);
+            return NWScriptRuntime.Current.GetTrapCreator(oTrapObject);
         }
 
         /// <summary>
@@ -171,7 +171,7 @@ namespace SWLOR.NWN.API.NWScript
         /// <returns>The tag of the key that will disarm the trap</returns>
         public static string GetTrapKeyTag(uint oTrapObject)
         {
-            return global::NWN.Core.NWScript.GetTrapKeyTag(oTrapObject);
+            return NWScriptRuntime.Current.GetTrapKeyTag(oTrapObject);
         }
 
         /// <summary>
@@ -181,7 +181,7 @@ namespace SWLOR.NWN.API.NWScript
         /// <returns>The DC for disarming the trap</returns>
         public static int GetTrapDisarmDC(uint oTrapObject)
         {
-            return global::NWN.Core.NWScript.GetTrapDisarmDC(oTrapObject);
+            return NWScriptRuntime.Current.GetTrapDisarmDC(oTrapObject);
         }
 
         /// <summary>
@@ -191,7 +191,7 @@ namespace SWLOR.NWN.API.NWScript
         /// <returns>The DC for detecting the trap</returns>
         public static int GetTrapDetectDC(uint oTrapObject)
         {
-            return global::NWN.Core.NWScript.GetTrapDetectDC(oTrapObject);
+            return NWScriptRuntime.Current.GetTrapDetectDC(oTrapObject);
         }
 
         /// <summary>
@@ -204,9 +204,7 @@ namespace SWLOR.NWN.API.NWScript
         /// <returns>The nearest trap to the target</returns>
         public static uint GetNearestTrapToObject(uint oTarget = OBJECT_INVALID, bool nTrapDetected = true)
         {
-            if (oTarget == OBJECT_INVALID)
-                oTarget = OBJECT_SELF;
-            return global::NWN.Core.NWScript.GetNearestTrapToObject(oTarget, nTrapDetected ? 1 : 0);
+            return NWScriptRuntime.Current.GetNearestTrapToObject(oTarget, nTrapDetected);
         }
 
         /// <summary>
@@ -216,9 +214,7 @@ namespace SWLOR.NWN.API.NWScript
         /// <returns>The last trap detected by the target, or OBJECT_INVALID on error</returns>
         public static uint GetLastTrapDetected(uint oTarget = OBJECT_INVALID)
         {
-            if (oTarget == OBJECT_INVALID)
-                oTarget = OBJECT_SELF;
-            return global::NWN.Core.NWScript.GetLastTrapDetected(oTarget);
+            return NWScriptRuntime.Current.GetLastTrapDetected(oTarget);
         }
 
         /// <summary>
@@ -228,7 +224,7 @@ namespace SWLOR.NWN.API.NWScript
         /// <returns>TRUE if the trap object is active</returns>
         public static bool GetTrapActive(uint oTrapObject)
         {
-            return global::NWN.Core.NWScript.GetTrapActive(oTrapObject) != 0;
+            return NWScriptRuntime.Current.GetTrapActive(oTrapObject);
         }
 
         /// <summary>
@@ -241,7 +237,7 @@ namespace SWLOR.NWN.API.NWScript
         /// <param name="nActive">TRUE/FALSE</param>
         public static void SetTrapActive(uint oTrapObject, bool nActive = true)
         {
-            global::NWN.Core.NWScript.SetTrapActive(oTrapObject, nActive ? 1 : 0);
+            NWScriptRuntime.Current.SetTrapActive(oTrapObject, nActive);
         }
 
         /// <summary>
@@ -251,7 +247,7 @@ namespace SWLOR.NWN.API.NWScript
         /// <returns>TRUE if the trap object can be recovered</returns>
         public static bool GetTrapRecoverable(uint oTrapObject)
         {
-            return global::NWN.Core.NWScript.GetTrapRecoverable(oTrapObject) != 0;
+            return NWScriptRuntime.Current.GetTrapRecoverable(oTrapObject);
         }
 
         /// <summary>
@@ -261,7 +257,7 @@ namespace SWLOR.NWN.API.NWScript
         /// <param name="nRecoverable">TRUE/FALSE</param>
         public static void SetTrapRecoverable(uint oTrapObject, bool nRecoverable = true)
         {
-            global::NWN.Core.NWScript.SetTrapRecoverable(oTrapObject, nRecoverable ? 1 : 0);
+            NWScriptRuntime.Current.SetTrapRecoverable(oTrapObject, nRecoverable);
         }
 
         /// <summary>
@@ -271,7 +267,7 @@ namespace SWLOR.NWN.API.NWScript
         /// <param name="nDisarmable">TRUE/FALSE</param>
         public static void SetTrapDisarmable(uint oTrapObject, bool nDisarmable = true)
         {
-            global::NWN.Core.NWScript.SetTrapDisarmable(oTrapObject, nDisarmable ? 1 : 0);
+            NWScriptRuntime.Current.SetTrapDisarmable(oTrapObject, nDisarmable);
         }
 
         /// <summary>
@@ -283,7 +279,7 @@ namespace SWLOR.NWN.API.NWScript
         /// <param name="nDetectable">TRUE/FALSE</param>
         public static void SetTrapDetectable(uint oTrapObject, bool nDetectable = true)
         {
-            global::NWN.Core.NWScript.SetTrapDetectable(oTrapObject, nDetectable ? 1 : 0);
+            NWScriptRuntime.Current.SetTrapDetectable(oTrapObject, nDetectable);
         }
 
         /// <summary>
@@ -294,7 +290,7 @@ namespace SWLOR.NWN.API.NWScript
         /// <param name="nOneShot">TRUE/FALSE</param>
         public static void SetTrapOneShot(uint oTrapObject, bool nOneShot = true)
         {
-            global::NWN.Core.NWScript.SetTrapOneShot(oTrapObject, nOneShot ? 1 : 0);
+            NWScriptRuntime.Current.SetTrapOneShot(oTrapObject, nOneShot);
         }
 
         /// <summary>
@@ -304,7 +300,7 @@ namespace SWLOR.NWN.API.NWScript
         /// <param name="sKeyTag">The tag of the key that will disarm the trap</param>
         public static void SetTrapKeyTag(uint oTrapObject, string sKeyTag)
         {
-            global::NWN.Core.NWScript.SetTrapKeyTag(oTrapObject, sKeyTag);
+            NWScriptRuntime.Current.SetTrapKeyTag(oTrapObject, sKeyTag);
         }
 
         /// <summary>
@@ -314,7 +310,7 @@ namespace SWLOR.NWN.API.NWScript
         /// <param name="nDisarmDC">Must be between 0 and 250</param>
         public static void SetTrapDisarmDC(uint oTrapObject, int nDisarmDC)
         {
-            global::NWN.Core.NWScript.SetTrapDisarmDC(oTrapObject, nDisarmDC);
+            NWScriptRuntime.Current.SetTrapDisarmDC(oTrapObject, nDisarmDC);
         }
 
         /// <summary>
@@ -324,7 +320,7 @@ namespace SWLOR.NWN.API.NWScript
         /// <param name="nDetectDC">Must be between 0 and 250</param>
         public static void SetTrapDetectDC(uint oTrapObject, int nDetectDC)
         {
-            global::NWN.Core.NWScript.SetTrapDetectDC(oTrapObject, nDetectDC);
+            NWScriptRuntime.Current.SetTrapDetectDC(oTrapObject, nDetectDC);
         }
 
         /// <summary>
@@ -342,7 +338,7 @@ namespace SWLOR.NWN.API.NWScript
             string sTag = "", Faction nFaction = Faction.Hostile, string sOnDisarmScript = "",
             string sOnTrapTriggeredScript = "")
         {
-            return global::NWN.Core.NWScript.CreateTrapAtLocation((int)nTrapType, lLocation, fSize, sTag, (int)nFaction, sOnDisarmScript, sOnTrapTriggeredScript);
+            return NWScriptRuntime.Current.CreateTrapAtLocation(nTrapType, lLocation, fSize, sTag, nFaction, sOnDisarmScript, sOnTrapTriggeredScript);
         }
 
         /// <summary>
@@ -360,7 +356,7 @@ namespace SWLOR.NWN.API.NWScript
         public static void CreateTrapOnObject(TrapBaseType nTrapType, uint oObject, Faction nFaction = Faction.Hostile,
             string sOnDisarmScript = "", string sOnTrapTriggeredScript = "")
         {
-            global::NWN.Core.NWScript.CreateTrapOnObject((int)nTrapType, oObject, (int)nFaction, sOnDisarmScript, sOnTrapTriggeredScript);
+            NWScriptRuntime.Current.CreateTrapOnObject(nTrapType, oObject, nFaction, sOnDisarmScript, sOnTrapTriggeredScript);
         }
 
         /// <summary>
@@ -369,7 +365,7 @@ namespace SWLOR.NWN.API.NWScript
         /// <param name="oTrap">A placeable, door or trigger</param>
         public static void SetTrapDisabled(uint oTrap)
         {
-            global::NWN.Core.NWScript.SetTrapDisabled(oTrap);
+            NWScriptRuntime.Current.SetTrapDisabled(oTrap);
         }
     }
 }

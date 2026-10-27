@@ -1,5 +1,4 @@
 using System.Collections.Generic;
-using System.Reflection;
 using System.Threading.Tasks;
 using SWLOR.Game.Server.EngineTests.Framework;
 using SWLOR.Game.Server.Entity;
@@ -168,8 +167,7 @@ namespace SWLOR.Game.Server.EngineTests.Definitions
                     }
 
                     var redirectArguments = new object[] { passenger, Shuttle.GetRide(playerId), null };
-                    var redirect = (bool)typeof(Shuttle).GetMethod("TryGetRideLoginRedirect", BindingFlags.NonPublic | BindingFlags.Static)
-                        .Invoke(null, redirectArguments);
+                    var redirect = (bool)ShuttleInternals.Invoke("TryGetRideLoginRedirect", redirectArguments);
                     ctx.AssertEqual(rebuildComplete, redirect, "Only rebuild-complete passengers receive a shuttle redirect");
                     if (rebuildComplete)
                         ctx.AssertEqual(GetArea(waypoint), GetAreaFromLocation((Location)redirectArguments[2]), "Completed passengers return to the landing area");
@@ -192,19 +190,16 @@ namespace SWLOR.Game.Server.EngineTests.Definitions
             }
         }
 
-        private static Dictionary<string, DateTime> BoardingTimes =>
-            (Dictionary<string, DateTime>)typeof(Shuttle).GetField("_boardingNotBeforeUtc", BindingFlags.NonPublic | BindingFlags.Static).GetValue(null);
+        private static Dictionary<string, DateTime> BoardingTimes => ShuttleInternals.BoardingTimes;
 
         private static void Invoke(string method, params object[] arguments) =>
-            typeof(Shuttle).GetMethod(method, BindingFlags.NonPublic | BindingFlags.Static).Invoke(null, arguments);
+            ShuttleInternals.Invoke(method, arguments);
 
         private static void Cleanup(ShuttleRide ride)
         {
             DB.Delete<ShuttleRide>(ride.Id);
             BoardingTimes.Remove(ride.PlayerId);
-            var holders = (Dictionary<string, (PlanetType Origin, PlanetType Destination)>)typeof(Shuttle)
-                .GetField("_ticketHolders", BindingFlags.NonPublic | BindingFlags.Static).GetValue(null);
-            holders.Remove(ride.PlayerId);
+            ShuttleInternals.TicketHolders.Remove(ride.PlayerId);
         }
     }
 }

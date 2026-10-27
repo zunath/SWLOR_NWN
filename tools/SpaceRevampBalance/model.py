@@ -239,6 +239,10 @@ def module_row(mod):
     return "H" if mod in WEAPONS else "M" if mod in MID else "L" if mod in LOW else None
 
 
+# The most a crew seat works at after Crew Morale and Leadership (ShipCrewSeats.MaximumSeatEffectiveness).
+CREW_CAP = 1.05
+
+
 def player_ship(role, rank, fit, maker=None, advanced=False, extra=None, name=None, pilot=None, crew=1.0):
     """fit: dict of module family -> count. Weapons go in High, the rest as listed. Every module at `rank`.
     crew: effectiveness of the station seats (1 = players at matching rank, 0.75 = the best droid, 0 = solo pilot).

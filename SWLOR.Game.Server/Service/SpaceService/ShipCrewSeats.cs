@@ -103,12 +103,24 @@ namespace SWLOR.Game.Server.Service.SpaceService
             GetRequiredRank(requiredSkills) <= seatSkillRank;
 
         /// <summary>
-        /// A crew station slot's effectiveness: the crew multiplier while a crew member who meets the module's rank
-        /// works the seat, otherwise 0 (the slot does nothing, its passives included). Starships (Revamp): "a player
-        /// at the module's rank 100%".
+        /// The most any seat works at, after Crew Morale and Leadership. A ship crewed by N players must not beat N
+        /// separate ships (plan section 10): a crewed Cruiser at 105% is level with five Fighters against a T5 Boss
+        /// capital (90 s against 91 s). The cap binds on player crews, who start at 100%; Crew Morale and Leadership
+        /// pay off most for droid crew, who start below it.
+        /// </summary>
+        public const double MaximumSeatEffectiveness = 1.05;
+
+        /// <summary>An effectiveness held between 0 and <see cref="MaximumSeatEffectiveness"/>.</summary>
+        public static double CapEffectiveness(double effectiveness) =>
+            Math.Clamp(effectiveness, 0.0, MaximumSeatEffectiveness);
+
+        /// <summary>
+        /// A crew station slot's effectiveness: the crew multiplier, capped at <see cref="MaximumSeatEffectiveness"/>,
+        /// while a crew member who meets the module's rank works the seat, otherwise 0 (the slot does nothing, its
+        /// passives included). Starships (Revamp): "a player at the module's rank 100%".
         /// </summary>
         public static double SeatEffectiveness(bool crewed, bool meetsRank, double crewMultiplier) =>
-            crewed && meetsRank ? Math.Max(0.0, crewMultiplier) : 0.0;
+            crewed && meetsRank ? CapEffectiveness(crewMultiplier) : 0.0;
 
         /// <summary>
         /// An amount worked at an effectiveness, rounded. A positive amount stays at least 1; an effectiveness of

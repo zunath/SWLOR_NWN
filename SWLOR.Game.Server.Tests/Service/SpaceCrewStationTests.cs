@@ -142,7 +142,22 @@ public class SpaceCrewStationTests
         ShipCrewSeats.SeatEffectiveness(false, true, 1.35).Should().Be(0.0, "an empty seat works nothing, passives included");
         ShipCrewSeats.SeatEffectiveness(true, false, 1.35).Should().Be(0.0);
         ShipCrewSeats.SeatEffectiveness(true, true, 1.0).Should().Be(1.0, "a player at the module's rank works it at 100%");
-        ShipCrewSeats.SeatEffectiveness(true, true, 1.35).Should().BeApproximately(1.35, 1e-9);
+        ShipCrewSeats.SeatEffectiveness(true, true, 1.35).Should().BeApproximately(1.05, 1e-9, "a seat works at 105% at most");
+    }
+
+    [Test]
+    public void CrewEffectiveness_IsCappedAt105Percent_ForPlayersAndDroidsAlike()
+    {
+        ShipCrewSeats.MaximumSeatEffectiveness.Should().Be(1.05);
+        ShipCrewSeats.CapEffectiveness(1.0).Should().Be(1.0);
+        ShipCrewSeats.CapEffectiveness(1.05).Should().BeApproximately(1.05, 1e-9);
+        ShipCrewSeats.CapEffectiveness(SpaceCrew.EffectivenessMultiplier(10, SpaceCommand.LeadershipCrewBonusPercent(50)))
+            .Should().BeApproximately(1.05, 1e-9, "Crew Morale and Leadership 50 on a player crew stop at the cap");
+        ShipCrewSeats.CapEffectiveness(-0.2).Should().Be(0.0);
+
+        // A droid crew starts below the cap (W8b: 50-75%), so Crew Morale and Leadership lift it in full.
+        ShipCrewSeats.SeatEffectiveness(true, true, 0.75 * 1.15).Should().BeApproximately(0.8625, 1e-9);
+        ShipCrewSeats.SeatEffectiveness(true, true, 0.5 * 1.15).Should().BeApproximately(0.575, 1e-9);
     }
 
     [Test]
@@ -317,6 +332,10 @@ public class SpaceCrewStationTests
         ReadServerSource("Service", "Ability.cs").Should().Contain("Space.IsAtCrewStation(activator)");
         ReadServerSource("Feature", "StatusEffectDefinition", "SocialScalingStatusEffectBase.cs")
             .Should().Contain("SpaceCommand.ApplyLeadershipScaling(");
+        var breakFormation = ReadServerSource("Feature", "AbilityDefinition", "Piloting", "BreakFormationAbilityDefinition.cs");
+        breakFormation.Should().Contain("new FlashStatusEffect(SpaceCommand.ApplyLeadershipScaling(activator,");
+        breakFormation.Should().Contain("new WeakenedStatusEffect(SpaceCommand.ApplyLeadershipScaling(activator,");
+        ReadServerSource("Service", "SpaceService", "SpaceCrew.cs").Should().Contain("ShipCrewSeats.CapEffectiveness(EffectivenessMultiplier(");
     }
 
     private static string ReadServerSource(params string[] path)

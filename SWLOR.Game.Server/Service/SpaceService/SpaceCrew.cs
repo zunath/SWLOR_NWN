@@ -21,14 +21,15 @@ namespace SWLOR.Game.Server.Service.SpaceService
         // Effectiveness
 
         /// <summary>
-        /// The effectiveness of the crew working a ship's stations, as a multiplier (1.0 is a player at the module's
-        /// rank). Command's Crew Morale and the captain's Leadership rank
-        /// (<see cref="SpaceCommand.GetLeadershipCrewBonusPercent"/>) raise it.
+        /// The effectiveness of the player crew working a ship's stations, as a multiplier (1.0 is a player at the
+        /// module's rank). Command's Crew Morale and the captain's Leadership rank
+        /// (<see cref="SpaceCommand.GetLeadershipCrewBonusPercent"/>) raise it, up to
+        /// <see cref="ShipCrewSeats.MaximumSeatEffectiveness"/>.
         /// </summary>
         public static double GetCrewEffectiveness(uint ship) =>
-            EffectivenessMultiplier(
+            ShipCrewSeats.CapEffectiveness(EffectivenessMultiplier(
                 Stat.GetStatAdjustment(ship, StatType.SpaceCrewEffectivenessPercentAdjustment),
-                SpaceCommand.GetLeadershipCrewBonusPercent(ship));
+                SpaceCommand.GetLeadershipCrewBonusPercent(ship)));
 
         /// <summary>The crew effectiveness multiplier for a Crew Morale percent and a Leadership percent.</summary>
         public static double EffectivenessMultiplier(int crewMoralePercent, int leadershipPercent) =>

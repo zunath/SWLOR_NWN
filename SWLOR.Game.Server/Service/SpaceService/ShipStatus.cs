@@ -103,6 +103,12 @@ namespace SWLOR.Game.Server.Service.SpaceService
         /// <summary>The movement multiplier while piloting this ship (1.0 is today's speed).</summary>
         public double SpeedMultiplier { get; set; } = 1.0;
 
+        /// <summary>Where the Engineer routes power (plan section 10). Saved data without it reads as Balanced.</summary>
+        public ShipPowerRouting PowerRouting { get; set; }
+
+        /// <summary>When the routing last changed; it can change again <see cref="PowerRoutingRules.ChangeCooldownSeconds"/> later.</summary>
+        public DateTime PowerRoutingChangedAt { get; set; }
+
         /// <summary>A Shield Hardener keeps this resistance bonus to every type until this time.</summary>
         public DateTime HardenedUntil { get; set; }
 

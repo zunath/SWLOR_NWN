@@ -7,6 +7,7 @@ using SWLOR.Game.Server.Service.GuiService;
 using SWLOR.Game.Server.Service.ItemService;
 using SWLOR.Game.Server.Service.PerkService;
 using SWLOR.Game.Server.Service.SkillService;
+using SWLOR.Game.Server.Service.SpaceService;
 using SWLOR.NWN.API.NWScript.Enum;
 
 namespace SWLOR.Game.Server.Feature.ItemDefinition
@@ -89,9 +90,11 @@ namespace SWLOR.Game.Server.Feature.ItemDefinition
                             return $"This item can be used in {timeToWait}.";
                         }
 
-                        if (GetIsObjectValid(droid))
+                        // A droid posted at a ship's station stays there and does not count toward the follow limit.
+                        var activationError = DroidCrewRules.GetActivationError(Droid.IsPosted(item), GetIsObjectValid(droid) ? 1 : 0);
+                        if (!string.IsNullOrEmpty(activationError))
                         {
-                            return "Only one droid may be activated at a time.";
+                            return activationError;
                         }
 
                         var companionSlotError = BeastMastery.GetCompanionSlotValidationError(user);
@@ -122,6 +125,11 @@ namespace SWLOR.Game.Server.Feature.ItemDefinition
                         if (GetIsObjectValid(droid))
                         {
                             return "Droid AI cannot be adjusted while active. Please dismiss your droid and try again.";
+                        }
+
+                        if (Droid.IsPosted(item))
+                        {
+                            return "Droid AI cannot be adjusted while the droid is posted at a ship's station.";
                         }
 
                         var perkLevel = Perk.GetPerkLevel(user, PerkType.DroidAssembly);

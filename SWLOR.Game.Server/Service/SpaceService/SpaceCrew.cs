@@ -2,6 +2,7 @@ using System.Collections.Generic;
 using System.Linq;
 using SWLOR.Game.Server.Service.SkillService;
 using SWLOR.Game.Server.Service.StatService;
+using SWLOR.NWN.API.NWScript.Enum;
 
 namespace SWLOR.Game.Server.Service.SpaceService
 {
@@ -10,13 +11,16 @@ namespace SWLOR.Game.Server.Service.SpaceService
     /// members hold seats on it while it flies (<see cref="Space.BoardCrewStation"/> boards and <see cref="Space.LeaveCrewStation"/> unseats them); a station
     /// slot works only while its seat is crewed, at the crew's effectiveness. While a crew member fires a station
     /// module, a fire context names them, so the shot or repair reads their attributes and stats while the ship
-    /// stays the source of range, threat and damage.
+    /// stays the source of range, threat and damage. A seat holds a player or a posted droid, never both.
     /// </summary>
     public static class SpaceCrew
     {
         private static readonly Dictionary<uint, Dictionary<ShipCrewSeat, uint>> _seatsByShip = new();
         private static readonly Dictionary<uint, (uint Ship, ShipCrewSeat Seat)> _seatByCrew = new();
         private static readonly Dictionary<uint, SpaceCrewFireContext> _fireContexts = new();
+        private static readonly Dictionary<uint, Dictionary<ShipCrewSeat, ShipDroidCrew>> _droidsByShip = new();
+        private static readonly Dictionary<uint, Dictionary<int, uint>> _droidEngagements = new();
+        private static readonly List<SpaceCrewFireContext> _droidFire = new();
 
         // Effectiveness
 
@@ -27,9 +31,28 @@ namespace SWLOR.Game.Server.Service.SpaceService
         /// <see cref="ShipCrewSeats.MaximumSeatEffectiveness"/>.
         /// </summary>
         public static double GetCrewEffectiveness(uint ship) =>
-            ShipCrewSeats.CapEffectiveness(EffectivenessMultiplier(
+            ShipCrewSeats.CapEffectiveness(GetCrewMultiplier(ship));
+
+        /// <summary>The ship's crew multiplier from Crew Morale and the captain's Leadership, before the cap.</summary>
+        public static double GetCrewMultiplier(uint ship) =>
+            EffectivenessMultiplier(
                 Stat.GetStatAdjustment(ship, StatType.SpaceCrewEffectivenessPercentAdjustment),
-                SpaceCommand.GetLeadershipCrewBonusPercent(ship)));
+                SpaceCommand.GetLeadershipCrewBonusPercent(ship));
+
+        /// <summary>
+        /// A posted droid's effectiveness at its seat: its tier's base (<see cref="DroidCrewRules.BaseEffectiveness"/>)
+        /// times the crew multiplier, capped like every seat.
+        /// </summary>
+        public static double GetDroidEffectiveness(uint ship, ShipDroidCrew droid) =>
+            droid == null
+                ? 0.0
+                : DroidCrewRules.SeatEffectiveness(droid.Seat, droid.Tier, GetCrewMultiplier(ship), GetDroidIndustryBonus(droid));
+
+        /// <summary>
+        /// What a droid's Industry rating (plan section 27) adds to its base effectiveness. The rating does not exist
+        /// yet, so this is 0 and the tier alone sets a droid's effectiveness.
+        /// </summary>
+        public static double GetDroidIndustryBonus(ShipDroidCrew droid) => 0.0;
 
         /// <summary>The crew effectiveness multiplier for a Crew Morale percent and a Leadership percent.</summary>
         public static double EffectivenessMultiplier(int crewMoralePercent, int leadershipPercent) =>
@@ -44,14 +67,21 @@ namespace SWLOR.Game.Server.Service.SpaceService
                 return false;
 
             var seat = ShipCrewSeats.GetSeatForSlot(status.Size, status.SlotTags, slotNumber);
-            return seat != ShipCrewSeat.Pilot && GetSeatOccupant(ship, seat) != OBJECT_INVALID;
+            return seat != ShipCrewSeat.Pilot && IsSeatWorked(ship, seat);
         }
 
-        /// <summary>Seats a crew member. False when the seat is taken or the crew member already holds a seat.</summary>
+        /// <summary>Whether a player or a droid works the seat.</summary>
+        public static bool IsSeatWorked(uint ship, ShipCrewSeat seat) =>
+            GetSeatOccupant(ship, seat) != OBJECT_INVALID || GetSeatDroid(ship, seat) != null;
+
+        /// <summary>
+        /// Seats a crew member. False when the seat is taken (by a player or a droid) or the crew member already
+        /// holds a seat.
+        /// </summary>
         public static bool AssignSeat(uint ship, ShipCrewSeat seat, uint crewMember)
         {
             if (seat == ShipCrewSeat.Invalid || seat == ShipCrewSeat.Pilot || crewMember == ship ||
-                _seatByCrew.ContainsKey(crewMember) || GetSeatOccupant(ship, seat) != OBJECT_INVALID)
+                crewMember == OBJECT_INVALID || _seatByCrew.ContainsKey(crewMember) || IsSeatWorked(ship, seat))
             {
                 return false;
             }
@@ -114,6 +144,88 @@ namespace SWLOR.Game.Server.Service.SpaceService
         public static List<uint> GetCrew(uint ship) =>
             _seatsByShip.TryGetValue(ship, out var seats) ? seats.Values.ToList() : new List<uint>();
 
+        // Droid crew
+
+        /// <summary>
+        /// Seats a posted droid while its ship flies. False when the seat is the Pilot's or is taken by a player or
+        /// another droid.
+        /// </summary>
+        public static bool AssignDroidSeat(uint ship, ShipDroidCrew droid)
+        {
+            if (droid == null || droid.Seat == ShipCrewSeat.Invalid || droid.Seat == ShipCrewSeat.Pilot ||
+                IsSeatWorked(ship, droid.Seat))
+            {
+                return false;
+            }
+
+            if (!_droidsByShip.TryGetValue(ship, out var seats))
+            {
+                seats = new Dictionary<ShipCrewSeat, ShipDroidCrew>();
+                _droidsByShip[ship] = seats;
+            }
+
+            seats[droid.Seat] = droid;
+            return true;
+        }
+
+        /// <summary>Takes the droid off a seat. False when no droid held it.</summary>
+        public static bool ReleaseDroidSeat(uint ship, ShipCrewSeat seat)
+        {
+            if (!_droidsByShip.TryGetValue(ship, out var seats) || !seats.Remove(seat))
+                return false;
+
+            if (seats.Count == 0)
+                _droidsByShip.Remove(ship);
+
+            _droidEngagements.Remove(ship);
+            return true;
+        }
+
+        /// <summary>The droid at a seat, or null.</summary>
+        public static ShipDroidCrew GetSeatDroid(uint ship, ShipCrewSeat seat) =>
+            _droidsByShip.TryGetValue(ship, out var seats) && seats.TryGetValue(seat, out var droid) ? droid : null;
+
+        /// <summary>The droids working a ship's stations.</summary>
+        public static List<ShipDroidCrew> GetDroidCrew(uint ship) =>
+            _droidsByShip.TryGetValue(ship, out var seats) ? seats.Values.ToList() : new List<ShipDroidCrew>();
+
+        /// <summary>The ships with droids at their stations.</summary>
+        public static List<uint> GetShipsWithDroidCrew() => _droidsByShip.Keys.ToList();
+
+        /// <summary>Takes every droid off a ship's seats (the ship docked, lost its pilot or was destroyed).</summary>
+        public static void ClearDroidCrew(uint ship)
+        {
+            _droidsByShip.Remove(ship);
+            _droidEngagements.Remove(ship);
+        }
+
+        /// <summary>The target a droid last switched a slot's weapon on against, or OBJECT_INVALID.</summary>
+        public static uint GetDroidEngagement(uint ship, int slot) =>
+            _droidEngagements.TryGetValue(ship, out var engagements) && engagements.TryGetValue(slot, out var target)
+                ? target
+                : OBJECT_INVALID;
+
+        /// <summary>Remembers that a droid switched a slot's weapon on against a target.</summary>
+        public static void RecordDroidEngagement(uint ship, int slot, uint target)
+        {
+            if (!_droidEngagements.TryGetValue(ship, out var engagements))
+            {
+                engagements = new Dictionary<int, uint>();
+                _droidEngagements[ship] = engagements;
+            }
+
+            engagements[slot] = target;
+        }
+
+        /// <summary>
+        /// Forgets what the ship's droids engaged, so their weapons switch on again at the target the pilot picks
+        /// next (the same one included).
+        /// </summary>
+        public static void ForgetDroidEngagements(uint ship)
+        {
+            _droidEngagements.Remove(ship);
+        }
+
         // Station fire
 
         /// <summary>
@@ -127,11 +239,19 @@ namespace SWLOR.Game.Server.Service.SpaceService
 
             _fireContexts.TryGetValue(context.Ship, out var previous);
             _fireContexts[context.Ship] = context;
-            return new SpaceCrewFireScope(context.Ship, previous);
+
+            var droidFire = context.Droid != null;
+            if (droidFire)
+                _droidFire.Add(context);
+
+            return new SpaceCrewFireScope(context.Ship, previous, droidFire);
         }
 
-        internal static void RestoreFireContext(uint ship, SpaceCrewFireContext previous)
+        internal static void RestoreFireContext(uint ship, SpaceCrewFireContext previous, bool droidFire = false)
         {
+            if (droidFire && _droidFire.Count > 0)
+                _droidFire.RemoveAt(_droidFire.Count - 1);
+
             if (ship == OBJECT_INVALID)
                 return;
 
@@ -147,9 +267,36 @@ namespace SWLOR.Game.Server.Service.SpaceService
 
         /// <summary>
         /// The creature whose attributes and stats a shot or repair from the ship reads: the crew member at work,
-        /// otherwise the ship.
+        /// otherwise the ship. A droid has no creature, so while one fires this is OBJECT_INVALID: no perks or
+        /// statuses apply, and <see cref="TryGetDroidAttribute"/> gives its attributes.
         /// </summary>
-        public static uint GetStatSource(uint ship) => GetFireContext(ship)?.CrewMember ?? ship;
+        public static uint GetStatSource(uint ship)
+        {
+            var context = GetFireContext(ship);
+            if (context == null)
+                return ship;
+
+            return context.Droid != null ? OBJECT_INVALID : context.CrewMember;
+        }
+
+        /// <summary>Whether a stat source is the droid firing right now.</summary>
+        public static bool IsDroidStatSource(uint statSource) => statSource == OBJECT_INVALID && _droidFire.Count > 0;
+
+        /// <summary>
+        /// A firing droid's attribute score (<see cref="DroidCrewRules.Attribute"/>, the same for every attribute)
+        /// when the stat source is the droid at work; false for every other source.
+        /// </summary>
+        public static bool TryGetDroidAttribute(uint statSource, AbilityType ability, out int score)
+        {
+            if (!IsDroidStatSource(statSource))
+            {
+                score = 0;
+                return false;
+            }
+
+            score = DroidCrewRules.Attribute(_droidFire[^1].Droid.Tier);
+            return true;
+        }
 
         /// <summary>The effectiveness of the station at work, or 1.0 when the pilot fires.</summary>
         public static double GetFireEffectiveness(uint ship) => GetFireContext(ship)?.Effectiveness ?? 1.0;
@@ -157,8 +304,12 @@ namespace SWLOR.Game.Server.Service.SpaceService
         /// <summary>The seat whose slots the ship may fire right now: the station at work, otherwise the Pilot's.</summary>
         public static ShipCrewSeat GetActingSeat(uint ship) => GetFireContext(ship)?.Seat ?? ShipCrewSeat.Pilot;
 
-        /// <summary>The player who earns the combat point for what the ship just did.</summary>
-        public static uint GetCreditedPlayer(uint ship) => GetStatSource(ship);
+        /// <summary>
+        /// The player who earns the combat point for what the ship just did: the crew member at work, or the pilot
+        /// for the pilot's own modules and a droid's.
+        /// </summary>
+        public static uint GetCreditedPlayer(uint ship) =>
+            GetFireContext(ship)?.Droid != null ? ship : GetStatSource(ship);
 
         /// <summary>The skill the combat point goes to: the seat's skill at a station, otherwise <paramref name="pilotSkill"/>.</summary>
         public static SkillType GetCreditedSkill(uint ship, SkillType pilotSkill) => GetFireContext(ship)?.Skill ?? pilotSkill;

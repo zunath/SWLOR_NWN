@@ -353,21 +353,24 @@ namespace SWLOR.Game.Server.Service
                 if (IsShipIncapacitated(creature))
                     return;
 
-                // A station slot fires only while its seat is crewed, at the crew member's own target.
+                // A station slot fires only while its seat is crewed: a crew member at their own target, a droid at the
+                // pilot's.
                 var seat = ShipCrewSeats.GetSeatForSlot(status.Size, status.SlotTags, slot);
                 var crewMember = seat == ShipCrewSeat.Pilot ? OBJECT_INVALID : SpaceCrew.GetSeatOccupant(creature, seat);
-                if (seat != ShipCrewSeat.Pilot && (crewMember == OBJECT_INVALID || !GetIsObjectValid(crewMember)))
+                var playerCrewed = crewMember != OBJECT_INVALID && GetIsObjectValid(crewMember);
+                var droid = seat == ShipCrewSeat.Pilot || playerCrewed ? null : SpaceCrew.GetSeatDroid(creature, seat);
+                if (seat != ShipCrewSeat.Pilot && !playerCrewed && droid == null)
                 {
                     TurnOffToggle(creature, status, slot);
                     return;
                 }
 
                 var mode = ShipToggleRules.GetTargetMode(detail.Type);
-                var currentTarget = GetLocalObject(crewMember == OBJECT_INVALID ? creature : crewMember, "SPACE_TARGET");
+                var currentTarget = GetLocalObject(playerCrewed ? crewMember : creature, "SPACE_TARGET");
                 var target =ShipToggleRules.ChooseTarget(mode, currentTarget, active.TargetId, creature);
                 var targetStatus = target == creature ? status : GetShipStatus(target);
                 var targetValid = GetIsObjectValid(target);
-                var required = detail.CalculateCapacitorAction?.Invoke(creature, status, module.ModuleBonus) ?? 0;
+                var required = GetModuleCapacitorCost(creature, status, module, detail);
                 var needsTarget = mode != ShipToggleTargetMode.SelfCentered;
 
                 ShipToggleCheck BuildCheck(string validationError, int requiredCapacitor) => new()
@@ -413,7 +416,9 @@ namespace SWLOR.Game.Server.Service
                 var next = ShipToggleRules.NextCycleTime(active.NextCycleTime, now, cycle);
                 active.NextCycleTime = next;
 
-                using (SpaceCrew.BeginStationFire(BuildCrewFireContext(creature, crewMember, seat)))
+                using (SpaceCrew.BeginStationFire(droid != null
+                           ? BuildDroidFireContext(creature, droid)
+                           : BuildCrewFireContext(creature, crewMember, seat)))
                 {
                     FireShipModule(creature, status, slot, module, detail, target, targetStatus, required,
                         true, next.AddSeconds(-cycle), next, false);
@@ -437,13 +442,33 @@ namespace SWLOR.Game.Server.Service
         /// </summary>
         private static void UpdateNpcRepairToggles(uint creature, ShipStatus shipStatus, bool allowTurnOn)
         {
-            foreach (var (feat, shipModule) in GetNpcModuleSlots(shipStatus))
+            UpdateRepairToggles(creature, shipStatus, GetNpcModuleSlots(shipStatus), allowTurnOn, NpcRepairThreshold,
+                ShipToggleRules.RepairsShield, ShipToggleRules.RepairsHull,
+                feat => AssignCommand(creature, () => ActivateShipModuleCore(creature, feat, true)));
+        }
+
+        /// <summary>
+        /// Switches a ship's shield and hull support toggles among <paramref name="slots"/>: off once nothing is
+        /// missing, and (with <paramref name="allowTurnOn"/>) on through <paramref name="turnOn"/> once
+        /// <paramref name="threshold"/> of the pool is missing. NPC ships and droid crew use it.
+        /// </summary>
+        private static void UpdateRepairToggles(
+            uint creature,
+            ShipStatus shipStatus,
+            IEnumerable<(FeatType Feat, ShipStatus.ShipStatusModule Module)> slots,
+            bool allowTurnOn,
+            float threshold,
+            Func<ShipModuleType, bool> supportsShield,
+            Func<ShipModuleType, bool> supportsHull,
+            Action<FeatType> turnOn)
+        {
+            foreach (var (feat, shipModule) in slots)
             {
                 var detail = _shipModules[shipModule.ItemTag];
                 if (detail.Activation != ShipModuleActivation.Toggle) continue;
 
-                var repairsShield = ShipToggleRules.RepairsShield(detail.Type);
-                var repairsHull = ShipToggleRules.RepairsHull(detail.Type);
+                var repairsShield = supportsShield(detail.Type);
+                var repairsHull = supportsHull(detail.Type);
                 if (!repairsShield && !repairsHull) continue;
 
                 var slot = GetFeatSlotNumber(feat);
@@ -461,9 +486,9 @@ namespace SWLOR.Game.Server.Service
                 {
                     TurnOffToggle(creature, shipStatus, slot);
                 }
-                else if (!isOn && allowTurnOn && ShipToggleRules.ShouldRepairerTurnOn(missing, max, NpcRepairThreshold))
+                else if (!isOn && allowTurnOn && ShipToggleRules.ShouldRepairerTurnOn(missing, max, threshold))
                 {
-                    AssignCommand(creature, () => ActivateShipModuleCore(creature, feat, true));
+                    turnOn(feat);
                 }
             }
         }
@@ -479,12 +504,34 @@ namespace SWLOR.Game.Server.Service
             ShipStatus targetShipStatus,
             float distance)
         {
-            foreach (var (feat, shipModule) in GetNpcModuleSlots(shipStatus))
+            TurnOnWeaponToggles(creature, shipStatus, GetNpcModuleSlots(shipStatus), target, targetShipStatus, distance,
+                _ => true,
+                (feat, _) => AssignCommand(creature, () => ActivateShipModuleCore(creature, feat, true)));
+        }
+
+        /// <summary>
+        /// Switches on the offensive toggles among <paramref name="slots"/> that can fire at the target from here
+        /// and that <paramref name="mayTurnOn"/> (by hotbar slot) allows, through <paramref name="turnOn"/>. NPC
+        /// ships and droid crew use it.
+        /// </summary>
+        private static void TurnOnWeaponToggles(
+            uint creature,
+            ShipStatus shipStatus,
+            IEnumerable<(FeatType Feat, ShipStatus.ShipStatusModule Module)> slots,
+            uint target,
+            ShipStatus targetShipStatus,
+            float distance,
+            Func<int, bool> mayTurnOn,
+            Action<FeatType, int> turnOn)
+        {
+            foreach (var (feat, shipModule) in slots)
             {
                 var detail = _shipModules[shipModule.ItemTag];
+                var slot = GetFeatSlotNumber(feat);
                 if (detail.Activation != ShipModuleActivation.Toggle ||
                     ShipToggleRules.GetTargetMode(detail.Type) != ShipToggleTargetMode.Follow ||
-                    IsShipToggleOn(shipStatus, GetFeatSlotNumber(feat)))
+                    IsShipToggleOn(shipStatus, slot) ||
+                    !mayTurnOn(slot))
                 {
                     continue;
                 }
@@ -498,7 +545,7 @@ namespace SWLOR.Game.Server.Service
 
                 if (canFire)
                 {
-                    AssignCommand(creature, () => ActivateShipModuleCore(creature, feat, true));
+                    turnOn(feat, slot);
                 }
             }
         }

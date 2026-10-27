@@ -11,8 +11,14 @@ namespace SWLOR.Game.Server.Service.SpaceService
         /// <summary>The ship that fires: its pilot's creature.</summary>
         public uint Ship { get; init; }
 
-        /// <summary>The crew member whose attributes and stats the shot or repair reads.</summary>
+        /// <summary>
+        /// The crew member whose attributes and stats the shot or repair reads, or OBJECT_INVALID for a droid,
+        /// which has no creature at its post.
+        /// </summary>
         public uint CrewMember { get; init; }
+
+        /// <summary>The droid at work, or null for a player crew member.</summary>
+        public ShipDroidCrew Droid { get; init; }
 
         public ShipCrewSeat Seat { get; init; }
 

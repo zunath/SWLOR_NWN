@@ -391,6 +391,21 @@ public class ShipHudRulesTests
         Value("Low Slots").Should().Be("0 / 2");
     }
 
+    /// <summary>Checks the Stats tab shows the Engineer's power routing and the speed it gives.</summary>
+    [Test]
+    public void StatsTab_ShowsThePowerRoutingAndTheRoutedSpeed()
+    {
+        var status = new ShipStatus { SpeedMultiplier = 1.0, PowerRouting = ShipPowerRouting.Engines };
+        var stats = ShipHudStats.FromStatus(status, Now);
+        stats.PowerRouting.Should().Be(ShipPowerRouting.Engines);
+        stats.SpeedMultiplier.Should().BeApproximately(1.2, 1e-9);
+
+        var rows = ShipHudRules.BuildStatRows(stats);
+        rows.Single(x => x.Label == "Power Routing").Value.Should().Be("Engines");
+        rows.Single(x => x.Label == "Speed").Value.Should().Be("120%");
+        ShipHudRules.BuildStatRows(new ShipHudStats()).Single(x => x.Label == "Power Routing").Value.Should().Be("Balanced");
+    }
+
     /// <summary>Checks a hull with no listed cargo shows a dash.</summary>
     [Test]
     public void BuildStatRows_NoCargoShowsADash()

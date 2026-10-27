@@ -2880,5 +2880,9 @@ namespace SWLOR.NWN.API.NWScript.Enum
         DeepCoreTrait = 3348,
         RapidExtractionTrait = 3349,
         ShipAllWeapons = 3350,
+        ShipPowerBalanced = 3351,
+        ShipPowerWeapons = 3352,
+        ShipPowerShields = 3353,
+        ShipPowerEngines = 3354,
 }
 }

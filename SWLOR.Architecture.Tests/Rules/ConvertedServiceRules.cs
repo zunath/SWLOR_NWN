@@ -71,7 +71,7 @@ internal static class ConvertedServiceRules
     {
         return facts.StaticFields
             .Where(field => !field.IsLiteral && isServiceType(field.Owner))
-            .Select(field => $"{field} is static state of a converted service: make it an instance field" +
+            .Select(field => $"{field} is static state of a converted service: make it an instance {(field.IsAutoProperty ? "property" : "field")}" +
                              (field.IsInitOnly ? " (static readonly still shares the collection it holds)." : "."))
             .OrderBy(message => message, StringComparer.Ordinal)
             .ToList();

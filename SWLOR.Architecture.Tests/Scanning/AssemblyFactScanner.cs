@@ -12,6 +12,7 @@ internal static class AssemblyFactScanner
 {
     private const string HandlerAttribute = "SWLOR.Game.Server.Core.NWNEventHandler";
     private const string CompilerGeneratedAttribute = "System.Runtime.CompilerServices.CompilerGeneratedAttribute";
+    private const string BackingFieldSuffix = ">k__BackingField";
 
     public static AssemblyFacts Scan(string assemblyPath)
     {
@@ -62,15 +63,22 @@ internal static class AssemblyFactScanner
                     _member = DisplayMember(handle, name);
                     AddExternal(field.DecodeSignature(_externalTypes, null));
 
-                    if (generated || (field.Attributes & FieldAttributes.Static) == 0 || name.StartsWith('<') || HasAttribute(field.GetCustomAttributes(), CompilerGeneratedAttribute))
+                    if (generated || (field.Attributes & FieldAttributes.Static) == 0)
+                        continue;
+
+                    // The compiler's own fields (lambda caches, closures) are not the service's state, but the field behind
+                    // a static auto-property is: report it under the property's name.
+                    var isBackingField = name.StartsWith('<') && name.EndsWith(BackingFieldSuffix, StringComparison.Ordinal);
+                    if (!isBackingField && (name.StartsWith('<') || HasAttribute(field.GetCustomAttributes(), CompilerGeneratedAttribute)))
                         continue;
 
                     fields.Add(new StaticFieldFact(
                         _source,
                         DeclaringName(handle),
-                        name,
+                        isBackingField ? name.Substring(1, name.Length - 1 - BackingFieldSuffix.Length) : name,
                         (field.Attributes & FieldAttributes.Literal) != 0,
-                        (field.Attributes & FieldAttributes.InitOnly) != 0));
+                        (field.Attributes & FieldAttributes.InitOnly) != 0,
+                        isBackingField));
                 }
 
                 foreach (var methodHandle in definition.GetMethods())

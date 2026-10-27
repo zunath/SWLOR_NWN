@@ -8,4 +8,8 @@ public static class StaticStateHolder
     public static readonly Dictionary<string, int> Cache = new();
 
     public static int Counter;
+
+    public static List<int> Items { get; } = new();
+
+    public static int Total { get; set; }
 }

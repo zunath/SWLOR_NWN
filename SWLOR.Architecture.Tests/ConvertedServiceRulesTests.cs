@@ -117,9 +117,11 @@ public class ConvertedServiceRulesTests
     {
         var problems = ConvertedServiceRules.StaticMutableFields(Facts, type => type == KeyOf(typeof(StaticStateHolder)));
 
-        problems.Should().HaveCount(2);
+        problems.Should().HaveCount(4);
         problems.Should().Contain(problem => problem.Contains("StaticStateHolder.Cache") && problem.Contains("static readonly"));
         problems.Should().Contain(problem => problem.Contains("StaticStateHolder.Counter") && !problem.Contains("static readonly"));
+        problems.Should().Contain(problem => problem.Contains("StaticStateHolder.Total (static auto-property)") && !problem.Contains("static readonly"));
+        problems.Should().Contain(problem => problem.Contains("StaticStateHolder.Items (static auto-property)") && problem.Contains("instance property"));
         problems.Should().NotContain(problem => problem.Contains("Limit"));
     }
 

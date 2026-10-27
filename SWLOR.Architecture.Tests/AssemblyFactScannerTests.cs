@@ -30,11 +30,16 @@ public class AssemblyFactScannerTests
     {
         var fields = Facts.StaticFields.Where(field => field.Owner == KeyOf(typeof(StaticStateHolder))).ToDictionary(field => field.Name);
 
-        fields.Keys.Should().BeEquivalentTo("Limit", "Cache", "Counter");
+        fields.Keys.Should().BeEquivalentTo("Limit", "Cache", "Counter", "Items", "Total");
         fields["Limit"].IsLiteral.Should().BeTrue();
         fields["Cache"].IsInitOnly.Should().BeTrue();
         fields["Cache"].IsLiteral.Should().BeFalse();
         fields["Counter"].IsInitOnly.Should().BeFalse();
+        fields["Counter"].IsAutoProperty.Should().BeFalse();
+        fields["Items"].IsAutoProperty.Should().BeTrue("the field behind a static auto-property is reported under the property's name");
+        fields["Items"].IsInitOnly.Should().BeTrue();
+        fields["Total"].IsAutoProperty.Should().BeTrue();
+        fields["Total"].IsInitOnly.Should().BeFalse();
     }
 
     [Test]

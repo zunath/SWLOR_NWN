@@ -357,27 +357,39 @@ function Read-TrxSummary {
         $failed.Add([pscustomobject]@{ Name = $node.GetAttribute('testName'); Message = $message })
     }
 
-    $total = 0; $passed = 0; $failedCount = 0; $notExecuted = 0
+    $total = 0; $passed = 0; $failedCount = 0; $notExecuted = 0; $broken = 0
     if ($counters) {
         $total = [int]$counters.GetAttribute('total')
         $passed = [int]$counters.GetAttribute('passed')
         $failedCount = [int]$counters.GetAttribute('failed')
         $notExecuted = [int]$counters.GetAttribute('notExecuted')
+        # Tests that errored, timed out, were aborted or lost their host are not failures in the counters above.
+        foreach ($name in @('error', 'timeout', 'aborted', 'disconnected')) { $broken += [int]$counters.GetAttribute($name) }
     }
+    $summaryNode = $xml.SelectSingleNode('//t:ResultSummary', $namespaces)
+    $outcome = ''
+    if ($summaryNode) { $outcome = $summaryNode.GetAttribute('outcome') }
     return [pscustomobject]@{
         Total       = $total
         Passed      = $passed
         Failed      = $failedCount
         NotExecuted = $notExecuted
+        Broken      = $broken
+        Outcome     = $outcome
         FailedTests = $failed.ToArray()
     }
 }
 
-# Runs `dotnet test --no-build` for one project and returns its counts and failed tests. The run is ok when the result
-# file shows no failed test and dotnet exited 0. NUnit still runs the OneTimeSetUp of a fixture whose tests were all
-# excluded, and dotnet then exits 1 although every test that ran passed (the excluded Roslyn-harness fixtures); that exit
-# code is accepted only when every fixture that failed its setup is one of -ExcludedClasses (the same rule the
-# maintainability CI uses). A run without a result file is never ok.
+# Runs `dotnet test --no-build` for one project and returns its counts and failed tests.
+#
+# The run is ok when all of this holds: a result file exists, at least -MinimumTests tests ran (VSTest exits 0 when a
+# filter matches nothing, so a renamed test would otherwise pass silently), no test failed, errored, timed out or was
+# aborted, and dotnet exited 0.
+#
+# One non-zero exit code is accepted: NUnit still runs the OneTimeSetUp of a fixture whose tests were all excluded, and
+# dotnet then exits 1 although every test that ran passed (the excluded Roslyn-harness fixtures). That is accepted only
+# when the console shows VSTest's own "Passed!" summary and no aborted or crashed run, the result file is clean as above
+# with an outcome other than Aborted, and every fixture that failed its setup is one of -ExcludedClasses.
 function Invoke-DotnetTest {
     param(
         [Parameter(Mandatory)][string]$Project,
@@ -385,6 +397,7 @@ function Invoke-DotnetTest {
         [string]$Configuration = 'Debug',
         [string]$Filter,
         [string[]]$ExcludedClasses = @(),
+        [int]$MinimumTests = 1,
         [hashtable]$Environment
     )
     $name = [System.IO.Path]::GetFileNameWithoutExtension($Project)
@@ -405,26 +418,38 @@ function Invoke-DotnetTest {
 
     $setupFailed = @($run.Lines | ForEach-Object { if ($_ -match '^Setup failed for test fixture (\S+)') { $Matches[1] } })
     $unexpected = @($setupFailed | Where-Object { $ExcludedClasses -notcontains ($_ -split '\.')[-1] })
+    $passedLine = @($run.Lines | Where-Object { $_ -match '^Passed!\s' }).Count -gt 0
+    $brokenLine = @($run.Lines | Where-Object { $_ -match '^(Failed!\s|Test Run Aborted|The active test run was aborted|Test host process crashed|Test Run Failed)' }).Count -gt 0
 
     $summary = Read-TrxSummary $trx
     $hasResults = ($null -ne $summary)
     $ok = $false
     $note = ''
     if ($hasResults) {
-        if ($summary.Failed -eq 0 -and $run.ExitCode -eq 0) {
+        $cleanFile = ($summary.Failed -eq 0 -and $summary.Broken -eq 0 -and $summary.Outcome -ne 'Aborted')
+        if ($summary.Total -lt $MinimumTests) {
+            $note = "$($summary.Total) test(s) ran, at least $MinimumTests expected; the filter matched too little (a test was renamed or removed?)"
+        }
+        elseif (-not $cleanFile) {
+            $note = "the result file shows $($summary.Failed) failed and $($summary.Broken) errored, timed out or aborted test(s), outcome $($summary.Outcome)"
+        }
+        elseif ($run.ExitCode -eq 0) {
             $ok = $true
         }
-        elseif ($summary.Failed -eq 0 -and $setupFailed.Count -gt 0 -and $unexpected.Count -eq 0) {
+        elseif ($setupFailed.Count -gt 0 -and $unexpected.Count -eq 0 -and $passedLine -and -not $brokenLine) {
             $ok = $true
             $note = "dotnet exited $($run.ExitCode) only because excluded fixtures failed their setup ($($setupFailed.Count)); counted as passed"
         }
-        elseif ($summary.Failed -eq 0) {
+        else {
             $note = "dotnet exited $($run.ExitCode) with no failed test"
-            if ($unexpected.Count -gt 0) { $note += "; fixture setup failed: $($unexpected -join ', ')" } else { $note += '; see the output above' }
+            if ($unexpected.Count -gt 0) { $note += "; fixture setup failed: $($unexpected -join ', ')" }
+            elseif ($setupFailed.Count -eq 0) { $note += '; no fixture setup failure explains it, see the output above' }
+            else { $note += '; the console shows an aborted or incomplete run besides the excluded fixtures, see the output above' }
         }
     }
     else {
-        $summary = [pscustomobject]@{ Total = 0; Passed = 0; Failed = 0; NotExecuted = 0; FailedTests = @() }
+        $summary = [pscustomobject]@{ Total = 0; Passed = 0; Failed = 0; NotExecuted = 0; Broken = 0; Outcome = ''; FailedTests = @() }
+        $note = 'no result file was produced (the test host crashed)'
     }
     return [pscustomobject]@{
         Project     = $name

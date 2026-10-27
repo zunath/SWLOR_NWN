@@ -446,7 +446,6 @@ function Invoke-Sync {
     foreach ($run in $results) {
         $state = if ($run.Ok) { 'passed' } else { 'FAILED' }
         Write-Host ("tests              : {0}: {1} - {2} passed, {3} failed, {4} skipped of {5} ({6}s)" -f $run.Project, $state, $run.Passed, $run.Failed, $run.Skipped, $run.Total, $run.Seconds)
-        if (-not $run.HasResults) { Write-Host '                     no result file was produced (the test host crashed or the filter matched nothing)' }
         if ($run.Note) { Write-Host ('                     {0}' -f $run.Note) }
         foreach ($test in ($run.FailedTests | Select-Object -First 15)) { Write-Host ("                     FAILED {0}: {1}" -f $test.Name, $test.Message) }
         if ($run.FailedTests.Count -gt 15) { Write-Host ("                     ... {0} more failed test(s)" -f ($run.FailedTests.Count - 15)) }

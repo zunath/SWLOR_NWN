@@ -34,6 +34,11 @@ namespace SWLOR.Game.Server.Service
             var player = GetLastPlayerDied();
             NamedAnimation.ClearOnDeath(player);
             Feature.UsePerkFeat.ClearQueuedAbility(player);
+
+            // A destroyed ship ejects its pilot alive in an escape pod, so there is nothing to revive or respawn.
+            if (Space.ApplyDeath(player))
+                return;
+
             var hostile = GetLastHostileActor(player);
             Feature.AbilityDefinition.ReviveRules.RecordPlayerDeath(player, hostile);
 
@@ -219,7 +224,8 @@ namespace SWLOR.Game.Server.Service
         /// Applies death penalties for a player.
         /// </summary>
         /// <param name="player">The player who we're applying penalties to</param>
-        private static int ApplyPenalties(uint player)
+        /// <returns>The player's total XP debt after the penalty.</returns>
+        public static int ApplyPenalties(uint player)
         {
             var playerId = GetObjectUUID(player);
             var dbPlayer = DB.Get<Player>(playerId);

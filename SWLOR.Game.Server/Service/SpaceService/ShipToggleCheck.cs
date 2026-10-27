@@ -17,6 +17,9 @@ namespace SWLOR.Game.Server.Service.SpaceService
         /// <summary>The target passes the module's valid object types and ship checks.</summary>
         public bool TargetTypeAllowed { get; set; } = true;
 
+        /// <summary>The target is another player ship that the ground PvP rules no longer let this ship attack.</summary>
+        public bool PvpForbidden { get; set; }
+
         public bool CheckRange { get; set; }
         public float Distance { get; set; }
         public float MaxDistance { get; set; }

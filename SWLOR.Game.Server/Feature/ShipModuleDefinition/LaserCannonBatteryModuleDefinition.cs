@@ -88,7 +88,7 @@ namespace SWLOR.Game.Server.Feature.ShipModuleDefinition
 
                                 if (nearbyTarget != activator &&
                                     Random.D4(1) != 1 &&
-                                    GetIsEnemy(nearbyTarget, activator) &&
+                                    Space.IsShipEnemy(activator, nearbyTarget) &&
                                     Space.GetShipStatus(nearbyTarget) != null)
                                 {
                                     var nearbyShipStatus = Space.GetShipStatus(nearbyTarget);

@@ -1573,6 +1573,21 @@ namespace SWLOR.Game.Server.Service
                 return;
             }
 
+            // Player ships attack each other only where the ground rules allow it (plan section 9, PvP). Modules that
+            // work around the ship pick their own enemies and skip the ones the rules protect.
+            if (IsOffensiveShipModule(shipModuleDetails.Type) &&
+                !shipModuleDetails.CanTargetSelf &&
+                GetIsObjectValid(target) &&
+                target != activator)
+            {
+                var pvpRefusal = GetPvpRefusal(activator, target);
+                if (!string.IsNullOrEmpty(pvpRefusal))
+                {
+                    SendActivationMessage(user, pvpRefusal);
+                    return;
+                }
+            }
+
             // A toggle that fires at the ship's target needs one to follow.
             var targetMode = ShipToggleRules.GetTargetMode(shipModuleDetails.Type);
             if (isToggle && targetMode == ShipToggleTargetMode.Follow && !GetIsObjectValid(target))
@@ -1621,7 +1636,7 @@ namespace SWLOR.Game.Server.Service
                 // Support modules lock onto the target that was selected when they were turned on, or the ship itself.
                 if (targetMode == ShipToggleTargetMode.Locked)
                 {
-                    var usable = GetIsObjectValid(target) && targetShipStatus != null && !GetIsEnemy(target, activator);
+                    var usable = GetIsObjectValid(target) && targetShipStatus != null && !IsShipHostile(activator, target);
                     lockedTarget = ShipToggleRules.ChooseLockTarget(usable, target, activator);
                 }
 
@@ -2437,6 +2452,12 @@ namespace SWLOR.Game.Server.Service
             if (targetShipStatus == null || AI.IsLeashEvading(target) || AI.IsLeashEvading(attacker))
                 return (0, 0);
 
+            // Player ships hurt each other only where the ground rules allow it, and the PvP damage ramp applies.
+            if (!CanShipAttack(attacker, target))
+                return (0, 0);
+
+            amount = ApplyPvpDamageRamp(attacker, target, amount);
+
             var shieldBefore = targetShipStatus.Shield;
             var hullBefore = targetShipStatus.Hull;
 
@@ -2473,6 +2494,7 @@ namespace SWLOR.Game.Server.Service
             if (targetShipStatus.Hull <= 0)
             {
                 targetShipStatus.Shield = 0;
+                RecordShipKiller(target, attacker);
 
                 // Lexicon Note regarding GetFirstObjectInShape/GetNextObjectInShape
                 // Do not apply EffectDamage without a DelayCommand (do DelayCommand(0.0, Apply...) at minimum).
@@ -2555,6 +2577,12 @@ namespace SWLOR.Game.Server.Service
             if (targetShipStatus == null || AI.IsLeashEvading(target) || AI.IsLeashEvading(attacker))
                 return;
 
+            // Player ships hurt each other only where the ground rules allow it, and the PvP damage ramp applies.
+            if (!CanShipAttack(attacker, target))
+                return;
+
+            amount = ApplyPvpDamageRamp(attacker, target, amount);
+
             var hullBefore = targetShipStatus.Hull;
             if (targetShipStatus.Hull > 0)
             {
@@ -2570,6 +2598,7 @@ namespace SWLOR.Game.Server.Service
             if (targetShipStatus.Hull <= 0)
             {
                 targetShipStatus.Shield = 0;
+                RecordShipKiller(target, attacker);
                 AssignCommand(attacker, () => ApplyEffectToObject(DurationType.Instant, EffectDeath(), target));
                 ClearCurrentTarget(attacker);
             }
@@ -2623,164 +2652,6 @@ namespace SWLOR.Game.Server.Service
             }
         }
 
-
-        /// <summary>
-        /// Applies death to a creature.
-        /// If this is a PC:
-        ///     - The ship modules will either drop or be destroyed.
-        ///     - The ship will require repairs
-        ///     - The pilot will be killed (inflicting default death system penalties)
-        ///     - Everyone inside the ship instance will be killed (inflicting default death system penalties)
-        ///     - The ship will relocate back to the last dock it was at
-        /// If this is an NPC, they will be killed and explode in spectacular fashion.
-        /// </summary>
-        [NWNEventHandler(ScriptName.OnModuleDeath)]
-        public static void ApplyDeath()
-        {
-            ApplyDeath(GetLastPlayerDied());
-        }
-
-        /// <summary>Applies the existing ship destruction and pilot cleanup to the specified creature.</summary>
-        public static void ApplyDeath(uint creature)
-        {
-            _pendingShipLaunches.Remove(creature);
-
-            // A crew member killed some other way (a DM, a script) leaves their station.
-            if (IsAtCrewStation(creature))
-                LeaveCrewStation(creature, returnToConsole: false);
-
-            if (!IsPlayerInSpaceMode(creature))
-                return;
-
-            // Everyone at the ship's stations and viewports goes down with it until escape pods arrive (W2d).
-            DestroyShipCrew(creature);
-            UnregisterShipPilot(creature);
-
-            ApplyEffectToObject(DurationType.Instant, EffectVisualEffect(VisualEffect.Fnf_Fireball), creature);
-
-            // When a player dies, they have a chance to drop every module installed on their ship.
-            if (GetIsPC(creature))
-            {
-                const int ChanceToDropModule = 65;
-                var deathLocation = GetLocation(creature);
-                var playerId = GetObjectUUID(creature);
-                var dbPlayer = DB.Get<Player>(playerId);
-                var dbPlayerShip = DB.Get<PlayerShip>(dbPlayer.ActiveShipId);
-                var dbProperty = DB.Get<WorldProperty>(dbPlayerShip.PropertyId);
-
-                // Give a chance to drop each installed module.
-                foreach (var (_, shipModule) in dbPlayerShip.Status.HighPowerModules)
-                {
-                    if (Random.D100(1) <= ChanceToDropModule)
-                    {
-                        var deserialized = ObjectPlugin.Deserialize(shipModule.SerializedItem);
-                        CopyObject(deserialized, deathLocation);
-                        DestroyObject(deserialized);
-                    }
-
-                    var moduleDetails = GetShipModuleDetailByItemTag(shipModule.ItemTag);
-                    moduleDetails.ModuleUnequippedAction?.Invoke(dbPlayerShip.Status, shipModule.ModuleBonus);
-
-                }
-
-                foreach (var (_, shipModule) in dbPlayerShip.Status.LowPowerModules)
-                {
-                    if (Random.D100(1) <= ChanceToDropModule)
-                    {
-                        var deserialized = ObjectPlugin.Deserialize(shipModule.SerializedItem);
-                        CopyObject(deserialized, deathLocation);
-                        DestroyObject(deserialized);
-                    }
-
-                    var moduleDetails = GetShipModuleDetailByItemTag(shipModule.ItemTag);
-                    moduleDetails.ModuleUnequippedAction?.Invoke(dbPlayerShip.Status, shipModule.ModuleBonus);
-                }
-
-                foreach (var (_, shipModule) in dbPlayerShip.Status.MidPowerModules)
-                {
-                    if (Random.D100(1) <= ChanceToDropModule)
-                    {
-                        var deserialized = ObjectPlugin.Deserialize(shipModule.SerializedItem);
-                        CopyObject(deserialized, deathLocation);
-                        DestroyObject(deserialized);
-                    }
-
-                    var moduleDetails = GetShipModuleDetailByItemTag(shipModule.ItemTag);
-                    moduleDetails.ModuleUnequippedAction?.Invoke(dbPlayerShip.Status, shipModule.ModuleBonus);
-                }
-
-                // Player always loses all modules regardless if they actually dropped.
-                ClearShipToggleState(creature, dbPlayerShip.Status);
-                dbPlayerShip.Status.HighPowerModules.Clear();
-                dbPlayerShip.Status.LowPowerModules.Clear();
-                dbPlayerShip.Status.MidPowerModules.Clear();
-                dbPlayerShip.PlayerHotBars.Clear();
-                dbPlayerShip.Status.Hull = 1;
-                dbPlayerShip.Status.Shield = 0;
-
-                // A revamp ship falls back to its bare hull stats now that it has no modules.
-                RecalculateShipStats(dbPlayerShip.Status, GetAbilityScore(creature, AbilityType.Willpower));
-
-                // Exit space mode
-                ClearCurrentTarget(creature);
-                RestoreCharacterAppearance(creature, dbPlayer);
-                DeleteLocalFloat(creature, Stat.ShipMovementSpeedVariable);
-                Stat.ApplyCreatureMovementRate(creature);
-                Enmity.RemoveCreatureEnmity(creature);
-
-                // Remove all module feats from the player.
-                foreach (var (feat, _) in ShipModuleFeats)
-                {
-                    CreaturePlugin.RemoveFeat(creature, feat);
-                }
-
-                // Load the player's hot bar.
-                if (string.IsNullOrWhiteSpace(dbPlayer.SerializedHotBar) ||
-                    !CreaturePlugin.DeserializeQuickbar(creature, dbPlayer.SerializedHotBar))
-                {
-                    // Deserialization failed. Clear out the player's hot bar and start fresh.
-                    for (var slot = 0; slot <= 35; slot++)
-                    {
-                        PlayerPlugin.SetQuickBarSlot(creature, slot, PlayerQuickBarSlot.Empty(QuickBarSlotType.Empty));
-                    }
-
-                    dbPlayer.SerializedHotBar = CreaturePlugin.SerializeQuickbar(creature);
-                }
-
-                _shipClones.Remove(dbPlayer.ActiveShipId);
-                ClearShipModuleRecasts(creature, dbPlayer);
-                dbPlayer.ActiveShipId = Guid.Empty.ToString();
-
-                // Removing the current position of the ship will automatically send it back to the last dock it was at.
-                if (dbProperty.Positions.ContainsKey(PropertyLocationType.CurrentPosition))
-                {
-                    dbProperty.Positions.Remove(PropertyLocationType.CurrentPosition);
-                }
-
-                // Update the changes
-                DB.Set(dbProperty);
-                DB.Set(dbPlayerShip);
-                DB.Set(dbPlayer);
-
-                // The pilot is no longer in space mode; stop tracking them and refresh space-dependent UI.
-                _playersInSpace.Remove(creature);
-                ExecuteScript("space_exit", creature);
-
-                // Murder everyone inside the ship's instance.
-                if (Property.TryGetLoadedInstance(dbPlayerShip.PropertyId, out var instance))
-                {
-                    foreach (var player in instance.Players)
-                    {
-                        ApplyEffectToObject(DurationType.Instant, EffectVisualEffect(VisualEffect.Fnf_Fireball), player);
-                        ApplyEffectToObject(DurationType.Instant, EffectDeath(), player);
-
-                        FloatingTextStringOnCreature(ColorToken.Red("The ship has exploded!"), player, false);
-                    }
-                }
-
-                DestroyPilotClone(creature);
-            }
-        }
 
         /// <summary>
         /// Every second, run through all known spaceship NPCs and process their AI.

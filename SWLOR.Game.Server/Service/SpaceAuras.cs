@@ -152,7 +152,8 @@ namespace SWLOR.Game.Server.Service
         private static void Reconcile(uint source, SpaceAura aura)
         {
             var inRange = Party.GetAllPartyMembersWithinRange(source, GetCommandRange(source))
-                .Where(x => Space.IsShipInSpace(x) && !GetIsDead(x) && (aura.TargetsSelf || x != source));
+                .Where(x => Space.IsShipInSpace(x) && !GetIsDead(x) && (aura.TargetsSelf || x != source) &&
+                            (x == source || !Space.IsShipHostile(source, x)));
 
             var (add, remove) = SpaceAuraRules.Reconcile(aura.Recipients, inRange);
             foreach (var ship in remove)

@@ -114,7 +114,7 @@ namespace SWLOR.Game.Server.Service
         public static List<uint> GetPartyShipsInRange(uint commander)
         {
             return Party.GetAllPartyMembersWithinRange(commander, SpaceAuras.GetCommandRange(commander))
-                .Where(x => Space.IsShipInSpace(x) && !GetIsDead(x))
+                .Where(x => Space.IsShipInSpace(x) && !GetIsDead(x) && !Space.IsShipHostile(commander, x))
                 .ToList();
         }
 
@@ -134,6 +134,7 @@ namespace SWLOR.Game.Server.Service
                 return true;
 
             return Party.IsInParty(commander, target) &&
+                   !Space.IsShipHostile(commander, target) &&
                    GetArea(commander) == GetArea(target) &&
                    GetDistanceBetween(commander, target) <= SpaceAuras.GetCommandRange(commander);
         }

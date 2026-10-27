@@ -846,28 +846,16 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
         {
             var playerId = GetObjectUUID(Player);
             var dbPlayer = DB.Get<Player>(playerId);
-            var shieldDiff = ship.Status.MaxShield - ship.Status.Shield;
-            var hullDiff = ship.Status.MaxHull - ship.Status.Hull;
-            var price = shieldDiff * 50 + hullDiff * 100;
-            var starportBonus = Property.GetEffectiveUpgradeLevel(dbPlayer.CitizenPropertyId, PropertyUpgradeType.StarportLevel) * 0.05f;
-            var socialBonus = (GetAbilityScore(Player, AbilityType.Social) - 10) * 0.02f;
-            if (socialBonus > 0.20f)
-                socialBonus = 0.20f;
-            else if (socialBonus < 0f)
-                socialBonus = 0f;
+            var starportLevel = Property.GetEffectiveUpgradeLevel(dbPlayer.CitizenPropertyId, PropertyUpgradeType.StarportLevel);
+            var detail = Space.FindShipDetail(ship.Status.ItemTag);
+            var sizeMultiplier = ShipRepairBill.GetSizeMultiplier(detail?.Hull, ship.Status.CapitalShip);
 
-            var bonuses = starportBonus + socialBonus;
-
-            if (bonuses > 0.90f)
-                bonuses = 0.90f;
-
-            price -= (int)(price * bonuses);
-            if (ship.Status.CapitalShip)
-            {
-                price *= 5;
-            }
-
-            return price;
+            return ShipRepairBill.Calculate(
+                ship.Status.MaxShield - ship.Status.Shield,
+                ship.Status.MaxHull - ship.Status.Hull,
+                sizeMultiplier,
+                starportLevel,
+                GetAbilityScore(Player, AbilityType.Social));
         }
 
         protected override void Initialize(ShipManagementPayload initialPayload)

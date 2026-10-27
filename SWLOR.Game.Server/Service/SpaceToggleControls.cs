@@ -58,7 +58,7 @@ namespace SWLOR.Game.Server.Service
 
             var (target, targetStatus) = GetCurrentTarget(player);
             var hasTarget = GetIsObjectValid(target);
-            var usable = hasTarget && targetStatus != null && !GetIsEnemy(target, player);
+            var usable = hasTarget && targetStatus != null && !IsShipHostile(player, target);
             var chosen = ShipHudRules.ChooseRetarget(hasTarget, usable, target, player, out var error);
             if (!string.IsNullOrEmpty(error))
             {

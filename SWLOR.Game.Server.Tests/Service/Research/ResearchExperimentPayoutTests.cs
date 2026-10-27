@@ -328,6 +328,19 @@ public class ResearchExperimentPayoutTests
     }
 
     [Test]
+    public void Forget_AlsoTakesTheJobsCompletionPayoutOffTheSet()
+    {
+        var player = new Player("player-1");
+        player.PaidExperimentJobs.Add(ResearchExperimentPayout.CompletionKey(JobId));
+        player.PaidExperimentJobs.Add(ResearchExperimentPayout.CompletionKey("job-2"));
+
+        ResearchExperimentPayout.Forget(player, JobId).Should().BeTrue("a job paid only for its completion still leaves the set");
+
+        player.PaidExperimentJobs.Should().BeEquivalentTo(new[] { ResearchExperimentPayout.CompletionKey("job-2") });
+        ResearchExperimentPayout.CompletionKey(JobId).Should().NotBe(JobId, "the completion entry never reads as the experiment payout");
+    }
+
+    [Test]
     public void ARecordSavedBeforeTheSetExisted_ReadsAsNotPaid_AndTheFirstPayoutCreatesTheSet()
     {
         var player = new Player("player-1") { PaidExperimentJobs = null };

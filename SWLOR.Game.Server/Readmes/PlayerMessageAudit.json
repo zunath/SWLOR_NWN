@@ -4327,7 +4327,7 @@
   },
   {
     "File": "SWLOR.Game.Server/Service/CraftService/Minigame/NwnQuickCraftWorld.cs",
-    "Line": 115,
+    "Line": 133,
     "Member": "Message",
     "Delivery": "Retained",
     "Call": "SendMessageToPC(player, text)"

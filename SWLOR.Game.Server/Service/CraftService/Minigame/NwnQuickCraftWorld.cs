@@ -63,22 +63,40 @@ public sealed class NwnQuickCraftWorld : IQuickCraftWorld
     public bool CreateItem(uint player, RecipeDetail recipe)
     {
         var before = CountComponent(player, recipe.Resref);
-        var item = NwnCraftSessionWorld.Instance.CreateCraftedItem(player, recipe);
-        if (GetIsObjectValid(item) && GetItemPossessor(item) == player)
-            return true;
+        var placed = KeepIfInInventory(player, NwnCraftSessionWorld.Instance.CreateCraftedItem(player, recipe));
 
-        // Created outside the inventory (on the ground, for a full inventory): it is not a made item, so it is removed.
-        if (GetIsObjectValid(item))
-            DestroyObject(item);
-
-        // An item the engine merged into an existing stack may not be returned as a valid object; the count tells.
+        // The count tells what arrived: an item merged into an existing stack may not come back as a valid object, and a template
+        // that does not stack creates one item whatever quantity is asked, so the rest are made one at a time.
         var gained = CountComponent(player, recipe.Resref) - before;
+        while (placed && gained > 0 && gained < recipe.Quantity)
+        {
+            var extra = CreateItemOnObject(recipe.Resref, player, 1);
+            SetLocalBool(extra, Item.PlayerProducedItemVariable, true);
+            placed = KeepIfInInventory(player, extra);
+            var now = CountComponent(player, recipe.Resref) - before;
+            if (now <= gained)
+                break;
+            gained = now;
+        }
+
         if (gained >= recipe.Quantity)
             return true;
 
         // Only part of the output fit: take that part back too, so a refunded craft leaves no output behind.
         if (gained > 0)
             RemoveUnits(player, recipe.Resref, gained);
+        return false;
+    }
+
+    /// <summary>An item created outside the inventory (on the ground, for a full inventory) is not a made item, so it is removed.</summary>
+    private static bool KeepIfInInventory(uint player, uint item)
+    {
+        if (!GetIsObjectValid(item))
+            return false;
+        if (GetItemPossessor(item) == player)
+            return true;
+
+        DestroyObject(item);
         return false;
     }
 

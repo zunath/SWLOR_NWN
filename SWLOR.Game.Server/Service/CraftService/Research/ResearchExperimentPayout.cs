@@ -101,6 +101,16 @@ public sealed class ResearchExperimentPayout
     /// <summary>
     /// Takes a deleted job's id off the player's set. Returns true when the set changed, so the caller saves the record.
     /// </summary>
-    public static bool Forget(Player dbPlayer, string jobId) =>
-        !string.IsNullOrEmpty(jobId) && dbPlayer?.PaidExperimentJobs != null && dbPlayer.PaidExperimentJobs.Remove(jobId);
+    public static bool Forget(Player dbPlayer, string jobId)
+    {
+        if (string.IsNullOrEmpty(jobId) || dbPlayer?.PaidExperimentJobs == null)
+            return false;
+
+        var experiment = dbPlayer.PaidExperimentJobs.Remove(jobId);
+        var completion = dbPlayer.PaidExperimentJobs.Remove(CompletionKey(jobId));
+        return experiment || completion;
+    }
+
+    /// <summary>The entry in <see cref="Player.PaidExperimentJobs"/> that records a job's completion XP as paid.</summary>
+    public static string CompletionKey(string jobId) => jobId + ":completion";
 }

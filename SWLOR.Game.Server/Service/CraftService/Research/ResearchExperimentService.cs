@@ -1,3 +1,4 @@
+using System.Collections.Generic;
 using System.Linq;
 using SWLOR.Game.Server.Entity;
 using SWLOR.Game.Server.Service.CraftService.Minigame;
@@ -75,13 +76,36 @@ public static class ResearchExperimentService
             DB.Set(dbPlayer);
     }
 
-    /// <summary>Gives the player the Fabrication XP for completing a job that brought a blueprint to <paramref name="level"/>.</summary>
+    /// <summary>
+    /// Gives the player the Fabrication XP for completing a job that brought a blueprint to <paramref name="level"/>, once per job:
+    /// one player save records the payout (<see cref="ResearchExperimentPayout.CompletionKey"/> in the paid set) with the XP waiting
+    /// in <see cref="Player.PendingCraftXp"/>, and the pending grant gives it. A stop before the job is deleted leaves the job to be
+    /// completed again (its blueprint change only reaches the character file at the next export), but the XP is not paid twice.
+    /// </summary>
     public static int GrantCompletionXp(uint player, ResearchJob job, int level)
     {
-        var xp = ResearchXpRules.CompletionXp(BaseXp(player, job), level);
-        if (xp > 0)
-            Skill.GiveSkillXP(player, SkillType.Fabrication, xp);
+        var dbPlayer = DB.Get<Player>(GetObjectUUID(player));
+        if (dbPlayer == null || job == null)
+            return 0;
 
+        dbPlayer.PaidExperimentJobs ??= new HashSet<string>();
+        var key = ResearchExperimentPayout.CompletionKey(job.Id);
+        if (dbPlayer.PaidExperimentJobs.Contains(key))
+        {
+            CraftSessionService.GrantPendingXp(player);
+            return 0;
+        }
+
+        var xp = ResearchXpRules.CompletionXp(BaseXp(player, job), level);
+        dbPlayer.PaidExperimentJobs.Add(key);
+        if (xp > 0)
+        {
+            dbPlayer.PendingCraftXp ??= new Dictionary<SkillType, int>();
+            dbPlayer.PendingCraftXp[SkillType.Fabrication] = dbPlayer.PendingCraftXp.GetValueOrDefault(SkillType.Fabrication) + xp;
+        }
+
+        DB.Set(dbPlayer);
+        CraftSessionService.GrantPendingXp(player);
         return xp;
     }
 

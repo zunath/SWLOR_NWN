@@ -17,11 +17,11 @@ public class SpaceNpcRoleShipTests
 
     private static readonly Dictionary<int, string[]> OrbitsByTier = new()
     {
-        [1] = new[] { "SPACE_VISCARA_ORBIT" },
-        [2] = new[] { "SPACE_MONCALA_ORBIT" },
-        [3] = new[] { "SPACE_HUTLAR_ORBIT" },
-        [4] = new[] { "SPACE_TATOOINE_ORBIT" },
-        [5] = new[] { "SPACE_DATHOMIR_ORBIT", "SPACE_DANTOOINE_ORBIT" },
+        [1] = new[] { "SPACE_VISCARA_ORBIT", "SPACE_VISCARA_BELT" },
+        [2] = new[] { "SPACE_MONCALA_ORBIT", "SPACE_VISCARA_BELT" },
+        [3] = new[] { "SPACE_HUTLAR_ORBIT", "SPACE_MIDRIM_NEBULA" },
+        [4] = new[] { "SPACE_TATOOINE_ORBIT", "SPACE_MIDRIM_NEBULA" },
+        [5] = new[] { "SPACE_DATHOMIR_ORBIT", "SPACE_DANTOOINE_ORBIT", "SPACE_KORRIBAN_DEBRIS" },
         [6] = new[] { "SPACE_KORRIBAN_ORBIT" },
     };
 

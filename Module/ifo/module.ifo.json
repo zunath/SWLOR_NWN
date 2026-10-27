@@ -1873,6 +1873,13 @@
         "__struct_id": 6,
         "Area_Name": {
           "type": "resref",
+          "value": "space_korrdebris"
+        }
+      },
+      {
+        "__struct_id": 6,
+        "Area_Name": {
+          "type": "resref",
           "value": "spending_area"
         }
       },
@@ -2847,6 +2854,20 @@
         "Area_Name": {
           "type": "resref",
           "value": "space_midrim2"
+        }
+      },
+      {
+        "__struct_id": 6,
+        "Area_Name": {
+          "type": "resref",
+          "value": "space_midrimneb"
+        }
+      },
+      {
+        "__struct_id": 6,
+        "Area_Name": {
+          "type": "resref",
+          "value": "space_viscbelt"
         }
       },
       {

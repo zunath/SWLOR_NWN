@@ -188,7 +188,7 @@ public class GatheringSpaceIndustryTests
         var tables = new HarvestingLootTableDefinition().BuildLootTables();
         var asteroidTables = tables.Where(x => x.Key.StartsWith("ASTEROID_")).ToArray();
 
-        asteroidTables.Should().HaveCount(12);
+        asteroidTables.Should().HaveCount(16, "six ores, the two Durelium belt asteroids (W6c), each with a strip table");
         foreach (var (name, table) in asteroidTables)
         {
             var rare = table.Where(item => item.IsRare).ToArray();

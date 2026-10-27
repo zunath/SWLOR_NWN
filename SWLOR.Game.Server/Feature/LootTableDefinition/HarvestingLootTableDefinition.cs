@@ -179,6 +179,19 @@ namespace SWLOR.Game.Server.Feature.LootTableDefinition
                 .AddItem("steel", 2)
                 .AddItem("vintrium", 1, isRare: true);
 
+            // Durelium asteroids of the Viscara Asteroid Belt (W6c): Durelium is the main ore beside the tier's own.
+            _builder.Create("ASTEROID_DURELIUM_1")
+                .AddItem("ore_durelium", 30)
+                .AddItem("ore_tilarium", 10)
+                .AddItem("aluminum", 2)
+                .AddItem("quadrenium", 1, isRare: true);
+
+            _builder.Create("ASTEROID_DURELIUM_2")
+                .AddItem("ore_durelium", 30)
+                .AddItem("ore_currian", 10)
+                .AddItem("steel", 2)
+                .AddItem("vintrium", 1, isRare: true);
+
             _builder.Create("ASTEROID_IDAILIA")
                 .AddItem("ore_idailia", 30)
                 .AddItem("obsidian", 2)
@@ -217,6 +230,18 @@ namespace SWLOR.Game.Server.Feature.LootTableDefinition
             _builder.Create("ASTEROID_CURRIAN_STRIP")
                 .AddItem("ore_currian", 30)
                 .AddItem("ore_durelium", 12)
+                .AddItem("steel", 10)
+                .AddItem("vintrium", 5, isRare: true);
+
+            _builder.Create("ASTEROID_DURELIUM_1_STRIP")
+                .AddItem("ore_durelium", 30)
+                .AddItem("ore_tilarium", 12)
+                .AddItem("aluminum", 10)
+                .AddItem("quadrenium", 5, isRare: true);
+
+            _builder.Create("ASTEROID_DURELIUM_2_STRIP")
+                .AddItem("ore_durelium", 30)
+                .AddItem("ore_currian", 12)
                 .AddItem("steel", 10)
                 .AddItem("vintrium", 5, isRare: true);
 

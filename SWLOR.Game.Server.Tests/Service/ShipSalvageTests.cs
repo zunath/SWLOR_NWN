@@ -414,8 +414,9 @@ public class ShipSalvageTests
         foreach (var (name, table) in tables.Where(x => x.Key.StartsWith("ASTEROID_")))
         {
             var lowTier = name.StartsWith("ASTEROID_TILARIUM") || name.StartsWith("ASTEROID_CURRIAN");
+            var beltAsteroid = name.StartsWith("ASTEROID_DURELIUM_1") || name.StartsWith("ASTEROID_DURELIUM_2");
             var durelium = table.SingleOrDefault(x => x.Resref == "ore_durelium");
-            if (!lowTier)
+            if (!lowTier && !beltAsteroid)
             {
                 durelium.Should().BeNull(name);
                 continue;
@@ -423,7 +424,10 @@ public class ShipSalvageTests
 
             durelium.Should().NotBeNull(name);
             durelium!.IsRare.Should().BeFalse();
-            durelium.Weight.Should().BeLessThan(table.First().Weight / 2, $"{name}: a modest share beside the ore");
+            if (beltAsteroid)
+                table.First().Resref.Should().Be("ore_durelium", $"{name}: the Viscara Asteroid Belt's main ore (W6c)");
+            else
+                durelium.Weight.Should().BeLessThan(table.First().Weight / 2, $"{name}: a modest share beside the ore");
         }
     }
 

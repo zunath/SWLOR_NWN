@@ -16,6 +16,9 @@ namespace SWLOR.Game.Server.Feature.SpawnDefinition
             KorribanOrbit();
             DathomirOrbit();
             DantooineOrbit();
+            ViscaraAsteroidBelt();
+            MidRimNebula();
+            KorribanDebrisField();
 
             return _builder.Build();
         }
@@ -811,6 +814,83 @@ namespace SWLOR.Game.Server.Feature.SpawnDefinition
                 .WithFrequency(1)
                 .RandomlyWalks()
                 .ReturnsHome();
+        }
+
+        // The three Small/Medium-only zones (plan section 12, W6c). Each area sets CREATURE_SPAWN_COUNT to 56, 1.25x the 45
+        // ships of an open 32x32 orbit, and spawns its tiers' ships at the open-orbit weights below.
+
+        /// <summary>
+        /// One faction tier's ships at the open-orbit weights (Viscara Orbit's table): Fighters and Interceptors, the
+        /// W5b role ships at modest weights, haulers, platforms, bombers, the carrier and the tier capital.
+        /// </summary>
+        private void AddFactionTier(int tier, int minelayerWeight = 1920)
+        {
+            void Ship(string hull, int weight) => _builder
+                .AddSpawn(ObjectType.Creature, $"t{tier}{hull}")
+                .WithFrequency(weight)
+                .RandomlyWalks()
+                .ReturnsHome();
+
+            Ship("bomber", 96);
+            Ship("cargo", 2400);
+            Ship("platform", 2400);
+            Ship("fighter", 38400);
+            Ship("gunship", 3840);
+            Ship("interceptor", 19200);
+            Ship("ewar", 1920);
+            Ship("sniper", 1920);
+            Ship("minelayer", minelayerWeight);
+            Ship("logistics", 1440);
+            Ship("carrier", 480);
+            Ship("capital", 960);
+        }
+
+        /// <summary>Viscara Asteroid Belt (space_viscbelt): Septra Khanate (T1) and Krakenborne (T2) ships in equal shares.</summary>
+        private void ViscaraAsteroidBelt()
+        {
+            _builder.Create("SPACE_VISCARA_BELT", "Space - Viscara Asteroid Belt");
+            AddFactionTier(1);
+            AddFactionTier(2);
+        }
+
+        /// <summary>Mid Rim Nebula (space_midrimneb): Snowdrift Syndicate (T3) and Clan Zel Arun (T4) ships in equal shares.</summary>
+        private void MidRimNebula()
+        {
+            _builder.Create("SPACE_MIDRIM_NEBULA", "Space - Mid Rim Nebula");
+            AddFactionTier(3);
+            AddFactionTier(4);
+        }
+
+        /// <summary>
+        /// Korriban Debris Field (space_korrdebris): Red Hand (T5) ships with the field's derelict defenses (plan section
+        /// 11): minelayers at twice the orbit weight (their spacemine mines) and derelict turrets, the unused turret rows
+        /// 2153 and 2154 on the T5 Defense Platform's preset (tag t5platform). The Sith and Mandalorian capitals spawn as in
+        /// the T5 orbits (Dathomir, Dantooine).
+        /// </summary>
+        private void KorribanDebrisField()
+        {
+            _builder.Create("SPACE_KORRIBAN_DEBRIS", "Space - Korriban Debris Field");
+            AddFactionTier(5, minelayerWeight: 3840);
+
+            foreach (var turret in new[] { "t5derturret1", "t5derturret2" })
+            {
+                _builder.AddSpawn(ObjectType.Creature, turret)
+                    .WithFrequency(2400)
+                    .RandomlyWalks()
+                    .ReturnsHome();
+            }
+
+            foreach (var (capital, weight) in new[]
+                     {
+                         ("sithcap1", 96), ("sithcap2", 48), ("sithcap3", 12), ("sithcap4", 12), ("sithcap5", 6),
+                         ("sithcap6", 2), ("sithcap7", 1), ("mandocap1", 12), ("mandocap2", 2), ("mandocap3", 1)
+                     })
+            {
+                _builder.AddSpawn(ObjectType.Creature, capital)
+                    .WithFrequency(weight)
+                    .RandomlyWalks()
+                    .ReturnsHome();
+            }
         }
     }
 }

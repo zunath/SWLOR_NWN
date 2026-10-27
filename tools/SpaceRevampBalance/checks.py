@@ -277,19 +277,23 @@ for L in TIERS:
     paint = fight([debuffed(p, defense=0.10)], [m.npc_ship("Fighter", L), m.npc_ship("Electronic Warfare", L)])
     mines = fight([p], [minelayer(L)])
     mine_pair = fight([p], [m.npc_ship("Fighter", L), minelayer(L)])
-    carrier = fight([p], [m.npc_ship("Carrier", L, "Elite")])
-    wave = fight([p], [m.npc_ship("Carrier", L, "Elite"), m.npc_ship("Fighter", L, count=2)])
+    # The wing fighter comes first: pilots kill it before the carrier. It is out for the whole fight here.
+    elite_wing = fight([p], [m.npc_ship("Fighter", L), m.npc_ship("Carrier", L, "Elite")])
+    carrier = fight([dict(p, count=3)], [m.npc_ship("Carrier", L, "Boss")])
+    wave = fight([dict(p, count=3)], [m.npc_ship("Fighter", L), m.npc_ship("Carrier", L, "Boss")])
     rows.append([f"T{TIERS.index(L) + 1} (R{L})", m.GROUND_TTK[L], f"{plain['mean']:.0f}s / {hard['mean']:.0f}s",
                  f"{blend:.0f}s ({blend / m.GROUND_TTK[L]:.0%})", cell(pair), cell(healed), cell(jam), cell(paint), cell(mines),
-                 cell(mine_pair), cell(carrier), cell(wave)])
+                 cell(mine_pair), cell(elite_wing), cell(carrier), cell(wave)])
 table(["Tier", "Ground s", "Gunship unhardened / hardened", "Gunship, hardened below half hull", "Fighter + Logistics, no repair",
        "Fighter + Logistics, repairing", "Fighter + EW, jammed", "Fighter + EW, painted", "Minelayer, every mine hits",
-       "Fighter + Minelayer, every mine hits", "Elite Carrier", "Elite Carrier + first wave (2 Fighters)"], rows)
+       "Fighter + Minelayer, every mine hits", "1 Fighter vs Elite Carrier + 1 wing Fighter (rejected)",
+       "3 Fighters vs Boss Carrier", "3 Fighters vs Boss Carrier + 1 wing Fighter"], rows)
 out.append("Upper bounds: the Logistics repairs, the jam, the paint and every mine are modeled as always on (in play the EW "
            "ship keeps one of them up 12 s in 18 and a mine needs the ship to fly within 5 m). The Gunship's hardener runs over "
            "the last quarter of its hull + shield, so its fight is about 3/4 of the unhardened time plus 1/4 of the hardened one. "
-           "The Carrier is Elite only and launches 2 Fighters every 30 s (4 waves, 4 alive at most): one Fighter cannot beat it "
-           "once a wave is out, so carriers are group content and spawn rarer than capitals.\n")
+           "One Fighter cannot beat an Elite carrier once a single wing fighter is out, so the Carrier is a Boss (group content, "
+           "spawning rarer than capitals) and launches 1 Fighter every 40 s (4 waves, 2 alive at most); the wing fighter is out "
+           "for the whole fight here, an upper bound.\n")
 
 Path(m.HERE / "checks.md").write_text("\n".join(out))
 print("\n".join(out))

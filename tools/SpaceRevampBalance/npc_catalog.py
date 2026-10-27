@@ -19,7 +19,7 @@ HULLS = {
     "ewar": ("Electronic Warfare", "Normal", "Small"),
     "sniper": ("Sniper", "Normal", "Small"),
     "logistics": ("Logistics", "Normal", "Medium"),
-    "carrier": ("Carrier", "Elite", "Large"),
+    "carrier": ("Carrier", "Boss", "Large"),
     "minelayer": ("Minelayer", "Normal", "Small"),
 }
 # Support modules a hull type fits beside its weapons (module family tag prefix), at the step of the ship's level. A

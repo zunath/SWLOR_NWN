@@ -160,12 +160,11 @@ public class ShipNpcRoleRulesTests
     [Test]
     public void Carrier_LaunchesWavesOnItsCooldownUpToItsCaps()
     {
-        ShipNpcRoleRules.FightersToLaunch(Now, DateTime.MinValue, 0, 0).Should().Be(2);
-        ShipNpcRoleRules.FightersToLaunch(Now, Now.AddSeconds(-29), 1, 0).Should().Be(0);
-        ShipNpcRoleRules.FightersToLaunch(Now, Now.AddSeconds(-30), 1, 2).Should().Be(2);
-        ShipNpcRoleRules.FightersToLaunch(Now, Now.AddSeconds(-30), 2, 3).Should().Be(1);
-        ShipNpcRoleRules.FightersToLaunch(Now, Now.AddSeconds(-30), 2, 4).Should().Be(0);
-        ShipNpcRoleRules.FightersToLaunch(Now, Now.AddSeconds(-60), ShipNpcRoleTuning.MaxWaves, 0).Should().Be(0);
+        ShipNpcRoleRules.FightersToLaunch(Now, DateTime.MinValue, 0, 0).Should().Be(1);
+        ShipNpcRoleRules.FightersToLaunch(Now, Now.AddSeconds(-39), 1, 0).Should().Be(0);
+        ShipNpcRoleRules.FightersToLaunch(Now, Now.AddSeconds(-40), 1, 1).Should().Be(1);
+        ShipNpcRoleRules.FightersToLaunch(Now, Now.AddSeconds(-40), 2, 2).Should().Be(0);
+        ShipNpcRoleRules.FightersToLaunch(Now, Now.AddSeconds(-80), ShipNpcRoleTuning.MaxWaves, 0).Should().Be(0);
     }
 
     [Test]

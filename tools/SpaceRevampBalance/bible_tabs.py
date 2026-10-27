@@ -344,7 +344,7 @@ def enemies():
     s.title("Preset table")
     rows = []
     for L in [1, 5, 10, 15, 20, 25, 30, 35, 40, 45, 50]:
-        for diff, roles in (("Normal", m.NORMAL_ROLES), ("Elite", ["Fighter", "Gunship", "Carrier"]), ("Boss", ["Fighter", "Gunship"])):
+        for diff, roles in (("Normal", m.NORMAL_ROLES), ("Elite", ["Fighter", "Gunship"]), ("Boss", ["Fighter", "Gunship", "Carrier"])):
             for role in roles:
                 if (L, diff, m.NPC_ROLES[role]["ground"]) not in m.PRESETS:
                     continue

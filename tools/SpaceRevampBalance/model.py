@@ -316,7 +316,7 @@ def player_ship(role, rank, fit, maker=None, advanced=False, extra=None, name=No
 # ---------------------------------------------------------------------------------------------------------------
 # ground role the stats come from, size per difficulty, HP x, Defense +, Evasion +, resist, weapon, damage x
 # Role behaviors (plan section 11) run in Space.ProcessSpaceNPCAI; their numbers are ShipNpcRoleTuning's, and the ai
-# texts below repeat them for the Bible. Carriers are Elite or Boss only, so the Normal checks skip them.
+# texts below repeat them for the Bible. Carriers are Bosses only, so the Normal checks skip them.
 NPC_ROLES = {
     "Fighter": dict(ground="Ranged", size="Small", hp=1.0, df=0, ev=0, res=0, weapon="Laser Cannon", dmg=1.0,
                     ai="Attacks its target"),
@@ -336,15 +336,16 @@ NPC_ROLES = {
     "Logistics": dict(ground="Ranged", size="Medium", hp=0.85, df=0, ev=0, res=0, weapon="Ion Cannon", dmg=0.8,
                       ai="Repairs allies: its Hull and Shield Repairers lock onto the most damaged ally in range once a "
                          "quarter of its hull or shield is missing. Cargo haulers use this row but carry no repairers"),
-    "Carrier": dict(ground="Ranged", size="Large", hp=1.0, df=3, ev=0, res=10, weapon="Laser Cannon", dmg=0.8, elite_only=True,
-                    ai="Elite or Boss only; group content. Launches a wave of 2 Normal Fighters of its faction every 30 s "
-                       "(4 waves, 4 alive at most); its fighters leave with it and drop no loot"),
+    "Carrier": dict(ground="Ranged", size="Large", hp=1.0, df=3, ev=0, res=10, weapon="Laser Cannon", dmg=0.8, boss_only=True,
+                    ai="Boss only (group content: one Fighter cannot beat an Elite carrier with a wing fighter out). "
+                       "Launches 1 Normal Fighter of its faction every 40 s (4 waves, 2 alive at most); its fighters "
+                       "leave with it and drop no loot"),
     "Minelayer": dict(ground="Melee", size="Small", hp=1.0, df=0, ev=0, res=0, weapon="Missile Launcher", dmg=0.8,
                       ai="Drops a mine every 20 s (Mine 10110, 3 at most, 60 s each): Bomber torpedo DMG to the first "
                          "ship within 5 m"),
 }
 # Roles a Normal can be (the fight-length checks run these).
-NORMAL_ROLES = [k for k, v in NPC_ROLES.items() if not v.get("elite_only")]
+NORMAL_ROLES = [k for k, v in NPC_ROLES.items() if not v.get("boss_only")]
 # A Gunship's Shield Hardener runs below half hull, the last quarter of its hull + shield (split 50/50), so its preset
 # resist gives up a quarter of the hardener's: the fight averages the role's resist (tools/SpaceRevampBalance checks K).
 HARDENER_SHARE = 0.25

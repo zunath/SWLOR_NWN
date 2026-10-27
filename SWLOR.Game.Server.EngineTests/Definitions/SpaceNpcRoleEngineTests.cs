@@ -50,14 +50,14 @@ namespace SWLOR.Game.Server.EngineTests.Definitions
             await ctx.WaitUntilAsync(() => StatusEffect.HasStatusEffect<FlashStatusEffect>(target), 10f, "the target to be jammed");
         }
 
-        [EngineTest("NPC carrier launches a wave of its tier's fighters", Category = "SpaceNPCAI", TimeoutSeconds = 45f)]
+        [EngineTest("NPC carrier launches its tier's fighter", Category = "SpaceNPCAI", TimeoutSeconds = 45f)]
         public static async Task CarrierLaunchesAWave(EngineTestContext ctx)
         {
             var (area, carrier, _) = await SpawnFightAsync(ctx, "t1carrier");
-            await ctx.WaitUntilAsync(() => CountInArea(area, "t1fighter") >= 2, 10f, "two fighters to launch");
+            await ctx.WaitUntilAsync(() => CountInArea(area, "t1fighter") >= 1, 10f, "a fighter to launch");
 
             DestroyObject(carrier);
-            await ctx.WaitUntilAsync(() => CountInArea(area, "t1fighter") == 0, 10f, "the fighters to leave with the carrier");
+            await ctx.WaitUntilAsync(() => CountInArea(area, "t1fighter") == 0, 10f, "the fighter to leave with the carrier");
         }
 
         [EngineTest("NPC minelayer drops a mine", Category = "SpaceNPCAI", TimeoutSeconds = 45f)]

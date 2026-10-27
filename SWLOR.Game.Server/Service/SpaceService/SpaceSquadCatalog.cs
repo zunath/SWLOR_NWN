@@ -38,7 +38,7 @@ namespace SWLOR.Game.Server.Service.SpaceService
             ("Minelayer", "minelayer"),
             ("Cargo Hauler", "cargo"),
             ("Defense Platform (Elite)", "platform"),
-            ("Carrier (Elite)", "carrier"),
+            ("Carrier (Boss)", "carrier"),
             ("Capital (Boss)", "capital"),
         };
 

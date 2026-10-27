@@ -46,7 +46,7 @@ public class SpaceNpcRoleShipTests
     [TestCase("sniper", "Sniper", "Normal", ShipSize.Small)]
     [TestCase("minelayer", "Minelayer", "Normal", ShipSize.Small)]
     [TestCase("logistics", "Logistics", "Normal", ShipSize.Medium)]
-    [TestCase("carrier", "Carrier", "Elite", ShipSize.Large)]
+    [TestCase("carrier", "Carrier", "Boss", ShipSize.Large)]
     public void RoleShips_HaveTheirRoleDifficultyAndSize(string hull, string role, string difficulty, ShipSize size)
     {
         for (var tier = 1; tier <= 6; tier++)

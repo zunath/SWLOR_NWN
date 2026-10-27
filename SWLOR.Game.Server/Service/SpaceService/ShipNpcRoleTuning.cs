@@ -71,15 +71,20 @@ namespace SWLOR.Game.Server.Service.SpaceService
         /// <summary>A sniper holds at this share of its longest weapon's range, just inside it.</summary>
         public const float KiteRangeShare = 0.9f;
 
-        // Carrier (Space Enemies, Roles: the W0 draft)
+        // Carrier (a Boss: one Fighter cannot beat an Elite carrier with even one wing fighter out, checks K)
 
-        public const int WaveSize = 2;
+        /// <summary>
+        /// One fighter per wave every 40 s: three Fighters still beat a Boss carrier with a wing fighter out the whole
+        /// fight in 73-97% of fights (checks K); the W0 draft's 2 every 30 s dropped that to 20-52%.
+        /// </summary>
+        public const int WaveSize = 1;
 
-        public const double WaveSeconds = 30.0;
+        public const double WaveSeconds = 40.0;
 
+        /// <summary>The W0 draft's four waves.</summary>
         public const int MaxWaves = 4;
 
-        /// <summary>At most two waves fly at once, so a carrier never holds more than 4 fighters in the area.</summary>
+        /// <summary>At most two waves fly at once.</summary>
         public const int MaxAliveFighters = WaveSize * 2;
 
         // Minelayer (Space Enemies, Roles: the W0 draft)

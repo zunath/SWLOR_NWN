@@ -205,19 +205,15 @@ public static class LootStatRevisionMigration
         changed |= ApplyRevision(item, ArkanianArmorStatRevisionCatalog.Changes,
             ArkanianArmorStatRevisionCatalog.RevisionVariable, ArkanianArmorStatRevisionCatalog.CurrentRevision,
             current => ReviseIceProtection(current, ArkanianArmorStatRevisionCatalog.IceResistance));
-        changed |= ApplyRevision(item, CarapaceBracerStatRevisionCatalog.Changes,
-            CarapaceBracerStatRevisionCatalog.RevisionVariable, CarapaceBracerStatRevisionCatalog.CurrentRevision,
-            ReviseCarapaceProtection);
+        changed |= ApplyRevision(item, RetiredDefenseStatRevisionCatalog.Changes,
+            RetiredDefenseStatRevisionCatalog.RevisionVariable, RetiredDefenseStatRevisionCatalog.CurrentRevision,
+            ReviseRetiredDefense);
         return changed;
     }
 
-    private static IEnumerable<LootStatChange> ReviseCarapaceProtection(uint item)
-    {
-        // The combat migration converted older copies' base Poison Defense into Resistance.
-        if (ReadTotal(item, ItemPropertyType.Defense, (int)CombatDamageType.Poison).Total == 0 &&
-            ReadTotal(item, ItemPropertyType.Resistance, (int)ResistanceType.Poison).Total >= 30)
-            yield return new LootStatChange(ItemPropertyType.Resistance, (int)ResistanceType.Poison, 30, 0);
-    }
+    private static IEnumerable<LootStatChange> ReviseRetiredDefense(uint item) =>
+        RetiredDefenseStatRevisionCatalog.ConvertedResistanceChanges(GetResRef(item),
+            subtype => ReadTotal(item, ItemPropertyType.Resistance, subtype).Total).ToArray();
 
     private static bool ApplyRevision(uint item, IReadOnlyDictionary<string, LootStatChange[]> catalog,
         string revisionVariable, int revision, Func<uint, IEnumerable<LootStatChange>> itemChanges = null)

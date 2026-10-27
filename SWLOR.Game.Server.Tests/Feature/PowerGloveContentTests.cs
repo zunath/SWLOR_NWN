@@ -52,7 +52,7 @@ public class PowerGloveContentTests
     {
         var references = new WeaponRecipes().BuildRecipes();
         var recipes = new PowerGloveRecipes().BuildRecipes();
-        recipes.Should().HaveCount(10);
+        recipes.Should().HaveCount(11);
         foreach (var (type, recipe) in recipes)
         {
             var referenceType = Enum.Parse<RecipeType>(type.ToString().Replace("PowerGlove", "Katar"));
@@ -189,6 +189,50 @@ public class PowerGloveContentTests
             leftMax.X.Should().BeApproximately(-rightMin.X, .0001f, $"wpl_{native} mirrors the right hand across X");
             leftMin.Y.Should().BeApproximately(rightMin.Y, .0001f, $"wpl_{native} keeps the punching axis");
             leftMax.Y.Should().BeApproximately(rightMax.Y, .0001f, $"wpl_{native} keeps the punching axis");
+            var rightPosition = MeshPosition(right);
+            var leftPosition = MeshPosition(left);
+            leftPosition.X.Should().BeApproximately(-rightPosition.X, .0001f, $"wpl_{native} mirrors the right hand's offset");
+            leftPosition.Y.Should().BeApproximately(rightPosition.Y, .0001f, $"wpl_{native} keeps the right hand's offset");
+            leftPosition.Z.Should().BeApproximately(rightPosition.Z, .0001f, $"wpl_{native} sits as high on the fist as the right hand");
+            // Mirroring across X keeps a rotation about X and reverses rotations about Y and Z.
+            var rightOrientation = MeshOrientation(right);
+            var leftOrientation = MeshOrientation(left);
+            leftOrientation.X.Should().BeApproximately(rightOrientation.X, .0001f, $"wpl_{native} mirrors the right hand's turn");
+            leftOrientation.Y.Should().BeApproximately(-rightOrientation.Y, .0001f, $"wpl_{native} mirrors the right hand's turn");
+            leftOrientation.Z.Should().BeApproximately(-rightOrientation.Z, .0001f, $"wpl_{native} mirrors the right hand's turn");
+            leftOrientation.W.Should().BeApproximately(rightOrientation.W, .0001f, $"wpl_{native} mirrors the right hand's turn");
+        }
+    }
+
+    [Test]
+    public void ReportedDesignsAreSeatedInTheFistAndTheRestKeepTheirAuthoredPlacement()
+    {
+        // The fist's grip tunnel (where the curled fingers close) is at the rhand/lhand hook on every playable body.
+        // The reported knuckle dusters were authored with their grip bar or finger loops below it, so they hung
+        // under the fist: Arc Knuckler and Ion Guard are raised onto it, and Blastknuckle, which was modeled lying
+        // flat, is turned 90 degrees about the punching axis so its finger holes ring the base of the fingers with
+        // the striking edge down. Every other design keeps its authored placement.
+        var turned = new System.Numerics.Quaternion(0, MathF.Sqrt(.5f), 0, MathF.Sqrt(.5f));
+        var fits = new Dictionary<int, (System.Numerics.Vector3 Position, System.Numerics.Quaternion Orientation)>
+        {
+            [103] = (new(.055f, -.023f, -.02f), turned),
+            [108] = (new(0, 0, .035f), System.Numerics.Quaternion.Identity),
+            [119] = (new(0, 0, .03f), System.Numerics.Quaternion.Identity),
+        };
+        var folder = Path.Combine(Root(), "SWLOR_Haks/sw_weapon");
+        foreach (var id in new PowerGloveAppearanceDefinition().MiddleParts.Where(id => id != 106))
+        {
+            var native = $"m_{id % 100 * 10 + id / 100:000}";
+            var (position, orientation) = fits.TryGetValue(id, out var fit)
+                ? fit
+                : (System.Numerics.Vector3.Zero, System.Numerics.Quaternion.Identity);
+            var right = File.ReadAllBytes(Path.Combine(folder, $"wpg_{native}.mdl"));
+            var actualPosition = MeshPosition(right);
+            var actualOrientation = MeshOrientation(right);
+            (actualPosition - position).Length().Should().BeLessThan(.0001f, $"wpg_{native} sits where it was fitted");
+            actualOrientation.Length().Should().BeApproximately(1, .0001f, $"wpg_{native} has a unit orientation");
+            MathF.Abs(System.Numerics.Quaternion.Dot(actualOrientation, orientation)).Should()
+                .BeApproximately(1, .0001f, $"wpg_{native} faces the way it was fitted");
         }
     }
 
@@ -196,16 +240,62 @@ public class PowerGloveContentTests
     {
         // Compiled offsets are relative to the 12-byte file header: geometry root, its first child, then that
         // trimesh's bounding box after the 112-byte node header.
+        var mesh = MeshNode(model) + 112 + 0x14;
+        return (ReadVector(model, mesh), ReadVector(model, mesh + 12));
+    }
+
+    private static System.Numerics.Vector3 MeshPosition(byte[] model) => ReadVector(model, ControllerValues(model, 8));
+
+    private static System.Numerics.Quaternion MeshOrientation(byte[] model)
+    {
+        var offset = ControllerValues(model, 20);
+        return new(BitConverter.ToSingle(model, offset), BitConverter.ToSingle(model, offset + 4),
+            BitConverter.ToSingle(model, offset + 8), BitConverter.ToSingle(model, offset + 12));
+    }
+
+    private static int ControllerValues(byte[] model, uint type)
+    {
+        // The mesh node's static controllers (8 = position, 20 = orientation): each 12-byte key gives the first
+        // value index into the node's controller data array.
+        var node = MeshNode(model);
+        var keys = 12 + (int)BitConverter.ToUInt32(model, node + 84);
+        var keyCount = (int)BitConverter.ToUInt32(model, node + 88);
+        var values = 12 + (int)BitConverter.ToUInt32(model, node + 96);
+        for (var key = keys; key < keys + keyCount * 12; key += 12)
+            if (BitConverter.ToUInt32(model, key) == type)
+                return values + BitConverter.ToUInt16(model, key + 8) * 4;
+        throw new InvalidDataException($"Power Glove mesh has no controller of type {type}.");
+    }
+
+    private static int MeshNode(byte[] model)
+    {
         var root = 12 + (int)BitConverter.ToUInt32(model, 12 + 72);
         var children = 12 + (int)BitConverter.ToUInt32(model, root + 72);
-        var mesh = 12 + (int)BitConverter.ToUInt32(model, children) + 112 + 0x14;
-        System.Numerics.Vector3 Read(int offset) => new(BitConverter.ToSingle(model, offset),
-            BitConverter.ToSingle(model, offset + 4), BitConverter.ToSingle(model, offset + 8));
-        return (Read(mesh), Read(mesh + 12));
+        return 12 + (int)BitConverter.ToUInt32(model, children);
     }
+
+    private static System.Numerics.Vector3 ReadVector(byte[] model, int offset) => new(BitConverter.ToSingle(model, offset),
+        BitConverter.ToSingle(model, offset + 4), BitConverter.ToSingle(model, offset + 8));
 
     private static (int Property, int Subtype, int Cost, int Table) PropertyBudget(JsonElement property) =>
         (Int(property, "PropertyName"), Int(property, "Subtype"), Int(property, "CostValue"), Int(property, "CostTable"));
+
+    [Test]
+    public void PowerGloveAndTwinPistolResrefsFitTheEngineLimit()
+    {
+        // NWN resrefs are at most 16 characters; a longer TemplateResRef cannot be created or looked up.
+        var items = Directory.EnumerateFiles(Path.Combine(Root(), "Module/uti"), "*.uti.json")
+            .Select(path => (Path.GetFileName(path)[..^".uti.json".Length], Item: ReadItem(Path.GetFileName(path)[..^".uti.json".Length])))
+            .Where(entry => Int(entry.Item, "BaseItem") == (int)BaseItem.PowerGlove ||
+                List(entry.Item, "VarTable").Any(local => Text(local, "Name") == "TWIN_PISTOL_PAIR"))
+            .ToArray();
+        items.Should().NotBeEmpty();
+        foreach (var (file, item) in items)
+        {
+            Text(item, "TemplateResRef").Should().Be(file, file);
+            file.Length.Should().BeLessThanOrEqualTo(16, file);
+        }
+    }
 
     private static JsonElement ReadItem(string resref)
     {

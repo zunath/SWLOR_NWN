@@ -734,6 +734,7 @@ namespace SWLOR.Game.Server.Service.CraftService
         ScopewrightCap = 697,
         WindcallerMantle = 698,
         WarbandHelm = 699,
+        SithPowerGlove = 6288,
         #endregion
 
 		#region Fabrication:  1001-2000
@@ -1200,6 +1201,7 @@ namespace SWLOR.Game.Server.Service.CraftService
         ListeningPostMonitor = 1520,
         GhostChannelConsole = 1521,
         BlacksiteAnalysisStation = 1522,
+        EspionageWorkbench = 1523,
 
         #endregion
 

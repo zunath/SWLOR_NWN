@@ -69,6 +69,8 @@ namespace SWLOR.Game.Server.Feature.QuestDefinition
 			BuildItemTask(builder, "smth_tsk_033", "com_cap", 1, 0);
 			BuildItemTask(builder, "smth_tsk_034", "com_gloves", 1, 0);
 			BuildItemTask(builder, "smth_tsk_035", "com_boots", 1, 0);
+			BasicPowerGloveTask(builder);
+			BasicTwinPistolsTask(builder);
 
             // Tier 2 (Rank 1)
             BuildItemTask(builder, "smth_tsk_200", "tit_greatsword", 1, 1);
@@ -106,6 +108,8 @@ namespace SWLOR.Game.Server.Feature.QuestDefinition
             BuildItemTask(builder, "smth_tsk_232", "val_cap", 1, 1);
             BuildItemTask(builder, "smth_tsk_233", "val_gloves", 1, 1);
             BuildItemTask(builder, "smth_tsk_234", "val_boots", 1, 1);
+            TitanPowerGloveTask(builder);
+            TitanTwinPistolsTask(builder);
 
             // Tier 3 (Rank 2)
             BuildItemTask(builder, "smth_tsk_400", "del_greatsword", 1, 2);
@@ -143,6 +147,8 @@ namespace SWLOR.Game.Server.Feature.QuestDefinition
             BuildItemTask(builder, "smth_tsk_432", "for_cap", 1, 2);
             BuildItemTask(builder, "smth_tsk_433", "for_gloves", 1, 2);
             BuildItemTask(builder, "smth_tsk_434", "for_boots", 1, 2);
+            DeltaPowerGloveTask(builder);
+            DeltaTwinPistolsTask(builder);
 
             // Tier 4 (Rank 3)
             BuildItemTask(builder, "smth_tsk_600", "proto_greatsword", 1, 3);
@@ -180,6 +186,8 @@ namespace SWLOR.Game.Server.Feature.QuestDefinition
             BuildItemTask(builder, "smth_tsk_632", "sur_cap", 1, 3);
             BuildItemTask(builder, "smth_tsk_633", "sur_gloves", 1, 3);
             BuildItemTask(builder, "smth_tsk_634", "sur_boots", 1, 3);
+            ProtoPowerGloveTask(builder);
+            ProtoTwinPistolsTask(builder);
 
             // Tier 5 (Rank 4)
             BuildItemTask(builder, "smth_tsk_800", "oph_greatsword", 1, 4);
@@ -217,8 +225,180 @@ namespace SWLOR.Game.Server.Feature.QuestDefinition
             BuildItemTask(builder, "smth_tsk_832", "sup_cap", 1, 4);
             BuildItemTask(builder, "smth_tsk_833", "sup_gloves", 1, 4);
             BuildItemTask(builder, "smth_tsk_834", "sup_boots", 1, 4);
+            OphidianPowerGloveTask(builder);
+            OphidianTwinPistolsTask(builder);
 
             return builder.Build();
+        }
+
+        private void BasicPowerGloveTask(QuestBuilder builder)
+        {
+            var itemName = Cache.GetItemNameByResref("b_pglove");
+            var rewardDetails = _rewardDetails[0];
+
+            builder.Create("smth_tsk_036", $"Craft 1x {itemName}")
+                .IsRepeatable()
+                .IsGuildTask(GuildType.SmitheryGuild, 0)
+
+                .AddState()
+                .SetStateJournalText($"Craft 1x {itemName} and return to the Smithery Guildmaster")
+                .AddCollectItemObjective("b_pglove", 1, CollectItemProducerRequirementType.PlayerProduced)
+
+                .AddGoldReward(rewardDetails.Gold)
+                .AddGPReward(GuildType.SmitheryGuild, rewardDetails.GP);
+        }
+
+        private void BasicTwinPistolsTask(QuestBuilder builder)
+        {
+            var itemName = Cache.GetItemNameByResref("b_twinpistol");
+            var rewardDetails = _rewardDetails[0];
+
+            builder.Create("smth_tsk_037", $"Craft 1x {itemName}")
+                .IsRepeatable()
+                .IsGuildTask(GuildType.SmitheryGuild, 0)
+
+                .AddState()
+                .SetStateJournalText($"Craft 1x {itemName} and return to the Smithery Guildmaster")
+                .AddCollectItemObjective("b_twinpistol", 1, CollectItemProducerRequirementType.PlayerProduced)
+
+                .AddGoldReward(rewardDetails.Gold)
+                .AddGPReward(GuildType.SmitheryGuild, rewardDetails.GP);
+        }
+
+        private void TitanPowerGloveTask(QuestBuilder builder)
+        {
+            var itemName = Cache.GetItemNameByResref("tit_pglove");
+            var rewardDetails = _rewardDetails[1];
+
+            builder.Create("smth_tsk_235", $"Craft 1x {itemName}")
+                .IsRepeatable()
+                .IsGuildTask(GuildType.SmitheryGuild, 1)
+
+                .AddState()
+                .SetStateJournalText($"Craft 1x {itemName} and return to the Smithery Guildmaster")
+                .AddCollectItemObjective("tit_pglove", 1, CollectItemProducerRequirementType.PlayerProduced)
+
+                .AddGoldReward(rewardDetails.Gold)
+                .AddGPReward(GuildType.SmitheryGuild, rewardDetails.GP);
+        }
+
+        private void TitanTwinPistolsTask(QuestBuilder builder)
+        {
+            var itemName = Cache.GetItemNameByResref("tit_twinpistol");
+            var rewardDetails = _rewardDetails[1];
+
+            builder.Create("smth_tsk_236", $"Craft 1x {itemName}")
+                .IsRepeatable()
+                .IsGuildTask(GuildType.SmitheryGuild, 1)
+
+                .AddState()
+                .SetStateJournalText($"Craft 1x {itemName} and return to the Smithery Guildmaster")
+                .AddCollectItemObjective("tit_twinpistol", 1, CollectItemProducerRequirementType.PlayerProduced)
+
+                .AddGoldReward(rewardDetails.Gold)
+                .AddGPReward(GuildType.SmitheryGuild, rewardDetails.GP);
+        }
+
+        private void DeltaPowerGloveTask(QuestBuilder builder)
+        {
+            var itemName = Cache.GetItemNameByResref("del_pglove");
+            var rewardDetails = _rewardDetails[2];
+
+            builder.Create("smth_tsk_435", $"Craft 1x {itemName}")
+                .IsRepeatable()
+                .IsGuildTask(GuildType.SmitheryGuild, 2)
+
+                .AddState()
+                .SetStateJournalText($"Craft 1x {itemName} and return to the Smithery Guildmaster")
+                .AddCollectItemObjective("del_pglove", 1, CollectItemProducerRequirementType.PlayerProduced)
+
+                .AddGoldReward(rewardDetails.Gold)
+                .AddGPReward(GuildType.SmitheryGuild, rewardDetails.GP);
+        }
+
+        private void DeltaTwinPistolsTask(QuestBuilder builder)
+        {
+            var itemName = Cache.GetItemNameByResref("del_twinpistol");
+            var rewardDetails = _rewardDetails[2];
+
+            builder.Create("smth_tsk_436", $"Craft 1x {itemName}")
+                .IsRepeatable()
+                .IsGuildTask(GuildType.SmitheryGuild, 2)
+
+                .AddState()
+                .SetStateJournalText($"Craft 1x {itemName} and return to the Smithery Guildmaster")
+                .AddCollectItemObjective("del_twinpistol", 1, CollectItemProducerRequirementType.PlayerProduced)
+
+                .AddGoldReward(rewardDetails.Gold)
+                .AddGPReward(GuildType.SmitheryGuild, rewardDetails.GP);
+        }
+
+        private void ProtoPowerGloveTask(QuestBuilder builder)
+        {
+            var itemName = Cache.GetItemNameByResref("proto_pglove");
+            var rewardDetails = _rewardDetails[3];
+
+            builder.Create("smth_tsk_635", $"Craft 1x {itemName}")
+                .IsRepeatable()
+                .IsGuildTask(GuildType.SmitheryGuild, 3)
+
+                .AddState()
+                .SetStateJournalText($"Craft 1x {itemName} and return to the Smithery Guildmaster")
+                .AddCollectItemObjective("proto_pglove", 1, CollectItemProducerRequirementType.PlayerProduced)
+
+                .AddGoldReward(rewardDetails.Gold)
+                .AddGPReward(GuildType.SmitheryGuild, rewardDetails.GP);
+        }
+
+        private void ProtoTwinPistolsTask(QuestBuilder builder)
+        {
+            var itemName = Cache.GetItemNameByResref("proto_twinpistol");
+            var rewardDetails = _rewardDetails[3];
+
+            builder.Create("smth_tsk_636", $"Craft 1x {itemName}")
+                .IsRepeatable()
+                .IsGuildTask(GuildType.SmitheryGuild, 3)
+
+                .AddState()
+                .SetStateJournalText($"Craft 1x {itemName} and return to the Smithery Guildmaster")
+                .AddCollectItemObjective("proto_twinpistol", 1, CollectItemProducerRequirementType.PlayerProduced)
+
+                .AddGoldReward(rewardDetails.Gold)
+                .AddGPReward(GuildType.SmitheryGuild, rewardDetails.GP);
+        }
+
+        private void OphidianPowerGloveTask(QuestBuilder builder)
+        {
+            var itemName = Cache.GetItemNameByResref("oph_pglove");
+            var rewardDetails = _rewardDetails[4];
+
+            builder.Create("smth_tsk_835", $"Craft 1x {itemName}")
+                .IsRepeatable()
+                .IsGuildTask(GuildType.SmitheryGuild, 4)
+
+                .AddState()
+                .SetStateJournalText($"Craft 1x {itemName} and return to the Smithery Guildmaster")
+                .AddCollectItemObjective("oph_pglove", 1, CollectItemProducerRequirementType.PlayerProduced)
+
+                .AddGoldReward(rewardDetails.Gold)
+                .AddGPReward(GuildType.SmitheryGuild, rewardDetails.GP);
+        }
+
+        private void OphidianTwinPistolsTask(QuestBuilder builder)
+        {
+            var itemName = Cache.GetItemNameByResref("oph_twinpistol");
+            var rewardDetails = _rewardDetails[4];
+
+            builder.Create("smth_tsk_836", $"Craft 1x {itemName}")
+                .IsRepeatable()
+                .IsGuildTask(GuildType.SmitheryGuild, 4)
+
+                .AddState()
+                .SetStateJournalText($"Craft 1x {itemName} and return to the Smithery Guildmaster")
+                .AddCollectItemObjective("oph_twinpistol", 1, CollectItemProducerRequirementType.PlayerProduced)
+
+                .AddGoldReward(rewardDetails.Gold)
+                .AddGPReward(GuildType.SmitheryGuild, rewardDetails.GP);
         }
 
         private void BuildItemTask(

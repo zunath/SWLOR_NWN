@@ -540,9 +540,9 @@ family, while other styles can reuse that rig. Check entry/loading time with a
 single wearer and with mixed robe styles on the actual client before deployment;
 compiled byte counts and offline pose checks do not measure runtime memory or
 loading performance.
-Publish generated robe updates in a separate HAK PR from the humanoid animation banks.
-Stack the robe PR on the body-animation branch, and keep the parent game's submodule pointer
-on the complete body-and-robe result. Merge both HAK changes before deploying either set.
+Publish generated robe updates in the same HAK PR as the humanoid animation banks that
+caused them, as a separate commit after the body banks, and point the parent game's submodule
+at the complete body-and-robe result. Deploy the body and robe HAKs together.
 After changing animations inherited from a body rig, regenerate those bridges from the HAK
 repository before packaging; otherwise a robe can continue using its older movement tracks:
 

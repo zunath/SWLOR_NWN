@@ -652,6 +652,7 @@
 "Ability","Shielding3","Shielding3","Beneficial","3","ife_shielding3","SWLOR_Haks\sw_2da\feat.2da",""
 "Ability","ShieldWall1","ShieldWall1","Beneficial","1","ife_shieldwall1","SWLOR_Haks\sw_2da\feat.2da",""
 "Ability","ShieldWall2","ShieldWall2","Beneficial","2","ife_shieldwall2","SWLOR_Haks\sw_2da\feat.2da",""
+"Ability","ShipAllWeapons","All Weapons","Self","","ife_allweap","SWLOR_Haks\sw_2da\feat.2da",""
 "Ability","ShockBeacon1","ShockBeacon1","Harmful","1","ife_shockbeacon1","SWLOR_Haks\sw_2da\feat.2da",""
 "Ability","ShockBeacon2","ShockBeacon2","Harmful","2","ife_shockbeacon2","SWLOR_Haks\sw_2da\feat.2da",""
 "Ability","ShockTrap","ShockTrap","Deployable","","ife_shocktrap","SWLOR_Haks\sw_2da\feat.2da",""

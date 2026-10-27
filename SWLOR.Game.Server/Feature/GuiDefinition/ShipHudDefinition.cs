@@ -1,0 +1,217 @@
+using SWLOR.Game.Server.Core.Beamdog;
+using SWLOR.Game.Server.Feature.GuiDefinition.ViewModel;
+using SWLOR.Game.Server.Service.GuiService;
+using SWLOR.Game.Server.Service.GuiService.Component;
+
+namespace SWLOR.Game.Server.Feature.GuiDefinition
+{
+    public class ShipHudDefinition : IGuiWindowDefinition
+    {
+        private readonly GuiWindowBuilder<ShipHudViewModel> _builder = new();
+
+        private const float TabRowHeight = 28f;
+        private const float TabPanelHeight = 48f;
+        private const float ContentPanelWidth = 380f;
+        private const float LabelHeight = 20f;
+        private const float ButtonHeight = 32f;
+
+        private static readonly GuiColor ShieldColor = new(3, 87, 152);
+        private static readonly GuiColor HullColor = new(139, 0, 0);
+
+        public GuiConstructedWindow BuildWindow()
+        {
+            var window = _builder.CreateWindow(GuiWindowType.ShipHud)
+                .SetInitialGeometry(10f, 100f, 430f, 470f)
+                .SetTitle("Ship HUD")
+                .SetIsResizable(true)
+                .SetIsCollapsible(true)
+                .BindOnClosed(model => model.OnWindowClosed())
+                .DefinePartialView(ShipHudViewModel.ShipTabPartial, AddShipTab)
+                .DefinePartialView(ShipHudViewModel.StatsTabPartial, AddStatsTab);
+
+            window.AddStandardLayout(layout =>
+            {
+                layout.SetTabPanelHeight(TabPanelHeight);
+                layout.AddTabRow(row =>
+                {
+                    row.SetHeight(TabRowHeight);
+                    row.AddToggles()
+                        .AddOption("Ship")
+                        .AddOption("Stats")
+                        .BindSelectedValue(model => model.TabToggleValue)
+                        .SetWidth(232f)
+                        .SetHeight(TabRowHeight);
+                });
+                layout.SetContentPartialElement(ShipHudViewModel.TabContentElement);
+            });
+
+            return _builder.Build();
+        }
+
+        private static void AddTabShell(
+            GuiGroup<ShipHudViewModel> host,
+            System.Action<GuiColumn<ShipHudViewModel>> content)
+        {
+            host.AddColumn(col =>
+            {
+                col.AddRow(row =>
+                {
+                    row.AddGroup(panel =>
+                    {
+                        panel.SetShowBorder(false);
+                        panel.SetScrollbars(NuiScrollbars.None);
+                        panel.AddColumn(content);
+                    })
+                        .SetWidth(ContentPanelWidth);
+                });
+            });
+        }
+
+        private static void AddShipTab(GuiGroup<ShipHudViewModel> host)
+        {
+            AddTabShell(host, col =>
+            {
+                col.AddRow(row =>
+                {
+                    row.AddLabel()
+                        .SetText("Target")
+                        .SetHeight(LabelHeight)
+                        .SetWidth(60f)
+                        .SetHorizontalAlign(NuiHorizontalAlign.Left)
+                        .SetColor(GuiColor.Cyan);
+                    row.AddLabel()
+                        .BindText(model => model.TargetName)
+                        .SetHeight(LabelHeight)
+                        .SetHorizontalAlign(NuiHorizontalAlign.Left);
+                });
+
+                AddTargetBar(col, "Shield", ShieldColor, model => model.TargetShieldProgress, model => model.TargetShieldText);
+                AddTargetBar(col, "Hull", HullColor, model => model.TargetHullProgress, model => model.TargetHullText);
+
+                col.AddRow(row =>
+                {
+                    row.AddButton()
+                        .BindText(model => model.AllWeaponsText)
+                        .BindIsEnabled(model => model.AllWeaponsEnabled)
+                        .SetHeight(ButtonHeight)
+                        .SetWidth(240f)
+                        .SetTooltip("Switches every toggled weapon on, or off when they are all on. Also on the hotbar.")
+                        .BindOnClicked(model => model.OnClickAllWeapons());
+                    row.AddSpacer();
+                });
+
+                col.AddRow(row =>
+                {
+                    row.AddLabel()
+                        .BindText(model => model.ModuleSummary)
+                        .SetHeight(LabelHeight)
+                        .SetHorizontalAlign(NuiHorizontalAlign.Left)
+                        .SetColor(GuiColor.Cyan);
+                });
+
+                col.AddRow(row =>
+                {
+                    row.AddList(template =>
+                    {
+                        template.AddCell(cell =>
+                        {
+                            cell.AddLabel()
+                                .BindText(model => model.ModuleNames)
+                                .SetHorizontalAlign(NuiHorizontalAlign.Left);
+                        });
+                        template.AddCell(cell =>
+                        {
+                            cell.AddLabel()
+                                .BindText(model => model.ModuleTargets)
+                                .SetHorizontalAlign(NuiHorizontalAlign.Left);
+                        });
+                        template.AddCell(cell =>
+                        {
+                            cell.SetIsVariable(false);
+                            cell.SetWidth(56f);
+                            cell.AddProgressBar()
+                                .BindValue(model => model.ModuleProgress);
+                        });
+                        template.AddCell(cell =>
+                        {
+                            cell.SetIsVariable(false);
+                            cell.AddButton()
+                                .SetText("Retarget")
+                                .SetWidth(76f)
+                                .BindIsEnabled(model => model.ModuleCanRetarget)
+                                .SetTooltip("Locks this module onto your current target. With nothing selected it locks onto your own ship.")
+                                .SetDisabledTooltip("This module always works on your current target.")
+                                .BindOnClicked(model => model.OnClickRetarget());
+                        });
+                    })
+                        .BindRowCount(model => model.ModuleNames)
+                        .SetRowHeight(32f);
+                });
+
+                col.AddRow(row =>
+                {
+                    row.AddLabel()
+                        .SetText("No modules are on.")
+                        .BindIsVisible(model => model.NoModulesVisible)
+                        .SetHeight(LabelHeight)
+                        .SetHorizontalAlign(NuiHorizontalAlign.Left);
+                });
+            });
+        }
+
+        private static void AddTargetBar(
+            GuiColumn<ShipHudViewModel> col,
+            string caption,
+            GuiColor color,
+            System.Linq.Expressions.Expression<System.Func<ShipHudViewModel, float>> progress,
+            System.Linq.Expressions.Expression<System.Func<ShipHudViewModel, string>> text)
+        {
+            col.AddRow(row =>
+            {
+                row.AddLabel()
+                    .SetText(caption)
+                    .SetHeight(LabelHeight)
+                    .SetWidth(60f)
+                    .SetHorizontalAlign(NuiHorizontalAlign.Left);
+                row.AddProgressBar()
+                    .BindValue(progress)
+                    .SetColor(color)
+                    .SetHeight(LabelHeight);
+                row.AddLabel()
+                    .BindText(text)
+                    .SetHeight(LabelHeight)
+                    .SetWidth(100f)
+                    .SetHorizontalAlign(NuiHorizontalAlign.Right);
+            });
+        }
+
+        private static void AddStatsTab(GuiGroup<ShipHudViewModel> host)
+        {
+            AddTabShell(host, col =>
+            {
+                col.AddRow(row =>
+                {
+                    row.AddList(template =>
+                    {
+                        template.AddCell(cell =>
+                        {
+                            cell.AddLabel()
+                                .BindText(model => model.StatLabels)
+                                .SetHorizontalAlign(NuiHorizontalAlign.Left);
+                        });
+                        template.AddCell(cell =>
+                        {
+                            cell.SetIsVariable(false);
+                            cell.SetWidth(120f);
+                            cell.AddLabel()
+                                .BindText(model => model.StatValues)
+                                .SetHorizontalAlign(NuiHorizontalAlign.Right);
+                        });
+                    })
+                        .BindRowCount(model => model.StatLabels)
+                        .SetRowHeight(22f);
+                });
+            });
+        }
+    }
+}

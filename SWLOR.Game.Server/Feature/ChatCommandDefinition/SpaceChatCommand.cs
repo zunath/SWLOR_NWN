@@ -12,6 +12,7 @@ namespace SWLOR.Game.Server.Feature.ChatCommandDefinition
         public Dictionary<string, ChatCommandDetail> BuildChatCommands()
         {
             ExitSpaceCommand();
+            ShipHudCommand();
 
             return _builder.Build();
         }
@@ -37,6 +38,14 @@ namespace SWLOR.Game.Server.Feature.ChatCommandDefinition
 
                     Space.WarpPlayerInsideShip(user);
                 });
+        }
+
+        private void ShipHudCommand()
+        {
+            _builder.Create("shiphud", "hud")
+                .Description("Opens or closes the Ship HUD while piloting a starship.")
+                .Permissions(AuthorizationLevel.All)
+                .Action((user, target, location, args) => SpaceHud.Toggle(user));
         }
     }
 }

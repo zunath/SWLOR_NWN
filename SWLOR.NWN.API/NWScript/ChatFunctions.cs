@@ -11,7 +11,7 @@ namespace SWLOR.NWN.API.NWScript
         /// <remarks>Should only be called from a module's OnPlayerChat event script. Private tells do not trigger an OnPlayerChat event.</remarks>
         public static uint GetPCChatSpeaker()
         {
-            return global::NWN.Core.NWScript.GetPCChatSpeaker();
+            return NWScriptRuntime.Current.GetPCChatSpeaker();
         }
 
         /// <summary>
@@ -20,7 +20,7 @@ namespace SWLOR.NWN.API.NWScript
         /// <param name="szMessage">The message to send to all DMs</param>
         public static void SendMessageToAllDMs(string szMessage)
         {
-            global::NWN.Core.NWScript.SendMessageToAllDMs(szMessage);
+            NWScriptRuntime.Current.SendMessageToAllDMs(szMessage);
         }
 
         /// <summary>
@@ -30,7 +30,7 @@ namespace SWLOR.NWN.API.NWScript
         /// <remarks>Should only be called from a module's OnPlayerChat event script. Private tells do not trigger an OnPlayerChat event.</remarks>
         public static string GetPCChatMessage()
         {
-            return global::NWN.Core.NWScript.GetPCChatMessage();
+            return NWScriptRuntime.Current.GetPCChatMessage();
         }
 
         /// <summary>
@@ -40,7 +40,7 @@ namespace SWLOR.NWN.API.NWScript
         /// <remarks>Should only be called from a module's OnPlayerChat event script. Private tells do not trigger an OnPlayerChat event. Possible values: TALKVOLUME_TALK, TALKVOLUME_WHISPER, TALKVOLUME_SHOUT, TALKVOLUME_SILENT_SHOUT (used for DM chat channel), TALKVOLUME_PARTY</remarks>
         public static TalkVolume GetPCChatVolume()
         {
-            return (TalkVolume)global::NWN.Core.NWScript.GetPCChatVolume();
+            return NWScriptRuntime.Current.GetPCChatVolume();
         }
 
         /// <summary>
@@ -50,7 +50,7 @@ namespace SWLOR.NWN.API.NWScript
         /// <remarks>The new chat message gets sent after the OnPlayerChat script exits.</remarks>
         public static void SetPCChatMessage(string sNewChatMessage = "")
         {
-            global::NWN.Core.NWScript.SetPCChatMessage(sNewChatMessage);
+            NWScriptRuntime.Current.SetPCChatMessage(sNewChatMessage);
         }
 
         /// <summary>
@@ -60,7 +60,7 @@ namespace SWLOR.NWN.API.NWScript
         /// <remarks>The new chat message gets sent after the OnPlayerChat script exits. Possible values: TALKVOLUME_TALK, TALKVOLUME_WHISPER, TALKVOLUME_SHOUT, TALKVOLUME_SILENT_SHOUT (used for DM chat channel), TALKVOLUME_PARTY, TALKVOLUME_TELL (sends the chat message privately back to the original speaker)</remarks>
         public static void SetPCChatVolume(TalkVolume nTalkVolume = TalkVolume.Talk)
         {
-            global::NWN.Core.NWScript.SetPCChatVolume((int)nTalkVolume);
+            NWScriptRuntime.Current.SetPCChatVolume(nTalkVolume);
         }
     }
 }

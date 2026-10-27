@@ -12,14 +12,7 @@ namespace SWLOR.NWN.API.NWScript
         /// <param name="tags">The tags to look for.</param>
         public static void RemoveEffectByTag(uint creature, params string[] tags)
         {
-            for (var effect = GetFirstEffect(creature); GetIsEffectValid(effect); effect = GetNextEffect(creature))
-            {
-                var effectTag = GetEffectTag(effect);
-                if (tags.Contains(effectTag))
-                {
-                    RemoveEffect(creature, effect);
-                }
-            }
+            NWScriptRuntime.Current.RemoveEffectByTag(creature, tags);
         }
 
         /// <summary>
@@ -29,14 +22,7 @@ namespace SWLOR.NWN.API.NWScript
         /// <param name="types">The types of effects to look for.</param>
         public static void RemoveEffect(uint creature, params EffectTypeScript[] types)
         {
-            for (var effect = GetFirstEffect(creature); GetIsEffectValid(effect); effect = GetNextEffect(creature))
-            {
-                var type = GetEffectType(effect);
-                if (types.Contains(type))
-                {
-                    RemoveEffect(creature, effect);
-                }
-            }
+            NWScriptRuntime.Current.RemoveEffect(creature, types);
         }
 
         /// <summary>
@@ -47,16 +33,7 @@ namespace SWLOR.NWN.API.NWScript
         /// <returns>true if at least one effect was found, false otherwise</returns>
         public static bool HasEffectByTag(uint creature, params string[] tags)
         {
-            for (var effect = GetFirstEffect(creature); GetIsEffectValid(effect); effect = GetNextEffect(creature))
-            {
-                var effectTag = GetEffectTag(effect);
-                if (tags.Contains(effectTag))
-                {
-                    return true;
-                }
-            }
-
-            return false;
+            return NWScriptRuntime.Current.HasEffectByTag(creature, tags);
         }
 
         /// <summary>
@@ -68,19 +45,7 @@ namespace SWLOR.NWN.API.NWScript
         /// <returns>true if a more powerful effect is in place, false otherwise</returns>
         public static bool HasMorePowerfulEffect(uint creature, int tier, params (string, int)[] effectLevels)
         {
-            for (var effect = GetFirstEffect(creature); GetIsEffectValid(effect); effect = GetNextEffect(creature))
-            {
-                var tag = GetEffectTag(effect);
-                foreach (var (levelTag, level) in effectLevels)
-                {
-                    if (tag == levelTag && tier < level)
-                    {
-                        return true;
-                    }
-                }
-            }
-
-            return false;
+            return NWScriptRuntime.Current.HasMorePowerfulEffect(creature, tier, effectLevels);
         }
     }
 }

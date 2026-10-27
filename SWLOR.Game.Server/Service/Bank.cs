@@ -2,6 +2,7 @@ using System.Collections.Generic;
 using System.Linq;
 using SWLOR.Game.Server.Entity;
 using SWLOR.Game.Server.Service.DBService;
+using SWLOR.Game.Server.Service.GuiService;
 using SWLOR.Game.Server.Service.LogService;
 using SWLOR.NWN.API.NWNX;
 
@@ -11,6 +12,7 @@ namespace SWLOR.Game.Server.Service
     {
         private const string StorageId = "GLOBAL_BANK";
         private const int MaxItems = 120;
+        private const int ItemsPerPage = 20;
         private const string CityIdLocalName = "CITY_ID";
 
         public static long GetItemCount(string playerId)
@@ -35,7 +37,25 @@ namespace SWLOR.Game.Server.Service
             return itemCount >= MaxItems;
         }
 
-        public static List<InventoryItem> SearchItems(string playerId, string searchText)
+        /// <summary>
+        /// Returns one page of the banked items that match the search. A page index past the last page is
+        /// clamped to the last page, so callers can ask for <see cref="int.MaxValue"/> to reach the newest deposits.
+        /// </summary>
+        public static BankItemPage SearchItems(string playerId, string searchText, int pageIndex)
+        {
+            var matchCount = DB.SearchCount(BuildSearchQuery(playerId, searchText));
+            var pagination = GuiPaginationState.Create(matchCount, ItemsPerPage, pageIndex);
+            var items = matchCount <= 0
+                ? new List<InventoryItem>()
+                : DB.Search(BuildSearchQuery(playerId, searchText)
+                        .AddPaging(ItemsPerPage, ItemsPerPage * pagination.SelectedPageIndex))
+                    .Where(item => item != null)
+                    .ToList();
+
+            return new BankItemPage(items, matchCount, pagination.PageNumbers, pagination.SelectedPageIndex);
+        }
+
+        private static DBQuery<InventoryItem> BuildSearchQuery(string playerId, string searchText)
         {
             var query = BuildPlayerItemQuery(playerId);
 
@@ -44,7 +64,8 @@ namespace SWLOR.Game.Server.Service
                 query.AddFieldSearch(nameof(InventoryItem.Name), searchText, true);
             }
 
-            return DB.Search(query).ToList();
+            // Oldest first, so the newest deposits are on the last page and paging is stable between pages.
+            return query.OrderBy(nameof(InventoryItem.DepositedTicks));
         }
 
         public static string GetDepositFailure(uint player, uint item)
@@ -70,7 +91,8 @@ namespace SWLOR.Game.Server.Service
                 Resref = GetResRef(item),
                 Quantity = GetItemStackSize(item),
                 Data = ObjectPlugin.Serialize(item),
-                IconResref = Item.GetIconResref(item)
+                IconResref = Item.GetIconResref(item),
+                DepositedTicks = DateTime.UtcNow.Ticks
             };
 
             DB.Set(dbItem);

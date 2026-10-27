@@ -117,6 +117,8 @@ namespace SWLOR.Game.Server.Feature.QuestDefinition
             BuildItemTask("hun_tsk_428", "tiger_blood", 6, 2);
             BuildItemTask("hun_tsk_429", "tiger_meat", 6, 2);
             BuildItemTask("hun_tsk_430", "q_tiger_paw", 3, 2);
+            ByyskPowerGloveTask();
+            ByyskTwinPistolsTask();
 
             // Tier 4 (Rank 3)
             BuildKillTask("hun_tsk_600", NPCGroupType.Tatooine_Womprat, 10, 3);
@@ -155,6 +157,8 @@ namespace SWLOR.Game.Server.Feature.QuestDefinition
             BuildItemTask("hun_tsk_633", "tusken_meat", 6, 3);
             BuildItemTask("hun_tsk_634", "tusken_bones", 6, 3);
             BuildItemTask("hun_tsk_635", "tusken_blood", 6, 3);
+            RaiderPowerGloveTask();
+            RaiderTwinPistolsTask();
 
             // Tier 5 (Rank 4)
             BuildItemTask("hun_tsk_800", "diamond", 3, 4);
@@ -183,6 +187,74 @@ namespace SWLOR.Game.Server.Feature.QuestDefinition
 
 
             return _builder.Build();
+        }
+
+        private void ByyskPowerGloveTask()
+        {
+            var itemName = Cache.GetItemNameByResref("byysk_pglove");
+            var rewardDetails = _rewardDetails[2];
+
+            _builder.Create("hun_tsk_431", $"3x {itemName}")
+                .IsRepeatable()
+                .IsGuildTask(GuildType.HuntersGuild, 2)
+
+                .AddState()
+                .SetStateJournalText($"Collect 3x {itemName} and return to the Hunter's Guildmaster")
+                .AddCollectItemObjective("byysk_pglove", 3, CollectItemProducerRequirementType.None)
+
+                .AddGoldReward(rewardDetails.Gold)
+                .AddGPReward(GuildType.HuntersGuild, rewardDetails.GP);
+        }
+
+        private void ByyskTwinPistolsTask()
+        {
+            var itemName = Cache.GetItemNameByResref("byysk_twinpistol");
+            var rewardDetails = _rewardDetails[2];
+
+            _builder.Create("hun_tsk_432", $"3x {itemName}")
+                .IsRepeatable()
+                .IsGuildTask(GuildType.HuntersGuild, 2)
+
+                .AddState()
+                .SetStateJournalText($"Collect 3x {itemName} and return to the Hunter's Guildmaster")
+                .AddCollectItemObjective("byysk_twinpistol", 3, CollectItemProducerRequirementType.None)
+
+                .AddGoldReward(rewardDetails.Gold)
+                .AddGPReward(GuildType.HuntersGuild, rewardDetails.GP);
+        }
+
+        private void RaiderPowerGloveTask()
+        {
+            var itemName = Cache.GetItemNameByResref("raider_pglove");
+            var rewardDetails = _rewardDetails[3];
+
+            _builder.Create("hun_tsk_636", $"3x {itemName}")
+                .IsRepeatable()
+                .IsGuildTask(GuildType.HuntersGuild, 3)
+
+                .AddState()
+                .SetStateJournalText($"Collect 3x {itemName} and return to the Hunter's Guildmaster")
+                .AddCollectItemObjective("raider_pglove", 3, CollectItemProducerRequirementType.None)
+
+                .AddGoldReward(rewardDetails.Gold)
+                .AddGPReward(GuildType.HuntersGuild, rewardDetails.GP);
+        }
+
+        private void RaiderTwinPistolsTask()
+        {
+            var itemName = Cache.GetItemNameByResref("raider_twinpstl");
+            var rewardDetails = _rewardDetails[3];
+
+            _builder.Create("hun_tsk_637", $"3x {itemName}")
+                .IsRepeatable()
+                .IsGuildTask(GuildType.HuntersGuild, 3)
+
+                .AddState()
+                .SetStateJournalText($"Collect 3x {itemName} and return to the Hunter's Guildmaster")
+                .AddCollectItemObjective("raider_twinpstl", 3, CollectItemProducerRequirementType.None)
+
+                .AddGoldReward(rewardDetails.Gold)
+                .AddGPReward(GuildType.HuntersGuild, rewardDetails.GP);
         }
 
         private void BuildItemTask(

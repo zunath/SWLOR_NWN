@@ -9,7 +9,9 @@ Read only the sections the task needs:
 - Migration or persistence change: "Persistence and migration coverage".
 - Ability or perk coverage: "The ability behavior coverage program" and "The perk coverage program".
 - Output locking for the maintainability refactor: "Characterization scenarios (output locking)". After every `master` sync: "Refreshing the snapshots after a `master` sync".
-- Running tests: "How to Run Locally". Concurrent runs collide on one compose project; see `AgentEnvironment.md`.
+- Running tests: "How to Run Locally". Concurrent runs collide on one compose project; see `AgentEnvironment.md`. A run that
+  crosses 10:00 UTC is killed by the server's daily restart ("CI", "The daily server restart").
+- The nightly and labelled-pull-request workflow: "CI".
 - Changing the runner itself: "Project Layout and Isolation", "Architecture Overview", "Environment Variable Reference".
 
 ## What It Is and Why
@@ -451,8 +453,8 @@ as `/nwn/home`, holding `modules/`, `hak/`, `tlk/`, `swlor.env` and receiving `d
 `SWLOR_ENGINE_TEST_SERVER_HOME` env var, the repo's `enginetests-home/` directory when it holds
 `swlor.env`, the repo's `debugserver/` directory when it exists (the dev-machine convention used by
 the normal `SWLOR.Runner` flow), and finally
-`SWLOR.Game.Server/Docker/` (the layout the CI workflow stages - that folder is tracked compose
-*configuration*, not inherently a runtime home). Both scripts:
+`SWLOR.Game.Server/Docker/` (a last resort: that folder is tracked compose
+*configuration*, not a runtime home; the CI workflow passes its own `--server-home`). Both scripts:
 
 1. Build `SWLOR.Game.Server` in `Release` (unless skipped) with `-p:RunPostBuildEvent=Never` (so
    the normal Windows-only CLI post-build deploy step doesn't run), then copy the build output from
@@ -480,7 +482,9 @@ which become zero-byte files - Beamdog's dedicated-server data does the same wit
 models and textures, because the server never reads them - so the HAKs take about 0.4 GB instead
 of 11 GB. Never deploy them. It packs with the native tools that `Setup.sh` prepares, about
 4 minutes in all, and later runs skip steps whose inputs are unchanged (`--force` redoes them).
-A full sweep took about 75 minutes in a 4-core cloud session, so pass `--timeout-minutes 120`.
+A full sweep took about 75 minutes in a 4-core cloud session when the suite had a few hundred tests; with 910 it takes about
+3 hours (the `CI` section has the details), so pass `--timeout-minutes 270`. The `CI` section below runs this flow on a hosted
+runner, with a 300 MB sparse `SWLOR_Haks` fetch in place of the full checkout.
 
 Usage:
 
@@ -523,7 +527,7 @@ ranges and killed the run (Redis exit 139, server exit 137, no report). The comm
 image's default module list; keep it in sync if the image changes.
 
 **Hard wall clock**: both runner scripts enforce a timeout on the containerized run
-(`-TimeoutMinutes` / `--timeout-minutes`, default 90; a full sweep takes roughly 45). On expiry
+(`-TimeoutMinutes` / `--timeout-minutes`, default 90, which a full sweep of 910 tests now exceeds: pass 270). On expiry
 the stack is torn down and the run is reported as failed. This exists because
 `docker compose up --abort-on-container-exit` blocks until a container exits, and a server that
 boots healthy but schedules no tests - a missing harness assembly, a filter matching nothing -
@@ -689,36 +693,83 @@ match the branch at any time (`-CheckOnly`), for example after a `SWLOR_Haks` po
 
 ## CI
 
-`.github/workflows/engine-tests.yml` runs on `ubuntu-latest` with a 60-minute timeout, triggered by:
+`.github/workflows/engine-tests.yml` runs the suite for the maintainability refactor (`MaintainabilityRefactorPlan.md`) on
+`ubuntu-24.04` (the server image is Linux, and Docker on Windows runners cannot run Linux containers). Triggers:
 
-- `workflow_dispatch`, with an optional `filter` input (`SWLOR_ENGINE_TEST_FILTER`).
-- `schedule` - nightly at `0 9 * * *`, outside normal contributor hours.
-- `pull_request` into `feature/combat-upgrade`, path-filtered to
-  `SWLOR.Game.Server/**`, `SWLOR.NWN.API/**`, `SWLOR.CLI/**`, `Module/**`,
-  `SWLOR.Game.Server.sln`, and the workflow file itself.
+- `schedule`: nightly at 01:00 UTC (21:00 US Eastern), the whole suite.
+- `pull_request` into `feature/maintainability-refactor`, only with a label. `engine-tests` runs the whole suite;
+  `engine-tests-characterization` runs only the Characterization scenarios (`-Filter Characterization`), which are the
+  refactor's output lock and take about 40 minutes with setup. With both labels the whole suite runs. A run starts when the
+  label is added and again on every push while it is on; adding some other label does not restart it.
+- `workflow_dispatch` with an optional `filter` (the same text `--filter` takes; a short one such as `a` matches nearly every
+  test), a `timeout_minutes` wall clock (10 to 270, default 270; a narrow filter can ask for less) and a `ref` (default
+  `feature/maintainability-refactor`).
 
-It checks out with `submodules: recursive` and `fetch-depth: 1`, builds `SWLOR.CLI` (which pulls in
-`SWLOR.Game.Server`/`SWLOR.NWN.API`), downloads the `neverwinter.nim` Linux release tools
-(`nwn_erf`/`nwn_gff`/`nwn_tlk`) and renames them to `*.exe` next to `SWLOR.CLI.dll` so `HakBuilder`/
-`ModulePacker`'s hardcoded process names resolve, builds the hak files via `SWLOR.CLI --hak`
-(retargeting `Build/hakbuilder.json`'s `OutputPath` to `SWLOR.Game.Server/Docker/`), packs the
-module via `SWLOR.CLI --pack` into `SWLOR.Game.Server/Docker/modules/`, stages the
-already-built server assembly (a transitive output of the CLI build) into
-`SWLOR.Game.Server/Docker/dotnet/`, then runs `scripts/run-engine-tests.sh --skip-build --filter`
-so the server is not compiled a second time. Engine test results and server logs are uploaded as
-artifacts on every run (`if: always()`), each with 14-day retention.
+GitHub fires `schedule` and lists `workflow_dispatch` only for workflow files on the default branch (`master`), and the refactor
+branch does not merge there until the end. The workflow therefore checks out the refactor branch itself for those two triggers,
+so an identical copy of the file on `master` is all the nightly needs. Until a copy exists there, only the labelled pull
+requests run it.
 
-**This workflow has not yet had a successful (or attempted) run on GitHub-hosted runners**, per its
-own header comment - treat early runs as a debugging exercise, not a working pipeline. The biggest
-risk is `SWLOR_Haks`: it's a roughly 13GB git submodule, and even with `fetch-depth: 1` the checked
-out working tree is still that large, which may exceed a hosted runner's disk space and/or the job
-time budget. The header also flags, in rough order of likelihood after that: the Linux
-`neverwinter.nim` binaries haven't been confirmed to produce byte-identical or even game-compatible
-output versus the pinned Windows tools in `SWLOR_Haks/`, nor has their CLI argument compatibility
-with `HakBuilder.cs`/`ModulePacker.cs` been verified; renaming the extension-less Linux binaries to
-`*.exe` is a workaround, not an upstream-supported flow; and NWN server boot inside the container
-(NWNX/NWSync/licensing, engine startup timing) has only been exercised via the normal
-`docker-compose.yml` dev flow, not in a CI sandbox network context.
+What a run does, all through the scripts a cloud session or dev machine uses (run them in this order to reproduce a CI run):
+
+1. Chooses the filter and the wall clock from the trigger, frees runner disk space, checks out the branch (a pull request's
+   merge result), and runs `tools/WaitOutServerRestart.py` (see "The daily server restart" below).
+2. Installs the pinned .NET SDK, runs the unit tests of the summary tool, the restart check, the HAK staging and the HAK fetch
+   (seconds), installs `libpcre3` and downloads the pinned native NWN tools (`tools/native-tools.json`, checksum verified)
+   for `nwn_erf` and `nwn_gff`.
+3. `scripts/ci/fetch-engine-test-haks.sh` fetches the part of the pinned `SWLOR_Haks` commit the server needs. The module lists
+   all 119 HAKs, but the dedicated server never reads models, textures or sounds (`prepare-engine-test-home.sh` makes those
+   zero-byte files), and they are 147,000 of the 207,000 files. The script does a blobless depth-1 fetch (4 MB of trees) and a
+   sparse non-cone checkout of the HAK folders and `sw_tlk` without those file types (in any case): about 59,000 files, 300 MB,
+   50 MB over the wire. The full history is never cloned. The left-out files stay in the index as skip-worktree entries; do not
+   write files at those paths or run `git sparse-checkout disable` or anything else that needs their content in that checkout,
+   or git downloads the 11 GB of blobs. (`git diff HEAD`, `git ls-files` and `git ls-tree`, which `prepare-engine-test-home.sh`
+   runs, need no blob and no network there.)
+4. `scripts/prepare-engine-test-home.sh` builds the server-only HAKs and the TLK from it (the names of the left-out files
+   come from the index, so the HAKs equal those built from a full checkout), packs `Module/` with `SWLOR.CLI --pack`
+   (the Characterization snapshots need the module and the 2DA/TLK data of the branch itself), and pulls the Docker images.
+5. `scripts/run-engine-tests.sh` builds the test project and runs the suite in the pinned server image, with a wall clock of
+   270 minutes (120 for the quick label; a manual run can ask for less). Its exit code is the job's result.
+6. `tools/EngineTestSummary.py` writes the job summary (verdict, failed tests, per-category table, slowest tests) and
+   annotations, and the job uploads the `engine-test-results` artifact (14 days): `engine-test-results.json`, the runner output
+   `engine-tests.log`, and the server's `logs/` and `app_logs/`.
+
+Time: setup is expected to take 25 to 30 minutes (on a 20-core dev machine the module pack alone took 3.5 minutes and the HAKs
+about 3; the hosted runner has four vCPUs and has not been timed). The whole suite (910 tests, 6 of them skipped by design) took
+about 3 hours locally (142 minutes for the first 901 tests, then the long ones: the five `WeaponRotationBalance` tests run 6.8
+minutes each); the Characterization scenarios take 11 minutes. Test time is mostly in-game waiting, so a hosted runner should
+be close to the local figure.
+
+The job fails when any engine test fails, when no test ran, when the server container exits non-zero (even after a green
+report), and when the server dies without writing a report. A run that hits its wall clock fails too, and says so: the log
+carries `TIMED OUT after N minute(s)`, and the summary and an error annotation call it a timeout, not a failed test. The job's
+own limit (355 minutes: setup 30, a restart wait of at most 15, the build 5, the wall clock, teardown 5, the upload 10) is
+above that on purpose, so GitHub never kills the job before the script has reported.
+
+### The daily server restart
+
+`ServerTasks.ProcessAutoRestart` shuts the game server down for the whole 30 seconds after 10:00:00 UTC every day, with no
+exception for engine-test runs. A run that crosses that moment ends without a report ("No report found ... the server likely
+crashed", with `Server shutting down for automated restart.` in the log); it happened to the first full local run of this
+workflow, 26 minutes in. Do not start a long engine run in the hours before 10:00 UTC. The workflow handles it three ways: the
+nightly starts at 01:00 UTC, `tools/WaitOutServerRestart.py` waits up to 15 minutes when a run would cross the restart and
+otherwise fails the job at its first step with an error saying to run it again after 10:01 UTC (a job has six hours in all, so
+a long wait leaves no room for a 3 hour run). It plans for the worst case, setup and build (35 minutes) plus the whole wall clock: 305
+minutes for a full run, so a full run started between about 05:00 and 09:45 UTC fails at once, and 155 minutes for the quick
+label. And
+`EngineTestSummary.py` names the restart when it cuts a run off anyway. The
+real fix is a guard in `ProcessAutoRestart` for `ApplicationSettings.EngineTestsEnabled`; after it lands, delete the check and
+this section.
+
+Running the same steps on your machine: `scripts/ci/fetch-engine-test-haks.sh` (needs `SWLOR_Haks` empty or absent: it replaces
+it), then `scripts/prepare-engine-test-home.sh --server-home <dir>`, then `scripts/run-engine-tests.sh --server-home <dir>`.
+On a Windows checkout `prepare-engine-test-home.sh` and `run-engine-tests.sh` carry CRLF line endings; convert them first
+(`sed -i 's/\r$//'`), or use `run-engine-tests.ps1` with a home from the normal deploy flow.
+
+**This workflow has not yet run on GitHub-hosted runners**: Actions has been locked for the account by a billing issue since it
+was written. Its steps were verified one by one on a dev machine (see the pull request that added it); what only a hosted
+runner can show is the apt and native-tool step, free disk space, Docker Hub pulls, and the job's total time. Treat the first
+runs as a shake-out.
 
 ## Known Gaps and Non-Goals
 

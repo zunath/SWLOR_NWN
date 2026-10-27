@@ -25,13 +25,17 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
                 ? GetColorSelectionPropertyName(region.PropertyName)
                 : null;
             if (selected == _activeColorSelection)
+            {
+                SyncSelectedPartSelection();
                 return;
+            }
 
             if (_activeColorSelection != null)
                 Set(false, _activeColorSelection);
             _activeColorSelection = selected;
             if (selected != null)
                 Set(true, selected);
+            SyncSelectedPartSelection();
         }
 
         // Cached scalar bindings allow one active swatch to move without replacing

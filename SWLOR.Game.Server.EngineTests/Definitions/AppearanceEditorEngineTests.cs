@@ -9,6 +9,7 @@ using SWLOR.Game.Server.Core.Beamdog;
 using SWLOR.Game.Server.EngineTests.Framework;
 using SWLOR.Game.Server.Entity;
 using SWLOR.Game.Server.Feature.ChatCommandDefinition;
+using SWLOR.Game.Server.Feature.AppearanceDefinition.AppearancePreview;
 using SWLOR.Game.Server.Feature.AppearanceDefinition.ItemAppearance;
 using SWLOR.Game.Server.Feature.AppearanceDefinition.RacialAppearance;
 using SWLOR.Game.Server.Feature.AppearanceDefinition.TintMap;
@@ -284,47 +285,64 @@ namespace SWLOR.Game.Server.EngineTests.Definitions
                 var editor = BindWithoutClient(civilian);
                 editor.OnSelectEquipment()();
                 var panel = AppearanceEditorDefinition.BuildEditorPanel(AppearanceEditorViewModel.EditorArmorPartial);
-                AssertGlobalSwatchImagesJson(ctx, JObject.Parse(JsonDump(panel.ToJson())), "Global native swatch images");
-                var swatchJson = JObject.Parse(JsonDump(panel.ToJson())).Descendants().OfType<JObject>()
-                    .Where(node => node["id"]?.Value<string>()?.StartsWith("ae_color_") == true).ToArray();
-                ctx.AssertEqual(120, swatchJson.Length, "All global and part swatches have native glow bindings");
-                foreach (var swatch in swatchJson)
-                {
-                    var expected = swatch["id"].Value<string>()["ae_color_".Length..^"Region".Length] + "Selected";
-                    ctx.AssertEqual(expected, swatch["encouraged"]?["bind"]?.Value<string>(), "Glow follows this exact material target");
-                    AssertColorSwatchDrawing(ctx, swatch);
-                }
+                AssertEquipmentSwatchesJson(ctx, JObject.Parse(JsonDump(panel.ToJson())), "Equipment native swatches");
                 AssertActiveColorSwatch(ctx, editor, "GlobalLeather1Selected");
                 foreach (var (channel, layer) in channels)
                 {
                     var regionName = "Global" + channel + "Region";
-                    var image = WidgetTree(panel).Single(widget => widget.Id == "ae_color_" + regionName);
-                    ctx.Assert(image is GuiImage<AppearanceEditorViewModel>, $"{channel}: global swatch retains responsive image sizing.");
-                    ctx.Assert(image.Events.TryGetValue("mousedown", out var mouseDown), $"{channel}: image handles mouse-down.");
-                    ctx.AssertEqual(nameof(AppearanceEditorViewModel.OnMouseDownGlobalColor), mouseDown.Method.Name,
-                        $"{channel}: image routes through the left-button filter");
-                    ctx.AssertEqual(1, mouseDown.Arguments.Count, $"{channel}: image captures one dye channel");
-                    ctx.AssertEqual(channel, (AppearanceArmorColor)mouseDown.Arguments[0].Value, $"{channel}: captured dye channel");
-                    ctx.Assert(!image.Events.ContainsKey("click"), $"{channel}: image must not require a button-only click event.");
-                    // The real mouse payload is client-owned. Exercise the unchanged
-                    // target-selection action delegated to by the mouse-down filter.
-                    editor.OnClickColorTarget(AppearanceEditorViewModel.ColorTarget.Global, channel)();
+                    var swatch = WidgetTree(panel).Single(widget => widget.Id == "ae_base_swatch_" + channel);
+                    ctx.Assert(swatch is GuiButton<AppearanceEditorViewModel>, $"{channel}: base swatch is a button.");
+                    ctx.Assert(swatch.Events.TryGetValue("click", out var click), $"{channel}: base swatch handles click.");
+                    ctx.AssertEqual(1, swatch.Events.Count, $"{channel}: base swatch needs only its click event");
+                    ctx.AssertEqual(nameof(AppearanceEditorViewModel.OnClickBaseSwatch), click.Method.Name,
+                        $"{channel}: base swatch routes to the base colour action");
+                    ctx.AssertEqual(1, click.Arguments.Count, $"{channel}: base swatch captures one dye channel");
+                    ctx.AssertEqual(channel, (AppearanceArmorColor)click.Arguments[0].Value, $"{channel}: captured dye channel");
+                    // Dispatch the action captured by the real definition's button.
+                    ((Action)click.Method.Invoke(editor, click.Arguments.Select(argument => argument.Value).ToArray()))();
                     AssertActiveColorSwatch(ctx, editor, "Global" + channel + "Selected");
                     AssertTintInput(ctx, editor, TintMapPaletteColors.GetColor(layer, 35 + (int)channel),
-                        $"{channel}: global image selection previews its own native dye");
+                        $"{channel}: base swatch selection previews its own native dye");
                     AssertPaletteRegion(ctx, (GuiRectangle)editor.GetType().GetProperty(regionName).GetValue(editor),
-                        35 + (int)channel, $"{channel}: global image region follows its native dye");
+                        35 + (int)channel, $"{channel}: base swatch region follows its native dye");
+                    ctx.AssertEqual(AppearancePreview.PaletteCode(35 + (int)channel),
+                        (string)editor.GetType().GetProperty("Global" + channel + "Code").GetValue(editor),
+                        $"{channel}: base swatch shows its palette code");
+                    ctx.Assert(editor.IsPaletteSelectionVisible, $"{channel}: a palette colour is outlined.");
+                    AssertPaletteOutline(ctx, editor, 35 + (int)channel, $"{channel}: palette outline");
                 }
                 foreach (var (part, target) in ArmorColorTargets())
-                foreach (var (channel, layer) in channels)
                 {
-                    editor.OnClickColorTarget(target, channel)();
-                    AssertActiveColorSwatch(ctx, editor, target.ToString() + channel + "Selected");
-                    ctx.Assert(editor.IsCustomTintAvailable,
-                        $"{part}/{channel} must retain its native picker even without a generated tint selection.");
-                    var mode = ((int)part + (int)channel) % 4;
-                    var expectedId = mode switch { 2 => 0, 3 => 77, _ => 35 + (int)channel };
-                    AssertPickerColor(ctx, editor, TintMapPaletteColors.GetColor(layer, expectedId), $"{part}/{channel} native preview");
+                    // The body map selects a part; its six swatches mirror that part's colours.
+                    var slot = Enum.Parse<AppearanceEditorSlot>(target.ToString());
+                    editor.OnClickMapSlot(slot)();
+                    ctx.Assert(editor.IsPartColorsVisible, $"{part}: part colours are shown for the selected slot.");
+                    ctx.Assert((bool)editor.GetType().GetProperty($"Map{slot}Selected").GetValue(editor),
+                        $"{part}: the body map highlights the selected slot.");
+                    foreach (var (channel, layer) in channels)
+                    {
+                        var source = (GuiRectangle)editor.GetType().GetProperty($"{target}{channel}Region").GetValue(editor);
+                        var mirror = (GuiRectangle)editor.GetType().GetProperty($"SelectedPart{channel}Region").GetValue(editor);
+                        ctx.Assert(source.X == mirror.X && source.Y == mirror.Y && source.Width == mirror.Width &&
+                            source.Height == mirror.Height, $"{part}/{channel}: the part swatch mirrors its target region.");
+                        var custom = (bool)editor.GetType().GetProperty($"{target}{channel}Custom").GetValue(editor);
+                        var expectedCode = custom ? "RGB"
+                            : source.Width < AppearanceEditorViewModel.ColorSize ? "Base"
+                            : AppearancePreview.PaletteCode((int)(source.Y / 16) * 16 + (int)(source.X / 16));
+                        ctx.AssertEqual(expectedCode,
+                            (string)editor.GetType().GetProperty($"SelectedPart{channel}Code").GetValue(editor),
+                            $"{part}/{channel}: part swatch code");
+
+                        editor.OnClickColorTarget(target, channel)();
+                        AssertActiveColorSwatch(ctx, editor, target.ToString() + channel + "Selected");
+                        ctx.Assert((bool)editor.GetType().GetProperty($"SelectedPart{channel}Selected").GetValue(editor),
+                            $"{part}/{channel}: the mirrored part swatch is highlighted.");
+                        ctx.Assert(editor.IsCustomTintAvailable,
+                            $"{part}/{channel} must retain its native picker even without a generated tint selection.");
+                        var mode = ((int)part + (int)channel) % 4;
+                        var expectedId = mode switch { 2 => 0, 3 => 77, _ => 35 + (int)channel };
+                        AssertPickerColor(ctx, editor, TintMapPaletteColors.GetColor(layer, expectedId), $"{part}/{channel} native preview");
+                    }
                 }
                 AssertArmorUnchanged(ctx, snapshot, civilian, "all114 part dye target selections");
                 editor.OnSelectAppearance()();
@@ -334,7 +352,7 @@ namespace SWLOR.Game.Server.EngineTests.Definitions
                 InvokePrivate(editor, "ResetArmorColorToInheritance", AppearanceEditorViewModel.ColorTarget.Chest, AppearanceArmorColor.Cloth1);
                 AssertActiveColorSwatch(ctx, editor, "ChestCloth1Selected");
             });
-            ctx.SetResultDetail("Six global images serialized dynamic regions and channel-specific mouse-down bindings; delegated target actions selected their native dyes. All19×6 native armor targets retained a picker, including Chest70. Seeded raw255/raw0/explicit0/explicit77 cases displayed inherited or explicit colors without armor writes. Headless coverage excludes mouse payload delivery and client rendering.");
+            ctx.SetResultDetail("Six base and six part swatch buttons serialized region, tint, custom, outline and code bindings; the definitions' captured base-swatch actions selected their native dyes, codes and palette outline. Selecting each of the 19 body-map slots mirrored its six target regions and codes into the part swatches, and all 19x6 native armor targets retained a picker, including Chest70. Seeded raw255/raw0/explicit0/explicit77 cases displayed inherited or explicit colors without armor writes. Headless coverage excludes mouse payload delivery and client rendering.");
         }
 
         [EngineTest("Appearance palette buttons apply only their selected native color channel", Category = "AppearanceEditor", TimeoutSeconds = 30f)]
@@ -345,6 +363,16 @@ namespace SWLOR.Game.Server.EngineTests.Definitions
             {
                 var editor = BindWithoutClient(civilian);
                 var panel = AppearanceEditorDefinition.BuildEditorPanel(AppearanceEditorViewModel.EditorMainPartial);
+                var panelJson = JObject.Parse(JsonDump(panel.ToJson()));
+                foreach (var (name, texture) in new[]
+                {
+                    ("Skin", "gui_pal_skin"), ("Hair", "gui_pal_hair01"), ("Tattoo1", "gui_pal_tattoo"), ("Tattoo2", "gui_pal_tattoo")
+                })
+                {
+                    AssertSwatchJson(ctx, panelJson.Descendants().OfType<JObject>()
+                        .Single(node => node["id"]?.Value<string>() == "ae_body_swatch_" + name), "Body" + name, texture,
+                        "Appearance body swatches");
+                }
                 var palette = WidgetTree(panel).Single(widget => widget.Id == "ae_color_palette");
                 var buttons = WidgetTree(palette).OfType<GuiButton<AppearanceEditorViewModel>>().ToArray();
                 var serialized = JObject.Parse(JsonDump(palette.ToJson()));
@@ -373,11 +401,23 @@ namespace SWLOR.Game.Server.EngineTests.Definitions
                     (ColorChannel.Tattoo2, TintMapLayerType.Tattoo2, "gui_pal_tattoo")
                 })
                 {
-                    // Exercise the selected-category setter; this token-zero fixture does
-                    // not synthesize the client's list-array event or mouse coordinates.
-                    editor.SelectedColorCategoryIndex = (int)channel;
-                    InvokePrivate(editor, "LoadTintMapEditor");
+                    // Dispatch the body swatch action captured by the real definition; this
+                    // token-zero fixture does not synthesize the client's mouse event.
+                    var name = channel.ToString();
+                    var swatch = WidgetTree(panel).Single(widget => widget.Id == "ae_body_swatch_" + name);
+                    ctx.Assert(swatch.Events.TryGetValue("click", out var select), $"{channel}: body swatch handles click.");
+                    ctx.AssertEqual(nameof(AppearanceEditorViewModel.OnClickBodySwatch), select.Method.Name,
+                        $"{channel}: body swatch routes to the body colour action");
+                    ctx.AssertEqual((int)channel, (int)select.Arguments.Single().Value, $"{channel}: body swatch captures its colour index");
+                    ((Action)select.Method.Invoke(editor, select.Arguments.Select(argument => argument.Value).ToArray()))();
+                    ctx.AssertEqual((int)channel, editor.SelectedColorCategoryIndex, $"{channel}: selected colour category");
                     ctx.AssertEqual(texture, editor.ColorSheetResref, $"{channel}: dynamic palette texture");
+                    foreach (var other in new[] { "Skin", "Hair", "Tattoo1", "Tattoo2" })
+                        ctx.AssertEqual(other == name, (bool)editor.GetType().GetProperty($"Body{other}Selected").GetValue(editor),
+                            $"{channel}: only the selected body swatch is highlighted ({other})");
+                    var custom = (bool)editor.GetType().GetProperty($"Body{name}Custom").GetValue(editor);
+                    ctx.AssertEqual(custom ? "RGB" : AppearancePreview.PaletteCode(GetColor(civilian, channel)),
+                        (string)editor.GetType().GetProperty($"Body{name}Code").GetValue(editor), $"{channel}: body swatch code");
                     foreach (var paletteId in new[] { 0, 87, 175 })
                     {
                         var before = Enum.GetValues<ColorChannel>().ToDictionary(value => value, value => GetColor(civilian, value));
@@ -410,7 +450,7 @@ namespace SWLOR.Game.Server.EngineTests.Definitions
                     AssertArmorUnchanged(ctx, unchangedArmor, civilian, $"Invalid preset {invalid} retains equipment state");
                 }
             });
-            ctx.SetResultDetail("All176 native button IDs, atlas regions and captured shared-action indices validated. Twelve button actions exercised skin, hair and both tattoos at presets0,87,175 with exact native IDs, synchronized RGB and no other-channel/equipment edits; invalid−1/176 were no-ops. Headless coverage excludes client mouse delivery and rendering; fixture has no helmet or cloak.");
+            ctx.SetResultDetail("All176 native button IDs, 9x7 atlas crops, letter/number headers, the bound selection outline and captured shared-action indices validated. The four body swatch buttons selected skin, hair and both tattoos with their palette sheets, highlights and codes; twelve palette actions at presets0,87,175 set exact native IDs, synchronized RGB and made no other-channel/equipment edits; invalid -1/176 were no-ops. Headless coverage excludes client mouse delivery and rendering; fixture has no helmet or cloak.");
         }
 
         private static IEnumerable<IGuiWidget> WidgetTree(IGuiWidget widget)
@@ -421,13 +461,30 @@ namespace SWLOR.Game.Server.EngineTests.Definitions
                     yield return descendant;
         }
 
+        private static PropertyInfo[] MaterialRegionProperties() => typeof(AppearanceEditorViewModel).GetProperties()
+            .Where(property => property.PropertyType == typeof(GuiRectangle) && property.Name.EndsWith("Region") &&
+                !property.Name.StartsWith("SelectedPart", StringComparison.Ordinal) &&
+                !property.Name.StartsWith("Body", StringComparison.Ordinal))
+            .ToArray();
+
+        private static void AssertPaletteOutline(EngineTestContext ctx, AppearanceEditorViewModel editor, int colorId, string stage)
+        {
+            var left = AppearanceEditorViewModel.PaletteHeaderWidth + colorId % 16 * AppearanceEditorViewModel.PaletteCellWidth + 1f;
+            var top = AppearanceEditorViewModel.PaletteHeaderHeight + colorId / 16 * AppearanceEditorViewModel.PaletteCellHeight + 1f;
+            var right = left + AppearanceEditorViewModel.PaletteCellWidth - 2f;
+            var bottom = top + AppearanceEditorViewModel.PaletteCellHeight - 2f;
+            var expected = new[] { left, top, right, top, right, bottom, left, bottom, left, top };
+            ctx.Assert(editor.PaletteSelectionPoints != null && editor.PaletteSelectionPoints.SequenceEqual(expected),
+                $"{stage}: the outline surrounds palette cell {AppearancePreview.PaletteCode(colorId)}.");
+        }
+
         private static void AssertActiveColorSwatch(EngineTestContext ctx, AppearanceEditorViewModel editor, string expected)
         {
-            var selectionProperties = typeof(AppearanceEditorViewModel).GetProperties()
-                .Where(property => property.PropertyType == typeof(GuiRectangle) && property.Name.EndsWith("Region"))
+            // The 120 Global and per-part material targets; the SelectedPart and Body swatches mirror them.
+            var selectionProperties = MaterialRegionProperties()
                 .Select(property => typeof(AppearanceEditorViewModel).GetProperty(property.Name[..^"Region".Length] + "Selected"))
                 .ToArray();
-            ctx.AssertEqual(120, selectionProperties.Length, "Every material swatch exposes a glow binding");
+            ctx.AssertEqual(120, selectionProperties.Length, "Every material target exposes a glow binding");
             var active = selectionProperties.Where(property => (bool)property.GetValue(editor)).Select(property => property.Name).ToArray();
             ctx.AssertEqual(1, active.Length, "Exactly one material target is highlighted");
             ctx.AssertEqual(expected, active.Single(), "The highlight moves to the selected target and channel");
@@ -1046,7 +1103,7 @@ namespace SWLOR.Game.Server.EngineTests.Definitions
                 SetLocalInt(civilian, savedCreatureTintName, savedCreatureTint);
                 var armor = ReadArmor(civilian);
                 var creatureColors = Enum.GetValues<ColorChannel>().Select(channel => GetColor(civilian, channel)).ToArray();
-                var editor = new AppearanceEditorViewModel { Geometry = new GuiRectangle(0, 0, 590, 740) };
+                var editor = new AppearanceEditorViewModel { Geometry = new GuiRectangle(0, 0, 1240, 720) };
                 var converter = new GuiPropertyConverter();
                 using var publications = new BindingPublications(editor);
                 editor.Bind(OBJECT_INVALID, 0, editor.Geometry, GuiWindowType.AppearanceEditor,
@@ -1065,21 +1122,24 @@ namespace SWLOR.Game.Server.EngineTests.Definitions
                     ctx.Assert(expectedBindings.Count > 0, "The tab must have published bindings before geometry checks.");
                     var partialName = isArmor ? AppearanceEditorViewModel.EditorArmorPartial : AppearanceEditorViewModel.EditorMainPartial;
                     var originalPanel = JObject.Parse(JsonDump(AppearanceEditorDefinition.BuildEditorPanel(partialName).ToJson()));
-                    AssertStaticPanelFlexPaths(ctx, originalPanel, isArmor, partialName);
+                    AssertStaticPanelLayout(ctx, originalPanel, isArmor, partialName);
 
+                    // 1240 and 1600 choose the 3- and 4-column grids, 900 the 1-column grid.
                     foreach (var (width, height) in new[]
                     {
-                        (590f, 740f), (1440f, 960f), (590f, 520f)
+                        (1240f, 720f), (1600f, 900f), (900f, 600f)
                     })
                     {
                         var stage = $"{partialName} at {width}x{height}";
                         editor.Geometry = new GuiRectangle(0, 0, width, height);
                         publications.Clear();
-                        // Exercise the actual completion callback after assigning geometry.
+                        // Exercise the actual completion callback after assigning geometry. It only
+                        // queues the debounced browser-grid swap, so nothing is published now; the
+                        // delayed swap needs the client's root layout and is not exercised here.
                         // The viewer is invalid: this is not incoming NuiGetBind transport or
                         // proof of client layout/scroll behavior at these dimensions.
                         InvokePrivate(editor, "OnClientPropertyUpdated", nameof(editor.Geometry));
-                        ctx.AssertEqual(0, publications.Count, $"{stage}: geometry must not redeliver any binding");
+                        ctx.AssertEqual(0, publications.Count, $"{stage}: geometry must not redeliver any binding immediately");
                         ctx.AssertEqual(width, editor.Geometry.Width, $"{stage}: geometry width remains exact");
                         ctx.AssertEqual(height, editor.Geometry.Height, $"{stage}: no layout redraw height nudge");
                         foreach (var (name, expected) in expectedBindings)
@@ -1101,197 +1161,156 @@ namespace SWLOR.Game.Server.EngineTests.Definitions
                     }
                 }
             });
-            ctx.SetResultDetail("Six actual Geometry completion callbacks at590x740,1440x960,590x520 published no bindings or redraw nudges and retained cached inputs. Static native panel JSON/event IDs stayed identical with no fixed widths along expanding control paths. All19 armor models,120 armor colors,4 creature colors,APC markers,TMP baselines and pending tint locals stayed unchanged. Headless coverage excludes client Geometry transport and rendered layout.");
+            ctx.SetResultDetail("Six actual Geometry completion callbacks at 1240x720, 1600x900 and 900x600 published no bindings synchronously (they only queue the debounced grid swap) and retained cached inputs. Static native panel JSON/event IDs stayed identical: fixed map and colour columns beside a flexible browser, bound body-map slots, palette and swatches. All 19 armor models, 120 armor colors, 4 creature colors, APC markers, TMP baselines and pending tint locals stayed unchanged. Headless coverage excludes client Geometry transport, the delayed grid swap and rendered layout.");
         }
 
-        private static void AssertStaticPanelFlexPaths(EngineTestContext ctx, JObject panel, bool isArmor, string stage)
+        private static void AssertStaticPanelLayout(EngineTestContext ctx, JObject panel, bool isArmor, string stage)
         {
             ctx.Assert(panel["width"] == null && panel["height"] == null,
                 $"{stage}: the static viewport must not retain a fixed window size.");
             var objects = new[] { panel }.Concat(panel.Descendants().OfType<JObject>()).ToArray();
             var ids = objects.Where(node => node["id"] != null).Select(node => node["id"].Value<string>()).ToArray();
             ctx.Assert(ids.Length > 0 && ids.Distinct().Count() == ids.Length, $"{stage}: native control IDs must be unique.");
-            var flexControls = objects.Where(node => node["type"]?.Value<string>() == "color_picker" ||
-                (isArmor ? node["type"]?.Value<string>() == "combo" :
-                    node["row_count"]?["bind"]?.Value<string>() == nameof(AppearanceEditorViewModel.PartOptions) + "_RowCount" ||
-                    node["id"]?.Value<string>() is "ae_previous_part" or "ae_next_part")).ToArray();
-            ctx.AssertEqual(isArmor ? 20 : 4, flexControls.Length, $"{stage}: all expanding picker/list/part controls are covered");
-            foreach (var control in flexControls)
+
+            // Body map | colours | browser: the side columns are fixed, the browser takes the rest.
+            var browserSlot = objects.Single(node => node["id"]?.Value<string>() == AppearanceEditorViewModel.BrowserGridElement);
+            var browser = browserSlot.Ancestors().OfType<JObject>().First(node => node["type"]?.Value<string>() == "group");
+            var contentRow = browser.Ancestors().OfType<JObject>().First(node => node["type"]?.Value<string>() == "row");
+            var columns = contentRow["children"].OfType<JObject>().ToArray();
+            ctx.AssertEqual(3, columns.Length, $"{stage}: body map, colours and browser share one row");
+            ctx.AssertEqual(AppearanceEditorDefinition.MapWidth, columns[0]["width"]?.Value<float>(), $"{stage}: body map width");
+            ctx.AssertEqual(AppearanceEditorDefinition.ColoursWidth, columns[1]["width"]?.Value<float>(), $"{stage}: colour column width");
+            ctx.Assert(ReferenceEquals(columns[2], browser) && browser["width"] == null,
+                $"{stage}: the browser must take the width left beside the fixed columns.");
+
+            var slots = objects.Where(node => node["id"]?.Value<string>()?.StartsWith("ae_slot_", StringComparison.Ordinal) == true).ToArray();
+            ctx.AssertEqual(isArmor ? 21 : 15, slots.Length, $"{stage}: body map slot count");
+            foreach (var slot in slots)
             {
-                var path = new[] { control }.Concat(control.Ancestors().OfType<JObject>()).ToArray();
-                var isPartSelector = control["type"]?.Value<string>() == "combo";
-                if (isPartSelector)
-                    ctx.AssertEqual(96f, control["width"]?.Value<float>(), $"{stage}: part dropdown must leave room for both arrows");
-                ctx.Assert(path.Skip(isPartSelector ? 1 : 0).All(node => node["width"] == null),
-                    $"{stage}: {control["type"]}/{control["id"]} must not encounter a fixed-width ancestor.");
-                ctx.Assert(path.Any(node => node["type"]?.Value<string>() == "group" &&
-                    node["scrollbars"]?.Value<int>() == (int)NuiScrollbars.Auto),
-                    $"{stage}: expanding controls must remain inside an automatically scrolling viewport.");
+                var name = slot["id"].Value<string>()["ae_slot_".Length..];
+                ctx.AssertEqual($"Map{name}Image", slot["label"]?["bind"]?.Value<string>(), $"{stage}/{name}: slot picture binding");
+                ctx.AssertEqual($"Map{name}Selected", slot["encouraged"]?["bind"]?.Value<string>(), $"{stage}/{name}: slot highlight");
+                var outline = slot["draw_list"]?.Children<JObject>().Single();
+                ctx.AssertEqual($"Map{name}Selected", outline?["enabled"]?["bind"]?.Value<string>(), $"{stage}/{name}: slot outline");
             }
 
+            var picker = objects.Single(node => node["type"]?.Value<string>() == "color_picker");
+            ctx.AssertEqual("ae_tint_picker", picker["id"]?.Value<string>(), $"{stage}: picker event ID");
+            ctx.AssertEqual(nameof(AppearanceEditorViewModel.SelectedTintColor), picker["value"]?["bind"]?.Value<string>(),
+                $"{stage}: picker binding");
+            ctx.Assert(picker.Ancestors().OfType<JObject>().All(node => node["id"]?.Value<string>() != "ae_color_palette"),
+                $"{stage}: the picker sits outside the fixed-size palette group.");
+            AssertAppearancePaletteJson(ctx, objects.Single(node => node["id"]?.Value<string>() == "ae_color_palette"), stage);
             if (isArmor)
-            {
-                AssertGlobalSwatchImagesJson(ctx, panel, stage);
-                var controls = objects.Where(node => node["type"]?.Value<string>() == "combo").ToArray();
-                ctx.AssertEqual(19, controls.Length, $"{stage}: all armor part selectors must be serialized");
-                var columns = controls.Select(control => control.Ancestors().OfType<JObject>()
-                    .First(node => node["type"]?.Value<string>() == "group")).Distinct().ToArray();
-                ctx.AssertEqual(3, columns.Length, $"{stage}: armor selectors must occupy three peer groups");
-                var row = columns[0].Ancestors().OfType<JObject>().First();
-                ctx.AssertEqual("row", row["type"]?.Value<string>(), $"{stage}: armor groups share a row");
-                ctx.AssertEqual(840f, row["height"]?.Value<float>(), $"{stage}: shared row bounds the armor stacks");
-                ctx.AssertEqual(3, row["children"].OfType<JObject>().Count(node => node["type"]?.Value<string>() == "group"),
-                    $"{stage}: exactly three groups must be direct row children");
-                foreach (var column in columns)
-                {
-                    ctx.Assert(ReferenceEquals(row, column.Ancestors().OfType<JObject>().First()),
-                        $"{stage}: all armor groups must be siblings in the bounded row.");
-                    // The client previously showed only the left stack: even a height-only
-                    // modifier disables the native peer group's equal-width eligibility.
-                    ctx.Assert(column["width"] == null && column["height"] == null,
-                        $"{stage}: neither dimension may be fixed on an equally sharing armor group.");
-                }
-                ctx.Assert(columns.Select(column => column.Descendants().OfType<JObject>()
-                        .Count(node => node["type"]?.Value<string>() == "combo")).SequenceEqual(new[] { 7, 5, 7 }),
-                    $"{stage}: the left, center and right armor stacks must retain all 19 controls.");
-            }
-            else
-            {
-                var palette = objects.Single(node => node["id"]?.Value<string>() == "ae_color_palette");
-                AssertAppearancePaletteJson(ctx, palette, stage);
-                var paletteRow = palette.Ancestors().OfType<JObject>().First();
-                ctx.AssertEqual("row", paletteRow["type"]?.Value<string>(), $"{stage}: palette is in a row");
-                var paletteChildren = paletteRow["children"].OfType<JObject>().ToArray();
-                // A lone fixed-width palette pulled the entire group's internal content
-                // toward its minimum width, even when the client drew a wide outer group.
-                ctx.AssertEqual(2, paletteChildren.Length, $"{stage}: palette row includes an expansion spacer");
-                ctx.Assert(ReferenceEquals(paletteChildren[0], palette) &&
-                    paletteChildren[1]["type"]?.Value<string>() == "spacer" &&
-                    paletteChildren[1]["width"] == null && paletteChildren[1]["height"] == null,
-                    $"{stage}: a dimensionless trailing spacer must absorb spare palette-row width.");
+                AssertEquipmentSwatchesJson(ctx, panel, stage);
+        }
 
-                var navigation = objects.Where(node => node["id"]?.Value<string>() is "ae_previous_part" or "ae_next_part").ToArray();
-                ctx.AssertEqual(2, navigation.Length, $"{stage}: both part navigation buttons are serialized");
-                var navigationRow = navigation[0].Ancestors().OfType<JObject>().First();
-                ctx.AssertEqual("row", navigationRow["type"]?.Value<string>(), $"{stage}: navigation shares a row");
-                ctx.AssertEqual(40f, navigationRow["height"]?.Value<float>(), $"{stage}: navigation row owns its height");
-                foreach (var button in navigation)
-                {
-                    ctx.Assert(ReferenceEquals(navigationRow, button.Ancestors().OfType<JObject>().First()) &&
-                        button["width"] == null && button["height"] == null,
-                        $"{stage}: navigation buttons must share the row without disabling equal-width sizing.");
-                }
+        private static void AssertEquipmentSwatchesJson(EngineTestContext ctx, JObject panel, string stage)
+        {
+            var objects = panel.Descendants().OfType<JObject>().ToArray();
+            var swatches = objects.Where(node => node["id"]?.Value<string>()?.Contains("_swatch_", StringComparison.Ordinal) == true).ToArray();
+            ctx.AssertEqual(12, swatches.Length, $"{stage}: six base and six selected-part swatches");
+            ctx.Assert(!objects.Any(node => node["id"]?.Value<string>()?.StartsWith("ae_color_", StringComparison.Ordinal) == true &&
+                    node["id"].Value<string>() != "ae_color_palette"),
+                $"{stage}: the 120 per-target swatches were replaced by the selected-part row.");
+            foreach (var channel in new[]
+            {
+                AppearanceArmorColor.Leather1, AppearanceArmorColor.Cloth1, AppearanceArmorColor.Metal1,
+                AppearanceArmorColor.Leather2, AppearanceArmorColor.Cloth2, AppearanceArmorColor.Metal2
+            })
+            {
+                var texture = channel is AppearanceArmorColor.Metal1 or AppearanceArmorColor.Metal2 ? "gui_pal_armor01" : "gui_pal_tattoo";
+                AssertSwatchJson(ctx, swatches.Single(node => node["id"].Value<string>() == "ae_base_swatch_" + channel),
+                    "Global" + channel, texture, stage);
+                AssertSwatchJson(ctx, swatches.Single(node => node["id"].Value<string>() == "ae_part_swatch_" + channel),
+                    "SelectedPart" + channel, texture, stage);
             }
         }
 
-        private static void AssertColorSwatchDrawing(EngineTestContext ctx, JObject swatch)
+        private static void AssertSwatchJson(EngineTestContext ctx, JObject swatch, string name, string texture, string stage)
         {
-            var region = swatch["id"].Value<string>()["ae_color_".Length..];
-            var name = region[..^"Region".Length];
-            var isGlobal = name.StartsWith("Global", StringComparison.Ordinal);
+            ctx.AssertEqual("button", swatch["type"]?.Value<string>(), $"{stage}/{name}: swatch is a button");
+            ctx.AssertEqual(name + "Selected", swatch["encouraged"]?["bind"]?.Value<string>(), $"{stage}/{name}: swatch glow");
             var drawings = swatch["draw_list"].Children<JObject>().ToArray();
-            ctx.AssertEqual(isGlobal ? 1 : 2, drawings.Length, name + ": preset and custom drawings coexist");
-            if (!isGlobal)
-            {
-                ctx.AssertEqual((int)NuiDrawListItemType.Image, drawings[0]["type"].Value<int>(),
-                    name + ": the preset image is drawn before the custom fill");
-                ctx.AssertEqual(region, drawings[0]["image_region"]?["bind"]?.Value<string>(),
-                    name + ": switching back to a preset retains its image binding");
-            }
-            var fill = drawings.Last();
-            ctx.AssertEqual((int)NuiDrawListItemType.PolyLine, fill["type"].Value<int>(), name + ": RGB polygon");
-            ctx.AssertEqual(name + "Tint", fill["color"]?["bind"]?.Value<string>(), name + ": effective color binding");
-            ctx.AssertEqual(name + "Custom", fill["enabled"]?["bind"]?.Value<string>(), name + ": custom mode binding");
-            ctx.AssertEqual(true, fill["fill"]?.Value<bool>(), name + ": RGB polygon is filled");
+            ctx.AssertEqual(3, drawings.Length, $"{stage}/{name}: palette crop, RGB fill and selection outline");
+
+            ctx.AssertEqual((int)NuiDrawListItemType.Image, drawings[0]["type"].Value<int>(), $"{stage}/{name}: crop drawn first");
+            ctx.AssertEqual(texture, drawings[0]["image"]?.Value<string>(), $"{stage}/{name}: palette sheet");
+            ctx.AssertEqual(name + "Region", drawings[0]["image_region"]?["bind"]?.Value<string>(), $"{stage}/{name}: crop binding");
+
+            var fill = drawings[1];
+            ctx.AssertEqual((int)NuiDrawListItemType.PolyLine, fill["type"].Value<int>(), $"{stage}/{name}: RGB polygon");
+            ctx.AssertEqual(name + "Tint", fill["color"]?["bind"]?.Value<string>(), $"{stage}/{name}: effective color binding");
+            ctx.AssertEqual(name + "Custom", fill["enabled"]?["bind"]?.Value<string>(), $"{stage}/{name}: custom mode binding");
+            ctx.AssertEqual(true, fill["fill"]?.Value<bool>(), $"{stage}/{name}: RGB polygon is filled");
             var points = fill["points"] as JArray;
             ctx.Assert(points != null && points.Count == 8 && points.All(point => point.Type == JTokenType.Float),
-                name + ": NUI requires eight flat float coordinates, not four vector objects");
-            var inset = isGlobal ? 0f : 2f;
-            var extent = isGlobal ? 99f : swatch["width"].Value<float>() - inset;
-            ctx.Assert(points.Values<float>().SequenceEqual(new[] { inset, inset, extent, inset, extent, extent, inset, extent }),
-                name + ": clockwise rectangle fills the color preview bounds");
-        }
+                $"{stage}/{name}: NUI requires eight flat float coordinates, not four vector objects.");
 
-        private static void AssertGlobalSwatchImagesJson(EngineTestContext ctx, JObject panel, string stage)
-        {
-            var images = panel.Descendants().OfType<JObject>()
-                .Where(node => node["id"]?.Value<string>()?.StartsWith("ae_color_Global", StringComparison.Ordinal) == true).ToArray();
-            ctx.AssertEqual(6, images.Length, $"{stage}: all six global dye images must be serialized");
-            foreach (var image in images)
-            {
-                var regionName = image["id"].Value<string>().Substring("ae_color_".Length);
-                ctx.AssertEqual("image", image["type"]?.Value<string>(), $"{stage}/{regionName}: responsive image dimensions");
-                ctx.Assert(image["width"] == null && image["height"] == null,
-                    $"{stage}/{regionName}: neither dimension may disable equal-width sharing.");
-                ctx.AssertEqual(2f, image["margin"]?.Value<float>(), $"{stage}/{regionName}: swatch margin");
-                ctx.AssertEqual(1f, image["aspect"]?.Value<float>(), $"{stage}/{regionName}: artwork and native encouragement share square bounds");
-                var fill = image["draw_list"]?.Children<JObject>().Single();
-                ctx.AssertEqual(true, image["draw_list_scissor"]?.Value<bool>(), $"{stage}: RGB fill is clipped to the responsive square");
-                ctx.AssertEqual(regionName[..^"Region".Length] + "Tint", fill?["color"]?["bind"]?.Value<string>(),
-                    $"{stage}/{regionName}: swatch uses the effective RGB color");
-                ctx.AssertEqual(true, fill?["fill"]?.Value<bool>(), $"{stage}/{regionName}: solid custom RGB fill");
-                ctx.AssertEqual(regionName[..^"Region".Length] + "Custom", fill?["enabled"]?["bind"]?.Value<string>(), $"{stage}: presets keep their original image");
-                var imageRow = image.Ancestors().OfType<JObject>().First();
-                ctx.AssertEqual("row", imageRow["type"]?.Value<string>(), $"{stage}/{regionName}: image belongs to a private row");
-                ctx.Assert(imageRow["height"] == null, $"{stage}/{regionName}: the square must not be forced to the outer row's height");
-                ctx.AssertEqual(1, imageRow["children"].Count(), $"{stage}/{regionName}: image uses the full cell without competing spacers");
-                var stack = imageRow.Ancestors().OfType<JObject>().First();
-                var stackRows = stack["children"].OfType<JObject>().ToArray();
-                ctx.AssertEqual(2, stackRows.Length, $"{stage}/{regionName}: cell keeps a row of vertical slack below the square");
-                ctx.AssertEqual("spacer", stackRows[1]["children"]?.First?["type"]?.Value<string>(), $"{stage}/{regionName}: trailing vertical spacer");
-                var cell = stack.Ancestors().OfType<JObject>().First();
-                ctx.AssertEqual("group", cell["type"]?.Value<string>(), $"{stage}/{regionName}: each square has an independent cell");
-                ctx.Assert(cell["width"] == null && cell["height"] == null && cell["encouraged"] == null,
-                    $"{stage}/{regionName}: cell shares width and never receives the selection outline.");
-                ctx.AssertEqual(0f, cell["margin"]?.Value<float>(), $"{stage}/{regionName}: cell margin");
-                ctx.AssertEqual((int)NuiScrollbars.None, cell["scrollbars"]?.Value<int>(), $"{stage}/{regionName}: cell scrollbars");
-            }
-            var rows = images.Select(image => image.Ancestors().OfType<JObject>()
-                .First(node => node["type"]?.Value<string>() == "group").Ancestors().OfType<JObject>().First()).Distinct().ToArray();
-            ctx.AssertEqual(2, rows.Length, $"{stage}: global dyes occupy two shared rows");
-            foreach (var row in rows)
-            {
-                ctx.AssertEqual("row", row["type"]?.Value<string>(), $"{stage}: global image parent is a row");
-                ctx.AssertEqual(99f, row["height"]?.Value<float>(), $"{stage}: shared row bounds image height");
-                ctx.AssertEqual(0f, row["margin"]?.Value<float>(), $"{stage}: global image row has no hidden margins");
-                ctx.AssertEqual(3, row["children"].OfType<JObject>().Count(node => node["type"]?.Value<string>() == "group"), $"{stage}: three peer cells fill the shared row");
-            }
-            var column = rows[0].Ancestors().OfType<JObject>().First();
-            ctx.Assert(ReferenceEquals(column, rows[1].Ancestors().OfType<JObject>().First()), $"{stage}: both image rows share their header column.");
-            var header = column["children"].OfType<JObject>().First();
-            ctx.AssertEqual(28f, header["height"]?.Value<float>(), $"{stage}: global label row owns its height");
-            var labels = header["children"].OfType<JObject>().ToArray();
-            ctx.AssertEqual(3, labels.Length, $"{stage}: one label aligns with each global dye column");
-            ctx.Assert(labels.Select(label => label["value"]?.Value<string>()).SequenceEqual(new[] { "Leather", "Cloth", "Metal" }),
-                $"{stage}: global dye headings keep their column order.");
-            ctx.Assert(labels.All(label => label["type"]?.Value<string>() == "label" &&
-                label["width"] == null && label["height"] == null && label["margin"]?.Value<float>() == 0f),
-                $"{stage}: global labels remain dimensionless equal-width peers.");
+            var outline = drawings[2];
+            ctx.AssertEqual((int)NuiDrawListItemType.PolyLine, outline["type"].Value<int>(), $"{stage}/{name}: outline");
+            ctx.AssertEqual(name + "Selected", outline["enabled"]?["bind"]?.Value<string>(), $"{stage}/{name}: outline binding");
+            ctx.AssertEqual(false, outline["fill"]?.Value<bool>(), $"{stage}/{name}: outline is not filled");
+            ctx.AssertEqual(10, (outline["points"] as JArray)?.Count, $"{stage}/{name}: closed rectangle outline");
+
+            var row = swatch.Ancestors().OfType<JObject>().First(node => node["type"]?.Value<string>() == "row");
+            var children = row["children"].OfType<JObject>().ToList();
+            var code = children[children.IndexOf(swatch) + 1];
+            ctx.AssertEqual(name + "Code", code["value"]?["bind"]?.Value<string>(), $"{stage}/{name}: palette code label");
         }
 
         private static void AssertAppearancePaletteJson(EngineTestContext ctx, JObject palette, string stage)
         {
-            ctx.AssertEqual("group", palette["type"]?.Value<string>(), $"{stage}: appearance palette is a button group");
-            ctx.AssertEqual(308f, palette["width"]?.Value<float>(), $"{stage}: palette grid width");
-            ctx.AssertEqual(218f, palette["height"]?.Value<float>(), $"{stage}: palette has no equipment-target header space");
+            const float headerWidth = AppearanceEditorViewModel.PaletteHeaderWidth;
+            const float headerHeight = AppearanceEditorViewModel.PaletteHeaderHeight;
+            const float cellWidth = AppearanceEditorViewModel.PaletteCellWidth;
+            const float cellHeight = AppearanceEditorViewModel.PaletteCellHeight;
+            ctx.AssertEqual("group", palette["type"]?.Value<string>(), $"{stage}: palette is a button group");
+            ctx.AssertEqual(headerWidth + 16 * cellWidth, palette["width"]?.Value<float>(), $"{stage}: palette grid width");
+            ctx.AssertEqual(headerHeight + 11 * cellHeight, palette["height"]?.Value<float>(), $"{stage}: palette grid height");
+            ctx.AssertEqual(nameof(AppearanceEditorViewModel.IsColorPickerVisible), palette["visible"]?["bind"]?.Value<string>(),
+                $"{stage}: palette visibility");
+
+            var outline = palette["draw_list"]?.Children<JObject>().Single();
+            ctx.AssertEqual((int)NuiDrawListItemType.PolyLine, outline?["type"]?.Value<int>(), $"{stage}: one selection outline");
+            ctx.AssertEqual(nameof(AppearanceEditorViewModel.PaletteSelectionPoints), outline?["points"]?["bind"]?.Value<string>(),
+                $"{stage}: outline points follow the selected colour");
+            ctx.AssertEqual(nameof(AppearanceEditorViewModel.IsPaletteSelectionVisible), outline?["enabled"]?["bind"]?.Value<string>(),
+                $"{stage}: outline hides for custom or inherited colours");
+
             var column = palette["children"].OfType<JObject>().Single();
             ctx.AssertEqual("col", column["type"]?.Value<string>(), $"{stage}: palette has one column of rows");
             var rows = column["children"].OfType<JObject>().ToArray();
-            ctx.AssertEqual(11, rows.Length, $"{stage}: all176 colors fit in11 rows without a target header");
-            var index = 0;
-            foreach (var row in rows)
+            ctx.AssertEqual(12, rows.Length, $"{stage}: one letter header and eleven colour rows");
+
+            var header = rows[0];
+            ctx.AssertEqual(headerHeight, header["height"]?.Value<float>(), $"{stage}: header height");
+            var headerCells = header["children"].OfType<JObject>().ToArray();
+            ctx.AssertEqual(17, headerCells.Length, $"{stage}: number-column spacer and sixteen letters");
+            ctx.AssertEqual("spacer", headerCells[0]["type"]?.Value<string>(), $"{stage}: header starts above the row numbers");
+            ctx.AssertEqual(headerWidth, headerCells[0]["width"]?.Value<float>(), $"{stage}: header spacer width");
+            ctx.Assert(headerCells.Skip(1).Select(label => label["value"]?.Value<string>())
+                    .SequenceEqual(Enumerable.Range(0, 16).Select(index => ((char)('A' + index)).ToString())),
+                $"{stage}: column letters A-P.");
+
+            var buttonIndex = 0;
+            for (var y = 0; y < 11; y++)
             {
+                var row = rows[y + 1];
                 ctx.AssertEqual("row", row["type"]?.Value<string>(), $"{stage}: palette row type");
-                ctx.AssertEqual(18f, row["height"]?.Value<float>(), $"{stage}: palette row height");
+                ctx.AssertEqual(cellHeight, row["height"]?.Value<float>(), $"{stage}: palette row height");
                 ctx.AssertEqual(0f, row["margin"]?.Value<float>(), $"{stage}: palette row has no hidden margins");
-                var buttons = row["children"].OfType<JObject>().ToArray();
-                ctx.AssertEqual(16, buttons.Length, $"{stage}: palette row includes every native column");
-                foreach (var button in buttons)
+                var cells = row["children"].OfType<JObject>().ToArray();
+                ctx.AssertEqual(17, cells.Length, $"{stage}: row number and sixteen colours");
+                ctx.AssertEqual((y + 1).ToString(), cells[0]["value"]?.Value<string>(), $"{stage}: row number {y + 1}");
+                ctx.AssertEqual(headerWidth, cells[0]["width"]?.Value<float>(), $"{stage}: row number width");
+                foreach (var button in cells.Skip(1))
                 {
+                    var index = buttonIndex++;
                     ctx.AssertEqual("button", button["type"]?.Value<string>(), $"{stage}/{index}: preset is independently clickable");
                     ctx.AssertEqual("ae_palette_" + index, button["id"]?.Value<string>(), $"{stage}/{index}: deterministic preset event ID");
-                    ctx.AssertEqual(18f, button["width"]?.Value<float>(), $"{stage}/{index}: button width");
-                    ctx.AssertEqual(18f, button["height"]?.Value<float>(), $"{stage}/{index}: button height");
+                    ctx.AssertEqual(cellWidth, button["width"]?.Value<float>(), $"{stage}/{index}: button width");
+                    ctx.AssertEqual(cellHeight, button["height"]?.Value<float>(), $"{stage}/{index}: button height");
                     ctx.AssertEqual(0f, button["margin"]?.Value<float>(), $"{stage}/{index}: button margin");
                     var image = button.Descendants().OfType<JObject>().Single(node =>
                         node["type"]?.Type == JTokenType.Integer &&
@@ -1299,14 +1318,13 @@ namespace SWLOR.Game.Server.EngineTests.Definitions
                     ctx.AssertEqual(nameof(AppearanceEditorViewModel.ColorSheetResref), image["image"]?["bind"]?.Value<string>(),
                         $"{stage}/{index}: button draws the selected skin/hair/tattoo/equipment palette");
                     var region = image["image_region"];
-                    ctx.AssertEqual((float)(index % 16 * 16 + 2), region?["x"]?.Value<float>(), $"{stage}/{index}: native atlas column");
-                    ctx.AssertEqual((float)(index / 16 * 16 + 2), region?["y"]?.Value<float>(), $"{stage}/{index}: native atlas row");
-                    ctx.AssertEqual(12f, region?["w"]?.Value<float>(), $"{stage}/{index}: swatch samples inside one color cell");
-                    ctx.AssertEqual(12f, region?["h"]?.Value<float>(), $"{stage}/{index}: swatch avoids adjacent palette rows");
-                    index++;
+                    ctx.AssertEqual((float)(index % 16 * 16 + 3), region?["x"]?.Value<float>(), $"{stage}/{index}: native atlas column");
+                    ctx.AssertEqual((float)(index / 16 * 16 + 4), region?["y"]?.Value<float>(), $"{stage}/{index}: native atlas row");
+                    ctx.AssertEqual(9f, region?["w"]?.Value<float>(), $"{stage}/{index}: 9x7 crop drawn at 2x keeps even pixel columns");
+                    ctx.AssertEqual(7f, region?["h"]?.Value<float>(), $"{stage}/{index}: crop stays inside one color cell");
                 }
             }
-            ctx.AssertEqual(176, index, $"{stage}: no missing or extra native palette IDs");
+            ctx.AssertEqual(176, buttonIndex, $"{stage}: no missing or extra native palette IDs");
         }
 
         private sealed record BindingPublication(int Sequence, JToken Value);
@@ -1417,9 +1435,7 @@ namespace SWLOR.Game.Server.EngineTests.Definitions
                     $"{stage}: {prefix} selected model must occur in its published options.");
             }
 
-            var regions = typeof(AppearanceEditorViewModel).GetProperties()
-                .Where(property => property.PropertyType == typeof(GuiRectangle) && property.Name.EndsWith("Region"))
-                .ToArray();
+            var regions = MaterialRegionProperties();
             ctx.AssertEqual(120, regions.Length, "All six dyes for Global and nineteen armor parts");
             foreach (var property in regions)
             {

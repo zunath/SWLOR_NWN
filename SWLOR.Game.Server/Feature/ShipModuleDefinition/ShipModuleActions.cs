@@ -437,12 +437,12 @@ namespace SWLOR.Game.Server.Feature.ShipModuleDefinition
         }
 
         /// <summary>
-        /// One ore pick from an asteroid's table. The pilot's Deep Core (Gathering) adds weight to the rare metals,
-        /// the way Treasure Hunter does on the ground.
+        /// One ore pick from an asteroid's table. The pilot's Deep Core (Gathering) adds percentage points to the
+        /// rare-metal chance, as a separate roll before the normal weighted pick.
         /// </summary>
         private static LootTableItem GetAsteroidOre(uint pilot, LootTable lootTable)
         {
-            return lootTable.GetRandomItemWithRareBonus(Stat.GetStatAdjustment(pilot, StatType.SpaceRareMetalChance));
+            return lootTable.GetRandomItemWithRareChance(Stat.GetStatAdjustment(pilot, StatType.SpaceRareMetalChance));
         }
 
         /// <summary>Mines one cycle of an asteroid and delivers the ore when the cycle ends.</summary>

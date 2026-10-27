@@ -6612,7 +6612,7 @@ namespace SWLOR.Game.Server.Service.StatService
         [StatType(StatTypeCategory.BeneficialWhenPositive)]
         SpaceMiningYieldBonus = 1215,
 
-        /// <summary>Weight added to the rare metals in an asteroid's ore table (Deep Core), as Treasure Hunter does on the ground.</summary>
+        /// <summary>Percentage points added to the rare-metal chance of an asteroid's ore (Deep Core), as a separate rare roll.</summary>
         [StatType(StatTypeCategory.BeneficialWhenPositive)]
         SpaceRareMetalChance = 1216,
 

@@ -173,14 +173,55 @@ public class GatheringSpaceIndustryTests
         }
     }
 
+    [TestCase(10, 9, "zinsiam")]
+    [TestCase(10, 0, "zinsiam")]
+    [TestCase(20, 19, "zinsiam")]
+    public void DeepCore_ARollBelowTheBonusGivesTheRareMetal(int bonus, int roll, string expected)
+    {
+        var table = new HarvestingLootTableDefinition().BuildLootTables()["ASTEROID_ARDANIUM"];
+
+        table.GetRandomItemWithRareChance(bonus, roll).Resref.Should().Be(expected);
+    }
+
     [Test]
-    public void TheAsteroidRoll_AddsDeepCoreWeightToTheRareMetalOnly()
+    public void DeepCore_NoBonusOrAHigherRollUsesTheNormalRoll()
     {
         var table = new HarvestingLootTableDefinition().BuildLootTables()["ASTEROID_TILARIUM"];
+        var items = new HashSet<string>(table.Select(item => item.Resref));
 
-        // Treasure Hunter's rule: the bonus is weight on each rare row (30 ore, 2 aluminum, 1 quadrenium).
-        var weights = table.Select(item => item.Weight + (item.IsRare ? 20 : 0)).ToArray();
-        weights.Should().Equal(30, 2, 21);
+        table.GetRandomItemWithRareChance(0, 0).Resref.Should().BeOneOf(items);
+        table.GetRandomItemWithRareChance(10, 10).Resref.Should().BeOneOf(items);
+    }
+
+    [TestCase(0, 0.10)]
+    [TestCase(10, 0.19)]
+    [TestCase(20, 0.28)]
+    public void DeepCore_RaisesTheRareShareByTheBonusPointsOfTheRemainder(int bonus, double expectedShare)
+    {
+        var table = new HarvestingLootTableDefinition().BuildLootTables()["ASTEROID_ARDANIUM"];
+
+        SWLOR.Game.Server.Service.Random.SetSeed(20260);
+        try
+        {
+            const int draws = 40000;
+            var rare = Enumerable.Range(0, draws)
+                .Count(_ => table.GetRandomItemWithRareChance(bonus).IsRare);
+
+            ((double)rare / draws).Should().BeApproximately(expectedShare, 0.01);
+        }
+        finally
+        {
+            SWLOR.Game.Server.Service.Random.ResetSeed();
+        }
+    }
+
+    [Test]
+    public void DeepCore_ATableWithNoRareRowUsesTheNormalRoll()
+    {
+        var table = new HarvestingLootTableDefinition().BuildLootTables()["HARVESTING_VELDITE"];
+
+        table.Any(item => item.IsRare).Should().BeFalse();
+        table.GetRandomItemWithRareChance(100, 0).Should().NotBeNull();
     }
 
     [Test]
@@ -192,7 +233,7 @@ public class GatheringSpaceIndustryTests
 
         actions.Should().Contain("Stat.GetStatAdjustment(pilot, StatType.SpaceMiningCycleSpeedPercent)");
         actions.Should().Contain("Stat.GetStatAdjustment(pilot, StatType.SpaceMiningYieldBonus)");
-        actions.Should().Contain("Stat.GetStatAdjustment(pilot, StatType.SpaceRareMetalChance)");
+        actions.Should().Contain("lootTable.GetRandomItemWithRareChance(Stat.GetStatAdjustment(pilot, StatType.SpaceRareMetalChance))");
         actions.Should().NotContain("PerkType.Prospector").And.NotContain("PerkType.DeepCore")
             .And.NotContain("PerkType.RapidExtraction", "space code reads stats, not perks");
 

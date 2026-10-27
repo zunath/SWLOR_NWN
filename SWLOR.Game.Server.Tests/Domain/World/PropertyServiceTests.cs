@@ -23,7 +23,7 @@ public class PropertyServiceTests : PropertyServiceTestBase
 
     /// <summary>The one property of a type the service saved (it saves a parent again when it adds a child to it).</summary>
     private WorldProperty SavedProperty(PropertyType type) =>
-        Db.Saved.OfType<WorldProperty>().Distinct().Single(x => x.PropertyType == type);
+        Db.Store.Saved.OfType<WorldProperty>().Distinct().Single(x => x.PropertyType == type);
 
     // ---- construction and the parts
 
@@ -158,18 +158,18 @@ public class PropertyServiceTests : PropertyServiceTestBase
         apartment.IsPubliclyAccessible.Should().BeFalse();
         apartment.ItemStorageCount.Should().Be(World.Catalog.GetLayoutByType(apartment.Layout).ItemStorageLimit);
         apartment.Dates[PropertyDateType.Lease].Should().BeCloseTo(DateTime.UtcNow.AddDays(7), TimeSpan.FromMinutes(1));
-        Db.Saved.Should().Contain(apartment);
+        Db.Store.Saved.Should().Contain(apartment);
 
-        var ownerPermission = Db.Saved.OfType<WorldPropertyPermission>().Single(x => x.PropertyId == apartment.Id);
+        var ownerPermission = Db.Store.Saved.OfType<WorldPropertyPermission>().Single(x => x.PropertyId == apartment.Id);
         ownerPermission.PlayerId.Should().Be(PlayerId);
         ownerPermission.Permissions.Keys.Should().BeEquivalentTo(World.Catalog.GetPermissionsByPropertyType(PropertyType.Apartment));
         ownerPermission.Permissions.Values.Should().OnlyContain(granted => granted);
         ownerPermission.GrantPermissions.Values.Should().OnlyContain(granted => granted);
 
-        var categories = Db.Saved.OfType<WorldPropertyCategory>().ToList();
+        var categories = Db.Store.Saved.OfType<WorldPropertyCategory>().ToList();
         categories.Select(x => x.Name).Should().Equal("Weapons", "Armor", "Crafting", "Miscellaneous");
         categories.Should().OnlyContain(x => x.ParentPropertyId == apartment.Id);
-        var categoryPermissions = Db.Saved.OfType<WorldPropertyPermission>().Where(x => x.PropertyId != apartment.Id).ToList();
+        var categoryPermissions = Db.Store.Saved.OfType<WorldPropertyPermission>().Where(x => x.PropertyId != apartment.Id).ToList();
         categoryPermissions.Select(x => x.PropertyId).Should().BeEquivalentTo(categories.Select(x => x.Id));
         categoryPermissions.Should().OnlyContain(x => x.PlayerId == PlayerId && x.Permissions[PropertyPermissionType.AccessStorage]);
 
@@ -186,7 +186,7 @@ public class PropertyServiceTests : PropertyServiceTestBase
 
         var interior = SavedProperty(PropertyType.House);
         interior.OwnerPlayerId.Should().Be(OtherPlayerId, "a building belongs to the owner of the city");
-        var permissions = Db.Saved.OfType<WorldPropertyPermission>().Where(x => x.PropertyId == interior.Id).ToList();
+        var permissions = Db.Store.Saved.OfType<WorldPropertyPermission>().Where(x => x.PropertyId == interior.Id).ToList();
         permissions.Select(x => x.PlayerId).Should().BeEquivalentTo(new[] { OtherPlayerId, PlayerId }, "the owner and the player who placed it");
     }
 
@@ -301,7 +301,7 @@ public class PropertyServiceTests : PropertyServiceTestBase
         (position.AreaResref, position.X, position.Y, position.Z, position.Orientation).Should().Be(("apartment_area", 1f, 2f, 3f, 0f));
         parent.ChildPropertyIds[PropertyChildType.Structure].Should().Equal(structure.Id);
         parent.ItemStorageCount.Should().Be(10 + baseStorage + 7);
-        Db.Saved.Should().ContainInOrder(structure, parent);
+        Db.Store.Saved.Should().ContainInOrder(structure, parent);
 
         var placeable = Service.GetPlaceableByPropertyId(structure.Id);
         placeable.Should().NotBe(PropertyWorld.Invalid);
@@ -326,7 +326,7 @@ public class PropertyServiceTests : PropertyServiceTestBase
         interior.ParentPropertyId.Should().Be(structure.Id);
         interior.ItemStorageCount.Should().Be(World.Catalog.GetLayoutByType(PropertyLayoutType.SmallHouseStyle1).ItemStorageLimit);
         structure.ChildPropertyIds[PropertyChildType.Interior].Should().Equal(interior.Id);
-        Db.Saved.OfType<WorldPropertyCategory>().Should().HaveCount(4, "a house has item storage");
+        Db.Store.Saved.OfType<WorldPropertyCategory>().Should().HaveCount(4, "a house has item storage");
         Service.GetPropertyLoadState(interior.Id).Should().Be(PropertyLoadState.Unloaded, "a private house loads on demand");
         World.Recorded.Events.Should().HaveCount(2, "once for the structure and once more now that its interior is linked");
         World.Recorded.Events.Select(e => e.Structure).Should().OnlyContain(type => type == StructureType.SmallHouseStyle1);
@@ -364,13 +364,13 @@ public class PropertyServiceTests : PropertyServiceTestBase
 
         Service.DeleteProperty(city);
 
-        Db.Deleted.Should().BeEquivalentTo(new[]
+        Db.Store.Deleted.Should().BeEquivalentTo(new[]
         {
             city.Id, hall.Id, interior.Id, orphan.Id, interiorCategory.Id, cityPermission.Id, categoryPermission.Id
         });
         citizen.CitizenPropertyId.Should().BeEmpty();
         citizen.PropertyOwedTaxes.Should().Be(0);
-        Db.Saved.Should().Contain(citizen);
+        Db.Store.Saved.Should().Contain(citizen);
         stranger.CitizenPropertyId.Should().Be("another-city");
         stranger.PropertyOwedTaxes.Should().Be(9);
         Service.GetPlaceableByPropertyId(hall.Id).Should().Be(PropertyWorld.Invalid, "the loader forgot the building");
@@ -387,7 +387,7 @@ public class PropertyServiceTests : PropertyServiceTestBase
 
         Service.DeleteProperty(apartment);
 
-        Db.Deleted.Should().Equal(apartment.Id);
+        Db.Store.Deleted.Should().Equal(apartment.Id);
     }
 
     [Test]
@@ -404,8 +404,8 @@ public class PropertyServiceTests : PropertyServiceTestBase
         Service.DeleteProperty(ship);
 
         starport.ChildPropertyIds[PropertyChildType.Starship].Should().Equal(otherShip);
-        Db.Saved.Should().Contain(starport).And.NotContain(stale, "a starport that never listed the ship is not rewritten");
-        Db.Deleted.Should().Equal(ship.Id);
+        Db.Store.Saved.Should().Contain(starport).And.NotContain(stale, "a starport that never listed the ship is not rewritten");
+        Db.Store.Deleted.Should().Equal(ship.Id);
     }
 
     [Test]
@@ -445,7 +445,7 @@ public class PropertyServiceTests : PropertyServiceTestBase
 
         Service.OnModuleLoad();
 
-        Db.Deleted.Should().Contain(new[] { expired.Id, queued.Id }).And.NotContain(current.Id);
+        Db.Store.Deleted.Should().Contain(new[] { expired.Id, queued.Id }).And.NotContain(current.Id);
         expired.IsQueuedForDeletion.Should().BeTrue("the lease was marked before the sweep");
         permission.Permissions.Should().NotBeEmpty("the permissions were refreshed");
         city.Dates.Should().ContainKey(PropertyDateType.BelowRequiredCitizens, "the city was checked for its citizens");
@@ -466,7 +466,7 @@ public class PropertyServiceTests : PropertyServiceTestBase
 
         Service.OnModuleLoad();
 
-        Db.Deleted.Should().Contain(fine.Id).And.NotContain(broken.Id, "it stays queued for the next boot");
+        Db.Store.Deleted.Should().Contain(fine.Id).And.NotContain(broken.Id, "it stays queued for the next boot");
     }
 
     [Test]
@@ -493,7 +493,7 @@ public class PropertyServiceTests : PropertyServiceTestBase
         owner.Permissions.Values.Should().OnlyContain(granted => granted, "the owner is given the permissions that were added");
         guest.Permissions.Values.Should().OnlyContain(granted => !granted, "anyone else is given them switched off");
         guest.GrantPermissions.Values.Should().OnlyContain(granted => !granted);
-        Db.Saved.Should().Contain(owner).And.Contain(guest).And.NotContain(upToDate, "a record that needed no change is not saved");
+        Db.Store.Saved.Should().Contain(owner).And.Contain(guest).And.NotContain(upToDate, "a record that needed no change is not saved");
     }
 
     [Test]
@@ -509,7 +509,7 @@ public class PropertyServiceTests : PropertyServiceTestBase
         Service.OnModuleLoad();
 
         ship.Positions.Should().NotContainKey(PropertyLocationType.CurrentPosition);
-        Db.Saved.Should().Contain(ship).And.Contain(untouched);
+        Db.Store.Saved.Should().Contain(ship).And.Contain(untouched);
     }
 
     // ---- the starship dock

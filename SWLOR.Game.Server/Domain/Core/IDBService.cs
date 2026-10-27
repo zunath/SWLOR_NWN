@@ -21,12 +21,12 @@ namespace SWLOR.Game.Server.Domain.Core
         void Set<T>(T entity)
             where T : EntityBase;
 
-        /// <summary>Determines whether an entity with the Id is stored. Same as <c>DB.Exists&lt;T&gt;</c>.</summary>
-        bool Exists<T>(string id)
-            where T : EntityBase;
-
         /// <summary>Deletes an entity by its Id. Same as <c>DB.Delete&lt;T&gt;</c>.</summary>
         void Delete<T>(string id)
+            where T : EntityBase;
+
+        /// <summary>True when an entity with the Id is stored, without reading it. Same as <c>DB.Exists&lt;T&gt;</c>.</summary>
+        bool Exists<T>(string id)
             where T : EntityBase;
 
         /// <summary>Searches for the entities matching a query. Same as <c>DB.Search&lt;T&gt;</c> (the result is lazy).</summary>

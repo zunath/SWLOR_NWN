@@ -29,7 +29,7 @@ public class PropertyLoaderTests
 
     private PropertyWorld.LoaderUnderTest Loader => _world.Loader;
 
-    private InMemoryDBService Db => _world.Db;
+    private QueryableDBService Db => _world.Db;
 
     [SetUp]
     public void SetUp() => _world = new PropertyWorld();
@@ -206,7 +206,7 @@ public class PropertyLoaderTests
         Loader.SetPropertyLoadState(apartment.Id, PropertyLoadState.Loaded);
 
         Loader.GetPropertyLoadState(apartment.Id).Should().Be(PropertyLoadState.Loaded);
-        Db.Reads.Should().BeEmpty("a valid area settles it without asking the database");
+        Db.Store.Reads.Should().BeEmpty("a valid area settles it without asking the database");
     }
 
     [Test]

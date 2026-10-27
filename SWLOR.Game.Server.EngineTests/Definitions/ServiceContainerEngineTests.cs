@@ -15,7 +15,7 @@ namespace SWLOR.Game.Server.EngineTests.Definitions
 {
     /// <summary>
     /// Proves, on a booted server, that the service container was built before the handlers ran and that the converted
-    /// services (Achievement, Faction, Taxi, Bank, Currency, Guild, PlayerMarket, Music, Weather, Property) work through their static facades
+    /// services (Achievement, Faction, Taxi, Bank, Currency, Guild, PlayerMarket, Music, Weather, Property, QuestContractBoard) work through their static facades
     /// against the real database.
     /// </summary>
     public static class ServiceContainerEngineTests
@@ -65,6 +65,7 @@ namespace SWLOR.Game.Server.EngineTests.Definitions
             ctx.AssertEqual("Township", Property.GetCityLevelName(3), "Property city rules answer through the container");
             ctx.AssertEqual(SWLOR.Game.Server.Service.PropertyService.PropertyLoadState.Failed, Property.GetPropertyLoadState("no-such-property"),
                 "The property loader answers through the container");
+            ctx.AssertEqual(QuestContractBoard.MinimumPostingFee, QuestContractBoard.CalculatePostingFee(0), "The quest contract board answers through the container");
         }
 
         /// <summary>

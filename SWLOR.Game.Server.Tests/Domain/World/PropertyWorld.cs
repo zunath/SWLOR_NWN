@@ -92,7 +92,7 @@ public sealed class PropertyWorld : IDisposable
         _scopes.Add(EventsPluginRuntime.Override(Events));
         _scopes.Add(ObjectPluginRuntime.Override(Objects));
 
-        Db = new InMemoryDBService { EvaluateQueries = true };
+        Db = new QueryableDBService();
         Catalog = new PropertyCatalog(Areas);
         if (cacheDefinitions)
             Catalog.CacheData();
@@ -114,7 +114,7 @@ public sealed class PropertyWorld : IDisposable
 
     public LocalVariables Locals { get; }
 
-    public InMemoryDBService Db { get; }
+    public QueryableDBService Db { get; }
 
     public StubAreas Areas { get; }
 

@@ -22,7 +22,7 @@ public abstract class PropertyServiceTestBase
 
     protected PropertyWorld.ServiceUnderTest Service => World.Service;
 
-    protected InMemoryDBService Db => World.Db;
+    protected QueryableDBService Db => World.Db;
 
     [SetUp]
     public void SetUpWorld()

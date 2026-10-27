@@ -25,7 +25,7 @@ public class PropertyCityGovernanceTests
 
     private PropertyWorld.CityUnderTest City => _world.City;
 
-    private InMemoryDBService Db => _world.Db;
+    private QueryableDBService Db => _world.Db;
 
     [SetUp]
     public void SetUp()
@@ -113,7 +113,7 @@ public class PropertyCityGovernanceTests
     private void VotingClosed(WorldProperty city) =>
         city.Dates[PropertyDateType.ElectionStart] = Now.AddDays(-(PropertyCityGovernance.ElectionRegistrationDays + PropertyCityGovernance.ElectionVotingDays + 1));
 
-    private WorldProperty Saved(WorldProperty city) => Db.Saved.OfType<WorldProperty>().Last(x => x.Id == city.Id);
+    private WorldProperty Saved(WorldProperty city) => Db.Store.Saved.OfType<WorldProperty>().Last(x => x.Id == city.Id);
 
     // ---- the constants and the pure rules
 
@@ -268,7 +268,7 @@ public class PropertyCityGovernanceTests
 
         City.ProcessCities();
 
-        Db.Saved.Should().BeEmpty("the query leaves out cities queued for deletion");
+        Db.Store.Saved.Should().BeEmpty("the query leaves out cities queued for deletion");
     }
 
     [Test]
@@ -282,7 +282,7 @@ public class PropertyCityGovernanceTests
 
         City.ProcessCities();
 
-        Db.Saved.OfType<Election>().Should().BeEmpty("no election is opened for a city that is going away");
+        Db.Store.Saved.OfType<Election>().Should().BeEmpty("no election is opened for a city that is going away");
         Saved(city).Upkeep.Should().Be(0, "no upkeep is assessed either");
     }
 
@@ -297,7 +297,7 @@ public class PropertyCityGovernanceTests
 
         City.ProcessCities();
 
-        var election = Db.Saved.OfType<Election>().Should().ContainSingle().Subject;
+        var election = Db.Store.Saved.OfType<Election>().Should().ContainSingle().Subject;
         election.PropertyId.Should().Be(city.Id);
         election.Stage.Should().Be(ElectionStageType.Registration);
     }
@@ -310,7 +310,7 @@ public class PropertyCityGovernanceTests
 
         City.ProcessCities();
 
-        Db.Saved.OfType<Election>().Should().BeEmpty();
+        Db.Store.Saved.OfType<Election>().Should().BeEmpty();
     }
 
     [Test]
@@ -324,7 +324,7 @@ public class PropertyCityGovernanceTests
 
         City.ProcessCities();
 
-        Db.Deleted.Should().Contain(election.Id);
+        Db.Store.Deleted.Should().Contain(election.Id);
         Saved(city).Dates[PropertyDateType.ElectionStart].Should().Be(start.AddDays(PropertyCityGovernance.ElectionRegistrationDays).AddDays(21));
         Saved(city).OwnerPlayerId.Should().Be(Mayor);
     }
@@ -341,8 +341,8 @@ public class PropertyCityGovernanceTests
         City.ProcessCities();
 
         Saved(city).OwnerPlayerId.Should().Be(Rival);
-        Db.Deleted.Should().Contain(mayorPermission.Id).And.Contain(election.Id);
-        var rivalPermission = Db.Saved.OfType<WorldPropertyPermission>().Single(x => x.PlayerId == Rival);
+        Db.Store.Deleted.Should().Contain(mayorPermission.Id).And.Contain(election.Id);
+        var rivalPermission = Db.Store.Saved.OfType<WorldPropertyPermission>().Single(x => x.PlayerId == Rival);
         rivalPermission.PropertyId.Should().Be(city.Id);
         rivalPermission.Permissions.Keys.Should().BeEquivalentTo(_world.Catalog.GetPermissionsByPropertyType(PropertyType.City));
         rivalPermission.GrantPermissions.Values.Should().OnlyContain(granted => granted);
@@ -359,8 +359,8 @@ public class PropertyCityGovernanceTests
         City.ProcessCities();
 
         Saved(city).OwnerPlayerId.Should().Be(Mayor);
-        Db.Saved.OfType<WorldPropertyPermission>().Should().BeEmpty();
-        Db.Deleted.Should().ContainSingle();
+        Db.Store.Saved.OfType<WorldPropertyPermission>().Should().BeEmpty();
+        Db.Store.Deleted.Should().ContainSingle();
     }
 
     [Test]
@@ -374,8 +374,8 @@ public class PropertyCityGovernanceTests
         City.ProcessCities();
 
         election.Stage.Should().Be(ElectionStageType.Voting);
-        Db.Saved.OfType<Election>().Should().ContainSingle().Which.Should().BeSameAs(election);
-        Db.Deleted.Should().BeEmpty();
+        Db.Store.Saved.OfType<Election>().Should().ContainSingle().Which.Should().BeSameAs(election);
+        Db.Store.Deleted.Should().BeEmpty();
     }
 
     [Test]
@@ -389,7 +389,7 @@ public class PropertyCityGovernanceTests
         City.ProcessCities();
 
         election.Stage.Should().Be(ElectionStageType.Registration);
-        Db.Saved.OfType<Election>().Should().BeEmpty();
+        Db.Store.Saved.OfType<Election>().Should().BeEmpty();
     }
 
     [Test]
@@ -409,8 +409,8 @@ public class PropertyCityGovernanceTests
         City.ProcessCities();
 
         Saved(city).OwnerPlayerId.Should().Be(Rival);
-        Db.Deleted.Should().Contain(mayorPermission.Id).And.Contain(election.Id);
-        Db.Saved.OfType<WorldPropertyPermission>().Should().ContainSingle().Which.Should().BeSameAs(rivalPermission, "an existing permission record is reused");
+        Db.Store.Deleted.Should().Contain(mayorPermission.Id).And.Contain(election.Id);
+        Db.Store.Saved.OfType<WorldPropertyPermission>().Should().ContainSingle().Which.Should().BeSameAs(rivalPermission, "an existing permission record is reused");
         rivalPermission.Permissions[PropertyPermissionType.EditTaxes].Should().BeTrue();
         Saved(city).Dates[PropertyDateType.ElectionStart].Should().Be(start.AddDays(PropertyCityGovernance.ElectionRegistrationDays + PropertyCityGovernance.ElectionVotingDays).AddDays(21));
     }
@@ -428,7 +428,7 @@ public class PropertyCityGovernanceTests
         City.ProcessCities();
 
         Saved(city).OwnerPlayerId.Should().Be(Mayor);
-        Db.Deleted.Should().ContainSingle().Which.Should().Be(election.Id);
+        Db.Store.Deleted.Should().ContainSingle().Which.Should().Be(election.Id);
     }
 
     [Test]
@@ -442,7 +442,7 @@ public class PropertyCityGovernanceTests
         City.ProcessCities();
 
         Saved(city).OwnerPlayerId.Should().Be(Mayor);
-        Db.Deleted.Should().ContainSingle().Which.Should().Be(election.Id);
+        Db.Store.Deleted.Should().ContainSingle().Which.Should().Be(election.Id);
     }
 
     // ---- level, upkeep and fees
@@ -481,8 +481,8 @@ public class PropertyCityGovernanceTests
         saved.Upgrades[PropertyUpgradeType.CityLevel].Should().Be(2);
         saved.Upkeep.Should().Be(_world.Catalog.GetLayoutByType(PropertyLayoutType.City).PricePerDay * 7);
         saved.Dates[PropertyDateType.Upkeep].Should().BeCloseTo(Now.AddDays(-1).AddDays(7), TimeSpan.FromSeconds(1));
-        Db.Saved.OfType<Player>().Should().HaveCount(11, "each of the eleven citizens is charged once, the mayor included");
-        Db.Saved.OfType<Player>().Should().OnlyContain(citizen => citizen.PropertyOwedTaxes == 30);
+        Db.Store.Saved.OfType<Player>().Should().HaveCount(11, "each of the eleven citizens is charged once, the mayor included");
+        Db.Store.Saved.OfType<Player>().Should().OnlyContain(citizen => citizen.PropertyOwedTaxes == 30);
     }
 
     [Test]
@@ -574,8 +574,8 @@ public class PropertyCityGovernanceTests
 
         Saved(doomed).IsQueuedForDeletion.Should().BeTrue();
         Saved(doomed).Upkeep.Should().Be(100, "the city was marked for removal before it was billed again");
-        Db.Saved.OfType<Player>().Should().HaveCount(5, "the citizenship fees are still charged for the cycle");
-        Db.Saved.OfType<Player>().Should().OnlyContain(citizen => citizen.PropertyOwedTaxes == 30);
+        Db.Store.Saved.OfType<Player>().Should().HaveCount(5, "the citizenship fees are still charged for the cycle");
+        Db.Store.Saved.OfType<Player>().Should().OnlyContain(citizen => citizen.PropertyOwedTaxes == 30);
     }
 
     // ---- broadcasts

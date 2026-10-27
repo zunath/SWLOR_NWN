@@ -437,7 +437,7 @@ public class PropertyServiceEntryTests : PropertyServiceTestBase
         Service.PlaceStructure();
 
         World.Events.CallsTo("SkipEvent").Should().BeEmpty();
-        Db.Saved.Should().BeEmpty();
+        Db.Store.Saved.Should().BeEmpty();
     }
 
     [TestCase("structure_0005", StructureType.Jukebox)]
@@ -491,7 +491,7 @@ public class PropertyServiceEntryTests : PropertyServiceTestBase
         World.Locals.Has(Player, "PROPERTY_CITY_HALL_X").Should().BeTrue();
         World.Engine.CallsTo("SetLocalFloat").Where(call => (string)call.Arguments[1]! == "PROPERTY_CITY_HALL_Z")
             .Should().ContainSingle().Which.Arguments[2].Should().Be(30f);
-        Db.Saved.Should().BeEmpty("the founding happens when the player confirms");
+        Db.Store.Saved.Should().BeEmpty("the founding happens when the player confirms");
     }
 
     [Test]
@@ -518,7 +518,7 @@ public class PropertyServiceEntryTests : PropertyServiceTestBase
         World.FloatingTextTo(Player).Should().Equal(
             "You do not have permission to place structures within this property.",
             "You do not have permission to place structures within this property.");
-        Db.Saved.OfType<WorldProperty>().Should().BeEmpty();
+        Db.Store.Saved.OfType<WorldProperty>().Should().BeEmpty();
     }
 
     [Test]
@@ -530,7 +530,7 @@ public class PropertyServiceEntryTests : PropertyServiceTestBase
         Service.PlaceStructure();
 
         World.Events.CallsTo("SkipEvent").Should().ContainSingle();
-        var structure = Db.Saved.OfType<WorldProperty>().Distinct().Single(x => x.PropertyType == PropertyType.Structure);
+        var structure = Db.Store.Saved.OfType<WorldProperty>().Distinct().Single(x => x.PropertyType == PropertyType.Structure);
         structure.StructureType.Should().Be(StructureType.Jukebox);
         structure.ParentPropertyId.Should().Be(apartment.Id);
         var position = structure.Positions[PropertyLocationType.StaticPosition];
@@ -551,7 +551,7 @@ public class PropertyServiceEntryTests : PropertyServiceTestBase
         Service.PlaceStructure();
 
         World.FloatingTextTo(Player).Should().Equal("Structure limit reached for this property.");
-        Db.Saved.Should().BeEmpty();
+        Db.Store.Saved.Should().BeEmpty();
     }
 
     [Test]
@@ -592,7 +592,7 @@ public class PropertyServiceEntryTests : PropertyServiceTestBase
         Service.PlaceStructure();
 
         World.FloatingTextTo(Player).Should().Equal("This Structure cannot be placed within this type of property.");
-        Db.Saved.Should().BeEmpty();
+        Db.Store.Saved.Should().BeEmpty();
     }
 
     private WorldProperty CityToBuildIn(out uint area)
@@ -637,5 +637,5 @@ public class PropertyServiceEntryTests : PropertyServiceTestBase
     }
 
     private WorldProperty SavedOfType(PropertyType type) =>
-        Db.Saved.OfType<WorldProperty>().Distinct().Single(x => x.PropertyType == type);
+        Db.Store.Saved.OfType<WorldProperty>().Distinct().Single(x => x.PropertyType == type);
 }

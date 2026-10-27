@@ -60,12 +60,23 @@ git init -q SWLOR_Haks
 git -C SWLOR_Haks config core.longpaths true
 git -C SWLOR_Haks remote add origin "$url"
 
+# Prints a file type as a pattern that matches it in any case (.mdl -> .[mM][dD][lL]); the patterns are case-sensitive
+# on Linux, and prepare-engine-test-home.sh stubs a type whatever its case.
+any_case() {
+    local text="$1" out="" character i
+    for ((i = 0; i < ${#text}; i++)); do
+        character="${text:i:1}"
+        if [[ "$character" =~ [a-z] ]]; then out+="[${character}${character^^}]"; else out+="$character"; fi
+    done
+    printf '%s' "$out"
+}
+
 # Cone mode cannot exclude a file type, so the patterns are gitignore-style: the folders, then the exclusions, which
 # win because the last matching pattern decides. The two root files keep git from fetching them on its own later.
 {
     printf '/%s\n' .gitattributes .gitignore
     printf '/%s/\n' "${folders[@]}"
-    for type in $stubbed_types; do printf '!*%s\n' "$type"; done
+    for type in $stubbed_types; do printf '!*%s\n' "$(any_case "$type")"; done
 } | git -C SWLOR_Haks sparse-checkout set --no-cone --stdin
 
 start=$SECONDS

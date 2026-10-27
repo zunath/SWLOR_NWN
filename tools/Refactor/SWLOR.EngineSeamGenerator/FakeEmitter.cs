@@ -8,10 +8,10 @@ internal static class FakeEmitter
 {
     public static string Emit(WrapperSourceFile source, SeamDefinition definition)
     {
-        var text = PartWriter.Begin(source, definition.FakeNamespace, new[]
-        {
-            $"using {definition.Namespace};",
-        });
+        // Nested data types (an NWNX plugin's result structs) stay in the static class, so the fake needs them in scope too.
+        var usings = new List<string> { $"using {definition.Namespace};" };
+        if (source.NestedTypes.Count > 0) usings.Add($"using static {definition.Namespace}.{definition.StaticClassName};");
+        var text = PartWriter.Begin(source, definition.FakeNamespace, usings);
         text.Append('\n');
         text.Append(PartWriter.Indent).Append("/// <summary>Engine calls declared in ").Append(InterfaceEmitter.PartName(source)).Append(", recorded instead of sent to the engine.</summary>\n");
         text.Append(PartWriter.Indent).Append("public partial class ").Append(definition.FakeName).Append(" : ").Append(definition.FakeBaseName).Append(", ").Append(definition.InterfaceName).Append('\n');

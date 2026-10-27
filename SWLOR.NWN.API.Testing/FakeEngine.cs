@@ -5,12 +5,15 @@ namespace SWLOR.NWN.API.Testing;
 
 /// <summary>
 /// The shared behaviour of the generated engine fakes: record every call, and answer with a configured value or a
-/// default. Tests install a fake with `NWScriptRuntime.Override(fake)`, run game code, then assert on <see cref="Calls"/>.
+/// default. Tests install a fake with the seam's runtime (`NWScriptRuntime.Override(fake)`, or `ChatPluginRuntime.Override(fake)`
+/// for an NWNX plugin), run game code, then assert on <see cref="Calls"/>.
 /// </summary>
 /// <remarks>
 /// Defaults are chosen so typical engine loops end: numbers and booleans are zero/false, strings are empty, object ids
 /// (every `uint` return) are OBJECT_INVALID, and engine structures are empty structures (handle 0) whose finalizer is
-/// suppressed. Anything else is `default`. A call never throws unless a configured value has the wrong type.
+/// suppressed. Plain data classes with a public parameterless constructor (an NWNX plugin's `JournalEntry`, say) come back as
+/// a new empty instance, so game code that reads a field of the result does not fail on a null. Anything else is `default`.
+/// A call never throws unless a configured value has the wrong type.
 /// </remarks>
 public abstract class FakeEngine
 {
@@ -122,6 +125,7 @@ public abstract class FakeEngine
         if (type == typeof(uint)) return (T)(object)ObjectInvalid;
         if (type == typeof(string)) return (T)(object)string.Empty;
         if (typeof(EngineStructureBase).IsAssignableFrom(type)) return (T)(object)EngineStructures.Create(type, 0);
+        if (type.IsClass && !type.IsAbstract && type.GetConstructor(Type.EmptyTypes) != null) return (T)Activator.CreateInstance(type)!;
 
         return default!;
     }

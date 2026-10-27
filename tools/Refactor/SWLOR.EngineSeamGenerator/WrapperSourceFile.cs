@@ -19,4 +19,10 @@ internal sealed class WrapperSourceFile
 
     /// <summary>Public constants. They cannot sit behind an interface, so they stay static.</summary>
     public required IReadOnlyList<string> Constants { get; init; }
+
+    /// <summary>Public nested types that only hold data (for example a result struct). They stay in the static class.</summary>
+    public required IReadOnlyList<NestedTypeInfo> NestedTypes { get; init; }
 }
+
+/// <summary>A data-only nested type of a wrapper class: its name and its text, line endings normalized to '\n'.</summary>
+internal sealed record NestedTypeInfo(string Name, string Text);

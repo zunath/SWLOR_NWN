@@ -1,12 +1,57 @@
 namespace SWLOR.EngineSeamGenerator;
 
 /// <summary>
-/// Builds the whole engine seam in memory: the interface, the pass-through implementation holding the original bodies, the
-/// runtime, the recording fake, and the rewritten static wrappers. Nothing is written here; <see cref="Apply"/> and
-/// <see cref="Compare"/> do that, and only when <see cref="GeneratorOutput.Errors"/> is empty.
+/// Builds the engine seams in memory: for each seam the interface, the pass-through implementation holding the original
+/// bodies, the runtime, the recording fake, and the rewritten static wrappers. Nothing is written here;
+/// <see cref="Apply"/> and <see cref="Compare"/> do that, and only when <see cref="GeneratorOutput.Errors"/> is empty.
 /// </summary>
 internal static class SeamGenerator
 {
+    /// <summary>
+    /// Generates every seam <see cref="SeamDefinition.Discover"/> finds (NWScript, and one per NWNX plugin) and merges them
+    /// into one output, so stale-file detection sees all of the generated folders at once.
+    /// </summary>
+    public static GeneratorOutput GenerateAll(
+        IGeneratorFileSystem sourceFiles,
+        IGeneratorFileSystem previousOutput,
+        Action<Dictionary<string, string>>? beforeVerify = null)
+    {
+        var merged = new GeneratorOutput();
+        merged.GeneratedRoots.AddRange(SeamDefinition.PluginGeneratedRoots);
+        var plugins = 0;
+
+        foreach (var definition in SeamDefinition.Discover(sourceFiles))
+        {
+            var output = Generate(sourceFiles, previousOutput, definition, beforeVerify);
+
+            foreach (var (path, content) in output.Files)
+            {
+                if (!merged.Files.TryAdd(path, content))
+                {
+                    merged.Errors.Add($"{path} is produced by more than one seam.");
+                }
+            }
+
+            foreach (var root in output.GeneratedRoots.Where(root => !merged.GeneratedRoots.Contains(root, StringComparer.Ordinal)))
+            {
+                merged.GeneratedRoots.Add(root);
+            }
+
+            merged.RewrittenWrappers.AddRange(output.RewrittenWrappers);
+            merged.Errors.AddRange(output.Errors);
+            merged.Report.AddRange(output.Report);
+            if (definition.IsSingleFile) plugins++;
+        }
+
+        if (merged.Errors.Count == 0)
+        {
+            var pluginFiles = merged.Files.Keys.Count(path => SeamDefinition.PluginGeneratedRoots.Any(root => path.StartsWith(root + "/", StringComparison.Ordinal)));
+            merged.Report.Add($"NWNX plugins: {plugins} seams, {pluginFiles} generated files (interface, pass-through, runtime and fake per plugin).");
+        }
+
+        return merged;
+    }
+
     public static GeneratorOutput Generate(
         IGeneratorFileSystem sourceFiles,
         IGeneratorFileSystem previousOutput,
@@ -14,7 +59,7 @@ internal static class SeamGenerator
         Action<Dictionary<string, string>>? beforeVerify = null)
     {
         var output = new GeneratorOutput();
-        output.GeneratedRoots.AddRange(new[] { definition.InterfaceRoot, definition.PassThroughRoot, definition.FakeRoot });
+        output.GeneratedRoots.AddRange(definition.GeneratedRoots);
 
         var sources = ReadSources(sourceFiles, definition, output.Errors);
         var existing = ReadPreviousPassThrough(previousOutput, definition, output.Errors);
@@ -88,17 +133,20 @@ internal static class SeamGenerator
         return output.GeneratedRoots
             .SelectMany(root => target.ListFiles(root, recursive: true))
             .Where(path => !output.Files.ContainsKey(path))
+            .Distinct(StringComparer.Ordinal)
             .OrderBy(path => path, StringComparer.Ordinal)
             .ToList();
     }
 
     private static List<WrapperSourceFile> ReadSources(IGeneratorFileSystem files, SeamDefinition definition, List<string> errors)
     {
-        var paths = definition.SourceDirectories
-            .SelectMany(directory => files.ListFiles(directory, recursive: false))
-            .Distinct(StringComparer.Ordinal)
-            .OrderBy(path => path, StringComparer.Ordinal)
-            .ToList();
+        var paths = definition.IsSingleFile
+            ? new List<string> { definition.SourceFile! }
+            : definition.SourceDirectories
+                .SelectMany(directory => files.ListFiles(directory, recursive: false))
+                .Distinct(StringComparer.Ordinal)
+                .OrderBy(path => path, StringComparer.Ordinal)
+                .ToList();
         if (paths.Count == 0)
         {
             errors.Add($"No wrapper sources found in {string.Join(", ", definition.SourceDirectories)}.");
@@ -117,7 +165,7 @@ internal static class SeamGenerator
     private static Dictionary<string, GeneratedMember> ReadPreviousPassThrough(IGeneratorFileSystem files, SeamDefinition definition, List<string> errors)
     {
         var members = new Dictionary<string, GeneratedMember>(StringComparer.Ordinal);
-        foreach (var path in files.ListFiles(definition.PassThroughRoot, recursive: true))
+        foreach (var path in definition.ExistingParts(files, definition.PassThroughRoot))
         {
             var text = files.ReadAllText(path) ?? throw new GeneratorException($"{path} could not be read.");
             foreach (var member in GeneratedTypeReader.Read(path, text, definition.PassThroughName, errors))
@@ -139,6 +187,18 @@ internal static class SeamGenerator
         var properties = members.Count(m => m.Kind == MemberKind.Property);
         var constants = plan.Sources.SelectMany(s => s.Constants.Select(c => (s.Path, Name: c))).ToList();
         var withMembers = plan.Sources.Count(s => s.Members.Count > 0);
+
+        if (definition.IsSingleFile)
+        {
+            // One line per plugin; the total for all plugins follows the last one.
+            var nestedTypes = plan.Sources.SelectMany(s => s.NestedTypes.Select(t => t.Name)).ToList();
+            var leftStatic = constants.Select(c => c.Name).Concat(nestedTypes).ToList();
+            output.Report.Add($"{definition.StaticClassName}: {members.Count} members behind {definition.InterfaceName} ({methods} methods, {properties} properties); " +
+                              $"bodies moved by this run {plan.MovedThisRun.Count}, already moved {members.Count - plan.MovedThisRun.Count}, " +
+                              $"dropped {plan.Dropped.Count}; left static: " +
+                              (leftStatic.Count == 0 ? "nothing" : string.Join(", ", leftStatic)) + ".");
+            return;
+        }
 
         output.Report.Add($"Wrapper files: {plan.Sources.Count} ({withMembers} with members).");
         output.Report.Add($"Members behind {definition.InterfaceName}: {members.Count} ({methods} methods, {properties} properties).");

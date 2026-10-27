@@ -1,16 +1,17 @@
 <#
 .SYNOPSIS
-    Generates the NWScript engine seam: INWScript, the pass-through implementation, the runtime, the recording fake, and
-    the forwarding bodies of the static wrappers in SWLOR.NWN.API.
+    Generates the engine seams, for NWScript and for each NWNX plugin: the interface (INWScript, IChatPlugin, ...), the
+    pass-through implementation, the runtime, the recording fake, and the forwarding bodies of the static wrappers in
+    SWLOR.NWN.API (NWScript, NWScriptCustom and NWNX/*Plugin.cs).
 
 .DESCRIPTION
     Wraps tools/Refactor/SWLOR.EngineSeamGenerator. The generator is deterministic and re-runnable: a second run changes
     nothing. It refuses to write unless every moved body is textually identical to the original, every signature matches
     the wrapper's, and a second run is a fixed point.
 
-    The daily sync re-runs this script after merging master. If master changed a file in SWLOR.NWN.API/NWScript or
-    NWScriptCustom, take master's version of that file (it holds original bodies) and run this script; it moves the new
-    bodies and regenerates the interface and the fake.
+    The daily sync re-runs this script after merging master. If master changed a file in SWLOR.NWN.API/NWScript,
+    NWScriptCustom or NWNX/*Plugin.cs, take master's version of that file (it holds original bodies) and run this script;
+    it moves the new bodies and regenerates the interfaces and the fakes of every seam.
 
     Runs on Windows PowerShell 5.1 and PowerShell 7.
 
@@ -19,7 +20,8 @@
 
 .PARAMETER VerifyOrigin
     Write nothing. Build the output from the wrapper files as committed at this git revision (the pristine hand-written
-    code) and exit 1 when the working tree differs from it.
+    code) and exit 1 when the working tree differs from it. Use a revision from before the first seam was merged, so every
+    wrapper still holds its original body.
 
 .PARAMETER RepositoryRoot
     Repository root. Defaults to two folders above this script.

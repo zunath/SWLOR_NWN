@@ -2,7 +2,8 @@
 
   <!--
     Test doubles for the engine seam in SWLOR.NWN.API. Referenced only by test projects: nothing in the game server
-    references it, so it never ships. Generated/ holds FakeNWScript, written by tools/Refactor/SWLOR.EngineSeamGenerator.
+    references it, so it never ships. Generated/ holds FakeNWScript and one fake per NWNX plugin (FakeChatPlugin, ...), written
+    by tools/Refactor/SWLOR.EngineSeamGenerator.
   -->
   <PropertyGroup>
     <TargetFramework>net10.0</TargetFramework>

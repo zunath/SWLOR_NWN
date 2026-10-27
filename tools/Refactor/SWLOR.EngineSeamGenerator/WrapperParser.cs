@@ -6,8 +6,8 @@ namespace SWLOR.EngineSeamGenerator;
 
 /// <summary>
 /// Reads a hand-written wrapper source file with Roslyn syntax only. Anything the generator cannot move behind an
-/// interface (generic methods, `ref` parameters, attributes, nested types, mutable statics) is reported as an error, so
-/// a new kind of member never slips past the seam unnoticed.
+/// interface (generic methods, `ref` parameters, attributes, mutable statics, nested types that hold code) is reported
+/// as an error, so a new kind of member never slips past the seam unnoticed.
 /// </summary>
 internal static class WrapperParser
 {
@@ -21,6 +21,7 @@ internal static class WrapperParser
 
         var members = new List<WrapperMember>();
         var constants = new List<string>();
+        var nestedTypes = new List<NestedTypeInfo>();
         var root = tree.GetCompilationUnitRoot();
         var usings = root.Usings.Select(u => u.ToString()).ToList();
         var eol = DetectEol(text);
@@ -41,9 +42,17 @@ internal static class WrapperParser
                     case FieldDeclarationSyntax field when IsPublicConstant(field):
                         constants.AddRange(field.Declaration.Variables.Select(v => v.Identifier.Text));
                         break;
+                    case BaseTypeDeclarationSyntax nested when definition.AllowDataOnlyNestedTypes:
+                        if (IsDataOnlyNestedType(path, nested, errors))
+                        {
+                            nestedTypes.Add(new NestedTypeInfo(nested.Identifier.Text, Normalize(nested.ToString())));
+                        }
+
+                        break;
                     default:
                         errors.Add($"{path}: unsupported member `{FirstLine(member)}` ({member.Kind()}). The generator moves public " +
-                                   "static methods with block bodies and get-only expression-bodied properties, and leaves public constants static.");
+                                   "static methods with block bodies and get-only expression-bodied properties, and leaves public constants" +
+                                   (definition.AllowDataOnlyNestedTypes ? " and data-only nested types" : string.Empty) + " static.");
                         break;
                 }
             }
@@ -56,7 +65,8 @@ internal static class WrapperParser
             Eol = eol,
             Usings = usings,
             Members = members,
-            Constants = constants
+            Constants = constants,
+            NestedTypes = nestedTypes
         };
     }
 
@@ -99,9 +109,9 @@ internal static class WrapperParser
 
         if (ns.Members.Count != 1 || ns.Members[0] is not ClassDeclarationSyntax cls || cls.Identifier.Text != definition.StaticClassName ||
             cls.TypeParameterList != null || cls.BaseList != null ||
-            !HasExactModifiers(cls.Modifiers, "public", "partial"))
+            !HasExactModifiers(cls.Modifiers, definition.StaticClassModifiers.ToArray()))
         {
-            errors.Add($"{path}: expected exactly one `public partial class {definition.StaticClassName}` in the namespace.");
+            errors.Add($"{path}: expected exactly one `{string.Join(" ", definition.StaticClassModifiers)} class {definition.StaticClassName}` in the namespace.");
             return null;
         }
 
@@ -221,6 +231,54 @@ internal static class WrapperParser
             .Select(line => line.Trim())
             .Where(line => line.Length > 0)
             .ToList();
+    }
+
+    /// <summary>
+    /// A nested type stays where it is, so it must hold data and nothing else: a public enum, or a public struct, class or
+    /// record whose members are fields and auto-implemented properties without initializers. Code in it could reach the
+    /// engine without passing through the seam.
+    /// </summary>
+    private static bool IsDataOnlyNestedType(string path, BaseTypeDeclarationSyntax nested, List<string> errors)
+    {
+        var name = nested.Identifier.Text;
+        var where = $"{path}: nested type {name}";
+        var valid = true;
+
+        if (!HasExactModifiers(nested.Modifiers, "public") || nested.AttributeLists.Count > 0)
+        {
+            errors.Add($"{where}: only public nested types without attributes are supported.");
+            valid = false;
+        }
+
+        if (nested is TypeDeclarationSyntax type)
+        {
+            if (type.TypeParameterList != null || type.ConstraintClauses.Count > 0 || type.BaseList != null ||
+                type is RecordDeclarationSyntax { ParameterList: not null })
+            {
+                errors.Add($"{where}: generics, base types and primary constructors are not supported.");
+                valid = false;
+            }
+
+            foreach (var member in type.Members)
+            {
+                var dataOnly = member switch
+                {
+                    FieldDeclarationSyntax field => field.AttributeLists.Count == 0 && field.Declaration.Variables.All(v => v.Initializer == null),
+                    PropertyDeclarationSyntax property => property.AttributeLists.Count == 0 && property.ExpressionBody == null &&
+                                                          property.Initializer == null && property.AccessorList != null &&
+                                                          property.AccessorList.Accessors.All(a => a.Body == null && a.ExpressionBody == null),
+                    _ => false
+                };
+                if (!dataOnly)
+                {
+                    errors.Add($"{where}: member `{FirstLine(member)}` holds code or an initializer. Nested types stay in the static class, " +
+                               "so they may only declare fields and auto-implemented properties.");
+                    valid = false;
+                }
+            }
+        }
+
+        return valid;
     }
 
     private static bool IsPublicConstant(FieldDeclarationSyntax field)

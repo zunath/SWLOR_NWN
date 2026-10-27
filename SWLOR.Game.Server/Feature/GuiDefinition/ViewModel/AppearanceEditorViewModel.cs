@@ -741,8 +741,9 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
                     return;
                 _loadedItemTypeIndex = value;
                 SuspendArmorClientWatches();
-                if (value == 0)
+                if (value is 0 or 1 or 2)
                 {
+                    // Armor, helmet and cloak all start on Base Leather 1, the first colour category.
                     _colorTarget = ColorTarget.Global;
                     _selectedColorChannel = AppearanceArmorColor.Leather1;
                 }
@@ -752,6 +753,8 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
                 LoadItemParts();
                 if (IsEquipmentSelected && value == 0)
                     UpdateTargetedColor();
+                else if (IsEquipmentSelected && value is 1 or 2)
+                    UpdateColorSelection();
                 LoadItemTypeEditor();
                 LoadTintMapEditor();
             }

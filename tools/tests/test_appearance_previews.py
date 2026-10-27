@@ -374,5 +374,24 @@ class ClassificationTests(unittest.TestCase):
         self.assertEqual(importable_classification(item), item)
 
 
+class MissingHakTests(unittest.TestCase):
+    def test_a_missing_module_hak_stops_the_run_before_writing_anything(self):
+        from appearance_previews import __main__ as generator
+        with tempfile.TemporaryDirectory() as folder:
+            root = Path(folder)
+            (root / "haks").mkdir()
+            output = root / "out"
+            output.mkdir()
+            (output / "apmh0_chest001f.dds").write_bytes(b"old")
+            original = generator.module_haks
+            generator.module_haks = lambda: ["sw_2da", "sw_part_previews"]
+            try:
+                code = generator.main(["--hak-dir", str(root / "haks"), "--output", str(output), "--work", str(root / "work")])
+            finally:
+                generator.module_haks = original
+            self.assertEqual(code, 2)
+            self.assertTrue((output / "apmh0_chest001f.dds").exists(), "existing pictures are kept")
+
+
 if __name__ == "__main__":
     unittest.main()

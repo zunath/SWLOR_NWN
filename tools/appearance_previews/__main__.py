@@ -29,6 +29,7 @@ from .resources import HakIndex
 from .tint import PREVIEW_DYES, bake, cloak_tile, plain_texture, read_tint_map, save_for_blender
 
 BACKGROUND = (60, 58, 55)
+OUTPUT_HAK = "sw_part_previews"
 DEFAULT_BLENDER = r"C:\Program Files\Blender Foundation\Blender 4.0\blender.exe"
 
 
@@ -229,6 +230,12 @@ def main(argv=None):
     args.hak_dir, args.output, args.work = (path.resolve() for path in (args.hak_dir, args.output, args.work))
 
     index = HakIndex(args.hak_dir, module_haks())
+    # The module's own HAK list (minus the pictures this tool makes) must all be present, or a
+    # wrong folder would quietly produce an incomplete set and delete the existing pictures.
+    missing = [name for name in index.missing if name != OUTPUT_HAK]
+    if missing:
+        print(f"Missing module HAKs in {args.hak_dir}: {', '.join(missing)}", file=sys.stderr)
+        return 2
     jobs = build(args.two_da, index.exists)
     if args.only:
         jobs = [j for j in jobs if re.search(args.only, j.key)]
@@ -324,6 +331,9 @@ def render(args, index, jobs, renders, cache):
     batch_jobs, materials, problems = [], set(), []
     for job in jobs:
         cache.forget(job.key)
+        # Only renders made by this run may be cached: a failed render must not leave old views.
+        for view in VIEWS:
+            (renders / f"{job.key}_{view}.png").unlink(missing_ok=True)
         ascii_path = args.work / "ascii" / f"{job.model}.mdl"
         if not ascii_path.exists():
             # Extraction or CleanModels decompile failed; see decompile.log in the work folder.

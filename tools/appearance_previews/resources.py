@@ -12,6 +12,7 @@ class HakIndex:
 
     def __init__(self, hak_dir: Path, hak_order):
         self.where = {}
+        self.missing = [name for name in hak_order if not (hak_dir / f"{name}.hak").is_file()]
         for name in hak_order:
             hak = hak_dir / f"{name}.hak"
             if not hak.is_file():

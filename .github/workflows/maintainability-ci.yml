@@ -1,0 +1,126 @@
+name: Maintainability CI
+
+# Safety net for the maintainability refactor (SWLOR.Game.Server/Readmes/MaintainabilityRefactorPlan.md): builds the
+# solution and runs the unit tests with coverage for everything that goes into, or is pushed to, the long-lived
+# refactor branch. Pull requests into master do not run it.
+on:
+  pull_request:
+    branches:
+      - feature/maintainability-refactor
+  push:
+    branches:
+      - feature/maintainability-refactor
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+concurrency:
+  group: maintainability-ci-${{ github.event.pull_request.number || github.ref }}
+  cancel-in-progress: ${{ github.event_name == 'pull_request' }}
+
+env:
+  DOTNET_CLI_TELEMETRY_OPTOUT: '1'
+  DOTNET_NOLOGO: '1'
+  AVALONIA_TELEMETRY_OPTOUT: '1'
+  # The only SWLOR_Haks folders the unit tests that run here read. The submodule is a 27 GB repository; the job
+  # fetches just these folders of the pinned commit (shallow, blob-filtered, sparse). Tests that need other folders
+  # are excluded in scripts/ci/run-unit-tests.sh; add the folder here when you drop their exclusion.
+  HAKS_FOLDERS: sw_2da sw_tlk sw_ability
+
+jobs:
+  build-and-test:
+    name: Build and unit tests
+    # Windows, because the suite passes there as it stands: PowerShell 5.1 (powershell.exe) and the bundled
+    # nwn_erf.exe are present. The same projects run in an ubuntu container (no Wine, no powershell.exe, no native NWN
+    # tools) fail 7 tests and skip 7 more: 3 in SWLOR.Game.Server.Tests spawn powershell.exe, 4 in SWLOR.CLI.Tests
+    # spawn nwn_erf/nwn_gff, and 7 DeployBuildTests in SWLOR.CLI.Tests are Windows-only. Linux needs the setup the
+    # cloud-session hooks do (.claude/hooks/session-start.sh) or 7 more exclusions, and still skips those 7.
+    runs-on: windows-2025
+    timeout-minutes: 120
+    defaults:
+      run:
+        shell: bash
+    steps:
+      - name: Prepare
+        run: |
+          git config --global core.longpaths true
+          echo "CI_OUT=$GITHUB_WORKSPACE/ci-out" >> "$GITHUB_ENV"
+      - uses: actions/checkout@11d5960a326750d5838078e36cf38b85af677262 # v4
+        with:
+          persist-credentials: false
+          submodules: false
+      - uses: actions/setup-dotnet@67a3573c9a986a3f9c594539f4ab511d57bb3ce9 # v4
+        with:
+          global-json-file: global.json
+      - uses: actions/setup-python@a26af69be951a213d495a4c3e4e4022e16d87065 # v5
+        with:
+          python-version: '3.12'
+
+      - name: Fetch the SWLOR_Haks folders the tests read
+        run: |
+          set -euo pipefail
+          sha="$(git rev-parse HEAD:SWLOR_Haks)"
+          url="$(git config -f .gitmodules submodule.SWLOR_Haks.url)"
+          echo "SWLOR_Haks $sha from $url, folders: $HAKS_FOLDERS"
+          rm -rf SWLOR_Haks
+          git init -q SWLOR_Haks
+          git -C SWLOR_Haks remote add origin "$url"
+          # shellcheck disable=SC2086
+          git -C SWLOR_Haks sparse-checkout set --cone $HAKS_FOLDERS
+          git -C SWLOR_Haks fetch -q --depth 1 --filter=blob:none origin "$sha"
+          git -C SWLOR_Haks -c advice.detachedHead=false checkout -q --detach FETCH_HEAD
+          test "$(git -C SWLOR_Haks rev-parse HEAD)" = "$sha"
+          for folder in $HAKS_FOLDERS; do
+            echo "$folder: $(find "SWLOR_Haks/$folder" -type f | wc -l) files"
+          done
+
+      - name: Restore and build the solution (Release)
+        run: |
+          dotnet --info | head -n 12
+          dotnet build SWLOR.Game.Server.sln -c Release -p:RunPostBuildEvent=Never -v q -clp:ErrorsOnly
+
+      - name: Test the coverage summary tool
+        run: python -B -m unittest tools.tests.test_coverage_summary -v
+
+      - name: Unit tests with coverage
+        id: tests
+        run: bash scripts/ci/run-unit-tests.sh --out "$CI_OUT/results"
+
+      - name: Coverage report
+        if: ${{ !cancelled() && steps.tests.conclusion != 'skipped' }}
+        run: |
+          set -euo pipefail
+          ls "$CI_OUT"/results/coverage/*.cobertura.xml > /dev/null || { echo "No coverage files were produced."; exit 1; }
+          dotnet tool restore
+          dotnet reportgenerator \
+            "-reports:$CI_OUT/results/coverage/*.cobertura.xml" \
+            "-targetdir:$CI_OUT/report" \
+            "-reporttypes:Html;Cobertura;MarkdownSummaryGithub;TextSummary" \
+            "-assemblyfilters:+SWLOR.*" \
+            -verbosity:Warning
+          {
+            echo "## Coverage"
+            echo
+            echo "Generated and test code is excluded (coverlet.runsettings). Report only; no threshold yet."
+            echo
+            python tools/CoverageSummary.py "$CI_OUT/report/Cobertura.xml" --assembly SWLOR.Game.Server
+            echo
+            echo "<details><summary>ReportGenerator summary per class</summary>"
+            echo
+            cat "$CI_OUT/report/SummaryGithub.md"
+            echo
+            echo "</details>"
+          } | tee "$CI_OUT/report/CoverageSummary.md" >> "$GITHUB_STEP_SUMMARY"
+
+      - name: Upload test results and the coverage report
+        if: ${{ !cancelled() }}
+        uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02 # v4
+        with:
+          name: unit-tests-and-coverage
+          path: |
+            ci-out/report/**
+            ci-out/results/**/*.trx
+            ci-out/results/*.log
+          if-no-files-found: warn
+          retention-days: 14

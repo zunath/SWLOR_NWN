@@ -147,7 +147,12 @@ r1 = fight([cr], [m.npc_ship("Gunship", 45, "Boss", size="Capital", hp_scale=1.0
 r5 = fight([dict(fi, count=5)], [m.npc_ship("Gunship", 45, "Boss", size="Capital")])
 table(["Side", "Hull+shield", "vs Boss capital"], [["1 Cruiser, 5 crew seats", round(cr["maxHull"] + cr["maxShield"]), cell(r1)],
                                                   ["5 Fighters", 5 * round(fi["maxHull"] + fi["maxShield"]), cell(r5)]])
-out.append("Crew seats add only the crew's own perks and seat-skill bonuses (W8), so a crewed capital must stay below N separate ships.\n")
+# Crew Morale and Leadership raise crew effectiveness, capped at 105% (the crew update, W8a).
+cr_cap = m.player_ship("Cruiser", 45, m.FIT["Cruiser"], crew=m.CREW_CAP)
+r_cap = fight([cr_cap], [m.npc_ship("Gunship", 45, "Boss", size="Capital", hp_scale=1.0)])
+out.append(f"Crew effectiveness is capped at {m.CREW_CAP:.0%} (Crew Morale and Leadership); at the cap the Cruiser takes "
+           f"{cell(r_cap)} (hull+shield {round(cr_cap['maxHull'] + cr_cap['maxShield'])}). Crew seats add only the crew's own perks "
+           "and seat-skill bonuses (W8), so a crewed capital must stay at or below N separate ships.\n")
 
 # H. Weapon families
 out.append("## H. Weapon families on a Fighter (3 of one family), mean kill time\n")
@@ -177,8 +182,9 @@ for L in (25, 35, 45):
     fi = m.player_ship("Fighter", L, m.FIT["Fighter"])
     for enemy, label in ((m.npc_ship("Fighter", L, "Boss"), "Boss (Large)"), (m.npc_ship("Fighter", L, "Elite", count=3), "3 Elites")):
         a = fight([fr], [enemy]); b = fight([dict(fi, count=3)], [enemy])
-        rows.append([f"T{TIERS.index(L) + 1}", label, cell(a), cell(b)])
-table(["Tier", "Enemy", "Crewed Frigate", "3 Fighters"], rows)
+        c = fight([m.player_ship("Frigate", L, m.FIT["Frigate"], crew=m.CREW_CAP)], [enemy])
+        rows.append([f"T{TIERS.index(L) + 1}", label, cell(a), cell(b), cell(c)])
+table(["Tier", "Enemy", "Crewed Frigate", "3 Fighters", f"Crewed Frigate ({m.CREW_CAP:.0%} cap)"], rows)
 
 # J. Sidegrades: every ship in a combat role, fitted the same way
 out.append("## J. Ships in the same role (T3 and T5, each at its own gate or above)\n")

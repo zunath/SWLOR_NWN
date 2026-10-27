@@ -236,7 +236,7 @@ public class PilotingAceTests
     public void TheSpaceCode_ReadsTheAceTraitsFromTheRightPlaces()
     {
         var space = ReadServerSource("Service", "Space.cs");
-        space.Should().Contain("if (!shot.IsAbility)\n                criticalRate += Stat.GetStatAdjustment(activator, StatType.WeaponCriticalRatePercentAdjustment);",
+        space.Should().Contain("if (!shot.IsAbility)\n                criticalRate += Stat.GetStatAdjustment(source, StatType.WeaponCriticalRatePercentAdjustment);",
             "weapon cycles, not ability shots, take the weapon critical rate");
         space.Should().Contain("SpaceSustainedFire.RegisterHit(activator, target, shot.Family)");
         space.Should().Contain("SpaceHostileAbilityRewards.Clear(player);");

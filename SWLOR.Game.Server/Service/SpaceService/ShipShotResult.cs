@@ -1,4 +1,5 @@
 using System.Collections.Generic;
+using SWLOR.Game.Server.Service.SkillService;
 namespace SWLOR.Game.Server.Service.SpaceService
 {
     /// <summary>
@@ -27,6 +28,15 @@ namespace SWLOR.Game.Server.Service.SpaceService
 
         /// <summary>Damage actually removed from the hull once applied.</summary>
         public int HullDamage { get; set; }
+
+        /// <summary>
+        /// The player who earns the shot's combat point: the crew member who fired a station module, or
+        /// OBJECT_INVALID for the attacker itself.
+        /// </summary>
+        public uint CreditedPlayer { get; set; } = OBJECT_INVALID;
+
+        /// <summary>The skill the combat point goes to: a crew member's seat skill, or Invalid for Piloting.</summary>
+        public SkillType CreditedSkill { get; set; } = SkillType.Invalid;
 
         /// <summary>Riders this landed shot consumed. Their extra damage and handlers run once the damage lands.</summary>
         public List<SpaceShotRider> ConsumedRiders { get; } = new();

@@ -777,6 +777,12 @@ namespace SWLOR.Game.Server.Service
                 return false;
             }
 
+            // A character at a crew station or viewport is hidden beside the ship and cannot act on its own.
+            if (Space.IsAtCrewStation(activator))
+            {
+                return Deny("You cannot use abilities while at a crew station.");
+            }
+
             // Cannot use this ability in space.
             var inSpace = Space.IsPlayerInSpaceMode(activator);
             if (inSpace && !ability.CanBeUsedInSpace)

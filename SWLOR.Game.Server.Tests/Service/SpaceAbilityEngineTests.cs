@@ -78,19 +78,19 @@ public class SpaceAbilityEngineTests
     }
 
     [Test]
-    public void IsSeatUsable_AllowsTheHelmAndCrewedStationsOnly()
+    public void ThePilotsAbilities_FireHelmSlotsOnly()
     {
-        SpaceWeaponPicker.IsSeatUsable(ShipSlotTag.Helm, false).Should().BeTrue();
-        SpaceWeaponPicker.IsSeatUsable(null, false).Should().BeTrue("an older ship has no tags");
-        SpaceWeaponPicker.IsSeatUsable(ShipSlotTag.Gunner, false).Should().BeFalse();
-        SpaceWeaponPicker.IsSeatUsable(ShipSlotTag.Gunner, true).Should().BeTrue();
-    }
+        var status = new ShipStatus
+        {
+            Size = ShipSize.Large,
+            SlotTags = new Dictionary<int, ShipSlotTag> { [1] = ShipSlotTag.Helm, [2] = ShipSlotTag.Gunner },
+        };
 
-    [Test]
-    public void CrewStubs_AreNeutralUntilTheCrewUpdateFillsThemIn()
-    {
+        SpaceCrew.CanActingSeatFire(77001u, status, 1).Should().BeTrue();
+        SpaceCrew.CanActingSeatFire(77001u, status, 2).Should().BeFalse("the pilot cannot fire station slots");
+        SpaceCrew.CanActingSeatFire(77001u, new ShipStatus(), 2).Should().BeTrue("an older ship has no tags");
         SpaceCrew.EffectivenessMultiplier(0, 0).Should().Be(1.0);
-        SpaceCrew.IsSeatCrewed(new ShipStatus(), 1).Should().BeFalse();
+        SpaceCrew.IsSeatCrewed(77001u, new ShipStatus(), 1).Should().BeFalse();
     }
 
     // Riders

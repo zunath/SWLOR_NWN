@@ -281,6 +281,7 @@ namespace SWLOR.Game.Server.Service
                 PropertyPermissionType.ChangeDescription,
                 PropertyPermissionType.EditCategories,
                 PropertyPermissionType.PilotShip,
+                PropertyPermissionType.CrewStation,
                 PropertyPermissionType.RefitShip
             };
 

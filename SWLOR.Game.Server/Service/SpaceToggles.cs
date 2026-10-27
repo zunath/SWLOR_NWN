@@ -150,17 +150,31 @@ namespace SWLOR.Game.Server.Service
                 _toggleWake[creature] = earliest.Value;
         }
 
-        /// <summary>Switches one toggle off, restores its icon and optionally tells the player why.</summary>
+        /// <summary>
+        /// Switches one toggle off, restores its icon and optionally tells the player who works the slot why (the
+        /// crew member at its station, or the pilot).
+        /// </summary>
         private static void TurnOffToggle(uint creature, ShipStatus status, int slotNumber, string message = null)
         {
             Toggles(status).RemoveAll(x => x.Slot == slotNumber);
             SaveShipStatus(creature, status);
-            RefreshShipModuleVisual(creature, status, slotNumber);
+            RefreshSlotVisuals(creature, status, slotNumber);
 
-            if (!string.IsNullOrWhiteSpace(message) && GetIsPC(creature))
-                SendMessageToPC(creature, message);
+            var slotOperator = GetSlotOperator(creature, status, slotNumber);
+            if (!string.IsNullOrWhiteSpace(message) && GetIsPC(slotOperator))
+                SendMessageToPC(slotOperator, message);
 
             UpdateToggleWake(creature, status);
+        }
+
+        /// <summary>Refreshes a slot's icon for the pilot and, for a station slot, the crew member who works it.</summary>
+        private static void RefreshSlotVisuals(uint ship, ShipStatus status, int slotNumber)
+        {
+            RefreshShipModuleVisual(ship, status, slotNumber);
+
+            var slotOperator = GetSlotOperator(ship, status, slotNumber);
+            if (slotOperator != ship && slotOperator != OBJECT_INVALID)
+                RefreshShipModuleVisual(slotOperator, status, slotNumber);
         }
 
         /// <summary>
@@ -189,7 +203,7 @@ namespace SWLOR.Game.Server.Service
 
             foreach (var slot in slots)
             {
-                RefreshShipModuleVisual(creature, status, slot);
+                RefreshSlotVisuals(creature, status, slot);
             }
         }
 
@@ -231,7 +245,7 @@ namespace SWLOR.Game.Server.Service
             if (GetIsPC(activator))
             {
                 SaveShipStatus(activator, activatorShipStatus);
-                RefreshShipModuleVisual(activator, activatorShipStatus, slotNumber);
+                RefreshSlotVisuals(activator, activatorShipStatus, slotNumber);
                 ExecuteScript("pc_target_upd", activator);
             }
 
@@ -339,8 +353,17 @@ namespace SWLOR.Game.Server.Service
                 if (IsShipIncapacitated(creature))
                     return;
 
+                // A station slot fires only while its seat is crewed, at the crew member's own target.
+                var seat = ShipCrewSeats.GetSeatForSlot(status.Size, status.SlotTags, slot);
+                var crewMember = seat == ShipCrewSeat.Pilot ? OBJECT_INVALID : SpaceCrew.GetSeatOccupant(creature, seat);
+                if (seat != ShipCrewSeat.Pilot && (crewMember == OBJECT_INVALID || !GetIsObjectValid(crewMember)))
+                {
+                    TurnOffToggle(creature, status, slot);
+                    return;
+                }
+
                 var mode = ShipToggleRules.GetTargetMode(detail.Type);
-                var currentTarget = GetLocalObject(creature, "SPACE_TARGET");
+                var currentTarget = GetLocalObject(crewMember == OBJECT_INVALID ? creature : crewMember, "SPACE_TARGET");
                 var target =ShipToggleRules.ChooseTarget(mode, currentTarget, active.TargetId, creature);
                 var targetStatus = target == creature ? status : GetShipStatus(target);
                 var targetValid = GetIsObjectValid(target);
@@ -390,8 +413,11 @@ namespace SWLOR.Game.Server.Service
                 var next = ShipToggleRules.NextCycleTime(active.NextCycleTime, now, cycle);
                 active.NextCycleTime = next;
 
-                FireShipModule(creature, status, slot, module, detail, target, targetStatus, required,
-                    true, next.AddSeconds(-cycle), next, false);
+                using (SpaceCrew.BeginStationFire(BuildCrewFireContext(creature, crewMember, seat)))
+                {
+                    FireShipModule(creature, status, slot, module, detail, target, targetStatus, required,
+                        true, next.AddSeconds(-cycle), next, false);
+                }
 
                 if (noDelayCycle)
                     SpaceWeaponCycles.ConsumeCycle(creature, detail.Type);

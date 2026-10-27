@@ -78,6 +78,7 @@ namespace SWLOR.Game.Server.Service
         {
             var player = GetEnteringObject();
             ReloadPlayerTlkStrings();
+            RestoreCrewMemberAfterLogin(player);
             WarpPlayerInsideShip(player);
         }
 
@@ -86,9 +87,13 @@ namespace SWLOR.Game.Server.Service
         {
             var player = GetExitingObject();
             _pendingShipLaunches.Remove(player);
+            CrewMemberDisconnected(player);
             if (!IsPlayerInSpaceMode(player))
                 return;
 
+            // The pilot's crew go back to their consoles; the ship stays in space without a pilot.
+            ReleaseShipCrew(player, "The ship's pilot has left the controls, so you leave your station.");
+            UnregisterShipPilot(player);
             TurnOffShipToggles(player);
             CloneShip(player);
 
@@ -432,7 +437,15 @@ namespace SWLOR.Game.Server.Service
             var player = OBJECT_SELF;
             var position = GetPosition(player);
 
-            if (!IsPlayerInSpaceMode(player)) return;
+            // A crew member picks their own target. A viewport watcher has no controls, so a click does nothing.
+            var isCrew = TryGetCrewStation(player, out _, out _);
+            if (!isCrew && IsAtCrewStation(player))
+            {
+                EventsPlugin.SkipEvent();
+                return;
+            }
+
+            if (!isCrew && !IsPlayerInSpaceMode(player)) return;
             EventsPlugin.SkipEvent();
 
             // Clicking enemies will cause this flag to be true (and we should proceed with target selection)
@@ -537,6 +550,17 @@ namespace SWLOR.Game.Server.Service
 
             var playerId = GetObjectUUID(player);
             var propertyId = Property.GetPropertyId(area);
+
+            // While someone flies the ship, its computer is the crew console: take a station or watch from a viewport.
+            var flyingShip = DB.Search(new DBQuery<PlayerShip>()
+                .AddFieldSearch(nameof(PlayerShip.PropertyId), propertyId, false)).FirstOrDefault();
+            if (flyingShip != null && GetIsObjectValid(GetShipPilot(flyingShip.Id)))
+            {
+                if (!ConversationMenu.TryStart(player, OBJECT_SELF, "CrewStationDialog"))
+                    SendMessageToPC(player, ColorToken.Red("This ship's controls are in use."));
+                return;
+            }
+
             var permissionQuery = new DBQuery<WorldPropertyPermission>()
                 .AddFieldSearch(nameof(WorldPropertyPermission.PropertyId), propertyId, false)
                 .AddFieldSearch(nameof(WorldPropertyPermission.PlayerId), playerId, false);
@@ -961,6 +985,7 @@ namespace SWLOR.Game.Server.Service
             if(!_playersInSpace.Contains(player))
                 _playersInSpace.Add(player);
 
+            RegisterShipPilot(shipId, player);
             RestoreShipModuleRecasts(player);
             ExecuteScript("space_enter", player);
         }
@@ -1089,6 +1114,9 @@ namespace SWLOR.Game.Server.Service
             if (!IsPlayerInSpaceMode(player))
                 return;
 
+            // Leaving space or docking returns the crew to their consoles (plan section 10).
+            ReleaseShipCrew(player, "The ship's pilot has left the controls, so you leave your station.");
+            UnregisterShipPilot(player);
             CloneShip(player);
 
             var playerId = GetObjectUUID(player);
@@ -1225,17 +1253,8 @@ namespace SWLOR.Game.Server.Service
                 if (dbPlayer.Perks[perkType] < requiredLevel) return false;
             }
 
-            foreach (var (_, shipModule) in playerShip.HighPowerModules)
-            {
-                if (!CanPlayerUseShipModule(player, shipModule.ItemTag)) return false;
-            }
-
-            foreach (var (_, shipModule) in playerShip.LowPowerModules)
-            {
-                if (!CanPlayerUseShipModule(player, shipModule.ItemTag)) return false;
-            }
-
-            foreach (var (_, shipModule) in playerShip.MidPowerModules)
+            // Crew-station modules are the crew's to work, so the pilot needs only the Helm's (plan section 10).
+            foreach (var shipModule in GetPilotModules(playerShip))
             {
                 if (!CanPlayerUseShipModule(player, shipModule.ItemTag)) return false;
             }
@@ -1243,19 +1262,40 @@ namespace SWLOR.Game.Server.Service
             return string.IsNullOrEmpty(GetShipSkillRequirementError(player, playerShip));
         }
 
+        /// <summary>The high, low and mid modules the pilot works: every one outside a crew-station slot.</summary>
+        private static IEnumerable<ShipStatus.ShipStatusModule> GetPilotModules(ShipStatus playerShip)
+        {
+            foreach (var (slot, shipModule) in playerShip.HighPowerModules)
+            {
+                if (!IsStationSlot(playerShip, ShipStatCalculator.GetHotbarSlot(ShipModulePowerType.High, slot)))
+                    yield return shipModule;
+            }
+
+            foreach (var (slot, shipModule) in playerShip.LowPowerModules)
+            {
+                if (!IsStationSlot(playerShip, ShipStatCalculator.GetHotbarSlot(ShipModulePowerType.Low, slot)))
+                    yield return shipModule;
+            }
+
+            foreach (var (slot, shipModule) in playerShip.MidPowerModules)
+            {
+                if (!IsStationSlot(playerShip, ShipStatCalculator.GetHotbarSlot(ShipModulePowerType.Mid, slot)))
+                    yield return shipModule;
+            }
+        }
+
         /// <summary>
-        /// Returns the use error for the first unmet RequiresSkill rank on the ship's deed or any fitted module,
-        /// or an empty string if the player meets them all. Requirements are stored when the deed is registered
-        /// and when a module is installed, so no item has to be deserialized.
+        /// Returns the use error for the first unmet RequiresSkill rank on the ship's deed or any module the pilot
+        /// works, or an empty string if the player meets them all. Crew-station modules are checked against their
+        /// crew instead. Requirements are stored when the deed is registered and when a module is installed, so no
+        /// item has to be deserialized.
         /// </summary>
         public static string GetShipSkillRequirementError(uint player, ShipStatus playerShip)
         {
             var error = Item.GetSkillRequirementsError(player, playerShip.RequiredSkills);
             if (!string.IsNullOrEmpty(error)) return error;
 
-            var modules = playerShip.HighPowerModules.Values
-                .Concat(playerShip.MidPowerModules.Values)
-                .Concat(playerShip.LowPowerModules.Values)
+            var modules = GetPilotModules(playerShip)
                 .Concat(playerShip.ConfigurationModules.Values);
 
             foreach (var shipModule in modules)
@@ -1391,36 +1431,70 @@ namespace SWLOR.Game.Server.Service
         /// </summary>
         public static void ActivateShipModule(uint activator, FeatType feat)
         {
+            // A crew member's station module fires from the ship (plan section 10).
+            if (TryGetCrewStation(activator, out var ship, out var seat))
+            {
+                ActivateShipModuleCore(ship, feat, false, activator, seat);
+                return;
+            }
+
             ActivateShipModuleCore(activator, feat, false);
         }
 
         /// <summary>
         /// Shared activation. With <paramref name="onlyTurnOn"/>, a toggle that is already on is left alone
-        /// instead of being switched off (ship AI uses this).
+        /// instead of being switched off (ship AI uses this). With a <paramref name="crewMember"/>, the ship fires a
+        /// module of the crew member's <paramref name="crewSeat"/> at the crew member's own target, with the crew
+        /// member's rank, stats and effectiveness.
         /// </summary>
-        private static void ActivateShipModuleCore(uint activator, FeatType feat, bool onlyTurnOn)
+        private static void ActivateShipModuleCore(
+            uint activator,
+            FeatType feat,
+            bool onlyTurnOn,
+            uint crewMember = OBJECT_INVALID,
+            ShipCrewSeat crewSeat = ShipCrewSeat.Invalid)
         {
             if (!ShipModuleFeats.ContainsKey(feat)) return;
             var activatorShipStatus = GetShipStatus(activator);
             if (activatorShipStatus == null) return;
             var slotNumber = GetFeatSlotNumber(feat);
+            var isCrew = crewMember != OBJECT_INVALID && crewMember != activator;
+
+            // Feedback goes to whoever pressed the module.
+            var user = isCrew ? crewMember : activator;
 
             if (slotNumber < 1 || slotNumber > 30)
             {
-                Log.Write(LogGroup.Error, $"Failed to locate matching ship module by its feat for player {GetName(activator)}");
-                SendMessageToPC(activator, "Unable to use that module.");
+                Log.Write(LogGroup.Error, $"Failed to locate matching ship module by its feat for player {GetName(user)}");
+                SendMessageToPC(user, "Unable to use that module.");
                 return;
             }
 
             // Slots 1-10 are high powered, 11-20 low powered and 21-30 mid powered.
             if (!TryGetFittedModule(activatorShipStatus, slotNumber, out var shipModule)) return;
 
-            // A module in a crew-station slot works only while its seat is crewed. Crew arrives in a later update.
-            if (activatorShipStatus.SlotTags != null &&
-                activatorShipStatus.SlotTags.TryGetValue(slotNumber, out var slotTag) &&
-                ShipStatCalculator.IsStation(slotTag))
+            // A crew-station slot works only for the crew member at its seat; the pilot fires Helm slots only.
+            var slotSeat = ShipCrewSeats.GetSeatForSlot(activatorShipStatus.Size, activatorShipStatus.SlotTags, slotNumber);
+            if (isCrew)
             {
-                SendMessageToPC(activator, $"This slot needs a crew member at the {ShipStatCalculator.GetSeatName(slotTag)} station.");
+                if (slotSeat != crewSeat)
+                {
+                    SendMessageToPC(user, $"That module belongs to the {ShipCrewSeats.GetSeatName(slotSeat)}.");
+                    return;
+                }
+
+                var rankError = GetStationRankError(crewMember, crewSeat, shipModule);
+                if (!string.IsNullOrEmpty(rankError))
+                {
+                    SendMessageToPC(user, rankError);
+                    return;
+                }
+            }
+            else if (slotSeat != ShipCrewSeat.Pilot)
+            {
+                SendMessageToPC(activator, SpaceCrew.IsSeatCrewed(activator, activatorShipStatus, slotNumber)
+                    ? $"This module belongs to the {ShipCrewSeats.GetSeatName(slotSeat)} station."
+                    : $"This slot needs a crew member at the {ShipCrewSeats.GetSeatName(slotSeat)} station.");
                 return;
             }
 
@@ -1439,7 +1513,7 @@ namespace SWLOR.Game.Server.Service
             // A dazed ship cannot switch a module on or fire one (a toggle that is on can still be switched off above).
             if (IsShipIncapacitated(activator))
             {
-                SendMessageToPC(activator, "You cannot use modules while incapacitated.");
+                SendMessageToPC(user, "You cannot use modules while incapacitated.");
                 return;
             }
 
@@ -1448,7 +1522,7 @@ namespace SWLOR.Game.Server.Service
 
             if (activatorShipStatus.Capacitor < requiredCapacitor)
             {
-                SendMessageToPC(activator, $"Your ship does not have enough capacitor to use that module. (Required: {requiredCapacitor})");
+                SendMessageToPC(user, $"Your ship does not have enough capacitor to use that module. (Required: {requiredCapacitor})");
                 return;
             }
 
@@ -1456,17 +1530,21 @@ namespace SWLOR.Game.Server.Service
             var now = DateTime.UtcNow;
             if (shipModule.RecastTime > now)
             {
-                SendMessageToPC(activator, "That module is not ready.");
+                SendMessageToPC(user, "That module is not ready.");
                 return;
             }
 
-            // Check global recast requirements. Toggles run on their own cycle and ignore it.
-            if (!isToggle && activatorShipStatus.GlobalRecast > now)
+            // Check global recast requirements. Toggles run on their own cycle and ignore it. Each crew member has
+            // their own (plan section 9).
+            _crewAssignments.TryGetValue(crewMember, out var crewAssignment);
+            var globalRecast = isCrew ? crewAssignment?.GlobalRecast ?? DateTime.MinValue : activatorShipStatus.GlobalRecast;
+            if (!isToggle && globalRecast > now)
             {
                 return;
             }
 
-            var (target, targetShipStatus) = GetCurrentTarget(activator);
+            // A crew member fires at the target they picked.
+            var (target, targetShipStatus) = GetCurrentTarget(user);
 
             // Targeting your own ship uses the one status, so the module's effect and its cost are saved together.
             if (target == activator && targetShipStatus != null)
@@ -1477,14 +1555,14 @@ namespace SWLOR.Game.Server.Service
                 !shipModuleDetails.ValidTargetTypes.Contains(GetObjectType(target)) &&
                 !(shipModuleDetails.CanTargetSelf && !GetIsObjectValid(target)))
             {
-                SendMessageToPC(activator, "This module cannot be used on that target type.");
+                SendMessageToPC(user, "This module cannot be used on that target type.");
                 return;
             }
 
             // Check for a selected target that doesn't have a ship status.
             if (GetObjectType(target) != ObjectType.Placeable && targetShipStatus == null && !shipModuleDetails.CanTargetSelf)
             {
-                SendMessageToPC(activator, "Invalid target.");
+                SendMessageToPC(user, "Invalid target.");
                 return;
             }
 
@@ -1492,7 +1570,7 @@ namespace SWLOR.Game.Server.Service
             var targetMode = ShipToggleRules.GetTargetMode(shipModuleDetails.Type);
             if (isToggle && targetMode == ShipToggleTargetMode.Follow && !GetIsObjectValid(target))
             {
-                SendMessageToPC(activator, "Invalid target.");
+                SendMessageToPC(user, "Invalid target.");
                 return;
             }
 
@@ -1500,7 +1578,7 @@ namespace SWLOR.Game.Server.Service
             var maxDistance = shipModuleDetails.ModuleMaxDistanceAction == null ? 10f : shipModuleDetails.ModuleMaxDistanceAction(activator, activatorShipStatus, target, targetShipStatus, shipModule.ModuleBonus);
             if (GetIsPC(activator) && GetDistanceBetween(activator, target) > maxDistance)
             {
-                SendMessageToPC(activator, $"Target is too far away. Maximum distance: {maxDistance} meters.");
+                SendMessageToPC(user, $"Target is too far away. Maximum distance: {maxDistance} meters.");
                 return;
             }
 
@@ -1518,12 +1596,15 @@ namespace SWLOR.Game.Server.Service
                 var result = shipModuleDetails.ModuleValidationAction(activator, activatorShipStatus, target, targetShipStatus, shipModule.ModuleBonus);
                 if (!string.IsNullOrWhiteSpace(result))
                 {
-                    SendMessageToPC(activator, result);
+                    SendMessageToPC(user, result);
                     return;
                 }
             }
 
             var recastSeconds = shipModuleDetails.CalculateRecastAction?.Invoke(activator, activatorShipStatus, shipModule.ModuleBonus);
+
+            // A crew member's module reads their stats and works at the station's effectiveness while it fires.
+            using var crewFire = SpaceCrew.BeginStationFire(isCrew ? BuildCrewFireContext(activator, crewMember, crewSeat) : null);
 
             if (isToggle)
             {
@@ -1556,10 +1637,14 @@ namespace SWLOR.Game.Server.Service
                 return;
             }
 
-            // One press: run the module-specific code now, then start the recast and the global recast.
+            // One press: run the module-specific code now, then start the recast and the global recast. A crew
+            // member's global recast is their own and leaves the pilot's alone.
             FireShipModule(activator, activatorShipStatus, slotNumber, shipModule, shipModuleDetails,
                 target, targetShipStatus, requiredCapacitor, recastSeconds != null, now,
-                now.AddSeconds(recastSeconds ?? 0f), true);
+                now.AddSeconds(recastSeconds ?? 0f), !isCrew);
+
+            if (isCrew && crewAssignment != null && recastSeconds != null)
+                crewAssignment.GlobalRecast = now.AddSeconds(2f);
         }
 
         /// <summary>
@@ -1996,19 +2081,31 @@ namespace SWLOR.Game.Server.Service
             var weaponSize = shot.Size ?? NormalizeShipSize(activatorStatus.Size);
             var targetSize = NormalizeShipSize(targetStatus.Size);
 
+            // A crew member's station shot reads their attributes and stats and works at the station's
+            // effectiveness; the ship stays the attacker (plan section 10).
+            var source = SpaceCrew.GetStatSource(activator);
+            var stationDmg = ShipCrewSeats.ScaleByEffectiveness(shot.Dmg, SpaceCrew.GetFireEffectiveness(activator));
+            if (stationDmg != shot.Dmg)
+                shot = shot.WithBonusDmg(stationDmg - shot.Dmg);
+
             var chanceToHit = SpaceCombatMath.HitChance(
-                GetShipAccuracy(activator, activatorStatus, shot),
+                GetShipAccuracy(source, activatorStatus, shot),
                 GetShipEvasion(target, targetStatus),
                 weaponSize,
                 targetSize,
                 shot.IgnoreSizePenalty);
-            var result = new ShipShotResult { ChanceToHit = chanceToHit };
+            var result = new ShipShotResult
+            {
+                ChanceToHit = chanceToHit,
+                CreditedPlayer = SpaceCrew.GetCreditedPlayer(activator),
+                CreditedSkill = SpaceCrew.GetCreditedSkill(activator, SkillType.Piloting),
+            };
 
-            var per = GetPilotScore(activator, activatorStatus, AbilityType.Perception);
+            var per = GetPilotScore(source, activatorStatus, AbilityType.Perception);
             var targetVit = GetPilotScore(target, targetStatus, AbilityType.Vitality);
-            var attack = GetShipAttack(activator, activatorStatus, shot);
+            var attack = GetShipAttack(source, activatorStatus, shot);
             var defense = GetShipDefense(target, targetStatus);
-            var damageAttribute = GetDamageAttribute(activator, activatorStatus, shot.Family);
+            var damageAttribute = GetDamageAttribute(source, activatorStatus, shot.Family);
 
             var hitRolled = Random.D100(1) <= chanceToHit;
             var blindMiss = hitRolled && IsBlinded(activator) && Random.D100(1) <= SpaceCombatMath.BlindMissChance;
@@ -2026,9 +2123,9 @@ namespace SWLOR.Game.Server.Service
 
             // The weapon critical rate stat belongs to the weapon's own cycles, as "weapon cycles have +N% Critical
             // Rate" reads; an ability shot takes only the general critical rate stat.
-            var criticalRate = Stat.GetStatAdjustment(activator, StatType.CriticalRatePercentAdjustment);
+            var criticalRate = Stat.GetStatAdjustment(source, StatType.CriticalRatePercentAdjustment);
             if (!shot.IsAbility)
-                criticalRate += Stat.GetStatAdjustment(activator, StatType.WeaponCriticalRatePercentAdjustment);
+                criticalRate += Stat.GetStatAdjustment(source, StatType.WeaponCriticalRatePercentAdjustment);
             result.IsCritical = Random.D100(1) <= SpaceCombatMath.CriticalRate(per, targetVit, shot.Rank, criticalRate);
 
             // A warded ship takes a critical hit as a normal hit that rolls minimum damage.
@@ -2048,20 +2145,20 @@ namespace SWLOR.Game.Server.Service
 
             if (result.IsCritical)
             {
-                var criticalPercent = Stat.GetStatAdjustment(activator, StatType.CriticalDamagePercentAdjustment) +
+                var criticalPercent = Stat.GetStatAdjustment(source, StatType.CriticalDamagePercentAdjustment) +
                                       SpaceCombatMath.HighHullCriticalDamageAdjustment(
                                           targetStatus.Hull,
                                           targetStatus.MaxHull,
-                                          Stat.GetStatAdjustment(activator, StatType.CriticalDamageHighHPTargetThresholdPercent),
-                                          Stat.GetStatAdjustment(activator, StatType.CriticalDamageHighHPTargetPercentAdjustment));
+                                          Stat.GetStatAdjustment(source, StatType.CriticalDamageHighHPTargetThresholdPercent),
+                                          Stat.GetStatAdjustment(source, StatType.CriticalDamageHighHPTargetPercentAdjustment));
                 rolled = SpaceCombatMath.CriticalDamage(rolled, true, criticalPercent);
             }
 
             var shapePercent = SpaceCombatMath.ShapeDamagePercent(
                 shot.IsAbility,
                 shot.IsArea,
-                Stat.GetStatAdjustment(activator, StatType.SingleTargetDamagePercentAdjustment),
-                Stat.GetStatAdjustment(activator, StatType.AreaAbilityDamagePercentAdjustment));
+                Stat.GetStatAdjustment(source, StatType.SingleTargetDamagePercentAdjustment),
+                Stat.GetStatAdjustment(source, StatType.AreaAbilityDamagePercentAdjustment));
 
             // A launcher's shot also takes the launcher shape stats (the Ordnance Stance).
             if (shot.Family == SpaceWeaponFamily.Launcher)
@@ -2069,13 +2166,13 @@ namespace SWLOR.Game.Server.Service
                 shapePercent += SpaceCombatMath.ShapeDamagePercent(
                     shot.IsAbility,
                     shot.IsArea,
-                    Stat.GetStatAdjustment(activator, StatType.SpaceLauncherSingleTargetDamagePercentAdjustment),
-                    Stat.GetStatAdjustment(activator, StatType.SpaceLauncherAreaAbilityDamagePercentAdjustment));
+                    Stat.GetStatAdjustment(source, StatType.SpaceLauncherSingleTargetDamagePercentAdjustment),
+                    Stat.GetStatAdjustment(source, StatType.SpaceLauncherAreaAbilityDamagePercentAdjustment));
             }
 
             rolled = SpaceCombatMath.ApplyDamageDealt(
                 rolled,
-                Stat.GetStatAdjustment(activator, StatType.DamageDealtPercentAdjustment),
+                Stat.GetStatAdjustment(source, StatType.DamageDealtPercentAdjustment),
                 shapePercent);
 
             var bonusPercent = 0;
@@ -2150,7 +2247,14 @@ namespace SWLOR.Game.Server.Service
             Enmity.ModifyEnmity(activator, target, Enmity.CalculateDamageEnmity(
                 result.Enmity,
                 Stat.GetStatAdjustment(activator, StatType.DamageEnmityPercentAdjustment)));
-            CombatPoint.AddCombatPoint(activator, target, SkillType.Piloting);
+
+            // A crew member's shot earns them the combat point, in their seat's skill. The shot was rolled while
+            // they worked the station, so the credit travels with the result (a missile lands later).
+            var creditedPlayer = result.CreditedPlayer == OBJECT_INVALID || !GetIsObjectValid(result.CreditedPlayer)
+                ? activator
+                : result.CreditedPlayer;
+            CombatPoint.AddCombatPoint(creditedPlayer, target,
+                result.CreditedSkill == SkillType.Invalid ? SkillType.Piloting : result.CreditedSkill);
             Combat.TrackAttackActivity(activator);
 
             var shotEvent = new SpaceShotEvent { Attacker = activator, Target = target, Shot = shot, Result = result };
@@ -2509,8 +2613,17 @@ namespace SWLOR.Game.Server.Service
         public static void ApplyDeath(uint creature)
         {
             _pendingShipLaunches.Remove(creature);
+
+            // A crew member killed some other way (a DM, a script) leaves their station.
+            if (IsAtCrewStation(creature))
+                LeaveCrewStation(creature, returnToConsole: false);
+
             if (!IsPlayerInSpaceMode(creature))
                 return;
+
+            // Everyone at the ship's stations and viewports goes down with it until escape pods arrive (W2d).
+            DestroyShipCrew(creature);
+            UnregisterShipPilot(creature);
 
             ApplyEffectToObject(DurationType.Instant, EffectVisualEffect(VisualEffect.Fnf_Fireball), creature);
 

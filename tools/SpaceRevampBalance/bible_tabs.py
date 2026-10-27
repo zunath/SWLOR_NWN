@@ -123,7 +123,14 @@ def starships():
         ["Max capacitor", f"Hull + {T['cap_per_wil']} x WIL + Capacitor Batteries", *[""] * 19, ""],
         ["Capacitor regen", f"Hull per second + {T['cap_regen_per_wil']} x WIL + Capacitor Regulators", *[""] * 19, ""],
         ["Shield regen", "Max shield x size rate per second x (1 + 2% per WIL above 10)", *[""] * 19, "Size rates: " + ", ".join(f"{k} {v * 100:.2f}%" for k, v in T["shield_regen_pct"].items()) + ". Always on."],
-        ["Crew-station slots", "Work only while their seat is crewed", *[""] * 19, "Each Large and Capital role tags some slots Gunner, Engineer or Sensors (Station column below). Helm slots fill first. A station slot, passive or active, works at its crew's effectiveness: a player at the module's rank 100%; droid crew by tier (best droid 50% at a Gunner seat, 75% at Engineer and Sensors; tier-1 combat droid 25%). A solo pilot runs only Helm slots."],
+        ["Crew-station slots", "Work only while their seat is crewed", *[""] * 19, "Each Large and Capital role tags some slots Gunner, Engineer or Sensors (Station column below). Helm slots fill first. "
+         "Large: Pilot, Gunner (High station slots), Engineer (Mid and Low station slots). Capital: Pilot, Gunner (first half "
+         "of the High station slots, rounded up), Second Gunner (the rest), Engineer (Mid and Low station slots except the "
+         "last Mid), Sensors (last Mid station slot). Seat skills: Gunners Piloting, Engineer Engineering, Sensors Espionage. "
+         "A station slot, passive or active, works only while its seat is crewed, at its crew's effectiveness: a player at "
+         "the module's rank 100%; droid crew by tier (best droid 50% at a Gunner seat, 75% at Engineer and Sensors; tier-1 "
+         "combat droid 25%). A solo pilot runs only Helm slots. Crew Morale (+10%) and the captain's Leadership (+1% per 10 "
+         "ranks, up to +5%) raise crew effectiveness, capped at 105%."],
     ])
     s.title("Size rules")
     s.table(["Size", "Gate", "Advanced", "Weapon output", "", "", "", "Module output", "Shield regen", "", "", "", "", "", "", "", "", "", "", "", "", "Notes"], [

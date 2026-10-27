@@ -1726,7 +1726,9 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
             ShipNames[SelectedShipIndex] = ShipName;
         };
 
-        private bool ValidateModuleEquip(PlayerShip dbShip, uint item)
+        /// <param name="hotbarSlot">The slot (1-30) the module goes into, or 0 for a configuration slot. The owner
+        /// fits a crew-station slot without rank checks: its crew is checked when they switch it on.</param>
+        private bool ValidateModuleEquip(PlayerShip dbShip, uint item, int hotbarSlot = 0)
         {
             var itemTag = GetTag(item);
 
@@ -1777,6 +1779,10 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
                 SendMessageToPC(Player, "No low power nodes are available.");
                 return false;
             }
+
+            // A crew-station module is checked against its crew, not the owner (plan section 10).
+            if (hotbarSlot > 0 && Space.IsStationSlot(dbShip.Status, hotbarSlot))
+                return true;
 
             // Doesn't meet perk requirements.
             if (!Space.CanPlayerUseShipModule(Player, itemTag))
@@ -1850,7 +1856,7 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
 
                     var moduleDetails = Space.GetShipModuleDetailByItemTag(itemTag);
 
-                    if (!ValidateModuleEquip(dbShip, item))
+                    if (!ValidateModuleEquip(dbShip, item, ShipStatCalculator.GetHotbarSlot(row, slot)))
                         return;
 
                     if (moduleDetails.PowerType != row)

@@ -1,4 +1,6 @@
+using System.Collections.Generic;
 using SWLOR.Game.Server.Entity;
+using SWLOR.Game.Server.Service.DBService;
 
 namespace SWLOR.Game.Server.Domain.Core
 {
@@ -17,6 +19,18 @@ namespace SWLOR.Game.Server.Domain.Core
 
         /// <summary>Stores an object under its Id. Same as <c>DB.Set&lt;T&gt;</c>.</summary>
         void Set<T>(T entity)
+            where T : EntityBase;
+
+        /// <summary>Deletes an entity by its Id. Same as <c>DB.Delete&lt;T&gt;</c>.</summary>
+        void Delete<T>(string id)
+            where T : EntityBase;
+
+        /// <summary>Searches for the entities matching a query. Same as <c>DB.Search&lt;T&gt;</c> (the result is lazy).</summary>
+        IEnumerable<T> Search<T>(DBQuery<T> query)
+            where T : EntityBase;
+
+        /// <summary>Counts the entities matching a query without reading them. Same as <c>DB.SearchCount&lt;T&gt;</c>.</summary>
+        long SearchCount<T>(DBQuery<T> query)
             where T : EntityBase;
     }
 }

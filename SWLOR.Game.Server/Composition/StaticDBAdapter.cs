@@ -1,6 +1,8 @@
+using System.Collections.Generic;
 using SWLOR.Game.Server.Domain.Core;
 using SWLOR.Game.Server.Entity;
 using SWLOR.Game.Server.Service;
+using SWLOR.Game.Server.Service.DBService;
 
 namespace SWLOR.Game.Server.Composition
 {
@@ -20,6 +22,24 @@ namespace SWLOR.Game.Server.Composition
             where T : EntityBase
         {
             DB.Set(entity);
+        }
+
+        public void Delete<T>(string id)
+            where T : EntityBase
+        {
+            DB.Delete<T>(id);
+        }
+
+        public IEnumerable<T> Search<T>(DBQuery<T> query)
+            where T : EntityBase
+        {
+            return DB.Search(query);
+        }
+
+        public long SearchCount<T>(DBQuery<T> query)
+            where T : EntityBase
+        {
+            return DB.SearchCount(query);
         }
     }
 }

@@ -18,8 +18,10 @@ public class FacadeForwardingTests
 {
     private static IEnumerable<TestCaseData> Services() => ConvertedServiceFixtures.AsTestCases();
 
+    // The facade's methods, and the getters of its static properties (the interface lists a property as its get_ method).
     private static IEnumerable<MethodInfo> FacadeMethods(Type facade) =>
-        facade.GetMethods(BindingFlags.Public | BindingFlags.Static | BindingFlags.DeclaredOnly).Where(method => !method.IsSpecialName);
+        facade.GetMethods(BindingFlags.Public | BindingFlags.Static | BindingFlags.DeclaredOnly)
+            .Where(method => !method.IsSpecialName || method.Name.StartsWith("get_", StringComparison.Ordinal));
 
     private static MethodInfo Signature(Type contract, MethodInfo facadeMethod) =>
         contract.GetMethod(facadeMethod.Name, facadeMethod.GetParameters().Select(parameter => parameter.ParameterType).ToArray())
@@ -57,7 +59,14 @@ public class FacadeForwardingTests
             call.Method.Name.Should().Be(method.Name);
             call.Arguments.Should().Equal(arguments, $"{service.Facade.Name}.{method.Name} passes its arguments through");
             if (method.ReturnType != typeof(void))
-                result.Should().BeSameAs(proxy.ReturnedBy(call.Method), $"{service.Facade.Name}.{method.Name} returns what the instance returned");
+            {
+                var returned = proxy.ReturnedBy(call.Method);
+                var because = $"{service.Facade.Name}.{method.Name} returns what the instance returned";
+                if (method.ReturnType.IsValueType)
+                    result.Should().Be(returned, because);
+                else
+                    result.Should().BeSameAs(returned, because);
+            }
             provider.Dispose();
         }
     }
@@ -122,6 +131,8 @@ public class FacadeForwardingTests
             return 1001u;
         if (type == typeof(int))
             return 7;
+        if (type == typeof(long))
+            return 7L;
         if (type == typeof(string))
             return "sample";
         if (type == typeof(bool))

@@ -120473,7 +120473,7 @@
         },
         "Bearing": {
           "type": "float",
-          "value": -1.570796251296997
+          "value": 1.546252489089966
         },
         "BodyBag": {
           "type": "byte",
@@ -120684,7 +120684,7 @@
               },
               "Value": {
                 "type": "cexostring",
-                "value": "WP_V_RepBaseInt_to_RepBaseExt"
+                "value": "RepBase_Enter1"
               }
             },
             {
@@ -172341,7 +172341,7 @@
         },
         "LinkedTo": {
           "type": "cexostring",
-          "value": "WP_V_RepHanger_to_RepBaseExt"
+          "value": "WP_pubbie_inter"
         },
         "LinkedToFlags": {
           "type": "byte",
@@ -172592,68 +172592,6 @@
         "MapNote": {
           "type": "cexolocstring",
           "value": {
-            "0": "Hanger Entrance"
-          }
-        },
-        "MapNoteEnabled": {
-          "type": "byte",
-          "value": 1
-        },
-        "Tag": {
-          "type": "cexostring",
-          "value": "WP_V_RepBaseExt_to_RepHanger"
-        },
-        "TemplateResRef": {
-          "type": "resref",
-          "value": "nw_waypoint001"
-        },
-        "XOrientation": {
-          "type": "float",
-          "value": 1.0
-        },
-        "XPosition": {
-          "type": "float",
-          "value": 33.26587677001953
-        },
-        "YOrientation": {
-          "type": "float",
-          "value": 7.549790126404332e-008
-        },
-        "YPosition": {
-          "type": "float",
-          "value": 115.8796997070313
-        },
-        "ZPosition": {
-          "type": "float",
-          "value": -0.03221511840820313
-        }
-      },
-      {
-        "__struct_id": 5,
-        "Appearance": {
-          "type": "byte",
-          "value": 1
-        },
-        "Description": {
-          "type": "cexolocstring",
-          "value": {}
-        },
-        "HasMapNote": {
-          "type": "byte",
-          "value": 1
-        },
-        "LinkedTo": {
-          "type": "cexostring",
-          "value": ""
-        },
-        "LocalizedName": {
-          "id": 14817,
-          "type": "cexolocstring",
-          "value": {}
-        },
-        "MapNote": {
-          "type": "cexolocstring",
-          "value": {
             "0": "Outpost Hope Entrance"
           }
         },
@@ -172663,7 +172601,7 @@
         },
         "Tag": {
           "type": "cexostring",
-          "value": "WP_V_RepBaseExt_to_RepBaseInt"
+          "value": "RepBase_Exit"
         },
         "TemplateResRef": {
           "type": "resref",
@@ -172811,6 +172749,65 @@
         "ZPosition": {
           "type": "float",
           "value": 0.0
+        }
+      },
+      {
+        "__struct_id": 5,
+        "Appearance": {
+          "type": "byte",
+          "value": 1
+        },
+        "Description": {
+          "type": "cexolocstring",
+          "value": {}
+        },
+        "HasMapNote": {
+          "type": "byte",
+          "value": 0
+        },
+        "LinkedTo": {
+          "type": "cexostring",
+          "value": ""
+        },
+        "LocalizedName": {
+          "type": "cexolocstring",
+          "value": {}
+        },
+        "MapNote": {
+          "type": "cexolocstring",
+          "value": {}
+        },
+        "MapNoteEnabled": {
+          "type": "byte",
+          "value": 0
+        },
+        "Tag": {
+          "type": "cexostring",
+          "value": "WP_V_RepBaseExt_to_RepHanger"
+        },
+        "TemplateResRef": {
+          "type": "resref",
+          "value": ""
+        },
+        "XOrientation": {
+          "type": "float",
+          "value": 0.0
+        },
+        "XPosition": {
+          "type": "float",
+          "value": 32.57379913330078
+        },
+        "YOrientation": {
+          "type": "float",
+          "value": 1.0
+        },
+        "YPosition": {
+          "type": "float",
+          "value": 116.2108306884766
+        },
+        "ZPosition": {
+          "type": "float",
+          "value": 0.1185356378555298
         }
       }
     ]

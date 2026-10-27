@@ -3282,6 +3282,20 @@
           "type": "resref",
           "value": "hut_fdy_core"
         }
+      },
+      {
+        "__struct_id": 6,
+        "Area_Name": {
+          "type": "resref",
+          "value": "visrephanger"
+        }
+      },
+      {
+        "__struct_id": 6,
+        "Area_Name": {
+          "type": "resref",
+          "value": "visredrepbase"
+        }
       }
     ]
   },

@@ -87,7 +87,7 @@
   "Name": {
     "type": "cexolocstring",
     "value": {
-      "0": "Viscara - Republic Base - Hangar"
+      "0": "[Prefab] Viscara - Republic Base - Hangar"
     }
   },
   "NoRest": {
@@ -5368,7 +5368,7 @@
   },
   "Version": {
     "type": "dword",
-    "value": 19
+    "value": 20
   },
   "Width": {
     "type": "int",

@@ -43,14 +43,29 @@ public class WeatherServiceTests
 
     private WeatherWorld.WeatherServiceUnderTest Service => _world.Service;
 
+    // The instance asks the static Property facade for the property of an area, which resolves from the container.
+    private FacadeContainer _facades = null!;
+    private IDisposable _facadeScope = null!;
+
+    [OneTimeSetUp]
+    public void BuildFacadeContainer() => _facades = new FacadeContainer();
+
+    [OneTimeTearDown]
+    public void DisposeFacadeContainer() => _facades.Dispose();
+
     [SetUp]
     public void SetUp()
     {
+        _facadeScope = _facades.Install();
         _world = new WeatherWorld();
     }
 
     [TearDown]
-    public void TearDown() => _world.Dispose();
+    public void TearDown()
+    {
+        _world.Dispose();
+        _facadeScope.Dispose();
+    }
 
     private static WeatherClimate Climate(PlanetType planet) => WeatherPlanetDefinitions.GetPlanetClimates()[planet];
 

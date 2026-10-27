@@ -31,9 +31,20 @@ public class AreaServiceTests
     private InMemoryDBService _db = null!;
     private AreaService _service = null!;
 
+    // RemoveInstancesFromCache asks the static Property facade for the resrefs of the property instance areas.
+    private FacadeContainer _facades = null!;
+    private IDisposable _facadeScope = null!;
+
+    [OneTimeSetUp]
+    public void BuildFacadeContainer() => _facades = new FacadeContainer();
+
+    [OneTimeTearDown]
+    public void DisposeFacadeContainer() => _facades.Dispose();
+
     [SetUp]
     public void SetUp()
     {
+        _facadeScope = _facades.Install();
         _engine = new FakeNWScript();
         _engine.SetReturnHandler("GetIsObjectValid", arguments => (uint)arguments[0]! != ObjectInvalid);
         _scope = NWScriptRuntime.Override(_engine);
@@ -45,6 +56,7 @@ public class AreaServiceTests
     public void TearDown()
     {
         _scope.Dispose();
+        _facadeScope.Dispose();
     }
 
     /// <summary>Makes the module's area list this one: the first call to GetFirstArea and GetNextArea walks it.</summary>

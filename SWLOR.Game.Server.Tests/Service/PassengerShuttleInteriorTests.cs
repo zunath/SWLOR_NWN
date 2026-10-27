@@ -102,6 +102,8 @@ public sealed class PassengerShuttleInteriorTests
         engine.SetReturnHandler("GetIsObjectValid", arguments => (uint)arguments[0]! is shuttleArea or landingArea);
         engine.SetReturnHandler("GetResRef", arguments => (uint)arguments[0]! == shuttleArea ? "shuttle" : "shuttle_test_landing");
         var areas = new AreaService(new InMemoryDBService());
+        using var facades = new FacadeContainer();
+        using var facadeScope = facades.Install();
 
         using (NWScriptRuntime.Override(engine))
         {

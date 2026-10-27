@@ -56,6 +56,16 @@ public class MusicServiceTests
     private readonly Dictionary<uint, uint> _areaOf = new();
     private readonly Dictionary<uint, string> _tags = new();
 
+    // The instance calls the static Property facade (the id of a property area), which resolves from the container.
+    private FacadeContainer _facades = null!;
+    private IDisposable _facadeScope = null!;
+
+    [OneTimeSetUp]
+    public void BuildFacadeContainer() => _facades = new FacadeContainer();
+
+    [OneTimeTearDown]
+    public void DisposeFacadeContainer() => _facades.Dispose();
+
     [OneTimeSetUp]
     public void LoadKeyItems()
     {
@@ -94,6 +104,7 @@ public class MusicServiceTests
 
         _engineScope = NWScriptRuntime.Override(_engine);
         _pluginScope = PlayerPluginRuntime.Override(_plugin);
+        _facadeScope = _facades.Install();
 
         AddPlayer(Player, Area);
     }
@@ -101,6 +112,7 @@ public class MusicServiceTests
     [TearDown]
     public void TearDown()
     {
+        _facadeScope.Dispose();
         _pluginScope.Dispose();
         _engineScope.Dispose();
     }

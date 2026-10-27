@@ -113,15 +113,17 @@ public class ShipDockingRulesTests
         ShipDockingRules.ResolveSize(ShipSize.Medium, true).Should().Be(ShipSize.Medium);
     }
 
-    [TestCase(true, true, ShipSize.Small, ShipUndockPlacement.Space)]
-    [TestCase(true, false, ShipSize.Medium, ShipUndockPlacement.Space)]
-    [TestCase(false, true, ShipSize.Small, ShipUndockPlacement.Starport)]
-    [TestCase(false, true, ShipSize.Medium, ShipUndockPlacement.Starport)]
-    [TestCase(false, true, ShipSize.Capital, ShipUndockPlacement.StarportTooSmall)]
-    [TestCase(false, false, ShipSize.Small, ShipUndockPlacement.NoDock)]
-    public void UndockingGoesBesideTheHostInSpaceOrIntoItsStarport(bool hostInSpace, bool hostHasDock, ShipSize visitor, ShipUndockPlacement expected)
+    [TestCase(true, true, StarportDockRefusal.None, ShipUndockPlacement.Space)]
+    [TestCase(true, false, StarportDockRefusal.None, ShipUndockPlacement.Space)]
+    [TestCase(true, true, StarportDockRefusal.AreaSizeLimit, ShipUndockPlacement.Space)]
+    [TestCase(false, true, StarportDockRefusal.None, ShipUndockPlacement.Starport)]
+    [TestCase(false, true, StarportDockRefusal.NpcDockTooSmall, ShipUndockPlacement.StarportTooSmall)]
+    [TestCase(false, true, StarportDockRefusal.PlayerStarportTooSmall, ShipUndockPlacement.StarportTooSmall)]
+    [TestCase(false, true, StarportDockRefusal.AreaSizeLimit, ShipUndockPlacement.StarportTooSmall)]
+    [TestCase(false, false, StarportDockRefusal.None, ShipUndockPlacement.NoDock)]
+    public void UndockingGoesBesideTheHostInSpaceOrIntoItsStarport(bool hostInSpace, bool hostHasDock, StarportDockRefusal refusal, ShipUndockPlacement expected)
     {
-        ShipDockingRules.ChooseUndockPlacement(hostInSpace, hostHasDock, visitor).Should().Be(expected);
+        ShipDockingRules.ChooseUndockPlacement(hostInSpace, hostHasDock, refusal).Should().Be(expected);
     }
 
     [Test]
@@ -185,13 +187,12 @@ public class ShipDockingRulesTests
     }
 
     [Test]
-    public void StarportsTakeLargeShipsAndSmaller()
+    public void TheDockingLimitsByHullSizeLiveInOneRulesFunction()
     {
-        ShipDockingRules.FitsStarport(ShipSize.Small).Should().BeTrue();
-        ShipDockingRules.FitsStarport(ShipSize.Medium).Should().BeTrue();
-        ShipDockingRules.FitsStarport(ShipSize.Large).Should().BeTrue();
-        ShipDockingRules.FitsStarport(ShipSize.Capital).Should().BeFalse();
-        ShipDockingRules.FitsStarport(ShipSize.Invalid).Should().BeFalse();
+        // W6b replaced the FitsStarport placeholder: docking, the host-starport undock and the restart-free
+        // "undock all" paths all ask the same rules (ShipAccessRulesTests covers the matrix).
+        typeof(ShipDockingRules).GetMethod("FitsStarport").Should().BeNull();
+        typeof(ShipAccessRules).GetMethod(nameof(ShipAccessRules.GetStarportRefusal)).Should().NotBeNull();
     }
 
     [Test]

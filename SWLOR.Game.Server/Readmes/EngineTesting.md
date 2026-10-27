@@ -708,7 +708,9 @@ crashed", with `Server shutting down for automated restart.` in the log); it hap
 workflow, 26 minutes in. Do not start a long engine run in the hours before 10:00 UTC. The workflow handles it three ways: the
 nightly starts at 01:00 UTC, `tools/WaitOutServerRestart.py` waits up to 15 minutes when a run would cross the restart and
 otherwise fails the job at its first step with an error saying to run it again after 10:01 UTC (a job has six hours in all, so
-a long wait leaves no room for a 3 hour run), and `EngineTestSummary.py` names the restart when it cuts a run off anyway. The
+a long wait leaves no room for a 3 hour run). It plans for the worst case, setup plus the whole wall clock: 330 minutes for a full
+run, so a full run started between about 04:30 and 09:45 UTC fails at once, and 150 minutes for a filtered one. And
+`EngineTestSummary.py` names the restart when it cuts a run off anyway. The
 real fix is a guard in `ProcessAutoRestart` for `ApplicationSettings.EngineTestsEnabled`; after it lands, delete the check and
 this section.
 

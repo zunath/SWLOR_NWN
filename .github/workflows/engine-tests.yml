@@ -87,14 +87,15 @@ jobs:
           if [ "$GITHUB_EVENT_NAME" = pull_request ] && ! grep -qF '"engine-tests"' <<< "$LABELS"; then
             filter=Characterization   # only the quick label is on
           fi
+          # The restart check plans for the worst case: setup (30) plus the run's whole wall clock.
           if [ -n "$filter" ]; then
             # A filtered run is short; the Characterization scenarios took 11 minutes of tests locally.
-            timeout=120; projection=150
+            timeout=120
           else
-            # A full sweep took about 180 minutes locally (the five WeaponRotationBalance tests alone take 34); 300 is
-            # the limit and 270 (setup 30 + 240) is what the restart check plans for.
-            timeout=300; projection=270
+            # A full sweep took about 180 minutes locally (the five WeaponRotationBalance tests alone take 34).
+            timeout=300
           fi
+          projection=$((30 + timeout))
           {
             echo "ENGINE_HOME=$RUNNER_TEMP/engine-tests-home"
             echo "CI_OUT=$RUNNER_TEMP/engine-tests-out"

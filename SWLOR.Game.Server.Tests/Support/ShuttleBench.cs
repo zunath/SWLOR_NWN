@@ -1,5 +1,4 @@
 using System.Numerics;
-using System.Text.RegularExpressions;
 using SWLOR.Game.Server.Domain.Core;
 using SWLOR.Game.Server.Domain.World;
 using SWLOR.Game.Server.Entity;
@@ -36,7 +35,8 @@ public sealed class SimObject
 /// <summary>
 /// A small model of the module for unit tests of the shuttle instance: areas, waypoints, placeables and players that
 /// the fake engine answers for (validity, tags, resrefs, positions, distances, iteration, creation and destruction),
-/// real local variables, the shuttle rides in memory, and the planet and area services the shuttle takes. The tick,
+/// real local variables, the shuttle rides in memory (a <see cref="QueryableDBService"/>, which applies the player, status and flight id
+/// filters of a ride search), and the planet and area services the shuttle takes. The tick,
 /// the clock and the scheduler of the instance are driven by the test through <see cref="ClockedShuttleService"/>.
 /// </summary>
 public sealed class ShuttleBench : IDisposable
@@ -57,7 +57,7 @@ public sealed class ShuttleBench : IDisposable
     {
         Engine = new FakeNWScript();
         Locals = new LocalVariables(Engine);
-        Db = new RideStore();
+        Db = new QueryableDBService();
         Areas = new StubAreaService(this);
         Planets = LoadedPlanets.Create();
         Service = new ClockedShuttleService(Db, Planets, Areas, now);
@@ -67,7 +67,7 @@ public sealed class ShuttleBench : IDisposable
 
     public FakeNWScript Engine { get; }
     public LocalVariables Locals { get; }
-    public RideStore Db { get; }
+    public QueryableDBService Db { get; }
     public StubAreaService Areas { get; }
     public PlanetService Planets { get; }
     public ClockedShuttleService Service { get; }
@@ -378,54 +378,4 @@ public sealed class StubAreaService : IAreaService
     public void EnterArea() => throw new NotSupportedException();
 
     public void ExitArea() => throw new NotSupportedException();
-}
-
-/// <summary>
-/// An in-memory database in which a search of shuttle rides applies the field filters of the query (player, status and
-/// flight id), which <see cref="InMemoryDBService"/> cannot; every other entity goes to the in-memory service.
-/// </summary>
-public sealed class RideStore : IDBService
-{
-    private static readonly Regex Filter = new(@"@(?<field>PlayerId|Status|FlightId):(?<value>\S+)", RegexOptions.Compiled);
-
-    public InMemoryDBService Inner { get; } = new();
-
-    public T Get<T>(string id)
-        where T : EntityBase => Inner.Get<T>(id);
-
-    public void Set<T>(T entity)
-        where T : EntityBase => Inner.Set(entity);
-
-    public void Delete<T>(string id)
-        where T : EntityBase => Inner.Delete<T>(id);
-
-    public IEnumerable<T> Search<T>(DBQuery<T> query)
-        where T : EntityBase
-    {
-        var found = Inner.Search(query);
-        return typeof(T) == typeof(ShuttleRide) ? found.Where(entity => Matches((ShuttleRide)(object)entity, query)).ToList() : found;
-    }
-
-    public long SearchCount<T>(DBQuery<T> query)
-        where T : EntityBase => Search(query).LongCount();
-
-    private static bool Matches<T>(ShuttleRide ride, DBQuery<T> query)
-        where T : EntityBase
-    {
-        foreach (Match filter in Filter.Matches(query.BuildQuery().QueryString))
-        {
-            var value = filter.Groups["value"].Value;
-            var matches = filter.Groups["field"].Value switch
-            {
-                "PlayerId" => DB.EscapeTokens(ride.PlayerId) == value,
-                "FlightId" => DB.EscapeTokens(ride.FlightId) == value,
-                "Status" => ((int)ride.Status).ToString() == value,
-                _ => true
-            };
-            if (!matches)
-                return false;
-        }
-
-        return true;
-    }
 }

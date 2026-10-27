@@ -73,7 +73,7 @@ public class ShuttleServiceTests
         {
             Status = ShuttleRideStatus.Ticketed, Origin = Origin, Destination = Destination, FarePaid = fare, TaxPaid = tax
         };
-        _bench.Db.Inner.With(ride);
+        _bench.Db.Store.With(ride);
         return ride;
     }
 
@@ -86,14 +86,14 @@ public class ShuttleServiceTests
             DepartureUtc = departure, ArrivalUtc = arrival,
             FlightId = flightId ?? ShuttleSchedule.BuildFlightId(Origin, Destination, departure)
         };
-        _bench.Db.Inner.With(ride);
+        _bench.Db.Store.With(ride);
         return ride;
     }
 
     private Player StoredPlayer(string playerId, bool rebuildComplete = true)
     {
         var player = new Player(playerId) { LocationAreaResref = "old_area", LocationX = 1f, RebuildComplete = rebuildComplete };
-        _bench.Db.Inner.With(player);
+        _bench.Db.Store.With(player);
         return player;
     }
 
@@ -137,8 +137,8 @@ public class ShuttleServiceTests
 
         Service.LoadShuttleFlights();
 
-        _bench.Db.Inner.Saved.Should().BeEmpty();
-        _bench.Db.Inner.Deleted.Should().BeEmpty();
+        _bench.Db.Store.Saved.Should().BeEmpty();
+        _bench.Db.Store.Deleted.Should().BeEmpty();
         Service.GetRide(PassengerId).Should().BeSameAs(ticket);
         Service.GetRide(OtherPassengerId).Should().BeSameAs(flying);
     }
@@ -173,7 +173,7 @@ public class ShuttleServiceTests
         stored.LocationY.Should().Be(60f);
         stored.LocationZ.Should().Be(1f);
         stored.LocationOrientation.Should().Be(180f);
-        _bench.Db.Inner.Saved.Should().ContainSingle().Which.Should().BeSameAs(stored);
+        _bench.Db.Store.Saved.Should().ContainSingle().Which.Should().BeSameAs(stored);
         Service.GetRide(PassengerId).Should().BeSameAs(ride, "the elapsed ride stays until the passenger logs in");
         Service.TryGetFlightInfo(_starport, out _, out _).Should().BeFalse("an arrived flight is not tracked");
     }
@@ -185,7 +185,7 @@ public class ShuttleServiceTests
 
         Service.LoadShuttleFlights();
 
-        _bench.Db.Inner.Saved.Should().BeEmpty();
+        _bench.Db.Store.Saved.Should().BeEmpty();
     }
 
     [Test]
@@ -198,7 +198,7 @@ public class ShuttleServiceTests
         Service.LoadShuttleFlights();
 
         stored.LocationAreaResref.Should().Be("old_area");
-        _bench.Db.Inner.Saved.Should().BeEmpty();
+        _bench.Db.Store.Saved.Should().BeEmpty();
     }
 
     // ---- buying a ticket
@@ -215,7 +215,7 @@ public class ShuttleServiceTests
 
         Service.TryPurchaseTicket(other.Id, Origin, Destination, string.Empty, 0f).Should().BeFalse();
 
-        _bench.Db.Inner.Saved.Should().BeEmpty();
+        _bench.Db.Store.Saved.Should().BeEmpty();
     }
 
     [TestCase(PlanetType.Invalid, PlanetType.Tatooine)]
@@ -225,7 +225,7 @@ public class ShuttleServiceTests
     {
         Service.TryPurchaseTicket(_passenger.Id, origin, destination, string.Empty, 0f).Should().BeFalse();
 
-        _bench.Db.Inner.Saved.Should().BeEmpty();
+        _bench.Db.Store.Saved.Should().BeEmpty();
         _bench.MessagesTo(_passenger.Id).Should().BeEmpty();
     }
 
@@ -250,7 +250,7 @@ public class ShuttleServiceTests
 
         _bench.MessagesTo(_passenger.Id).Should().ContainSingle().Which.Should().Contain("You do not have enough credits");
         _bench.Engine.CallsTo("TakeGoldFromCreature").Should().BeEmpty();
-        _bench.Db.Inner.Saved.Should().BeEmpty();
+        _bench.Db.Store.Saved.Should().BeEmpty();
     }
 
     [Test]
@@ -263,7 +263,7 @@ public class ShuttleServiceTests
 
         var take = _bench.Engine.CallsTo("TakeGoldFromCreature").Should().ContainSingle().Subject;
         take.Arguments.Should().Equal(fare + tax, _passenger.Id, true);
-        var ride = _bench.Db.Inner.Saved.Should().ContainSingle().Subject.Should().BeOfType<ShuttleRide>().Subject;
+        var ride = _bench.Db.Store.Saved.Should().ContainSingle().Subject.Should().BeOfType<ShuttleRide>().Subject;
         ride.PlayerId.Should().Be(PassengerId);
         ride.Status.Should().Be(ShuttleRideStatus.Ticketed);
         ride.Origin.Should().Be(Origin);
@@ -278,12 +278,12 @@ public class ShuttleServiceTests
         var fare = GalaxyMap.GetFare(Origin, Destination);
         var tax = (int)(0.1f * fare);
         var city = new WorldProperty { Treasury = 1000 };
-        _bench.Db.Inner.With(city);
+        _bench.Db.Store.With(city);
 
         Service.TryPurchaseTicket(_passenger.Id, Origin, Destination, city.Id, 0.1f).Should().BeTrue();
 
         city.Treasury.Should().Be(1000 + tax);
-        _bench.Db.Inner.Saved.Should().Contain(city);
+        _bench.Db.Store.Saved.Should().Contain(city);
     }
 
     [TestCase("")]
@@ -293,7 +293,7 @@ public class ShuttleServiceTests
     {
         Service.TryPurchaseTicket(_passenger.Id, Origin, Destination, cityPropertyId, 0.1f).Should().BeTrue();
 
-        _bench.Db.Inner.Saved.OfType<WorldProperty>().Should().BeEmpty();
+        _bench.Db.Store.Saved.OfType<WorldProperty>().Should().BeEmpty();
         Service.GetRide(PassengerId).Should().NotBeNull();
     }
 
@@ -301,7 +301,7 @@ public class ShuttleServiceTests
     public void TryPurchaseTicket_charges_no_tax_when_the_rate_is_zero()
     {
         var city = new WorldProperty { Treasury = 1000 };
-        _bench.Db.Inner.With(city);
+        _bench.Db.Store.With(city);
 
         Service.TryPurchaseTicket(_passenger.Id, Origin, Destination, city.Id, 0f).Should().BeTrue();
 
@@ -319,7 +319,7 @@ public class ShuttleServiceTests
         Service.RefundTicket(_passenger.Id).Should().BeTrue();
 
         _bench.Engine.CallsTo("GiveGoldToCreature").Should().ContainSingle().Which.Arguments.Should().Equal(_passenger.Id, 500);
-        _bench.Db.Inner.Deleted.Should().ContainSingle().Which.Should().Be(ride.Id);
+        _bench.Db.Store.Deleted.Should().ContainSingle().Which.Should().Be(ride.Id);
         Service.GetRide(PassengerId).Should().BeNull();
         _bench.MessagesTo(_passenger.Id).Should().ContainSingle()
             .Which.Should().Be("Your shuttle ticket has been refunded for 500 credits. Taxes are non-refundable.");
@@ -371,7 +371,7 @@ public class ShuttleServiceTests
         ride.FlightId.Should().Be(ShuttleSchedule.BuildFlightId(Origin, Destination, FirstDeparture));
         ride.DepartureUtc.Should().Be(boardedAt);
         ride.ArrivalUtc.Should().Be(boardedAt.AddSeconds(TransitSeconds));
-        _bench.Db.Inner.Saved.Should().Contain(ride);
+        _bench.Db.Store.Saved.Should().Contain(ride);
         _bench.MessagesTo(_passenger.Id).Should().Contain(
             $"You board the shuttle to Tatooine. Estimated flight time: {Wait(TimeSpan.FromSeconds(TransitSeconds))}.");
     }
@@ -719,7 +719,7 @@ public class ShuttleServiceTests
         Service.Tick!();
 
         _bench.MessagesTo(_passenger.Id).Should().Contain("The shuttle touches down at Tatooine.");
-        _bench.Db.Inner.Deleted.Should().Contain(ride.Id);
+        _bench.Db.Store.Deleted.Should().Contain(ride.Id);
         Service.GetRide(PassengerId).Should().BeNull();
         _bench.RunAssigned(_passenger.Id);
         var jump = (Location)_bench.Engine.CallsTo("ActionJumpToLocation").Last().Arguments[0]!;
@@ -764,7 +764,7 @@ public class ShuttleServiceTests
 
         _bench.MessagesTo(_passenger.Id).Should().BeEmpty();
         _bench.AssignedTo(_passenger.Id).Should().BeEmpty("a passenger who left forfeits the trip");
-        _bench.Db.Inner.Deleted.Should().Contain(ride.Id);
+        _bench.Db.Store.Deleted.Should().Contain(ride.Id);
     }
 
     [Test]
@@ -778,7 +778,7 @@ public class ShuttleServiceTests
         Service.Tick!();
 
         stored.LocationAreaResref.Should().Be("tatooine_landing_zone");
-        _bench.Db.Inner.Deleted.Should().NotContain(ride.Id, "the ride stays until the passenger logs in");
+        _bench.Db.Store.Deleted.Should().NotContain(ride.Id, "the ride stays until the passenger logs in");
     }
 
     [Test]
@@ -791,7 +791,7 @@ public class ShuttleServiceTests
         Service.Tick!();
 
         _bench.MessagesTo(_passenger.Id).Should().Contain("The shuttle touches down at Tatooine.");
-        _bench.Db.Inner.Deleted.Should().Contain(ride.Id);
+        _bench.Db.Store.Deleted.Should().Contain(ride.Id);
         Service.Scheduled.Should().BeEmpty("there is no instance to destroy");
     }
 
@@ -920,7 +920,7 @@ public class ShuttleServiceTests
         landing.Area.Should().Be(_landingArea);
         landing.Position.Should().Be(new Vector3(50f, 60f, 1f));
         _bench.MessagesTo(_passenger.Id).Should().ContainSingle().Which.Should().Be("Your shuttle has arrived at Tatooine.");
-        _bench.Db.Inner.Deleted.Should().ContainSingle().Which.Should().Be(ride.Id);
+        _bench.Db.Store.Deleted.Should().ContainSingle().Which.Should().Be(ride.Id);
     }
 
     [Test]
@@ -933,7 +933,7 @@ public class ShuttleServiceTests
 
         location.Should().BeNull();
         _bench.MessagesTo(_passenger.Id).Should().ContainSingle().Which.Should().Be("Your shuttle has arrived at Tatooine.");
-        _bench.Db.Inner.Deleted.Should().ContainSingle().Which.Should().Be(ride.Id);
+        _bench.Db.Store.Deleted.Should().ContainSingle().Which.Should().Be(ride.Id);
     }
 
     [Test]
@@ -956,7 +956,7 @@ public class ShuttleServiceTests
         Service.TryGetLoginRedirect(_passenger.Id, out var location).Should().BeFalse();
 
         location.Should().BeNull();
-        _bench.Db.Inner.Deleted.Should().BeEmpty();
+        _bench.Db.Store.Deleted.Should().BeEmpty();
         _bench.MessagesTo(_passenger.Id).Should().BeEmpty();
     }
 
@@ -1210,7 +1210,7 @@ public class ShuttleServiceTests
 
         Service.HandleShuttleAreaExit();
 
-        _bench.Db.Inner.Deleted.Should().ContainSingle().Which.Should().Be(ride.Id);
+        _bench.Db.Store.Deleted.Should().ContainSingle().Which.Should().Be(ride.Id);
     }
 
     [Test]
@@ -1221,7 +1221,7 @@ public class ShuttleServiceTests
 
         Service.HandleShuttleAreaExit();
 
-        _bench.Db.Inner.Deleted.Should().BeEmpty();
+        _bench.Db.Store.Deleted.Should().BeEmpty();
     }
 
     [Test]
@@ -1236,7 +1236,7 @@ public class ShuttleServiceTests
         LeavesShuttle(dm, area);
         Service.HandleShuttleAreaExit();
 
-        _bench.Db.Inner.Deleted.Should().BeEmpty();
+        _bench.Db.Store.Deleted.Should().BeEmpty();
     }
 
     [Test]
@@ -1247,7 +1247,7 @@ public class ShuttleServiceTests
 
         Service.HandleShuttleAreaExit();
 
-        _bench.Db.Inner.Deleted.Should().BeEmpty();
+        _bench.Db.Store.Deleted.Should().BeEmpty();
         Service.GetRide(PassengerId).Should().BeSameAs(ride);
     }
 
@@ -1272,7 +1272,7 @@ public class ShuttleServiceTests
         ride.Status = ShuttleRideStatus.Ticketed;
         Service.HandleShuttleAreaExit();
 
-        _bench.Db.Inner.Deleted.Should().BeEmpty();
+        _bench.Db.Store.Deleted.Should().BeEmpty();
     }
 
     // ---- queries

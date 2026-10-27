@@ -59,8 +59,8 @@ public sealed class PassengerShuttleInteriorTests
         foreach (var (tag, type) in objects)
             bench.AddObject(tag, type, template);
         var passenger = bench.AddPlayer("passenger", bench.AddArea("starport"), new Vector3(1f, 1f, 0f));
-        bench.Db.Inner.With(new Player("passenger") { RebuildComplete = true });
-        bench.Db.Inner.With(new ShuttleRide("passenger")
+        bench.Db.Store.With(new Player("passenger") { RebuildComplete = true });
+        bench.Db.Store.With(new ShuttleRide("passenger")
         {
             Status = ShuttleRideStatus.InTransit,
             Origin = PlanetType.Viscara,

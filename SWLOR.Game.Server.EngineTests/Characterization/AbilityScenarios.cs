@@ -116,7 +116,8 @@ public static class AbilityScenarios
             "its behavior case names: itself, a hostile training dummy or a friendly creature one and a half metres away. The clock is frozen " +
             $"at {FrozenClock.Start:yyyy-MM-dd HH:mm:ss} UTC, so effect durations are the full applied durations. Random is seeded with {Seed} plus the " +
             "ability's position immediately before the activation. HP columns are the change from before the activation; " +
-            "effects are written 'name:remainingSeconds'.",
+            "effects are written 'name:remainingSeconds'. The recast column is the time from the frozen clock until the cooldown the " +
+            "activation started ends, or 'none'.",
             AbilityRun.InputColumns,
             AbilityRun.OutputColumns,
             Seed) { AllowConstantOutputs = true };

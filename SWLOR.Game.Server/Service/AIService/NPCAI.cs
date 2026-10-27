@@ -167,7 +167,7 @@ namespace SWLOR.Game.Server.Service.AIService
             }
 
             if (GetIsObjectValid(context.CurrentEnmityTarget) && state.CombatStartedTime == default)
-                state.CombatStartedTime = DateTime.UtcNow;
+                state.CombatStartedTime = Clock.UtcNow;
 
             UpdateActivePhase(context);
 
@@ -180,7 +180,7 @@ namespace SWLOR.Game.Server.Service.AIService
             if (!bypassDecisionThrottle && ShouldThrottle(profile, state, trigger))
                 return false;
 
-            state.LastDecisionTime = DateTime.UtcNow;
+            state.LastDecisionTime = Clock.UtcNow;
 
             ProfilerPlugin.PushPerfScope(creature, "NpcAI.Decide");
             try
@@ -233,7 +233,7 @@ namespace SWLOR.Game.Server.Service.AIService
             if (profile.DecisionThrottleSeconds <= 0f || state.LastDecisionTime == default)
                 return false;
 
-            return (DateTime.UtcNow - state.LastDecisionTime).TotalSeconds < profile.DecisionThrottleSeconds;
+            return (Clock.UtcNow - state.LastDecisionTime).TotalSeconds < profile.DecisionThrottleSeconds;
         }
 
         private static void UpdateActivePhase(AIContext context)
@@ -641,7 +641,7 @@ namespace SWLOR.Game.Server.Service.AIService
                 return false;
 
             return context.State.Cooldowns.TryGetValue(action.CooldownId, out var availableAt) &&
-                   availableAt > DateTime.UtcNow;
+                   availableAt > Clock.UtcNow;
         }
 
         private static void ApplyCooldown(AIContext context, AIActionDefinition action)
@@ -649,7 +649,7 @@ namespace SWLOR.Game.Server.Service.AIService
             if (string.IsNullOrWhiteSpace(action.CooldownId) || action.CooldownSeconds <= 0f)
                 return;
 
-            context.State.Cooldowns[action.CooldownId] = DateTime.UtcNow.AddSeconds(action.CooldownSeconds);
+            context.State.Cooldowns[action.CooldownId] = Clock.UtcNow.AddSeconds(action.CooldownSeconds);
         }
 
         private static bool HasCompletedOncePerPhaseAction(AIContext context, AIActionDefinition action)

@@ -98,7 +98,7 @@ namespace SWLOR.Game.Server.Service.AIService
 
         public float ElapsedCombatSeconds => State.CombatStartedTime == default
             ? 0f
-            : (float)(DateTime.UtcNow - State.CombatStartedTime).TotalSeconds;
+            : (float)(Clock.UtcNow - State.CombatStartedTime).TotalSeconds;
 
         public bool HasFeat(SWLOR.NWN.API.NWScript.Enum.FeatType feat)
         {

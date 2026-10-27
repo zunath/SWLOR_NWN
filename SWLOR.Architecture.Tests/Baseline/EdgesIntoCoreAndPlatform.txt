@@ -30,7 +30,7 @@ QuickCast -> DB | 1
 
 # Abilities -> Platform (12 edges)
 Ability -> Platform/Core | 13
-AbilityCooldownVisual -> Platform/Core | 3
+AbilityCooldownVisual -> Platform/Core | 6
 AbilityCooldownVisual -> Platform/Entity | 1
 Feature/AbilityDefinition -> Platform/Core | 16
 Feature/AbilityDefinition -> Platform/Entity | 6
@@ -181,13 +181,13 @@ CombatRecorder -> Platform/Native | 3
 CombatRecorder -> Platform/Root | 1
 Death -> Platform/Core | 4
 Death -> Platform/Entity | 6
-Enmity -> Platform/Core | 9
-MeleeTechnique -> Platform/Core | 8
+Enmity -> Platform/Core | 12
+MeleeTechnique -> Platform/Core | 20
 OrdinaryAttackTraits -> Platform/Core | 3
 PairedRangedTraits -> Platform/Core | 17
 Poisons -> Platform/Core | 1
 PvpCombat -> Platform/Core | 4
-Recast -> Platform/Core | 1
+Recast -> Platform/Core | 4
 Recast -> Platform/Entity | 3
 Recast -> Platform/Extension | 1
 Resistance -> Platform/Core | 1
@@ -297,7 +297,7 @@ Spawn -> Random | 4
 Spawn -> Walkmesh | 1
 
 # Creatures -> Platform (6 edges)
-AI -> Platform/Core | 19
+AI -> Platform/Core | 24
 AI -> Platform/Native | 1
 CompanionControl -> Platform/Core | 6
 NPCGroup -> Platform/Core | 1

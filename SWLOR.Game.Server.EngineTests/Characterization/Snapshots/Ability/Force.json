@@ -2,14 +2,14 @@
   "function": "UsePerkFeat.TryUseAbility",
   "description": "Activates representative Force abilities through the real activation pipeline and records the outcome of each.",
   "seed": 20261031,
-  "inputs": "Each ability is used by a fresh nw_bandit001 (2000 HP, 9999 FP and stamina, no regeneration) on the target its behavior case names: itself, a hostile training dummy or a friendly creature one and a half metres away. The clock is frozen at 2026-01-15 12:00:00 UTC, so effect durations are the full applied durations. Random is seeded with 20261031 plus the ability's position immediately before the activation. HP columns are the change from before the activation; effects are written 'name:remainingSeconds'.",
+  "inputs": "Each ability is used by a fresh nw_bandit001 (2000 HP, 9999 FP and stamina, no regeneration) on the target its behavior case names: itself, a hostile training dummy or a friendly creature one and a half metres away. The clock is frozen at 2026-01-15 12:00:00 UTC, so effect durations are the full applied durations. Random is seeded with 20261031 plus the ability's position immediately before the activation. HP columns are the change from before the activation; effects are written 'name:remainingSeconds'. The recast column is the time from the frozen clock until the cooldown the activation started ends, or 'none'.",
   "rowCount": 5,
-  "columns": ["ability", "feat", "activation", "target", "recastGroup", "=> accepted", "=> denial", "=> impact", "=> fpSpent", "=> staminaSpent", "=> casterHP", "=> targetHP", "=> targetEnmity", "=> casterEffects", "=> targetEffects", "=> queued"],
+  "columns": ["ability", "feat", "activation", "target", "recastGroup", "=> accepted", "=> denial", "=> impact", "=> fpSpent", "=> staminaSpent", "=> casterHP", "=> targetHP", "=> targetEnmity", "=> casterEffects", "=> targetEffects", "=> queued", "=> recast"],
   "rows": [
-    ["ForceLightning1", 2436, "Casted", "HostileCreature", "ForceLightning", true, "", "targets 1, critical hits 0, damage 7, skill Force", 4, 0, 0, -7, 107, [], ["Shock:30"], false],
-    ["ForceChoke1", 2504, "Casted", "HostileCreature", "ForceChoke", true, "", "targets 1, critical hits 0, damage 0, skill Force", 2, 0, 0, 0, 100, [], ["Force Choke:30", "Immobilized:30"], false],
-    ["ForceDrain1", 2440, "Casted", "HostileCreature", "ForceDrain", true, "", "targets 1, critical hits 0, damage 11, skill Force", 4, 0, 4, -11, 113, [], [], false],
-    ["Renewal1", 2387, "Casted", "FriendlyCreature", "Renewal", true, "", "targets 0, critical hits 0, damage 0, skill Force", 4, 0, 0, 0, 0, [], ["Renewal I:30"], false],
-    ["FuryStance1", 2446, "Casted", "Self", "FuryStance", true, "", "targets 0, critical hits 0, damage 0, skill Force", 5, 0, 0, 0, 0, ["Fury Stance I:-1"], [], false]
+    ["ForceLightning1", 2436, "Casted", "HostileCreature", "ForceLightning", true, "", "targets 1, critical hits 0, damage 7, skill Force", 4, 0, 0, -7, 107, [], ["Shock:30"], false, "15s"],
+    ["ForceChoke1", 2504, "Casted", "HostileCreature", "ForceChoke", true, "", "targets 1, critical hits 0, damage 0, skill Force", 2, 0, 0, 0, 100, [], ["Force Choke:30", "Immobilized:30"], false, "45s"],
+    ["ForceDrain1", 2440, "Casted", "HostileCreature", "ForceDrain", true, "", "targets 1, critical hits 0, damage 11, skill Force", 4, 0, 4, -11, 113, [], [], false, "12s"],
+    ["Renewal1", 2387, "Casted", "FriendlyCreature", "Renewal", true, "", "targets 0, critical hits 0, damage 0, skill Force", 4, 0, 0, 0, 0, [], ["Renewal I:30"], false, "15s"],
+    ["FuryStance1", 2446, "Casted", "Self", "FuryStance", true, "", "targets 0, critical hits 0, damage 0, skill Force", 5, 0, 0, 0, 0, ["Fury Stance I:-1"], [], false, "30s"]
   ]
 }

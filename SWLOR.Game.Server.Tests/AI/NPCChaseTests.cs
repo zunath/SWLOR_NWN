@@ -33,6 +33,8 @@ public class NPCChaseTests
             using System.Linq;
             using static World;
 
+            public static class Clock { public static DateTime UtcNow => DateTime.UtcNow; }
+
             public static class World
             {
                 public const uint OBJECT_INVALID = 0;

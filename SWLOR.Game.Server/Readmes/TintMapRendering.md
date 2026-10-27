@@ -564,56 +564,74 @@ repair the installed banks or `--check` to verify them;
 bridge and replays idle, walk and run on a robe wearer against the plain body. Rebuild
 `sw_anim_m.hak` and `sw_anim_f.hak`; no module repack or C# deploy is required.
 
-Chest parts 154 (human bodies) and 269 (human, elf, half-orc and dwarf bodies) carry
-ankle-length coat skirts in the chest mesh. Each half of the skirt was weighted to its
-own thigh and shin, so striding pulled the halves apart: the back tore open and the legs
-showed through it. A chest part only reaches the normal body's bones, and a least-squares
-fit shows no blend of them reproduces robe 236's coat helpers. The first repair moved every
+Several chest, belt and pelvis parts carry long skirts in the part mesh: the coat skirts
+of chests 028, 059, 154, 269 and 310, the skirt belts 019, 110, 112 and 114, the front
+tabard of belt 226, and the skirts of pelvis 035 and 198. Each half of a skirt was
+weighted to its own thigh and shin, so striding pulled the halves apart: the back tore
+open and the legs showed through it, or a front panel stayed between the legs. A body
+part only reaches the normal body's bones, and a least-squares fit shows no blend of them
+reproduces robe 236's coat helpers. The first repair (chests 154 and 269) moved every
 leg weight onto `pelvis_g`, as on rigid stock skirts. That stopped the tearing, but the
-coat then hung frozen while the legs strode through it (test-server report, October 2026).
-The body skeleton also carries the stock back belt flap (`fb1_g01`, `fb2_g01`, `fb4_g01`),
-which the walk, run, sit, kneel, knockdown and `sw_*` ability clips swing like coat tails.
-The second repair hung most of the coat from that flap and the pelvis. It swung again, but
-the standing idles (`pause1`, `pause2`) sway the hips to one side and lean the flap
-back, so the coat hung off-centre, one panel tucked behind its leg, and angled back
-instead of falling beside the legs (test-server report, October 2026). Only the legs stay
-under the body in those idles, which is why the original leg-weighted coat hung straight.
+coat then hung frozen while the legs strode through it (test-server report, October
+2026). The body skeleton also carries the stock back belt flap (`fb1_g01`, `fb2_g01`,
+`fb4_g01`) and front tabard flap (`tf1_g`, `tf2_g`, `tf3_g01`), which the walk, run, sit,
+kneel, knockdown and `sw_*` ability clips swing like coat tails. The second repair hung
+most of the coat from the back flap and the pelvis. It swung again, but the standing idles
+(`pause1`, `pause2`) sway the hips to one side and lean the flap back, so the coat hung
+off-centre, one panel tucked behind its leg, and angled back instead of falling beside the
+legs (test-server report, October 2026). Only the legs stay under the body in those
+idles, which is why the original leg-weighted skirts hung straight.
+
 `ChestSkirtBindings.py` therefore weights each leg-weighted vertex by its bind height.
 Above the hip joints it keeps the pelvis binding, so the waist cannot tear. From the hip
-joints to the middle flap joint it eases onto the leg on its own side of the body: the
-thigh, and below the knee the shin, so a side panel lies along the lower leg when the knee
-bends. Within 45 degrees of the back seam (`SEAM`) both thighs share it, so the halves
-move together where they meet; the coat is open at the front. Below the middle flap joint
-the back also hangs from the two lower flap joints: fully at the back, easing to nothing
-120 degrees round (`FALLOFF`), at full strength on chest 154 and 60% on chest 269, whose
-flat tail trailed almost level at full strength (`FLAP_STRENGTH`). The front panels take
-no flap, so in seated poses they drape over the knees instead of stretching back to the
-flap on the floor. There the legs and the flap carry the whole vertex, so every vertex
-keeps at most four bones. Below the hips the weights depend only on the bind position;
-the geometry, inverse binds and bone tables stay as they were, missing bones take free
-palette slots, and the bind shape is unchanged. The engine pairs clip tracks with the
-wearer's joints by part ID, and the dwarf (Ugnaught, Ewok) and half-orc (Cathar) roots
-number their flap joints apart from `a_ba`, so their flaps never move (client-verified).
-On those bodies chest 269 hangs below the hips two thirds from the legs and a third from
-the pelvis (`flaps_animated`, `STILL_THIGHS`), so it swings there too. Measured on all ten
-bodies: in `pause1` each hem edge sits within 5.6 cm of where the original put it beside
-the feet (up to 17 cm off with the flap-and-pelvis binding); over the walk and run clips
-the hem moves 5 to 24 cm against the pelvis in each stride, at most 3.8% of leg samples
-show behind the coat, and the 99.5th-percentile edge stretch stays at or below 3.2x
-(13.7x with the original leg weights, 1.7x with the flap-and-pelvis binding). Seated and
-crouched it stays below 4.9x (13x originally).
-A few clips carry no flap tracks (`runfl`, `runfr`, `pausewalkfl`, `pausewalkfr`, injured
-walks and some custom emotes); there the back holds its previous pose, as stock tabards do.
-The originals are read from the Git blobs recorded in
-`ChestSkirtBindings.json`. Other chest styles with leg-weighted coat tails (003, 027 to
-029, 059, 065, 072, 128, 155, 276, 290, 300, 310) are unchanged.
+joints to the middle back flap joint it eases onto the leg on its own side of the body:
+the thigh, and below the knee the shin, so a side panel lies along the lower leg when the
+knee bends. Near a seam both thighs share it (`SEAM`, 45 degrees), so the halves move
+together where they meet: at the back, and for skirts closed in front (`closed`) at the
+front too. Lower down the back also hangs from the two lower back flap joints, fully at
+the back and easing to nothing 120 degrees round (`FALLOFF`), and a closed front or
+tabard from the two lower front flap joints (`FRONT_FALLOFF`). Each style sets its flap
+shares in `STYLES`: chest 269 and belts 112 and 114 take 60% of the back flap, because
+their long tails trailed almost level behind runners at full strength; belt 226 hangs
+from the front flap alone as one piece, like a stock tabard; pelvis 198's narrow front
+and back strips share the two legs evenly (`seam` 90). Open coats keep the flap off their
+side and front panels, so in seated poses those drape over the knees instead of
+stretching back to the flap on the floor. There the legs and the flaps carry the whole
+vertex, and the two flaps never meet, so every vertex keeps at most four bones. Below the
+hips the weights depend only on the bind position, so even uneven source weights move
+together; the geometry, inverse binds and bone tables stay as they were, missing bones
+take free palette slots, and the bind shape is unchanged.
+
+The engine pairs clip tracks with the wearer's joints by part ID, and the dwarf (Ugnaught,
+Ewok) and half-orc (Cathar) roots number their flap joints apart from `a_ba`, so their
+flaps never move (client-verified). On those bodies the legs carry, below the hips, the
+share the source gave them there on average (`still_share`) and the pelvis the rest, and
+the back seam is narrower (`STILL_SEAM`, 25 degrees; per style `still_seam`), so each half
+follows its own leg sooner and covers it from behind. A few clips carry no flap tracks
+(`runfl`, `runfr`, `pausewalkfl`, `pausewalkfr`, injured walks and the custom emotes,
+including `/paraderest`); there the flaps hold their previous pose, as stock tabards do.
+Bothan female chest 310 is not rebound: its external bone table does not match the
+`pfe0` skeleton.
+
+`TestChestSkirtBindings.py` measures every rebound model against its original. Standing
+(`pause1`) each hem edge stays within 8 cm of where the original put it beside the feet,
+and in `/paraderest` (custom 52, flaps held from the idle) within 12 cm; the flap-and-pelvis
+binding of chest 154 was up to 17 cm off. Over the walk and run clips the hem of every
+skirt that reaches below the knee moves against the pelvis (at most 3 cm when hip-bound),
+at most 7% of leg samples show behind a back-covering skirt where the flaps swing (55%
+hip-bound; on flapless bodies no more than the original plus 3 points, or 10%), at most
+25% poke out in front of a closed front or tabard (originally up to 75%), and the
+99.5th-percentile edge stretch stays below 4x (13.7x with the original leg weights).
+The originals are read from the Git blobs recorded in `ChestSkirtBindings.json`.
+Other parts with leg-weighted skirts are unchanged.
 Run `python -B SWLOR_Haks/tools/ChestSkirtBindings.py --apply`, then
 `python -B SWLOR_Haks/tools/GeneratePartSkinModels.py --apply`, which renumbers the
 robe-body aliases whose bone mapping changed. Both scripts' `--check` and
 `python -B -m unittest discover -s SWLOR_Haks/tools -p "TestChestSkirtBindings.py"` (stock dwarf
-and half-orc animations from `NWN_GAME_DATA` or the default Steam install) guard them. Rebuild
-`sw_pt_chest.hak` and `sw_2da.hak` together and restart the server, which reads the
-renumbered aliases from `partrender.2da`.
+and half-orc animations from `NWN_GAME_DATA` or the default Steam install; a few minutes)
+guard them. Rebuild `sw_pt_chest.hak`, `sw_pt_belt.hak`, `sw_pt_pelvis.hak` and
+`sw_2da.hak` together and restart the server, which reads the renumbered aliases from
+`partrender.2da`.
 
 Robe 236's tint map is built from its original PLT, not the March 2026 revision
 (SWLOR_Haks #291) that raised the coat's Leather 1 shade from a mean of 38 to 61 and

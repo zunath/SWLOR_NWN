@@ -1,15 +1,12 @@
-using SWLOR.Game.Server.Core.NWNX.Enum;
 using SWLOR.Game.Server.Service.SpaceService;
-using SWLOR.NWN.API.NWNX;
-using SWLOR.NWN.API.NWScript.Enum;
 
 namespace SWLOR.Game.Server.Service
 {
     /// <summary>
     /// Player ships fighting player ships (plan section 9, PvP). A player ship may attack another player ship only
-    /// when the ground rules allow it: the attacker has the target marked hostile in the player list
-    /// (<see cref="PlayerList.IsHostileTo"/>) and the area's PvP setting allows players to fight. Ships against NPC
-    /// ships keep the engine's reaction. The PvP damage ramp and the halved hard crowd control are the ground's:
+    /// when the ground rules allow it. The ground defers to the engine's <c>GetIsReactionTypeHostile</c> (reputation,
+    /// the area and server PvP setting, and the Like/Dislike marks between players), and so does space, so the two
+    /// cannot drift apart. Ships against NPC ships keep the engine's reaction. The PvP damage ramp and the halved hard crowd control are the ground's:
     /// the damage hook calls <see cref="PvpCombat"/> and statuses go through <c>StatusEffect</c>.
     /// </summary>
     public static partial class Space
@@ -26,16 +23,8 @@ namespace SWLOR.Game.Server.Service
             if (!isPvp)
                 return SpacePvpDecision.NotPlayerVersusPlayer;
 
-            var decision = SpacePvpRules.CanAttack(
-                true,
-                PlayerList.IsHostileTo(attacker, target),
-                GetEffectivePvpSetting(GetArea(target)),
-                Party.IsInParty(attacker, target));
-
-            // The ground ability check (reputation, the area PvP setting and the Like/Dislike marks) must agree.
-            return decision == SpacePvpDecision.Allowed && !GetIsReactionTypeHostile(target, attacker)
-                ? SpacePvpDecision.NotHostile
-                : decision;
+            // The ground check, unchanged: reputation, the area and server PvP setting and the Like/Dislike marks.
+            return SpacePvpRules.CanAttack(true, GetIsReactionTypeHostile(target, attacker));
         }
 
         /// <summary>Whether a ship may attack another ship. Always true unless two players' ships are involved.</summary>
@@ -88,13 +77,6 @@ namespace SWLOR.Game.Server.Service
             return SpacePvpRules.ApplyRamp(amount, true, PvpCombat.GetDamageIncreasePercent(target));
         }
 
-        /// <summary>The area's PvP setting; a server-default area takes the server's.</summary>
-        private static PvPSetting GetEffectivePvpSetting(uint area)
-        {
-            var areaSetting = GetIsObjectValid(area) ? AreaPlugin.GetPVPSetting(area) : PvPSetting.ServerDefault;
-            var serverSetting = (PvPSetting)AdministrationPlugin.GetPlayOptionValue(AdministrationOption.PvpSetting);
-            return SpacePvpRules.ResolveAreaSetting(areaSetting, serverSetting);
-        }
 
         /// <summary>Remembers who delivered the blow that destroyed a ship, for the death rules.</summary>
         private static void RecordShipKiller(uint target, uint attacker)

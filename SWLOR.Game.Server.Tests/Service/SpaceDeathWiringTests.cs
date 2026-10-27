@@ -20,8 +20,8 @@ public class SpaceDeathWiringTests
 
         var pvp = ReadServerSource("Service", "SpacePvp.cs");
         pvp.Should().Contain("PvpCombat.RecordHit(attacker, target);");
-        pvp.Should().Contain("PlayerList.IsHostileTo(attacker, target)");
-        pvp.Should().Contain("GetIsReactionTypeHostile(target, attacker)");
+        pvp.Should().Contain("SpacePvpRules.CanAttack(true, GetIsReactionTypeHostile(target, attacker))");
+        pvp.Should().NotContain("GetPVPSetting", "space defers to the engine instead of reading the PvP setting itself");
     }
 
     [Test]

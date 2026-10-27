@@ -8,16 +8,13 @@ namespace SWLOR.Game.Server.Service.SpaceService
         /// <summary>One side is not a player ship; the ground rules for NPCs apply and PvP rules do not.</summary>
         NotPlayerVersusPlayer = 0,
 
-        /// <summary>Both ships are players ships, the attacker marked the target hostile and the area allows PvP.</summary>
+        /// <summary>Both ships belong to players and the ground hostility check lets the attacker attack.</summary>
         Allowed = 1,
 
-        /// <summary>The attacker has not marked the target hostile in the player list.</summary>
+        /// <summary>
+        /// The ground hostility check refuses: the attacker has not marked the target hostile, or the engine PvP
+        /// setting of the area or server does not allow these two players to fight.
+        /// </summary>
         NotHostile = 2,
-
-        /// <summary>The area PvP setting forbids players from fighting.</summary>
-        AreaForbids = 3,
-
-        /// <summary>The area allows PvP only between players who are not in the same party.</summary>
-        PartyProtected = 4,
     }
 }

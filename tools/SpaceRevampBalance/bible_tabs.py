@@ -137,8 +137,8 @@ def starships():
         ["Power routing", "Engineer seat, player only; the mode can change once per 6 s", *[""] * 19, "Weapons: -25% weapon capacitor use, -10% shield regen, -10% speed. "
          "Shields: +15% shield regen, -5% weapon damage, -10% speed. Engines: +20% speed, -5% weapon damage, -10% shield regen. Balanced: no change. "
          "No mode raises weapon damage, so none kills faster than Balanced."],
-        ["PvP", "Ground rules", *[""] * 19, "A player's ship attacks another player's ship only when the attacker has the target marked hostile (player list) and the area's PvP setting allows it "
-         "(No PvP refuses; Party PvP spares the attacker's party). Remote repair, capacitor transfer and Command orders skip a hostile player. The PvP damage ramp and the halved hard crowd control apply."],
+        ["PvP", "Ground rules", *[""] * 19, "A player's ship attacks another player's ship only when the ground hostility check allows it "
+         "(the engine's reputation, area and server PvP setting and the attacker's hostile mark in the player list). Remote repair, capacitor transfer and Command orders skip a hostile player. The PvP damage ramp and the halved hard crowd control apply."],
         ["Ship destruction", "Escape pods", *[""] * 19, "Everyone aboard (pilot, station crew, viewport watchers, passengers) is ejected alive to the dock the ship is towed to and takes the normal ground XP debt. "
          "Modules drop (65% each) only when another player destroys the ship in Wild Space; everywhere else they stay installed. The wreck is left at 1 hull. Droids return to their owners."],
         ["Repair bill", "50 per missing shield point + 100 per missing hull point, then x the Repair x column", *[""] * 19, "Small x1.0, Medium x1.5, Large x2.5, Capital x4.0, after the starport (5% per level) and Social (2% per point over 10, up to 20%) discounts; 90% off at most."],

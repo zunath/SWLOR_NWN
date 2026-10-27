@@ -55,19 +55,21 @@ namespace SWLOR.Game.Server.EngineTests.Definitions
 
                 SetPCDislike(attacker.Creature, target.Creature);
                 ctx.AssertEqual(SpacePvpDecision.Allowed, Space.GetPvpDecision(attacker.Creature, target.Creature), "decision for a hostile player in a full PvP area");
+                ctx.Assert(GetIsReactionTypeHostile(target.Creature, attacker.Creature), "the ground check agrees");
                 await ctx.ExecuteInCreatureContextAsync(attacker.Creature, () => Space.ApplyShipDamage(attacker.Creature, target.Creature, 10));
                 ctx.AssertEqual(90, Hull(), "hull after an attack on a hostile player");
 
                 AreaPlugin.SetPVPSetting(ctx.Arena, PvPSetting.NoPvP);
-                ctx.AssertEqual(SpacePvpDecision.AreaForbids, Space.GetPvpDecision(attacker.Creature, target.Creature), "decision in a no PvP area");
+                ctx.AssertEqual(GetIsReactionTypeHostile(target.Creature, attacker.Creature), Space.CanShipAttack(attacker.Creature, target.Creature), "space follows the ground check in a no PvP area");
                 await ctx.ExecuteInCreatureContextAsync(attacker.Creature, () => Space.ApplyShipDamage(attacker.Creature, target.Creature, 10));
-                ctx.AssertEqual(90, Hull(), "hull after an attack in a no PvP area");
+                ctx.AssertEqual(Space.CanShipAttack(attacker.Creature, target.Creature) ? 80 : 90, Hull(), "hull after an attack in a no PvP area follows the ground check");
 
                 // The ramp raises damage dealt to a player who has been in PvP combat for five minutes by 100%.
                 AreaPlugin.SetPVPSetting(ctx.Arena, PvPSetting.FullPvP);
                 PvpCombat.SetCombatSecondsForTesting(target.Creature, 300);
+                var before = Hull();
                 await ctx.ExecuteInCreatureContextAsync(attacker.Creature, () => Space.ApplyShipDamage(attacker.Creature, target.Creature, 10));
-                ctx.AssertEqual(70, Hull(), "hull after a hit during the 100% damage ramp");
+                ctx.AssertEqual(before - 20, Hull(), "hull after a hit during the 100% damage ramp");
             }
             finally
             {

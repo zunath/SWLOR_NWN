@@ -237,17 +237,6 @@ namespace SWLOR.NWN.API.NWNX
         }
 
         /// <summary>
-        /// Retrieves the raw value of an administration option, for options that hold more than on or off
-        /// (the PvP setting is 0 for no PvP, 1 for party PvP and 2 for full PvP).
-        /// </summary>
-        /// <param name="option">The administration option to query.</param>
-        /// <returns>The option's value.</returns>
-        public static int GetPlayOptionValue(AdministrationOption option)
-        {
-            return AdminPlugin.GetPlayOption((int)option);
-        }
-
-        /// <summary>
         /// Sets the value of a specific administration option.
         /// </summary>
         /// <param name="option">The administration option to modify. See AdministrationOption enum for available options.</param>

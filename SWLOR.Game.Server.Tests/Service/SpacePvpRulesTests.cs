@@ -2,7 +2,6 @@ using FluentAssertions;
 using NUnit.Framework;
 using SWLOR.Game.Server.Service.PvpCombatService;
 using SWLOR.Game.Server.Service.SpaceService;
-using SWLOR.NWN.API.NWScript.Enum;
 
 namespace SWLOR.Game.Server.Tests.Service;
 
@@ -11,26 +10,17 @@ public class SpacePvpRulesTests
     [Test]
     public void Attack_OnNpcShip_IsNeverStoppedByPvpRules()
     {
-        var decision = SpacePvpRules.CanAttack(false, false, PvPSetting.NoPvP, false);
+        // Even when the ground check says no, an NPC ship is not a PvP matter.
+        var decision = SpacePvpRules.CanAttack(false, false);
 
         decision.Should().Be(SpacePvpDecision.NotPlayerVersusPlayer);
         SpacePvpRules.IsAllowed(decision).Should().BeTrue();
     }
 
     [Test]
-    public void Attack_OnPlayerNotMarkedHostile_IsRefused()
+    public void Attack_OnPlayerTheGroundCheckCallsHostile_IsAllowed()
     {
-        var decision = SpacePvpRules.CanAttack(true, false, PvPSetting.FullPvP, false);
-
-        decision.Should().Be(SpacePvpDecision.NotHostile);
-        SpacePvpRules.IsAllowed(decision).Should().BeFalse();
-        SpacePvpRules.GetRefusal(decision).Should().Contain("hostile");
-    }
-
-    [Test]
-    public void Attack_OnHostilePlayerInFullPvpArea_IsAllowed()
-    {
-        var decision = SpacePvpRules.CanAttack(true, true, PvPSetting.FullPvP, true);
+        var decision = SpacePvpRules.CanAttack(true, true);
 
         decision.Should().Be(SpacePvpDecision.Allowed);
         SpacePvpRules.IsAllowed(decision).Should().BeTrue();
@@ -38,37 +28,20 @@ public class SpacePvpRulesTests
     }
 
     [Test]
-    public void Attack_OnHostilePlayerInNoPvpArea_IsRefused()
+    public void Attack_OnPlayerTheGroundCheckRefuses_IsRefused()
     {
-        var decision = SpacePvpRules.CanAttack(true, true, PvPSetting.NoPvP, false);
+        // Not marked hostile, a no-PvP area and a party the setting protects all reach space as one answer: no.
+        var decision = SpacePvpRules.CanAttack(true, false);
 
-        decision.Should().Be(SpacePvpDecision.AreaForbids);
+        decision.Should().Be(SpacePvpDecision.NotHostile);
         SpacePvpRules.IsAllowed(decision).Should().BeFalse();
-        SpacePvpRules.GetRefusal(decision).Should().Contain("area");
+        SpacePvpRules.GetRefusal(decision).Should().Contain("hostile").And.Contain("PvP");
     }
 
     [Test]
-    public void Attack_InPartyPvpArea_ProtectsOnlyThePartyMembers()
+    public void Refusal_IsEmptyForNpcShips()
     {
-        SpacePvpRules.CanAttack(true, true, PvPSetting.PartyPvP, false).Should().Be(SpacePvpDecision.Allowed);
-        SpacePvpRules.CanAttack(true, true, PvPSetting.PartyPvP, true).Should().Be(SpacePvpDecision.PartyProtected);
-        SpacePvpRules.GetRefusal(SpacePvpDecision.PartyProtected).Should().Contain("party");
-    }
-
-    [Test]
-    public void Attack_InUnresolvedServerDefaultArea_IsRefused()
-    {
-        // The caller resolves ServerDefault first; an unresolved value must not open PvP by accident.
-        SpacePvpRules.CanAttack(true, true, PvPSetting.ServerDefault, false).Should().Be(SpacePvpDecision.AreaForbids);
-    }
-
-    [TestCase(PvPSetting.ServerDefault, PvPSetting.FullPvP, PvPSetting.FullPvP)]
-    [TestCase(PvPSetting.ServerDefault, PvPSetting.NoPvP, PvPSetting.NoPvP)]
-    [TestCase(PvPSetting.NoPvP, PvPSetting.FullPvP, PvPSetting.NoPvP)]
-    [TestCase(PvPSetting.PartyPvP, PvPSetting.NoPvP, PvPSetting.PartyPvP)]
-    public void ResolveAreaSetting_UsesTheServerSettingOnlyForDefaultAreas(PvPSetting area, PvPSetting server, PvPSetting expected)
-    {
-        SpacePvpRules.ResolveAreaSetting(area, server).Should().Be(expected);
+        SpacePvpRules.GetRefusal(SpacePvpDecision.NotPlayerVersusPlayer).Should().BeEmpty();
     }
 
     [Test]

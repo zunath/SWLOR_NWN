@@ -29,15 +29,21 @@ public class DMPossessionPlayerLoopTests
         _harness = Compile($$"""
             public static class DMPresence
             {
-                {{Method("Service/DMPresence.cs", "GetControlledCreature")}}
-                {{Method("Service/DMPresence.cs", "IsControlledByDM")}}
-                {{Method("Service/DMPresence.cs", "IsDMPresentInArea")}}
-                {{Method("Service/DMPresence.cs", "SendMessage")}}
+                {{InstanceMethod("Domain/Administration/DMPresenceService.cs", "GetControlledCreature")}}
+                {{InstanceMethod("Domain/Administration/DMPresenceService.cs", "IsControlledByDM")}}
+                {{InstanceMethod("Domain/Administration/DMPresenceService.cs", "IsDMPresentInArea")}}
+                {{InstanceMethod("Domain/Administration/DMPresenceService.cs", "SendMessage")}}
             }
 
             public static class DMPlayerDirectory
             {
-                {{Method("Service/DMPlayerDirectory.cs", "GetOnlinePlayers")}}
+                // The service's injected presence, as this harness models it.
+                private static readonly Presence _presence = new();
+                private sealed class Presence
+                {
+                    public bool IsControlledByDM(uint player) => DMPresence.IsControlledByDM(player);
+                }
+                {{InstanceMethod("Domain/Administration/DMPlayerDirectoryService.cs", "GetOnlinePlayers")}}
             }
 
             public static class CombatRecorder

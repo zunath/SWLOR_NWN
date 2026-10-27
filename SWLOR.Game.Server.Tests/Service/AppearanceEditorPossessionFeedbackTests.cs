@@ -22,8 +22,8 @@ public class AppearanceEditorPossessionFeedbackTests
         _harness = Compile($$"""
             public static class DMPresence
             {
-                {{Method("Service/DMPresence.cs", "GetControlledCreature")}}
-                {{Method("Service/DMPresence.cs", "SendMessage")}}
+                {{InstanceMethod("Domain/Administration/DMPresenceService.cs", "GetControlledCreature")}}
+                {{InstanceMethod("Domain/Administration/DMPresenceService.cs", "SendMessage")}}
             }
 
             public sealed class Editor

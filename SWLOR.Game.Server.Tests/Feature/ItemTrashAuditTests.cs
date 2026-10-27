@@ -22,8 +22,8 @@ public class ItemTrashAuditTests
         var trash = ReadSource("Feature/TrashCan.cs").DescendantNodes().OfType<ClassDeclarationSyntax>().Single();
         var confirm = ReadSource("Feature/DialogDefinition/DestroyItemDialog.cs").DescendantNodes()
             .OfType<MethodDeclarationSyntax>().Single(method => method.Identifier.ValueText == "ConfirmPageInit");
-        var getDm = ReadSource("Service/DMPresence.cs").DescendantNodes().OfType<MethodDeclarationSyntax>()
-            .Single(method => method.Identifier.ValueText == "GetDM");
+        var getDm = SWLOR.Game.Server.Tests.Service.DMPossessionHarness.InstanceMethod(
+            "Domain/Administration/DMPresenceService.cs", "GetDM");
         var source = $$"""
             using System;
             using System.Collections.Generic;

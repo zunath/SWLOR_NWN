@@ -44,20 +44,28 @@ QuickCast -> Platform/Entity | 5
 
 # Administration -> Core (8 edges)
 DMBlueprintCatalog -> Log | 5
-DMCreatorFavorite -> DB | 2
-DMCreatureManagerFavorite -> DB | 4
+DMCreatorFavorite -> DB | 4
+DMCreatureManagerFavorite -> DB | 6
 DMObjectDetails -> Cache | 2
-DMPlayerDirectory -> DB | 8
-DMPreference -> DB | 2
+DMPlayerDirectory -> DB | 10
+DMPreference -> DB | 4
 DMPresence -> Log | 4
 DMTool -> DB | 1
 
-# Administration -> Platform (6 edges)
+# Administration -> Platform (14 edges)
+DMBlueprintCatalog -> Platform/Composition | 1
 DMBlueprintCatalog -> Platform/Core | 1
+DMCreatorFavorite -> Platform/Composition | 1
 DMCreatorFavorite -> Platform/Entity | 2
+DMCreatureManagerFavorite -> Platform/Composition | 1
 DMCreatureManagerFavorite -> Platform/Entity | 4
+DMObjectDetails -> Platform/Composition | 1
+DMObjectSearch -> Platform/Composition | 1
+DMPlayerDirectory -> Platform/Composition | 1
 DMPlayerDirectory -> Platform/Entity | 10
-DMPreference -> Platform/Entity | 2
+DMPreference -> Platform/Composition | 1
+DMPreference -> Platform/Entity | 6
+DMPresence -> Platform/Composition | 1
 DMTool -> Platform/Entity | 1
 
 # Character -> Core (35 edges)

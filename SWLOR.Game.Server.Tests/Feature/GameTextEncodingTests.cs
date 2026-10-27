@@ -50,8 +50,8 @@ public class GameTextEncodingTests
         (Path.Combine("Feature", "GuiDefinition", "ViewModel", "DisguiseViewModel.cs"), "\u25CF Active"),
         (Path.Combine("Feature", "GuiDefinition", "ViewModel", "DMChooserViewModel.cs"), "Level \u00B7 HP"),
         (Path.Combine("Feature", "GuiDefinition", "ViewModel", "DMCreatorViewModel.cs"), "Level \u00B7 Faction"),
-        (Path.Combine("Service", "DMObjectDetails.cs"), " \u00B7 HP "),
-        (Path.Combine("Service", "DMObjectDetails.cs"), " \u00B7 ")
+        (Path.Combine("Domain", "Administration", "DMObjectDetailsService.cs"), " \u00B7 HP "),
+        (Path.Combine("Domain", "Administration", "DMObjectDetailsService.cs"), " \u00B7 ")
     };
 
     [Test]

@@ -1,14 +1,16 @@
+using SWLOR.Game.Server.Composition;
+using SWLOR.Game.Server.Domain.Administration;
 using SWLOR.Game.Server.Entity;
 
 namespace SWLOR.Game.Server.Service
 {
     /// <summary>
-    /// Loads and saves DM chat and display preferences, keyed by the DM's public CD key.
+    /// The static API of the DM chat and display preferences, keyed by the DM's public CD key. The logic lives in
+    /// <see cref="IDMPreferenceService"/>; every member here forwards to the container's instance.
     /// </summary>
     public static class DMPreference
     {
-        // The DB entity cache is keyed by id alone, and Account already uses the bare CD key.
-        private const string IdPrefix = "DM:";
+        private static IDMPreferenceService Instance => FacadeAccessor.Resolve<IDMPreferenceService>();
 
         /// <summary>
         /// Returns the preferences of the DM acting through an avatar or a possessed creature, or the defaults when
@@ -17,11 +19,7 @@ namespace SWLOR.Game.Server.Service
         /// <param name="actor">A DM avatar or the creature they possess.</param>
         public static DMPreferences Get(uint actor)
         {
-            var id = GetId(actor);
-            if (string.IsNullOrEmpty(id))
-                return new DMPreferences();
-
-            return DB.Get<DMPreferences>(id) ?? new DMPreferences { Id = id };
+            return Instance.Get(actor);
         }
 
         /// <summary>
@@ -32,23 +30,7 @@ namespace SWLOR.Game.Server.Service
         /// <returns>false when the DM's CD key could not be read, so nothing was saved.</returns>
         public static bool Update(uint actor, Action<DMPreferences> change)
         {
-            var id = GetId(actor);
-            if (string.IsNullOrEmpty(id))
-                return false;
-
-            var preferences = DB.Get<DMPreferences>(id) ?? new DMPreferences { Id = id };
-            change(preferences);
-            DB.Set(preferences);
-            return true;
-        }
-
-        private static string GetId(uint actor)
-        {
-            // The CD key resolves from the object the player controls, which is the possessed creature while possessing.
-            var cdKey = GetPCPublicCDKey(DMPresence.GetControlledCreature(actor));
-            return string.IsNullOrWhiteSpace(cdKey)
-                ? string.Empty
-                : IdPrefix + cdKey;
+            return Instance.Update(actor, change);
         }
     }
 }

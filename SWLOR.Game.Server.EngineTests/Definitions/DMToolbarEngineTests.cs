@@ -5,6 +5,8 @@ using System.Reflection;
 using System.Text.Json;
 using System.Threading.Tasks;
 using NWN.Native.API;
+using SWLOR.Game.Server.Composition;
+using SWLOR.Game.Server.Domain.Administration;
 using SWLOR.Game.Server.EngineTests.Framework;
 using SWLOR.Game.Server.Entity;
 using SWLOR.Game.Server.Feature.ChatCommandDefinition;
@@ -362,8 +364,9 @@ namespace SWLOR.Game.Server.EngineTests.Definitions
         public static async Task CreatorListsAndCreatesBlueprints(EngineTestContext ctx)
         {
             // Custom palettes are read while the module loads, so no DM's click waits on hundreds of template reads.
-            var loadedPalettes = (System.Collections.IDictionary)typeof(DMBlueprintCatalog)
-                .GetField("_palettes", BindingFlags.Static | BindingFlags.NonPublic)!.GetValue(null)!;
+            var catalog = CompositionRoot.ServerHost.Provider.GetService(typeof(IDMBlueprintCatalogService))!;
+            var loadedPalettes = (System.Collections.IDictionary)catalog.GetType()
+                .GetField("_palettes", BindingFlags.Instance | BindingFlags.NonPublic)!.GetValue(catalog)!;
             ctx.Assert(Enum.GetValues<DMBlueprintCategory>().All(category => loadedPalettes.Contains((category, DMBlueprintSource.Custom))),
                 "every custom palette is loaded before a DM opens the Creator");
 

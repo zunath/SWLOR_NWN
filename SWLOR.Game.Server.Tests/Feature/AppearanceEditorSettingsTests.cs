@@ -33,8 +33,8 @@ public class AppearanceEditorSettingsTests
             "SWLOR.Game.Server", "Feature", "ArmorDisplay.cs"));
         var getDMArmorDisplay = CSharpSyntaxTree.ParseText(armorDisplaySource).GetRoot().DescendantNodes()
             .OfType<MethodDeclarationSyntax>().Single(node => node.Identifier.Text == "GetDMArmorDisplay").ToFullString();
-        var dmPresence = DMPossessionHarness.Method("Service/DMPresence.cs", "GetControlledCreature") +
-                         DMPossessionHarness.Method("Service/DMPresence.cs", "SendMessage");
+        var dmPresence = DMPossessionHarness.InstanceMethod("Domain/Administration/DMPresenceService.cs", "GetControlledCreature") +
+                         DMPossessionHarness.InstanceMethod("Domain/Administration/DMPresenceService.cs", "SendMessage");
         var harness = $$"""
             using System;
             using System.Linq.Expressions;

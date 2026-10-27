@@ -107,7 +107,7 @@ DMObjectDetails -> Item | 3
 DMPresence -> Space | 1
 
 # Administration -> UI (1 edge)
-DMPresence -> Gui | 8
+DMPresence -> Gui | 16
 
 # Administration -> World (2 edges)
 DMObjectDetails -> Area | 1

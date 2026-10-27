@@ -515,6 +515,8 @@ Ships at launch.
   - Add a crew property permission next to `PilotShip`.
   - Handle disconnects at a station, crew leaving mid-fight, and ship death (escape pods).
 - **Balance:** a ship crewed by N players must not beat N separate ships. The combat simulator checks this.
+- **Station slots need their seat (W0 balance):** a Large or Capital role tags some slots in each row to a crew seat (Starships (Revamp), Station H/M/L). A station slot works only while its seat is crewed, passives included, at the crew's effectiveness. A solo pilot runs only the Helm slots. This keeps a solo Large or Capital hull a slower, tougher sidegrade to a Fighter while a fully crewed one matches the same number of separate ships.
+- **Droid seat effectiveness (W0 balance):** the best droid works an Engineer or Sensors seat at 75% and a Gunner seat at 50%; a tier-1 combat droid works any seat at 25%. At 75% on Gunner seats, one pilot with droids beat a Fighter by about 2x.
 - **Command:** the Command style's crew bonuses apply to everyone aboard, and the captain's Leadership rank adds to them.
 - **Ship-to-ship docking:** a Small or Medium ship can dock with a player's Large or Capital ship when the host's owner grants a new **Dock** permission (next to `PilotShip`).
   - The visiting ship is attached and hidden beside the host, the way crew characters are kept beside the ship. Its pilot and passengers walk into the host's interior.
@@ -854,6 +856,8 @@ Everything merges to one integration branch and releases together.
 | W11 | Release | Balance pass, client evidence, docs (section 19), player release notes | All |
 
 **Suggested order:** W0 and W1 first, then W2 and W3, then W4-W9 and W12-W16 in parallel slices, then W10, then W11.
+
+**W0 status:** the combat numbers (hulls, the 50 ships, modules, size rules, space enemies) are in the Bible's Starships, Ship Modules, Space Enemies and Space Balance (Revamp) tabs, generated and simulator-checked by `tools/SpaceRevampBalance`. Trade, component and economy numbers are drafted with their own workstreams (W7, W9), since nothing else depends on them.
 
 ## 19. Verification
 
@@ -1349,15 +1353,15 @@ Model and Launch skins are `appearance.2da` rows. Launch skins are Hull Designs 
 | 1 | Striker | Small | Fighter | Corellian | Standard | 0 | 10057 | 10190, 10193, 10194 | Weapon cycles 5% faster. |
 | 2 | Republic Striker | Small | Fighter | Republic | Standard | 0 | 10071 | 10072, 10073, 10199, 10200 | +15% shield regen. |
 | 3 | Davaab | Small | Fighter | Mandalorian | Standard | 0 | 10155 | 10105 | +10% max hull and +5% missile damage. |
-| 4 | Aurek Strikefighter | Small | Fighter | Republic | Advanced | 10 | 10074 | - | +20% shield regen; Point-Defense fires as Medium. |
-| 5 | Sith Fighter | Small | Fighter | Sith | Advanced | 10 | 10092 | 2008, 10089, 10090, 10091, 10210, 10211 | +10% Critical Rate; critical hits restore 1 capacitor. |
+| 4 | Aurek Strikefighter | Small | Fighter | Republic | Advanced | 10 | 10074 | - | +20% max shield and +20% shield regen; Point-Defense fires as Medium. |
+| 5 | Sith Fighter | Small | Fighter | Sith | Advanced | 10 | 10092 | 2008, 10089, 10090, 10091, 10210, 10211 | +10% Critical Rate and +10% weapon damage; critical hits restore 1 capacitor. |
 | 6 | Cutlass | Small | Fighter | Corellian | Advanced | 10 | 10161 | 10204 | +1 Mid slot. |
 | 7 | Condor | Small | Interceptor | Corellian | Standard | 0 | 10055 | 10153, 10144 | +10% speed. |
 | 8 | Republic Scout | Small | Interceptor | Republic | Standard | 0 | 10068 | 10069, 10070, 10205, 2001, 2003 | Ion Web range +20%. |
 | 9 | Sith Scout | Small | Interceptor | Sith | Standard | 0 | 10086 | 10087, 10088 | +10% damage to webbed targets. |
-| 10 | Eclipse Interceptor | Small | Interceptor | Sith | Advanced | 10 | 2006 | - | +15% speed; webs also lower the target's evasion. |
+| 10 | Eclipse Interceptor | Small | Interceptor | Sith | Advanced | 10 | 2006 | - | +15% speed; webs also lower the target's evasion by 10. |
 | 11 | Republic Bomber | Small | Bomber | Republic | Standard | 0 | 10058 | 10059, 10060, 10104 | Torpedo hits strip 10% extra shield. |
-| 12 | Sith Bomber | Small | Bomber | Sith | Standard | 0 | 10077 | 10078, 10079, 10106, 10241, 2007 | +5% torpedo Critical Rate. |
+| 12 | Sith Bomber | Small | Bomber | Sith | Standard | 0 | 10077 | 10078, 10079, 10106, 10241, 2007 | +10% torpedo damage and +5% torpedo Critical Rate. |
 | 13 | Chela Bomber | Small | Bomber | Republic | Advanced | 10 | 10149 | 2005, 10237 | Torpedoes ignore 25% of the target's resistances. |
 | 14 | Sith Infiltrator | Small | Explorer | Sith | Standard | 0 | 10083 | 10084, 10085, 10064, 10065, 10066, 10067 | Sensor Sweep reveals ships 50% farther away. |
 | 15 | Chiss Hyperion | Small | Explorer | Chiss | Standard | 0 | 10230 | 10191, 10192 | +25% scan strength; signatures show their tier from 25%. |
@@ -1365,10 +1369,10 @@ Model and Launch skins are `appearance.2da` rows. Launch skins are Hull Designs 
 | 17 | Republic Gunship | Medium | Gunship | Republic | Standard | 10 | 10061 | 10062, 10063, 10148, 10056 | +10% shield resistances. |
 | 18 | Sith Gunship | Medium | Gunship | Sith | Standard | 10 | 10080 | 10081, 10082, 10163 | +10% threat generation and +5% damage. |
 | 19 | Hutt Gunship | Medium | Gunship | Hutt | Standard | 10 | 10107 | 10216 | +20% max hull, -10% speed. |
-| 20 | Basilisk War Droid | Medium | Gunship | Mandalorian | Advanced | 20 | 10120 | 10156 | +15% hull resistances and +10% explosive damage. |
+| 20 | Basilisk War Droid | Medium | Gunship | Mandalorian | Advanced | 20 | 10120 | 10156 | +15 hull resistances and +10% explosive damage. |
 | 21 | Czerka Repair Tender | Medium | Logistics | Czerka | Standard | 10 | 10182 | 10226 | +15% remote hull repair. |
 | 22 | Chiss Caretaker | Medium | Logistics | Chiss | Standard | 10 | 10103 | 10102 | Remote repair range +25%. |
-| 23 | Jedi Transport | Medium | Logistics | Republic | Advanced | 20 | 10119 | 10157, 10101 | Repairs 20% stronger; repairs also remove one slow. |
+| 23 | Jedi Transport | Medium | Logistics | Republic | Advanced | 20 | 10119 | 10157, 10101 | Repairs 30% stronger; repairs also remove one slow. |
 | 24 | Y8 Miner | Medium | Mining Barge | Czerka | Standard | 10 | 10152 | 10151, 10227 | +15% ore yield. |
 | 25 | Gas Skimmer | Medium | Mining Barge | Corellian | Standard | 10 | 10185 | 10201 | +15% gas yield. |
 | 26 | XS Freighter | Medium | Light Freighter | Corellian | Standard | 10 | 10146 | 10054, 10206 | +20% cargo. |
@@ -1379,19 +1383,19 @@ Model and Launch skins are `appearance.2da` rows. Launch skins are Hull Designs 
 | 31 | Republic Hammerhead | Large | Frigate | Republic | Standard | 25 | 10076 | 10134, 10075 | Point-Defense deals +20% damage. |
 | 32 | Sith Hammerhead | Large | Frigate | Sith | Standard | 25 | 10138 | 10137 | +5% Critical Rate. |
 | 33 | Mandalorian Raider | Large | Frigate | Mandalorian | Standard | 25 | 10121 | 10224 | +15% max hull and +10% missile damage. |
-| 34 | Raider Marauder | Large | Frigate | Rift Raider | Advanced | 35 | 10196 | 10195, 10133 | Shield regen doubles while no weapon is firing. |
+| 34 | Raider Marauder | Large | Frigate | Rift Raider | Advanced | 35 | 10196 | 10195, 10133 | Shield regen doubles while no weapon is firing; +10% weapon damage. |
 | 35 | Heavy Lifter | Large | Industrial | Czerka | Standard | 25 | 10188 | 10132, 10229 | +20% strip-mining yield. |
 | 36 | Czerka Salvager | Large | Industrial | Czerka | Standard | 25 | 10197 | 10198, 10131 | +20% salvage yield. |
 | 37 | Freight Train | Large | Heavy Freighter | Czerka | Standard | 25 | 10189 | 2174, 10187 | +30% cargo. |
 | 38 | Republic Quartermaster | Large | Heavy Freighter | Republic | Standard | 25 | 10130 | 10150 | +15% max shield; allied ships within 30 m take 5% less damage. |
 | 39 | Hutt Grand Barge | Large | Heavy Freighter | Hutt | Advanced | 35 | 10109 | 10212 | +40% cargo; Jump Beacon jumps cost 50% less fuel. |
-| 40 | Neutral Thranta | Capital | Cruiser | Corellian | Standard | 40 | 10135 | 10217 | +1 High slot. |
+| 40 | Neutral Thranta | Capital | Cruiser | Corellian | Standard | 40 | 10135 | 10217 | +1 High slot (Gunner); -10% max hull and shield. |
 | 41 | Republic Thranta | Capital | Cruiser | Republic | Standard | 40 | 10123 | 10117, 10122, 2170 | +10% max shield. |
 | 42 | Sith Thranta | Capital | Cruiser | Sith | Standard | 40 | 10139 | 10126, 10238, 10239 | +10% damage. |
 | 43 | Hutt Corvette | Capital | Cruiser | Hutt | Standard | 40 | 10108 | - | +20% max hull and +50% cargo. |
 | 44 | Jehavey'ir | Capital | Cruiser | Mandalorian | Standard | 40 | 10154 | - | +15% max hull and +10% explosive damage. |
 | 45 | Chiss Trireme | Capital | Cruiser | Chiss | Standard | 40 | 10162 | - | +15% weapon range. |
-| 46 | Corellian Gunboat | Capital | Cruiser | Corellian | Standard | 40 | 10145 | - | +10% speed and evasion. |
+| 46 | Corellian Gunboat | Capital | Cruiser | Corellian | Standard | 40 | 10145 | - | +10% speed and +4 evasion. |
 | 47 | Czerka Armored Transport | Capital | Command Ship | Czerka | Standard | 40 | 10218 | - | Crew stations +10% effective; droid crew +20%. |
 | 48 | Terminus Corsair | Capital | Command Ship | Corellian | Standard | 40 | 10207 | 10142, 10093, 10118, 2169 | Allied ships within command range +5% speed. |
 | 49 | Crusader Corvette | Capital | Command Ship | Mandalorian | Standard | 40 | 10260 | 10116, 10115 | +15% max hull; allies within command range +5% explosive damage. |

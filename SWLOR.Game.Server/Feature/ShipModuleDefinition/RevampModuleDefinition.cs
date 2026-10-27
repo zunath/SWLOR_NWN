@@ -154,7 +154,7 @@ namespace SWLOR.Game.Server.Feature.ShipModuleDefinition
         {
             var firingSize = status.Size == ShipSize.Invalid ? ShipSize.Small : status.Size;
             var targetSize = targetStatus?.Size ?? ShipSize.Small;
-            return ShipShotBuilder.Build(step, firingSize, targetSize, targetStatus?.Shield ?? 0);
+            return ShipShotBuilder.Build(step, firingSize, targetSize, targetStatus?.Shield ?? 0, status.FindNpcShot(step.Tag));
         }
 
         private void Weapon(ShipModuleStep step, WeaponFire fire)
@@ -171,7 +171,13 @@ namespace SWLOR.Game.Server.Feature.ShipModuleDefinition
             _builder
                 .MaxDistance(step.Range)
                 .ValidTargetType(ObjectType.Creature)
-                .ValidationAction((activator, _, _, _, _) => ShipModuleActions.AmmoError(activator, ammoResref, missingAmmoMessage))
+                .ValidationAction((activator, status, _, targetStatus, _) =>
+                {
+                    var ammoError = ShipModuleActions.AmmoError(activator, ammoResref, missingAmmoMessage);
+                    return string.IsNullOrWhiteSpace(ammoError)
+                        ? ShipNpcRules.TargetError(step.Family, status, targetStatus?.Size ?? ShipSize.Small)
+                        : ammoError;
+                })
                 .ActivatedAction((activator, status, target, targetStatus, _) =>
                 {
                     var shot = BuildShot(step, status, targetStatus);

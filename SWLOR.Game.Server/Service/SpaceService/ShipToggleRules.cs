@@ -33,6 +33,21 @@ namespace SWLOR.Game.Server.Service.SpaceService
             }
         }
 
+        /// <summary>Whether a module of this type is a weapon an NPC ship turns on against its target.</summary>
+        public static bool IsOffensive(ShipModuleType type)
+        {
+            return type == ShipModuleType.LaserBattery ||
+                   type == ShipModuleType.TurboLaser ||
+                   type == ShipModuleType.AssaultConcussionMissile ||
+                   type == ShipModuleType.StormCannon ||
+                   type == ShipModuleType.QuadLaser ||
+                   type == ShipModuleType.ProtonBomb ||
+                   type == ShipModuleType.Missile ||
+                   type == ShipModuleType.IonCannon ||
+                   type == ShipModuleType.BeamLaser ||
+                   type == ShipModuleType.CombatLaser;
+        }
+
         /// <summary>Whether a module of this type restores shield (an NPC ship runs it while shield is missing).</summary>
         public static bool RepairsShield(ShipModuleType type)
         {

@@ -29,13 +29,18 @@ namespace SWLOR.Game.Server.Feature.ShipModuleDefinition
         /// <summary>An error message when a player has none of the ammo item. NPC ships need no ammo.</summary>
         public static string AmmoError(uint activator, string resref, string message)
         {
+            if (!GetIsPC(activator)) return string.Empty;
+
             var item = GetItemPossessedBy(activator, resref);
             var stackSize = GetItemStackSize(item);
-            return stackSize <= 0 && GetIsPC(activator) ? message : string.Empty;
+            return stackSize <= 0 ? message : string.Empty;
         }
 
+        /// <summary>Uses up one ammo item. NPC ships have none to use.</summary>
         public static void ConsumeAmmo(uint activator, string resref)
         {
+            if (!GetIsPC(activator)) return;
+
             var item = GetItemPossessedBy(activator, resref);
             var stackSize = GetItemStackSize(item);
             if (stackSize <= 1)

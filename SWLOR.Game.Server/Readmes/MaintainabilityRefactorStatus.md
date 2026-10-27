@@ -59,7 +59,7 @@ Status: `open`, `in progress`, `review` (pull request open), `done`, `blocked`.
 | P0-6 | Scripted live smoke run with `tools/NwnLiveClient.py`; baseline recorded | - | Sonnet | open | | Needs a local server and client |
 | P0-7 | Daily sync script and parity script (characterization tests against a throwaway `master` worktree) | P0-4 | Sonnet | open | | |
 | P0-8 | Cross-domain dependency guard recording today's calls (domain map first) | - | Opus map, Sonnet build | open | | Decision 9 |
-| P0-9 | Feasibility check: do app-created worktrees inherit sparse checkout? | - | Sonnet | open | | Read-only; gates the haks cutover |
+| P0-9 | Feasibility check: do app-created worktrees inherit sparse checkout? | - | Opus (trivial) | done | - | Git 2.46 copies the sparse settings of the worktree `git worktree add` runs from (tested in a scratch repo). So after the haks cutover the main checkout itself must be sparse (code + `sw_2da`, `sw_tlk`, `sw_ability`), with full hak folders only in a dedicated worktree used for hak builds and local deploys. Confirm at cutover that the desktop app's worktree creation inherits it. |
 
 Phases 1-4 and the final cutover get their own items when Phase 0 is done.
 

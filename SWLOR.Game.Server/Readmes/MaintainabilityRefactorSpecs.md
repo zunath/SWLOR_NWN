@@ -231,6 +231,9 @@ summary and exiting non-zero on failure. Neither pushes; the agent running them 
 3. Re-runs every mechanical script (clock seam, and later ones as they are added to the manifest), then builds and
    runs the unit, characterization and architecture tests with the standard filters.
 4. Prints what to record in the status file's sync log: date, `master` commit merged, conflicts, test results.
+5. Not part of this script (it needs Docker and about 30 minutes): after each sync run `Update-EngineCharacterization.ps1`
+   (P0-7c, `Readmes/EngineTesting.md`) to bring the engine snapshots in step with the merged module and hak content,
+   and explain every changed row by a `master` change.
 
 ### `Test-MaintainabilityParity.ps1`
 

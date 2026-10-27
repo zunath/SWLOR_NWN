@@ -8,7 +8,7 @@ Read only the sections the task needs:
 - Writing a test: "How to Write a New Engine Test" (attribute contract, `EngineTestContext` API, player fixture, timing, worked example).
 - Migration or persistence change: "Persistence and migration coverage".
 - Ability or perk coverage: "The ability behavior coverage program" and "The perk coverage program".
-- Output locking for the maintainability refactor: "Characterization scenarios (output locking)".
+- Output locking for the maintainability refactor: "Characterization scenarios (output locking)". After every `master` sync: "Refreshing the snapshots after a `master` sync".
 - Running tests: "How to Run Locally". Concurrent runs collide on one compose project; see `AgentEnvironment.md`.
 - Changing the runner itself: "Project Layout and Isolation", "Architecture Overview", "Environment Variable Reference".
 
@@ -626,6 +626,8 @@ build time and the scenario compares against the embedded file.
 The snapshots depend on the module and the 2DA and TLK data, as well as on the code. Pack the module from the checkout
 you are testing (`Module\PackModule.cmd`) and use `sw_2da`, `sw_ability` and `sw_tlk` built from the pinned
 `SWLOR_Haks` commit before judging a mismatch; a stale server home produces diffs that no code change explains.
+`tools/Refactor/Update-EngineCharacterization.ps1` does all of that (see "Refreshing the snapshots after a `master`
+sync" below); the steps here are what it automates.
 
 To regenerate after an intended, approved behaviour change:
 
@@ -641,6 +643,49 @@ files). Never regenerate to make a failing scenario pass.
 
 To add a scenario: create a `FrozenClock` and a `ScenarioArena`, spawn fixtures with `ScenarioActors`, seed `Random` inside the
 step that rolls, build a `SnapshotTable` of the outcomes and call `ScenarioSnapshot.Verify(area, name, table)`.
+
+#### Refreshing the snapshots after a `master` sync
+
+Every sync of `feature/maintainability-refactor` (`tools/Refactor/Sync-MaintainabilityBranch.ps1`) can change the module
+or hak content the scenarios read (loot tables, recipes, abilities, 2DA rows, TLK text), so the engine snapshots must be
+brought in step with the branch after each sync. In the worktree that holds the merge (snapshot folder clean, sparse
+`SWLOR_Haks` at the commit the branch pins, which the sync script moves), with Docker running:
+
+```powershell
+powershell -NoProfile -File tools/Refactor/Update-EngineCharacterization.ps1            # update, then confirm
+powershell -NoProfile -File tools/Refactor/Update-EngineCharacterization.ps1 -WaitMinutes 45   # queue behind another run
+powershell -NoProfile -File tools/Refactor/Update-EngineCharacterization.ps1 -CheckOnly        # compare only, change nothing
+```
+
+It runs the procedure above without the manual preparation, in about 30 minutes (measured 28: module pack 3.5 minutes,
+hak build 10 seconds, each of the two engine runs 12 minutes including its build):
+
+1. Refuses to start (exit 5) while the `swlor-engine-tests` compose project has any container. `scripts/run-engine-tests.ps1`
+   tears that project down at the start and the end of a run, so a second run would destroy the first agent's run. The
+   script never stops or removes those containers; wait and run it again, or pass `-WaitMinutes`.
+2. Packs the module from the worktree under the throwaway name `swlor_et_characterization` and rebuilds `sw_2da` and
+   `sw_ability` and copies `sw_tlk.tlk` from the worktree's pinned `SWLOR_Haks`.
+3. Prepares a throwaway server home outside the repository (default `C:\Temp\swlor-engine-characterization-<id>\`):
+   `swlor.env` and `settings.tml` from `SWLOR.Game.Server/Docker`, the module, the TLK, and a hak set in which every
+   other hak is an NTFS hard link to the shared dev server's hak set (`-BaseHakDirectory`, default `debugserver\hak`; the
+   files are only read). Nothing is written to `debugserver`, `enginetests-home` or the repository's ignored folders.
+4. Runs `scripts/run-engine-tests.ps1 -Filter Characterization` with `SWLOR_UPDATE_SNAPSHOTS=1`, lists the snapshot
+   files that changed with their changed row counts, then runs it again without the variable to confirm (skipped when
+   nothing changed, because the first run already compared every snapshot).
+5. Removes the home and the compose containers its runs created. `-KeepHome` keeps the home and `-ReuseHome <folder>`
+   repeats a run in it without packing again.
+
+The script commits and reverts nothing. **Explain every changed row before committing:** find the `master` commit or file that
+explains it (`git diff -U0 -- SWLOR.Game.Server.EngineTests/Characterization/Snapshots`, then `git log origin/master --
+<file>` for the loot table, recipe, 2DA row or text behind it). Content that `master` changed is drift to record; any row
+that no `master` content change explains is a regression in the branch: stop, keep the evidence and report it instead of
+committing the snapshot. Commit the explained snapshot files with the sync (or the sync's follow-up) and say in the sync log
+which master commits caused them.
+
+Exit codes: 0 passed; 1 an engine run failed (after a failed update run the snapshots written are partial: discard them,
+do not commit); 4 the script could not run (dirty snapshot folder, `SWLOR_Haks` not at the pinned commit, no Docker,
+no base hak set); 5 the compose project is in use. The script is also the way to check that the committed snapshots still
+match the branch at any time (`-CheckOnly`), for example after a `SWLOR_Haks` pointer change.
 
 ## CI
 

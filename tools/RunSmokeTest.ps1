@@ -57,7 +57,7 @@ if (-not $SkipBuild) {
         & dotnet build (Join-Path $repository "SWLOR.Game.Server\SWLOR.Game.Server.csproj") -c Release `
             -p:RunPostBuildEvent=Never -v q -clp:ErrorsOnly
         if ($LASTEXITCODE -ne 0) {
-            Write-Error "The Release build failed (exit $LASTEXITCODE); the smoke run did not start."
+            [Console]::Error.WriteLine("The Release build failed (exit $LASTEXITCODE); the smoke run did not start.")
             exit 2
         }
     }

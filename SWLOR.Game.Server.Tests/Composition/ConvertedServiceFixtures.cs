@@ -1,4 +1,3 @@
-using System.Reflection;
 using System.Text.Json;
 using NUnit.Framework;
 using SWLOR.Game.Server.Composition;
@@ -8,7 +7,8 @@ namespace SWLOR.Game.Server.Tests.Composition;
 /// <summary>
 /// Finds the converted services from <c>SWLOR.Architecture.Tests/ConvertedServices.json</c>, the list the architecture
 /// rules use, so the tests that prove the facade and registration of every converted service pick up a new conversion
-/// without being edited.
+/// without being edited. A service that lists extra facades (<c>"facades": ["QuestService.QuestEncounter"]</c>) yields
+/// one more entry per extra facade, with the facade type, its interface and its instance class.
 /// </summary>
 public static class ConvertedServiceFixtures
 {
@@ -20,21 +20,36 @@ public static class ConvertedServiceFixtures
         var path = Path.Combine(FindRepositoryRoot(), "SWLOR.Architecture.Tests", "ConvertedServices.json");
         using var document = JsonDocument.Parse(File.ReadAllText(path));
         var assembly = typeof(CompositionRoot).Assembly;
+        var services = new List<ConvertedServiceTypes>();
 
-        return document.RootElement.GetProperty("services").EnumerateArray()
-            .Select(element =>
+        foreach (var element in document.RootElement.GetProperty("services").EnumerateArray())
+        {
+            var name = element.GetProperty("name").GetString()!;
+            var domain = element.GetProperty("domain").GetString()!;
+            var domainNamespace = $"{ServerNamespace}.Domain.{domain}";
+            services.Add(new ConvertedServiceTypes(
+                name,
+                domain,
+                assembly.GetType($"{ServerNamespace}.Service.{name}", throwOnError: true)!,
+                assembly.GetType($"{domainNamespace}.I{name}Service", throwOnError: true)!,
+                assembly.GetType($"{domainNamespace}.{name}Service", throwOnError: true)!));
+
+            if (!element.TryGetProperty("facades", out var facades))
+                continue;
+
+            foreach (var facade in facades.EnumerateArray().Select(entry => entry.GetString()!))
             {
-                var name = element.GetProperty("name").GetString()!;
-                var domain = element.GetProperty("domain").GetString()!;
-                var domainNamespace = $"{ServerNamespace}.Domain.{domain}";
-                return new ConvertedServiceTypes(
-                    name,
+                var typeName = facade[(facade.LastIndexOf('.') + 1)..];
+                services.Add(new ConvertedServiceTypes(
+                    facade,
                     domain,
-                    assembly.GetType($"{ServerNamespace}.Service.{name}", throwOnError: true)!,
-                    assembly.GetType($"{domainNamespace}.I{name}Service", throwOnError: true)!,
-                    assembly.GetType($"{domainNamespace}.{name}Service", throwOnError: true)!);
-            })
-            .ToList();
+                    assembly.GetType($"{ServerNamespace}.Service.{facade}", throwOnError: true)!,
+                    assembly.GetType($"{domainNamespace}.I{typeName}Service", throwOnError: true)!,
+                    assembly.GetType($"{domainNamespace}.{typeName}Service", throwOnError: true)!));
+            }
+        }
+
+        return services;
     }
 
     public static IEnumerable<TestCaseData> AsTestCases() =>

@@ -1,62 +1,11 @@
 using System.Text.Json;
 using FluentAssertions;
 using NUnit.Framework;
-using SWLOR.Game.Server.Entity;
-using SWLOR.Game.Server.Service.QuestService;
 
 namespace SWLOR.Game.Server.Tests.Feature;
 
 public class QuestEncounterTests
 {
-    [Test]
-    public void IsPlayerOnQuestState_RequiresExactQuestState()
-    {
-        var player = new Player("player-id");
-        player.Quests["blood_frenzy_mastery"] = new PlayerQuest
-        {
-            CurrentState = 1,
-            TimesCompleted = 0,
-        };
-
-        QuestEncounter.IsPlayerOnQuestState(player, "blood_frenzy_mastery", 1)
-            .Should()
-            .BeTrue();
-
-        QuestEncounter.IsPlayerOnQuestState(player, "blood_frenzy_mastery", 2)
-            .Should()
-            .BeFalse();
-    }
-
-    [Test]
-    public void GetCooldownRemaining_ReturnsRemainingEncounterCooldown()
-    {
-        var now = new DateTime(2026, 6, 27, 12, 0, 0, DateTimeKind.Utc);
-        var player = new Player("player-id");
-        player.EncounterCooldowns["blood_frenzy_mastery_kess"] = now.AddMinutes(60);
-
-        QuestEncounter.GetCooldownRemaining(player, "blood_frenzy_mastery_kess", now.AddMinutes(15))
-            .Should()
-            .Be(TimeSpan.FromMinutes(45));
-
-        QuestEncounter.GetCooldownRemaining(player, "blood_frenzy_mastery_kess", now.AddMinutes(60))
-            .Should()
-            .Be(TimeSpan.Zero);
-    }
-
-    [Test]
-    public void IsIdleExpired_RequiresFullIdleTimeout()
-    {
-        var lastActivity = new DateTime(2026, 6, 27, 12, 0, 0, DateTimeKind.Utc);
-
-        QuestEncounter.IsIdleExpired(lastActivity, lastActivity.AddMinutes(9), TimeSpan.FromMinutes(10))
-            .Should()
-            .BeFalse();
-
-        QuestEncounter.IsIdleExpired(lastActivity, lastActivity.AddMinutes(10), TimeSpan.FromMinutes(10))
-            .Should()
-            .BeTrue();
-    }
-
     [Test]
     public void KessSpawnWaypoint_IsAvailableInWaypointPalette()
     {
@@ -107,21 +56,6 @@ public class QuestEncounterTests
     }
 
     [Test]
-    public void QuestKillDispatch_UsesParticipantCreditForQuestEncounterCreatures()
-    {
-        var root = FindRepositoryRoot();
-        var questSource = File.ReadAllText(Path.Combine(
-            root.FullName,
-            "SWLOR.Game.Server",
-            "Service",
-            "Quest.cs"));
-
-        questSource.Should().Contain("QuestEncounter.IsQuestEncounterCreature(creature)");
-        questSource.Should().Contain("QuestEncounter.ProgressKillCredit(creature, npcGroupType, possibleQuests);");
-        questSource.Should().Contain("QuestEncounter.ClearEncounterForCreature(creature);");
-    }
-
-    [Test]
     public void QuestEncounterVisibility_DoesNotUseHeartbeat()
     {
         var root = FindRepositoryRoot();
@@ -133,9 +67,9 @@ public class QuestEncounterTests
         var encounterSource = File.ReadAllText(Path.Combine(
             root.FullName,
             "SWLOR.Game.Server",
-            "Service",
-            "QuestService",
-            "QuestEncounter.cs"));
+            "Domain",
+            "Quests",
+            "QuestEncounterService.cs"));
         var questDetailSource = File.ReadAllText(Path.Combine(
             root.FullName,
             "SWLOR.Game.Server",

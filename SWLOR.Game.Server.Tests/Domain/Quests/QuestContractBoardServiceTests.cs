@@ -44,8 +44,8 @@ public class QuestContractBoardServiceTests
     private FakeUtilPlugin _util = null!;
     private QueryableDBService _db = null!;
     private TestBoard _service = null!;
+    private QuestService _quests = null!;
     private readonly List<IDisposable> _scopes = new();
-    private readonly List<string> _contractIds = new();
     private readonly List<uint> _online = new();
     private readonly HashSet<uint> _invalid = new();
     private int _cursor;
@@ -56,7 +56,6 @@ public class QuestContractBoardServiceTests
     {
         _online.Clear();
         _invalid.Clear();
-        _contractIds.Clear();
         _entering = ObjectInvalid;
 
         _engine = new FakeNWScript();
@@ -94,16 +93,13 @@ public class QuestContractBoardServiceTests
         _scopes.Add(UtilPluginRuntime.Override(_util));
 
         _db = new QueryableDBService();
-        _service = new TestBoard(_db);
+        _quests = QuestServices.Create(_db);
+        _service = new TestBoard(_db, _quests);
     }
 
     [TearDown]
     public void TearDown()
     {
-        // The runtime quests live in the static quest cache, which the other tests share.
-        foreach (var contractId in _contractIds.Concat(_db.Store.Saved.OfType<QuestContract>().Select(contract => contract.Id)))
-            Quest.UnregisterRuntimeQuest(QuestContractFactory.BuildQuestId(contractId));
-
         foreach (var scope in Enumerable.Reverse(_scopes))
             scope.Dispose();
         _scopes.Clear();
@@ -112,8 +108,8 @@ public class QuestContractBoardServiceTests
     /// <summary>The service with the three calls the unit tests cannot run answered by the test.</summary>
     private sealed class TestBoard : QuestContractBoardService
     {
-        public TestBoard(IDBService db)
-            : base(db)
+        public TestBoard(IDBService db, IQuestService quests)
+            : base(db, quests)
         {
         }
 
@@ -154,7 +150,6 @@ public class QuestContractBoardServiceTests
     private QuestContract Seed(QuestContract contract)
     {
         _db.With(contract);
-        _contractIds.Add(contract.Id);
         return contract;
     }
 
@@ -702,7 +697,7 @@ public class QuestContractBoardServiceTests
         draft.DateExpires.Should().BeCloseTo(DateTime.UtcNow.AddDays(QuestContractBoardService.ContractDurationDays), TimeSpan.FromMinutes(1));
         draft.DatePublished.Should().BeCloseTo(DateTime.UtcNow, TimeSpan.FromMinutes(1));
         _db.Store.Saved.Should().ContainSingle().Which.Should().BeSameAs(draft);
-        Quest.GetQuestByIdOrDefault(QuestContractFactory.BuildQuestId(draft.Id)).Should().NotBeNull();
+        _quests.GetQuestByIdOrDefault(QuestContractFactory.BuildQuestId(draft.Id)).Should().NotBeNull();
 
         // The fee is taken from the player on the player's own action queue.
         var assigned = _engine.CallsTo("AssignCommand").Should().ContainSingle().Which;
@@ -741,7 +736,7 @@ public class QuestContractBoardServiceTests
     {
         var contract = Published(Author, credits: 750);
         contract.RewardItems.Add(new QuestContractItem { Data = "escrowed" });
-        Quest.RegisterRuntimeQuest(QuestContractFactory.BuildQuest(contract));
+        _quests.RegisterRuntimeQuest(QuestContractFactory.BuildQuest(contract));
 
         _service.CancelContract(Author, contract.Id).Should().BeEmpty();
 
@@ -752,7 +747,7 @@ public class QuestContractBoardServiceTests
         refund.PlayerId.Should().Be(IdOf(Author));
         refund.Credits.Should().Be(750);
         refund.Items.Should().ContainSingle().Which.Data.Should().Be("escrowed");
-        Quest.GetQuestByIdOrDefault(QuestContractFactory.BuildQuestId(contract.Id)).Should().BeNull();
+        _quests.GetQuestByIdOrDefault(QuestContractFactory.BuildQuestId(contract.Id)).Should().BeNull();
     }
 
     [TestCase(DungeonMaster)]
@@ -1081,7 +1076,7 @@ public class QuestContractBoardServiceTests
     {
         var contract = Published(Author, credits: 400);
         contract.RewardItems.Add(new QuestContractItem { Data = "prize" });
-        Quest.RegisterRuntimeQuest(QuestContractFactory.BuildQuest(contract));
+        _quests.RegisterRuntimeQuest(QuestContractFactory.BuildQuest(contract));
         var submission = Delivery(Worker, contract.Id, 0, "turned in");
         submission.HeldForCompletion = true;
         _db.With(submission);
@@ -1095,7 +1090,7 @@ public class QuestContractBoardServiceTests
         contract.DateClosed.Should().BeCloseTo(DateTime.UtcNow, TimeSpan.FromMinutes(1));
         contract.SettlementPending.Should().Be(0, "settlement finished");
         contract.RewardItems.Should().BeEmpty();
-        Quest.GetQuestByIdOrDefault(QuestContractFactory.BuildQuestId(contract.Id)).Should().BeNull();
+        _quests.GetQuestByIdOrDefault(QuestContractFactory.BuildQuestId(contract.Id)).Should().BeNull();
 
         var receipt = _db.Store.Saved.OfType<QuestContractDelivery>().Single(delivery => delivery.Id == contract.Id + "-reward");
         receipt.PlayerId.Should().Be(IdOf(Worker));
@@ -1173,8 +1168,8 @@ public class QuestContractBoardServiceTests
 
         _service.RegisterContracts();
 
-        Quest.GetQuestByIdOrDefault(QuestContractFactory.BuildQuestId(open.Id)).Should().NotBeNull();
-        Quest.GetQuestByIdOrDefault(QuestContractFactory.BuildQuestId(other.Id)).Should().NotBeNull();
+        _quests.GetQuestByIdOrDefault(QuestContractFactory.BuildQuestId(open.Id)).Should().NotBeNull();
+        _quests.GetQuestByIdOrDefault(QuestContractFactory.BuildQuestId(other.Id)).Should().NotBeNull();
         open.Status.Should().Be(QuestContractStatus.Published);
         _db.Store.Saved.Should().BeEmpty("nothing is expired, settled or pruned");
     }
@@ -1200,8 +1195,8 @@ public class QuestContractBoardServiceTests
         refund.PlayerId.Should().Be(IdOf(Author));
         refund.Credits.Should().Be(600);
         refund.Items.Should().ContainSingle();
-        Quest.GetQuestByIdOrDefault(questId).Should().BeNull();
-        Quest.GetQuestByIdOrDefault(QuestContractFactory.BuildQuestId(online.Id)).Should().NotBeNull();
+        _quests.GetQuestByIdOrDefault(questId).Should().BeNull();
+        _quests.GetQuestByIdOrDefault(QuestContractFactory.BuildQuestId(online.Id)).Should().NotBeNull();
         player.Quests.Should().NotContainKey(questId);
         MessagesTo(Worker).Should().Contain(message => message.Contains("has been expired"));
     }
@@ -1250,7 +1245,7 @@ public class QuestContractBoardServiceTests
 
         contract.Status.Should().Be(QuestContractStatus.Fulfilled);
         contract.CompletedByPlayerId.Should().Be(IdOf(Worker));
-        Quest.GetQuestByIdOrDefault(questId).Should().BeNull();
+        _quests.GetQuestByIdOrDefault(questId).Should().BeNull();
     }
 
     [Test]
@@ -1266,7 +1261,7 @@ public class QuestContractBoardServiceTests
         contract.Status.Should().Be(QuestContractStatus.Published);
         held.HeldForCompletion.Should().BeFalse("the abandoned attempt goes back to its player");
         held.PlayerId.Should().Be(IdOf(Worker));
-        Quest.GetQuestByIdOrDefault(QuestContractFactory.BuildQuestId(contract.Id)).Should().NotBeNull();
+        _quests.GetQuestByIdOrDefault(QuestContractFactory.BuildQuestId(contract.Id)).Should().NotBeNull();
     }
 
     [Test]

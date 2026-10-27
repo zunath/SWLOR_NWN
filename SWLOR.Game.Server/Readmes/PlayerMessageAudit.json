@@ -147,6 +147,167 @@
     "Call": "SendMessageToPC(player, ColorToken.Green(DeliveriesWaitingMessage))"
   },
   {
+    "File": "SWLOR.Game.Server/Domain/Quests/QuestEncounterService.cs",
+    "Line": 76,
+    "Member": "UseActivator",
+    "Delivery": "Retained",
+    "Call": "SendMessageToPC(player, \"You are not ready to use this object.\")"
+  },
+  {
+    "File": "SWLOR.Game.Server/Domain/Quests/QuestEncounterService.cs",
+    "Line": 84,
+    "Member": "UseActivator",
+    "Delivery": "Retained",
+    "Call": "SendMessageToPC(player, \"This encounter object is missing its encounter ID. Please inform an admin.\")"
+  },
+  {
+    "File": "SWLOR.Game.Server/Domain/Quests/QuestEncounterService.cs",
+    "Line": 90,
+    "Member": "UseActivator",
+    "Delivery": "Retained",
+    "Call": "SendMessageToPC(player, \"This encounter is already active.\")"
+  },
+  {
+    "File": "SWLOR.Game.Server/Domain/Quests/QuestEncounterService.cs",
+    "Line": 98,
+    "Member": "UseActivator",
+    "Delivery": "Retained",
+    "Call": "SendMessageToPC(player, $\"You need {Time.GetTimeLongIntervals(remainingCooldown, false)} before you can call this encounter again.\")"
+  },
+  {
+    "File": "SWLOR.Game.Server/Domain/Quests/QuestEncounterService.cs",
+    "Line": 106,
+    "Member": "UseActivator",
+    "Delivery": "Retained",
+    "Call": "SendMessageToPC(player, \"This encounter object is missing its creature resref. Please inform an admin.\")"
+  },
+  {
+    "File": "SWLOR.Game.Server/Domain/Quests/QuestEncounterService.cs",
+    "Line": 114,
+    "Member": "UseActivator",
+    "Delivery": "Retained",
+    "Call": "SendMessageToPC(player, \"The encounter failed to start. Please inform an admin.\")"
+  },
+  {
+    "File": "SWLOR.Game.Server/Domain/Quests/QuestEncounterService.cs",
+    "Line": 129,
+    "Member": "UseActivator",
+    "Delivery": "Retained",
+    "Call": "SendMessageToPC(player, \"The encounter has begun.\")"
+  },
+  {
+    "File": "SWLOR.Game.Server/Domain/Quests/QuestEncounterService.cs",
+    "Line": 492,
+    "Member": "SendMessageToNearbyPlayers",
+    "Delivery": "Retained",
+    "Call": "SendMessageToPC(receiver, message)"
+  },
+  {
+    "File": "SWLOR.Game.Server/Domain/Quests/QuestService.cs",
+    "Line": 185,
+    "Member": "LoadPlayerQuests",
+    "Delivery": "Retained",
+    "Call": "SendMessageToPC(player, ColorToken.Red(\"One or more quests in your journal are no longer available (e.g. a cancelled or expired contract) and have been removed.\"))"
+  },
+  {
+    "File": "SWLOR.Game.Server/Domain/Quests/QuestService.cs",
+    "Line": 349,
+    "Member": "RequestItemsFromPlayer",
+    "Delivery": "Retained",
+    "Call": "SendMessageToPC(player, \"You have not accepted this quest yet.\")"
+  },
+  {
+    "File": "SWLOR.Game.Server/Domain/Quests/QuestService.cs",
+    "Line": 356,
+    "Member": "RequestItemsFromPlayer",
+    "Delivery": "Retained",
+    "Call": "SendMessageToPC(player, \"You have already completed this quest.\")"
+  },
+  {
+    "File": "SWLOR.Game.Server/Domain/Quests/QuestService.cs",
+    "Line": 370,
+    "Member": "RequestItemsFromPlayer",
+    "Delivery": "Retained",
+    "Call": "SendMessageToPC(player, \"There are no items to turn in for this quest. This is likely a bug. Please let the staff know.\")"
+  },
+  {
+    "File": "SWLOR.Game.Server/Domain/Quests/QuestService.cs",
+    "Line": 489,
+    "Member": "OpenItemCollector",
+    "Delivery": "Retained",
+    "Call": "SendMessageToPC(player, \"This quest collector is not available to you.\")"
+  },
+  {
+    "File": "SWLOR.Game.Server/Domain/Quests/QuestService.cs",
+    "Line": 493,
+    "Member": "OpenItemCollector",
+    "Delivery": "Retained",
+    "Call": "FloatingTextStringOnCreature(\"Please place the items you would like to turn in for this quest into the container. If you want to cancel this process, move away from the container.\", player, false)"
+  },
+  {
+    "File": "SWLOR.Game.Server/Domain/Quests/QuestService.cs",
+    "Line": 504,
+    "Member": "OpenItemCollector",
+    "Delivery": "Retained",
+    "Call": "SendMessageToPC(player, text)"
+  },
+  {
+    "File": "SWLOR.Game.Server/Domain/Quests/QuestService.cs",
+    "Line": 565,
+    "Member": "DisturbItemCollector",
+    "Delivery": "Retained",
+    "Call": "SendMessageToPC(player, \"This quest collector is no longer available to you.\")"
+  },
+  {
+    "File": "SWLOR.Game.Server/Domain/Quests/QuestService.cs",
+    "Line": 574,
+    "Member": "DisturbItemCollector",
+    "Delivery": "Retained",
+    "Call": "SendMessageToPC(player, \"That item is not required for this quest.\")"
+  },
+  {
+    "File": "SWLOR.Game.Server/Domain/Quests/QuestService.cs",
+    "Line": 585,
+    "Member": "DisturbItemCollector",
+    "Delivery": "Retained",
+    "Call": "SendMessageToPC(player, \"This quest is no longer available.\")"
+  },
+  {
+    "File": "SWLOR.Game.Server/Domain/Quests/QuestService.cs",
+    "Line": 600,
+    "Member": "DisturbItemCollector",
+    "Delivery": "Retained",
+    "Call": "SendMessageToPC(player, rejection)"
+  },
+  {
+    "File": "SWLOR.Game.Server/Domain/Quests/QuestService.cs",
+    "Line": 651,
+    "Member": "DisturbItemCollector",
+    "Delivery": "Retained",
+    "Call": "SendMessageToPC(player, $\"You need {dbPlayer.Quests[questId].ItemProgresses[resref]}x {itemName} to complete this quest.\")"
+  },
+  {
+    "File": "SWLOR.Game.Server/Domain/Quests/QuestService.cs",
+    "Line": 716,
+    "Member": "TriggerAndPlaceableProgression",
+    "Delivery": "Retained",
+    "Call": "SendMessageToPC(player, \"QUEST_ID variable not set on object. Please inform admin this quest is bugged. (QuestID: \" + questId + \")\")"
+  },
+  {
+    "File": "SWLOR.Game.Server/Domain/Quests/QuestService.cs",
+    "Line": 722,
+    "Member": "TriggerAndPlaceableProgression",
+    "Delivery": "Retained",
+    "Call": "SendMessageToPC(player, \"QUEST_STATE variable not set on object. Please inform admin this quest is bugged. (QuestID: \" + questId + \")\")"
+  },
+  {
+    "File": "SWLOR.Game.Server/Domain/Quests/QuestService.cs",
+    "Line": 742,
+    "Member": "TriggerAndPlaceableProgression",
+    "Delivery": "Retained",
+    "Call": "SendMessageToPC(player, questMessage)"
+  },
+  {
     "File": "SWLOR.Game.Server/Domain/Social/ChatCommandService.cs",
     "Line": 68,
     "Member": "HandleChatMessage",
@@ -5362,111 +5523,6 @@
     "Call": "SendMessageToPC(player, ColorToken.Combat(\"PvP combat has ended. Healing and damage are back to normal.\"))"
   },
   {
-    "File": "SWLOR.Game.Server/Service/Quest.cs",
-    "Line": 161,
-    "Member": "LoadPlayerQuests",
-    "Delivery": "Retained",
-    "Call": "SendMessageToPC(player, ColorToken.Red(\"One or more quests in your journal are no longer available (e.g. a cancelled or expired contract) and have been removed.\"))"
-  },
-  {
-    "File": "SWLOR.Game.Server/Service/Quest.cs",
-    "Line": 325,
-    "Member": "RequestItemsFromPlayer",
-    "Delivery": "Retained",
-    "Call": "SendMessageToPC(player, \"You have not accepted this quest yet.\")"
-  },
-  {
-    "File": "SWLOR.Game.Server/Service/Quest.cs",
-    "Line": 332,
-    "Member": "RequestItemsFromPlayer",
-    "Delivery": "Retained",
-    "Call": "SendMessageToPC(player, \"You have already completed this quest.\")"
-  },
-  {
-    "File": "SWLOR.Game.Server/Service/Quest.cs",
-    "Line": 346,
-    "Member": "RequestItemsFromPlayer",
-    "Delivery": "Retained",
-    "Call": "SendMessageToPC(player, \"There are no items to turn in for this quest. This is likely a bug. Please let the staff know.\")"
-  },
-  {
-    "File": "SWLOR.Game.Server/Service/Quest.cs",
-    "Line": 467,
-    "Member": "OpenItemCollector",
-    "Delivery": "Retained",
-    "Call": "SendMessageToPC(player, \"This quest collector is not available to you.\")"
-  },
-  {
-    "File": "SWLOR.Game.Server/Service/Quest.cs",
-    "Line": 471,
-    "Member": "OpenItemCollector",
-    "Delivery": "Retained",
-    "Call": "FloatingTextStringOnCreature(\"Please place the items you would like to turn in for this quest into the container. If you want to cancel this process, move away from the container.\", player, false)"
-  },
-  {
-    "File": "SWLOR.Game.Server/Service/Quest.cs",
-    "Line": 482,
-    "Member": "OpenItemCollector",
-    "Delivery": "Retained",
-    "Call": "SendMessageToPC(player, text)"
-  },
-  {
-    "File": "SWLOR.Game.Server/Service/Quest.cs",
-    "Line": 545,
-    "Member": "DisturbItemCollector",
-    "Delivery": "Retained",
-    "Call": "SendMessageToPC(player, \"This quest collector is no longer available to you.\")"
-  },
-  {
-    "File": "SWLOR.Game.Server/Service/Quest.cs",
-    "Line": 554,
-    "Member": "DisturbItemCollector",
-    "Delivery": "Retained",
-    "Call": "SendMessageToPC(player, \"That item is not required for this quest.\")"
-  },
-  {
-    "File": "SWLOR.Game.Server/Service/Quest.cs",
-    "Line": 565,
-    "Member": "DisturbItemCollector",
-    "Delivery": "Retained",
-    "Call": "SendMessageToPC(player, \"This quest is no longer available.\")"
-  },
-  {
-    "File": "SWLOR.Game.Server/Service/Quest.cs",
-    "Line": 580,
-    "Member": "DisturbItemCollector",
-    "Delivery": "Retained",
-    "Call": "SendMessageToPC(player, rejection)"
-  },
-  {
-    "File": "SWLOR.Game.Server/Service/Quest.cs",
-    "Line": 631,
-    "Member": "DisturbItemCollector",
-    "Delivery": "Retained",
-    "Call": "SendMessageToPC(player, $\"You need {dbPlayer.Quests[questId].ItemProgresses[resref]}x {itemName} to complete this quest.\")"
-  },
-  {
-    "File": "SWLOR.Game.Server/Service/Quest.cs",
-    "Line": 698,
-    "Member": "TriggerAndPlaceableProgression",
-    "Delivery": "Retained",
-    "Call": "SendMessageToPC(player, \"QUEST_ID variable not set on object. Please inform admin this quest is bugged. (QuestID: \" + questId + \")\")"
-  },
-  {
-    "File": "SWLOR.Game.Server/Service/Quest.cs",
-    "Line": 704,
-    "Member": "TriggerAndPlaceableProgression",
-    "Delivery": "Retained",
-    "Call": "SendMessageToPC(player, \"QUEST_STATE variable not set on object. Please inform admin this quest is bugged. (QuestID: \" + questId + \")\")"
-  },
-  {
-    "File": "SWLOR.Game.Server/Service/Quest.cs",
-    "Line": 724,
-    "Member": "TriggerAndPlaceableProgression",
-    "Delivery": "Retained",
-    "Call": "SendMessageToPC(player, questMessage)"
-  },
-  {
     "File": "SWLOR.Game.Server/Service/QuestContractService/QuestContractFactory.cs",
     "Line": 102,
     "Member": "HandleCollectedItem",
@@ -5549,62 +5605,6 @@
     "Member": "Complete",
     "Delivery": "Retained",
     "Call": "SendMessageToPC(player, \"Quest '\" + Name + \"' complete!\")"
-  },
-  {
-    "File": "SWLOR.Game.Server/Service/QuestService/QuestEncounter.cs",
-    "Line": 61,
-    "Member": "UseActivator",
-    "Delivery": "Retained",
-    "Call": "SendMessageToPC(player, \"You are not ready to use this object.\")"
-  },
-  {
-    "File": "SWLOR.Game.Server/Service/QuestService/QuestEncounter.cs",
-    "Line": 69,
-    "Member": "UseActivator",
-    "Delivery": "Retained",
-    "Call": "SendMessageToPC(player, \"This encounter object is missing its encounter ID. Please inform an admin.\")"
-  },
-  {
-    "File": "SWLOR.Game.Server/Service/QuestService/QuestEncounter.cs",
-    "Line": 75,
-    "Member": "UseActivator",
-    "Delivery": "Retained",
-    "Call": "SendMessageToPC(player, \"This encounter is already active.\")"
-  },
-  {
-    "File": "SWLOR.Game.Server/Service/QuestService/QuestEncounter.cs",
-    "Line": 83,
-    "Member": "UseActivator",
-    "Delivery": "Retained",
-    "Call": "SendMessageToPC(player, $\"You need {Time.GetTimeLongIntervals(remainingCooldown, false)} before you can call this encounter again.\")"
-  },
-  {
-    "File": "SWLOR.Game.Server/Service/QuestService/QuestEncounter.cs",
-    "Line": 91,
-    "Member": "UseActivator",
-    "Delivery": "Retained",
-    "Call": "SendMessageToPC(player, \"This encounter object is missing its creature resref. Please inform an admin.\")"
-  },
-  {
-    "File": "SWLOR.Game.Server/Service/QuestService/QuestEncounter.cs",
-    "Line": 99,
-    "Member": "UseActivator",
-    "Delivery": "Retained",
-    "Call": "SendMessageToPC(player, \"The encounter failed to start. Please inform an admin.\")"
-  },
-  {
-    "File": "SWLOR.Game.Server/Service/QuestService/QuestEncounter.cs",
-    "Line": 114,
-    "Member": "UseActivator",
-    "Delivery": "Retained",
-    "Call": "SendMessageToPC(player, \"The encounter has begun.\")"
-  },
-  {
-    "File": "SWLOR.Game.Server/Service/QuestService/QuestEncounter.cs",
-    "Line": 480,
-    "Member": "SendMessageToNearbyPlayers",
-    "Delivery": "Retained",
-    "Call": "SendMessageToPC(receiver, message)"
   },
   {
     "File": "SWLOR.Game.Server/Service/QuestService/QuestObjectives.cs",

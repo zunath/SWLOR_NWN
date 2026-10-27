@@ -10,7 +10,8 @@ namespace SWLOR.Game.Server.Tests.Service;
 public class QuestContractRepostTests
 {
     // These rules touch neither the engine nor the database.
-    private static readonly QuestContractBoardService Board = new(new InMemoryDBService());
+    private static readonly InMemoryDBService Db = new();
+    private static readonly QuestContractBoardService Board = new(Db, QuestServices.Create(Db));
 
     /// <summary>
     /// Checks reusable statuses produce a fresh draft whose editable values are independent of the

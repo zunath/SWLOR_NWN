@@ -5,6 +5,7 @@ using SWLOR.Game.Server.Core.Beamdog;
 using SWLOR.Game.Server.Entity;
 using SWLOR.Game.Server.Feature.AppearanceDefinition.ItemAppearance;
 using SWLOR.Game.Server.Feature.AppearanceDefinition.RacialAppearance;
+using SWLOR.Game.Server.Feature.AppearanceDefinition.AppearancePreview;
 using SWLOR.Game.Server.Feature.AppearanceDefinition.TintMap;
 using SWLOR.Game.Server.Feature.GuiDefinition.RefreshEvent;
 using SWLOR.Game.Server.Service;
@@ -50,14 +51,11 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
         }
 
         public const string MainPartialElement = "MAIN_PARTIAL_VIEW";
-        public const string ArmorColorElement = "ARMOR_COLOR_VIEW";
 
         public const string EditorMainPartial = "APPEARANCE_EDITOR_MAIN_PARTIAL";
         public const string EditorWeaponPartial = "APPEARANCE_EDITOR_WEAPON_PARTIAL";
         public const string EditorArmorPartial = "APPEARANCE_EDITOR_ARMOR_PARTIAL";
         public const string SettingsPartial = "SETTINGS_PARTIAL";
-        public const string ArmorColorsClothLeather = "APPEARANCE_EDITOR_COLORS_CLOTH_LEATHER";
-        public const string ArmorColorsMetal = "APPEARANCE_EDITOR_COLORS_METAL";
 
         public const int TextureColorsPerRow = 16;
         public const int ColorSize = 16; // 16x16 colors on the sprite sheet
@@ -84,7 +82,6 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
         private string _tintComponentCorrection;
 
         private uint _target;
-        private bool _isMetalPalette;
 
         private AppearanceArmorColor _selectedColorChannel;
         private ColorTarget _colorTarget;
@@ -99,7 +96,7 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
                 .AddTab(AppearanceTabId, EditorMainPartial)
                 .AddTab(EquipmentTabId, EditorArmorPartial)
                 .AddTab(SettingsTabId, SettingsPartial)
-                .AddTab(SimpleEquipmentTabId, EditorMainPartial)
+                .AddTab(SimpleEquipmentTabId, EditorArmorPartial)
                 .AddTab(WeaponEquipmentTabId, EditorWeaponPartial);
         private static readonly GuiToggleGroupSync EditorToggles = new(AppearanceTabId, EquipmentTabId);
         private static readonly GuiToggleGroupSync SettingsToggles = new(SettingsTabId);
@@ -325,23 +322,8 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
             set => Set(value);
         }
 
-        public string PartNumberText
-        {
-            get => Get<string>();
-            set => Set(value);
-        }
 
-        public int ArmorPartNumberSlot
-        {
-            get => Get<int>();
-            set => Set(value);
-        }
 
-        public string ArmorPartNumberText
-        {
-            get => Get<string>();
-            set => Set(value);
-        }
 
         public GuiBindingList<string> ColorCategoryOptions
         {
@@ -952,6 +934,8 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
             Set(0, nameof(SelectedItemTypeIndex));
             _loadedItemTypeIndex = 0;
             RegisterColorMappings();
+            _selectedSlot = AppearanceEditorSlot.Head;
+            InitializePartBrowser();
             InitializeColorSelection();
             IsAppearanceSelected = true;
             IsEquipmentSelected = false;
@@ -972,14 +956,8 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
             LoadTintMapEditor();
             InitializeSettings();
             ColorTargetText = string.Empty;
-            PartNumberText = string.Empty;
-            ArmorPartNumberText = string.Empty;
-            ArmorPartNumberSlot = (int)AppearanceArmor.Torso;
             LoadItemTypeEditor();
 
-            WatchOnClient(model => model.PartNumberText);
-            WatchOnClient(model => model.ArmorPartNumberSlot);
-            WatchOnClient(model => model.ArmorPartNumberText);
             WatchOnClient(model => model.EditorTabToggleValue);
             WatchOnClient(model => model.SettingsTabToggleValue);
             WatchOnClient(model => model.SelectedColorCategoryIndex);
@@ -990,6 +968,7 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
             WatchOnClient(model => model.CustomTintRed);
             WatchOnClient(model => model.CustomTintGreen);
             WatchOnClient(model => model.CustomTintBlue);
+            WatchPartBrowser();
             _tintControlBindingsWatched = true;
         }
 
@@ -1034,6 +1013,8 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
             _tintComponentCorrection = null;
             _hasTintComponentDraft = false;
             RefreshTintMapAvailability();
+            RefreshBodySwatches();
+            RefreshItemBaseSwatches();
             if (!TryGetEditableTintSelections(out var selections, out var layerType, out _))
             {
                 IsCustomTintAvailable = false;
@@ -1394,6 +1375,9 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
 
         protected override void OnClientPropertyUpdated(string propertyName)
         {
+            if (propertyName == nameof(Geometry))
+                QueueBrowserResize();
+
             if (_isDMArmorDisplay && propertyName is nameof(ShowHelmet) or nameof(ShowCloak))
                 ApplyDMArmorDisplay();
 
@@ -1568,8 +1552,10 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
                 if (isArmorEditor)
                 {
                     IsCopyEnabled = true;
-                    RestoreArmorPalette();
+                    UpdatePaletteSheetForChannel();
                 }
+                if (!IsSettingsSelected)
+                    ApplyBrowserColumns(force: true);
 
                 // Tab replacement still needs current bindings after its nested palette.
                 // Resizing does not replace controls or pause their watches.
@@ -1577,14 +1563,6 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
             });
             if (isArmorEditor)
                 ResumeArmorClientWatches();
-        }
-
-        private void RestoreArmorPalette()
-        {
-            if (!Gui.IsWindowOpen(Player, WindowType) || !IsEquipmentSelected || SelectedItemTypeIndex != 0)
-                return;
-            _isMetalPalette = _selectedColorChannel is AppearanceArmorColor.Metal1 or AppearanceArmorColor.Metal2;
-            ChangePartialView(ArmorColorElement, _isMetalPalette ? ArmorColorsMetal : ArmorColorsClothLeather);
         }
 
         protected override void OnModalClosedRestore()
@@ -1771,6 +1749,7 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
             }
 
             _partIdToIndex = partIdToIndex;
+            _partIds = partIds.ToList();
             return (partNames, partSelected);
         }
 
@@ -1906,8 +1885,10 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
 
             PartOptions = partNames;
             PartSelected = partSelected;
-            SelectedPartIndex = _partIdToIndex[selectedPartId];
-            PartSelected[SelectedPartIndex] = true;
+            SelectedPartIndex = _partIdToIndex.TryGetValue(selectedPartId, out var selectedIndex) ? selectedIndex : -1;
+            if (SelectedPartIndex >= 0)
+                PartSelected[SelectedPartIndex] = true;
+            RefreshPartBrowser();
         }
 
         private void LoadSettings()
@@ -2032,6 +2013,8 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
                 RightFootSelection = GetItemAppearance(item, ItemAppearanceType.ArmorModel, (int)AppearanceArmor.RightFoot);
 
                 UpdateAllColors();
+                SyncSelectedPartSwatches();
+                RefreshPartBrowser();
 
                 return;
             }
@@ -2104,8 +2087,11 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
 
             PartOptions = partNames;
             PartSelected = partSelected;
-            SelectedPartIndex = _partIdToIndex[selectedPartId];
-            PartSelected[SelectedPartIndex] = true;
+            SelectedPartIndex = _partIdToIndex.TryGetValue(selectedPartId, out var selectedIndex) ? selectedIndex : -1;
+            if (SelectedPartIndex >= 0)
+                PartSelected[SelectedPartIndex] = true;
+            RefreshItemBaseSwatches();
+            RefreshPartBrowser();
         }
 
         public Action OnSelectAppearance() => () => SelectEditorTab(AppearanceTabId);
@@ -2217,19 +2203,6 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
             DMPresence.SendMessage(Player, message);
         }
 
-        public Action OnSelectColorCategory() => () =>
-        {
-            ToggleItemEquippedFlags();
-            if (DoesNotHaveItemEquipped)
-                return;
-
-            var index = NuiGetEventArrayIndex();
-            ColorCategorySelected[SelectedColorCategoryIndex] = false;
-
-            SelectedColorCategoryIndex = index;
-            ColorCategorySelected[index] = true;
-            LoadTintMapEditor();
-        };
 
         public Action OnSelectPartCategory() => () =>
         {
@@ -2659,16 +2632,6 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
             }
         }
 
-        public Action OnSelectPart() => () =>
-        {
-            var index = NuiGetEventArrayIndex();
-
-            PartSelected[SelectedPartIndex] = false;
-            SelectedPartIndex = index;
-            PartSelected[index] = true;
-
-            LoadPart();
-        };
 
         public Action OnPreviousPart() => () =>
         {
@@ -2694,21 +2657,6 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
             LoadPart();
         };
 
-        public Action OnClickGoToPart() => () =>
-        {
-            if (!TryParsePartNumber(PartNumberText, out var partId) ||
-                !_partIdToIndex.TryGetValue(partId, out var index))
-            {
-                SendMessageToPC(Player, ColorToken.Red($"Part #{PartNumberText?.Trim()} is not in this list."));
-                return;
-            }
-
-            if (SelectedPartIndex >= 0 && SelectedPartIndex < PartSelected.Count)
-                PartSelected[SelectedPartIndex] = false;
-            SelectedPartIndex = index;
-            PartSelected[index] = true;
-            LoadPart();
-        };
 
         private static bool TryParsePartNumber(string text, out int partId)
         {
@@ -2772,15 +2720,6 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
                 SynchronizeCustomTintControlsToPaletteColor(colorId);
         };
 
-        public Action OnMouseDownGlobalColor(AppearanceArmorColor channel) => () =>
-        {
-            var payload = NuiGetEventPayload();
-            var button = JsonGetInt(JsonObjectGet(payload, "mouse_btn"));
-            if (button != (int)NuiMouseButton.Left)
-                return;
-
-            OnClickColorTarget(ColorTarget.Global, channel)();
-        };
 
         private bool ApplyArmorPaletteColor(int colorId)
         {
@@ -3058,20 +2997,7 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
             _selectedColorChannel = channel;
 
             UpdateTargetedColor();
-
-            // We only swap the palette if we're moving from a Cloth/Leather palette to a Metal palette or vice-versa.
-            // This (slightly) works around a NUI issue where the palette will disappear when switching between Cloth/Leather and Metal.
-            if ((channel == AppearanceArmorColor.Metal1 || channel == AppearanceArmorColor.Metal2) && !_isMetalPalette)
-            {
-                ChangePartialView(ArmorColorElement, ArmorColorsMetal);
-                _isMetalPalette = true;
-            }
-            else if(_isMetalPalette && channel != AppearanceArmorColor.Metal1 && channel != AppearanceArmorColor.Metal2)
-            {
-                ChangePartialView(ArmorColorElement, ArmorColorsClothLeather);
-                _isMetalPalette = false;
-            }
-
+            UpdatePaletteSheetForChannel();
             LoadTintMapEditor();
         };
 
@@ -3360,41 +3286,6 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
             AdjustArmorPart(partType, adjustBy);
         };
 
-        public Action OnClickApplyArmorPartNumber() => () =>
-        {
-            if (!IsEquipmentSelected || SelectedItemTypeIndex != 0)
-                return;
-
-            ToggleItemEquippedFlags();
-            if (DoesNotHaveItemEquipped)
-                return;
-
-            var partType = (AppearanceArmor)ArmorPartNumberSlot;
-            var (options, select) = GetArmorPartBinding(partType);
-            if (options == null)
-                return;
-
-            if (!TryParsePartNumber(ArmorPartNumberText, out var partId) ||
-                options.All(option => option.Value != partId))
-            {
-                SendMessageToPC(Player, ColorToken.Red($"Part #{ArmorPartNumberText?.Trim()} is not available for this slot."));
-                return;
-            }
-
-            // Select it quietly, then apply it the way the arrow buttons do.
-            var wasSkippingAdjustment = _skipAdjustArmorPart;
-            _skipAdjustArmorPart = true;
-            try
-            {
-                select(partId);
-            }
-            finally
-            {
-                _skipAdjustArmorPart = wasSkippingAdjustment;
-            }
-
-            AdjustArmorPart(partType, 0);
-        };
 
         private (GuiBindingList<GuiComboEntry> Options, Action<int> Select) GetArmorPartBinding(AppearanceArmor partType)
         {

@@ -1,6 +1,5 @@
 using System.Collections.Generic;
 using System.Linq;
-using System.Reflection;
 using System.Threading.Tasks;
 using SWLOR.Game.Server.EngineTests.Framework;
 using SWLOR.Game.Server.Entity;
@@ -120,7 +119,7 @@ namespace SWLOR.Game.Server.EngineTests.Definitions
                     DB.Set(interrupted);
                     try
                     {
-                        typeof(QuestContractBoard).GetMethod("RecoverSettlements", BindingFlags.NonPublic | BindingFlags.Static).Invoke(null, null);
+                        QuestContractBoardInternals.Invoke("RecoverSettlements");
                         var recovered = DB.Get<QuestContractDelivery>(interrupted.Id + "-reward");
                         ctx.Assert(recovered != null, "Boot recovery creates the missing payment");
                         ctx.AssertEqual(77, recovered.Credits, "Boot recovery preserves the missing credits");
@@ -148,7 +147,7 @@ namespace SWLOR.Game.Server.EngineTests.Definitions
             DB.Set(submission);
             try
             {
-                typeof(QuestContractBoard).GetMethod("RecoverSettlements", BindingFlags.NonPublic | BindingFlags.Static).Invoke(null, null);
+                QuestContractBoardInternals.Invoke("RecoverSettlements");
                 ctx.AssertEqual(player.Id, DB.Get<QuestContract>(contract.Id).CompletedByPlayerId, "Persisted completion determines the winner");
                 ctx.AssertEqual(42, DB.Get<QuestContractDelivery>(contract.Id + "-reward").Credits, "The completed quest receives its payment");
                 ctx.AssertEqual(contract.AuthorPlayerId, DB.Get<QuestContractDelivery>(submission.Id).PlayerId, "Completed submission reaches the author");
@@ -247,8 +246,7 @@ namespace SWLOR.Game.Server.EngineTests.Definitions
                     var emptyReceipt = new QuestContractDelivery { IsRewardPayment = true, SourceContractId = contracts[0].Id };
                     DB.Set(emptyReceipt);
                     DB.Set(new QuestContractDelivery { HeldForCompletion = true, SourceContractId = preserved[4].Id });
-                    typeof(QuestContractBoard).GetMethod("PruneHistory", BindingFlags.NonPublic | BindingFlags.Static)
-                        .Invoke(null, new object[] { now });
+                    QuestContractBoardInternals.Invoke("PruneHistory", now);
                     foreach (var contract in contracts)
                         ctx.Assert(DB.Get<QuestContract>(contract.Id) == null, "All old settled history rows are deleted, including rows beyond fifty");
                     foreach (var contract in preserved)
@@ -296,8 +294,7 @@ namespace SWLOR.Game.Server.EngineTests.Definitions
                 ctx.AssertEqual(0L, DB.SearchCount(new DBQuery<QuestContract>().AddFieldSearch(nameof(QuestContract.Status),
                     new[] { (int)QuestContractStatus.Fulfilled, (int)QuestContractStatus.Expired, (int)QuestContractStatus.Cancelled, (int)QuestContractStatus.TakenDown })),
                     "The sweep must work when no closed history exists");
-                typeof(QuestContractBoard).GetMethod("PruneHistory", BindingFlags.NonPublic | BindingFlags.Static)
-                    .Invoke(null, new object[] { DateTime.UtcNow });
+                QuestContractBoardInternals.Invoke("PruneHistory", DateTime.UtcNow);
                 foreach (var delivery in empty)
                     ctx.Assert(DB.Get<QuestContractDelivery>(delivery.Id) == null, "Empty orphaned deliveries are removed beyond fifty rows");
                 foreach (var delivery in protectedDeliveries)
@@ -334,8 +331,7 @@ namespace SWLOR.Game.Server.EngineTests.Definitions
                     ctx.AssertEqual(GetLocalString(player, name), GetLocalString(restored, name), "The native snapshot preserves the claim checkpoint with the awards");
                 }
             };
-            typeof(QuestContractBoard).GetMethod("ClaimDeliveries", BindingFlags.NonPublic | BindingFlags.Static)
-                .Invoke(null, new object[] { player, checkpoint });
+            QuestContractBoardInternals.Invoke("ClaimDeliveries", player, checkpoint);
         }
 
         private static void Cleanup(QuestContract contract)

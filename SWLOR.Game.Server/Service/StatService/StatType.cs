@@ -6628,6 +6628,10 @@ namespace SWLOR.Game.Server.Service.StatService
         [StatType(StatTypeCategory.BeneficialWhenPositive)]
         SpaceSalvageYieldBonus = 1219,
 
+        /// <summary>Percentage points added to the chance a salvaged component's trait is rare (Trait Hunter).</summary>
+        [StatType(StatTypeCategory.BeneficialWhenPositive)]
+        SpaceRareTraitChance = 1220,
+
 
     }
 

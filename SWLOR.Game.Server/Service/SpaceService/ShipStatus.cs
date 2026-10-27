@@ -17,6 +17,9 @@ namespace SWLOR.Game.Server.Service.SpaceService
             public DateTime RecastStartedAt { get; set; }
             public int ModuleBonus { get; set; }
 
+            /// <summary>The component traits the module item carried when it was installed (plan section 14). Null when none.</summary>
+            public List<ShipComponentTraitType> Traits { get; set; }
+
             /// <summary>
             /// RequiresSkill ranks on the module item when it was installed. Null when it had none.
             /// </summary>

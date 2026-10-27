@@ -210,6 +210,12 @@ namespace SWLOR.Game.Server.Service
         /// </summary>
         /// <param name="recipeType">The type of recipe to look for.</param>
         /// <returns>true if recipe has been registered, false otherwise.</returns>
+        /// <summary>The name a recipe list shows: the recipe's own name when it has one, else the crafted item's.</summary>
+        public static string GetRecipeName(RecipeDetail recipe)
+        {
+            return string.IsNullOrWhiteSpace(recipe.Name) ? Cache.GetItemNameByResref(recipe.Resref) : recipe.Name;
+        }
+
         public static bool RecipeExists(RecipeType recipeType)
         {
             return _recipes.ContainsKey(recipeType);

@@ -1,10 +1,11 @@
-"""Write the space revamp recipe rows into the Design Bible's Engineering Recipes tab at the zip/XML level.
+"""Write the space revamp recipe rows into the Design Bible's recipe tabs at the zip/XML level.
 
 usage: python bible_recipes.py [--check]
-Rows come from catalog.py (module steps and ship deeds), one per RevampStarshipRecipes recipe, under the tab's
-existing headers. They are appended after the last row. Re-running removes the previously generated rows (matched
-by Recipe Enum) and writes them again; --check only reports whether the workbook is current. Every other zip
-entry is copied byte for byte, and the rest of the worksheet XML is left untouched.
+Rows come from catalog.py: the module steps and ship deeds (Engineering Recipes) and the ship component recipes,
+each on its skill's tab (Engineering, Smithery, or Cooking Recipes for Agriculture). They sit under each tab's
+existing headers, appended after its last row. Re-running removes the previously generated rows (matched by Recipe
+Enum) and writes them again; --check only reports whether the workbook is current. Every other zip entry is copied
+byte for byte, and the rest of each worksheet XML is left untouched.
 """
 import html
 import os
@@ -20,7 +21,9 @@ import model as m  # noqa: E402
 
 WORKBOOK = m.REPO / "design" / "bible" / "SWLOR Design Bible.xlsx"
 SHEET_NAME = "Engineering Recipes"
-STYLE = 14  # centered body style the tab's newest rows use
+SHEET_BY_SKILL = {"Engineering": "Engineering Recipes", "Smithery": "Smithery Recipes", "Agriculture": "Cooking Recipes"}
+RESEARCH_COLUMN = {"Engineering Recipes": "AC", "Smithery Recipes": "AC", "Cooking Recipes": "AD"}
+STYLE = 14  # centered body style the tabs' newest rows use
 COMPONENT_COLUMNS = ["M", "O", "Q", "S", "U", "W", "Y", "AA"]  # quantity sits in the next column
 
 
@@ -37,14 +40,20 @@ def col_after(letter):
 
 
 def recipe_rows():
-    steps, hulls = c.catalog()
+    """Every generated row with the tab it belongs on."""
+    steps, hulls, components = c.full_catalog()
     rows = []
     for s in steps:
-        rows.append(dict(enum=s["RecipeName"], category="ShipModule", name=s["Name"], level=s["RecipeLevel"],
-                         resref=s["Tag"], enhancement="Module", components=s["Components"]))
+        rows.append(dict(sheet=SHEET_NAME, skill="Engineering", enum=s["RecipeName"], category="ShipModule", name=s["Name"],
+                         level=s["RecipeLevel"], resref=s["Tag"], enhancement="Module", slots=1, components=s["Components"]))
     for h in hulls:
-        rows.append(dict(enum=h["RecipeName"], category="Starship", name="Ship Deed: " + h["Name"], level=h["RecipeLevel"],
-                         resref=h["Tag"], enhancement="Starship", components=h["Components"]))
+        rows.append(dict(sheet=SHEET_NAME, skill="Engineering", enum=h["RecipeName"], category="Starship",
+                         name="Ship Deed: " + h["Name"], level=h["RecipeLevel"], resref=h["Tag"], enhancement="Starship",
+                         slots=1, components=h["Components"]))
+    for x in components:
+        rows.append(dict(sheet=SHEET_BY_SKILL[x["Skill"]], skill=x["Skill"], enum=x["RecipeName"], category="ShipComponent",
+                         name=x["Name"], level=x["RecipeLevel"], resref=x["Resref"], enhancement="N/A", slots=0,
+                         components=x["Components"]))
     for r in rows:
         assert len(r["components"]) <= len(COMPONENT_COLUMNS), r["enum"]
     return rows
@@ -57,31 +66,34 @@ def cell(ref, value):
 
 
 def row_xml(number, r):
-    cells = [("A", "Engineering"), ("D", r["enum"]), ("E", r["category"]), ("G", r["name"]), ("H", r["level"]),
-             ("I", 1), ("J", r["resref"]), ("K", r["enhancement"]), ("L", 1)]
+    cells = [("A", r["skill"]), ("D", r["enum"]), ("E", r["category"]), ("G", r["name"]), ("H", r["level"]),
+             ("I", 1), ("J", r["resref"]), ("K", r["enhancement"]), ("L", r["slots"])]
     for column, (resref, quantity) in zip(COMPONENT_COLUMNS, r["components"]):
         cells.append((column, resref))
         cells.append((col_after(column), quantity))
-    cells.append(("AC", 0))
+    cells.append((RESEARCH_COLUMN[r["sheet"]], 0))
     return f'<row r="{number}">' + "".join(cell(f"{col}{number}", v) for col, v in cells) + "</row>"
 
 
-def sheet_path(zf):
+def sheet_path(zf, name=SHEET_NAME):
     workbook = zf.read("xl/workbook.xml").decode("utf-8")
-    rid = re.search(r'<sheet [^>]*name="%s"[^>]*r:id="(\w+)"' % re.escape(SHEET_NAME), workbook).group(1)
+    rid = re.search(r'<sheet [^>]*name="%s"[^>]*r:id="(\w+)"' % re.escape(name), workbook).group(1)
     rels = zf.read("xl/_rels/workbook.xml.rels").decode("utf-8")
     target = re.search(r'<Relationship [^>]*Id="%s"[^>]*Target="([^"]+)"' % rid, rels) or \
         re.search(r'<Relationship [^>]*Target="([^"]+)"[^>]*Id="%s"' % rid, rels)
     return "xl/" + target.group(1)
 
 
-def rewrite(xml, rows):
-    enums = {r["enum"] for r in rows}
+def rewrite(xml, rows, generated_enums):
+    """Drops every previously generated row (any enum this generator writes, on any tab) and appends this tab's rows."""
 
     def generated(match):
         number = match.group(1)
         d = re.search(r'<c r="D%s"[^>]*t="inlineStr"><is><t[^>]*>([^<]*)</t>' % number, match.group(0))
-        return d is not None and d.group(1) in enums
+        return d is not None and d.group(1) in generated_enums
+
+    def blank(text):
+        return "<v>" not in text and "<is>" not in text
 
     kept, last = [], 1
     head, rest = xml.split("<sheetData>", 1)
@@ -91,34 +103,46 @@ def rewrite(xml, rows):
     for match in matches:
         if generated(match):
             continue
-        kept.append(match.group(0))
-        last = max(last, int(match.group(1)))
-    new_rows = [row_xml(last + 1 + i, r) for i, r in enumerate(rows)]
+        number = int(match.group(1))
+        kept.append((number, match.group(0)))
+        if not blank(match.group(0)):
+            last = max(last, number)
+    # New rows follow the last row with a value; formatting-only blank rows they land on are replaced.
+    new_rows = [(last + 1 + i, row_xml(last + 1 + i, r)) for i, r in enumerate(rows)]
+    taken = {n for n, _ in new_rows}
+    merged = sorted([x for x in kept if x[0] not in taken] + new_rows, key=lambda x: x[0])
     end = last + len(new_rows)
-    tail = re.sub(r'(<autoFilter ref="\$A\$1:\$[A-Z]+\$)\d+', lambda mo: mo.group(1) + str(end), tail, count=1)
-    return head + "<sheetData>" + "".join(kept + new_rows) + "</sheetData>" + tail, end
+    tail = re.sub(r'(<autoFilter ref="\$A\$1:\$[A-Z]+\$)\d+', lambda mo: mo.group(1) + str(max(end, last)), tail, count=1)
+    return head + "<sheetData>" + "".join(x for _, x in merged) + "</sheetData>" + tail, end
 
 
 def main():
     rows = recipe_rows()
+    enums = {r["enum"] for r in rows}
+    sheets = sorted({r["sheet"] for r in rows})
+    updates, report = {}, []
     with zipfile.ZipFile(WORKBOOK) as zf:
-        path = sheet_path(zf)
-        original = zf.read(path).decode("utf-8")
-        updated, end = rewrite(original, rows)
-        if updated == original:
-            print(f"{len(rows)} recipe rows already current (last row {end})")
+        for name in sheets:
+            path = sheet_path(zf, name)
+            original = zf.read(path).decode("utf-8")
+            updated, end = rewrite(original, [r for r in rows if r["sheet"] == name], enums)
+            report.append(f"{name}: {sum(1 for r in rows if r['sheet'] == name)} rows (last row {end})")
+            if updated != original:
+                updates[path] = updated
+        if not updates:
+            print("recipe rows already current; " + "; ".join(report))
             return
         if "--check" in sys.argv:
-            print("Engineering Recipes rows out of date")
+            print("recipe rows out of date: " + ", ".join(sorted(updates)))
             sys.exit(1)
         fd, tmp = tempfile.mkstemp(suffix=".xlsx", dir=WORKBOOK.parent)
         os.close(fd)
         with zipfile.ZipFile(tmp, "w") as out:
             for info in zf.infolist():
-                data = updated.encode("utf-8") if info.filename == path else zf.read(info.filename)
+                data = updates[info.filename].encode("utf-8") if info.filename in updates else zf.read(info.filename)
                 out.writestr(info, data, compress_type=info.compress_type)
     os.replace(tmp, WORKBOOK)
-    print(f"{len(rows)} recipe rows written to {SHEET_NAME} (last row {end})")
+    print("recipe rows written; " + "; ".join(report))
 
 
 if __name__ == "__main__":

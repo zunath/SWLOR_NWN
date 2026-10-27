@@ -1881,6 +1881,7 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
                         ItemTag = itemTag,
                         RecastTime = DateTime.MinValue,
                         ModuleBonus = moduleBonus,
+                        Traits = ShipComponents.GetTraitsOrNull(item),
                         RequiredSkills = Item.GetRequiredSkills(item)
                     };
 

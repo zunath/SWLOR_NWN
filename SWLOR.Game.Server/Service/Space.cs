@@ -1461,7 +1461,9 @@ namespace SWLOR.Game.Server.Service
 
             // Append the ship module's description to the item's description.
             var baseItemDescription = GetStringByStrRef(StringToInt(Get2DAString("baseitems", "Description", (int)GetBaseItemType(item))));
-            SetDescription(item, BuildShipModuleDescription(GetDescription(item, true), baseItemDescription, moduleDetail.Description));
+            SetDescription(item, ShipComponents.BuildDescription(
+                BuildShipModuleDescription(GetDescription(item, true), baseItemDescription, moduleDetail.Description),
+                ShipComponents.GetTraits(item)));
 
             // Apply item properties defined in code.
             foreach (var (perkType, level) in moduleDetail.RequiredPerks)

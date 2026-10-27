@@ -94,6 +94,13 @@ namespace SWLOR.Game.Server.EngineTests.Definitions.PerkCoverage
                     Prices = new[] { 2, 3, 4 },
                     GrantedFeats = new[] { FeatType.SalvageExpertTrait },
                 },
+                new()
+                {
+                    Perk = PerkType.TraitHunter,
+                    MaxLevel = 2,
+                    Prices = new[] { 3, 4 },
+                    GrantedFeats = new[] { FeatType.TraitHunterTrait },
+                },
             };
         }
     }

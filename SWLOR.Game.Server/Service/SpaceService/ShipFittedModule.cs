@@ -1,3 +1,5 @@
+using System.Collections.Generic;
+
 namespace SWLOR.Game.Server.Service.SpaceService
 {
     /// <summary>
@@ -12,5 +14,8 @@ namespace SWLOR.Game.Server.Service.SpaceService
         public int Slot { get; set; }
 
         public ShipModuleStep Step { get; set; }
+
+        /// <summary>The module item's component traits. Null or empty when it has none.</summary>
+        public IReadOnlyCollection<ShipComponentTraitType> Traits { get; set; }
     }
 }

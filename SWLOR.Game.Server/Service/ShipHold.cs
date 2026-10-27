@@ -35,9 +35,15 @@ namespace SWLOR.Game.Server.Service
         /// </summary>
         /// <param name="pilot">The ship: its pilot's creature.</param>
         /// <param name="resrefs">One entry per item yielded.</param>
-        public static void DeliverYield(uint pilot, IReadOnlyCollection<string> resrefs)
+        /// <param name="components">Salvaged components, each with its trait; each takes its own hold entry.</param>
+        public static void DeliverYield(
+            uint pilot,
+            IReadOnlyCollection<string> resrefs,
+            IReadOnlyCollection<(string Resref, ShipComponentTraitType Trait)> components = null)
         {
-            if (resrefs == null || resrefs.Count == 0)
+            resrefs ??= Array.Empty<string>();
+            components ??= Array.Empty<(string Resref, ShipComponentTraitType Trait)>();
+            if (resrefs.Count == 0 && components.Count == 0)
                 return;
 
             var byResref = resrefs
@@ -48,6 +54,8 @@ namespace SWLOR.Game.Server.Service
 
             var overflow = new List<(string Resref, int Quantity)>();
             var stored = new List<(string Resref, int Quantity)>();
+            var storedComponents = new List<string>();
+            var overflowComponents = new List<(string Resref, ShipComponentTraitType Trait)>();
             var holdFull = false;
 
             if (TryGetHold(pilot, out var property, out var categories, out var hold, out var holdIsNew))
@@ -73,7 +81,21 @@ namespace SWLOR.Game.Server.Service
                     }
                 }
 
-                if (stored.Count > 0)
+                foreach (var component in components)
+                {
+                    var name = property.ItemStorageCount - usedEntries > 0 ? StoreComponent(hold, component) : null;
+                    if (name == null)
+                    {
+                        overflowComponents.Add(component);
+                        holdFull = true;
+                        continue;
+                    }
+
+                    usedEntries++;
+                    storedComponents.Add(name);
+                }
+
+                if (stored.Count > 0 || storedComponents.Count > 0)
                 {
                     if (holdIsNew)
                         SaveNewHold(pilot, property, hold);
@@ -84,6 +106,7 @@ namespace SWLOR.Game.Server.Service
             else
             {
                 overflow.AddRange(byResref);
+                overflowComponents.AddRange(components);
             }
 
             foreach (var (resref, quantity) in overflow)
@@ -94,9 +117,17 @@ namespace SWLOR.Game.Server.Service
                 }
             }
 
-            if (stored.Count > 0)
+            foreach (var (resref, trait) in overflowComponents)
             {
-                var text = string.Join(", ", stored.Select(x => $"{x.Quantity}x {Cache.GetItemNameByResref(x.Resref)}"));
+                var item = CreateItemOnObject(resref, pilot);
+                if (GetIsObjectValid(item))
+                    ShipComponents.SetTraits(item, new[] { trait });
+            }
+
+            if (stored.Count > 0 || storedComponents.Count > 0)
+            {
+                var text = string.Join(", ", stored.Select(x => $"{x.Quantity}x {Cache.GetItemNameByResref(x.Resref)}")
+                    .Concat(storedComponents.Select(x => $"1x {x}")));
                 SendMessageToPC(pilot, ColorToken.Green($"Stored in the ship hold: {text}."));
             }
 
@@ -238,6 +269,32 @@ namespace SWLOR.Game.Server.Service
             }
 
             return kept;
+        }
+
+        /// <summary>Stores one salvaged component with its trait in a new hold entry and returns its name, or null.</summary>
+        private static string StoreComponent(WorldPropertyCategory hold, (string Resref, ShipComponentTraitType Trait) component)
+        {
+            var storage = GetObjectByTag(TemporaryStorageTag);
+            if (!GetIsObjectValid(storage))
+                return null;
+
+            var item = CreateItemOnObject(component.Resref, storage);
+            if (!GetIsObjectValid(item))
+                return null;
+
+            ShipComponents.SetTraits(item, new[] { component.Trait });
+            var name = GetName(item);
+            hold.Items[Guid.NewGuid().ToString()] = new WorldPropertyItem
+            {
+                Name = name,
+                Tag = GetTag(item),
+                Resref = component.Resref,
+                IconResref = Item.GetIconResref(item),
+                Quantity = 1,
+                Data = ObjectPlugin.Serialize(item)
+            };
+            DestroyObject(item);
+            return name;
         }
 
         /// <summary>The item's largest stack, read once per resref from a copy in the no-access storage container.</summary>

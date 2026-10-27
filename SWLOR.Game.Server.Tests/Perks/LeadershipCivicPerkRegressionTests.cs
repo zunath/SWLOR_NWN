@@ -64,8 +64,8 @@ public class LeadershipCivicPerkRegressionTests
         placeCityHall.Should().Contain("Perk.GetPerkLevel(player, PerkType.CityManagement) < 1");
         placeCityHall.Should().Contain("The City Management I perk is required to establish a city.");
 
-        var property = ReadSource("Service", "Property.cs");
-        var processCityLevel = ExtractMethod(property, "private static void ProcessCityLevel(WorldProperty city)");
+        var property = ReadSource("Domain", "World", "PropertyCityGovernance.cs");
+        var processCityLevel = ExtractMethod(property, "private void ProcessCityLevel(WorldProperty city)");
         processCityLevel.Should().Contain("mayor.Perks[PerkType.CityManagement] + 1");
         processCityLevel.Should().Contain("if (mayorLevel < currentLevel)");
         processCityLevel.Should().Contain("for (var level = 1; level <= 5; level++)");
@@ -105,8 +105,8 @@ public class LeadershipCivicPerkRegressionTests
     {
         CalculateDiscountedWeeklyBasePrice(perkRank, dailyLayoutPrice).Should().Be(expectedWeeklyBasePrice);
 
-        var property = ReadSource("Service", "Property.cs");
-        var processUpkeep = ExtractMethod(property, "private static void ProcessUpkeep(DateTime now, WorldProperty city)");
+        var property = ReadSource("Domain", "World", "PropertyCityGovernance.cs");
+        var processUpkeep = ExtractMethod(property, "private void ProcessUpkeep(DateTime now, WorldProperty city)");
         processUpkeep.Should().Contain("dbMayor.Perks[PerkType.Upkeep] * 0.05f");
         processUpkeep.Should().Contain("var basePrice = layout.PricePerDay * 7;");
         processUpkeep.Should().Contain("basePrice -= (int)(basePrice * upkeepReductionPercent);");

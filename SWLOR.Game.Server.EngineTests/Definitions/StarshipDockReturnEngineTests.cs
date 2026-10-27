@@ -223,8 +223,7 @@ public static class StarshipDockReturnEngineTests
         return property;
     }
 
-    private static void RunCleanUpData() =>
-        typeof(Property).GetMethod("CleanUpData", BindingFlags.Static | BindingFlags.NonPublic).Invoke(null, null);
+    private static void RunCleanUpData() => PropertyCaches.CleanUpData();
 
     private static Task Restart(EngineTestContext ctx, PlayerAbilityFixture actor) =>
         ctx.ExecuteInCreatureContextAsync(actor.Creature, RunCleanUpData);

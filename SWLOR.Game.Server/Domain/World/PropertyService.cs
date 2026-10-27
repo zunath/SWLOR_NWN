@@ -1022,7 +1022,7 @@ namespace SWLOR.Game.Server.Domain.World
             var player = GetLastUsedBy();
             var terminal = OBJECT_SELF;
 
-            Gui.TogglePlayerWindow(player, GuiWindowType.ManageApartment, null, terminal);
+            TogglePlayerWindow(player, GuiWindowType.ManageApartment, null, terminal);
         }
 
         /// <summary>
@@ -1206,7 +1206,7 @@ namespace SWLOR.Game.Server.Domain.World
 
             if (Gui.IsWindowOpen(player, GuiWindowType.ManageStructures))
             {
-                Gui.TogglePlayerWindow(player, GuiWindowType.ManageStructures);
+                TogglePlayerWindow(player, GuiWindowType.ManageStructures);
                 return;
             }
 
@@ -1249,7 +1249,7 @@ namespace SWLOR.Game.Server.Domain.World
                 return;
             }
 
-            Gui.TogglePlayerWindow(player, GuiWindowType.ManageStructures);
+            TogglePlayerWindow(player, GuiWindowType.ManageStructures);
         }
 
         /// <summary>
@@ -1522,7 +1522,7 @@ namespace SWLOR.Game.Server.Domain.World
             }
             else
             {
-                Gui.TogglePlayerWindow(player, GuiWindowType.ManageCitizenship, null, terminal);
+                TogglePlayerWindow(player, GuiWindowType.ManageCitizenship, null, terminal);
             }
         }
 
@@ -1551,7 +1551,7 @@ namespace SWLOR.Game.Server.Domain.World
                                        permission.Permissions[PropertyPermissionType.ManageUpgrades] ||
                                        permission.Permissions[PropertyPermissionType.ManageUpkeep]))
             {
-                Gui.TogglePlayerWindow(player, GuiWindowType.ManageCity, null, terminal);
+                TogglePlayerWindow(player, GuiWindowType.ManageCity, null, terminal);
             }
             else
             {
@@ -1575,6 +1575,19 @@ namespace SWLOR.Game.Server.Domain.World
         public int GetEffectiveUpgradeLevel(string cityId, PropertyUpgradeType upgradeType)
         {
             return _city.GetEffectiveUpgradeLevel(cityId, upgradeType);
+        }
+
+        /// <summary>
+        /// Shows or hides a window for a player. The window table of <c>Gui</c> is filled by the module load, so a unit
+        /// test replaces this.
+        /// </summary>
+        /// <param name="player">The player to show the window to.</param>
+        /// <param name="type">The type of window.</param>
+        /// <param name="payload">An optional payload for the window's view model.</param>
+        /// <param name="tetherObject">The object the window is tethered to.</param>
+        protected virtual void TogglePlayerWindow(uint player, GuiWindowType type, GuiPayloadBase payload = null, uint tetherObject = OBJECT_INVALID)
+        {
+            Gui.TogglePlayerWindow(player, type, payload, tetherObject);
         }
     }
 }

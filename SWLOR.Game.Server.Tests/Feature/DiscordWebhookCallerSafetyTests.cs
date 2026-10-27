@@ -48,7 +48,7 @@ public class DiscordWebhookCallerSafetyTests
     [Test]
     public void PropertyBroadcastDoesNotMoveItsCallerOntoAnAsyncContinuation()
     {
-        var method = FindMethod(ReadSource("Service/Property.cs"), "BroadcastPropertyEvent");
+        var method = FindMethod(ReadSource("Domain/World/PropertyCityGovernance.cs"), "BroadcastPropertyEvent");
         method.DescendantNodes().OfType<AwaitExpressionSyntax>().Should().BeEmpty();
         method.ReturnType.ToString().Should().Be("void");
         method.ToString().Should().Contain(".GetResult()");
@@ -78,7 +78,7 @@ public class DiscordWebhookCallerSafetyTests
             "BugReportViewModel.SubmitBugReportToDiscord",
             "HoloNetViewModel.SubmitBroadcastAsync",
             "DMChatCommand.SendDMShoutWebhookAsync",
-            "Property.BroadcastPropertyEvent",
+            "PropertyCityGovernance.BroadcastPropertyEvent",
             "ServerTasks.SendServerLifecycleNotification"
         }, "each new caller must be checked for native calls after its asynchronous enqueue");
     }

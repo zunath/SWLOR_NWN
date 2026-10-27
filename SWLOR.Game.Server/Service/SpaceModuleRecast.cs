@@ -8,11 +8,13 @@ namespace SWLOR.Game.Server.Service
 {
     public static partial class Space
     {
-        /// <summary>Pairs fitted high and low modules with their independent feat and recast slots.</summary>
+        /// <summary>Pairs fitted high, mid and low modules with their independent feat and recast slots.</summary>
         private static IEnumerable<(ShipModuleFeat Feat, ShipStatus.ShipStatusModule Module)> ModuleRecastSlots(ShipStatus status)
         {
             foreach (var (slot, module) in status.HighPowerModules)
                 yield return (ShipModuleFeats[HighSlotToFeat(slot)], module);
+            foreach (var (slot, module) in status.MidPowerModules)
+                yield return (ShipModuleFeats[MidSlotToFeat(slot)], module);
             foreach (var (slot, module) in status.LowPowerModules)
                 yield return (ShipModuleFeats[LowSlotToFeat(slot)], module);
         }
@@ -21,7 +23,8 @@ namespace SWLOR.Game.Server.Service
         private static void ApplyShipModuleRecast(uint player, ShipModuleFeat feat, ShipStatus.ShipStatusModule module, ShipStatus status)
         {
             if (!GetIsObjectValid(player) || !GetIsPC(player) || GetIsDM(player) || GetIsDMPossessed(player) ||
-                module.RecastTime <= DateTime.UtcNow || !_shipModules.TryGetValue(module.ItemTag, out var detail) ||
+                feat.RecastGroup == RecastGroup.Invalid || module.RecastTime <= DateTime.UtcNow ||
+                !_shipModules.TryGetValue(module.ItemTag, out var detail) ||
                 detail.CalculateRecastAction == null) return;
             var startedAt = module.RecastStartedAt;
             if (startedAt == default || startedAt >= module.RecastTime)

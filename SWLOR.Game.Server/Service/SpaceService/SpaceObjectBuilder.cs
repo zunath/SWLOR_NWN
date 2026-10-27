@@ -53,6 +53,10 @@ namespace SWLOR.Game.Server.Service.SpaceService
             {
                 _activeSpaceObject.HighPoweredModules.Add(shipModuleItemTag);
             }
+            else if (shipModule.PowerType == ShipModulePowerType.Mid)
+            {
+                _activeSpaceObject.MidPowerModules.Add(shipModuleItemTag);
+            }
             else
             {
                 _activeSpaceObject.LowPowerModules.Add(shipModuleItemTag);

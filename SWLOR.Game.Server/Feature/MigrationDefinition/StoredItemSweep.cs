@@ -67,6 +67,7 @@ internal static class StoredItemSweep
         {
             var shipChanged = MigrateData(converter, ship.SerializedItem, value => ship.SerializedItem = value);
             shipChanged |= MigrateModules(converter, ship.Status?.HighPowerModules);
+            shipChanged |= MigrateModules(converter, ship.Status?.MidPowerModules);
             shipChanged |= MigrateModules(converter, ship.Status?.LowPowerModules);
             shipChanged |= MigrateModules(converter, ship.Status?.ConfigurationModules);
             return shipChanged;

@@ -136,6 +136,54 @@ namespace SWLOR.Game.Server.Service.SpaceService
         }
 
         /// <summary>
+        /// Sets the number of mid power nodes on this ship.
+        /// </summary>
+        /// <param name="midPowerNodes">The number of mid power nodes to set.</param>
+        /// <returns>A ship builder with the configured options.</returns>
+        public ShipBuilder MidPowerNodes(int midPowerNodes)
+        {
+            _activeShip.MidPowerNodes = midPowerNodes;
+
+            return this;
+        }
+
+        /// <summary>
+        /// Sets the size class of this ship.
+        /// </summary>
+        /// <param name="size">The ship size.</param>
+        /// <returns>A ship builder with the configured options.</returns>
+        public ShipBuilder Size(ShipSize size)
+        {
+            _activeShip.Size = size;
+
+            return this;
+        }
+
+        /// <summary>
+        /// Sets the role of this ship.
+        /// </summary>
+        /// <param name="role">The ship role.</param>
+        /// <returns>A ship builder with the configured options.</returns>
+        public ShipBuilder Role(ShipRole role)
+        {
+            _activeShip.Role = role;
+
+            return this;
+        }
+
+        /// <summary>
+        /// Sets the manufacturer of this ship.
+        /// </summary>
+        /// <param name="manufacturer">The ship manufacturer.</param>
+        /// <returns>A ship builder with the configured options.</returns>
+        public ShipBuilder Manufacturer(ShipManufacturer manufacturer)
+        {
+            _activeShip.Manufacturer = manufacturer;
+
+            return this;
+        }
+
+        /// <summary>
         /// Sets the number of ship configuration nodes on this ship.
         /// By default ships should have 1 configuration node.
         /// </summary>

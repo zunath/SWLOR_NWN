@@ -3,16 +3,20 @@ using System.Threading.Tasks;
 using SWLOR.Game.Server.Composition;
 using SWLOR.Game.Server.EngineTests.Framework;
 using SWLOR.Game.Server.Entity;
+using SWLOR.Game.Server.Enumeration;
 using SWLOR.Game.Server.Extension;
 using SWLOR.Game.Server.Service.AchievementService;
+using SWLOR.Game.Server.Service.CurrencyService;
 using SWLOR.Game.Server.Service.FactionService;
+using SWLOR.Game.Server.Service.PlayerMarketService;
 using SWLOR.Game.Server.Service.TaxiService;
 
 namespace SWLOR.Game.Server.EngineTests.Definitions
 {
     /// <summary>
     /// Proves, on a booted server, that the service container was built before the handlers ran and that the converted
-    /// services (Achievement, Faction, Taxi) work through their static facades against the real database.
+    /// services (Achievement, Faction, Taxi, Bank, Currency, Guild, PlayerMarket) work through their static facades
+    /// against the real database.
     /// </summary>
     public static class ServiceContainerEngineTests
     {
@@ -39,6 +43,13 @@ namespace SWLOR.Game.Server.EngineTests.Definitions
 
             ctx.Assert(Taxi.GetDestinationsByRegionId(1).ContainsKey(TaxiDestinationType.VelesEntrance),
                 "Taxi destinations cached by the module-cache handler should include Veles Entrance.");
+
+            ctx.AssertEqual("Rebuild Tokens", Currency.GetCurrencyDetail(CurrencyType.RebuildToken).Name, "Currencies cached by the module-cache handler");
+            ctx.AssertEqual(5, Guild.MaxRank, "Guild data loaded by the module-cache handler");
+            ctx.AssertEqual("Hunter's Guild", Guild.GetGuild(GuildType.HuntersGuild).Name, "Guilds cached by the module-cache handler");
+            ctx.Assert(Guild.DateTasksLoaded != null, "Guild tasks refreshed by the quests-registered handler");
+            ctx.AssertEqual("MARKET_GLOBAL", PlayerMarket.GetMarketRegion(MarketRegionType.Global).MarketId, "Market regions cached by the module-cache handler");
+            ctx.Assert(PlayerMarket.GetActiveCategories().Count > 0, "Market categories cached by the module-cache handler");
         }
 
         /// <summary>
@@ -62,6 +73,30 @@ namespace SWLOR.Game.Server.EngineTests.Definitions
             ctx.AssertEqual(30, stored.Factions[FactionType.Jedi].Points, "Stored Jedi points");
             ctx.Assert(stored.TaxiDestinations[1].Contains(TaxiDestinationType.VelesEntrance),
                 "Veles Entrance should be registered in the stored taxi destinations.");
+        }
+
+        /// <summary>
+        /// A player's currency balance and guild points are written through the Currency and Guild facades, the
+        /// container's instances and the database adapter, and read back from Redis on a later frame. The bank answers
+        /// from the same container.
+        /// </summary>
+        [EngineTest("Economy facades persist through the container to the database", Category = "Composition", TimeoutSeconds = 45f)]
+        public static async Task EconomyFacadesPersistThroughTheContainer(EngineTestContext ctx)
+        {
+            using var player = await PlayerAbilityFixture.CreateAsync(ctx);
+
+            Currency.GiveCurrency(player.Creature, CurrencyType.RebuildToken, 5);
+            Currency.TakeCurrency(player.Creature, CurrencyType.RebuildToken, 2);
+            ctx.AssertEqual(3, Currency.GetCurrency(player.Creature, CurrencyType.RebuildToken), "Balance read back through the Currency facade");
+            Guild.GiveGuildPoints(player.Creature, GuildType.HuntersGuild, 150);
+
+            // The database serves a stored copy again on the next frame.
+            await ctx.WaitFrameAsync();
+            var stored = DB.Get<Player>(player.Id);
+
+            ctx.AssertEqual(3, stored.Currencies[CurrencyType.RebuildToken], "Stored Rebuild Token balance");
+            ctx.AssertEqual(150, stored.Guilds[GuildType.HuntersGuild].Points, "Stored Hunter's Guild points");
+            ctx.AssertEqual(0L, Bank.GetItemCount(player.Id), "A new player has nothing in the bank");
         }
     }
 }

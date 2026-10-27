@@ -13,6 +13,7 @@ namespace SWLOR.Game.Server.Entity
             DockedToShipId = string.Empty;
             DockedCrewPlayerIds = new List<string>();
             Cargo = new Dictionary<CommodityType, CargoLot>();
+            SealedFreight = new List<SealedFreightLot>();
         }
 
         [Indexed]
@@ -44,5 +45,11 @@ namespace SWLOR.Game.Server.Entity
         /// bank, the market or contracts. Older records load empty.
         /// </summary>
         public Dictionary<CommodityType, CargoLot> Cargo { get; set; }
+
+        /// <summary>
+        /// Freight contracts' sealed loads aboard (plan section 13): they fill cargo volume and cannot be sold. Older
+        /// records load with none.
+        /// </summary>
+        public List<SealedFreightLot> SealedFreight { get; set; }
     }
 }

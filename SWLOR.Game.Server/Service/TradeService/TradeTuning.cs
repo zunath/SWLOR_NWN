@@ -4,7 +4,8 @@
 namespace SWLOR.Game.Server.Service.TradeService
 {
     /// <summary>
-    /// The trade core's spread, flooding, recovery, Social, XP and cargo spill numbers.
+    /// The trade numbers: spread, flooding, recovery, Social, XP and cargo spill (the trade core), and customs,
+    /// black markets, pirate ambushes, convoys, freight contracts, lawful standing and the HoloNet board (trade risk).
     /// </summary>
     public static class TradeTuning
     {
@@ -19,5 +20,51 @@ namespace SWLOR.Game.Server.Service.TradeService
         public const int XpMaximumPerSale = 1200;
         public const int SpillSeconds = 300;
         public const int SpillMaximumContainers = 6;
+
+        public const double BlackMarketPremium = 1.1;
+        public const double ScanBase = 0.03;
+        public const double ScanPerThousandCredits = 0.002;
+        public const double ScanMaximum = 0.6;
+        public const double FineRate = 0.5;
+        public const int ScanDelaySeconds = 10;
+        public const int CustomsAnswerSeconds = 30;
+        public const int PatrolSeconds = 300;
+        public const int CompartmentBasePercent = 15;
+        public const int CompartmentRanksPerPercent = 3;
+
+        public const int AmbushThreshold = 25000;
+        public const double AmbushBase = 0.01;
+        public const double AmbushPerTenThousandCredits = 0.004;
+        public const double AmbushMaximum = 0.04;
+        public const double AmbushTierStep = 0.1;
+        public const int AmbushDelaySeconds = 20;
+        public const int AmbushSquadMinimum = 2;
+        public const int AmbushSquadMaximum = 5;
+        public const int AmbushSquadValueStep = 25000;
+        public const int AmbushSeconds = 300;
+        public const int SealedValuePerVolume = 40;
+
+        public const int ConvoyValuePerTier = 800;
+        public const int ConvoyLifetimeSeconds = 900;
+        public static readonly int[] ConvoyEscortsByTier = { 0, 1, 1, 2, 2, 2, 3 };
+        public const TradeAuthority ConvoyAuthorityDefault = TradeAuthority.Czerka;
+
+        public const int FreightOffersPerExchange = 4;
+        public static readonly int[] FreightOfferVolumes = { 40, 100, 200, 400 };
+        public const double FreightFeeBase = 0.7;
+        public const double FreightFeePerHop = 1.05;
+        public const double FreightDepositRate = 0.5;
+        public const int FreightDeadlineBaseMinutes = 20;
+        public const int FreightDeadlinePerHopMinutes = 10;
+        public const int FreightMaximumActive = 3;
+        public const int FreightOfferMinutes = 60;
+
+        public const int StandingCaughtSmuggling = -25;
+        public const int StandingRanFromCustoms = -100;
+        public const int StandingAttackedLawfulShip = -75;
+        public const int StandingRaidedConvoy = -50;
+        public const int StandingDeliveredFreight = 5;
+
+        public const int HoloNetRefreshMinutes = 60;
     }
 }

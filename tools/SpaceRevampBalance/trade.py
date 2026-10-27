@@ -158,6 +158,97 @@ HOP_MINUTES = 3.0
 STOP_MINUTES = 2.0
 SAME_ORBIT_MINUTES = 1.0
 
+# ---------------------------------------------------------------------------------------------------------------
+# Trade risk (W7b): black markets, customs, pirate ambushes, convoys, freight contracts, the HoloNet board, standing
+# ---------------------------------------------------------------------------------------------------------------
+# Black markets (plan section 13) pay a premium for restricted and contraband goods they do not make themselves.
+BLACK_MARKETS = ["Hutlar", "Tatooine", "SmugglersMoon"]
+BLACK_MARKET_PREMIUM = 1.10
+
+# Orbit tiers: the t1-t6 spawns of each orbit in SpaceSpawnDefinition. Smuggler's Moon has no spawns: its lanes' tier
+# (Hutlar 3, Tatooine 4) gives 4. The Mid Rim systems have none either: the plan's Mid Rim Nebula is T3-4, so Mid Rim 1
+# (the Viscara side) is 3 and Mid Rim 2 (the Korriban side) is 4. The W6c zones take their higher faction tier.
+ORBIT_TIERS = {"viscaraorbit": 1, "moncalaorbit": 2, "hutlar_orbit": 3, "tatooineorbit": 4, "narshadorbit": 4,
+               "space_dathomir": 5, "dantooineorbit": 5, "space_korriban": 6, "space_midrim1": 3, "space_midrim2": 4,
+               "space_viscbelt": 2, "space_midrimneb": 4, "space_korrdebris": 5}
+ORBIT_NAMES = {"viscaraorbit": "Viscara Orbit", "moncalaorbit": "Mon Cala Orbit", "hutlar_orbit": "Hutlar Orbit",
+               "tatooineorbit": "Tatooine Orbit", "narshadorbit": "Smuggler's Moon Orbit", "space_dathomir": "Dathomir Orbit",
+               "dantooineorbit": "Dantooine Orbit", "space_korriban": "Korriban Orbit", "space_midrim1": "Mid Rim 1",
+               "space_midrim2": "Mid Rim 2", "space_viscbelt": "Viscara Asteroid Belt", "space_midrimneb": "Mid Rim Nebula",
+               "space_korrdebris": "Korriban Debris Field"}
+
+# Customs patrols fly the lawful orbits (plan section 13): the authorities of the lawful docks there. Viscara's orbit
+# holds a Republic dock (Viscara) and a Czerka one (CZ-220), so either patrol may stop a ship there.
+CUSTOMS = {"viscaraorbit": ["Republic", "Czerka"], "moncalaorbit": ["Republic"], "dantooineorbit": ["Republic"],
+           "space_korriban": ["Sith"]}
+# Scan chance per orbit entry, on the base value of the goods that orbit's patrol bans: base + per 1,000 credits,
+# capped. A Smuggling Compartment cuts it by its percentage.
+SCAN_BASE = 0.03
+SCAN_PER_THOUSAND = 0.002
+SCAN_MAX = 0.60
+FINE_RATE = 0.50                # the fine is this share of the banned goods' base value, and the goods are confiscated
+SCAN_DELAY_SECONDS = 10         # after the ship enters the orbit
+CUSTOMS_ANSWER_SECONDS = 30     # no answer counts as running
+PATROL_SECONDS = 300            # a patrol leaves after this long
+# Smuggling Compartment (Low, Piloting): the Ship Modules (Revamp) tab's step, scan chance -(15 + rank / 3)% (Mk I 15%,
+# Mk X 30%); only the best counts.
+COMPARTMENT_BASE = 15
+COMPARTMENT_RANKS_PER_PERCENT = 3
+
+# Pirate ambushes (plan section 13): a ship carrying more than the threshold (base value of its commodities plus its
+# sealed freight's declared value) may be ambushed when it enters an orbit or jumps. Chance and squad size grow with
+# the value and the orbit tier; every squad leads with an interceptor.
+AMBUSH_THRESHOLD = 25000
+AMBUSH_BASE = 0.01
+AMBUSH_PER_TEN_THOUSAND = 0.004
+AMBUSH_MAX = 0.04
+AMBUSH_TIER_STEP = 0.10         # chance x (0.8 + 0.1 x tier): T1 0.9 to T6 1.4
+AMBUSH_DELAY_SECONDS = 20
+AMBUSH_SQUAD_MIN = 2
+AMBUSH_SQUAD_MAX = 5
+AMBUSH_SQUAD_VALUE_STEP = 25000  # one more raider per this much value over the threshold; one more from tier 4
+AMBUSH_SECONDS = 300            # raiders who lose their prey leave after this long
+SEALED_VALUE_PER_VOLUME = 40    # what pirates think a sealed load is worth, per unit of volume
+# Simulation only (assumed; measure in a client): an ambush costs this many minutes, and this share of ambushes ends
+# with the freighter destroyed and its cargo lost.
+AMBUSH_SIM_MINUTES = 2.0
+AMBUSH_SIM_LOSS = 0.10
+
+# NPC trade convoys: a hauler and escorts on the Neutral faction. The hauler's cargo is about this many base credits
+# per orbit tier (about 12 same-tier kills of loot), in up to two legal goods the orbit's docks export, or any legal
+# good in an orbit without a dock. Raiding a convoy costs lawful standing.
+CONVOY_VALUE_PER_TIER = 800
+CONVOY_ESCORTS = {1: 1, 2: 1, 3: 2, 4: 2, 5: 2, 6: 3}
+CONVOY_LIFETIME_SECONDS = 900
+CONVOY_SPAWN_WEIGHT = 480       # the carriers' weight: about 0.6% of an orbit's spawns
+
+# Freight contracts: sealed loads from one exchange to another for a fixed fee (plan section 13, about 75% of the
+# space combat rate). Offers change every hour. A late delivery still pays the fee but forfeits the deposit; an
+# abandoned or destroyed load forfeits it with no fee.
+FREIGHT_OFFERS_PER_EXCHANGE = 4
+FREIGHT_OFFER_VOLUMES = [40, 100, 200, 400]
+FREIGHT_FEE_BASE = 0.70         # credits per unit of volume ...
+FREIGHT_FEE_PER_HOP = 1.05      # ... plus this per starlane hop
+FREIGHT_DEPOSIT_RATE = 0.50     # of the fee
+FREIGHT_DEADLINE_BASE_MINUTES = 20
+FREIGHT_DEADLINE_PER_HOP_MINUTES = 10
+FREIGHT_MAX_ACTIVE = 3
+FREIGHT_OFFER_MINUTES = 60
+FREIGHT_SIM_VOLUME = 300        # simulation: the sealed volume an XS Freighter (480) carries per run
+
+# Lawful standing (the ground faction standing, -5000 to 5000). The lawful authorities' factions lose standing; a
+# delivered freight contract gains standing with the destination exchange's faction.
+STANDING = {"CaughtSmuggling": -25, "RanFromCustoms": -100, "AttackedLawfulShip": -75, "RaidedConvoy": -50,
+            "DeliveredFreight": 5}
+AUTHORITY_FACTION = {"Republic": "RepublicMilitary", "Czerka": "Czerka", "Sith": "SithMilitary"}
+EXCHANGE_FACTION = {"Viscara": "RepublicMilitary", "CZ220": "Czerka", "MonCala": "RepublicMilitary", "Hutlar": "HuttCartel",
+                    "Tatooine": "HuttCartel", "SmugglersMoon": "Smuggler", "Korriban": "SithMilitary", "Dathomir": "Invalid",
+                    "Dantooine": "RepublicMilitary"}
+CONVOY_AUTHORITY_DEFAULT = "Czerka"  # a convoy outside a lawful orbit flies for Czerka (industrial shipping)
+
+# The HoloNet board shows every exchange's prices as of its last snapshot (plan section 13: an hour stale).
+HOLONET_REFRESH_MINUTES = 60
+
 
 def legality(banned):
     if not banned:
@@ -207,6 +298,8 @@ def markets():
             producers = [e for e in EXCHANGES if com[1] in e[6]]
             nearest = min(hops(ex[3], p[3]) for p in producers)
             risk = RISK_PREMIUM[legality(com[5])]
+            if ex[0] in BLACK_MARKETS and com[5]:
+                risk *= BLACK_MARKET_PREMIUM
             if com[1] in ex[6]:
                 role, factor = "Producer", PRODUCER_FACTOR
             elif com[1] in ex[7]:
@@ -391,6 +484,209 @@ def same_exchange_round_trip(m, units, social=26):
     return back - cost
 
 
+# ---------------------------------------------------------------------------------------------------------------
+# Trade risk math (mirrors Service/TradeService/CustomsRules.cs, PirateAmbushRules.cs and FreightContractRules.cs)
+# ---------------------------------------------------------------------------------------------------------------
+def compartment_reduction(rank):
+    return COMPARTMENT_BASE + rank // COMPARTMENT_RANKS_PER_PERCENT
+
+
+def banned_value(basket, authority):
+    return sum(units * commodity(c)[3] for c, units in basket.items() if authority in commodity(c)[5])
+
+
+def scan_chance(value, reduction_percent=0.0):
+    if value <= 0:
+        return 0.0
+    chance = min(SCAN_MAX, SCAN_BASE + SCAN_PER_THOUSAND * value / 1000)
+    return chance * (1 - min(100.0, reduction_percent) / 100)
+
+
+def fine(value):
+    return math.ceil(value * FINE_RATE)
+
+
+def ambush_chance(value, tier):
+    if value <= AMBUSH_THRESHOLD:
+        return 0.0
+    chance = min(AMBUSH_MAX, AMBUSH_BASE + AMBUSH_PER_TEN_THOUSAND * (value - AMBUSH_THRESHOLD) / 10000)
+    return chance * (0.8 + AMBUSH_TIER_STEP * tier)
+
+
+def ambush_squad_size(value, tier):
+    size = AMBUSH_SQUAD_MIN + int(max(0, value - AMBUSH_THRESHOLD) // AMBUSH_SQUAD_VALUE_STEP) + (1 if tier >= 4 else 0)
+    return max(AMBUSH_SQUAD_MIN, min(AMBUSH_SQUAD_MAX, size))
+
+
+def freight_fee(volume, hop_count):
+    return round(volume * (FREIGHT_FEE_BASE + FREIGHT_FEE_PER_HOP * max(1, hop_count)))
+
+
+def freight_deposit(fee):
+    return math.ceil(fee * FREIGHT_DEPOSIT_RATE)
+
+
+def freight_deadline_minutes(hop_count):
+    return FREIGHT_DEADLINE_BASE_MINUTES + FREIGHT_DEADLINE_PER_HOP_MINUTES * max(1, hop_count)
+
+
+def route(a, b):
+    """The orbits a ship enters from launching at a to arriving at b: the launch orbit, then one per jump."""
+    if a == b:
+        return [a]
+    prev, frontier = {a: None}, [a]
+    while frontier and b not in prev:
+        nxt = []
+        for n in frontier:
+            for x in LANES[n]:
+                if x not in prev:
+                    prev[x] = n
+                    nxt.append(x)
+        frontier = nxt
+    path, node = [], b
+    while node is not None:
+        path.append(node)
+        node = prev[node]
+    return path[::-1]
+
+
+def leg_risk(basket, revenue, cost, here, there, reduction=0.0):
+    """Expected credits and extra minutes of one leg after customs and pirates, in expectation: each orbit entered may
+    bring an ambush (some cargo lost) and a customs scan (the patrol's banned goods confiscated and fined)."""
+    left = {c: float(n) for c, n in basket.items()}
+    fines, minutes = 0.0, 0.0
+    for orbit in route(exchange(here)[3], exchange(there)[3]):
+        value = sum(n * commodity(c)[3] for c, n in left.items())
+        pa = ambush_chance(value, ORBIT_TIERS[orbit])
+        minutes += pa * AMBUSH_SIM_MINUTES
+        for c in left:
+            left[c] *= 1 - pa * AMBUSH_SIM_LOSS
+        authorities = CUSTOMS.get(orbit, [])
+        for authority in authorities:
+            caught = scan_chance(banned_value(left, authority), reduction) / len(authorities)
+            fines += caught * fine(banned_value(left, authority))
+            for c in left:
+                if authority in commodity(c)[5]:
+                    left[c] *= 1 - caught
+    kept = sum(revenue[c] * left[c] / basket[c] for c in basket if basket[c])
+    return kept - cost - fines, minutes
+
+
+def trim_banned(basket, cap):
+    """The basket with its banned goods scaled down to at most cap credits of base value."""
+    value = sum(n * commodity(c)[3] for c, n in basket.items() if commodity(c)[5])
+    if value <= cap:
+        return dict(basket)
+    scale = cap / value
+    return {c: (int(n * scale) if commodity(c)[5] else n) for c, n in basket.items()}
+
+
+BANNED_CAPS = [0, 2000, 5000, 10000, 20000, 40000, float("inf")]
+
+
+def priced(state, here, there, basket, social):
+    cost, revenue = 0, {}
+    for c, n in basket.items():
+        if n <= 0:
+            continue
+        hm, tm = market(here, c), market(there, c)
+        cost += buy_cost(hm["base"], hm["factor"], state[(here, c)], hm["depth"], n, social)
+        revenue[c] = sell_revenue(tm["base"], tm["factor"], state[(there, c)], tm["depth"], n, social)
+    return cost, revenue
+
+
+def simulate_risk(hold, start="Viscara", hours=4, social=10, lawful=False, reduction=0.0, log=None):
+    """simulate() with customs and pirates in expectation. The trader weighs each leg's expected profit after risk and
+    may carry fewer banned goods (BANNED_CAPS) than fit."""
+    goods = [c[1] for c in COMMODITIES if not lawful or not c[5]]
+    state = {(m["exchange"], m["commodity"]): 0.0 for m in MARKETS}
+    here, clock = start, 0.0
+    per_hour = [0.0] * hours
+    while clock < hours * 60:
+        best = None
+        for ex in EXCHANGES:
+            if ex[0] == here:
+                continue
+            full, _ = plan_leg(state, here, ex[0], hold, social, goods)
+            tried = []
+            for cap in ([0] if lawful else BANNED_CAPS):
+                basket = {c: n for c, n in trim_banned(full, cap).items() if n > 0}
+                if basket in tried:
+                    continue
+                tried.append(basket)
+                cost, revenue = priced(state, here, ex[0], basket, social)
+                expected, extra = leg_risk(basket, revenue, cost, here, ex[0], reduction)
+                minutes = leg_minutes(here, ex[0]) + extra
+                if best is None or expected / minutes > best[0]:
+                    best = (expected / minutes, ex[0], basket, expected, minutes)
+        _, there, basket, expected, minutes = best
+        for c, n in basket.items():
+            state[(here, c)] -= n
+        for k in state:
+            state[k] = recover(state[k], minutes / 60)
+        for c, n in basket.items():
+            state[(there, c)] += n
+        clock += minutes
+        per_hour[min(hours - 1, int((clock - 1e-9) // 60))] += expected
+        if log is not None:
+            log.append((round(clock), here, there, round(expected), dict(basket)))
+        here = there
+    return per_hour
+
+
+def freight_rate(volume=FREIGHT_SIM_VOLUME):
+    """Credits per hour hauling sealed freight on each route length, without trading on the side."""
+    out = {}
+    for h in range(1, 6):
+        minutes = STOP_MINUTES + h * HOP_MINUTES
+        out[h] = freight_fee(volume, h) / minutes * 60
+    return out
+
+
+RISK_REFERENCE_CASES = [
+    # (authority, cargo, compartment rank or None, orbit tier)
+    ("Republic", {"EncryptedDataChips": 100}, None, 1),
+    ("Republic", {"EncryptedDataChips": 300, "SithRelics": 20}, None, 2),
+    ("Czerka", {"EncryptedDataChips": 300, "SithRelics": 20}, 20, 1),
+    ("Sith", {"Moonspice": 60, "Grain": 100}, 45, 6),
+    ("Republic", {"Grain": 400}, 0, 5),
+]
+
+
+def risk_reference():
+    """Reference numbers the C# rules must reproduce (TradeRiskTests reads the generated fixture)."""
+    cases = []
+    for authority, cargo, rank, tier in RISK_REFERENCE_CASES:
+        reduction = 0.0 if rank is None else compartment_reduction(rank)
+        value = banned_value(cargo, authority)
+        total = sum(n * commodity(c)[3] for c, n in cargo.items())
+        cases.append(dict(Authority=authority, Cargo=cargo, CompartmentRank=-1 if rank is None else rank, Tier=tier,
+                          BannedValue=value, ScanChance=round(scan_chance(value, reduction), 6), Fine=fine(value),
+                          CargoValue=total, AmbushChance=round(ambush_chance(total, tier), 6),
+                          SquadSize=ambush_squad_size(total, tier)))
+    return cases
+
+
+def risk_outcome():
+    """The contraband and legal earning rates after risk against T3 space combat (plan section 13 targets)."""
+    t3 = combat_credits_per_hour(3)[1]
+    freighters = [h for h in HULLS if h[1] >= 480]
+
+    def average(lawful, reduction):
+        rates = [sum(simulate_risk(hold, lawful=lawful, reduction=reduction)) / 4 for _, hold in freighters]
+        return sum(rates) / len(rates)
+
+    contraband = average(False, 0.0)
+    compartment = average(False, compartment_reduction(20))
+    legal = average(True, 0.0)
+    freight = freight_rate()
+    return dict(T3Combat=round(t3), ContrabandPerHour=round(contraband), ContrabandPercent=round(100 * contraband / t3),
+                CompartmentPerHour=round(compartment), CompartmentPercent=round(100 * compartment / t3),
+                LegalPerHour=round(legal), LegalPercent=round(100 * legal / t3),
+                FreightPerHour=round(sum(freight.values()) / len(freight)),
+                FreightPercent=round(100 * sum(freight.values()) / len(freight) / t3))
+
+
 MARKETS = markets()
 MARKET_INDEX = {(m["exchange"], m["commodity"]): m for m in MARKETS}
 COMMODITY_NAMES = [c[1] for c in COMMODITIES]
@@ -419,6 +715,22 @@ def report():
     print("\nXS Freighter, legal goods, hour 1 legs (minute, from, to, profit, basket):")
     for row in log:
         print("   ", row)
+    print("\nAfter customs and pirates (expected loss), freighters (hold 480+), 4-hour averages, against T3 combat:")
+    outcome = risk_outcome()
+    print(f"  every good, no compartment: {outcome['ContrabandPerHour']} ({outcome['ContrabandPercent']}%; target 150-200%)")
+    print(f"  every good, Smuggling Compartment Mk V: {outcome['CompartmentPerHour']} ({outcome['CompartmentPercent']}%)")
+    print(f"  legal goods: {outcome['LegalPerHour']} ({outcome['LegalPercent']}%; target 100-125%)")
+    print(f"  freight contracts, {FREIGHT_SIM_VOLUME} volume: {outcome['FreightPerHour']} ({outcome['FreightPercent']}%; target 75%)")
+    for name, hold in HULLS:
+        for lawful in (True, False):
+            hours = simulate_risk(hold, lawful=lawful)
+            print(f"  {name:24s} {'legal' if lawful else 'all  '}: " + " / ".join(f"{h:6.0f}" for h in hours)
+                  + f"   avg {sum(hours) / len(hours):6.0f}")
+    log = []
+    simulate_risk(480, hours=2, log=log)
+    print("\nXS Freighter, every good, after risk, hours 1-2 legs (minute, from, to, expected profit, basket):")
+    for row in log:
+        print("   ", row)
 
 
 # ---------------------------------------------------------------------------------------------------------------
@@ -445,7 +757,7 @@ def cs_double(x):
 
 def catalog_cs():
     lines = [HEADER.rstrip("\n"), "using System.Collections.Generic;", "using SWLOR.Game.Server.Enumeration;",
-             "using SWLOR.Game.Server.Service.TradeService;", "",
+             "using SWLOR.Game.Server.Service.FactionService;", "using SWLOR.Game.Server.Service.TradeService;", "",
              "namespace SWLOR.Game.Server.Feature.TradeDefinition", "{",
              "    /// <summary>", "    /// The commodities and dock exchanges of the trade core (plan section 13).", "    /// </summary>",
              "    public static class TradeCatalog", "    {",
@@ -462,8 +774,11 @@ def catalog_cs():
               "        public static readonly IReadOnlyList<TradeExchangeDetail> Exchanges = new List<TradeExchangeDetail>", "        {"]
     for enum, name, planets, orbit, authority, tier, produces, consumes in EXCHANGES:
         planet_list = ", ".join(f"PlanetType.{p}" for p in planets)
+        black = "true" if enum in BLACK_MARKETS else "false"
         lines.append(f"            new TradeExchangeDetail {{ Type = TradeExchangeType.{enum}, Name = {cs_string(name)}, "
                      f"Authority = TradeAuthority.{authority}, OrbitTier = {tier}, PlanetTypes = new[] {{ {planet_list} }}, "
+                     f"OrbitResref = {cs_string(orbit)}, IsBlackMarket = {black}, "
+                     f"StandingFaction = FactionType.{EXCHANGE_FACTION[enum]}, "
                      "Markets = new List<TradeMarketDetail>")
         lines.append("            {")
         for m in MARKETS:
@@ -471,6 +786,21 @@ def catalog_cs():
                 lines.append(f"                new TradeMarketDetail {{ Commodity = CommodityType.{m['commodity']}, "
                              f"Role = CommodityRole.{m['role']}, PriceFactor = {cs_double(m['factor'])}, Depth = {m['depth']} }},")
         lines.append("            } },")
+    lines += ["        };", "",
+              "        /// <summary>The space systems: orbit tier for pirates and convoys, and the customs patrols of lawful orbits.</summary>",
+              "        public static readonly IReadOnlyList<TradeOrbitDetail> Orbits = new List<TradeOrbitDetail>", "        {"]
+    for orbit, tier in ORBIT_TIERS.items():
+        patrols = ", ".join(f"TradeAuthority.{a}" for a in CUSTOMS.get(orbit, []))
+        lines.append(f"            new TradeOrbitDetail {{ AreaResref = {cs_string(orbit)}, Name = {cs_string(ORBIT_NAMES[orbit])}, "
+                     f"Tier = {tier}, CustomsAuthorities = {cs_array('TradeAuthority', patrols)} }},")
+    lines += ["        };", "",
+              "        /// <summary>Starlane hops between every pair of exchanges (freight contract fees and deadlines).</summary>",
+              "        public static readonly IReadOnlyList<TradeRouteDetail> Routes = new List<TradeRouteDetail>", "        {"]
+    for a in EXCHANGES:
+        for b in EXCHANGES:
+            if a is not b:
+                lines.append(f"            new TradeRouteDetail {{ From = TradeExchangeType.{a[0]}, To = TradeExchangeType.{b[0]}, "
+                             f"Hops = {hops(a[3], b[3])} }},")
     lines += ["        };", "    }", "}", ""]
     return "\n".join(lines)
 
@@ -479,7 +809,8 @@ def tuning_cs():
     return "\n".join([
         HEADER.rstrip("\n"), "namespace SWLOR.Game.Server.Service.TradeService", "{",
         "    /// <summary>",
-        "    /// The trade core's spread, flooding, recovery, Social, XP and cargo spill numbers.",
+        "    /// The trade numbers: spread, flooding, recovery, Social, XP and cargo spill (the trade core), and customs,",
+        "    /// black markets, pirate ambushes, convoys, freight contracts, lawful standing and the HoloNet board (trade risk).",
         "    /// </summary>",
         "    public static class TradeTuning", "    {",
         f"        public const double Spread = {cs_double(SPREAD)};",
@@ -493,12 +824,70 @@ def tuning_cs():
         f"        public const int XpMaximumPerSale = {XP_MAX_PER_SALE};",
         f"        public const int SpillSeconds = {SPILL_SECONDS};",
         f"        public const int SpillMaximumContainers = {SPILL_MAX_CONTAINERS};",
+        "",
+        f"        public const double BlackMarketPremium = {cs_double(BLACK_MARKET_PREMIUM)};",
+        f"        public const double ScanBase = {cs_double(SCAN_BASE)};",
+        f"        public const double ScanPerThousandCredits = {cs_double(SCAN_PER_THOUSAND)};",
+        f"        public const double ScanMaximum = {cs_double(SCAN_MAX)};",
+        f"        public const double FineRate = {cs_double(FINE_RATE)};",
+        f"        public const int ScanDelaySeconds = {SCAN_DELAY_SECONDS};",
+        f"        public const int CustomsAnswerSeconds = {CUSTOMS_ANSWER_SECONDS};",
+        f"        public const int PatrolSeconds = {PATROL_SECONDS};",
+        f"        public const int CompartmentBasePercent = {COMPARTMENT_BASE};",
+        f"        public const int CompartmentRanksPerPercent = {COMPARTMENT_RANKS_PER_PERCENT};",
+        "",
+        f"        public const int AmbushThreshold = {AMBUSH_THRESHOLD};",
+        f"        public const double AmbushBase = {cs_double(AMBUSH_BASE)};",
+        f"        public const double AmbushPerTenThousandCredits = {cs_double(AMBUSH_PER_TEN_THOUSAND)};",
+        f"        public const double AmbushMaximum = {cs_double(AMBUSH_MAX)};",
+        f"        public const double AmbushTierStep = {cs_double(AMBUSH_TIER_STEP)};",
+        f"        public const int AmbushDelaySeconds = {AMBUSH_DELAY_SECONDS};",
+        f"        public const int AmbushSquadMinimum = {AMBUSH_SQUAD_MIN};",
+        f"        public const int AmbushSquadMaximum = {AMBUSH_SQUAD_MAX};",
+        f"        public const int AmbushSquadValueStep = {AMBUSH_SQUAD_VALUE_STEP};",
+        f"        public const int AmbushSeconds = {AMBUSH_SECONDS};",
+        f"        public const int SealedValuePerVolume = {SEALED_VALUE_PER_VOLUME};",
+        "",
+        f"        public const int ConvoyValuePerTier = {CONVOY_VALUE_PER_TIER};",
+        f"        public const int ConvoyLifetimeSeconds = {CONVOY_LIFETIME_SECONDS};",
+        "        public static readonly int[] ConvoyEscortsByTier = { 0, " + ", ".join(str(CONVOY_ESCORTS[t]) for t in range(1, 7)) + " };",
+        f"        public const TradeAuthority ConvoyAuthorityDefault = TradeAuthority.{CONVOY_AUTHORITY_DEFAULT};",
+        "",
+        f"        public const int FreightOffersPerExchange = {FREIGHT_OFFERS_PER_EXCHANGE};",
+        "        public static readonly int[] FreightOfferVolumes = { " + ", ".join(str(v) for v in FREIGHT_OFFER_VOLUMES) + " };",
+        f"        public const double FreightFeeBase = {cs_double(FREIGHT_FEE_BASE)};",
+        f"        public const double FreightFeePerHop = {cs_double(FREIGHT_FEE_PER_HOP)};",
+        f"        public const double FreightDepositRate = {cs_double(FREIGHT_DEPOSIT_RATE)};",
+        f"        public const int FreightDeadlineBaseMinutes = {FREIGHT_DEADLINE_BASE_MINUTES};",
+        f"        public const int FreightDeadlinePerHopMinutes = {FREIGHT_DEADLINE_PER_HOP_MINUTES};",
+        f"        public const int FreightMaximumActive = {FREIGHT_MAX_ACTIVE};",
+        f"        public const int FreightOfferMinutes = {FREIGHT_OFFER_MINUTES};",
+        "",
+        *[f"        public const int Standing{k} = {v};" for k, v in STANDING.items()],
+        "",
+        f"        public const int HoloNetRefreshMinutes = {HOLONET_REFRESH_MINUTES};",
         "    }", "}", ""])
+
+
+_OUTCOME = []
+
+
+def outcome():
+    """risk_outcome(), worked out once per run (it takes about a minute)."""
+    if not _OUTCOME:
+        _OUTCOME.append(risk_outcome())
+    return _OUTCOME[0]
+
+
+def reference_json():
+    """The C# rules' reference cases and the simulated outcome (SWLOR.Game.Server.Tests, TradeRiskTests)."""
+    return json.dumps(dict(Cases=risk_reference(), Outcome=outcome()), indent=2) + "\n"
 
 
 WRITES = {
     "SWLOR.Game.Server/Feature/TradeDefinition/TradeCatalog.cs": catalog_cs,
     "SWLOR.Game.Server/Service/TradeService/TradeTuning.cs": tuning_cs,
+    "SWLOR.Game.Server.Tests/Fixtures/Trade/TradeRiskReference.json": reference_json,
 }
 
 
@@ -508,7 +897,7 @@ WRITES = {
 def trade_tab(Sheet):
     s = Sheet("Trade (Revamp)", [24, 12, 9, 9, 14, 24, 24, 60])
     s.title("Trade (Revamp): commodities, dock exchanges, pricing, flooding and recovery")
-    s.note("Dev Status: Proposed (space revamp W7a draft). Generated by tools/SpaceRevampBalance/trade.py.")
+    s.note("Dev Status: Proposed (space revamp W7a and W7b drafts). Generated by tools/SpaceRevampBalance/trade.py.")
     s.blank()
     s.title("Commodities")
     s.table(["Commodity", "Legality", "Base", "Volume", "Banned by", "Produced at", "Consumed at", "Base price source"],
@@ -536,6 +925,41 @@ def trade_tab(Sheet):
         ["Social", f"{SOCIAL_PER_POINT * 100:g}% per point over {SOCIAL_BASE}", "", "", "", "", "", f"at most {SOCIAL_MAX * 100:g}%"],
         ["Trade XP", f"{XP_PER_PROFIT_CREDIT} Piloting XP per profit credit", "", "", "", "", "", f"at most {XP_MAX_PER_SALE} per sale"],
         ["Cargo spill", f"{SPILL_SECONDS} s", "", "", "", "", "", f"up to {SPILL_MAX_CONTAINERS} containers; anyone can scoop"],
+    ])
+    s.title("Trade risk (W7b)")
+    s.table(["Rule", "Value", "", "", "", "", "", "Notes"], [
+        ["Black markets", ", ".join(exchange(e)[1] for e in BLACK_MARKETS), "", "", "", "", "",
+         f"x{BLACK_MARKET_PREMIUM} on restricted and contraband goods they do not make"],
+        ["Customs scan chance", f"{SCAN_BASE} + {SCAN_PER_THOUSAND} per 1,000 credits", "", "", "", "", "",
+         f"per orbit entry, on the base value of the goods the patrol bans; at most {SCAN_MAX}; {SCAN_DELAY_SECONDS} s after entry"],
+        ["Customs fine", f"{FINE_RATE} x banned base value", "", "", "", "", "",
+         f"and the goods are confiscated; or run: the patrol turns hostile. {CUSTOMS_ANSWER_SECONDS} s to answer"],
+        ["Smuggling Compartment", f"-({COMPARTMENT_BASE} + rank / {COMPARTMENT_RANKS_PER_PERCENT})% scan chance", "", "", "", "", "",
+         "Low slot, Piloting (the Ship Modules tab's step); Mk I 15%, Mk X 30%; only the best counts"],
+        ["Pirate ambush chance", f"{AMBUSH_BASE} + {AMBUSH_PER_TEN_THOUSAND} per 10,000 over {AMBUSH_THRESHOLD}", "", "", "", "", "",
+         f"per orbit entry, at most {AMBUSH_MAX}, x (0.8 + {AMBUSH_TIER_STEP} x orbit tier); cargo base value plus "
+         f"{SEALED_VALUE_PER_VOLUME} per sealed volume"],
+        ["Pirate squad", f"{AMBUSH_SQUAD_MIN} + 1 per {AMBUSH_SQUAD_VALUE_STEP} over the threshold, +1 from tier 4", "", "", "", "", "",
+         f"{AMBUSH_SQUAD_MIN}-{AMBUSH_SQUAD_MAX} ships; an interceptor always, then fighters, a gunship from 4 ships"],
+        ["Convoy cargo", f"{CONVOY_VALUE_PER_TIER} x orbit tier base credits", "", "", "", "", "",
+         "1-2 legal exports of the orbit; escorts " + ", ".join(f"T{t} {n}" for t, n in CONVOY_ESCORTS.items())],
+        ["Freight fee", f"volume x ({FREIGHT_FEE_BASE} + {FREIGHT_FEE_PER_HOP} x hops)", "", "", "", "", "",
+         f"deposit {FREIGHT_DEPOSIT_RATE} x fee; deadline {FREIGHT_DEADLINE_BASE_MINUTES} + {FREIGHT_DEADLINE_PER_HOP_MINUTES} min per hop; "
+         f"{FREIGHT_OFFERS_PER_EXCHANGE} offers per exchange per {FREIGHT_OFFER_MINUTES} min; at most {FREIGHT_MAX_ACTIVE} held"],
+        ["Lawful standing", ", ".join(f"{k} {v}" for k, v in STANDING.items()), "", "", "", "", "",
+         "ground faction standing (-5000 to 5000)"],
+        ["HoloNet board", f"{HOLONET_REFRESH_MINUTES} min", "", "", "", "", "", "price snapshot age at most"],
+    ])
+    s.title("Orbits")
+    s.table(["Orbit", "Tier", "Customs", "", "", "", "", ""],
+            [[ORBIT_NAMES[o], t, ", ".join(CUSTOMS.get(o, [])) or "-", "", "", "", "", ""] for o, t in ORBIT_TIERS.items()])
+    result = outcome()
+    s.title("Earnings after risk (trade.py --sim; freighters, 4-hour average, against T3 space combat)")
+    s.table(["Activity", "Credits per hour", "% of T3", "", "", "", "", "Target"], [
+        ["Contraband and legal goods", result["ContrabandPerHour"], result["ContrabandPercent"], "", "", "", "", "150-200%"],
+        ["... with a Smuggling Compartment Mk V", result["CompartmentPerHour"], result["CompartmentPercent"], "", "", "", "", ""],
+        ["Legal goods only", result["LegalPerHour"], result["LegalPercent"], "", "", "", "", "100-125%"],
+        ["Freight contracts", result["FreightPerHour"], result["FreightPercent"], "", "", "", "", "about 75%"],
     ])
     s.title("Markets")
     s.table(["Exchange", "Commodity", "Role", "Factor", "Depth", "", "", ""],

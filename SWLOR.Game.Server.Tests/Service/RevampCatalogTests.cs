@@ -23,7 +23,7 @@ public class RevampCatalogTests
     {
         var steps = RevampModuleCatalog.Steps;
 
-        steps.Should().HaveCount(298, "278 + the Salvager and Gas Harvester ranks (W6a)");
+        steps.Should().HaveCount(308, "278 + the Salvager and Gas Harvester ranks (W6a) + the Smuggling Compartment ranks (W7b)");
         steps.Select(x => x.Tag).Should().OnlyHaveUniqueItems();
         steps.Select(x => x.Name).Should().OnlyHaveUniqueItems();
         foreach (var step in steps)
@@ -57,7 +57,7 @@ public class RevampCatalogTests
                 first.CycleSeconds.Should().BeGreaterThan(0, family.Key.ToString());
         }
 
-        RevampModuleCatalog.Steps.Select(x => x.Family).Distinct().Should().HaveCount(41);
+        RevampModuleCatalog.Steps.Select(x => x.Family).Distinct().Should().HaveCount(42);
         Enum.GetValues<ShipModuleFamily>().Where(x => x != ShipModuleFamily.Invalid)
             .Should().BeEquivalentTo(RevampModuleCatalog.Steps.Select(x => x.Family).Distinct(), "every family has steps");
     }
@@ -145,7 +145,7 @@ public class RevampCatalogTests
         var all = steps.Select(x => x.RecipeType).Concat(hulls.Select(x => x.RecipeType)).ToList();
         all.Should().OnlyHaveUniqueItems();
         all.Select(x => x.ToString()).Should().OnlyHaveUniqueItems();
-        all.Should().OnlyContain(x => (int)x >= 7000 && (int)x < 7000 + 348);
+        all.Should().OnlyContain(x => (int)x >= 7000 && (int)x < 7000 + 358);
     }
 
     [Test]

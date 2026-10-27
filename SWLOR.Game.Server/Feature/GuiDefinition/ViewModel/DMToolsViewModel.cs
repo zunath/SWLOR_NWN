@@ -259,6 +259,27 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
             Log.Write(LogGroup.DM, $"{GetName(Player)} spawned {spawned} x {tag} in {GetName(area)}.");
         };
 
+        /// <summary>
+        /// Starts a trade convoy (plan section 13) of the picked faction's tier at the DM: a hauler and its escorts on
+        /// the Neutral faction, flying to one of the area's starlanes.
+        /// </summary>
+        public Action OnStartConvoy() => () =>
+        {
+            var area = GetArea(Player);
+            if (!Space.IsSpaceArea(area))
+            {
+                SpaceStatus = "You must be in a space area.";
+                SpaceStatusColor = GuiColor.Red;
+                return;
+            }
+
+            var tier = SpaceFactionIndex + 1;
+            var started = Trade.StartConvoy(GetLocation(Player), tier);
+            SpaceStatus = started ? $"Started a tier {tier} trade convoy." : "The convoy could not be created.";
+            SpaceStatusColor = started ? GuiColor.Green : GuiColor.Red;
+            Log.Write(LogGroup.DM, $"{GetName(Player)} started a tier {tier} trade convoy in {GetName(area)}.");
+        };
+
         private string GetAreaResref()
         {
             return GetResRef(GetArea(Player));

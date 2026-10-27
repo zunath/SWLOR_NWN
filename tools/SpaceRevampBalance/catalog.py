@@ -16,6 +16,7 @@ from pathlib import Path
 sys.path.insert(0, str(Path(__file__).resolve().parent))
 import model as m  # noqa: E402
 import npc_catalog  # noqa: E402
+import trade  # noqa: E402
 
 ROOT = m.REPO
 ROMAN = ["I", "II", "III", "IV", "V", "VI", "VII", "VIII", "IX", "X"]
@@ -47,6 +48,8 @@ ART = {
     "power_diverter": (513, 243, "iit_smpowdivert"),
     # New artwork for the salvage update (W6a), in the ESS9 bank.
     "salvager": (523, 226, "iit_smsalvager"), "gas_harvester": (523, 227, "iit_smgasharvest"),
+    # The trade risk update (W7b), in the ESS9 bank.
+    "smuggling_compartment": (523, 228, "iit_smsmuggle"),
 }
 
 W = m.WEAPONS
@@ -156,6 +159,9 @@ FAMILIES = [
      lambda r, s: f"Salvages wrecks up to tier {s['MiningTier']} every 6 seconds while on. Capital wrecks need a Large or Capital hull."),
     ("GasHarvester", "Gas Harvester", "Gas Harvest", "sm_gas", "High", "Gathering", "Toggle", 6.0, 3, 15, "gas_harvester", False,
      p(MiningTier=lambda r: r // 10 + 1), lambda r, s: f"Harvests Tibanna Gas from gas clouds up to tier {s['MiningTier']} every 6 seconds while on."),
+    ("SmugglingCompartment", "Smuggling Compartment", "Smuggler", "sm_smug", "Low", "Piloting", "Passive", 0, 0, 0,
+     "smuggling_compartment", False, p(ScanReduction=lambda r: trade.compartment_reduction(r)),
+     lambda r, s: f"A shielded hidden hold: customs scans find your cargo {s['ScanReduction']}% less often. Only your best Smuggling Compartment counts."),
 ]
 
 MATERIALS = {1: ("ref_tilarium", "elec_ruined"), 2: ("ref_currian", "elec_flawed"), 3: ("ref_idailia", "elec_good"),
@@ -166,9 +172,9 @@ def tier(rank):
     return min(5, rank // 10 + 1)
 
 
-# Families added after the 50 hulls (the salvage update, W6a). Their recipe IDs follow the hulls' so no earlier
-# RecipeType value moves.
-LATE_FAMILIES = {"Salvager", "GasHarvester"}
+# Families added after the 50 hulls (the salvage update W6a, the trade risk update W7b). Their recipe IDs follow the
+# hulls' so no earlier RecipeType value moves.
+LATE_FAMILIES = {"Salvager", "GasHarvester", "SmugglingCompartment"}
 
 
 def module_steps(late_recipe_start=None):

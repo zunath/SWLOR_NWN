@@ -15,6 +15,7 @@ namespace SWLOR.Game.Server.Feature.SpaceObjectDefinition
             Tier4();
             Tier5();
             RoleShips();
+            TradeRiskShips();
 
             return _builder.Build();
         }
@@ -561,6 +562,133 @@ namespace SWLOR.Game.Server.Feature.SpaceObjectDefinition
                 .ItemTag("NPC_Gunship6");
 
             _builder.Create("t6carrier")
+                .ItemTag("NPC_Gunship6");
+        }
+
+        /// <summary>
+        /// The trade risk ships of every tier (plan sections 11 and 13): pirate raiders who ambush loaded ships, customs
+        /// patrols of the lawful orbits and trade convoys. Hull, weapons and support modules come from RevampNpcShipCatalog.
+        /// </summary>
+        private void TradeRiskShips()
+        {
+            _builder.Create("t1pirint")
+                .ItemTag("NPC_Interceptor1");
+
+            _builder.Create("t1pirftr")
+                .ItemTag("NPC_Fighter1");
+
+            _builder.Create("t1pirgun")
+                .ItemTag("NPC_Gunship1");
+
+            _builder.Create("t2pirint")
+                .ItemTag("NPC_Interceptor2");
+
+            _builder.Create("t2pirftr")
+                .ItemTag("NPC_Fighter2");
+
+            _builder.Create("t2pirgun")
+                .ItemTag("NPC_Gunship2");
+
+            _builder.Create("t3pirint")
+                .ItemTag("NPC_Interceptor3");
+
+            _builder.Create("t3pirftr")
+                .ItemTag("NPC_Fighter3");
+
+            _builder.Create("t3pirgun")
+                .ItemTag("NPC_Gunship3");
+
+            _builder.Create("t4pirint")
+                .ItemTag("NPC_Interceptor4");
+
+            _builder.Create("t4pirftr")
+                .ItemTag("NPC_Fighter4");
+
+            _builder.Create("t4pirgun")
+                .ItemTag("NPC_Gunship4");
+
+            _builder.Create("t5pirint")
+                .ItemTag("NPC_Interceptor5");
+
+            _builder.Create("t5pirftr")
+                .ItemTag("NPC_Fighter5");
+
+            _builder.Create("t5pirgun")
+                .ItemTag("NPC_Gunship5");
+
+            _builder.Create("t6pirint")
+                .ItemTag("NPC_Interceptor6");
+
+            _builder.Create("t6pirftr")
+                .ItemTag("NPC_Fighter6");
+
+            _builder.Create("t6pirgun")
+                .ItemTag("NPC_Gunship6");
+
+            _builder.Create("t1repcusgun")
+                .ItemTag("NPC_Gunship1");
+
+            _builder.Create("t1repcusint")
+                .ItemTag("NPC_Interceptor1");
+
+            _builder.Create("t1czkcusgun")
+                .ItemTag("NPC_Gunship1");
+
+            _builder.Create("t1czkcusint")
+                .ItemTag("NPC_Interceptor1");
+
+            _builder.Create("t2repcusgun")
+                .ItemTag("NPC_Gunship2");
+
+            _builder.Create("t2repcusint")
+                .ItemTag("NPC_Interceptor2");
+
+            _builder.Create("t5repcusgun")
+                .ItemTag("NPC_Gunship5");
+
+            _builder.Create("t5repcusint")
+                .ItemTag("NPC_Interceptor5");
+
+            _builder.Create("t6sithcusgun")
+                .ItemTag("NPC_Gunship6");
+
+            _builder.Create("t6sithcusint")
+                .ItemTag("NPC_Interceptor6");
+
+            _builder.Create("t1convoy")
+                .ItemTag("NPC_Cargo1");
+
+            _builder.Create("t1escort")
+                .ItemTag("NPC_Gunship1");
+
+            _builder.Create("t2convoy")
+                .ItemTag("NPC_Cargo2");
+
+            _builder.Create("t2escort")
+                .ItemTag("NPC_Gunship2");
+
+            _builder.Create("t3convoy")
+                .ItemTag("NPC_Cargo3");
+
+            _builder.Create("t3escort")
+                .ItemTag("NPC_Gunship3");
+
+            _builder.Create("t4convoy")
+                .ItemTag("NPC_Cargo4");
+
+            _builder.Create("t4escort")
+                .ItemTag("NPC_Gunship4");
+
+            _builder.Create("t5convoy")
+                .ItemTag("NPC_Cargo5");
+
+            _builder.Create("t5escort")
+                .ItemTag("NPC_Gunship5");
+
+            _builder.Create("t6convoy")
+                .ItemTag("NPC_Cargo6");
+
+            _builder.Create("t6escort")
                 .ItemTag("NPC_Gunship6");
         }
     }

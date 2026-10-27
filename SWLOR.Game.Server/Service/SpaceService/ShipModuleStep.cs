@@ -66,5 +66,9 @@ namespace SWLOR.Game.Server.Service.SpaceService
         public int DamageAll { get; set; }
         public int AuraShieldPercent { get; set; }
         public int AuraAccuracy { get; set; }
+
+        // Trade
+        /// <summary>The percentage a Smuggling Compartment cuts the customs scan chance by.</summary>
+        public int ScanReduction { get; set; }
     }
 }

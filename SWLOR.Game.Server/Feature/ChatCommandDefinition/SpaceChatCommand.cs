@@ -2,6 +2,7 @@ using System.Collections.Generic;
 using SWLOR.Game.Server.Enumeration;
 using SWLOR.Game.Server.Service;
 using SWLOR.Game.Server.Service.ChatCommandService;
+using SWLOR.Game.Server.Service.GuiService;
 
 namespace SWLOR.Game.Server.Feature.ChatCommandDefinition
 {
@@ -15,6 +16,7 @@ namespace SWLOR.Game.Server.Feature.ChatCommandDefinition
             DockCommand();
             UndockCommand();
             ShipHudCommand();
+            HoloNetCommand();
 
             return _builder.Build();
         }
@@ -71,6 +73,14 @@ namespace SWLOR.Game.Server.Feature.ChatCommandDefinition
                 .Description("Opens or closes the Ship HUD while piloting a starship.")
                 .Permissions(AuthorizationLevel.All)
                 .Action((user, target, location, args) => SpaceHud.Toggle(user));
+        }
+
+        private void HoloNetCommand()
+        {
+            _builder.Create("holonet")
+                .Description("Opens or closes the HoloNet price board: the best commodity prices across the exchanges, up to an hour old.")
+                .Permissions(AuthorizationLevel.All)
+                .Action((user, target, location, args) => Gui.TogglePlayerWindow(user, GuiWindowType.HoloNetBoard));
         }
     }
 }

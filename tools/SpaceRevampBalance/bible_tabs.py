@@ -1,7 +1,7 @@
 """Write the W0 space revamp tabs into the Design Bible at the zip/XML level.
 
-usage: python bible_tabs.py   (run checks.py first; it writes the Space Balance tab from checks.md)
-Every untouched zip entry is copied byte for byte. Re-running replaces the four tabs in place.
+usage: python bible_tabs.py   (run checks.py first; it writes the Space Balance tab from checks.md; trade.py --check too)
+Every untouched zip entry is copied byte for byte. Re-running replaces the five tabs in place.
 """
 import html
 import json
@@ -495,6 +495,7 @@ def write(sheets):
 
 
 if __name__ == "__main__":
-    tabs = [starships(), modules(), enemies(), balance()]
+    import trade
+    tabs = [starships(), modules(), enemies(), balance(), trade.trade_tab(Sheet)]
     write(tabs)
     print({t.name: t.n for t in tabs})

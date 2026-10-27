@@ -264,8 +264,8 @@ public class AppearancePreviewTests
             .Invoke(null, new object[] { height, columns })!).Should().Be(expected);
 
     [TestCase(800f, 760f, 0f, 0f, 1010f, 760f)]
-    [TestCase(1240f, 600f, 0f, 0f, 1240f, 730f)]
-    [TestCase(1240f, 740f, 0f, 0f, 1240f, 740f)]
+    [TestCase(1240f, 600f, 0f, 0f, 1240f, 750f)]
+    [TestCase(1240f, 760f, 0f, 0f, 1240f, 760f)]
     [TestCase(800f, 500f, 900f, 650f, 900f, 650f)]
     [TestCase(950f, 500f, 900f, 650f, 950f, 650f)]
     [TestCase(1240f, 720f, 1280f, 720f, 1240f, 720f)]

@@ -34,7 +34,7 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition
         /// without scrolling. Smaller saved or dragged sizes are grown back to it.
         /// </summary>
         public const float MinimumWindowWidth = 1010f;
-        public const float MinimumWindowHeight = 730f;
+        public const float MinimumWindowHeight = 750f;
 
         private static readonly GuiColor Highlight = new(255, 196, 40);
 

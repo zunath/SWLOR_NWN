@@ -112,7 +112,8 @@ namespace SWLOR.Game.Server.Service
 
         /// <summary>
         /// A station slot's effectiveness right now: the crew multiplier while a crew member who meets the module's
-        /// rank works the seat, otherwise 0. Helm slots are always 1.
+        /// rank works the seat, a droid's effectiveness while a droid whose tier meets it does, otherwise 0. Helm
+        /// slots are always 1.
         /// </summary>
         public static double GetStationSlotEffectiveness(uint ship, ShipStatus status, int slotNumber)
         {
@@ -122,6 +123,14 @@ namespace SWLOR.Game.Server.Service
 
             var crewMember = SpaceCrew.GetSeatOccupant(ship, seat);
             var crewed = crewMember != OBJECT_INVALID && GetIsObjectValid(crewMember);
+            var droid = crewed ? null : SpaceCrew.GetSeatDroid(ship, seat);
+            if (droid != null)
+            {
+                var droidMeetsRank = !TryGetFittedModule(status, slotNumber, out var droidModule) ||
+                                     DroidCrewRules.MeetsRank(droidModule.RequiredSkills, droid.Tier);
+                return droidMeetsRank ? SpaceCrew.GetDroidEffectiveness(ship, droid) : 0.0;
+            }
+
             var meetsRank = crewed &&
                             (!TryGetFittedModule(status, slotNumber, out var module) ||
                              ShipCrewSeats.MeetsRank(module.RequiredSkills, GetPlayerSkillRank(crewMember, ShipCrewSeats.GetSeatSkill(seat))));
@@ -145,9 +154,24 @@ namespace SWLOR.Game.Server.Service
             };
         }
 
+        /// <summary>The fire context of a droid working a station slot.</summary>
+        private static SpaceCrewFireContext BuildDroidFireContext(uint ship, ShipDroidCrew droid)
+        {
+            return new SpaceCrewFireContext
+            {
+                Ship = ship,
+                CrewMember = OBJECT_INVALID,
+                Droid = droid,
+                Seat = droid.Seat,
+                Effectiveness = SpaceCrew.GetDroidEffectiveness(ship, droid),
+                Skill = SkillType.Piloting,
+            };
+        }
+
         /// <summary>
         /// Works out the pilot's ship again with its stations as they are now crewed, so station passives count
-        /// only while their seat is worked. Saves the ship.
+        /// only while their seat is worked, and returns the power routing to Balanced once no player works the
+        /// Engineer seat. Saves the ship.
         /// </summary>
         private static void RecalculateCrewedShip(uint pilot)
         {
@@ -160,13 +184,21 @@ namespace SWLOR.Game.Server.Service
                 return;
 
             var status = dbShip.Status;
-            if (!RecalculateShipStats(status, GetAbilityScore(pilot, AbilityType.Willpower), false,
-                    slot => GetStationSlotEffectiveness(pilot, status, slot)))
-            {
+            var routingReset = status.PowerRouting != ShipPowerRouting.Balanced &&
+                               !GetIsObjectValid(SpaceCrew.GetSeatOccupant(pilot, ShipCrewSeat.Engineer));
+            if (routingReset)
+                status.PowerRouting = ShipPowerRouting.Balanced;
+
+            var recalculated = RecalculateShipStats(status, GetAbilityScore(pilot, AbilityType.Willpower), false,
+                slot => GetStationSlotEffectiveness(pilot, status, slot));
+            if (!recalculated && !routingReset)
                 return;
-            }
 
             DB.Set(dbShip);
+            ApplyShipSpeed(pilot, status);
+            if (routingReset)
+                SendMessageToPC(pilot, "Nobody works the Engineer station, so the ship's power returns to Balanced.");
+
             ExecuteScript("pc_target_upd", pilot);
         }
 
@@ -254,6 +286,11 @@ namespace SWLOR.Game.Server.Service
             var dbShip = GetInteriorShip(player, out var propertyId);
             var pilot = GetShipPilot(dbShip.Id);
             var isViewer = seat == ShipCrewSeat.Invalid;
+
+            // A seat holds a player or a droid, and players come first (DroidCrewRules.PlayerBumpsDroid).
+            if (!isViewer && SpaceCrew.GetSeatDroid(pilot, seat) != null)
+                BumpDroidCrew(player, dbShip.Id, seat);
+
             if (!isViewer && !SpaceCrew.AssignSeat(pilot, seat, player))
             {
                 SendMessageToPC(player, ColorToken.Red($"The {ShipCrewSeats.GetSeatName(seat)} station is taken."));
@@ -380,6 +417,16 @@ namespace SWLOR.Game.Server.Service
                 feats.Add(feat);
             }
 
+            // The Engineer routes power. The feats are owned before the hotbar loads, so saved slots for them survive.
+            if (seat == ShipCrewSeat.Engineer)
+            {
+                foreach (var feat in PowerRoutingRules.Feats)
+                {
+                    CreaturePlugin.AddFeat(crewMember, feat);
+                    feats.Add(feat);
+                }
+            }
+
             var key = GetCrewHotBarKey(playerId, seat);
             var dbShip = DB.Get<PlayerShip>(shipId);
             if (dbShip == null ||
@@ -403,6 +450,9 @@ namespace SWLOR.Game.Server.Service
                     DB.Set(dbShip);
                 }
             }
+
+            if (seat == ShipCrewSeat.Engineer)
+                EnsurePowerRoutingOnHotBar(crewMember);
 
             RestoreCrewStationVisuals(crewMember, status, slots);
         }
@@ -592,6 +642,7 @@ namespace SWLOR.Game.Server.Service
                     CreaturePlugin.RemoveFeat(player, feat);
                 }
 
+                RemovePowerRoutingFeats(player);
                 ClearShipModuleRecasts(player, dbPlayer);
                 RestoreGroundHotBar(player, dbPlayer);
             }
@@ -683,6 +734,7 @@ namespace SWLOR.Game.Server.Service
                 CreaturePlugin.RemoveFeat(player, feat);
             }
 
+            RemovePowerRoutingFeats(player);
             ClearShipModuleRecasts(player, dbPlayer);
             RestoreGroundHotBar(player, dbPlayer);
             dbPlayer.ActiveCrewShipId = string.Empty;

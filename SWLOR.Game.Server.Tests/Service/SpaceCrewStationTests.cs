@@ -328,7 +328,8 @@ public class SpaceCrewStationTests
         death.Should().Contain("EscapePodRules.BuildManifest(creature, stationCrew");
 
         var toggles = ReadServerSource("Service", "SpaceToggles.cs");
-        toggles.Should().Contain("SpaceCrew.BeginStationFire(BuildCrewFireContext(creature, crewMember, seat))");
+        toggles.Should().Contain("? BuildDroidFireContext(creature, droid)");
+        toggles.Should().Contain(": BuildCrewFireContext(creature, crewMember, seat)))");
 
         var actions = ReadServerSource("Feature", "ShipModuleDefinition", "ShipModuleActions.cs");
         actions.Should().Contain("SpaceCrew.GetStatSource(repairer)");
@@ -339,7 +340,9 @@ public class SpaceCrewStationTests
         var breakFormation = ReadServerSource("Feature", "AbilityDefinition", "Piloting", "BreakFormationAbilityDefinition.cs");
         breakFormation.Should().Contain("new FlashStatusEffect(SpaceCommand.ApplyLeadershipScaling(activator,");
         breakFormation.Should().Contain("new WeakenedStatusEffect(SpaceCommand.ApplyLeadershipScaling(activator,");
-        ReadServerSource("Service", "SpaceService", "SpaceCrew.cs").Should().Contain("ShipCrewSeats.CapEffectiveness(EffectivenessMultiplier(");
+        var crew = ReadServerSource("Service", "SpaceService", "SpaceCrew.cs");
+        crew.Should().Contain("ShipCrewSeats.CapEffectiveness(GetCrewMultiplier(ship))");
+        crew.Should().Contain("DroidCrewRules.SeatEffectiveness(droid.Seat, droid.Tier, GetCrewMultiplier(ship)");
     }
 
     private static string ReadServerSource(params string[] path)

@@ -242,6 +242,27 @@ def module_row(mod):
 # The most a crew seat works at after Crew Morale and Leadership (ShipCrewSeats.MaximumSeatEffectiveness).
 CREW_CAP = 1.05
 
+# Engineer power routing (PowerRoutingRules): percent changes to weapon capacitor use, weapon damage, shield regen
+# and speed. Speed is not modelled in fights.
+POWER_ROUTING = {
+    "Balanced": dict(cap=0, dmg=0, regen=0, speed=0),
+    "Weapons": dict(cap=-25, dmg=0, regen=-10, speed=-10),
+    "Shields": dict(cap=0, dmg=-5, regen=15, speed=-10),
+    "Engines": dict(cap=0, dmg=-5, regen=-10, speed=20),
+}
+
+
+def routed(ship, mode):
+    """A player ship with the Engineer's power routing applied (weapon damage folds into _dmg, as hull bonuses do)."""
+    r = POWER_ROUTING[mode]
+    q = dict(ship)
+    q["_dmg"] = ship["_dmg"] + r["dmg"]
+    q["shieldRegenPerSecond"] = round(ship["shieldRegenPerSecond"] * (1 + r["regen"] / 100), 2)
+    q["weapons"] = [dict(w, capacitorPerCycle=max(1, int(w["capacitorPerCycle"] * (1 + r["cap"] / 100) + 0.5)) if w["capacitorPerCycle"] else 0)
+                    for w in ship["weapons"]]
+    q["name"] = f"{ship['name']} ({mode})"
+    return q
+
 
 def player_ship(role, rank, fit, maker=None, advanced=False, extra=None, name=None, pilot=None, crew=1.0):
     """fit: dict of module family -> count. Weapons go in High, the rest as listed. Every module at `rank`.

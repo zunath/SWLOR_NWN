@@ -92,8 +92,10 @@ namespace SWLOR.Game.Server.Service
             if (!IsPlayerInSpaceMode(player))
                 return;
 
-            // The pilot's crew go back to their consoles; the ship stays in space without a pilot.
+            // The pilot's crew go back to their consoles; the ship stays in space without a pilot, and its droids
+            // stop until someone flies it again.
             ReleaseShipCrew(player, "The ship's pilot has left the controls, so you leave your station.");
+            UnloadDroidCrew(player);
             UnregisterShipPilot(player);
             TurnOffShipToggles(player);
             CloneShip(player);
@@ -393,6 +395,7 @@ namespace SWLOR.Game.Server.Service
                 PlayerPlugin.ApplyLoopingVisualEffectToObject(creature, target, VisualEffect.Vfx_Target_Marker);
             }
             SetLocalObject(creature, "SPACE_TARGET", target);
+            SpaceCrew.ForgetDroidEngagements(creature);
 
             if(GetIsPC(creature) && !Gui.IsWindowOpen(creature, GuiWindowType.TargetStatus) && GetShipStatus(target) != null)
                 Gui.TogglePlayerWindow(creature, GuiWindowType.TargetStatus);
@@ -535,8 +538,52 @@ namespace SWLOR.Game.Server.Service
         [NWNEventHandler(ScriptName.OnShipComputer)]
         public static void UseShipComputer()
         {
-            var area = GetArea(OBJECT_SELF);
+            var computer = OBJECT_SELF;
             var player = GetLastUsedBy();
+            if (IsPlayerInSpaceMode(player))
+                return;
+
+            SetLocalBool(computer, ShipComputerVariable, true);
+
+            // A click while a launch is pending goes on with the launch.
+            if (_pendingShipLaunches.ContainsKey(player))
+            {
+                TakeShipControls(player, computer);
+                return;
+            }
+
+            // While someone flies the ship, its computer is the crew console: take a station or watch from a viewport.
+            var propertyId = Property.GetPropertyId(GetArea(computer));
+            var dbShip = DB.Search(new DBQuery<PlayerShip>()
+                .AddFieldSearch(nameof(PlayerShip.PropertyId), propertyId, false)).FirstOrDefault();
+            if (dbShip != null && GetIsObjectValid(GetShipPilot(dbShip.Id)))
+            {
+                if (!ConversationMenu.TryStart(player, computer, "CrewStationDialog"))
+                    SendMessageToPC(player, ColorToken.Red("This ship's controls are in use."));
+                return;
+            }
+
+            // A docked ship with crew stations offers its droid crew first to a captain who has droids to post or
+            // recall; the menu's first choice takes the controls.
+            if (dbShip != null && ShouldOfferDroidCrewMenu(player, dbShip, propertyId) &&
+                ConversationMenu.TryStart(player, computer, "CrewStationDialog"))
+            {
+                return;
+            }
+
+            TakeShipControls(player, computer);
+        }
+
+        /// <summary>Whether a placeable is a ship computer (it marks itself when first used).</summary>
+        public static bool IsShipComputer(uint placeable) => GetLocalBool(placeable, ShipComputerVariable);
+
+        /// <summary>
+        /// Puts the player at the controls of the ship whose computer they use: checks their permission and the
+        /// ship, then sends them to its space position.
+        /// </summary>
+        public static void TakeShipControls(uint player, uint computer)
+        {
+            var area = GetArea(computer);
             if (IsPlayerInSpaceMode(player))
                 return;
 
@@ -551,16 +598,6 @@ namespace SWLOR.Game.Server.Service
 
             var playerId = GetObjectUUID(player);
             var propertyId = Property.GetPropertyId(area);
-
-            // While someone flies the ship, its computer is the crew console: take a station or watch from a viewport.
-            var flyingShip = DB.Search(new DBQuery<PlayerShip>()
-                .AddFieldSearch(nameof(PlayerShip.PropertyId), propertyId, false)).FirstOrDefault();
-            if (flyingShip != null && GetIsObjectValid(GetShipPilot(flyingShip.Id)))
-            {
-                if (!ConversationMenu.TryStart(player, OBJECT_SELF, "CrewStationDialog"))
-                    SendMessageToPC(player, ColorToken.Red("This ship's controls are in use."));
-                return;
-            }
 
             var permissionQuery = new DBQuery<WorldPropertyPermission>()
                 .AddFieldSearch(nameof(WorldPropertyPermission.PropertyId), propertyId, false)
@@ -857,7 +894,13 @@ namespace SWLOR.Game.Server.Service
             var dbPlayerShip = DB.Get<PlayerShip>(shipId);
             var shipDetail = _shipTypes[dbPlayerShip.Status.ItemTag];
             ClearShipToggleState(player, dbPlayerShip.Status);
-            RecalculateShipStats(dbPlayerShip.Status, GetAbilityScore(player, AbilityType.Willpower));
+            dbPlayerShip.Status.PowerRouting = ShipPowerRouting.Balanced;
+
+            // The droid crew takes its stations with the pilot, so the stations they work count from the start.
+            var droidCrew = SeatDroidCrew(player, dbPlayerShip);
+            var launchStatus = dbPlayerShip.Status;
+            RecalculateShipStats(launchStatus, GetAbilityScore(player, AbilityType.Willpower), false,
+                slot => GetStationSlotEffectiveness(player, launchStatus, slot));
             SetLocalFloat(player, Stat.ShipMovementSpeedVariable, (float)dbPlayerShip.Status.SpeedMultiplier);
 
             // Snapshot the character's appearance at the moment it gets overwritten so exiting
@@ -992,6 +1035,7 @@ namespace SWLOR.Game.Server.Service
                 _playersInSpace.Add(player);
 
             RegisterShipPilot(shipId, player);
+            AnnounceDroidCrew(player, dbPlayerShip, droidCrew);
             RestoreShipModuleRecasts(player);
             ExecuteScript("space_enter", player);
         }
@@ -1120,8 +1164,9 @@ namespace SWLOR.Game.Server.Service
             if (!IsPlayerInSpaceMode(player))
                 return;
 
-            // Leaving space or docking returns the crew to their consoles (plan section 10).
+            // Leaving space or docking returns the crew to their consoles (plan section 10). Posted droids stay posted.
             ReleaseShipCrew(player, "The ship's pilot has left the controls, so you leave your station.");
+            UnloadDroidCrew(player);
             UnregisterShipPilot(player);
             CloneShip(player);
 
@@ -1452,23 +1497,32 @@ namespace SWLOR.Game.Server.Service
         /// Shared activation. With <paramref name="onlyTurnOn"/>, a toggle that is already on is left alone
         /// instead of being switched off (ship AI uses this). With a <paramref name="crewMember"/>, the ship fires a
         /// module of the crew member's <paramref name="crewSeat"/> at the crew member's own target, with the crew
-        /// member's rank, stats and effectiveness.
+        /// member's rank, stats and effectiveness. With a <paramref name="droid"/>, the ship fires a module of the
+        /// droid's seat at the pilot's target (repairers at the ship itself), with the droid's tier and
+        /// effectiveness, and nobody is told of a refusal.
         /// </summary>
         private static void ActivateShipModuleCore(
             uint activator,
             FeatType feat,
             bool onlyTurnOn,
             uint crewMember = OBJECT_INVALID,
-            ShipCrewSeat crewSeat = ShipCrewSeat.Invalid)
+            ShipCrewSeat crewSeat = ShipCrewSeat.Invalid,
+            ShipDroidCrew droid = null)
         {
             if (!ShipModuleFeats.ContainsKey(feat)) return;
             var activatorShipStatus = GetShipStatus(activator);
             if (activatorShipStatus == null) return;
             var slotNumber = GetFeatSlotNumber(feat);
-            var isCrew = crewMember != OBJECT_INVALID && crewMember != activator;
+            var isDroid = droid != null;
+            var isCrew = isDroid || (crewMember != OBJECT_INVALID && crewMember != activator);
+            if (isDroid)
+            {
+                crewMember = OBJECT_INVALID;
+                crewSeat = droid.Seat;
+            }
 
-            // Feedback goes to whoever pressed the module.
-            var user = isCrew ? crewMember : activator;
+            // Feedback goes to whoever pressed the module. A droid has no one to tell.
+            var user = isDroid ? OBJECT_INVALID : isCrew ? crewMember : activator;
 
             if (slotNumber < 1 || slotNumber > 30)
             {
@@ -1490,11 +1544,19 @@ namespace SWLOR.Game.Server.Service
                     return;
                 }
 
-                var rankError = GetStationRankError(crewMember, crewSeat, shipModule);
-                if (!string.IsNullOrEmpty(rankError))
+                if (isDroid)
                 {
-                    SendActivationMessage(user, rankError);
-                    return;
+                    if (!DroidCrewRules.MeetsRank(shipModule.RequiredSkills, droid.Tier))
+                        return;
+                }
+                else
+                {
+                    var rankError = GetStationRankError(crewMember, crewSeat, shipModule);
+                    if (!string.IsNullOrEmpty(rankError))
+                    {
+                        SendActivationMessage(user, rankError);
+                        return;
+                    }
                 }
             }
             else if (slotSeat != ShipCrewSeat.Pilot)
@@ -1525,7 +1587,7 @@ namespace SWLOR.Game.Server.Service
             }
 
             // Check capacitor requirements
-            var requiredCapacitor = shipModuleDetails.CalculateCapacitorAction?.Invoke(activator, activatorShipStatus, shipModule.ModuleBonus) ?? 0;
+            var requiredCapacitor = GetModuleCapacitorCost(activator, activatorShipStatus, shipModule, shipModuleDetails);
 
             if (activatorShipStatus.Capacitor < requiredCapacitor)
             {
@@ -1550,11 +1612,15 @@ namespace SWLOR.Game.Server.Service
                 return;
             }
 
-            // A crew member fires at the target they picked.
-            var (target, targetShipStatus) = GetCurrentTarget(user);
+            // A crew member fires at the target they picked; a droid at the pilot's.
+            var (target, targetShipStatus) = GetCurrentTarget(isDroid ? activator : user);
+
+            // A droid's repairers work on its own ship.
+            if (isDroid && ShipToggleRules.GetTargetMode(_shipModules[shipModule.ItemTag].Type) == ShipToggleTargetMode.Locked)
+                target = activator;
 
             // Targeting your own ship uses the one status, so the module's effect and its cost are saved together.
-            if (target == activator && targetShipStatus != null)
+            if (target == activator)
                 targetShipStatus = activatorShipStatus;
 
             // Check for valid object type if the ship module requires it.
@@ -1626,7 +1692,9 @@ namespace SWLOR.Game.Server.Service
             var recastSeconds = shipModuleDetails.CalculateRecastAction?.Invoke(activator, activatorShipStatus, shipModule.ModuleBonus);
 
             // A crew member's module reads their stats and works at the station's effectiveness while it fires.
-            using var crewFire = SpaceCrew.BeginStationFire(isCrew ? BuildCrewFireContext(activator, crewMember, crewSeat) : null);
+            using var crewFire = SpaceCrew.BeginStationFire(isDroid
+                ? BuildDroidFireContext(activator, droid)
+                : isCrew ? BuildCrewFireContext(activator, crewMember, crewSeat) : null);
 
             if (isToggle)
             {
@@ -1958,16 +2026,26 @@ namespace SWLOR.Game.Server.Service
         }
 
         /// <summary>
-        /// A pilot attribute for the ship math: a preset NPC ship's own, otherwise the creature's ability score.
+        /// A pilot attribute for the ship math: a preset NPC ship's own, a droid's while one fires a station, otherwise
+        /// the creature's ability score.
         /// </summary>
         private static int GetPilotScore(uint creature, ShipStatus status, AbilityType ability)
         {
+            if (SpaceCrew.TryGetDroidAttribute(creature, ability, out var droidScore))
+                return droidScore;
+
             return ShipNpcRules.PilotScore(status, ability, type => GetAbilityScore(creature, type));
         }
 
-        /// <summary>The level term a legacy NPC ship adds to a value; zero for players and preset NPC ships.</summary>
+        /// <summary>
+        /// The level term a legacy NPC ship adds to a value; zero for players, preset NPC ships and droids at a
+        /// player's station.
+        /// </summary>
         private static int GetNpcLevelBonus(uint creature, ShipStatus status, Func<int, int> bonusForLevel)
         {
+            if (SpaceCrew.IsDroidStatSource(creature))
+                return 0;
+
             return ShipNpcRules.UsesLevelTerm(IsPlayerPilot(creature), status)
                 ? bonusForLevel(GetNpcLevel(creature))
                 : 0;
@@ -2056,11 +2134,16 @@ namespace SWLOR.Game.Server.Service
                 Stat.GetStatAdjustment(defender, StatType.SpaceDefensePercentAdjustment));
         }
 
-        /// <summary>Shield regained per second: a preset NPC ship's own rate, otherwise the size and WIL formula.</summary>
+        /// <summary>
+        /// Shield regained per second: a preset NPC ship's own rate, otherwise the size and WIL formula, changed by
+        /// the Engineer's power routing.
+        /// </summary>
         public static double GetShipShieldRegenPerSecond(uint ship, ShipStatus shipStatus)
         {
             var wil = GetPilotScore(ship, shipStatus, AbilityType.Willpower);
-            return ShipNpcRules.ShieldRegenPerSecond(shipStatus, shipStatus.GetEffectiveMaxShield(DateTime.UtcNow), wil);
+            return PowerRoutingRules.ApplyShieldRegen(
+                ShipNpcRules.ShieldRegenPerSecond(shipStatus, shipStatus.GetEffectiveMaxShield(DateTime.UtcNow), wil),
+                shipStatus.PowerRouting);
         }
 
         /// <summary>Capacitor regained per second: the hull's regen plus 0.05 per point of WIL.</summary>
@@ -2223,6 +2306,7 @@ namespace SWLOR.Game.Server.Service
 
             var bonusPercent = 0;
             activatorStatus.DamageBonusPercent?.TryGetValue(shot.DamageType, out bonusPercent);
+            bonusPercent += PowerRoutingRules.WeaponDamagePercent(activatorStatus.PowerRouting);
 
             var resistance = 0;
             targetStatus.Resistances?.TryGetValue(GetShipResistanceType(shot.DamageType), out resistance);

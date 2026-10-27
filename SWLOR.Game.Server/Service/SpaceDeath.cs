@@ -75,6 +75,8 @@ namespace SWLOR.Game.Server.Service
                 LeaveCrewStation(crewMember, returnToConsole: false);
             }
 
+            // Droids stop working and go back to their owners.
+            UnloadDroidCrew(creature);
             UnregisterShipPilot(creature);
             ApplyEffectToObject(DurationType.Instant, EffectVisualEffect(VisualEffect.Fnf_Fireball), creature);
 
@@ -103,6 +105,9 @@ namespace SWLOR.Game.Server.Service
                 // The modules stay installed; keep the hot bar of the ship for the next flight.
                 dbPlayerShip.PlayerHotBars[playerId] = CreaturePlugin.SerializeQuickbar(creature);
             }
+
+            ReturnDroidCrew(dbPlayerShip, "was destroyed");
+            dbPlayerShip.Status.PowerRouting = ShipPowerRouting.Balanced;
 
             ClearShipToggleState(creature, dbPlayerShip.Status);
             dbPlayerShip.Status.Hull = 1;

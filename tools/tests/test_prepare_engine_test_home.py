@@ -60,6 +60,7 @@ class PrepareScriptTests(unittest.TestCase):
         git("init", "-q", cwd=haks)
         git("config", "user.email", "test@example.com", cwd=haks)
         git("config", "user.name", "test", cwd=haks)
+        git("config", "core.ignoreCase", "false", cwd=haks)  # sparse patterns are case-sensitive on Linux
         for relative, content in FILES.items():
             path = os.path.join(haks, *relative.split("/"))
             os.makedirs(os.path.dirname(path), exist_ok=True)
@@ -76,7 +77,11 @@ class PrepareScriptTests(unittest.TestCase):
         return root, haks
 
     def sparse_like_the_fetch_script(self, folders):
-        return ["/%s/" % folder for folder in folders] + ["!*" + suffix for suffix in STUBBED_TYPES.split()]
+        """The patterns scripts/ci/fetch-engine-test-haks.sh writes (that script has its own end-to-end test)."""
+        def any_case(suffix):
+            return "".join(f"[{c}{c.upper()}]" if c.isalpha() else c for c in suffix)
+
+        return ["/%s/" % folder for folder in folders] + ["!*" + any_case(suffix) for suffix in STUBBED_TYPES.split()]
 
     def run_block(self, code, *arguments):
         environment = dict(os.environ, STUBBED_TYPES=STUBBED_TYPES)

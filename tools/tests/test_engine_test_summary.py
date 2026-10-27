@@ -68,6 +68,39 @@ class SummaryTests(unittest.TestCase):
         self.assertTrue(verdict.startswith("NO REPORT"))
         self.assertIn("never wrote", notes[0])
 
+    def test_the_daily_server_restart_is_named_and_is_not_called_a_failed_test(self):
+        log = "Server shutting down for automated restart.\nNo report found at /nwn/home/app_logs/x.json\n"
+        verdict, markdown, notes = EngineTestSummary.summarise(None, log, 150)
+        self.assertTrue(verdict.startswith("CUT OFF BY THE SERVER'S DAILY AUTOMATED RESTART"))
+        self.assertIn("not a failed test", notes[0])
+        self.assertIn("## Engine tests: CUT OFF", markdown[0])
+
+    def test_a_restart_message_next_to_a_complete_report_does_not_hide_the_results(self):
+        log = "Server shutting down for automated restart.\n"
+        verdict, _, notes = EngineTestSummary.summarise(report(result("A", 0)), log, 150)
+        self.assertEqual("PASSED", verdict)
+        self.assertEqual([], notes)
+
+    def test_a_green_report_is_not_passed_when_the_runner_failed(self):
+        log = "docker compose exit code: 139\nEngine tests failed: server container exited with code 139.\n"
+        verdict, markdown, notes = EngineTestSummary.summarise(report(result("A", 0)), log, 150, "failure")
+        self.assertTrue(verdict.startswith("RUNNER FAILED"))
+        self.assertIn("server container exited with code 139", notes[0])
+        self.assertIn("## Engine tests: RUNNER FAILED", markdown[0])
+
+    def test_a_runner_failure_without_a_known_message_still_fails_the_summary(self):
+        verdict, _, notes = EngineTestSummary.summarise(report(result("A", 0)), "something else", 150, "failure")
+        self.assertTrue(verdict.startswith("RUNNER FAILED"))
+        self.assertIn("the runner script failed", notes[0])
+
+    def test_a_successful_runner_keeps_the_passed_verdict(self):
+        verdict, _, _ = EngineTestSummary.summarise(report(result("A", 0)), "", 150, "success")
+        self.assertEqual("PASSED", verdict)
+
+    def test_failed_tests_win_over_a_failed_runner(self):
+        verdict, _, _ = EngineTestSummary.summarise(report(result("A", 1, message="x")), "", 150, "failure")
+        self.assertEqual("1 FAILED", verdict)
+
     def test_empty_report_means_no_tests_ran(self):
         verdict, _, notes = EngineTestSummary.summarise(report(), "", 150)
         self.assertEqual("NO TESTS RAN", verdict)

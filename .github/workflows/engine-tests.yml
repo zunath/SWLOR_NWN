@@ -12,13 +12,18 @@ name: Engine tests
 # The job fails when any engine test fails, when none ran, when the server dies without a report, and when the run
 # hits its wall clock; the summary and an annotation say which of those happened.
 #
+# The game server restarts itself at 10:00 UTC every day, tests running or not (ServerTasks.ProcessAutoRestart), and a
+# run that crosses that moment is killed without a report. The nightly starts at 04:00 UTC to stay clear of it, and the
+# run waits (tools/WaitOutServerRestart.py) when a labelled pull request or a manual run would cross it.
+#
 # GitHub only fires `schedule` (and lists `workflow_dispatch`) for workflow files on the default branch, which is
 # master, and nothing is merged to master until the refactor is done. This file checks out the refactor branch itself
 # for those two triggers, so an identical copy on master is all the nightly needs; until one exists, only the labelled
 # pull requests run it. See the pull request that added this file.
 on:
   schedule:
-    - cron: '0 9 * * *'
+    # Midnight US Eastern: the run is over long before the server's own 10:00 UTC restart.
+    - cron: '0 4 * * *'
   pull_request:
     branches:
       - feature/maintainability-refactor
@@ -41,8 +46,9 @@ env:
   DOTNET_CLI_TELEMETRY_OPTOUT: '1'
   DOTNET_NOLOGO: '1'
   # Wall clock for the test run itself, enforced by scripts/run-engine-tests.sh (it kills the containers and says
-  # "TIMED OUT"). A full sweep took 75 minutes in a 4-core cloud session; the rest is headroom. Keep it below the
-  # job's timeout-minutes minus the 30 minutes setup may take, so the script reports the timeout and not GitHub.
+  # "TIMED OUT"). A full sweep took 75 minutes in a 4-core cloud session; the rest is headroom. The job's
+  # timeout-minutes must cover setup (30), a wait for the server restart (up to this much) and the run itself, so the
+  # script reports a timeout and not GitHub.
   ENGINE_TEST_TIMEOUT_MINUTES: '150'
 
 jobs:
@@ -56,7 +62,9 @@ jobs:
         (github.event.action != 'labeled' || github.event.label.name == 'engine-tests')))
     # Ubuntu, because the server image is Linux and Docker on Windows runners cannot run Linux containers.
     runs-on: ubuntu-24.04
-    timeout-minutes: 210
+    # Setup 30 + waiting out the server restart at worst 152 + the run 150 + the summary and upload 10 = 342; GitHub's
+    # own limit is 360.
+    timeout-minutes: 350
     concurrency:
       group: engine-tests-${{ github.event.pull_request.number || github.event_name }}
       cancel-in-progress: ${{ github.event_name == 'pull_request' }}
@@ -107,7 +115,10 @@ jobs:
 
       - name: Test the summary tool and the HAK staging
         # Seconds, and they catch a broken sparse-HAK path before the long steps start.
-        run: python3 -B -m unittest tools.tests.test_engine_test_summary tools.tests.test_prepare_engine_test_home -v
+        run: >-
+          python3 -B -m unittest -v
+          tools.tests.test_engine_test_summary tools.tests.test_wait_out_server_restart
+          tools.tests.test_prepare_engine_test_home tools.tests.test_fetch_engine_test_haks
 
       - name: Native NWN tools
         # nwn_erf and nwn_gff pack the HAKs and the module. SWLOR.CLI finds them in the cache this fills, the same
@@ -127,6 +138,11 @@ jobs:
           SWLOR_RESOURCE_CONVERSION_WORKERS: '4'
         run: bash scripts/prepare-engine-test-home.sh --server-home "$ENGINE_HOME"
 
+      - name: Stay clear of the server's daily restart
+        # Passes at once when the run fits; otherwise sleeps until just after 10:00 UTC. Delete this step when
+        # ServerTasks.ProcessAutoRestart skips engine-test runs.
+        run: python3 tools/WaitOutServerRestart.py --run-minutes "$ENGINE_TEST_TIMEOUT_MINUTES"
+
       - name: Run the engine tests
         id: tests
         env:
@@ -142,11 +158,14 @@ jobs:
 
       - name: Summary
         if: ${{ !cancelled() && steps.tests.conclusion != 'skipped' }}
+        env:
+          RUNNER_OUTCOME: ${{ steps.tests.outcome }}
         run: |
           python3 tools/EngineTestSummary.py \
             --report "$ENGINE_HOME/app_logs/engine_tests/engine-test-results.json" \
             --log "$CI_OUT/engine-tests.log" \
             --timeout-minutes "$ENGINE_TEST_TIMEOUT_MINUTES" \
+            --runner-outcome "$RUNNER_OUTCOME" \
             --annotations --markdown-out "$GITHUB_STEP_SUMMARY"
 
       - name: Collect the results and server logs

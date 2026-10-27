@@ -9,7 +9,9 @@ Read only the sections the task needs:
 - Migration or persistence change: "Persistence and migration coverage".
 - Ability or perk coverage: "The ability behavior coverage program" and "The perk coverage program".
 - Output locking for the maintainability refactor: "Characterization scenarios (output locking)".
-- Running tests: "How to Run Locally". Concurrent runs collide on one compose project; see `AgentEnvironment.md`.
+- Running tests: "How to Run Locally". Concurrent runs collide on one compose project; see `AgentEnvironment.md`. A run that
+  crosses 10:00 UTC is killed by the server's daily restart ("CI", "The daily server restart").
+- The nightly and labelled-pull-request workflow: "CI".
 - Changing the runner itself: "Project Layout and Isolation", "Architecture Overview", "Environment Variable Reference".
 
 ## What It Is and Why
@@ -648,7 +650,7 @@ step that rolls, build a `SnapshotTable` of the outcomes and call `ScenarioSnaps
 `.github/workflows/engine-tests.yml` runs the suite for the maintainability refactor (`MaintainabilityRefactorPlan.md`) on
 `ubuntu-24.04` (the server image is Linux, and Docker on Windows runners cannot run Linux containers). Triggers:
 
-- `schedule`: nightly at 09:00 UTC.
+- `schedule`: nightly at 04:00 UTC (midnight US Eastern), so the run is over before the server's own restart at 10:00 UTC.
 - `pull_request` into `feature/maintainability-refactor` that carries the `engine-tests` label. It runs when the label is added
   and again on every push while the label is on; adding some other label does not restart it.
 - `workflow_dispatch` with an optional `filter` (the same text `--filter` takes, for example `Characterization`) and a `ref`
@@ -669,26 +671,40 @@ What a run does, all through the scripts a cloud session or dev machine uses (ru
    all 119 HAKs, but the dedicated server never reads models, textures or sounds (`prepare-engine-test-home.sh` makes those
    zero-byte files), and they are 147,000 of the 207,000 files. The script does a blobless depth-1 fetch (4 MB of trees) and a
    sparse non-cone checkout of the HAK folders and `sw_tlk` without those file types: about 59,000 files, 300 MB, 50 MB over
-   the wire. The full history is never cloned. Do not run `git checkout`, `git diff` against edited files or anything else that
-   needs the missing content in that checkout: git would download the 11 GB of blobs.
+   the wire. The full history is never cloned. The left-out files stay in the index as skip-worktree entries; do not write files
+   at those paths or run `git sparse-checkout disable` or anything else that needs their content in that checkout, or git
+   downloads the 11 GB of blobs. (`git diff HEAD`, `git ls-files` and `git ls-tree`, which `prepare-engine-test-home.sh` runs,
+   need no blob and no network there.)
 4. `scripts/prepare-engine-test-home.sh` builds the server-only HAKs and the TLK from it (the names of the left-out files
    come from the index, so the HAKs equal those built from a full checkout), packs `Module/` with `SWLOR.CLI --pack`
    (the Characterization snapshots need the module and the 2DA/TLK data of the branch itself), and pulls the Docker images.
-5. `scripts/run-engine-tests.sh --timeout-minutes 150` builds the test project and runs the suite in the pinned server image.
+5. `tools/WaitOutServerRestart.py` returns at once when a run of up to 150 minutes fits before the next 10:00 UTC, and otherwise
+   sleeps until 10:01:30 UTC (see "The daily server restart" below).
+6. `scripts/run-engine-tests.sh --timeout-minutes 150` builds the test project and runs the suite in the pinned server image.
    Its exit code is the job's result.
-6. `tools/EngineTestSummary.py` writes the job summary (verdict, failed tests, per-category table, slowest tests) and
-   annotations, and uploads the `engine-test-results` artifact (14 days): `engine-test-results.json`, the runner output
+7. `tools/EngineTestSummary.py` writes the job summary (verdict, failed tests, per-category table, slowest tests) and
+   annotations, and the job uploads the `engine-test-results` artifact (14 days): `engine-test-results.json`, the runner output
    `engine-tests.log`, and the server's `logs/` and `app_logs/`.
 
 The job fails when any engine test fails, when no test ran, when the server container exits non-zero (even after a green
 report), and when the server dies without writing a report. A run that hits the 150-minute wall clock fails too, and says so:
 the log carries `TIMED OUT after 150 minute(s)`, and the summary and an error annotation call it a timeout, not a failed test.
-The job's own limit (210 minutes) is above that on purpose, so GitHub never kills the job before the script has reported.
+The job's own limit (350 minutes: setup, a wait for the restart, the run, the upload) is above that on purpose, so GitHub never
+kills the job before the script has reported.
+
+### The daily server restart
+
+`ServerTasks.ProcessAutoRestart` shuts the game server down for the whole 30 seconds after 10:00:00 UTC every day, with no
+exception for engine-test runs. A run that crosses that moment ends without a report ("No report found ... the server likely
+crashed", with `Server shutting down for automated restart.` in the log); it happened to the first full local run of this
+workflow. Do not start a long engine run in the two or three hours before 10:00 UTC. The workflow handles it with a late
+nightly start and the wait step above, and `EngineTestSummary.py` names the cause when it happens anyway. The real fix is a
+guard in `ProcessAutoRestart` for `ApplicationSettings.EngineTestsEnabled`; after it lands, delete the wait step.
 
 Running the same steps on your machine: `scripts/ci/fetch-engine-test-haks.sh` (needs `SWLOR_Haks` empty or absent: it replaces
 it), then `scripts/prepare-engine-test-home.sh --server-home <dir>`, then `scripts/run-engine-tests.sh --server-home <dir>`.
-On a Windows checkout these `.sh` files carry CRLF line endings; convert them first, or use `run-engine-tests.ps1` with a home
-from the normal deploy flow.
+On a Windows checkout `prepare-engine-test-home.sh` and `run-engine-tests.sh` carry CRLF line endings; convert them first
+(`sed -i 's/\r$//'`), or use `run-engine-tests.ps1` with a home from the normal deploy flow.
 
 **This workflow has not yet run on GitHub-hosted runners**: Actions has been locked for the account by a billing issue since it
 was written. Its steps were verified one by one on a dev machine (see the pull request that added it); what only a hosted

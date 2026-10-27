@@ -19,6 +19,10 @@ from collections import OrderedDict
 
 OUTCOMES = {0: "Passed", 1: "Failed", 2: "Skipped"}
 TIMED_OUT = re.compile(r"TIMED OUT after (\d+) minute")
+RESTARTED = re.compile(r"Server shutting down for automated restart")
+# The lines run-engine-tests.sh prints when it fails although the report may be green.
+RUNNER_FAILURE = re.compile(r"Engine tests failed: server container exited with code \d+\.?|"
+                            r"Could not (?:tear down|restore|prepare)[^\r\n]*")
 # Only this many failures become annotations (GitHub shows at most ten per step); the Markdown lists them all.
 MAX_ANNOTATIONS = 10
 SLOWEST = 10
@@ -65,8 +69,12 @@ def category_rows(results):
     return rows
 
 
-def summarise(report, log, timeout_minutes=None):
-    """Returns (verdict, markdown lines, annotation lines)."""
+def summarise(report, log, timeout_minutes=None, runner_outcome=None):
+    """Returns (verdict, markdown lines, annotation lines).
+
+    runner_outcome is the result of the step that ran scripts/run-engine-tests.sh ("success", "failure", ...). A green
+    report does not make the run green when the runner failed: it also fails on the server container's exit code.
+    """
     notes, markdown = [], []
     timed_out = TIMED_OUT.search(log)
     results = (report or {}).get("Results") or []
@@ -81,6 +89,11 @@ def summarise(report, log, timeout_minutes=None):
             "suite did not finish. This is a timeout, not a failed test{1}. Look for a stalled test at the end of "
             "the log, or raise the limit.".format(
                 minutes, f"; {len(failed)} test(s) had already failed" if failed else ""))
+    elif report is None and RESTARTED.search(log):
+        verdict = "CUT OFF BY THE SERVER'S DAILY AUTOMATED RESTART (10:00 UTC), not a test failure"
+        notes.append("::error title=Engine tests cut off by the daily server restart::The game server restarts itself "
+                     "at 10:00 UTC (ServerTasks.ProcessAutoRestart) and this run was still going. No report was "
+                     "written. This is not a failed test; rerun it clear of 10:00 UTC.")
     elif report is None:
         verdict = "NO REPORT (the server crashed or was killed before it wrote one)"
         notes.append("::error title=Engine tests produced no report::The server never wrote "
@@ -90,6 +103,12 @@ def summarise(report, log, timeout_minutes=None):
         notes.append("::error title=No engine tests ran::The report holds no results. Check the filter and the log.")
     elif failed:
         verdict = f"{len(failed)} FAILED"
+    elif runner_outcome and runner_outcome != "success":
+        verdict = "RUNNER FAILED (every test passed, but the run did not end cleanly)"
+        reason = RUNNER_FAILURE.search(log)
+        notes.append("::error title=Engine test run failed::Every test in the report passed, but "
+                     + (escape_data(reason.group(0).strip()) if reason else "the runner script failed")
+                     + ". See the end of the log.")
     else:
         verdict = "PASSED"
 
@@ -165,11 +184,13 @@ def main(argv=None):
     parser.add_argument("--report", required=True, help="engine-test-results.json (may be missing)")
     parser.add_argument("--log", help="the runner's output, searched for the wall-clock timeout message")
     parser.add_argument("--timeout-minutes", type=int, help="the wall-clock limit the run was given")
+    parser.add_argument("--runner-outcome", help="outcome of the runner step (success, failure, cancelled, skipped)")
     parser.add_argument("--annotations", action="store_true", help="print GitHub error/warning annotations")
     parser.add_argument("--markdown-out", help="append the Markdown to this file (the job summary) instead of stdout")
     args = parser.parse_args(argv)
 
-    verdict, markdown, notes = summarise(read_report(args.report), read_log(args.log), args.timeout_minutes)
+    verdict, markdown, notes = summarise(read_report(args.report), read_log(args.log), args.timeout_minutes,
+                                         args.runner_outcome)
     if args.annotations:
         for note in notes:
             print(note)

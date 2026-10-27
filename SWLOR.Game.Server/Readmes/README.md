@@ -46,7 +46,7 @@ One line per guide. Rule guides are required reading before working in their are
 
 ## Plans, audits, and data
 
-- [MaintainabilityRefactorPlan.md](MaintainabilityRefactorPlan.md) and [MaintainabilityRefactorStatus.md](MaintainabilityRefactorStatus.md): the testability, dependency-injection and hot-reload refactor on `feature/maintainability-refactor`, and its progress and handoff.
+- [MaintainabilityRefactorPlan.md](MaintainabilityRefactorPlan.md) , [MaintainabilityRefactorStatus.md](MaintainabilityRefactorStatus.md), [MaintainabilityRefactorSpecs.md](MaintainabilityRefactorSpecs.md) and [MaintainabilityRefactorAgentBrief.md](MaintainabilityRefactorAgentBrief.md): the testability, dependency-injection and hot-reload refactor on `feature/maintainability-refactor`, and its progress and handoff.
 - [PlayerRecognitionAndDisguisesPlan.md](PlayerRecognitionAndDisguisesPlan.md), [BeastMutationExpansionPlan.md](BeastMutationExpansionPlan.md), [VelesTradeConcourse.md](VelesTradeConcourse.md), [SkillRankLimitsPlan.md](SkillRankLimitsPlan.md): feature plans.
 - [WeatherAreaAudit.md](WeatherAreaAudit.md): per-area weather audit.
 - [GameplayIconManifest.csv](GameplayIconManifest.csv), [CombatUpgradeBiblePerkManifest.csv](CombatUpgradeBiblePerkManifest.csv), [PlayerMessageAudit.json](PlayerMessageAudit.json): data read by tools and tests.

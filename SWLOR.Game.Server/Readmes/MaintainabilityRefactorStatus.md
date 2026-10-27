@@ -53,8 +53,11 @@ Status: `open`, `in progress`, `review` (pull request open), `done`, `blocked`.
 | P0-1 | Plan and status docs on the branch | - | Opus | done | - | First commit of the branch |
 | P0-2 | CI workflow: build + unit tests for the refactor branch; coverage collection with generated code excluded; baseline report | - | Sonnet | in progress | | Worktree `.claude/worktrees/mr-p0-2` |
 | P0-2b | Nightly and on-label engine-test workflow (feasibility first: Docker, module, haks in Actions) | P0-2 | Sonnet | open | | |
-| P0-3 | Inventory of randomness and time sources in combat, stats, perks, abilities, XP, crafting, loot | - | Haiku | in progress | | Read-only; input for P0-4 |
-| P0-4 | Behaviour-neutral seams + output-locking test project (`SWLOR.Game.Server.CharacterizationTests`), combat first | P0-3 | Opus spec, Sonnet build | open | | Each seam has a default-equals-today test |
+| P0-3 | Inventory of randomness and time sources in combat, stats, perks, abilities, XP, crafting, loot | - | Haiku | done | - | Findings summarized in [MaintainabilityRefactorSpecs.md](MaintainabilityRefactorSpecs.md) |
+| P0-4a | Output-locking Tier A: combat calculations (spec in MaintainabilityRefactorSpecs.md) | P0-3 | Sonnet | in progress | | Worktree `.claude/worktrees/mr-p0-4a` |
+| P0-4b | Output-locking Tier A: stats, abilities, perks | P0-4a | Sonnet | open | | |
+| P0-4c | Output-locking Tier A: XP, crafting, loot | P0-4a | Sonnet | open | | |
+| P0-4d | Output-locking Tier B: engine scenarios with a behaviour-neutral clock seam (spec to write) | P0-4a | Opus spec, Sonnet build | open | | Needs a clock seam for about 70 direct `DateTime.UtcNow` reads |
 | P0-5 | Boot-order and script-handler-order record test | - | Sonnet | in progress | | Worktree `.claude/worktrees/mr-p0-5` |
 | P0-6 | Scripted live smoke run with `tools/NwnLiveClient.py`; baseline recorded | - | Sonnet | open | | Needs a local server and client |
 | P0-7 | Daily sync script and parity script (characterization tests against a throwaway `master` worktree) | P0-4 | Sonnet | open | | |
@@ -68,7 +71,7 @@ Phases 1-4 and the final cutover get their own items when Phase 0 is done.
 Started 2026-10-26 by the coordinating session, each as a subagent with the agent brief:
 
 - P0-2 (Sonnet): branch `claude/mr-p0-2`, worktree `C:\Projects\SWLOR_NWN\.claude\worktrees\mr-p0-2`.
-- P0-3 (Haiku): read-only; result goes into the P0-4 task, not into a pull request.
+- P0-4a (Sonnet): branch `claude/mr-p0-4a`, worktree `C:\Projects\SWLOR_NWN\.claude\worktrees\mr-p0-4a`.
 - P0-5 (Sonnet): branch `claude/mr-p0-5`, worktree `C:\Projects\SWLOR_NWN\.claude\worktrees\mr-p0-5`.
 
 If this session ends before they report: check `gh pr list --base feature/maintainability-refactor` and the
@@ -76,9 +79,8 @@ branches above, review any open pull request, and restart an item from its row i
 
 ## Next actions
 
-1. Review and merge the P0-2 and P0-5 pull requests; record the coverage baseline here.
-2. Write the P0-4 spec from the P0-3 inventory.
-3. Then P0-8 (domain map first), P0-9, P0-6, P0-2b, P0-7.
+1. Review and merge the P0-2, P0-5 and P0-4a pull requests; record the coverage baseline here.
+2. Then P0-4b, P0-4c, P0-8 (domain map first), P0-6, P0-2b, P0-7, and the P0-4d spec.
 
 ## Sync log
 

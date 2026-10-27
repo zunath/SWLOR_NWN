@@ -3,7 +3,7 @@
 # Kinds: action = void handler, run in this order; conditional = bool handler, every one runs and the results are ANDed.
 # The order is the one the script handler manifest (SWLOR.Game.Server/Core/ScriptHandlerOrder.txt) declares, not reflection order.
 # A handler the manifest does not list runs after the listed ones until it is added; a listed handler that no longer exists is ignored.
-# Regenerate (then rebuild, because the server embeds the manifest): SWLOR_UPDATE_SNAPSHOTS=1 dotnet test SWLOR.Game.Server.Tests --no-build --filter "FullyQualifiedName~ScriptHandlerOrderTests"
+# Regenerate (build first so the handlers are current, and build again after, because the server embeds the manifest): SWLOR_UPDATE_SNAPSHOTS=1 dotnet test SWLOR.Game.Server.Tests --no-build --filter "FullyQualifiedName~ScriptHandlerOrderTests"
 
 == BOOT BUCKETS (in the order the server reaches them) ==
 

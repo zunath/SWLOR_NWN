@@ -399,11 +399,12 @@ mod_preload  # run by the engine before the module loads
 **Adding a handler.**
 
 1. Write the `[NWNEventHandler]` method.
-2. Run the manifest generator, then rebuild:
-   `SWLOR_UPDATE_SNAPSHOTS=1 dotnet test SWLOR.Game.Server.Tests --no-build --filter "FullyQualifiedName~ScriptHandlerOrderTests"`
+2. Build, so the generator sees the new handler: `dotnet build SWLOR.Game.Server.Tests -p:RunPostBuildEvent=Never -v q -clp:ErrorsOnly`.
+3. Run the manifest generator: `SWLOR_UPDATE_SNAPSHOTS=1 dotnet test SWLOR.Game.Server.Tests --no-build --filter "FullyQualifiedName~ScriptHandlerOrderTests"`
    (PowerShell: `$env:SWLOR_UPDATE_SNAPSHOTS='1'; dotnet test ...; Remove-Item Env:SWLOR_UPDATE_SNAPSHOTS`). It rewrites the manifest from what the server would load, so existing handlers keep their order and a new handler is **appended to the end of its script's block**.
-3. If the new handler must run before others, move its line in the manifest. The generator never reorders lines it already has.
-4. Commit the manifest with the handler. `ScriptHandlerOrderTests` fails while the manifest is not complete or names a handler that no longer exists.
+4. If the new handler must run before others, move its line in the manifest. The generator never reorders lines it already has.
+5. Build again (same command as step 2) and run `dotnet test SWLOR.Game.Server.Tests --no-build --filter "FullyQualifiedName~ScriptHandler"`. The server embeds the manifest, so the assembly carries the new one only after a rebuild.
+6. Commit the manifest with the handler. `ScriptHandlerOrderTests` fails while the manifest is not complete or names a handler that no longer exists.
 
 **Renaming or moving a handler method or class.** Edit its manifest line in place. Regenerating instead would drop the old line and append the new name at the end of the script, changing when it runs.
 

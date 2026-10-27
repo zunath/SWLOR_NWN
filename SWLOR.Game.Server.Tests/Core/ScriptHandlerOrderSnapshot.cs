@@ -46,7 +46,7 @@ public static class ScriptHandlerOrderSnapshot
         text.Append("# Kinds: action = void handler, run in this order; conditional = bool handler, every one runs and the results are ANDed.\n");
         text.Append("# The order is the one the script handler manifest (SWLOR.Game.Server/Core/ScriptHandlerOrder.txt) declares, not reflection order.\n");
         text.Append("# A handler the manifest does not list runs after the listed ones until it is added; a listed handler that no longer exists is ignored.\n");
-        text.Append("# Regenerate (then rebuild, because the server embeds the manifest): SWLOR_UPDATE_SNAPSHOTS=1 dotnet test SWLOR.Game.Server.Tests --no-build --filter \"FullyQualifiedName~ScriptHandlerOrderTests\"\n");
+        text.Append("# Regenerate (build first so the handlers are current, and build again after, because the server embeds the manifest): SWLOR_UPDATE_SNAPSHOTS=1 dotnet test SWLOR.Game.Server.Tests --no-build --filter \"FullyQualifiedName~ScriptHandlerOrderTests\"\n");
         text.Append('\n');
 
         text.Append("== BOOT BUCKETS (in the order the server reaches them) ==\n");

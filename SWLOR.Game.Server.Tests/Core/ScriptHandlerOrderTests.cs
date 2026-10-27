@@ -30,7 +30,7 @@ namespace SWLOR.Game.Server.Tests.Core;
 ///
 /// <para><b>What a failure here means.</b> The manifest and the registry disagree: a handler was added, renamed, moved
 /// to another type or removed without the manifest following. The fix is to regenerate the manifest (the command is in
-/// the failure message, then rebuild) and review the diff; a new handler is appended to the end of its script, so move
+/// the failure message; build before and after it) and review the diff; a new handler is appended to the end of its script, so move
 /// its line if it must run earlier. This test never judges whether the order is right, only that the manifest is complete.</para>
 ///
 /// <para>Which assemblies are scanned, and in what order, is load order. On a production server only
@@ -51,7 +51,7 @@ public class ScriptHandlerOrderTests
     private const string RegenerateCommand =
         "SWLOR_UPDATE_SNAPSHOTS=1 dotnet test SWLOR.Game.Server.Tests --no-build --filter \"FullyQualifiedName~ScriptHandlerOrderTests\"" +
         "   (PowerShell: $env:SWLOR_UPDATE_SNAPSHOTS='1'; dotnet test ...; Remove-Item Env:SWLOR_UPDATE_SNAPSHOTS)" +
-        "   then rebuild SWLOR.Game.Server.Tests so the server assembly embeds the new manifest";
+        "   (build SWLOR.Game.Server.Tests first so the generator sees your handler, and again afterwards so the server assembly embeds the new manifest)";
 
     private static Assembly GameAssembly => typeof(ScriptRegistry).Assembly;
 

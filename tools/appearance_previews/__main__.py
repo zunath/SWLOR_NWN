@@ -249,12 +249,24 @@ def main(argv=None):
     cache.save()
 
     kept, skipped, wanted = write_pictures(all_keys, renders, args.output, args.size)
+    # A part that failed to render keeps whatever picture was published before.
+    wanted |= {f"{preview_resref(key, view)}.dds" for key in failed_keys(problems) for view in VIEWS}
     if not args.only:
         for stale in args.output.glob("*.dds"):
             if stale.name not in wanted:
                 stale.unlink()
     print(f"{kept} pictures written, {skipped} duplicates of the human body skipped, {len(problems)} problems")
     return 1 if problems else 0
+
+
+def failed_keys(problems):
+    """Part keys named by PREVIEW_* problem lines."""
+    keys = set()
+    for line in problems:
+        parts = line.split()
+        if len(parts) > 1 and parts[0].startswith("PREVIEW_") and parts[0] != "PREVIEW_BATCH_FAILED":
+            keys.add(parts[1])
+    return keys
 
 
 def batch_problems(returncode, stdout, stderr, batch, renders):

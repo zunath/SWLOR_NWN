@@ -393,5 +393,13 @@ class MissingHakTests(unittest.TestCase):
             self.assertTrue((output / "apmh0_chest001f.dds").exists(), "existing pictures are kept")
 
 
+class FailedPartTests(unittest.TestCase):
+    def test_problem_lines_name_their_parts(self):
+        from appearance_previews.__main__ import failed_keys
+        problems = ["PREVIEW_FAILED pmh0_chest001 RuntimeError('x')", "PREVIEW_MISSING_RENDER helm_002",
+                    "PREVIEW_NO_MODEL pfh0_head012", "PREVIEW_BATCH_FAILED exit 3: crash"]
+        self.assertEqual(failed_keys(problems), {"pmh0_chest001", "helm_002", "pfh0_head012"})
+
+
 if __name__ == "__main__":
     unittest.main()

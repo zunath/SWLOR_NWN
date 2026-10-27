@@ -1,0 +1,129 @@
+namespace SWLOR.Game.Server.Service.SpaceService
+{
+    /// <summary>
+    /// The space combat rules (plan sections 5, 8 and 9) as pure functions. The combat simulator's SpaceShotMath
+    /// holds the same rules, so both must give the same numbers.
+    /// </summary>
+    public static class SpaceCombatMath
+    {
+        /// <summary>Hit chance lost per size step the weapon is above its target.</summary>
+        public const int SizeHitPenaltyPerStep = 10;
+
+        /// <summary>Damage share lost per size step the weapon is below its target. Compounds per step.</summary>
+        public const double SizeDamagePenaltyPerStep = 0.12;
+
+        public const int MinimumResistance = -100;
+        public const int MaximumResistance = 100;
+
+        /// <summary>Energy: ship Accuracy + module Accuracy + AGI x 3. Launcher: the same with PER x 3.</summary>
+        public static int Accuracy(int shipAccuracy, int moduleAccuracy, int agi, int per, SpaceWeaponFamily family) =>
+            shipAccuracy + moduleAccuracy + (family == SpaceWeaponFamily.Energy ? agi : per) * 3;
+
+        /// <summary>Ship Evasion + AGI x 3.</summary>
+        public static int Evasion(int shipEvasion, int agi) => shipEvasion + agi * 3;
+
+        /// <summary>The attribute damage scales with: PER for energy weapons, MGT for launchers.</summary>
+        public static int DamageAttribute(SpaceWeaponFamily family, int per, int mgt) =>
+            family == SpaceWeaponFamily.Energy ? per : mgt;
+
+        /// <summary>Ship Attack + module Attack + the damage attribute.</summary>
+        public static int Attack(int shipAttack, int moduleAttack, int damageAttribute) =>
+            shipAttack + moduleAttack + damageAttribute;
+
+        /// <summary>Ship Defense + the target's VIT.</summary>
+        public static int Defense(int shipDefense, int vit) => shipDefense + vit;
+
+        /// <summary>Size steps the weapon is above (positive) or below (negative) the target; 0 when it ignores size.</summary>
+        public static int SizeSteps(ShipSize weaponSize, ShipSize targetSize, bool ignoreSize) =>
+            ignoreSize ? 0 : (int)weaponSize - (int)targetSize;
+
+        /// <summary>
+        /// Combat.CalculateHitRate with the size penalty as its percentage modifier. The formula's own limits apply
+        /// after the penalty.
+        /// </summary>
+        public static int HitChance(int accuracy, int evasion, ShipSize weaponSize, ShipSize targetSize, bool ignoreSize)
+        {
+            var penalty = Math.Max(0, SizeSteps(weaponSize, targetSize, ignoreSize)) * SizeHitPenaltyPerStep;
+            return Combat.CalculateHitRate(accuracy, evasion, -penalty);
+        }
+
+        /// <summary>Damage multiplier for a weapon smaller than its target: (1 - penalty) per step, compounding.</summary>
+        public static double SizeDamageMultiplier(ShipSize weaponSize, ShipSize targetSize, bool ignoreSize) =>
+            Math.Pow(1.0 - SizeDamagePenaltyPerStep, Math.Max(0, -SizeSteps(weaponSize, targetSize, ignoreSize)));
+
+        /// <summary>The damage formula's delta cap for a weapon of this rank.</summary>
+        public static int DeltaCap(int rank) => rank <= 0 ? 1 : Math.Clamp(rank / 10 + 1, 1, 6);
+
+        /// <summary>The ground critical rate with the module rank as weapon rank. PER against VIT for both families.</summary>
+        public static int CriticalRate(int per, int targetVit, int moduleRank, int modifier) =>
+            Combat.CalculateCriticalRate(per, targetVit, moduleRank, modifier);
+
+        /// <summary>Combat.CalculateDamageRange with one Attack against one Defense and the target's VIT as defender stat.</summary>
+        public static (int Minimum, int Maximum) DamageRange(
+            int attack, int dmg, int damageAttribute, int defense, int targetVit, bool critical, int moduleRank) =>
+            Combat.CalculateDamageRange(
+                attack,
+                dmg,
+                damageAttribute,
+                defense,
+                targetVit,
+                critical ? Combat.StandardCriticalRating : 0,
+                DeltaCap(moduleRank));
+
+        /// <summary>The share of damage a resistance lets through. The resistance is limited to -100..100.</summary>
+        public static double ResistanceMultiplier(int resistancePercent) =>
+            1.0 - Math.Clamp(resistancePercent, MinimumResistance, MaximumResistance) / 100.0;
+
+        /// <summary>
+        /// Applies damage that has been through every other stage. It goes to the shield first (the shield loses the
+        /// damage times <paramref name="shieldDamageMultiplier"/>) and the part the shield could not absorb goes to the
+        /// hull at 1x; <paramref name="shieldBypass"/> sends all of it to the hull. Returns the shield and hull points
+        /// removed, which leaves out damage beyond the hull's last point.
+        /// </summary>
+        public static double ApplyToPools(
+            ref double shield, ref double hull, double damage, bool shieldBypass, double shieldDamageMultiplier)
+        {
+            if (damage <= 0 || hull <= 0)
+                return 0;
+
+            if (shieldDamageMultiplier <= 0)
+                shieldDamageMultiplier = 1.0;
+
+            var removed = 0.0;
+            var toHull = damage;
+            if (!shieldBypass && shield > 0)
+            {
+                var shieldCost = damage * shieldDamageMultiplier;
+                if (shield >= shieldCost)
+                {
+                    shield -= shieldCost;
+                    return shieldCost;
+                }
+
+                toHull = damage - shield / shieldDamageMultiplier;
+                removed += shield;
+                shield = 0;
+            }
+
+            var hullLoss = Math.Min(hull, toHull);
+            hull -= hullLoss;
+            return removed + hullLoss;
+        }
+
+        /// <summary>Share of max shield regained per second, by hull size.</summary>
+        public static double ShieldRegenRate(ShipSize size) => size switch
+        {
+            ShipSize.Medium => 0.0055,
+            ShipSize.Large => 0.006,
+            ShipSize.Capital => 0.0065,
+            _ => 0.005,
+        };
+
+        /// <summary>Shield regained per second: max shield x the size rate x the WIL factor x the regen bonus.</summary>
+        public static double ShieldRegenPerSecond(double maxShield, ShipSize size, int wil, int shieldRegenBonusPercent) =>
+            maxShield * ShieldRegenRate(size) * (1.0 + 0.02 * (wil - 10)) * (1.0 + shieldRegenBonusPercent / 100.0);
+
+        /// <summary>Capacitor regained per second: the hull's regen plus 0.05 per point of WIL.</summary>
+        public static double CapacitorRegenPerSecond(double hullRegen, int wil) => hullRegen + 0.05 * wil;
+    }
+}

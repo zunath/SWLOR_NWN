@@ -1,11 +1,11 @@
 using System.Collections.Generic;
 using SWLOR.Game.Server.Service;
+using SWLOR.Game.Server.Service.CombatService;
 using SWLOR.Game.Server.Service.PerkService;
 using SWLOR.Game.Server.Service.SkillService;
 using SWLOR.Game.Server.Service.SpaceService;
 using SWLOR.NWN.API.NWScript.Enum;
 using SWLOR.NWN.API.NWScript.Enum.VisualEffect;
-using Random = SWLOR.Game.Server.Service.Random;
 
 namespace SWLOR.Game.Server.Feature.ShipModuleDefinition
 {
@@ -47,57 +47,27 @@ namespace SWLOR.Game.Server.Feature.ShipModuleDefinition
                 .Capacitor(capacitor)
                 .ActivatedAction((activator, activatorShipStatus, target, targetShipStatus, moduleBonus) =>
                 {
-                    var attackBonus = activatorShipStatus.ThermalDamage;
-                    var attackerStat = Space.GetAttackStat(activator);
-                    var attack = Space.GetShipAttack(activator, attackBonus);
-                    var defenseBonus = targetShipStatus.ThermalDefense * 2;
-                    var defense = Space.GetShipDefense(target, defenseBonus);
-                    var defenderStat = GetAbilityScore(target, AbilityType.Vitality);
-                    var moduleDamage = dmg + moduleBonus / 3;
-                    var damage = Combat.CalculateDamage(
-                        attack,
-                        moduleDamage,
-                        attackerStat,
-                        defense,
-                        defenderStat,
-                        0);
+                    var rank = (requiredLevel - 1) * 10;
+                    var shot = new SpaceWeaponShot
+                    {
+                        Family = SpaceWeaponFamily.Energy,
+                        DamageType = CombatDamageType.Thermal,
+                        Dmg = dmg + moduleBonus / 3,
+                        Rank = rank,
+                        Attack = rank * 2,
+                        Accuracy = rank * 2
+                    };
+                    var result = Space.RollWeaponShot(activator, activatorShipStatus, target, targetShipStatus, shot);
 
-                    var chanceToHit = Space.CalculateChanceToHit(activator, target);
-                    var roll = Random.D100(1);
-                    var isHit = roll <= chanceToHit;
                     var sound = EffectVisualEffect(VisualEffect.Vfx_Ship_Blast);
                     var missile = EffectVisualEffect(VisualEffect.Mirv_StarWars_Bolt2);
-
-                    if (isHit)
+                    AssignCommand(activator, () =>
                     {
-                        AssignCommand(activator, () =>
-                        {
-                            ApplyEffectToObject(DurationType.Instant, sound, target);
-                            ApplyEffectToObject(DurationType.Instant, missile, target);
+                        ApplyEffectToObject(DurationType.Instant, sound, target);
+                        ApplyEffectToObject(DurationType.Instant, missile, target);
+                    });
 
-                            DelayCommand(0.3f, () =>
-                            {
-                                Space.ApplyShipDamage(activator, target, damage);
-                            });
-                        });
-                    }
-                    else
-                    {
-                        AssignCommand(activator, () =>
-                        {
-                            ApplyEffectToObject(DurationType.Instant, sound, target);
-                            ApplyEffectToObject(DurationType.Instant, missile, target);
-                        });
-                    }
-
-                    var attackId = isHit ? 1 : 4;
-                    Messaging.SendMessageNearbyToPlayers(
-                        target,
-                        receiver => Combat.BuildCombatLogMessage(receiver, activator, target, attackId, chanceToHit),
-                        60f);
-
-                    Enmity.ModifyEnmity(activator, target, damage);
-                    CombatPoint.AddCombatPoint(activator, target, SkillType.Piloting);
+                    Space.CompleteWeaponShot(activator, target, shot, result, 0.3f);
                 });
         }
     }

@@ -1,5 +1,6 @@
 using System.Collections.Generic;
 using SWLOR.Game.Server.Service.CombatService;
+using SWLOR.Game.Server.Service.SkillService;
 
 namespace SWLOR.Game.Server.Service.SpaceService
 {
@@ -13,9 +14,19 @@ namespace SWLOR.Game.Server.Service.SpaceService
             public DateTime RecastTime { get; set; }
             public DateTime RecastStartedAt { get; set; }
             public int ModuleBonus { get; set; }
+
+            /// <summary>
+            /// RequiresSkill ranks on the module item when it was installed. Null when it had none.
+            /// </summary>
+            public Dictionary<SkillType, int> RequiredSkills { get; set; }
         }
 
         public string ItemTag { get; set; }
+
+        /// <summary>
+        /// RequiresSkill ranks on the ship's deed item when it was registered. Null when it had none.
+        /// </summary>
+        public Dictionary<SkillType, int> RequiredSkills { get; set; }
         public int Shield { get; set; }
         public int Hull { get; set; }
         public int Capacitor { get; set; }

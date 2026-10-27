@@ -490,11 +490,9 @@ namespace SWLOR.Game.Server.Service
                         weaponSkillRequirementOverride == SkillType.TwinPistol);
                     var rankRequired = GetItemPropertyCostTableValue(ip);
 
-                    if (Skill.GetCreatureSkillRank(creature, skillType) < rankRequired)
-                    {
-                        var skillName = Skill.GetSkillDetails(skillType).Name;
-                        return $"This item requires {skillName} rank {rankRequired} to use.";
-                    }
+                    var skillError = GetSkillRequirementError(creature, skillType, rankRequired);
+                    if (!string.IsNullOrEmpty(skillError))
+                        return skillError;
                 }
                 else if (type == ItemPropertyType.RequiresStat)
                 {
@@ -514,6 +512,71 @@ namespace SWLOR.Game.Server.Service
             }
 
             return string.Empty;
+        }
+
+        /// <summary>
+        /// Returns the use error for a single skill rank requirement, or an empty string if the creature meets it.
+        /// </summary>
+        public static string GetSkillRequirementError(uint creature, SkillType skillType, int rankRequired)
+        {
+            if (Skill.GetCreatureSkillRank(creature, skillType) >= rankRequired)
+                return string.Empty;
+
+            var skillName = Skill.GetSkillDetails(skillType).Name;
+            return $"This item requires {skillName} rank {rankRequired} to use.";
+        }
+
+        /// <summary>
+        /// Returns the highest RequiresSkill rank on an item for each skill, or null if it has none.
+        /// </summary>
+        public static Dictionary<SkillType, int> GetRequiredSkills(uint item)
+        {
+            Dictionary<SkillType, int> required = null;
+
+            for (var ip = GetFirstItemProperty(item); GetIsItemPropertyValid(ip); ip = GetNextItemProperty(item))
+            {
+                if (GetItemPropertyType(ip) != ItemPropertyType.RequiresSkill)
+                    continue;
+
+                var skillType = (SkillType)GetItemPropertySubType(ip);
+                var rank = GetItemPropertyCostTableValue(ip);
+
+                required ??= new Dictionary<SkillType, int>();
+                if (!required.TryGetValue(skillType, out var existing) || rank > existing)
+                    required[skillType] = rank;
+            }
+
+            return required;
+        }
+
+        /// <summary>
+        /// Finds the first skill requirement a rank lookup does not satisfy.
+        /// </summary>
+        public static KeyValuePair<SkillType, int>? FindUnmetSkillRequirement(
+            IReadOnlyDictionary<SkillType, int> requirements,
+            System.Func<SkillType, int> getRank)
+        {
+            if (requirements == null)
+                return null;
+
+            foreach (var requirement in requirements)
+            {
+                if (getRank(requirement.Key) < requirement.Value)
+                    return requirement;
+            }
+
+            return null;
+        }
+
+        /// <summary>
+        /// Returns the use error for stored skill requirements, or an empty string if the creature meets them all.
+        /// </summary>
+        public static string GetSkillRequirementsError(uint creature, IReadOnlyDictionary<SkillType, int> requirements)
+        {
+            var unmet = FindUnmetSkillRequirement(requirements, skill => Skill.GetCreatureSkillRank(creature, skill));
+            return unmet.HasValue
+                ? GetSkillRequirementError(creature, unmet.Value.Key, unmet.Value.Value)
+                : string.Empty;
         }
 
         public static string CanEquip(uint creature, uint item, InventorySlot? prospectiveSlot = null)

@@ -559,7 +559,10 @@ namespace SWLOR.Game.Server.Service
 
             if (!CanPlayerUseShip(player, dbShip.Status))
             {
-                SendMessageToPC(player, ColorToken.Red("You do not have the ability to pilot this ship."));
+                var skillError = GetShipSkillRequirementError(player, dbShip.Status);
+                SendMessageToPC(player, ColorToken.Red(string.IsNullOrEmpty(skillError)
+                    ? "You do not have the ability to pilot this ship."
+                    : skillError));
                 return;
             }
 
@@ -1213,7 +1216,31 @@ namespace SWLOR.Game.Server.Service
                 if (!CanPlayerUseShipModule(player, shipModule.ItemTag)) return false;
             }
 
-            return true;
+            return string.IsNullOrEmpty(GetShipSkillRequirementError(player, playerShip));
+        }
+
+        /// <summary>
+        /// Returns the use error for the first unmet RequiresSkill rank on the ship's deed or any fitted module,
+        /// or an empty string if the player meets them all. Requirements are stored when the deed is registered
+        /// and when a module is installed, so no item has to be deserialized.
+        /// </summary>
+        public static string GetShipSkillRequirementError(uint player, ShipStatus playerShip)
+        {
+            var error = Item.GetSkillRequirementsError(player, playerShip.RequiredSkills);
+            if (!string.IsNullOrEmpty(error)) return error;
+
+            var modules = playerShip.HighPowerModules.Values
+                .Concat(playerShip.MidPowerModules.Values)
+                .Concat(playerShip.LowPowerModules.Values)
+                .Concat(playerShip.ConfigurationModules.Values);
+
+            foreach (var shipModule in modules)
+            {
+                error = Item.GetSkillRequirementsError(player, shipModule.RequiredSkills);
+                if (!string.IsNullOrEmpty(error)) return error;
+            }
+
+            return string.Empty;
         }
 
         /// <summary>

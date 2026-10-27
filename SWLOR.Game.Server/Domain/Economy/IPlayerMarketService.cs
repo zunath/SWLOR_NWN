@@ -1,0 +1,56 @@
+using System.Collections.Generic;
+using SWLOR.Game.Server.Service.PlayerMarketService;
+using SWLOR.NWN.API.NWScript.Enum.Item;
+
+namespace SWLOR.Game.Server.Domain.Economy
+{
+    /// <summary>
+    /// The player market: its categories and regions, and the checks that run when the module loads and when a player
+    /// enters. The static facade <c>Service.PlayerMarket</c> forwards to the container's instance of this interface and
+    /// keeps the event handlers and the constants.
+    /// </summary>
+    public interface IPlayerMarketService
+    {
+        /// <summary>
+        /// When the module caches, cache all static player market data for quick retrieval.
+        /// </summary>
+        void CacheData();
+
+        /// <summary>
+        /// Marks items as unlisted if they have been sitting on the market for longer than two weeks.
+        /// </summary>
+        void RemoveOldListings();
+
+        /// <summary>
+        /// When a player enters the server, if they have credits in their market till, send them a message stating so.
+        /// </summary>
+        void CheckMarketTill();
+
+        /// <summary>
+        /// Retrieves all active market categories.
+        /// </summary>
+        /// <returns>A dictionary of active market categories.</returns>
+        Dictionary<MarketCategoryType, MarketCategoryAttribute> GetActiveCategories();
+
+        /// <summary>
+        /// Retrieves the market region detail given a specific type.
+        /// </summary>
+        /// <param name="regionType">The type of market region</param>
+        /// <returns>A market region detail</returns>
+        MarketRegionAttribute GetMarketRegion(MarketRegionType regionType);
+
+        /// <summary>
+        /// Returns the market category decided by the base item alone (weapons and wearables), or null
+        /// when the item's data decides it. Needs no live item, so offline migrations can use it.
+        /// </summary>
+        MarketCategoryType? GetBaseItemMarketCategory(BaseItem baseItemType);
+
+        /// <summary>
+        /// Determines which market category an item should be placed in.
+        /// If category cannot be determined, MarketCategoryType.Miscellaneous will be returned.
+        /// </summary>
+        /// <param name="item">The item to check</param>
+        /// <returns>A market category type to place the item in.</returns>
+        MarketCategoryType GetItemMarketCategory(uint item);
+    }
+}

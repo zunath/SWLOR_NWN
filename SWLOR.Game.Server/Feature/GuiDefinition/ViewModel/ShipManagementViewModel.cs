@@ -1424,6 +1424,7 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
                     Status = new ShipStatus
                     {
                         ItemTag = itemTag,
+                        RequiredSkills = Item.GetRequiredSkills(item),
                         Shield = shipDetail.MaxShield + bonuses.Shield,
                         MaxShield = shipDetail.MaxShield + bonuses.Shield,
                         Hull = shipDetail.MaxHull + bonuses.Hull,
@@ -1575,6 +1576,14 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
                 return false;
             }
 
+            // Doesn't meet skill requirements.
+            var skillError = Item.GetSkillRequirementsError(Player, Item.GetRequiredSkills(item));
+            if (!string.IsNullOrEmpty(skillError))
+            {
+                SendMessageToPC(Player, skillError);
+                return false;
+            }
+
             var capShip = dbShip.Status.CapitalShip;
             var capMod = moduleDetails.CapitalClassModule;
 
@@ -1634,7 +1643,8 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
                         SerializedItem = ObjectPlugin.Serialize(item),
                         ItemTag = itemTag,
                         RecastTime = DateTime.MinValue,
-                        ModuleBonus = moduleBonus
+                        ModuleBonus = moduleBonus,
+                        RequiredSkills = Item.GetRequiredSkills(item)
                     };
 
                     moduleDetails.ModuleEquippedAction?.Invoke(dbShip.Status, moduleBonus);
@@ -1709,7 +1719,8 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
                         SerializedItem = ObjectPlugin.Serialize(item),
                         ItemTag = itemTag,
                         RecastTime = DateTime.MinValue,
-                        ModuleBonus = moduleBonus
+                        ModuleBonus = moduleBonus,
+                        RequiredSkills = Item.GetRequiredSkills(item)
                     };
 
                     moduleDetails.ModuleEquippedAction?.Invoke(dbShip.Status, moduleBonus);
@@ -1783,7 +1794,8 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
                             SerializedItem = ObjectPlugin.Serialize(item),
                             ItemTag = itemTag,
                             RecastTime = DateTime.MinValue,
-                            ModuleBonus = moduleBonus
+                            ModuleBonus = moduleBonus,
+                            RequiredSkills = Item.GetRequiredSkills(item)
                         };
 
                         moduleDetails.ModuleEquippedAction?.Invoke(dbShip.Status, moduleBonus);

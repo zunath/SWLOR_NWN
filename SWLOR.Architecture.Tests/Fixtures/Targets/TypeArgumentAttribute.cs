@@ -1,6 +1,6 @@
 namespace SWLOR.Architecture.Tests.Fixtures.Targets;
 
-[System.AttributeUsage(System.AttributeTargets.Class, AllowMultiple = true)]
+[System.AttributeUsage(System.AttributeTargets.All, AllowMultiple = true)]
 public sealed class TypeArgumentAttribute : System.Attribute
 {
     public TypeArgumentAttribute(System.Type type)

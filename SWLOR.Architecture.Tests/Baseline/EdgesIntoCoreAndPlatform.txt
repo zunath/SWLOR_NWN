@@ -629,12 +629,12 @@ Gui -> FrameProfiler | 2
 Gui -> Log | 1
 
 # UI -> Platform (10 edges)
-Feature/GuiDefinition -> Platform/Core | 27
+Feature/GuiDefinition -> Platform/Core | 143
 Feature/GuiDefinition -> Platform/Entity | 336
 Feature/GuiDefinition -> Platform/Enumeration | 21
 Feature/GuiDefinition -> Platform/Extension | 3
 Feature/GuiDefinition -> Platform/Root | 9
-Gui -> Platform/Core | 103
+Gui -> Platform/Core | 115
 Gui -> Platform/Entity | 3
 Gui -> Platform/Enumeration | 1
 Gui -> Platform/Properties | 1

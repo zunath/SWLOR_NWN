@@ -21,6 +21,7 @@ public class AssemblyScannerTests
     [TestCase(typeof(TypeofTarget), "Source::TakesTypeof", TestName = "typeof")]
     [TestCase(typeof(ParameterTarget), "Source::TakesParameter", TestName = "Parameter type")]
     [TestCase(typeof(ReturnTarget), "Source::Returns", TestName = "Return type")]
+    [TestCase(typeof(MemberReferenceSignatureTarget), "Source::CallsGenericHost", TestName = "Signature of a member reference")]
     [TestCase(typeof(LocalTarget), "Source::UsesLocal", TestName = "Local variable type")]
     [TestCase(typeof(GenericArgumentTarget), "Source::UsesGenericArgument", TestName = "Generic argument of a framework type")]
     [TestCase(typeof(GenericMethodTarget), "Source::UsesGenericMethod", TestName = "Generic argument of a framework method")]
@@ -34,6 +35,15 @@ public class AssemblyScannerTests
         var members = MembersReferencing(typeof(Source), target);
 
         members.Should().Contain(member);
+    }
+
+    [TestCase(typeof(ParameterAttributeTarget), "SignatureAttributeSource::Parameter", TestName = "Attribute on a parameter")]
+    [TestCase(typeof(ReturnAttributeTarget), "SignatureAttributeSource::Returning", TestName = "Attribute on a return value")]
+    [TestCase(typeof(MethodGenericAttributeTarget), "SignatureAttributeSource::Generic", TestName = "Attribute on a method's generic parameter")]
+    [TestCase(typeof(TypeGenericAttributeTarget), "SignatureAttributeSource::(type)", TestName = "Attribute on a type's generic parameter")]
+    public void Records_the_types_named_by_attributes_on_signatures(Type target, string member)
+    {
+        MembersReferencing(typeof(SignatureAttributeSource<>), target).Should().Contain(member);
     }
 
     [Test]

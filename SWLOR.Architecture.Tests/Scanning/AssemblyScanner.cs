@@ -15,8 +15,9 @@ namespace SWLOR.Architecture.Tests.Scanning;
 /// <para>A reference is any of: a method, field, property accessor or type token in a method body (calls, field
 /// access, <c>newobj</c>, casts, <c>typeof</c>, boxing, <c>ldftn</c>, <c>calli</c> signatures), a catch type, a type
 /// in a local variable, a type in a method or field signature (return value, parameter, field type, generic
-/// arguments, arrays), a base type or interface, a generic constraint, or a custom attribute (its type, plus the types
-/// named by <c>typeof</c> arguments and the enum types of enum arguments).</para>
+/// arguments, arrays), a base type or interface, a generic constraint, or a custom attribute on a
+/// type, member, parameter, return value or generic parameter (its type, plus the types named by <c>typeof</c>
+/// arguments and the enum types of enum arguments).</para>
 /// <para>Nested and compiler-generated types (closures, lambdas, async state machines, local functions) are
 /// attributed to the top-level type that declares them.</para>
 /// <para><b>Limit.</b> The C# compiler inlines constants (enum members, <c>const</c> fields), so a dependency made
@@ -82,7 +83,7 @@ internal static class AssemblyScanner
             AddEntity(type.BaseType);
             foreach (var implementation in type.GetInterfaceImplementations())
                 AddEntity(_metadata.GetInterfaceImplementation(implementation).Interface);
-            AddConstraints(type.GetGenericParameters());
+            AddGenericParameters(type.GetGenericParameters());
             AddAttributes(type.GetCustomAttributes());
 
             foreach (var fieldHandle in type.GetFields())
@@ -115,13 +116,14 @@ internal static class AssemblyScanner
         {
             _member = MemberId(owner, _metadata.GetString(method.Name));
 
-            var signature = method.DecodeSignature(_signatures, null);
-            AddAll(signature.ReturnType);
-            foreach (var parameter in signature.ParameterTypes)
-                AddAll(parameter);
+            AddSignature(method.DecodeSignature(_signatures, null));
 
-            AddConstraints(method.GetGenericParameters());
+            AddGenericParameters(method.GetGenericParameters());
             AddAttributes(method.GetCustomAttributes());
+
+            // Attributes on the return value and on parameters sit on the parameter rows, not on the method.
+            foreach (var parameterHandle in method.GetParameters())
+                AddAttributes(_metadata.GetParameter(parameterHandle).GetCustomAttributes());
 
             if (method.RelativeVirtualAddress != 0)
                 ScanBody(_pe.GetMethodBody(method.RelativeVirtualAddress));
@@ -187,13 +189,22 @@ internal static class AssemblyScanner
             }
         }
 
-        private void AddConstraints(GenericParameterHandleCollection parameters)
+        private void AddGenericParameters(GenericParameterHandleCollection parameters)
         {
             foreach (var parameterHandle in parameters)
             {
-                foreach (var constraintHandle in _metadata.GetGenericParameter(parameterHandle).GetConstraints())
+                var parameter = _metadata.GetGenericParameter(parameterHandle);
+                foreach (var constraintHandle in parameter.GetConstraints())
                     AddEntity(_metadata.GetGenericParameterConstraint(constraintHandle).Type);
+                AddAttributes(parameter.GetCustomAttributes());
             }
+        }
+
+        private void AddSignature(MethodSignature<TypeDefinitionHandle[]> signature)
+        {
+            AddAll(signature.ReturnType);
+            foreach (var parameter in signature.ParameterTypes)
+                AddAll(parameter);
         }
 
         private void AddAttributes(CustomAttributeHandleCollection attributes)
@@ -254,8 +265,14 @@ internal static class AssemblyScanner
                     AddTarget(_metadata.GetFieldDefinition((FieldDefinitionHandle)handle).GetDeclaringType());
                     break;
                 case HandleKind.MemberReference:
-                    // Members of generic types of other assemblies (List<Perk>.Add) carry the type arguments on the parent.
-                    AddEntity(_metadata.GetMemberReference((MemberReferenceHandle)handle).Parent);
+                    // A member of a constructed generic type (List<Perk>.Add) carries the type arguments on the parent.
+                    // One of a generic type of this assembly also names its other types in the signature.
+                    var reference = _metadata.GetMemberReference((MemberReferenceHandle)handle);
+                    AddEntity(reference.Parent);
+                    if (reference.GetKind() == MemberReferenceKind.Method)
+                        AddSignature(reference.DecodeMethodSignature(_signatures, null));
+                    else
+                        AddAll(reference.DecodeFieldSignature(_signatures, null));
                     break;
                 case HandleKind.MethodSpecification:
                     var specification = _metadata.GetMethodSpecification((MethodSpecificationHandle)handle);
@@ -266,13 +283,7 @@ internal static class AssemblyScanner
                 case HandleKind.StandaloneSignature:
                     var standalone = _metadata.GetStandaloneSignature((StandaloneSignatureHandle)handle);
                     if (standalone.GetKind() == StandaloneSignatureKind.Method)
-                    {
-                        var signature = standalone.DecodeMethodSignature(_signatures, null);
-                        AddAll(signature.ReturnType);
-                        foreach (var parameter in signature.ParameterTypes)
-                            AddAll(parameter);
-                    }
-
+                        AddSignature(standalone.DecodeMethodSignature(_signatures, null));
                     break;
                 // TypeReference, ModuleReference and the rest point outside the assembly.
             }

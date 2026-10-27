@@ -24,6 +24,9 @@ public static class Source
 
     public static ReturnTarget? Returns() => null;
 
+    // A member of a constructed generic type of this assembly is a member reference that names MemberReferenceSignatureTarget.
+    public static void CallsGenericHost() => new GenericHost<int>().Take(null);
+
     public static void UsesLocal()
     {
         LocalTarget? local = null;

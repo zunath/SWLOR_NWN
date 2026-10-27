@@ -85,6 +85,7 @@ public class ClockSeamSourceGuardTests
                     var c = global::System.DateTime.UtcNow;
                     var d = Environment.TickCount64;
                     var e = System.Environment.TickCount64;
+                    var e2 = global::System.Environment.TickCount64;
                     var f = Clock.UtcNow;
                     var g = Clock.TickCount64;
                     var h = DateTimeOffset.UtcNow;
@@ -96,7 +97,7 @@ public class ClockSeamSourceGuardTests
 
         var reads = ClockSeamSources.FindDirectReads(source);
 
-        reads.Select(read => read.Line).Should().Equal(8, 9, 10, 11, 12);
+        reads.Select(read => read.Line).Should().Equal(8, 9, 10, 11, 12, 13);
     }
 
     private static bool IsBuildOutput(string serverRoot, string file)

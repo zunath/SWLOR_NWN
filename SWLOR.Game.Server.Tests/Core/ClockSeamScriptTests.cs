@@ -64,7 +64,7 @@ public class ClockSeamScriptTests
         var first = RunScript();
 
         first.ExitCode.Should().Be(0, first.Output);
-        first.Output.Should().Contain("Changed 4 of 5 files: 3 DateTime.UtcNow and 3 Environment.TickCount64 rewritten, 2 using lines added.");
+        first.Output.Should().Contain("Changed 4 of 5 files: 5 DateTime.UtcNow and 5 Environment.TickCount64 rewritten, 2 using lines added.");
         File.ReadAllBytes(withUsings).Should().Equal(Utf8WithoutBom.GetBytes(Sample("\r\n", rewritten: true, coreUsing: true)));
         File.ReadAllBytes(withoutUsings).Should().Equal(Utf8WithBom.GetPreamble().Concat(Utf8WithoutBom.GetBytes(
             "using SWLOR.Game.Server.Core;\n\nnamespace SWLOR.Game.Server.Service.Folder;\n\npublic static class B { public static long Read() => Clock.TickCount64 + \"caf" + EAcute + "\".Length; }\n")).ToArray());
@@ -101,30 +101,50 @@ public class ClockSeamScriptTests
         File.ReadAllBytes(path).Should().Equal(before);
     }
 
-    /// <summary>A file with a using block (the Core using only when asked), a comment, and reads the script must and must not touch.</summary>
+    // The reads the script must rewrite sit in code; the same text in comments, string literals and escaped interpolation
+    // braces must come out byte for byte.
+    private const string OriginalBody = """
+        namespace SWLOR.Game.Server.Service
+        {
+            public static class A
+            {
+                // DateTime.UtcNow in a comment
+                public static object Read() => new object[] { DateTime.UtcNow, System.DateTime.UtcNow, Environment.TickCount64, DateTimeOffset.UtcNow, Other.DateTime.UtcNow };
+                public static string Text = "DateTime.UtcNow and Environment.TickCount64 stay in strings"; // DateTime.UtcNow
+                public static string Verbatim = @"DateTime.UtcNow ""quoted"" Environment.TickCount64";
+                public static string Interpolated(int n) => $"DateTime.UtcNow {{Environment.TickCount64}} {Environment.TickCount64} {n}";
+                public static char Quote = '"'; public static object AfterQuote = DateTime.UtcNow;
+                public static object Qualified = new object[] { global::System.DateTime.UtcNow, global::System.Environment.TickCount64 };
+            }
+        }
+        """;
+
+    private const string RewrittenBody = """
+        namespace SWLOR.Game.Server.Service
+        {
+            public static class A
+            {
+                // DateTime.UtcNow in a comment
+                public static object Read() => new object[] { Clock.UtcNow, Clock.UtcNow, Clock.TickCount64, DateTimeOffset.UtcNow, Other.DateTime.UtcNow };
+                public static string Text = "DateTime.UtcNow and Environment.TickCount64 stay in strings"; // DateTime.UtcNow
+                public static string Verbatim = @"DateTime.UtcNow ""quoted"" Environment.TickCount64";
+                public static string Interpolated(int n) => $"DateTime.UtcNow {{Environment.TickCount64}} {Clock.TickCount64} {n}";
+                public static char Quote = '"'; public static object AfterQuote = Clock.UtcNow;
+                public static object Qualified = new object[] { Clock.UtcNow, Clock.TickCount64 };
+            }
+        }
+        """;
+
+    /// <summary>A file with a using block (the Core using only when asked) and the sample reads, with the given line endings.</summary>
     private static string Sample(string eol, bool rewritten, bool coreUsing)
     {
-        var reads = rewritten
-            ? "Clock.UtcNow, Clock.UtcNow, Clock.TickCount64"
-            : "DateTime.UtcNow, System.DateTime.UtcNow, Environment.TickCount64";
-        var lines = new List<string> { "using System.Collections.Generic;" };
+        var header = new List<string> { "using System.Collections.Generic;" };
         if (coreUsing)
-            lines.Add("using SWLOR.Game.Server.Core;");
-        lines.AddRange(new[]
-        {
-            "using SWLOR.Game.Server.Feature.Foo;",
-            "",
-            "namespace SWLOR.Game.Server.Service",
-            "{",
-            "    public static class A",
-            "    {",
-            "        // DateTime.UtcNow in a comment",
-            $"        public static object Read() => new object[] {{ {reads}, DateTimeOffset.UtcNow, Other.DateTime.UtcNow }};",
-            "    }",
-            "}",
-            "",
-        });
-        return string.Join(eol, lines);
+            header.Add("using SWLOR.Game.Server.Core;");
+        header.Add("using SWLOR.Game.Server.Feature.Foo;");
+        header.Add("");
+        var body = (rewritten ? RewrittenBody : OriginalBody).Replace("\r\n", "\n").Replace("\n", eol);
+        return string.Join(eol, header) + eol + body + eol;
     }
 
     private string Write(string relativePath, Encoding encoding, string content)
@@ -172,10 +192,16 @@ public class ClockSeamScriptTests
 
             using (process)
             {
+                var output = process.StandardOutput.ReadToEndAsync();
                 var errors = process.StandardError.ReadToEndAsync();
-                var output = process.StandardOutput.ReadToEnd();
-                process.WaitForExit(120_000).Should().BeTrue("the script must finish");
-                return (process.ExitCode, output + errors.Result);
+                if (!process.WaitForExit(120_000))
+                {
+                    process.Kill(true);
+                    Assert.Fail("The script did not finish within 120 seconds.");
+                }
+
+                process.WaitForExit();
+                return (process.ExitCode, output.Result + errors.Result);
             }
         }
 

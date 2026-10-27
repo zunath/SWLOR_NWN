@@ -8,9 +8,13 @@
     nothing. The daily sync and the parity script re-run it after merging master, so new master code in the listed
     files is rewritten the same way.
 
+    Only code is rewritten: the file is scanned for comments, string and character literals, and preprocessor lines,
+    which are copied unchanged. The expressions inside the {holes} of interpolated strings are code and are rewritten.
+    DateTime.UtcNow, System.DateTime.UtcNow and global::System.DateTime.UtcNow (and the same three forms of
+    Environment.TickCount64) are all rewritten.
+
     Runs on Windows PowerShell 5.1 and PowerShell 7. Files are read and written byte for byte (Latin-1), so the BOM,
-    encoding and line endings of each file are kept exactly; inserted lines use the file's own line ending. Comment-only
-    lines are left alone.
+    encoding and line endings of each file are kept exactly; inserted lines use the file's own line ending.
 
 .PARAMETER Check
     Change nothing. Print what would change and exit 1 if anything would, 0 if every file is already rewritten.
@@ -41,12 +45,55 @@ $manifestPath = Join-Path $PSScriptRoot 'ClockSeamFiles.txt'
 $latin1 = [System.Text.Encoding]::GetEncoding(28591)
 $usingLine = 'using SWLOR.Game.Server.Core;'
 
-# DateTime.UtcNow / System.DateTime.UtcNow and Environment.TickCount64 / System.Environment.TickCount64, not part of
-# a longer member access such as Foo.DateTime.UtcNow.
-$rewrites = @(
-    @{ Name = 'DateTime.UtcNow'; Pattern = '(?<![\w.])(?:System\.)?DateTime\.UtcNow\b'; Replacement = 'Clock.UtcNow' },
-    @{ Name = 'Environment.TickCount64'; Pattern = '(?<![\w.])(?:System\.)?Environment\.TickCount64\b'; Replacement = 'Clock.TickCount64' }
+# The reads to rewrite (not part of a longer member access such as Foo.DateTime.UtcNow), plus Clock reads already in
+# place, which only tell the script that the file needs the using.
+$readAlternatives = @(
+    '(?<utc>(?<![\w.])(?<!::)(?:global::)?(?:System\.)?DateTime\.UtcNow\b)',
+    '(?<tick>(?<![\w.])(?<!::)(?:global::)?(?:System\.)?Environment\.TickCount64\b)',
+    '(?<clock>(?<![\w.])Clock\.(?:UtcNow|TickCount64)\b)'
 )
+$readPattern = $readAlternatives -join '|'
+
+# Everything that is not code, tried before the reads so that a read inside one of them is never matched: comments,
+# preprocessor lines, raw, verbatim, regular and character literals. Interpolated strings are matched separately because
+# their {holes} are code.
+$scanPattern = (@(
+    '(?<skip>//[^\r\n]*)',
+    '(?<skip>/\*[\s\S]*?\*/)',
+    '(?<skip>(?m:^[ \t]*#[^\r\n]*))',
+    '(?<skip>"""[\s\S]*?""")',
+    '(?<interp>\$@"(?:[^"{]|""|\{\{|\{[^{}]*\})*")',
+    '(?<interp>@\$"(?:[^"{]|""|\{\{|\{[^{}]*\})*")',
+    '(?<interp>\$"(?:[^"\\\r\n{]|\\.|\{\{|\{[^{}\r\n]*\})*")',
+    '(?<skip>@"(?:[^"]|"")*")',
+    '(?<skip>"(?:[^"\\\r\n]|\\.)*")',
+    '(?<skip>''(?:[^''\\\r\n]|\\(?:u[0-9A-Fa-f]{4}|x[0-9A-Fa-f]{1,4}|.))'')'
+) + $readAlternatives) -join '|'
+$holePattern = '\{\{|\}\}|(?<hole>\{[^{}]*\})'
+
+$script:counts = @{ 'DateTime.UtcNow' = 0; 'Environment.TickCount64' = 0 }
+$script:clockUsed = $false
+
+$readEvaluator = [System.Text.RegularExpressions.MatchEvaluator]{
+    param($m)
+    if ($m.Groups['utc'].Success) { $script:counts['DateTime.UtcNow']++; return 'Clock.UtcNow' }
+    if ($m.Groups['tick'].Success) { $script:counts['Environment.TickCount64']++; return 'Clock.TickCount64' }
+    $script:clockUsed = $true
+    return $m.Value
+}
+
+$holeEvaluator = [System.Text.RegularExpressions.MatchEvaluator]{
+    param($m)
+    if (-not $m.Groups['hole'].Success) { return $m.Value }
+    return [regex]::Replace($m.Value, $readPattern, $readEvaluator)
+}
+
+$codeEvaluator = [System.Text.RegularExpressions.MatchEvaluator]{
+    param($m)
+    if ($m.Groups['interp'].Success) { return [regex]::Replace($m.Value, $holePattern, $holeEvaluator) }
+    if ($m.Groups['skip'].Success) { return $m.Value }
+    return $readEvaluator.Invoke($m)
+}
 
 function Get-ManifestFiles {
     $paths = New-Object 'System.Collections.Generic.List[string]'
@@ -77,7 +124,9 @@ function Get-ManifestFiles {
     return $unique
 }
 
-function Add-CoreUsing([string[]]$lines, [string]$eol) {
+function Add-CoreUsing([string]$text, [string]$eol) {
+    $lines = [string[]]@([regex]::Split($text, '(?<=\n)') | Where-Object { $_.Length -gt 0 })
+
     $namespaceIndex = -1
     for ($i = 0; $i -lt $lines.Length; $i++) {
         if ($lines[$i] -match '^\s*namespace\s') { $namespaceIndex = $i; break }
@@ -93,7 +142,8 @@ function Add-CoreUsing([string[]]$lines, [string]$eol) {
         }
     }
 
-    $newLine = $usingLine + $eol
+    # Before the first SWLOR using that sorts after it, else after the last SWLOR using, else after the last using, else
+    # above the namespace with a blank line.
     $insertAt = -1
     $blankAfter = $false
     foreach ($i in $serverUsings) {
@@ -106,12 +156,12 @@ function Add-CoreUsing([string[]]$lines, [string]$eol) {
     $result = New-Object 'System.Collections.Generic.List[string]'
     for ($i = 0; $i -lt $lines.Length; $i++) {
         if ($i -eq $insertAt) {
-            $result.Add($newLine)
+            $result.Add($usingLine + $eol)
             if ($blankAfter) { $result.Add($eol) }
         }
         $result.Add($lines[$i])
     }
-    return ,$result.ToArray()
+    return -join $result
 }
 
 $files = [string[]]@(Get-ManifestFiles)
@@ -123,56 +173,44 @@ foreach ($path in $files) {
     $bytes = [System.IO.File]::ReadAllBytes($path)
     $text = $latin1.GetString($bytes)
 
-    # A UTF-8 BOM reads as three Latin-1 characters; keep it out of the first line and put it back afterwards.
+    # A UTF-8 BOM reads as three Latin-1 characters; keep it out of the text and put it back afterwards.
     $bom = ''
     $bomText = "$([char]0xEF)$([char]0xBB)$([char]0xBF)"
     if ($text.StartsWith($bomText)) {
-        $bom = $text.Substring(0, 3)
+        $bom = $bomText
         $text = $text.Substring(3)
     }
 
     $eol = "`n"
     if ($text.Contains("`r`n")) { $eol = "`r`n" }
 
-    $lines = [string[]]@([regex]::Split($text, '(?<=\n)') | Where-Object { $_.Length -gt 0 })
-    $counts = @{ 'DateTime.UtcNow' = 0; 'Environment.TickCount64' = 0 }
-    for ($i = 0; $i -lt $lines.Length; $i++) {
-        $line = $lines[$i]
-        if ($line -match '^\s*(//|/\*|\*)') { continue }
-        foreach ($rewrite in $rewrites) {
-            $found = [regex]::Matches($line, $rewrite.Pattern)
-            if ($found.Count -gt 0) {
-                $line = [regex]::Replace($line, $rewrite.Pattern, $rewrite.Replacement)
-                $counts[$rewrite.Name] += $found.Count
-            }
-        }
-        $lines[$i] = $line
-    }
+    $script:counts = @{ 'DateTime.UtcNow' = 0; 'Environment.TickCount64' = 0 }
+    $script:clockUsed = $false
+    $rewritten = [regex]::Replace($text, $scanPattern, $codeEvaluator)
 
     $usingAdded = $false
-    $joined = -join $lines
-    $usesClock = [regex]::IsMatch($joined, '(?<![\w.])Clock\.(UtcNow|TickCount64)\b')
-    $inCoreNamespace = [regex]::IsMatch($joined, '(?m)^\s*namespace\s+SWLOR\.Game\.Server\.Core(\s|;|\.|$)')
-    $hasUsing = [regex]::IsMatch($joined, '(?m)^\s*using\s+SWLOR\.Game\.Server\.Core\s*;')
+    $inCoreNamespace = [regex]::IsMatch($rewritten, '(?m)^\s*namespace\s+SWLOR\.Game\.Server\.Core(\s|;|\.|$)')
+    $hasUsing = [regex]::IsMatch($rewritten, '(?m)^\s*using\s+SWLOR\.Game\.Server\.Core\s*;')
+    $replaced = $script:counts['DateTime.UtcNow'] + $script:counts['Environment.TickCount64']
+    $usesClock = $script:clockUsed -or $replaced -gt 0
     if ($usesClock -and -not $hasUsing -and -not $inCoreNamespace) {
-        $lines = Add-CoreUsing $lines $eol
+        $rewritten = Add-CoreUsing $rewritten $eol
         $usingAdded = $true
     }
 
-    $replaced = $counts['DateTime.UtcNow'] + $counts['Environment.TickCount64']
     if ($replaced -eq 0 -and -not $usingAdded) { continue }
 
     $relative = $path.Substring($RepositoryRoot.Length).TrimStart('\', '/').Replace('\', '/')
-    $summary = "{0}: {1} DateTime.UtcNow, {2} Environment.TickCount64" -f $relative, $counts['DateTime.UtcNow'], $counts['Environment.TickCount64']
+    $summary = "{0}: {1} DateTime.UtcNow, {2} Environment.TickCount64" -f $relative, $script:counts['DateTime.UtcNow'], $script:counts['Environment.TickCount64']
     if ($usingAdded) { $summary += ', using added'; $usingsAdded++ }
     Write-Host $summary
 
     $changedFiles++
-    $total['DateTime.UtcNow'] += $counts['DateTime.UtcNow']
-    $total['Environment.TickCount64'] += $counts['Environment.TickCount64']
+    $total['DateTime.UtcNow'] += $script:counts['DateTime.UtcNow']
+    $total['Environment.TickCount64'] += $script:counts['Environment.TickCount64']
 
     if (-not $Check) {
-        [System.IO.File]::WriteAllBytes($path, $latin1.GetBytes($bom + (-join $lines)))
+        [System.IO.File]::WriteAllBytes($path, $latin1.GetBytes($bom + $rewritten))
     }
 }
 

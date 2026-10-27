@@ -92,17 +92,14 @@ Coordinator since 2026-10-27 afternoon: the session "SWLOR maintainability refac
 
 - P0-6b (Sonnet, run by the first coordinator's session): branch `claude/mr-p0-6b`, worktree `C:\Projects\SWLOR_NWN\.claude\worktrees\mr-p0-6`; live stacks `swlor-live-*p06*`. When it reports, review and merge its pull request and check no live stack is left.
 - P2-A5, P2-A6, P2-A7 (Sonnet subagents of the current coordinator; see Work queue). If this coordinator stops, check `gh pr list --base feature/maintainability-refactor` and each worktree before restarting an item.
-- Engine snapshot refresh after the `df3034336` sync (`Update-EngineCharacterization.ps1`, in the coordinator worktree).
-
 ## Next actions
 
-1. Finish the engine snapshot refresh for the `df3034336` sync; explain every changed row by a master commit and record it in the sync log.
-2. Review and merge P2-A5, P2-A6, P2-A7 as they report (squash; merge the base into the later ones for list conflicts in
+1. Review and merge P2-A5, P2-A6, P2-A7 as they report (squash; merge the base into the later ones for list conflicts in
    `ServiceRegistrations.cs` / `ConvertedServices.json`). Then A8 `Property` and A9 `Space` (Opus review). At most three agents.
-3. Then Waves B-D per the specs' Phase 2 section (the `FacadeAccessor` cache must land before Wave D).
-4. Merge P0-6b when it reports (see In flight).
-5. Next daily sync due 2026-10-28.
-6. GitHub Actions is billing-locked; the owner said not to wait. The gate is a local `scripts/ci/run-unit-tests.sh` run.
+2. Then Waves B-D per the specs' Phase 2 section (the `FacadeAccessor` cache must land before Wave D).
+3. Merge P0-6b when it reports (see In flight).
+4. Next daily sync due 2026-10-28. Until master lists `sw_part_previews` in `Build/hakbuilder.json`, the engine refresh needs the workaround in Environment notes.
+5. GitHub Actions is billing-locked; the owner said not to wait. The gate is a local `scripts/ci/run-unit-tests.sh` run.
 
 ## Coverage baseline (P0-2, 2026-10-27, branch at the P1-1 merge)
 
@@ -130,6 +127,7 @@ Existing bugs found while locking outputs. They are recorded for the owner and s
 | P0-2b | The full engine-test sweep on the branch base had 24 failures in its first 901 tests: 19 fail the same with real haks, 4 pass when run alone (order or load dependent), 1 was the stale loot snapshot (since fixed by P0-7c). The nightly run will be red until these are fixed. Evidence: `C:\Temp\mr-p0-2b\evidence` (local). |
 | P0-4d2 | Possible bug (observed, not investigated): Sundering Sweep I reports 19 damage to one target, but the target's HP did not change within 6 seconds in the scenario fixture. |
 | P0-2 | 25 unit tests already fail on `master` (full Windows checkout): `ResourceRestorationTests` (14) and `StealthRestTests` (8) compile methods out of `Stat.cs` that now call members their harness lacks; `FirstAidCombatUpgradeTests.FirstAidSupplyRequirements_MatchMerchantStackTemplates` asserts changed source text; `PlayerMessageAuditTests.MessageInventory_CoversEveryRuntimeCallSite` (stale `PlayerMessageAudit.json`); `CombatUpgradeBibleRecipeParityTests.LiveRecipes_AreDocumentedInBible` (EspionageWorkbench recipe missing from the Bible workbook). Excluded in CI with reasons. |
+| Sync 2026-10-27 (master defect) | master #2940 added `sw_part_previews` to `Module/ifo/module.ifo.json`, but `Build/hakbuilder.json` (read by `scripts/deployment/swlor-deploy.sh`, `scripts/prepare-engine-test-home.sh` and the engine-test scripts) does not list it, so a server built from it logs "Unable to load module". Reported to the owner with a proposed master fix session; not fixed on this branch. |
 | P0-10 | When the bootstrap throws (for example a broken build without the handler manifest), the NWNX crash handler segfault-loops after the abort and the container keeps running while flooding the log (about 12 MB in 40 s). Not yet checked whether any bootstrap exception on `master` behaves the same. |
 
 ## Sync log
@@ -137,7 +135,7 @@ Existing bugs found while locking outputs. They are recorded for the owner and s
 | Date | `master` commit merged | Conflicts | Parity | By |
 |---|---|---|---|---|
 | 2026-10-27 | 6d49650f7 | none | identical to master 6d49650f7 (132 characterization snapshot files, 662 handlers, 39 engine-test handlers); tests: 6443 passed, 0 failed. Snapshots regenerated for master's #2898 (recipe 6288 `SithPowerGlove`, 15 loot tables). | Claude Sonnet 5.5 (P0-7) |
-| 2026-10-27 | df3034336 (9 commits) | none | identical to master df3034336 (132 characterization snapshot files, 662 handlers, 39 engine-test handlers) after regenerating one row: `Ability/AbilityPresentation.json` Inner Circle Surge gains `DamageImpactVisualEffect=Vfx_Imp_Lightning_M` (master #2938). Tests: Game.Server.Tests 7205 passed, Characterization 148, Architecture 141 (+1 skipped), NWN.API 341. Merge `9f31c2b05`, refresh `2800030d9`. Engine snapshot refresh: running. | Claude Opus 5.5 (coordinator) |
+| 2026-10-27 | df3034336 (9 commits) | none | identical to master df3034336 (132 characterization snapshot files, 662 handlers, 39 engine-test handlers) after regenerating one row: `Ability/AbilityPresentation.json` Inner Circle Surge gains `DamageImpactVisualEffect=Vfx_Imp_Lightning_M` (master #2938). Tests: Game.Server.Tests 7205 passed, Characterization 148, Architecture 141 (+1 skipped), NWN.API 341. Merge `9f31c2b05`, refresh `2800030d9`. Engine snapshots: 41 passed, 0 changed (needed a hand-built `sw_part_previews.hak` in a kept home; see Environment notes). | Claude Opus 5.5 (coordinator) |
 
 ## Port log
 
@@ -152,3 +150,8 @@ Existing bugs found while locking outputs. They are recorded for the owner and s
 - Container builds that download over HTTPS fail on the owner's machine because the antivirus inspects
   HTTPS. Do not work around it; report the step as blocked.
 - The machine's CPU is often busy with other sessions; test timeouts may need to be generous.
+- Engine snapshot refresh while `Build/hakbuilder.json` lacks `sw_part_previews` (see Reported defects): run
+  `Update-EngineCharacterization.ps1 -KeepHome -WorkDirectory <new dir>` (fails at module load, keeps the home), build the hak
+  with `dotnet SWLOR.CLI/bin/Release/net10.0/SWLOR.CLI.dll --hak` from a folder holding a one-entry `hakbuilder.json`
+  (`sw_part_previews`, `CompileModels: false`; not while the refresh script is building the CLI), move it into `<dir>\hak`,
+  then rerun with `-ReuseHome <dir>`. Delete `<dir>` afterwards (its haks are hard links).

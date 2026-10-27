@@ -124,8 +124,14 @@ class RunResults:
 
     @property
     def complete(self) -> bool:
-        """True when every step ran and passed (manual and blocked steps are not complete)."""
-        return all(step.status == PASS for step in self.steps)
+        """True when every scenario step ran and passed and the run ended cleanly.
+
+        Manual and blocked steps are not complete, and neither is a run whose setup failed
+        before any step was recorded.
+        """
+        return (not self.error and self.teardown_clean
+                and [step.id for step in self.steps] == [definition.id for definition in SCENARIO]
+                and all(step.status == PASS for step in self.steps))
 
     @property
     def teardown_clean(self) -> bool:
@@ -224,6 +230,58 @@ def error_logs(home: Path) -> list[str]:
     return sorted(path.name for path in folder.glob('*.log')) if folder.is_dir() else []
 
 
+# What the server build compiles: this project, the API project it references and the shared
+# MSBuild files. Anything else in the checkout (tools, module data, guides) cannot change the DLL.
+BUILD_INPUT_FOLDERS = ('SWLOR.Game.Server/', 'SWLOR.NWN.API/')
+BUILD_INPUT_FILES = ('Directory.Build.props', 'Directory.Build.targets', 'global.json')
+
+
+def uncommitted_paths(status: bytes) -> list[str]:
+    """Paths from "git status --porcelain=v1 -z" output, with a rename's old path included."""
+    entries = status.decode('utf-8', 'replace').split('\0')
+    paths, index = [], 0
+    while index < len(entries):
+        entry = entries[index]
+        index += 1
+        if len(entry) < 4:
+            continue
+        paths.append(entry[3:])
+        # A rename or copy is followed by its source path as a separate entry.
+        if entry[0] in 'RC' or entry[1] in 'RC':
+            if index < len(entries) and entries[index]:
+                paths.append(entries[index])
+            index += 1
+    return paths
+
+
+def is_build_input(path: str) -> bool:
+    if path.lower().endswith('.md'):
+        return False
+    return path.startswith(BUILD_INPUT_FOLDERS) or path in BUILD_INPUT_FILES
+
+
+def stale_build_inputs(repo: Path, assembly: Path) -> list[str]:
+    """Uncommitted server build inputs that the assembly may not contain.
+
+    The assembly's revision stamp is the commit it was built at, so edits made after that
+    commit still carry the current head. An edit is covered only when the assembly is newer
+    than the file; a deleted file is always reported, since its time of removal is unknown.
+    """
+    status = subprocess.run(['git', '-C', str(repo), 'status', '--porcelain=v1', '-z', '--untracked-files=all'],
+                            capture_output=True, check=True, timeout=120).stdout
+    built = assembly.stat().st_mtime_ns
+    stale = []
+    for path in uncommitted_paths(status):
+        if not is_build_input(path):
+            continue
+        target = repo / path
+        if not target.exists():
+            stale.append(f'{path} (deleted)')
+        elif target.stat().st_mtime_ns > built:
+            stale.append(f'{path} (newer than the build)')
+    return sorted(stale)
+
+
 def head_commit(repo: Path) -> str:
     try:
         return subprocess.run(['git', '-C', str(repo), 'rev-parse', 'HEAD'], capture_output=True, text=True,
@@ -305,6 +363,12 @@ class SmokeRun:
         revision, commit = self.results.build_revision, self.results.commit
         step.check('build matches the branch head', bool(revision) and revision == commit,
                    f'build {revision or "unknown"}, branch head {commit or "unknown"}')
+        assembly = Path(stack.state['inputs']['dotnet']) / 'SWLOR.Game.Server.dll'
+        try:
+            stale = stale_build_inputs(live.REPO_ROOT, assembly)
+            step.check('build includes every uncommitted source change', not stale, ', '.join(stale[:5]))
+        except (OSError, subprocess.SubprocessError) as error:
+            step.check('build includes every uncommitted source change', False, f'could not tell: {error}')
         if not self.server_only:
             live.ensure_client_image(stack.state['client_image'])
         stack.ensure_owner()
@@ -319,13 +383,16 @@ class SmokeRun:
             live.seed_player(stack, uuid)
         errors = error_logs(stack.home)
         step.check('no server error log written during boot', not errors, ', '.join(errors))
-        if self.server_only:
-            return
-        stack.ensure_owner()
-        live.start_client(stack, Path(stack.state['cdkey_source']))
-        live.record_image_ids(stack, ('client',))
-        live.require_running(stack, 'after start-up')
-        step.check('client connects to the server', stack.joined_players() > 0)
+        services = ['redis', 'swlor-server']
+        if not self.server_only:
+            stack.ensure_owner()
+            live.start_client(stack, Path(stack.state['cdkey_source']))
+            live.record_image_ids(stack, ('client',))
+            step.check('client connects to the server', stack.joined_players() > 0)
+            services.append('client')
+        # Last, so a server that stopped right after loading the module cannot pass.
+        stopped = [service for service in services if not stack.running(service)]
+        step.check('containers still running after start-up', not stopped, ', '.join(stopped))
 
     # -- steps ------------------------------------------------------
 
@@ -342,6 +409,7 @@ class SmokeRun:
             step.status = BLOCKED
             step.detail = 'Server-only run: the client half of this step did not run.'
         else:
+            self.capture(step, 'connected')
             step.detail = 'Server loaded the module and the client connected.'
 
     def step_login(self, step: StepResult) -> None:
@@ -360,6 +428,8 @@ class SmokeRun:
     def step_logout(self, step: StepResult) -> None:
         stack = self.stack
         assert stack is not None
+        # The client exits when it is kicked, so this is the last frame the run can take.
+        self.capture(step, 'before-logout')
         step.check('player booted through the server console', live.boot_players(stack))
         step.check('no player remains joined', stack.joined_players() <= 0)
         step.detail = 'Character was logged out through the server console.'
@@ -489,8 +559,14 @@ def run_command(options: argparse.Namespace) -> int:
             raise LiveStackError('Pass --character <test character>.bic; the default test character was not found.')
         options.character = str(found)
     options.name = options.name or f'smoke-{secrets.token_hex(3)}'
+    # A label is a folder name and a Compose project suffix: refuse separators and dots before
+    # anything is created, so a name can never place results outside the validated root.
+    for number in range(1, options.repeat + 1):
+        live.project_name(run_label(options.name, number, options.repeat))
     stamp = datetime.datetime.now(datetime.timezone.utc).strftime('%Y%m%dT%H%M%SZ')
-    batch = root / f'{options.name}-{stamp}'
+    batch = (root / f'{options.name}-{stamp}').resolve()
+    if not live.is_within(batch, root):
+        raise LiveStackError(f'The results folder must stay inside {root}: {batch}')
     batch.mkdir(parents=True)
     documents = []
     exit_code = 0

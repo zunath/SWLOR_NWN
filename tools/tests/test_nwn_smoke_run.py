@@ -1,10 +1,12 @@
 """Pure logic of the scripted smoke run; the Docker run itself is the smoke baseline."""
 from pathlib import Path
 import json
-import re
+import os
+import subprocess
 import sys
 import tempfile
 import unittest
+from types import SimpleNamespace
 from unittest.mock import patch
 
 sys.path.insert(0, str(Path(__file__).resolve().parents[1]))
@@ -104,6 +106,17 @@ class ResultsTests(unittest.TestCase):
         results.steps[3].status = smoke.FAIL
         self.assertTrue(results.failed)
 
+    def test_a_run_that_recorded_no_steps_or_an_error_is_never_complete(self):
+        setup_failed = smoke.RunResults('smoke', 'full', 'now', [], teardown={'clean': True},
+                                        error='The stack could not be prepared: docker is not on PATH.')
+        self.assertFalse(setup_failed.complete)
+        self.assertTrue(setup_failed.failed)
+        no_steps = smoke.RunResults('smoke', 'full', 'now', [], teardown={'clean': True})
+        self.assertFalse(no_steps.complete)
+        passing = [smoke.StepResult(d.id, d.title, smoke.PASS) for d in smoke.SCENARIO]
+        self.assertFalse(smoke.RunResults('smoke', 'full', 'now', passing[:-1], teardown={'clean': True}).complete)
+        self.assertFalse(smoke.RunResults('smoke', 'full', 'now', passing, teardown={'clean': False}).complete)
+
 
 class ErrorLogTests(unittest.TestCase):
     def test_error_logs_are_listed_by_name_and_absence_means_none(self):
@@ -115,6 +128,117 @@ class ErrorLogTests(unittest.TestCase):
             (home / 'app_logs' / 'Error' / 'Error_20261027.log').write_text('boom', 'utf-8')
             (home / 'app_logs' / 'Error' / 'notes.txt').write_text('ignored', 'utf-8')
             self.assertEqual(['Error_20261027.log'], smoke.error_logs(home))
+
+
+class StaleBuildTests(unittest.TestCase):
+    def test_porcelain_output_lists_paths_including_a_renames_source(self):
+        status = b' M SWLOR.Game.Server/A.cs\0?? tools/new file.py\0R  SWLOR.NWN.API/New.cs\0SWLOR.NWN.API/Old.cs\0'
+        self.assertEqual(['SWLOR.Game.Server/A.cs', 'tools/new file.py', 'SWLOR.NWN.API/New.cs',
+                          'SWLOR.NWN.API/Old.cs'], smoke.uncommitted_paths(status))
+        self.assertEqual([], smoke.uncommitted_paths(b''))
+
+    def test_only_files_the_server_build_compiles_count(self):
+        for path in ('SWLOR.Game.Server/Service/Combat.cs', 'SWLOR.NWN.API/NWScript.cs', 'Directory.Build.props',
+                     'global.json'):
+            self.assertTrue(smoke.is_build_input(path), path)
+        for path in ('tools/SmokeTest.py', 'Module/are/x.are.json', 'SWLOR.Game.Server/Readmes/Guide.md',
+                     'SWLOR.Game.Server.Tests/CombatTests.cs', 'README.md'):
+            self.assertFalse(smoke.is_build_input(path), path)
+
+    def test_uncommitted_edits_newer_than_the_assembly_are_reported(self):
+        with tempfile.TemporaryDirectory() as folder:
+            repo = Path(folder)
+
+            def git(*arguments):
+                subprocess.run(['git', '-C', str(repo), '-c', 'user.name=t', '-c', 'user.email=t@example.com',
+                                *arguments], check=True, capture_output=True)
+            git('init', '-q')
+            for name in ('SWLOR.Game.Server/A.cs', 'SWLOR.Game.Server/Gone.cs', 'tools/x.py', 'NOTES.md'):
+                (repo / name).parent.mkdir(parents=True, exist_ok=True)
+                (repo / name).write_text('one', 'utf-8')
+            git('add', '-A')
+            git('commit', '-q', '-m', 'first')
+            assembly = repo / 'built.dll'
+            assembly.write_text('dll', 'utf-8')
+            old = os.stat(assembly).st_mtime_ns - 10_000_000_000
+            os.utime(assembly, ns=(old, old))
+            self.assertEqual([], smoke.stale_build_inputs(repo, assembly))
+            (repo / 'SWLOR.Game.Server/A.cs').write_text('two', 'utf-8')
+            (repo / 'SWLOR.Game.Server/Gone.cs').unlink()
+            (repo / 'SWLOR.NWN.API').mkdir()
+            (repo / 'SWLOR.NWN.API/B.cs').write_text('new', 'utf-8')
+            (repo / 'tools/x.py').write_text('two', 'utf-8')
+            (repo / 'NOTES.md').write_text('two', 'utf-8')
+            self.assertEqual(['SWLOR.Game.Server/A.cs (newer than the build)', 'SWLOR.Game.Server/Gone.cs (deleted)',
+                              'SWLOR.NWN.API/B.cs (newer than the build)'], smoke.stale_build_inputs(repo, assembly))
+            # A build made after the edits covers them; only the deletion cannot be proven.
+            fresh = os.stat(repo / 'SWLOR.NWN.API/B.cs').st_mtime_ns + 1_000_000_000
+            os.utime(assembly, ns=(fresh, fresh))
+            self.assertEqual(['SWLOR.Game.Server/Gone.cs (deleted)'], smoke.stale_build_inputs(repo, assembly))
+
+
+class BringUpTests(unittest.TestCase):
+    def fake_run(self, folder, running, server_only=True):
+        run = smoke.SmokeRun(options(server_only=server_only), 'smoke-test', Path(folder))
+        run.results.commit = run.results.build_revision = 'a' * 40
+        run.redis = lambda *arguments: 'PONG'
+        run.stack = SimpleNamespace(
+            state={'inputs': {'dotnet': folder}}, home=Path(folder), running=running,
+            ensure_owner=lambda: None, compose=lambda *arguments, **keywords: None, joined_players=lambda: 0)
+        return run
+
+    def bring_up(self, run):
+        step = smoke.StepResult('boot', 'Server boots')
+        with patch.object(smoke.live, 'wait_for_server'), patch.object(smoke.live, 'record_image_ids'), \
+                patch.object(smoke.live, 'log'), patch.object(smoke, 'stale_build_inputs', return_value=[]):
+            run.bring_up(step)
+        return {check.name: check.passed for check in step.checks}
+
+    def test_a_server_that_stopped_after_loading_the_module_fails_a_server_only_boot(self):
+        with tempfile.TemporaryDirectory() as folder:
+            checks = self.bring_up(self.fake_run(folder, lambda service: service != 'swlor-server'))
+        self.assertFalse(checks['containers still running after start-up'])
+        self.assertTrue(checks['redis answers'])
+
+    def test_a_healthy_server_only_boot_passes_every_check_and_starts_no_client(self):
+        with tempfile.TemporaryDirectory() as folder:
+            checks = self.bring_up(self.fake_run(folder, lambda service: service != 'client'))
+        self.assertTrue(all(checks.values()), checks)
+        self.assertNotIn('client connects to the server', checks)
+
+    def test_an_edited_source_newer_than_the_build_fails_the_boot_step(self):
+        with tempfile.TemporaryDirectory() as folder:
+            run = self.fake_run(folder, lambda service: True)
+            step = smoke.StepResult('boot', 'Server boots')
+            with patch.object(smoke.live, 'wait_for_server'), patch.object(smoke.live, 'record_image_ids'), \
+                    patch.object(smoke.live, 'log'), patch.object(
+                        smoke, 'stale_build_inputs', return_value=['SWLOR.Game.Server/A.cs (newer than the build)']):
+                run.bring_up(step)
+        failed = [check.name for check in step.checks if not check.passed]
+        self.assertEqual(['build includes every uncommitted source change'], failed)
+
+
+class ClientStepTests(unittest.TestCase):
+    def test_boot_takes_a_screenshot_once_the_client_is_connected(self):
+        with tempfile.TemporaryDirectory() as folder:
+            run = smoke.SmokeRun(options(server_only=False), 'smoke-test', Path(folder))
+            step = smoke.StepResult('boot', 'Server boots')
+            captured = []
+            run.bring_up = lambda step: None
+            run.capture = lambda step, name: captured.append(name)
+            run.step_boot(step)
+        self.assertEqual(['connected'], captured)
+
+    def test_logout_captures_before_the_player_is_booted_because_the_client_exits_afterwards(self):
+        with tempfile.TemporaryDirectory() as folder:
+            run = smoke.SmokeRun(options(server_only=False), 'smoke-test', Path(folder))
+            run.stack = SimpleNamespace(joined_players=lambda: 0)
+            order = []
+            run.capture = lambda step, name: order.append('capture')
+            step = smoke.StepResult('logout', 'Log out cleanly')
+            with patch.object(smoke.live, 'boot_players', side_effect=lambda stack: order.append('boot') or True):
+                run.step_logout(step)
+        self.assertEqual(['capture', 'boot'], order)
 
 
 class RunStepTests(unittest.TestCase):
@@ -208,6 +332,14 @@ class RunTests(unittest.TestCase):
         inside = smoke.live.REPO_ROOT / 'smoke-results'
         with self.assertRaises(LiveStackError):
             smoke.run_command(options(results_root=inside))
+
+    def test_a_run_name_cannot_place_results_outside_the_results_root(self):
+        with tempfile.TemporaryDirectory() as folder:
+            root = Path(folder) / 'results'
+            for name in ('../escape', 'a/b', 'a\\b', '.hidden', 'x' * 80):
+                with self.assertRaises(LiveStackError, msg=name):
+                    smoke.run_command(options(name=name, results_root=root))
+            self.assertFalse(root.exists())
 
     def test_repeat_must_be_positive(self):
         with self.assertRaises(LiveStackError):

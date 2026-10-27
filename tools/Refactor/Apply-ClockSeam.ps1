@@ -21,16 +21,25 @@
 .PARAMETER Check
     Change nothing. Print what would change and exit 1 if anything would, 0 if every file is already rewritten.
 
+.PARAMETER ListOwnedFiles
+    Change nothing and print only the repository-relative paths (forward slashes, one per line) of the files this
+    script owns, which are the entries of ClockSeamFiles.txt (a trailing /** stays: every file under that folder),
+    whether or not they exist. The daily sync uses it to decide which merge
+    conflicts it may settle by taking master's version and running this script again
+    (tools/Refactor/MechanicalScripts.txt).
+
 .PARAMETER RepositoryRoot
     Repository root. Defaults to two folders above this script.
 
 .EXAMPLE
     pwsh -NoProfile -File tools/Refactor/Apply-ClockSeam.ps1
     pwsh -NoProfile -File tools/Refactor/Apply-ClockSeam.ps1 -Check
+    pwsh -NoProfile -File tools/Refactor/Apply-ClockSeam.ps1 -ListOwnedFiles
 #>
 [CmdletBinding()]
 param(
     [switch]$Check,
+    [switch]$ListOwnedFiles,
     [string]$RepositoryRoot
 )
 
@@ -357,6 +366,17 @@ function Add-CoreUsing([string]$text, [string]$eol) {
         $result.Add($lines[$i])
     }
     return -join $result
+}
+
+if ($ListOwnedFiles) {
+    # The manifest entries as they are, without checking that the files exist: a file master deleted or renamed is
+    # still owned, so the sync can settle a conflict in it.
+    foreach ($raw in [System.IO.File]::ReadAllLines($manifestPath)) {
+        $entry = $raw.Trim()
+        if ($entry.Length -eq 0 -or $entry.StartsWith('#')) { continue }
+        Write-Output ('SWLOR.Game.Server/' + $entry.Replace('\', '/'))
+    }
+    exit 0
 }
 
 $files = [string[]]@(Get-ManifestFiles)

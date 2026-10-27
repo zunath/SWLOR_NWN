@@ -2,7 +2,7 @@
   "function": "Recipe definitions: Engineering.Enhancements (every IRecipeListDefinition recipe in this group)",
   "description": "The built data of every recipe in the group: skill, category, level, practice rank limit, quantity, crafted item, active flag, enhancement type and slots, research cost modifier, components in the order the definition adds them (resref x quantity), requirements (class and field values in declaration order) and the effect lines (count and fingerprint).",
   "seed": null,
-  "inputs": "342 of the 3354 recipes, sorted by recipe id. Groups: Smithery by armor/accessory or weapon categories, Fabrication, Agriculture, Espionage and Engineering by gear, enhancements, starship, droid parts, droid software and music. effectFingerprint is the first 12 hex digits of the SHA-256 of the lines joined with a line feed.",
+  "inputs": "342 of the 3355 recipes, sorted by recipe id. Groups: Smithery by armor/accessory or weapon categories, Fabrication, Agriculture, Espionage and Engineering by gear, enhancements, starship, droid parts, droid software and music. effectFingerprint is the first 12 hex digits of the SHA-256 of the lines joined with a line feed.",
   "rowCount": 342,
   "columns": ["recipe", "recipeName", "=> skill", "=> category", "=> level", "=> practiceRankLimit", "=> quantity", "=> resref", "=> isActive", "=> enhancementType", "=> enhancementSlots", "=> researchCostModifier", "=> components", "=> requirements", "=> effectLineCount", "=> effectFingerprint"],
   "rows": [

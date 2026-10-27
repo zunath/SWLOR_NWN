@@ -268,7 +268,7 @@ internal static class BulkMotionAuthor
                 choreographies.Add(category, recipes);
             }
             var choreography = recipes.SingleOrDefault(recipe => recipe.Id == entry.Id);
-            var sourceNames = choreography?.Beats.Where(b => b.SourceModel != null).Select(b => b.SourceModel!).Distinct().Order().ToArray() ?? [];
+            var sourceNames = choreography?.Beats.SelectMany(b => new[] { b.SourceModel, b.GripModel }).OfType<string>().Distinct().Order().ToArray() ?? [];
             foreach (var sourceName in sourceNames)
             {
                 if (choreographyModels.ContainsKey(sourceName)) continue;

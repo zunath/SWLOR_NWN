@@ -128,3 +128,52 @@ so the order must stop depending on file layout first.
   discovery order so parity holds (record this in the P0-7 scripts).
 
 **Done:** manifest in place, order tests and seam proof pass, CoreSystems.md updated, Codex loop clean.
+
+## P0-8 - Cross-domain dependency guard
+
+**Goal (owner decision 9):** record which domains call which today and fail any new cross-domain dependency, so
+the code stops tangling further while the refactor runs. Later phases move each domain into its own namespace;
+this guard works before and after those moves because it maps types to domains, not files.
+
+**Domain map (coordinator's first cut, 2026-10-26; refine as conversions happen).** A "service" is the static
+class `SWLOR.Game.Server.Service.<Name>` plus every type in `SWLOR.Game.Server.Service.<Name>Service.*`.
+
+| Domain | Services | Feature folders |
+|---|---|---|
+| Core | DB, Log, Cache, Random, Time, GameMath, ColorToken, Messaging, Communication, BackgroundJob, FrameProfiler, Migration, Authorization, Menu, Conversation, ConversationMenu, Snippet, PlayerFeedback, ObjectVisibility, Walkmesh, TileMagic, AnimationPlayer, NamedAnimation, NamedAnimationPlayback, Animation (folder), Attribute (folder) | MigrationDefinition, SnippetDefinition, DialogDefinition |
+| UI | Gui | GuiDefinition |
+| Combat | Combat, CombatPoint, CombatRecorder, Enmity, PvpCombat, Resistance, Recast, RecastTimestamp, Telegraph, Targeting, QueuedAttackAnimation, WeaponAttackEligibility, WeaponAttackPhase, WeaponDelay, OrdinaryAttackTraits, PairedRangedTraits, MeleeTechnique, TwinPistolAbility, TwinPistolEquipment, TwinPistolMastery, PowerGloveEquipment, Stealth, Death, Poisons, BattleGrid | - |
+| Abilities | Ability, AbilityCooldownVisual, QuickCast, Mimicry, MimicryLoadouts | AbilityDefinition |
+| Character | Stat, Skill, Perk, StatusEffect, Race, Achievement, Activity, PlayerActivityEffectTag, PlayerDescriptor, PlayerName, PlayerIntroduction, Disguise, EspionageInfiltration, Language, RoleplayXP (folder) | PerkDefinition, StatusEffectDefinition, AppearanceDefinition |
+| Items | Item, ItemTrash, EquipmentUnequip, KeyItem, Loot, LightsaberWorkbench, OverflowStorage | ItemDefinition, LootTableDefinition |
+| Crafting | Craft, Slicing (folder) | RecipeDefinition |
+| Economy | Bank, Currency, PlayerMarket, Guild | - |
+| Quests | Quest, QuestContractBoard, QuestContract (folder), Faction | QuestDefinition |
+| World | Area, Planet, Weather, Music, Shuttle, Taxi, Property, Fishing, HoloCom, Traps, Notes | FishingLocationDefinition, PropertyLayoutDefinition, TrapDefinition |
+| Space | Space, SpaceModuleRecast | ShipDefinition, ShipModuleDefinition, SpaceObjectDefinition |
+| Creatures | AI, Spawn, NPCGroup, NPC (folder), CompanionControl (folder) | AIDefinition, SpawnDefinition |
+| Companions | BeastMastery, IncubationFieldNote, Droid, DroidEquipmentDiagnostics | BeastDefinition |
+| Social | ChatCommand, ChatPortraitTells, Party, PlayerList | ChatCommandDefinition |
+| Administration | DMBlueprintCatalog, DMCreatorFavorite, DMCreatureManagerFavorite, DMObjectDetails, DMObjectSearch, DMPlayerDirectory, DMPreference, DMPresence, DMTool (folder) | - |
+| Gameplay | (catch-all) | every top-level `Feature/*.cs` file and any `Feature` folder not listed above |
+
+Types outside `Service` and `Feature` (`Core/`, `Native/`, `Entity/`, `Enumeration/`, `Extension/`) belong to
+domain `Platform`; record their edges too but do not fail on edges into `Platform` or `Core`.
+
+**Design:**
+- New NUnit project `SWLOR.Architecture.Tests` (same test packages as the other test projects), added to the
+  solution and, if it exists on the base, to `.github/workflows/maintainability-ci.yml`.
+- Read dependencies from the compiled `SWLOR.Game.Server.dll` IL (System.Reflection.Metadata or Mono.Cecil): for
+  every method body (including compiler-generated closures and lambdas, attributed to their declaring user type)
+  record references to methods, fields, properties and types of other services. This is exact and ignores
+  comments and strings.
+- The domain map lives in a checked-in JSON file in the test project. A service or `Feature` folder that is in
+  no domain fails the test with "add it to the domain map" (new services from `master` get mapped during the sync).
+- Baseline: a checked-in, sorted list of today's cross-domain edges at service level (`Combat -> Stat`), with the
+  count of distinct referencing members as information only. The test fails when (a) a new cross-domain service
+  edge appears, or (b) a baseline edge no longer exists (keep the baseline tight). Edges into `Core` and
+  `Platform` are recorded but never fail. Regenerate with `SWLOR_UPDATE_SNAPSHOTS=1` (reviewed like any snapshot).
+- Report totals in the test output: edges per domain pair.
+
+**Done:** guard passes on the branch; a deliberately added cross-domain call fails it with a clear message; the
+baseline and map are reviewed for sense; Codex loop clean.

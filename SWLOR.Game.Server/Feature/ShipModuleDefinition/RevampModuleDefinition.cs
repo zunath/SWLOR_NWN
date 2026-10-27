@@ -81,6 +81,12 @@ namespace SWLOR.Game.Server.Feature.ShipModuleDefinition
                 case ShipModuleFamily.StripMiner:
                     StripMiner(step);
                     break;
+                case ShipModuleFamily.GasHarvester:
+                    GasHarvester(step);
+                    break;
+                case ShipModuleFamily.Salvager:
+                    Salvager(step);
+                    break;
                 case ShipModuleFamily.ShieldRepairer:
                     Repairer(step, ShipModuleActions.RepairShield);
                     break;
@@ -122,6 +128,8 @@ namespace SWLOR.Game.Server.Feature.ShipModuleDefinition
                 ShipModuleFamily.AssaultConcussionMissile => ShipModuleType.AssaultConcussionMissile,
                 ShipModuleFamily.MiningLaser => ShipModuleType.MiningLaser,
                 ShipModuleFamily.StripMiner => ShipModuleType.StripMiner,
+                ShipModuleFamily.GasHarvester => ShipModuleType.GasHarvester,
+                ShipModuleFamily.Salvager => ShipModuleType.Salvager,
                 ShipModuleFamily.ShieldRepairer => ShipModuleType.ShieldRepairer,
                 ShipModuleFamily.HullRepairer => ShipModuleType.HullRepairer,
                 ShipModuleFamily.ShieldHardener => ShipModuleType.ShieldHardener,
@@ -172,7 +180,7 @@ namespace SWLOR.Game.Server.Feature.ShipModuleDefinition
             _builder
                 .MaxDistance(step.Range)
                 .ValidTargetType(ObjectType.Placeable)
-                .ValidationAction((_, _, target, _, _) => ShipModuleActions.MiningLaserError(target, step.MiningTier))
+                .ValidationAction((activator, _, target, _, _) => ShipModuleActions.MiningLaserError(activator, target, step.MiningTier))
                 .Recast((activator, _, _) => ShipModuleActions.MiningCycleSeconds(activator, (float)step.CycleSeconds))
                 .ActivatedAction((activator, _, target, _, moduleBonus) =>
                     ShipModuleActions.MineAsteroid(activator, target, (float)step.CycleSeconds, moduleBonus));
@@ -183,16 +191,38 @@ namespace SWLOR.Game.Server.Feature.ShipModuleDefinition
             _builder
                 .MaxDistance(step.Range)
                 .ValidTargetType(ObjectType.Placeable)
-                .ValidationAction((_, status, target, _, _) =>
+                .ValidationAction((activator, status, target, _, _) =>
                 {
                     if (status.Size != ShipSize.Large && status.Size != ShipSize.Capital)
                         return "A strip miner needs a Large or Capital hull.";
 
-                    return ShipModuleActions.StripMinerError(target, step.MiningTier);
+                    return ShipModuleActions.StripMinerError(activator, target, step.MiningTier);
                 })
                 .Recast((activator, _, _) => ShipModuleActions.MiningCycleSeconds(activator, (float)step.CycleSeconds))
                 .ActivatedAction((activator, _, target, _, moduleBonus) =>
                     ShipModuleActions.StripAsteroid(activator, target, (float)step.CycleSeconds, moduleBonus));
+        }
+
+        private void GasHarvester(ShipModuleStep step)
+        {
+            _builder
+                .MaxDistance(step.Range)
+                .ValidTargetType(ObjectType.Placeable)
+                .ValidationAction((activator, _, target, _, _) => ShipSalvageActions.GasHarvesterError(activator, target, step.MiningTier))
+                .Recast((activator, _, _) => ShipModuleActions.MiningCycleSeconds(activator, (float)step.CycleSeconds))
+                .ActivatedAction((activator, _, target, _, moduleBonus) =>
+                    ShipSalvageActions.HarvestGasCloud(activator, target, (float)step.CycleSeconds, moduleBonus));
+        }
+
+        private void Salvager(ShipModuleStep step)
+        {
+            _builder
+                .MaxDistance(step.Range)
+                .ValidTargetType(ObjectType.Placeable)
+                .ValidationAction((activator, status, target, _, _) => ShipSalvageActions.SalvagerError(activator, status, target, step.MiningTier))
+                .Recast((activator, _, _) => ShipModuleActions.MiningCycleSeconds(activator, (float)step.CycleSeconds))
+                .ActivatedAction((activator, _, target, _, moduleBonus) =>
+                    ShipSalvageActions.SalvageWreck(activator, target, (float)step.CycleSeconds, moduleBonus));
         }
 
         private void Repairer(ShipModuleStep step, System.Action<uint, ShipStatus, uint, ShipStatus, int> repair)

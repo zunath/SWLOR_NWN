@@ -45,5 +45,7 @@ namespace SWLOR.Game.Server.Service.SpaceService
         TargetingArray = 37,
         WeaponsComputer = 38,
         PowerDiverter = 39,
+        Salvager = 40,
+        GasHarvester = 41,
     }
 }

@@ -17,6 +17,7 @@ namespace SWLOR.Game.Server.Feature.LootTableDefinition
             VegetablePatches();
             AsteroidMining();
             StripMining();
+            GasHarvesting();
 
             return _builder.Build();
         }
@@ -168,11 +169,13 @@ namespace SWLOR.Game.Server.Feature.LootTableDefinition
         {
             _builder.Create("ASTEROID_TILARIUM")
                 .AddItem("ore_tilarium", 30)
+                .AddItem("ore_durelium", 4)
                 .AddItem("aluminum", 2)
                 .AddItem("quadrenium", 1, isRare: true);
 
             _builder.Create("ASTEROID_CURRIAN")
                 .AddItem("ore_currian", 30)
+                .AddItem("ore_durelium", 4)
                 .AddItem("steel", 2)
                 .AddItem("vintrium", 1, isRare: true);
 
@@ -196,15 +199,24 @@ namespace SWLOR.Game.Server.Feature.LootTableDefinition
                 .AddItem("zinsiam", 1, isRare: true);
         }
 
+        /// <summary>Gas clouds (plan section 12): Tibanna Gas, harvested by the Gas Harvester.</summary>
+        private void GasHarvesting()
+        {
+            _builder.Create("GAS_TIBANNA")
+                .AddItem("gas_tibanna", 1);
+        }
+
         private void StripMining()
         {
             _builder.Create("ASTEROID_TILARIUM_STRIP")
                 .AddItem("ore_tilarium", 30)
+                .AddItem("ore_durelium", 12)
                 .AddItem("aluminum", 10)
                 .AddItem("quadrenium", 5, isRare: true);
 
             _builder.Create("ASTEROID_CURRIAN_STRIP")
                 .AddItem("ore_currian", 30)
+                .AddItem("ore_durelium", 12)
                 .AddItem("steel", 10)
                 .AddItem("vintrium", 5, isRare: true);
 

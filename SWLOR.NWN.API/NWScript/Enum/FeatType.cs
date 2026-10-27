@@ -2884,5 +2884,7 @@ namespace SWLOR.NWN.API.NWScript.Enum
         ShipPowerWeapons = 3352,
         ShipPowerShields = 3353,
         ShipPowerEngines = 3354,
+        GasSiphoningTrait = 3355,
+        SalvageExpertTrait = 3356,
 }
 }

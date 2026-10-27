@@ -80,6 +80,20 @@ namespace SWLOR.Game.Server.EngineTests.Definitions.PerkCoverage
                     Prices = new[] { 3, 4 },
                     GrantedFeats = new[] { FeatType.RapidExtractionTrait },
                 },
+                new()
+                {
+                    Perk = PerkType.GasSiphoning,
+                    MaxLevel = 2,
+                    Prices = new[] { 2, 3 },
+                    GrantedFeats = new[] { FeatType.GasSiphoningTrait },
+                },
+                new()
+                {
+                    Perk = PerkType.SalvageExpert,
+                    MaxLevel = 3,
+                    Prices = new[] { 2, 3, 4 },
+                    GrantedFeats = new[] { FeatType.SalvageExpertTrait },
+                },
             };
         }
     }

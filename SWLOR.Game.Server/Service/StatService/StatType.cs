@@ -6620,6 +6620,14 @@ namespace SWLOR.Game.Server.Service.StatService
         [StatType(StatTypeCategory.BeneficialWhenPositive)]
         SpaceMiningCycleSpeedPercent = 1217,
 
+        /// <summary>Tibanna Gas added to every Gas Harvester cycle on a gas cloud (Gas Siphoning).</summary>
+        [StatType(StatTypeCategory.BeneficialWhenPositive)]
+        SpaceGasYieldBonus = 1218,
+
+        /// <summary>Items added to every Salvager cycle on a wreck (Salvage Expert).</summary>
+        [StatType(StatTypeCategory.BeneficialWhenPositive)]
+        SpaceSalvageYieldBonus = 1219,
+
 
     }
 

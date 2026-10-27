@@ -1,0 +1,25 @@
+using System;
+using System.Collections.Generic;
+
+namespace SWLOR.Game.Server.Service.SpaceService
+{
+    /// <summary>A destroyed NPC ship's wreck that a Salvager can work (plan section 12, "Salvage").</summary>
+    public class ShipWreck
+    {
+        /// <summary>The faction tier of the ship (1-6).</summary>
+        public int Tier { get; init; }
+
+        public WreckDifficulty Difficulty { get; init; }
+
+        /// <summary>The destroyed ship's hull size. A Capital wreck needs a Large or Capital salvager.</summary>
+        public ShipSize Size { get; init; }
+
+        public DateTime DestroyedAt { get; init; }
+
+        /// <summary>The players of the killing party, who have the wreck to themselves for the claim time.</summary>
+        public HashSet<string> Claimants { get; init; } = new();
+
+        /// <summary>Salvage cycles left before the wreck is stripped.</summary>
+        public int RemainingCycles { get; set; }
+    }
+}

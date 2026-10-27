@@ -12,20 +12,20 @@ using SWLOR.NWN.API.NWScript.Enum;
 namespace SWLOR.Game.Server.Tests.Perks;
 
 /// <summary>
-/// The Gathering "Space Industry" perks (plan section 6, Appendix A) that exist today: Prospector, Deep Core and
-/// Rapid Extraction. Gas Siphoning, Salvage Expert and Trait Hunter wait for gas harvesting and salvage (W6).
+/// The Gathering "Space Industry" perks (plan section 6, Appendix A) that exist today: Prospector, Deep Core,
+/// Rapid Extraction, Gas Siphoning and Salvage Expert. Trait Hunter waits for the salvaged-component traits (W9).
 /// </summary>
 public class GatheringSpaceIndustryTests
 {
     private static readonly PerkType[] SpaceIndustryPerks =
     {
-        PerkType.Prospector, PerkType.DeepCore, PerkType.RapidExtraction
+        PerkType.Prospector, PerkType.DeepCore, PerkType.RapidExtraction, PerkType.GasSiphoning, PerkType.SalvageExpert
     };
 
     private static Dictionary<PerkType, PerkDetail> BuildPerks()
     {
         var definition = new GatheringPerkDefinition();
-        foreach (var method in new[] { "Prospector", "DeepCore", "RapidExtraction" })
+        foreach (var method in new[] { "Prospector", "DeepCore", "RapidExtraction", "GasSiphoning", "SalvageExpert" })
         {
             typeof(GatheringPerkDefinition)
                 .GetMethod(method, BindingFlags.Instance | BindingFlags.NonPublic)!
@@ -57,9 +57,22 @@ public class GatheringSpaceIndustryTests
         ((int)FeatType.RapidExtractionTrait).Should().Be(3349);
     }
 
+    [Test]
+    public void TheGasAndSalvageIds_FollowThePowerRoutingFeats()
+    {
+        ((int)PerkType.GasSiphoning).Should().Be(886);
+        ((int)PerkType.SalvageExpert).Should().Be(887);
+        ((int)StatType.SpaceGasYieldBonus).Should().Be(1218);
+        ((int)StatType.SpaceSalvageYieldBonus).Should().Be(1219);
+        ((int)FeatType.GasSiphoningTrait).Should().Be(3355);
+        ((int)FeatType.SalvageExpertTrait).Should().Be(3356);
+    }
+
     [TestCase(PerkType.Prospector, "Prospector", new[] { 2, 3, 4 }, new[] { 10, 25, 40 }, FeatType.ProspectorTrait)]
     [TestCase(PerkType.DeepCore, "Deep Core", new[] { 3, 4 }, new[] { 20, 40 }, FeatType.DeepCoreTrait)]
     [TestCase(PerkType.RapidExtraction, "Rapid Extraction", new[] { 3, 4 }, new[] { 30, 45 }, FeatType.RapidExtractionTrait)]
+    [TestCase(PerkType.GasSiphoning, "Gas Siphoning", new[] { 2, 3 }, new[] { 15, 35 }, FeatType.GasSiphoningTrait)]
+    [TestCase(PerkType.SalvageExpert, "Salvage Expert", new[] { 2, 3, 4 }, new[] { 10, 25, 40 }, FeatType.SalvageExpertTrait)]
     public void ThePerks_HaveTheBiblePricesAndGatheringRanks(
         PerkType perkType, string name, int[] prices, int[] ranks, FeatType feat)
     {
@@ -94,6 +107,11 @@ public class GatheringSpaceIndustryTests
         perks[PerkType.DeepCore].PerkLevels[2].Description.Should().Be("+20 to the rare-metal chance from asteroids.");
         perks[PerkType.RapidExtraction].PerkLevels[1].Description.Should().Be("Mining, gas and salvage cycles are 10% faster.");
         perks[PerkType.RapidExtraction].PerkLevels[2].Description.Should().Be("Mining, gas and salvage cycles are 20% faster.");
+        perks[PerkType.GasSiphoning].PerkLevels[1].Description.Should().Be("+1 Tibanna Gas per cycle.");
+        perks[PerkType.GasSiphoning].PerkLevels[2].Description.Should().Be("+2 Tibanna Gas per cycle.");
+        perks[PerkType.SalvageExpert].PerkLevels[1].Description.Should().Be("+1 item per salvage cycle.");
+        perks[PerkType.SalvageExpert].PerkLevels[2].Description.Should().Be("+2 items per salvage cycle.");
+        perks[PerkType.SalvageExpert].PerkLevels[3].Description.Should().Be("+3 items per salvage cycle.");
 
         perks.Values.SelectMany(perk => perk.PerkLevels.Values)
             .Select(level => level.Description)
@@ -111,6 +129,11 @@ public class GatheringSpaceIndustryTests
 
         Stat(PerkType.RapidExtraction, 1, StatType.SpaceMiningCycleSpeedPercent).Should().Be(10);
         Stat(PerkType.RapidExtraction, 2, StatType.SpaceMiningCycleSpeedPercent).Should().Be(20);
+
+        Stat(PerkType.GasSiphoning, 1, StatType.SpaceGasYieldBonus).Should().Be(1);
+        Stat(PerkType.GasSiphoning, 2, StatType.SpaceGasYieldBonus).Should().Be(2);
+        foreach (var (rank, items) in new[] { (1, 1), (2, 2), (3, 3) })
+            Stat(PerkType.SalvageExpert, rank, StatType.SpaceSalvageYieldBonus).Should().Be(items);
     }
 
     [Test]
@@ -118,7 +141,8 @@ public class GatheringSpaceIndustryTests
     {
         var spaceStats = new[]
         {
-            StatType.SpaceMiningYieldBonus, StatType.SpaceRareMetalChance, StatType.SpaceMiningCycleSpeedPercent
+            StatType.SpaceMiningYieldBonus, StatType.SpaceRareMetalChance, StatType.SpaceMiningCycleSpeedPercent,
+            StatType.SpaceGasYieldBonus, StatType.SpaceSalvageYieldBonus
         };
 
         BuildPerks().Values.SelectMany(perk => perk.PerkLevels.Values)
@@ -129,10 +153,11 @@ public class GatheringSpaceIndustryTests
     }
 
     [Test]
-    public void TheImplementedRows_CostTwentyThreeSkillPoints()
+    public void TheImplementedRows_CostThirtySevenSkillPoints()
     {
         BuildPerks().Values.SelectMany(perk => perk.PerkLevels.Values).Sum(level => level.Price)
-            .Should().Be(23, "Prospector 9 + Deep Core 7 + Rapid Extraction 7 of the Bible's 44 SP group");
+            .Should().Be(37, "Prospector 9 + Deep Core 7 + Rapid Extraction 7 + Gas Siphoning 5 + Salvage Expert 9 of the " +
+                             "Bible's 44 SP group; Trait Hunter (7) waits for W9");
         BuildPerks().Keys.Should().BeEquivalentTo(SpaceIndustryPerks);
     }
 
@@ -148,13 +173,13 @@ public class GatheringSpaceIndustryTests
         SpaceCombatMath.MiningCycleSeconds(baseSeconds, percent).Should().BeApproximately(expected, 0.0001f);
     }
 
-    [TestCase(1f, 0, 1f)]
-    [TestCase(1f, 1, 2f)]
-    [TestCase(2.5f, 3, 5.5f)]
-    [TestCase(2f, -4, 2f)]
-    public void Prospector_AddsToTheLegacyYield(float legacyYield, int prospector, float expected)
+    [TestCase(1, 0, 1)]
+    [TestCase(1, 1, 2)]
+    [TestCase(2, 3, 5)]
+    [TestCase(2, -4, 2)]
+    public void Prospector_AddsToTheLegacyYield(int legacyYield, int prospector, int expected)
     {
-        SpaceCombatMath.MiningYield(legacyYield, prospector).Should().BeApproximately(expected, 0.0001f);
+        SpaceCombatMath.MiningYield(legacyYield, prospector).Should().Be(expected);
     }
 
     [Test]

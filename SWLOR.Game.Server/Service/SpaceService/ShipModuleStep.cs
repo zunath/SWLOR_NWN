@@ -42,6 +42,7 @@ namespace SWLOR.Game.Server.Service.SpaceService
         public ShipSize? FixedSize { get; set; }
 
         // Gathering
+        /// <summary>The highest asteroid, gas cloud or wreck tier a mining, gas or salvage module works.</summary>
         public int MiningTier { get; set; }
 
         // Support and passive numbers

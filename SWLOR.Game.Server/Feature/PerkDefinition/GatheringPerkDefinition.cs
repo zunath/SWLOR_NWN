@@ -22,6 +22,8 @@ namespace SWLOR.Game.Server.Feature.PerkDefinition
             Prospector();
             DeepCore();
             RapidExtraction();
+            GasSiphoning();
+            SalvageExpert();
 
             return _builder.Build();
         }
@@ -323,6 +325,50 @@ namespace SWLOR.Game.Server.Feature.PerkDefinition
                 .Price(4)
                 .RequirementSkill(SkillType.Gathering, 45);
         }
+
+        private void GasSiphoning()
+        {
+            _builder.Create(PerkCategoryType.Gathering, PerkType.GasSiphoning)
+                .Name("Gas Siphoning")
+
+                .AddPerkLevel()
+                .GrantsFeat(FeatType.GasSiphoningTrait)
+                .Description("+1 Tibanna Gas per cycle.")
+                .IncreasesStat(StatType.SpaceGasYieldBonus, 1)
+                .Price(2)
+                .RequirementSkill(SkillType.Gathering, 15)
+
+                .AddPerkLevel()
+                .Description("+2 Tibanna Gas per cycle.")
+                .IncreasesStat(StatType.SpaceGasYieldBonus, 2)
+                .Price(3)
+                .RequirementSkill(SkillType.Gathering, 35);
+        }
+
+
+        private void SalvageExpert()
+        {
+            _builder.Create(PerkCategoryType.Gathering, PerkType.SalvageExpert)
+                .Name("Salvage Expert")
+
+                .AddPerkLevel()
+                .GrantsFeat(FeatType.SalvageExpertTrait)
+                .Description("+1 item per salvage cycle.")
+                .IncreasesStat(StatType.SpaceSalvageYieldBonus, 1)
+                .Price(2)
+                .RequirementSkill(SkillType.Gathering, 10)
+
+                .AddPerkLevel()
+                .Description("+2 items per salvage cycle.")
+                .IncreasesStat(StatType.SpaceSalvageYieldBonus, 2)
+                .Price(3)
+                .RequirementSkill(SkillType.Gathering, 25)
+
+                .AddPerkLevel()
+                .Description("+3 items per salvage cycle.")
+                .IncreasesStat(StatType.SpaceSalvageYieldBonus, 3)
+                .Price(4)
+                .RequirementSkill(SkillType.Gathering, 40);
+        }
     }
 }
-

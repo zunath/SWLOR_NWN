@@ -2472,28 +2472,28 @@
   },
   {
     "File": "SWLOR.Game.Server/Feature/GuiDefinition/ViewModel/RefineryViewModel.cs",
-    "Line": 207,
+    "Line": 214,
     "Member": "OnClickAddItem",
     "Delivery": "Retained",
     "Call": "SendMessageToPC(Player, \"Item must be in your inventory.\")"
   },
   {
     "File": "SWLOR.Game.Server/Feature/GuiDefinition/ViewModel/RefineryViewModel.cs",
-    "Line": 216,
+    "Line": 223,
     "Member": "OnClickAddItem",
     "Delivery": "Retained",
     "Call": "SendMessageToPC(Player, \"Only raw materials may be added to the refining list.\")"
   },
   {
     "File": "SWLOR.Game.Server/Feature/GuiDefinition/ViewModel/RefineryViewModel.cs",
-    "Line": 224,
+    "Line": 231,
     "Member": "OnClickAddItem",
     "Delivery": "Retained",
     "Call": "SendMessageToPC(Player, $\"Your Refining perk level must be at least {_ores[resref].RequiredLevel} to refine that item.\")"
   },
   {
     "File": "SWLOR.Game.Server/Feature/GuiDefinition/ViewModel/RefineryViewModel.cs",
-    "Line": 379,
+    "Line": 386,
     "Member": "OnWindowClosed",
     "Delivery": "Retained",
     "Call": "SendMessageToPC(Player, Item.ItemsHeldMessage)"
@@ -3179,31 +3179,59 @@
   },
   {
     "File": "SWLOR.Game.Server/Feature/ShipModuleDefinition/ShipModuleActions.cs",
-    "Line": 488,
+    "Line": 511,
     "Member": "MineAsteroid",
     "Delivery": "Retained",
     "Call": "SendMessageToPC(activator, \"Your target has been fully mined.\")"
   },
   {
     "File": "SWLOR.Game.Server/Feature/ShipModuleDefinition/ShipModuleActions.cs",
-    "Line": 502,
+    "Line": 525,
     "Member": "MineAsteroid",
     "Delivery": "Retained",
     "Call": "SendMessageToPC(activator, $\"{GetName(target)} has been fully mined.\")"
   },
   {
     "File": "SWLOR.Game.Server/Feature/ShipModuleDefinition/ShipModuleActions.cs",
-    "Line": 552,
+    "Line": 587,
     "Member": "StripAsteroid",
     "Delivery": "Retained",
     "Call": "SendMessageToPC(activator, $\"{GetName(target)} has been depleted by your strip miner.\")"
   },
   {
     "File": "SWLOR.Game.Server/Feature/ShipModuleDefinition/ShipModuleActions.cs",
-    "Line": 681,
+    "Line": 716,
     "Member": "ApplySupport",
     "Delivery": "Retained",
     "Call": "Messaging.SendMessageNearbyToPlayers(\n                activator,\n                receiver => $\"{PlayerName.GetDisplayName(receiver, activator)} restores {amount} {noun} to {PlayerName.GetDisplayName(receiver, target)}'s ship.\")"
+  },
+  {
+    "File": "SWLOR.Game.Server/Feature/ShipModuleDefinition/ShipSalvageActions.cs",
+    "Line": 70,
+    "Member": "HarvestGasCloud",
+    "Delivery": "Retained",
+    "Call": "SendMessageToPC(activator, \"Your target has been fully harvested.\")"
+  },
+  {
+    "File": "SWLOR.Game.Server/Feature/ShipModuleDefinition/ShipSalvageActions.cs",
+    "Line": 83,
+    "Member": "HarvestGasCloud",
+    "Delivery": "Retained",
+    "Call": "SendMessageToPC(activator, $\"{GetName(target)} has been fully harvested.\")"
+  },
+  {
+    "File": "SWLOR.Game.Server/Feature/ShipModuleDefinition/ShipSalvageActions.cs",
+    "Line": 150,
+    "Member": "SalvageWreck",
+    "Delivery": "Retained",
+    "Call": "SendMessageToPC(activator, \"Your target has been fully salvaged.\")"
+  },
+  {
+    "File": "SWLOR.Game.Server/Feature/ShipModuleDefinition/ShipSalvageActions.cs",
+    "Line": 175,
+    "Member": "SalvageWreck",
+    "Delivery": "Retained",
+    "Call": "SendMessageToPC(activator, $\"{GetName(target)} has been fully salvaged.\")"
   },
   {
     "File": "SWLOR.Game.Server/Feature/SlicingTerminal.cs",
@@ -5458,6 +5486,20 @@
     "Member": "GiveReward",
     "Delivery": "Retained",
     "Call": "SendMessageToPC(player, $\"You earned {Amount} XP!\")"
+  },
+  {
+    "File": "SWLOR.Game.Server/Service/ShipHold.cs",
+    "Line": 100,
+    "Member": "DeliverYield",
+    "Delivery": "Retained",
+    "Call": "SendMessageToPC(pilot, ColorToken.Green($\"Stored in the ship hold: {text}.\"))"
+  },
+  {
+    "File": "SWLOR.Game.Server/Service/ShipHold.cs",
+    "Line": 274,
+    "Member": "WarnHoldFull",
+    "Delivery": "Retained",
+    "Call": "SendMessageToPC(pilot, ColorToken.Red(\"Your ship's hold is full. Yields go to your inventory until you make room.\"))"
   },
   {
     "File": "SWLOR.Game.Server/Service/Shuttle.cs",

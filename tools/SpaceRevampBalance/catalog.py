@@ -45,6 +45,8 @@ ART = {
     "redundant_shields": (516, 251, "iit_smredshld"), "reinforced_plating": (516, 253, "iit_smreinplate"),
     "targeting_array": (513, 242, "iit_smtgtarray"), "weapons_computer": (513, 240, "iit_smwpncomp"),
     "power_diverter": (513, 243, "iit_smpowdivert"),
+    # New artwork for the salvage update (W6a), in the ESS9 bank.
+    "salvager": (523, 226, "iit_smsalvager"), "gas_harvester": (523, 227, "iit_smgasharvest"),
 }
 
 W = m.WEAPONS
@@ -149,6 +151,11 @@ FAMILIES = [
      p(DamageAll=lambda r: 8 if r < 45 else 10), lambda r, s: f"Capital: +{s['DamageAll']}% weapon damage."),
     ("PowerDiverter", "Power Diverter", "Pwr Diverter", "sm_pdiv", "Low", "Piloting", "Passive", 0, 0, 0, "power_diverter", True,
      p(CapacitorRegen=lambda r: round(m.CAP_REGEN_STEP[r] * 2, 2)), lambda r, s: f"Capital: +{s['CapacitorRegen']} capacitor per second (scales with hull size)."),
+    ("Salvager", "Salvager", "Salvager", "sm_salv", "High", "Gathering", "Toggle", 6.0, 3, 15, "salvager", False,
+     p(MiningTier=lambda r: r // 10 + 1),
+     lambda r, s: f"Salvages wrecks up to tier {s['MiningTier']} every 6 seconds while on. Capital wrecks need a Large or Capital hull."),
+    ("GasHarvester", "Gas Harvester", "Gas Harvest", "sm_gas", "High", "Gathering", "Toggle", 6.0, 3, 15, "gas_harvester", False,
+     p(MiningTier=lambda r: r // 10 + 1), lambda r, s: f"Harvests Tibanna Gas from gas clouds up to tier {s['MiningTier']} every 6 seconds while on."),
 ]
 
 MATERIALS = {1: ("ref_tilarium", "elec_ruined"), 2: ("ref_currian", "elec_flawed"), 3: ("ref_idailia", "elec_good"),
@@ -159,8 +166,14 @@ def tier(rank):
     return min(5, rank // 10 + 1)
 
 
-def module_steps():
+# Families added after the 50 hulls (the salvage update, W6a). Their recipe IDs follow the hulls' so no earlier
+# RecipeType value moves.
+LATE_FAMILIES = {"Salvager", "GasHarvester"}
+
+
+def module_steps(late_recipe_start=None):
     steps, recipe = [], RECIPE_TYPE_START
+    late_recipe = late_recipe_start
     for (key, name, short, prefix, row, skill, use, cycle, cap, rng, art, capital, stats, desc) in FAMILIES:
         for r in (CAPITAL_STEPS if capital else m.STEPS):
             mk = ROMAN[r // 5]
@@ -168,15 +181,19 @@ def module_steps():
             refined, elec = MATERIALS[tier(r)]
             heavy = 2 if capital else 1
             base, model_part, texture = ART[art]
+            late = key in LATE_FAMILIES
             steps.append(dict(
                 Family=key, Rank=r, Tag=f"{prefix}_{r:02d}", Name=f"{name} Mk {mk}", ShortName=f"{short} {mk}"[:14],
                 Row=row, Skill=skill, Activation=use, CycleSeconds=cycle, CapacitorCost=cap, Range=rng, Capital=capital,
-                Texture=texture, BaseItem=base, ModelPart=model_part, Description=desc(r, s), RecipeType=recipe,
+                Texture=texture, BaseItem=base, ModelPart=model_part, Description=desc(r, s), RecipeType=late_recipe if late else recipe,
                 RecipeName=f"Ship{key}{r:02d}",
                 RecipeLevel=max(2, min(50, r + (3 if capital else 0))),
                 Components=[(refined, (3 if row == "High" else 2) * heavy), (elec, (2 if row == "High" else 1) * heavy)],
                 Cost=100 + 30 * r + (2000 if capital else 0), **s))
-            recipe += 1
+            if late:
+                late_recipe = None if late_recipe is None else late_recipe + 1
+            else:
+                recipe += 1
     return steps
 
 
@@ -348,7 +365,7 @@ END = "        // END space revamp catalog"
 
 def recipe_enum(steps, hulls):
     text = RECIPE_ENUM.read_text(encoding="utf-8")
-    block = "\n".join([BEGIN] + [f"        {x['RecipeName']} = {x['RecipeType']}," for x in steps + hulls] + [END])
+    block = "\n".join([BEGIN] + [f"        {x['RecipeName']} = {x['RecipeType']}," for x in sorted(steps + hulls, key=lambda x: x["RecipeType"])] + [END])
     if BEGIN in text:
         head, rest = text.split(BEGIN, 1)
         tail = rest.split(END, 1)[1]
@@ -361,9 +378,15 @@ def recipe_enum(steps, hulls):
 CRLF_FILES = {"SWLOR.Game.Server/Service/CraftService/RecipeType.cs"}
 
 
+def catalog():
+    """Every module step and ship deed with its RecipeType: the earlier families, then the hulls, then LATE_FAMILIES."""
+    early = [s for s in module_steps() if s["Family"] not in LATE_FAMILIES]
+    hulls = ships(RECIPE_TYPE_START + len(early))
+    return module_steps(RECIPE_TYPE_START + len(early) + len(hulls)), hulls
+
+
 def writes():
-    steps = module_steps()
-    hulls = ships(RECIPE_TYPE_START + len(steps))
+    steps, hulls = catalog()
     files = {
         "SWLOR.Game.Server/Feature/ShipModuleDefinition/RevampModuleCatalog.cs": module_catalog_cs(steps),
         "SWLOR.Game.Server/Feature/ShipDefinition/RevampShipCatalog.cs": ship_catalog_cs(hulls),

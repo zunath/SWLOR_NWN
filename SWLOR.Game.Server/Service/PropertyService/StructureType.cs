@@ -2718,6 +2718,13 @@ namespace SWLOR.Game.Server.Service.PropertyService
             1)]
         BlacksiteAnalysisStation = 435,
 
+        [Structure("Espionage Workbench",
+            "espionage_bench",
+            "",
+            true,
+            0)]
+        EspionageWorkbench = 436,
+
         // Buildings start here (5000+)
         [Structure("City Hall - Style 1",
             "city_hall",

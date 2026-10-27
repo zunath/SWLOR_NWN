@@ -13,7 +13,8 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.Piloting
     /// Break Formation I-II: enemy ships within command range suffer an Accuracy penalty (and, at II, Weakened)
     /// for 30 s. Ported from the Leadership Break Morale (the numbers, STM and cooldown are the ground's). A ship
     /// weapon rolls Accuracy, not ability hit chance, so the penalty is the Flash status's ship Accuracy stat.
-    /// Social raises the penalties, as it does on the ground.
+    /// Social raises the penalties, as it does on the ground, and the captain's Leadership rank raises them further
+    /// (<see cref="SpaceCommand.ApplyLeadershipScaling"/>).
     /// </summary>
     public class BreakFormationAbilityDefinition : IAbilityListDefinition
     {
@@ -55,7 +56,8 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.Piloting
                 var applied = Space.ApplyStatusToShip(
                     activator,
                     ship,
-                    new FlashStatusEffect(AbilityEffectScaling.ScaleValueBySourceSocial(activator, accuracyBase, accuracyMaximum)),
+                    new FlashStatusEffect(SpaceCommand.ApplyLeadershipScaling(activator,
+                        AbilityEffectScaling.ScaleValueBySourceSocial(activator, accuracyBase, accuracyMaximum))),
                     DebuffSeconds);
 
                 if (weakenedBase > 0)
@@ -63,7 +65,8 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.Piloting
                     applied |= Space.ApplyStatusToShip(
                         activator,
                         ship,
-                        new WeakenedStatusEffect(AbilityEffectScaling.ScaleValueBySourceSocial(activator, weakenedBase, weakenedMaximum)),
+                        new WeakenedStatusEffect(SpaceCommand.ApplyLeadershipScaling(activator,
+                            AbilityEffectScaling.ScaleValueBySourceSocial(activator, weakenedBase, weakenedMaximum))),
                         DebuffSeconds);
                 }
 

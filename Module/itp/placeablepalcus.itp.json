@@ -37614,6 +37614,17 @@
                     "__struct_id": 0,
                     "NAME": {
                       "type": "cexostring",
+                      "value": "Crew Console"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "crew_console"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
                       "value": "Croknor Vein"
                     },
                     "RESREF": {

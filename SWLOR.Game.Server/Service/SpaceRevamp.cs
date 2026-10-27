@@ -38,15 +38,21 @@ namespace SWLOR.Game.Server.Service
         /// <summary>
         /// Works out a revamp ship's stats from its hull, fitted modules and the pilot's WIL and stores them on
         /// the status. Current hull, shield and capacitor are limited to the new maximums; with
-        /// <paramref name="fill"/> they start full. Does nothing for a legacy ship.
+        /// <paramref name="fill"/> they start full. Station slots count only through
+        /// <paramref name="stationEffectiveness"/> (see <see cref="ShipStatCalculator.Calculate"/>); without it they
+        /// are empty. Does nothing for a legacy ship.
         /// </summary>
         /// <returns>true when the ship is a revamp ship and was recalculated.</returns>
-        public static bool RecalculateShipStats(ShipStatus status, int willpower, bool fill = false)
+        public static bool RecalculateShipStats(
+            ShipStatus status,
+            int willpower,
+            bool fill = false,
+            Func<int, double> stationEffectiveness = null)
         {
             if (status == null || !_shipTypes.TryGetValue(status.ItemTag ?? string.Empty, out var detail) || detail.Hull == null)
                 return false;
 
-            var result = ShipStatCalculator.Calculate(detail.Hull, GetFittedRevampModules(status), willpower);
+            var result = ShipStatCalculator.Calculate(detail.Hull, GetFittedRevampModules(status), willpower, stationEffectiveness);
             ShipStatCalculator.Apply(result, status, fill);
             return true;
         }

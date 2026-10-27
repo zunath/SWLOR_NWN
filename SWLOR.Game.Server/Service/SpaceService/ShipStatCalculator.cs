@@ -82,9 +82,17 @@ namespace SWLOR.Game.Server.Service.SpaceService
         public static bool IsStation(ShipSlotTag tag) => tag != ShipSlotTag.Helm && tag != ShipSlotTag.Invalid;
 
         /// <summary>
-        /// Works out a ship's stats. Modules in station slots add nothing until their seat is crewed.
+        /// Works out a ship's stats. Modules in station slots add nothing until their seat is crewed: then
+        /// <paramref name="stationEffectiveness"/> (hotbar slot to effectiveness, 0 for an empty seat) scales their
+        /// hull, shield, capacitor and capacitor regen, as the balance model does. Their best-of Defense, Evasion
+        /// and Accuracy, speed, resistances and damage bonuses apply in full while the seat works them. With no
+        /// <paramref name="stationEffectiveness"/>, every station slot is empty (a solo pilot runs the Helm only).
         /// </summary>
-        public static ShipStatResult Calculate(ShipHullEntry hull, IEnumerable<ShipFittedModule> modules, int willpower)
+        public static ShipStatResult Calculate(
+            ShipHullEntry hull,
+            IEnumerable<ShipFittedModule> modules,
+            int willpower,
+            Func<int, double> stationEffectiveness = null)
         {
             var tags = BuildSlotTags(hull);
             var size = hull.Size == ShipSize.Invalid ? ShipSize.Small : hull.Size;
@@ -113,13 +121,20 @@ namespace SWLOR.Game.Server.Service.SpaceService
                 var step = fitted?.Step;
                 if (step == null) continue;
 
-                if (tags.TryGetValue(GetHotbarSlot(fitted.Row, fitted.Slot), out var tag) && IsStation(tag))
-                    continue;
+                var hotbarSlot = GetHotbarSlot(fitted.Row, fitted.Slot);
+                var effectiveness = 1.0;
+                if (tags.TryGetValue(hotbarSlot, out var tag) && IsStation(tag))
+                {
+                    effectiveness = stationEffectiveness?.Invoke(hotbarSlot) ?? 0.0;
+                    if (effectiveness <= 0.0)
+                        continue;
+                }
 
-                hullPoints += Round(step.Hull * moduleMultiplier);
-                shieldPoints += Round(step.Shield * moduleMultiplier);
-                capacitor += Round(step.MaxCapacitor * moduleMultiplier);
-                capacitorRegen += step.CapacitorRegen * moduleMultiplier;
+                var outputMultiplier = moduleMultiplier * effectiveness;
+                hullPoints += Round(step.Hull * outputMultiplier);
+                shieldPoints += Round(step.Shield * outputMultiplier);
+                capacitor += Round(step.MaxCapacitor * outputMultiplier);
+                capacitorRegen += step.CapacitorRegen * outputMultiplier;
 
                 bestDefense = Math.Max(bestDefense, step.ModuleDefense);
                 bestAccuracy = Math.Max(bestAccuracy, step.ModuleAccuracy);

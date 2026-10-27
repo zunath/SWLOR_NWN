@@ -17,26 +17,13 @@ namespace SWLOR.Game.Server.Service.SpaceService
         /// <summary>Progress is shown in steps of this size so an unchanged bar is not pushed again.</summary>
         public const float ProgressStep = 0.05f;
 
-        /// <summary>The seat whose modules the HUD lists. Crew members will pass their own seat.</summary>
-        public const ShipSlotTag PilotSeat = ShipSlotTag.Helm;
-
-        /// <summary>The crew seat a hotbar slot belongs to. A slot without a tag belongs to the Helm.</summary>
-        public static ShipSlotTag GetSlotSeat(ShipStatus status, int slot)
-        {
-            if (status?.SlotTags != null &&
-                status.SlotTags.TryGetValue(slot, out var tag) &&
-                tag != ShipSlotTag.Invalid)
-            {
-                return tag;
-            }
-
-            return ShipSlotTag.Helm;
-        }
+        /// <summary>The seat whose modules the HUD lists for the pilot. A crew member passes their own seat.</summary>
+        public const ShipCrewSeat PilotSeat = ShipCrewSeat.Pilot;
 
         /// <summary>The one filter that decides which slots a seat sees and controls.</summary>
-        public static bool IsSlotInSeat(ShipStatus status, int slot, ShipSlotTag seat)
+        public static bool IsSlotInSeat(ShipStatus status, int slot, ShipCrewSeat seat)
         {
-            return GetSlotSeat(status, slot) == seat;
+            return ShipCrewSeats.GetSeatForSlot(status.Size, status.SlotTags, slot) == seat;
         }
 
         /// <summary>The fitted module in a hotbar slot (high 1-10, low 11-20, mid 21-30), or null.</summary>
@@ -85,7 +72,7 @@ namespace SWLOR.Game.Server.Service.SpaceService
         /// </summary>
         public static List<ShipHudModuleRow> BuildModuleRows(
             ShipStatus status,
-            ShipSlotTag seat,
+            ShipCrewSeat seat,
             DateTime now,
             Func<string, ShipModuleDetail> getDetail,
             uint currentTarget,
@@ -175,7 +162,7 @@ namespace SWLOR.Game.Server.Service.SpaceService
         }
 
         /// <summary>The slots of the weapon toggles a seat controls: toggled offensive modules, in slot order.</summary>
-        public static List<int> GetWeaponSlots(ShipStatus status, ShipSlotTag seat, Func<string, ShipModuleDetail> getDetail)
+        public static List<int> GetWeaponSlots(ShipStatus status, ShipCrewSeat seat, Func<string, ShipModuleDetail> getDetail)
         {
             var slots = new List<int>();
             if (status == null)
@@ -229,13 +216,13 @@ namespace SWLOR.Game.Server.Service.SpaceService
         {
             return new List<ShipHudStatRow>
             {
-                new("Vitals"),
+                new("VITALS"),
                 new("Hull", $"{stats.Hull} / {stats.MaxHull}"),
                 new("Shield", $"{stats.Shield} / {stats.MaxShield}"),
                 new("Shield Regen", $"{stats.ShieldRegenPerSecond:0.##} / s"),
                 new("Capacitor", $"{stats.Capacitor} / {stats.MaxCapacitor}"),
                 new("Capacitor Regen", $"{stats.CapacitorRegenPerSecond:0.##} / s"),
-                new("Offense"),
+                new("OFFENSE"),
                 new("Attack (energy)", stats.EnergyAttack.ToString()),
                 new("Attack (launcher)", stats.LauncherAttack.ToString()),
                 new("Accuracy (energy)", stats.EnergyAccuracy.ToString()),
@@ -244,13 +231,13 @@ namespace SWLOR.Game.Server.Service.SpaceService
                 new("Thermal Damage", FormatPercent(stats.ThermalDamagePercent)),
                 new("EM Damage", FormatPercent(stats.EmDamagePercent)),
                 new("Explosive Damage", FormatPercent(stats.ExplosiveDamagePercent)),
-                new("Defense"),
+                new("DEFENSES"),
                 new("Defense", stats.Defense.ToString()),
                 new("Evasion", stats.Evasion.ToString()),
                 new("Thermal Resistance", $"{stats.ThermalResistance}%"),
                 new("EM Resistance", $"{stats.EmResistance}%"),
                 new("Explosive Resistance", $"{stats.ExplosiveResistance}%"),
-                new("Ship"),
+                new("SHIP"),
                 new("Speed", $"{Math.Round(stats.SpeedMultiplier * 100)}%"),
                 new("Cargo", stats.Cargo?.ToString() ?? "-"),
                 new("High Slots", $"{stats.HighFitted} / {stats.HighSlots}"),

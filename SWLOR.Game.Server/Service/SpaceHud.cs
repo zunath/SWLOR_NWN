@@ -1,6 +1,7 @@
 using System.Collections.Generic;
 using System.Linq;
 using SWLOR.Game.Server.Core;
+using SWLOR.Game.Server.Core.NWNX.Enum;
 using SWLOR.Game.Server.Feature.GuiDefinition.RefreshEvent;
 using SWLOR.Game.Server.Service.GuiService;
 using SWLOR.Game.Server.Service.SpaceService;
@@ -114,7 +115,7 @@ namespace SWLOR.Game.Server.Service
         }
 
         /// <summary>The modules that are on, as the HUD lists them for a seat.</summary>
-        public static List<ShipHudModuleRow> GetModuleRows(uint player, ShipStatus status, ShipSlotTag seat)
+        public static List<ShipHudModuleRow> GetModuleRows(uint player, ShipStatus status, ShipCrewSeat seat)
         {
             var (target, _) = Space.GetCurrentTarget(player);
             return ShipHudRules.BuildModuleRows(
@@ -128,7 +129,7 @@ namespace SWLOR.Game.Server.Service
         }
 
         /// <summary>The weapon toggles a seat controls and how many are on.</summary>
-        public static (int On, int Total) GetWeaponCounts(ShipStatus status, ShipSlotTag seat)
+        public static (int On, int Total) GetWeaponCounts(ShipStatus status, ShipCrewSeat seat)
         {
             var slots = ShipHudRules.GetWeaponSlots(status, seat, Space.FindShipModuleDetail);
             return (ShipHudRules.CountOn(status, slots), slots.Count);

@@ -47,15 +47,6 @@ namespace SWLOR.Game.Server.Service.SpaceService
         }
 
         /// <summary>
-        /// A module in a Helm slot always works. A module in a crew station works only while the seat is crewed.
-        /// A slot with no tag (an older ship) counts as the Helm.
-        /// </summary>
-        public static bool IsSeatUsable(ShipSlotTag? tag, bool seatCrewed)
-        {
-            return !tag.HasValue || !ShipStatCalculator.IsStation(tag.Value) || seatCrewed;
-        }
-
-        /// <summary>
         /// The usable module of the filter's family with the highest rank whose range reaches
         /// <paramref name="distance"/>. Equal ranks go to the lower slot number. Null when none qualifies.
         /// </summary>

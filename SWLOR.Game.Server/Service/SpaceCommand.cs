@@ -1,6 +1,7 @@
 using System.Collections.Generic;
 using System.Linq;
 using SWLOR.Game.Server.Core;
+using SWLOR.Game.Server.Entity;
 using SWLOR.Game.Server.Feature.AbilityDefinition;
 using SWLOR.Game.Server.Feature.StatusEffectDefinition;
 using SWLOR.Game.Server.Service.CombatService;
@@ -40,12 +41,66 @@ namespace SWLOR.Game.Server.Service
 
         // Leadership
 
+        /// <summary>The highest Leadership rank.</summary>
+        public const int LeadershipMaximumRank = 50;
+
         /// <summary>
-        /// The percent by which the captain's Leadership rank strengthens the Command style: its command range, the
-        /// orders' strength and the crew aboard (plan section 10). The crew update fills this in; until then
-        /// Leadership rank adds nothing, so every caller of this hook is a no-op.
+        /// What Leadership 50 adds to the Command style: the relative bonus SOC 26 gives the ground Leadership orders
+        /// over SOC 10 (Press the Attack II +8% to +10%, Decisive Command +12% to +15%, Mark Target +8% to +10%, the
+        /// ground's direct-effect stat bonus of 25%). The ground scales Leadership by SOC only; space adds the rank on top.
         /// </summary>
-        public static int GetLeadershipBonusPercent(uint ship) => 0;
+        public const int LeadershipMaximumBonusPercent = 25;
+
+        /// <summary>
+        /// What Leadership 50 adds to the effectiveness of the crew aboard. The balance model (plan section 10) puts
+        /// a player crew at 100%: a crewed Cruiser at 100% already matches five separate Fighters against a T5 Boss
+        /// capital (94 s against 91 s), and at 105% it is level with them (90 s), so Leadership's share stops there.
+        /// </summary>
+        public const int LeadershipCrewMaximumBonusPercent = 5;
+
+        /// <summary>
+        /// The percent by which the captain's Leadership rank strengthens the Command style: its command range and
+        /// the orders' and auras' strength (plan section 10). The captain is the pilot; an NPC ship has none.
+        /// </summary>
+        public static int GetLeadershipBonusPercent(uint ship) => LeadershipBonusPercent(GetCaptainLeadershipRank(ship));
+
+        /// <summary>The percent the captain's Leadership rank adds to the effectiveness of the crew aboard.</summary>
+        public static int GetLeadershipCrewBonusPercent(uint ship) => LeadershipCrewBonusPercent(GetCaptainLeadershipRank(ship));
+
+        private static int GetCaptainLeadershipRank(uint ship)
+        {
+            if (!GetIsObjectValid(ship) || !GetIsPC(ship) || GetIsDM(ship))
+                return 0;
+
+            var dbPlayer = DB.Get<Player>(GetObjectUUID(ship));
+            return dbPlayer?.Skills != null && dbPlayer.Skills.TryGetValue(SkillType.Leadership, out var leadership)
+                ? leadership.Rank
+                : 0;
+        }
+
+        /// <summary>The Leadership bonus to orders, auras and range for a rank: +0.5% per rank, up to +25% at rank 50.</summary>
+        public static int LeadershipBonusPercent(int leadershipRank) => ScaleByLeadershipRank(leadershipRank, LeadershipMaximumBonusPercent);
+
+        /// <summary>The Leadership bonus to crew effectiveness for a rank: +1% per 10 ranks, up to +5% at rank 50.</summary>
+        public static int LeadershipCrewBonusPercent(int leadershipRank) => ScaleByLeadershipRank(leadershipRank, LeadershipCrewMaximumBonusPercent);
+
+        private static int ScaleByLeadershipRank(int leadershipRank, int maximumPercent) =>
+            (int)Math.Round(
+                Math.Clamp(leadershipRank, 0, LeadershipMaximumRank) * maximumPercent / (double)LeadershipMaximumRank,
+                MidpointRounding.AwayFromZero);
+
+        /// <summary>
+        /// A Command status value raised by its source's Leadership bonus when the source is a ship in space, so the
+        /// orders and auras the ground scales by SOC alone (Focus Fire, Formation, Fleet Action) also scale with the
+        /// captain's Leadership rank. Ground values are left alone.
+        /// </summary>
+        public static int ApplyLeadershipScaling(uint source, int value)
+        {
+            if (value == 0 || source == 0 || source == OBJECT_INVALID || !Space.IsShipInSpace(source))
+                return value;
+
+            return SpaceCombatMath.ScaleByPercent(value, GetLeadershipBonusPercent(source));
+        }
 
         // Range
 
@@ -116,6 +171,11 @@ namespace SWLOR.Game.Server.Service
                 if (StatusEffect.ApplyStatusEffect(commander, ship, statusEffect, duration))
                     Ability.PlaySuccessfulImpactVisualEffect(commander, ship);
 
+                // Command's crew bonuses reach everyone aboard (plan section 10): crew members fire the ship's
+                // station modules with their own stats.
+                foreach (var crewMember in SpaceCrew.GetCrew(ship))
+                    StatusEffect.ApplyStatusEffect(commander, crewMember, statusEffect, duration);
+
                 ApplyEffectToObject(DurationType.Instant, EffectVisualEffect(VisualEffect.Vfx_Imp_Holy_Aid), ship);
                 affected.Add(ship);
             }
@@ -183,6 +243,15 @@ namespace SWLOR.Game.Server.Service
                     ship,
                     new HostileAbilityPartyBuffStatusEffect(damagePercent, accuracyPercent, nameStrRef, icon),
                     duration);
+
+                foreach (var crewMember in SpaceCrew.GetCrew(ship))
+                {
+                    StatusEffect.ApplyStatusEffect(
+                        activator,
+                        crewMember,
+                        new HostileAbilityPartyBuffStatusEffect(damagePercent, accuracyPercent, nameStrRef, icon),
+                        duration);
+                }
             }
         }
 

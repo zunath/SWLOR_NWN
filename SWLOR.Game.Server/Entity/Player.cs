@@ -166,6 +166,12 @@ namespace SWLOR.Game.Server.Entity
         public EmoteStyle EmoteStyle { get; set; }
         public string SerializedHotBar { get; set; }
         public string ActiveShipId { get; set; }
+
+        /// <summary>
+        /// The ship whose crew station or viewport the character is at, or empty. Saved so a character who
+        /// disconnects at a station is put back on their feet at the next login. Older records read as empty.
+        /// </summary>
+        public string ActiveCrewShipId { get; set; } = string.Empty;
         [Indexed]
         public string UnknownDisplayName { get; set; }
         // Account details recorded at each login so staff tools can show them for offline characters.

@@ -1,6 +1,5 @@
 using System.Collections.Generic;
 using SWLOR.Game.Server.Service;
-using SWLOR.Game.Server.Service.SkillService;
 using SWLOR.Game.Server.Service.SpaceService;
 using SWLOR.NWN.API.NWScript.Enum;
 using SWLOR.NWN.API.NWScript.Enum.VisualEffect;
@@ -251,7 +250,7 @@ namespace SWLOR.Game.Server.Feature.ShipModuleDefinition
                     }
 
                     Enmity.ModifyEnmityOnAll(activator, 100);
-                    CombatPoint.AddSupportCombatPoint(activator, supported, SkillType.Piloting);
+                    ShipModuleActions.AddSupportCombatPoint(activator, supported);
                 });
         }
 
@@ -277,7 +276,7 @@ namespace SWLOR.Game.Server.Feature.ShipModuleDefinition
                     }
 
                     Enmity.ModifyEnmityOnAll(activator, 100 + step.Repair);
-                    CombatPoint.AddSupportCombatPoint(activator, supported, SkillType.Piloting);
+                    ShipModuleActions.AddSupportCombatPoint(activator, supported);
                 });
         }
 
@@ -301,7 +300,7 @@ namespace SWLOR.Game.Server.Feature.ShipModuleDefinition
                     }
 
                     // The taunt puts each affected enemy on the E-War ship's enmity table, so supporting it credits them.
-                    CombatPoint.AddSupportCombatPoint(activator, activator, SkillType.Piloting);
+                    ShipModuleActions.AddSupportCombatPoint(activator, activator);
                 });
         }
     }

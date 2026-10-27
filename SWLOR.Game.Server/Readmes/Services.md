@@ -6,6 +6,8 @@ This document provides an overview of the Service layer in SWLOR.Game.Server, wh
 
 The Service layer contains the main business logic for the game. Services are organized by functionality and provide the core game mechanics that builders and other components use.
 
+Services are being converted to instance classes built by a dependency-injection container (the maintainability refactor, Phase 2). A converted service keeps its static class here as a facade with the same members, so callers do not change; its logic and state live in an instance class under `Domain/<Domain>/`. `Achievement`, `Faction` and `Taxi` are converted. See [DependencyInjection.md](DependencyInjection.md).
+
 ## Directory Structure
 
 ```

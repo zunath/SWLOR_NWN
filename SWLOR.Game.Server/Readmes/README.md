@@ -31,6 +31,7 @@ One line per guide. Rule guides are required reading before working in their are
 - [ProjectStructure.md](ProjectStructure.md): solution layout and build setup.
 - [CoreSystems.md](CoreSystems.md): NWScript/NWNX wrappers, async, GUI framework.
 - [Services.md](Services.md): the static game services.
+- [DependencyInjection.md](DependencyInjection.md): the service container, the static-facade pattern, and how to convert a service (the recipe, with the pilot as the example).
 - [Entities.md](Entities.md): Redis-persisted entities and queries.
 - [Features.md](Features.md) and [Builders.md](Builders.md): content definitions and their builders.
 - [AbilityDefinitions.md](AbilityDefinitions.md): ability definitions in practice.

@@ -40,6 +40,8 @@ public class DMObjectDetailsServiceTests
     private readonly Dictionary<(string TwoDA, string Column, int Row), string> _twoDA = new();
     private DMBlueprintCatalogService _catalog = null!;
     private DMObjectDetailsService _service = null!;
+    private FacadeContainer _container = null!;
+    private IDisposable _containerScope = null!;
 
     [SetUp]
     public void SetUp()
@@ -62,11 +64,16 @@ public class DMObjectDetailsServiceTests
             _twoDA.TryGetValue(((string)arguments[0]!, (string)arguments[1]!, (int)arguments[2]!), out var value) ? value : string.Empty);
         _catalog = new DMBlueprintCatalogService(new DMPresenceService());
         _service = new DMObjectDetailsService(_catalog);
+        // The service reads the players in an area through the Area facade, which resolves its instance from a container.
+        _container = new FacadeContainer();
+        _containerScope = _container.Install();
     }
 
     [TearDown]
     public void TearDown()
     {
+        _containerScope.Dispose();
+        _container.Dispose();
         foreach (var scope in _scopes)
             scope.Dispose();
         _scopes.Clear();

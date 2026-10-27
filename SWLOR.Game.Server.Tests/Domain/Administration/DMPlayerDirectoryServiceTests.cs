@@ -30,6 +30,8 @@ public class DMPlayerDirectoryServiceTests
     private DMPossessionEngine _world = null!;
     private InMemoryDBService _db = null!;
     private DMPlayerDirectoryService _service = null!;
+    private FacadeContainer _container = null!;
+    private IDisposable _containerScope = null!;
 
     [SetUp]
     public void SetUp()
@@ -41,11 +43,16 @@ public class DMPlayerDirectoryServiceTests
         // An object that is not a PC takes their no-database path, which is enough to list the online characters here.
         _world.Engine.SetReturnHandler("GetIsPC", _ => false);
         _world.Name(Cantina, "Cantina");
+        // The service reads the area cache through the Area facade, which resolves its instance from a container.
+        _container = new FacadeContainer();
+        _containerScope = _container.Install();
     }
 
     [TearDown]
     public void TearDown()
     {
+        _containerScope.Dispose();
+        _container.Dispose();
         _world.Dispose();
     }
 

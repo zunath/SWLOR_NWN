@@ -1,0 +1,92 @@
+# SWLOR script handler order: handlers added by SWLOR.Game.Server.EngineTests (a server with engine tests enabled). They run after the game's handlers of the same script.
+# One line per handler, in the order the registry runs them: kind, then Namespace.Type.Method.
+# Kinds: action = void handler, run in this order; conditional = bool handler, every one runs and the results are ANDed.
+# The order is whatever reflection returns for the compiled assembly (see ScriptHandlerOrderTests for what drives it).
+# Regenerate: SWLOR_UPDATE_SNAPSHOTS=1 dotnet test SWLOR.Game.Server.Tests --no-build --filter "FullyQualifiedName~ScriptHandlerOrderTests"
+
+== BOOT BUCKETS (in the order the server reaches them) ==
+
+mod_cache_bef  # run by EventRegistration.OnModulePreload through ExecuteScript
+  action      SWLOR.Game.Server.EngineTests.Definitions.MigrationEngineTests.CaptureLegacyPropertyLoadingBeforeStoredMigrations
+
+mod_load  # run by the engine as the module OnModuleLoad event, which EventRegistration.OnModulePreload points at this script
+  action      SWLOR.Game.Server.EngineTests.EngineTest.ScheduleEngineTests
+
+== OTHER SCRIPTS (alphabetical; the registry never reads its script names in order) ==
+
+asso_add_aft
+  action      SWLOR.Game.Server.EngineTests.Definitions.DroidInventoryEngineTests.ConfigureRepositoryFixture
+
+crea_damaged_aft
+  action      SWLOR.Game.Server.EngineTests.Definitions.PairedRangedConversionEngineTests.ObserveNativeImpact
+  action      SWLOR.Game.Server.EngineTests.Definitions.SaberWardConversionEngineTests.ObserveImpact
+  action      SWLOR.Game.Server.EngineTests.Definitions.TwinPistolCompanionArrivalEngineTests.ObserveDamage
+  action      SWLOR.Game.Server.EngineTests.Definitions.TwinPistolCrossSkillEngineTests.ObserveActivatedImpacts
+  action      SWLOR.Game.Server.EngineTests.Definitions.TwinPistolFocusedBurstEngineTests.ObserveImpacts
+  action      SWLOR.Game.Server.EngineTests.Definitions.WeaponAbilityDamageTypeEngineTests.ObserveAbilityDamage
+  action      SWLOR.Game.Server.EngineTests.Definitions.WeaponRotationBalanceEngineTests.ObserveDamage
+
+crea_hb_aft
+  action      SWLOR.Game.Server.EngineTests.Definitions.CreatureHeartbeatEngineTests.ObserveManagedHeartbeat
+
+droid_convers
+  action      SWLOR.Game.Server.EngineTests.Definitions.DroidInventoryEngineTests.RecordDroidConversation
+
+heal_bef
+  action      SWLOR.Game.Server.EngineTests.Definitions.TankEnmityEngineTests.TriggerNestedHealing
+
+item_eqp_bef
+  action      SWLOR.Game.Server.EngineTests.Definitions.EquippedItemAppearanceEngineTests.ObserveValidatedEquip
+
+item_eqpval_aft
+  action      SWLOR.Game.Server.EngineTests.Definitions.EquippedItemAppearanceEngineTests.ObserveEquipAfter
+
+item_eqpval_bef
+  action      SWLOR.Game.Server.EngineTests.Definitions.EquippedItemAppearanceEngineTests.ObserveEquipBefore
+
+item_on_hit
+  action      SWLOR.Game.Server.EngineTests.Definitions.DoubleWeaponEngineTests.ObserveItemHit
+  action      SWLOR.Game.Server.EngineTests.Definitions.DualWieldEngineTests.ObserveItemHit
+  action      SWLOR.Game.Server.EngineTests.Definitions.TwinPistolCrossSkillEngineTests.ObserveQueuedCallback
+
+item_uneqp_aft
+  action      SWLOR.Game.Server.EngineTests.Definitions.EquippedItemAppearanceEngineTests.ObserveUnequipAfter
+
+item_uneqp_bef
+  action      SWLOR.Game.Server.EngineTests.Definitions.DroidInventoryEngineTests.RecordRifleUnequip
+  action      SWLOR.Game.Server.EngineTests.Definitions.EquippedItemAppearanceEngineTests.ObserveUnequipBefore
+
+item_val_aft
+  action      SWLOR.Game.Server.EngineTests.Definitions.EquippedItemAppearanceEngineTests.ObserveValidateAfter
+
+item_val_bef
+  action      SWLOR.Game.Server.EngineTests.Definitions.EquippedItemAppearanceEngineTests.ObserveValidateBefore
+
+mod_death
+  action      SWLOR.Game.Server.EngineTests.Definitions.MeleeTechniqueLifecycleEngineTests.ObservePlayerDeath
+  action      SWLOR.Game.Server.EngineTests.Definitions.TwinPistolFatalSaveEngineTests.ObserveDeath
+
+mod_dying
+  action      SWLOR.Game.Server.EngineTests.Definitions.TwinPistolFatalSaveEngineTests.ObserveDying
+
+mod_equip
+  action      SWLOR.Game.Server.EngineTests.Definitions.EquippedItemAppearanceEngineTests.ObserveModuleEquip
+
+mod_heartbeat
+  action      SWLOR.Game.Server.EngineTests.Definitions.MeleeTechniqueLifecycleEngineTests.ObserveHeartbeat
+
+mod_unequip
+  action      SWLOR.Game.Server.EngineTests.Definitions.EquippedItemAppearanceEngineTests.ObserveModuleUnequip
+
+safe_proj_bef
+  action      SWLOR.Game.Server.EngineTests.Definitions.PistolPresentationEngineTests.ObserveProjectile
+
+swlor_damage
+  action      SWLOR.Game.Server.EngineTests.Definitions.DoubleWeaponEngineTests.ObserveDamage
+  action      SWLOR.Game.Server.EngineTests.Definitions.DualWieldEngineTests.ObserveWeaponDamage
+  action      SWLOR.Game.Server.EngineTests.Definitions.PowerGlovePairEngineTests.ObserveDamage
+  action      SWLOR.Game.Server.EngineTests.Definitions.TwinPistolCrossSkillEngineTests.ObserveQueuedOrdinaryLeak
+  action      SWLOR.Game.Server.EngineTests.Definitions.TwinPistolEngineTests.ObserveDamage
+  action      SWLOR.Game.Server.EngineTests.Definitions.TwinPistolFocusedBurstEngineTests.ObserveOrdinaryHits
+  action      SWLOR.Game.Server.EngineTests.Definitions.WeaponAbilityDamageTypeEngineTests.ObserveAutoAttackDamage
+  action      SWLOR.Game.Server.EngineTests.Definitions.WeaponRotationBalanceEngineTests.ObserveOrdinaryHits

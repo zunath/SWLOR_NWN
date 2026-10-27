@@ -35,10 +35,21 @@ namespace SWLOR.Game.Server.Core
 
         public void LoadHandlersFromAssembly()
         {
+            LoadHandlersFromAssemblies(AppDomain.CurrentDomain.GetAssemblies());
+        }
+
+        /// <summary>
+        /// Discovers and registers every <see cref="NWNEventHandler"/> method in the given assemblies, in the
+        /// order the assemblies are given. <see cref="LoadHandlersFromAssembly"/> calls this with every assembly
+        /// loaded in the current AppDomain, which is what the server does at boot; tests call it with an explicit
+        /// assembly list so they do not depend on what else the test host has loaded.
+        /// </summary>
+        public void LoadHandlersFromAssemblies(IEnumerable<Assembly> assemblies)
+        {
             _scripts.Clear();
             _conditionalScripts.Clear();
 
-            var handlers = AppDomain.CurrentDomain.GetAssemblies()
+            var handlers = assemblies
                 .SelectMany(a => a.GetTypes())
                 .SelectMany(t => t.GetMethods())
                 .Where(m => m.GetCustomAttributes(typeof(NWNEventHandler), false).Length > 0)
@@ -107,6 +118,22 @@ namespace SWLOR.Game.Server.Core
         public bool HasConditionalScript(string scriptName)
         {
             return _conditionalScripts.ContainsKey(scriptName);
+        }
+
+        /// <summary>
+        /// Names of every script that has at least one action (void) handler, in the order the registry stores them.
+        /// </summary>
+        public IReadOnlyList<string> GetActionScriptNames()
+        {
+            return _scripts.Keys.ToArray();
+        }
+
+        /// <summary>
+        /// Names of every script that has at least one conditional (bool) handler, in the order the registry stores them.
+        /// </summary>
+        public IReadOnlyList<string> GetConditionalScriptNames()
+        {
+            return _conditionalScripts.Keys.ToArray();
         }
 
         public IEnumerable<(Action Action, string Name)> GetActionScripts(string scriptName)

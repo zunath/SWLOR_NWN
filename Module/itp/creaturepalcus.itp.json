@@ -1067,6 +1067,25 @@
                     "__struct_id": 0,
                     "CR": {
                       "type": "float",
+                      "value": 35.0
+                    },
+                    "FACTION": {
+                      "type": "cexostring",
+                      "value": "Hostile"
+                    },
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "Clan Zel Arun Minelayer"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "t4minelayer"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "CR": {
+                      "type": "float",
                       "value": 40.0
                     },
                     "FACTION": {
@@ -1105,6 +1124,25 @@
                     "__struct_id": 0,
                     "CR": {
                       "type": "float",
+                      "value": 35.0
+                    },
+                    "FACTION": {
+                      "type": "cexostring",
+                      "value": "Hostile"
+                    },
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "Clan Zel Arun Sniper"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "t4sniper"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "CR": {
+                      "type": "float",
                       "value": 40.0
                     },
                     "FACTION": {
@@ -1118,6 +1156,25 @@
                     "RESREF": {
                       "type": "resref",
                       "value": "t4gunship"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "CR": {
+                      "type": "float",
+                      "value": 40.0
+                    },
+                    "FACTION": {
+                      "type": "cexostring",
+                      "value": "Hostile"
+                    },
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "Clan Zel Arun Carrier"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "t4carrier"
                     }
                   },
                   {
@@ -1143,6 +1200,25 @@
                     "__struct_id": 0,
                     "CR": {
                       "type": "float",
+                      "value": 37.0
+                    },
+                    "FACTION": {
+                      "type": "cexostring",
+                      "value": "Hostile"
+                    },
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "Clan Zel Arun Jammer"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "t4ewar"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "CR": {
+                      "type": "float",
                       "value": 40.0
                     },
                     "FACTION": {
@@ -1156,6 +1232,25 @@
                     "RESREF": {
                       "type": "resref",
                       "value": "t4cargo"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "CR": {
+                      "type": "float",
+                      "value": 40.0
+                    },
+                    "FACTION": {
+                      "type": "cexostring",
+                      "value": "Hostile"
+                    },
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "Clan Zel Arun Repair Tender"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "t4logistics"
                     }
                   },
                   {
@@ -1238,6 +1333,25 @@
                     "__struct_id": 0,
                     "CR": {
                       "type": "float",
+                      "value": 55.0
+                    },
+                    "FACTION": {
+                      "type": "cexostring",
+                      "value": "Hostile"
+                    },
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "Imperial Minelayer"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "t6minelayer"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "CR": {
+                      "type": "float",
                       "value": 60.0
                     },
                     "FACTION": {
@@ -1276,6 +1390,25 @@
                     "__struct_id": 0,
                     "CR": {
                       "type": "float",
+                      "value": 55.0
+                    },
+                    "FACTION": {
+                      "type": "cexostring",
+                      "value": "Hostile"
+                    },
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "Imperial Sniper"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "t6sniper"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "CR": {
+                      "type": "float",
                       "value": 60.0
                     },
                     "FACTION": {
@@ -1289,6 +1422,25 @@
                     "RESREF": {
                       "type": "resref",
                       "value": "t6gunship"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "CR": {
+                      "type": "float",
+                      "value": 60.0
+                    },
+                    "FACTION": {
+                      "type": "cexostring",
+                      "value": "Hostile"
+                    },
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "Imperial Carrier"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "t6carrier"
                     }
                   },
                   {
@@ -1314,6 +1466,25 @@
                     "__struct_id": 0,
                     "CR": {
                       "type": "float",
+                      "value": 57.0
+                    },
+                    "FACTION": {
+                      "type": "cexostring",
+                      "value": "Hostile"
+                    },
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "Imperial Jammer"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "t6ewar"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "CR": {
+                      "type": "float",
                       "value": 60.0
                     },
                     "FACTION": {
@@ -1327,6 +1498,25 @@
                     "RESREF": {
                       "type": "resref",
                       "value": "t6cargo"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "CR": {
+                      "type": "float",
+                      "value": 60.0
+                    },
+                    "FACTION": {
+                      "type": "cexostring",
+                      "value": "Hostile"
+                    },
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "Imperial Repair Tender"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "t6logistics"
                     }
                   },
                   {
@@ -1428,6 +1618,25 @@
                     "__struct_id": 0,
                     "CR": {
                       "type": "float",
+                      "value": 15.0
+                    },
+                    "FACTION": {
+                      "type": "cexostring",
+                      "value": "Hostile"
+                    },
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "Krakenborne Minelayer"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "t2minelayer"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "CR": {
+                      "type": "float",
                       "value": 20.0
                     },
                     "FACTION": {
@@ -1466,6 +1675,25 @@
                     "__struct_id": 0,
                     "CR": {
                       "type": "float",
+                      "value": 15.0
+                    },
+                    "FACTION": {
+                      "type": "cexostring",
+                      "value": "Hostile"
+                    },
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "Krakenborne Sniper"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "t2sniper"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "CR": {
+                      "type": "float",
                       "value": 20.0
                     },
                     "FACTION": {
@@ -1485,6 +1713,25 @@
                     "__struct_id": 0,
                     "CR": {
                       "type": "float",
+                      "value": 20.0
+                    },
+                    "FACTION": {
+                      "type": "cexostring",
+                      "value": "Hostile"
+                    },
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "Krakenborne Carrier"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "t2carrier"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "CR": {
+                      "type": "float",
                       "value": 17.0
                     },
                     "FACTION": {
@@ -1498,6 +1745,25 @@
                     "RESREF": {
                       "type": "resref",
                       "value": "t2interceptor"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "CR": {
+                      "type": "float",
+                      "value": 17.0
+                    },
+                    "FACTION": {
+                      "type": "cexostring",
+                      "value": "Hostile"
+                    },
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "Krakenborne Jammer"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "t2ewar"
                     }
                   },
                   {
@@ -1536,6 +1802,25 @@
                     "RESREF": {
                       "type": "resref",
                       "value": "t2cargo"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "CR": {
+                      "type": "float",
+                      "value": 20.0
+                    },
+                    "FACTION": {
+                      "type": "cexostring",
+                      "value": "Hostile"
+                    },
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "Krakenborne Repair Tender"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "t2logistics"
                     }
                   },
                   {
@@ -1599,6 +1884,25 @@
                     "__struct_id": 0,
                     "CR": {
                       "type": "float",
+                      "value": 45.0
+                    },
+                    "FACTION": {
+                      "type": "cexostring",
+                      "value": "Hostile"
+                    },
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "Red Hand Minelayer"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "t5minelayer"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "CR": {
+                      "type": "float",
                       "value": 50.0
                     },
                     "FACTION": {
@@ -1637,6 +1941,25 @@
                     "__struct_id": 0,
                     "CR": {
                       "type": "float",
+                      "value": 45.0
+                    },
+                    "FACTION": {
+                      "type": "cexostring",
+                      "value": "Hostile"
+                    },
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "Red Hand Sniper"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "t5sniper"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "CR": {
+                      "type": "float",
                       "value": 50.0
                     },
                     "FACTION": {
@@ -1656,6 +1979,25 @@
                     "__struct_id": 0,
                     "CR": {
                       "type": "float",
+                      "value": 50.0
+                    },
+                    "FACTION": {
+                      "type": "cexostring",
+                      "value": "Hostile"
+                    },
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "Red Hand Carrier"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "t5carrier"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "CR": {
+                      "type": "float",
                       "value": 47.0
                     },
                     "FACTION": {
@@ -1669,6 +2011,25 @@
                     "RESREF": {
                       "type": "resref",
                       "value": "t5interceptor"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "CR": {
+                      "type": "float",
+                      "value": 47.0
+                    },
+                    "FACTION": {
+                      "type": "cexostring",
+                      "value": "Hostile"
+                    },
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "Red Hand Jammer"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "t5ewar"
                     }
                   },
                   {
@@ -1713,6 +2074,25 @@
                     "__struct_id": 0,
                     "CR": {
                       "type": "float",
+                      "value": 50.0
+                    },
+                    "FACTION": {
+                      "type": "cexostring",
+                      "value": "Hostile"
+                    },
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "Red Hand Repair Tender"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "t5logistics"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "CR": {
+                      "type": "float",
                       "value": 5.0
                     },
                     "FACTION": {
@@ -1726,6 +2106,25 @@
                     "RESREF": {
                       "type": "resref",
                       "value": "t1bomber"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "CR": {
+                      "type": "float",
+                      "value": 5.0
+                    },
+                    "FACTION": {
+                      "type": "cexostring",
+                      "value": "Hostile"
+                    },
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "Septra Khanate Minelayer"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "t1minelayer"
                     }
                   },
                   {
@@ -1770,6 +2169,25 @@
                     "__struct_id": 0,
                     "CR": {
                       "type": "float",
+                      "value": 5.0
+                    },
+                    "FACTION": {
+                      "type": "cexostring",
+                      "value": "Hostile"
+                    },
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "Septra Khanate Sniper"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "t1sniper"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "CR": {
+                      "type": "float",
                       "value": 10.0
                     },
                     "FACTION": {
@@ -1789,6 +2207,25 @@
                     "__struct_id": 0,
                     "CR": {
                       "type": "float",
+                      "value": 10.0
+                    },
+                    "FACTION": {
+                      "type": "cexostring",
+                      "value": "Hostile"
+                    },
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "Septra Khanate Carrier"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "t1carrier"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "CR": {
+                      "type": "float",
                       "value": 7.0
                     },
                     "FACTION": {
@@ -1802,6 +2239,25 @@
                     "RESREF": {
                       "type": "resref",
                       "value": "t1interceptor"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "CR": {
+                      "type": "float",
+                      "value": 7.0
+                    },
+                    "FACTION": {
+                      "type": "cexostring",
+                      "value": "Hostile"
+                    },
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "Septra Khanate Jammer"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "t1ewar"
                     }
                   },
                   {
@@ -1846,6 +2302,25 @@
                     "__struct_id": 0,
                     "CR": {
                       "type": "float",
+                      "value": 10.0
+                    },
+                    "FACTION": {
+                      "type": "cexostring",
+                      "value": "Hostile"
+                    },
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "Septra Khanate Repair Tender"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "t1logistics"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "CR": {
+                      "type": "float",
                       "value": 25.0
                     },
                     "FACTION": {
@@ -1859,6 +2334,25 @@
                     "RESREF": {
                       "type": "resref",
                       "value": "t3bomber"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "CR": {
+                      "type": "float",
+                      "value": 25.0
+                    },
+                    "FACTION": {
+                      "type": "cexostring",
+                      "value": "Hostile"
+                    },
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "Snowdrift Syndicate Minelayer"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "t3minelayer"
                     }
                   },
                   {
@@ -1903,6 +2397,25 @@
                     "__struct_id": 0,
                     "CR": {
                       "type": "float",
+                      "value": 25.0
+                    },
+                    "FACTION": {
+                      "type": "cexostring",
+                      "value": "Hostile"
+                    },
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "Snowdrift Syndicate Sniper"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "t3sniper"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "CR": {
+                      "type": "float",
                       "value": 30.0
                     },
                     "FACTION": {
@@ -1930,11 +2443,49 @@
                     },
                     "NAME": {
                       "type": "cexostring",
+                      "value": "Snowdrift Syndicate Repair Tender"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "t3logistics"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "CR": {
+                      "type": "float",
+                      "value": 30.0
+                    },
+                    "FACTION": {
+                      "type": "cexostring",
+                      "value": "Hostile"
+                    },
+                    "NAME": {
+                      "type": "cexostring",
                       "value": "Snowdrift Syndicate Gunship"
                     },
                     "RESREF": {
                       "type": "resref",
                       "value": "t3gunship"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "CR": {
+                      "type": "float",
+                      "value": 30.0
+                    },
+                    "FACTION": {
+                      "type": "cexostring",
+                      "value": "Hostile"
+                    },
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "Snowdrift Syndicate Carrier"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "t3carrier"
                     }
                   },
                   {
@@ -1954,6 +2505,25 @@
                     "RESREF": {
                       "type": "resref",
                       "value": "t3interceptor"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "CR": {
+                      "type": "float",
+                      "value": 27.0
+                    },
+                    "FACTION": {
+                      "type": "cexostring",
+                      "value": "Hostile"
+                    },
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "Snowdrift Syndicate Jammer"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "t3ewar"
                     }
                   },
                   {

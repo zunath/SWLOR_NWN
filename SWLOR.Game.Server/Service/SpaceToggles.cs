@@ -432,7 +432,8 @@ namespace SWLOR.Game.Server.Service
         }
 
         /// <summary>
-        /// Switches an NPC ship's repairers: off once nothing is missing, and (in combat) on once a quarter is missing.
+        /// Switches an NPC ship's repairers: off once nothing is missing on the ship they are locked onto (the ship
+        /// itself, or the ally a Logistics ship picked), and (in combat) on for the ship itself once a quarter is missing.
         /// </summary>
         private static void UpdateNpcRepairToggles(uint creature, ShipStatus shipStatus, bool allowTurnOn)
         {
@@ -446,9 +447,13 @@ namespace SWLOR.Game.Server.Service
                 if (!repairsShield && !repairsHull) continue;
 
                 var slot = GetFeatSlotNumber(feat);
+                var locked = GetActiveToggle(shipStatus, slot)?.TargetId ?? OBJECT_INVALID;
+                var repaired = locked != OBJECT_INVALID && locked != creature && GetIsObjectValid(locked)
+                    ? GetShipStatus(locked) ?? shipStatus
+                    : shipStatus;
                 var missing = repairsShield
-                    ? shipStatus.MaxShield - shipStatus.Shield
-                    : shipStatus.MaxHull - shipStatus.Hull;
+                    ? repaired.MaxShield - repaired.Shield
+                    : repaired.MaxHull - repaired.Hull;
                 var max = repairsShield ? shipStatus.MaxShield : shipStatus.MaxHull;
                 var isOn = IsShipToggleOn(shipStatus, slot);
 

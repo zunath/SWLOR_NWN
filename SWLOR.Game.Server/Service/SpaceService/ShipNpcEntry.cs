@@ -25,5 +25,11 @@ namespace SWLOR.Game.Server.Service.SpaceService
         public int Willpower { get; set; }
         public int Might { get; set; }
         public ShipNpcWeapon[] Weapons { get; set; } = new ShipNpcWeapon[0];
+
+        /// <summary>The Mid and Low support modules (Shield Hardener, repairers) fitted at the ship's rank step.</summary>
+        public string[] Support { get; set; } = new string[0];
+
+        /// <summary>A Minelayer's mine DMG: the Bomber torpedo of its level and difficulty. Zero for other roles.</summary>
+        public int MineDmg { get; set; }
     }
 }

@@ -9,6 +9,7 @@ using SWLOR.Game.Server.Service.DBService;
 using SWLOR.Game.Server.Service.GuiService;
 using SWLOR.Game.Server.Service.GuiService.Component;
 using SWLOR.Game.Server.Service.LogService;
+using SWLOR.Game.Server.Service.SpaceService;
 using SWLOR.NWN.API.NWNX;
 using SWLOR.NWN.API.NWScript.Enum;
 using SWLOR.NWN.API.NWScript.Enum.VisualEffect;
@@ -37,6 +38,47 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
         private readonly List<string> _layoutIds = new();
         private int _selectedLayoutIndex;
         private uint _highlightedPlaceable;
+
+        private const int PlaceablesTabId = 0;
+        private const int SpaceTabId = 1;
+        public const string TabContentElement = "dmtools_tab_content";
+        public const string PlaceablesTabPartial = "DMTOOLS_TAB_PLACEABLES";
+        public const string SpaceTabPartial = "DMTOOLS_TAB_SPACE";
+
+        private static readonly GuiTabGroup<DMToolsViewModel, GuiPayloadBase> Tabs =
+            new GuiTabGroup<DMToolsViewModel, GuiPayloadBase>()
+                .AddTab(PlaceablesTabId, PlaceablesTabPartial)
+                .AddTab(SpaceTabId, SpaceTabPartial);
+
+        private static readonly GuiToggleGroupSync TabToggles = new(PlaceablesTabId, SpaceTabId);
+
+        public int SelectedTabId { get => Get<int>(); set => Set(value); }
+
+        public int TabToggleValue
+        {
+            get => Get<int>();
+            set
+            {
+                Set(value);
+                TabToggles.HandleClientChange(value, SelectTab);
+            }
+        }
+
+        public GuiBindingList<GuiComboEntry> SpaceFactionOptions { get => Get<GuiBindingList<GuiComboEntry>>(); set => Set(value); }
+
+        public int SpaceFactionIndex { get => Get<int>(); set => Set(value); }
+
+        public GuiBindingList<GuiComboEntry> SpaceRoleOptions { get => Get<GuiBindingList<GuiComboEntry>>(); set => Set(value); }
+
+        public int SpaceRoleIndex { get => Get<int>(); set => Set(value); }
+
+        public GuiBindingList<GuiComboEntry> SpaceCountOptions { get => Get<GuiBindingList<GuiComboEntry>>(); set => Set(value); }
+
+        public int SpaceCountIndex { get => Get<int>(); set => Set(value); }
+
+        public string SpaceStatus { get => Get<string>(); set => Set(value); }
+
+        public GuiColor SpaceStatusColor { get => Get<GuiColor>(); set => Set(value); }
 
         public string Instructions
         {
@@ -133,6 +175,16 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
             PageNumbers = new GuiBindingList<GuiComboEntry>();
             LayoutNames = new GuiBindingList<string>();
             LayoutToggles = new GuiBindingList<bool>();
+            TabToggleValue = PlaceablesTabId;
+            SelectedTabId = PlaceablesTabId;
+            SpaceFactionOptions = ComboOptions(SpaceSquadCatalog.Factions);
+            SpaceRoleOptions = ComboOptions(SpaceSquadCatalog.Roles.Select(x => x.Label).ToList());
+            SpaceCountOptions = ComboOptions(Enumerable.Range(1, SpaceSquadCatalog.MaxSquadSize).Select(x => x.ToString()).ToList());
+            SpaceFactionIndex = 0;
+            SpaceRoleIndex = 0;
+            SpaceCountIndex = 2;
+            SpaceStatus = string.Empty;
+            SpaceStatusColor = GuiColor.Green;
 
             RebuildPlaceables();
             Search();
@@ -141,8 +193,71 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
             WatchOnClient(model => model.SelectedPageIndex);
             WatchOnClient(model => model.SearchText);
             WatchOnClient(model => model.LayoutName);
+            WatchOnClient(model => model.TabToggleValue);
+            WatchOnClient(model => model.SpaceFactionIndex);
+            WatchOnClient(model => model.SpaceRoleIndex);
+            WatchOnClient(model => model.SpaceCountIndex);
             _skipPaginationSearch = false;
+
+            SelectTab(PlaceablesTabId);
         }
+
+        private static GuiBindingList<GuiComboEntry> ComboOptions(IReadOnlyList<string> labels)
+        {
+            var options = new GuiBindingList<GuiComboEntry>();
+            for (var index = 0; index < labels.Count; index++)
+                options.Add(new GuiComboEntry(labels[index], index));
+
+            return options;
+        }
+
+        private void SelectTab(int tabId)
+        {
+            SelectedTabId = tabId;
+            TabToggles.SyncTo(tabId, value => TabToggleValue = value);
+            Tabs.Select(this, TabContentElement, tabId);
+        }
+
+        protected override void OnModalClosedRestore() => Tabs.Select(this, TabContentElement, SelectedTabId);
+
+        /// <summary>
+        /// Spawns the picked squad on a ring around the DM. Space ships only work in space areas, so the DM must be
+        /// in one.
+        /// </summary>
+        public Action OnSpawnSpaceSquad() => () =>
+        {
+            var area = GetArea(Player);
+            if (!Space.IsSpaceArea(area))
+            {
+                SpaceStatus = "You must be in a space area.";
+                SpaceStatusColor = GuiColor.Red;
+                return;
+            }
+
+            var tag = SpaceSquadCatalog.CreatureTag(SpaceFactionIndex, SpaceRoleIndex);
+            if (string.IsNullOrEmpty(tag))
+            {
+                SpaceStatus = "That faction has no ship in that role.";
+                SpaceStatusColor = GuiColor.Red;
+                return;
+            }
+
+            var count = SpaceSquadCatalog.SquadSize(SpaceCountIndex);
+            var center = GetPosition(Player);
+            var spawned = 0;
+            for (var index = 0; index < count; index++)
+            {
+                var (x, y) = SpaceSquadCatalog.Offset(index, count);
+                var location = Location(area, new Vector3(center.X + x, center.Y + y, center.Z), GetFacing(Player));
+                var ship = CreateObject(ObjectType.Creature, tag, location);
+                if (GetIsObjectValid(ship))
+                    spawned++;
+            }
+
+            SpaceStatus = $"Spawned {spawned} {SpaceSquadCatalog.Factions[SpaceFactionIndex]} {SpaceSquadCatalog.Roles[SpaceRoleIndex].Label} ship(s).";
+            SpaceStatusColor = spawned == count ? GuiColor.Green : GuiColor.Red;
+            Log.Write(LogGroup.DM, $"{GetName(Player)} spawned {spawned} x {tag} in {GetName(area)}.");
+        };
 
         private string GetAreaResref()
         {

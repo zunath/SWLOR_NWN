@@ -315,22 +315,39 @@ def player_ship(role, rank, fit, maker=None, advanced=False, extra=None, name=No
 # NPC space roles
 # ---------------------------------------------------------------------------------------------------------------
 # ground role the stats come from, size per difficulty, HP x, Defense +, Evasion +, resist, weapon, damage x
+# Role behaviors (plan section 11) run in Space.ProcessSpaceNPCAI; their numbers are ShipNpcRoleTuning's, and the ai
+# texts below repeat them for the Bible. Carriers are Elite or Boss only, so the Normal checks skip them.
 NPC_ROLES = {
     "Fighter": dict(ground="Ranged", size="Small", hp=1.0, df=0, ev=0, res=0, weapon="Laser Cannon", dmg=1.0,
                     ai="Attacks its target"),
     "Interceptor": dict(ground="Ranged", size="Small", hp=0.9, df=0, ev=8, res=0, weapon="Laser Cannon", dmg=0.9,
-                        ai="Webs and interdicts ships that flee"),
+                        ai="Webs ships that flee: a player moving away below half hull or beyond its weapon range gets "
+                           "Hamstring (-20% speed) for 6 s, every 9 s, and is chased"),
     "Bomber": dict(ground="Melee", size="Small", hp=1.05, df=1, ev=-2, res=0, weapon="Missile Launcher", dmg=1.0,
-                   ai="Hunts the biggest hull; torpedoes Large and Capital targets"),
+                   ai="Hunts the biggest hull in its weapon range; torpedoes Large and Capital targets"),
     "Sniper": dict(ground="Ranged", size="Small", hp=0.9, df=0, ev=0, res=0, weapon="Beam Cannon", dmg=1.1,
-                   ai="Kites at maximum range"),
+                   ai="Kites at 90% of its longest weapon range"),
     "Electronic Warfare": dict(ground="Ranged", size="Small", hp=0.9, df=0, ev=2, res=0, weapon="Ion Cannon", dmg=0.85,
-                               ai="Jams or paints the top-threat player"),
+                               ai="Jams (Flash, -8% Accuracy) or paints (Exposed, -10% Defense) the top-threat player "
+                                  "for 12 s, every 18 s"),
     "Gunship": dict(ground="Ranged", size="Medium", hp=0.8, df=3, ev=0, res=10, weapon="Laser Cannon", dmg=1.0,
-                    ai="Holds threat and hardens"),
+                    ai="Tank: holds threat by turning on the player doing the most damage to its squad (every 12 s) and "
+                       "switches on its Shield Hardener below half hull"),
     "Logistics": dict(ground="Ranged", size="Medium", hp=0.85, df=0, ev=0, res=0, weapon="Ion Cannon", dmg=0.8,
-                      ai="Repairs allies"),
+                      ai="Repairs allies: its Hull and Shield Repairers lock onto the most damaged ally in range once a "
+                         "quarter of its hull or shield is missing. Cargo haulers use this row but carry no repairers"),
+    "Carrier": dict(ground="Ranged", size="Large", hp=1.0, df=3, ev=0, res=10, weapon="Laser Cannon", dmg=0.8, elite_only=True,
+                    ai="Elite or Boss only; group content. Launches a wave of 2 Normal Fighters of its faction every 30 s "
+                       "(4 waves, 4 alive at most); its fighters leave with it and drop no loot"),
+    "Minelayer": dict(ground="Melee", size="Small", hp=1.0, df=0, ev=0, res=0, weapon="Missile Launcher", dmg=0.8,
+                      ai="Drops a mine every 20 s (Mine 10110, 3 at most, 60 s each): Bomber torpedo DMG to the first "
+                         "ship within 5 m"),
 }
+# Roles a Normal can be (the fight-length checks run these).
+NORMAL_ROLES = [k for k, v in NPC_ROLES.items() if not v.get("elite_only")]
+# A Gunship's Shield Hardener runs below half hull, the last quarter of its hull + shield (split 50/50), so its preset
+# resist gives up a quarter of the hardener's: the fight averages the role's resist (tools/SpaceRevampBalance checks K).
+HARDENER_SHARE = 0.25
 DIFFICULTY_SIZE = {"Normal": None, "Tough": None, "Elite": "Medium", "Boss": "Large"}
 # Space elites and bosses keep the ground HP but hit softer, so one pilot solos most elites (plan section 19).
 DIFFICULTY_DMG = {"Normal": 1.0, "Tough": 0.9, "Elite": 0.8, "Boss": 0.8}

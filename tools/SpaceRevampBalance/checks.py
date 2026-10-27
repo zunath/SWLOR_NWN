@@ -38,13 +38,13 @@ def best_rank(size, L):
 out.append("## A. Fight length: a Fighter (3 Laser Cannons) vs one same-level Normal of each role\n")
 rows, worst = [], 0
 for L in TIERS:
-    res = {role: fight([m.player_ship("Fighter", L, m.FIT["Fighter"])], [m.npc_ship(role, L)]) for role in m.NPC_ROLES}
+    res = {role: fight([m.player_ship("Fighter", L, m.FIT["Fighter"])], [m.npc_ship(role, L)]) for role in m.NORMAL_ROLES}
     means = [r["mean"] for r in res.values()]
     spread = max(means) / min(means)
     worst = max(worst, spread)
     rows.append([f"T{TIERS.index(L) + 1} (R{L})", m.GROUND_TTK[L]] + [f"{r['mean']:.0f}s ({r['left']:.0%})" for r in res.values()]
                 + [f"{max(means) / m.GROUND_TTK[L]:.0%}", f"{spread:.2f}x"])
-table(["Tier", "Ground s"] + list(m.NPC_ROLES) + ["Slowest vs ground", "Slowest / fastest"], rows)
+table(["Tier", "Ground s"] + m.NORMAL_ROLES + ["Slowest vs ground", "Slowest / fastest"], rows)
 out.append(f"Mean time to kill, (hull + shield left). Targets: every role within the ground time, slowest / fastest <= 1.5x. Worst spread {worst:.2f}x.\n")
 
 # B. Hull comparison
@@ -220,6 +220,76 @@ for L in (25, 45):
                              cell(pack), cell(e), f"{sc / top:.0%}"])
 table(["Tier", "Role", "Ship", "Tier", "Hull+shield", "vs 2 Normal Fighters", "vs Elite Fighter", "Combat score vs best in group"], rows)
 out.append("Large and Capital ships are fully crewed here. Non-combat signatures (speed, cargo, scan, range) do not show in this score.\n")
+
+# K. Role behaviors
+out.append("## K. Role behaviors: a Fighter (3 Laser Cannons) vs the roles with their behavior modeled\n")
+
+
+def step(L):
+    return min(45, L // 5 * 5)
+
+
+def gunship(L, hardened):
+    n = m.npc_ship("Gunship", L)
+    h = 10 + step(L) // 5
+    res = n["resistances"]["em"] - round(h * m.HARDENER_SHARE) + (h if hardened else 0)
+    n["resistances"] = {k: res for k in n["resistances"]}
+    return n
+
+
+def repaired_fighter(L):
+    # The Logistics ship's Hull and Shield Repairers (Medium x1.1) on its partner, always on: the upper bound.
+    f = m.npc_ship("Fighter", L)
+    rep = m.REPAIR_STEP[step(L)]
+    f["repairers"] = [{"name": "Logistics Shield Repairer", "target": "Shield", "amountPerCycle": round(rep * 1.1),
+                       "cycleSeconds": 4, "capacitorPerCycle": 0},
+                      {"name": "Logistics Hull Repairer", "target": "Hull", "amountPerCycle": round(max(1, round(rep * 0.8)) * 1.1),
+                       "cycleSeconds": 4, "capacitorPerCycle": 0}]
+    return f
+
+
+def debuffed(p, accuracy=0.0, defense=0.0):
+    # The EW ship's jam (Flash: -8% of the Accuracy rating) or paint (Exposed: -10% Defense), always on: the upper bound.
+    p = json.loads(json.dumps(p))
+    rating = p["accuracy"] + p["weapons"][0]["accuracy"] + 3 * p["pilot"]["agi"]
+    p["accuracy"] -= round(accuracy * rating)
+    p["defense"] = round(p["defense"] * (1 - defense))
+    return p
+
+
+def minelayer(L):
+    # Every mine hits: one Bomber torpedo per 20 s, shields bypassed, size ignored.
+    n = m.npc_ship("Minelayer", L)
+    torpedo = next(w for w in m.npc_ship("Bomber", L, vs_size="Large")["weapons"] if w["name"] == "NPC Torpedo")
+    n["weapons"].append(dict(torpedo, name="NPC Mine", cycleSeconds=20.0))
+    return n
+
+
+rows = []
+for L in TIERS:
+    p = m.player_ship("Fighter", L, m.FIT["Fighter"])
+    plain = fight([p], [gunship(L, False)])
+    hard = fight([p], [gunship(L, True)])
+    blend = plain["mean"] * (1 - m.HARDENER_SHARE) + hard["mean"] * m.HARDENER_SHARE
+    pair = fight([p], [m.npc_ship("Fighter", L), m.npc_ship("Logistics", L)])
+    healed = fight([p], [repaired_fighter(L), m.npc_ship("Logistics", L)])
+    jam = fight([debuffed(p, accuracy=0.08)], [m.npc_ship("Fighter", L), m.npc_ship("Electronic Warfare", L)])
+    paint = fight([debuffed(p, defense=0.10)], [m.npc_ship("Fighter", L), m.npc_ship("Electronic Warfare", L)])
+    mines = fight([p], [minelayer(L)])
+    mine_pair = fight([p], [m.npc_ship("Fighter", L), minelayer(L)])
+    carrier = fight([p], [m.npc_ship("Carrier", L, "Elite")])
+    wave = fight([p], [m.npc_ship("Carrier", L, "Elite"), m.npc_ship("Fighter", L, count=2)])
+    rows.append([f"T{TIERS.index(L) + 1} (R{L})", m.GROUND_TTK[L], f"{plain['mean']:.0f}s / {hard['mean']:.0f}s",
+                 f"{blend:.0f}s ({blend / m.GROUND_TTK[L]:.0%})", cell(pair), cell(healed), cell(jam), cell(paint), cell(mines),
+                 cell(mine_pair), cell(carrier), cell(wave)])
+table(["Tier", "Ground s", "Gunship unhardened / hardened", "Gunship, hardened below half hull", "Fighter + Logistics, no repair",
+       "Fighter + Logistics, repairing", "Fighter + EW, jammed", "Fighter + EW, painted", "Minelayer, every mine hits",
+       "Fighter + Minelayer, every mine hits", "Elite Carrier", "Elite Carrier + first wave (2 Fighters)"], rows)
+out.append("Upper bounds: the Logistics repairs, the jam, the paint and every mine are modeled as always on (in play the EW "
+           "ship keeps one of them up 12 s in 18 and a mine needs the ship to fly within 5 m). The Gunship's hardener runs over "
+           "the last quarter of its hull + shield, so its fight is about 3/4 of the unhardened time plus 1/4 of the hardened one. "
+           "The Carrier is Elite only and launches 2 Fighters every 30 s (4 waves, 4 alive at most): one Fighter cannot beat it "
+           "once a wave is out, so carriers are group content and spawn rarer than capitals.\n")
 
 Path(m.HERE / "checks.md").write_text("\n".join(out))
 print("\n".join(out))

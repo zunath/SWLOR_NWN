@@ -30,6 +30,46 @@ public class UnitClassifierTests
         UnitClassifier.Classify(new TypeKey(@namespace, name)).Should().Be(expected);
     }
 
+    private const string DomainMapJson = """
+        {
+          "platformDomain": "Platform",
+          "featureTypeDomain": "Gameplay",
+          "unrestrictedTargetDomains": ["Core", "Platform"],
+          "domains": {
+            "Core": { "services": ["DB"], "featureFolders": [] },
+            "Character": { "services": ["Achievement", "Stat"], "featureFolders": [] },
+            "Space": { "services": ["Space", "SpaceModuleRecast"], "featureFolders": [] },
+            "Gameplay": { "services": [], "featureFolders": [] }
+          }
+        }
+        """;
+
+    [TestCase("SWLOR.Game.Server.Domain.Character", "IAchievementService", "Achievement")]
+    [TestCase("SWLOR.Game.Server.Domain.Character", "AchievementService", "Achievement")]
+    [TestCase("SWLOR.Game.Server.Domain.Character", "AchievementNotification", "Achievement")]
+    [TestCase("SWLOR.Game.Server.Domain.Character.Achievement", "AchievementWindow", "Achievement")]
+    [TestCase("SWLOR.Game.Server.Domain.Character", "IStatService", "Stat")]
+    [TestCase("SWLOR.Game.Server.Domain.Core", "IDBService", "DB")]
+    [TestCase("SWLOR.Game.Server.Domain.Space", "SpaceService", "Space")]
+    [TestCase("SWLOR.Game.Server.Domain.Space", "ISpaceModuleRecastService", "SpaceModuleRecast")]
+    [TestCase("SWLOR.Game.Server.Domain.Character", "AchievementsHelper", "Platform/Domain.Character")]
+    [TestCase("SWLOR.Game.Server.Domain.Character", "Unrelated", "Platform/Domain.Character")]
+    [TestCase("SWLOR.Game.Server.Domain.Character", "IAmbient", "Platform/Domain.Character")]
+    [TestCase("SWLOR.Game.Server.Domain.Unknown", "IAchievementService", "Platform/Domain.Unknown")]
+    public void Classifies_the_types_of_a_converted_service_as_the_service(string @namespace, string name, string expectedUnit)
+    {
+        DependencyUnit.TryParse(expectedUnit, out var expected).Should().BeTrue();
+
+        UnitClassifier.Classify(new TypeKey(@namespace, name), DomainMap.Parse(DomainMapJson)).Should().Be(expected);
+    }
+
+    [Test]
+    public void Without_a_map_the_types_of_a_domain_namespace_are_platform_code()
+    {
+        UnitClassifier.Classify(new TypeKey("SWLOR.Game.Server.Domain.Character", "IAchievementService")).Should().Be(
+            new DependencyUnit(UnitKind.Platform, "Domain.Character"));
+    }
+
     [TestCase("", "<Module>")]
     [TestCase("", "<>f__AnonymousType0")]
     [TestCase("System.Runtime.CompilerServices", "IsExternalInit")]

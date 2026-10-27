@@ -1,16 +1,19 @@
 using System.Collections.Generic;
-using System.Linq;
+using SWLOR.Game.Server.Composition;
 using SWLOR.Game.Server.Core;
-using SWLOR.Game.Server.Entity;
-using SWLOR.Game.Server.Extension;
+using SWLOR.Game.Server.Domain.World;
 using SWLOR.Game.Server.Service.TaxiService;
 
 namespace SWLOR.Game.Server.Service
 {
+    /// <summary>
+    /// The static API of the taxi destinations. The logic and state live in <see cref="ITaxiService"/>; every member
+    /// here forwards to the container's instance, and the event handler stays here so its name in the handler order
+    /// manifest does not change.
+    /// </summary>
     public static class Taxi
     {
-        private static readonly Dictionary<TaxiDestinationType, TaxiDestinationAttribute> _allTaxiDestinations = new Dictionary<TaxiDestinationType, TaxiDestinationAttribute>();
-        private static readonly Dictionary<int, Dictionary<TaxiDestinationType, TaxiDestinationAttribute>> _taxiDestinationsByRegionId = new Dictionary<int, Dictionary<TaxiDestinationType, TaxiDestinationAttribute>>();
+        private static ITaxiService Instance => FacadeAccessor.Resolve<ITaxiService>();
 
         /// <summary>
         /// When the module loads, cache all taxi destinations.
@@ -18,17 +21,7 @@ namespace SWLOR.Game.Server.Service
         [NWNEventHandler(ScriptName.OnModuleCacheBefore)]
         public static void LoadTaxiDestinations()
         {
-            var taxiDestinationTypes = Enum.GetValues(typeof(TaxiDestinationType)).Cast<TaxiDestinationType>();
-            foreach (var destination in taxiDestinationTypes)
-            {
-                var detail = destination.GetAttribute<TaxiDestinationType, TaxiDestinationAttribute>();
-
-                if(!_taxiDestinationsByRegionId.ContainsKey(detail.RegionId))
-                    _taxiDestinationsByRegionId[detail.RegionId] = new Dictionary<TaxiDestinationType, TaxiDestinationAttribute>();
-
-                _taxiDestinationsByRegionId[detail.RegionId][destination] = detail;
-                _allTaxiDestinations[destination] = detail;
-            }
+            Instance.LoadTaxiDestinations();
         }
 
         /// <summary>
@@ -39,29 +32,7 @@ namespace SWLOR.Game.Server.Service
         /// <param name="type">The destination type to register</param>
         public static void RegisterTaxiDestination(uint player, TaxiDestinationType type)
         {
-            if (!GetIsPC(player) || GetIsDM(player))
-            {
-                SendMessageToPC(player, "Only players may register taxi destinations.");
-                return;
-            }
-
-            var detail = _allTaxiDestinations[type];
-            var playerId = GetObjectUUID(player);
-            var dbPlayer = DB.Get<Player>(playerId);
-
-            if (!dbPlayer.TaxiDestinations.ContainsKey(detail.RegionId))
-                dbPlayer.TaxiDestinations[detail.RegionId] = new List<TaxiDestinationType>();
-
-            if (dbPlayer.TaxiDestinations[detail.RegionId].Contains(type))
-            {
-                SendMessageToPC(player, "You have already registered this location.");
-                return;
-            }
-
-            dbPlayer.TaxiDestinations[detail.RegionId].Add(type);
-            SendMessageToPC(player, $"'{detail.Name}' registered into taxi destinations!");
-
-            DB.Set(dbPlayer);
+            Instance.RegisterTaxiDestination(player, type);
         }
 
         /// <summary>
@@ -71,7 +42,7 @@ namespace SWLOR.Game.Server.Service
         /// <returns>A dictionary of taxi destination types and attributes.</returns>
         public static Dictionary<TaxiDestinationType, TaxiDestinationAttribute> GetDestinationsByRegionId(int regionId)
         {
-            return _taxiDestinationsByRegionId[regionId].ToDictionary(x => x.Key, y => y.Value);
+            return Instance.GetDestinationsByRegionId(regionId);
         }
     }
 }

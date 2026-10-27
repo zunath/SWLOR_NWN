@@ -1,0 +1,113 @@
+# Dependency Injection
+
+How the server's services move from static classes to instances built by a dependency-injection container, and how to convert one. The decisions are in `MaintainabilityRefactorSpecs.md` (Phase 2); this guide is the working recipe, with the pilot (`Achievement`, `Faction`, `Taxi`) as the example. Read it before converting a service.
+
+Sections: The pattern · The container · Converting a service · Dependencies · Tests · Rules the architecture tests enforce · Pitfalls
+
+## The pattern
+
+A converted service is three pieces. Callers, content definitions and event handlers keep using the static class, so nothing outside the service changes.
+
+| Piece | Where | What it is |
+|---|---|---|
+| Facade | `Service/<Name>.cs`, namespace `SWLOR.Game.Server.Service` | The static class every caller already uses. Same public members, same signatures. Each member forwards to the instance. It keeps the `[NWNEventHandler]` methods and the `const` fields. |
+| Interface | `Domain/<Domain>/I<Name>Service.cs` | One member per public member of the old static class, with the doc comments. |
+| Instance class | `Domain/<Domain>/<Name>Service.cs` | The old logic moved verbatim. Static state becomes instance fields. Dependencies come through the constructor. |
+
+`<Domain>` is the domain the service is in `SWLOR.Architecture.Tests/DomainMap.json` (Core, UI, Combat, Abilities, Character, Items, Crafting, Economy, Quests, World, Space, Creatures, Companions, Social, Administration, Gameplay). The namespace is `SWLOR.Game.Server.Domain.<Domain>`, never `SWLOR.Game.Server.<Domain>`: a namespace named like a service (`Combat`, `Space`) or like an existing folder (`Core`) would capture simple names such as `Combat.CalculateHitRate()` in every file below `SWLOR.Game.Server`. Inside `Domain.*` code, a name that is also a domain (`Combat`, `Space`) still means the facade only when spelled `Service.Combat`.
+
+The support types of the service (the enum, the attribute, records) stay where they are, in `Service/<Name>Service/`. Moving them would change the `using` of every caller; they move when the facades are removed (Phase 2, P2-Z).
+
+The facade, as converted (`Service/Achievement.cs`):
+
+```csharp
+public static class Achievement
+{
+    private static IAchievementService Instance => FacadeAccessor.Resolve<IAchievementService>();
+
+    [NWNEventHandler(ScriptName.OnModuleLoad)]
+    public static void ReserveGuiIds()
+    {
+        Instance.ReserveGuiIds();
+    }
+
+    public static void GiveAchievement(uint player, AchievementType achievementType)
+    {
+        Instance.GiveAchievement(player, achievementType);
+    }
+    // ... one forwarding member per member of the interface
+}
+```
+
+A `const` cannot forward, so the facade repeats it from the instance class: `public const int MinimumFaction = Domain.Quests.FactionService.MinimumFaction;` (spell the namespace: `FactionService` alone means the namespace `Service.FactionService` inside `namespace SWLOR.Game.Server.Service`). Compile-time constants are inlined, so callers (the toolset included) are unaffected.
+
+## The container
+
+Code lives in `Composition/`.
+
+- `ContainerHost` builds a container once, with `ValidateOnBuild` and `ValidateScopes`, and creates every singleton during the build. A missing dependency, a lifetime mistake or a constructor that throws stops the boot, not the first handler that needs the service. A second build, or asking before the build, throws `ContainerNotBuiltException`.
+- `CompositionRoot.ServerHost` is the server's container. `ServiceRegistrations` lists the services, one line each, grouped by domain. Every game service is a singleton (process lifetime; there are no scoped services in this phase).
+- `FacadeAccessor.Resolve<T>()` is the one internal accessor facades use. Nothing else may resolve from the container (see the rules below).
+- `ServerBootstrapper` runs a named step list (`Steps`). `BuildServiceContainer` comes after the internal systems (logging, the script execution provider) and before `RegisterEventHandlers`, `LoadEngineTestAssembly` and `LoadScripts`. Handlers exist only after `LoadScripts` registers them, and the engine cannot call back into the server before `Bootstrap` returns, so the container exists before any handler, `mod_preload` included. `LoadScripts` refuses to run without the container, and `ServerBootstrapperOrderTests` pins the order.
+- A constructor must not call the engine or read other services' state: singletons are created while the server boots, before the module loads. Do engine-dependent setup in a handler (the facade forwards it), as the services always did.
+
+Tests that need their own container build one with `ContainerHost.Create(services)` and make the facades use it for the current async flow with `CompositionRoot.InstallForTests(provider)`. Production code never calls it (`CompositionSourceGuardTests` fails if it does).
+
+## Converting a service
+
+One service per pull request. Each pull request also brings the service's own lines to at least 70% coverage.
+
+1. Read the service, its folder, its callers (the service's edges in `SWLOR.Architecture.Tests/Baseline/CrossDomainEdges.txt`), its handlers (`Core/ScriptHandlerOrder.txt`) and its tests. Look for tests that recompile its source with Roslyn or reset its static state by reflection; they are replaced in step 7.
+2. Create the interface and the instance class in `Domain/<Domain>/`. Move the logic and state verbatim: statics become instance fields, `static` goes off the methods, nothing else changes. Keep strings that name the service (a GUI id reservation made under `nameof(Achievement)` stays the literal `"Achievement"`; do not reference the facade from the instance).
+3. Turn the old file into the facade: keep the class, the handlers and the constants, forward every public member to `Instance`. Keep the doc comments.
+4. Register the interface in `Composition/ServiceRegistrations.cs` (one line) and add the service, sorted by name, to `SWLOR.Architecture.Tests/ConvertedServices.json`.
+5. Handlers stay on the facade. The instance class has no `[NWNEventHandler]`: the script registry binds handlers as static methods, and the handler order manifest keeps its names (`SWLOR.Game.Server.Service.Achievement.LoadAchievements`). Do not move a facade to another namespace or file path; a move can reorder reflection (`ScriptHandlerManifestBaselineTests` fails; delete that temporary test in the first pull request that legitimately reorders it, as its comment says).
+6. If the old file made player messages, `Readmes/PlayerMessageAudit.json` lists them by file: change `File` (and `Line`) of those entries to the instance file. If `PlayerMessageAuditTests` names the old file in its list of gameplay-outcome files, name the instance file.
+7. Write the unit tests (below) and measure coverage.
+8. Build and run: the service's tests, `SWLOR.Architecture.Tests`, `SWLOR.Game.Server.CharacterizationTests` (snapshots must not change), the handler order tests (`ScriptHandlerManifestOrderTests`, `ScriptHandlerSeamTests`, `ScriptHandlerManifestBaselineTests`), and `scripts/ci/run-unit-tests.sh --out <dir>`. For a service with in-game behaviour also run the engine characterization scenarios (`scripts/run-engine-tests.ps1 -Filter Characterization`, `EngineTesting.md`).
+9. Record the service, the pull request and the coverage before and after in `MaintainabilityRefactorStatus.md` (the coordinating session does this when it merges).
+
+## Dependencies
+
+| The service uses | In the instance class |
+|---|---|
+| Another converted service | Constructor-injected interface. |
+| A service not converted yet (`Gui`, `Random`, `Messaging`, ...) | The static facade, as before. It converts later and keeps working. |
+| `DB` | `IDBService` (`Domain/Core`), constructor-injected. Until `DB` itself converts it is implemented by `Composition/StaticDBAdapter`, which forwards to the static `DB` one to one. `IDBService` has only the members converted services have needed (`Get<T>`, `Set<T>`); add a member with the same signature as on `DB` when you need it. When `DB` converts, `IDBService` becomes its interface and the adapter is deleted. |
+| The engine (NWScript, NWNX) | Bare calls through the global static imports, as everywhere. Tests swap the engine with `NWScriptRuntime.Override` and the plugin runtimes (`PlayerPluginRuntime.Override`, ...). Do not inject `INWScript`. |
+| Time, randomness | `Clock` and `Random` as before (`Clock` only in the files the clock seam script owns). |
+
+Never inject `IServiceProvider` or take the container in a constructor. Dependencies that form a cycle between two converted services cannot be injected both ways: break it by moving the shared part into a third service, or leave one direction on the static facade and say so in the pull request.
+
+## Tests
+
+- **The instance**: `Tests/Domain/<Domain>/<Name>ServiceTests.cs`. Construct the instance with fakes: `InMemoryDBService` for `IDBService` (entities by id, records every `Set`), `PlayerEngine` (a `FakeNWScript` where the target is a player with a UUID; `Messages()` returns what was sent to the player), `FakePlayerPlugin` and the other plugin fakes for NWNX calls. Assert the saved entities, the messages and the engine calls. The three pilot test classes are the examples.
+- **The facade**: nothing to write. `FacadeForwardingTests` reads `ConvertedServices.json` and proves for every listed service that the facade and the interface have the same members, that each facade member makes exactly one call on the instance with the same arguments and returns its result, that the container holds one instance of the instance class, that the instance has no handlers, and that `ConvertedServices.json` lists exactly the services `ServiceRegistrations` registers (apart from `IDBService`).
+- **Coverage**: at least 70% of the service's lines (the facade, the interface and the instance class). Measure with the repository's settings, which exclude generated code:
+
+  ```bash
+  dotnet test SWLOR.Game.Server.Tests --no-build -c Release --collect "XPlat Code Coverage" --settings coverlet.runsettings --results-directory <dir>
+  ```
+
+  then read `line-rate` per class in the `coverage.cobertura.xml` it writes (or run all projects with `scripts/ci/run-unit-tests.sh --out <dir>`, which merges them). Report the number before the conversion and after it.
+- **Behaviour must not change**: `SWLOR.Game.Server.CharacterizationTests` snapshots stay byte for byte; do not regenerate them.
+
+## Rules the architecture tests enforce
+
+`SWLOR.Architecture.Tests` (`ConvertedServicesTests`) reads the compiled server and fails with a message naming the type and member:
+
+- **The pieces exist.** A listed service has the static class `Service.<Name>`, the interface `Domain.<Domain>.I<Name>Service` and a class `Domain.<Domain>.<Name>Service` that implements it, and the domain agrees with `DomainMap.json`.
+- **No static state.** No type of a converted service (the facade, the interface, the instance class, the types in `Service/<Name>Service/`) holds a static field. Only `const` is allowed; `static readonly` is not, because it still shares the collection it holds.
+- **Handlers stay on the facade.** A `[NWNEventHandler]` on any other type of a converted service fails.
+- **The instance never calls its own facade.**
+- **No service location.** Nothing outside `Composition/` uses `IServiceProvider` or any `Microsoft.Extensions.DependencyInjection` type, and nothing outside `Composition/` and the facades of converted services uses `FacadeAccessor`.
+- **Domain types name their service.** A type in `Domain.<Domain>` is classified as the service of that domain whose name starts its name (`IAchievementService`, `AchievementService` and `AchievementNotification` are all the service `Achievement`), so the cross-domain baseline (`CrossDomainEdges.txt`) is the same before and after a conversion. A type that names no service of its domain shows up as a new `Platform/Domain.<Domain>` edge.
+
+The composition root (`Composition/`) names every service it registers, so its outgoing edges are left out of the cross-domain guard (`wiringPlatformAreas` in `DomainMap.json`).
+
+## Pitfalls
+
+- **Name clash.** `Service.<Name>Service` is a namespace (the support types) and `<Name>Service` is also the instance class. Inside `namespace SWLOR.Game.Server.Service` the simple name means the namespace; the facade refers to the interface only.
+- **Package.** `Microsoft.Extensions.DependencyInjection` 9.0.9 is the version the toolset already uses (`SWLOR.Toolset.csproj`); `SWLOR.Game.Server/packages.lock.json` and the lock files of the toolset projects that reference the server record it. Change the version everywhere at once, then `dotnet restore <project> --force-evaluate` (add `-p:Configuration=Release` for the `packages.Release.lock.json` files) for the server and each toolset project.
+- **Test projects see `Domain` as a namespace.** A test namespace `...Tests.Domain.<Domain>` is fine; spell the production types with a `using SWLOR.Game.Server.Domain.<Domain>;`.
+- **Facade cost.** Every facade call resolves the instance from the container (one dictionary lookup). Fine for services that run per event; a hot-path service can cache the instance once the container's lifetime per reload generation is settled (Phase 4).

@@ -51,18 +51,18 @@ public interface ICraftSessionWorld
     /// <summary>Releases the player from the station and stops the work clip.</summary>
     void EndStationWork(uint player);
 
-    uint CreateCraftedItem(uint player, RecipeDetail recipe);
-
-    /// <summary>How many units of the resref the player's inventory holds, counting stack sizes.</summary>
-    int CountInInventory(uint player, string resref);
+    /// <summary>
+    /// Creates the finished item outside the player's inventory (one stack of the recipe's quantity, or a single item for a template
+    /// that does not stack), so its bonuses are applied to it before it can merge into a stack the player already carries.
+    /// </summary>
+    uint CreateFinishedItem(RecipeDetail recipe);
 
     /// <summary>
-    /// Settles where the finished <paramref name="item"/> (with its bonuses) goes, judged by what the inventory gained since
-    /// <paramref name="countBefore"/> (an output that merged into a stack can come back as an invalid handle). A template that does not
-    /// stack made one item, so the rest of the recipe's quantity are copies of it. Every unit in the inventory is delivered; a unit that
-    /// landed outside it or was never made is held instead, so the full quantity is always accounted for.
+    /// Moves the finished <paramref name="item"/>, bonuses applied, to the player. A template that does not stack made one item, so the
+    /// rest of the recipe's quantity are copies of it. Each unit is serialized first: the ones that fit the inventory are delivered, the
+    /// rest are held, so the full quantity is always accounted for with its bonuses.
     /// </summary>
-    CraftedUnits FinishUnits(uint player, uint item, RecipeDetail recipe, int countBefore);
+    CraftedUnits FinishUnits(uint player, uint item, RecipeDetail recipe);
 
     void ApplyVendorValue(uint item, int addGoldPiece);
 

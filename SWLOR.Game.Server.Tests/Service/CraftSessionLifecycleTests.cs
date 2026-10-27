@@ -268,6 +268,32 @@ public class CraftSessionLifecycleTests
     }
 
     [Test]
+    public void Succeed_ANonStackingOutputWithNoRoom_HoldsEveryUnit()
+    {
+        _recipe.Quantity = 2;
+        _world.NonStackingResrefs.Add(_recipe.Resref);
+        _world.OutputLost = true;
+        var lifecycle = Lifecycle();
+        var session = StartSession(lifecycle);
+
+        lifecycle.SucceedAtPace(_world, FakeCraftSessionWorld.PlayerHandle, _player, session, new MinigameMeter(60, 100));
+
+        _player.HeldCraftItems.Should().HaveCount(2);
+        _world.Crafted.Should().BeEmpty();
+    }
+
+    [Test]
+    public void Succeed_AppliesTheBonusesBeforeTheOutputReachesTheInventory()
+    {
+        var lifecycle = Lifecycle();
+        var session = StartSession(lifecycle, NoItem, FakeCraftSessionWorld.FirstEnhancement);
+
+        lifecycle.SucceedAtPace(_world, FakeCraftSessionWorld.PlayerHandle, _player, session, new MinigameMeter(60, 100));
+
+        _world.Events.Should().ContainInOrder("create:test_item", "enhance", "finish");
+    }
+
+    [Test]
     public void Succeed_AStackingRecipeOfTwo_MakesNoCopies()
     {
         _recipe.Quantity = 2;

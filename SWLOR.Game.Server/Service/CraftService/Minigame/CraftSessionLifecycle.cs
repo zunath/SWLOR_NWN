@@ -138,8 +138,7 @@ public sealed class CraftSessionLifecycle
             recipe.Category == RecipeCategoryType.Food,
             filledSlots);
 
-        var countBefore = _world.CountInInventory(player, recipe.Resref);
-        var item = _world.CreateCraftedItem(player, recipe);
+        var item = _world.CreateFinishedItem(recipe);
         _world.ApplyVendorValue(item, outcome.VendorValueBonus);
 
         foreach (var transfer in outcome.Enhancements)
@@ -166,7 +165,7 @@ public sealed class CraftSessionLifecycle
             dbPlayer.CraftedRecipes[record.Recipe] = DateTime.UtcNow;
 
         // The full quantity is accounted for: units in the inventory are delivered, the rest are held until there is room.
-        var units = _world.FinishUnits(player, item, recipe, countBefore);
+        var units = _world.FinishUnits(player, item, recipe);
         if (units.Held.Count > 0)
         {
             dbPlayer.HeldCraftItems ??= new List<string>();

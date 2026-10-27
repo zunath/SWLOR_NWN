@@ -181,73 +181,53 @@ public sealed class NwnCraftSessionWorld : ICraftSessionWorld
         return item;
     }
 
-    public int CountInInventory(uint player, string resref) => NwnQuickCraftWorld.CountComponent(player, resref);
+    public uint CreateFinishedItem(RecipeDetail recipe)
+    {
+        var item = CreateItemOnObject(recipe.Resref, GetObjectByTag("TEMP_ITEM_STORAGE"), Math.Max(1, recipe.Quantity));
+        SetLocalBool(item, Item.PlayerProducedItemVariable, true);
+        return item;
+    }
 
-    public CraftedUnits FinishUnits(uint player, uint item, RecipeDetail recipe, int countBefore)
+    public CraftedUnits FinishUnits(uint player, uint item, RecipeDetail recipe)
     {
         var result = new CraftedUnits(new List<string>(), new List<string>());
-        var quantity = Math.Max(1, recipe.Quantity);
-        var valid = GetIsObjectValid(item);
-        var inInventory = valid && GetItemPossessor(item) == player;
-
-        // An invalid handle can only be a stack merge or no room, so it is judged as a stack.
-        var stacks = !valid || StringToInt(Get2DAString("baseitems", "Stacking", (int)GetBaseItemType(item))) > 1;
-        if (stacks)
+        if (!GetIsObjectValid(item))
         {
-            var gained = Math.Clamp(CountInInventory(player, recipe.Resref) - countBefore, 0, quantity);
-            if (inInventory && GetItemStackSize(item) == gained)
-                result.Delivered.Add(ObjectPlugin.Serialize(item));
-            else if (gained > 0)
-                result.Delivered.Add(SerializeStandIn(recipe.Resref, gained));
-
-            var missing = quantity - gained;
-            if (missing <= 0)
-                return result;
-
-            if (valid && !inInventory)
-            {
-                // It landed outside the inventory with its bonuses: hold that item itself.
-                SetItemStackSize(item, missing);
-                result.Held.Add(ObjectPlugin.Serialize(item));
-                DestroyObject(item);
-            }
-            else
-            {
-                result.Held.Add(SerializeStandIn(recipe.Resref, missing));
-            }
-
+            Log.Write(LogGroup.Error, $"The finished item '{recipe.Resref}' for {GetObjectUUID(player)} could not be created.", true);
             return result;
         }
 
-        var serialized = ObjectPlugin.Serialize(item);
         var made = new List<uint> { item };
-        for (var unit = 1; unit < quantity; unit++)
-            made.Add(CopyItem(item, player, true));
+        var stacks = StringToInt(Get2DAString("baseitems", "Stacking", (int)GetBaseItemType(item))) > 1;
+        if (!stacks)
+        {
+            var storage = GetObjectByTag("TEMP_ITEM_STORAGE");
+            for (var unit = 1; unit < Math.Max(1, recipe.Quantity); unit++)
+                made.Add(CopyItem(item, storage, true));
+        }
 
+        var serialized = ObjectPlugin.Serialize(item);
         foreach (var unit in made)
         {
-            if (GetIsObjectValid(unit) && GetItemPossessor(unit) == player)
+            if (!GetIsObjectValid(unit))
             {
-                result.Delivered.Add(ObjectPlugin.Serialize(unit));
+                // A copy that could not be made is held as the finished item itself.
+                result.Held.Add(serialized);
                 continue;
             }
 
-            if (GetIsObjectValid(unit))
-                DestroyObject(unit);
-            result.Held.Add(serialized);
+            var form = ObjectPlugin.Serialize(unit);
+            if (Item.FitsInInventory(player, unit) && ObjectPlugin.AcquireItem(player, unit))
+            {
+                result.Delivered.Add(form);
+                continue;
+            }
+
+            DestroyObject(unit);
+            result.Held.Add(form);
         }
 
         return result;
-    }
-
-    /// <summary>A plain made item of the resref, serialized, for units the inventory holds only as part of a merged stack.</summary>
-    private static string SerializeStandIn(string resref, int quantity)
-    {
-        var standIn = CreateItemOnObject(resref, GetObjectByTag("TEMP_ITEM_STORAGE"), quantity);
-        SetLocalBool(standIn, Item.PlayerProducedItemVariable, true);
-        var serialized = ObjectPlugin.Serialize(standIn);
-        DestroyObject(standIn);
-        return serialized;
     }
 
     public void ApplyVendorValue(uint item, int addGoldPiece) => ItemPlugin.SetAddGoldPieceValue(item, addGoldPiece);

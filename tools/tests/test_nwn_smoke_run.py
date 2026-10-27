@@ -403,6 +403,16 @@ class RunTests(unittest.TestCase):
                     smoke.run_command(options(name=name, results_root=root))
             self.assertFalse(root.exists())
 
+    def test_a_full_run_needs_pillow_and_says_how_to_install_it(self):
+        with patch.dict(sys.modules, {'PIL': None}):
+            with self.assertRaises(LiveStackError) as caught:
+                smoke.run_command(options(server_only=False))
+        self.assertIn('pip install -r tools/nwn_visual_check/requirements.txt', str(caught.exception))
+
+    def test_a_server_only_run_does_not_need_pillow(self):
+        with patch.dict(sys.modules, {'PIL': None}), tempfile.TemporaryDirectory() as folder,                 patch.object(smoke.live, 'create', side_effect=LiveStackError('docker is not on PATH.')),                 patch.object(smoke.live, 'log'):
+            self.assertEqual(2, smoke.run_command(options(server_only=True, results_root=Path(folder))))
+
     def test_repeat_must_be_positive(self):
         with self.assertRaises(LiveStackError):
             smoke.run_command(options(repeat=0))

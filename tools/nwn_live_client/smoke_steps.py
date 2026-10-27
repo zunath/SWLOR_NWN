@@ -17,7 +17,8 @@ import re
 import time
 
 from .smoke_client import (EMPTY_GRID_CELL, HOTBAR_X, HOTBAR_Y, MAIN_HAND_SLOT, SELF_POINT, GameClient,
-                           bright_pixels, green_text_present, matching_lines, window_left)
+                           bright_pixels, green_text_present, window_left)
+from .stack import LiveStackError
 
 BANK_TERMINAL_POINTS = [(600, 395), (598, 360)]
 COOKPOT_POINTS = [(740, 366), (555, 368)]
@@ -28,6 +29,7 @@ PERKS_FIRST_ROW = (158, 375)
 PERKS_BUY = (302, 594)
 PERKS_YES = (302, 584)
 PERKS_CLOSE = (743, 17)
+PERKS_TITLE = (4, 8, 220, 26)
 # Bank window controls, as offsets from the window's left edge.
 BANK_DEPOSIT = (237, 494)
 BANK_FIRST_WITHDRAW = (395, 140)
@@ -44,6 +46,22 @@ CONVERSATION_FIRST_REPLY = (316, 357)
 # The three areas of the start of the game, as the server's chat log names them.
 AREA_HANGAR = 'CZ-220 - Hangar'
 AREA_OFFICES = 'CZ-220 - Offices & Labs'
+
+
+# The CZ220_MYNOCKS spawn table holds two creatures: the mynock and the rarer coolant-scarred one.
+MYNOCK = r'(?:Coolant-Scarred )?Mynock'
+
+
+def character_name(run) -> str:
+    """The test character's in-game name, read once from its player record.
+
+    Chat-log lines carry the character's name, so no check hard-codes one.
+    """
+    if not getattr(run, 'character_name', ''):
+        run.character_name = player_record(run).get('Name') or ''
+    if not run.character_name:
+        raise LiveStackError('The player record has no name yet.')
+    return run.character_name
 
 
 def expect(step, name: str, evidence: str | None, detail: str = '') -> bool:
@@ -67,9 +85,8 @@ def teleport(client: GameClient, tag: str) -> bool:
     if client.wait_for('Invalid waypoint tag', mark, 3, 1):
         return False
     if client.wait_area_change(tips, timeout=14):
-        client.wait_loaded()
-    else:
-        time.sleep(4)
+        return client.wait_loaded()
+    time.sleep(4)
     return True
 
 
@@ -106,8 +123,11 @@ def spawn(client: GameClient, resref: str, quantity: int, item_name: str) -> str
     return client.wait_for(rf'Acquired Item: {re.escape(item_name)}', mark, 20)
 
 
-def attack_target(client: GameClient, victim: str, attempts: int = 3) -> tuple[int, int] | None:
-    """Find a hostile near the character, click it and wait until the character attacks it."""
+def attack_target(client: GameClient, name: str, victim: str, attempts: int = 3) -> tuple[int, int] | None:
+    """Find a hostile near the character, click it and wait until the character attacks it.
+
+    name is the character's name and victim a regular expression for the target's name.
+    """
     for _ in range(attempts):
         client.ensure_alive()
         point = client.find_hostile()
@@ -115,7 +135,7 @@ def attack_target(client: GameClient, victim: str, attempts: int = 3) -> tuple[i
             continue
         mark = client.mark()
         client.click_object(*point)
-        if client.wait_for(rf'Agan Tarn attacks {re.escape(victim)}', mark, 14, 1.5):
+        if client.wait_for(rf'{re.escape(name)} attacks {victim}', mark, 14, 1.5):
             return point
     return None
 
@@ -135,11 +155,37 @@ def attack_log_has(client: GameClient, mark: int, attack_type: int, weapon: str)
 
 # ---------------------------------------------------------------- steps
 
+def fight(run, step, label: str, weapon: str, attack_type: int) -> None:
+    """Go to the mynocks, wait for one to engage, attack it and check the damage and the weapon used.
+
+    Evidence: the character's attack and damage lines in the client chat log, and the server's own
+    combat-resolution log naming the weapon and the attack type (1 melee, 2 ranged).
+    """
+    client: GameClient = run.client
+    name = character_name(run)
+    attack_mark = len(client.attack_lines())
+    # The mark comes first: a mynock can strike while the area is still settling after the jump.
+    mark = client.mark()
+    step.check(f'{label}: teleport to the mynock spawn point', teleport(client, 'CZ220_MYNOCKS'))
+    expect(step, f'{label}: a mynock engages', client.wait_for(rf'{MYNOCK} (attacks|uses|readies)', mark, 90, 3))
+    clicked = attack_target(client, name, MYNOCK)
+    detail = f'clicked {clicked}' if clicked else 'no hostile label found'
+    expect(step, f'{label}: the character attacks the mynock',
+           client.wait_for(rf'{re.escape(name)} attacks {MYNOCK}', mark, 40, 2), detail)
+    expect(step, f'{label}: a damage number appears in the combat log',
+           client.wait_for(rf'{re.escape(name)} .*damages {MYNOCK}: \d+ \(', mark, 60, 2))
+    expect(step, f'{label}: the server resolved the attack with the {weapon}',
+           attack_log_has(client, attack_mark, attack_type, weapon))
+    run.capture(step, label)
+    stop_actions(client)
+
+
 def combat(run, step) -> None:
     """A rifle (ranged) attack, then a knife (melee) attack, on mynocks that come to the character.
 
-    Both weapons are created and located in the quiet hangar first: an inventory icon is found by
-    comparing two screenshots, which only works while the scene behind the panel holds still.
+    Weapons are created, found and equipped in the quiet hangar: an inventory icon is found by
+    comparing two screenshots, which only works while the scene behind the panel holds still, and
+    each drag is checked by the icon leaving its cell, because the client drops drags now and then.
     """
     client: GameClient = run.client
     client.ensure_alive()
@@ -152,47 +198,15 @@ def combat(run, step) -> None:
     step.check('the knife appears in the inventory', knife is not None, str(knife))
     if rifle is None or knife is None:
         return
-    attack_mark = len(client.attack_lines())
 
-    # Ranged.
-    client.drag(*rifle, *MAIN_HAND_SLOT)
-    time.sleep(3)
-    step.check('teleport to the mynock spawn point', teleport(client, 'CZ220_MYNOCKS'))
-    mark = client.mark()
-    expect(step, 'the target appears and engages', client.wait_for(r'Mynock (attacks|uses|readies)', mark, 70, 3))
-    clicked = attack_target(client, 'Mynock')
-    step.check('the character attacks the mynock with the rifle', clicked is not None, f'clicked {clicked}')
-    time.sleep(8)
-    damage = matching_lines(client.lines_since(mark), r'Agan Tarn .*damages Mynock: \d+ \(')
-    expect(step, 'ranged damage number appears in the combat log', damage[0] if damage else None)
-    expect(step, 'the server resolved the attack as a ranged rifle attack',
-           attack_log_has(client, attack_mark, 2, 'Basic Rifle'))
-    run.capture(step, 'ranged')
-    attack_mark = len(client.attack_lines())
+    step.check('the rifle is equipped', client.move_item(rifle, MAIN_HAND_SLOT))
+    fight(run, step, 'ranged', 'Basic Rifle', 2)
 
-    # Melee: put the rifle back where it was, equip the knife, and fight the next mynock that comes.
-    # The rifle may have killed the first one, so the character goes back to the spawn point for another.
     client.ensure_alive()
-    client.drag(*MAIN_HAND_SLOT, *rifle)
-    time.sleep(3)
-    client.drag(*knife, *MAIN_HAND_SLOT)
-    time.sleep(3)
-    mark = client.mark()
-    if not client.wait_for(r'Mynock (attacks|uses|readies)', mark, 25, 3):
-        teleport(client, 'ENTRY_STARTING_WP')
-        teleport(client, 'CZ220_MYNOCKS')
-        mark = client.mark()
-        client.wait_for(r'Mynock (attacks|uses|readies)', mark, 70, 3)
-    mark = client.mark()
-    clicked = attack_target(client, 'Mynock')
-    step.check('the character attacks the mynock with the knife', clicked is not None, f'clicked {clicked}')
-    time.sleep(8)
-    damage = matching_lines(client.lines_since(mark), r'Agan Tarn .*damages Mynock: \d+ \(')
-    expect(step, 'melee damage number appears in the combat log', damage[0] if damage else None)
-    expect(step, 'the server resolved the attack as a melee knife attack',
-           attack_log_has(client, attack_mark, 1, 'Basic Knife'))
-    run.capture(step, 'melee')
-    stop_actions(client)
+    step.check('back in the hangar', teleport(client, 'ENTRY_STARTING_WP'))
+    step.check('the rifle is put away', client.move_item(MAIN_HAND_SLOT, rifle))
+    step.check('the knife is equipped', client.move_item(knife, MAIN_HAND_SLOT))
+    fight(run, step, 'melee', 'Basic Knife', 1)
     step.detail = 'Ranged rifle and melee knife attacks landed and their damage was logged.'
 
 
@@ -205,7 +219,9 @@ def unequip_main_hand(client: GameClient) -> None:
 def ability(run, step) -> None:
     """Buy Adrenal Stim in the perks window, use it, then use it again inside its cooldown."""
     client: GameClient = run.client
+    name = character_name(run)
     reset_windows(client)
+    step.check('the inventory panel is closed', client.ensure_inventory_closed())
     step.check('teleport to the hangar', teleport(client, 'ENTRY_STARTING_WP'))
     mark = client.mark()
     client.say('/perks')
@@ -219,8 +235,7 @@ def ability(run, step) -> None:
     perks = player_record(run).get('Perks', {})
     step.check('the purchase is saved on the player record', perks.get('AdrenalStim') == 1, json.dumps(perks))
     run.capture(step, 'perk-bought')
-    client.nui_click(*PERKS_CLOSE)
-    time.sleep(2)
+    step.check('the perks window closes', client.close_window(*PERKS_CLOSE, PERKS_TITLE))
 
     expect(step, 'stim packs are created', spawn(client, 'stim_pack', 3, 'Stim Pack'))
     slot = (HOTBAR_X[3], HOTBAR_Y)
@@ -228,9 +243,9 @@ def ability(run, step) -> None:
     client.nui_click(*slot)
     time.sleep(2)
     client.click(*SELF_POINT)
-    expect(step, 'the ability is used', client.wait_for(r'Agan Tarn readies Adrenal Stim I\.', mark, 20))
+    expect(step, 'the ability is used', client.wait_for(rf'{re.escape(name)} readies Adrenal Stim I\.', mark, 20))
     expect(step, 'the stim pack is consumed', client.wait_for(r'Lost Item: Stim Pack', mark, 10))
-    expect(step, 'the effect lands', client.wait_for(r'Agan Tarn receives the effect of Adrenal Stim', mark, 10))
+    expect(step, 'the effect lands', client.wait_for(rf'{re.escape(name)} receives the effect of Adrenal Stim', mark, 10))
     run.capture(step, 'used')
 
     mark = client.mark()
@@ -368,6 +383,7 @@ def quest(run, step) -> None:
 def transfer(run, step) -> None:
     """Go to the hangar and back to the offices, proving each area from the server's chat log."""
     client: GameClient = run.client
+    name = character_name(run)
     step.check('teleport to the hangar', teleport(client, 'ENTRY_STARTING_WP'))
     run.capture(step, 'hangar')
     step.check('teleport back to the offices', teleport(client, 'Reception'))
@@ -375,9 +391,9 @@ def transfer(run, step) -> None:
     time.sleep(4)
     lines = client.server_chat_lines()
     # Each chat line is logged with the area its speaker stood in when sending it.
-    wanted = [(f'{AREA_OFFICES} Agan Tarn: /tpwp ENTRY_STARTING_WP', 'sent from the offices'),
-              (f'{AREA_HANGAR} Agan Tarn: /tpwp Reception', 'sent from the hangar'),
-              (f'{AREA_OFFICES} Agan Tarn: /help', 'sent from the offices again')]
+    wanted = [(f'{AREA_OFFICES} {name}: /tpwp ENTRY_STARTING_WP', 'sent from the offices'),
+              (f'{AREA_HANGAR} {name}: /tpwp Reception', 'sent from the hangar'),
+              (f'{AREA_OFFICES} {name}: /help', 'sent from the offices again')]
     for text, name in wanted:
         found = [line for line in lines if text in line]
         step.check(f'the server logged the command {name}', bool(found), found[-1][:120] if found else text)

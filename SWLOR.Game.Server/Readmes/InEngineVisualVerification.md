@@ -82,7 +82,7 @@ python tools/NwnLiveClient.py down <run dir>
 
 ## Smoke run
 
-The scripted live smoke run ends each phase of the maintainability refactor (`MaintainabilityRefactorPlan.md`, owner decision 4). It is one repeatable command on top of the stack in "Server behavior", so every rule there still applies.
+The scripted live smoke run ends each phase of the maintainability refactor (`MaintainabilityRefactorPlan.md`, owner decision 4). It is one repeatable command on top of the stack in "Server behavior", so every rule there still applies, plus Pillow for the screenshot analysis (`python -m pip install -r tools/nwn_visual_check/requirements.txt`).
 
 ```powershell
 powershell -NoProfile -File tools/RunSmokeTest.ps1 -Repeat 2 -PublicCdKey <8-character public key>

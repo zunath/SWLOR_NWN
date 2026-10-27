@@ -292,6 +292,15 @@ def relative_or_absolute(path: Path, base: Path) -> str:
         return str(path)
 
 
+def require_pillow() -> None:
+    """Fail early, with the install command, when the screenshot analysis cannot import Pillow."""
+    try:
+        __import__('PIL')
+    except ImportError:
+        raise LiveStackError('The smoke run reads screenshots with Pillow, which is not installed. Install it '
+                             'with: python -m pip install -r tools/nwn_visual_check/requirements.txt') from None
+
+
 def head_commit(repo: Path) -> str:
     try:
         return subprocess.run(['git', '-C', str(repo), 'rev-parse', 'HEAD'], capture_output=True, text=True,
@@ -628,6 +637,8 @@ def parser() -> argparse.ArgumentParser:
 def run_command(options: argparse.Namespace) -> int:
     if options.repeat < 1:
         raise LiveStackError('--repeat must be at least 1.')
+    if not options.server_only:
+        require_pillow()
     root = (options.results_root or default_results_root()).resolve()
     for repository in live.repository_roots():
         if live.is_within(root, repository):
@@ -674,6 +685,7 @@ def run_command(options: argparse.Namespace) -> int:
 
 
 def attach_command(options: argparse.Namespace) -> int:
+    require_pillow()
     stack = Stack(options.run_dir)
     stack.ensure_owner()
     values = dict(server_only=False, settle=45.0, character=None)

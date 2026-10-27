@@ -35,11 +35,16 @@ DEATH_TITLE = (500, 143, 780, 166)
 RESPAWN_BUTTON = (641, 390)
 
 
-def scan_points(center: tuple[int, int] = (640, 385), step_x: int = 40, step_y: int = 35, reach_x: int = 160,
-                reach_y: int = 105) -> list[tuple[int, int]]:
-    """Screen points around the character, nearest first: where a creature fighting it can stand."""
-    points = [(center[0] + dx, center[1] + dy)
-              for dx in range(-reach_x, reach_x + 1, step_x) for dy in range(-reach_y, reach_y + 1, step_y)]
+def scan_points(center: tuple[int, int] = (640, 385)) -> list[tuple[int, int]]:
+    """Screen points around the character, nearest first: where a creature fighting it can stand.
+
+    A mynock is small, so the points next to the character are 20 pixels apart; farther out they
+    are 40 and 35 apart. The scan stops at the first hostile, which is usually among the first few.
+    """
+    def grid(reach_x: int, reach_y: int, step_x: int, step_y: int) -> list[tuple[int, int]]:
+        return [(center[0] + dx, center[1] + dy)
+                for dx in range(-reach_x, reach_x + 1, step_x) for dy in range(-reach_y, reach_y + 1, step_y)]
+    points = list(dict.fromkeys(grid(80, 60, 20, 20) + grid(160, 105, 40, 35)))
     points = [(x, y) for x, y in points if 0 <= x < SCREEN[0] and 0 <= y < SCREEN[1]]
     return sorted(points, key=lambda point: ((point[0] - center[0]) ** 2 + ((point[1] - center[1]) * 1.5) ** 2,
                                              point))
@@ -93,6 +98,21 @@ def green_text_present(image, box: tuple[int, int, int, int], minimum: int = 100
 def bright_pixels(image, box: tuple[int, int, int, int]) -> int:
     """How many near-white pixels lie in a box (UI title text on a dark bar)."""
     return sum(1 for r, g, b in pixels(image, box) if min(r, g, b) > 200)
+
+
+def region_changed(before, after, center: tuple[int, int], half: int = 14, threshold: int = 40,
+                   minimum: int = 25) -> bool:
+    """True when enough pixels around a point differ between two screenshots (an icon came or went)."""
+    from PIL import ImageChops
+    box = (max(0, center[0] - half), max(0, center[1] - half), center[0] + half, center[1] + half)
+    difference = ImageChops.difference(before.convert('L').crop(box), after.convert('L').crop(box))
+    return sum(1 for value in pixels_gray(difference) if value > threshold) >= minimum
+
+
+def pixels_gray(image) -> list[int]:
+    """The values of a greyscale image, whichever Pillow API this version has."""
+    getter = getattr(image, 'get_flattened_data', None) or image.getdata
+    return list(getter())
 
 
 def window_left(image, y: int = 300) -> int | None:
@@ -276,6 +296,42 @@ class GameClient:
         self.key('i')
         time.sleep(2)
         return self.inventory_open()
+
+    def ensure_inventory_closed(self) -> bool:
+        if not self.inventory_open():
+            return True
+        self.key('i')
+        time.sleep(2)
+        return not self.inventory_open()
+
+    def close_window(self, x: int, y: int, title_box: tuple[int, int, int, int], attempts: int = 3) -> bool:
+        """Click a window's close button until its title text is gone from the screen.
+
+        A click can be dropped without a trace, and an open window swallows later clicks meant for
+        the game view, so closing is verified rather than assumed. The title area must be clear of
+        other windows (close the inventory panel first).
+        """
+        for _ in range(attempts):
+            if bright_pixels(self.snapshot(), title_box) < 40:
+                return True
+            self.nui_click(x, y)
+            time.sleep(2)
+        return bright_pixels(self.snapshot(), title_box) < 40
+
+    def move_item(self, source: tuple[int, int], target: tuple[int, int], attempts: int = 3) -> bool:
+        """Drag an inventory or equipment icon to another place until the source shows the change.
+
+        The server does not tell a dropped drag from a done one, so the screen is compared: an icon
+        that moved leaves its source cell different. Use it only in a quiet scene, where nothing else
+        changes behind the inventory panel.
+        """
+        for _ in range(attempts):
+            before = self.snapshot()
+            self.drag(*source, *target)
+            time.sleep(3)
+            if region_changed(before, self.snapshot(), source):
+                return True
+        return False
 
     def locate_new_item(self, create) -> tuple[int, int] | None:
         """Run create() (which adds an item) and return where the new icon appeared in the grid."""

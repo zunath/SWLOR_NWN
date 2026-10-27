@@ -170,6 +170,52 @@ class ClientActionTests(unittest.TestCase):
         self.assertEqual([], calls)
 
     @unittest.skipIf(Image is None, 'Pillow is not installed')
+    def test_closing_a_window_is_verified_and_repeated_until_its_title_is_gone(self):
+        client, calls = self.client()
+        titled = blank()
+        ImageDraw.Draw(titled).rectangle((10, 12, 150, 22), fill=(250, 250, 250))
+        screens = iter([titled, titled, blank(), blank()])
+        with patch.object(client, 'snapshot', side_effect=lambda: next(screens)),                 patch.object(smoke_client.time, 'sleep'):
+            self.assertTrue(client.close_window(743, 17, (4, 8, 220, 26)))
+        self.assertEqual(2, len([call for call in calls if call[0] == 'click']))
+
+    @unittest.skipIf(Image is None, 'Pillow is not installed')
+    def test_a_window_that_never_closes_is_reported(self):
+        client, calls = self.client()
+        titled = blank()
+        ImageDraw.Draw(titled).rectangle((10, 12, 150, 22), fill=(250, 250, 250))
+        with patch.object(client, 'snapshot', return_value=titled), patch.object(smoke_client.time, 'sleep'):
+            self.assertFalse(client.close_window(743, 17, (4, 8, 220, 26), attempts=2))
+        self.assertEqual(2, len([call for call in calls if call[0] == 'click']))
+
+    @unittest.skipIf(Image is None, 'Pillow is not installed')
+    def test_an_icon_that_left_its_cell_is_a_change_and_an_untouched_cell_is_not(self):
+        before, after = blank(), blank()
+        ImageDraw.Draw(before).rectangle((120, 340, 150, 380), fill=(200, 200, 200))
+        self.assertTrue(smoke_client.region_changed(before, after, (136, 350)))
+        self.assertFalse(smoke_client.region_changed(before, before.copy(), (136, 350)))
+        self.assertFalse(smoke_client.region_changed(before, after, (600, 600)))
+
+    @unittest.skipIf(Image is None, 'Pillow is not installed')
+    def test_a_dropped_drag_is_repeated_until_the_icon_has_moved(self):
+        client, calls = self.client()
+        icon, empty = blank(), blank()
+        ImageDraw.Draw(icon).rectangle((120, 340, 150, 380), fill=(200, 200, 200))
+        screens = iter([icon, icon, icon, empty])
+        with patch.object(client, 'snapshot', side_effect=lambda: next(screens)),                 patch.object(smoke_client.time, 'sleep'):
+            self.assertTrue(client.move_item((136, 350), (30, 120)))
+        self.assertEqual(2, len([call for call in calls if call[0] == 'drag-slow']))
+
+    @unittest.skipIf(Image is None, 'Pillow is not installed')
+    def test_a_drag_that_never_lands_is_reported(self):
+        client, calls = self.client()
+        icon = blank()
+        ImageDraw.Draw(icon).rectangle((120, 340, 150, 380), fill=(200, 200, 200))
+        with patch.object(client, 'snapshot', return_value=icon), patch.object(smoke_client.time, 'sleep'):
+            self.assertFalse(client.move_item((136, 350), (30, 120), attempts=2))
+        self.assertEqual(2, len([call for call in calls if call[0] == 'drag-slow']))
+
+    @unittest.skipIf(Image is None, 'Pillow is not installed')
     def test_a_windows_left_edge_comes_from_its_copper_frame(self):
         image = blank()
         draw = ImageDraw.Draw(image)
@@ -226,6 +272,29 @@ class StepHelperTests(unittest.TestCase):
         client = self.FakeClient(invalid=True)
         with patch.object(smoke_steps.time, 'sleep'):
             self.assertFalse(smoke_steps.teleport(client, 'NO_SUCH_TAG'))
+
+    def test_both_mynock_variants_of_the_spawn_table_match(self):
+        import re
+        pattern = re.compile(rf'{smoke_steps.MYNOCK} (attacks|uses|readies)')
+        self.assertTrue(pattern.search('Mynock attacks Agan Tarn: *hit*'))
+        self.assertTrue(pattern.search('Coolant-Scarred Mynock readies Sonic Shriek.'))
+        self.assertFalse(pattern.search('Malfunctioning Patrol Droid attacks Agan Tarn'))
+
+    def test_the_characters_name_comes_from_its_record_once(self):
+        run = SimpleNamespace()
+        with patch.object(smoke_steps, 'player_record', return_value={'Name': 'Test Pilot'}) as record:
+            self.assertEqual('Test Pilot', smoke_steps.character_name(run))
+            self.assertEqual('Test Pilot', smoke_steps.character_name(run))
+        self.assertEqual(1, record.call_count)
+        with patch.object(smoke_steps, 'player_record', return_value={}):
+            with self.assertRaises(smoke_steps.LiveStackError):
+                smoke_steps.character_name(SimpleNamespace())
+
+    def test_a_timed_out_area_load_fails_the_teleport(self):
+        client = self.FakeClient()
+        client.wait_loaded = lambda timeout=120, settle=4: False
+        with patch.object(smoke_steps.time, 'sleep'):
+            self.assertFalse(smoke_steps.teleport(client, 'MN_Bank'))
 
     def test_a_dropped_click_is_repeated_until_its_effect_shows_in_the_chat_log(self):
         answers = iter([None, None, 'Acquired Item: Basic Pistol'])

@@ -1,10 +1,10 @@
-using System.Reflection;
 using System.Text.Json;
 using FluentAssertions;
 using NUnit.Framework;
 using SWLOR.Game.Server.Enumeration;
 using SWLOR.Game.Server.Service;
 using SWLOR.Game.Server.Service.WeatherService;
+using SWLOR.Game.Server.Tests.Support;
 using Precipitation = SWLOR.NWN.API.NWScript.Enum.Weather;
 
 namespace SWLOR.Game.Server.Tests.Service;
@@ -127,7 +127,7 @@ public class WeatherAreaConfigurationTests
     {
         var planets = WeatherPlanetDefinitions.GetPlanetClimates();
         var areas = ReadAreas();
-        foreach (var planet in Planet.GetAllPlanets().Keys) planets.Should().ContainKey(planet);
+        foreach (var planet in LoadedPlanets.Create().GetAllPlanets().Keys) planets.Should().ContainKey(planet);
         foreach (var area in areas.Where(a => a.Planet is PlanetType.CZ220 or PlanetType.SmugglersMoonStation))
         {
             planets[area.Planet].IsSheltered.Should().BeTrue();
@@ -151,9 +151,7 @@ public class WeatherAreaConfigurationTests
         var root = new DirectoryInfo(AppContext.BaseDirectory);
         while (root != null && !Directory.Exists(Path.Combine(root.FullName, "Module"))) root = root.Parent;
         root.Should().NotBeNull();
-        const BindingFlags flags = BindingFlags.Static | BindingFlags.NonPublic;
-        typeof(Planet).GetMethod("CachePlanets", flags)!.Invoke(null, null);
-        var resolveName = typeof(Planet).GetMethod("ResolvePlanetTypeByAreaName", flags)!;
+        var planets = LoadedPlanets.Create();
         var areas = new List<Area>();
         foreach (var file in Directory.EnumerateFiles(Path.Combine(root!.FullName, "Module", "are"), "*.are.json"))
         {
@@ -168,8 +166,8 @@ public class WeatherAreaConfigurationTests
                         locals[variable.GetProperty("Name").GetProperty("value").GetString()!] = variable.GetProperty("Value").GetProperty("value");
             var name = data.GetProperty("Name").GetProperty("value").GetProperty("0").GetString()!;
             var space = name.StartsWith("Space -") || locals.TryGetValue("SPACE", out var spaceFlag) && spaceFlag.GetInt32() != 0;
-            var planet = (PlanetType)resolveName.Invoke(null, new object[] { name })!;
-            if (planet == PlanetType.Invalid && !space) planet = Planet.GetPlanetTypeByAreaResref(resource);
+            var planet = LoadedPlanets.Resolve(planets, name);
+            if (planet == PlanetType.Invalid && !space) planet = planets.GetPlanetTypeByAreaResref(resource);
             if (planet == PlanetType.Invalid && locals.TryGetValue("PLANET_TYPE_ID", out var id)) planet = (PlanetType)id.GetInt32();
             areas.Add(new Area(resource, name, data.GetProperty("Tileset").GetProperty("value").GetString()!,
                 data.GetProperty("Flags").GetProperty("value").GetInt32(), planet,

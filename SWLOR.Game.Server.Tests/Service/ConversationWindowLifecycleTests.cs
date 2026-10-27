@@ -16,7 +16,7 @@ public class ConversationWindowLifecycleTests
     {
         var root = FindRepositoryRoot();
         var server = Path.Combine(root, "SWLOR.Game.Server");
-        var areaPath = Path.Combine(server, "Service", "Area.cs");
+        var areaPath = Path.Combine(server, "Domain", "World", "AreaService.cs");
         var bypasses = Directory.EnumerateFiles(server, "*.cs", SearchOption.AllDirectories)
             .Where(path => !string.Equals(path, areaPath, StringComparison.OrdinalIgnoreCase))
             .Where(path => Regex.IsMatch(File.ReadAllText(path), @"\b(?:CreateArea|CopyArea)\s*\("))

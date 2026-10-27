@@ -76,8 +76,9 @@ public class PlayerFacingNameBroadcastTests
         var source = File.ReadAllText(Path.Combine(
             root.FullName,
             "SWLOR.Game.Server",
-            "Service",
-            "HoloCom.cs"));
+            "Domain",
+            "World",
+            "HoloComService.cs"));
 
         source.Should().NotContain("GetName(");
         source.Should().Contain("PlayerName.GetDisplayName(sender, receiver)");
@@ -184,8 +185,9 @@ public class PlayerFacingNameBroadcastTests
         var planetSource = File.ReadAllText(Path.Combine(
             root.FullName,
             "SWLOR.Game.Server",
-            "Service",
-            "Planet.cs"));
+            "Domain",
+            "World",
+            "PlanetService.cs"));
         planetSource.Should().Contain("private const string PlanetTypeIdVariable = \"PLANET_TYPE_ID\";");
         planetSource.Should().Contain("if (_planets.Count <= 0)");
         planetSource.Should().Contain("CachePlanets();");
@@ -194,7 +196,7 @@ public class PlayerFacingNameBroadcastTests
         planetSource.Should().Contain("GetPlanetTypeByAreaResref(string areaResref)");
         planetSource.Should().Contain("ResolvePlanetTypeByAreaResref(GetResRef(area))");
         planetSource.Should().Contain("if (GetLocalBool(area, \"SPACE\") || areaName.StartsWith(\"Space -\"))");
-        planetSource.Should().Contain("private static readonly HashSet<string> _spaceAreaResrefs");
+        planetSource.Should().Contain("private readonly HashSet<string> _spaceAreaResrefs");
         planetSource.Should().Contain("\"viscaraorbit\"");
         planetSource.Should().Contain("if (_spaceAreaResrefs.Contains(areaResref))");
         planetSource.Should().Contain("[\"veles\"] = PlanetType.Viscara");
@@ -466,8 +468,9 @@ public class PlayerFacingNameBroadcastTests
         var holoComSource = File.ReadAllText(Path.Combine(
             root.FullName,
             "SWLOR.Game.Server",
-            "Service",
-            "HoloCom.cs"));
+            "Domain",
+            "World",
+            "HoloComService.cs"));
         holoComSource.Should().Contain("var holoSender = CopyObject(sender");
         holoComSource.Should().Contain("var holoReceiver = CopyObject(receiver");
         holoComSource.Should().Contain("SetName(holoSender, \"HoloCom Hologram\");");

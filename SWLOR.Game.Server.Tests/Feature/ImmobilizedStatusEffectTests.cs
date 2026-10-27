@@ -36,7 +36,7 @@ public class ImmobilizedStatusEffectTests
     {
         var root = FindRepositoryRoot();
         var server = Path.Combine(root, "SWLOR.Game.Server");
-        var holoCom = File.ReadAllText(Path.Combine(server, "Service", "HoloCom.cs"));
+        var holoCom = File.ReadAllText(Path.Combine(server, "Domain", "World", "HoloComService.cs"));
         var craft = File.ReadAllText(Path.Combine(
             server,
             "Feature",

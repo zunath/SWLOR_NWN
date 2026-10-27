@@ -12,8 +12,22 @@ namespace SWLOR.Game.Server.Tests.Core;
 /// </summary>
 public static class ClockSeamSources
 {
-    private static readonly string[] SystemClockTypes = { "DateTime", "System.DateTime", "global::System.DateTime" };
-    private static readonly string[] SystemEnvironmentTypes = { "Environment", "System.Environment", "global::System.Environment" };
+    // What the game project's implicit usings import, so a listed file binds the same way it does in the build.
+    private const string ImplicitUsings = """
+        global using System;
+        global using System.Collections.Generic;
+        global using System.IO;
+        global using System.Linq;
+        global using System.Net.Http;
+        global using System.Threading;
+        global using System.Threading.Tasks;
+        """;
+
+    private static readonly Lazy<MetadataReference[]> References = new(() =>
+        ((string)AppContext.GetData("TRUSTED_PLATFORM_ASSEMBLIES")!)
+            .Split(Path.PathSeparator)
+            .Select(path => (MetadataReference)MetadataReference.CreateFromFile(path))
+            .ToArray());
 
     public static string FindRepositoryRoot()
     {
@@ -61,59 +75,38 @@ public static class ClockSeamSources
     }
 
     /// <summary>
-    /// The direct reads of <c>DateTime.UtcNow</c> and <c>Environment.TickCount64</c> in the source, by line, including
-    /// through a using alias or a <c>using static</c> of those types. Comments and string contents are ignored because
-    /// the source is parsed, not searched.
+    /// The direct reads of <c>DateTime.UtcNow</c> and <c>Environment.TickCount64</c> in the source, by line. The source is
+    /// bound against the framework, so aliases (<c>using UtcClock = System.DateTime;</c>, <c>using Sys = global::System;</c>),
+    /// <c>using static</c> and any spelling of the type are all resolved; comments and string contents are ignored.
     /// </summary>
     public static IReadOnlyList<(int Line, string Text)> FindDirectReads(string source)
     {
-        var root = CSharpSyntaxTree.ParseText(source).GetRoot();
-        var clockTypes = new HashSet<string>(SystemClockTypes);
-        var environmentTypes = new HashSet<string>(SystemEnvironmentTypes);
-        var clockMemberIsImported = false;
-        var environmentMemberIsImported = false;
-        foreach (var directive in root.DescendantNodes().OfType<UsingDirectiveSyntax>())
-        {
-            var target = directive.NamespaceOrType.WithoutTrivia().ToString();
-            if (directive.Alias != null)
-            {
-                var alias = directive.Alias.Name.Identifier.ValueText;
-                if (SystemClockTypes.Contains(target))
-                    clockTypes.Add(alias);
-                if (SystemEnvironmentTypes.Contains(target))
-                    environmentTypes.Add(alias);
-            }
-            else if (directive.StaticKeyword.IsKind(SyntaxKind.StaticKeyword))
-            {
-                clockMemberIsImported |= SystemClockTypes.Contains(target);
-                environmentMemberIsImported |= SystemEnvironmentTypes.Contains(target);
-            }
-        }
+        var tree = CSharpSyntaxTree.ParseText(source);
+        var compilation = CSharpCompilation.Create(
+            "ClockSeamGuard",
+            new[] { tree, CSharpSyntaxTree.ParseText(ImplicitUsings) },
+            References.Value,
+            new CSharpCompilationOptions(OutputKind.DynamicallyLinkedLibrary));
+        var model = compilation.GetSemanticModel(tree);
 
         var reads = new List<(int, string)>();
-        foreach (var access in root.DescendantNodes().OfType<MemberAccessExpressionSyntax>())
+        foreach (var name in tree.GetRoot().DescendantNodes().OfType<SimpleNameSyntax>())
         {
-            var target = access.Expression.WithoutTrivia().ToString();
-            var member = access.Name.Identifier.ValueText;
-            if ((member == "UtcNow" && clockTypes.Contains(target)) || (member == "TickCount64" && environmentTypes.Contains(target)))
-                reads.Add((LineOf(access), access.WithoutTrivia().ToString()));
-        }
+            var member = name.Identifier.ValueText;
+            if (member != "UtcNow" && member != "TickCount64")
+                continue;
 
-        // A bare UtcNow / TickCount64 resolves to the system member only when its type was imported with using static.
-        foreach (var identifier in root.DescendantNodes().OfType<IdentifierNameSyntax>())
-        {
-            var name = identifier.Identifier.ValueText;
-            var isImportedMember = (name == "UtcNow" && clockMemberIsImported) || (name == "TickCount64" && environmentMemberIsImported);
-            var isQualifiedOrNamed = identifier.Parent is MemberAccessExpressionSyntax access && access.Name == identifier
-                                     || identifier.Parent is MemberBindingExpressionSyntax
-                                     || identifier.Parent is QualifiedNameSyntax
-                                     || identifier.Parent is NameEqualsSyntax;
-            if (isImportedMember && !isQualifiedOrNamed)
-                reads.Add((LineOf(identifier), name));
+            if (model.GetSymbolInfo(name).Symbol is not IPropertySymbol property)
+                continue;
+
+            var owner = property.ContainingType?.ToDisplayString();
+            if ((member == "UtcNow" && owner == "System.DateTime") || (member == "TickCount64" && owner == "System.Environment"))
+            {
+                SyntaxNode expression = name.Parent is MemberAccessExpressionSyntax access && access.Name == name ? access : name;
+                reads.Add((expression.GetLocation().GetLineSpan().StartLinePosition.Line + 1, expression.WithoutTrivia().ToString()));
+            }
         }
 
         return reads.OrderBy(read => read.Item1).ToList();
     }
-
-    private static int LineOf(SyntaxNode node) => node.GetLocation().GetLineSpan().StartLinePosition.Line + 1;
 }

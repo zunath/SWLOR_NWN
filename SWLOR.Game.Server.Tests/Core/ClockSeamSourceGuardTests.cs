@@ -105,6 +105,7 @@ public class ClockSeamSourceGuardTests
     {
         const string source = """
             using UtcClock = System.DateTime;
+            using Sys = global::System;
             using static System.Environment;
             class Sample
             {
@@ -114,13 +115,15 @@ public class ClockSeamSourceGuardTests
                     var b = TickCount64;
                     var c = Clock.UtcNow;
                     var d = other.TickCount64;
+                    var e = Sys.DateTime.UtcNow;
+                    var f = Sys.Environment.TickCount64;
                 }
             }
             """;
 
         var reads = ClockSeamSources.FindDirectReads(source);
 
-        reads.Select(read => read.Line).Should().Equal(7, 8);
+        reads.Select(read => read.Line).Should().Equal(8, 9, 12, 13);
     }
 
     private static bool IsBuildOutput(string serverRoot, string file)

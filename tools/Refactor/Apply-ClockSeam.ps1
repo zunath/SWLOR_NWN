@@ -8,10 +8,12 @@
     nothing. The daily sync and the parity script re-run it after merging master, so new master code in the listed
     files is rewritten the same way.
 
-    Only code is rewritten: the file is scanned for comments, string and character literals, and preprocessor lines,
-    which are copied unchanged. The expressions inside the {holes} of interpolated strings are code and are rewritten.
-    DateTime.UtcNow, System.DateTime.UtcNow and global::System.DateTime.UtcNow (and the same three forms of
-    Environment.TickCount64) are all rewritten.
+    Only code is rewritten. A small C# scanner (compiled with Add-Type) walks each file the way the C# lexer does:
+    comments, preprocessor lines, character literals and the text of string literals are copied unchanged, while the
+    expressions inside the holes of interpolated strings (nested holes, nested strings and char literals included, but
+    not their format clauses) are code. DateTime.UtcNow, System.DateTime.UtcNow and global::System.DateTime.UtcNow, and
+    the same three forms of Environment.TickCount64, are rewritten. Reads through a using alias are not; the guard test
+    (ClockSeamSourceGuardTests) resolves them and fails, so they are handled by hand.
 
     Runs on Windows PowerShell 5.1 and PowerShell 7. Files are read and written byte for byte (Latin-1), so the BOM,
     encoding and line endings of each file are kept exactly; inserted lines use the file's own line ending.
@@ -45,72 +47,247 @@ $manifestPath = Join-Path $PSScriptRoot 'ClockSeamFiles.txt'
 $latin1 = [System.Text.Encoding]::GetEncoding(28591)
 $usingLine = 'using SWLOR.Game.Server.Core;'
 
-# The reads to rewrite (not part of a longer member access such as Foo.DateTime.UtcNow), plus Clock reads already in
-# place, which only tell the script that the file needs the using.
-$readAlternatives = @(
-    '(?<utc>(?<![\w.])(?<!::)(?:global::)?(?:System\.)?DateTime\.UtcNow\b)',
-    '(?<tick>(?<![\w.])(?<!::)(?:global::)?(?:System\.)?Environment\.TickCount64\b)',
-    '(?<clock>(?<![\w.])Clock\.(?:UtcNow|TickCount64)\b)'
-)
-$readPattern = $readAlternatives -join '|'
+# Plain C# 5 so that Windows PowerShell 5.1 can compile it.
+$rewriterSource = @'
+using System;
+using System.Text;
+using System.Text.RegularExpressions;
 
-# Everything that is not code, tried before the reads so that a read inside one of them is never matched: comments,
-# preprocessor lines, raw, verbatim, regular and character literals. Interpolated strings are matched separately because
-# their {holes} are code.
-$scanPattern = (@(
-    '(?<skip>//[^\r\n]*)',
-    '(?<skip>/\*[\s\S]*?\*/)',
-    '(?<skip>(?m:^[ \t]*#[^\r\n]*))',
-    '(?<skip>"""[\s\S]*?""")',
-    '(?<interp>\$@"(?:[^"{]|""|\{\{|\{[^{}]*\})*")',
-    '(?<interp>@\$"(?:[^"{]|""|\{\{|\{[^{}]*\})*")',
-    '(?<interp>\$"(?:[^"\\\r\n{]|\\.|\{\{|\{[^{}\r\n]*\})*")',
-    '(?<skip>@"(?:[^"]|"")*")',
-    '(?<skip>"(?:[^"\\\r\n]|\\.)*")',
-    '(?<skip>''(?:[^''\\\r\n]|\\(?:u[0-9A-Fa-f]{4}|x[0-9A-Fa-f]{1,4}|.))'')'
-) + $readAlternatives) -join '|'
-$holePattern = '\{\{|\}\}|(?<hole>\{[^{}]*\})'
+namespace SwlorRefactor
+{
+    public sealed class ClockSeamResult
+    {
+        public string Text;
+        public int UtcNow;
+        public int TickCount64;
+        public bool ClockUsed;
+    }
 
-$script:counts = @{ 'DateTime.UtcNow' = 0; 'Environment.TickCount64' = 0 }
-$script:clockUsed = $false
+    public sealed class ClockSeamRewriter
+    {
+        private static readonly Regex Utc = new Regex(@"\G(?:global::)?(?:System\.)?DateTime\.UtcNow\b", RegexOptions.CultureInvariant);
+        private static readonly Regex Tick = new Regex(@"\G(?:global::)?(?:System\.)?Environment\.TickCount64\b", RegexOptions.CultureInvariant);
+        private static readonly Regex ClockRead = new Regex(@"\GClock\.(?:UtcNow|TickCount64)\b", RegexOptions.CultureInvariant);
 
-$readEvaluator = [System.Text.RegularExpressions.MatchEvaluator]{
-    param($m)
-    if ($m.Groups['utc'].Success) { $script:counts['DateTime.UtcNow']++; return 'Clock.UtcNow' }
-    if ($m.Groups['tick'].Success) { $script:counts['Environment.TickCount64']++; return 'Clock.TickCount64' }
-    $script:clockUsed = $true
-    return $m.Value
-}
+        private readonly string _s;
+        private readonly StringBuilder _o;
+        private int _i;
+        private int _utc;
+        private int _tick;
+        private bool _clock;
 
-# Index of the ':' that starts the format clause of an interpolation hole such as {value:yyyy}, or the index of the closing
-# brace when there is none. A ':' inside parentheses or brackets, or part of '::', belongs to the expression.
-function Get-FormatClauseIndex([string]$hole) {
-    $depth = 0
-    for ($i = 1; $i -lt $hole.Length - 1; $i++) {
-        $c = $hole[$i]
-        if ($c -eq '(' -or $c -eq '[') { $depth++ }
-        elseif ($c -eq ')' -or $c -eq ']') { $depth-- }
-        elseif ($c -eq ':' -and $depth -eq 0) {
-            if ($hole[$i + 1] -eq ':') { $i++; continue }
-            return $i
+        private ClockSeamRewriter(string text)
+        {
+            _s = text;
+            _o = new StringBuilder(text.Length + 256);
+        }
+
+        public static ClockSeamResult Rewrite(string text)
+        {
+            ClockSeamRewriter rewriter = new ClockSeamRewriter(text);
+            rewriter.Code(false);
+            ClockSeamResult result = new ClockSeamResult();
+            result.Text = rewriter._o.ToString();
+            result.UtcNow = rewriter._utc;
+            result.TickCount64 = rewriter._tick;
+            result.ClockUsed = rewriter._clock;
+            return result;
+        }
+
+        // Copies code, rewriting clock reads, to the end of the text or, inside an interpolation hole, to the hole's
+        // closing brace (left unconsumed).
+        private void Code(bool inHole)
+        {
+            int depth = 0;
+            while (_i < _s.Length)
+            {
+                char c = _s[_i];
+                char next = _i + 1 < _s.Length ? _s[_i + 1] : '\0';
+
+                if (c == '/' && next == '/') { CopyToEndOfLine(); continue; }
+                if (c == '/' && next == '*') { CopyBlockComment(); continue; }
+                if (c == '#' && AtLineStart()) { CopyToEndOfLine(); continue; }
+                if (c == '\'') { CharLiteral(); continue; }
+                if (StartsString()) { StringLiteral(); continue; }
+
+                if (inHole)
+                {
+                    if (c == '(' || c == '[' || c == '{') depth++;
+                    else if (c == ')' || c == ']') depth--;
+                    else if (c == '}')
+                    {
+                        if (depth == 0) return;
+                        depth--;
+                    }
+                    else if (c == ':')
+                    {
+                        if (next == ':') { Append(2); continue; }
+                        if (depth == 0)
+                        {
+                            // The format clause is text up to the hole's closing brace.
+                            while (_i < _s.Length && _s[_i] != '}') Append(1);
+                            return;
+                        }
+                    }
+                }
+
+                if (c == '@' && _i + 1 < _s.Length && IsIdentifierStart(next))
+                {
+                    Append(1);
+                    CopyIdentifier();
+                    continue;
+                }
+
+                if (IsIdentifierStart(c)) { IdentifierOrRead(); continue; }
+                Append(1);
+            }
+        }
+
+        private void IdentifierOrRead()
+        {
+            int p = _i;
+            if (!IsQualifiedBefore(p))
+            {
+                Match m = Utc.Match(_s, p);
+                if (m.Success) { _o.Append("Clock.UtcNow"); _i += m.Length; _utc++; return; }
+                m = Tick.Match(_s, p);
+                if (m.Success) { _o.Append("Clock.TickCount64"); _i += m.Length; _tick++; return; }
+                if (ClockRead.Match(_s, p).Success) _clock = true;
+            }
+            CopyIdentifier();
+        }
+
+        // True when the identifier at p is a member of something (after '.' or '::'), so it is not the type we look for.
+        private bool IsQualifiedBefore(int p)
+        {
+            int j = p - 1;
+            while (j >= 0 && char.IsWhiteSpace(_s[j])) j--;
+            if (j < 0) return false;
+            if (_s[j] == '.') return true;
+            return _s[j] == ':' && j > 0 && _s[j - 1] == ':';
+        }
+
+        private void CopyIdentifier()
+        {
+            int q = _i;
+            while (q < _s.Length && IsIdentifierPart(_s[q])) q++;
+            if (q == _i) q = _i + 1;
+            _o.Append(_s, _i, q - _i);
+            _i = q;
+        }
+
+        private static bool IsIdentifierStart(char c)
+        {
+            return char.IsLetter(c) || c == '_';
+        }
+
+        private static bool IsIdentifierPart(char c)
+        {
+            return char.IsLetterOrDigit(c) || c == '_';
+        }
+
+        private bool AtLineStart()
+        {
+            int j = _i - 1;
+            while (j >= 0 && (_s[j] == ' ' || _s[j] == '\t')) j--;
+            return j < 0 || _s[j] == '\n';
+        }
+
+        private void Append(int count)
+        {
+            if (_i + count > _s.Length) count = _s.Length - _i;
+            _o.Append(_s, _i, count);
+            _i += count;
+        }
+
+        private void CopyToEndOfLine()
+        {
+            while (_i < _s.Length && _s[_i] != '\n') Append(1);
+        }
+
+        private void CopyBlockComment()
+        {
+            int end = _s.IndexOf("*/", _i + 2, StringComparison.Ordinal);
+            Append(end < 0 ? _s.Length - _i : end + 2 - _i);
+        }
+
+        private void CharLiteral()
+        {
+            int n = _s.Length;
+            if (_i + 1 < n && _s[_i + 1] == '\\')
+            {
+                int j = _i + 3;
+                int limit = Math.Min(n, _i + 12);
+                while (j < limit && _s[j] != '\'') j++;
+                if (j < limit && _s[j] == '\'') { Append(j + 1 - _i); return; }
+            }
+            else if (_i + 2 < n && _s[_i + 2] == '\'')
+            {
+                Append(3);
+                return;
+            }
+            Append(1);
+        }
+
+        private bool StartsString()
+        {
+            int j = _i;
+            while (j < _s.Length && (_s[j] == '$' || _s[j] == '@')) j++;
+            return j < _s.Length && _s[j] == '"';
+        }
+
+        private void StringLiteral()
+        {
+            int dollars = 0;
+            bool verbatim = false;
+            while (_s[_i] == '$' || _s[_i] == '@')
+            {
+                if (_s[_i] == '$') dollars++; else verbatim = true;
+                Append(1);
+            }
+
+            int quotes = 0;
+            while (_i + quotes < _s.Length && _s[_i + quotes] == '"') quotes++;
+            if (quotes >= 3)
+            {
+                // Raw string literal: copied as text up to the matching run of quotes.
+                Append(quotes);
+                int end = _s.IndexOf(new string('"', quotes), _i, StringComparison.Ordinal);
+                Append(end < 0 ? _s.Length - _i : end + quotes - _i);
+                return;
+            }
+
+            Append(1);
+            bool interpolated = dollars > 0;
+            while (_i < _s.Length)
+            {
+                char c = _s[_i];
+                char next = _i + 1 < _s.Length ? _s[_i + 1] : '\0';
+                if (c == '"')
+                {
+                    if (verbatim && next == '"') { Append(2); continue; }
+                    Append(1);
+                    return;
+                }
+                if (!verbatim && c == '\\') { Append(2); continue; }
+                if (interpolated && c == '{')
+                {
+                    if (next == '{') { Append(2); continue; }
+                    Append(1);
+                    Code(true);
+                    if (_i < _s.Length && _s[_i] == '}') Append(1);
+                    continue;
+                }
+                if (interpolated && c == '}' && next == '}') { Append(2); continue; }
+                Append(1);
+            }
         }
     }
-    return $hole.Length - 1
 }
+'@
 
-$holeEvaluator = [System.Text.RegularExpressions.MatchEvaluator]{
-    param($m)
-    if (-not $m.Groups['hole'].Success) { return $m.Value }
-    $formatAt = Get-FormatClauseIndex $m.Value
-    $expression = [regex]::Replace($m.Value.Substring(0, $formatAt), $readPattern, $readEvaluator)
-    return $expression + $m.Value.Substring($formatAt)
-}
-
-$codeEvaluator = [System.Text.RegularExpressions.MatchEvaluator]{
-    param($m)
-    if ($m.Groups['interp'].Success) { return [regex]::Replace($m.Value, $holePattern, $holeEvaluator) }
-    if ($m.Groups['skip'].Success) { return $m.Value }
-    return $readEvaluator.Invoke($m)
+if (-not ('SwlorRefactor.ClockSeamRewriter' -as [type])) {
+    Add-Type -TypeDefinition $rewriterSource -Language CSharp
 }
 
 function Get-ManifestFiles {
@@ -202,30 +379,30 @@ foreach ($path in $files) {
     $eol = "`n"
     if ($text.Contains("`r`n")) { $eol = "`r`n" }
 
-    $script:counts = @{ 'DateTime.UtcNow' = 0; 'Environment.TickCount64' = 0 }
-    $script:clockUsed = $false
-    $rewritten = [regex]::Replace($text, $scanPattern, $codeEvaluator)
+    $result = [SwlorRefactor.ClockSeamRewriter]::Rewrite($text)
+    $rewritten = $result.Text
+    $utcCount = $result.UtcNow
+    $tickCount = $result.TickCount64
 
     $usingAdded = $false
     $inCoreNamespace = [regex]::IsMatch($rewritten, '(?m)^\s*namespace\s+SWLOR\.Game\.Server\.Core(\s|;|\.|$)')
     $hasUsing = [regex]::IsMatch($rewritten, '(?m)^\s*using\s+SWLOR\.Game\.Server\.Core\s*;')
-    $replaced = $script:counts['DateTime.UtcNow'] + $script:counts['Environment.TickCount64']
-    $usesClock = $script:clockUsed -or $replaced -gt 0
+    $usesClock = $result.ClockUsed -or ($utcCount + $tickCount) -gt 0
     if ($usesClock -and -not $hasUsing -and -not $inCoreNamespace) {
         $rewritten = Add-CoreUsing $rewritten $eol
         $usingAdded = $true
     }
 
-    if ($replaced -eq 0 -and -not $usingAdded) { continue }
+    if (($utcCount + $tickCount) -eq 0 -and -not $usingAdded) { continue }
 
     $relative = $path.Substring($RepositoryRoot.Length).TrimStart('\', '/').Replace('\', '/')
-    $summary = "{0}: {1} DateTime.UtcNow, {2} Environment.TickCount64" -f $relative, $script:counts['DateTime.UtcNow'], $script:counts['Environment.TickCount64']
+    $summary = "{0}: {1} DateTime.UtcNow, {2} Environment.TickCount64" -f $relative, $utcCount, $tickCount
     if ($usingAdded) { $summary += ', using added'; $usingsAdded++ }
     Write-Host $summary
 
     $changedFiles++
-    $total['DateTime.UtcNow'] += $script:counts['DateTime.UtcNow']
-    $total['Environment.TickCount64'] += $script:counts['Environment.TickCount64']
+    $total['DateTime.UtcNow'] += $utcCount
+    $total['Environment.TickCount64'] += $tickCount
 
     if (-not $Check) {
         [System.IO.File]::WriteAllBytes($path, $latin1.GetBytes($bom + $rewritten))

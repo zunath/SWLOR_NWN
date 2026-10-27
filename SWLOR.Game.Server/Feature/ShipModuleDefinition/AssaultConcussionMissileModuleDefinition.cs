@@ -40,6 +40,7 @@ namespace SWLOR.Game.Server.Feature.ShipModuleDefinition
                 .PowerType(ShipModulePowerType.High)
                 .RequirePerk(PerkType.OffensiveModules, 5)
                 .Recast(24f)
+                .OnePress()
                 .CapitalClassModule()
                 .ValidationAction((activator, _, target, _, _) =>
                 {

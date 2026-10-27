@@ -21,6 +21,21 @@ namespace SWLOR.Game.Server.Service.SpaceService
             public Dictionary<SkillType, int> RequiredSkills { get; set; }
         }
 
+        /// <summary>
+        /// A toggled module that is on.
+        /// </summary>
+        public class ShipActiveModule
+        {
+            /// <summary>The hotbar feat slot number (1-30): high 1-10, low 11-20, mid 21-30.</summary>
+            public int Slot { get; set; }
+
+            /// <summary>When the module's current cycle ends and it fires again.</summary>
+            public DateTime NextCycleTime { get; set; }
+
+            /// <summary>The object a support module locked onto when it was turned on.</summary>
+            public uint TargetId { get; set; } = OBJECT_INVALID;
+        }
+
         public string ItemTag { get; set; }
 
         /// <summary>
@@ -102,10 +117,10 @@ namespace SWLOR.Game.Server.Service.SpaceService
         public Dictionary<int, ShipStatusModule> ConfigurationModules { get; set; }
 
         /// <summary>
-        /// A collection of ship modules, by feat, which can be activated.
-        /// This is primarily used by ship AI but is also available for player ships.
+        /// The toggled modules that are currently on, for players and ships alike (plan section 8).
+        /// Saved data that has an empty list still loads.
         /// </summary>
-        public HashSet<int> ActiveModules { get; set; }
+        public List<ShipActiveModule> ActiveModules { get; set; }
 
         /// <summary>
         /// Resistance percentages by damage type.
@@ -123,7 +138,7 @@ namespace SWLOR.Game.Server.Service.SpaceService
             LowPowerModules = new Dictionary<int, ShipStatusModule>();
             MidPowerModules = new Dictionary<int, ShipStatusModule>();
             ConfigurationModules = new Dictionary<int, ShipStatusModule>();
-            ActiveModules = new HashSet<int>();
+            ActiveModules = new List<ShipActiveModule>();
             Resistances = new Dictionary<ResistanceType, int>();
             SlotTags = new Dictionary<int, ShipSlotTag>();
         }

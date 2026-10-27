@@ -53,7 +53,7 @@ namespace SWLOR.Game.Server.Feature.ShipModuleDefinition
             .ValidTargetType(ObjectType.Creature)
             .PowerType(ShipModulePowerType.High)
             .RequirePerk(PerkType.OffensiveModules, 5)
-            .Recast(8f)
+            .Toggle(8f)
             .Capacitor(totalAttacks * 3)
             .CapitalClassModule()
             .ActivatedAction((activator, activatorShipStatus, target, targetShipStatus, moduleBonus) =>

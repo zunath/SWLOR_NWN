@@ -123,6 +123,32 @@ namespace SWLOR.Game.Server.Service.SpaceService
         }
 
         /// <summary>
+        /// Makes this module a toggle: its hotbar feat switches it on and off, and while on it fires itself
+        /// each time the cycle ends. The module's recast is its cycle.
+        /// </summary>
+        /// <param name="cycleSeconds">The number of seconds between shots while the toggle is on.</param>
+        /// <returns>A ship module builder with the configured options.</returns>
+        public ShipModuleBuilder Toggle(float cycleSeconds)
+        {
+            _activeShipModule.Activation = ShipModuleActivation.Toggle;
+            _activeShipModule.CalculateRecastAction = (activator, shipStatus, moduleBonus) => cycleSeconds;
+
+            return this;
+        }
+
+        /// <summary>
+        /// Makes this module a one-press module: each press fires once and then the module recasts
+        /// (see <see cref="Recast(float)"/>).
+        /// </summary>
+        /// <returns>A ship module builder with the configured options.</returns>
+        public ShipModuleBuilder OnePress()
+        {
+            _activeShipModule.Activation = ShipModuleActivation.OnePress;
+
+            return this;
+        }
+
+        /// <summary>
         /// Sets the action to run when this module's capacitor usage is calculated.
         /// </summary>
         /// <param name="action">The action to take.</param>

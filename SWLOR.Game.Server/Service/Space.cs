@@ -67,6 +67,7 @@ namespace SWLOR.Game.Server.Service
 
             Scheduler.ScheduleRepeating(ProcessSpaceNPCAI, TimeSpan.FromSeconds(1));
             Scheduler.ScheduleRepeating(PlayerShipRecovery, TimeSpan.FromSeconds(1), TimeSpan.FromMilliseconds(100d));
+            ScheduleShipToggleLoop();
         }
 
         [NWNEventHandler(ScriptName.OnModuleEnter)]
@@ -85,6 +86,7 @@ namespace SWLOR.Game.Server.Service
             if (!IsPlayerInSpaceMode(player))
                 return;
 
+            TurnOffShipToggles(player);
             CloneShip(player);
 
             if (_playersInSpace.Contains(player))
@@ -503,6 +505,8 @@ namespace SWLOR.Game.Server.Service
                 OBJECT_SELF == GetAreaFromLocation(launch.PilotLocation))
                 launch.HasDeparted = true;
 
+            // Leaving a space area (a starlane jump) switches every toggle off.
+            TurnOffShipToggles(player);
             ClearCurrentTarget(player);
         }
 
@@ -824,6 +828,7 @@ namespace SWLOR.Game.Server.Service
             var dbPlayer = DB.Get<Player>(playerId);
             var dbPlayerShip = DB.Get<PlayerShip>(shipId);
             var shipDetail = _shipTypes[dbPlayerShip.Status.ItemTag];
+            ClearShipToggleState(player, dbPlayerShip.Status);
 
             // Snapshot the character's appearance at the moment it gets overwritten so exiting
             // space restores exactly what they looked like, even if the value captured at
@@ -1085,6 +1090,7 @@ namespace SWLOR.Game.Server.Service
             var dbPlayer = DB.Get<Player>(playerId);
             var shipId = dbPlayer.ActiveShipId;
             var dbShip = DB.Get<PlayerShip>(shipId);
+            ClearShipToggleState(player, dbShip.Status);
 
             ClearCurrentTarget(player);
             RestoreCharacterAppearance(player, dbPlayer);
@@ -1362,39 +1368,47 @@ namespace SWLOR.Game.Server.Service
             ActivateShipModule(OBJECT_SELF, feat);
         }
 
-        /// <summary>Validates and activates the fitted module, then publishes its paid hardware deadline through the regular recast display.</summary>
+        /// <summary>
+        /// Validates and activates the fitted module. A toggle module is switched on (firing its first cycle
+        /// at once) or, when already on, switched off. A one-press module fires once and recasts.
+        /// </summary>
         public static void ActivateShipModule(uint activator, FeatType feat)
+        {
+            ActivateShipModuleCore(activator, feat, false);
+        }
+
+        /// <summary>
+        /// Shared activation. With <paramref name="onlyTurnOn"/>, a toggle that is already on is left alone
+        /// instead of being switched off (ship AI uses this).
+        /// </summary>
+        private static void ActivateShipModuleCore(uint activator, FeatType feat, bool onlyTurnOn)
         {
             if (!ShipModuleFeats.ContainsKey(feat)) return;
             var activatorShipStatus = GetShipStatus(activator);
             if (activatorShipStatus == null) return;
             var slotNumber = GetFeatSlotNumber(feat);
-            ShipStatus.ShipStatusModule shipModule;
 
-            // Slot numbers between 1-10 are high powered slots
-            if (slotNumber <= 10)
-            {
-                shipModule = activatorShipStatus.HighPowerModules[slotNumber];
-            }
-            // Slot Numbers between 10-20 are low powered slots.
-            else if (slotNumber <= 20)
-            {
-                shipModule = activatorShipStatus.LowPowerModules[slotNumber-10];
-            }
-            // Slot numbers 21-30 are mid powered slots.
-            else if (slotNumber <= 30)
-            {
-                shipModule = activatorShipStatus.MidPowerModules[slotNumber-20];
-            }
-            else
+            if (slotNumber < 1 || slotNumber > 30)
             {
                 Log.Write(LogGroup.Error, $"Failed to locate matching ship module by its feat for player {GetName(activator)}");
                 SendMessageToPC(activator, "Unable to use that module.");
                 return;
             }
 
+            // Slots 1-10 are high powered, 11-20 low powered and 21-30 mid powered.
+            if (!TryGetFittedModule(activatorShipStatus, slotNumber, out var shipModule)) return;
+
             // Found the ship module. Run validation checks.
             var shipModuleDetails = _shipModules[shipModule.ItemTag];
+            var isToggle = shipModuleDetails.Activation == ShipModuleActivation.Toggle;
+
+            // A toggle that is on is switched off by its next press.
+            if (isToggle && GetActiveToggle(activatorShipStatus, slotNumber) != null)
+            {
+                if (!onlyTurnOn)
+                    TurnOffToggle(activator, activatorShipStatus, slotNumber);
+                return;
+            }
 
             // Check capacitor requirements
             var requiredCapacitor = shipModuleDetails.CalculateCapacitorAction?.Invoke(activator, activatorShipStatus, shipModule.ModuleBonus) ?? 0;
@@ -1413,13 +1427,18 @@ namespace SWLOR.Game.Server.Service
                 return;
             }
 
-            // Check global recast requirements
-            if (GetShipStatus(activator).GlobalRecast > now)
+            // Check global recast requirements. Toggles run on their own cycle and ignore it.
+            if (!isToggle && activatorShipStatus.GlobalRecast > now)
             {
                 return;
             }
 
             var (target, targetShipStatus) = GetCurrentTarget(activator);
+
+            // Targeting your own ship uses the one status, so the module's effect and its cost are saved together.
+            if (target == activator && targetShipStatus != null)
+                targetShipStatus = activatorShipStatus;
+
             // Check for valid object type if the ship module requires it.
             if (shipModuleDetails.ValidTargetTypes.Count > 0 &&
                 !shipModuleDetails.ValidTargetTypes.Contains(GetObjectType(target)) &&
@@ -1431,6 +1450,14 @@ namespace SWLOR.Game.Server.Service
 
             // Check for a selected target that doesn't have a ship status.
             if (GetObjectType(target) != ObjectType.Placeable && targetShipStatus == null && !shipModuleDetails.CanTargetSelf)
+            {
+                SendMessageToPC(activator, "Invalid target.");
+                return;
+            }
+
+            // A toggle that fires at the ship's target needs one to follow.
+            var targetMode = ShipToggleRules.GetTargetMode(shipModuleDetails.Type);
+            if (isToggle && targetMode == ShipToggleTargetMode.Follow && !GetIsObjectValid(target))
             {
                 SendMessageToPC(activator, "Invalid target.");
                 return;
@@ -1463,48 +1490,43 @@ namespace SWLOR.Game.Server.Service
                 }
             }
 
-            // Validation succeeded, run the module-specific code now.
-            shipModuleDetails.ModuleActivatedAction?.Invoke(activator, activatorShipStatus, target, targetShipStatus, shipModule.ModuleBonus);
+            var recastSeconds = shipModuleDetails.CalculateRecastAction?.Invoke(activator, activatorShipStatus, shipModule.ModuleBonus);
 
-            // Update the recast and global recast timer.
-            if (shipModuleDetails.CalculateRecastAction != null)
+            if (isToggle)
             {
-                var recastSeconds = shipModuleDetails.CalculateRecastAction(activator, activatorShipStatus, shipModule.ModuleBonus);
-                var recastTimer = now.AddSeconds(recastSeconds);
-                shipModule.RecastStartedAt = now;
-                shipModule.RecastTime = recastTimer;
-                activatorShipStatus.GlobalRecast = now.AddSeconds(2f);
+                var cycle = recastSeconds is > 0f ? recastSeconds.Value : (float)ShipToggleRules.LoopSeconds;
+                var lockedTarget = OBJECT_INVALID;
+
+                // Support modules lock onto the target that was selected when they were turned on, or the ship itself.
+                if (targetMode == ShipToggleTargetMode.Locked)
+                {
+                    var usable = GetIsObjectValid(target) && targetShipStatus != null && !GetIsEnemy(target, activator);
+                    lockedTarget = ShipToggleRules.ChooseLockTarget(usable, target, activator);
+                }
+
+                var fireTarget = ShipToggleRules.ChooseTarget(targetMode, target, lockedTarget, activator);
+                var fireTargetStatus = fireTarget == activator
+                    ? activatorShipStatus
+                    : fireTarget == target ? targetShipStatus : GetShipStatus(fireTarget);
+
+                Toggles(activatorShipStatus).Add(new ShipStatus.ShipActiveModule
+                {
+                    Slot = slotNumber,
+                    NextCycleTime = now.AddSeconds(cycle),
+                    TargetId = lockedTarget
+                });
+
+                // The first cycle fires at once; the auto-fire loop takes over when it ends.
+                FireShipModule(activator, activatorShipStatus, slotNumber, shipModule, shipModuleDetails,
+                    fireTarget, fireTargetStatus, requiredCapacitor, true, now, now.AddSeconds(cycle), false);
+                UpdateToggleWake(activator, activatorShipStatus);
+                return;
             }
 
-            // Reduce capacitor
-            if (requiredCapacitor > 0)
-            {
-                activatorShipStatus.Capacitor -= requiredCapacitor;
-            }
-
-            // Update changes for players. No need to update NPCs as they are already stored in memory cache.
-            if (GetIsPC(activator))
-            {
-                var playerId = GetObjectUUID(activator);
-                var dbPlayer = DB.Get<Player>(playerId);
-                var dbShip = DB.Get<PlayerShip>(dbPlayer.ActiveShipId);
-                dbShip.Status = activatorShipStatus;
-
-                DB.Set(dbShip);
-                ApplyShipModuleRecast(activator, ShipModuleFeats[feat], shipModule, activatorShipStatus);
-                ExecuteScript("pc_target_upd", activator);
-            }
-
-            if (GetIsPC(target))
-            {
-                var playerId = GetObjectUUID(target);
-                var dbPlayer = DB.Get<Player>(playerId);
-                var dbShip = DB.Get<PlayerShip>(dbPlayer.ActiveShipId);
-                dbShip.Status = targetShipStatus;
-
-                DB.Set(dbShip);
-                ExecuteScript("pc_target_upd", target);
-            }
+            // One press: run the module-specific code now, then start the recast and the global recast.
+            FireShipModule(activator, activatorShipStatus, slotNumber, shipModule, shipModuleDetails,
+                target, targetShipStatus, requiredCapacitor, recastSeconds != null, now,
+                now.AddSeconds(recastSeconds ?? 0f), true);
         }
 
         /// <summary>
@@ -1685,11 +1707,6 @@ namespace SWLOR.Game.Server.Service
                     RecastTime = DateTime.UtcNow
                 });
 
-                if (shipModule.Type != ShipModuleType.Passive)
-                {
-                    shipStatus.ActiveModules.Add(slot);
-                }
-
                 shipModule.ModuleEquippedAction?.Invoke(shipStatus, 0);
 
                 featCount++;
@@ -1705,11 +1722,6 @@ namespace SWLOR.Game.Server.Service
                     RecastTime = DateTime.UtcNow
                 });
 
-                if (shipModule.Type != ShipModuleType.Passive)
-                {
-                    shipStatus.ActiveModules.Add(slot);
-                }
-
                 shipModule.ModuleEquippedAction?.Invoke(shipStatus, 0);
 
                 featCount++;
@@ -1724,11 +1736,6 @@ namespace SWLOR.Game.Server.Service
                     ItemTag = itemTag,
                     RecastTime = DateTime.UtcNow
                 });
-
-                if (shipModule.Type != ShipModuleType.Passive)
-                {
-                    shipStatus.ActiveModules.Add(slot);
-                }
 
                 shipModule.ModuleEquippedAction?.Invoke(shipStatus, 0);
 
@@ -1746,6 +1753,7 @@ namespace SWLOR.Game.Server.Service
         {
             var creature = OBJECT_SELF;
 
+            _toggleWake.Remove(creature);
             if (_shipNPCs.ContainsKey(creature))
             {
                 _shipNPCs.Remove(creature);
@@ -2293,6 +2301,7 @@ namespace SWLOR.Game.Server.Service
                 }
 
                 // Player always loses all modules regardless if they actually dropped.
+                ClearShipToggleState(creature, dbPlayerShip.Status);
                 dbPlayerShip.Status.HighPowerModules.Clear();
                 dbPlayerShip.Status.LowPowerModules.Clear();
                 dbPlayerShip.Status.MidPowerModules.Clear();
@@ -2373,6 +2382,7 @@ namespace SWLOR.Game.Server.Service
                 .ToList();
             foreach (var creature in defunctShips)
             {
+                _toggleWake.Remove(creature);
                 _shipNPCs.Remove(creature);
             }
 
@@ -2383,6 +2393,9 @@ namespace SWLOR.Game.Server.Service
 
                 ApplyAutoShipRecovery(creature, shipStatus);
 
+                // Repairers switch off once the ship is whole again, in or out of a fight.
+                UpdateNpcRepairToggles(creature, shipStatus, false);
+
                 // Determine target
                 var target = Enmity.GetHighestEnmityTarget(creature);
                 if (!GetIsObjectValid(target)) continue;
@@ -2391,41 +2404,6 @@ namespace SWLOR.Game.Server.Service
                 if (AI.TryStartCombatLeashEvade(creature, target))
                     continue;
 
-                // Determine which modules are available.
-                var highModules = shipStatus.HighPowerModules.Where(x =>
-                {
-                    var shipModuleDetail = _shipModules[x.Value.ItemTag];
-                    var requiredCapacitor = shipModuleDetail.CalculateCapacitorAction?.Invoke(creature, shipStatus, 0) ?? 0;
-
-                    return x.Value.RecastTime <= now &&
-                           shipStatus.Capacitor >= requiredCapacitor &&
-                           shipStatus.GlobalRecast <= now;
-                })
-                    .Select(s => new Tuple<FeatType, ShipStatus.ShipStatusModule>(HighSlotToFeat(s.Key), s.Value));
-
-                var lowModules = shipStatus.LowPowerModules.Where(x =>
-                {
-                    var shipModuleDetail = _shipModules[x.Value.ItemTag];
-                    var requiredCapacitor = shipModuleDetail.CalculateCapacitorAction?.Invoke(creature, shipStatus, 0) ?? 0;
-
-                    return x.Value.RecastTime <= now &&
-                           shipStatus.Capacitor >= requiredCapacitor &&
-                           shipStatus.GlobalRecast <= now;
-                })
-                    .Select(s => new Tuple<FeatType, ShipStatus.ShipStatusModule>(LowSlotToFeat(s.Key), s.Value));
-
-                var midModules = shipStatus.MidPowerModules.Where(x =>
-                {
-                    var shipModuleDetail = _shipModules[x.Value.ItemTag];
-                    var requiredCapacitor = shipModuleDetail.CalculateCapacitorAction?.Invoke(creature, shipStatus, 0) ?? 0;
-
-                    return x.Value.RecastTime <= now &&
-                           shipStatus.Capacitor >= requiredCapacitor &&
-                           shipStatus.GlobalRecast <= now;
-                })
-                    .Select(s => new Tuple<FeatType, ShipStatus.ShipStatusModule>(MidSlotToFeat(s.Key), s.Value));
-
-                var availableModules = highModules.Concat(midModules).Concat(lowModules).ToList();
                 var targetShipStatus = GetShipStatus(target);
                 var distance = GetDistanceBetween(creature, target);
 
@@ -2441,40 +2419,37 @@ namespace SWLOR.Game.Server.Service
                     ? Math.Min(NPCShipKeepDistance, engagementDistance * 0.75f)
                     : NPCShipKeepDistance;
 
-                // Determine which module(s) to activate
+                // Toggled modules switch on against the highest enmity target and then run themselves;
+                // the auto-fire loop keeps offensive ones on whichever target the ship currently has.
                 SetCurrentTarget(creature, target);
+                UpdateNpcRepairToggles(creature, shipStatus, true);
+                TurnOnNpcWeaponToggles(creature, shipStatus, target, targetShipStatus, distance);
+
+                // One-press modules are still used from the AI tick.
                 var featsToUse = new List<FeatType>();
-                foreach (var (feat, shipModule) in availableModules)
+                foreach (var (feat, shipModule) in GetNpcModuleSlots(shipStatus))
                 {
                     var shipModuleDetail = _shipModules[shipModule.ItemTag];
-                    var useModule = false;
-                    if (shipModuleDetail.Type == ShipModuleType.ShieldRepairer ||
-                             shipModuleDetail.Type == ShipModuleType.BulwarkShieldGenerator)
+                    if (shipModuleDetail.Activation != ShipModuleActivation.OnePress ||
+                        !IsOffensiveShipModule(shipModuleDetail.Type))
                     {
-                        var shieldPointsLost = shipStatus.MaxShield - shipStatus.Shield;
-                        if (shieldPointsLost >= shipStatus.MaxShield * 0.75)
-                        {
-                            useModule = true;
-                        }
+                        continue;
                     }
-                    else if(shipModuleDetail.Type == ShipModuleType.HullRepairer ||
-                             shipModuleDetail.Type == ShipModuleType.RepairFieldGenerator)
+
+                    var requiredCapacitor = shipModuleDetail.CalculateCapacitorAction?.Invoke(creature, shipStatus, 0) ?? 0;
+                    if (shipModule.RecastTime > now ||
+                        shipStatus.Capacitor < requiredCapacitor ||
+                        shipStatus.GlobalRecast > now)
                     {
-                        var hullPointsLost = shipStatus.MaxHull - shipStatus.Hull;
-                        if (hullPointsLost >= shipStatus.MaxHull * 0.75)
-                        {
-                            useModule = true;
-                        }
+                        continue;
                     }
-                    else if (IsOffensiveShipModule(shipModuleDetail.Type))
-                    {
-                        var maxDistance = GetShipModuleMaxDistance(creature, shipStatus, target, targetShipStatus, shipModule);
-                        // Self-centered weapons hit enemies around the firing ship rather than the selected target.
-                        useModule = CanNPCFireShipModule(creature, shipStatus, target, targetShipStatus, shipModule) &&
+
+                    var maxDistance = GetShipModuleMaxDistance(creature, shipStatus, target, targetShipStatus, shipModule);
+                    // Self-centered weapons hit enemies around the firing ship rather than the selected target.
+                    var useModule = CanNPCFireShipModule(creature, shipStatus, target, targetShipStatus, shipModule) &&
                                     (shipModuleDetail.CanTargetSelf
                                         ? HasEnemyShipWithin(creature, maxDistance)
                                         : distance <= maxDistance);
-                    }
 
                     if (useModule)
                     {

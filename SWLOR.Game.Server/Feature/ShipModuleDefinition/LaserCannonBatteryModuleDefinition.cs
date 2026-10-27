@@ -53,6 +53,7 @@ namespace SWLOR.Game.Server.Feature.ShipModuleDefinition
             .PowerType(ShipModulePowerType.High)
             .RequirePerk(PerkType.OffensiveModules, 5)
             .Recast(18f)
+            .OnePress()
             .Capacitor(15)
             .CapitalClassModule()
             .CanTargetSelf()

@@ -939,13 +939,16 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
         };
 
         // ---------------- colour indicators ----------------
-        /// <summary>Palette code (H1), RGB for a custom colour, or Outfit for a part using the outfit colour.</summary>
-        internal static string SwatchCode(GuiRectangle region, bool custom)
+        /// <summary>
+        /// Palette code (H1), RGB for a custom colour, or, with no palette colour, "Outfit" for a
+        /// part using the outfit colour and "None" for an item or body colour.
+        /// </summary>
+        internal static string SwatchCode(GuiRectangle region, bool custom, bool isPart)
         {
             if (custom)
                 return "RGB";
             if (region == null || region.Width < ColorSize)
-                return "Outfit";
+                return isPart ? "Outfit" : "None";
             return AppearancePreview.PaletteCode((int)(region.Y / ColorSize) * TextureColorsPerRow + (int)(region.X / ColorSize));
         }
 
@@ -953,7 +956,7 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
         private void OnSwatchUpdated(ColorTarget target, AppearanceArmorColor channel, string name)
         {
             if (target == ColorTarget.Global)
-                SetIfChanged($"Global{channel}Code", SwatchCode(Get<GuiRectangle>(name + "Region"), Get<bool>(name + "Custom")));
+                SetIfChanged($"Global{channel}Code", SwatchCode(Get<GuiRectangle>(name + "Region"), Get<bool>(name + "Custom"), isPart: false));
             if (target != ColorTarget.Global && target == ToColorTarget(_selectedSlot))
                 MirrorPartSwatch(channel);
             RefreshPaletteSelection();
@@ -992,7 +995,7 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
             Set(region, $"SelectedPart{channel}Region");
             Set(Get<GuiColor>(source + "Tint") ?? new GuiColor(0, 0, 0), $"SelectedPart{channel}Tint");
             SetIfChanged($"SelectedPart{channel}Custom", custom);
-            SetIfChanged($"SelectedPart{channel}Code", SwatchCode(region, custom));
+            SetIfChanged($"SelectedPart{channel}Code", SwatchCode(region, custom, isPart: true));
         }
 
         private void SyncSelectedPartSelection()
@@ -1020,7 +1023,7 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
                 Set(new GuiColor(color.Red, color.Green, color.Blue), $"Body{name}Tint");
                 SetIfChanged($"Body{name}Custom", hasCustom);
                 SetIfChanged($"Body{name}Selected", SelectedColorCategoryIndex == index);
-                SetIfChanged($"Body{name}Code", SwatchCode(region, hasCustom));
+                SetIfChanged($"Body{name}Code", SwatchCode(region, hasCustom, isPart: false));
             }
             RefreshPaletteSelection();
         }

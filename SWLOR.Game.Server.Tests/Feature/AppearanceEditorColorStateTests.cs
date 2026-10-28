@@ -98,6 +98,10 @@ public class AppearanceEditorColorStateTests
         property.IndexOf("value == _loadedItemTypeIndex", StringComparison.Ordinal).Should()
             .BeLessThan(property.IndexOf("_colorTarget = ColorTarget.Global", StringComparison.Ordinal));
         property.Should().Contain("_selectedColorChannel = AppearanceArmorColor.Leather1");
+        var hidePartRows = property.IndexOf("SetIfChanged(nameof(IsPartColorsVisible), false)", StringComparison.Ordinal);
+        hidePartRows.Should().BeGreaterThan(property.IndexOf("if (value != 0)", StringComparison.Ordinal),
+            "helmets, cloaks and weapons hide the armor part colour rows");
+        property.IndexOf("if (value != 0)", StringComparison.Ordinal).Should().BeGreaterThan(0);
         property.IndexOf("LoadItemParts()", StringComparison.Ordinal).Should()
             .BeLessThan(property.IndexOf("LoadItemTypeEditor()", StringComparison.Ordinal),
                 "the current selections must be ready before the replacement widgets are shown");

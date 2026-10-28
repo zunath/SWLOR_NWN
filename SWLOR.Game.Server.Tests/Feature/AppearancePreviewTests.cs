@@ -212,6 +212,8 @@ public class AppearancePreviewTests
     {
         SwatchCode(null, false).Should().Be("Outfit");
         SwatchCode(null, true).Should().Be("RGB");
+        SwatchCode(null, false, isPart: false).Should().Be("None",
+            "an unset helmet, cloak or outfit colour does not come from the outfit");
     }
 
     [TestCase(4000f, true, 10)]
@@ -349,10 +351,10 @@ public class AppearancePreviewTests
         AppearanceEditorViewModel.BrowserGrid(4, 3).Should().Be("AE_BROWSER_GRID_4X3");
     }
 
-    private static string SwatchCode(GuiRectangle region, bool custom) =>
+    private static string SwatchCode(GuiRectangle region, bool custom, bool isPart = true) =>
         (string)typeof(AppearanceEditorViewModel)
             .GetMethod("SwatchCode", BindingFlags.NonPublic | BindingFlags.Static)!
-            .Invoke(null, new object[] { region, custom })!;
+            .Invoke(null, new object[] { region, custom, isPart })!;
 
     private static int BrowserColumnsForWidth(float width, bool hasSideColumns) =>
         (int)typeof(AppearanceEditorViewModel)

@@ -797,6 +797,9 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
                     _selectedColorChannel = AppearanceArmorColor.Leather1;
                 }
                 ToggleItemEquippedFlags();
+                // Helmets, cloaks and weapons have no armor parts to colour.
+                if (value != 0)
+                    SetIfChanged(nameof(IsPartColorsVisible), false);
                 LoadColorCategoryOptions();
                 LoadPartCategoryOptions();
                 LoadItemParts();

@@ -99,6 +99,7 @@ public class CombatReleaseBalanceAuditTests
         StatType.TwinBladeSingleTargetAbilityDamagePercentAdjustment,
         StatType.TwinBladeAreaAbilityDamagePercentAdjustment,
         StatType.ThrowingAreaAbilityDamagePercentAdjustment,
+        StatType.ThrowingSingleTargetDamagePercentAdjustment,
         StatType.SingleTargetPhysicalAbilityDamagePercentAdjustment,
         StatType.SkillAreaAbilityDamagePercentAdjustment,
         StatType.SkillAbilityDamagePercentAdjustment,

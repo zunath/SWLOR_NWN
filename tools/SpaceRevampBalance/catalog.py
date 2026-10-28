@@ -1072,21 +1072,23 @@ def ace_rows(hulls):
     out = []
     for i, a in enumerate(rw.ACES):
         design = by_design[a["design"]]
-        assert design["Tier"] <= a["tier"] and not design["WildSpaceOnly"], a["key"]
+        assert design["Tier"] <= a["tier"] and (not design["WildSpaceOnly"] or a.get("wild")), a["key"]
         rare_family, rare_trait = a["rare"]
         assert any(t[1] == rare_trait and t[3] == "Rare" and rare_family in t[4] for t in comp.TRAITS), a["key"]
         trophy_name, placeable, trophy_text = a["trophy"]
         maker = maker_row(a["maker"])
         out.append(dict(
             a, Level=rw.ace_level(a), LootTable=rw.ace_loot_table(a), ItemTag=f"{rw.ACE_ITEM_TAGS[a['role']]}{a['tier']}",
-            Design=design, ModuleSchematic=named[a["named"]]["Resref"],
+            Design=design, ModuleSchematic=named[a["named"]]["Resref"] if a["named"] else rw.PROTOTYPE_TECH,
+            WildSpace=bool(a.get("wild")), RiftKey=events.key_for_tier(6 if a.get("wild") else a["tier"]),
             TrophyResref=rw.trophy_resref(i), TrophyId=rw.TROPHY_START + i, TrophyEnum=rw.trophy_enum(trophy_name),
             TrophyName=trophy_name, TrophyPlaceable=placeable, TrophyText=trophy_text,
             RareResref=comp.resref(comp.family(rare_family)[0], min(a["tier"], 5)), RareTrait=rare_trait,
             MakerResref=maker_component_resref(a["maker"]), MakerTrait=maker[1], Achievement=rw.ace_achievement(a)))
     assert len({x["tag"] for x in out}) == len(out) and all(len(x["tag"]) <= 16 for x in out)
     assert len({x["design"] for x in out}) == len(out), "every ace flies its own Hull Design"
-    assert len({x["named"] for x in out}) == len(out), "every ace drops its own Module Schematic"
+    named_aces = [x["named"] for x in out if x["named"]]
+    assert len(set(named_aces)) == len(named_aces), "every ace with a Module Schematic drops its own"
     assert len({x["TrophyPlaceable"] for x in out}) == len(out), "every trophy places its own placeable"
     return out
 
@@ -1102,14 +1104,15 @@ def ace_catalog_cs(aces):
         f'TrophyResref = {q(a["TrophyResref"])}, Trophy = StructureType.{a["TrophyEnum"]}, '
         f'RareComponentResref = {q(a["RareResref"])}, RareTrait = ShipComponentTraitType.{a["RareTrait"]}, '
         f'ManufacturerComponentResref = {q(a["MakerResref"])}, ManufacturerTrait = ShipComponentTraitType.{a["MakerTrait"]}, '
-        f'Achievement = AchievementType.{a["Achievement"]} }},' for a in aces)
+        f'Achievement = AchievementType.{a["Achievement"]}'
+        f'{", WildSpace = true" if a["WildSpace"] else ""} }},' for a in aces)
     w = rw.ACE_LOOT_WEIGHTS
     return (HEADER + "using System.Collections.Generic;\nusing SWLOR.Game.Server.Service.AchievementService;\n"
             "using SWLOR.Game.Server.Service.PropertyService;\nusing SWLOR.Game.Server.Service.SpaceService;\n"
             "using SWLOR.NWN.API.NWScript.Enum;\n\n"
             "namespace SWLOR.Game.Server.Feature.ShipRewardDefinition\n{\n"
             "    public static class RevampAceCatalog\n    {\n"
-            "        /// <summary>The named rare-spawn pilots: one per orbit and one per Small/Medium zone (plan section 11).</summary>\n"
+            "        /// <summary>The named rare-spawn pilots: one per orbit, Small/Medium zone and Wild Space system (plan sections 11 and 23).</summary>\n"
             "        public static readonly IReadOnlyList<ShipAce> Aces = new List<ShipAce>\n        {\n"
             f"{rows}\n        }};\n\n"
             f"        public const string AceDifficulty = {q(rw.ACE_DIFFICULTY)};\n"
@@ -1145,7 +1148,7 @@ def ace_loot_cs(aces):
             f"                .AddSpawnAction(item => ShipComponents.SetTraits(item, new[] {{ ShipComponentTraitType.{a['RareTrait']} }}))\n"
             f'                .AddItem("{a["MakerResref"]}", {w["maker_component"]}, 1, true)\n'
             f"                .AddSpawnAction(item => ShipComponents.SetTraits(item, new[] {{ ShipComponentTraitType.{a['MakerTrait']} }}))\n"
-            f'                .AddItem("{events.key_for_tier(a["tier"])}", {w["rift_key"]}, 1, true);\n'
+            f'                .AddItem("{a["RiftKey"]}", {w["rift_key"]}, 1, true);\n'
             "        }")
     return (HEADER + "using System.Collections.Generic;\nusing SWLOR.Game.Server.Service;\n"
             "using SWLOR.Game.Server.Service.LootService;\nusing SWLOR.Game.Server.Service.SpaceService;\n\n"
@@ -1175,7 +1178,8 @@ ACE_VARIABLE = "SPACE_ACE"
 def ace_blueprints(aces):
     out = {}
     for a in aces:
-        template = json.loads((ROOT / "Module" / "utc" / f"t{a['tier']}gunship.utc.json").read_text(encoding="utf-8"))
+        source = "rrgunship" if a["WildSpace"] else f"t{a['tier']}gunship"
+        template = json.loads((ROOT / "Module" / "utc" / f"{source}.utc.json").read_text(encoding="utf-8"))
         d = copy.deepcopy(template)
         d["Tag"]["value"] = a["tag"]
         d["TemplateResRef"]["value"] = a["tag"]
@@ -1184,7 +1188,7 @@ def ace_blueprints(aces):
         d["Description"]["value"] = {"0": a["lore"]}
         d["Appearance_Type"]["value"] = a["design"]
         d["VarTable"]["value"] = [
-            local_string("LOOT_TABLE_1", rw.ACE_ELITE_TABLE.format(tier=a["tier"])),
+            local_string("LOOT_TABLE_1", rw.ace_elite_table(a)),
             local_string("LOOT_TABLE_2", f"{a['LootTable']}, 100, 1"),
             local_string("LOOT_TABLE_3", f"{a['LootTable']}, {rw.ACE_SECOND_ROLL}, 1"),
             local_int(ACE_VARIABLE, 1),
@@ -1267,6 +1271,7 @@ def writes():
     npc_tags = re.findall(r'_builder\.Create\("([^"]+)"\)', npc_source)
     aces = ace_rows(hulls)
     npc_tags += [a["tag"] for a in aces]
+    npc_tags += events.armada_tags()
     files["SWLOR.Game.Server/Feature/SpaceObjectDefinition/RevampNpcShipCatalog.cs"] = npc_catalog.catalog_cs(
         HEADER, npc_catalog.entries(ROOT, npc_tags, {a["tag"]: (a["role"], a["Level"]) for a in aces}))
     files["SWLOR.Game.Server/Feature/ShipRewardDefinition/RevampAceCatalog.cs"] = ace_catalog_cs(aces)

@@ -8,6 +8,7 @@ using SWLOR.Game.Server.Feature.LootTableDefinition;
 using SWLOR.Game.Server.Feature.ShipModuleDefinition;
 using SWLOR.Game.Server.Feature.SpaceObjectDefinition;
 using SWLOR.Game.Server.Feature.SpawnDefinition;
+using SWLOR.Game.Server.Feature.TradeDefinition;
 using SWLOR.Game.Server.Service;
 using SWLOR.Game.Server.Service.CraftService;
 using SWLOR.Game.Server.Service.SkillService;
@@ -493,6 +494,80 @@ public class ShipSalvageTests
         var path = Path.Combine(Root(), "Module", folder, $"{resref}.{folder}.json");
         using var document = JsonDocument.Parse(File.ReadAllText(path));
         return document.RootElement.Clone();
+    }
+
+    // Zone hazards (W11o): standalone minefields and pre-placed wreck sites
+
+    [Test]
+    public void ZoneHazards_AreModuleWaypointsWithTheirTiersInTheTunedAreas()
+    {
+        SpaceHazardTuning.Placements.Where(x => x.WaypointTag == SpaceHazardTuning.MinefieldTag).Select(x => x.AreaResref)
+            .Should().BeEquivalentTo("space_viscbelt", "space_midrimneb", "space_korrdebris");
+        SpaceHazardTuning.Placements.Where(x => x.WaypointTag == SpaceHazardTuning.WreckSiteTag).Select(x => x.AreaResref)
+            .Should().Contain(WildSpaceTuning.KnownOrbits).And.Contain("space_korrdebris", "space_wsgraveyrd");
+
+        foreach (var group in SpaceHazardTuning.Placements.GroupBy(x => x.AreaResref))
+        {
+            using var git = JsonDocument.Parse(File.ReadAllText(Path.Combine(Root(), "Module", "git", $"{group.Key}.git.json"), System.Text.Encoding.Latin1));
+            var root = git.RootElement;
+            var waypoints = root.GetProperty("WaypointList").GetProperty("value").EnumerateArray().ToList();
+            var others = waypoints.Where(x => !x.GetProperty("Tag").GetProperty("value").GetString()!.StartsWith("SPACE_"))
+                .Select(x => (X: x.GetProperty("XPosition").GetProperty("value").GetSingle(), Y: x.GetProperty("YPosition").GetProperty("value").GetSingle()))
+                .Concat(root.GetProperty("Placeable List").GetProperty("value").EnumerateArray()
+                    .Select(x => (X: x.GetProperty("X").GetProperty("value").GetSingle(), Y: x.GetProperty("Y").GetProperty("value").GetSingle())))
+                .ToList();
+            foreach (var placement in group)
+            {
+                var placed = waypoints.Where(x => x.GetProperty("Tag").GetProperty("value").GetString() == placement.WaypointTag).ToList();
+                placed.Should().HaveCount(placement.Count, $"{group.Key} {placement.WaypointTag}");
+                foreach (var waypoint in placed)
+                {
+                    var tier = waypoint.GetProperty("VarTable").GetProperty("value").EnumerateArray()
+                        .Single(x => x.GetProperty("Name").GetProperty("value").GetString() == SpaceHazardTuning.TierVariable)
+                        .GetProperty("Value").GetProperty("value").GetInt32();
+                    tier.Should().Be(placement.Tier);
+                    var x = waypoint.GetProperty("XPosition").GetProperty("value").GetSingle();
+                    var y = waypoint.GetProperty("YPosition").GetProperty("value").GetSingle();
+                    x.Should().BeInRange(30, 290);
+                    y.Should().BeInRange(30, 290);
+                    others.Min(o => Math.Sqrt(Math.Pow(o.X - x, 2) + Math.Pow(o.Y - y, 2))).Should().BeGreaterThan(40,
+                        $"a hazard in {group.Key} stands clear of its lanes, docks, planets and decor");
+                }
+            }
+        }
+
+        var trade = TradeCatalog.Orbits.ToDictionary(x => x.AreaResref, x => x.Tier);
+        foreach (var placement in SpaceHazardTuning.Placements.Where(x => trade.ContainsKey(x.AreaResref)))
+            placement.Tier.Should().BeLessThanOrEqualTo(trade[placement.AreaResref], "a hazard never hits above its area's tier");
+    }
+
+    [Test]
+    public void FieldMines_HitAsTheirTiersMinelayerAndReArm()
+    {
+        SpaceHazardRules.SiteTier(0).Should().Be(1);
+        SpaceHazardRules.SiteTier(9).Should().Be(6);
+        var presets = RevampNpcShipCatalog.Ships.ToDictionary(x => x.CreatureTag);
+        for (var tier = 1; tier <= 6; tier++)
+        {
+            var minelayer = presets[SpaceHazardRules.MinelayerTag(tier)];
+            minelayer.Role.Should().Be("Minelayer");
+            minelayer.MineDmg.Should().BeGreaterThan(0);
+        }
+
+        var now = new DateTime(2026, 10, 28, 12, 0, 0, DateTimeKind.Utc);
+        SpaceHazardRules.MineRearmAt(now).Should().Be(now.AddSeconds(300));
+        SpaceHazardRules.WreckRespawnAt(now).Should().Be(now.AddMinutes(30));
+        SpaceHazardTuning.MinesPerField.Should().Be(4);
+
+        var hazards = ReadSource("Service", "SpaceHazards.cs");
+        hazards.Should().Contain("SpaceHazardRules.MinelayerTag(mine.Tier)").And.Contain("Dmg = preset.MineDmg")
+            .And.Contain("ShipShotBuilder.Build(torpedo,").And.Contain("CreateWreck(GetLocation(site.Waypoint), SpaceHazardTuning.WreckName");
+        var roles = ReadSource("Service", "SpaceNpcRoles.cs");
+        roles.Should().Contain("!mine.Field && (!GetIsObjectValid(mine.Owner)", "a field mine has no minelayer and no lifetime")
+            .And.Contain("DetonateFieldMine(mine, victims[0])");
+        SpaceHazardTuning.WreckDifficulty.Should().Be(WreckDifficulty.Normal);
+        SpaceHazardTuning.WreckSize.Should().Be(ShipSize.Medium);
+        ShipSalvageRules.WreckCycles(SpaceHazardTuning.WreckSize, SpaceHazardTuning.WreckDifficulty).Should().Be(4);
     }
 
     private static string ReadSource(params string[] relativePath) =>

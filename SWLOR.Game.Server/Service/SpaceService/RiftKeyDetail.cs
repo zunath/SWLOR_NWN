@@ -19,6 +19,9 @@ namespace SWLOR.Game.Server.Service.SpaceService
         /// <summary>The credits a finished run pays at a multiplier of 1.</summary>
         public int BaseCredits { get; set; }
 
+        /// <summary>The template area this key's pocket is an instance of (one per tier 1-5; tier 5.5 the original).</summary>
+        public string Template { get; set; }
+
         public string TierLabel => TierTenths % 10 == 0 ? (TierTenths / 10).ToString() : $"{TierTenths / 10}.{TierTenths % 10}";
     }
 }

@@ -60,7 +60,7 @@ namespace SWLOR.Game.Server.Service
         }
 
         /// <summary>Whether an area is a Rift Run pocket.</summary>
-        public static bool IsRiftPocket(uint area) => GetIsObjectValid(area) && GetResRef(area) == RiftRunTuning.TemplateResref;
+        public static bool IsRiftPocket(uint area) => GetIsObjectValid(area) && RiftRunRules.IsPocketTemplate(GetResRef(area));
 
         /// <summary>Opens a pocket for the key user and the party ships nearby, and spends the key.</summary>
         public static void StartRiftRun(uint user, uint item)
@@ -94,11 +94,11 @@ namespace SWLOR.Game.Server.Service
             }
 
             var pilots = RiftRunRules.PickParty(user, nearby);
-            var area = Area.CreateInstance(RiftRunTuning.TemplateResref, $"rift_pocket_{Guid.NewGuid():N}", $"Rift Pocket (Tier {key.TierLabel})");
+            var area = Area.CreateInstance(key.Template, $"rift_pocket_{Guid.NewGuid():N}", $"Rift Pocket (Tier {key.TierLabel})");
             if (!GetIsObjectValid(area))
             {
                 SendMessageToPC(user, ColorToken.Red("The rift flickers and will not open. Your key is unspent."));
-                Log.Write(LogGroup.Error, $"Rift Run: could not create an instance of {RiftRunTuning.TemplateResref}.");
+                Log.Write(LogGroup.Error, $"Rift Run: could not create an instance of {key.Template}.");
                 return false;
             }
 
@@ -181,7 +181,7 @@ namespace SWLOR.Game.Server.Service
         private static Location RiftRoomLocation(RiftRun run, int room, float dx = 0f, float dy = 0f)
         {
             var waypoint = GetNearestObjectByTag($"{RiftRunTuning.RoomWaypointPrefix}{room + 1}", GetFirstObjectInArea(run.Area));
-            var (x, y, z) = RiftRunTuning.RoomPoints[Math.Clamp(room, 0, RiftRunTuning.RoomPoints.Count - 1)];
+            var (x, y, z) = RiftRunRules.RoomPoint(run.Key.Template, room);
             var position = GetIsObjectValid(waypoint) && GetArea(waypoint) == run.Area ? GetPosition(waypoint) : Vector3(x, y, z);
             return Location(run.Area, Vector3(position.X + dx, position.Y + dy, position.Z), 0f);
         }

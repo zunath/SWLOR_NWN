@@ -110,6 +110,8 @@ namespace SWLOR.Game.Server.Service
 
                 if (_incursionDirty || now - _incursionSavedAt >= TimeSpan.FromMinutes(1) && state.Active != null)
                     SaveIncursions();
+
+                ProcessCapitalBattle(now);
             }
             catch (Exception ex)
             {
@@ -219,7 +221,7 @@ namespace SWLOR.Game.Server.Service
                     if (!IncursionRules.IsBlockadeHolding(incursion, key))
                         continue;
 
-                    var ships = SpawnIncursionGroup(incursion, GetArea(dock), GetPosition(dock), IncursionRules.BlockadeShips(area.Tier),
+                    var ships = SpawnIncursionGroup(incursion, GetArea(dock), GetPosition(dock), IncursionRules.BlockadeShips(area.Tier, incursion.Invader),
                         IncursionTuning.BlockadeRingMeters, IncursionRoleBlockade, area.Tier);
                     _incursionBlockadeShips[key] = ships;
                 }
@@ -240,7 +242,7 @@ namespace SWLOR.Game.Server.Service
             var command = progress.WavesCleared >= IncursionTuning.WavesPerArea;
             var ships = command
                 ? IncursionRules.CommandShips(area.Tier, incursion.Invader)
-                : IncursionRules.WaveShips(area.Tier);
+                : IncursionRules.WaveShips(area.Tier, incursion.Invader);
             _incursionAreaShips[area.Resref] = SpawnIncursionGroup(incursion, areaObject, center, ships, IncursionTuning.WaveRingMeters,
                 command ? IncursionRoleCommand : IncursionRoleWave, area.Tier);
             _incursionAreaPhases[area.Resref] = command ? IncursionAreaPhase.Command : IncursionAreaPhase.Wave;
@@ -256,7 +258,6 @@ namespace SWLOR.Game.Server.Service
             IReadOnlyList<(string Tag, string Hull)> ships, float radius, string role, int tier)
         {
             var spawned = new List<uint>();
-            var invader = IncursionRules.GetInvader(incursion.Invader);
             for (var index = 0; index < ships.Count; index++)
             {
                 var (x, y) = SignatureSiteRules.RingOffset(index, ships.Count, radius);
@@ -266,9 +267,6 @@ namespace SWLOR.Game.Server.Service
 
                 SetLocalString(ship, IncursionRoleVariable, role);
                 SetLocalInt(ship, IncursionTierVariable, tier);
-                SetName(ship, IncursionRules.ShipName(incursion.Invader, ships[index].Hull));
-                if (ships[index].Hull == "capital" && invader != null && IncursionRules.UsesInvaderAppearance(tier))
-                    SetCreatureAppearanceType(ship, (AppearanceType)invader.CapitalAppearance);
 
                 spawned.Add(ship);
             }

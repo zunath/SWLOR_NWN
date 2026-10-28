@@ -33,9 +33,12 @@ public class SpaceAceTests
     private static IEnumerable<ShipAce> Aces => RevampAceCatalog.Aces;
 
     [Test]
-    public void Aces_OnePerOrbitAndZoneEachInItsAreasOwnSpawnTable()
+    public void Aces_OnePerOrbitZoneAndWildSpaceSystemEachInItsAreasOwnSpawnTable()
     {
-        Aces.Select(x => x.AreaResref).Should().BeEquivalentTo(OrbitAreas.Concat(ZoneAreas));
+        Aces.Select(x => x.AreaResref).Should().BeEquivalentTo(OrbitAreas.Concat(ZoneAreas).Concat(WildSpaceTuning.Systems.Select(x => x.AreaResref)));
+        Aces.Where(x => x.WildSpace).Select(x => x.AreaResref).Should().BeEquivalentTo(WildSpaceTuning.Systems.Select(x => x.AreaResref));
+        foreach (var system in WildSpaceTuning.Systems)
+            Aces.Single(x => x.AreaResref == system.AreaResref).SpawnTable.Should().Be(system.SpawnTable);
         Aces.Select(x => x.SpawnTable).Should().OnlyHaveUniqueItems("one ace per spawn table, so one per area");
         Aces.Select(x => x.Tag).Should().OnlyHaveUniqueItems();
 
@@ -46,7 +49,7 @@ public class SpaceAceTests
             ShipAceRules.Get(ace.Tag).Should().BeSameAs(ace);
         }
 
-        foreach (var area in OrbitAreas.Concat(ZoneAreas))
+        foreach (var area in OrbitAreas.Concat(ZoneAreas).Concat(WildSpaceTuning.Systems.Select(x => x.AreaResref)))
             Aces.Count(x => AreaSpawnTable(x.AreaResref) == AreaSpawnTable(area)).Should().Be(1, area);
     }
 
@@ -57,13 +60,21 @@ public class SpaceAceTests
         {
             var preset = RevampNpcShipCatalog.Ships.Single(x => x.CreatureTag == ace.Tag);
             preset.Difficulty.Should().Be(RevampAceCatalog.AceDifficulty);
-            preset.Level.Should().Be(ace.Tier * 10).And.Be(ace.Level);
+            preset.Level.Should().Be(ace.WildSpace ? 52 : ace.Tier * 10).And.Be(ace.Level);
             preset.Role.Should().Be(ace.Role);
             ShipNpcRoleRules.ParseRole(preset.Role).Should().NotBe(ShipNpcRole.Invalid, ace.Tag);
             preset.Size.Should().Be(ShipSize.Medium, "the Elite hull class, as every Elite preset");
             (preset.Hull + preset.Shield).Should().BeLessThan(32767, "the 16-bit HP limit (NpcHitPoints.md)");
             preset.Weapons.Should().NotBeEmpty(ace.Tag);
             preset.Support.Should().BeEmpty(ace.Tag);
+
+            if (ace.WildSpace)
+            {
+                ace.Tier.Should().Be(WildSpaceTuning.ContentTier, "Wild Space content uses tier 5 for every tier-indexed table");
+                preset.Level.Should().Be(RevampNpcShipCatalog.Ships.Single(x => x.CreatureTag == "rrgunship").Level,
+                    "a Wild Space ace is an Elite at the Rift Raiders' level");
+                continue;
+            }
 
             var platform = RevampNpcShipCatalog.Ships.Single(x => x.CreatureTag == $"t{ace.Tier}platform");
             (preset.Level, preset.Difficulty).Should().Be((platform.Level, platform.Difficulty),
@@ -134,8 +145,8 @@ public class SpaceAceTests
             appearance.Should().Be((int)ace.Appearance);
             appearances.Should().NotContainKey(appearance, $"{ace.Tag} flies a Hull Design no other creature uses");
 
-            Skin(d).Should().Be($"t{ace.Tier}hvyskin", "the tier's Gunship and Defense Platform skin sets the level");
-            Local(d, "LOOT_TABLE_1").Should().Be($"SPACE_ELITE_T{ace.Tier}, 66, 5");
+            Skin(d).Should().Be(ace.WildSpace ? "rrskin" : $"t{ace.Tier}hvyskin", "the tier's Gunship and Defense Platform skin sets the level");
+            Local(d, "LOOT_TABLE_1").Should().Be(ace.WildSpace ? "SPACE_ELITE_WS, 66, 5" : $"SPACE_ELITE_T{ace.Tier}, 66, 5");
             Local(d, "LOOT_TABLE_2").Should().Be($"{ace.LootTable}, 100, 1", "one guaranteed unique drop");
             Local(d, "LOOT_TABLE_3").Should().Be($"{ace.LootTable}, {RevampAceCatalog.SecondRollPercent}, 1",
                 "one more low-chance unique drop");
@@ -161,16 +172,21 @@ public class SpaceAceTests
             var design = RevampRewardCatalog.HullDesigns.Single(x => x.Resref == ace.DesignResref);
             design.Appearance.Should().Be(ace.Appearance, "an ace drops the Design Schematic of the design it flies");
             design.Tier.Should().BeLessThanOrEqualTo(ace.Tier);
-            design.WildSpaceOnly.Should().BeFalse();
+            if (!ace.WildSpace)
+                design.WildSpaceOnly.Should().BeFalse("only a Wild Space ace may drop a Wild Space only design");
             Weight(table, ace.DesignResref).Should().Be(RevampAceCatalog.DesignWeight);
 
-            moduleSchematics.Should().Contain(ace.ModuleSchematicResref);
+            if (ace.WildSpace)
+                ace.ModuleSchematicResref.Should().Be("proto_tech", "a Wild Space ace drops Prototype Tech in the Module Schematic slot");
+            else
+                moduleSchematics.Should().Contain(ace.ModuleSchematicResref);
             Weight(table, ace.ModuleSchematicResref).Should().Be(RevampAceCatalog.ModuleSchematicWeight);
             Weight(table, ace.TrophyResref).Should().Be(RevampAceCatalog.TrophyWeight);
 
+            var key = ace.WildSpace ? "rift_key_t55" : RiftRunRules.KeyForTier(ace.Tier).Resref;
             table.Select(x => x.Resref).Should().Equal(ace.DesignResref, ace.ModuleSchematicResref, ace.TrophyResref,
-                ace.RareComponentResref, ace.ManufacturerComponentResref, RiftRunRules.KeyForTier(ace.Tier).Resref);
-            Weight(table, RiftRunRules.KeyForTier(ace.Tier).Resref).Should().Be(RevampAceCatalog.RiftKeyWeight, "an ace drops its tier's Rift Key");
+                ace.RareComponentResref, ace.ManufacturerComponentResref, key);
+            Weight(table, key).Should().Be(RevampAceCatalog.RiftKeyWeight, "an ace drops its tier's Rift Key");
             var rare = table[3];
             rare.Weight.Should().Be(RevampAceCatalog.RareComponentWeight);
             rare.OnSpawn.Should().NotBeNull("the component is stamped with its rare trait");
@@ -189,7 +205,9 @@ public class SpaceAceTests
         }
 
         Aces.Select(x => x.DesignResref).Should().OnlyHaveUniqueItems();
-        Aces.Select(x => x.ModuleSchematicResref).Should().OnlyHaveUniqueItems();
+        Aces.Where(x => !x.WildSpace).Select(x => x.ModuleSchematicResref).Should().OnlyHaveUniqueItems();
+        Aces.Where(x => x.WildSpace).Should().HaveCount(6).And.OnlyContain(x => x.Manufacturer == ShipManufacturer.RiftRaider);
+        Aces.Where(x => x.WildSpace).Select(x => (int)x.Achievement).Should().Equal(218, 219, 220, 221, 222, 223);
         Aces.Select(x => x.TrophyResref).Should().OnlyHaveUniqueItems();
         Aces.Select(x => x.Achievement).Should().OnlyHaveUniqueItems();
     }

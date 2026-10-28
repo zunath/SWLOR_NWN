@@ -129,18 +129,15 @@ public class ShipSalvageTests
         strip.Should().Contain("shipStatus == null");
         strip.Should().NotContain("Space.GetShipStatus(activator).Industrial");
         actions.Should().Contain("public static string StripMinerError(uint activator, uint target, int tier)");
-        ReadSource("Feature", "ShipModuleDefinition", "StripMinerModuleDefinition.cs")
-            .Should().Contain("StripMinerError(activator, target, 5)");
     }
 
-    [TestCase(0, 0, 0, 1)]
-    [TestCase(2, 0, 0, 3)]
-    [TestCase(0, 7, 0, 2)]
-    [TestCase(0, 0, 11, 2, Description = "11 / 6 is 1, not 1.83")]
-    [TestCase(1, 8, 12, 6)]
-    public void TheExtractionBaseAmount_IsAWholeNumber(int legacyRanks, int industrial, int moduleBonus, int expected)
+    [TestCase(0, 0, 1)]
+    [TestCase(7, 0, 2)]
+    [TestCase(0, 11, 2, Description = "11 / 6 is 1, not 1.83")]
+    [TestCase(8, 12, 5)]
+    public void TheExtractionBaseAmount_IsAWholeNumber(int industrial, int moduleBonus, int expected)
     {
-        SpaceCombatMath.ExtractionBaseAmount(legacyRanks, industrial, moduleBonus).Should().Be(expected);
+        SpaceCombatMath.ExtractionBaseAmount(industrial, moduleBonus).Should().Be(expected);
     }
 
     [TestCase(1, 4, 4, Description = "1 ore uses 1 unit: four cycles")]

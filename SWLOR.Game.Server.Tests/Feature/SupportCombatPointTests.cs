@@ -24,15 +24,8 @@ public class SupportCombatPointTests
                              module.Name == "CapitalEwarModuleDefinition.cs")
             .ToList();
 
-        supportModules.Select(module => module.Name).Should().Contain(new[]
-        {
-            "HullRepairerModuleDefinition.cs",
-            "ShieldRepairerModuleDefinition.cs",
-            "RepairFieldGeneratorModuleDefinition.cs",
-            "BulwarkShieldGeneratorModuleDefinition.cs",
-            "HypermatterInjectorModuleDefinition.cs",
-            "CapitalEwarModuleDefinition.cs",
-        });
+        // Every module, the repairers, injector and capital arrays included, is built by RevampModuleDefinition.
+        supportModules.Select(module => module.Name).Should().Contain("RevampModuleDefinition.cs");
 
         // The repairers and the injector share ShipModuleActions, which holds their combat point credit.
         var sharedSupport = shipModules.Single(module => module.Name == "ShipModuleActions.cs").Source;

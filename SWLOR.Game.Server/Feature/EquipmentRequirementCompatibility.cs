@@ -22,5 +22,15 @@ public static class EquipmentRequirementCompatibility
             Normalize(GetModuleItemAcquired());
     }
 
-    public static bool Normalize(uint obj) => EquipmentRequirementMigration.MigrateObject(obj);
+    /// <summary>
+    /// Replaces retired ship deeds and modules with their new items first (the retired Piloting perk stamps they carry
+    /// never become skill requirements), then moves legacy requirements on everything else to skill ranks.
+    /// </summary>
+    public static bool Normalize(uint obj)
+    {
+        var converted = LegacySpaceItemMigration.MigrateObject(obj, out var replacedRoot);
+        if (replacedRoot)
+            return converted;
+        return EquipmentRequirementMigration.MigrateObject(obj) | converted;
+    }
 }

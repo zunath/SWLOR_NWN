@@ -2780,91 +2780,84 @@
   },
   {
     "File": "SWLOR.Game.Server/Feature/GuiDefinition/ViewModel/ShipManagementViewModel.cs",
-    "Line": 1921,
-    "Member": "ValidateModuleEquip",
-    "Delivery": "Retained",
-    "Call": "SendMessageToPC(Player, \"You do not meet the perk requirements necessary to install this module.\")"
-  },
-  {
-    "File": "SWLOR.Game.Server/Feature/GuiDefinition/ViewModel/ShipManagementViewModel.cs",
-    "Line": 1929,
+    "Line": 1922,
     "Member": "ValidateModuleEquip",
     "Delivery": "Retained",
     "Call": "SendMessageToPC(Player, skillError)"
   },
   {
     "File": "SWLOR.Game.Server/Feature/GuiDefinition/ViewModel/ShipManagementViewModel.cs",
-    "Line": 1984,
+    "Line": 1977,
     "Member": "ProcessPower",
     "Delivery": "Retained",
     "Call": "SendMessageToPC(Player, $\"Only {rowName}-powered ship modules may be installed to this slot.\")"
   },
   {
     "File": "SWLOR.Game.Server/Feature/GuiDefinition/ViewModel/ShipManagementViewModel.cs",
-    "Line": 1995,
+    "Line": 1988,
     "Member": "ProcessPower",
     "Delivery": "Retained",
     "Call": "SendMessageToPC(Player, $\"Only {rowName}-powered ship modules may be installed to this slot.\")"
   },
   {
     "File": "SWLOR.Game.Server/Feature/GuiDefinition/ViewModel/ShipManagementViewModel.cs",
-    "Line": 2031,
+    "Line": 2024,
     "Member": "ProcessPower",
     "Delivery": "Retained",
     "Call": "SendMessageToPC(Player, Item.InventoryFullMessage)"
   },
   {
     "File": "SWLOR.Game.Server/Feature/GuiDefinition/ViewModel/ShipManagementViewModel.cs",
-    "Line": 2063,
+    "Line": 2056,
     "Member": "ProcessConfiguration",
     "Delivery": "Retained",
     "Call": "SendMessageToPC(Player, \"Only ship configuration modules may be installed to this slot.\")"
   },
   {
     "File": "SWLOR.Game.Server/Feature/GuiDefinition/ViewModel/ShipManagementViewModel.cs",
-    "Line": 2075,
+    "Line": 2068,
     "Member": "ProcessConfiguration",
     "Delivery": "Retained",
     "Call": "SendMessageToPC(Player, \"Only ship configuration modules may be installed to this slot.\")"
   },
   {
     "File": "SWLOR.Game.Server/Feature/GuiDefinition/ViewModel/ShipManagementViewModel.cs",
-    "Line": 2107,
+    "Line": 2100,
     "Member": "ProcessConfiguration",
     "Delivery": "Retained",
     "Call": "SendMessageToPC(Player, Item.InventoryFullMessage)"
   },
   {
     "File": "SWLOR.Game.Server/Feature/GuiDefinition/ViewModel/ShipManagementViewModel.cs",
-    "Line": 2272,
+    "Line": 2265,
     "Member": "OnClickBoardShip",
     "Delivery": "Retained",
     "Call": "SendMessageToPC(Player, \"You are in combat.\")"
   },
   {
     "File": "SWLOR.Game.Server/Feature/GuiDefinition/ViewModel/ShipManagementViewModel.cs",
-    "Line": 2282,
+    "Line": 2275,
     "Member": "OnClickBoardShip",
     "Delivery": "Retained",
     "Call": "FloatingTextStringOnCreature(\"You do not have permission to access that property.\", Player, false)"
   },
   {
     "File": "SWLOR.Game.Server/Feature/GuiDefinition/ViewModel/ShipManagementViewModel.cs",
-    "Line": 2321,
+    "Line": 2314,
     "Member": "OnClickRemoveAccess",
     "Delivery": "Retained",
     "Call": "FloatingTextStringOnCreature(\"Ship access removed.\", Player, false)"
   },
   {
     "File": "SWLOR.Game.Server/Feature/GuiDefinition/ViewModel/ShipManagementViewModel.cs",
-    "Line": 2402,
+    "Line": 2395,
     "Member": "OnClickRepair",
     "Delivery": "Retained",
     "Call": "FloatingTextStringOnCreature(ColorToken.Red(\"Not enough credits!\"), Player, false)"
   },
   {
     "File": "SWLOR.Game.Server/Feature/GuiDefinition/ViewModel/ShipManagementViewModel.cs",
-    "Line": 2415,
+    "Line": 2408,
     "Member": "OnClickRepair",
     "Delivery": "Retained",
     "Call": "FloatingTextStringOnCreature(ColorToken.Green(\"Ship repaired!\"), Player, false)"
@@ -3080,6 +3073,20 @@
     "Call": "SendMessageToPC(player, $\"Your {saberText} been recalibrated to current crafting limits, retaining supported bonuses and previously applied Chiro upgrades.\")"
   },
   {
+    "File": "SWLOR.Game.Server/Feature/MigrationDefinition/LegacySpaceItemMigration.cs",
+    "Line": 58,
+    "Member": "MigrateItem",
+    "Delivery": "Retained",
+    "Call": "SendMessageToPC(player, $\"{name} was retired, since ship roles are now built into each hull. You received {credits} credits for it.\")"
+  },
+  {
+    "File": "SWLOR.Game.Server/Feature/MigrationDefinition/LegacySpaceItemMigration.cs",
+    "Line": 79,
+    "Member": "MigrateItem",
+    "Delivery": "Retained",
+    "Call": "SendMessageToPC(player, $\"{oldName} was converted to {tally.RootReplacement.Name}.\")"
+  },
+  {
     "File": "SWLOR.Game.Server/Feature/MiniMaps.cs",
     "Line": 71,
     "Member": "MiniMapGui",
@@ -3283,50 +3290,29 @@
     "Call": "SendMessageToPC(player, ColorToken.Green(\"Welcome to Star Wars: Legends of the Old Republic!\\n\") +\n                                        ColorToken.White(\"Join our Discord at: https://discord.gg/MyQAM6m\"))"
   },
   {
-    "File": "SWLOR.Game.Server/Feature/ShipModuleDefinition/BulwarkShieldGeneratorModuleDefinition.cs",
-    "Line": 79,
-    "Member": "BulwarkShieldGenerator",
-    "Delivery": "Retained",
-    "Call": "Messaging.SendMessageNearbyToPlayers(\n                        activator,\n                        receiver => $\"{PlayerName.GetDisplayName(receiver, activator)} begins restoring {recovery} shield HP to nearby ships reinforcing their shield integrity.\")"
-  },
-  {
-    "File": "SWLOR.Game.Server/Feature/ShipModuleDefinition/CapitalEwarModuleDefinition.cs",
-    "Line": 56,
-    "Member": "CapitalEWarModule",
-    "Delivery": "Retained",
-    "Call": "Messaging.SendMessageNearbyToPlayers(\n                        activator,\n                        receiver => $\"{PlayerName.GetDisplayName(receiver, activator)} activates their E-War device and begins to draw fire.\")"
-  },
-  {
-    "File": "SWLOR.Game.Server/Feature/ShipModuleDefinition/RepairFieldGeneratorModuleDefinition.cs",
-    "Line": 75,
-    "Member": "RepairFieldGenerator",
-    "Delivery": "Retained",
-    "Call": "Messaging.SendMessageNearbyToPlayers(\n                        activator,\n                        receiver => $\"{PlayerName.GetDisplayName(receiver, activator)} begins restoring {recovery} armor HP to nearby ships.\")"
-  },
-  {
     "File": "SWLOR.Game.Server/Feature/ShipModuleDefinition/ShipModuleActions.cs",
-    "Line": 581,
+    "Line": 580,
     "Member": "MineAsteroid",
     "Delivery": "Retained",
     "Call": "SendMessageToPC(activator, \"Your target has been fully mined.\")"
   },
   {
     "File": "SWLOR.Game.Server/Feature/ShipModuleDefinition/ShipModuleActions.cs",
-    "Line": 595,
+    "Line": 594,
     "Member": "MineAsteroid",
     "Delivery": "Retained",
     "Call": "SendMessageToPC(activator, $\"{GetName(target)} has been fully mined.\")"
   },
   {
     "File": "SWLOR.Game.Server/Feature/ShipModuleDefinition/ShipModuleActions.cs",
-    "Line": 661,
+    "Line": 660,
     "Member": "StripAsteroid",
     "Delivery": "Retained",
     "Call": "SendMessageToPC(activator, $\"{GetName(target)} has been depleted by your strip miner.\")"
   },
   {
     "File": "SWLOR.Game.Server/Feature/ShipModuleDefinition/ShipModuleActions.cs",
-    "Line": 795,
+    "Line": 794,
     "Member": "ApplySupport",
     "Delivery": "Retained",
     "Call": "Messaging.SendMessageNearbyToPlayers(\n                activator,\n                receiver => $\"{PlayerName.GetDisplayName(receiver, activator)} restores {amount} {noun} to {PlayerName.GetDisplayName(receiver, target)}'s ship.\")"
@@ -6189,21 +6175,21 @@
   },
   {
     "File": "SWLOR.Game.Server/Service/Space.cs",
-    "Line": 2455,
+    "Line": 2314,
     "Member": "CompleteWeaponShot",
     "Delivery": "Retained",
     "Call": "Messaging.SendMessageNearbyToPlayers(\n                target,\n                receiver => Combat.BuildCombatLogMessage(receiver, activator, target, attackId, result.ChanceToHit),\n                60f)"
   },
   {
     "File": "SWLOR.Game.Server/Service/Space.cs",
-    "Line": 3018,
+    "Line": 2877,
     "Member": "NotifyShipDamage",
     "Delivery": "Retained",
     "Call": "Messaging.SendMessageNearbyToPlayers(attacker, buildMessage, ShipDamageMessageRange)"
   },
   {
     "File": "SWLOR.Game.Server/Service/Space.cs",
-    "Line": 3024,
+    "Line": 2883,
     "Member": "NotifyShipDamage",
     "Delivery": "Retained",
     "Call": "SendMessageToPC(target, buildMessage(target))"

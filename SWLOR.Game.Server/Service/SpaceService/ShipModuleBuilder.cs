@@ -1,6 +1,4 @@
 using System.Collections.Generic;
-using SWLOR.Game.Server.Service.LogService;
-using SWLOR.Game.Server.Service.PerkService;
 using SWLOR.NWN.API.NWScript.Enum;
 
 namespace SWLOR.Game.Server.Service.SpaceService
@@ -252,30 +250,6 @@ namespace SWLOR.Game.Server.Service.SpaceService
         public ShipModuleBuilder CapitalClassModule()
         {
             _activeShipModule.CapitalClassModule = true;
-
-            return this;
-        }
-
-        /// <summary>
-        /// Indicates a player must have the perk at a specific level in order to equip and use it.
-        /// </summary>
-        /// <param name="perkType">The type of perk to require.</param>
-        /// <param name="requiredLevel">The required level of the perk.</param>
-        /// <returns>A ship module builder with the configured options.</returns>
-        public ShipModuleBuilder RequirePerk(PerkType perkType, int requiredLevel)
-        {
-            if (requiredLevel < 0)
-            {
-                Log.Write(LogGroup.Error, $"Failed to add required perk to {_activeShipModule.Name} because requiredLevel cannot be less than zero.");
-                return this;
-            }
-            if (requiredLevel > 100)
-            {
-                Log.Write(LogGroup.Error, $"Failed to add required perk to {_activeShipModule.Name} because requiredLevel cannot be greater than 100.");
-                return this;
-            }
-
-            _activeShipModule.RequiredPerks[perkType] = requiredLevel;
 
             return this;
         }

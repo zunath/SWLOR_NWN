@@ -26,7 +26,7 @@ namespace SWLOR.Game.Server.EngineTests.Definitions
             MaxShield = 100,
             Capacitor = 100,
             MaxCapacitor = 100,
-            HighPowerModules = { [1] = new ShipStatus.ShipStatusModule { ItemTag = "hull_rep_b" } },
+            HighPowerModules = { [1] = new ShipStatus.ShipStatusModule { ItemTag = "sm_hrep_00" } },
         };
 
         [EngineTest("A player ship cannot damage another player's ship unless the ground rules allow it", Category = "ShipDeath", TimeoutSeconds = 60f)]

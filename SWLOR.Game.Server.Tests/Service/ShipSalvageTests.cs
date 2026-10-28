@@ -376,8 +376,8 @@ public class ShipSalvageTests
 
     // Blueprints, loot and the refinery
 
-    [TestCase("spc_gascloud_t3", "spc_gascloud", 6120, 3)]
-    [TestCase("spc_gascloud_t4", "spc_gascloud", 6120, 4)]
+    [TestCase("spc_gascloud_t3", "spc_gascloud", 479, 3)]
+    [TestCase("spc_gascloud_t4", "spc_gascloud", 479, 4)]
     public void TheGasClouds_YieldTibannaAtTheirTier(string resref, string tag, int appearance, int tier)
     {
         var utp = ReadBlueprint("utp", resref);

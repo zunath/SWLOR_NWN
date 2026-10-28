@@ -199,6 +199,12 @@ namespace SWLOR.Game.Server.Service.SpaceService
             return total > 0 && on < total;
         }
 
+        /// <summary>A module row's two lines: the slot and module, then what it works on.</summary>
+        public static string GetModuleRowText(ShipHudModuleRow row)
+        {
+            return $"{row.SlotLabel}: {row.Name}\nTarget: {row.TargetText}";
+        }
+
         /// <summary>The All Weapons button's text.</summary>
         public static string GetAllWeaponsText(int on, int total)
         {

@@ -26,6 +26,21 @@ namespace SWLOR.Game.Server.Feature.ShipModuleDefinition
 
         private const string GasCloudUnitsVariable = "GAS_CLOUD_REMAINING_UNITS";
 
+        /// <summary>
+        /// A gas cloud is an invisible, clickable placeable (spc_gascloud_t3/t4); this looping effect is what players see.
+        /// </summary>
+        public const VisualEffect GasCloudVisual = VisualEffect.Vfx_Dur_Aura_Cold;
+
+        /// <summary>The cloud effect's scale, sized to read beside a ship.</summary>
+        public const float GasCloudVisualScale = 3.0f;
+
+        /// <summary>Gives a newly spawned gas cloud its looping cloud effect.</summary>
+        public static void ShowGasCloud(uint cloud)
+        {
+            var visual = SupernaturalEffect(EffectVisualEffect(GasCloudVisual, false, GasCloudVisualScale));
+            ApplyEffectToObject(DurationType.Permanent, visual, cloud);
+        }
+
         // Gas harvesting
 
         /// <summary>An error message when the target is not a gas cloud this gas harvester can harvest.</summary>

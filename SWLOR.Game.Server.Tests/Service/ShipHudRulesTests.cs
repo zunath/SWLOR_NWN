@@ -237,6 +237,15 @@ public class ShipHudRulesTests
         ShipHudRules.ShouldTurnAllWeaponsOn(on, total).Should().Be(expected);
     }
 
+    /// <summary>Checks a module row puts the module and its target on separate lines, so neither cuts the other off.</summary>
+    [Test]
+    public void GetModuleRowText_PutsTheTargetOnItsOwnLine()
+    {
+        var row = new ShipHudModuleRow { SlotLabel = "High 1", Name = "Laser Cannon", TargetText = "Septra Khanate Scrap Hauler" };
+
+        ShipHudRules.GetModuleRowText(row).Should().Be("High 1: Laser Cannon" + "\n" + "Target: Septra Khanate Scrap Hauler");
+    }
+
     /// <summary>Checks the All Weapons button reads Off, partial or On.</summary>
     [TestCase(0, 0, "All Weapons: none fitted")]
     [TestCase(0, 3, "All Weapons: Off")]

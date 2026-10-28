@@ -60,8 +60,7 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
 
         public string ModuleSummary { get => Get<string>(); set => Set(value); }
         public bool NoModulesVisible { get => Get<bool>(); set => Set(value); }
-        public GuiBindingList<string> ModuleNames { get => Get<GuiBindingList<string>>(); set => Set(value); }
-        public GuiBindingList<string> ModuleTargets { get => Get<GuiBindingList<string>>(); set => Set(value); }
+        public GuiBindingList<string> ModuleTexts { get => Get<GuiBindingList<string>>(); set => Set(value); }
         public GuiBindingList<float> ModuleProgress { get => Get<GuiBindingList<float>>(); set => Set(value); }
         public GuiBindingList<bool> ModuleCanRetarget { get => Get<GuiBindingList<bool>>(); set => Set(value); }
 
@@ -94,8 +93,7 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
             AllWeaponsEnabled = false;
             ModuleSummary = string.Empty;
             NoModulesVisible = true;
-            ModuleNames = new GuiBindingList<string>();
-            ModuleTargets = new GuiBindingList<string>();
+            ModuleTexts = new GuiBindingList<string>();
             ModuleProgress = new GuiBindingList<float>();
             ModuleCanRetarget = new GuiBindingList<bool>();
             StatLabels = new GuiBindingList<string>();
@@ -163,8 +161,7 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
             Assign(summary, () => ModuleSummary, v => ModuleSummary = v);
             Assign(_moduleRows.Count == 0, () => NoModulesVisible, v => NoModulesVisible = v);
 
-            AssignList(_moduleRows.Select(x => $"{x.SlotLabel}: {x.Name}").ToList(), () => ModuleNames, v => ModuleNames = v);
-            AssignList(_moduleRows.Select(x => x.TargetText).ToList(), () => ModuleTargets, v => ModuleTargets = v);
+            AssignList(_moduleRows.Select(ShipHudRules.GetModuleRowText).ToList(), () => ModuleTexts, v => ModuleTexts = v);
             AssignList(_moduleRows.Select(x => x.Progress).ToList(), () => ModuleProgress, v => ModuleProgress = v);
             AssignList(_moduleRows.Select(x => x.CanRetarget).ToList(), () => ModuleCanRetarget, v => ModuleCanRetarget = v);
         }

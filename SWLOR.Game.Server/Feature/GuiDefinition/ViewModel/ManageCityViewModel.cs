@@ -1,3 +1,4 @@
+using System;
 using System.Linq;
 using SWLOR.Game.Server.Entity;
 using SWLOR.Game.Server.Feature.GuiDefinition.Payload;
@@ -500,6 +501,38 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
 
         };
 
+        /// <summary>
+        /// Parses and clamps the entered taxes. Without the Edit Taxes permission the stored values are kept
+        /// and the method returns false when the player tried to change either one.
+        /// </summary>
+        public static bool TryResolveTaxes(
+            bool canEditTaxes,
+            string citizenshipText,
+            string transportationText,
+            int currentCitizenshipTax,
+            int currentTransportationTax,
+            out int citizenshipTax,
+            out int transportationTax)
+        {
+            if (!int.TryParse(citizenshipText, out citizenshipTax))
+                citizenshipTax = 0;
+
+            if (!int.TryParse(transportationText, out transportationTax))
+                transportationTax = 0;
+
+            citizenshipTax = Math.Clamp(citizenshipTax, 0, 50000);
+            transportationTax = Math.Clamp(transportationTax, 0, 25);
+
+            if (canEditTaxes)
+                return true;
+
+            var unchanged = citizenshipTax == currentCitizenshipTax &&
+                            transportationTax == currentTransportationTax;
+            citizenshipTax = currentCitizenshipTax;
+            transportationTax = currentTransportationTax;
+            return unchanged;
+        }
+
         public Action SaveChanges() => () =>
         {
             if (CityName.Length <= 0)
@@ -509,30 +542,26 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
                 return;
             }
 
+            RefreshPermissions();
+
             var dbCity = DB.Get<WorldProperty>(_cityId);
 
+            if (!TryResolveTaxes(
+                    CanEditTaxes,
+                    CitizenshipTax,
+                    TransportationTax,
+                    dbCity.Taxes[PropertyTaxType.Citizenship],
+                    dbCity.Taxes[PropertyTaxType.Transportation],
+                    out var citizenshipTax,
+                    out var transportationTax))
+            {
+                Instructions = "Insufficient permissions to edit taxes.";
+                InstructionsColor = GuiColor.Red;
+                RefreshTaxesAndFees();
+                return;
+            }
+
             dbCity.CustomName = CityName;
-
-            if (!int.TryParse(CitizenshipTax, out var citizenshipTax))
-            {
-                citizenshipTax = 0;
-            }
-
-            if (!int.TryParse(TransportationTax, out var transportationTax))
-            {
-                transportationTax = 0;
-            }
-
-            if (citizenshipTax < 0)
-                citizenshipTax = 0;
-            else if (citizenshipTax > 50000)
-                citizenshipTax = 50000;
-
-            if (transportationTax < 0)
-                transportationTax = 0;
-            else if (transportationTax > 25)
-                transportationTax = 25;
-
             dbCity.Taxes[PropertyTaxType.Citizenship] = citizenshipTax;
             dbCity.Taxes[PropertyTaxType.Transportation] = transportationTax;
 

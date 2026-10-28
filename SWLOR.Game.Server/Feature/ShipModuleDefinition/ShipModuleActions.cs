@@ -168,6 +168,10 @@ namespace SWLOR.Game.Server.Feature.ShipModuleDefinition
             bool singleImpact,
             Action<ShipShotResult> afterDamage = null)
         {
+            // A cloaked ship fires nothing, and its weapons stay locked for a few seconds after it decloaks.
+            if (Space.IsShipFiringLocked(activator))
+                return null;
+
             switch (step.Family)
             {
                 case ShipModuleFamily.LaserCannon:

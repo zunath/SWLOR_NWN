@@ -5748,94 +5748,87 @@
   },
   {
     "File": "SWLOR.Game.Server/Service/Space.cs",
-    "Line": 576,
+    "Line": 581,
     "Member": "UseShipComputer",
     "Delivery": "Retained",
     "Call": "SendMessageToPC(player, ColorToken.Red(\"This ship's controls are in use.\"))"
   },
   {
     "File": "SWLOR.Game.Server/Service/Space.cs",
-    "Line": 625,
+    "Line": 630,
     "Member": "TakeShipControls",
     "Delivery": "Retained",
     "Call": "SendMessageToPC(player, ColorToken.Red(\"You do not have permission to pilot this starship.\"))"
   },
   {
     "File": "SWLOR.Game.Server/Service/Space.cs",
-    "Line": 635,
+    "Line": 640,
     "Member": "TakeShipControls",
     "Delivery": "Retained",
     "Call": "SendMessageToPC(player, ColorToken.Red(\"ERROR: Could not locate ship. Notify an admin.\"))"
   },
   {
     "File": "SWLOR.Game.Server/Service/Space.cs",
-    "Line": 641,
+    "Line": 646,
     "Member": "TakeShipControls",
     "Delivery": "Retained",
     "Call": "SendMessageToPC(player, ColorToken.Red($\"This ship is docked aboard {hostName}. Undock it from that ship's computer or with /undock.\"))"
   },
   {
     "File": "SWLOR.Game.Server/Service/Space.cs",
-    "Line": 648,
+    "Line": 653,
     "Member": "TakeShipControls",
     "Delivery": "Retained",
     "Call": "SendMessageToPC(player, ColorToken.Red(\"This ship's controls are in use.\"))"
   },
   {
     "File": "SWLOR.Game.Server/Service/Space.cs",
-    "Line": 655,
+    "Line": 660,
     "Member": "TakeShipControls",
     "Delivery": "Retained",
     "Call": "SendMessageToPC(player, ColorToken.Red(string.IsNullOrEmpty(skillError)\n                    ? \"You do not have the ability to pilot this ship.\"\n                    : skillError))"
   },
   {
     "File": "SWLOR.Game.Server/Service/Space.cs",
-    "Line": 671,
+    "Line": 676,
     "Member": "TakeShipControls",
     "Delivery": "Retained",
     "Call": "SendMessageToPC(player, ColorToken.Red(\"Unable to locate this starship's space destination. Notify an admin.\"))"
   },
   {
     "File": "SWLOR.Game.Server/Service/Space.cs",
-    "Line": 679,
+    "Line": 684,
     "Member": "TakeShipControls",
     "Delivery": "Retained",
     "Call": "SendMessageToPC(player, ColorToken.Red(\"This starship's space destination is unavailable. Notify an admin.\"))"
   },
   {
     "File": "SWLOR.Game.Server/Service/Space.cs",
-    "Line": 775,
+    "Line": 780,
     "Member": "CheckShipLaunch",
     "Delivery": "Retained",
     "Call": "SendMessageToPC(player, ColorToken.Red(\"Unable to reach this starship's space destination. Please try again or notify an admin.\"))"
   },
   {
     "File": "SWLOR.Game.Server/Service/Space.cs",
-    "Line": 2421,
+    "Line": 2444,
     "Member": "CompleteWeaponShot",
     "Delivery": "Retained",
     "Call": "Messaging.SendMessageNearbyToPlayers(\n                target,\n                receiver => Combat.BuildCombatLogMessage(receiver, activator, target, attackId, result.ChanceToHit),\n                60f)"
   },
   {
     "File": "SWLOR.Game.Server/Service/Space.cs",
-    "Line": 2975,
+    "Line": 3004,
     "Member": "NotifyShipDamage",
     "Delivery": "Retained",
     "Call": "Messaging.SendMessageNearbyToPlayers(attacker, buildMessage, ShipDamageMessageRange)"
   },
   {
     "File": "SWLOR.Game.Server/Service/Space.cs",
-    "Line": 2981,
+    "Line": 3010,
     "Member": "NotifyShipDamage",
     "Delivery": "Retained",
     "Call": "SendMessageToPC(target, buildMessage(target))"
-  },
-  {
-    "File": "SWLOR.Game.Server/Service/Space.cs",
-    "Line": 3185,
-    "Member": "PreventSpaceStealth",
-    "Delivery": "Retained",
-    "Call": "SendMessageToPC(creature, ColorToken.Red($\"You cannot enter stealth mode in space.\"))"
   },
   {
     "File": "SWLOR.Game.Server/Service/SpaceAccess.cs",
@@ -6266,77 +6259,91 @@
   },
   {
     "File": "SWLOR.Game.Server/Service/SpaceSignatureJump.cs",
-    "Line": 122,
+    "Line": 113,
+    "Member": "BeginSignatureJump",
+    "Delivery": "Retained",
+    "Call": "SendMessageToPC(player, ColorToken.Red(cloakBlock))"
+  },
+  {
+    "File": "SWLOR.Game.Server/Service/SpaceSignatureJump.cs",
+    "Line": 126,
     "Member": "BeginSignatureJump",
     "Delivery": "Retained",
     "Call": "SendMessageToPC(player, ColorToken.Red(SignatureJumpRules.Message(refusal)))"
   },
   {
     "File": "SWLOR.Game.Server/Service/SpaceSignatureJump.cs",
-    "Line": 135,
+    "Line": 139,
     "Member": "BeginSignatureJump",
     "Delivery": "Retained",
     "Call": "SendMessageToPC(player, ColorToken.Red(RiftRules.Message(riftRefusal)))"
   },
   {
     "File": "SWLOR.Game.Server/Service/SpaceSignatureJump.cs",
-    "Line": 143,
+    "Line": 147,
     "Member": "BeginSignatureJump",
     "Delivery": "Retained",
     "Call": "SendMessageToPC(player, ColorToken.Cyan($\"Spooling the jump drive: {ScanningTuning.JumpSpoolSeconds:0} seconds. Taking fire breaks it off.\"))"
   },
   {
     "File": "SWLOR.Game.Server/Service/SpaceSignatureJump.cs",
-    "Line": 154,
+    "Line": 158,
     "Member": "InterruptSignatureJump",
     "Delivery": "Retained",
     "Call": "SendMessageToPC(ship, ColorToken.Red(SignatureJumpRules.Message(SignatureJumpRefusal.Damaged)))"
   },
   {
     "File": "SWLOR.Game.Server/Service/SpaceSignatureJump.cs",
-    "Line": 174,
+    "Line": 178,
     "Member": "CompleteSignatureJump",
     "Delivery": "Retained",
     "Call": "SendMessageToPC(player, ColorToken.Red(SignatureJumpRules.Message(refusal)))"
   },
   {
     "File": "SWLOR.Game.Server/Service/SpaceSignatureJump.cs",
-    "Line": 196,
+    "Line": 200,
     "Member": "CompleteSignatureJump",
     "Delivery": "Retained",
     "Call": "SendMessageToPC(player, ColorToken.Cyan($\"Jumped to the {ScanningRules.TypeName(signature.Type)}.\"))"
   },
   {
     "File": "SWLOR.Game.Server/Service/SpaceSignatureJump.cs",
-    "Line": 227,
+    "Line": 231,
     "Member": "RunSensorSweep",
     "Delivery": "Retained",
     "Call": "SendMessageToPC(player, ColorToken.Red(\"Only the pilot can run a Sensor Sweep.\"))"
   },
   {
     "File": "SWLOR.Game.Server/Service/SpaceSignatureJump.cs",
-    "Line": 235,
+    "Line": 239,
     "Member": "RunSensorSweep",
     "Delivery": "Retained",
     "Call": "SendMessageToPC(player, ColorToken.Red(\"A Sensor Sweep needs a Probe Launcher fitted.\"))"
   },
   {
     "File": "SWLOR.Game.Server/Service/SpaceSignatureJump.cs",
-    "Line": 243,
+    "Line": 246,
+    "Member": "RunSensorSweep",
+    "Delivery": "Retained",
+    "Call": "SendMessageToPC(player, ColorToken.Red(cloakBlock))"
+  },
+  {
+    "File": "SWLOR.Game.Server/Service/SpaceSignatureJump.cs",
+    "Line": 254,
     "Member": "RunSensorSweep",
     "Delivery": "Retained",
     "Call": "SendMessageToPC(player, ColorToken.Red($\"The Sensor Sweep is recharging: {SensorSweepRules.SecondsLeft(last, now)} seconds.\"))"
   },
   {
     "File": "SWLOR.Game.Server/Service/SpaceSignatureJump.cs",
-    "Line": 249,
+    "Line": 260,
     "Member": "RunSensorSweep",
     "Delivery": "Retained",
     "Call": "SendMessageToPC(player, ColorToken.Red(\"Not enough capacitor for a Sensor Sweep.\"))"
   },
   {
     "File": "SWLOR.Game.Server/Service/SpaceSignatureJump.cs",
-    "Line": 286,
+    "Line": 301,
     "Member": "RunSensorSweep",
     "Delivery": "Retained",
     "Call": "SendMessageToPC(player, ColorToken.Cyan($\"Sensor Sweep: {ordered.Count} ship(s) within {range} m.\"))"
@@ -6977,5 +6984,40 @@
     "Member": "ApplyWildSpaceEnvironment",
     "Delivery": "Retained",
     "Call": "SendMessageToPC(ship, ColorToken.Cyan(WildSpaceRules.EntryMessage(system?.Name ?? GetName(GetArea(ship)), environment, ignorePenalties)))"
+  },
+  {
+    "File": "SWLOR.Game.Server/Service/SpaceCloak.cs",
+    "Line": 151,
+    "Member": "BeginCloak",
+    "Delivery": "Retained",
+    "Call": "SendMessageToPC(ship, ColorToken.Cyan($\"Cloaking: your ship vanishes in {profile.EngageSeconds:0.#} seconds.\"))"
+  },
+  {
+    "File": "SWLOR.Game.Server/Service/SpaceCloak.cs",
+    "Line": 174,
+    "Member": "CompleteCloak",
+    "Delivery": "Retained",
+    "Call": "SendMessageToPC(ship, ColorToken.Cyan(\"Your ship is cloaked.\"))"
+  },
+  {
+    "File": "SWLOR.Game.Server/Service/SpaceCloak.cs",
+    "Line": 212,
+    "Member": "EndCloak",
+    "Delivery": "Retained",
+    "Call": "SendMessageToPC(ship, ColorToken.Red(message))"
+  },
+  {
+    "File": "SWLOR.Game.Server/Service/SpaceCloak.cs",
+    "Line": 214,
+    "Member": "EndCloak",
+    "Delivery": "Retained",
+    "Call": "SendMessageToPC(ship, end == ShipCloakEnd.Decloaked\n                    ? ColorToken.Cyan($\"Your ship is visible again. Weapons are locked for {CloakTuning.DecloakLockSeconds:0} seconds.\")\n                    : ColorToken.Cyan(\"The cloak failed.\"))"
+  },
+  {
+    "File": "SWLOR.Game.Server/Service/SpaceCloak.cs",
+    "Line": 401,
+    "Member": "RedirectSpaceStealth",
+    "Delivery": "Retained",
+    "Call": "SendMessageToPC(creature, ColorToken.Red(\"Only a Cloaking Device hides a ship in space.\"))"
   }
 ]

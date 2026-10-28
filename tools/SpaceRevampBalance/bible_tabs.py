@@ -13,6 +13,7 @@ import zipfile
 from pathlib import Path
 
 sys.path.insert(0, str(Path(__file__).resolve().parent))
+import cloak  # noqa: E402
 import model as m  # noqa: E402
 
 WORKBOOK = m.REPO / "design" / "bible" / "SWLOR Design Bible.xlsx"
@@ -213,7 +214,7 @@ UTILITY = {
     "Target Painter": lambda r: f"target takes +{5 + r // 9}% damage",
     "Interdictor": lambda r: f"{15 + r // 5} m",
     "Afterburner": lambda r: f"+{25 + r // 3}% speed",
-    "Cloaking Device": lambda r: f"reveal range {10 - r // 9} m",
+    "Cloaking Device": lambda r: f"reveal range {cloak.reveal_range(r)} m",
     "Hypermatter Injector": lambda r: f"+{30 + r} capacitor",
     "Cargo Expander": lambda r: f"+{20 + r // 3}% cargo",
     "Smuggling Compartment": lambda r: f"scan chance -{15 + r // 3}%",
@@ -253,7 +254,9 @@ def modules():
         ["Jammer", "Mid", "Piloting (Sensors)", "Toggle", 4.0, 4, "None", "Target Accuracy down."],
         ["Target Painter", "Mid", "Piloting (Sensors)", "Toggle", 4.0, 4, "None", "Target takes more damage from every source."],
         ["Afterburner", "Mid", "Piloting (Helm)", "Toggle", 2.0, 3, "None", "+ speed while on."],
-        ["Cloaking Device", "Mid", "Piloting (Helm)", "Toggle", 1.0, 2, "None", "Small hulls and Blockade Runners; speed -50%; no module or ability use while cloaked (W16)."],
+        ["Cloaking Device", "Mid", "Piloting (Helm)", "Toggle", cloak.CYCLE_SECONDS, cloak.CAPACITOR, "None",
+         f"Small hulls and Blockade Runners; cloak time {cloak.ENGAGE_SECONDS:g} s ({cloak.ROLE_ENGAGE_SECONDS:g} s on Interceptors, Bombers and Explorers); speed -{cloak.SPEED_PERCENT}% "
+         f"(-{100 - cloak.ROLE_SPEED_PERCENT}% on them); no module or ability use while cloaked; weapons locked {cloak.DECLOAK_LOCK_SECONDS} s after decloaking (Cloaking (Revamp))."],
         ["Probe Launcher", "Mid", "Piloting (Sensors)", "Toggle", 10.0, 4, "None", "Adds signal to every hidden signature in the system; its Sensor Sweep pulse lists ships in range (Scanning (Revamp))."],
         ["Data Analyzer", "Mid", "Espionage (Sensors)", "One press", 20.0, 5, "None", "No rank ladder; the Slicing perk gates targets."],
         ["Targeting Computer", "Mid", "Piloting (Helm)", "Passive", "", "", "None", "+ Accuracy; the best one counts."],
@@ -774,7 +777,8 @@ if __name__ == "__main__":
     import trade
     import wildspace
     tabs = [starships(), modules(), enemies(), balance(), trade.trade_tab(Sheet), components_tab(),
-            scanning.scanning_tab(Sheet), rewards_tab(), slicing.slicing_tab(Sheet), wildspace.wildspace_tab(Sheet)]
+            scanning.scanning_tab(Sheet), rewards_tab(), slicing.slicing_tab(Sheet), wildspace.wildspace_tab(Sheet),
+            cloak.cloak_tab(Sheet)]
     if "--check" in sys.argv:
         check(tabs)
         sys.exit(0)

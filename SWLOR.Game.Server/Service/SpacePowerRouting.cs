@@ -83,7 +83,9 @@ namespace SWLOR.Game.Server.Service
                 return;
 
             SetLocalFloat(pilot, Stat.ShipMovementSpeedVariable,
-                (float)PowerRoutingRules.ApplySpeed(status.SpeedMultiplier, status.PowerRouting));
+                (float)ShipCloakRules.ApplySpeed(
+                    PowerRoutingRules.ApplySpeed(status.SpeedMultiplier, status.PowerRouting),
+                    GetCloakSpeedMultiplier(pilot)));
             Stat.ApplyCreatureMovementRate(pilot);
         }
 

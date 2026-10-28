@@ -160,6 +160,10 @@ namespace SWLOR.Game.Server.Service
             SaveShipStatus(creature, status);
             RefreshSlotVisuals(creature, status, slotNumber);
 
+            // Switching the Cloaking Device off, by hand or by any auto-off, ends the cloak.
+            if (_cloaks.TryGet(creature, out var cloak) && cloak.Slot == slotNumber)
+                EndCloak(creature, null, false);
+
             var slotOperator = GetSlotOperator(creature, status, slotNumber);
             if (!string.IsNullOrWhiteSpace(message) && GetIsPC(slotOperator))
                 SendMessageToPC(slotOperator, message);
@@ -183,6 +187,7 @@ namespace SWLOR.Game.Server.Service
         /// </summary>
         private static void ClearShipToggleState(uint creature, ShipStatus status)
         {
+            ClearCloakState(creature);
             _toggleWake.Remove(creature);
             if (status != null)
                 Toggles(status).Clear();
@@ -191,6 +196,7 @@ namespace SWLOR.Game.Server.Service
         /// <summary>Switches off every toggle on a ship without a message (area change, logout).</summary>
         public static void TurnOffShipToggles(uint creature)
         {
+            ClearCloakState(creature);
             if (!_toggleWake.ContainsKey(creature)) return;
             _toggleWake.Remove(creature);
 
@@ -374,13 +380,14 @@ namespace SWLOR.Game.Server.Service
                 var currentTarget = GetLocalObject(playerCrewed ? crewMember : creature, "SPACE_TARGET");
                 var target =ShipToggleRules.ChooseTarget(mode, currentTarget, active.TargetId, creature);
                 var targetStatus = target == creature ? status : GetShipStatus(target);
-                var targetValid = GetIsObjectValid(target);
+                var targetValid = GetIsObjectValid(target) && !IsShipHiddenFrom(creature, target);
                 var required = GetModuleCapacitorCost(creature, status, module, detail);
                 var needsTarget = mode != ShipToggleTargetMode.SelfCentered;
 
                 ShipToggleCheck BuildCheck(string validationError, int requiredCapacitor) => new()
                 {
                     ShipInSpace = !GetIsDead(creature),
+                    ShipCloaked = detail.Type != ShipModuleType.CloakingDevice && GetCloakPhase(creature) != ShipCloakPhase.Off,
                     NeedsTarget = needsTarget,
                     TargetValid = targetValid,
                     TargetDead = targetValid && GetIsDead(target),

@@ -423,6 +423,11 @@ namespace SWLOR.Game.Server.Service
         public static (uint, ShipStatus) GetCurrentTarget(uint player)
         {
             var target = GetLocalObject(player, "SPACE_TARGET");
+
+            // A target that cloaked is out of sight: the selection stays but nothing can act on it.
+            if (IsShipHiddenFrom(player, target))
+                return (OBJECT_INVALID, null);
+
             return (target, GetShipStatus(target));
         }
 
@@ -1634,6 +1639,14 @@ namespace SWLOR.Game.Server.Service
                 return;
             }
 
+            // A cloaking or cloaked ship uses nothing but its Cloaking Device, and its weapons stay locked after it decloaks.
+            var cloakBlock = GetCloakModuleBlock(activator, shipModuleDetails);
+            if (!string.IsNullOrEmpty(cloakBlock))
+            {
+                SendActivationMessage(user, cloakBlock);
+                return;
+            }
+
             // Check capacitor requirements
             var requiredCapacitor = GetModuleCapacitorCost(activator, activatorShipStatus, shipModule, shipModuleDetails);
 
@@ -2632,6 +2645,7 @@ namespace SWLOR.Game.Server.Service
             {
                 MarkShipCombat(attacker, target);
                 InterruptSignatureJump(target);
+                NotifyCloakDamaged(target);
             }
 
             if (hullDamage > 0)
@@ -2800,6 +2814,7 @@ namespace SWLOR.Game.Server.Service
             if (targetShipStatus.Hull < hullBefore)
             {
                 MarkShipCombat(attacker, target);
+                NotifyCloakDamaged(target);
                 SpaceCombatEvents.RaiseHullDamaged(new SpaceHullEvent
                 {
                     Ship = target,
@@ -2842,8 +2857,8 @@ namespace SWLOR.Game.Server.Service
                 UpdateNpcRepairToggles(creature, shipStatus, false);
                 RunNpcRoleUpkeep(creature, shipStatus, role);
 
-                // Determine target
-                var target = Enmity.GetHighestEnmityTarget(creature);
+                // Determine target. A cloaked ship keeps its enmity but is skipped until it can be seen again.
+                var target = Enmity.GetHighestEnmityAttackTarget(creature);
                 if (!GetIsObjectValid(target)) continue;
 
                 // Ships follow the same combat leash as ground enemies.
@@ -3177,26 +3192,6 @@ namespace SWLOR.Game.Server.Service
             }
 
             return bonuses;
-        }
-
-        /// <summary>
-        /// When a player attempts to stealth while in space mode,
-        /// exit the stealth mode and send an error message.
-        /// </summary>
-        [NWNEventHandler(ScriptName.OnStealthEnterBefore)]
-        public static void PreventSpaceStealth()
-        {
-            var creature = OBJECT_SELF;
-
-            if (!IsPlayerInSpaceMode(creature))
-                return;
-
-            AssignCommand(creature, () =>
-            {
-                SetActionMode(creature, ActionMode.Stealth, false);
-            });
-
-            SendMessageToPC(creature, ColorToken.Red($"You cannot enter stealth mode in space."));
         }
 
     }

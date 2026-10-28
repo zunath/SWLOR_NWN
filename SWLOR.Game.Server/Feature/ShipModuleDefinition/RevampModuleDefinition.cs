@@ -114,6 +114,9 @@ namespace SWLOR.Game.Server.Feature.ShipModuleDefinition
                 case ShipModuleFamily.DataAnalyzer:
                     DataAnalyzer(step);
                     break;
+                case ShipModuleFamily.CloakingDevice:
+                    CloakingDevice(step);
+                    break;
             }
         }
 
@@ -145,6 +148,7 @@ namespace SWLOR.Game.Server.Feature.ShipModuleDefinition
                 ShipModuleFamily.EWarArray => ShipModuleType.CapitalEwar,
                 ShipModuleFamily.ProbeLauncher => ShipModuleType.ProbeLauncher,
                 ShipModuleFamily.DataAnalyzer => ShipModuleType.DataAnalyzer,
+                ShipModuleFamily.CloakingDevice => ShipModuleType.CloakingDevice,
                 _ => ShipModuleType.Passive,
             };
         }
@@ -350,6 +354,15 @@ namespace SWLOR.Game.Server.Feature.ShipModuleDefinition
                 .ValidTargetType(ObjectType.Placeable)
                 .ValidationAction((activator, _, target, _, _) => Space.DataAnalyzerError(activator, target))
                 .ActivatedAction((activator, _, target, _, _) => Space.StartDataAnalyzer(activator, target));
+        }
+
+        private void CloakingDevice(ShipModuleStep step)
+        {
+            _builder
+                .CanTargetSelf()
+                .MaxDistance(SelfRange)
+                .ValidationAction((activator, status, _, _, _) => Space.CloakError(activator, status))
+                .ActivatedAction((activator, status, _, _, _) => Space.RunCloakCycle(activator, status, Effective(step)));
         }
 
         private void EWarArray(ShipModuleStep step)

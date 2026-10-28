@@ -35,9 +35,15 @@ namespace SWLOR.Game.Server.Service
 
         /// <summary>
         /// Whether the source treats the target ship as an enemy it can attack: the engine's reaction for NPCs, and
-        /// the PvP rules between two players.
+        /// the PvP rules between two players. A cloaked ship the source cannot see is not a target.
         /// </summary>
         public static bool IsShipEnemy(uint source, uint target)
+        {
+            return IsShipEnemyIgnoringCloak(source, target) && !IsShipHiddenFrom(source, target);
+        }
+
+        /// <summary>Whether the source treats the target as an enemy before a cloak is counted.</summary>
+        public static bool IsShipEnemyIgnoringCloak(uint source, uint target)
         {
             return PvpCombat.IsPlayerAgainstPlayer(source, target)
                 ? CanShipAttack(source, target)

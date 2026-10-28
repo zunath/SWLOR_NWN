@@ -106,6 +106,10 @@ namespace SWLOR.Game.Server.Service
             if (!IsFlyingIn(player, area) || _customsScans.ContainsKey(player))
                 return;
 
+            // Pirates cannot hunt what they cannot see: a cloaked ship slips past the ambush roll.
+            if (Space.DodgesPirateAmbush(player))
+                return;
+
             var ship = GetActiveShip(player);
             if (ship == null)
                 return;

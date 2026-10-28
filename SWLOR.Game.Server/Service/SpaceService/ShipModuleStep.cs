@@ -82,6 +82,10 @@ namespace SWLOR.Game.Server.Service.SpaceService
         /// <summary>The range in meters of a Probe Launcher's Sensor Sweep pulse.</summary>
         public int SweepRange { get; set; }
 
+        // Cloaking
+        /// <summary>The range in meters within which another ship sees a ship cloaked with this device.</summary>
+        public int RevealRange { get; set; }
+
         /// <summary>A copy whose numbers can be changed (component traits) without touching the catalog row.</summary>
         public ShipModuleStep Clone() => (ShipModuleStep)MemberwiseClone();
     }

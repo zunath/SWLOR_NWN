@@ -39,6 +39,9 @@ namespace SWLOR.Game.Server.Service.SpaceService
         /// <summary>Where the Engineer routes power.</summary>
         public ShipPowerRouting PowerRouting { get; set; }
 
+        /// <summary>The Cloaking Device's state for the Cloak line, or null when the ship has none fitted.</summary>
+        public string CloakText { get; set; }
+
         /// <summary>The cargo hold size, or null when the hull has none listed.</summary>
         public int? Cargo { get; set; }
 

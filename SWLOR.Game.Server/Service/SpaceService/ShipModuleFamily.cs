@@ -50,5 +50,6 @@ namespace SWLOR.Game.Server.Service.SpaceService
         SmugglingCompartment = 42,
         ProbeLauncher = 43,
         DataAnalyzer = 44,
+        CloakingDevice = 45,
     }
 }

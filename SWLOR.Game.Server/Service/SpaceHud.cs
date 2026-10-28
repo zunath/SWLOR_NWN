@@ -152,6 +152,8 @@ namespace SWLOR.Game.Server.Service
             stats.Defense = Space.GetShipDefense(player, status);
             stats.Evasion = Space.GetShipEvasion(player, status);
             stats.CriticalRate = Space.GetShipCriticalRate(player, status);
+            stats.SpeedMultiplier = ShipCloakRules.ApplySpeed(stats.SpeedMultiplier, Space.GetCloakSpeedMultiplier(player));
+            stats.CloakText = Space.GetCloakStatusText(player, status);
 
             var ship = Space.FindShipDetail(status.ItemTag);
             if (ship != null)

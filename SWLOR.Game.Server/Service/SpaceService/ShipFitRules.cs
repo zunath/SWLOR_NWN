@@ -25,6 +25,12 @@ namespace SWLOR.Game.Server.Service.SpaceService
             if (ship.Hull == null && ship.CapitalShip && !module.CapitalClassModule)
                 return CapitalShipMessage;
 
+            if (module.Step?.Family == ShipModuleFamily.CloakingDevice && ship.Hull != null &&
+                !ShipCloakRules.CanFit(ship.Hull.Size, ship.Hull.Role))
+            {
+                return ShipCloakRules.FitMessage;
+            }
+
             return string.Empty;
         }
     }

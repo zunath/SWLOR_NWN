@@ -4073,6 +4073,16 @@ namespace SWLOR.Game.Server.Service.CraftService
         ShipAmmoSeekerMissile4 = 7530,
         ShipAmmoSeekerMissile5 = 7531,
         ShipDataAnalyzer00 = 7532,
+        ShipCloakingDevice00 = 7533,
+        ShipCloakingDevice05 = 7534,
+        ShipCloakingDevice10 = 7535,
+        ShipCloakingDevice15 = 7536,
+        ShipCloakingDevice20 = 7537,
+        ShipCloakingDevice25 = 7538,
+        ShipCloakingDevice30 = 7539,
+        ShipCloakingDevice35 = 7540,
+        ShipCloakingDevice40 = 7541,
+        ShipCloakingDevice45 = 7542,
         // END space revamp catalog
     }
 }

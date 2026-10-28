@@ -17,7 +17,7 @@ namespace SWLOR.Game.Server.Tests.Perks;
 
 /// <summary>
 /// The Command style of Piloting (plan section 6, Appendix A): the perk rows, prices and ranks of the Design Bible
-/// tab "Piloting (Revamp)", the space abilities they grant and the stats the traits set.
+/// tab "Piloting", the space abilities they grant and the stats the traits set.
 /// </summary>
 public class PilotingCommandTests
 {
@@ -357,8 +357,6 @@ public class PilotingCommandTests
         actions.Should().Contain("amount = ApplyRepairEfficiency(activator, amount);");
         ReadServerSource("Feature", "ShipModuleDefinition", "RevampModuleDefinition.cs")
             .Should().Contain("ShipModuleActions.ApplyRepairEfficiency(activator, repair)");
-        ReadServerSource("Feature", "ShipModuleDefinition", "RepairFieldGeneratorModuleDefinition.cs")
-            .Should().Contain("ShipModuleActions.ApplyRepairEfficiency(activator, repairAmount + bonusRecovery)");
 
         var crew = ReadServerSource("Service", "SpaceService", "SpaceCrew.cs");
         crew.Should().Contain("StatType.SpaceCrewEffectivenessPercentAdjustment");

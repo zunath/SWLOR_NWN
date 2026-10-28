@@ -11,7 +11,7 @@ namespace SWLOR.Game.Server.Service.PerkService
         [PerkCategory("General", true)]
         General = 2,
 
-        [PerkCategory("Piloting", true)]
+        [PerkCategory("Piloting", false)]
         Piloting = 5,
 
         [PerkCategory("First Aid", false)]

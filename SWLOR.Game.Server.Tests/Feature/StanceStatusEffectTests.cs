@@ -293,7 +293,7 @@ public class StanceStatusEffectTests
             // match on the toggle (exactly one refund-cleaned status effect) rather than the name alone.
             // A space style stance shares its name with its ground source (Ordnance Stance), so the row's tab
             // also decides whether the ability is the space one.
-            var isSpaceRow = row.Tab.StartsWith("Piloting (Revamp)", StringComparison.Ordinal);
+            var isSpaceRow = row.Tab == "Piloting";
             var matches = abilities
                 .Where(ability => ability.Name == row.PerkName &&
                                   ability.StatusEffectTypesRemovedOnPerkRefund.Count == 1 &&

@@ -1,5 +1,6 @@
 using System;
 using System.Collections.Generic;
+using System.Linq;
 using SWLOR.Game.Server.Entity;
 using SWLOR.Game.Server.Service;
 using SWLOR.Game.Server.Service.LogService;
@@ -18,11 +19,21 @@ namespace SWLOR.Game.Server.Feature.MigrationDefinition;
 /// </summary>
 internal static class StoredItemSweep
 {
+    /// <summary>The first server migration whose sweep also converts retired ship deeds and modules.</summary>
+    internal const int LegacySpaceItemsVersion = 30;
+
     internal static void Migrate(int version)
     {
         var progress = new ServerMigrationProgress(version, CountSections());
-        var changed = Sweep(new ParallelStoredItemPass(progress), SavedDataStoredItemConverter.Instance);
+        var space = version >= LegacySpaceItemsVersion ? new LegacySpaceItemSweep() : null;
+        var changed = Sweep(new ParallelStoredItemPass(progress), SavedDataStoredItemConverter.Instance, space);
         Log.Write(LogGroup.Migration, $"Migration #{version}: Updated item artwork, loot stats and equipment slots in {changed} stored records.", true);
+        if (space == null)
+            return;
+        var paid = space.Apply(version);
+        var totals = space.Totals;
+        Log.Write(LogGroup.Migration, $"Migration #{version}: Stored space items: {string.Join(", ", totals.Items.OrderBy(x => x.Key).Select(x => $"{x.Key} {x.Value}"))}; " +
+            $"{totals.ConfigurationModulesRefunded} configuration modules refunded for {totals.Credits} credits; {paid} owners paid or given designs.", true);
     }
 
     private static (string Name, int Count)[] CountSections() => new[]
@@ -40,29 +51,52 @@ internal static class StoredItemSweep
     };
 
     /// <summary>Every stored item record and the fields holding its items.</summary>
-    private static int Sweep(ParallelStoredItemPass pass, IStoredItemConverter converter)
+    /// <param name="space">The retired space item rule, or null for a sweep before <see cref="LegacySpaceItemsVersion"/>.
+    /// Registered ships are converted by their own pass first (<see cref="PlayerShipConversion"/>).</param>
+    private static int Sweep(ParallelStoredItemPass pass, IStoredItemConverter converter, LegacySpaceItemSweep space)
     {
         var changed = 0;
         changed += pass.Process<InventoryItem>(item =>
-            MigrateItem(converter, item.Resref, item.Data, value => item.Data = value, item.IconResref, value => item.IconResref = value));
+        {
+            var itemChanged = MigrateItem(converter, item.Resref, item.Data, value => item.Data = value, item.IconResref, value => item.IconResref = value);
+            return itemChanged | (space?.Migrate(item.Data, value => item.Data = value, item.PlayerId,
+                (blueprint, resref) => (item.Name, item.Tag, item.Resref, item.IconResref) = (blueprint.Name, resref, resref, blueprint.IconResref),
+                credits => space.QueueRemoval<InventoryItem>(item.Id, item.PlayerId, credits)) ?? false);
+        });
         changed += pass.Process<MarketItem>(item =>
         {
-            return MigrateItem(converter, item.Resref, item.Data, value => item.Data = value, item.IconResref, value => item.IconResref = value,
+            var itemChanged = MigrateItem(converter, item.Resref, item.Data, value => item.Data = value, item.IconResref, value => item.IconResref = value,
                 listing => item.Category = listing.Category);
+            return itemChanged | (space?.Migrate(item.Data, value => item.Data = value, item.PlayerId,
+                (blueprint, resref) => (item.Name, item.Tag, item.Resref, item.IconResref, item.Category) =
+                    (blueprint.Name, resref, resref, blueprint.IconResref, blueprint.Category),
+                credits => space.QueueRemoval<MarketItem>(item.Id, item.PlayerId, credits)) ?? false);
         });
         changed += pass.Process<WorldPropertyCategory>(category =>
         {
             var categoryChanged = false;
             if (category.Items != null)
-                foreach (var item in category.Items.Values)
+                foreach (var (key, item) in category.Items.ToList())
+                {
                     categoryChanged |= MigrateItem(converter, item.Resref, item.Data, value => item.Data = value, item.IconResref, value => item.IconResref = value);
+                    if (space == null)
+                        continue;
+                    var removed = false;
+                    categoryChanged |= space.Migrate(item.Data, value => item.Data = value, LegacySpaceItemSweep.ForProperty(category.ParentPropertyId),
+                        (blueprint, resref) => (item.Name, item.Tag, item.Resref, item.IconResref) = (blueprint.Name, resref, resref, blueprint.IconResref),
+                        _ => removed = category.Items.Remove(key));
+                    categoryChanged |= removed;
+                }
             return categoryChanged;
         });
-        changed += pass.Process<WorldProperty>(property => MigrateData(converter, property.SerializedItem, value => property.SerializedItem = value));
-        changed += pass.Process<ResearchJob>(job => MigrateData(converter, job.SerializedItem, value => job.SerializedItem = value));
+        changed += pass.Process<WorldProperty>(property => MigrateData(converter, property.SerializedItem, value => property.SerializedItem = value) |
+            (space?.Migrate(property.SerializedItem, value => property.SerializedItem = value, null) ?? false));
+        changed += pass.Process<ResearchJob>(job => MigrateData(converter, job.SerializedItem, value => job.SerializedItem = value) |
+            (space?.Migrate(job.SerializedItem, value => job.SerializedItem = value, null) ?? false));
         // Cosmetic chest templates retain Armor so ApplyOutfit can still load them.
         changed += pass.Process<PlayerOutfit>(outfit => MigrateData(converter, outfit.Data, value => outfit.Data = value, repairHeadgear: false));
-        changed += pass.Process<DMCreature>(creature => MigrateData(converter, creature.Data, value => creature.Data = value));
+        changed += pass.Process<DMCreature>(creature => MigrateData(converter, creature.Data, value => creature.Data = value) |
+            (space?.Migrate(creature.Data, value => creature.Data = value, null) ?? false));
         changed += pass.Process<PlayerShip>(ship =>
         {
             var shipChanged = MigrateData(converter, ship.SerializedItem, value => ship.SerializedItem = value);
@@ -72,8 +106,8 @@ internal static class StoredItemSweep
             shipChanged |= MigrateModules(converter, ship.Status?.ConfigurationModules);
             return shipChanged;
         });
-        changed += pass.Process<QuestContract>(contract => MigrateContractItems(converter, contract.RewardItems));
-        changed += pass.Process<QuestContractDelivery>(delivery => MigrateContractItems(converter, delivery.Items));
+        changed += pass.Process<QuestContract>(contract => MigrateContractItems(converter, contract.RewardItems, space));
+        changed += pass.Process<QuestContractDelivery>(delivery => MigrateContractItems(converter, delivery.Items, space));
         return changed;
     }
 
@@ -93,12 +127,16 @@ internal static class StoredItemSweep
         return true;
     }
 
-    private static bool MigrateContractItems(IStoredItemConverter converter, List<QuestContractItem> items)
+    private static bool MigrateContractItems(IStoredItemConverter converter, List<QuestContractItem> items, LegacySpaceItemSweep space)
     {
         var changed = false;
         if (items != null)
             foreach (var item in items)
+            {
                 changed |= MigrateItem(converter, item.Resref, item.Data, value => item.Data = value, item.IconResref, value => item.IconResref = value);
+                changed |= space?.Migrate(item.Data, value => item.Data = value, null,
+                    (blueprint, resref) => (item.Name, item.Resref, item.IconResref) = (blueprint.Name, resref, blueprint.IconResref)) ?? false;
+            }
         return changed;
     }
 

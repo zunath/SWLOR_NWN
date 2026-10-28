@@ -6,7 +6,6 @@ using SWLOR.Game.Server.Feature.ShipRewardDefinition;
 using SWLOR.Game.Server.Service;
 using SWLOR.Game.Server.Service.DroidService;
 using SWLOR.Game.Server.Service.LootService;
-using SWLOR.Game.Server.Service.PerkService;
 using SWLOR.Game.Server.Service.SkillService;
 using SWLOR.Game.Server.Service.SpaceService;
 using SWLOR.Game.Server.Service.StatService;
@@ -569,7 +568,7 @@ namespace SWLOR.Game.Server.Feature.ShipModuleDefinition
 
                 // Perk & module bonuses. These increase the overall yield of each asteroid.
                 var amountToMine = SpaceCombatMath.MiningYield(
-                    SpaceCombatMath.ExtractionBaseAmount(Perk.GetPerkLevel(activator, PerkType.StarshipMining), shipStatus.Industrial, moduleBonus),
+                    SpaceCombatMath.ExtractionBaseAmount(shipStatus.Industrial, moduleBonus),
                     GetProspectorBonus(activator));
 
                 // Refresh remaining units (could have changed since the start)
@@ -650,7 +649,7 @@ namespace SWLOR.Game.Server.Feature.ShipModuleDefinition
                 // The same per-cycle ore as a mining laser, over every cycle the asteroid has left.
                 var amountToMine = SpaceCombatMath.StripMinerYield(
                     SpaceCombatMath.MiningYield(
-                        SpaceCombatMath.ExtractionBaseAmount(Perk.GetPerkLevel(activator, PerkType.StarshipMining), shipStatus.Industrial, moduleBonus),
+                        SpaceCombatMath.ExtractionBaseAmount(shipStatus.Industrial, moduleBonus),
                         GetProspectorBonus(activator)),
                     remainingUnits);
 

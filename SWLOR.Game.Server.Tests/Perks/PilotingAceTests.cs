@@ -16,7 +16,7 @@ namespace SWLOR.Game.Server.Tests.Perks;
 
 /// <summary>
 /// The Ace style of Piloting (plan section 6, Appendix A): the perk rows, prices and ranks of the Design Bible tab
-/// "Piloting (Revamp)", the space abilities they grant and the stats the traits set.
+/// "Piloting", the space abilities they grant and the stats the traits set.
 /// </summary>
 public class PilotingAceTests
 {

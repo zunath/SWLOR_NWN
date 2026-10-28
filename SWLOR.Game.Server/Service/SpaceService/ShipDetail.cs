@@ -1,5 +1,3 @@
-using System.Collections.Generic;
-using SWLOR.Game.Server.Service.PerkService;
 using SWLOR.Game.Server.Service.PropertyService;
 using SWLOR.NWN.API.NWScript.Enum;
 
@@ -31,15 +29,12 @@ namespace SWLOR.Game.Server.Service.SpaceService
         public ShipRole Role { get; set; }
         public ShipManufacturer Manufacturer { get; set; }
 
-        public Dictionary<PerkType, int> RequiredPerks { get; set; }
-
-        /// <summary>The revamp hull this ship comes from. Null for legacy ships.</summary>
+        /// <summary>The revamp hull this ship comes from. Null for NPC ship items.</summary>
         public ShipHullEntry Hull { get; set; }
 
         public ShipDetail()
         {
             Name = string.Empty;
-            RequiredPerks = new Dictionary<PerkType, int>();
         }
     }
 }

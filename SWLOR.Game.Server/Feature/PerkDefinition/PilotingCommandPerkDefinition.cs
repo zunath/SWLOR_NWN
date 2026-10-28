@@ -9,7 +9,7 @@ namespace SWLOR.Game.Server.Feature.PerkDefinition
     /// <summary>
     /// The Command style of Piloting (plan section 6, Appendix A): orders and repairs ported from the Leadership
     /// Vanguard Command and Field Steward lines and the First Aid Med Kit. Rows, prices, ranks and text are the
-    /// Design Bible tab "Piloting (Revamp)". The traits set space-only stats, because the ground stats of the same
+    /// Design Bible tab "Piloting". The traits set space-only stats, because the ground stats of the same
     /// perks add up with a pilot's ground Leadership and First Aid perks.
     /// </summary>
     public class PilotingCommandPerkDefinition : IPerkListDefinition

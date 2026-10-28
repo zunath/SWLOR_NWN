@@ -9,7 +9,7 @@ namespace SWLOR.Game.Server.Feature.PerkDefinition
     /// <summary>
     /// The Ace style of Piloting (plan section 6, Appendix A): energy weapons and evasion, ported from the
     /// Pistol's Skirmisher and Gambler lines and the Rifle's Sustained Fire. Rows, prices, ranks and text are the
-    /// Design Bible tab "Piloting (Revamp)". The legacy Piloting perks stay in PilotingPerkDefinition.
+    /// Design Bible tab "Piloting".
     /// </summary>
     public class PilotingAcePerkDefinition : IPerkListDefinition
     {

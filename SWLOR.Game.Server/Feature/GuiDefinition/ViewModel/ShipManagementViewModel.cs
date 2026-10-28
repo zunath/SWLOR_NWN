@@ -1897,13 +1897,6 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
             if (hotbarSlot > 0 && Space.IsStationSlot(dbShip.Status, hotbarSlot))
                 return true;
 
-            // Doesn't meet perk requirements.
-            if (!Space.CanPlayerUseShipModule(Player, itemTag))
-            {
-                SendMessageToPC(Player, "You do not meet the perk requirements necessary to install this module.");
-                return false;
-            }
-
             // Doesn't meet skill requirements.
             var skillError = Item.GetSkillRequirementsError(Player, Item.GetRequiredSkills(item));
             if (!string.IsNullOrEmpty(skillError))

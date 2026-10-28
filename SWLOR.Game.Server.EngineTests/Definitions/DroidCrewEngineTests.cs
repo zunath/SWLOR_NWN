@@ -37,7 +37,7 @@ namespace SWLOR.Game.Server.EngineTests.Definitions
             {
                 [3] = new ShipStatus.ShipStatusModule
                 {
-                    ItemTag = "hull_rep_b",
+                    ItemTag = "sm_hrep_35",
                     RequiredSkills = new Dictionary<SkillType, int> { [SkillType.Piloting] = 10 },
                 },
             },
@@ -73,7 +73,7 @@ namespace SWLOR.Game.Server.EngineTests.Definitions
                 await ctx.WaitUntilAsync(() => Hull() > 10, 5f, "the droid switches the hull repairer on");
                 Space.TurnOffShipToggles(pilot.Creature);
                 SpaceCrew.ClearDroidCrew(pilot.Creature);
-                ctx.AssertEqual(15, Hull(), "hull after the droid's Basic Hull Repairer cycle (7 at 75%)");
+                ctx.AssertEqual(16, Hull(), "hull after the droid's Hull Repairer cycle (8 at 75%)");
                 ctx.Assert(!SpaceCrew.IsSeatWorked(pilot.Creature, ShipCrewSeat.Engineer), "the seat is free again");
             }
             finally

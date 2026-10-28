@@ -1,6 +1,7 @@
 using System.Text.Json;
 using FluentAssertions;
 using NUnit.Framework;
+using SWLOR.Game.Server.Feature.MigrationDefinition;
 using SWLOR.Game.Server.Feature.ShipDefinition;
 using SWLOR.Game.Server.Feature.ShipModuleDefinition;
 using SWLOR.Game.Server.Service.CombatService;
@@ -174,7 +175,6 @@ public class RevampCatalogTests
         {
             var module = modules[step.Tag];
             module.Step.Should().BeSameAs(step);
-            module.RequiredPerks.Should().BeEmpty(step.Tag);
             module.PowerType.Should().Be(step.Row, step.Tag);
             module.CapitalClassModule.Should().Be(step.Capital, step.Tag);
             module.Activation.Should().Be(step.Activation, step.Tag);
@@ -202,7 +202,6 @@ public class RevampCatalogTests
         {
             var ship = ships[hull.Tag];
             ship.Hull.Should().BeSameAs(hull);
-            ship.RequiredPerks.Should().BeEmpty(hull.Tag);
             ship.ItemResref.Should().Be(hull.Tag);
             ship.Name.Should().Be(hull.Name);
             ship.Appearance.Should().Be(hull.Appearance);
@@ -219,7 +218,7 @@ public class RevampCatalogTests
     }
 
     [Test]
-    public void AllDefinitions_RegisterWithoutDuplicateKeysAlongsideTheLegacyOnes()
+    public void AllDefinitions_RegisterWithoutDuplicateKeysAndNoRetiredItems()
     {
         var assembly = typeof(IShipModuleListDefinition).Assembly;
         var moduleTags = new HashSet<string>();
@@ -242,14 +241,16 @@ public class RevampCatalogTests
             }
         }
 
-        moduleTags.Should().Contain(RevampModuleCatalog.Steps.Select(x => x.Tag)).And.Contain("com_laser_1");
-        shipTags.Should().Contain(RevampShipCatalog.Hulls.Select(x => x.Tag)).And.Contain("sdeed_striker");
+        moduleTags.Should().BeEquivalentTo(RevampModuleCatalog.Steps.Select(x => x.Tag), "the retired modules and configurations are gone");
+        moduleTags.Should().NotContain(LegacySpaceItemCatalog.Modules.Keys).And.NotContain(LegacySpaceItemCatalog.ConfigurationModules.Keys);
+        shipTags.Should().Contain(RevampShipCatalog.Hulls.Select(x => x.Tag)).And.Contain("NPC_Fighter1")
+            .And.NotContain(LegacySpaceItemCatalog.Hulls.Select(x => x.Tag), "the retired player hulls are gone");
         foreach (var hull in RevampShipCatalog.Hulls)
             shipResrefs[hull.Tag].Should().Be(hull.Tag, "a revamp deed resref is not shared with another ship");
     }
 
     [Test]
-    public void LegacyModulesAndShips_StayLegacy()
+    public void OnlyNpcShipItemsHaveNoRevampHull()
     {
         var assembly = typeof(IShipModuleListDefinition).Assembly;
         var legacyModules = assembly.GetTypes()
@@ -259,8 +260,9 @@ public class RevampCatalogTests
             .Where(x => !x.IsAbstract && typeof(IShipListDefinition).IsAssignableFrom(x) && x != typeof(RevampPlayerShipDefinition))
             .SelectMany(x => ((IShipListDefinition)Activator.CreateInstance(x)!).BuildShips().Values);
 
-        legacyModules.Should().OnlyContain(x => x.Step == null);
-        legacyShips.Should().OnlyContain(x => x.Hull == null);
+        legacyModules.Should().BeEmpty("every module is a revamp module");
+        legacyShips.Should().OnlyContain(x => x.Hull == null && x.Name.StartsWith("NPC"),
+            "only the NPC ship items remain, and their presets supply the stats");
     }
 
     [Test]

@@ -8,7 +8,7 @@ namespace SWLOR.Game.Server.Feature.PerkDefinition
 {
     /// <summary>
     /// The Ordnance style of Piloting (plan section 6, Appendix A): missiles and torpedoes as area ordnance, ported
-    /// from the Throwing Ordnance line. Rows, prices, ranks and text are the Design Bible tab "Piloting (Revamp)".
+    /// from the Throwing Ordnance line. Rows, prices, ranks and text are the Design Bible tab "Piloting".
     /// The traits set space-only stats, because the ground stats of the same line pick their skill through selector
     /// stats that cannot coexist with a pilot's ground perks.
     /// </summary>

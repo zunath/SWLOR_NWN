@@ -1102,11 +1102,49 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
             for (var item = GetFirstItemInInventory(Player); GetIsObjectValid(item); item = GetNextItemInInventory(Player))
             {
                 var resref = GetResRef(item);
-                if(recipe.Components.ContainsKey(resref))
+                if(recipe.Components.ContainsKey(resref) || ShipComponents.IsStandInCandidate(recipe, item))
                     components.Add(item);
             }
 
             return ShipComponents.OrderForConsumption(recipe, components);
+        }
+
+        /// <summary>
+        /// Takes the rare-traited components that fill an Advanced deed's rare-trait slot or stand in for its missing rare
+        /// component (W11o) out of the list, one item each, and counts them against the slot or the rare component. An
+        /// unfilled slot stays among the remaining components, so the craft fails like any missing component.
+        /// </summary>
+        private void AggregateStandIns(RecipeDetail recipe, List<uint> components, Dictionary<string, int> remainingComponents, List<uint> result)
+        {
+            var rare = ShipRareComponentRules.HasRareSlot(recipe.Resref)
+                ? ShipRareComponentRules.RareSlotKey
+                : ShipRareComponentRules.RareComponentOf(recipe.Components.Keys);
+            if (rare == null || recipe.Category != RecipeCategoryType.Starship)
+                return;
+
+            if (rare == ShipRareComponentRules.RareSlotKey)
+                remainingComponents[rare] = 1;
+
+            foreach (var standIn in ShipComponents.ReserveStandIns(recipe, components))
+            {
+                var stack = GetItemStackSize(standIn);
+                SetItemStackSize(standIn, 1);
+                _components.Add(ObjectPlugin.Serialize(standIn));
+                result.Add(standIn);
+                if (stack > 1)
+                {
+                    SetItemStackSize(standIn, stack - 1);
+                }
+                else
+                {
+                    components.Remove(standIn);
+                    DestroyObject(standIn);
+                }
+
+                remainingComponents[rare]--;
+                if (remainingComponents[rare] <= 0)
+                    remainingComponents.Remove(rare);
+            }
         }
 
         /// <summary>
@@ -1119,6 +1157,7 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
             var recipe = Craft.GetRecipe(_recipe);
             var remainingComponents = recipe.Components.ToDictionary(x => x.Key, y => y.Value);
             var result = new List<uint>();
+            AggregateStandIns(recipe, components, remainingComponents, result);
 
             for (var index = components.Count - 1; index >= 0; index--)
             {

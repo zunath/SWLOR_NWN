@@ -119,6 +119,7 @@ namespace SWLOR.Game.Server.Service
 
             ReturnDroidCrew(dbPlayerShip, "was destroyed");
             dbPlayerShip.Status.PowerRouting = ShipPowerRouting.Balanced;
+            dbPlayerShip.Status.PowerRoutingBonusPercent = 0;
 
             ClearShipToggleState(creature, dbPlayerShip.Status);
             dbPlayerShip.Status.Hull = 1;

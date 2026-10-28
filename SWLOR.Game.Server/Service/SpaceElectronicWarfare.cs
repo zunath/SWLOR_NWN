@@ -115,7 +115,9 @@ namespace SWLOR.Game.Server.Service
         /// <summary>One Jammer cycle: the target's Accuracy drops until a moment after the next cycle is due.</summary>
         public static void ApplyJam(uint activator, uint target, ShipStatus targetStatus, ShipModuleStep step)
         {
-            var penalty = ShipCrewSeats.ScaleByEffectiveness(step.TargetAccuracy, SpaceCrew.GetFireEffectiveness(activator));
+            // The runner's Espionage rank strengthens the jam (W11n), then the station's effectiveness scales it.
+            var penalty = ShipCrewSeats.ScaleByEffectiveness(
+                ApplySeatSkillBonus(activator, ShipModuleType.Jammer, step.TargetAccuracy), SpaceCrew.GetFireEffectiveness(activator));
             ShipElectronicWarfareRules.Jam(targetStatus, penalty, ShipElectronicWarfareRules.HoldSeconds(step.CycleSeconds), DateTime.UtcNow);
 
             ApplyEffectToObject(DurationType.Temporary, EffectBeam(VisualEffect.Vfx_Beam_Cold, activator, BodyNode.Chest), target, 1.0f);
@@ -125,7 +127,9 @@ namespace SWLOR.Game.Server.Service
         /// <summary>One Target Painter cycle: the target takes more damage until a moment after the next cycle is due.</summary>
         public static void ApplyPaint(uint activator, uint target, ShipStatus targetStatus, ShipModuleStep step)
         {
-            var percent = ShipCrewSeats.ScaleByEffectiveness(step.PaintPercent, SpaceCrew.GetFireEffectiveness(activator));
+            // The runner's Espionage rank strengthens the paint (W11n), then the station's effectiveness scales it.
+            var percent = ShipCrewSeats.ScaleByEffectiveness(
+                ApplySeatSkillBonus(activator, ShipModuleType.TargetPainter, step.PaintPercent), SpaceCrew.GetFireEffectiveness(activator));
             ShipElectronicWarfareRules.Paint(targetStatus, percent, ShipElectronicWarfareRules.HoldSeconds(step.CycleSeconds), DateTime.UtcNow);
 
             ApplyEffectToObject(DurationType.Temporary, EffectBeam(VisualEffect.Vfx_Beam_Fire, activator, BodyNode.Chest), target, 1.0f);

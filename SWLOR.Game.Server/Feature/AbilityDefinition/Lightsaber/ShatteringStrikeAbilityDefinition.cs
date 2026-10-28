@@ -45,7 +45,7 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.Lightsaber
                 AbilityType.Invalid,
                 new WeaponAbilityProfile
                 {
-                    StatusEffectFactory = () => new SunderStatusEffect(10)
+                    StatusEffectFactory = () => new SunderStatusEffect(12)
                 });
 
             ConfigureWeaponAbility(
@@ -76,7 +76,7 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.Lightsaber
                 AbilityType.Invalid,
                 new WeaponAbilityProfile
                 {
-                    StatusEffectFactory = () => new SunderStatusEffect(12)
+                    StatusEffectFactory = () => new SunderStatusEffect(15)
                 });
 
             return builder.Build();

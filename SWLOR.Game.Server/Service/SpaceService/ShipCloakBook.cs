@@ -95,8 +95,11 @@ namespace SWLOR.Game.Server.Service.SpaceService
             state.PaintedUntil.TryGetValue(observer, out var until) &&
             now < until;
 
-        /// <summary>Whether an observer cannot see the ship through its cloak.</summary>
-        public bool IsHiddenFrom(uint ship, uint observer, bool isAlly, double distance, DateTime now)
+        /// <summary>
+        /// Whether an observer cannot see the ship through its cloak. <paramref name="espionageBonusPercent"/> stretches the
+        /// reveal range for an observer whose ship has an Espionage rank.
+        /// </summary>
+        public bool IsHiddenFrom(uint ship, uint observer, bool isAlly, double distance, DateTime now, int espionageBonusPercent = 0)
         {
             if (!_states.TryGetValue(ship, out var state))
                 return false;
@@ -106,7 +109,8 @@ namespace SWLOR.Game.Server.Service.SpaceService
                 isAlly,
                 distance,
                 state.Profile.RevealMeters,
-                IsPainted(ship, observer, now));
+                IsPainted(ship, observer, now),
+                espionageBonusPercent);
         }
     }
 }

@@ -13,40 +13,89 @@ namespace SWLOR.Game.Server.EngineTests.Definitions
 {
     public static class WeaponStatusSpreadEngineTests
     {
-        [EngineTest("Sundering Sweep spreads once when multiple targets have Sunder", Category = "StatusEffect", TimeoutSeconds = 30f)]
-        public static Task SunderingSweepSpreadsOncePerCast(EngineTestContext ctx)
+        [EngineTest("Sundering Sweep spreads to one more enemy per rank when multiple targets have Sunder", Category = "StatusEffect", TimeoutSeconds = 30f)]
+        public static Task SunderingSweepSpreadsOneMorePerRank(EngineTestContext ctx)
             => VerifySpreadCount(ctx, new SunderingSweepAbilityDefinition().BuildAbilities(),
                 new[] { FeatType.SunderingSweep1, FeatType.SunderingSweep2, FeatType.SunderingSweep3 },
-                typeof(SunderStatusEffect), 1, 2);
+                typeof(SunderStatusEffect), new[] { 1, 2, 3 }, 2, recipientCount: 3);
+
+        [EngineTest("Sundering Sweep spreads the source's Sunder strength", Category = "StatusEffect", TimeoutSeconds = 30f)]
+        public static async Task SunderingSweepSpreadsSourceStrength(EngineTestContext ctx)
+        {
+            var caster = ctx.SpawnCreature("nw_bandit001");
+            var source = ctx.SpawnCreature("nw_rat001", 1f);
+            var recipient = ctx.SpawnCreature("nw_rat001", 3.5f);
+            await ctx.WaitFrameAsync();
+            SWLOR.NWN.API.NWNX.ObjectPlugin.SetPosition(caster, GetPositionFromLocation(ctx.GetArenaLocation()));
+            SWLOR.NWN.API.NWNX.ObjectPlugin.SetPosition(source, GetPositionFromLocation(ctx.GetArenaLocation(1f)));
+            SWLOR.NWN.API.NWNX.ObjectPlugin.SetPosition(recipient, GetPositionFromLocation(ctx.GetArenaLocation(3.5f)));
+            ApplyEffectToObject(DurationType.Temporary, EffectCutsceneParalyze(), caster, 60f);
+            foreach (var enemy in new[] { source, recipient })
+            {
+                SetCommandable(false, enemy);
+                ctx.SuppressNPCNaturalRegen(enemy);
+                ApplyEffectToObject(DurationType.Temporary, EffectTemporaryHitpoints(1000), enemy, 60f);
+                ctx.MakeHostile(enemy);
+            }
+
+            // Shattering Strike I strength, below the 15% default.
+            ctx.Assert(StatusEffect.ApplyStatusEffect(caster, source, new SunderStatusEffect(12), 60f), "setup Sunder must apply");
+            var ability = new SunderingSweepAbilityDefinition().BuildAbilities()[FeatType.SunderingSweep1];
+            Combat.SetAbilityHitResolutionOverride(true);
+            Combat.SetAutoAttackHitResolutionOverride(false);
+            try
+            {
+                Ability.BeginAbilityImpact(caster, ability);
+                try
+                {
+                    await ctx.ExecuteInCreatureContextAsync(caster, () => ability.ImpactAction(caster, source, 1, GetLocation(source)));
+                }
+                finally
+                {
+                    Ability.EndAbilityImpact(caster);
+                }
+            }
+            finally
+            {
+                Combat.SetAbilityHitResolutionOverride(null);
+                Combat.SetAutoAttackHitResolutionOverride(null);
+            }
+
+            ctx.Assert(StatusEffect.HasStatusEffect(recipient, typeof(SunderStatusEffect)), "the recipient must receive Sunder");
+            ctx.AssertEqual(-12, Stat.GetStatAdjustment(recipient, StatType.PhysicalDefensePercentAdjustment),
+                "the spread Sunder must keep the source's 12% Defense reduction");
+        }
 
         [EngineTest("Serrated Arc spreads from each initially bleeding target", Category = "StatusEffect", TimeoutSeconds = 30f)]
         public static Task SerratedArcSpreadsFromEachSource(EngineTestContext ctx)
             => VerifySpreadCount(ctx, new SerratedArcAbilityDefinition().BuildAbilities(),
                 new[] { FeatType.SerratedArc1, FeatType.SerratedArc2, FeatType.SerratedArc3 },
-                typeof(BleedStatusEffect), 2, 4);
+                typeof(BleedStatusEffect), new[] { 2, 2, 2 }, 4);
 
         [EngineTest("Sundering Sweep cannot spread Sunder procced by its own hit", Category = "StatusEffect", TimeoutSeconds = 30f)]
         public static Task SunderingSweepRequiresPreexistingSunder(EngineTestContext ctx)
             => VerifySpreadCount(ctx, new SunderingSweepAbilityDefinition().BuildAbilities(),
                 new[] { FeatType.SunderingSweep1, FeatType.SunderingSweep2, FeatType.SunderingSweep3 },
-                typeof(SunderStatusEffect), 0, 2, StatType.DamageDealtSunderChance);
+                typeof(SunderStatusEffect), new[] { 0, 0, 0 }, 2, StatType.DamageDealtSunderChance);
 
         [EngineTest("Serrated Arc cannot spread Bleed procced by its own hit", Category = "StatusEffect", TimeoutSeconds = 30f)]
         public static Task SerratedArcRequiresPreexistingBleed(EngineTestContext ctx)
             => VerifySpreadCount(ctx, new SerratedArcAbilityDefinition().BuildAbilities(),
                 new[] { FeatType.SerratedArc1, FeatType.SerratedArc2, FeatType.SerratedArc3 },
-                typeof(BleedStatusEffect), 0, 2, StatType.DamageDealtBleedChance);
+                typeof(BleedStatusEffect), new[] { 0, 0, 0 }, 2, StatType.DamageDealtBleedChance);
 
         private static async Task VerifySpreadCount(EngineTestContext ctx,
             Dictionary<FeatType, AbilityDetail> abilities, FeatType[] feats, Type statusEffect,
-            int expectedRecipients, int expectedImpacts, StatType procStat = StatType.Invalid)
+            int[] expectedRecipients, int expectedImpacts, StatType procStat = StatType.Invalid, int recipientCount = 2)
         {
             var testsHitProc = procStat != StatType.Invalid;
             var sourceOffset = testsHitProc ? 1.5f : 1f;
             var recipientOffset = testsHitProc ? 6f : 3.5f;
             var caster = ctx.SpawnCreature("nw_bandit001");
             var sources = new[] { ctx.SpawnCreature("nw_rat001", -sourceOffset), ctx.SpawnCreature("nw_rat001", sourceOffset) };
-            var recipients = new[] { ctx.SpawnCreature("nw_rat001", -recipientOffset), ctx.SpawnCreature("nw_rat001", recipientOffset) };
+            // A third recipient sits farther out on the positive side, still within 5m of the nearer source.
+            var recipientOffsets = new[] { -recipientOffset, recipientOffset, recipientOffset + 1f }.Take(recipientCount).ToArray();
+            var recipients = recipientOffsets.Select(offset => ctx.SpawnCreature("nw_rat001", offset)).ToArray();
             var enemies = sources.Concat(recipients).ToArray();
             await ctx.WaitFrameAsync();
             SWLOR.NWN.API.NWNX.ObjectPlugin.SetPosition(caster, GetPositionFromLocation(ctx.GetArenaLocation()));
@@ -54,8 +103,9 @@ namespace SWLOR.Game.Server.EngineTests.Definitions
             {
                 var direction = index == 0 ? -1 : 1;
                 SWLOR.NWN.API.NWNX.ObjectPlugin.SetPosition(sources[index], GetPositionFromLocation(ctx.GetArenaLocation(direction * sourceOffset)));
-                SWLOR.NWN.API.NWNX.ObjectPlugin.SetPosition(recipients[index], GetPositionFromLocation(ctx.GetArenaLocation(direction * recipientOffset)));
             }
+            for (var index = 0; index < recipients.Length; index++)
+                SWLOR.NWN.API.NWNX.ObjectPlugin.SetPosition(recipients[index], GetPositionFromLocation(ctx.GetArenaLocation(recipientOffsets[index])));
             ApplyEffectToObject(DurationType.Temporary, EffectCutsceneParalyze(), caster, 120f);
             if (testsHitProc)
                 TemporaryStatModifier.Add(caster, procStat, 100, 120f);
@@ -98,7 +148,7 @@ namespace SWLOR.Game.Server.EngineTests.Definitions
                     }
 
                     ctx.AssertEqual(expectedImpacts, impactedTargetCount, $"{feat}: primary area targets");
-                    ctx.AssertEqual(expectedRecipients, recipients.Count(target => StatusEffect.HasStatusEffect(target, statusEffect)),
+                    ctx.AssertEqual(expectedRecipients[rank - 1], recipients.Count(target => StatusEffect.HasStatusEffect(target, statusEffect)),
                         $"{feat}: additional recipients across all initially affected targets");
                     for (var index = 0; index < sources.Length; index++)
                     {

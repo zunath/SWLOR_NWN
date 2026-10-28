@@ -1,7 +1,9 @@
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using SWLOR.Game.Server.Core;
 using SWLOR.Game.Server.Entity;
+using SWLOR.Game.Server.Feature.ShipModuleDefinition;
 using SWLOR.Game.Server.Service.DroidService;
 using SWLOR.Game.Server.Service.HoldingService;
 using SWLOR.Game.Server.Service.PerkService;
@@ -521,6 +523,8 @@ namespace SWLOR.Game.Server.Service
                     DroidCrewRules.RunsWhenShieldLow, DroidCrewRules.RunsWhenHullLow,
                     feat => AssignCommand(pilot, () => ActivateShipModuleCore(pilot, feat, true, droid: posted)));
 
+                UpdateDroidElectronicWarfare(pilot, status, slots, posted);
+
                 if (!hostile)
                     continue;
 
@@ -531,6 +535,40 @@ namespace SWLOR.Game.Server.Service
                         SpaceCrew.RecordDroidEngagement(pilot, slot, target);
                         AssignCommand(pilot, () => ActivateShipModuleCore(pilot, feat, true, droid: posted));
                     });
+            }
+        }
+
+        /// <summary>
+        /// A droid's electronic warfare (plan section 10: the Sensors seat runs Mid electronic warfare): each array
+        /// among <paramref name="slots"/> is on while an enemy ship is within the array's range and off once none is.
+        /// It works at the droid's station effectiveness, like everything else it fires.
+        /// </summary>
+        private static void UpdateDroidElectronicWarfare(
+            uint pilot,
+            ShipStatus status,
+            List<(FeatType Feat, ShipStatus.ShipStatusModule Module)> slots,
+            ShipDroidCrew droid)
+        {
+            foreach (var (feat, module) in slots)
+            {
+                var detail = _shipModules[module.ItemTag];
+                if (DroidCrewRules.GetTask(detail.Type, detail.Activation) != DroidCrewTask.ElectronicWarfare)
+                    continue;
+
+                var step = RevampModuleCatalog.Steps.FirstOrDefault(x =>
+                    string.Equals(x.Tag, module.ItemTag, StringComparison.OrdinalIgnoreCase));
+                if (step == null)
+                    continue;
+
+                var slot = GetFeatSlotNumber(feat);
+                var isOn = IsShipToggleOn(status, slot);
+                if (!DroidCrewRules.FlipsElectronicWarfare(isOn, HasEnemyShipWithin(pilot, step.Range)))
+                    continue;
+
+                if (isOn)
+                    TurnOffToggle(pilot, status, slot);
+                else
+                    AssignCommand(pilot, () => ActivateShipModuleCore(pilot, feat, true, droid: droid));
             }
         }
 

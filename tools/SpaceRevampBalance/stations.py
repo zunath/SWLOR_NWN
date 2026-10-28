@@ -97,9 +97,10 @@ WILD_ANCHORS = [
 ANCHOR_TAG_PREFIX = "STATION_ANCHOR_"
 ANCHOR_Z = 3.0
 EXTERIOR_OFFSET = 30.0
-EXTERIOR_RESREF = "_mdrn_pl_spcstn"      # the existing [mdrn]SpaceStation placeable (placeables.2da 1452)
+EXTERIOR_RESREF = "_mdrn_pl_spcs003"     # "Space Station - Civilian 3", a space-station placeable the orbits use (W11g)
+EXTERIOR_TAG = "station_exterior"
 # The exterior grows with the city level (plan section 25: "scaled by city level").
-EXTERIOR_SCALE_BY_LEVEL = [0.6, 0.7, 0.8, 0.9, 1.0]
+EXTERIOR_SCALE_BY_LEVEL = [1.2, 1.4, 1.6, 1.8, 2.0]
 
 # Planet name of each PlanetType used as a home port.
 PLANET_NAMES = {"Viscara": "Viscara", "CZ220": "CZ-220", "Tatooine": "Tatooine", "MonCala": "Mon Cala",
@@ -419,7 +420,12 @@ def tuning_cs():
             "        // Anchor sites and the exterior\n"
             f"        public const string AnchorTagPrefix = {q(ANCHOR_TAG_PREFIX)};\n"
             f"        public const float ExteriorOffset = {f(EXTERIOR_OFFSET)};\n"
+            "        /// <summary>\n"
+            "        /// The exterior model: \"Space Station - Civilian 3\", one of the SWLOR space-station placeables the orbits use.\n"
+            "        /// </summary>\n"
             f"        public const string ExteriorResref = {q(EXTERIOR_RESREF)};\n"
+            "        /// <summary>The tag every station exterior model is spawned with.</summary>\n"
+            f"        public const string ExteriorTag = {q(EXTERIOR_TAG)};\n"
             f"        public static readonly float[] ExteriorScaleByLevel = {{ {scales} }};\n\n"
             "        /// <summary>Two anchor sites per orbit with an NPC dock and one or two per Wild Space system.</summary>\n"
             "        public static readonly IReadOnlyList<StationAnchor> Anchors = new List<StationAnchor>\n        {\n"

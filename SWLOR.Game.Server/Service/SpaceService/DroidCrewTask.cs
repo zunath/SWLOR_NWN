@@ -17,5 +17,8 @@ namespace SWLOR.Game.Server.Service.SpaceService
 
         /// <summary>A Probe Launcher: run whenever there is something to scan, by a droid with Survey Protocol.</summary>
         Survey = 4,
+
+        /// <summary>An electronic warfare array: run while an enemy ship is within its range.</summary>
+        ElectronicWarfare = 5,
     }
 }

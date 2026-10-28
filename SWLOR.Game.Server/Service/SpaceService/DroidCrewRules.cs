@@ -128,6 +128,7 @@ namespace SWLOR.Game.Server.Service.SpaceService
                     => DroidCrewTask.ShieldSupport,
                 ShipModuleType.HullRepairer or ShipModuleType.RepairFieldGenerator => DroidCrewTask.HullSupport,
                 ShipModuleType.ProbeLauncher => DroidCrewTask.Survey,
+                ShipModuleType.CapitalEwar => DroidCrewTask.ElectronicWarfare,
                 _ => DroidCrewTask.None,
             };
         }
@@ -139,6 +140,13 @@ namespace SWLOR.Game.Server.Service.SpaceService
         public static bool RunsProbeLauncher(IReadOnlyDictionary<PerkType, int> protocols, bool launcherOn, bool somethingToScan) =>
             !launcherOn && somethingToScan &&
             DroidIndustryRules.GetProtocolValue(protocols, PerkType.SurveyProtocol) > 0;
+
+        /// <summary>
+        /// Whether a droid flips an electronic warfare toggle (plan section 10: the Sensors seat runs Mid electronic
+        /// warfare): on while an enemy ship is within the module's range, off once none is, the way repairers switch
+        /// off once nothing is missing, so it never drains the capacitor on an empty sky.
+        /// </summary>
+        public static bool FlipsElectronicWarfare(bool isOn, bool enemyInRange) => isOn != enemyInRange;
 
         /// <summary>Whether a droid runs this module while shield is low.</summary>
         public static bool RunsWhenShieldLow(ShipModuleType type) =>

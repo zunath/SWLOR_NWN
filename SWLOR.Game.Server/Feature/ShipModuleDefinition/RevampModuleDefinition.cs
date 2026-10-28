@@ -372,7 +372,10 @@ namespace SWLOR.Game.Server.Feature.ShipModuleDefinition
                 .MaxDistance(SelfRange)
                 .ActivatedAction((activator, _, _, _, _) =>
                 {
-                    var accuracy = Effective(step).AuraAccuracy;
+                    // A station's array works at the effectiveness of whoever runs it (a crew member or a droid), as
+                    // weapon damage and repairs do (plan section 10); the pilot's own runs at 100%.
+                    var accuracy = ShipCrewSeats.ScaleByEffectiveness(
+                        Effective(step).AuraAccuracy, SpaceCrew.GetFireEffectiveness(activator));
                     var seconds = step.CycleSeconds + 0.5;
                     ApplyEffectToObject(DurationType.Temporary, EffectVisualEffect(VisualEffect.Vfx_Dur_Aura_Pulse_Blue_White), activator, (float)step.CycleSeconds);
 

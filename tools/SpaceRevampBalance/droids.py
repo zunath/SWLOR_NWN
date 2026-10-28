@@ -607,7 +607,8 @@ def main():
     stale = []
     for rel, data in writes().items():
         path = REPO / rel
-        if path.exists() and path.read_bytes() == data:
+        # A Windows checkout stores these files with CRLF line ends; compare the text, not the line ends.
+        if path.exists() and path.read_bytes().replace(b"\r\n", b"\n") == data.replace(b"\r\n", b"\n"):
             continue
         stale.append(rel)
         if not check:

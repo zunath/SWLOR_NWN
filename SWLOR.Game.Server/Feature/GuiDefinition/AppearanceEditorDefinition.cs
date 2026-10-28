@@ -17,7 +17,7 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition
     {
         private readonly GuiWindowBuilder<AppearanceEditorViewModel> _builder = new();
 
-        public const float MapWidth = 320f;
+        public const float MapWidth = 280f;
         public const float ColoursWidth = 372f;
         public const float WeaponCategoryWidth = 200f;
         public const float TileSize = 96f; // pictures are 96x96; drawn 1:1 so they stay sharp
@@ -30,11 +30,14 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition
         private const float NoItemLabelWidth = 130f;
 
         /// <summary>
-        /// The smallest window that shows the body map, the colours and a two-column part browser
-        /// without scrolling. Smaller saved or dragged sizes are grown back to it.
+        /// Editor size in a window too small for one column of pictures. The editor keeps this
+        /// size and the window's content area scrolls, so every panel stays reachable.
         /// </summary>
-        public const float MinimumWindowWidth = 1010f;
-        public const float MinimumWindowHeight = 750f;
+        public const float CompactBrowserWidth = TileSize + 64f;
+
+        private const float SideColumnWidth = 58f;
+        private const float PairColumnWidth = 58f;
+        private const float CenterColumnWidth = 120f;
 
         private static readonly GuiColor Highlight = new(255, 196, 40);
 
@@ -48,6 +51,9 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition
                 case AppearanceEditorViewModel.EditorMainPartial: definition.BuildAppearanceEditor(panel); break;
                 case AppearanceEditorViewModel.EditorArmorPartial: definition.BuildEquipmentEditor(panel); break;
                 case AppearanceEditorViewModel.EditorWeaponPartial: definition.BuildWeaponEditor(panel); break;
+                case AppearanceEditorViewModel.EditorMainCompactPartial: definition.BuildAppearanceEditor(panel, true); break;
+                case AppearanceEditorViewModel.EditorArmorCompactPartial: definition.BuildEquipmentEditor(panel, true); break;
+                case AppearanceEditorViewModel.EditorWeaponCompactPartial: definition.BuildWeaponEditor(panel, true); break;
                 case AppearanceEditorViewModel.SettingsPartial: definition.BuildSettings(panel); break;
                 default:
                     for (var columns = 1; columns <= AppearanceEditorViewModel.MaxBrowserColumns; columns++)
@@ -77,6 +83,9 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition
                 .DefinePartialView(AppearanceEditorViewModel.EditorMainPartial, BuildAppearanceEditor)
                 .DefinePartialView(AppearanceEditorViewModel.EditorArmorPartial, BuildEquipmentEditor)
                 .DefinePartialView(AppearanceEditorViewModel.EditorWeaponPartial, BuildWeaponEditor)
+                .DefinePartialView(AppearanceEditorViewModel.EditorMainCompactPartial, partial => BuildAppearanceEditor(partial, true))
+                .DefinePartialView(AppearanceEditorViewModel.EditorArmorCompactPartial, partial => BuildEquipmentEditor(partial, true))
+                .DefinePartialView(AppearanceEditorViewModel.EditorWeaponCompactPartial, partial => BuildWeaponEditor(partial, true))
                 .DefinePartialView(AppearanceEditorViewModel.SettingsPartial, BuildSettings)
                 .AddStandardLayout(layout =>
                 {
@@ -143,9 +152,26 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition
         }
 
         // ---------------------------------------------------------------- editors
-        private void BuildAppearanceEditor(GuiGroup<AppearanceEditorViewModel> partial)
+        /// <summary>
+        /// Compact editors (windows too small for one column of pictures) scroll sideways to reach
+        /// every panel. Each panel scrolls vertically on its own: NUI stops drawing the nested
+        /// picture grid once its top is scrolled out of an outer group.
+        /// </summary>
+        private static void SizeEditor(GuiGroup<AppearanceEditorViewModel> partial, bool compact) =>
+            partial.SetScrollbars(compact ? NuiScrollbars.X : NuiScrollbars.None);
+
+        private void AddBrowser(GuiRow<AppearanceEditorViewModel> row, bool compact)
         {
-            partial.SetScrollbars(NuiScrollbars.None);
+            var browser = row.AddGroup(group => BuildBrowser(group, compact));
+            if (compact)
+                browser.SetWidth(CompactBrowserWidth);
+        }
+
+        private void BuildAppearanceEditor(GuiGroup<AppearanceEditorViewModel> partial) => BuildAppearanceEditor(partial, false);
+
+        private void BuildAppearanceEditor(GuiGroup<AppearanceEditorViewModel> partial, bool compact)
+        {
+            SizeEditor(partial, compact);
             partial.AddColumn(col =>
             {
                 col.AddRow(row =>
@@ -153,14 +179,16 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition
                     row.BindIsVisible(model => model.HasItemEquipped);
                     row.AddGroup(map => BuildBodyMap(map, equipment: false)).SetWidth(MapWidth);
                     row.AddGroup(colours => BuildColours(colours, BuildBodySwatches)).SetWidth(ColoursWidth);
-                    row.AddGroup(BuildBrowser);
+                    AddBrowser(row, compact);
                 });
             });
         }
 
-        private void BuildEquipmentEditor(GuiGroup<AppearanceEditorViewModel> partial)
+        private void BuildEquipmentEditor(GuiGroup<AppearanceEditorViewModel> partial) => BuildEquipmentEditor(partial, false);
+
+        private void BuildEquipmentEditor(GuiGroup<AppearanceEditorViewModel> partial, bool compact)
         {
-            partial.SetScrollbars(NuiScrollbars.None);
+            SizeEditor(partial, compact);
             partial.AddColumn(col =>
             {
                 col.AddRow(row =>
@@ -168,14 +196,16 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition
                     row.BindIsVisible(model => model.HasItemEquipped);
                     row.AddGroup(map => BuildBodyMap(map, equipment: true)).SetWidth(MapWidth);
                     row.AddGroup(colours => BuildColours(colours, BuildItemSwatches)).SetWidth(ColoursWidth);
-                    row.AddGroup(BuildBrowser);
+                    AddBrowser(row, compact);
                 });
             });
         }
 
-        private void BuildWeaponEditor(GuiGroup<AppearanceEditorViewModel> partial)
+        private void BuildWeaponEditor(GuiGroup<AppearanceEditorViewModel> partial) => BuildWeaponEditor(partial, false);
+
+        private void BuildWeaponEditor(GuiGroup<AppearanceEditorViewModel> partial, bool compact)
         {
-            partial.SetScrollbars(NuiScrollbars.None);
+            SizeEditor(partial, compact);
             partial.AddColumn(col =>
             {
                 col.AddRow(row =>
@@ -201,7 +231,7 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition
                                 .SetHeight(160f);
                         }));
                     }).SetWidth(WeaponCategoryWidth);
-                    row.AddGroup(BuildBrowser);
+                    AddBrowser(row, compact);
                 });
             });
         }
@@ -251,24 +281,6 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition
                     row.AddSpacer();
                 });
 
-                if (equipment)
-                {
-                    col.AddRow(row =>
-                    {
-                        row.AddButton()
-                            .SetId("ae_copy_right")
-                            .SetText("Copy to Right")
-                            .SetTooltip("Copies the left side's parts and colours to the right side.")
-                            .BindIsEnabled(model => model.IsCopyEnabled)
-                            .BindOnClicked(model => model.OnClickCopyToRight());
-                        row.AddButton()
-                            .SetId("ae_copy_left")
-                            .SetText("Copy to Left")
-                            .SetTooltip("Copies the right side's parts and colours to the left side.")
-                            .BindIsEnabled(model => model.IsCopyEnabled)
-                            .BindOnClicked(model => model.OnClickCopyToLeft());
-                    });
-                }
                 col.AddRow(fill => fill.AddSpacer());
             });
         }
@@ -283,8 +295,12 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition
                 AddSlot(side, AppearanceEditorSlot.RightBicep, true, SlotSize);
                 AddSlot(side, AppearanceEditorSlot.RightForearm, true, SlotSize);
                 AddSlot(side, AppearanceEditorSlot.RightHand, true, SlotSize);
+                side.AddRow(gap => gap.AddSpacer().SetHeight(24f));
+                AddCopyButton(side, "ae_copy_left", "arrow_right",
+                    "Copy to Left: copies the right side's parts and colours to the left side.",
+                    model => model.OnClickCopyToLeft());
                 side.AddRow(fill => fill.AddSpacer());
-            }).SetWidth(64f);
+            }).SetWidth(SideColumnWidth);
             row.AddColumn(center =>
             {
                 AddSlot(center, AppearanceEditorSlot.Head, true, SlotSize);
@@ -296,7 +312,7 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition
                 AddPair(center, AppearanceEditorSlot.RightShin, AppearanceEditorSlot.LeftShin, true);
                 AddPair(center, AppearanceEditorSlot.RightFoot, AppearanceEditorSlot.LeftFoot, true);
                 center.AddRow(fill => fill.AddSpacer());
-            }).SetWidth(140f);
+            }).SetWidth(CenterColumnWidth);
             row.AddColumn(side =>
             {
                 AddSlot(side, AppearanceEditorSlot.Cloak, true, SlotSize);
@@ -305,8 +321,12 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition
                 AddSlot(side, AppearanceEditorSlot.LeftBicep, true, SlotSize);
                 AddSlot(side, AppearanceEditorSlot.LeftForearm, true, SlotSize);
                 AddSlot(side, AppearanceEditorSlot.LeftHand, true, SlotSize);
+                side.AddRow(gap => gap.AddSpacer().SetHeight(24f));
+                AddCopyButton(side, "ae_copy_right", "arrow_left",
+                    "Copy to Right: copies the left side's parts and colours to the right side.",
+                    model => model.OnClickCopyToRight());
                 side.AddRow(fill => fill.AddSpacer());
-            }).SetWidth(64f);
+            }).SetWidth(SideColumnWidth);
         }
 
         /// <summary>
@@ -326,7 +346,7 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition
             }
 
             row.AddColumn(side => Arm(side, AppearanceEditorSlot.RightBicep, AppearanceEditorSlot.RightForearm,
-                AppearanceEditorSlot.RightHand)).SetWidth(64f);
+                AppearanceEditorSlot.RightHand)).SetWidth(SideColumnWidth);
             row.AddColumn(center =>
             {
                 AddSlot(center, AppearanceEditorSlot.Head, false, SlotSize);
@@ -336,9 +356,29 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition
                 AddPair(center, AppearanceEditorSlot.RightShin, AppearanceEditorSlot.LeftShin, false);
                 AddPair(center, AppearanceEditorSlot.RightFoot, AppearanceEditorSlot.LeftFoot, false);
                 center.AddRow(fill => fill.AddSpacer());
-            }).SetWidth(140f);
+            }).SetWidth(CenterColumnWidth);
             row.AddColumn(side => Arm(side, AppearanceEditorSlot.LeftBicep, AppearanceEditorSlot.LeftForearm,
-                AppearanceEditorSlot.LeftHand)).SetWidth(64f);
+                AppearanceEditorSlot.LeftHand)).SetWidth(SideColumnWidth);
+        }
+
+        /// <summary>A square copy button under one arm; its arrow points at the side it copies to.</summary>
+        private static void AddCopyButton(GuiColumn<AppearanceEditorViewModel> col, string id, string arrow,
+            string tooltip, Expression<System.Func<AppearanceEditorViewModel, System.Action>> onClick)
+        {
+            col.AddRow(row =>
+            {
+                row.AddSpacer();
+                row.AddButtonImage()
+                    .SetId(id)
+                    .SetImageResref(arrow)
+                    .SetTooltip(tooltip)
+                    .SetWidth(SlotSize)
+                    .SetHeight(SlotSize)
+                    .SetMargin(2f)
+                    .BindIsEnabled(model => model.IsCopyEnabled)
+                    .BindOnClicked(onClick);
+                row.AddSpacer();
+            });
         }
 
         private void AddPair(GuiColumn<AppearanceEditorViewModel> col, AppearanceEditorSlot right, AppearanceEditorSlot left, bool equipment)
@@ -346,8 +386,8 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition
             col.AddRow(row =>
             {
                 row.AddSpacer();
-                row.AddColumn(c => AddSlot(c, right, equipment, SlotSize)).SetWidth(62f);
-                row.AddColumn(c => AddSlot(c, left, equipment, SlotSize)).SetWidth(62f);
+                row.AddColumn(c => AddSlot(c, right, equipment, SlotSize)).SetWidth(PairColumnWidth);
+                row.AddColumn(c => AddSlot(c, left, equipment, SlotSize)).SetWidth(PairColumnWidth);
                 row.AddSpacer();
             });
         }
@@ -372,25 +412,53 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition
             });
         }
 
+        private const float SwatchRowLabelWidth = 56f;
+        private const float SwatchCodeWidth = 44f;
+
+        /// <summary>
+        /// Two sections: the item's own colours ("Outfit", "Helmet", "Cloak"), then the selected
+        /// armor part's colours, which override the outfit colour on that part only.
+        /// </summary>
         private void BuildItemSwatches(GuiColumn<AppearanceEditorViewModel> col)
         {
             col.AddRow(row =>
             {
-                row.AddSpacer().SetWidth(56f);
+                row.AddLabel()
+                    .BindText(model => model.BaseColorsTitle)
+                    .SetTooltip("Colours for the whole item.")
+                    .SetWidth(SwatchRowLabelWidth)
+                    .SetHeight(20f);
                 foreach (var label in new[] { "Leather", "Cloth", "Metal" })
                 {
-                    row.AddLabel().SetText(label).SetWidth(72f).SetHeight(20f)
+                    row.AddLabel().SetText(label).SetWidth(SwatchWidth + 4f + SwatchCodeWidth).SetHeight(20f)
                         .SetHorizontalAlign(NuiHorizontalAlign.Center);
                 }
                 row.AddSpacer();
             });
-            AddItemSwatchRow(col, "Base 1", "Global", AppearanceArmorColor.Leather1, AppearanceArmorColor.Cloth1,
+            AddItemSwatchRow(col, "1", "Global", AppearanceArmorColor.Leather1, AppearanceArmorColor.Cloth1,
                 AppearanceArmorColor.Metal1, partRow: false);
-            AddItemSwatchRow(col, "Base 2", "Global", AppearanceArmorColor.Leather2, AppearanceArmorColor.Cloth2,
+            AddItemSwatchRow(col, "2", "Global", AppearanceArmorColor.Leather2, AppearanceArmorColor.Cloth2,
                 AppearanceArmorColor.Metal2, partRow: false);
-            AddItemSwatchRow(col, "Part 1", "SelectedPart", AppearanceArmorColor.Leather1, AppearanceArmorColor.Cloth1,
+            col.AddRow(row =>
+            {
+                row.BindIsVisible(model => model.IsPartColorsVisible);
+                row.AddLabel()
+                    .BindText(model => model.SelectedPartColorsTitle)
+                    .SetTooltip("Colours for this part only. A swatch marked Outfit uses the outfit colour.")
+                    .SetHorizontalAlign(NuiHorizontalAlign.Left)
+                    .SetHeight(SwatchHeight);
+                row.AddButton()
+                    .SetId("ae_use_base")
+                    .SetText("Use Outfit")
+                    .SetTooltip("Puts the selected part colour back to the outfit colour.")
+                    .BindIsEnabled(model => model.IsUseBaseEnabled)
+                    .SetWidth(90f)
+                    .SetHeight(SwatchHeight)
+                    .BindOnClicked(model => model.OnClickUseBase());
+            });
+            AddItemSwatchRow(col, "1", "SelectedPart", AppearanceArmorColor.Leather1, AppearanceArmorColor.Cloth1,
                 AppearanceArmorColor.Metal1, partRow: true);
-            AddItemSwatchRow(col, "Part 2", "SelectedPart", AppearanceArmorColor.Leather2, AppearanceArmorColor.Cloth2,
+            AddItemSwatchRow(col, "2", "SelectedPart", AppearanceArmorColor.Leather2, AppearanceArmorColor.Cloth2,
                 AppearanceArmorColor.Metal2, partRow: true);
         }
 
@@ -401,7 +469,8 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition
             {
                 if (partRow)
                     row.BindIsVisible(model => model.IsPartColorsVisible);
-                row.AddLabel().SetText(label).SetWidth(56f).SetHeight(SwatchHeight);
+                row.AddLabel().SetText(label).SetWidth(SwatchRowLabelWidth).SetHeight(SwatchHeight)
+                    .SetHorizontalAlign(NuiHorizontalAlign.Center);
                 foreach (var channel in new[] { leather, cloth, metal })
                 {
                     var texture = channel is AppearanceArmorColor.Metal1 or AppearanceArmorColor.Metal2
@@ -415,25 +484,15 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition
                         button.SetId($"ae_part_swatch_{channel}")
                             .BindOnClicked(model => model.OnClickPartSwatch(copy))
                             .BindOnMouseDown(model => model.OnMouseDownPartSwatch(copy))
-                            .SetTooltip("Right-click to use the base colour.");
+                            .SetTooltip("Colours only this part. Right-click to go back to the outfit colour.");
                     }
                     else
                     {
                         button.SetId($"ae_base_swatch_{channel}")
+                            .SetTooltip("Colours the whole item. Parts marked Outfit use this colour.")
                             .BindOnClicked(model => model.OnClickBaseSwatch(copy));
                     }
-                    row.AddLabel().BindText(Bind<string>(name + "Code")).SetWidth(30f).SetHeight(SwatchHeight);
-                }
-                if (partRow && leather == AppearanceArmorColor.Leather2)
-                {
-                    row.AddButton()
-                        .SetId("ae_use_base")
-                        .SetText("Base")
-                        .SetTooltip("Clear the selected part colour so it uses the base colour.")
-                        .BindIsEnabled(model => model.IsUseBaseEnabled)
-                        .SetWidth(52f)
-                        .SetHeight(SwatchHeight)
-                        .BindOnClicked(model => model.OnClickUseBase());
+                    row.AddLabel().BindText(Bind<string>(name + "Code")).SetWidth(SwatchCodeWidth).SetHeight(SwatchHeight);
                 }
                 row.AddSpacer();
             });
@@ -662,9 +721,21 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition
         }
 
         // ---------------------------------------------------------------- browser
-        private void BuildBrowser(GuiGroup<AppearanceEditorViewModel> group)
+        private void BuildBrowser(GuiGroup<AppearanceEditorViewModel> group) => BuildBrowser(group, false);
+
+        /// <summary>
+        /// The grid partial holds the view toggles, tiles and pager, sized for the window. A compact
+        /// browser holds a one-picture grid directly and scrolls it: NUI stops drawing a nested
+        /// grid group once it is scrolled.
+        /// </summary>
+        private void BuildBrowser(GuiGroup<AppearanceEditorViewModel> group, bool compact)
         {
-            // The grid partial holds the view toggles, tiles and pager, sized for the window.
+            if (compact)
+            {
+                BuildBrowserGrid(group, 1, 1);
+                group.SetShowBorder(true).SetScrollbars(NuiScrollbars.Y);
+                return;
+            }
             group.SetShowBorder(true).SetScrollbars(NuiScrollbars.None);
             group.AddColumn(col => col.AddRow(row => row.AddPartialView(AppearanceEditorViewModel.BrowserGridElement)));
         }

@@ -264,39 +264,43 @@ public class AppearancePreviewTests
             .GetMethod("BrowserRowsForHeight", BindingFlags.NonPublic | BindingFlags.Static)!
             .Invoke(null, new object[] { height, columns })!).Should().Be(expected);
 
-    [TestCase(800f, 760f, 0f, 0f, 1010f, 760f)]
-    [TestCase(1240f, 600f, 0f, 0f, 1240f, 750f)]
-    [TestCase(1240f, 760f, 0f, 0f, 1240f, 760f)]
-    [TestCase(800f, 500f, 900f, 650f, 900f, 650f)]
-    [TestCase(950f, 500f, 900f, 650f, 950f, 650f)]
-    [TestCase(1240f, 720f, 1280f, 720f, 1240f, 720f)]
-    public void SmallWindowsGrowToTheMinimumWithinTheScreen(float width, float height, float screenWidth,
-        float screenHeight, float expectedWidth, float expectedHeight)
+    // width, height, x, y, screen width, screen height, scale -> width, height
+    [TestCase(800f, 760f, 40f, 30f, 0f, 0f, 1f, 1010f, 760f)]
+    [TestCase(1240f, 600f, 40f, 30f, 0f, 0f, 1f, 1240f, 750f)]
+    [TestCase(1240f, 760f, 40f, 30f, 0f, 0f, 1f, 1240f, 760f)]
+    [TestCase(800f, 500f, 40f, 30f, 900f, 650f, 1f, 900f, 650f)]
+    [TestCase(1240f, 720f, 40f, 0f, 1280f, 720f, 1f, 1240f, 720f)]
+    [TestCase(1800f, 900f, 300f, 200f, 1280f, 720f, 1f, 1280f, 750f)]
+    [TestCase(1800f, 1000f, 300f, 200f, 1280f, 720f, 1f, 1280f, 720f)]
+    [TestCase(800f, 500f, 1900f, 1000f, 2400f, 1350f, 1.2f, 1010f, 750f)]
+    [TestCase(800f, 500f, 1900f, 1000f, 1600f, 900f, 0.8f, 1010f, 750f)]
+    public void WindowsFitTheMinimumAndTheScreen(float width, float height, float x, float y, float screenWidth,
+        float screenHeight, float scale, float expectedWidth, float expectedHeight)
     {
-        var geometry = new GuiRectangle(40f, 30f, width, height);
-        var fitted = FitMinimumWindow(geometry, screenWidth, screenHeight);
-        fitted.Width.Should().Be(expectedWidth);
-        fitted.Height.Should().Be(expectedHeight);
-        if (width == expectedWidth && height == expectedHeight)
-            fitted.Should().BeSameAs(geometry, "an unchanged size keeps the player's position");
-        else if (screenWidth > 0f)
+        var geometry = new GuiRectangle(x, y, width, height);
+        var fitted = FitMinimumWindow(geometry, screenWidth, screenHeight, scale);
+        fitted.Width.Should().BeApproximately(expectedWidth, 0.01f);
+        fitted.Height.Should().BeApproximately(Math.Min(expectedHeight, screenHeight > 0f ? screenHeight / scale : float.MaxValue), 0.01f);
+        if (screenWidth > 0f)
         {
-            fitted.X.Should().BeInRange(0f, Math.Max(0f, screenWidth - fitted.Width));
-            fitted.Y.Should().BeInRange(0f, Math.Max(0f, screenHeight - fitted.Height));
+            // Positions are physical pixels; the window covers its size times the GUI scale.
+            fitted.X.Should().BeInRange(0f, screenWidth - fitted.Width * scale + 0.01f);
+            fitted.Y.Should().BeInRange(0f, screenHeight - fitted.Height * scale + 0.01f);
         }
     }
 
     [Test]
-    public void AWindowAtLeastTheMinimumKeepsItsGeometry()
+    public void AWindowThatAlreadyFitsKeepsItsGeometry()
     {
-        var geometry = new GuiRectangle(500f, 400f, 1300f, 800f);
-        FitMinimumWindow(geometry, 1600f, 900f).Should().BeSameAs(geometry);
+        var geometry = new GuiRectangle(100f, 50f, 1300f, 800f);
+        FitMinimumWindow(geometry, 1920f, 1080f, 1f).Should().BeSameAs(geometry);
+        FitMinimumWindow(geometry, 0f, 0f, 1f).Should().BeSameAs(geometry);
     }
 
-    private static GuiRectangle FitMinimumWindow(GuiRectangle geometry, float screenWidth, float screenHeight) =>
+    private static GuiRectangle FitMinimumWindow(GuiRectangle geometry, float screenWidth, float screenHeight, float scale) =>
         (GuiRectangle)typeof(AppearanceEditorViewModel)
             .GetMethod("FitMinimumWindow", BindingFlags.NonPublic | BindingFlags.Static)!
-            .Invoke(null, new object[] { geometry, screenWidth, screenHeight })!;
+            .Invoke(null, new object[] { geometry, screenWidth, screenHeight, scale })!;
 
     [Test]
     public void BrowserGridNamesAreDistinctPerSize()

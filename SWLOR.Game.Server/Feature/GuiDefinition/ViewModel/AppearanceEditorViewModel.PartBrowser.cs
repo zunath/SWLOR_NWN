@@ -674,25 +674,31 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
         /// Grows a window smaller than the editor's minimum (an old saved size, or a drag) back to
         /// the minimum, within the player's screen, so no panel is cut off.
         /// </summary>
-        internal static GuiRectangle FitMinimumWindow(GuiRectangle geometry, float screenWidth, float screenHeight)
+        /// <param name="screenWidth">Screen width in physical pixels (0 when unknown), like Geometry X.</param>
+        /// <param name="screenHeight">Screen height in physical pixels (0 when unknown), like Geometry Y.</param>
+        /// <param name="scale">GUI scale; a window's on-screen size is its width and height times this.</param>
+        internal static GuiRectangle FitMinimumWindow(GuiRectangle geometry, float screenWidth, float screenHeight, float scale)
         {
             if (geometry == null)
                 return null;
+            if (scale <= 0f)
+                scale = 1f;
             var width = Math.Max(geometry.Width, AppearanceEditorDefinition.MinimumWindowWidth);
             var height = Math.Max(geometry.Height, AppearanceEditorDefinition.MinimumWindowHeight);
             var x = geometry.X;
             var y = geometry.Y;
+            // A saved size larger than this screen (or the minimum on a small screen) is capped to it.
             if (screenWidth > 0f)
             {
-                width = Math.Min(width, Math.Max(geometry.Width, screenWidth));
-                x = Math.Clamp(x, 0f, Math.Max(0f, screenWidth - width));
+                width = Math.Min(width, screenWidth / scale);
+                x = Math.Clamp(x, 0f, Math.Max(0f, screenWidth - width * scale));
             }
             if (screenHeight > 0f)
             {
-                height = Math.Min(height, Math.Max(geometry.Height, screenHeight));
-                y = Math.Clamp(y, 0f, Math.Max(0f, screenHeight - height));
+                height = Math.Min(height, screenHeight / scale);
+                y = Math.Clamp(y, 0f, Math.Max(0f, screenHeight - height * scale));
             }
-            if (width == geometry.Width && height == geometry.Height)
+            if (width == geometry.Width && height == geometry.Height && x == geometry.X && y == geometry.Y)
                 return geometry;
             return new GuiRectangle(x, y, width, height);
         }
@@ -700,11 +706,9 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
         private void EnsureMinimumWindowSize()
         {
             var scale = GetPlayerDeviceProperty(Player, PlayerDevicePropertyType.GuiScale) / 100f;
-            if (scale <= 0f)
-                scale = 1f;
-            var screenWidth = GetPlayerDeviceProperty(Player, PlayerDevicePropertyType.GuiWidth) / scale;
-            var screenHeight = GetPlayerDeviceProperty(Player, PlayerDevicePropertyType.GuiHeight) / scale;
-            var fitted = FitMinimumWindow(Geometry, screenWidth, screenHeight);
+            var screenWidth = GetPlayerDeviceProperty(Player, PlayerDevicePropertyType.GuiWidth);
+            var screenHeight = GetPlayerDeviceProperty(Player, PlayerDevicePropertyType.GuiHeight);
+            var fitted = FitMinimumWindow(Geometry, screenWidth, screenHeight, scale);
             if (fitted != null && !ReferenceEquals(fitted, Geometry))
                 Geometry = fitted;
         }

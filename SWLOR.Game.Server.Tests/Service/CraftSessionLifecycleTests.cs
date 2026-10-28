@@ -526,8 +526,8 @@ public class CraftSessionLifecycleTests
         _world.SavedRecords.Should().HaveCount(2);
         _world.SavedRecords[0].SessionActive.Should().BeFalse("the settlement save ends the craft");
         _world.SavedRecords[0].PendingXp.Should().Equal(entitled, "the same save that ends the craft carries the XP it earned");
-        _world.SavedRecords[1].PendingXp.Should().BeEmpty("the entitlement is cleared and saved before it is given");
-        _world.SavedPendingAtXp.Should().ContainSingle().Which.Should().BeEmpty();
+        _world.SavedRecords[1].PendingXp.Should().BeEmpty("the save that gives the XP also clears the entitlement");
+        _world.SavedPendingAtXp.Should().ContainSingle().Which.Should().Equal(entitled, "the entitlement stays saved until the award's own save");
         _world.XpGiven.Should().Equal((SkillType.Smithery, success.Outcome.Xp));
         _player.PendingCraftXp.Should().BeEmpty();
     }
@@ -545,7 +545,7 @@ public class CraftSessionLifecycleTests
         _world.SavedRecords[0].SessionActive.Should().BeFalse();
         _world.SavedRecords[0].PendingXp.Should().Equal(new Dictionary<SkillType, int> { [SkillType.Smithery] = settlement.Xp });
         _world.SavedRecords.Last().PendingXp.Should().BeEmpty();
-        _world.SavedPendingAtXp.Should().ContainSingle().Which.Should().BeEmpty();
+        _world.SavedPendingAtXp.Should().ContainSingle().Which.Should().ContainKey(SkillType.Smithery, "the entitlement stays saved until the award's own save");
         _world.XpGiven.Should().Equal((SkillType.Smithery, settlement.Xp));
     }
 

@@ -293,7 +293,26 @@ public sealed class NwnCraftSessionWorld : ICraftSessionWorld
         BiowareXP2.IPSafeAddItemProperty(item, blueprintLevelIP, 0f, AddItemPropertyPolicy.ReplaceExisting, true, false);
     }
 
-    public void GiveXp(uint player, SkillType skill, int xp) => Skill.GiveSkillXP(player, skill, xp, false, false);
+    public bool AwardPendingXp(uint player, Player dbPlayer, SkillType skill, int xp)
+    {
+        // The same guards Skill.GiveSkillXP returns on before it loads the record: the entitlement stays until an award can run.
+        if (!GetIsPC(player) || GetIsDM(player) || GetIsDead(player) || GetCurrentHitPoints(player) <= 0)
+            return false;
+
+        // GiveSkillXP loads the record through DB.Get, which returns this frame's cached instance, and saves it. The removal is made on
+        // that instance, so the save that holds the award also holds the removal.
+        var record = DB.Get<Player>(dbPlayer.Id) ?? dbPlayer;
+        record.PendingCraftXp?.Remove(skill);
+        if (!ReferenceEquals(record, dbPlayer))
+            dbPlayer.PendingCraftXp?.Remove(skill);
+
+        if (xp > 0)
+            Skill.GiveSkillXP(player, skill, xp, false, false);
+
+        // GiveSkillXP does not save when the XP changed nothing (a capped skill with no debt); this save then records the removal.
+        DB.Set(record);
+        return true;
+    }
 
     public bool CanReceiveXp(uint player) => !GetIsDead(player) && GetCurrentHitPoints(player) > 0;
 

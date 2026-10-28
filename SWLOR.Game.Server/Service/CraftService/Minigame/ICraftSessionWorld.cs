@@ -74,7 +74,11 @@ public interface ICraftSessionWorld
     /// <summary>Applies the blueprint's random and guaranteed bonuses and marks the item with the blueprint level.</summary>
     void ApplyBlueprintBonuses(uint player, uint item, RecipeDetail recipe, BlueprintDetail blueprint);
 
-    void GiveXp(uint player, SkillType skill, int xp);
+    /// <summary>
+    /// Gives one skill's waiting craft XP and takes it off <see cref="Player.PendingCraftXp"/> in the same player save, so a stop can
+    /// neither lose it nor give it twice. Returns false, keeping the entitlement, when the award cannot run now.
+    /// </summary>
+    bool AwardPendingXp(uint player, Player dbPlayer, SkillType skill, int xp);
 
     /// <summary>True when the player can be given skill XP now. A dead player cannot, so XP earned then waits on the record.</summary>
     bool CanReceiveXp(uint player);

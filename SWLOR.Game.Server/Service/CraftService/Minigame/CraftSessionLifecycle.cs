@@ -339,11 +339,8 @@ public sealed class CraftSessionLifecycle
     /// award, and a dead player's XP waits for a respawn or login. Does nothing while the player cannot receive XP. Returns whether any
     /// XP was given.
     /// <para>
-    /// The entitlement is cleared and saved before the XP is given, so a second call, a relog or a crash can never give it twice. A stop in
-    /// the window between that save and the award can lose the XP; it cannot duplicate it. The two writes are not merged into one save
-    /// because <c>Skill.GiveSkillXP</c> loads and saves the player by id on its own: <c>DB.Get</c> returns the instance cached for the
-    /// current frame, which is not necessarily the one passed here, and <c>GiveSkillXP</c> returns without saving in several cases (a dead
-    /// player, a skill at the cap with no XP debt), so a removal left to its save could be lost and the XP given again.
+    /// Each skill's XP is given and taken off the entitlement in the same player save (<see cref="ICraftSessionWorld.AwardPendingXp"/>),
+    /// so a second call, a relog or a crash can neither give it twice nor lose it.
     /// </para>
     /// </summary>
     public bool GrantPendingXp(uint player, Player dbPlayer)
@@ -352,15 +349,12 @@ public sealed class CraftSessionLifecycle
         if (pending == null || pending.Count == 0 || !_world.CanReceiveXp(player))
             return false;
 
-        var owed = pending.ToList();
-        pending.Clear();
-        _world.SaveRecord(dbPlayer);
+        // Each skill's XP is given and taken off the entitlement in one save, so a stop between them cannot lose or repeat it.
+        var given = false;
+        foreach (var (skill, xp) in pending.ToList())
+            given |= _world.AwardPendingXp(player, dbPlayer, skill, xp);
 
-        // XP last: GiveXp saves the player record itself.
-        foreach (var (skill, xp) in owed)
-            _world.GiveXp(player, skill, xp);
-
-        return true;
+        return given;
     }
 
     /// <summary>Gives back held items that fit the inventory now. Returns how many are still held.</summary>

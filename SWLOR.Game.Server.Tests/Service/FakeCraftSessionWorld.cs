@@ -194,11 +194,16 @@ internal sealed class FakeCraftSessionWorld : ICraftSessionWorld
     /// <summary>For each XP award, the entitlement the last saved record still held when the award ran.</summary>
     public List<Dictionary<SkillType, int>> SavedPendingAtXp { get; } = new();
 
-    public void GiveXp(uint player, SkillType skill, int xp)
+    public bool AwardPendingXp(uint player, Player dbPlayer, SkillType skill, int xp)
     {
         Events.Add("xp");
-        XpGiven.Add((skill, xp));
         SavedPendingAtXp.Add(SavedRecords.Count > 0 ? SavedRecords[^1].PendingXp : new Dictionary<SkillType, int>());
+        XpGiven.Add((skill, xp));
+
+        // The award and the removal are one save.
+        dbPlayer.PendingCraftXp?.Remove(skill);
+        SaveRecord(dbPlayer);
+        return true;
     }
 
     public void SaveRecord(Player dbPlayer)

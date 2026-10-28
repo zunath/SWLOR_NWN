@@ -33,6 +33,7 @@ namespace SWLOR.Game.Server.Service
         private const string QuestNpcGroupVariable = "QUEST_NPC_GROUP_ID";
         private const double DerelictProcessSeconds = 2;
         private const int DerelictPlacementTries = 12;
+        private const float DerelictSpotSpacing = 2f;
 
         private static readonly Dictionary<string, DerelictBoarding> _derelicts = new();
 
@@ -375,20 +376,22 @@ namespace SWLOR.Game.Server.Service
             }
 
             var entrance = GetPositionFromLocation(GetDerelictEntrance(interior));
+            var used = new List<Vector3>();
             foreach (var resref in plan.Dressing)
-                CreateObject(ObjectType.Placeable, resref, Location(interior, PickDerelictSpot(interior, entrance, anchors, 2f), Random.Next(360)));
+                CreateObject(ObjectType.Placeable, resref, Location(interior, PickDerelictSpot(interior, entrance, anchors, 2f, used), Random.Next(360)));
 
             foreach (var resref in plan.Enemies)
-                SpawnDerelictEnemy(boarding, interior, resref, PickDerelictSpot(interior, entrance, anchors, DerelictTuning.EntranceClearMeters));
+                SpawnDerelictEnemy(boarding, interior, resref, PickDerelictSpot(interior, entrance, anchors, DerelictTuning.EntranceClearMeters, used));
 
             foreach (var resref in plan.Terminals)
                 CreateObject(ObjectType.Placeable, resref,
-                    Location(interior, PickDerelictSpot(interior, entrance, anchors, DerelictTuning.EntranceClearMeters), Random.Next(360)));
+                    Location(interior, PickDerelictSpot(interior, entrance, anchors, DerelictTuning.EntranceClearMeters, used), Random.Next(360)));
 
             var strongboxSpot = Enumerable.Range(0, DerelictPlacementTries)
-                .Select(_ => PickDerelictSpot(interior, entrance, anchors, DerelictTuning.EntranceClearMeters))
+                .Select(_ => PickDerelictSpot(interior, entrance, anchors, DerelictTuning.EntranceClearMeters, used, false))
                 .OrderByDescending(x => System.Numerics.Vector3.Distance(x, entrance))
                 .First();
+            used.Add(strongboxSpot);
             var strongbox = CreateObject(ObjectType.Placeable, plan.StrongboxResref, Location(interior, strongboxSpot, Random.Next(360)),
                 false, DerelictStrongboxTag);
             if (GetIsObjectValid(strongbox))
@@ -403,10 +406,12 @@ namespace SWLOR.Game.Server.Service
         }
 
         /// <summary>
-        /// A random walkable spot of the interior at least <paramref name="clearance"/> from the entrance; with no baked
-        /// walkmesh point, beside one of the template's placeables.
+        /// A random walkable spot of the interior at least <paramref name="clearance"/> from the entrance and clear of the
+        /// spots already <paramref name="used"/>; with no baked walkmesh point (the dense ship templates bake none), a
+        /// walkable point 2-4 m beside one of the template's placeables, never on it.
         /// </summary>
-        private static Vector3 PickDerelictSpot(uint interior, Vector3 entrance, IReadOnlyList<Vector3> anchors, float clearance)
+        private static Vector3 PickDerelictSpot(uint interior, Vector3 entrance, IReadOnlyList<Vector3> anchors, float clearance,
+            List<Vector3> used, bool reserve = true)
         {
             var fallback = entrance;
             for (var attempt = 0; attempt < DerelictPlacementTries; attempt++)
@@ -416,15 +421,33 @@ namespace SWLOR.Game.Server.Service
                 {
                     if (anchors.Count == 0)
                         break;
-                    position = anchors[Random.Next(anchors.Count)];
+                    var anchor = anchors[Random.Next(anchors.Count)];
+                    var angle = Random.Next(360) * System.MathF.PI / 180f;
+                    var distance = 2f + Random.Next(3);
+                    position = new Vector3(anchor.X + System.MathF.Cos(angle) * distance, anchor.Y + System.MathF.Sin(angle) * distance, anchor.Z);
+                    if (!IsWalkable(interior, position))
+                        continue;
                 }
 
                 fallback = position;
-                if (System.Numerics.Vector3.Distance(position, entrance) >= clearance)
-                    return position;
+                if (System.Numerics.Vector3.Distance(position, entrance) < clearance ||
+                    used.Any(x => System.Numerics.Vector3.Distance(x, position) < DerelictSpotSpacing))
+                    continue;
+
+                if (reserve)
+                    used.Add(position);
+                return position;
             }
 
+            if (reserve)
+                used.Add(fallback);
             return fallback;
+        }
+
+        private static bool IsWalkable(uint area, Vector3 position)
+        {
+            var material = GetSurfaceMaterial(Location(area, position, 0f));
+            return material > 0 && Get2DAString("surfacemat", "Walk", material) == "1";
         }
 
         /// <summary>A ground enemy of the derelict: the spawn system's scripts and stats, without dungeon quest credit.</summary>

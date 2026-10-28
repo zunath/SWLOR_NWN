@@ -408,7 +408,12 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition
                     row.SetHeight(160f);
                 });
 
-                AddLabelRow(content, model => model.BuyNote);
+                content.AddRow(row =>
+                {
+                    row.AddText()
+                        .BindText(model => model.BuyNote)
+                        .SetHeight(44f);
+                });
             });
         }
     }

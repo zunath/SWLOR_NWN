@@ -13,7 +13,7 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition
     {
         private readonly GuiWindowBuilder<HoloNetBoardViewModel> _builder = new();
 
-        private const float ContentPanelWidth = 560f;
+        private const float ContentPanelWidth = 640f;
         private const float LabelHeight = 20f;
         private const float ExchangeWidth = 130f;
         private const float PriceWidth = 56f;
@@ -21,7 +21,7 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition
         public GuiConstructedWindow BuildWindow()
         {
             var window = _builder.CreateWindow(GuiWindowType.HoloNetBoard)
-                .SetInitialGeometry(0, 0, 610f, 640f)
+                .SetInitialGeometry(0, 0, 690f, 640f)
                 .SetTitle("HoloNet Price Board")
                 .SetIsResizable(true)
                 .SetIsCollapsible(true)

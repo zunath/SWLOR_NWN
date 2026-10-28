@@ -79,6 +79,8 @@ namespace SWLOR.Game.Server.Service
         {
             var player = GetEnteringObject();
             ReloadPlayerTlkStrings();
+            // A cloak never outlives a restart: its ghost effect may have been saved on the character by a crash.
+            RemoveStaleCloakEffect(player);
             RestoreCrewMemberAfterLogin(player);
             WarpPlayerInsideShip(player);
             RestoreDockedPassengerAfterLogin(player);
@@ -971,6 +973,7 @@ namespace SWLOR.Game.Server.Service
             var shipDetail = _shipTypes[dbPlayerShip.Status.ItemTag];
             ClearShipToggleState(player, dbPlayerShip.Status);
             dbPlayerShip.Status.PowerRouting = ShipPowerRouting.Balanced;
+            dbPlayerShip.Status.PowerRoutingBonusPercent = 0;
 
             // The droid crew takes its stations with the pilot, so the stations they work count from the start.
             var droidCrew = SeatDroidCrew(player, dbPlayerShip);
@@ -2071,7 +2074,8 @@ namespace SWLOR.Game.Server.Service
             var wil = GetPilotScore(ship, shipStatus, AbilityType.Willpower);
             return PowerRoutingRules.ApplyShieldRegen(
                 ShipNpcRules.ShieldRegenPerSecond(shipStatus, shipStatus.GetEffectiveMaxShield(DateTime.UtcNow), wil),
-                shipStatus.PowerRouting);
+                shipStatus.PowerRouting,
+                shipStatus.PowerRoutingBonusPercent);
         }
 
         /// <summary>

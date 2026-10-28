@@ -213,7 +213,8 @@ public class CloakingTests
     public void TheCargoRule_IsReCheckedEveryCycleThroughTheDevicesValidation()
     {
         var error = ExtractMethod(ReadSource("Service", "SpaceCloak.cs"), "public static string CloakError(");
-        error.Should().Contain("Trade.GetUsedVolume(Trade.GetActiveShip(ship)) > 0");
+        error.Should().Contain("var activeShip = GetIsPC(ship) ? Trade.GetActiveShip(ship) : null;")
+            .And.Contain("Trade.GetUsedVolume(activeShip) > 0");
         error.Should().Contain("ShipCloakRules.GetStartError(");
 
         ExtractMethod(ReadSource("Feature", "ShipModuleDefinition", "RevampModuleDefinition.cs"), "private void CloakingDevice(")
@@ -481,7 +482,8 @@ public class CloakingTests
         var hidden = ExtractMethod(space, "public static bool IsShipHiddenFrom(");
         hidden.Should().Contain("observer == target || GetIsDM(observer)");
         hidden.Should().Contain("IsCloakAlly(target, observer)");
-        hidden.Should().Contain("_cloaks.IsHiddenFrom(target, observer,");
+        hidden.Should().Contain("IsCloakHiddenFrom(target, observer,");
+        ExtractMethod(space, "private static bool IsCloakHiddenFrom(").Should().Contain("_cloaks.IsHiddenFrom(ship, observer, isAlly, distance, now");
         ExtractMethod(space, "private static bool IsCloakAlly(").Should().Contain("Party.IsInParty(ship, observer)").And.Contain("SpaceCrew.GetCrew(ship)");
 
         var visibility = ExtractMethod(space, "private static void RefreshCloakVisibility(");

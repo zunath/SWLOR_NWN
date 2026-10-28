@@ -1,6 +1,7 @@
 using SWLOR.Game.Server.Core;
 using SWLOR.Game.Server.Core.NWNX.Enum;
 using SWLOR.Game.Server.Feature.GuiDefinition.RefreshEvent;
+using SWLOR.Game.Server.Service.SkillService;
 using SWLOR.Game.Server.Service.SpaceService;
 using SWLOR.Game.Server.Service.StatService;
 using SWLOR.NWN.API.NWNX;
@@ -10,7 +11,8 @@ namespace SWLOR.Game.Server.Service
 {
     /// <summary>
     /// Power routing (plan section 10): the player at the Engineer station shifts the ship's power between weapons,
-    /// shields and engines with four hotbar feats (<see cref="PowerRoutingRules"/>). Droids do not route power. The
+    /// shields and engines with four hotbar feats (<see cref="PowerRoutingRules"/>); their Engineering rank makes the
+    /// routing's gain larger (W11n). Droids do not route power. The
     /// routing is saved on the ship status, read by the capacitor cost, shield regen, weapon damage and speed, and
     /// returns to Balanced when no player works the Engineer seat.
     /// </summary>
@@ -66,10 +68,13 @@ namespace SWLOR.Game.Server.Service
 
             status.PowerRouting = mode;
             status.PowerRoutingChangedAt = now;
+            status.PowerRoutingBonusPercent = mode == ShipPowerRouting.Balanced
+                ? 0
+                : ShipSeatSkillRules.EngineeringRoutingPercent(GetPlayerSkillRank(player, SkillType.Engineering));
             SaveShipStatus(ship, status);
             ApplyShipSpeed(ship, status);
 
-            var message = $"Power routed to {PowerRoutingRules.GetName(mode)}: {PowerRoutingRules.GetEffect(mode)}.";
+            var message = $"Power routed to {PowerRoutingRules.GetName(mode)}: {PowerRoutingRules.GetEffect(mode, status.PowerRoutingBonusPercent)}.";
             SendMessageToPC(player, message);
             SendMessageToPC(ship, $"{PlayerName.GetDisplayName(ship, player)}: {message}");
             Gui.PublishRefreshEvent(ship, new ShipHudRefreshEvent());
@@ -85,7 +90,7 @@ namespace SWLOR.Game.Server.Service
             SetLocalFloat(pilot, Stat.ShipMovementSpeedVariable,
                 (float)ShipAfterburnerRules.ApplySpeed(
                     ShipCloakRules.ApplySpeed(
-                        PowerRoutingRules.ApplySpeed(status.SpeedMultiplier, status.PowerRouting),
+                        PowerRoutingRules.ApplySpeed(status.SpeedMultiplier, status.PowerRouting, status.PowerRoutingBonusPercent),
                         GetCloakSpeedMultiplier(pilot)),
                     GetAfterburnerPercent(status)));
             Stat.ApplyCreatureMovementRate(pilot);
@@ -102,7 +107,7 @@ namespace SWLOR.Game.Server.Service
             ShipModuleDetail detail)
         {
             var cost = ShipTraitRules.CapacitorCost(detail.CalculateCapacitorAction?.Invoke(ship, status, module.ModuleBonus) ?? 0, module.Traits);
-            cost = PowerRoutingRules.ApplyCapacitorCost(cost, status.PowerRouting, ShipToggleRules.IsOffensive(detail.Type));
+            cost = PowerRoutingRules.ApplyCapacitorCost(cost, status.PowerRouting, ShipToggleRules.IsOffensive(detail.Type), status.PowerRoutingBonusPercent);
             return WildSpaceRules.AdjustCapacitorCost(cost, Stat.GetStatAdjustment(ship, StatType.SpaceCapacitorCostPercentAdjustment));
         }
 

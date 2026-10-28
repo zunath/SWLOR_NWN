@@ -139,7 +139,15 @@ def starships():
          "(5, 15, 25, 35, 45). Droid attributes are 16 + 0.2 x level. A player who takes a droid's seat bumps the droid back to its owner."],
         ["Power routing", "Engineer seat, player only; the mode can change once per 6 s", *[""] * 19, "Weapons: -25% weapon capacitor use, -10% shield regen, -10% speed. "
          "Shields: +15% shield regen, -5% weapon damage, -10% speed. Engines: +20% speed, -5% weapon damage, -10% shield regen. Balanced: no change. "
-         "No mode raises weapon damage, so none kills faster than Balanced."],
+         "No mode raises weapon damage, so none kills faster than Balanced. The Engineer's Engineering rank makes the gain larger: +0.5% per rank, "
+         "up to +25% at 50 (Weapons 31% less capacitor, Shields +19% shield regen, Engines +25% speed); the penalties never change (Space Balance section Q)."],
+        ["Seat skills", "Engineering, Espionage and Leadership ranks (whoever works the module: the crew member at its seat, otherwise the pilot)", *[""] * 19,
+         "Engineering: Shield, Hull and Repair Field repairs and the Hypermatter Injector +0.2% per rank (up to +10% at 50), power routing gain "
+         "+0.5% per rank (up to +25%). Espionage: Jammer, E-War Array and Target Painter strength +0.2% per rank (up to +10%), Probe Launcher "
+         "scan strength +1% per rank (up to +50%), the range at which the ship sees through a cloak +1% per rank (up to +50%; the better of the "
+         "pilot's and the Sensors officer's rank). Leadership: Command orders, auras and range +0.5% per rank (up to +25%), crew effectiveness "
+         "+1% per 10 ranks (up to +5%). Droids and NPC ships have no rank. Only Leadership's crew bonus counts toward the 105% seat cap; the others "
+         "are the crew member's own, as perks are, and add no weapon damage (Space Balance section Q)."],
         ["PvP", "Ground rules", *[""] * 19, "A player's ship attacks another player's ship only when the ground hostility check allows it "
          "(the engine's reputation, area and server PvP setting and the attacker's hostile mark in the player list). Remote repair, capacitor transfer and Command orders skip a hostile player. The PvP damage ramp and the halved hard crowd control apply."],
         ["Ship destruction", "Escape pods", *[""] * 19, "Everyone aboard (pilot, station crew, viewport watchers, passengers) is ejected alive to the dock the ship is towed to and takes the normal ground XP debt. "
@@ -246,14 +254,14 @@ def modules():
         ["Salvager", "High", "Gathering (Helm)", "Toggle", 6.0, 3, "Module", "Salvages wrecks up to its tier."],
         ["Gas Harvester", "High", "Gathering (Helm)", "Toggle", 6.0, 3, "Module", "Harvests gas clouds up to its tier."],
         ["Shield Booster", "Mid", "Piloting (Helm)", "Passive", "", "", "Module", "+ max shield (table)."],
-        ["Shield Repairer", "Mid", "Piloting (Engineer)", "Toggle", 4.0, 4, "Module", "Repairs its locked target's shield, or your own."],
+        ["Shield Repairer", "Mid", "Piloting (Engineer)", "Toggle", 4.0, 4, "Module", "Repairs its locked target's shield, or your own. Engineering adds +0.2% per rank (up to +10% at 50) for whoever runs it."],
         ["Shield Hardener", "Mid", "Piloting (Engineer)", "Toggle", 4.0, 4, "None", "+ all resistances while on."],
         ["Capacitor Battery", "Mid", "Piloting (Helm)", "Passive", "", "", "Module", "+ max capacitor."],
-        ["Hypermatter Injector", "Mid", "Piloting (Engineer)", "One press", 30.0, 0, "Module", "Restores capacitor; uses a capsule."],
+        ["Hypermatter Injector", "Mid", "Piloting (Engineer)", "One press", 30.0, 0, "Module", "Restores capacitor; uses a capsule. Engineering adds +0.2% per rank (up to +10% at 50) for whoever runs it."],
         ["Ion Web", "Mid", "Piloting (Sensors)", "Toggle", 3.0, 3, "None", "Slows the target (Mobility); 20 m. Interceptors +25% strength and +50% range (the Republic Scout +20% more range); the Barracuda is immune. A web breaks a cloak."],
         ["Interdictor", "Mid", "Piloting (Sensors)", "Toggle", 4.0, 5, "None", "While held the target can't jump a starlane or to a signature, dock, board, cross a rift, open a Rift Run or cloak, and its Afterburner shuts down; range in the table (+50% on Interceptors). A hold breaks a cloak."],
-        ["Jammer", "Mid", "Piloting (Sensors)", "Toggle", 4.0, 4, "None", "Target Accuracy down; 30 m (the E-War Array's range). The stronger jam or E-War Array penalty counts."],
-        ["Target Painter", "Mid", "Piloting (Sensors)", "Toggle", 4.0, 4, "None", "Target takes more damage from every weapon and ability; 30 m. The stronger paint counts."],
+        ["Jammer", "Mid", "Piloting (Sensors)", "Toggle", 4.0, 4, "None", "Target Accuracy down; 30 m (the E-War Array's range). The stronger jam or E-War Array penalty counts. Espionage adds +0.2% per rank (up to +10% at 50) to its strength for whoever runs it."],
+        ["Target Painter", "Mid", "Piloting (Sensors)", "Toggle", 4.0, 4, "None", "Target takes more damage from every weapon and ability; 30 m. The stronger paint counts. Espionage adds +0.2% per rank (up to +10% at 50) to its strength for whoever runs it."],
         ["Afterburner", "Mid", "Piloting (Helm)", "Toggle", 2.0, 3, "None", "+ speed while on (multiplies with routing and the cloak); an Interdictor's hold shuts it down."],
         ["Cloaking Device", "Mid", "Piloting (Helm)", "Toggle", cloak.CYCLE_SECONDS, cloak.CAPACITOR, "None",
          f"Small hulls and Blockade Runners; cloak time {cloak.ENGAGE_SECONDS:g} s ({cloak.ROLE_ENGAGE_SECONDS:g} s on Interceptors, Bombers and Explorers); speed -{cloak.SPEED_PERCENT}% "
@@ -262,7 +270,7 @@ def modules():
         ["Data Analyzer", "Mid", "Espionage (Sensors)", "One press", 20.0, 5, "None", "No rank ladder; the Slicing perk gates targets."],
         ["Targeting Computer", "Mid", "Piloting (Helm)", "Passive", "", "", "None", "+ Accuracy; the best one counts."],
         ["Hull Plating", "Low", "Piloting (Helm)", "Passive", "", "", "Module", "+ max hull and + Defense; only the best Defense counts."],
-        ["Hull Repairer", "Low", "Piloting (Engineer)", "Toggle", 4.0, 4, "Module", "Repairs its locked target's hull, or your own (80% of the shield amount)."],
+        ["Hull Repairer", "Low", "Piloting (Engineer)", "Toggle", 4.0, 4, "Module", "Repairs its locked target's hull, or your own (80% of the shield amount). Engineering adds +0.2% per rank (up to +10% at 50) for whoever runs it."],
         ["Resist Plating", "Low", "Piloting (Helm)", "Passive", "", "", "None", "One resistance, or all at a cost to Evasion."],
         ["Capacitor Regulator", "Low", "Piloting (Engineer)", "Passive", "", "", "Module", "+ capacitor regen."],
         ["Thrusters", "Low", "Piloting (Helm)", "Passive", "", "", "None", "+ Evasion (best one counts) and +5% speed (stacks)."],
@@ -304,8 +312,8 @@ def modules():
     s.title("Capital modules (Capital hulls only; ranks 40 and 45)")
     s.table(["Module", "Row", "Use", "Rank 40", "Rank 45", "", "", "", "", "", "", "", "", "Notes"], [
         ["Bulwark Shield Generator", "Mid", "Toggle", "+15% max shield to allies within 30 m", "+20%", *[""] * 8, "Engineer seat; 8 capacitor per 4 s."],
-        ["Repair Field", "Mid", "Toggle", f"{round(m.REPAIR_STEP[40] * 1.1)} shield per 4 s to allies within 30 m", f"{round(m.REPAIR_STEP[45] * 1.1)}", *[""] * 8, "Engineer seat; 10 capacitor per 4 s; never the capital itself."],
-        ["E-War Array", "Mid", "Toggle", "-12 Accuracy to enemies within 30 m", "-14", *[""] * 8, "Sensors seat; 8 capacitor per 4 s."],
+        ["Repair Field", "Mid", "Toggle", f"{round(m.REPAIR_STEP[40] * 1.1)} shield per 4 s to allies within 30 m", f"{round(m.REPAIR_STEP[45] * 1.1)}", *[""] * 8, "Engineer seat; 10 capacitor per 4 s; never the capital itself. Engineering adds +0.2% per rank (up to +10% at 50) for whoever runs it."],
+        ["E-War Array", "Mid", "Toggle", "-12 Accuracy to enemies within 30 m", "-14", *[""] * 8, "Sensors seat; 8 capacitor per 4 s. Espionage adds +0.2% per rank (up to +10% at 50) to its strength for whoever runs it."],
         ["Advanced Thrusters", "Low", "Passive", "+80 Evasion, +10% speed", "+90, +10%", *[""] * 8, "Counts as Thrusters for the best-one rule."],
         ["Redundant Shield Generator", "Low", "Passive", f"+{round(m.HP_STEP[40] * 1.5 * 1.1)} max shield", f"+{round(m.HP_STEP[45] * 1.5 * 1.1)}", *[""] * 8, ""],
         ["Reinforced Plating", "Low", "Passive", f"+{round(m.HP_STEP[40] * 1.5 * 1.1)} max hull, +72 Defense", f"+{round(m.HP_STEP[45] * 1.5 * 1.1)}, +81", *[""] * 8, "Counts as Hull Plating for the best-one rule."],

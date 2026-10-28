@@ -745,6 +745,19 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
             set => Set(value);
         }
 
+        /// <summary>The selected ship's hull traits (read-only), from the components it was built with.</summary>
+        public string HullTraitsText
+        {
+            get => Get<string>();
+            set => Set(value);
+        }
+
+        public string HullTraitsTooltip
+        {
+            get => Get<string>();
+            set => Set(value);
+        }
+
         public bool IsMyShipsToggled
         {
             get => Get<bool>();
@@ -1049,6 +1062,8 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
                 IsPermissionsEnabled = false;
                 IsNameEnabled = false;
                 ShipLocation = string.Empty;
+                HullTraitsText = string.Empty;
+                HullTraitsTooltip = string.Empty;
                 IsRepairEnabled = false;
                 RepairText = "Repair";
                 LoadHullDesigns(null, null, false);
@@ -1099,7 +1114,7 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
                 {
                     var detail = Space.GetShipModuleDetailByItemTag(module.ItemTag);
                     HighPower1Resref = detail.Texture;
-                    HighPower1Tooltip = detail.Name;
+                    HighPower1Tooltip = ShipTraitRules.ModuleTooltip(detail.Name, module.Traits);
                 }
                 else
                 {
@@ -1114,7 +1129,7 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
                 {
                     var detail = Space.GetShipModuleDetailByItemTag(module.ItemTag);
                     HighPower2Resref = detail.Texture;
-                    HighPower2Tooltip = detail.Name;
+                    HighPower2Tooltip = ShipTraitRules.ModuleTooltip(detail.Name, module.Traits);
                 }
                 else
                 {
@@ -1129,7 +1144,7 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
                 {
                     var detail = Space.GetShipModuleDetailByItemTag(module.ItemTag);
                     HighPower3Resref = detail.Texture;
-                    HighPower3Tooltip = detail.Name;
+                    HighPower3Tooltip = ShipTraitRules.ModuleTooltip(detail.Name, module.Traits);
                 }
                 else
                 {
@@ -1144,7 +1159,7 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
                 {
                     var detail = Space.GetShipModuleDetailByItemTag(module.ItemTag);
                     HighPower4Resref = detail.Texture;
-                    HighPower4Tooltip = detail.Name;
+                    HighPower4Tooltip = ShipTraitRules.ModuleTooltip(detail.Name, module.Traits);
                 }
                 else
                 {
@@ -1159,7 +1174,7 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
                 {
                     var detail = Space.GetShipModuleDetailByItemTag(module.ItemTag);
                     HighPower5Resref = detail.Texture;
-                    HighPower5Tooltip = detail.Name;
+                    HighPower5Tooltip = ShipTraitRules.ModuleTooltip(detail.Name, module.Traits);
                 }
                 else
                 {
@@ -1174,7 +1189,7 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
                 {
                     var detail = Space.GetShipModuleDetailByItemTag(module.ItemTag);
                     HighPower6Resref = detail.Texture;
-                    HighPower6Tooltip = detail.Name;
+                    HighPower6Tooltip = ShipTraitRules.ModuleTooltip(detail.Name, module.Traits);
                 }
                 else
                 {
@@ -1189,7 +1204,7 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
                 {
                     var detail = Space.GetShipModuleDetailByItemTag(module.ItemTag);
                     HighPower7Resref = detail.Texture;
-                    HighPower7Tooltip = detail.Name;
+                    HighPower7Tooltip = ShipTraitRules.ModuleTooltip(detail.Name, module.Traits);
                 }
                 else
                 {
@@ -1204,7 +1219,7 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
                 {
                     var detail = Space.GetShipModuleDetailByItemTag(module.ItemTag);
                     HighPower8Resref = detail.Texture;
-                    HighPower8Tooltip = detail.Name;
+                    HighPower8Tooltip = ShipTraitRules.ModuleTooltip(detail.Name, module.Traits);
                 }
                 else
                 {
@@ -1228,7 +1243,7 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
                 {
                     var detail = Space.GetShipModuleDetailByItemTag(module.ItemTag);
                     LowPower1Resref = detail.Texture;
-                    LowPower1Tooltip = detail.Name;
+                    LowPower1Tooltip = ShipTraitRules.ModuleTooltip(detail.Name, module.Traits);
                 }
                 else
                 {
@@ -1243,7 +1258,7 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
                 {
                     var detail = Space.GetShipModuleDetailByItemTag(module.ItemTag);
                     LowPower2Resref = detail.Texture;
-                    LowPower2Tooltip = detail.Name;
+                    LowPower2Tooltip = ShipTraitRules.ModuleTooltip(detail.Name, module.Traits);
                 }
                 else
                 {
@@ -1258,7 +1273,7 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
                 {
                     var detail = Space.GetShipModuleDetailByItemTag(module.ItemTag);
                     LowPower3Resref = detail.Texture;
-                    LowPower3Tooltip = detail.Name;
+                    LowPower3Tooltip = ShipTraitRules.ModuleTooltip(detail.Name, module.Traits);
                 }
                 else
                 {
@@ -1273,7 +1288,7 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
                 {
                     var detail = Space.GetShipModuleDetailByItemTag(module.ItemTag);
                     LowPower4Resref = detail.Texture;
-                    LowPower4Tooltip = detail.Name;
+                    LowPower4Tooltip = ShipTraitRules.ModuleTooltip(detail.Name, module.Traits);
                 }
                 else
                 {
@@ -1288,7 +1303,7 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
                 {
                     var detail = Space.GetShipModuleDetailByItemTag(module.ItemTag);
                     LowPower5Resref = detail.Texture;
-                    LowPower5Tooltip = detail.Name;
+                    LowPower5Tooltip = ShipTraitRules.ModuleTooltip(detail.Name, module.Traits);
                 }
                 else
                 {
@@ -1303,7 +1318,7 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
                 {
                     var detail = Space.GetShipModuleDetailByItemTag(module.ItemTag);
                     LowPower6Resref = detail.Texture;
-                    LowPower6Tooltip = detail.Name;
+                    LowPower6Tooltip = ShipTraitRules.ModuleTooltip(detail.Name, module.Traits);
                 }
                 else
                 {
@@ -1318,7 +1333,7 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
                 {
                     var detail = Space.GetShipModuleDetailByItemTag(module.ItemTag);
                     LowPower7Resref = detail.Texture;
-                    LowPower7Tooltip = detail.Name;
+                    LowPower7Tooltip = ShipTraitRules.ModuleTooltip(detail.Name, module.Traits);
                 }
                 else
                 {
@@ -1333,7 +1348,7 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
                 {
                     var detail = Space.GetShipModuleDetailByItemTag(module.ItemTag);
                     LowPower8Resref = detail.Texture;
-                    LowPower8Tooltip = detail.Name;
+                    LowPower8Tooltip = ShipTraitRules.ModuleTooltip(detail.Name, module.Traits);
                 }
                 else
                 {
@@ -1345,7 +1360,8 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
                 {
                     var midModule = ship.Status.MidPowerModules.GetValueOrDefault(slot);
                     var midDetail = midModule == null ? null : Space.GetShipModuleDetailByItemTag(midModule.ItemTag);
-                    SetMidSlot(slot, shipDetail.MidPowerNodes >= slot, midDetail?.Texture ?? _blank, midDetail?.Name ?? string.Empty);
+                    SetMidSlot(slot, shipDetail.MidPowerNodes >= slot, midDetail?.Texture ?? _blank,
+                        midDetail == null ? string.Empty : ShipTraitRules.ModuleTooltip(midDetail.Name, midModule.Traits));
                 }
 
                 // Legacy hulls have no mid slots and revamp hulls have no configuration slots.
@@ -1368,7 +1384,7 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
                 {
                     var detail = Space.GetShipModuleDetailByItemTag(module.ItemTag);
                     Configuration1Resref = detail.Texture;
-                    Configuration1Tooltip = detail.Name;
+                    Configuration1Tooltip = ShipTraitRules.ModuleTooltip(detail.Name, module.Traits);
                 }
                 else
                 {
@@ -1383,7 +1399,7 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
                 {
                     var detail = Space.GetShipModuleDetailByItemTag(module.ItemTag);
                     Configuration2Resref = detail.Texture;
-                    Configuration2Tooltip = detail.Name;
+                    Configuration2Tooltip = ShipTraitRules.ModuleTooltip(detail.Name, module.Traits);
                 }
                 else
                 {
@@ -1398,7 +1414,7 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
                 {
                     var detail = Space.GetShipModuleDetailByItemTag(module.ItemTag);
                     Configuration3Resref = detail.Texture;
-                    Configuration3Tooltip = detail.Name;
+                    Configuration3Tooltip = ShipTraitRules.ModuleTooltip(detail.Name, module.Traits);
                 }
                 else
                 {
@@ -1413,7 +1429,7 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
                 {
                     var detail = Space.GetShipModuleDetailByItemTag(module.ItemTag);
                     Configuration4Resref = detail.Texture;
-                    Configuration4Tooltip = detail.Name;
+                    Configuration4Tooltip = ShipTraitRules.ModuleTooltip(detail.Name, module.Traits);
                 }
                 else
                 {
@@ -1428,7 +1444,7 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
                 {
                     var detail = Space.GetShipModuleDetailByItemTag(module.ItemTag);
                     Configuration5Resref = detail.Texture;
-                    Configuration5Tooltip = detail.Name;
+                    Configuration5Tooltip = ShipTraitRules.ModuleTooltip(detail.Name, module.Traits);
                 }
                 else
                 {
@@ -1443,7 +1459,7 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
                 {
                     var detail = Space.GetShipModuleDetailByItemTag(module.ItemTag);
                     Configuration6Resref = detail.Texture;
-                    Configuration6Tooltip = detail.Name;
+                    Configuration6Tooltip = ShipTraitRules.ModuleTooltip(detail.Name, module.Traits);
                 }
                 else
                 {
@@ -1458,7 +1474,7 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
                 {
                     var detail = Space.GetShipModuleDetailByItemTag(module.ItemTag);
                     Configuration7Resref = detail.Texture;
-                    Configuration7Tooltip = detail.Name;
+                    Configuration7Tooltip = ShipTraitRules.ModuleTooltip(detail.Name, module.Traits);
                 }
                 else
                 {
@@ -1473,7 +1489,7 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
                 {
                     var detail = Space.GetShipModuleDetailByItemTag(module.ItemTag);
                     Configuration8Resref = detail.Texture;
-                    Configuration8Tooltip = detail.Name;
+                    Configuration8Tooltip = ShipTraitRules.ModuleTooltip(detail.Name, module.Traits);
                 }
                 else
                 {
@@ -1485,6 +1501,8 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
                 IsNameEnabled = hasAccess && permission.Permissions.GetValueOrDefault(PropertyPermissionType.RenameProperty) && isAtCurrentLocation;
                 IsRefitEnabled = hasAccess && permission.Permissions.GetValueOrDefault(PropertyPermissionType.RefitShip) && isAtCurrentLocation;
                 IsPermissionsEnabled = hasAccess && permission.GrantPermissions.Any(x => x.Value) && isAtCurrentLocation;
+                HullTraitsText = ShipTraitRules.HullTraitsText(ship.Status.HullTraits);
+                HullTraitsTooltip = ShipTraitRules.HullTraitsTooltip(ship.Status.HullTraits);
                 ShipLocation = isDockedAboard
                     ? $"Docked aboard {hostName}"
                     : isInSpace

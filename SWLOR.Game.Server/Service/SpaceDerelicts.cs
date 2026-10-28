@@ -196,6 +196,34 @@ namespace SWLOR.Game.Server.Service
             };
         }
 
+        /// <summary>
+        /// The Scanner tab's Board and Salvage buttons: targets the derelict wreck of a signature in the pilot's area, so
+        /// <see cref="BoardDerelict"/> or <see cref="SendSalvageTeam"/> acts on it as <c>/board</c> and <c>/salvage</c>
+        /// do. False, telling the pilot why, when its wreck is not here.
+        /// </summary>
+        public static bool TargetDerelictSignature(uint player, string signatureId)
+        {
+            var signature = FindSignature(signatureId);
+            if (signature is { Type: SignatureType.Derelict })
+            {
+                foreach (var objective in signature.Objectives)
+                {
+                    if (!GetIsObjectValid(objective) ||
+                        GetObjectType(objective) != ObjectType.Placeable ||
+                        GetArea(objective) != GetArea(player))
+                    {
+                        continue;
+                    }
+
+                    SetCurrentTarget(player, objective);
+                    return true;
+                }
+            }
+
+            SendMessageToPC(player, ColorToken.Red("The derelict is not in this system. Jump to it first."));
+            return false;
+        }
+
         // Boarding
 
         /// <summary>

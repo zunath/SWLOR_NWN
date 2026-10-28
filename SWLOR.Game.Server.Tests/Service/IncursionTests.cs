@@ -203,6 +203,47 @@ public class IncursionTests
         ReadSource("Feature", "GuiDefinition", "ViewModel", "TradeExchangeViewModel.cs").Should().Contain("Space.GetIncursionPriceMultiplier(");
     }
 
+    [Test]
+    public void HoloNet_PricesTheIncursionSpike_AndRebuildsWhenAnIncursionStartsOrEnds()
+    {
+        var plain = HoloNetRules.Build((_, _) => 0, Wednesday);
+        var spiked = HoloNetRules.Build((_, _) => 0, Wednesday, _ => IncursionTuning.PriceMultiplier);
+        spiked.Rows.Should().HaveCount(plain.Rows.Count);
+        foreach (var (before, after) in plain.Rows.Zip(spiked.Rows))
+        {
+            after.Commodity.Should().Be(before.Commodity);
+            after.BuyPrice.Should().BeGreaterThanOrEqualTo(before.BuyPrice, after.Name);
+            after.SellPrice.Should().BeGreaterThan(before.SellPrice, after.Name);
+        }
+
+        // Only the region's exchanges spike: a good's best buyer can move into the region.
+        var incursion = IncursionRules.Create(Region("viscaraorbit"), IncursionInvader.Sith, Wednesday, new Dictionary<string, int>());
+        var region = HoloNetRules.Build((_, _) => 0, Wednesday, exchange => IncursionRules.GetPriceMultiplier(incursion, exchange));
+        region.Rows.Should().Contain(x => x.SellAt == TradeExchangeType.Viscara || x.SellAt == TradeExchangeType.CZ220 ||
+                                          x.SellAt == TradeExchangeType.MonCala);
+
+        HoloNetRules.GetPriceKey(null).Should().BeEmpty();
+        HoloNetRules.GetPriceKey(incursion).Should().Be(HoloNetRules.GetPriceKey(incursion));
+        var later = IncursionRules.Create(Region("viscaraorbit"), IncursionInvader.Sith, Wednesday.AddDays(7), new Dictionary<string, int>());
+        HoloNetRules.GetPriceKey(later).Should().NotBe(HoloNetRules.GetPriceKey(incursion), "a new incursion rebuilds the board");
+
+        var board = ReadSource("Service", "TradeHoloNet.cs");
+        board.Should().Contain("HoloNetRules.GetPriceKey(Space.GetActiveIncursion())");
+        board.Should().Contain("Space.GetIncursionPriceMultiplier);");
+    }
+
+    [Test]
+    public void FreightContracts_AreRefusedAtAnExchangeABlockadeClosed()
+    {
+        var freight = ReadSource("Service", "TradeFreight.cs").Replace("\r\n", "\n");
+        freight.Should().Contain("var closed = Space.GetIncursionExchangeRefusal(exchange);");
+        System.Text.RegularExpressions.Regex.Matches(freight, @"if \(IsFreightExchangeClosed\(player, exchange\)\)\n\s+return;")
+            .Count.Should().Be(2, "both accepting and delivering are refused");
+        freight.IndexOf("IsFreightExchangeClosed(player, exchange)", StringComparison.Ordinal)
+            .Should().BeLessThan(freight.IndexOf("TakeGoldFromCreature(offer.Deposit", StringComparison.Ordinal), "no deposit is taken first");
+        IncursionRules.ExchangeRefusal(IncursionInvader.Sith).Should().Contain("The exchange is closed");
+    }
+
     // Contribution
 
     [Test]

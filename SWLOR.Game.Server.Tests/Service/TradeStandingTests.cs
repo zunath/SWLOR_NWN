@@ -8,6 +8,7 @@ using SWLOR.Game.Server.Service.FactionService;
 using SWLOR.Game.Server.Service.PropertyService;
 using SWLOR.Game.Server.Service.SpaceService;
 using SWLOR.Game.Server.Service.TradeService;
+using SWLOR.Game.Server.Feature.SpawnDefinition;
 
 namespace SWLOR.Game.Server.Tests.Service;
 
@@ -521,6 +522,101 @@ public class TradeStandingTests
                 SpaceSquadCatalog.CreatureTag(faction, role).Should().Be($"t{faction + 1}{hull}", $"tier {faction + 1} {hull}");
             }
         }
+    }
+
+    // Hutt Cartel enforcers (W11b)
+
+    [Test]
+    public void HuttEnforcers_AttackOnlyPilotsHostileToTheCartel()
+    {
+        HuttEnforcerRules.Faction.Should().Be(FactionType.HuttCartel);
+        HuttEnforcerRules.AttacksOnSight(TradeStandingTier.Hostile).Should().BeTrue();
+        foreach (var tier in new[] { TradeStandingTier.Neutral, TradeStandingTier.Trusted, TradeStandingTier.Honored, TradeStandingTier.Exalted })
+            HuttEnforcerRules.AttacksOnSight(tier).Should().BeFalse(tier.ToString());
+
+        HuttEnforcerRules.AttacksOnSight(TradeStandingRules.GetTier(TradeTuning.StandingHostile)).Should().BeTrue();
+        HuttEnforcerRules.AttacksOnSight(TradeStandingRules.GetTier(TradeTuning.StandingHostile + 1)).Should().BeFalse();
+
+        HuttEnforcerRules.IsEnforcer("t4huttenfgun").Should().BeTrue();
+        HuttEnforcerRules.IsEnforcer("t4huttenfint").Should().BeTrue();
+        HuttEnforcerRules.IsEnforcer("t4gunship").Should().BeFalse("Clan Zel Arun is a hostile faction tier, not the Cartel");
+        HuttEnforcerRules.IsEnforcer(null).Should().BeFalse();
+        HuttEnforcerRules.GetGroup("area-1").Should().NotBe(HuttEnforcerRules.GetGroup("area-2"), "each orbit's enforcers are one group");
+    }
+
+    [Test]
+    public void HuttEnforcers_PatrolSmugglersMoonAndTheOrbitsItsLanesReach()
+    {
+        TradeTuning.HuttEnforcerTier.Should().Be(4);
+        TradeTuning.HuttEnforcerOrbits.Should().BeEquivalentTo("narshadorbit", "hutlar_orbit", "tatooineorbit");
+        foreach (var orbit in TradeTuning.HuttEnforcerOrbits)
+        {
+            HuttEnforcerRules.PatrolsOrbit(orbit).Should().BeTrue(orbit);
+            TradeLookup.GetOrbit(orbit).Should().NotBeNull(orbit);
+        }
+
+        HuttEnforcerRules.PatrolsOrbit("viscaraorbit").Should().BeFalse();
+        TradeLookup.GetExchange(TradeExchangeType.Hutlar).StandingFaction.Should().Be(FactionType.HuttCartel);
+        TradeLookup.GetExchange(TradeExchangeType.Tatooine).StandingFaction.Should().Be(FactionType.HuttCartel);
+
+        var spawns = new SpaceSpawnDefinition().BuildSpawnTables();
+        foreach (var table in new[] { "SPACE_NARSHADDAA_ORBIT", "SPACE_HUTLAR_ORBIT", "SPACE_TATOOINE_ORBIT" })
+        {
+            foreach (var tag in TradeTuning.HuttEnforcerTags)
+                spawns[table].Spawns.Where(x => x.Resref == tag).Select(x => x.Weight)
+                    .Should().Equal(new[] { TradeTuning.HuttEnforcerSpawnWeight }, $"{table} {tag}");
+        }
+
+        foreach (var (name, table) in spawns)
+        {
+            if (name is "SPACE_NARSHADDAA_ORBIT" or "SPACE_HUTLAR_ORBIT" or "SPACE_TATOOINE_ORBIT")
+                continue;
+            table.Spawns.Should().NotContain(x => HuttEnforcerRules.IsEnforcer(x.Resref), name);
+        }
+    }
+
+    [Test]
+    public void HuttEnforcers_AreNeutralTierFourCopiesOfTheGunshipAndInterceptor()
+    {
+        var registered = new NPCSpaceObjectDefinition().BuildSpaceObjects();
+        foreach (var (tag, source, appearance) in new[] { ("t4huttenfgun", "t4gunship", 10107), ("t4huttenfint", "t4interceptor", 10153) })
+        {
+            registered.Should().ContainKey(tag);
+            var copy = JObject.Parse(File.ReadAllText(Path.Combine(RepositoryRoot(), "Module", "utc", $"{tag}.utc.json")));
+            var original = JObject.Parse(File.ReadAllText(Path.Combine(RepositoryRoot(), "Module", "utc", $"{source}.utc.json")));
+            copy["Tag"]!["value"]!.Value<string>().Should().Be(tag);
+            copy["TemplateResRef"]!["value"]!.Value<string>().Should().Be(tag);
+            copy["FactionID"]!["value"]!.Value<int>().Should().Be(6, "Neutral, like the customs patrols, until a pilot crosses the Cartel");
+            copy["Appearance_Type"]!["value"]!.Value<int>().Should().Be(appearance);
+            copy["FirstName"]!["value"]!["0"]!.Value<string>().Should().StartWith("Hutt Cartel Enforcer");
+            copy["Equip_ItemList"]!.ToString().Should().Be(original["Equip_ItemList"]!.ToString(), "the tier 4 skin sets its level");
+            copy["VarTable"]!.ToString().Should().Be(original["VarTable"]!.ToString(), "it carries its source's loot");
+
+            var npc = RevampNpcShipCatalog.Ships.Single(x => x.CreatureTag == tag);
+            var sourceNpc = RevampNpcShipCatalog.Ships.Single(x => x.CreatureTag == source);
+            npc.Level.Should().Be(sourceNpc.Level);
+            npc.Role.Should().Be(sourceNpc.Role);
+            npc.Hull.Should().Be(sourceNpc.Hull);
+            ShipManufacturerRules.WreckManufacturer(tag).Should().Be(ShipManufacturer.Hutt, "Appendix D: Hutt Cargo Coupling from the enforcers' wrecks");
+        }
+
+        var palette = File.ReadAllText(Path.Combine(RepositoryRoot(), "Module", "itp", "creaturepalcus.itp.json"));
+        palette.Should().Contain("\"t4huttenfgun\"").And.Contain("\"t4huttenfint\"");
+    }
+
+    [Test]
+    public void Wiring_HuttEnforcersJoinTheirOrbitAndAnswerToTheCartel()
+    {
+        var enforcers = ReadServerSource("Service", "TradeEnforcers.cs");
+        enforcers.Should().Contain("[NWNEventHandler(ScriptName.OnCreatureSpawnAfter)]");
+        enforcers.Should().Contain("MarkLawful(ship, group, TradeAuthority.None, LawfulShipKind.HuttEnforcer);");
+        enforcers.Should().Contain("HuttEnforcerRules.AttacksOnSight(GetStandingTier(player, HuttEnforcerRules.Faction))");
+        ReadServerSource("Service", "TradeOrbitRisk.cs").Should().Contain("RollHuttEnforcers(player, area)");
+
+        var convoys = ReadServerSource("Service", "TradeConvoys.cs");
+        convoys.Should().Contain("if (kind == LawfulShipKind.HuttEnforcer)");
+        convoys.Should().Contain("RecordStanding(attacker, HuttEnforcerRules.Faction, TradeStandingEvent.AttackedLawfulShip);");
+        ((int)LawfulShipKind.HuttEnforcer).Should().Be(3);
     }
 
     private static string RepositoryRoot()

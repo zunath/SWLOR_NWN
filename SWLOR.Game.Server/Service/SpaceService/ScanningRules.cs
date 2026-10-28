@@ -228,6 +228,17 @@ namespace SWLOR.Game.Server.Service.SpaceService
         }
 
         /// <summary>
+        /// Whether the Scanner tab offers Board and Salvage on a signature (the W15c <c>/board</c> and <c>/salvage</c>):
+        /// a boardable derelict not yet stripped that the party can jump to. The commands check the rest (range,
+        /// combat, defenses, hull size, droids).
+        /// </summary>
+        public static bool CanBoard(ScanSignature signature, IEnumerable<string> partyIds)
+        {
+            return signature is { Type: SignatureType.Derelict, Boardable: true, DerelictLooted: false } &&
+                   CanJump(signature, partyIds);
+        }
+
+        /// <summary>
         /// The rows the Scanner tab shows a viewer: every signature in the area that the viewer's party has any signal
         /// on, strongest first.
         /// </summary>
@@ -256,6 +267,7 @@ namespace SWLOR.Game.Server.Service.SpaceService
                     Tooltip = RowTooltip(signature, percent, areaWidth, areaHeight),
                     Percent = percent,
                     CanJump = CanJump(signature, partyIds),
+                    CanBoard = CanBoard(signature, partyIds),
                 });
             }
 

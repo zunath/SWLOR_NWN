@@ -1,6 +1,7 @@
 using System.Collections.Generic;
 using SWLOR.Game.Server.Feature.ShipRewardDefinition;
 using SWLOR.Game.Server.Service.SpawnService;
+using SWLOR.Game.Server.Service.TradeService;
 using SWLOR.NWN.API.NWScript.Enum;
 
 namespace SWLOR.Game.Server.Feature.SpawnDefinition
@@ -78,6 +79,22 @@ namespace SWLOR.Game.Server.Feature.SpawnDefinition
             AddFactionTier(1);
             AddRareCapitals();
             AddAce("ace_smuggler");
+            AddHuttEnforcers();
+        }
+
+        /// <summary>
+        /// The Hutt Cartel enforcers (plan section 11) on the Smuggler's Moon lanes: Smuggler's Moon Orbit and the orbits
+        /// its starlanes reach (Hutlar and Tatooine). Their tags and weight are trade.py's (TradeTuning).
+        /// </summary>
+        private void AddHuttEnforcers()
+        {
+            foreach (var tag in TradeTuning.HuttEnforcerTags)
+            {
+                _builder.AddSpawn(ObjectType.Creature, tag)
+                    .WithFrequency(TradeTuning.HuttEnforcerSpawnWeight)
+                    .RandomlyWalks()
+                    .ReturnsHome();
+            }
         }
 
         /// <summary>The Mid Rim nebula (space_midrim1): Dathomir Orbit's tier 5 ships and capitals, with its own ace.</summary>
@@ -456,6 +473,8 @@ namespace SWLOR.Game.Server.Feature.SpawnDefinition
                 .ReturnsHome();
 
             AddAce("ace_hutlar");
+
+            AddHuttEnforcers();
         }
 
         private void TatooineOrbit()
@@ -575,6 +594,8 @@ namespace SWLOR.Game.Server.Feature.SpawnDefinition
                 .ReturnsHome();
 
             AddAce("ace_tatooine");
+
+            AddHuttEnforcers();
         }
 
         private void KorribanOrbit()

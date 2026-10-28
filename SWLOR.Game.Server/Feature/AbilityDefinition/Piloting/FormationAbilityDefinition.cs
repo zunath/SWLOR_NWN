@@ -4,6 +4,7 @@ using SWLOR.Game.Server.Service;
 using SWLOR.Game.Server.Service.AbilityService;
 using SWLOR.Game.Server.Service.PerkService;
 using SWLOR.Game.Server.Service.SkillService;
+using SWLOR.Game.Server.Service.SpaceService;
 using SWLOR.NWN.API.NWScript.Enum;
 
 namespace SWLOR.Game.Server.Feature.AbilityDefinition.Piloting
@@ -42,7 +43,8 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.Piloting
             }
 
             if (SpaceAuras.ApplyAura(activator, aura))
-                CombatPoint.AddSupportCombatPoint(activator, SpaceCommand.GetPartyShipsInRange(activator), SkillType.Piloting);
+                CombatPoint.AddSupportCombatPoint(
+                    SpaceCrew.GetAbilityUser(activator), SpaceCommand.GetPartyShipsInRange(activator), SkillType.Piloting);
         }
     }
 }

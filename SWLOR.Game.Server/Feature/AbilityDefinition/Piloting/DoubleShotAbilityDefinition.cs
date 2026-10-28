@@ -44,13 +44,14 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.Piloting
                         return;
 
                     var ability = Ability.GetActiveAbilityImpactSummary(activator)?.Ability;
+                    var user = SpaceCrew.GetAbilityUser(activator);
                     var restored = Combat.RestoreAbilityHitStamina(
-                        activator, ability, criticalStaminaRestore, sendFeedback: false);
-                    if (restored > 0 && GetIsPC(activator))
+                        user, ability, criticalStaminaRestore, sendFeedback: false);
+                    if (restored > 0 && GetIsPC(user))
                     {
                         PlayerFeedback.ShowDiagnosticFloatingText(
                             ColorToken.Combat($"Double Shot restored {restored} STM"),
-                            activator,
+                            user,
                             false);
                     }
                 });

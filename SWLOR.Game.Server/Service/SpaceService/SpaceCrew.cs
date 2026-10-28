@@ -298,6 +298,20 @@ namespace SWLOR.Game.Server.Service.SpaceService
             return context.Droid != null ? OBJECT_INVALID : context.CrewMember;
         }
 
+        /// <summary>
+        /// The creature that uses an ability the ship activates: the crew member using their own Piloting ability from
+        /// a station (plan section 10), otherwise <paramref name="creature"/> itself. The ship stays the activator and
+        /// source (validation, range, self statuses, the orders' reach); the user's perks, STM, recasts, Social and
+        /// Leadership stand behind it.
+        /// </summary>
+        public static uint GetAbilityUser(uint creature)
+        {
+            var context = GetFireContext(creature);
+            return context is { IsAbility: true } && context.CrewMember != OBJECT_INVALID
+                ? context.CrewMember
+                : creature;
+        }
+
         /// <summary>Whether a stat source is the droid firing right now.</summary>
         public static bool IsDroidStatSource(uint statSource) => statSource == OBJECT_INVALID && _droidFire.Count > 0;
 

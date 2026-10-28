@@ -26,9 +26,10 @@ HULLS = {
 # Gunship hardens below half hull; a Logistics ship repairs allies. Cargo haulers keep the Logistics row unarmed.
 SUPPORT = {"gunship": ("sm_hard",), "logistics": ("sm_hrep", "sm_shrep")}
 # The trade risk groups (W7b) copy a hull type of their tier: pirate raiders (pir), customs patrols of the Republic,
-# Czerka and the Sith (repcus, czkcus, sithcus), and trade convoys (a cargo hauler and gunship escorts).
+# Czerka and the Sith (repcus, czkcus, sithcus), and trade convoys (a cargo hauler and gunship escorts). The Hutt Cartel
+# enforcers (huttenf, W11b) copy the tier 4 gunship and interceptor.
 GROUP_HULLS = {"int": "interceptor", "ftr": "fighter", "gun": "gunship"}
-GROUP_PREFIXES = ("pir", "repcus", "czkcus", "sithcus")
+GROUP_PREFIXES = ("pir", "repcus", "czkcus", "sithcus", "huttenf")
 ALIASES = {"convoy": "cargo", "escort": "gunship"}
 HARDENER_RESIST = {"sm_hard": lambda step: 10 + step // 5}  # the Shield Hardener family (catalog.py FAMILIES)
 MODULE_FOR = {

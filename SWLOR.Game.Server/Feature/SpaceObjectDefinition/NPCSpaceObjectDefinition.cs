@@ -706,6 +706,13 @@ namespace SWLOR.Game.Server.Feature.SpaceObjectDefinition
 
             _builder.Create("t6escort")
                 .ItemTag("NPC_Gunship6");
+
+            // Hutt Cartel enforcers on the Smuggler's Moon lanes (W11b): tier 4, Neutral until a pilot crosses the Cartel.
+            _builder.Create("t4huttenfgun")
+                .ItemTag("NPC_Gunship4");
+
+            _builder.Create("t4huttenfint")
+                .ItemTag("NPC_Interceptor4");
         }
 
         /// <summary>

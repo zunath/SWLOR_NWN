@@ -587,7 +587,8 @@ def rewards_tab():
 
     s.title("Rare components (top band, tier 5)")
     s.note("Used by the named modules. Advanced hull recipes and the rare-trait stand-in come with the manufacturer "
-           "components (W9c). Prototype Tech has no source until Wild Space (W12c) and is flagged NO_ECONOMY until then.")
+           "components (W9c). Prototype Tech drops from space slicing (locked caches and data cores, W12b); Wild Space "
+           "adds more later (W12c).")
     s.table(["Component", "Resref", "Crafted by", "Level", "RecipeType", "", "", "Inputs"],
             [[x["Name"], x["Resref"], x["Skill"], x["RecipeLevel"], x["RecipeType"], "", "",
               ", ".join(f"{q}x {r}" for r, q in x["Components"])] for x in components if x["Family"] in
@@ -769,9 +770,10 @@ def write(sheets):
 
 if __name__ == "__main__":
     import scanning
+    import slicing
     import trade
     tabs = [starships(), modules(), enemies(), balance(), trade.trade_tab(Sheet), components_tab(),
-            scanning.scanning_tab(Sheet), rewards_tab()]
+            scanning.scanning_tab(Sheet), rewards_tab(), slicing.slicing_tab(Sheet)]
     if "--check" in sys.argv:
         check(tabs)
         sys.exit(0)

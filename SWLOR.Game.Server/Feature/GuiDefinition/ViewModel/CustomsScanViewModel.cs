@@ -44,8 +44,8 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
                             "Pay the fine and surrender them, or run.";
                 FineText = $"Fine: {scan.Fine} credits. You carry {GetGold(Player)}.";
                 DeadlineText = $"Answer within {seconds} seconds. No answer counts as running.";
-                CanPay = GetGold(Player) >= scan.Fine;
-                IsPending = true;
+                CanPay = GetGold(Player) >= scan.Fine && !scan.IsBeingSliced;
+                IsPending = !scan.IsBeingSliced;
                 CanSlice = Trade.CanSliceCustomsScan(Player);
             }
 
@@ -62,6 +62,12 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
         {
             if (GetScan() != null)
                 Trade.PayCustomsFine(Player);
+        };
+
+        public Action OnClickSlice() => () =>
+        {
+            if (GetScan() != null)
+                Trade.SliceCustomsScan(Player);
         };
 
         public Action OnClickRun() => () =>

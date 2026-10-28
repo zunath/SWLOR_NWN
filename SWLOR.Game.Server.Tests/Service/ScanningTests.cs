@@ -355,13 +355,13 @@ public class ScanningTests
     }
 
     [Test]
-    public void Spawning_NoRiftsOrDataSitesYet_GasFromTierThree()
+    public void Spawning_DataSitesButNoRiftsYet_GasFromTierThree()
     {
         for (var tier = 1; tier <= 6; tier++)
         {
             var weights = SignatureSiteRules.GetWeights(tier);
             weights[SignatureType.Rift].Should().Be(0);
-            weights[SignatureType.DataSite].Should().Be(0);
+            weights[SignatureType.DataSite].Should().Be(15, "data sites spawn with the Data Analyzer (W12b)");
             weights[SignatureType.GasSite].Should().Be(tier >= 3 ? 20 : 0);
 
             var seen = new HashSet<SignatureType>();
@@ -369,7 +369,7 @@ public class ScanningTests
             for (var roll = 0; roll < total; roll++)
                 seen.Add(SignatureSiteRules.PickType(tier, _ => roll));
 
-            seen.Should().NotContain(SignatureType.Rift).And.NotContain(SignatureType.DataSite).And.NotContain(SignatureType.Invalid);
+            seen.Should().NotContain(SignatureType.Rift).And.NotContain(SignatureType.Invalid).And.Contain(SignatureType.DataSite);
             seen.Contains(SignatureType.GasSite).Should().Be(tier >= 3);
         }
     }

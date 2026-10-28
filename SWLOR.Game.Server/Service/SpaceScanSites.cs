@@ -51,6 +51,11 @@ namespace SWLOR.Game.Server.Service
                     break;
                 case SignatureType.CacheSite:
                     SpawnSiteCache(signature, area, "Hidden Cache");
+                    if (signature.Locked && GetIsObjectValid(signature.Cache))
+                        LockCache(signature.Cache, signature, area);
+                    break;
+                case SignatureType.DataSite:
+                    SpawnDataCans(signature, area, center);
                     break;
             }
 
@@ -184,6 +189,12 @@ namespace SWLOR.Game.Server.Service
             if (signature == null || signature.Completed)
             {
                 DestroyObject(cache);
+                return;
+            }
+
+            if (IsLockedCache(cache))
+            {
+                SendMessageToPC(user, ColorToken.Red("The cache is locked. Target it and slice it open with a Data Analyzer."));
                 return;
             }
 

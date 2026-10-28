@@ -279,7 +279,7 @@ public class SpaceRewardTests
 
         RevampComponentCatalog.SalvageFamilies.Should().NotContain(RevampComponentCatalog.RareFamilies, "never salvaged");
         using var tech = ReadBlueprint("proto_tech");
-        HasNoEconomy(tech.RootElement).Should().BeTrue("Prototype Tech has no source until Wild Space (W12c)");
+        HasNoEconomy(tech.RootElement).Should().BeFalse("space slicing drops Prototype Tech (W12b), so it is an economy item");
     }
 
     // Ship Schematics

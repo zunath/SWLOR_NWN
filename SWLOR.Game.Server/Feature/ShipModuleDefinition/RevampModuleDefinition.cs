@@ -111,6 +111,9 @@ namespace SWLOR.Game.Server.Feature.ShipModuleDefinition
                 case ShipModuleFamily.ProbeLauncher:
                     ProbeLauncher(step);
                     break;
+                case ShipModuleFamily.DataAnalyzer:
+                    DataAnalyzer(step);
+                    break;
             }
         }
 
@@ -141,6 +144,7 @@ namespace SWLOR.Game.Server.Feature.ShipModuleDefinition
                 ShipModuleFamily.RepairField => ShipModuleType.RepairFieldGenerator,
                 ShipModuleFamily.EWarArray => ShipModuleType.CapitalEwar,
                 ShipModuleFamily.ProbeLauncher => ShipModuleType.ProbeLauncher,
+                ShipModuleFamily.DataAnalyzer => ShipModuleType.DataAnalyzer,
                 _ => ShipModuleType.Passive,
             };
         }
@@ -337,6 +341,15 @@ namespace SWLOR.Game.Server.Feature.ShipModuleDefinition
                 .MaxDistance(SelfRange)
                 .ValidationAction((activator, _, _, _, _) => Space.ProbeLauncherError(activator))
                 .ActivatedAction((activator, status, _, _, _) => Space.RunProbeCycle(activator, status, Effective(step)));
+        }
+
+        private void DataAnalyzer(ShipModuleStep step)
+        {
+            _builder
+                .MaxDistance(step.Range)
+                .ValidTargetType(ObjectType.Placeable)
+                .ValidationAction((activator, _, target, _, _) => Space.DataAnalyzerError(activator, target))
+                .ActivatedAction((activator, _, target, _, _) => Space.StartDataAnalyzer(activator, target));
         }
 
         private void EWarArray(ShipModuleStep step)

@@ -19,6 +19,12 @@ namespace SWLOR.Game.Server.Service.SpaceService
         /// <summary>The players of the killing party, who have the wreck to themselves for the claim time.</summary>
         public HashSet<string> Claimants { get; init; } = new();
 
+        /// <summary>
+        /// Whether the wreck still carries a data core to slice (elite, ace and boss wrecks; plan section 12). The
+        /// claimants' first claim covers it as it covers salvage.
+        /// </summary>
+        public bool HasDataCore { get; set; }
+
         /// <summary>Salvage cycles left before the wreck is stripped.</summary>
         public int RemainingCycles { get; set; }
 

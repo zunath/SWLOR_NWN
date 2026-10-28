@@ -171,7 +171,7 @@ namespace SWLOR.Game.Server.Service.SpaceService
                 if (ScanningTuning.Threat.TryGetValue(signature.Type, out var threat))
                     parts.Add($"Threat: {threat}");
                 if (ScanningTuning.LootClass.TryGetValue(signature.Type, out var loot))
-                    parts.Add($"Loot: {loot}");
+                    parts.Add(signature.Locked ? $"Loot: {loot} (locked: needs a Data Analyzer)" : $"Loot: {loot}");
             }
             else
             {

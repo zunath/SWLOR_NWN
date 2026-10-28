@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using SWLOR.Game.Server.Core;
 using SWLOR.NWN.API.Engine;
+using SWLOR.Game.Server.Service.SlicingService;
 using SWLOR.Game.Server.Service.SpaceService;
 using SWLOR.NWN.API.NWScript.Enum;
 
@@ -44,6 +45,9 @@ namespace SWLOR.Game.Server.Service
 
             var size = status.Size;
             var difficulty = ShipSalvageRules.ParseDifficulty(preset.Difficulty);
+            var tier = ShipSalvageRules.WreckTier(GetTag(creature), preset.Level);
+            RollSpaceLockbox(creature, difficulty, tier);
+
             var resref = size == ShipSize.Capital ? CapitalWreckResref : WreckResref;
             var wreck = CreateObject(ObjectType.Placeable, resref, GetLocation(creature));
             if (!GetIsObjectValid(wreck))
@@ -52,12 +56,13 @@ namespace SWLOR.Game.Server.Service
             SetName(wreck, $"{GetName(creature)} Wreck");
             _wrecks[wreck] = new ShipWreck
             {
-                Tier = ShipSalvageRules.WreckTier(GetTag(creature), preset.Level),
+                Tier = tier,
                 Difficulty = difficulty,
                 Size = size,
                 DestroyedAt = DateTime.UtcNow,
                 Claimants = GetKillingParty(creature),
-                RemainingCycles = ShipSalvageRules.WreckCycles(size, difficulty)
+                RemainingCycles = ShipSalvageRules.WreckCycles(size, difficulty),
+                HasDataCore = SpaceSlicingRules.HasDataCore(difficulty, GetLocalBool(creature, SpaceSlicingTuning.AceVariable))
             };
 
             _wrecks[wreck].Manufacturer = ShipManufacturerRules.WreckManufacturer(GetTag(creature));
@@ -89,7 +94,8 @@ namespace SWLOR.Game.Server.Service
                 Size = size,
                 DestroyedAt = DateTime.UtcNow,
                 Claimants = claimants ?? new HashSet<string>(),
-                RemainingCycles = ShipSalvageRules.WreckCycles(size, difficulty)
+                RemainingCycles = ShipSalvageRules.WreckCycles(size, difficulty),
+                HasDataCore = SpaceSlicingRules.HasDataCore(difficulty, false)
             };
 
             AssignCommand(wreck, () => DelayCommand(seconds, () => RemoveWreck(wreck)));

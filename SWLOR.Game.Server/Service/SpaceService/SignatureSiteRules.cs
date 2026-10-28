@@ -14,8 +14,8 @@ namespace SWLOR.Game.Server.Service.SpaceService
             ScanningTuning.Areas.FirstOrDefault(x => x.AreaResref == areaResref);
 
         /// <summary>
-        /// The type weights in an area of this tier. Gas sites need tier 3 gas clouds; data sites and rifts have no
-        /// weight until the Data Analyzer and Wild Space exist.
+        /// The type weights in an area of this tier. Gas sites need tier 3 gas clouds; rifts have no weight until Wild
+        /// Space exists.
         /// </summary>
         public static Dictionary<SignatureType, int> GetWeights(int tier)
         {
@@ -43,8 +43,12 @@ namespace SWLOR.Game.Server.Service.SpaceService
             return weights[^1].Key;
         }
 
-        /// <summary>A new hidden signature of an area, which fades after <see cref="ScanningTuning.HiddenLifetimeSeconds"/>.</summary>
-        public static ScanSignature Create(string id, string areaResref, int tier, SignatureType type, float x, float y, float z, DateTime now)
+        /// <summary>
+        /// A new hidden signature of an area, which fades after <see cref="ScanningTuning.HiddenLifetimeSeconds"/>. Only a
+        /// cache site can be <paramref name="locked"/>.
+        /// </summary>
+        public static ScanSignature Create(string id, string areaResref, int tier, SignatureType type, float x, float y, float z, DateTime now,
+            bool locked = false)
         {
             return new ScanSignature
             {
@@ -58,6 +62,7 @@ namespace SWLOR.Game.Server.Service.SpaceService
                 CreatedAt = now,
                 ExpiresAt = now.AddSeconds(ScanningTuning.HiddenLifetimeSeconds),
                 SignalRequired = ScanningRules.SignalRequired(type, tier),
+                Locked = locked && type == SignatureType.CacheSite,
             };
         }
 
@@ -96,6 +101,9 @@ namespace SWLOR.Game.Server.Service.SpaceService
         /// <summary>The credits in a site's cache.</summary>
         public static int SiteCredits(SignatureType type, int tier) =>
             ScanningTuning.SiteCredits.TryGetValue(type, out var credits) ? credits[TierIndex(tier)] : 0;
+
+        /// <summary>The credits in a locked cache, paid when it is sliced open.</summary>
+        public static int LockedCacheCredits(int tier) => ScanningTuning.LockedCacheCredits[TierIndex(tier)];
 
         /// <summary>The loot table a site cache pulls its items from.</summary>
         public static string CacheLootTable(int tier) => $"SPACE_ELITE_T{TierIndex(tier)}";

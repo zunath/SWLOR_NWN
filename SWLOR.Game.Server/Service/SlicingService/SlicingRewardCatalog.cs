@@ -31,6 +31,28 @@ namespace SWLOR.Game.Server.Service.SlicingService
                 .ToList();
         }
 
+        // Space reward tables (plan section 24, "Rewards"): one per space source, numbers in SpaceSlicingTuning. They are
+        // kept apart from the ground tables above, which stay as they are.
+
+        /// <summary>A space source's base credits at a slicing tier (1-5), or 0 for a source that pays none (customs).</summary>
+        public static int GetSpaceCredits(SlicingSourceType source, int tier)
+        {
+            return SpaceSlicingTuning.Credits.TryGetValue(source, out var credits)
+                ? credits[Math.Clamp(tier, 1, SpaceSlicingTuning.MaximumTier)]
+                : 0;
+        }
+
+        /// <summary>A space source's bonus pick weights, or none for a source that pays nothing.</summary>
+        public static IReadOnlyDictionary<SpaceSlicingRewardKind, int> GetSpaceBonusWeights(SlicingSourceType source)
+        {
+            return SpaceSlicingTuning.BonusWeights.TryGetValue(source, out var weights)
+                ? weights
+                : new Dictionary<SpaceSlicingRewardKind, int>();
+        }
+
+        /// <summary>Whether a source rolls a space reward table instead of the ground tables.</summary>
+        public static bool HasSpaceTable(SlicingSourceType source) => SpaceSlicingTuning.Credits.ContainsKey(source);
+
         private static void AddNamedRewards()
         {
             Named(SlicingSourceType.Lockbox, 1, "slw_quickdraw", "Quickdraw Holdout", true);

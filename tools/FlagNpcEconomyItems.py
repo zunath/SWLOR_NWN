@@ -78,7 +78,7 @@ def collect():
         "FishType.cs", "FishingRodType.cs", "FishingBaitType.cs",
         "SlicingCacheSmitheryRecipes.cs", "SlicingCacheCookingRecipes.cs", "TraceFuseRecipes.cs",
         "SlicingTerminalFurnitureRecipes.cs", "ConcentratedVenomRecipes.cs", "ShipSalvageItems.cs",
-        "RevampComponentCatalog.cs", "RevampRewardCatalog.cs",
+        "RevampComponentCatalog.cs", "RevampRewardCatalog.cs", "SpaceSlicingItems.cs",
     )
     # Space revamp catalogs: each hull and module Tag is the output resref of a RevampStarshipRecipes recipe.
     revamp_catalogs = ("RevampModuleCatalog.cs", "RevampShipCatalog.cs")

@@ -344,10 +344,9 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition
             {
                 content.AddRow(row =>
                 {
-                    row.AddLabel()
+                    row.AddText()
                         .SetText("Spawn an enemy squad around you. You must be in a space area.")
-                        .SetHorizontalAlign(NuiHorizontalAlign.Left)
-                        .SetHeight(20f);
+                        .SetHeight(44f);
                 });
 
                 content.AddRow(row =>

@@ -15,7 +15,7 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition
 
         private const float TabRowHeight = 28f;
         private const float TabPanelHeight = 48f;
-        private const float ContentPanelWidth = 560f;
+        private const float ContentPanelWidth = 610f;
         private const float LabelHeight = 20f;
         private const float ButtonHeight = 32f;
         private const float RoleWidth = 96f;
@@ -29,7 +29,7 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition
         public GuiConstructedWindow BuildWindow()
         {
             var window = _builder.CreateWindow(GuiWindowType.TradeExchange)
-                .SetInitialGeometry(0, 0, 610f, 680f)
+                .SetInitialGeometry(0, 0, 660f, 680f)
                 .SetTitle("Trade Exchange")
                 .SetIsResizable(true)
                 .SetIsCollapsible(true)

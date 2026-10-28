@@ -11,7 +11,7 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition
 
         private const float TabRowHeight = 28f;
         private const float TabPanelHeight = 48f;
-        private const float ContentPanelWidth = 380f;
+        private const float ContentPanelWidth = 470f;
         private const float LabelHeight = 20f;
         private const float ButtonHeight = 32f;
 
@@ -21,7 +21,7 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition
         public GuiConstructedWindow BuildWindow()
         {
             var window = _builder.CreateWindow(GuiWindowType.ShipHud)
-                .SetInitialGeometry(10f, 100f, 430f, 470f)
+                .SetInitialGeometry(10f, 100f, 520f, 500f)
                 .SetTitle("Ship HUD")
                 .SetIsResizable(true)
                 .SetIsCollapsible(true)
@@ -41,7 +41,7 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition
                         .AddOption("Stats")
                         .AddOption("Scanner")
                         .BindSelectedValue(model => model.TabToggleValue)
-                        .SetWidth(348f)
+                        .SetWidth(460f)
                         .SetHeight(TabRowHeight);
                 });
                 layout.SetContentPartialElement(ShipHudViewModel.TabContentElement);
@@ -263,6 +263,7 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition
                     })
                         .BindRowCount(model => model.SignatureNames)
                         .SetRowHeight(32f);
+                    row.SetHeight(150f);
                 });
 
                 col.AddRow(row =>

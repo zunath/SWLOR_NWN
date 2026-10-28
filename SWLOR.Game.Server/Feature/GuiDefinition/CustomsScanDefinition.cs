@@ -13,14 +13,14 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition
     {
         private readonly GuiWindowBuilder<CustomsScanViewModel> _builder = new();
 
-        private const float ContentPanelWidth = 420f;
+        private const float ContentPanelWidth = 510f;
         private const float LabelHeight = 20f;
         private const float ButtonHeight = 35f;
 
         public GuiConstructedWindow BuildWindow()
         {
             var window = _builder.CreateWindow(GuiWindowType.CustomsScan)
-                .SetInitialGeometry(0, 0, 470f, 300f)
+                .SetInitialGeometry(0, 0, 560f, 300f)
                 .SetTitle("Customs Scan")
                 .SetIsResizable(true)
                 .SetIsCollapsible(true)

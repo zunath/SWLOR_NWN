@@ -126,7 +126,8 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
             StandingVisible = false;
             TariffText = string.Empty;
             TariffVisible = false;
-            TabToggleValue = MarketTabId;
+            // Sync quietly: a raw set runs SelectTab before UnitsText exists, and its restore then sends a null.
+            TabToggles.SyncTo(MarketTabId, value => TabToggleValue = value);
             SelectedTabId = MarketTabId;
             ShipOptions = new GuiBindingList<GuiComboEntry>();
             SelectedShipIndex = 0;

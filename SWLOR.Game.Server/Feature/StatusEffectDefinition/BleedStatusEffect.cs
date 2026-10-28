@@ -20,6 +20,12 @@ namespace SWLOR.Game.Server.Feature.StatusEffectDefinition
         public override float Frequency => 6f;
         public override bool PreservesTickScheduleOnRefresh => true;
 
+        // Machines cannot bleed, independent of their Trauma resistance.
+        public override string CanApply(uint creature)
+        {
+            return Droid.IsBloodlessMachine(creature) ? "Droids cannot bleed." : string.Empty;
+        }
+
         protected override void Tick(uint creature)
         {
             var hasSource = GetIsObjectValid(Source);

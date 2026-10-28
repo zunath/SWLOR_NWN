@@ -1258,6 +1258,8 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition
 
                 if (SpreadSunderFromTarget && sourceStatuses.Sundered)
                 {
+                    // Spread the source's own Sunder strength rather than the default one.
+                    var sourceSunder = StatusEffect.GetStatusEffect(target, typeof(SunderStatusEffect));
                     SpreadStatusToNearbyHostile(
                         activator,
                         target,
@@ -1265,7 +1267,8 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition
                         SpreadSunderDurationSeconds > 0 ? SpreadSunderDurationSeconds : 30f,
                         damageType,
                         spreadSnapshot,
-                        MaximumStatusSpreadsPerSource);
+                        MaximumStatusSpreadsPerSource,
+                        sourceSunder == null ? null : sourceSunder.Clone);
                 }
             }
 
@@ -1303,7 +1306,8 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition
                 float duration,
                 CombatDamageType damageType,
                 StatusSpreadSnapshot spreadSnapshot,
-                int maximumRecipients = 1)
+                int maximumRecipients = 1,
+                Func<IStatusEffect> createStatus = null)
             {
                 if (duration <= 0f || !GetIsObjectValid(sourceTarget))
                     return;
@@ -1320,7 +1324,9 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition
                         // Remember the recipient's prerequisites before spreading, so an enemy
                         // hit later in this cast cannot chain a newly received status onward.
                         spreadSnapshot.Capture(nearby);
-                        return StatusEffect.ApplyStatusEffect(activator, nearby, statusEffect, duration, damageType);
+                        return createStatus == null
+                            ? StatusEffect.ApplyStatusEffect(activator, nearby, statusEffect, duration, damageType)
+                            : StatusEffect.ApplyStatusEffect(activator, nearby, createStatus(), duration, damageType);
                     });
                 }
             }

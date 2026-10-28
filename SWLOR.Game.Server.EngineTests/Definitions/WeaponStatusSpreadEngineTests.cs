@@ -19,6 +19,53 @@ namespace SWLOR.Game.Server.EngineTests.Definitions
                 new[] { FeatType.SunderingSweep1, FeatType.SunderingSweep2, FeatType.SunderingSweep3 },
                 typeof(SunderStatusEffect), new[] { 1, 2, 3 }, 2, recipientCount: 3);
 
+        [EngineTest("Sundering Sweep spreads the source's Sunder strength", Category = "StatusEffect", TimeoutSeconds = 30f)]
+        public static async Task SunderingSweepSpreadsSourceStrength(EngineTestContext ctx)
+        {
+            var caster = ctx.SpawnCreature("nw_bandit001");
+            var source = ctx.SpawnCreature("nw_rat001", 1f);
+            var recipient = ctx.SpawnCreature("nw_rat001", 3.5f);
+            await ctx.WaitFrameAsync();
+            SWLOR.NWN.API.NWNX.ObjectPlugin.SetPosition(caster, GetPositionFromLocation(ctx.GetArenaLocation()));
+            SWLOR.NWN.API.NWNX.ObjectPlugin.SetPosition(source, GetPositionFromLocation(ctx.GetArenaLocation(1f)));
+            SWLOR.NWN.API.NWNX.ObjectPlugin.SetPosition(recipient, GetPositionFromLocation(ctx.GetArenaLocation(3.5f)));
+            ApplyEffectToObject(DurationType.Temporary, EffectCutsceneParalyze(), caster, 60f);
+            foreach (var enemy in new[] { source, recipient })
+            {
+                SetCommandable(false, enemy);
+                ctx.SuppressNPCNaturalRegen(enemy);
+                ApplyEffectToObject(DurationType.Temporary, EffectTemporaryHitpoints(1000), enemy, 60f);
+                ctx.MakeHostile(enemy);
+            }
+
+            // Shattering Strike I strength, below the 15% default.
+            ctx.Assert(StatusEffect.ApplyStatusEffect(caster, source, new SunderStatusEffect(12), 60f), "setup Sunder must apply");
+            var ability = new SunderingSweepAbilityDefinition().BuildAbilities()[FeatType.SunderingSweep1];
+            Combat.SetAbilityHitResolutionOverride(true);
+            Combat.SetAutoAttackHitResolutionOverride(false);
+            try
+            {
+                Ability.BeginAbilityImpact(caster, ability);
+                try
+                {
+                    await ctx.ExecuteInCreatureContextAsync(caster, () => ability.ImpactAction(caster, source, 1, GetLocation(source)));
+                }
+                finally
+                {
+                    Ability.EndAbilityImpact(caster);
+                }
+            }
+            finally
+            {
+                Combat.SetAbilityHitResolutionOverride(null);
+                Combat.SetAutoAttackHitResolutionOverride(null);
+            }
+
+            ctx.Assert(StatusEffect.HasStatusEffect(recipient, typeof(SunderStatusEffect)), "the recipient must receive Sunder");
+            ctx.AssertEqual(-12, Stat.GetStatAdjustment(recipient, StatType.PhysicalDefensePercentAdjustment),
+                "the spread Sunder must keep the source's 12% Defense reduction");
+        }
+
         [EngineTest("Serrated Arc spreads from each initially bleeding target", Category = "StatusEffect", TimeoutSeconds = 30f)]
         public static Task SerratedArcSpreadsFromEachSource(EngineTestContext ctx)
             => VerifySpreadCount(ctx, new SerratedArcAbilityDefinition().BuildAbilities(),

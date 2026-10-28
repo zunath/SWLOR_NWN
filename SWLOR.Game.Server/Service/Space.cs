@@ -999,49 +999,19 @@ namespace SWLOR.Game.Server.Service
             dbPlayer.SerializedHotBar = CreaturePlugin.SerializeQuickbar(player);
             dbPlayer.ActiveShipId = shipId;
 
-            foreach(var (slot, shipModule) in dbPlayerShip.Status.HighPowerModules)
+            // Only the pilot's own slots become feats and hotbar buttons; a crew seat's slots live on its station hotbar.
+            var pilotSlots = PilotHotBarRules.GetPilotSlots(dbPlayerShip.Status,
+                tag => _shipModules.TryGetValue(tag, out var detail) && detail.Type != ShipModuleType.Passive);
+            foreach (var slot in pilotSlots)
             {
-                var feat = HighSlotToFeat(slot);
-                var shipModuleDetail = _shipModules[shipModule.ItemTag];
-
-                // Passive modules shouldn't be converted to feats.
-                if (shipModuleDetail.Type == ShipModuleType.Passive) continue;
+                var feat = SlotNumberToFeat(slot);
+                TryGetFittedModule(dbPlayerShip.Status, slot, out var shipModule);
 
                 // Convert current ship module to feat.
                 CreaturePlugin.AddFeat(player, feat);
 
                 // Rename the feat to match the configured name on the ship module.
-                ApplyShipModuleFeat(player, shipModuleDetail, feat);
-            }
-
-            foreach (var (slot, shipModule) in dbPlayerShip.Status.LowPowerModules)
-            {
-                var feat = LowSlotToFeat(slot);
-                var shipModuleDetail = _shipModules[shipModule.ItemTag];
-
-                // Passive modules shouldn't be converted to feats.
-                if (shipModuleDetail.Type == ShipModuleType.Passive) continue;
-
-                // Convert current ship module to feat.
-                CreaturePlugin.AddFeat(player, feat);
-
-                // Rename the feat to match the configured name on the ship module.
-                ApplyShipModuleFeat(player, shipModuleDetail, feat);
-            }
-
-            foreach (var (slot, shipModule) in dbPlayerShip.Status.MidPowerModules)
-            {
-                var feat = MidSlotToFeat(slot);
-                var shipModuleDetail = _shipModules[shipModule.ItemTag];
-
-                // Passive modules shouldn't be converted to feats.
-                if (shipModuleDetail.Type == ShipModuleType.Passive) continue;
-
-                // Convert current ship module to feat.
-                CreaturePlugin.AddFeat(player, feat);
-
-                // Rename the feat to match the configured name on the ship module.
-                ApplyShipModuleFeat(player, shipModuleDetail, feat);
+                ApplyShipModuleFeat(player, _shipModules[shipModule.ItemTag], feat);
             }
 
             // The All Weapons feat is owned before the hot bar loads, so a saved slot for it survives.
@@ -1061,42 +1031,18 @@ namespace SWLOR.Game.Server.Service
                 }
 
                 var currentSlot = 0;
-                foreach (var (slot, shipModule) in dbPlayerShip.Status.HighPowerModules)
+                foreach (var slot in pilotSlots)
                 {
-                    var feat = HighSlotToFeat(slot);
-                    var shipModuleDetail = _shipModules[shipModule.ItemTag];
-                    if (shipModuleDetail.Type != ShipModuleType.Passive)
-                    {
-                        PlayerPlugin.SetQuickBarSlot(player, currentSlot, PlayerQuickBarSlot.UseFeat(feat));
-
-                        currentSlot++;
-                    }
-                }
-                foreach (var (slot, shipModule) in dbPlayerShip.Status.LowPowerModules)
-                {
-                    var feat = LowSlotToFeat(slot);
-                    var shipModuleDetail = _shipModules[shipModule.ItemTag];
-                    if (shipModuleDetail.Type != ShipModuleType.Passive)
-                    {
-                        PlayerPlugin.SetQuickBarSlot(player, currentSlot, PlayerQuickBarSlot.UseFeat(feat));
-
-                        currentSlot++;
-                    }
-                }
-                foreach (var (slot, shipModule) in dbPlayerShip.Status.MidPowerModules)
-                {
-                    var feat = MidSlotToFeat(slot);
-                    var shipModuleDetail = _shipModules[shipModule.ItemTag];
-                    if (shipModuleDetail.Type != ShipModuleType.Passive)
-                    {
-                        PlayerPlugin.SetQuickBarSlot(player, currentSlot, PlayerQuickBarSlot.UseFeat(feat));
-
-                        currentSlot++;
-                    }
+                    PlayerPlugin.SetQuickBarSlot(player, currentSlot, PlayerQuickBarSlot.UseFeat(SlotNumberToFeat(slot)));
+                    currentSlot++;
                 }
 
                 dbPlayerShip.PlayerHotBars[playerId] = CreaturePlugin.SerializeQuickbar(player);
             }
+
+            // A saved bar from before the crew stations (or a refit) may still hold a crew seat's slots.
+            if (RemoveCrewSlotsFromHotBar(player, dbPlayerShip.Status))
+                dbPlayerShip.PlayerHotBars[playerId] = CreaturePlugin.SerializeQuickbar(player);
 
             SpaceHud.EnsureAllWeaponsOnHotBar(player);
             EnsureJumpToSignatureOnHotBar(player, dbPlayerShip.Status);
@@ -1384,6 +1330,30 @@ namespace SWLOR.Game.Server.Service
                 return false;
 
             return string.IsNullOrEmpty(GetShipSkillRequirementError(player, playerShip));
+        }
+
+        /// <summary>
+        /// Empties every quickbar button that holds a crew seat's module feat, so the pilot's bar keeps only
+        /// pilot-seat abilities. Returns whether any button was cleared.
+        /// </summary>
+        private static bool RemoveCrewSlotsFromHotBar(uint player, ShipStatus status)
+        {
+            const int MaxSlots = 35;
+            var changed = false;
+            for (var index = 0; index <= MaxSlots; index++)
+            {
+                var button = PlayerPlugin.GetQuickBarSlot(player, index);
+                if (button.ObjectType != QuickBarSlotType.Feat || !ShipModuleFeats.ContainsKey((FeatType)button.INTParam1))
+                    continue;
+
+                if (!PilotHotBarRules.IsCrewSlot(status, GetFeatSlotNumber((FeatType)button.INTParam1)))
+                    continue;
+
+                PlayerPlugin.SetQuickBarSlot(player, index, PlayerQuickBarSlot.Empty(QuickBarSlotType.Empty));
+                changed = true;
+            }
+
+            return changed;
         }
 
         /// <summary>The high, low and mid modules the pilot works: every one outside a crew-station slot.</summary>
@@ -1699,6 +1669,12 @@ namespace SWLOR.Game.Server.Service
                 return;
             }
 
+            // A crew member's module reads their stats and works at the station's effectiveness while it validates
+            // and fires (a droid at the Sensors seat is validated as a droid, not as the pilot).
+            using var crewFire = SpaceCrew.BeginStationFire(isDroid
+                ? BuildDroidFireContext(activator, droid)
+                : isCrew ? BuildCrewFireContext(activator, crewMember, crewSeat) : null);
+
             // Run any custom validation specific to the ship module.
             if (shipModuleDetails.ModuleValidationAction != null)
             {
@@ -1711,11 +1687,6 @@ namespace SWLOR.Game.Server.Service
             }
 
             var recastSeconds = shipModuleDetails.CalculateRecastAction?.Invoke(activator, activatorShipStatus, shipModule.ModuleBonus);
-
-            // A crew member's module reads their stats and works at the station's effectiveness while it fires.
-            using var crewFire = SpaceCrew.BeginStationFire(isDroid
-                ? BuildDroidFireContext(activator, droid)
-                : isCrew ? BuildCrewFireContext(activator, crewMember, crewSeat) : null);
 
             if (isToggle)
             {

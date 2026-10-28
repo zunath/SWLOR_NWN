@@ -20,5 +20,8 @@ namespace SWLOR.Game.Server.Service.SpaceService
 
         /// <summary>An electronic warfare array: run while an enemy ship is within its range.</summary>
         ElectronicWarfare = 5,
+
+        /// <summary>A Data Analyzer: pressed at a data can, locked cache or wreck data core the pilot has targeted.</summary>
+        Slicing = 6,
     }
 }

@@ -33,7 +33,8 @@ public sealed class _30_ConvertSpaceItems : IServerMigration
     /// <summary>
     /// Saves each ship's returned modules, then pays its owner, then saves the ship, so a failure leaves a ship still
     /// retired (converted again on the next boot) rather than modules lost. Returned modules keep fixed ids, so a
-    /// retry replaces them.
+    /// retry replaces them, and the payout is keyed by the ship id in the owner ledger
+    /// (<see cref="Player.RetiredSpaceRefunds"/>), so the retry neither pays nor announces it a second time.
     /// </summary>
     private void ConvertShips()
     {
@@ -59,8 +60,10 @@ public sealed class _30_ConvertSpaceItems : IServerMigration
                     DB.Set(module);
                 if (owner != null)
                 {
-                    var changed = LegacySpaceItemSweep.Pay(owner, result.Items.Credits, result.Items.HullDesigns);
-                    if (result.HullConverted || result.ReturnedModules.Count > 0)
+                    var shipKey = $"{nameof(PlayerShip)}:{ship.Id}";
+                    var alreadyHandled = owner.RetiredSpaceRefunds != null && owner.RetiredSpaceRefunds.Contains(shipKey);
+                    var changed = LegacySpaceItemSweep.Pay(owner, result.Items.Credits, result.Items.HullDesigns, shipKey);
+                    if (!alreadyHandled && (result.HullConverted || result.ReturnedModules.Count > 0))
                     {
                         owner.UpgradeNotices ??= new List<string>();
                         owner.UpgradeNotices.Add(BuildNotice(ship, result));

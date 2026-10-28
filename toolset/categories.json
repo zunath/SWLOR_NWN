@@ -553,7 +553,11 @@
             "medical_center",
             "player_rnd",
             "starport",
-            "station_deck"
+            "station_deck",
+            "holding_plains",
+            "holding_forest",
+            "holding_desert",
+            "holding_cave"
           ]
         },
         {

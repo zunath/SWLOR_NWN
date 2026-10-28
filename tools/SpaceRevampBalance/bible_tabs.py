@@ -596,7 +596,8 @@ def passive_rows():
         ("Three holdings, level 1 (average type)", f"{average('l1'):.0f} min"),
         ("Three holdings, level 3, best droid, Processing Plant (average type)", f"{average('l3_plant'):.0f} min"),
         ("Three holdings at their best, the three best types",
-         f"{sum(r['l3_plant'] for r in best):.0f} min ({sum(r['l3_plant'] * r['events'] for r in best):.0f} after events)"),
+         f"{sum(r['l3_plant'] for r in best):.0f} min ({sum(r['l3_plant'] * r['events'] for r in best):.0f} after events, "
+         f"{sum(r['l3_plant'] * r['defended'] for r in best):.0f} with every raid driven off)"),
     ]
     ratios = []
     for d in stations.drill_income():

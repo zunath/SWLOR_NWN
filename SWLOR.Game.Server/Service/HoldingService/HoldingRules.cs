@@ -149,12 +149,14 @@ namespace SWLOR.Game.Server.Service.HoldingService
 
                 if (holding.CustomsFine > 0 && day >= holding.CustomsDeadline)
                     Confiscate(holding, day, result);
+                if (holding.RaidPending && day >= holding.RaidDeadline)
+                    LoseRaid(holding, day, result);
 
                 holding.DaysUntilEvent--;
                 if (holding.DaysUntilEvent <= 0)
                 {
                     holding.DaysUntilEvent = HoldingTuning.EventIntervalDays;
-                    if (holding.Setback == HoldingSetbackType.Invalid && holding.CustomsFine <= 0)
+                    if (holding.Setback == HoldingSetbackType.Invalid && holding.CustomsFine <= 0 && !holding.RaidPending)
                         ApplyEvent(holding, detail, RollEvent(detail, random.NextDouble()), day, result);
                 }
 
@@ -207,10 +209,12 @@ namespace SWLOR.Game.Server.Service.HoldingService
                         $"{detail.RepairUnits} {TradeLookup.GetCommodity(detail.RepairGood)?.Name} are delivered.", result);
                     break;
                 case HoldingEventType.Raid:
-                    var stolen = Raid(holding.Warehouse);
-                    AddLog(holding, day, stolen > 0
-                        ? $"Bandit raid: raiders carried off {stolen} units from the warehouse."
-                        : "Bandit raid: raiders found the warehouse empty.", result);
+                    // W11o: the raiders hold the site until they are driven off there or the answer window runs out.
+                    holding.RaidPending = true;
+                    holding.RaidDeadline = day.AddDays(HoldingTuning.RaidAnswerDays);
+                    AddLog(holding, day,
+                        $"Bandit raid: raiders hold the site. Drive them off there within {HoldingTuning.RaidAnswerDays} days " +
+                        "or they carry off half the warehouse.", result);
                     break;
                 case HoldingEventType.Customs:
                     var value = GetBannedValue(holding.Warehouse);
@@ -227,6 +231,51 @@ namespace SWLOR.Game.Server.Service.HoldingService
                         "or the banned stock is confiscated.", result);
                     break;
             }
+        }
+
+        /// <summary>
+        /// Whether a player may join a holding site as a guest (W11o): a member of the owner's party, while the owner has the
+        /// site open, at the holding's own dock.
+        /// </summary>
+        public static bool CanJoinAsGuest(bool inOwnersParty, bool siteOpen, bool atHoldingsDock) => inOwnersParty && siteOpen && atHoldingsDock;
+
+        /// <summary>A dock id that is a player city's or station's Starport (a property id) rather than an NPC landing area.</summary>
+        public static bool IsCityDockId(string dockId) => Guid.TryParse(dockId ?? string.Empty, out _);
+
+        /// <summary>
+        /// The exchange whose holdings a player city's or station's Starport sells (W11o): the planet city's planet, or an
+        /// orbit station's anchor exchange. A Wild Space station has no planet below it, so it sells none.
+        /// </summary>
+        public static TradeExchangeType GetCityDockHoldingsExchange(TradeExchangeType dockExchange, bool isWildSpaceStation) =>
+            isWildSpaceStation || GetHoldingsAt(dockExchange).Count == 0 ? TradeExchangeType.Invalid : dockExchange;
+
+        /// <summary>An undefended raid (W11o): when its window runs out, the raiders take their share of the warehouse.</summary>
+        public static void LoseRaid(PlanetaryHolding holding, DateTime day, HoldingAdvanceResult result)
+        {
+            holding.RaidPending = false;
+            var stolen = Raid(holding.Warehouse);
+            AddLog(holding, day, stolen > 0
+                ? $"Bandit raid: nobody drove the raiders off, and they carried off {stolen} units from the warehouse."
+                : "Bandit raid: nobody drove the raiders off, but they found the warehouse empty.", result);
+        }
+
+        /// <summary>The raiders at the site are all down (W11o): the warehouse is safe. False when no raid was pending.</summary>
+        public static bool RepelRaid(PlanetaryHolding holding, DateTime now, HoldingAdvanceResult result)
+        {
+            if (holding == null || !holding.RaidPending)
+                return false;
+
+            holding.RaidPending = false;
+            AddLog(holding, now, "Bandit raid: the raiders were driven off. The warehouse is safe.", result);
+            return true;
+        }
+
+        /// <summary>The raiders of a holding's raid (W11o): its dock tier's roster, picked with <paramref name="roll"/>.</summary>
+        public static List<string> PlanRaiders(HoldingDetail detail, Func<int, int> roll)
+        {
+            var tier = Math.Clamp(TradeLookup.GetExchange(detail?.Exchange ?? TradeExchangeType.Invalid)?.OrbitTier ?? 1, 1, 6);
+            var roster = HoldingTuning.RaiderRosters[tier];
+            return Enumerable.Range(0, HoldingTuning.RaidersPerRaid).Select(_ => roster[roll(roster.Length)]).ToList();
         }
 
         /// <summary>Takes the raid's share of every good in the warehouse (rounded half up); returns the units taken.</summary>

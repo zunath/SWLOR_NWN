@@ -346,7 +346,13 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
                 ? "No staff droid. An industrial droid's Industry raises the output."
                 : $"Staff droid: {holding.DroidName}, Industry {holding.DroidIndustry}, +{droidPercent}% output.";
 
-            if (holding.Setback != HoldingSetbackType.Invalid)
+            if (holding.RaidPending)
+            {
+                EventText = $"Bandit raid: raiders hold the site. Drive them off there (Visit Site) by {holding.RaidDeadline:yyyy-MM-dd HH:mm} UTC " +
+                            "or they carry off half the warehouse.";
+                EventVisible = true;
+            }
+            else if (holding.Setback != HoldingSetbackType.Invalid)
             {
                 EventText = $"{HoldingRules.GetSetbackName(holding.Setback)}: output stopped until {holding.RepairUnitsNeeded} " +
                             $"{Name(detail.RepairGood)} are delivered.";

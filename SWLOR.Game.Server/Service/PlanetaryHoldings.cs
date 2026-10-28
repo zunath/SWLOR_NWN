@@ -9,6 +9,7 @@ using SWLOR.Game.Server.Service.LogService;
 using SWLOR.Game.Server.Service.PerkService;
 using SWLOR.Game.Server.Service.TradeService;
 using SWLOR.NWN.API.Engine;
+using SWLOR.NWN.API.NWScript.Enum;
 
 namespace SWLOR.Game.Server.Service
 {
@@ -19,11 +20,17 @@ namespace SWLOR.Game.Server.Service
     /// posted as staff raises the output; events roll every few days. The owner's ship docked there collects the
     /// warehouse into its cargo bay, and each holding has a small ground site reached from the dock. Holdings catch up
     /// lazily, whenever the owner logs in or opens the Holdings window.
+    /// W11o: a bandit raid is a ground fight at the site (the owner and party guests kill the raiders to keep the stock),
+    /// the outdoor types have outdoor sites, and player-city and station starports sell holdings too.
     /// </summary>
     public static class PlanetaryHoldings
     {
         public const string SiteHoldingIdVariable = "HOLDING_SITE_ID";
         private const string SiteReturnVariable = "HOLDING_SITE_RETURN";
+        private const string RaiderVariable = "HOLDING_RAIDER";
+        private const string SiteRaidersSpawnedVariable = "HOLDING_RAIDERS_SPAWNED";
+        private const string QuestNpcGroupVariable = "QUEST_NPC_GROUP_ID";
+        private const int RaiderPlacementTries = 12;
         private const string SiteConsoleTag = "building_exit";
         private const string SiteEntranceTag = "PROPERTY_ENTRANCE";
         private const string SiteConversation = "HoldingSiteDialog";
@@ -482,6 +489,12 @@ namespace SWLOR.Game.Server.Service
                 return;
             }
 
+            SpawnRaiders(holding, detail, site);
+            SendToSite(player, site);
+        }
+
+        private static void SendToSite(uint player, uint site)
+        {
             var entrance = GetSiteEntrance(site);
             SetLocalLocation(player, SiteReturnVariable, GetLocation(player));
             AssignCommand(player, () =>
@@ -489,6 +502,156 @@ namespace SWLOR.Game.Server.Service
                 ClearAllActions();
                 ActionJumpToLocation(entrance);
             });
+        }
+
+        /// <summary>
+        /// The holding sites a player can join as a guest at this dock (W11o): those of the members of their party whose
+        /// site is open (the owner went first), as (holding id, label).
+        /// </summary>
+        public static List<(string HoldingId, string Label)> GetGuestSites(uint player, string dockId)
+        {
+            var sites = new List<(string HoldingId, string Label)>();
+            foreach (var (holdingId, site) in _sites.ToList())
+            {
+                var holding = GetIsObjectValid(site) ? DB.Get<PlanetaryHolding>(holdingId) : null;
+                if (holding == null || holding.DockId != dockId || holding.OwnerPlayerId == GetObjectUUID(player))
+                    continue;
+
+                var owner = FindOnlinePlayer(holding.OwnerPlayerId);
+                if (!HoldingRules.CanJoinAsGuest(GetIsObjectValid(owner) && GetFactionEqual(owner, player), true, holding.DockId == dockId))
+                    continue;
+
+                sites.Add((holdingId, $"{GetName(owner)}'s {GetHoldingName(holding)}"));
+            }
+
+            return sites;
+        }
+
+        /// <summary>A party guest joins an open holding site at its dock (W11o). Guests cannot manage the holding.</summary>
+        public static void JoinSite(uint guest, string holdingId, string dockId)
+        {
+            var holding = string.IsNullOrWhiteSpace(holdingId) ? null : DB.Get<PlanetaryHolding>(holdingId);
+            var owner = holding == null ? OBJECT_INVALID : FindOnlinePlayer(holding.OwnerPlayerId);
+            var open = holding != null && _sites.TryGetValue(holding.Id, out var site) && GetIsObjectValid(site);
+            if (!HoldingRules.CanJoinAsGuest(GetIsObjectValid(owner) && GetFactionEqual(owner, guest), open, holding?.DockId == dockId))
+            {
+                SendMessageToPC(guest, ColorToken.Red("Only members of the owner's party can join a holding site, and only while the owner has it open at this dock."));
+                return;
+            }
+
+            SpawnRaiders(holding, HoldingRules.GetDetail(holding.Type), _sites[holding.Id]);
+            SendToSite(guest, _sites[holding.Id]);
+            SendMessageToPC(owner, $"{GetName(guest)} joins you at your {GetHoldingName(holding)}.");
+        }
+
+        private static uint FindOnlinePlayer(string playerId)
+        {
+            for (var player = GetFirstPC(); GetIsObjectValid(player); player = GetNextPC())
+            {
+                if (!GetIsDM(player) && GetObjectUUID(player) == playerId)
+                    return player;
+            }
+
+            return OBJECT_INVALID;
+        }
+
+        // Bandit raids (W11o)
+
+        /// <summary>A pending raid's raiders, spawned once per site instance at walkable spots away from the entrance.</summary>
+        private static void SpawnRaiders(PlanetaryHolding holding, HoldingDetail detail, uint site)
+        {
+            if (!holding.RaidPending || GetLocalBool(site, SiteRaidersSpawnedVariable))
+                return;
+
+            SetLocalBool(site, SiteRaidersSpawnedVariable, true);
+            var entrance = GetPositionFromLocation(GetSiteEntrance(site));
+            foreach (var resref in HoldingRules.PlanRaiders(detail, max => Random.Next(max)))
+            {
+                var location = GetSiteEntrance(site);
+                for (var attempt = 0; attempt < RaiderPlacementTries; attempt++)
+                {
+                    var candidate = Walkmesh.GetRandomLocation(site);
+                    var position = GetPositionFromLocation(candidate);
+                    if (position.X == 0f && position.Y == 0f)
+                        continue;
+
+                    location = candidate;
+                    if (System.Numerics.Vector3.Distance(position, entrance) >= HoldingTuning.RaidEntranceClearMeters)
+                        break;
+                }
+
+                var raider = CreateObject(ObjectType.Creature, resref, location);
+                if (!GetIsObjectValid(raider))
+                    continue;
+
+                // The roster borrows other areas' creatures; their kills here count toward no quest.
+                DeleteLocalInt(raider, QuestNpcGroupVariable);
+                Spawn.PrepareDMSpawnedCreature(raider);
+                Stat.LoadNPCStats(raider);
+                SetLocalString(raider, RaiderVariable, holding.Id);
+            }
+        }
+
+        /// <summary>The last raider down at a site drives the raid off: the warehouse is safe.</summary>
+        [NWNEventHandler(ScriptName.OnCreatureDeathAfter)]
+        public static void CheckRaidRepelled()
+        {
+            var raider = OBJECT_SELF;
+            var holdingId = GetLocalString(raider, RaiderVariable);
+            if (string.IsNullOrWhiteSpace(holdingId))
+                return;
+
+            var site = GetArea(raider);
+            for (var obj = GetFirstObjectInArea(site, ObjectType.Creature); GetIsObjectValid(obj); obj = GetNextObjectInArea(site, ObjectType.Creature))
+            {
+                if (obj != raider && !GetIsDead(obj) && GetLocalString(obj, RaiderVariable) == holdingId)
+                    return;
+            }
+
+            var holding = DB.Get<PlanetaryHolding>(holdingId);
+            if (holding == null)
+                return;
+
+            var owner = FindOnlinePlayer(holding.OwnerPlayerId);
+            if (!Process(holding, owner))
+                return;
+
+            var result = new HoldingAdvanceResult();
+            if (!HoldingRules.RepelRaid(holding, DateTime.UtcNow, result))
+                return;
+
+            DB.Set(holding);
+            for (var obj = GetFirstObjectInArea(site); GetIsObjectValid(obj); obj = GetNextObjectInArea(site))
+            {
+                if (GetIsPC(obj))
+                    SendMessageToPC(obj, ColorToken.Green($"{GetHoldingName(holding)}: {result.Events.LastOrDefault()}"));
+            }
+
+            Log.Write(LogGroup.Space, $"HOLDING RAID REPELLED - {holding.OwnerPlayerId} - {holding.Type} {holding.Id}");
+        }
+
+        // Player-city and station starports (W11o)
+
+        /// <summary>
+        /// A holding bought at a player city's or station's Starport whose starport is gone (retrieved, or the city lost)
+        /// ships from this NPC dock of its exchange from now on, so it is never stranded.
+        /// </summary>
+        public static void RehomeStrandedHoldings(uint player, TradeExchangeType exchange, string npcDockId)
+        {
+            if (exchange == TradeExchangeType.Invalid || string.IsNullOrWhiteSpace(npcDockId) || HoldingRules.IsCityDockId(npcDockId))
+                return;
+
+            foreach (var holding in LoadHoldings(player))
+            {
+                var detail = HoldingRules.GetDetail(holding.Type);
+                if (detail?.Exchange != exchange || !HoldingRules.IsCityDockId(holding.DockId) || Trade.TryGetCityDock(holding.DockId) != null)
+                    continue;
+
+                holding.DockId = npcDockId;
+                HoldingRules.AddLog(holding, DateTime.UtcNow, "Its starport is gone: the holding now ships from this dock.");
+                DB.Set(holding);
+                SendMessageToPC(player, $"Your {GetHoldingName(holding)} lost its starport and now ships from this dock.");
+            }
         }
 
         /// <summary>Sends the player from a holding site back to the dock they came from.</summary>

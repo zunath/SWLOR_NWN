@@ -68,6 +68,10 @@ namespace SWLOR.Game.Server.Service
             // Rift Run pockets are instances of this template; no ship or player is ever placed in the template itself.
             AreasByResref.Remove(SpaceService.RiftRunTuning.TemplateResref);
 
+            // Planetary holdings' outdoor sites (W11o) are instances of these templates.
+            foreach (var areaResref in HoldingService.HoldingTuning.OutdoorSiteResrefs)
+                AreasByResref.Remove(areaResref);
+
             foreach (var areaResref in Property.GetAllInstanceAreaResrefs())
             {
                 if (AreasByResref.ContainsKey(areaResref))

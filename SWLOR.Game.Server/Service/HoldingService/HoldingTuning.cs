@@ -28,6 +28,22 @@ namespace SWLOR.Game.Server.Service.HoldingService
         public const double RaidLossShare = 0.5;
         public const double CustomsFineRate = 0.5;
         public const int CustomsAnswerDays = 2;
+        public const int RaidAnswerDays = 2;
+        public const int RaidersPerRaid = 4;
+        public const float RaidEntranceClearMeters = 8f;
+        /// <summary>Raider blueprints by the holding dock's orbit tier (index 1-6).</summary>
+        public static readonly string[][] RaiderRosters =
+        {
+            new string[0],
+            new[] { "looter_1", "looter_2" },
+            new[] { "man_ranger_1", "man_hunter", "man_warrior_1" },
+            new[] { "ecoterr_1", "ecoterr_2" },
+            new[] { "nar_pirate", "nar_thief", "nar_redblade", "nar_hiddenblade" },
+            new[] { "nar_troublemaker", "dantarihunter", "vdathtribal" },
+            new[] { "vkorrdun1rifle", "vkorrdun1sword" },
+        };
+        /// <summary>The outdoor site templates (W11o): instance templates, kept out of saved locations.</summary>
+        public static readonly string[] OutdoorSiteResrefs = { "holding_plains", "holding_forest", "holding_desert", "holding_cave" };
         public const int LogEntries = 8;
 
         /// <summary>Credits an hour of space combat by orbit tier (index 1-6): the income check's reference.</summary>

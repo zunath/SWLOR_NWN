@@ -12,7 +12,7 @@ namespace SWLOR.Game.Server.Service.SpaceService
         public string AreaResref { get; init; }
         public SignatureType Type { get; init; }
 
-        /// <summary>The tier of its area (1-6): its signal, site content and rewards.</summary>
+        /// <summary>The tier of its area (1-6): its signal, site content and rewards. Wild Space is tier 5 with <see cref="WildSpace"/> set.</summary>
         public int Tier { get; init; }
 
         public float X { get; init; }
@@ -47,6 +47,15 @@ namespace SWLOR.Game.Server.Service.SpaceService
 
         /// <summary>Whether the site has been completed: its cache was taken.</summary>
         public bool Completed { get; set; }
+
+        /// <summary>Whether it lies in Wild Space: tier 5.5 content, shown as Tier 5.5 (plan section 23).</summary>
+        public bool WildSpace { get; init; }
+
+        /// <summary>The rift a Rift signature is an end of; empty for every other type.</summary>
+        public string RiftId { get; init; } = string.Empty;
+
+        /// <summary>A rift's size and destination, shown from the threat level on.</summary>
+        public string RiftDetail { get; set; } = string.Empty;
 
         public bool IsRevealed => RevealedAt != null;
     }

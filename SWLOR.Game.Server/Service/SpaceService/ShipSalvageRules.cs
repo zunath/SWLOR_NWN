@@ -118,10 +118,20 @@ namespace SWLOR.Game.Server.Service.SpaceService
 
         /// <summary>
         /// The loot table a rare find comes from: the wreck tier's space elite or boss table (the tables the same ships
-        /// drop from), or null for a normal wreck.
+        /// drop from), or null for a normal wreck. In Wild Space, the Rift Raiders' elite or boss table.
         /// </summary>
-        public static string RareFindTable(int wreckTier, WreckDifficulty difficulty)
+        public static string RareFindTable(int wreckTier, WreckDifficulty difficulty, bool wildSpace = false)
         {
+            if (wildSpace)
+            {
+                return difficulty switch
+                {
+                    WreckDifficulty.Elite => "SPACE_ELITE_WS",
+                    WreckDifficulty.Boss => "SPACE_BOSS_WS",
+                    _ => null,
+                };
+            }
+
             var tier = Math.Clamp(wreckTier, 1, 6);
             return difficulty switch
             {

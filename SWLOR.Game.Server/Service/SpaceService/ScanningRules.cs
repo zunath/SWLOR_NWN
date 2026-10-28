@@ -9,10 +9,14 @@ namespace SWLOR.Game.Server.Service.SpaceService
     /// </summary>
     public static class ScanningRules
     {
-        /// <summary>The signal a signature of this type and tier needs to resolve.</summary>
-        public static double SignalRequired(SignatureType type, int tier) =>
-            ScanningTuning.SignalPerTier * Math.Clamp(tier, 1, 6) *
+        /// <summary>The signal a signature of this type and tier needs to resolve; a Wild Space one at tier 5.5.</summary>
+        public static double SignalRequired(SignatureType type, int tier, bool wildSpace = false) =>
+            ScanningTuning.SignalPerTier * WildSpaceRules.SignalTier(tier, wildSpace) *
             (ScanningTuning.Difficulty.TryGetValue(type, out var difficulty) ? difficulty : 1.0);
+
+        /// <summary>A signature's tier as the Scanner tab shows it: 5.5 in Wild Space.</summary>
+        public static string TierLabel(ScanSignature signature) =>
+            WildSpaceRules.TierLabel(signature.Tier, signature.WildSpace);
 
         /// <summary>The Espionage bonus in percent for a rank: +1% per rank, up to +50% at rank 50.</summary>
         public static int EspionageBonusPercent(int espionageRank) =>
@@ -140,7 +144,7 @@ namespace SWLOR.Game.Server.Service.SpaceService
                 return "Unknown signal";
 
             var name = TypeName(signature.Type);
-            return level >= SignatureInfoLevel.Tier || tierEarly ? $"{name} (Tier {signature.Tier})" : name;
+            return level >= SignatureInfoLevel.Tier || tierEarly ? $"{name} (Tier {TierLabel(signature)})" : name;
         }
 
         /// <summary>The detail column of a Scanner tab row: the rough location, then the threat, then the exact location.</summary>
@@ -172,6 +176,8 @@ namespace SWLOR.Game.Server.Service.SpaceService
                     parts.Add($"Threat: {threat}");
                 if (ScanningTuning.LootClass.TryGetValue(signature.Type, out var loot))
                     parts.Add(signature.Locked ? $"Loot: {loot} (locked: needs a Data Analyzer)" : $"Loot: {loot}");
+                if (!string.IsNullOrEmpty(signature.RiftDetail))
+                    parts.Add(signature.RiftDetail);
             }
             else
             {
@@ -198,11 +204,11 @@ namespace SWLOR.Game.Server.Service.SpaceService
             var name = TypeName(signature.Type);
             return crossed switch
             {
-                SignatureInfoLevel.Type => tierEarly ? $"Signature resolved: {name} (Tier {signature.Tier})." : $"Signature resolved: {name}.",
-                SignatureInfoLevel.Tier => $"Signature resolved: {name} (Tier {signature.Tier}).",
-                SignatureInfoLevel.Threat => $"Signature resolved: {name} (Tier {signature.Tier}), threat: " +
+                SignatureInfoLevel.Type => tierEarly ? $"Signature resolved: {name} (Tier {TierLabel(signature)})." : $"Signature resolved: {name}.",
+                SignatureInfoLevel.Tier => $"Signature resolved: {name} (Tier {TierLabel(signature)}).",
+                SignatureInfoLevel.Threat => $"Signature resolved: {name} (Tier {TierLabel(signature)}), threat: " +
                                              $"{(ScanningTuning.Threat.TryGetValue(signature.Type, out var t) ? t : "unknown")}.",
-                SignatureInfoLevel.Located => $"Signature located: {name} (Tier {signature.Tier}). Jump to it from the Scanner tab of the Ship HUD.",
+                SignatureInfoLevel.Located => $"Signature located: {name} (Tier {TierLabel(signature)}). Jump to it from the Scanner tab of the Ship HUD.",
                 _ => null,
             };
         }

@@ -25,6 +25,12 @@ namespace SWLOR.Game.Server.Service.SpaceService
         /// </summary>
         public bool HasDataCore { get; set; }
 
+        /// <summary>
+        /// Whether the wreck lies in Wild Space: its rare finds draw on the Wild Space tables and schematics, and its
+        /// salvaged components roll rare traits more often (plan section 23).
+        /// </summary>
+        public bool WildSpace { get; init; }
+
         /// <summary>Salvage cycles left before the wreck is stripped.</summary>
         public int RemainingCycles { get; set; }
 

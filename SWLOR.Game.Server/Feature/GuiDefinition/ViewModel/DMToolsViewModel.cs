@@ -273,7 +273,14 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
                 return;
             }
 
-            var tier = SpaceFactionIndex + 1;
+            var tier = SpaceSquadCatalog.ConvoyTier(SpaceFactionIndex);
+            if (tier <= 0)
+            {
+                SpaceStatus = "The Rift Raiders run no convoys. Pick a faction tier.";
+                SpaceStatusColor = GuiColor.Red;
+                return;
+            }
+
             var started = Trade.StartConvoy(GetLocation(Player), tier);
             SpaceStatus = started ? $"Started a tier {tier} trade convoy." : "The convoy could not be created.";
             SpaceStatusColor = started ? GuiColor.Green : GuiColor.Red;

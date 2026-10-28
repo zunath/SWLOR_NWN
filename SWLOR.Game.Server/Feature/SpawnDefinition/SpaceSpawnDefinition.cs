@@ -23,6 +23,7 @@ namespace SWLOR.Game.Server.Feature.SpawnDefinition
             ViscaraAsteroidBelt();
             MidRimNebula();
             KorribanDebrisField();
+            WildSpace();
 
             return _builder.Build();
         }
@@ -1001,6 +1002,27 @@ namespace SWLOR.Game.Server.Feature.SpawnDefinition
 
             AddRareCapitals();
             AddAce("ace_korrdebris");
+        }
+
+        /// <summary>
+        /// Every Wild Space system (plan section 23, the six areas in WildSpaceTuning.Systems): Rift Raiders flying all
+        /// eight W5b roles and the pirate hulls, at the open-orbit weights (tools/SpaceRevampBalance/wildspace.py
+        /// SPAWN_WEIGHTS) with the bomber at the role ships' weight. No convoys, capitals or aces.
+        /// </summary>
+        private void WildSpace()
+        {
+            _builder.Create("SPACE_WILD_SPACE", "Space - Wild Space");
+            foreach (var (tag, weight) in new[]
+                     {
+                         ("rrfighter", 38400), ("rrinterceptor", 19200), ("rrgunship", 3840), ("rrbomber", 1920), ("rrewar", 1920),
+                         ("rrsniper", 1920), ("rrminelayer", 1920), ("rrlogistics", 1440), ("rrcarrier", 480)
+                     })
+            {
+                _builder.AddSpawn(ObjectType.Creature, tag)
+                    .WithFrequency(weight)
+                    .RandomlyWalks()
+                    .ReturnsHome();
+            }
         }
     }
 }

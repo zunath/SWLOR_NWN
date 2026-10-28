@@ -9,8 +9,8 @@ using SWLOR.Game.Server.Service.SpawnService;
 namespace SWLOR.Game.Server.Tests.Service;
 
 /// <summary>
-/// Docking limits by hull size, the Small/Medium-only areas and the starlane graph (plan sections 7 and 12, W6b), and the
-/// three Small/Medium-only zones (W6c).
+/// Docking limits by hull size, the Small/Medium-only areas and the starlane graph (plan sections 7 and 12, W6b), the
+/// three Small/Medium-only zones (W6c) and the six Wild Space systems (W12c).
 /// </summary>
 public class ShipAccessRulesTests
 {
@@ -290,6 +290,77 @@ public class ShipAccessRulesTests
         }
     }
 
+    // Wild Space (W12c)
+
+    [Test]
+    public void TheWildSpaceSystemsAreFlaggedTierFiveAndAHalf()
+    {
+        WildSpaceTuning.Systems.Should().HaveCount(6);
+        WildSpaceTuning.Systems.Select(x => x.Environment).Should().OnlyHaveUniqueItems()
+            .And.BeEquivalentTo(Enum.GetValues<WildSpaceEnvironment>().Where(x => x != WildSpaceEnvironment.Invalid));
+        foreach (var system in WildSpaceTuning.Systems)
+        {
+            AreaLocal(system.AreaResref, "SPACE").Should().Be(1, system.AreaResref);
+            AreaLocal(system.AreaResref, Space.WildSpaceVariable).Should().Be(1, system.AreaResref);
+            AreaLocal(system.AreaResref, WildSpaceTuning.TierVariable).Should().Be(55, "tier 5.5 is stored in tenths");
+            AreaLocal(system.AreaResref, WildSpaceTuning.EnvironmentVariable).Should().Be((int)system.Environment);
+            AreaLocal(system.AreaResref, "MAX_SHIP_SIZE").Should().BeNull("every hull may enter Wild Space; rifts cap the size");
+            AreaString(system.AreaResref, "CREATURE_SPAWN_TABLE_ID").Should().Be("SPACE_WILD_SPACE");
+            WildSpaceRules.ContentTier(AreaLocal(system.AreaResref, WildSpaceTuning.TierVariable)!.Value).Should().Be(WildSpaceTuning.ContentTier);
+        }
+
+        AreasContaining("\"WILD_SPACE\"").Should().BeEquivalentTo(WildSpaceTuning.Systems.Select(x => x.AreaResref),
+            "only the Wild Space systems drop modules on a PvP death");
+    }
+
+    [Test]
+    public void TheWildSpaceSystemsHaveNoStarlanesOrDocks()
+    {
+        foreach (var system in WildSpaceTuning.Systems)
+        {
+            using var document = JsonDocument.Parse(File.ReadAllText(Path.Combine(RepositoryRoot, "Module", "git", $"{system.AreaResref}.git.json")));
+            var root = document.RootElement;
+            root.GetProperty("Placeable List").GetProperty("value").EnumerateArray()
+                .Select(x => x.GetProperty("TemplateResRef").GetProperty("value").GetString())
+                .Should().NotContain(new[] { "tele_obj", "spc_dock" }, $"{system.AreaResref} is reached only through rifts");
+            root.GetProperty("WaypointList").GetProperty("value").EnumerateArray()
+                .Select(x => x.GetProperty("Tag").GetProperty("value").GetString())
+                .Should().BeEquivalentTo(new[] { "STUCK_WAYPOINT" });
+        }
+
+        var graph = LaneGraph();
+        foreach (var system in WildSpaceTuning.Systems)
+        {
+            graph.Should().NotContainKey(system.AreaResref);
+            graph.Values.Should().NotContain(x => x.Contains(system.AreaResref), "no starlane or Jump Beacon leads into Wild Space");
+        }
+    }
+
+    [Test]
+    public void TheWildSpaceSystemsAreRegisteredAreas()
+    {
+        var ifo = File.ReadAllText(Path.Combine(RepositoryRoot, "Module", "ifo", "module.ifo.json"));
+        var planet = ReadServerSource("Service", "Planet.cs");
+        var toolset = File.ReadAllText(Path.Combine(RepositoryRoot, "toolset", "categories.json"));
+        var creatures = new SpaceSpawnDefinition().BuildSpawnTables();
+        foreach (var system in WildSpaceTuning.Systems)
+        {
+            ifo.Should().Contain($"\"value\": \"{system.AreaResref}\"");
+            planet.Should().Contain($"\"{system.AreaResref}\",");
+            toolset.Should().Contain($"\"{system.AreaResref}\"");
+            using var are = JsonDocument.Parse(File.ReadAllText(Path.Combine(RepositoryRoot, "Module", "are", $"{system.AreaResref}.are.json")));
+            are.RootElement.GetProperty("ResRef").GetProperty("value").GetString().Should().Be(system.AreaResref);
+            are.RootElement.GetProperty("Tag").GetProperty("value").GetString().Should().Be(system.AreaResref);
+            are.RootElement.GetProperty("Name").GetProperty("value").GetProperty("0").GetString().Should().Be(system.Name);
+            File.Exists(Path.Combine(RepositoryRoot, "Module", "gic", $"{system.AreaResref}.gic.json")).Should().BeTrue();
+            ScanningTuning.Areas.Should().ContainSingle(x => x.AreaResref == system.AreaResref && x.WildSpace && x.Tier == WildSpaceTuning.ContentTier);
+        }
+
+        creatures.Should().ContainKey("SPACE_WILD_SPACE");
+        creatures["SPACE_WILD_SPACE"].Spawns.Select(x => x.Resref).Should().BeEquivalentTo(WildSpaceTuning.RiftRaiderTags);
+        WildSpaceTuning.KnownOrbits.Should().OnlyContain(x => ScanningTuning.Areas.Any(a => a.AreaResref == x && !a.WildSpace));
+    }
+
     private static double Share(SpawnTable table, string prefix) =>
         (double)table.Spawns.Where(x => x.Resref.StartsWith(prefix)).Sum(x => x.Weight) / table.Spawns.Sum(x => x.Weight);
 
@@ -474,7 +545,7 @@ public class ShipAccessRulesTests
 
     private static string ServerDirectory => Path.Combine(RepositoryRoot, "SWLOR.Game.Server");
 
-    private static readonly string[] Needles = { "STARSHIP_DOCKPOINT", "CAPITAL_DOCK", "MAX_SHIP_SIZE", "STARLANE_LANDING" };
+    private static readonly string[] Needles = { "STARSHIP_DOCKPOINT", "CAPITAL_DOCK", "MAX_SHIP_SIZE", "STARLANE_LANDING", "\"WILD_SPACE\"" };
 
     // One pass over the area files (about 650 MB), keeping only which needles each contains.
     private static readonly Lazy<Dictionary<string, bool[]>> AreaScan = new(() =>

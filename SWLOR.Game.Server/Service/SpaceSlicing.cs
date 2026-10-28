@@ -185,7 +185,9 @@ namespace SWLOR.Game.Server.Service
                 return;
             }
 
-            var rewards = SlicingReward.RollSpace(source, tier, max => Random.Next(max), AgentIntelAvailable);
+            // A target in Wild Space can give the Wild Space only schematics (the Rift Raider ships).
+            var wildSpace = source != SlicingSourceType.SpaceLockbox && GetIsObjectValid(target) && IsWildSpace(GetArea(target));
+            var rewards = SlicingReward.RollSpace(source, tier, max => Random.Next(max), AgentIntelAvailable, wildSpace);
             var ship = GetSlicingShip(slicer);
             switch (source)
             {
@@ -370,7 +372,7 @@ namespace SWLOR.Game.Server.Service
             {
                 signature.Completed = true;
                 credits = SignatureSiteRules.LockedCacheCredits(signature.Tier);
-                var table = Loot.GetLootTableByName(SignatureSiteRules.CacheLootTable(signature.Tier));
+                var table = Loot.GetLootTableByName(SignatureSiteRules.CacheLootTable(signature.Tier, signature.WildSpace));
                 items.AddRange(Enumerable.Range(0, ScanningTuning.CacheItemPulls).Select(_ => table.GetRandomItem().Resref));
             }
 

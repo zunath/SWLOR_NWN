@@ -89,6 +89,10 @@ namespace SWLOR.Game.Server.Service
 
             foreach (var signature in signatures.ToList())
             {
+                // Rift ends belong to the rift network (SpaceRifts), which places and ends them.
+                if (signature.Type == SignatureType.Rift)
+                    continue;
+
                 if (signature.IsRevealed)
                     UpdateSite(signature);
 
@@ -101,7 +105,7 @@ namespace SWLOR.Game.Server.Service
             }
 
             // A fresh area (after a restart) fills at once; later gaps wait for their respawn time.
-            while (signatures.Count + respawns.Count < detail.Signatures)
+            while (signatures.Count(x => x.Type != SignatureType.Rift) + respawns.Count < detail.Signatures)
                 respawns.Add(now);
 
             var due = respawns.Where(x => now >= x).ToList();
@@ -135,7 +139,7 @@ namespace SWLOR.Game.Server.Service
 
             var locked = type == SignatureType.CacheSite && SpaceSlicingRules.RollsLockedCache(Random.Next(100));
             return SignatureSiteRules.Create(Guid.NewGuid().ToString(), detail.AreaResref, detail.Tier, type,
-                position.X, position.Y, position.Z, now, locked);
+                position.X, position.Y, position.Z, now, locked, detail.WildSpace);
         }
 
         /// <summary>The player IDs of a player's party (the player included), DMs left out.</summary>
@@ -185,7 +189,8 @@ namespace SWLOR.Game.Server.Service
                 return;
 
             var hull = FindShipDetail(status.ItemTag)?.Hull;
-            var hullBonus = hull == null ? 0 : ScanningRules.HullScanBonusPercent(hull.Role, hull.Manufacturer, hull.Tag);
+            var hullBonus = hull == null ? 0 : ScanningRules.HullScanBonusPercent(hull.Role, hull.Manufacturer, hull.Tag) +
+                                               WildSpaceRules.HullScanBonusPercent(hull.Tag, IsWildSpace(GetArea(ship)));
             var tierEarly = hull != null && ScanningRules.ShowsTierEarly(hull.Tag);
             var signal = ScanningRules.SignalPerCycle(
                 step.ScanStrength,

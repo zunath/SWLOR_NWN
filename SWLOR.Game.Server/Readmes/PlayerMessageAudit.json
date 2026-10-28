@@ -6231,21 +6231,28 @@
   },
   {
     "File": "SWLOR.Game.Server/Service/SpaceScanSites.cs",
-    "Line": 179,
+    "Line": 184,
     "Member": "OpenSiteCache",
     "Delivery": "Retained",
     "Call": "SendMessageToPC(user, ColorToken.Red(\"Only a ship can open a site cache.\"))"
   },
   {
     "File": "SWLOR.Game.Server/Service/SpaceScanSites.cs",
-    "Line": 192,
+    "Line": 197,
+    "Member": "OpenSiteCache",
+    "Delivery": "Retained",
+    "Call": "SendMessageToPC(user, ColorToken.Red(\"The cache is locked. Target it and slice it open with a Data Analyzer.\"))"
+  },
+  {
+    "File": "SWLOR.Game.Server/Service/SpaceScanSites.cs",
+    "Line": 203,
     "Member": "OpenSiteCache",
     "Delivery": "Retained",
     "Call": "SendMessageToPC(user, ColorToken.Red(\"The cache is keyed to the ships that scanned this site. Scan it yourself to open it.\"))"
   },
   {
     "File": "SWLOR.Game.Server/Service/SpaceScanSites.cs",
-    "Line": 205,
+    "Line": 216,
     "Member": "OpenSiteCache",
     "Delivery": "Retained",
     "Call": "SendMessageToPC(user, ColorToken.Green($\"You open the {GetName(cache)}: {credits} credits.\"))"
@@ -6644,28 +6651,70 @@
   },
   {
     "File": "SWLOR.Game.Server/Service/TradeCustoms.cs",
-    "Line": 80,
+    "Line": 65,
+    "Member": "SliceCustomsScan",
+    "Delivery": "Retained",
+    "Call": "SendMessageToPC(player, ColorToken.Red(error))"
+  },
+  {
+    "File": "SWLOR.Game.Server/Service/TradeCustoms.cs",
+    "Line": 76,
+    "Member": "SliceCustomsScan",
+    "Delivery": "Retained",
+    "Call": "SendMessageToPC(player, ColorToken.Green($\"{GetName(slicer)} slices the patrol's scan from the Sensors station.\"))"
+  },
+  {
+    "File": "SWLOR.Game.Server/Service/TradeCustoms.cs",
+    "Line": 114,
+    "Member": "ResolveCustomsSpoof",
+    "Delivery": "Retained",
+    "Call": "SendMessageToPC(player, ColorToken.Green($\"The {CustomsRules.GetAuthorityName(scan.Authority)} patrol's scan comes back clean. It lets you go.\"))"
+  },
+  {
+    "File": "SWLOR.Game.Server/Service/TradeCustoms.cs",
+    "Line": 116,
+    "Member": "ResolveCustomsSpoof",
+    "Delivery": "Retained",
+    "Call": "SendMessageToPC(slicer, ColorToken.Green(\"The patrol's scan comes back clean.\"))"
+  },
+  {
+    "File": "SWLOR.Game.Server/Service/TradeCustoms.cs",
+    "Line": 138,
+    "Member": "ResolveCustomsSpoof",
+    "Delivery": "Retained",
+    "Call": "SendMessageToPC(player, ColorToken.Red(message))"
+  },
+  {
+    "File": "SWLOR.Game.Server/Service/TradeCustoms.cs",
+    "Line": 140,
+    "Member": "ResolveCustomsSpoof",
+    "Delivery": "Retained",
+    "Call": "SendMessageToPC(slicer, ColorToken.Red(\"The spoof is detected.\"))"
+  },
+  {
+    "File": "SWLOR.Game.Server/Service/TradeCustoms.cs",
+    "Line": 193,
     "Member": "RollCustomsScan",
     "Delivery": "Retained",
     "Call": "SendMessageToPC(player, ColorToken.Red(\n                $\"A {CustomsRules.GetAuthorityName(authority)} customs patrol scans your ship and finds {CustomsRules.Describe(scan.Goods)}. \" +\n                $\"Pay the fine of {scan.Fine} credits and surrender the goods, or run.\"))"
   },
   {
     "File": "SWLOR.Game.Server/Service/TradeCustoms.cs",
-    "Line": 105,
+    "Line": 218,
     "Member": "PayCustomsFine",
     "Delivery": "Retained",
     "Call": "SendMessageToPC(player, ColorToken.Red($\"You need {scan.Fine} credits to pay the fine.\"))"
   },
   {
     "File": "SWLOR.Game.Server/Service/TradeCustoms.cs",
-    "Line": 118,
+    "Line": 231,
     "Member": "PayCustomsFine",
     "Delivery": "Retained",
     "Call": "SendMessageToPC(player, ColorToken.Green(taken.Count > 0\n                ? $\"You pay {scan.Fine} credits. The patrol confiscates {CustomsRules.Describe(taken)} and lets you go.\"\n                : $\"You pay {scan.Fine} credits and the patrol lets you go.\"))"
   },
   {
     "File": "SWLOR.Game.Server/Service/TradeCustoms.cs",
-    "Line": 139,
+    "Line": 252,
     "Member": "RunFromCustoms",
     "Delivery": "Retained",
     "Call": "SendMessageToPC(player, ColorToken.Red(timedOut\n                ? \"You did not answer the customs patrol. It moves to stop you!\"\n                : \"You run from the customs patrol. It moves to stop you!\"))"
@@ -6830,5 +6879,54 @@
     "Member": "Thunderstorm",
     "Delivery": "Retained",
     "Call": "SendMessageToPC(target, WeatherFeedbackText.Lightning)"
+  },
+  {
+    "File": "SWLOR.Game.Server/Feature/ItemDefinition/SpaceLockboxItemDefinition.cs",
+    "Line": 37,
+    "Member": "Lockbox",
+    "Delivery": "Retained",
+    "Call": "SendMessageToPC(user, error)"
+  },
+  {
+    "File": "SWLOR.Game.Server/Service/SpaceSlicing.cs",
+    "Line": 169,
+    "Member": "StartSlicing",
+    "Delivery": "Retained",
+    "Call": "SendMessageToPC(slicer, error)"
+  },
+  {
+    "File": "SWLOR.Game.Server/Service/SpaceSlicing.cs",
+    "Line": 208,
+    "Member": "CompleteSlicing",
+    "Delivery": "Retained",
+    "Call": "SendMessageToPC(slicer, \"The data core is drained. The wreck can still be salvaged.\")"
+  },
+  {
+    "File": "SWLOR.Game.Server/Service/SpaceSlicing.cs",
+    "Line": 291,
+    "Member": "DeliverRewardsToShip",
+    "Delivery": "Retained",
+    "Call": "SendMessageToPC(slicer, ColorToken.Green($\"Slicing recovered: {DescribeRewards(rewards)}.\"))"
+  },
+  {
+    "File": "SWLOR.Game.Server/Service/SpaceSlicing.cs",
+    "Line": 316,
+    "Member": "GiveRewardsToPlayer",
+    "Delivery": "Retained",
+    "Call": "SendMessageToPC(player, ColorToken.Green($\"You recover {DescribeRewards(rewards)}.\"))"
+  },
+  {
+    "File": "SWLOR.Game.Server/Service/SpaceSlicing.cs",
+    "Line": 381,
+    "Member": "OpenLockedCache",
+    "Delivery": "Retained",
+    "Call": "SendMessageToPC(slicer, ColorToken.Green($\"The lock gives way. You open the {GetName(cache)}: {credits} credits.\"))"
+  },
+  {
+    "File": "SWLOR.Game.Server/Service/SpaceSlicing.cs",
+    "Line": 405,
+    "Member": "RollSpaceLockbox",
+    "Delivery": "Retained",
+    "Call": "SendMessageToPC(killer, ColorToken.Green($\"A sealed lockbox tumbles out of {GetName(creature)}.\"))"
   }
 ]

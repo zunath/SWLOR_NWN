@@ -19,12 +19,13 @@ import model as m  # noqa: E402
 import npc_catalog  # noqa: E402
 import rewards as rw  # noqa: E402
 import scanning  # noqa: E402
+import slicing  # noqa: E402
 import trade  # noqa: E402
 
 ROOT = m.REPO
 ROMAN = ["I", "II", "III", "IV", "V", "VI", "VII", "VIII", "IX", "X"]
 CAPITAL_STEPS = [40, 45]
-SKILL = {"Piloting": "SkillType.Piloting", "Gathering": "SkillType.Gathering"}
+SKILL = {"Piloting": "SkillType.Piloting", "Gathering": "SkillType.Gathering", "Espionage": "SkillType.Espionage"}
 RECIPE_TYPE_START = 7000
 
 # Existing artwork each family reuses (ShipItemIconBindings.csv role): BaseItem, inventory model, action icon.
@@ -55,6 +56,8 @@ ART = {
     "smuggling_compartment": (523, 228, "iit_smsmuggle"),
     # The scanning update (W12a), in the ESS9 bank.
     "probe_launcher": (523, 238, "iit_smprobe"),
+    # The space slicing update (W12b), in the ESS9 bank.
+    "data_analyzer": (523, 240, "iit_smdatanlz"),
 }
 
 W = m.WEAPONS
@@ -173,6 +176,8 @@ FAMILIES = [
      lambda r, s: f"Launches scan probes every 10 seconds while on, adding {s['ScanStrength']} signal strength to every hidden "
                   f"signature in the system. Its Sensor Sweep pulse, on the Scanner tab of the Ship HUD, lists every ship "
                   f"within {s['SweepRange']} m. Espionage strengthens the scan."),
+    ("DataAnalyzer", "Data Analyzer", "Data Analyzer", "sm_dataan", "Mid", "Espionage", "OnePress", slicing.ANALYZER_RECAST_SECONDS,
+     slicing.ANALYZER_CAPACITOR, slicing.ANALYZER_RANGE, "data_analyzer", False, p(), lambda r, s: slicing.ANALYZER_DESCRIPTION),
 ]
 
 MATERIALS = {1: ("ref_tilarium", "elec_ruined"), 2: ("ref_currian", "elec_flawed"), 3: ("ref_idailia", "elec_good"),
@@ -311,6 +316,13 @@ LATE_FAMILIES = {"Salvager", "GasHarvester", "SmugglingCompartment"}
 # Families added after the component recipes (the scanning update W12a). Their recipe IDs follow the components'.
 COMPONENT_LATE_FAMILIES = {"ProbeLauncher"}
 
+# Families added after rewards.py's block (the space slicing update W12b). Their recipe IDs follow the last W9b recipe
+# (the ammo variants), so no earlier value moves.
+REWARD_LATE_FAMILIES = {"DataAnalyzer"}
+
+# Families with one item and no rank requirement: any hull fits it (the Data Analyzer, plan section 24).
+SINGLE_STEP_FAMILIES = {"DataAnalyzer"}
+
 # The numbers a named rank-50 module raises past its family's rank-45 step by a share of the rank 40 -> 45 step
 # (rewards.named_value), Attack and Accuracy included; flags, multipliers, penalties and tiers stay as they are.
 NAMED_SCALED = {"Dmg", "Shield", "Hull", "Repair", "MaxCapacitor", "CapacitorRestore", "CapacitorRegen", "ModuleAccuracy",
@@ -345,27 +357,33 @@ def named_steps(recipe_start):
             Components=named_bill(key, row), Cost=rw.NAMED_COST, **s))
     return out
 
-def module_steps(late_recipe_start=None, component_late_start=None):
+def module_steps(late_recipe_start=None, component_late_start=None, reward_late_start=None):
     steps, recipe = [], RECIPE_TYPE_START
     late_recipe = late_recipe_start
     post_recipe = component_late_start
+    reward_recipe = reward_late_start
     for (key, name, short, prefix, row, skill, use, cycle, cap, rng, art, capital, stats, desc) in FAMILIES:
-        for r in (CAPITAL_STEPS if capital else m.STEPS):
+        single = key in SINGLE_STEP_FAMILIES
+        for r in ([0] if single else CAPITAL_STEPS if capital else m.STEPS):
             mk = ROMAN[r // 5]
             s = stats(r)
             base, model_part, texture = ART[art]
             late = key in LATE_FAMILIES
             post = key in COMPONENT_LATE_FAMILIES
+            after_rewards = key in REWARD_LATE_FAMILIES
             steps.append(dict(
-                Family=key, Rank=r, Tag=f"{prefix}_{r:02d}", Name=f"{name} Mk {mk}", ShortName=f"{short} {mk}"[:14],
+                Family=key, Rank=r, Tag=f"{prefix}_{r:02d}", Name=name if single else f"{name} Mk {mk}",
+                ShortName=(short if single else f"{short} {mk}")[:14],
                 Row=row, Skill=skill, Activation=use, CycleSeconds=cycle, CapacitorCost=cap, Range=rng, Capital=capital,
                 Texture=texture, BaseItem=base, ModelPart=model_part, Description=desc(r, s),
-                RecipeType=post_recipe if post else late_recipe if late else recipe,
+                RecipeType=reward_recipe if after_rewards else post_recipe if post else late_recipe if late else recipe,
                 RecipeName=f"Ship{key}{r:02d}",
                 RecipeLevel=max(2, min(50, r + (3 if capital else 0))),
                 Components=module_bill(key, r, row, capital),
                 Cost=100 + 30 * r + (2000 if capital else 0), **s))
-            if post:
+            if after_rewards:
+                reward_recipe = None if reward_recipe is None else reward_recipe + 1
+            elif post:
                 post_recipe = None if post_recipe is None else post_recipe + 1
             elif late:
                 late_recipe = None if late_recipe is None else late_recipe + 1
@@ -575,15 +593,18 @@ def full_catalog():
     rewards.py's block (W9b): the named rank-50 modules (appended to the steps) and the rare component recipes.
     """
     all_steps = module_steps()
-    early = [s for s in all_steps if s["Family"] not in LATE_FAMILIES | COMPONENT_LATE_FAMILIES]
+    early = [s for s in all_steps if s["Family"] not in LATE_FAMILIES | COMPONENT_LATE_FAMILIES | REWARD_LATE_FAMILIES]
     late = [s for s in all_steps if s["Family"] in LATE_FAMILIES]
     hulls = ships(RECIPE_TYPE_START + len(early))
     recipes = component_recipes(RECIPE_TYPE_START + len(early) + len(hulls) + len(late))
     steps = module_steps(RECIPE_TYPE_START + len(early) + len(hulls), max(x["RecipeType"] for x in recipes) + 1)
-    start = max(x["RecipeType"] for x in steps + hulls + recipes) + 1
+    start = max(x["RecipeType"] for x in steps + hulls + recipes if x["RecipeType"] is not None) + 1
     assert start == rw.RECIPE_START, f"rewards.RECIPE_START must follow the last earlier recipe ({start})"
     named = named_steps(rw.RECIPE_START)
-    return steps + named, hulls, recipes + rare_recipes(rw.RECIPE_START + len(named))
+    rare = rare_recipes(rw.RECIPE_START + len(named))
+    reward_end = max(x["RecipeType"] for x in named + rare + ammo_recipes()) + 1
+    steps = module_steps(RECIPE_TYPE_START + len(early) + len(hulls), max(x["RecipeType"] for x in recipes) + 1, reward_end)
+    return steps + named, hulls, recipes + rare
 
 
 def catalog():

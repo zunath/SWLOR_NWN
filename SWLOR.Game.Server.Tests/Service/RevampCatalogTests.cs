@@ -23,8 +23,8 @@ public class RevampCatalogTests
     {
         var steps = RevampModuleCatalog.Steps;
 
-        steps.Should().HaveCount(334, "278 + the Salvager and Gas Harvester ranks (W6a) + the Smuggling Compartment ranks (W7b) + " +
-            "the Probe Launcher ranks (W12a) + 16 named rank-50 modules (W9b)");
+        steps.Should().HaveCount(335, "278 + the Salvager and Gas Harvester ranks (W6a) + the Smuggling Compartment ranks (W7b) + " +
+            "the Probe Launcher ranks (W12a) + 16 named rank-50 modules (W9b) + the Data Analyzer (W12b)");
         steps.Select(x => x.Tag).Should().OnlyHaveUniqueItems();
         steps.Select(x => x.Name).Should().OnlyHaveUniqueItems();
         foreach (var step in steps)
@@ -43,7 +43,7 @@ public class RevampCatalogTests
         foreach (var family in RevampModuleCatalog.Steps.GroupBy(x => x.Family))
         {
             var first = family.First();
-            var ladder = first.Capital ? CapitalRanks : StandardRanks;
+            var ladder = family.Key == ShipModuleFamily.DataAnalyzer ? new[] { 0 } : first.Capital ? CapitalRanks : StandardRanks;
             if (family.Any(x => x.Named))
                 ladder = ladder.Append(50).ToArray();
             family.Select(x => x.Rank).Should().Equal(ladder, family.Key.ToString());
@@ -57,12 +57,12 @@ public class RevampCatalogTests
             family.Select(x => x.CapacitorCost).Distinct().Should().ContainSingle(family.Key.ToString());
             family.Select(x => x.CycleSeconds).Distinct().Should().ContainSingle(family.Key.ToString());
             first.Row.Should().BeOneOf(ShipModulePowerType.High, ShipModulePowerType.Mid, ShipModulePowerType.Low);
-            first.Skill.Should().BeOneOf(SkillType.Piloting, SkillType.Gathering);
+            first.Skill.Should().BeOneOf(SkillType.Piloting, SkillType.Gathering, SkillType.Espionage);
             if (first.Activation != ShipModuleActivation.Invalid)
                 first.CycleSeconds.Should().BeGreaterThan(0, family.Key.ToString());
         }
 
-        RevampModuleCatalog.Steps.Select(x => x.Family).Distinct().Should().HaveCount(43);
+        RevampModuleCatalog.Steps.Select(x => x.Family).Distinct().Should().HaveCount(44);
         Enum.GetValues<ShipModuleFamily>().Where(x => x != ShipModuleFamily.Invalid)
             .Should().BeEquivalentTo(RevampModuleCatalog.Steps.Select(x => x.Family).Distinct(), "every family has steps");
     }
@@ -151,10 +151,12 @@ public class RevampCatalogTests
         all.Should().OnlyHaveUniqueItems();
         all.Select(x => x.ToString()).Should().OnlyHaveUniqueItems();
         // The modules and hulls take 7000-7357; the Probe Launcher (W12a) follows the component recipes (7358-7487); the
-        // named modules (W9b) open the next block.
-        all.Where(x => !steps.Any(s => s.Named && s.RecipeType == x))
+        // named modules (W9b) open the next block (7498-7531, with the rare components and ammo); the Data Analyzer (W12b)
+        // follows it.
+        all.Where(x => !steps.Any(s => s.Named && s.RecipeType == x) && x != RecipeType.ShipDataAnalyzer00)
             .Should().OnlyContain(x => ((int)x >= 7000 && (int)x < 7000 + 358) || ((int)x >= 7488 && (int)x < 7498));
         steps.Where(x => x.Named).Select(x => (int)x.RecipeType).Should().OnlyContain(x => x >= 7498 && x < 7498 + 16);
+        ((int)RecipeType.ShipDataAnalyzer00).Should().Be(7532);
     }
 
     [Test]

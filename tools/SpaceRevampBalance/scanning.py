@@ -6,7 +6,8 @@ usage: python scanning.py            (writes the generated C# scanning tuning)
        python scanning.py --sim      (prints the exploration payout against space combat per tier)
 
 Every scanning number lives here. catalog.py reads the Probe Launcher steps from it, and bible_tabs.py calls
-scanning_tab(Sheet) to write the Scanning (Revamp) tab.
+scanning_tab(Sheet) to write the Scanning (Revamp) tab. The space slicing numbers (data sites' data cans, locked caches,
+wreck data cores, space lockboxes) are slicing.py's; this model counts them in each site's value and time.
 
 Sources:
 - Probe Launcher: the Ship Modules (Revamp) tab's draft (Mid, Piloting at the Sensors seat, toggle, 10 s cycle,
@@ -23,6 +24,7 @@ import sys
 from pathlib import Path
 
 sys.path.insert(0, str(Path(__file__).resolve().parent))
+import slicing  # noqa: E402
 import trade  # noqa: E402
 
 REPO = Path(__file__).resolve().parents[2]
@@ -117,8 +119,8 @@ RESPAWN_SECONDS = 300            # a new signature appears this long after one i
 SITE_CHECK_SECONDS = 6           # how often sites are checked for completion and timers
 
 # Type weights. Gas sites need a tier 3 Gas Harvester cloud (the gas clouds are tier 3 and 4), so they spawn from
-# tier 3. Data sites wait for the Data Analyzer (W12b) and rifts for Wild Space (W12c): weight 0 until then.
-WEIGHTS = {"CombatSite": 35, "CacheSite": 25, "GasSite": 20, "Derelict": 20, "DataSite": 0, "Rift": 0}
+# tier 3. Data sites spawn with the Data Analyzer (W12b, slicing.py); rifts wait for Wild Space (W12c): weight 0.
+WEIGHTS = {"CombatSite": 35, "CacheSite": 25, "GasSite": 20, "Derelict": 20, "DataSite": slicing.DATA_SITE_WEIGHT, "Rift": 0}
 GAS_MINIMUM_TIER = 3
 
 
@@ -178,11 +180,26 @@ SALVAGE_SCRAP_PER_CYCLE = 1.5                  # 1 + Industrial / 4 + module bon
 SALVAGE_MINUTES = SALVAGE_CYCLES * 6 / 60 + 0.25
 CACHE_ITEM_PULLS = 1                           # pulls from the tier's SPACE_ELITE table, on top of the credits
 MARKDOWN = 0.40
+CAN_TRAVEL_MINUTES = 0.25                      # flying between a data site's cans
+LOCKED_CACHE_PERCENT = slicing.LOCKED_CACHE_PERCENT
 
 
 def combat_rate(tier):
-    """Space combat credits per hour of the tier (trade.py's baseline)."""
-    return trade.combat_credits_per_hour(tier)[1]
+    """Space combat credits per hour of the tier: trade.py's baseline with the space lockboxes normal kills drop."""
+    return slicing.combat_with_lockboxes(tier)
+
+
+def slicing_tier(tier):
+    return slicing.target_tier(tier)
+
+
+def lockbox_kill_value(tier):
+    """What a site ship's space lockbox drop adds to its kill, where slicing lockboxes pays (slicing.py)."""
+    return slicing.lockbox_per_kill(tier) if slicing.lockboxes_pay(tier) else 0.0
+
+
+def lockbox_kill_minutes(tier):
+    return slicing.lockbox_minutes_per_kill() if slicing.lockboxes_pay(tier) else 0.0
 
 
 _UTC = {}
@@ -215,22 +232,33 @@ def scrap_value(tier):
 
 def site_minutes(kind, tier):
     if kind == "CombatSite":
-        return len(combat_squad(tier)) * KILL_MINUTES
+        return len(combat_squad(tier)) * (KILL_MINUTES + lockbox_kill_minutes(tier))
     if kind == "Derelict":
-        return len(derelict_defenses(tier)) * PLATFORM_MINUTES + SALVAGE_MINUTES
+        return (len(derelict_defenses(tier)) * (PLATFORM_MINUTES + lockbox_kill_minutes(tier)) + SALVAGE_MINUTES
+                + slicing.SLICE_MINUTES)
     if kind == "GasSite":
         return GAS_SITE_CLOUDS * GAS_CLOUD_MINUTES
+    if kind == "DataSite":
+        return slicing.DATA_SITE_CANS * (slicing.SLICE_MINUTES + CAN_TRAVEL_MINUTES)
+    if kind == "LockedCache":
+        return CACHE_MINUTES + slicing.SLICE_MINUTES
     return CACHE_MINUTES
 
 
 def own_value(kind, tier):
     """What a site pays before its cache: the ships' own loot, the wreck's scrap, the clouds' gas."""
     if kind == "CombatSite":
-        return sum(kill_value(t) for t in combat_squad(tier))
+        return sum(kill_value(t) + lockbox_kill_value(tier) for t in combat_squad(tier))
     if kind == "Derelict":
-        return sum(kill_value(t) for t in derelict_defenses(tier)) + SALVAGE_CYCLES * SALVAGE_SCRAP_PER_CYCLE * scrap_value(tier)
+        return (sum(kill_value(t) + lockbox_kill_value(tier) for t in derelict_defenses(tier))
+                + SALVAGE_CYCLES * SALVAGE_SCRAP_PER_CYCLE * scrap_value(tier)
+                + slicing.expected_value("WreckDataCore", slicing_tier(tier)))
     if kind == "GasSite":
         return GAS_SITE_CLOUDS * GAS_CLOUD_UNITS * trade.item_cost("gas_tibanna") * MARKDOWN
+    if kind == "DataSite":
+        return slicing.DATA_SITE_CANS * slicing.expected_value("DataCan", slicing_tier(tier))
+    if kind == "LockedCache":
+        return slicing.expected_value("LockedCache", slicing_tier(tier))
     return 0.0
 
 
@@ -261,17 +289,27 @@ def site_value(kind, tier):
     return own_value(kind, tier) + site_credits(kind, tier) + CACHE_ITEM_PULLS * elite_pull_value(tier)
 
 
+def mix(tier):
+    """The weighted site kinds of a tier, with LOCKED_CACHE_PERCENT of the cache sites counted as locked caches."""
+    w = {k: v for k, v in weights(tier).items() if v}
+    if "CacheSite" in w:
+        cache = w.pop("CacheSite")
+        w["CacheSite"] = cache * (100 - LOCKED_CACHE_PERCENT) / 100
+        w["LockedCache"] = cache * LOCKED_CACHE_PERCENT / 100
+    return w
+
+
 def explore_rate(tier):
     """Credits per hour exploring the tier's areas: the weighted site mix, each with its share of the overhead."""
-    w = weights(tier)
+    w = mix(tier)
     total = sum(w.values())
-    minutes = sum(w[k] / total * (site_minutes(k, tier) + overhead_minutes(tier)) for k in w if w[k])
-    value = sum(w[k] / total * site_value(k, tier) for k in w if w[k])
+    minutes = sum(w[k] / total * (site_minutes(k, tier) + overhead_minutes(tier)) for k in w)
+    value = sum(w[k] / total * site_value(k, tier) for k in w)
     return value / minutes * 60
 
 
 TIERS = [1, 2, 3, 4, 5, 6]
-KINDS = ["CombatSite", "CacheSite", "GasSite", "Derelict"]
+KINDS = ["CombatSite", "CacheSite", "GasSite", "Derelict", "DataSite"]
 
 
 def report():
@@ -281,9 +319,9 @@ def report():
         e, c = explore_rate(t), combat_rate(t)
         print(f"  T{t}: explore {e:7.0f}/h, combat {c:7.0f}/h, {100 * e / c:5.1f}% of its tier, {100 * e / t3:5.1f}% of T3; "
               f"scan {scan_minutes(t):.1f} min, overhead {overhead_minutes(t):.2f} min/site")
-        for k in KINDS:
-            if weights(t)[k]:
-                print(f"      {k:10s} {site_minutes(k, t):4.1f} min, own {own_value(k, t):6.0f}, cache {site_credits(k, t):5d} cr "
+        for k in KINDS + ["LockedCache"]:
+            if mix(t).get(k):
+                print(f"      {k:11s} {site_minutes(k, t):4.1f} min, own {own_value(k, t):6.0f}, cache {site_credits(k, t):5d} cr "
                       f"+ {CACHE_ITEM_PULLS} elite pull ({elite_pull_value(t):.0f})")
 
 
@@ -412,7 +450,14 @@ def tuning_cs():
               "        {"]
     lines += [f"            [SignatureType.{k}] = new[] {{ 0.0, " + ", ".join(cs_double(round(own_value(k, t), 2)) for t in TIERS) + " },"
               for k in KINDS]
-    lines += ["        };", "    }", "}", ""]
+    lines += ["        };", "",
+              "        // Locked caches (space slicing, slicing.py): this share of cache sites must be sliced open; their credits, time and",
+              "        // slicing reward replace a plain cache's.",
+              f"        public const int LockedCachePercent = {LOCKED_CACHE_PERCENT};",
+              "        public static readonly int[] LockedCacheCredits = { 0, " + ", ".join(str(site_credits("LockedCache", t)) for t in TIERS) + " };",
+              "        public static readonly double[] LockedCacheMinutes = { 0.0, " + ", ".join(cs_double(round(site_minutes("LockedCache", t), 4)) for t in TIERS) + " };",
+              "        public static readonly double[] LockedCacheOwnCredits = { 0.0, " + ", ".join(cs_double(round(own_value("LockedCache", t), 2)) for t in TIERS) + " };",
+              "    }", "}", ""]
     return "\n".join(lines)
 
 
@@ -487,6 +532,10 @@ def scanning_tab(Sheet):
             [[t, site_credits("CombatSite", t), site_credits("CacheSite", t), site_credits("GasSite", t) if t >= GAS_MINIMUM_TIER else "-",
               site_credits("Derelict", t), round(explore_rate(t)), round(combat_rate(t)), f"{100 * explore_rate(t) / combat_rate(t):.0f}%"]
              for t in TIERS])
+    s.table(["Tier", "Data site", "Locked cache", "", "", "", "", "Notes (space slicing, slicing.py)"],
+            [[t, site_credits("DataSite", t), site_credits("LockedCache", t), "", "", "", "",
+              f"data site: {slicing.DATA_SITE_CANS} data cans, then its cache; {LOCKED_CACHE_PERCENT}% of cache sites are locked "
+              "caches, sliced open for these credits, the elite pull and a slicing reward" if t == 1 else ""] for t in TIERS])
     s.table(["Model input", "Value", "", "", "", "", "", "Notes"], [
         ["Kill", f"{KILL_MINUTES:g} min", "", "", "", "", "", "the trade combat baseline's 60 kills per hour"],
         ["Platform or turret", f"{PLATFORM_MINUTES:g} min", "", "", "", "", "", ""],
@@ -495,6 +544,10 @@ def scanning_tab(Sheet):
         ["Cache", f"{CACHE_MINUTES:g} min", "", "", "", "", "", ""],
         ["Jump", f"{JUMP_MINUTES:g} min", "", "", "", "", "", "per site"],
         ["Travel", f"{TRAVEL_MINUTES:g} min", "", "", "", "", "", "per area, shared by its signatures with the scan"],
+        ["Slicing", f"{slicing.SLICE_MINUTES:g} min", "", "", "", "", "",
+         f"a data can, locked cache or data core board, {slicing.SLICE_SUCCESS:.0%} success; {CAN_TRAVEL_MINUTES:g} min between cans"],
+        ["Combat / h", "with space lockboxes", "", "", "", "", "",
+         f"normal kills drop a space lockbox {slicing.LOCKBOX_DROP_PERCENT['Normal']}% of the time; counted where slicing it pays"],
     ])
     return s
 

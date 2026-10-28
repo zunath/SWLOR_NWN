@@ -3,6 +3,7 @@ using System.Linq;
 using SWLOR.Game.Server.Core;
 using SWLOR.Game.Server.Service.LogService;
 using SWLOR.Game.Server.Service.SkillService;
+using SWLOR.Game.Server.Service.SlicingService;
 using SWLOR.Game.Server.Service.SpaceService;
 using SWLOR.Game.Server.Service.StatService;
 using SWLOR.NWN.API.NWScript.Enum;
@@ -132,8 +133,9 @@ namespace SWLOR.Game.Server.Service
             if (position.X == 0f && position.Y == 0f)
                 return null;
 
+            var locked = type == SignatureType.CacheSite && SpaceSlicingRules.RollsLockedCache(Random.Next(100));
             return SignatureSiteRules.Create(Guid.NewGuid().ToString(), detail.AreaResref, detail.Tier, type,
-                position.X, position.Y, position.Z, now);
+                position.X, position.Y, position.Z, now, locked);
         }
 
         /// <summary>The player IDs of a player's party (the player included), DMs left out.</summary>

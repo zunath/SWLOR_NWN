@@ -88,7 +88,7 @@ namespace SWLOR.Game.Server.Service.SpaceService
             [SignatureType.CacheSite] = 25,
             [SignatureType.GasSite] = 20,
             [SignatureType.Derelict] = 20,
-            [SignatureType.DataSite] = 0,
+            [SignatureType.DataSite] = 15,
             [SignatureType.Rift] = 0,
         };
 
@@ -148,30 +148,40 @@ namespace SWLOR.Game.Server.Service.SpaceService
         /// <summary>The credits in a completed site's cache, by type and tier (index 1-6).</summary>
         public static readonly IReadOnlyDictionary<SignatureType, int[]> SiteCredits = new Dictionary<SignatureType, int[]>
         {
-            [SignatureType.CombatSite] = new[] { 0, 100, 200, 300, 250, 50, 600 },
+            [SignatureType.CombatSite] = new[] { 0, 100, 200, 300, 250, 75, 600 },
             [SignatureType.CacheSite] = new[] { 0, 100, 225, 300, 225, 275, 825 },
-            [SignatureType.GasSite] = new[] { 0, 25, 225, 375, 275, 375, 1425 },
-            [SignatureType.Derelict] = new[] { 0, 75, 325, 625, 225, 150, 1850 },
+            [SignatureType.GasSite] = new[] { 0, 25, 225, 375, 275, 400, 1425 },
+            [SignatureType.Derelict] = new[] { 0, 125, 375, 675, 250, 75, 2125 },
+            [SignatureType.DataSite] = new[] { 0, 250, 450, 450, 400, 50, 1750 },
         };
 
         // Payout model (scanning.py --sim): minutes and credits per site and the combat rate it is measured against.
         public const double ExplorePremium = 1.15;
-        public static readonly double[] CombatCreditsPerHour = { 0, 4055.12, 6269.68, 8500.17, 7557.0, 9161.4, 22212.36 };
+        public static readonly double[] CombatCreditsPerHour = { 0, 4055.12, 6269.68, 8500.17, 7557.0, 9380.09, 22212.36 };
         public static readonly double[] ElitePullCredits = { 0, 64.75, 50.01, 73.41, 89.86, 122.17, 201.44 };
         public static readonly double[] OverheadMinutes = { 0, 1.75, 1.75, 1.75, 1.75, 1.75, 1.9167 };
         public static readonly IReadOnlyDictionary<SignatureType, double[]> SiteMinutes = new Dictionary<SignatureType, double[]>
         {
-            [SignatureType.CombatSite] = new[] { 0.0, 3.0, 3.0, 4.0, 4.0, 5.0, 5.0 },
+            [SignatureType.CombatSite] = new[] { 0.0, 3.0, 3.0, 4.0, 4.0, 5.15, 5.0 },
             [SignatureType.CacheSite] = new[] { 0.0, 0.5, 0.5, 0.5, 0.5, 0.5, 0.5 },
             [SignatureType.GasSite] = new[] { 0.0, 2.5, 2.5, 2.5, 2.5, 2.5, 2.5 },
-            [SignatureType.Derelict] = new[] { 0.0, 3.05, 3.05, 3.05, 3.05, 5.05, 5.05 },
+            [SignatureType.Derelict] = new[] { 0.0, 4.55, 4.55, 4.55, 4.55, 6.61, 6.55 },
+            [SignatureType.DataSite] = new[] { 0.0, 5.25, 5.25, 5.25, 5.25, 5.25, 5.25 },
         };
         public static readonly IReadOnlyDictionary<SignatureType, double[]> SiteOwnCredits = new Dictionary<SignatureType, double[]>
         {
-            [SignatureType.CombatSite] = new[] { 0.0, 202.76, 313.48, 566.68, 503.8, 1013.91, 2145.56 },
+            [SignatureType.CombatSite] = new[] { 0.0, 202.76, 313.48, 566.68, 503.8, 1055.58, 2145.56 },
             [SignatureType.CacheSite] = new[] { 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0 },
             [SignatureType.GasSite] = new[] { 0.0, 243.0, 243.0, 243.0, 243.0, 243.0, 243.0 },
-            [SignatureType.Derelict] = new[] { 0.0, 237.66, 213.05, 72.0, 392.54, 926.3, 926.3 },
+            [SignatureType.Derelict] = new[] { 0.0, 310.93, 326.78, 278.72, 568.03, 1306.6, 1289.93 },
+            [SignatureType.DataSite] = new[] { 0.0, 219.81, 341.19, 620.16, 526.45, 1090.89, 1090.89 },
         };
+
+        // Locked caches (space slicing, slicing.py): this share of cache sites must be sliced open; their credits, time and
+        // slicing reward replace a plain cache's.
+        public const int LockedCachePercent = 40;
+        public static readonly int[] LockedCacheCredits = { 0, 150, 275, 325, 250, 125, 1025 };
+        public static readonly double[] LockedCacheMinutes = { 0.0, 2.0, 2.0, 2.0, 2.0, 2.0, 2.0 };
+        public static readonly double[] LockedCacheOwnCredits = { 0.0, 77.32, 119.03, 212.98, 195.64, 431.15, 431.15 };
     }
 }

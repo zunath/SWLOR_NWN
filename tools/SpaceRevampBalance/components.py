@@ -76,7 +76,7 @@ MODULE_COMPONENT = {
     "SmugglingCompartment": "HullFrame",
     "Thrusters": "ThrusterAssembly", "AdvancedThrusters": "ThrusterAssembly",
     "TargetingComputer": "SensorSuite", "TargetingArray": "SensorSuite", "EWarArray": "SensorSuite",
-    "ProbeLauncher": "SensorSuite",
+    "ProbeLauncher": "SensorSuite", "DataAnalyzer": "SensorSuite",
     "MiningLaser": "ExtractionHead", "StripMiner": "ExtractionHead", "Salvager": "ExtractionHead",
     "GasHarvester": "ExtractionHead",
 }

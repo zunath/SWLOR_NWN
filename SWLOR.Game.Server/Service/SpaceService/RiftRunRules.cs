@@ -13,6 +13,13 @@ namespace SWLOR.Game.Server.Service.SpaceService
         public const int ArrivalGraceSeconds = 15;
 
         /// <summary>
+        /// Whether a pilot is out of the run: logged out, no longer flying, or in an area other than the pocket. A pilot
+        /// between areas is still loading into the pocket and stays in the run however long the load takes.
+        /// </summary>
+        public static bool HasLeftPocket(bool pilotValid, bool inSpace, bool betweenAreas, bool inPocket) =>
+            !pilotValid || !inSpace || (!betweenAreas && !inPocket);
+
+        /// <summary>
         /// A pilot logged out (their creature is gone): their ship waits in the pocket for them to rejoin while the run is
         /// open (W11k). Does nothing for a pilot the run does not know.
         /// </summary>

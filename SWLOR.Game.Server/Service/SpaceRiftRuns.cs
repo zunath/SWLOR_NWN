@@ -122,6 +122,17 @@ namespace SWLOR.Game.Server.Service
                                       string.Join(", ", pilots.Select(PlayerName.GetAuditName)));
         }
 
+        /// <summary>
+        /// A pilot logging out of a run: their ship waits in the pocket for them to rejoin (W11k). This runs at logout
+        /// because the run's next check can still see the leaving pilot's creature after its ship is unregistered, and
+        /// would then drop the pilot without keeping their ship (W11m live check).
+        /// </summary>
+        private static void MarkRiftRunPilotAway(uint pilot)
+        {
+            foreach (var run in _riftRuns.Values.Where(x => x.Pilots.Contains(pilot)))
+                RiftRunRules.MarkAway(run, pilot);
+        }
+
         /// <summary>The open run a logged-out pilot's ship waits in, or null (W11k).</summary>
         private static RiftRun FindRejoinableRiftRun(string shipId) =>
             _riftRuns.Values.FirstOrDefault(x => RiftRunRules.CanRejoin(x, shipId) && GetIsObjectValid(x.Area));
@@ -204,7 +215,8 @@ namespace SWLOR.Game.Server.Service
             {
                 foreach (var pilot in run.Pilots.Where(x => !GetIsObjectValid(x)).ToList())
                     RiftRunRules.MarkAway(run, pilot);
-                run.Pilots.RemoveAll(x => !GetIsObjectValid(x) || GetArea(x) != run.Area || !IsPlayerInSpaceMode(x));
+                run.Pilots.RemoveAll(x => RiftRunRules.HasLeftPocket(
+                    GetIsObjectValid(x), IsPlayerInSpaceMode(x), !GetIsObjectValid(GetArea(x)), GetArea(x) == run.Area));
             }
 
             run.Enemies.RemoveAll(x => !GetIsObjectValid(x) || GetIsDead(x));

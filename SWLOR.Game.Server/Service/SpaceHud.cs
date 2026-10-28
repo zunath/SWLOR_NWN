@@ -152,7 +152,9 @@ namespace SWLOR.Game.Server.Service
             stats.Defense = Space.GetShipDefense(player, status);
             stats.Evasion = Space.GetShipEvasion(player, status);
             stats.CriticalRate = Space.GetShipCriticalRate(player, status);
-            stats.SpeedMultiplier = ShipCloakRules.ApplySpeed(stats.SpeedMultiplier, Space.GetCloakSpeedMultiplier(player));
+            stats.SpeedMultiplier = ShipAfterburnerRules.ApplySpeed(
+                ShipCloakRules.ApplySpeed(stats.SpeedMultiplier, Space.GetCloakSpeedMultiplier(player)),
+                Space.GetAfterburnerPercent(status));
             stats.CloakText = Space.GetCloakStatusText(player, status);
             stats.IncursionText = Space.GetIncursionStatusText(player);
             stats.RiftRunText = Space.GetRiftRunStatusText(player);

@@ -76,16 +76,18 @@ namespace SWLOR.Game.Server.Service
             return true;
         }
 
-        /// <summary>Sets the pilot's movement to the ship's speed under its power routing.</summary>
+        /// <summary>Sets the pilot's movement to the ship's speed under its power routing, cloak and Afterburner.</summary>
         public static void ApplyShipSpeed(uint pilot, ShipStatus status)
         {
             if (status == null || !GetIsObjectValid(pilot) || !IsPlayerInSpaceMode(pilot))
                 return;
 
             SetLocalFloat(pilot, Stat.ShipMovementSpeedVariable,
-                (float)ShipCloakRules.ApplySpeed(
-                    PowerRoutingRules.ApplySpeed(status.SpeedMultiplier, status.PowerRouting),
-                    GetCloakSpeedMultiplier(pilot)));
+                (float)ShipAfterburnerRules.ApplySpeed(
+                    ShipCloakRules.ApplySpeed(
+                        PowerRoutingRules.ApplySpeed(status.SpeedMultiplier, status.PowerRouting),
+                        GetCloakSpeedMultiplier(pilot)),
+                    GetAfterburnerPercent(status)));
             Stat.ApplyCreatureMovementRate(pilot);
         }
 

@@ -86,9 +86,10 @@ MODULE_COMPONENT = {
     "HullPlating": "HullFrame", "HullRepairer": "HullFrame", "ThermalPlating": "HullFrame", "EMPlating": "HullFrame",
     "ExplosivePlating": "HullFrame", "AdaptivePlating": "HullFrame", "ReinforcedPlating": "HullFrame",
     "SmugglingCompartment": "HullFrame", "CargoExpander": "HullFrame",
-    "Thrusters": "ThrusterAssembly", "AdvancedThrusters": "ThrusterAssembly",
+    "Thrusters": "ThrusterAssembly", "AdvancedThrusters": "ThrusterAssembly", "Afterburner": "ThrusterAssembly",
     "TargetingComputer": "SensorSuite", "TargetingArray": "SensorSuite", "EWarArray": "SensorSuite",
     "ProbeLauncher": "SensorSuite", "DataAnalyzer": "SensorSuite", "CloakingDevice": "SensorSuite",
+    "IonWeb": "SensorSuite", "Interdictor": "SensorSuite", "Jammer": "SensorSuite", "TargetPainter": "SensorSuite",
     "MiningLaser": "ExtractionHead", "StripMiner": "ExtractionHead", "Salvager": "ExtractionHead",
     "GasHarvester": "ExtractionHead",
 }

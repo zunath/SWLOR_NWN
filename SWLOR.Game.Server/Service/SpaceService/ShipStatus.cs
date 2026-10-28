@@ -128,6 +128,22 @@ namespace SWLOR.Game.Server.Service.SpaceService
         public int AccuracyPenalty { get; set; }
         public DateTime AccuracyPenaltyUntil { get; set; }
 
+        /// <summary>
+        /// An enemy Interdictor holds the ship until this time: no starlane or signature jump, docking, rift crossing,
+        /// Rift Key or cloak, and its Afterburner shuts down (W11k). Saved data without it reads as never held.
+        /// </summary>
+        public DateTime InterdictedUntil { get; set; }
+
+        /// <summary>Percent more damage the ship takes from an enemy Target Painter until <see cref="PaintedUntil"/>.</summary>
+        public int PaintedPercent { get; set; }
+        public DateTime PaintedUntil { get; set; }
+
+        /// <summary>Whether an Interdictor holds the ship right now.</summary>
+        public bool IsInterdicted(DateTime now) => now < InterdictedUntil;
+
+        /// <summary>The extra damage taken from a Target Painter right now, in percent (0 when unpainted).</summary>
+        public int GetPaintPercent(DateTime now) => now < PaintedUntil ? PaintedPercent : 0;
+
         /// <summary>Percent added to max shield by an allied Bulwark Shield Generator until <see cref="ShieldAuraUntil"/>.</summary>
         public int ShieldAuraPercent { get; set; }
         public DateTime ShieldAuraUntil { get; set; }

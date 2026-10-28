@@ -117,6 +117,21 @@ namespace SWLOR.Game.Server.Feature.ShipModuleDefinition
                 case ShipModuleFamily.CloakingDevice:
                     CloakingDevice(step);
                     break;
+                case ShipModuleFamily.IonWeb:
+                    IonWeb(step);
+                    break;
+                case ShipModuleFamily.Interdictor:
+                    Interdictor(step);
+                    break;
+                case ShipModuleFamily.Jammer:
+                    HostileElectronicWarfare(step, Space.ApplyJam);
+                    break;
+                case ShipModuleFamily.TargetPainter:
+                    HostileElectronicWarfare(step, Space.ApplyPaint);
+                    break;
+                case ShipModuleFamily.Afterburner:
+                    Afterburner(step);
+                    break;
             }
         }
 
@@ -149,6 +164,11 @@ namespace SWLOR.Game.Server.Feature.ShipModuleDefinition
                 ShipModuleFamily.ProbeLauncher => ShipModuleType.ProbeLauncher,
                 ShipModuleFamily.DataAnalyzer => ShipModuleType.DataAnalyzer,
                 ShipModuleFamily.CloakingDevice => ShipModuleType.CloakingDevice,
+                ShipModuleFamily.IonWeb => ShipModuleType.IonWeb,
+                ShipModuleFamily.Interdictor => ShipModuleType.Interdictor,
+                ShipModuleFamily.Jammer => ShipModuleType.Jammer,
+                ShipModuleFamily.TargetPainter => ShipModuleType.TargetPainter,
+                ShipModuleFamily.Afterburner => ShipModuleType.Afterburner,
                 _ => ShipModuleType.Passive,
             };
         }
@@ -363,6 +383,71 @@ namespace SWLOR.Game.Server.Feature.ShipModuleDefinition
                 .MaxDistance(SelfRange)
                 .ValidationAction((activator, status, _, _, _) => Space.CloakError(activator, status))
                 .ActivatedAction((activator, status, _, _, _) => Space.RunCloakCycle(activator, status, Effective(step)));
+        }
+
+        /// <summary>
+        /// An Ion Web (W11k): slows the ship's target every cycle. The Interceptor role webs harder and farther, the
+        /// Republic Scout farther still, and the Barracuda shrugs webs off.
+        /// </summary>
+        private void IonWeb(ShipModuleStep step)
+        {
+            _builder
+                .MaxDistance((_, status, _, _, _) => Space.GetIonWebRange(status, step.Range))
+                .ValidTargetType(ObjectType.Creature)
+                .ValidationAction((activator, _, target, targetStatus, _) => Space.IonWebError(activator, target, targetStatus))
+                .ActivatedAction((activator, status, target, _, _) =>
+                {
+                    Space.ApplyIonWeb(activator, status, target, Effective(step));
+                    TauntTarget(activator, target);
+                });
+        }
+
+        /// <summary>
+        /// An Interdictor (W11k): holds the ship's target every cycle, so it cannot jump, dock, cloak or run an
+        /// Afterburner. The Interceptor role reaches farther.
+        /// </summary>
+        private void Interdictor(ShipModuleStep step)
+        {
+            _builder
+                .MaxDistance((_, status, _, _, _) => Space.GetInterdictorRange(status, step.Range))
+                .ValidTargetType(ObjectType.Creature)
+                .ValidationAction((activator, _, target, targetStatus, _) => Space.HostileElectronicWarfareError(activator, target, targetStatus))
+                .ActivatedAction((activator, _, target, targetStatus, _) =>
+                {
+                    Space.ApplyInterdiction(activator, target, targetStatus, Effective(step));
+                    TauntTarget(activator, target);
+                });
+        }
+
+        /// <summary>A Jammer or Target Painter (W11k): renews its debuff on the ship's target every cycle.</summary>
+        private void HostileElectronicWarfare(ShipModuleStep step, System.Action<uint, uint, ShipStatus, ShipModuleStep> apply)
+        {
+            _builder
+                .MaxDistance(step.Range)
+                .ValidTargetType(ObjectType.Creature)
+                .ValidationAction((activator, _, target, targetStatus, _) => Space.HostileElectronicWarfareError(activator, target, targetStatus))
+                .ActivatedAction((activator, _, target, targetStatus, _) =>
+                {
+                    apply(activator, target, targetStatus, Effective(step));
+                    TauntTarget(activator, target);
+                });
+        }
+
+        /// <summary>The E-War target puts the ship on its enmity table, so supporting it credits the target (as the E-War Array does).</summary>
+        private static void TauntTarget(uint activator, uint target)
+        {
+            Enmity.ModifyEnmity(activator, target, 100);
+            ShipModuleActions.AddSupportCombatPoint(activator, activator);
+        }
+
+        /// <summary>An Afterburner (W11k): + speed while on; an Interdictor's hold shuts it down.</summary>
+        private void Afterburner(ShipModuleStep step)
+        {
+            _builder
+                .CanTargetSelf()
+                .MaxDistance(SelfRange)
+                .ValidationAction((_, status, _, _, _) => Space.AfterburnerError(status))
+                .ActivatedAction((activator, status, _, _, _) => Space.RunAfterburnerCycle(activator, status));
         }
 
         private void EWarArray(ShipModuleStep step)

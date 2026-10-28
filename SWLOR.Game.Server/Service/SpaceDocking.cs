@@ -254,6 +254,10 @@ namespace SWLOR.Game.Server.Service
             if (GetIsDead(player) || _pendingShipLaunches.ContainsKey(player))
                 return false;
 
+            // An Interdictor's hold keeps a ship from docking (W11k).
+            if (RefuseWhileInterdicted(player))
+                return false;
+
             var (target, _) = GetCurrentTarget(player);
             if (!TryGetFlownShip(target, out var host))
             {

@@ -119,7 +119,8 @@ namespace SWLOR.Game.Server.Service.SpaceService
             if (activation != ShipModuleActivation.Toggle)
                 return DroidCrewTask.None;
 
-            if (ShipToggleRules.IsOffensive(type))
+            // The Ion Web, Interdictor, Jammer and Target Painter work at the pilot's target, as weapons do (W11k).
+            if (ShipToggleRules.TargetsEnemy(type))
                 return DroidCrewTask.Weapon;
 
             return type switch

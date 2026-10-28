@@ -110,6 +110,10 @@ namespace SWLOR.Game.Server.Service
             if (hull == null)
                 return ShipCloakRules.HullMessage;
 
+            // An Interdictor's hold keeps a ship from cloaking, and ends a cloak within a cycle (W11k).
+            if (status.IsInterdicted(DateTime.UtcNow))
+                return ShipElectronicWarfareRules.InterdictedMessage;
+
             var hasCargo = GetIsPC(ship) && Trade.GetUsedVolume(Trade.GetActiveShip(ship)) > 0;
             return ShipCloakRules.GetStartError(hull.Size, hull.Role, hasCargo);
         }

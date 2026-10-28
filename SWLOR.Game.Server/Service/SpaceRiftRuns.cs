@@ -40,6 +40,11 @@ namespace SWLOR.Game.Server.Service
         /// <summary>Why a Rift Key cannot open a pocket for this user now, or empty.</summary>
         public static string GetRiftKeyRefusal(uint user, uint item)
         {
+            // An Interdictor's hold keeps a ship from opening a pocket (W11k).
+            var hold = GetInterdictionRefusal(user);
+            if (!string.IsNullOrEmpty(hold))
+                return hold;
+
             var refusal = RiftRunRules.GetStartRefusal(
                 RiftRunRules.FindKey(GetResRef(item)),
                 IsPlayerInSpaceMode(user),

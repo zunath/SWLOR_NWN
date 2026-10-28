@@ -512,7 +512,8 @@ public class TradeStandingTests
         var hulls = SpaceSquadCatalog.Roles.Select(x => x.Hull).ToList();
         hulls.Should().Contain(new[] { "pirint", "pirftr", "pirgun", "convoy", "escort" });
 
-        for (var faction = 0; faction < SpaceSquadCatalog.Factions.Count; faction++)
+        // The six faction tiers; the Rift Raiders (index 6) fly as pirates themselves and run no convoys.
+        for (var faction = 0; faction < 6; faction++)
         {
             foreach (var hull in new[] { "pirint", "pirftr", "pirgun", "convoy", "escort" })
             {

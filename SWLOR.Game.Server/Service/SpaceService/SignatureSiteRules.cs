@@ -14,8 +14,8 @@ namespace SWLOR.Game.Server.Service.SpaceService
             ScanningTuning.Areas.FirstOrDefault(x => x.AreaResref == areaResref);
 
         /// <summary>
-        /// The type weights in an area of this tier. Gas sites need tier 3 gas clouds; rifts have no weight until Wild
-        /// Space exists.
+        /// The type weights in an area of this tier. Gas sites need tier 3 gas clouds. Rifts have no weight: the rift
+        /// network (<see cref="RiftRules"/>) places them, so they never take a site signature's place.
         /// </summary>
         public static Dictionary<SignatureType, int> GetWeights(int tier)
         {
@@ -45,10 +45,10 @@ namespace SWLOR.Game.Server.Service.SpaceService
 
         /// <summary>
         /// A new hidden signature of an area, which fades after <see cref="ScanningTuning.HiddenLifetimeSeconds"/>. Only a
-        /// cache site can be <paramref name="locked"/>.
+        /// cache site can be <paramref name="locked"/>. A Wild Space signature is tier 5 content at tier 5.5 signal.
         /// </summary>
         public static ScanSignature Create(string id, string areaResref, int tier, SignatureType type, float x, float y, float z, DateTime now,
-            bool locked = false)
+            bool locked = false, bool wildSpace = false)
         {
             return new ScanSignature
             {
@@ -61,8 +61,34 @@ namespace SWLOR.Game.Server.Service.SpaceService
                 Z = z,
                 CreatedAt = now,
                 ExpiresAt = now.AddSeconds(ScanningTuning.HiddenLifetimeSeconds),
-                SignalRequired = ScanningRules.SignalRequired(type, tier),
+                SignalRequired = ScanningRules.SignalRequired(type, tier, wildSpace),
                 Locked = locked && type == SignatureType.CacheSite,
+                WildSpace = wildSpace,
+            };
+        }
+
+        /// <summary>
+        /// One end of a rift: a hidden Rift signature that lasts until the rift collapses (the rift network removes it).
+        /// A rift leads into or out of Wild Space, so its signal is tier 5.5's.
+        /// </summary>
+        public static ScanSignature CreateRiftEnd(string id, string areaResref, string riftId, float x, float y, float z, DateTime now,
+            DateTime collapsesAt, string detail)
+        {
+            return new ScanSignature
+            {
+                Id = id,
+                AreaResref = areaResref,
+                Tier = WildSpaceTuning.ContentTier,
+                Type = SignatureType.Rift,
+                X = x,
+                Y = y,
+                Z = z,
+                CreatedAt = now,
+                ExpiresAt = collapsesAt,
+                SignalRequired = ScanningRules.SignalRequired(SignatureType.Rift, WildSpaceTuning.ContentTier, true),
+                WildSpace = true,
+                RiftId = riftId,
+                RiftDetail = detail,
             };
         }
 
@@ -74,6 +100,10 @@ namespace SWLOR.Game.Server.Service.SpaceService
         {
             if (signature.Completed)
                 return true;
+
+            // A rift end lasts as long as its rift; the rift network ends it.
+            if (signature.Type == SignatureType.Rift)
+                return false;
 
             return signature.RevealedAt is { } revealed
                 ? now >= revealed.AddSeconds(ScanningTuning.SiteLifetimeSeconds)
@@ -89,8 +119,9 @@ namespace SWLOR.Game.Server.Service.SpaceService
 
         private static int TierIndex(int tier) => Math.Clamp(tier, 1, 6);
 
-        /// <summary>The creature tags of a combat site's squad.</summary>
-        public static IReadOnlyList<string> CombatSquad(int tier) => ScanningTuning.CombatSquads[TierIndex(tier)];
+        /// <summary>The creature tags of a combat site's squad: Rift Raiders in Wild Space.</summary>
+        public static IReadOnlyList<string> CombatSquad(int tier, bool wildSpace = false) =>
+            wildSpace ? ScanningTuning.WildSpaceCombatSquad : ScanningTuning.CombatSquads[TierIndex(tier)];
 
         /// <summary>The creature tags of a derelict's defenses.</summary>
         public static IReadOnlyList<string> DerelictDefenses(int tier) => ScanningTuning.DerelictDefenses[TierIndex(tier)];
@@ -105,8 +136,9 @@ namespace SWLOR.Game.Server.Service.SpaceService
         /// <summary>The credits in a locked cache, paid when it is sliced open.</summary>
         public static int LockedCacheCredits(int tier) => ScanningTuning.LockedCacheCredits[TierIndex(tier)];
 
-        /// <summary>The loot table a site cache pulls its items from.</summary>
-        public static string CacheLootTable(int tier) => $"SPACE_ELITE_T{TierIndex(tier)}";
+        /// <summary>The loot table a site cache pulls its items from: the Rift Raiders' elite table in Wild Space.</summary>
+        public static string CacheLootTable(int tier, bool wildSpace = false) =>
+            wildSpace ? ScanningTuning.WildSpaceCacheTable : $"SPACE_ELITE_T{TierIndex(tier)}";
 
         /// <summary>Where object <paramref name="index"/> of <paramref name="count"/> stands around a site, on a ring.</summary>
         public static (float X, float Y) RingOffset(int index, int count, float radius)

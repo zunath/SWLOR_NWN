@@ -163,11 +163,11 @@ namespace SWLOR.Game.Server.Feature.ShipModuleDefinition
                     ShipSalvageRules.RollsRareFind(wreck.Difficulty, Random.Next(100) - traitRareFind))
                 {
                     // Some rare finds are a schematic or rare torpedoes; the rest come from the tier's table.
-                    var reward = ShipRareFindRules.Roll(wreck.Tier, wreck.Difficulty, Random.Next);
+                    var reward = ShipRareFindRules.Roll(wreck.Tier, wreck.Difficulty, Random.Next, wreck.WildSpace);
                     if (reward.Count > 0)
                         yield.AddRange(reward);
                     else
-                        yield.Add(Loot.GetLootTableByName(ShipSalvageRules.RareFindTable(wreck.Tier, wreck.Difficulty)).GetRandomItem().Resref);
+                        yield.Add(Loot.GetLootTableByName(ShipSalvageRules.RareFindTable(wreck.Tier, wreck.Difficulty, wreck.WildSpace)).GetRandomItem().Resref);
                 }
 
                 var areaAurodium = GetLocalInt(GetArea(target), ShipSalvageRules.AurodiumPercentVariable);
@@ -197,8 +197,10 @@ namespace SWLOR.Game.Server.Feature.ShipModuleDefinition
         private static List<(string Resref, ShipComponentTraitType Trait)> RollSalvagedComponents(uint activator, ShipWreck wreck)
         {
             var components = new List<(string Resref, ShipComponentTraitType Trait)>();
-            var rolled = ShipTraitRules.RollSalvagedComponent(
-                wreck.Tier, wreck.Difficulty, Stat.GetStatAdjustment(activator, StatType.SpaceRareTraitChance), Random.Next);
+            // Wild Space wrecks roll rare traits more often (plan section 23).
+            var rareTraitChance = Stat.GetStatAdjustment(activator, StatType.SpaceRareTraitChance) +
+                                  (wreck.WildSpace ? WildSpaceTuning.RareTraitBonusPercent : 0);
+            var rolled = ShipTraitRules.RollSalvagedComponent(wreck.Tier, wreck.Difficulty, rareTraitChance, Random.Next);
             if (rolled != null)
                 components.Add(rolled.Value);
 

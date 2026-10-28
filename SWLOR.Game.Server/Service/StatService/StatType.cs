@@ -6636,6 +6636,29 @@ namespace SWLOR.Game.Server.Service.StatService
         [StatType(StatTypeCategory.BeneficialWhenPositive)]
         SpaceScanStrengthPercent = 1221,
 
+        /// <summary>
+        /// Percent adjustment to the shield points a ship loses per point of damage its shield absorbs, read only by
+        /// ship combat (Wild Space environments). Negative values make the shield stronger.
+        /// </summary>
+        [StatType(StatTypeCategory.BeneficialWhenNegative)]
+        SpaceShieldDamageTakenPercentAdjustment = 1280,
+
+        /// <summary>Percent adjustment to a ship's capacitor regen (Wild Space environments).</summary>
+        [StatType(StatTypeCategory.BeneficialWhenPositive)]
+        SpaceCapacitorRegenPercentAdjustment = 1281,
+
+        /// <summary>Percent added to the damage of a ship's EM shots (Wild Space environments).</summary>
+        [StatType(StatTypeCategory.BeneficialWhenPositive)]
+        SpaceEmDamagePercentAdjustment = 1282,
+
+        /// <summary>Percent added to the damage of a ship's ability shots, its overcharged shots and volleys (Wild Space environments).</summary>
+        [StatType(StatTypeCategory.BeneficialWhenPositive)]
+        SpaceAbilityDamagePercentAdjustment = 1283,
+
+        /// <summary>Percent adjustment to the capacitor a ship's modules use (Wild Space environments). Negative values are cheaper.</summary>
+        [StatType(StatTypeCategory.BeneficialWhenNegative)]
+        SpaceCapacitorCostPercentAdjustment = 1284,
+
 
     }
 

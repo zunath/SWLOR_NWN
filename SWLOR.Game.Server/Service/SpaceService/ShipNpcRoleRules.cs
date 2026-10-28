@@ -166,11 +166,14 @@ namespace SWLOR.Game.Server.Service.SpaceService
         }
 
         /// <summary>
-        /// The fighter preset a carrier launches: the Fighter of its faction tier ("t3carrier" launches "t3fighter").
-        /// Empty for a tag with no tier prefix.
+        /// The fighter preset a carrier launches: the Fighter of its faction tier ("t3carrier" launches "t3fighter"),
+        /// or a Rift Raider fighter from a Rift Raider carrier. Empty for a tag with no tier prefix.
         /// </summary>
         public static string FighterTag(string carrierTag)
         {
+            if (WildSpaceRules.IsRiftRaider(carrierTag))
+                return "rrfighter";
+
             if (string.IsNullOrWhiteSpace(carrierTag) || carrierTag.Length < 2 ||
                 carrierTag[0] != 't' || !char.IsDigit(carrierTag[1]))
             {

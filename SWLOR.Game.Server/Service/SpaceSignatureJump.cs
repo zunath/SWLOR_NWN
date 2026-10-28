@@ -53,7 +53,10 @@ namespace SWLOR.Game.Server.Service
             BeginSignatureJump(player, signature.Id);
         }
 
-        /// <summary>The nearest site the player's party has located, other than one the ship is already at.</summary>
+        /// <summary>
+        /// The nearest site the player's party has located, other than one the ship is already at. A located rift counts
+        /// at any distance: jumping to it crosses it.
+        /// </summary>
         private static ScanSignature FindNearestJumpableSignature(uint player)
         {
             var party = GetScanPartyIds(player);
@@ -61,7 +64,7 @@ namespace SWLOR.Game.Server.Service
             return GetSignatures(GetResRef(GetArea(player)))
                 .Where(x => ScanningRules.CanJump(x, party))
                 .Select(x => (Signature: x, Distance: Distance(position, x)))
-                .Where(x => x.Distance > AtSiteMeters)
+                .Where(x => x.Distance > AtSiteMeters || x.Signature.Type == SignatureType.Rift)
                 .OrderBy(x => x.Distance)
                 .Select(x => x.Signature)
                 .FirstOrDefault();
@@ -120,6 +123,20 @@ namespace SWLOR.Game.Server.Service
                 return false;
             }
 
+            // A rift turns away a hull it cannot carry before the drive spools.
+            if (signature.Type == SignatureType.Rift)
+            {
+                var status = GetShipStatus(player);
+                var riftRefusal = status == null
+                    ? RiftPassageRefusal.Collapsed
+                    : RiftRules.GetPassageRefusal(FindRift(signature.RiftId), status.Size, DateTime.UtcNow);
+                if (riftRefusal != RiftPassageRefusal.None)
+                {
+                    SendMessageToPC(player, ColorToken.Red(RiftRules.Message(riftRefusal)));
+                    return false;
+                }
+            }
+
             var pending = new PendingSignatureJump { SignatureId = signatureId, StartedAt = DateTime.UtcNow };
             _signatureJumps[player] = pending;
             ApplyEffectToObject(DurationType.Temporary, EffectVisualEffect(VisualEffect.Vfx_Dur_Glow_Light_Blue), player, (float)ScanningTuning.JumpSpoolSeconds);
@@ -155,6 +172,12 @@ namespace SWLOR.Game.Server.Service
             if (refusal != SignatureJumpRefusal.None)
             {
                 SendMessageToPC(player, ColorToken.Red(SignatureJumpRules.Message(refusal)));
+                return;
+            }
+
+            if (signature.Type == SignatureType.Rift)
+            {
+                CrossRift(player, signature);
                 return;
             }
 

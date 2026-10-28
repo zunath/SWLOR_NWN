@@ -110,10 +110,11 @@ namespace SWLOR.Game.Server.Service.SlicingService
         /// A space source's success (plan section 24): its credits at 75-125% and one bonus pick from its table.
         /// <paramref name="next"/> returns a number from 0 to its argument minus 1. A schematic pick whose pool is still
         /// empty, and an agent intel pick while <paramref name="agentIntelAvailable"/> is false, give
-        /// <see cref="SpaceSlicingTuning.FallbackKind"/> instead. A source with no table (customs) gives nothing.
+        /// <see cref="SpaceSlicingTuning.FallbackKind"/> instead. A source with no table (customs) gives nothing. A
+        /// <paramref name="wildSpace"/> target's schematic pools include the Wild Space only schematics.
         /// </summary>
         public static IReadOnlyList<SpaceSlicingReward> RollSpace(
-            SlicingSourceType source, int tier, Func<int, int> next, bool agentIntelAvailable = false)
+            SlicingSourceType source, int tier, Func<int, int> next, bool agentIntelAvailable = false, bool wildSpace = false)
         {
             var rewards = new List<SpaceSlicingReward>();
             if (!SlicingRewardCatalog.HasSpaceTable(source))
@@ -144,7 +145,7 @@ namespace SWLOR.Game.Server.Service.SlicingService
                 pick -= weight;
             }
 
-            rewards.Add(RollSpaceKind(kind, kind, tier, baseCredits, next, agentIntelAvailable));
+            rewards.Add(RollSpaceKind(kind, kind, tier, baseCredits, next, agentIntelAvailable, wildSpace));
             return rewards;
         }
 
@@ -166,7 +167,8 @@ namespace SWLOR.Game.Server.Service.SlicingService
             int tier,
             int baseCredits,
             Func<int, int> next,
-            bool agentIntelAvailable)
+            bool agentIntelAvailable,
+            bool wildSpace)
         {
             switch (kind)
             {
@@ -182,9 +184,9 @@ namespace SWLOR.Game.Server.Service.SlicingService
                 case SpaceSlicingRewardKind.DesignSchematic:
                 case SpaceSlicingRewardKind.RecipeUnlock:
                 case SpaceSlicingRewardKind.ShipSchematic:
-                    var pool = GetSchematicPool(kind, tier);
+                    var pool = GetSchematicPool(kind, tier, wildSpace);
                     if (pool.Count == 0)
-                        return RollSpaceKind(SpaceSlicingTuning.FallbackKind, picked, tier, baseCredits, next, agentIntelAvailable);
+                        return RollSpaceKind(SpaceSlicingTuning.FallbackKind, picked, tier, baseCredits, next, agentIntelAvailable, wildSpace);
 
                     return new SpaceSlicingReward { Kind = kind, PickedKind = picked, Resref = pool[next(pool.Count)] };
                 case SpaceSlicingRewardKind.PrototypeTech:
@@ -192,7 +194,7 @@ namespace SWLOR.Game.Server.Service.SlicingService
                 case SpaceSlicingRewardKind.AgentIntel:
                     return agentIntelAvailable
                         ? new SpaceSlicingReward { Kind = kind, PickedKind = picked }
-                        : RollSpaceKind(SpaceSlicingTuning.FallbackKind, picked, tier, baseCredits, next, false);
+                        : RollSpaceKind(SpaceSlicingTuning.FallbackKind, picked, tier, baseCredits, next, false, wildSpace);
                 default:
                     throw new ArgumentOutOfRangeException(nameof(kind), kind, "Unknown space slicing reward kind.");
             }
@@ -218,15 +220,16 @@ namespace SWLOR.Game.Server.Service.SlicingService
         /// <summary>
         /// The schematic items a pick of a kind can give at a slicing tier (the blueprint update's items, W9b): Design
         /// and Ship Schematics for ships of the tier or lower, as salvage rare finds give them; Module Schematics (recipe
-        /// unlocks of the named rank-50 modules) from <see cref="SpaceSlicingTuning.RecipeUnlockMinimumTier"/>.
+        /// unlocks of the named rank-50 modules) from <see cref="SpaceSlicingTuning.RecipeUnlockMinimumTier"/>. Wild Space
+        /// targets add the Wild Space only schematics.
         /// </summary>
-        public static IReadOnlyList<string> GetSchematicPool(SpaceSlicingRewardKind kind, int tier)
+        public static IReadOnlyList<string> GetSchematicPool(SpaceSlicingRewardKind kind, int tier, bool wildSpace = false)
         {
             tier = Math.Clamp(tier, 1, SpaceSlicingTuning.MaximumTier);
             return kind switch
             {
-                SpaceSlicingRewardKind.DesignSchematic => ShipRareFindRules.Designs(tier).Select(x => x.Resref).ToList(),
-                SpaceSlicingRewardKind.ShipSchematic => ShipRareFindRules.ShipSchematics(tier).Select(x => x.Resref).ToList(),
+                SpaceSlicingRewardKind.DesignSchematic => ShipRareFindRules.Designs(tier, wildSpace).Select(x => x.Resref).ToList(),
+                SpaceSlicingRewardKind.ShipSchematic => ShipRareFindRules.ShipSchematics(tier, wildSpace).Select(x => x.Resref).ToList(),
                 SpaceSlicingRewardKind.RecipeUnlock => tier >= SpaceSlicingTuning.RecipeUnlockMinimumTier
                     ? RevampRewardCatalog.ModuleSchematics.Select(x => x.Resref).ToList()
                     : Array.Empty<string>(),

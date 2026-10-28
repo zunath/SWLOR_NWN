@@ -345,7 +345,9 @@ public class ScanningTests
     [Test]
     public void Spawning_CoversTheOrbitsAndZones_WithMoreSignaturesInZones()
     {
-        ScanningTuning.Areas.Should().HaveCount(13);
+        // The 10 orbits, the 3 zones and the 6 Wild Space systems (W12c).
+        ScanningTuning.Areas.Should().HaveCount(19);
+        ScanningTuning.Areas.Count(x => x.WildSpace).Should().Be(6);
         ScanningTuning.Areas.Where(x => x.AreaResref is "space_viscbelt" or "space_midrimneb" or "space_korrdebris")
             .Should().OnlyContain(x => x.Signatures == 4);
         ScanningTuning.Areas.Where(x => x.AreaResref is not ("space_viscbelt" or "space_midrimneb" or "space_korrdebris"))
@@ -355,7 +357,7 @@ public class ScanningTests
     }
 
     [Test]
-    public void Spawning_DataSitesButNoRiftsYet_GasFromTierThree()
+    public void Spawning_DataSitesButNoRandomRifts_GasFromTierThree()
     {
         for (var tier = 1; tier <= 6; tier++)
         {

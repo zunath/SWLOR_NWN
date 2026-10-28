@@ -35,7 +35,7 @@ namespace SWLOR.Game.Server.Service
             switch (signature.Type)
             {
                 case SignatureType.CombatSite:
-                    SpawnSiteRing(signature, area, center, SignatureSiteRules.CombatSquad(signature.Tier), ObjectType.Creature, SquadRingMeters);
+                    SpawnSiteRing(signature, area, center, SignatureSiteRules.CombatSquad(signature.Tier, signature.WildSpace), ObjectType.Creature, SquadRingMeters);
                     break;
                 case SignatureType.GasSite:
                     var clouds = Enumerable.Repeat(SignatureSiteRules.GasCloud(signature.Tier), ScanningTuning.GasSiteClouds).ToList();
@@ -56,6 +56,9 @@ namespace SWLOR.Game.Server.Service
                     break;
                 case SignatureType.DataSite:
                     SpawnDataCans(signature, area, center);
+                    break;
+                case SignatureType.Rift:
+                    // A rift spawns nothing: the party that located it crosses it with Jump to Signature.
                     break;
             }
 
@@ -209,7 +212,7 @@ namespace SWLOR.Game.Server.Service
             if (credits > 0)
                 GiveGoldToCreature(user, credits);
 
-            var table = Loot.GetLootTableByName(SignatureSiteRules.CacheLootTable(signature.Tier));
+            var table = Loot.GetLootTableByName(SignatureSiteRules.CacheLootTable(signature.Tier, signature.WildSpace));
             var items = Enumerable.Range(0, ScanningTuning.CacheItemPulls).Select(_ => table.GetRandomItem().Resref).ToList();
             ShipHold.DeliverYield(user, items);
 

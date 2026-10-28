@@ -371,5 +371,22 @@ out.append(f"Mean time to kill (hull + shield left), every fit on the same rank-
            f"within the ground T5 time, slowest / fastest <= 1.5x): worst spread {worst_spread:.2f}x, slowest "
            f"{slowest_ratio:.0%} of the ground T5 time. Level-50 Elite Fighter: named {cell(elite_named)}, rank 45 {cell(elite_r45)}.\n")
 
+# N. Wild Space environments (W12c)
+import wildspace  # noqa: E402
+
+out.append("## N. Wild Space environments: a named-fit Fighter vs each level 52 Normal role, the environment on both ships\n")
+env_base, env_rows = wildspace.environment_rows(RUNS)
+worst_env = max(abs(d["worst"]) for d in env_rows.values())
+table(["Environment", "Effects"] + m.NORMAL_ROLES + ["Mean change", "Not modeled"],
+      [[wildspace.ENVIRONMENT_NAMES[e], wildspace.environment_text(e)] + [f"{d['deltas'][k]:+.1f}%" for k in m.NORMAL_ROLES]
+       + [f"{d['mean']:+.1f}%", d["note"]] for e, d in env_rows.items()])
+out.append(f"Change in mean time to kill against the same fight with no environment (baseline "
+           f"{', '.join(f'{k} {v:.0f}s' for k, v in env_base.items())}). Every ship in a system takes its environment, so a "
+           f"change helps and hurts both sides. Target: no environment moves a fight more than about +-{wildspace.FIGHT_BAND}% "
+           f"(worst {worst_env:.1f}%, {'met' if worst_env <= wildspace.FIGHT_BAND + 0.5 else 'NOT MET'}). Speed, ability damage "
+           "and capacitor use do not change an auto-fire fight here: the Black Hole's speed matters for kiting and escape, the "
+           "Red Giant's ability damage only for pilots who use abilities (about a quarter of a fit's damage, so about 5% "
+           "faster kills), and a laser fit's capacitor does not run dry in these fights.\n")
+
 Path(m.HERE / "checks.md").write_text("\n".join(out))
 print("\n".join(out))

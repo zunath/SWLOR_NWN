@@ -25,7 +25,7 @@ internal static class StoredItemSweep
     internal static void Migrate(int version)
     {
         var progress = new ServerMigrationProgress(version, CountSections());
-        var space = version >= LegacySpaceItemsVersion ? new LegacySpaceItemSweep() : null;
+        var space = version >= LegacySpaceItemsVersion ? new LegacySpaceItemSweep(version) : null;
         var changed = Sweep(new ParallelStoredItemPass(progress), SavedDataStoredItemConverter.Instance, space);
         Log.Write(LogGroup.Migration, $"Migration #{version}: Updated item artwork, loot stats and equipment slots in {changed} stored records.", true);
         if (space == null)
@@ -59,19 +59,19 @@ internal static class StoredItemSweep
         changed += pass.Process<InventoryItem>(item =>
         {
             var itemChanged = MigrateItem(converter, item.Resref, item.Data, value => item.Data = value, item.IconResref, value => item.IconResref = value);
-            return itemChanged | (space?.Migrate(item.Data, value => item.Data = value, item.PlayerId,
+            return itemChanged | (space?.Migrate(item.Data, value => item.Data = value, item.PlayerId, $"{nameof(InventoryItem)}:{item.Id}",
                 (blueprint, resref) => (item.Name, item.Tag, item.Resref, item.IconResref) = (blueprint.Name, resref, resref, blueprint.IconResref),
                 credits => space.QueueRemoval<InventoryItem>(item.Id, item.PlayerId, credits)) ?? false);
-        });
+        }, space == null ? null : space.Flush);
         changed += pass.Process<MarketItem>(item =>
         {
             var itemChanged = MigrateItem(converter, item.Resref, item.Data, value => item.Data = value, item.IconResref, value => item.IconResref = value,
                 listing => item.Category = listing.Category);
-            return itemChanged | (space?.Migrate(item.Data, value => item.Data = value, item.PlayerId,
+            return itemChanged | (space?.Migrate(item.Data, value => item.Data = value, item.PlayerId, $"{nameof(MarketItem)}:{item.Id}",
                 (blueprint, resref) => (item.Name, item.Tag, item.Resref, item.IconResref, item.Category) =
                     (blueprint.Name, resref, resref, blueprint.IconResref, blueprint.Category),
                 credits => space.QueueRemoval<MarketItem>(item.Id, item.PlayerId, credits)) ?? false);
-        });
+        }, space == null ? null : space.Flush);
         changed += pass.Process<WorldPropertyCategory>(category =>
         {
             var categoryChanged = false;
@@ -83,12 +83,13 @@ internal static class StoredItemSweep
                         continue;
                     var removed = false;
                     categoryChanged |= space.Migrate(item.Data, value => item.Data = value, LegacySpaceItemSweep.ForProperty(category.ParentPropertyId),
+                        $"{nameof(WorldPropertyCategory)}:{category.Id}:{key}",
                         (blueprint, resref) => (item.Name, item.Tag, item.Resref, item.IconResref) = (blueprint.Name, resref, resref, blueprint.IconResref),
                         _ => removed = category.Items.Remove(key));
                     categoryChanged |= removed;
                 }
             return categoryChanged;
-        });
+        }, space == null ? null : space.Flush);
         changed += pass.Process<WorldProperty>(property => MigrateData(converter, property.SerializedItem, value => property.SerializedItem = value) |
             (space?.Migrate(property.SerializedItem, value => property.SerializedItem = value, null) ?? false));
         changed += pass.Process<ResearchJob>(job => MigrateData(converter, job.SerializedItem, value => job.SerializedItem = value) |
@@ -134,7 +135,7 @@ internal static class StoredItemSweep
             foreach (var item in items)
             {
                 changed |= MigrateItem(converter, item.Resref, item.Data, value => item.Data = value, item.IconResref, value => item.IconResref = value);
-                changed |= space?.Migrate(item.Data, value => item.Data = value, null,
+                changed |= space?.Migrate(item.Data, value => item.Data = value, null, null,
                     (blueprint, resref) => (item.Name, item.Resref, item.IconResref) = (blueprint.Name, resref, blueprint.IconResref)) ?? false;
             }
         return changed;

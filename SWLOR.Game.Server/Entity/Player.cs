@@ -259,6 +259,13 @@ namespace SWLOR.Game.Server.Entity
         /// "ship deed tag:appearance" (<c>HullDesignRules.Key</c>). Older records load empty.
         /// </summary>
         public Dictionary<string, DateTime> UnlockedHullDesigns { get; set; } = new();
+
+        /// <summary>
+        /// Keys of the retired space item records already refunded to this character's market till by server migration
+        /// #30 (<c>LegacySpaceItemSweep.Pay</c>). A refund is written here with the credits in one save, before the
+        /// record it came from is converted, so a migration that stops partway never pays a record twice or loses it.
+        /// </summary>
+        public List<string> RetiredSpaceRefunds { get; set; } = new();
         public Dictionary<FeatType, DateTime> LearnedTechniques { get; set; }
         public List<FeatType> EquippedTechniques { get; set; }
         public List<MimicryLoadout> MimicryLoadouts { get; set; }

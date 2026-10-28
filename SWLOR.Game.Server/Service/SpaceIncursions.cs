@@ -45,8 +45,11 @@ namespace SWLOR.Game.Server.Service
         private static readonly Dictionary<string, IncursionAreaPhase> _incursionAreaPhases = new();
         private static readonly Dictionary<string, DateTime> _incursionNextSpawn = new();
         private static readonly Dictionary<string, List<uint>> _incursionBlockadeShips = new();
-        private static readonly Dictionary<uint, Dictionary<uint, double>> _incursionDamage = new();
-        private static readonly Dictionary<uint, uint> _incursionLastHit = new();
+        // Damage is keyed by the persistent player id of the pilot, not the temporary creature handle, so a pilot who
+        // logs out before the kill is still credited.
+        private static readonly Dictionary<uint, Dictionary<string, double>> _incursionDamage = new();
+        private static readonly Dictionary<uint, string> _incursionLastHit = new();
+        private static readonly Dictionary<string, string> _incursionPilotNames = new();
 
         [NWNEventHandler(ScriptName.OnModuleLoad)]
         public static void ScheduleIncursions()
@@ -415,6 +418,7 @@ namespace SWLOR.Game.Server.Service
             _incursionBlockadeShips.Clear();
             _incursionDamage.Clear();
             _incursionLastHit.Clear();
+            _incursionPilotNames.Clear();
             _incursionSpawned = false;
         }
 
@@ -446,14 +450,18 @@ namespace SWLOR.Game.Server.Service
                 return;
 
             var playerId = GetObjectUUID(player);
-            if (!IncursionRecord.PendingPayouts.Remove(playerId, out var payout))
+            if (!IncursionRecord.PendingPayouts.ContainsKey(playerId))
                 return;
 
-            SaveIncursions();
+            // The payout stays pending until delivery: a player who disconnects within the delay collects it at the next login.
             DelayCommand(6f, () =>
             {
-                if (GetIsObjectValid(player))
-                    DeliverIncursionPayout(player, payout);
+                var payout = IncursionRules.ClaimPending(IncursionRecord.PendingPayouts, playerId, GetIsObjectValid(player));
+                if (payout == null)
+                    return;
+
+                SaveIncursions();
+                DeliverIncursionPayout(player, payout);
             });
         }
 
@@ -491,12 +499,14 @@ namespace SWLOR.Game.Server.Service
             }
 
             var ship = GetFiringShip(attacker);
+            var pilotId = GetObjectUUID(ship);
+            _incursionPilotNames[pilotId] = GetName(ship);
             if (!_incursionDamage.TryGetValue(target, out var damage))
-                _incursionDamage[target] = damage = new Dictionary<uint, double>();
+                _incursionDamage[target] = damage = new Dictionary<string, double>();
 
-            damage.TryGetValue(ship, out var dealt);
-            damage[ship] = dealt + amount;
-            _incursionLastHit[target] = ship;
+            damage.TryGetValue(pilotId, out var dealt);
+            damage[pilotId] = dealt + amount;
+            _incursionLastHit[target] = pilotId;
         }
 
         /// <summary>A destroyed incursion ship's points go to the ships that damaged it, shared by the players aboard each.</summary>
@@ -515,21 +525,17 @@ namespace SWLOR.Game.Server.Service
 
             var tier = GetLocalInt(ship, IncursionTierVariable);
             var points = IncursionRules.KillPoints(_npcPresets.TryGetValue(GetTag(ship), out var preset) ? preset.Difficulty : "Normal");
-            foreach (var (pilot, share) in IncursionRules.SplitKill(damage, points, killer))
+            // A pilot still online shares the points with the crew aboard; one who logged out is credited by id and
+            // collects a pending payout when the region clears.
+            IncursionRules.CreditKill(incursion, tier, damage, points, killer, pilotId =>
             {
-                if (!GetIsObjectValid(pilot))
-                    continue;
+                var pilot = GetObjectByUUID(pilotId);
+                if (GetIsObjectValid(pilot) && GetIsPC(pilot))
+                    return GetShipCrewPlayers(pilot).Select(x => (GetObjectUUID(x), GetName(x))).ToList();
 
-                var aboard = GetShipCrewPlayers(pilot);
-                foreach (var player in aboard)
-                {
-                    var contribution = GetContribution(incursion, player);
-                    IncursionRules.AddPoints(contribution, tier, share / aboard.Count);
-                    contribution.Damage += (long)Math.Round(damage[pilot] / aboard.Count);
-                    if (pilot == killer)
-                        contribution.Kills++;
-                }
-            }
+                _incursionPilotNames.TryGetValue(pilotId, out var name);
+                return new List<(string Id, string Name)> { (pilotId, name ?? string.Empty) };
+            });
 
             _incursionDirty = true;
         }

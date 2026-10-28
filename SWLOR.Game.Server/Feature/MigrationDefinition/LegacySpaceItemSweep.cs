@@ -17,12 +17,14 @@ public sealed class LegacySpaceItemSweep
 {
     private const string PropertyOwnerPrefix = "property:";
 
-    private readonly ConcurrentDictionary<string, int> _credits = new();
-    private readonly ConcurrentDictionary<string, ConcurrentDictionary<string, byte>> _designs = new();
+    private readonly int _version;
+    private readonly ConcurrentBag<(string Owner, string Key, int Credits, string[] Designs)> _pending = new();
     private readonly ConcurrentBag<(Type RecordType, string Id, string OwnerId, int Credits)> _storedConfigurations = new();
+    private readonly HashSet<string> _paidOwners = new();
     private readonly LegacySpaceItemTally _totals = new();
     private readonly object _totalsLock = new();
 
+    public LegacySpaceItemSweep(int version = StoredItemSweep.LegacySpaceItemsVersion) => _version = version;
     public LegacySpaceItemTally Totals => _totals;
 
     /// <summary>
@@ -30,7 +32,7 @@ public sealed class LegacySpaceItemSweep
     /// is); a property id is passed as <see cref="ForProperty"/>. Returns whether the data changed; a stored
     /// configuration module is left in place and reported through <paramref name="rootConfiguration"/>.
     /// </summary>
-    public bool Migrate(string data, Action<string> setData, string ownerId, Action<LegacySpaceItemBlueprint, string> rootReplaced = null,
+    public bool Migrate(string data, Action<string> setData, string ownerId, string sourceKey = null, Action<LegacySpaceItemBlueprint, string> rootReplaced = null,
         Action<int> rootConfiguration = null)
     {
         var tally = new LegacySpaceItemTally();
@@ -47,13 +49,8 @@ public sealed class LegacySpaceItemSweep
             nestedCredits -= rootCredits;
             rootConfiguration?.Invoke(rootCredits);
         }
-        if (!string.IsNullOrWhiteSpace(ownerId))
-        {
-            if (nestedCredits > 0)
-                _credits.AddOrUpdate(ownerId, nestedCredits, (_, current) => current + nestedCredits);
-            foreach (var key in tally.HullDesigns)
-                _designs.GetOrAdd(ownerId, _ => new ConcurrentDictionary<string, byte>())[key] = 0;
-        }
+        if (!string.IsNullOrWhiteSpace(ownerId) && (nestedCredits > 0 || tally.HullDesigns.Count > 0))
+            _pending.Add((ownerId, (sourceKey ?? ownerId) + "#nested", Math.Max(0, nestedCredits), tally.HullDesigns.ToArray()));
         lock (_totalsLock)
             _totals.Add(tally);
         return changed;
@@ -67,50 +64,82 @@ public sealed class LegacySpaceItemSweep
         _storedConfigurations.Add((typeof(T), recordId, ownerId, credits));
 
     /// <summary>
-    /// Main thread: deletes queued configuration module records, then pays every owner and unlocks their designs.
-    /// Returns the number of players paid or given designs.
+    /// Main thread: pays the owners of queued configuration module records and whatever the pass still holds, then
+    /// deletes the records. Returns the number of players paid or given designs.
     /// </summary>
     public int Apply(int version)
     {
         foreach (var (recordType, id, ownerId, credits) in _storedConfigurations)
         {
-            if (recordType == typeof(InventoryItem))
-                DB.Delete<InventoryItem>(id);
-            else if (recordType == typeof(MarketItem))
-                DB.Delete<MarketItem>(id);
-            else
+            if (recordType != typeof(InventoryItem) && recordType != typeof(MarketItem))
                 throw new InvalidOperationException($"No removal is known for stored {recordType.Name} records.");
             if (!string.IsNullOrWhiteSpace(ownerId) && credits > 0)
-                _credits.AddOrUpdate(ownerId, credits, (_, current) => current + credits);
+                _pending.Add((ownerId, $"{recordType.Name}:{id}#root", credits, Array.Empty<string>()));
         }
-
-        var owners = _credits.Keys.Concat(_designs.Keys).Distinct().ToList();
-        var paid = 0;
-        foreach (var owner in owners)
+        // Owners are saved before the deletes: a stop in between leaves the module in place and its refund keyed.
+        Flush();
+        foreach (var (recordType, id, _, _) in _storedConfigurations)
         {
+            if (recordType == typeof(InventoryItem))
+                DB.Delete<InventoryItem>(id);
+            else
+                DB.Delete<MarketItem>(id);
+        }
+        return _paidOwners.Count;
+    }
+
+    /// <summary>
+    /// Main thread: pays every refund and design queued so far and saves each owner. The pass calls it before each
+    /// batch of converted records is saved, so a stop at any point leaves either the old item with its refund already
+    /// keyed (a rerun skips the payout) or the converted item with its refund paid.
+    /// </summary>
+    public void Flush()
+    {
+        var pending = new List<(string Owner, string Key, int Credits, string[] Designs)>();
+        while (_pending.TryTake(out var entry))
+            pending.Add(entry);
+        foreach (var owned in pending.GroupBy(x => x.Owner))
+        {
+            var owner = owned.Key;
             var playerId = owner;
             if (owner.StartsWith(PropertyOwnerPrefix, StringComparison.Ordinal))
                 playerId = DB.Get<WorldProperty>(owner[PropertyOwnerPrefix.Length..])?.OwnerPlayerId;
             var player = string.IsNullOrWhiteSpace(playerId) ? null : DB.Get<Player>(playerId);
-            var credits = _credits.TryGetValue(owner, out var owed) ? owed : 0;
             if (player == null)
             {
-                Log.Write(LogGroup.Migration, $"Migration #{version}: no player record for owner '{owner}'; {credits} configuration module credits were not paid.", true);
+                Log.Write(LogGroup.Migration, $"Migration #{_version}: no player record for owner '{owner}'; {owned.Sum(x => x.Credits)} configuration module credits were not paid.", true);
                 continue;
             }
-            if (Pay(player, credits, _designs.TryGetValue(owner, out var designs) ? designs.Keys : Array.Empty<string>()))
+            var changed = false;
+            foreach (var entry in owned)
+                changed |= Pay(player, entry.Credits, entry.Designs, entry.Credits > 0 ? entry.Key : null);
+            if (changed)
             {
                 DB.Set(player);
-                paid++;
+                _paidOwners.Add(owner);
             }
         }
-        return paid;
     }
 
-    /// <summary>Pays configuration module credits into a player's market till and unlocks Hull Designs. True when it changed the record.</summary>
-    public static bool Pay(Player player, int credits, IEnumerable<string> designs)
+    /// <summary>
+    /// Pays configuration module credits into a player market till and unlocks Hull Designs. True when it changed the
+    /// record. A <paramref name="refundKey"/> already in <see cref="Player.RetiredSpaceRefunds"/> is not paid again; a
+    /// new one is recorded with the credits, so one save carries both.
+    /// </summary>
+    public static bool Pay(Player player, int credits, IEnumerable<string> designs, string refundKey = null)
     {
         var changed = false;
+        if (refundKey != null)
+        {
+            player.RetiredSpaceRefunds ??= new List<string>();
+            if (player.RetiredSpaceRefunds.Contains(refundKey))
+                credits = 0;
+            else
+            {
+                player.RetiredSpaceRefunds.Add(refundKey);
+                changed = true;
+            }
+        }
         if (credits > 0)
         {
             player.MarketTill += credits;

@@ -72,8 +72,10 @@ namespace SWLOR.Game.Server.Feature.LootTableDefinition
                 .AddItem("cnt_spear", 1)
                 .AddItem("cnt_twinblade", 1)
                 .AddItem("cnt_katar", 1)
+                .AddItem("cnt_pglove", 1)
                 .AddItem("cnt_staff", 1)
                 .AddItem("cnt_pistol", 1)
+                .AddItem("cnt_twinpistol", 1)
                 .AddItem("cnt_rifle", 1)
                 .AddItem("cnt_shuriken", 1);
 
@@ -102,8 +104,10 @@ namespace SWLOR.Game.Server.Feature.LootTableDefinition
                 .AddItem("cnt_spear", 1)
                 .AddItem("cnt_twinblade", 1)
                 .AddItem("cnt_katar", 1)
+                .AddItem("cnt_pglove", 1)
                 .AddItem("cnt_staff", 1)
                 .AddItem("cnt_pistol", 1)
+                .AddItem("cnt_twinpistol", 1)
                 .AddItem("cnt_rifle", 1)
                 .AddItem("cnt_shuriken", 1)
                 .AddItem("gantry_cap", 1)

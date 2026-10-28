@@ -2,6 +2,7 @@ using System.Reflection;
 using FluentAssertions;
 using NUnit.Framework;
 using SWLOR.Game.Server.Core.Beamdog;
+using SWLOR.Game.Server.Feature.AppearanceDefinition.AppearancePreview;
 using SWLOR.Game.Server.Feature.GuiDefinition;
 using SWLOR.Game.Server.Feature.GuiDefinition.ViewModel;
 using SWLOR.Game.Server.Service.GuiService;
@@ -11,19 +12,46 @@ using SWLOR.NWN.API.NWScript.Enum.Item;
 namespace SWLOR.Game.Server.Tests.Service;
 
 /// <summary>
-/// Checks the constructed controls and their authored size budgets. The shared
-/// validator catches fatal height constraints, but intentionally does not report
-/// horizontal clipping or a picker placed inside a smaller palette partial.
-/// These tests do not claim to run the client's layout solver.
+/// Checks the constructed Appearance Editor controls: body map, colour column, part
+/// browser and its responsive grid partials. The shared validator catches fatal height
+/// constraints; these tests check bindings, event routing and authored size budgets.
+/// They do not claim to run the client's layout solver.
 /// </summary>
 public class AppearanceEditorLayoutTests
 {
+    private const string WindowMain = "%%WINDOW_MAIN%%";
+
     private GuiConstructedWindow _window;
     private IReadOnlyDictionary<string, IGuiWidget> _partials;
+
     private static readonly string[] EditorPanels =
     {
         AppearanceEditorViewModel.EditorMainPartial, AppearanceEditorViewModel.EditorArmorPartial,
-        AppearanceEditorViewModel.SettingsPartial, AppearanceEditorViewModel.EditorWeaponPartial
+        AppearanceEditorViewModel.EditorWeaponPartial, AppearanceEditorViewModel.SettingsPartial
+    };
+
+    private static readonly (string Partial, int Columns, int Rows)[] BrowserGrids =
+        Enumerable.Range(1, AppearanceEditorViewModel.MaxBrowserColumns)
+            .SelectMany(columns => Enumerable.Range(1, AppearanceEditorViewModel.MaxBrowserRows)
+                .Select(rows => (AppearanceEditorViewModel.BrowserGrid(columns, rows), columns, rows)))
+            .ToArray();
+
+    private static string FullHeightGrid(int columns) =>
+        AppearanceEditorViewModel.BrowserGrid(columns, AppearanceEditorViewModel.MaxBrowserRows);
+
+    private static readonly string[] AllPanels =
+        EditorPanels.Concat(BrowserGrids.Select(grid => grid.Partial)).ToArray();
+
+    private static readonly AppearanceEditorSlot[] ArmorOnlySlots =
+    {
+        AppearanceEditorSlot.Neck, AppearanceEditorSlot.Belt, AppearanceEditorSlot.Robe,
+        AppearanceEditorSlot.Cloak, AppearanceEditorSlot.RightShoulder, AppearanceEditorSlot.LeftShoulder
+    };
+
+    private static readonly AppearanceArmorColor[] Channels =
+    {
+        AppearanceArmorColor.Leather1, AppearanceArmorColor.Cloth1, AppearanceArmorColor.Metal1,
+        AppearanceArmorColor.Leather2, AppearanceArmorColor.Cloth2, AppearanceArmorColor.Metal2
     };
 
     [SetUp]
@@ -45,436 +73,583 @@ public class AppearanceEditorLayoutTests
         _partials = authoredWindow.PartialViews;
     }
 
+    // ------------------------------------------------------------------ whole window
+
     [Test]
-    public void WeaponsContainOnlyPartControlsWithoutReservedTintSpace()
+    public void EveryPartialIsDefinedAndHasNoLayoutFindings()
     {
-        var weapon = _partials[AppearanceEditorViewModel.EditorWeaponPartial];
-        var widgets = Walk(weapon).ToArray();
-        widgets.Should().Contain(widget => widget.Id == "ae_part_select");
-        widgets.Should().Contain(widget => widget.Id == "ae_part_category");
-        widgets.Should().NotContain(widget => widget.Id == "ae_color_category" ||
-            widget.Id == "ae_color_palette" || widget.Id == "ae_tint_picker" ||
-            (widget.Id != null && widget.Id.StartsWith("ae_palette_")));
-        var partList = widgets.Single(widget => widget.Id == "ae_part_select");
-        partList.Should().NotBeNull();
+        _partials.Keys.Should().Contain(AllPanels.Append(WindowMain));
+        _partials.Keys.Should().NotContain(new[]
+        {
+            "APPEARANCE_EDITOR_COLORS_CLOTH_LEATHER", "APPEARANCE_EDITOR_COLORS_METAL"
+        }, "the armor palette is no longer swapped between nested palette partials");
         _window.LayoutFindings.Should().BeEmpty();
+        foreach (var name in _partials.Keys)
+        {
+            GuiLayoutValidator.Validate("appearance_editor",
+                    new Dictionary<string, IGuiWidget> { [name] = _partials[name] })
+                .Should().BeEmpty($"{name} must not contain an unsolvable row");
+        }
     }
 
     [Test]
-    public void OnlyMaterialSwatchesBindTheActiveTargetGlow()
+    public void EveryEventWidgetHasAUniqueIdAndSharedIdsRouteToTheSameHandler()
     {
-        var armor = _partials[AppearanceEditorViewModel.EditorArmorPartial];
-        var swatches = Walk(armor).Where(widget => widget.Id?.StartsWith("ae_color_") == true).ToArray();
-        swatches.Should().HaveCount(120);
-        foreach (var swatch in swatches)
+        var handlers = new Dictionary<string, string>();
+        foreach (var name in AllPanels)
         {
-            var expected = swatch.Id["ae_color_".Length..^"Region".Length] + "Selected";
-            ReadProperty<string>(swatch, "IsEncouragedBindName").Should().Be(expected);
-            ReadProperty<bool>(swatch, "IsEncouragedBound").Should().BeTrue();
-            typeof(AppearanceEditorViewModel).GetProperty(expected)!.PropertyType.Should().Be(typeof(bool));
-        }
-        foreach (var palette in _partials.Values.SelectMany(Walk).Where(widget => widget.Id?.StartsWith("ae_palette_") == true))
-        {
-            ReadProperty<string>(palette, "IsEncouragedBindName").Should().BeNullOrEmpty();
-            ReadProperty<bool>(palette, "IsEncouraged").Should().BeFalse();
+            var eventWidgets = Walk(_partials[name]).Where(widget => widget.Events.Count > 0).ToArray();
+            eventWidgets.Should().NotBeEmpty($"{name} has clickable controls");
+            eventWidgets.Select(widget => widget.Id).Should().OnlyContain(id => !string.IsNullOrWhiteSpace(id),
+                $"NWN only fires events for elements with ids ({name})");
+            eventWidgets.Select(widget => widget.Id).Should().OnlyHaveUniqueItems(
+                $"an event id must identify one control in {name}");
+
+            // Events are registered per window and element id, so a control repeated in
+            // several partials (browser, palette, body map) must route identically.
+            foreach (var (id, handler) in EventSnapshot(_partials[name]))
+            {
+                if (handlers.TryGetValue(id, out var existing))
+                    handler.Should().Be(existing, $"{id} is registered once for the whole window");
+                else
+                    handlers[id] = handler;
+            }
         }
     }
 
     [Test]
-    public void ProductionPartialsFitInitialWindow()
+    public void RuntimePanelsRetainEveryBootEventAndBinding([ValueSource(nameof(AllPanels))] string partialName)
     {
-        _window.LayoutFindings.Should().BeEmpty();
-        foreach (var name in new[] { AppearanceEditorViewModel.EditorMainPartial,
-                     AppearanceEditorViewModel.EditorArmorPartial, AppearanceEditorViewModel.SettingsPartial })
-        {
-            var partial = _partials[name];
-            Width(partial).Should().Be(0f, $"{name}'s viewport must fill the window");
-            Width(partial.Elements.Single()).Should().Be(0f);
-            NaturalWidth(partial).Should().BeLessThanOrEqualTo(_window.InitialGeometry.Width - 60f,
-                $"{name}'s fixed controls must leave the initial window's border and scrollbar allowance");
-        }
+        var boot = _partials[partialName];
+        var runtime = AppearanceEditorDefinition.BuildEditorPanel(partialName);
+        EventSnapshot(runtime).Should().BeEquivalentTo(EventSnapshot(boot),
+            "runtime copies must route to the event handlers registered at boot, with the same typed arguments");
+        BindingSnapshot(runtime).Should().BeEquivalentTo(BindingSnapshot(boot),
+            "panel copies must retain every binding, including draw-list regions and outlines");
     }
 
     [Test]
-    public void StaticPanelsRequireNoWindowGeometryAndRetainTheirBootDimensions()
+    public void StaticPanelsRequireNoWindowGeometry()
     {
         var factory = typeof(AppearanceEditorDefinition).GetMethods(BindingFlags.Public | BindingFlags.Static)
             .Single(method => method.Name == nameof(AppearanceEditorDefinition.BuildEditorPanel));
         factory.GetParameters().Select(parameter => parameter.ParameterType).Should().Equal(new[] { typeof(string) },
-            "the same client layout must serve every window size without server-computed dimensions");
-        foreach (var name in EditorPanels)
+            "the panel layout must not be computed from the window size; only the grid partial is swapped");
+        foreach (var name in AllPanels)
         {
             var panel = AppearanceEditorDefinition.BuildEditorPanel(name);
-            Width(panel).Should().Be(0f);
-            panel.DeclaredHeight.Should().Be(0f);
-            panel.Elements.Should().ContainSingle();
-            var content = panel.Elements.Single();
-            content.Should().BeOfType<GuiColumn<AppearanceEditorViewModel>>();
-            Width(content).Should().Be(0f);
             Walk(panel).Select(widget => (widget.GetType(), Width(widget), widget.DeclaredHeight))
                 .Should().Equal(Walk(_partials[name]).Select(widget =>
                     (widget.GetType(), Width(widget), widget.DeclaredHeight)),
                     "reopening or switching tabs must reuse the boot layout's dimensions");
         }
+        Assert.Throws<ArgumentOutOfRangeException>(() => AppearanceEditorDefinition.BuildEditorPanel("unknown"));
     }
 
-    [TestCase(AppearanceEditorViewModel.ArmorColorsClothLeather)]
-    [TestCase(AppearanceEditorViewModel.ArmorColorsMetal)]
-    [TestCase(AppearanceEditorViewModel.EditorMainPartial)]
-    public void EveryPresetHasItsOwnClickableCellAndBoundedAtlasCrop(string partialName)
+    [Test]
+    public void NavigationAndMainContentHaveNoFixedWidthAncestor()
     {
-        var isMain = partialName == AppearanceEditorViewModel.EditorMainPartial;
-        var palette = isMain
-            ? Walk(_partials[partialName]).Single(widget => widget.Id == "ae_color_palette")
-            : _partials[partialName];
-        var paletteButtons = Walk(palette).OfType<GuiButton<AppearanceEditorViewModel>>()
-            .Where(button => button.Events.Values.Any(method =>
-                method.Method.Name == nameof(AppearanceEditorViewModel.OnClickColorPalette)))
-            .ToArray();
-        var ids = paletteButtons.Select(button => button.Events.Values.Single(method =>
-                method.Method.Name == nameof(AppearanceEditorViewModel.OnClickColorPalette)))
-            .Select(method => (int)method.Arguments.Single().Value);
-        ids.Should().Equal(Enumerable.Range(0, 176),
-            "all presets, including the previously clipped last colors, must retain their own click targets");
-        paletteButtons.Should().OnlyContain(button => Width(button) == 18f &&
-            button.DeclaredHeight == 18f && button.DeclaredMargin == 0f);
+        var main = _partials[WindowMain];
+        var toggles = Walk(main).OfType<GuiToggles<AppearanceEditorViewModel>>().ToArray();
+        var primary = toggles.Single(toggle => ReadProperty<string>(toggle, "SelectedValueBindName") ==
+            nameof(AppearanceEditorViewModel.EditorTabToggleValue));
+        var settings = toggles.Single(toggle => ReadProperty<string>(toggle, "SelectedValueBindName") ==
+            nameof(AppearanceEditorViewModel.SettingsTabToggleValue));
+        PathTo(main, primary).SkipLast(1).Should().OnlyContain(widget => Width(widget) == 0f);
+        Width(primary).Should().Be(300f);
+        Width(settings).Should().Be(150f);
+        AssertEquipmentPicker(PathTo(main, primary).OfType<GuiRow<AppearanceEditorViewModel>>().Last());
+        var slot = Walk(main).Single(widget => widget.Id == AppearanceEditorViewModel.MainPartialElement);
+        PathTo(main, slot).Should().OnlyContain(widget => Width(widget) == 0f,
+            "the active partial needs the full available window width");
+        Slots(main).Should().Equal(AppearanceEditorViewModel.MainPartialElement);
+    }
 
-        var crops = new List<(float X, float Y, float Width, float Height)>();
-        for (var index = 0; index < paletteButtons.Length; index++)
+    // ------------------------------------------------------------------ editor columns
+
+    [TestCase(AppearanceEditorViewModel.EditorMainPartial)]
+    [TestCase(AppearanceEditorViewModel.EditorArmorPartial)]
+    [TestCase(AppearanceEditorViewModel.EditorWeaponPartial)]
+    public void EditorsShowFixedSideColumnsBesideAFlexibleBrowser(string partialName)
+    {
+        var partial = _partials[partialName];
+        ReadProperty<NuiScrollbars>(partial, "Scrollbars").Should().Be(NuiScrollbars.None);
+        Width(partial).Should().Be(0f);
+        partial.DeclaredHeight.Should().Be(0f);
+        var column = partial.Elements.Should().ContainSingle().Which;
+        column.Should().BeOfType<GuiColumn<AppearanceEditorViewModel>>();
+
+        var rows = column.Elements.ToList();
+        // No hidden rows above the editors: a hidden row still takes up height.
+        rows.Should().ContainSingle();
+        Walk(partial).OfType<GuiComboBox<AppearanceEditorViewModel>>().Should().BeEmpty(
+            "the equipment picker shares the tab row");
+        var content = rows.Single();
+        ReadProperty<string>(content, "IsVisibleBindName").Should().Be(nameof(AppearanceEditorViewModel.HasItemEquipped));
+
+        content.Elements.Should().AllBeOfType<GuiGroup<AppearanceEditorViewModel>>();
+        var groups = content.Elements.ToArray();
+        var expectedWidths = partialName == AppearanceEditorViewModel.EditorWeaponPartial
+            ? new[] { AppearanceEditorDefinition.WeaponCategoryWidth, 0f }
+            : new[] { AppearanceEditorDefinition.MapWidth, AppearanceEditorDefinition.ColoursWidth, 0f };
+        groups.Select(group => Width(group)).Should().Equal(expectedWidths,
+            "the browser takes the width left beside the fixed columns");
+        Slots(groups.Last()).Should().Equal(AppearanceEditorViewModel.BrowserGridElement);
+        Slots(partial).Should().Equal(AppearanceEditorViewModel.BrowserGridElement);
+    }
+
+    private static void AssertEquipmentPicker(IGuiWidget row)
+    {
+        var picker = Walk(row).OfType<GuiComboBox<AppearanceEditorViewModel>>().Should().ContainSingle().Which;
+        ReadProperty<string>(picker, "SelectedIndexBindName").Should()
+            .Be(nameof(AppearanceEditorViewModel.EquipmentTypeValue));
+        ReadProperty<string>(picker, "IsVisibleBindName").Should().Be(nameof(AppearanceEditorViewModel.IsEquipmentSelected));
+        ReadProperty<List<GuiComboEntry>>(picker, "Options").Select(option => (option.Label, option.Value))
+            .Should().Equal(new[] { ("Armor", 0), ("Weapon (Main)", 1), ("Weapon (Off)", 2) },
+                "entries carry their list position, which the combo reports");
+        foreach (var (entry, itemType) in new[] { (0, 0), (1, 3), (2, 4) })
         {
-            var button = paletteButtons[index];
+            AppearanceEditorViewModel.ToItemTypeIndex(entry).Should().Be(itemType);
+            AppearanceEditorViewModel.ToEquipmentTypeValue(itemType).Should().Be(entry);
+        }
+        AppearanceEditorViewModel.ToEquipmentTypeValue(1).Should().Be(0, "a helmet belongs to the armor entry");
+        AppearanceEditorViewModel.ToEquipmentTypeValue(2).Should().Be(0, "a cloak belongs to the armor entry");
+        var message = Walk(row).OfType<GuiLabel<AppearanceEditorViewModel>>().Should().ContainSingle().Which;
+        ReadProperty<string>(message, "IsVisibleBindName").Should().Be(nameof(AppearanceEditorViewModel.IsNoEditableItemVisible));
+        var outfits = Walk(row).Single(widget => widget.Id == "ae_outfits");
+        ReadProperty<string>(outfits, "IsVisibleBindName").Should().Be(nameof(AppearanceEditorViewModel.IsEquipmentSelected));
+        AssertSingleHandler(outfits, "click", nameof(AppearanceEditorViewModel.OnClickOutfits));
+    }
+
+    [Test]
+    public void SettingsHostNoBrowserGrid()
+    {
+        Slots(_partials[AppearanceEditorViewModel.SettingsPartial]).Should().BeEmpty();
+        foreach (var (grid, _, _) in BrowserGrids)
+            Slots(_partials[grid]).Should().BeEmpty("grid partials are leaves of the nested browser slot");
+    }
+
+    [TestCase(AppearanceEditorViewModel.EditorMainPartial)]
+    [TestCase(AppearanceEditorViewModel.EditorArmorPartial)]
+    [TestCase(AppearanceEditorViewModel.EditorWeaponPartial)]
+    public void EditorsFitTheInitialWindowWithTheGridChosenForIt(string partialName)
+    {
+        var hasSideColumns = partialName != AppearanceEditorViewModel.EditorWeaponPartial;
+        var initial = _window.InitialGeometry;
+        var columns = BrowserColumns(initial.Width, hasSideColumns);
+        var grid = _partials[FullHeightGrid(columns)];
+        var browser = BrowserGroup(partialName);
+        var contentRow = PathTo(_partials[partialName], browser).OfType<GuiRow<AppearanceEditorViewModel>>().Last();
+        var sides = contentRow.Elements.Where(widget => !ReferenceEquals(widget, browser)).ToArray();
+
+        var width = sides.Sum(MinimumWidth) + Math.Max(MinimumWidth(browser), NaturalWidth(grid));
+        width.Should().BeLessThanOrEqualTo(initial.Width - 60f,
+            $"{partialName} plus its {columns}-column grid must leave the border and scrollbar allowance");
+        var height = Math.Max(sides.Max(MinimumHeight), NaturalHeight(browser) + NaturalHeight(grid));
+        height.Should().BeLessThanOrEqualTo(initial.Height - AppearanceEditorDefinition.TabPanelHeight - 60f,
+            $"{partialName} must fit below the tab panel");
+    }
+
+    [TestCase(AppearanceEditorViewModel.EditorMainCompactPartial, AppearanceEditorViewModel.EditorMainPartial)]
+    [TestCase(AppearanceEditorViewModel.EditorArmorCompactPartial, AppearanceEditorViewModel.EditorArmorPartial)]
+    [TestCase(AppearanceEditorViewModel.EditorWeaponCompactPartial, AppearanceEditorViewModel.EditorWeaponPartial)]
+    public void CompactEditorsScrollSidewaysAndThePicturesScrollInTheirPanel(string compactName, string fullName)
+    {
+        var compact = AppearanceEditorDefinition.BuildEditorPanel(compactName);
+        var full = AppearanceEditorDefinition.BuildEditorPanel(fullName);
+        ReadProperty<NuiScrollbars>(compact, "Scrollbars").Should().Be(NuiScrollbars.X,
+            "a window narrower than the editor scrolls sideways to every panel");
+        var oneTileGrid = AppearanceEditorDefinition.BuildEditorPanel(AppearanceEditorViewModel.BrowserGrid(1, 1));
+        Walk(compact).Select(widget => widget.Id).Where(id => id != null)
+            .Should().BeEquivalentTo(Walk(full).Concat(Walk(oneTileGrid)).Select(widget => widget.Id)
+                    .Where(id => id != null && id != AppearanceEditorViewModel.BrowserGridElement),
+                "the compact editor has every control of the full one and a one-picture grid");
+
+        Walk(compact).Should().NotContain(widget => widget.Id == AppearanceEditorViewModel.BrowserGridElement,
+            "NUI stops drawing a nested grid group once it is scrolled");
+        var tile = Walk(compact).Single(widget => widget.Id == "ae_tile_0");
+        var browser = PathTo(compact, tile).OfType<GuiGroup<AppearanceEditorViewModel>>().Last();
+        ReadProperty<NuiScrollbars>(browser, "Scrollbars").Should().Be(NuiScrollbars.Y,
+            "a short window scrolls the picture panel");
+        ReadProperty<float>(browser, "Width").Should().Be(AppearanceEditorDefinition.CompactBrowserWidth);
+        var grid = AppearanceEditorDefinition.BuildEditorPanel(AppearanceEditorViewModel.BrowserGrid(1, 1));
+        NaturalWidth(grid).Should().BeLessThanOrEqualTo(AppearanceEditorDefinition.CompactBrowserWidth - 20f,
+            "one column of pictures fits the compact browser");
+    }
+
+    // ------------------------------------------------------------------ body map
+
+    [TestCase(AppearanceEditorViewModel.EditorArmorPartial, true)]
+    [TestCase(AppearanceEditorViewModel.EditorMainPartial, false)]
+    public void BodyMapSlotsBindTheirPictureHighlightAndClick(string partialName, bool equipment)
+    {
+        var partial = _partials[partialName];
+        var expected = Enum.GetValues<AppearanceEditorSlot>()
+            .Where(slot => equipment || !ArmorOnlySlots.Contains(slot)).ToArray();
+        expected.Should().HaveCount(equipment ? 21 : 15);
+
+        var slots = Walk(partial).Where(widget => widget.Id?.StartsWith("ae_slot_", StringComparison.Ordinal) == true)
+            .ToArray();
+        slots.Select(widget => widget.Id).Should().BeEquivalentTo(expected.Select(slot => $"ae_slot_{slot}"));
+        foreach (var slot in expected)
+        {
+            var image = $"Map{slot}Image";
+            var selected = $"Map{slot}Selected";
+            typeof(AppearanceEditorViewModel).GetProperty(image)!.PropertyType.Should().Be(typeof(string));
+            typeof(AppearanceEditorViewModel).GetProperty(selected)!.PropertyType.Should().Be(typeof(bool));
+
+            var button = slots.Single(widget => widget.Id == $"ae_slot_{slot}");
+            button.Should().BeOfType<GuiButtonImage<AppearanceEditorViewModel>>();
+            ReadProperty<string>(button, "ResrefBindName").Should().Be(image);
+            ReadProperty<string>(button, "IsEncouragedBindName").Should().Be(selected);
+            OutlineBindings(button).Should().Equal(new[] { selected },
+                "the selected slot is shown by an outline, never by text");
+            AssertSingleHandler(button, "click", nameof(AppearanceEditorViewModel.OnClickMapSlot),
+                (typeof(AppearanceEditorSlot), slot));
+            ReadProperty<string>(button, "Tooltip").Should().NotBeNullOrWhiteSpace();
+        }
+
+        if (!equipment)
+        {
+            foreach (var slot in ArmorOnlySlots)
+                Walk(partial).Should().NotContain(widget => widget.Id == $"ae_slot_{slot}",
+                    $"{slot} has no body part on the Appearance tab");
+        }
+        else
+        {
+            ReadProperty<string>(slots.Single(widget => widget.Id == "ae_slot_Head"), "Tooltip").Should().Be("Helmet");
+        }
+    }
+
+    [Test]
+    public void CopyButtonsAreOnlyOnTheEquipmentMap()
+    {
+        var armor = _partials[AppearanceEditorViewModel.EditorArmorPartial];
+        foreach (var (id, method) in new[]
+                 {
+                     ("ae_copy_right", nameof(AppearanceEditorViewModel.OnClickCopyToRight)),
+                     ("ae_copy_left", nameof(AppearanceEditorViewModel.OnClickCopyToLeft))
+                 })
+        {
+            var button = Walk(armor).Single(widget => widget.Id == id);
+            ReadProperty<string>(button, "IsEnabledBindName").Should().Be(nameof(AppearanceEditorViewModel.IsCopyEnabled));
+            ReadProperty<float>(button, "Width").Should().Be(ReadProperty<float>(button, "Height"),
+                "the copy buttons are square slots under the arms");
+            ReadProperty<string>(button, "Resref").Should().Be(id == "ae_copy_right" ? "arrow_left" : "arrow_right",
+                "each arrow points at the side it copies to");
+            AssertSingleHandler(button, "click", method);
+            Walk(_partials[AppearanceEditorViewModel.EditorMainPartial]).Should().NotContain(widget => widget.Id == id);
+        }
+    }
+
+    // ------------------------------------------------------------------ palette
+
+    [TestCase(AppearanceEditorViewModel.EditorMainPartial)]
+    [TestCase(AppearanceEditorViewModel.EditorArmorPartial)]
+    public void PaletteHas176CroppedButtonsUnderLetteredAndNumberedHeaders(string partialName)
+    {
+        var palette = Walk(_partials[partialName]).Single(widget => widget.Id == "ae_color_palette");
+        palette.Should().BeOfType<GuiGroup<AppearanceEditorViewModel>>();
+        ReadProperty<string>(palette, "IsVisibleBindName").Should().Be(nameof(AppearanceEditorViewModel.IsColorPickerVisible));
+        ReadProperty<NuiScrollbars>(palette, "Scrollbars").Should().Be(NuiScrollbars.None);
+        palette.Events.Should().BeEmpty("each palette button supplies its own preset index");
+
+        const float headerWidth = AppearanceEditorViewModel.PaletteHeaderWidth;
+        const float headerHeight = AppearanceEditorViewModel.PaletteHeaderHeight;
+        const float cellWidth = AppearanceEditorViewModel.PaletteCellWidth;
+        const float cellHeight = AppearanceEditorViewModel.PaletteCellHeight;
+        Width(palette).Should().Be(headerWidth + 16 * cellWidth);
+        palette.DeclaredHeight.Should().Be(headerHeight + 11 * cellHeight);
+
+        // The selection outline is one bound polyline drawn over the whole palette.
+        var outline = DrawItems(palette).Should().ContainSingle().Which
+            .Should().BeOfType<GuiDrawListItemPolyLine<AppearanceEditorViewModel>>().Which;
+        ReadProperty<string>(outline, "PointsBindName").Should().Be(nameof(AppearanceEditorViewModel.PaletteSelectionPoints));
+        ReadProperty<string>(outline, "IsEnabledBindName").Should().Be(nameof(AppearanceEditorViewModel.IsPaletteSelectionVisible));
+        ReadProperty<bool>(outline, "IsFilled").Should().BeFalse();
+
+        var rows = palette.Elements.Should().ContainSingle().Which.Elements;
+        rows.Should().HaveCount(12, "one letter header and eleven palette rows");
+        rows.Should().OnlyContain(row => row.DeclaredMargin == 0f);
+
+        // Header: a spacer the width of the row numbers, then letters A-P over the cells.
+        var header = rows[0];
+        header.DeclaredHeight.Should().Be(headerHeight);
+        header.Elements[0].Should().BeOfType<GuiSpacer<AppearanceEditorViewModel>>();
+        Width(header.Elements[0]).Should().Be(headerWidth);
+        var letters = header.Elements.Skip(1).ToArray();
+        letters.Should().AllBeOfType<GuiLabel<AppearanceEditorViewModel>>();
+        letters.Select(label => ReadProperty<string>(label, "Text"))
+            .Should().Equal(Enumerable.Range(0, 16).Select(column => ((char)('A' + column)).ToString()));
+        letters.Should().OnlyContain(label => Width(label) == cellWidth && label.DeclaredMargin == 0f);
+
+        var buttons = new List<GuiButton<AppearanceEditorViewModel>>();
+        for (var y = 0; y < 11; y++)
+        {
+            var row = rows[y + 1];
+            row.DeclaredHeight.Should().Be(cellHeight);
+            row.Elements.Should().HaveCount(17);
+            var number = row.Elements[0].Should().BeOfType<GuiLabel<AppearanceEditorViewModel>>().Which;
+            ReadProperty<string>(number, "Text").Should().Be((y + 1).ToString());
+            Width(number).Should().Be(headerWidth, "row numbers fill the header column the outline offsets by");
+            number.DeclaredMargin.Should().Be(0f);
+            buttons.AddRange(row.Elements.Skip(1).Cast<GuiButton<AppearanceEditorViewModel>>());
+        }
+
+        buttons.Should().HaveCount(176);
+        var crops = new List<(float, float, float, float)>();
+        for (var index = 0; index < buttons.Count; index++)
+        {
+            var button = buttons[index];
             button.Id.Should().Be("ae_palette_" + index);
-            button.Events.Should().ContainSingle(
-                "preset cells need only their click action and must not bind a no-op reset on mouse-down");
-            var image = BoundObjects(button, "button").Select(entry => entry.Value)
-                .OfType<GuiDrawListItemImage<AppearanceEditorViewModel>>().Single();
+            AssertSingleHandler(button, "click", nameof(AppearanceEditorViewModel.OnClickColorPalette), (typeof(int), index));
+            ReadProperty<string>(button, "Tooltip").Should().Be(AppearancePreview.PaletteCode(index));
+            ReadProperty<string>(button, "IsEncouragedBindName").Should().BeNullOrEmpty(
+                "the palette selection is the shared outline, not 176 encouraged bindings");
+            Width(button).Should().Be(cellWidth);
+            button.DeclaredHeight.Should().Be(cellHeight);
+            button.DeclaredMargin.Should().Be(0f);
+
+            var image = DrawItems(button).Should().ContainSingle().Which
+                .Should().BeOfType<GuiDrawListItemImage<AppearanceEditorViewModel>>().Which;
+            ReadProperty<string>(image, "ResrefBindName").Should().Be(nameof(AppearanceEditorViewModel.ColorSheetResref),
+                "every cell follows the selected skin, hair, tattoo or armor palette sheet");
+            ReadProperty<string>(image, "DrawTextureRegionBindName").Should().BeNullOrEmpty();
             var crop = ReadProperty<GuiRectangle>(image, "DrawTextureRegion");
-            crop.Should().NotBeNull();
-            var actualCrop = (crop.X, crop.Y, crop.Width, crop.Height);
-            actualCrop.Should().Be((index % 16 * 16f + 2f, index / 16 * 16f + 2f, 12f, 12f),
-                "each click ID must show the interior of its own source palette cell");
-            crop.X.Should().BeGreaterThanOrEqualTo(0f);
-            crop.Y.Should().BeGreaterThanOrEqualTo(0f);
+            var actual = (crop.X, crop.Y, crop.Width, crop.Height);
+            actual.Should().Be((index % 16 * 16f + 3f, index / 16 * 16f + 4f, 9f, 7f),
+                "each cell samples a 9x7 interior of its own 16x16 sheet cell, drawn at exactly 2x");
             (crop.X + crop.Width).Should().BeLessThanOrEqualTo(256f);
             (crop.Y + crop.Height).Should().BeLessThanOrEqualTo(176f);
-            ReadProperty<string>(image, "DrawTextureRegionBindName").Should().BeNullOrEmpty();
             var position = ReadProperty<GuiRectangle>(image, "Position");
-            position.X.Should().BeGreaterThanOrEqualTo(0f);
-            position.Y.Should().BeGreaterThanOrEqualTo(0f);
-            (position.X + position.Width).Should().BeLessThanOrEqualTo(Width(button));
-            (position.Y + position.Height).Should().BeLessThanOrEqualTo(button.DeclaredHeight);
-            if (isMain)
-            {
-                ReadProperty<string>(image, "ResrefBindName").Should().Be(nameof(AppearanceEditorViewModel.ColorSheetResref),
-                    "all appearance cells must change together when the selected skin, hair, tattoo, or equipment category changes");
-            }
-            else
-            {
-                ReadProperty<string>(image, "ResrefBindName").Should().BeNullOrEmpty();
-                ReadProperty<string>(image, "Resref").Should().Be(
-                    partialName == AppearanceEditorViewModel.ArmorColorsMetal ? "gui_pal_armor01" : "gui_pal_tattoo");
-            }
-            crops.Add(actualCrop);
+            (position.X + position.Width).Should().BeLessThanOrEqualTo(cellWidth);
+            (position.Y + position.Height).Should().BeLessThanOrEqualTo(cellHeight);
+            crops.Add(actual);
         }
         crops.Should().OnlyHaveUniqueItems();
-
-        var slot = Walk(_partials[AppearanceEditorViewModel.EditorArmorPartial])
-            .Single(widget => widget.Id == AppearanceEditorViewModel.ArmorColorElement);
-        Width(slot).Should().Be(308f);
-        slot.DeclaredHeight.Should().Be(246f);
-        Width(palette).Should().Be(308f);
-        palette.DeclaredHeight.Should().Be(isMain ? 218f : 246f);
-        var paletteRows = Walk(palette).OfType<GuiRow<AppearanceEditorViewModel>>()
-            .Where(row => row.Elements.OfType<GuiButton<AppearanceEditorViewModel>>().Any()).ToArray();
-        paletteRows.Should().HaveCount(11);
-        paletteRows.Should().OnlyContain(row => row.Elements.Count == 16);
-        paletteRows.Max(NaturalWidth).Should().BeLessThanOrEqualTo(Width(slot) - 16f,
-            "palette rows need room inside the slot instead of overflowing beside the global channels");
-        NaturalHeight(palette).Should().BeLessThanOrEqualTo(palette.DeclaredHeight - 16f,
-            "the palette bounds must include all eleven swatch rows and any target label with spacing");
-        var targetLabels = Walk(palette).OfType<GuiLabel<AppearanceEditorViewModel>>().Where(label =>
-            ReadProperty<string>(label, "TextBindName") == nameof(AppearanceEditorViewModel.ColorTargetText));
-        targetLabels.Should().HaveCount(isMain ? 0 : 1,
-            "the appearance palette omits the equipment-only target header");
-        Walk(palette).OfType<GuiColorPicker<AppearanceEditorViewModel>>().Should().BeEmpty(
-            "the RGB picker belongs below the palette/channel row, outside this bounded partial");
     }
 
     [Test]
-    public void PaletteAndGlobalChannelsFitTogetherInTheArmorContent()
+    public void WeaponEditorHasPartCategoriesButNoColours()
     {
-        var armor = _partials[AppearanceEditorViewModel.EditorArmorPartial];
-        var slot = Walk(armor).Single(widget => widget.Id == AppearanceEditorViewModel.ArmorColorElement);
-        var combinedRow = PathTo(armor, slot).Reverse().OfType<GuiRow<AppearanceEditorViewModel>>()
-            .First(row => row.Elements.Count > 1);
-        NaturalWidth(combinedRow).Should().BeLessThanOrEqualTo(_window.InitialGeometry.Width - 60f,
-            "the old 320px palette plus 216px global channels exceeded the whole 476px window");
-        combinedRow.Elements.Should().HaveCount(2);
-        var channels = combinedRow.Elements.OfType<GuiGroup<AppearanceEditorViewModel>>()
-            .Single(group => group.Id != AppearanceEditorViewModel.ArmorColorElement);
-        ReadProperty<bool>(channels, "ShowBorder").Should().BeFalse();
-        ReadProperty<NuiScrollbars>(channels, "Scrollbars").Should().Be(NuiScrollbars.None);
-        PathTo(armor, channels).Should().OnlyContain(widget => Width(widget) == 0f,
-            "the global channels must receive the space left beside the fixed palette");
+        var weapon = _partials[AppearanceEditorViewModel.EditorWeaponPartial];
+        var widgets = Walk(weapon).ToArray();
+        var category = widgets.Single(widget => widget.Id == "ae_part_category");
+        ReadProperty<string>(category, "TextBindName").Should().Be(nameof(AppearanceEditorViewModel.PartCategoryOptions));
+        ReadProperty<string>(category, "IsToggledBindName").Should().Be(nameof(AppearanceEditorViewModel.PartCategorySelected));
+        AssertSingleHandler(category, "click", nameof(AppearanceEditorViewModel.OnSelectPartCategory));
+        widgets.OfType<GuiList<AppearanceEditorViewModel>>().Single();
+        widgets.Should().NotContain(widget => widget.Id != null && (widget.Id == "ae_color_palette" ||
+            widget.Id == "ae_tint_picker" || widget.Id.StartsWith("ae_palette_") || widget.Id.StartsWith("ae_slot_") ||
+            widget.Id.Contains("_swatch_")));
+        widgets.OfType<GuiColorPicker<AppearanceEditorViewModel>>().Should().BeEmpty();
     }
 
+    // ------------------------------------------------------------------ swatches
+
     [Test]
-    public void GlobalSwatchesShareClientWidthAndDisplayTheirActualColor()
+    public void EquipmentSwatchesBindRegionTintCustomSelectedAndCode()
     {
         var armor = _partials[AppearanceEditorViewModel.EditorArmorPartial];
-        var expectedChannels = new[]
+        foreach (var channel in Channels)
         {
-            AppearanceArmorColor.Leather1, AppearanceArmorColor.Cloth1, AppearanceArmorColor.Metal1,
-            AppearanceArmorColor.Leather2, AppearanceArmorColor.Cloth2, AppearanceArmorColor.Metal2
+            var texture = channel is AppearanceArmorColor.Metal1 or AppearanceArmorColor.Metal2
+                ? "gui_pal_armor01"
+                : "gui_pal_tattoo";
+
+            var global = Walk(armor).Single(widget => widget.Id == $"ae_base_swatch_{channel}");
+            AssertSwatch(armor, global, $"Global{channel}", texture);
+            AssertSingleHandler(global, "click", nameof(AppearanceEditorViewModel.OnClickBaseSwatch),
+                (typeof(AppearanceArmorColor), channel));
+
+            var part = Walk(armor).Single(widget => widget.Id == $"ae_part_swatch_{channel}");
+            AssertSwatch(armor, part, $"SelectedPart{channel}", texture);
+            part.Events.Keys.Should().BeEquivalentTo("click", "mousedown");
+            AssertHandler(part.Events["click"], nameof(AppearanceEditorViewModel.OnClickPartSwatch),
+                (typeof(AppearanceArmorColor), channel));
+            AssertHandler(part.Events["mousedown"], nameof(AppearanceEditorViewModel.OnMouseDownPartSwatch),
+                (typeof(AppearanceArmorColor), channel));
+            PathTo(armor, part).Should().Contain(ancestor =>
+                    ReadProperty<string>(ancestor, "IsVisibleBindName") == nameof(AppearanceEditorViewModel.IsPartColorsVisible),
+                "part colours only show while an armor part is selected");
+        }
+
+        var swatches = Walk(armor).Where(widget => widget.Id?.Contains("_swatch_") == true).ToArray();
+        swatches.Should().HaveCount(12);
+        Walk(armor).Should().NotContain(widget => widget.Id != null && widget.Id.StartsWith("ae_color_") &&
+            widget.Id != "ae_color_palette", "the 120 per-target swatches were replaced by the selected-part row");
+        Walk(armor).Should().NotContain(widget => widget.Id == "ae_body_swatch_Skin");
+    }
+
+    [Test]
+    public void AppearanceSwatchesBindRegionTintCustomSelectedAndCode()
+    {
+        var main = _partials[AppearanceEditorViewModel.EditorMainPartial];
+        var expected = new[]
+        {
+            ("Skin", "gui_pal_skin"), ("Hair", "gui_pal_hair01"), ("Tattoo1", "gui_pal_tattoo"), ("Tattoo2", "gui_pal_tattoo")
         };
-        var images = Walk(armor).OfType<GuiImage<AppearanceEditorViewModel>>().Where(image =>
-            image.Id?.StartsWith("ae_color_Global", StringComparison.Ordinal) == true).ToArray();
-        images.Should().HaveCount(6);
-        for (var index = 0; index < images.Length; index++)
+        for (var index = 0; index < expected.Length; index++)
         {
-            var image = images[index];
-            var channel = expectedChannels[index];
-            var regionBinding = "Global" + channel + "Region";
-            image.Id.Should().Be("ae_color_" + regionBinding);
-            ReadProperty<string>(image, "RegionBindName").Should().Be(regionBinding);
-            var drawList = ReadProperty<List<GuiDrawList<AppearanceEditorViewModel>>>(image, "DrawLists").Single();
-            ReadProperty<bool>(drawList, "IsConstrainedToTargetBounds").Should().BeTrue();
-            var fill = ReadProperty<List<IGuiDrawListItem>>(drawList, "DrawItems").Single();
-            ReadProperty<string>(fill, "ColorBindName").Should().Be("Global" + channel + "Tint");
-            ReadProperty<string>(fill, "IsEnabledBindName").Should().Be("Global" + channel + "Custom");
-            ReadProperty<List<GuiVector2>>(fill, "Points").Select(point => (point.X, point.Y))
-                .Should().Equal((0f, 0f), (99f, 0f), (99f, 99f), (0f, 99f));
-            ReadProperty<float>(image, "AspectRatio").Should().Be(1f,
-                "the image, click target and encouraged highlight must have identical square bounds");
-            PathTo(armor, image).Should().OnlyContain(widget => Width(widget) == 0f,
-                "the responsive image and its ancestors must use the width left beside the palette");
-            image.DeclaredHeight.Should().Be(0f,
-                "neither image dimension may force its flexible cell to overflow");
-            image.DeclaredMargin.Should().Be(2f);
-            image.Events.Should().ContainSingle();
-            var handler = image.Events.Values.Single();
-            handler.Method.Name.Should().Be(nameof(AppearanceEditorViewModel.OnMouseDownGlobalColor));
-            handler.Arguments.Should().ContainSingle().Which.Should().Be(
-                new KeyValuePair<Type, object>(typeof(AppearanceArmorColor), channel));
+            var (name, texture) = expected[index];
+            var swatch = Walk(main).Single(widget => widget.Id == $"ae_body_swatch_{name}");
+            AssertSwatch(main, swatch, $"Body{name}", texture);
+            AssertSingleHandler(swatch, "click", nameof(AppearanceEditorViewModel.OnClickBodySwatch), (typeof(int), index));
         }
-
-        foreach (var image in images)
-        {
-            var path = PathTo(armor, image).ToArray();
-            var imageRow = path.OfType<GuiRow<AppearanceEditorViewModel>>().Last();
-            imageRow.DeclaredHeight.Should().Be(0f,
-                "the immediate parent must not force the square to use the outer row's full height");
-            imageRow.Elements.Should().ContainSingle().Which.Should().BeSameAs(image,
-                "horizontal spacers compete with the image and reduce the swatch to one third of its available width");
-            var stack = path.OfType<GuiColumn<AppearanceEditorViewModel>>().Last();
-            stack.Elements.Should().HaveCount(2);
-            stack.Elements[1].Elements.Should().ContainSingle().Which
-                .Should().BeOfType<GuiSpacer<AppearanceEditorViewModel>>();
-            var cell = path.OfType<GuiGroup<AppearanceEditorViewModel>>().Last();
-            cell.DeclaredHeight.Should().Be(0f);
-            cell.DeclaredMargin.Should().Be(0f);
-            ReadProperty<float>(cell, "Padding").Should().Be(0f);
-            ReadProperty<bool>(cell, "ShowBorder").Should().BeFalse();
-            ReadProperty<NuiScrollbars>(cell, "Scrollbars").Should().Be(NuiScrollbars.None);
-            ReadProperty<bool>(cell, "IsEncouragedBound").Should().BeFalse();
-        }
-        var cells = images.Select(image => PathTo(armor, image).OfType<GuiGroup<AppearanceEditorViewModel>>().Last()).ToArray();
-        var rows = cells.Select(cell => PathTo(armor, cell).OfType<GuiRow<AppearanceEditorViewModel>>().Last())
-            .Distinct().ToArray();
-        rows.Should().HaveCount(2);
-        rows.Should().OnlyContain(row => row.Elements.Count == 3 &&
-            row.Elements.All(widget => widget is GuiGroup<AppearanceEditorViewModel>) &&
-            Width(row) == 0f && row.DeclaredHeight == 99f && row.DeclaredMargin == 0f,
-            "each row must split its available width among exactly three swatch cells");
-        var column = PathTo(armor, rows[0]).OfType<GuiColumn<AppearanceEditorViewModel>>().Last();
-        var header = (GuiRow<AppearanceEditorViewModel>)column.Elements.First();
-        header.DeclaredHeight.Should().Be(28f);
-        header.DeclaredMargin.Should().Be(0f);
-        Width(header).Should().Be(0f);
-        header.Elements.Should().HaveCount(3);
-        header.Elements.Should().OnlyContain(widget => widget is GuiLabel<AppearanceEditorViewModel> &&
-            Width(widget) == 0f && widget.DeclaredHeight == 0f && widget.DeclaredMargin == 0f);
-        header.Elements.Select(label => ReadProperty<string>(label, "Text")).Should().Equal("Leather", "Cloth", "Metal");
+        Walk(main).Where(widget => widget.Id?.Contains("_swatch_") == true).Should().HaveCount(4);
     }
 
     [Test]
-    public void PickerAndRgbControlsRemainOutsideThePaletteSlotAndHaveRoom(
-        [Values(AppearanceEditorViewModel.EditorMainPartial, AppearanceEditorViewModel.EditorArmorPartial)] string partialName)
+    public void UseBaseSitsOnThePartColourRowAndClearsOnlyPartColours()
     {
-        var partial = AppearanceEditorDefinition.BuildEditorPanel(partialName);
-        var picker = Walk(partial).OfType<GuiColorPicker<AppearanceEditorViewModel>>().Single();
+        var partial = _partials[AppearanceEditorViewModel.EditorArmorPartial];
+        var useBase = Walk(partial).Single(widget => widget.Id == "ae_use_base");
+        PathTo(partial, useBase).Should().Contain(ancestor =>
+            ReadProperty<string>(ancestor, "IsVisibleBindName") == nameof(AppearanceEditorViewModel.IsPartColorsVisible));
+        ReadProperty<string>(useBase, "IsEnabledBindName").Should().Be(nameof(AppearanceEditorViewModel.IsUseBaseEnabled));
+        AssertSingleHandler(useBase, "click", nameof(AppearanceEditorViewModel.OnClickUseBase));
+        Walk(_partials[AppearanceEditorViewModel.EditorMainPartial]).Should().NotContain(widget => widget.Id == "ae_use_base",
+            "body colours have no part colours to clear");
+    }
+
+    // ------------------------------------------------------------------ RGB picker
+
+    [TestCase(AppearanceEditorViewModel.EditorMainPartial)]
+    [TestCase(AppearanceEditorViewModel.EditorArmorPartial)]
+    public void ColourPickerAndRgbFieldsBindTheCustomTint(string partialName)
+    {
+        var partial = _partials[partialName];
+        var picker = Walk(partial).OfType<GuiColorPicker<AppearanceEditorViewModel>>().Should().ContainSingle().Which;
+        picker.Id.Should().Be("ae_tint_picker");
         ReadProperty<string>(picker, "SelectedColorBindName").Should().Be(nameof(AppearanceEditorViewModel.SelectedTintColor));
-        PathTo(partial, picker).Should().OnlyContain(widget => Width(widget) == 0f,
-            "the client must size the picker and all its ancestors without a server layout update");
-        picker.DeclaredHeight.Should().Be(128f);
-        var pickerRow = PathTo(partial, picker).Reverse().OfType<GuiRow<AppearanceEditorViewModel>>().First();
-        pickerRow.Elements.Should().ContainSingle().Which.Should().BeSameAs(picker,
-            "flexible side spacers must not absorb the extra width intended for the picker");
+        ReadProperty<string>(picker, "IsEnabledBindName").Should().Be(nameof(AppearanceEditorViewModel.IsCustomTintEditable));
+        Width(picker).Should().Be(196f);
+        picker.DeclaredHeight.Should().Be(100f);
+        picker.Events.Keys.Should().BeEquivalentTo("mousedown", "mouseup");
+        AssertHandler(picker.Events["mousedown"], nameof(AppearanceEditorViewModel.OnMouseDownTintPicker));
+        AssertHandler(picker.Events["mouseup"], nameof(AppearanceEditorViewModel.OnMouseUpTintPicker));
+        PathTo(partial, picker).Should().NotContain(widget => widget.Id == "ae_color_palette",
+            "the picker sits below the palette, outside its fixed-size group");
+
+        var pickerRow = PathTo(partial, picker).OfType<GuiRow<AppearanceEditorViewModel>>().Last();
+        ReadProperty<string>(pickerRow, "IsVisibleBindName").Should().Be(nameof(AppearanceEditorViewModel.IsCustomTintAvailable));
+        NaturalWidth(pickerRow).Should().BeLessThanOrEqualTo(AppearanceEditorDefinition.ColoursWidth - 16f,
+            "the picker and R/G/B fields must fit the colour column");
+
         var fields = Walk(partial).OfType<GuiTextEdit<AppearanceEditorViewModel>>()
-            .Where(field => ReadProperty<string>(field, "ValueBindName") is
-                nameof(AppearanceEditorViewModel.CustomTintRed) or
-                nameof(AppearanceEditorViewModel.CustomTintGreen) or
-                nameof(AppearanceEditorViewModel.CustomTintBlue)).ToArray();
-        fields.Select(field => ReadProperty<string>(field, "ValueBindName")).Should().BeEquivalentTo(new[]
-        {
+            .Where(field => PathTo(partial, field).Contains(pickerRow)).ToArray();
+        fields.Select(field => ReadProperty<string>(field, "ValueBindName")).Should().Equal(
             nameof(AppearanceEditorViewModel.CustomTintRed), nameof(AppearanceEditorViewModel.CustomTintGreen),
-            nameof(AppearanceEditorViewModel.CustomTintBlue)
-        });
-
-        foreach (var control in fields.Cast<IGuiWidget>().Append(picker))
+            nameof(AppearanceEditorViewModel.CustomTintBlue));
+        var channels = new[] { "R", "G", "B" };
+        for (var index = 0; index < fields.Length; index++)
         {
-            var path = PathTo(partial, control).ToArray();
-            path.Should().NotContain(widget => widget.Id == AppearanceEditorViewModel.ArmorColorElement);
-            var row = path.Reverse().OfType<GuiRow<AppearanceEditorViewModel>>().First();
-            ReadProperty<string>(row, "IsVisibleBindName").Should().Be(nameof(AppearanceEditorViewModel.IsCustomTintAvailable));
-            path.Take(path.Length - 1).Should().OnlyContain(widget => Width(widget) == 0f);
-            if (control != picker)
-            {
-                Width(control).Should().Be(48f);
-                NaturalWidth(row).Should().BeLessThanOrEqualTo(256f,
-                    "the fixed RGB inputs must fit the narrowest column that holds the palette image");
-            }
-            if (row.DeclaredHeight > 0)
-                row.DeclaredHeight.Should().BeGreaterThanOrEqualTo(control.DeclaredHeight);
+            var field = fields[index];
+            ReadProperty<int>(field, "MaxLength").Should().Be(3);
+            ReadProperty<string>(field, "IsEnabledBindName").Should().Be(nameof(AppearanceEditorViewModel.IsCustomTintEditable));
+            var fieldRow = PathTo(partial, field).OfType<GuiRow<AppearanceEditorViewModel>>().Last();
+            ReadProperty<string>(fieldRow.Elements[0], "Text").Should().Be(channels[index]);
+        }
+
+        var title = Walk(partial).OfType<GuiLabel<AppearanceEditorViewModel>>()
+            .Single(label => ReadProperty<string>(label, "Text") == "Custom Colour (RGB)");
+        PathTo(partial, title).Should().Contain(ancestor =>
+            ReadProperty<string>(ancestor, "IsVisibleBindName") == nameof(AppearanceEditorViewModel.IsCustomTintAvailable));
+    }
+
+    // ------------------------------------------------------------------ browser
+
+    [Test]
+    public void EveryGridOffersViewsPagerAndPartNumber([ValueSource(nameof(BrowserGridNames))] string gridName)
+    {
+        var browser = _partials[gridName];
+        var views = Walk(browser).OfType<GuiToggleButton<AppearanceEditorViewModel>>().ToArray();
+        views.Select(view => view.Id).Should().Equal(
+            Enum.GetValues<AppearancePreviewView>().Select(view => $"ae_view_{view}"));
+        views.Select(view => ReadProperty<string>(view, "IsToggledBindName")).Should().Equal(
+            nameof(AppearanceEditorViewModel.IsFrontViewSelected), nameof(AppearanceEditorViewModel.IsBackViewSelected),
+            nameof(AppearanceEditorViewModel.IsAngleViewSelected));
+        views.Should().OnlyContain(view => ReadProperty<string>(view, "IsVisibleBindName") ==
+            nameof(AppearanceEditorViewModel.IsPreviewViewChoiceVisible), "weapon pages have only front pictures");
+        for (var index = 0; index < views.Length; index++)
+            AssertSingleHandler(views[index], "click", nameof(AppearanceEditorViewModel.OnClickPreviewView),
+                (typeof(AppearancePreviewView), (AppearancePreviewView)index));
+
+        var pager = Walk(browser).OfType<GuiComboBox<AppearanceEditorViewModel>>().Should().ContainSingle().Which;
+        ReadProperty<string>(pager, "OptionsBindName").Should().Be(nameof(AppearanceEditorViewModel.BrowserPageOptions));
+        ReadProperty<string>(pager, "SelectedIndexBindName").Should().Be(nameof(AppearanceEditorViewModel.BrowserPageIndex));
+
+        AssertSingleHandler(Walk(browser).Single(widget => widget.Id == "ae_browser_previous"), "click",
+            nameof(AppearanceEditorViewModel.OnClickBrowserPrevious));
+        AssertSingleHandler(Walk(browser).Single(widget => widget.Id == "ae_browser_next"), "click",
+            nameof(AppearanceEditorViewModel.OnClickBrowserNext));
+        AssertSingleHandler(Walk(browser).Single(widget => widget.Id == "ae_browser_go"), "click",
+            nameof(AppearanceEditorViewModel.OnClickBrowserGo));
+        var number = Walk(browser).Single(widget => widget.Id == "ae_browser_part_number");
+        ReadProperty<string>(number, "ValueBindName").Should().Be(nameof(AppearanceEditorViewModel.BrowserPartNumberText));
+        ReadProperty<string>(number, "Placeholder").Should().Be("Part #");
+    }
+
+    [Test]
+    public void EveryGridHasItsRowsOfBoundTiles([ValueSource(nameof(BrowserGridNames))] string gridName)
+    {
+        var (_, columns, rowCount) = BrowserGrids.Single(entry => entry.Partial == gridName);
+        var grid = _partials[gridName];
+        ReadProperty<NuiScrollbars>(grid, "Scrollbars").Should().Be(NuiScrollbars.None);
+        var rows = grid.Elements.Should().ContainSingle().Which.Elements
+            .Where(row => Walk(row).OfType<GuiButtonImage<AppearanceEditorViewModel>>().Any()).ToArray();
+        rows.Should().HaveCount(rowCount);
+        (columns * rowCount).Should().BeLessThanOrEqualTo(AppearanceEditorViewModel.BrowserTileCount);
+
+        var tiles = Walk(grid).OfType<GuiButtonImage<AppearanceEditorViewModel>>().ToArray();
+        tiles.Should().HaveCount(columns * rowCount);
+        foreach (var row in rows)
+            Walk(row).OfType<GuiButtonImage<AppearanceEditorViewModel>>().Should().HaveCount(columns);
+
+        var labels = Walk(grid).OfType<GuiLabel<AppearanceEditorViewModel>>().ToArray();
+        labels.Should().HaveCount(tiles.Length);
+        for (var tile = 0; tile < tiles.Length; tile++)
+        {
+            foreach (var (suffix, type) in new[]
+                     {
+                         ("Image", typeof(string)), ("Visible", typeof(bool)), ("Selected", typeof(bool)), ("Label", typeof(string))
+                     })
+                typeof(AppearanceEditorViewModel).GetProperty($"Tile{tile}{suffix}")!.PropertyType.Should().Be(type);
+
+            var button = tiles[tile];
+            button.Id.Should().Be($"ae_tile_{tile}");
+            ReadProperty<string>(button, "ResrefBindName").Should().Be($"Tile{tile}Image");
+            ReadProperty<string>(button, "IsVisibleBindName").Should().Be($"Tile{tile}Visible");
+            ReadProperty<string>(button, "IsEncouragedBindName").Should().Be($"Tile{tile}Selected");
+            OutlineBindings(button).Should().Equal($"Tile{tile}Selected");
+            Width(button).Should().Be(AppearanceEditorDefinition.TileSize);
+            button.DeclaredHeight.Should().Be(AppearanceEditorDefinition.TileSize);
+            AssertSingleHandler(button, "click", nameof(AppearanceEditorViewModel.OnClickTile), (typeof(int), tile));
+
+            ReadProperty<string>(labels[tile], "TextBindName").Should().Be($"Tile{tile}Label");
+            ReadProperty<string>(labels[tile], "IsVisibleBindName").Should().Be($"Tile{tile}Visible");
         }
     }
 
     [Test]
-    public void MainEditorUsesIndependentCategoryAndDetailScrollViewports()
+    public void EachColumnCountLeavesRoomForItsGrid(
+        [ValueSource(nameof(BrowserGridColumns))] int columns, [Values(true, false)] bool hasSideColumns)
     {
-        var partial = AppearanceEditorDefinition.BuildEditorPanel(AppearanceEditorViewModel.EditorMainPartial);
-        ReadProperty<NuiScrollbars>(partial, "Scrollbars").Should().Be(NuiScrollbars.None);
-        var contentRow = Walk(partial).OfType<GuiRow<AppearanceEditorViewModel>>()
-            .Single(row => row.Elements.OfType<GuiGroup<AppearanceEditorViewModel>>().Count() == 2);
-        contentRow.Elements.Should().HaveCount(2);
-        var panels = contentRow.Elements.OfType<GuiGroup<AppearanceEditorViewModel>>().ToArray();
-        panels.Select(Width).Should().Equal(new[] { 200f, 0f },
-            "the category rail is fixed while the detail panel consumes the remaining client width");
-        panels.Should().OnlyContain(panel => panel.DeclaredHeight == 0f &&
-            !ReadProperty<bool>(panel, "ShowBorder") &&
-            ReadProperty<NuiScrollbars>(panel, "Scrollbars") == NuiScrollbars.Auto,
-            "each side must scroll both tall content and fixed palette content wider than its viewport");
-        var lists = Walk(partial).OfType<GuiList<AppearanceEditorViewModel>>().ToArray();
-        lists.Should().HaveCount(3);
-        foreach (var list in lists)
-        {
-            var binding = ReadProperty<string>(list, "RowCountBindName");
-            var expectedPanel = binding == nameof(AppearanceEditorViewModel.PartOptions) + "_RowCount"
-                ? panels[1] : panels[0];
-            PathTo(partial, list).OfType<GuiGroup<AppearanceEditorViewModel>>().Last()
-                .Should().BeSameAs(expectedPanel);
-            PathTo(partial, list).Where(widget => !ReferenceEquals(widget, panels[0]))
-                .Should().OnlyContain(widget => Width(widget) == 0f,
-                    "lists must fill their viewport without calculated widths");
-            var expectedHeight = binding switch
-            {
-                nameof(AppearanceEditorViewModel.ColorCategoryOptions) + "_RowCount" => 154f,
-                nameof(AppearanceEditorViewModel.PartCategoryOptions) + "_RowCount" => 450f,
-                _ => 280f
-            };
-            list.DeclaredHeight.Should().Be(expectedHeight);
-        }
-        lists.Select(list => ReadProperty<string>(list, "RowCountBindName")).Should().BeEquivalentTo(new[]
-        {
-            nameof(AppearanceEditorViewModel.ColorCategoryOptions) + "_RowCount",
-            nameof(AppearanceEditorViewModel.PartCategoryOptions) + "_RowCount",
-            nameof(AppearanceEditorViewModel.PartOptions) + "_RowCount"
-        });
+        // The narrowest window that BrowserColumnsForWidth gives this column count must
+        // still fit that grid beside the fixed columns.
+        if (columns == 1)
+            Assert.Pass("One column is the fallback for any width.");
+        var width = Enumerable.Range(1, 4000).Select(value => (float)value)
+            .First(value => BrowserColumns(value, hasSideColumns) == columns);
+        var fixedColumns = hasSideColumns
+            ? AppearanceEditorDefinition.MapWidth + AppearanceEditorDefinition.ColoursWidth
+            : AppearanceEditorDefinition.WeaponCategoryWidth;
+        var grid = _partials[FullHeightGrid(columns)];
+        NaturalWidth(grid).Should().BeLessThanOrEqualTo(width - fixedColumns - 24f,
+            $"a {columns}-column grid is chosen from {width}px");
     }
 
-    [Test]
-    public void ArmorCombosFitNarrowWindowsInsideThreeEqualFlexibleGroups()
-    {
-        var armor = AppearanceEditorDefinition.BuildEditorPanel(AppearanceEditorViewModel.EditorArmorPartial);
-        ReadProperty<NuiScrollbars>(armor, "Scrollbars").Should().Be(NuiScrollbars.Auto);
-        var combos = ArmorPartCombos(armor);
-        combos.Should().HaveCount(19);
-        foreach (var combo in combos)
-        {
-            var path = PathTo(armor, combo).ToArray();
-            path.Where(widget => !ReferenceEquals(widget, combo)).Should().OnlyContain(widget => Width(widget) == 0f,
-                "narrow dropdowns must not prevent their parent columns from sharing the client width");
-            Width(combo).Should().Be(96f);
-            path.OfType<GuiColumn<AppearanceEditorViewModel>>().Last().DeclaredHeight.Should().Be(112f,
-                "each part block must contribute a bounded height to its stack");
-            combo.DeclaredHeight.Should().Be(24f);
-            combo.DeclaredMargin.Should().Be(0f);
-            var row = path.Reverse().OfType<GuiRow<AppearanceEditorViewModel>>().First();
-            row.Elements.Should().HaveCount(3);
-            var arrows = row.Elements.OfType<GuiButton<AppearanceEditorViewModel>>().ToArray();
-            arrows.Should().HaveCount(2);
-            arrows.Should().OnlyContain(button => Width(button) == 24f && button.DeclaredHeight == 24f &&
-                button.DeclaredMargin == 0f && button.Events.Values.Any(action =>
-                    action.Method.Name == nameof(AppearanceEditorViewModel.OnClickAdjustArmorPart)));
-            NaturalWidth(row).Should().Be(144f,
-                "the dropdown and both arrows must fit within each column of the narrow editor");
-        }
-
-        var partsRow = Walk(armor).OfType<GuiRow<AppearanceEditorViewModel>>().Single(row =>
-            row.Elements.OfType<GuiGroup<AppearanceEditorViewModel>>().Count() == 3 &&
-            Walk(row).OfType<GuiComboBox<AppearanceEditorViewModel>>().Count() == 19);
-        partsRow.DeclaredHeight.Should().Be(840f,
-            "the shared row must supply the stack height without modifying its peer groups' dimensions");
-        Width(partsRow).Should().Be(0f);
-        partsRow.Elements.Should().HaveCount(5);
-        var gaps = partsRow.Elements.OfType<GuiSpacer<AppearanceEditorViewModel>>().ToArray();
-        gaps.Should().HaveCount(2);
-        gaps.Should().OnlyContain(spacer => Width(spacer) == 6f,
-            "flexible gaps must not consume the same new width as the actual armor columns");
-        var stacks = partsRow.Elements.OfType<GuiGroup<AppearanceEditorViewModel>>().ToArray();
-        stacks.Should().OnlyContain(group => Width(group) == 0f && group.DeclaredHeight == 0f &&
-            !ReadProperty<bool>(group, "ShowBorder") &&
-            ReadProperty<NuiScrollbars>(group, "Scrollbars") == NuiScrollbars.None,
-            "either width or height on a peer group disables native equal-width sharing in both axes");
-        stacks.Select(group => Walk(group).OfType<GuiComboBox<AppearanceEditorViewModel>>().Count())
-            .Should().Equal(7, 5, 7);
-        stacks.Should().OnlyContain(group => NaturalHeight(group) <= partsRow.DeclaredHeight,
-            "every fixed part block must fit inside the height supplied by the shared row");
-    }
-
-    [Test]
-    public void MainPaletteIsAnInlineButtonGroupWithNoContainerMouseHandler()
-    {
-        var palette = Walk(_partials[AppearanceEditorViewModel.EditorMainPartial])
-            .Single(widget => widget.Id == "ae_color_palette");
-        palette.Should().BeOfType<GuiGroup<AppearanceEditorViewModel>>();
-        Width(palette).Should().Be(308f);
-        palette.DeclaredHeight.Should().Be(218f);
-        ReadProperty<bool>(palette, "ShowBorder").Should().BeFalse();
-        ReadProperty<NuiScrollbars>(palette, "Scrollbars").Should().Be(NuiScrollbars.None);
-        ReadProperty<string>(palette, "IsVisibleBindName").Should().Be(nameof(AppearanceEditorViewModel.IsColorPickerVisible));
-        palette.Events.Should().BeEmpty("individual buttons supply preset IDs, so the container must not interpret scaled mouse positions");
-        Walk(palette).OfType<GuiImage<AppearanceEditorViewModel>>().Should().BeEmpty();
-    }
-
-    [Test]
-    public void FixedMainPaletteHasATrailingFlexibleSpacer()
-    {
-        var main = _partials[AppearanceEditorViewModel.EditorMainPartial];
-        var palette = Walk(main).Single(widget => widget.Id == "ae_color_palette");
-        var row = PathTo(main, palette).OfType<GuiRow<AppearanceEditorViewModel>>().Last();
-        row.Elements.Should().HaveCount(2);
-        row.Elements[0].Should().BeSameAs(palette);
-        row.Elements[1].Should().BeOfType<GuiSpacer<AppearanceEditorViewModel>>();
-        Width(row.Elements[1]).Should().Be(0f);
-        row.Elements[1].DeclaredHeight.Should().Be(0f,
-            "a dimension modifier would prevent the spacer absorbing the detail panel's extra width");
-        Width(row).Should().Be(0f);
-    }
-
-    [Test]
-    public void PreviousAndNextPartButtonsShareWidthWithoutDimensionModifiers()
-    {
-        var main = _partials[AppearanceEditorViewModel.EditorMainPartial];
-        var previous = Walk(main).Single(widget => widget.Id == "ae_previous_part");
-        var next = Walk(main).Single(widget => widget.Id == "ae_next_part");
-        var row = PathTo(main, previous).OfType<GuiRow<AppearanceEditorViewModel>>().Last();
-        row.Elements.Should().Equal(new[] { previous, next });
-        row.DeclaredHeight.Should().Be(40f);
-        Width(row).Should().Be(0f);
-        row.Elements.Should().OnlyContain(button => Width(button) == 0f && button.DeclaredHeight == 0f,
-            "even a height-only modifier disables the buttons' native equal-width sharing");
-    }
+    // ------------------------------------------------------------------ settings
 
     [Test]
     public void SettingsContentUsesClientWidthAndVerticalScrolling()
@@ -508,153 +683,81 @@ public class AppearanceEditorLayoutTests
         _window.LayoutFindings.Should().BeEmpty();
     }
 
-    [Test]
-    public void NavigationAndMainContentHaveNoFixedWidthAncestor()
-    {
-        var main = _partials["%%WINDOW_MAIN%%"];
-        var toggles = Walk(main).OfType<GuiToggles<AppearanceEditorViewModel>>().ToArray();
-        var primary = toggles.Single(toggle => ReadProperty<string>(toggle, "SelectedValueBindName") ==
-            nameof(AppearanceEditorViewModel.EditorTabToggleValue));
-        var settings = toggles.Single(toggle => ReadProperty<string>(toggle, "SelectedValueBindName") ==
-            nameof(AppearanceEditorViewModel.SettingsTabToggleValue));
-        PathTo(main, primary).SkipLast(1).Should().OnlyContain(widget => Width(widget) == 0f);
-        Width(primary).Should().Be(300f);
-        Width(settings).Should().Be(150f);
-        var tabRow = PathTo(main, primary).OfType<GuiRow<AppearanceEditorViewModel>>().Last();
-        var itemSelector = Walk(main).OfType<GuiComboBox<AppearanceEditorViewModel>>().Single();
-        var equipmentRow = PathTo(main, itemSelector).OfType<GuiRow<AppearanceEditorViewModel>>().Last();
-        foreach (var row in new[] { tabRow, equipmentRow })
-        {
-            row.Elements.Should().HaveCount(4);
-            row.Elements.First().Should().BeOfType<GuiSpacer<AppearanceEditorViewModel>>();
-            row.Elements.Last().Should().BeOfType<GuiSpacer<AppearanceEditorViewModel>>();
-            Width(row).Should().Be(0f);
-            row.Elements.Skip(1).Take(2).Should().OnlyContain(control => Width(control) > 0f,
-                "only the paired outer spacers should absorb spare width and center the controls");
-        }
-        var slot = Walk(main).Single(widget => widget.Id == AppearanceEditorViewModel.MainPartialElement);
-        PathTo(main, slot).Should().OnlyContain(widget => Width(widget) == 0f,
-            "the active partial and its scrollbar need the full available window width");
-    }
+    // ------------------------------------------------------------------ helpers
 
-    [TestCase(AppearanceEditorViewModel.EditorMainPartial)]
-    [TestCase(AppearanceEditorViewModel.EditorArmorPartial)]
-    [TestCase(AppearanceEditorViewModel.SettingsPartial)]
-    public void EditorViewportsHaveNoFixedRootWidthOrHeight(string partialName)
+    private static IEnumerable<int> BrowserGridColumns() => BrowserGrids.Select(grid => grid.Columns).Distinct();
+
+    private static IEnumerable<string> BrowserGridNames() => BrowserGrids.Select(grid => grid.Partial);
+
+    private static int BrowserColumns(float width, bool hasSideColumns) =>
+        (int)typeof(AppearanceEditorViewModel)
+            .GetMethod("BrowserColumnsForWidth", BindingFlags.NonPublic | BindingFlags.Static)!
+            .Invoke(null, new object[] { width, hasSideColumns })!;
+
+    private IGuiWidget BrowserGroup(string partialName)
     {
         var partial = _partials[partialName];
-        var expectedScrollbars = partialName switch
-        {
-            AppearanceEditorViewModel.EditorMainPartial => NuiScrollbars.None,
-            AppearanceEditorViewModel.EditorArmorPartial => NuiScrollbars.Auto,
-            _ => NuiScrollbars.Y
-        };
-        ReadProperty<NuiScrollbars>(partial, "Scrollbars").Should().Be(expectedScrollbars,
-            "main delegates scrolling to its side-by-side viewports, and armor permits both overflow axes");
-        Width(partial).Should().Be(0f,
-            "the scrollbar must follow the window edge instead of staying at the old panel width");
-        partial.DeclaredHeight.Should().Be(0f,
-            "the scroll viewport must fill the available window height, not use a fixed content height");
-        partial.Elements.Should().ContainSingle().Which.Should().BeOfType<GuiColumn<AppearanceEditorViewModel>>();
-        Width(partial.Elements.Single()).Should().Be(0f);
+        var slot = Walk(partial).Single(widget => widget.Id == AppearanceEditorViewModel.BrowserGridElement);
+        return PathTo(partial, slot).OfType<GuiGroup<AppearanceEditorViewModel>>()
+            .Last(group => !ReferenceEquals(group, slot));
     }
 
-    [Test]
-    public void MainContentScrollsAndUsesOnlyOneNestedArmorPaletteSlot()
+    private static void AssertSwatch(IGuiWidget root, IGuiWidget swatch, string name, string texture)
     {
-        var main = _partials["%%WINDOW_MAIN%%"];
-        var mainSlot = Walk(main).Single(widget => widget.Id == AppearanceEditorViewModel.MainPartialElement);
-        PathTo(main, mainSlot).OfType<GuiGroup<AppearanceEditorViewModel>>()
-            .Should().Contain(group => ReadProperty<NuiScrollbars>(group, "Scrollbars") == NuiScrollbars.Auto,
-                "the full editor must remain reachable when its window is shorter than the controls");
-        Slots(main).Should().Equal(AppearanceEditorViewModel.MainPartialElement);
-        Slots(_partials[AppearanceEditorViewModel.EditorMainPartial]).Should().BeEmpty();
-        Slots(_partials[AppearanceEditorViewModel.SettingsPartial]).Should().BeEmpty();
-        Slots(_partials[AppearanceEditorViewModel.EditorArmorPartial]).Should().Equal(AppearanceEditorViewModel.ArmorColorElement);
-        Slots(_partials[AppearanceEditorViewModel.ArmorColorsClothLeather]).Should().BeEmpty();
-        Slots(_partials[AppearanceEditorViewModel.ArmorColorsMetal]).Should().BeEmpty();
+        foreach (var (suffix, type) in new[]
+                 {
+                     ("Region", typeof(GuiRectangle)), ("Tint", typeof(GuiColor)), ("Custom", typeof(bool)),
+                     ("Selected", typeof(bool)), ("Code", typeof(string))
+                 })
+            typeof(AppearanceEditorViewModel).GetProperty(name + suffix)!.PropertyType.Should().Be(type, name + suffix);
+
+        swatch.Should().BeOfType<GuiButton<AppearanceEditorViewModel>>();
+        ReadProperty<string>(swatch, "IsEncouragedBindName").Should().Be(name + "Selected");
+        var items = DrawItems(swatch).ToArray();
+        items.Should().HaveCount(3, $"{name}: palette crop, custom RGB fill and selection outline");
+
+        var image = items[0].Should().BeOfType<GuiDrawListItemImage<AppearanceEditorViewModel>>().Which;
+        ReadProperty<string>(image, "Resref").Should().Be(texture);
+        ReadProperty<string>(image, "DrawTextureRegionBindName").Should().Be(name + "Region");
+
+        var fill = items[1].Should().BeOfType<GuiDrawListItemPolyLine<AppearanceEditorViewModel>>().Which;
+        ReadProperty<string>(fill, "ColorBindName").Should().Be(name + "Tint");
+        ReadProperty<string>(fill, "IsEnabledBindName").Should().Be(name + "Custom");
+        ReadProperty<bool>(fill, "IsFilled").Should().BeTrue();
+
+        var outline = items[2].Should().BeOfType<GuiDrawListItemPolyLine<AppearanceEditorViewModel>>().Which;
+        ReadProperty<string>(outline, "IsEnabledBindName").Should().Be(name + "Selected");
+        ReadProperty<bool>(outline, "IsFilled").Should().BeFalse();
+
+        // The palette code ("H1", "RGB", "Base") is the label right after the swatch.
+        var row = PathTo(root, swatch).OfType<GuiRow<AppearanceEditorViewModel>>().Last();
+        var index = row.Elements.IndexOf(swatch);
+        var code = row.Elements[index + 1].Should().BeOfType<GuiLabel<AppearanceEditorViewModel>>().Which;
+        ReadProperty<string>(code, "TextBindName").Should().Be(name + "Code");
     }
 
-    [Test]
-    public void RuntimePanelsRetainEveryBootEventAndBinding(
-        [Values(AppearanceEditorViewModel.EditorMainPartial, AppearanceEditorViewModel.EditorArmorPartial,
-            AppearanceEditorViewModel.SettingsPartial)] string partialName)
+    private static string[] OutlineBindings(IGuiWidget widget) => DrawItems(widget)
+        .OfType<GuiDrawListItemPolyLine<AppearanceEditorViewModel>>()
+        .Select(line => ReadProperty<string>(line, "IsEnabledBindName")).ToArray();
+
+    private static IEnumerable<object> DrawItems(IGuiWidget widget) =>
+        ReadProperty<System.Collections.IEnumerable>(widget, "DrawLists").Cast<object>()
+            .SelectMany(list => ReadProperty<System.Collections.IEnumerable>(list, "DrawItems").Cast<object>());
+
+    private static void AssertSingleHandler(IGuiWidget widget, string eventName, string method,
+        params (Type Type, object Value)[] arguments)
     {
-        var boot = _partials[partialName];
-        var runtime = AppearanceEditorDefinition.BuildEditorPanel(partialName);
-        foreach (var panel in new[] { boot, runtime })
-        {
-            var eventWidgets = Walk(panel).Where(widget => widget.Events.Count > 0).ToArray();
-            eventWidgets.Should().NotBeEmpty();
-            eventWidgets.Select(widget => widget.Id).Should().OnlyContain(id => !string.IsNullOrWhiteSpace(id));
-            eventWidgets.Select(widget => widget.Id).Should().OnlyHaveUniqueItems(
-                "an event ID must identify one control in each panel");
-        }
-
-        EventSnapshot(runtime).Should().BeEquivalentTo(EventSnapshot(boot),
-            "runtime copies must route to the event handlers registered at boot, with the same typed arguments");
-        BindingSnapshot(runtime).Should().BeEquivalentTo(BindingSnapshot(boot),
-            "static panel copies must retain options, selected values, visibility and every draw-texture region binding");
+        widget.Events.Keys.Should().Equal(new[] { eventName }, $"{widget.Id} needs only its {eventName} event");
+        AssertHandler(widget.Events[eventName], method, arguments);
     }
 
-    [Test]
-    public void RuntimeArmorRetainsAllPartOptionsAndAll120SwatchRegions()
+    private static void AssertHandler(GuiMethodDetail handler, string method, params (Type Type, object Value)[] arguments)
     {
-        var armor = AppearanceEditorDefinition.BuildEditorPanel(AppearanceEditorViewModel.EditorArmorPartial);
-        var combos = ArmorPartCombos(armor);
-        combos.Should().HaveCount(19);
-        var options = combos.Select(combo => ReadProperty<string>(combo, "OptionsBindName")).ToArray();
-        options.Should().OnlyHaveUniqueItems();
-        options.Should().OnlyContain(name => name.EndsWith("Options", StringComparison.Ordinal));
-        combos.Select(combo => ReadProperty<string>(combo, "SelectedIndexBindName")).Should().BeEquivalentTo(
-            options.Select(name => name[..^"Options".Length] + "Selection"));
-
-        var expectedRegions = typeof(AppearanceEditorViewModel).GetProperties()
-            .Where(property => property.PropertyType == typeof(GuiRectangle) &&
-                property.Name.EndsWith("Region", StringComparison.Ordinal))
-            .Select(property => property.Name).ToArray();
-        expectedRegions.Should().HaveCount(120);
-        var regionBindings = BindingSnapshot(armor)
-            .Where(entry => entry.Key.EndsWith(".DrawTextureRegionBindName", StringComparison.Ordinal) ||
-                entry.Key.EndsWith(".RegionBindName", StringComparison.Ordinal))
-            .Select(entry => entry.Value).ToArray();
-        regionBindings.Should().BeEquivalentTo(expectedRegions);
+        handler.Method.Name.Should().Be(method);
+        handler.Method.DeclaringType.Should().Be(typeof(AppearanceEditorViewModel));
+        handler.Arguments.Select(argument => (argument.Key, argument.Value))
+            .Should().Equal(arguments.Select(argument => (argument.Type, argument.Value)));
     }
-
-    [Test]
-    public void ArmorPartNumberEntryOffersEverySlotOnce()
-    {
-        var armor = AppearanceEditorDefinition.BuildEditorPanel(AppearanceEditorViewModel.EditorArmorPartial);
-        var slot = Walk(armor).OfType<GuiComboBox<AppearanceEditorViewModel>>().Single(combo => combo.Id == ArmorPartSlotId);
-        ReadProperty<string>(slot, "SelectedIndexBindName").Should().Be(nameof(AppearanceEditorViewModel.ArmorPartNumberSlot));
-        var slotValues = ReadProperty<IEnumerable<GuiComboEntry>>(slot, "Options").Select(option => option.Value).ToArray();
-        slotValues.Should().BeEquivalentTo(Enumerable.Range(0, (int)AppearanceArmor.Num));
-
-        var row = PathTo(armor, slot).OfType<GuiRow<AppearanceEditorViewModel>>().Last();
-        row.DeclaredHeight.Should().Be(40f);
-        Walk(row).OfType<GuiTextEdit<AppearanceEditorViewModel>>().Single().Id.Should().Be("ae_armor_part_number");
-        Walk(row).OfType<GuiButton<AppearanceEditorViewModel>>().Single().Events.Values
-            .Should().ContainSingle(action => action.Method.Name.Contains(nameof(AppearanceEditorViewModel.OnClickApplyArmorPartNumber)));
-    }
-
-    [Test]
-    public void PartListOffersGoToPartBeneathPreviousAndNext()
-    {
-        var main = AppearanceEditorDefinition.BuildEditorPanel(AppearanceEditorViewModel.EditorMainPartial);
-        var entry = Walk(main).Single(widget => widget.Id == "ae_part_number");
-        var go = Walk(main).Single(widget => widget.Id == "ae_go_to_part");
-        var row = PathTo(main, entry).OfType<GuiRow<AppearanceEditorViewModel>>().Last();
-        PathTo(main, go).Should().Contain(row);
-        row.DeclaredHeight.Should().Be(40f);
-        row.Elements.Should().OnlyContain(widget => Width(widget) == 0f,
-            "the entry and button share the panel width like Previous and Next");
-    }
-
-    private const string ArmorPartSlotId = "ae_armor_part_slot";
-
-    // The per-slot part dropdowns, excluding the slot picker of the part-number entry.
-    private static GuiComboBox<AppearanceEditorViewModel>[] ArmorPartCombos(IGuiWidget armor) =>
-        Walk(armor).OfType<GuiComboBox<AppearanceEditorViewModel>>().Where(combo => combo.Id != ArmorPartSlotId).ToArray();
 
     private static IReadOnlyDictionary<string, string> EventSnapshot(IGuiWidget root) => Walk(root)
         .SelectMany(widget => widget.Events.Select(entry => new KeyValuePair<string, string>(
@@ -662,6 +765,7 @@ public class AppearanceEditorLayoutTests
             entry.Value.Method.DeclaringType!.FullName + "." + entry.Value.Method + "(" +
             string.Join(",", entry.Value.Arguments.Select(argument => argument.Key.FullName + ":" +
                 Convert.ToString(argument.Value, System.Globalization.CultureInfo.InvariantCulture))) + ")")))
+        .Where(entry => !Guid.TryParse(entry.Key.Split('/')[0], out _))
         .ToDictionary(entry => entry.Key, entry => entry.Value);
 
     private static IReadOnlyDictionary<string, string> BindingSnapshot(IGuiWidget root) =>
@@ -698,6 +802,7 @@ public class AppearanceEditorLayoutTests
             yield return property;
     }
 
+    // Partial-view slots are empty groups with an id.
     private static IEnumerable<string> Slots(IGuiWidget widget) => Walk(widget)
         .OfType<GuiGroup<AppearanceEditorViewModel>>()
         .Where(group => group.Elements.Count == 0 && !string.IsNullOrEmpty(group.Id)).Select(group => group.Id);

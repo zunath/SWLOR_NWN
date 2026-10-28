@@ -98,6 +98,10 @@ public class AppearanceEditorColorStateTests
         property.IndexOf("value == _loadedItemTypeIndex", StringComparison.Ordinal).Should()
             .BeLessThan(property.IndexOf("_colorTarget = ColorTarget.Global", StringComparison.Ordinal));
         property.Should().Contain("_selectedColorChannel = AppearanceArmorColor.Leather1");
+        var hidePartRows = property.IndexOf("SetIfChanged(nameof(IsPartColorsVisible), false)", StringComparison.Ordinal);
+        hidePartRows.Should().BeGreaterThan(property.IndexOf("if (value != 0)", StringComparison.Ordinal),
+            "helmets, cloaks and weapons hide the armor part colour rows");
+        property.IndexOf("if (value != 0)", StringComparison.Ordinal).Should().BeGreaterThan(0);
         property.IndexOf("LoadItemParts()", StringComparison.Ordinal).Should()
             .BeLessThan(property.IndexOf("LoadItemTypeEditor()", StringComparison.Ordinal),
                 "the current selections must be ready before the replacement widgets are shown");
@@ -108,37 +112,88 @@ public class AppearanceEditorColorStateTests
     }
 
     [Test]
-    public void TabRestorationPublishesBindingsAfterTheNestedPaletteAndBeforeEditingResumes()
+    public void TabRestorationPublishesBindingsAfterTheBrowserGridAndBeforeEditingResumes()
     {
         var root = CSharpSyntaxTree.ParseText(ReadViewModel()).GetRoot();
-        FindMethod(root, "LoadItemTypeEditor").ToString().Should()
-            .Contain("EditorTabs.Select(this, MainPartialElement, partialTabId, OnEditorPartialApplied)");
-        var restored = FindMethod(root, "OnEditorPartialApplied").ToString();
-        restored.IndexOf("SuspendArmorClientWatches()", StringComparison.Ordinal).Should()
-            .BeLessThan(restored.IndexOf("RestoreArmorPalette()", StringComparison.Ordinal));
-        restored.IndexOf("RestoreArmorPalette()", StringComparison.Ordinal).Should()
-            .BeLessThan(restored.IndexOf("RepublishBindings()", StringComparison.Ordinal));
-        restored.IndexOf("RepublishBindings()", StringComparison.Ordinal).Should()
-            .BeLessThan(restored.IndexOf("ResumeArmorClientWatches()", StringComparison.Ordinal));
-        restored.IndexOf("SynchronizeTintControlBindings(", StringComparison.Ordinal).Should()
-            .BeLessThan(restored.IndexOf("RestoreArmorPalette()", StringComparison.Ordinal),
-                "replacement widgets must not edit colors while their current bindings are restored");
+        var load = FindMethod(root, "LoadItemTypeEditor").ToString();
+        load.Should().Contain("var tabs = _isCompactLayout ? CompactEditorTabs : EditorTabs;");
+        load.Should().Contain("tabs.Select(this, MainPartialElement, partialTabId, OnEditorPartialApplied)");
+        var restoredMethod = FindMethod(root, "OnEditorPartialApplied");
+        var restored = restoredMethod.ToString();
+        var order = new[]
+        {
+            "SuspendArmorClientWatches()", "SynchronizeTintControlBindings(", "UpdatePaletteSheetForChannel()",
+            "ApplyBrowserColumns(force: true)", "RepublishBindings()", "ResumeArmorClientWatches()"
+        };
+        for (var index = 1; index < order.Length; index++)
+        {
+            restored.IndexOf(order[index - 1], StringComparison.Ordinal).Should().BeGreaterThanOrEqualTo(0)
+                .And.BeLessThan(restored.IndexOf(order[index], StringComparison.Ordinal),
+                    $"{order[index - 1]} must run before {order[index]}");
+        }
+
+        // The palette sheet and the grid swap happen while the replacement widgets'
+        // tint bindings are suppressed, so restoring them cannot edit colours.
+        var synchronized = restoredMethod.DescendantNodes().OfType<InvocationExpressionSyntax>()
+            .Single(call => call.Expression.ToString() == "SynchronizeTintControlBindings")
+            .ArgumentList.Arguments.Single().Expression;
+        synchronized.Should().BeAssignableTo<LambdaExpressionSyntax>();
+        var calls = synchronized.DescendantNodes().OfType<InvocationExpressionSyntax>()
+            .Select(call => call.ToString()).ToArray();
+        calls.Should().Contain(new[] { "UpdatePaletteSheetForChannel()", "ApplyBrowserColumns(force: true)", "RepublishBindings()" });
+
+        restored.Should().NotContain("RestoreArmorPalette");
+        ReadViewModel().Should().NotContain("RestoreArmorPalette", "the nested armor palette partials were removed");
         restored.Should().NotContain("SetGroupLayout(");
         restored.Should().NotContain("LoadItemParts()");
         restored.Should().NotContain("ApplyCurrentColors");
     }
 
     [Test]
-    public void ResizingDoesNotRebuildTheEditorOrReplayItsBindings()
+    public void ResizingOnlySwapsTheBrowserGridWhenItsColumnCountChanges()
     {
-        var source = ReadViewModel();
-        var root = CSharpSyntaxTree.ParseText(source).GetRoot();
-        var clientUpdated = FindMethod(root, "OnClientPropertyUpdated").ToString();
-        clientUpdated.Should().NotContain("Geometry");
-        source.Should().NotContain("QueueEditorResize");
-        source.Should().NotContain("BuildEditorPanel(");
-        source.Should().NotContain("SetGroupLayout(");
-        source.Should().NotContain("_editorResizeGeneration");
+        var root = CSharpSyntaxTree.ParseText(ReadViewModel()).GetRoot();
+        var browser = CSharpSyntaxTree.ParseText(ReadViewModel("AppearanceEditorViewModel.PartBrowser.cs")).GetRoot();
+
+        var clientUpdated = FindMethod(root, "OnClientPropertyUpdated");
+        var geometry = clientUpdated.DescendantNodes().OfType<IfStatementSyntax>()
+            .Single(statement => statement.Condition.ToString() == "propertyName == nameof(Geometry)");
+        geometry.Statement.ToString().Should().Be("QueueBrowserResize();",
+            "a geometry update only queues the debounced browser resize");
+
+        var queue = FindMethod(browser, "QueueBrowserResize");
+        queue.ToString().Should().Contain("++_resizeGeneration");
+        queue.ToString().Should().Contain("DelayCommand(");
+        queue.ToString().Should().Contain("generation != _resizeGeneration",
+            "only the last geometry update of a drag resizes the grid");
+        Invocations(queue).Should().BeEquivalentTo(new[] { "DelayCommand", "ApplyBrowserColumns" },
+            "a resize never changes the window size the player dragged to");
+        queue.ToString().Should().NotContain("Geometry = ");
+
+        var apply = FindMethod(browser, "ApplyBrowserColumns");
+        apply.ToString().Should().Contain("if (!force && columns == _browserColumns && rows == _browserRows)",
+            "the window is rebuilt only when the column count changes");
+        var swaps = apply.DescendantNodes().OfType<InvocationExpressionSyntax>()
+            .Where(call => call.Expression.ToString() == "ChangePartialView").ToArray();
+        swaps.Should().ContainSingle();
+        swaps.Single().ArgumentList.Arguments[0].ToString().Should().Be("BrowserGridElement",
+            "resizing swaps only the nested grid, never the editor panel");
+        Invocations(apply).Should().NotContain(new[]
+        {
+            "RepublishBindings", "SetGroupLayout", "LoadItemParts", "LoadTintMapEditor"
+        });
+        var reload = apply.DescendantNodes().OfType<InvocationExpressionSyntax>()
+            .Single(call => call.Expression.ToString() == "LoadItemTypeEditor");
+        reload.Ancestors().OfType<IfStatementSyntax>().First().Condition.ToString()
+            .Should().Be("compact != _isCompactLayout",
+                "the editor panel is reloaded only when the window crosses into or out of the compact layout");
+
+        foreach (var source in new[] { root, browser })
+        {
+            source.ToString().Should().NotContain("BuildEditorPanel(");
+            source.ToString().Should().NotContain("SetGroupLayout(");
+            source.ToString().Should().NotContain("QueueEditorResize");
+        }
     }
 
     [Test]
@@ -184,13 +239,18 @@ public class AppearanceEditorColorStateTests
     private static MethodDeclarationSyntax FindMethod(Microsoft.CodeAnalysis.SyntaxNode root, string name) =>
         root.DescendantNodes().OfType<MethodDeclarationSyntax>().Single(method => method.Identifier.ValueText == name);
 
-    private static string ReadViewModel()
+    private static string[] Invocations(Microsoft.CodeAnalysis.SyntaxNode node) => node.DescendantNodes()
+        .OfType<InvocationExpressionSyntax>()
+        .Select(call => call.Expression is MemberAccessExpressionSyntax member ? member.Name.Identifier.ValueText : call.Expression.ToString())
+        .Distinct().ToArray();
+
+    private static string ReadViewModel(string fileName = "AppearanceEditorViewModel.cs")
     {
         var directory = new DirectoryInfo(TestContext.CurrentContext.TestDirectory);
         while (directory != null)
         {
             var path = Path.Combine(directory.FullName, "SWLOR.Game.Server", "Feature", "GuiDefinition", "ViewModel",
-                "AppearanceEditorViewModel.cs");
+                fileName);
             if (File.Exists(path))
                 return File.ReadAllText(path);
             directory = directory.Parent;

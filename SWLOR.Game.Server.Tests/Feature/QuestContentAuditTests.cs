@@ -165,8 +165,9 @@ public sealed partial class QuestConversationTests
         var obtainable = EconomyObtainabilityCoverageTests.ReadObtainableResrefs(root);
         var craftable = Directory.EnumerateFiles(Path.Combine(root, "SWLOR.Game.Server", "Feature", "RecipeDefinition"),
                 "*.cs", SearchOption.AllDirectories)
-            .SelectMany(path => Regex.Matches(File.ReadAllText(path), "\\.Resref\\(\\s*\"([^\"]+)\"")
-                .Select(match => match.Groups[1].Value)).ToHashSet();
+            .SelectMany(path => Regex.Matches(File.ReadAllText(path),
+                    "\\.Resref\\(\\s*\"([^\"]+)\"|\\(RecipeType\\.\\w+, RecipeType\\.\\w+, \"([^\"]+)\"\\)")
+                .Select(match => match.Groups[1].Success ? match.Groups[1].Value : match.Groups[2].Value)).ToHashSet();
         // RevampStarshipRecipes registers a recipe for every catalog module step and hull.
         craftable.UnionWith(SWLOR.Game.Server.Feature.ShipModuleDefinition.RevampModuleCatalog.Steps.Select(step => step.Tag));
         craftable.UnionWith(SWLOR.Game.Server.Feature.ShipDefinition.RevampShipCatalog.Hulls.Select(hull => hull.Tag));

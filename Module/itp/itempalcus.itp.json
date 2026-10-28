@@ -22983,6 +22983,17 @@
               "__struct_id": 0,
               "NAME": {
                 "type": "cexostring",
+                "value": "Station Core"
+              },
+              "RESREF": {
+                "type": "resref",
+                "value": "structure_5018"
+              }
+            },
+            {
+              "__struct_id": 0,
+              "NAME": {
+                "type": "cexostring",
                 "value": "Ladder, Dark"
               },
               "RESREF": {

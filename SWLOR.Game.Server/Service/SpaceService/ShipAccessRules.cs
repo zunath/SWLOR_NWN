@@ -37,9 +37,12 @@ namespace SWLOR.Game.Server.Service.SpaceService
 
             // Only Capital hulls are left: they need a major port or a level 2 player starport.
             if (request.IsPlayerStarport)
-                return request.PlayerStarportLevel >= CapitalStarportLevel
-                    ? StarportDockRefusal.None
-                    : StarportDockRefusal.PlayerStarportTooSmall;
+            {
+                if (request.PlayerStarportLevel >= CapitalStarportLevel)
+                    return StarportDockRefusal.None;
+
+                return request.IsStationStarport ? StarportDockRefusal.StationStarportTooSmall : StarportDockRefusal.PlayerStarportTooSmall;
+            }
 
             return request.CapitalDock ? StarportDockRefusal.None : StarportDockRefusal.NpcDockTooSmall;
         }
@@ -51,6 +54,7 @@ namespace SWLOR.Game.Server.Service.SpaceService
             StarportDockRefusal.AreaSizeLimit => $"Only {DescribeSizeLimit(areaMax)} ships can dock here.",
             StarportDockRefusal.NpcDockTooSmall => $"This dock cannot take a Capital ship. Capital ships dock only at {CapitalPortNames}.",
             StarportDockRefusal.PlayerStarportTooSmall => $"This starport cannot take a Capital ship. Its city's starport must reach level {CapitalStarportLevel} (upgrade it from Manage City).",
+            StarportDockRefusal.StationStarportTooSmall => $"This station cannot take a Capital ship. Its starport must reach level {CapitalStarportLevel} (upgrade it from Manage City).",
             _ => string.Empty,
         };
 

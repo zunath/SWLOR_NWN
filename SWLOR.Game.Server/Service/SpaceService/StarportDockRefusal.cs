@@ -16,5 +16,8 @@ namespace SWLOR.Game.Server.Service.SpaceService
 
         /// <summary>A Capital hull at a player starport below level 2.</summary>
         PlayerStarportTooSmall = 4,
+
+        /// <summary>A Capital hull at a player station's starport below level 2.</summary>
+        StationStarportTooSmall = 5,
     }
 }

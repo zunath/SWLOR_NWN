@@ -1,6 +1,7 @@
 using SWLOR.Game.Server.Entity;
 using SWLOR.Game.Server.Service;
 using SWLOR.Game.Server.Service.ConversationService;
+using SWLOR.Game.Server.Service.PropertyService;
 
 namespace SWLOR.Game.Server.Feature.DialogDefinition
 {
@@ -31,9 +32,22 @@ namespace SWLOR.Game.Server.Feature.DialogDefinition
 
                 var position = GetPosition(player);
                 var orientation = GetFacing(player);
-                var areaResref = GetResRef(GetArea(player));
+                var area = GetArea(player);
 
-                dbPlayer.RespawnAreaResref = areaResref;
+                // A player city's (or station's) Medical Center is an instance: register it by its property, and keep the
+                // last world registration as the fallback for when the building is gone.
+                var propertyId = Property.GetPropertyId(area);
+                var property = string.IsNullOrWhiteSpace(propertyId) ? null : DB.Get<WorldProperty>(propertyId);
+                if (property?.PropertyType == PropertyType.MedicalCenter)
+                {
+                    dbPlayer.RespawnPropertyId = property.Id;
+                    DB.Set(dbPlayer);
+                    FloatingTextStringOnCreature("You will return to this location the next time you die.", player, false);
+                    return;
+                }
+
+                dbPlayer.RespawnPropertyId = string.Empty;
+                dbPlayer.RespawnAreaResref = GetResRef(area);
                 dbPlayer.RespawnLocationOrientation = orientation;
                 dbPlayer.RespawnLocationX = position.X;
                 dbPlayer.RespawnLocationY = position.Y;

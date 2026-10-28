@@ -8276,6 +8276,128 @@
           "value": ""
         },
         "LocalizedName": {
+          "type": "cexolocstring",
+          "value": {
+            "0": "Station Anchor - MonCala1"
+          }
+        },
+        "MapNote": {
+          "type": "cexolocstring",
+          "value": {}
+        },
+        "MapNoteEnabled": {
+          "type": "byte",
+          "value": 1
+        },
+        "Tag": {
+          "type": "cexostring",
+          "value": "STATION_ANCHOR_MONCALA1"
+        },
+        "TemplateResRef": {
+          "type": "resref",
+          "value": "nw_waypoint001"
+        },
+        "XOrientation": {
+          "type": "float",
+          "value": -0.7245580616896932
+        },
+        "XPosition": {
+          "type": "float",
+          "value": 180.5
+        },
+        "YOrientation": {
+          "type": "float",
+          "value": 0.689213765997513
+        },
+        "YPosition": {
+          "type": "float",
+          "value": 140.5
+        },
+        "ZPosition": {
+          "type": "float",
+          "value": 2.999990463256836
+        }
+      },
+      {
+        "__struct_id": 5,
+        "Appearance": {
+          "type": "byte",
+          "value": 1
+        },
+        "Description": {
+          "type": "cexolocstring",
+          "value": {}
+        },
+        "HasMapNote": {
+          "type": "byte",
+          "value": 0
+        },
+        "LinkedTo": {
+          "type": "cexostring",
+          "value": ""
+        },
+        "LocalizedName": {
+          "type": "cexolocstring",
+          "value": {
+            "0": "Station Anchor - MonCala2"
+          }
+        },
+        "MapNote": {
+          "type": "cexolocstring",
+          "value": {}
+        },
+        "MapNoteEnabled": {
+          "type": "byte",
+          "value": 1
+        },
+        "Tag": {
+          "type": "cexostring",
+          "value": "STATION_ANCHOR_MONCALA2"
+        },
+        "TemplateResRef": {
+          "type": "resref",
+          "value": "nw_waypoint001"
+        },
+        "XOrientation": {
+          "type": "float",
+          "value": -0.8309922150680064
+        },
+        "XPosition": {
+          "type": "float",
+          "value": 220.5
+        },
+        "YOrientation": {
+          "type": "float",
+          "value": -0.556284044797591
+        },
+        "YPosition": {
+          "type": "float",
+          "value": 200.5
+        },
+        "ZPosition": {
+          "type": "float",
+          "value": 2.999990463256836
+        }
+      },
+      {
+        "__struct_id": 5,
+        "Appearance": {
+          "type": "byte",
+          "value": 1
+        },
+        "Description": {
+          "type": "cexolocstring",
+          "value": {}
+        },
+        "HasMapNote": {
+          "type": "byte",
+          "value": 0
+        },
+        "LinkedTo": {
+          "type": "cexostring",
+          "value": ""
+        },
+        "LocalizedName": {
           "id": 14817,
           "type": "cexolocstring",
           "value": {

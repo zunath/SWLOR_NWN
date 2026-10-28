@@ -1991,7 +1991,8 @@ namespace SWLOR.Game.Server.Service
                 upkeepPerkLevel,
                 city.Upgrades[PropertyUpgradeType.MedicalCenterLevel],
                 city.Upgrades[PropertyUpgradeType.StarportLevel],
-                city.Upgrades[PropertyUpgradeType.CantinaLevel]);
+                city.Upgrades[PropertyUpgradeType.CantinaLevel],
+                city.Upgrades.GetValueOrDefault(PropertyUpgradeType.JumpBeaconLevel, 1));
 
             Log.Write(LogGroup.Property, $"Weekly upkeep calcuated to be: {weeklyUpkeep} credits.");
             city.Upkeep += weeklyUpkeep;
@@ -2037,6 +2038,9 @@ namespace SWLOR.Game.Server.Service
         {
             if (property.PropertyType == PropertyType.Starship)
                 UnregisterStarshipFromStarports(property);
+
+            if (property.PropertyType == PropertyType.Structure && StationBuildingRules.IsStationBuilding(property.StructureType))
+                StationBuildings.OnDeleted(property);
 
             // Recursively clear any children properties tied to this property.
             // Children are also found by their parent Id because loading spawns structures that way,
@@ -2658,6 +2662,7 @@ namespace SWLOR.Game.Server.Service
                 property.ParentPropertyId = anchor.AreaResref;
                 property.StationAnchorId = anchor.Id;
                 InitializeNewCity(property, now);
+                property.Upgrades[PropertyUpgradeType.JumpBeaconLevel] = 1;
             });
 
             if (!TryGetLoadedInstance(station.Id, out var deck))
@@ -3342,7 +3347,8 @@ namespace SWLOR.Game.Server.Service
             if (property.PropertyType == PropertyType.City &&
                 structureDetail.RestrictedPropertyTypes == PropertyType.City)
             {
-                structureCount = structures.Count(x => GetStructureByType(x.StructureType).LayoutType != PropertyLayoutType.Invalid);
+                structureCount = structures.Count(x => GetStructureByType(x.StructureType).LayoutType != PropertyLayoutType.Invalid ||
+                                                       StationBuildingRules.IsStationBuilding(x.StructureType));
                 structureLimit = layout.BuildingLimit;
                 fixtureName = "Building";
             }
@@ -3388,6 +3394,17 @@ namespace SWLOR.Game.Server.Service
             if (!structureDetail.RestrictedPropertyTypes.HasFlag(property.PropertyType))
             {
                 FloatingTextStringOnCreature($"This {fixtureName} cannot be placed within this type of property.", player, false);
+                return;
+            }
+
+            // The Shipyard, Asteroid Drill and Jump Beacon stand only on a station deck, and no beacon reaches Wild Space.
+            var stationBuildingError = StationBuildingRules.GetPlacementError(
+                structureType,
+                Station.IsStation(property),
+                Station.GetAnchor(property)?.IsWildSpace ?? false);
+            if (!string.IsNullOrWhiteSpace(stationBuildingError))
+            {
+                FloatingTextStringOnCreature(stationBuildingError, player, false);
                 return;
             }
 
@@ -3769,6 +3786,9 @@ namespace SWLOR.Game.Server.Service
                     break;
                 case PropertyUpgradeType.CantinaLevel:
                     structureType = StructureType.Cantina;
+                    break;
+                case PropertyUpgradeType.JumpBeaconLevel:
+                    structureType = StructureType.JumpBeacon;
                     break;
             }
 

@@ -52,6 +52,7 @@ COMMODITIES = [
     (21, "AbdamarylliaExtract", "Abdamaryllia Extract", 250, 2, [], "Distilled extract of Korriban's abdamaryllia flower."),
     (22, "WitchHerbs", "Witch Herbs", 42, 1, [], "Dried herbs gathered by the witches of Dathomir."),
     (23, "BanthaMilk", "Bantha Milk", 65, 2, [], "Chilled churns of Dantooine bantha milk."),
+    (24, "StationFuel", "Station Fuel", 250, 2, [], "Refined hyperfuel cells that power station Jump Beacons."),
 ]
 
 # Comparable item blueprint and its Cost for each base price.
@@ -79,6 +80,7 @@ SOURCE = {
     "AbdamarylliaExtract": "abdamaryllia (Abdamaryllia) 250",
     "WitchHerbs": "herb_question (Questionable Herb) 42",
     "BanthaMilk": "milk_1 (Fresh Kath Hound Milk) 13, crate of 5",
+    "StationFuel": "reactor_core (Salvaged Reactor Core) 175 + gas_tibanna (Tibanna Gas) 27, refined: x1.25, rounded to 250",
 }
 
 AUTHORITIES = ["None", "Republic", "Czerka", "Sith"]
@@ -91,7 +93,7 @@ EXCHANGES = [
     ("Viscara", "Viscara", ["Viscara"], "viscaraorbit", "Republic", 1,
      ["VelesHoney", "ViscaranCrystals", "KinrathSilk"], ["PurifiedWater", "MedicalSupplies"]),
     ("CZ220", "CZ-220", ["CZ220"], "viscaraorbit", "Czerka", 1,
-     ["ReactorCores", "CzerkaMachineParts", "WeaponsCrates"], ["Grain", "AraciaTimber"]),
+     ["ReactorCores", "CzerkaMachineParts", "WeaponsCrates", "StationFuel"], ["Grain", "AraciaTimber"]),
     ("MonCala", "Mon Cala", ["MonCala"], "moncalaorbit", "Republic", 2,
      ["Seafood", "PurifiedWater", "HullSections", "MedicalSupplies"], ["KinrathSilk", "AraciaTimber", "NeonSalt"]),
     ("Hutlar", "Hutlar", ["Hutlar"], "hutlar_orbit", "None", 3,
@@ -107,6 +109,9 @@ EXCHANGES = [
     ("Dantooine", "Dantooine", ["Dantooine"], "dantooineorbit", "Republic", 5,
      ["Grain", "BanthaMilk"], ["ByyskHides", "BanthaHides", "BeastHides", "AraciaTimber"]),
 ]
+# Station Fuel (W13b, plan sections 25-26) is the Jump Beacon's fuel: a refined good worth more than its inputs (Reactor
+# Cores and Tibanna Gas), made by Czerka at CZ-220 beside its reactor cores, and imported nowhere: stations burn it.
+# Holdings' Processing Plants (W14b) add a second source later.
 # Departures from the plan's dock table: Mon Cala also exports Medical Supplies (kolto) and CZ-220 Weapons Crates,
 # because the table lists both as imports with no exporter. Smuggler's Moon Landing and Station share one exchange
 # (they share an orbit). Smuggler's Moon has no NPC spawns yet; tier 4 is its lanes' tier (Hutlar 3, Tatooine 4).

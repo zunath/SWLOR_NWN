@@ -22994,6 +22994,39 @@
               "__struct_id": 0,
               "NAME": {
                 "type": "cexostring",
+                "value": "Shipyard"
+              },
+              "RESREF": {
+                "type": "resref",
+                "value": "structure_5019"
+              }
+            },
+            {
+              "__struct_id": 0,
+              "NAME": {
+                "type": "cexostring",
+                "value": "Asteroid Drill"
+              },
+              "RESREF": {
+                "type": "resref",
+                "value": "structure_5020"
+              }
+            },
+            {
+              "__struct_id": 0,
+              "NAME": {
+                "type": "cexostring",
+                "value": "Jump Beacon"
+              },
+              "RESREF": {
+                "type": "resref",
+                "value": "structure_5021"
+              }
+            },
+            {
+              "__struct_id": 0,
+              "NAME": {
+                "type": "cexostring",
                 "value": "Ladder, Dark"
               },
               "RESREF": {

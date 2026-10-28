@@ -219,7 +219,9 @@ public class TradeRiskTests
             cargo.Keys.Should().OnlyContain(x => TradeCatalog.Exchanges.Any(e =>
                 e.OrbitResref == "viscaraorbit" && e.FindMarket(x)!.Role == CommodityRole.Producer));
             var value = cargo.Sum(x => x.Value * TradeLookup.GetCommodity(x.Key)!.BasePrice);
-            value.Should().BeInRange(ConvoyRules.GetCargoValue(tier) - 200, ConvoyRules.GetCargoValue(tier));
+            // Each pick rounds down to whole units, so it falls short by less than one unit of it.
+            var rounding = cargo.Keys.Sum(x => TradeLookup.GetCommodity(x)!.BasePrice);
+            value.Should().BeInRange(ConvoyRules.GetCargoValue(tier) - rounding, ConvoyRules.GetCargoValue(tier));
         }
 
         ConvoyRules.GetCandidateGoods("space_midrim1").Should().OnlyContain(x => TradeLookup.GetCommodity(x)!.Legality == CommodityLegality.Legal);

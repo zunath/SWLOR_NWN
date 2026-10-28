@@ -250,8 +250,10 @@ public class StationTests
         StationDeckRules.GetSlot(StructureType.Cantina).Should().Be(StationDeckSlotType.Cantina);
         StationDeckRules.GetSlot(StructureType.SmallHouseStyle1).Should().Be(StationDeckSlotType.Invalid);
 
-        foreach (var reserved in new[] { StationDeckSlotType.Shipyard, StationDeckSlotType.AsteroidDrill, StationDeckSlotType.JumpBeacon, StationDeckSlotType.StationFuel })
-            StationTuning.DeckSlots[reserved].Building.Should().Be(StructureType.Invalid);
+        StationDeckRules.GetSlot(StructureType.Shipyard).Should().Be(StationDeckSlotType.Shipyard);
+        StationDeckRules.GetSlot(StructureType.AsteroidDrill).Should().Be(StationDeckSlotType.AsteroidDrill);
+        StationDeckRules.GetSlot(StructureType.JumpBeacon).Should().Be(StationDeckSlotType.JumpBeacon);
+        StationTuning.DeckSlots[StationDeckSlotType.StationFuel].Building.Should().Be(StructureType.Invalid);
 
         StationTuning.DeckSlots.Keys.Should().BeEquivalentTo(Enum.GetValues<StationDeckSlotType>().Where(x => x != StationDeckSlotType.Invalid));
     }

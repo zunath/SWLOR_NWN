@@ -161,6 +161,15 @@ namespace SWLOR.Game.Server.Service.CraftService
         }
 
         /// <summary>
+        /// Requires the recipe to be crafted at a player station's Shipyard that admits the crafter (Capital hulls).
+        /// </summary>
+        public RecipeBuilder RequirementShipyard()
+        {
+            _activeRecipe.Requirements.Add(new RecipeShipyardRequirement());
+            return this;
+        }
+
+        /// <summary>
         /// Adds a perk level requirement to craft this recipe.
         /// </summary>
         /// <param name="perkType">The perk required to craft the recipe.</param>

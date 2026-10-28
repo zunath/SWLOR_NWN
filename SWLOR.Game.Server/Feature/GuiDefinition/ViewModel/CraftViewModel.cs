@@ -12,6 +12,7 @@ using SWLOR.Game.Server.Service.GuiService.Component;
 using SWLOR.Game.Server.Service.LogService;
 using SWLOR.Game.Server.Service.SkillService;
 using SWLOR.Game.Server.Service.SpaceService;
+using SWLOR.Game.Server.Service.StationService;
 using SWLOR.NWN.API.Engine;
 using SWLOR.NWN.API.NWNX;
 using SWLOR.NWN.API.NWScript.Enum;
@@ -36,6 +37,9 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
         private BlueprintDetail _activeBlueprint;
         private bool _hasBlueprint;
         private static readonly BlueprintBonuses _blueprintBonuses = new();
+
+        /// <summary>A Shipyard droid's progress bonus for this craft (Capital hulls at a station Shipyard), in percent.</summary>
+        private int _shipyardSpeedPercent;
 
         private const int RapidSynthesisRequiredSkillRank = 10;
         private const int CarefulSynthesisRequiredSkillRank = 30;
@@ -1252,8 +1256,37 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
             RemoveImmobility();
         }
 
+        /// <summary>Whether the recipe is built at a station Shipyard (the Capital hull deeds).</summary>
+        private bool IsShipyardRecipe() =>
+            Craft.GetRecipe(_recipe).Requirements.OfType<RecipeShipyardRequirement>().Any();
+
+        /// <summary>The Shipyard fee and the blueprint's credit cost must both be payable before a Shipyard build starts.</summary>
+        private bool ProcessShipyardFee()
+        {
+            if (!IsShipyardRecipe())
+                return true;
+
+            var fee = StationBuildings.GetShipyardFee(StationBuildings.GetShipyardStation(Player));
+            var blueprintCost = _hasBlueprint ? Craft.CalculateBlueprintCraftCreditCost(_blueprintItem) : 0;
+            if (GetGold(Player) < fee + blueprintCost)
+            {
+                StatusText = $"The Shipyard fee is {fee} credits!";
+                StatusColor = GuiColor.Red;
+                return false;
+            }
+
+            return true;
+        }
+
         private void SwitchToCraftMode()
         {
+            _shipyardSpeedPercent = 0;
+            if (IsShipyardRecipe())
+            {
+                StationBuildings.PayShipyardFee(Player, StationBuildings.GetShipyardStation(Player));
+                _shipyardSpeedPercent = StationBuildings.GetShipyardSpeedPercent(Player);
+            }
+
             if (_hasBlueprint)
             {
                 _activeBlueprint = Craft.GetBlueprintDetails(_blueprintItem);
@@ -1346,7 +1379,7 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
                 return;
             }
 
-            if (ProcessBlueprintRequirements() && ProcessComponents())
+            if (ProcessBlueprintRequirements() && ProcessShipyardFee() && ProcessComponents())
             {
                 SwitchToCraftMode();
             }
@@ -1364,7 +1397,8 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
             var steadyHandBonus = dbPlayer.Skills[recipe.Skill].Rank >= SteadyHandRequiredSkillRank ? 21 : 0;
             var progress = (int)((baseProgress + steadyHandBonus + craftsmanship * 0.65f) * recipeDiff);
 
-            return progress;
+            // A droid assigned to the station's Shipyard speeds up Capital hull builds.
+            return StationBuildingRules.ApplyShipyardSpeed(progress, _shipyardSpeedPercent);
         }
 
         private int CalculateQuality(int baseQuality)

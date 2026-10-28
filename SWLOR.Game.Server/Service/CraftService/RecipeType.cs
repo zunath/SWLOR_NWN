@@ -1202,6 +1202,9 @@ namespace SWLOR.Game.Server.Service.CraftService
         BlacksiteAnalysisStation = 1522,
         EspionageWorkbench = 1523,
         StationCore = 1524,
+        Shipyard = 1525,
+        AsteroidDrill = 1526,
+        JumpBeacon = 1527,
 
         #endregion
 

@@ -1,5 +1,5 @@
-"""Space revamp player stations (plan section 25, W13a): anchor sites, founding, upkeep, the deck, docking, exchanges and
-the passenger shuttle.
+"""Space revamp player stations (plan section 25, W13a and W13b): anchor sites, founding, upkeep, the deck, docking,
+exchanges, the passenger shuttle and the station-only buildings (the Shipyard, the Asteroid Drill and the Jump Beacon).
 
 usage: python stations.py            (writes the generated C# station tuning)
        python stations.py --check    (exit 1 when the generated file is out of date)
@@ -18,10 +18,12 @@ Sources:
 - The shuttle: GalaxyMap's orbital hop (60 s, 25 credits, every 60 s) for a station and the NPC dock of its orbit.
 """
 import json
+import re
 import sys
 from pathlib import Path
 
 sys.path.insert(0, str(Path(__file__).resolve().parent))
+import droids  # noqa: E402
 import trade  # noqa: E402
 import wildspace  # noqa: E402
 
@@ -150,7 +152,8 @@ def exterior_position(x, y):
 # ---------------------------------------------------------------------------------------------------------------
 # The station's land is an instance of station_deck, a copy of Smuggler's Moon's Corporate District (pw_ar_narscorpd)
 # with its NPCs, doors, transitions, triggers, sounds and working placeables removed and its static scenery kept.
-# The civic buildings snap to their slots (one of each per station); the station-only slots are kept clear for W13b.
+# The civic buildings and the station-only buildings (W13b) snap to their slots (one of each per station); the Station
+# Fuel slot is kept clear.
 # Every other building and structure keeps DECK_SLOT_CLEARANCE metres from every slot. Slot points are the plazas the
 # source area's NPCs stood on (unverified in a client).
 # (slot, x, y, building)
@@ -160,9 +163,9 @@ DECK_SLOTS = [
     ("MedicalCenter", 35.0, 117.0, "MedicalCenter"),
     ("Bank", 95.0, 39.0, "Bank"),
     ("Cantina", 61.0, 66.0, "Cantina"),
-    ("Shipyard", 98.0, 140.0, None),
-    ("AsteroidDrill", 111.0, 50.0, None),
-    ("JumpBeacon", 34.0, 79.0, None),
+    ("Shipyard", 98.0, 140.0, "Shipyard"),
+    ("AsteroidDrill", 111.0, 50.0, "AsteroidDrill"),
+    ("JumpBeacon", 34.0, 79.0, "JumpBeacon"),
     ("StationFuel", 83.0, 105.0, None),
 ]
 DECK_SLOT_CLEARANCE = 10.0
@@ -183,10 +186,175 @@ WILD_SPACE_SECONDS = 300
 WILD_SPACE_PERIOD_SECONDS = 120
 
 
-def weekly_upkeep(upkeep_perk=0, medical=1, starport=1, cantina=1):
+def weekly_upkeep(upkeep_perk=0, medical=1, starport=1, cantina=1, beacon=1):
     base = PRICE_PER_DAY * 7
     base -= int(base * UPKEEP_PERK_REDUCTION * upkeep_perk)
-    return base + (medical - 1 + starport - 1 + cantina - 1) * UPGRADE_PRICE_PER_LEVEL
+    return base + (medical - 1 + starport - 1 + cantina - 1 + beacon - 1) * UPGRADE_PRICE_PER_LEVEL
+
+
+# ---------------------------------------------------------------------------------------------------------------
+# Station-only buildings (W13b): the Shipyard, the Asteroid Drill and the Jump Beacon
+# ---------------------------------------------------------------------------------------------------------------
+# Each is a building without an interior: a console placeable that snaps to its reserved deck slot (one per station)
+# and an existing scenery model beside it. Players use the console. The Station Fuel slot stays clear (decision):
+# Station Fuel is cargo, burned from the jumping ship's own cargo bay, so it needs no building.
+# Recipes follow the city buildings' (StructureRecipes): Fabrication, Reinforced Construction Parts and Reinforced
+# Power Supply Units at levels 41-50; the Shipyard, the top building, matches the Lab (level 50, 8 Zinsiam).
+# RecipeType continues the Fabrication structures after the Station Core (1524), far below W14a's 7700+.
+# (structure, structure id, name, recipe id, recipe level, components, slot, console resref, model resref, description)
+BUILDINGS = [
+    ("Shipyard", 5019, "Shipyard", 1525, 50,
+     [("r_const_parts", 4), ("r_pow_supp_unit", 3), ("zinsiam", 8)], "Shipyard", "engineering_term", "swd2_crane001",
+     "A station shipyard. Deploy it on a player station's deck: Capital hulls can only be built at a Shipyard, and a "
+     "droid assigned to it speeds up the work."),
+    ("AsteroidDrill", 5020, "Asteroid Drill", 1526, 45,
+     [("r_const_parts", 4), ("r_pow_supp_unit", 2)], "AsteroidDrill", "swlor_0034", "swd3_mindr01",
+     "A station asteroid drill. Deploy it on a player station's deck: it extracts the anchor site's ore over time into "
+     "the station's drill storage, and a droid assigned to it raises the output."),
+    ("JumpBeacon", 5021, "Jump Beacon", 1527, 48,
+     [("r_const_parts", 4), ("r_pow_supp_unit", 3)], "JumpBeacon", "swlor_0024", "_mdrn_pl_comtwr1",
+     "A station jump beacon. Deploy it on a player station's deck: it jumps a ship docked at the station to another "
+     "station's beacon for Station Fuel. Beacons never reach into or out of Wild Space."),
+]
+BUILDING_MODEL_OFFSET = 6.0              # the scenery model stands this far behind the console (+Y)
+
+# Industry (plan section 27): an assigned droid's bonus is StationDroidRules' (droids.py numbers): the Shipyard builds
+# +0.3% faster per Industry point and the Drill mines +0.5% more per point, raised by Efficiency Protocol (+40% at II).
+MAX_INDUSTRY = droids.MAXIMUM_INDUSTRY
+BEST_EFFICIENCY_PERCENT = max(droids.PROTOCOLS["EfficiencyProtocol"][2].values())
+
+# Shipyard: Capital hull deeds are crafted only within this range of a Shipyard console that admits the crafter.
+SHIPYARD_RANGE = 10.0
+# The mayor's optional fee per Capital hull built, paid into the treasury (PropertyTaxType.Shipyard): a flat number of
+# credits like the citizenship tax, with the same 0-50,000 range (decision).
+SHIPYARD_FEE_MAX = 50000
+# A droid shortens builds (StationDroidRules.ShipyardBuildSpeedPercent): Capital deed crafting progress per synthesis
+# step rises by its percent. Crafting is the progress mini-game, so "faster" is fewer synthesis steps.
+
+# Asteroid Drill: units of ore a day, rolled from the anchor area's asteroid tables in the shares they spawn
+# (SpaceResourceSpawnDefinition, through each asteroid's ASTEROID_LOOT_TABLE_ID), so the drill mines the site's own ore
+# at its system's tier. A droid adds StationDroidRules.DrillOutputPercent. Storage holds this many days of output; a
+# full drill stops until someone collects.
+DRILL_UNITS_PER_DAY = 150
+DRILL_STORAGE_DAYS = 3
+# The anchor areas' resource spawn tables (their spawn waypoint's SPAWN_TABLE local; StationTests checks the git).
+AREA_RESOURCE_TABLES = {
+    "viscaraorbit": "SPACE_RESOURCES_VISCARA_ORBIT", "tatooineorbit": "SPACE_RESOURCES_TATOOINE_ORBIT",
+    "moncalaorbit": "SPACE_RESOURCES_MONCALA_ORBIT", "hutlar_orbit": "SPACE_RESOURCES_HUTLAR_ORBIT",
+    "space_dathomir": "SPACE_RESOURCES_DATHOMIR_ORBIT", "space_korriban": "SPACE_RESOURCES_KORRIBAN_ORBIT",
+    "dantooineorbit": "SPACE_RESOURCES_DATHOMIR_ORBIT", "narshadorbit": "SPACE_RESOURCES_VISCARA_ORBIT",
+    "space_wspulsar": "SPACE_RESOURCES_KORRIBAN_DEBRIS", "space_wsblkhole": "SPACE_RESOURCES_KORRIBAN_DEBRIS",
+    "space_wsionstorm": "SPACE_RESOURCES_KORRIBAN_DEBRIS", "space_wsmagnetar": "SPACE_RESOURCES_KORRIBAN_DEBRIS",
+    "space_wsredgiant": "SPACE_RESOURCES_KORRIBAN_DEBRIS", "space_wsgraveyrd": "SPACE_RESOURCES_KORRIBAN_DEBRIS",
+}
+# Income check (assumed; measure in a client): an active miner at the system pulls MINER_ORE_PER_HOUR ore, about one
+# asteroid of 6 ore a minute with two matched lasers (finding it, flying in, 2-3 six-second cycles), and ore is valued
+# at what an NPC store pays (40% of the item's Cost). A drill must stay under an hour of that a day, droid included.
+MINER_ORE_PER_HOUR = 360
+STORE_BUY_RATE = 0.40
+DRILL_MAX_MINING_HOURS = 1.0
+
+# Jump Beacon: the beacon level (a city upgrade, 1-3, like the Starport's) caps the hull: both ends must take it.
+BEACON_MAX_LEVEL = 3
+BEACON_MAX_HULL = {1: "Medium", 2: "Large", 3: "Capital"}
+# Station Fuel units a jump burns from the ship's cargo bay, by hull size, and the hulls that burn less (the Hutt Grand
+# Barge's signature: 50% less fuel, rounded up).
+JUMP_FUEL = {"Small": 1, "Medium": 2, "Large": 4, "Capital": 8}
+JUMP_FUEL_DISCOUNT = {"sd_huttgrandbarg": 50}
+# Who may jump to and from a beacon (the mayor's setting, default citizens). Allies are the citizens of the stations
+# the mayor lists.
+BEACON_ACCESS = ["Citizens", "Allies", "Anyone"]
+
+
+def jump_fuel(size, hull_tag=""):
+    units = JUMP_FUEL[size]
+    discount = JUMP_FUEL_DISCOUNT.get(hull_tag, 0)
+    return max(1, -(-units * (100 - discount) // 100))
+
+
+def _cs_source(*parts):
+    return (REPO / "SWLOR.Game.Server" / Path(*parts)).read_text(encoding="utf-8")
+
+
+def loot_table_rows():
+    """HarvestingLootTableDefinition: table name to [(resref, weight)]."""
+    text = _cs_source("Feature", "LootTableDefinition", "HarvestingLootTableDefinition.cs")
+    tables = {}
+    for block in re.split(r'_builder\.Create\(', text)[1:]:
+        name = re.match(r'"([A-Z0-9_]+)"', block).group(1)
+        tables[name] = [(r, int(w)) for r, w in re.findall(r'\.AddItem\("([^"]+)",\s*(\d+)', block)]
+    return tables
+
+
+def resource_spawn_rows():
+    """SpaceResourceSpawnDefinition: table name to [(placeable resref, frequency)]."""
+    text = _cs_source("Feature", "SpawnDefinition", "SpaceResourceSpawnDefinition.cs")
+    tables = {}
+    for block in re.split(r'_builder\.Create\(', text)[1:]:
+        name = re.match(r'"([A-Z0-9_]+)"', block).group(1)
+        tables[name] = [(r, int(w)) for r, w in
+                        re.findall(r'AddSpawn\(ObjectType\.Placeable,\s*"([^"]+)"\)\s*\.WithFrequency\((\d+)\)', block)]
+    return tables
+
+
+def asteroid_table(resref):
+    """The ASTEROID_LOOT_TABLE_ID local of an asteroid placeable, or None for anything else (gas clouds)."""
+    data = json.loads((REPO / "Module" / "utp" / f"{resref}.utp.json").read_text(encoding="latin-1"))
+    for var in data.get("VarTable", {}).get("value", []):
+        if var["Name"]["value"] == "ASTEROID_LOOT_TABLE_ID":
+            return var["Value"]["value"]
+    return None
+
+
+def drill_tables():
+    """Each anchor area's drill tables: [(asteroid loot table, weight)] in the shares its asteroids spawn."""
+    spawns = resource_spawn_rows()
+    out = {}
+    for area in sorted({a["area"] for a in anchors()}):
+        rows = []
+        for resref, frequency in spawns[AREA_RESOURCE_TABLES[area]]:
+            table = asteroid_table(resref)
+            if table:
+                rows.append((table, frequency))
+        out[area] = rows
+    return out
+
+
+def system_tier(area):
+    return wildspace.CONTENT_TIER if area in wildspace.SYSTEM_NAMES else trade.ORBIT_TIERS[area]
+
+
+def ore_value(area):
+    """Credits an NPC store pays for one unit of the area's drill ore, on average."""
+    tables = loot_table_rows()
+    rows = drill_tables()[area]
+    total_weight = sum(w for _, w in rows)
+    value = 0.0
+    for table, weight in rows:
+        items = tables[table]
+        item_weight = sum(w for _, w in items)
+        value += weight / total_weight * sum(w / item_weight * trade.item_cost(r) for r, w in items)
+    return value * STORE_BUY_RATE
+
+
+def drill_droid_percent(industry=0, efficiency=0):
+    return round(droids.DRILL_OUTPUT_PERCENT_PER_INDUSTRY * industry * (1 + efficiency / 100))
+
+
+def drill_units_per_day(industry=0, efficiency=0):
+    return DRILL_UNITS_PER_DAY * (1 + drill_droid_percent(industry, efficiency) / 100)
+
+
+def drill_income():
+    """Per anchor area: tier, credits a day (no droid, best droid), a miner's credits an hour, and the mining hours."""
+    rows = []
+    for area in sorted(drill_tables(), key=lambda a: (system_tier(a), a)):
+        unit = ore_value(area)
+        day, best = drill_units_per_day() * unit, drill_units_per_day(MAX_INDUSTRY, BEST_EFFICIENCY_PERCENT) * unit
+        miner = MINER_ORE_PER_HOUR * unit
+        rows.append(dict(area=area, tier=system_tier(area), unit=unit, day=day, best=best, miner=miner,
+                         hours=day / miner, best_hours=best / miner))
+    return rows
 
 
 # ---------------------------------------------------------------------------------------------------------------
@@ -219,11 +387,12 @@ def tuning_cs():
     citizens = ", ".join(str(c) for c in CITIZENS_REQUIRED)
     ex, ey, efacing = DECK_ENTRANCE
     return (HEADER + "using System.Collections.Generic;\nusing SWLOR.Game.Server.Enumeration;\n"
-            "using SWLOR.Game.Server.Service.PropertyService;\nusing SWLOR.Game.Server.Service.TradeService;\n\n"
+            "using SWLOR.Game.Server.Service.CraftService;\nusing SWLOR.Game.Server.Service.PropertyService;\n"
+            "using SWLOR.Game.Server.Service.SpaceService;\nusing SWLOR.Game.Server.Service.TradeService;\n\n"
             "namespace SWLOR.Game.Server.Service.StationService\n{\n"
             "    /// <summary>\n"
             "    /// The player station numbers (plan section 25): founding and upkeep (the planet city's), the anchor sites,\n"
-            "    /// the station exterior, the deck slots and the passenger shuttle.\n"
+            "    /// the station exterior, the deck slots, the passenger shuttle and the station-only buildings.\n"
             "    /// </summary>\n"
             "    public static class StationTuning\n    {\n"
             f"        public const int InitialPrice = {INITIAL_PRICE};\n"
@@ -266,8 +435,47 @@ def tuning_cs():
             f"        public const int OrbitHopPeriodSeconds = {ORBIT_HOP_PERIOD_SECONDS};\n"
             f"        public const int WildSpaceFare = {WILD_SPACE_FARE};\n"
             f"        public const int WildSpaceSeconds = {WILD_SPACE_SECONDS};\n"
-            f"        public const int WildSpacePeriodSeconds = {WILD_SPACE_PERIOD_SECONDS};\n"
+            f"        public const int WildSpacePeriodSeconds = {WILD_SPACE_PERIOD_SECONDS};\n\n"
+            + buildings_cs() +
             "    }\n}\n")
+
+
+def buildings_cs():
+    q = json.dumps
+    building_lines = "\n".join(
+        f"            new StationBuildingDetail {{ Structure = StructureType.{b}, Name = {q(name)}, "
+        f"ItemResref = {q(f'structure_{sid}')}, Recipe = RecipeType.{b}, RecipeLevel = {level}, "
+        f"Components = new[] {{ {', '.join(f'({q(r)}, {n})' for r, n in comps)} }}, Slot = StationDeckSlotType.{slot}, "
+        f"ConsoleResref = {q(console)}, ModelResref = {q(model)} }},"
+        for b, sid, name, rid, level, comps, slot, console, model, _ in BUILDINGS)
+    table_lines = "\n".join(
+        f"            [{q(area)}] = new[] {{ {', '.join(f'({q(t)}, {w})' for t, w in rows)} }},"
+        for area, rows in drill_tables().items())
+    hull_lines = ", ".join(f"[{lvl}] = ShipSize.{size}" for lvl, size in BEACON_MAX_HULL.items())
+    fuel_lines = ", ".join(f"[ShipSize.{size}] = {n}" for size, n in JUMP_FUEL.items())
+    discount_lines = ", ".join(f"[{q(tag)}] = {pct}" for tag, pct in JUMP_FUEL_DISCOUNT.items())
+    return ("        // Station-only buildings: the Shipyard, the Asteroid Drill and the Jump Beacon\n"
+            "        public static readonly IReadOnlyList<StationBuildingDetail> Buildings = new List<StationBuildingDetail>\n        {\n"
+            f"{building_lines}\n        }};\n\n"
+            f"        public const float BuildingModelOffset = {f(BUILDING_MODEL_OFFSET)};\n\n"
+            "        // The Shipyard\n"
+            f"        public const float ShipyardRange = {f(SHIPYARD_RANGE)};\n"
+            f"        public const int ShipyardFeeMax = {SHIPYARD_FEE_MAX};\n\n"
+            "        // The Asteroid Drill\n"
+            f"        public const int DrillUnitsPerDay = {DRILL_UNITS_PER_DAY};\n"
+            f"        public const int DrillStorageDays = {DRILL_STORAGE_DAYS};\n\n"
+            "        /// <summary>Each anchor area's asteroid loot tables, weighted as its asteroids spawn.</summary>\n"
+            "        public static readonly IReadOnlyDictionary<string, (string LootTable, int Weight)[]> DrillTables = "
+            "new Dictionary<string, (string LootTable, int Weight)[]>\n        {\n"
+            f"{table_lines}\n        }};\n\n"
+            "        // The Jump Beacon\n"
+            f"        public const int BeaconMaxLevel = {BEACON_MAX_LEVEL};\n"
+            "        public static readonly IReadOnlyDictionary<int, ShipSize> BeaconMaxHull = "
+            f"new Dictionary<int, ShipSize> {{ {hull_lines} }};\n"
+            "        public static readonly IReadOnlyDictionary<ShipSize, int> JumpFuel = "
+            f"new Dictionary<ShipSize, int> {{ {fuel_lines} }};\n"
+            "        public static readonly IReadOnlyDictionary<string, int> JumpFuelDiscountPercent = "
+            f"new Dictionary<string, int> {{ {discount_lines} }};\n")
 
 
 WRITES = {"SWLOR.Game.Server/Service/StationService/StationTuning.cs": tuning_cs}
@@ -278,8 +486,8 @@ WRITES = {"SWLOR.Game.Server/Service/StationService/StationTuning.cs": tuning_cs
 # ---------------------------------------------------------------------------------------------------------------
 def stations_tab(Sheet):
     s = Sheet("Player Stations (Revamp)", [26, 18, 16, 14, 14, 14, 14, 60])
-    s.title("Player Stations (Revamp): anchor sites, founding, upkeep, the deck, docking, exchanges and the shuttle")
-    s.note("Dev Status: Proposed (space revamp W13a draft). Generated by tools/SpaceRevampBalance/stations.py; plan section 25.")
+    s.title("Player Stations (Revamp): anchor sites, founding, upkeep, the deck, docking, exchanges, the shuttle and the station-only buildings")
+    s.note("Dev Status: Proposed (space revamp W13a and W13b drafts). Generated by tools/SpaceRevampBalance/stations.py; plan section 25.")
     s.blank()
     s.title("Founding and upkeep (the planet city's numbers)")
     s.table(["Rule", "Value", "", "", "", "", "", "Notes"], [
@@ -309,7 +517,7 @@ def stations_tab(Sheet):
            "scaled " + " / ".join(f"{x:.1f}" for x in EXTERIOR_SCALE_BY_LEVEL) + " at city levels 1-5.")
     s.title("Deck slots (station_deck)")
     s.table(["Slot", "X", "Y", "Building", "", "", "", "Notes"],
-            [[slot, x, y, b or "-", "", "", "", "civic: snaps here, one per station" if b else "kept clear for W13b"]
+            [[slot, x, y, b or "-", "", "", "", "snaps here, one per station" if b else "kept clear (Station Fuel is cargo)"]
              for slot, x, y, b in DECK_SLOTS])
     s.note(f"Other buildings and structures keep {DECK_SLOT_CLEARANCE:.0f} m from every slot.")
     s.title("Docking, exchanges and the shuttle")
@@ -321,12 +529,41 @@ def stations_tab(Sheet):
         ["Wild Space shuttle", f"{WILD_SPACE_FARE} cr", f"{WILD_SPACE_SECONDS} s", f"every {WILD_SPACE_PERIOD_SECONDS} s", "", "", "",
          "to and from the nearest open port; passengers only"],
     ])
+    s.title("Station-only buildings (W13b): consoles at their deck slots, one each per station")
+    s.table(["Building", "Recipe", "Level", "Components", "Console", "Model", "", "Notes"],
+            [[name, f"RecipeType {rid}", level, ", ".join(f"{n} {r}" for r, n in comps), console, model, "", f"structure_{sid}; {desc}"]
+             for _, sid, name, rid, level, comps, _, console, model, desc in BUILDINGS])
+    s.table(["Rule", "Value", "", "", "", "", "", "Notes"], [
+        ["Shipyard gate", "Capital deeds", "", "", "", "", "", f"crafted only within {SHIPYARD_RANGE:.0f} m of a Shipyard console that admits the crafter"],
+        ["Shipyard access", "Citizens / Anyone", "", "", "", "", "", "the mayor's choice (Edit Taxes permission), citizens by default"],
+        ["Shipyard fee", f"0-{SHIPYARD_FEE_MAX}", "", "", "", "", "", "credits per Capital hull, paid into the treasury (PropertyTaxType.Shipyard 4, Manage City)"],
+        ["Shipyard droid", f"+{droids.SHIPYARD_BUILD_SPEED_PERCENT_PER_INDUSTRY:g}% / Industry", f"+{droids.SHIPYARD_BUILD_SPEED_PERCENT_PER_INDUSTRY * MAX_INDUSTRY:.0f}% at {MAX_INDUSTRY}", "", "", "", "",
+         "crafting progress per synthesis step on Capital deeds (StationDroidRules)"],
+        ["Drill output", f"{DRILL_UNITS_PER_DAY} ore a day", f"{DRILL_STORAGE_DAYS} days stored", "", "", "", "",
+         "rolled from the anchor area's asteroid tables in their spawn shares; stops while full"],
+        ["Drill droid", f"+{droids.DRILL_OUTPUT_PERCENT_PER_INDUSTRY:g}% / Industry", f"+{drill_droid_percent(MAX_INDUSTRY)}% at {MAX_INDUSTRY}",
+         f"+{drill_droid_percent(MAX_INDUSTRY, BEST_EFFICIENCY_PERCENT)}% with Efficiency", "", "", "", "output (StationDroidRules)"],
+        ["Beacon level", "1-3", "", "", "", "", "", "a city upgrade (Manage City), +" + f"{UPGRADE_PRICE_PER_LEVEL} upkeep a week per level above 1; "
+         + ", ".join(f"level {lvl} {size}" for lvl, size in BEACON_MAX_HULL.items()) + " hulls; both beacons must take the hull"],
+        ["Jump fuel", " / ".join(f"{size} {n}" for size, n in JUMP_FUEL.items()), "", "", "", "", "",
+         "Station Fuel units from the ship's cargo bay; the Hutt Grand Barge burns 50% less (rounded up)"],
+        ["Beacon access", " / ".join(BEACON_ACCESS), "", "", "", "", "", "who may jump to and from it (Edit Taxes permission), citizens by default; allies are the citizens of the stations the mayor lists"],
+        ["Wild Space", "never", "", "", "", "", "", "no beacon in Wild Space, and no jump into or out of it"],
+    ])
+    s.title(f"Asteroid Drill income against an active miner ({MINER_ORE_PER_HOUR} ore an hour, ore at {STORE_BUY_RATE:.0%} of Cost)")
+    s.table(["Anchor area", "Tier", "Credits / ore", "Drill / day", "Best droid / day", "Miner / hour", "Hours", "Notes"],
+            [[r["area"], r["tier"], round(r["unit"], 1), round(r["day"]), round(r["best"]), round(r["miner"]),
+              f"{r['hours']:.2f} / {r['best_hours']:.2f}", "mining hours a day without / with the best droid"]
+             for r in drill_income()])
     return s
 
 
 def check_anchors():
     """Every anchor is in a known area, inside the map, and clear of the area's placeables and waypoints."""
     problems = []
+    for r in drill_income():
+        if r["best_hours"] >= DRILL_MAX_MINING_HOURS:
+            problems.append(f"{r['area']} drill pays {r['best_hours']:.2f} mining hours a day")
     seen = set()
     for a in anchors():
         if a["id"] in seen:

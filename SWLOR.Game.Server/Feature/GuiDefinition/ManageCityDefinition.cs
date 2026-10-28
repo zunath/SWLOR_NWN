@@ -111,6 +111,25 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition
                             col.AddRow(row =>
                             {
                                 row.AddLabel()
+                                    .SetHorizontalAlign(NuiHorizontalAlign.Left)
+                                    .SetVerticalAlign(NuiVerticalAlign.Middle)
+                                    .SetHeight(25f)
+                                    .BindText(model => model.JumpBeaconLevel)
+                                    .BindTooltip(model => model.JumpBeaconCurrentUpgrade);
+
+                                row.AddButton()
+                                    .SetText("Upgrade Jump Beacon")
+                                    .SetHeight(35f)
+                                    .BindOnClicked(model => model.UpgradeJumpBeaconLevel())
+                                    .BindIsEnabled(model => model.CanUpgradeJumpBeacons)
+                                    .BindTooltip(model => model.JumpBeaconNextUpgrade);
+
+                                row.BindIsVisible(model => model.IsStation);
+                            });
+
+                            col.AddRow(row =>
+                            {
+                                row.AddLabel()
                                     .SetText("Taxes & Fees")
                                     .SetHeight(25f)
                                     .SetHorizontalAlign(NuiHorizontalAlign.Center)
@@ -163,6 +182,26 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition
                             {
                                 row.AddTextEdit()
                                     .BindValue(model => model.ExchangeTariff);
+                            });
+
+                            col.AddRow(row =>
+                            {
+                                row.AddLabel()
+                                    .SetHorizontalAlign(NuiHorizontalAlign.Left)
+                                    .SetVerticalAlign(NuiVerticalAlign.Middle)
+                                    .SetText("Shipyard Fee:")
+                                    .SetHeight(25f)
+                                    .SetTooltip("Flat credits charged for each Capital hull built at your station's Shipyard, paid into the treasury. (Range: 0-50000)");
+
+                                row.BindIsVisible(model => model.IsStation);
+                            });
+
+                            col.AddRow(row =>
+                            {
+                                row.AddTextEdit()
+                                    .BindValue(model => model.ShipyardFee);
+
+                                row.BindIsVisible(model => model.IsStation);
                             });
 
                             col.AddRow(row =>

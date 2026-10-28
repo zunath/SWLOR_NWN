@@ -3,14 +3,16 @@
 // </auto-generated>
 using System.Collections.Generic;
 using SWLOR.Game.Server.Enumeration;
+using SWLOR.Game.Server.Service.CraftService;
 using SWLOR.Game.Server.Service.PropertyService;
+using SWLOR.Game.Server.Service.SpaceService;
 using SWLOR.Game.Server.Service.TradeService;
 
 namespace SWLOR.Game.Server.Service.StationService
 {
     /// <summary>
     /// The player station numbers (plan section 25): founding and upkeep (the planet city's), the anchor sites,
-    /// the station exterior, the deck slots and the passenger shuttle.
+    /// the station exterior, the deck slots, the passenger shuttle and the station-only buildings.
     /// </summary>
     public static class StationTuning
     {
@@ -83,9 +85,9 @@ namespace SWLOR.Game.Server.Service.StationService
             [StationDeckSlotType.MedicalCenter] = new StationDeckSlot { Type = StationDeckSlotType.MedicalCenter, X = 35.0f, Y = 117.0f, Building = StructureType.MedicalCenter },
             [StationDeckSlotType.Bank] = new StationDeckSlot { Type = StationDeckSlotType.Bank, X = 95.0f, Y = 39.0f, Building = StructureType.Bank },
             [StationDeckSlotType.Cantina] = new StationDeckSlot { Type = StationDeckSlotType.Cantina, X = 61.0f, Y = 66.0f, Building = StructureType.Cantina },
-            [StationDeckSlotType.Shipyard] = new StationDeckSlot { Type = StationDeckSlotType.Shipyard, X = 98.0f, Y = 140.0f, Building = StructureType.Invalid },
-            [StationDeckSlotType.AsteroidDrill] = new StationDeckSlot { Type = StationDeckSlotType.AsteroidDrill, X = 111.0f, Y = 50.0f, Building = StructureType.Invalid },
-            [StationDeckSlotType.JumpBeacon] = new StationDeckSlot { Type = StationDeckSlotType.JumpBeacon, X = 34.0f, Y = 79.0f, Building = StructureType.Invalid },
+            [StationDeckSlotType.Shipyard] = new StationDeckSlot { Type = StationDeckSlotType.Shipyard, X = 98.0f, Y = 140.0f, Building = StructureType.Shipyard },
+            [StationDeckSlotType.AsteroidDrill] = new StationDeckSlot { Type = StationDeckSlotType.AsteroidDrill, X = 111.0f, Y = 50.0f, Building = StructureType.AsteroidDrill },
+            [StationDeckSlotType.JumpBeacon] = new StationDeckSlot { Type = StationDeckSlotType.JumpBeacon, X = 34.0f, Y = 79.0f, Building = StructureType.JumpBeacon },
             [StationDeckSlotType.StationFuel] = new StationDeckSlot { Type = StationDeckSlotType.StationFuel, X = 83.0f, Y = 105.0f, Building = StructureType.Invalid },
         };
 
@@ -96,5 +98,48 @@ namespace SWLOR.Game.Server.Service.StationService
         public const int WildSpaceFare = 1000;
         public const int WildSpaceSeconds = 300;
         public const int WildSpacePeriodSeconds = 120;
+
+        // Station-only buildings: the Shipyard, the Asteroid Drill and the Jump Beacon
+        public static readonly IReadOnlyList<StationBuildingDetail> Buildings = new List<StationBuildingDetail>
+        {
+            new StationBuildingDetail { Structure = StructureType.Shipyard, Name = "Shipyard", ItemResref = "structure_5019", Recipe = RecipeType.Shipyard, RecipeLevel = 50, Components = new[] { ("r_const_parts", 4), ("r_pow_supp_unit", 3), ("zinsiam", 8) }, Slot = StationDeckSlotType.Shipyard, ConsoleResref = "engineering_term", ModelResref = "swd2_crane001" },
+            new StationBuildingDetail { Structure = StructureType.AsteroidDrill, Name = "Asteroid Drill", ItemResref = "structure_5020", Recipe = RecipeType.AsteroidDrill, RecipeLevel = 45, Components = new[] { ("r_const_parts", 4), ("r_pow_supp_unit", 2) }, Slot = StationDeckSlotType.AsteroidDrill, ConsoleResref = "swlor_0034", ModelResref = "swd3_mindr01" },
+            new StationBuildingDetail { Structure = StructureType.JumpBeacon, Name = "Jump Beacon", ItemResref = "structure_5021", Recipe = RecipeType.JumpBeacon, RecipeLevel = 48, Components = new[] { ("r_const_parts", 4), ("r_pow_supp_unit", 3) }, Slot = StationDeckSlotType.JumpBeacon, ConsoleResref = "swlor_0024", ModelResref = "_mdrn_pl_comtwr1" },
+        };
+
+        public const float BuildingModelOffset = 6.0f;
+
+        // The Shipyard
+        public const float ShipyardRange = 10.0f;
+        public const int ShipyardFeeMax = 50000;
+
+        // The Asteroid Drill
+        public const int DrillUnitsPerDay = 150;
+        public const int DrillStorageDays = 3;
+
+        /// <summary>Each anchor area's asteroid loot tables, weighted as its asteroids spawn.</summary>
+        public static readonly IReadOnlyDictionary<string, (string LootTable, int Weight)[]> DrillTables = new Dictionary<string, (string LootTable, int Weight)[]>
+        {
+            ["dantooineorbit"] = new[] { ("ASTEROID_BARINIUM", 37), ("ASTEROID_GOSTIAN", 25), ("ASTEROID_ARDANIUM", 3) },
+            ["hutlar_orbit"] = new[] { ("ASTEROID_CURRIAN", 50), ("ASTEROID_IDAILIA", 30), ("ASTEROID_BARINIUM", 5) },
+            ["moncalaorbit"] = new[] { ("ASTEROID_TILARIUM", 50), ("ASTEROID_CURRIAN", 30), ("ASTEROID_IDAILIA", 5) },
+            ["narshadorbit"] = new[] { ("ASTEROID_TILARIUM", 50), ("ASTEROID_CURRIAN", 5) },
+            ["space_dathomir"] = new[] { ("ASTEROID_BARINIUM", 37), ("ASTEROID_GOSTIAN", 25), ("ASTEROID_ARDANIUM", 3) },
+            ["space_korriban"] = new[] { ("ASTEROID_GOSTIAN", 25), ("ASTEROID_ARDANIUM", 1) },
+            ["space_wsblkhole"] = new[] { ("ASTEROID_GOSTIAN", 25), ("ASTEROID_ARDANIUM", 3) },
+            ["space_wsgraveyrd"] = new[] { ("ASTEROID_GOSTIAN", 25), ("ASTEROID_ARDANIUM", 3) },
+            ["space_wsionstorm"] = new[] { ("ASTEROID_GOSTIAN", 25), ("ASTEROID_ARDANIUM", 3) },
+            ["space_wsmagnetar"] = new[] { ("ASTEROID_GOSTIAN", 25), ("ASTEROID_ARDANIUM", 3) },
+            ["space_wspulsar"] = new[] { ("ASTEROID_GOSTIAN", 25), ("ASTEROID_ARDANIUM", 3) },
+            ["space_wsredgiant"] = new[] { ("ASTEROID_GOSTIAN", 25), ("ASTEROID_ARDANIUM", 3) },
+            ["tatooineorbit"] = new[] { ("ASTEROID_IDAILIA", 50), ("ASTEROID_BARINIUM", 30), ("ASTEROID_GOSTIAN", 5) },
+            ["viscaraorbit"] = new[] { ("ASTEROID_TILARIUM", 50), ("ASTEROID_CURRIAN", 5) },
+        };
+
+        // The Jump Beacon
+        public const int BeaconMaxLevel = 3;
+        public static readonly IReadOnlyDictionary<int, ShipSize> BeaconMaxHull = new Dictionary<int, ShipSize> { [1] = ShipSize.Medium, [2] = ShipSize.Large, [3] = ShipSize.Capital };
+        public static readonly IReadOnlyDictionary<ShipSize, int> JumpFuel = new Dictionary<ShipSize, int> { [ShipSize.Small] = 1, [ShipSize.Medium] = 2, [ShipSize.Large] = 4, [ShipSize.Capital] = 8 };
+        public static readonly IReadOnlyDictionary<string, int> JumpFuelDiscountPercent = new Dictionary<string, int> { ["sd_huttgrandbarg"] = 50 };
     }
 }

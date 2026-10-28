@@ -30,5 +30,6 @@ namespace SWLOR.Game.Server.Service.TradeService
         AbdamarylliaExtract = 21,
         WitchHerbs = 22,
         BanthaMilk = 23,
+        StationFuel = 24,
     }
 }

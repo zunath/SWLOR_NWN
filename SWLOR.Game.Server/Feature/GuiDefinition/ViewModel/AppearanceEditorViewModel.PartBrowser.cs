@@ -59,6 +59,7 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
         private bool _browserFrontOnly;
         private float[] _paletteOutline = Array.Empty<float>();
         private int _resizeGeneration;
+        private bool _isCompactLayout;
         private bool _compactPageLabels;
 
         private int BrowserPageSize => _browserColumns * _browserRows;
@@ -357,6 +358,8 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
         public string SelectedPartMetal1Code { get => Get<string>(); set => Set(value); }
         public string SelectedPartMetal2Code { get => Get<string>(); set => Set(value); }
         public bool IsPartColorsVisible { get => Get<bool>(); set => Set(value); }
+        public string SelectedPartColorsTitle { get => Get<string>(); set => Set(value); }
+        public string BaseColorsTitle { get => Get<string>(); set => Set(value); }
 
         public GuiRectangle BodySkinRegion { get => Get<GuiRectangle>(); set => Set(value); }
         public GuiRectangle BodyHairRegion { get => Get<GuiRectangle>(); set => Set(value); }
@@ -661,33 +664,61 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
             return Math.Clamp((int)(available / tile), 1, MaxBrowserColumns);
         }
 
+        /// <summary>
+        /// Extra height for controls a narrow browser stacks: two columns put the pager on two
+        /// rows; one column also stacks the view buttons and puts the pager on three rows.
+        /// </summary>
+        private static float StackedControlsHeight(int columns) => columns switch
+        {
+            1 => 150f,
+            2 => 40f,
+            _ => 0f
+        };
+
+        /// <summary>Window height that holds one row of pictures in a one-column browser.</summary>
+        private static readonly float BrowserMinimumWindowHeight = 260f + StackedControlsHeight(1) + 138f;
+
+        /// <summary>
+        /// True when the window is too small for one column or one row of pictures beside the
+        /// other panels; the editor then keeps a fixed size and the window content scrolls.
+        /// </summary>
+        internal static bool IsCompactWindow(float windowWidth, float windowHeight, bool hasSideColumns)
+        {
+            const float sideColumns = AppearanceEditorDefinition.MapWidth + AppearanceEditorDefinition.ColoursWidth + 48f;
+            const float weaponColumn = AppearanceEditorDefinition.WeaponCategoryWidth + 50f;
+            const float tile = AppearanceEditorDefinition.TileSize + 14f;
+            if (windowWidth <= 0f || windowHeight <= 0f)
+                return false;
+            var available = windowWidth - (hasSideColumns ? sideColumns : weaponColumn) - 44f;
+            return available < tile || windowHeight < BrowserMinimumWindowHeight;
+        }
+
         /// <summary>Tile rows that fit the window height; narrow browsers stack their pager on two rows.</summary>
         internal static int BrowserRowsForHeight(float windowHeight, int columns)
         {
             const float overhead = 260f;
             const float row = 138f;
-            var available = windowHeight - overhead - (columns <= 2 ? 40f : 0f);
+            var available = windowHeight - overhead - StackedControlsHeight(columns);
             return Math.Clamp((int)(available / row), 1, MaxBrowserRows);
         }
 
         /// <summary>
-        /// Grows a window smaller than the editor's minimum (an old saved size, or a drag) back to
-        /// the minimum, within the player's screen, so no panel is cut off.
+        /// Caps a saved window larger than the player's screen to it and pulls it back on screen.
+        /// Never grows a window, so a player can shrink the editor and it stays that size.
         /// </summary>
         /// <param name="screenWidth">Screen width in physical pixels (0 when unknown), like Geometry X.</param>
         /// <param name="screenHeight">Screen height in physical pixels (0 when unknown), like Geometry Y.</param>
         /// <param name="scale">GUI scale; a window's on-screen size is its width and height times this.</param>
-        internal static GuiRectangle FitMinimumWindow(GuiRectangle geometry, float screenWidth, float screenHeight, float scale)
+        internal static GuiRectangle FitWindowToScreen(GuiRectangle geometry, float screenWidth, float screenHeight, float scale)
         {
             if (geometry == null)
                 return null;
             if (scale <= 0f)
                 scale = 1f;
-            var width = Math.Max(geometry.Width, AppearanceEditorDefinition.MinimumWindowWidth);
-            var height = Math.Max(geometry.Height, AppearanceEditorDefinition.MinimumWindowHeight);
+            var width = geometry.Width;
+            var height = geometry.Height;
             var x = geometry.X;
             var y = geometry.Y;
-            // A saved size larger than this screen (or the minimum on a small screen) is capped to it.
             if (screenWidth > 0f)
             {
                 width = Math.Min(width, screenWidth / scale);
@@ -703,12 +734,13 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
             return new GuiRectangle(x, y, width, height);
         }
 
-        private void EnsureMinimumWindowSize()
+        /// <summary>Runs once when the window opens, never on a resize, so a drag is never undone.</summary>
+        private void FitWindowToPlayerScreen()
         {
             var scale = GetPlayerDeviceProperty(Player, PlayerDevicePropertyType.GuiScale) / 100f;
             var screenWidth = GetPlayerDeviceProperty(Player, PlayerDevicePropertyType.GuiWidth);
             var screenHeight = GetPlayerDeviceProperty(Player, PlayerDevicePropertyType.GuiHeight);
-            var fitted = FitMinimumWindow(Geometry, screenWidth, screenHeight, scale);
+            var fitted = FitWindowToScreen(Geometry, screenWidth, screenHeight, scale);
             if (fitted != null && !ReferenceEquals(fitted, Geometry))
                 Geometry = fitted;
         }
@@ -720,7 +752,6 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
             {
                 if (generation != _resizeGeneration || Geometry == null)
                     return;
-                EnsureMinimumWindowSize();
                 if (!IsSettingsSelected)
                     ApplyBrowserColumns();
             });
@@ -730,17 +761,26 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
         {
             var width = Geometry?.Width ?? 0f;
             var height = Geometry?.Height ?? 0f;
-            var columns = width > 0
-                ? BrowserColumnsForWidth(width, SelectedItemTypeIndex is not (3 or 4) || IsAppearanceSelected)
-                : MaxBrowserColumns;
-            var rows = height > 0 ? BrowserRowsForHeight(height, columns) : MaxBrowserRows;
+            var hasSideColumns = SelectedItemTypeIndex is not (3 or 4) || IsAppearanceSelected;
+            var compact = IsCompactWindow(width, height, hasSideColumns);
+            if (compact != _isCompactLayout)
+            {
+                // Reloading the editor applies the browser grid again for the new layout.
+                _isCompactLayout = compact;
+                LoadItemTypeEditor();
+                return;
+            }
+            var columns = compact ? 1 : width > 0 ? BrowserColumnsForWidth(width, hasSideColumns) : MaxBrowserColumns;
+            var rows = compact ? 1 : height > 0 ? BrowserRowsForHeight(height, columns) : MaxBrowserRows;
             if (!force && columns == _browserColumns && rows == _browserRows)
                 return;
             var currentIndex = _browserIds.IndexOf(_browserCurrent);
             _browserColumns = columns;
             _browserRows = rows;
             _browserPage = currentIndex >= 0 ? currentIndex / BrowserPageSize : 0;
-            ChangePartialView(BrowserGridElement, BrowserGrid(columns, rows));
+            // Compact editors hold their one-picture grid directly.
+            if (!compact)
+                ChangePartialView(BrowserGridElement, BrowserGrid(columns, rows));
             PublishBrowser();
             RepublishInputValues();
         }
@@ -899,13 +939,16 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
         };
 
         // ---------------- colour indicators ----------------
-        /// <summary>Palette code (H1), RGB for a custom colour, or Base for an inherited part colour.</summary>
-        internal static string SwatchCode(GuiRectangle region, bool custom)
+        /// <summary>
+        /// Palette code (H1), RGB for a custom colour, or, with no palette colour, "Outfit" for a
+        /// part using the outfit colour and "None" for an item or body colour.
+        /// </summary>
+        internal static string SwatchCode(GuiRectangle region, bool custom, bool isPart)
         {
             if (custom)
                 return "RGB";
             if (region == null || region.Width < ColorSize)
-                return "Base";
+                return isPart ? "Outfit" : "None";
             return AppearancePreview.PaletteCode((int)(region.Y / ColorSize) * TextureColorsPerRow + (int)(region.X / ColorSize));
         }
 
@@ -913,7 +956,7 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
         private void OnSwatchUpdated(ColorTarget target, AppearanceArmorColor channel, string name)
         {
             if (target == ColorTarget.Global)
-                SetIfChanged($"Global{channel}Code", SwatchCode(Get<GuiRectangle>(name + "Region"), Get<bool>(name + "Custom")));
+                SetIfChanged($"Global{channel}Code", SwatchCode(Get<GuiRectangle>(name + "Region"), Get<bool>(name + "Custom"), isPart: false));
             if (target != ColorTarget.Global && target == ToColorTarget(_selectedSlot))
                 MirrorPartSwatch(channel);
             RefreshPaletteSelection();
@@ -925,10 +968,24 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
             SetIfChanged(nameof(IsPartColorsVisible), visible);
             if (!visible)
                 return;
+            SetIfChanged(nameof(SelectedPartColorsTitle), PartColorsTitle(_selectedSlot));
             foreach (var channel in SwatchChannels)
                 MirrorPartSwatch(channel);
             SyncSelectedPartSelection();
         }
+
+        /// <summary>Heads the part colour rows with the selected part's name, e.g. "Left Shoulder".</summary>
+        internal static string PartColorsTitle(AppearanceEditorSlot slot) =>
+            string.Concat(slot.ToString().Select((letter, index) =>
+                index > 0 && char.IsUpper(letter) ? " " + letter : letter.ToString()));
+
+        /// <summary>Heads the item colour rows: the outfit for armor, otherwise the item itself.</summary>
+        internal static string ItemColorsTitle(int itemTypeIndex) => itemTypeIndex switch
+        {
+            1 => "Helmet",
+            2 => "Cloak",
+            _ => "Outfit"
+        };
 
         private void MirrorPartSwatch(AppearanceArmorColor channel)
         {
@@ -938,7 +995,7 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
             Set(region, $"SelectedPart{channel}Region");
             Set(Get<GuiColor>(source + "Tint") ?? new GuiColor(0, 0, 0), $"SelectedPart{channel}Tint");
             SetIfChanged($"SelectedPart{channel}Custom", custom);
-            SetIfChanged($"SelectedPart{channel}Code", SwatchCode(region, custom));
+            SetIfChanged($"SelectedPart{channel}Code", SwatchCode(region, custom, isPart: true));
         }
 
         private void SyncSelectedPartSelection()
@@ -966,7 +1023,7 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
                 Set(new GuiColor(color.Red, color.Green, color.Blue), $"Body{name}Tint");
                 SetIfChanged($"Body{name}Custom", hasCustom);
                 SetIfChanged($"Body{name}Selected", SelectedColorCategoryIndex == index);
-                SetIfChanged($"Body{name}Code", SwatchCode(region, hasCustom));
+                SetIfChanged($"Body{name}Code", SwatchCode(region, hasCustom, isPart: false));
             }
             RefreshPaletteSelection();
         }

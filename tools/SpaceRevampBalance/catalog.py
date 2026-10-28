@@ -311,11 +311,11 @@ LATE_FAMILIES = {"Salvager", "GasHarvester", "SmugglingCompartment"}
 # Families added after the component recipes (the scanning update W12a). Their recipe IDs follow the components'.
 COMPONENT_LATE_FAMILIES = {"ProbeLauncher"}
 
-# The numbers a named rank-50 module scales up from its family's rank-45 step (rewards.named_value); flags, multipliers,
-# penalties and tiers stay as they are.
+# The numbers a named rank-50 module raises past its family's rank-45 step by a share of the rank 40 -> 45 step
+# (rewards.named_value), Attack and Accuracy included; flags, multipliers, penalties and tiers stay as they are.
 NAMED_SCALED = {"Dmg", "Shield", "Hull", "Repair", "MaxCapacitor", "CapacitorRestore", "CapacitorRegen", "ModuleAccuracy",
                 "ModuleDefense", "ModuleEvasion", "ResistAll", "ResistThermal", "ResistEM", "ResistExplosive",
-                "DamageThermal", "DamageEM", "DamageExplosive", "DamageAll", "AuraShieldPercent"}
+                "DamageThermal", "DamageEM", "DamageExplosive", "DamageAll", "AuraShieldPercent", "Attack", "Accuracy"}
 
 
 def named_bill(family, row):
@@ -324,10 +324,8 @@ def named_bill(family, row):
 
 
 def named_stats(stats):
-    s = {k: (rw.named_value(v) if k in NAMED_SCALED else v) for k, v in stats(45).items()}
-    if s.get("Attack"):
-        s["Attack"] = s["Accuracy"] = 2 * rw.NAMED_RANK
-    return s
+    s45, s40 = stats(45), stats(40)
+    return {k: (rw.named_value(v, s40[k]) if k in NAMED_SCALED else v) for k, v in s45.items()}
 
 
 def named_steps(recipe_start):

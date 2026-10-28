@@ -115,7 +115,7 @@ public class SpaceRewardTests
     // Named rank-50 modules
 
     [Test]
-    public void NamedModules_AreTheirFamilysRankFortyFiveNumbersPlusTenPercent()
+    public void NamedModules_AreTheirFamilysRankFortyFiveNumbersPlusAShareOfOneRankStep()
     {
         var named = RevampModuleCatalog.Steps.Where(x => x.Named).ToList();
         named.Should().HaveCount(16);
@@ -124,42 +124,47 @@ public class SpaceRewardTests
         foreach (var step in named)
         {
             var rank45 = Step(step.Tag[..^2] + "45");
+            var rank40 = Step(step.Tag[..^2] + "40");
             step.Rank.Should().Be(50);
             step.Capital.Should().BeFalse();
             step.Row.Should().Be(rank45.Row);
             step.CycleSeconds.Should().Be(rank45.CycleSeconds);
             step.CapacitorCost.Should().Be(rank45.CapacitorCost);
-            Plus10(step.Dmg, rank45.Dmg, step.Tag);
-            Plus10(step.Shield, rank45.Shield, step.Tag);
-            Plus10(step.Hull, rank45.Hull, step.Tag);
-            Plus10(step.Repair, rank45.Repair, step.Tag);
-            Plus10(step.MaxCapacitor, rank45.MaxCapacitor, step.Tag);
-            Plus10(step.ModuleAccuracy, rank45.ModuleAccuracy, step.Tag);
-            Plus10(step.ModuleDefense, rank45.ModuleDefense, step.Tag);
-            Plus10(step.ModuleEvasion, rank45.ModuleEvasion, step.Tag);
-            Plus10(step.ResistAll, rank45.ResistAll, step.Tag);
-            if (rank45.Dmg > 0)
-            {
-                step.Attack.Should().Be(100, step.Tag);
-                step.Accuracy.Should().Be(100, step.Tag);
-            }
-
-            if (rank45.CapacitorRegen > 0)
-                step.CapacitorRegen.Should().BeApproximately(rank45.CapacitorRegen * 1.1, 0.01, step.Tag);
+            PlusShare(step.Dmg, rank45.Dmg, rank40.Dmg, step.Tag);
+            PlusShare(step.Attack, rank45.Attack, rank40.Attack, step.Tag);
+            PlusShare(step.Accuracy, rank45.Accuracy, rank40.Accuracy, step.Tag);
+            PlusShare(step.Shield, rank45.Shield, rank40.Shield, step.Tag);
+            PlusShare(step.Hull, rank45.Hull, rank40.Hull, step.Tag);
+            PlusShare(step.Repair, rank45.Repair, rank40.Repair, step.Tag);
+            PlusShare(step.MaxCapacitor, rank45.MaxCapacitor, rank40.MaxCapacitor, step.Tag);
+            PlusShare(step.ModuleAccuracy, rank45.ModuleAccuracy, rank40.ModuleAccuracy, step.Tag);
+            PlusShare(step.ModuleDefense, rank45.ModuleDefense, rank40.ModuleDefense, step.Tag);
+            PlusShare(step.ModuleEvasion, rank45.ModuleEvasion, rank40.ModuleEvasion, step.Tag);
+            PlusShare(step.ResistAll, rank45.ResistAll, rank40.ResistAll, step.Tag);
+            if (rank45.CapacitorRegen > rank40.CapacitorRegen)
+                step.CapacitorRegen.Should().BeGreaterThan(rank45.CapacitorRegen, step.Tag)
+                    .And.BeLessThan(rank45.CapacitorRegen + (rank45.CapacitorRegen - rank40.CapacitorRegen), step.Tag);
         }
+
+        Step("sm_laser_50").Attack.Should().Be(93, "rank 45's 90 plus 30% of the 10-point rank step");
+        Step("sm_laser_50").Dmg.Should().Be(Step("sm_laser_45").Dmg + 1);
+        Step("sm_plate_50").Hull.Should().Be(Step("sm_plate_45").Hull + 11, "395 plus 30% of the 35-point step");
 
         Step("sm_resall_50").ModuleEvasion.Should().Be(Step("sm_resall_45").ModuleEvasion, "penalties stay as they are");
     }
 
-    private static void Plus10(int named, int rank45, string tag)
+    /// <summary>A named number: rank 45 plus 30% of the rank 40 -> 45 step, at least +1; unchanged when the step adds nothing.</summary>
+    private static void PlusShare(int named, int rank45, int rank40, string tag)
     {
-        if (rank45 <= 0)
+        var step = rank45 - rank40;
+        if (rank45 <= 0 || step <= 0)
         {
             named.Should().Be(rank45, tag);
             return;
         }
 
-        named.Should().Be(Math.Max(rank45 + 1, (int)(rank45 * 1.1 + 0.5)), tag);
+        named.Should().Be(rank45 + Math.Max(1, (int)(step * 0.3 + 0.5)), tag);
+        named.Should().BeLessThan(rank45 + step + 1, $"{tag}: a named module is worth less than a full rank step");
     }
 
     [Test]

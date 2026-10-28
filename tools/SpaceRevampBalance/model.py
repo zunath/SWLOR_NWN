@@ -136,14 +136,14 @@ WEAPONS = {
 }
 
 
-def named_value(value):
-    """A rank-45 number on a named rank-50 module (rewards.named_value): positive values +10%, at least +1."""
+def named_value(rank45, rank40):
+    """A number on a named rank-50 module (rewards.named_value): rank 45 plus a share of the rank 40 -> 45 step."""
     import rewards  # imported here: rewards.py sits beside this file and holds the named-module rule
-    return rewards.named_value(value)
+    return rewards.named_value(rank45, rank40)
 
 
 def weapon(name, rank, hull_size, pilot, label=None, named=False):
-    """A weapon step; named is the family's named rank-50 module (rank-45 DMG +10%, Attack and Accuracy 2 x 50)."""
+    """A weapon step; named is the family's named rank-50 module (rewards.named_value on DMG, Attack and Accuracy)."""
     w = WEAPONS[name]
     if w.get("capital"):
         mult, size = T["capital_weapon_mult"], "Capital"
@@ -152,15 +152,18 @@ def weapon(name, rank, hull_size, pilot, label=None, named=False):
     else:
         mult, size = T["weapon_size_mult"][hull_size], hull_size
     attr = pilot["per"] if w["family"] == "Energy" else pilot["mgt"]
+    cm = T["capital_weapon_mult"] if w.get("capital") else 1.0
     if named:
-        base = max(1, round(GROUND_DMG[45] * w["dmg"] * (T["capital_weapon_mult"] if w.get("capital") else 1.0)))
-        dmg = max(1, round(named_value(base) * (1.0 if w.get("capital") else mult)))
+        base = named_value(max(1, round(GROUND_DMG[45] * w["dmg"] * cm)), max(1, round(GROUND_DMG[40] * w["dmg"] * cm)))
+        dmg = max(1, round(base * (1.0 if w.get("capital") else mult)))
+        gear = named_value(2 * 45, 2 * 40)
         rank = 50
     else:
         dmg = max(1, round(GROUND_DMG[rank] * w["dmg"] * mult))
+        gear = 2 * rank
     return {"name": label or f"{name} r{rank}", "family": w["family"], "damageType": w["type"],
             "dmg": dmg, "rank": rank, "cycleSeconds": w["cycle"],
-            "capacitorPerCycle": w["cap"], "attack": 2 * rank + attr, "accuracy": 2 * rank, "size": size,
+            "capacitorPerCycle": w["cap"], "attack": gear + attr, "accuracy": gear, "size": size,
             "shieldBypass": w.get("bypass", False), "ignoreSizePenalty": w.get("ignore_size", False),
             "shieldDamageMultiplier": w["shield"]}
 
@@ -279,7 +282,7 @@ def routed(ship, mode):
 
 def player_ship(role, rank, fit, maker=None, advanced=False, extra=None, name=None, pilot=None, crew=1.0, named=False):
     """fit: dict of module family -> count. Weapons go in High, the rest as listed. Every module at `rank`; with named,
-    every module is its family's named rank-50 module (the rank-45 numbers +10%, rewards.py).
+    every module is its family's named rank-50 module (rank 45 plus a share of the rank 40 -> 45 step, rewards.py).
     crew: effectiveness of the station seats (1 = players at matching rank, 0.75 = the best droid, 0 = solo pilot).
     Weapons fill Helm High slots first; the rest sit in Gunner slots."""
     h = hull_stats(role, maker, advanced, extra)
@@ -287,7 +290,8 @@ def player_ship(role, rank, fit, maker=None, advanced=False, extra=None, name=No
     size = h["size"]
     ms = T["module_size_mult"][size]
     r = min(45, (rank // 5) * 5) if named else (rank // 5) * 5
-    nv = named_value if named else (lambda v: v)
+    nv = named_value if named else (lambda v45, v40: v45)
+    r40 = r - 5
     hull, shield, cap, capr, df, ev, acc = h["hull"], h["shield"], h["cap"] + T["cap_per_wil"] * p["wil"], \
         h["capr"] + T["cap_regen_per_wil"] * p["wil"], h["df"] + p["vit"], h["ev"], h["acc"]  # the simulator adds AGI x 3
     weapons, repairers, res = [], [], h["res"]
@@ -311,29 +315,30 @@ def player_ship(role, rank, fit, maker=None, advanced=False, extra=None, name=No
                 w["dmg"] = max(1, round(w["dmg"] * e))
                 weapons.append(w)
             elif mod == "Hull Plating":
-                hull += round(nv(HP_STEP[r]) * ms * e)
-                best["df"] = max(best["df"], nv(round(1.8 * r)))
+                hull += round(nv(HP_STEP[r], HP_STEP.get(r40, 0)) * ms * e)
+                best["df"] = max(best["df"], nv(round(1.8 * r), round(1.8 * r40)))
             elif mod == "Shield Booster":
-                shield += round(nv(HP_STEP[r]) * ms * e)
+                shield += round(nv(HP_STEP[r], HP_STEP.get(r40, 0)) * ms * e)
             elif mod == "Thrusters":
-                best["ev"] = max(best["ev"], nv(2 * r))
+                best["ev"] = max(best["ev"], nv(2 * r, 2 * r40))
             elif mod == "Targeting Computer":
-                best["acc"] = max(best["acc"], nv(2 + round(0.4 * r)))
+                best["acc"] = max(best["acc"], nv(2 + round(0.4 * r), 2 + round(0.4 * r40)))
             elif mod == "Capacitor Battery":
-                cap += round(nv(CAP_STEP[r]) * ms * e)
+                cap += round(nv(CAP_STEP[r], CAP_STEP.get(r40, 0)) * ms * e)
             elif mod == "Capacitor Regulator":
-                capr += nv(CAP_REGEN_STEP[r]) * ms * e
+                capr += nv(CAP_REGEN_STEP[r], CAP_REGEN_STEP.get(r40, 0)) * ms * e
             elif mod in ("Shield Repairer", "Hull Repairer"):
-                if named:  # the catalog's named Repair: the rank-45 Repair (hull repairers 80%) +10%
-                    amount = (nv(REPAIR_STEP[r]) if mod == "Shield Repairer" else nv(max(1, round(REPAIR_STEP[r] * 0.8)))) * ms * e
+                if named:  # the catalog's named Repair (hull repairers 80%), as rewards.named_value makes it
+                    amount = (nv(REPAIR_STEP[r], REPAIR_STEP[r40]) if mod == "Shield Repairer" else
+                              nv(max(1, round(REPAIR_STEP[r] * 0.8)), max(1, round(REPAIR_STEP[r40] * 0.8)))) * ms * e
                 else:
                     amount = REPAIR_STEP[r] * ms * e * (1.0 if mod == "Shield Repairer" else 0.8)
                 repairers.append({"name": f"{mod} {len(repairers) + 1}", "target": "Shield" if mod == "Shield Repairer" else "Hull",
                                   "amountPerCycle": max(1, round(amount)), "cycleSeconds": 4, "capacitorPerCycle": 4})
             elif mod == "Shield Hardener":
-                res += nv(10 + r // 5)  # toggle: models as always on
+                res += nv(10 + r // 5, 10 + r40 // 5)  # toggle: models as always on
             elif mod == "Resist Plating":
-                res += nv(6 + r // 6)
+                res += nv(6 + r // 6, 6 + r40 // 6)
             else:
                 raise ValueError(mod)
     df, ev, acc = df + best["df"], ev + best["ev"], acc + best["acc"]

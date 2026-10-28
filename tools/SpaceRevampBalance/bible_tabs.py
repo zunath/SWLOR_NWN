@@ -563,13 +563,16 @@ def rewards_tab():
 
     steps, hulls, components = c.full_catalog()
     by_tag = {x["Tag"]: x for x in steps}
-    s.title("Named rank-50 modules: the family's rank-45 numbers +10% (penalties unchanged), Attack and Accuracy 100")
+    s.title(f"Named rank-50 modules: each rank-45 number plus {rw.NAMED_STEP_SHARE:.0%} of its rank 40 -> 45 step "
+            "(at least +1), Attack and Accuracy included; penalties unchanged")
     s.note(f"Recipe level {rw.NAMED_RECIPE_LEVEL} (Engineering {rw.NAMED_RECIPE_LEVEL - 3}), unlocked by a Module Schematic, "
            f"{rw.NAMED_ENHANCEMENT_SLOTS} enhancement slots, research cost +{rw.NAMED_RESEARCH_COST_MODIFIER:.0%}, Piloting 50 to "
            "fit; droids work rank 45 at most. Bill: twice the rank-45 bill plus a Thorilide Core and an Aurodium Plating. "
            "Module Schematics drop from SPACE_BOSS_T5 (weight 1 each beside x150) and SPACE_BOSS_T6 (beside x10), about 5% "
-           "of boss rolls for any schematic, and from those tables' salvage rare finds.")
-    keys = ["Dmg", "Shield", "Hull", "Repair", "MaxCapacitor", "CapacitorRegen", "ModuleAccuracy", "ModuleDefense",
+           "of boss rolls for any schematic, and from those tables' salvage rare finds. A full rank step is worth about "
+           f"1.3x kill speed (Space Balance section M), so the share keeps a full named fit within {rw.NAMED_GAIN_CAP}x of "
+           "a rank-45 fit.")
+    keys = ["Dmg", "Attack", "Accuracy", "Shield", "Hull", "Repair", "MaxCapacitor", "CapacitorRegen", "ModuleAccuracy", "ModuleDefense",
             "ModuleEvasion", "ResistAll"]
     rows = []
     for x in [s_ for s_ in steps if s_.get("Named")]:

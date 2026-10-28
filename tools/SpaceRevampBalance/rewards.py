@@ -11,12 +11,17 @@ RECIPE_START = 7498
 
 # ---------------------------------------------------------------------------------------------------------------
 # Named rank-50 modules (plan sections 8 and 14): one per main family, the ground Chiro pattern (level-52 recipe
-# unlocked by a Module Schematic, 2 enhancement slots, research cost +20%). Their numbers are the family's rank-45
-# numbers +10% (penalties stay as they are), with Attack and Accuracy 2 x 50. Each takes its family's tier 5 component
-# twice, a Thorilide Core and an Aurodium Plating on top of twice the rank-45 bill's refined ore and electronics.
+# unlocked by a Module Schematic, 2 enhancement slots, research cost +20%). Each number is the family's rank-45 number
+# plus NAMED_STEP_SHARE of its rank 40 -> 45 step (at least +1 where the step grows it; numbers the ladder does not grow,
+# and penalties, stay as they are), Attack and Accuracy included. A full rank step is worth about 1.3x kill speed
+# (checks.py section M), so the share keeps a full named fit within 1.15x of a rank-45 fit. Each takes its family's
+# tier 5 component twice, a Thorilide Core and an Aurodium Plating on top of twice the rank-45 bill's refined ore and
+# electronics.
 # ---------------------------------------------------------------------------------------------------------------
 NAMED_RANK = 50
-NAMED_MULT = 1.1
+NAMED_STEP_SHARE = 0.3
+# A named fit's kill-speed gain over a rank-45 fit may be at most this (or the rank step, if smaller).
+NAMED_GAIN_CAP = 1.15
 NAMED_RECIPE_LEVEL = 52
 NAMED_ENHANCEMENT_SLOTS = 2
 NAMED_RESEARCH_COST_MODIFIER = 0.2
@@ -43,13 +48,19 @@ NAMED = [
 NAMED_EXTRA = [(comp.rare_resref("thorcore"), 1), (comp.rare_resref("aurplate"), 1)]
 
 
-def named_value(value):
-    """A rank-45 number made named: positive values +10% (at least +1), penalties and zero unchanged."""
-    if isinstance(value, bool) or not isinstance(value, (int, float)) or value <= 0:
-        return value
-    if isinstance(value, float) and not float(value).is_integer():
-        return round(value * NAMED_MULT, 2)
-    return max(int(value) + 1, int(value * NAMED_MULT + 0.5))
+def named_value(rank45, rank40):
+    """
+    A named number: the rank-45 number plus NAMED_STEP_SHARE of its rank 40 -> 45 step, at least +1 (+0.01 for a
+    fraction) when the step grows it. Penalties, flags and numbers the ladder does not grow stay at the rank-45 value.
+    """
+    if isinstance(rank45, bool) or not isinstance(rank45, (int, float)) or rank45 <= 0:
+        return rank45
+    step = rank45 - rank40
+    if step <= 0:
+        return rank45
+    if isinstance(rank45, float) and not float(rank45).is_integer():
+        return round(rank45 + max(0.01, step * NAMED_STEP_SHARE), 2)
+    return int(rank45) + max(1, int(step * NAMED_STEP_SHARE + 0.5))
 
 
 def unlock_resref(tag_prefix):

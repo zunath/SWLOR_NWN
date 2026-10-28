@@ -34,7 +34,8 @@ public class TradeTests
         {
             commodity.BasePrice.Should().BePositive(commodity.Name);
             commodity.Volume.Should().BePositive(commodity.Name);
-            commodity.Producers.Should().NotBeEmpty($"{commodity.Name} needs a dock that exports it");
+            (commodity.IsHoldingGood ? commodity.HoldingSources : commodity.Producers).Should()
+                .NotBeEmpty($"{commodity.Name} needs a dock that exports it, or holdings that refine it");
             commodity.Name.Should().MatchRegex("^[A-Za-z' ]+$");
         }
 
@@ -69,6 +70,9 @@ public class TradeTests
             foreach (var market in exchange.Markets)
             {
                 market.Depth.Should().BePositive();
+                if (TradeLookup.GetCommodity(market.Commodity).IsHoldingGood)
+                    continue;
+
                 var producer = TradeCatalog.Exchanges
                     .Select(x => x.FindMarket(market.Commodity))
                     .Where(x => x is { Role: CommodityRole.Producer })

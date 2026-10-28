@@ -12,5 +12,6 @@ namespace SWLOR.Game.Server.Service.TradeService
         NoneAboard = 6,
         ShipNotDocked = 7,
         NoExchangeHere = 8,
+        HoldingsOnly = 9,
     }
 }

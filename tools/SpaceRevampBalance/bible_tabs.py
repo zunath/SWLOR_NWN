@@ -773,6 +773,7 @@ def write(sheets):
 
 if __name__ == "__main__":
     import droids
+    import holdings
     import scanning
     import slicing
     import stations
@@ -780,7 +781,8 @@ if __name__ == "__main__":
     import wildspace
     tabs = [starships(), modules(), enemies(), balance(), trade.trade_tab(Sheet), components_tab(),
             scanning.scanning_tab(Sheet), rewards_tab(), slicing.slicing_tab(Sheet), wildspace.wildspace_tab(Sheet),
-            cloak.cloak_tab(Sheet), stations.stations_tab(Sheet), droids.droids_tab(Sheet)]
+            cloak.cloak_tab(Sheet), stations.stations_tab(Sheet), droids.droids_tab(Sheet),
+            holdings.holdings_tab(Sheet)]
     if "--check" in sys.argv:
         check(tabs)
         sys.exit(0)

@@ -85,6 +85,62 @@ SOURCE = {
 
 AUTHORITIES = ["None", "Republic", "Czerka", "Sith"]
 
+# Holding goods (W14b, plan section 26): refined goods that only Planetary Holdings make, in a Processing Plant from the
+# holding's own output and a good delivered from another planet (holdings.py holds every chain). No exchange sells them:
+# exchanges buy them, as importers where listed below and as neutral markets elsewhere, priced by starlane hops from the
+# docks whose holdings refine them (HOLDING_GOOD_SOURCES). The greedy trader of --sim cannot buy them, so they change
+# no trade outcome. Ids start at 25, after Station Fuel (W13b, a CZ-220 export).
+HOLDING_GOODS = [
+    (25, "RationPacks", "Ration Packs", 150, 2, [], "Sealed crates of field rations packed by planetary holdings."),
+    (26, "FocusingLenses", "Focusing Lenses", 200, 1, [], "Precision lenses ground from Viscaran crystals."),
+    (27, "PrefabShelters", "Prefab Shelters", 270, 4, [], "Flat-packed shelters of timber and salvaged plate."),
+    (28, "Glitterstim", "Glitterstim", 600, 1, ["Republic", "Czerka", "Sith"], "Refined glitterstim spice, cut with abdamaryllia."),
+    (29, "SithHolocrons", "Sith Holocrons", 1300, 2, ["Republic"], "Restored holocrons from the Korriban digs."),
+    (30, "AgedBanthaCheese", "Aged Bantha Cheese", 215, 2, [], "Wheels of salted, aged bantha milk cheese."),
+]
+COMMODITIES += HOLDING_GOODS
+SOURCE.update({
+    "RationPacks": "refined: Grain + Purified Water x1.20 (and the seafood and salt recipes, x1.18-1.22)",
+    "FocusingLenses": "refined: 5 Viscaran Crystals + 2 Czerka Machine Parts = 2 lenses (x1.23), or 3 parts + 4 crystals (x1.15)",
+    "PrefabShelters": "refined: 2 Aracia Timber + 1 Czerka Machine Parts (x1.21) or 3 Jawa Salvage + 1 Aracia Timber (x1.17)",
+    "Glitterstim": "refined: Moonspice + Abdamaryllia Extract, x1.20",
+    "SithHolocrons": "refined: Sith Relics + 2 Encrypted Data Chips, x1.20",
+    "AgedBanthaCheese": "refined: 2 Bantha Milk + 1 Neon Salt, x1.19",
+})
+# The docks whose holdings refine each holding good (holdings.py checks them against its chains) and the docks that
+# import it (pays well).
+HOLDING_GOOD_SOURCES = {
+    "RationPacks": ["MonCala", "Tatooine", "SmugglersMoon", "Dantooine"],
+    "FocusingLenses": ["Viscara", "CZ220"],
+    "PrefabShelters": ["Hutlar", "Tatooine"],
+    "Glitterstim": ["SmugglersMoon"],
+    "SithHolocrons": ["Korriban"],
+    "AgedBanthaCheese": ["Dantooine"],
+}
+HOLDING_GOOD_CONSUMERS = {
+    "RationPacks": ["Hutlar", "Korriban", "Dathomir"],
+    "FocusingLenses": ["MonCala", "Hutlar", "Korriban"],
+    "PrefabShelters": ["Dantooine", "Dathomir", "Korriban"],
+    "Glitterstim": ["Hutlar", "Tatooine", "Dathomir"],
+    "SithHolocrons": ["SmugglersMoon", "Hutlar"],
+    "AgedBanthaCheese": ["Viscara", "MonCala", "Tatooine"],
+}
+
+
+def is_holding_good(name):
+    return name in HOLDING_GOOD_SOURCES
+
+
+def makes(ex, name):
+    """An exchange makes a good it exports, or a holding good its holdings refine."""
+    return name in ex[6] or ex[0] in HOLDING_GOOD_SOURCES.get(name, [])
+
+
+def needs(ex, name):
+    return name in ex[7] or ex[0] in HOLDING_GOOD_CONSUMERS.get(name, [])
+
+
+
 # ---------------------------------------------------------------------------------------------------------------
 # Exchanges (plan section 13 dock table). Exports are produced (cheap), imports consumed (pays well).
 # ---------------------------------------------------------------------------------------------------------------
@@ -313,8 +369,7 @@ def exchange(name):
 
 def trades(ex, com):
     """An exchange trades a good it makes or needs, and any other good its authority does not ban."""
-    _, _, _, _, authority, _, produces, consumes = ex
-    return com[1] in produces or com[1] in consumes or authority not in com[5]
+    return makes(ex, com[1]) or needs(ex, com[1]) or ex[4] not in com[5]
 
 
 def markets():
@@ -324,14 +379,16 @@ def markets():
         for com in COMMODITIES:
             if not trades(ex, com):
                 continue
-            producers = [e for e in EXCHANGES if com[1] in e[6]]
+            producers = [e for e in EXCHANGES if makes(e, com[1])]
             nearest = min(hops(ex[3], p[3]) for p in producers)
             risk = RISK_PREMIUM[legality(com[5])]
             if ex[0] in BLACK_MARKETS and com[5]:
                 risk *= BLACK_MARKET_PREMIUM
             if com[1] in ex[6]:
                 role, factor = "Producer", PRODUCER_FACTOR
-            elif com[1] in ex[7]:
+            elif makes(ex, com[1]):
+                role, factor = "Neutral", NEUTRAL_BASE  # a holding good at a dock whose holdings make it: never sold
+            elif needs(ex, com[1]):
                 role, factor = "Consumer", min(CONSUMER_MAX, CONSUMER_BASE + CONSUMER_PER_HOP * nearest) * risk
             else:
                 role, factor = "Neutral", min(NEUTRAL_MAX, NEUTRAL_BASE + NEUTRAL_PER_HOP * nearest) * risk
@@ -509,7 +566,7 @@ def plan_leg(state, here, there, hold, social, goods, tier=0):
 def simulate(hold, start="Viscara", hours=4, social=10, log=None, lawful=False, tier=0):
     """Credits earned in each hour by a trader who always flies the leg that pays most per minute. A lawful trader
     carries only legal goods."""
-    goods = [c[1] for c in COMMODITIES if not lawful or not c[5]]
+    goods = [c[1] for c in COMMODITIES if (not lawful or not c[5]) and not is_holding_good(c[1])]
     state = {(m["exchange"], m["commodity"]): 0.0 for m in MARKETS}
     here, clock = start, 0.0
     per_hour = [0.0] * hours
@@ -667,7 +724,7 @@ def priced(state, here, there, basket, social, tier=0):
 def simulate_risk(hold, start="Viscara", hours=4, social=10, lawful=False, reduction=0.0, log=None, tier=0):
     """simulate() with customs and pirates in expectation. The trader weighs each leg's expected profit after risk and
     may carry fewer banned goods (BANNED_CAPS) than fit."""
-    goods = [c[1] for c in COMMODITIES if not lawful or not c[5]]
+    goods = [c[1] for c in COMMODITIES if (not lawful or not c[5]) and not is_holding_good(c[1])]
     state = {(m["exchange"], m["commodity"]): 0.0 for m in MARKETS}
     here, clock = start, 0.0
     per_hour = [0.0] * hours
@@ -906,12 +963,14 @@ def catalog_cs():
              "        public static readonly IReadOnlyList<CommodityDetail> Commodities = new List<CommodityDetail>", "        {"]
     for _, enum, name, base, vol, banned, desc in COMMODITIES:
         producers = ", ".join(f"TradeExchangeType.{e[0]}" for e in EXCHANGES if enum in e[6])
-        consumers = ", ".join(f"TradeExchangeType.{e[0]}" for e in EXCHANGES if enum in e[7])
+        consumers = ", ".join(f"TradeExchangeType.{e[0]}" for e in EXCHANGES if needs(e, enum))
         bans = ", ".join(f"TradeAuthority.{a}" for a in banned)
+        sources = ", ".join(f"TradeExchangeType.{x}" for x in HOLDING_GOOD_SOURCES.get(enum, []))
+        holding = f"HoldingSources = {cs_array('TradeExchangeType', sources)}, " if sources else ""
         lines.append(f"            new CommodityDetail {{ Type = CommodityType.{enum}, Name = {cs_string(name)}, BasePrice = {base}, "
                      f"Volume = {vol}, BannedBy = {cs_array('TradeAuthority', bans)}, "
                      f"Producers = {cs_array('TradeExchangeType', producers)}, Consumers = {cs_array('TradeExchangeType', consumers)}, "
-                     f"Description = {cs_string(desc)} }},")
+                     f"{holding}Description = {cs_string(desc)} }},")
     lines += ["        };", "",
               "        public static readonly IReadOnlyList<TradeExchangeDetail> Exchanges = new List<TradeExchangeDetail>", "        {"]
     for enum, name, planets, orbit, authority, tier, produces, consumes in EXCHANGES:
@@ -1064,7 +1123,9 @@ def trade_tab(Sheet):
     s.title("Commodities")
     s.table(["Commodity", "Legality", "Base", "Volume", "Banned by", "Produced at", "Consumed at", "Base price source"],
             [[name, legality(banned), base, vol, ", ".join(banned) or "-",
-              ", ".join(e[1] for e in EXCHANGES if enum in e[6]), ", ".join(e[1] for e in EXCHANGES if enum in e[7]),
+              ", ".join(e[1] for e in EXCHANGES if enum in e[6]) or
+              "Holdings at " + ", ".join(exchange(x)[1] for x in HOLDING_GOOD_SOURCES.get(enum, [])),
+              ", ".join(e[1] for e in EXCHANGES if needs(e, enum)),
               SOURCE[enum]] for _, enum, name, base, vol, banned, _ in COMMODITIES])
     s.title("Exchanges")
     s.table(["Exchange", "Authority", "Orbit tier", "", "Orbit", "Exports", "Imports", ""],

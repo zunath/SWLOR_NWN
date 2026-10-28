@@ -42,11 +42,16 @@ namespace SWLOR.Game.Server.Service
                     SpawnSiteRing(signature, area, center, clouds, ObjectType.Placeable, CloudRingMeters);
                     break;
                 case SignatureType.Derelict:
-                    var wreck = CreateWreck(Location(area, center, Random.Next(360)), "Derelict Wreck", signature.Tier,
+                    var wreck = CreateWreck(Location(area, center, Random.Next(360)),
+                        signature.Boardable ? "Boardable Derelict" : "Derelict Wreck", signature.Tier,
                         ScanningTuning.WreckSize, ScanningTuning.WreckDifficultyLevel, GetScanPartyIds(revealer),
-                        ScanningTuning.SiteLifetimeSeconds);
+                        // A boarded derelict's site can outlast its lifetime; ending the site removes the wreck then.
+                        ScanningTuning.SiteLifetimeSeconds + (signature.Boardable ? DerelictTuning.BoardingHoldMinutes * 60 : 0));
                     if (GetIsObjectValid(wreck))
+                    {
+                        SetLocalString(wreck, SiteSignatureVariable, signature.Id);
                         signature.Objectives.Add(wreck);
+                    }
                     SpawnSiteRing(signature, area, center, SignatureSiteRules.DerelictDefenses(signature.Tier), ObjectType.Creature, DefenseRingMeters);
                     break;
                 case SignatureType.CacheSite:

@@ -641,6 +641,13 @@ namespace SWLOR.Game.Server.Service
                 return;
             }
 
+            // A ship docked at a derelict undocks beside it (plan section 28).
+            if (IsDockedAtDerelict(dbShip, out _))
+            {
+                UndockFromDerelict(player, dbShip);
+                return;
+            }
+
             if (IsDockedAboardHost(dbShip, out var hostName))
             {
                 SendMessageToPC(player, ColorToken.Red($"This ship is docked aboard {hostName}. Undock it from that ship's computer or with /undock."));
@@ -701,7 +708,8 @@ namespace SWLOR.Game.Server.Service
         /// (<see cref="TryCompleteShipLaunch"/>); <paramref name="pilotLocation"/> is where their copy sits in the
         /// ship's interior, and <paramref name="undockFromShipId"/> names a host the ship leaves on arrival.
         /// </summary>
-        private static void BeginShipLaunch(uint player, string shipId, Location location, Location pilotLocation, string undockFromShipId = "")
+        private static void BeginShipLaunch(uint player, string shipId, Location location, Location pilotLocation, string undockFromShipId = "",
+            string undockFromDerelictId = "")
         {
             var launch = new PendingShipLaunch
             {
@@ -711,6 +719,7 @@ namespace SWLOR.Game.Server.Service
                 PilotLocation = pilotLocation,
                 DepartureArea = GetArea(player),
                 UndockFromShipId = undockFromShipId ?? string.Empty,
+                UndockFromDerelictId = undockFromDerelictId ?? string.Empty,
                 ExpiresAt = DateTime.UtcNow.AddSeconds(30)
             };
             _pendingShipLaunches[player] = launch;
@@ -737,6 +746,8 @@ namespace SWLOR.Game.Server.Service
 
             if (!string.IsNullOrEmpty(launch.UndockFromShipId))
                 CompleteUndockLaunch(player, launch);
+            if (!string.IsNullOrEmpty(launch.UndockFromDerelictId))
+                CompleteDerelictUndock(player, launch);
 
             SetLocalLocation(player, "SPACE_INSTANCE_LOCATION", launch.PilotLocation);
             SetLocalBool(player, "SPACE_INSTANCE_LOCATION_SET", true);

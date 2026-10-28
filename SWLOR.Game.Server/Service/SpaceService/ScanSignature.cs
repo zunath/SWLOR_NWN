@@ -63,6 +63,18 @@ namespace SWLOR.Game.Server.Service.SpaceService
         /// <summary>The player an agent lead is for: only their party's probes find it.</summary>
         public string AgentPlayerId { get; init; } = string.Empty;
 
+        /// <summary>Whether a derelict can be boarded or stripped by a salvage team (plan section 28).</summary>
+        public bool Boardable { get; init; }
+
+        /// <summary>Whether a boardable derelict draws waves of enemy ships while it is worked.</summary>
+        public bool Contested { get; init; }
+
+        /// <summary>Whether a boardable derelict's strongbox was opened or a salvage team stripped it.</summary>
+        public bool DerelictLooted { get; set; }
+
+        /// <summary>A boarded derelict's site stays open until then, past its lifetime; null when nobody works it.</summary>
+        public DateTime? HeldUntil { get; set; }
+
         public bool IsRevealed => RevealedAt != null;
 
         /// <summary>Whether a faction agent placed it for one player's mission; it is not part of its area's signature count.</summary>

@@ -15,6 +15,8 @@ namespace SWLOR.Game.Server.Feature.ChatCommandDefinition
             ExitSpaceCommand();
             DockCommand();
             UndockCommand();
+            BoardCommand();
+            SalvageCommand();
             ShipHudCommand();
             HoloNetCommand();
 
@@ -65,6 +67,22 @@ namespace SWLOR.Game.Server.Feature.ChatCommandDefinition
                 .Description("Undocks your starship from the ship you stand aboard.")
                 .Permissions(AuthorizationLevel.All)
                 .Action((user, target, location, args) => Space.UndockFromInterior(user));
+        }
+
+        private void BoardCommand()
+        {
+            _builder.Create("board")
+                .Description("Docks your Small or Medium starship with the derelict you target, and your party boards it on foot.")
+                .Permissions(AuthorizationLevel.All)
+                .Action((user, target, location, args) => Space.BoardDerelict(user));
+        }
+
+        private void SalvageCommand()
+        {
+            _builder.Create("salvage")
+                .Description("Sends the droids posted aboard your starship to strip the derelict you target while you hold beside it.")
+                .Permissions(AuthorizationLevel.All)
+                .Action((user, target, location, args) => Space.SendSalvageTeam(user));
         }
 
         private void ShipHudCommand()

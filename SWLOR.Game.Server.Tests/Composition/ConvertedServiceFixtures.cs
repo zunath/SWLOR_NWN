@@ -14,7 +14,10 @@ public static class ConvertedServiceFixtures
 {
     private const string ServerNamespace = "SWLOR.Game.Server";
 
-    /// <summary>The converted services: name, domain, the static facade, the interface and the instance class.</summary>
+    /// <summary>
+    /// The converted services: name, domain, the static facade, the interface and the instance class, and the parts of
+    /// a service that is split by responsibility.
+    /// </summary>
     public static IReadOnlyList<ConvertedServiceTypes> Load()
     {
         var path = Path.Combine(FindRepositoryRoot(), "SWLOR.Architecture.Tests", "ConvertedServices.json");
@@ -27,12 +30,22 @@ public static class ConvertedServiceFixtures
                 var name = element.GetProperty("name").GetString()!;
                 var domain = element.GetProperty("domain").GetString()!;
                 var domainNamespace = $"{ServerNamespace}.Domain.{domain}";
+                var parts = element.TryGetProperty("parts", out var partNames)
+                    ? partNames.EnumerateArray()
+                        .Select(part => part.GetString()!)
+                        .Select(part => new ConvertedServicePartTypes(
+                            part,
+                            assembly.GetType($"{domainNamespace}.I{part}", throwOnError: true)!,
+                            assembly.GetType($"{domainNamespace}.{part}", throwOnError: true)!))
+                        .ToList()
+                    : new List<ConvertedServicePartTypes>();
                 return new ConvertedServiceTypes(
                     name,
                     domain,
                     assembly.GetType($"{ServerNamespace}.Service.{name}", throwOnError: true)!,
                     assembly.GetType($"{domainNamespace}.I{name}Service", throwOnError: true)!,
-                    assembly.GetType($"{domainNamespace}.{name}Service", throwOnError: true)!);
+                    assembly.GetType($"{domainNamespace}.{name}Service", throwOnError: true)!,
+                    parts);
             })
             .ToList();
     }

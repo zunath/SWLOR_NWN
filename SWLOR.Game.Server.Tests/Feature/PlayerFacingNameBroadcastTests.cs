@@ -412,11 +412,15 @@ public class PlayerFacingNameBroadcastTests
         citizenshipSource.Should().Contain("PlayerName.GetPlainDisplayNameByPlayerId(Player, dbCity.OwnerPlayerId, dbMayorPlayer.Name)");
         citizenshipSource.Should().NotContain("Mayor: {dbMayorPlayer.Name}");
 
-        var propertySource = File.ReadAllText(Path.Combine(
-            root.FullName,
-            "SWLOR.Game.Server",
-            "Service",
-            "Property.cs"));
+        // The property system is the facade and the four classes behind it.
+        var propertySource = string.Concat(new[]
+        {
+            Path.Combine("Service", "Property.cs"),
+            Path.Combine("Domain", "World", "PropertyService.cs"),
+            Path.Combine("Domain", "World", "PropertyLoader.cs"),
+            Path.Combine("Domain", "World", "PropertyCatalog.cs"),
+            Path.Combine("Domain", "World", "PropertyCityGovernance.cs"),
+        }.Select(relative => File.ReadAllText(Path.Combine(root.FullName, "SWLOR.Game.Server", relative))));
         propertySource.Should().NotContain("$\"{GetName(player)}'s Apartment\"");
         propertySource.Should().NotContain("$\"{GetName(player)}'s Starship\"");
         propertySource.Should().NotContain("$\"{GetName(player)}'s City\"");

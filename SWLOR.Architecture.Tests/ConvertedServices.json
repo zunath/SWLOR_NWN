@@ -25,6 +25,7 @@
     { "name": "Planet", "domain": "World" },
     { "name": "PlayerList", "domain": "Social" },
     { "name": "PlayerMarket", "domain": "Economy" },
+    { "name": "Property", "domain": "World", "parts": [ "PropertyCatalog", "PropertyCityGovernance", "PropertyLoader" ] },
     { "name": "QuestContractBoard", "domain": "Quests" },
     { "name": "Shuttle", "domain": "World" },
     { "name": "Taxi", "domain": "World" },

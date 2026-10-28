@@ -357,6 +357,146 @@
     "Call": "SendMessageToPC(sender, \"Your HoloCom call went unanswered.\")"
   },
   {
+    "File": "SWLOR.Game.Server/Domain/World/PropertyLoader.cs",
+    "Line": 335,
+    "Member": "NotifyPropertyLoadWaiters",
+    "Delivery": "Retained",
+    "Call": "SendMessageToPC(player, message)"
+  },
+  {
+    "File": "SWLOR.Game.Server/Domain/World/PropertyLoader.cs",
+    "Line": 369,
+    "Member": "NotifyPropertyLoadWaitersWithoutClearing",
+    "Delivery": "Retained",
+    "Call": "SendMessageToPC(player, message)"
+  },
+  {
+    "File": "SWLOR.Game.Server/Domain/World/PropertyLoader.cs",
+    "Line": 375,
+    "Member": "SendPropertyLoadingMessage",
+    "Delivery": "Retained",
+    "Call": "SendMessageToPC(player, \"This property is still loading. Please try again shortly.\")"
+  },
+  {
+    "File": "SWLOR.Game.Server/Domain/World/PropertyLoader.cs",
+    "Line": 380,
+    "Member": "SendPropertyLoadFailedMessage",
+    "Delivery": "Retained",
+    "Call": "SendMessageToPC(player, \"This property could not be loaded. Please notify staff.\")"
+  },
+  {
+    "File": "SWLOR.Game.Server/Domain/World/PropertyService.cs",
+    "Line": 1130,
+    "Member": "EnterProperty",
+    "Delivery": "Retained",
+    "Call": "FloatingTextStringOnCreature(\"You do not have permission to access that property.\", player, false)"
+  },
+  {
+    "File": "SWLOR.Game.Server/Domain/World/PropertyService.cs",
+    "Line": 1218,
+    "Member": "PropertyMenu",
+    "Delivery": "Retained",
+    "Call": "FloatingTextStringOnCreature($\"This menu can only be accessed within player properties.\", player, false)"
+  },
+  {
+    "File": "SWLOR.Game.Server/Domain/World/PropertyService.cs",
+    "Line": 1248,
+    "Member": "PropertyMenu",
+    "Delivery": "Retained",
+    "Call": "FloatingTextStringOnCreature($\"You do not have permission to access this property.\", player, false)"
+  },
+  {
+    "File": "SWLOR.Game.Server/Domain/World/PropertyService.cs",
+    "Line": 1304,
+    "Member": "PlaceStructure",
+    "Delivery": "Retained",
+    "Call": "FloatingTextStringOnCreature(\"Cities cannot be founded here.\", player, false)"
+  },
+  {
+    "File": "SWLOR.Game.Server/Domain/World/PropertyService.cs",
+    "Line": 1321,
+    "Member": "PlaceStructure",
+    "Delivery": "Retained",
+    "Call": "FloatingTextStringOnCreature($\"Structures may only be placed within player properties.\", player, false)"
+  },
+  {
+    "File": "SWLOR.Game.Server/Domain/World/PropertyService.cs",
+    "Line": 1334,
+    "Member": "PlaceStructure",
+    "Delivery": "Retained",
+    "Call": "FloatingTextStringOnCreature($\"You do not have permission to place structures within this property.\", player, false)"
+  },
+  {
+    "File": "SWLOR.Game.Server/Domain/World/PropertyService.cs",
+    "Line": 1386,
+    "Member": "PlaceStructure",
+    "Delivery": "Retained",
+    "Call": "FloatingTextStringOnCreature($\"Unable to place structure in this property. Notify an admin.\", player, false)"
+  },
+  {
+    "File": "SWLOR.Game.Server/Domain/World/PropertyService.cs",
+    "Line": 1394,
+    "Member": "PlaceStructure",
+    "Delivery": "Retained",
+    "Call": "FloatingTextStringOnCreature($\"{fixtureName} limit reached for this property.\", player, false)"
+  },
+  {
+    "File": "SWLOR.Game.Server/Domain/World/PropertyService.cs",
+    "Line": 1401,
+    "Member": "PlaceStructure",
+    "Delivery": "Retained",
+    "Call": "FloatingTextStringOnCreature($\"This {fixtureName} cannot be placed within this type of property.\", player, false)"
+  },
+  {
+    "File": "SWLOR.Game.Server/Domain/World/PropertyService.cs",
+    "Line": 1425,
+    "Member": "PlaceStructure",
+    "Delivery": "Retained",
+    "Call": "SendMessageToPC(player, $\"{fixtureName} Limit: {structureCount+1} / {structureLimit}\")"
+  },
+  {
+    "File": "SWLOR.Game.Server/Domain/World/PropertyService.cs",
+    "Line": 1444,
+    "Member": "EnterBuilding",
+    "Delivery": "Retained",
+    "Call": "SendMessageToPC(player, \"This building is not ready yet. Please try again shortly.\")"
+  },
+  {
+    "File": "SWLOR.Game.Server/Domain/World/PropertyService.cs",
+    "Line": 1444,
+    "Member": "EnterBuilding",
+    "Delivery": "Retained",
+    "Call": "SendMessageToPC(player, \"This building is not ready yet. Please try again shortly.\")"
+  },
+  {
+    "File": "SWLOR.Game.Server/Domain/World/PropertyService.cs",
+    "Line": 1484,
+    "Member": "EnterBuilding",
+    "Delivery": "Retained",
+    "Call": "SendMessageToPC(player, \"You do not have permission to enter.\")"
+  },
+  {
+    "File": "SWLOR.Game.Server/Domain/World/PropertyService.cs",
+    "Line": 1502,
+    "Member": "OpenCitizenshipMenu",
+    "Delivery": "Retained",
+    "Call": "SendMessageToPC(player, \"Only players may use this terminal.\")"
+  },
+  {
+    "File": "SWLOR.Game.Server/Domain/World/PropertyService.cs",
+    "Line": 1521,
+    "Member": "OpenCitizenshipMenu",
+    "Delivery": "Retained",
+    "Call": "SendMessageToPC(player, ColorToken.Red(\"You are a citizen of another city. You cannot access this terminal unless you revoke your citizenship first.\"))"
+  },
+  {
+    "File": "SWLOR.Game.Server/Domain/World/PropertyService.cs",
+    "Line": 1558,
+    "Member": "OpenCityManagementMenu",
+    "Delivery": "Retained",
+    "Call": "SendMessageToPC(player, ColorToken.Red(\"You do not have permission to access this terminal.\"))"
+  },
+  {
     "File": "SWLOR.Game.Server/Domain/World/TaxiService.cs",
     "Line": 44,
     "Member": "RegisterTaxiDestination",
@@ -5199,146 +5339,6 @@
     "Member": "RestorePair",
     "Delivery": "Retained",
     "Call": "SendMessageToPC(MessageRecipient(creature), ColorToken.Red(\"Free inventory or bag space before equipping the Power Glove.\"))"
-  },
-  {
-    "File": "SWLOR.Game.Server/Service/Property.cs",
-    "Line": 720,
-    "Member": "NotifyPropertyLoadWaiters",
-    "Delivery": "Retained",
-    "Call": "SendMessageToPC(player, message)"
-  },
-  {
-    "File": "SWLOR.Game.Server/Service/Property.cs",
-    "Line": 754,
-    "Member": "NotifyPropertyLoadWaitersWithoutClearing",
-    "Delivery": "Retained",
-    "Call": "SendMessageToPC(player, message)"
-  },
-  {
-    "File": "SWLOR.Game.Server/Service/Property.cs",
-    "Line": 760,
-    "Member": "SendPropertyLoadingMessage",
-    "Delivery": "Retained",
-    "Call": "SendMessageToPC(player, \"This property is still loading. Please try again shortly.\")"
-  },
-  {
-    "File": "SWLOR.Game.Server/Service/Property.cs",
-    "Line": 765,
-    "Member": "SendPropertyLoadFailedMessage",
-    "Delivery": "Retained",
-    "Call": "SendMessageToPC(player, \"This property could not be loaded. Please notify staff.\")"
-  },
-  {
-    "File": "SWLOR.Game.Server/Service/Property.cs",
-    "Line": 2996,
-    "Member": "EnterProperty",
-    "Delivery": "Retained",
-    "Call": "FloatingTextStringOnCreature(\"You do not have permission to access that property.\", player, false)"
-  },
-  {
-    "File": "SWLOR.Game.Server/Service/Property.cs",
-    "Line": 3085,
-    "Member": "PropertyMenu",
-    "Delivery": "Retained",
-    "Call": "FloatingTextStringOnCreature($\"This menu can only be accessed within player properties.\", player, false)"
-  },
-  {
-    "File": "SWLOR.Game.Server/Service/Property.cs",
-    "Line": 3115,
-    "Member": "PropertyMenu",
-    "Delivery": "Retained",
-    "Call": "FloatingTextStringOnCreature($\"You do not have permission to access this property.\", player, false)"
-  },
-  {
-    "File": "SWLOR.Game.Server/Service/Property.cs",
-    "Line": 3172,
-    "Member": "PlaceStructure",
-    "Delivery": "Retained",
-    "Call": "FloatingTextStringOnCreature(\"Cities cannot be founded here.\", player, false)"
-  },
-  {
-    "File": "SWLOR.Game.Server/Service/Property.cs",
-    "Line": 3189,
-    "Member": "PlaceStructure",
-    "Delivery": "Retained",
-    "Call": "FloatingTextStringOnCreature($\"Structures may only be placed within player properties.\", player, false)"
-  },
-  {
-    "File": "SWLOR.Game.Server/Service/Property.cs",
-    "Line": 3202,
-    "Member": "PlaceStructure",
-    "Delivery": "Retained",
-    "Call": "FloatingTextStringOnCreature($\"You do not have permission to place structures within this property.\", player, false)"
-  },
-  {
-    "File": "SWLOR.Game.Server/Service/Property.cs",
-    "Line": 3254,
-    "Member": "PlaceStructure",
-    "Delivery": "Retained",
-    "Call": "FloatingTextStringOnCreature($\"Unable to place structure in this property. Notify an admin.\", player, false)"
-  },
-  {
-    "File": "SWLOR.Game.Server/Service/Property.cs",
-    "Line": 3262,
-    "Member": "PlaceStructure",
-    "Delivery": "Retained",
-    "Call": "FloatingTextStringOnCreature($\"{fixtureName} limit reached for this property.\", player, false)"
-  },
-  {
-    "File": "SWLOR.Game.Server/Service/Property.cs",
-    "Line": 3269,
-    "Member": "PlaceStructure",
-    "Delivery": "Retained",
-    "Call": "FloatingTextStringOnCreature($\"This {fixtureName} cannot be placed within this type of property.\", player, false)"
-  },
-  {
-    "File": "SWLOR.Game.Server/Service/Property.cs",
-    "Line": 3293,
-    "Member": "PlaceStructure",
-    "Delivery": "Retained",
-    "Call": "SendMessageToPC(player, $\"{fixtureName} Limit: {structureCount+1} / {structureLimit}\")"
-  },
-  {
-    "File": "SWLOR.Game.Server/Service/Property.cs",
-    "Line": 3392,
-    "Member": "EnterBuilding",
-    "Delivery": "Retained",
-    "Call": "SendMessageToPC(player, \"This building is not ready yet. Please try again shortly.\")"
-  },
-  {
-    "File": "SWLOR.Game.Server/Service/Property.cs",
-    "Line": 3399,
-    "Member": "EnterBuilding",
-    "Delivery": "Retained",
-    "Call": "SendMessageToPC(player, \"This building is not ready yet. Please try again shortly.\")"
-  },
-  {
-    "File": "SWLOR.Game.Server/Service/Property.cs",
-    "Line": 3432,
-    "Member": "EnterBuilding",
-    "Delivery": "Retained",
-    "Call": "SendMessageToPC(player, \"You do not have permission to enter.\")"
-  },
-  {
-    "File": "SWLOR.Game.Server/Service/Property.cs",
-    "Line": 3464,
-    "Member": "OpenCitizenshipMenu",
-    "Delivery": "Retained",
-    "Call": "SendMessageToPC(player, \"Only players may use this terminal.\")"
-  },
-  {
-    "File": "SWLOR.Game.Server/Service/Property.cs",
-    "Line": 3483,
-    "Member": "OpenCitizenshipMenu",
-    "Delivery": "Retained",
-    "Call": "SendMessageToPC(player, ColorToken.Red(\"You are a citizen of another city. You cannot access this terminal unless you revoke your citizenship first.\"))"
-  },
-  {
-    "File": "SWLOR.Game.Server/Service/Property.cs",
-    "Line": 3521,
-    "Member": "OpenCityManagementMenu",
-    "Delivery": "Retained",
-    "Call": "SendMessageToPC(player, ColorToken.Red(\"You do not have permission to access this terminal.\"))"
   },
   {
     "File": "SWLOR.Game.Server/Service/PvpCombat.cs",

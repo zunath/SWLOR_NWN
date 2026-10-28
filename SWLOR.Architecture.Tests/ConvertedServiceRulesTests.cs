@@ -110,6 +110,83 @@ public class ConvertedServiceRulesTests
         problems.Should().HaveCount(3);
     }
 
+    // ---- the parts of a split service
+
+    [Test]
+    public void A_split_service_lists_its_parts_sorted_and_named_after_the_service()
+    {
+        var list = ConvertedServiceList.Parse("""{ "services": [ { "name": "Stat", "domain": "Character", "parts": [ "StatCache", "StatEffects" ] } ] }""");
+
+        list.Problems.Should().BeEmpty();
+        var service = list.Services.Single();
+        service.PartNames.Should().Equal("StatCache", "StatEffects");
+        service.PartInterface("StatCache").ToString().Should().Be("SWLOR.Game.Server.Domain.Character.IStatCache");
+        service.PartInstance("StatCache").ToString().Should().Be("SWLOR.Game.Server.Domain.Character.StatCache");
+    }
+
+    [Test]
+    public void A_part_that_the_cross_domain_guard_would_not_count_as_the_service_is_reported()
+    {
+        var list = ConvertedServiceList.Parse("""{ "services": [ { "name": "Stat", "domain": "Character", "parts": [ "Cache", "Statistics", "StatService", "Stat", "Bad Name" ] } ] }""");
+
+        list.Problems.Should().Contain(problem => problem.Contains("'Cache'") && problem.Contains("must start with the service name"));
+        list.Problems.Should().Contain(problem => problem.Contains("'Statistics'") && problem.Contains("followed by a capital letter"));
+        list.Problems.Should().Contain(problem => problem.Contains("'StatService'") && problem.Contains("StatService itself"));
+        list.Problems.Should().Contain(problem => problem.Contains("'Stat'") && problem.Contains("must start with the service name"));
+        list.Problems.Should().Contain(problem => problem.Contains("'Bad Name' is not a plain part name"));
+    }
+
+    [Test]
+    public void The_parts_must_be_sorted_without_duplicates()
+    {
+        var list = ConvertedServiceList.Parse("""{ "services": [ { "name": "Stat", "domain": "Character", "parts": [ "StatEffects", "StatCache", "StatCache" ] } ] }""");
+
+        list.Problems.Should().Contain(problem => problem.Contains("'StatCache' of Stat is out of order"));
+        list.Problems.Should().Contain(problem => problem.Contains("'StatCache' of Stat is listed twice"));
+    }
+
+    [Test]
+    public void A_service_without_parts_has_none()
+    {
+        new ConvertedService("Achievement", "Character").PartNames.Should().BeEmpty();
+    }
+
+    [Test]
+    public void A_split_service_with_every_piece_and_part_passes()
+    {
+        var service = new ConvertedService("Stat", "Character", ["StatCache"]);
+        var facts = FactsOf(
+            new TypeFact(service.Facade, false, true, true, []),
+            new TypeFact(service.Interface, true, false, false, []),
+            new TypeFact(service.Instance, false, false, true, [service.Interface.ToString()]),
+            new TypeFact(service.PartInterface("StatCache"), true, false, false, []),
+            new TypeFact(service.PartInstance("StatCache"), false, false, true, [service.PartInterface("StatCache").ToString()]));
+
+        ConvertedServiceRules.MissingPieces(ListOf(service), facts).Should().BeEmpty();
+    }
+
+    [Test]
+    public void A_missing_or_misshapen_part_is_named()
+    {
+        var service = new ConvertedService("Stat", "Character", ["StatCache", "StatEffects", "StatTiming"]);
+        var facts = FactsOf(
+            new TypeFact(service.Facade, false, true, true, []),
+            new TypeFact(service.Interface, true, false, false, []),
+            new TypeFact(service.Instance, false, false, true, [service.Interface.ToString()]),
+            new TypeFact(service.PartInterface("StatCache"), false, false, false, []),
+            new TypeFact(service.PartInstance("StatCache"), false, true, true, []),
+            new TypeFact(service.PartInterface("StatEffects"), true, false, false, []),
+            new TypeFact(service.PartInstance("StatEffects"), false, false, true, []));
+
+        var problems = ConvertedServiceRules.MissingPieces(ListOf(service), facts);
+
+        problems.Should().Contain(problem => problem.Contains("IStatCache must be an interface"));
+        problems.Should().Contain(problem => problem.Contains("StatCache must be an instance class"));
+        problems.Should().Contain(problem => problem.Contains("StatEffects must implement") && problem.Contains("IStatEffects"));
+        problems.Should().Contain(problem => problem.Contains("interface") && problem.Contains("IStatTiming") && problem.Contains("does not exist"));
+        problems.Should().Contain(problem => problem.Contains("StatTiming") && problem.Contains("class") && problem.Contains("does not exist"));
+    }
+
     // ---- static state
 
     [Test]
@@ -211,7 +288,8 @@ public class ConvertedServiceRulesTests
     private static AssemblyFacts FactsOf(params TypeFact[] types) => new(types, [], [], []);
 
     private static ConvertedServiceList ListOf(params ConvertedService[] services) =>
-        ConvertedServiceList.Parse("{ \"services\": [" + string.Join(",", services.Select(s => $"{{ \"name\": \"{s.Name}\", \"domain\": \"{s.Domain}\" }}")) + "] }");
+        ConvertedServiceList.Parse("{ \"services\": [" + string.Join(",", services.Select(s =>
+            $"{{ \"name\": \"{s.Name}\", \"domain\": \"{s.Domain}\", \"parts\": [{string.Join(",", s.PartNames.Select(part => $"\"{part}\""))}] }}")) + "] }");
 
     private static TypeKey KeyOf(Type type) => new(type.Namespace ?? string.Empty, type.Name);
 }

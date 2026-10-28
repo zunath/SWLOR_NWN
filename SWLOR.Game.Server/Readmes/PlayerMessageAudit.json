@@ -4858,148 +4858,148 @@
     "Call": "SpeakString(personality.DeathPhrase())"
   },
   {
-    "File": "SWLOR.Game.Server/Service/Fishing.cs",
-    "Line": 248,
+    "File": "SWLOR.Game.Server/Domain/World/FishingService.cs",
+    "Line": 260,
     "Member": "ClickFishingPoint",
     "Delivery": "Retained",
     "Call": "SendMessageToPC(player, \"You move and interrupt your cast.\")"
   },
   {
-    "File": "SWLOR.Game.Server/Service/Fishing.cs",
-    "Line": 267,
+    "File": "SWLOR.Game.Server/Domain/World/FishingService.cs",
+    "Line": 279,
     "Member": "ClickFishingPoint",
     "Delivery": "Retained",
     "Call": "SendMessageToPC(player, \"Only players may fish.\")"
   },
   {
-    "File": "SWLOR.Game.Server/Service/Fishing.cs",
-    "Line": 273,
+    "File": "SWLOR.Game.Server/Domain/World/FishingService.cs",
+    "Line": 285,
     "Member": "ClickFishingPoint",
     "Delivery": "Retained",
     "Call": "SendMessageToPC(player, \"You are busy.\")"
   },
   {
-    "File": "SWLOR.Game.Server/Service/Fishing.cs",
-    "Line": 279,
+    "File": "SWLOR.Game.Server/Domain/World/FishingService.cs",
+    "Line": 291,
     "Member": "ClickFishingPoint",
     "Delivery": "Retained",
     "Call": "SendMessageToPC(player, \"You cannot fish right now.\")"
   },
   {
-    "File": "SWLOR.Game.Server/Service/Fishing.cs",
-    "Line": 286,
+    "File": "SWLOR.Game.Server/Domain/World/FishingService.cs",
+    "Line": 298,
     "Member": "ClickFishingPoint",
     "Delivery": "Retained",
     "Call": "SendMessageToPC(player, \"A fishing rod must be equipped.\")"
   },
   {
-    "File": "SWLOR.Game.Server/Service/Fishing.cs",
-    "Line": 294,
+    "File": "SWLOR.Game.Server/Domain/World/FishingService.cs",
+    "Line": 306,
     "Member": "ClickFishingPoint",
     "Delivery": "Retained",
     "Call": "SendMessageToPC(player, \"Your fishing rod has no bait loaded. Use the fishing rod and target a bait to load some.\")"
   },
   {
-    "File": "SWLOR.Game.Server/Service/Fishing.cs",
-    "Line": 300,
+    "File": "SWLOR.Game.Server/Domain/World/FishingService.cs",
+    "Line": 312,
     "Member": "ClickFishingPoint",
     "Delivery": "Retained",
     "Call": "SendMessageToPC(player, \"You are too far away from the fishing point.\")"
   },
   {
-    "File": "SWLOR.Game.Server/Service/Fishing.cs",
-    "Line": 308,
+    "File": "SWLOR.Game.Server/Domain/World/FishingService.cs",
+    "Line": 320,
     "Member": "ClickFishingPoint",
     "Delivery": "Retained",
     "Call": "SendMessageToPC(player, \"This fishing point has been exhausted.\")"
   },
   {
-    "File": "SWLOR.Game.Server/Service/Fishing.cs",
-    "Line": 330,
+    "File": "SWLOR.Game.Server/Domain/World/FishingService.cs",
+    "Line": 342,
     "Member": "ClickFishingPoint",
     "Delivery": "Retained",
     "Call": "Messaging.SendMessageNearbyToPlayers(\n                player,\n                receiver => $\"{PlayerName.GetDisplayName(receiver, player)} casts a line into the water.\")"
   },
   {
-    "File": "SWLOR.Game.Server/Service/Fishing.cs",
-    "Line": 379,
+    "File": "SWLOR.Game.Server/Domain/World/FishingService.cs",
+    "Line": 391,
     "Member": "FinishFishing",
     "Delivery": "Retained",
     "Call": "SendMessageToPC(player, \"You move and interrupt your cast.\")"
   },
   {
-    "File": "SWLOR.Game.Server/Service/Fishing.cs",
-    "Line": 387,
+    "File": "SWLOR.Game.Server/Domain/World/FishingService.cs",
+    "Line": 399,
     "Member": "FinishFishing",
     "Delivery": "Retained",
     "Call": "SendMessageToPC(player, \"This fishing point has been exhausted.\")"
   },
   {
-    "File": "SWLOR.Game.Server/Service/Fishing.cs",
-    "Line": 394,
+    "File": "SWLOR.Game.Server/Domain/World/FishingService.cs",
+    "Line": 406,
     "Member": "FinishFishing",
     "Delivery": "Retained",
     "Call": "SendMessageToPC(player, \"A fishing rod must be equipped.\")"
   },
   {
-    "File": "SWLOR.Game.Server/Service/Fishing.cs",
-    "Line": 402,
+    "File": "SWLOR.Game.Server/Domain/World/FishingService.cs",
+    "Line": 414,
     "Member": "FinishFishing",
     "Delivery": "Retained",
     "Call": "SendMessageToPC(player, \"Your fishing rod has no bait loaded. Use the fishing rod and target a bait to load some.\")"
   },
   {
-    "File": "SWLOR.Game.Server/Service/Fishing.cs",
-    "Line": 408,
+    "File": "SWLOR.Game.Server/Domain/World/FishingService.cs",
+    "Line": 420,
     "Member": "FinishFishing",
     "Delivery": "Retained",
     "Call": "SendMessageToPC(player, \"Invalid location Id for this fishing point. Please report this with the /bug chat command.\")"
   },
   {
-    "File": "SWLOR.Game.Server/Service/Fishing.cs",
-    "Line": 414,
+    "File": "SWLOR.Game.Server/Domain/World/FishingService.cs",
+    "Line": 426,
     "Member": "FinishFishing",
     "Delivery": "Retained",
     "Call": "SendMessageToPC(player, \"Valid location Id but no fish are assigned to this point. Please report this with the /bug chat command.\")"
   },
   {
-    "File": "SWLOR.Game.Server/Service/Fishing.cs",
-    "Line": 420,
+    "File": "SWLOR.Game.Server/Domain/World/FishingService.cs",
+    "Line": 432,
     "Member": "FinishFishing",
     "Delivery": "Retained",
     "Call": "SendMessageToPC(player, \"Fishing rod is not registered in the system. Please report this with the /bug chat command.\")"
   },
   {
-    "File": "SWLOR.Game.Server/Service/Fishing.cs",
-    "Line": 436,
+    "File": "SWLOR.Game.Server/Domain/World/FishingService.cs",
+    "Line": 448,
     "Member": "FinishFishing",
     "Delivery": "Retained",
     "Call": "SendMessageToPC(player, \"Not even a nibble...\")"
   },
   {
-    "File": "SWLOR.Game.Server/Service/Fishing.cs",
-    "Line": 464,
+    "File": "SWLOR.Game.Server/Domain/World/FishingService.cs",
+    "Line": 476,
     "Member": "FinishFishing",
     "Delivery": "Retained",
     "Call": "SendMessageToPC(player, ColorToken.Red(\"You failed to reel the fish in...\"))"
   },
   {
-    "File": "SWLOR.Game.Server/Service/Fishing.cs",
-    "Line": 470,
+    "File": "SWLOR.Game.Server/Domain/World/FishingService.cs",
+    "Line": 482,
     "Member": "FinishFishing",
     "Delivery": "Retained",
     "Call": "SendMessageToPC(player, $\"You landed a {fish.Name}!\")"
   },
   {
-    "File": "SWLOR.Game.Server/Service/Fishing.cs",
-    "Line": 473,
+    "File": "SWLOR.Game.Server/Domain/World/FishingService.cs",
+    "Line": 485,
     "Member": "FinishFishing",
     "Delivery": "Retained",
     "Call": "SendMessageToPC(player, $\"Bait Remaining: {remainingBait}x {baitName}\")"
   },
   {
-    "File": "SWLOR.Game.Server/Service/Fishing.cs",
-    "Line": 484,
+    "File": "SWLOR.Game.Server/Domain/World/FishingService.cs",
+    "Line": 496,
     "Member": "FinishFishing",
     "Delivery": "Retained",
     "Call": "Messaging.SendMessageNearbyToPlayers(fishingPoint, \"The fishing point has been exhausted.\")"
@@ -5628,81 +5628,81 @@
     "Call": "SendMessageToPC(player, $\"You earned {Amount} XP!\")"
   },
   {
-    "File": "SWLOR.Game.Server/Service/Shuttle.cs",
-    "Line": 219,
+    "File": "SWLOR.Game.Server/Domain/World/ShuttleService.cs",
+    "Line": 251,
     "Member": "BoardPassengers",
     "Delivery": "Retained",
     "Call": "SendMessageToPC(player, $\"You board the shuttle to {destinationName}. Estimated flight time: {transit}.\")"
   },
   {
-    "File": "SWLOR.Game.Server/Service/Shuttle.cs",
-    "Line": 239,
+    "File": "SWLOR.Game.Server/Domain/World/ShuttleService.cs",
+    "Line": 271,
     "Member": "NotifyMissedBoarding",
     "Delivery": "Retained",
     "Call": "SendMessageToPC(player, ColorToken.Yellow($\"You missed your shuttle to {destinationName}! Your ticket remains valid. The next shuttle departs in {wait} - be within {(int)BoardingRangeMeters} meters of the flights terminal. You can refund your ticket at any flights terminal before boarding.\"))"
   },
   {
-    "File": "SWLOR.Game.Server/Service/Shuttle.cs",
-    "Line": 273,
+    "File": "SWLOR.Game.Server/Domain/World/ShuttleService.cs",
+    "Line": 305,
     "Member": "ProcessBoardingCalls",
     "Delivery": "Retained",
     "Call": "SendMessageToPC(player, ColorToken.Cyan($\"Now boarding: shuttle to {destinationName} departs in {wait}. Be within {(int)BoardingRangeMeters} meters of the flights terminal!\"))"
   },
   {
-    "File": "SWLOR.Game.Server/Service/Shuttle.cs",
-    "Line": 317,
+    "File": "SWLOR.Game.Server/Domain/World/ShuttleService.cs",
+    "Line": 349,
     "Member": "ProcessArrival",
     "Delivery": "Retained",
     "Call": "SendMessageToPC(player, $\"The shuttle touches down at {destinationName}.\")"
   },
   {
-    "File": "SWLOR.Game.Server/Service/Shuttle.cs",
-    "Line": 443,
+    "File": "SWLOR.Game.Server/Domain/World/ShuttleService.cs",
+    "Line": 475,
     "Member": "ProcessTransitBroadcasts",
     "Delivery": "Retained",
     "Call": "SpeakString($\"Now arriving at {destinationName} in {remaining}.\")"
   },
   {
-    "File": "SWLOR.Game.Server/Service/Shuttle.cs",
-    "Line": 669,
+    "File": "SWLOR.Game.Server/Domain/World/ShuttleService.cs",
+    "Line": 701,
     "Member": "TryPurchaseTicket",
     "Delivery": "Retained",
     "Call": "SendMessageToPC(player, ColorToken.Red(\"You already have a shuttle ticket.\"))"
   },
   {
-    "File": "SWLOR.Game.Server/Service/Shuttle.cs",
-    "Line": 679,
+    "File": "SWLOR.Game.Server/Domain/World/ShuttleService.cs",
+    "Line": 711,
     "Member": "TryPurchaseTicket",
     "Delivery": "Retained",
     "Call": "SendMessageToPC(player, ColorToken.Red(\"You do not have enough credits to purchase this flight!\"))"
   },
   {
-    "File": "SWLOR.Game.Server/Service/Shuttle.cs",
-    "Line": 729,
+    "File": "SWLOR.Game.Server/Domain/World/ShuttleService.cs",
+    "Line": 761,
     "Member": "RefundTicket",
     "Delivery": "Retained",
     "Call": "SendMessageToPC(player, $\"Your shuttle ticket has been refunded for {ride.FarePaid} credits. Taxes are non-refundable.\")"
   },
   {
-    "File": "SWLOR.Game.Server/Service/Shuttle.cs",
-    "Line": 784,
+    "File": "SWLOR.Game.Server/Domain/World/ShuttleService.cs",
+    "Line": 816,
     "Member": "CompleteRideOnLogin",
     "Delivery": "Retained",
-    "Call": "SendMessageToPC(player, $\"Your shuttle has arrived at {Planet.GetPlanetByType(ride.Destination).Name}.\")"
+    "Call": "SendMessageToPC(player, $\"Your shuttle has arrived at {_planet.GetPlanetByType(ride.Destination).Name}.\")"
   },
   {
-    "File": "SWLOR.Game.Server/Service/Shuttle.cs",
-    "Line": 812,
+    "File": "SWLOR.Game.Server/Domain/World/ShuttleService.cs",
+    "Line": 844,
     "Member": "RestoreTicketedSession",
     "Delivery": "Retained",
     "Call": "SendMessageToPC(player, ColorToken.Yellow($\"You still have a shuttle ticket from {originName} to {destinationName}. Automatic boarding resumes in {wait} if you are within {(int)BoardingRangeMeters} meters of a flights terminal at {originName}. You can refund your ticket at any flights terminal before boarding.\"))"
   },
   {
-    "File": "SWLOR.Game.Server/Service/Shuttle.cs",
-    "Line": 860,
+    "File": "SWLOR.Game.Server/Domain/World/ShuttleService.cs",
+    "Line": 890,
     "Member": "EnterServer",
     "Delivery": "Retained",
-    "Call": "SendMessageToPC(current, $\"You resume your shuttle flight to {Planet.GetPlanetByType(ride.Destination).Name}. Estimated arrival: {remaining}.\")"
+    "Call": "SendMessageToPC(current, $\"You resume your shuttle flight to {_planet.GetPlanetByType(ride.Destination).Name}. Estimated arrival: {remaining}.\")"
   },
   {
     "File": "SWLOR.Game.Server/Service/Skill.cs",

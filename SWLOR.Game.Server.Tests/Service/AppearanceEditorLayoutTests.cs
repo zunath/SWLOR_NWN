@@ -250,6 +250,33 @@ public class AppearanceEditorLayoutTests
             $"{partialName} must fit below the tab panel");
     }
 
+    [TestCase(AppearanceEditorViewModel.EditorMainCompactPartial, AppearanceEditorViewModel.EditorMainPartial)]
+    [TestCase(AppearanceEditorViewModel.EditorArmorCompactPartial, AppearanceEditorViewModel.EditorArmorPartial)]
+    [TestCase(AppearanceEditorViewModel.EditorWeaponCompactPartial, AppearanceEditorViewModel.EditorWeaponPartial)]
+    public void CompactEditorsScrollSidewaysAndThePicturesScrollInTheirPanel(string compactName, string fullName)
+    {
+        var compact = AppearanceEditorDefinition.BuildEditorPanel(compactName);
+        var full = AppearanceEditorDefinition.BuildEditorPanel(fullName);
+        ReadProperty<NuiScrollbars>(compact, "Scrollbars").Should().Be(NuiScrollbars.X,
+            "a window narrower than the editor scrolls sideways to every panel");
+        var oneTileGrid = AppearanceEditorDefinition.BuildEditorPanel(AppearanceEditorViewModel.BrowserGrid(1, 1));
+        Walk(compact).Select(widget => widget.Id).Where(id => id != null)
+            .Should().BeEquivalentTo(Walk(full).Concat(Walk(oneTileGrid)).Select(widget => widget.Id)
+                    .Where(id => id != null && id != AppearanceEditorViewModel.BrowserGridElement),
+                "the compact editor has every control of the full one and a one-picture grid");
+
+        Walk(compact).Should().NotContain(widget => widget.Id == AppearanceEditorViewModel.BrowserGridElement,
+            "NUI stops drawing a nested grid group once it is scrolled");
+        var tile = Walk(compact).Single(widget => widget.Id == "ae_tile_0");
+        var browser = PathTo(compact, tile).OfType<GuiGroup<AppearanceEditorViewModel>>().Last();
+        ReadProperty<NuiScrollbars>(browser, "Scrollbars").Should().Be(NuiScrollbars.Y,
+            "a short window scrolls the picture panel");
+        ReadProperty<float>(browser, "Width").Should().Be(AppearanceEditorDefinition.CompactBrowserWidth);
+        var grid = AppearanceEditorDefinition.BuildEditorPanel(AppearanceEditorViewModel.BrowserGrid(1, 1));
+        NaturalWidth(grid).Should().BeLessThanOrEqualTo(AppearanceEditorDefinition.CompactBrowserWidth - 20f,
+            "one column of pictures fits the compact browser");
+    }
+
     // ------------------------------------------------------------------ body map
 
     [TestCase(AppearanceEditorViewModel.EditorArmorPartial, true)]

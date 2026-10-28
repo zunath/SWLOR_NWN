@@ -111,8 +111,9 @@ public class AppearanceEditorColorStateTests
     public void TabRestorationPublishesBindingsAfterTheBrowserGridAndBeforeEditingResumes()
     {
         var root = CSharpSyntaxTree.ParseText(ReadViewModel()).GetRoot();
-        FindMethod(root, "LoadItemTypeEditor").ToString().Should()
-            .Contain("EditorTabs.Select(this, MainPartialElement, partialTabId, OnEditorPartialApplied)");
+        var load = FindMethod(root, "LoadItemTypeEditor").ToString();
+        load.Should().Contain("var tabs = _isCompactLayout ? CompactEditorTabs : EditorTabs;");
+        load.Should().Contain("tabs.Select(this, MainPartialElement, partialTabId, OnEditorPartialApplied)");
         var restoredMethod = FindMethod(root, "OnEditorPartialApplied");
         var restored = restoredMethod.ToString();
         var order = new[]
@@ -175,8 +176,13 @@ public class AppearanceEditorColorStateTests
             "resizing swaps only the nested grid, never the editor panel");
         Invocations(apply).Should().NotContain(new[]
         {
-            "LoadItemTypeEditor", "RepublishBindings", "SetGroupLayout", "LoadItemParts", "LoadTintMapEditor"
+            "RepublishBindings", "SetGroupLayout", "LoadItemParts", "LoadTintMapEditor"
         });
+        var reload = apply.DescendantNodes().OfType<InvocationExpressionSyntax>()
+            .Single(call => call.Expression.ToString() == "LoadItemTypeEditor");
+        reload.Ancestors().OfType<IfStatementSyntax>().First().Condition.ToString()
+            .Should().Be("compact != _isCompactLayout",
+                "the editor panel is reloaded only when the window crosses into or out of the compact layout");
 
         foreach (var source in new[] { root, browser })
         {

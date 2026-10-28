@@ -202,15 +202,15 @@ public class AppearancePreviewTests
     [TestCase(7, false, "H1")]
     [TestCase(175, false, "P11")]
     [TestCase(42, true, "RGB")]
-    [TestCase(255, false, "Base")]
+    [TestCase(255, false, "Outfit")]
     [TestCase(255, true, "RGB")]
-    public void SwatchCodeShowsPaletteCodeRgbOrBase(int colorId, bool custom, string expected) =>
+    public void SwatchCodeShowsPaletteCodeRgbOrOutfit(int colorId, bool custom, string expected) =>
         SwatchCode(BuildPaletteRegion(colorId), custom).Should().Be(expected);
 
     [Test]
-    public void SwatchCodeOfAMissingRegionIsBase()
+    public void SwatchCodeOfAMissingRegionIsOutfit()
     {
-        SwatchCode(null, false).Should().Be("Base");
+        SwatchCode(null, false).Should().Be("Outfit");
         SwatchCode(null, true).Should().Be("RGB");
     }
 
@@ -258,6 +258,8 @@ public class AppearancePreviewTests
     [TestCase(714f, 2, 3)]
     [TestCase(713f, 2, 2)]
     [TestCase(100f, 1, 1)]
+    [TestCase(640f, 1, 1)]
+    [TestCase(686f, 1, 2)]
     [TestCase(4000f, 4, 4)]
     public void BrowserRowsFollowTheWindowHeight(float height, int columns, int expected) =>
         ((int)typeof(AppearanceEditorViewModel)
@@ -295,13 +297,41 @@ public class AppearancePreviewTests
         FitWindowToScreen(geometry, 0f, 0f, 1f).Should().BeSameAs(geometry);
     }
 
-    [TestCase(AppearanceEditorSlot.LeftShoulder, "Left Shoulder only (blank = Base)")]
-    [TestCase(AppearanceEditorSlot.Chest, "Chest only (blank = Base)")]
-    [TestCase(AppearanceEditorSlot.RightFoot, "Right Foot only (blank = Base)")]
+    [TestCase(AppearanceEditorSlot.LeftShoulder, "Left Shoulder")]
+    [TestCase(AppearanceEditorSlot.Chest, "Chest")]
+    [TestCase(AppearanceEditorSlot.RightFoot, "Right Foot")]
     public void PartColourRowsNameTheSelectedPart(AppearanceEditorSlot slot, string expected) =>
         ((string)typeof(AppearanceEditorViewModel)
             .GetMethod("PartColorsTitle", BindingFlags.NonPublic | BindingFlags.Static)!
             .Invoke(null, new object[] { slot })!).Should().Be(expected);
+
+    [TestCase(0, "Outfit")]
+    [TestCase(1, "Helmet")]
+    [TestCase(2, "Cloak")]
+    public void ItemColourRowsNameTheItem(int itemTypeIndex, string expected) =>
+        ((string)typeof(AppearanceEditorViewModel)
+            .GetMethod("ItemColorsTitle", BindingFlags.NonPublic | BindingFlags.Static)!
+            .Invoke(null, new object[] { itemTypeIndex })!).Should().Be(expected);
+
+    // width, height, has side columns -> compact
+    [TestCase(1240f, 720f, true, false)]
+    [TestCase(854f, 720f, true, false)]
+    [TestCase(853f, 720f, true, true)]
+    [TestCase(760f, 720f, true, true)]
+    [TestCase(1240f, 548f, true, false)]
+    [TestCase(1240f, 547f, true, true)]
+    [TestCase(404f, 720f, false, false)]
+    [TestCase(403f, 720f, false, true)]
+    [TestCase(0f, 0f, true, false)]
+    public void SmallWindowsUseTheFixedSizeEditor(float width, float height, bool hasSideColumns, bool expected)
+    {
+        ((bool)typeof(AppearanceEditorViewModel)
+            .GetMethod("IsCompactWindow", BindingFlags.NonPublic | BindingFlags.Static)!
+            .Invoke(null, new object[] { width, height, hasSideColumns })!).Should().Be(expected);
+        if (!expected && width > 0f)
+            BrowserColumnsForWidth(width, hasSideColumns).Should().BeGreaterThanOrEqualTo(1,
+                "a window that is not compact fits at least one column of pictures");
+    }
 
     private static GuiRectangle FitWindowToScreen(GuiRectangle geometry, float screenWidth, float screenHeight, float scale) =>
         (GuiRectangle)typeof(AppearanceEditorViewModel)

@@ -59,6 +59,7 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
         private bool _browserFrontOnly;
         private float[] _paletteOutline = Array.Empty<float>();
         private int _resizeGeneration;
+        private bool _isCompactLayout;
         private bool _compactPageLabels;
 
         private int BrowserPageSize => _browserColumns * _browserRows;
@@ -358,6 +359,7 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
         public string SelectedPartMetal2Code { get => Get<string>(); set => Set(value); }
         public bool IsPartColorsVisible { get => Get<bool>(); set => Set(value); }
         public string SelectedPartColorsTitle { get => Get<string>(); set => Set(value); }
+        public string BaseColorsTitle { get => Get<string>(); set => Set(value); }
 
         public GuiRectangle BodySkinRegion { get => Get<GuiRectangle>(); set => Set(value); }
         public GuiRectangle BodyHairRegion { get => Get<GuiRectangle>(); set => Set(value); }
@@ -662,12 +664,41 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
             return Math.Clamp((int)(available / tile), 1, MaxBrowserColumns);
         }
 
+        /// <summary>
+        /// Extra height for controls a narrow browser stacks: two columns put the pager on two
+        /// rows; one column also stacks the view buttons and puts the pager on three rows.
+        /// </summary>
+        private static float StackedControlsHeight(int columns) => columns switch
+        {
+            1 => 150f,
+            2 => 40f,
+            _ => 0f
+        };
+
+        /// <summary>Window height that holds one row of pictures in a one-column browser.</summary>
+        private static readonly float BrowserMinimumWindowHeight = 260f + StackedControlsHeight(1) + 138f;
+
+        /// <summary>
+        /// True when the window is too small for one column or one row of pictures beside the
+        /// other panels; the editor then keeps a fixed size and the window content scrolls.
+        /// </summary>
+        internal static bool IsCompactWindow(float windowWidth, float windowHeight, bool hasSideColumns)
+        {
+            const float sideColumns = AppearanceEditorDefinition.MapWidth + AppearanceEditorDefinition.ColoursWidth + 48f;
+            const float weaponColumn = AppearanceEditorDefinition.WeaponCategoryWidth + 50f;
+            const float tile = AppearanceEditorDefinition.TileSize + 14f;
+            if (windowWidth <= 0f || windowHeight <= 0f)
+                return false;
+            var available = windowWidth - (hasSideColumns ? sideColumns : weaponColumn) - 44f;
+            return available < tile || windowHeight < BrowserMinimumWindowHeight;
+        }
+
         /// <summary>Tile rows that fit the window height; narrow browsers stack their pager on two rows.</summary>
         internal static int BrowserRowsForHeight(float windowHeight, int columns)
         {
             const float overhead = 260f;
             const float row = 138f;
-            var available = windowHeight - overhead - (columns <= 2 ? 40f : 0f);
+            var available = windowHeight - overhead - StackedControlsHeight(columns);
             return Math.Clamp((int)(available / row), 1, MaxBrowserRows);
         }
 
@@ -730,17 +761,26 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
         {
             var width = Geometry?.Width ?? 0f;
             var height = Geometry?.Height ?? 0f;
-            var columns = width > 0
-                ? BrowserColumnsForWidth(width, SelectedItemTypeIndex is not (3 or 4) || IsAppearanceSelected)
-                : MaxBrowserColumns;
-            var rows = height > 0 ? BrowserRowsForHeight(height, columns) : MaxBrowserRows;
+            var hasSideColumns = SelectedItemTypeIndex is not (3 or 4) || IsAppearanceSelected;
+            var compact = IsCompactWindow(width, height, hasSideColumns);
+            if (compact != _isCompactLayout)
+            {
+                // Reloading the editor applies the browser grid again for the new layout.
+                _isCompactLayout = compact;
+                LoadItemTypeEditor();
+                return;
+            }
+            var columns = compact ? 1 : width > 0 ? BrowserColumnsForWidth(width, hasSideColumns) : MaxBrowserColumns;
+            var rows = compact ? 1 : height > 0 ? BrowserRowsForHeight(height, columns) : MaxBrowserRows;
             if (!force && columns == _browserColumns && rows == _browserRows)
                 return;
             var currentIndex = _browserIds.IndexOf(_browserCurrent);
             _browserColumns = columns;
             _browserRows = rows;
             _browserPage = currentIndex >= 0 ? currentIndex / BrowserPageSize : 0;
-            ChangePartialView(BrowserGridElement, BrowserGrid(columns, rows));
+            // Compact editors hold their one-picture grid directly.
+            if (!compact)
+                ChangePartialView(BrowserGridElement, BrowserGrid(columns, rows));
             PublishBrowser();
             RepublishInputValues();
         }
@@ -899,13 +939,13 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
         };
 
         // ---------------- colour indicators ----------------
-        /// <summary>Palette code (H1), RGB for a custom colour, or Base for an inherited part colour.</summary>
+        /// <summary>Palette code (H1), RGB for a custom colour, or Outfit for a part using the outfit colour.</summary>
         internal static string SwatchCode(GuiRectangle region, bool custom)
         {
             if (custom)
                 return "RGB";
             if (region == null || region.Width < ColorSize)
-                return "Base";
+                return "Outfit";
             return AppearancePreview.PaletteCode((int)(region.Y / ColorSize) * TextureColorsPerRow + (int)(region.X / ColorSize));
         }
 
@@ -931,13 +971,18 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
             SyncSelectedPartSelection();
         }
 
-        /// <summary>Names the part the Part rows colour, e.g. "Left Shoulder only (blank = Base)".</summary>
-        internal static string PartColorsTitle(AppearanceEditorSlot slot)
-        {
-            var name = string.Concat(slot.ToString().Select((letter, index) =>
+        /// <summary>Heads the part colour rows with the selected part's name, e.g. "Left Shoulder".</summary>
+        internal static string PartColorsTitle(AppearanceEditorSlot slot) =>
+            string.Concat(slot.ToString().Select((letter, index) =>
                 index > 0 && char.IsUpper(letter) ? " " + letter : letter.ToString()));
-            return $"{name} only (blank = Base)";
-        }
+
+        /// <summary>Heads the item colour rows: the outfit for armor, otherwise the item itself.</summary>
+        internal static string ItemColorsTitle(int itemTypeIndex) => itemTypeIndex switch
+        {
+            1 => "Helmet",
+            2 => "Cloak",
+            _ => "Outfit"
+        };
 
         private void MirrorPartSwatch(AppearanceArmorColor channel)
         {

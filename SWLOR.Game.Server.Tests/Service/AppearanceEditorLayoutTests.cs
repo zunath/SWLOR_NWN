@@ -158,11 +158,7 @@ public class AppearanceEditorLayoutTests
         PathTo(main, primary).SkipLast(1).Should().OnlyContain(widget => Width(widget) == 0f);
         Width(primary).Should().Be(300f);
         Width(settings).Should().Be(150f);
-        var itemSelector = Walk(main).OfType<GuiComboBox<AppearanceEditorViewModel>>().Single();
-        ReadProperty<string>(itemSelector, "SelectedIndexBindName").Should()
-            .Be(nameof(AppearanceEditorViewModel.SelectedItemTypeIndex));
-        ReadProperty<List<GuiComboEntry>>(itemSelector, "Options").Select(option => option.Value)
-            .Should().Equal(0, 1, 2, 3, 4);
+        AssertEquipmentPicker(PathTo(main, primary).OfType<GuiRow<AppearanceEditorViewModel>>().Last());
         var slot = Walk(main).Single(widget => widget.Id == AppearanceEditorViewModel.MainPartialElement);
         PathTo(main, slot).Should().OnlyContain(widget => Width(widget) == 0f,
             "the active partial needs the full available window width");
@@ -183,13 +179,16 @@ public class AppearanceEditorLayoutTests
         var column = partial.Elements.Should().ContainSingle().Which;
         column.Should().BeOfType<GuiColumn<AppearanceEditorViewModel>>();
 
-        var rows = column.Elements;
-        rows.Should().HaveCount(2);
-        ReadProperty<string>(rows[0], "IsVisibleBindName").Should().Be(nameof(AppearanceEditorViewModel.DoesNotHaveItemEquipped));
-        ReadProperty<string>(rows[1], "IsVisibleBindName").Should().Be(nameof(AppearanceEditorViewModel.HasItemEquipped));
+        var rows = column.Elements.ToList();
+        // No hidden rows above the editors: a hidden row still takes up height.
+        rows.Should().ContainSingle();
+        Walk(partial).OfType<GuiComboBox<AppearanceEditorViewModel>>().Should().BeEmpty(
+            "the equipment picker shares the tab row");
+        var content = rows.Single();
+        ReadProperty<string>(content, "IsVisibleBindName").Should().Be(nameof(AppearanceEditorViewModel.HasItemEquipped));
 
-        rows[1].Elements.Should().AllBeOfType<GuiGroup<AppearanceEditorViewModel>>();
-        var groups = rows[1].Elements.ToArray();
+        content.Elements.Should().AllBeOfType<GuiGroup<AppearanceEditorViewModel>>();
+        var groups = content.Elements.ToArray();
         var expectedWidths = partialName == AppearanceEditorViewModel.EditorWeaponPartial
             ? new[] { AppearanceEditorDefinition.WeaponCategoryWidth, 0f }
             : new[] { AppearanceEditorDefinition.MapWidth, AppearanceEditorDefinition.ColoursWidth, 0f };
@@ -197,6 +196,29 @@ public class AppearanceEditorLayoutTests
             "the browser takes the width left beside the fixed columns");
         Slots(groups.Last()).Should().Equal(AppearanceEditorViewModel.BrowserGridElement);
         Slots(partial).Should().Equal(AppearanceEditorViewModel.BrowserGridElement);
+    }
+
+    private static void AssertEquipmentPicker(IGuiWidget row)
+    {
+        var picker = Walk(row).OfType<GuiComboBox<AppearanceEditorViewModel>>().Should().ContainSingle().Which;
+        ReadProperty<string>(picker, "SelectedIndexBindName").Should()
+            .Be(nameof(AppearanceEditorViewModel.EquipmentTypeValue));
+        ReadProperty<string>(picker, "IsVisibleBindName").Should().Be(nameof(AppearanceEditorViewModel.IsEquipmentSelected));
+        ReadProperty<List<GuiComboEntry>>(picker, "Options").Select(option => (option.Label, option.Value))
+            .Should().Equal(new[] { ("Armor", 0), ("Weapon (Main)", 1), ("Weapon (Off)", 2) },
+                "entries carry their list position, which the combo reports");
+        foreach (var (entry, itemType) in new[] { (0, 0), (1, 3), (2, 4) })
+        {
+            AppearanceEditorViewModel.ToItemTypeIndex(entry).Should().Be(itemType);
+            AppearanceEditorViewModel.ToEquipmentTypeValue(itemType).Should().Be(entry);
+        }
+        AppearanceEditorViewModel.ToEquipmentTypeValue(1).Should().Be(0, "a helmet belongs to the armor entry");
+        AppearanceEditorViewModel.ToEquipmentTypeValue(2).Should().Be(0, "a cloak belongs to the armor entry");
+        var message = Walk(row).OfType<GuiLabel<AppearanceEditorViewModel>>().Should().ContainSingle().Which;
+        ReadProperty<string>(message, "IsVisibleBindName").Should().Be(nameof(AppearanceEditorViewModel.IsNoEditableItemVisible));
+        var outfits = Walk(row).Single(widget => widget.Id == "ae_outfits");
+        ReadProperty<string>(outfits, "IsVisibleBindName").Should().Be(nameof(AppearanceEditorViewModel.IsEquipmentSelected));
+        AssertSingleHandler(outfits, "click", nameof(AppearanceEditorViewModel.OnClickOutfits));
     }
 
     [Test]
@@ -224,8 +246,35 @@ public class AppearanceEditorLayoutTests
         width.Should().BeLessThanOrEqualTo(initial.Width - 60f,
             $"{partialName} plus its {columns}-column grid must leave the border and scrollbar allowance");
         var height = Math.Max(sides.Max(MinimumHeight), NaturalHeight(browser) + NaturalHeight(grid));
-        height.Should().BeLessThanOrEqualTo(initial.Height - 84f - 60f,
-            $"{partialName} must fit below the 84px tab panel");
+        height.Should().BeLessThanOrEqualTo(initial.Height - AppearanceEditorDefinition.TabPanelHeight - 60f,
+            $"{partialName} must fit below the tab panel");
+    }
+
+    [TestCase(AppearanceEditorViewModel.EditorMainCompactPartial, AppearanceEditorViewModel.EditorMainPartial)]
+    [TestCase(AppearanceEditorViewModel.EditorArmorCompactPartial, AppearanceEditorViewModel.EditorArmorPartial)]
+    [TestCase(AppearanceEditorViewModel.EditorWeaponCompactPartial, AppearanceEditorViewModel.EditorWeaponPartial)]
+    public void CompactEditorsScrollSidewaysAndThePicturesScrollInTheirPanel(string compactName, string fullName)
+    {
+        var compact = AppearanceEditorDefinition.BuildEditorPanel(compactName);
+        var full = AppearanceEditorDefinition.BuildEditorPanel(fullName);
+        ReadProperty<NuiScrollbars>(compact, "Scrollbars").Should().Be(NuiScrollbars.X,
+            "a window narrower than the editor scrolls sideways to every panel");
+        var oneTileGrid = AppearanceEditorDefinition.BuildEditorPanel(AppearanceEditorViewModel.BrowserGrid(1, 1));
+        Walk(compact).Select(widget => widget.Id).Where(id => id != null)
+            .Should().BeEquivalentTo(Walk(full).Concat(Walk(oneTileGrid)).Select(widget => widget.Id)
+                    .Where(id => id != null && id != AppearanceEditorViewModel.BrowserGridElement),
+                "the compact editor has every control of the full one and a one-picture grid");
+
+        Walk(compact).Should().NotContain(widget => widget.Id == AppearanceEditorViewModel.BrowserGridElement,
+            "NUI stops drawing a nested grid group once it is scrolled");
+        var tile = Walk(compact).Single(widget => widget.Id == "ae_tile_0");
+        var browser = PathTo(compact, tile).OfType<GuiGroup<AppearanceEditorViewModel>>().Last();
+        ReadProperty<NuiScrollbars>(browser, "Scrollbars").Should().Be(NuiScrollbars.Y,
+            "a short window scrolls the picture panel");
+        ReadProperty<float>(browser, "Width").Should().Be(AppearanceEditorDefinition.CompactBrowserWidth);
+        var grid = AppearanceEditorDefinition.BuildEditorPanel(AppearanceEditorViewModel.BrowserGrid(1, 1));
+        NaturalWidth(grid).Should().BeLessThanOrEqualTo(AppearanceEditorDefinition.CompactBrowserWidth - 20f,
+            "one column of pictures fits the compact browser");
     }
 
     // ------------------------------------------------------------------ body map
@@ -284,6 +333,10 @@ public class AppearanceEditorLayoutTests
         {
             var button = Walk(armor).Single(widget => widget.Id == id);
             ReadProperty<string>(button, "IsEnabledBindName").Should().Be(nameof(AppearanceEditorViewModel.IsCopyEnabled));
+            ReadProperty<float>(button, "Width").Should().Be(ReadProperty<float>(button, "Height"),
+                "the copy buttons are square slots under the arms");
+            ReadProperty<string>(button, "Resref").Should().Be(id == "ae_copy_right" ? "arrow_left" : "arrow_right",
+                "each arrow points at the side it copies to");
             AssertSingleHandler(button, "click", method);
             Walk(_partials[AppearanceEditorViewModel.EditorMainPartial]).Should().NotContain(widget => widget.Id == id);
         }
@@ -516,6 +569,8 @@ public class AppearanceEditorLayoutTests
         views.Select(view => ReadProperty<string>(view, "IsToggledBindName")).Should().Equal(
             nameof(AppearanceEditorViewModel.IsFrontViewSelected), nameof(AppearanceEditorViewModel.IsBackViewSelected),
             nameof(AppearanceEditorViewModel.IsAngleViewSelected));
+        views.Should().OnlyContain(view => ReadProperty<string>(view, "IsVisibleBindName") ==
+            nameof(AppearanceEditorViewModel.IsPreviewViewChoiceVisible), "weapon pages have only front pictures");
         for (var index = 0; index < views.Length; index++)
             AssertSingleHandler(views[index], "click", nameof(AppearanceEditorViewModel.OnClickPreviewView),
                 (typeof(AppearancePreviewView), (AppearancePreviewView)index));

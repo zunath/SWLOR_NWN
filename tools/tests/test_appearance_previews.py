@@ -1,5 +1,6 @@
 """Check Appearance Editor picture naming, tint baking and cloak tiles without Blender or NWN."""
 import re
+import struct
 import sys
 import tempfile
 import unittest
@@ -196,6 +197,19 @@ class CloakTileTests(unittest.TestCase):
         self.assertTrue((layer[256:] == 9).all())
 
 
+# ItemClass of every BaseItem the Appearance Editor offers weapon parts for (SWLOR_Haks sw_2da/baseitems.2da).
+ITEM_CLASSES = {
+    1: "WSwLs", 7: "WBwXl", 11: "WBwSh", 12: "WDbSw", 13: "WSwGs", 22: "WSwDg", 50: "WDbQs", 56: "AShLw",
+    58: "WPlSs", 59: "WThSh", 61: "WBwSh", 310: "WSwDp", 511: "WDbLsbr", 512: "WSwGlsbr", 514: "WBwSh",
+    525: "WSwLs", 537: "WDbSw", 541: "WPG",
+}
+
+
+def write_base_items(root: Path):
+    rows = [f"{row} 1 item{row} {item_class}" for row, item_class in ITEM_CLASSES.items()]
+    (root / "baseitems.2da").write_text("\n".join(["2DA V2.0", "", "Name label ItemClass"] + rows), encoding="latin-1")
+
+
 class NamingParityTests(unittest.TestCase):
     """Job keys must be the keys the game server asks for (AppearancePreview.cs)."""
 
@@ -251,8 +265,10 @@ class NamingParityTests(unittest.TestCase):
         self.assertEqual(cloak_job.model, "pfh0_cloak_001")
         self.assertEqual(cloak_job.materials, {"*": f"{jobs.CLOAK_ATLAS_PREFIX}9"})
 
+        self.assertIn("wswls_t_011", keys)
+        self.assertIn("ashlw_011", keys)
         for key in keys:
-            self.assertRegex(key, r"^(p[fm]h0_[a-z]+\d{3}|helm_\d{3})$")
+            self.assertRegex(key, r"^(p[fm]h0_[a-z]+\d{3}|helm_\d{3}|w[a-z]+_[tmb]_\d{3}|w[a-z]+_\d{3}|ashlw_\d{3})$")
             for view in VIEWS:
                 preview_resref(key, view)  # raises when a key cannot fit a resref
 
@@ -272,6 +288,7 @@ class NamingParityTests(unittest.TestCase):
         (root / "cloakmodel.2da").write_text("\n".join(cloak_models), encoding="latin-1")
         cloak_tints = ["2DA V2.0", "", "LABEL INDEX", f"{self.cloak_row} tint 9"]
         (root / "cloaktint.2da").write_text("\n".join(cloak_tints), encoding="latin-1")
+        write_base_items(root)
         return jobs.build(root, lambda name: True)
 
 
@@ -323,6 +340,175 @@ class DuplicateTests(unittest.TestCase):
             self.assertFalse(old.exists(), "the human picture must show instead")
             self.assertTrue(unrelated.exists())
 
+    def test_weapon_parts_publish_only_their_front_picture(self):
+        from appearance_previews.__main__ import write_pictures
+        with tempfile.TemporaryDirectory() as folder:
+            renders, output = Path(folder, "renders"), Path(folder, "out")
+            renders.mkdir()
+            output.mkdir()
+            for key in ("wswls_t_011", "pmh0_chest001"):
+                for view in VIEWS:
+                    Image.new("RGBA", (64, 64), (200, 0, 0, 255)).save(renders / f"{key}_{view}.png")
+            kept, _, wanted = write_pictures(["wswls_t_011", "pmh0_chest001"], renders, output, 96,
+                                             frozenset({"wswls_t_011"}))
+            self.assertEqual(kept, 4)
+            self.assertIn("awswls_t_011f.dds", wanted)
+            self.assertNotIn("awswls_t_011b.dds", wanted)
+            self.assertNotIn("awswls_t_011a.dds", wanted)
+            self.assertIn("apmh0_chest001b.dds", wanted)
+
+    def test_a_partial_run_removes_old_pictures_of_its_empty_parts_only(self):
+        from appearance_previews.__main__ import remove_stale_pictures
+        with tempfile.TemporaryDirectory() as folder:
+            output = Path(folder)
+            empty, kept, other = (output / "awpg_t_011f.dds", output / "awswls_t_011f.dds",
+                                  output / "awswdg_t_011f.dds")
+            for path in (empty, kept, other):
+                path.write_bytes(b"old")
+            remove_stale_pictures(output, {"awswls_t_011f.dds"}, ["wpg_t_011", "wswls_t_011"])
+            self.assertFalse(empty.exists(), "a part found empty must not keep its old picture")
+            self.assertTrue(kept.exists())
+            self.assertTrue(other.exists(), "parts outside a partial run are left alone")
+            remove_stale_pictures(output, {"awswls_t_011f.dds"})
+            self.assertFalse(other.exists(), "a full run removes every picture it did not write")
+
+
+class WeaponJobTests(unittest.TestCase):
+    def test_composite_part_ids_name_the_engine_models(self):
+        # Part id = colour * 100 + model; resref = <ItemClass>_<t|m|b>_<model * 10 + colour:D3>.
+        self.assertEqual(jobs.composite_weapon_model("wswls", "t", 101), "wswls_t_011")
+        self.assertEqual(jobs.composite_weapon_model("wswls", "b", 325), "wswls_b_253")
+        self.assertEqual(jobs.composite_weapon_model("wpg", "m", 110), "wpg_m_101")
+        self.assertEqual(jobs.composite_weapon_model("wswglsbr", "t", 114), "wswglsbr_t_141")
+        self.assertEqual(jobs.composite_weapon_model("wswls", "t", 100), "")
+        self.assertEqual(jobs.composite_weapon_model("wswls", "t", 7), "")
+
+    def test_simple_part_ids_name_the_engine_models(self):
+        self.assertEqual(jobs.simple_weapon_model("ashlw", 11), "ashlw_011")
+        self.assertEqual(jobs.simple_weapon_model("wthsh", 255), "wthsh_255")
+        self.assertEqual(jobs.simple_weapon_model("ashlw", 0), "")
+
+    def test_definitions_are_read_as_the_editor_registers_them(self):
+        definitions = jobs.weapon_definitions()
+        self.assertEqual(definitions["Longsword"], "LongswordAppearanceDefinition")
+        for base_item in ("Pistol", "Sling", "LegacyPistol"):
+            self.assertEqual(definitions[base_item], "PistolAppearanceDefinition")
+        ids = jobs.base_item_ids()
+        self.assertEqual({ids[name] for name in definitions}, set(ITEM_CLASSES))
+
+    def test_definition_lists_skip_comments(self):
+        folder = jobs.DEFINITIONS / "ItemAppearance"
+        simple, lists = jobs.weapon_definition(folder / "LongswordAppearanceDefinition.cs")
+        self.assertFalse(simple)
+        self.assertEqual(lists["TopParts"][:2], [101, 102])
+        self.assertIn(901, lists["BottomParts"])
+        simple, lists = jobs.weapon_definition(folder / "LargeShieldAppearanceDefinition.cs")
+        self.assertTrue(simple)
+        self.assertEqual(lists["SimpleParts"][0], 11)
+
+    def test_every_weapon_part_has_a_picture_resref(self):
+        with tempfile.TemporaryDirectory() as directory:
+            write_base_items(Path(directory))
+            models = jobs.weapon_models(Path(directory))
+        found = dict(models)
+        self.assertTrue(found["PowerGlove"].startswith("wpg_"))
+        self.assertIn(("Longsword", "wswls_t_011"), models)
+        self.assertIn(("LargeShield", "ashlw_011"), models)
+        for _, model in models:
+            for view in VIEWS:
+                self.assertEqual(preview_resref(model, view), f"a{model}{view}")
+
+    def test_build_marks_weapon_jobs_and_skips_missing_models(self):
+        with tempfile.TemporaryDirectory() as directory:
+            root = Path(directory)
+            for name in ("appearance.2da", "cloakmodel.2da", "cloaktint.2da"):
+                (root / name).write_text("2DA V2.0" + chr(10) + chr(10) + "LABEL" + chr(10), encoding="latin-1")
+            write_base_items(root)
+            built = jobs.build(root, lambda name: name in {"wswls_t_011.mdl", "ashlw_011.mdl"})
+        self.assertEqual(sorted((j.key, j.model, j.weapon) for j in built),
+                         [("ashlw_011", "ashlw_011", "shield"), ("wswls_t_011", "wswls_t_011", "weapon")])
+
+    def test_item_classes_match_the_haks(self):
+        two_da = REPO / "SWLOR_Haks/sw_2da/baseitems.2da"
+        if not two_da.is_file():
+            self.skipTest("SWLOR_Haks sw_2da is not checked out")
+        classes = jobs.item_classes(two_da.parent)
+        self.assertEqual({row: classes[row] for row in ITEM_CLASSES}, {r: c.lower() for r, c in ITEM_CLASSES.items()})
+
+
+class EmitterTests(unittest.TestCase):
+    def test_textured_emitters_are_read_with_their_size(self):
+        from appearance_previews.__main__ import mesh_emitters
+        model = chr(10).join([
+            "node trimesh blade", "  bitmap null", "  render 0", "endnode",
+            "node emitter nwnemitter02", "  texture lsbr_015", "  sizeStart 0.22", "  sizeStart_y 1.21", "endnode",
+            "node emitter spark", "  texture NULL", "  sizeStart 0.1", "  sizeStart_y 0.1", "endnode", ""])
+        with tempfile.TemporaryDirectory() as folder:
+            path = Path(folder, "m.mdl")
+            path.write_text(model)
+            self.assertEqual(mesh_emitters(path),
+                             [{"node": "nwnemitter02", "texture": "lsbr_015", "width": 0.22, "length": 1.21}])
+
+
+class BiowareDdsTests(unittest.TestCase):
+    def test_bioware_dds_decodes_like_the_standard_file(self):
+        from appearance_previews.tint import open_texture
+        with tempfile.TemporaryDirectory() as folder:
+            standard = Path(folder, "standard.dds")
+            source = Image.new("RGB", (8, 8))
+            source.putdata([(x * 30, y * 30, 90) for y in range(8) for x in range(8)])
+            source.save(standard, "DDS", pixel_format="DXT1")
+            data = standard.read_bytes()
+            self.assertEqual(data[84:88], b"DXT1")
+            blocks = data[128:128 + 32]  # top mipmap: an 8x8 DXT1 image is 4 blocks of 8 bytes
+            bioware = Path(folder, "bioware.dds")
+            bioware.write_bytes(struct.pack("<IIIIf", 8, 8, 3, 32, 1.0) + blocks)
+            expected = np.asarray(Image.open(standard).convert("RGB"))
+            self.assertTrue(np.array_equal(np.asarray(open_texture(bioware).convert("RGB")), expected))
+
+    def test_other_unreadable_files_still_fail(self):
+        from appearance_previews.tint import open_texture
+        with tempfile.TemporaryDirectory() as folder:
+            junk = Path(folder, "junk.dds")
+            junk.write_bytes(b"not a texture at all")
+            with self.assertRaises((OSError, ValueError)):
+                open_texture(junk)
+
+
+class BaseGameDataTests(unittest.TestCase):
+    def test_key_and_bif_resources_are_found_and_extracted(self):
+        from appearance_previews.resources import HakIndex
+        with tempfile.TemporaryDirectory() as folder:
+            root = Path(folder)
+            (root / "data").mkdir()
+            payloads = [b"model bytes", b"texture bytes", b"script"]
+            types = [2002, 3, 2009]  # mdl, tga, nss (not read)
+            table, offset = b"", 20 + 16 * len(payloads)
+            for index, (payload, restype) in enumerate(zip(payloads, types)):
+                table += struct.pack("<IIII", index, offset, len(payload), restype)
+                offset += len(payload)
+            bif = b"BIFFV1  " + struct.pack("<III", len(payloads), 0, 20) + table + b"".join(payloads)
+            (root / "data/test.bif").write_bytes(bif)
+            name = b"data" + bytes([92]) + b"test.bif" + bytes([0])
+            names = [b"wswls_t_011", b"wswls_t_011", b"nw_script"]
+            name_offset = 24 + 12
+            key_table_offset = name_offset + len(name)
+            key = b"KEY V1  " + struct.pack("<IIII", 1, len(names), 24, key_table_offset)
+            key += struct.pack("<IIHH", len(bif), name_offset, len(name), 1) + name
+            for index, (resref, restype) in enumerate(zip(names, types)):
+                key += struct.pack("<16sHI", resref, restype, index)
+            (root / "data/test.key").write_bytes(key)
+            (root / "haks").mkdir()
+            index = HakIndex(root / "haks", [], root)
+            self.assertTrue(index.exists("WSWLS_T_011.mdl"))
+            self.assertTrue(index.exists("wswls_t_011.tga"))
+            self.assertFalse(index.exists("nw_script.nss"))
+            out = root / "out"
+            extracted = index.extract(["wswls_t_011.mdl", "wswls_t_011.tga", "missing.mdl"], out)
+            self.assertEqual(sorted(extracted), ["wswls_t_011.mdl", "wswls_t_011.tga"])
+            self.assertEqual((out / "wswls_t_011.mdl").read_bytes(), b"model bytes")
+            self.assertEqual((out / "wswls_t_011.tga").read_bytes(), b"texture bytes")
+
 
 class BatchProblemTests(unittest.TestCase):
     def test_a_crashed_batch_reports_its_exit_code_and_every_missing_render(self):
@@ -345,6 +531,13 @@ class BatchProblemTests(unittest.TestCase):
             for view in VIEWS:
                 Image.new("RGBA", (4, 4)).save(renders / f"done_{view}.png")
             self.assertEqual(batch_problems(0, "PREVIEW_RENDERED done" + chr(10), "", [{"key": "done"}], renders), [])
+
+    def test_an_empty_weapon_part_is_not_a_problem(self):
+        from appearance_previews.__main__ import batch_problems, empty_parts
+        with tempfile.TemporaryDirectory() as folder:
+            stdout = "PREVIEW_EMPTY wbwsh_t_011" + chr(10)
+            self.assertEqual(batch_problems(0, stdout, "", [{"key": "wbwsh_t_011"}], Path(folder)), [])
+            self.assertEqual(empty_parts(stdout), {"wbwsh_t_011"})
 
 
 class RenderCacheTests(unittest.TestCase):

@@ -50,10 +50,16 @@ internal sealed class FakeScavengeWorld : IScavengeWorld
         Xp.Add(xp);
     }
 
-    public string CreateItem(uint site, string resref, int quantity)
+    /// <summary>How many more units the site's inventory can take.</summary>
+    public int SiteRoom { get; set; } = int.MaxValue;
+
+    public string CreateItem(uint site, string resref, int quantity, out int placed)
     {
         Log.Add("create");
-        Created.Add((site, resref, quantity));
+        placed = Math.Min(quantity, SiteRoom);
+        SiteRoom -= placed;
+        if (placed > 0)
+            Created.Add((site, resref, placed));
         return "Item " + resref;
     }
 

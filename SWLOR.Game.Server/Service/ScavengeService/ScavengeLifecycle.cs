@@ -367,11 +367,21 @@ namespace SWLOR.Game.Server.Service.ScavengeService
             }
             else
             {
-                names = session.Finds
-                    .Select(find => $"{find.Quantity}x {_world.CreateItem(request.Site, find.Resref, find.Quantity)}")
-                    .ToList();
+                // Only what the site took leaves the record; a full site leaves the rest saved, and the scavenger gets it at once.
+                var shortfall = new List<ScavengeFind>();
+                foreach (var find in session.Finds)
+                {
+                    var name = _world.CreateItem(request.Site, find.Resref, find.Quantity, out var placed);
+                    if (placed > 0)
+                        names.Add($"{placed}x {name}");
+                    if (placed < find.Quantity)
+                        shortfall.Add(find with { Quantity = find.Quantity - placed });
+                }
+
                 if (session.Finds.Count > 0)
-                    _world.SavePendingFinds(session.Player, Array.Empty<ScavengeFind>());
+                    _world.SavePendingFinds(session.Player, shortfall);
+                if (shortfall.Count > 0)
+                    _world.ReturnPendingFinds(session.Player);
 
                 // The site's extra loot tables roll once for every search that found something, as they always did. A find from Dig Deeper skips them.
                 var searchFinds = session.Finds.Count(find => !find.Deeper);

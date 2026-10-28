@@ -1,3 +1,4 @@
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using SWLOR.Game.Server.Entity;
@@ -52,10 +53,13 @@ namespace SWLOR.Game.Server.Service.ScavengeService
             Skill.GiveSkillXP(player, SkillType.Gathering, xp, false, false);
         }
 
-        public string CreateItem(uint site, string resref, int quantity)
+        public string CreateItem(uint site, string resref, int quantity, out int placed)
         {
+            // The count decides: a full site creates nothing, and an item that merges into a stack can come back as an invalid handle.
+            var before = NwnQuickCraftWorld.CountComponent(site, resref);
             var item = CreateItemOnObject(resref, site, quantity);
-            return GetIsObjectValid(item) ? GetName(item) : resref;
+            placed = Math.Clamp(NwnQuickCraftWorld.CountComponent(site, resref) - before, 0, quantity);
+            return GetIsObjectValid(item) ? GetName(item) : Cache.GetItemNameByResref(resref);
         }
 
         public void SavePendingFinds(uint player, IReadOnlyList<ScavengeFind> finds)

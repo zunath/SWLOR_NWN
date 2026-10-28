@@ -340,6 +340,21 @@ public class ScavengeLifecycleTests
     }
 
     [Test]
+    public void FindsAFullSiteCannotTake_StaySavedAndGoToTheScavenger()
+    {
+        var lifecycle = Lifecycle(1, 0, 3);
+        var session = lifecycle.Start(Request());
+        _world.SiteRoom = 1;
+
+        lifecycle.Act(session, SearchAt(0));
+        lifecycle.Abandon(session, ScavengeEnd.WindowClosed);
+
+        _world.Created.Should().Equal((Site, "fiberp_ruined", 1));
+        _world.PendingSaves.Last().Should().Equal(new ScavengeFind("fiberp_ruined", 2, false));
+        _world.Returned.Should().Equal(new ScavengeFind("fiberp_ruined", 2, false));
+    }
+
+    [Test]
     public void ASearchThatFindsNothing_SavesNothingOnTheRecord()
     {
         var lifecycle = Lifecycle(100);

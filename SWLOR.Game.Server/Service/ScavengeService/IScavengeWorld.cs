@@ -30,8 +30,11 @@ namespace SWLOR.Game.Server.Service.ScavengeService
 
         void GiveGatheringXp(uint player, int xp);
 
-        /// <summary>Puts an item in the site's inventory and returns the item's name for the summary.</summary>
-        string CreateItem(uint site, string resref, int quantity);
+        /// <summary>
+        /// Puts an item in the site's inventory and returns the item's name for the summary. <paramref name="placed"/> is how many units
+        /// the site's inventory gained, which is less than asked when the site is full.
+        /// </summary>
+        string CreateItem(uint site, string resref, int quantity, out int placed);
 
         /// <summary>
         /// Saves what a board in progress has found on the scavenger's record, so a server restart before the visit ends cannot lose it. An

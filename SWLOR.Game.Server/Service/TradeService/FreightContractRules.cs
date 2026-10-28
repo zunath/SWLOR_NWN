@@ -18,7 +18,9 @@ namespace SWLOR.Game.Server.Service.TradeService
 
         public static int GetFee(int volume, int hops)
         {
-            return (int)Math.Round(volume * (TradeTuning.FreightFeeBase + TradeTuning.FreightFeePerHop * Math.Max(1, hops)),
+            var index = Array.IndexOf(TradeTuning.FreightOfferVolumes, volume);
+            var factor = index < 0 ? 1.0 : TradeTuning.FreightOfferFeeFactors[index];
+            return (int)Math.Round(volume * (TradeTuning.FreightFeeBase + TradeTuning.FreightFeePerHop * Math.Max(1, hops)) * factor,
                 MidpointRounding.ToEven);
         }
 

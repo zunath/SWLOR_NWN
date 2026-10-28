@@ -54,6 +54,7 @@ namespace SWLOR.Game.Server.Service.TradeService
         public static readonly int[] FreightOfferVolumes = { 40, 100, 200, 400 };
         public const double FreightFeeBase = 0.7;
         public const double FreightFeePerHop = 1.05;
+        public static readonly double[] FreightOfferFeeFactors = { 1.0, 1.0, 1.0, 0.65 };
         public const double FreightDepositRate = 0.5;
         public const int FreightDeadlineBaseMinutes = 20;
         public const int FreightDeadlinePerHopMinutes = 10;

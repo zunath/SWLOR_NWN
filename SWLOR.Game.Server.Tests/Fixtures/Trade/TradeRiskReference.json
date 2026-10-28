@@ -306,8 +306,8 @@
         "LegalPercent": 121,
         "ContrabandPerHour": 15583,
         "ContrabandPercent": 183,
-        "FreightPerHour": 13125,
-        "FreightPercent": 154
+        "FreightPerHour": 10185,
+        "FreightPercent": 120
       }
     ]
   }

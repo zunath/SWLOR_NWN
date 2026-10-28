@@ -259,6 +259,10 @@ STANDING_TIERS = [("Trusted", 250, 8, 0.0025), ("Honored", 750, 16, 0.005), ("Ex
 # Freight offers by volume (FREIGHT_OFFER_VOLUMES) need this standing with the offering exchange's faction. Dathomir has
 # no faction and offers every load to everyone.
 FREIGHT_OFFER_MIN_STANDING = [0, 0, 250, 1500]
+# The fee per volume of each offer volume, as a share of the usual rate. The 400 volume load is a bulk load that pays
+# less per unit, which holds the best-case Exalted freight (the three largest loads in a 700+ hold) inside the legal
+# band of 100-125% of T3 combat. A volume that is not an offer volume pays the full rate.
+FREIGHT_OFFER_FEE_FACTOR = [1.0, 1.0, 1.0, 0.65]
 HOSTILE_PATROL_COOLDOWN_SECONDS = 300  # an attack-on-sight patrol comes at most once per authority in this time
 
 # Player-city exchanges: a city starport trades through its planet's NPC exchange (same goods, prices and flooding),
@@ -573,8 +577,12 @@ def ambush_squad_size(value, tier):
     return max(AMBUSH_SQUAD_MIN, min(AMBUSH_SQUAD_MAX, size))
 
 
+def freight_fee_factor(volume):
+    return FREIGHT_OFFER_FEE_FACTOR[FREIGHT_OFFER_VOLUMES.index(volume)] if volume in FREIGHT_OFFER_VOLUMES else 1.0
+
+
 def freight_fee(volume, hop_count):
-    return round(volume * (FREIGHT_FEE_BASE + FREIGHT_FEE_PER_HOP * max(1, hop_count)))
+    return round(volume * (FREIGHT_FEE_BASE + FREIGHT_FEE_PER_HOP * max(1, hop_count)) * freight_fee_factor(volume))
 
 
 def freight_deposit(fee):
@@ -700,14 +708,15 @@ def freight_rate(volume=FREIGHT_SIM_VOLUME):
 
 
 def freight_volume_open(tier, hold):
-    """The sealed volume a pilot of this standing tier can have aboard: the three largest offers they may take at one
-    exchange (one of each volume is offered), as many as fit the hold."""
+    """The paying volume a pilot of this standing tier can have aboard: the three largest offers they may take at one
+    exchange (one of each volume is offered), as many as fit the hold, each counted at its fee factor."""
     standing = 0 if tier <= 0 else STANDING_TIERS[tier - 1][1]
     allowed = sorted((v for v, need in zip(FREIGHT_OFFER_VOLUMES, FREIGHT_OFFER_MIN_STANDING) if need <= standing), reverse=True)
-    total = 0
+    total, used = 0.0, 0
     for volume in allowed[:FREIGHT_MAX_ACTIVE]:
-        if total + volume <= hold:
-            total += volume
+        if used + volume <= hold:
+            used += volume
+            total += volume * freight_fee_factor(volume)
     return total
 
 
@@ -986,6 +995,7 @@ def tuning_cs():
         "        public static readonly int[] FreightOfferVolumes = { " + ", ".join(str(v) for v in FREIGHT_OFFER_VOLUMES) + " };",
         f"        public const double FreightFeeBase = {cs_double(FREIGHT_FEE_BASE)};",
         f"        public const double FreightFeePerHop = {cs_double(FREIGHT_FEE_PER_HOP)};",
+        "        public static readonly double[] FreightOfferFeeFactors = { " + ", ".join(cs_double(v) for v in FREIGHT_OFFER_FEE_FACTOR) + " };",
         f"        public const double FreightDepositRate = {cs_double(FREIGHT_DEPOSIT_RATE)};",
         f"        public const int FreightDeadlineBaseMinutes = {FREIGHT_DEADLINE_BASE_MINUTES};",
         f"        public const int FreightDeadlinePerHopMinutes = {FREIGHT_DEADLINE_PER_HOP_MINUTES};",
@@ -1108,6 +1118,8 @@ def trade_tab(Sheet):
         ["Freight offers", ", ".join(f"{v} vol: {m or 'open'}" for v, m in zip(FREIGHT_OFFER_VOLUMES, FREIGHT_OFFER_MIN_STANDING)), "", "", "", "", "",
          "minimum standing with the offering exchange's faction (Dathomir has none: open)"],
         ["Freight standing", STANDING["DeliveredFreight"], "", "", "", "", "", "per delivered contract (late or on time)"],
+        ["Freight fee factor", ", ".join(f"{v} vol: x{f:g}" for v, f in zip(FREIGHT_OFFER_VOLUMES, FREIGHT_OFFER_FEE_FACTOR)), "", "", "", "", "",
+         "share of the usual fee per volume; the 400 volume bulk load pays less per unit"],
         ["Hostile patrols", f"every {HOSTILE_PATROL_COOLDOWN_SECONDS} s at most", "", "", "", "", "",
          "a patrol of a hostile authority attacks on sight when the pilot enters its system"],
         ["City exchange", f"starport level {CITY_EXCHANGE_STARPORT_LEVEL}", "", "", "", "", "",

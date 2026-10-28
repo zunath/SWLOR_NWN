@@ -441,6 +441,20 @@ public class TradeStandingTests
         tiers.Should().BeInAscendingOrder();
         tiers.First().Should().BeInRange(65, 90, "a Trusted pilot hauls at about the plan's 75%");
         tiers.First().Should().BeGreaterThan(outcome["NeutralFreightPercent"]!.Value<int>());
+        tiers.Last().Should().BeInRange(100, 125, "freight is legal trade: even the best-case Exalted pilot stays in the 100-125% legal band");
+    }
+
+    [Test]
+    public void Freight_TheBulkLoadPaysLessPerUnit()
+    {
+        TradeTuning.FreightOfferFeeFactors.Should().HaveCount(TradeTuning.FreightOfferVolumes.Length);
+        TradeTuning.FreightOfferFeeFactors.Take(3).Should().OnlyContain(x => x == 1.0);
+        TradeTuning.FreightOfferFeeFactors.Last().Should().BeLessThan(1.0);
+
+        FreightContractRules.GetFee(400, 3).Should().Be((int)Math.Round(400 * (0.70 + 1.05 * 3) * TradeTuning.FreightOfferFeeFactors.Last(), MidpointRounding.ToEven));
+        FreightContractRules.GetFee(200, 3).Should().Be((int)Math.Round(200 * (0.70 + 1.05 * 3), MidpointRounding.ToEven));
+        FreightContractRules.GetFee(300, 3).Should().Be((int)Math.Round(300 * (0.70 + 1.05 * 3), MidpointRounding.ToEven), "only the offer volumes carry a factor");
+        FreightContractRules.GetFee(400, 3).Should().BeGreaterThan(FreightContractRules.GetFee(200, 3), "the bulk load still pays more in total");
     }
 
     // Wiring

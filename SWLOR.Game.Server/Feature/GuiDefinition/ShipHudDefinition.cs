@@ -27,7 +27,8 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition
                 .SetIsCollapsible(true)
                 .BindOnClosed(model => model.OnWindowClosed())
                 .DefinePartialView(ShipHudViewModel.ShipTabPartial, AddShipTab)
-                .DefinePartialView(ShipHudViewModel.StatsTabPartial, AddStatsTab);
+                .DefinePartialView(ShipHudViewModel.StatsTabPartial, AddStatsTab)
+                .DefinePartialView(ShipHudViewModel.ScannerTabPartial, AddScannerTab);
 
             window.AddStandardLayout(layout =>
             {
@@ -38,8 +39,9 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition
                     row.AddToggles()
                         .AddOption("Ship")
                         .AddOption("Stats")
+                        .AddOption("Scanner")
                         .BindSelectedValue(model => model.TabToggleValue)
-                        .SetWidth(232f)
+                        .SetWidth(348f)
                         .SetHeight(TabRowHeight);
                 });
                 layout.SetContentPartialElement(ShipHudViewModel.TabContentElement);
@@ -182,6 +184,88 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition
                     .SetHeight(LabelHeight)
                     .SetWidth(100f)
                     .SetHorizontalAlign(NuiHorizontalAlign.Right);
+            });
+        }
+
+        private static void AddScannerTab(GuiGroup<ShipHudViewModel> host)
+        {
+            AddTabShell(host, col =>
+            {
+                col.AddRow(row =>
+                {
+                    row.AddLabel()
+                        .BindText(model => model.ScannerSummary)
+                        .SetHeight(LabelHeight)
+                        .SetHorizontalAlign(NuiHorizontalAlign.Left)
+                        .SetColor(GuiColor.Cyan);
+                });
+
+                col.AddRow(row =>
+                {
+                    row.AddList(template =>
+                    {
+                        template.AddCell(cell =>
+                        {
+                            cell.AddLabel()
+                                .BindText(model => model.SignatureNames)
+                                .SetHorizontalAlign(NuiHorizontalAlign.Left);
+                        });
+                        template.AddCell(cell =>
+                        {
+                            cell.AddLabel()
+                                .BindText(model => model.SignatureDetails)
+                                .BindTooltip(model => model.SignatureTooltips)
+                                .SetHorizontalAlign(NuiHorizontalAlign.Left);
+                        });
+                        template.AddCell(cell =>
+                        {
+                            cell.SetIsVariable(false);
+                            cell.SetWidth(56f);
+                            cell.AddProgressBar()
+                                .BindValue(model => model.SignatureProgress);
+                        });
+                        template.AddCell(cell =>
+                        {
+                            cell.SetIsVariable(false);
+                            cell.AddButton()
+                                .SetText("Jump")
+                                .SetWidth(64f)
+                                .BindIsEnabled(model => model.SignatureCanJump)
+                                .SetTooltip("Micro-jumps to the site after a 5 second spool. Taking fire breaks it off.")
+                                .SetDisabledTooltip("Your party must scan this signature to 100% first.")
+                                .BindOnClicked(model => model.OnClickJump());
+                        });
+                    })
+                        .BindRowCount(model => model.SignatureNames)
+                        .SetRowHeight(32f);
+                });
+
+                col.AddRow(row =>
+                {
+                    row.AddButton()
+                        .BindText(model => model.SweepText)
+                        .BindIsEnabled(model => model.SweepEnabled)
+                        .SetHeight(ButtonHeight)
+                        .SetWidth(240f)
+                        .SetTooltip("Pulses your Probe Launcher: lists every ship within its sweep range, cloaked ships included.")
+                        .BindOnClicked(model => model.OnClickSweep());
+                    row.AddSpacer();
+                });
+
+                col.AddRow(row =>
+                {
+                    row.AddList(template =>
+                    {
+                        template.AddCell(cell =>
+                        {
+                            cell.AddLabel()
+                                .BindText(model => model.ContactLines)
+                                .SetHorizontalAlign(NuiHorizontalAlign.Left);
+                        });
+                    })
+                        .BindRowCount(model => model.ContactLines)
+                        .SetRowHeight(22f);
+                });
             });
         }
 

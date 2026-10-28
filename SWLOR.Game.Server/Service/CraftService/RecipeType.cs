@@ -4028,6 +4028,16 @@ namespace SWLOR.Game.Server.Service.CraftService
         ShipComponentLifeSupportSystem3 = 7485,
         ShipComponentLifeSupportSystem4 = 7486,
         ShipComponentLifeSupportSystem5 = 7487,
+        ShipProbeLauncher00 = 7488,
+        ShipProbeLauncher05 = 7489,
+        ShipProbeLauncher10 = 7490,
+        ShipProbeLauncher15 = 7491,
+        ShipProbeLauncher20 = 7492,
+        ShipProbeLauncher25 = 7493,
+        ShipProbeLauncher30 = 7494,
+        ShipProbeLauncher35 = 7495,
+        ShipProbeLauncher40 = 7496,
+        ShipProbeLauncher45 = 7497,
         // END space revamp catalog
     }
 }

@@ -71,6 +71,13 @@ namespace SWLOR.Game.Server.Service.SpaceService
         /// <summary>The percentage a Smuggling Compartment cuts the customs scan chance by.</summary>
         public int ScanReduction { get; set; }
 
+        // Scanning
+        /// <summary>The signal a Probe Launcher cycle adds to every hidden signature, before bonuses.</summary>
+        public int ScanStrength { get; set; }
+
+        /// <summary>The range in meters of a Probe Launcher's Sensor Sweep pulse.</summary>
+        public int SweepRange { get; set; }
+
         /// <summary>A copy whose numbers can be changed (component traits) without touching the catalog row.</summary>
         public ShipModuleStep Clone() => (ShipModuleStep)MemberwiseClone();
     }

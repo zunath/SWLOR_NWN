@@ -27,6 +27,7 @@ namespace SWLOR.Game.Server.Service.SpaceService
                 case ShipModuleType.RepairFieldGenerator:
                 case ShipModuleType.CapitalEwar:
                 case ShipModuleType.ShieldHardener:
+                case ShipModuleType.ProbeLauncher:
                     return ShipToggleTargetMode.SelfCentered;
                 default:
                     return ShipToggleTargetMode.Follow;

@@ -17,6 +17,7 @@ sys.path.insert(0, str(Path(__file__).resolve().parent))
 import components as comp  # noqa: E402
 import model as m  # noqa: E402
 import npc_catalog  # noqa: E402
+import scanning  # noqa: E402
 import trade  # noqa: E402
 
 ROOT = m.REPO
@@ -51,6 +52,8 @@ ART = {
     "salvager": (523, 226, "iit_smsalvager"), "gas_harvester": (523, 227, "iit_smgasharvest"),
     # The trade risk update (W7b), in the ESS9 bank.
     "smuggling_compartment": (523, 228, "iit_smsmuggle"),
+    # The scanning update (W12a), in the ESS9 bank.
+    "probe_launcher": (523, 238, "iit_smprobe"),
 }
 
 W = m.WEAPONS
@@ -163,6 +166,12 @@ FAMILIES = [
     ("SmugglingCompartment", "Smuggling Compartment", "Smuggler", "sm_smug", "Low", "Piloting", "Passive", 0, 0, 0,
      "smuggling_compartment", False, p(ScanReduction=lambda r: trade.compartment_reduction(r)),
      lambda r, s: f"A shielded hidden hold: customs scans find your cargo {s['ScanReduction']}% less often. Only your best Smuggling Compartment counts."),
+    ("ProbeLauncher", "Probe Launcher", "Probe", "sm_probe", "Mid", "Piloting", "Toggle", scanning.PROBE_CYCLE_SECONDS,
+     scanning.PROBE_CAPACITOR, 0, "probe_launcher", False,
+     p(ScanStrength=scanning.probe_strength, SweepRange=scanning.sweep_range),
+     lambda r, s: f"Launches scan probes every 10 seconds while on, adding {s['ScanStrength']} signal strength to every hidden "
+                  f"signature in the system. Its Sensor Sweep pulse, on the Scanner tab of the Ship HUD, lists every ship "
+                  f"within {s['SweepRange']} m. Espionage strengthens the scan."),
 ]
 
 MATERIALS = {1: ("ref_tilarium", "elec_ruined"), 2: ("ref_currian", "elec_flawed"), 3: ("ref_idailia", "elec_good"),
@@ -282,25 +291,33 @@ def component_items():
 # hulls' so no earlier RecipeType value moves.
 LATE_FAMILIES = {"Salvager", "GasHarvester", "SmugglingCompartment"}
 
+# Families added after the component recipes (the scanning update W12a). Their recipe IDs follow the components'.
+COMPONENT_LATE_FAMILIES = {"ProbeLauncher"}
 
-def module_steps(late_recipe_start=None):
+
+def module_steps(late_recipe_start=None, component_late_start=None):
     steps, recipe = [], RECIPE_TYPE_START
     late_recipe = late_recipe_start
+    post_recipe = component_late_start
     for (key, name, short, prefix, row, skill, use, cycle, cap, rng, art, capital, stats, desc) in FAMILIES:
         for r in (CAPITAL_STEPS if capital else m.STEPS):
             mk = ROMAN[r // 5]
             s = stats(r)
             base, model_part, texture = ART[art]
             late = key in LATE_FAMILIES
+            post = key in COMPONENT_LATE_FAMILIES
             steps.append(dict(
                 Family=key, Rank=r, Tag=f"{prefix}_{r:02d}", Name=f"{name} Mk {mk}", ShortName=f"{short} {mk}"[:14],
                 Row=row, Skill=skill, Activation=use, CycleSeconds=cycle, CapacitorCost=cap, Range=rng, Capital=capital,
-                Texture=texture, BaseItem=base, ModelPart=model_part, Description=desc(r, s), RecipeType=late_recipe if late else recipe,
+                Texture=texture, BaseItem=base, ModelPart=model_part, Description=desc(r, s),
+                RecipeType=post_recipe if post else late_recipe if late else recipe,
                 RecipeName=f"Ship{key}{r:02d}",
                 RecipeLevel=max(2, min(50, r + (3 if capital else 0))),
                 Components=module_bill(key, r, row, capital),
                 Cost=100 + 30 * r + (2000 if capital else 0), **s))
-            if late:
+            if post:
+                post_recipe = None if post_recipe is None else post_recipe + 1
+            elif late:
                 late_recipe = None if late_recipe is None else late_recipe + 1
             else:
                 recipe += 1
@@ -501,17 +518,24 @@ def recipe_enum(steps, hulls):
 CRLF_FILES = {"SWLOR.Game.Server/Service/CraftService/RecipeType.cs"}
 
 
-def catalog():
-    """Every module step and ship deed with its RecipeType: the earlier families, then the hulls, then LATE_FAMILIES."""
-    early = [s for s in module_steps() if s["Family"] not in LATE_FAMILIES]
-    hulls = ships(RECIPE_TYPE_START + len(early))
-    return module_steps(RECIPE_TYPE_START + len(early) + len(hulls)), hulls
-
-
 def full_catalog():
-    """The catalog plus the component recipes (W9a), numbered after every module and hull so nothing earlier moves."""
-    steps, hulls = catalog()
-    return steps, hulls, component_recipes(max(x["RecipeType"] for x in steps + hulls) + 1)
+    """
+    Every module step, ship deed and component recipe with its RecipeType: the earlier families, then the hulls, then
+    LATE_FAMILIES, then the component recipes (W9a), then COMPONENT_LATE_FAMILIES, so no earlier value moves.
+    """
+    all_steps = module_steps()
+    early = [s for s in all_steps if s["Family"] not in LATE_FAMILIES | COMPONENT_LATE_FAMILIES]
+    late = [s for s in all_steps if s["Family"] in LATE_FAMILIES]
+    hulls = ships(RECIPE_TYPE_START + len(early))
+    recipes = component_recipes(RECIPE_TYPE_START + len(early) + len(hulls) + len(late))
+    steps = module_steps(RECIPE_TYPE_START + len(early) + len(hulls), max(x["RecipeType"] for x in recipes) + 1)
+    return steps, hulls, recipes
+
+
+def catalog():
+    """Every module step and ship deed with its RecipeType (see full_catalog)."""
+    steps, hulls, _ = full_catalog()
+    return steps, hulls
 
 
 def enum_cs(name, summary, members):

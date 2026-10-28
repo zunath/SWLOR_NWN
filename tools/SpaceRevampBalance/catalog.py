@@ -16,6 +16,7 @@ from pathlib import Path
 sys.path.insert(0, str(Path(__file__).resolve().parent))
 import cloak  # noqa: E402
 import components as comp  # noqa: E402
+import events  # noqa: E402
 import model as m  # noqa: E402
 import npc_catalog  # noqa: E402
 import rewards as rw  # noqa: E402
@@ -963,6 +964,7 @@ def ace_catalog_cs(aces):
             f"        public const int TrophyWeight = {w['trophy']};\n"
             f"        public const int RareComponentWeight = {w['rare_component']};\n"
             f"        public const int ManufacturerComponentWeight = {w['maker_component']};\n"
+            f"        public const int RiftKeyWeight = {w['rift_key']};\n"
             "    }\n}\n")
 
 
@@ -984,7 +986,8 @@ def ace_loot_cs(aces):
             f'                .AddItem("{a["RareResref"]}", {w["rare_component"]}, 1, true)\n'
             f"                .AddSpawnAction(item => ShipComponents.SetTraits(item, new[] {{ ShipComponentTraitType.{a['RareTrait']} }}))\n"
             f'                .AddItem("{a["MakerResref"]}", {w["maker_component"]}, 1, true)\n'
-            f"                .AddSpawnAction(item => ShipComponents.SetTraits(item, new[] {{ ShipComponentTraitType.{a['MakerTrait']} }}));\n"
+            f"                .AddSpawnAction(item => ShipComponents.SetTraits(item, new[] {{ ShipComponentTraitType.{a['MakerTrait']} }}))\n"
+            f'                .AddItem("{events.key_for_tier(a["tier"])}", {w["rift_key"]}, 1, true);\n'
             "        }")
     return (HEADER + "using System.Collections.Generic;\nusing SWLOR.Game.Server.Service;\n"
             "using SWLOR.Game.Server.Service.LootService;\nusing SWLOR.Game.Server.Service.SpaceService;\n\n"

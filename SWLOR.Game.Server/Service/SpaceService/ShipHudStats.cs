@@ -42,6 +42,12 @@ namespace SWLOR.Game.Server.Service.SpaceService
         /// <summary>The Cloaking Device's state for the Cloak line, or null when the ship has none fitted.</summary>
         public string CloakText { get; set; }
 
+        /// <summary>The running incursion in the pilot's area (plan section 30), or null.</summary>
+        public string IncursionText { get; set; }
+
+        /// <summary>The pilot's Rift Run (plan section 31), or null.</summary>
+        public string RiftRunText { get; set; }
+
         /// <summary>The cargo hold size, or null when the hull has none listed.</summary>
         public int? Cargo { get; set; }
 

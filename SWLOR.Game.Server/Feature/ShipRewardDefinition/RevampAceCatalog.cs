@@ -40,5 +40,6 @@ namespace SWLOR.Game.Server.Feature.ShipRewardDefinition
         public const int TrophyWeight = 20;
         public const int RareComponentWeight = 25;
         public const int ManufacturerComponentWeight = 15;
+        public const int RiftKeyWeight = 15;
     }
 }

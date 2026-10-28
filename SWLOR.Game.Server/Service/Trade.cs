@@ -212,7 +212,8 @@ namespace SWLOR.Game.Server.Service
         {
             ship = string.IsNullOrWhiteSpace(shipId) ? null : DB.Get<PlayerShip>(shipId);
             detail = TradeLookup.GetCommodity(commodity);
-            market = TradeLookup.GetExchange(exchangeType)?.FindMarket(commodity);
+            market = TradePricing.WithPriceMultiplier(
+                TradeLookup.GetExchange(exchangeType)?.FindMarket(commodity), Space.GetIncursionPriceMultiplier(exchangeType));
             dock = GetDock(dockId, exchangeType);
 
             if (ship == null || ship.OwnerPlayerId != GetObjectUUID(player) || !IsDockedAt(ship, dockId))
@@ -224,6 +225,13 @@ namespace SWLOR.Game.Server.Service
             if (!dock.HasExchange || dock.Exchange != exchangeType)
             {
                 SendMessageToPC(player, ColorToken.Red(TradeRules.GetRefusalMessage(TradeRefusal.NoExchangeHere)));
+                return false;
+            }
+
+            var closed = Space.GetIncursionExchangeRefusal(exchangeType);
+            if (!string.IsNullOrEmpty(closed))
+            {
+                SendMessageToPC(player, ColorToken.Red(closed));
                 return false;
             }
 

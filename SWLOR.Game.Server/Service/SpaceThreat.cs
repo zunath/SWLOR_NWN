@@ -22,6 +22,7 @@ namespace SWLOR.Game.Server.Service
         /// <param name="restored">Points actually restored, after the pool's maximum.</param>
         public static void ApplyRepairEnmity(uint source, uint repaired, int restored)
         {
+            RecordIncursionRepair(source, repaired, restored);
             var amount = SpaceCombatMath.RepairEnmity(restored);
             if (amount <= 0 || !GetIsObjectValid(source) || !GetIsObjectValid(repaired))
                 return;

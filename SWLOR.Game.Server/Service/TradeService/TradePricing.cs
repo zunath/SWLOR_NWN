@@ -17,6 +17,24 @@ namespace SWLOR.Game.Server.Service.TradeService
             return Math.Clamp(multiplier, TradeTuning.FloodMinimum, TradeTuning.FloodMaximum);
         }
 
+        /// <summary>
+        /// A market priced at a multiple of its usual factor, for an event that moves a whole exchange's prices (an
+        /// incursion's price spike, plan section 30). A multiplier of 1 returns the market itself.
+        /// </summary>
+        public static TradeMarketDetail WithPriceMultiplier(TradeMarketDetail market, double multiplier)
+        {
+            if (market == null || Math.Abs(multiplier - 1.0) < 1e-9)
+                return market;
+
+            return new TradeMarketDetail
+            {
+                Commodity = market.Commodity,
+                Role = market.Role,
+                PriceFactor = market.PriceFactor * multiplier,
+                Depth = market.Depth,
+            };
+        }
+
         /// <summary>The fraction Social improves prices by: 0.1% per point over 10, at most 1.5%.</summary>
         public static double GetSocialBonus(int social)
         {

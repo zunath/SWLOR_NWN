@@ -65,6 +65,9 @@ namespace SWLOR.Game.Server.Service
             // Keep flight coordinates out of persistent player locations.
             AreasByResref.Remove(Shuttle.ShuttleInteriorResref);
 
+            // Rift Run pockets are instances of this template; no ship or player is ever placed in the template itself.
+            AreasByResref.Remove(SpaceService.RiftRunTuning.TemplateResref);
+
             foreach (var areaResref in Property.GetAllInstanceAreaResrefs())
             {
                 if (AreasByResref.ContainsKey(areaResref))

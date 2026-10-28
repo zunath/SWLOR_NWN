@@ -450,7 +450,9 @@ public class WildSpaceTests
             .Which.Should().Be(RevampRewardCatalog.ModuleSchematics[0].Resref);
         ShipRareFindRules.Roll(5, WreckDifficulty.Elite, Rolls(31), true).Should().Equal(RevampRewardCatalog.PrototypeTechResref);
         ShipRareFindRules.Roll(5, WreckDifficulty.Elite, Rolls(31), false).Should().BeEmpty("outside Wild Space it is the table's item");
-        ShipRareFindRules.Roll(5, WreckDifficulty.Elite, Rolls(41), true).Should().BeEmpty();
+        // Then the Rift Key (W15b): elite 5 after every other share; the Wild Space key in Wild Space.
+        ShipRareFindRules.Roll(5, WreckDifficulty.Elite, Rolls(41), true).Should().Equal(WildSpaceTuning.RiftKeyResref);
+        ShipRareFindRules.Roll(5, WreckDifficulty.Elite, Rolls(45), true).Should().BeEmpty();
 
         ShipSalvageRules.RareFindTable(5, WreckDifficulty.Elite, true).Should().Be("SPACE_ELITE_WS");
         ShipSalvageRules.RareFindTable(5, WreckDifficulty.Boss, true).Should().Be("SPACE_BOSS_WS");

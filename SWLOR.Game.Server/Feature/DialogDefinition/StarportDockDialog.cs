@@ -41,6 +41,15 @@ namespace SWLOR.Game.Server.Feature.DialogDefinition
             var spaceWaypointTag = GetLocalString(self, "STARPORT_TELEPORT_WAYPOINT");
             var player = Player;
 
+            // An incursion's blockade holding at this dock takes its docking services offline.
+            var blockade = Space.GetIncursionDockRefusal(self);
+            if (!string.IsNullOrEmpty(blockade))
+            {
+                SendMessageToPC(player, ColorToken.Red(blockade));
+                Close();
+                return;
+            }
+
             if (string.IsNullOrWhiteSpace(spaceWaypointTag))
             {
                 Log.Write(LogGroup.Error, $"{GetName(self)} is missing the local variable 'STARPORT_TELEPORT_WAYPOINT' and cannot be used by players to dock their ships.");

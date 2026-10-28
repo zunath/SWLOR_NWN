@@ -334,8 +334,9 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition
         }
 
         /// <summary>
-        /// Spawns an enemy squad of one faction tier and role near the DM, or a trade convoy of that tier. Incursions
-        /// and derelicts come with their own systems (plan sections 28 and 30) and are shown disabled until then.
+        /// Spawns an enemy squad of one faction tier and role near the DM, or a trade convoy of that tier, or starts an
+        /// incursion centred on the DM's orbit (plan section 30). Derelicts come with their own system (plan section 28)
+        /// and are shown disabled until then.
         /// </summary>
         private static void AddSpaceTab(GuiGroup<DMToolsViewModel> host)
         {
@@ -407,8 +408,8 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition
                 {
                     row.AddButton()
                         .SetText("Start Incursion")
-                        .SetTooltip("Comes with incursions")
-                        .SetIsEnabled(false)
+                        .SetTooltip("Start an incursion centred on the orbit you are in (an orbit with a dock), by a random armada")
+                        .BindOnClicked(model => model.OnStartIncursion())
                         .SetHeight(35f);
                     row.AddButton()
                         .SetText("Start Convoy")

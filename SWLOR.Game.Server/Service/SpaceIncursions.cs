@@ -1,0 +1,651 @@
+using System.Collections.Generic;
+using System.Linq;
+using SWLOR.Game.Server.Core;
+using SWLOR.Game.Server.Entity;
+using SWLOR.Game.Server.Service.LogService;
+using SWLOR.Game.Server.Service.SpaceService;
+using SWLOR.Game.Server.Service.TradeService;
+using SWLOR.NWN.API.NWScript.Enum;
+
+namespace SWLOR.Game.Server.Service
+{
+    /// <summary>
+    /// Incursions (plan section 30). Once a week a Sith or Mandalorian armada invades a region (an orbit with a dock and its
+    /// starlane neighbours) for up to 48 hours: waves in every area, then each area's command group, and a blockade at
+    /// every planet dock that refuses docking and closes the dock's exchange while it holds. The region's exchanges price
+    /// everything higher while it lasts. Clearing every area and blockade pays each player by the contribution tracked
+    /// (damage dealt to destroyed incursion ships, killing blows and repairs) plus a region reward. The schedule and the
+    /// running incursion are saved in <see cref="IncursionState"/>: a restart respawns its ships and keeps its progress.
+    /// </summary>
+    public static partial class Space
+    {
+        private const string IncursionRoleVariable = "INCURSION_ROLE";
+        private const string IncursionTierVariable = "INCURSION_TIER";
+        private const string IncursionRoleWave = "wave";
+        private const string IncursionRoleCommand = "command";
+        private const string IncursionRoleBlockade = "blockade";
+        private const string DockTeleportWaypointVariable = "STARPORT_TELEPORT_WAYPOINT";
+        private const string DockLandingWaypointVariable = "STARPORT_LANDING_WAYPOINT_TAG";
+        private const string DockPlanetVariable = "PLANET_TYPE_ID";
+        private const string DockConversationVariable = "CONVERSATION";
+        private const string DockConversation = "StarportDockDialog";
+
+        private enum IncursionAreaPhase
+        {
+            Idle = 0,
+            Wave = 1,
+            Command = 2,
+        }
+
+        private static IncursionState _incursionState;
+        private static bool _incursionDirty;
+        private static bool _incursionSpawned;
+        private static DateTime _incursionSavedAt;
+        private static readonly Dictionary<string, List<uint>> _incursionAreaShips = new();
+        private static readonly Dictionary<string, IncursionAreaPhase> _incursionAreaPhases = new();
+        private static readonly Dictionary<string, DateTime> _incursionNextSpawn = new();
+        private static readonly Dictionary<string, List<uint>> _incursionBlockadeShips = new();
+        private static readonly Dictionary<uint, Dictionary<uint, double>> _incursionDamage = new();
+        private static readonly Dictionary<uint, uint> _incursionLastHit = new();
+
+        [NWNEventHandler(ScriptName.OnModuleLoad)]
+        public static void ScheduleIncursions()
+        {
+            Scheduler.ScheduleRepeating(ProcessIncursions, TimeSpan.FromSeconds(IncursionTuning.TickSeconds), TimeSpan.FromSeconds(30));
+        }
+
+        private static IncursionState IncursionRecord =>
+            _incursionState ??= DB.Get<IncursionState>(IncursionState.RecordId) ?? new IncursionState();
+
+        /// <summary>The running incursion, or null.</summary>
+        public static ActiveIncursion GetActiveIncursion() => IncursionRecord.Active;
+
+        private static void SaveIncursions()
+        {
+            DB.Set(IncursionRecord);
+            _incursionDirty = false;
+            _incursionSavedAt = DateTime.UtcNow;
+        }
+
+        private static void ProcessIncursions()
+        {
+            try
+            {
+                var state = IncursionRecord;
+                var now = DateTime.UtcNow;
+                if (state.NextStartAt == default)
+                {
+                    state.NextStartAt = IncursionRules.NextStart(now);
+                    _incursionDirty = true;
+                }
+
+                if (state.Active == null)
+                {
+                    if (IncursionRules.IsDue(state.NextStartAt, now))
+                    {
+                        var missed = IncursionRules.IsMissed(state.NextStartAt, now);
+                        state.NextStartAt = IncursionRules.NextStart(now);
+                        _incursionDirty = true;
+                        if (!missed)
+                        {
+                            var region = IncursionRules.PickRegion(IncursionTuning.Regions, state.LastCenter, max => Random.Next(max));
+                            if (region != null)
+                                StartIncursion(region, IncursionRules.PickInvader(max => Random.Next(max)), "weekly schedule");
+                        }
+                    }
+                }
+                else if (now >= state.Active.EndsAt)
+                {
+                    EndIncursion(false);
+                }
+                else
+                {
+                    if (!_incursionSpawned)
+                        SpawnIncursion();
+                    UpdateIncursion(now);
+                }
+
+                if (_incursionDirty || now - _incursionSavedAt >= TimeSpan.FromMinutes(1) && state.Active != null)
+                    SaveIncursions();
+            }
+            catch (Exception ex)
+            {
+                Log.Write(LogGroup.Error, $"Incursion processing failed: {ex}");
+            }
+        }
+
+        /// <summary>Starts an incursion in a region now. Refused while another runs.</summary>
+        public static bool StartIncursion(IncursionRegion region, IncursionInvader invader, string source)
+        {
+            var state = IncursionRecord;
+            if (state.Active != null || region == null)
+                return false;
+
+            var docks = new Dictionary<string, int>();
+            foreach (var area in region.Areas)
+            {
+                foreach (var (_, key, planet) in GetIncursionDocks(area.Resref))
+                    docks[key] = planet;
+            }
+
+            state.Active = IncursionRules.Create(region, invader, DateTime.UtcNow, docks);
+            state.LastCenter = region.Center;
+            _incursionSpawned = false;
+            SpawnIncursion();
+            SaveIncursions();
+
+            var name = IncursionRules.GetInvader(invader)?.Name ?? "An armada";
+            BroadcastIncursion(ColorToken.Red(
+                $"INCURSION: the {name} invades the {region.Name} region ({string.Join(", ", region.Areas.Select(x => x.Name))}) for up to " +
+                $"{IncursionTuning.DurationHours:0} hours. Its blockades have shut the region's docks and prices there have spiked. " +
+                "Drive it out for a share of the spoils: /incursion for details."));
+            Log.Write(LogGroup.Space, $"INCURSION STARTED - {invader} in {region.Center} ({source}), {docks.Count} blockades");
+            return true;
+        }
+
+        /// <summary>Starts an incursion centred on the DM's orbit (DM tools). Returns the status line.</summary>
+        public static (bool Started, string Message) StartIncursionAt(uint dm)
+        {
+            var area = GetArea(dm);
+            if (!IsSpaceArea(area))
+                return (false, "You must be in a space area.");
+
+            if (IncursionRecord.Active != null)
+                return (false, $"An incursion is already running in the {IncursionRules.FindRegion(IncursionRecord.Active.Center)?.Name} region.");
+
+            var region = IncursionRules.FindRegion(GetResRef(area));
+            if (region == null)
+                return (false, "Stand in an orbit with a dock to start an incursion centred on it.");
+
+            var invader = IncursionRules.PickInvader(max => Random.Next(max));
+            var started = StartIncursion(region, invader, $"DM {GetName(dm)}");
+            return (started, started
+                ? $"Started a {IncursionRules.GetInvader(invader)?.Name} incursion in the {region.Name} region."
+                : "The incursion could not be started.");
+        }
+
+        /// <summary>The planet docks of an area that a blockade can hold: (placeable, key, planet type).</summary>
+        private static List<(uint Dock, string Key, int Planet)> GetIncursionDocks(string areaResref)
+        {
+            var docks = new List<(uint Dock, string Key, int Planet)>();
+            var area = Area.GetAreaByResref(areaResref);
+            if (!GetIsObjectValid(area))
+                return docks;
+
+            for (var obj = GetFirstObjectInArea(area, ObjectType.Placeable); GetIsObjectValid(obj); obj = GetNextObjectInArea(area, ObjectType.Placeable))
+            {
+                var waypoint = GetLocalString(obj, DockTeleportWaypointVariable);
+                if (string.IsNullOrWhiteSpace(waypoint) ||
+                    GetLocalString(obj, DockConversationVariable) != DockConversation ||
+                    !string.IsNullOrWhiteSpace(GetLocalString(obj, DockLandingWaypointVariable)) ||
+                    !string.IsNullOrWhiteSpace(GetLocalString(obj, Station.StationCityVariable)))
+                {
+                    continue;
+                }
+
+                docks.Add((obj, IncursionRules.DockKey(areaResref, waypoint), GetLocalInt(obj, DockPlanetVariable)));
+            }
+
+            return docks;
+        }
+
+        /// <summary>Spawns what the running incursion has left: each area's current wave or command group and the unbroken blockades.</summary>
+        private static void SpawnIncursion()
+        {
+            var incursion = IncursionRecord.Active;
+            if (incursion == null)
+                return;
+
+            DespawnIncursionShips();
+            var region = IncursionRules.FindRegion(incursion.Center);
+            if (region == null)
+                return;
+
+            foreach (var area in region.Areas)
+            {
+                _incursionAreaPhases[area.Resref] = IncursionAreaPhase.Idle;
+                _incursionNextSpawn[area.Resref] = DateTime.UtcNow;
+                if (incursion.Areas.TryGetValue(area.Resref, out var progress) && !IncursionRules.IsAreaLiberated(progress))
+                    SpawnIncursionAreaGroup(incursion, area, progress);
+            }
+
+            foreach (var area in region.Areas)
+            {
+                foreach (var (dock, key, _) in GetIncursionDocks(area.Resref))
+                {
+                    if (!IncursionRules.IsBlockadeHolding(incursion, key))
+                        continue;
+
+                    var ships = SpawnIncursionGroup(incursion, GetArea(dock), GetPosition(dock), IncursionRules.BlockadeShips(area.Tier),
+                        IncursionTuning.BlockadeRingMeters, IncursionRoleBlockade, area.Tier);
+                    _incursionBlockadeShips[key] = ships;
+                }
+            }
+
+            _incursionSpawned = true;
+        }
+
+        /// <summary>Spawns an area's next wave, or its command group after the last wave.</summary>
+        private static void SpawnIncursionAreaGroup(ActiveIncursion incursion, IncursionArea area, IncursionAreaProgress progress)
+        {
+            var areaObject = Area.GetAreaByResref(area.Resref);
+            if (!GetIsObjectValid(areaObject))
+                return;
+
+            var location = Walkmesh.GetRandomLocation(areaObject);
+            var center = GetPositionFromLocation(location);
+            var command = progress.WavesCleared >= IncursionTuning.WavesPerArea;
+            var ships = command
+                ? IncursionRules.CommandShips(area.Tier, incursion.Invader)
+                : IncursionRules.WaveShips(area.Tier);
+            _incursionAreaShips[area.Resref] = SpawnIncursionGroup(incursion, areaObject, center, ships, IncursionTuning.WaveRingMeters,
+                command ? IncursionRoleCommand : IncursionRoleWave, area.Tier);
+            _incursionAreaPhases[area.Resref] = command ? IncursionAreaPhase.Command : IncursionAreaPhase.Wave;
+
+            if (command)
+            {
+                var name = IncursionRules.GetInvader(incursion.Invader)?.Name;
+                BroadcastIncursion(ColorToken.Red($"INCURSION: the {name} command group has arrived in {area.Name}. Destroy it to liberate the system."));
+            }
+        }
+
+        private static List<uint> SpawnIncursionGroup(ActiveIncursion incursion, uint area, System.Numerics.Vector3 center,
+            IReadOnlyList<(string Tag, string Hull)> ships, float radius, string role, int tier)
+        {
+            var spawned = new List<uint>();
+            var invader = IncursionRules.GetInvader(incursion.Invader);
+            for (var index = 0; index < ships.Count; index++)
+            {
+                var (x, y) = SignatureSiteRules.RingOffset(index, ships.Count, radius);
+                var ship = CreateObject(ObjectType.Creature, ships[index].Tag, Location(area, Vector3(center.X + x, center.Y + y, center.Z), Random.Next(360)));
+                if (!GetIsObjectValid(ship))
+                    continue;
+
+                SetLocalString(ship, IncursionRoleVariable, role);
+                SetLocalInt(ship, IncursionTierVariable, tier);
+                SetName(ship, IncursionRules.ShipName(incursion.Invader, ships[index].Hull));
+                if (ships[index].Hull == "capital" && invader != null && IncursionRules.UsesInvaderAppearance(tier))
+                    SetCreatureAppearanceType(ship, (AppearanceType)invader.CapitalAppearance);
+
+                spawned.Add(ship);
+            }
+
+            return spawned;
+        }
+
+        /// <summary>Moves each area on: a destroyed wave brings the next after the delay, a destroyed command group liberates the area.</summary>
+        private static void UpdateIncursion(DateTime now)
+        {
+            var incursion = IncursionRecord.Active;
+            var region = IncursionRules.FindRegion(incursion.Center);
+            if (region == null)
+            {
+                EndIncursion(false);
+                return;
+            }
+
+            var name = IncursionRules.GetInvader(incursion.Invader)?.Name;
+            foreach (var area in region.Areas)
+            {
+                if (!incursion.Areas.TryGetValue(area.Resref, out var progress) || IncursionRules.IsAreaLiberated(progress))
+                    continue;
+
+                var alive = PruneIncursionShips(_incursionAreaShips, area.Resref);
+                _incursionAreaPhases.TryGetValue(area.Resref, out var phase);
+                if (alive > 0)
+                    continue;
+
+                if (phase == IncursionAreaPhase.Wave)
+                {
+                    progress.WavesCleared = Math.Min(IncursionTuning.WavesPerArea, progress.WavesCleared + 1);
+                    _incursionAreaPhases[area.Resref] = IncursionAreaPhase.Idle;
+                    _incursionNextSpawn[area.Resref] = now.AddSeconds(IncursionTuning.WaveDelaySeconds);
+                    _incursionDirty = true;
+                    MessageIncursionArea(area.Resref, ColorToken.Cyan(
+                        $"Wave {progress.WavesCleared} of {IncursionTuning.WavesPerArea} destroyed. More of the {name} is inbound."));
+                    continue;
+                }
+
+                if (phase == IncursionAreaPhase.Command)
+                {
+                    progress.CommandDestroyed = true;
+                    _incursionAreaPhases[area.Resref] = IncursionAreaPhase.Idle;
+                    _incursionDirty = true;
+                    BroadcastIncursion(ColorToken.Green($"INCURSION: {area.Name} is liberated from the {name}."));
+                    continue;
+                }
+
+                if (_incursionNextSpawn.TryGetValue(area.Resref, out var at) && now < at)
+                    continue;
+
+                SpawnIncursionAreaGroup(incursion, area, progress);
+            }
+
+            foreach (var key in _incursionBlockadeShips.Keys.ToList())
+            {
+                if (PruneIncursionShips(_incursionBlockadeShips, key) > 0)
+                    continue;
+
+                _incursionBlockadeShips.Remove(key);
+                if (!incursion.BrokenBlockades.Contains(key))
+                {
+                    incursion.BrokenBlockades.Add(key);
+                    _incursionDirty = true;
+                    BroadcastIncursion(ColorToken.Green($"INCURSION: the blockade at {DescribeDock(key)} is broken. Its docking services are back online."));
+                }
+            }
+
+            if (IncursionRules.IsCleared(incursion))
+                CompleteIncursion(region);
+        }
+
+        private static int PruneIncursionShips(Dictionary<string, List<uint>> groups, string key)
+        {
+            if (!groups.TryGetValue(key, out var ships))
+                return 0;
+
+            ships.RemoveAll(x => !GetIsObjectValid(x) || GetIsDead(x));
+            return ships.Count;
+        }
+
+        private static string DescribeDock(string key)
+        {
+            var waypoint = key.Contains(':') ? key[(key.IndexOf(':') + 1)..] : key;
+            return waypoint.Replace("_Orbit", string.Empty).Replace("_", " ");
+        }
+
+        /// <summary>Pays every contributor and ends the incursion.</summary>
+        private static void CompleteIncursion(IncursionRegion region)
+        {
+            var state = IncursionRecord;
+            var incursion = state.Active;
+            var online = new Dictionary<string, uint>();
+            for (var player = GetFirstPC(); GetIsObjectValid(player); player = GetNextPC())
+            {
+                if (!GetIsDM(player))
+                    online[GetObjectUUID(player)] = player;
+            }
+
+            var paid = 0;
+            foreach (var (playerId, contribution) in incursion.Contributions)
+            {
+                if (contribution.TotalPoints() <= 0)
+                    continue;
+
+                var payout = IncursionRules.BuildPayout(contribution, region, incursion.Invader, max => Random.Next(max));
+                paid++;
+                if (online.TryGetValue(playerId, out var player))
+                    DeliverIncursionPayout(player, payout);
+                else
+                    state.PendingPayouts[playerId] = payout;
+            }
+
+            var name = IncursionRules.GetInvader(incursion.Invader)?.Name;
+            BroadcastIncursion(ColorToken.Green($"INCURSION: the {region.Name} region is cleared and the {name} is in retreat. {paid} pilots share the spoils."));
+            Log.Write(LogGroup.Space, $"INCURSION CLEARED - {incursion.Invader} in {incursion.Center}, {paid} contributors paid");
+            EndIncursion(true);
+        }
+
+        /// <summary>Ends the running incursion: cleared, or the armada withdraws when time runs out.</summary>
+        private static void EndIncursion(bool cleared)
+        {
+            var state = IncursionRecord;
+            var incursion = state.Active;
+            DespawnIncursionShips();
+            state.Active = null;
+            SaveIncursions();
+
+            if (!cleared && incursion != null)
+            {
+                var region = IncursionRules.FindRegion(incursion.Center);
+                BroadcastIncursion(ColorToken.Orange(
+                    $"INCURSION: the {IncursionRules.GetInvader(incursion.Invader)?.Name} withdraws from the {region?.Name} region before it could be cleared. No spoils are paid."));
+                Log.Write(LogGroup.Space, $"INCURSION ENDED - {incursion.Invader} in {incursion.Center} timed out");
+            }
+        }
+
+        private static void DespawnIncursionShips()
+        {
+            foreach (var ship in _incursionAreaShips.Values.Concat(_incursionBlockadeShips.Values).SelectMany(x => x).Where(GetIsObjectValid).ToList())
+                DestroyObject(ship);
+
+            _incursionAreaShips.Clear();
+            _incursionAreaPhases.Clear();
+            _incursionNextSpawn.Clear();
+            _incursionBlockadeShips.Clear();
+            _incursionDamage.Clear();
+            _incursionLastHit.Clear();
+            _incursionSpawned = false;
+        }
+
+        private static void DeliverIncursionPayout(uint player, IncursionPayout payout)
+        {
+            if (payout.Credits > 0)
+                GiveGoldToCreature(player, payout.Credits);
+
+            var items = new List<string>(payout.Items);
+            foreach (var (table, pulls) in payout.Pulls)
+            {
+                var lootTable = Loot.GetLootTableByName(table);
+                for (var pull = 0; pull < pulls; pull++)
+                    items.Add(lootTable.GetRandomItem().Resref);
+            }
+
+            ShipHold.DeliverYield(player, items.Where(x => !string.IsNullOrWhiteSpace(x)).ToList());
+            SendMessageToPC(player, ColorToken.Green(
+                $"Incursion spoils for the {payout.RegionName} region: {payout.Credits} credits and {items.Count} item(s) for {payout.Points:0.#} contribution points."));
+            Log.Write(LogGroup.Space, $"INCURSION PAYOUT - {PlayerName.GetAuditName(player)} - {payout.Credits} credits, {string.Join(", ", items)}");
+        }
+
+        /// <summary>A player who was offline when a region was cleared collects the spoils at login.</summary>
+        [NWNEventHandler(ScriptName.OnModuleEnter)]
+        public static void DeliverPendingIncursionPayout()
+        {
+            var player = GetEnteringObject();
+            if (!GetIsPC(player) || GetIsDM(player))
+                return;
+
+            var playerId = GetObjectUUID(player);
+            if (!IncursionRecord.PendingPayouts.Remove(playerId, out var payout))
+                return;
+
+            SaveIncursions();
+            DelayCommand(6f, () =>
+            {
+                if (GetIsObjectValid(player))
+                    DeliverIncursionPayout(player, payout);
+            });
+        }
+
+        // Contribution
+
+        /// <summary>The players aboard a ship: its pilot and the station crew (viewport watchers left out).</summary>
+        private static List<uint> GetShipCrewPlayers(uint pilot)
+        {
+            var players = new List<uint> { pilot };
+            players.AddRange(_crewAssignments.Where(x => x.Value.Pilot == pilot && !x.Value.IsViewer && GetIsPC(x.Key)).Select(x => x.Key));
+            return players.Where(GetIsObjectValid).Distinct().ToList();
+        }
+
+        /// <summary>The pilot of the ship a player fires from: themselves, or the pilot of the ship whose station they hold.</summary>
+        private static uint GetFiringShip(uint player) =>
+            _crewAssignments.TryGetValue(player, out var assignment) ? assignment.Pilot : player;
+
+        private static IncursionContribution GetContribution(ActiveIncursion incursion, uint player)
+        {
+            var playerId = GetObjectUUID(player);
+            if (!incursion.Contributions.TryGetValue(playerId, out var contribution))
+                incursion.Contributions[playerId] = contribution = new IncursionContribution();
+
+            contribution.Name = GetName(player);
+            return contribution;
+        }
+
+        /// <summary>Called by both ship damage paths: a player ship's damage to an incursion ship counts toward its kill.</summary>
+        private static void RecordIncursionDamage(uint attacker, uint target, int amount)
+        {
+            if (amount <= 0 || IncursionRecord.Active == null || !GetIsPC(attacker) ||
+                string.IsNullOrEmpty(GetLocalString(target, IncursionRoleVariable)))
+            {
+                return;
+            }
+
+            var ship = GetFiringShip(attacker);
+            if (!_incursionDamage.TryGetValue(target, out var damage))
+                _incursionDamage[target] = damage = new Dictionary<uint, double>();
+
+            damage.TryGetValue(ship, out var dealt);
+            damage[ship] = dealt + amount;
+            _incursionLastHit[target] = ship;
+        }
+
+        /// <summary>A destroyed incursion ship's points go to the ships that damaged it, shared by the players aboard each.</summary>
+        [NWNEventHandler(ScriptName.OnCreatureDeathBefore)]
+        public static void CreditIncursionKill()
+        {
+            var ship = OBJECT_SELF;
+            var incursion = IncursionRecord.Active;
+            if (incursion == null || string.IsNullOrEmpty(GetLocalString(ship, IncursionRoleVariable)))
+                return;
+
+            _incursionDamage.Remove(ship, out var damage);
+            _incursionLastHit.Remove(ship, out var killer);
+            if (damage == null)
+                return;
+
+            var tier = GetLocalInt(ship, IncursionTierVariable);
+            var points = IncursionRules.KillPoints(_npcPresets.TryGetValue(GetTag(ship), out var preset) ? preset.Difficulty : "Normal");
+            foreach (var (pilot, share) in IncursionRules.SplitKill(damage, points, killer))
+            {
+                if (!GetIsObjectValid(pilot))
+                    continue;
+
+                var aboard = GetShipCrewPlayers(pilot);
+                foreach (var player in aboard)
+                {
+                    var contribution = GetContribution(incursion, player);
+                    IncursionRules.AddPoints(contribution, tier, share / aboard.Count);
+                    contribution.Damage += (long)Math.Round(damage[pilot] / aboard.Count);
+                    if (pilot == killer)
+                        contribution.Kills++;
+                }
+            }
+
+            _incursionDirty = true;
+        }
+
+        /// <summary>Called when a module repairs a ship: repairing an ally in an incursion area counts.</summary>
+        private static void RecordIncursionRepair(uint source, uint repaired, int restored)
+        {
+            var incursion = IncursionRecord.Active;
+            if (incursion == null || restored <= 0 || !GetIsPC(source) || !GetIsPC(repaired))
+                return;
+
+            var ship = GetFiringShip(source);
+            if (ship == repaired)
+                return;
+
+            var area = IncursionRules.FindArea(incursion, GetResRef(GetArea(ship)));
+            if (area == null)
+                return;
+
+            var aboard = GetShipCrewPlayers(ship);
+            var points = IncursionRules.RepairPoints(restored, area.Tier);
+            foreach (var player in aboard)
+            {
+                var contribution = GetContribution(incursion, player);
+                IncursionRules.AddPoints(contribution, area.Tier, points / aboard.Count);
+                contribution.Repairs += restored / aboard.Count;
+            }
+
+            _incursionDirty = true;
+        }
+
+        // Docks, trade and status
+
+        /// <summary>Why a dock refuses docking, or empty: a blockade holding at it.</summary>
+        public static string GetIncursionDockRefusal(uint dock)
+        {
+            var incursion = IncursionRecord.Active;
+            if (incursion == null)
+                return string.Empty;
+
+            var key = IncursionRules.DockKey(GetResRef(GetArea(dock)), GetLocalString(dock, DockTeleportWaypointVariable));
+            return IncursionRules.IsBlockadeHolding(incursion, key) ? IncursionRules.DockRefusal(incursion.Invader) : string.Empty;
+        }
+
+        /// <summary>Why an exchange is closed, or empty.</summary>
+        public static string GetIncursionExchangeRefusal(TradeExchangeType exchange)
+        {
+            var incursion = IncursionRecord.Active;
+            return IncursionRules.IsExchangeClosed(incursion, exchange) ? IncursionRules.ExchangeRefusal(incursion.Invader) : string.Empty;
+        }
+
+        /// <summary>The incursion price multiplier of an exchange (1 outside a running incursion's region).</summary>
+        public static double GetIncursionPriceMultiplier(TradeExchangeType exchange) =>
+            IncursionRules.GetPriceMultiplier(IncursionRecord.Active, exchange);
+
+        /// <summary>The Ship HUD's incursion line for a pilot in an incursion area, or null.</summary>
+        public static string GetIncursionStatusText(uint player)
+        {
+            var incursion = IncursionRecord.Active;
+            var area = IncursionRules.FindArea(incursion, GetResRef(GetArea(player)));
+            if (area == null)
+                return null;
+
+            incursion.Contributions.TryGetValue(GetObjectUUID(player), out var contribution);
+            var progress = incursion.Areas.TryGetValue(area.Resref, out var p) ? p : new IncursionAreaProgress();
+            var stage = IncursionRules.IsAreaLiberated(progress)
+                ? "liberated"
+                : progress.WavesCleared >= IncursionTuning.WavesPerArea ? "command group" : $"wave {progress.WavesCleared + 1}/{IncursionTuning.WavesPerArea}";
+            return $"{stage}, {IncursionRules.FormatRemaining(incursion.EndsAt - DateTime.UtcNow)} left, {contribution?.TotalPoints() ?? 0:0.#} pts";
+        }
+
+        /// <summary>The /incursion report.</summary>
+        public static string DescribeIncursion(uint player)
+        {
+            var state = IncursionRecord;
+            var incursion = state.Active;
+            if (incursion == null)
+                return $"No incursion is under way. The next armada is expected {state.NextStartAt:dddd d MMMM, HH:mm} UTC.";
+
+            var region = IncursionRules.FindRegion(incursion.Center);
+            var lines = new List<string>
+            {
+                $"The {IncursionRules.GetInvader(incursion.Invader)?.Name} holds the {region?.Name} region: {IncursionRules.FormatRemaining(incursion.EndsAt - DateTime.UtcNow)} left. " +
+                $"Prices at the region's exchanges are x{IncursionTuning.PriceMultiplier:0.##}.",
+            };
+            foreach (var area in region?.Areas ?? Array.Empty<IncursionArea>())
+            {
+                var progress = incursion.Areas.TryGetValue(area.Resref, out var p) ? p : new IncursionAreaProgress();
+                var stage = IncursionRules.IsAreaLiberated(progress)
+                    ? "liberated"
+                    : progress.WavesCleared >= IncursionTuning.WavesPerArea ? "command group" : $"wave {progress.WavesCleared + 1} of {IncursionTuning.WavesPerArea}";
+                lines.Add($"  {area.Name} (tier {area.Tier}): {stage}");
+            }
+
+            var held = incursion.Blockades.Keys.Count(x => !incursion.BrokenBlockades.Contains(x));
+            lines.Add($"  Blockades holding: {held} of {incursion.Blockades.Count}");
+            incursion.Contributions.TryGetValue(GetObjectUUID(player), out var contribution);
+            lines.Add(contribution == null
+                ? "  You have not contributed yet."
+                : $"  Your contribution: {contribution.TotalPoints():0.#} points ({contribution.Kills} killing blows, {contribution.Damage} damage, {contribution.Repairs} repaired).");
+            return string.Join("\n", lines);
+        }
+
+        private static void BroadcastIncursion(string message)
+        {
+            for (var player = GetFirstPC(); GetIsObjectValid(player); player = GetNextPC())
+                SendMessageToPC(player, message);
+        }
+
+        private static void MessageIncursionArea(string areaResref, string message)
+        {
+            for (var player = GetFirstPC(); GetIsObjectValid(player); player = GetNextPC())
+            {
+                if (GetResRef(GetArea(player)) == areaResref)
+                    SendMessageToPC(player, message);
+            }
+        }
+    }
+}

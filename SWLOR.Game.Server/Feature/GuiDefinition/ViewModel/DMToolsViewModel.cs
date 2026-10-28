@@ -287,6 +287,17 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
             Log.Write(LogGroup.DM, $"{GetName(Player)} started a tier {tier} trade convoy in {GetName(area)}.");
         };
 
+        /// <summary>
+        /// Starts an incursion (plan section 30) centred on the DM's orbit, by a random armada, when none is running.
+        /// </summary>
+        public Action OnStartIncursion() => () =>
+        {
+            var (started, message) = Space.StartIncursionAt(Player);
+            SpaceStatus = message;
+            SpaceStatusColor = started ? GuiColor.Green : GuiColor.Red;
+            Log.Write(LogGroup.DM, $"{GetName(Player)} start incursion in {GetName(GetArea(Player))}: {message}");
+        };
+
         private string GetAreaResref()
         {
             return GetResRef(GetArea(Player));

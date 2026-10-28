@@ -307,6 +307,9 @@ STANDING_TIER_IDS = {"Neutral": 0, "Trusted": 1, "Honored": 2, "Exalted": 3}
 AMMO = ["ship_missile_ion", "ship_missile_inc", "ship_missile_skr"]
 AMMO_QUANTITY = 10
 RIFT_KEY = "rift_key_t55"
+# Rift Keys of tiers 1-5 (W15b, events.KEYS): each store sells the keys up to its faction's highest dock tier (at most 5)
+# beside the tier 5.5 key, priced by each key's Cost and gated by standing that rises with the key's tier.
+RIFT_KEY_GATES = {10: "Neutral", 20: "Trusted", 30: "Trusted", 40: "Honored", 50: "Honored", 55: "Honored"}
 STORE_CATEGORIES = ["Ammo", "DesignSchematic", "ManufacturerComponent", "RiftKey", "ShipSchematic"]
 STORE_CATEGORY_IDS = {k: i for i, k in enumerate(STORE_CATEGORIES, 1)}
 
@@ -357,6 +360,22 @@ def store_prices():
     }
 
 
+def faction_key_tier(faction):
+    """The highest Rift Key tier (1-5) the faction's store sells: its highest agent dock's tier."""
+    return min(5, max(dock_tier(dock) for _, _, f, dock, _, _ in AGENTS if f == faction))
+
+
+def rift_keys(faction):
+    """The faction store's Rift Keys in tier order: tiers 1 up to its dock tier, then tier 5.5."""
+    import events
+    top = faction_key_tier(faction) * 10
+    return [(t, r) for t, r, _ in events.KEYS if t <= top] + [(t, r) for t, r, _ in events.KEYS if t == 55]
+
+
+def rift_key_price(resref):
+    return price(trade.item_cost(resref))
+
+
 def store(faction):
     """The faction store's items: (category, resref, name, quantity, trait)."""
     maker = FACTION_MAKER[faction]
@@ -366,7 +385,7 @@ def store(faction):
              for d in design_rows() if makers.get(d["ShipTag"], ("", False))[0] == maker and not d["WildSpaceOnly"]]
     comp = maker_component(maker)
     rows.append(("ManufacturerComponent", comp["Resref"], comp["Name"], 1, comp["Trait"]))
-    rows.append(("RiftKey", RIFT_KEY, None, 1, None))
+    rows += [("RiftKey", r, None, 1, None) for _, r in rift_keys(faction)]
     rows += [("ShipSchematic", s["Resref"], f"Ship Schematic: {s['ShipName']}", 1, None)
              for s in schematic_rows() if makers.get(s["ShipTag"], ("", False))[0] == maker and not s["WildSpaceOnly"]]
     return rows
@@ -549,6 +568,14 @@ def tuning_cs():
               + ", ".join(f"[FactionTokenStoreCategory.{k}] = TradeStandingTier.{v}" for k, v in STORE_GATES.items()) + " };",
               "        public static readonly string[] StoreAmmo = { " + ", ".join(cs_string(r) for r in AMMO) + " };",
               "",
+              "        /// <summary>The Rift Keys each faction's store sells, in tier order, with their token price and standing gate.</summary>",
+              "        public static readonly IReadOnlyDictionary<FactionType, string[]> StoreRiftKeys = new Dictionary<FactionType, string[]> { "
+              + ", ".join(f"[FactionType.{f}] = new[] {{ " + ", ".join(cs_string(r) for _, r in rift_keys(f)) + " }" for f in FACTION_NAMES) + " };",
+              "        public static readonly IReadOnlyDictionary<string, int> RiftKeyPrices = new Dictionary<string, int> { "
+              + ", ".join(f"[{cs_string(r)}] = {rift_key_price(r)}" for t, r in sorted({k for f in FACTION_NAMES for k in rift_keys(f)})) + " };",
+              "        public static readonly IReadOnlyDictionary<string, TradeStandingTier> RiftKeyGates = new Dictionary<string, TradeStandingTier> { "
+              + ", ".join(f"[{cs_string(r)}] = TradeStandingTier.{RIFT_KEY_GATES[t]}" for t, r in sorted({k for f in FACTION_NAMES for k in rift_keys(f)})) + " };",
+              "",
               "        /// <summary>The faction whose store sells each ship maker's schematics and component.</summary>",
               "        public static readonly IReadOnlyDictionary<FactionType, ShipManufacturer> FactionMakers = new Dictionary<FactionType, ShipManufacturer> { "
               + ", ".join(f"[FactionType.{f}] = ShipManufacturer.{m}" for f, m in FACTION_MAKER.items()) + " };",
@@ -595,7 +622,8 @@ def reference_json():
     rates = {str(t): dict(Combat=round(scanning.combat_rate(t)), Agents=round(tier_rate(t)),
                           Percent=round(100 * tier_rate(t) / scanning.combat_rate(t), 1)) for t in TIERS}
     stores = {f: [dict(Category=c, Resref=r, Quantity=q) for c, r, _, q, _ in store(f)] for f in FACTION_NAMES}
-    return json.dumps(dict(Cases=cases, Rates=rates, Stores=stores, StorePrices=store_prices()), indent=2) + "\n"
+    keys = {r: dict(Tokens=rift_key_price(r), MinimumTier=RIFT_KEY_GATES[t]) for f in FACTION_NAMES for t, r in rift_keys(f)}
+    return json.dumps(dict(Cases=cases, Rates=rates, Stores=stores, StorePrices=store_prices(), RiftKeys=keys), indent=2) + "\n"
 
 
 WRITES = {
@@ -658,8 +686,12 @@ def agents_tab(Sheet):
               {"Ammo": f"Ion, Incendiary and Seeker Missiles, {AMMO_QUANTITY} each",
                "DesignSchematic": "the faction maker's Hull Designs (Wild Space only designs left out)",
                "ManufacturerComponent": "the faction maker's component (with its trait)",
-               "RiftKey": "Rift Key (Tier 5.5); tiers 1-5 come with W15c",
+               "RiftKey": "Rift Keys: tier 1 up to the faction's highest dock tier (at most 5), and tier 5.5",
                "ShipSchematic": "the faction maker's Advanced ships"}[c]] for c in STORE_CATEGORIES])
+    s.table(["Rift Key", "Tokens", "Standing", "", "", "", "", "Sold by"],
+            [[r, rift_key_price(r), RIFT_KEY_GATES[t], "", "", "", "",
+              ", ".join(FACTION_NAMES[f] for f in FACTION_NAMES if (t, r) in rift_keys(f))]
+             for t, r in sorted({k for f in FACTION_NAMES for k in rift_keys(f)})])
     s.table(["Faction", "Maker", "Designs", "Ship Schematics", "", "", "", "Manufacturer component"],
             [[FACTION_NAMES[f], FACTION_MAKER[f], sum(1 for x in store(f) if x[0] == "DesignSchematic"),
               sum(1 for x in store(f) if x[0] == "ShipSchematic"), "", "", "", maker_component(FACTION_MAKER[f])["Name"]]

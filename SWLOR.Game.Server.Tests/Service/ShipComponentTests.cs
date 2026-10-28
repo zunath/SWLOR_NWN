@@ -379,13 +379,20 @@ public class ShipComponentTests
     }
 
     [Test]
-    public void ShipModuleRecipes_InheritTraitsAndHullsDoNot()
+    public void ShipModuleAndDeedRecipes_InheritTraits()
     {
         var modules = new RevampStarshipRecipes().BuildRecipes();
         foreach (var step in RevampModuleCatalog.Steps)
             ShipComponents.InheritsTraits(modules[step.RecipeType]).Should().BeTrue(step.Tag);
         foreach (var hull in RevampShipCatalog.Hulls)
-            ShipComponents.InheritsTraits(modules[hull.RecipeType]).Should().BeFalse(hull.Tag);
+        {
+            ShipComponents.InheritsTraits(modules[hull.RecipeType]).Should().BeTrue(hull.Tag);
+            ShipComponents.IsHullDeed(hull.Tag).Should().BeTrue(hull.Tag);
+        }
+
+        ShipComponents.IsHullDeed("sdeed_striker").Should().BeFalse("legacy deeds have no components");
+        ShipComponents.BuildHullDescription("A deed.", new[] { ShipComponentTraitType.Reinforced })
+            .Should().EndWith("Reinforced: +3% max hull, +3% resistances, -1% speed");
 
         var components = new ShipComponentRecipes().BuildRecipes();
         components.Values.Should().OnlyContain(x => !ShipComponents.InheritsTraits(x));

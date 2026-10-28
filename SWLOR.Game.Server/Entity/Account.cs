@@ -40,5 +40,8 @@ namespace SWLOR.Game.Server.Entity
         public ulong SkillsLearned { get; set; }
         public ulong QuestsCompleted { get; set; }
         public ulong ItemsCrafted { get; set; }
+
+        /// <summary>Credits earned from trade: commodity sale profit and freight contract fees (plan section 14).</summary>
+        public ulong TradeCreditsEarned { get; set; }
     }
 }

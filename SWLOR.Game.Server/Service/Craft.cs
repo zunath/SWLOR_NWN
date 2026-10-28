@@ -176,7 +176,7 @@ namespace SWLOR.Game.Server.Service
             Console.WriteLine($"Loaded {_recipes.Count} recipes.");
         }
 
-        /// <summary>Whether the Research Terminal can turn a recipe into a blueprint: weapons, armor, food and ship modules.</summary>
+        /// <summary>Whether the Research Terminal can turn a recipe into a blueprint: weapons, armor, food, ship modules and ship deeds.</summary>
         public static bool IsResearchableRecipe(RecipeDetail recipe)
         {
             return recipe.EnhancementType == RecipeEnhancementType.Weapon ||

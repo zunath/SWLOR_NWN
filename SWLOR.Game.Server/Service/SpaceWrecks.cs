@@ -60,6 +60,8 @@ namespace SWLOR.Game.Server.Service
                 RemainingCycles = ShipSalvageRules.WreckCycles(size, difficulty)
             };
 
+            _wrecks[wreck].Manufacturer = ShipManufacturerRules.WreckManufacturer(GetTag(creature));
+
             // The wreck schedules its own removal: a delay on the dying ship would be lost when the ship is destroyed.
             AssignCommand(wreck, () => DelayCommand(ShipSalvageRules.WreckSeconds, () => DestroyObject(wreck)));
         }

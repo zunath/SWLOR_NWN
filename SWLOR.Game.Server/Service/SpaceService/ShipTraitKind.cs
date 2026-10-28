@@ -16,5 +16,8 @@ namespace SWLOR.Game.Server.Service.SpaceService
 
         /// <summary>A researched blueprint's item bonus, stamped on the module it crafts.</summary>
         Blueprint = 4,
+
+        /// <summary>A manufacturer component's maker trait, never crafted or salvaged at random.</summary>
+        Manufacturer = 5,
     }
 }

@@ -1544,10 +1544,9 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
             var recipe = Craft.GetRecipe(_recipe);
             if (ShipBlueprintRules.IsResearchable(recipe))
             {
-                var family = ShipBlueprintRules.ComponentFamily(recipe);
                 for (var currentBonus = 1; currentBonus <= _activeBlueprint.ItemBonuses; currentBonus++)
                 {
-                    var trait = ShipBlueprintRules.Pick(family, ShipBlueprintRules.BonusTier(recipe.Level, currentBonus), Random.Next);
+                    var trait = ShipBlueprintRules.Pick(recipe, ShipBlueprintRules.BonusTier(recipe.Level, currentBonus), Random.Next);
                     if (trait == ShipComponentTraitType.None)
                         continue;
 

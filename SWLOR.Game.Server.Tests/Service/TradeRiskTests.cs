@@ -416,7 +416,7 @@ public class TradeRiskTests
         var spawns = new SpaceSpawnDefinition().BuildSpawnTables();
         foreach (var table in new[] { "SPACE_VISCARA_ORBIT", "SPACE_MONCALA_ORBIT", "SPACE_HUTLAR_ORBIT", "SPACE_TATOOINE_ORBIT",
                      "SPACE_KORRIBAN_ORBIT", "SPACE_DATHOMIR_ORBIT", "SPACE_DANTOOINE_ORBIT", "SPACE_VISCARA_BELT",
-                     "SPACE_MIDRIM_NEBULA", "SPACE_KORRIBAN_DEBRIS" })
+                     "SPACE_MIDRIM_NEBULA", "SPACE_KORRIBAN_DEBRIS", "SPACE_NARSHADDAA_ORBIT", "SPACE_MIDRIM_1", "SPACE_MIDRIM_2" })
         {
             var objects = spawns[table].Spawns;
             var convoy = objects.Where(x => x.Resref.EndsWith("convoy")).ToList();

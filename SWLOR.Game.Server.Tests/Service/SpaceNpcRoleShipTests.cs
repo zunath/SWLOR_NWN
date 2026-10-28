@@ -17,12 +17,12 @@ public class SpaceNpcRoleShipTests
 
     private static readonly Dictionary<int, string[]> OrbitsByTier = new()
     {
-        [1] = new[] { "SPACE_VISCARA_ORBIT", "SPACE_VISCARA_BELT" },
+        [1] = new[] { "SPACE_VISCARA_ORBIT", "SPACE_NARSHADDAA_ORBIT", "SPACE_VISCARA_BELT" },
         [2] = new[] { "SPACE_MONCALA_ORBIT", "SPACE_VISCARA_BELT" },
         [3] = new[] { "SPACE_HUTLAR_ORBIT", "SPACE_MIDRIM_NEBULA" },
         [4] = new[] { "SPACE_TATOOINE_ORBIT", "SPACE_MIDRIM_NEBULA" },
-        [5] = new[] { "SPACE_DATHOMIR_ORBIT", "SPACE_DANTOOINE_ORBIT", "SPACE_KORRIBAN_DEBRIS" },
-        [6] = new[] { "SPACE_KORRIBAN_ORBIT" },
+        [5] = new[] { "SPACE_DATHOMIR_ORBIT", "SPACE_DANTOOINE_ORBIT", "SPACE_MIDRIM_1", "SPACE_KORRIBAN_DEBRIS" },
+        [6] = new[] { "SPACE_KORRIBAN_ORBIT", "SPACE_MIDRIM_2" },
     };
 
     private static ShipNpcEntry Entry(string tag) => RevampNpcShipCatalog.Ships.Single(x => x.CreatureTag == tag);
@@ -106,7 +106,9 @@ public class SpaceNpcRoleShipTests
                 continue;
             }
 
-            var tier = entry.CreatureTag.Substring(0, 2);
+            // An ace mines as the Elite Bomber of its level, so only its tier's bomber row exists to compare with.
+            var ace = ShipAceRules.Get(entry.CreatureTag);
+            var tier = ace != null ? $"t{ace.Tier}" : entry.CreatureTag.Substring(0, 2);
             var bomber = Entry(tier + "bomber");
             var torpedo = bomber.Weapons.Single(x => x.ModuleTag.StartsWith("sm_torp_"));
             entry.MineDmg.Should().BePositive(entry.CreatureTag);

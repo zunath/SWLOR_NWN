@@ -82,7 +82,11 @@ namespace SWLOR.Game.Server.Service.SpaceService
         public static bool IsStation(ShipSlotTag tag) => tag != ShipSlotTag.Helm && tag != ShipSlotTag.Invalid;
 
         /// <summary>
-        /// Works out a ship's stats. Modules in station slots add nothing until their seat is crewed: then
+        /// Works out a ship's stats. A hull's own traits (inherited by its deed from the components it was crafted from,
+        /// <paramref name="hullTraits"/>) apply <see cref="ShipTraitRules.HullSum"/> of each stat to the ship's totals:
+        /// hull, shield and capacitor as percent points of the hull's percent bonus, capacitor regen, Accuracy, Defense
+        /// and resistances as a percent of the total, weapon damage as percent points, Evasion as points and speed as
+        /// percent points. Modules in station slots add nothing until their seat is crewed: then
         /// <paramref name="stationEffectiveness"/> (hotbar slot to effectiveness, 0 for an empty seat) scales their
         /// hull, shield, capacitor and capacitor regen, as the balance model does. Their best-of Defense, Evasion
         /// and Accuracy, speed, resistances and damage bonuses apply in full while the seat works them. With no
@@ -92,7 +96,8 @@ namespace SWLOR.Game.Server.Service.SpaceService
             ShipHullEntry hull,
             IEnumerable<ShipFittedModule> modules,
             int willpower,
-            Func<int, double> stationEffectiveness = null)
+            Func<int, double> stationEffectiveness = null,
+            IReadOnlyCollection<ShipComponentTraitType> hullTraits = null)
         {
             var tags = BuildSlotTags(hull);
             var size = hull.Size == ShipSize.Invalid ? ShipSize.Small : hull.Size;
@@ -162,26 +167,36 @@ namespace SWLOR.Game.Server.Service.SpaceService
                 damageExplosive += step.DamageExplosive + step.DamageAll;
             }
 
+            // The hull's own traits.
+            int H(ShipTraitStat stat) => ShipTraitRules.HullSum(hullTraits, stat);
+            int Percent(int total, ShipTraitStat stat) => ShipTraitRules.Scale(total, H(stat));
+            var hullDamage = H(ShipTraitStat.Damage);
+            damageThermal += hullDamage;
+            damageEm += hullDamage;
+            damageExplosive += hullDamage;
+            speedPercent += H(ShipTraitStat.Speed);
+            capacitorRegen *= 1 + H(ShipTraitStat.CapacitorRegen) / 100.0;
+
             return new ShipStatResult
             {
                 Size = size,
                 CapitalShip = size == ShipSize.Capital,
-                MaxHull = (int)Round(hullPoints * (1 + hull.HullPercent / 100.0)),
-                MaxShield = (int)Round(shieldPoints * (1 + hull.ShieldPercent / 100.0)),
-                MaxCapacitor = (int)Round(capacitor * (1 + hull.CapacitorPercent / 100.0)),
+                MaxHull = (int)Round(hullPoints * (1 + (hull.HullPercent + H(ShipTraitStat.Hull)) / 100.0)),
+                MaxShield = (int)Round(shieldPoints * (1 + (hull.ShieldPercent + H(ShipTraitStat.Shield)) / 100.0)),
+                MaxCapacitor = (int)Round(capacitor * (1 + (hull.CapacitorPercent + H(ShipTraitStat.Capacitor)) / 100.0)),
                 CapacitorRegenPerSecond = capacitorRegen,
                 Attack = hull.Attack,
-                Accuracy = hull.Accuracy + bestAccuracy,
-                Defense = hull.Defense + bestDefense,
-                Evasion = hull.Evasion + bestEvasion + evasionPenalty + traitEvasion,
+                Accuracy = Percent(hull.Accuracy + bestAccuracy, ShipTraitStat.Accuracy),
+                Defense = Percent(hull.Defense + bestDefense, ShipTraitStat.Defense),
+                Evasion = hull.Evasion + bestEvasion + evasionPenalty + traitEvasion + H(ShipTraitStat.Evasion),
                 ShieldRegenBonusPercent = hull.ShieldRegenPercent,
                 CriticalBonus = hull.CriticalBonus,
                 Speed = hull.Speed * (1 + speedPercent / 100.0),
                 Resistances = new Dictionary<ResistanceType, int>
                 {
-                    [ResistanceType.Thermal] = resistAll + resistThermal,
-                    [ResistanceType.EM] = resistAll + resistEm,
-                    [ResistanceType.Explosive] = resistAll + resistExplosive,
+                    [ResistanceType.Thermal] = Percent(resistAll + resistThermal, ShipTraitStat.Resistance),
+                    [ResistanceType.EM] = Percent(resistAll + resistEm, ShipTraitStat.Resistance),
+                    [ResistanceType.Explosive] = Percent(resistAll + resistExplosive, ShipTraitStat.Resistance),
                 },
                 DamageBonusPercent = new Dictionary<CombatDamageType, int>
                 {

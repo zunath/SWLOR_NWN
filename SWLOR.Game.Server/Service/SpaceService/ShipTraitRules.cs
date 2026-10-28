@@ -116,6 +116,63 @@ namespace SWLOR.Game.Server.Service.SpaceService
         public static int ModuleBonus(int moduleBonus, IEnumerable<ShipComponentTraitType> traits) =>
             Math.Max(0, moduleBonus + Sum(traits, ShipTraitStat.Yield));
 
+        // Hull traits
+
+        /// <summary>Whether a hull applies the stat: the module numbers (capacitor use, repair, Yield, rare find) it does not.</summary>
+        public static bool IsHullStat(ShipTraitStat stat) => RevampComponentCatalog.HullTraitStats.Contains(stat);
+
+        /// <summary>
+        /// What a hull's traits add to one stat: <see cref="RevampComponentCatalog.HullTraitSharePercent"/> of the summed
+        /// value, rounded half away from zero; 0 for a stat a hull does not apply.
+        /// </summary>
+        public static int HullSum(IEnumerable<ShipComponentTraitType> traits, ShipTraitStat stat)
+        {
+            if (!IsHullStat(stat))
+                return 0;
+
+            var share = Sum(traits, stat) * RevampComponentCatalog.HullTraitSharePercent / 100.0;
+            return (int)Math.Round(share, MidpointRounding.AwayFromZero);
+        }
+
+        /// <summary>One trait's effects on a hull as players read them, for example "+3% hull, +3% resistances, -1% speed".</summary>
+        public static string DescribeHullEffects(ShipComponentTrait trait)
+        {
+            var parts = new List<string>();
+            foreach (var effect in trait.Effects)
+            {
+                var value = HullSum(new[] { trait.Type }, effect.Stat);
+                if (value == 0)
+                    continue;
+
+                var unit = effect.Stat is ShipTraitStat.Evasion ? string.Empty : "%";
+                parts.Add($"{(value > 0 ? "+" : string.Empty)}{value}{unit} {HullStatText(effect.Stat)}");
+            }
+
+            return parts.Count == 0 ? "no effect on a hull" : string.Join(", ", parts);
+        }
+
+        private static string HullStatText(ShipTraitStat stat) => stat switch
+        {
+            ShipTraitStat.Damage => "weapon damage",
+            ShipTraitStat.Accuracy => "Accuracy",
+            ShipTraitStat.Hull => "max hull",
+            ShipTraitStat.Shield => "max shield",
+            ShipTraitStat.Capacitor => "max capacitor",
+            ShipTraitStat.CapacitorRegen => "capacitor regen",
+            ShipTraitStat.Defense => "Defense",
+            ShipTraitStat.Resistance => "resistances",
+            ShipTraitStat.Evasion => "Evasion",
+            ShipTraitStat.Speed => "speed",
+            _ => stat.ToString(),
+        };
+
+        /// <summary>One examine line per hull trait, with what it does on the hull.</summary>
+        public static List<string> DescribeHullLines(IEnumerable<ShipComponentTraitType> traits) =>
+            (traits ?? Enumerable.Empty<ShipComponentTraitType>())
+                .Select(Get).Where(x => x != null)
+                .Select(x => $"{x.Name}: {DescribeHullEffects(x)}")
+                .ToList();
+
         // Item storage
 
         /// <summary>Reads the stored trait numbers; unknown numbers are dropped.</summary>

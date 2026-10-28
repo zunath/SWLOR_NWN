@@ -21,5 +21,8 @@ namespace SWLOR.Game.Server.Service.SpaceService
 
         /// <summary>Salvage cycles left before the wreck is stripped.</summary>
         public int RemainingCycles { get; set; }
+
+        /// <summary>The maker whose manufacturer component the wreck's salvage can yield; Invalid for none.</summary>
+        public ShipManufacturer Manufacturer { get; set; }
     }
 }

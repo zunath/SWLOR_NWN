@@ -1827,6 +1827,13 @@
     "Call": "DMPresence.SendMessage(Player, $\"To {result.Name}: {message}\")"
   },
   {
+    "File": "SWLOR.Game.Server/Feature/GuiDefinition/ViewModel/DMToolsViewModel.cs",
+    "Line": 410,
+    "Member": "OnListRiftPockets",
+    "Delivery": "Retained",
+    "Call": "DMPresence.SendMessage(Player, line)"
+  },
+  {
     "File": "SWLOR.Game.Server/Feature/GuiDefinition/ViewModel/DMSettingsViewModel.cs",
     "Line": 104,
     "Member": "OnClientPropertyUpdated",
@@ -3151,42 +3158,42 @@
   },
   {
     "File": "SWLOR.Game.Server/Feature/PlaceableScripts.cs",
-    "Line": 48,
+    "Line": 52,
     "Member": "UseTeleportDevice",
     "Delivery": "Retained",
     "Call": "SendMessageToPC(user, missingKeyItemMessage)"
   },
   {
     "File": "SWLOR.Game.Server/Feature/PlaceableScripts.cs",
-    "Line": 67,
+    "Line": 71,
     "Member": "UseTeleportDevice",
     "Delivery": "Retained",
     "Call": "SendMessageToPC(user, \"Cannot locate waypoint. Inform an admin this teleporter is broken.\")"
   },
   {
     "File": "SWLOR.Game.Server/Feature/PlaceableScripts.cs",
-    "Line": 102,
+    "Line": 111,
     "Member": "UseTeleportDevice",
     "Delivery": "Retained",
     "Call": "SendMessageToPC(partyMember, $\"You ventured forth with {userName}.\")"
   },
   {
     "File": "SWLOR.Game.Server/Feature/PlaceableScripts.cs",
-    "Line": 205,
+    "Line": 214,
     "Member": "PurchaseRebuild",
     "Delivery": "Retained",
     "Call": "SendMessageToPC(player, $\"Only players may use this terminal.\")"
   },
   {
     "File": "SWLOR.Game.Server/Feature/PlaceableScripts.cs",
-    "Line": 211,
+    "Line": 220,
     "Member": "PurchaseRebuild",
     "Delivery": "Retained",
     "Call": "SendMessageToPC(player, ColorToken.Red($\"You do not have any rebuild tokens.\"))"
   },
   {
     "File": "SWLOR.Game.Server/Feature/PlaceableScripts.cs",
-    "Line": 222,
+    "Line": 231,
     "Member": "PurchaseRebuild",
     "Delivery": "Retained",
     "Call": "SendMessageToPC(player, $\"Remaining rebuild tokens: {Currency.GetCurrency(player, CurrencyType.RebuildToken)}\")"
@@ -7050,42 +7057,42 @@
   },
   {
     "File": "SWLOR.Game.Server/Service/SpaceRiftRuns.cs",
-    "Line": 62,
+    "Line": 71,
     "Member": "StartRiftRun",
     "Delivery": "Retained",
     "Call": "SendMessageToPC(user, ColorToken.Red(refusal))"
   },
   {
     "File": "SWLOR.Game.Server/Service/SpaceRiftRuns.cs",
-    "Line": 83,
-    "Member": "StartRiftRun",
+    "Line": 100,
+    "Member": "OpenRiftRun",
     "Delivery": "Retained",
     "Call": "SendMessageToPC(user, ColorToken.Red(\"The rift flickers and will not open. Your key is unspent.\"))"
   },
   {
     "File": "SWLOR.Game.Server/Service/SpaceRiftRuns.cs",
-    "Line": 108,
-    "Member": "StartRiftRun",
+    "Line": 128,
+    "Member": "OpenRiftRun",
     "Delivery": "Retained",
-    "Call": "SendMessageToPC(player, ColorToken.Cyan(\n                        $\"{GetName(user)} opens a tier {key.TierLabel} rift pocket. Clear its three chambers within \" +\n                        $\"{RiftRunTuning.TimerSeconds / 60} minutes, or it collapses with you inside.\"))"
+    "Call": "SendMessageToPC(player, ColorToken.Cyan(\n                        $\"{(GetIsObjectValid(item) ? GetName(user) : \"A DM\")} opens a tier {key.TierLabel} rift pocket. Clear its three chambers within \" +\n                        $\"{RiftRunTuning.TimerSeconds / 60} minutes, or it collapses with you inside.\"))"
   },
   {
     "File": "SWLOR.Game.Server/Service/SpaceRiftRuns.cs",
-    "Line": 151,
+    "Line": 176,
     "Member": "RejoinRiftRun",
     "Delivery": "Retained",
     "Call": "SendMessageToPC(pilot, ColorToken.Cyan(\n                $\"You rejoin the Rift Run in chamber {run.Room + 1} of {RiftRunTuning.Rooms.Count}, the {RiftRunTuning.Rooms[run.Room].Name}: {left} left.\"))"
   },
   {
     "File": "SWLOR.Game.Server/Service/SpaceRiftRuns.cs",
-    "Line": 234,
+    "Line": 303,
     "Member": "PayRiftRun",
     "Delivery": "Retained",
     "Call": "SendMessageToPC(player, ColorToken.Green(\n                        $\"The pocket is cleared with {RiftRunRules.FormatTimer(secondsLeft)} to spare: {share} credits. The rift returns you in {RiftRunTuning.ReturnDelaySeconds:0} seconds.\"))"
   },
   {
     "File": "SWLOR.Game.Server/Service/SpaceRiftRuns.cs",
-    "Line": 323,
+    "Line": 392,
     "Member": "MessageRiftRun",
     "Delivery": "Retained",
     "Call": "SendMessageToPC(player, message)"
@@ -7106,28 +7113,28 @@
   },
   {
     "File": "SWLOR.Game.Server/Service/SpaceScanSites.cs",
-    "Line": 201,
+    "Line": 206,
     "Member": "OpenSiteCache",
     "Delivery": "Retained",
     "Call": "SendMessageToPC(user, ColorToken.Red(\"Only a ship can open a site cache.\"))"
   },
   {
     "File": "SWLOR.Game.Server/Service/SpaceScanSites.cs",
-    "Line": 214,
+    "Line": 219,
     "Member": "OpenSiteCache",
     "Delivery": "Retained",
     "Call": "SendMessageToPC(user, ColorToken.Red(\"The cache is locked. Target it and slice it open with a Data Analyzer.\"))"
   },
   {
     "File": "SWLOR.Game.Server/Service/SpaceScanSites.cs",
-    "Line": 220,
+    "Line": 225,
     "Member": "OpenSiteCache",
     "Delivery": "Retained",
     "Call": "SendMessageToPC(user, ColorToken.Red(\"The cache is keyed to the ships that scanned this site. Scan it yourself to open it.\"))"
   },
   {
     "File": "SWLOR.Game.Server/Service/SpaceScanSites.cs",
-    "Line": 234,
+    "Line": 239,
     "Member": "OpenSiteCache",
     "Delivery": "Retained",
     "Call": "SendMessageToPC(user, ColorToken.Green($\"You open the {GetName(cache)}: {credits} credits.\"))"
@@ -7236,6 +7243,13 @@
     "Member": "RunSensorSweep",
     "Delivery": "Retained",
     "Call": "SendMessageToPC(player, ColorToken.Cyan($\"Sensor Sweep: {ordered.Count} ship(s) within {range} m.\"))"
+  },
+  {
+    "File": "SWLOR.Game.Server/Service/SpaceStarlanes.cs",
+    "Line": 73,
+    "Member": "WarnOfDangerousStarlane",
+    "Delivery": "Retained",
+    "Call": "SendMessageToPC(creature, ColorToken.Orange(warning))"
   },
   {
     "File": "SWLOR.Game.Server/Service/SpaceSustainedFire.cs",

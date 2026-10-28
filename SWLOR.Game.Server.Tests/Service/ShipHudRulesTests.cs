@@ -466,4 +466,36 @@ public class ShipHudRulesTests
             File.Exists(Path.Combine(directory.FullName, "SWLOR_Haks", "sw_ability", file + ".tga")).Should().BeTrue(file);
         }
     }
+
+    /// <summary>Checks the pilot's HUD counts every module that is on, including the ones a crew seat or droid runs (null seat).</summary>
+    [Test]
+    public void BuildModuleRows_WithNoSeat_ListsEveryActiveModuleAndNamesTheCrewSeat()
+    {
+        var status = BuildLargeShipWithStations();
+        TurnOn(status, 1);
+        TurnOn(status, 3);
+        TurnOn(status, 21);
+
+        var all = ShipHudRules.BuildModuleRows(status, null, Now, Lookup, OBJECT_INVALID, Self, Name);
+
+        all.Select(x => x.Slot).Should().Equal(1, 3, 21);
+        all.Select(x => x.SeatLabel).Should().Equal(null, "Gunner", "Engineer");
+        ShipHudRules.GetModuleRowText(all[0]).Should().StartWith("High 1: Laser Cannon\n");
+        ShipHudRules.GetModuleRowText(all[1]).Should().StartWith("High 3: Laser Cannon (Gunner)\n");
+        ShipHudRules.GetModuleRowText(all[2]).Should().StartWith("Mid 1: Shield Repairer (Engineer)\n");
+    }
+
+    /// <summary>Checks a crew member's own HUD (a seat given) still lists only that seat's modules.</summary>
+    [Test]
+    public void BuildModuleRows_WithASeat_StillListsOnlyThatSeat()
+    {
+        var status = BuildLargeShipWithStations();
+        TurnOn(status, 1);
+        TurnOn(status, 3);
+        TurnOn(status, 21);
+
+        Rows(status, ShipCrewSeat.Pilot).Select(x => x.Slot).Should().Equal(1);
+        Rows(status, ShipCrewSeat.Gunner).Select(x => x.Slot).Should().Equal(3);
+        Rows(status, ShipCrewSeat.Gunner).Single().SeatLabel.Should().BeNull();
+    }
 }

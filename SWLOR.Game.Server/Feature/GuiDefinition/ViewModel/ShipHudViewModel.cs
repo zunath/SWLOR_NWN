@@ -156,7 +156,7 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
             Assign(ShipHudRules.GetAllWeaponsText(weaponsOn, weaponTotal), () => AllWeaponsText, v => AllWeaponsText = v);
             Assign(weaponTotal > 0, () => AllWeaponsEnabled, v => AllWeaponsEnabled = v);
 
-            _moduleRows = SpaceHud.GetModuleRows(Player, status, seat);
+            _moduleRows = SpaceHud.GetModuleRows(Player, status, null);
             var summary = _moduleRows.Count == 1 ? "1 module on" : $"{_moduleRows.Count} modules on";
             Assign(summary, () => ModuleSummary, v => ModuleSummary = v);
             Assign(_moduleRows.Count == 0, () => NoModulesVisible, v => NoModulesVisible = v);

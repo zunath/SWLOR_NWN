@@ -187,6 +187,44 @@ namespace SWLOR.Game.Server.Service.SpaceService
             return shares;
         }
 
+        /// <summary>
+        /// Credits a destroyed ship points to the contributions of the players behind the ships that damaged it.
+        /// <paramref name="damage"/> and <paramref name="killer"/> are keyed by the persistent player id of each pilot, so
+        /// a pilot who logged out before the kill is still paid (as a pending payout when the region clears).
+        /// <paramref name="aboard"/> lists the players sharing a pilot ship now: the crew while the pilot is online, or
+        /// just the pilot (with the last known name) when not.
+        /// </summary>
+        public static void CreditKill(ActiveIncursion incursion, int tier, IReadOnlyDictionary<string, double> damage, double points, string killer,
+            Func<string, IReadOnlyList<(string Id, string Name)>> aboard)
+        {
+            foreach (var (pilot, share) in SplitKill(damage, points, killer))
+            {
+                var crew = aboard(pilot);
+                if (crew == null || crew.Count == 0)
+                    continue;
+
+                foreach (var (id, name) in crew)
+                {
+                    if (!incursion.Contributions.TryGetValue(id, out var contribution))
+                        incursion.Contributions[id] = contribution = new IncursionContribution();
+
+                    if (!string.IsNullOrWhiteSpace(name))
+                        contribution.Name = name;
+                    AddPoints(contribution, tier, share / crew.Count);
+                    contribution.Damage += (long)Math.Round(damage[pilot] / crew.Count);
+                    if (pilot == killer)
+                        contribution.Kills++;
+                }
+            }
+        }
+
+        /// <summary>
+        /// Takes a pending payout out of the saved list only when it can be delivered right now, so a player who
+        /// disconnects before delivery keeps it pending for the next login. Null when there is nothing to deliver.
+        /// </summary>
+        public static IncursionPayout ClaimPending(Dictionary<string, IncursionPayout> pending, string playerId, bool canDeliver) =>
+            canDeliver && pending.Remove(playerId, out var payout) ? payout : null;
+
         /// <summary>Points for repairing an ally in an area of this tier.</summary>
         public static double RepairPoints(int restored, int tier)
         {

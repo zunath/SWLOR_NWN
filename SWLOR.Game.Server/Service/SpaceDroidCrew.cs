@@ -7,6 +7,7 @@ using SWLOR.Game.Server.Feature.ShipModuleDefinition;
 using SWLOR.Game.Server.Service.DroidService;
 using SWLOR.Game.Server.Service.HoldingService;
 using SWLOR.Game.Server.Service.PerkService;
+using SWLOR.Game.Server.Service.SlicingService;
 using SWLOR.Game.Server.Service.SpaceService;
 using SWLOR.NWN.API.NWScript.Enum;
 
@@ -524,6 +525,7 @@ namespace SWLOR.Game.Server.Service
                     feat => AssignCommand(pilot, () => ActivateShipModuleCore(pilot, feat, true, droid: posted)));
 
                 UpdateDroidElectronicWarfare(pilot, status, slots, posted);
+                RunDroidDataAnalyzer(pilot, slots, posted, target);
 
                 if (!hostile)
                     continue;
@@ -572,7 +574,89 @@ namespace SWLOR.Game.Server.Service
             }
         }
 
+        /// <summary>
+        /// A droid's slicing (plan section 24): a Data Analyzer among <paramref name="slots"/> is pressed whenever the
+        /// pilot has a data can, locked cache or wreck data core targeted. The press validates the rest (range,
+        /// combat, the droid's tier, the site's keying) and reports nothing to a droid.
+        /// </summary>
+        private static void RunDroidDataAnalyzer(
+            uint pilot,
+            List<(FeatType Feat, ShipStatus.ShipStatusModule Module)> slots,
+            ShipDroidCrew droid,
+            uint target)
+        {
+            if (!GetIsObjectValid(target) || GetObjectType(target) != ObjectType.Placeable ||
+                !SpaceSlicingRules.UsesDataAnalyzer(GetAnalyzerTarget(target).Source))
+            {
+                return;
+            }
+
+            foreach (var (feat, module) in slots)
+            {
+                var detail = _shipModules[module.ItemTag];
+                if (DroidCrewRules.GetTask(detail.Type, detail.Activation) != DroidCrewTask.Slicing)
+                    continue;
+
+                AssignCommand(pilot, () => ActivateShipModuleCore(pilot, feat, true, droid: droid));
+            }
+        }
+
         // Controllers
+
+        /// <summary>
+        /// A posted droid's snapshot (tier, Industry, protocols) is brought up to its controller's current rating, for a
+        /// ship's station or a holding's staff. Station building droids are not refreshed: their controller is stored
+        /// with the building and cannot change while posted.
+        /// </summary>
+        public static void RefreshPostedDroid(uint controller)
+        {
+            var postedId = Droid.GetPostedShipId(controller);
+            if (string.IsNullOrWhiteSpace(postedId))
+                return;
+
+            var owner = GetItemPossessor(controller);
+            if (HoldingRules.IsDroidPosting(postedId))
+            {
+                if (GetIsPC(owner))
+                    PlanetaryHoldings.RefreshStaffDroid(owner, HoldingRules.GetHoldingIdFromPosting(postedId), controller);
+                return;
+            }
+
+            var dbShip = DB.Get<PlayerShip>(postedId);
+            var droidId = Droid.GetDroidId(controller);
+            var posting = dbShip?.DroidCrew?.FirstOrDefault(x => x.DroidItemId == droidId);
+            if (posting == null)
+                return;
+
+            var details = Droid.LoadDroidItemPropertyDetails(controller);
+            var protocols = DroidIndustryRules.SelectProtocols(details.Perks);
+            var changed = DroidCrewRules.RefreshPosting(posting, details.Tier, details.Industry, protocols);
+            if (changed)
+                DB.Set(dbShip);
+
+            // The ship in flight works from its own copy of the posting.
+            var pilot = GetShipPilot(dbShip.Id);
+            var live = GetIsObjectValid(pilot) ? SpaceCrew.GetSeatDroid(pilot, posting.Seat) : null;
+            if (live != null && live.DroidItemId == droidId &&
+                DroidCrewRules.RefreshPosting(live, details.Tier, details.Industry, protocols))
+            {
+                RecalculateCrewedShip(pilot);
+            }
+        }
+
+        /// <summary>At login, the droids the player carries that are posted aboard a ship or at a holding catch up with their controllers.</summary>
+        [NWNEventHandler(ScriptName.OnModuleEnter)]
+        public static void RefreshPostedDroidsAtLogin()
+        {
+            var player = GetEnteringObject();
+            if (!GetIsPC(player) || GetIsDM(player))
+                return;
+
+            foreach (var controller in Droid.GetControllers(player).Where(Droid.IsPosted))
+            {
+                RefreshPostedDroid(controller);
+            }
+        }
 
         /// <summary>
         /// A player's posted droid controllers are checked at login: one whose posting ended while they were away

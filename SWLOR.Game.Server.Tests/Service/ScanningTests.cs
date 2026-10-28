@@ -234,7 +234,7 @@ public class ScanningTests
         var source = File.ReadAllText(RepositoryFile("SWLOR.Game.Server", "Service", "SpaceScanning.cs")).Replace("\r\n", "\n");
         source.Should().Contain("if (after >= ScanningTuning.InfoLocatedPercent && !signature.IsRevealed)\n                    RevealSite(signature, ship);");
         var sites = File.ReadAllText(RepositoryFile("SWLOR.Game.Server", "Service", "SpaceScanSites.cs"));
-        sites.Should().Contain("private static void RevealSite(ScanSignature signature, uint revealer)");
+        sites.Should().Contain("private static void RevealSite(ScanSignature signature, uint revealer, bool openToAll = false)");
         System.Text.RegularExpressions.Regex.Matches(source + sites, @"RevealSite\(signature, ").Count.Should().Be(1,
             "the probe cycle at 100% is the only caller");
     }

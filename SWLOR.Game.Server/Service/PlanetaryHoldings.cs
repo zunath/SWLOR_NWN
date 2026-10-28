@@ -402,6 +402,21 @@ namespace SWLOR.Game.Server.Service
             Log.Write(LogGroup.Space, $"HOLDING DROID - {PlayerName.GetAuditName(player)} - {holding.Id} - posted '{holding.DroidName}' (Industry {holding.DroidIndustry})");
         }
 
+        /// <summary>
+        /// A staff droid's rating changed (its instructions were edited, or a login found its controller changed): the
+        /// holding catches up at the old rating, then works at the new one.
+        /// </summary>
+        public static void RefreshStaffDroid(uint owner, string holdingId, uint controller)
+        {
+            var holding = LoadHolding(owner, holdingId);
+            if (holding == null || holding.DroidItemId != Droid.GetDroidId(controller))
+                return;
+
+            var (industry, efficiency) = StationBuildings.GetDroidIndustry(controller);
+            if (HoldingRules.RefreshDroid(holding, industry, efficiency))
+                DB.Set(holding);
+        }
+
         public static void RecallDroid(uint player, string holdingId)
         {
             var holding = LoadHolding(player, holdingId);

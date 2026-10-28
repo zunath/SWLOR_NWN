@@ -148,7 +148,7 @@ public class SpaceSlicingTests
             "a crew slicer cannot slice while the ship fights");
         session.Should().Contain("if (IsInCombat(player, session.Source))", "a started attempt stops when combat starts");
 
-        ServerSource("Service", "SpaceSlicing.cs").Should().Contain("return \"A droid cannot slice.\";");
+        ServerSource("Service", "SpaceSlicing.cs").Should().Contain("return \"That module has no one to run it.\";");
     }
 
     [Test]

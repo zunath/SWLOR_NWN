@@ -5,7 +5,8 @@ namespace SWLOR.Game.Server.Service.TradeService
 {
     /// <summary>
     /// The trade numbers: spread, flooding, recovery, Social, XP and cargo spill (the trade core), and customs,
-    /// black markets, pirate ambushes, convoys, freight contracts, lawful standing and the HoloNet board (trade risk).
+    /// black markets, pirate ambushes, convoys, freight contracts, lawful standing and the HoloNet board (trade risk), and
+    /// what standing unlocks and the city exchange tariff (standing and tariffs).
     /// </summary>
     public static class TradeTuning
     {
@@ -53,6 +54,7 @@ namespace SWLOR.Game.Server.Service.TradeService
         public static readonly int[] FreightOfferVolumes = { 40, 100, 200, 400 };
         public const double FreightFeeBase = 0.7;
         public const double FreightFeePerHop = 1.05;
+        public static readonly double[] FreightOfferFeeFactors = { 1.0, 1.0, 1.0, 0.65 };
         public const double FreightDepositRate = 0.5;
         public const int FreightDeadlineBaseMinutes = 20;
         public const int FreightDeadlinePerHopMinutes = 10;
@@ -63,7 +65,16 @@ namespace SWLOR.Game.Server.Service.TradeService
         public const int StandingRanFromCustoms = -100;
         public const int StandingAttackedLawfulShip = -75;
         public const int StandingRaidedConvoy = -50;
-        public const int StandingDeliveredFreight = 5;
+        public const int StandingDeliveredFreight = 10;
+        public const int StandingHostile = -500;
+        public static readonly int[] StandingTierMinimums = { 250, 750, 1500 };
+        public static readonly int[] StandingScanCutPercents = { 8, 16, 25 };
+        public static readonly double[] StandingPriceBonuses = { 0.0025, 0.005, 0.0075 };
+        public static readonly int[] FreightOfferMinimumStandings = { 0, 0, 250, 1500 };
+        public const int HostilePatrolCooldownSeconds = 300;
+
+        public const int CityExchangeStarportLevel = 2;
+        public const int TariffMaximumPercent = 10;
 
         public const int HoloNetRefreshMinutes = 60;
     }

@@ -1008,6 +1008,13 @@
     "Call": "SendMessageToPC(player, \"Unable to continue. The planet could not be determined. Notify an admin.\")"
   },
   {
+    "File": "SWLOR.Game.Server/Feature/DialogDefinition/StarportDialog.cs",
+    "Line": 146,
+    "Member": "AddCityTradeExchangeResponse",
+    "Delivery": "Retained",
+    "Call": "SendMessageToPC(player, ColorToken.Red(\n                        $\"This starport needs to be upgraded to level {TradeTuning.CityExchangeStarportLevel} before it has a Trade Exchange. Ask the city's leadership.\"))"
+  },
+  {
     "File": "SWLOR.Game.Server/Feature/DialogDefinition/StarportDockDialog.cs",
     "Line": 46,
     "Member": "Initialize",
@@ -6371,42 +6378,49 @@
   },
   {
     "File": "SWLOR.Game.Server/Service/Trade.cs",
-    "Line": 118,
+    "Line": 126,
     "Member": "Buy",
     "Delivery": "Retained",
     "Call": "SendMessageToPC(player, ColorToken.Red(TradeRules.GetRefusalMessage(order.Refusal)))"
   },
   {
     "File": "SWLOR.Game.Server/Service/Trade.cs",
-    "Line": 129,
+    "Line": 138,
     "Member": "Buy",
     "Delivery": "Retained",
-    "Call": "SendMessageToPC(player, ColorToken.Green($\"Bought {order.Units} {detail.Name} for {order.Credits} credits{reduced}.\"))"
+    "Call": "SendMessageToPC(player, ColorToken.Green($\"Bought {order.Units} {detail.Name} for {order.Credits} credits{DescribeTariff(order, dock)}{reduced}.\"))"
   },
   {
     "File": "SWLOR.Game.Server/Service/Trade.cs",
-    "Line": 151,
+    "Line": 162,
     "Member": "Sell",
     "Delivery": "Retained",
     "Call": "SendMessageToPC(player, ColorToken.Red(TradeRules.GetRefusalMessage(order.Refusal)))"
   },
   {
     "File": "SWLOR.Game.Server/Service/Trade.cs",
-    "Line": 163,
+    "Line": 175,
     "Member": "Sell",
     "Delivery": "Retained",
-    "Call": "SendMessageToPC(player, ColorToken.Green($\"Sold {order.Units} {detail.Name} for {order.Credits} credits, {profitText}.\"))"
+    "Call": "SendMessageToPC(player, ColorToken.Green($\"Sold {order.Units} {detail.Name} for {order.Credits} credits{DescribeTariff(order, dock)}, {profitText}.\"))"
   },
   {
     "File": "SWLOR.Game.Server/Service/Trade.cs",
-    "Line": 199,
+    "Line": 218,
     "Member": "TryGetTrade",
     "Delivery": "Retained",
     "Call": "SendMessageToPC(player, ColorToken.Red(TradeRules.GetRefusalMessage(TradeRefusal.ShipNotDocked)))"
   },
   {
     "File": "SWLOR.Game.Server/Service/Trade.cs",
-    "Line": 205,
+    "Line": 224,
+    "Member": "TryGetTrade",
+    "Delivery": "Retained",
+    "Call": "SendMessageToPC(player, ColorToken.Red(TradeRules.GetRefusalMessage(TradeRefusal.NoExchangeHere)))"
+  },
+  {
+    "File": "SWLOR.Game.Server/Service/Trade.cs",
+    "Line": 230,
     "Member": "TryGetTrade",
     "Delivery": "Retained",
     "Call": "SendMessageToPC(player, ColorToken.Red(TradeRules.GetRefusalMessage(TradeRefusal.NotTradedHere)))"
@@ -6539,7 +6553,14 @@
   },
   {
     "File": "SWLOR.Game.Server/Service/TradeOrbitRisk.cs",
-    "Line": 83,
+    "Line": 98,
+    "Member": "RollHostilePatrols",
+    "Delivery": "Retained",
+    "Call": "SendMessageToPC(player, ColorToken.Red(\n                    $\"A {CustomsRules.GetAuthorityName(authority)} customs patrol recognizes your ship and moves to attack on sight!\"))"
+  },
+  {
+    "File": "SWLOR.Game.Server/Service/TradeOrbitRisk.cs",
+    "Line": 126,
     "Member": "RollPirateAmbush",
     "Delivery": "Retained",
     "Call": "SendMessageToPC(player, ColorToken.Red(\"Pirate raiders drop out of hyperspace, hunting your cargo!\"))"

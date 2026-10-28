@@ -151,6 +151,22 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition
 
                             col.AddRow(row =>
                             {
+                                row.AddLabel()
+                                    .SetHorizontalAlign(NuiHorizontalAlign.Left)
+                                    .SetVerticalAlign(NuiVerticalAlign.Middle)
+                                    .SetText("Exchange Tariff:")
+                                    .SetHeight(25f)
+                                    .SetTooltip("A percentage added to purchases and taken from sales at your starport's Trade Exchange, paid into the treasury. The exchange opens at starport level 2. (Range: 0%-10%)");
+                            });
+
+                            col.AddRow(row =>
+                            {
+                                row.AddTextEdit()
+                                    .BindValue(model => model.ExchangeTariff);
+                            });
+
+                            col.AddRow(row =>
+                            {
                                 row.AddSpacer();
 
                                 row.AddLabel()

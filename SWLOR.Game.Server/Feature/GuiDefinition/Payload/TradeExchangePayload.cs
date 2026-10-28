@@ -7,13 +7,16 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.Payload
     {
         public TradeExchangeType Exchange { get; set; }
 
-        /// <summary>The dock's landing area: ships docked here are the ones that trade.</summary>
-        public string LandingAreaResref { get; set; }
+        /// <summary>
+        /// The dock: an NPC starport's landing area resref, or a player city starport's property id. Ships docked here
+        /// are the ones that trade.
+        /// </summary>
+        public string DockId { get; set; }
 
-        public TradeExchangePayload(TradeExchangeType exchange, string landingAreaResref)
+        public TradeExchangePayload(TradeExchangeType exchange, string dockId)
         {
             Exchange = exchange;
-            LandingAreaResref = landingAreaResref;
+            DockId = dockId;
         }
     }
 }

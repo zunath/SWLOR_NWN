@@ -49,10 +49,13 @@ namespace SWLOR.Game.Server.Service
             return DB.Get<PlayerShip>(dbPlayer.ActiveShipId);
         }
 
-        /// <summary>Whether the ship sits at the NPC dock whose landing area this is (not in space, not aboard a host).</summary>
-        public static bool IsDockedAt(PlayerShip ship, string landingAreaResref)
+        /// <summary>
+        /// Whether the ship sits at the dock (not in space, not aboard a host). An NPC dock is its landing area resref; a
+        /// player city's starport is its property id, which a ship docked there keeps in its dock position.
+        /// </summary>
+        public static bool IsDockedAt(PlayerShip ship, string dockId)
         {
-            if (ship == null || string.IsNullOrWhiteSpace(landingAreaResref) || Space.IsDockedAboardHost(ship, out _))
+            if (ship == null || string.IsNullOrWhiteSpace(dockId) || Space.IsDockedAboardHost(ship, out _))
                 return false;
 
             var property = DB.Get<WorldProperty>(ship.PropertyId);
@@ -60,14 +63,14 @@ namespace SWLOR.Game.Server.Service
                 return false;
 
             return property.Positions.TryGetValue(PropertyLocationType.DockPosition, out var dock) &&
-                   dock.AreaResref == landingAreaResref;
+                   (dock.AreaResref == dockId || (!string.IsNullOrWhiteSpace(dock.InstancePropertyId) && dock.InstancePropertyId == dockId));
         }
 
-        /// <summary>The player's own ships docked at this NPC dock. Cargo and its profit stay with the owner.</summary>
-        public static List<PlayerShip> GetShipsDockedAt(uint player, string landingAreaResref)
+        /// <summary>The player's own ships docked at this dock. Cargo and its profit stay with the owner.</summary>
+        public static List<PlayerShip> GetShipsDockedAt(uint player, string dockId)
         {
             return PlayerShipAccess.GetOwnedShips(GetObjectUUID(player))
-                .Where(ship => IsDockedAt(ship, landingAreaResref))
+                .Where(ship => IsDockedAt(ship, dockId))
                 .ToList();
         }
 
@@ -94,10 +97,13 @@ namespace SWLOR.Game.Server.Service
             return state.Markets.TryGetValue(commodity, out var market) ? market.Pressure : 0;
         }
 
-        /// <summary>Buys units for the player's ship docked here. An order for more than fits or is affordable buys what it can.</summary>
-        public static void Buy(uint player, string shipId, TradeExchangeType exchangeType, string landingAreaResref, CommodityType commodity, int units)
+        /// <summary>
+        /// Buys units for the player's ship docked here. An order for more than fits or is affordable buys what it can;
+        /// a city dock adds its tariff to the cost.
+        /// </summary>
+        public static void Buy(uint player, string shipId, TradeExchangeType exchangeType, string dockId, CommodityType commodity, int units)
         {
-            if (!TryGetTrade(player, shipId, exchangeType, landingAreaResref, commodity, out var ship, out var detail, out var market))
+            if (!TryGetTrade(player, shipId, exchangeType, dockId, commodity, out var ship, out var detail, out var market, out var dock))
                 return;
 
             var now = DateTime.UtcNow;
@@ -111,7 +117,9 @@ namespace SWLOR.Game.Server.Service
                 units,
                 capacity,
                 GetFreeVolume(ship),
-                GetGold(player));
+                GetGold(player),
+                GetPriceBonus(player, exchangeType),
+                dock.TariffPercent);
 
             if (order.Refusal != TradeRefusal.None)
             {
@@ -124,16 +132,17 @@ namespace SWLOR.Game.Server.Service
             AddPressure(state, commodity, -order.Units, now);
             DB.Set(ship);
             DB.Set(state);
+            PayTariff(dock, order.Tariff, player);
 
             var reduced = order.WasReduced ? " (all that fits and you can afford)" : string.Empty;
-            SendMessageToPC(player, ColorToken.Green($"Bought {order.Units} {detail.Name} for {order.Credits} credits{reduced}."));
-            Log.Write(LogGroup.Space, $"TRADE BUY - {PlayerName.GetAuditName(player)} - {order.Units} {commodity} for {order.Credits} at {exchangeType} - ship {ship.Id}");
+            SendMessageToPC(player, ColorToken.Green($"Bought {order.Units} {detail.Name} for {order.Credits} credits{DescribeTariff(order, dock)}{reduced}."));
+            Log.Write(LogGroup.Space, $"TRADE BUY - {PlayerName.GetAuditName(player)} - {order.Units} {commodity} for {order.Credits} (tariff {order.Tariff}) at {exchangeType} - ship {ship.Id}");
         }
 
         /// <summary>Sells units from the player's ship docked here and gives Piloting XP for the profit.</summary>
-        public static void Sell(uint player, string shipId, TradeExchangeType exchangeType, string landingAreaResref, CommodityType commodity, int units)
+        public static void Sell(uint player, string shipId, TradeExchangeType exchangeType, string dockId, CommodityType commodity, int units)
         {
-            if (!TryGetTrade(player, shipId, exchangeType, landingAreaResref, commodity, out var ship, out var detail, out var market))
+            if (!TryGetTrade(player, shipId, exchangeType, dockId, commodity, out var ship, out var detail, out var market, out var dock))
                 return;
 
             var now = DateTime.UtcNow;
@@ -144,7 +153,9 @@ namespace SWLOR.Game.Server.Service
                 GetPressure(state, commodity),
                 GetAbilityScore(player, AbilityType.Social),
                 units,
-                CargoHoldRules.GetUnits(ship.Cargo, commodity));
+                CargoHoldRules.GetUnits(ship.Cargo, commodity),
+                GetPriceBonus(player, exchangeType),
+                dock.TariffPercent);
 
             if (order.Refusal != TradeRefusal.None)
             {
@@ -157,11 +168,12 @@ namespace SWLOR.Game.Server.Service
             AddPressure(state, commodity, order.Units, now);
             DB.Set(ship);
             DB.Set(state);
+            PayTariff(dock, order.Tariff, player);
 
             var profit = order.Credits - cost;
             var profitText = profit >= 0 ? $"a profit of {profit}" : $"a loss of {-profit}";
-            SendMessageToPC(player, ColorToken.Green($"Sold {order.Units} {detail.Name} for {order.Credits} credits, {profitText}."));
-            Log.Write(LogGroup.Space, $"TRADE SELL - {PlayerName.GetAuditName(player)} - {order.Units} {commodity} for {order.Credits} (cost {cost}) at {exchangeType} - ship {ship.Id}");
+            SendMessageToPC(player, ColorToken.Green($"Sold {order.Units} {detail.Name} for {order.Credits} credits{DescribeTariff(order, dock)}, {profitText}."));
+            Log.Write(LogGroup.Space, $"TRADE SELL - {PlayerName.GetAuditName(player)} - {order.Units} {commodity} for {order.Credits} (cost {cost}, tariff {order.Tariff}) at {exchangeType} - ship {ship.Id}");
 
             var xp = TradeRules.GetSaleXp(profit);
             if (xp > 0)
@@ -180,23 +192,36 @@ namespace SWLOR.Game.Server.Service
             market.UpdatedAt = now;
         }
 
+        private static string DescribeTariff(TradeOrder order, TradeDock dock)
+        {
+            return order.Tariff > 0 ? $" (including a {order.Tariff} credit tariff for {dock.CityName})" : string.Empty;
+        }
+
         private static bool TryGetTrade(
             uint player,
             string shipId,
             TradeExchangeType exchangeType,
-            string landingAreaResref,
+            string dockId,
             CommodityType commodity,
             out PlayerShip ship,
             out CommodityDetail detail,
-            out TradeMarketDetail market)
+            out TradeMarketDetail market,
+            out TradeDock dock)
         {
             ship = string.IsNullOrWhiteSpace(shipId) ? null : DB.Get<PlayerShip>(shipId);
             detail = TradeLookup.GetCommodity(commodity);
             market = TradeLookup.GetExchange(exchangeType)?.FindMarket(commodity);
+            dock = GetDock(dockId, exchangeType);
 
-            if (ship == null || ship.OwnerPlayerId != GetObjectUUID(player) || !IsDockedAt(ship, landingAreaResref))
+            if (ship == null || ship.OwnerPlayerId != GetObjectUUID(player) || !IsDockedAt(ship, dockId))
             {
                 SendMessageToPC(player, ColorToken.Red(TradeRules.GetRefusalMessage(TradeRefusal.ShipNotDocked)));
+                return false;
+            }
+
+            if (!dock.HasExchange || dock.Exchange != exchangeType)
+            {
+                SendMessageToPC(player, ColorToken.Red(TradeRules.GetRefusalMessage(TradeRefusal.NoExchangeHere)));
                 return false;
             }
 

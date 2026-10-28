@@ -239,12 +239,36 @@ FREIGHT_SIM_VOLUME = 300        # simulation: the sealed volume an XS Freighter 
 # Lawful standing (the ground faction standing, -5000 to 5000). The lawful authorities' factions lose standing; a
 # delivered freight contract gains standing with the destination exchange's faction.
 STANDING = {"CaughtSmuggling": -25, "RanFromCustoms": -100, "AttackedLawfulShip": -75, "RaidedConvoy": -50,
-            "DeliveredFreight": 5}
+            "DeliveredFreight": 10}
 AUTHORITY_FACTION = {"Republic": "RepublicMilitary", "Czerka": "Czerka", "Sith": "SithMilitary"}
 EXCHANGE_FACTION = {"Viscara": "RepublicMilitary", "CZ220": "Czerka", "MonCala": "RepublicMilitary", "Hutlar": "HuttCartel",
                     "Tatooine": "HuttCartel", "SmugglersMoon": "Smuggler", "Korriban": "SithMilitary", "Dathomir": "Invalid",
                     "Dantooine": "RepublicMilitary"}
 CONVOY_AUTHORITY_DEFAULT = "Czerka"  # a convoy outside a lawful orbit flies for Czerka (industrial shipping)
+
+# ---------------------------------------------------------------------------------------------------------------
+# Standing and city tariffs (W7c)
+# ---------------------------------------------------------------------------------------------------------------
+# What lawful standing unlocks (plan section 13, "Factions"). Standing is the ground faction standing (-5000 to 5000)
+# with an exchange's faction (its StandingFaction) or a customs patrol's authority. Tiers by minimum standing: a delivered
+# freight contract gives 10, so Trusted takes 25 deliveries, Honored 75 and Exalted 150.
+STANDING_HOSTILE = -500         # at or below this the authority's customs patrol attacks on sight (five runs from customs)
+# name, minimum standing, customs scan chance cut (percent, multiplies with a Smuggling Compartment), price bonus
+# (added to Social's, both sides of every trade at that faction's exchanges).
+STANDING_TIERS = [("Trusted", 250, 8, 0.0025), ("Honored", 750, 16, 0.005), ("Exalted", 1500, 25, 0.0075)]
+# Freight offers by volume (FREIGHT_OFFER_VOLUMES) need this standing with the offering exchange's faction. Dathomir has
+# no faction and offers every load to everyone.
+FREIGHT_OFFER_MIN_STANDING = [0, 0, 250, 1500]
+# The fee per volume of each offer volume, as a share of the usual rate. The 400 volume load is a bulk load that pays
+# less per unit, which holds the best-case Exalted freight (the three largest loads in a 700+ hold) inside the legal
+# band of 100-125% of T3 combat. A volume that is not an offer volume pays the full rate.
+FREIGHT_OFFER_FEE_FACTOR = [1.0, 1.0, 1.0, 0.65]
+HOSTILE_PATROL_COOLDOWN_SECONDS = 300  # an attack-on-sight patrol comes at most once per authority in this time
+
+# Player-city exchanges: a city starport trades through its planet's NPC exchange (same goods, prices and flooding),
+# from this starport upgrade level, and the city adds a tariff on every buy (added to the price) and sale (taken from it).
+CITY_EXCHANGE_STARPORT_LEVEL = 2
+TARIFF_MAX_PERCENT = 10
 
 # The HoloNet board shows every exchange's prices as of its last snapshot (plan section 13: an hour stale).
 HOLONET_REFRESH_MINUTES = 60
@@ -337,21 +361,54 @@ def social_bonus(social):
     return min(SOCIAL_MAX, max(0, social - SOCIAL_BASE) * SOCIAL_PER_POINT)
 
 
-def unit_buy(base, factor, pressure, depth, social):
-    return unit_mid(base, factor, pressure, depth) * (1 + SPREAD) * (1 - social_bonus(social))
+def unit_buy(base, factor, pressure, depth, social, bonus=0.0):
+    return unit_mid(base, factor, pressure, depth) * (1 + SPREAD) * (1 - social_bonus(social) - bonus)
 
 
-def unit_sell(base, factor, pressure, depth, social):
-    return unit_mid(base, factor, pressure, depth) * (1 - SPREAD) * (1 + social_bonus(social))
+def unit_sell(base, factor, pressure, depth, social, bonus=0.0):
+    return unit_mid(base, factor, pressure, depth) * (1 - SPREAD) * (1 + social_bonus(social) + bonus)
 
 
-def buy_cost(base, factor, pressure, depth, units, social=10):
+def buy_cost(base, factor, pressure, depth, units, social=10, bonus=0.0):
     """Credits to buy units. Each unit is priced at the pressure halfway through it; buying lowers pressure."""
-    return math.ceil(sum(unit_buy(base, factor, pressure - i - 0.5, depth, social) for i in range(units)))
+    return math.ceil(sum(unit_buy(base, factor, pressure - i - 0.5, depth, social, bonus) for i in range(units)))
 
 
-def sell_revenue(base, factor, pressure, depth, units, social=10):
-    return math.floor(sum(unit_sell(base, factor, pressure + i + 0.5, depth, social) for i in range(units)))
+def sell_revenue(base, factor, pressure, depth, units, social=10, bonus=0.0):
+    return math.floor(sum(unit_sell(base, factor, pressure + i + 0.5, depth, social, bonus) for i in range(units)))
+
+
+# ---------------------------------------------------------------------------------------------------------------
+# Standing and tariffs (mirrors Service/TradeService/TradeStandingRules.cs and TradeTariffRules.cs)
+# ---------------------------------------------------------------------------------------------------------------
+def standing_tier(standing):
+    """-1 Hostile, 0 Neutral, 1 Trusted, 2 Honored, 3 Exalted."""
+    if standing <= STANDING_HOSTILE:
+        return -1
+    tier = 0
+    for index, (_, minimum, _, _) in enumerate(STANDING_TIERS, 1):
+        if standing >= minimum:
+            tier = index
+    return tier
+
+
+def standing_scan_cut(tier):
+    return 0 if tier <= 0 else STANDING_TIERS[tier - 1][2]
+
+
+def standing_price_bonus(tier):
+    return 0.0 if tier <= 0 else STANDING_TIERS[tier - 1][3]
+
+
+def exchange_price_bonus(exchange_name, tier):
+    """The price bonus at an exchange: its faction's standing tier (Dathomir has no faction)."""
+    return 0.0 if EXCHANGE_FACTION[exchange_name] == "Invalid" else standing_price_bonus(tier)
+
+
+def tariff(credits, percent):
+    """The city's tariff on a buy or sale of this many credits: rounded up, never more than the credits."""
+    percent = max(0, min(TARIFF_MAX_PERCENT, percent))
+    return min(credits, math.ceil(credits * percent / 100))
 
 
 def recover(pressure, hours):
@@ -421,9 +478,10 @@ def market(ex, com):
     return MARKET_INDEX.get((ex, com))
 
 
-def plan_leg(state, here, there, hold, social, goods):
+def plan_leg(state, here, there, hold, social, goods, tier=0):
     """The basket that earns the most from here to there: add the best unit per volume until nothing pays."""
     basket, used, profit = {}, 0, 0.0
+    buy_bonus, sell_bonus = exchange_price_bonus(here, tier), exchange_price_bonus(there, tier)
     while True:
         best, best_gain = None, 0.0
         for c in goods:
@@ -431,8 +489,8 @@ def plan_leg(state, here, there, hold, social, goods):
             if not hm or not tm or used + hm["volume"] > hold:
                 continue
             n = basket.get(c, 0)
-            buy = unit_buy(hm["base"], hm["factor"], state[(here, c)] - n - 0.5, hm["depth"], social)
-            sell = unit_sell(tm["base"], tm["factor"], state[(there, c)] + n + 0.5, tm["depth"], social)
+            buy = unit_buy(hm["base"], hm["factor"], state[(here, c)] - n - 0.5, hm["depth"], social, buy_bonus)
+            sell = unit_sell(tm["base"], tm["factor"], state[(there, c)] + n + 0.5, tm["depth"], social, sell_bonus)
             gain = (sell - buy) / hm["volume"]
             if gain > best_gain:
                 best, best_gain = c, gain
@@ -443,7 +501,7 @@ def plan_leg(state, here, there, hold, social, goods):
         profit += best_gain * market(here, best)["volume"]
 
 
-def simulate(hold, start="Viscara", hours=4, social=10, log=None, lawful=False):
+def simulate(hold, start="Viscara", hours=4, social=10, log=None, lawful=False, tier=0):
     """Credits earned in each hour by a trader who always flies the leg that pays most per minute. A lawful trader
     carries only legal goods."""
     goods = [c[1] for c in COMMODITIES if not lawful or not c[5]]
@@ -454,13 +512,13 @@ def simulate(hold, start="Viscara", hours=4, social=10, log=None, lawful=False):
         options = []
         for ex in EXCHANGES:
             if ex[0] != here:
-                basket, profit = plan_leg(state, here, ex[0], hold, social, goods)
+                basket, profit = plan_leg(state, here, ex[0], hold, social, goods, tier)
                 options.append((profit / leg_minutes(here, ex[0]), ex[0], basket))
         _, there, basket = max(options)
         realized = 0
         for c, n in basket.items():
             hm = market(here, c)
-            realized -= buy_cost(hm["base"], hm["factor"], state[(here, c)], hm["depth"], n, social)
+            realized -= buy_cost(hm["base"], hm["factor"], state[(here, c)], hm["depth"], n, social, exchange_price_bonus(here, tier))
             state[(here, c)] -= n
         minutes = leg_minutes(here, there)
         for k in state:
@@ -468,7 +526,7 @@ def simulate(hold, start="Viscara", hours=4, social=10, log=None, lawful=False):
         clock += minutes
         for c, n in basket.items():
             tm = market(there, c)
-            realized += sell_revenue(tm["base"], tm["factor"], state[(there, c)], tm["depth"], n, social)
+            realized += sell_revenue(tm["base"], tm["factor"], state[(there, c)], tm["depth"], n, social, exchange_price_bonus(there, tier))
             state[(there, c)] += n
         per_hour[min(hours - 1, int((clock - 1e-9) // 60))] += realized
         if log is not None:
@@ -495,11 +553,12 @@ def banned_value(basket, authority):
     return sum(units * commodity(c)[3] for c, units in basket.items() if authority in commodity(c)[5])
 
 
-def scan_chance(value, reduction_percent=0.0):
+def scan_chance(value, reduction_percent=0.0, standing_percent=0.0):
+    """The scan chance after a Smuggling Compartment's cut and the patrol authority's standing cut (they multiply)."""
     if value <= 0:
         return 0.0
     chance = min(SCAN_MAX, SCAN_BASE + SCAN_PER_THOUSAND * value / 1000)
-    return chance * (1 - min(100.0, reduction_percent) / 100)
+    return chance * (1 - min(100.0, reduction_percent) / 100) * (1 - min(100.0, standing_percent) / 100)
 
 
 def fine(value):
@@ -518,8 +577,12 @@ def ambush_squad_size(value, tier):
     return max(AMBUSH_SQUAD_MIN, min(AMBUSH_SQUAD_MAX, size))
 
 
+def freight_fee_factor(volume):
+    return FREIGHT_OFFER_FEE_FACTOR[FREIGHT_OFFER_VOLUMES.index(volume)] if volume in FREIGHT_OFFER_VOLUMES else 1.0
+
+
 def freight_fee(volume, hop_count):
-    return round(volume * (FREIGHT_FEE_BASE + FREIGHT_FEE_PER_HOP * max(1, hop_count)))
+    return round(volume * (FREIGHT_FEE_BASE + FREIGHT_FEE_PER_HOP * max(1, hop_count)) * freight_fee_factor(volume))
 
 
 def freight_deposit(fee):
@@ -550,7 +613,7 @@ def route(a, b):
     return path[::-1]
 
 
-def leg_risk(basket, revenue, cost, here, there, reduction=0.0):
+def leg_risk(basket, revenue, cost, here, there, reduction=0.0, standing_cut=0.0):
     """Expected credits and extra minutes of one leg after customs and pirates, in expectation: each orbit entered may
     bring an ambush (some cargo lost) and a customs scan (the patrol's banned goods confiscated and fined)."""
     left = {c: float(n) for c, n in basket.items()}
@@ -563,7 +626,7 @@ def leg_risk(basket, revenue, cost, here, there, reduction=0.0):
             left[c] *= 1 - pa * AMBUSH_SIM_LOSS
         authorities = CUSTOMS.get(orbit, [])
         for authority in authorities:
-            caught = scan_chance(banned_value(left, authority), reduction) / len(authorities)
+            caught = scan_chance(banned_value(left, authority), reduction, standing_cut) / len(authorities)
             fines += caught * fine(banned_value(left, authority))
             for c in left:
                 if authority in commodity(c)[5]:
@@ -584,18 +647,19 @@ def trim_banned(basket, cap):
 BANNED_CAPS = [0, 2000, 5000, 10000, 20000, 40000, float("inf")]
 
 
-def priced(state, here, there, basket, social):
+def priced(state, here, there, basket, social, tier=0):
     cost, revenue = 0, {}
+    buy_bonus, sell_bonus = exchange_price_bonus(here, tier), exchange_price_bonus(there, tier)
     for c, n in basket.items():
         if n <= 0:
             continue
         hm, tm = market(here, c), market(there, c)
-        cost += buy_cost(hm["base"], hm["factor"], state[(here, c)], hm["depth"], n, social)
-        revenue[c] = sell_revenue(tm["base"], tm["factor"], state[(there, c)], tm["depth"], n, social)
+        cost += buy_cost(hm["base"], hm["factor"], state[(here, c)], hm["depth"], n, social, buy_bonus)
+        revenue[c] = sell_revenue(tm["base"], tm["factor"], state[(there, c)], tm["depth"], n, social, sell_bonus)
     return cost, revenue
 
 
-def simulate_risk(hold, start="Viscara", hours=4, social=10, lawful=False, reduction=0.0, log=None):
+def simulate_risk(hold, start="Viscara", hours=4, social=10, lawful=False, reduction=0.0, log=None, tier=0):
     """simulate() with customs and pirates in expectation. The trader weighs each leg's expected profit after risk and
     may carry fewer banned goods (BANNED_CAPS) than fit."""
     goods = [c[1] for c in COMMODITIES if not lawful or not c[5]]
@@ -607,15 +671,15 @@ def simulate_risk(hold, start="Viscara", hours=4, social=10, lawful=False, reduc
         for ex in EXCHANGES:
             if ex[0] == here:
                 continue
-            full, _ = plan_leg(state, here, ex[0], hold, social, goods)
+            full, _ = plan_leg(state, here, ex[0], hold, social, goods, tier)
             tried = []
             for cap in ([0] if lawful else BANNED_CAPS):
                 basket = {c: n for c, n in trim_banned(full, cap).items() if n > 0}
                 if basket in tried:
                     continue
                 tried.append(basket)
-                cost, revenue = priced(state, here, ex[0], basket, social)
-                expected, extra = leg_risk(basket, revenue, cost, here, ex[0], reduction)
+                cost, revenue = priced(state, here, ex[0], basket, social, tier)
+                expected, extra = leg_risk(basket, revenue, cost, here, ex[0], reduction, standing_scan_cut(tier))
                 minutes = leg_minutes(here, ex[0]) + extra
                 if best is None or expected / minutes > best[0]:
                     best = (expected / minutes, ex[0], basket, expected, minutes)
@@ -640,6 +704,31 @@ def freight_rate(volume=FREIGHT_SIM_VOLUME):
     for h in range(1, 6):
         minutes = STOP_MINUTES + h * HOP_MINUTES
         out[h] = freight_fee(volume, h) / minutes * 60
+    return out
+
+
+def freight_volume_open(tier, hold):
+    """The paying volume a pilot of this standing tier can have aboard: the three largest offers they may take at one
+    exchange (one of each volume is offered), as many as fit the hold, each counted at its fee factor."""
+    standing = 0 if tier <= 0 else STANDING_TIERS[tier - 1][1]
+    allowed = sorted((v for v, need in zip(FREIGHT_OFFER_VOLUMES, FREIGHT_OFFER_MIN_STANDING) if need <= standing), reverse=True)
+    total, used = 0.0, 0
+    for volume in allowed[:FREIGHT_MAX_ACTIVE]:
+        if used + volume <= hold:
+            used += volume
+            total += volume * freight_fee_factor(volume)
+    return total
+
+
+def freight_outcome():
+    """Freight contract earnings per hour by standing tier, for each freighter (hold 480+), against T3 combat."""
+    t3 = combat_credits_per_hour(3)[1]
+    holds = [h for _, h in HULLS if h >= 480]
+    out = {}
+    for tier in range(0, len(STANDING_TIERS) + 1):
+        rates = [sum(freight_rate(freight_volume_open(tier, hold)).values()) / 5 for hold in holds]
+        average = sum(rates) / len(rates)
+        out[tier] = dict(PerHour=round(average), Percent=round(100 * average / t3))
     return out
 
 
@@ -687,6 +776,43 @@ def risk_outcome():
                 FreightPercent=round(100 * sum(freight.values()) / len(freight) / t3))
 
 
+def standing_outcome():
+    """Legal and contraband earnings (freighters, 4-hour average, after risk) and freight contracts for a pilot with
+    this tier of standing at every faction (the best case), against T3 combat. The price bonus applies at every exchange
+    with a faction and the scan cut at every patrol."""
+    t3 = combat_credits_per_hour(3)[1]
+    freighters = [h for h in HULLS if h[1] >= 480]
+    freight = freight_outcome()
+    rows = []
+    for tier in range(1, len(STANDING_TIERS) + 1):
+        def average(lawful):
+            rates = [sum(simulate_risk(hold, lawful=lawful, tier=tier)) / 4 for _, hold in freighters]
+            return sum(rates) / len(rates)
+
+        legal, contraband = average(True), average(False)
+        rows.append(dict(Tier=STANDING_TIERS[tier - 1][0], LegalPerHour=round(legal), LegalPercent=round(100 * legal / t3),
+                         ContrabandPerHour=round(contraband), ContrabandPercent=round(100 * contraband / t3),
+                         FreightPerHour=freight[tier]["PerHour"], FreightPercent=freight[tier]["Percent"]))
+    return dict(NeutralFreightPerHour=freight[0]["PerHour"], NeutralFreightPercent=freight[0]["Percent"], Tiers=rows)
+
+
+def standing_reference():
+    """Reference numbers the C# standing, price and tariff rules must reproduce."""
+    standings = [-5000, -501, -500, -499, 0, 249, 250, 749, 750, 1499, 1500, 5000]
+    tiers = [dict(Standing=x, Tier=standing_tier(x), ScanCut=standing_scan_cut(max(0, standing_tier(x))),
+                  PriceBonus=standing_price_bonus(max(0, standing_tier(x)))) for x in standings]
+    tariffs = [dict(Credits=c, Percent=pc, Tariff=tariff(c, pc))
+               for c, pc in [(1000, 0), (1000, 5), (999, 5), (1, 10), (100000, 10), (100, 25), (3, -4), (0, 10)]]
+    base, factor, depth = 100, 1.2, 2500
+    prices = [dict(Social=social, Bonus=bonus, Units=units, Buy=buy_cost(base, factor, 0.0, depth, units, social, bonus),
+                   Sell=sell_revenue(base, factor, 0.0, depth, units, social, bonus))
+              for social, bonus, units in [(10, 0.0, 10), (26, 0.0, 10), (10, 0.015, 10), (26, 0.015, 40), (10, 0.01, 1)]]
+    scan = [dict(Banned=value, Compartment=comp, Standing=cut, Chance=round(scan_chance(value, comp, cut), 6))
+            for value, comp, cut in [(10000, 0, 0), (10000, 0, 25), (10000, 30, 25), (40000, 15, 8), (200000, 0, 16)]]
+    return dict(Tiers=tiers, Tariffs=tariffs, Prices=prices, Scans=scan,
+                FreightMinimumStandings=dict(zip(map(str, FREIGHT_OFFER_VOLUMES), FREIGHT_OFFER_MIN_STANDING)))
+
+
 MARKETS = markets()
 MARKET_INDEX = {(m["exchange"], m["commodity"]): m for m in MARKETS}
 COMMODITY_NAMES = [c[1] for c in COMMODITIES]
@@ -731,6 +857,17 @@ def report():
     print("\nXS Freighter, every good, after risk, hours 1-2 legs (minute, from, to, expected profit, basket):")
     for row in log:
         print("   ", row)
+    print("\nStanding (W7c): best case, a pilot with this tier at every faction (price bonus at their exchanges, scan cut at "
+          "every patrol), freighters, 4-hour averages, against T3 combat:")
+    result = standing_outcome()
+    print(f"  Neutral: freight contracts {result['NeutralFreightPerHour']} ({result['NeutralFreightPercent']}%; offers over "
+          f"100 volume are locked)")
+    for row in result["Tiers"]:
+        print(f"  {row['Tier']:8s}: legal {row['LegalPerHour']} ({row['LegalPercent']}%; target 100-125% at neutral), "
+              f"every good {row['ContrabandPerHour']} ({row['ContrabandPercent']}%; target 150-200% at neutral), "
+              f"freight {row['FreightPerHour']} ({row['FreightPercent']}%)")
+    print("\nCity tariff, one buy and one sale of 1,000 credits at 10%:",
+          f"{tariff(1000, 10)} each, {tariff(1000, 10) * 2 / 2000:.0%} of the money changing hands")
 
 
 # ---------------------------------------------------------------------------------------------------------------
@@ -810,7 +947,8 @@ def tuning_cs():
         HEADER.rstrip("\n"), "namespace SWLOR.Game.Server.Service.TradeService", "{",
         "    /// <summary>",
         "    /// The trade numbers: spread, flooding, recovery, Social, XP and cargo spill (the trade core), and customs,",
-        "    /// black markets, pirate ambushes, convoys, freight contracts, lawful standing and the HoloNet board (trade risk).",
+        "    /// black markets, pirate ambushes, convoys, freight contracts, lawful standing and the HoloNet board (trade risk), and",
+        "    /// what standing unlocks and the city exchange tariff (standing and tariffs).",
         "    /// </summary>",
         "    public static class TradeTuning", "    {",
         f"        public const double Spread = {cs_double(SPREAD)};",
@@ -857,6 +995,7 @@ def tuning_cs():
         "        public static readonly int[] FreightOfferVolumes = { " + ", ".join(str(v) for v in FREIGHT_OFFER_VOLUMES) + " };",
         f"        public const double FreightFeeBase = {cs_double(FREIGHT_FEE_BASE)};",
         f"        public const double FreightFeePerHop = {cs_double(FREIGHT_FEE_PER_HOP)};",
+        "        public static readonly double[] FreightOfferFeeFactors = { " + ", ".join(cs_double(v) for v in FREIGHT_OFFER_FEE_FACTOR) + " };",
         f"        public const double FreightDepositRate = {cs_double(FREIGHT_DEPOSIT_RATE)};",
         f"        public const int FreightDeadlineBaseMinutes = {FREIGHT_DEADLINE_BASE_MINUTES};",
         f"        public const int FreightDeadlinePerHopMinutes = {FREIGHT_DEADLINE_PER_HOP_MINUTES};",
@@ -864,12 +1003,29 @@ def tuning_cs():
         f"        public const int FreightOfferMinutes = {FREIGHT_OFFER_MINUTES};",
         "",
         *[f"        public const int Standing{k} = {v};" for k, v in STANDING.items()],
+        f"        public const int StandingHostile = {STANDING_HOSTILE};",
+        "        public static readonly int[] StandingTierMinimums = { " + ", ".join(str(t[1]) for t in STANDING_TIERS) + " };",
+        "        public static readonly int[] StandingScanCutPercents = { " + ", ".join(str(t[2]) for t in STANDING_TIERS) + " };",
+        "        public static readonly double[] StandingPriceBonuses = { " + ", ".join(cs_double(t[3]) for t in STANDING_TIERS) + " };",
+        "        public static readonly int[] FreightOfferMinimumStandings = { " + ", ".join(str(v) for v in FREIGHT_OFFER_MIN_STANDING) + " };",
+        f"        public const int HostilePatrolCooldownSeconds = {HOSTILE_PATROL_COOLDOWN_SECONDS};",
+        "",
+        f"        public const int CityExchangeStarportLevel = {CITY_EXCHANGE_STARPORT_LEVEL};",
+        f"        public const int TariffMaximumPercent = {TARIFF_MAX_PERCENT};",
         "",
         f"        public const int HoloNetRefreshMinutes = {HOLONET_REFRESH_MINUTES};",
         "    }", "}", ""])
 
 
 _OUTCOME = []
+_STANDING_OUTCOME = []
+
+
+def standing_outcome_cached():
+    """standing_outcome(), worked out once per run."""
+    if not _STANDING_OUTCOME:
+        _STANDING_OUTCOME.append(standing_outcome())
+    return _STANDING_OUTCOME[0]
 
 
 def outcome():
@@ -881,7 +1037,8 @@ def outcome():
 
 def reference_json():
     """The C# rules' reference cases and the simulated outcome (SWLOR.Game.Server.Tests, TradeRiskTests)."""
-    return json.dumps(dict(Cases=risk_reference(), Outcome=outcome()), indent=2) + "\n"
+    return json.dumps(dict(Cases=risk_reference(), Outcome=outcome(), StandingReference=standing_reference(),
+                           StandingOutcome=standing_outcome_cached()), indent=2) + "\n"
 
 
 WRITES = {
@@ -950,6 +1107,34 @@ def trade_tab(Sheet):
          "ground faction standing (-5000 to 5000)"],
         ["HoloNet board", f"{HOLONET_REFRESH_MINUTES} min", "", "", "", "", "", "price snapshot age at most"],
     ])
+    s.title("Standing and city tariffs (W7c)")
+    s.table(["Rule", "Value", "", "", "", "", "", "Notes"], [
+        ["Standing tiers", ", ".join(f"{n} {m}" for n, m, _, _ in STANDING_TIERS), "", "", "", "", "",
+         f"minimum ground faction standing (-5000 to 5000) with the exchange's faction or the patrol's authority; Hostile at {STANDING_HOSTILE} or lower"],
+        ["Customs scan cut", ", ".join(f"{n} -{c}%" for n, _, c, _ in STANDING_TIERS), "", "", "", "", "",
+         "multiplies with a Smuggling Compartment's cut"],
+        ["Price bonus", ", ".join(f"{n} +{b * 100:g}%" for n, _, _, b in STANDING_TIERS), "", "", "", "", "",
+         "both sides of every trade at that faction's exchanges; adds to Social's (at most 1.5%)"],
+        ["Freight offers", ", ".join(f"{v} vol: {m or 'open'}" for v, m in zip(FREIGHT_OFFER_VOLUMES, FREIGHT_OFFER_MIN_STANDING)), "", "", "", "", "",
+         "minimum standing with the offering exchange's faction (Dathomir has none: open)"],
+        ["Freight standing", STANDING["DeliveredFreight"], "", "", "", "", "", "per delivered contract (late or on time)"],
+        ["Freight fee factor", ", ".join(f"{v} vol: x{f:g}" for v, f in zip(FREIGHT_OFFER_VOLUMES, FREIGHT_OFFER_FEE_FACTOR)), "", "", "", "", "",
+         "share of the usual fee per volume; the 400 volume bulk load pays less per unit"],
+        ["Hostile patrols", f"every {HOSTILE_PATROL_COOLDOWN_SECONDS} s at most", "", "", "", "", "",
+         "a patrol of a hostile authority attacks on sight when the pilot enters its system"],
+        ["City exchange", f"starport level {CITY_EXCHANGE_STARPORT_LEVEL}", "", "", "", "", "",
+         "uses the planet's NPC exchange (goods, prices, flooding, freight)"],
+        ["City tariff", f"0-{TARIFF_MAX_PERCENT}%", "", "", "", "", "",
+         "set by the mayor or council (Edit Taxes); added to buys, taken from sales, paid into the city treasury"],
+    ])
+    standing_result = standing_outcome_cached()
+    neutral = outcome()
+    s.title("Earnings with standing (best case: this tier at every faction; trade.py --sim)")
+    s.table(["Standing", "Legal per hour", "% of T3", "Every good per hour", "% of T3", "Freight per hour", "% of T3", "Notes"],
+            [["Neutral", neutral["LegalPerHour"], neutral["LegalPercent"], neutral["ContrabandPerHour"], neutral["ContrabandPercent"],
+              standing_result["NeutralFreightPerHour"], standing_result["NeutralFreightPercent"], "offers over 100 volume locked"]] +
+            [[row["Tier"], row["LegalPerHour"], row["LegalPercent"], row["ContrabandPerHour"], row["ContrabandPercent"],
+              row["FreightPerHour"], row["FreightPercent"], ""] for row in standing_result["Tiers"]])
     s.title("Orbits")
     s.table(["Orbit", "Tier", "Customs", "", "", "", "", ""],
             [[ORBIT_NAMES[o], t, ", ".join(CUSTOMS.get(o, [])) or "-", "", "", "", "", ""] for o, t in ORBIT_TIERS.items()])

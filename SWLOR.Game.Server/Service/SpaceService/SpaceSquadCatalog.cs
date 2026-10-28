@@ -5,8 +5,9 @@ using SWLOR.Game.Server.Feature.SpaceObjectDefinition;
 namespace SWLOR.Game.Server.Service.SpaceService
 {
     /// <summary>
-    /// What the DM tools' Space tab can spawn: the faction tiers, the ship roles of each tier and where a squad's
-    /// ships stand around the DM. Pure data and arithmetic.
+    /// What the DM tools' Space tab can spawn: the faction tiers, the ship roles of each tier (the trade risk ships
+    /// too: pirate raiders, convoy haulers and escorts) and where a squad's ships stand around the DM. Pure data and
+    /// arithmetic.
     /// </summary>
     public static class SpaceSquadCatalog
     {
@@ -40,6 +41,11 @@ namespace SWLOR.Game.Server.Service.SpaceService
             ("Defense Platform (Elite)", "platform"),
             ("Carrier (Boss)", "carrier"),
             ("Capital (Boss)", "capital"),
+            ("Pirate Interceptor", "pirint"),
+            ("Pirate Fighter", "pirftr"),
+            ("Pirate Gunship", "pirgun"),
+            ("Convoy Hauler (with escorts)", "convoy"),
+            ("Convoy Escort", "escort"),
         };
 
         private static readonly HashSet<string> _presetTags = RevampNpcShipCatalog.Ships.Select(x => x.CreatureTag).ToHashSet();

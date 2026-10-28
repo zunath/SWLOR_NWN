@@ -93,14 +93,19 @@ namespace SWLOR.Game.Server.Feature.DialogDefinition
         }
 
         /// <summary>
-        /// The dock's Trade Exchange (plan section 13), at NPC starports only: player-city starports get theirs with
-        /// city tariffs. Ship-only locations such as the Abandoned Station have none.
+        /// The dock's Trade Exchange (plan section 13). An NPC starport trades through its planet's exchange; a player
+        /// city's starport trades through the same exchange once the city has upgraded it, and charges the city's tariff.
+        /// Ship-only locations such as the Abandoned Station have none.
         /// </summary>
         private void AddTradeExchangeResponse(ConversationMenuPage page, uint player, string landingWaypointTag)
         {
             var area = GetArea(Owner);
-            if (!string.IsNullOrWhiteSpace(Property.GetPropertyId(area)))
+            var starportId = Property.GetPropertyId(area);
+            if (!string.IsNullOrWhiteSpace(starportId))
+            {
+                AddCityTradeExchangeResponse(page, player, starportId);
                 return;
+            }
 
             var exchange = TradeLookup.GetExchangeForPlanet(Planet.GetPlanetType(area));
             var landingLocation = string.IsNullOrWhiteSpace(landingWaypointTag)
@@ -119,6 +124,31 @@ namespace SWLOR.Game.Server.Feature.DialogDefinition
             {
                 Close();
                 var payload = new TradeExchangePayload(exchange, landingAreaResref);
+                Gui.TogglePlayerWindow(player, GuiWindowType.TradeExchange, payload, Owner);
+            });
+        }
+
+        /// <summary>
+        /// A player city's Trade Exchange. Cities whose starport is below the opening level (and cities on no NPC planet)
+        /// see no exchange; a city starport that only needs an upgrade tells the player so.
+        /// </summary>
+        private void AddCityTradeExchangeResponse(ConversationMenuPage page, uint player, string starportId)
+        {
+            var dock = Trade.TryGetCityDock(starportId);
+            if (dock == null || dock.Exchange == TradeExchangeType.Invalid)
+                return;
+
+            page.AddResponse("Trade Exchange", () =>
+            {
+                Close();
+                if (!dock.HasExchange)
+                {
+                    SendMessageToPC(player, ColorToken.Red(
+                        $"This starport needs to be upgraded to level {TradeTuning.CityExchangeStarportLevel} before it has a Trade Exchange. Ask the city's leadership."));
+                    return;
+                }
+
+                var payload = new TradeExchangePayload(dock.Exchange, starportId);
                 Gui.TogglePlayerWindow(player, GuiWindowType.TradeExchange, payload, Owner);
             });
         }

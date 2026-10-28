@@ -101,6 +101,25 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition
             content.AddRow(row =>
             {
                 row.AddLabel()
+                    .BindText(model => model.StandingText)
+                    .BindIsVisible(model => model.StandingVisible)
+                    .SetHeight(LabelHeight)
+                    .SetHorizontalAlign(NuiHorizontalAlign.Left);
+            });
+
+            content.AddRow(row =>
+            {
+                row.AddLabel()
+                    .BindText(model => model.TariffText)
+                    .BindIsVisible(model => model.TariffVisible)
+                    .SetColor(new GuiColor(255, 200, 0))
+                    .SetHeight(LabelHeight)
+                    .SetHorizontalAlign(NuiHorizontalAlign.Left);
+            });
+
+            content.AddRow(row =>
+            {
+                row.AddLabel()
                     .SetText("Ship")
                     .SetWidth(60f)
                     .SetHorizontalAlign(NuiHorizontalAlign.Left);

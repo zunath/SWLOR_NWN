@@ -84,5 +84,231 @@
     "LegalPercent": 103,
     "FreightPerHour": 6300,
     "FreightPercent": 74
+  },
+  "StandingReference": {
+    "Tiers": [
+      {
+        "Standing": -5000,
+        "Tier": -1,
+        "ScanCut": 0,
+        "PriceBonus": 0.0
+      },
+      {
+        "Standing": -501,
+        "Tier": -1,
+        "ScanCut": 0,
+        "PriceBonus": 0.0
+      },
+      {
+        "Standing": -500,
+        "Tier": -1,
+        "ScanCut": 0,
+        "PriceBonus": 0.0
+      },
+      {
+        "Standing": -499,
+        "Tier": 0,
+        "ScanCut": 0,
+        "PriceBonus": 0.0
+      },
+      {
+        "Standing": 0,
+        "Tier": 0,
+        "ScanCut": 0,
+        "PriceBonus": 0.0
+      },
+      {
+        "Standing": 249,
+        "Tier": 0,
+        "ScanCut": 0,
+        "PriceBonus": 0.0
+      },
+      {
+        "Standing": 250,
+        "Tier": 1,
+        "ScanCut": 8,
+        "PriceBonus": 0.0025
+      },
+      {
+        "Standing": 749,
+        "Tier": 1,
+        "ScanCut": 8,
+        "PriceBonus": 0.0025
+      },
+      {
+        "Standing": 750,
+        "Tier": 2,
+        "ScanCut": 16,
+        "PriceBonus": 0.005
+      },
+      {
+        "Standing": 1499,
+        "Tier": 2,
+        "ScanCut": 16,
+        "PriceBonus": 0.005
+      },
+      {
+        "Standing": 1500,
+        "Tier": 3,
+        "ScanCut": 25,
+        "PriceBonus": 0.0075
+      },
+      {
+        "Standing": 5000,
+        "Tier": 3,
+        "ScanCut": 25,
+        "PriceBonus": 0.0075
+      }
+    ],
+    "Tariffs": [
+      {
+        "Credits": 1000,
+        "Percent": 0,
+        "Tariff": 0
+      },
+      {
+        "Credits": 1000,
+        "Percent": 5,
+        "Tariff": 50
+      },
+      {
+        "Credits": 999,
+        "Percent": 5,
+        "Tariff": 50
+      },
+      {
+        "Credits": 1,
+        "Percent": 10,
+        "Tariff": 1
+      },
+      {
+        "Credits": 100000,
+        "Percent": 10,
+        "Tariff": 10000
+      },
+      {
+        "Credits": 100,
+        "Percent": 25,
+        "Tariff": 10
+      },
+      {
+        "Credits": 3,
+        "Percent": -4,
+        "Tariff": 0
+      },
+      {
+        "Credits": 0,
+        "Percent": 10,
+        "Tariff": 0
+      }
+    ],
+    "Prices": [
+      {
+        "Social": 10,
+        "Bonus": 0.0,
+        "Units": 10,
+        "Buy": 1275,
+        "Sell": 1125
+      },
+      {
+        "Social": 26,
+        "Bonus": 0.0,
+        "Units": 10,
+        "Buy": 1256,
+        "Sell": 1142
+      },
+      {
+        "Social": 10,
+        "Bonus": 0.015,
+        "Units": 10,
+        "Buy": 1256,
+        "Sell": 1142
+      },
+      {
+        "Social": 26,
+        "Bonus": 0.015,
+        "Units": 40,
+        "Buy": 4976,
+        "Sell": 4610
+      },
+      {
+        "Social": 10,
+        "Bonus": 0.01,
+        "Units": 1,
+        "Buy": 126,
+        "Sell": 113
+      }
+    ],
+    "Scans": [
+      {
+        "Banned": 10000,
+        "Compartment": 0,
+        "Standing": 0,
+        "Chance": 0.05
+      },
+      {
+        "Banned": 10000,
+        "Compartment": 0,
+        "Standing": 25,
+        "Chance": 0.0375
+      },
+      {
+        "Banned": 10000,
+        "Compartment": 30,
+        "Standing": 25,
+        "Chance": 0.02625
+      },
+      {
+        "Banned": 40000,
+        "Compartment": 15,
+        "Standing": 8,
+        "Chance": 0.08602
+      },
+      {
+        "Banned": 200000,
+        "Compartment": 0,
+        "Standing": 16,
+        "Chance": 0.3612
+      }
+    ],
+    "FreightMinimumStandings": {
+      "40": 0,
+      "100": 0,
+      "200": 250,
+      "400": 1500
+    }
+  },
+  "StandingOutcome": {
+    "NeutralFreightPerHour": 2940,
+    "NeutralFreightPercent": 35,
+    "Tiers": [
+      {
+        "Tier": "Trusted",
+        "LegalPerHour": 9301,
+        "LegalPercent": 109,
+        "ContrabandPerHour": 14132,
+        "ContrabandPercent": 166,
+        "FreightPerHour": 7140,
+        "FreightPercent": 84
+      },
+      {
+        "Tier": "Honored",
+        "LegalPerHour": 9744,
+        "LegalPercent": 115,
+        "ContrabandPerHour": 14775,
+        "ContrabandPercent": 174,
+        "FreightPerHour": 7140,
+        "FreightPercent": 84
+      },
+      {
+        "Tier": "Exalted",
+        "LegalPerHour": 10252,
+        "LegalPercent": 121,
+        "ContrabandPerHour": 15583,
+        "ContrabandPercent": 183,
+        "FreightPerHour": 10185,
+        "FreightPercent": 120
+      }
+    ]
   }
 }

@@ -16,6 +16,8 @@ namespace SWLOR.Game.Server.Service
     /// </summary>
     public static partial class Trade
     {
+        private static readonly Dictionary<(uint Player, TradeAuthority Authority), DateTime> _hostilePatrolAt = new();
+
         /// <summary>Pirate raiders appear this far from their prey.</summary>
         private const float AmbushRangeMeters = 35f;
 
@@ -35,6 +37,7 @@ namespace SWLOR.Game.Server.Service
             if (orbit == null)
                 return;
 
+            DelayCommand(TradeTuning.ScanDelaySeconds, () => RollHostilePatrols(player, area, orbit));
             DelayCommand(TradeTuning.ScanDelaySeconds, () => RollCustomsScan(player, area, orbit));
             DelayCommand(TradeTuning.AmbushDelaySeconds, () => RollPirateAmbush(player, area, orbit));
         }
@@ -56,6 +59,46 @@ namespace SWLOR.Game.Server.Service
                 .Concat(status.MidPowerModules.Values)
                 .Concat(status.LowPowerModules.Values)
                 .Select(x => x.ItemTag);
+        }
+
+        /// <summary>
+        /// A pilot whose standing with a system's customs authority is Hostile is attacked on sight: that authority's
+        /// patrol flies in and turns on them, without a scan. It comes at most once per cooldown per authority.
+        /// </summary>
+        private static void RollHostilePatrols(uint player, uint area, TradeOrbitDetail orbit)
+        {
+            if (!IsFlyingIn(player, area))
+                return;
+
+            var now = DateTime.UtcNow;
+            foreach (var key in _hostilePatrolAt.Where(x => (now - x.Value).TotalSeconds >= TradeTuning.HostilePatrolCooldownSeconds).Select(x => x.Key).ToList())
+                _hostilePatrolAt.Remove(key);
+
+            foreach (var authority in orbit.CustomsAuthorities)
+            {
+                var tier = GetStandingTier(player, TradeStandingRules.GetFaction(authority));
+                _hostilePatrolAt.TryGetValue((player, authority), out var last);
+                if (!TradeStandingRules.ShouldPatrolAttack(tier, last == default ? null : last, now))
+                    continue;
+
+                _hostilePatrolAt[(player, authority)] = now;
+                PruneLawfulGroups();
+                var group = Guid.NewGuid().ToString();
+                var patrol = SpawnAround(player, CustomsRules.GetPatrolTags(authority, orbit.Tier), PatrolRangeMeters);
+                foreach (var patrolShip in patrol)
+                {
+                    MarkLawful(patrolShip, group, authority, LawfulShipKind.CustomsPatrol);
+                    DespawnWhenIdle(patrolShip, TradeTuning.PatrolSeconds);
+                }
+
+                _lawfulGroups[group] = patrol;
+                _lawfulOffenders.Add((group, player));
+                TurnLawfulGroupHostile(group, player);
+
+                SendMessageToPC(player, ColorToken.Red(
+                    $"A {CustomsRules.GetAuthorityName(authority)} customs patrol recognizes your ship and moves to attack on sight!"));
+                Log.Write(LogGroup.Space, $"HOSTILE PATROL - {PlayerName.GetAuditName(player)} - {authority} patrol attacks in {GetResRef(area)}");
+            }
         }
 
         private static void RollPirateAmbush(uint player, uint area, TradeOrbitDetail orbit)

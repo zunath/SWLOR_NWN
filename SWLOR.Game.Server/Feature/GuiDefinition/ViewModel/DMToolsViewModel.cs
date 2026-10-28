@@ -215,10 +215,24 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
         {
             SelectedTabId = tabId;
             TabToggles.SyncTo(tabId, value => TabToggleValue = value);
-            Tabs.Select(this, TabContentElement, tabId);
+            Tabs.Select(this, TabContentElement, tabId, RestoreTabPicks);
         }
 
-        protected override void OnModalClosedRestore() => Tabs.Select(this, TabContentElement, SelectedTabId);
+        protected override void OnModalClosedRestore() => Tabs.Select(this, TabContentElement, SelectedTabId, RestoreTabPicks);
+
+        /// <summary>
+        /// Pushes the Space combos' picks again once their layout exists. A pick pushed while another tab is shown is
+        /// dropped, so the Ships combo showed 1 while a squad of 3 spawned.
+        /// </summary>
+        private void RestoreTabPicks()
+        {
+            if (SelectedTabId != SpaceTabId)
+                return;
+
+            SpaceFactionIndex = SpaceFactionIndex;
+            SpaceRoleIndex = SpaceRoleIndex;
+            SpaceCountIndex = SpaceCountIndex;
+        }
 
         /// <summary>
         /// Spawns the picked squad on a ring around the DM. Space ships only work in space areas, so the DM must be

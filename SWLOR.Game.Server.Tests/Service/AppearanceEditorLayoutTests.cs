@@ -676,6 +676,12 @@ public class AppearanceEditorLayoutTests
         Walk(settings).OfType<GuiRow<AppearanceEditorViewModel>>()
             .Should().OnlyContain(row => Width(row) == 0f && NaturalWidth(row) <= 256f,
                 "fixed controls must leave the surrounding spacers free to follow the client width");
+        foreach (var id in new[] { "ae_head_value", "ae_head_x_value", "ae_head_y_value", "ae_head_z_value" })
+        {
+            var value = Walk(settings).Single(widget => widget.Id == id);
+            NaturalWidth(PathTo(settings, value).OfType<GuiRow<AppearanceEditorViewModel>>().Last())
+                .Should().BeLessThanOrEqualTo(224f, "head values must remain readable in the 300px client window");
+        }
     }
 
     [Test]

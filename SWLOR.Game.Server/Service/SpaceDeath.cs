@@ -24,8 +24,8 @@ namespace SWLOR.Game.Server.Service
     public static partial class Space
     {
         /// <summary>
-        /// Area local int. Set to 1 on every Wild Space area (plan section 23). A player ship that another player
-        /// destroys there can drop its modules. No area carries it until the Wild Space areas are built.
+        /// Area local int. Set to 1 on every Wild Space area (plan section 23, the six systems in
+        /// <see cref="WildSpaceTuning.Systems"/>). A player ship that another player destroys there can drop its modules.
         /// </summary>
         public const string WildSpaceVariable = "WILD_SPACE";
 

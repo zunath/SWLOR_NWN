@@ -63,7 +63,7 @@ namespace SWLOR.Game.Server.Service.SpaceService
         public const int SiteCheckSeconds = 6;
         public const int GasMinimumTier = 3;
 
-        /// <summary>The areas signatures appear in: the space orbits and the Small/Medium zones.</summary>
+        /// <summary>The areas signatures appear in: the space orbits, the Small/Medium zones and Wild Space.</summary>
         public static readonly IReadOnlyList<ScanAreaDetail> Areas = new List<ScanAreaDetail>
         {
             new ScanAreaDetail { AreaResref = "viscaraorbit", Tier = 1, Signatures = 3 },
@@ -79,6 +79,12 @@ namespace SWLOR.Game.Server.Service.SpaceService
             new ScanAreaDetail { AreaResref = "space_viscbelt", Tier = 2, Signatures = 4 },
             new ScanAreaDetail { AreaResref = "space_midrimneb", Tier = 4, Signatures = 4 },
             new ScanAreaDetail { AreaResref = "space_korrdebris", Tier = 5, Signatures = 4 },
+            new ScanAreaDetail { AreaResref = "space_wspulsar", Tier = 5, Signatures = 3, WildSpace = true },
+            new ScanAreaDetail { AreaResref = "space_wsblkhole", Tier = 5, Signatures = 3, WildSpace = true },
+            new ScanAreaDetail { AreaResref = "space_wsionstorm", Tier = 5, Signatures = 3, WildSpace = true },
+            new ScanAreaDetail { AreaResref = "space_wsmagnetar", Tier = 5, Signatures = 3, WildSpace = true },
+            new ScanAreaDetail { AreaResref = "space_wsredgiant", Tier = 5, Signatures = 3, WildSpace = true },
+            new ScanAreaDetail { AreaResref = "space_wsgraveyrd", Tier = 5, Signatures = 3, WildSpace = true },
         };
 
         /// <summary>Type weights before the tier rules (gas sites from tier 3).</summary>
@@ -129,6 +135,10 @@ namespace SWLOR.Game.Server.Service.SpaceService
             new[] { "t5fighter", "t5fighter", "t5interceptor", "t5bomber", "t5gunship" },
             new[] { "t6fighter", "t6fighter", "t6interceptor", "t6bomber", "t6gunship" },
         };
+
+        /// <summary>The squad of a combat site in Wild Space: Rift Raiders.</summary>
+        public static readonly string[] WildSpaceCombatSquad = new[] { "rrfighter", "rrfighter", "rrinterceptor", "rrbomber", "rrgunship" };
+        public const string WildSpaceCacheTable = "SPACE_ELITE_WS";
 
         /// <summary>A derelict's defenses, by tier (index 1-6).</summary>
         public static readonly string[][] DerelictDefenses =

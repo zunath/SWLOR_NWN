@@ -5811,21 +5811,21 @@
   },
   {
     "File": "SWLOR.Game.Server/Service/Space.cs",
-    "Line": 2434,
+    "Line": 2444,
     "Member": "CompleteWeaponShot",
     "Delivery": "Retained",
     "Call": "Messaging.SendMessageNearbyToPlayers(\n                target,\n                receiver => Combat.BuildCombatLogMessage(receiver, activator, target, attackId, result.ChanceToHit),\n                60f)"
   },
   {
     "File": "SWLOR.Game.Server/Service/Space.cs",
-    "Line": 2990,
+    "Line": 3004,
     "Member": "NotifyShipDamage",
     "Delivery": "Retained",
     "Call": "Messaging.SendMessageNearbyToPlayers(attacker, buildMessage, ShipDamageMessageRange)"
   },
   {
     "File": "SWLOR.Game.Server/Service/Space.cs",
-    "Line": 2996,
+    "Line": 3010,
     "Member": "NotifyShipDamage",
     "Delivery": "Retained",
     "Call": "SendMessageToPC(target, buildMessage(target))"
@@ -6259,84 +6259,91 @@
   },
   {
     "File": "SWLOR.Game.Server/Service/SpaceSignatureJump.cs",
-    "Line": 110,
+    "Line": 113,
     "Member": "BeginSignatureJump",
     "Delivery": "Retained",
     "Call": "SendMessageToPC(player, ColorToken.Red(cloakBlock))"
   },
   {
     "File": "SWLOR.Game.Server/Service/SpaceSignatureJump.cs",
-    "Line": 123,
+    "Line": 126,
     "Member": "BeginSignatureJump",
     "Delivery": "Retained",
     "Call": "SendMessageToPC(player, ColorToken.Red(SignatureJumpRules.Message(refusal)))"
   },
   {
     "File": "SWLOR.Game.Server/Service/SpaceSignatureJump.cs",
-    "Line": 130,
+    "Line": 139,
+    "Member": "BeginSignatureJump",
+    "Delivery": "Retained",
+    "Call": "SendMessageToPC(player, ColorToken.Red(RiftRules.Message(riftRefusal)))"
+  },
+  {
+    "File": "SWLOR.Game.Server/Service/SpaceSignatureJump.cs",
+    "Line": 147,
     "Member": "BeginSignatureJump",
     "Delivery": "Retained",
     "Call": "SendMessageToPC(player, ColorToken.Cyan($\"Spooling the jump drive: {ScanningTuning.JumpSpoolSeconds:0} seconds. Taking fire breaks it off.\"))"
   },
   {
     "File": "SWLOR.Game.Server/Service/SpaceSignatureJump.cs",
-    "Line": 141,
+    "Line": 158,
     "Member": "InterruptSignatureJump",
     "Delivery": "Retained",
     "Call": "SendMessageToPC(ship, ColorToken.Red(SignatureJumpRules.Message(SignatureJumpRefusal.Damaged)))"
   },
   {
     "File": "SWLOR.Game.Server/Service/SpaceSignatureJump.cs",
-    "Line": 161,
+    "Line": 178,
     "Member": "CompleteSignatureJump",
     "Delivery": "Retained",
     "Call": "SendMessageToPC(player, ColorToken.Red(SignatureJumpRules.Message(refusal)))"
   },
   {
     "File": "SWLOR.Game.Server/Service/SpaceSignatureJump.cs",
-    "Line": 177,
+    "Line": 200,
     "Member": "CompleteSignatureJump",
     "Delivery": "Retained",
     "Call": "SendMessageToPC(player, ColorToken.Cyan($\"Jumped to the {ScanningRules.TypeName(signature.Type)}.\"))"
   },
   {
     "File": "SWLOR.Game.Server/Service/SpaceSignatureJump.cs",
-    "Line": 208,
+    "Line": 231,
     "Member": "RunSensorSweep",
     "Delivery": "Retained",
     "Call": "SendMessageToPC(player, ColorToken.Red(\"Only the pilot can run a Sensor Sweep.\"))"
   },
   {
     "File": "SWLOR.Game.Server/Service/SpaceSignatureJump.cs",
-    "Line": 216,
+    "Line": 239,
     "Member": "RunSensorSweep",
     "Delivery": "Retained",
     "Call": "SendMessageToPC(player, ColorToken.Red(\"A Sensor Sweep needs a Probe Launcher fitted.\"))"
   },
   {
     "File": "SWLOR.Game.Server/Service/SpaceSignatureJump.cs",
-    "Line": 223,
+    "Line": 246,
     "Member": "RunSensorSweep",
     "Delivery": "Retained",
     "Call": "SendMessageToPC(player, ColorToken.Red(cloakBlock))"
   },
   {
     "File": "SWLOR.Game.Server/Service/SpaceSignatureJump.cs",
-    "Line": 231,
+    "Line": 254,
     "Member": "RunSensorSweep",
     "Delivery": "Retained",
     "Call": "SendMessageToPC(player, ColorToken.Red($\"The Sensor Sweep is recharging: {SensorSweepRules.SecondsLeft(last, now)} seconds.\"))"
   },
   {
     "File": "SWLOR.Game.Server/Service/SpaceSignatureJump.cs",
-    "Line": 237,
+    "Line": 260,
     "Member": "RunSensorSweep",
     "Delivery": "Retained",
     "Call": "SendMessageToPC(player, ColorToken.Red(\"Not enough capacitor for a Sensor Sweep.\"))"
   },
   {
     "File": "SWLOR.Game.Server/Service/SpaceSignatureJump.cs",
-    "Line": 278,
+    "Line": 301,
     "Member": "RunSensorSweep",
     "Delivery": "Retained",
     "Call": "SendMessageToPC(player, ColorToken.Cyan($\"Sensor Sweep: {ordered.Count} ship(s) within {range} m.\"))"
@@ -6937,6 +6944,48 @@
     "Call": "SendMessageToPC(killer, ColorToken.Green($\"A sealed lockbox tumbles out of {GetName(creature)}.\"))"
   },
   {
+    "File": "SWLOR.Game.Server/Service/SpaceRifts.cs",
+    "Line": 149,
+    "Member": "WarnRiftCollapse",
+    "Delivery": "Retained",
+    "Call": "SendMessageToPC(pilot, ColorToken.Red(\n                        $\"Sensors warn that the rift to {RiftAreaName(other)} is collapsing: it closes in {seconds} seconds. \" +\n                        \"A ship left with no way out when it closes is thrown clear and damaged.\"))"
+  },
+  {
+    "File": "SWLOR.Game.Server/Service/SpaceRifts.cs",
+    "Line": 229,
+    "Member": "EjectPilotFromWildSpace",
+    "Delivery": "Retained",
+    "Call": "SendMessageToPC(pilot, ColorToken.Red(\n                $\"The last rift out collapses. Its shockwave throws your ship clear to {RiftAreaName(GetAreaFromLocation(location))}: \" +\n                $\"shields down and {hullBefore - status.Hull} hull lost.\"))"
+  },
+  {
+    "File": "SWLOR.Game.Server/Service/SpaceRifts.cs",
+    "Line": 279,
+    "Member": "CrossRift",
+    "Delivery": "Retained",
+    "Call": "SendMessageToPC(pilot, ColorToken.Red(RiftRules.Message(refusal)))"
+  },
+  {
+    "File": "SWLOR.Game.Server/Service/SpaceRifts.cs",
+    "Line": 288,
+    "Member": "CrossRift",
+    "Delivery": "Retained",
+    "Call": "SendMessageToPC(pilot, ColorToken.Red(RiftRules.Message(RiftPassageRefusal.Collapsed)))"
+  },
+  {
+    "File": "SWLOR.Game.Server/Service/SpaceRifts.cs",
+    "Line": 308,
+    "Member": "CrossRift",
+    "Delivery": "Retained",
+    "Call": "SendMessageToPC(pilot, ColorToken.Cyan($\"You cross the rift into {RiftAreaName(destination)}. Its far end stays on your scanner.\"))"
+  },
+  {
+    "File": "SWLOR.Game.Server/Service/SpaceWildSpace.cs",
+    "Line": 86,
+    "Member": "ApplyWildSpaceEnvironment",
+    "Delivery": "Retained",
+    "Call": "SendMessageToPC(ship, ColorToken.Cyan(WildSpaceRules.EntryMessage(system?.Name ?? GetName(GetArea(ship)), environment, ignorePenalties)))"
+  },
+  {
     "File": "SWLOR.Game.Server/Service/SpaceCloak.cs",
     "Line": 151,
     "Member": "BeginCloak",
@@ -6966,7 +7015,7 @@
   },
   {
     "File": "SWLOR.Game.Server/Service/SpaceCloak.cs",
-    "Line": 400,
+    "Line": 401,
     "Member": "RedirectSpaceStealth",
     "Delivery": "Retained",
     "Call": "SendMessageToPC(creature, ColorToken.Red(\"Only a Cloaking Device hides a ship in space.\"))"

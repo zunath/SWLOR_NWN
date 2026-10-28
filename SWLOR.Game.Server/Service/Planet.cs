@@ -34,6 +34,12 @@ namespace SWLOR.Game.Server.Service
             "space_midrim2",
             "space_midrimneb",
             "space_viscbelt",
+            "space_wsblkhole",
+            "space_wsgraveyrd",
+            "space_wsionstorm",
+            "space_wsmagnetar",
+            "space_wspulsar",
+            "space_wsredgiant",
             "tatooineorbit",
             "viscaraorbit"
         };

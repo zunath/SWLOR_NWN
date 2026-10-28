@@ -160,7 +160,9 @@ public class SpaceNpcRoleShipTests
     [Test]
     public void SquadCatalog_NamesARegisteredShipForEveryPick()
     {
-        for (var faction = 0; faction < SpaceSquadCatalog.Factions.Count; faction++)
+        // The six faction tiers, then the Rift Raiders (Wild Space).
+        SpaceSquadCatalog.Factions.Should().HaveCount(7);
+        for (var faction = 0; faction < 6; faction++)
         {
             for (var role = 0; role < SpaceSquadCatalog.Roles.Count; role++)
             {
@@ -171,6 +173,14 @@ public class SpaceNpcRoleShipTests
                 tag.Should().Be(expected);
             }
         }
+
+        var raiders = SpaceSquadCatalog.Roles.Select((x, i) => SpaceSquadCatalog.CreatureTag(6, i)).Where(x => x.Length > 0).ToList();
+        raiders.Should().OnlyContain(x => WildSpaceTuning.RiftRaiderTags.Contains(x));
+        raiders.Distinct().Should().BeEquivalentTo(WildSpaceTuning.RiftRaiderTags, "every Rift Raider can be spawned");
+        SpaceSquadCatalog.CreatureTag(6, SpaceSquadCatalog.Roles.ToList().FindIndex(x => x.Hull == "pirint")).Should().Be("rrinterceptor");
+        SpaceSquadCatalog.CreatureTag(6, SpaceSquadCatalog.Roles.ToList().FindIndex(x => x.Hull == "capital")).Should().BeEmpty();
+        SpaceSquadCatalog.ConvoyTier(6).Should().Be(0, "the Rift Raiders run no convoys");
+        SpaceSquadCatalog.ConvoyTier(2).Should().Be(3);
 
         SpaceSquadCatalog.CreatureTag(-1, 0).Should().BeEmpty();
         SpaceSquadCatalog.CreatureTag(0, SpaceSquadCatalog.Roles.Count).Should().BeEmpty();

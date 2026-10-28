@@ -66,7 +66,8 @@ def creature_level(root, tag):
 def hull_type(tag):
     if tag.startswith(("sithcap", "mandocap")):
         return "capital"
-    hull = re.match(r"t\d(\w+)$", tag).group(1)
+    # Faction tiers are t1-t6; the Rift Raiders (Wild Space, tier 5.5) are rr.
+    hull = re.match(r"(?:t\d|rr)(\w+)$", tag).group(1)
     group = re.match(r"(%s)(%s)$" % ("|".join(GROUP_PREFIXES), "|".join(GROUP_HULLS)), hull)
     if group:
         return GROUP_HULLS[group.group(2)]

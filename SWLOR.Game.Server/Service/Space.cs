@@ -2208,11 +2208,16 @@ namespace SWLOR.Game.Server.Service
                 shipStatus.PowerRouting);
         }
 
-        /// <summary>Capacitor regained per second: the hull's regen plus 0.05 per point of WIL.</summary>
+        /// <summary>
+        /// Capacitor regained per second: the hull's regen plus 0.05 per point of WIL, changed by the capacitor regen
+        /// stat (a Wild Space environment).
+        /// </summary>
         public static double GetShipCapacitorRegenPerSecond(uint ship, ShipStatus shipStatus)
         {
             var wil = GetPilotScore(ship, shipStatus, AbilityType.Willpower);
-            return SpaceCombatMath.CapacitorRegenPerSecond(shipStatus.CapacitorRegenPerSecond, wil);
+            return WildSpaceRules.AdjustCapacitorRegen(
+                SpaceCombatMath.CapacitorRegenPerSecond(shipStatus.CapacitorRegenPerSecond, wil),
+                Stat.GetStatAdjustment(ship, StatType.SpaceCapacitorRegenPercentAdjustment));
         }
 
         /// <summary>
@@ -2369,6 +2374,11 @@ namespace SWLOR.Game.Server.Service
             var bonusPercent = 0;
             activatorStatus.DamageBonusPercent?.TryGetValue(shot.DamageType, out bonusPercent);
             bonusPercent += PowerRoutingRules.WeaponDamagePercent(activatorStatus.PowerRouting);
+            bonusPercent += WildSpaceRules.EnvironmentDamagePercent(
+                shot.DamageType,
+                shot.IsAbility,
+                Stat.GetStatAdjustment(source, StatType.SpaceEmDamagePercentAdjustment),
+                Stat.GetStatAdjustment(source, StatType.SpaceAbilityDamagePercentAdjustment));
 
             var resistance = 0;
             targetStatus.Resistances?.TryGetValue(GetShipResistanceType(shot.DamageType), out resistance);
@@ -2603,6 +2613,10 @@ namespace SWLOR.Game.Server.Service
                 return (0, 0);
 
             amount = ApplyPvpDamageRamp(attacker, target, amount);
+
+            // A Wild Space environment makes shields stronger or weaker.
+            shieldDamageMultiplier = WildSpaceRules.AdjustShieldDamageMultiplier(
+                shieldDamageMultiplier, Stat.GetStatAdjustment(target, StatType.SpaceShieldDamageTakenPercentAdjustment));
 
             // Firing on a convoy or customs patrol turns its group hostile and costs lawful standing.
             Trade.OnShipAttacked(attacker, target);

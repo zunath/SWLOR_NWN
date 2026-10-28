@@ -18,6 +18,7 @@ namespace SWLOR.Game.Server.Feature.SpaceObjectDefinition
             RoleShips();
             TradeRiskShips();
             Aces();
+            RiftRaiders();
 
             return _builder.Build();
         }
@@ -705,6 +706,40 @@ namespace SWLOR.Game.Server.Feature.SpaceObjectDefinition
 
             _builder.Create("t6escort")
                 .ItemTag("NPC_Gunship6");
+        }
+
+        /// <summary>
+        /// The Rift Raiders (Wild Space, tier 5.5, plan section 23): every W5b role and the pirate hulls at level 52. Hull,
+        /// weapons and support modules come from RevampNpcShipCatalog; the legacy ship item is the tier 5 ship of the role.
+        /// </summary>
+        private void RiftRaiders()
+        {
+            _builder.Create("rrfighter")
+                .ItemTag("NPC_Fighter5");
+
+            _builder.Create("rrinterceptor")
+                .ItemTag("NPC_Interceptor5");
+
+            _builder.Create("rrbomber")
+                .ItemTag("NPC_Bomber5");
+
+            _builder.Create("rrsniper")
+                .ItemTag("NPC_Fighter5");
+
+            _builder.Create("rrewar")
+                .ItemTag("NPC_Interceptor5");
+
+            _builder.Create("rrminelayer")
+                .ItemTag("NPC_Bomber5");
+
+            _builder.Create("rrgunship")
+                .ItemTag("NPC_Gunship5");
+
+            _builder.Create("rrlogistics")
+                .ItemTag("NPC_Gunship5");
+
+            _builder.Create("rrcarrier")
+                .ItemTag("NPC_Gunship5");
         }
     }
 }

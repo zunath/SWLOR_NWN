@@ -26,6 +26,7 @@ from pathlib import Path
 sys.path.insert(0, str(Path(__file__).resolve().parent))
 import slicing  # noqa: E402
 import trade  # noqa: E402
+import wildspace  # noqa: E402
 
 REPO = Path(__file__).resolve().parents[2]
 
@@ -106,12 +107,14 @@ def sweep_range(rank):
 # Signatures: where, how many, how long
 # ---------------------------------------------------------------------------------------------------------------
 # The space orbits and the three Small/Medium zones (trade.ORBIT_TIERS). Zones hold one more signature than an orbit,
-# as they pay better than open orbit (plan section 12). Rifts spawn only in Wild Space (W12c).
+# as they pay better than open orbit (plan section 12). The Wild Space systems (W12c, wildspace.py) are tier 5 content at
+# tier 5.5 signal, with an orbit's site signatures; their rifts come from the rift network on top of these.
 ZONE_AREAS = {"space_viscbelt", "space_midrimneb", "space_korrdebris"}
 ORBIT_SIGNATURES = 3
 ZONE_SIGNATURES = 4
 AREAS = [(resref, tier, ZONE_SIGNATURES if resref in ZONE_AREAS else ORBIT_SIGNATURES, trade.ORBIT_NAMES[resref])
          for resref, tier in trade.ORBIT_TIERS.items()]
+WILD_SPACE_AREAS = [(resref, wildspace.CONTENT_TIER, wildspace.SITE_SIGNATURES, name) for resref, name, _, _, _ in wildspace.SYSTEMS]
 
 HIDDEN_LIFETIME_SECONDS = 3600   # an unresolved signature fades and a new one appears elsewhere
 SITE_LIFETIME_SECONDS = 1200     # a revealed site despawns after this long, completed or not
@@ -119,7 +122,8 @@ RESPAWN_SECONDS = 300            # a new signature appears this long after one i
 SITE_CHECK_SECONDS = 6           # how often sites are checked for completion and timers
 
 # Type weights. Gas sites need a tier 3 Gas Harvester cloud (the gas clouds are tier 3 and 4), so they spawn from
-# tier 3. Data sites spawn with the Data Analyzer (W12b, slicing.py); rifts wait for Wild Space (W12c): weight 0.
+# tier 3. Data sites spawn with the Data Analyzer (W12b, slicing.py). Rifts weigh 0: the rift network (W12c, wildspace.py)
+# places them in Wild Space and the known orbits, so they never take a site signature's place.
 WEIGHTS = {"CombatSite": 35, "CacheSite": 25, "GasSite": 20, "Derelict": 20, "DataSite": slicing.DATA_SITE_WEIGHT, "Rift": 0}
 GAS_MINIMUM_TIER = 3
 
@@ -135,6 +139,11 @@ def combat_squad(tier):
     """An NPC squad of the area's tier (the W5b role ships, SpaceSquadCatalog's t<tier><hull> tags)."""
     hulls = ["fighter", "fighter", "interceptor"] + (["bomber"] if tier >= 3 else []) + (["gunship"] if tier >= 5 else [])
     return [f"t{tier}{h}" for h in hulls]
+
+
+# Wild Space sites: a tier 5 squad's hulls flown by Rift Raiders, and caches that pull from the Rift Raiders' elite table.
+WILD_SPACE_SQUAD = ["rrfighter", "rrfighter", "rrinterceptor", "rrbomber", "rrgunship"]
+WILD_SPACE_CACHE_TABLE = "SPACE_ELITE_WS"
 
 
 def derelict_defenses(tier):
@@ -390,11 +399,13 @@ def tuning_cs():
               f"        public const int SiteCheckSeconds = {SITE_CHECK_SECONDS};",
               f"        public const int GasMinimumTier = {GAS_MINIMUM_TIER};",
               "",
-              "        /// <summary>The areas signatures appear in: the space orbits and the Small/Medium zones.</summary>",
+              "        /// <summary>The areas signatures appear in: the space orbits, the Small/Medium zones and Wild Space.</summary>",
               "        public static readonly IReadOnlyList<ScanAreaDetail> Areas = new List<ScanAreaDetail>",
               "        {"]
     lines += [f"            new ScanAreaDetail {{ AreaResref = {json.dumps(r)}, Tier = {t}, Signatures = {n} }},"
               for r, t, n, _ in AREAS]
+    lines += [f"            new ScanAreaDetail {{ AreaResref = {json.dumps(r)}, Tier = {t}, Signatures = {n}, WildSpace = true }},"
+              for r, t, n, _ in WILD_SPACE_AREAS]
     lines += ["        };", "",
               "        /// <summary>Type weights before the tier rules (gas sites from tier 3).</summary>",
               "        public static readonly IReadOnlyDictionary<SignatureType, int> Weights = new Dictionary<SignatureType, int>",
@@ -421,6 +432,10 @@ def tuning_cs():
               "            System.Array.Empty<string>(),"]
     lines += [f"            {cs_strings(combat_squad(t))}," for t in TIERS]
     lines += ["        };", "",
+              "        /// <summary>The squad of a combat site in Wild Space: Rift Raiders.</summary>",
+              f"        public static readonly string[] WildSpaceCombatSquad = {cs_strings(WILD_SPACE_SQUAD)};",
+              f"        public const string WildSpaceCacheTable = {json.dumps(WILD_SPACE_CACHE_TABLE)};",
+              "",
               "        /// <summary>A derelict's defenses, by tier (index 1-6).</summary>",
               "        public static readonly string[][] DerelictDefenses =",
               "        {",

@@ -2,6 +2,7 @@ using SWLOR.Game.Server.Core;
 using SWLOR.Game.Server.Core.NWNX.Enum;
 using SWLOR.Game.Server.Feature.GuiDefinition.RefreshEvent;
 using SWLOR.Game.Server.Service.SpaceService;
+using SWLOR.Game.Server.Service.StatService;
 using SWLOR.NWN.API.NWNX;
 using SWLOR.NWN.API.NWScript.Enum;
 
@@ -88,7 +89,10 @@ namespace SWLOR.Game.Server.Service
             Stat.ApplyCreatureMovementRate(pilot);
         }
 
-        /// <summary>A module's capacitor use: its own, changed by the power routing for weapon modules.</summary>
+        /// <summary>
+        /// A module's capacitor use: its own, changed by the power routing for weapon modules and by the ship's capacitor
+        /// use stat (a Wild Space environment).
+        /// </summary>
         private static int GetModuleCapacitorCost(
             uint ship,
             ShipStatus status,
@@ -96,7 +100,8 @@ namespace SWLOR.Game.Server.Service
             ShipModuleDetail detail)
         {
             var cost = ShipTraitRules.CapacitorCost(detail.CalculateCapacitorAction?.Invoke(ship, status, module.ModuleBonus) ?? 0, module.Traits);
-            return PowerRoutingRules.ApplyCapacitorCost(cost, status.PowerRouting, ShipToggleRules.IsOffensive(detail.Type));
+            cost = PowerRoutingRules.ApplyCapacitorCost(cost, status.PowerRouting, ShipToggleRules.IsOffensive(detail.Type));
+            return WildSpaceRules.AdjustCapacitorCost(cost, Stat.GetStatAdjustment(ship, StatType.SpaceCapacitorCostPercentAdjustment));
         }
 
         /// <summary>Puts each routing feat the Engineer's saved hotbar lacks in its first empty slot.</summary>

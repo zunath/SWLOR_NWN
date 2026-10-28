@@ -61,6 +61,7 @@ namespace SWLOR.Game.Server.Service
                 Size = size,
                 DestroyedAt = DateTime.UtcNow,
                 Claimants = GetKillingParty(creature),
+                WildSpace = IsWildSpace(GetArea(creature)),
                 RemainingCycles = ShipSalvageRules.WreckCycles(size, difficulty),
                 HasDataCore = SpaceSlicingRules.HasDataCore(difficulty, GetLocalBool(creature, SpaceSlicingTuning.AceVariable))
             };
@@ -94,6 +95,7 @@ namespace SWLOR.Game.Server.Service
                 Size = size,
                 DestroyedAt = DateTime.UtcNow,
                 Claimants = claimants ?? new HashSet<string>(),
+                WildSpace = IsWildSpace(GetAreaFromLocation(location)),
                 RemainingCycles = ShipSalvageRules.WreckCycles(size, difficulty),
                 HasDataCore = SpaceSlicingRules.HasDataCore(difficulty, false)
             };

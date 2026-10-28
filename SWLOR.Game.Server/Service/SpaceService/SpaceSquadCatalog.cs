@@ -5,9 +5,9 @@ using SWLOR.Game.Server.Feature.SpaceObjectDefinition;
 namespace SWLOR.Game.Server.Service.SpaceService
 {
     /// <summary>
-    /// What the DM tools' Space tab can spawn: the faction tiers, the ship roles of each tier (the trade risk ships
-    /// too: pirate raiders, convoy haulers and escorts) and where a squad's ships stand around the DM. Pure data and
-    /// arithmetic.
+    /// What the DM tools' Space tab can spawn: the faction tiers and the Rift Raiders of Wild Space, the ship roles of
+    /// each (the trade risk ships too: pirate raiders, convoy haulers and escorts) and where a squad's ships stand around
+    /// the DM. Pure data and arithmetic.
     /// </summary>
     public static class SpaceSquadCatalog
     {
@@ -24,6 +24,21 @@ namespace SWLOR.Game.Server.Service.SpaceService
             "T4 Clan Zel Arun",
             "T5 Red Hand",
             "T6 Imperial",
+            "T5.5 Rift Raiders",
+        };
+
+        /// <summary>The creature tag prefix of each faction: t1-t6, and rr for the Rift Raiders.</summary>
+        private static readonly string[] _prefixes = { "t1", "t2", "t3", "t4", "t5", "t6", "rr" };
+
+        /// <summary>
+        /// The Rift Raiders are pirates through and through: their interceptor, fighter and gunship answer the pirate
+        /// roles too.
+        /// </summary>
+        private static readonly Dictionary<string, string> _riftRaiderHulls = new()
+        {
+            ["pirint"] = "interceptor",
+            ["pirftr"] = "fighter",
+            ["pirgun"] = "gunship",
         };
 
         /// <summary>The roles, with the hull type that names a tier's creature (t3 + "sniper").</summary>
@@ -51,17 +66,26 @@ namespace SWLOR.Game.Server.Service.SpaceService
         private static readonly HashSet<string> _presetTags = RevampNpcShipCatalog.Ships.Select(x => x.CreatureTag).ToHashSet();
 
         /// <summary>
-        /// The creature tag of a faction tier's ship in a role, or empty when that tier has no such ship (the
-        /// Imperial tier has no generic capital; its capitals are the Sith ones).
+        /// The creature tag of a faction's ship in a role, or empty when it has no such ship (the Imperial tier has no
+        /// generic capital; its capitals are the Sith ones; the Rift Raiders fly no haulers, platforms or capitals).
         /// </summary>
         public static string CreatureTag(int factionIndex, int roleIndex)
         {
             if (factionIndex < 0 || factionIndex >= Factions.Count || roleIndex < 0 || roleIndex >= Roles.Count)
                 return string.Empty;
 
-            var tag = $"t{factionIndex + 1}{Roles[roleIndex].Hull}";
+            var prefix = _prefixes[factionIndex];
+            var hull = Roles[roleIndex].Hull;
+            if (prefix == "rr" && _riftRaiderHulls.TryGetValue(hull, out var raiderHull))
+                hull = raiderHull;
+
+            var tag = prefix + hull;
             return _presetTags.Contains(tag) ? tag : string.Empty;
         }
+
+        /// <summary>The faction tier (1-6) a convoy of the picked faction flies at, or 0 for the Rift Raiders, who run none.</summary>
+        public static int ConvoyTier(int factionIndex) =>
+            factionIndex >= 0 && factionIndex < _prefixes.Length && _prefixes[factionIndex] != "rr" ? factionIndex + 1 : 0;
 
         /// <summary>A squad size from the count picker's index: 1 to <see cref="MaxSquadSize"/>.</summary>
         public static int SquadSize(int countIndex)

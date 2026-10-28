@@ -1713,6 +1713,177 @@
                     "__struct_id": 0,
                     "CR": {
                       "type": "float",
+                      "value": 52.0
+                    },
+                    "FACTION": {
+                      "type": "cexostring",
+                      "value": "Hostile"
+                    },
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "Rift Raider Cutlass"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "rrfighter"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "CR": {
+                      "type": "float",
+                      "value": 52.0
+                    },
+                    "FACTION": {
+                      "type": "cexostring",
+                      "value": "Hostile"
+                    },
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "Rift Raider Prowler"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "rrinterceptor"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "CR": {
+                      "type": "float",
+                      "value": 52.0
+                    },
+                    "FACTION": {
+                      "type": "cexostring",
+                      "value": "Hostile"
+                    },
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "Rift Raider Bomber"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "rrbomber"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "CR": {
+                      "type": "float",
+                      "value": 52.0
+                    },
+                    "FACTION": {
+                      "type": "cexostring",
+                      "value": "Hostile"
+                    },
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "Rift Raider Sniper"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "rrsniper"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "CR": {
+                      "type": "float",
+                      "value": 52.0
+                    },
+                    "FACTION": {
+                      "type": "cexostring",
+                      "value": "Hostile"
+                    },
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "Rift Raider Jammer"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "rrewar"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "CR": {
+                      "type": "float",
+                      "value": 52.0
+                    },
+                    "FACTION": {
+                      "type": "cexostring",
+                      "value": "Hostile"
+                    },
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "Rift Raider Minelayer"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "rrminelayer"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "CR": {
+                      "type": "float",
+                      "value": 52.0
+                    },
+                    "FACTION": {
+                      "type": "cexostring",
+                      "value": "Hostile"
+                    },
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "Rift Raider Marauder"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "rrgunship"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "CR": {
+                      "type": "float",
+                      "value": 52.0
+                    },
+                    "FACTION": {
+                      "type": "cexostring",
+                      "value": "Hostile"
+                    },
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "Rift Raider Tender"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "rrlogistics"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "CR": {
+                      "type": "float",
+                      "value": 52.0
+                    },
+                    "FACTION": {
+                      "type": "cexostring",
+                      "value": "Hostile"
+                    },
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "Rift Raider Mothership"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "rrcarrier"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "CR": {
+                      "type": "float",
                       "value": 50.0
                     },
                     "FACTION": {

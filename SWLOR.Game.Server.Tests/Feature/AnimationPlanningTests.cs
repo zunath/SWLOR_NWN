@@ -87,7 +87,10 @@ public class AnimationPlanningTests
             .Where(feat => abilities.ContainsKey(feat) && !abilities[feat].IsMimicryTrait && !abilities[feat].CanBeUsedInSpace)
             .Select(feat => abilities[feat]).ToArray();
         var bible = Csv("SWLOR.Game.Server/Readmes/CombatUpgradeBiblePerkManifest.csv");
-        var requirements = CurrentPerks().Where(perk => Active(perk).Length > 0 || bible.Any(row =>
+        // Space abilities fire from the ship, so a Piloting style row needs no character animation.
+        bool Space(PerkDetail perk) => perk.PerkLevels.Values.SelectMany(level => level.GrantedFeats)
+            .Any(feat => abilities.ContainsKey(feat) && abilities[feat].CanBeUsedInSpace);
+        var requirements = CurrentPerks().Where(perk => Active(perk).Length > 0 || !Space(perk) && bible.Any(row =>
             Normalize(row["Tab"]) == Normalize(Category(perk)) && Normalize(row["PerkName"]) == Normalize(perk.Name) &&
             new[] { "Combat", "Stance", "Toggle", "Aura" }.Contains(row["Type"]))).ToArray();
         var plan = Csv("design/animations/animation-plan.csv");

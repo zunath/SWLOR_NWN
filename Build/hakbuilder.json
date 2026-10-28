@@ -19,6 +19,11 @@
       "CompileModels": false
     },
     {
+      "Name": "sw_part_previews",
+      "Path": "../SWLOR_Haks/sw_part_previews/",
+      "CompileModels": false
+    },
+    {
       "Name": "sw_shader",
       "Path": "../SWLOR_Haks/sw_shader/",
       "CompileModels": false

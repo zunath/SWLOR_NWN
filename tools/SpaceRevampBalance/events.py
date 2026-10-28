@@ -150,6 +150,52 @@ CAPITAL_BATTLE_AREAS = [a for a in trade.ORBIT_TIERS if trade.ORBIT_TIERS[a] >= 
                         and a in wildspace.KNOWN_ORBITS]
 
 
+# ---------------------------------------------------------------------------------------------------------------
+# Zone hazards (W11o): standalone minefields in the three Small/Medium zones and pre-placed wrecks in the open orbits,
+# the zones and the Ship Graveyard. Both are Module waypoints (tag below, HAZARD_TIER int local) that the server fills at
+# boot and refills on a timer (SpaceHazards.cs). Undefined in the plan beyond "standalone mines" and "pre-placed wrecks"
+# (section 12, W6c), so the most conservative version:
+# - A minefield is MINES_PER_FIELD of the minelayer's `spacemine` creatures on a MINE_RING_METERS ring. A mine detonates
+#   on the first enemy ship within the minelayer mine's trigger distance (5 m) exactly as a minelayer's mine does: the
+#   Torpedo step's flags (bypasses shields, ignores size) with the field tier's Minelayer preset MineDmg and launcher
+#   Attack, Accuracy and rank (checks.py section K: every mine hitting). A detonated mine re-arms MINE_REARM_SECONDS
+#   later. The field's tier is the zone's lower tier, so a T1-2 belt field hits as a tier 1 minelayer's mine. Mines drop
+#   nothing.
+# - A wreck site holds one salvageable wreck (the W6a/W12a CreateWreck path): a Medium Normal wreck of the site's tier
+#   (4 cycles, no rare find, no data core), open to every ship (no party claim). Once stripped or expired it comes back
+#   WRECK_RESPAWN_MINUTES later; WRECK_LIFETIME_MINUTES caps an untouched one. Salvage pays per cycle as any wreck of its
+#   tier does, and a site's 4 cycles every half hour is a small share of a salvager's hour (the kills' wrecks are the
+#   modelled source), so no income band moves.
+# ---------------------------------------------------------------------------------------------------------------
+HAZARD_TIER_VARIABLE = "HAZARD_TIER"
+MINEFIELD_TAG = "SPACE_MINEFIELD"
+WRECK_SITE_TAG = "SPACE_WRECK_SITE"
+HAZARD_TAGS = (MINEFIELD_TAG, WRECK_SITE_TAG)
+HAZARD_NAMES = {MINEFIELD_TAG: "Minefield", WRECK_SITE_TAG: "Wreck Site"}
+MINES_PER_FIELD = 4
+MINE_RING_METERS = 8
+MINE_REARM_SECONDS = 300
+HAZARD_TICK_SECONDS = 10
+WRECK_SITE_NAME = "Drifting Wreck"
+WRECK_RESPAWN_MINUTES = 30
+WRECK_LIFETIME_MINUTES = 60
+WRECK_SIZE = "Medium"
+WRECK_DIFFICULTY = "Normal"
+# (area, minefields, field tier): the zones' lower tier.
+MINEFIELDS = [("space_viscbelt", 3, 1), ("space_midrimneb", 3, 3), ("space_korrdebris", 4, 5)]
+# (area, wreck sites, tier): one in each open orbit at its tier, two in the zones and three in the Debris Field and the
+# Ship Graveyard (tier 5 content; the wreck reads Wild Space from its area).
+WRECK_SITES = ([(a, 1, trade.ORBIT_TIERS[a]) for a in wildspace.KNOWN_ORBITS]
+               + [("space_viscbelt", 2, 1), ("space_midrimneb", 2, 3), ("space_korrdebris", 3, 5),
+                  ("space_wsgraveyrd", 3, wildspace.CONTENT_TIER)])
+
+
+def hazard_placements():
+    """(area, waypoint tag, count, tier) for every hazard waypoint group."""
+    return ([(a, MINEFIELD_TAG, n, t) for a, n, t in MINEFIELDS]
+            + [(a, WRECK_SITE_TAG, n, t) for a, n, t in WRECK_SITES])
+
+
 # The region's exchanges (those whose dock launches into a region area) price every good at this multiple while the
 # incursion lasts: supplies run short. Buying and selling both move, so hauling goods in pays and hoarding there costs.
 PRICE_MULTIPLIER = 1.25
@@ -253,6 +299,26 @@ TEMPLATE_NAME = "Rift Pocket"
 TEMPLATE_SOURCE = "space_wsblkhole"
 ROOM_WAYPOINT_PREFIX = "RIFT_ROOM_"
 ROOM_POINTS = [(60.0, 60.0, 3.0), (160.5, 250.5, 3.0), (225.0, 130.0, 3.0)]
+# Per-tier pockets (W11o): each key tier 1-5 opens its own template, a copy of the tier 5.5 pocket with its own sky,
+# music and chamber layout (the RIFT_ROOM waypoints: each at least 40 m from the decor and 100 m from the others).
+# Tier 5.5 keeps space_riftpocket. (tier tenths, resref, sky box, day music, battle music, chamber points)
+POCKET_TEMPLATES = [
+    (10, "space_riftpkt_t1", 63, 320, 311, [(60.0, 260.0, 3.0), (260.0, 250.0, 3.0), (160.0, 70.0, 3.0)]),
+    (20, "space_riftpkt_t2", 23, 333, 308, [(60.0, 60.0, 3.0), (250.5, 160.5, 3.0), (130.0, 225.0, 3.0)]),
+    (30, "space_riftpkt_t3", 70, 305, 337, [(60.0, 260.0, 3.0), (250.5, 159.5, 3.0), (120.0, 80.0, 3.0)]),
+    (40, "space_riftpkt_t4", 34, 313, 304, [(260.0, 260.0, 3.0), (159.5, 69.5, 3.0), (70.0, 200.0, 3.0)]),
+    (50, "space_riftpkt_t5", 0, 290, 311, [(60.0, 250.0, 3.0), (170.0, 60.0, 3.0), (250.0, 210.0, 3.0)]),
+]
+
+
+def template_for(tier_tenths):
+    return next((r for t, r, *_ in POCKET_TEMPLATES if t == tier_tenths), TEMPLATE_RESREF)
+
+
+def template_rooms(resref):
+    return next((rooms for _, r, _, _, _, rooms in POCKET_TEMPLATES if r == resref), ROOM_POINTS)
+
+
 TIMER_SECONDS = 900
 MAX_SHIPS = 3
 JOIN_METERS = 30
@@ -561,14 +627,48 @@ def incursion_cs():
     return "\n".join(lines)
 
 
+def hazard_cs():
+    q = json.dumps
+    rows = "\n".join(f"            new SpaceHazardPlacement {{ AreaResref = {q(a)}, WaypointTag = {q(t)}, Count = {n}, Tier = {tier} }},"
+                     for a, t, n, tier in hazard_placements())
+    lines = [HEADER.rstrip("\n"), "using System.Collections.Generic;", "",
+             "namespace SWLOR.Game.Server.Service.SpaceService", "{",
+             "    /// <summary>",
+             "    /// The zone hazard numbers (W11o): standalone minefields and pre-placed wreck sites, held by Module waypoints.",
+             "    /// </summary>",
+             "    public static class SpaceHazardTuning", "    {",
+             f"        public const string TierVariable = {q(HAZARD_TIER_VARIABLE)};",
+             f"        public const string MinefieldTag = {q(MINEFIELD_TAG)};",
+             f"        public const string WreckSiteTag = {q(WRECK_SITE_TAG)};",
+             f"        public const int MinesPerField = {MINES_PER_FIELD};",
+             f"        public const float MineRingMeters = {cs_float(MINE_RING_METERS)};",
+             f"        public const double MineRearmSeconds = {cs_double(MINE_REARM_SECONDS)};",
+             f"        public const double TickSeconds = {cs_double(HAZARD_TICK_SECONDS)};",
+             f"        public const string WreckName = {q(WRECK_SITE_NAME)};",
+             f"        public const double WreckRespawnMinutes = {cs_double(WRECK_RESPAWN_MINUTES)};",
+             f"        public const double WreckLifetimeMinutes = {cs_double(WRECK_LIFETIME_MINUTES)};",
+             f"        public const ShipSize WreckSize = ShipSize.{WRECK_SIZE};",
+             f"        public const WreckDifficulty WreckDifficulty = SpaceService.WreckDifficulty.{WRECK_DIFFICULTY};",
+             "",
+             "        /// <summary>Every hazard waypoint group the Module places: the area, the waypoint tag, how many and their tier.</summary>",
+             "        public static readonly IReadOnlyList<SpaceHazardPlacement> Placements = new List<SpaceHazardPlacement>", "        {",
+             rows, "        };", "    }", "}", ""]
+    return "\n".join(lines)
+
+
 def rift_cs():
     keys = [f"            new RiftKeyDetail {{ Resref = {q(resref)}, TierTenths = {tenths}, Name = {q(key_name(tenths))}, "
-            f"CreaturePrefix = {q(key_prefix(tenths))}, LootTable = {q(elite_table(tenths))}, BaseCredits = {run_base_credits(tenths)} }},"
+            f"CreaturePrefix = {q(key_prefix(tenths))}, LootTable = {q(elite_table(tenths))}, BaseCredits = {run_base_credits(tenths)}, "
+            f"Template = {q(template_for(tenths))} }},"
             for tenths, resref, _ in KEYS]
     rooms = [f"            new RiftRoom {{ Name = {q(name)}, Waves = new[] {{ {', '.join(cs_strings(x) for x in waves)} }}, "
              f"Extras = {cs_strings(extras)} }},"
              for name, waves, extras in ROOMS]
-    points = ", ".join(f"({cs_float(x)}, {cs_float(y)}, {cs_float(z)})" for x, y, z in ROOM_POINTS)
+    def cs_points(points):
+        return ", ".join(f"({cs_float(x)}, {cs_float(y)}, {cs_float(z)})" for x, y, z in points)
+
+    points = cs_points(ROOM_POINTS)
+    template_rows = [f"            [{q(r)}] = new[] {{ {cs_points(rooms)} }}," for _, r, _, _, _, rooms in POCKET_TEMPLATES]
     lines = [HEADER.rstrip("\n"), "using System.Collections.Generic;", "",
              "namespace SWLOR.Game.Server.Service.SpaceService", "{",
              "    /// <summary>",
@@ -598,6 +698,11 @@ def rift_cs():
              "        /// <summary>Where each chamber's arrival point stands when the template has no waypoint for it.</summary>",
              f"        public static readonly IReadOnlyList<(float X, float Y, float Z)> RoomPoints = new[] {{ {points} }};",
              "",
+             "        /// <summary>The per-tier pocket templates (key tiers 1-5) and their chamber points; tier 5.5 uses TemplateResref.</summary>",
+             "        public static readonly IReadOnlyDictionary<string, (float X, float Y, float Z)[]> TemplateRoomPoints = "
+             "new Dictionary<string, (float X, float Y, float Z)[]>", "        {",
+             *template_rows, "        };",
+             "",
              "        /// <summary>Every Rift Key, tier 1-5 and 5.5. Every Resref string literal here is an item resref.</summary>",
              "        public static readonly IReadOnlyList<RiftKeyDetail> Keys = new List<RiftKeyDetail>", "        {",
              *keys, "        };", "",
@@ -612,6 +717,31 @@ def rift_cs():
              + ", ".join(f"[WreckDifficulty.{k}] = {v}" for k, v in SALVAGE_KEY_PERCENT.items()) + " };",
              "    }", "}", ""]
     return "\n".join(lines)
+
+
+def pocket_templates():
+    """Each per-tier pocket: the tier 5.5 template's are, gic and git with its own resref, sky, music and chambers."""
+    out = {}
+    for tenths, resref, sky, day, battle, rooms in POCKET_TEMPLATES:
+        name = f"Rift Pocket (Tier {tenths // 10})"
+        are = json.loads((REPO / "Module" / "are" / f"{TEMPLATE_RESREF}.are.json").read_text(encoding="cp1252"))
+        are["ResRef"]["value"] = resref
+        are["Tag"]["value"] = resref
+        are["Name"]["value"] = {"0": name}
+        are["SkyBox"]["value"] = sky
+        gic = json.loads((REPO / "Module" / "gic" / f"{TEMPLATE_RESREF}.gic.json").read_text(encoding="cp1252"))
+        git = json.loads((REPO / "Module" / "git" / f"{TEMPLATE_RESREF}.git.json").read_text(encoding="cp1252"))
+        git["AreaProperties"]["value"]["MusicDay"]["value"] = day
+        git["AreaProperties"]["value"]["MusicNight"]["value"] = day
+        git["AreaProperties"]["value"]["MusicBattle"]["value"] = battle
+        for waypoint in git["WaypointList"]["value"]:
+            tag = waypoint["Tag"]["value"]
+            if tag.startswith(ROOM_WAYPOINT_PREFIX):
+                x, y, z = rooms[int(tag[len(ROOM_WAYPOINT_PREFIX):]) - 1]
+                waypoint["XPosition"]["value"], waypoint["YPosition"]["value"], waypoint["ZPosition"]["value"] = x, y, z
+        for kind, data in (("are", are), ("gic", gic), ("git", git)):
+            out[f"Module/{kind}/{resref}.{kind}.json"] = json.dumps(data, indent=2, ensure_ascii=False) + "\n"
+    return out
 
 
 def key_blueprints():
@@ -637,9 +767,11 @@ def writes():
     files = {
         "SWLOR.Game.Server/Service/SpaceService/IncursionTuning.cs": incursion_cs(),
         "SWLOR.Game.Server/Service/SpaceService/RiftRunTuning.cs": rift_cs(),
+        "SWLOR.Game.Server/Service/SpaceService/SpaceHazardTuning.cs": hazard_cs(),
     }
     files.update(key_blueprints())
     files.update(armada_blueprints())
+    files.update(pocket_templates())
     return files
 
 
@@ -648,7 +780,7 @@ def writes():
 # ---------------------------------------------------------------------------------------------------------------
 def events_tab(Sheet):
     s = Sheet("Events (Revamp)", [30, 18, 14, 14, 14, 14, 14, 70])
-    s.title("Events (Revamp): weekly incursions and Rift Runs")
+    s.title("Events (Revamp): weekly incursions, capital battles, zone hazards and Rift Runs")
     s.note("Dev Status: Proposed (space revamp W15b draft). Generated by tools/SpaceRevampBalance/events.py; plan sections 30 and 31.")
     s.blank()
     s.title("Incursions: schedule and spawns")
@@ -664,9 +796,32 @@ def events_tab(Sheet):
         ["Blockades", " + ".join(BLOCKADE_HULLS), "", "", "", "", "",
          "one at every planet dock of the region; while it holds, the dock refuses docking and its exchange is closed"],
         ["Price spike", f"x{PRICE_MULTIPLIER:g}", "", "", "", "", "", "the region's exchanges, buying and selling, while the incursion lasts"],
-        ["Command ship", "tier capital, invader hull", "", "", "", "", "",
-         "tiers 1-5: the tier's capital with the Inquisitor or Jahavey'ir appearance; tier 6: the Sith or Mandalorian capital itself"],
+        ["Command ship", "armada command ship", "", "", "", "", "",
+         "tiers 1-5: the armada's copy of the tier's capital (Inquisitor or Jahavey'ir hull); tier 6: the Sith or Mandalorian capital itself"],
+        ["Armada ships (W11o)", f"{len(armada_ships())} creatures", "", "", "", "", "",
+         "each invader's copy of the tier's role ships (t<tier>sitharm / mandoarm + ftr, int, bmb, gun, plt, cmd): same preset, "
+         "skin, loot and legacy ship item, with the armada's name and hulls (Sith: Imperial; Mandalorian: Clan Zel Arun)"],
     ])
+    s.title("Capital battles (W11o; plan section 11 encounter type)")
+    s.table(["Rule", "Value", "", "", "", "", "", "Notes"], [
+        ["Interval", f"every {CAPITAL_BATTLE_INTERVAL_HOURS} h", "", "", "", "", "",
+         f"the first {CAPITAL_BATTLE_FIRST_MINUTES} min after a restart; skipped while an incursion runs; one at a time"],
+        ["Areas", ", ".join(trade.ORBIT_NAMES[a] for a in CAPITAL_BATTLE_AREAS), "", "", "", "", "",
+         "the open tier 5-6 orbits, where the rare capitals already fly"],
+        ["Battle group", "command ship + " + " + ".join(COMMAND_ESCORTS), "", "", "", "", "",
+         "the incursion command group of the orbit's tier, Sith or Mandalorian Armada at random"],
+        ["Duration", f"{CAPITAL_BATTLE_MINUTES} min", "", "", "", "", "", "then it withdraws; announced server-wide on arrival, destruction and withdrawal"],
+        ["Reward", "the ships' own loot", "", "", "", "", "", "no extra payout: the fight pays what the same ships pay anywhere"],
+    ])
+    s.title("Zone hazards (W11o): minefields and wreck sites")
+    s.table(["Rule", "Value", "", "", "", "", "", "Notes"], [
+        ["Minefield", f"{MINES_PER_FIELD} mines, {MINE_RING_METERS} m ring", "", "", "", "", "",
+         f"each mine hits as its tier's minelayer mine (Torpedo flags, Bomber torpedo DMG) and re-arms {MINE_REARM_SECONDS} s after it detonates"],
+        ["Wreck site", f"{WRECK_SIZE} {WRECK_DIFFICULTY} wreck", "", "", "", "", "",
+         f"open to every ship; back {WRECK_RESPAWN_MINUTES} min after it is stripped or expires ({WRECK_LIFETIME_MINUTES} min)"],
+    ])
+    s.table(["Area", "Hazard", "Count", "Tier", "", "", "", "Notes"],
+            [[a, HAZARD_NAMES[t], n, tier, "", "", "", "Module waypoint " + t] for a, t, n, tier in hazard_placements()])
     s.title("Regions (an orbit with a dock and its starlane neighbours; each area fights at its own tier)")
     s.table(["Region", "Tier", "", "", "", "", "", "Areas"],
             [[REGION_NAMES[c], trade.ORBIT_TIERS[c], "", "", "", "", "",
@@ -696,8 +851,9 @@ def events_tab(Sheet):
            f"per incursion for the region reward's share, kill loot at the combat rate. Target {TARGET:.0%} (band 120-140%).")
     s.title("Rift Runs")
     s.table(["Rule", "Value", "", "", "", "", "", "Notes"], [
-        ["Pocket", TEMPLATE_RESREF, "", "", "", "", "",
-         f"one template area (copied from {TEMPLATE_SOURCE}), an instance per run, at most {MAX_RUNS} at once"],
+        ["Pocket", ", ".join([r for _, r, *_ in POCKET_TEMPLATES] + [TEMPLATE_RESREF]), "", "", "", "", "",
+         f"one template per key tier 1-5 (W11o: own sky, music and chambers) and {TEMPLATE_RESREF} for tier 5.5 (copied from "
+         f"{TEMPLATE_SOURCE}); an instance per run, at most {MAX_RUNS} at once"],
         ["Ships", f"1-{MAX_SHIPS}", "", "", "", "", "",
          f"the key user and party ships within {JOIN_METERS} m; the key is spent when the pocket opens"],
         ["Timer", f"{TIMER_SECONDS // 60} min", "", "", "", "", "", "warnings at " + ", ".join(f"{x} s" for x in WARNING_SECONDS)],
@@ -733,6 +889,7 @@ def main():
     stale = []
     for rel, text in writes().items():
         path = REPO / rel
+        assert not rel.startswith("Module/") or text.isascii(), rel
         if path.exists() and path.read_text(encoding="utf-8") == text:
             continue
         stale.append(rel)

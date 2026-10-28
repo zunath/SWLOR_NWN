@@ -150,10 +150,73 @@ public class RiftRunTests
             Math.Sqrt(Math.Pow(a.X - b.X, 2) + Math.Pow(a.Y - b.Y, 2)).Should().BeGreaterThan(100, "chambers stand far apart");
         }
 
-        ReadSource("Service", "Area.cs").Should().Contain("AreasByResref.Remove(SpaceService.RiftRunTuning.TemplateResref);");
+        ReadSource("Service", "Area.cs").Should().Contain("foreach (var template in SpaceService.RiftRunTuning.Keys.Select(x => x.Template).Distinct())")
+            .And.Contain("AreasByResref.Remove(template);");
         var runs = ReadSource("Service", "SpaceRiftRuns.cs");
-        runs.Should().Contain("Area.CreateInstance(RiftRunTuning.TemplateResref").And.Contain("DestroyArea(run.Area)")
+        runs.Should().Contain("Area.CreateInstance(key.Template").And.Contain("DestroyArea(run.Area)")
             .And.Contain("Item.ReduceItemStack(item, 1);");
+    }
+
+    [Test]
+    public void Pocket_EachKeyTierHasItsOwnTemplateWithItsOwnSkyMusicAndChambers()
+    {
+        RiftRunTuning.Keys.Select(x => x.Template).Should().Equal("space_riftpkt_t1", "space_riftpkt_t2", "space_riftpkt_t3",
+            "space_riftpkt_t4", "space_riftpkt_t5", RiftRunTuning.TemplateResref);
+        RiftRunTuning.TemplateRoomPoints.Keys.Should().BeEquivalentTo(RiftRunTuning.Keys.Select(x => x.Template).Where(x => x != RiftRunTuning.TemplateResref));
+        var ifo = File.ReadAllText(Path.Combine(Root(), "Module", "ifo", "module.ifo.json"), System.Text.Encoding.Latin1);
+        var planet = ReadSource("Service", "Planet.cs");
+        int Sky(JsonDocument are) => are.RootElement.GetProperty("SkyBox").GetProperty("value").GetInt32();
+        int Music(JsonDocument git) => git.RootElement.GetProperty("AreaProperties").GetProperty("value").GetProperty("MusicDay").GetProperty("value").GetInt32();
+        var skies = new HashSet<int>();
+        var music = new HashSet<int>();
+        using (var are = Module("are", RiftRunTuning.TemplateResref)) skies.Add(Sky(are));
+        using (var git = Module("git", RiftRunTuning.TemplateResref)) music.Add(Music(git));
+        using var source = Module("git", RiftRunTuning.TemplateResref);
+        var sourcePlaceables = source.RootElement.GetProperty("Placeable List").GetProperty("value").EnumerateArray()
+            .Select(x => (X: x.GetProperty("X").GetProperty("value").GetSingle(), Y: x.GetProperty("Y").GetProperty("value").GetSingle())).ToList();
+
+        foreach (var (template, points) in RiftRunTuning.TemplateRoomPoints)
+        {
+            ifo.Should().Contain($"\"{template}\"");
+            planet.Should().Contain($"\"{template}\"");
+            RiftRunRules.IsPocketTemplate(template).Should().BeTrue();
+            File.Exists(Path.Combine(Root(), "Module", "gic", $"{template}.gic.json")).Should().BeTrue();
+            using (var are = Module("are", template))
+            {
+                are.RootElement.GetProperty("ResRef").GetProperty("value").GetString().Should().Be(template);
+                are.RootElement.GetProperty("Tag").GetProperty("value").GetString().Should().Be(template);
+                skies.Add(Sky(are)).Should().BeTrue($"{template} has a sky of its own");
+            }
+
+            using var git = Module("git", template);
+            music.Add(Music(git)).Should().BeTrue($"{template} has music of its own");
+            git.RootElement.GetProperty("VarTable").GetProperty("value").EnumerateArray()
+                .Select(x => x.GetProperty("Name").GetProperty("value").GetString()).Should().Equal("SPACE");
+            git.RootElement.GetProperty("Creature List").GetProperty("value").GetArrayLength().Should().Be(0);
+            var waypoints = git.RootElement.GetProperty("WaypointList").GetProperty("value").EnumerateArray()
+                .ToDictionary(x => x.GetProperty("Tag").GetProperty("value").GetString()!, x => x);
+            waypoints.Keys.Should().BeEquivalentTo("STUCK_WAYPOINT", "RIFT_ROOM_1", "RIFT_ROOM_2", "RIFT_ROOM_3");
+            points.Should().HaveCount(3);
+            for (var room = 0; room < 3; room++)
+            {
+                var waypoint = waypoints[$"{RiftRunTuning.RoomWaypointPrefix}{room + 1}"];
+                waypoint.GetProperty("XPosition").GetProperty("value").GetSingle().Should().Be(points[room].X);
+                waypoint.GetProperty("YPosition").GetProperty("value").GetSingle().Should().Be(points[room].Y);
+                RiftRunRules.RoomPoint(template, room).Should().Be(points[room]);
+                sourcePlaceables.Min(p => Math.Sqrt(Math.Pow(p.X - points[room].X, 2) + Math.Pow(p.Y - points[room].Y, 2)))
+                    .Should().BeGreaterThan(40, "a chamber stands clear of the pocket's decor");
+                for (var other = room + 1; other < 3; other++)
+                    Math.Sqrt(Math.Pow(points[room].X - points[other].X, 2) + Math.Pow(points[room].Y - points[other].Y, 2))
+                        .Should().BeGreaterThan(100, "chambers stand far apart");
+            }
+        }
+
+        RiftRunRules.RoomPoint(RiftRunTuning.TemplateResref, 1).Should().Be(RiftRunTuning.RoomPoints[1]);
+        RiftRunRules.IsPocketTemplate(RiftRunTuning.TemplateResref).Should().BeTrue();
+        RiftRunRules.IsPocketTemplate("space_wsblkhole").Should().BeFalse();
+        ReadSource("Service", "SpaceRiftRuns.cs").Should().Contain("RiftRunRules.IsPocketTemplate(GetResRef(area))")
+            .And.Contain("RiftRunRules.RoomPoint(run.Key.Template, room)");
+        ReadSource("Service", "SpaceDmTools.cs").Should().Contain("OpenRiftRun", "the DM pocket tools open pockets through the shared opener");
     }
 
     [Test]

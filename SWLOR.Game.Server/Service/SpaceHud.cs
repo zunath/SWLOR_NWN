@@ -115,8 +115,8 @@ namespace SWLOR.Game.Server.Service
                 PlayerPlugin.SetQuickBarSlot(player, firstEmpty, PlayerQuickBarSlot.UseFeat(FeatType.ShipAllWeapons));
         }
 
-        /// <summary>The modules that are on, as the HUD lists them for a seat.</summary>
-        public static List<ShipHudModuleRow> GetModuleRows(uint player, ShipStatus status, ShipCrewSeat seat)
+        /// <summary>The modules that are on, as the HUD lists them: one seat's, or (null) every module on the ship.</summary>
+        public static List<ShipHudModuleRow> GetModuleRows(uint player, ShipStatus status, ShipCrewSeat? seat)
         {
             var (target, _) = Space.GetCurrentTarget(player);
             return ShipHudRules.BuildModuleRows(

@@ -74,6 +74,22 @@ namespace SWLOR.Game.Server.Service.HoldingService
                 ? 0
                 : DroidIndustryRules.HoldingOutputPercent(holding.DroidIndustry, holding.DroidEfficiencyPercent);
 
+        /// <summary>
+        /// Brings a staff droid's snapshot (Industry, Efficiency Protocol) up to what its controller reads now. True when
+        /// either changed. The holding must be caught up first, so the new rating starts from now.
+        /// </summary>
+        public static bool RefreshDroid(PlanetaryHolding holding, int industry, int efficiencyPercent)
+        {
+            if (string.IsNullOrEmpty(holding?.DroidItemId))
+                return false;
+
+            var newIndustry = Math.Max(0, industry);
+            var changed = holding.DroidIndustry != newIndustry || holding.DroidEfficiencyPercent != efficiencyPercent;
+            holding.DroidIndustry = newIndustry;
+            holding.DroidEfficiencyPercent = efficiencyPercent;
+            return changed;
+        }
+
         public static int GetDailyUnits(HoldingDetail detail, int level, int droidPercent) =>
             DroidIndustryRules.ApplyPercent(Round(detail.BatchUnits * HoldingTuning.LevelOutput[ClampLevel(level)]), droidPercent);
 

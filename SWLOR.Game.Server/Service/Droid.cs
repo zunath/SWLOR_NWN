@@ -1246,6 +1246,10 @@ namespace SWLOR.Game.Server.Service
                 AddItemProperty(DurationType.Permanent,
                     ItemPropertyCustom(ItemPropertyType.DroidInstruction, (int)instruction.Perk, instruction.Level), controller);
             SaveConstructedDroid(controller, constructedDroid);
+
+            // A posted droid works at the rating its controller reads now, not the one it had when it was posted.
+            if (IsPosted(controller))
+                Space.RefreshPostedDroid(controller);
         }
 
         [NWNEventHandler(ScriptName.OnDroidBlocked)]

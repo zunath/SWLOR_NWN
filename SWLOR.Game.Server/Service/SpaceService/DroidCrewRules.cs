@@ -116,6 +116,10 @@ namespace SWLOR.Game.Server.Service.SpaceService
         /// <summary>What a droid does with a module of this type and activation.</summary>
         public static DroidCrewTask GetTask(ShipModuleType type, ShipModuleActivation activation)
         {
+            // The Data Analyzer is a one-press module, so it is the one task a droid gives a non-toggle.
+            if (type == ShipModuleType.DataAnalyzer)
+                return DroidCrewTask.Slicing;
+
             if (activation != ShipModuleActivation.Toggle)
                 return DroidCrewTask.None;
 
@@ -148,6 +152,63 @@ namespace SWLOR.Game.Server.Service.SpaceService
         /// off once nothing is missing, so it never drains the capacitor on an empty sky.
         /// </summary>
         public static bool FlipsElectronicWarfare(bool isOn, bool enemyInRange) => isOn != enemyInRange;
+
+        /// <summary>
+        /// Brings a posting's snapshot (tier, Industry, protocols) up to what its controller reads now, so a droid whose
+        /// instructions or parts changed while posted works at its current rating (plan section 27). True when
+        /// anything changed.
+        /// </summary>
+        public static bool RefreshPosting(ShipDroidCrew posting, int tier, int industry, IReadOnlyDictionary<PerkType, int> protocols)
+        {
+            var newTier = ClampTier(tier);
+            var newIndustry = Math.Max(0, industry);
+            var newProtocols = protocols == null ? new Dictionary<PerkType, int>() : new Dictionary<PerkType, int>(protocols);
+            var changed = posting.Tier != newTier || posting.Industry != newIndustry ||
+                          !SameProtocols(posting.Protocols, newProtocols);
+
+            posting.Tier = newTier;
+            posting.Industry = newIndustry;
+            posting.Protocols = newProtocols;
+            return changed;
+        }
+
+        private static bool SameProtocols(IReadOnlyDictionary<PerkType, int> first, IReadOnlyDictionary<PerkType, int> second)
+        {
+            if (first == null || first.Count != second.Count)
+                return false;
+
+            foreach (var (perk, level) in first)
+            {
+                if (!second.TryGetValue(perk, out var other) || other != level)
+                    return false;
+            }
+
+            return true;
+        }
+
+        /// <summary>
+        /// Why a droid at the Sensors seat cannot slice a target, or an empty string (plan section 24, "Slicing in
+        /// space"): a droid cannot play the mini-game, so it slices a target of its own tier or lower outright, and
+        /// never while the ship is in combat, as a player cannot.
+        /// </summary>
+        public static string GetSlicingError(int droidTier, int targetTier, bool shipInCombat)
+        {
+            if (shipInCombat)
+                return "The droid cannot slice while the ship is in combat.";
+
+            if (ClampTier(droidTier) < targetTier)
+                return $"The droid is too basic to slice a tier {targetTier} target.";
+
+            return string.Empty;
+        }
+
+        /// <summary>
+        /// Whether a droid's slicing press opens the target: its station effectiveness is the chance (roll 0-99), so a
+        /// better industrial droid slices a target in fewer presses. A miss is a failed slice and costs what a
+        /// player's does: the target is lost.
+        /// </summary>
+        public static bool SlicingSucceeds(double effectiveness, int roll) =>
+            roll < Math.Clamp((int)Math.Round(effectiveness * 100.0), 0, 100);
 
         /// <summary>Whether a droid runs this module while shield is low.</summary>
         public static bool RunsWhenShieldLow(ShipModuleType type) =>

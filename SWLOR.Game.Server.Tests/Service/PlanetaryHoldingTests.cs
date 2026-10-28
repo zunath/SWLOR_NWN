@@ -332,12 +332,12 @@ public class PlanetaryHoldingTests
         holding.HasProcessingPlant.Should().BeTrue();
         HoldingRules.GetPlantRefusal(holding, detail, 1_000_000).Should().Be(HoldingRefusal.PlantBuilt);
 
-        // The plant takes half of each day's output, and its input up to some days of recipes.
+        // The plant takes its share of each day's output (35% since W11e), and its input up to some days of recipes.
         var plantUnits = HoldingRules.GetPlantUnits(detail.BatchUnits);
-        plantUnits.Should().Be(detail.BatchUnits / 2);
+        plantUnits.Should().Be((int)(detail.BatchUnits * 0.35));
         HoldingRules.GetDeliverableUnits(holding, detail, CommodityType.PurifiedWater).Should().Be(HoldingTuning.InputStockDays * plantUnits);
 
-        // Grain 1 + Water 1 make 1 Ration Pack, up to the plant's half of the output; the rest stays grain.
+        // Grain 1 + Water 1 make 1 Ration Pack, up to the plant's share of the output; the rest stays grain.
         HoldingRules.Deliver(holding, detail, CommodityType.PurifiedWater, plantUnits + 5, Start, new HoldingAdvanceResult());
         Advance(holding, 1);
         Units(holding, CommodityType.RationPacks).Should().Be(plantUnits);

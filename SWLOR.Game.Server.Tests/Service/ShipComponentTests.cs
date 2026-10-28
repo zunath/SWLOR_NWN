@@ -156,10 +156,26 @@ public class ShipComponentTests
 
     [TestCase(1, "ore_durelium")]
     [TestCase(2, "ore_durelium")]
-    [TestCase(3, "obsidian")]
+    [TestCase(3, "ref_plagionite")]
+    [TestCase(5, "ref_jasioclase")]
     public void HullFrames_UseDureliumInTheFirstBand(int tier, string signature)
     {
         Recipe(ShipComponentFamily.HullFrame, tier).Components.Select(x => x.Resref).Should().Contain(signature);
+    }
+
+    // W11e: where a hull recipe takes these components, the gem or metal signature is the tier's ground refined ore, so
+    // no hull costs more than 1.3x its pre-component material value; the other tiers keep the gem or metal.
+    [TestCase(ShipComponentFamily.HullFrame, 4, "ref_keromber")]
+    [TestCase(ShipComponentFamily.OrdnanceAssembly, 1, "ref_veldite")]
+    [TestCase(ShipComponentFamily.OrdnanceAssembly, 3, "obsidian")]
+    [TestCase(ShipComponentFamily.SensorSuite, 2, "ref_scordspar")]
+    [TestCase(ShipComponentFamily.SensorSuite, 5, "emerald")]
+    [TestCase(ShipComponentFamily.ExtractionHead, 2, "steel")]
+    [TestCase(ShipComponentFamily.ExtractionHead, 3, "ref_plagionite")]
+    [TestCase(ShipComponentFamily.ExtractionHead, 5, "diamond")]
+    public void HullPathComponents_UseGroundOreInTheTiersHullsTakeThem(ShipComponentFamily family, int tier, string signature)
+    {
+        Recipe(family, tier).Components.Select(x => x.Resref).Should().Contain(signature);
     }
 
     [TestCase(ShipComponentFamily.ShipReactor)]

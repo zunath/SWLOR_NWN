@@ -76,6 +76,21 @@ public class AppearanceEditorLayoutTests
     // ------------------------------------------------------------------ whole window
 
     [Test]
+    public void SettingsExposeFourHeadRowsWithMinusPlusAndReadout()
+    {
+        var widgets = Walk(_partials[AppearanceEditorViewModel.SettingsPartial]).ToArray();
+        foreach (var id in new[] { "ae_head", "ae_head_x", "ae_head_y", "ae_head_z" })
+        {
+            widgets.Should().ContainSingle(w => w.Id == id + "_decrease");
+            widgets.Should().ContainSingle(w => w.Id == id + "_increase");
+            widgets.Should().ContainSingle(w => w.Id == id + "_value");
+        }
+        var reset = widgets.Single(w => w.Id == "ae_head_reset");
+        reset.Events.Values.Should().ContainSingle(e => e.Method.Name == nameof(AppearanceEditorViewModel.OnResetHead));
+        _window.LayoutFindings.Should().BeEmpty();
+    }
+
+    [Test]
     public void EveryPartialIsDefinedAndHasNoLayoutFindings()
     {
         _partials.Keys.Should().Contain(AllPanels.Append(WindowMain));
@@ -661,6 +676,12 @@ public class AppearanceEditorLayoutTests
         Walk(settings).OfType<GuiRow<AppearanceEditorViewModel>>()
             .Should().OnlyContain(row => Width(row) == 0f && NaturalWidth(row) <= 256f,
                 "fixed controls must leave the surrounding spacers free to follow the client width");
+        foreach (var id in new[] { "ae_head_value", "ae_head_x_value", "ae_head_y_value", "ae_head_z_value" })
+        {
+            var value = Walk(settings).Single(widget => widget.Id == id);
+            NaturalWidth(PathTo(settings, value).OfType<GuiRow<AppearanceEditorViewModel>>().Last())
+                .Should().BeLessThanOrEqualTo(208f, "head values must leave room for native margins and the scrollbar in a 300px client window");
+        }
     }
 
     [Test]

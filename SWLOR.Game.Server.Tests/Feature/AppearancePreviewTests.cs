@@ -113,6 +113,21 @@ public class AppearancePreviewTests
     }
 
     [Test]
+    public void WeaponPartKeysNameTheEnginePartModels()
+    {
+        AppearancePreview.WeaponPartKey("WSwLs", AppearanceWeapon.Top, 101).Should().Be("wswls_t_011");
+        AppearancePreview.WeaponPartKey("wswls", AppearanceWeapon.Middle, 325).Should().Be("wswls_m_253");
+        AppearancePreview.WeaponPartKey("wswls", AppearanceWeapon.Bottom, 908).Should().Be("wswls_b_089");
+        AppearancePreview.WeaponPartKey("wswls", AppearanceWeapon.Invalid, 101).Should().BeEmpty();
+        AppearancePreview.WeaponPartKey("wswls", AppearanceWeapon.Top, 0).Should().BeEmpty();
+        AppearancePreview.WeaponPartKey("", AppearanceWeapon.Top, 101).Should().BeEmpty();
+        AppearancePreview.Resref(AppearancePreview.WeaponPartKey("wswls", AppearanceWeapon.Top, 101), AppearancePreviewView.Angle)
+            .Should().Be("awswls_t_011a");
+        AppearancePreview.SimpleWeaponKey("WPLGLV", 7).Should().Be("wplglv_007");
+        AppearancePreview.SimpleWeaponKey("wplglv", 0).Should().BeEmpty();
+    }
+
+    [Test]
     public void HeadHelmetAndCloakKeys()
     {
         AppearancePreview.HeadKey("pmh0", 7).Should().Be("pmh0_head007");
@@ -199,21 +214,28 @@ public class AppearancePreviewTests
         SwatchCode(null, true).Should().Be("RGB");
     }
 
-    [TestCase(2000f, true, 4)]
+    [TestCase(4000f, true, 10)]
+    [TestCase(1884f, true, 10)]
+    [TestCase(1883f, true, 9)]
     [TestCase(1240f, true, 4)]
-    [TestCase(1208f, true, 4)]
-    [TestCase(1207f, true, 3)]
-    [TestCase(1102f, true, 3)]
-    [TestCase(1101f, true, 2)]
-    [TestCase(996f, true, 2)]
-    [TestCase(995f, true, 1)]
+    [TestCase(1224f, true, 4)]
+    [TestCase(1223f, true, 3)]
+    [TestCase(1114f, true, 3)]
+    [TestCase(1113f, true, 2)]
+    [TestCase(1010f, true, 2)]
+    [TestCase(1004f, true, 2)]
+    [TestCase(1003f, true, 1)]
     [TestCase(0f, true, 1)]
-    [TestCase(688f, false, 4)]
-    [TestCase(687f, false, 3)]
-    [TestCase(582f, false, 3)]
-    [TestCase(581f, false, 2)]
-    [TestCase(476f, false, 2)]
-    [TestCase(475f, false, 1)]
+    [TestCase(2000f, false, 10)]
+    [TestCase(1394f, false, 10)]
+    [TestCase(1393f, false, 9)]
+    [TestCase(1240f, false, 8)]
+    [TestCase(734f, false, 4)]
+    [TestCase(733f, false, 3)]
+    [TestCase(624f, false, 3)]
+    [TestCase(623f, false, 2)]
+    [TestCase(514f, false, 2)]
+    [TestCase(513f, false, 1)]
     public void BrowserColumnsFollowTheWindowWidth(float width, bool hasSideColumns, int expected) =>
         BrowserColumnsForWidth(width, hasSideColumns).Should().Be(expected);
 
@@ -227,19 +249,58 @@ public class AppearancePreviewTests
     }
 
     [TestCase(720f, 4, 3)]
-    [TestCase(714f, 4, 3)]
-    [TestCase(713f, 4, 2)]
-    [TestCase(640f, 4, 2)]
-    [TestCase(576f, 4, 2)]
-    [TestCase(575f, 4, 1)]
-    [TestCase(754f, 2, 3)]
-    [TestCase(753f, 2, 2)]
+    [TestCase(674f, 4, 3)]
+    [TestCase(673f, 4, 2)]
+    [TestCase(536f, 4, 2)]
+    [TestCase(535f, 4, 1)]
+    [TestCase(812f, 4, 4)]
+    [TestCase(811f, 4, 3)]
+    [TestCase(714f, 2, 3)]
+    [TestCase(713f, 2, 2)]
     [TestCase(100f, 1, 1)]
-    [TestCase(4000f, 4, 3)]
+    [TestCase(4000f, 4, 4)]
     public void BrowserRowsFollowTheWindowHeight(float height, int columns, int expected) =>
         ((int)typeof(AppearanceEditorViewModel)
             .GetMethod("BrowserRowsForHeight", BindingFlags.NonPublic | BindingFlags.Static)!
             .Invoke(null, new object[] { height, columns })!).Should().Be(expected);
+
+    // width, height, x, y, screen width, screen height, scale -> width, height
+    [TestCase(800f, 760f, 40f, 30f, 0f, 0f, 1f, 1010f, 760f)]
+    [TestCase(1240f, 600f, 40f, 30f, 0f, 0f, 1f, 1240f, 750f)]
+    [TestCase(1240f, 760f, 40f, 30f, 0f, 0f, 1f, 1240f, 760f)]
+    [TestCase(800f, 500f, 40f, 30f, 900f, 650f, 1f, 900f, 650f)]
+    [TestCase(1240f, 720f, 40f, 0f, 1280f, 720f, 1f, 1240f, 720f)]
+    [TestCase(1800f, 900f, 300f, 200f, 1280f, 720f, 1f, 1280f, 750f)]
+    [TestCase(1800f, 1000f, 300f, 200f, 1280f, 720f, 1f, 1280f, 720f)]
+    [TestCase(800f, 500f, 1900f, 1000f, 2400f, 1350f, 1.2f, 1010f, 750f)]
+    [TestCase(800f, 500f, 1900f, 1000f, 1600f, 900f, 0.8f, 1010f, 750f)]
+    public void WindowsFitTheMinimumAndTheScreen(float width, float height, float x, float y, float screenWidth,
+        float screenHeight, float scale, float expectedWidth, float expectedHeight)
+    {
+        var geometry = new GuiRectangle(x, y, width, height);
+        var fitted = FitMinimumWindow(geometry, screenWidth, screenHeight, scale);
+        fitted.Width.Should().BeApproximately(expectedWidth, 0.01f);
+        fitted.Height.Should().BeApproximately(Math.Min(expectedHeight, screenHeight > 0f ? screenHeight / scale : float.MaxValue), 0.01f);
+        if (screenWidth > 0f)
+        {
+            // Positions are physical pixels; the window covers its size times the GUI scale.
+            fitted.X.Should().BeInRange(0f, screenWidth - fitted.Width * scale + 0.01f);
+            fitted.Y.Should().BeInRange(0f, screenHeight - fitted.Height * scale + 0.01f);
+        }
+    }
+
+    [Test]
+    public void AWindowThatAlreadyFitsKeepsItsGeometry()
+    {
+        var geometry = new GuiRectangle(100f, 50f, 1300f, 800f);
+        FitMinimumWindow(geometry, 1920f, 1080f, 1f).Should().BeSameAs(geometry);
+        FitMinimumWindow(geometry, 0f, 0f, 1f).Should().BeSameAs(geometry);
+    }
+
+    private static GuiRectangle FitMinimumWindow(GuiRectangle geometry, float screenWidth, float screenHeight, float scale) =>
+        (GuiRectangle)typeof(AppearanceEditorViewModel)
+            .GetMethod("FitMinimumWindow", BindingFlags.NonPublic | BindingFlags.Static)!
+            .Invoke(null, new object[] { geometry, screenWidth, screenHeight, scale })!;
 
     [Test]
     public void BrowserGridNamesAreDistinctPerSize()

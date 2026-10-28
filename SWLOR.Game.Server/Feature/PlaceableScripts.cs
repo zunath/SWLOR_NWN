@@ -78,6 +78,10 @@ namespace SWLOR.Game.Server.Feature
             if (!Space.CanFlownShipEnterArea(user, destinationArea))
                 return;
 
+            // A starlane into a higher tier, a zone or Wild Space says so as the pilot jumps.
+            var fromArea = GetArea(device);
+            Space.WarnOfDangerousStarlane(user, fromArea, destinationArea);
+
             var location = GetLocation(waypoint);
             TeleportCreature(user, location, waypoint);
 
@@ -100,6 +104,7 @@ namespace SWLOR.Game.Server.Feature
                     continue;
                 }
 
+                Space.WarnOfDangerousStarlane(partyMember, fromArea, destinationArea);
                 TeleportCreature(partyMember, location, waypoint);
 
                 var userName = PlayerName.GetDisplayName(partyMember, user);

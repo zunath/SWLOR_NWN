@@ -26,8 +26,11 @@ namespace SWLOR.Game.Server.Service
         /// <summary>Site ships still in a fight when their site ended; each is removed once nobody fights it.</summary>
         private static readonly HashSet<uint> _lingeringSiteShips = new();
 
-        /// <summary>Opens a signature's site where it lies: its ships, clouds, wreck or cache spawn now.</summary>
-        private static void RevealSite(ScanSignature signature, uint revealer)
+        /// <summary>
+        /// Opens a signature's site where it lies: its ships, clouds, wreck or cache spawn now. A site a DM opens has no
+        /// party to claim its wreck, so the wreck is open to anyone (<paramref name="openToAll"/>).
+        /// </summary>
+        private static void RevealSite(ScanSignature signature, uint revealer, bool openToAll = false)
         {
             var area = GetArea(revealer);
             signature.RevealedAt = DateTime.UtcNow;
@@ -45,7 +48,7 @@ namespace SWLOR.Game.Server.Service
                 case SignatureType.Derelict:
                     var wreck = CreateWreck(Location(area, center, Random.Next(360)),
                         signature.Boardable ? "Boardable Derelict" : "Derelict Wreck", signature.Tier,
-                        ScanningTuning.WreckSize, ScanningTuning.WreckDifficultyLevel, GetScanPartyIds(revealer),
+                        ScanningTuning.WreckSize, ScanningTuning.WreckDifficultyLevel, openToAll ? new HashSet<string>() : GetScanPartyIds(revealer),
                         // A boarded derelict's site can outlast its lifetime; ending the site removes the wreck then.
                         ScanningTuning.SiteLifetimeSeconds + (signature.Boardable ? DerelictTuning.BoardingHoldMinutes * 60 : 0));
                     if (GetIsObjectValid(wreck))

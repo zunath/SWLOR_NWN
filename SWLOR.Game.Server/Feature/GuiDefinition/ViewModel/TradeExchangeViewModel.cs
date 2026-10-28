@@ -361,7 +361,7 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
             OfferMinutes = minutes;
             OfferCanAccept = canAccept;
 
-            ContractsTitle = $"Your freight contracts ({contracts.Count} of {TradeTuning.FreightMaximumActive})";
+            ContractsTitle = $"Your freight contracts ({FreightContractRules.CountFreight(contracts)} of {TradeTuning.FreightMaximumActive})";
             _contractIds = contracts.Select(x => x.Id).ToList();
             var contractRoutes = new GuiBindingList<string>();
             var contractTooltips = new GuiBindingList<string>();
@@ -374,8 +374,10 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
                 var left = (int)Math.Ceiling((contract.Deadline - now).TotalMinutes);
                 var shipName = DB.Get<WorldProperty>(DB.Get<PlayerShip>(contract.ShipId)?.PropertyId ?? string.Empty)?.CustomName ?? "a ship";
                 contractRoutes.Add($"{TradeLookup.GetExchange(contract.Origin)?.Name} to {TradeLookup.GetExchange(contract.Destination)?.Name}, {contract.Volume} vol");
-                contractTooltips.Add($"Aboard {shipName}. Fee {contract.Fee} credits, deposit {contract.Deposit} credits.");
-                due.Add(late ? "Late: deposit lost" : $"Due in {left} min");
+                contractTooltips.Add(contract.IsAgentCourier
+                    ? $"Aboard {shipName}. A faction agent's courier run: the agent pays on an on-time delivery."
+                    : $"Aboard {shipName}. Fee {contract.Fee} credits, deposit {contract.Deposit} credits.");
+                due.Add(late ? (contract.IsAgentCourier ? "Late: the agent will not pay" : "Late: deposit lost") : $"Due in {left} min");
                 dueColors.Add(late ? GuiColor.Red : GuiColor.Green);
                 canDeliver.Add(ship != null && contract.Destination == _exchange &&
                                ship.SealedFreight.Any(x => x.ContractId == contract.Id));

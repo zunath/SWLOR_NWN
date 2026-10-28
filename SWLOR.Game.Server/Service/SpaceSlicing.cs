@@ -197,6 +197,7 @@ namespace SWLOR.Game.Server.Service
                     break;
                 case SlicingSourceType.DataCan:
                     DeliverRewardsToShip(slicer, ship, rewards, new List<string>());
+                    FactionAgents.OnHeistTargetSliced(slicer, target);
                     DestroyObject(target);
                     break;
                 case SlicingSourceType.LockedCache:
@@ -233,6 +234,8 @@ namespace SWLOR.Game.Server.Service
                 case SlicingSourceType.CustomsScan:
                     break;
                 default:
+                    if (source == SlicingSourceType.DataCan)
+                        FactionAgents.OnHeistTargetLost(target);
                     DestroyObject(target);
                     break;
             }
@@ -244,15 +247,13 @@ namespace SWLOR.Game.Server.Service
             Trade.ResolveCustomsSpoof(slicer, false);
         }
 
-        /// <summary>
-        /// Whether agent intel can be given (plan section 29). Faction agents arrive in W15; until then an agent intel
-        /// pick gives a component with a rare trait instead.
-        /// </summary>
-        public static bool AgentIntelAvailable => false;
+        /// <summary>Whether agent intel can be given (plan section 29): faction agents turn it into intel leads.</summary>
+        public static bool AgentIntelAvailable => true;
 
-        /// <summary>The W15 hook for an agent intel reward: unlocks a special agent mission for the slicer.</summary>
+        /// <summary>An agent intel reward: the slicer can open an intel lead on any faction agent's board.</summary>
         private static void GrantAgentIntel(uint slicer)
         {
+            FactionAgents.GrantIntel(slicer);
         }
 
         // Reward delivery

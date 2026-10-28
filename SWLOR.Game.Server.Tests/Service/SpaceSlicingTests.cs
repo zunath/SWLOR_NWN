@@ -321,7 +321,8 @@ public class SpaceSlicingTests
         SlicingReward.RollSpace(SlicingSourceType.DataCan, 3, Rolls(0, intel, 0, 0))[1].Kind.Should().Be(SpaceSlicingRewardKind.RareComponent);
         SlicingReward.RollSpace(SlicingSourceType.DataCan, 3, Rolls(0, intel, 0, 0), true)[1].Kind.Should().Be(SpaceSlicingRewardKind.AgentIntel,
             "the W15 hook turns agent intel on");
-        ServerSource("Service", "SpaceSlicing.cs").Should().Contain("public static bool AgentIntelAvailable => false;", "faction agents arrive in W15");
+        ServerSource("Service", "SpaceSlicing.cs").Should().Contain("public static bool AgentIntelAvailable => true;", "faction agents turn intel into leads (W15a)");
+        ServerSource("Service", "SpaceSlicing.cs").Should().Contain("FactionAgents.GrantIntel(slicer);");
     }
 
     [Test]

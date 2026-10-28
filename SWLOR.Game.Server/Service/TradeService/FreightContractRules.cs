@@ -103,7 +103,7 @@ namespace SWLOR.Game.Server.Service.TradeService
                 return FreightRefusal.StandingTooLow;
             if ((taken?.Contains(offer.Id) ?? false) || (active?.Any(x => x.Id == offer.Id) ?? false))
                 return FreightRefusal.AlreadyTaken;
-            if ((active?.Count ?? 0) >= TradeTuning.FreightMaximumActive)
+            if (CountFreight(active) >= TradeTuning.FreightMaximumActive)
                 return FreightRefusal.TooManyContracts;
             if (capacity <= 0)
                 return FreightRefusal.NoCargoBay;
@@ -113,6 +113,29 @@ namespace SWLOR.Game.Server.Service.TradeService
                 return FreightRefusal.NotEnoughCredits;
 
             return FreightRefusal.None;
+        }
+
+        /// <summary>The freight contracts that count toward the limit: faction agents' courier runs do not.</summary>
+        public static int CountFreight(IEnumerable<FreightContract> active)
+        {
+            return active?.Count(x => !x.IsAgentCourier) ?? 0;
+        }
+
+        /// <summary>A faction agent's courier run as a contract: a sealed load to the destination by the deadline, no fee or deposit.</summary>
+        public static FreightContract AgentCourier(string missionId, TradeExchangeType origin, TradeExchangeType destination, string shipId,
+            int volume, int deadlineMinutes, DateTime now)
+        {
+            return new FreightContract
+            {
+                Id = missionId,
+                Origin = origin,
+                Destination = destination,
+                ShipId = shipId,
+                Volume = volume,
+                AcceptedAt = now,
+                Deadline = now.AddMinutes(deadlineMinutes),
+                IsAgentCourier = true,
+            };
         }
 
         /// <summary>The contract the player holds once the offer is accepted.</summary>

@@ -22,5 +22,11 @@ namespace SWLOR.Game.Server.Service.TradeService
         public int Deposit { get; set; }
         public DateTime AcceptedAt { get; set; }
         public DateTime Deadline { get; set; }
+
+        /// <summary>
+        /// A faction agent's sealed courier run (plan section 29): no fee or deposit, the agent pays on delivery, and it
+        /// does not count toward the freight contract limit. Its id is the mission's.
+        /// </summary>
+        public bool IsAgentCourier { get; set; }
     }
 }

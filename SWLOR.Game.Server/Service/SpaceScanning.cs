@@ -101,11 +101,13 @@ namespace SWLOR.Game.Server.Service
 
                 EndSite(signature);
                 signatures.Remove(signature);
-                respawns.Add(now.AddSeconds(ScanningTuning.RespawnSeconds));
+                // A faction agent's lead is placed again when its pilot next enters the system, if the mission is still open.
+                if (!signature.IsAgentLead)
+                    respawns.Add(now.AddSeconds(ScanningTuning.RespawnSeconds));
             }
 
             // A fresh area (after a restart) fills at once; later gaps wait for their respawn time.
-            while (signatures.Count(x => x.Type != SignatureType.Rift) + respawns.Count < detail.Signatures)
+            while (signatures.Count(x => x.Type != SignatureType.Rift && !x.IsAgentLead) + respawns.Count < detail.Signatures)
                 respawns.Add(now);
 
             var due = respawns.Where(x => now >= x).ToList();
@@ -202,7 +204,8 @@ namespace SWLOR.Game.Server.Service
 
             var scannerId = GetObjectUUID(ship);
             var operatorCreature = SpaceCrew.GetCreditedPlayer(ship);
-            foreach (var signature in signatures)
+            var partyIds = GetScanPartyIds(ship);
+            foreach (var signature in signatures.Where(x => SignatureSiteRules.CanScan(x, partyIds)))
             {
                 var (before, after) = ScanningRules.AddSignal(signature, scannerId, signal);
                 var message = ScanningRules.ThresholdMessage(signature, ScanningRules.CrossedLevel(before, after), tierEarly);
@@ -228,8 +231,9 @@ namespace SWLOR.Game.Server.Service
                 return false;
 
             var scannerId = GetObjectUUID(ship);
+            var partyIds = GetScanPartyIds(ship);
             return GetSignatures(GetResRef(GetArea(ship)))
-                .Any(x => !x.Completed && x.Signal.GetValueOrDefault(scannerId) < x.SignalRequired);
+                .Any(x => !x.Completed && SignatureSiteRules.CanScan(x, partyIds) && x.Signal.GetValueOrDefault(scannerId) < x.SignalRequired);
         }
 
         /// <summary>

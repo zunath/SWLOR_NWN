@@ -81,6 +81,13 @@ namespace SWLOR.Game.Server.Service
             dbPlayer.FreightContracts.Remove(contract);
             DB.Set(ship);
             DB.Set(dbPlayer);
+            if (contract.IsAgentCourier)
+            {
+                Log.Write(LogGroup.Space, $"AGENT COURIER DELIVER - {PlayerName.GetAuditName(player)} - {contract.Id}{(result.IsLate ? " (late)" : string.Empty)}");
+                FactionAgents.OnCourierDelivered(player, contract.Id, result.IsLate);
+                return;
+            }
+
             GiveGoldToCreature(player, result.Fee + result.DepositReturned);
 
             SendMessageToPC(player, result.IsLate
@@ -106,6 +113,12 @@ namespace SWLOR.Game.Server.Service
             if (ship != null && ship.SealedFreight.RemoveAll(x => x.ContractId == contract.Id) > 0)
                 DB.Set(ship);
 
+            if (contract.IsAgentCourier)
+            {
+                FactionAgents.Abandon(player, contract.Id);
+                return;
+            }
+
             SendMessageToPC(player, ColorToken.Red($"Contract abandoned. The deposit of {contract.Deposit} credits is forfeit."));
             Log.Write(LogGroup.Space, $"FREIGHT ABANDON - {PlayerName.GetAuditName(player)} - {contract.Id} deposit {contract.Deposit} forfeit");
         }
@@ -128,13 +141,58 @@ namespace SWLOR.Game.Server.Service
             DB.Set(dbPlayer);
 
             var owner = FindOnlinePlayer(ship.OwnerPlayerId);
-            foreach (var contract in failed)
+            foreach (var contract in failed.Where(x => x.IsAgentCourier))
+                FactionAgents.OnCourierLost(ship.OwnerPlayerId, contract.Id);
+            foreach (var contract in failed.Where(x => !x.IsAgentCourier))
             {
                 if (GetIsObjectValid(owner))
                     SendMessageToPC(owner, ColorToken.Red(
                         $"Your freight for {TradeLookup.GetExchange(contract.Destination)?.Name} was lost with your ship. The contract failed and the deposit of {contract.Deposit} credits is forfeit."));
                 Log.Write(LogGroup.Space, $"FREIGHT LOST - player {ship.OwnerPlayerId} - {contract.Id} lost with ship {ship.Id}");
             }
+        }
+
+        /// <summary>
+        /// Loads a faction agent's sealed courier load (plan section 29) into one of the player's ships docked at the
+        /// agent's dock with room for it, and records the run as a contract. Returns the ship id, or empty when none fits.
+        /// </summary>
+        public static string LoadAgentCourier(uint player, string dockId, TradeExchangeType origin, string missionId,
+            TradeExchangeType destination, int volume, int deadlineMinutes)
+        {
+            var ship = GetShipsDockedAt(player, dockId).FirstOrDefault(x => GetCargoCapacity(x) > 0 && GetFreeVolume(x) >= volume);
+            var dbPlayer = DB.Get<Player>(GetObjectUUID(player));
+            if (ship == null || dbPlayer == null)
+                return string.Empty;
+
+            var contract = FreightContractRules.AgentCourier(missionId, origin, destination, ship.Id, volume, deadlineMinutes, DateTime.UtcNow);
+            ship.SealedFreight.Add(FreightContractRules.GetSealedLot(contract));
+            dbPlayer.FreightContracts.Add(contract);
+            DB.Set(ship);
+            DB.Set(dbPlayer);
+            return ship.Id;
+        }
+
+        /// <summary>Whether one of the player's ships docked here could take a sealed load of this volume.</summary>
+        public static bool HasCourierRoom(uint player, string dockId, int volume, out bool noShip)
+        {
+            var ships = GetShipsDockedAt(player, dockId).Where(x => GetCargoCapacity(x) > 0).ToList();
+            noShip = ships.Count == 0;
+            return ships.Any(x => GetFreeVolume(x) >= volume);
+        }
+
+        /// <summary>Takes a faction agent's courier load off its ship and drops its contract, when the mission ends without delivery.</summary>
+        public static void UnloadAgentCourier(string playerId, string missionId)
+        {
+            var dbPlayer = DB.Get<Player>(playerId);
+            var contract = dbPlayer?.FreightContracts.FirstOrDefault(x => x.Id == missionId && x.IsAgentCourier);
+            if (contract == null)
+                return;
+
+            dbPlayer.FreightContracts.Remove(contract);
+            DB.Set(dbPlayer);
+            var ship = string.IsNullOrWhiteSpace(contract.ShipId) ? null : DB.Get<PlayerShip>(contract.ShipId);
+            if (ship != null && ship.SealedFreight.RemoveAll(x => x.ContractId == contract.Id) > 0)
+                DB.Set(ship);
         }
 
         private static PlayerShip GetOwnShipDockedHere(uint player, string shipId, TradeExchangeType exchange, string dockId)

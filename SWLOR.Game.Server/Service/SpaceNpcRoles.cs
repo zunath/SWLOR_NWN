@@ -27,6 +27,22 @@ namespace SWLOR.Game.Server.Service
             Scheduler.ScheduleRepeating(ProcessSpaceMines, TimeSpan.FromSeconds(ShipNpcRoleTuning.MineCheckSeconds));
         }
 
+        /// <summary>
+        /// The tier and role of a destroyed preset NPC ship that counts for an agent's kill mission: a faction-tier ship,
+        /// a pirate raider or an ace, never a lawful convoy or customs ship.
+        /// </summary>
+        public static bool TryGetMissionKill(uint creature, out int tier, out ShipNpcRole role)
+        {
+            tier = 0;
+            role = ShipNpcRole.Invalid;
+            if (GetIsPC(creature) || Trade.IsLawfulShip(creature) || !_npcPresets.TryGetValue(GetTag(creature), out var preset))
+                return false;
+
+            tier = ShipSalvageRules.WreckTier(GetTag(creature), preset.Level);
+            role = ShipNpcRoleRules.ParseRole(preset.Role);
+            return true;
+        }
+
         /// <summary>The role of an NPC ship's preset, or Invalid for a legacy NPC ship.</summary>
         public static ShipNpcRole GetNpcRole(uint creature)
         {

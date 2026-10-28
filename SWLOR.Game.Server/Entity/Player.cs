@@ -8,6 +8,7 @@ using SWLOR.Game.Server.Service.AbilityService;
 using SWLOR.Game.Server.Service.CombatService;
 using SWLOR.Game.Server.Service.CraftService;
 using SWLOR.Game.Server.Service.CurrencyService;
+using SWLOR.Game.Server.Service.FactionAgentService;
 using SWLOR.Game.Server.Service.FactionService;
 using SWLOR.Game.Server.Service.GuiService;
 using SWLOR.Game.Server.Service.GuiService.Component;
@@ -223,6 +224,15 @@ namespace SWLOR.Game.Server.Entity
 
         /// <summary>The freight offers the player took this hour and the last, so one offer cannot be taken twice.</summary>
         public List<string> FreightOffersTaken { get; set; } = new();
+
+        /// <summary>The faction agent missions the player holds (plan section 29), with their terms. Older records load with none.</summary>
+        public List<AgentMission> AgentMissions { get; set; } = new();
+
+        /// <summary>The agent offers the player took today and yesterday, so one offer cannot be taken twice.</summary>
+        public List<string> AgentOffersTaken { get; set; } = new();
+
+        /// <summary>Agent intel from sliced data cans: each opens one intel lead on a faction agent's board.</summary>
+        public int AgentIntel { get; set; }
 
 
         public PlayerSettings Settings { get; set; }

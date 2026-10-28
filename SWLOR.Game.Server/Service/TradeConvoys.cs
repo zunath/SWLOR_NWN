@@ -33,6 +33,49 @@ namespace SWLOR.Game.Server.Service
             return GetIsObjectValid(hauler);
         }
 
+        /// <summary>
+        /// Starts a convoy for a faction agent's escort mission (plan section 29) and returns its hauler, or OBJECT_INVALID.
+        /// The hauler sets itself up as it spawns, as every convoy does.
+        /// </summary>
+        public static uint StartEscortConvoy(Location location, int tier)
+        {
+            var hauler = CreateObject(ObjectType.Creature, ConvoyRules.GetHaulerTag(tier), location);
+            return GetIsObjectValid(hauler) ? hauler : OBJECT_INVALID;
+        }
+
+        /// <summary>Whether a ship flies for a lawful authority: a trade convoy or a customs patrol.</summary>
+        public static bool IsLawfulShip(uint ship)
+        {
+            return !string.IsNullOrEmpty(GetLocalString(ship, LawfulGroupVariable));
+        }
+
+        /// <summary>
+        /// Pirate raiders of the tier strike an escorted convoy: they spawn around its hauler, go for it and the escorting
+        /// pilot, and the convoy fights back. They leave once idle, as ambushers do.
+        /// </summary>
+        public static int SpawnConvoyRaiders(uint hauler, int tier, int size, uint pilot)
+        {
+            var group = GetLocalString(hauler, LawfulGroupVariable);
+            var convoy = _lawfulGroups.TryGetValue(group, out var members) ? members.Where(x => GetIsObjectValid(x) && !GetIsDead(x)).ToList() : new List<uint> { hauler };
+            var raiders = SpawnAround(hauler, PirateAmbushRules.GetSquad(tier, size), AmbushRangeMeters);
+            foreach (var raider in raiders)
+            {
+                foreach (var ship in convoy)
+                {
+                    SetIsTemporaryEnemy(raider, ship);
+                    SetIsTemporaryEnemy(ship, raider);
+                    Enmity.ModifyEnmity(raider, ship, 50);
+                }
+
+                Enmity.ModifyEnmity(hauler, raider, 100);
+                if (GetIsObjectValid(pilot))
+                    Enmity.ModifyEnmity(pilot, raider, 50);
+                DespawnWhenIdle(raider, TradeTuning.AmbushSeconds);
+            }
+
+            return raiders.Count;
+        }
+
         /// <summary>A convoy hauler, from a spawn table or the DM tools, loads its cargo and calls its escorts.</summary>
         [NWNEventHandler(ScriptName.OnCreatureSpawnAfter)]
         public static void InitializeConvoyOnSpawn()
@@ -84,7 +127,11 @@ namespace SWLOR.Game.Server.Service
                 AssignCommand(hauler, () =>
                 {
                     ActionMoveToObject(starlane, false, 5f);
-                    ActionDoCommand(() => DismissLawfulGroup(group, 0f));
+                    ActionDoCommand(() =>
+                    {
+                        FactionAgents.OnConvoyArrived(hauler);
+                        DismissLawfulGroup(group, 0f);
+                    });
                 });
             }
 

@@ -57,6 +57,15 @@ namespace SWLOR.Game.Server.Service.SpaceService
         /// <summary>A rift's size and destination, shown from the threat level on.</summary>
         public string RiftDetail { get; set; } = string.Empty;
 
+        /// <summary>The faction agent mission this signature is a lead for (plan section 29); empty for every other signature.</summary>
+        public string AgentMissionId { get; init; } = string.Empty;
+
+        /// <summary>The player an agent lead is for: only their party's probes find it.</summary>
+        public string AgentPlayerId { get; init; } = string.Empty;
+
         public bool IsRevealed => RevealedAt != null;
+
+        /// <summary>Whether a faction agent placed it for one player's mission; it is not part of its area's signature count.</summary>
+        public bool IsAgentLead => !string.IsNullOrEmpty(AgentMissionId);
     }
 }

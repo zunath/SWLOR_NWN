@@ -10,7 +10,7 @@ namespace SWLOR.Game.Server.Feature.PerkDefinition
     /// <summary>
     /// The Bulwark style of Piloting (plan section 6, Appendix A): a tank ported from the Vibroblade Bulwark line,
     /// the Heavy Vibroblade Immortal line and the Armor Provoke. Rows, prices, ranks and text are the Design Bible
-    /// tab "Piloting (Revamp)". Bulwark, Fortification and the resistances reuse the ground stats; Anger Strike,
+    /// tab "Piloting". Bulwark, Fortification and the resistances reuse the ground stats; Anger Strike,
     /// Critical Ward and Unbreakable set space-only stats, because the ground stats of the same perks add up with a
     /// pilot's ground perks and key their cooldowns to hit points.
     /// </summary>

@@ -232,12 +232,12 @@ namespace SWLOR.Game.Server.Service.SpaceService
         }
 
         /// <summary>
-        /// The base amount of one extraction cycle (mining laser, gas harvester, salvager): 1, plus a legacy perk's
-        /// ranks, plus a quarter of the ship's Industrial bonus, plus a sixth of the module bonus. Whole numbers
+        /// The base amount of one extraction cycle (mining laser, gas harvester, salvager): 1, plus a quarter of the
+        /// ship's Industrial bonus, plus a sixth of the module bonus. Whole numbers
         /// throughout (plan section 16, bug 3: the module bonus was divided as a float).
         /// </summary>
-        public static int ExtractionBaseAmount(int legacyPerkRanks, int industrialBonus, int moduleBonus) =>
-            1 + Math.Max(0, legacyPerkRanks) + Math.Max(0, industrialBonus) / 4 + Math.Max(0, moduleBonus) / 6;
+        public static int ExtractionBaseAmount(int industrialBonus, int moduleBonus) =>
+            1 + Math.Max(0, industrialBonus) / 4 + Math.Max(0, moduleBonus) / 6;
 
         /// <summary>The ore one mining cycle yields: the base amount plus Prospector (or a cycle's perk bonus).</summary>
         public static int MiningYield(int baseAmount, int prospectorBonus) =>

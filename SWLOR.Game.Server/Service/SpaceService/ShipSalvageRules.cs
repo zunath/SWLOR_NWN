@@ -95,11 +95,11 @@ namespace SWLOR.Game.Server.Service.SpaceService
 
         /// <summary>Items one salvage cycle yields: the mining laser's base amount plus Salvage Expert.</summary>
         public static int SalvageItemsPerCycle(int industrialBonus, int moduleBonus, int salvageExpertBonus) =>
-            SpaceCombatMath.ExtractionBaseAmount(0, industrialBonus, moduleBonus) + Math.Max(0, salvageExpertBonus);
+            SpaceCombatMath.ExtractionBaseAmount(industrialBonus, moduleBonus) + Math.Max(0, salvageExpertBonus);
 
         /// <summary>Tibanna Gas one harvest cycle yields: the mining laser's base amount plus Gas Siphoning.</summary>
         public static int GasPerCycle(int industrialBonus, int moduleBonus, int gasSiphoningBonus) =>
-            SpaceCombatMath.ExtractionBaseAmount(0, industrialBonus, moduleBonus) + Math.Max(0, gasSiphoningBonus);
+            SpaceCombatMath.ExtractionBaseAmount(industrialBonus, moduleBonus) + Math.Max(0, gasSiphoningBonus);
 
         /// <summary>The Ship Scrap of a wreck's tier: the Refinery turns tier N scrap into tier N electronics (T6 uses T5).</summary>
         public static string ShipScrapResref(int wreckTier) => ShipSalvageItems.ShipScrap[Math.Clamp(wreckTier, 1, 5) - 1];

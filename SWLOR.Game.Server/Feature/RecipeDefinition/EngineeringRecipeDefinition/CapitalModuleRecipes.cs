@@ -12,7 +12,12 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.EngineeringRecipeDefinition
         {
             Tier5();
 
-            return _builder.Build();
+            // The retired ship and module recipes (plan section 15): kept so saved unlocks and blueprints still find
+            // them, but no longer learned or crafted. RevampStarshipRecipes makes their replacements.
+            var recipes = _builder.Build();
+            foreach (var recipe in recipes.Values)
+                recipe.IsActive = false;
+            return recipes;
         }
 
         private void Tier5()

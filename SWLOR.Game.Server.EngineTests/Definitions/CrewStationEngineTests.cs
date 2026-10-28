@@ -39,7 +39,7 @@ namespace SWLOR.Game.Server.EngineTests.Definitions
             {
                 [3] = new ShipStatus.ShipStatusModule
                 {
-                    ItemTag = "hull_rep_b",
+                    ItemTag = "sm_hrep_35",
                     RequiredSkills = new Dictionary<SkillType, int> { [SkillType.Piloting] = 10 },
                 },
             },
@@ -89,7 +89,7 @@ namespace SWLOR.Game.Server.EngineTests.Definitions
 
                 await ctx.ExecuteInCreatureContextAsync(crew.Creature, () => Space.ActivateShipModule(crew.Creature, stationFeat));
                 Space.TurnOffShipToggles(pilot.Creature);
-                ctx.AssertEqual(17, Hull(), "hull after the Engineer's Basic Hull Repairer cycle (7 at 100%)");
+                ctx.AssertEqual(18, Hull(), "hull after the Engineer's Hull Repairer cycle (8 at 100%)");
 
                 ctx.Assert(CombatPoint.HasCombatPoints(crew.Creature, fighting),
                     "the crew member earns the combat point for their station's repair");
@@ -99,7 +99,7 @@ namespace SWLOR.Game.Server.EngineTests.Definitions
                 SpaceCrew.ReleaseSeat(crew.Creature);
                 await ctx.ExecuteInCreatureContextAsync(crew.Creature, () => Space.ActivateShipModule(crew.Creature, stationFeat));
                 Space.TurnOffShipToggles(pilot.Creature);
-                ctx.AssertEqual(17, Hull(), "hull after the crew member leaves the seat and presses it");
+                ctx.AssertEqual(18, Hull(), "hull after the crew member leaves the seat and presses it");
             }
             finally
             {

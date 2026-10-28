@@ -1,6 +1,4 @@
 using System.Collections.Generic;
-using SWLOR.Game.Server.Service.LogService;
-using SWLOR.Game.Server.Service.PerkService;
 using SWLOR.Game.Server.Service.PropertyService;
 using SWLOR.NWN.API.NWScript.Enum;
 
@@ -216,30 +214,6 @@ namespace SWLOR.Game.Server.Service.SpaceService
         public ShipBuilder DroidBay()
         {
             _activeShip.HasDroidBay = true;
-
-            return this;
-        }
-
-        /// <summary>
-        /// Indicates a player must have the perk at a specific level in order to use the ship.
-        /// </summary>
-        /// <param name="perkType">The type of perk to require</param>
-        /// <param name="requiredLevel">The minimum level required</param>
-        /// <returns>A ship builder with the configured options.</returns>
-        public ShipBuilder RequirePerk(PerkType perkType, int requiredLevel)
-        {
-            if (requiredLevel < 0)
-            {
-                Log.Write(LogGroup.Error, $"Failed to add required perk to {_activeShip.Name} because requiredLevel cannot be less than zero.");
-                return this;
-            }
-            if (requiredLevel > 100)
-            {
-                Log.Write(LogGroup.Error, $"Failed to add required perk to {_activeShip.Name} because requiredLevel cannot be greater than 100.");
-                return this;
-            }
-
-            _activeShip.RequiredPerks[perkType] = requiredLevel;
 
             return this;
         }

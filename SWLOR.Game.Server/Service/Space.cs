@@ -1354,24 +1354,12 @@ namespace SWLOR.Game.Server.Service
         /// <returns>true if all requirements are met, false otherwise</returns>
         public static bool CanPlayerUseShip(uint player, ShipStatus playerShip)
         {
-            var playerId = GetObjectUUID(player);
-            var dbPlayer = DB.Get<Player>(playerId);
-
-            var shipDetails = _shipTypes[playerShip.ItemTag];
-
-            // Check ship requirements
-            foreach (var (perkType, requiredLevel) in shipDetails.RequiredPerks)
-            {
-                if (!dbPlayer.Perks.ContainsKey(perkType)) return false;
-
-                if (dbPlayer.Perks[perkType] < requiredLevel) return false;
-            }
+            if (!_shipTypes.ContainsKey(playerShip.ItemTag ?? string.Empty))
+                return false;
 
             // Crew-station modules are the crew's to work, so the pilot needs only the Helm's (plan section 10).
-            foreach (var shipModule in GetPilotModules(playerShip))
-            {
-                if (!CanPlayerUseShipModule(player, shipModule.ItemTag)) return false;
-            }
+            if (GetPilotModules(playerShip).Any(shipModule => !_shipModules.ContainsKey(shipModule.ItemTag ?? string.Empty)))
+                return false;
 
             return string.IsNullOrEmpty(GetShipSkillRequirementError(player, playerShip));
         }
@@ -1409,10 +1397,7 @@ namespace SWLOR.Game.Server.Service
             var error = Item.GetSkillRequirementsError(player, playerShip.RequiredSkills);
             if (!string.IsNullOrEmpty(error)) return error;
 
-            var modules = GetPilotModules(playerShip)
-                .Concat(playerShip.ConfigurationModules.Values);
-
-            foreach (var shipModule in modules)
+            foreach (var shipModule in GetPilotModules(playerShip))
             {
                 error = Item.GetSkillRequirementsError(player, shipModule.RequiredSkills);
                 if (!string.IsNullOrEmpty(error)) return error;
@@ -1422,32 +1407,7 @@ namespace SWLOR.Game.Server.Service
         }
 
         /// <summary>
-        /// Determines if player can use a ship module by its tag.
-        /// </summary>
-        /// <param name="player">The player to check</param>
-        /// <param name="itemTag">The ship module item tag</param>
-        /// <returns>true if player can use the module, false otherwise</returns>
-        public static bool CanPlayerUseShipModule(uint player, string itemTag)
-        {
-            if (!_shipModules.ContainsKey(itemTag)) return false;
-
-            var playerId = GetObjectUUID(player);
-            var dbPlayer = DB.Get<Player>(playerId);
-            var shipModule = _shipModules[itemTag];
-
-            foreach (var (perkType, requiredLevel) in shipModule.RequiredPerks)
-            {
-                if (!dbPlayer.Perks.ContainsKey(perkType)) return false;
-
-                if (dbPlayer.Perks[perkType] < requiredLevel) return false;
-            }
-
-            return true;
-        }
-
-        /// <summary>
-        /// When a ship module item is examined,
-        /// append the configured description to the item's description and add prerequisite perk item properties.
+        /// When a ship module item is examined, append the configured description to the item's description.
         /// </summary>
         [NWNEventHandler(ScriptName.OnExamineObjectBefore)]
         public static void ExamineShipModuleItem()
@@ -1456,12 +1416,11 @@ namespace SWLOR.Game.Server.Service
         }
 
         /// <summary>
-        /// Applies ship and ship module examine details to an item.
+        /// Applies ship module examine details to an item.
         /// </summary>
         public static void ApplyExamineDetails(uint item)
         {
             ApplyShipModuleExamineDetails(item);
-            ApplyShipExamineDetails(item);
         }
 
         /// <summary>
@@ -1496,39 +1455,6 @@ namespace SWLOR.Game.Server.Service
             SetDescription(item, ShipComponents.BuildDescription(
                 BuildShipModuleDescription(GetDescription(item, true), baseItemDescription, moduleDetail.Description),
                 ShipComponents.GetTraits(item)));
-
-            // Apply item properties defined in code.
-            foreach (var (perkType, level) in moduleDetail.RequiredPerks)
-            {
-                var ip = ItemPropertyCustom(ItemPropertyType.UseLimitationPerk, (int)perkType, level);
-                BiowareXP2.IPSafeAddItemProperty(item, ip, 0.0f, AddItemPropertyPolicy.ReplaceExisting, true, false);
-            }
-        }
-
-        /// <summary>
-        /// When a ship item is examined, add the prerequisite perk item properties.
-        /// </summary>
-        [NWNEventHandler(ScriptName.OnExamineObjectBefore)]
-        public static void ExamineShipItem()
-        {
-            ApplyShipExamineDetails(StringToObject(EventsPlugin.GetEventData("EXAMINEE_OBJECT_ID")));
-        }
-
-        private static void ApplyShipExamineDetails(uint item)
-        {
-            // Must be an item
-            if (GetObjectType(item) != ObjectType.Item) return;
-
-            // Tag must be registered with the system.
-            var itemTag = GetTag(item);
-            if (!_shipTypes.ContainsKey(itemTag)) return;
-            var shipDetail = _shipTypes[itemTag];
-
-            foreach (var (perkType, level) in shipDetail.RequiredPerks)
-            {
-                var ip = ItemPropertyCustom(ItemPropertyType.UseLimitationPerk, (int)perkType, level);
-                BiowareXP2.IPSafeAddItemProperty(item, ip, 0.0f, AddItemPropertyPolicy.ReplaceExisting, true, false);
-            }
         }
 
         /// <summary>
@@ -1955,81 +1881,14 @@ namespace SWLOR.Game.Server.Service
             var registeredEnemyType = _spaceObjects[creatureTag];
             var shipDetail = _shipTypes[registeredEnemyType.ShipItemTag];
 
-            // A creature with a preset gets its ship from the preset rather than the legacy hull and loadout.
-            if (_npcPresets.TryGetValue(creatureTag, out var preset))
+            // Every NPC ship takes its hull, weapons and support modules from its preset (RevampNpcShipCatalog).
+            if (!_npcPresets.TryGetValue(creatureTag, out var preset))
             {
-                _shipNPCs[creature] = ShipNpcRules.BuildStatus(preset, registeredEnemyType.ShipItemTag, shipDetail.CapitalShip, DateTime.UtcNow);
+                Log.Write(LogGroup.Error, $"Space object '{creatureTag}' has no NPC ship preset and was not given a ship.");
                 return;
             }
 
-            var shipStatus = new ShipStatus
-            {
-                ItemTag = registeredEnemyType.ShipItemTag,
-                Shield = shipDetail.MaxShield,
-                MaxShield = shipDetail.MaxShield,
-                Hull = shipDetail.MaxHull,
-                MaxHull = shipDetail.MaxHull,
-                Capacitor = shipDetail.MaxCapacitor,
-                MaxCapacitor = shipDetail.MaxCapacitor,
-                EMDefense = shipDetail.EMDefense,
-                ExplosiveDefense = shipDetail.ExplosiveDefense,
-                ThermalDefense = shipDetail.ThermalDefense,
-                Accuracy = shipDetail.Accuracy,
-                Evasion = shipDetail.Evasion,
-                ShieldRechargeRate = shipDetail.ShieldRechargeRate,
-                CapitalShip = shipDetail.CapitalShip,
-                Size = shipDetail.Size == ShipSize.Invalid ? ShipSize.Small : shipDetail.Size
-            };
-
-            // Attach the modules to the ship status.
-            var featCount = 0;
-            foreach (var itemTag in registeredEnemyType.HighPoweredModules)
-            {
-                var feat = ShipModuleFeats.ElementAt(featCount).Key;
-                var slot = HighFeatToSlot(feat);
-                var shipModule = _shipModules[itemTag];
-                shipStatus.HighPowerModules.Add(slot, new ShipStatus.ShipStatusModule
-                {
-                    ItemTag = itemTag,
-                    RecastTime = DateTime.UtcNow
-                });
-
-                shipModule.ModuleEquippedAction?.Invoke(shipStatus, 0);
-
-                featCount++;
-            }
-            foreach (var itemTag in registeredEnemyType.LowPowerModules)
-            {
-                var feat = ShipModuleFeats.ElementAt(featCount).Key;
-                var slot = LowFeatToSlot(feat);
-                var shipModule = _shipModules[itemTag];
-                shipStatus.LowPowerModules.Add(slot, new ShipStatus.ShipStatusModule
-                {
-                    ItemTag = itemTag,
-                    RecastTime = DateTime.UtcNow
-                });
-
-                shipModule.ModuleEquippedAction?.Invoke(shipStatus, 0);
-
-                featCount++;
-            }
-            foreach (var itemTag in registeredEnemyType.MidPowerModules)
-            {
-                var feat = ShipModuleFeats.ElementAt(featCount).Key;
-                var slot = MidFeatToSlot(feat);
-                var shipModule = _shipModules[itemTag];
-                shipStatus.MidPowerModules.Add(slot, new ShipStatus.ShipStatusModule
-                {
-                    ItemTag = itemTag,
-                    RecastTime = DateTime.UtcNow
-                });
-
-                shipModule.ModuleEquippedAction?.Invoke(shipStatus, 0);
-
-                featCount++;
-            }
-
-            _shipNPCs[creature] = shipStatus;
+            _shipNPCs[creature] = ShipNpcRules.BuildStatus(preset, registeredEnemyType.ShipItemTag, shipDetail.CapitalShip, DateTime.UtcNow);
         }
 
         /// <summary>

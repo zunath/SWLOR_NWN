@@ -2,6 +2,7 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using SWLOR.Game.Server.Core;
+using SWLOR.NWN.API.Engine;
 using SWLOR.Game.Server.Service.SpaceService;
 using SWLOR.NWN.API.NWScript.Enum;
 
@@ -61,6 +62,36 @@ namespace SWLOR.Game.Server.Service
 
             // The wreck schedules its own removal: a delay on the dying ship would be lost when the ship is destroyed.
             AssignCommand(wreck, () => DelayCommand(ShipSalvageRules.WreckSeconds, () => DestroyObject(wreck)));
+        }
+
+        /// <summary>
+        /// Places a salvageable wreck that no ship's death left, such as a derelict site's (plan section 24). The
+        /// claimants have it to themselves for the claim time from now, and it is removed after
+        /// <paramref name="seconds"/>.
+        /// </summary>
+        public static uint CreateWreck(Location location, string name, int tier, ShipSize size, WreckDifficulty difficulty,
+            HashSet<string> claimants, float seconds)
+        {
+            ForgetVanishedWrecks();
+
+            var resref = size == ShipSize.Capital ? CapitalWreckResref : WreckResref;
+            var wreck = CreateObject(ObjectType.Placeable, resref, location);
+            if (!GetIsObjectValid(wreck))
+                return OBJECT_INVALID;
+
+            SetName(wreck, name);
+            _wrecks[wreck] = new ShipWreck
+            {
+                Tier = Math.Clamp(tier, 1, 6),
+                Difficulty = difficulty,
+                Size = size,
+                DestroyedAt = DateTime.UtcNow,
+                Claimants = claimants ?? new HashSet<string>(),
+                RemainingCycles = ShipSalvageRules.WreckCycles(size, difficulty)
+            };
+
+            AssignCommand(wreck, () => DelayCommand(seconds, () => RemoveWreck(wreck)));
+            return wreck;
         }
 
         /// <summary>The wreck a placeable is, or null when it is not a wreck (or has been stripped).</summary>

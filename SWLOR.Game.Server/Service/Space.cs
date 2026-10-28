@@ -996,6 +996,7 @@ namespace SWLOR.Game.Server.Service
 
             // The All Weapons feat is owned before the hot bar loads, so a saved slot for it survives.
             CreaturePlugin.AddFeat(player, FeatType.ShipAllWeapons);
+            CreaturePlugin.AddFeat(player, FeatType.ShipJumpToSignature);
 
             // Load the player's ship hot bar.
             if (!dbPlayerShip.PlayerHotBars.ContainsKey(playerId) ||
@@ -1048,6 +1049,7 @@ namespace SWLOR.Game.Server.Service
             }
 
             SpaceHud.EnsureAllWeaponsOnHotBar(player);
+            EnsureJumpToSignatureOnHotBar(player, dbPlayerShip.Status);
 
             DB.Set(dbPlayer);
             DB.Set(dbPlayerShip);
@@ -1234,6 +1236,8 @@ namespace SWLOR.Game.Server.Service
                 CreaturePlugin.RemoveFeat(player, feat);
             }
             CreaturePlugin.RemoveFeat(player, FeatType.ShipAllWeapons);
+            CreaturePlugin.RemoveFeat(player, FeatType.ShipJumpToSignature);
+            ClearScanningState(player);
 
             // Load the player's hot bar.
             if (string.IsNullOrWhiteSpace(dbPlayer.SerializedHotBar) ||
@@ -2599,7 +2603,10 @@ namespace SWLOR.Game.Server.Service
             var shieldDamage = shieldBefore - targetShipStatus.Shield;
             var hullDamage = hullBefore - targetShipStatus.Hull;
             if (shieldDamage > 0 || hullDamage > 0)
+            {
                 MarkShipCombat(attacker, target);
+                InterruptSignatureJump(target);
+            }
 
             if (hullDamage > 0)
             {

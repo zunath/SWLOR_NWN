@@ -2887,5 +2887,6 @@ namespace SWLOR.NWN.API.NWScript.Enum
         GasSiphoningTrait = 3355,
         SalvageExpertTrait = 3356,
         TraitHunterTrait = 3357,
+        ShipJumpToSignature = 3358,
 }
 }

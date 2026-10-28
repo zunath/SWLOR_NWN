@@ -6632,6 +6632,10 @@ namespace SWLOR.Game.Server.Service.StatService
         [StatType(StatTypeCategory.BeneficialWhenPositive)]
         SpaceRareTraitChance = 1220,
 
+        /// <summary>Percent added to a Probe Launcher's scan strength on a ship (space system environments).</summary>
+        [StatType(StatTypeCategory.BeneficialWhenPositive)]
+        SpaceScanStrengthPercent = 1221,
+
 
     }
 

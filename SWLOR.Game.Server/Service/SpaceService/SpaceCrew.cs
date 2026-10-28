@@ -54,6 +54,12 @@ namespace SWLOR.Game.Server.Service.SpaceService
         /// </summary>
         public static double GetDroidIndustryBonus(ShipDroidCrew droid) => 0.0;
 
+        /// <summary>
+        /// The percent a droid's Survey Protocol instruction (plan section 27) adds to a Probe Launcher it runs. The
+        /// instruction does not exist yet, so this is 0 for every droid and for no droid at all.
+        /// </summary>
+        public static int GetDroidSurveyBonusPercent(ShipDroidCrew droid) => 0;
+
         /// <summary>The crew effectiveness multiplier for a Crew Morale percent and a Leadership percent.</summary>
         public static double EffectivenessMultiplier(int crewMoralePercent, int leadershipPercent) =>
             1.0 + (Math.Max(0, crewMoralePercent) + Math.Max(0, leadershipPercent)) / 100.0;

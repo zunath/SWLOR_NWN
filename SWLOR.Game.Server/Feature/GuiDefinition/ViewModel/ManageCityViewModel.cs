@@ -187,14 +187,26 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
             WatchOnClient(model => model.CitizenshipTax);
         }
 
-        private void RefreshPermissions()
+        private bool RefreshPermissions()
         {
             var playerId = GetObjectUUID(Player);
             var dbCity = DB.Get<WorldProperty>(_cityId);
             var permission = DB.Search(new DBQuery<WorldPropertyPermission>()
                 .AddFieldSearch(nameof(WorldPropertyPermission.PlayerId), playerId, false)
                 .AddFieldSearch(nameof(WorldPropertyPermission.PropertyId), _cityId, false))
-                .Single();
+                .SingleOrDefault();
+
+            // The permission row is deleted when another manager revokes the player's last permission.
+            if (permission == null)
+            {
+                CanAccessTreasury = false;
+                CanEditTaxes = false;
+                CanManageUpkeep = false;
+                CanUpgradeMedicalCenters = false;
+                CanUpgradeStarports = false;
+                CanUpgradeCantinas = false;
+                return false;
+            }
 
             // Permissions
             CanAccessTreasury = permission.Permissions[PropertyPermissionType.AccessTreasury];
@@ -211,6 +223,8 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
             CanUpgradeCantinas = permission.Permissions[PropertyPermissionType.ManageUpgrades] &&
                               dbCity.Upgrades[PropertyUpgradeType.CantinaLevel] < MaxUpgradeLevel &&
                               dbCity.Upgrades[PropertyUpgradeType.CityLevel] >= dbCity.Upgrades[PropertyUpgradeType.CantinaLevel] + 1;
+
+            return true;
         }
 
         private void RefreshUpgradeLevels()
@@ -502,10 +516,10 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
         };
 
         /// <summary>
-        /// Parses and clamps the entered taxes. Without the Edit Taxes permission the stored values are kept
-        /// and the method returns false when the player tried to change either one.
+        /// Parses and clamps the entered taxes. Without the Edit Taxes permission the entered text is ignored
+        /// and the stored values are kept.
         /// </summary>
-        public static bool TryResolveTaxes(
+        public static void ResolveTaxes(
             bool canEditTaxes,
             string citizenshipText,
             string transportationText,
@@ -514,6 +528,13 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
             out int citizenshipTax,
             out int transportationTax)
         {
+            if (!canEditTaxes)
+            {
+                citizenshipTax = currentCitizenshipTax;
+                transportationTax = currentTransportationTax;
+                return;
+            }
+
             if (!int.TryParse(citizenshipText, out citizenshipTax))
                 citizenshipTax = 0;
 
@@ -522,15 +543,6 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
 
             citizenshipTax = Math.Clamp(citizenshipTax, 0, 50000);
             transportationTax = Math.Clamp(transportationTax, 0, 25);
-
-            if (canEditTaxes)
-                return true;
-
-            var unchanged = citizenshipTax == currentCitizenshipTax &&
-                            transportationTax == currentTransportationTax;
-            citizenshipTax = currentCitizenshipTax;
-            transportationTax = currentTransportationTax;
-            return unchanged;
         }
 
         public Action SaveChanges() => () =>
@@ -542,24 +554,23 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
                 return;
             }
 
-            RefreshPermissions();
+            if (!RefreshPermissions())
+            {
+                Instructions = "Insufficient permissions.";
+                InstructionsColor = GuiColor.Red;
+                return;
+            }
 
             var dbCity = DB.Get<WorldProperty>(_cityId);
 
-            if (!TryResolveTaxes(
-                    CanEditTaxes,
-                    CitizenshipTax,
-                    TransportationTax,
-                    dbCity.Taxes[PropertyTaxType.Citizenship],
-                    dbCity.Taxes[PropertyTaxType.Transportation],
-                    out var citizenshipTax,
-                    out var transportationTax))
-            {
-                Instructions = "Insufficient permissions to edit taxes.";
-                InstructionsColor = GuiColor.Red;
-                RefreshTaxesAndFees();
-                return;
-            }
+            ResolveTaxes(
+                CanEditTaxes,
+                CitizenshipTax,
+                TransportationTax,
+                dbCity.Taxes[PropertyTaxType.Citizenship],
+                dbCity.Taxes[PropertyTaxType.Transportation],
+                out var citizenshipTax,
+                out var transportationTax);
 
             dbCity.CustomName = CityName;
             dbCity.Taxes[PropertyTaxType.Citizenship] = citizenshipTax;

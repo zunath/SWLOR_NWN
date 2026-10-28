@@ -21,7 +21,7 @@ public class SpaceAchievementTests
     public void SpaceAchievements_FollowTheGroundOnesAndAreActive()
     {
         Space.Select(x => (int)x).Should().BeEquivalentTo(Enumerable.Range(187, Space.Length), "numbered after Final Salvo (186)");
-        Space.Length.Should().Be(6 + 1 + RevampAceCatalog.Aces.Count + 1 + 6 + 1 + 3);
+        Space.Length.Should().Be(6 + 1 + RevampAceCatalog.Aces.Count + 1 + 6 + 1 + 3 + 3 + 1, "W11o appended three interiors and the crewed kill");
         foreach (var achievement in Space)
         {
             var detail = achievement.GetAttribute<AchievementType, AchievementAttribute>();
@@ -79,6 +79,42 @@ public class SpaceAchievementTests
         SpaceAchievementRules.IsNamedModule(null).Should().BeFalse();
     }
 
+    [Test]
+    public void FighterCorvetteAndBasiliskInteriors_GrantTheirExplorationAchievement()
+    {
+        var root = new DirectoryInfo(TestContext.CurrentContext.TestDirectory);
+        while (!File.Exists(Path.Combine(root.FullName, "SWLOR.Game.Server.sln")))
+            root = root.Parent!;
+
+        foreach (var (area, achievement) in new[]
+                 {
+                     ("ship_fight_v", AchievementType.ExploreStarshipFighter),
+                     ("ship_corv_v", AchievementType.ExploreStarshipCorvette),
+                     ("ship_basi_v", AchievementType.ExploreStarshipBasilisk),
+                 })
+        {
+            using var git = System.Text.Json.JsonDocument.Parse(File.ReadAllText(Path.Combine(root.FullName, "Module", "git", area + ".git.json")));
+            var variable = git.RootElement.GetProperty("VarTable").GetProperty("value").EnumerateArray()
+                .Single(x => x.GetProperty("Name").GetProperty("value").GetString() == "EXPLORE_ACHIEVEMENT_ID");
+            variable.GetProperty("Type").GetProperty("value").GetInt32().Should().Be(1, "an int local");
+            variable.GetProperty("Value").GetProperty("value").GetInt32().Should().Be((int)achievement, area);
+        }
+
+        File.ReadAllText(Path.Combine(root.FullName, "SWLOR.Game.Server", "Feature", "AchievementProgression.cs"))
+            .Should().Contain("GetLocalInt(area, \"EXPLORE_ACHIEVEMENT_ID\")", "the area enter grants it as for every other interior");
+    }
+
+    [Test]
+    public void CrewedKills_NeedAPlayerCrewmateAboard()
+    {
+        SpaceAchievementRules.IsCrewedKill(1).Should().BeFalse("a pilot alone");
+        SpaceAchievementRules.IsCrewedKill(2).Should().BeTrue();
+        SpaceAchievementRules.IsCrewedKill(4).Should().BeTrue();
+        ((int)AchievementType.SpaceCrewedKill).Should().Be(221);
+    }
+
+    [TestCase("Service/SpaceAchievements.cs", "GetShipCrewPlayers(GetFiringShip(killer))")]
+    [TestCase("Service/SpaceAchievements.cs", "Achievement.GiveAchievement(player, AchievementType.SpaceCrewedKill);")]
     [TestCase("Service/SpaceAchievements.cs", "[NWNEventHandler(ScriptName.OnCreatureDeathBefore)]")]
     [TestCase("Service/SpaceAchievements.cs", "Achievement.GiveAchievement(member, ace.Achievement);")]
     [TestCase("Service/SpaceAchievements.cs", "IsWildSpace(OBJECT_SELF)")]

@@ -23027,6 +23027,39 @@
               "__struct_id": 0,
               "NAME": {
                 "type": "cexostring",
+                "value": "Captain's Holotable"
+              },
+              "RESREF": {
+                "type": "resref",
+                "value": "structure_5022"
+              }
+            },
+            {
+              "__struct_id": 0,
+              "NAME": {
+                "type": "cexostring",
+                "value": "Star Map Pedestal"
+              },
+              "RESREF": {
+                "type": "resref",
+                "value": "structure_5023"
+              }
+            },
+            {
+              "__struct_id": 0,
+              "NAME": {
+                "type": "cexostring",
+                "value": "Holo Star Globe"
+              },
+              "RESREF": {
+                "type": "resref",
+                "value": "structure_5024"
+              }
+            },
+            {
+              "__struct_id": 0,
+              "NAME": {
+                "type": "cexostring",
                 "value": "Ladder, Dark"
               },
               "RESREF": {

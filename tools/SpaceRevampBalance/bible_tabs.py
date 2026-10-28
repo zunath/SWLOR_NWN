@@ -896,7 +896,15 @@ def rewards_tab():
     s.table(["Trophy", "Item", "StructureType", "Placeable", "", "", "", "Description"],
             [[a["TrophyName"], a["TrophyResref"], a["TrophyId"], a["TrophyPlaceable"], "", "", "", a["TrophyText"]] for a in aces])
 
-    s.title("Space achievements (W9c)")
+    s.title("Space decor: Fabrication furniture (W11o)")
+    s.note("Crafted structures (structure_50NN after the station buildings) for homes, city buildings, stations and starship "
+           "interiors, each an existing placeable no other structure uses, at the bill and level of the Electronics furniture "
+           "recipe named. Rows on the Fabrication Recipes tab.")
+    s.table(["Decor", "Item", "StructureType", "Placeable", "Recipe", "Level", "Copies", "Description"],
+            [[d["Name"], d["Resref"], d["StructureId"], d["Placeable"], d["RecipeId"], d["Level"], d["Copies"], d["Text"]]
+             for d in rw.decor_rows()])
+
+    s.title("Space achievements (W9c; W11o added the Fighter, Corvette and Basilisk interiors and the crewed kill)")
     s.table(["Achievement", "Id", "Enum", "", "", "", "", "Description"],
             [[name, aid, enum, "", "", "", "", text] for (aid, enum, name, text) in rw.achievements()])
     return s

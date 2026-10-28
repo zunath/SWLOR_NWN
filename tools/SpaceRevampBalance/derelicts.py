@@ -58,10 +58,17 @@ DOCK_CAPACITY = 2        # ships of one party docked at a derelict at once
 BOARDING_HOLD_MINUTES = 40  # a boarded site stays open while boarded, at most this long after the first ship docked
 
 # Templates: existing starship interiors reused unchanged and dressed as wrecks when instanced (decision: no new areas).
+# W11o added four more hull layouts, the roomy ones (30 or more placeables 10 m or more from the entrance, so the
+# placement fallback beside placeables has room); the cramped Small layouts (Panther, Hound, Condor, Striker, Fighter,
+# Basilisk, the Light Freighter) stay out.
 TEMPLATES = [
     ("ship_merchant_z", "Derelict Merchant Freighter"),
     ("ship_throne_z", "Derelict Throne Yacht"),
     ("ship_consul_z", "Derelict Consular Cruiser"),
+    ("ship_mule_z", "Derelict Mule Hauler"),
+    ("ship_falchion_z", "Derelict Falchion Runner"),
+    ("ship_saber_z", "Derelict Saber Prospector"),
+    ("ship_corv_v", "Derelict Corvette"),
 ]
 DRESSING = ["swd2_debr001", "swd3_dbpil02", "swd_jkpl001", "swd_jkpl002", "zep_smokesm"]
 DRESSING_COUNT = 10

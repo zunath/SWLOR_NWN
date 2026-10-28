@@ -370,6 +370,52 @@ SITE_ACHIEVEMENTS = [
 ]
 
 
+# W11o: the interiors that still had no exploration achievement (plan section 14) and the first crewed kill, appended
+# after the trade milestones so no earlier id moves. Each interior's area carries EXPLORE_ACHIEVEMENT_ID (Module git
+# VarTable), as the other starship interiors do; a crewed kill is a kill by a ship with a player crewmate at a station.
+INTERIOR_ACHIEVEMENTS = [
+    ("ship_fight_v", "ExploreStarshipFighter", "Explore Fighter Ship", "Explore a Fighter class starship."),
+    ("ship_corv_v", "ExploreStarshipCorvette", "Explore Corvette Ship", "Explore a Corvette class starship."),
+    ("ship_basi_v", "ExploreStarshipBasilisk", "Explore Basilisk Ship", "Explore a Basilisk class starship."),
+]
+CREWED_KILL_ACHIEVEMENT = ("SpaceCrewedKill", "Crewed Kill", "Destroyed a ship in space with a crewmate at a station.")
+
+# ---------------------------------------------------------------------------------------------------------------
+# Space decor (W11o, plan section 14 "interior trophies and decor"): Fabrication furniture for homes, city buildings,
+# stations and starship interiors. Each places an existing static placeable no other structure uses, and copies the
+# bill, level and tier of the Electronics furniture recipe named last (FurnitureRecipes), so no number is new: one
+# item storage slot and two Structure enhancement slots like every crafted furniture piece.
+# StructureType after the station buildings (5018-5021), RecipeType after the last revamp recipe (7792).
+# ---------------------------------------------------------------------------------------------------------------
+DECOR_STRUCTURE_START = 5022
+DECOR_RECIPE_START = 7793
+DECOR_COST = 100   # like every crafted furniture item (structure_0162)
+DECOR_STORAGE = 1
+DECOR_ENHANCEMENT_SLOTS = 2
+# enum, name, placeable, description, level, perk tier, components, the furniture recipe it copies
+DECOR = [
+    ("CaptainsHolotable", "Captain's Holotable", "swlor_1268",
+     "A command holotable that projects star charts and fleet positions above the captain's console.",
+     49, 5, [("ref_jasioclase", 5), ("elec_high", 5)], "ConsoleCircularCommand"),
+    ("StarMapPedestal", "Star Map Pedestal", "_mdrn_pl_basestm",
+     "A navigator's pedestal that holds the hyperspace routes a ship has charted.",
+     40, 4, [("elec_imperfect", 6), ("ref_keromber", 3)], "HoloDisplay"),
+    ("HoloStarGlobe", "Holo Star Globe", "_mdrn_pl_holgl7l",
+     "A large holographic star, a favorite centerpiece of spacers' quarters.",
+     45, 5, [("elec_imperfect", 3), ("ref_jasioclase", 2)], "HoloProjector2"),
+]
+
+
+def decor_rows():
+    """Every space decor piece with its StructureType, RecipeType and item resref."""
+    out = []
+    for i, (enum, name, placeable, text, level, tier, components, copies) in enumerate(DECOR):
+        sid = DECOR_STRUCTURE_START + i
+        out.append(dict(Enum=enum, Name=name, Placeable=placeable, Text=text, Level=level, Tier=tier, Components=components,
+                        Copies=copies, StructureId=sid, RecipeId=DECOR_RECIPE_START + i, Resref=f"structure_{sid}"))
+    return out
+
+
 def ace_achievement(ace):
     return f"SpaceAce{ace['key']}"
 
@@ -390,4 +436,7 @@ def achievements():
     out.append(("SpaceWildSpace", "Beyond the Map", "Entered Wild Space."))
     for credits, enum, name in TRADE_ACHIEVEMENTS:
         out.append((enum, name, f"Earned {credits:,} credits of trade profit and freight fees."))
+    for _area, enum, name, text in INTERIOR_ACHIEVEMENTS:
+        out.append((enum, name, text))
+    out.append(CREWED_KILL_ACHIEVEMENT)
     return [(ACHIEVEMENT_START + i, enum, name, text) for i, (enum, name, text) in enumerate(out)]

@@ -5317,6 +5317,26 @@
     "type": "list",
     "value": []
   },
+  "VarTable": {
+    "type": "list",
+    "value": [
+      {
+        "__struct_id": 0,
+        "Name": {
+          "type": "cexostring",
+          "value": "EXPLORE_ACHIEVEMENT_ID"
+        },
+        "Type": {
+          "type": "dword",
+          "value": 1
+        },
+        "Value": {
+          "type": "int",
+          "value": 220
+        }
+      }
+    ]
+  },
   "WaypointList": {
     "type": "list",
     "value": [

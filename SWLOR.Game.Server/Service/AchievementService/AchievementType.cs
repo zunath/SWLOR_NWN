@@ -549,6 +549,14 @@ namespace SWLOR.Game.Server.Service.AchievementService
         SpaceTradeEarnings2 = 216,
         [Achievement("Trade Baron", "Earned 1,000,000 credits of trade profit and freight fees.", true)]
         SpaceTradeEarnings3 = 217,
+        [Achievement("Explore Fighter Ship", "Explore a Fighter class starship.", true)]
+        ExploreStarshipFighter = 218,
+        [Achievement("Explore Corvette Ship", "Explore a Corvette class starship.", true)]
+        ExploreStarshipCorvette = 219,
+        [Achievement("Explore Basilisk Ship", "Explore a Basilisk class starship.", true)]
+        ExploreStarshipBasilisk = 220,
+        [Achievement("Crewed Kill", "Destroyed a ship in space with a crewmate at a station.", true)]
+        SpaceCrewedKill = 221,
         // END space achievements
 	}
 

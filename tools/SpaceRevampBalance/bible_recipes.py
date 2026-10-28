@@ -3,7 +3,7 @@
 usage: python bible_recipes.py [--check]
 Rows come from catalog.py: the module steps and ship deeds (Engineering Recipes) and the ship component recipes,
 each on its skill's tab (Engineering, Smithery, or Cooking Recipes for Agriculture), from stations.py: the Station
-Core (Fabrication Recipes, laid out like the tab's Starport row), and from droids.py: the industrial droid parts and
+Core and the station-only buildings (Fabrication Recipes, laid out like the tab's Starport row), and from droids.py: the industrial droid parts and
 protocol discs (Engineering Recipes). They sit under each tab's
 existing headers, appended after its last row. Re-running removes the previously generated rows (matched by Recipe
 Enum) and writes them again; --check only reports whether the workbook is current. Every other zip entry is copied
@@ -70,6 +70,10 @@ def recipe_rows():
                      name=stations.CORE_ITEM_NAME, level=stations.CORE_RECIPE_LEVEL, resref=stations.CORE_ITEM_RESREF,
                      enhancement="N/A", slots=0, components=stations.CORE_COMPONENTS, perk="Structure Blueprints",
                      perk_level=2, storage=1))
+    for enum, sid, name, _, level, components, *_ in stations.BUILDINGS:
+        rows.append(dict(sheet=FABRICATION_SHEET, skill="Fabrication", enum=enum, category="Structure", name=name,
+                         level=level, resref=f"structure_{sid}", enhancement="N/A", slots=0, components=components,
+                         perk="Structure Blueprints", perk_level=2, storage=1))
     rows += [dict(r, sheet=SHEET_NAME) for r in droids.recipe_rows()]
     for r in rows:
         assert len(r["components"]) <= len(COMPONENT_COLUMNS), r["enum"]

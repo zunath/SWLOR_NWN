@@ -101,10 +101,13 @@ namespace SWLOR.Game.Server.Service.StationService
             _ => string.Empty,
         };
 
-        /// <summary>A station's weekly upkeep: the planet city's formula at the station layout's daily price.</summary>
-        public static int GetWeeklyUpkeep(int upkeepPerkLevel, int medicalCenterLevel, int starportLevel, int cantinaLevel)
+        /// <summary>
+        /// A station's weekly upkeep: the planet city's formula at the station layout's daily price, with its Jump Beacon
+        /// level counted like the other building upgrades.
+        /// </summary>
+        public static int GetWeeklyUpkeep(int upkeepPerkLevel, int medicalCenterLevel, int starportLevel, int cantinaLevel, int jumpBeaconLevel = 1)
         {
-            return CityUpkeepRules.GetWeeklyUpkeep(StationTuning.PricePerDay, upkeepPerkLevel, medicalCenterLevel, starportLevel, cantinaLevel);
+            return CityUpkeepRules.GetWeeklyUpkeep(StationTuning.PricePerDay, upkeepPerkLevel, medicalCenterLevel, starportLevel, cantinaLevel, jumpBeaconLevel);
         }
 
         /// <summary>Where the station exterior stands: <see cref="StationTuning.ExteriorOffset"/> from the anchor toward the area's middle.</summary>

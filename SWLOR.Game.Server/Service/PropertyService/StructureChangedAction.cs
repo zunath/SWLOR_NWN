@@ -36,6 +36,9 @@ namespace SWLOR.Game.Server.Service.PropertyService
             Assign(StructureType.LargeHouseStyle3, StructureChangeType.PositionChanged, ChangeHouse());
             Assign(StructureType.LargeHouseStyle4, StructureChangeType.PositionChanged, ChangeHouse());
             Assign(StructureType.LabStyle1, StructureChangeType.PositionChanged, ChangeLab());
+            Assign(StructureType.Shipyard, StructureChangeType.PositionChanged, StationBuildings.OnPositionChanged);
+            Assign(StructureType.AsteroidDrill, StructureChangeType.PositionChanged, StationBuildings.OnPositionChanged);
+            Assign(StructureType.JumpBeacon, StructureChangeType.PositionChanged, StationBuildings.OnPositionChanged);
 
             // Structure retrieved actions
             Assign(StructureType.CityHall, StructureChangeType.Retrieved, ClearDoor());
@@ -57,6 +60,9 @@ namespace SWLOR.Game.Server.Service.PropertyService
             Assign(StructureType.LargeHouseStyle3, StructureChangeType.Retrieved, ClearDoor());
             Assign(StructureType.LargeHouseStyle4, StructureChangeType.Retrieved, ClearDoor());
             Assign(StructureType.LabStyle1, StructureChangeType.Retrieved, ClearDoor());
+            Assign(StructureType.Shipyard, StructureChangeType.Retrieved, StationBuildings.OnRetrieved);
+            Assign(StructureType.AsteroidDrill, StructureChangeType.Retrieved, StationBuildings.OnRetrieved);
+            Assign(StructureType.JumpBeacon, StructureChangeType.Retrieved, StationBuildings.OnRetrieved);
 
             return _actions;
         }

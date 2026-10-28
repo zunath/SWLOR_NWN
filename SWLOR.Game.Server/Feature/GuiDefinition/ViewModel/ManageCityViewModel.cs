@@ -1,3 +1,4 @@
+using System.Collections.Generic;
 using System.Linq;
 using SWLOR.Game.Server.Entity;
 using SWLOR.Game.Server.Feature.GuiDefinition.Payload;
@@ -8,6 +9,7 @@ using SWLOR.Game.Server.Service.GuiService.Component;
 using SWLOR.Game.Server.Service.LogService;
 using SWLOR.Game.Server.Service.PerkService;
 using SWLOR.Game.Server.Service.PropertyService;
+using SWLOR.Game.Server.Service.StationService;
 using SWLOR.Game.Server.Service.TradeService;
 
 namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
@@ -92,6 +94,44 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
         public string ExchangeTariff
         {
             get => Get<string>();
+            set => Set(value);
+        }
+
+        /// <summary>The Shipyard fee per Capital hull (player stations only).</summary>
+        public string ShipyardFee
+        {
+            get => Get<string>();
+            set => Set(value);
+        }
+
+        /// <summary>Whether the city is a player station, which shows the Jump Beacon upgrade and the Shipyard fee.</summary>
+        public bool IsStation
+        {
+            get => Get<bool>();
+            set => Set(value);
+        }
+
+        public string JumpBeaconLevel
+        {
+            get => Get<string>();
+            set => Set(value);
+        }
+
+        public string JumpBeaconCurrentUpgrade
+        {
+            get => Get<string>();
+            set => Set(value);
+        }
+
+        public string JumpBeaconNextUpgrade
+        {
+            get => Get<string>();
+            set => Set(value);
+        }
+
+        public bool CanUpgradeJumpBeacons
+        {
+            get => Get<bool>();
             set => Set(value);
         }
 
@@ -192,6 +232,7 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
             WatchOnClient(model => model.TransportationTax);
             WatchOnClient(model => model.CitizenshipTax);
             WatchOnClient(model => model.ExchangeTariff);
+            WatchOnClient(model => model.ShipyardFee);
         }
 
         private void RefreshPermissions()
@@ -218,7 +259,22 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
             CanUpgradeCantinas = permission.Permissions[PropertyPermissionType.ManageUpgrades] &&
                               dbCity.Upgrades[PropertyUpgradeType.CantinaLevel] < MaxUpgradeLevel &&
                               dbCity.Upgrades[PropertyUpgradeType.CityLevel] >= dbCity.Upgrades[PropertyUpgradeType.CantinaLevel] + 1;
+
+            // A player station's Jump Beacon level (1-3) caps the hulls it jumps.
+            var beaconLevel = GetJumpBeaconLevel(dbCity);
+            IsStation = Station.IsStation(dbCity);
+            CanUpgradeJumpBeacons = IsStation &&
+                              permission.Permissions[PropertyPermissionType.ManageUpgrades] &&
+                              beaconLevel < StationTuning.BeaconMaxLevel &&
+                              dbCity.Upgrades[PropertyUpgradeType.CityLevel] >= beaconLevel + 1;
         }
+
+        /// <summary>A station's Jump Beacon upgrade level; stations founded before beacons existed start at 1.</summary>
+        private static int GetJumpBeaconLevel(WorldProperty dbCity) =>
+            dbCity.Upgrades.GetValueOrDefault(PropertyUpgradeType.JumpBeaconLevel, 1);
+
+        private static int GetMaxUpgradeLevel(PropertyUpgradeType upgradeType) =>
+            upgradeType == PropertyUpgradeType.JumpBeaconLevel ? StationTuning.BeaconMaxLevel : MaxUpgradeLevel;
 
         private void RefreshUpgradeLevels()
         {
@@ -234,6 +290,11 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
             StarportNextUpgrade = GetStarportUpgrade(dbCity.Upgrades[PropertyUpgradeType.StarportLevel] + 1);
             CantinaCurrentUpgrade = GetCantinaUpgrade(dbCity.Upgrades[PropertyUpgradeType.CantinaLevel]);
             CantinaNextUpgrade = GetCantinaUpgrade(dbCity.Upgrades[PropertyUpgradeType.CantinaLevel] + 1);
+
+            var beaconLevel = GetJumpBeaconLevel(dbCity);
+            JumpBeaconLevel = $"Jump Beacon: Lvl {beaconLevel}";
+            JumpBeaconCurrentUpgrade = GetJumpBeaconUpgrade(beaconLevel);
+            JumpBeaconNextUpgrade = GetJumpBeaconUpgrade(beaconLevel + 1);
         }
 
         private void RefreshCitizenList()
@@ -279,6 +340,7 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
             CitizenshipTax = $"{dbCity.Taxes[PropertyTaxType.Citizenship]}";
             TransportationTax = $"{dbCity.Taxes[PropertyTaxType.Transportation]}";
             ExchangeTariff = $"{GetStoredExchangeTariff(dbCity)}";
+            ShipyardFee = $"{StationBuildings.GetShipyardFee(dbCity)}";
         }
 
         /// <summary>The city's Trade Exchange tariff percent. Cities that never set one have none.</summary>
@@ -323,6 +385,14 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
                     return "UPGRADES MAXED";
             }
         }
+        private static string GetJumpBeaconUpgrade(int level)
+        {
+            if (level < 1 || level > StationTuning.BeaconMaxLevel)
+                return "UPGRADES MAXED";
+
+            return $"Jumps hulls up to {StationBuildingRules.GetMaxHull(level)}";
+        }
+
         private string GetCantinaUpgrade(int level)
         {
             switch (level)
@@ -358,12 +428,12 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
         {
             var dbCity = DB.Get<WorldProperty>(_cityId);
             var mayor = DB.Get<Player>(dbCity.OwnerPlayerId);
-            var currentLevel = dbCity.Upgrades[upgradeType];
+            var currentLevel = dbCity.Upgrades.GetValueOrDefault(upgradeType, 1);
             var mayorPerkLevel = mayor.Perks.ContainsKey(PerkType.CityManagement)
                 ? mayor.Perks[PerkType.CityManagement]
                 : 0;
 
-            if (currentLevel >= MaxUpgradeLevel)
+            if (currentLevel >= GetMaxUpgradeLevel(upgradeType))
             {
                 Instructions = "Cannot upgrade further.";
                 InstructionsColor = GuiColor.Red;
@@ -397,7 +467,7 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
         private void HandleUpgrade(PropertyUpgradeType upgradeType, PropertyType propertyType)
         {
             var dbCity = DB.Get<WorldProperty>(_cityId);
-            var currentLevel = dbCity.Upgrades[upgradeType];
+            var currentLevel = dbCity.Upgrades.GetValueOrDefault(upgradeType, 1);
             var initialPrice = 50000 * (currentLevel + 1);
 
             if (!ValidateUpgrade(upgradeType, initialPrice))
@@ -408,14 +478,14 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
                 {
                     // Refresh entity in case another player is editing this city.
                     dbCity = DB.Get<WorldProperty>(_cityId);
-                    currentLevel = dbCity.Upgrades[upgradeType];
+                    currentLevel = dbCity.Upgrades.GetValueOrDefault(upgradeType, 1);
                     initialPrice = 50000 * (currentLevel + 1);
 
                     if (!ValidateUpgrade(upgradeType, initialPrice))
                         return;
 
                     dbCity.Treasury -= initialPrice;
-                    dbCity.Upgrades[upgradeType]++;
+                    dbCity.Upgrades[upgradeType] = currentLevel + 1;
 
                     DB.Set(dbCity);
 
@@ -470,6 +540,14 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
         public Action UpgradeCantinaLevel() => () =>
         {
             HandleUpgrade(PropertyUpgradeType.CantinaLevel, PropertyType.Cantina);
+        };
+
+        public Action UpgradeJumpBeaconLevel() => () =>
+        {
+            if (!Station.IsStation(DB.Get<WorldProperty>(_cityId)))
+                return;
+
+            HandleUpgrade(PropertyUpgradeType.JumpBeaconLevel, PropertyType.Invalid);
         };
 
         public Action PayUpkeep() => () =>
@@ -567,13 +645,28 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
                     tariffRefused = true;
             }
 
+            // A station's Shipyard fee (0 to the cap) is set the same way, with the Edit Taxes permission.
+            if (Station.IsStation(dbCity))
+            {
+                if (!int.TryParse(ShipyardFee, out var shipyardFee))
+                    shipyardFee = StationBuildings.GetShipyardFee(dbCity);
+                shipyardFee = StationBuildingRules.ClampShipyardFee(shipyardFee);
+                if (shipyardFee != StationBuildings.GetShipyardFee(dbCity))
+                {
+                    if (CanEditTaxes)
+                        dbCity.Taxes[PropertyTaxType.Shipyard] = shipyardFee;
+                    else
+                        tariffRefused = true;
+                }
+            }
+
             DB.Set(dbCity);
 
             RefreshPropertyDetails();
             RefreshTaxesAndFees();
 
             Instructions = tariffRefused
-                ? "City details saved. You need the Edit Taxes permission to change the exchange tariff."
+                ? "City details saved. You need the Edit Taxes permission to change the exchange tariff or the Shipyard fee."
                 : "City details saved successfully.";
             InstructionsColor = tariffRefused ? GuiColor.Red : GuiColor.Green;
 

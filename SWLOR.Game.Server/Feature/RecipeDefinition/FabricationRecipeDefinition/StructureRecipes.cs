@@ -231,6 +231,34 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.FabricationRecipeDefinition
                 .Component("r_const_parts", 4)
                 .Component("r_pow_supp_unit", 2);
 
+            // The station-only buildings (plan section 25). StationBuildingTests checks these against StationTuning (stations.py).
+            // Shipyard: the top building, at the Lab's recipe.
+            _builder.Create(RecipeType.Shipyard, SkillType.Fabrication)
+                .Category(RecipeCategoryType.Structure)
+                .Resref("structure_5019")
+                .Level(50)
+                .Quantity(1)
+                .Component("r_const_parts", 4)
+                .Component("r_pow_supp_unit", 3)
+                .Component("zinsiam", 8);
+
+            // Asteroid Drill
+            _builder.Create(RecipeType.AsteroidDrill, SkillType.Fabrication)
+                .Category(RecipeCategoryType.Structure)
+                .Resref("structure_5020")
+                .Level(45)
+                .Quantity(1)
+                .Component("r_const_parts", 4)
+                .Component("r_pow_supp_unit", 2);
+
+            // Jump Beacon
+            _builder.Create(RecipeType.JumpBeacon, SkillType.Fabrication)
+                .Category(RecipeCategoryType.Structure)
+                .Resref("structure_5021")
+                .Level(48)
+                .Quantity(1)
+                .Component("r_const_parts", 4)
+                .Component("r_pow_supp_unit", 3);
         }
     }
 }

@@ -19,5 +19,11 @@ namespace SWLOR.Game.Server.Service.PropertyService
         /// Cities created before the exchange have no entry, which counts as 0.
         /// </summary>
         Exchange = 3,
+
+        /// <summary>
+        /// Flat credits (0 to the cap) charged for each Capital hull built at a player station's Shipyard, paid into the
+        /// treasury. Cities without an entry charge none.
+        /// </summary>
+        Shipyard = 4,
     }
 }

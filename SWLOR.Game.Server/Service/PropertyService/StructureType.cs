@@ -2991,6 +2991,31 @@ namespace SWLOR.Game.Server.Service.PropertyService
             PropertyLayoutType.CityHallStyle1,
             false)]
         StationCore = 5018,
+
+        // Station-only buildings (plan section 25): consoles on a station's deck, without an interior.
+        [Structure("Shipyard",
+            "engineering_term",
+            "",
+            true,
+            0,
+            PropertyType.City)]
+        Shipyard = 5019,
+
+        [Structure("Asteroid Drill",
+            "swlor_0034",
+            "",
+            true,
+            0,
+            PropertyType.City)]
+        AsteroidDrill = 5020,
+
+        [Structure("Jump Beacon",
+            "swlor_0024",
+            "",
+            true,
+            0,
+            PropertyType.City)]
+        JumpBeacon = 5021,
     }
 
     public class StructureAttribute : Attribute

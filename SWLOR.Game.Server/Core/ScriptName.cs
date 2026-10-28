@@ -135,6 +135,7 @@ namespace SWLOR.Game.Server.Core
         public const string OnShipComputer = "ship_computer";
         public const string OnSpaceTarget = "spc_target";
         public const string OnCargoPodUsed = "cargo_pod_used";
+        public const string OnStationBuildingUsed = "stn_bldg_used";
         public const string OnSiteCacheUsed = "site_cache_used";
 
         // Aura events

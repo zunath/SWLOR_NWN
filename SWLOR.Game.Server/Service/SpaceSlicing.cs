@@ -143,16 +143,53 @@ namespace SWLOR.Game.Server.Service
             if (!SpaceSlicingRules.UsesDataAnalyzer(source))
                 return "Only data cans, locked caches and wreck data cores can be sliced.";
 
+            // A droid at the Sensors seat slices outright, by its tier, with no mini-game.
+            var droid = SpaceCrew.GetFireContext(ship)?.Droid;
+            if (droid != null)
+                return GetDroidSlicingError(ship, target, source, tier, droid);
+
             var slicer = SpaceCrew.GetStatSource(ship);
             if (!GetIsObjectValid(slicer))
-                return "A droid cannot slice.";
+                return "That module has no one to run it.";
 
             return SlicingSession.ValidateStart(slicer, target, source, tier);
         }
 
-        /// <summary>A Data Analyzer press: whoever runs it (the pilot, or the Sensors crew member) starts slicing the target.</summary>
+        /// <summary>Why a droid cannot slice the target now: the ship's state, its own tier, the pilot's slicing, or the target's rules.</summary>
+        private static string GetDroidSlicingError(uint ship, uint target, SlicingSourceType source, int tier, ShipDroidCrew droid)
+        {
+            if (tier < 1 || tier > 5)
+                return "This slicing target has an invalid security profile.";
+
+            if (SlicingSession.Get(ship) != null)
+                return "The pilot is already slicing.";
+
+            var error = DroidCrewRules.GetSlicingError(droid.Tier, tier, IsShipInCombat(ship) || GetIsInCombat(ship));
+            if (!string.IsNullOrEmpty(error))
+                return error;
+
+            if (GetArea(ship) != GetArea(target) || !SpaceSlicingRules.IsInAnalyzerRange(GetDistanceBetween(ship, target)))
+                return $"The target is out of your Data Analyzer's range ({SpaceSlicingTuning.AnalyzerRange:0} m).";
+
+            return GetSourceTargetError(ship, ship, target, source);
+        }
+
+        /// <summary>
+        /// A Data Analyzer press: whoever runs it (the pilot, or the Sensors crew member) starts slicing the target. A
+        /// droid at the seat has no mini-game: its press opens the target by chance (<see cref="DroidCrewRules.SlicingSucceeds"/>)
+        /// and the rewards go to the pilot's ship as for a player's success.
+        /// </summary>
         public static void StartDataAnalyzer(uint ship, uint target)
         {
+            var droidContext = SpaceCrew.GetFireContext(ship);
+            if (droidContext?.Droid != null)
+            {
+                var (droidSource, droidTier) = GetAnalyzerTarget(target);
+                if (DroidCrewRules.SlicingSucceeds(droidContext.Effectiveness, Random.Next(100)))
+                    CompleteSlicing(ship, target, droidSource, droidTier);
+                return;
+            }
+
             var slicer = SpaceCrew.GetStatSource(ship);
             if (!GetIsObjectValid(slicer) || !GetIsPC(slicer))
                 return;

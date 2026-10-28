@@ -9,6 +9,9 @@ namespace SWLOR.Game.Server.Service.SpaceService
         /// <summary>The slot's row and number, such as "High 2".</summary>
         public string SlotLabel { get; set; }
 
+        /// <summary>The crew seat (or droid post) that runs the module when it is not a pilot module, else null.</summary>
+        public string SeatLabel { get; set; }
+
         public string Name { get; set; }
 
         /// <summary>What the module is aimed at right now.</summary>

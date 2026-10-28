@@ -2,6 +2,7 @@ using FluentAssertions;
 using Newtonsoft.Json;
 using NUnit.Framework;
 using SWLOR.Game.Server.Service;
+using SWLOR.Game.Server.Service.AbilityService;
 using SWLOR.Game.Server.Service.SpaceService;
 
 namespace SWLOR.Game.Server.Tests.Service;
@@ -263,6 +264,34 @@ public class ShipToggleRulesTests
         }
     }
 
+    /// <summary>Checks every active module has its lit icon art and the lit icon's six recharge frames in the haks.</summary>
+    [Test]
+    public void EveryActiveModule_HasLitArtAndRechargeFramesInTheHaks()
+    {
+        var abilityFolder = Path.Combine(RepositoryRoot(), "SWLOR_Haks", "sw_ability");
+        var textures = AllModules().Where(x => x.Activation != ShipModuleActivation.Invalid)
+            .Select(x => x.Texture).Distinct().ToArray();
+        textures.Should().NotBeEmpty();
+
+        foreach (var texture in textures)
+        {
+            var lit = ShipToggleRules.LitTextureName(texture)!;
+            var names = new List<string> { lit };
+            for (var stage = 0; stage <= AbilityCooldownVisual.MaximumCooldownStage; stage++)
+                names.Add(AbilityCooldownVisual.GetCooldownTextureName(lit, stage)!);
+
+            foreach (var name in names)
+            {
+                var path = Path.Combine(abilityFolder, name + ".tga");
+                File.Exists(path).Should().BeTrue($"{texture} needs {name} (tools/GenerateLitModuleIcons.py, then GenerateCooldownIcons.ps1)");
+                var data = File.ReadAllBytes(path);
+                BitConverter.ToUInt16(data, 12).Should().Be(32, path);
+                BitConverter.ToUInt16(data, 14).Should().Be(32, path);
+                data[17].Should().Be(8, "NWN icons use eight alpha bits and bottom-left origin");
+            }
+        }
+    }
+
     /// <summary>Checks no module with an action is left without a toggle or one-press classification.</summary>
     [Test]
     public void EveryModuleWithAnAction_IsToggleOrOnePress()
@@ -343,5 +372,12 @@ public class ShipToggleRulesTests
         loaded.ActiveModules[0].Slot.Should().Be(3);
         loaded.ActiveModules[0].NextCycleTime.Should().Be(Start);
         loaded.ActiveModules[0].TargetId.Should().Be(42u);
+    }
+
+    private static string RepositoryRoot()
+    {
+        for (var directory = new DirectoryInfo(TestContext.CurrentContext.TestDirectory); directory != null; directory = directory.Parent)
+            if (File.Exists(Path.Combine(directory.FullName, "SWLOR.Game.Server.sln"))) return directory.FullName;
+        throw new DirectoryNotFoundException("Could not locate the repository.");
     }
 }

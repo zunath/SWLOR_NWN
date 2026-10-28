@@ -60,7 +60,7 @@ public class TankThreatTests
 
     [TestCase(typeof(BastionStanceStatusEffect), -20, 20)]
     [TestCase(typeof(DefensiveStanceStatusEffect), -20, 30)]
-    [TestCase(typeof(ImmovableStanceStatusEffect), -25, 30)]
+    [TestCase(typeof(ImmovableStanceStatusEffect), -15, 30)]
     [TestCase(typeof(IronWallStanceStatusEffect), -25, 30)]
     [TestCase(typeof(SentinelStanceStatusEffect), -15, 0)]
     public void TankStancesBeatAnOffensiveBuildWithSustainableAreaRotations(Type type, int attackPenalty, int generalBonus)

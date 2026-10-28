@@ -56,6 +56,9 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
         public const string EditorWeaponPartial = "APPEARANCE_EDITOR_WEAPON_PARTIAL";
         public const string EditorArmorPartial = "APPEARANCE_EDITOR_ARMOR_PARTIAL";
         public const string SettingsPartial = "SETTINGS_PARTIAL";
+        public const string EditorMainCompactPartial = "APPEARANCE_EDITOR_MAIN_COMPACT_PARTIAL";
+        public const string EditorWeaponCompactPartial = "APPEARANCE_EDITOR_WEAPON_COMPACT_PARTIAL";
+        public const string EditorArmorCompactPartial = "APPEARANCE_EDITOR_ARMOR_COMPACT_PARTIAL";
 
         public const int TextureColorsPerRow = 16;
         public const int ColorSize = 16; // 16x16 colors on the sprite sheet
@@ -98,6 +101,14 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
                 .AddTab(SettingsTabId, SettingsPartial)
                 .AddTab(SimpleEquipmentTabId, EditorArmorPartial)
                 .AddTab(WeaponEquipmentTabId, EditorWeaponPartial);
+        // Same tabs at a fixed size, for windows too small for one column of pictures.
+        private static readonly GuiTabGroup<AppearanceEditorViewModel, AppearanceEditorPayload> CompactEditorTabs =
+            new GuiTabGroup<AppearanceEditorViewModel, AppearanceEditorPayload>()
+                .AddTab(AppearanceTabId, EditorMainCompactPartial)
+                .AddTab(EquipmentTabId, EditorArmorCompactPartial)
+                .AddTab(SettingsTabId, SettingsPartial)
+                .AddTab(SimpleEquipmentTabId, EditorArmorCompactPartial)
+                .AddTab(WeaponEquipmentTabId, EditorWeaponCompactPartial);
         private static readonly GuiToggleGroupSync EditorToggles = new(AppearanceTabId, EquipmentTabId);
         private static readonly GuiToggleGroupSync SettingsToggles = new(SettingsTabId);
         private int _selectedTabId = AppearanceTabId;
@@ -786,6 +797,9 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
                     _selectedColorChannel = AppearanceArmorColor.Leather1;
                 }
                 ToggleItemEquippedFlags();
+                // Helmets, cloaks and weapons have no armor parts to colour.
+                if (value != 0)
+                    SetIfChanged(nameof(IsPartColorsVisible), false);
                 LoadColorCategoryOptions();
                 LoadPartCategoryOptions();
                 LoadItemParts();
@@ -974,7 +988,7 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
             _colorTarget = ColorTarget.Global;
             _selectedColorChannel = AppearanceArmorColor.Leather1;
             _selectedTabId = AppearanceTabId;
-            EnsureMinimumWindowSize();
+            FitWindowToPlayerScreen();
             Set(0, nameof(EditorTabToggleValue));
             Set(-1, nameof(SettingsTabToggleValue));
             Set(0, nameof(SelectedItemTypeIndex));
@@ -1587,13 +1601,15 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
                     ? SelectedItemTypeIndex == 0 ? EquipmentTabId
                         : SelectedItemTypeIndex is 3 or 4 ? WeaponEquipmentTabId : SimpleEquipmentTabId
                     : AppearanceTabId;
-            EditorTabs.Select(this, MainPartialElement, partialTabId, OnEditorPartialApplied);
+            var tabs = _isCompactLayout ? CompactEditorTabs : EditorTabs;
+            tabs.Select(this, MainPartialElement, partialTabId, OnEditorPartialApplied);
         }
 
         private void OnEditorPartialApplied()
         {
             SuspendArmorClientWatches();
             var isArmorEditor = IsEquipmentSelected && SelectedItemTypeIndex == 0;
+            SetIfChanged(nameof(BaseColorsTitle), ItemColorsTitle(SelectedItemTypeIndex));
             SynchronizeTintControlBindings(() =>
             {
                 if (isArmorEditor)

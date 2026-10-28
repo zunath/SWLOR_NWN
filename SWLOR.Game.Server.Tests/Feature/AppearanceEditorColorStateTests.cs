@@ -98,6 +98,10 @@ public class AppearanceEditorColorStateTests
         property.IndexOf("value == _loadedItemTypeIndex", StringComparison.Ordinal).Should()
             .BeLessThan(property.IndexOf("_colorTarget = ColorTarget.Global", StringComparison.Ordinal));
         property.Should().Contain("_selectedColorChannel = AppearanceArmorColor.Leather1");
+        var hidePartRows = property.IndexOf("SetIfChanged(nameof(IsPartColorsVisible), false)", StringComparison.Ordinal);
+        hidePartRows.Should().BeGreaterThan(property.IndexOf("if (value != 0)", StringComparison.Ordinal),
+            "helmets, cloaks and weapons hide the armor part colour rows");
+        property.IndexOf("if (value != 0)", StringComparison.Ordinal).Should().BeGreaterThan(0);
         property.IndexOf("LoadItemParts()", StringComparison.Ordinal).Should()
             .BeLessThan(property.IndexOf("LoadItemTypeEditor()", StringComparison.Ordinal),
                 "the current selections must be ready before the replacement widgets are shown");
@@ -111,8 +115,9 @@ public class AppearanceEditorColorStateTests
     public void TabRestorationPublishesBindingsAfterTheBrowserGridAndBeforeEditingResumes()
     {
         var root = CSharpSyntaxTree.ParseText(ReadViewModel()).GetRoot();
-        FindMethod(root, "LoadItemTypeEditor").ToString().Should()
-            .Contain("EditorTabs.Select(this, MainPartialElement, partialTabId, OnEditorPartialApplied)");
+        var load = FindMethod(root, "LoadItemTypeEditor").ToString();
+        load.Should().Contain("var tabs = _isCompactLayout ? CompactEditorTabs : EditorTabs;");
+        load.Should().Contain("tabs.Select(this, MainPartialElement, partialTabId, OnEditorPartialApplied)");
         var restoredMethod = FindMethod(root, "OnEditorPartialApplied");
         var restored = restoredMethod.ToString();
         var order = new[]
@@ -161,7 +166,9 @@ public class AppearanceEditorColorStateTests
         queue.ToString().Should().Contain("DelayCommand(");
         queue.ToString().Should().Contain("generation != _resizeGeneration",
             "only the last geometry update of a drag resizes the grid");
-        Invocations(queue).Should().BeEquivalentTo("DelayCommand", "EnsureMinimumWindowSize", "ApplyBrowserColumns");
+        Invocations(queue).Should().BeEquivalentTo(new[] { "DelayCommand", "ApplyBrowserColumns" },
+            "a resize never changes the window size the player dragged to");
+        queue.ToString().Should().NotContain("Geometry = ");
 
         var apply = FindMethod(browser, "ApplyBrowserColumns");
         apply.ToString().Should().Contain("if (!force && columns == _browserColumns && rows == _browserRows)",
@@ -173,8 +180,13 @@ public class AppearanceEditorColorStateTests
             "resizing swaps only the nested grid, never the editor panel");
         Invocations(apply).Should().NotContain(new[]
         {
-            "LoadItemTypeEditor", "RepublishBindings", "SetGroupLayout", "LoadItemParts", "LoadTintMapEditor"
+            "RepublishBindings", "SetGroupLayout", "LoadItemParts", "LoadTintMapEditor"
         });
+        var reload = apply.DescendantNodes().OfType<InvocationExpressionSyntax>()
+            .Single(call => call.Expression.ToString() == "LoadItemTypeEditor");
+        reload.Ancestors().OfType<IfStatementSyntax>().First().Condition.ToString()
+            .Should().Be("compact != _isCompactLayout",
+                "the editor panel is reloaded only when the window crosses into or out of the compact layout");
 
         foreach (var source in new[] { root, browser })
         {

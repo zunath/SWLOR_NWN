@@ -250,20 +250,31 @@ public class AppearanceEditorLayoutTests
             $"{partialName} must fit below the tab panel");
     }
 
-    [TestCase(AppearanceEditorViewModel.EditorMainPartial)]
-    [TestCase(AppearanceEditorViewModel.EditorArmorPartial)]
-    public void TheMinimumWindowShowsTheMapColoursAndATwoColumnBrowser(string partialName)
+    [TestCase(AppearanceEditorViewModel.EditorMainCompactPartial, AppearanceEditorViewModel.EditorMainPartial)]
+    [TestCase(AppearanceEditorViewModel.EditorArmorCompactPartial, AppearanceEditorViewModel.EditorArmorPartial)]
+    [TestCase(AppearanceEditorViewModel.EditorWeaponCompactPartial, AppearanceEditorViewModel.EditorWeaponPartial)]
+    public void CompactEditorsScrollSidewaysAndThePicturesScrollInTheirPanel(string compactName, string fullName)
     {
-        var width = AppearanceEditorDefinition.MinimumWindowWidth;
-        BrowserColumns(width, hasSideColumns: true).Should().BeGreaterThanOrEqualTo(2);
-        var browser = BrowserGroup(partialName);
-        var contentRow = PathTo(_partials[partialName], browser).OfType<GuiRow<AppearanceEditorViewModel>>().Last();
-        var sides = contentRow.Elements.Where(widget => !ReferenceEquals(widget, browser)).ToArray();
-        var grid = _partials[FullHeightGrid(2)];
-        (sides.Sum(MinimumWidth) + NaturalWidth(grid)).Should().BeLessThanOrEqualTo(width - 60f);
-        var height = sides.Max(MinimumHeight);
-        height.Should().BeLessThanOrEqualTo(AppearanceEditorDefinition.MinimumWindowHeight
-            - AppearanceEditorDefinition.TabPanelHeight - 60f, $"{partialName} side columns fit the minimum height");
+        var compact = AppearanceEditorDefinition.BuildEditorPanel(compactName);
+        var full = AppearanceEditorDefinition.BuildEditorPanel(fullName);
+        ReadProperty<NuiScrollbars>(compact, "Scrollbars").Should().Be(NuiScrollbars.X,
+            "a window narrower than the editor scrolls sideways to every panel");
+        var oneTileGrid = AppearanceEditorDefinition.BuildEditorPanel(AppearanceEditorViewModel.BrowserGrid(1, 1));
+        Walk(compact).Select(widget => widget.Id).Where(id => id != null)
+            .Should().BeEquivalentTo(Walk(full).Concat(Walk(oneTileGrid)).Select(widget => widget.Id)
+                    .Where(id => id != null && id != AppearanceEditorViewModel.BrowserGridElement),
+                "the compact editor has every control of the full one and a one-picture grid");
+
+        Walk(compact).Should().NotContain(widget => widget.Id == AppearanceEditorViewModel.BrowserGridElement,
+            "NUI stops drawing a nested grid group once it is scrolled");
+        var tile = Walk(compact).Single(widget => widget.Id == "ae_tile_0");
+        var browser = PathTo(compact, tile).OfType<GuiGroup<AppearanceEditorViewModel>>().Last();
+        ReadProperty<NuiScrollbars>(browser, "Scrollbars").Should().Be(NuiScrollbars.Y,
+            "a short window scrolls the picture panel");
+        ReadProperty<float>(browser, "Width").Should().Be(AppearanceEditorDefinition.CompactBrowserWidth);
+        var grid = AppearanceEditorDefinition.BuildEditorPanel(AppearanceEditorViewModel.BrowserGrid(1, 1));
+        NaturalWidth(grid).Should().BeLessThanOrEqualTo(AppearanceEditorDefinition.CompactBrowserWidth - 20f,
+            "one column of pictures fits the compact browser");
     }
 
     // ------------------------------------------------------------------ body map
@@ -322,6 +333,10 @@ public class AppearanceEditorLayoutTests
         {
             var button = Walk(armor).Single(widget => widget.Id == id);
             ReadProperty<string>(button, "IsEnabledBindName").Should().Be(nameof(AppearanceEditorViewModel.IsCopyEnabled));
+            ReadProperty<float>(button, "Width").Should().Be(ReadProperty<float>(button, "Height"),
+                "the copy buttons are square slots under the arms");
+            ReadProperty<string>(button, "Resref").Should().Be(id == "ae_copy_right" ? "arrow_left" : "arrow_right",
+                "each arrow points at the side it copies to");
             AssertSingleHandler(button, "click", method);
             Walk(_partials[AppearanceEditorViewModel.EditorMainPartial]).Should().NotContain(widget => widget.Id == id);
         }

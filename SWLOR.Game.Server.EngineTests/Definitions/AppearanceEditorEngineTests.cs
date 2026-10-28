@@ -327,7 +327,7 @@ namespace SWLOR.Game.Server.EngineTests.Definitions
                             source.Height == mirror.Height, $"{part}/{channel}: the part swatch mirrors its target region.");
                         var custom = (bool)editor.GetType().GetProperty($"{target}{channel}Custom").GetValue(editor);
                         var expectedCode = custom ? "RGB"
-                            : source.Width < AppearanceEditorViewModel.ColorSize ? "Base"
+                            : source.Width < AppearanceEditorViewModel.ColorSize ? "Outfit"
                             : AppearancePreview.PaletteCode((int)(source.Y / 16) * 16 + (int)(source.X / 16));
                         ctx.AssertEqual(expectedCode,
                             (string)editor.GetType().GetProperty($"SelectedPart{channel}Code").GetValue(editor),

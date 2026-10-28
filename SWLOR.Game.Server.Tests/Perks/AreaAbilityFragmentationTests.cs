@@ -137,14 +137,15 @@ public class AreaAbilityFragmentationTests
         ability.IsAreaAbility.Should().BeTrue();
     }
 
-    [TestCase(FeatType.SunderingSweep1)]
-    [TestCase(FeatType.SunderingSweep2)]
-    [TestCase(FeatType.SunderingSweep3)]
-    public void SunderingSweep_LimitsSunderToOneSpreadPerCast(FeatType feat)
+    [TestCase(FeatType.SunderingSweep1, 1)]
+    [TestCase(FeatType.SunderingSweep2, 2)]
+    [TestCase(FeatType.SunderingSweep3, 3)]
+    public void SunderingSweep_SpreadsSunderToOneMoreEnemyPerRank(FeatType feat, int spreads)
     {
         var profile = GetProfile(new SunderingSweepAbilityDefinition().BuildAbilities()[feat]);
         GetProperty<bool>(profile, "SpreadSunderFromTarget").Should().BeTrue();
-        GetProperty<int>(profile, "MaximumStatusSpreadsPerCast").Should().Be(1);
+        GetProperty<int>(profile, "MaximumStatusSpreadsPerCast").Should().Be(spreads);
+        GetProperty<int>(profile, "MaximumStatusSpreadsPerSource").Should().Be(spreads);
     }
 
     private static void AddShrapnelCasingStats(int rank)

@@ -23,7 +23,7 @@ namespace SWLOR.Game.Server.Feature.StatusEffectDefinition
         // Machines cannot bleed, independent of their Trauma resistance.
         public override string CanApply(uint creature)
         {
-            return Droid.IsBloodlessMachine(creature) ? "Droids cannot bleed." : string.Empty;
+            return Droid.IsBloodlessMachine(creature) ? "Machines cannot bleed." : string.Empty;
         }
 
         protected override void Tick(uint creature)

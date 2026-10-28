@@ -1,6 +1,7 @@
 using System.Collections.Generic;
 using FluentAssertions;
 using NUnit.Framework;
+using SWLOR.Game.Server.Service.DroidService;
 using SWLOR.Game.Server.Service.SkillService;
 using SWLOR.Game.Server.Service.SpaceService;
 using SWLOR.NWN.API.NWScript.Enum;
@@ -8,9 +9,9 @@ using SWLOR.NWN.API.NWScript.Enum;
 namespace SWLOR.Game.Server.Tests.Service;
 
 /// <summary>
-/// Droid crew (plan section 10): effectiveness by tier and seat from the W0 balance numbers, the crew cap, the tier's
-/// module rank, the tier's attributes, what a droid does with each module, the follow-limit exclusion, the posting
-/// rules, the seat registry (a seat holds a player or a droid) and a droid's station fire.
+/// Droid crew (plan sections 10 and 27): effectiveness by Industry and seat from the W0 balance numbers, the crew cap,
+/// the tier's module rank, the tier's attributes, what a droid does with each module, the follow-limit exclusion, the
+/// posting rules, the seat registry (a seat holds a player or a droid) and a droid's station fire.
 /// </summary>
 public class SpaceDroidCrewTests
 {
@@ -28,9 +29,9 @@ public class SpaceDroidCrewTests
         }),
     };
 
-    private static ShipDroidCrew Droid(ShipCrewSeat seat, int tier = 5) => new()
+    private static ShipDroidCrew Droid(ShipCrewSeat seat, int tier = 5, int industry = 100) => new()
     {
-        Seat = seat, OwnerPlayerId = "owner", DroidItemId = $"droid-{seat}-{tier}", Name = "R5", Tier = tier,
+        Seat = seat, OwnerPlayerId = "owner", DroidItemId = $"droid-{seat}-{tier}", Name = "R5", Tier = tier, Industry = industry,
     };
 
     [TearDown]
@@ -42,35 +43,38 @@ public class SpaceDroidCrewTests
 
     // Effectiveness
 
-    [TestCase(1, 0.25)]
-    [TestCase(2, 0.3125)]
-    [TestCase(3, 0.375)]
-    [TestCase(4, 0.4375)]
-    [TestCase(5, 0.50)]
-    public void GunnerSeats_RiseFromAQuarterAtTierOneToHalfAtTierFive(int tier, double expected)
+    [TestCase(0, 0.25)]
+    [TestCase(20, 0.30)]
+    [TestCase(40, 0.35)]
+    [TestCase(60, 0.40)]
+    [TestCase(80, 0.45)]
+    [TestCase(100, 0.50)]
+    public void GunnerSeats_RiseWithIndustryFromAQuarterToHalfForTheBestIndustrialDroid(int industry, double expected)
     {
-        DroidCrewRules.BaseEffectiveness(ShipCrewSeat.Gunner, tier).Should().BeApproximately(expected, 1e-9);
-        DroidCrewRules.BaseEffectiveness(ShipCrewSeat.SecondGunner, tier).Should().BeApproximately(expected, 1e-9);
+        DroidCrewRules.BaseEffectiveness(ShipCrewSeat.Gunner, industry).Should().BeApproximately(expected, 1e-9);
+        DroidCrewRules.BaseEffectiveness(ShipCrewSeat.SecondGunner, industry).Should().BeApproximately(expected, 1e-9);
     }
 
-    [TestCase(1, 0.25)]
-    [TestCase(2, 0.375)]
-    [TestCase(3, 0.50)]
-    [TestCase(4, 0.625)]
-    [TestCase(5, 0.75)]
-    public void EngineerAndSensorsSeats_RiseFromAQuarterAtTierOneToThreeQuartersAtTierFive(int tier, double expected)
+    [TestCase(0, 0.25)]
+    [TestCase(20, 0.35)]
+    [TestCase(40, 0.45)]
+    [TestCase(60, 0.55)]
+    [TestCase(80, 0.65)]
+    [TestCase(100, 0.75)]
+    public void EngineerAndSensorsSeats_RiseWithIndustryFromAQuarterToThreeQuartersForTheBestIndustrialDroid(int industry, double expected)
     {
-        DroidCrewRules.BaseEffectiveness(ShipCrewSeat.Engineer, tier).Should().BeApproximately(expected, 1e-9);
-        DroidCrewRules.BaseEffectiveness(ShipCrewSeat.Sensors, tier).Should().BeApproximately(expected, 1e-9);
+        DroidCrewRules.BaseEffectiveness(ShipCrewSeat.Engineer, industry).Should().BeApproximately(expected, 1e-9);
+        DroidCrewRules.BaseEffectiveness(ShipCrewSeat.Sensors, industry).Should().BeApproximately(expected, 1e-9);
     }
 
     [Test]
-    public void Droids_NeverFly_AndTiersOutsideOneToFiveAreClamped()
+    public void Droids_NeverFly_TheBayIsNoStation_AndIndustryOutsideZeroToOneHundredIsClamped()
     {
-        DroidCrewRules.BaseEffectiveness(ShipCrewSeat.Pilot, 5).Should().Be(0);
-        DroidCrewRules.BaseEffectiveness(ShipCrewSeat.Invalid, 5).Should().Be(0);
-        DroidCrewRules.BaseEffectiveness(ShipCrewSeat.Engineer, 0).Should().BeApproximately(0.25, 1e-9);
-        DroidCrewRules.BaseEffectiveness(ShipCrewSeat.Engineer, 9).Should().BeApproximately(0.75, 1e-9);
+        DroidCrewRules.BaseEffectiveness(ShipCrewSeat.Pilot, 100).Should().Be(0);
+        DroidCrewRules.BaseEffectiveness(ShipCrewSeat.Invalid, 100).Should().Be(0);
+        DroidCrewRules.BaseEffectiveness(ShipCrewSeat.DroidBay, 100).Should().Be(0, "a bay droid's Industry pays off through the bay");
+        DroidCrewRules.BaseEffectiveness(ShipCrewSeat.Engineer, -5).Should().BeApproximately(0.25, 1e-9);
+        DroidCrewRules.BaseEffectiveness(ShipCrewSeat.Engineer, 999).Should().BeApproximately(0.75, 1e-9);
     }
 
     [Test]
@@ -78,21 +82,45 @@ public class SpaceDroidCrewTests
     {
         // Crew Morale +10% and Leadership 50 (+5%).
         var multiplier = SpaceCrew.EffectivenessMultiplier(10, 5);
-        DroidCrewRules.SeatEffectiveness(ShipCrewSeat.Engineer, 5, multiplier).Should().BeApproximately(0.8625, 1e-9);
-        DroidCrewRules.SeatEffectiveness(ShipCrewSeat.Gunner, 5, multiplier).Should().BeApproximately(0.575, 1e-9);
-        DroidCrewRules.SeatEffectiveness(ShipCrewSeat.Gunner, 1, 1.0).Should().BeApproximately(0.25, 1e-9);
+        DroidCrewRules.SeatEffectiveness(ShipCrewSeat.Engineer, 100, multiplier).Should().BeApproximately(0.8625, 1e-9);
+        DroidCrewRules.SeatEffectiveness(ShipCrewSeat.Gunner, 100, multiplier).Should().BeApproximately(0.575, 1e-9);
+        DroidCrewRules.SeatEffectiveness(ShipCrewSeat.Gunner, 0, 1.0).Should().BeApproximately(0.25, 1e-9);
 
-        DroidCrewRules.SeatEffectiveness(ShipCrewSeat.Engineer, 5, 3.0)
+        DroidCrewRules.SeatEffectiveness(ShipCrewSeat.Engineer, 100, 3.0)
             .Should().Be(ShipCrewSeats.MaximumSeatEffectiveness, "every seat is capped at 105%, droid seats included");
-        DroidCrewRules.SeatEffectiveness(ShipCrewSeat.Engineer, 5, -1.0).Should().Be(0);
+        DroidCrewRules.SeatEffectiveness(ShipCrewSeat.Engineer, 100, -1.0).Should().Be(0);
     }
 
     [Test]
-    public void IndustryRating_IsAHookThatAddsNothingYet()
+    public void TheBestIndustrialDroid_WorksAtThreeQuartersOfAPlayer_AndStaysUnderTheCrewCap()
     {
-        SpaceCrew.GetDroidIndustryBonus(Droid(ShipCrewSeat.Engineer)).Should().Be(0);
-        DroidCrewRules.BaseEffectiveness(ShipCrewSeat.Engineer, 3, 0.1).Should().BeApproximately(0.6, 1e-9,
-            "an Industry bonus adds to the base once it exists");
+        // A player at the module's rank works a seat at 100% (ShipCrewSeats.SeatEffectiveness).
+        var player = ShipCrewSeats.SeatEffectiveness(true, true, 1.0);
+        DroidCrewRules.BaseEffectiveness(ShipCrewSeat.Engineer, DroidIndustryTuning.MaximumIndustry)
+            .Should().BeApproximately(0.75 * player, 1e-9);
+
+        // Crew Morale, Leadership 50 and a further +20% (the Czerka Armored Transport's drafted droid crew bonus).
+        var multiplier = SpaceCrew.EffectivenessMultiplier(10, 5) + 0.20;
+        foreach (var seat in new[] { ShipCrewSeat.Gunner, ShipCrewSeat.SecondGunner, ShipCrewSeat.Engineer, ShipCrewSeat.Sensors })
+        {
+            (DroidCrewRules.BaseEffectiveness(seat, DroidIndustryTuning.MaximumIndustry) * multiplier)
+                .Should().BeLessThanOrEqualTo(ShipCrewSeats.MaximumSeatEffectiveness, seat.ToString());
+            DroidCrewRules.SeatEffectiveness(seat, DroidIndustryTuning.MaximumIndustry, 100.0)
+                .Should().Be(ShipCrewSeats.MaximumSeatEffectiveness, "the cap binds whatever the multiplier");
+        }
+    }
+
+    [Test]
+    public void IndustryBonus_IsWhatIndustryAddsOverACombatDroid()
+    {
+        SpaceCrew.GetDroidIndustryBonus(Droid(ShipCrewSeat.Engineer)).Should().BeApproximately(0.50, 1e-9);
+        SpaceCrew.GetDroidIndustryBonus(Droid(ShipCrewSeat.Gunner)).Should().BeApproximately(0.25, 1e-9);
+        SpaceCrew.GetDroidIndustryBonus(Droid(ShipCrewSeat.Engineer, 5, 0)).Should().Be(0, "a combat droid has no Industry");
+        SpaceCrew.GetDroidIndustryBonus(Droid(ShipCrewSeat.Engineer, 3, 50)).Should().BeApproximately(0.25, 1e-9);
+        SpaceCrew.GetDroidIndustryBonus(Droid(ShipCrewSeat.DroidBay)).Should().Be(0);
+        SpaceCrew.GetDroidIndustryBonus(null).Should().Be(0);
+        DroidCrewRules.BaseEffectiveness(ShipCrewSeat.Engineer, 0).Should().BeApproximately(DroidCrewRules.NoIndustryEffectiveness, 1e-9,
+            "a tier-5 combat droid makes poor crew: its tier sets only the module ranks");
     }
 
     // Tier gates and attributes
@@ -145,6 +173,7 @@ public class SpaceDroidCrewTests
         DroidCrewRules.GetTask(ShipModuleType.HypermatterInjector, ShipModuleActivation.Toggle).Should().Be(DroidCrewTask.None);
         DroidCrewRules.GetTask(ShipModuleType.CapitalEwar, ShipModuleActivation.Toggle).Should().Be(DroidCrewTask.None);
         DroidCrewRules.GetTask(ShipModuleType.CombatLaser, ShipModuleActivation.OnePress).Should().Be(DroidCrewTask.None);
+        DroidCrewRules.GetTask(ShipModuleType.ProbeLauncher, ShipModuleActivation.Toggle).Should().Be(DroidCrewTask.Survey);
 
         DroidCrewRules.RunsWhenShieldLow(ShipModuleType.ShieldHardener).Should().BeTrue();
         DroidCrewRules.RunsWhenHullLow(ShipModuleType.ShieldHardener).Should().BeFalse();
@@ -189,7 +218,8 @@ public class SpaceDroidCrewTests
     {
         string Error(bool captain = true, bool seatExists = true, bool seatHasPlayer = false, bool seatHasDroid = false,
             bool owns = true, bool posted = false, bool following = false) =>
-            DroidCrewRules.GetPostingError(captain, seatExists, seatHasPlayer, seatHasDroid, owns, posted, following, "Gunner");
+            DroidCrewRules.GetPostingError(captain, seatExists, seatHasPlayer, seatHasDroid, owns, posted, following,
+                ShipCrewSeats.GetPostName(ShipCrewSeat.Gunner));
 
         Error().Should().BeEmpty();
         Error(captain: false).Should().Contain("permission");
@@ -198,6 +228,8 @@ public class SpaceDroidCrewTests
         Error(posted: true).Should().Contain("already posted");
         Error(following: true).Should().Contain("Dismiss");
         Error(seatHasPlayer: true).Should().Be("Someone works the Gunner station.");
+        DroidCrewRules.GetPostingError(true, true, false, true, true, false, false, ShipCrewSeats.GetPostName(ShipCrewSeat.DroidBay))
+            .Should().Be("A droid already works the droid bay. Recall it first.");
         Error(seatHasDroid: true).Should().Contain("Recall it first");
         DroidCrewRules.PlayerBumpsDroid.Should().BeTrue("a player taking a droid's station sends the droid back to its owner");
     }

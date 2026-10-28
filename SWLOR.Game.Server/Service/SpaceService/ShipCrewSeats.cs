@@ -88,8 +88,13 @@ namespace SWLOR.Game.Server.Service.SpaceService
             ShipCrewSeat.SecondGunner => "Second Gunner",
             ShipCrewSeat.Engineer => "Engineer",
             ShipCrewSeat.Sensors => "Sensors",
+            ShipCrewSeat.DroidBay => "Droid Bay",
             _ => "Pilot",
         };
+
+        /// <summary>A seat as a place to work, for messages: "the Gunner station", or "the droid bay".</summary>
+        public static string GetPostName(ShipCrewSeat seat) =>
+            seat == ShipCrewSeat.DroidBay ? "the droid bay" : $"the {GetSeatName(seat)} station";
 
         /// <summary>
         /// The rank a module needs: the highest of its RequiresSkill ranks, or 0 when it has none. At a crew station

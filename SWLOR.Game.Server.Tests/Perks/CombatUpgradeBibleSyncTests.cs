@@ -207,6 +207,7 @@ public class CombatUpgradeBibleSyncTests
 
     private static readonly HashSet<PerkCategoryType> DroidInstructionCategories = new()
     {
+        PerkCategoryType.DroidProtocols,
         PerkCategoryType.General,
         PerkCategoryType.VibrobladeDefense,
         PerkCategoryType.VibrobladeOffense,
@@ -1518,8 +1519,9 @@ public class CombatUpgradeBibleSyncTests
         {
             foreach (var (level, perkLevel) in detail.PerkLevels.OrderBy(x => x.Key))
             {
-                if (perkLevel.DroidAISlots <= 0 || perkLevel.GrantedFeats.Count <= 0 ||
-                    perkLevel.GrantedFeats.All(IsPassiveIconTraitFeat))
+                // Droid protocols (PerkGroupType.Droid) are instructions with no ability feat.
+                if (perkLevel.DroidAISlots <= 0 || (detail.GroupType != PerkGroupType.Droid &&
+                    (perkLevel.GrantedFeats.Count <= 0 || perkLevel.GrantedFeats.All(IsPassiveIconTraitFeat))))
                     continue;
 
                 var suffix = detail.PerkLevels.Count > 1

@@ -1,4 +1,5 @@
 using System.Collections.Generic;
+using SWLOR.Game.Server.Service.DroidService;
 using SWLOR.Game.Server.Service.SpaceService;
 
 namespace SWLOR.Game.Server.Feature.ShipDefinition
@@ -34,6 +35,9 @@ namespace SWLOR.Game.Server.Feature.ShipDefinition
 
                 if (hull.Size == ShipSize.Capital)
                     _builder.CapitalShip();
+
+                if (DroidIndustryRules.HasDroidBay(hull.Role))
+                    _builder.DroidBay();
             }
 
             return _builder.Build();

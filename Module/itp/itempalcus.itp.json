@@ -55975,6 +55975,281 @@
                       "type": "resref",
                       "value": "zondeyn"
                     }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "Logistics CPU I"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "d_in_cpu1"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "Logistics CPU II"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "d_in_cpu2"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "Logistics CPU III"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "d_in_cpu3"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "Logistics CPU IV"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "d_in_cpu4"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "Logistics CPU V"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "d_in_cpu5"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "Survey Head I"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "d_in_hd1"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "Survey Head II"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "d_in_hd2"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "Survey Head III"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "d_in_hd3"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "Survey Head IV"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "d_in_hd4"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "Survey Head V"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "d_in_hd5"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "Utility Body I"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "d_in_bd1"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "Utility Body II"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "d_in_bd2"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "Utility Body III"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "d_in_bd3"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "Utility Body IV"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "d_in_bd4"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "Utility Body V"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "d_in_bd5"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "Labor Arms I"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "d_in_ar1"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "Labor Arms II"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "d_in_ar2"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "Labor Arms III"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "d_in_ar3"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "Labor Arms IV"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "d_in_ar4"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "Labor Arms V"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "d_in_ar5"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "Hauler Legs I"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "d_in_lg1"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "Hauler Legs II"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "d_in_lg2"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "Hauler Legs III"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "d_in_lg3"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "Hauler Legs IV"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "d_in_lg4"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "Hauler Legs V"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "d_in_lg5"
+                    }
                   }
                 ]
               },
@@ -72587,6 +72862,94 @@
                     "RESREF": {
                       "type": "resref",
                       "value": "map_034"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "Instruction Disc: Efficiency Protocol I"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "id_efficiency1"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "Instruction Disc: Efficiency Protocol II"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "id_efficiency2"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "Instruction Disc: Damage Control Protocol I"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "id_dmgcontrol1"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "Instruction Disc: Damage Control Protocol II"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "id_dmgcontrol2"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "Instruction Disc: Survey Protocol I"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "id_survey1"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "Instruction Disc: Survey Protocol II"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "id_survey2"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "Instruction Disc: Prospecting Protocol I"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "id_prospect1"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "Instruction Disc: Prospecting Protocol II"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "id_prospect2"
                     }
                   }
                 ]

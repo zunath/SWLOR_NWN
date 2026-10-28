@@ -831,6 +831,12 @@ namespace SWLOR.Game.Server.Service.PerkService
         SalvageExpert = 887,
         TraitHunter = 888,
 
-        // IDs 650 and 889+ are free.
+        // Droid protocols: industrial droid AI instructions (PerkGroupType.Droid).
+        EfficiencyProtocol = 900,
+        DamageControlProtocol = 901,
+        SurveyProtocol = 902,
+        ProspectingProtocol = 903,
+
+        // IDs 650, 889-899 and 904+ are free.
     }
 }

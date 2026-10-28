@@ -56,6 +56,7 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
         private int _mobilityResistance;
         private int _traumaResistance;
         private int _disruptionResistance;
+        private int _industry;
 
         public string Error
         {
@@ -297,6 +298,12 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
             set => Set(value);
         }
 
+        public string Industry
+        {
+            get => Get<string>();
+            set => Set(value);
+        }
+
         public string CPUResref
         {
             get => Get<string>();
@@ -388,6 +395,7 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
             _mobilityResistance = 0;
             _traumaResistance = 0;
             _disruptionResistance = 0;
+            _industry = 0;
 
             RefreshStats();
 
@@ -477,6 +485,7 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
             MobilityResistance = $"Mob. RES: {_mobilityResistance}";
             TraumaResistance = $"Trauma RES: {_traumaResistance}";
             DisruptionResistance = $"Disr. RES: {_disruptionResistance}";
+            Industry = $"Industry: {_industry}";
         }
 
         private void AdjustResistances(IReadOnlyDictionary<ResistanceType, int> resistances, int multiplier)
@@ -599,6 +608,7 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
             _unarmed += part.Unarmed;
             _twinPistol += part.TwinPistol;
             _armor += part.Armor;
+            _industry += part.Industry;
             AdjustResistances(part.Resistances, 1);
 
             RefreshStats();
@@ -657,6 +667,7 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
             _unarmed -= part.Unarmed;
             _twinPistol -= part.TwinPistol;
             _armor -= part.Armor;
+            _industry -= part.Industry;
             AdjustResistances(part.Resistances, -1);
 
             RefreshStats();
@@ -989,6 +1000,7 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
                 var ipMobilityResistance = ItemPropertyCustom(ItemPropertyType.DroidStat, (int)DroidStatSubType.ResistanceMobility, _mobilityResistance);
                 var ipTraumaResistance = ItemPropertyCustom(ItemPropertyType.DroidStat, (int)DroidStatSubType.ResistanceTrauma, _traumaResistance);
                 var ipDisruptionResistance = ItemPropertyCustom(ItemPropertyType.DroidStat, (int)DroidStatSubType.ResistanceDisruption, _disruptionResistance);
+                var ipIndustry = ItemPropertyCustom(ItemPropertyType.DroidStat, (int)DroidStatSubType.Industry, _industry);
 
                 BiowareXP2.IPSafeAddItemProperty(controller, ipPersonality, 0f, AddItemPropertyPolicy.ReplaceExisting, false, false);
                 BiowareXP2.IPSafeAddItemProperty(controller, ipTier, 0f, AddItemPropertyPolicy.ReplaceExisting, false, false);
@@ -1024,6 +1036,7 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
                 BiowareXP2.IPSafeAddItemProperty(controller, ipMobilityResistance, 0f, AddItemPropertyPolicy.ReplaceExisting, false, false);
                 BiowareXP2.IPSafeAddItemProperty(controller, ipTraumaResistance, 0f, AddItemPropertyPolicy.ReplaceExisting, false, false);
                 BiowareXP2.IPSafeAddItemProperty(controller, ipDisruptionResistance, 0f, AddItemPropertyPolicy.ReplaceExisting, false, false);
+                BiowareXP2.IPSafeAddItemProperty(controller, ipIndustry, 0f, AddItemPropertyPolicy.ReplaceExisting, false, false);
 
                 constructedDroid.SerializedCPU = _cpuItem;
                 constructedDroid.SerializedHead = _headItem;

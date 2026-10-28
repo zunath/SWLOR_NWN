@@ -342,6 +342,9 @@ namespace SWLOR.Game.Server.Service
                         case DroidStatSubType.SOC:
                             details.SOC += value;
                             break;
+                        case DroidStatSubType.Industry:
+                            details.Industry += value;
+                            break;
                         case DroidStatSubType.Armor:
                             AddSkillBonus(details.Skills, SkillType.Armor, value);
                             break;
@@ -498,6 +501,9 @@ namespace SWLOR.Game.Server.Service
                             break;
                         case DroidStatSubType.SOC:
                             details.SOC += value;
+                            break;
+                        case DroidStatSubType.Industry:
+                            details.Industry += value;
                             break;
                         case DroidStatSubType.Armor:
                             details.Armor += value;

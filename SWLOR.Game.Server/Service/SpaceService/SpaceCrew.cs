@@ -1,5 +1,7 @@
 using System.Collections.Generic;
 using System.Linq;
+using SWLOR.Game.Server.Service.DroidService;
+using SWLOR.Game.Server.Service.PerkService;
 using SWLOR.Game.Server.Service.SkillService;
 using SWLOR.Game.Server.Service.StatService;
 using SWLOR.NWN.API.NWScript.Enum;
@@ -40,25 +42,36 @@ namespace SWLOR.Game.Server.Service.SpaceService
                 SpaceCommand.GetLeadershipCrewBonusPercent(ship));
 
         /// <summary>
-        /// A posted droid's effectiveness at its seat: its tier's base (<see cref="DroidCrewRules.BaseEffectiveness"/>)
+        /// A posted droid's effectiveness at its seat: its Industry's base (<see cref="DroidCrewRules.BaseEffectiveness"/>)
         /// times the crew multiplier, capped like every seat.
         /// </summary>
         public static double GetDroidEffectiveness(uint ship, ShipDroidCrew droid) =>
             droid == null
                 ? 0.0
-                : DroidCrewRules.SeatEffectiveness(droid.Seat, droid.Tier, GetCrewMultiplier(ship), GetDroidIndustryBonus(droid));
+                : DroidCrewRules.SeatEffectiveness(droid.Seat, droid.Industry, GetCrewMultiplier(ship));
 
         /// <summary>
-        /// What a droid's Industry rating (plan section 27) adds to its base effectiveness. The rating does not exist
-        /// yet, so this is 0 and the tier alone sets a droid's effectiveness.
+        /// What a droid's Industry rating (plan section 27) adds to its base effectiveness at its seat: up to +50% at
+        /// the Engineer and Sensors seats and +25% at Gunner seats for the best industrial droid, none for a combat droid.
         /// </summary>
-        public static double GetDroidIndustryBonus(ShipDroidCrew droid) => 0.0;
+        public static double GetDroidIndustryBonus(ShipDroidCrew droid) =>
+            droid == null ? 0.0 : DroidCrewRules.IndustryBonus(droid.Seat, droid.Industry);
 
         /// <summary>
-        /// The percent a droid's Survey Protocol instruction (plan section 27) adds to a Probe Launcher it runs. The
-        /// instruction does not exist yet, so this is 0 for every droid and for no droid at all.
+        /// The percent a droid's Survey Protocol instruction (plan section 27) adds to a Probe Launcher it runs, or 0
+        /// for a droid without it and for no droid at all.
         /// </summary>
-        public static int GetDroidSurveyBonusPercent(ShipDroidCrew droid) => 0;
+        public static int GetDroidSurveyBonusPercent(ShipDroidCrew droid) =>
+            DroidIndustryRules.GetProtocolValue(droid?.Protocols, PerkType.SurveyProtocol);
+
+        /// <summary>
+        /// The percent a droid's Damage Control Protocol adds to the repairs it runs at the Engineer station, or 0
+        /// anywhere else.
+        /// </summary>
+        public static int GetDroidRepairBonusPercent(ShipDroidCrew droid) =>
+            droid?.Seat == ShipCrewSeat.Engineer
+                ? DroidIndustryRules.GetProtocolValue(droid.Protocols, PerkType.DamageControlProtocol)
+                : 0;
 
         /// <summary>The crew effectiveness multiplier for a Crew Morale percent and a Leadership percent.</summary>
         public static double EffectivenessMultiplier(int crewMoralePercent, int leadershipPercent) =>
@@ -86,8 +99,8 @@ namespace SWLOR.Game.Server.Service.SpaceService
         /// </summary>
         public static bool AssignSeat(uint ship, ShipCrewSeat seat, uint crewMember)
         {
-            if (seat == ShipCrewSeat.Invalid || seat == ShipCrewSeat.Pilot || crewMember == ship ||
-                crewMember == OBJECT_INVALID || _seatByCrew.ContainsKey(crewMember) || IsSeatWorked(ship, seat))
+            if (seat == ShipCrewSeat.Invalid || seat == ShipCrewSeat.Pilot || seat == ShipCrewSeat.DroidBay ||
+                crewMember == ship || crewMember == OBJECT_INVALID || _seatByCrew.ContainsKey(crewMember) || IsSeatWorked(ship, seat))
             {
                 return false;
             }

@@ -2,6 +2,7 @@ using System;
 using System.Collections.Generic;
 using SWLOR.Game.Server.Entity;
 using SWLOR.Game.Server.Service;
+using SWLOR.Game.Server.Service.DroidService;
 using SWLOR.Game.Server.Service.SkillService;
 using SWLOR.Game.Server.Service.SpaceService;
 using SWLOR.Game.Server.Service.StatService;
@@ -87,9 +88,11 @@ namespace SWLOR.Game.Server.Feature.ShipModuleDefinition
                     SetLocalInt(target, GasCloudUnitsVariable, remainingUnits);
                 }
 
+                // A droid in the ship's droid bay adds to the gas delivered, not to what the cloud loses.
+                var delivered = DroidIndustryRules.ApplyPercent(amount, Space.GetDroidBayYieldPercent(activator));
                 var lootTable = Loot.GetLootTableByName(GetLocalString(target, GasCloudLootTableVariable));
                 var gas = new List<string>();
-                for (var count = 1; count <= amount; count++)
+                for (var count = 1; count <= delivered; count++)
                 {
                     gas.Add(lootTable.GetRandomItem().Resref);
                 }
@@ -155,12 +158,15 @@ namespace SWLOR.Game.Server.Feature.ShipModuleDefinition
                 }
 
                 // Salvage Expert (Gathering) adds items to every cycle.
-                var items = ShipSalvageRules.SalvageItemsPerCycle(
-                    shipStatus.Industrial, moduleBonus, Stat.GetStatAdjustment(activator, StatType.SpaceSalvageYieldBonus));
+                // A droid in the ship's droid bay adds items and, with Prospecting Protocol, rare-find chance.
+                var items = DroidIndustryRules.ApplyPercent(ShipSalvageRules.SalvageItemsPerCycle(
+                        shipStatus.Industrial, moduleBonus, Stat.GetStatAdjustment(activator, StatType.SpaceSalvageYieldBonus)),
+                    Space.GetDroidBayYieldPercent(activator));
                 var yield = ShipSalvageRules.ScrapYield(wreck.Tier, items);
+                var rareFind = traitRareFind + Space.GetDroidBayRareFindBonus(activator);
 
                 if (ShipSalvageRules.RareFindPercent(wreck.Difficulty) > 0 &&
-                    ShipSalvageRules.RollsRareFind(wreck.Difficulty, Random.Next(100) - traitRareFind))
+                    ShipSalvageRules.RollsRareFind(wreck.Difficulty, Random.Next(100) - rareFind))
                 {
                     // Some rare finds are a schematic or rare torpedoes; the rest come from the tier's table.
                     var reward = ShipRareFindRules.Roll(wreck.Tier, wreck.Difficulty, Random.Next, wreck.WildSpace);

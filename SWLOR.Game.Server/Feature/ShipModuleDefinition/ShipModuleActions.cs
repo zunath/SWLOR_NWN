@@ -4,6 +4,7 @@ using SWLOR.Game.Server.Core;
 using SWLOR.Game.Server.Entity;
 using SWLOR.Game.Server.Feature.ShipRewardDefinition;
 using SWLOR.Game.Server.Service;
+using SWLOR.Game.Server.Service.DroidService;
 using SWLOR.Game.Server.Service.LootService;
 using SWLOR.Game.Server.Service.PerkService;
 using SWLOR.Game.Server.Service.SkillService;
@@ -604,11 +605,14 @@ namespace SWLOR.Game.Server.Feature.ShipModuleDefinition
                 var lootTableId = GetLocalString(target, "ASTEROID_LOOT_TABLE_ID");
                 var lootTable = Loot.GetLootTableByName(lootTableId);
 
-                // Deliver the units to the ship's hold, or the pilot when it is full.
+                // Deliver the units to the ship's hold, or the pilot when it is full. A droid in the ship's droid bay
+                // adds to the ore delivered (not to what the asteroid loses) and, with Prospecting, to the rare chance.
+                var delivered = DroidIndustryRules.ApplyPercent(amountToMine, Space.GetDroidBayYieldPercent(activator));
+                var bayRareFind = rareFind + Space.GetDroidBayRareFindBonus(activator);
                 var ore = new List<string>();
-                for (var count = 1; count <= amountToMine; count++)
+                for (var count = 1; count <= delivered; count++)
                 {
-                    ore.Add(GetAsteroidOre(activator, lootTable, rareFind).Resref);
+                    ore.Add(GetAsteroidOre(activator, lootTable, bayRareFind).Resref);
                 }
 
                 ShipHold.DeliverYield(activator, ore);
@@ -661,10 +665,12 @@ namespace SWLOR.Game.Server.Feature.ShipModuleDefinition
                 var lootTableId = GetLocalString(target, "STRIPMINE_LOOT_TABLE_ID");
                 var lootTable = Loot.GetLootTableByName(lootTableId);
 
+                var delivered = DroidIndustryRules.ApplyPercent(amountToMine, Space.GetDroidBayYieldPercent(activator));
+                var bayRareFind = rareFind + Space.GetDroidBayRareFindBonus(activator);
                 var ore = new List<string>();
-                for (var count = 1; count <= amountToMine; count++)
+                for (var count = 1; count <= delivered; count++)
                 {
-                    ore.Add(GetAsteroidOre(activator, lootTable, rareFind).Resref);
+                    ore.Add(GetAsteroidOre(activator, lootTable, bayRareFind).Resref);
                 }
 
                 ShipHold.DeliverYield(activator, ore);
@@ -692,12 +698,15 @@ namespace SWLOR.Game.Server.Feature.ShipModuleDefinition
         /// <summary>
         /// A repair's amount after the repairer's Repair Efficiency (Command), which every module and ability repair
         /// uses. A crew member's station repair works at the station's effectiveness and takes the crew member's own
-        /// Repair Efficiency (plan section 10).
+        /// Repair Efficiency (plan section 10). Droids add their part first (plan section 27): a Logistics hull's bay
+        /// droid, and Damage Control Protocol at the Engineer station.
         /// </summary>
         public static int ApplyRepairEfficiency(uint repairer, int amount)
         {
             return SpaceCombatMath.ApplyRepairEfficiency(
-                ShipCrewSeats.ScaleByEffectiveness(amount, SpaceCrew.GetFireEffectiveness(repairer)),
+                ShipCrewSeats.ScaleByEffectiveness(
+                    SpaceCombatMath.ScaleByPercent(amount, Space.GetDroidRepairBonusPercent(repairer)),
+                    SpaceCrew.GetFireEffectiveness(repairer)),
                 Stat.GetStatAdjustment(SpaceCrew.GetStatSource(repairer), StatType.SpaceRepairEfficiencyPercentAdjustment));
         }
 

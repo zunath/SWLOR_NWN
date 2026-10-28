@@ -155,30 +155,34 @@ namespace SWLOR.Game.Server.Feature.DialogDefinition
 
             var pilot = Space.GetShipPilot(dbShip.Id);
             var posted = Space.GetPostedDroids(dbShip);
-            var header = "Droid crew. A droid posted at a station stays at its post and does not follow you. It works " +
-                         "the station while someone flies the ship: weapons at the pilot's target, repairers and shields " +
-                         "when they run low. Its tier sets how well it works and the module ranks it can switch on.\n";
+            var header = "Droid crew. A posted droid stays at its post and does not follow you. At a station it works " +
+                         "while someone flies the ship: weapons at the pilot's target, repairers and shields when they run " +
+                         "low. Its Industry sets how well it works and its tier the module ranks it can switch on. A droid " +
+                         "in a droid bay adds its Industry to the ship's yields or repairs.\n";
 
-            foreach (var seat in ShipCrewSeats.GetStationSeats(dbShip.Status.Size))
+            foreach (var seat in Space.GetDroidPosts(dbShip.Status))
             {
                 var droid = posted.FirstOrDefault(x => x.Seat == seat);
                 var crewMember = GetIsObjectValid(pilot) ? SpaceCrew.GetSeatOccupant(pilot, seat) : OBJECT_INVALID;
                 var who = droid != null
-                    ? $"{droid.Name} (tier {droid.Tier}, {DroidCrewRules.BaseEffectiveness(seat, droid.Tier):P0})"
+                    ? $"{droid.Name} (tier {droid.Tier}, Industry {droid.Industry})"
                     : crewMember != OBJECT_INVALID && GetIsObjectValid(crewMember)
                         ? PlayerName.GetDisplayName(player, crewMember)
                         : ColorToken.Green("open");
                 header += $"\n{ShipCrewSeats.GetSeatName(seat)}: {who}";
+                if (droid != null)
+                    header += $"\n  {Space.DescribeDroidWork(seat, droid, dbShip.Status)}";
 
                 var chosen = seat;
+                var postName = ShipCrewSeats.GetPostName(seat);
                 if (droid != null)
                 {
-                    page.AddResponse($"Recall {droid.Name} from the {ShipCrewSeats.GetSeatName(seat)} station",
+                    page.AddResponse($"Recall {droid.Name} from {postName}",
                         () => Space.RecallDroid(player, chosen));
                 }
                 else if (crewMember == OBJECT_INVALID || !GetIsObjectValid(crewMember))
                 {
-                    page.AddResponse($"Post a droid at the {ShipCrewSeats.GetSeatName(seat)} station", () =>
+                    page.AddResponse($"Post a droid at {postName}", () =>
                     {
                         var model = Data<Model>();
                         model.Seat = chosen;
@@ -195,7 +199,7 @@ namespace SWLOR.Game.Server.Feature.DialogDefinition
         {
             var player = Player;
             var model = Data<Model>();
-            var seatName = ShipCrewSeats.GetSeatName(model.Seat);
+            var postName = ShipCrewSeats.GetPostName(model.Seat);
 
             if (!string.IsNullOrEmpty(model.Result))
             {
@@ -210,21 +214,26 @@ namespace SWLOR.Game.Server.Feature.DialogDefinition
                 return;
             }
 
-            page.Header = $"Choose a droid for the {seatName} station. The percent is how well it works the station " +
-                          "before Crew Morale and Leadership.";
+            page.Header = model.Seat == ShipCrewSeat.DroidBay
+                ? "Choose a droid for the droid bay. Its Industry sets what it adds to the ship's yields or repairs."
+                : $"Choose a droid for {postName}. The percent is how well it works the station before Crew Morale " +
+                  "and Leadership; it comes from the droid's Industry.";
 
             foreach (var controller in controllers)
             {
-                var tier = DroidCrewRules.ClampTier(Droid.LoadDroidItemPropertyDetails(controller).Tier);
+                var details = Droid.LoadDroidItemPropertyDetails(controller);
+                var tier = DroidCrewRules.ClampTier(details.Tier);
                 var name = Droid.GetDroidName(controller);
-                var effectiveness = DroidCrewRules.BaseEffectiveness(model.Seat, tier);
                 var chosen = controller;
-                page.AddResponse(
-                    $"{name} (tier {tier}): {effectiveness:P0}, modules up to rank {DroidCrewRules.MaximumModuleRank(tier)}",
+                var text = model.Seat == ShipCrewSeat.DroidBay
+                    ? $"{name} (tier {tier}, Industry {details.Industry})"
+                    : $"{name} (tier {tier}, Industry {details.Industry}): {DroidCrewRules.BaseEffectiveness(model.Seat, details.Industry):P0}, " +
+                      $"modules up to rank {DroidCrewRules.MaximumModuleRank(tier)}";
+                page.AddResponse(text,
                     () =>
                     {
                         if (Space.PostDroid(player, model.Seat, chosen))
-                            model.Result = $"{name} now works the {seatName} station.";
+                            model.Result = $"{name} now works {postName}.";
                     });
             }
         }

@@ -199,6 +199,9 @@ namespace SWLOR.Game.Server.Service.PerkService
 
         [PerkCategory("Piloting - Command", true)]
         PilotingCommand = 68,
+
+        [PerkCategory("Droid Protocols", true)]
+        DroidProtocols = 69,
     }
 
     public class PerkCategoryAttribute : Attribute

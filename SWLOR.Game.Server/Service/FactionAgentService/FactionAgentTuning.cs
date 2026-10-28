@@ -27,7 +27,7 @@ namespace SWLOR.Game.Server.Service.FactionAgentService
         public const double BaseMinutes = 3.0;
         public const double HopMinutes = 3.0;
         public const double CourierStopMinutes = 2.0;
-        public const double OrePerMinute = 13.846153846153845;
+        public static readonly double[] OrePerMinute = new double[] { 0.0, 12.5, 13.846153846153845, 10.833333333333334, 10.0, 10.0, 10.0 };
         public const double ConvoyFlightMinutes = 4.0;
         public const double RaiderKillMinutes = 1.0;
         public const float ConvoySpawnDelaySeconds = 10f;

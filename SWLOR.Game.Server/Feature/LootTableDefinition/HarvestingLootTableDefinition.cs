@@ -248,23 +248,23 @@ namespace SWLOR.Game.Server.Feature.LootTableDefinition
 
             _builder.Create("ASTEROID_IDAILIA_STRIP")
                 .AddItem("ore_idailia", 240)
-                .AddItem("obsidian", 2)
-                .AddItem("ionite", 1, isRare: true);
+                .AddItem("obsidian", 6)
+                .AddItem("ionite", 3, isRare: true);
 
             _builder.Create("ASTEROID_BARINIUM_STRIP")
                 .AddItem("ore_barinium", 480)
-                .AddItem("crystal", 2)
-                .AddItem("katrium", 1, isRare: true);
+                .AddItem("crystal", 6)
+                .AddItem("katrium", 3, isRare: true);
 
             _builder.Create("ASTEROID_GOSTIAN_STRIP")
                 .AddItem("ore_gostian", 960)
-                .AddItem("diamond", 2)
-                .AddItem("zinsiam", 1, isRare: true);
+                .AddItem("diamond", 6)
+                .AddItem("zinsiam", 3, isRare: true);
 
             _builder.Create("ASTEROID_ARDANIUM_STRIP")
                 .AddItem("ore_arda", 32)
                 .AddItem("ore_gostian", 256)
-                .AddItem("zinsiam", 1, isRare: true);
+                .AddItem("zinsiam", 3, isRare: true);
         }
     }
 }

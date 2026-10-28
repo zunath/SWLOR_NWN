@@ -96,8 +96,8 @@
       "Hops": 0,
       "Role": "Invalid",
       "Site": "",
-      "Credits": 725,
-      "Tokens": 1
+      "Credits": 750,
+      "Tokens": 2
     },
     {
       "Type": "ConvoyEscort",
@@ -386,8 +386,8 @@
       "Hops": 0,
       "Role": "Invalid",
       "Site": "",
-      "Credits": 1675,
-      "Tokens": 3
+      "Credits": 1850,
+      "Tokens": 4
     },
     {
       "Type": "ConvoyEscort",
@@ -531,8 +531,8 @@
       "Hops": 0,
       "Role": "Invalid",
       "Site": "",
-      "Credits": 1725,
-      "Tokens": 3
+      "Credits": 1950,
+      "Tokens": 4
     },
     {
       "Type": "ConvoyEscort",
@@ -676,8 +676,8 @@
       "Hops": 0,
       "Role": "Invalid",
       "Site": "",
-      "Credits": 2150,
-      "Tokens": 4
+      "Credits": 2425,
+      "Tokens": 5
     },
     {
       "Type": "ConvoyEscort",
@@ -821,8 +821,8 @@
       "Hops": 0,
       "Role": "Invalid",
       "Site": "",
-      "Credits": 3850,
-      "Tokens": 8
+      "Credits": 4500,
+      "Tokens": 9
     },
     {
       "Type": "ConvoyEscort",
@@ -874,8 +874,8 @@
   "Rates": {
     "1": {
       "Combat": 4055,
-      "Agents": 4364,
-      "Percent": 107.6
+      "Agents": 4357,
+      "Percent": 107.4
     },
     "2": {
       "Combat": 6270,
@@ -884,22 +884,22 @@
     },
     "3": {
       "Combat": 8500,
-      "Agents": 9190,
-      "Percent": 108.1
+      "Agents": 9183,
+      "Percent": 108.0
     },
     "4": {
       "Combat": 7557,
-      "Agents": 8179,
+      "Agents": 8177,
       "Percent": 108.2
     },
     "5": {
       "Combat": 9347,
-      "Agents": 10108,
+      "Agents": 10104,
       "Percent": 108.1
     },
     "6": {
       "Combat": 22212,
-      "Agents": 24000,
+      "Agents": 23989,
       "Percent": 108.0
     }
   },

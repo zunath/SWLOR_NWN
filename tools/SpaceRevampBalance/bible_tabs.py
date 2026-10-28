@@ -466,6 +466,7 @@ def zones(s):
 SUMMARY_TIERS = ["T1", "T2", "T3", "T4", "T5", "T6", "T5.5"]
 ACTIVE_BAND = (100, 140)       # of the tier's combat rate: every active activity
 CONTRABAND_BAND = (150, 200)   # contraband trade after customs and pirates
+MINING_BAND = (88, 107)        # "about 90-100%": a no-perk miner (W11e), level with the strip miner
 STORE_EXPLORE_MAX = 120        # exploring with schematics and Prototype Tech at their store price
 PASSIVE_CAP_MINUTES = 90       # passive income per character a day, in minutes of the tier's combat rate
 
@@ -569,10 +570,11 @@ def income_rows():
         ("Incursion (2 active hours)", cells(tiers(incursion(2))), "100-140%", "events.py"),
         ("Rift Run (solo, typical pace)", cells({**{f"T{t}": rift(10 * t) for t in range(1, 6)}, "T5.5": rift(55)}),
          "100-140%", "events.py"),
-        ("Mining, three Mining Lasers, no perks (best area of the tier)", cells(best_area("credits")), "100-140%",
+        ("Mining, three Mining Lasers, no perks (best area of the tier)", cells(best_area("credits")), "about 90-100%",
          "mining.py"),
-        ("Strip mining, Industrial, no perks (best area of the tier)", cells(best_area("strip")), "100-140%", "mining.py"),
-        ("Mining with Prospector III and Rapid Extraction II", cells(best_area("perks")), "perks (flagged)", "mining.py"),
+        ("Strip mining, Industrial, no perks (best area of the tier)", cells(best_area("strip")), "about 90-100%", "mining.py"),
+        ("Mining with Prospector III and Rapid Extraction II", cells(best_area("perks")), "at most 140%", "mining.py"),
+        ("Strip mining with Prospector III and Rapid Extraction II", cells(best_area("perk_strip")), "at most 140%", "mining.py"),
     ]
 
 
@@ -609,7 +611,8 @@ def passive_rows():
 
 def summary_flags(rows):
     """The cells outside their band (active 100-140%, contraband 150-200%, store-valued exploring at most 120%)."""
-    bands = {"100-140%": ACTIVE_BAND, "150-200%": CONTRABAND_BAND, "at most 120%": (0, STORE_EXPLORE_MAX)}
+    bands = {"100-140%": ACTIVE_BAND, "150-200%": CONTRABAND_BAND, "at most 120%": (0, STORE_EXPLORE_MAX),
+             "about 90-100%": MINING_BAND, "at most 140%": (0, ACTIVE_BAND[1])}
     out = []
     for name, data, band, _src in rows:
         if band in bands:

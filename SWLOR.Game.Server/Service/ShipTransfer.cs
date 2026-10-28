@@ -3,6 +3,7 @@ using System.Linq;
 using SWLOR.Game.Server.Core;
 using SWLOR.Game.Server.Entity;
 using SWLOR.Game.Server.Feature.DialogDefinition;
+using SWLOR.Game.Server.Feature.MigrationDefinition;
 using SWLOR.Game.Server.Service.DBService;
 using SWLOR.Game.Server.Service.LogService;
 using SWLOR.Game.Server.Service.PlayerMarketService;
@@ -67,23 +68,14 @@ namespace SWLOR.Game.Server.Service
         }
 
         /// <summary>
-        /// Whether a stored item or a fitted module aboard can't normally be traded (cursed: undroppable), so a
-        /// transfer never passes on bound items.
+        /// Whether a stored item or a fitted module aboard, or anything nested inside a bag or container, cannot
+        /// normally be traded (cursed: undroppable), so a transfer or market sale never passes on bound items.
         /// </summary>
         private static bool HasUntradeableItemAboard(PlayerShip ship, WorldProperty property)
         {
             static bool IsUntradeable(string data)
             {
-                if (string.IsNullOrWhiteSpace(data))
-                    return false;
-
-                var item = ObjectPlugin.Deserialize(data);
-                if (!GetIsObjectValid(item))
-                    return false;
-
-                var untradeable = GetItemCursedFlag(item);
-                DestroyObject(item);
-                return untradeable;
+                return StoredObjectData.ContainsCursedItem(data);
             }
 
             var modules = ship.Status.HighPowerModules.Values

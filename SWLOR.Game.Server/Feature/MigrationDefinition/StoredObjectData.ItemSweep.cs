@@ -459,6 +459,33 @@ internal sealed partial class StoredObjectData
 
     internal static BaseItem ReadBaseItem(Node item) => (BaseItem)ReadInteger(item, "BaseItem");
 
+    /// <summary>
+    /// Whether a saved item, or anything stored inside it at any depth (bags, containers), has the cursed flag set.
+    /// Cursed items cannot be dropped, traded or sold, so a container holding one cannot be either.
+    /// </summary>
+    internal static bool ContainsCursedItem(string data)
+    {
+        if (string.IsNullOrWhiteSpace(data))
+            return false;
+        var document = new StoredObjectData(Convert.FromBase64String(data));
+        return ContainsCursedItem(document._root, new HashSet<Node>());
+    }
+
+    private static bool ContainsCursedItem(Node item, HashSet<Node> visited)
+    {
+        if (!visited.Add(item))
+            return false;
+        if (ReadInteger(item, "Cursed") != 0)
+            return true;
+        foreach (var list in item.Fields.Where(IsInventoryList))
+        foreach (var child in list.Children)
+        {
+            if (ContainsCursedItem(child, visited))
+                return true;
+        }
+        return false;
+    }
+
     internal static int ReadInteger(Node node, string name)
     {
         var field = node.Fields.FirstOrDefault(x => x.Name == name && x.Type <= 5);

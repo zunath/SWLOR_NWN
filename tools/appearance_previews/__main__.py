@@ -3,8 +3,13 @@
 python tools/GenerateAppearancePreviews.py --hak-dir <packed haks> --output <hak source folder> --work <scratch>
 
 Reads the parts the editor offers (armor for every body type, every species' heads, helmets,
-cloaks), extracts each model and its tint material from the packed HAKs, renders front, back
-and 3/4 views in Blender, and writes 96x96 DXT1 DDS files named a<key><f|b|a>.
+cloaks, weapon and shield parts), extracts each model and its tint material from the packed HAKs
+(base game weapon models and textures from the NWN:EE install, --nwn-root), renders front, back
+and 3/4 views in Blender, and writes 96x96 DXT1 DDS files named a<key><f|b|a>. A weapon part's
+key is its model resref (wswls_t_011); it is laid out diagonally to fill the tile, and only its
+front picture ships, since a lone part looks the same from every side.
+
+The packed HAKs must match the hak sources: a stale sw_weapon.hak misses newer weapon models.
 
 Pictures of a non-human body part that look the same as the human body's picture are left
 out; the game server falls back to the human picture when a species has none of its own.
@@ -31,6 +36,7 @@ from .tint import PREVIEW_DYES, bake, cloak_tile, plain_texture, read_tint_map, 
 BACKGROUND = (60, 58, 55)
 OUTPUT_HAK = "sw_part_previews"
 DEFAULT_BLENDER = r"C:\Program Files\Blender Foundation\Blender 4.0\blender.exe"
+DEFAULT_NWN_ROOT = r"C:\Program Files (x86)\Steam\steamapps\common\Neverwinter Nights"
 
 
 def module_haks():
@@ -105,6 +111,50 @@ def mesh_materials(ascii_path: Path, bitmap_fallbacks=None) -> dict:
                 bitmaps[node] = parts[1].lower()
         elif parts[0] == "endnode":
             node = None
+    return result
+
+
+def mesh_emitters(ascii_path: Path) -> list:
+    """Textured emitters ({node, texture, width, length}); a lightsaber blade is a billboard emitter."""
+    result, current = [], None
+    for line in ascii_path.read_text(errors="ignore").splitlines():
+        parts = line.split()
+        if not parts:
+            continue
+        if parts[0] == "node":
+            current = {"node": parts[2], "texture": None, "width": 0.0, "length": 0.0} \
+                if len(parts) > 2 and parts[1] == "emitter" else None
+        elif current is not None and len(parts) > 1:
+            if parts[0] == "texture" and parts[1].lower() != "null":
+                current["texture"] = parts[1].lower()
+            elif parts[0].lower() == "sizestart":
+                current["width"] = float(parts[1])
+            elif parts[0].lower() == "sizestart_y":
+                current["length"] = float(parts[1])
+        if parts[0] == "endnode" and current is not None:
+            if current["texture"] and current["width"] > 0 and current["length"] > 0:
+                result.append(current)
+            current = None
+    return result
+
+
+def prepare_emitter_textures(index: HakIndex, names, work: Path) -> dict:
+    """Emitter texture name -> {image, sources}: the texture with its alpha, for glowing billboards."""
+    raw, baked = work / "raw", work / "textures"
+    baked.mkdir(parents=True, exist_ok=True)
+    index.extract([f"{n}.{e}" for n in names for e in ("dds", "tga")], raw)
+    result = {}
+    for name in names:
+        source = next((raw / f"{name}.{e}" for e in ("dds", "tga") if (raw / f"{name}.{e}").exists()), None)
+        if source is None:
+            continue
+        image = baked / f"{name}_e.png"
+        try:
+            if not image.exists():
+                plain_texture(source, image, keep_alpha=True)
+            result[name] = {"image": str(image), "sources": [source.name]}
+        except (OSError, ValueError) as error:
+            print("PREVIEW_UNREADABLE_TEXTURE", source.name, error)
     return result
 
 
@@ -206,14 +256,20 @@ def save_dds(image: Image.Image, path: Path):
     image.transpose(Image.FLIP_TOP_BOTTOM).save(path, "DDS", pixel_format="DXT1")
 
 
-def write_pictures(keys, renders: Path, output: Path, size: int):
+def picture_views(key: str, front_only=frozenset()):
+    """Views published for a part. A lone weapon or shield part looks the same from every side,
+    so only its front picture ships; the editor hides the view buttons for weapons."""
+    return ("f",) if key in front_only else VIEWS
+
+
+def write_pictures(keys, renders: Path, output: Path, size: int, front_only=frozenset()):
     """Write every picture, skipping non-human pictures that duplicate the human one."""
     kept = skipped = 0
     save_dds(Image.new("RGB", (size, size), BACKGROUND), output / f"{EMPTY_PICTURE}.dds")
     wanted = {f"{EMPTY_PICTURE}.dds"}
     for key in keys:
         twin = human_twin(key)
-        for view in VIEWS:
+        for view in picture_views(key, front_only):
             png = renders / f"{key}_{view}.png"
             if not png.exists():
                 continue
@@ -238,6 +294,8 @@ def main(argv=None):
     parser.add_argument("--work", type=Path, required=True, help="Scratch folder (models, textures, renders)")
     parser.add_argument("--two-da", type=Path, default=REPO / "SWLOR_Haks/sw_2da")
     parser.add_argument("--blender", default=os.environ.get("BLENDER", DEFAULT_BLENDER))
+    parser.add_argument("--nwn-root", type=Path, default=Path(os.environ.get("NWN_ROOT", DEFAULT_NWN_ROOT)),
+                        help="NWN:EE install; base game weapon models and textures come from its KEY/BIF data")
     parser.add_argument("--only", help="Regex on picture keys, for partial runs")
     parser.add_argument("--render-size", type=int, default=256)
     parser.add_argument("--size", type=int, default=96)
@@ -247,7 +305,11 @@ def main(argv=None):
     # Blender resolves texture paths against its own folder; hand it absolute paths only.
     args.hak_dir, args.output, args.work = (path.resolve() for path in (args.hak_dir, args.output, args.work))
 
-    index = HakIndex(args.hak_dir, module_haks())
+    if not (args.nwn_root / "data/nwn_base.key").is_file():
+        # Without the base game, every base weapon model would be quietly left out.
+        print(f"No NWN:EE install at {args.nwn_root} (set --nwn-root or NWN_ROOT)", file=sys.stderr)
+        return 2
+    index = HakIndex(args.hak_dir, module_haks(), args.nwn_root)
     # The module's own HAK list (minus the pictures this tool makes) must all be present, or a
     # wrong folder would quietly produce an incomplete set and delete the existing pictures.
     missing = [name for name in index.missing if name != OUTPUT_HAK]
@@ -260,21 +322,33 @@ def main(argv=None):
     args.output.mkdir(parents=True, exist_ok=True)
     renders = args.work / "renders"
     all_keys = [j.key for j in jobs]
+    front_only = frozenset(j.key for j in jobs if j.weapon)
     cache = RenderCache(args.work, index, args.render_size)
     jobs = [j for j in jobs if not cache.is_fresh(j.key, renders)]
     print(f"{len(jobs)} parts to render")
     problems = render(args, index, jobs, renders, cache) if jobs else []
     cache.save()
 
-    kept, skipped, wanted = write_pictures(all_keys, renders, args.output, args.size)
+    kept, skipped, wanted = write_pictures(all_keys, renders, args.output, args.size, front_only)
     # A part that failed to render keeps whatever picture was published before.
-    wanted |= {f"{preview_resref(key, view)}.dds" for key in failed_keys(problems) for view in VIEWS}
-    if not args.only:
-        for stale in args.output.glob("*.dds"):
-            if stale.name not in wanted:
-                stale.unlink()
+    wanted |= {f"{preview_resref(key, view)}.dds" for key in failed_keys(problems)
+               for view in picture_views(key, front_only)}
+    remove_stale_pictures(args.output, wanted, all_keys if args.only else None)
     print(f"{kept} pictures written, {skipped} duplicates of the human body skipped, {len(problems)} problems")
     return 1 if problems else 0
+
+
+def remove_stale_pictures(output: Path, wanted, keys=None):
+    """Delete published pictures this run did not write. A full run checks every picture; a
+    partial (--only) run checks only its own parts, so a part now empty or front-only loses
+    its old pictures while other parts keep theirs."""
+    if keys is None:
+        candidates = output.glob("*.dds")
+    else:
+        candidates = (output / f"{preview_resref(key, view)}.dds" for key in keys for view in VIEWS)
+    for path in candidates:
+        if path.name not in wanted:
+            path.unlink(missing_ok=True)
 
 
 def failed_keys(problems):
@@ -287,6 +361,11 @@ def failed_keys(problems):
     return keys
 
 
+def empty_parts(stdout):
+    """Weapon parts Blender found nothing to draw on (deliberately empty models); they get no picture."""
+    return {line.split()[1] for line in stdout.splitlines() if line.startswith("PREVIEW_EMPTY ")}
+
+
 def batch_problems(returncode, stdout, stderr, batch, renders):
     """Every reason a Blender batch did not produce all of its renders."""
     problems = [line for line in stdout.splitlines() if line.startswith(("PREVIEW_FAILED", "PREVIEW_NO_MESH"))]
@@ -294,6 +373,7 @@ def batch_problems(returncode, stdout, stderr, batch, renders):
         tail = (stderr or stdout).strip().splitlines()[-1:] or [""]
         problems.append(f"PREVIEW_BATCH_FAILED exit {returncode}: {tail[0]}")
     reported = {line.split()[1] for line in problems if line.startswith(("PREVIEW_FAILED", "PREVIEW_NO_MESH"))}
+    reported |= empty_parts(stdout)
     for job in batch:
         if job["key"] not in reported and not all((renders / f"{job['key']}_{view}.png").exists() for view in VIEWS):
             problems.append(f"PREVIEW_MISSING_RENDER {job['key']}")
@@ -384,9 +464,16 @@ def render(args, index, jobs, renders, cache):
         materials.update(nodes.values())
         materials.update(bitmaps.values())
         batch_jobs.append({"key": job.key, "ascii": str(ascii_path), "nodes": nodes, "bitmaps": bitmaps,
-                           "model": f"{job.model}.mdl"})
+                           "model": f"{job.model}.mdl", "weapon": job.weapon,
+                           "emitters": mesh_emitters(ascii_path) if job.weapon else []})
     textures = prepare_textures(index, materials, args.work, palette)
+    glows = prepare_emitter_textures(index, sorted({e["texture"] for j in batch_jobs for e in j["emitters"]}), args.work)
     for job in batch_jobs:
+        glow_sources = []
+        for emitter in job["emitters"]:
+            glow = glows.get(emitter.pop("texture"), {})
+            emitter["image"] = glow.get("image")
+            glow_sources += glow.get("sources", [])
         # A material without resources falls back to the node's own bitmap texture.
         for node, material in list(job["nodes"].items()):
             fallback = job.get("bitmaps", {}).get(node)
@@ -395,7 +482,9 @@ def render(args, index, jobs, renders, cache):
         job.pop("bitmaps", None)
         job["textures"] = {m: dict(textures[m]) for m in set(job["nodes"].values()) if m in textures}
         job["sources"] = [job.pop("model")] + [name for m in job["textures"].values() for name in m.pop("sources", [])]
-        job["complete"] = all(m in job["textures"] for m in set(job["nodes"].values()))
+        job["sources"] += glow_sources
+        job["complete"] = (all(m in job["textures"] for m in set(job["nodes"].values()))
+                           and all(e["image"] for e in job["emitters"]))
 
     script = Path(__file__).with_name("blender_render.py")
     batches = [batch_jobs[i:i + args.batch] for i in range(0, len(batch_jobs), args.batch)]
@@ -408,6 +497,8 @@ def render(args, index, jobs, renders, cache):
                                  str(batch_file), str(renders), str(args.render_size)],
                                 capture_output=True, text=True, encoding="utf8", errors="replace")
         problems = batch_problems(result.returncode, result.stdout, result.stderr, batch, renders)
+        for key in sorted(empty_parts(result.stdout)):
+            print("PREVIEW_EMPTY", key, "(nothing to draw; no picture)", flush=True)
         for job in batch:
             if all((renders / f"{job['key']}_{view}.png").exists() for view in VIEWS):
                 cache.record(job["key"], job["sources"], job["complete"])

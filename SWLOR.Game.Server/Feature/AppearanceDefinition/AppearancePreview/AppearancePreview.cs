@@ -80,6 +80,30 @@ namespace SWLOR.Game.Server.Feature.AppearanceDefinition.AppearancePreview
 
         public static string HelmetKey(int helmetId) => helmetId > 0 ? $"helm_{helmetId:D3}" : string.Empty;
 
+        /// <summary>
+        /// Model of one part of a three-part weapon: part id 101 (colour 1, model 1) of a longsword top is
+        /// wswls_t_011, the engine's model * 10 + colour number.
+        /// </summary>
+        public static string WeaponPartKey(string itemClass, AppearanceWeapon part, int partId)
+        {
+            var letter = part switch
+            {
+                AppearanceWeapon.Top => 't',
+                AppearanceWeapon.Middle => 'm',
+                AppearanceWeapon.Bottom => 'b',
+                _ => '\0'
+            };
+            var model = partId % 100;
+            var color = partId / 100;
+            if (letter == '\0' || string.IsNullOrWhiteSpace(itemClass) || model <= 0 || color <= 0)
+                return string.Empty;
+            return $"{itemClass.Trim().ToLowerInvariant()}_{letter}_{model * 10 + color:D3}";
+        }
+
+        /// <summary>Model of a one-part weapon, e.g. a power glove: item class plus the part number.</summary>
+        public static string SimpleWeaponKey(string itemClass, int partId) =>
+            partId > 0 && !string.IsNullOrWhiteSpace(itemClass) ? $"{itemClass.Trim().ToLowerInvariant()}_{partId:D3}" : string.Empty;
+
         public static string CloakKey(string body, int cloakRow) =>
             cloakRow > 0 && body.Length > 0 ? $"{body}_clk{cloakRow:D3}" : string.Empty;
 

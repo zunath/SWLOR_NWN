@@ -19,8 +19,8 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
     public partial class AppearanceEditorViewModel
     {
         public const string BrowserGridElement = "AE_BROWSER_GRID";
-        public const int MaxBrowserColumns = 4;
-        public const int MaxBrowserRows = 3;
+        public const int MaxBrowserColumns = 10;
+        public const int MaxBrowserRows = 4;
         public const int BrowserTileCount = MaxBrowserColumns * MaxBrowserRows;
 
         /// <summary>Browser layout partial for a tile grid size (columns x rows, controls sized to fit).</summary>
@@ -56,6 +56,7 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
         private Func<int, string> _browserKey = _ => string.Empty;
         private Func<int, string> _browserLabel = id => id.ToString();
         private Action<int> _browserApply;
+        private bool _browserFrontOnly;
         private float[] _paletteOutline = Array.Empty<float>();
         private int _resizeGeneration;
         private bool _compactPageLabels;
@@ -77,6 +78,9 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
                 PublishBrowser();
             }
         }
+
+        /// <summary>Weapon and shield parts ship only a front picture, so their pages hide the view buttons.</summary>
+        public bool IsPreviewViewChoiceVisible { get => Get<bool>(); set => Set(value); }
 
         public bool IsFrontViewSelected { get => Get<bool>(); set => Set(value); }
         public bool IsBackViewSelected { get => Get<bool>(); set => Set(value); }
@@ -121,6 +125,34 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
         public string Tile9Image { get => Get<string>(); set => Set(value); }
         public string Tile10Image { get => Get<string>(); set => Set(value); }
         public string Tile11Image { get => Get<string>(); set => Set(value); }
+        public string Tile12Image { get => Get<string>(); set => Set(value); }
+        public string Tile13Image { get => Get<string>(); set => Set(value); }
+        public string Tile14Image { get => Get<string>(); set => Set(value); }
+        public string Tile15Image { get => Get<string>(); set => Set(value); }
+        public string Tile16Image { get => Get<string>(); set => Set(value); }
+        public string Tile17Image { get => Get<string>(); set => Set(value); }
+        public string Tile18Image { get => Get<string>(); set => Set(value); }
+        public string Tile19Image { get => Get<string>(); set => Set(value); }
+        public string Tile20Image { get => Get<string>(); set => Set(value); }
+        public string Tile21Image { get => Get<string>(); set => Set(value); }
+        public string Tile22Image { get => Get<string>(); set => Set(value); }
+        public string Tile23Image { get => Get<string>(); set => Set(value); }
+        public string Tile24Image { get => Get<string>(); set => Set(value); }
+        public string Tile25Image { get => Get<string>(); set => Set(value); }
+        public string Tile26Image { get => Get<string>(); set => Set(value); }
+        public string Tile27Image { get => Get<string>(); set => Set(value); }
+        public string Tile28Image { get => Get<string>(); set => Set(value); }
+        public string Tile29Image { get => Get<string>(); set => Set(value); }
+        public string Tile30Image { get => Get<string>(); set => Set(value); }
+        public string Tile31Image { get => Get<string>(); set => Set(value); }
+        public string Tile32Image { get => Get<string>(); set => Set(value); }
+        public string Tile33Image { get => Get<string>(); set => Set(value); }
+        public string Tile34Image { get => Get<string>(); set => Set(value); }
+        public string Tile35Image { get => Get<string>(); set => Set(value); }
+        public string Tile36Image { get => Get<string>(); set => Set(value); }
+        public string Tile37Image { get => Get<string>(); set => Set(value); }
+        public string Tile38Image { get => Get<string>(); set => Set(value); }
+        public string Tile39Image { get => Get<string>(); set => Set(value); }
         public string Tile0Label { get => Get<string>(); set => Set(value); }
         public string Tile1Label { get => Get<string>(); set => Set(value); }
         public string Tile2Label { get => Get<string>(); set => Set(value); }
@@ -133,6 +165,34 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
         public string Tile9Label { get => Get<string>(); set => Set(value); }
         public string Tile10Label { get => Get<string>(); set => Set(value); }
         public string Tile11Label { get => Get<string>(); set => Set(value); }
+        public string Tile12Label { get => Get<string>(); set => Set(value); }
+        public string Tile13Label { get => Get<string>(); set => Set(value); }
+        public string Tile14Label { get => Get<string>(); set => Set(value); }
+        public string Tile15Label { get => Get<string>(); set => Set(value); }
+        public string Tile16Label { get => Get<string>(); set => Set(value); }
+        public string Tile17Label { get => Get<string>(); set => Set(value); }
+        public string Tile18Label { get => Get<string>(); set => Set(value); }
+        public string Tile19Label { get => Get<string>(); set => Set(value); }
+        public string Tile20Label { get => Get<string>(); set => Set(value); }
+        public string Tile21Label { get => Get<string>(); set => Set(value); }
+        public string Tile22Label { get => Get<string>(); set => Set(value); }
+        public string Tile23Label { get => Get<string>(); set => Set(value); }
+        public string Tile24Label { get => Get<string>(); set => Set(value); }
+        public string Tile25Label { get => Get<string>(); set => Set(value); }
+        public string Tile26Label { get => Get<string>(); set => Set(value); }
+        public string Tile27Label { get => Get<string>(); set => Set(value); }
+        public string Tile28Label { get => Get<string>(); set => Set(value); }
+        public string Tile29Label { get => Get<string>(); set => Set(value); }
+        public string Tile30Label { get => Get<string>(); set => Set(value); }
+        public string Tile31Label { get => Get<string>(); set => Set(value); }
+        public string Tile32Label { get => Get<string>(); set => Set(value); }
+        public string Tile33Label { get => Get<string>(); set => Set(value); }
+        public string Tile34Label { get => Get<string>(); set => Set(value); }
+        public string Tile35Label { get => Get<string>(); set => Set(value); }
+        public string Tile36Label { get => Get<string>(); set => Set(value); }
+        public string Tile37Label { get => Get<string>(); set => Set(value); }
+        public string Tile38Label { get => Get<string>(); set => Set(value); }
+        public string Tile39Label { get => Get<string>(); set => Set(value); }
         public bool Tile0Selected { get => Get<bool>(); set => Set(value); }
         public bool Tile1Selected { get => Get<bool>(); set => Set(value); }
         public bool Tile2Selected { get => Get<bool>(); set => Set(value); }
@@ -145,6 +205,34 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
         public bool Tile9Selected { get => Get<bool>(); set => Set(value); }
         public bool Tile10Selected { get => Get<bool>(); set => Set(value); }
         public bool Tile11Selected { get => Get<bool>(); set => Set(value); }
+        public bool Tile12Selected { get => Get<bool>(); set => Set(value); }
+        public bool Tile13Selected { get => Get<bool>(); set => Set(value); }
+        public bool Tile14Selected { get => Get<bool>(); set => Set(value); }
+        public bool Tile15Selected { get => Get<bool>(); set => Set(value); }
+        public bool Tile16Selected { get => Get<bool>(); set => Set(value); }
+        public bool Tile17Selected { get => Get<bool>(); set => Set(value); }
+        public bool Tile18Selected { get => Get<bool>(); set => Set(value); }
+        public bool Tile19Selected { get => Get<bool>(); set => Set(value); }
+        public bool Tile20Selected { get => Get<bool>(); set => Set(value); }
+        public bool Tile21Selected { get => Get<bool>(); set => Set(value); }
+        public bool Tile22Selected { get => Get<bool>(); set => Set(value); }
+        public bool Tile23Selected { get => Get<bool>(); set => Set(value); }
+        public bool Tile24Selected { get => Get<bool>(); set => Set(value); }
+        public bool Tile25Selected { get => Get<bool>(); set => Set(value); }
+        public bool Tile26Selected { get => Get<bool>(); set => Set(value); }
+        public bool Tile27Selected { get => Get<bool>(); set => Set(value); }
+        public bool Tile28Selected { get => Get<bool>(); set => Set(value); }
+        public bool Tile29Selected { get => Get<bool>(); set => Set(value); }
+        public bool Tile30Selected { get => Get<bool>(); set => Set(value); }
+        public bool Tile31Selected { get => Get<bool>(); set => Set(value); }
+        public bool Tile32Selected { get => Get<bool>(); set => Set(value); }
+        public bool Tile33Selected { get => Get<bool>(); set => Set(value); }
+        public bool Tile34Selected { get => Get<bool>(); set => Set(value); }
+        public bool Tile35Selected { get => Get<bool>(); set => Set(value); }
+        public bool Tile36Selected { get => Get<bool>(); set => Set(value); }
+        public bool Tile37Selected { get => Get<bool>(); set => Set(value); }
+        public bool Tile38Selected { get => Get<bool>(); set => Set(value); }
+        public bool Tile39Selected { get => Get<bool>(); set => Set(value); }
         public bool Tile0Visible { get => Get<bool>(); set => Set(value); }
         public bool Tile1Visible { get => Get<bool>(); set => Set(value); }
         public bool Tile2Visible { get => Get<bool>(); set => Set(value); }
@@ -157,6 +245,34 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
         public bool Tile9Visible { get => Get<bool>(); set => Set(value); }
         public bool Tile10Visible { get => Get<bool>(); set => Set(value); }
         public bool Tile11Visible { get => Get<bool>(); set => Set(value); }
+        public bool Tile12Visible { get => Get<bool>(); set => Set(value); }
+        public bool Tile13Visible { get => Get<bool>(); set => Set(value); }
+        public bool Tile14Visible { get => Get<bool>(); set => Set(value); }
+        public bool Tile15Visible { get => Get<bool>(); set => Set(value); }
+        public bool Tile16Visible { get => Get<bool>(); set => Set(value); }
+        public bool Tile17Visible { get => Get<bool>(); set => Set(value); }
+        public bool Tile18Visible { get => Get<bool>(); set => Set(value); }
+        public bool Tile19Visible { get => Get<bool>(); set => Set(value); }
+        public bool Tile20Visible { get => Get<bool>(); set => Set(value); }
+        public bool Tile21Visible { get => Get<bool>(); set => Set(value); }
+        public bool Tile22Visible { get => Get<bool>(); set => Set(value); }
+        public bool Tile23Visible { get => Get<bool>(); set => Set(value); }
+        public bool Tile24Visible { get => Get<bool>(); set => Set(value); }
+        public bool Tile25Visible { get => Get<bool>(); set => Set(value); }
+        public bool Tile26Visible { get => Get<bool>(); set => Set(value); }
+        public bool Tile27Visible { get => Get<bool>(); set => Set(value); }
+        public bool Tile28Visible { get => Get<bool>(); set => Set(value); }
+        public bool Tile29Visible { get => Get<bool>(); set => Set(value); }
+        public bool Tile30Visible { get => Get<bool>(); set => Set(value); }
+        public bool Tile31Visible { get => Get<bool>(); set => Set(value); }
+        public bool Tile32Visible { get => Get<bool>(); set => Set(value); }
+        public bool Tile33Visible { get => Get<bool>(); set => Set(value); }
+        public bool Tile34Visible { get => Get<bool>(); set => Set(value); }
+        public bool Tile35Visible { get => Get<bool>(); set => Set(value); }
+        public bool Tile36Visible { get => Get<bool>(); set => Set(value); }
+        public bool Tile37Visible { get => Get<bool>(); set => Set(value); }
+        public bool Tile38Visible { get => Get<bool>(); set => Set(value); }
+        public bool Tile39Visible { get => Get<bool>(); set => Set(value); }
 
         // ---------------- body map bindings ----------------
         public string MapHeadImage { get => Get<string>(); set => Set(value); }
@@ -270,6 +386,7 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
         private void InitializePartBrowser()
         {
             // Every bound value needs an entry before it is watched or re-sent.
+            IsPreviewViewChoiceVisible = true;
             IsFrontViewSelected = true;
             IsBackViewSelected = false;
             IsAngleViewSelected = false;
@@ -325,8 +442,10 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
             Get2DAString("appearance", "RACE", (int)GetAppearanceType(_target)));
 
         private void SetBrowserSource(IEnumerable<int> ids, int current, Func<int, string> key,
-            Func<int, string> label, Action<int> apply)
+            Func<int, string> label, Action<int> apply, bool frontOnly = false)
         {
+            _browserFrontOnly = frontOnly;
+            SetIfChanged(nameof(IsPreviewViewChoiceVisible), !frontOnly);
             _browserIds = ids.ToList();
             _browserCurrent = current;
             _browserKey = key;
@@ -345,7 +464,7 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
             if (_browserIds == null)
                 return;
             _browserPage = Math.Clamp(_browserPage, 0, BrowserPageCount - 1);
-            var view = PreviewView;
+            var view = _browserFrontOnly ? AppearancePreviewView.Front : PreviewView;
             for (var tile = 0; tile < BrowserTileCount; tile++)
             {
                 var position = _browserPage * BrowserPageSize + tile;
@@ -426,14 +545,32 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
             }
             else
             {
-                // Weapons have no pictures yet; their tiles show the part name.
                 var names = PartOptions;
                 var ids = _partIds;
-                SetBrowserSource(ids, CurrentPartId(), _ => string.Empty,
+                SetBrowserSource(ids, CurrentPartId(), WeaponPictureKey(),
                     id => _partIdToIndex.TryGetValue(id, out var index) && names != null && index < names.Count ? names[index] : id.ToString(),
-                    SelectPartFromBrowser);
+                    SelectPartFromBrowser, frontOnly: true);
             }
             RefreshBodyMap();
+        }
+
+        /// <summary>Picture key of a weapon part: the part model of the equipped weapon's item class.</summary>
+        private Func<int, string> WeaponPictureKey()
+        {
+            var type = GetBaseItemType(GetItem());
+            if (!_weaponAppearances.TryGetValue(type, out var appearance))
+                return _ => string.Empty;
+            var itemClass = Get2DAString("baseitems", "ItemClass", (int)type);
+            if (appearance.IsSimple)
+                return id => AppearancePreview.SimpleWeaponKey(itemClass, id);
+            var part = SelectedPartCategoryIndex switch
+            {
+                0 => AppearanceWeapon.Top,
+                1 => AppearanceWeapon.Middle,
+                2 => AppearanceWeapon.Bottom,
+                _ => AppearanceWeapon.Invalid
+            };
+            return id => AppearancePreview.WeaponPartKey(itemClass, part, id);
         }
 
         private void SelectPartFromBrowser(int partId)
@@ -516,20 +653,64 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
         /// <summary>Column count that fits the browser beside the fixed map and colour columns.</summary>
         internal static int BrowserColumnsForWidth(float windowWidth, bool hasSideColumns)
         {
-            const float sideColumns = 320f + 372f + 48f;
-            const float tile = 106f; // AppearanceEditorDefinition.TileSize + its 10px column padding
+            const float sideColumns = AppearanceEditorDefinition.MapWidth + AppearanceEditorDefinition.ColoursWidth + 48f;
+            const float weaponColumn = AppearanceEditorDefinition.WeaponCategoryWidth + 50f;
+            const float tile = AppearanceEditorDefinition.TileSize + 14f; // a tile plus its column spacing, measured in the client
             // Window border plus the browser group's border and padding.
-            var available = windowWidth - (hasSideColumns ? sideColumns : 220f) - 44f;
-            return available >= tile * 4 ? 4 : available >= tile * 3 ? 3 : available >= tile * 2 ? 2 : 1;
+            var available = windowWidth - (hasSideColumns ? sideColumns : weaponColumn) - 44f;
+            return Math.Clamp((int)(available / tile), 1, MaxBrowserColumns);
         }
 
         /// <summary>Tile rows that fit the window height; narrow browsers stack their pager on two rows.</summary>
         internal static int BrowserRowsForHeight(float windowHeight, int columns)
         {
-            const float overhead = 300f;
+            const float overhead = 260f;
             const float row = 138f;
             var available = windowHeight - overhead - (columns <= 2 ? 40f : 0f);
             return Math.Clamp((int)(available / row), 1, MaxBrowserRows);
+        }
+
+        /// <summary>
+        /// Grows a window smaller than the editor's minimum (an old saved size, or a drag) back to
+        /// the minimum, within the player's screen, so no panel is cut off.
+        /// </summary>
+        /// <param name="screenWidth">Screen width in physical pixels (0 when unknown), like Geometry X.</param>
+        /// <param name="screenHeight">Screen height in physical pixels (0 when unknown), like Geometry Y.</param>
+        /// <param name="scale">GUI scale; a window's on-screen size is its width and height times this.</param>
+        internal static GuiRectangle FitMinimumWindow(GuiRectangle geometry, float screenWidth, float screenHeight, float scale)
+        {
+            if (geometry == null)
+                return null;
+            if (scale <= 0f)
+                scale = 1f;
+            var width = Math.Max(geometry.Width, AppearanceEditorDefinition.MinimumWindowWidth);
+            var height = Math.Max(geometry.Height, AppearanceEditorDefinition.MinimumWindowHeight);
+            var x = geometry.X;
+            var y = geometry.Y;
+            // A saved size larger than this screen (or the minimum on a small screen) is capped to it.
+            if (screenWidth > 0f)
+            {
+                width = Math.Min(width, screenWidth / scale);
+                x = Math.Clamp(x, 0f, Math.Max(0f, screenWidth - width * scale));
+            }
+            if (screenHeight > 0f)
+            {
+                height = Math.Min(height, screenHeight / scale);
+                y = Math.Clamp(y, 0f, Math.Max(0f, screenHeight - height * scale));
+            }
+            if (width == geometry.Width && height == geometry.Height && x == geometry.X && y == geometry.Y)
+                return geometry;
+            return new GuiRectangle(x, y, width, height);
+        }
+
+        private void EnsureMinimumWindowSize()
+        {
+            var scale = GetPlayerDeviceProperty(Player, PlayerDevicePropertyType.GuiScale) / 100f;
+            var screenWidth = GetPlayerDeviceProperty(Player, PlayerDevicePropertyType.GuiWidth);
+            var screenHeight = GetPlayerDeviceProperty(Player, PlayerDevicePropertyType.GuiHeight);
+            var fitted = FitMinimumWindow(Geometry, screenWidth, screenHeight, scale);
+            if (fitted != null && !ReferenceEquals(fitted, Geometry))
+                Geometry = fitted;
         }
 
         private void QueueBrowserResize()
@@ -537,9 +718,11 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
             var generation = ++_resizeGeneration;
             DelayCommand(0.3f, () =>
             {
-                if (generation != _resizeGeneration || Geometry == null || IsSettingsSelected)
+                if (generation != _resizeGeneration || Geometry == null)
                     return;
-                ApplyBrowserColumns();
+                EnsureMinimumWindowSize();
+                if (!IsSettingsSelected)
+                    ApplyBrowserColumns();
             });
         }
 
@@ -580,7 +763,7 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
             OnPropertyChanged(nameof(IsAngleViewSelected));
             OnPropertyChanged(nameof(BrowserPageIndex));
             OnPropertyChanged(nameof(BrowserPartNumberText));
-            OnPropertyChanged(nameof(SelectedItemTypeIndex));
+            OnPropertyChanged(nameof(EquipmentTypeValue));
             OnPropertyChanged(nameof(EditorTabToggleValue));
             OnPropertyChanged(nameof(SettingsTabToggleValue));
         }

@@ -50,7 +50,7 @@ public class SpaceElectronicWarfareTests
             steps.Should().OnlyContain(x => x.Row == ShipModulePowerType.Mid && x.Skill == SkillType.Piloting &&
                                             x.Activation == ShipModuleActivation.Toggle && !x.Capital &&
                                             x.CycleSeconds == cycle && x.CapacitorCost == capacitor && x.Texture == texture);
-            steps.Should().OnlyContain(x => x.ShortName.Length <= 14 && !x.Description.Contains('—'));
+            steps.Should().OnlyContain(x => x.ShortName.Length <= 14 && !x.Description.Any(c => c > 127));
         }
     }
 

@@ -205,7 +205,15 @@ public class AppearanceEditorLayoutTests
             .Be(nameof(AppearanceEditorViewModel.EquipmentTypeValue));
         ReadProperty<string>(picker, "IsVisibleBindName").Should().Be(nameof(AppearanceEditorViewModel.IsEquipmentSelected));
         ReadProperty<List<GuiComboEntry>>(picker, "Options").Select(option => (option.Label, option.Value))
-            .Should().Equal(("Armor", 0), ("Weapon (Main)", 3), ("Weapon (Off)", 4));
+            .Should().Equal(new[] { ("Armor", 0), ("Weapon (Main)", 1), ("Weapon (Off)", 2) },
+                "entries carry their list position, which the combo reports");
+        foreach (var (entry, itemType) in new[] { (0, 0), (1, 3), (2, 4) })
+        {
+            AppearanceEditorViewModel.ToItemTypeIndex(entry).Should().Be(itemType);
+            AppearanceEditorViewModel.ToEquipmentTypeValue(itemType).Should().Be(entry);
+        }
+        AppearanceEditorViewModel.ToEquipmentTypeValue(1).Should().Be(0, "a helmet belongs to the armor entry");
+        AppearanceEditorViewModel.ToEquipmentTypeValue(2).Should().Be(0, "a cloak belongs to the armor entry");
         var message = Walk(row).OfType<GuiLabel<AppearanceEditorViewModel>>().Should().ContainSingle().Which;
         ReadProperty<string>(message, "IsVisibleBindName").Should().Be(nameof(AppearanceEditorViewModel.IsNoEditableItemVisible));
         var outfits = Walk(row).Single(widget => widget.Id == "ae_outfits");

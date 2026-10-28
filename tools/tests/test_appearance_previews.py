@@ -357,6 +357,21 @@ class DuplicateTests(unittest.TestCase):
             self.assertNotIn("awswls_t_011a.dds", wanted)
             self.assertIn("apmh0_chest001b.dds", wanted)
 
+    def test_a_partial_run_removes_old_pictures_of_its_empty_parts_only(self):
+        from appearance_previews.__main__ import remove_stale_pictures
+        with tempfile.TemporaryDirectory() as folder:
+            output = Path(folder)
+            empty, kept, other = (output / "awpg_t_011f.dds", output / "awswls_t_011f.dds",
+                                  output / "awswdg_t_011f.dds")
+            for path in (empty, kept, other):
+                path.write_bytes(b"old")
+            remove_stale_pictures(output, {"awswls_t_011f.dds"}, ["wpg_t_011", "wswls_t_011"])
+            self.assertFalse(empty.exists(), "a part found empty must not keep its old picture")
+            self.assertTrue(kept.exists())
+            self.assertTrue(other.exists(), "parts outside a partial run are left alone")
+            remove_stale_pictures(output, {"awswls_t_011f.dds"})
+            self.assertFalse(other.exists(), "a full run removes every picture it did not write")
+
 
 class WeaponJobTests(unittest.TestCase):
     def test_composite_part_ids_name_the_engine_models(self):

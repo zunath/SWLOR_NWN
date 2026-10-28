@@ -724,10 +724,12 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
             }
         }
 
-        // Values of the equipment picker; helmet (1) and cloak (2) are chosen on the armor body map.
+        // Equipment picker entries, in list order. Helmets and cloaks are chosen on the armor body map.
         public const int ArmorEquipmentValue = 0;
-        public const int MainHandEquipmentValue = 3;
-        public const int OffHandEquipmentValue = 4;
+        public const int MainHandEquipmentValue = 1;
+        public const int OffHandEquipmentValue = 2;
+        private const int MainHandItemType = 3;
+        private const int OffHandItemType = 4;
 
         /// <summary>Equipment picker value: armor (also while its helmet or cloak is edited) or a weapon hand.</summary>
         public int EquipmentTypeValue
@@ -736,17 +738,28 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
             set
             {
                 Set(value);
-                var itemType = value is MainHandEquipmentValue or OffHandEquipmentValue ? value : ArmorEquipmentValue;
+                var itemType = ToItemTypeIndex(value);
                 // Armor already covers its helmet and cloak; only a weapon or a weapon-to-armor change loads a page.
-                if (itemType == ArmorEquipmentValue && SelectedItemTypeIndex is 0 or 1 or 2)
+                if (itemType == 0 && SelectedItemTypeIndex is 0 or 1 or 2)
                     return;
                 if (SelectedItemTypeIndex != itemType)
                     SelectedItemTypeIndex = itemType;
             }
         }
 
-        private static int ToEquipmentTypeValue(int itemTypeIndex) =>
-            itemTypeIndex is MainHandEquipmentValue or OffHandEquipmentValue ? itemTypeIndex : ArmorEquipmentValue;
+        public static int ToItemTypeIndex(int equipmentValue) => equipmentValue switch
+        {
+            MainHandEquipmentValue => MainHandItemType,
+            OffHandEquipmentValue => OffHandItemType,
+            _ => 0
+        };
+
+        public static int ToEquipmentTypeValue(int itemTypeIndex) => itemTypeIndex switch
+        {
+            MainHandItemType => MainHandEquipmentValue,
+            OffHandItemType => OffHandEquipmentValue,
+            _ => ArmorEquipmentValue
+        };
 
         public int SelectedItemTypeIndex
         {

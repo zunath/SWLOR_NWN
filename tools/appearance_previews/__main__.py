@@ -333,12 +333,22 @@ def main(argv=None):
     # A part that failed to render keeps whatever picture was published before.
     wanted |= {f"{preview_resref(key, view)}.dds" for key in failed_keys(problems)
                for view in picture_views(key, front_only)}
-    if not args.only:
-        for stale in args.output.glob("*.dds"):
-            if stale.name not in wanted:
-                stale.unlink()
+    remove_stale_pictures(args.output, wanted, all_keys if args.only else None)
     print(f"{kept} pictures written, {skipped} duplicates of the human body skipped, {len(problems)} problems")
     return 1 if problems else 0
+
+
+def remove_stale_pictures(output: Path, wanted, keys=None):
+    """Delete published pictures this run did not write. A full run checks every picture; a
+    partial (--only) run checks only its own parts, so a part now empty or front-only loses
+    its old pictures while other parts keep theirs."""
+    if keys is None:
+        candidates = output.glob("*.dds")
+    else:
+        candidates = (output / f"{preview_resref(key, view)}.dds" for key in keys for view in VIEWS)
+    for path in candidates:
+        if path.name not in wanted:
+            path.unlink(missing_ok=True)
 
 
 def failed_keys(problems):

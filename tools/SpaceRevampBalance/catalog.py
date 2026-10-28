@@ -65,11 +65,11 @@ ART = {
     # The gaps pass (W11d): the ESS9 bank is full and no hak change was wanted, so the Cargo Expander reuses the retired
     # Logistics Configuration's artwork (a cargo tug cartridge; the configuration modules were removed in W10).
     "cargo_expander": (522, 249, "iit_smlogconfig"),
-    # The E-War and Afterburner modules (W11k): the ESS9 bank is full, so each item reuses a retired configuration
-    # module's inventory art (removed in W10, as the Cargo Expander did) and only the action icon is new.
-    "ion_web": (522, 248, "iit_smionweb"), "interdictor": (522, 252, "iit_sminterdict"),
-    "jammer": (522, 254, "iit_smjammer"), "target_painter": (522, 251, "iit_smtgtpaint"),
-    "afterburner": (522, 250, "iit_smafterburn"),
+    # The E-War and Afterburner modules (W11k, art W11l): the ESS9 bank is full, so each item takes its own ESS8 model.
+    # 238-242 were compatibility aliases that no base 522 or 534 blueprint has ever used, so no saved item shows them.
+    "ion_web": (522, 238, "iit_smionweb"), "interdictor": (522, 239, "iit_sminterdict"),
+    "jammer": (522, 240, "iit_smjammer"), "target_painter": (522, 241, "iit_smtgtpaint"),
+    "afterburner": (522, 242, "iit_smafterburn"),
 }
 
 W = m.WEAPONS

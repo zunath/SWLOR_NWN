@@ -26,7 +26,33 @@ namespace SWLOR.Game.Server.Service.ShuttleService
         /// <returns>A 32-bit hash unique to the directional route.</returns>
         public static uint GetRouteHash(PlanetType origin, PlanetType destination)
         {
-            var routeKey = $"{(int)origin}>{(int)destination}";
+            return HashRouteKey($"{(int)origin}>{(int)destination}");
+        }
+
+        /// <summary>
+        /// The route hash of a shuttle route. A planet route hashes as before; a station route adds the station id to its
+        /// end: "{originId}:{stationId}&gt;{destinationId}" or "{originId}&gt;{destinationId}:{stationId}".
+        /// </summary>
+        public static uint GetRouteHash(ShuttleRoute route)
+        {
+            return HashRouteKey(GetRouteKey(route));
+        }
+
+        private static string GetRouteKey(ShuttleRoute route)
+        {
+            if (!route.IsStationRoute)
+                return $"{(int)route.Origin.Planet}>{(int)route.Destination.Planet}";
+
+            return $"{GetStopKey(route.Origin)}>{GetStopKey(route.Destination)}";
+        }
+
+        private static string GetStopKey(ShuttleStop stop)
+        {
+            return stop.IsStation ? $"{(int)stop.Planet}:{stop.StationId}" : ((int)stop.Planet).ToString(CultureInfo.InvariantCulture);
+        }
+
+        private static uint HashRouteKey(string routeKey)
+        {
             var hash = FnvOffsetBasis;
 
             foreach (var c in routeKey)
@@ -77,13 +103,45 @@ namespace SWLOR.Game.Server.Service.ShuttleService
         /// <returns>The next departure time, in UTC.</returns>
         public static DateTime GetNextDepartureUtc(PlanetType origin, PlanetType destination, DateTime utcNow, DateTime notBeforeUtc = default)
         {
+            return GetNextDepartureUtc(GetPeriodSeconds(origin, destination), GetOffsetSeconds(origin, destination), utcNow, notBeforeUtc);
+        }
+
+        /// <summary>The next scheduled departure of a shuttle route; see the planet overload.</summary>
+        public static DateTime GetNextDepartureUtc(ShuttleRoute route, DateTime utcNow, DateTime notBeforeUtc = default)
+        {
+            if (!route.IsStationRoute)
+                return GetNextDepartureUtc(route.Origin.Planet, route.Destination.Planet, utcNow, notBeforeUtc);
+
+            var period = ShuttleRouteRules.GetPeriodSeconds(route);
+            var offset = (int)((GetRouteHash(route) / 7) % (uint)period);
+            return GetNextDepartureUtc(period, offset, utcNow, notBeforeUtc);
+        }
+
+        /// <summary>Every scheduled departure of a shuttle route within (fromExclusive, toInclusive], ascending.</summary>
+        public static IEnumerable<DateTime> GetDeparturesBetween(ShuttleRoute route, DateTime fromExclusive, DateTime toInclusive)
+        {
+            var current = GetNextDepartureUtc(route, fromExclusive);
+
+            while (current <= toInclusive)
+            {
+                yield return current;
+                current = GetNextDepartureUtc(route, current);
+            }
+        }
+
+        /// <summary>A stable flight id for a shuttle route: the planet form for a planet route, the route key otherwise.</summary>
+        public static string BuildFlightId(ShuttleRoute route, DateTime departureUtc)
+        {
+            return $"{GetRouteKey(route)}@{departureUtc.Ticks}";
+        }
+
+        private static DateTime GetNextDepartureUtc(int period, int offset, DateTime utcNow, DateTime notBeforeUtc)
+        {
             // Include a departure exactly at the eligibility boundary, while still requiring
             // every result to be strictly later than utcNow.
             if (notBeforeUtc > utcNow)
                 utcNow = notBeforeUtc.AddTicks(-1);
 
-            var period = GetPeriodSeconds(origin, destination);
-            var offset = GetOffsetSeconds(origin, destination);
             var elapsedTicks = utcNow.Ticks - DateTime.UnixEpoch.Ticks;
             var t = elapsedTicks / TimeSpan.TicksPerSecond;
             if (elapsedTicks < 0 && elapsedTicks % TimeSpan.TicksPerSecond != 0)

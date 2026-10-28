@@ -12,8 +12,8 @@ namespace SWLOR.Game.Server.Feature.DialogDefinition
     {
         private class Model
         {
-            public PlanetType Origin { get; set; }
-            public PlanetType Destination { get; set; }
+            public ShuttleStop Origin { get; set; }
+            public ShuttleStop Destination { get; set; }
             public float Tax { get; set; }
             public string CityPropertyId { get; set; }
         }
@@ -33,7 +33,8 @@ namespace SWLOR.Game.Server.Feature.DialogDefinition
         }
 
         /// <summary>
-        /// Resolves the city transportation tax rate for property-based starports.
+        /// Resolves the terminal's stop (a planet, or a player station) and the city transportation tax rate for
+        /// property-based starports.
         /// </summary>
         private void Initialize()
         {
@@ -42,7 +43,7 @@ namespace SWLOR.Game.Server.Feature.DialogDefinition
             var propertyId = Property.GetPropertyId(area);
             var model = Data<Model>();
 
-            model.Origin = (PlanetType)GetLocalInt(terminal, "CURRENT_LOCATION");
+            model.Origin = GetTerminalStop(terminal);
 
             if (string.IsNullOrWhiteSpace(propertyId))
                 return;
@@ -58,6 +59,18 @@ namespace SWLOR.Game.Server.Feature.DialogDefinition
             model.CityPropertyId = dbCity.Id;
         }
 
+        /// <summary>The terminal's stop: its planet, or the player station whose Starport it stands in.</summary>
+        private static ShuttleStop GetTerminalStop(uint terminal)
+        {
+            var planet = (PlanetType)GetLocalInt(terminal, "CURRENT_LOCATION");
+            var stationId = GetLocalString(terminal, Station.StationCityVariable);
+            if (string.IsNullOrWhiteSpace(stationId))
+                return ShuttleStop.ForPlanet(planet);
+
+            var stop = Station.GetShuttleStop(stationId);
+            return stop.IsStation ? stop : ShuttleStop.ForStation(stationId, planet, false);
+        }
+
         /// <summary>
         /// Renders the main terminal page: pass gate, ticket purchase, or existing ticket status.
         /// </summary>
@@ -65,8 +78,7 @@ namespace SWLOR.Game.Server.Feature.DialogDefinition
         {
             var model = Data<Model>();
             var player = Player;
-            var terminal = Owner;
-            var origin = (PlanetType)GetLocalInt(terminal, "CURRENT_LOCATION");
+            var origin = model.Origin;
 
             // Travel is locked until the player earns a CZ-220 Shuttle Pass by completing their
             // orientation on CZ-220. This keeps new arrivals on the tutorial station.
@@ -93,9 +105,10 @@ namespace SWLOR.Game.Server.Feature.DialogDefinition
         }
 
         /// <summary>
-        /// Renders the list of destinations a passenger can book a ticket to.
+        /// Renders the list of destinations a passenger can book a ticket to. A player station's terminal flies only to
+        /// its home port; a planet's terminal also lists the stations it serves (plan section 25).
         /// </summary>
-        private void BuildTicketPurchasePage(ConversationMenuPage page, Model model, uint player, PlanetType origin)
+        private void BuildTicketPurchasePage(ConversationMenuPage page, Model model, uint player, ShuttleStop origin)
         {
             var hasSmugglerPass = KeyItem.HasKeyItem(player, KeyItemType.SmugglerPass);
 
@@ -103,49 +116,70 @@ namespace SWLOR.Game.Server.Feature.DialogDefinition
                           "within 15 meters of this terminal or you will miss your flight. " +
                           "Please select one of our available destinations below.";
 
+            void AddDestination(ShuttleStop destination)
+            {
+                var route = new ShuttleRoute(origin, destination);
+                var fare = ShuttleRouteRules.GetFare(route);
+                var tax = (int)(model.Tax * fare);
+                var price = fare + tax;
+                var countdown = Time.GetTimeLongIntervals(Shuttle.GetNextDepartureUtc(route) - DateTime.UtcNow, false);
+                var transit = Time.GetTimeLongIntervals(TimeSpan.FromSeconds(ShuttleRouteRules.GetTransitSeconds(route)), false);
+
+                var optionText = $"{Station.GetStopName(destination)} [{price} cr] - departs in {countdown}, flight time {transit}";
+                page.AddResponse(optionText, () =>
+                {
+                    model.Destination = destination;
+                    GoToPage(ConfirmPageId);
+                });
+            }
+
+            if (origin.IsStation)
+            {
+                if (origin.Planet != PlanetType.SmugglersMoon || hasSmugglerPass)
+                    AddDestination(ShuttleStop.ForPlanet(origin.Planet));
+
+                return;
+            }
+
             var planets = Planet.GetAllPlanets();
 
-            foreach (var (type, planet) in planets)
+            foreach (var (type, _) in planets)
             {
-                if (origin == type ||
+                if (origin.Planet == type ||
                     type == PlanetType.SmugglersMoonStation ||
                     (type == PlanetType.SmugglersMoon && !hasSmugglerPass))
                 {
                     continue;
                 }
 
-                var fare = GalaxyMap.GetFare(origin, type);
-                var tax = (int)(model.Tax * fare);
-                var price = fare + tax;
-                var countdown = Time.GetTimeLongIntervals(Shuttle.GetNextDepartureUtc(origin, type) - DateTime.UtcNow, false);
-                var transit = Time.GetTimeLongIntervals(TimeSpan.FromSeconds(GalaxyMap.GetTransitSeconds(origin, type)), false);
+                AddDestination(ShuttleStop.ForPlanet(type));
+            }
 
-                var optionText = $"{planet.Name} [{price} cr] - departs in {countdown}, flight time {transit}";
-                page.AddResponse(optionText, () =>
-                {
-                    model.Destination = type;
-                    GoToPage(ConfirmPageId);
-                });
+            foreach (var station in ShuttleRouteRules.GetStationDestinations(origin, Station.GetShuttleStations()))
+            {
+                AddDestination(station);
             }
         }
 
         /// <summary>
         /// Renders the player's existing ticket status, with a refund option at any starport.
         /// </summary>
-        private void BuildTicketedPage(ConversationMenuPage page, uint player, PlanetType terminalPlanet, ShuttleRide ride)
+        private void BuildTicketedPage(ConversationMenuPage page, uint player, ShuttleStop terminalStop, ShuttleRide ride)
         {
-            var destinationName = Planet.GetPlanetByType(ride.Destination).Name;
-            var countdown = Time.GetTimeLongIntervals(Shuttle.GetNextDepartureUtc(ride.Origin, ride.Destination, ride.PlayerId) - DateTime.UtcNow, false);
-            var transit = Time.GetTimeLongIntervals(TimeSpan.FromSeconds(GalaxyMap.GetTransitSeconds(ride.Origin, ride.Destination)), false);
+            var route = Shuttle.GetRideRoute(ride);
+            var origin = route.Origin;
+            var destinationName = Station.GetStopName(route.Destination);
+            var countdown = Time.GetTimeLongIntervals(Shuttle.GetNextDepartureUtc(route, ride.PlayerId) - DateTime.UtcNow, false);
+            var transit = Time.GetTimeLongIntervals(TimeSpan.FromSeconds(ShuttleRouteRules.GetTransitSeconds(route)), false);
 
             page.Header = "Ticketed Flight: " + destinationName + "\n" +
                           "Departs in: " + countdown + "\n" +
                           "Flight time: " + transit + "\n\n" +
                           "Be within 15 meters of the flights terminal when boarding is called or you will miss this shuttle.";
 
-            if (terminalPlanet != ride.Origin)
+            if (terminalStop != origin)
             {
-                var originName = Planet.GetPlanetByType(ride.Origin).Name;
+                var originName = Station.GetStopName(origin);
                 page.Header += $"\n\nThis ticket departs from {originName}. You may refund it here to book a different flight.";
             }
 
@@ -163,12 +197,13 @@ namespace SWLOR.Game.Server.Feature.DialogDefinition
         {
             var player = Player;
             var model = Data<Model>();
-            var destinationName = Planet.GetPlanetByType(model.Destination).Name;
-            var fare = GalaxyMap.GetFare(model.Origin, model.Destination);
+            var route = new ShuttleRoute(model.Origin, model.Destination);
+            var destinationName = Station.GetStopName(model.Destination);
+            var fare = ShuttleRouteRules.GetFare(route);
             var tax = (int)(model.Tax * fare);
             var price = fare + tax;
-            var countdown = Time.GetTimeLongIntervals(Shuttle.GetNextDepartureUtc(model.Origin, model.Destination) - DateTime.UtcNow, false);
-            var transit = Time.GetTimeLongIntervals(TimeSpan.FromSeconds(GalaxyMap.GetTransitSeconds(model.Origin, model.Destination)), false);
+            var countdown = Time.GetTimeLongIntervals(Shuttle.GetNextDepartureUtc(route) - DateTime.UtcNow, false);
+            var transit = Time.GetTimeLongIntervals(TimeSpan.FromSeconds(ShuttleRouteRules.GetTransitSeconds(route)), false);
 
             page.Header = "Selected Destination: " + destinationName + "\n" +
                           "Fare: " + fare + " cr\n" +
@@ -188,10 +223,10 @@ namespace SWLOR.Game.Server.Feature.DialogDefinition
             {
                 page.AddResponse("Confirm Flight", () =>
                 {
-                    if (!Shuttle.TryPurchaseTicket(player, model.Origin, model.Destination, model.CityPropertyId, model.Tax))
+                    if (!Shuttle.TryPurchaseTicket(player, route, model.CityPropertyId, model.Tax))
                         return;
 
-                    var confirmedCountdown = Time.GetTimeLongIntervals(Shuttle.GetNextDepartureUtc(model.Origin, model.Destination) - DateTime.UtcNow, false);
+                    var confirmedCountdown = Time.GetTimeLongIntervals(Shuttle.GetNextDepartureUtc(route) - DateTime.UtcNow, false);
                     SendMessageToPC(player, ColorToken.Green($"Ticket purchased! Your shuttle to {destinationName} departs in {confirmedCountdown}."));
 
                     Close();

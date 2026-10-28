@@ -18,6 +18,7 @@ namespace SWLOR.Game.Server.Feature.DialogDefinition
             public PlanetType Planet { get; set; }
             public Location SpaceLocation { get; set; }
             public ShipDockPoint LandingPoint { get; set; }
+            public string StationId { get; set; }
         }
 
         private const string MainPageId = "MAIN_PAGE";
@@ -69,6 +70,7 @@ namespace SWLOR.Game.Server.Feature.DialogDefinition
             var model = Data<Model>();
             model.SpaceLocation = GetLocation(spaceWaypoint);
             model.Planet = planetType;
+            model.StationId = GetLocalString(self, Station.StationCityVariable);
 
             var landingWaypointTag = GetLocalString(self, "STARPORT_LANDING_WAYPOINT_TAG");
             if (!string.IsNullOrWhiteSpace(landingWaypointTag))
@@ -97,11 +99,15 @@ namespace SWLOR.Game.Server.Feature.DialogDefinition
             var player = Player;
             var playerId = GetObjectUUID(player);
             var model = Data<Model>();
-            var dockPoints = model.LandingPoint == null
-                ? Space.GetDockPointsByPlanet(model.Planet)
-                : new Dictionary<string, ShipDockPoint> { ["station"] = model.LandingPoint };
+            var dockPoints = !string.IsNullOrWhiteSpace(model.StationId)
+                ? Station.GetDockPoints(model.StationId)
+                : model.LandingPoint == null
+                    ? Space.GetDockPointsByPlanet(model.Planet)
+                    : new Dictionary<string, ShipDockPoint> { ["station"] = model.LandingPoint };
 
-            page.Header = "Please select a location.";
+            page.Header = !string.IsNullOrWhiteSpace(model.StationId) && dockPoints.Count <= 0
+                ? "This station has no Starport to dock at."
+                : "Please select a location.";
 
             foreach (var (_, dockPoint) in dockPoints)
             {

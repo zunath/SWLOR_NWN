@@ -6791,6 +6791,128 @@
           "value": ""
         },
         "LocalizedName": {
+          "type": "cexolocstring",
+          "value": {
+            "0": "Station Anchor - Tatooine1"
+          }
+        },
+        "MapNote": {
+          "type": "cexolocstring",
+          "value": {}
+        },
+        "MapNoteEnabled": {
+          "type": "byte",
+          "value": 1
+        },
+        "Tag": {
+          "type": "cexostring",
+          "value": "STATION_ANCHOR_TATOOINE1"
+        },
+        "TemplateResRef": {
+          "type": "resref",
+          "value": "nw_waypoint001"
+        },
+        "XOrientation": {
+          "type": "float",
+          "value": -0.005025062182388579
+        },
+        "XPosition": {
+          "type": "float",
+          "value": 160.5
+        },
+        "YOrientation": {
+          "type": "float",
+          "value": 0.9999873742953272
+        },
+        "YPosition": {
+          "type": "float",
+          "value": 60.5
+        },
+        "ZPosition": {
+          "type": "float",
+          "value": 2.999990463256836
+        }
+      },
+      {
+        "__struct_id": 5,
+        "Appearance": {
+          "type": "byte",
+          "value": 1
+        },
+        "Description": {
+          "type": "cexolocstring",
+          "value": {}
+        },
+        "HasMapNote": {
+          "type": "byte",
+          "value": 0
+        },
+        "LinkedTo": {
+          "type": "cexostring",
+          "value": ""
+        },
+        "LocalizedName": {
+          "type": "cexolocstring",
+          "value": {
+            "0": "Station Anchor - Tatooine2"
+          }
+        },
+        "MapNote": {
+          "type": "cexolocstring",
+          "value": {}
+        },
+        "MapNoteEnabled": {
+          "type": "byte",
+          "value": 1
+        },
+        "Tag": {
+          "type": "cexostring",
+          "value": "STATION_ANCHOR_TATOOINE2"
+        },
+        "TemplateResRef": {
+          "type": "resref",
+          "value": "nw_waypoint001"
+        },
+        "XOrientation": {
+          "type": "float",
+          "value": 0.887584423910363
+        },
+        "XPosition": {
+          "type": "float",
+          "value": 120.5
+        },
+        "YOrientation": {
+          "type": "float",
+          "value": -0.4606450807636061
+        },
+        "YPosition": {
+          "type": "float",
+          "value": 180.5
+        },
+        "ZPosition": {
+          "type": "float",
+          "value": 2.999990463256836
+        }
+      },
+      {
+        "__struct_id": 5,
+        "Appearance": {
+          "type": "byte",
+          "value": 1
+        },
+        "Description": {
+          "type": "cexolocstring",
+          "value": {}
+        },
+        "HasMapNote": {
+          "type": "byte",
+          "value": 0
+        },
+        "LinkedTo": {
+          "type": "cexostring",
+          "value": ""
+        },
+        "LocalizedName": {
           "id": 14817,
           "type": "cexolocstring",
           "value": {

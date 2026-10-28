@@ -527,6 +527,8 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
             var dbCity = DB.Get<WorldProperty>(_cityId);
 
             dbCity.CustomName = CityName;
+            if (Station.IsStation(dbCity))
+                Station.RenameExterior(dbCity);
 
             if (!int.TryParse(CitizenshipTax, out var citizenshipTax))
             {

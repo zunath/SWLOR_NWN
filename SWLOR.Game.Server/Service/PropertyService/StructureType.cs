@@ -2980,7 +2980,18 @@ namespace SWLOR.Game.Server.Service.PropertyService
             0,
             PropertyType.City,
             PropertyLayoutType.LabStyle1)]
-        LabStyle1 = 5017,    }
+        LabStyle1 = 5017,
+
+        [Structure("Station Core",
+            "city_hall",
+            "",
+            true,
+            0,
+            PropertyType.City,
+            PropertyLayoutType.CityHallStyle1,
+            false)]
+        StationCore = 5018,
+    }
 
     public class StructureAttribute : Attribute
     {

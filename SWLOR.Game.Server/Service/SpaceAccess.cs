@@ -55,6 +55,7 @@ namespace SWLOR.Game.Server.Service
             {
                 ShipSize = GetShipSize(ship),
                 IsPlayerStarport = isPlayerStarport,
+                IsStationStarport = isPlayerStarport && Station.IsStation(Station.GetCityOfInterior(playerStarportId)),
                 CapitalDock = !isPlayerStarport && GetIsObjectValid(landingArea) && GetLocalBool(landingArea, CapitalDockVariable),
                 PlayerStarportLevel = isPlayerStarport ? GetPlayerStarportLevel(playerStarportId) : 0,
                 AreaMaxSize = isPlayerStarport ? ShipSize.Invalid : GetAreaMaxShipSize(landingArea),

@@ -147,6 +147,12 @@ namespace SWLOR.Game.Server.Entity
         public float RespawnLocationOrientation { get; set; }
         [Indexed]
         public string RespawnAreaResref { get; set; }
+
+        /// <summary>
+        /// A player city's Medical Center the player registered at. Its instance takes priority over
+        /// <see cref="RespawnAreaResref"/>, which stays as the fallback when the building is gone or not loaded.
+        /// </summary>
+        public string RespawnPropertyId { get; set; }
         public int UnallocatedXP { get; set; }
         public int UnallocatedSP { get; set; }
         public int UnallocatedAP { get; set; }

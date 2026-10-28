@@ -1201,6 +1201,7 @@ namespace SWLOR.Game.Server.Service.CraftService
         GhostChannelConsole = 1521,
         BlacksiteAnalysisStation = 1522,
         EspionageWorkbench = 1523,
+        StationCore = 1524,
 
         #endregion
 

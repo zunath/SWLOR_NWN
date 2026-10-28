@@ -393,6 +393,15 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
                     return;
                 }
 
+                if (structure.StructureType == StructureType.Starport &&
+                    Station.IsStation(parentProperty) &&
+                    Station.CountStarports(parentProperty.Id) <= 1)
+                {
+                    Instructions = "A station must keep a Starport.";
+                    InstructionColor = GuiColor.Red;
+                    return;
+                }
+
                 // Removing this structure would reduce the item storage cap below the number of items actually
                 // in storage.
                 var query = new DBQuery<WorldPropertyCategory>()

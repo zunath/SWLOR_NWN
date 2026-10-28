@@ -1,4 +1,5 @@
 using System.Collections.Generic;
+using System.Linq;
 using FluentAssertions;
 using NUnit.Framework;
 using SWLOR.Game.Server.Service.DroidService;
@@ -171,13 +172,37 @@ public class SpaceDroidCrewTests
 
         DroidCrewRules.GetTask(ShipModuleType.MiningLaser, ShipModuleActivation.Toggle).Should().Be(DroidCrewTask.None);
         DroidCrewRules.GetTask(ShipModuleType.HypermatterInjector, ShipModuleActivation.Toggle).Should().Be(DroidCrewTask.None);
-        DroidCrewRules.GetTask(ShipModuleType.CapitalEwar, ShipModuleActivation.Toggle).Should().Be(DroidCrewTask.None);
         DroidCrewRules.GetTask(ShipModuleType.CombatLaser, ShipModuleActivation.OnePress).Should().Be(DroidCrewTask.None);
         DroidCrewRules.GetTask(ShipModuleType.ProbeLauncher, ShipModuleActivation.Toggle).Should().Be(DroidCrewTask.Survey);
+        DroidCrewRules.GetTask(ShipModuleType.CapitalEwar, ShipModuleActivation.Toggle).Should().Be(DroidCrewTask.ElectronicWarfare);
 
         DroidCrewRules.RunsWhenShieldLow(ShipModuleType.ShieldHardener).Should().BeTrue();
         DroidCrewRules.RunsWhenHullLow(ShipModuleType.ShieldHardener).Should().BeFalse();
         DroidCrewRules.RepairThreshold.Should().Be(0.25f, "droids repair at the threshold NPC ships use");
+    }
+
+    [Test]
+    public void ElectronicWarfare_RunsWhileAnEnemyIsInRange_AndStopsOnceNoneIs()
+    {
+        DroidCrewRules.FlipsElectronicWarfare(isOn: false, enemyInRange: true).Should().BeTrue("an enemy came in range");
+        DroidCrewRules.FlipsElectronicWarfare(isOn: true, enemyInRange: false).Should().BeTrue("nothing left to jam");
+        DroidCrewRules.FlipsElectronicWarfare(isOn: true, enemyInRange: true).Should().BeFalse();
+        DroidCrewRules.FlipsElectronicWarfare(isOn: false, enemyInRange: false).Should().BeFalse();
+    }
+
+    [Test]
+    public void ElectronicWarfare_IsWiredIntoTheDroidStations_AtStationEffectiveness()
+    {
+        var crew = ReadServerSource("Service", "SpaceDroidCrew.cs");
+        crew.Should().Contain("UpdateDroidElectronicWarfare(pilot, status, slots, posted);")
+            .And.Contain("DroidCrewRules.FlipsElectronicWarfare(isOn, HasEnemyShipWithin(pilot, step.Range))")
+            .And.Contain("AssignCommand(pilot, () => ActivateShipModuleCore(pilot, feat, true, droid: droid));");
+        crew.IndexOf("UpdateDroidElectronicWarfare(pilot, status, slots, posted);", System.StringComparison.Ordinal)
+            .Should().BeLessThan(crew.IndexOf("if (!hostile)", System.StringComparison.Ordinal),
+                "the array also switches off when the pilot has no hostile target");
+
+        ReadServerSource("Feature", "ShipModuleDefinition", "RevampModuleDefinition.cs")
+            .Should().Contain("ShipCrewSeats.ScaleByEffectiveness(\n                        Effective(step).AuraAccuracy, SpaceCrew.GetFireEffectiveness(activator));");
     }
 
     [Test]
@@ -299,5 +324,15 @@ public class SpaceDroidCrewTests
 
         SpaceCrew.GetStatSource(Ship).Should().Be(Ship);
         SpaceCrew.IsDroidStatSource(Invalid).Should().BeFalse();
+    }
+
+    private static string ReadServerSource(params string[] path)
+    {
+        var directory = new System.IO.DirectoryInfo(TestContext.CurrentContext.TestDirectory);
+        while (directory != null && !System.IO.File.Exists(System.IO.Path.Combine(directory.FullName, "SWLOR.Game.Server.sln")))
+            directory = directory.Parent;
+
+        var full = System.IO.Path.Combine(new[] { directory!.FullName, "SWLOR.Game.Server" }.Concat(path).ToArray());
+        return System.IO.File.ReadAllText(full).Replace("\r\n", "\n");
     }
 }

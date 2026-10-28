@@ -36,6 +36,7 @@ namespace SWLOR.Game.Server.Feature.ChatCommandDefinition
             Recipes();
             Perks();
             Techniques();
+            Hotbars();
             DeleteCommand();
             LanguageCommand();
             ToggleEmoteStyle();
@@ -208,6 +209,20 @@ namespace SWLOR.Game.Server.Feature.ChatCommandDefinition
                 .Action((user, target, location, args) =>
                 {
                     Gui.TogglePlayerWindow(user, GuiWindowType.Techniques, new TechniquesPayload());
+                });
+        }
+
+        private void Hotbars()
+        {
+            _builder.Create("hotbars")
+                .Description("Toggles the Hotbars window, where extra hotbars are turned on, sized and moved.")
+                .Permissions(AuthorizationLevel.All)
+                .Validate((user, args) => GetIsPC(user) && !GetIsDM(user) && !GetIsDMPossessed(user)
+                    ? string.Empty
+                    : ColorToken.Red("Only player characters have extra hotbars."))
+                .Action((user, target, location, args) =>
+                {
+                    Gui.TogglePlayerWindow(user, GuiWindowType.ExtraHotbarSetup);
                 });
         }
 

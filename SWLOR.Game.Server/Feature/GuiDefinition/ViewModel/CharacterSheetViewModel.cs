@@ -580,6 +580,14 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
             Gui.TogglePlayerWindow(Player, GuiWindowType.AppearanceEditor, payload);
         };
 
+        public Action OnClickHotbars() => () =>
+        {
+            if (GetIsDM(Player) || GetIsDMPossessed(Player))
+                return;
+
+            Gui.TogglePlayerWindow(Player, GuiWindowType.ExtraHotbarSetup);
+        };
+
         public Action OnClickSettings() => () =>
         {
             Gui.TogglePlayerWindow(Player, GuiWindowType.Settings);

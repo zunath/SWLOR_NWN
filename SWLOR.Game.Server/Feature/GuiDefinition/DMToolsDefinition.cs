@@ -17,6 +17,10 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition
         // bottom row at any window size.
         private const float PlaceablesPanelWidth = 1000f;
         private const float PlaceablesPanelHeight = 470f;
+        // The Space tab has two columns, ships and events on the left and sites, pockets and cloaks on the right, so it
+        // takes the Placeables tab's panel size.
+        private const float SpacePanelWidth = 1000f;
+        private const float SpacePanelHeight = 470f;
         private const float SpaceLabelWidth = 90f;
         private const float SpaceFieldWidth = 300f;
 
@@ -349,9 +353,10 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition
         }
 
         /// <summary>
-        /// Spawns an enemy squad of one faction tier and role near the DM, or a trade convoy of that tier, or starts an
-        /// incursion centred on the DM's orbit (plan section 30). Derelicts come with their own system (plan section 28)
-        /// and are shown disabled until then.
+        /// Left column: spawn an enemy squad of one faction tier and role near the DM, a trade convoy of that tier, or an
+        /// incursion centred on the DM's orbit (plan section 30). Right column: place a derelict or a hidden signature
+        /// where the DM clicks (plan sections 24 and 28), open, close and list Rift Pockets (plan section 31) and break a
+        /// ship's cloak (plan section 6).
         /// </summary>
         private static void AddSpaceTab(GuiGroup<DMToolsViewModel> host)
         {
@@ -359,84 +364,171 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition
             {
                 content.AddRow(row =>
                 {
-                    row.AddText()
-                        .SetText("Spawn an enemy squad around you. You must be in a space area.")
-                        .SetHeight(44f);
+                    row.AddColumn(AddSpaceShipsColumn);
+                    row.AddColumn(AddSpaceToolsColumn);
                 });
+            }, SpacePanelWidth, SpacePanelHeight);
+        }
 
-                content.AddRow(row =>
-                {
-                    row.AddLabel()
-                        .SetText("Faction")
-                        .SetHorizontalAlign(NuiHorizontalAlign.Left)
-                        .SetWidth(SpaceLabelWidth);
-                    row.AddComboBox()
-                        .BindOptions(model => model.SpaceFactionOptions)
-                        .BindSelectedIndex(model => model.SpaceFactionIndex)
-                        .SetWidth(SpaceFieldWidth);
-                });
-
-                content.AddRow(row =>
-                {
-                    row.AddLabel()
-                        .SetText("Role")
-                        .SetHorizontalAlign(NuiHorizontalAlign.Left)
-                        .SetWidth(SpaceLabelWidth);
-                    row.AddComboBox()
-                        .BindOptions(model => model.SpaceRoleOptions)
-                        .BindSelectedIndex(model => model.SpaceRoleIndex)
-                        .SetWidth(SpaceFieldWidth);
-                });
-
-                content.AddRow(row =>
-                {
-                    row.AddLabel()
-                        .SetText("Ships")
-                        .SetHorizontalAlign(NuiHorizontalAlign.Left)
-                        .SetWidth(SpaceLabelWidth);
-                    row.AddComboBox()
-                        .BindOptions(model => model.SpaceCountOptions)
-                        .BindSelectedIndex(model => model.SpaceCountIndex)
-                        .SetWidth(SpaceFieldWidth);
-                });
-
-                content.AddRow(row =>
-                {
-                    row.AddButton()
-                        .SetText("Spawn Squad")
-                        .SetTooltip("Spawn the ships around you")
-                        .BindOnClicked(model => model.OnSpawnSpaceSquad())
-                        .SetHeight(35f);
-                });
-
-                content.AddRow(row =>
-                {
-                    row.AddLabel()
-                        .BindText(model => model.SpaceStatus)
-                        .BindColor(model => model.SpaceStatusColor)
-                        .SetHorizontalAlign(NuiHorizontalAlign.Left)
-                        .SetHeight(20f);
-                });
-
-                content.AddRow(row =>
-                {
-                    row.AddButton()
-                        .SetText("Start Incursion")
-                        .SetTooltip("Start an incursion centred on the orbit you are in (an orbit with a dock), by a random armada")
-                        .BindOnClicked(model => model.OnStartIncursion())
-                        .SetHeight(35f);
-                    row.AddButton()
-                        .SetText("Start Convoy")
-                        .SetTooltip("Start a trade convoy of the picked faction's tier around you")
-                        .BindOnClicked(model => model.OnStartConvoy())
-                        .SetHeight(35f);
-                    row.AddButton()
-                        .SetText("Place Derelict")
-                        .SetTooltip("Comes with derelicts")
-                        .SetIsEnabled(false)
-                        .SetHeight(35f);
-                });
+        private static void AddSpaceStatus(GuiColumn<DMToolsViewModel> col)
+        {
+            col.AddRow(row =>
+            {
+                row.AddLabel()
+                    .BindText(model => model.SpaceStatus)
+                    .BindColor(model => model.SpaceStatusColor)
+                    .SetHorizontalAlign(NuiHorizontalAlign.Left)
+                    .SetHeight(20f);
             });
+        }
+
+        private static void AddSpaceShipsColumn(GuiColumn<DMToolsViewModel> col)
+        {
+            col.AddRow(row =>
+            {
+                row.AddText()
+                    .SetText("Spawn an enemy squad around you. You must be in a space area.")
+                    .SetHeight(44f);
+            });
+
+            col.AddRow(row =>
+            {
+                row.AddLabel()
+                    .SetText("Faction")
+                    .SetHorizontalAlign(NuiHorizontalAlign.Left)
+                    .SetWidth(SpaceLabelWidth);
+                row.AddComboBox()
+                    .BindOptions(model => model.SpaceFactionOptions)
+                    .BindSelectedIndex(model => model.SpaceFactionIndex)
+                    .SetWidth(SpaceFieldWidth);
+            });
+
+            col.AddRow(row =>
+            {
+                row.AddLabel()
+                    .SetText("Role")
+                    .SetHorizontalAlign(NuiHorizontalAlign.Left)
+                    .SetWidth(SpaceLabelWidth);
+                row.AddComboBox()
+                    .BindOptions(model => model.SpaceRoleOptions)
+                    .BindSelectedIndex(model => model.SpaceRoleIndex)
+                    .SetWidth(SpaceFieldWidth);
+            });
+
+            col.AddRow(row =>
+            {
+                row.AddLabel()
+                    .SetText("Ships")
+                    .SetHorizontalAlign(NuiHorizontalAlign.Left)
+                    .SetWidth(SpaceLabelWidth);
+                row.AddComboBox()
+                    .BindOptions(model => model.SpaceCountOptions)
+                    .BindSelectedIndex(model => model.SpaceCountIndex)
+                    .SetWidth(SpaceFieldWidth);
+            });
+
+            col.AddRow(row =>
+            {
+                row.AddButton()
+                    .SetText("Spawn Squad")
+                    .SetTooltip("Spawn the ships around you")
+                    .BindOnClicked(model => model.OnSpawnSpaceSquad())
+                    .SetHeight(35f);
+            });
+
+            AddSpaceStatus(col);
+
+            col.AddRow(row =>
+            {
+                row.AddButton()
+                    .SetText("Start Incursion")
+                    .SetTooltip("Start an incursion centred on the orbit you are in (an orbit with a dock), by a random armada")
+                    .BindOnClicked(model => model.OnStartIncursion())
+                    .SetHeight(35f);
+                row.AddButton()
+                    .SetText("Start Convoy")
+                    .SetTooltip("Start a trade convoy of the picked faction's tier around you")
+                    .BindOnClicked(model => model.OnStartConvoy())
+                    .SetHeight(35f);
+            });
+        }
+
+        private static void AddSpaceToolsColumn(GuiColumn<DMToolsViewModel> col)
+        {
+            col.AddRow(row =>
+            {
+                row.AddText()
+                    .SetText("Place sites where you click, open or close Rift Pockets, and break a ship's cloak.")
+                    .SetHeight(44f);
+            });
+
+            col.AddRow(row =>
+            {
+                row.AddLabel()
+                    .SetText("Signature")
+                    .SetHorizontalAlign(NuiHorizontalAlign.Left)
+                    .SetWidth(SpaceLabelWidth);
+                row.AddComboBox()
+                    .BindOptions(model => model.SpaceSignatureOptions)
+                    .BindSelectedIndex(model => model.SpaceSignatureIndex)
+                    .SetWidth(SpaceFieldWidth);
+            });
+
+            col.AddRow(row =>
+            {
+                row.AddButton()
+                    .SetText("Place Signature")
+                    .SetTooltip("Click a point in this space area to hide a signature of the picked kind there, for a Probe Launcher to find")
+                    .BindOnClicked(model => model.OnPlaceSignature())
+                    .SetHeight(35f);
+                row.AddButton()
+                    .SetText("Place Derelict")
+                    .SetTooltip("Click a point in this space area to place a boardable derelict there, with its site open")
+                    .BindOnClicked(model => model.OnPlaceDerelict())
+                    .SetHeight(35f);
+            });
+
+            col.AddRow(row =>
+            {
+                row.AddLabel()
+                    .SetText("Pocket")
+                    .SetHorizontalAlign(NuiHorizontalAlign.Left)
+                    .SetWidth(SpaceLabelWidth);
+                row.AddComboBox()
+                    .BindOptions(model => model.SpacePocketOptions)
+                    .BindSelectedIndex(model => model.SpacePocketIndex)
+                    .SetWidth(SpaceFieldWidth);
+            });
+
+            col.AddRow(row =>
+            {
+                row.AddButton()
+                    .SetText("Open Pocket")
+                    .SetTooltip("Click a player's ship to open a Rift Pocket of the picked tier for it and its party, with no key spent")
+                    .BindOnClicked(model => model.OnOpenRiftPocket())
+                    .SetHeight(35f);
+                row.AddButton()
+                    .SetText("Close Pocket")
+                    .SetTooltip("Close the Rift Pocket you are standing in; its ships return where they opened it")
+                    .BindOnClicked(model => model.OnCloseRiftPocket())
+                    .SetHeight(35f);
+                row.AddButton()
+                    .SetText("List Pockets")
+                    .SetTooltip("List the open Rift Pockets in your chat")
+                    .BindOnClicked(model => model.OnListRiftPockets())
+                    .SetHeight(35f);
+            });
+
+            col.AddRow(row =>
+            {
+                row.AddButton()
+                    .SetText("Uncloak Ship")
+                    .SetTooltip("Click a cloaked ship to break its cloak")
+                    .BindOnClicked(model => model.OnUncloakShip())
+                    .SetHeight(35f);
+            });
+
+            AddSpaceStatus(col);
         }
     }
 }

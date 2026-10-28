@@ -406,7 +406,8 @@ public class SpaceRewardTests
         var torpedoes = ShipRareFindRules.Roll(5, WreckDifficulty.Boss, Rolls(40, 0));
         torpedoes.Should().HaveCount(2).And.OnlyContain(x => x == "proton_bomb_ion");
 
-        ShipRareFindRules.Roll(5, WreckDifficulty.Boss, Rolls(50)).Should().BeEmpty("the rest come from the tier table");
+        ShipRareFindRules.Roll(5, WreckDifficulty.Boss, Rolls(50)).Should().Equal(new[] { "rift_key_t5" }, "then the tier's Rift Key (W15b)");
+        ShipRareFindRules.Roll(5, WreckDifficulty.Boss, Rolls(60)).Should().BeEmpty("the rest come from the tier table");
         ShipRareFindRules.Roll(5, WreckDifficulty.Elite, Rolls(30)).Should().BeEmpty("elite wrecks give no torpedoes");
         ShipRareFindRules.Roll(5, WreckDifficulty.Normal, Rolls(0)).Should().BeEmpty();
 

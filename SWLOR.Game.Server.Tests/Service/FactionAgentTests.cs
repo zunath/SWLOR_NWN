@@ -499,6 +499,14 @@ public class FactionAgentTests
                 .Should().OnlyContain(x => RevampRewardCatalog.ShipSchematics.Any(s => s.Resref == x.Resref && makers[s.ShipTag] == maker && !s.WildSpaceOnly));
             foreach (var item in items)
             {
+                if (item.Category == FactionTokenStoreCategory.RiftKey)
+                {
+                    var key = reference["RiftKeys"]![item.Resref]!;
+                    item.Tokens.Should().Be(key["Tokens"]!.Value<int>(), item.Resref);
+                    item.MinimumTier.Should().Be(Enum.Parse<TradeStandingTier>(key["MinimumTier"]!.Value<string>()!), item.Resref);
+                    continue;
+                }
+
                 item.Tokens.Should().Be(FactionAgentTuning.StorePrices[item.Category]);
                 item.MinimumTier.Should().Be(FactionAgentTuning.StoreGates[item.Category]);
                 File.Exists(Path.Combine(RepositoryRoot(), "Module", "uti", $"{item.Resref}.uti.json")).Should().BeTrue(item.Resref);

@@ -19,6 +19,7 @@ namespace SWLOR.Game.Server.Feature.ChatCommandDefinition
             SalvageCommand();
             ShipHudCommand();
             HoloNetCommand();
+            IncursionCommand();
 
             return _builder.Build();
         }
@@ -99,6 +100,14 @@ namespace SWLOR.Game.Server.Feature.ChatCommandDefinition
                 .Description("Opens or closes the HoloNet price board: the best commodity prices across the exchanges, up to an hour old.")
                 .Permissions(AuthorizationLevel.All)
                 .Action((user, target, location, args) => Gui.TogglePlayerWindow(user, GuiWindowType.HoloNetBoard));
+        }
+
+        private void IncursionCommand()
+        {
+            _builder.Create("incursion")
+                .Description("Shows the running incursion: its region, what is left to clear and your contribution, or when the next one is due.")
+                .Permissions(AuthorizationLevel.All)
+                .Action((user, target, location, args) => SendMessageToPC(user, Space.DescribeIncursion(user)));
         }
     }
 }

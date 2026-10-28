@@ -275,7 +275,7 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
             foreach (var type in _rows)
             {
                 var commodity = TradeLookup.GetCommodity(type);
-                var market = exchange?.FindMarket(type);
+                var market = TradePricing.WithPriceMultiplier(exchange?.FindMarket(type), Space.GetIncursionPriceMultiplier(exchange?.Type ?? TradeExchangeType.Invalid));
                 if (commodity == null || market == null)
                     continue;
 

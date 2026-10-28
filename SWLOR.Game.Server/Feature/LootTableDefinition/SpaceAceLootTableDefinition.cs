@@ -47,7 +47,8 @@ namespace SWLOR.Game.Server.Feature.LootTableDefinition
                 .AddItem("sc_thruster_1", 25, 1, true)
                 .AddSpawnAction(item => ShipComponents.SetTraits(item, new[] { ShipComponentTraitType.CorellianModified }))
                 .AddItem("sc_thruster_5", 15, 1, true)
-                .AddSpawnAction(item => ShipComponents.SetTraits(item, new[] { ShipComponentTraitType.CorellianDriveKit }));
+                .AddSpawnAction(item => ShipComponents.SetTraits(item, new[] { ShipComponentTraitType.CorellianDriveKit }))
+                .AddItem("rift_key_t1", 15, 1, true);
         }
 
         /// <summary>Grizzik the Collector (Smuggler's Moon orbit).</summary>
@@ -61,7 +62,8 @@ namespace SWLOR.Game.Server.Feature.LootTableDefinition
                 .AddItem("sc_reactor_1", 25, 1, true)
                 .AddSpawnAction(item => ShipComponents.SetTraits(item, new[] { ShipComponentTraitType.HuttRigged }))
                 .AddItem("sc_reactor_5", 15, 1, true)
-                .AddSpawnAction(item => ShipComponents.SetTraits(item, new[] { ShipComponentTraitType.HuttCargoCoupling }));
+                .AddSpawnAction(item => ShipComponents.SetTraits(item, new[] { ShipComponentTraitType.HuttCargoCoupling }))
+                .AddItem("rift_key_t1", 15, 1, true);
         }
 
         /// <summary>Captain Ilsa Morrow (Mon Cala orbit).</summary>
@@ -75,7 +77,8 @@ namespace SWLOR.Game.Server.Feature.LootTableDefinition
                 .AddItem("sc_ordnance_2", 25, 1, true)
                 .AddSpawnAction(item => ShipComponents.SetTraits(item, new[] { ShipComponentTraitType.SithTuned }))
                 .AddItem("sc_shieldprj_5", 15, 1, true)
-                .AddSpawnAction(item => ShipComponents.SetTraits(item, new[] { ShipComponentTraitType.RepublicShieldMatrix }));
+                .AddSpawnAction(item => ShipComponents.SetTraits(item, new[] { ShipComponentTraitType.RepublicShieldMatrix }))
+                .AddItem("rift_key_t2", 15, 1, true);
         }
 
         /// <summary>Rook Varrus (the Viscara Asteroid Belt).</summary>
@@ -89,7 +92,8 @@ namespace SWLOR.Game.Server.Feature.LootTableDefinition
                 .AddItem("sc_extract_2", 25, 1, true)
                 .AddSpawnAction(item => ShipComponents.SetTraits(item, new[] { ShipComponentTraitType.CzerkaPattern }))
                 .AddItem("sc_extract_5", 15, 1, true)
-                .AddSpawnAction(item => ShipComponents.SetTraits(item, new[] { ShipComponentTraitType.CzerkaIndustrialFrame }));
+                .AddSpawnAction(item => ShipComponents.SetTraits(item, new[] { ShipComponentTraitType.CzerkaIndustrialFrame }))
+                .AddItem("rift_key_t2", 15, 1, true);
         }
 
         /// <summary>Kael Dunmor (Hutlar orbit).</summary>
@@ -103,7 +107,8 @@ namespace SWLOR.Game.Server.Feature.LootTableDefinition
                 .AddItem("sc_sensor_3", 25, 1, true)
                 .AddSpawnAction(item => ShipComponents.SetTraits(item, new[] { ShipComponentTraitType.ChissCalibrated }))
                 .AddItem("sc_sensor_5", 15, 1, true)
-                .AddSpawnAction(item => ShipComponents.SetTraits(item, new[] { ShipComponentTraitType.ChissSensorArray }));
+                .AddSpawnAction(item => ShipComponents.SetTraits(item, new[] { ShipComponentTraitType.ChissSensorArray }))
+                .AddItem("rift_key_t3", 15, 1, true);
         }
 
         /// <summary>Torvak Zel (Tatooine orbit).</summary>
@@ -117,7 +122,8 @@ namespace SWLOR.Game.Server.Feature.LootTableDefinition
                 .AddItem("sc_hframe_4", 25, 1, true)
                 .AddSpawnAction(item => ShipComponents.SetTraits(item, new[] { ShipComponentTraitType.MandalorianForged }))
                 .AddItem("sc_hframe_5", 15, 1, true)
-                .AddSpawnAction(item => ShipComponents.SetTraits(item, new[] { ShipComponentTraitType.MandalorianPlating }));
+                .AddSpawnAction(item => ShipComponents.SetTraits(item, new[] { ShipComponentTraitType.MandalorianPlating }))
+                .AddItem("rift_key_t4", 15, 1, true);
         }
 
         /// <summary>Siv Orrin (the Mid Rim Nebula).</summary>
@@ -131,7 +137,8 @@ namespace SWLOR.Game.Server.Feature.LootTableDefinition
                 .AddItem("sc_sensor_4", 25, 1, true)
                 .AddSpawnAction(item => ShipComponents.SetTraits(item, new[] { ShipComponentTraitType.ChissCalibrated }))
                 .AddItem("sc_hframe_5", 15, 1, true)
-                .AddSpawnAction(item => ShipComponents.SetTraits(item, new[] { ShipComponentTraitType.MandalorianPlating }));
+                .AddSpawnAction(item => ShipComponents.SetTraits(item, new[] { ShipComponentTraitType.MandalorianPlating }))
+                .AddItem("rift_key_t4", 15, 1, true);
         }
 
         /// <summary>Vexa Thorne (Dathomir orbit).</summary>
@@ -145,7 +152,8 @@ namespace SWLOR.Game.Server.Feature.LootTableDefinition
                 .AddItem("sc_emitter_5", 25, 1, true)
                 .AddSpawnAction(item => ShipComponents.SetTraits(item, new[] { ShipComponentTraitType.SithTuned }))
                 .AddItem("sc_emitter_5", 15, 1, true)
-                .AddSpawnAction(item => ShipComponents.SetTraits(item, new[] { ShipComponentTraitType.SithTargetingCore }));
+                .AddSpawnAction(item => ShipComponents.SetTraits(item, new[] { ShipComponentTraitType.SithTargetingCore }))
+                .AddItem("rift_key_t5", 15, 1, true);
         }
 
         /// <summary>Mako Drell (Dantooine orbit).</summary>
@@ -159,7 +167,8 @@ namespace SWLOR.Game.Server.Feature.LootTableDefinition
                 .AddItem("sc_shieldprj_5", 25, 1, true)
                 .AddSpawnAction(item => ShipComponents.SetTraits(item, new[] { ShipComponentTraitType.RepublicGrade }))
                 .AddItem("sc_shieldprj_5", 15, 1, true)
-                .AddSpawnAction(item => ShipComponents.SetTraits(item, new[] { ShipComponentTraitType.RepublicShieldMatrix }));
+                .AddSpawnAction(item => ShipComponents.SetTraits(item, new[] { ShipComponentTraitType.RepublicShieldMatrix }))
+                .AddItem("rift_key_t5", 15, 1, true);
         }
 
         /// <summary>Harl Quessen (the Mid Rim nebula).</summary>
@@ -173,7 +182,8 @@ namespace SWLOR.Game.Server.Feature.LootTableDefinition
                 .AddItem("sc_thruster_5", 25, 1, true)
                 .AddSpawnAction(item => ShipComponents.SetTraits(item, new[] { ShipComponentTraitType.CorellianModified }))
                 .AddItem("sc_thruster_5", 15, 1, true)
-                .AddSpawnAction(item => ShipComponents.SetTraits(item, new[] { ShipComponentTraitType.CorellianDriveKit }));
+                .AddSpawnAction(item => ShipComponents.SetTraits(item, new[] { ShipComponentTraitType.CorellianDriveKit }))
+                .AddItem("rift_key_t5", 15, 1, true);
         }
 
         /// <summary>Scrapper VX-9 (the Korriban Debris Field).</summary>
@@ -187,7 +197,8 @@ namespace SWLOR.Game.Server.Feature.LootTableDefinition
                 .AddItem("sc_reactor_5", 25, 1, true)
                 .AddSpawnAction(item => ShipComponents.SetTraits(item, new[] { ShipComponentTraitType.HuttRigged }))
                 .AddItem("sc_reactor_5", 15, 1, true)
-                .AddSpawnAction(item => ShipComponents.SetTraits(item, new[] { ShipComponentTraitType.HuttCargoCoupling }));
+                .AddSpawnAction(item => ShipComponents.SetTraits(item, new[] { ShipComponentTraitType.HuttCargoCoupling }))
+                .AddItem("rift_key_t5", 15, 1, true);
         }
 
         /// <summary>Commander Raine Kardos (the Outer Rim approach).</summary>
@@ -201,7 +212,8 @@ namespace SWLOR.Game.Server.Feature.LootTableDefinition
                 .AddItem("sc_emitter_5", 25, 1, true)
                 .AddSpawnAction(item => ShipComponents.SetTraits(item, new[] { ShipComponentTraitType.SithTuned }))
                 .AddItem("sc_emitter_5", 15, 1, true)
-                .AddSpawnAction(item => ShipComponents.SetTraits(item, new[] { ShipComponentTraitType.SithTargetingCore }));
+                .AddSpawnAction(item => ShipComponents.SetTraits(item, new[] { ShipComponentTraitType.SithTargetingCore }))
+                .AddItem("rift_key_t55", 15, 1, true);
         }
 
         /// <summary>Lord Malakor Venn (Korriban orbit).</summary>
@@ -215,7 +227,8 @@ namespace SWLOR.Game.Server.Feature.LootTableDefinition
                 .AddItem("sc_ordnance_5", 25, 1, true)
                 .AddSpawnAction(item => ShipComponents.SetTraits(item, new[] { ShipComponentTraitType.SithTuned }))
                 .AddItem("sc_emitter_5", 15, 1, true)
-                .AddSpawnAction(item => ShipComponents.SetTraits(item, new[] { ShipComponentTraitType.SithTargetingCore }));
+                .AddSpawnAction(item => ShipComponents.SetTraits(item, new[] { ShipComponentTraitType.SithTargetingCore }))
+                .AddItem("rift_key_t55", 15, 1, true);
         }
     }
 }

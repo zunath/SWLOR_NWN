@@ -33,6 +33,7 @@ namespace SWLOR.Game.Server.Service
             "space_midrim1",
             "space_midrim2",
             "space_midrimneb",
+            "space_riftpocket",
             "space_viscbelt",
             "space_wsblkhole",
             "space_wsgraveyrd",

@@ -154,7 +154,7 @@ public class SpaceAceTests
         {
             var table = tables[ace.LootTable];
             table.IsRare.Should().BeTrue(ace.LootTable);
-            table.Should().HaveCount(5).And.OnlyContain(x => x.IsRare && x.MaxQuantity == 1);
+            table.Should().HaveCount(6).And.OnlyContain(x => x.IsRare && x.MaxQuantity == 1);
 
             var design = RevampRewardCatalog.HullDesigns.Single(x => x.Resref == ace.DesignResref);
             design.Appearance.Should().Be(ace.Appearance, "an ace drops the Design Schematic of the design it flies");
@@ -167,7 +167,8 @@ public class SpaceAceTests
             Weight(table, ace.TrophyResref).Should().Be(RevampAceCatalog.TrophyWeight);
 
             table.Select(x => x.Resref).Should().Equal(ace.DesignResref, ace.ModuleSchematicResref, ace.TrophyResref,
-                ace.RareComponentResref, ace.ManufacturerComponentResref);
+                ace.RareComponentResref, ace.ManufacturerComponentResref, RiftRunRules.KeyForTier(ace.Tier).Resref);
+            Weight(table, RiftRunRules.KeyForTier(ace.Tier).Resref).Should().Be(RevampAceCatalog.RiftKeyWeight, "an ace drops its tier's Rift Key");
             var rare = table[3];
             rare.Weight.Should().Be(RevampAceCatalog.RareComponentWeight);
             rare.OnSpawn.Should().NotBeNull("the component is stamped with its rare trait");

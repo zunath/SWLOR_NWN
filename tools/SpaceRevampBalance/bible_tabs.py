@@ -655,7 +655,7 @@ def rewards_tab():
     s.title("Manufacturer components (Appendix D): a tier 5 component carrying its maker's trait (W9c)")
     s.note("Each is its family's tier 5 item (sc_<family>_5) with the maker's trait, so every tier 5 recipe of the family "
            "takes it and the trait reaches the module or hull built from it. Never crafted. Sources now: aces (weight "
-           f"{rw.ACE_LOOT_WEIGHTS['maker_component']} of 100 in each ace table) and salvage of the maker's NPC ships: "
+           f"{rw.ACE_LOOT_WEIGHTS['maker_component']} of {sum(rw.ACE_LOOT_WEIGHTS.values())} in each ace table) and salvage of the maker's NPC ships: "
            + ", ".join(f"{k} {v}%" for k, v in comp.MANUFACTURER_SALVAGE_PERCENT.items()) + " per salvage cycle. Wreck "
            "makers: Republic and Czerka customs their own; Sith customs, the Imperial fleet (tier 6) and the Sith capitals "
            "Sith; Clan Zel Arun (tier 4) and the Mandalorian capitals Mandalorian; pirate raiders and the other faction "
@@ -675,7 +675,8 @@ def rewards_tab():
            f"(IsRare, every entry rare) at 100% and {rw.ACE_SECOND_ROLL}% (one roll each): Design Schematic "
            f"{rw.ACE_LOOT_WEIGHTS['design']}, Module Schematic {rw.ACE_LOOT_WEIGHTS['module']}, trophy "
            f"{rw.ACE_LOOT_WEIGHTS['trophy']}, a component of its tier with a rare trait {rw.ACE_LOOT_WEIGHTS['rare_component']}, "
-           f"its maker's manufacturer component {rw.ACE_LOOT_WEIGHTS['maker_component']}. Its wreck carries a data core (the "
+           f"its maker's manufacturer component {rw.ACE_LOOT_WEIGHTS['maker_component']}, the Rift Key of its tier "
+           f"{rw.ACE_LOOT_WEIGHTS['rift_key']} (W15b; tier 6 aces the tier 5.5 key). Its wreck carries a data core (the "
            f"SPACE_ACE creature local) and yields its maker's component in salvage.")
     by_tag = {e["CreatureTag"]: e for e in __import__("npc_catalog").entries(
         m.REPO, [a["tag"] for a in aces], {a["tag"]: (a["role"], a["Level"]) for a in aces})}
@@ -775,6 +776,7 @@ if __name__ == "__main__":
     import agents
     import derelicts
     import droids
+    import events
     import holdings
     import scanning
     import slicing
@@ -784,7 +786,8 @@ if __name__ == "__main__":
     tabs = [starships(), modules(), enemies(), balance(), trade.trade_tab(Sheet), components_tab(),
             scanning.scanning_tab(Sheet), rewards_tab(), slicing.slicing_tab(Sheet), wildspace.wildspace_tab(Sheet),
             cloak.cloak_tab(Sheet), stations.stations_tab(Sheet), droids.droids_tab(Sheet),
-            holdings.holdings_tab(Sheet), agents.agents_tab(Sheet), derelicts.derelicts_tab(Sheet)]
+            holdings.holdings_tab(Sheet), agents.agents_tab(Sheet), derelicts.derelicts_tab(Sheet),
+            events.events_tab(Sheet)]
     if "--check" in sys.argv:
         check(tabs)
         sys.exit(0)

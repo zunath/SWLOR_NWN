@@ -244,6 +244,10 @@ namespace SWLOR.Game.Server.Service.SpaceService
 
             if (stats.CloakText != null)
                 rows.Add(new("Cloak", stats.CloakText));
+            if (stats.IncursionText != null)
+                rows.Add(new("Incursion", stats.IncursionText));
+            if (stats.RiftRunText != null)
+                rows.Add(new("Rift Run", stats.RiftRunText));
 
             rows.AddRange(new ShipHudStatRow[]
             {

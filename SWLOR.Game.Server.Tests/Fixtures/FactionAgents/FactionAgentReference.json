@@ -1092,6 +1092,31 @@
       },
       {
         "Category": "RiftKey",
+        "Resref": "rift_key_t1",
+        "Quantity": 1
+      },
+      {
+        "Category": "RiftKey",
+        "Resref": "rift_key_t2",
+        "Quantity": 1
+      },
+      {
+        "Category": "RiftKey",
+        "Resref": "rift_key_t3",
+        "Quantity": 1
+      },
+      {
+        "Category": "RiftKey",
+        "Resref": "rift_key_t4",
+        "Quantity": 1
+      },
+      {
+        "Category": "RiftKey",
+        "Resref": "rift_key_t5",
+        "Quantity": 1
+      },
+      {
+        "Category": "RiftKey",
         "Resref": "rift_key_t55",
         "Quantity": 1
       },
@@ -1185,6 +1210,21 @@
       {
         "Category": "ManufacturerComponent",
         "Resref": "sc_extract_5",
+        "Quantity": 1
+      },
+      {
+        "Category": "RiftKey",
+        "Resref": "rift_key_t1",
+        "Quantity": 1
+      },
+      {
+        "Category": "RiftKey",
+        "Resref": "rift_key_t2",
+        "Quantity": 1
+      },
+      {
+        "Category": "RiftKey",
+        "Resref": "rift_key_t3",
         "Quantity": 1
       },
       {
@@ -1301,6 +1341,26 @@
       },
       {
         "Category": "RiftKey",
+        "Resref": "rift_key_t1",
+        "Quantity": 1
+      },
+      {
+        "Category": "RiftKey",
+        "Resref": "rift_key_t2",
+        "Quantity": 1
+      },
+      {
+        "Category": "RiftKey",
+        "Resref": "rift_key_t3",
+        "Quantity": 1
+      },
+      {
+        "Category": "RiftKey",
+        "Resref": "rift_key_t4",
+        "Quantity": 1
+      },
+      {
+        "Category": "RiftKey",
         "Resref": "rift_key_t55",
         "Quantity": 1
       },
@@ -1344,6 +1404,26 @@
       {
         "Category": "ManufacturerComponent",
         "Resref": "sc_reactor_5",
+        "Quantity": 1
+      },
+      {
+        "Category": "RiftKey",
+        "Resref": "rift_key_t1",
+        "Quantity": 1
+      },
+      {
+        "Category": "RiftKey",
+        "Resref": "rift_key_t2",
+        "Quantity": 1
+      },
+      {
+        "Category": "RiftKey",
+        "Resref": "rift_key_t3",
+        "Quantity": 1
+      },
+      {
+        "Category": "RiftKey",
+        "Resref": "rift_key_t4",
         "Quantity": 1
       },
       {
@@ -1401,6 +1481,31 @@
       {
         "Category": "ManufacturerComponent",
         "Resref": "sc_hframe_5",
+        "Quantity": 1
+      },
+      {
+        "Category": "RiftKey",
+        "Resref": "rift_key_t1",
+        "Quantity": 1
+      },
+      {
+        "Category": "RiftKey",
+        "Resref": "rift_key_t2",
+        "Quantity": 1
+      },
+      {
+        "Category": "RiftKey",
+        "Resref": "rift_key_t3",
+        "Quantity": 1
+      },
+      {
+        "Category": "RiftKey",
+        "Resref": "rift_key_t4",
+        "Quantity": 1
+      },
+      {
+        "Category": "RiftKey",
+        "Resref": "rift_key_t5",
         "Quantity": 1
       },
       {
@@ -1567,6 +1672,31 @@
       },
       {
         "Category": "RiftKey",
+        "Resref": "rift_key_t1",
+        "Quantity": 1
+      },
+      {
+        "Category": "RiftKey",
+        "Resref": "rift_key_t2",
+        "Quantity": 1
+      },
+      {
+        "Category": "RiftKey",
+        "Resref": "rift_key_t3",
+        "Quantity": 1
+      },
+      {
+        "Category": "RiftKey",
+        "Resref": "rift_key_t4",
+        "Quantity": 1
+      },
+      {
+        "Category": "RiftKey",
+        "Resref": "rift_key_t5",
+        "Quantity": 1
+      },
+      {
+        "Category": "RiftKey",
         "Resref": "rift_key_t55",
         "Quantity": 1
       },
@@ -1588,5 +1718,31 @@
     "ManufacturerComponent": 25,
     "RiftKey": 20,
     "ShipSchematic": 100
+  },
+  "RiftKeys": {
+    "rift_key_t1": {
+      "Tokens": 6,
+      "MinimumTier": "Neutral"
+    },
+    "rift_key_t2": {
+      "Tokens": 9,
+      "MinimumTier": "Trusted"
+    },
+    "rift_key_t3": {
+      "Tokens": 12,
+      "MinimumTier": "Trusted"
+    },
+    "rift_key_t4": {
+      "Tokens": 11,
+      "MinimumTier": "Honored"
+    },
+    "rift_key_t5": {
+      "Tokens": 13,
+      "MinimumTier": "Honored"
+    },
+    "rift_key_t55": {
+      "Tokens": 20,
+      "MinimumTier": "Honored"
+    }
   }
 }

@@ -57,6 +57,15 @@ namespace SWLOR.Game.Server.Service.SpaceService
                 }
             }
 
+            // After every other share, the rare find can be a Rift Key of the wreck's tier (plan section 31).
+            if (rewards.Count == 0 && RiftRunTuning.SalvageKeyPercent.TryGetValue(difficulty, out var keyPercent))
+            {
+                var start = odds.DesignPercent + odds.ShipPercent + odds.TorpedoPercent +
+                            (wildSpace && WildSpaceTuning.RareFindExtras.TryGetValue(difficulty, out var shares) ? shares.ModulePercent + shares.PrototypePercent : 0);
+                if (roll >= start && roll < start + keyPercent)
+                    rewards.Add(RiftRunRules.KeyForTier(wreckTier, wildSpace).Resref);
+            }
+
             return rewards;
         }
 

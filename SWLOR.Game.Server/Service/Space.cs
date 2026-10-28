@@ -2652,6 +2652,7 @@ namespace SWLOR.Game.Server.Service
 
             var shieldDamage = shieldBefore - targetShipStatus.Shield;
             var hullDamage = hullBefore - targetShipStatus.Hull;
+            RecordIncursionDamage(attacker, target, shieldDamage + hullDamage);
             if (shieldDamage > 0 || hullDamage > 0)
             {
                 MarkShipCombat(attacker, target);
@@ -2776,6 +2777,8 @@ namespace SWLOR.Game.Server.Service
             // Safety clamping
             if (targetShipStatus.Hull < 0)
             targetShipStatus.Hull = 0;
+
+            RecordIncursionDamage(attacker, target, hullBefore - targetShipStatus.Hull);
 
             // Apply death if hull has reached zero. Shields are reduced to 0 in this instance as well.
             if (targetShipStatus.Hull <= 0)

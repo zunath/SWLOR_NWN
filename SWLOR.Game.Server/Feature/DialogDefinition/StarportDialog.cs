@@ -124,6 +124,13 @@ namespace SWLOR.Game.Server.Feature.DialogDefinition
             page.AddResponse("Trade Exchange", () =>
             {
                 Close();
+                var closed = Space.GetIncursionExchangeRefusal(exchange);
+                if (!string.IsNullOrEmpty(closed))
+                {
+                    SendMessageToPC(player, ColorToken.Red(closed));
+                    return;
+                }
+
                 var payload = new TradeExchangePayload(exchange, landingAreaResref);
                 Gui.TogglePlayerWindow(player, GuiWindowType.TradeExchange, payload, Owner);
             });
@@ -178,6 +185,13 @@ namespace SWLOR.Game.Server.Feature.DialogDefinition
                 {
                     SendMessageToPC(player, ColorToken.Red(
                         $"This starport needs to be upgraded to level {TradeTuning.CityExchangeStarportLevel} before it has a Trade Exchange. Ask the city's leadership."));
+                    return;
+                }
+
+                var closed = Space.GetIncursionExchangeRefusal(dock.Exchange);
+                if (!string.IsNullOrEmpty(closed))
+                {
+                    SendMessageToPC(player, ColorToken.Red(closed));
                     return;
                 }
 

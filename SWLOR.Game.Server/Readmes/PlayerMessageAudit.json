@@ -820,17 +820,24 @@
   },
   {
     "File": "SWLOR.Game.Server/Feature/ChatCommandDefinition/SpaceChatCommand.cs",
-    "Line": 42,
+    "Line": 43,
     "Member": "ExitSpaceCommand",
     "Delivery": "Retained",
     "Call": "SendMessageToPC(user, \"This command can only be used while piloting a starship.\")"
   },
   {
     "File": "SWLOR.Game.Server/Feature/ChatCommandDefinition/SpaceChatCommand.cs",
-    "Line": 48,
+    "Line": 49,
     "Member": "ExitSpaceCommand",
     "Delivery": "Retained",
     "Call": "SendMessageToPC(user, \"This command cannot be used while you're targeted.\")"
+  },
+  {
+    "File": "SWLOR.Game.Server/Feature/ChatCommandDefinition/SpaceChatCommand.cs",
+    "Line": 110,
+    "Member": "IncursionCommand",
+    "Delivery": "Retained",
+    "Call": "SendMessageToPC(user, Space.DescribeIncursion(user))"
   },
   {
     "File": "SWLOR.Game.Server/Feature/ChatCommandDefinition/SpatialChatCommand.cs",
@@ -1023,70 +1030,91 @@
   },
   {
     "File": "SWLOR.Game.Server/Feature/DialogDefinition/StarportDialog.cs",
-    "Line": 179,
+    "Line": 130,
+    "Member": "AddTradeExchangeResponse",
+    "Delivery": "Retained",
+    "Call": "SendMessageToPC(player, ColorToken.Red(closed))"
+  },
+  {
+    "File": "SWLOR.Game.Server/Feature/DialogDefinition/StarportDialog.cs",
+    "Line": 186,
     "Member": "AddCityTradeExchangeResponse",
     "Delivery": "Retained",
     "Call": "SendMessageToPC(player, ColorToken.Red(\n                        $\"This starport needs to be upgraded to level {TradeTuning.CityExchangeStarportLevel} before it has a Trade Exchange. Ask the city's leadership.\"))"
   },
   {
+    "File": "SWLOR.Game.Server/Feature/DialogDefinition/StarportDialog.cs",
+    "Line": 194,
+    "Member": "AddCityTradeExchangeResponse",
+    "Delivery": "Retained",
+    "Call": "SendMessageToPC(player, ColorToken.Red(closed))"
+  },
+  {
     "File": "SWLOR.Game.Server/Feature/DialogDefinition/StarportDockDialog.cs",
-    "Line": 47,
+    "Line": 48,
+    "Member": "Initialize",
+    "Delivery": "Retained",
+    "Call": "SendMessageToPC(player, ColorToken.Red(blockade))"
+  },
+  {
+    "File": "SWLOR.Game.Server/Feature/DialogDefinition/StarportDockDialog.cs",
+    "Line": 56,
     "Member": "Initialize",
     "Delivery": "Retained",
     "Call": "SendMessageToPC(player, \"This docking point is misconfigured. Notify an admin.\")"
   },
   {
     "File": "SWLOR.Game.Server/Feature/DialogDefinition/StarportDockDialog.cs",
-    "Line": 57,
+    "Line": 66,
     "Member": "Initialize",
     "Delivery": "Retained",
     "Call": "SendMessageToPC(player, \"This docking point is misconfigured. Notify an admin.\")"
   },
   {
     "File": "SWLOR.Game.Server/Feature/DialogDefinition/StarportDockDialog.cs",
-    "Line": 65,
+    "Line": 74,
     "Member": "Initialize",
     "Delivery": "Retained",
     "Call": "SendMessageToPC(player, \"This docking point is misconfigured. Notify an admin.\")"
   },
   {
     "File": "SWLOR.Game.Server/Feature/DialogDefinition/StarportDockDialog.cs",
-    "Line": 82,
+    "Line": 91,
     "Member": "Initialize",
     "Delivery": "Retained",
     "Call": "SendMessageToPC(player, \"This docking point is misconfigured. Notify an admin.\")"
   },
   {
     "File": "SWLOR.Game.Server/Feature/DialogDefinition/StarportDockDialog.cs",
-    "Line": 122,
+    "Line": 131,
     "Member": "MainPageInit",
     "Delivery": "Retained",
     "Call": "SendMessageToPC(player, ColorToken.Red(\"You cannot dock while being targeted.\"))"
   },
   {
     "File": "SWLOR.Game.Server/Feature/DialogDefinition/StarportDockDialog.cs",
-    "Line": 146,
+    "Line": 155,
     "Member": "MainPageInit",
     "Delivery": "Retained",
     "Call": "SendMessageToPC(player, ColorToken.Red(\"This starport is no longer available for docking.\"))"
   },
   {
     "File": "SWLOR.Game.Server/Feature/DialogDefinition/StarportDockDialog.cs",
-    "Line": 164,
+    "Line": 173,
     "Member": "MainPageInit",
     "Delivery": "Retained",
     "Call": "SendMessageToPC(player, ColorToken.Red(message))"
   },
   {
     "File": "SWLOR.Game.Server/Feature/DialogDefinition/StarportDockDialog.cs",
-    "Line": 177,
+    "Line": 186,
     "Member": "MainPageInit",
     "Delivery": "Retained",
     "Call": "SendMessageToPC(player, ColorToken.Red(\"This starport is still loading. Please try again shortly.\"))"
   },
   {
     "File": "SWLOR.Game.Server/Feature/DialogDefinition/StarportDockDialog.cs",
-    "Line": 190,
+    "Line": 199,
     "Member": "MainPageInit",
     "Delivery": "Retained",
     "Call": "SendMessageToPC(player, ColorToken.Red(\"This starport is still loading. Please try again shortly.\"))"
@@ -3844,7 +3872,7 @@
   },
   {
     "File": "SWLOR.Game.Server/Service/Area.cs",
-    "Line": 147,
+    "Line": 150,
     "Member": "EnterArea",
     "Delivery": "Retained",
     "Call": "SendMessageToPC(player, ColorToken.Purple(prefix + message))"
@@ -6154,14 +6182,14 @@
   },
   {
     "File": "SWLOR.Game.Server/Service/Space.cs",
-    "Line": 3015,
+    "Line": 3018,
     "Member": "NotifyShipDamage",
     "Delivery": "Retained",
     "Call": "Messaging.SendMessageNearbyToPlayers(attacker, buildMessage, ShipDamageMessageRange)"
   },
   {
     "File": "SWLOR.Game.Server/Service/Space.cs",
-    "Line": 3021,
+    "Line": 3024,
     "Member": "NotifyShipDamage",
     "Delivery": "Retained",
     "Call": "SendMessageToPC(target, buildMessage(target))"
@@ -6713,6 +6741,27 @@
     "Call": "SendMessageToPC(player, \"The Ship HUD can only be used while piloting a starship.\")"
   },
   {
+    "File": "SWLOR.Game.Server/Service/SpaceIncursions.cs",
+    "Line": 435,
+    "Member": "DeliverIncursionPayout",
+    "Delivery": "Retained",
+    "Call": "SendMessageToPC(player, ColorToken.Green(\n                $\"Incursion spoils for the {payout.RegionName} region: {payout.Credits} credits and {items.Count} item(s) for {payout.Points:0.#} contribution points.\"))"
+  },
+  {
+    "File": "SWLOR.Game.Server/Service/SpaceIncursions.cs",
+    "Line": 639,
+    "Member": "BroadcastIncursion",
+    "Delivery": "Retained",
+    "Call": "SendMessageToPC(player, message)"
+  },
+  {
+    "File": "SWLOR.Game.Server/Service/SpaceIncursions.cs",
+    "Line": 647,
+    "Member": "MessageIncursionArea",
+    "Delivery": "Retained",
+    "Call": "SendMessageToPC(player, message)"
+  },
+  {
     "File": "SWLOR.Game.Server/Service/SpacePowerRouting.cs",
     "Line": 39,
     "Member": "SetPowerRouting",
@@ -6753,6 +6802,41 @@
     "Member": "SetPowerRouting",
     "Delivery": "Retained",
     "Call": "SendMessageToPC(ship, $\"{PlayerName.GetDisplayName(ship, player)}: {message}\")"
+  },
+  {
+    "File": "SWLOR.Game.Server/Service/SpaceRiftRuns.cs",
+    "Line": 62,
+    "Member": "StartRiftRun",
+    "Delivery": "Retained",
+    "Call": "SendMessageToPC(user, ColorToken.Red(refusal))"
+  },
+  {
+    "File": "SWLOR.Game.Server/Service/SpaceRiftRuns.cs",
+    "Line": 83,
+    "Member": "StartRiftRun",
+    "Delivery": "Retained",
+    "Call": "SendMessageToPC(user, ColorToken.Red(\"The rift flickers and will not open. Your key is unspent.\"))"
+  },
+  {
+    "File": "SWLOR.Game.Server/Service/SpaceRiftRuns.cs",
+    "Line": 108,
+    "Member": "StartRiftRun",
+    "Delivery": "Retained",
+    "Call": "SendMessageToPC(player, ColorToken.Cyan(\n                        $\"{GetName(user)} opens a tier {key.TierLabel} rift pocket. Clear its three chambers within \" +\n                        $\"{RiftRunTuning.TimerSeconds / 60} minutes, or it collapses with you inside.\"))"
+  },
+  {
+    "File": "SWLOR.Game.Server/Service/SpaceRiftRuns.cs",
+    "Line": 234,
+    "Member": "PayRiftRun",
+    "Delivery": "Retained",
+    "Call": "SendMessageToPC(player, ColorToken.Green(\n                        $\"The pocket is cleared with {RiftRunRules.FormatTimer(secondsLeft)} to spare: {share} credits. The rift returns you in {RiftRunTuning.ReturnDelaySeconds:0} seconds.\"))"
+  },
+  {
+    "File": "SWLOR.Game.Server/Service/SpaceRiftRuns.cs",
+    "Line": 323,
+    "Member": "MessageRiftRun",
+    "Delivery": "Retained",
+    "Call": "SendMessageToPC(player, message)"
   },
   {
     "File": "SWLOR.Game.Server/Service/SpaceScanning.cs",
@@ -7148,21 +7232,28 @@
   },
   {
     "File": "SWLOR.Game.Server/Service/Trade.cs",
-    "Line": 220,
+    "Line": 221,
     "Member": "TryGetTrade",
     "Delivery": "Retained",
     "Call": "SendMessageToPC(player, ColorToken.Red(TradeRules.GetRefusalMessage(TradeRefusal.ShipNotDocked)))"
   },
   {
     "File": "SWLOR.Game.Server/Service/Trade.cs",
-    "Line": 226,
+    "Line": 227,
     "Member": "TryGetTrade",
     "Delivery": "Retained",
     "Call": "SendMessageToPC(player, ColorToken.Red(TradeRules.GetRefusalMessage(TradeRefusal.NoExchangeHere)))"
   },
   {
     "File": "SWLOR.Game.Server/Service/Trade.cs",
-    "Line": 232,
+    "Line": 234,
+    "Member": "TryGetTrade",
+    "Delivery": "Retained",
+    "Call": "SendMessageToPC(player, ColorToken.Red(closed))"
+  },
+  {
+    "File": "SWLOR.Game.Server/Service/Trade.cs",
+    "Line": 240,
     "Member": "TryGetTrade",
     "Delivery": "Retained",
     "Call": "SendMessageToPC(player, ColorToken.Red(TradeRules.GetRefusalMessage(TradeRefusal.NotTradedHere)))"

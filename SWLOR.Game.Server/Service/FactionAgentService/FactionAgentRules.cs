@@ -418,7 +418,8 @@ namespace SWLOR.Game.Server.Service.FactionAgentService
 
         /// <summary>
         /// A faction's store: the missile variants, the faction maker's Hull Designs and Advanced ships' schematics (Wild
-        /// Space only ones left out), its manufacturer component and the Rift Key. Rift Keys of tiers 1-5 come with W15c.
+        /// Space only ones left out), its manufacturer component and the Rift Keys: tier 1 up to the faction's highest dock tier,
+        /// each priced and gated by its own tier, and tier 5.5.
         /// </summary>
         public static List<FactionTokenStoreItem> GetStoreItems(FactionType faction)
         {
@@ -448,7 +449,16 @@ namespace SWLOR.Game.Server.Service.FactionAgentService
             var component = RevampComponentCatalog.ManufacturerComponents.FirstOrDefault(x => x.Manufacturer == maker);
             if (component != null)
                 items.Add(Item(FactionTokenStoreCategory.ManufacturerComponent, component.Resref, component.Name, 1, component.Trait));
-            items.Add(Item(FactionTokenStoreCategory.RiftKey, FactionAgentTuning.RiftKeyResref, null));
+            if (FactionAgentTuning.StoreRiftKeys.TryGetValue(faction, out var keys))
+            {
+                items.AddRange(keys.Select(key =>
+                {
+                    var item = Item(FactionTokenStoreCategory.RiftKey, key, null);
+                    item.Tokens = FactionAgentTuning.RiftKeyPrices[key];
+                    item.MinimumTier = FactionAgentTuning.RiftKeyGates[key];
+                    return item;
+                }));
+            }
             items.AddRange(RevampRewardCatalog.ShipSchematics
                 .Where(x => Made(x.ShipTag) && !x.WildSpaceOnly)
                 .Select(x => Item(FactionTokenStoreCategory.ShipSchematic, x.Resref, $"Ship Schematic: {x.ShipName}")));

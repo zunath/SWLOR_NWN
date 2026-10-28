@@ -223,7 +223,8 @@ ACE_SPAWN_SHARE = (0.007, 0.009)
 # The ace's own table: one guaranteed roll and one more at ACE_SECOND_ROLL percent, beside the tier's elite table.
 ACE_SECOND_ROLL = 25
 ACE_ELITE_TABLE = "SPACE_ELITE_T{tier}, 66, 5"
-ACE_LOOT_WEIGHTS = dict(design=30, module=10, trophy=20, rare_component=25, maker_component=15)
+# rift_key: the Rift Key of the ace's tier (W15b, events.key_for_tier; tier 6 aces drop the tier 5.5 key).
+ACE_LOOT_WEIGHTS = dict(design=30, module=10, trophy=20, rare_component=25, maker_component=15, rift_key=15)
 ACE_ITEM_TAGS = {"Fighter": "NPC_Fighter", "Sniper": "NPC_Fighter", "Interceptor": "NPC_Interceptor",
                  "Electronic Warfare": "NPC_Interceptor", "Bomber": "NPC_Bomber", "Minelayer": "NPC_Bomber"}
 FACTION_NAMES = {1: "Septra Khanate", 2: "Krakenborne", 3: "Snowdrift Syndicate", 4: "Clan Zel Arun", 5: "Red Hand",

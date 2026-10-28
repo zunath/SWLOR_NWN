@@ -388,5 +388,62 @@ out.append(f"Change in mean time to kill against the same fight with no environm
            "Red Giant's ability damage only for pilots who use abilities (about a quarter of a fit's damage, so about 5% "
            "faster kills), and a laser fit's capacitor does not run dry in these fights.\n")
 
+# O. Incursions and Rift Runs (W15b)
+import events  # noqa: E402
+import npc_catalog  # noqa: E402
+
+
+def event_ship(hull, level):
+    role, difficulty, size = npc_catalog.HULLS[hull]
+    return m.npc_ship(role, level, difficulty, size=None if difficulty == "Normal" else size)
+
+
+def event_fight(ships, hulls, level, pilot_rank=None, named=False):
+    rank = pilot_rank or level
+    p = m.player_ship("Fighter", rank, m.FIT["Fighter"], named=named)
+    return fight([dict(p, count=ships)], [event_ship(h, level) for h in hulls])
+
+
+out.append("## O. Incursions and Rift Runs: matched Fighters (3 Laser Cannons) against each composition, all of it at once\n")
+rows, incursion_worst = [], {}
+for L in TIERS:
+    t = TIERS.index(L) + 1
+    wave2 = event_fight(2, events.wave_hulls(t), L)
+    wave3 = event_fight(3, events.wave_hulls(t), L)
+    block2 = event_fight(2, events.BLOCKADE_HULLS, L)
+    block3 = event_fight(3, events.BLOCKADE_HULLS, L)
+    command5 = event_fight(5, ["capital"] + events.COMMAND_ESCORTS, L)
+    command6 = event_fight(6, ["capital"] + events.COMMAND_ESCORTS, L)
+    best_wave = wave2 if wave2["win"] >= 0.95 else wave3
+    incursion_worst[t] = (best_wave["win"], max(block2["win"], block3["win"]), command6["win"])
+    rows.append([f"T{t}", "+".join(events.wave_hulls(t)), cell(wave2), cell(wave3), cell(block2), cell(block3), cell(command5), cell(command6)])
+table(["Tier", "Wave", "Wave, 2 ships", "Wave, 3 ships", "Blockade, 2 ships", "Blockade, 3 ships", "Command, 5 ships", "Command, 6 ships"], rows)
+out.append("Incursions are group content: a wave (the W12a combat site squad) for 2 matched pilots (3 at T5, where it adds a gunship), "
+           f"a blockade ({' + '.join(events.BLOCKADE_HULLS)}) for 2-3, a command group (the tier's capital + "
+           f"{' + '.join(events.COMMAND_ESCORTS)}) for about 6. In the game ships engage as they notice a pilot, so these "
+           "all-at-once fights are the hard case. Tier 6 (Korriban's region) is above the simulator's ranks and not modeled.\n")
+
+rows, solo_worst, group_worst = [], 1.0, 1.0
+for tenths, resref, _ in events.KEYS:
+    level, rank, named = (wildspace.RIFT_RAIDER_LEVEL, 45, True) if tenths == 55 else (TIERS[tenths // 10 - 1], None, False)
+    solo_time, cells = 0.0, []
+    for room in range(len(events.ROOMS)):
+        for ships in (1, 2, 3):
+            for wave in events.room_waves(tenths, room, ships):
+                r = event_fight(ships, wave, level, rank, named)
+                if ships == 1:
+                    solo_time += r["mean"]
+                    solo_worst = min(solo_worst, r["win"])
+                    cells.append(f"{'+'.join(wave)}: {cell(r)}")
+                else:
+                    group_worst = min(group_worst, r["win"])
+    rows.append([f"{events.key_label(tenths)} ({resref})", "; ".join(cells), f"{solo_time / 60:.1f} min"])
+table(["Key", "Solo waves (mean time, win, hull + shield left)", "Solo fight time"], rows)
+out.append(f"Each wave of each chamber, solo and with the 2- and 3-ship extras. Worst solo win {solo_worst:.0%}, worst party win "
+           f"{group_worst:.0%}. Target: a matched solo pilot wins every wave (at least 90%: "
+           f"{'met' if solo_worst >= 0.9 else 'NOT MET'}) and a party at least as often (met: {group_worst >= 0.9}). The solo fight "
+           f"time sits inside the {events.TIMER_SECONDS // 60}-minute timer with room for the waves' delays, shield regeneration "
+           "between waves and the chamber pulls. Tier 5.5: a named-fit rank 45 Fighter against the level 52 Rift Raiders.\n")
+
 Path(m.HERE / "checks.md").write_text("\n".join(out))
 print("\n".join(out))

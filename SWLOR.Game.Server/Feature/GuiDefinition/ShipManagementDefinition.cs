@@ -83,6 +83,33 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition
                     col.AddRow(row =>
                     {
                         row.AddButton()
+                            .SetText("Transfer Ship")
+                            .SetTooltip("Give the selected ship, with everything aboard, to a player at this starport.")
+                            .BindIsVisible(model => model.IsMyShipsToggled)
+                            .BindIsEnabled(model => model.IsTransferEnabled)
+                            .BindOnClicked(model => model.OnClickTransferShip())
+                            .SetHeight(35f);
+
+                        row.AddTextEdit()
+                            .BindValue(model => model.SalePrice)
+                            .SetPlaceholder("Price")
+                            .SetMaxLength(9)
+                            .BindIsVisible(model => model.IsMyShipsToggled)
+                            .BindIsEnabled(model => model.IsSaleEnabled)
+                            .SetHeight(35f);
+
+                        row.AddButton()
+                            .BindText(model => model.SaleButtonText)
+                            .SetTooltip("List the selected ship on the player market at the price typed beside it, or cancel its listing.")
+                            .BindIsVisible(model => model.IsMyShipsToggled)
+                            .BindIsEnabled(model => model.IsSaleEnabled)
+                            .BindOnClicked(model => model.OnClickSellShip())
+                            .SetHeight(35f);
+                    });
+
+                    col.AddRow(row =>
+                    {
+                        row.AddButton()
                             .SetText("Remove My Access")
                             .SetTooltip("Remove your permissions from the selected ship so it no longer appears in this list.")
                             .BindIsVisible(model => model.IsOtherShipsToggled)

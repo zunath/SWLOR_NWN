@@ -3329,6 +3329,13 @@ namespace SWLOR.Game.Server.Service
                 return;
             }
 
+            // A ship listed on the market is locked until it sells or the listing ends (plan section 7).
+            if (ShipTransfer.IsPropertyListedForSale(propertyId))
+            {
+                FloatingTextStringOnCreature("This ship is listed for sale. Its furniture cannot change until the listing ends.", player, false);
+                return;
+            }
+
             var property = DB.Get<WorldProperty>(propertyId);
             var layout = GetLayoutByType(property.Layout);
             int structureLimit;

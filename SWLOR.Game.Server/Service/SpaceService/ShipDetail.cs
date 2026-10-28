@@ -22,7 +22,6 @@ namespace SWLOR.Game.Server.Service.SpaceService
         public int ExplosiveDefense { get; set; }
         public int ThermalDefense { get; set; }
         public int EMDefense { get; set; }
-        public int IndustryBonus { get; set; }
         public bool HasDroidBay { get; set; }
         public bool CapitalShip { get; set; }
         public ShipSize Size { get; set; }

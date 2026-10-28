@@ -22,7 +22,7 @@ namespace SWLOR.Game.Server.Service.SpaceService
         ProtonBomb = 17,
         StripMiner = 18,
         CapitalEwar = 19,
-        CapitalPowerDiverter = 20,
+        // 20 was CapitalPowerDiverter, never used (plan section 16, bug 6); the Power Diverter is a passive.
         ShieldHardener = 21,
         Salvager = 22,
         GasHarvester = 23,

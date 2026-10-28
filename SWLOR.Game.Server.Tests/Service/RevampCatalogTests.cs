@@ -24,8 +24,9 @@ public class RevampCatalogTests
     {
         var steps = RevampModuleCatalog.Steps;
 
-        steps.Should().HaveCount(345, "278 + the Salvager and Gas Harvester ranks (W6a) + the Smuggling Compartment ranks (W7b) + " +
-            "the Probe Launcher ranks (W12a) + 16 named rank-50 modules (W9b) + the Data Analyzer (W12b) + the Cloaking Device ranks");
+        steps.Should().HaveCount(355, "278 + the Salvager and Gas Harvester ranks (W6a) + the Smuggling Compartment ranks (W7b) + " +
+            "the Probe Launcher ranks (W12a) + 16 named rank-50 modules (W9b) + the Data Analyzer (W12b) + the Cloaking Device ranks + " +
+            "the Cargo Expander ranks (W11d)");
         steps.Select(x => x.Tag).Should().OnlyHaveUniqueItems();
         steps.Select(x => x.Name).Should().OnlyHaveUniqueItems();
         foreach (var step in steps)
@@ -63,7 +64,7 @@ public class RevampCatalogTests
                 first.CycleSeconds.Should().BeGreaterThan(0, family.Key.ToString());
         }
 
-        RevampModuleCatalog.Steps.Select(x => x.Family).Distinct().Should().HaveCount(45);
+        RevampModuleCatalog.Steps.Select(x => x.Family).Distinct().Should().HaveCount(46);
         Enum.GetValues<ShipModuleFamily>().Where(x => x != ShipModuleFamily.Invalid)
             .Should().BeEquivalentTo(RevampModuleCatalog.Steps.Select(x => x.Family).Distinct(), "every family has steps");
     }
@@ -153,13 +154,15 @@ public class RevampCatalogTests
         all.Select(x => x.ToString()).Should().OnlyHaveUniqueItems();
         // The modules and hulls take 7000-7357; the Probe Launcher (W12a) follows the component recipes (7358-7487); the
         // named modules (W9b) open the next block (7498-7531, with the rare components and ammo); the Data Analyzer (W12b)
-        // follows it, then the Cloaking Device ranks (7533-7542).
+        // follows it, then the Cloaking Device ranks (7533-7542); the Cargo Expander ranks (W11d) follow the industrial
+        // droid recipes (7733-7742).
         all.Where(x => !steps.Any(s => s.Named && s.RecipeType == x) && x != RecipeType.ShipDataAnalyzer00 &&
-                       steps.All(s => s.Family != ShipModuleFamily.CloakingDevice || s.RecipeType != x))
+                       steps.All(s => s.Family is not (ShipModuleFamily.CloakingDevice or ShipModuleFamily.CargoExpander) || s.RecipeType != x))
             .Should().OnlyContain(x => ((int)x >= 7000 && (int)x < 7000 + 358) || ((int)x >= 7488 && (int)x < 7498));
         steps.Where(x => x.Named).Select(x => (int)x.RecipeType).Should().OnlyContain(x => x >= 7498 && x < 7498 + 16);
         ((int)RecipeType.ShipDataAnalyzer00).Should().Be(7532);
         steps.Where(x => x.Family == ShipModuleFamily.CloakingDevice).Select(x => (int)x.RecipeType).Should().Equal(Enumerable.Range(7533, 10));
+        steps.Where(x => x.Family == ShipModuleFamily.CargoExpander).Select(x => (int)x.RecipeType).Should().Equal(Enumerable.Range(7733, 10));
     }
 
     [Test]

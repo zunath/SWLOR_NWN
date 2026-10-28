@@ -51,5 +51,6 @@ namespace SWLOR.Game.Server.Service.SpaceService
         ProbeLauncher = 43,
         DataAnalyzer = 44,
         CloakingDevice = 45,
+        CargoExpander = 46,
     }
 }

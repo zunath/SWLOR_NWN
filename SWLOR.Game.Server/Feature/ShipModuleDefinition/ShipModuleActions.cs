@@ -691,19 +691,13 @@ namespace SWLOR.Game.Server.Feature.ShipModuleDefinition
             });
         }
 
+        /// <summary>
+        /// Gathering XP for a mining cycle (plan section 9: mining modules are Gathering's, and so is their XP): the
+        /// asteroid's level (tier x 10) against the player's Gathering rank, the same rule as gas and salvage.
+        /// </summary>
         private static void GiveMiningExperience(uint activator, uint target)
         {
-            if (GetIsPC(activator) && !GetIsDM(activator) && !GetIsDMPossessed(activator))
-            {
-                var playerId = GetObjectUUID(activator);
-                var dbPlayer = DB.Get<Player>(playerId);
-                var rank = dbPlayer.Skills[SkillType.Piloting].Rank;
-                var asteroidLevel = GetLocalInt(target, "ASTEROID_TIER") * 10;
-                var delta = asteroidLevel - rank;
-                var xp = Skill.GetDeltaXP(delta);
-
-                Skill.GiveSkillXP(activator, SkillType.Piloting, xp);
-            }
+            ShipSalvageActions.GiveGatheringExperience(activator, GetLocalInt(target, "ASTEROID_TIER"));
         }
 
         // Support

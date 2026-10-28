@@ -322,6 +322,22 @@ public class GatheringSpaceIndustryTests
         }
     }
 
+    [Test]
+    public void Mining_GivesGatheringXp_LikeGasAndSalvage()
+    {
+        // Plan section 4: mining modules are Gathering's, and so is their XP (W11j; it was still Piloting).
+        var actions = ReadSource("Feature", "ShipModuleDefinition", "ShipModuleActions.cs");
+        var mining = ExtractMethod(actions, "private static void GiveMiningExperience(");
+        var salvage = ReadSource("Feature", "ShipModuleDefinition", "ShipSalvageActions.cs");
+
+        mining.Should().Contain("ShipSalvageActions.GiveGatheringExperience(activator, GetLocalInt(target, \"ASTEROID_TIER\"))");
+        mining.Should().NotContain("SkillType.Piloting");
+        salvage.Should().Contain("internal static void GiveGatheringExperience(uint activator, int tier)")
+            .And.Contain("Skill.GiveSkillXP(activator, SkillType.Gathering, Skill.GetDeltaXP(delta));");
+        ExtractMethod(actions, "public static void MineAsteroid(").Should().Contain("GiveMiningExperience(activator, target);");
+        ExtractMethod(actions, "public static void StripAsteroid(").Should().Contain("GiveMiningExperience(activator, target);");
+    }
+
     [TestCase("RevampModuleDefinition.cs")]
     public void TheMiningModules_RunTheirToggleOnTheRapidExtractionCycle(string file)
     {

@@ -244,8 +244,8 @@ namespace SWLOR.Game.Server.Feature.ShipModuleDefinition
             return components;
         }
 
-        /// <summary>Gathering XP for a gas or salvage cycle: the target's level (tier x 10) against the player's Gathering rank.</summary>
-        private static void GiveGatheringExperience(uint activator, int tier)
+        /// <summary>Gathering XP for a mining, gas or salvage cycle: the target's level (tier x 10) against the player's Gathering rank.</summary>
+        internal static void GiveGatheringExperience(uint activator, int tier)
         {
             if (!GetIsPC(activator) || GetIsDM(activator) || GetIsDMPossessed(activator))
                 return;

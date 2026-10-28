@@ -16,7 +16,10 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
 
         private void RefreshHeadTransformSettings()
         {
-            HeadSizeText = HelmetModelRenderer.GetHeadScale(_target).ToString("0.00", CultureInfo.InvariantCulture);
+            var headScale = HelmetModelRenderer.GetHeadScale(_target);
+            if (headScale <= 0f)
+                headScale = 1f;
+            HeadSizeText = headScale.ToString("0.00", CultureInfo.InvariantCulture);
             HeadPositionXText = HeadPosition.Get(_target, ObjectVisualTransform.TranslateX).ToString("0.00", CultureInfo.InvariantCulture);
             HeadPositionYText = HeadPosition.Get(_target, ObjectVisualTransform.TranslateY).ToString("0.00", CultureInfo.InvariantCulture);
             HeadPositionZText = HeadPosition.Get(_target, ObjectVisualTransform.TranslateZ).ToString("0.00", CultureInfo.InvariantCulture);

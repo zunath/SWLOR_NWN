@@ -674,7 +674,7 @@ public class AppearanceEditorLayoutTests
         Walk(settings).Where(widget => widget is GuiGroup<AppearanceEditorViewModel> or GuiColumn<AppearanceEditorViewModel>)
             .Should().OnlyContain(widget => Width(widget) == 0f);
         Walk(settings).OfType<GuiRow<AppearanceEditorViewModel>>()
-            .Should().OnlyContain(row => Width(row) == 0f && NaturalWidth(row) <= _window.InitialGeometry.Width - 60f,
+            .Should().OnlyContain(row => Width(row) == 0f && NaturalWidth(row) <= 256f,
                 "fixed controls must leave the surrounding spacers free to follow the client width");
     }
 

@@ -18,6 +18,7 @@ public class AppearanceEditorSettingsTests
     private MethodInfo _adjustPosition = null!;
     private MethodInfo _editPosition = null!;
     private MethodInfo _resetHead = null!;
+    private MethodInfo _headSettingsText = null!;
 
     [OneTimeSetUp]
     public void CompileSettingsWithRecordingEngineAndDatabase()
@@ -222,6 +223,13 @@ public class AppearanceEditorSettingsTests
                     HeadPosition.ApplySaved(2, DB.Record);
                     return (X, Y, Z, DB.Writes);
                 }
+                public static string HeadSettingsText(float headScale)
+                {
+                    Head = headScale;
+                    var harness = new Harness();
+                    harness.RefreshHeadTransformSettings();
+                    return harness.HeadSizeText;
+                }
                 public static (float Head, float X, float Y, float Z, float Height, int Writes) ResetHead(bool save)
                 {
                     TargetPC = true; TargetDM = TargetPossessed = ViewerDM = ViewerPossessed = false;
@@ -259,6 +267,15 @@ public class AppearanceEditorSettingsTests
         _adjustPosition = harnessType.GetMethod("AdjustPosition")!;
         _editPosition = harnessType.GetMethod("EditPosition")!;
         _resetHead = harnessType.GetMethod("ResetHead")!;
+        _headSettingsText = harnessType.GetMethod("HeadSettingsText")!;
+    }
+
+    [TestCase(0f, "1.00")]
+    [TestCase(-0.25f, "1.00")]
+    [TestCase(1.13f, "1.13")]
+    public void HeadSettingsDisplayNormalizesNonPositiveCachedScales(float headScale, string expected)
+    {
+        _headSettingsText.Invoke(null, new object[] { headScale }).Should().Be(expected);
     }
 
     [TestCase(ObjectVisualTransform.TranslateX)]

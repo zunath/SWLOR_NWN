@@ -101,6 +101,32 @@ public class SpaceW11kGapTests
             "the payout still goes to every pilot in the run, a rejoined one included");
     }
 
+    // W11m live check: the run's check saw a leaving pilot still valid but out of space mode and dropped them unkept.
+    [Test]
+    public void ALoggingOutPilot_IsMarkedAwayAtLogout_BeforeTheShipIsUnregistered()
+    {
+        var space = ReadSource("Service", "Space.cs");
+        var exit = space.IndexOf("public static void ExitServer()", StringComparison.Ordinal);
+        var away = space.IndexOf("MarkRiftRunPilotAway(player);", exit, StringComparison.Ordinal);
+        away.Should().BeGreaterThan(exit);
+        away.Should().BeLessThan(space.IndexOf("UnregisterShipPilot(player);", exit, StringComparison.Ordinal));
+        ReadSource("Service", "SpaceRiftRuns.cs").Should().Contain(
+            "foreach (var run in _riftRuns.Values.Where(x => x.Pilots.Contains(pilot)))\n                RiftRunRules.MarkAway(run, pilot);");
+    }
+
+    // W11m live check: a client that took over a minute to load the pocket found its solo run already abandoned.
+    [TestCase(true, true, false, true, false, TestName = "In the pocket")]
+    [TestCase(true, true, true, false, false, TestName = "Still loading into the pocket")]
+    [TestCase(true, true, false, false, true, TestName = "In another area")]
+    [TestCase(false, true, true, false, true, TestName = "Logged out")]
+    [TestCase(true, false, false, true, true, TestName = "No longer flying")]
+    public void APilotStillLoadingIntoThePocket_StaysInTheRun(bool valid, bool inSpace, bool betweenAreas, bool inPocket, bool left)
+    {
+        RiftRunRules.HasLeftPocket(valid, inSpace, betweenAreas, inPocket).Should().Be(left);
+        ReadSource("Service", "SpaceRiftRuns.cs").Should().Contain(
+            "RiftRunRules.HasLeftPocket(\n                    GetIsObjectValid(x), IsPlayerInSpaceMode(x), !GetIsObjectValid(GetArea(x)), GetArea(x) == run.Area)");
+    }
+
     // Ship HUD Hull Traits
 
     [Test]

@@ -94,6 +94,8 @@ namespace SWLOR.Game.Server.Service
             if (!IsPlayerInSpaceMode(player))
                 return;
 
+            MarkRiftRunPilotAway(player);
+
             // The pilot's crew go back to their consoles; the ship stays in space without a pilot, and its droids
             // stop until someone flies it again.
             ReleaseShipCrew(player, "The ship's pilot has left the controls, so you leave your station.");

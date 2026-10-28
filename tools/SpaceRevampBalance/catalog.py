@@ -62,6 +62,9 @@ ART = {
     "data_analyzer": (523, 240, "iit_smdatanlz"),
     # The cloaking update, in the ESS9 bank: the item reuses an existing inventory model, only the action icon is new.
     "cloaking_device": (523, 36, "iit_smcloak"),
+    # The gaps pass (W11d): the ESS9 bank is full and no hak change was wanted, so the Cargo Expander reuses the retired
+    # Logistics Configuration's artwork (a cargo tug cartridge; the configuration modules were removed in W10).
+    "cargo_expander": (522, 249, "iit_smlogconfig"),
 }
 
 W = m.WEAPONS
@@ -184,6 +187,9 @@ FAMILIES = [
      slicing.ANALYZER_CAPACITOR, slicing.ANALYZER_RANGE, "data_analyzer", False, p(), lambda r, s: slicing.ANALYZER_DESCRIPTION),
     ("CloakingDevice", "Cloaking Device", "Cloak", "sm_cloak", "Mid", "Piloting", "Toggle", cloak.CYCLE_SECONDS, cloak.CAPACITOR, 0,
      "cloaking_device", False, p(**cloak.STATS), lambda r, s: cloak.describe(r)),
+    ("CargoExpander", "Cargo Expander", "Cargo Exp", "sm_cargo", "Low", "Piloting", "Passive", 0, 0, 0, "cargo_expander", False,
+     p(CargoPercent=trade.expander_percent, SpeedPercent=trade.CARGO_EXPANDER_SPEED_PERCENT),
+     lambda r, s: f"+{s['CargoPercent']}% cargo bay (of the hull's cargo) and {s['SpeedPercent']}% speed. Several expanders stack."),
 ]
 
 MATERIALS = {1: ("ref_tilarium", "elec_ruined"), 2: ("ref_currian", "elec_flawed"), 3: ("ref_idailia", "elec_good"),
@@ -329,6 +335,11 @@ REWARD_LATE_FAMILIES = {"DataAnalyzer"}
 # Families added after the Data Analyzer (the cloaking update). Their recipe IDs follow it, so no earlier value moves.
 CLOAK_LATE_FAMILIES = {"CloakingDevice"}
 
+# Families added by the gaps pass (W11d). Their recipe IDs follow the highest RecipeType in use (the industrial droid
+# parts and protocol discs of droids.py, 7700-7732), so no earlier value moves.
+CARGO_LATE_FAMILIES = {"CargoExpander"}
+CARGO_RECIPE_START = 7733
+
 # Families with one item and no rank requirement: any hull fits it (the Data Analyzer, plan section 24).
 SINGLE_STEP_FAMILIES = {"DataAnalyzer"}
 
@@ -366,12 +377,14 @@ def named_steps(recipe_start):
             Components=named_bill(key, row), Cost=rw.NAMED_COST, **s))
     return out
 
-def module_steps(late_recipe_start=None, component_late_start=None, reward_late_start=None, cloak_late_start=None):
+def module_steps(late_recipe_start=None, component_late_start=None, reward_late_start=None, cloak_late_start=None,
+                 cargo_late_start=None):
     steps, recipe = [], RECIPE_TYPE_START
     late_recipe = late_recipe_start
     post_recipe = component_late_start
     reward_recipe = reward_late_start
     cloak_recipe = cloak_late_start
+    cargo_recipe = cargo_late_start
     for (key, name, short, prefix, row, skill, use, cycle, cap, rng, art, capital, stats, desc) in FAMILIES:
         single = key in SINGLE_STEP_FAMILIES
         for r in ([0] if single else CAPITAL_STEPS if capital else m.STEPS):
@@ -382,17 +395,20 @@ def module_steps(late_recipe_start=None, component_late_start=None, reward_late_
             post = key in COMPONENT_LATE_FAMILIES
             after_rewards = key in REWARD_LATE_FAMILIES
             after_cloak = key in CLOAK_LATE_FAMILIES
+            after_droids = key in CARGO_LATE_FAMILIES
             steps.append(dict(
                 Family=key, Rank=r, Tag=f"{prefix}_{r:02d}", Name=name if single else f"{name} Mk {mk}",
                 ShortName=(short if single else f"{short} {mk}")[:14],
                 Row=row, Skill=skill, Activation=use, CycleSeconds=cycle, CapacitorCost=cap, Range=rng, Capital=capital,
                 Texture=texture, BaseItem=base, ModelPart=model_part, Description=desc(r, s),
-                RecipeType=cloak_recipe if after_cloak else reward_recipe if after_rewards else post_recipe if post else late_recipe if late else recipe,
+                RecipeType=cargo_recipe if after_droids else cloak_recipe if after_cloak else reward_recipe if after_rewards else post_recipe if post else late_recipe if late else recipe,
                 RecipeName=f"Ship{key}{r:02d}",
                 RecipeLevel=max(2, min(50, r + (3 if capital else 0))),
                 Components=module_bill(key, r, row, capital),
                 Cost=100 + 30 * r + (2000 if capital else 0), **s))
-            if after_cloak:
+            if after_droids:
+                cargo_recipe = None if cargo_recipe is None else cargo_recipe + 1
+            elif after_cloak:
                 cloak_recipe = None if cloak_recipe is None else cloak_recipe + 1
             elif after_rewards:
                 reward_recipe = None if reward_recipe is None else reward_recipe + 1
@@ -606,10 +622,11 @@ def full_catalog():
     Every module step, ship deed and component recipe with its RecipeType: the earlier families, then the hulls, then
     LATE_FAMILIES, then the component recipes (W9a), then COMPONENT_LATE_FAMILIES, so no earlier value moves; then
     rewards.py's block (W9b): the named rank-50 modules (appended to the steps) and the rare component recipes; then
-    REWARD_LATE_FAMILIES and CLOAK_LATE_FAMILIES.
+    REWARD_LATE_FAMILIES and CLOAK_LATE_FAMILIES; then CARGO_LATE_FAMILIES from CARGO_RECIPE_START.
     """
     all_steps = module_steps()
-    early = [s for s in all_steps if s["Family"] not in LATE_FAMILIES | COMPONENT_LATE_FAMILIES | REWARD_LATE_FAMILIES | CLOAK_LATE_FAMILIES]
+    early = [s for s in all_steps if s["Family"] not in
+             LATE_FAMILIES | COMPONENT_LATE_FAMILIES | REWARD_LATE_FAMILIES | CLOAK_LATE_FAMILIES | CARGO_LATE_FAMILIES]
     late = [s for s in all_steps if s["Family"] in LATE_FAMILIES]
     hulls = ships(RECIPE_TYPE_START + len(early))
     recipes = component_recipes(RECIPE_TYPE_START + len(early) + len(hulls) + len(late))
@@ -620,7 +637,11 @@ def full_catalog():
     rare = rare_recipes(rw.RECIPE_START + len(named))
     reward_end = max(x["RecipeType"] for x in named + rare + ammo_recipes()) + 1
     cloak_start = reward_end + len([s for s in all_steps if s["Family"] in REWARD_LATE_FAMILIES])
-    steps = module_steps(RECIPE_TYPE_START + len(early) + len(hulls), max(x["RecipeType"] for x in recipes) + 1, reward_end, cloak_start)
+    steps = module_steps(RECIPE_TYPE_START + len(early) + len(hulls), max(x["RecipeType"] for x in recipes) + 1, reward_end, cloak_start,
+                         CARGO_RECIPE_START)
+    others = [x["RecipeType"] for x in steps + named + hulls + recipes + rare + ammo_recipes()
+              if x["RecipeType"] is not None and x.get("Family") not in CARGO_LATE_FAMILIES]
+    assert CARGO_RECIPE_START > max(others), "CARGO_RECIPE_START must follow every other generated recipe"
     return steps + named, hulls, recipes + rare
 
 
@@ -793,6 +814,7 @@ def reward_catalog_cs(steps, hulls, ammo):
         f'Name = {q(x["Name"])}, Tier = {x["Tier"]}, RecipeLevel = {x["RecipeLevel"]}, Quantity = {x["Quantity"]}, '
         f'Components = {cs_pairs(x["Components"])} }},' for x in ammo)
     fee = ", ".join(f"[ShipSize.{k}] = {v}" for k, v in rw.REFIT_FEE.items())
+    transfer_fee = ", ".join(f"[ShipSize.{k}] = {v}" for k, v in rw.TRANSFER_FEE.items())
     finds = ", ".join(
         f"[{DIFFICULTY[k]}] = new ShipRareFindReward {{ DesignPercent = {v['design']}, ShipPercent = {v['ship']}, "
         f"TorpedoPercent = {v['torpedo']} }}" for k, v in rw.RARE_FIND_REWARDS.items())
@@ -818,6 +840,8 @@ def reward_catalog_cs(steps, hulls, ammo):
             f"{ammo_recipe_rows}\n        }};\n\n"
             "        /// <summary>The credits a starport Refit to another Hull Design costs, by hull size.</summary>\n"
             f"        public static readonly IReadOnlyDictionary<ShipSize, int> RefitFee = new Dictionary<ShipSize, int> {{ {fee} }};\n\n"
+            "        /// <summary>The credits a direct ship transfer (a gift) costs its giver, by hull size.</summary>\n"
+            f"        public static readonly IReadOnlyDictionary<ShipSize, int> TransferFee = new Dictionary<ShipSize, int> {{ {transfer_fee} }};\n\n"
             "        /// <summary>The share of an elite or boss wreck's rare finds that is a schematic or a rare torpedo.</summary>\n"
             "        public static readonly IReadOnlyDictionary<WreckDifficulty, ShipRareFindReward> RareFindRewards = "
             f"new Dictionary<WreckDifficulty, ShipRareFindReward> {{ {finds} }};\n\n"

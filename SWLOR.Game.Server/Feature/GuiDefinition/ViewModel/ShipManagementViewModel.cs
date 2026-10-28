@@ -7,8 +7,10 @@ using SWLOR.Game.Server.Service;
 using SWLOR.Game.Server.Service.DBService;
 using SWLOR.Game.Server.Service.GuiService;
 using SWLOR.Game.Server.Service.GuiService.Component;
+using SWLOR.Game.Server.Service.PlayerMarketService;
 using SWLOR.Game.Server.Service.PropertyService;
 using SWLOR.Game.Server.Service.SpaceService;
+using SWLOR.Game.Server.Service.TradeService;
 using SWLOR.NWN.API.Engine;
 using SWLOR.NWN.API.NWNX;
 using SWLOR.NWN.API.NWScript.Enum;
@@ -727,6 +729,30 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
             set => Set(value);
         }
 
+        public bool IsTransferEnabled
+        {
+            get => Get<bool>();
+            set => Set(value);
+        }
+
+        public bool IsSaleEnabled
+        {
+            get => Get<bool>();
+            set => Set(value);
+        }
+
+        public string SaleButtonText
+        {
+            get => Get<string>();
+            set => Set(value);
+        }
+
+        public string SalePrice
+        {
+            get => Get<string>();
+            set => Set(value);
+        }
+
         public bool IsPermissionsEnabled
         {
             get => Get<bool>();
@@ -954,7 +980,9 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
             SelectedPageIndex = 0;
             LoadPage();
 
+            SalePrice = string.Empty;
             WatchOnClient(model => model.ShipName);
+            WatchOnClient(model => model.SalePrice);
             WatchOnClient(model => model.SelectedPageIndex);
             _skipPageLoad = false;
         }
@@ -1510,6 +1538,9 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
                         : isDockInstanceLoading
                             ? "Docked (loading...)"
                             : GetName(currentLocation);
+                var listing = ShipTransfer.GetListing(ship.Id);
+                if (listing is { IsListed: true })
+                    ShipLocation += $" - listed for sale ({listing.Price} cr)";
                 IsRepairEnabled = (ship.Status.Shield < ship.Status.MaxShield ||
                                   ship.Status.Hull < ship.Status.MaxHull) &&
                                   gold >= repairPrice &&
@@ -1654,13 +1685,22 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
                 var dbShip = DB.Get<PlayerShip>(shipId);
                 var dbProperty = DB.Get<WorldProperty>(dbShip.PropertyId);
                 var shipLocation = GetShipLocation(dbShip, dbProperty, out _);
-                IsUnregisterEnabled = shipLocation == GetArea(Player) && playerId == dbProperty.OwnerPlayerId;
+                var isOwner = playerId == dbProperty.OwnerPlayerId;
+                var isDockedHere = shipLocation == GetArea(Player);
+                var isListed = ShipTransfer.IsListedForSale(shipId);
+                IsUnregisterEnabled = isDockedHere && isOwner;
                 IsRemoveAccessEnabled = IsOtherShipsToggled && playerId != dbShip.OwnerPlayerId;
+                IsTransferEnabled = isDockedHere && isOwner && !isListed;
+                IsSaleEnabled = isOwner && (isListed || isDockedHere);
+                SaleButtonText = isListed ? "Cancel Sale" : "List for Sale";
             }
             else
             {
                 IsUnregisterEnabled = false;
                 IsRemoveAccessEnabled = false;
+                IsTransferEnabled = false;
+                IsSaleEnabled = false;
+                SaleButtonText = "List for Sale";
             }
         }
 
@@ -1817,6 +1857,7 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
                         dbPlayer.ActiveShipId = Guid.Empty.ToString();
 
                     Space.UndockAllToStarport(dbShip, "was unregistered");
+                    ShipTransfer.RemoveListings(shipId);
                     dbProperty.IsQueuedForDeletion = true;
 
                     DB.Delete<PlayerShip>(shipId);
@@ -1834,6 +1875,74 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
 
                     FloatingTextStringOnCreature("Ship unregistered!", Player, false);
                 });
+        };
+
+        /// <summary>
+        /// Direct transfer (plan section 7): the owner picks another player at the starport where the ship is docked.
+        /// The recipient reads the ship's summary and accepts; the giver pays the transfer fee then.
+        /// </summary>
+        public Action OnClickTransferShip() => () =>
+        {
+            if (SelectedShipIndex <= -1)
+                return;
+
+            var shipId = _shipIds[SelectedShipIndex];
+            Targeting.EnterTargetingMode(Player, ObjectType.Creature, "Please click on the player who will receive this ship.",
+                target =>
+                {
+                    var dbShip = DB.Get<PlayerShip>(shipId);
+                    if (dbShip == null || dbShip.OwnerPlayerId != GetObjectUUID(Player))
+                    {
+                        FloatingTextStringOnCreature("You no longer own this ship.", Player, false);
+                        return;
+                    }
+
+                    ShipTransfer.Offer(Player, dbShip, target);
+                });
+        };
+
+        /// <summary>
+        /// Market sale (plan section 7): lists the ship at the asking price typed in the price box, or cancels its
+        /// listing. The ship stays where it is docked and is locked while listed.
+        /// </summary>
+        public Action OnClickSellShip() => () =>
+        {
+            if (SelectedShipIndex <= -1)
+                return;
+
+            var shipId = _shipIds[SelectedShipIndex];
+            var dbShip = DB.Get<PlayerShip>(shipId);
+            if (dbShip == null || dbShip.OwnerPlayerId != GetObjectUUID(Player))
+                return;
+
+            if (ShipTransfer.IsListedForSale(shipId))
+            {
+                ShowModal("Cancel this ship's market listing?", () =>
+                {
+                    ShipTransfer.RemoveListings(shipId);
+                    FloatingTextStringOnCreature("Listing cancelled.", Player, false);
+                    LoadShip();
+                });
+                return;
+            }
+
+            if (!ShipTransferRules.TryParsePrice(SalePrice, out var price))
+            {
+                FloatingTextStringOnCreature("Enter an asking price above zero in the price box first.", Player, false);
+                return;
+            }
+
+            var taxRate = PlayerMarket.GetMarketRegion(MarketRegionType.Global).TaxRate * 100;
+            ShowModal($"List this ship on the market for {price} credits? The market keeps {taxRate:0.#}% when it sells. " +
+                      "While it is listed, the ship cannot fly, be furnished or be transferred.", () =>
+            {
+                dbShip = DB.Get<PlayerShip>(shipId);
+                if (dbShip == null || !ShipTransfer.List(Player, dbShip, price))
+                    return;
+
+                FloatingTextStringOnCreature(ColorToken.Green("Ship listed for sale!"), Player, false);
+                LoadShip();
+            });
         };
 
         public Action OnClickSaveShipName() => () =>
@@ -2017,6 +2126,15 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
                 var moduleDetail = Space.GetShipModuleDetailByItemTag(module.ItemTag);
                 ShowModal($"{moduleDetail.Name} is equipped to {rowName} slot #{slot}. Would you like to uninstall it?", () =>
                 {
+                    // A Cargo Expander stays while the cargo bay would overflow without it.
+                    var hullCargo = Space.FindShipDetail(dbShip.Status.ItemTag)?.Hull?.Cargo ?? 0;
+                    if (!ShipCargoRules.CanRemoveModule(hullCargo, ShipCargoRules.GetFittedModuleTags(dbShip.Status).ToList(),
+                            module.ItemTag, Trade.GetUsedVolume(dbShip)))
+                    {
+                        SendMessageToPC(Player, "Unload the cargo bay first: its cargo would not fit without this Cargo Expander.");
+                        return;
+                    }
+
                     var item = ObjectPlugin.Deserialize(module.SerializedItem);
                     var moduleBonus = Space.GetModuleBonus(item);
                     if (!Item.TryAcquireItem(Player, item))

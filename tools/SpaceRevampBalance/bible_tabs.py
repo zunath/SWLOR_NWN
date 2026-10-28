@@ -266,7 +266,7 @@ def modules():
         ["Capacitor Regulator", "Low", "Piloting (Engineer)", "Passive", "", "", "Module", "+ capacitor regen."],
         ["Thrusters", "Low", "Piloting (Helm)", "Passive", "", "", "None", "+ Evasion (best one counts) and +5% speed (stacks)."],
         ["Damage Amplifier", "Low", "Piloting (Helm)", "Passive", "", "", "None", "+ one damage type (EM, Thermal or Explosive)."],
-        ["Cargo Expander", "Low", "Piloting (Helm)", "Passive", "", "", "None", "+ cargo; -5% speed."],
+        ["Cargo Expander", "Low", "Piloting (Helm)", "Passive", "", "", "None", "+ cargo (a share of the hull's cargo) and -5% speed; both stack."],
         ["Smuggling Compartment", "Low", "Piloting (Helm)", "Passive", "", "", "None", "Lowers the customs scan chance."],
     ]
     s.table(["Family", "Row", "Skill (seat)", "Use", "Cycle s", "Capacitor", "Size scaling", "", "", "", "", "", "", "Notes"],
@@ -607,7 +607,10 @@ def rewards_tab():
     s.note("Every ship keeps its Standard design. A Design Schematic (dsgn_<appearance>) unlocks one design for the "
            "character (Player.UnlockedHullDesigns); Ship Management's Refit Design changes a ship to a design unlocked for "
            "its model while it is docked at the starport, for the fee below. Designs do not change a ship's stats.")
-    s.table(["Size", "Refit fee", "", "", "", "", "", ""], [[k, v, "", "", "", "", "", ""] for k, v in rw.REFIT_FEE.items()])
+    s.table(["Size", "Refit fee", "Transfer fee", "", "", "", "", ""],
+            [[k, v, rw.TRANSFER_FEE[k], "", "", "", "", ""] for k, v in rw.REFIT_FEE.items()])
+    s.note("Transfer fee: a direct ship transfer (Ship Management's Transfer Ship, plan section 7) costs the giver this; a "
+           "player market sale pays the market tax instead. Hull Designs never change hands.")
     design_rows = {}
     for d in c.designs(hulls):
         design_rows.setdefault(d["ShipName"], []).append(f"{d['Name']} ({d['Appearance']})")

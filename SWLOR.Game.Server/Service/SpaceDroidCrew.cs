@@ -328,6 +328,15 @@ namespace SWLOR.Game.Server.Service
         /// </summary>
         private static void ReturnDroidCrew(PlayerShip dbShip, string reason)
         {
+            ReturnShipDroidCrew(dbShip, reason);
+        }
+
+        /// <summary>
+        /// Every droid posted aboard goes back to its owner, who keeps it: the ship was destroyed or changed owner
+        /// (plan section 7). Changes the record; the caller saves it.
+        /// </summary>
+        public static void ReturnShipDroidCrew(PlayerShip dbShip, string reason)
+        {
             var postings = GetPostedDroids(dbShip).ToList();
             if (postings.Count == 0)
                 return;

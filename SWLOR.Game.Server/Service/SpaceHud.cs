@@ -163,7 +163,7 @@ namespace SWLOR.Game.Server.Service
                 stats.HighSlots = ship.HighPowerNodes;
                 stats.MidSlots = ship.MidPowerNodes;
                 stats.LowSlots = ship.LowPowerNodes;
-                stats.Cargo = ship.Hull?.Cargo;
+                stats.Cargo = ship.Hull == null ? null : ShipCargoRules.GetCapacity(ship.Hull.Cargo, status);
             }
 
             var dbShip = Trade.GetActiveShip(player);

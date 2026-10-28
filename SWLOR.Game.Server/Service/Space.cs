@@ -654,6 +654,13 @@ namespace SWLOR.Game.Server.Service
                 return;
             }
 
+            // A ship listed on the market is locked until it sells or the listing ends (plan section 7).
+            if (ShipTransfer.IsListedForSale(dbShip.Id))
+            {
+                SendMessageToPC(player, ColorToken.Red("This ship is listed for sale and cannot fly until the listing ends."));
+                return;
+            }
+
             if ((_shipClones.ContainsKey(dbShip.Id) && !GetIsObjectValid(_shipClones[dbShip.Id])) ||
                 _pendingShipLaunches.Values.Any(launch => launch.ShipId == dbShip.Id))
             {
@@ -1879,7 +1886,12 @@ namespace SWLOR.Game.Server.Service
             if (!_spaceObjects.ContainsKey(creatureTag)) return;
 
             var registeredEnemyType = _spaceObjects[creatureTag];
-            var shipDetail = _shipTypes[registeredEnemyType.ShipItemTag];
+            if (!_shipTypes.TryGetValue(registeredEnemyType.ShipItemTag ?? string.Empty, out var shipDetail))
+            {
+                // Placeable space objects (asteroids, gas clouds, wrecks) carry an unused item tag (plan section 16, bug 18).
+                Log.Write(LogGroup.Error, $"Space object '{creatureTag}' points at '{registeredEnemyType.ShipItemTag}', which is not a registered ship.");
+                return;
+            }
 
             // Every NPC ship takes its hull, weapons and support modules from its preset (RevampNpcShipCatalog).
             if (!_npcPresets.TryGetValue(creatureTag, out var preset))

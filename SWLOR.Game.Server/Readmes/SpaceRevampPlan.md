@@ -447,6 +447,14 @@ Today the only way to hand a ship over is unregistering it, which turns it back 
   - Buying uses the market's existing flow: the same-CD-key block, the price check, and the seller's proceeds minus the market tax going to their market till. Then it runs the transfer above instead of handing over an item. The market tax replaces the transfer fee.
   - The buyer doesn't need to be at the starport; the ship stays where it's docked.
   - When a listing expires after the usual 14 days, the ship simply unlocks.
+- **Added by the gaps pass (W11d):**
+  - **Rules:** `ShipTransferRules` (pure, `Service/SpaceService`) checks a `ShipTransferCheck` in this order: same owner, in space (a `CurrentPosition` or a pilot at the controls), docked aboard another ship or at a derelict, players in the interior, listed for sale (skipped by the sale itself), cargo in the cargo bay, sealed freight, an untradeable (cursed) item stored aboard or fitted, and the recipient at `Space.MaxRegisteredShips`. Each refusal has its own message. A recipient below the ship's rank may own it; Piloting gates flying it as before.
+  - **Completing (`ShipTransfer.Complete`):** ships docked aboard go to the starport first (`Space.UndockAllToStarport`, W8c), droids posted aboard go back to their owners (`Space.ReturnShipDroidCrew`, the destroyed-ship path, instead of blocking), every market listing of the ship ends, and `CollectOwnedProperties` walks the ship property and its `Structure` and `Interior` children (never `RegisteredStarport` or `Starship` links, which point at a city's starport). Each one, the `PlayerShip` and the old owner's `ActiveShipId` are updated; every permission on the ship, its structures and its storage categories is deleted and the new owner gets full rights, so the old owner and their guests lose access. Per-player hotbars clear. `HullDesignAppearance`, the name, `WorldProperty.Layout` (a migrated interior), furniture positions, stored items and fitted modules stay. `Player.UnlockedHullDesigns` is never touched, and Refit already checks the refitting player's own unlocks.
+  - **Direct transfer:** Ship Management's **Transfer Ship** (owner, ship docked where they stand, not listed) targets another player in that dock area. The recipient gets `ShipTransferOfferDialog`: the summary (ship, hull and design, modules, furniture, stored items, dock) and Accept or Decline. The offer is held in memory for `ShipTransferRules.OfferSeconds` (120). Accept checks everything again with both players at the dock, takes the fee from the giver and completes. **Fee** (draft, section 17): `rewards.TRANSFER_FEE`, the Refit fee scale (Small 1,000, Medium 1,500, Large 2,500, Capital 4,000), in `RevampRewardCatalog.TransferFee`.
+  - **Market sales:** a price box and **List for Sale** / **Cancel Sale** in Ship Management (owner, ship docked where they stand). The listing is a `MarketItem` in the Global market with `ShipId` (indexed; empty for item listings and older records, so no migration), empty `Data`, category Starship and the deed's icon, named "<ship> (<hull>)". The seller's market window shows it: removing it only unlocks the ship, and listing it again checks the ship again. The buyer's Examine shows the deed and sends the summary; Buy runs the market's checks (same CD key, price) and then `ShipTransfer.Buy`, which checks again (a refused ship keeps its listing and nothing is paid), takes the price, completes the transfer where the ship is docked and pays the seller's till minus the market tax. Unregistering a ship ends its listing.
+  - **Lock while listed:** launching (`Space` pilot path), placing furniture (`Property.PlaceStructure`), retrieving furniture (`ManageStructuresViewModel`) and Transfer Ship refuse; the market's 14-day expiry (`PlayerMarket.RemoveOldListings`) unlists it, which unlocks it.
+  - **Tests:** `ShipTransferTests` (every blocking condition and its message, sale vs. listing, ship limit, fee by size, every structure re-owned but not the starport, migrated interior and look kept, permissions reset, designs not shared, the re-checks, the locks and the market wiring).
+  - **Not verified in a client:** both flows need client evidence (section 19).
 
 ## 8. Modules
 
@@ -519,6 +527,12 @@ Toggled modules are the ship's auto-attacks; perk abilities are the buttons, as 
 - **Who is checked:** the skill named first gates the module for a pilot fitting it on their own ship. At a crew seat the seat's skill is checked instead (section 10).
 - **Capital modules:** capital weapons and arrays fit only Capital hulls. Hull and shield repairers and the injector now work on capital ships too.
 - **NPC-only modules:** variants (`npc_*`) convert to the new families with NPC-level scaling.
+- **Added by the gaps pass (W11d), Cargo Expander:**
+  - **Family:** `ShipModuleFamily.CargoExpander` (46), Low row, Piloting at the Helm, passive, ranks 0-45 (`sm_cargo_00`-`sm_cargo_45`, Module/uti; needs a module repack). `catalog.py` adds it through `CARGO_LATE_FAMILIES`: its recipes are `ShipCargoExpander00`-`45` = 7733-7742, after the highest RecipeType in use (the industrial droid parts and discs, 7700-7732), so no value moves. Recipe: a Hull Frame of the rank's tier plus refined ore, like the other Low modules.
+  - **Numbers** (the Ship Modules (Revamp) tab's draft, now in `trade.py`): +(20 + rank / 3)% of the hull's own cargo (Mk I 20%, Mk X 35%) and -5% speed (`SpeedPercent`, through `ShipStatCalculator`). Appendix B does not say best-one, and the draft's speed cost stacks like Thrusters' speed, so **expanders stack**. `ShipCargoRules.GetCapacity` (mirrors `trade.expanded_hold`) is what `Trade.GetCargoCapacity` and the HUD's Cargo row read; a hull with no cargo stays at none. An expander cannot be uninstalled while the cargo bay would overflow without it.
+  - **Art:** no free ESS9 model and no hak change, so it reuses the retired Logistics Configuration's art (BaseItem 522, model 249, `iit_smlogconfig`; the configuration modules were removed in W10). Rows added to `ShipItemIconBindings.csv`.
+  - **Trade check** (`trade.py --sim`, legal goods, 4-hour averages, T3 combat 8,500 an hour): 0 / 1 / 2 / 4 Mk X expanders give XS Freighter 108 / 114 / 116 / 120%, Heavy Lifter 116 / 123 / 102 / 116%, Republic Quartermaster 101-116%, Hutt Grand Barge 116% flat; small holds gain most (Barracuda 80% to 108% with four). Every result stays inside the 100-125% legal band or below it, and holds above about 1,200 add nothing, because flooding caps a trip. The sim keeps leg times fixed, so the -5% speed per expander makes these an upper bound.
+  - **Tests:** `CargoExpanderTests`; `RevampCatalogTests` and `ShipComponentTests` counts updated.
 
 ### Ranks and size
 
@@ -1029,6 +1043,37 @@ Fix these as part of the rewrite. Most go away with the code that replaces them.
 23. The `t3capital` NPC has no `npc_cap3` configuration (`Feature/SpaceObjectDefinition/NPCSpaceObjectDefinition.cs`, `t3capital`), so its defense is 70 against 157 for T2 and 383 for T4.
 24. `npc_cap2` has explosive attack 20 and explosive defense 5 (`ShipConfigurationModuleDefinition.cs`), which look swapped: every other boss configuration has explosive defense at half its thermal defense.
 
+**Status (checked by the gaps pass, W11d):**
+
+| # | Status | Where |
+|---|---|---|
+| 1 | Fixed | `ShipModuleActions.MineAsteroid` holds the asteroid until the cycle ends (W4f/W6a rewrite) |
+| 2 | Fixed | `RevampModuleDefinition` (`StripMinerError` tier check), `ShipModuleActions.StripAsteroid` (status and asteroid checks after the delay), `SpaceCombatMath` (laser-rate yield over the asteroid's cycles) |
+| 3 | Fixed | `SpaceCombatMath.ExtractionBaseAmount` (integer math) |
+| 4 | Fixed | Configuration modules removed (W10) |
+| 5 | Fixed | Removed with configuration modules (W10) |
+| 6 | Fixed | Storm Cannons are `ShipModuleType.StormCannon` (`RevampModuleDefinition.GetModuleType`); W11d removed the unused `CapitalPowerDiverter` type (value 20, never stored) |
+| 7 | Fixed | Revamp Turbolaser: 4 s cycle, and its text says 4 s; weapons have no `CanTargetSelf` (`RevampModuleDefinition.Weapon`) |
+| 8 | Fixed | The Quad Laser uses the shared toggle weapon path (one shot per cycle through `ShipModuleActions.FireStep`); the legacy multi-shot loop is gone |
+| 9 | Fixed | `SpaceCombatMath.ShieldRegenRate` rises with hull size |
+| 10 | Fixed (W11d) | `ShipKillXpRules.GetRange`: in space the kill XP range covers the longest High-row module range (50 m); the ground keeps 40 m (`CombatPoint`) |
+| 11 | Fixed | W2d (section 9) |
+| 12 | Fixed | W10: `EquipmentRequirementMigration` skips every retired Piloting perk stamp (116-121, 255) |
+| 13 | Fixed (W11d) | Subtype 58 is labelled "Agility", the ability bonus it builds (`EnhancementSubType`) |
+| 14 | Fixed | Ship Schematics (W9b) replace them; W10 keeps saved unlocks as the new deed recipes. The three blueprints stay as legacy items |
+| 15 | Partly fixed (W11d) | `Missile35` is level 35, matching its tier and the ammo variants. The recipe enum names stay (a rename needs a data migration; the values and quantities are right). The Bible rows need regenerating, and `Missile25`/`Missile35` stay in the recipe parity exclusions until then |
+| 16 | Fixed | `HasDroidBay` is read (`Space.HasDroidBay`), `ShipStatus.ActiveModules` is the toggle state (`ShipHudRules`); the legacy defense fields seed registration and are replaced by `RecalculateShipStats`. W11d removed the unread `ShipDetail.IndustryBonus` |
+| 17 | Fixed | Removed with configuration modules (W10) |
+| 18 | Fixed (W11d) | `Space.CreatureSpawn` skips a space object whose item tag is not a registered ship; the asteroid and salvage placeables never read it |
+| 19 | Fixed | W10 refunds it (`LegacyPerkRefundMigration`); the value stays for saved data |
+| 20 | Fixed (W11d) | `Builders.md` ShipBuilder, ShipModuleBuilder and SpaceObjectBuilder examples use real members |
+| 21 | Fixed | `ShipFitRules`: a revamp capital hull takes ordinary modules |
+| 22 | Fixed | W6b (section 12) |
+| 23 | Fixed | W5a presets (`RevampNpcShipCatalog`): `t3capital` Defense 68, between T2 52 and T4 108 |
+| 24 | Fixed | Configuration modules removed (W10); NPC resistances come from the presets |
+
+Tests: `SpaceRevampBugListTests` (6, 10, 13, 15, 16, 18, 20), `ShipAccessRulesTests` (22), the mining and salvage tests (1-3).
+
 ## 17. Numbers to draft for approval
 
 Draft each in the Bible, check it with the combat simulator where it affects combat, and get owner approval before code.
@@ -1105,6 +1150,7 @@ Everything merges to one integration branch and releases together.
   - Build once with `-p:RunPostBuildEvent=Never -v q -clp:ErrorsOnly`.
   - Run focused NUnit filters for each slice.
   - Add tests for: rank gating, size rules, slot rows, migration (refunds, item mapping, ship rebuild), seat skill checks (Piloting, Engineering, Espionage) and the Engineering, Espionage and Leadership bonuses, Piloting rank changing no combat stat, trade pricing and flooding, cargo spill, customs, XP split and range, PvP gating, escape pods, every auto-off trigger, support-module target locks and Retarget, All Weapons, space slicing (tier gate, Sensors crew slicing, Espionage XP, customs spoof outcomes), mining yield into ship storage (and the overflow to inventory), Shipyard access and fee, ship transfers and market sales (every structure re-owned, blocking conditions, designs not shared, permissions reset, migrated interiors kept).
+- **Unit test coverage (checked by the gaps pass, W11d):** rank gating `ShipSkillGatingTests`; size rules `ShipShotBuilderTests`, `SpaceCombatMathTests`; slot rows `RevampCatalogTests`, `ShipStatCalculatorTests`; migration `SpaceItemMigrationTests`; seat skill checks and Leadership `SpaceCrewStationTests`; Piloting rank adds no combat stat `SpaceRevampBugListTests` (new); trade pricing, flooding and cargo spill `TradeTests`; customs `TradeRiskTests`; XP split `SpaceCrewStationTests` and range `SpaceRevampBugListTests` (new); PvP `SpacePvpRulesTests`; escape pods `SpaceDeathRulesTests`, `SpaceDeathWiringTests`; auto-off `ShipToggleRulesTests`, `CloakingTests`, `SpaceDroidCrewTests`; target locks, Retarget and All Weapons `ShipHudRulesTests`; space slicing `SpaceSlicingTests`; mining yield and overflow `ShipSalvageTests`; Shipyard `StationTests`, `StationBuildingTests`; ship transfers and market sales `ShipTransferTests` (new); Cargo Expander `CargoExpanderTests` (new). **No tests:** the Engineering and Espionage rank bonuses, which are not built (no numbers yet).
 - **Engine tests** (`EngineTesting.md`) for:
   - Entering space with Mid slots.
   - Crew boarding, camera attach and re-attach after a starlane jump.

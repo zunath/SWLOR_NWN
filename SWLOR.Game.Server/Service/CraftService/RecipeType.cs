@@ -4088,6 +4088,16 @@ namespace SWLOR.Game.Server.Service.CraftService
         ShipCloakingDevice35 = 7540,
         ShipCloakingDevice40 = 7541,
         ShipCloakingDevice45 = 7542,
+        ShipCargoExpander00 = 7733,
+        ShipCargoExpander05 = 7734,
+        ShipCargoExpander10 = 7735,
+        ShipCargoExpander15 = 7736,
+        ShipCargoExpander20 = 7737,
+        ShipCargoExpander25 = 7738,
+        ShipCargoExpander30 = 7739,
+        ShipCargoExpander35 = 7740,
+        ShipCargoExpander40 = 7741,
+        ShipCargoExpander45 = 7742,
         // END space revamp catalog
 
         // Industrial droids (tools/SpaceRevampBalance/droids.py): parts 7700-7724, protocol discs 7725-7732.

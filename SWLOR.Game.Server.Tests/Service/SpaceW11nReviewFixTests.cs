@@ -73,6 +73,27 @@ public class SpaceW11nReviewFixTests
             .Should().Contain("LegacySpaceItemSweep.Pay(owner, result.Items.Credits, result.Items.HullDesigns, shipKey)");
     }
 
+    [Test]
+    public void ConfigurationModuleInPropertyStorage_IsRefundedToThePropertyOwnerByKey()
+    {
+        var sweep = ReadSource("Feature", "MigrationDefinition", "StoredItemSweep.cs").Replace("\r\n", "\n");
+        sweep.Should().Contain("space.QueueRefund(owner, sourceKey, credits);", "the removed module pays its owner");
+        sweep.Should().Contain("var owner = LegacySpaceItemSweep.ForProperty(category.ParentPropertyId);");
+        sweep.Should().Contain("$\"{nameof(WorldPropertyCategory)}:{category.Id}:{key}\"");
+
+        LoadBlueprints();
+        var removedWith = -1;
+        var sweepRule = new LegacySpaceItemSweep();
+        sweepRule.Migrate(Item("config_fig3"), _ => { }, "property:p1", "WorldPropertyCategory:c1:k1", rootConfiguration: credits => removedWith = credits);
+        removedWith.Should().Be(750);
+        sweepRule.QueueRefund("property:p1", "WorldPropertyCategory:c1:k1", removedWith);
+
+        var owner = new Player();
+        LegacySpaceItemSweep.Pay(owner, removedWith, Array.Empty<string>(), "WorldPropertyCategory:c1:k1#root").Should().BeTrue();
+        LegacySpaceItemSweep.Pay(owner, removedWith, Array.Empty<string>(), "WorldPropertyCategory:c1:k1#root").Should().BeFalse("a rerun does not pay twice");
+        owner.MarketTill.Should().Be(750);
+    }
+
     // Cursed items nested in containers
 
     private static bool ContainsCursed(string data) =>

@@ -82,10 +82,15 @@ internal static class StoredItemSweep
                     if (space == null)
                         continue;
                     var removed = false;
-                    categoryChanged |= space.Migrate(item.Data, value => item.Data = value, LegacySpaceItemSweep.ForProperty(category.ParentPropertyId),
-                        $"{nameof(WorldPropertyCategory)}:{category.Id}:{key}",
+                    var owner = LegacySpaceItemSweep.ForProperty(category.ParentPropertyId);
+                    var sourceKey = $"{nameof(WorldPropertyCategory)}:{category.Id}:{key}";
+                    categoryChanged |= space.Migrate(item.Data, value => item.Data = value, owner, sourceKey,
                         (blueprint, resref) => (item.Name, item.Tag, item.Resref, item.IconResref) = (blueprint.Name, resref, resref, blueprint.IconResref),
-                        _ => removed = category.Items.Remove(key));
+                        credits =>
+                        {
+                            removed = category.Items.Remove(key);
+                            space.QueueRefund(owner, sourceKey, credits);
+                        });
                     categoryChanged |= removed;
                 }
             return categoryChanged;

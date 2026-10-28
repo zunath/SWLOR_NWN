@@ -59,6 +59,16 @@ public sealed class LegacySpaceItemSweep
     public static string ForProperty(string propertyId) =>
         string.IsNullOrWhiteSpace(propertyId) ? null : PropertyOwnerPrefix + propertyId;
 
+    /// <summary>
+    /// Queues the refund for a configuration module the pass removes itself (one stored in a property category). The key
+    /// names the stored item, so a rerun never pays it twice; <see cref="Flush"/> pays it before the record is saved.
+    /// </summary>
+    public void QueueRefund(string ownerId, string sourceKey, int credits)
+    {
+        if (!string.IsNullOrWhiteSpace(ownerId) && credits > 0)
+            _pending.Add((ownerId, sourceKey + "#root", credits, Array.Empty<string>()));
+    }
+
     /// <summary>A stored record that is itself a configuration module, removed by <see cref="Apply"/>.</summary>
     public void QueueRemoval<T>(string recordId, string ownerId, int credits) where T : EntityBase =>
         _storedConfigurations.Add((typeof(T), recordId, ownerId, credits));

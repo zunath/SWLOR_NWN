@@ -1286,7 +1286,7 @@
           "id": 5670,
           "type": "cexolocstring",
           "value": {
-            "0": "Starlane - Mid Rim"
+            "0": "Starlane - Hutlar"
           }
         },
         "OnClick": {
@@ -1424,7 +1424,7 @@
               },
               "Value": {
                 "type": "cexostring",
-                "value": "STARLANE_LANDING_MIDRIM_1_3"
+                "value": "STARLANE_LANDING_HUTLAR_4"
               }
             },
             {

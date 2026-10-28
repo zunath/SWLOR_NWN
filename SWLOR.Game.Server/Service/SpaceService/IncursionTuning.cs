@@ -34,10 +34,10 @@ namespace SWLOR.Game.Server.Service.SpaceService
         public static readonly IReadOnlyDictionary<string, double> KillEquivalents = new Dictionary<string, double> { ["Normal"] = 1.0, ["Elite"] = 2.5, ["Boss"] = 9.0 };
 
         /// <summary>Credits per contribution point, by tier (index 1-6).</summary>
-        public static readonly double[] CreditsPerPoint = { 0, 9.1, 17.0, 22.7, 18.8, 22.0, 58.9 };
+        public static readonly double[] CreditsPerPoint = { 0, 9.9, 18.3, 24.4, 20.3, 23.8, 63.3 };
 
         /// <summary>The region reward's credits, by the region's tier (index 1-6).</summary>
-        public static readonly int[] RegionCredits = { 0, 1620, 2510, 3400, 3020, 3660, 8880 };
+        public static readonly int[] RegionCredits = { 0, 1420, 2190, 2980, 2640, 3210, 7770 };
 
         /// <summary>A tier fighter's hull + shield: a repair that restores it counts RepairPerPool points (index 1-6).</summary>
         public static readonly int[] FighterPool = { 0, 78, 216, 365, 468, 561, 653 };
@@ -58,7 +58,7 @@ namespace SWLOR.Game.Server.Service.SpaceService
         {
             new IncursionRegion { Center = "viscaraorbit", Name = "Viscara", Tier = 1, Areas = new[] { new IncursionArea { Resref = "viscaraorbit", Name = "Viscara Orbit", Tier = 1 }, new IncursionArea { Resref = "moncalaorbit", Name = "Mon Cala Orbit", Tier = 2 }, new IncursionArea { Resref = "space_midrim1", Name = "Mid Rim 1", Tier = 3 }, new IncursionArea { Resref = "space_viscbelt", Name = "Viscara Asteroid Belt", Tier = 2 } } },
             new IncursionRegion { Center = "moncalaorbit", Name = "Mon Cala", Tier = 2, Areas = new[] { new IncursionArea { Resref = "moncalaorbit", Name = "Mon Cala Orbit", Tier = 2 }, new IncursionArea { Resref = "dantooineorbit", Name = "Dantooine Orbit", Tier = 5 }, new IncursionArea { Resref = "hutlar_orbit", Name = "Hutlar Orbit", Tier = 3 }, new IncursionArea { Resref = "viscaraorbit", Name = "Viscara Orbit", Tier = 1 } } },
-            new IncursionRegion { Center = "hutlar_orbit", Name = "Hutlar", Tier = 3, Areas = new[] { new IncursionArea { Resref = "hutlar_orbit", Name = "Hutlar Orbit", Tier = 3 }, new IncursionArea { Resref = "moncalaorbit", Name = "Mon Cala Orbit", Tier = 2 }, new IncursionArea { Resref = "narshadorbit", Name = "Smuggler's Moon Orbit", Tier = 4 }, new IncursionArea { Resref = "tatooineorbit", Name = "Tatooine Orbit", Tier = 4 } } },
+            new IncursionRegion { Center = "hutlar_orbit", Name = "Hutlar", Tier = 3, Areas = new[] { new IncursionArea { Resref = "hutlar_orbit", Name = "Hutlar Orbit", Tier = 3 }, new IncursionArea { Resref = "moncalaorbit", Name = "Mon Cala Orbit", Tier = 2 }, new IncursionArea { Resref = "narshadorbit", Name = "Smuggler's Moon Orbit", Tier = 4 }, new IncursionArea { Resref = "tatooineorbit", Name = "Tatooine Orbit", Tier = 4 }, new IncursionArea { Resref = "space_midrimneb", Name = "Mid Rim Nebula", Tier = 4 } } },
             new IncursionRegion { Center = "tatooineorbit", Name = "Tatooine", Tier = 4, Areas = new[] { new IncursionArea { Resref = "tatooineorbit", Name = "Tatooine Orbit", Tier = 4 }, new IncursionArea { Resref = "hutlar_orbit", Name = "Hutlar Orbit", Tier = 3 }, new IncursionArea { Resref = "narshadorbit", Name = "Smuggler's Moon Orbit", Tier = 4 }, new IncursionArea { Resref = "space_dathomir", Name = "Dathomir Orbit", Tier = 5 } } },
             new IncursionRegion { Center = "narshadorbit", Name = "Smuggler's Moon", Tier = 4, Areas = new[] { new IncursionArea { Resref = "narshadorbit", Name = "Smuggler's Moon Orbit", Tier = 4 }, new IncursionArea { Resref = "hutlar_orbit", Name = "Hutlar Orbit", Tier = 3 }, new IncursionArea { Resref = "tatooineorbit", Name = "Tatooine Orbit", Tier = 4 } } },
             new IncursionRegion { Center = "space_korriban", Name = "Korriban", Tier = 6, Areas = new[] { new IncursionArea { Resref = "space_korriban", Name = "Korriban Orbit", Tier = 6 }, new IncursionArea { Resref = "space_midrim2", Name = "Mid Rim 2", Tier = 4 }, new IncursionArea { Resref = "space_korrdebris", Name = "Korriban Debris Field", Tier = 5 } } },

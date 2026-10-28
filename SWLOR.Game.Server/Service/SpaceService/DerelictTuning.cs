@@ -48,7 +48,7 @@ namespace SWLOR.Game.Server.Service.SpaceService
         public const int MaximumWaves = 3;
         public const float WaveRingMeters = 25f;
         /// <summary>The strongbox's step-up per contested wave cleared before it opens (percent), by content tier.</summary>
-        public static readonly int[] WaveStepPercent = { 0, 20, 15, 10, 10, 35, 30, 60 };
+        public static readonly int[] WaveStepPercent = { 0, 20, 15, 5, 5, 35, 30, 60 };
         public const int DefenderSharePercent = 50;
         public const float DefenseRadius = 60f;
         public const int ReinforcementCount = 2;
@@ -67,7 +67,7 @@ namespace SWLOR.Game.Server.Service.SpaceService
         // Payout model (derelicts.py --sim): credits per hour by content tier against the tier's space combat rate.
         public static readonly int[] CombatCreditsPerHour = { 0, 4055, 6270, 8500, 7557, 9347, 22212, 10955 };
         public static readonly int[] BoardingCreditsPerHour = { 0, 4669, 7289, 9795, 8747, 10728, 25531, 12558 };
-        public static readonly int[] ContestedGroupCreditsPerHour = { 0, 5344, 7989, 11687, 10690, 12269, 29044, 14272 };
+        public static readonly int[] ContestedGroupCreditsPerHour = { 0, 5344, 7989, 11103, 10118, 12269, 29044, 14272 };
         public static readonly int[] SalvageCreditsPerHour = { 0, 3011, 4817, 6435, 5662, 7098, 16847, 8171 };
         public const int SalvageReferenceIndustry = 80;
     }

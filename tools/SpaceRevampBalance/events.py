@@ -110,7 +110,7 @@ POINTS_PER_PULL = 20
 MAX_PULLS = 20
 MAX_PAID_POINTS = 600
 MIN_REGION_POINTS = 5
-REGION_HOURS = 0.4
+REGION_HOURS = 0.35             # W11e: was 0.4, which put 2 active hours at 140-141% of combat (now 139%)
 REGION_PULLS = 2
 SCHEMATIC_PERCENT = 10
 

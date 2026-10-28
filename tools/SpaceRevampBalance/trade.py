@@ -172,21 +172,21 @@ EXCHANGES = [
 # because the table lists both as imports with no exporter. Smuggler's Moon Landing and Station share one exchange
 # (they share an orbit). Smuggler's Moon has no NPC spawns yet; tier 4 is its lanes' tier (Hutlar 3, Tatooine 4).
 
-# Starlane graph (Module/git, 2026-10-27): every lane has one back. The three W6c zones are dead ends with no exchange,
-# so they change no route length.
+# Starlane graph (Module/git, 2026-10-28): every lane has one back. The three W6c zones are dead ends with no exchange,
+# so they change no route length. The Mid Rim Nebula (T3-4) hangs off Hutlar (T3) since W11e, not Mid Rim 1 (T5 space).
 LANES = {
     "viscaraorbit": ["moncalaorbit", "space_midrim1", "space_viscbelt"],
     "moncalaorbit": ["dantooineorbit", "hutlar_orbit", "viscaraorbit"],
     "dantooineorbit": ["moncalaorbit"],
-    "hutlar_orbit": ["moncalaorbit", "narshadorbit", "tatooineorbit"],
+    "hutlar_orbit": ["moncalaorbit", "narshadorbit", "tatooineorbit", "space_midrimneb"],
     "narshadorbit": ["hutlar_orbit", "tatooineorbit"],
     "tatooineorbit": ["hutlar_orbit", "narshadorbit", "space_dathomir"],
     "space_dathomir": ["tatooineorbit"],
-    "space_midrim1": ["space_midrim2", "viscaraorbit", "space_midrimneb"],
+    "space_midrim1": ["space_midrim2", "viscaraorbit"],
     "space_midrim2": ["space_korriban", "space_midrim1"],
     "space_korriban": ["space_midrim2", "space_korrdebris"],
     "space_viscbelt": ["viscaraorbit"],
-    "space_midrimneb": ["space_midrim1"],
+    "space_midrimneb": ["hutlar_orbit"],
     "space_korrdebris": ["space_korriban"],
 }
 
@@ -1268,12 +1268,45 @@ def trade_tab(Sheet):
     return s
 
 
+def module_lanes():
+    """The starlane graph as Module/git holds it (tele_obj placeables whose DESTINATION is a STARLANE_LANDING waypoint),
+    read the way ShipAccessRulesTests reads it: area -> the areas its lanes land in."""
+    lanes, landings = [], {}
+    for path in sorted((REPO / "Module" / "git").glob("*.git.json")):
+        text = path.read_text(encoding="latin-1")
+        if "STARLANE_LANDING" not in text:
+            continue
+        data, area = json.loads(text), path.name[:-len(".git.json")]
+        for p in data["Placeable List"]["value"]:
+            if p["TemplateResRef"]["value"] != "tele_obj":
+                continue
+            dest = [v["Value"]["value"] for v in p.get("VarTable", {}).get("value", []) if v["Name"]["value"] == "DESTINATION"]
+            if dest and str(dest[0]).startswith("STARLANE_LANDING"):
+                lanes.append((area, dest[0]))
+        for w in data["WaypointList"]["value"]:
+            if w["Tag"]["value"].startswith("STARLANE_LANDING"):
+                landings[w["Tag"]["value"]] = area
+    graph = {}
+    for area, dest in lanes:
+        graph.setdefault(area, set()).add(landings[dest])
+    return graph
+
+
+def check_lanes():
+    """The differences between LANES and the module's starlanes (empty when they agree)."""
+    module = module_lanes()
+    return [f"{a}: LANES {sorted(LANES.get(a, []))}, module {sorted(module.get(a, set()))}"
+            for a in sorted(set(LANES) | set(module)) if set(LANES.get(a, [])) != module.get(a, set())]
+
+
 def main():
     if "--sim" in sys.argv:
         report()
         return
     if check_orbit_rule():
         sys.exit(f"orbit rule broken: {check_orbit_rule()}")
+    if check_lanes():
+        sys.exit("LANES differs from the Module/git starlanes: " + "; ".join(check_lanes()))
     check = "--check" in sys.argv
     stale = []
     for rel, build in WRITES.items():

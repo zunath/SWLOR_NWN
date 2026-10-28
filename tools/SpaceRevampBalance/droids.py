@@ -195,8 +195,8 @@ BAY_REPAIR_PERCENT_PER_INDUSTRY = 0.10  # +10% at 100 Industry, +20% with Damage
 
 # Hooks for later slices (draft numbers; their slices tune them).
 HOLDING_OUTPUT_PERCENT_PER_INDUSTRY = 0.5        # Planetary Holdings (W14b): +50% at 100 Industry
-DRILL_OUTPUT_PERCENT_PER_INDUSTRY = 0.5          # Asteroid Drill (W13): +50% at 100 Industry
-SHIPYARD_BUILD_SPEED_PERCENT_PER_INDUSTRY = 0.3  # Shipyard (W13): builds 30% faster at 100 Industry
+DRILL_OUTPUT_PERCENT_PER_INDUSTRY = 0.5          # Asteroid Drill (W13b, StationDroidRules): +50% at 100 Industry
+SHIPYARD_BUILD_SPEED_PERCENT_PER_INDUSTRY = 0.3  # Shipyard (W13b, StationDroidRules): builds 30% faster at 100 Industry
 SALVAGE_TEAM_SPEED_PERCENT_PER_INDUSTRY = 0.3    # Derelict salvage teams (W15): a 30% shorter timer at 100 Industry
 SALVAGE_TEAM_YIELD_PERCENT_PER_INDUSTRY = 0.25   # Derelict salvage teams (W15): +25% yield at 100 Industry
 
@@ -495,8 +495,8 @@ def droids_tab(Sheet):
     s.title("Hooks for later slices")
     s.table(["Where", "Per Industry", "At 100", "", "", "", "", "Slice"], [
         ["Planetary Holdings output", f"+{HOLDING_OUTPUT_PERCENT_PER_INDUSTRY:g}%", f"+{HOLDING_OUTPUT_PERCENT_PER_INDUSTRY * 100:g}%", "", "", "", "", "W14b; Efficiency Protocol applies"],
-        ["Asteroid Drill output", f"+{DRILL_OUTPUT_PERCENT_PER_INDUSTRY:g}%", f"+{DRILL_OUTPUT_PERCENT_PER_INDUSTRY * 100:g}%", "", "", "", "", "W13; Efficiency Protocol applies"],
-        ["Shipyard build speed", f"+{SHIPYARD_BUILD_SPEED_PERCENT_PER_INDUSTRY:g}%", f"+{SHIPYARD_BUILD_SPEED_PERCENT_PER_INDUSTRY * 100:g}%", "", "", "", "", "W13"],
+        ["Asteroid Drill output", f"+{DRILL_OUTPUT_PERCENT_PER_INDUSTRY:g}%", f"+{DRILL_OUTPUT_PERCENT_PER_INDUSTRY * 100:g}%", "", "", "", "", "W13b (StationDroidRules); Efficiency Protocol applies"],
+        ["Shipyard build speed", f"+{SHIPYARD_BUILD_SPEED_PERCENT_PER_INDUSTRY:g}%", f"+{SHIPYARD_BUILD_SPEED_PERCENT_PER_INDUSTRY * 100:g}%", "", "", "", "", "W13b (StationDroidRules)"],
         ["Derelict salvage team timer", f"-{SALVAGE_TEAM_SPEED_PERCENT_PER_INDUSTRY:g}%", f"-{SALVAGE_TEAM_SPEED_PERCENT_PER_INDUSTRY * 100:g}%", "", "", "", "", "W15"],
         ["Derelict salvage team yield", f"+{SALVAGE_TEAM_YIELD_PERCENT_PER_INDUSTRY:g}%", f"+{SALVAGE_TEAM_YIELD_PERCENT_PER_INDUSTRY * 100:g}%", "", "", "", "", "W15"],
     ])

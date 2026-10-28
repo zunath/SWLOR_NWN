@@ -7,6 +7,7 @@ using SWLOR.Game.Server.Service.CraftService;
 using SWLOR.Game.Server.Service.DroidService;
 using SWLOR.Game.Server.Service.PerkService;
 using SWLOR.Game.Server.Service.SpaceService;
+using SWLOR.Game.Server.Service.StationService;
 using SWLOR.NWN.API.NWScript.Enum.Item;
 using SWLOR.NWN.API.NWScript.Enum.Item.Property;
 
@@ -375,8 +376,12 @@ public class DroidIndustryTests
     {
         DroidIndustryRules.HoldingOutputPercent(100, 0).Should().Be(50);
         DroidIndustryRules.HoldingOutputPercent(100, 40).Should().Be(70);
-        DroidIndustryRules.DrillOutputPercent(60, 0).Should().Be(30);
-        DroidIndustryRules.ShipyardBuildSpeedPercent(100).Should().Be(30);
+        StationDroidRules.DrillOutputPercent(60, 0).Should().Be(30);
+        StationDroidRules.DrillOutputPercent(100, 40).Should().Be(70);
+        StationDroidRules.ShipyardBuildSpeedPercent(100).Should().Be(30);
+        StationDroidRules.TakesDroid(StationDeckSlotType.Shipyard).Should().BeTrue();
+        StationDroidRules.TakesDroid(StationDeckSlotType.AsteroidDrill).Should().BeTrue();
+        StationDroidRules.TakesDroid(StationDeckSlotType.Bank).Should().BeFalse();
         DroidIndustryRules.SalvageTeamSpeedPercent(100).Should().Be(30);
         DroidIndustryRules.SalvageTeamYieldPercent(100).Should().Be(25);
         DroidIndustryRules.HoldingOutputPercent(0, 40).Should().Be(0, "a combat droid adds nothing");

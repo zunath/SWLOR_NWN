@@ -7,8 +7,9 @@ namespace SWLOR.Game.Server.Service.DroidService
 {
     /// <summary>
     /// Industrial droid rules (plan section 27): a droid's Industry is the sum of its industrial parts', and Industry pays
-    /// off at a ship's stations, in its droid bay, and (through the hooks here) in holdings, station buildings and
-    /// derelict salvage teams. The industrial protocols are droid-only AI instructions. Numbers: <see cref="DroidIndustryTuning"/>.
+    /// off at a ship's stations, in its droid bay, and (through the hooks here) in holdings and derelict salvage teams;
+    /// station buildings read it through <see cref="StationService.StationDroidRules"/>. The industrial protocols are
+    /// droid-only AI instructions. Numbers: <see cref="DroidIndustryTuning"/>.
     /// </summary>
     public static class DroidIndustryRules
     {
@@ -70,14 +71,6 @@ namespace SWLOR.Game.Server.Service.DroidService
         /// <summary>Planetary Holdings (W14b): the output a staff droid adds.</summary>
         public static int HoldingOutputPercent(int industry, int efficiencyPercent) =>
             Round(DroidIndustryTuning.HoldingOutputPercentPerIndustry * OutputIndustry(industry, efficiencyPercent));
-
-        /// <summary>A station's Asteroid Drill (W13): the output an assigned droid adds.</summary>
-        public static int DrillOutputPercent(int industry, int efficiencyPercent) =>
-            Round(DroidIndustryTuning.DrillOutputPercentPerIndustry * OutputIndustry(industry, efficiencyPercent));
-
-        /// <summary>A station's Shipyard (W13): how much faster an assigned droid builds.</summary>
-        public static int ShipyardBuildSpeedPercent(int industry) =>
-            Round(DroidIndustryTuning.ShipyardBuildSpeedPercentPerIndustry * Math.Max(0, industry));
 
         /// <summary>A derelict salvage team (W15): how much shorter the droids' timer is.</summary>
         public static int SalvageTeamSpeedPercent(int industry) =>
